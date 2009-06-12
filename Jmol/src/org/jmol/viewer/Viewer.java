@@ -124,7 +124,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private CommandHistory commandHistory = new CommandHistory();
   private ColorManager colorManager;
 
-  Compiler compiler;
+  ScriptCompiler compiler;
   Hashtable definedAtomSets;
 
   private MinimizerInterface minimizer;
@@ -173,7 +173,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
-  Eval eval;
+  ScriptEvaluator eval;
   private DataManager dataManager;
   private FileManager fileManager;
   private ModelManager modelManager;
@@ -245,9 +245,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     repaintManager = new RepaintManager(this);
     initialize();
     fileManager = new FileManager(this);
-    compiler = new Compiler(this);
+    compiler = new ScriptCompiler(this);
     definedAtomSets = new Hashtable();
-    eval = new Eval(this);
+    eval = new ScriptEvaluator(this);
   }
 
   /**
@@ -1531,11 +1531,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   BitSet getAtomBitSet(Object atomExpression) {
     // typically a string such as "(atomno < 3)"
-    return Eval.getAtomBitSet(eval, atomExpression);
+    return ScriptEvaluator.getAtomBitSet(eval, atomExpression);
   }
 
   Vector getAtomBitSetVector(Object atomExpression) {
-    return Eval.getAtomBitSetVector(eval, getAtomCount(), atomExpression);
+    return ScriptEvaluator.getAtomBitSetVector(eval, getAtomCount(), atomExpression);
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -4596,11 +4596,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.getParameter(key);
   }
 
-  public Variable getOrSetNewVariable(String key) {
+  public ScriptVariable getOrSetNewVariable(String key) {
     return global.getOrSetNewVariable(key);
   }
 
-  Variable setVariable(String name, Variable value) {
+  ScriptVariable setVariable(String name, ScriptVariable value) {
     return global.setUserVariable(name, value);
   }
 
@@ -4641,7 +4641,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (key.equalsIgnoreCase("showSelections"))
       return getSelectionHaloEnabled();
     if (global.htUserVariables.containsKey(key)) {
-      Variable t = global.getUserVariable(key);
+      ScriptVariable t = global.getUserVariable(key);
       if (t.tok == Token.on)
         return true;
       if (t.tok == Token.off)
@@ -4833,7 +4833,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol)
       global.setParameterValue(key, value);
     else
-      global.setUserVariable(key, new Variable(Token.string, value));
+      global.setUserVariable(key, new ScriptVariable(Token.string, value));
   }
 
   private void setPropertyError(String msg) {
@@ -5026,7 +5026,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol)
       global.setParameterValue(key, value);
     else
-      global.setUserVariable(key, new Variable(Token.decimal, new Float(value)));
+      global.setUserVariable(key, new ScriptVariable(Token.decimal, new Float(value)));
     return true;
   }
 
@@ -5204,7 +5204,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol) {
       global.setParameterValue(key, value);
     } else {
-      global.setUserVariable(key, Variable.intVariable(value));
+      global.setUserVariable(key, ScriptVariable.intVariable(value));
     }
   }
 
@@ -5716,7 +5716,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol)
       global.setParameterValue(key, value);
     else
-      global.setUserVariable(key, Variable.getBoolean(value));
+      global.setUserVariable(key, ScriptVariable.getBoolean(value));
     if (notFound)
       return false;
     if (doRepaint) {
@@ -6717,7 +6717,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public synchronized Object evaluateExpression(Object stringOrTokens) {
-    return Eval.evaluateExpression(this, stringOrTokens);
+    return ScriptEvaluator.evaluateExpression(this, stringOrTokens);
   }
 
   public String getPdbData(BitSet bs) {
@@ -7456,11 +7456,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   
   /// User-defined functions
   
-  Function getFunction(String name) {
+  ScriptFunction getFunction(String name) {
     return stateManager.getFunction(name);
   }
 
-  void addFunction(Function f) {
+  void addFunction(ScriptFunction f) {
     stateManager.addFunction(f);
   }
 

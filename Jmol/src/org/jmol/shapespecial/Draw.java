@@ -40,7 +40,6 @@ import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.MouseManager;
-import org.jmol.viewer.Token;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
@@ -579,23 +578,16 @@ public class Draw extends MeshCollection {
           bsAllModels = new BitSet();
         for (int j = 0; j < modelBasedPoints.length; j++)
           if (iModel < 0 || j == iModel) {
-            Object points = Escape.unescapePointOrBitsetAsVariable(modelBasedPoints[j]);
-            if (!(points instanceof Token))
-              continue;
+            Object point = Escape.unescapePointOrBitset(modelBasedPoints[j]);
             bsAllModels.set(j);
-            switch (((Token) points).tok) {
-            case Token.point3f:
-              addPoint((Point3f) ((Token) points).value, j);
-              break;
-            case Token.bitset:
-              bs = (BitSet) ((Token) points).value;
+            if (point instanceof Point3f) {
+              addPoint((Point3f) point, j);
+            } else if (point instanceof BitSet) {
+              bs = (BitSet) point;
               if (bsModel != null)
                 bs.and(bsModel);
               if (BitSetUtil.firstSetBit(bs) >= 0)
                 addPoint(viewer.getAtomSetCenter(bs), j);
-              break;
-            default:
-            //ignored
             }
           }
         break;

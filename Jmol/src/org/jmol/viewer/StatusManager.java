@@ -428,7 +428,7 @@ class StatusManager {
     }
     String sJmol = (msWalltime == 0 ? jmolScriptCallback(JmolConstants.CALLBACK_SCRIPT)
         : null);
-    boolean isScriptCompletion = (strStatus == Eval.SCRIPT_COMPLETED);
+    boolean isScriptCompletion = (strStatus == ScriptManager.SCRIPT_COMPLETED);
 
     if (recordStatus("script")) {
       boolean isError = (strErrorMessageUntranslated != null);

@@ -25,7 +25,7 @@
 
 package org.jmol.viewer;
 
-class FlowContext {
+class ScriptFlowContext {
   /*
    * Flow Contexts in Jmol 11.3.23+  -- Bob Hanson
    * 
@@ -136,11 +136,11 @@ class FlowContext {
    * 
    */
   
-  private Compiler compiler;
+  private ScriptCompiler compiler;
   Token token;
   private int pt0;
-  Function function;
-  private FlowContext parent;
+  ScriptFunction function;
+  private ScriptFlowContext parent;
   int lineStart;
   int commandStart;
   int ptLine;
@@ -148,7 +148,7 @@ class FlowContext {
   boolean forceEndIf = true;
   String ident;
   
-  FlowContext(Compiler compiler, Token token, int pt0, FlowContext parent) {
+  ScriptFlowContext(ScriptCompiler compiler, Token token, int pt0, ScriptFlowContext parent) {
     this.compiler = compiler;
     this.token = token;
     this.ident = (String)token.value;
@@ -159,8 +159,8 @@ class FlowContext {
     //System.out.println ("FlowContext: init " + this);  
   }
 
-  FlowContext getBreakableContext(int nLevelsUp) {
-    FlowContext f = this;
+  ScriptFlowContext getBreakableContext(int nLevelsUp) {
+    ScriptFlowContext f = this;
     while (f != null && (f.token.tok != Token.forcmd
       && f.token.tok != Token.whilecmd || nLevelsUp-- > 0))
       f = f.getParent();
@@ -198,14 +198,14 @@ class FlowContext {
         + " command " + commandStart;  
   }
   
-  FlowContext getParent() {
+  ScriptFlowContext getParent() {
     //System.out.println("FlowContext end " + path() + " on line/command " + lineCurrent + " " + iCommand);
     return parent;
   }
   
   String path() {
     String s = "";
-    FlowContext f = this;
+    ScriptFlowContext f = this;
     while (f != null) {
       s = f.ident + "-" + s;
       f = f.parent;
@@ -213,7 +213,7 @@ class FlowContext {
     return "[" + s + "]";
   }
   
-  void setFunction(Function function) {
+  void setFunction(ScriptFunction function) {
     this.function = function;
   }
 }

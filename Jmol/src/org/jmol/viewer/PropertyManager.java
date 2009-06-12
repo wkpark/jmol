@@ -164,14 +164,14 @@ class PropertyManager {
     return info;
   }
   
-  static Object extractProperty(Object property, Variable[] args, int ptr) {
+  static Object extractProperty(Object property, ScriptVariable[] args, int ptr) {
     if (ptr >= args.length)
       return property;
     int pt;
-    Variable arg = args[ptr++];
+    ScriptVariable arg = args[ptr++];
     switch (arg.tok) {
     case Token.integer:
-      pt = Variable.iValue(arg) - 1;  //one-based, as for array selectors
+      pt = ScriptVariable.iValue(arg) - 1;  //one-based, as for array selectors
       if (property instanceof Vector) {
         Vector v = (Vector) property;
         if (pt < 0)
@@ -242,7 +242,7 @@ class PropertyManager {
       }
       break;
     case Token.string:
-      String key = Variable.sValue(arg);
+      String key = ScriptVariable.sValue(arg);
       if (property instanceof Hashtable) {
         Hashtable h = (Hashtable) property;
         if (key.equalsIgnoreCase("keys")) {
@@ -367,7 +367,7 @@ class PropertyManager {
     case PROP_DATA_INFO:
       return viewer.getData(myParam.toString());
     case PROP_EVALUATE:
-      return Eval.evaluateExpression(viewer, myParam.toString());
+      return ScriptEvaluator.evaluateExpression(viewer, myParam.toString());
     case PROP_IMAGE:
       return viewer.getImageAs(returnType == null ? "JPEG" : "JPG64", -1, -1, -1, null, null);
     }

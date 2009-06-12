@@ -26,7 +26,7 @@ package org.jmol.viewer;
 import java.util.Hashtable;
 import java.util.Vector;
 
-class Function {
+class ScriptFunction {
 
   // / functions
 
@@ -51,9 +51,9 @@ class Function {
   int[] lineIndices;
   int nParameters;
   Vector names = new Vector();
-  Variable returnValue;
+  ScriptVariable returnValue;
 
-  Function(String name) {
+  ScriptFunction(String name) {
     this.name = name;
   }
 
@@ -62,9 +62,9 @@ class Function {
     for (int i = names.size(); --i >= 0;) {
       String name = (String) names.get(i);
       contextVariables.put(name, (i < nParameters && i < nParams ? params
-          .get(i) : (new Variable(Token.string, "")).setName(name)));
+          .get(i) : (new ScriptVariable(Token.string, "")).setName(name)));
     }
-    contextVariables.put("_retval", Variable.intVariable(0));
+    contextVariables.put("_retval", ScriptVariable.intVariable(0));
   }
 
   void addVariable(String name, boolean isParameter) {
@@ -91,7 +91,7 @@ class Function {
     return s.toString();
   }
 
-  static void setFunction(Function function, String script,
+  static void setFunction(ScriptFunction function, String script,
                           int ichCurrentCommand, int pt, short[] lineNumbers,
                           int[] lineIndices, Vector lltoken) {
     int cmdpt0 = function.cmdpt0;

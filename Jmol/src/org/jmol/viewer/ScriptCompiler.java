@@ -34,7 +34,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.BitSet;
 
-class Compiler extends CompilationTokenParser {
+class ScriptCompiler extends ScriptCompilationTokenParser {
 
   /**
    * The Compiler clas is really two parts -- 
@@ -53,7 +53,7 @@ class Compiler extends CompilationTokenParser {
    */
   private static final String LOAD_TYPES = "append;files;menu;trajectory;models;" + JmolConstants.LOAD_ATOM_DATA_TYPES;
   
-  Compiler(Viewer viewer) {
+  ScriptCompiler(Viewer viewer) {
     this.viewer = viewer;
   }
   
@@ -76,7 +76,7 @@ class Compiler extends CompilationTokenParser {
   private boolean isCheckOnly;
   private boolean haveComments;
 
-  private Function thisFunction;
+  private ScriptFunction thisFunction;
   
   
   boolean compile(String filename, String script, boolean isPredefining,
@@ -115,7 +115,7 @@ class Compiler extends CompilationTokenParser {
     if (thisFunction == null) {
       if (contextVariables == null)
         contextVariables = new Hashtable();
-      contextVariables.put(ident, (new Variable(Token.string, "")).setName(ident));
+      contextVariables.put(ident, (new ScriptVariable(Token.string, "")).setName(ident));
     } else {
       thisFunction.addVariable(ident, false);
     }
@@ -161,7 +161,7 @@ class Compiler extends CompilationTokenParser {
         : script.substring(pt + JmolConstants.EMBEDDED_SCRIPT_TAG.length(), pt2));
   }
   
-  private FlowContext flowContext;
+  private ScriptFlowContext flowContext;
   private Vector ltoken;
   private Vector lltoken;
   private Vector vBraces;
@@ -885,7 +885,7 @@ class Compiler extends CompilationTokenParser {
       if (tokCommand == Token.breakcmd || tokCommand == Token.continuecmd) {
         if (nTokens != 1)
           return ERROR(ERROR_badArgumentCount);
-        FlowContext f = (flowContext == null ? null : flowContext
+        ScriptFlowContext f = (flowContext == null ? null : flowContext
             .getBreakableContext(val = Math.abs(val)));
         if (f == null)
           return ERROR(ERROR_badContext, (String) tokenCommand.value);
@@ -1158,7 +1158,7 @@ class Compiler extends CompilationTokenParser {
         return CONTINUE; // don't store name in stack
       }
       if (nTokens == 1) {
-        flowContext.setFunction(thisFunction = new Function(ident));
+        flowContext.setFunction(thisFunction = new ScriptFunction(ident));
         break; // function f
       }
       if (nTokens == 2) {
@@ -1415,7 +1415,7 @@ class Compiler extends CompilationTokenParser {
     case Token.breakcmd:
     case Token.continuecmd:
       isNew = false;
-      FlowContext f = (flowContext == null ? null : flowContext.getBreakableContext(0));
+      ScriptFlowContext f = (flowContext == null ? null : flowContext.getBreakableContext(0));
       if (f == null)
         return error(ERROR_badContext, ident);
       tokenCommand = new Token(tokCommand, f.getPt0(), ident); //copy
@@ -1441,7 +1441,7 @@ class Compiler extends CompilationTokenParser {
       if (tokCommand == Token.elsecmd || tokCommand == Token.elseif) {
         flowContext.token = tokenCommand;
       } else {
-        flowContext = new FlowContext(this, tokenCommand, pt, flowContext);        
+        flowContext = new ScriptFlowContext(this, tokenCommand, pt, flowContext);        
       }
     }
     tokCommand = tokenCommand.tok;
@@ -1461,7 +1461,7 @@ class Compiler extends CompilationTokenParser {
     case Token.function:
       if (!isCheckOnly)
         addTokenToPrefix(new Token(Token.function, thisFunction));
-      Function.setFunction(thisFunction, script, pt1, lltoken.size(),
+      ScriptFunction.setFunction(thisFunction, script, pt1, lltoken.size(),
           lineNumbers, lineIndices, lltoken);
       thisFunction = null;
       tokenCommand.intValue = 0;
@@ -1997,7 +1997,7 @@ class Compiler extends CompilationTokenParser {
         + " >>>> " + errorLine.substring(ichToken - ichCurrentCommand) : errorLine)
         + " <<<<";
     errorMessage = GT._("script compiler ERROR: ") + errorMessage
-         + Eval.setErrorLineMessage(null, filename, lineCurrent, iCommand, lineInfo);
+         + ScriptEvaluator.setErrorLineMessage(null, filename, lineCurrent, iCommand, lineInfo);
     if (!isSilent) {
       viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);
       Logger.error(errorMessage);

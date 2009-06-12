@@ -447,15 +447,15 @@ public class StateManager {
     return (name.indexOf("_") == 0 ? localFunctions : globalFunctions).containsKey(name);
   }
 
-  void addFunction(Function function) {
+  void addFunction(ScriptFunction function) {
     (function.name.indexOf("_") == 0 ? localFunctions
         : globalFunctions).put(function.name, function);
   }
 
-  Function getFunction(String name) {
+  ScriptFunction getFunction(String name) {
     if (name == null)
       return null;
-    Function function = (Function) (name.indexOf("_") == 0 ? localFunctions
+    ScriptFunction function = (ScriptFunction) (name.indexOf("_") == 0 ? localFunctions
         : globalFunctions).get(name);
     return (function == null || function.aatoken == null ? null : function);
   }
@@ -887,7 +887,7 @@ public class StateManager {
         htParameterValues.remove(key);
     }
 
-    Variable setUserVariable(String key, Variable var) {
+    ScriptVariable setUserVariable(String key, ScriptVariable var) {
       if (var == null) 
         return null;
       key = key.toLowerCase();
@@ -910,11 +910,11 @@ public class StateManager {
       htUserVariables.remove(key);
     }
 
-    Variable getUserVariable(String name) {
+    ScriptVariable getUserVariable(String name) {
       if (name == null)
         return null;
       name = name.toLowerCase();
-      return (Variable) htUserVariables.get(name);
+      return (ScriptVariable) htUserVariables.get(name);
     }
 
     String getParameterEscaped(String name, int nMax) {
@@ -938,7 +938,7 @@ public class StateManager {
     }
 
     private String escapeUserVariable(String name) {
-      Variable var = (Variable) htUserVariables.get(name);
+      ScriptVariable var = (ScriptVariable) htUserVariables.get(name);
       // previously known to contain 
       return var.escape();
     }
@@ -962,13 +962,13 @@ public class StateManager {
      * @return     a new variable if possible, but null if "_xxx"
      * 
      */
-    Variable getOrSetNewVariable(String name) {
+    ScriptVariable getOrSetNewVariable(String name) {
       if (name == null || name.length() == 0)
         name = "x";
       Object v = getParameter(name, true);
       if (v == null && name.charAt(0) != '_')
-        v = setUserVariable(name, new Variable());
-      return Variable.getVariable(v);
+        v = setUserVariable(name, new ScriptVariable());
+      return ScriptVariable.getVariable(v);
     }
 
     Object getParameter(String name, boolean asVariable) {
@@ -988,8 +988,8 @@ public class StateManager {
       if (htPropertyFlagsRemoved.containsKey(name))
         return Boolean.FALSE;
       if (htUserVariables.containsKey(name)) {
-        Variable v = (Variable) htUserVariables.get(name);
-        return (asVariable ? v : Variable.oValue(v));
+        ScriptVariable v = (ScriptVariable) htUserVariables.get(name);
+        return (asVariable ? v : ScriptVariable.oValue(v));
       }
       return null;
     }
@@ -1118,7 +1118,7 @@ public class StateManager {
       while (e.hasMoreElements())
         list[n++] = (key = (String) e.nextElement())
             + (key.charAt(0) == '@' ? " "
-                + Variable.sValue((Variable) htUserVariables.get(key)) : " = "
+                + ScriptVariable.sValue((ScriptVariable) htUserVariables.get(key)) : " = "
                 + escapeUserVariable(key));
 
       Arrays.sort(list, 0, n);

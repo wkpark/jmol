@@ -48,8 +48,10 @@ import org.jmol.viewer.ScriptEvaluator.ScriptException;
 class ScriptMathProcessor {
   /**
    * Reverse Polish Notation Engine for IF, SET, and %{...} -- Bob Hanson
-   * 2/16/2007 Just a simple RPN processor that can handle boolean, int, float,
-   * String, Point3f, and BitSet
+   * 2/16/2007 Just a (not so simple?) RPN processor that can handle boolean,
+   * int, float, String, Point3f, and BitSet
+   * 
+   * hansonr@stolaf.edu
    * 
    */
 
@@ -74,7 +76,8 @@ class ScriptMathProcessor {
   private int ptid = 0;
   private int ptx = Integer.MAX_VALUE;
 
-  ScriptMathProcessor(ScriptEvaluator eval, boolean isArrayItem, boolean asVector) {
+  ScriptMathProcessor(ScriptEvaluator eval, boolean isArrayItem,
+      boolean asVector) {
     this.eval = eval;
     this.viewer = eval.viewer;
     this.logMessages = eval.logMessages;
@@ -184,9 +187,8 @@ class ScriptMathProcessor {
   }
 
   boolean isOpFunc(Token op) {
-    return (Token.tokAttr(op.tok, Token.mathfunc) 
-        || op.tok == Token.propselector
-           && Token.tokAttr(op.intValue, Token.mathfunc));
+    return (Token.tokAttr(op.tok, Token.mathfunc) || op.tok == Token.propselector
+        && Token.tokAttr(op.intValue, Token.mathfunc));
   }
 
   boolean skipping;
@@ -221,11 +223,11 @@ class ScriptMathProcessor {
    * @return false if an error condition arises
    * @throws ScriptException
    */
-    boolean addOp(Token op) throws ScriptException {
-      return addOp(op, true); 
-    }
-    
-    boolean addOp(Token op, boolean allowMathFunc) throws ScriptException {
+  boolean addOp(Token op) throws ScriptException {
+    return addOp(op, true);
+  }
+
+  boolean addOp(Token op, boolean allowMathFunc) throws ScriptException {
 
     if (logMessages) {
 
@@ -526,7 +528,9 @@ class ScriptMathProcessor {
   ScriptVariable getX() throws ScriptException {
     if (xPt < 0)
       eval.error(ScriptEvaluator.ERROR_endOfStatementUnexpected);
-    return ScriptVariable.selectItem(xStack[xPt--]);
+    ScriptVariable v = ScriptVariable.selectItem(xStack[xPt]);
+    xStack[xPt--] = null;
+    return v;
   }
 
   private boolean evaluateFunction() throws ScriptException {
@@ -1361,7 +1365,8 @@ class ScriptMathProcessor {
     return addX(viewer.getData(selected, type));
   }
 
-  private boolean evaluateLabel(int intValue, ScriptVariable[] args) throws ScriptException {
+  private boolean evaluateLabel(int intValue, ScriptVariable[] args)
+      throws ScriptException {
     ScriptVariable x1 = getX();
     String format = (args.length == 0 ? "%U" : ScriptVariable.sValue(args[0]));
     boolean asArray = Token.tokAttr(intValue, Token.minmaxmask);
@@ -1595,7 +1600,7 @@ class ScriptMathProcessor {
       if (!isSyntaxCheck && !x2.increment(incrementX))
         return false;
       wasX = true;
-      xPt++; // reverse getX()
+      putX(x2); // reverse getX()
       return true;
     }
 

@@ -1651,22 +1651,6 @@ class ScriptMathProcessor {
         if (!(v instanceof ScriptVariable))
           return false;
         x2 = (ScriptVariable) v;
-      } else if (xPt >= 1 && xStack[xPt].tok == Token.opEQ
-          || x2.tok == Token.opEQ) {
-        // special case {xxx}.label[n] because we also have
-        // {xxx}.label("format")
-        // so for now at least we have to do the selection manually.
-        int index = Integer.MIN_VALUE;
-        if (x2.tok == Token.list) {
-          x2.intValue = 1;
-          index = ScriptVariable.iValue(x2);
-          x2 = (ScriptVariable) getX().value;
-          if (x2.intValue != iv)
-            return false;
-        }
-        x2 = getX();
-        if (index != Integer.MIN_VALUE)
-          x2.intValue = index;
       }
       if (op.tok == x2.tok)
         x2 = getX();

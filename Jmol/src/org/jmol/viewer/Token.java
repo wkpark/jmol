@@ -580,13 +580,14 @@ public class Token {
   final static int sub          = 4 | 1 << 9 | mathfunc | mathproperty;
   final static int mul          = 5 | 1 << 9 | mathfunc | mathproperty;
   final static int div          = 6 | 1 << 9 | mathfunc | mathproperty;
-  public final static int label = 7 | 1 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | defaultON | setparam;
 
   // xxx(a,b)
 
   final static int random       = 2 | 2 << 9 | mathfunc;
   final static int cross        = 3 | 2 << 9 | mathfunc;
   final static int script       = 4 | 2 << 9 | mathfunc | command;
+  // second parameter for label forces "all" -- an array even for one label
+  public final static int label = 5 | 2 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | defaultON | setparam;
 
   // ___.xxx(a,b)
 

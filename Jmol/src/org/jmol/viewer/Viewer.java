@@ -2000,12 +2000,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getFileAsString(String name) {
+    return getFileAsString(name, Integer.MAX_VALUE);
+  }
+  
+  public String getFileAsString(String name, int nBytesMax) {
     if (name == null)
       return getCurrentFileAsString();
     String[] data = new String[2];
     data[0] = name;
     // ignore error completely
-    getFileAsString(data);
+    getFileAsString(data, nBytesMax);
     return data[1];
   }
 
@@ -2013,8 +2017,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return fileManager.getFullPath(name, false);
   }
 
-  boolean getFileAsString(String[] data) {
-    return fileManager.getFileDataOrErrorAsString(data);
+  boolean getFileAsString(String[] data, int nBytesMax) {
+    return fileManager.getFileDataOrErrorAsString(data, nBytesMax);
   }
 
   String[] getFileInfo() {

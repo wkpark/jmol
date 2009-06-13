@@ -1250,12 +1250,13 @@ class ScriptMathProcessor {
   }
 
   private boolean evaluateLoad(ScriptVariable[] args, int tok) {
-    if (args.length != 1)
+    if (args.length > 2 || args.length < 1)
       return false;
     if (isSyntaxCheck)
       return addX("");
     String file = ScriptVariable.sValue(args[0]);
-    return addX(tok == Token.load ? viewer.getFileAsString(file) : viewer
+    int nBytesMax = (args.length == 2 ? ScriptVariable.iValue(args[1]) : Integer.MAX_VALUE);
+    return addX(tok == Token.load ? viewer.getFileAsString(file, nBytesMax) : viewer
         .getFullPath(file));
   }
 

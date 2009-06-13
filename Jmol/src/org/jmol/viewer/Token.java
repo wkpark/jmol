@@ -559,7 +559,6 @@ public class Token {
 
   // xxx(a)
   
-  final static int load         = 1 | 1 << 9 | mathfunc | command;
   final static int substructure = 2 | 1 << 9 | mathfunc;
   final static int javascript   = 3 | 1 << 9 | mathfunc | implicitStringCommand;
   final static int sin          = 4 | 1 << 9 | mathfunc;
@@ -585,8 +584,9 @@ public class Token {
   // xxx(a,b)
 
   final static int cross        = 1 | 2 << 9 | mathfunc;
-  final static int random       = 2 | 2 << 9 | mathfunc;
-  final static int script       = 3 | 2 << 9 | mathfunc | command;
+  final static int load         = 2 | 2 << 9 | mathfunc | command;
+  final static int random       = 3 | 2 << 9 | mathfunc;
+  final static int script       = 4 | 2 << 9 | mathfunc | command;
 
   // ___.xxx(a,b)
 

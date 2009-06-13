@@ -344,11 +344,12 @@ public class FileManager {
 
   /**
    * 
-   * @param data [0] initially path name, but returned as full path name; [1]file contents (directory listing for a ZIP/JAR file) or error string
+   * @param data [0]    initially path name, but returned as full path name; [1]file contents (directory listing for a ZIP/JAR file) or error string
+   * @param nBytesMax   
    * @return true if successful; false on error 
    */
   
-  boolean getFileDataOrErrorAsString(String[] data) {
+  boolean getFileDataOrErrorAsString(String[] data, int nBytesMax) {
     data[1] = "";
     String name = data[0];
     if (name == null)
@@ -362,7 +363,10 @@ public class FileManager {
       BufferedReader br = (BufferedReader) t;
       StringBuffer sb = new StringBuffer(8192);
       String line;
-      while ((line = br.readLine()) != null) {
+      int n;
+      while ((n = sb.length()) < nBytesMax && (line = br.readLine()) != null) {
+        if (nBytesMax < n - 1 + line.length())
+          line = line.substring(0, nBytesMax - n - 1);
         sb.append(line);
         sb.append('\n');
       }

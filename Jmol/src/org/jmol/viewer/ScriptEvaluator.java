@@ -534,7 +534,7 @@ class ScriptEvaluator {
           debugScript);
     String[] data = new String[2];
     data[0] = filename;
-    if (!viewer.getFileAsString(data)) {
+    if (!viewer.getFileAsString(data, Integer.MAX_VALUE)) {
       setErrorMessage("io error reading " + data[0] + ": " + data[1]);
       return false;
     }

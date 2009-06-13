@@ -32,6 +32,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 // place "?JMOLJAR=xxxxx" to use a specific jar file
 
 // bob hanson -- jmolResize(w,h) -- resizes absolutely or by percent (w or h 0.5 means 50%)
+//    angel herraez -- update of jmolResize(w,h,targetSuffix) so it is not tied to first applet
 // bob hanson -- jmolEvaluate -- evaluates molecular math 8:37 AM 2/23/2007
 // bob hanson -- jmolScriptMessage -- returns all "scriptStatus" messages 8:37 AM 2/23/2007
 // bob hanson -- jmolScriptEcho -- returns all "scriptEcho" messages 8:37 AM 2/23/2007
@@ -1598,12 +1599,18 @@ if(document.location.search.indexOf("NOAPPLET")>=0){
 
 ///////////////////////////////////////////
 
-//new 9:49 AM 3/6/2007:
+//new 9:49 AM 3/6/2007:    updated 13 Jun 2009
 
-//both w and h are optional. 
-//if either is between 0 and 1, then it is taken as percent/100.
-//if either is greater than 1, then it is taken as a size. 
-function jmolResize(w,h) {
+  /*
+	Resizes absolutely (pixels) or by percent of window (w or h 0.5 means 50%).
+	targetSuffix is optional and defaults to zero (first applet in page).
+	Both w and h are optional, but needed if you want to use targetSuffix.
+		h defaults to w
+		w defaults to 100% of window
+	If either w or h is between 0 and 1, then it is taken as percent/100.
+	If either w or h is greater than 1, then it is taken as a size (pixels). 
+	*/
+function jmolResize(w,h,targetSuffix) {
  _jmol.alerted = true;
  var percentW = (!w ? 100 : w <= 1  && w > 0 ? w * 100 : 0)
  var percentH = (!h ? percentW : h <= 1 && h > 0 ? h * 100 : 0)
@@ -1615,10 +1622,10 @@ function jmolResize(w,h) {
    var width=window.innerWidth - netscapeScrollWidth;
    var height=window.innerHeight-netscapeScrollWidth;
  }
- var applet = _jmolGetApplet(0);
+ var applet = _jmolGetApplet(targetSuffix);
  if(!applet)return;
  applet.style.width = (percentW ? width * percentW/100 : w)+"px"
- applet.style.height = (percentH ? height * percentH/100 : h)+"px"
+ applet.style.height = (percentH ? height * percentH/100 : (h ? h : w))+"px"
  title=width +  " " + height + " " + (new Date())
 }
 

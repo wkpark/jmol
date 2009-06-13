@@ -131,7 +131,7 @@ class Jmol {
       $prefix .= " name='".$this->escapeAttribute($this->mValName)."'".
                  " id='".$this->escapeAttribute($this->mValName)."'";
     }
-    $prefix .= " href=\"javascript::void(0)\"".
+    $prefix .= " href=\"javascript:void(0)\"".
 					" onclick=\"jmolWikiPopupWindow(".
 											"'".$this->escapeScript($this->mValTitle)."',".
 											"'".$this->escapeScript($this->mValSize)."',".

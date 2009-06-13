@@ -368,9 +368,9 @@ public class FileManager {
       if (nBytesMax == Integer.MAX_VALUE) {
         while ((line = br.readLine()) != null)
           sb.append(line).append('\n');
-    } else {
-      int n = 0;
-      int len;
+      } else {
+        int n = 0;
+        int len;
         while (n < nBytesMax && (line = br.readLine()) != null) {
           if (nBytesMax - n < (len = line.length()) + 1)
             line = line.substring(0, nBytesMax - n - 1);

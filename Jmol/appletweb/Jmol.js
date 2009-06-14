@@ -990,10 +990,10 @@ function _jmolFixDim(x) {
   var sx = "" + x;
   return (sx.indexOf("%") == sx.length-1 ? sx 
   	: (x = parseFloat(x)) < 0 ? "" 
+  	: isNaN(x) ? _jmol.allowedJmolSize[2]
   	: x <= 1 && x > 0 ? x * 100 + "%"
   	: (x = Math.floor(x)) < _jmol.allowedJmolSize[0] ? _jmol.allowedJmolSize[0]
   	: x > _jmol.allowedJmolSize[1] ? _jmol.allowedJmolSize[1] 
-  	: isNaN(x) ? _jmol.allowedJmolSize[2]
 	: x);
 }
 

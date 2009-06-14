@@ -4600,8 +4600,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.getParameter(key);
   }
 
-  public ScriptVariable getOrSetNewVariable(String key) {
-    return global.getOrSetNewVariable(key);
+  ScriptVariable getOrSetNewVariable(String key, boolean doSet) {
+    return global.getOrSetNewVariable(key, doSet);
   }
 
   ScriptVariable setVariable(String name, ScriptVariable value) {
@@ -5758,7 +5758,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void showParameter(String key, boolean ifNotSet, int nMax) {
     String sv = "" + global.getParameterEscaped(key, nMax);
-    if (ifNotSet || sv.indexOf("<not set>") < 0)
+    if (ifNotSet || sv.indexOf("<not defined>") < 0)
       showString(key + " = " + sv);
   }
 

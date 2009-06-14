@@ -934,7 +934,7 @@ public class StateManager {
         return escapeUserVariable(name);
       if (htPropertyFlagsRemoved.containsKey(name))
         return "false";
-      return "<not set>";
+      return "<not defined>";
     }
 
     private String escapeUserVariable(String name) {
@@ -959,14 +959,15 @@ public class StateManager {
      *  
      * 
      * @param name
+     * @param doSet
      * @return     a new variable if possible, but null if "_xxx"
      * 
      */
-    ScriptVariable getOrSetNewVariable(String name) {
+    ScriptVariable getOrSetNewVariable(String name, boolean doSet) {
       if (name == null || name.length() == 0)
         name = "x";
       Object v = getParameter(name, true);
-      return (v == null && name.charAt(0) != '_' ?
+      return (v == null && doSet && name.charAt(0) != '_' ?
         setUserVariable(name, new ScriptVariable())
          : ScriptVariable.getVariable(v));
     }

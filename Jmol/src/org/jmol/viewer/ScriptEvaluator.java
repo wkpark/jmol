@@ -7357,12 +7357,12 @@ class ScriptEvaluator {
 
     // create user variable if needed for list now, so we can do the copying
 
-    boolean needVariable = (!isUserVariable && !isExpression && !settingData && (isArrayItem
-        || settingProperty || !(tv.value instanceof String
+    boolean needVariable = (!isUserVariable && !isExpression && !settingData 
+        && (isArrayItem || settingProperty || !(tv.value instanceof String
         || tv.value instanceof Integer || tv.value instanceof Float || tv.value instanceof Boolean)));
 
     if (needVariable) {
-      t = viewer.getOrSetNewVariable(key);
+      t = viewer.getOrSetNewVariable(key, true);
       if (t == null) { // can't set a variable _xxxx
         error(ERROR_invalidArgument);
       }
@@ -7883,7 +7883,7 @@ class ScriptEvaluator {
             v = name;
           else if ((localVars == null || (v = localVars.get(name)) == null)
               && (v = getContextVariableAsVariable(name)) == null)
-            rpn.addX(viewer.getOrSetNewVariable(name)); // because we may have ++ here
+            rpn.addX(viewer.getOrSetNewVariable(name, false));
           break;
         }
       }

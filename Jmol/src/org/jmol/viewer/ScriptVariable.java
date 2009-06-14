@@ -88,9 +88,14 @@ class ScriptVariable extends Token {
     value = theToken.value;
   }
 
+  /**
+   * @param x
+   * @return  a ScriptVariable of the input type, or if x is null, then a new ScriptVariable,
+   *     or, if the type is not found, null
+   */
   static ScriptVariable getVariable(Object x) {
     if (x == null)
-      return null;
+      return new ScriptVariable();
     if (x instanceof ScriptVariable)
       return (ScriptVariable) x;
     if (x instanceof String) 

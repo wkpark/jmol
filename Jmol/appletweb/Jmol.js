@@ -971,32 +971,6 @@ function _jmolSterilizeInline(model) {
 		2048 standard for GeoWall (http://geowall.geo.lsa.umich.edu/home.html)
 	*/
 
-function _jmolGetAppletSize(size) {
-	/*  AngelH, mar2007
-		Accepts single number or 2-value array, each one can be either:
-	   percent (text string ending %), decimal 0 to 1 (percent/100), number, or text string (interpreted as nr.)
-	   Size is now returned as string or number, no "px".
-	*/
-  var width, height;
-  if ( (typeof size) == "object" && size != null ) {
-    width = size[0]; height = size[1];
-  } else {
-    width = height = size;
-  }
-  return [_jmolFixDim(width), _jmolFixDim(height)];
-}
-
-function _jmolFixDim(x) {
-  var sx = "" + x;
-  return (sx.indexOf("%") == sx.length-1 ? sx 
-  	: (x = parseFloat(x)) < 0 ? "" 
-  	: isNaN(x) ? _jmol.allowedJmolSize[2]
-  	: x <= 1 && x > 0 ? x * 100 + "%"
-  	: (x = Math.floor(x)) < _jmol.allowedJmolSize[0] ? _jmol.allowedJmolSize[0]
-  	: x > _jmol.allowedJmolSize[1] ? _jmol.allowedJmolSize[1] 
-	: x);
-}
-
 function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, title) {
   ++_jmol.radioCount;
   if (groupName == undefined || groupName == null)
@@ -1632,10 +1606,36 @@ function jmolResizeApplet(size,targetSuffix) {
  _jmol.alerted = true;
  var applet = _jmolGetApplet(targetSuffix);
  if(!applet)return;
- var sz = _jmolGetAppletSize(size);
- var szX = "" + sz[0];
- var szY = "" + sz[1];
- if (szX) applet.style.width = szX.indexOf("%") >= 0 ? szX : szX+"px";
- if (szY) applet.style.height = szY.indexOf("%") >= 0 ? szY : szY+"px";
+ var sz = _jmolGetAppletSize(size, "px");
+ sz[0] && (applet.style.width = sz[0]);
+ sz[1] && (applet.style.height = sz[1]);
 }
+
+function _jmolGetAppletSize(size, units) {
+	/*  AngelH, mar2007
+		Accepts single number or 2-value array, each one can be either:
+	   percent (text string ending %), decimal 0 to 1 (percent/100), number, or text string (interpreted as nr.)
+	   Size is now returned as string or number, no "px".
+	*/
+  var width, height;
+  if ( (typeof size) == "object" && size != null ) {
+    width = size[0]; height = size[1];
+  } else {
+    width = height = size;
+  }
+  return [_jmolFixDim(width, units), _jmolFixDim(height, units)];
+}
+
+function _jmolFixDim(x, units) {
+  var sx = "" + x;
+  return (sx.indexOf("%") == sx.length-1 ? sx 
+  	: (x = parseFloat(x)) < 0 ? "" 
+  	: x <= 1 && x > 0 ? x * 100 + "%"
+  	: ((x = Math.floor(x)) < _jmol.allowedJmolSize[0] ? _jmol.allowedJmolSize[0]
+  	    : x > _jmol.allowedJmolSize[1] ? _jmol.allowedJmolSize[1] 
+  	    : isNaN(x) ? _jmol.allowedJmolSize[2]
+        : x) + (units ? units : ""));
+}
+
+
 

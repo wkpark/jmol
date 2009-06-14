@@ -533,6 +533,7 @@ var _jmol = {
   appletCount: 0,
   appletSuffixes: [],
   appletWindow: null,
+  allowedJmolSize = [10, 2048, 300],   // min, max, default (pixels)
   
   buttonCount: 0,
   checkboxCount: 0,
@@ -970,7 +971,6 @@ function _jmolSterilizeInline(model) {
 		2048 standard for GeoWall (http://geowall.geo.lsa.umich.edu/home.html)
 	*/
 
-if (allowedJmolSize==undefined) var allowedJmolSize = [1, 2048, 300]   // min, max, default (pixels)
 function _jmolGetAppletSize(size) {
 	/*  AngelH, mar2007
 		Accepts single number or 2-value array, each one can be either:
@@ -983,20 +983,16 @@ function _jmolGetAppletSize(size) {
   } else {
     width = height = size;
   }
-  // if percent, leave it as it is:
-  if ( width.toString().charAt(width.toString().length-1) != "%" ) {
-    width = parseFloat(width);	// convert to nr., or strip text, or make zero
-	if ( width <= 1 && width > 0 ) { width = (width*100)+"%" }	// decimal: convert to percent and quit
-	else if ( width >= allowedJmolSize[0] && width <= allowedJmolSize[1] ) { width = parseInt(width) }	// accept only that range (pixels)
-	else { width = allowedJmolSize[2] }	// default size 300 pixels
-  }
-  if ( height.toString().charAt(height.toString().length-1) != "%" ) {
-    height = parseFloat(height);
-	if ( height <= 1 && height > 0 ) { height = (height*100)+"%" }
-	else if ( height >= allowedJmolSize[0] && height <= allowedJmolSize[1] ) { height = parseInt(height) }
-	else { height = allowedJmolSize[2] }
-  }
-  return [width, height];
+  return [_jmolFixDim(width), _jmolFixDim(height)];
+}
+
+function _jmolFixDim(x) {
+  var sx = "" + x;
+  return (sx.indexOf("%") == sx.length-1 ? sx 
+  	: (x = parseFloat(x)) <= 1 && x > 0 ? x * 100 + "%"
+  	: (x = Math.floor(x)) < _jmol.allowedJmolSize[0] ? _jmol.allowedJmolSize[0]
+  	: x > _jmol.allowedJmolSize[1] ? _jmol.allowedJmolSize[1] 
+  	: x);
 }
 
 function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, title) {
@@ -1627,5 +1623,22 @@ function jmolResize(w,h,targetSuffix) {
  applet.style.width = (percentW ? width * percentW/100 : w)+"px"
  applet.style.height = (percentH ? height * percentH/100 : (h ? h : w))+"px"
  //title=width +  " " + height + " " + (new Date())
+}
+
+function jmolResizeApplet(size,targetSuffix) {
+ // See _jmolGetAppletSize() for the formats accepted as size [same used by jmolApplet()]
+ _jmol.alerted = true;
+ var applet = _jmolGetApplet(targetSuffix);
+ if(!applet)return;
+ var sz = _jmolGetAppletSize(size);
+ var szX = "" + sz[0];
+ var szY = "" + sz[1];
+ // Special case -1 means don't resize in that direction:
+ if ( (typeof size)=="object" ) {
+   if (size[0]==-1) szX = false
+   if (size[1]==-1) szY = false
+ }
+ if (szX) applet.style.width = szX.indexOf("%")!=-1 ? szX : szX+"px";
+ if (szY) applet.style.height = szY.indexOf("%")!=-1 ? szY : szY+"px";
 }
 

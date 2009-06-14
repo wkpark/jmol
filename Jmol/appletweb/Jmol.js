@@ -1615,7 +1615,7 @@ function _jmolGetAppletSize(size, units) {
 	/*  AngelH, mar2007
 		Accepts single number or 2-value array, each one can be either:
 	   percent (text string ending %), decimal 0 to 1 (percent/100), number, or text string (interpreted as nr.)
-	   Size is now returned as string or number, no "px".
+	   [width, height] array of strings is returned, with units added if specified.
 	*/
   var width, height;
   if ( (typeof size) == "object" && size != null ) {

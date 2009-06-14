@@ -1613,7 +1613,7 @@ function jmolResizeApplet(size,targetSuffix) {
 
 function _jmolGetAppletSize(size, units) {
 	/*  AngelH, mar2007
-		Accepts single number or 2-value array, each one can be either:
+	   Accepts single number or 2-value array, each one can be one of:
 	   percent (text string ending %), decimal 0 to 1 (percent/100), number, or text string (interpreted as nr.)
 	   [width, height] array of strings is returned, with units added if specified.
 	*/

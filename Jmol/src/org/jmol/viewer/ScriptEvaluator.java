@@ -1569,7 +1569,7 @@ class ScriptEvaluator {
         break;
       case Token.on:
       case Token.off:
-        rpn.addX(instruction.tok == Token.on);
+        rpn.addX(new ScriptVariable(instruction));
         break;
       case Token.selected:
         rpn.addX(BitSetUtil.copy(viewer.getSelectionSet()));
@@ -1642,16 +1642,16 @@ class ScriptEvaluator {
         break;
       case Token.spec_seqcode:
         if (isInMath)
-          rpn.addX(instruction.intValue);
+          rpn.addXNum(ScriptVariable.intVariable(instruction.intValue));
         else
           rpn.addX(getAtomBits(Token.spec_seqcode, new Integer(
               getSeqCode(instruction))));
         break;
       case Token.spec_seqcode_range:
         if (isInMath) {
-          rpn.addX(instruction.intValue);
+          rpn.addXNum(ScriptVariable.intVariable(instruction.intValue));
           rpn.addX(Token.tokenMinus);
-          rpn.addX(code[++pc].intValue);
+          rpn.addXNum(ScriptVariable.intVariable(code[++pc].intValue));
           break;
         }
         int chainID = (pc + 3 < code.length && code[pc + 2].tok == Token.opAnd
@@ -1794,10 +1794,8 @@ class ScriptEvaluator {
         rpn.addX(value);
         break;
       case Token.decimal:
-        rpn.addX(new ScriptVariable(instruction));
-        break;
       case Token.integer:
-        rpn.addX(new ScriptVariable(instruction));
+        rpn.addXNum(new ScriptVariable(instruction));
         break;
       default:
         // System.out.println(" " + instruction +" " +(new
@@ -7770,18 +7768,20 @@ class ScriptEvaluator {
         break;
       case Token.semicolon: // for (i = 1; i < 3; i=i+1)
         break out;
+      case Token.spec_seqcode:
+      case Token.integer:
+        rpn.addXNum(ScriptVariable.intVariable(theToken.intValue));
+        break;
+      case Token.decimal:
+        rpn.addXNum(new ScriptVariable(theToken));
+        break;
       case Token.on:
       case Token.off:
-      case Token.decimal:
       case Token.string:
       case Token.point3f:
       case Token.point4f:
       case Token.bitset:
         rpn.addX(new ScriptVariable(theToken));
-        break;
-      case Token.spec_seqcode:
-      case Token.integer:
-        rpn.addX(ScriptVariable.intVariable(theToken.intValue));
         break;
       case Token.dollarsign:
         rpn.addX(new ScriptVariable(Token.point3f, centerParameter(i)));
@@ -7792,7 +7792,16 @@ class ScriptEvaluator {
         i = iToken;
         break;
       case Token.expressionBegin:
-        v = expression(statement, i, 0, true, true, true, true);
+        if (tokAt(i + 1) == Token.all && tokAt(i + 2) == Token.expressionEnd) {
+          tok = Token.all;
+          iToken += 2;
+        }
+        // fall through
+      case Token.all:
+        if (tok == Token.all)
+          v = viewer.getModelAtomBitSet(-1, true);
+        else
+          v = expression(statement, i, 0, true, true, true, true);
         i = iToken;
         if (nParen == 0 && isOneExpressionOnly) {
           iToken++;
@@ -7874,7 +7883,7 @@ class ScriptEvaluator {
             v = name;
           else if ((localVars == null || (v = localVars.get(name)) == null)
               && (v = getContextVariableAsVariable(name)) == null)
-            v = viewer.getOrSetNewVariable(name); // because we may have ++ here
+            rpn.addX(viewer.getOrSetNewVariable(name)); // because we may have ++ here
           break;
         }
       }

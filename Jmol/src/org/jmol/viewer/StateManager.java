@@ -966,9 +966,9 @@ public class StateManager {
       if (name == null || name.length() == 0)
         name = "x";
       Object v = getParameter(name, true);
-      if (v == null && name.charAt(0) != '_')
-        v = setUserVariable(name, new ScriptVariable());
-      return ScriptVariable.getVariable(v);
+      return (v == null && name.charAt(0) != '_' ?
+        setUserVariable(name, new ScriptVariable())
+         : ScriptVariable.getVariable(v));
     }
 
     Object getParameter(String name, boolean asVariable) {

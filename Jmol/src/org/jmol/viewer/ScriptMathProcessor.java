@@ -149,23 +149,14 @@ class ScriptMathProcessor {
     ifStack[ifPt] = c;
   }
 
-  boolean addX(ScriptVariable x) throws ScriptException {
-    if (xPt >= 0 && xStack[xPt].tok == Token.expressionEnd)
-      return wasX = true; // skipping
-    if (wasX && x.tok == Token.integer && x.intValue < 0) {
-      addOp(Token.tokenMinus);
-      x = ScriptVariable.intVariable(-x.intValue);
-    } else if (wasX && x.tok == Token.decimal
-        && ((Float) x.value).floatValue() < 0) {
-      addOp(Token.tokenMinus);
-      x = new ScriptVariable(Token.decimal,
-          new Float(-ScriptVariable.fValue(x)));
-    }
+  boolean addX(ScriptVariable x) {
+    // the standard entry point
     putX(x);
     return wasX = true;
   }
 
   boolean addX(Object x) {
+    // the standard entry point
     ScriptVariable v = ScriptVariable.getVariable(x);
     if (v == null)
       return false;
@@ -173,25 +164,52 @@ class ScriptMathProcessor {
     return wasX = true;
   }
 
-  boolean addX(boolean x) {
-    return addX((Object) ScriptVariable.getVariable(x ? Boolean.TRUE
+  boolean addXNum(ScriptVariable x) throws ScriptException {
+    // corrects for x -3 being x - 3
+    // only when coming from expression() or parameterExpression()
+    if (wasX)
+      switch (x.tok) {
+      case Token.integer:
+        if (x.intValue < 0) {
+          addOp(Token.tokenMinus);
+          x = ScriptVariable.intVariable(-x.intValue);
+        }
+        break;
+      case Token.decimal:
+        float f = ((Float) x.value).floatValue();
+        if (f < 0) {
+          addOp(Token.tokenMinus);
+          x = new ScriptVariable(Token.decimal, new Float(-f));
+        }
+        break;
+      }
+    putX(x);
+    return wasX = true;
+  }
+
+  private boolean addX(boolean x) {
+    putX(ScriptVariable.getVariable(x ? Boolean.TRUE
         : Boolean.FALSE));
+    return wasX = true;
   }
 
-  boolean addX(int x) {
-    return addX((Object) ScriptVariable.intVariable(x));
+  private boolean addX(int x) {
+    // no check for unary minus
+    putX(ScriptVariable.intVariable(x));
+    return wasX = true;
   }
 
-  boolean addX(float x) {
+  private boolean addX(float x) {
+    // no check for unary minus
     return addX(new Float(x));
   }
 
-  boolean isOpFunc(Token op) {
+  private static boolean isOpFunc(Token op) {
     return (Token.tokAttr(op.tok, Token.mathfunc) || op.tok == Token.propselector
         && Token.tokAttr(op.intValue, Token.mathfunc));
   }
 
-  boolean skipping;
+  private boolean skipping;
 
   /**
    * addOp The primary driver of the Reverse Polish Notation evaluation engine.
@@ -525,7 +543,7 @@ class ScriptMathProcessor {
     System.out.flush();
   }
 
-  ScriptVariable getX() throws ScriptException {
+  private ScriptVariable getX() throws ScriptException {
     if (xPt < 0)
       eval.error(ScriptEvaluator.ERROR_endOfStatementUnexpected);
     ScriptVariable v = ScriptVariable.selectItem(xStack[xPt]);
@@ -1465,8 +1483,7 @@ class ScriptMathProcessor {
     return addX(viewer.getAtomBits(Token.getTokenFromName(withinStr).tok, bs));
   }
 
-  private boolean evaluateConnected(ScriptVariable[] args)
-      throws ScriptException {
+  private boolean evaluateConnected(ScriptVariable[] args) {
     /*
      * Two options here:
      * 

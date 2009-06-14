@@ -992,7 +992,8 @@ function _jmolFixDim(x) {
   	: (x = parseFloat(x)) <= 1 && x > 0 ? x * 100 + "%"
   	: (x = Math.floor(x)) < _jmol.allowedJmolSize[0] ? _jmol.allowedJmolSize[0]
   	: x > _jmol.allowedJmolSize[1] ? _jmol.allowedJmolSize[1] 
-  	: x);
+  	: isNaN(x) ? _jmol.allowedJmolSize[2]
+	: x);
 }
 
 function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, title) {

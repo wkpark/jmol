@@ -533,7 +533,7 @@ var _jmol = {
   appletCount: 0,
   appletSuffixes: [],
   appletWindow: null,
-  allowedJmolSize = [10, 2048, 300],   // min, max, default (pixels)
+  allowedJmolSize: [10, 2048, 300],   // min, max, default (pixels)
   
   buttonCount: 0,
   checkboxCount: 0,
@@ -989,7 +989,8 @@ function _jmolGetAppletSize(size) {
 function _jmolFixDim(x) {
   var sx = "" + x;
   return (sx.indexOf("%") == sx.length-1 ? sx 
-  	: (x = parseFloat(x)) <= 1 && x > 0 ? x * 100 + "%"
+  	: (x = parseFloat(x)) < 0 ? "" 
+  	: x <= 1 && x > 0 ? x * 100 + "%"
   	: (x = Math.floor(x)) < _jmol.allowedJmolSize[0] ? _jmol.allowedJmolSize[0]
   	: x > _jmol.allowedJmolSize[1] ? _jmol.allowedJmolSize[1] 
   	: isNaN(x) ? _jmol.allowedJmolSize[2]
@@ -1634,12 +1635,7 @@ function jmolResizeApplet(size,targetSuffix) {
  var sz = _jmolGetAppletSize(size);
  var szX = "" + sz[0];
  var szY = "" + sz[1];
- // Special case -1 means don't resize in that direction:
- if ( (typeof size)=="object" ) {
-   if (size[0]==-1) szX = false
-   if (size[1]==-1) szY = false
- }
- if (szX) applet.style.width = szX.indexOf("%")!=-1 ? szX : szX+"px";
- if (szY) applet.style.height = szY.indexOf("%")!=-1 ? szY : szY+"px";
+ if (szX) applet.style.width = szX.indexOf("%") >= 0 ? szX : szX+"px";
+ if (szY) applet.style.height = szY.indexOf("%") >= 0 ? szY : szY+"px";
 }
 

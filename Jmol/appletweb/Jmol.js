@@ -1626,6 +1626,6 @@ function jmolResize(w,h,targetSuffix) {
  if(!applet)return;
  applet.style.width = (percentW ? width * percentW/100 : w)+"px"
  applet.style.height = (percentH ? height * percentH/100 : (h ? h : w))+"px"
- title=width +  " " + height + " " + (new Date())
+ //title=width +  " " + height + " " + (new Date())
 }
 

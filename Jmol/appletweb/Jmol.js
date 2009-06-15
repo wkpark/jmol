@@ -67,6 +67,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh 12/2008 -- jmolScriptWaitOutput() -- waits for script to complete and delivers output normally sent to console
 
 // bh 5/2009  -- Support for XHTML using jmolSetXHTML(id)
+// ah & bh 6/2009 -- New jmolResizeApplet() more flexible, similar to jmolApplet() size syntax
 
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
@@ -533,8 +534,11 @@ var _jmol = {
   appletCount: 0,
   appletSuffixes: [],
   appletWindow: null,
-  allowedJmolSize: [10, 2048, 300],   // min, max, default (pixels)
-  
+  allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
+	  /*  By setting the _jmol.allowedJmolSize[] variable in the webpage 
+	      before calling jmolApplet(), limits for applet size can be overriden.
+		    2048 standard for GeoWall (http://geowall.geo.lsa.umich.edu/home.html)
+	  */  
   buttonCount: 0,
   checkboxCount: 0,
   linkCount: 0,
@@ -962,14 +966,6 @@ function _jmolSterilizeInline(model) {
     alert("inline model:\n" + inlineModel);
   return inlineModel;
 }
-
-	/*  AngelH, mar2007:
-		By (re)setting this variable in the webpage before calling jmolApplet(), limits for applet size can be overriden.
-	*/
-
-	/* hansonr, jun2007:
-		2048 standard for GeoWall (http://geowall.geo.lsa.umich.edu/home.html)
-	*/
 
 function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, title) {
   ++_jmol.radioCount;
@@ -1571,8 +1567,7 @@ if(document.location.search.indexOf("NOAPPLET")>=0){
 
 ///////////////////////////////////////////
 
-//new 9:49 AM 3/6/2007:    updated 13 Jun 2009
-
+  //  This should no longer be needed, jmolResizeApplet() is better; kept for backwards compatibility
   /*
 	Resizes absolutely (pixels) or by percent of window (w or h 0.5 means 50%).
 	targetSuffix is optional and defaults to zero (first applet in page).
@@ -1584,8 +1579,8 @@ if(document.location.search.indexOf("NOAPPLET")>=0){
 	*/
 function jmolResize(w,h,targetSuffix) {
  _jmol.alerted = true;
- var percentW = (!w ? 100 : w <= 1  && w > 0 ? w * 100 : 0)
- var percentH = (!h ? percentW : h <= 1 && h > 0 ? h * 100 : 0)
+ var percentW = (!w ? 100 : w <= 1  && w > 0 ? w * 100 : 0);
+ var percentH = (!h ? percentW : h <= 1 && h > 0 ? h * 100 : 0);
  if (_jmol.browser=="msie") {
    var width=document.body.clientWidth;
    var height=document.body.clientHeight;
@@ -1596,13 +1591,15 @@ function jmolResize(w,h,targetSuffix) {
  }
  var applet = _jmolGetApplet(targetSuffix);
  if(!applet)return;
- applet.style.width = (percentW ? width * percentW/100 : w)+"px"
- applet.style.height = (percentH ? height * percentH/100 : (h ? h : w))+"px"
- //title=width +  " " + height + " " + (new Date())
+ applet.style.width = (percentW ? width * percentW/100 : w)+"px";
+ applet.style.height = (percentH ? height * percentH/100 : (h ? h : w))+"px";
+ //title=width +  " " + height + " " + (new Date());
 }
 
+// 13 Jun 09 -- makes jmolResize() obsolete  (kept for backwards compatibility)
 function jmolResizeApplet(size,targetSuffix) {
  // See _jmolGetAppletSize() for the formats accepted as size [same used by jmolApplet()]
+ //  Special case: an empty value for width or height is accepted, meaning no change in that dimension.
  _jmol.alerted = true;
  var applet = _jmolGetApplet(targetSuffix);
  if(!applet)return;
@@ -1612,10 +1609,10 @@ function jmolResizeApplet(size,targetSuffix) {
 }
 
 function _jmolGetAppletSize(size, units) {
-	/*  AngelH, mar2007
-	   Accepts single number or 2-value array, each one can be one of:
+	/* Accepts single number or 2-value array, each one can be one of:
 	   percent (text string ending %), decimal 0 to 1 (percent/100), number, or text string (interpreted as nr.)
 	   [width, height] array of strings is returned, with units added if specified.
+	   Percent is relative to container div or element (which should have explicitly set size).
 	*/
   var width, height;
   if ( (typeof size) == "object" && size != null ) {
@@ -1630,8 +1627,7 @@ function _jmolFixDim(x, units) {
   var sx = "" + x;
   return (sx.length == 0 ? (units ? "" : _jmol.allowedJmolSize[2])
 	: sx.indexOf("%") == sx.length-1 ? sx 
-  	: (x = parseFloat(x)) < 0 ? "" 
-  	: x <= 1 && x > 0 ? x * 100 + "%"
+  	: (x = parseFloat(x)) <= 1 && x > 0 ? x * 100 + "%"
   	: (isNaN(x = Math.floor(x)) ? _jmol.allowedJmolSize[2]
   		: x < _jmol.allowedJmolSize[0] ? _jmol.allowedJmolSize[0]
   	    : x > _jmol.allowedJmolSize[1] ? _jmol.allowedJmolSize[1] 

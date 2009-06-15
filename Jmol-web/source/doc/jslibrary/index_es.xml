@@ -545,6 +545,32 @@ Cada páginaCada página      </p>
 	  (Las versiones modernas de Java ya no usan esto.)
 				</blockquote>
 			</section>
+			<section title="jmolResizeApplet">
+				<code>
+	  jmolResizeApplet(tamaño, <span class="optP">sufijoDiana</span>)
+	</code>
+				<p>
+	Sirve para cambiar de tamaño una miniaplicación ya existente. 
+				</p>
+				<p>
+	<code>tamaño</code>: un valor o una matriz con dos valores; 
+	consulta los detalles de los formatos aceptados en la
+	función <a href="#jmolApplet"><code>jmolApplet</code></a>.
+	<br/><i>Caso especial:</i> si el valor de ancho o el de alto está vacío
+	(por ej., <code>""</code>), esa dimensión no se cambiará.	
+				</p>
+				<p>
+	  Cuando se estén mostrando en la página varias miniaplicaciones JmolApplet,
+	  <code>sufijoDiana</code> permite indicar cuál de ellas se debe redimensionar;
+	su valor por defecto es "0"
+	(es decir, la primera miniaplicación de la página).
+				</p>
+				<blockquote>
+					<i>Nota:</i>
+					<br/>
+				Implementado en Jmol.js a partir de la versión 11.7.42 de Jmol.
+				</blockquote>
+			</section>
 			<section title="jmolHtml">
 				<code>jmolHtml(textoHtml)</code>
 				<p>
@@ -1024,9 +1050,9 @@ Cada páginaCada página      </p>
 				</p>
 				<pre>  function nombreFunción(a,b,c)
 	{
-	   var aa = "" + a
-	   var bb = "" + b
-	   var cc = "" + c
+	   var aa = " + a
+	   var bb = " + b
+	   var cc = " + c
 	   ...(aquí van las acciones deseadas, usando aa, bb y cc en lugar de a, b, c)...
 	}</pre>
 				<p>
@@ -1073,7 +1099,7 @@ Cada páginaCada página      </p>
 	<pre>
 	function miFunc(a,mens) {
 	  var mensaje
-	  var s = mens + "" // NUNCA operes sobre el 2º parámetro
+	  var s = mens + " // NUNCA operes sobre el 2º parámetro
 	  if (s.charAt(0) == 'C')
 	    mensaje = "Sí, eso es un carbono."
 	  else

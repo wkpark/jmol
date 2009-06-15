@@ -524,6 +524,31 @@
 	  (These are not used by modern versions of Java.)
 				</blockquote>
 			</section>
+			<section title="jmolResizeApplet">
+				<code>
+	  jmolResizeApplet(size, <span class="optP">targetSuffix</span>)
+	</code>
+				<p>
+	Used to change the dimensions of an existing applet.
+				</p>
+				<p>
+					<code>size</code>: a value or an array with a pair of values; 
+	see details of accepted formats under the
+	<a href="#jmolApplet"><code>jmolApplet</code></a> function.
+	<br/><i>Special case:</i> if either width or height value is empty
+	(e.g. <code>""</code>),	that dimension will not be resized.
+				</p>
+				<p>
+	  When more than one JmolApplet is being displayed, 
+	  <code>targetSuffix</code> is used to specify which one will be resized;
+	  default is "0" (i.e., the first applet in the page).
+				</p>
+				<blockquote>
+					<i>Note:</i>
+					<br/>
+				Implemented only in Jmol.js accompanying Jmol version 11.7.42 or later.
+				</blockquote>
+			</section>
 			<section title="jmolHtml">
 				<code>jmolHtml(htmlText)</code>
 				<p>
@@ -993,9 +1018,9 @@
 				</p>
 				<pre>  function functionName(a,b,c)
 	{
-	   var aa = "" + a
-	   var bb = "" + b
-	   var cc = "" + c
+	   var aa = " + a
+	   var bb = " + b
+	   var cc = " + c
 	   ...(here go desired actions, using  aa, bb and cc instead of a, b, c)...
 	}</pre>
 				<p>
@@ -1040,7 +1065,7 @@
 	<pre>
 	function myfunc(a,mess) {
 	  var msg
-	  var s = mess + "" // convert the 2nd parameter to a JavaScript string
+	  var s = mess + " // convert the 2nd parameter to a JavaScript string
 	  if (s.charAt(0) == 'C')
 	    msg = "yes, that is a carbon."
 	  else

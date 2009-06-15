@@ -1628,7 +1628,8 @@ function _jmolGetAppletSize(size, units) {
 
 function _jmolFixDim(x, units) {
   var sx = "" + x;
-  return (sx.indexOf("%") == sx.length-1 ? sx 
+  return (sx.length == 0 ? (units ? "" : _jmol.allowedJmolSize[2])
+	: sx.indexOf("%") == sx.length-1 ? sx 
   	: (x = parseFloat(x)) < 0 ? "" 
   	: x <= 1 && x > 0 ? x * 100 + "%"
   	: (isNaN(x = Math.floor(x)) ? _jmol.allowedJmolSize[2]
@@ -1636,6 +1637,7 @@ function _jmolFixDim(x, units) {
   	    : x > _jmol.allowedJmolSize[1] ? _jmol.allowedJmolSize[1] 
         : x) + (units ? units : ""));
 }
+
 
 
 

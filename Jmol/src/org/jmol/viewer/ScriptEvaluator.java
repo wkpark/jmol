@@ -4535,7 +4535,8 @@ class ScriptEvaluator {
       while (i < statementLength) {
         switch (tokAt(i)) {
         case Token.identifier:
-          if (parameterAsString(i).equalsIgnoreCase("filter")) {
+          String s = parameterAsString(i);
+          if (s.equalsIgnoreCase("filter")) {
             String filter = stringParameter(++i);
             htParams.put("filter", filter);
             loadScript.append(" FILTER ").append(Escape.escape(filter));
@@ -4548,7 +4549,7 @@ class ScriptEvaluator {
           htParams.remove("isTrajectory");
           if (firstLastSteps == null) {
             firstLastSteps = new Vector();
-            pt = new Point3f(0, 0, 1);
+            pt = new Point3f(0, -1, 1);
           }
           if (isPoint3f(++i)) {
             pt = getPoint3f(i, false);

@@ -920,7 +920,9 @@ public class FileManager {
         CompoundDocument doc = new CompoundDocument(bis);
         return getBufferedReaderForString(doc.getAllData("Molecule").toString());
       } else if (isGzip(is)) {
-        is = new GZIPInputStream(bis);
+        do {
+          is = new BufferedInputStream(new GZIPInputStream(is));
+        } while (isGzip(is));
       } else if (ZipUtil.isZipFile(is)) {
         if (allowZipStream)
           return new ZipInputStream(bis);

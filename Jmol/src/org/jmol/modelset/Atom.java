@@ -1079,6 +1079,8 @@ final public class Atom extends Point3fi {
     case -Token.model:
       //float is handled differently
       return atom.getModelFileNumber();
+    case Token.modelindex:
+      return atom.modelIndex;
     case Token.molecule:
       return atom.getMoleculeNumber();
     case Token.occupancy:

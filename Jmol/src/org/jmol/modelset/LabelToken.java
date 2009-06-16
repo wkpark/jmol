@@ -146,6 +146,7 @@ public class LabelToken {
            Token.covalent,
            Token.file,
            Token.label,
+           Token.modelindex,
            Token.property,
            Token.radius,
            Token.spacefill,

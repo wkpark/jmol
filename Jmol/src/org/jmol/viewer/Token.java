@@ -501,7 +501,8 @@ public class Token {
   public final static int groupID       = intproperty | 9;
   public final static int groupindex    = intproperty | 10;
   final public static int model         = intproperty | 11 | command;
-  final public static int molecule      = intproperty | 12;
+  final public static int modelindex    = intproperty | 12;
+  final public static int molecule      = intproperty | 13;
   public final static int polymerLength = intproperty | 14;
   public final static int resno         = intproperty | 15;
   final public static int site          = intproperty | 16;
@@ -832,6 +833,7 @@ public class Token {
     "mo",                new Token(mo),
     "model",             new Token(model),
     "models",            null,
+    "modelindex",        new Token(modelindex),
     "move",              new Token(move),
     "moveto",            new Token(moveto),
     "navigate",          new Token(navigate),

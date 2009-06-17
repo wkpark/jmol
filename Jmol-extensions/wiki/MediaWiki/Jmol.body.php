@@ -200,7 +200,7 @@ class Jmol {
     $postfix .= "</a>";
     $postfix .= "<div id='JmolInlineEnv".$uniqueID."'></div>";
 			 /*  style='z-index:5;position:absolute;vertical-align:top;' */
-    $postfix .= "<div style='font-size:0.85em; line-height:1.2; text-align:left; margin:0 1.5ex;'>".
+    $postfix .= "<div style='font-size:0.85em; line-height:1.2; text-align:left; margin:0.3em 1ex;'>".
 	   $this->mValCaption."</div></div>";
 	   
     $this->mOutput .= $this->renderInternalJmolApplet($prefix, $postfix, "\\'");
@@ -298,7 +298,8 @@ class Jmol {
   // Internal function to make a Jmol applet
   private function renderInternalJmolApplet($prefix, $postfix, $sep) {
     global $wgJmolAuthorizeUrl, $wgJmolAuthorizeUploadedFile;
-    global $wgJmolForceNameSpace, $wgJmolExtensionPath;
+    global $wgJmolForceNameSpace, $wgJmolExtensionPath, $wgScriptPath;
+
     $output = $prefix;
 		// initialize now goes in the body, thus allowing signed applet:
     $output .= 
@@ -330,7 +331,7 @@ class Jmol {
     }
     if ($this->mValWikiPageContents != "") {
       if ($wgJmolAuthorizeUrl == true) {
-        $this->mValUrlContents = "/index.php?title=";
+        $this->mValUrlContents = $wgScriptPath."/index.php?title=";	// AH - fix for non-root wikis
         if ($wgJmolForceNameSpace != "") {
           $this->mValUrlContents .= $wgJmolForceNameSpace.":";
         }

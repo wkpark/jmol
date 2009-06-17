@@ -12,7 +12,7 @@ $wgExtensionCredits['parserhook'][] = array(
   'url'         => 'http://wiki.jmol.org/index.php/MediaWiki',
   'status'      => 'development',
   'type'        => 'hook',
-  'version'     => '3.0'
+  'version'     => '3.1'
 //  'version'     => StubManager::getRevisionId( '$Id$' )
 );
 
@@ -27,9 +27,12 @@ global $wgJmolForceNameSpace;
 global $wgJmolShowWarnings;
 global $wgJmolUsingSignedAppletByDefault;
 
-$wgJmolAuthorizeChoosingSignedApplet = true;
+/*	These are the default (recommended) values; they can be changed here, 
+	but it is advisable to chenge them in LocalSettings.php
+*/
+$wgJmolAuthorizeChoosingSignedApplet = false;
 $wgJmolAuthorizeUploadedFile = true;
-$wgJmolAuthorizeUrl = true;
+$wgJmolAuthorizeUrl = false;
 $wgJmolDefaultAppletSize = "400";
 $wgJmolDefaultScript = "";
 $wgJmolExtensionPath = $wgScriptPath."/extensions/Jmol";

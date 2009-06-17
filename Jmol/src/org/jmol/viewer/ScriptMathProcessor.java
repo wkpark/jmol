@@ -436,7 +436,10 @@ class ScriptMathProcessor {
     case Token.opIf:
       // System.out.println("---------IF---------");
       boolean isFirst = ScriptVariable.bValue(getX());
-      putOp(Token.tokenColon);
+      if (tok0 == Token.colon)
+        ifPt--;
+      else 
+        putOp(Token.tokenColon);
       putIf(isFirst ? 'T' : 'F');
       skipping = !isFirst;
       wasX = false;

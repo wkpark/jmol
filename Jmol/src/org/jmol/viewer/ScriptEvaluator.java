@@ -183,6 +183,7 @@ class ScriptEvaluator {
   private ScriptVariable getContextVariableAsVariable(String var) {
     if (var.equals("expressionBegin"))
       return null;
+    var = var.toLowerCase();
     if (contextVariables != null && contextVariables.containsKey(var))
       return (ScriptVariable) contextVariables.get(var);
     for (int i = scriptLevel; --i >= 0;)

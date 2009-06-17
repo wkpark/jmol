@@ -201,6 +201,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   private final static int EOL = 3;
   private final static int ERROR = 4;
 
+  private int tokLastMath;
+  
   private boolean compile0() {
     // these four will be returned:
     contextVariables = null;
@@ -221,6 +223,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     ichBrace = 0;
     lineCurrent = 1;
     iCommand = 0;
+    tokLastMath = 0;
     lastToken = Token.tokenOff;
     vBraces = new Vector();
     iBrace = 0;
@@ -310,7 +313,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           return false;
         }
       }
-      if (lookingAtLookupToken()) {
+      if (lookingAtLookupToken(ichToken)) {
         String ident = getPrefixToken();
         switch (parseKnownToken(ident)) {
         case CONTINUE:
@@ -339,21 +342,31 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     int ichT = ichToken;
     while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
       ++ichT;
-    if (isLineContinuation(ichT))
+    if (isLineContinuation(ichT, tokCommand == Token.set))
       ichT += 1 + nCharNewLine(ichT + 1);
     cchToken = ichT - ichToken;
     return cchToken > 0;
   }
 
-  private boolean isLineContinuation(int ichT) {
-    char ch;
-    boolean isEscaped = (ichT < cchScript - 1 
-        && script.charAt(ichT) == '\\'
-       && ((ch = script.charAt(ichT + 1)) == '\r' 
-         || ch == '\n'));
+  private boolean isLineContinuation(int ichT, boolean checkSet) {
+    boolean isEscaped = (ichT + 2 < cchScript && script.charAt(ichT) == '\\' && nCharNewLine(ichT + 1) > 0 
+        || checkSet && lookingAtSetContinuation(ichT));   
     if (isEscaped)
       lineCurrent++;
     return isEscaped;
+  }
+
+  private boolean lookingAtSetContinuation(int ichT) {
+    int n;
+    if (ichT >= cchScript || (n = nCharNewLine(ichT)) == 0 || lastToken.tok == Token.leftbrace)
+      return false;
+    if (parenCount > 0 || bracketCount > 0 || lastToken.tok == tokLastMath)
+      return true;
+    ichT += n;
+    while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
+      ++ichT;
+    return (lookingAtLookupToken(ichT) 
+        && tokLastMath != 0);
   }
 
   private boolean lookingAtEndOfLine() {
@@ -432,16 +445,16 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         return OK;
       }
 
-    if (!haveComments && ichFirstSharp < 0)
+    boolean isSharp = (ichFirstSharp < 0);
+    if (isSharp && !haveComments)
       return OK;
 
-    boolean isSharp = (ichFirstSharp < 0);
     // old way:
     // first, find the end of the statement and scan for # (sharp) signs
 
     for (; ichT < cchScript; ichT++) {
       if (eol(ch = script.charAt(ichT))) {
-        if (isLineContinuation(ichT - 1)) {
+        if (isLineContinuation(ichT - 1, false)) {
           ichT += nCharNewLine(ichT);
           continue;
         }
@@ -930,6 +943,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     
     Token token;
 
+    if (tokLastMath != 0)
+      tokLastMath = theTok;
     switch (theTok) {
     case Token.andequals:
       if (theTok == Token.andequals) {
@@ -1898,46 +1913,59 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     return true;
   }
 
-  private boolean lookingAtLookupToken() {
-    if (ichToken == cchScript)
+  private boolean lookingAtLookupToken(int ichT) {
+    if (ichT == cchScript)
       return false;
-    int ichT = ichToken;
+    int ichT0 = ichT;
+    tokLastMath = 0;
     char ch;
     switch (ch = script.charAt(ichT++)) {
     case '-':
     case '+':
     case '&':
     case '|':
-      if (ichT < cchScript && script.charAt(ichT) == ch)
-        ++ichT;
-      // fall through
+      if (ichT < cchScript) {
+        if (script.charAt(ichT) == ch) {
+          ++ichT;
+          if (ch == '-' || ch == '+')
+            break;
+        } else if (script.charAt(ichT) == '=') {
+          ++ichT;
+        }
+      }
+      tokLastMath++;
+      break;
     case '\\':  // leftdivide
     case '*':
     case '/':
     case '!':
       if (ichT < cchScript && script.charAt(ichT) == '=')
         ++ichT;
+      tokLastMath++;
+      break;
+    case ')':
+    case ']':
+    case '}':
+    case '.':
       break;
     case '(':
-    case ')':
     case ',':
     case '{':
-    case '}':
     case '$':
     case ':':
     case ';':
     case '@':
-    case '.':
     case '%':
     case '[':
-    case ']':
+      tokLastMath = 1;
       break;
     case '<':
-    case '=':
+  case '=':
     case '>':
       if (ichT < cchScript
           && ((ch = script.charAt(ichT)) == '<' || ch == '=' || ch == '>'))
         ++ichT;
+      tokLastMath = 1;
       break;
     default:
       if (!Character.isLetter(ch))
@@ -1947,19 +1975,21 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     case '_':
     case '\'':
     case '?': // include question marks in identifier for atom expressions
+      if (ch == '?')
+        tokLastMath = 1;
       while (ichT < cchScript
           && (Character.isLetterOrDigit(ch = script.charAt(ichT)) 
               || ch == '_' || ch == '?' || ch == '~' || ch == '\'')
           ||
           // hack for insertion codes embedded in an atom expression :-(
           // select c3^a
-          (ch == '^' && ichT > ichToken && Character.isDigit(script
+          (ch == '^' && ichT > ichT0 && Character.isDigit(script
               .charAt(ichT - 1)))
           || ch == '\\' && ichT + 1 < cchScript && script.charAt(ichT + 1) == '?')
         ++ichT;
       break;
     }
-    cchToken = ichT - ichToken;
+    cchToken = ichT - ichT0;
     return true;
   }
 

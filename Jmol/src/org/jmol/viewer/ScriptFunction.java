@@ -60,7 +60,7 @@ class ScriptFunction {
   void setVariables(Hashtable contextVariables, Vector params) {
     int nParams = (params == null ? 0 : params.size());
     for (int i = names.size(); --i >= 0;) {
-      String name = (String) names.get(i);
+      String name = ((String) names.get(i)).toLowerCase();
       contextVariables.put(name, (i < nParameters && i < nParams ? params
           .get(i) : (new ScriptVariable(Token.string, "")).setName(name)));
     }

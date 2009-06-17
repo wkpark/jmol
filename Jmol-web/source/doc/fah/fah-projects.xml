@@ -5195,6 +5195,9 @@
   <fah_proj number="2681" name="p2681_" public="y"
     server="171.67.108.22" preferred="4" deadline="6"
     credit="25403" frames="100" code="GC" contact="kasson"/>
+  <fah_proj number="2682" name="p2682_" public="y"
+    server="171.67.108.22" preferred="4" deadline="6"
+    credit="25403" frames="100" code="GC" contact="kasson"/>
 
   <!-- Projects 2700 to 2799 -->
   <fah_proj number="2711" name="p2711_GPUlambda" public="y"
@@ -7994,6 +7997,12 @@
   <fah_proj number="6304" name="p6304_sh3_with_TYR_frags" public="y" file="xyz"
     server="171.64.65.111" atoms="15108" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz" contrib="Hyperlife"/>
+  <fah_proj number="6305" name="p6305_Peptide dimer in TIP3P water" public="n"
+    server="171.64.65.111" atoms="5768" preferred="10" deadline="15"
+    credit="49" frames="100" code="G" contact="vvoelz"/>
+  <fah_proj number="6306" name="p6306_Peptide dimer in TIP3P water" public="n"
+    server="171.64.65.111" atoms="5768" preferred="10" deadline="15"
+    credit="57" frames="100" code="G" contact="vvoelz"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

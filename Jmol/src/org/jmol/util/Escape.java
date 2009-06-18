@@ -46,7 +46,9 @@ public class Escape {
 
   public static String escape(Object x) {
     if (x instanceof String)
-      return Escape.escape("" + x);
+      return escape("" + x);
+    if (x instanceof String[])
+      return escape((String[]) x);
     return x.toString();
   }
 
@@ -543,11 +545,11 @@ public class Escape {
   public static Object unescapePointOrBitset(String s) {
     Object v = s;
     if (s.charAt(0) == '{')
-      v = Escape.unescapePoint(s);
+      v = unescapePoint(s);
     else if (s.indexOf("({") == 0 && s.indexOf("({") == s.lastIndexOf("({"))
-      v = Escape.unescapeBitset(s);
+      v = unescapeBitset(s);
     else if (s.indexOf("[{") == 0)
-      v = new BondSet(Escape.unescapeBitset(s));
+      v = new BondSet(unescapeBitset(s));
     return v;
   }
 }

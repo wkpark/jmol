@@ -62,8 +62,13 @@ class ScriptFunction {
     for (int i = names.size(); --i >= 0;) {
       String name = ((String) names.get(i)).toLowerCase();
       contextVariables.put(name, (i < nParameters && i < nParams ? 
-          new ScriptVariable().set((ScriptVariable) params.get(i)) 
+          new ScriptVariable((ScriptVariable) params.get(i)) 
           : (new ScriptVariable(Token.string, "")).setName(name)));
+
+      
+//      contextVariables.put(name, (i < nParameters && i < nParams ? 
+//          new ScriptVariable().set((ScriptVariable) params.get(i)) 
+//          : (new ScriptVariable(Token.string, "")).setName(name)));
     }
     contextVariables.put("_retval", ScriptVariable.intVariable(0));
   }

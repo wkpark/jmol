@@ -57,7 +57,6 @@ class ScriptVariable extends Token {
   ScriptVariable() {
     tok = string;
     value = "";
-
   }
 
   ScriptVariable(int tok) {
@@ -754,6 +753,6 @@ class ScriptVariable extends Token {
   }
   
   public String toString() {
-    return super.toString() + "[" + name + "] index =" + index;
+    return super.toString() + "[" + name + "] index =" + index + " hashcode=" + hashCode();
   }
 }

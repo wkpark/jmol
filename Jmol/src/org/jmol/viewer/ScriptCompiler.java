@@ -334,7 +334,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     int ichT = ichToken;
     while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
       ++ichT;
-    if (isLineContinuation(ichT, tokCommand == Token.set))
+    if (isLineContinuation(ichT, tokCommand == Token.set || tokCommand == Token.print))
       ichT += 1 + nCharNewLine(ichT + 1);
     cchToken = ichT - ichToken;
     return cchToken > 0;
@@ -342,13 +342,13 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
 
   private boolean isLineContinuation(int ichT, boolean checkSet) {
     boolean isEscaped = (ichT + 2 < cchScript && script.charAt(ichT) == '\\' && nCharNewLine(ichT + 1) > 0 
-        || checkSet && lookingAtSetContinuation(ichT));   
+        || checkSet && lookingAtMathContinuation(ichT));   
     if (isEscaped)
       lineCurrent++;
     return isEscaped;
   }
 
-  private boolean lookingAtSetContinuation(int ichT) {
+  private boolean lookingAtMathContinuation(int ichT) {
     int n;
     if (ichT >= cchScript || (n = nCharNewLine(ichT)) == 0 || lastToken.tok == Token.leftbrace)
       return false;

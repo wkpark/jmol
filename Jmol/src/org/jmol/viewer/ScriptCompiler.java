@@ -264,14 +264,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       if (lookingAtLeadingWhitespace())
         continue;
       endOfLine = false;
-      
-      
-      //if (ichToken <= cchScript-30)
-      //System.out.println("loop ichCurrentCommand = " + ichCurrentCommand 
-      //  + " ichToken = " + ichToken + " cchToken = "
-      //+ cchToken + " ..." + TextFormat.split(script.substring(ichToken, ichToken + 30), '\n')[0]);
-      
-
       if (!isEndOfCommand) {
         endOfLine = lookingAtEndOfLine();
         switch (endOfLine ? OK : lookingAtComment()) {
@@ -439,7 +431,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         // ichT points at char after /*, whatever that is. So even /***/ will be caught
         incrementLineCount(script.substring(ichToken, ichT));
         cchToken = ichT + (ch == '*' ? 3 : 2) - ichToken;
-        //System.out.println("removing " + script.substring(ichToken, ichToken + cchToken));
         return CONTINUE;
       default:
         return OK;
@@ -556,9 +547,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
             lineIndices = lnI;
             lnLength *= 2;
           }
-
-          //System.out.println("setting command " + ltoken.get(0) + " line "
-            //  + iLine + " command " + iCommand);
           lineNumbers[iCommand] = iLine;
           lineIndices[iCommand] = ichCurrentCommand;
           lltoken.addElement(atokenInfix);
@@ -1101,7 +1089,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       if (Token.tokAttr(tokCommand, Token.flowCommand)) {
         lastFlowCommand = tokenCommand;
         if (iBrace > 0
-            && Token.tokAttrOr(tokCommand, Token.elsecmd, Token.elseif)) {
+            && (tokCommand == Token.elsecmd || tokCommand == Token.elseif)) {
           if (((Token) vBraces.get(iBrace - 1)).tok == Token.rightbrace) {
             vBraces.remove(--iBrace);
             vBraces.remove(--iBrace);
@@ -1369,9 +1357,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     return forceFlowEnd(token);
   }
 
-  private int forceFlowEnd(Token token) {
-    
-    //System.out.println("forcing end");
+  private int forceFlowEnd(Token token) {    
     Token t0 = tokenCommand;    
     tokenCommand = new Token(Token.end, "end");
     tokCommand = tokenCommand.tok;

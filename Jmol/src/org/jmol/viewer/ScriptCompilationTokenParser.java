@@ -696,7 +696,7 @@ abstract class ScriptCompilationTokenParser {
     if (!tokenAttr(tokenComparator, Token.comparator))
       return error(ERROR_tokenExpected, "== != < > <= >=");
     if (tokenAttr(tokenAtomProperty, Token.strproperty) 
-        && !Token.tokAttrOr(tokenComparator.tok, Token.opEQ, Token.opNE))
+        && tokenComparator.tok != Token.opEQ && tokenComparator.tok != Token.opNE)
       return error(ERROR_tokenExpected, "== !=");
     if (getToken() == null)
       return error(ERROR_unrecognizedExpressionToken, "" + valuePeek());

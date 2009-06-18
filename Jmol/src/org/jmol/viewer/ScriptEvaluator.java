@@ -4286,9 +4286,30 @@ class ScriptEvaluator {
       return;
     String s = viewer.formatText(text);
     if (outputBuffer == null)
-      Logger.warn(s);
+      viewer.showMessage(s);
     if (!s.startsWith("_"))
       scriptStatusOrBuffer(s);
+  }
+
+  private void print() throws ScriptException {
+    if (statementLength == 1)
+      error(ERROR_badArgumentCount);
+    String s = (String) parameterExpression(1, 0, "", false);
+    if (isSyntaxCheck)
+      return;
+    if (outputBuffer != null)
+      outputBuffer.append(s).append('\n');
+    else
+      viewer.showString(s, true);
+  }
+
+  private void showString(String str) {
+    if (isSyntaxCheck)
+      return;
+    if (outputBuffer != null)
+      outputBuffer.append(str).append('\n');
+    else
+      viewer.showString(str, false);
   }
 
   private void scriptStatusOrBuffer(String s) {
@@ -9535,14 +9556,6 @@ class ScriptEvaluator {
     return "";
   }
 
-  private void print() throws ScriptException {
-    if (statementLength == 1)
-      error(ERROR_badArgumentCount);
-    String s = (String) parameterExpression(1, 0, "", false);
-    if (!isSyntaxCheck)
-      showString(s);
-  }
-
   private void returnCmd() throws ScriptException {
     ScriptVariable t = getContextVariableAsVariable("_retval");
     if (t == null) {
@@ -9908,15 +9921,6 @@ class ScriptEvaluator {
       showString(str + " = " + value);
     else if (str != null)
       showString(str + " = " + getParameterEscaped(str));
-  }
-
-  private void showString(String str) {
-    if (isSyntaxCheck)
-      return;
-    if (outputBuffer != null)
-      outputBuffer.append(str).append('\n');
-    else
-      viewer.showString(str);
   }
 
   private String getFunctionCalls(String selectedFunction) {

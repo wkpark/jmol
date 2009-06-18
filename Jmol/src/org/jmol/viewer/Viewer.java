@@ -318,6 +318,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   boolean autoExit = false;
   private boolean haveDisplay = true;
+  private boolean isPrintOnly = false;
   private boolean mustRender = true;
   private boolean checkScriptOnly = false;
   private boolean listCommands = false;
@@ -336,6 +337,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (commandOptions == null)
       commandOptions = "";
     String str = "" + commandOptions;
+    isPrintOnly = (commandOptions.indexOf("-p") >= 0);
     isApplet = (commandOptions.indexOf("-applet") >= 0);
     if (isApplet) {
       Logger.info("applet context: " + commandOptions);
@@ -5759,11 +5761,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void showParameter(String key, boolean ifNotSet, int nMax) {
     String sv = "" + global.getParameterEscaped(key, nMax);
     if (ifNotSet || sv.indexOf("<not defined>") < 0)
-      showString(key + " = " + sv);
+      showString(key + " = " + sv, false);
   }
 
-  public void showString(String str) {
-    if (isScriptQueued && !isSilent)
+  public void showString(String str, boolean isPrint) {
+    if (isScriptQueued && (!isSilent || isPrint))
       Logger.warn(str);
     scriptEcho(str);
   }
@@ -7482,4 +7484,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         : StateManager.globalFunctions);
   }
 
+  void showMessage(String s) {
+    if (!isPrintOnly)
+      Logger.warn(s);
+  }
 }

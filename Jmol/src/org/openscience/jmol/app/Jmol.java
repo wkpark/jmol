@@ -143,9 +143,11 @@ public class Jmol extends JPanel {
         "Jmol's persistent values");
   }
 
-  static boolean isSilent = false;
-  static boolean haveConsole = true;
-  static boolean haveDisplay = true;
+  boolean isSilent = false;
+  boolean haveConsole = true;
+  boolean haveDisplay = true;
+  boolean isPrintOnly = false;
+  
   JmolAdapter modelAdapter;
   String appletContext;
 
@@ -161,6 +163,11 @@ public class Jmol extends JPanel {
     this.frame = frame;
     this.startupWidth = startupWidth;
     this.startupHeight = startupHeight;
+    haveDisplay = (commandOptions.indexOf("-n") < 0);
+    isSilent = (commandOptions.indexOf("-i") >= 0);
+    haveConsole = (commandOptions.indexOf("-o") < 0);
+    isPrintOnly = (commandOptions.indexOf("-p") >= 0);
+    
     numWindows++;
 
     try {
@@ -335,7 +342,7 @@ public class Jmol extends JPanel {
     say(GT._("Launching main frame..."));
   }
 
-  static void report(String str) {
+  void report(String str) {
     if (isSilent)
       return;
     Logger.info(str);
@@ -345,10 +352,13 @@ public class Jmol extends JPanel {
                              String commandOptions) {
 
     Splash splash = null;
+    boolean haveDisplay = (commandOptions == null || commandOptions.indexOf("-n") < 0);
     if (haveDisplay) {
       ImageIcon splash_image = JmolResourceHandler.getIconX("splash");
-      report("splash_image=" + splash_image);
-      splash = new Splash((commandOptions.indexOf("-L") >= 0 ? null : frame), splash_image);
+      boolean isSilent = (commandOptions.indexOf("-i") >= 0);
+      if (!isSilent)
+        Logger.info("splash_image=" + splash_image);
+      splash = new Splash((commandOptions != null && commandOptions.indexOf("-L") >= 0 ? null : frame), splash_image);
       splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
       splash.showStatus(GT._("Creating main window..."));
       splash.showStatus(GT._("Initializing Swing..."));
@@ -412,6 +422,8 @@ public class Jmol extends JPanel {
         ._("start with no splash screen"));
     options.addOption("o", "noconsole", false, GT
         ._("no console -- all output to sysout"));
+    options.addOption("p", "printOnly", false, GT
+        ._("send only output from print messages to console (implies -i)"));
     options.addOption("t", "threaded", false, GT
         ._("independent commmand thread"));
     options.addOption("x", "exit", false, GT
@@ -524,9 +536,19 @@ public class Jmol extends JPanel {
       Logger.setLogLevel(Logger.LEVEL_DEBUG);
     }
 
+    boolean haveConsole = true;
+    boolean haveDisplay = true;
+    boolean isSilent = false;
+    
     // silent startup
     if (line.hasOption("i")) {
       commandOptions += "-i";
+      isSilent = true;
+    }
+
+    // print command output only (implies silent)
+    if (line.hasOption("p")) {
+      commandOptions += "-i-p";
       isSilent = true;
     }
 
@@ -708,7 +730,8 @@ public class Jmol extends JPanel {
 
       // then command script
       if (script1 != null && script1.length() > 0) {
-        report("Executing script: " + script1);
+        if (!isSilent)
+          Logger.info("Executing script: " + script1);
         if (haveDisplay)
           jmol.splash.showStatus(GT._("Executing script 1..."));
         jmol.viewer.script(script1);
@@ -717,7 +740,8 @@ public class Jmol extends JPanel {
       // next the file
 
       if (scriptFilename != null) {
-        report("Executing script from file: " + scriptFilename);
+        if (!isSilent)
+          Logger.info("Executing script from file: " + scriptFilename);
         if (haveDisplay)
           jmol.splash.showStatus(GT._("Executing script file..."));
         if (scriptFilename.equals("-")) {
@@ -737,7 +761,8 @@ public class Jmol extends JPanel {
       }
       // then command script
       if (script2 != null && script2.length() > 0) {
-        report("Executing script: " + script2);
+        if (!isSilent)
+          Logger.info("Executing script: " + script2);
         if (haveDisplay)
           jmol.splash.showStatus(GT._("Executing script 2..."));
         jmol.viewer.script(script2);

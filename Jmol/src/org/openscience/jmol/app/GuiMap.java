@@ -188,7 +188,7 @@ class GuiMap {
     labels.put("rotateScriptTip", GT._("Rotate molecule."));
     labels.put("pickScriptTip", GT
         ._("Select a set of atoms using SHIFT-LEFT-DRAG."));
-    labels.put("pickMeasureDistanceTip", GT
+    labels.put("pickMeasureScriptTip", GT
         ._("Click atoms to measure distances"));
     labels.put("homeTip", GT._("Return molecule to home position."));
 

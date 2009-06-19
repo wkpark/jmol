@@ -737,11 +737,14 @@ class TransformManager11 extends TransformManager {
 
   float getNavigationDepthPercent() {
     calcCameraFactors(); //current
-    return 50 * (1 + (modelCenterOffset - referencePlaneOffset) / modelRadiusPixels);
+    return (modelRadiusPixels == 0 ? 0 : 
+      50 * (1 + (modelCenterOffset - referencePlaneOffset) / modelRadiusPixels));
   }
 
   float getNavigationOffsetPercent(char XorY) {
     transformPoint(navigationCenter, navigationOffset);
+    if (width == 0 || height == 0)
+      return 0;
     return (XorY == 'X' ? (navigationOffset.x - width / 2f) * 100f / width
         : (navigationOffset.y - height / 2f) * 100f / height);
   }

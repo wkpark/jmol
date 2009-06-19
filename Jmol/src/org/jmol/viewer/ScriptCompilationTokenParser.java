@@ -374,10 +374,9 @@ abstract class ScriptCompilationTokenParser {
     default:
       if (Token.tokAttr(tok, Token.atomproperty)) {
         int itemp = itokenInfix;
-        boolean isOK = clauseComparator();
-        if (isOK || !Token.tokAttr(tok, Token.predefinedset))
+        boolean isOK = clauseComparator(Token.tokAttr(tok, Token.predefinedset));
+        if (isOK || itokenInfix != itemp)
             return isOK;
-        itokenInfix = itemp;
       }
       if (tok != Token.integer && !Token.tokAttr(tok, Token.predefinedset))
         break;
@@ -690,11 +689,17 @@ abstract class ScriptCompilationTokenParser {
     return true;
   }
   
-  private boolean clauseComparator() {
+  private boolean clauseComparator(boolean isOptional) {
     Token tokenAtomProperty = tokenNext();
     Token tokenComparator = tokenNext();
-    if (!tokenAttr(tokenComparator, Token.comparator))
-      return error(ERROR_tokenExpected, "== != < > <= >=");
+    if (!tokenAttr(tokenComparator, Token.comparator)) {
+      if (!isOptional)
+        return error(ERROR_tokenExpected, "== != < > <= >=");
+      if (tokenComparator != null)
+        returnToken();
+      returnToken();
+      return false;
+    }
     if (tokenAttr(tokenAtomProperty, Token.strproperty) 
         && tokenComparator.tok != Token.opEQ && tokenComparator.tok != Token.opNE)
       return error(ERROR_tokenExpected, "== !=");

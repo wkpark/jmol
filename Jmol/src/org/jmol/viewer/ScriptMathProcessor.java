@@ -1687,7 +1687,7 @@ class ScriptMathProcessor {
     String s;
     ScriptVariable x1 = getX();
     if (isSyntaxCheck)
-      return addX(ScriptVariable.sValue(x1));
+      return addX(new ScriptVariable(x1));
     switch (op.tok) {
     case Token.opAnd:
       if (x1.tok == Token.bitset && x2.tok == Token.bitset) {

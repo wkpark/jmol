@@ -10079,6 +10079,9 @@ class ScriptEvaluator {
           havePoints = true;
           break;
         }
+      case Token.reverse:
+        propertyName = "reverse";
+        break;
       case Token.rightsquare:
         if ((isSavedState = !isSavedState) == (theTok == Token.rightsquare))
           error(ERROR_invalidArgument);
@@ -10170,10 +10173,6 @@ class ScriptEvaluator {
         }
         if (str.equalsIgnoreCase("VERTICES")) {
           propertyName = "vertices";
-          break;
-        }
-        if (str.equalsIgnoreCase("REVERSE")) {
-          propertyName = "reverse";
           break;
         }
         if (str.equalsIgnoreCase("NOHEAD")) {

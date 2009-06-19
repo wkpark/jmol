@@ -220,6 +220,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     nSemiSkip = 0;
     ichToken = 0;
     ichCurrentCommand = 0;
+    ichComment = 0;
     ichBrace = 0;
     lineCurrent = 1;
     iCommand = 0;
@@ -446,6 +447,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     // old way:
     // first, find the end of the statement and scan for # (sharp) signs
 
+    if (ichComment > ichT)
+      ichT = ichComment;
     for (; ichT < cchScript; ichT++) {
       if (eol(ch = script.charAt(ichT))) {
         ichEnd = ichT;
@@ -464,7 +467,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     if (ichFirstSharp < 0) // there were no sharps found
       return OK;
-
+    ichComment = ichFirstSharp;
     /****************************************************************
      * check for #jc comment if it occurs anywhere in the statement, then the
      * statement is not executed. This allows statements which are executed in

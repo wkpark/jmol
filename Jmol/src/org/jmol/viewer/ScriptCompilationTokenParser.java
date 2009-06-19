@@ -49,7 +49,7 @@ abstract class ScriptCompilationTokenParser {
   protected short lineCurrent;
   protected int iCommand;
  
-  protected int ichCurrentCommand;
+  protected int ichCurrentCommand, ichEnd;
   protected int ichToken;
   
   protected Token theToken;

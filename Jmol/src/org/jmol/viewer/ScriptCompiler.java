@@ -66,7 +66,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   private Hashtable contextVariables;
   private Token[][] aatokenCompiled;
   private short[] lineNumbers;
-  private int[] lineIndices;
+  private int[][] lineIndices;
 
   
   
@@ -103,7 +103,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     return lineNumbers;
   }
 
-  int[] getLineIndices() {
+  int[][] getLineIndices() {
     return lineIndices;
   }
 
@@ -233,7 +233,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     cchToken = 0;
     lnLength = 8;
     lineNumbers = new short[lnLength];
-    lineIndices = new int[lnLength];
+    lineIndices = new int[lnLength][2];
     isNewSet = isSetBrace = false;
     ptNewSetModifier = 1;
     isShowScriptOutput = false;    
@@ -368,6 +368,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     int n = nCharNewLine(ichT);
     if (n == 0)
       return false;
+    ichEnd = ichToken;
     cchToken = n;
     return true;    
   }
@@ -419,8 +420,10 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       switch (script.charAt(++ichT)) {
       case '/':
         ichFirstSharp = ichToken;
+        ichEnd = ichT - 1;
         break;
       case '*':
+        ichEnd = ichT - 1;
         String terminator = (++ichT < cchScript && (ch = script.charAt(ichT)) == '*' 
             ? "**/" : "*/");
         ichT = script.indexOf(terminator, ichToken + 2);
@@ -445,6 +448,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
 
     for (; ichT < cchScript; ichT++) {
       if (eol(ch = script.charAt(ichT))) {
+        ichEnd = ichT;
         if (isLineContinuation(ichT - 1, false)) {
           ichT += nCharNewLine(ichT);
           continue;
@@ -542,13 +546,14 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
             short[] lnT = new short[lnLength * 2];
             System.arraycopy(lineNumbers, 0, lnT, 0, lnLength);
             lineNumbers = lnT;
-            int[] lnI = new int[lnLength * 2];
+            int[][] lnI = new int[lnLength * 2][2];
             System.arraycopy(lineIndices, 0, lnI, 0, lnLength);
             lineIndices = lnI;
             lnLength *= 2;
           }
           lineNumbers[iCommand] = iLine;
-          lineIndices[iCommand] = ichCurrentCommand;
+          lineIndices[iCommand][0] = ichCurrentCommand;
+          lineIndices[iCommand][1] = (ichEnd == ichCurrentCommand ? ichToken : ichEnd);
           lltoken.addElement(atokenInfix);
           iCommand = lltoken.size();
         }
@@ -858,7 +863,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       Float.valueOf(script.substring(ichToken, ichToken + cchToken))
           .floatValue();
       int intValue = (JmolConstants.modelValue(script.substring(ichToken, ichToken + cchToken)));
-      ltoken.addElement(new Token(Token.decimal, intValue, new Float(value)));
+      addTokenToPrefix(new Token(Token.decimal, intValue, new Float(value)));
       return CONTINUE;
     }
     if (lookingAtSeqcode()) {
@@ -1081,7 +1086,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     case Token.nada:
       // first token in command
       lastToken = Token.tokenOff;
-      ichCurrentCommand = ichToken;
+      ichCurrentCommand = ichEnd = ichToken;
       tokenCommand = theToken;
       tokCommand = theTok;
       // checking first here for a flow command because
@@ -1516,7 +1521,11 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private boolean eol(char ch) {
-    return (ch == '\r' || ch == '\n' || ch == ';' && nSemiSkip <= 0);  
+    return eol(ch, nSemiSkip);  
+  }
+  
+  static boolean eol(char ch, int nSkip) {
+    return (ch == '\r' || ch == '\n' || ch == ';' && nSkip <= 0);  
   }
   
   private boolean lookingAtBraceSyntax() {
@@ -2003,12 +2012,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   }
   
   private boolean handleError() {
-    int icharEnd;
-    if ((icharEnd = script.indexOf('\r', ichCurrentCommand)) == -1
-        && (icharEnd = script.indexOf('\n', ichCurrentCommand)) == -1)
-      icharEnd = script.length();
-    errorLine = script.substring(ichCurrentCommand, icharEnd);
-    String lineInfo = (ichToken < errorLine.length() ? errorLine.substring(0,
+    errorLine = script.substring(ichCurrentCommand, ichEnd == ichCurrentCommand ? ichToken : ichEnd);
+    String lineInfo = (ichToken < ichEnd ? errorLine.substring(0,
         ichToken - ichCurrentCommand)
         + " >>>> " + errorLine.substring(ichToken - ichCurrentCommand) : errorLine)
         + " <<<<";

@@ -48,7 +48,7 @@ class ScriptFunction {
   String script;
   Token[][] aatoken;
   short[] lineNumbers;
-  int[] lineIndices;
+  int[][] lineIndices;
   int nParameters;
   Vector names = new Vector();
   ScriptVariable returnValue;
@@ -99,18 +99,18 @@ class ScriptFunction {
 
   static void setFunction(ScriptFunction function, String script,
                           int ichCurrentCommand, int pt, short[] lineNumbers,
-                          int[] lineIndices, Vector lltoken) {
+                          int[][] lineIndices, Vector lltoken) {
     int cmdpt0 = function.cmdpt0;
     int chpt0 = function.chpt0;
     int nCommands = pt - cmdpt0;
     function.script = script.substring(chpt0, ichCurrentCommand);
     Token[][] aatoken = function.aatoken = new Token[nCommands][];
-    function.lineIndices = new int[nCommands];
+    function.lineIndices = new int[nCommands][];
     function.lineNumbers = new short[nCommands];
     short line0 = (short) (lineNumbers[cmdpt0] - 1);
     for (int i = 0; i < nCommands; i++) {
       function.lineNumbers[i] = (short) (lineNumbers[cmdpt0 + i] - line0);
-      function.lineIndices[i] = lineIndices[cmdpt0 + i] - chpt0;
+      function.lineIndices[i] = new int[] {lineIndices[cmdpt0 + i][0] - chpt0, lineIndices[cmdpt0 + i][1] - chpt0 };
       aatoken[i] = (Token[]) lltoken.get(cmdpt0 + i);
       if (aatoken[i].length > 0) {
         Token tokenCommand = aatoken[i][0];
@@ -121,7 +121,7 @@ class ScriptFunction {
     }
     for (int i = pt; --i >= cmdpt0;) {
       lltoken.remove(i);
-      lineIndices[i] = 0;
+      lineIndices[i][0] = lineIndices[i][1] = 0;
     }
   }
 

@@ -121,7 +121,7 @@ class ScriptEvaluator {
   // created by Compiler:
   private Token[][] aatoken;
   private short[] lineNumbers;
-  private int[] lineIndices;
+  private int[][] lineIndices;
   private Hashtable contextVariables;
   private String script;
 
@@ -364,7 +364,7 @@ class ScriptEvaluator {
     String functionName;
     String script;
     short[] lineNumbers;
-    int[] lineIndices;
+    int[][] lineIndices;
     Token[][] aatoken;
     Token[] statement;
     int statementLength;
@@ -1392,10 +1392,11 @@ class ScriptEvaluator {
         }
       return sb.toString();
     }
-    int ichBegin = lineIndices[pc];
-    int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
-        .length()
-        : lineIndices[pc + 1]);
+    int ichBegin = lineIndices[pc][0];
+    int ichEnd = lineIndices[pc][1];
+    //(pc + 1 == lineIndices.length || lineIndices[pc + 1][0] == 0 ? script
+      //  .length()
+        //: lineIndices[pc + 1]);
     String s = "";
     try {
       s = script.substring(ichBegin, ichEnd);
@@ -1403,11 +1404,10 @@ class ScriptEvaluator {
         s = TextFormat.simpleReplace(s, "\\\n", "  ");
       if (s.indexOf("\\\r") >= 0)
         s = TextFormat.simpleReplace(s, "\\\r", "  ");
-      int i;
-      if ((i = s.indexOf("\n")) >= 0)
-        s = s.substring(0, i);
-      if ((i = s.indexOf("\r")) >= 0)
-        s = s.substring(0, i);
+      //int i;
+      //for (i =  s.length(); --i >= 0 && !ScriptCompiler.eol(s.charAt(i), 0); ){
+      //}      
+      //s = s.substring(0, i + 1);
       if (s.length() > 0 && !s.endsWith(";") && !s.endsWith("{")
           && !s.endsWith("}"))
         s += ";";

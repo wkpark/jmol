@@ -6970,7 +6970,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *          the command to add
    */
   void addCommand(String command) {
-    commandHistory.addCommand(command);
+    commandHistory.addCommand(TextFormat.replaceAllCharacters(command, "\r\n\t", " "));
   }
 
   /**

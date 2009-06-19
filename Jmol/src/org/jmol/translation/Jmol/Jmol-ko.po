@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-06-01 22:13+0200\n"
+"POT-Creation-Date: 2009-06-19 17:58+0200\n"
 "PO-Revision-Date: 2008-10-01 21:54+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -141,7 +141,7 @@ msgstr "{0} 콜렉션의 맨 마지막으로"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "BufferedReader로 읽기 실패: {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:170
+#: org/openscience/jmol/app/DisplayPanel.java:172
 msgid "Delete atoms"
 msgstr "원자 지움"
 
@@ -752,134 +752,138 @@ msgstr "Jmol 도움말"
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Jmol 시작 오류: 'user.home'이 정의되지 않았습니다."
 
-#: org/openscience/jmol/app/Jmol.java:182
+#: org/openscience/jmol/app/Jmol.java:189
 msgid "Initializing 3D display..."
 msgstr "3D 장면 초기화..."
 
-#: org/openscience/jmol/app/Jmol.java:206
+#: org/openscience/jmol/app/Jmol.java:213
 msgid "Initializing Preferences..."
 msgstr "환경 초기화..."
 
-#: org/openscience/jmol/app/Jmol.java:208
+#: org/openscience/jmol/app/Jmol.java:215
 msgid "Initializing Recent Files..."
 msgstr "최근 파일 초기화..."
 
-#: org/openscience/jmol/app/Jmol.java:211
+#: org/openscience/jmol/app/Jmol.java:218
 msgid "Initializing Script Window..."
 msgstr "스크립트 창 초기화..."
 
-#: org/openscience/jmol/app/Jmol.java:215
+#: org/openscience/jmol/app/Jmol.java:222
 msgid "Initializing Measurements..."
 msgstr "측정 초기화..."
 
-#: org/openscience/jmol/app/Jmol.java:238
+#: org/openscience/jmol/app/Jmol.java:245
 msgid "Building Command Hooks..."
 msgstr "명령 후크 구성..."
 
-#: org/openscience/jmol/app/Jmol.java:249
+#: org/openscience/jmol/app/Jmol.java:256
 msgid "Building Menubar..."
 msgstr "메뉴바 구성..."
 
-#: org/openscience/jmol/app/Jmol.java:265
+#: org/openscience/jmol/app/Jmol.java:272
 msgid "Starting display..."
 msgstr "디스플레이 시작..."
 
-#: org/openscience/jmol/app/Jmol.java:314
+#: org/openscience/jmol/app/Jmol.java:321
 msgid "Setting up Drag-and-Drop..."
 msgstr "드랙-앤-드롭 셋업..."
 
-#: org/openscience/jmol/app/Jmol.java:335
+#: org/openscience/jmol/app/Jmol.java:342
 msgid "Launching main frame..."
 msgstr "기본 프레임 적제..."
 
-#: org/openscience/jmol/app/Jmol.java:353
+#: org/openscience/jmol/app/Jmol.java:363
 msgid "Creating main window..."
 msgstr "기본 창 구성..."
 
-#: org/openscience/jmol/app/Jmol.java:354
+#: org/openscience/jmol/app/Jmol.java:364
 msgid "Initializing Swing..."
 msgstr "Swing 초기화..."
 
-#: org/openscience/jmol/app/Jmol.java:366
+#: org/openscience/jmol/app/Jmol.java:376
 msgid "Initializing Jmol..."
 msgstr "Jmol 초기화..."
 
-#: org/openscience/jmol/app/Jmol.java:399
+#: org/openscience/jmol/app/Jmol.java:409
 msgid "transparent background"
 msgstr "투명한 배경화면"
 
-#: org/openscience/jmol/app/Jmol.java:400
+#: org/openscience/jmol/app/Jmol.java:410
 msgid "give this help page"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:402
+#: org/openscience/jmol/app/Jmol.java:412
 msgid "no display (and also exit when done)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:404
+#: org/openscience/jmol/app/Jmol.java:414
 #, fuzzy
 msgid "check script syntax only - no file loading"
 msgstr "스크립트 문법검사만"
 
-#: org/openscience/jmol/app/Jmol.java:406
+#: org/openscience/jmol/app/Jmol.java:416
 #, fuzzy
 msgid "check script syntax only - with file loading"
 msgstr "스크립트 문법검사만"
 
-#: org/openscience/jmol/app/Jmol.java:407
+#: org/openscience/jmol/app/Jmol.java:417
 msgid "debug"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:408
+#: org/openscience/jmol/app/Jmol.java:418
 msgid "silent startup operation"
 msgstr "조용히 시작하기"
 
-#: org/openscience/jmol/app/Jmol.java:410
+#: org/openscience/jmol/app/Jmol.java:420
 msgid "list commands during script execution"
 msgstr "스크립트 실행중 명령 목록"
 
-#: org/openscience/jmol/app/Jmol.java:412
+#: org/openscience/jmol/app/Jmol.java:422
 msgid "start with no splash screen"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:414
+#: org/openscience/jmol/app/Jmol.java:424
 msgid "no console -- all output to sysout"
 msgstr "콘솔 없음 -- 모든 출력은 sysout으로"
 
-#: org/openscience/jmol/app/Jmol.java:416
-msgid "independent commmand thread"
-msgstr "독립적인 명령 쓰레드"
-
-#: org/openscience/jmol/app/Jmol.java:418
-msgid "exit after script (implicit with -n)"
-msgstr "스크립트 실행후 끝내기 (-n을 내포함)"
-
-#: org/openscience/jmol/app/Jmol.java:422
-msgid "script file to execute or '-' for System.in"
+#: org/openscience/jmol/app/Jmol.java:426
+msgid "send only output from print messages to console (implies -i)"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:428
+msgid "independent commmand thread"
+msgstr "독립적인 명령 쓰레드"
+
+#: org/openscience/jmol/app/Jmol.java:430
+msgid "exit after script (implicit with -n)"
+msgstr "스크립트 실행후 끝내기 (-n을 내포함)"
+
+#: org/openscience/jmol/app/Jmol.java:434
+msgid "script file to execute or '-' for System.in"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:440
 msgid "Jmol script to execute BEFORE -s option"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:434
+#: org/openscience/jmol/app/Jmol.java:446
 msgid "Jmol script to execute AFTER -s option"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:443
+#: org/openscience/jmol/app/Jmol.java:455
 msgid "property=value"
 msgstr "속성=값"
 
-#: org/openscience/jmol/app/Jmol.java:446
+#: org/openscience/jmol/app/Jmol.java:458
 msgid "supported options are given below"
 msgstr "지원되는 옵션은 아래에 주어져있음"
 
-#: org/openscience/jmol/app/Jmol.java:452
+#: org/openscience/jmol/app/Jmol.java:464
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "창 너비 x 높이, 예) . {0}"
 
-#: org/openscience/jmol/app/Jmol.java:462
+#: org/openscience/jmol/app/Jmol.java:474
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -887,60 +891,60 @@ msgstr ""
 "JPG 이미지 화질 (1-100: 기본값 75) 혹은 PNG 이미지 압축률 (0-9: 기본값 2, 최"
 "대 압축률 9)"
 
-#: org/openscience/jmol/app/Jmol.java:467
+#: org/openscience/jmol/app/Jmol.java:479
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:488
+#: org/openscience/jmol/app/Jmol.java:500
 msgid "For example:"
 msgstr "예:"
 
-#: org/openscience/jmol/app/Jmol.java:494
+#: org/openscience/jmol/app/Jmol.java:506
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:713
+#: org/openscience/jmol/app/Jmol.java:736
 #, fuzzy
 msgid "Executing script 1..."
 msgstr "스크립트 실행..."
 
-#: org/openscience/jmol/app/Jmol.java:722
+#: org/openscience/jmol/app/Jmol.java:746
 #, fuzzy
 msgid "Executing script file..."
 msgstr "스크립트 실행..."
 
-#: org/openscience/jmol/app/Jmol.java:742
+#: org/openscience/jmol/app/Jmol.java:767
 #, fuzzy
 msgid "Executing script 2..."
 msgstr "스크립트 실행..."
 
-#: org/openscience/jmol/app/Jmol.java:754
+#: org/openscience/jmol/app/Jmol.java:779
 msgid "Jmol Java Console"
 msgstr "Jmol 자바 콘솔"
 
-#: org/openscience/jmol/app/Jmol.java:762
+#: org/openscience/jmol/app/Jmol.java:787
 #: org/openscience/jmol/app/ScriptWindow.java:103
 msgid "Clear"
 msgstr "지움"
 
-#: org/openscience/jmol/app/Jmol.java:776
+#: org/openscience/jmol/app/Jmol.java:801
 msgid "Could not create ConsoleTextArea: "
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:856
+#: org/openscience/jmol/app/Jmol.java:881
 msgid "Closing Jmol..."
 msgstr "Jmol 닫기..."
 
-#: org/openscience/jmol/app/Jmol.java:1479
+#: org/openscience/jmol/app/Jmol.java:1504
 msgid "Open URL"
 msgstr "URL 열기"
 
-#: org/openscience/jmol/app/Jmol.java:1480
+#: org/openscience/jmol/app/Jmol.java:1505
 msgid "Enter URL of molecular model"
 msgstr "분자 모델의 URL을 넣으세요"
 
-#: org/openscience/jmol/app/Jmol.java:1664
+#: org/openscience/jmol/app/Jmol.java:1689
 msgid "IO Exception:"
 msgstr "IO 예외"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-06-01 22:13+0200\n"
+"POT-Creation-Date: 2009-06-19 17:58+0200\n"
 "PO-Revision-Date: 2009-04-09 23:04+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.cat>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -144,7 +144,7 @@ msgstr "Salta al darrer {0} de la col·lecció"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "S''ha produït un error en llegir del «BufferedReader»: {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:170
+#: org/openscience/jmol/app/DisplayPanel.java:172
 msgid "Delete atoms"
 msgstr "Suprimeix els àtoms"
 
@@ -748,133 +748,137 @@ msgstr ""
 "S'ha produït un error en iniciar el Jmol: la propietat 'user.home' no està "
 "definida."
 
-#: org/openscience/jmol/app/Jmol.java:182
+#: org/openscience/jmol/app/Jmol.java:189
 msgid "Initializing 3D display..."
 msgstr "S'està iniciant la visualització 3D…"
 
-#: org/openscience/jmol/app/Jmol.java:206
+#: org/openscience/jmol/app/Jmol.java:213
 msgid "Initializing Preferences..."
 msgstr "S'estan inicialitzant les preferències…"
 
-#: org/openscience/jmol/app/Jmol.java:208
+#: org/openscience/jmol/app/Jmol.java:215
 msgid "Initializing Recent Files..."
 msgstr "S'estan inicialitzant els fitxers recents…"
 
-#: org/openscience/jmol/app/Jmol.java:211
+#: org/openscience/jmol/app/Jmol.java:218
 msgid "Initializing Script Window..."
 msgstr "S'està inicialitzant la finestra d'scripts…"
 
-#: org/openscience/jmol/app/Jmol.java:215
+#: org/openscience/jmol/app/Jmol.java:222
 msgid "Initializing Measurements..."
 msgstr "S'estan inicialitzant les mesures…"
 
-#: org/openscience/jmol/app/Jmol.java:238
+#: org/openscience/jmol/app/Jmol.java:245
 msgid "Building Command Hooks..."
 msgstr "S'estan construint els lligams de les ordres…"
 
-#: org/openscience/jmol/app/Jmol.java:249
+#: org/openscience/jmol/app/Jmol.java:256
 msgid "Building Menubar..."
 msgstr "S'està construint la barra de menú…"
 
-#: org/openscience/jmol/app/Jmol.java:265
+#: org/openscience/jmol/app/Jmol.java:272
 msgid "Starting display..."
 msgstr "S'està iniciant la visualització…"
 
-#: org/openscience/jmol/app/Jmol.java:314
+#: org/openscience/jmol/app/Jmol.java:321
 msgid "Setting up Drag-and-Drop..."
 msgstr "Configuració del l'«arrossega i deixa anar»…"
 
-#: org/openscience/jmol/app/Jmol.java:335
+#: org/openscience/jmol/app/Jmol.java:342
 msgid "Launching main frame..."
 msgstr "S'està executant el fotograma principal…"
 
-#: org/openscience/jmol/app/Jmol.java:353
+#: org/openscience/jmol/app/Jmol.java:363
 msgid "Creating main window..."
 msgstr "S'està creant la finestra principal…"
 
-#: org/openscience/jmol/app/Jmol.java:354
+#: org/openscience/jmol/app/Jmol.java:364
 msgid "Initializing Swing..."
 msgstr "S'està inicialitzant el Swing…"
 
-#: org/openscience/jmol/app/Jmol.java:366
+#: org/openscience/jmol/app/Jmol.java:376
 msgid "Initializing Jmol..."
 msgstr "S'està inicialitzant el Jmol…"
 
-#: org/openscience/jmol/app/Jmol.java:399
+#: org/openscience/jmol/app/Jmol.java:409
 msgid "transparent background"
 msgstr "fons transparent"
 
-#: org/openscience/jmol/app/Jmol.java:400
+#: org/openscience/jmol/app/Jmol.java:410
 msgid "give this help page"
 msgstr "adjunta aquesta pàgina d'ajuda"
 
-#: org/openscience/jmol/app/Jmol.java:402
+#: org/openscience/jmol/app/Jmol.java:412
 msgid "no display (and also exit when done)"
 msgstr "no mostris res (i també surt quan s'acabi)"
 
-#: org/openscience/jmol/app/Jmol.java:404
+#: org/openscience/jmol/app/Jmol.java:414
 msgid "check script syntax only - no file loading"
 msgstr "comprova només la sintaxi de l'script - no carreguis el fitxer"
 
-#: org/openscience/jmol/app/Jmol.java:406
+#: org/openscience/jmol/app/Jmol.java:416
 msgid "check script syntax only - with file loading"
 msgstr "comprova només la sintaxi de l'script - amb càrrega de fitxer"
 
-#: org/openscience/jmol/app/Jmol.java:407
+#: org/openscience/jmol/app/Jmol.java:417
 msgid "debug"
 msgstr "depura"
 
-#: org/openscience/jmol/app/Jmol.java:408
+#: org/openscience/jmol/app/Jmol.java:418
 msgid "silent startup operation"
 msgstr "operació d'inici silenciós"
 
-#: org/openscience/jmol/app/Jmol.java:410
+#: org/openscience/jmol/app/Jmol.java:420
 msgid "list commands during script execution"
 msgstr "llista les ordres durant l'execució de l'script"
 
-#: org/openscience/jmol/app/Jmol.java:412
+#: org/openscience/jmol/app/Jmol.java:422
 msgid "start with no splash screen"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:414
+#: org/openscience/jmol/app/Jmol.java:424
 msgid "no console -- all output to sysout"
 msgstr "no hi ha consola -- tota lo sortida serà al sistema"
 
-#: org/openscience/jmol/app/Jmol.java:416
+#: org/openscience/jmol/app/Jmol.java:426
+msgid "send only output from print messages to console (implies -i)"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:428
 msgid "independent commmand thread"
 msgstr "Fil d'ordre independent"
 
-#: org/openscience/jmol/app/Jmol.java:418
+#: org/openscience/jmol/app/Jmol.java:430
 msgid "exit after script (implicit with -n)"
 msgstr "surt després de l'script (implícit amb -n)"
 
-#: org/openscience/jmol/app/Jmol.java:422
+#: org/openscience/jmol/app/Jmol.java:434
 #, fuzzy
 msgid "script file to execute or '-' for System.in"
 msgstr "fitxer script per executar"
 
-#: org/openscience/jmol/app/Jmol.java:428
+#: org/openscience/jmol/app/Jmol.java:440
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "Script de Jmol que s'executarà ABANS de l'opció -s"
 
-#: org/openscience/jmol/app/Jmol.java:434
+#: org/openscience/jmol/app/Jmol.java:446
 msgid "Jmol script to execute AFTER -s option"
 msgstr "Script de Jmol que s'executarà DESPRÉS de l'opció -s"
 
-#: org/openscience/jmol/app/Jmol.java:443
+#: org/openscience/jmol/app/Jmol.java:455
 msgid "property=value"
 msgstr "propietat=valor"
 
-#: org/openscience/jmol/app/Jmol.java:446
+#: org/openscience/jmol/app/Jmol.java:458
 msgid "supported options are given below"
 msgstr "les opcions implementades es descriuen a continuació"
 
-#: org/openscience/jmol/app/Jmol.java:452
+#: org/openscience/jmol/app/Jmol.java:464
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "amplada x altura de la finestra, ex. {0}"
 
-#: org/openscience/jmol/app/Jmol.java:462
+#: org/openscience/jmol/app/Jmol.java:474
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -882,59 +886,59 @@ msgstr ""
 "Qualitat de la imatge JPG (1-100; per defecte 75) o compressió de la imatge "
 "PNG (0-9; per defecte 2, compressió màxima 9)"
 
-#: org/openscience/jmol/app/Jmol.java:467
+#: org/openscience/jmol/app/Jmol.java:479
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} o {1}:nomdelfitxer"
 
-#: org/openscience/jmol/app/Jmol.java:488
+#: org/openscience/jmol/app/Jmol.java:500
 msgid "For example:"
 msgstr "Per exemple:"
 
-#: org/openscience/jmol/app/Jmol.java:494
+#: org/openscience/jmol/app/Jmol.java:506
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr ""
 "Les opcions -D són les següents (els paràmetres predeterminats en "
 "parèntesis):"
 
-#: org/openscience/jmol/app/Jmol.java:713
+#: org/openscience/jmol/app/Jmol.java:736
 msgid "Executing script 1..."
 msgstr "S'està executant l'script 1..."
 
-#: org/openscience/jmol/app/Jmol.java:722
+#: org/openscience/jmol/app/Jmol.java:746
 msgid "Executing script file..."
 msgstr "S'està executant el fitxer d'script..."
 
-#: org/openscience/jmol/app/Jmol.java:742
+#: org/openscience/jmol/app/Jmol.java:767
 msgid "Executing script 2..."
 msgstr "S'està executant l'script 2..."
 
-#: org/openscience/jmol/app/Jmol.java:754
+#: org/openscience/jmol/app/Jmol.java:779
 msgid "Jmol Java Console"
 msgstr "Consola Java del Jmol"
 
-#: org/openscience/jmol/app/Jmol.java:762
+#: org/openscience/jmol/app/Jmol.java:787
 #: org/openscience/jmol/app/ScriptWindow.java:103
 msgid "Clear"
 msgstr "Neteja"
 
-#: org/openscience/jmol/app/Jmol.java:776
+#: org/openscience/jmol/app/Jmol.java:801
 msgid "Could not create ConsoleTextArea: "
 msgstr "No s'ha pogut crear l'àrea de text de la consola: "
 
-#: org/openscience/jmol/app/Jmol.java:856
+#: org/openscience/jmol/app/Jmol.java:881
 msgid "Closing Jmol..."
 msgstr "S'està tancant el Jmol…"
 
-#: org/openscience/jmol/app/Jmol.java:1479
+#: org/openscience/jmol/app/Jmol.java:1504
 msgid "Open URL"
 msgstr "Obre un URL"
 
-#: org/openscience/jmol/app/Jmol.java:1480
+#: org/openscience/jmol/app/Jmol.java:1505
 msgid "Enter URL of molecular model"
 msgstr "Introduïu l'URL d'un model molecular"
 
-#: org/openscience/jmol/app/Jmol.java:1664
+#: org/openscience/jmol/app/Jmol.java:1689
 msgid "IO Exception:"
 msgstr "S'ha produït una excepció IO:"
 

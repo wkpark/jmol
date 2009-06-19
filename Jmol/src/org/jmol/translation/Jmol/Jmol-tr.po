@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-06-01 22:13+0200\n"
+"POT-Creation-Date: 2009-06-19 17:58+0200\n"
 "PO-Revision-Date: 2008-08-04 20:46+0000\n"
 "Last-Translator: Muhammet Kara <Unknown>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -143,7 +143,7 @@ msgstr "Koleksiyondaki en son {0} elemanına git"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "TamponlanmışOkuyucudan okuma sırasında bir hata oluştu: {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:170
+#: org/openscience/jmol/app/DisplayPanel.java:172
 #, fuzzy
 msgid "Delete atoms"
 msgstr "Atomları Sil"
@@ -811,195 +811,199 @@ msgstr "Jmol Yardımı"
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Jmol başlatmada hata: 'user.home' özelliği tanımlanmamış."
 
-#: org/openscience/jmol/app/Jmol.java:182
+#: org/openscience/jmol/app/Jmol.java:189
 msgid "Initializing 3D display..."
 msgstr "3D görüntüleme başlatılıyor..."
 
-#: org/openscience/jmol/app/Jmol.java:206
+#: org/openscience/jmol/app/Jmol.java:213
 msgid "Initializing Preferences..."
 msgstr "Tercihler başlatılıyor..."
 
-#: org/openscience/jmol/app/Jmol.java:208
+#: org/openscience/jmol/app/Jmol.java:215
 msgid "Initializing Recent Files..."
 msgstr "Geçmiş dosyalar başlatılıyor..."
 
-#: org/openscience/jmol/app/Jmol.java:211
+#: org/openscience/jmol/app/Jmol.java:218
 msgid "Initializing Script Window..."
 msgstr "Betik Penceresi Başlatılıyor..."
 
-#: org/openscience/jmol/app/Jmol.java:215
+#: org/openscience/jmol/app/Jmol.java:222
 msgid "Initializing Measurements..."
 msgstr "Ölçümler başlatılıyor..."
 
-#: org/openscience/jmol/app/Jmol.java:238
+#: org/openscience/jmol/app/Jmol.java:245
 msgid "Building Command Hooks..."
 msgstr "Komut Bağları Oluşturuluyor..."
 
-#: org/openscience/jmol/app/Jmol.java:249
+#: org/openscience/jmol/app/Jmol.java:256
 msgid "Building Menubar..."
 msgstr "Menu Çubuğu Oluşturuluyor..."
 
-#: org/openscience/jmol/app/Jmol.java:265
+#: org/openscience/jmol/app/Jmol.java:272
 msgid "Starting display..."
 msgstr "Görüntülemeye başlanıyor..."
 
-#: org/openscience/jmol/app/Jmol.java:314
+#: org/openscience/jmol/app/Jmol.java:321
 msgid "Setting up Drag-and-Drop..."
 msgstr "Sürükle-Bırak kuruluyor..."
 
-#: org/openscience/jmol/app/Jmol.java:335
+#: org/openscience/jmol/app/Jmol.java:342
 msgid "Launching main frame..."
 msgstr "Ana çerçeve başlatılıyor..."
 
-#: org/openscience/jmol/app/Jmol.java:353
+#: org/openscience/jmol/app/Jmol.java:363
 msgid "Creating main window..."
 msgstr "Ana pencere üretiliyor..."
 
-#: org/openscience/jmol/app/Jmol.java:354
+#: org/openscience/jmol/app/Jmol.java:364
 msgid "Initializing Swing..."
 msgstr "Sapma başlatılıyor..."
 
-#: org/openscience/jmol/app/Jmol.java:366
+#: org/openscience/jmol/app/Jmol.java:376
 msgid "Initializing Jmol..."
 msgstr "Jmol başlatılıyor..."
 
-#: org/openscience/jmol/app/Jmol.java:399
+#: org/openscience/jmol/app/Jmol.java:409
 msgid "transparent background"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:400
+#: org/openscience/jmol/app/Jmol.java:410
 msgid "give this help page"
 msgstr "Bunu yardım sayfasına ver"
 
-#: org/openscience/jmol/app/Jmol.java:402
+#: org/openscience/jmol/app/Jmol.java:412
 msgid "no display (and also exit when done)"
 msgstr "görüntü yok (ve tamamlanınca çık)"
 
-#: org/openscience/jmol/app/Jmol.java:404
+#: org/openscience/jmol/app/Jmol.java:414
 #, fuzzy
 msgid "check script syntax only - no file loading"
 msgstr "yalnızca betik söz dizimini kontrol et"
 
-#: org/openscience/jmol/app/Jmol.java:406
+#: org/openscience/jmol/app/Jmol.java:416
 #, fuzzy
 msgid "check script syntax only - with file loading"
 msgstr "yalnızca betik söz dizimini kontrol et"
 
-#: org/openscience/jmol/app/Jmol.java:407
+#: org/openscience/jmol/app/Jmol.java:417
 msgid "debug"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:408
+#: org/openscience/jmol/app/Jmol.java:418
 msgid "silent startup operation"
 msgstr "sessiz başlatma işlemi"
 
-#: org/openscience/jmol/app/Jmol.java:410
+#: org/openscience/jmol/app/Jmol.java:420
 msgid "list commands during script execution"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:412
+#: org/openscience/jmol/app/Jmol.java:422
 msgid "start with no splash screen"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:414
+#: org/openscience/jmol/app/Jmol.java:424
 msgid "no console -- all output to sysout"
 msgstr "komut arayüzü yok -- bütün çıktılar sysyout'a"
 
-#: org/openscience/jmol/app/Jmol.java:416
-msgid "independent commmand thread"
-msgstr ""
-
-#: org/openscience/jmol/app/Jmol.java:418
-msgid "exit after script (implicit with -n)"
-msgstr "betik işletiminden sonra çık (varsayılan -n ile)"
-
-#: org/openscience/jmol/app/Jmol.java:422
-msgid "script file to execute or '-' for System.in"
+#: org/openscience/jmol/app/Jmol.java:426
+msgid "send only output from print messages to console (implies -i)"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:428
+msgid "independent commmand thread"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:430
+msgid "exit after script (implicit with -n)"
+msgstr "betik işletiminden sonra çık (varsayılan -n ile)"
+
+#: org/openscience/jmol/app/Jmol.java:434
+msgid "script file to execute or '-' for System.in"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:440
 msgid "Jmol script to execute BEFORE -s option"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:434
+#: org/openscience/jmol/app/Jmol.java:446
 msgid "Jmol script to execute AFTER -s option"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:443
+#: org/openscience/jmol/app/Jmol.java:455
 msgid "property=value"
 msgstr "özellik = değer"
 
-#: org/openscience/jmol/app/Jmol.java:446
+#: org/openscience/jmol/app/Jmol.java:458
 msgid "supported options are given below"
 msgstr "desteklenen seçenekler aşağıda verilmiştir"
 
-#: org/openscience/jmol/app/Jmol.java:452
+#: org/openscience/jmol/app/Jmol.java:464
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "pencere genişliği x yüksekliği, örneğin {0}"
 
-#: org/openscience/jmol/app/Jmol.java:462
+#: org/openscience/jmol/app/Jmol.java:474
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:467
+#: org/openscience/jmol/app/Jmol.java:479
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} ya da {1}:dosyaadi"
 
-#: org/openscience/jmol/app/Jmol.java:488
+#: org/openscience/jmol/app/Jmol.java:500
 msgid "For example:"
 msgstr "Örneğin:"
 
-#: org/openscience/jmol/app/Jmol.java:494
+#: org/openscience/jmol/app/Jmol.java:506
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr ""
 "-D seçenekleri aşağıda listenenmiştir (parantez içindekiler varsayılan "
 "seçeneklerdir):"
 
-#: org/openscience/jmol/app/Jmol.java:713
+#: org/openscience/jmol/app/Jmol.java:736
 #, fuzzy
 msgid "Executing script 1..."
 msgstr "Betik yürütülüyor..."
 
-#: org/openscience/jmol/app/Jmol.java:722
+#: org/openscience/jmol/app/Jmol.java:746
 #, fuzzy
 msgid "Executing script file..."
 msgstr "Betik yürütülüyor..."
 
-#: org/openscience/jmol/app/Jmol.java:742
+#: org/openscience/jmol/app/Jmol.java:767
 #, fuzzy
 msgid "Executing script 2..."
 msgstr "Betik yürütülüyor..."
 
-#: org/openscience/jmol/app/Jmol.java:754
+#: org/openscience/jmol/app/Jmol.java:779
 msgid "Jmol Java Console"
 msgstr "Jmol Java Uçbirimi"
 
-#: org/openscience/jmol/app/Jmol.java:762
+#: org/openscience/jmol/app/Jmol.java:787
 #: org/openscience/jmol/app/ScriptWindow.java:103
 msgid "Clear"
 msgstr "Temizle"
 
-#: org/openscience/jmol/app/Jmol.java:776
+#: org/openscience/jmol/app/Jmol.java:801
 msgid "Could not create ConsoleTextArea: "
 msgstr "KonsolMetinAlanı oluşturulamadı: "
 
-#: org/openscience/jmol/app/Jmol.java:856
+#: org/openscience/jmol/app/Jmol.java:881
 msgid "Closing Jmol..."
 msgstr "Jmol Kapanıyor..."
 
-#: org/openscience/jmol/app/Jmol.java:1479
+#: org/openscience/jmol/app/Jmol.java:1504
 msgid "Open URL"
 msgstr "Adresi aç"
 
-#: org/openscience/jmol/app/Jmol.java:1480
+#: org/openscience/jmol/app/Jmol.java:1505
 msgid "Enter URL of molecular model"
 msgstr "Moleküler modelin adresini gir"
 
-#: org/openscience/jmol/app/Jmol.java:1664
+#: org/openscience/jmol/app/Jmol.java:1689
 msgid "IO Exception:"
 msgstr "G/Ç Hatası:"
 

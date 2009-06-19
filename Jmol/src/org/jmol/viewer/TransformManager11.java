@@ -737,7 +737,7 @@ class TransformManager11 extends TransformManager {
 
   float getNavigationDepthPercent() {
     calcCameraFactors(); //current
-    return (modelRadiusPixels == 0 ? 0 : 
+    return (modelRadiusPixels == 0 ? 50 : 
       50 * (1 + (modelCenterOffset - referencePlaneOffset) / modelRadiusPixels));
   }
 

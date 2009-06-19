@@ -1104,20 +1104,21 @@ abstract class TransformManager {
     //    " zoomLarge, antialias, resetSlab, resetZoom width/height "
     //    + zoomLarge + ","+antialias + "," + resetSlab + "," + resetZoom
     //    + "  " + width + "/" + height);
-    if (width == 0 || height == 0)
-      return;
+    if (width == 0 || height == 0) {
+      screenPixelCount = 1;
+    } else {
 
-    // translate to the middle of the screen
-    fixedTranslation.set(width * (andCenter ? 0.5f : xTranslationFraction),
-        height * (andCenter ? 0.5f : yTranslationFraction), 0);
-    setTranslationFractions();
-    if (resetZoom)
-      resetNavigationPoint(resetSlab);
+      // translate to the middle of the screen
+      fixedTranslation.set(width * (andCenter ? 0.5f : xTranslationFraction),
+          height * (andCenter ? 0.5f : yTranslationFraction), 0);
+      setTranslationFractions();
+      if (resetZoom)
+        resetNavigationPoint(resetSlab);
     // 2005 02 22
     // switch to finding larger screen dimension
     // find smaller screen dimension
-    screenPixelCount = (zoomLarge == (height > width) ? height : width);
-
+      screenPixelCount = (zoomLarge == (height > width) ? height : width);
+    }
     // ensure that rotations don't leave some atoms off the screen
     // note that this radius is to the furthest outside edge of an atom
     // given the current VDW radius setting. it is currently *not*

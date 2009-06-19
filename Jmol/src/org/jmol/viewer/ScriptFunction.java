@@ -90,9 +90,6 @@ class ScriptFunction {
     s.append(") {\n");
     if (script != null)
       s.append(script);
-    if (script == null || script.length() > 0
-        && script.charAt(script.length() - 1) != '\n')
-      s.append("\n");
     s.append("}\n\n");
     return s.toString();
   }
@@ -103,7 +100,7 @@ class ScriptFunction {
     int cmdpt0 = function.cmdpt0;
     int chpt0 = function.chpt0;
     int nCommands = pt - cmdpt0;
-    function.script = script.substring(chpt0, ichCurrentCommand);
+    function.setScript(script.substring(chpt0, ichCurrentCommand));
     Token[][] aatoken = function.aatoken = new Token[nCommands][];
     function.lineIndices = new int[nCommands][];
     function.lineNumbers = new short[nCommands];
@@ -123,6 +120,12 @@ class ScriptFunction {
       lltoken.remove(i);
       lineIndices[i][0] = lineIndices[i][1] = 0;
     }
+  }
+
+  private void setScript(String s) {
+    script = s;
+    if (script != null && script != "" && !script.endsWith("\n"))
+      script += "\n";
   }
 
 }

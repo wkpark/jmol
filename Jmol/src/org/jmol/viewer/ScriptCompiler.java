@@ -335,15 +335,15 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     int ichT = ichToken;
     while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
       ++ichT;
-    if (isLineContinuation(ichT, tokCommand == Token.set || tokCommand == Token.print))
+    if (isLineContinuation(ichT, true))
       ichT += 1 + nCharNewLine(ichT + 1);
     cchToken = ichT - ichToken;
     return cchToken > 0;
   }
 
-  private boolean isLineContinuation(int ichT, boolean checkSet) {
+  private boolean isLineContinuation(int ichT, boolean checkMathop) {
     boolean isEscaped = (ichT + 2 < cchScript && script.charAt(ichT) == '\\' && nCharNewLine(ichT + 1) > 0 
-        || checkSet && lookingAtMathContinuation(ichT));   
+        || checkMathop && lookingAtMathContinuation(ichT));   
     if (isEscaped)
       lineCurrent++;
     return isEscaped;
@@ -353,7 +353,11 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     int n;
     if (ichT >= cchScript || (n = nCharNewLine(ichT)) == 0 || lastToken.tok == Token.leftbrace)
       return false;
-    if (parenCount > 0 || bracketCount > 0 || lastToken.tok == tokLastMath)
+    if (parenCount > 0 || bracketCount > 0)
+      return true;
+    if (tokCommand != Token.set && tokCommand != Token.print)
+        return false;
+    if (lastToken.tok == tokLastMath)
       return true;
     ichT += n;
     while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
@@ -556,7 +560,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           }
           lineNumbers[iCommand] = iLine;
           lineIndices[iCommand][0] = ichCurrentCommand;
-          lineIndices[iCommand][1] = (ichEnd == ichCurrentCommand ? ichToken : ichEnd);
+          lineIndices[iCommand][1] =  Math.min(cchScript, ichEnd == ichCurrentCommand ? ichToken : ichEnd);
           lltoken.addElement(atokenInfix);
           iCommand = lltoken.size();
         }
@@ -1933,9 +1937,11 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       tokLastMath++;
       break;
+    case '/':
+      if (ichT < cchScript && script.charAt(ichT) == '/')
+        break;
     case '\\':  // leftdivide
     case '*':
-    case '/':
     case '!':
       if (ichT < cchScript && script.charAt(ichT) == '=')
         ++ichT;

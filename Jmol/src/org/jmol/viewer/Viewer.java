@@ -1590,7 +1590,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                                  String[] fullPathNameReturn,
                                                  boolean isBinary) {
     return fileManager.getBufferedReaderOrErrorMessageFromName(name,
-        fullPathNameReturn, isBinary);
+        fullPathNameReturn, isBinary, true);
   }
 
   void addLoadScript(String script) {
@@ -1990,7 +1990,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String pathName = modelManager.getModelSetPathName();
     if (pathName == null)
       return null;
-    return getFileAsString(pathName);
+    return getFileAsString(pathName, Integer.MAX_VALUE, true);
   }
 
   public String getFullPathName() {
@@ -2002,16 +2002,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getFileAsString(String name) {
-    return getFileAsString(name, Integer.MAX_VALUE);
+    return getFileAsString(name, Integer.MAX_VALUE, false);
   }
   
-  public String getFileAsString(String name, int nBytesMax) {
+  public String getFileAsString(String name, int nBytesMax, boolean doSpecialLoad) {
     if (name == null)
       return getCurrentFileAsString();
     String[] data = new String[2];
     data[0] = name;
     // ignore error completely
-    getFileAsString(data, nBytesMax);
+    getFileAsString(data, nBytesMax, doSpecialLoad);
     return data[1];
   }
 
@@ -2019,8 +2019,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return fileManager.getFullPath(name, false);
   }
 
-  boolean getFileAsString(String[] data, int nBytesMax) {
-    return fileManager.getFileDataOrErrorAsString(data, nBytesMax);
+  boolean getFileAsString(String[] data, int nBytesMax, boolean doSpecialLoad) {
+    return fileManager.getFileDataOrErrorAsString(data, nBytesMax, doSpecialLoad);
   }
 
   String[] getFileInfo() {
@@ -4606,7 +4606,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.getOrSetNewVariable(key, doSet);
   }
 
-  ScriptVariable setVariable(String name, ScriptVariable value) {
+  ScriptVariable setUserVariable(String name, ScriptVariable value) {
     return global.setUserVariable(name, value);
   }
 

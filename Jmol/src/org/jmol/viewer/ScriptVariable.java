@@ -650,7 +650,7 @@ class ScriptVariable extends Token {
         selector = 0;
       while (selector >= str.length())
         str += " ";
-      str = str.substring(0, selector) + s + str.substring(selector + 1);
+      value = str.substring(0, selector) + s + str.substring(selector + 1);
       break;
     }
     return true;

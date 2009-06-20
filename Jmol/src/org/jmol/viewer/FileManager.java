@@ -116,7 +116,7 @@ public class FileManager {
     if (pt >= 0)
       return fileName.substring(0, pt);
     Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName, true,
-        false, true);
+        false, true, true);
     if (br instanceof BufferedReader)
       return viewer.getModelAdapter().getFileTypeName((BufferedReader) br);
     if (br instanceof ZipInputStream) {
@@ -348,15 +348,16 @@ public class FileManager {
    *          [0] initially path name, but returned as full path name; [1]file
    *          contents (directory listing for a ZIP/JAR file) or error string
    * @param nBytesMax
+   * @param doSpecialLoad 
    * @return true if successful; false on error
    */
 
-  boolean getFileDataOrErrorAsString(String[] data, int nBytesMax) {
+  boolean getFileDataOrErrorAsString(String[] data, int nBytesMax, boolean doSpecialLoad) {
     data[1] = "";
     String name = data[0];
     if (name == null)
       return false;
-    Object t = getBufferedReaderOrErrorMessageFromName(name, data, false);
+    Object t = getBufferedReaderOrErrorMessageFromName(name, data, false, doSpecialLoad);
     if (t instanceof String) {
       data[1] = (String) t;
       return false;
@@ -863,23 +864,23 @@ public class FileManager {
 
   Object getBufferedReaderOrErrorMessageFromName(String name,
                                                  String[] fullPathNameReturn,
-                                                 boolean isBinary) {
+                                                 boolean isBinary, boolean doSpecialLoad) {
     String[] names = classifyName(name, true);
     if (names == null)
       return "cannot read file name: " + name;
     if (fullPathNameReturn != null)
       fullPathNameReturn[0] = names[0].replace('\\', '/');
     return getUnzippedBufferedReaderOrErrorMessageFromName(names[0], false,
-        isBinary, false);
+        isBinary, false, doSpecialLoad);
   }
 
   Object getUnzippedBufferedReaderOrErrorMessageFromName(
                                                          String name,
                                                          boolean allowZipStream,
                                                          boolean asInputStream,
-                                                         boolean isTypeCheckOnly) {
+                                                         boolean isTypeCheckOnly, boolean doSpecialLoad) {
     String[] subFileList = null;
-    String[] info = viewer.getModelAdapter().specialLoad(name, "filesNeeded?");
+    String[] info = (doSpecialLoad ? viewer.getModelAdapter().specialLoad(name, "filesNeeded?") : null);
     if (info != null) {
       if (isTypeCheckOnly)
         return info;
@@ -1000,7 +1001,7 @@ public class FileManager {
         String name = fullPathNameInThread;
         String[] subFileList = null;
         Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, true,
-            false, false);
+            false, false, true);
         if (name.indexOf("|") >= 0)
           name = (subFileList = TextFormat.split(name, "|"))[0];
         if (t instanceof BufferedReader) {
@@ -1119,7 +1120,7 @@ public class FileManager {
       if (name.indexOf("|") >= 0)
         name = (subFileList = TextFormat.split(name, "|"))[0];
       Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, true,
-          false, false);
+          false, false, true);
       if (t instanceof ZipInputStream) {
         if (subFileList != null)
           htParams.put("subFileList", subFileList);

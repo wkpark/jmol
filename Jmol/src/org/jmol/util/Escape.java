@@ -159,7 +159,7 @@ public class Escape {
    * @return serialized array
    */
   public static String escape(String[] list) {
-    if (list == null || list.length == 0)
+    if (list == null)
       return escape("");
     StringBuffer s = new StringBuffer();
     s.append("[");

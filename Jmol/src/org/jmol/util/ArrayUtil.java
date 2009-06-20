@@ -243,9 +243,18 @@ final public class ArrayUtil {
     } else {
       data = (float[]) floatOrStringArray;
     }
-    float minmax = (tok == Token.min ? Float.MAX_VALUE 
-        : tok == Token.average || tok == Token.stddev ? 0 
-            : -Float.MAX_VALUE);
+    double sum;
+    switch (tok) {
+    case Token.min:
+      sum = Float.MAX_VALUE;
+      break;
+    case Token.max:
+      sum = -Float.MAX_VALUE;
+      break;
+    default:
+      sum = 0;
+    }
+    double sum2 = 0;
     int n = 0;
     for (int i = data.length; --i >= 0; ) {
       float v;
@@ -254,34 +263,33 @@ final public class ArrayUtil {
       n++;
       switch(tok){
       case Token.stddev:
+        sum2 += ((double) v) * v;
+        //fall through
       case Token.average:
-        minmax += v;
+        sum += v;
         break;
       case Token.min:
-        if (v < minmax)
-          minmax = v;
+        if (v < sum)
+          sum = v;
         break;
       case Token.max:
-        if (v > minmax)
-          minmax = v;
+        if (v > sum)
+          sum = v;
         break;
       }
     }
     if (n == 0)
       return "NaN";
-    if (tok == Token.average)
-      minmax /= n;
-    else if (tok == Token.stddev) {
+    switch (tok) {
+    case Token.average:
+      sum /= n;
+      break;
+    case Token.stddev:
       if (n == 1)
         return "NaN";
-      minmax /= n;
-      double d = 0;
-      double x;
-      for (int i = data.length; --i >= 0; )
-        d += (x = data[i] - minmax) * x;
-      minmax = (float) Math.sqrt(d / (n - 1));
+      sum = Math.sqrt((sum2 - sum * sum / n) / (n - 1));
     }
-    return new Float(minmax);
+    return new Float(sum);
   }
 
   public static Object sortOrReverse(Object list, int tok, boolean checkFloat) {

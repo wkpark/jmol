@@ -336,6 +336,8 @@ class ScriptMathProcessor {
         op = newOp = Token.tokenArray;
       }
       break;
+    case Token.rightsquare:
+      break;
     case Token.minusMinus:
     case Token.plusPlus:
       incrementX = (op.tok == Token.plusPlus ? 1 : -1);
@@ -381,7 +383,7 @@ class ScriptMathProcessor {
 
     while (oPt >= 0
         && tok0 != Token.colon
-        && (!(isLeftOp || op.tok == Token.leftsquare) || tok0 == Token.propselector
+        && (!isLeftOp || tok0 == Token.propselector
             && (op.tok == Token.propselector || op.tok == Token.leftsquare))
         && Token.getPrecedence(tok0) >= Token.getPrecedence(op.tok)) {
 
@@ -1125,10 +1127,7 @@ class ScriptMathProcessor {
     if (isSyntaxCheck)
       return addX("");
     int len = args.length;
-    if (len == 0)
-      len = 1;
     String[] array = new String[len];
-    array[0] = "";
     for (int i = 0; i < args.length; i++)
       array[i] = ScriptVariable.sValue(args[i]);
     return addX(array);
@@ -1277,7 +1276,7 @@ class ScriptMathProcessor {
       return addX("");
     String file = ScriptVariable.sValue(args[0]);
     int nBytesMax = (args.length == 2 ? ScriptVariable.iValue(args[1]) : Integer.MAX_VALUE);
-    return addX(tok == Token.load ? viewer.getFileAsString(file, nBytesMax) : viewer
+    return addX(tok == Token.load ? viewer.getFileAsString(file, nBytesMax, false) : viewer
         .getFullPath(file));
   }
 

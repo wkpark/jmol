@@ -48,7 +48,6 @@ import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.shape.Object2d;
-import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
@@ -535,7 +534,7 @@ class ScriptEvaluator {
           debugScript);
     String[] data = new String[2];
     data[0] = filename;
-    if (!viewer.getFileAsString(data, Integer.MAX_VALUE)) {
+    if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) {
       setErrorMessage("io error reading " + data[0] + ": " + data[1]);
       return false;
     }
@@ -693,11 +692,6 @@ class ScriptEvaluator {
   private void setStringProperty(String key, String value) {
     if (!isSyntaxCheck) // ??? || key.equalsIgnoreCase("defaultdirectory"))
       viewer.setStringProperty(key, value);
-  }
-
-  void setListVariable(String key, ScriptVariable x) {
-    if (!isSyntaxCheck)
-      viewer.setVariable(key, x);
   }
 
   /*
@@ -869,7 +863,7 @@ class ScriptEvaluator {
       return s;
     Object v = ScriptVariable.unescapePointOrBitsetAsVariable(s);
     if (v instanceof String && key != null)
-      v = viewer.setVariable(key, new ScriptVariable(Token.string, (String) v));
+      v = viewer.setUserVariable(key, new ScriptVariable(Token.string, (String) v));
     return v;
   }
 
@@ -7374,7 +7368,8 @@ class ScriptEvaluator {
         null);
     if (isSyntaxCheck || v == null)
       return;
-    if (((Vector) v).size() == 0)
+    int nv = ((Vector) v).size();
+    if (nv == 0 || isArrayItem && nv < 3)
       error(ERROR_invalidArgument);
     ScriptVariable tv = (ScriptVariable) ((Vector) v).get(isArrayItem ? 2 : 0);
 
@@ -8070,7 +8065,7 @@ class ScriptEvaluator {
       if (!isAtoms)
         break;
       isInt = Token.tokAttr(tok, Token.intproperty)
-         && !Token.tokAttr(tok, Token.floatproperty);
+          && !Token.tokAttr(tok, Token.floatproperty);
       // occupancy and radius considered floats here
       isString = !isInt && Token.tokAttr(tok, Token.strproperty);
       // structure considered int; for the name, use .label("%[structure]")
@@ -8114,7 +8109,8 @@ class ScriptEvaluator {
       switch (minmaxtype) {
       case 0:
       case Token.all:
-        return getBitsetIdent(bs, null, tokenValue, useAtomMap, index, isExplicitlyAll);
+        return getBitsetIdent(bs, null, tokenValue, useAtomMap, index,
+            isExplicitlyAll);
       }
       return "";
     }
@@ -8131,10 +8127,10 @@ class ScriptEvaluator {
 
     int n = 0;
     int ivvMinMax = 0;
-    int ivAvg = 0;
-    float fvAvg = 0;
     int ivMinMax = 0;
     float fvMinMax = 0;
+    double sum = 0;
+    double sum2 = 0;
     switch (minmaxtype) {
     case Token.min:
       ivMinMax = Integer.MAX_VALUE;
@@ -8158,11 +8154,8 @@ class ScriptEvaluator {
       int iModel = -1;
       int nOps = 0;
       count = (isSyntaxCheck ? 0 : viewer.getAtomCount());
-      switch (minmaxtype) {
-      case Token.all:
-      case Token.stddev:
+      if (minmaxtype == Token.all)
         vout = new Vector();
-      }
       int mode = (isPt ? 3 : isString ? 2 : isInt ? 1 : 0);
       for (int i = (haveIndex ? index : 0); i < count; i++) {
         if (!haveIndex && bs != null && !bs.get(i))
@@ -8191,26 +8184,28 @@ class ScriptEvaluator {
           default:
             fv = Atom.atomPropertyFloat(atom, tok);
           }
-          if (fv == Float.MAX_VALUE) {
+          if (fv == Float.MAX_VALUE || Float.isNaN(fv)
+              && minmaxtype != Token.all) {
             n--; // don't count this one
-          } else {
-            if (Float.isNaN(fv) && minmaxtype != Token.all)
-              n--; // don't count this one
-            else
-              switch (minmaxtype) {
-              case Token.min:
-                fvMinMax = Math.min(fvMinMax, fv);
-                break;
-              case Token.max:
-                fvMinMax = Math.max(fvMinMax, fv);
-                break;
-              case Token.stddev:
-              case Token.all:
-                vout.add(new Float(fv));
-                // fall through
-              default:
-                fvAvg += fv;
-              }
+            continue;
+          }
+          switch (minmaxtype) {
+          case Token.min:
+            if (fv < fvMinMax)
+              fvMinMax = fv;
+            break;
+          case Token.max:
+            if (fv > fvMinMax)
+              fvMinMax = fv;
+            break;
+          case Token.all:
+            vout.add(new Float(fv));
+            break;
+          case Token.stddev:
+            sum2 += ((double) fv) * fv;
+            // fall through
+          default:
+            sum += fv;
           }
           break;
         case 1: // isInt
@@ -8263,17 +8258,21 @@ class ScriptEvaluator {
           }
           switch (minmaxtype) {
           case Token.min:
-            ivMinMax = Math.min(ivMinMax, iv);
+            if (iv < ivMinMax)
+              ivMinMax = iv;
             break;
           case Token.max:
-            ivMinMax = Math.max(ivMinMax, iv);
+            if (iv > ivMinMax)
+              ivMinMax = iv;
             break;
           case Token.all:
-          case Token.stddev:
             vout.add(new Integer(iv));
+            break;
+          case Token.stddev:
+            sum2 += ((double) iv) * iv;
             // fall through
           default:
-            ivAvg += iv;
+            sum += iv;
           }
           break;
         case 2: // isString
@@ -8295,11 +8294,8 @@ class ScriptEvaluator {
       }
     } else { // bonds
       count = viewer.getBondCount();
-      switch (minmaxtype) {
-      case Token.all:
-      case Token.stddev:
+      if (minmaxtype == Token.all)
         vout = new Vector();
-      }
       for (int i = 0; i < count; i++) {
         if (bs != null && !bs.get(i))
           continue;
@@ -8310,17 +8306,21 @@ class ScriptEvaluator {
           float fv = bond.getAtom1().distance(bond.getAtom2());
           switch (minmaxtype) {
           case Token.min:
-            fvMinMax = Math.min(fvMinMax, fv);
+            if (fv < fvMinMax)
+              fvMinMax = fv;
             break;
           case Token.max:
-            fvMinMax = Math.max(fvMinMax, fv);
+            if (fv > fvMinMax)
+              fvMinMax = fv;
             break;
-          case Token.stddev:
           case Token.all:
             vout.add(new Float(fv));
+            break;
+          case Token.stddev:
+            sum2 += (double) fv * fv;
             // fall through
           default:
-            fvAvg += fv;
+            sum += fv;
           }
           break;
         case Token.xyz:
@@ -8338,8 +8338,8 @@ class ScriptEvaluator {
           }
           break;
         case Token.color:
-          Graphics3D.colorPointFromInt(viewer.getColixArgb(bond
-              .getColix()), ptT);
+          Graphics3D.colorPointFromInt(viewer.getColixArgb(bond.getColix()),
+              ptT);
           switch (minmaxtype) {
           case Token.all:
             vout.add(new Point3f(ptT));
@@ -8382,15 +8382,6 @@ class ScriptEvaluator {
       case Token.min:
       case Token.max:
         return new Integer(ivMinMax);
-      case Token.stddev:
-        float[] f = new float[n];
-        for (int i = n; --i >= 0;)
-          f[i] = ((Integer) vout.get(i)).intValue();
-        return ArrayUtil.getMinMax(f, Token.stddev);
-      default:
-        if ((ivMinMax = ivAvg / n) * n == ivAvg)
-          return new Integer(ivMinMax);
-        return new Float(((float) ivAvg) / n);
       }
     }
     switch (minmaxtype) {
@@ -8398,13 +8389,17 @@ class ScriptEvaluator {
     case Token.max:
       return new Float(fvMinMax);
     case Token.stddev:
-      float[] f = new float[n];
-      for (int i = n; --i >= 0;)
-        f[i] = ((Float) vout.get(i)).floatValue();
-      return ArrayUtil.getMinMax(f, Token.stddev);
+      // because SUM (x_i - X_av)^2 = SUM(x_i^2) - 2X_av SUM(x_i) + SUM(X_av^2)
+      // = SUM(x_i^2) - 2nX_av^2 + nX_av^2
+      // = SUM(x_i^2) - nX_av^2
+      // = SUM(x_i^2) - [SUM(x_i)]^2 / n
+      sum = Math.sqrt((sum2 - sum * sum / n) / (n - 1));
+      break;
     default:
-      return new Float(fvAvg / n);
+      sum /= n;
+      break;
     }
+    return new Float(sum);
   }
 
   private void setBitsetProperty(BitSet bs, int tok, int iValue, float fValue,

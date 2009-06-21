@@ -35,8 +35,6 @@ import org.jmol.util.Logger;
 abstract public class GamessReader extends MOReader {
 
   protected Vector atomNames;
-  protected Hashtable shellsByAtomType;
-  protected Vector slatersByAtomType;
 
   abstract protected void readAtomsInBohrCoordinates() throws Exception;  
  
@@ -50,8 +48,8 @@ abstract public class GamessReader extends MOReader {
     discardLinesUntilContains(initiator);
     readLine();
     int[] slater = null;
-    shellsByAtomType = new Hashtable();
-    slatersByAtomType = new Vector();
+    Hashtable shellsByAtomType = new Hashtable();
+    Vector slatersByAtomType = new Vector();
     String atomType = null;
     
     while (readLine() != null && line.indexOf(terminator) < 0) {
@@ -105,22 +103,11 @@ abstract public class GamessReader extends MOReader {
       for (int j = 3; j < tokens.length; j++)
         gaussians[i][j - 3] = parseFloat(tokens[j]);
     }
-    if (Logger.debugging) {
-      Logger.debug(shellCount + " slater shells read");
-      Logger.debug(gaussianCount + " gaussian primitives read");
-    }
-  }
-
-  protected void setMOData(boolean clearOrbitals) {
-    
-    // executed by MOReader at MO time because only then do we know the proper
-    // number of atoms and the atom names.
-    
     int atomCount = atomNames.size();
     if (shells == null && atomCount > 0) {
       shells = new Vector();
       for (int i = 0; i < atomCount; i++) {
-        String atomType = (String) atomNames.elementAt(i);
+        atomType = (String) atomNames.elementAt(i);
         Vector slaters = (Vector) shellsByAtomType.get(atomType);
         if (slaters == null) {
           Logger.error("slater for atom " + i + " atomType " + atomType
@@ -128,12 +115,16 @@ abstract public class GamessReader extends MOReader {
           return;
         }
         for (int j = 0; j < slaters.size(); j++) {
-          int[] slater = (int[]) slaters.elementAt(j);
+          slater = (int[]) slaters.elementAt(j);
           shells.addElement(new int[] { i, slater[0], slater[1], slater[2] });
         }
       }
     }
-    super.setMOData(clearOrbitals);
+
+    if (Logger.debugging) {
+      Logger.debug(shellCount + " slater shells read");
+      Logger.debug(gaussianCount + " gaussian primitives read");
+    }
   }
 
   abstract protected String fixShellTag(String tag);

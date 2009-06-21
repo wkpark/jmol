@@ -42,8 +42,14 @@ public class GamessUKReader extends GamessReader {
    * 
    */
   protected boolean checkLine() throws Exception {
+    if (line.indexOf("contracted primitive functions") >= 0) {
+      readGaussianBasis(
+          "======================================================", "======");
+      return false;
+    }
     if (line.indexOf("molecular geometry") >= 0) {
       if (doGetModel(++modelNumber)) {
+        atomNames = new Vector();
         readAtomsInBohrCoordinates();
         iHaveAtoms = true;
         return true;
@@ -60,11 +66,6 @@ public class GamessUKReader extends GamessReader {
       // not implemented for readFrequencies();
       return true;
     } 
-    if (line.indexOf("contracted primitive functions") >= 0) {
-      readGaussianBasis(
-          "======================================================", "======");
-      return false;
-    }
     if (line.indexOf("SYMMETRY ASSIGNMENT") >= 0) {
       readOrbitalSymmetryAndOccupancy();
       return false;

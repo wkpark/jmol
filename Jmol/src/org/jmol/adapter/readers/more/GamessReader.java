@@ -34,7 +34,9 @@ import org.jmol.util.Logger;
 
 abstract public class GamessReader extends MOReader {
 
-  protected Vector atomNames = new Vector();
+  protected Vector atomNames;
+  protected Hashtable shellsByAtomType;
+  protected Vector slatersByAtomType;
 
   abstract protected void readAtomsInBohrCoordinates() throws Exception;  
  
@@ -48,8 +50,8 @@ abstract public class GamessReader extends MOReader {
     discardLinesUntilContains(initiator);
     readLine();
     int[] slater = null;
-    Hashtable shellsByAtomType = new Hashtable();
-    Vector slatersByAtomType = new Vector();
+    shellsByAtomType = new Hashtable();
+    slatersByAtomType = new Vector();
     String atomType = null;
     
     while (readLine() != null && line.indexOf(terminator) < 0) {
@@ -96,23 +98,6 @@ abstract public class GamessReader extends MOReader {
     }
     if (atomType != null)
       shellsByAtomType.put(atomType, slatersByAtomType);
-    shells = new Vector();
-    int atomCount = atomNames.size();
-    for (int i = 0; i < atomCount; i++) {
-      atomType = (String) atomNames.elementAt(i);
-      Vector slaters = (Vector) shellsByAtomType.get(atomType);
-      if (slaters == null) {
-        Logger.error("slater for atom " + i + " atomType " + atomType
-            + " was not found in listing. Ignoring molecular orbitals");
-        return;
-      }
-      for (int j = 0; j < slaters.size(); j++) {
-        slater = (int[]) slaters.elementAt(j);
-        shells.addElement(new int[] { i, slater[0], slater[1], slater[2] });
-        //System.out.println(atomType + " " + i + " " + slater[0] + " " + slater[1] + " "+ slater[2]);
-          
-      }
-    }
     gaussians = new float[gaussianCount][];
     for (int i = 0; i < gaussianCount; i++) {
       tokens = (String[]) gdata.get(i);
@@ -124,6 +109,31 @@ abstract public class GamessReader extends MOReader {
       Logger.debug(shellCount + " slater shells read");
       Logger.debug(gaussianCount + " gaussian primitives read");
     }
+  }
+
+  protected void setMOData(boolean clearOrbitals) {
+    
+    // executed by MOReader at MO time because only then do we know the proper
+    // number of atoms and the atom names.
+    
+    int atomCount = atomNames.size();
+    if (shells == null && atomCount > 0) {
+      shells = new Vector();
+      for (int i = 0; i < atomCount; i++) {
+        String atomType = (String) atomNames.elementAt(i);
+        Vector slaters = (Vector) shellsByAtomType.get(atomType);
+        if (slaters == null) {
+          Logger.error("slater for atom " + i + " atomType " + atomType
+              + " was not found in listing. Ignoring molecular orbitals");
+          return;
+        }
+        for (int j = 0; j < slaters.size(); j++) {
+          int[] slater = (int[]) slaters.elementAt(j);
+          shells.addElement(new int[] { i, slater[0], slater[1], slater[2] });
+        }
+      }
+    }
+    super.setMOData(clearOrbitals);
   }
 
   abstract protected String fixShellTag(String tag);
@@ -218,4 +228,5 @@ abstract public class GamessReader extends MOReader {
     }
     return line;
   }
+  
 }

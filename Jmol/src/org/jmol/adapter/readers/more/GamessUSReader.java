@@ -31,6 +31,7 @@
 package org.jmol.adapter.readers.more;
 
 import java.io.BufferedReader;
+import java.util.Vector;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollection;
@@ -48,9 +49,14 @@ public class GamessUSReader extends GamessReader {
    */
   protected boolean checkLine() throws Exception {
     boolean isBohr;
+    if (line.indexOf("ATOMIC BASIS SET") >= 0) {
+      readGaussianBasis("SHELL TYPE", "TOTAL");
+      return false;
+    }
     if ((isBohr = line.indexOf("COORDINATES (BOHR)") >= 0)
         || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
       if (doGetModel(++modelNumber)) {
+        atomNames = new Vector();
         if (isBohr)
           readAtomsInBohrCoordinates();
         else
@@ -69,10 +75,6 @@ public class GamessUSReader extends GamessReader {
     if (line.indexOf("FREQUENCIES IN CM") >= 0) {
       readFrequencies();
       return true;
-    }
-    if (line.indexOf("ATOMIC BASIS SET") >= 0) {
-      readGaussianBasis("SHELL TYPE", "TOTAL");
-      return false;
     }
     if (line.indexOf("SUMMARY OF THE EFFECTIVE FRAGMENT") >= 0) {
       // We have EFP and we're not afraid to use it!!

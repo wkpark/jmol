@@ -85,6 +85,15 @@ abstract public class AtomCollection {
     partialCharges = mergeModelSet.partialCharges;
     ellipsoids = mergeModelSet.ellipsoids;
     specialAtomIDs = mergeModelSet.specialAtomIDs;
+    setHaveStraightness(false);
+  }
+  
+  public void setHaveStraightness(boolean TF) {
+    haveStraightness = TF;
+  }
+  
+  protected boolean getHaveStraightness() {
+    return haveStraightness;
   }
   
   public Viewer viewer;
@@ -125,6 +134,7 @@ abstract public class AtomCollection {
   protected Object[][] ellipsoids;
   protected int[] surfaceDistance100s;
 
+  protected boolean haveStraightness;
 
   public boolean modelSetHasVibrationVectors(){
     return (vibrationVectors != null);

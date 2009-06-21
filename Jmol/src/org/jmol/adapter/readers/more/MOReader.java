@@ -85,8 +85,12 @@ abstract class MOReader extends AtomSetCollectionReader {
   int shellCount = 0;
   int gaussianCount = 0;
   Hashtable moData = new Hashtable();
+  protected Vector shells;
+  protected float[][] gaussians;
   Vector orbitals = new Vector();
   protected String calculationType = "?";
+  protected String energyUnits = "";
+  
   protected Vector moTypes;
   private boolean getNBOs;
   private boolean getNBOCharges;
@@ -385,9 +389,8 @@ abstract class MOReader extends AtomSetCollectionReader {
         data[i].addElement(tokens[i + nSkip]);
       line = "";
     }
-    moData.put("mos", orbitals);
-    moData.put("energyUnits", "a.u.");
-    setMOData(moData);    
+    energyUnits = "a.u.";
+    setMOData(true);    
   }
 
   protected void getMOHeader(int headerType, String[] tokens, Hashtable[] mos, int nThisLine)
@@ -446,4 +449,17 @@ abstract class MOReader extends AtomSetCollectionReader {
     }
   }
 
+  protected void setMOData(boolean clearOrbitals) {
+    moData.put("calculationType", calculationType);
+    moData.put("energyUnits", energyUnits);
+    moData.put("shells", shells);
+    moData.put("gaussians", gaussians);
+    moData.put("mos", orbitals);
+    setMOData(moData);
+    if (clearOrbitals) {
+      orbitals = new Vector();
+      moData = new Hashtable();
+    }
+  }
+  
 }

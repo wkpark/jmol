@@ -2035,6 +2035,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to ModelManager
   // ///////////////////////////////////////////////////////////////
 
+  public void autoCalculate(int tokProperty) {
+    switch (tokProperty) {
+    case Token.surfacedistance:
+      modelSet.getSurfaceDistanceMax();
+      break;
+    case Token.straightness:
+      modelSet.calculateStraightness();
+      break;
+    }
+  }
+  
+  int getSurfaceDistanceMax() {
+    return modelSet.getSurfaceDistanceMax();
+  }
+
   public void calculateStraightness() {
     modelSet.calculateStraightness();
   }
@@ -2046,6 +2061,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + (envelopeRadius == Float.MAX_VALUE ? "FROM" : "WITHIN"), null,
         bsSelected, null, "", false, true);
     return modelSet.calculateSurface(bsSelected, envelopeRadius);
+  }
+
+  void calculateStructures(BitSet bsAtoms) {
+    // Eval
+    modelSet.calculateStructures(bsAtoms);
   }
 
   public AtomIndexIterator getWithinModelIterator(Atom atom, float distance) {
@@ -2204,15 +2224,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   boolean haveModelSet() {
     return modelSet != null;
-  }
-
-  int getSurfaceDistanceMax() {
-    return modelSet.getSurfaceDistanceMax();
-  }
-
-  void calculateStructures(BitSet bsAtoms) {
-    // Eval
-    modelSet.calculateStructures(bsAtoms);
   }
 
   void clearBfactorRange() {
@@ -4686,6 +4697,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // /11.5.39//
       if (key.equalsIgnoreCase("quaternionFrame")) {
         global.quaternionFrame = "" + (value.toLowerCase() + "c").charAt(0);
+        modelSet.setHaveStraightness(false);
         break;
       }
 
@@ -7489,4 +7501,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!isPrintOnly)
       Logger.warn(s);
   }
+
 }

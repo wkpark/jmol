@@ -178,19 +178,18 @@ public class GaussianReader extends MOReader {
     }
     if (line.startsWith(" Standard basis:")) {
       Logger.debug(line);
-      moData.put("energyUnits", "");
-      moData.put("calculationType", line.substring(17).trim());
+      energyUnits = "";
+      calculationType = line.substring(17).trim();
       return true;
     }
     if (line.startsWith(" General basis read from cards:")) {
       Logger.debug(line);
-      moData.put("energyUnits", "");
-      moData.put("calculationType", line.substring(31).trim());
+      energyUnits = "";
+      calculationType = line.substring(31).trim();
       return true;
     }
     if (line.startsWith(" AO basis set:")) {
       readBasis();
-      atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
       return true;
     }
     if (line.indexOf("Molecular Orbital Coefficients") >= 0) {
@@ -329,7 +328,7 @@ public class GaussianReader extends MOReader {
    */
 
   void readBasis() throws Exception {
-    Vector sdata = new Vector();
+    shells = new Vector();
     Vector gdata = new Vector();
     int atomCount = 0;
     gaussianCount = 0;
@@ -337,7 +336,6 @@ public class GaussianReader extends MOReader {
     String lastAtom = "";
     String[] tokens;
     
-    final String calculationType = (String) moData.get("calculationType");
     boolean doSphericalD = (calculationType != null && (calculationType.indexOf("5D") > 0));
     boolean doSphericalF = (calculationType != null && (calculationType.indexOf("7F") > 0));
     while (readLine() != null && line.startsWith(" Atom")) {
@@ -357,22 +355,20 @@ public class GaussianReader extends MOReader {
       int nGaussians = parseInt(tokens[5]);
       slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
       slater[3] = nGaussians;
-      sdata.addElement(slater);
+      shells.addElement(slater);
       gaussianCount += nGaussians;
       for (int i = 0; i < nGaussians; i++)
         gdata.addElement(getTokens(readLine()));
     }
     if (atomCount == 0)
       atomCount = 1;
-    float[][] garray = new float[gaussianCount][];
+    gaussians = new float[gaussianCount][];
     for (int i = 0; i < gaussianCount; i++) {
       tokens = (String[]) gdata.get(i);
-      garray[i] = new float[tokens.length];
+      gaussians[i] = new float[tokens.length];
       for (int j = 0; j < tokens.length; j++)
-        garray[i][j] = parseFloat(tokens[j]);
+        gaussians[i][j] = parseFloat(tokens[j]);
     }
-    moData.put("shells", sdata);
-    moData.put("gaussians", garray);
     if (Logger.debugging) {
       Logger.debug(shellCount + " slater shells read");
       Logger.debug(gaussianCount + " gaussian primitives read");
@@ -433,8 +429,7 @@ but:
       }
     }
     addMOData(nThisLine, data, mos);
-    moData.put("mos", orbitals);
-    setMOData(moData);
+    setMOData(false); // perhaps in the future we might change this to TRUE
   }
 
   /* SAMPLE FREQUENCY OUTPUT */

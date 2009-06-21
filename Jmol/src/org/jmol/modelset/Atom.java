@@ -1207,6 +1207,7 @@ final public class Atom extends Point3fi {
       ch = atom.getInsertionCode();
       return (ch == '\0' ? "" : "" + ch);
     case Token.label:
+    case Token.format:
       String s = atom.group.chain.modelSet.getAtomLabel(atom.getAtomIndex());
       if (s == null)
         s = "";

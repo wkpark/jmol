@@ -87,15 +87,31 @@ public class TextFormat {
     return format(formatDecimal(value, precision), width, 0, alignLeft, zeroPad);
   }
 
+  public static String format(double value, int width, int precision,
+                              boolean alignLeft, boolean zeroPad) {
+    return format(formatDecimal((float)value, -1 - precision), width, 0, alignLeft, zeroPad);
+  }
+
+  /**
+   * 
+   * @param value       
+   * @param width       number of columns
+   * @param precision   precision > 0 ==> precision = number of characters max from left
+   *                    precision < 0 ==> -1 - precision = number of char. max from right
+   * @param alignLeft
+   * @param zeroPad     generally for numbers turned strings
+   * @return            formatted string
+   */
   public static String format(String value, int width, int precision,
                               boolean alignLeft, boolean zeroPad) {
     if (value == null)
       return "";
+    int len = value.length();
     if (precision != Integer.MAX_VALUE && precision > 0
-        && precision < value.length())
+        && precision < len)
       value = value.substring(0, precision);
-    else if (precision < 0 && -precision < value.length())
-      value = value.substring(value.length() + precision);
+    else if (precision < 0 && len + precision >= 0)
+      value = value.substring(len + precision);
 
     int padLength = width - value.length();
     if (padLength <= 0)
@@ -117,15 +133,15 @@ public class TextFormat {
   }
 
   public static String formatString(String strFormat, String key, String strT) {
-    return formatString(strFormat, key, strT, Float.NaN);
+    return formatString(strFormat, key, strT, Float.NaN, Double.NaN);
   }
 
   public static String formatString(String strFormat, String key, float floatT) {
-    return formatString(strFormat, key, null, floatT);
+    return formatString(strFormat, key, null, floatT, Double.NaN);
   }
 
   public static String formatString(String strFormat, String key, int intT) {
-    return formatString(strFormat, key, "" + intT, Float.NaN);
+    return formatString(strFormat, key, "" + intT, Float.NaN, Double.NaN);
   }
    
   /**
@@ -150,33 +166,37 @@ public class TextFormat {
         if (values[o] instanceof String[]) {
           String[] sVal = (String[]) values[o];
           for (int i = 0; i < sVal.length; i++)
-            strFormat = formatString(strFormat, "s", sVal[i], Float.NaN, true);
+            strFormat = formatString(strFormat, "s", sVal[i], Float.NaN, Double.NaN, true);
         } else if (values[o] instanceof float[]) {
           float[] fVal = (float[]) values[o];
           for (int i = 0; i < fVal.length; i++)
-            strFormat = formatString(strFormat, "f", null, fVal[i], true);
+            strFormat = formatString(strFormat, "f", null, fVal[i], Double.NaN, true);
+        } else if (values[o] instanceof double[]) {
+          double[] dVal = (double[]) values[o];
+          for (int i = 0; i < dVal.length; i++)
+            strFormat = formatString(strFormat, "e", null, Float.NaN, dVal[i], true);
         } else if (values[o] instanceof int[]) {
           int[] iVal = (int[]) values[o];
           for (int i = 0; i < iVal.length; i++)
             strFormat = formatString(strFormat, "d", "" + iVal[i], Float.NaN,
-                true);
+                Double.NaN, true);
           for (int i = 0; i < iVal.length; i++)
             strFormat = formatString(strFormat, "i", "" + iVal[i], Float.NaN,
-                true);
+                Double.NaN, true);
         } else if (values[o] instanceof Point3f[]) {
           Point3f[] pVal = (Point3f[]) values[o];
           for (int i = 0; i < pVal.length; i++) {
-            strFormat = formatString(strFormat, "p", null, pVal[i].x, true);
-            strFormat = formatString(strFormat, "p", null, pVal[i].y, true);
-            strFormat = formatString(strFormat, "p", null, pVal[i].z, true);
+            strFormat = formatString(strFormat, "p", null, pVal[i].x, Double.NaN, true);
+            strFormat = formatString(strFormat, "p", null, pVal[i].y, Double.NaN, true);
+            strFormat = formatString(strFormat, "p", null, pVal[i].z, Double.NaN, true);
           }
         } else if (values[o] instanceof Point4f[]) {
           Point4f[] qVal = (Point4f[]) values[o];
           for (int i = 0; i < qVal.length; i++) {
-            strFormat = formatString(strFormat, "q", null, qVal[i].x, true);
-            strFormat = formatString(strFormat, "q", null, qVal[i].y, true);
-            strFormat = formatString(strFormat, "q", null, qVal[i].z, true);
-            strFormat = formatString(strFormat, "q", null, qVal[i].w, true);
+            strFormat = formatString(strFormat, "q", null, qVal[i].x, Double.NaN, true);
+            strFormat = formatString(strFormat, "q", null, qVal[i].y, Double.NaN, true);
+            strFormat = formatString(strFormat, "q", null, qVal[i].z, Double.NaN, true);
+            strFormat = formatString(strFormat, "q", null, qVal[i].w, Double.NaN, true);
           }
         }
       }
@@ -192,9 +212,9 @@ public class TextFormat {
     return sprintf(strFormat, new Object[] {sVal, fVal, iVal});
   }
 
-  public static String formatString(String strFormat, String key, String strT,
-                                    float floatT) {
-    return formatString(strFormat, key, strT, floatT, false);
+  private static String formatString(String strFormat, String key, String strT,
+                                    float floatT, double doubleT) {
+    return formatString(strFormat, key, strT, floatT, doubleT, false);
   }
 
   /**
@@ -205,12 +225,13 @@ public class TextFormat {
    * @param key      any string to match
    * @param strT     replacement string or null
    * @param floatT   replacement float or Float.NaN
+   * @param doubleT  replacement double or Double.NaN -- for exponential
    * @param doOne    mimic sprintf    
    * @return         formatted string
    */
 
   private static String formatString(String strFormat, String key, String strT,
-                                    float floatT, boolean doOne) {
+                                    float floatT, double doubleT, boolean doOne) {
     if (strFormat == null)
       return null;
     if ("".equals(strFormat))
@@ -248,12 +269,19 @@ public class TextFormat {
           ++ich;
         }
         int precision = Integer.MAX_VALUE;
+        boolean isExponential = false;
         if (strFormat.charAt(ich) == '.') {
           ++ich;
-          if ((ch = strFormat.charAt(ich)) >= '0' && (ch <= '9')) {
+          if ((ch = strFormat.charAt(ich)) == '-') {
+            isExponential = true;
+            ++ich;
+          } 
+          if ((ch = strFormat.charAt(ich)) >= '0' && ch <= '9') {
             precision = ch - '0';
             ++ich;
           }
+          if (isExponential)
+            precision = -precision - (strT == null ? 1 : 0);
         }
         String st = strFormat.substring(ich, ich + len);
         if (!st.equals(key)) {
@@ -267,6 +295,9 @@ public class TextFormat {
               zeroPad);
         else if (strT != null)
           strLabel += TextFormat.format(strT, width, precision, alignLeft,
+              zeroPad);
+        else if (!Double.isNaN(doubleT))
+          strLabel += TextFormat.format(doubleT, width, precision, alignLeft,
               zeroPad);
         if (doOne)
           break;

@@ -892,6 +892,8 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public void calculateStraightness() {
+    if (getHaveStraightness())
+      return;
     char ctype = (viewer.getTestFlag3() ? 's' : 'S');
     char qtype = viewer.getQuaternionFrame();
     // testflag3 ON  --> preliminary: Hanson's original normal-based straightness
@@ -902,6 +904,7 @@ abstract public class ModelCollection extends BondCollection {
       for (int p = 0; p < nPoly; p++)
         model.bioPolymers[p].getPdbData(ctype, qtype, 2, false, null, null, null, null, false, new BitSet());
     }
+    setHaveStraightness(true);
   }
 
   private static class Structure {
@@ -1701,7 +1704,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public void setAtomCoordRelative(Point3f offset, BitSet bs) {
     setAtomCoordRelative(bs, offset.x, offset.y, offset.z);
-    recalculateLeadMidpointsAndWingVectors(-1);
+    recalculatePositionDependentQuantities();
   }
 
   public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
@@ -1713,8 +1716,14 @@ abstract public class ModelCollection extends BondCollection {
     case Token.vibXyz:
       break;
     default:
-      recalculateLeadMidpointsAndWingVectors(-1);
+      recalculatePositionDependentQuantities();
     }
+  }
+
+  private void recalculatePositionDependentQuantities() {
+    if (getHaveStraightness())
+      calculateStraightness();
+    recalculateLeadMidpointsAndWingVectors(-1);
   }
 
   public int getAtomCountInModel(int modelIndex) {

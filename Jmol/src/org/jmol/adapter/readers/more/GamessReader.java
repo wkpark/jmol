@@ -96,7 +96,7 @@ abstract public class GamessReader extends MOReader {
     }
     if (atomType != null)
       shellsByAtomType.put(atomType, slatersByAtomType);
-    Vector sdata = new Vector();
+    shells = new Vector();
     int atomCount = atomNames.size();
     for (int i = 0; i < atomCount; i++) {
       atomType = (String) atomNames.elementAt(i);
@@ -108,26 +108,22 @@ abstract public class GamessReader extends MOReader {
       }
       for (int j = 0; j < slaters.size(); j++) {
         slater = (int[]) slaters.elementAt(j);
-        sdata.addElement(new int[] { i, slater[0], slater[1], slater[2] });
+        shells.addElement(new int[] { i, slater[0], slater[1], slater[2] });
         //System.out.println(atomType + " " + i + " " + slater[0] + " " + slater[1] + " "+ slater[2]);
           
       }
     }
-    float[][] garray = new float[gaussianCount][];
+    gaussians = new float[gaussianCount][];
     for (int i = 0; i < gaussianCount; i++) {
       tokens = (String[]) gdata.get(i);
-      garray[i] = new float[tokens.length - 3];
+      gaussians[i] = new float[tokens.length - 3];
       for (int j = 3; j < tokens.length; j++)
-        garray[i][j - 3] = parseFloat(tokens[j]);
+        gaussians[i][j - 3] = parseFloat(tokens[j]);
     }
-    moData.put("shells", sdata);
-    moData.put("gaussians", garray);
     if (Logger.debugging) {
       Logger.debug(shellCount + " slater shells read");
       Logger.debug(gaussianCount + " gaussian primitives read");
     }
-    moData.put("calculationType", calculationType);
-    atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
   }
 
   abstract protected String fixShellTag(String tag);

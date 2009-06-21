@@ -72,18 +72,17 @@ public class LabelToken {
    * 
    */
 
-  String text; 
-  String key;
-  Hashtable values;
-  float[] data;
-  int tok;
-  int pt = -1;
-  int pt1 = 0;
-  char ch1;
-  int width;
-  int precision = Integer.MAX_VALUE;
-  boolean alignLeft;
-  boolean zeroPad;
+  private String text; 
+  private String key;
+  private float[] data;
+  private int tok;
+  private int pt = -1;
+  private char ch1;
+  private int width;
+  private int precision = Integer.MAX_VALUE;
+  private boolean alignLeft;
+  private boolean zeroPad;
+  private boolean intAsFloat;
 
   // do not change array order without changing string order as well
   // new tokens can be added to the list at the end
@@ -145,6 +144,7 @@ public class LabelToken {
            Token.groupID,
            Token.covalent,
            Token.file,
+           Token.format,
            Token.label,
            Token.modelindex,
            Token.property,
@@ -204,6 +204,7 @@ public class LabelToken {
       if (ich != ichPercent)
         tokens[i++] = new LabelToken(strFormat.substring(ich, ichPercent));
       LabelToken lt = tokens[i++] = new LabelToken(ichPercent);
+      viewer.autoCalculate(lt.tok);
       ich = setToken(viewer, strFormat, lt, cch, chAtom, htValues);
     }
     if (ich < cch)
@@ -227,10 +228,18 @@ public class LabelToken {
       ++ich;
     }
     lt.precision = Integer.MAX_VALUE;
+    boolean isNegative = false;
     if (strFormat.charAt(ich) == '.') {
       ++ich;
+      lt.intAsFloat = true;
+      if ((ch = strFormat.charAt(ich)) == '-') {
+        isNegative = true;
+        ++ich;
+      }
       if (Character.isDigit(ch = strFormat.charAt(ich))) {
         lt.precision = ch - '0';
+        if (isNegative)
+          lt.precision = -1 - lt.precision;
         ++ich;
       }
     }
@@ -240,15 +249,14 @@ public class LabelToken {
         String key = (String) keys.nextElement();
         if (strFormat.indexOf(key) == ich) {
           lt.key = key;
-          lt.values = htValues;
-          return lt.pt1 = ich + key.length();
+          return ich + key.length();
         }
       }
     }
     switch (ch = strFormat.charAt(ich++)) {
     case '%':
       lt.text = "%";
-      return lt.pt1 = ich;
+      return ich;
     case '[':
       int ichClose = strFormat.indexOf(']', ich);
       if (ichClose < ich) {
@@ -290,7 +298,6 @@ public class LabelToken {
       }
     }
     lt.text = strFormat.substring(lt.pt, ich);
-    lt.pt1 = ich;
     if (chAtom != '\0' && ich < cch && Character.isDigit(ch = strFormat.charAt(ich))) {
       ich++;
       lt.ch1 = ch;
@@ -398,7 +405,10 @@ public class LabelToken {
       default:
         switch (t.tok & Token.PROPERTYFLAGS) {
         case Token.intproperty:
-          strT = "" + Atom.atomPropertyInt(atom, t.tok);
+          if (t.intAsFloat)
+            floatT = Atom.atomPropertyInt(atom, t.tok);
+          else
+            strT = "" + Atom.atomPropertyInt(atom, t.tok);
           break;
         case Token.floatproperty:
           floatT = Atom.atomPropertyFloat(atom, t.tok);

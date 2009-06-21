@@ -1841,6 +1841,7 @@ class ScriptEvaluator {
     ModelSet modelSet = viewer.getModelSet();
     Atom[] atoms = modelSet.atoms;
     float propertyFloat = 0;
+    viewer.autoCalculate(tokWhat);
     for (int i = 0; i < atomCount; ++i) {
       boolean match = false;
       Atom atom = atoms[i];
@@ -4010,7 +4011,8 @@ class ScriptEvaluator {
       // color values.
       switch (tok) {
       case Token.surfacedistance:
-        viewer.getSurfaceDistanceMax();
+      case Token.straightness:
+        viewer.autoCalculate(tok);
         break;
       case Token.temperature:
         if (viewer.isRangeSelected())
@@ -8043,10 +8045,24 @@ class ScriptEvaluator {
                                      Point4f planeRef, Object tokenValue,
                                      Object opValue, boolean useAtomMap,
                                      int index) throws ScriptException {
+    
+    // index is a special argument set in parameterExpression that 
+    // indicates we are looking at only one atom within a for(...) loop
+    // the bitset cannot be a BondSet in that case
+    
     boolean haveIndex = (index != Integer.MAX_VALUE);
-    boolean isAtoms = !(tokenValue instanceof BondSet);
+    
+    boolean isAtoms = haveIndex || !(tokenValue instanceof BondSet);
+    // check minmax flags:
+    
     int minmaxtype = tok & Token.minmaxmask;
+    boolean isExplicitlyAll = (minmaxtype == Token.minmaxmask);
     tok &= ~Token.minmaxmask;
+    if (tok == Token.nada)
+      tok = (isAtoms ? Token.atoms : Token.bonds);
+    
+    // determine property type:
+    
     boolean isPt = false;
     boolean isInt = false;
     boolean isString = false;
@@ -8070,42 +8086,48 @@ class ScriptEvaluator {
       isString = !isInt && Token.tokAttr(tok, Token.strproperty);
       // structure considered int; for the name, use .label("%[structure]")
     }
-    boolean isExplicitlyAll = (minmaxtype == Token.minmaxmask);
+
+    // preliminarty checks we only want to do once:
+    
+    Point3f pt = (isPt || !isAtoms ? new Point3f() : null);
     if (isString || isExplicitlyAll)
       minmaxtype = Token.all;
-    Vector vout = null;
+    Vector vout =  (minmaxtype == Token.all ? new Vector() : null);
+    
     BitSet bsNew = null;
+    String userFunction = null;
+    Vector params = null;
+    BitSet bsAtom = null;
+    ScriptVariable tokenAtom = null;
+    Point3f ptT = null;
+    float[] data = null;
 
-    if (tok == Token.atoms)
-      bsNew = (!isAtoms && !isSyntaxCheck ? viewer.getAtomBits(Token.bonds, bs)
-          : bs);
-    if (tok == Token.bonds)
-      bsNew = (isAtoms && !isSyntaxCheck ? viewer.getBondsForSelectedAtoms(bs)
-          : bs);
-    if (bsNew != null) {
-      if (minmaxtype == 0 || minmaxtype == Token.all || isSyntaxCheck)
-        return bsNew;
-      int n = bsNew.size();
-      int i = 0;
+    switch (tok) {
+    case Token.atoms:
+    case Token.bonds:
+      if (isSyntaxCheck)
+        return bs;
+      bsNew = (tok == Token.atoms ? (isAtoms ? bs : viewer.getAtomBits(
+          Token.bonds, bs)) : (isAtoms ? new BondSet(viewer.getBondsForSelectedAtoms(bs))
+          : bs));
+      int i;
       switch (minmaxtype) {
       case Token.min:
-        for (i = -1; ++i < n;)
-          if (bsNew.get(i))
-            break;
+        i = BitSetUtil.firstSetBit(bsNew);
         break;
       case Token.max:
-        for (i = n; --i >= 0;)
-          if (bsNew.get(i))
-            break;
+        i = BitSetUtil.length(bsNew) - 1;
         break;
+      case Token.stddev:
+        return new Float(Float.NaN);
+      default:
+        return bsNew;        
       }
       bsNew.clear();
-      if (i >= 0 && i < n)
+      if (i >= 0)
         bsNew.set(i);
       return bsNew;
-    }
-
-    if (tok == Token.identify) {
+    case Token.identify:
       switch (minmaxtype) {
       case 0:
       case Token.all:
@@ -8113,16 +8135,26 @@ class ScriptEvaluator {
             isExplicitlyAll);
       }
       return "";
-    }
-    String userFunction = null;
-    Vector params = null;
-    BitSet bsAtom = null;
-    ScriptVariable tokenAtom = null;
-    if (tok == Token.function) {
+    case Token.function:
       userFunction = (String) ((Object[]) opValue)[0];
       params = (Vector) ((Object[]) opValue)[1];
       bsAtom = new BitSet();
       tokenAtom = new ScriptVariable(Token.bitset, bsAtom);
+      break;
+    case Token.straightness:
+    case Token.surfacedistance:
+      viewer.autoCalculate(tok);
+      break;
+    case Token.distance:
+      if (ptRef == null && planeRef == null)
+        return new Point3f();
+     break;
+    case Token.color:
+      ptT = new Point3f();
+      break;
+    case Token.property:
+      data = viewer.getDataFloat((String) opValue);
+      break;
     }
 
     int n = 0;
@@ -8141,21 +8173,13 @@ class ScriptEvaluator {
       fvMinMax = -Float.MAX_VALUE;
       break;
     }
-    Point3f pt = new Point3f();
-    if (tok == Token.distance && ptRef == null && planeRef == null)
-      return pt;
-
-    Point3f ptT = (tok == Token.color ? new Point3f() : null);
     ModelSet modelSet = viewer.getModelSet();
-    float[] data = (tok == Token.property ? viewer
-        .getDataFloat((String) opValue) : null);
+ 
     int count = 0;
-    if (isAtoms || haveIndex) {
+    if (isAtoms) {
       int iModel = -1;
       int nOps = 0;
       count = (isSyntaxCheck ? 0 : viewer.getAtomCount());
-      if (minmaxtype == Token.all)
-        vout = new Vector();
       int mode = (isPt ? 3 : isString ? 2 : isInt ? 1 : 0);
       for (int i = (haveIndex ? index : 0); i < count; i++) {
         if (!haveIndex && bs != null && !bs.get(i))
@@ -8294,8 +8318,6 @@ class ScriptEvaluator {
       }
     } else { // bonds
       count = viewer.getBondCount();
-      if (minmaxtype == Token.all)
-        vout = new Vector();
       for (int i = 0; i < count; i++) {
         if (bs != null && !bs.get(i))
           continue;
@@ -10952,8 +10974,7 @@ class ScriptEvaluator {
           error(ERROR_invalidArgument);
         if (!isSyntaxCheck && !isCavity) {
           Atom[] atoms = viewer.getModelSet().atoms;
-          if (tokProperty == Token.surfacedistance)
-            viewer.getSurfaceDistanceMax();
+          viewer.autoCalculate(tokProperty);
           for (int iAtom = atomCount; --iAtom >= 0;) {
             data[iAtom] = Atom.atomPropertyFloat(atoms[iAtom], tokProperty);
           }

@@ -616,12 +616,9 @@ class ScriptMathProcessor {
     case Token.mul:
     case Token.div:
       return evaluateList(op.intValue, args);
-    case Token.format:
-      if (isSyntaxCheck)
-        return addX("");
-      return addX(ScriptVariable.sprintf(args));
     case Token.label:
-      return evaluateLabel(op.intValue, args);
+    case Token.format:
+        return evaluateLabel(op.intValue, args);
     case Token.data:
       return evaluateData(args);
     case Token.load:
@@ -1388,11 +1385,19 @@ class ScriptMathProcessor {
 
   private boolean evaluateLabel(int intValue, ScriptVariable[] args)
       throws ScriptException {
-    ScriptVariable x1 = getX();
-    String format = (args.length == 0 ? "%U" : ScriptVariable.sValue(args[0]));
-    boolean asArray = Token.tokAttr(intValue, Token.minmaxmask);
+    // NOT {xxx}.label
+    // {xxx}.label("....")
+    // {xxx}.yyy.format("...")
+    // (value).format("...")
+    // format("....",a,b,c...)
+    
+    ScriptVariable x1 = (args.length < 2 ? getX() : null);
     if (isSyntaxCheck)
       return addX("");
+    String format = (args.length == 0 ? "%U" : ScriptVariable.sValue(args[0]));
+    boolean asArray = Token.tokAttr(intValue, Token.minmaxmask);
+    if (x1 == null)
+      return addX(ScriptVariable.sprintf(args));
     if (x1.tok == Token.bitset)
       return addX(eval.getBitsetIdent(ScriptVariable.bsSelect(x1), format,
           x1.value, true, x1.index, asArray));

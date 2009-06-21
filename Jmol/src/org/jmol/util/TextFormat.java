@@ -130,6 +130,7 @@ public class TextFormat {
    
   /**
    * sprintf emulation uses (almost) c++ standard string formats 
+   *         's'        string
    *         'i' or 'd' integer
    *         'f'        float/decimal
    *         'p'        point3f

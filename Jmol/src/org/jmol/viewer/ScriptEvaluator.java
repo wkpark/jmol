@@ -9994,6 +9994,7 @@ class ScriptEvaluator {
         "moData");
     if (moData == null)
       error(ERROR_moModelError);
+    setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(modelIndex));
     setShapeProperty(JmolConstants.SHAPE_MO, "moData", moData);
     return (String) viewer.getShapeProperty(JmolConstants.SHAPE_MO, "showMO",
         ptMO);

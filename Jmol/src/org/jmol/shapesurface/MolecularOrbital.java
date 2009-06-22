@@ -240,7 +240,7 @@ public class MolecularOrbital extends Isosurface {
 
   public Object getProperty(String propertyName, int param) {
     if (propertyName == "list") {
-      String s = (String) super.getProperty(propertyName, param);
+      String s = (String) super.getProperty("list", param);
       if (s.length() > 1)
         s += "cutoff = " + super.getProperty("cutoff", 0) + "\n";
       return s; 

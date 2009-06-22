@@ -82,9 +82,9 @@ import java.util.Vector;
   */
 abstract class MOReader extends AtomSetCollectionReader {
     
-  int shellCount = 0;
-  int gaussianCount = 0;
-  Hashtable moData = new Hashtable();
+  protected int shellCount = 0;
+  protected int gaussianCount = 0;
+  protected Hashtable moData = new Hashtable();
   protected Vector shells;
   protected float[][] gaussians;
 

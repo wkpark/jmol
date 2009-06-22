@@ -1428,7 +1428,7 @@ class ScriptMathProcessor {
       isSequence = !Parser
           .isOneOf(
               withinStr.toLowerCase(),
-              "atomname;type;atomtype;element;site;group;chain;structure;molecule;model;boundbox");
+              "atomname;atomtype;element;site;group;chain;structure;molecule;model;boundbox");
     } else if (isDistance) {
       distance = ScriptVariable.fValue(args[0]);
       if (i < 2)
@@ -1451,8 +1451,7 @@ class ScriptMathProcessor {
         return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.atomName,
             ScriptVariable.sValue(args[1])));
       // within (atomType, "XX,YY,ZZZ")
-      if (withinStr.equalsIgnoreCase("atomType")
-          || withinStr.equalsIgnoreCase("type"))
+      if (withinStr.equalsIgnoreCase("atomType"))
         return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.atomType,
             ScriptVariable.sValue(args[1])));
       break;

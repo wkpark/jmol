@@ -1545,6 +1545,7 @@ class ScriptEvaluator {
         break;
       case Token.string:
         rpn.addX(new ScriptVariable(instruction));
+        //note that the compiler has changed all within() types to strings.
         if (((String) value).equals("hkl")) {
           rpn.addX(new ScriptVariable(Token.point4f, hklParameter(pc + 2)));
           pc = iToken;
@@ -5936,12 +5937,11 @@ class ScriptEvaluator {
           plane = planeParameter(2);
         }
         break;
+      case Token.hkl:
+        plane = (getToken(2).tok == Token.none ? null : hklParameter(2));
+        break;
       case Token.identifier:
         str = parameterAsString(1);
-        if (str.equalsIgnoreCase("hkl")) {
-          plane = (getToken(2).tok == Token.none ? null : hklParameter(2));
-          break;
-        }
         if (str.equalsIgnoreCase("reference")) {
           // only in 11.2; deprecated
           return;
@@ -7765,24 +7765,28 @@ class ScriptEvaluator {
         }
         int p = 0;
         int jlast = 0;
-        for (int j = 0; j < atomCount; j++)
-          if (bsAtoms.get(j)) {
-            if (jlast >= 0)
-              bsX.clear(jlast);
-            jlast = j;
-            bsX.set(j);
-            t.index = j;
-            res = parameterExpression(i, pt2, (isFor ? "XXX" : null), isFor, j,
-                false, localVars, isFunctionOfX ? null : dummy);
-            if (isFor) {
-              if (res == null || ((Vector) res).size() == 0)
-                error(ERROR_invalidArgument);
-              sout[p++] = ScriptVariable.sValue((ScriptVariable) ((Vector) res)
-                  .elementAt(0));
-            } else if (((Boolean) res).booleanValue()) {
-              bsSelect.set(j);
+        if (BitSetUtil.firstSetBit(bsAtoms) < 0) {
+          iToken = pt2 - 1;
+        } else {
+          for (int j = 0; j < atomCount; j++)
+            if (bsAtoms.get(j)) {
+              if (jlast >= 0)
+                bsX.clear(jlast);
+              jlast = j;
+              bsX.set(j);
+              t.index = j;
+              res = parameterExpression(i, pt2, (isFor ? "XXX" : null), isFor, j,
+                  false, localVars, isFunctionOfX ? null : dummy);
+              if (isFor) {
+                if (res == null || ((Vector) res).size() == 0)
+                  error(ERROR_invalidArgument);
+                sout[p++] = ScriptVariable.sValue((ScriptVariable) ((Vector) res)
+                    .elementAt(0));
+              } else if (((Boolean) res).booleanValue()) {
+                bsSelect.set(j);
+              }
             }
-          }
+        }
         if (isFor) {
           v = sout;
         } else if (isFunctionOfX) {
@@ -7798,12 +7802,33 @@ class ScriptEvaluator {
       case Token.integer:
         rpn.addXNum(ScriptVariable.intVariable(theToken.intValue));
         break;
-      case Token.decimal:
-        rpn.addXNum(new ScriptVariable(theToken));
+        // these next are for the within() command
+      case Token.plane:
+        if (tokAt(iToken + 1) == Token.leftparen) {
+          if (!rpn.addOp(theToken, true))
+            error(ERROR_invalidArgument);
+          break;
+        }
+        rpn.addX(new ScriptVariable(theToken));
         break;
+      case Token.atomName:
+      case Token.atomType:
+      case Token.branch:
+      case Token.boundbox:
+      case Token.chain:
+      case Token.coord:
+      case Token.element:
+      case Token.group:
+      case Token.hkl:
+      case Token.model:
+      case Token.molecule:
+      case Token.site:
+      case Token.structure:
+        //
       case Token.on:
       case Token.off:
       case Token.string:
+      case Token.decimal:
       case Token.point3f:
       case Token.point4f:
       case Token.bitset:
@@ -11123,6 +11148,13 @@ class ScriptEvaluator {
         if (!isSyntaxCheck)
           setShapeProperty(iShape, "center", viewer.getAtomPoint3f(iAtom));
         break;
+      case Token.hkl:
+        // miller indices hkl
+        planeSeen = true;
+        propertyName = "plane";
+        propertyValue = hklParameter(++i);
+        i = iToken;
+        break;
       case Token.lcaocartoon:
         surfaceObjectSeen = true;
         String lcaoType = parameterAsString(++i);
@@ -11419,14 +11451,6 @@ class ScriptEvaluator {
         }
         if (str.equalsIgnoreCase("GRIDPOINTS")) {
           propertyName = "gridPoints";
-          break;
-        }
-        if (str.equalsIgnoreCase("HKL")) {
-          // miller indices hkl
-          planeSeen = true;
-          propertyName = "plane";
-          propertyValue = hklParameter(++i);
-          i = iToken;
           break;
         }
         if (str.equalsIgnoreCase("ID")) {

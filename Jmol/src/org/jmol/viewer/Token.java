@@ -659,6 +659,7 @@ public class Token {
   final public static int frontlit     = misc | 19;
   final public static int frontonly    = misc | 20;
   final public static int fullylit     = misc | 21;
+  final static int hkl                 = misc | 120;
   final static int image               = misc | 121;  //11.5.53
   final public static int info  = misc | 122;
   final static int jmol         = misc | 23;
@@ -1074,6 +1075,7 @@ public class Token {
     "groupIndex",            new Token(groupindex),
     "hetero",           new Token(hetero),
     "hidden",           new Token(hidden),
+    "hkl",              new Token(hkl),
     "hydrogen",         new Token(hydrogen),
     "hydrogens",        null,
     "identify",         new Token(identify),

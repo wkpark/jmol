@@ -195,12 +195,14 @@ abstract class ScriptCompilationTokenParser {
   private int tokPeek() {
     if (itokenInfix >= atokenInfix.length)
       return Token.nada;
+    System.out.println("peeking at " + Token.nameOf(atokenInfix[itokenInfix].tok));
     return atokenInfix[itokenInfix].tok;
   }
 
   private boolean tokPeek(int tok) {
     if (itokenInfix >= atokenInfix.length)
       return false;
+    System.out.println("peeking at " + Token.nameOf(atokenInfix[itokenInfix].tok));
     return (atokenInfix[itokenInfix].tok == tok);
   }
 
@@ -303,6 +305,9 @@ abstract class ScriptCompilationTokenParser {
     haveString = false;
     if (!clauseAnd())
       return false;
+    if (isEmbeddedExpression && lastToken.tok == Token.expressionEnd)
+      return true;
+
     //for simplicity, giving XOR (toggle) same precedence as OR
     //OrNot: First OR, but if that makes no change, then NOT (special toggle)
     int tok;
@@ -321,6 +326,8 @@ abstract class ScriptCompilationTokenParser {
   private boolean clauseAnd() {
     if (!clauseNot())
       return false;
+    if (isEmbeddedExpression && lastToken.tok == Token.expressionEnd)
+      return true;
     while (tokPeek(Token.opAnd)) {
       addNextToken();
       if (!clauseNot())
@@ -522,20 +529,20 @@ abstract class ScriptCompilationTokenParser {
     case Token.branch:
       allowComma = false;
       //fall through
+    case Token.atomType:
+    case Token.atomName:
     case Token.boundbox:
     case Token.chain:
     case Token.coord:
     case Token.element:
     case Token.group:
+    case Token.hkl:
     case Token.model:
     case Token.molecule:
     case Token.plane:
     case Token.site:
-    case Token.string:
     case Token.structure:
-    case Token.type:
-    case Token.atomType:
-    case Token.atomName:
+    case Token.string:
       key = (String) theValue;
       break;
     case Token.identifier:

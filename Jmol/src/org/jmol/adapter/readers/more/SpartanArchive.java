@@ -298,6 +298,7 @@ public class SpartanArchive {
       if (line.length() >= 7 && line.substring(0, 7).equals("VIBFREQ"))
         readVibFreqs();
     }
+    setVibrationsFromProperties();
     //System.out.println(line);
   }
 
@@ -305,6 +306,10 @@ public class SpartanArchive {
     //fall-back if no other dipole record
     readLine();
     String tokens[] = getTokens();
+    setDipole(tokens);
+  }
+
+  private void setDipole(String[] tokens) {
     if (tokens.length != 3)
       return;
     Vector3f dipole = new Vector3f(parseFloat(tokens[0]),
@@ -316,9 +321,10 @@ public class SpartanArchive {
     String tokens[] = getTokens();
     if (tokens.length == 0)
       return;
-    //Logger.debug("reading property line:" + line);
-    boolean isString = (tokens[1].equals("STRING"));
+    //System.out.println("reading property line:" + line);
+    boolean isString = (tokens[1].startsWith("STRING"));
     String keyName = tokens[2];
+    boolean isDipole = (keyName.equals("DIPOLE_VEC"));
     Object value = new Object();
     Vector vector = new Vector();
     if (tokens[3].equals("=")) {
@@ -333,6 +339,7 @@ public class SpartanArchive {
         nValues = 1;
       boolean isArray = (tokens.length == 6);
       Vector atomInfo = new Vector();
+      int ipt = 0;
       while (readLine() != null
           && !line.substring(0, 3).equals("END")) {
         if (isString) {
@@ -340,10 +347,12 @@ public class SpartanArchive {
           vector.addElement(value);
         } else {
           String tokens2[] = getTokens();
-          for (int i = 0; i < tokens2.length; i++) {
+          if (isDipole)
+            setDipole(tokens2);
+          for (int i = 0; i < tokens2.length; i++, ipt++) {
             if (isArray) {
               atomInfo.addElement(new Float(parseFloat(tokens2[i])));
-              if ((i + 1) % nValues == 0) {
+              if ((ipt + 1) % nValues == 0) {
                 vector.addElement(atomInfo);
                 atomInfo = new Vector();
               }
@@ -430,6 +439,60 @@ public class SpartanArchive {
     }
     atomSetCollection
         .setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
+  }
+
+  private void setVibrationsFromProperties() throws Exception {
+    Vector freq_modes = (Vector) atomSetCollection.getAtomSetCollectionAuxiliaryInfo("FREQ_MODES");
+    if (freq_modes == null)
+      return;
+    Vector freq_lab = (Vector) atomSetCollection.getAtomSetCollectionAuxiliaryInfo("FREQ_LAB");
+    Vector freq_val = (Vector) atomSetCollection.getAtomSetCollectionAuxiliaryInfo("FREQ_VAL");
+    int frequencyCount = freq_val.size();
+    Vector vibrations = new Vector();
+    Vector freqs = new Vector();
+    if (Logger.debugging) {
+      Logger.debug(
+          "reading PROP VALUE:VIB FREQ_MODE vibration records: frequencyCount = " + frequencyCount);
+    }
+    Object v;
+    for (int i = 0; i < frequencyCount; ++i) {
+      int atomCount0 = atomSetCollection.getAtomCount();
+      atomSetCollection.cloneLastAtomSet();
+      addBonds(bondData, atomCount0);
+      Hashtable info = new Hashtable();
+      info.put("freq", (v = freq_val.get(i)));
+      float freq = ((Float) v).floatValue();
+      String label = (String) freq_lab.get(i);
+      if (!label.equals("???"))
+        info.put("label", label);
+      freqs.addElement(info);
+      atomSetCollection.setAtomSetName(label + " " + freq + " cm^-1");
+      atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
+          "Frequencies");
+    }
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
+    int atomCount = atomSetCollection.getFirstAtomSetAtomCount();
+    Atom[] atoms = atomSetCollection.getAtoms();
+    int iatom = atomCount; // add vibrations starting at second atomset
+    for (int i = 0; i < frequencyCount; i++) {
+      int ipt = 0;
+      Vector vib = new Vector();
+      Vector mode = (Vector) freq_modes.get(i);
+      for (int ia = 0; ia < atomCount; ia++) {
+        Vector vibatom = new Vector();
+        float vx = ((Float)(v = mode.get(ipt++))).floatValue();
+        vibatom.addElement(v);
+        float vy = ((Float)(v = mode.get(ipt++))).floatValue();
+        vibatom.addElement(v);
+        float vz = ((Float)(v = mode.get(ipt++))).floatValue();
+        vibatom.addElement(v);
+        atoms[iatom++].addVibrationVector(vx, vy, vz);
+        vib.addElement(vibatom);
+      }
+      vibrations.addElement(vib);
+      vib = new Vector();
+    }
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
   }
 
   private String getQuotedString(String strQuote) {

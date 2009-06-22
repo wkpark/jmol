@@ -8480,6 +8480,7 @@ class ScriptEvaluator {
               iValue), bs);
       return;
     case Token.label:
+    case Token.format:
       if (tokenValue.tok == Token.list)
         list = (String[]) tokenValue.value;
       else

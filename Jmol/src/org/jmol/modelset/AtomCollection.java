@@ -541,6 +541,7 @@ abstract public class AtomCollection {
         taint(i, TAINT_FORMALCHARGE);
         break;
       case Token.label:
+      case Token.format:
         ((ModelSet)this).setAtomLabel(sValue, i);
         break;
       case Token.occupancy:

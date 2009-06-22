@@ -553,7 +553,7 @@ public class Token {
   // xxx(a,b,c,d,e,...)
   
   final static int array         = 1 | 0 << 9 | mathfunc;
-  public final static int format = 2 | 0 << 9 | mathfunc | mathproperty | strproperty;
+  public final static int format = 2 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
   final static int function      = 3 | 0 << 9 | mathfunc | flowCommand | noeval;
   final static int getproperty   = 4 | 0 << 9 | mathfunc | command;
   final static int write         = 5 | 0 << 9 | mathfunc | command;

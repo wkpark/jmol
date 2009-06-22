@@ -35,6 +35,7 @@ import java.util.Vector;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollection;
+import org.jmol.util.Logger;
 
 public class GamessUSReader extends GamessReader {
 
@@ -49,6 +50,9 @@ public class GamessUSReader extends GamessReader {
    */
   protected boolean checkLine() throws Exception {
     boolean isBohr;
+    if (line.contains("SCFTYP=UHF")){
+      isUHF = true;
+    }
     if (line.indexOf("ATOMIC BASIS SET") >= 0) {
       readGaussianBasis("SHELL TYPE", "TOTAL");
       return false;
@@ -92,6 +96,11 @@ public class GamessUSReader extends GamessReader {
             .indexOf("  MOLECULAR ORBITALS LOCALIZED BY THE POPULATION METHOD") < 0) {
       if (!filterMO())
         return true;
+      if (isUHF) {
+        //should read alpha and beta
+        Logger.error("Skipped reading UHF orbitals in GAMESS file--known problem.\n   No orbitals read.");
+        return true;
+      }
       // energies and possibly symmetries
       readMolecularOrbitals(HEADER_GAMESS_ORIGINAL);
       return false;
@@ -100,9 +109,13 @@ public class GamessUSReader extends GamessReader {
         || line.indexOf("  THE PIPEK-MEZEY POPULATION LOCALIZED ORBITALS ARE") >= 0) {
       if (!filterMO())
         return true;
+      if (isUHF) {
+        //should read alpha and beta
+        Logger.error("Skipped reading UHF orbitals in GAMESS file--known problem.\n   No orbitals read.");
+        return true;
+      }
       readMolecularOrbitals(HEADER_NONE);
       return false;
-
     }
     if (line.indexOf("  NATURAL ORBITALS IN ATOMIC ORBITAL BASIS") >= 0) {
       // the for mat of the next orbitals can change depending on the
@@ -113,6 +126,14 @@ public class GamessUSReader extends GamessReader {
         return true;
       readMolecularOrbitals(HEADER_GAMESS_OCCUPANCIES);
       return false;
+    }
+    if (line.indexOf("BASIS OPTIONS")>=0){
+      //read in the basis set info TO DO
+      return true;
+    }    
+    if (line.indexOf("$CONTRL OPTIONS")>=0){
+      //read in the calculation type info TO DO
+      return true;
     }
     return checkNboLine();
   }

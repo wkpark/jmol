@@ -35,6 +35,7 @@ import org.jmol.util.Logger;
 abstract public class GamessReader extends MOReader {
 
   protected Vector atomNames;
+  protected boolean isUHF = false;
 
   abstract protected void readAtomsInBohrCoordinates() throws Exception;  
  

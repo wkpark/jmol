@@ -560,7 +560,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           }
           lineNumbers[iCommand] = iLine;
           lineIndices[iCommand][0] = ichCurrentCommand;
-          lineIndices[iCommand][1] =  Math.min(cchScript, ichEnd == ichCurrentCommand ? ichToken : ichEnd);
+          lineIndices[iCommand][1] =  Math.max(ichCurrentCommand, 
+              Math.min(cchScript, ichEnd == ichCurrentCommand ? ichToken : ichEnd));
           lltoken.addElement(atokenInfix);
           iCommand = lltoken.size();
         }

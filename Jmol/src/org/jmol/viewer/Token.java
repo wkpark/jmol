@@ -241,8 +241,8 @@ public class Token {
   final static int endifcmd     = 4 | flowCommand | noArgs;
 //final static int forcmd       see mathfunc
   final static int whilecmd     = 6 | flowCommand;
-  final static int breakcmd     = 7 | flowCommand | noArgs;
-  final static int continuecmd  = 8 | flowCommand | noArgs;
+  final static int breakcmd     = 7 | flowCommand;
+  final static int continuecmd  = 8 | flowCommand;
   final static int end          = 9 | flowCommand | noeval;
   
   final static int animation    = command | 1;

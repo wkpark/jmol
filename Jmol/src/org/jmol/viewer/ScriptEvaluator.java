@@ -7379,7 +7379,8 @@ class ScriptEvaluator {
 
     boolean needVariable = (!isUserVariable && !isExpression && !settingData 
         && (isArrayItem || settingProperty || !(tv.value instanceof String
-        || tv.value instanceof Integer || tv.value instanceof Float || tv.value instanceof Boolean)));
+        || tv.tok == Token.integer || tv.value instanceof Integer 
+        || tv.value instanceof Float || tv.value instanceof Boolean)));
 
     if (needVariable) {
       t = viewer.getOrSetNewVariable(key, true);
@@ -9860,10 +9861,15 @@ class ScriptEvaluator {
             "jvxlFileData");
       break;
     case Token.mo:
-      int ptMO = ((len = statementLength) == 2 ? Integer.MAX_VALUE
-          : intParameter(2));
-      if (!isSyntaxCheck)
-        msg = getMoJvxl(ptMO);
+      if (optParameterAsString(2).equalsIgnoreCase("energies")) {
+        msg = viewer.getMoInfo(-1);
+        len = 3;
+      } else {
+        int ptMO = ((len = statementLength) == 2 ? Integer.MAX_VALUE
+            : intParameter(2));
+        if (!isSyntaxCheck)
+          msg = getMoJvxl(ptMO);
+      }
       break;
     case Token.model:
       if (!isSyntaxCheck)

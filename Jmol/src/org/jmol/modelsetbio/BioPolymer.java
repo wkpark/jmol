@@ -778,11 +778,10 @@ public abstract class BioPolymer extends Polymer {
           }
           strExtra = q.getInfo()
               + TextFormat.sprintf("  %10.5p %10.5p %10.5p",
-                  new Object[] { new Point3f[] { ptCenter } });
+                  new Object[] { ptCenter });
           if (qtype == 'n' && isAmino) {
             strExtra += TextFormat.sprintf("  %10.5p %10.5p %10.5p",
-                new Object[] { new Point3f[] { ((AminoMonomer) monomer)
-                    .getNitrogenHydrogenPoint() } });
+                new Object[] { ((AminoMonomer) monomer).getNitrogenHydrogenPoint() });
           } else if (derivType == 2 && !Float.isNaN(val1)) {
             strExtra += TextFormat.sprintf(" %10.5f %10.5f",
                 new Object[] { new float[] { val1, val2 } });
@@ -792,9 +791,9 @@ public abstract class BioPolymer extends Polymer {
           continue;
         pdbATOM.append(LabelToken.formatLabel(a, "ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
         pdbATOM.append(TextFormat.sprintf(
-            "%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n", new String[] {
-                a.getElementSymbol(false).toUpperCase(), strExtra }, new float[] {
-                x * factor, y * factor, z * factor, w * factor }));
+            "%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n", new Object[] {
+                a.getElementSymbol(false).toUpperCase(), strExtra, new float[] {
+                x * factor, y * factor, z * factor, w * factor }}));
         if (atomno != Integer.MIN_VALUE) {
           pdbCONECT.append("CONECT");
           pdbCONECT.append(TextFormat.formatString("%5i", "i", atomno));

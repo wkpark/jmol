@@ -699,40 +699,35 @@ class ScriptVariable extends Token {
       return strFormat;
     int[] vd = (strFormat.indexOf("d") >= 0 || strFormat.indexOf("i") >= 0 ? new int[1]
         : null);
-    String[] vs = (strFormat.indexOf("s") >= 0 ? new String[1] : null);
     float[] vf = (strFormat.indexOf("f") >= 0 ? new float[1] : null);
     double[] ve = (strFormat.indexOf("e") >= 0 ? new double[1] : null);
-    Point3f[] vp = (strFormat.indexOf("p") >= 0 && var.tok == Token.point3f ? new Point3f[1]
-        : null);
-    Point4f[] vq = (strFormat.indexOf("q") >= 0 && var.tok == Token.point4f ? new Point4f[1]
-        : null);
-    Object[] of = new Object[] { vd, vs, vf, vp, vq, ve };
+    boolean getS = (strFormat.indexOf("s") >= 0);
+    boolean getP = (strFormat.indexOf("p") >= 0 && var.tok == Token.point3f
+        || strFormat.indexOf("q") >= 0 && var.tok == Token.point4f);
+    Object[] of = new Object[] { vd, vf, ve, null, null};
     if (var.tok != Token.list)
-      return sprintf(strFormat, var, of, vd, vs, vf, vp, vq, ve);
+      return sprintf(strFormat, var, of, vd, vf, ve, getS, getP);
     String[] list = (String[]) var.value;
     String[] list2 = new String[list.length];
     for (int i = 0; i < list.length; i++) {
       String s = strFormat;
-      list2[i] = sprintf(s, tValue(list[i]), of, vd, vs, vf, vp, vq, ve);
+      list2[i] = sprintf(s, tValue(list[i]), of, vd, vf, ve, getS, getP);
     }
     return list2;
   }
 
   private static String sprintf(String strFormat, ScriptVariable var, Object[] of, 
-                                int[] vd, String[] vs, float[] vf,
-                                Point3f[] vp, Point4f[] vq, double[] ve) {
+                                int[] vd, float[] vf, double[] ve, boolean getS, boolean getP) {
     if (vd != null)
       vd[0] = iValue(var);
-    if (vs != null)
-      vs[0] = sValue(var);
     if (vf != null)
       vf[0] = fValue(var);
     if (ve != null)
       ve[0] = fValue(var);
-    if (vp != null)
-      vp[0]= (Point3f) var.value;
-    if (vq != null)
-      vq[0]= (Point4f) var.value;    
+    if (getS)
+      of[3] = sValue(var);
+    if (getP)
+      of[4]= var.value;
     return TextFormat.sprintf(strFormat, of );
   }
 

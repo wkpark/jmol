@@ -953,11 +953,10 @@ class CalculationsUFF extends Calculations {
         iVal[j + 1] = atoms[others[j]].atom.getAtomNumber();
       }
       sb.append(TextFormat.sprintf("%3d %8.3f %8.3f %8.3f  %-5s %8.3f %8.3f %8.3f" + s + "\n", 
-          new String[] { atom.type },
+          new Object[] { atom.type,
           new float[] { (float) atom.coord[0], (float) atom.coord[1],
             (float) atom.coord[2], (float) atom.force[0], (float) atom.force[1],
-            (float) atom.force[2], }, 
-          iVal));
+            (float) atom.force[2] }, iVal}));
     }
     sb.append(trailer + "\n\n");
     return sb.toString();
@@ -1013,48 +1012,48 @@ class CalculationsUFF extends Calculations {
     case CALC_DISTANCE:
       return TextFormat.sprintf(
           "%3d %3d  %-5s %-5s  %4.2f%8.3f   %8.3f     %8.3f   %8.3f   %8.3f",
-          new String[] { atoms[c.ia].type, atoms[c.ib].type }, 
+          new Object[] { atoms[c.ia].type, atoms[c.ib].type, 
           new float[] { (float)c.dData[2]/*rab*/, (float)c.rab, 
               (float)c.dData[0], (float)c.dData[1], 
               (float)c.delta, (float)c.energy },
-          new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber() });
+          new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber() }});
     case CALC_ANGLE:
       return TextFormat.sprintf(
           "%3d %3d %3d  %-5s %-5s %-5s  %8.3f  %8.3f     %8.3f   %8.3f", 
-          new String[] { atoms[c.ia].type, atoms[c.ib].type, 
-              atoms[c.ic].type },
+          new Object[] { atoms[c.ia].type, atoms[c.ib].type, 
+              atoms[c.ic].type,
           new float[] { (float)(c.theta * RAD_TO_DEG), (float)c.dData[4] /*THETA0*/, 
               (float)c.dData[0]/*Kijk*/, (float) c.energy },
           new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber(),
-              atoms[c.ic].atom.getAtomNumber()} );
+              atoms[c.ic].atom.getAtomNumber()} });
       case CALC_TORSION:
       return TextFormat.sprintf(
           "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %8.3f     %8.3f     %8.3f", 
-          new String[] { atoms[c.ia].type, atoms[c.ib].type, 
-              atoms[c.ic].type, atoms[c.id].type },
+          new Object[] { atoms[c.ia].type, atoms[c.ib].type, 
+              atoms[c.ic].type, atoms[c.id].type,
           new float[] { (float) c.dData[0]/*V*/, 
               (float) (c.theta * RAD_TO_DEG), (float) c.energy },
           new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber(),
-              atoms[c.ic].atom.getAtomNumber(), atoms[c.id].atom.getAtomNumber() } );
+              atoms[c.ic].atom.getAtomNumber(), atoms[c.id].atom.getAtomNumber() } });
     case CALC_OOP:
       return TextFormat.sprintf("" +
           "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %8.3f   %8.3f     %8.3f",
-          new String[] { atoms[c.ia].type, atoms[c.ib].type, 
-              atoms[c.ic].type, atoms[c.id].type },
+          new Object[] { atoms[c.ia].type, atoms[c.ib].type, 
+              atoms[c.ic].type, atoms[c.id].type,
           new float[] { (float)(c.theta * RAD_TO_DEG), 
               (float)c.dData[0]/*koop*/, (float) c.energy },
           new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber(),
-              atoms[c.ic].atom.getAtomNumber(), atoms[c.id].atom.getAtomNumber() } );
+              atoms[c.ic].atom.getAtomNumber(), atoms[c.id].atom.getAtomNumber() } });
     case CALC_VDW:
       return TextFormat.sprintf("%3d %3d  %-5s %-5s %6.3f  %8.3f  %8.3f", 
-          new String[] { atoms[c.iData[0]].type, atoms[c.iData[1]].type },
+          new Object[] { atoms[c.iData[0]].type, atoms[c.iData[1]].type,
           new float[] { (float)c.rab, (float)c.dData[0]/*kab*/, (float)c.energy},
-          new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber() } );
+          new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber() } });
     case CALC_ES:
       return TextFormat.sprintf("%3d %3d  %-5s %-5s %6.3f  %8.3f  %8.3f", 
-          new String[] { atoms[c.iData[0]].type, atoms[c.iData[1]].type },
+          new Object[] { atoms[c.iData[0]].type, atoms[c.iData[1]].type,
           new float[] { (float)c.rab, (float)c.dData[0]/*qq*/, (float)c.energy },
-          new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber() });
+          new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber() } });
     }
     return "";
   }
@@ -1082,7 +1081,7 @@ class CalculationsUFF extends Calculations {
       break;
     }
     return TextFormat.sprintf("\n     TOTAL %s ENERGY = %8.3f %s\n", 
-        new String[] {s, getUnit() }, new float[] { (float) energy });
+        new Object[] { s, getUnit(), new Float(energy) });
   }
 
 }

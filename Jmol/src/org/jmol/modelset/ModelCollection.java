@@ -2924,4 +2924,36 @@ abstract public class ModelCollection extends BondCollection {
     return offsets;
   }
 
+  public String getMoInfo(int modelIndex) {
+    StringBuffer sb = new StringBuffer();
+    for (int m = 0; m < modelCount; m++) {
+      if (modelIndex >= 0 && m != modelIndex)
+        continue;
+      Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(m, "moData");
+      if (moData == null)
+        continue;
+      Vector mos = (Vector) (moData.get("mos"));
+      int nOrb = (mos == null ? 0 : mos.size());
+      if (nOrb == 0)
+        continue;
+      for (int i = nOrb; --i >= 0; ) {
+        Hashtable mo = (Hashtable) mos.get(i);
+        String type = (String) mo.get("type");
+        if (type == null)
+          type = "";
+        String units = (String) mo.get("energyUnits");
+        if (units == null)
+          units = "";
+        Float occ = (Float) mo.get("occupancy");
+        if (occ != null)
+          type = "occupancy " + occ.floatValue() + " " + type;
+        sb.append(TextFormat.sprintf(
+            "model %-2s;  mo %-2i # energy %-8.3f %s %s\n", new Object[] {
+                getModelNumberDotted(m), new Integer(i + 1),
+                mo.get("energy"), units, type }));
+      }
+    }
+    return sb.toString();
+  }
+
 }

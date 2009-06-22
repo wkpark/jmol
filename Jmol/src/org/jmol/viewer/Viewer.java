@@ -7502,4 +7502,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       Logger.warn(s);
   }
 
+  public String getMoInfo(int modelIndex) {
+    return modelSet.getMoInfo(modelIndex);
+  }
+
 }

@@ -125,8 +125,8 @@ abstract public class ForceField {
     dE = 0;
     calc.setPreliminary(stepMax > 0);
     e0 = energyFull(false, false);
-    s = TextFormat.sprintf(" Initial E = %10.3f " + calc.getUnit() + " criterion = %8.6f max steps = " + stepMax, null,
-          new float[] { (float) e0, (float) criterion }, null);
+    s = TextFormat.sprintf(" Initial E = %10.3f " + calc.getUnit() + " criterion = %8.6f max steps = " + stepMax, 
+        new Object[] { new Float(e0), new Float(criterion) });
     viewer.showString(s, false);
     calc.appendLogData(s);
   }
@@ -158,9 +158,9 @@ abstract public class ForceField {
       boolean done = Util.isNear(e1, e0, criterion);
 
       if (done || currentStep % 10 == 0 || stepMax <= currentStep) {
-        String s = TextFormat.sprintf(" Step %-4d E = %10.6f    dE = %8.6f", null,
-            new float[] { (float) e1, (float) (dE), (float) criterion },
-            new int[] { currentStep });
+        String s = TextFormat.sprintf(" Step %-4d E = %10.6f    dE = %8.6f",
+            new Object[] { new float[] { (float) e1, (float) (dE), (float) criterion },
+            new Integer(currentStep) });
         viewer.showString(s, false);
         calc.appendLogData(s);
       }
@@ -274,9 +274,9 @@ abstract public class ForceField {
        + energyVDW(gradients)
        + energyES(gradients);
 
-    if (!isSilent && calc.loggingEnabled)
-      calc.appendLogData(TextFormat.sprintf("\nTOTAL ENERGY = %8.3f " + getUnits() + "\n", 
-          null, new float[] { (float) energy }));
+    if (!isSilent && calc.loggingEnabled)      
+      calc.appendLogData(TextFormat.sprintf("\nTOTAL ENERGY = %8.3f %s\n", 
+          new Object[] {new Float(energy), getUnits() }));
     return energy;
   }
 

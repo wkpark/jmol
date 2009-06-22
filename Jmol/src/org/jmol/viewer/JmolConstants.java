@@ -2741,7 +2741,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     public final static int SHAPE_ROCKETS    = 15;
   
   public final static int SHAPE_MAX_SECONDARY = 16; //////////
-  public final static int SHAPE_MIN_SPECIAL   = 16; //////////
+  public final static int SHAPE_MIN_SPECIAL    = 16; //////////
 
     public final static int SHAPE_DIPOLES    = 16;
     public final static int SHAPE_VECTORS    = 17;

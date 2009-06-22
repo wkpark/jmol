@@ -1396,7 +1396,7 @@ class ScriptMathProcessor {
       return addX("");
     String format = (args.length == 0 ? "%U" : ScriptVariable.sValue(args[0]));
     boolean asArray = Token.tokAttr(intValue, Token.minmaxmask);
-    if (x1 == null)
+    if (x1 == null) 
       return addX(ScriptVariable.sprintf(args));
     if (x1.tok == Token.bitset)
       return addX(eval.getBitsetIdent(ScriptVariable.bsSelect(x1), format,

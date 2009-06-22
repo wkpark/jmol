@@ -211,7 +211,7 @@ public class Token {
 
   final static int center       = 1 | atomExpressionCommand;
   final static int define       = 2 | atomExpressionCommand | expression | setparam;
-  final static int delete       = 3 | atomExpressionCommand;
+  public final static int delete       = 3 | atomExpressionCommand;
   final static int display      = 4 | atomExpressionCommand | setparam;
   final static int hide         = 5 | atomExpressionCommand;
   final static int restrict     = 6 | atomExpressionCommand;
@@ -246,7 +246,7 @@ public class Token {
   final static int end          = 9 | flowCommand | noeval;
   
   final static int animation    = command | 1;
-  final static int axes         = command | 2 | setparam | defaultON;
+  public final static int axes         = command | 2 | setparam | defaultON;
   final static int backbone     = command | 3 | predefinedset | defaultON;
   final static int background   = command | 4 | setparam;
   final static int bondorder    = command | 5;
@@ -322,7 +322,7 @@ public class Token {
   final public static int unitcell = command | 64 | setparam | expression | predefinedset | defaultON;
   final static int vector       = command | 65;
   public final static int vibration    = command | 66;
-  final static int wireframe     = command |67 | defaultON;
+  public final static int wireframe     = command |67 | defaultON;
   //final static int write   see mathfunc
   final static int zoom         = command | 68;
   final static int zoomTo       = command | 69;
@@ -372,7 +372,7 @@ public class Token {
   final public static int rna           = predefinedset | 9;
   final public static int selected      = predefinedset | 10;
   final static int solvent              = predefinedset | 11 | setparam;
-  final static int sidechain            = predefinedset | 12;
+  public final static int sidechain            = predefinedset | 12;
   final static int surface              = predefinedset | 13;
   final static int thismodel            = predefinedset | 14;
 
@@ -421,7 +421,7 @@ public class Token {
  
   final static int divide       = 0 | mathop | 10 << 4;
   final static int times        = 1 | mathop | 10 << 4;
-  final static int percent      = 2 | mathop | 10 << 4;
+  public final static int percent      = 2 | mathop | 10 << 4;
   final static int leftdivide   = 3 | mathop | 10 << 4;  //   quaternion1 \ quaternion2
   
   final static int unaryMinus   = 0 | mathop | 11 << 4;
@@ -554,9 +554,10 @@ public class Token {
   
   final static int array         = 1 | 0 << 9 | mathfunc;
   public final static int format = 2 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
-  final static int function      = 3 | 0 << 9 | mathfunc | flowCommand | noeval;
-  final static int getproperty   = 4 | 0 << 9 | mathfunc | command;
-  final static int write         = 5 | 0 << 9 | mathfunc | command;
+  public final static int label  = 3 | 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | defaultON | setparam;
+  final static int function      = 4 | 0 << 9 | mathfunc | flowCommand | noeval;
+  final static int getproperty   = 5 | 0 << 9 | mathfunc | command;
+  final static int write         = 6 | 0 << 9 | mathfunc | command;
 
   // xxx(a)
   
@@ -576,7 +577,6 @@ public class Token {
   
   final static int div          = 0 | 1 << 9 | mathfunc | mathproperty;
   final static int join         = 1 | 1 << 9 | mathfunc | mathproperty;
-  public final static int label = 2 | 1 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | defaultON | setparam;
   final static int mul          = 3 | 1 << 9 | mathfunc | mathproperty;
   final static int split        = 4 | 1 << 9 | mathfunc | mathproperty;
   final static int sub          = 5 | 1 << 9 | mathfunc | mathproperty;
@@ -584,7 +584,7 @@ public class Token {
 
   // xxx(a,b)
 
-  final static int cross        = 1 | 2 << 9 | mathfunc;
+  public final static int cross        = 1 | 2 << 9 | mathfunc;
   final static int load         = 2 | 2 << 9 | mathfunc | command;
   final static int random       = 3 | 2 << 9 | mathfunc;
   final static int script       = 4 | 2 << 9 | mathfunc | command;

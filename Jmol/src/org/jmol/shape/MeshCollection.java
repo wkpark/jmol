@@ -411,13 +411,12 @@ public abstract class MeshCollection extends Shape {
     return null;
   }
 
- private Object getVertices(Mesh mesh) {
-   if (mesh == null)
-     return null;
-   return mesh.vertices;
- }
+  private Object getVertices(Mesh mesh) {
+    if (mesh == null)
+      return null;
+    return mesh.vertices;
+  }
  
-
   private void deleteMesh() {
     int i = 0;
     if (explicitID && currentMesh != null) {

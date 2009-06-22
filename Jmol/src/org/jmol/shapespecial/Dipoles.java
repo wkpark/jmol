@@ -28,7 +28,9 @@ import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Token;
 
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
@@ -61,6 +63,8 @@ public class Dipoles extends Shape {
   private int atomIndex2;
   private short colix;
   private Vector3f calculatedDipole;
+  private String wildID;
+  
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -90,11 +94,14 @@ public class Dipoles extends Shape {
     }
 
     if ("thisID" == propertyName) {
-      if (value == null) {
+      wildID = null;
+      String thisID = (String) value;
+      if (thisID == null || TextFormat.isWild(thisID)) {
         currentDipole = null;
+        if (thisID != null)
+          wildID = thisID.toUpperCase();
         return;
       }
-      String thisID = "" + (String) value;
       currentDipole = findDipole(thisID);
       if (currentDipole == null)
         currentDipole = allocDipole(thisID, "");
@@ -133,32 +140,71 @@ public class Dipoles extends Shape {
     }
 
     if ("on" == propertyName) {
-      if (currentDipole != null)
-        currentDipole.visible = true;
-      else {
-        for (int i = dipoleCount; --i >= 0;)
-          if (!isBond || isBondDipole(i))
-            dipoles[i].visible = true;
-      }
+      setProperty(Token.on, isBond, 0, 0);
       return;
     }
 
     if ("off" == propertyName) {
-      if (currentDipole != null)
-        currentDipole.visible = false;
-      else {
-        for (int i = dipoleCount; --i >= 0;)
-          if (!isBond || isBondDipole(i))
-            dipoles[i].visible = false;
-      }
+      setProperty(Token.off, isBond, 0, 0);
       return;
     }
 
     if ("delete" == propertyName) {
-      if (currentDipole != null)
-        deleteDipole(currentDipole);
-      else
+      if (wildID == null && currentDipole == null) {
         clear(false);
+        return;
+      }
+      setProperty(Token.delete, isBond, 0, 0);
+      return;
+    }
+
+    if ("width" == propertyName) {
+      short mad = tempDipole.mad = (short) (((Float) value).floatValue() * 1000);
+      if (currentDipole == null)
+        setProperty(Token.wireframe, isBond, mad, 0);  //
+      return;
+    }
+
+    if ("offset" == propertyName) {
+      float offset = tempDipole.offsetAngstroms = ((Float) value).floatValue();
+      if (currentDipole == null)
+        setProperty(Token.axes, isBond, 0, offset);
+      return;
+    }
+
+    if ("offsetPercent" == propertyName) {
+      int offsetPercent = tempDipole.offsetPercent = ((Integer) value).intValue();
+      if (tempDipole.dipoleValue != 0)
+        tempDipole.offsetAngstroms = offsetPercent / 100f
+            * tempDipole.dipoleValue;
+      if (currentDipole == null)
+        setProperty(Token.percent, isBond, 0, offsetPercent / 100f);
+      return;
+    }
+
+    if ("offsetSide" == propertyName) {
+      float offsetSide = ((Float) value).floatValue();
+      setProperty(Token.sidechain, isBond, 0, offsetSide);
+      return;
+    }
+
+    if ("cross" == propertyName) {
+      setProperty(Token.cross, isBond, (((Boolean) value).booleanValue() ? 1 : 0), 0);
+      return;
+    }
+
+    if ("color" == propertyName) {
+      colix = Graphics3D.getColix(value);
+      if (isBond) {
+        setColixDipole(colix, JmolConstants.BOND_COVALENT_MASK, bs);
+      } else if (value != null) {
+        setProperty(Token.color, false, 0, 0);
+      }
+      return;
+    }
+
+    if ("translucency" == propertyName) {
+      setProperty(Token.translucent, isBond, (value.equals("translucent") ? 1 : 0), 0);
       return;
     }
 
@@ -169,83 +215,6 @@ public class Dipoles extends Shape {
 
     if ("clearBonds" == propertyName) {
       clear(true);
-    }
-
-    if ("width" == propertyName) {
-      short mad = tempDipole.mad = (short) (((Float) value).floatValue() * 1000);
-      if (currentDipole == null)
-        for (int i = dipoleCount; --i >= 0;)
-          dipoles[i].mad = mad;
-      return;
-    }
-
-    if ("offset" == propertyName) {
-      tempDipole.offsetAngstroms = ((Float) value).floatValue();
-      if (currentDipole == null)
-        for (int i = dipoleCount; --i >= 0;)
-          if (!isBond || isBondDipole(i))
-            dipoles[i].offsetAngstroms = tempDipole.offsetAngstroms;
-      return;
-    }
-
-    if ("offsetPercent" == propertyName) {
-      tempDipole.offsetPercent = ((Integer) value).intValue();
-      if (tempDipole.dipoleValue != 0)
-        tempDipole.offsetAngstroms = tempDipole.offsetPercent / 100f
-            * tempDipole.dipoleValue;
-      if (currentDipole == null)
-        for (int i = dipoleCount; --i >= 0;)
-          if (!isBond || isBondDipole(i))
-            dipoles[i].offsetAngstroms = tempDipole.offsetPercent / 100f
-                * dipoles[i].dipoleValue;
-      return;
-    }
-
-    if ("offsetSide" == propertyName) {
-      float offsetSide = ((Float) value).floatValue();
-      if (currentDipole != null)
-        currentDipole.offsetSide = offsetSide;
-      else
-        for (int i = dipoleCount; --i >= 0;)
-          if (!isBond || isBondDipole(i))
-            dipoles[i].offsetSide = offsetSide;
-      return;
-    }
-
-    if ("cross" == propertyName) {
-      boolean isOFF = !((Boolean) value).booleanValue();
-      if (currentDipole != null)
-        currentDipole.noCross = isOFF;
-      else
-        for (int i = dipoleCount; --i >= 0;)
-          if (!isBond || isBondDipole(i))
-            dipoles[i].noCross = isOFF;
-      return;
-    }
-
-    if ("color" == propertyName) {
-      colix = Graphics3D.getColix(value);
-      if (isBond) {
-        setColixDipole(colix, JmolConstants.BOND_COVALENT_MASK, bs);
-      } else if (value != null) {
-        if (currentDipole != null)
-          currentDipole.colix = colix;
-        else
-          for (int i = dipoleCount; --i >= 0;)
-            dipoles[i].colix = colix;
-      }
-      return;
-    }
-
-    if ("translucency" == propertyName) {
-      boolean isTranslucent = (value.equals("translucent"));
-      if (currentDipole != null)
-        currentDipole.setTranslucent(isTranslucent, translucentLevel);
-      else
-        for (int i = dipoleCount; --i >= 0;)
-          if (!isBond || isBondDipole(i))
-            dipoles[i].setTranslucent(isTranslucent, translucentLevel);
-      return;
     }
 
     if ("startSet" == propertyName) {
@@ -335,6 +304,72 @@ public class Dipoles extends Shape {
       return;
     }
 
+  }
+
+  private void setProperty(int tok, boolean bondOnly, int iValue, float fValue) {
+    if (currentDipole != null)
+      setProperty(tok, currentDipole, iValue, fValue);
+    else {
+      for (int i = dipoleCount; --i >= 0;)
+        if (!bondOnly || isBondDipole(i))
+          if (wildID == null
+              || TextFormat.isMatch(dipoles[i].thisID.toUpperCase(), wildID,
+                  true, true))
+            setProperty(tok, dipoles[i], iValue, fValue);
+    }
+  }
+
+  private void setProperty(int tok, Dipole dipole, int iValue, float fValue) {
+    switch (tok) {
+    case Token.on:
+      dipole.visible = true;
+      return;
+    case Token.off:
+      dipole.visible = false;       
+      return;
+    case Token.delete:
+      deleteDipole(dipole);
+      return;
+    case Token.wireframe:
+      dipole.mad = tempDipole.mad = (short) iValue;
+      return;
+    case Token.axes:
+      dipole.offsetAngstroms = fValue;
+      return;
+    case Token.percent:
+      dipole.offsetAngstroms = fValue * dipole.dipoleValue;
+      return;
+    case Token.sidechain:
+      dipole.offsetSide = fValue;
+      return;
+    case Token.cross:
+      dipole.noCross = (iValue == 0);
+      return;
+    case Token.color:
+      dipole.colix = colix;
+      return;
+    case Token.translucent:
+      dipole.setTranslucent(iValue == 1, translucentLevel);
+      return;
+    }
+    System.out.println("Unkown dipole property! " + Token.nameOf(tok));
+  }
+
+  public Object getProperty(String property, int index) {
+    if (property.startsWith("checkID:")) {
+      // returns FIRST match
+      String key = property.substring(8).toUpperCase();
+      boolean isWild = TextFormat.isWild(key);
+      for (int i = dipoleCount; --i >= 0;) {
+        String id = dipoles[i].thisID.toUpperCase();
+        if (id.equals(key) || isWild && TextFormat.isMatch(id, key, true, true))
+          return id;
+      }
+    }
+    if (property.equals("list")) {
+      return getShapeState();
+    }
+    return null;
   }
 
   private void getBondDipoles() {

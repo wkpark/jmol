@@ -3633,31 +3633,36 @@ class ScriptEvaluator {
     if (isSyntaxCheck)
       return "";
     int iTok = iToken;
+    int tokCommand = tokAt(0);
     boolean isWild = TextFormat.isWild(id);
-    for (int iShape = JmolConstants.SHAPE_MAX_HAS_ID; --iShape >= JmolConstants.SHAPE_MIN_HAS_ID;) {
-      if (iShape == JmolConstants.SHAPE_MO
-          || viewer.getShapeProperty(iShape, "checkID:" + id) == null)
-        continue;
-      setShapeProperty(iShape, "thisID", id);
-      int tok = tokAt(0);
-      switch (tok) {
-      case Token.delete:
-        setShapeProperty(iShape, "delete", null);
-        break;
-      case Token.hide:
-      case Token.display:
-        setShapeProperty(iShape, "hidden", tok == Token.display ? Boolean.FALSE
-            : Boolean.TRUE);
-        break;
-      case Token.show:
-        if (iShape == JmolConstants.SHAPE_ISOSURFACE && !isWild)
-          return getIsosurfaceJvxl();
-        s += (String) viewer.getShapeProperty(iShape, "command") + "\n";
-        break;
-      case Token.color:
-        colorShape(iShape, iTok + 1, false);
-        break;
+    for (int iShape = JmolConstants.SHAPE_DIPOLES;;) {
+      if (iShape != JmolConstants.SHAPE_MO
+          && viewer.getShapeProperty(iShape, "checkID:" + id) != null) {
+        setShapeProperty(iShape, "thisID", id);
+        switch (tokCommand) {
+        case Token.delete:
+          setShapeProperty(iShape, "delete", null);
+          break;
+        case Token.hide:
+        case Token.display:
+          setShapeProperty(iShape, "hidden",
+              tokCommand == Token.display ? Boolean.FALSE : Boolean.TRUE);
+          break;
+        case Token.show:
+          if (iShape == JmolConstants.SHAPE_ISOSURFACE && !isWild)
+            return getIsosurfaceJvxl();
+          s += (String) viewer.getShapeProperty(iShape, "command") + "\n";
+        case Token.color:
+          colorShape(iShape, iTok + 1, false);
+          break;
+        }
+        if (!isWild)
+          break;
       }
+      if (iShape == JmolConstants.SHAPE_DIPOLES)
+        iShape = JmolConstants.SHAPE_MAX_HAS_ID;
+      if (--iShape < JmolConstants.SHAPE_MIN_HAS_ID)
+        break;
     }
     return s;
   }

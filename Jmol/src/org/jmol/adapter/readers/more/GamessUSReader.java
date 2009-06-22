@@ -52,6 +52,8 @@ public class GamessUSReader extends GamessReader {
     boolean isBohr;
     if (line.contains("SCFTYP=UHF")){
       isUHF = true;
+      ignoreMOs = (filter == null);
+      Logger.warn("Skipping reading of MOs when UHF.\n   No orbitals read.");
     }
     if (line.indexOf("ATOMIC BASIS SET") >= 0) {
       readGaussianBasis("SHELL TYPE", "TOTAL");
@@ -96,11 +98,6 @@ public class GamessUSReader extends GamessReader {
             .indexOf("  MOLECULAR ORBITALS LOCALIZED BY THE POPULATION METHOD") < 0) {
       if (!filterMO())
         return true;
-      if (isUHF) {
-        //should read alpha and beta
-        Logger.error("Skipped reading UHF orbitals in GAMESS file--known problem.\n   No orbitals read.");
-        return true;
-      }
       // energies and possibly symmetries
       readMolecularOrbitals(HEADER_GAMESS_ORIGINAL);
       return false;
@@ -109,11 +106,6 @@ public class GamessUSReader extends GamessReader {
         || line.indexOf("  THE PIPEK-MEZEY POPULATION LOCALIZED ORBITALS ARE") >= 0) {
       if (!filterMO())
         return true;
-      if (isUHF) {
-        //should read alpha and beta
-        Logger.error("Skipped reading UHF orbitals in GAMESS file--known problem.\n   No orbitals read.");
-        return true;
-      }
       readMolecularOrbitals(HEADER_NONE);
       return false;
     }

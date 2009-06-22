@@ -102,6 +102,7 @@ abstract class MOReader extends AtomSetCollectionReader {
 
   protected boolean iHaveAtoms = false;
   protected boolean continuing = true;
+  protected boolean ignoreMOs = false;
 
   final protected int HEADER_GAMESS_UK_MO = 3;
   final protected int HEADER_GAMESS_OCCUPANCIES = 2;
@@ -317,6 +318,12 @@ abstract class MOReader extends AtomSetCollectionReader {
 
    */
   protected void readMolecularOrbitals(int headerType) throws Exception {
+    if (ignoreMOs) {
+      // but for now can override this with FILTER=" LOCALIZED ORBITALS"
+      //should read alpha and beta
+      readLine();
+      return;
+    }
     Hashtable[] mos = null;
     Vector[] data = null;
     Vector coeffLabels = null;

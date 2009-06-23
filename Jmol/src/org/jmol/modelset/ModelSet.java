@@ -752,7 +752,7 @@ abstract public class ModelSet extends ModelCollection {
   
   public BitSet deleteModels(BitSet bsAtoms) {
     // full models are deleted for any model containing the specified atoms
-    BitSet bsModels = getModelBitSet(bsAtoms);
+    BitSet bsModels = getModelBitSet(bsAtoms, false);
     includeAllRelatedFrames(bsModels);
     int nAtomsDeleted = 0;
     

@@ -338,7 +338,7 @@ abstract public class ModelCollection extends BondCollection {
       bs = null;
     if (bs == null && isBbcageDefault || atomCount < 2)
       return;
-    bboxModels = getModelBitSet(bboxAtoms = BitSetUtil.copy(bs));
+    bboxModels = getModelBitSet(bboxAtoms = BitSetUtil.copy(bs), false);
     if (calcAtomsMinMax(bs, boxInfo) == atomCount)
       isBbcageDefault = true;
     if (bs == null) { // from modelLoader or reset
@@ -682,6 +682,24 @@ abstract public class ModelCollection extends BondCollection {
         return true;
     return false;
   }
+
+  public BitSet getModelBitSet(BitSet atomList, boolean allTrajectories) {
+    BitSet bs = new BitSet();
+    int lastModel = -1;
+    int modelIndex = 0;
+    for (int i = 0; i < atomCount; i++)
+      if (atomList == null || atomList.get(i)) {
+        bs.set(modelIndex = atoms[i].modelIndex);
+        if (allTrajectories && modelIndex != lastModel) {
+          lastModel = modelIndex;
+          for (int j = 0; j < modelCount; j++)
+            if (models[j].trajectoryBaseIndex == models[modelIndex].trajectoryBaseIndex)
+              bs.set(j);
+        }
+      }
+    return bs;
+  }
+
 
   /** 
    * only some models can be iterated through.

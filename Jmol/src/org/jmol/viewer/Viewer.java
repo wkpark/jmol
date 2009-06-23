@@ -2242,8 +2242,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getModelAtomBitSet(modelIndex, asCopy);
   }
 
-  public BitSet getModelBitSet(BitSet atomList) {
-    return modelSet.getModelBitSet(atomList);
+  public BitSet getModelBitSet(BitSet atomList, boolean allTrajectories) {
+    return modelSet.getModelBitSet(atomList, allTrajectories);
   }
 
   Object getClientFile() {
@@ -2635,12 +2635,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Hashtable getModelInfo(Object atomExpression) {
-    return modelSet.getModelInfo(getModelBitSet(getAtomBitSet(atomExpression)));
+    return modelSet.getModelInfo(getModelBitSet(getAtomBitSet(atomExpression), false));
   }
 
   public Hashtable getAuxiliaryInfo(Object atomExpression) {
     return modelSet
-        .getAuxiliaryInfo(getModelBitSet(getAtomBitSet(atomExpression)));
+        .getAuxiliaryInfo(getModelBitSet(getAtomBitSet(atomExpression), false));
   }
 
   public Hashtable getShapeInfo() {

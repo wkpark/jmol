@@ -9376,7 +9376,7 @@ class ScriptEvaluator {
       } else if (tok == Token.frame) {
         bsFrames = expression(args, ++pt, 0, true, false, true, true);
         if (!isSyntaxCheck)
-          bsFrames = viewer.getModelBitSet(bsFrames);
+          bsFrames = viewer.getModelBitSet(bsFrames, true);
         pt = iToken + 1;
       } else if (Parser.isOneOf(type, driverList.toLowerCase())) {
         // povray, maya, vrml, u3d

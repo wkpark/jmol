@@ -31,6 +31,7 @@ import javax.vecmath.Matrix3f;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 /**
  * 
@@ -81,6 +82,7 @@ class PropertyManager {
     "menu"            , "<type>", "current",
     "minimizationInfo", "", "",
     "PointGroupInfo"  , atomExpression, "(visible)",
+    "PdbInfo"         , "<type>", "",
     "errorMessage", "", "",
   };
 
@@ -121,8 +123,9 @@ class PropertyManager {
   private final static int PROP_MENU = 29;
   private final static int PROP_MINIMIZATION_INFO = 30;
   private final static int PROP_POINTGROUP_INFO = 31;
-  private final static int PROP_ERROR_MESSAGE = 32;
-  private final static int PROP_COUNT = 33;
+  private final static int PROP_PDB_INFO = 32;
+  private final static int PROP_ERROR_MESSAGE = 33;
+  private final static int PROP_COUNT = 34;
 
   //// static methods used by Eval and Viewer ////
   
@@ -360,6 +363,8 @@ class PropertyManager {
       return viewer.getStateInfo(myParam.toString());
     case PROP_POINTGROUP_INFO:
       return viewer.getPointGroupInfo(myParam);
+    case PROP_PDB_INFO:
+      return getPdbInfo(viewer.getPDBHeader(), myParam.toString());
     case PROP_ERROR_MESSAGE:
       return viewer.getErrorMessageUntranslated();
     case PROP_TRANSFORM_INFO:
@@ -384,4 +389,44 @@ class PropertyManager {
     }
     return info;
   }
+  
+  static Object getPdbInfo(String header, String type) {
+    Hashtable ht = new Hashtable();
+    if (header == null)
+      return ht;
+    String[] lines = TextFormat.split(header, '\n');
+    String keyLast = "";
+    StringBuffer sb = new StringBuffer();
+    boolean haveType = (type != null && type.length() > 0);
+    if (haveType)
+      type = type.toUpperCase();
+    String key = "";
+    for (int i = 0; i < lines.length; i++) {
+      String line = lines[i];
+      if (line.length() < 12) continue;
+      key = line.substring(0,6).trim();
+      String cont = line.substring(7,10).trim();
+      if (key.equals("REMARK")) {
+        key += cont;
+      }
+      if (!key.equals(keyLast)) {
+        if (haveType && keyLast.equals(type))
+          return sb.toString();
+        if (sb != null && !haveType) {
+          ht.put(keyLast, sb.toString());
+          sb = new StringBuffer();
+        }
+        keyLast = key;
+      }
+      if (!haveType || key.equals(type))
+        sb.append(line.substring(10).trim()).append('\n');      
+    }
+    if (sb != null && !haveType) {
+      ht.put(keyLast, sb.toString());
+    }
+    if (haveType)
+      return (key.equals(type) ? sb.toString() : "");
+    return ht;
+  }
+
 }

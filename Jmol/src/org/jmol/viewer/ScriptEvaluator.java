@@ -1392,6 +1392,8 @@ class ScriptEvaluator {
       //  .length()
         //: lineIndices[pc + 1]);
     String s = "";
+    if (ichBegin < 0 || ichEnd <= ichBegin || ichEnd > script.length())
+      return "";
     try {
       s = script.substring(ichBegin, ichEnd);
       if (s.indexOf("\\\n") >= 0)
@@ -1407,8 +1409,7 @@ class ScriptEvaluator {
         s += ";";
     } catch (Exception e) {
       Logger.error("darn problem in Eval getCommand: ichBegin=" + ichBegin
-          + " ichEnd=" + ichEnd + " len = " + script.length() + " script = "
-          + script + "\n" + e);
+          + " ichEnd=" + ichEnd + " len = " + script.length() + "\n" + e);
     }
     return s;
   }

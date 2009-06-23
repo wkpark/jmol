@@ -1135,6 +1135,7 @@ abstract public class ModelCollection extends BondCollection {
       case -1:
         continue;
       case 0:
+        setModelAuxiliaryInfo(modelIndex, "fileHeader", "");
         return "";
       default:
         if (ichFound < ichMin)

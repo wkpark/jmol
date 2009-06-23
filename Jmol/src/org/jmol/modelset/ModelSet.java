@@ -846,5 +846,6 @@ abstract public class ModelSet extends ModelCollection {
     loadShape(JmolConstants.SHAPE_LABELS);
     shapes[JmolConstants.SHAPE_LABELS].setProperty("label:"+strLabel, new Integer(i), null);
   }
+  
 }
 

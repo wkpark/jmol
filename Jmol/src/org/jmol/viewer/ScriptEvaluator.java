@@ -9892,7 +9892,7 @@ class ScriptEvaluator {
             "jvxlFileData");
       break;
     case Token.mo:
-      if (optParameterAsString(2).equalsIgnoreCase("energies")) {
+      if (optParameterAsString(2).equalsIgnoreCase("list")) {
         msg = viewer.getMoInfo(-1);
         len = 3;
       } else {

@@ -103,6 +103,7 @@ abstract class MOReader extends AtomSetCollectionReader {
   protected boolean iHaveAtoms = false;
   protected boolean continuing = true;
   protected boolean ignoreMOs = false;
+  protected String alphaBeta = "";
 
   final protected int HEADER_GAMESS_UK_MO = 3;
   final protected int HEADER_GAMESS_OCCUPANCIES = 2;
@@ -127,12 +128,17 @@ abstract class MOReader extends AtomSetCollectionReader {
       while (line != null && continuing)
         if (checkLine())
           readLine();
+      finalizeMoReader();
     } catch (Exception e) {
       return setError(e);
     }
     return atomSetCollection;
   }
   
+  protected void finalizeMoReader() {
+    // see subclasses
+  }
+
   private void initializeMoReader(BufferedReader reader, String type) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("type");
@@ -152,7 +158,7 @@ abstract class MOReader extends AtomSetCollectionReader {
       return true;
     boolean isOK = true;
     int nOK = 0;
-    line = line.toLowerCase();
+    line = line.toLowerCase() + " " + alphaBeta;
     if (filterTokens == null) {
       filterIsNot = (filter.indexOf("!") >= 0);
       filterTokens = getTokens(filter.replace('!', ' ').replace(',', ' ')
@@ -339,6 +345,11 @@ abstract class MOReader extends AtomSetCollectionReader {
       }
       if (line.indexOf("end") >= 0)
         break;
+      if (line.indexOf(" ALPHA SET ") >= 0)
+        alphaBeta = "alpha";
+      else if (line.indexOf(" BETA SET ") >= 0)
+        alphaBeta = "beta";
+
         //not everyone has followed the conventions for ending a section of output
       if (line.length() == 0 || line.indexOf("--") >= 0 || line.indexOf(".....") >=0 
            || line.indexOf("NBO BASIS") >= 0 // reading NBOs
@@ -364,7 +375,9 @@ abstract class MOReader extends AtomSetCollectionReader {
             }
           }
           mos[iMo].put("coefficients", coefs);
-          if (moTypes != null && moCount < moTypes.size())
+          if (alphaBeta.length() > 0)
+            mos[iMo].put("type", alphaBeta);
+          else if (moTypes != null && moCount < moTypes.size())
             mos[iMo].put("type", moTypes.get(moCount++));
           orbitals.addElement(mos[iMo]);
         }
@@ -398,7 +411,7 @@ abstract class MOReader extends AtomSetCollectionReader {
       line = "";
     }
     energyUnits = "a.u.";
-    setMOData(true);    
+    setMOData(!alphaBeta.equals("alpha"));    
   }
 
   protected void getMOHeader(int headerType, String[] tokens, Hashtable[] mos, int nThisLine)
@@ -467,6 +480,7 @@ abstract class MOReader extends AtomSetCollectionReader {
     if (clearOrbitals) {
       orbitals = new Vector();
       moData = new Hashtable();
+      alphaBeta = "";
     }
   }
   

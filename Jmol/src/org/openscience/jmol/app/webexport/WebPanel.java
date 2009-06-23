@@ -515,7 +515,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
   private static String copyBinaryFile(String fullPathName, String dataPath) {
     String name = fullPathName.substring(fullPathName.lastIndexOf('/') + 1);
     name = dataPath + "/" + name;
-    String gzname = name.concat(".gz");
+    String gzname = name + ".gz";
     File outFile = new File(name);
     File gzoutFile = new File(gzname);
     if (outFile.exists())
@@ -563,7 +563,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
   private static String writeFileBytes(String path, byte[] data) {
     try {
       if (data.length>=524288 && !path.endsWith("JmolApplet.jar") ){ //gzip it
-        path = path.concat(".gz");
+        path += ".gz";
         GZIPOutputStream gzFile = new GZIPOutputStream(new FileOutputStream(path));
         gzFile.write(data);
         LogPanel.log("      ..." + GT._("compressing large data file to") + "\n");

@@ -31,11 +31,11 @@ import java.util.Vector;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 abstract public class GamessReader extends MOReader {
 
   protected Vector atomNames;
-  protected boolean isUHF = false;
 
   abstract protected void readAtomsInBohrCoordinates() throws Exception;  
  
@@ -220,5 +220,99 @@ abstract public class GamessReader extends MOReader {
     }
     return line;
   }
-  
+
+  /*
+  BASIS OPTIONS
+  -------------
+  GBASIS=N311         IGAUSS=       6      POLAR=DUNNING 
+  NDFUNC=       3     NFFUNC=       1     DIFFSP=       T
+  NPFUNC=       3      DIFFS=       T
+  SPLIT3=     4.00000000     1.00000000     0.25000000
+
+
+  $CONTRL OPTIONS
+  ---------------
+SCFTYP=UHF          RUNTYP=OPTIMIZE     EXETYP=RUN     
+MPLEVL=       2     CITYP =NONE         CCTYP =NONE         VBTYP =NONE    
+DFTTYP=NONE         TDDFT =NONE    
+MULT  =       3     ICHARG=       0     NZVAR =       0     COORD =UNIQUE  
+PP    =NONE         RELWFN=NONE         LOCAL =NONE         NUMGRD=       F
+ISPHER=       1     NOSYM =       0     MAXIT =      30     UNITS =ANGS    
+PLTORB=       F     MOLPLT=       F     AIMPAC=       F     FRIEND=        
+NPRINT=       7     IREST =       0     GEOM  =INPUT   
+NORMF =       0     NORMP =       0     ITOL  =      20     ICUT  =       9
+INTTYP=BEST         GRDTYP=BEST         QMTTOL= 1.0E-06
+
+$SYSTEM OPTIONS
+*/
+
+
+
+  private Hashtable calcOptions;
+  private boolean isTypeSet;
+
+  protected void setCalculationType() {
+    if (calcOptions == null || isTypeSet)
+      return;
+    isTypeSet = true;
+    String SCFtype = (String) calcOptions.get("contrl_options_SCFTYP");
+    String Runtype = (String) calcOptions.get("contrl_options_RUNTYP");
+    String igauss = (String) calcOptions.get("basis_options_IGAUSS");
+    String gbasis = (String) calcOptions.get("basis_options_GBASIS");
+    if (igauss == null && SCFtype == null)
+      return;
+
+    if (calculationType.equals("?"))
+      calculationType = "";
+
+    if (igauss != null) {
+      if (calculationType.length() > 0)
+        calculationType += " ";
+      calculationType += igauss + "-"
+          + TextFormat.simpleReplace(gbasis, "N", "");
+      // Q: "N" here means what?
+    }
+    if (SCFtype != null) {
+      if (calculationType.length() > 0)
+        calculationType += " ";
+      calculationType += SCFtype + " " + Runtype;
+    }
+  }
+
+  protected void readControlInfo() throws Exception {
+    readCalculationInfo("contrl_options_");
+  }
+
+  protected void readBasisInfo() throws Exception {
+    readCalculationInfo("basis_options_");
+  }
+
+  private void readCalculationInfo(String type) throws Exception {
+    if (calcOptions == null) {
+      calcOptions = new Hashtable();
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("calculationOptions",
+          calcOptions);
+    }
+    while (readLine() != null && (line = line.trim()).length() > 0) {
+      if (line.indexOf("=") < 0)
+        continue;
+      String[] tokens = getTokens(TextFormat.simpleReplace(line, "="," = "));
+      for (int i = 0; i < tokens.length; i++) {
+        if (!tokens[i].equals("="))
+          continue;
+        try {
+        String key = type + tokens[i - 1];
+        String value = (key.equals("basis_options_SPLIT3") ? tokens[++i] + " " + tokens[++i]
+            + " " + tokens[++i] : tokens[++i]);
+        if (Logger.debugging)
+          Logger.debug(key + " = " + value);
+        calcOptions.put(key, value);
+        } catch (Exception e) {
+          // not interested
+        }
+      }
+    }
+  }
+
+
 }

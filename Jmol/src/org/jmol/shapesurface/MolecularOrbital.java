@@ -243,7 +243,7 @@ public class MolecularOrbital extends Isosurface {
       String s = (String) super.getProperty("list", param);
       if (s.length() > 1)
         s += "cutoff = " + super.getProperty("cutoff", 0) + "\n";
-      return s; 
+      return viewer.getMoInfo(-1) + "\n" + s; 
     }
     if (propertyName == "moNumber")
       return new Integer(moNumber);

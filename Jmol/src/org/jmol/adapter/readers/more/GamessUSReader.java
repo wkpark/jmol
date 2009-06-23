@@ -35,7 +35,6 @@ import java.util.Vector;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollection;
-import org.jmol.util.Logger;
 
 public class GamessUSReader extends GamessReader {
 
@@ -50,16 +49,11 @@ public class GamessUSReader extends GamessReader {
    */
   protected boolean checkLine() throws Exception {
     boolean isBohr;
-    if (line.contains("SCFTYP=UHF")) {
-      isUHF = true;
-      ignoreMOs = (filter == null);
-      Logger.warn("Skipping reading of MOs when UHF.\n   No orbitals read.");
-    }
-    if (line.contains("BASIS OPTIONS")) {
+    if (line.contains("BASIS OPTIONS")){
       readBasisInfo();
       return true;
-    }
-    if (line.contains("$CONTRL OPTIONS")) {
+    }    
+    if (line.contains("$CONTRL OPTIONS")){
       readControlInfo();
       return true;
     }
@@ -97,7 +91,11 @@ public class GamessUSReader extends GamessReader {
       readEFPInBohrCoordinates();
       return false;
     }
-    if (line.indexOf("  EIGENVECTORS") >= 0
+    if (line.indexOf("- ALPHA SET -") >= 0)
+      alphaBeta = "alpha";
+    else if (line.indexOf("- BETA SET -") >= 0)
+      alphaBeta = "beta";
+    else if  (line.indexOf("  EIGENVECTORS") >= 0
         || line.indexOf("  INITIAL GUESS ORBITALS") >= 0
         || line.indexOf("  MCSCF OPTIMIZED ORBITALS") >= 0
         || line.indexOf("  MCSCF NATURAL ORBITALS") >= 0
@@ -106,10 +104,6 @@ public class GamessUSReader extends GamessReader {
             .indexOf("  MOLECULAR ORBITALS LOCALIZED BY THE POPULATION METHOD") < 0) {
       if (!filterMO())
         return true;
-      if (isUHF) {
-        //should read alpha and beta
-        return true;
-      }
       // energies and possibly symmetries
       readMolecularOrbitals(HEADER_GAMESS_ORIGINAL);
       return false;
@@ -118,10 +112,6 @@ public class GamessUSReader extends GamessReader {
         || line.indexOf("  THE PIPEK-MEZEY POPULATION LOCALIZED ORBITALS ARE") >= 0) {
       if (!filterMO())
         return true;
-      if (isUHF) {
-        //should read alpha and beta
-        return true;
-      }
       readMolecularOrbitals(HEADER_NONE);
       return false;
     }
@@ -137,6 +127,12 @@ public class GamessUSReader extends GamessReader {
     }
     return checkNboLine();
   }
+  
+  protected void readMolecularOrbitals(int headerType) throws Exception {
+    setCalculationType();
+    super.readMolecularOrbitals(headerType);
+  }
+  
   /*
 
    for H2ORHF, the Z entries are nuclear positions
@@ -385,72 +381,4 @@ public class GamessUSReader extends GamessReader {
 
    */
   
-  /*
-      BASIS OPTIONS
-     -------------
-     GBASIS=N311         IGAUSS=       6      POLAR=DUNNING 
-     NDFUNC=       3     NFFUNC=       1     DIFFSP=       T
-     NPFUNC=       3      DIFFS=       T
-     SPLIT3=     4.00000000     1.00000000     0.25000000
-
-
-   */
-  private void readBasisInfo() throws Exception {
-    // This should probably be extended beyond GBASIS and IGAUSS
-    String igauss = "";
-    String gbasis = "";
-    while (readLine() != null && line.trim().length() > 0) {
-      if (line.contains("GBASIS=")) {
-        int start = line.indexOf("GBASIS=") + 7;
-        int end = start + 10;
-        gbasis = line.substring(start, end).trim();
-      }
-      if (line.contains("IGAUSS=")) {
-        int start = line.indexOf("IGAUSS=") + 7;
-        int end = start + 10;
-        igauss = line.substring(start, end).trim();
-      }
-    }
-    if (calculationType == "?" && igauss != "") {
-      calculationType = "";
-    }
-    calculationType = calculationType + igauss + "-" + gbasis;
-  }
-/*
-     $CONTRL OPTIONS
-     ---------------
- SCFTYP=UHF          RUNTYP=OPTIMIZE     EXETYP=RUN     
- MPLEVL=       2     CITYP =NONE         CCTYP =NONE         VBTYP =NONE    
- DFTTYP=NONE         TDDFT =NONE    
- MULT  =       3     ICHARG=       0     NZVAR =       0     COORD =UNIQUE  
- PP    =NONE         RELWFN=NONE         LOCAL =NONE         NUMGRD=       F
- ISPHER=       1     NOSYM =       0     MAXIT =      30     UNITS =ANGS    
- PLTORB=       F     MOLPLT=       F     AIMPAC=       F     FRIEND=        
- NPRINT=       7     IREST =       0     GEOM  =INPUT   
- NORMF =       0     NORMP =       0     ITOL  =      20     ICUT  =       9
- INTTYP=BEST         GRDTYP=BEST         QMTTOL= 1.0E-06
-
-     $SYSTEM OPTIONS
- */
-  private void readControlInfo() throws Exception {
-    // This should be extended beyond SCFTYP and RUNTYP.
-    String SCFtype = "";
-    String Runtype = "";
-    while (readLine() != null && line.trim().length() > 0) {
-      if (line.contains("SCFTYP=")) {
-        int start = line.indexOf("SCFTYP=") + 7;
-        int end = start + 10;
-        SCFtype = line.substring(start, end).trim();
-      }
-      if (line.contains("RUNTYP=")) {
-        int start = line.indexOf("RUNTYP=") + 7;
-        int end = start + 12;
-        Runtype = line.substring(start, end).trim();
-      }
-    }
-    if (calculationType == "?" && SCFtype != "") {
-      calculationType = "";
-    }
-    calculationType = calculationType + SCFtype + " " + Runtype;
-  }
 }

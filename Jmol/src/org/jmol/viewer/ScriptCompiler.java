@@ -40,9 +40,9 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
    * The Compiler clas is really two parts -- 
    * 
    * Compiler.class          going from characters to tokens
-   * CompliationTOkenParser  further syntax checking and modifications
+   * CompilationTokenParser  further syntax checking and modifications
    * 
-   * The data structure follow the following sequences:
+   * The data structures follow the following sequences:
    * 
    * String script ==> Vector lltoken[][] --> Token[][] aatokenCompiled[][]
    * 
@@ -67,8 +67,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   private Token[][] aatokenCompiled;
   private short[] lineNumbers;
   private int[][] lineIndices;
-
-  
   
   private int lnLength = 8;
   private boolean preDefining;
@@ -77,7 +75,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   private boolean haveComments;
 
   private ScriptFunction thisFunction;
-  
   
   boolean compile(String filename, String script, boolean isPredefining,
                   boolean isSilent, boolean debugScript, boolean isCheckOnly) {
@@ -776,8 +773,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         return ERROR(ERROR_missingEnd, "data");
       return CONTINUE;
     }
-    
-    
     if (tokCommand == Token.sync && nTokens == 1 && charToken()) {
       String ident = script.substring(ichToken, ichToken + cchToken);
       addTokenToPrefix(new Token(Token.identifier, ident));
@@ -1572,22 +1567,17 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   private boolean lookingAtString() {
     if (ichToken == cchScript)
       return false;
-    if (script.charAt(ichToken) != '"')
+    char chFirst = script.charAt(ichToken);
+    if (chFirst != '"' && chFirst != '\'')
       return false;
-    // remove support for single quote
-    // in order to use it in atom expressions
-    //    char chFirst = script.charAt(ichToken);
-    //    if (chFirst != '"' && chFirst != '\'')
-    //      return false;
     int ichT = ichToken;
-    //    while (ichT < cchScript && script.charAt(ichT++) != chFirst)
     char ch;
     boolean previousCharBackslash = false;
     while (++ichT < cchScript) {
       ch = script.charAt(ichT);
-      if (ch == '"' && !previousCharBackslash)
+      if (ch == chFirst && !previousCharBackslash)
         break;
-      previousCharBackslash = ch == '\\' ? !previousCharBackslash : false;
+      previousCharBackslash = (ch == '\\' ? !previousCharBackslash : false);
     }
     if (ichT == cchScript)
       cchToken = -1;

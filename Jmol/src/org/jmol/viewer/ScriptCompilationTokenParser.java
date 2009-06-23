@@ -193,29 +193,21 @@ abstract class ScriptCompilationTokenParser {
   }
   
   private int tokPeek() {
-    if (itokenInfix >= atokenInfix.length)
-      return Token.nada;
-    System.out.println("peeking at " + Token.nameOf(atokenInfix[itokenInfix].tok));
-    return atokenInfix[itokenInfix].tok;
+    return (itokenInfix >= atokenInfix.length ? Token.nada
+        : atokenInfix[itokenInfix].tok);
   }
 
   private boolean tokPeek(int tok) {
-    if (itokenInfix >= atokenInfix.length)
-      return false;
-    System.out.println("peeking at " + Token.nameOf(atokenInfix[itokenInfix].tok));
-    return (atokenInfix[itokenInfix].tok == tok);
+    return (itokenInfix < atokenInfix.length && atokenInfix[itokenInfix].tok == tok);
   }
 
   private int intPeek() {
-    if (itokenInfix >= atokenInfix.length)
-      return Integer.MAX_VALUE;
-    return atokenInfix[itokenInfix].intValue;    
+    return (itokenInfix >= atokenInfix.length ? Integer.MAX_VALUE
+        : atokenInfix[itokenInfix].intValue);
   }
   
   private Object valuePeek() {
-    if (moreTokens())
-      return atokenInfix[itokenInfix].value;
-    return "";
+    return (moreTokens() ? atokenInfix[itokenInfix].value : "");
   }
  
   /**
@@ -223,9 +215,8 @@ abstract class ScriptCompilationTokenParser {
    * @return the next token
    */
   private Token tokenNext() {
-    if (itokenInfix >= atokenInfix.length)
-      return null;
-    return atokenInfix[itokenInfix++];
+    return (itokenInfix >= atokenInfix.length ? null 
+        : atokenInfix[itokenInfix++]);
   }
   
   private boolean tokenNext(int tok) {

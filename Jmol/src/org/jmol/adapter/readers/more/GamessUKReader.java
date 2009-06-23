@@ -42,6 +42,14 @@ public class GamessUKReader extends GamessReader {
    * 
    */
   protected boolean checkLine() throws Exception {
+    if (line.contains("BASIS OPTIONS")){
+      readBasisInfo();
+      return true;
+    }    
+    if (line.contains("$CONTRL OPTIONS")){
+      readControlInfo();
+      return true;
+    }
     if (line.indexOf("contracted primitive functions") >= 0) {
       readGaussianBasis(
           "======================================================", "======");

@@ -9374,10 +9374,14 @@ class ScriptEvaluator {
       if (tok == Token.image) {
         pt++;
       } else if (tok == Token.frame) {
-        bsFrames = expression(args, ++pt, 0, true, false, true, true);
+        if (args[++pt].tok == Token.expressionBegin || args[pt].tok == Token.bitset) {
+          bsFrames = expression(args, pt, 0, true, false, true, true);
+          pt = iToken + 1;
+        } else {
+          bsFrames = viewer.getModelAtomBitSet(-1, false);
+        }
         if (!isSyntaxCheck)
           bsFrames = viewer.getModelBitSet(bsFrames, true);
-        pt = iToken + 1;
       } else if (Parser.isOneOf(type, driverList.toLowerCase())) {
         // povray, maya, vrml, u3d
         pt++;

@@ -50,16 +50,16 @@ public class GamessUSReader extends GamessReader {
    */
   protected boolean checkLine() throws Exception {
     boolean isBohr;
-    if (line.contains("SCFTYP=UHF")){
+    if (line.contains("SCFTYP=UHF")) {
       isUHF = true;
       ignoreMOs = (filter == null);
       Logger.warn("Skipping reading of MOs when UHF.\n   No orbitals read.");
     }
-    if (line.contains("BASIS OPTIONS")){
+    if (line.contains("BASIS OPTIONS")) {
       readBasisInfo();
       return true;
-    }    
-    if (line.contains("$CONTRL OPTIONS")){
+    }
+    if (line.contains("$CONTRL OPTIONS")) {
       readControlInfo();
       return true;
     }
@@ -395,30 +395,27 @@ public class GamessUSReader extends GamessReader {
 
 
    */
-private void readBasisInfo() throws Exception {
-  //This should probably be extended beyond GBASIS and IGAUSS
-  String igauss = "";
-  String gbasis = "";
-  while(readLine()!=null && line.trim().length()>0){
-    if(line.contains("GBASIS=")){
-      int start = line.indexOf("GBASIS=")+7;
-      int end = start + 10;
-      gbasis = line.substring(start,end).trim();
+  private void readBasisInfo() throws Exception {
+    // This should probably be extended beyond GBASIS and IGAUSS
+    String igauss = "";
+    String gbasis = "";
+    while (readLine() != null && line.trim().length() > 0) {
+      if (line.contains("GBASIS=")) {
+        int start = line.indexOf("GBASIS=") + 7;
+        int end = start + 10;
+        gbasis = line.substring(start, end).trim();
+      }
+      if (line.contains("IGAUSS=")) {
+        int start = line.indexOf("IGAUSS=") + 7;
+        int end = start + 10;
+        igauss = line.substring(start, end).trim();
+      }
     }
-    if(line.contains("IGAUSS=")){
-      int start = line.indexOf("IGAUSS=")+7;
-      int end = start + 10;
-      igauss = line.substring(start,end).trim();
+    if (calculationType == "?" && igauss != "") {
+      calculationType = "";
     }
+    calculationType = calculationType + igauss + "-" + gbasis;
   }
-  if (calculationType=="?"&& igauss!=""){
-    calculationType ="";
-  }
-  calculationType=calculationType.concat(igauss);
-  calculationType=calculationType.concat("-");
-  calculationType=calculationType.concat(gbasis);
-  calculationType=calculationType.concat(" ");
-}
 /*
      $CONTRL OPTIONS
      ---------------
@@ -435,27 +432,25 @@ private void readBasisInfo() throws Exception {
 
      $SYSTEM OPTIONS
  */
-private void readControlInfo() throws Exception{
-  //This should be extended beyond SCFTYP and RUNTYP.
-  String SCFtype = "";
-  String Runtype = "";
-  while(readLine()!=null && line.trim().length()>0){
-    if(line.contains("SCFTYP=")){
-      int start = line.indexOf("SCFTYP=")+7;
-      int end = start + 10;
-      SCFtype = line.substring(start,end).trim();
+  private void readControlInfo() throws Exception {
+    // This should be extended beyond SCFTYP and RUNTYP.
+    String SCFtype = "";
+    String Runtype = "";
+    while (readLine() != null && line.trim().length() > 0) {
+      if (line.contains("SCFTYP=")) {
+        int start = line.indexOf("SCFTYP=") + 7;
+        int end = start + 10;
+        SCFtype = line.substring(start, end).trim();
+      }
+      if (line.contains("RUNTYP=")) {
+        int start = line.indexOf("RUNTYP=") + 7;
+        int end = start + 12;
+        Runtype = line.substring(start, end).trim();
+      }
     }
-    if(line.contains("RUNTYP=")){
-      int start = line.indexOf("RUNTYP=")+7;
-      int end = start + 12;
-      Runtype = line.substring(start,end).trim();
+    if (calculationType == "?" && SCFtype != "") {
+      calculationType = "";
     }
+    calculationType = calculationType + SCFtype + " " + Runtype;
   }
-  if (calculationType=="?"&& SCFtype!=""){
-    calculationType ="";
-  }
-  calculationType=calculationType.concat(SCFtype);
-  calculationType=calculationType.concat(" ");
-  calculationType=calculationType.concat(Runtype);
-  calculationType=calculationType.concat(" ");}
 }

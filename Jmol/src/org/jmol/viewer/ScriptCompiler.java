@@ -586,6 +586,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           forceFlowEnd(flowContext.token);
           isEndOfCommand = true;
           cchToken = 0;
+          ichCurrentCommand = ichToken;
           lineCurrent--;
           return CONTINUE;
         }
@@ -2022,7 +2023,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   }
   
   private boolean handleError() {
-    errorLine = script.substring(ichCurrentCommand, ichEnd == ichCurrentCommand ? ichToken : ichEnd);
+    errorLine = script.substring(ichCurrentCommand, ichEnd <= ichCurrentCommand ? ichToken : ichEnd);
     String lineInfo = (ichToken < ichEnd ? errorLine.substring(0,
         ichToken - ichCurrentCommand)
         + " >>>> " + errorLine.substring(ichToken - ichCurrentCommand) : errorLine)

@@ -761,7 +761,13 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         }
       }
     }
-    if (lookingAtString()) {
+    
+    // cd, echo, gotocmd, help, hover, javascript, label, message, and pause
+    // all are implicitly strings. You CAN use "..." but you don't have to,
+    // and you cannot use '...'. This way the introduction of single quotes 
+    // as an equivalent of double quotes cannot break existing scripts. -- BH 06/2009
+    
+    if (lookingAtString(!Token.tokAttr(tokCommand, Token.implicitStringCommand))) {
       if (cchToken < 0)
         return ERROR(ERROR_endOfCommandUnexpected);
       String str = ((tokCommand == Token.load || tokCommand == Token.background || tokCommand == Token.script)
@@ -1492,7 +1498,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     if (script.length() > ichToken && script.charAt(ichToken) == '\n') {
       lineCurrent++;ichToken++;
     }
-    int i = script.indexOf("\"" + key + "\"", ichToken) - 4;
+    int i = script.indexOf(chFirst + key + chFirst, ichToken) - 4;
     if (i < 0 || !script.substring(i, i + 4).equalsIgnoreCase("END "))
       return false;
     String str = script.substring(ichToken, i);
@@ -1564,11 +1570,12 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     return false;
   }
 
-  private boolean lookingAtString() {
+  char chFirst;
+  private boolean lookingAtString(boolean allowPrime) {
     if (ichToken == cchScript)
       return false;
-    char chFirst = script.charAt(ichToken);
-    if (chFirst != '"' && chFirst != '\'')
+    chFirst = script.charAt(ichToken);
+    if (chFirst != '"' && (!allowPrime || chFirst != '\''))
       return false;
     int ichT = ichToken;
     char ch;

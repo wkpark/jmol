@@ -345,11 +345,15 @@ abstract class MOReader extends AtomSetCollectionReader {
       }
       if (line.indexOf("end") >= 0)
         break;
-      if (line.indexOf(" ALPHA SET ") >= 0)
+      if (line.indexOf(" ALPHA SET ") >= 0) {
         alphaBeta = "alpha";
-      else if (line.indexOf(" BETA SET ") >= 0)
+        if (readLine() == null)
+          break;
+      } else if (line.indexOf(" BETA SET ") >= 0) {
         alphaBeta = "beta";
-
+        if (readLine() == null)
+          break;
+      }
         //not everyone has followed the conventions for ending a section of output
       if (line.length() == 0 || line.indexOf("--") >= 0 || line.indexOf(".....") >=0 
            || line.indexOf("NBO BASIS") >= 0 // reading NBOs

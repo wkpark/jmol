@@ -70,7 +70,11 @@ public class GamessUKReader extends GamessReader {
       readOrbitalSymmetryAndOccupancy();
       return false;
     } 
-    if (line.indexOf("eigenvectors") >= 0) {
+    if (line.indexOf("- ALPHA SET -") >= 0)
+      alphaBeta = "alpha";
+    else if (line.indexOf("- BETA SET -") >= 0)
+      alphaBeta = "beta";
+    else if (line.indexOf("eigenvectors") >= 0) {
       readMolecularOrbitals(HEADER_GAMESS_UK_MO);
       setOrbitalSymmetryAndOccupancy();
       return false;

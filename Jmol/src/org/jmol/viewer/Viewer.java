@@ -3767,6 +3767,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // + " " + Thread.currentThread().getId());
     if (checkResume(strScript))
       return "script processing resumed"; // be very odd if this fired
+    if (checkStepping(strScript))
+      return "script processing stepped";
     if (checkHalt(strScript))
       return "script execution halted";
     if (strScript == null)

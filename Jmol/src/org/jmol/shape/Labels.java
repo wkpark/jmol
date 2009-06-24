@@ -340,7 +340,7 @@ public class Labels extends AtomShape {
       formats[i] = strLabel;
       bsSizeSet.set(i, (strLabel != null));
       text = getLabel(i);
-      if (text == null && isScaled) {
+      if (isScaled) {
         text = new Text(g3d, null, label, (short) 0, (short) 0, 0, 0, 0, 0,
             0, scalePixelsPerMicron);
         putLabel(i, text);

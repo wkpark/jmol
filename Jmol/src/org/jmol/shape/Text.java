@@ -327,7 +327,7 @@ public class Text extends Object2d {
       yBoxOffset = yOffset;
     } else {
       if (yOffset == 0)
-        yBoxOffset = -boxHeight / 2 - 2;
+        yBoxOffset = -boxHeight / 2; //- 2;
       else
         yBoxOffset = -boxHeight + yOffset;
     }

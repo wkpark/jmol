@@ -870,7 +870,8 @@ class ScriptEvaluator {
             if (isExpression) {
               fixed[j] = new Token(Token.bitset, getAtomBitSet(this, s));
             } else {
-              tok = (isClauseDefine || s.indexOf(".") >= 0
+              tok = (isClauseDefine || tokAt(0) == Token.load && j == 1 
+                  || s.indexOf(".") >= 0
                   || s.indexOf(" ") >= 0 || s.indexOf("=") >= 0
                   || s.indexOf(";") >= 0 || s.indexOf("[") >= 0
                   || s.indexOf("{") >= 0 ? Token.string : Token.identifier);
@@ -906,6 +907,8 @@ class ScriptEvaluator {
       j++;
     }
     statement = fixed;
+    for (i = j; i < statement.length; i++)
+      statement[i] = null;
     statementLength = j;
     return true;
   }
@@ -4390,6 +4393,8 @@ class ScriptEvaluator {
       //showString("Cannot pause thread when _useCommandThread = FALSE: " + msg);
       //return;
     }
+    if (viewer.autoExit || !viewer.haveDisplay)
+      return;
     if (scriptLevel == 0 && pc == aatoken.length - 1) {
       viewer.scriptStatus("nothing to pause: " + msg); 
       return;
@@ -12192,8 +12197,13 @@ class ScriptEvaluator {
     boolean inClauseDefine = false;
     boolean setEquals = (tok == Token.set
         && ((String) statement[0].value) == "" && statement[0].intValue == '=' && tokAt(1) != Token.expressionBegin);
-    for (int i = 0; i < statement.length; ++i) {
+    int len = statement.length;
+    for (int i = 0; i < len; ++i) {
       Token token = statement[i];
+      if (token == null) {
+        len = i;
+        break;
+      }
       if (iTok == i - 1)
         sb.append(" <<");
       if (i != 0)
@@ -12337,7 +12347,7 @@ class ScriptEvaluator {
         // value SHOULD NEVER BE NULL, BUT JUST IN CASE...
         sb.append(token.value.toString());
     }
-    if (iTok >= statement.length - 1)
+    if (iTok >= len - 1)
       sb.append(" <<");
     return sb.toString();
   }

@@ -317,7 +317,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   boolean autoExit = false;
-  private boolean haveDisplay = true;
+  boolean haveDisplay = true;
   private boolean isPrintOnly = false;
   private boolean mustRender = true;
   private boolean checkScriptOnly = false;

@@ -199,7 +199,7 @@ class ScriptEvaluator {
       if (withVariables) {
         if (stack[i].contextVariables != null) {
           sb.append(getScriptID(stack[i]));
-          sb.append(StateManager.getVariableList(stack[i].contextVariables));
+          sb.append(StateManager.getVariableList(stack[i].contextVariables, 80));
         }
       } else {
         sb.append(setErrorLineMessage(stack[i].functionName, stack[i].filename,
@@ -210,7 +210,7 @@ class ScriptEvaluator {
     if (withVariables) {
       if (contextVariables != null) {
         sb.append(getScriptID(null));
-        sb.append(StateManager.getVariableList(contextVariables));
+        sb.append(StateManager.getVariableList(contextVariables, 80));
       }
     } else {
       sb.append(setErrorLineMessage(functionName, filename,
@@ -775,17 +775,18 @@ class ScriptEvaluator {
             pc++;
             if (error)
               scriptStatusOrBuffer(errorMessage);
-            pauseExecution();
+            else 
+              pauseExecution();
           }
         }
-        viewer.scriptStatus("script execution resumed");
+        viewer.scriptStatus("script execution " + (error || interruptExecution ? "interrupted" : "resumed"));
       } catch (Exception e) {
 
       }
       Logger.debug("script execution resumed");
     }
     // once more to trap quit during pause
-    return !interruptExecution;
+    return !error && !interruptExecution;
   }
 
   private int commandHistoryLevelMax = 0;

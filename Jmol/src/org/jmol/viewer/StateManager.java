@@ -68,7 +68,7 @@ public class StateManager {
   public final static int OBJ_MAX = 7;
   private final static String objectNameList = "background axis1      axis2      axis3      boundbox   unitcell   frank      ";
 
-  static String getVariableList(Hashtable htVariables) {
+  static String getVariableList(Hashtable htVariables, int nMax) {
     StringBuffer sb = new StringBuffer();
     //user variables only:
     int n = 0;
@@ -79,7 +79,7 @@ public class StateManager {
       String key = (String) e.nextElement();
       ScriptVariable var = (ScriptVariable) htVariables.get(key);
       list[n++] = key  + (key.charAt(0) == '@' ? " "
-              + ScriptVariable.sValue(var) : " = " + var.escape());
+              + ScriptVariable.sValue(var) : " = " + varClip(key, var.escape(), nMax));
     }
     Arrays.sort(list, 0, n);
     for (int i = 0; i < n; i++)
@@ -466,7 +466,7 @@ public class StateManager {
   Hashtable localFunctions = new Hashtable();
 
   boolean isFunction(String name) {
-    return (name.indexOf("_") == 0 ? localFunctions : globalFunctions).containsKey(name);
+    return (name.indexOf("_") == 0 ? globalFunctions : localFunctions).containsKey(name);
   }
 
   void addFunction(ScriptFunction function) {
@@ -943,12 +943,7 @@ public class StateManager {
       name = name.toLowerCase();
       if (htParameterValues.containsKey(name)) {
         Object v = htParameterValues.get(name);
-        String sv = Escape.escape(v);
-        if (nMax > 0 && sv.length() > nMax)
-          sv = sv.substring(0, nMax) + "\n#...(" + sv.length()
-              + " bytes -- use SHOW " + name + " or MESSAGE @" + name
-              + " to view)";
-        return sv;
+        return varClip(name, Escape.escape(v), nMax);
       }
       if (htPropertyFlags.containsKey(name))
         return htPropertyFlags.get(name).toString();
@@ -1111,7 +1106,7 @@ public class StateManager {
           appendCmd(commands, list[i]);
 
       commands.append("\n#user-defined variables; \n");
-      commands.append(StateManager.getVariableList(htUserVariables));
+      commands.append(StateManager.getVariableList(htUserVariables, 0));
 
       // label defaults
 
@@ -1349,7 +1344,7 @@ public class StateManager {
     }
 
     String getVariableList() {
-      return StateManager.getVariableList(htUserVariables);
+      return StateManager.getVariableList(htUserVariables, 0);
     }
 
   }
@@ -1366,6 +1361,14 @@ public class StateManager {
     }
     for (int i = i1; i <= i2; i++)
       bs.set(i);
+  }
+
+  public static String varClip(String name, String sv, int nMax) {
+    if (nMax > 0 && sv.length() > nMax)
+      sv = sv.substring(0, nMax) + " #...more (" + sv.length()
+          + " bytes -- use SHOW " + name + " or MESSAGE @" + name
+          + " to view)";
+    return sv;
   }
 
   public static String getCommands(Hashtable ht) {

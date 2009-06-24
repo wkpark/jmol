@@ -99,6 +99,7 @@ class ScriptEvaluator {
 
   private boolean interruptExecution;
   private boolean executionPaused;
+  private boolean executionStepping;
   private boolean isExecuting;
 
   private long timeBeginExecution;
@@ -192,9 +193,14 @@ class ScriptEvaluator {
     return null;
   }
 
+  String getNextStatement() {
+    return (pc < aatoken.length ? 
+        setErrorLineMessage(functionName, filename,
+            getLinenumber(null), pc, statementAsString(aatoken[pc], -9999)) : "");  
+  }
+  
   private String getContext(boolean withVariables) {
     StringBuffer sb = new StringBuffer();
-    iToken = -9999;
     for (int i = 0; i < scriptLevel; i++) {
       if (withVariables) {
         if (stack[i].contextVariables != null) {
@@ -204,7 +210,7 @@ class ScriptEvaluator {
       } else {
         sb.append(setErrorLineMessage(stack[i].functionName, stack[i].filename,
             getLinenumber(stack[i]), stack[i].pc,
-            statementAsString(stack[i].statement)));
+            statementAsString(stack[i].statement, -9999)));
       }
     }
     if (withVariables) {
@@ -214,7 +220,7 @@ class ScriptEvaluator {
       }
     } else {
       sb.append(setErrorLineMessage(functionName, filename,
-      getLinenumber(null), pc, statementAsString(statement)));
+      getLinenumber(null), pc, statementAsString(statement, -9999)));
     }
 
     return sb.toString();
@@ -312,7 +318,7 @@ class ScriptEvaluator {
     boolean tempOpen = fileOpenCheck;
     fileOpenCheck = openFiles;
     viewer.pushHoldRepaint("runEval");
-    interruptExecution = executionPaused = false;
+    interruptExecution = executionPaused = executionStepping = false;
     isExecuting = true;
     currentThread = Thread.currentThread();
     isSyntaxCheck = checkingScriptOnly = checkScriptOnly;
@@ -739,6 +745,7 @@ class ScriptEvaluator {
       return;
     delay(-100);
     viewer.popHoldRepaint("pauseExecution");
+    executionStepping = false;
     executionPaused = true;
   }
 
@@ -747,6 +754,14 @@ class ScriptEvaluator {
   }
 
   void resumePausedExecution() {
+    executionPaused = false;
+    executionStepping = false;
+  }
+
+  void stepPausedExecution() {
+    if (!executionPaused)
+      return;
+    executionStepping = true;
     executionPaused = false;
   }
 
@@ -779,7 +794,8 @@ class ScriptEvaluator {
               pauseExecution();
           }
         }
-        viewer.scriptStatus("script execution " + (error || interruptExecution ? "interrupted" : "resumed"));
+        if (!executionStepping)
+          viewer.scriptStatus("script execution " + (error || interruptExecution ? "interrupted" : "resumed"));
       } catch (Exception e) {
 
       }
@@ -977,6 +993,9 @@ class ScriptEvaluator {
       }
       if (token == null)
         continue;
+      if (executionStepping && !isSyntaxCheck) {
+        viewer.scriptStatus(getNextStatement());
+      }
       switch (token.tok) {
       case Token.nada:
         break;
@@ -1301,6 +1320,10 @@ class ScriptEvaluator {
       }
       if (!isSyntaxCheck)
         viewer.setCursor(Viewer.CURSOR_DEFAULT);
+      if (executionStepping) {
+        executionStepping = false;
+        executionPaused = true;
+      }
     }
   }
 
@@ -1460,11 +1483,11 @@ class ScriptEvaluator {
       for (int i = 1; i < statementLength; ++i)
         Logger.debug(statement[i].toString());
     }
-    iToken = -2;
+    iToken = -9999;
     if (logMessages) {
       String s = (ifLevel > 0 ? "                          ".substring(0,
           ifLevel * 2) : "");
-      strbufLog.append(s).append(statementAsString(statement));
+      strbufLog.append(s).append(statementAsString(statement, iToken));
       viewer.scriptStatus(strbufLog.toString());
     } else {
       String cmd = getCommand(pc, false, false);
@@ -12149,7 +12172,7 @@ class ScriptEvaluator {
     return msg;
   }
 
-  private String statementAsString(Token[] statement) {
+  private String statementAsString(Token[] statement, int iTok) {
 //    System.out.println(statement.length + " " + statementLength);
     if (statement.length == 0)
       return "";
@@ -12171,7 +12194,7 @@ class ScriptEvaluator {
         && ((String) statement[0].value) == "" && statement[0].intValue == '=' && tokAt(1) != Token.expressionBegin);
     for (int i = 0; i < statement.length; ++i) {
       Token token = statement[i];
-      if (iToken == i - 1)
+      if (iTok == i - 1)
         sb.append(" <<");
       if (i != 0)
         sb.append(' ');
@@ -12180,7 +12203,7 @@ class ScriptEvaluator {
         if (token.tok != Token.opEQ)
           sb.append("= ");
       }
-      if (iToken == i && token.tok != Token.expressionEnd)
+      if (iTok == i && token.tok != Token.expressionEnd)
         sb.append(">> ");
       switch (token.tok) {
       case Token.expressionBegin:
@@ -12314,7 +12337,7 @@ class ScriptEvaluator {
         // value SHOULD NEVER BE NULL, BUT JUST IN CASE...
         sb.append(token.value.toString());
     }
-    if (iToken >= statement.length - 1)
+    if (iTok >= statement.length - 1)
       sb.append(" <<");
     return sb.toString();
   }
@@ -12323,7 +12346,7 @@ class ScriptEvaluator {
     StringBuffer sb = new StringBuffer();
     for (;;) {
       sb.append(setErrorLineMessage(functionName, filename, getLinenumber(null),
-          pc, statementAsString(statement)));
+          pc, statementAsString(statement, iToken)));
       if (scriptLevel > 0)
         popContext();
       else

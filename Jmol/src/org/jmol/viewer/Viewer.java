@@ -3655,6 +3655,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       strScript = strScript.substring(1);
     if (checkResume(strScript))
       return "script processing resumed";
+    if (checkStepping(strScript))
+      return "script processing stepped";
     if (checkHalt(strScript))
       return "script execution halted";
     if (isScriptExecuting() && (isInterrupt || eval.isExecutionPaused())) {
@@ -3681,6 +3683,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean checkResume(String strScript) {
     if (strScript.equalsIgnoreCase("resume")) {
       resumeScriptExecution();
+      return true;
+    }
+    return false;
+  }
+
+  public boolean checkStepping(String strScript) {
+    if (strScript.equalsIgnoreCase("step")) {
+      stepScriptExecution();
+      return true;
+    }
+    if (strScript.equalsIgnoreCase("?")) {
+      scriptStatus(eval.getNextStatement());
       return true;
     }
     return false;
@@ -3837,6 +3851,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void resumeScriptExecution() {
     eval.resumePausedExecution();
+  }
+
+  public void stepScriptExecution() {
+    eval.stepPausedExecution();
   }
 
   public void pauseScriptExecution() {

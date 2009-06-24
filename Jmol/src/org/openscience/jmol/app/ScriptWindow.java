@@ -59,6 +59,9 @@ public final class ScriptWindow extends JDialog
   ConsoleTextPane console;
   private JButton closeButton;
   private JButton runButton;
+  private JButton pauseButton;
+  private JButton stepButton;
+  private JButton questButton;
   private JButton haltButton;
   private JButton clearButton;
   private JButton historyButton;
@@ -94,6 +97,19 @@ public final class ScriptWindow extends JDialog
     runButton = new JButton(GT._("Run"));
     runButton.addActionListener(this);
     buttonPanel.add(runButton);
+
+    pauseButton = new JButton(GT._("Pause"));
+    pauseButton.addActionListener(this);
+    buttonPanel.add(pauseButton);
+    pauseButton.setEnabled(false);
+
+    questButton = new JButton("?");
+    questButton.addActionListener(this);
+    buttonPanel.add(questButton);
+
+    stepButton = new JButton(GT._("Step"));
+    stepButton.addActionListener(this);
+    buttonPanel.add(stepButton);
 
     haltButton = new JButton(GT._("Halt"));
     haltButton.addActionListener(this);
@@ -175,6 +191,8 @@ public final class ScriptWindow extends JDialog
       setError(true);
       runButton.setEnabled(true);
       haltButton.setEnabled(false);
+      pauseButton.setEnabled(false);
+      stepButton.setEnabled(true);
     } else if (!isError) {
       console.outputStatus(strStatus);
     }
@@ -183,10 +201,12 @@ public final class ScriptWindow extends JDialog
   public void notifyScriptStart() {
     runButton.setEnabled(true);
     haltButton.setEnabled(true);
+    pauseButton.setEnabled(true);
   }
 
   public void notifyScriptTermination() {
     runButton.setEnabled(true);
+    pauseButton.setEnabled(false);
     haltButton.setEnabled(false);
   }
 
@@ -222,8 +242,9 @@ public final class ScriptWindow extends JDialog
   }
    
   ExecuteCommandThread execThread;
-  void executeCommandAsThread(){ 
-    String strCommand = console.getCommandString().trim();
+  void executeCommandAsThread(String strCommand){ 
+    if (strCommand == null)
+      strCommand = console.getCommandString().trim();
     if (strCommand.equalsIgnoreCase("undo")) {
       undoRedo(false);
       console.appendNewline();
@@ -236,6 +257,8 @@ public final class ScriptWindow extends JDialog
       return;
     } else if (strCommand.equalsIgnoreCase("exitJmol")) {
       System.exit(0);
+    } else if (strCommand.length() == 0) {
+      strCommand = "!resume";
     }
       
     if (strCommand.length() > 0) {
@@ -337,12 +360,14 @@ public final class ScriptWindow extends JDialog
     if (doWait) { //for testing, mainly
       // demonstrates using the statusManager system; probably hangs application.
       runButton.setEnabled(false);
+      pauseButton.setEnabled(true);
       haltButton.setEnabled(true);
 
       Vector info = (Vector) viewer
           .scriptWaitStatus(strCommand.substring(5),
               "+fileLoaded,+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated");
       runButton.setEnabled(true);
+      pauseButton.setEnabled(false);
       haltButton.setEnabled(false);
       /*
        * info = [ statusRecortSet0, statusRecortSet1, statusRecortSet2, ...]
@@ -370,6 +395,7 @@ public final class ScriptWindow extends JDialog
         console.outputError(strErrorMessage);
       } else {
         runButton.setEnabled(true);
+        pauseButton.setEnabled(true);
         haltButton.setEnabled(true);
         viewer.script(strCommand);
       }
@@ -382,7 +408,13 @@ public final class ScriptWindow extends JDialog
     if (source == closeButton) {
       hide();
     } else if (source == runButton) {
-      executeCommandAsThread();
+      executeCommandAsThread(null);
+    } else if (source == pauseButton) {
+      executeCommandAsThread("!pause");
+    } else if (source == stepButton) {
+      executeCommandAsThread("!step");
+    } else if (source == questButton) {
+      executeCommandAsThread("!?");
     } else if (source == clearButton) {
       console.clearContent();
     } else if (source == historyButton) {

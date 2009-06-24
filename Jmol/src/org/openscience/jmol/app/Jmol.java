@@ -1835,6 +1835,9 @@ public class Jmol extends JPanel {
             scriptWindow.notifyScriptStart();
         } else {
           scriptWindow.sendConsoleMessage(strInfo);
+          if (data[2] != null && display != null)
+              display.status.setStatus(1, (String) data[2]);
+
         }
         break;
       case JmolConstants.CALLBACK_RESIZE:

@@ -4537,6 +4537,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     scriptStatus(strStatus, "", 0, null);
   }
 
+  void scriptStatus(String strStatus, String statusMessage) {
+    scriptStatus(strStatus, statusMessage, 0, null);
+  }
+
   private void scriptStatus(String strStatus, String statusMessage,
                             int msWalltime, String strErrorMessageUntranslated) {
     statusManager.setScriptStatus(strStatus, statusMessage, msWalltime,

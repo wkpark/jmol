@@ -68,6 +68,28 @@ public class StateManager {
   public final static int OBJ_MAX = 7;
   private final static String objectNameList = "background axis1      axis2      axis3      boundbox   unitcell   frank      ";
 
+  static String getVariableList(Hashtable htVariables) {
+    StringBuffer sb = new StringBuffer();
+    //user variables only:
+    int n = 0;
+    Enumeration e = htVariables.keys();
+
+    String[] list = new String[htVariables.size()];
+    while (e.hasMoreElements()) {
+      String key = (String) e.nextElement();
+      ScriptVariable var = (ScriptVariable) htVariables.get(key);
+      list[n++] = key  + (key.charAt(0) == '@' ? " "
+              + ScriptVariable.sValue(var) : " = " + var.escape());
+    }
+    Arrays.sort(list, 0, n);
+    for (int i = 0; i < n; i++)
+      if (list[i] != null)
+        appendCmd(sb, list[i]);
+    if (n == 0)
+      sb.append("# --no global user variables defined--;\n");
+    return sb.toString();
+  }
+  
   static int getObjectIdFromName(String name) {
     if (name == null)
       return -1;
@@ -931,16 +953,10 @@ public class StateManager {
       if (htPropertyFlags.containsKey(name))
         return htPropertyFlags.get(name).toString();
       if (htUserVariables.containsKey(name))
-        return escapeUserVariable(name);
+        return ((ScriptVariable) htUserVariables.get(name)).escape();
       if (htPropertyFlagsRemoved.containsKey(name))
         return "false";
       return "<not defined>";
-    }
-
-    private String escapeUserVariable(String name) {
-      ScriptVariable var = (ScriptVariable) htUserVariables.get(name);
-      // previously known to contain 
-      return var.escape();
     }
 
     /**
@@ -1095,7 +1111,7 @@ public class StateManager {
           appendCmd(commands, list[i]);
 
       commands.append("\n#user-defined variables; \n");
-      commands.append(getVariableList());
+      commands.append(StateManager.getVariableList(htUserVariables));
 
       // label defaults
 
@@ -1108,29 +1124,6 @@ public class StateManager {
       return commands.toString();
     }
 
-    String getVariableList() {
-      StringBuffer sb = new StringBuffer();
-      //user variables only:
-      int n = 0;
-      String key;
-      Enumeration e = htUserVariables.keys();
-
-      String[] list = new String[htUserVariables.size()];
-      while (e.hasMoreElements())
-        list[n++] = (key = (String) e.nextElement())
-            + (key.charAt(0) == '@' ? " "
-                + ScriptVariable.sValue((ScriptVariable) htUserVariables.get(key)) : " = "
-                + escapeUserVariable(key));
-
-      Arrays.sort(list, 0, n);
-      for (int i = 0; i < n; i++)
-        if (list[i] != null)
-          appendCmd(sb, list[i]);
-      if (n == 0)
-        sb.append("# --none--;\n");
-      return sb.toString();
-    }
-    
     private boolean doReportProperty(String name) {
       //System.out.println(unreportedProperties);
       return (name.charAt(0) != '_' && unreportedProperties.indexOf(";" + name
@@ -1353,6 +1346,10 @@ public class StateManager {
       setParameterValue("zoomLarge", zoomLarge);
       setParameterValue("zShade", zShade);
       setParameterValue("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
+    }
+
+    String getVariableList() {
+      return StateManager.getVariableList(htUserVariables);
     }
 
   }

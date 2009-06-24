@@ -192,6 +192,31 @@ class ScriptEvaluator {
     return null;
   }
 
+  private String getContextVariableList() {
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < scriptLevel; i++)
+      if (stack[i].contextVariables != null) {
+        sb.append(getScriptID(stack[i]));
+        sb.append(StateManager.getVariableList(stack[i].contextVariables));
+      }
+    if (contextVariables != null) {
+      sb.append(getScriptID(null));
+      sb.append(StateManager.getVariableList(contextVariables));
+    }
+    return sb.toString();
+  }
+
+
+  private String getScriptID(Context context) {
+    String id = "";
+    if (context == null) {
+      id = filename + "\n# function " + functionName;
+    } else {
+      id = context.filename + "\n# function " + context.functionName;
+    }
+    return "\n# file: " + id + "\n";
+  }
+
   private String getParameterEscaped(String var) {
     ScriptVariable v = getContextVariableAsVariable(var);
     return (v == null ? "" + viewer.getParameterEscaped(var) : Escape
@@ -4339,7 +4364,7 @@ class ScriptEvaluator {
     pauseExecution();
     msg = (msg.length() == 0 ? ": RESUME to continue." 
         : ": " + viewer.formatText(msg));
-    viewer.scriptStatus("script execution paused" + msg);
+    viewer.scriptStatus("script execution paused" + msg, "script paused for RESUME");
   }
 
   private void label(int index) throws ScriptException {
@@ -9707,7 +9732,7 @@ class ScriptEvaluator {
     case Token.identifier:
       if (str.equalsIgnoreCase("variables")) {
         if (!isSyntaxCheck)
-          msg = viewer.getVariableList();
+          msg = viewer.getVariableList() + getContextVariableList();
       } else if (str.equalsIgnoreCase("historyLevel")) {
         value = "" + commandHistoryLevelMax;
       } else if (str.equalsIgnoreCase("defaultLattice")) {

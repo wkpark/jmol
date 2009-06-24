@@ -192,29 +192,38 @@ class ScriptEvaluator {
     return null;
   }
 
-  private String getContextVariableList() {
+  private String getContext(boolean withVariables) {
     StringBuffer sb = new StringBuffer();
-    for (int i = 0; i < scriptLevel; i++)
-      if (stack[i].contextVariables != null) {
-        sb.append(getScriptID(stack[i]));
-        sb.append(StateManager.getVariableList(stack[i].contextVariables));
+    iToken = -9999;
+    for (int i = 0; i < scriptLevel; i++) {
+      if (withVariables) {
+        if (stack[i].contextVariables != null) {
+          sb.append(getScriptID(stack[i]));
+          sb.append(StateManager.getVariableList(stack[i].contextVariables));
+        }
+      } else {
+        sb.append(setErrorLineMessage(stack[i].functionName, stack[i].filename,
+            getLinenumber(stack[i]), stack[i].pc,
+            statementAsString(stack[i].statement)));
       }
-    if (contextVariables != null) {
-      sb.append(getScriptID(null));
-      sb.append(StateManager.getVariableList(contextVariables));
     }
+    if (withVariables) {
+      if (contextVariables != null) {
+        sb.append(getScriptID(null));
+        sb.append(StateManager.getVariableList(contextVariables));
+      }
+    } else {
+      sb.append(setErrorLineMessage(functionName, filename,
+      getLinenumber(null), pc, statementAsString(statement)));
+    }
+
     return sb.toString();
   }
 
-
   private String getScriptID(Context context) {
-    String id = "";
-    if (context == null) {
-      id = filename + "\n# function " + functionName;
-    } else {
-      id = context.filename + "\n# function " + context.functionName;
-    }
-    return "\n# file: " + id + "\n";
+    String fuName = (context == null ? functionName : "function " + context.functionName);
+    String fiName = (context == null ? filename : context.filename);    
+    return "\n# " + fuName + " (file " + fiName + ")\n";
   }
 
   private String getParameterEscaped(String var) {
@@ -1395,8 +1404,8 @@ class ScriptEvaluator {
     return ((Boolean) parameterExpression(1, 0, null, false)).booleanValue();
   }
 
-  private int getLinenumber() {
-    return lineNumbers[pc];
+  private int getLinenumber(Context c) {
+    return (c == null ? lineNumbers[pc] : c.lineNumbers[c.pc]);
   }
 
   private String getCommand(int pc, boolean allThisLine, boolean addSemi) {
@@ -1454,7 +1463,7 @@ class ScriptEvaluator {
     if (logMessages) {
       String s = (ifLevel > 0 ? "                          ".substring(0,
           ifLevel * 2) : "");
-      strbufLog.append(s).append(statementAsString());
+      strbufLog.append(s).append(statementAsString(statement));
       viewer.scriptStatus(strbufLog.toString());
     } else {
       String cmd = getCommand(pc, false, false);
@@ -4361,9 +4370,9 @@ class ScriptEvaluator {
       viewer.scriptStatus("nothing to pause: " + msg); 
       return;
     }
-    pauseExecution();
     msg = (msg.length() == 0 ? ": RESUME to continue." 
         : ": " + viewer.formatText(msg));
+    pauseExecution();
     viewer.scriptStatus("script execution paused" + msg, "script paused for RESUME");
   }
 
@@ -9729,10 +9738,14 @@ class ScriptEvaluator {
       msg = viewer.getPdbData(modelIndex,
           theTok == Token.quaternion ? "quaternion w" : "ramachandran");
       break;
+    case Token.trace:
+      if (!isSyntaxCheck)
+        msg = getContext(false);
+      break;
     case Token.identifier:
       if (str.equalsIgnoreCase("variables")) {
         if (!isSyntaxCheck)
-          msg = viewer.getVariableList() + getContextVariableList();
+          msg = viewer.getVariableList() + getContext(true);
       } else if (str.equalsIgnoreCase("historyLevel")) {
         value = "" + commandHistoryLevelMax;
       } else if (str.equalsIgnoreCase("defaultLattice")) {
@@ -12135,14 +12148,16 @@ class ScriptEvaluator {
     return msg;
   }
 
-  private String statementAsString() {
+  private String statementAsString(Token[] statement) {
+//    System.out.println(statement.length + " " + statementLength);
     if (statement.length == 0)
       return "";
     StringBuffer sb = new StringBuffer();
     int tok = statement[0].tok;
     switch (tok) {
     case Token.nada:
-      return "#" + statement[0].value;
+      String s = (String) statement[0].value;
+      return (s.startsWith("/") ? "/" : "#") + s;
     case Token.end:
       if (statement.length == 2 && statement[1].tok == Token.function)
         return ((ScriptFunction) (statement[1].value)).toString();
@@ -12153,7 +12168,7 @@ class ScriptEvaluator {
     boolean inClauseDefine = false;
     boolean setEquals = (tok == Token.set
         && ((String) statement[0].value) == "" && statement[0].intValue == '=' && tokAt(1) != Token.expressionBegin);
-    for (int i = 0; i < statementLength; ++i) {
+    for (int i = 0; i < statement.length; ++i) {
       Token token = statement[i];
       if (iToken == i - 1)
         sb.append(" <<");
@@ -12298,7 +12313,7 @@ class ScriptEvaluator {
         // value SHOULD NEVER BE NULL, BUT JUST IN CASE...
         sb.append(token.value.toString());
     }
-    if (iToken >= statementLength - 1)
+    if (iToken >= statement.length - 1)
       sb.append(" <<");
     return sb.toString();
   }
@@ -12306,8 +12321,8 @@ class ScriptEvaluator {
   String contextTrace() {
     StringBuffer sb = new StringBuffer();
     for (;;) {
-      sb.append(setErrorLineMessage(functionName, filename, getLinenumber(),
-          pc, statementAsString()));
+      sb.append(setErrorLineMessage(functionName, filename, getLinenumber(null),
+          pc, statementAsString(statement)));
       if (scriptLevel > 0)
         popContext();
       else
@@ -12320,11 +12335,9 @@ class ScriptEvaluator {
                                     int lineCurrent, int pcCurrent,
                                     String lineInfo) {
     String err = "\n----";
-    if (functionName != null)
-      err += "function " + functionName + " ";
-    if (filename != null)
+    if (filename != null || functionName != null)
       err += "line " + lineCurrent + " command " + (pcCurrent + 1) + " of "
-          + filename + ":";
+          + (functionName == null ? filename : "function " + functionName ) + ":";
     err += "\n         " + lineInfo;
     return err;
   }

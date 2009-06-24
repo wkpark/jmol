@@ -6403,21 +6403,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     while ((i = text.indexOf("@{")) >= 0) {
       i++;
       int i0 = i + 1;
-      if (text.indexOf("}", i0) < 0)
-        return text;
-      int nBrace = 1;
       int len = text.length();
-      while (nBrace > 0 && ++i < len) {
-        switch (text.charAt(i)) {
-        case '{':
-          nBrace++;
-          break;
-        case '}':
-          nBrace--;
-          break;
-        }
-      }
-      if (nBrace != 0)
+      i = ScriptCompiler.ichMathTerminator(text, i, len);
+      if (i >= len)
         return text;
       name = text.substring(i0, i);
       if (name.length() == 0)

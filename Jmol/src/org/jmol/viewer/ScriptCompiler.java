@@ -235,7 +235,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     isNewSet = isSetBrace = false;
     ptNewSetModifier = 1;
     isShowScriptOutput = false;    
-    
+    iHaveQuotedString = false;
     lltoken = new Vector();
     ltoken = new Vector();
     tokCommand = Token.nada;
@@ -803,7 +803,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       } else if ((bs = lookingAtBitset()) != null) {
         addTokenToPrefix(new Token(Token.bitset, bs));
         return CONTINUE;
-      } else if (!iHaveQuotedString && lookingAtSpecialString()) {
+      } else if (!iHaveQuotedString && lookingAtImpliedString()) {
         String str = script.substring(ichToken, ichToken + cchToken);
         int pt = str.indexOf(" ");
         if (pt > 0) {
@@ -815,7 +815,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         return CONTINUE;
       }
     } else if (tokCommand == Token.script) {
-      if (!iHaveQuotedString && lookingAtSpecialString()) {
+      if (!iHaveQuotedString && lookingAtImpliedString()) {
         String str = script.substring(ichToken, ichToken + cchToken);
         int pt = str.indexOf(" ");
         if (pt > 0) {
@@ -835,7 +835,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       // write filename
       if (nTokens == 2 && lastToken.tok == Token.frame)
         iHaveQuotedString = true;
-      if (nTokens > 2 && !iHaveQuotedString && lookingAtSpecialString()) {
+      if (nTokens > 2 && !iHaveQuotedString && lookingAtImpliedString()) {
         String str = script.substring(ichToken, ichToken + cchToken);
         if (str.startsWith("@{")) {
           iHaveQuotedString = true;
@@ -849,7 +849,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     if (Token.tokAttr(tokCommand, Token.implicitStringCommand)
         && !(tokCommand == Token.script && iHaveQuotedString)
-        && lookingAtSpecialString()) {
+        && lookingAtImpliedString()) {
       String str = script.substring(ichToken, ichToken + cchToken);
       addTokenToPrefix(new Token(Token.string, str));
       return CONTINUE;
@@ -1671,32 +1671,74 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     return true;
   }
 
-  private boolean lookingAtSpecialString() {
+  /**
+   * An "implied string" is a parameter that is not quoted
+   * but because of its position in a command is implied to
+   * be a string. First we must exclude @xxxx. Then we consume
+   * the entire math syntax @{......} or any set of characters
+   * not involving white space.
+   * 
+   * @return true or false
+   */
+  private boolean lookingAtImpliedString() {
     int ichT = ichToken;
     char ch;
+    // look ahead to \n, \r, terminal ;, or }
     while (ichT < cchScript && !eol(ch = script.charAt(ichT)) && ch != '}')
       ++ichT;
     boolean isMath = false;
+    // if we have @{ then this is not an implied string look ahead to \n, \r, terminal ;, or }
     if (ichT > ichToken && script.charAt(ichToken) == '@'
         && (ichT <= ichToken + 1 || !(isMath = script.charAt(ichToken + 1) == '{')))
       return false;
     if (isMath) {
-      int nP = 1;
-      ichT = ichToken + 1;
-      while (++ichT < cchScript && nP > 0)
-        switch(script.charAt(ichT)) {
-        case '{':
-          nP++;
-          break;
-        case '}':
-          nP--;
-          break;
-        }
-      return (cchToken = ichT - ichToken) > 0;
+      ichT = ichMathTerminator(script, ichToken + 1, cchScript);
+      if (ichT == cchScript)
+        return false;
+      return ((cchToken = ichT  + 1 - ichToken) > 0);
     }
     while (--ichT > ichToken && Character.isWhitespace(script.charAt(ichT))) {
     }
     return (cchToken = ++ichT - ichToken) > 0;
+  }
+
+  /**
+   * For @{....}
+   * 
+   * @param script
+   * @param ichT
+   * @param len
+   * @return     position of "}"
+   */
+  static int ichMathTerminator(String script, int ichT, int len) {
+    int nP = 1;
+    char chFirst = '\0';
+    char chLast = '\0';
+    while (nP > 0 && ++ichT < len) {
+      char ch = script.charAt(ichT);
+      if (chFirst != '\0') {
+        if (chLast == '\\') {
+          ch = '\0';
+        } else if (ch == chFirst) {
+          chFirst = '\0';
+        }
+        chLast = ch;
+        continue;
+      }
+      switch(ch) {
+      case '\'':
+      case '"':
+        chFirst = ch;
+        break;
+      case '{':
+        nP++;
+        break;
+      case '}':
+        nP--;
+        break;
+      }
+    }
+    return ichT;
   }
 
   private float lookingAtExponential() {

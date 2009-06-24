@@ -1086,15 +1086,6 @@ class ScriptEvaluator {
       case Token.script:
         script(token.tok);
         break;
-      case Token.resume:
-        if (!isSyntaxCheck)
-          resumePausedExecution();
-        break;
-      case Token.step:
-        refresh();
-        if (!isSyntaxCheck)
-          stepPausedExecution();
-        break;
       case Token.function:
         function();
         break;
@@ -1334,6 +1325,14 @@ class ScriptEvaluator {
         break;
       case Token.pause: // resume is done differently
         pause();
+        break;
+      case Token.step:
+        if (pause())
+          stepPausedExecution();
+        break;
+      case Token.resume:
+        if (!isSyntaxCheck)
+          resumePausedExecution();
         break;
       default:
         error(ERROR_unrecognizedCommand);
@@ -4402,24 +4401,25 @@ class ScriptEvaluator {
     viewer.scriptStatus(s);
   }
 
-  private void pause() throws ScriptException {
+  private boolean pause() throws ScriptException {
     if (isSyntaxCheck)
-      return;
+      return false;
     String msg = optParameterAsString(1);
     if (!viewer.getBooleanProperty("_useCommandThread")) {
       //showString("Cannot pause thread when _useCommandThread = FALSE: " + msg);
       //return;
     }
     if (viewer.autoExit || !viewer.haveDisplay)
-      return;
+      return false;
     if (scriptLevel == 0 && pc == aatoken.length - 1) {
       viewer.scriptStatus("nothing to pause: " + msg); 
-      return;
+      return false;
     }
     msg = (msg.length() == 0 ? ": RESUME to continue." 
         : ": " + viewer.formatText(msg));
     pauseExecution();
     viewer.scriptStatus("script execution paused" + msg, "script paused for RESUME");
+    return true;
   }
 
   private void label(int index) throws ScriptException {

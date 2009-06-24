@@ -324,7 +324,8 @@ public final class ScriptWindow extends JDialog
       console.grabFocus();
       return;
     }
-    
+    if (strCommand.charAt(0) != '!' && viewer.getBooleanProperty("executionPaused"))
+      strCommand = "!" + strCommand;
     if (strCommand.charAt(0) != '!' && !isError) {
       undoSave();
     }
@@ -555,7 +556,7 @@ class ConsoleTextPane extends JTextPane {
   synchronized void checkCommand() {
     String strCommand = consoleDoc.getCommandString();
     if (strCommand.length() == 0 || strCommand.charAt(0) == '!'
-        || viewer.isScriptExecuting())
+        || viewer.isScriptExecuting() || viewer.getBooleanProperty("executionPaused"))
       return;
     checking = true;
     consoleDoc

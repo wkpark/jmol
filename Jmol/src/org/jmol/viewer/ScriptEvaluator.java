@@ -744,6 +744,7 @@ class ScriptEvaluator {
             pauseExecution();
           }
         }
+        viewer.scriptStatus("script execution resumed");
       } catch (Exception e) {
 
       }
@@ -4326,12 +4327,18 @@ class ScriptEvaluator {
   private void pause() throws ScriptException {
     if (isSyntaxCheck)
       return;
-    pauseExecution();
     String msg = optParameterAsString(1);
-    if (msg.length() == 0)
-      msg = ": RESUME to continue.";
-    else
-      msg = ": " + viewer.formatText(msg);
+    if (!viewer.getBooleanProperty("_useCommandThread")) {
+      //showString("Cannot pause thread when _useCommandThread = FALSE: " + msg);
+      //return;
+    }
+    if (scriptLevel == 0 && pc == aatoken.length - 1) {
+      viewer.scriptStatus("nothing to pause: " + msg); 
+      return;
+    }
+    pauseExecution();
+    msg = (msg.length() == 0 ? ": RESUME to continue." 
+        : ": " + viewer.formatText(msg));
     viewer.scriptStatus("script execution paused" + msg);
   }
 

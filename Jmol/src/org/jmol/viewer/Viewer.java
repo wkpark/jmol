@@ -4649,6 +4649,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return ((Boolean) global.htPropertyFlags.get(key)).booleanValue();
     }
     // special cases
+    if (key.equalsIgnoreCase("executionPaused"))
+      return eval.isExecutionPaused();
     if (key.equalsIgnoreCase("haveBFactors"))
       return (modelSet.getBFactors() != null);
     if (key.equalsIgnoreCase("colorRasmol"))

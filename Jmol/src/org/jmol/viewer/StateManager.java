@@ -470,15 +470,15 @@ public class StateManager {
   }
 
   void addFunction(ScriptFunction function) {
-    (function.name.indexOf("_") == 0 ? localFunctions
-        : globalFunctions).put(function.name, function);
+    (function.name.indexOf("_") == 0 ? globalFunctions
+        : localFunctions).put(function.name, function);
   }
 
   ScriptFunction getFunction(String name) {
     if (name == null)
       return null;
-    ScriptFunction function = (ScriptFunction) (name.indexOf("_") == 0 ? localFunctions
-        : globalFunctions).get(name);
+    ScriptFunction function = (ScriptFunction) (name.indexOf("_") == 0 ? globalFunctions
+        : localFunctions).get(name);
     return (function == null || function.aatoken == null ? null : function);
   }
   

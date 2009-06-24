@@ -318,7 +318,8 @@ class ScriptEvaluator {
     boolean tempOpen = fileOpenCheck;
     fileOpenCheck = openFiles;
     viewer.pushHoldRepaint("runEval");
-    interruptExecution = executionPaused = executionStepping = false;
+    interruptExecution = executionPaused = false;
+    executionStepping = false;
     isExecuting = true;
     currentThread = Thread.currentThread();
     isSyntaxCheck = checkingScriptOnly = checkScriptOnly;
@@ -759,8 +760,6 @@ class ScriptEvaluator {
   }
 
   void stepPausedExecution() {
-    if (!executionPaused)
-      return;
     executionStepping = true;
     executionPaused = false;
   }
@@ -1052,9 +1051,6 @@ class ScriptEvaluator {
       case Token.message:
         message();
         break;
-      case Token.resume:
-        // just needed for script checking
-        break;
       case Token.exit: // flush the queue and...
         if (!isSyntaxCheck && pc > 0)
           viewer.clearScriptQueue();
@@ -1089,6 +1085,15 @@ class ScriptEvaluator {
       case Token.javascript:
       case Token.script:
         script(token.tok);
+        break;
+      case Token.resume:
+        if (!isSyntaxCheck)
+          resumePausedExecution();
+        break;
+      case Token.step:
+        refresh();
+        if (!isSyntaxCheck)
+          stepPausedExecution();
         break;
       case Token.function:
         function();
@@ -5361,8 +5366,7 @@ class ScriptEvaluator {
           return;
       }
     } else {
-      i = 1;
-      if (getToken(i).tok != Token.string)
+      if (getToken(1).tok != Token.string)
         error(ERROR_filenameExpected);
       filename = theScript;
       theScript = null;

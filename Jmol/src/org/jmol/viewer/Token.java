@@ -299,6 +299,7 @@ public class Token {
   final static int refresh      = command | 43 | noArgs;
   final static int reset        = command | 44;
   final static int restore      = command | 45;
+  final static int resume       = command | 46 | noArgs;
   final static int ribbon       = command | 46 | defaultON;
   final static int rocket       = command | 47 | defaultON;
   final static int rotate       = command | 48 | defaultON;
@@ -312,6 +313,7 @@ public class Token {
   final static int spin         = command | 55 | setparam | defaultON;
   final static int ssbond       = command | 56 | setparam | defaultON;
   final static int star         = command | 57 | defaultON;
+  final static int step         = command | 57 | noArgs;
   final static int stereo       = command | 58 | defaultON;
   final static int strands      = command | 59 | setparam | defaultON;
 //final static int structure    see intproperty
@@ -689,7 +691,6 @@ public class Token {
   final static int range        = misc | 44;
   final static int rasmol       = misc | 45;
   final public static int residue= misc | 46;
-  final static int resume       = misc | 47;
   final static int rewind       = misc | 48;
   final static int right        = misc | 49;
   final static int rotation     = misc | 50;
@@ -870,6 +871,7 @@ public class Token {
     "show",              new Token(show),
     "slab",              new Token(slab),
     "spacefill",         new Token(spacefill),
+    "step",              new Token(step),
     "cpk",               null,
     "spin",              new Token(spin),
     "ssbond",            new Token(ssbond),

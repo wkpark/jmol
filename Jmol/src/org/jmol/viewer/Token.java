@@ -393,7 +393,7 @@ public class Token {
   final static int leftparen    = 0 | mathop | 1 << 4;
   final static int rightparen   = 1 | mathop | 1 << 4;
 
-  final static int opIf         = 1 | mathop | 2 << 4;
+  final static int opIf         = 1 | mathop | 2 << 4 | setparam;
   final static int colon        = 2 | mathop | 2 << 4;
 
   final static int comma        = 0 | mathop | 3 << 4;

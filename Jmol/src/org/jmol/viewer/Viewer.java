@@ -3650,6 +3650,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (allowSyncScript && statusManager.syncingScripts
         && strScript.indexOf("#NOSYNC;") < 0)
       syncScript(strScript + " #NOSYNC;", null);
+    if (eval.isExecutionPaused() && strScript.charAt(0) != '!')
+      strScript = '!' + TextFormat.trim(strScript, "\n\r\t ");
     boolean isInterrupt = (strScript.length() > 0 && strScript.charAt(0) == '!');
     if (isInterrupt)
       strScript = strScript.substring(1);

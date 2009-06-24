@@ -842,6 +842,9 @@ class ScriptEvaluator {
         } else {
           v = getParameter(var, false);
         }
+        tok = tokAt(0);
+        boolean forceString = (Token.tokAttr(tok, Token.implicitStringCommand) 
+            || tok == Token.load || tok == Token.script); // for the file names
         if (v instanceof ScriptVariable) {
           fixed[j] = (Token) v;
           if (isExpression && fixed[j].tok == Token.list)
@@ -865,12 +868,19 @@ class ScriptEvaluator {
           if (v instanceof ScriptVariable) {
             fixed[j] = (Token) v;
           } else {
-            // identifiers cannot have periods; file names can, though
             s = (String) v;
             if (isExpression) {
               fixed[j] = new Token(Token.bitset, getAtomBitSet(this, s));
             } else {
-              tok = (isClauseDefine || tokAt(0) == Token.load && j == 1 
+              // bit of a hack here....
+              // identifiers cannot have periods; file names can, though
+              // TODO: this is still a hack
+              // what we really need to know is what the compiler
+              // expects here -- a string or an identifier, because
+              // they will be processed differently.
+              // a filename with only letters and numbers will be 
+              // read incorrectly here as an identifier.
+              tok = (isClauseDefine || forceString 
                   || s.indexOf(".") >= 0
                   || s.indexOf(" ") >= 0 || s.indexOf("=") >= 0
                   || s.indexOf(";") >= 0 || s.indexOf("[") >= 0
@@ -884,9 +894,11 @@ class ScriptEvaluator {
           fixed[j] = new Token(Token.point3f, v);
         } else if (v instanceof Point4f) {
           fixed[j] = new Token(Token.point4f, v);
+        } else if (v instanceof String[]) {
+          fixed[j] = new Token(Token.string, Escape.escape((String[])v));
         } else {
           Point3f center = getObjectCenter(var, Integer.MIN_VALUE);
-          if (center == null)
+          if (center == null) 
             error(ERROR_invalidArgument);
           fixed[j] = new Token(Token.point3f, center);
         }
@@ -5320,6 +5332,7 @@ class ScriptEvaluator {
   private void script(int tok) throws ScriptException {
     boolean loadCheck = true;
     boolean isCheck = false;
+    boolean doStep = false;
     int lineNumber = 0;
     int pc = 0;
     int lineEnd = 0;
@@ -5348,19 +5361,18 @@ class ScriptEvaluator {
           return;
       }
     } else {
-      if (getToken(1).tok != Token.string)
+      i = 1;
+      if (getToken(i).tok != Token.string)
         error(ERROR_filenameExpected);
       filename = theScript;
       theScript = null;
+      String option = optParameterAsString(statementLength - 1);
+      doStep = option.equalsIgnoreCase("step");
       if (filename.equalsIgnoreCase("inline")) {
-        theScript = parameterExpression(2, 0, "_script", false).toString();
+        theScript = parameterExpression(2, (doStep ? statementLength - 1 : 0), "_script", false).toString();
         i = iToken + 1;
       }
-      String option = optParameterAsString(i);
-      if (option.equalsIgnoreCase("check")) {
-        isCheck = true;
-        option = optParameterAsString(++i);
-      }
+      option = optParameterAsString(i);
       if (option.equalsIgnoreCase("noload")) {
         loadCheck = false;
         option = optParameterAsString(++i);
@@ -5384,7 +5396,7 @@ class ScriptEvaluator {
           else
             error(ERROR_invalidArgument);
       }
-      checkLength(i);
+      checkLength(doStep ? i + 1 : i);
     }
     if (isSyntaxCheck && !checkingScriptOnly)
       return;
@@ -5404,6 +5416,7 @@ class ScriptEvaluator {
       this.pc = pc;
       boolean saveLoadCheck = fileOpenCheck;
       fileOpenCheck = fileOpenCheck && loadCheck;
+      executionStepping = doStep;
       instructionDispatchLoop(isCheck);
       if (debugScript && viewer.getMessageStyleChime())
         viewer.scriptStatus("script <exiting>");

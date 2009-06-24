@@ -259,6 +259,14 @@ $SYSTEM OPTIONS
     String Runtype = (String) calcOptions.get("contrl_options_RUNTYP");
     String igauss = (String) calcOptions.get("basis_options_IGAUSS");
     String gbasis = (String) calcOptions.get("basis_options_GBASIS");
+    boolean DFunc = !((String) calcOptions.get("basis_options_NDFUNC")).contentEquals("0");
+    boolean PFunc = !((String) calcOptions.get("basis_options_NPFUNC")).contentEquals("0");
+    boolean FFunc = !((String) calcOptions.get("basis_options_NFFUNC")).contentEquals("0");
+    String DFTtype = (String) calcOptions.get("contrl_options_DFTTYP");
+    int perturb = parseInt((String) calcOptions.get("contrl_options_MPLEVL"));
+    String CItype = (String) calcOptions.get("contrl_options_CITYP");
+    String CCtype = (String) calcOptions.get("contrl_options_CCTYP");
+
     if (igauss == null && SCFtype == null)
       return;
 
@@ -266,16 +274,99 @@ $SYSTEM OPTIONS
       calculationType = "";
 
     if (igauss != null) {
-      if (calculationType.length() > 0)
-        calculationType += " ";
-      calculationType += igauss + "-"
-          + TextFormat.simpleReplace(gbasis, "N", "");
-      // Q: "N" here means what?
-    }
-    if (SCFtype != null) {
-      if (calculationType.length() > 0)
-        calculationType += " ";
-      calculationType += SCFtype + " " + Runtype;
+      if (!igauss.contentEquals("0")) {
+        if (calculationType.length() > 0)
+          calculationType += " ";
+        calculationType += igauss + "-"
+            + TextFormat.simpleReplace(gbasis, "N", "");
+        // Q: "N" here means what? Some people use it in the notation, not
+        // common.
+        if (((String) calcOptions.get("basis_options_DIFFSP")).contentEquals("T")) {
+          // check if we have diffuse S on H's too => "++" instead of "+"
+          if (((String) calcOptions.get("basis_options_DIFFS")).contentEquals("T"))
+            calculationType += "+";
+          calculationType += "+";
+        }
+        calculationType += "G";
+        // append (d,p) , (d), (f,d,p), etc. to indicate polarization.
+        // not using * and ** notation as it is inconsistent.
+        if (DFunc || PFunc || FFunc) {
+          calculationType += "(";
+          if (FFunc) {
+            calculationType += "f";
+            if (DFunc || PFunc)
+              calculationType += ",";
+          }
+          if (DFunc) {
+            calculationType += "d";
+            if (PFunc)
+              calculationType += ",";
+          }
+          if (PFunc)
+            calculationType += "p";
+          calculationType += ")";
+        }
+      }
+      if (igauss.contentEquals("0")) { // we have a non Pople basis set.
+        // most common translated to standard notation, others in GAMESS
+        // internal format.
+        boolean recognized = false;
+        if (calculationType.length() > 0)
+          calculationType += " ";
+        if (gbasis.startsWith("ACC"))
+          calculationType += "aug-cc-p";
+        if (gbasis.startsWith("CC"))
+          calculationType+="cc-p";
+        if ((gbasis.startsWith("ACC") || gbasis.startsWith("CC"))
+            && gbasis.endsWith("C"))
+          calculationType += "C";
+        if (gbasis.contains("CCD")){
+          calculationType += "VDZ";
+          recognized = true;
+        }
+        if (gbasis.contains("CCT")){
+          calculationType += "VTZ";
+          recognized = true;
+        }
+        if (gbasis.contains("CCQ")){
+          calculationType += "VQZ";
+          recognized = true;
+        }
+        if (gbasis.contains("CC5")){
+          calculationType += "V5Z";
+          recognized = true;
+        }
+        if (gbasis.contains("CC6")){
+          calculationType += "V6Z";
+          recognized = true;
+        }
+        if (!recognized)calculationType+=gbasis;
+      }
+      if (!DFTtype.contains("NONE")){ 
+        if (calculationType.length() > 0)
+          calculationType += " ";
+        calculationType+=DFTtype;
+      }
+      if (!CItype.contains("NONE")){ 
+        if (calculationType.length() > 0)
+          calculationType += " ";
+        calculationType+=CItype;
+      }
+      if (!CCtype.contains("NONE")){ 
+        if (calculationType.length() > 0)
+          calculationType += " ";
+        calculationType+=CCtype;
+      }
+      if (perturb > 0){
+        if (calculationType.length() > 0)
+          calculationType += " ";
+        calculationType+="MP"+perturb;
+      }
+      if (SCFtype != null) {
+        if (calculationType.length() > 0)
+          calculationType += " ";
+        calculationType += SCFtype + " " + Runtype;
+      }
     }
   }
 

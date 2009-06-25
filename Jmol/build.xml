@@ -534,6 +534,12 @@ support for assertions (which were introduced in 1.4).
       </fileset>
     </jar>
 
+    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Console.jar" manifest="manifest/applet.txt">
+      <fileset dir="${applet.classes.dir}">
+    	<include name="org/jmol/console/**" />
+      </fileset>
+    </jar>
+
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Popup.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/popup/**" />
@@ -630,6 +636,7 @@ support for assertions (which were introduced in 1.4).
       <!-- changes to this must be replicated below for the signed applet -->
       <indexjars>
       	<!-- no export here - this is the unsigned applet -->
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Console.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Popup.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Quantum.jar" />
@@ -664,6 +671,11 @@ support for assertions (which were introduced in 1.4).
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
     <delete  file="${jmol.applet.build.dir}/JmolAppletSigned.jar.temp" />
 
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Console.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Console.jar"
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+    	
   	<signjar jar="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
@@ -765,6 +777,7 @@ support for assertions (which were introduced in 1.4).
 		<include name="org/jmol/i18n/**" />
       </fileset>    	
       <indexjars>
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Console.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Quantum.jar" />

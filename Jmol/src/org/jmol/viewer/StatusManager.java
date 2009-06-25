@@ -558,6 +558,12 @@ class StatusManager {
       jmolStatusListener.showConsole(showConsole);
   }
   
+  synchronized void showEditor(String text) {
+    if (jmolStatusListener != null)
+      jmolCallbackListener.notifyCallback(JmolConstants.SHOW_EDITOR, 
+          new Object[] { null, text, });
+  }
+  
   float[][] functionXY(String functionName, int nX, int nY) {
     return (jmolStatusListener == null ? new float[Math.abs(nX)][Math.abs(nY)] :
       jmolStatusListener.functionXY(functionName, nX, nY));

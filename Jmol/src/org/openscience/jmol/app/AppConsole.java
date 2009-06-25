@@ -51,13 +51,13 @@ import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.TextFormat;
-//import org.jmol.viewer.Token;
 
-public final class ScriptWindow extends JDialog
+public final class AppConsole extends JDialog
     implements ActionListener, EnterListener{
   
   ConsoleTextPane console;
   private JButton closeButton;
+  private JButton editButton;
   private JButton runButton;
   private JButton pauseButton;
   private JButton stepButton;
@@ -78,7 +78,7 @@ public final class ScriptWindow extends JDialog
    */
   
 
-  public ScriptWindow(JmolViewer viewer, JFrame frame) {
+  public AppConsole(JmolViewer viewer, JFrame frame) {
     super(frame, GT._("Jmol Script Console"), false);
     this.viewer = viewer;
     layoutWindow(getContentPane());
@@ -93,6 +93,10 @@ public final class ScriptWindow extends JDialog
     JScrollPane consolePane = new JScrollPane(console);
         
     JPanel buttonPanel = new JPanel();
+
+    editButton = new JButton("Edit");
+    editButton.addActionListener(this);
+    buttonPanel.add(editButton);
 
     runButton = new JButton(GT._("Run"));
     runButton.addActionListener(this);
@@ -192,7 +196,6 @@ public final class ScriptWindow extends JDialog
       runButton.setEnabled(true);
       haltButton.setEnabled(false);
       pauseButton.setEnabled(false);
-      stepButton.setEnabled(true);
     } else if (!isError) {
       console.outputStatus(strStatus);
     }
@@ -407,12 +410,15 @@ public final class ScriptWindow extends JDialog
     Object source = e.getSource();
     if (source == closeButton) {
       hide();
+    } else if (source == editButton) {
+      viewer.getProperty(null,"scriptEditor", null);
     } else if (source == runButton) {
       executeCommandAsThread(null);
     } else if (source == pauseButton) {
       executeCommandAsThread("!pause");
     } else if (source == stepButton) {
-      executeCommandAsThread("!step");
+      String strCommand = console.getCommandString().trim();
+      executeCommandAsThread(strCommand.length() == 0 ? "step" : "step;"  + strCommand);
     } else if (source == questButton) {
       executeCommandAsThread("!?");
     } else if (source == clearButton) {
@@ -420,7 +426,7 @@ public final class ScriptWindow extends JDialog
     } else if (source == historyButton) {
       console.clearContent(viewer.getSetHistory(Integer.MAX_VALUE));
     } else if (source == stateButton) {
-      console.clearContent(viewer.getStateInfo());
+      viewer.getProperty(null,"scriptEditor", viewer.getStateInfo());
     } else if (source == haltButton) {
       viewer.haltScriptExecution();
     } else if (source == undoButton) {
@@ -445,7 +451,7 @@ class ConsoleTextPane extends JTextPane {
   
   boolean checking = false;
   
-  ConsoleTextPane(ScriptWindow scriptWindow) {
+  ConsoleTextPane(AppConsole scriptWindow) {
     super(new ConsoleDocument());
     consoleDoc = (ConsoleDocument)getDocument();
     consoleDoc.setConsoleTextPane(this);

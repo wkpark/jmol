@@ -30,7 +30,7 @@ import javax.swing.AbstractButton;
 
 import org.jmol.i18n.GT;
 
-class GuiMap {
+public class GuiMap {
 
   Hashtable map = new Hashtable();
   
@@ -54,12 +54,12 @@ class GuiMap {
     return (String)labels.get(key);
   }
 
-  JMenu newJMenu(String key) {
+  public JMenu newJMenu(String key) {
     String label = getLabel(key);
     return new KeyJMenu(key, getLabelWithoutMnemonic(label), getMnemonic(label));
   }
   
-  JMenuItem newJMenuItem(String key) {
+  public JMenuItem newJMenuItem(String key) {
     String label = getLabel(key);
     return new KeyJMenuItem(key, getLabelWithoutMnemonic(label), getMnemonic(label));
   }

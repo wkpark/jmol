@@ -6593,8 +6593,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Object getProperty(String returnType, String infoType, Object paramInfo) {
     // accepts a BitSet paramInfo
-    // return types include "JSON", "string", "readable", and anything else
+    // return types include "JSON", "String", "readable", and anything else
     // returns the Java object.
+    if (infoType.equals("scriptContext"))
+      return eval.getContext();
+    if (infoType.equals("scriptEditor")) {
+      statusManager.showEditor((String) paramInfo);
+      return null;
+    }
     return PropertyManager.getProperty(this, returnType, infoType, paramInfo);
   }
 

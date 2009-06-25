@@ -30,13 +30,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.jmol.api.*;
-import org.jmol.util.Logger;
 
-class Jvm12 {
+public class Jvm12 {
 
   protected JmolViewer viewer;
   private Component awtComponent;
-  Console console;
+  public JmolConsoleInterface console;
   protected String appletContext;
 
   Jvm12(Component awtComponent, JmolViewer viewer, String appletContext) {
@@ -83,21 +82,15 @@ class Jvm12 {
     return (console != null);
   }
 
-  Console getConsole() {
+  void getConsole() {
     if (console == null) {
-      try {
-        console = new Console(awtComponent, viewer, this);
-      } catch (Exception e) {
-        Logger.debug("Jvm12/console exception");
+      console = (JmolConsoleInterface) Interface.getOptionInterface("console.AppletConsole");
+      if (console == null) {
+        console = (JmolConsoleInterface) Interface.getOptionInterface("console.AppletConsole");
       }
     }
-    if (console == null) {
-      try { //try again -- Java 1.6.0 bug? When "console" is given in a script, but not the menu
-        console = new Console(awtComponent, viewer, this);
-      } catch (Exception e) {
-      }
-    }
-    return console;
+    if (console != null)
+      console.set(viewer, this);
   }
 
   String getConsoleMessage() {
@@ -199,6 +192,18 @@ class Jvm12 {
         .getOptionInterface("export.image.ImageCreator");
     c.setViewer(viewer);
     return c.getClipboardText();
+  }
+
+  JmolScriptEditorInterface scriptEditor;
+  
+  void showEditor(boolean showEditor, String msg) {
+    if (scriptEditor == null) {
+      scriptEditor = (JmolScriptEditorInterface) Interface.getOptionInterface("console.ScriptEditor");
+      scriptEditor = scriptEditor.getScriptEditor(viewer, awtComponent);
+    }
+    if (msg != null)
+      scriptEditor.output(msg);
+    scriptEditor.setVisible(showEditor);
   }
 
 }

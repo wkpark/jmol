@@ -817,6 +817,7 @@ public class Jmol implements WrappedApplet {
 
     public boolean notifyEnabled(int type) {
       switch (type) {
+      case JmolConstants.SHOW_EDITOR:
       case JmolConstants.CALLBACK_ANIMFRAME:
       case JmolConstants.CALLBACK_ECHO:
       case JmolConstants.CALLBACK_ERROR:
@@ -839,7 +840,7 @@ public class Jmol implements WrappedApplet {
 
     public void notifyCallback(int type, Object[] data) {
 
-      String callback = callbacks[type];
+      String callback = (type < callbacks.length ? callbacks[type] : null);
       boolean doCallback = (callback != null && (data == null || data[0] == null));
       if (data != null)
         data[0] = htmlName;
@@ -849,6 +850,10 @@ public class Jmol implements WrappedApplet {
       //System.out.println("Jmol.java notifyCallback " + type + " " + callback
       //  + " " + strInfo);
       switch (type) {
+      case JmolConstants.SHOW_EDITOR:
+        if (jvm12 != null)
+          jvm12.showEditor(true, strInfo);
+        return;
       case JmolConstants.CALLBACK_ANIMFRAME:
         // Note: twos-complement. To get actual frame number, use 
         // Math.max(frameNo, -2 - frameNo)

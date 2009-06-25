@@ -42,11 +42,11 @@ public class ConsoleTextArea extends JTextArea {
   }    // ConsoleTextArea()
 
 
-  public ConsoleTextArea() throws IOException {
+  public ConsoleTextArea(boolean doRedirect) throws IOException {
 
     final LoopedStreams ls = new LoopedStreams();
 
-    String redirect = System.getProperty("JmolConsole");
+    String redirect = (doRedirect ? System.getProperty("JmolConsole") : "false");
     if (redirect == null || redirect.equals("true")) {
         // Redirect System.out & System.err.
         

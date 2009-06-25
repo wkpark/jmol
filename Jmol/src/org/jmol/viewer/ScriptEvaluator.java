@@ -92,7 +92,7 @@ class ScriptEvaluator {
   private boolean isStateScript;
   private int scriptLevel;
   private int scriptReportingLevel = 0;
-  private Context[] stack = new Context[scriptLevelMax];
+  private ScriptContext[] stack = new ScriptContext[scriptLevelMax];
 
   private boolean error;
   private String errorMessage;
@@ -226,7 +226,7 @@ class ScriptEvaluator {
     return sb.toString();
   }
 
-  private String getScriptID(Context context) {
+  private String getScriptID(ScriptContext context) {
     String fuName = (context == null ? functionName : "function " + context.functionName);
     String fiName = (context == null ? filename : context.filename);    
     return "\n# " + fuName + " (file " + fiName + ")\n";
@@ -399,32 +399,17 @@ class ScriptEvaluator {
     popContext();
   }
 
-  private static class Context {
-    String filename;
-    String functionName;
-    String script;
-    short[] lineNumbers;
-    int[][] lineIndices;
-    Token[][] aatoken;
-    Token[] statement;
-    int statementLength;
-    int pc;
-    int pcEnd = Integer.MAX_VALUE;
-    int lineEnd = Integer.MAX_VALUE;
-    int iToken;
-    StringBuffer outputBuffer;
-    Hashtable contextVariables;
-    boolean isStateScript;
-
-    Context() {
-      //
-    }
-  }
-
   private void pushContext(ScriptFunction function) throws ScriptException {
     if (scriptLevel == scriptLevelMax)
       error(ERROR_tooManyScriptLevels);
-    Context context = new Context();
+    ScriptContext context = getContext();
+    stack[scriptLevel++] = context;
+    if (checkingScriptOnly)
+      Logger.info("-->>-------------".substring(0, scriptLevel + 5) + filename);
+  }
+
+  ScriptContext getContext() {
+    ScriptContext context = new ScriptContext(this);
     context.filename = filename;
     context.functionName = functionName;
     context.script = script;
@@ -440,9 +425,7 @@ class ScriptEvaluator {
     context.outputBuffer = outputBuffer;
     context.contextVariables = contextVariables;
     context.isStateScript = isStateScript;
-    stack[scriptLevel++] = context;
-    if (checkingScriptOnly)
-      Logger.info("-->>-------------".substring(0, scriptLevel + 5) + filename);
+    return context;
   }
 
   private void popContext() {
@@ -450,7 +433,7 @@ class ScriptEvaluator {
       Logger.info("--<<-------------".substring(0, scriptLevel + 5) + filename);
     if (scriptLevel == 0)
       return;
-    Context context = stack[--scriptLevel];
+    ScriptContext context = stack[--scriptLevel];
     stack[scriptLevel] = null;
     filename = context.filename;
     functionName = context.functionName;
@@ -1447,7 +1430,7 @@ class ScriptEvaluator {
     return ((Boolean) parameterExpression(1, 0, null, false)).booleanValue();
   }
 
-  private int getLinenumber(Context c) {
+  private int getLinenumber(ScriptContext c) {
     return (c == null ? lineNumbers[pc] : c.lineNumbers[c.pc]);
   }
 

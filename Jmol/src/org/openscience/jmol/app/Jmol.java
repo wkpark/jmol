@@ -25,6 +25,7 @@ package org.openscience.jmol.app;
 
 import org.jmol.api.*;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.console.ScriptEditor;
 import org.jmol.export.dialog.Dialog;
 import org.jmol.export.dialog.HistoryFile;
 import org.jmol.export.image.ImageCreator;
@@ -77,7 +78,8 @@ public class Jmol extends JPanel {
   MeasurementTable measurementTable;
   RecentFilesDialog recentFiles;
   //private JMenu recentFilesMenu;
-  public ScriptWindow scriptWindow;
+  public AppConsole scriptWindow;
+  public ScriptEditor scriptEditor;
   public AtomSetChooser atomSetChooser;
   private ExecuteScriptAction executeScriptAction;
   protected JFrame frame;
@@ -100,6 +102,7 @@ public class Jmol extends JPanel {
   // Window names for the history file
   private final static String JMOL_WINDOW_NAME = "Jmol";
   private final static String CONSOLE_WINDOW_NAME = "Console";
+  private final static String EDITOR_WINDOW_NAME = "ScriptEditor";
   private final static String SCRIPT_WINDOW_NAME = "ScriptWindow";
   private final static String FILE_OPEN_WINDOW_NAME = "FileOpen";
   private final static String WEB_MAKER_WINDOW_NAME = "JmolWebPageMaker";
@@ -124,6 +127,8 @@ public class Jmol extends JPanel {
 
   static JFrame consoleframe;
 
+  static JFrame editorframe;
+  
   static {
     if (System.getProperty("javawebstart.version") != null) {
 
@@ -216,7 +221,9 @@ public class Jmol extends JPanel {
     recentFiles = new RecentFilesDialog(frame);
     if (haveDisplay) {
       say(GT._("Initializing Script Window..."));
-      scriptWindow = new ScriptWindow(viewer, frame);
+      scriptWindow = new AppConsole(viewer, frame);
+      say(GT._("Initializing Script Editor..."));
+      scriptEditor = new ScriptEditor(viewer, frame);
     }
 
     say(GT._("Initializing Measurements..."));
@@ -317,6 +324,8 @@ public class Jmol extends JPanel {
     // Repositionning windows
     if (scriptWindow != null)
       historyFile.repositionWindow(SCRIPT_WINDOW_NAME, scriptWindow, 200, 100);
+    if (scriptEditor != null)
+      historyFile.repositionWindow(EDITOR_WINDOW_NAME, scriptEditor, 150, 50);
 
     say(GT._("Setting up Drag-and-Drop..."));
     FileDropper dropper = new FileDropper();
@@ -773,13 +782,13 @@ public class Jmol extends JPanel {
     }
 
     if (haveConsole) {
-      Point location = jmol.frame.getLocation();
-      size = jmol.frame.getSize();
       // Adding console frame to grab System.out & System.err
-      consoleframe = new JFrame(GT._("Jmol Java Console"));
+      consoleframe = new JFrame(GT._("Jmol Console"));
       consoleframe.setIconImage(jmol.frame.getIconImage());
+      editorframe = new JFrame(GT._("Jmol Script Editor"));
+      editorframe.setIconImage(jmol.frame.getIconImage());
       try {
-        final ConsoleTextArea consoleTextArea = new ConsoleTextArea();
+        final ConsoleTextArea consoleTextArea = new ConsoleTextArea(true);
         consoleTextArea.setFont(java.awt.Font.decode("monospaced"));
         consoleframe.getContentPane().add(new JScrollPane(consoleTextArea),
             java.awt.BorderLayout.CENTER);
@@ -800,23 +809,53 @@ public class Jmol extends JPanel {
             java.awt.BorderLayout.CENTER);
         errorTextArea.append(GT._("Could not create ConsoleTextArea: ") + e);
       }
-
-      Dimension consoleSize = historyFile.getWindowSize(CONSOLE_WINDOW_NAME);
-      Point consolePosition = historyFile
-          .getWindowPosition(CONSOLE_WINDOW_NAME);
-      if ((consoleSize != null) && (consolePosition != null)) {
-        consoleframe.setBounds(consolePosition.x, consolePosition.y,
-            consoleSize.width, consoleSize.height);
-      } else {
-        consoleframe.setBounds(location.x, location.y + size.height,
-            size.width, 200);
+      try {
+        final ConsoleTextArea editorTextArea = new ConsoleTextArea(false);
+        editorTextArea.setFont(java.awt.Font.decode("monospaced"));
+        editorframe.getContentPane().add(new JScrollPane(editorTextArea),
+            java.awt.BorderLayout.CENTER);
+        if (Boolean.getBoolean("clearConsoleButton")) {
+          JButton buttonClear = new JButton(GT._("Clear"));
+          buttonClear.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+              editorTextArea.setText("");
+            }
+          });
+          editorframe.getContentPane().add(buttonClear,
+              java.awt.BorderLayout.SOUTH);
+        }
+      } catch (IOException e) {
+        JTextArea errorTextArea = new JTextArea();
+        errorTextArea.setFont(java.awt.Font.decode("monospaced"));
+        editorframe.getContentPane().add(new JScrollPane(errorTextArea),
+            java.awt.BorderLayout.CENTER);
+        errorTextArea.append(GT._("Could not create ConsoleTextArea: ") + e);
       }
+      setWindow(CONSOLE_WINDOW_NAME, consoleframe, jmol);
+      setWindow(EDITOR_WINDOW_NAME, editorframe, jmol);
+     
+    }
+  }
 
-      Boolean consoleVisible = historyFile
-          .getWindowVisibility(CONSOLE_WINDOW_NAME);
-      if ((consoleVisible != null) && (consoleVisible.equals(Boolean.TRUE))) {
-        consoleframe.show();
-      }
+  private static void setWindow(String name,
+                                          JFrame consoleframe, Jmol jmol) {
+    Point location = jmol.frame.getLocation();
+    Dimension size = jmol.frame.getSize();
+    Dimension consoleSize = historyFile.getWindowSize(name);
+    Point consolePosition = historyFile
+        .getWindowPosition(name);
+    if ((consoleSize != null) && (consolePosition != null)) {
+      consoleframe.setBounds(consolePosition.x, consolePosition.y,
+          consoleSize.width, consoleSize.height);
+    } else {
+      consoleframe.setBounds(location.x, location.y + size.height,
+          size.width, 200);
+    }
+
+    Boolean consoleVisible = historyFile
+        .getWindowVisibility(name);
+    if ((consoleVisible != null) && (consoleVisible.equals(Boolean.TRUE))) {
+      consoleframe.show();
     }
   }
 
@@ -872,6 +911,8 @@ public class Jmol extends JPanel {
   private void dispose(JFrame f) {
     if (historyFile != null && scriptWindow != null)
       historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, scriptWindow, null);
+    if (historyFile != null && scriptEditor != null)
+      historyFile.addWindowInfo(EDITOR_WINDOW_NAME, scriptEditor, null);
     if (historyFile != null && webExport != null) {
       WebExport.saveHistory();
       WebExport.cleanUp();
@@ -888,6 +929,9 @@ public class Jmol extends JPanel {
         f.dispose();
         if (scriptWindow != null) {
           scriptWindow.dispose();
+        }
+        if (scriptEditor != null) {
+          scriptEditor.dispose();
         }
       } catch (Exception e) {
         System.out.println("frame disposal exception");
@@ -1320,7 +1364,7 @@ public class Jmol extends JPanel {
       new CloseAction(), new ExitAction(), copyImageAction, copyScriptAction,
       pasteClipboardAction, new AboutAction(), new WhatsNewAction(),
       new UguideAction(), new ConsoleAction(), new RecentFilesAction(),
-      povrayAction, writeAction, toWebAction, new ScriptWindowAction(),
+      povrayAction, writeAction, toWebAction, new ScriptWindowAction(), new ScriptEditorAction(),
       new AtomSetChooserAction(), viewMeasurementTableAction, new GaussianAction() }
   ;
 
@@ -1634,6 +1678,18 @@ public class Jmol extends JPanel {
     }
   }
 
+  class ScriptEditorAction extends AbstractAction {
+
+    public ScriptEditorAction() {
+      super(scriptAction);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      if (scriptEditor != null)
+        scriptEditor.show();
+    }
+  }
+
   class AtomSetChooserAction extends AbstractAction {
     public AtomSetChooserAction() {
       super(atomsetchooserAction);
@@ -1737,6 +1793,19 @@ public class Jmol extends JPanel {
         viewer, fileName, historyFile, FILE_OPEN_WINDOW_NAME, (fileName == null));
   }
 
+  void showEditor(boolean showEditor, String text) {
+    if (scriptEditor == null)
+      return;
+    if (showEditor) {
+      scriptEditor.show();
+      if (text != null)
+        scriptEditor.output(text);
+    } else {
+      scriptEditor.hide();
+    }
+  }
+
+
   public static final String chemFileProperty = "chemFile";
 
   class MyStatusListener implements JmolStatusListener {
@@ -1767,6 +1836,7 @@ public class Jmol extends JPanel {
 
     public boolean notifyEnabled(int type) {
       switch (type) {
+      case JmolConstants.SHOW_EDITOR:
       case JmolConstants.CALLBACK_ANIMFRAME:
       case JmolConstants.CALLBACK_ECHO:
       case JmolConstants.CALLBACK_LOADSTRUCT:
@@ -1789,6 +1859,9 @@ public class Jmol extends JPanel {
       String strInfo = (data == null || data[1] == null ? null : data[1]
           .toString());
       switch (type) {
+      case JmolConstants.SHOW_EDITOR:
+        showEditor(true, strInfo);
+        return;
       case JmolConstants.CALLBACK_LOADSTRUCT:
         notifyFileLoaded(strInfo, (String) data[2], (String) data[3],
             (String) data[4]);
@@ -2005,6 +2078,7 @@ public class Jmol extends JPanel {
       else
         scriptWindow.hide();
     }
+
     /**
      * this is just a test method for isosurface FUNCTIONXY
      * @param functionName 

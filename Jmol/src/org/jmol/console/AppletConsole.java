@@ -21,9 +21,11 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.applet;
+package org.jmol.console;
 
 import org.jmol.api.*;
+import org.jmol.applet.GuiMap;
+import org.jmol.applet.Jvm12;
 import org.jmol.i18n.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -33,17 +35,17 @@ import javax.swing.text.*;
 
 import org.jmol.util.Logger;
 
-class Console implements ActionListener, WindowListener {
+public class AppletConsole implements ActionListener, WindowListener, JmolConsoleInterface {
   private final JTextArea input = new ControlEnterTextArea();
   private final JTextPane output = new JTextPane();
   private final Document outputDocument = output.getDocument();
   
   private JFrame jf;
-  private JButton runButton, clearOutButton, clearInButton, historyButton, stateButton, loadButton;
+  private JButton editButton, runButton, clearOutButton, clearInButton, historyButton, stateButton, loadButton;
 
   private final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
 
-  private final JmolViewer viewer;
+  private JmolViewer viewer;
   
   private GuiMap guimap = new GuiMap();
 
@@ -55,18 +57,21 @@ class Console implements ActionListener, WindowListener {
   //  System.out.println("Console " + this + " finalize");
   //}
 
-  private final Jvm12 jvm12;
+  private Jvm12 jvm12;
   private JMenuBar menubar; // requiring Swing here for now
 
   public Object getMyMenuBar() {
     return menubar;
   }
   
-  void dispose() {
+  public void dispose() {
     jf.dispose();
   }
 
-  Console(Component componentParent, JmolViewer viewer, Jvm12 jvm12) {
+  public AppletConsole() {
+  }
+  
+  public void set(JmolViewer viewer, Jvm12 jvm12) {
     //Logger.debug("Console constructor");
     //System.out.println("Console " + this + " constructed");
 
@@ -77,11 +82,12 @@ class Console implements ActionListener, WindowListener {
 
     jf = new JFrame(GT._("Jmol Script Console"));
     jf.setSize(600, 400);
-    runButton = new JButton(GT._("Execute"));
+    stateButton = new JButton(GT._("State"));
+    editButton = new JButton(GT._("Edit"));
+    runButton = new JButton(GT._("Run"));
     clearOutButton = new JButton(GT._("Clear Output"));
     clearInButton = new JButton(GT._("Clear Input"));
     historyButton = new JButton(GT._("History"));
-    stateButton = new JButton(GT._("State"));
     loadButton = new JButton(GT._("Load"));
 
     setupInput();
@@ -109,6 +115,7 @@ class Console implements ActionListener, WindowListener {
     Container c2 = new Container();
     c2.setLayout(new BoxLayout(c2, BoxLayout.X_AXIS));
     c2.add(Box.createGlue());
+    c2.add(editButton);
     c2.add(runButton);
     c2.add(loadButton);
     c2.add(clearInButton);
@@ -124,6 +131,7 @@ class Console implements ActionListener, WindowListener {
     label1.setAlignmentX(Component.CENTER_ALIGNMENT);
     c.add(label1);
     
+    editButton.addActionListener(this);
     runButton.addActionListener(this);
     clearInButton.addActionListener(this);
     clearOutButton.addActionListener(this);
@@ -134,7 +142,7 @@ class Console implements ActionListener, WindowListener {
     jf.addWindowListener(this);
     GT.setDoTranslate(doTranslate);
   }
-
+  
   protected JMenuBar createMenubar() {
     JMenuBar mb = new JMenuBar();
     //addNormalMenuBar(mb);
@@ -158,7 +166,6 @@ class Console implements ActionListener, WindowListener {
     menuBar.add(m0);
   }
 
-  
   private void addHelpItems(JMenu m0, String key, String attr) {
     JMenu m = guimap.newJMenu(key);
     String[] commands = (String[]) viewer.getProperty(null, "tokenList", attr);
@@ -221,7 +228,7 @@ class Console implements ActionListener, WindowListener {
     StyleConstants.setBold(attributesCommand, true);
   }
 
-  void setVisible(boolean visible) {
+  public void setVisible(boolean visible) {
     if (Logger.debugging) {
       Logger.debug("Console.setVisible(" + visible + ")");
     }
@@ -229,7 +236,7 @@ class Console implements ActionListener, WindowListener {
     input.requestFocus();
   }
 
-  void output(String message) {
+  public void output(String message) {
     output(message, null);
   }
 
@@ -247,7 +254,7 @@ class Console implements ActionListener, WindowListener {
     output.setCaretPosition(outputDocument.getLength());
   }
 
-  String getText() {
+  public String getText() {
     return output.getText(); 
   }
 
@@ -255,24 +262,35 @@ class Console implements ActionListener, WindowListener {
     Object source = e.getSource();
     if (source == runButton) {
       execute(null);
+      return;
+    }
+    if (source == editButton) {
+      viewer.getProperty(null,"scriptEditor", null);
+      return;
     }
     if (source == clearInButton) {
       input.setText("");
+      return;
     }
     if (source == clearOutButton) {
       output.setText("");
+      return;
     }
     if (source == historyButton) {
       output.setText(viewer.getSetHistory(Integer.MAX_VALUE));
+      return;
     }
     if (source == stateButton) {
-      output.setText(viewer.getStateInfo());
+      viewer.getProperty(null,"scriptEditor", viewer.getStateInfo());
+      return;
     }
     if (source == loadButton) {
       viewer.loadInline(input.getText(), false);
+      return;
     }
     if (source instanceof JMenuItem) {
       execute(((JMenuItem) source).getName());
+      return;
     }
   }
 

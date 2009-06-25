@@ -10,6 +10,7 @@ org/jmol/applet/*.java
 org/jmol/appletwrapper/*.java
 org/jmol/atomdata/*.java
 org/jmol/bspt/*.java
+org/jmol/console/*.java
 org/jmol/export/*.java
 org/jmol/export/dialog/*.java
 org/jmol/export/image/*.java

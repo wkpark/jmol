@@ -74,6 +74,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   private boolean isCheckOnly;
   private boolean haveComments;
 
+  String scriptExtensions;
+  
   private ScriptFunction thisFunction;
   
   boolean compile(String filename, String script, boolean isPredefining,
@@ -148,8 +150,14 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
    * @return cleaned script
    */
   private String cleanScriptComments(String script) {
+    int pt = (script.indexOf("\0##"));
+    if (pt >= 0) {
+      // these are for jmolConsole and scriptEditor
+      scriptExtensions = script.substring(pt + 1);
+      script = script.substring(0, pt);
+    }
     haveComments = (script.indexOf("#") >= 0); // speeds processing
-    int pt = script.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG);
+    pt = script.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG);
     if (pt < 0)
       return script;
     int pt1 = script.lastIndexOf("/*", pt);

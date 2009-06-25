@@ -33,6 +33,7 @@ import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 import org.jmol.util.*;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.ScriptContext;
 import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.webexport.WebExport;
 
@@ -78,7 +79,7 @@ public class Jmol extends JPanel {
   MeasurementTable measurementTable;
   RecentFilesDialog recentFiles;
   //private JMenu recentFilesMenu;
-  public AppConsole scriptWindow;
+  public AppConsole appConsole;
   public ScriptEditor scriptEditor;
   public AtomSetChooser atomSetChooser;
   private ExecuteScriptAction executeScriptAction;
@@ -221,9 +222,9 @@ public class Jmol extends JPanel {
     recentFiles = new RecentFilesDialog(frame);
     if (haveDisplay) {
       say(GT._("Initializing Script Window..."));
-      scriptWindow = new AppConsole(viewer, frame);
+      appConsole = new AppConsole(viewer, frame);
       say(GT._("Initializing Script Editor..."));
-      scriptEditor = new ScriptEditor(viewer, frame);
+      scriptEditor = new ScriptEditor(viewer, frame, appConsole);
     }
 
     say(GT._("Initializing Measurements..."));
@@ -322,8 +323,8 @@ public class Jmol extends JPanel {
     frame.setIconImage(iconImage);
 
     // Repositionning windows
-    if (scriptWindow != null)
-      historyFile.repositionWindow(SCRIPT_WINDOW_NAME, scriptWindow, 200, 100);
+    if (appConsole != null)
+      historyFile.repositionWindow(SCRIPT_WINDOW_NAME, appConsole, 200, 100);
     if (scriptEditor != null)
       historyFile.repositionWindow(EDITOR_WINDOW_NAME, scriptEditor, 150, 50);
 
@@ -387,7 +388,7 @@ public class Jmol extends JPanel {
     Jmol window = new Jmol(splash, frame, null, startupWidth, startupHeight,
         commandOptions);
     if (haveDisplay)
-      frame.show();
+      frame.setVisible(true);
     return window;
   }
 
@@ -855,7 +856,7 @@ public class Jmol extends JPanel {
     Boolean consoleVisible = historyFile
         .getWindowVisibility(name);
     if ((consoleVisible != null) && (consoleVisible.equals(Boolean.TRUE))) {
-      consoleframe.show();
+      consoleframe.setVisible(true);
     }
   }
 
@@ -909,8 +910,8 @@ public class Jmol extends JPanel {
   }
 
   private void dispose(JFrame f) {
-    if (historyFile != null && scriptWindow != null)
-      historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, scriptWindow, null);
+    if (historyFile != null && appConsole != null)
+      historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, appConsole, null);
     if (historyFile != null && scriptEditor != null)
       historyFile.addWindowInfo(EDITOR_WINDOW_NAME, scriptEditor, null);
     if (historyFile != null && webExport != null) {
@@ -927,8 +928,8 @@ public class Jmol extends JPanel {
       viewer.setModeMouse(JmolConstants.MOUSE_NONE);
       try {
         f.dispose();
-        if (scriptWindow != null) {
-          scriptWindow.dispose();
+        if (appConsole != null) {
+          appConsole.dispose();
         }
         if (scriptEditor != null) {
           scriptEditor.dispose();
@@ -945,7 +946,7 @@ public class Jmol extends JPanel {
     JFrame f = this.frame;
     Jmol j = new Jmol(null, newFrame, Jmol.this, startupWidth, startupHeight,
         "", (state == null ? null : f.getLocationOnScreen()));
-    newFrame.show();
+    newFrame.setVisible(true);
     if (state != null) {
       dispose(f);
       j.viewer.evalStringQuiet(state);
@@ -1374,7 +1375,7 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      Jmol.this.frame.hide();
+      Jmol.this.frame.setVisible(false);
       Jmol.this.doClose();
     }
   }
@@ -1387,7 +1388,7 @@ public class Jmol extends JPanel {
 
     public void actionPerformed(ActionEvent e) {
       if (consoleframe != null)
-        consoleframe.show();
+        consoleframe.setVisible(true);
     }
 
   }
@@ -1400,7 +1401,7 @@ public class Jmol extends JPanel {
 
     public void actionPerformed(ActionEvent e) {
       AboutDialog ad = new AboutDialog(frame);
-      ad.show();
+      ad.setVisible(true);
     }
 
   }
@@ -1413,7 +1414,7 @@ public class Jmol extends JPanel {
 
     public void actionPerformed(ActionEvent e) {
       WhatsNewDialog wnd = new WhatsNewDialog(frame);
-      wnd.show();
+      wnd.setVisible(true);
     }
   }
 
@@ -1425,7 +1426,7 @@ public class Jmol extends JPanel {
     public void actionPerformed(ActionEvent e) {
       if (gaussianDialog == null)
         gaussianDialog = new GaussianDialog(frame, viewer);
-      gaussianDialog.show();
+      gaussianDialog.setVisible(true);
     }
   }
     
@@ -1438,7 +1439,7 @@ public class Jmol extends JPanel {
     public void actionPerformed(ActionEvent e) {
       JFrame newFrame = new JFrame();
       new Jmol(null, newFrame, Jmol.this, startupWidth, startupHeight, "");
-      newFrame.show();
+      newFrame.setVisible(true);
     }
 
   }
@@ -1450,7 +1451,7 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      (new HelpDialog(frame)).show();
+      (new HelpDialog(frame)).setVisible(true);
     }
   }
 
@@ -1659,7 +1660,7 @@ public class Jmol extends JPanel {
 
     public void actionPerformed(ActionEvent e) {
 
-      recentFiles.show();
+      recentFiles.setVisible(true);
       String selection = recentFiles.getFile();
       if (selection != null)
         viewer.openFileAsynchronously(selection);
@@ -1673,8 +1674,8 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      if (scriptWindow != null)
-        scriptWindow.show();
+      if (appConsole != null)
+        appConsole.setVisible(true);
     }
   }
 
@@ -1686,7 +1687,7 @@ public class Jmol extends JPanel {
 
     public void actionPerformed(ActionEvent e) {
       if (scriptEditor != null)
-        scriptEditor.show();
+        scriptEditor.setVisible(true);
     }
   }
 
@@ -1696,7 +1697,7 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      atomSetChooser.show();
+      atomSetChooser.setVisible(true);
     }
   }
 
@@ -1797,11 +1798,11 @@ public class Jmol extends JPanel {
     if (scriptEditor == null)
       return;
     if (showEditor) {
-      scriptEditor.show();
+      scriptEditor.setVisible(true);
       if (text != null)
         scriptEditor.output(text);
     } else {
-      scriptEditor.hide();
+      scriptEditor.setVisible(false);
     }
   }
 
@@ -1892,25 +1893,34 @@ public class Jmol extends JPanel {
         notifyAtomPicked(strInfo);
         break;
       case JmolConstants.CALLBACK_SCRIPT:
-        if (scriptWindow == null)
-          return;
         int msWalltime = ((Integer) data[3]).intValue();
-        // general message has msWalltime = 0
-        // special messages have msWalltime < 0
-        // termination message has msWalltime > 0 (1 + msWalltime)
-        // "script started"/"pending"/"script terminated"/"script completed"
-        //   do not get sent to console
-        if (msWalltime > 0) {
-          // termination -- button legacy
-          scriptWindow.notifyScriptTermination();
-        } else if (msWalltime < 0) {
-          if (msWalltime == -2)
-            scriptWindow.notifyScriptStart();
-        } else {
-          scriptWindow.sendConsoleMessage(strInfo);
-          if (data[2] != null && display != null)
-              display.status.setStatus(1, (String) data[2]);
-
+        if (appConsole != null) {
+          // general message has msWalltime = 0
+          // special messages have msWalltime < 0
+          // termination message has msWalltime > 0 (1 + msWalltime)
+          // "script started"/"pending"/"script terminated"/"script completed"
+          //   do not get sent to console
+          if (msWalltime == 0) {
+            appConsole.sendConsoleMessage(strInfo);
+            if (data[2] != null && display != null)
+                display.status.setStatus(1, (String) data[2]);  
+          }
+        }
+        if (scriptEditor != null) {
+          // general message has msWalltime = 0
+          // special messages have msWalltime < 0
+          // termination message has msWalltime > 0 (1 + msWalltime)
+          // "script started"/"pending"/"script terminated"/"script completed"
+          //   do not get sent to console
+          if (msWalltime > 0) {
+            // termination -- button legacy
+            scriptEditor.notifyScriptTermination();
+          } else if (msWalltime < 0) {
+            if (msWalltime == -2)
+              scriptEditor.notifyScriptStart();
+          } else if (scriptEditor.isVisible() && ((String) data[2]).length() > 0) {
+            scriptEditor.notifyContext((ScriptContext)viewer.getProperty("DATA_API", "scriptContext", null), data);
+          }
         }
         break;
       case JmolConstants.CALLBACK_RESIZE:
@@ -1966,9 +1976,9 @@ public class Jmol extends JPanel {
     }
 
     private void notifyAtomPicked(String info) {
-      if (scriptWindow != null) {
-        scriptWindow.sendConsoleMessage(info);
-        scriptWindow.sendConsoleMessage("\n");
+      if (appConsole != null) {
+        appConsole.sendConsoleMessage(info);
+        appConsole.sendConsoleMessage("\n");
       }
     }
 
@@ -1985,8 +1995,8 @@ public class Jmol extends JPanel {
       //      jmolpopup.updateComputedMenus();
       String title = "Jmol";
       if (fullPathName == null) {
-        if (fileName != null && scriptWindow != null)
-          scriptWindow.undoClear();
+        if (fileName != null && appConsole != null)
+          appConsole.undoClear();
         // a 'clear/zap' operation
       } else {
         if (modelName != null && fileName != null)
@@ -2031,13 +2041,13 @@ public class Jmol extends JPanel {
     }
 
     private void sendConsoleEcho(String strEcho) {
-      if (scriptWindow != null)
-        scriptWindow.sendConsoleEcho(strEcho);
+      if (appConsole != null)
+        appConsole.sendConsoleEcho(strEcho);
     }
 
     private void sendConsoleMessage(String strStatus) {
-      if (scriptWindow != null)
-        scriptWindow.sendConsoleMessage(strStatus);
+      if (appConsole != null)
+        appConsole.sendConsoleMessage(strStatus);
     }
 
     public void handlePopupMenu(int x, int y) {
@@ -2058,8 +2068,8 @@ public class Jmol extends JPanel {
         browse.invoke(deskTop, arguments);
       } catch (Exception e) {
         System.out.println(e.getMessage());
-        if (scriptWindow != null) {
-          scriptWindow
+        if (appConsole != null) {
+          appConsole
               .sendConsoleMessage("Java 6 Desktop.browse() capability unavailable. Could not open "
                   + url);
         } else {
@@ -2071,12 +2081,12 @@ public class Jmol extends JPanel {
     }
 
     public void showConsole(boolean showConsole) {
-      if (scriptWindow == null)
+      if (appConsole == null)
         return;
       if (showConsole)
-        scriptWindow.show();
+        appConsole.setVisible(true);
       else
-        scriptWindow.hide();
+        appConsole.setVisible(false);
     }
 
     /**

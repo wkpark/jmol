@@ -35,7 +35,7 @@ public class Jvm12 {
 
   protected JmolViewer viewer;
   private Component awtComponent;
-  public JmolConsoleInterface console;
+  public JmolAppletConsoleInterface console;
   protected String appletContext;
 
   Jvm12(Component awtComponent, JmolViewer viewer, String appletContext) {
@@ -84,9 +84,9 @@ public class Jvm12 {
 
   void getConsole() {
     if (console == null) {
-      console = (JmolConsoleInterface) Interface.getOptionInterface("console.AppletConsole");
+      console = (JmolAppletConsoleInterface) Interface.getOptionInterface("console.AppletConsole");
       if (console == null) {
-        console = (JmolConsoleInterface) Interface.getOptionInterface("console.AppletConsole");
+        console = (JmolAppletConsoleInterface) Interface.getOptionInterface("console.AppletConsole");
       }
     }
     if (console != null)
@@ -199,7 +199,7 @@ public class Jvm12 {
   void showEditor(boolean showEditor, String msg) {
     if (scriptEditor == null) {
       scriptEditor = (JmolScriptEditorInterface) Interface.getOptionInterface("console.ScriptEditor");
-      scriptEditor = scriptEditor.getScriptEditor(viewer, awtComponent);
+      scriptEditor = scriptEditor.getScriptEditor(viewer, awtComponent, console);
     }
     if (msg != null)
       scriptEditor.output(msg);

@@ -3655,12 +3655,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean isInterrupt = (strScript.length() > 0 && strScript.charAt(0) == '!');
     if (isInterrupt)
       strScript = strScript.substring(1);
-    if (checkResume(strScript))
-      return "script processing resumed";
-    if (checkStepping(strScript))
-      return "script processing stepped";
-    if (checkHalt(strScript))
-      return "script execution halted";
+    String msg = checkScriptExecution(strScript);
+    if (msg != null)
+      return msg;
     if (isScriptExecuting() && (isInterrupt || eval.isExecutionPaused())) {
       interruptScript = strScript;
       if (strScript.indexOf("moveto ") == 0)
@@ -3668,8 +3665,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return "!" + strScript;
     }
     interruptScript = "";
+    if (isQuiet)
+      strScript += JmolConstants.SCRIPT_EDITOR_IGNORE;
     return scriptManager.addScript(strScript, false, isQuiet
         && !getMessageStyleChime());
+  }
+
+  private String checkScriptExecution(String strScript) {
+    String str = strScript;
+    if (str.indexOf("\0##") >= 0)
+      str = str.substring(0, str.indexOf("\0##"));
+    if (checkResume(str))
+      return "script processing resumed";
+    if (checkStepping(str))
+      return "script processing stepped";
+    if (checkHalt(str))
+      return "script execution halted";
+    return null;
   }
 
   boolean usingScriptQueue() {
@@ -3682,32 +3694,35 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     scriptManager.clearQueue();
   }
 
-  public boolean checkResume(String strScript) {
-    if (strScript.equalsIgnoreCase("resume")) {
+  public boolean checkResume(String str) {
+    if (str.equalsIgnoreCase("resume")) {
+      scriptStatus("", "execution resumed", 0, null);
       resumeScriptExecution();
       return true;
     }
     return false;
   }
 
-  public boolean checkStepping(String strScript) {
-    if (strScript.equalsIgnoreCase("step")) {
+  public boolean checkStepping(String str) {
+    if (str.equalsIgnoreCase("step")) {
       stepScriptExecution();
       return true;
     }
-    if (strScript.equalsIgnoreCase("?")) {
+    if (str.equalsIgnoreCase("?")) {
       scriptStatus(eval.getNextStatement());
       return true;
     }
     return false;
   }
 
-  public boolean checkHalt(String strScript) {
-    String str = strScript.toLowerCase();
-    if (str.equals("pause")) {
+  public boolean checkHalt(String str) {
+    if (str.equalsIgnoreCase("pause")) {
       pauseScriptExecution();
+      if (scriptEditorVisible)
+        scriptStatus("", "paused -- type RESUME to continue", 0, null);
       return true;
     }
+    str = str.toLowerCase();
     if (str.startsWith("exit")) {
       haltScriptExecution();
       clearScriptQueue();
@@ -3767,14 +3782,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // System.out.println("DEBUG: evalStringWaitStatus " +
     // Thread.currentThread().getName()
     // + " " + Thread.currentThread().getId());
-    if (checkResume(strScript))
-      return "script processing resumed"; // be very odd if this fired
-    if (checkStepping(strScript))
-      return "script processing stepped";
-    if (checkHalt(strScript))
-      return "script execution halted";
     if (strScript == null)
       return null;
+    String str = checkScriptExecution(strScript);
+    if (str != null)
+      return str;
 
     // typically request:
     // "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated"
@@ -4563,7 +4575,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     scriptStatus(strStatus, statusMessage, 0, null);
   }
 
-  private void scriptStatus(String strStatus, String statusMessage,
+  void scriptStatus(String strStatus, String statusMessage,
                             int msWalltime, String strErrorMessageUntranslated) {
     statusManager.setScriptStatus(strStatus, statusMessage, msWalltime,
         strErrorMessageUntranslated);
@@ -4677,6 +4689,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // special cases
     if (key.equalsIgnoreCase("executionPaused"))
       return eval.isExecutionPaused();
+    if (key.equalsIgnoreCase("executionStepping"))
+      return eval.isExecutionStepping();
     if (key.equalsIgnoreCase("haveBFactors"))
       return (modelSet.getBFactors() != null);
     if (key.equalsIgnoreCase("colorRasmol"))
@@ -6591,15 +6605,29 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return getProperty(returnType, infoType, (Object) paramInfo);
   }
 
+  private boolean scriptEditorVisible;
+  
+  boolean isScriptEditorVisible() {
+    return scriptEditorVisible;
+  }
+  
   public Object getProperty(String returnType, String infoType, Object paramInfo) {
     // accepts a BitSet paramInfo
     // return types include "JSON", "String", "readable", and anything else
     // returns the Java object.
-    if (infoType.equals("scriptContext"))
-      return eval.getContext();
-    if (infoType.equals("scriptEditor")) {
-      statusManager.showEditor((String) paramInfo);
-      return null;
+    // Jmol 11.7.45 also uses this method as a general API 
+    // for getting and returning script data from the console and editor
+    if ("DATA_API".equals(returnType)) {
+      if (infoType.equals("scriptContext"))
+        return eval.getContext();
+      if (infoType.equals("scriptEditor")) {
+        statusManager.showEditor((String) paramInfo);
+        return null;
+      }
+      if (infoType.equals("scriptEditorState")) {
+        scriptEditorVisible = ((Boolean)paramInfo).booleanValue();
+        return null;
+      }
     }
     return PropertyManager.getProperty(this, returnType, infoType, paramInfo);
   }

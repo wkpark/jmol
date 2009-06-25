@@ -79,5 +79,5 @@ abstract public class JmolSimpleViewer {
    * @param paramInfo  
    * @return            property data -- see org.jmol.viewer.PropertyManager.java
    */
-  abstract public Object getProperty(String returnType, String infoType, String paramInfo);
+  abstract public Object getProperty(String returnType, String infoType, Object paramInfo);
 }

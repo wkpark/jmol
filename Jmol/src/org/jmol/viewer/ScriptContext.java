@@ -31,7 +31,6 @@ public class ScriptContext {
   /**
    * 
    */
-  public ScriptEvaluator eval;
   public String filename;
   public String functionName;
   public String script;
@@ -47,8 +46,14 @@ public class ScriptContext {
   public StringBuffer outputBuffer;
   public Hashtable contextVariables;
   public boolean isStateScript;
+  public String errorMessage;
+  public ScriptContext[] stack;
+  public int scriptLevel;
+  public boolean isSyntaxCheck;
+  public boolean executionStepping;
+  public boolean executionPaused;
+  public String scriptExtensions;
 
-  ScriptContext(ScriptEvaluator scriptEvaluator) {
-    eval = scriptEvaluator;
+  ScriptContext() {
   }
 }

@@ -29,6 +29,7 @@ import org.jmol.appletwrapper.*;
 import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.ScriptContext;
 import org.jmol.viewer.Viewer;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -148,7 +149,7 @@ public class Jmol implements WrappedApplet {
   String languagePath;
 
   AppletWrapper appletWrapper;
-  private JmolViewer viewer;
+  protected JmolViewer viewer;
 
   private final static boolean REQUIRE_PROGRESSBAR = true;
   private boolean jvm12orGreater;
@@ -950,6 +951,17 @@ public class Jmol implements WrappedApplet {
         // termination message has msWalltime > 0 (1 + msWalltime)
         // "script started"/"pending"/"script terminated"/"script completed"
         //   do not get sent to console
+        if (jvm12 != null && jvm12.scriptEditor != null) {
+            if (msWalltime > 0) {
+              // termination -- button legacy
+              jvm12.scriptEditor.notifyScriptTermination();
+            } else if (msWalltime < 0) {
+              if (msWalltime == -2)
+                jvm12.scriptEditor.notifyScriptStart();
+            } else if (jvm12.scriptEditor.isVisible() && ((String) data[2]).length() > 0) {
+              jvm12.scriptEditor.notifyContext((ScriptContext)viewer.getProperty("DATA_API", "scriptContext", null), data);
+            }
+          }
         boolean toConsole = (msWalltime == 0);
         if (msWalltime > 0) {
           // termination -- button legacy

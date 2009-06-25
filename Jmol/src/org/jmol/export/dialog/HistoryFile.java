@@ -321,7 +321,7 @@ public class HistoryFile {
         window.setSize(size);
       }
       if ((visible != null) && (visible.equals(Boolean.TRUE))) {
-        window.show();
+        window.setVisible(true);
       }
     }
   }

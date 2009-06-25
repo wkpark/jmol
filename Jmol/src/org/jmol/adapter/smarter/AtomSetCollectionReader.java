@@ -542,7 +542,11 @@ public abstract class AtomSetCollectionReader {
     initializeSymmetry();
   }
 
+  public String calculationType = "?";
+
   public void setMOData(Hashtable moData) {
+    if (!calculationType.equals("?"))
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("calculationType", calculationType);
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
     Vector orbitals = (Vector) moData.get("mos");
     if (orbitals != null)

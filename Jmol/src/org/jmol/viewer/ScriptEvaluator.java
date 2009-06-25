@@ -138,6 +138,7 @@ class ScriptEvaluator {
   private int iToken;
   private int lineEnd;
   private int pcEnd;
+  private String scriptExtensions;
 
   ScriptEvaluator(Viewer viewer) {
     this.viewer = viewer;
@@ -328,6 +329,7 @@ class ScriptEvaluator {
     setErrorMessage(null);
     try {
       try {
+        getScriptExtensions();
         instructionDispatchLoop(listCommands);
         String script = viewer.getInterruptScript();
         if (script != "")
@@ -394,7 +396,7 @@ class ScriptEvaluator {
     // a = script("xxxx")
     pushContext(null);
     this.outputBuffer = outputBuffer;
-    if (loadScript(null, script, false))
+    if (loadScript(null, script+JmolConstants.SCRIPT_EDITOR_IGNORE, false))
       instructionDispatchLoop(false);
     popContext();
   }
@@ -409,7 +411,7 @@ class ScriptEvaluator {
   }
 
   ScriptContext getContext() {
-    ScriptContext context = new ScriptContext(this);
+    ScriptContext context = new ScriptContext();
     context.filename = filename;
     context.functionName = functionName;
     context.script = script;
@@ -425,16 +427,17 @@ class ScriptEvaluator {
     context.outputBuffer = outputBuffer;
     context.contextVariables = contextVariables;
     context.isStateScript = isStateScript;
+    context.errorMessage = errorMessage;
+    context.stack = stack;
+    context.scriptLevel = scriptLevel;
+    context.isSyntaxCheck = isSyntaxCheck;
+    context.executionStepping = executionStepping;
+    context.executionPaused = executionPaused;
+    context.scriptExtensions = scriptExtensions;
     return context;
   }
 
-  private void popContext() {
-    if (checkingScriptOnly)
-      Logger.info("--<<-------------".substring(0, scriptLevel + 5) + filename);
-    if (scriptLevel == 0)
-      return;
-    ScriptContext context = stack[--scriptLevel];
-    stack[scriptLevel] = null;
+  private void getContext(ScriptContext context) {  
     filename = context.filename;
     functionName = context.functionName;
     script = context.script;
@@ -450,25 +453,62 @@ class ScriptEvaluator {
     outputBuffer = context.outputBuffer;
     contextVariables = context.contextVariables;
     isStateScript = context.isStateScript;
-
+    scriptExtensions = context.scriptExtensions;
+  }
+  
+  private void popContext() {
+    if (checkingScriptOnly)
+      Logger.info("--<<-------------".substring(0, scriptLevel + 5) + filename);
+    if (scriptLevel == 0)
+      return;
+    ScriptContext context = stack[--scriptLevel];
+    stack[scriptLevel] = null;
+    getContext(context);
   }
 
   private boolean loadScript(String filename, String strScript,
                              boolean debugCompiler) {
     this.filename = filename;
-    if (!compiler.compile(filename, strScript, false, false, debugCompiler,
-        false)) {
+    boolean isOK = compiler.compile(filename, strScript, false, false, debugCompiler,
+        false);
+    if (!isOK)
       setErrorMessage("");
-      return false;
-    }
     aatoken = compiler.getAatokenCompiled();
     lineNumbers = compiler.getLineNumbers();
     lineIndices = compiler.getLineIndices();
     contextVariables = compiler.getContextVariables();
     script = compiler.getScript();
+    scriptExtensions = compiler.scriptExtensions;
     isStateScript = (script.indexOf(Viewer.STATE_VERSION_STAMP) >= 0);
-    pc = 0;
-    return true;
+    String s = script;
+    pc = getScriptExtensions();
+    if (!isSyntaxCheck && viewer.isScriptEditorVisible() && strScript.indexOf(JmolConstants.SCRIPT_EDITOR_IGNORE) < 0)
+      viewer.scriptStatus("");
+    script = s;
+    return isOK;
+  }
+
+  private int getScriptExtensions() {
+    String extensions = scriptExtensions;
+    if (extensions == null)
+      return 0;
+    int pt = extensions.indexOf("##SCRIPT_STEP"); 
+    if (pt >= 0) {
+      executionStepping = true;
+    }
+    pt = extensions.indexOf("##SCRIPT_START=");
+    if (pt < 0)
+      return 0;
+    pt = Parser.parseInt(extensions.substring(pt + 15));
+    if (pt == Integer.MIN_VALUE)
+      return 0;
+    for (pc = 0; pc < lineIndices.length; pc++) {
+      if (lineIndices[pc][0] > pt)
+        break;
+    }
+    if (pc > 0)
+      --pc;
+    return pc;
   }
 
   private boolean loadFunction(String name, Vector params) {
@@ -737,6 +777,10 @@ class ScriptEvaluator {
     return executionPaused;
   }
 
+  boolean isExecutionStepping() {
+    return executionStepping;
+  }
+
   void resumePausedExecution() {
     executionPaused = false;
     executionStepping = false;
@@ -756,7 +800,9 @@ class ScriptEvaluator {
       }
       try {
         while (executionPaused) {
+          viewer.popHoldRepaint("pause");
           Thread.sleep(100);
+          refresh();
           String script = viewer.getInterruptScript();
           if (script != "") {
             resumePausedExecution();
@@ -769,17 +815,21 @@ class ScriptEvaluator {
             } catch (Error er) {
               setErrorMessage("" + er);
             }
-            pc++;
-            if (error)
+            if (error) {
+              popContext();
               scriptStatusOrBuffer(errorMessage);
-            else 
-              pauseExecution();
+              setErrorMessage(null);
+            }
+            pc++;
+            pauseExecution();
           }
+          viewer.pushHoldRepaint("pause");
         }
-        if (!executionStepping)
+        if (!isSyntaxCheck && !interruptExecution && !executionStepping) {
           viewer.scriptStatus("script execution " + (error || interruptExecution ? "interrupted" : "resumed"));
+        }
       } catch (Exception e) {
-
+        viewer.pushHoldRepaint("pause");
       }
       Logger.debug("script execution resumed");
     }
@@ -939,6 +989,7 @@ class ScriptEvaluator {
     if (lineEnd == 0)
       lineEnd = Integer.MAX_VALUE;
     String lastCommand = "";
+    
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
       if (!checkContinue())
         break;
@@ -991,7 +1042,7 @@ class ScriptEvaluator {
       if (token == null)
         continue;
       if (executionStepping && !isSyntaxCheck) {
-        viewer.scriptStatus(getNextStatement());
+        viewer.scriptStatus(getNextStatement(), "stepping -- type RESUME to continue", 0, null);
       }
       switch (token.tok) {
       case Token.nada:
@@ -12408,4 +12459,5 @@ class ScriptEvaluator {
     }
   }
 
+  
 }

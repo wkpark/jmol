@@ -34,19 +34,18 @@ import javax.swing.*;
 import javax.swing.text.*;
 
 import org.jmol.util.Logger;
+import org.jmol.viewer.JmolConstants;
 
-public class AppletConsole implements ActionListener, WindowListener, JmolConsoleInterface {
+public class AppletConsole extends JmolConsole implements JmolAppletConsoleInterface {
   private final JTextArea input = new ControlEnterTextArea();
   private final JTextPane output = new JTextPane();
   private final Document outputDocument = output.getDocument();
   
   private JFrame jf;
-  private JButton editButton, runButton, clearOutButton, clearInButton, historyButton, stateButton, loadButton;
+  private Jvm12 jvm12;
 
   private final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
 
-  private JmolViewer viewer;
-  
   private GuiMap guimap = new GuiMap();
 
   JmolViewer getViewer() {
@@ -57,8 +56,9 @@ public class AppletConsole implements ActionListener, WindowListener, JmolConsol
   //  System.out.println("Console " + this + " finalize");
   //}
 
-  private Jvm12 jvm12;
   private JMenuBar menubar; // requiring Swing here for now
+  private JButton clearOutButton, clearInButton, loadButton;
+
 
   public Object getMyMenuBar() {
     return menubar;
@@ -66,6 +66,7 @@ public class AppletConsole implements ActionListener, WindowListener, JmolConsol
   
   public void dispose() {
     jf.dispose();
+    super.dispose();
   }
 
   public AppletConsole() {
@@ -82,8 +83,8 @@ public class AppletConsole implements ActionListener, WindowListener, JmolConsol
 
     jf = new JFrame(GT._("Jmol Script Console"));
     jf.setSize(600, 400);
+    editButton = new JButton(GT._("Editor"));
     stateButton = new JButton(GT._("State"));
-    editButton = new JButton(GT._("Edit"));
     runButton = new JButton(GT._("Run"));
     clearOutButton = new JButton(GT._("Clear Output"));
     clearInButton = new JButton(GT._("Clear Input"));
@@ -258,30 +259,18 @@ public class AppletConsole implements ActionListener, WindowListener, JmolConsol
     return output.getText(); 
   }
 
+  protected void clearContent(String text) {
+    output.setText(text);
+  }
+  
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
-    if (source == runButton) {
-      execute(null);
-      return;
-    }
-    if (source == editButton) {
-      viewer.getProperty(null,"scriptEditor", null);
-      return;
-    }
     if (source == clearInButton) {
       input.setText("");
       return;
     }
     if (source == clearOutButton) {
       output.setText("");
-      return;
-    }
-    if (source == historyButton) {
-      output.setText(viewer.getSetHistory(Integer.MAX_VALUE));
-      return;
-    }
-    if (source == stateButton) {
-      viewer.getProperty(null,"scriptEditor", viewer.getStateInfo());
       return;
     }
     if (source == loadButton) {
@@ -292,13 +281,15 @@ public class AppletConsole implements ActionListener, WindowListener, JmolConsol
       execute(((JMenuItem) source).getName());
       return;
     }
+    
+    super.actionPerformed(e);
   }
 
-  void execute(String strCommand) {
+  protected void execute(String strCommand) {
     String cmd = (strCommand == null ? input.getText() : strCommand);
     if (strCommand == null)
       input.setText(null);
-    String strErrorMessage = viewer.script(cmd);
+    String strErrorMessage = viewer.script(cmd + JmolConstants.SCRIPT_EDITOR_IGNORE);
     if (strErrorMessage != null && !strErrorMessage.equals("pending"))
       output(strErrorMessage);
     if (strCommand == null)
@@ -344,27 +335,12 @@ public class AppletConsole implements ActionListener, WindowListener, JmolConsol
   // window listener stuff to close when the window closes
   ////////////////////////////////////////////////////////////////
 
-  public void windowActivated(WindowEvent we) {
-  }
-
   public void windowClosed(WindowEvent we) {
     jvm12.console = null;
   }
 
   public void windowClosing(WindowEvent we) {
     jvm12.console = null;
-  }
-
-  public void windowDeactivated(WindowEvent we) {
-  }
-
-  public void windowDeiconified(WindowEvent we) {
-  }
-
-  public void windowIconified(WindowEvent we) {
-  }
-
-  public void windowOpened(WindowEvent we) {
   }
 
 }

@@ -2,7 +2,7 @@ package org.jmol.api;
 
 import org.jmol.applet.Jvm12;
 
-public interface JmolConsoleInterface {
+public interface JmolAppletConsoleInterface {
 
   void setVisible(boolean b);
 

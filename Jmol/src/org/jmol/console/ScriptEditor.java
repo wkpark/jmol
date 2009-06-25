@@ -27,6 +27,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.*;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -34,8 +35,8 @@ import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 import javax.swing.JTextPane; //import javax.swing.SwingUtilities;
+import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.JScrollPane;
@@ -43,7 +44,7 @@ import javax.swing.JScrollPane;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
-import org.jmol.util.Logger;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.ScriptContext;
 
 public final class ScriptEditor extends JDialog implements JmolScriptEditorInterface, ActionListener {
@@ -51,12 +52,15 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   EditorTextPane editor;
   private JButton closeButton;
   private JButton loadButton;
+  private JButton topButton;
   private JButton runButton;
   private JButton pauseButton;
   private JButton stepButton;
   private JButton haltButton;
   private JButton clearButton;
+  private JButton resumeButton;
   private JButton stateButton;
+  private JButton consoleButton;
   JmolViewer viewer;
 
   /*
@@ -68,18 +72,20 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   public ScriptEditor() { 
   }
 
-  private JFrame jf;
+  private JmolConsole jmolConsole;
 
-  public JmolScriptEditorInterface getScriptEditor(JmolViewer viewer, Object frame) {
-    return new ScriptEditor(viewer, jf = new JFrame());
+  public JmolScriptEditorInterface getScriptEditor(JmolViewer viewer, Object frame, Object jmolConsole) {
+    return new ScriptEditor(viewer, null, (JmolConsole) jmolConsole);
   }
   
-  public ScriptEditor(JmolViewer viewer, JFrame frame) {
+  public ScriptEditor(JmolViewer viewer, JFrame frame, JmolConsole jmolConsole) {
     super(frame, GT._("Jmol Script Editor"), false);
     this.viewer = viewer;
+    this.jmolConsole = jmolConsole;
     layoutWindow(getContentPane());
-    setSize(645, 400);
-    setLocationRelativeTo(frame);
+    setSize(745, 400);
+    if (frame != null)
+      setLocationRelativeTo(frame);
   }
 
   void layoutWindow(Container container) {
@@ -89,6 +95,10 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
     JPanel buttonPanel = new JPanel();
 
+    consoleButton = new JButton(GT._("Console"));
+    consoleButton.addActionListener(this);
+    buttonPanel.add(consoleButton);
+
     stateButton = new JButton(GT._("State"));
     stateButton.addActionListener(this);
     buttonPanel.add(stateButton);
@@ -96,11 +106,15 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     loadButton = new JButton(GT._("Script"));
     loadButton.addActionListener(this);
     buttonPanel.add(loadButton);
+    
+    
+    topButton = new JButton(GT._("Top"));
+    topButton.addActionListener(this);
+    buttonPanel.add(topButton);
 
     runButton = new JButton(GT._("Run"));
     runButton.addActionListener(this);
     buttonPanel.add(runButton);
-    runButton.setEnabled(false);
 
     pauseButton = new JButton(GT._("Pause"));
     pauseButton.addActionListener(this);
@@ -110,7 +124,11 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     stepButton = new JButton(GT._("Step"));
     stepButton.addActionListener(this);
     buttonPanel.add(stepButton);
-    stepButton.setEnabled(false);
+
+    resumeButton = new JButton(GT._("Resume"));
+    resumeButton.addActionListener(this);
+    buttonPanel.add(resumeButton);
+    resumeButton.setEnabled(false);
 
     haltButton = new JButton(GT._("Halt"));
     haltButton.addActionListener(this);
@@ -159,25 +177,155 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     haltButton.setEnabled(false);
   }
 
+  public void setVisible(boolean b) {
+    super.setVisible(b);
+    viewer.getProperty("DATA_API", "scriptEditorState", b ? Boolean.TRUE : Boolean.FALSE);
+    editor.grabFocus();
+  }
+  
+  public Object getMyMenuBar() {
+    return null;
+  }
+
+  public String getText() {
+    return editor.getText();
+  }
+
+  public void output(String message) {
+    editor.clearContent(message);
+  }
+
+  public void dispose() {
+    super.dispose();
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.jmol.api.JmolScriptEditorInterface#notifyContext(org.jmol.viewer.ScriptContext, java.lang.Object[])
+   * 
+   * from org.jmol.viewer.StatusManager:
+   * 
+      if (isScriptCompletion && viewer.getMessageStyleChime()
+          && viewer.getDebugScript()) {
+        jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
+            new Object[] { null, "script <exiting>", statusMessage,
+                new Integer(-1), strErrorMessageUntranslated });
+        strStatus = "Jmol script completed.";
+      }
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
+          new Object[] { sJmol, strStatus, statusMessage,
+              new Integer(isScriptCompletion ? -1 : msWalltime),
+              strErrorMessageUntranslated });
+   */
+  
+  public void notifyContext(ScriptContext context, Object[] data) {
+    haltButton.setEnabled(context.errorMessage == null);
+    pauseButton.setEnabled(context.errorMessage == null);
+    resumeButton.setEnabled(false);
+    if (context.errorMessage == null)
+      setContext(context); 
+  }
+
   private ScriptContext context;
+  
+  //int ntest = 0;
+  
+  private synchronized void setContext(ScriptContext scriptContext) {
+    if (scriptContext.script.indexOf(JmolConstants.SCRIPT_EDITOR_IGNORE) >= 0)
+      return;
+    context = scriptContext;
+    String s = context.script;
+    editor.clearContent(s);
+    boolean isPaused = context.executionPaused || context.executionStepping;
+    resumeButton.setEnabled(isPaused);
+    //System.out.println(context.pc + " " + context.executionPaused + " " + context.executionStepping);
+    try {
+      try {
+
+        int pt = (isPaused ? context.pc + 1 : context.pc);
+        setVisible(true);
+        int pt2;
+        int pt1;
+        if (pt < context.aatoken.length) {
+          pt1 = context.lineIndices[pt][0];
+          pt2 = context.lineIndices[pt][1];
+          //System.out.println ("cursor set to " + pt + " ispaused " + isPaused + " " + context.pc + " " + context.lineIndices.length);
+        } else {
+          pt1 = pt2 = editor.getDocument().getLength();
+        }
+        if (isPaused) {
+          editor.setCaretPosition(pt1);
+          editor.editorDoc.doHighlight(pt1, pt2);
+        }
+        //editor.grabFocus();
+      } catch (Exception e) {
+        editor.setCaretPosition(0);
+        // do we care?
+      }
+    } catch (Error er) {
+      // no. We don't.
+    }
+  }
+  
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
-    if (source == closeButton) {
-      hide();
-    } else if (source == loadButton) {
-      context = (ScriptContext) viewer.getProperty(null, "scriptContext", null);
-      editor.clearContent(context.script);
-    } else if (source == runButton) {
-    } else if (source == pauseButton) {
-    } else if (source == stepButton) {
-    } else if (source == clearButton) {
-      editor.clearContent();
-    } else if (source == stateButton) {
-      editor.clearContent(viewer.getStateInfo());
-    } else if (source == haltButton) {
-      viewer.haltScriptExecution();
-      editor.grabFocus(); // always grab the focus (e.g., after clear)
+    if (source == consoleButton) {
+      jmolConsole.setVisible(true);
+      return;
     }
+    if (source == closeButton) {
+      setVisible(false);
+      return;
+    }
+    if (source == loadButton) {
+      setContext((ScriptContext) viewer.getProperty("DATA_API",
+          "scriptContext", null));
+      return;
+    }
+    if (source == topButton) {
+      editor.setCaretPosition(0);
+      editor.grabFocus();
+      gotoPosition(0, 0);
+      return;
+    }
+    if (source == runButton) {
+      jmolConsole.execute(editor.getText() + "\0##");
+      return;
+    }
+    if (source == pauseButton) {
+      jmolConsole.execute("!pause\0##");
+      return;
+    }
+    if (source == resumeButton) {
+      jmolConsole.execute("!resume\0##");
+      return;
+    }
+    if (source == stepButton) {
+      doStep();
+      return;
+    }
+    if (source == clearButton) {
+      editor.clearContent();
+      return;
+    }
+    if (source == stateButton) {
+      editor.clearContent(viewer.getStateInfo());
+      return;
+    }
+    if (source == haltButton) {
+      viewer.haltScriptExecution();
+      return;
+    }
+  }
+
+  private void doStep() {
+    boolean isPaused = viewer.getBooleanProperty("executionPaused");
+    jmolConsole.execute(isPaused ? "!step\0##" 
+        : editor.getText() + "\0##SCRIPT_STEP\n##SCRIPT_START=" +  editor.getCaretPosition());
+  }
+
+  private void gotoPosition(int i, int j) {
+    editor.scrollRectToVisible(new Rectangle(i, j));
   }
 
   class EditorTextPane extends JTextPane {
@@ -198,54 +346,9 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       clearContent(null);
     }
 
-    public void clearContent(String text) {
-      editorDoc.clearContent();
-      if (text != null)
-        editorDoc.outputEcho(text);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.awt.Component#processKeyEvent(java.awt.event.KeyEvent)
-     */
-
-    /**
-     * Custom key event processing for command 0 implementation.
-     * 
-     * Captures key up and key down strokes to call command history and
-     * redefines the same events with control down to allow caret vertical
-     * shift.
-     * 
-     * @see java.awt.Component#processKeyEvent(java.awt.event.KeyEvent)
-     */
-    protected void processKeyEvent(KeyEvent ke) {
-      // Id Control key is down, captures events does command
-      // history recall and inhibits caret vertical shift.
-
-      int kcode = ke.getKeyCode();
-      int kid = ke.getID();
-      if (kcode == KeyEvent.VK_UP && kid == KeyEvent.KEY_PRESSED
-          && !ke.isControlDown()) {
-      } else if (kcode == KeyEvent.VK_DOWN && kid == KeyEvent.KEY_PRESSED
-          && !ke.isControlDown()) {
-      } else if ((kcode == KeyEvent.VK_DOWN || kcode == KeyEvent.VK_UP)
-          && kid == KeyEvent.KEY_PRESSED && ke.isControlDown()) {
-      } else {
-        // Standard processing for other events.
-        super.processKeyEvent(ke);
-        // check command for compiler-identifyable syntax issues
-        // this may have to be taken out if people start complaining
-        // that only some of the commands are being checked
-        // that is -- that the script itself is not being fully checked
-
-        // not perfect -- help here?
-        if (kid == KeyEvent.KEY_RELEASED
-            && ke.getModifiers() < 2
-            && (kcode > KeyEvent.VK_DOWN && kcode < 400 || kcode == KeyEvent.VK_BACK_SPACE)) {
-
-        }
-      }
+    public synchronized void clearContent(String text) {
+      editorDoc.outputEcho(text);
+      editor.setCaretPosition(0);
     }
 
   }
@@ -254,37 +357,35 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
     EditorTextPane EditorTextPane;
 
-    SimpleAttributeSet attError;
+    SimpleAttributeSet attHighlight;
     SimpleAttributeSet attEcho;
-    SimpleAttributeSet attPrompt;
-    SimpleAttributeSet attUserInput;
-    SimpleAttributeSet attStatus;
+
 
     EditorDocument() {
       super();
+      putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
 
-      attError = new SimpleAttributeSet();
-      StyleConstants.setForeground(attError, Color.red);
-
-      attPrompt = new SimpleAttributeSet();
-      StyleConstants.setForeground(attPrompt, Color.magenta);
-
-      attUserInput = new SimpleAttributeSet();
-      StyleConstants.setForeground(attUserInput, Color.black);
+      attHighlight = new SimpleAttributeSet();
+      StyleConstants.setBackground(attHighlight, Color.LIGHT_GRAY);
+      StyleConstants.setForeground(attHighlight, Color.blue);
+      StyleConstants.setBold(attHighlight, true);
 
       attEcho = new SimpleAttributeSet();
       StyleConstants.setForeground(attEcho, Color.blue);
       StyleConstants.setBold(attEcho, true);
 
-      attStatus = new SimpleAttributeSet();
-      StyleConstants.setForeground(attStatus, Color.black);
-      StyleConstants.setItalic(attStatus, true);
+    
     }
 
     void setEditorTextPane(EditorTextPane EditorTextPane) {
       this.EditorTextPane = EditorTextPane;
     }
 
+    void doHighlight(int from, int to) {
+      if (from >= to)
+        return;
+      super.setCharacterAttributes(from, to - from, attHighlight, true);
+    }
 
     /**
      * Removes all content of the script window, and add a new prompt.
@@ -292,13 +393,15 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     void clearContent() {
       try {
         super.remove(0, getLength());
-      } catch (BadLocationException exception) {
-        Logger.error("Could not clear script window content", exception);
+      } catch (Exception exception) {
+        //Logger.error("Could not clear script window content", exception);
       }
     }
 
     void outputEcho(String text) {
       clearContent();
+      if (text == null)
+        return;
       try {
         super.insertString(0, text, attEcho);
       } catch (Exception e) {
@@ -306,23 +409,4 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       }
     }
   }
-
-  public Object getMyMenuBar() {
-    return null;
-  }
-
-  public String getText() {
-    return editor.getText();
-  }
-
-  public void output(String message) {
-    editor.clearContent(message);
-  }
-
-  public void dispose() {
-    if(jf != null)
-      jf.dispose();
-  }
-
-
 }

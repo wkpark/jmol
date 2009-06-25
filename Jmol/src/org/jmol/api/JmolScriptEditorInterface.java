@@ -1,5 +1,7 @@
 package org.jmol.api;
 
+import org.jmol.viewer.ScriptContext;
+
 public interface JmolScriptEditorInterface {
 
   void setVisible(boolean b);
@@ -10,6 +12,14 @@ public interface JmolScriptEditorInterface {
 
   void dispose();
   
-  JmolScriptEditorInterface getScriptEditor(JmolViewer viewer, Object frame);
+  JmolScriptEditorInterface getScriptEditor(JmolViewer viewer, Object frame, Object jmolConsole);
+
+  boolean isVisible();
+
+  void notifyContext(ScriptContext property, Object[] data);
+
+  void notifyScriptTermination();
+
+  void notifyScriptStart();
 
 }

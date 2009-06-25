@@ -136,7 +136,7 @@ public class SpartanArchive {
       s = calculationType;
     else if (s.indexOf(calculationType) < 0)
       s = calculationType + s;
-    moData.put("calculationType", s);
+    moData.put("calculationType", r.calculationType = s);
     return modelAtomCount;
   }
 

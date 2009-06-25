@@ -213,7 +213,7 @@ public class MopacGraphfReader extends MopacDataReader {
   private boolean readKeywords() throws Exception {
     if (readLine() == null || line.indexOf(" Keywords:") < 0)
       return false;
-    moData.put("calculationType", line.substring(11).trim());
+    moData.put("calculationType", calculationType = line.substring(11).trim());
     boolean isUHF = (line.indexOf("UHF") >= 0);
     if (isUHF)
       for (int i = orbitals.size(); --i >= 0;)

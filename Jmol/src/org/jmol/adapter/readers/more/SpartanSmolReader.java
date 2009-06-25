@@ -162,7 +162,7 @@ public class SpartanSmolReader extends SpartanInputReader {
         // TODO: 5D shell ... WHY HERE?
 
         if (line != null && line.indexOf("5D shell") >= 0) {
-          moData.put("calculationType", line);
+          moData.put("calculationType", calculationType = line);
         }
         readLine();
       }

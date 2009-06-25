@@ -89,7 +89,6 @@ abstract class MOReader extends AtomSetCollectionReader {
   protected float[][] gaussians;
 
   protected Vector orbitals = new Vector();
-  protected String calculationType = "?";
   protected String energyUnits = "";
   
   protected Vector moTypes;

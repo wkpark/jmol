@@ -259,9 +259,12 @@ $SYSTEM OPTIONS
     String Runtype = (String) calcOptions.get("contrl_options_RUNTYP");
     String igauss = (String) calcOptions.get("basis_options_IGAUSS");
     String gbasis = (String) calcOptions.get("basis_options_GBASIS");
-    boolean DFunc = !((String) calcOptions.get("basis_options_NDFUNC")).contentEquals("0");
-    boolean PFunc = !((String) calcOptions.get("basis_options_NPFUNC")).contentEquals("0");
-    boolean FFunc = !((String) calcOptions.get("basis_options_NFFUNC")).contentEquals("0");
+    boolean DFunc = !"0".equals((String) calcOptions
+        .get("basis_options_NDFUNC"));
+    boolean PFunc = !"0".equals((String) calcOptions
+        .get("basis_options_NPFUNC"));
+    boolean FFunc = !"0".equals((String) calcOptions
+        .get("basis_options_NFFUNC"));
     String DFTtype = (String) calcOptions.get("contrl_options_DFTTYP");
     int perturb = parseInt((String) calcOptions.get("contrl_options_MPLEVL"));
     String CItype = (String) calcOptions.get("contrl_options_CITYP");
@@ -274,16 +277,49 @@ $SYSTEM OPTIONS
       calculationType = "";
 
     if (igauss != null) {
-      if (!igauss.contentEquals("0")) {
+      if ("0".equals(igauss)) { // we have a non Pople basis set.
+        // most common translated to standard notation, others in GAMESS
+        // internal format.
+        boolean recognized = false;
+        if (calculationType.length() > 0)
+          calculationType += " ";
+        if (gbasis.startsWith("ACC"))
+          calculationType += "aug-cc-p";
+        if (gbasis.startsWith("CC"))
+          calculationType += "cc-p";
+        if ((gbasis.startsWith("ACC") || gbasis.startsWith("CC"))
+            && gbasis.endsWith("C"))
+          calculationType += "C";
+        if (gbasis.contains("CCD")) {
+          calculationType += "VDZ";
+          recognized = true;
+        }
+        if (gbasis.contains("CCT")) {
+          calculationType += "VTZ";
+          recognized = true;
+        }
+        if (gbasis.contains("CCQ")) {
+          calculationType += "VQZ";
+          recognized = true;
+        }
+        if (gbasis.contains("CC5")) {
+          calculationType += "V5Z";
+          recognized = true;
+        }
+        if (gbasis.contains("CC6")) {
+          calculationType += "V6Z";
+          recognized = true;
+        }
+        if (!recognized)
+          calculationType += gbasis;
+      } else {
         if (calculationType.length() > 0)
           calculationType += " ";
         calculationType += igauss + "-"
             + TextFormat.simpleReplace(gbasis, "N", "");
-        // Q: "N" here means what? Some people use it in the notation, not
-        // common.
-        if (((String) calcOptions.get("basis_options_DIFFSP")).contentEquals("T")) {
+        if ("T".equals((String) calcOptions.get("basis_options_DIFFSP"))) {
           // check if we have diffuse S on H's too => "++" instead of "+"
-          if (((String) calcOptions.get("basis_options_DIFFS")).contentEquals("T"))
+          if ("T".equals((String) calcOptions.get("basis_options_DIFFS")))
             calculationType += "+";
           calculationType += "+";
         }
@@ -307,60 +343,25 @@ $SYSTEM OPTIONS
           calculationType += ")";
         }
       }
-      if (igauss.contentEquals("0")) { // we have a non Pople basis set.
-        // most common translated to standard notation, others in GAMESS
-        // internal format.
-        boolean recognized = false;
+      if (!DFTtype.contains("NONE")) {
         if (calculationType.length() > 0)
           calculationType += " ";
-        if (gbasis.startsWith("ACC"))
-          calculationType += "aug-cc-p";
-        if (gbasis.startsWith("CC"))
-          calculationType+="cc-p";
-        if ((gbasis.startsWith("ACC") || gbasis.startsWith("CC"))
-            && gbasis.endsWith("C"))
-          calculationType += "C";
-        if (gbasis.contains("CCD")){
-          calculationType += "VDZ";
-          recognized = true;
-        }
-        if (gbasis.contains("CCT")){
-          calculationType += "VTZ";
-          recognized = true;
-        }
-        if (gbasis.contains("CCQ")){
-          calculationType += "VQZ";
-          recognized = true;
-        }
-        if (gbasis.contains("CC5")){
-          calculationType += "V5Z";
-          recognized = true;
-        }
-        if (gbasis.contains("CC6")){
-          calculationType += "V6Z";
-          recognized = true;
-        }
-        if (!recognized)calculationType+=gbasis;
+        calculationType += DFTtype;
       }
-      if (!DFTtype.contains("NONE")){ 
+      if (!CItype.contains("NONE")) {
         if (calculationType.length() > 0)
           calculationType += " ";
-        calculationType+=DFTtype;
+        calculationType += CItype;
       }
-      if (!CItype.contains("NONE")){ 
+      if (!CCtype.contains("NONE")) {
         if (calculationType.length() > 0)
           calculationType += " ";
-        calculationType+=CItype;
+        calculationType += CCtype;
       }
-      if (!CCtype.contains("NONE")){ 
+      if (perturb > 0) {
         if (calculationType.length() > 0)
           calculationType += " ";
-        calculationType+=CCtype;
-      }
-      if (perturb > 0){
-        if (calculationType.length() > 0)
-          calculationType += " ";
-        calculationType+="MP"+perturb;
+        calculationType += "MP" + perturb;
       }
       if (SCFtype != null) {
         if (calculationType.length() > 0)

@@ -66,7 +66,7 @@ public class JaguarReader extends MOReader {
     }
     if (line.startsWith("  basis set:")) {
       moData.put("energyUnits", "");
-      moData.put("calculationType", line.substring(13).trim());
+      moData.put("calculationType", calculationType = line.substring(13).trim());
       return true;
     }
     if (line.indexOf("Shell information") >= 0) {

@@ -77,7 +77,7 @@ public class PsiReader extends MOReader {
       return true;
     }
     if (line.startsWith("  label        = ")) {
-      moData.put("calculationType", line.substring(17).trim());
+      moData.put("calculationType", calculationType = line.substring(17).trim());
       return true;
     }
     if (line.startsWith("molecular orbitals for ")) {

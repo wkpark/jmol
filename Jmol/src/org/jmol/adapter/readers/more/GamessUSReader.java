@@ -404,7 +404,7 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
       String searchstr = (havePartialChargeFilter
           && filter.toUpperCase().indexOf("CHARGETYPE=LOW") >= 0 ? "LOW.POP."
           : "MULL.POP.");
-      int poploc = -1;
+      int poploc = 0;
       for (; ++poploc < tokens.length; )
         if (searchstr.equals(tokens[poploc]))
           break;

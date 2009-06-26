@@ -329,7 +329,7 @@ class ScriptEvaluator {
     setErrorMessage(null);
     try {
       try {
-        getScriptExtensions();
+        setScriptExtensions();
         instructionDispatchLoop(listCommands);
         String script = viewer.getInterruptScript();
         if (script != "")
@@ -376,11 +376,6 @@ class ScriptEvaluator {
       return;
     }
     error = true;
-    if (err.length() == 0) {
-      errorMessage = compiler.getErrorMessage();
-      errorMessageUntranslated = compiler.getErrorMessageUntranslated();
-      return;
-    }
     if (errorMessage == null) // there could be a compiler error from a script
                               // command
       errorMessage = GT._("script ERROR: ");
@@ -404,13 +399,13 @@ class ScriptEvaluator {
   private void pushContext(ScriptFunction function) throws ScriptException {
     if (scriptLevel == scriptLevelMax)
       error(ERROR_tooManyScriptLevels);
-    ScriptContext context = getContext();
+    ScriptContext context = getScriptContext();
     stack[scriptLevel++] = context;
     if (checkingScriptOnly)
       Logger.info("-->>-------------".substring(0, scriptLevel + 5) + filename);
   }
 
-  ScriptContext getContext() {
+  ScriptContext getScriptContext() {
     ScriptContext context = new ScriptContext();
     context.filename = filename;
     context.functionName = functionName;
@@ -437,13 +432,25 @@ class ScriptEvaluator {
     return context;
   }
 
-  private void getContext(ScriptContext context) {  
-    filename = context.filename;
-    functionName = context.functionName;
+  private void getScriptContext(ScriptContext context, boolean isFull) { 
+
+    // just from the compiler:
+    
     script = context.script;
     lineNumbers = context.lineNumbers;
     lineIndices = context.lineIndices;
     aatoken = context.aatoken;
+    contextVariables = context.contextVariables;
+    scriptExtensions = context.scriptExtensions;
+    if (!isFull) {
+      error = (context.errorType != null);
+      errorMessage = context.errorMessage;
+      errorMessageUntranslated = context.errorMessageUntranslated;
+      return;
+    }
+    
+    filename = context.filename;
+    functionName = context.functionName;
     statement = context.statement;
     statementLength = context.statementLength;
     pc = context.pc;
@@ -451,9 +458,7 @@ class ScriptEvaluator {
     pcEnd = context.pcEnd;
     iToken = context.iToken;
     outputBuffer = context.outputBuffer;
-    contextVariables = context.contextVariables;
     isStateScript = context.isStateScript;
-    scriptExtensions = context.scriptExtensions;
   }
   
   private void popContext() {
@@ -463,32 +468,24 @@ class ScriptEvaluator {
       return;
     ScriptContext context = stack[--scriptLevel];
     stack[scriptLevel] = null;
-    getContext(context);
+    getScriptContext(context, true);
   }
 
   private boolean loadScript(String filename, String strScript,
                              boolean debugCompiler) {
     this.filename = filename;
-    boolean isOK = compiler.compile(filename, strScript, false, false, debugCompiler,
-        false);
-    if (!isOK)
-      setErrorMessage("");
-    aatoken = compiler.getAatokenCompiled();
-    lineNumbers = compiler.getLineNumbers();
-    lineIndices = compiler.getLineIndices();
-    contextVariables = compiler.getContextVariables();
-    script = compiler.getScript();
-    scriptExtensions = compiler.scriptExtensions;
+    getScriptContext(compiler.compile(filename, strScript, false, false, debugCompiler,
+        false), false);    
     isStateScript = (script.indexOf(Viewer.STATE_VERSION_STAMP) >= 0);
     String s = script;
-    pc = getScriptExtensions();
+    pc = setScriptExtensions();
     if (!isSyntaxCheck && viewer.isScriptEditorVisible() && strScript.indexOf(JmolConstants.SCRIPT_EDITOR_IGNORE) < 0)
       viewer.scriptStatus("");
     script = s;
-    return isOK;
+    return !error;
   }
 
-  private int getScriptExtensions() {
+  private int setScriptExtensions() {
     String extensions = scriptExtensions;
     if (extensions == null)
       return 0;
@@ -541,34 +538,22 @@ class ScriptEvaluator {
     return v;
   }
 
-  Object checkScriptSilent(String script) {
-    if (!compiler.compile(null, script, false, true, false, true)) {
-      errorMessageUntranslated = compiler.getErrorMessageUntranslated();
-      return compiler.getErrorMessage();
-    }
+  ScriptContext checkScriptSilent(String script) {
+    ScriptContext sc = compiler.compile(null, script, false, true, false, true);
+    if (sc.errorType != null)
+      return sc;
+    getScriptContext(sc, false);
     isSyntaxCheck = true;
     checkingScriptOnly = false;
-    setErrorMessage(null);
-    this.script = compiler.getScript();
     pc = 0;
-    aatoken = compiler.getAatokenCompiled();
-    lineNumbers = compiler.getLineNumbers();
-    lineIndices = compiler.getLineIndices();
-    contextVariables = compiler.getContextVariables();
     try {
       instructionDispatchLoop(false);
     } catch (ScriptException e) {
       setErrorMessage(e.toString());
+      sc = getScriptContext();
     }
     isSyntaxCheck = false;
-    if (errorMessage != null)
-      return errorMessage;
-    Vector info = new Vector();
-    info.addElement(compiler.getScript());
-    info.addElement(compiler.getAatokenCompiled());
-    info.addElement(compiler.getLineNumbers());
-    info.addElement(compiler.getLineIndices());
-    return info;
+    return sc;
   }
 
   private void clearState(boolean tQuiet) {
@@ -683,23 +668,23 @@ class ScriptEvaluator {
       definedAtomSets.put(script, Boolean.TRUE);
       return;
     }
-    if (!compiler.compile("#predefine", script, true, false, false, false)) {
-      viewer
-          .scriptStatus("JmolConstants.java ERROR: predefined set compile error:"
+    ScriptContext sc = compiler.compile("#predefine", script, true, false, false, false);
+    if (sc.errorType != null) {
+        viewer
+           .scriptStatus("JmolConstants.java ERROR: predefined set compile error:"
               + script
               + "\ncompile error:"
-              + compiler.getErrorMessageUntranslated());
+              + sc.errorMessageUntranslated);
       return;
     }
 
-    Token[][] aatoken = compiler.getAatokenCompiled();
-    if (aatoken.length != 1) {
+    if (sc.aatoken.length != 1) {
       viewer
           .scriptStatus("JmolConstants.java ERROR: predefinition does not have exactly 1 command:"
               + script);
       return;
     }
-    Token[] statement = aatoken[0];
+    Token[] statement = sc.aatoken[0];
     if (statement.length <= 2) {
       viewer.scriptStatus("JmolConstants.java ERROR: bad predefinition length:"
           + script);
@@ -1041,9 +1026,16 @@ class ScriptEvaluator {
       }
       if (token == null)
         continue;
-      if (executionStepping && !isSyntaxCheck) {
-        viewer.scriptStatus(getNextStatement(), "stepping -- type RESUME to continue", 0, null);
+      
+      if (!isSyntaxCheck) {
+        if (executionStepping) 
+          viewer.scriptStatus(getNextStatement(), "stepping -- type RESUME to continue", 0, null);
+       // nope -- this results in a huge number of null pointer exceptions 
+        // within the AWT framework. It apparently just cannot keep up.
+         // else if (viewer.isScriptEditorVisible())
+         // viewer.scriptStatus("", "running", 0, null);
       }
+
       switch (token.tok) {
       case Token.nada:
         break;

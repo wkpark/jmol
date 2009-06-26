@@ -78,8 +78,13 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     return new ScriptEditor(viewer, null, (JmolConsole) jmolConsole);
   }
   
+  protected String title;
+  protected  String parsedData = "";
+  protected ScriptContext parsedContext;
+  
   public ScriptEditor(JmolViewer viewer, JFrame frame, JmolConsole jmolConsole) {
-    super(frame, GT._("Jmol Script Editor"), false);
+    super(frame, null, false);
+    setTitle(title = GT._("Jmol Script Editor"));
     this.viewer = viewer;
     this.jmolConsole = jmolConsole;
     layoutWindow(getContentPane());
@@ -191,6 +196,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     return editor.getText();
   }
 
+  
   public void output(String message) {
     editor.clearContent(message);
   }
@@ -242,7 +248,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     try {
       try {
 
-        int pt = (isPaused ? context.pc + 1 : context.pc);
+        int pt = (context.executionPaused ? context.pc: context.pc);
         setVisible(true);
         int pt2;
         int pt1;
@@ -268,6 +274,10 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   }
   
   public void actionPerformed(ActionEvent e) {
+    checkAction(e);
+  }
+  
+  private synchronized void checkAction(ActionEvent e) {
     Object source = e.getSource();
     if (source == consoleButton) {
       jmolConsole.setVisible(true);
@@ -283,9 +293,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       return;
     }
     if (source == topButton) {
-      editor.setCaretPosition(0);
-      editor.grabFocus();
-      gotoPosition(0, 0);
+      gotoTop();
       return;
     }
     if (source == runButton) {
@@ -316,6 +324,29 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       viewer.haltScriptExecution();
       return;
     }
+
+  }
+ 
+  private void gotoTop() {
+    editor.setCaretPosition(0);
+    editor.grabFocus();
+    gotoPosition(0, 0);
+    parseScript(editor.getText());
+  }
+
+  protected void parseScript(String text) {
+    if (text == null || text.length() == 0) {
+      parsedContext = null;
+      parsedData = "";
+      setTitle(title);
+      return;
+    }
+    if (text.equals(parsedData) && parsedContext != null)
+      return;
+    parsedData = text;
+    parsedContext = (ScriptContext) viewer.getProperty("DATA_API","scriptCheck", text);
+    setTitle(title + " -- " + parsedContext.aatoken.length + " commands " 
+        + (parsedContext.iCommandError < 0 ? "" : " ERROR: " + parsedContext.errorType));
   }
 
   private void doStep() {
@@ -349,8 +380,8 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     public synchronized void clearContent(String text) {
       editorDoc.outputEcho(text);
       editor.setCaretPosition(0);
+      parseScript(text);
     }
-
   }
 
   class EditorDocument extends DefaultStyledDocument {

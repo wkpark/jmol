@@ -78,36 +78,51 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   
   private ScriptFunction thisFunction;
   
-  boolean compile(String filename, String script, boolean isPredefining,
+ 
+  /**
+   * return a structure that is only the first part of the process - identifying lines and commands
+   * for the scriptEditor
+   * 
+   * @param script
+   * @return        ScriptContext
+   */
+  
+  ScriptContext parseScriptForTokens(String script) {
+    this.script = script;
+    filename = null;
+    isCheckOnly = true;
+    isSilent = true;
+    logMessages = false;
+    preDefining = false;
+    return parseScript(false);
+  }
+ 
+  private ScriptContext parseScript(boolean doFull) {
+    if (!compile0(doFull))
+      handleError();
+    ScriptContext sc = new ScriptContext();
+    sc.script = script;
+    sc.scriptExtensions = scriptExtensions;
+    sc.aatoken = aatokenCompiled;
+    sc.errorType = errorType;
+    sc.errorMessage = errorMessage;
+    sc.errorMessageUntranslated = (errorMessageUntranslated == null 
+        ? errorMessage : errorMessageUntranslated);
+    sc.lineIndices = lineIndices;
+    sc.lineNumbers = lineNumbers;
+    sc.contextVariables = contextVariables;
+    return sc;
+  }
+
+  ScriptContext compile(String filename, String script, boolean isPredefining,
                   boolean isSilent, boolean debugScript, boolean isCheckOnly) {
     this.isCheckOnly = isCheckOnly;
     this.filename = filename;
     this.isSilent = isSilent;
-    this.script = cleanScriptComments(script);
-    cchScript = this.script.length();
+    this.script = script;
     logMessages = (!isSilent && !isPredefining && debugScript);
     preDefining = (filename == "#predefine");
-    return (compile0() || handleError());
-  }
-
-  String getScript() {
-    return script;
-  }
-  
-  Token[][] getAatokenCompiled() {
-    return aatokenCompiled;
-  }
-
-  short[] getLineNumbers() {
-    return lineNumbers;
-  }
-
-  int[][] getLineIndices() {
-    return lineIndices;
-  }
-
-  Hashtable getContextVariables() {
-    return contextVariables;
+    return parseScript(true);
   }
 
   private void addContextVariable(String ident) {
@@ -120,14 +135,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     }
   }
   
-  String getErrorMessage() {
-    return errorMessage;
-  }
-  
-  String getErrorMessageUntranslated() {
-    return errorMessageUntranslated == null ? errorMessage : errorMessageUntranslated;
-  }  
-
   /**
    * allows for three kinds of comments.
    * NOTE: closing involves asterisks and slash together, but that can't be shown here. 
@@ -208,7 +215,11 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
 
   private int tokLastMath;
   
-  private boolean compile0() {
+  private boolean compile0(boolean isFull) {
+    
+    script = cleanScriptComments(script);
+    cchScript = this.script.length();
+
     // these four will be returned:
     contextVariables = null;
     lineNumbers = null;
@@ -217,7 +228,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     
     thisFunction = null;
     flowContext = null;
-    
+    errorType = null;
     errorMessage = null;
     errorMessageUntranslated = null;
     errorLine = null;
@@ -289,7 +300,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       
       if (isEndOfCommand) {
         isEndOfCommand = false;
-        switch (processTokenList(iLine)) {
+        switch (processTokenList(iLine, isFull)) {
         case CONTINUE:
           continue;
         case ERROR:
@@ -515,7 +526,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     return (nTokens == 0 ? OK2 : CONTINUE);
   }
 
-  private int processTokenList(short iLine) {
+  private int processTokenList(short iLine, boolean doCompile) {
     if (nTokens > 0 || comment != null) {
       if (nTokens == 0) {
         // just a comment
@@ -547,7 +558,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       }
 
       if (ltoken.size() > 0) {
-        if (!compileCommand())
+        if (doCompile && !compileCommand())
           return ERROR;
         if (logMessages) {
           Logger.debug("-------------------------------------");
@@ -2070,6 +2081,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   }
   
   private boolean handleError() {
+    errorType = errorMessage;
     errorLine = script.substring(ichCurrentCommand, ichEnd <= ichCurrentCommand ? ichToken : ichEnd);
     String lineInfo = (ichToken < ichEnd ? errorLine.substring(0,
         ichToken - ichCurrentCommand)
@@ -2083,8 +2095,5 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     return false;
   }
- 
-
-
 
 }

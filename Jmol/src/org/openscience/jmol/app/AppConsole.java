@@ -553,7 +553,6 @@ public final class AppConsole extends JmolConsole implements EnterListener{
         e.printStackTrace();
       }
     }  
-
      
     synchronized void checkCommand() {
       String strCommand = consoleDoc.getCommandString();
@@ -562,8 +561,8 @@ public final class AppConsole extends JmolConsole implements EnterListener{
         return;
       checking = true;
       consoleDoc
-          .colorCommand(viewer.scriptCheck(strCommand) == null ? consoleDoc.attUserInput
-              : consoleDoc.attError);
+          .colorCommand(viewer.scriptCheck(strCommand) instanceof String ? 
+             consoleDoc.attError : consoleDoc.attUserInput);
       checking = false;
     }
   }

@@ -3841,20 +3841,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return info;
   }
 
-  boolean checking;
-
-  public String scriptCheck(String strScript) {
+  private Object scriptCheck(String strScript, boolean returnContext) {
     // from ConsoleTextPane.checkCommand() and applet Jmol.scriptProcessor()
-    if (strScript == null || checking)
-      return null;
-    checking = true;
-    if (strScript.indexOf(")") == 0) // history disabled
+    if (strScript.indexOf(")") == 0 || strScript.indexOf("!") == 0) // history disabled
       strScript = strScript.substring(1);
-    Object obj = eval.checkScriptSilent(strScript);
-    checking = false;
-    if (obj instanceof String)
-      return (String) obj;
-    return null;
+    ScriptContext sc = (new ScriptEvaluator(this)).checkScriptSilent(strScript);
+    if (returnContext || sc.errorMessage == null)
+      return sc;
+    return sc.errorMessage;
+  }
+
+  public synchronized Object scriptCheck(String strScript) {
+    return scriptCheck(strScript, false);
   }
 
   public boolean isScriptExecuting() {
@@ -6617,14 +6615,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // returns the Java object.
     // Jmol 11.7.45 also uses this method as a general API 
     // for getting and returning script data from the console and editor
+
     if ("DATA_API".equals(returnType)) {
-      if (infoType.equals("scriptContext"))
-        return eval.getContext();
-      if (infoType.equals("scriptEditor")) {
+      switch (("scriptCheck........." 
+              +"scriptContext......."
+              +"scriptEditor........"
+              +"scriptEditorState...").indexOf(infoType)) {
+      case 0:
+        return scriptCheck((String) paramInfo, true);
+      case 20:
+        return eval.getScriptContext();
+      case 40:
         statusManager.showEditor((String) paramInfo);
         return null;
-      }
-      if (infoType.equals("scriptEditorState")) {
+      case 60:
         scriptEditorVisible = ((Boolean)paramInfo).booleanValue();
         return null;
       }

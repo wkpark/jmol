@@ -1051,6 +1051,7 @@ abstract class ScriptCompilationTokenParser {
   protected String errorMessage;
   protected String errorMessageUntranslated;
   protected String errorLine;
+  protected String errorType;
 
   protected final static int ERROR_badArgumentCount  = 0;
   protected final static int ERROR_badContext  = 1;

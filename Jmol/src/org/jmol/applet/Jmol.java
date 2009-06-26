@@ -604,8 +604,8 @@ public class Jmol implements WrappedApplet {
       return "";
     switch (processType) {
     case SCRIPT_CHECK:
-      String err = viewer.scriptCheck(script);
-      return (err == null ? "" : err);
+      Object err = viewer.scriptCheck(script);
+      return (err instanceof String ? (String) err : "");
     case SCRIPT_WAIT:
       if (statusParams != null)
         return viewer.scriptWaitStatus(script, statusParams).toString();

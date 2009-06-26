@@ -47,6 +47,9 @@ public class ScriptContext {
   public Hashtable contextVariables;
   public boolean isStateScript;
   public String errorMessage;
+  public String errorMessageUntranslated;
+  public int iCommandError = -1;
+  public String errorType;
   public ScriptContext[] stack;
   public int scriptLevel;
   public boolean isSyntaxCheck;

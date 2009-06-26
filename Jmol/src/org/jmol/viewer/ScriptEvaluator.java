@@ -130,7 +130,7 @@ class ScriptEvaluator {
   }
 
   // specific to current statement
-  private int pc; // program counter
+  protected int pc; // program counter
   private String thisCommand;
   private String fullCommand;
   private Token[] statement;
@@ -373,6 +373,7 @@ class ScriptEvaluator {
     if (err == null) {
       error = false;
       errorMessage = null;
+      iCommandError = -1;
       return;
     }
     error = true;
@@ -422,7 +423,11 @@ class ScriptEvaluator {
     context.outputBuffer = outputBuffer;
     context.contextVariables = contextVariables;
     context.isStateScript = isStateScript;
+    
     context.errorMessage = errorMessage;
+    context.errorType = errorType;
+    context.iCommandError = iCommandError;
+
     context.stack = stack;
     context.scriptLevel = scriptLevel;
     context.isSyntaxCheck = isSyntaxCheck;
@@ -446,6 +451,8 @@ class ScriptEvaluator {
       error = (context.errorType != null);
       errorMessage = context.errorMessage;
       errorMessageUntranslated = context.errorMessageUntranslated;
+      iCommandError = context.iCommandError;
+      errorType = context.errorType;
       return;
     }
     
@@ -7487,11 +7494,13 @@ class ScriptEvaluator {
 
     Object v = parameterExpression(pt, ptMax, key, true, -1, isArrayItem, null,
         null);
-    if (isSyntaxCheck || v == null)
+    if (v == null)
       return;
     int nv = ((Vector) v).size();
-    if (nv == 0 || isArrayItem && nv < 3)
+    if (nv == 0 || !isArrayItem && nv > 1 || isArrayItem && nv != 3)
       error(ERROR_invalidArgument);
+    if (isSyntaxCheck)
+      return;
     ScriptVariable tv = (ScriptVariable) ((Vector) v).get(isArrayItem ? 2 : 0);
 
     // create user variable if needed for list now, so we can do the copying
@@ -12420,19 +12429,23 @@ class ScriptEvaluator {
   }
 
   protected String errorMessageUntranslated;
-
+  protected String errorType;
+  protected int iCommandError;
+  
   class ScriptException extends Exception {
 
     private String message;
     private String untranslated;
 
     ScriptException(String msg, String untranslated) {
-      message = msg;
+      errorType = message = msg;
+      iCommandError = pc;
       this.untranslated = (untranslated == null ? msg : untranslated);
       if (message == null) {
         message = "";
         return;
       }
+      
       String s = contextTrace();
       message += s;
       this.untranslated += s;

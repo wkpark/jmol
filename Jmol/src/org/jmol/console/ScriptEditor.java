@@ -29,16 +29,20 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.*;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 import javax.swing.JTextPane; //import javax.swing.SwingUtilities;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
+import javax.swing.undo.UndoManager;
 import javax.swing.JScrollPane;
 
 import org.jmol.api.JmolScriptEditorInterface;
@@ -82,8 +86,13 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   protected  String parsedData = "";
   protected ScriptContext parsedContext;
   
+  protected SimpleAttributeSet attHighlight;
+  protected SimpleAttributeSet attEcho;
+  protected SimpleAttributeSet attError;
+
   public ScriptEditor(JmolViewer viewer, JFrame frame, JmolConsole jmolConsole) {
     super(frame, null, false);
+    setAttributes();
     setTitle(title = GT._("Jmol Script Editor"));
     this.viewer = viewer;
     this.jmolConsole = jmolConsole;
@@ -93,6 +102,21 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       setLocationRelativeTo(frame);
   }
 
+  void setAttributes() {
+    attHighlight = new SimpleAttributeSet();
+    StyleConstants.setBackground(attHighlight, Color.LIGHT_GRAY);
+    StyleConstants.setForeground(attHighlight, Color.blue);
+    StyleConstants.setBold(attHighlight, true);
+
+    attEcho = new SimpleAttributeSet();
+    StyleConstants.setForeground(attEcho, Color.blue);
+    StyleConstants.setBold(attEcho, true);
+
+    attError = new SimpleAttributeSet();
+    StyleConstants.setForeground(attError, Color.red);
+    StyleConstants.setBold(attError, true);
+
+  }
   void layoutWindow(Container container) {
     editor = new EditorTextPane(this);
     editor.setDragEnabled(true);
@@ -113,7 +137,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     buttonPanel.add(loadButton);
     
     
-    topButton = new JButton(GT._("Top"));
+    topButton = new JButton(GT._("Check"));
     topButton.addActionListener(this);
     buttonPanel.add(topButton);
 
@@ -232,30 +256,37 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       setContext(context); 
   }
 
-  private ScriptContext context;
-  
   String filename;
   
   private synchronized void setContext(ScriptContext scriptContext) {
     if (scriptContext.script.indexOf(JmolConstants.SCRIPT_EDITOR_IGNORE) >= 0)
       return;
-    context = scriptContext;
+    ScriptContext context = parsedContext = scriptContext;
     String s = context.script;
     filename = context.filename;
     if (filename == null && context.functionName != null)
       filename = "function " + context.functionName; 
     editor.clearContent(s);
     boolean isPaused = context.executionPaused || context.executionStepping;
+    System.out.println(context.executionPaused + " "+ context.executionStepping);
     resumeButton.setEnabled(isPaused);
     //System.out.println(context.pc + " " + context.executionPaused + " " + context.executionStepping);
+    gotoCommand(context.pc + (context.executionPaused ? 0 : 1), isPaused, attHighlight);
+  }
+  
+  private void gotoCommand(int pt, boolean isPaused, SimpleAttributeSet attr) {    
+    ScriptContext context = parsedContext;
     try {
       try {
-
-        int pt = (context.executionPaused ? context.pc: context.pc);
         setVisible(true);
         int pt2;
         int pt1;
-        if (pt < context.aatoken.length) {
+        if (pt < 0) {
+          pt1 = 0;
+          pt2 = editor.getDocument().getLength();
+        } else if (context == null || context.aatoken == null) {
+          pt1 = pt2 = 0;
+        } else if (pt < context.aatoken.length) {
           pt1 = context.lineIndices[pt][0];
           pt2 = context.lineIndices[pt][1];
           //System.out.println ("cursor set to " + pt + " ispaused " + isPaused + " " + context.pc + " " + context.lineIndices.length);
@@ -264,7 +295,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
         }
         if (isPaused) {
           editor.setCaretPosition(pt1);
-          editor.editorDoc.doHighlight(pt1, pt2);
+          editor.editorDoc.doHighlight(pt1, pt2, attr);
         }
         //editor.grabFocus();
       } catch (Exception e) {
@@ -273,9 +304,9 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       }
     } catch (Error er) {
       // no. We don't.
-    }
+    }    
   }
-  
+
   public void actionPerformed(ActionEvent e) {
     checkAction(e);
   }
@@ -350,8 +381,10 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     parsedData = text;
     parsedContext = (ScriptContext) viewer.getProperty("DATA_API","scriptCheck", text);
     setTitle(title + (filename == null ? "" : "[" + filename + "]") 
-        + " -- " + parsedContext.aatoken.length + " commands " 
+        + " -- " + (parsedContext.aatoken == null ? "" : parsedContext.aatoken.length + " commands ") 
         + (parsedContext.iCommandError < 0 ? "" : " ERROR: " + parsedContext.errorType));
+    boolean isError = (parsedContext.iCommandError >= 0);
+    gotoCommand(isError ? parsedContext.iCommandError : 0, true, isError ? attError : attHighlight);
   }
 
   private void doStep() {
@@ -385,8 +418,30 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
     public synchronized void clearContent(String text) {
       editorDoc.outputEcho(text);
-      editor.setCaretPosition(0);
       parseScript(text);
+    }
+    
+    protected void processKeyEvent(KeyEvent ke)
+    {
+       // Id Control key is down, captures events does command
+       // history recall and inhibits caret vertical shift.
+
+      int kcode = ke.getKeyCode();
+      int kid = ke.getID();
+      if (kcode == KeyEvent.VK_Z
+          && kid == KeyEvent.KEY_PRESSED
+          && ke.isControlDown()) {
+          editor.editorDoc.undo();
+       } else if (kcode == KeyEvent.VK_Z
+           && kid == KeyEvent.KEY_PRESSED
+           && ke.isShiftDown() && ke.isControlDown()
+         || kcode == KeyEvent.VK_Y
+         && kid == KeyEvent.KEY_PRESSED
+         && ke.isControlDown()) {
+           editor.editorDoc.redo();
+       } else {
+         super.processKeyEvent(ke);
+       }
     }
   }
 
@@ -394,36 +449,53 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
     EditorTextPane EditorTextPane;
 
-    SimpleAttributeSet attHighlight;
-    SimpleAttributeSet attEcho;
-
-
     EditorDocument() {
       super();
       putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
-
-      attHighlight = new SimpleAttributeSet();
-      StyleConstants.setBackground(attHighlight, Color.LIGHT_GRAY);
-      StyleConstants.setForeground(attHighlight, Color.blue);
-      StyleConstants.setBold(attHighlight, true);
-
-      attEcho = new SimpleAttributeSet();
-      StyleConstants.setForeground(attEcho, Color.blue);
-      StyleConstants.setBold(attEcho, true);
-
-    
+      addUndoableEditListener(new MyUndoableEditListener());
     }
 
     void setEditorTextPane(EditorTextPane EditorTextPane) {
       this.EditorTextPane = EditorTextPane;
     }
 
-    void doHighlight(int from, int to) {
+    void doHighlight(int from, int to, SimpleAttributeSet attr) {
+      setCharacterAttributes(0, editor.editorDoc.getLength(), attEcho, true);
       if (from >= to)
         return;
-      super.setCharacterAttributes(from, to - from, attHighlight, true);
+      setCharacterAttributes(from, to - from, attr, true);
+      editor.select(from, to);
+      editor.setSelectedTextColor(attr == attError ? Color.RED : Color.black);
+
     }
 
+    protected UndoManager undo = new UndoManager();
+
+    protected class MyUndoableEditListener implements UndoableEditListener {
+      public void undoableEditHappened(UndoableEditEvent e) {
+        // Remember the edit and update the menus
+        undo.addEdit(e.getEdit());
+        // undoAction.updateUndoState();
+        // redoAction.updateRedoState();
+      }
+    }  
+
+    protected void undo() {
+      try {
+        undo.undo();
+      } catch (Exception e) {
+        //
+      }
+    }
+    
+    protected void redo() {
+      try {
+        undo.redo();
+      } catch (Exception e) {
+        //
+      }
+    }
+    
     /**
      * Removes all content of the script window, and add a new prompt.
      */

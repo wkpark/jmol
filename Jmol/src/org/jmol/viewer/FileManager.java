@@ -101,13 +101,13 @@ public class FileManager {
     StringBuffer commands = new StringBuffer();
     if (sfunc != null) {
       sfunc.append("  _setFileState;\n");
-      commands.append("function _setFileState();\n\n");
+      commands.append("function _setFileState() {\n\n");
     }
     commands.append(loadScript);
     if (viewer.getModelSetFileName().equals("zapped"))
       commands.append("  zap;\n");
     if (sfunc != null)
-      commands.append("\nend function;\n\n");
+      commands.append("\n}\n\n");
     return commands.toString();
   }
 

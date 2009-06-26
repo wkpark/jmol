@@ -152,7 +152,7 @@ abstract class TransformManager {
     StringBuffer commands = new StringBuffer("");
     if (sfunc != null) {
       sfunc.append("  _setPerspectiveState;\n");
-      commands.append("function _setPerspectiveState();\n");
+      commands.append("function _setPerspectiveState() {\n");
     }
     StateManager
         .appendCmd(commands, "set perspectiveModel " + perspectiveModel);
@@ -197,7 +197,7 @@ abstract class TransformManager {
         commands.append("  slab on;\n");
     }
     if (sfunc != null)
-      commands.append("end function;\n\n");
+      commands.append("}\n\n");
     return commands.toString();
   }
 

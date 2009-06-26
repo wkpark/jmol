@@ -260,11 +260,11 @@ class DataManager {
     if (n == 0)
       return;
     if (sfunc != null)
-      state.append("function _setDataState();\n");
+      state.append("function _setDataState() {\n");
     state.append(sb);  
     if (sfunc != null) {
       sfunc.append("  _setDataState;\n");
-      state.append("end function;\n\n");
+      state.append("}\n\n");
     }
   }
 

@@ -240,7 +240,7 @@ class SelectionManager {
     StringBuffer commands = new StringBuffer();
     if (sfunc != null) {
       sfunc.append("  _setSelectionState;\n");
-      commands.append("function _setSelectionState();\n");
+      commands.append("function _setSelectionState() {\n");
     }
     StateManager.appendCmd(commands, viewer.getTrajectoryInfo());
     if (BitSetUtil.firstSetBit(bsHidden) >= 0)
@@ -262,7 +262,7 @@ class SelectionManager {
     if (viewer.getSelectionHaloEnabled())
       StateManager.appendCmd(commands, "SelectionHalos ON");
     if (sfunc != null) 
-      commands.append("end function;\n\n");
+      commands.append("}\n\n");
     return commands.toString();
   }
 

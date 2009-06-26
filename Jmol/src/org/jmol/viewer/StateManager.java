@@ -792,7 +792,7 @@ public class StateManager {
       if (sfunc != null) {
         sfunc
             .append("  initialize;\n  set refreshing false;\n  _setWindowState;\n");
-        str.append("\nfunction _setWindowState();\n");
+        str.append("\nfunction _setWindowState() {\n");
       }
       str.append("# height " + viewer.getScreenHeight() + ";\n# width "
           + viewer.getScreenWidth() + ";\n");
@@ -806,7 +806,7 @@ public class StateManager {
       str.append(getSpecularState());
       appendCmd(str, "statusReporting  = " + statusReporting);
       if (sfunc != null)
-        str.append("end function;\n\n");
+        str.append("}\n\n");
       return str.toString();
     }
 
@@ -1051,7 +1051,7 @@ public class StateManager {
       StringBuffer commands = new StringBuffer();
       if (sfunc != null) {
         sfunc.append("  _setVariableState;\n");
-        commands.append("function _setVariableState();\n\n");
+        commands.append("function _setVariableState() {\n\n");
       }
       int n = 0;
       Enumeration e;
@@ -1115,7 +1115,7 @@ public class StateManager {
           "defaultState"));
 
       if (sfunc != null)
-        commands.append("\nend function;\n\n");
+        commands.append("\n}\n\n");
       return commands.toString();
     }
 

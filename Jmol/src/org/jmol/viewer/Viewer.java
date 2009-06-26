@@ -2688,7 +2688,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String getStateInfo(String type) {
     boolean isAll = (type == null || type.equalsIgnoreCase("all"));
     StringBuffer s = new StringBuffer("");
-    StringBuffer sfunc = (isAll ? new StringBuffer("function _setState();\n")
+    StringBuffer sfunc = (isAll ? new StringBuffer("function _setState() {\n")
         : null);
     if (isAll)
       s.append(STATE_VERSION_STAMP + getJmolVersion() + ";\n");
@@ -2743,7 +2743,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           + global.antialiasImages);
       if (getSpinOn())
         StateManager.appendCmd(sfunc, "spin on");
-      sfunc.append("end function;\n\n_setState;\n");
+      sfunc.append("}\n\n_setState;\n");
     }
     if (isAll)
       s.append(sfunc);

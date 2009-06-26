@@ -649,11 +649,11 @@ abstract public class ModelSet extends ModelCollection {
     cmd = "";
     if (isAll && sfunc != null) {
       sfunc.append("  _setDefinedState;\n");
-      cmd = "function _setDefinedState();\n\n";
+      cmd = "function _setDefinedState() {\n\n";
     }
 
     if (sfunc != null)
-      commands.append("\nend function;\n\n");
+      commands.append("\n}\n\n");
     return cmd + commands.toString();
   }
   
@@ -661,7 +661,7 @@ abstract public class ModelSet extends ModelCollection {
     StringBuffer commands = new StringBuffer();
     if (isAll && sfunc != null) {
       sfunc.append("  _setModelState;\n");
-      commands.append("function _setModelState();\n");
+      commands.append("function _setModelState() {\n");
     }
     String cmd;
 
@@ -720,7 +720,7 @@ abstract public class ModelSet extends ModelCollection {
 
     }
     if (sfunc != null)
-      commands.append("\nend function;\n\n");
+      commands.append("\n}\n\n");
     return commands.toString();
   }
 

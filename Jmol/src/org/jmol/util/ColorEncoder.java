@@ -270,8 +270,8 @@ import org.jmol.util.ArrayUtil;
       //s.append("userColorScheme = " + colors + ";\n");
     if (n > 0 && sfunc != null)
       sfunc.append("\n  _setColorState\n");
-    return (n > 0 && sfunc != null ? "function _setColorState();\n" 
-        + s.append("end function;\n\n").toString() : s.toString());
+    return (n > 0 && sfunc != null ? "function _setColorState() {\n" 
+        + s.append("}\n\n").toString() : s.toString());
   }
   
   public static String getColorSchemeList(int[] scheme) {

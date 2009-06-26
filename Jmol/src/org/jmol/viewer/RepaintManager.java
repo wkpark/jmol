@@ -286,7 +286,7 @@ class RepaintManager {
     StringBuffer commands = new StringBuffer();
     if (sfunc != null) {
       sfunc.append("  _setFrameState;\n");
-      commands.append("function _setFrameState();\n");
+      commands.append("function _setFrameState() {\n");
     }
     commands.append("# frame state;\n");
     
@@ -315,7 +315,7 @@ class RepaintManager {
     if (animationOn && animationPaused)
       StateManager.appendCmd(commands, "animation PAUSE");
     if (sfunc != null)
-      commands.append("end function;\n\n");
+      commands.append("}\n\n");
     return commands.toString();
   }
   

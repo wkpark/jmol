@@ -42,6 +42,42 @@ public class GamessUSReader extends GamessReader {
     return readAtomSetCollection(reader, "gamess");
   }
 
+  /*
+  ------------------
+  MOLECULAR ORBITALS
+  ------------------
+
+  ------------
+  EIGENVECTORS
+  ------------
+
+  1          2          3          4          5
+  -79.9156   -20.4669   -20.4579   -20.4496   -20.4419
+  A          A          A          A          A   
+  1  C  1  S   -0.000003  -0.000029  -0.000004   0.000011   0.000016
+  2  C  1  S   -0.000009   0.000140   0.000001   0.000057   0.000065
+  3  C  1  X    0.000007  -0.000241  -0.000022  -0.000010  -0.000061
+  4  C  1  Y   -0.000008   0.000017  -0.000027  -0.000010   0.000024
+  5  C  1  Z    0.000007   0.000313   0.000009  -0.000002  -0.000001
+  6  C  1  S    0.000049   0.000875  -0.000164  -0.000521  -0.000440
+  7  C  1  X   -0.000066   0.000161   0.000125   0.000034   0.000406
+  8  C  1  Y    0.000042   0.000195  -0.000165  -0.000254  -0.000573
+  9  C  1  Z    0.000003   0.000045   0.000052   0.000112  -0.000129
+  10  C  1 XX   -0.000010   0.000010  -0.000040   0.000019   0.000045
+  11  C  1 YY   -0.000010  -0.000031   0.000000  -0.000003   0.000019
+  ...
+
+  6          7          8          9         10
+  -20.4354   -20.4324   -20.3459   -20.3360   -11.2242
+  A          A          A          A          A   
+  1  C  1  S    0.000000  -0.000001   0.000001   0.000000   0.008876
+  2  C  1  S   -0.000003   0.000002   0.000003   0.000002   0.000370
+
+  ...
+  TOTAL NUMBER OF BASIS SET SHELLS             =  101
+
+  */
+
   /**
    * @return true if need to read new line
    * @throws Exception
@@ -92,7 +128,7 @@ public class GamessUSReader extends GamessReader {
       return false;
     }
     if (line.indexOf("  TOTAL MULLIKEN AND LOWDIN ATOMIC POPULATIONS") >= 0) {
-      readPartialCharges("mulliken"); //This should be changed to some kind of load parameter.
+      readPartialCharges();
       return true;
     }
     if (line.indexOf("- ALPHA SET -") >= 0)
@@ -349,70 +385,36 @@ public class GamessUSReader extends GamessReader {
     return tag;
   }
 
+
   /*
-   ------------------
-   MOLECULAR ORBITALS
-   ------------------
+  TOTAL MULLIKEN AND LOWDIN ATOMIC POPULATIONS
+ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
+1 O             8.000000    0.000000         8.000000    0.000000
+2 O             8.000000    0.000000         8.000000    0.000000
 
-   ------------
-   EIGENVECTORS
-   ------------
 
-   1          2          3          4          5
-   -79.9156   -20.4669   -20.4579   -20.4496   -20.4419
-   A          A          A          A          A   
-   1  C  1  S   -0.000003  -0.000029  -0.000004   0.000011   0.000016
-   2  C  1  S   -0.000009   0.000140   0.000001   0.000057   0.000065
-   3  C  1  X    0.000007  -0.000241  -0.000022  -0.000010  -0.000061
-   4  C  1  Y   -0.000008   0.000017  -0.000027  -0.000010   0.000024
-   5  C  1  Z    0.000007   0.000313   0.000009  -0.000002  -0.000001
-   6  C  1  S    0.000049   0.000875  -0.000164  -0.000521  -0.000440
-   7  C  1  X   -0.000066   0.000161   0.000125   0.000034   0.000406
-   8  C  1  Y    0.000042   0.000195  -0.000165  -0.000254  -0.000573
-   9  C  1  Z    0.000003   0.000045   0.000052   0.000112  -0.000129
-   10  C  1 XX   -0.000010   0.000010  -0.000040   0.000019   0.000045
-   11  C  1 YY   -0.000010  -0.000031   0.000000  -0.000003   0.000019
-   ...
+*/
 
-   6          7          8          9         10
-   -20.4354   -20.4324   -20.3459   -20.3360   -11.2242
-   A          A          A          A          A   
-   1  C  1  S    0.000000  -0.000001   0.000001   0.000000   0.008876
-   2  C  1  S   -0.000003   0.000002   0.000003   0.000002   0.000370
-
-   ...
-   TOTAL NUMBER OF BASIS SET SHELLS             =  101
-
-   */
-  
   /**
-   * @param chrgType choice of mulliken or lowdin
    * @throws Exception
    */
-  void readPartialCharges(String chrgType) throws Exception {
-    while(readLine()!=null && !line.contains("ATOM")); 
-    String tokens[]=getTokens();
-    String searchstr = "MULL.POP.";
-    int poploc = -1;
-    if(chrgType=="lowdin") searchstr = "LOW.POP.";
-    for (int i = 0; i<tokens.length; ++i){
-      if (searchstr.equals(tokens[i])) {
-        poploc = i;
-        if (!"CHARGE".equals(tokens[i+1])) return; //Not as expected don't read
-      }    
-    }   
-    Atom[] atoms = atomSetCollection.getAtoms();
-    int startAtom = atomSetCollection.getLastAtomSetAtomIndex();
-    int endAtom = atomSetCollection.getAtomCount();
-    for (int i = startAtom; i < endAtom && readLine() != null; ++i)
-      atoms[i].partialCharge = parseFloat(getTokens()[poploc+2]);
-  }  
- /*
-          TOTAL MULLIKEN AND LOWDIN ATOMIC POPULATIONS
-       ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
-    1 O             8.000000    0.000000         8.000000    0.000000
-    2 O             8.000000    0.000000         8.000000    0.000000
-
-
-  */
+  void readPartialCharges() throws Exception {
+    while (readLine() != null && !line.contains("ATOM")) {
+      String tokens[] = getTokens();
+      String searchstr = (havePartialChargeFilter
+          && filter.toUpperCase().indexOf("CHARGETYPE=LOW") >= 0 ? "LOW.POP."
+          : "MULL.POP.");
+      int poploc = -1;
+      for (; ++poploc < tokens.length; )
+        if (searchstr.equals(tokens[poploc]))
+          break;
+      if (++poploc >= tokens.length || !"CHARGE".equals(tokens[poploc++]))
+        return; // Not as expected don't read
+      Atom[] atoms = atomSetCollection.getAtoms();
+      int startAtom = atomSetCollection.getLastAtomSetAtomIndex();
+      int endAtom = atomSetCollection.getAtomCount();
+      for (int i = startAtom; i < endAtom && readLine() != null; ++i)
+        atoms[i].partialCharge = parseFloat(getTokens()[poploc]);
+    }
+  }
 }

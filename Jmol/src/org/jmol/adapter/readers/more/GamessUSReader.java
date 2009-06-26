@@ -91,6 +91,10 @@ public class GamessUSReader extends GamessReader {
       readEFPInBohrCoordinates();
       return false;
     }
+    if (line.indexOf("  TOTAL MULLIKEN AND LOWDIN ATOMIC POPULATIONS") >= 0) {
+      readPartialCharges("mulliken"); //This should be changed to some kind of load parameter.
+      return true;
+    }
     if (line.indexOf("- ALPHA SET -") >= 0)
       alphaBeta = "alpha";
     else if (line.indexOf("- BETA SET -") >= 0)
@@ -381,4 +385,34 @@ public class GamessUSReader extends GamessReader {
 
    */
   
+  /**
+   * @param chrgType choice of mulliken or lowdin
+   * @throws Exception
+   */
+  void readPartialCharges(String chrgType) throws Exception {
+    while(readLine()!=null && !line.contains("ATOM")); 
+    String tokens[]=getTokens();
+    String searchstr = "MULL.POP.";
+    int poploc = -1;
+    if(chrgType=="lowdin") searchstr = "LOW.POP.";
+    for (int i = 0; i<tokens.length; ++i){
+      if (searchstr.equals(tokens[i])) {
+        poploc = i;
+        if (!"CHARGE".equals(tokens[i+1])) return; //Not as expected don't read
+      }    
+    }   
+    Atom[] atoms = atomSetCollection.getAtoms();
+    int startAtom = atomSetCollection.getLastAtomSetAtomIndex();
+    int endAtom = atomSetCollection.getAtomCount();
+    for (int i = startAtom; i < endAtom && readLine() != null; ++i)
+      atoms[i].partialCharge = parseFloat(getTokens()[poploc+2]);
+  }  
+ /*
+          TOTAL MULLIKEN AND LOWDIN ATOMIC POPULATIONS
+       ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
+    1 O             8.000000    0.000000         8.000000    0.000000
+    2 O             8.000000    0.000000         8.000000    0.000000
+
+
+  */
 }

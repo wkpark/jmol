@@ -398,22 +398,23 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
    * @throws Exception
    */
   void readPartialCharges() throws Exception {
-    while (readLine() != null && !line.contains("ATOM")) {
-      String tokens[] = getTokens();
-      String searchstr = (havePartialChargeFilter
-          && filter.toUpperCase().indexOf("CHARGETYPE=LOW") >= 0 ? "LOW.POP."
-          : "MULL.POP.");
-      int poploc = 0;
-      for (; ++poploc < tokens.length; )
-        if (searchstr.equals(tokens[poploc]))
-          break;
-      if (++poploc >= tokens.length || !"CHARGE".equals(tokens[poploc++]))
-        return; // Not as expected don't read
-      Atom[] atoms = atomSetCollection.getAtoms();
-      int startAtom = atomSetCollection.getLastAtomSetAtomIndex();
-      int endAtom = atomSetCollection.getAtomCount();
-      for (int i = startAtom; i < endAtom && readLine() != null; ++i)
-        atoms[i].partialCharge = parseFloat(getTokens()[poploc]);
+    String tokens[]=null;
+    String searchstr = (havePartialChargeFilter
+        && filter.toUpperCase().indexOf("CHARGE=LOW") >= 0 ? "LOW.POP."
+            : "MULL.POP.");
+    while (readLine() != null && ("".equals(line.trim())||line.contains("ATOM"))) {
+      tokens = getTokens();      
     }
+    int poploc = 0;
+    for (; ++poploc < tokens.length; )
+      if (searchstr.equals(tokens[poploc]))
+        break;
+    if (++poploc >= tokens.length || !"CHARGE".equals(tokens[poploc++]))
+      return; // Not as expected don't read
+    Atom[] atoms = atomSetCollection.getAtoms();
+    int startAtom = atomSetCollection.getLastAtomSetAtomIndex();
+    int endAtom = atomSetCollection.getAtomCount();
+    for (int i = startAtom; i < endAtom && readLine() != null; ++i)
+      atoms[i].partialCharge = parseFloat(getTokens(prevline)[poploc]);
   }
 }

@@ -1918,7 +1918,7 @@ public class Jmol extends JPanel {
           } else if (msWalltime < 0) {
             if (msWalltime == -2)
               scriptEditor.notifyScriptStart();
-          } else if (scriptEditor.isVisible() && ((String) data[2]).length() > 0) {
+          } else if (scriptEditor.isVisible() && ((String) data[2]).length() > 0 || data[4] != null) {
             scriptEditor.notifyContext((ScriptContext)viewer.getProperty("DATA_API", "scriptContext", null), data);
           }
         }

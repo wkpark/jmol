@@ -232,15 +232,15 @@ public class Resolver {
     String err = null;
     try {
       className = getReaderClassBase(atomSetCollectionReaderName);
-      atomSetCollectionReaderClass = Class.forName(className);//,true, Thread.currentThread().getContextClassLoader());
+      atomSetCollectionReaderClass = Class.forName(className);
       atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
           .newInstance();
+      return atomSetCollectionReader.readData(fullName, htParams, bufferedReader);
     } catch (Exception e) {
       err = "File reader was not found:" + className;
       Logger.error(err);
       return err;
     }
-    return atomSetCollectionReader.readData(fullName, htParams, bufferedReader);
   }
 
   /**
@@ -266,12 +266,12 @@ public class Resolver {
       className = classBase + "xml.XmlReader";
       atomSetCollectionReaderClass = Class.forName(className);
       atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass.newInstance();
+      return atomSetCollectionReader.readData("DOM node", htParams, DOMNode);
     } catch (Exception e) {
       String err = "File reader was not found:" + className;
       Logger.error(err, e);
       return err;
     }
-    return atomSetCollectionReader.readData("DOM node", htParams, DOMNode);
   }
 
   ////// PRIVATE METHODS ///////

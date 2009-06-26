@@ -194,6 +194,11 @@ public abstract class AtomSetCollectionReader {
     return finalize(htParams, filename);
   }
 
+  public abstract void readAtomSetCollection(BufferedReader reader);
+
+  public void readAtomSetCollectionFromDOM(Object DOMNode) {
+  }
+
   private Object finalize(Hashtable htParams, String filename) {
     if (!htParams.containsKey("templateAtomCount"))
       htParams.put("templateAtomCount", new Integer(atomSetCollection
@@ -220,11 +225,6 @@ public abstract class AtomSetCollectionReader {
       return "No atoms found\nfor file " + filename + "\ntype "
           + atomSetCollection.fileTypeName;
     return atomSetCollection;
-  }
-
-  public abstract void readAtomSetCollection(BufferedReader reader);
-
-  public void readAtomSetCollectionFromDOM(Object DOMNode) {
   }
 
   protected void setError(Exception e) {

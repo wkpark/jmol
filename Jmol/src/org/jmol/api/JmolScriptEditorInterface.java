@@ -22,4 +22,6 @@ public interface JmolScriptEditorInterface {
 
   void notifyScriptStart();
 
+  void setFilename(String filename);
+
 }

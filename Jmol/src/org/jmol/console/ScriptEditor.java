@@ -124,7 +124,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     pauseButton = new JButton(GT._("Pause"));
     pauseButton.addActionListener(this);
     buttonPanel.add(pauseButton);
-    pauseButton.setEnabled(false);
+    pauseButton.setEnabled(true);
 
     stepButton = new JButton(GT._("Step"));
     stepButton.addActionListener(this);
@@ -234,13 +234,16 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
   private ScriptContext context;
   
-  //int ntest = 0;
+  String filename;
   
   private synchronized void setContext(ScriptContext scriptContext) {
     if (scriptContext.script.indexOf(JmolConstants.SCRIPT_EDITOR_IGNORE) >= 0)
       return;
     context = scriptContext;
     String s = context.script;
+    filename = context.filename;
+    if (filename == null && context.functionName != null)
+      filename = "function " + context.functionName; 
     editor.clearContent(s);
     boolean isPaused = context.executionPaused || context.executionStepping;
     resumeButton.setEnabled(isPaused);
@@ -297,6 +300,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       return;
     }
     if (source == runButton) {
+      notifyScriptStart();
       jmolConsole.execute(editor.getText() + "\0##");
       return;
     }
@@ -345,7 +349,8 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       return;
     parsedData = text;
     parsedContext = (ScriptContext) viewer.getProperty("DATA_API","scriptCheck", text);
-    setTitle(title + " -- " + parsedContext.aatoken.length + " commands " 
+    setTitle(title + (filename == null ? "" : "[" + filename + "]") 
+        + " -- " + parsedContext.aatoken.length + " commands " 
         + (parsedContext.iCommandError < 0 ? "" : " ERROR: " + parsedContext.errorType));
   }
 
@@ -374,6 +379,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     }
 
     public void clearContent() {
+      filename = null;
       clearContent(null);
     }
 
@@ -439,5 +445,9 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
         e.printStackTrace();
       }
     }
+  }
+
+  public void setFilename(String filename) {
+    this.filename = filename;
   }
 }

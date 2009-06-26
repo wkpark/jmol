@@ -196,13 +196,15 @@ public class Jvm12 {
 
   JmolScriptEditorInterface scriptEditor;
   
-  void showEditor(boolean showEditor, String msg) {
+  void showEditor(boolean showEditor, String filename, String msg) {
     if (scriptEditor == null) {
       scriptEditor = (JmolScriptEditorInterface) Interface.getOptionInterface("console.ScriptEditor");
       scriptEditor = scriptEditor.getScriptEditor(viewer, awtComponent, console);
     }
-    if (msg != null)
+    if (msg != null) {
+      scriptEditor.setFilename(filename);
       scriptEditor.output(msg);
+    }
     scriptEditor.setVisible(showEditor);
   }
 

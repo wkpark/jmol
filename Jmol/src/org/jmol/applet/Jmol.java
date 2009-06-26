@@ -852,8 +852,9 @@ public class Jmol implements WrappedApplet {
       //  + " " + strInfo);
       switch (type) {
       case JmolConstants.SHOW_EDITOR:
+        String filename = (String) data[2];
         if (jvm12 != null)
-          jvm12.showEditor(true, strInfo);
+          jvm12.showEditor(true, filename, strInfo);
         return;
       case JmolConstants.CALLBACK_ANIMFRAME:
         // Note: twos-complement. To get actual frame number, use 

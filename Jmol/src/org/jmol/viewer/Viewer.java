@@ -1632,8 +1632,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String type = fileManager.getFileTypeName(fileName);
     checkHalt("exit");
     // assumes a Jmol script file if no other file type
-    evalString((type == null && allowScript ? "script " : "load ")
-        + Escape.escape(fileName));
+    allowScript &= (type == null);
+    if (scriptEditorVisible && allowScript)
+      statusManager.showEditor(new String[] { fileName, getFileAsString(fileName) });
+    else
+      evalString((allowScript ? "script " : "load ")
+         + Escape.escape(fileName));
   }
 
   private final static int FILE_STATUS_NOT_LOADED = -1;
@@ -6626,7 +6630,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       case 20:
         return eval.getScriptContext();
       case 40:
-        statusManager.showEditor((String) paramInfo);
+        statusManager.showEditor((String[]) paramInfo);
         return null;
       case 60:
         scriptEditorVisible = ((Boolean)paramInfo).booleanValue();

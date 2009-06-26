@@ -558,10 +558,14 @@ class StatusManager {
       jmolStatusListener.showConsole(showConsole);
   }
   
-  synchronized void showEditor(String text) {
+  synchronized void showEditor(String[] file_text) {
+    if (file_text == null)
+      file_text = new String[]{ null, null };
+    if (file_text[1] == null)
+      file_text[1] = "<no data>";
     if (jmolStatusListener != null)
       jmolCallbackListener.notifyCallback(JmolConstants.SHOW_EDITOR, 
-          new Object[] { null, text, });
+          new Object[] { null, file_text[1], file_text[0] });
   }
   
   float[][] functionXY(String functionName, int nX, int nY) {

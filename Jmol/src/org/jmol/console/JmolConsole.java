@@ -65,7 +65,7 @@ public abstract class JmolConsole extends JDialog implements ActionListener, Win
     } else if (source == historyButton) {
       clearContent(viewer.getSetHistory(Integer.MAX_VALUE));
     } else if (source == stateButton) {
-      viewer.getProperty("DATA_API","scriptEditor", viewer.getStateInfo());
+      viewer.getProperty("DATA_API","scriptEditor", new String[] { "current state" , viewer.getStateInfo() });
     }
   }
 

@@ -31,11 +31,13 @@ import javax.swing.UIManager;
 
 import org.jmol.api.*;
 
-public class Jvm12 {
+ public class Jvm12 {
 
   protected JmolViewer viewer;
   private Component awtComponent;
   public JmolAppletConsoleInterface console;
+  JmolScriptEditorInterface scriptEditor;
+  
   protected String appletContext;
 
   Jvm12(Component awtComponent, JmolViewer viewer, String appletContext) {
@@ -57,7 +59,7 @@ public class Jvm12 {
     return g.getClipBounds(rectClip);
   }
 
-  Dimension getSize() {
+  public Dimension getSize() {
     return awtComponent.getSize(dimSize);
   }
 
@@ -194,9 +196,7 @@ public class Jvm12 {
     return c.getClipboardText();
   }
 
-  JmolScriptEditorInterface scriptEditor;
-  
-  void showEditor(boolean showEditor, String filename, String msg) {
+  public void showEditor(boolean showEditor, String filename, String msg) {
     if (scriptEditor == null) {
       scriptEditor = (JmolScriptEditorInterface) Interface.getOptionInterface("console.ScriptEditor");
       scriptEditor = scriptEditor.getScriptEditor(viewer, awtComponent, console);

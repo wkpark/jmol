@@ -24,11 +24,12 @@
 package org.jmol.console;
 
 import org.jmol.api.*;
-import org.jmol.applet.GuiMap;
 import org.jmol.applet.Jvm12;
 import org.jmol.i18n.*;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Hashtable;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -45,12 +46,6 @@ public class AppletConsole extends JmolConsole implements JmolAppletConsoleInter
   private Jvm12 jvm12;
 
   private final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
-
-  private GuiMap guimap = new GuiMap();
-
-  JmolViewer getViewer() {
-    return viewer;
-  }
 
   //public void finalize() {
   //  System.out.println("Console " + this + " finalize");
@@ -153,8 +148,8 @@ public class AppletConsole extends JmolConsole implements JmolAppletConsoleInter
   }
   
   protected void addHelpMenuBar(JMenuBar menuBar) {
-    JMenu m0 = guimap.newJMenu("help");
-    JMenuItem item = guimap.newJMenuItem("search");
+    JMenu m0 = newJMenu("help");
+    JMenuItem item = newJMenuItem("search");
     item.addActionListener(this);
     item.setName("help ?search=?");
     m0.add(item);
@@ -168,7 +163,7 @@ public class AppletConsole extends JmolConsole implements JmolAppletConsoleInter
   }
 
   private void addHelpItems(JMenu m0, String key, String attr) {
-    JMenu m = guimap.newJMenu(key);
+    JMenu m = newJMenu(key);
     String[] commands = (String[]) viewer.getProperty(null, "tokenList", attr);
     m0.add(m);
     JMenu m2 = null;
@@ -204,7 +199,7 @@ public class AppletConsole extends JmolConsole implements JmolAppletConsoleInter
   }
 
   protected JMenuItem createMenuItem(String cmd) {
-    return guimap.newJMenuItem(cmd);
+    return newJMenuItem(cmd);
   }
 
   private void setupInput() {
@@ -324,7 +319,7 @@ public class AppletConsole extends JmolConsole implements JmolAppletConsoleInter
     }
 
     private void recallCommand(boolean up) {
-      String cmd = getViewer().getSetHistory(up ? -1 : 1);
+      String cmd = viewer.getSetHistory(up ? -1 : 1);
       if (cmd == null)
         return;
       setText(cmd);
@@ -341,6 +336,116 @@ public class AppletConsole extends JmolConsole implements JmolAppletConsoleInter
 
   public void windowClosing(WindowEvent we) {
     jvm12.console = null;
+  }
+
+  /// Graphical User Interface for applet ///
+  
+  protected Hashtable map = new Hashtable();
+  protected Hashtable labels = null;
+  
+  
+  private Hashtable setupLabels() {
+      Hashtable labels = new Hashtable();
+      labels.put("help", GT._("&Help"));
+      labels.put("search", GT._("&Search..."));
+      labels.put("commands", GT._("&Commands"));
+      labels.put("functions", GT._("Math &Functions"));
+      labels.put("parameters", GT._("Set &Parameters"));
+      labels.put("more", GT._("&More"));
+      return labels;
+  }
+
+  private String getLabel(String key) {
+    if (labels == null) {
+      labels = setupLabels();
+    }
+    return (String)labels.get(key);
+  }
+
+  private JMenu newJMenu(String key) {
+    String label = getLabel(key);
+    return new KeyJMenu(key, getLabelWithoutMnemonic(label), getMnemonic(label));
+  }
+  
+  private JMenuItem newJMenuItem(String key) {
+    String label = getLabel(key);
+    return new KeyJMenuItem(key, getLabelWithoutMnemonic(label), getMnemonic(label));
+  }
+/*
+  private Object get(String key) {
+    return map.get(key);
+  }
+
+  private static String getKey(Object obj) {
+    return (((GetKey)obj).getKey());
+  }
+*/
+
+  private static String getLabelWithoutMnemonic(String label) {
+    if (label == null) {
+      return null;
+    }
+    int index = label.indexOf('&');
+    if (index == -1) {
+      return label;
+    }
+    return label.substring(0, index) +
+      ((index < label.length() - 1) ? label.substring(index + 1) : "");
+  }
+  
+  private static char getMnemonic(String label) {
+    if (label == null) {
+      return ' ';
+    }
+    int index = label.indexOf('&');
+    if ((index == -1) || (index == label.length() - 1)){
+      return ' ';
+    }
+    return label.charAt(index + 1);
+  }
+  
+  /*
+  private void setSelected(String key, boolean b) {
+    ((AbstractButton)get(key)).setSelected(b);
+  }
+
+  private boolean isSelected(String key) {
+    return ((AbstractButton)get(key)).isSelected();
+  }
+  */
+
+  private interface GetKey {
+    public String getKey();
+  }
+
+  private class KeyJMenu extends JMenu implements GetKey {
+    String key;
+    KeyJMenu(String key, String label, char mnemonic) {
+      super(label);
+      if (mnemonic != ' ') {
+          setMnemonic(mnemonic);
+      }
+      this.key = key;
+      map.put(key, this);
+    }
+    public String getKey() {
+      return key;
+    }
+  }
+
+  private class KeyJMenuItem extends JMenuItem implements GetKey {
+    String key;
+    KeyJMenuItem(String key, String label, char mnemonic) {
+      super(label);
+      if (mnemonic != ' ') {
+          setMnemonic(mnemonic);
+      }
+      this.key = key;
+      map.put(key, this);
+    }
+    public String getKey() {
+      return key;
+    }
   }
 
 }

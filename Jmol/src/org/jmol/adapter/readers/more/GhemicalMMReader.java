@@ -71,7 +71,7 @@ import org.jmol.api.JmolAdapter;
  */
 public class GhemicalMMReader extends AtomSetCollectionReader {
     
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
 
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("ghemicalMM");
@@ -91,13 +91,14 @@ public class GhemicalMMReader extends AtomSetCollectionReader {
         else if (line.startsWith("!Charges"))
           processCharges();
         else if (line.startsWith("!End")) {
-          return atomSetCollection;
+          return;
         }
       }
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
+      return;
     }
-    return setError(new Exception("unexpected end of file"));
+    setError(new Exception("unexpected end of file"));
   }
 
   void processHeader() {

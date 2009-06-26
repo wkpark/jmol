@@ -154,7 +154,10 @@ public abstract class AtomSetCollectionReader {
   protected BitSet bsModels;
   protected BitSet bsFilter;
   protected String filter;
+  protected boolean haveAtomFilter;
   protected String spaceGroup;
+  protected boolean havePartialChargeFilter;
+  public String calculationType = "?";
 
   // private state variables
   private boolean iHaveFractionalCoordinates;
@@ -176,13 +179,55 @@ public abstract class AtomSetCollectionReader {
     System.out.println(this + " finalized");
   }
 */  
-  public abstract AtomSetCollection readAtomSetCollection(BufferedReader reader);
-
-  public AtomSetCollection readAtomSetCollectionFromDOM(Object DOMNode) {
-    return null;
+  
+  public Object readData(String filename, Hashtable htParams, 
+                         BufferedReader reader) throws Exception {
+    initialize(htParams);
+    readAtomSetCollection(reader);
+    reader.close();
+    return finalize(htParams, filename);
+  }  
+  
+  protected Object readData(String filename, Hashtable htParams, Object DOMNode) {
+    initialize(htParams);
+    readAtomSetCollectionFromDOM(DOMNode);
+    return finalize(htParams, filename);
   }
 
-  protected AtomSetCollection setError(Exception e) {
+  private Object finalize(Hashtable htParams, String filename) {
+    if (!htParams.containsKey("templateAtomCount"))
+      htParams.put("templateAtomCount", new Integer(atomSetCollection
+          .getAtomCount()));
+    if (htParams.containsKey("bsFilter"))
+      htParams.put("filteredAtomCount", new Integer(BitSetUtil
+          .cardinalityOf((BitSet) htParams.get("bsFilter"))));
+    if (!calculationType.equals("?"))
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("calculationType",
+          calculationType);
+
+    String fileType = atomSetCollection.fileTypeName;
+    if (fileType.indexOf("(") >= 0)
+      fileType = fileType.substring(0, fileType.indexOf("("));
+    for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;) {
+      atomSetCollection.setAtomSetAuxiliaryInfo("fileName", filename, i);
+      atomSetCollection.setAtomSetAuxiliaryInfo("fileType", fileType, i);
+    }
+    atomSetCollection.freeze();
+    if (atomSetCollection.errorMessage != null)
+      return atomSetCollection.errorMessage + "\nfor file " + filename
+          + "\ntype " + atomSetCollection.fileTypeName;
+    if (atomSetCollection.atomCount == 0)
+      return "No atoms found\nfor file " + filename + "\ntype "
+          + atomSetCollection.fileTypeName;
+    return atomSetCollection;
+  }
+
+  public abstract void readAtomSetCollection(BufferedReader reader);
+
+  public void readAtomSetCollectionFromDOM(Object DOMNode) {
+  }
+
+  protected void setError(Exception e) {
     e.printStackTrace();
     if (line == null)
       atomSetCollection.errorMessage = "Unexpected end of file after line "
@@ -190,7 +235,6 @@ public abstract class AtomSetCollectionReader {
     else
       atomSetCollection.errorMessage = "Error reading file at line " + ptLine
           + ":\n" + line + "\n" + e.getMessage();
-    return atomSetCollection;
   }
   
   void initialize(Hashtable htParams) {
@@ -203,9 +247,17 @@ public abstract class AtomSetCollectionReader {
       desiredModelNumber = ((Integer) htParams.get("modelNumber")).intValue();
     applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
     filter = (String) htParams.get("filter");
+    // filter is used for 
+    // atoms: can contain [XXX] or ![XXX], .XXX; or !.XXX;, :X, !:X
+    // GAMESS partial charge type: charge=LOW (MULLIKEN is default)
+    // MO type: phrase or !phrase in MO line
     // bsFilter is usually null, but it gets set to indicate
     // which atoms were selected by the filter. This then
     // gets used by COORD files to load just those coordinates
+    haveAtomFilter = (filter != null && (filter.indexOf(".") >= 0 
+        || filter.indexOf("[") >= 0 || filter.indexOf(".") >= 0));
+    havePartialChargeFilter = (filter != null 
+        && filter.toLowerCase().indexOf("charge=") >= 0);
     bsFilter = (BitSet) htParams.get("bsFilter");
     if (bsFilter == null && filter != null) {
       bsFilter = new BitSet();
@@ -432,9 +484,16 @@ public abstract class AtomSetCollectionReader {
 
   protected boolean filterAtom(Atom atom) {
     //cif, pdb readers
-    return filterAtom(atom, atomSetCollection.atomCount);
+    return (!haveAtomFilter || filterAtom(atom, atomSetCollection.atomCount));
   }
 
+  /**
+   * 
+   * filter can contain [XXX] or ![XXX], .XXX; or !.XXX;, :X, !:X
+   * @param atom
+   * @param iAtom
+   * @return        true if we want this atom
+   */
   protected boolean filterAtom(Atom atom, int iAtom) {
     //mdtop, cif, pdb
     String code;
@@ -542,11 +601,7 @@ public abstract class AtomSetCollectionReader {
     initializeSymmetry();
   }
 
-  public String calculationType = "?";
-
   public void setMOData(Hashtable moData) {
-    if (!calculationType.equals("?"))
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("calculationType", calculationType);
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
     Vector orbitals = (Vector) moData.get("mos");
     if (orbitals != null)
@@ -788,6 +843,6 @@ public abstract class AtomSetCollectionReader {
   
   protected static String parseTrimmed(String s, int iStart, int iEnd) {
     return Parser.parseTrimmed(s, iStart, iEnd);
-  }  
+  }
 
 }

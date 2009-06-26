@@ -72,8 +72,8 @@ public class QchemReader extends MOReader {
   int nBasis = 0;          // # of basis according to qchem
 
   
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
-    return readAtomSetCollection(reader, "qchem");
+  public void readAtomSetCollection(BufferedReader reader) {
+    readAtomSetCollection(reader, "qchem");
   }
 
   /**

@@ -44,7 +44,7 @@ public class MopacReader extends AtomSetCollectionReader {
   
   private boolean chargesFound = false;
 
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
 
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("mopac");
@@ -73,9 +73,9 @@ public class MopacReader extends AtomSetCollectionReader {
           readFrequencies();
       }
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
     
   void processTotalEnergy() {

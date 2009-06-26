@@ -58,7 +58,7 @@ public class Mol2Reader extends FFReader {
   private int atomCount = 0;
   private boolean isPDB = false;
 
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+  public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("mol2");
     try {
@@ -78,9 +78,9 @@ public class Mol2Reader extends FFReader {
         readLine();
       }
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
 
   private void processMolecule() throws Exception {

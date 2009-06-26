@@ -58,7 +58,7 @@ public class MdTopReader extends FFReader {
   private int nAtoms = 0;
   private int atomCount = 0;
 
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+  public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("mdtop");
     try {
@@ -85,41 +85,40 @@ public class MdTopReader extends FFReader {
         else if (line.equals("MASS"))
           getMasses();
       }
-    } catch (Exception e) {
-      return setError(e);
-    }
-    Atom[] atoms = atomSetCollection.getAtoms();
-    if (filter == null) {
-      nAtoms = atomCount;
-    } else {
-      Atom[] atoms2 = new Atom[atoms.length];
-      nAtoms = 0;
-      for (int i = 0; i < atomCount; i++)
-        if (filterAtom(atoms[i], i))
-          atoms2[nAtoms++] = atoms[i];
-      atomSetCollection.discardPreviousAtoms();
-      for (int i = 0; i < nAtoms; i++) {
-        Atom atom = atoms2[i];
-        atomSetCollection.addAtom(atom);
+      Atom[] atoms = atomSetCollection.getAtoms();
+      if (filter == null) {
+        nAtoms = atomCount;
+      } else {
+        Atom[] atoms2 = new Atom[atoms.length];
+        nAtoms = 0;
+        for (int i = 0; i < atomCount; i++)
+          if (filterAtom(atoms[i], i))
+            atoms2[nAtoms++] = atoms[i];
+        atomSetCollection.discardPreviousAtoms();
+        for (int i = 0; i < nAtoms; i++) {
+          Atom atom = atoms2[i];
+          atomSetCollection.addAtom(atom);
+        }
       }
+      Logger.info("Total number of atoms used=" + nAtoms);
+      int j = 0;
+      for (int i = 0; i < nAtoms; i++) {
+        Atom atom = atoms[i];
+        if (i % 100 == 0)
+          j++;
+        setAtomCoord(atom, (i % 100)*2, j*2, 0);
+        atom.isHetero = JmolAdapter.isHetero(atom.group3);
+        String atomType = atom.atomName;
+        atomType = atomType.substring(atomType.indexOf('\0') + 1);
+        if (!getElementSymbol(atom, atomType))
+          atom.elementSymbol = deducePdbElementSymbol(atom.isHetero, atom.atomName,
+              atom.group3);
+      }
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
+      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+    } catch (Exception e) {
+      setError(e);
     }
-    Logger.info("Total number of atoms used=" + nAtoms);
-    int j = 0;
-    for (int i = 0; i < nAtoms; i++) {
-      Atom atom = atoms[i];
-      if (i % 100 == 0)
-        j++;
-      setAtomCoord(atom, (i % 100)*2, j*2, 0);
-      atom.isHetero = JmolAdapter.isHetero(atom.group3);
-      String atomType = atom.atomName;
-      atomType = atomType.substring(atomType.indexOf('\0') + 1);
-      if (!getElementSymbol(atom, atomType))
-        atom.elementSymbol = deducePdbElementSymbol(atom.isHetero, atom.atomName,
-            atom.group3);
-    }
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
-    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
-    return atomSetCollection;
   }
 
   private String getDataBlock() throws Exception {

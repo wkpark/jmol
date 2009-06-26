@@ -68,7 +68,7 @@ public class CifReader extends AtomSetCollectionReader {
 
   private Hashtable htHetero;
 
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+  public void readAtomSetCollection(BufferedReader reader) {
     int nAtoms = 0;
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("cif");
@@ -169,9 +169,8 @@ public class CifReader extends AtomSetCollectionReader {
       atomSetCollection.setCollectionName("<collection of "
           + atomSetCollection.getAtomSetCount() + " models>");
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
   }
 
   ////////////////////////////////////////////////////////////////

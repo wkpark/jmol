@@ -52,7 +52,7 @@ import java.io.BufferedReader;
 public class MolReader extends AtomSetCollectionReader {
 
   String header = "";
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
     atomSetCollection = new AtomSetCollection("mol");
     this.reader = reader;
     try {
@@ -72,9 +72,8 @@ public class MolReader extends AtomSetCollectionReader {
         flushLines();
       }
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
   }
   
   void processMolSdHeader() throws Exception {

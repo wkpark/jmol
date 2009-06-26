@@ -99,11 +99,10 @@ public class GaussianReader extends MOReader {
    * 
    * @param reader
    *          BufferedReader associated with the Gaussian output text.
-   * @return The AtomSetCollection representing the interpreted Gaussian text.
    **/
 
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
-    return readAtomSetCollection(reader, "gaussian");
+  public void readAtomSetCollection(BufferedReader reader) {
+    readAtomSetCollection(reader, "gaussian");
   }
   
   private int stepNumber = 0;

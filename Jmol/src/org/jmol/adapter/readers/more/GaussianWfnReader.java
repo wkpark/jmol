@@ -83,10 +83,9 @@ EXPONENTS  0.2068882D+04 0.3106496D+03 0.7068303D+02 0.1986108D+02 0.6299305D+01
    *
    *
    * @param reader BufferedReader associated with the Gaussian output text.
-   * @return The AtomSetCollection representing the interpreted Gaussian text.
    **/
 
-   public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+   public void readAtomSetCollection(BufferedReader reader) {
 /*
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("wfn");
@@ -96,10 +95,9 @@ EXPONENTS  0.2068882D+04 0.3106496D+03 0.7068303D+02 0.1986108D+02 0.6299305D+01
       readBasis();
       readMolecularOrbitals();
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
 */
-    return atomSetCollection;
   }
 
    /*

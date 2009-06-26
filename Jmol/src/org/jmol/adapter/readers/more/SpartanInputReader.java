@@ -42,7 +42,7 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
   protected String bondData = "";
   //Hashtable moData = new Hashtable();
 
-  protected AtomSetCollection readInputRecords() {
+  protected void readInputRecords() {
     int atomCount0 = atomCount;
     try {
       readInputHeader();
@@ -53,7 +53,7 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
           break;
       }
       if (line == null)
-        return atomSetCollection;
+        return;
       readInputAtoms();
       discardLinesUntilContains("ATOMLABELS");
       if (line != null)
@@ -65,12 +65,11 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
         readLine();
       if (line != null && line.indexOf("MOLSTATE") >= 0)
         readTransform();
+      if (atomSetCollection.getAtomCount() > 0)
+        atomSetCollection.setAtomSetName(modelName);
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    if (atomSetCollection.getAtomCount() > 0)
-      atomSetCollection.setAtomSetName(modelName);
-    return atomSetCollection;
   }
   
   private void readTransform() throws Exception {

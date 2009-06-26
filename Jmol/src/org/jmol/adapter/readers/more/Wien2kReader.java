@@ -43,7 +43,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
   private char latticeCode;
   private boolean doSymmetry = true;
   
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+  public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("wien2k");
     doSymmetry = !spaceGroup.equals("none");
@@ -56,9 +56,9 @@ public class Wien2kReader extends AtomSetCollectionReader {
       applySymmetryAndSetTrajectory();
       readEmbeddedScript();
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
 
   /* from HallInfo:

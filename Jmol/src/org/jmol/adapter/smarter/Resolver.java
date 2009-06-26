@@ -26,14 +26,12 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
-import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import netscape.javascript.JSObject;
 
-import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
@@ -242,18 +240,7 @@ public class Resolver {
       Logger.error(err);
       return err;
     }
-    atomSetCollectionReader.initialize(htParams);
-    AtomSetCollection atomSetCollection = atomSetCollectionReader
-        .readAtomSetCollection(bufferedReader);
-    if (!htParams.containsKey("templateAtomCount"))
-      htParams.put("templateAtomCount", new Integer(atomSetCollection
-          .getAtomCount()));
-    if (htParams.containsKey("bsFilter"))
-      htParams.put("filteredAtomCount", new Integer(BitSetUtil
-          .cardinalityOf((BitSet) htParams.get("bsFilter"))));
-    bufferedReader.close();
-    bufferedReader = null;
-    return finalize(atomSetCollection, fullName);
+    return atomSetCollectionReader.readData(fullName, htParams, bufferedReader);
   }
 
   /**
@@ -284,10 +271,7 @@ public class Resolver {
       Logger.error(err, e);
       return err;
     }
-    atomSetCollectionReader.initialize(htParams);
-    AtomSetCollection atomSetCollection =
-      atomSetCollectionReader.readAtomSetCollectionFromDOM(DOMNode);
-    return finalize(atomSetCollection, "DOM node");
+    return atomSetCollectionReader.readData("DOM node", htParams, DOMNode);
   }
 
   ////// PRIVATE METHODS ///////
@@ -412,23 +396,6 @@ public class Resolver {
     return "unidentified " + specialTags[SPECIAL_CML_DOM][0];
   }
 
-  private static Object finalize(AtomSetCollection atomSetCollection, String filename) {
-    String fileType = atomSetCollection.fileTypeName;
-    if (fileType.indexOf("(") >= 0)
-      fileType = fileType.substring(0, fileType.indexOf("("));
-    for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;) {
-      atomSetCollection.setAtomSetAuxiliaryInfo("fileName", filename, i);
-      atomSetCollection.setAtomSetAuxiliaryInfo("fileType", fileType, i);
-    }
-    atomSetCollection.freeze();
-    if (atomSetCollection.errorMessage != null)
-      return atomSetCollection.errorMessage + "\nfor file " + filename + "\ntype "
-          + atomSetCollection.fileTypeName;
-    if (atomSetCollection.atomCount == 0)
-      return "No atoms found\nfor file " + filename + "\ntype "
-          + atomSetCollection.fileTypeName;
-    return atomSetCollection;
-  }
 
   /**
    * the main resolver method. One of the great advantages of Jmol is that it can

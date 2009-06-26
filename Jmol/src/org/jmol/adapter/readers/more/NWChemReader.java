@@ -76,8 +76,8 @@ public class NWChemReader extends MOReader {
   private boolean haveAt;
   private boolean inInput;
  
- public AtomSetCollection readAtomSetCollection(BufferedReader reader)  {
-   return readAtomSetCollection(reader, "nwchem");
+ public void readAtomSetCollection(BufferedReader reader)  {
+   readAtomSetCollection(reader, "nwchem");
  }
 
  /**

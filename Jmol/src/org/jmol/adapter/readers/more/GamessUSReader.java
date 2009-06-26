@@ -34,12 +34,11 @@ import java.io.BufferedReader;
 import java.util.Vector;
 
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.adapter.smarter.AtomSetCollection;
 
 public class GamessUSReader extends GamessReader {
 
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
-    return readAtomSetCollection(reader, "gamess");
+  public void readAtomSetCollection(BufferedReader reader) {
+    readAtomSetCollection(reader, "gamess");
   }
 
   /*

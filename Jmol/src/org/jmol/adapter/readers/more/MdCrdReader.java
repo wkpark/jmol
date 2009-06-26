@@ -43,7 +43,7 @@ import javax.vecmath.Point3f;
 public class MdCrdReader extends AtomSetCollectionReader {
     
  private Vector trajectorySteps;
- public AtomSetCollection readAtomSetCollection(BufferedReader br) {
+ public void readAtomSetCollection(BufferedReader br) {
     reader = br;
     atomSetCollection = new AtomSetCollection("mdcrd");
     // add a dummy atom, just so not "no atoms found"
@@ -54,11 +54,10 @@ public class MdCrdReader extends AtomSetCollectionReader {
     try {
       readLine(); //title
       readCoordinates();
+      Logger.info("Total number of trajectory steps=" + trajectorySteps.size());
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    Logger.info("Total number of trajectory steps=" + trajectorySteps.size());
-    return atomSetCollection;
   }
 
   void readCoordinates() throws Exception {

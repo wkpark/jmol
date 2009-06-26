@@ -62,7 +62,7 @@ public class ShelxReader extends AtomSetCollectionReader {
   boolean isCmdf = false;
   boolean iHaveAtomSet = false;
 
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("shelx");
     try {
@@ -115,9 +115,9 @@ public class ShelxReader extends AtomSetCollectionReader {
       } while (readLine() != null);
       applySymmetryAndSetTrajectory();
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
 
   final static String[] supportedRecordTypes = { "TITL", "CELL", "SPGR",

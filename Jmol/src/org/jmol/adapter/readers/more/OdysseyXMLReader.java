@@ -43,7 +43,7 @@ public class OdysseyXMLReader extends AtomSetCollectionReader {
   int atomCount, bondCount;
   //Hashtable moData = new Hashtable();
 
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("odyssey(XML)");
     try {
@@ -53,12 +53,11 @@ public class OdysseyXMLReader extends AtomSetCollectionReader {
         readAtoms();
       if (discardLinesUntilContains("<bonds") != null)
         readBonds();
+      if (atomCount > 0)
+        atomSetCollection.setAtomSetName(modelName);
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    if (atomCount > 0)
-      atomSetCollection.setAtomSetName(modelName);
-    return atomSetCollection;
   }
 
   void readDescription() throws Exception {

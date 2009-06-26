@@ -46,7 +46,7 @@ import org.jmol.util.Logger;
  */
 public class WebMOReader extends MopacDataReader {
 
- public AtomSetCollection readAtomSetCollection(BufferedReader reader)  {
+ public void readAtomSetCollection(BufferedReader reader)  {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("webmo");
     modelNumber = 0;
@@ -82,13 +82,11 @@ public class WebMOReader extends MopacDataReader {
         }
         readLine();
       }
+      if (Logger.debugging)
+        Logger.debug(orbitals.size() + " molecular orbitals read");
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    if (Logger.debugging) {
-      Logger.debug(orbitals.size() + " molecular orbitals read");
-    }
-    return atomSetCollection;
   }
 
   void readHeader() throws Exception {

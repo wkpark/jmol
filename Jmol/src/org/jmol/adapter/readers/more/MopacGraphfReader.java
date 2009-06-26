@@ -41,7 +41,7 @@ public class MopacGraphfReader extends MopacDataReader {
   int[] atomicNumbers;
   int atomCount;
   
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
 
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("mopacGraphf");
@@ -53,9 +53,9 @@ public class MopacGraphfReader extends MopacDataReader {
       if (readKeywords())
         readMOs(true);
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
     
   void readAtoms() throws Exception {

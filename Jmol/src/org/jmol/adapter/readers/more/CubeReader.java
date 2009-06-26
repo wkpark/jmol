@@ -64,7 +64,7 @@ public class CubeReader extends AtomSetCollectionReader {
   final float[] origin = new float[3];
   final float[][] voxelVectors = new float[3][];
   
- public AtomSetCollection readAtomSetCollection(BufferedReader br) {
+ public void readAtomSetCollection(BufferedReader br) {
     reader = br;
     atomSetCollection = new AtomSetCollection("cube");
     try {
@@ -82,9 +82,9 @@ public class CubeReader extends AtomSetCollectionReader {
       atomSetCollection.volumetricSurfaceData = voxelData;
       */
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
 
   void readTitleLines() throws Exception {

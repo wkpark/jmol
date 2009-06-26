@@ -22,7 +22,7 @@ public class MoldenReader extends MopacDataReader {
   protected float[] frequencies = null;
   protected AtomSetCollection freqAtomSet = null;
   
-	public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+	public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("molden");
     modelNumber = 0;
@@ -45,9 +45,9 @@ public class MoldenReader extends MopacDataReader {
         readLine();
       }
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
   
   void readAtoms() throws Exception {

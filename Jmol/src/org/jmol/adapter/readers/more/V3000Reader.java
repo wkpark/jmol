@@ -43,7 +43,7 @@ public class V3000Reader extends AtomSetCollectionReader {
   int headerAtomCount;
   int headerBondCount;
 
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("v3000");
     try {
@@ -57,9 +57,9 @@ public class V3000Reader extends AtomSetCollectionReader {
         }
       }
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
 
   void processCtab() throws Exception {

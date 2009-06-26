@@ -59,9 +59,8 @@ public class AdfReader extends AtomSetCollectionReader {
    * Read the ADF output.
    *
    * @param reader  input stream
-   * @return a ChemFile with the coordinates, energies, and vibrations.
    */
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+  public void readAtomSetCollection(BufferedReader reader) {
     atomSetCollection = new AtomSetCollection("adf");
     this.reader = reader;
     boolean iHaveAtoms = false;
@@ -86,9 +85,9 @@ public class AdfReader extends AtomSetCollectionReader {
         }
       }
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
 
   /**

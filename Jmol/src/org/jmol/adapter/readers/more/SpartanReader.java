@@ -47,7 +47,7 @@ public class SpartanReader extends AtomSetCollectionReader {
   int atomCount;
   Hashtable moData = new Hashtable();
 
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("spartan");
     String cartesianHeader = "Cartesian Coordinates (Ang";
@@ -65,9 +65,9 @@ public class SpartanReader extends AtomSetCollectionReader {
           readFrequencies();
       }
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
 
   boolean isSpartanArchive(String strNotArchive)

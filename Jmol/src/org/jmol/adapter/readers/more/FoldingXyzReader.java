@@ -46,7 +46,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
   // Enable / Disable features of the reader
   private final static boolean useAutoBond = false;
   
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("foldingXyz");
 
@@ -61,9 +61,9 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
       	readAtoms(modelAtomCount);
       }
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
 	    
   /**

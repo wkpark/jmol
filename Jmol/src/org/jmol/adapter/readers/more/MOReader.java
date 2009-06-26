@@ -110,7 +110,7 @@ abstract class MOReader extends AtomSetCollectionReader {
   final protected int HEADER_NONE = 0;
   
 
-  abstract public AtomSetCollection readAtomSetCollection(BufferedReader reader); 
+  abstract public void readAtomSetCollection(BufferedReader reader); 
 
   /**
    * @return true if need to read new line
@@ -119,7 +119,7 @@ abstract class MOReader extends AtomSetCollectionReader {
    */
   abstract protected boolean checkLine() throws Exception;
   
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader, String type) {
+  public void readAtomSetCollection(BufferedReader reader, String type) {
     initializeMoReader(reader, type);
     try {
       readLine();
@@ -129,9 +129,8 @@ abstract class MOReader extends AtomSetCollectionReader {
           readLine();
       finalizeMoReader();
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
   }
   
   protected void finalizeMoReader() {

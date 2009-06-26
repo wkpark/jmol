@@ -55,7 +55,7 @@ public class CsfReader extends MopacDataReader {
   int nGaussians = 0;
   int nSlaters = 0;
   
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("csf");
     try {
@@ -71,9 +71,9 @@ public class CsfReader extends MopacDataReader {
         readLine();
       }
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
   private void processObjectClass() throws Exception {
     if (line.equals("object_class connector")) {

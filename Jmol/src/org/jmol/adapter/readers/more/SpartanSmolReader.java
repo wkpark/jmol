@@ -39,50 +39,7 @@ import org.jmol.util.Logger;
 
 public class SpartanSmolReader extends SpartanInputReader {
 
-  private class MoleculeRecord {
-    float[] mat;
-    // last 16x4 bytes constitutes the 4x4 matrix, using doubles
-    MoleculeRecord(String binaryCodes) {
-      String[] tokens = getTokens(binaryCodes.trim());
-      if (tokens.length < 16)
-        return;
-      byte[] bytes = new byte[tokens.length];
-      for (int i = 0; i < tokens.length;i++)
-        bytes[i] = (byte) Integer.parseInt(tokens[i], 16);
-      mat = new float[16];
-      for (int i = 16, j = bytes.length; --i >= 0; j -= 8)
-        mat[i] = bytesToDoubleToFloat(bytes, j);        
-    }
-    
-    private float bytesToDoubleToFloat(byte[] bytes, int j) {
-      double d = Double.longBitsToDouble((((long) bytes[--j]) & 0xff) << 56
-          | (((long) bytes[--j]) & 0xff) << 48
-          | (((long) bytes[--j]) & 0xff) << 40 
-          | (((long) bytes[--j]) & 0xff) << 32
-          | (((long) bytes[--j]) & 0xff) << 24
-          | (((long) bytes[--j]) & 0xff) << 16
-          | (((long) bytes[--j]) & 0xff) << 8
-          | (((long) bytes[--j]) & 0xff));
-      return (float) d;
-    }
-
-    protected void setTrans() {
-      if (mat == null)
-        return;
-      setTransform(
-          mat[0], mat[1], mat[2], 
-          mat[4], mat[5], mat[6], 
-          mat[8], mat[9], mat[10]);
-    }
-  }
-
-  private String endCheck = "END Directory Entry ";
-  private Hashtable moData = new Hashtable();
-  private String title;
-
-  SpartanArchive spartanArchive;
-
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+  public void readAtomSetCollection(BufferedReader reader) {
     modelName = "Spartan file";
     this.reader = reader;
     try {
@@ -137,7 +94,7 @@ public class SpartanSmolReader extends SpartanInputReader {
             bondData = "";
             readInputRecords();
             if (atomSetCollection.errorMessage != null)
-              return atomSetCollection;
+              return;
             if (title != null)
               atomSetCollection.setAtomSetName(title);
           } else if (lcline.endsWith("_output")) {
@@ -168,15 +125,59 @@ public class SpartanSmolReader extends SpartanInputReader {
       }
       if (atomCount > 0)
         applySymmetryAndSetTrajectory();
+
+      // info out of order -- still a chance, at least for first model
+      if (atomCount > 0 && spartanArchive != null && atomSetCollection.getBondCount() == 0
+          && bondData != null)
+        spartanArchive.addBonds(bondData, 0);
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    // info out of order -- still a chance, at least for first model
-    if (atomCount > 0 && spartanArchive != null && atomSetCollection.getBondCount() == 0
-        && bondData != null)
-      spartanArchive.addBonds(bondData, 0);
-    return atomSetCollection;
   }
+
+  private class MoleculeRecord {
+    float[] mat;
+    // last 16x4 bytes constitutes the 4x4 matrix, using doubles
+    MoleculeRecord(String binaryCodes) {
+      String[] tokens = getTokens(binaryCodes.trim());
+      if (tokens.length < 16)
+        return;
+      byte[] bytes = new byte[tokens.length];
+      for (int i = 0; i < tokens.length;i++)
+        bytes[i] = (byte) Integer.parseInt(tokens[i], 16);
+      mat = new float[16];
+      for (int i = 16, j = bytes.length; --i >= 0; j -= 8)
+        mat[i] = bytesToDoubleToFloat(bytes, j);        
+    }
+    
+    private float bytesToDoubleToFloat(byte[] bytes, int j) {
+      double d = Double.longBitsToDouble((((long) bytes[--j]) & 0xff) << 56
+          | (((long) bytes[--j]) & 0xff) << 48
+          | (((long) bytes[--j]) & 0xff) << 40 
+          | (((long) bytes[--j]) & 0xff) << 32
+          | (((long) bytes[--j]) & 0xff) << 24
+          | (((long) bytes[--j]) & 0xff) << 16
+          | (((long) bytes[--j]) & 0xff) << 8
+          | (((long) bytes[--j]) & 0xff));
+      return (float) d;
+    }
+
+    protected void setTrans() {
+      if (mat == null)
+        return;
+      setTransform(
+          mat[0], mat[1], mat[2], 
+          mat[4], mat[5], mat[6], 
+          mat[8], mat[9], mat[10]);
+    }
+  }
+
+  private String endCheck = "END Directory Entry ";
+  private Hashtable moData = new Hashtable();
+  private String title;
+
+  SpartanArchive spartanArchive;
+
 
   Hashtable titles;
   

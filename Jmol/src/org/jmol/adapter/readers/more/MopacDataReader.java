@@ -45,7 +45,7 @@ abstract class MopacDataReader extends AtomSetCollectionReader {
   protected final Vector floatinfo = new Vector();
   protected final Vector orbitals = new Vector();
   
-  public abstract AtomSetCollection readAtomSetCollection(BufferedReader reader);
+  public abstract void readAtomSetCollection(BufferedReader reader);
   
   protected final static int [] dValues = new int[] { 
     // MOPAC2007 graphf output data order

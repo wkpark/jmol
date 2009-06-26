@@ -93,7 +93,7 @@ public class PdbReader extends AtomSetCollectionReader {
    "HEADER  " + //18
    "COMPND  ";  //19
 
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
     //System.out.println(this + " initialized");
     this.reader = reader;
     atomSetCollection = new AtomSetCollection(fileType);
@@ -229,13 +229,12 @@ public class PdbReader extends AtomSetCollectionReader {
       applySymmetryAndSetTrajectory();
       if (htSites != null)
         addSites(htSites);
+      if (pdbHeader != null)
+        atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader",
+            pdbHeader.toString());
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    if (pdbHeader != null)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader",
-          pdbHeader.toString());
-    return atomSetCollection;
   }
 
   private void header() {

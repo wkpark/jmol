@@ -35,11 +35,11 @@ import java.io.BufferedReader;
 
 public class OdysseyReader extends SpartanInputReader {
   
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+  public void readAtomSetCollection(BufferedReader reader) {
     modelName = "Odyssey file";
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("odyssey)");
-    return readInputRecords();
+    readInputRecords();
   }
   
 }

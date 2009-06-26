@@ -46,7 +46,7 @@ public class AlchemyReader extends AtomSetCollectionReader {
   int atomCount;
   int bondCount;
 
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+  public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("Alchemy");
     try {
@@ -57,9 +57,9 @@ public class AlchemyReader extends AtomSetCollectionReader {
       readAtoms();
       readBonds();
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
 
   /*

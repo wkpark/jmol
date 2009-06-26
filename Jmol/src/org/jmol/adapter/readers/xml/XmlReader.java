@@ -109,13 +109,13 @@ public class XmlReader extends AtomSetCollectionReader {
 
   /////////////// file reader option //////////////
 
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     XMLReader xmlReader = getXMLReader();
     if (xmlReader == null) {
       atomSetCollection = new AtomSetCollection("xml");
       atomSetCollection.errorMessage = "No XML reader found";
-      return atomSetCollection;
+      return;
     }
     try {
       processXml(xmlReader);
@@ -123,7 +123,6 @@ public class XmlReader extends AtomSetCollectionReader {
       e.printStackTrace();
       atomSetCollection.errorMessage = "XML reader error: " + e.getMessage();
     }
-    return atomSetCollection;
   }
 
   private XMLReader getXMLReader() {
@@ -215,9 +214,8 @@ public class XmlReader extends AtomSetCollectionReader {
 
   /////////////// DOM option //////////////
 
- public AtomSetCollection readAtomSetCollectionFromDOM(Object Node) {
+ public void readAtomSetCollectionFromDOM(Object Node) {
     processXml((JSObject) Node);
-    return atomSetCollection;
   }
 
   private Object processXml(JSObject DOMNode) {

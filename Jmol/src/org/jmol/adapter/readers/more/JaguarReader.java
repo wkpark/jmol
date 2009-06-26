@@ -40,8 +40,8 @@ public class JaguarReader extends MOReader {
   int moCount = 0;
   float lumoEnergy = Float.MAX_VALUE;
 
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader)  {
-    return readAtomSetCollection(reader, "jaguar");
+  public void readAtomSetCollection(BufferedReader reader)  {
+    readAtomSetCollection(reader, "jaguar");
   }
 
   /**

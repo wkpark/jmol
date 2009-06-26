@@ -32,8 +32,8 @@ import java.util.Vector;
 
 public class GamessUKReader extends GamessReader {
 
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
-    return readAtomSetCollection(reader, "gamessUK");
+  public void readAtomSetCollection(BufferedReader reader) {
+    readAtomSetCollection(reader, "gamessUK");
   }
 
   /**

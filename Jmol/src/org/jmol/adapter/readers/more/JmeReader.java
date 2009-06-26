@@ -59,7 +59,7 @@ public class JmeReader extends AtomSetCollectionReader {
 
   StringTokenizer tokenizer;
   
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("jme");
 
@@ -72,9 +72,9 @@ public class JmeReader extends AtomSetCollectionReader {
       readAtoms(atomCount);
       readBonds(bondCount);
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
     
   void readAtoms(int atomCount) throws Exception {

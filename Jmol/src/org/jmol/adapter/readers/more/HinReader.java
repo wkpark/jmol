@@ -46,15 +46,15 @@ import java.io.BufferedReader;
  */
 public class HinReader extends AtomSetCollectionReader {
   
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("hin");
     try {
       readAtoms();
     } catch (Exception e) {
-      return setError(e);
+      setError(e);
     }
-    return atomSetCollection;
+
   }
   
   int atomIndex;

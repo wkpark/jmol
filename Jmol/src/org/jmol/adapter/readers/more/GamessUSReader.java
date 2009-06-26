@@ -33,7 +33,10 @@ package org.jmol.adapter.readers.more;
 import java.io.BufferedReader;
 import java.util.Vector;
 
+import javax.vecmath.Vector3f;
+
 import org.jmol.adapter.smarter.Atom;
+import org.jmol.util.Logger;
 
 public class GamessUSReader extends GamessReader {
 
@@ -128,6 +131,10 @@ public class GamessUSReader extends GamessReader {
     }
     if (line.indexOf("  TOTAL MULLIKEN AND LOWDIN ATOMIC POPULATIONS") >= 0) {
       readPartialCharges();
+      return false;
+    }
+    if (line.indexOf("ELECTROSTATIC MOMENTS")>=0){
+      readDipoleMoment();
       return true;
     }
     if (line.indexOf("- ALPHA SET -") >= 0)
@@ -416,5 +423,34 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
     int endAtom = atomSetCollection.getAtomCount();
     for (int i = startAtom; i < endAtom && readLine() != null; ++i)
       atoms[i].partialCharge = parseFloat(getTokens(prevline)[poploc]);
+  }
+ /*
+           ---------------------
+          ELECTROSTATIC MOMENTS
+          ---------------------
+
+ POINT   1           X           Y           Z (BOHR)    CHARGE
+                 0.000000    0.000000   -0.020735        0.00 (A.U.)
+         DX          DY          DZ         /D/  (DEBYE)
+     0.000000    0.000000   -1.449162    1.449162
+  */
+  void readDipoleMoment() throws Exception {
+    String tokens[] = null;
+    readLine();
+    while (line != null && ("".equals(line.trim()) || !line.contains("DX"))) {
+      readLine();
+    }
+    tokens = getTokens(line);
+    if (tokens.length != 5)
+      return;
+    if ("DX".equals(tokens[0]) && "DY".equals(tokens[1])
+        && "DZ".equals(tokens[2])) {
+      tokens = getTokens(readLine());
+      Vector3f dipole = new Vector3f(parseFloat(tokens[0]),
+          parseFloat(tokens[1]), parseFloat(tokens[2]));
+      Logger.info("Molecular dipole for model "
+          + atomSetCollection.getAtomSetCount() + " = " + dipole);
+      atomSetCollection.setAtomSetAuxiliaryInfo("dipole", dipole);
+    }
   }
 }

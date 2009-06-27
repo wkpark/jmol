@@ -320,9 +320,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   boolean haveDisplay = true;
   private boolean isPrintOnly = false;
   private boolean mustRender = true;
-  private boolean checkScriptOnly = false;
+  private boolean isCmdLine_c_or_C_Option = false;
   private boolean listCommands = false;
-  private boolean fileOpenCheck = true;
+  private boolean isCmdLine_C_Option = true;
   private boolean useCommandThread = false;
   private boolean isSignedApplet = false;
 
@@ -361,8 +361,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (isSilent)
         Logger.setLogLevel(Logger.LEVEL_WARN); // no info, but warnings and
                                                // errors
-      checkScriptOnly = (str.toLowerCase().indexOf("-c") >= 0);
-      fileOpenCheck = (checkScriptOnly && str.indexOf("-C") >= 0);
+      isCmdLine_c_or_C_Option = (str.toLowerCase().indexOf("-c") >= 0);
+      isCmdLine_C_Option = (str.indexOf("-C") >= 0);
       listCommands = (str.indexOf("-l") >= 0);
       autoExit = (str.indexOf("-x") >= 0);
       haveDisplay = (display != null && str.indexOf("-n") < 0);
@@ -3730,16 +3730,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (str.startsWith("exit")) {
       haltScriptExecution();
       clearScriptQueue();
-      if (checkScriptOnly)
+      if (isCmdLine_c_or_C_Option)
         Logger.info("exit -- stops script checking");
-      checkScriptOnly = false;
+      isCmdLine_c_or_C_Option = false;
       return str.equals("exit");
     }
     if (str.startsWith("quit")) {
       haltScriptExecution();
-      if (checkScriptOnly)
+      if (isCmdLine_c_or_C_Option)
         Logger.info("quit -- stops script checking");
-      checkScriptOnly = false;
+      isCmdLine_c_or_C_Option = false;
       return str.equals("quit");
     }
     return false;
@@ -3798,7 +3798,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // flush list
     String oldStatusList = statusManager.getStatusList();
     getProperty("String", "jmolStatus", statusList);
-    if (checkScriptOnly)
+    if (isCmdLine_c_or_C_Option)
       Logger.info("--checking script:\n" + eval.getScript() + "\n----\n");
     boolean historyDisabled = (strScript.indexOf(")") == 0);
     if (historyDisabled)
@@ -3815,7 +3815,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       isScriptQueued = isQueued;
       if (!isQuiet)
         scriptStatus(null, strScript, -2 - (++scriptIndex), null);
-      eval.runEval(checkScriptOnly, !checkScriptOnly || fileOpenCheck,
+      eval.runEval(isCmdLine_c_or_C_Option, isCmdLine_C_Option,
           historyDisabled, listCommands);
       setErrorMessage(strErrorMessage = eval.getErrorMessage(),
           strErrorMessageUntranslated = eval.getErrorMessageUntranslated());
@@ -3827,13 +3827,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       scriptStatus("Jmol script terminated", strErrorMessage, 1,
           strErrorMessageUntranslated);
     }
-    if (checkScriptOnly) {
+    if (isCmdLine_c_or_C_Option) {
       if (strErrorMessage == null)
         Logger.info("--script check ok");
       else
         Logger.error("--script check error\n" + strErrorMessageUntranslated);
     }
-    if (checkScriptOnly)
+    if (isCmdLine_c_or_C_Option)
       Logger.info("(use 'exit' to stop checking)");
     isScriptQueued = true;
     if (returnType.equalsIgnoreCase("String"))

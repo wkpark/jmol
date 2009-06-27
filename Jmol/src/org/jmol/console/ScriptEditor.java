@@ -254,13 +254,11 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     boolean isPaused = context.executionPaused || context.executionStepping;
     pauseButton.setEnabled(!isPaused && viewer.isScriptExecuting());
     resumeButton.setEnabled(isPaused);
-    System.out.println(context.pc + " " + context.executionPaused + " " + context.executionStepping);
     gotoCommand(context.pc, isPaused, attHighlight);
   }
   
   private void gotoCommand(int pt, boolean isPaused, SimpleAttributeSet attr) {    
     ScriptContext context = parsedContext;
-    System.out.println("goto " + pt);
     try {
       try {
         setVisible(true);
@@ -281,7 +279,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
         if (isPaused) {
           editor.setCaretPosition(pt1);
           editor.editorDoc.doHighlight(pt1, pt2, attr);
-          System.out.println("highlighting /" + editor.editorDoc.getText(pt1,pt2 - pt1) + "/");
+          //System.out.println("highlighting /" + editor.editorDoc.getText(pt1,pt2 - pt1) + "/");
         }
         //editor.grabFocus();
       } catch (Exception e) {

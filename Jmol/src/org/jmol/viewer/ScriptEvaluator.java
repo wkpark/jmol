@@ -314,17 +314,17 @@ class ScriptEvaluator {
     return isExecuting && !interruptExecution;
   }
 
-  void runEval(boolean checkScriptOnly, boolean openFiles,
+  void runEval(boolean isCmdLine_c_or_C_Option, boolean isCmdLine_C_Option,
                boolean historyDisabled, boolean listCommands) {
     // only one reference now -- in Viewer
     boolean tempOpen = isCmdLine_C_Option;
-    isCmdLine_C_Option = openFiles && checkScriptOnly;
+    this.isCmdLine_C_Option = isCmdLine_C_Option;
     viewer.pushHoldRepaint("runEval");
     interruptExecution = executionPaused = false;
     executionStepping = false;
     isExecuting = true;
     currentThread = Thread.currentThread();
-    isSyntaxCheck = isCmdLine_c_or_C_Option = checkScriptOnly;
+    isSyntaxCheck = this.isCmdLine_c_or_C_Option = isCmdLine_c_or_C_Option;
     timeBeginExecution = System.currentTimeMillis();
     this.historyDisabled = historyDisabled;
     setErrorMessage(null);
@@ -562,7 +562,7 @@ class ScriptEvaluator {
       return sc;
     getScriptContext(sc, false);
     isSyntaxCheck = true;
-    isCmdLine_c_or_C_Option = false;
+    isCmdLine_c_or_C_Option = isCmdLine_C_Option = false;
     pc = 0;
     try {
       instructionDispatchLoop(false);
@@ -1006,7 +1006,7 @@ class ScriptEvaluator {
     
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
       
-      System.out.println("pc = " + pc + " scriptlevel = " + scriptLevel + " " + getCommand(pc, true,true));
+      //System.out.println("pc = " + pc + " scriptlevel = " + scriptLevel + " " + getCommand(pc, true,true));
       
       if (!isSyntaxCheck && !checkContinue())
         break;
@@ -1397,7 +1397,7 @@ class ScriptEvaluator {
   private boolean isCommandDisplayable(int i) {
     if (i >= aatoken.length || i >= pcEnd || aatoken[i] == null)
       return false;
-    System.out.println(Token.nameOf(aatoken[i][0].tok)+" " + lineIndices[i][0] + "," + lineIndices[i][1]);
+    //System.out.println(Token.nameOf(aatoken[i][0].tok)+" " + lineIndices[i][0] + "," + lineIndices[i][1]);
     return (lineIndices[i][1] > lineIndices[i][0]);
   }
 

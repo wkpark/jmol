@@ -317,7 +317,7 @@ class ScriptEvaluator {
   void runEval(boolean isCmdLine_c_or_C_Option, boolean isCmdLine_C_Option,
                boolean historyDisabled, boolean listCommands) {
     // only one reference now -- in Viewer
-    boolean tempOpen = isCmdLine_C_Option;
+    boolean tempOpen = this.isCmdLine_C_Option;
     this.isCmdLine_C_Option = isCmdLine_C_Option;
     viewer.pushHoldRepaint("runEval");
     interruptExecution = executionPaused = false;
@@ -350,7 +350,7 @@ class ScriptEvaluator {
           : "ScriptException"), errorMessage, errorMessageUntranslated);
     }
     timeEndExecution = System.currentTimeMillis();
-    isCmdLine_C_Option = tempOpen;
+    this.isCmdLine_C_Option = tempOpen;
     if (errorMessage == null && interruptExecution)
       setErrorMessage("execution interrupted");
     else if (!tQuiet && !isSyntaxCheck)
@@ -4763,7 +4763,7 @@ class ScriptEvaluator {
           .get("fullPathName")));
       loadScript.append(sOptions);
     }
-    if (isSyntaxCheck && !(isCmdLine_C_Option)) {
+    if (isSyntaxCheck && !isCmdLine_C_Option) {
       viewer.deallocateReaderThreads();
       return;
     }
@@ -5472,7 +5472,7 @@ class ScriptEvaluator {
         pc++;
       this.pc = pc;
       boolean saveLoadCheck = isCmdLine_C_Option;
-      isCmdLine_C_Option = isCmdLine_C_Option && loadCheck;
+      isCmdLine_C_Option &= loadCheck;
       executionStepping |= doStep;
       instructionDispatchLoop(isCheck);
       if (debugScript && viewer.getMessageStyleChime())

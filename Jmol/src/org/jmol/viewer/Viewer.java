@@ -2023,7 +2023,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return fileManager.getFullPath(name, false);
   }
 
-  boolean getFileAsString(String[] data, int nBytesMax, boolean doSpecialLoad) {
+  public boolean getFileAsString(String[] data, int nBytesMax, boolean doSpecialLoad) {
     return fileManager.getFileDataOrErrorAsString(data, nBytesMax, doSpecialLoad);
   }
 
@@ -3806,8 +3806,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     historyDisabled = historyDisabled || !isQueued; // no history for scriptWait
                                                     // 11.5.45
     setErrorMessage(null);
-    boolean isOK = (isScriptFile ? eval.loadScriptFile(strScript, isQuiet)
-        : eval.loadScriptString(strScript, isQuiet));
+    boolean isOK = (isScriptFile ? eval.compileScriptFile(strScript, isQuiet)
+        : eval.compileScriptString(strScript, isQuiet));
     String strErrorMessage = eval.getErrorMessage();
     String strErrorMessageUntranslated = eval.getErrorMessageUntranslated();
     setErrorMessage(strErrorMessage, strErrorMessageUntranslated);
@@ -3815,7 +3815,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       isScriptQueued = isQueued;
       if (!isQuiet)
         scriptStatus(null, strScript, -2 - (++scriptIndex), null);
-      eval.runEval(isCmdLine_c_or_C_Option, isCmdLine_C_Option,
+      eval.evaluateCompiledScript(isCmdLine_c_or_C_Option, isCmdLine_C_Option,
           historyDisabled, listCommands);
       setErrorMessage(strErrorMessage = eval.getErrorMessage(),
           strErrorMessageUntranslated = eval.getErrorMessageUntranslated());

@@ -54,6 +54,7 @@ import org.jmol.viewer.ScriptContext;
 public final class ScriptEditor extends JDialog implements JmolScriptEditorInterface, ActionListener {
 
   EditorTextPane editor;
+  private JButton openButton;
   private JButton closeButton;
   private JButton loadButton;
   private JButton topButton;
@@ -136,6 +137,8 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     JScrollPane editorPane = new JScrollPane(editor);
 
     consoleButton = setButton(GT._("Console"));
+    if (!viewer.isApplet() || viewer.getBooleanProperty("_signedApplet"))
+      openButton = setButton(GT._("Open"));
     loadButton = setButton(GT._("Script"));
     checkButton = setButton(GT._("Check"));
     topButton = setButton(GT._("Top"));
@@ -301,6 +304,10 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       jmolConsole.setVisible(true);
       return;
     }
+    if (source == openButton) {
+      doOpen();
+      return;
+    }
     if (source == closeButton) {
       setVisible(false);
       return;
@@ -351,6 +358,13 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
   }
  
+  static String[] lastOpened = {"?.spt", null} ;
+  private void doOpen() {
+    viewer.getFileAsString(lastOpened, Integer.MAX_VALUE, false);
+    editor.clearContent(lastOpened[1]);
+    lastOpened[1] = null;
+  }
+
   public void gotoTop() {
     editor.setCaretPosition(0);
     editor.grabFocus();
@@ -377,7 +391,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   }
 
   private void gotoParsedLine() {
-    setTitle(title + parsedContext.contextPath 
+    setTitle(title + " " + parsedContext.contextPath 
         + " -- " + (parsedContext.aatoken == null ? "" : parsedContext.aatoken.length + " commands ") 
         + (parsedContext.iCommandError < 0 ? "" : " ERROR: " + parsedContext.errorType));
     boolean isError = (parsedContext.iCommandError >= 0);

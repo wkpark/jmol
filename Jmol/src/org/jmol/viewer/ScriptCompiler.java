@@ -103,8 +103,12 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     ScriptContext sc = new ScriptContext();
     sc.script = script;
     sc.scriptExtensions = scriptExtensions;
-    sc.aatoken = aatokenCompiled;
     sc.errorType = errorType;
+    if (errorType != null) {
+      sc.iCommandError = iCommand;
+      setAaTokenCompiled();
+    }
+    sc.aatoken = aatokenCompiled;
     sc.errorMessage = errorMessage;
     sc.errorMessageUntranslated = (errorMessageUntranslated == null 
         ? errorMessage : errorMessageUntranslated);
@@ -308,8 +312,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         }
         if (ichToken < cchScript)
           continue;
-        aatokenCompiled = new Token[lltoken.size()][];
-        lltoken.copyInto(aatokenCompiled);
+        setAaTokenCompiled();
         return (flowContext == null 
             || error(ERROR_missingEnd, Token.nameOf(flowContext.token.tok)));
       }
@@ -345,6 +348,11 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       return error(ERROR_unrecognizedToken, script.substring(ichToken,
           ichToken + 1));
     }
+  }
+  
+  private void setAaTokenCompiled() {
+    aatokenCompiled = new Token[lltoken.size()][];
+    lltoken.copyInto(aatokenCompiled);
   }
 
   private boolean lookingAtLeadingWhitespace() {
@@ -1494,10 +1502,11 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     case Token.whilecmd:
       break;
     case Token.function:
-      if (!isCheckOnly)
+      if (!isCheckOnly) {
         addTokenToPrefix(new Token(Token.function, thisFunction));
-      ScriptFunction.setFunction(thisFunction, script, pt1, lltoken.size(),
-          lineNumbers, lineIndices, lltoken);
+        ScriptFunction.setFunction(thisFunction, script, pt1, lltoken.size(),
+            lineNumbers, lineIndices, lltoken);
+      }
       thisFunction = null;
       tokenCommand.intValue = 0;
       flowContext = flowContext.getParent();

@@ -47,6 +47,7 @@ import java.util.Vector;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.console.JmolConsole;
+import org.jmol.console.ScriptEditor;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
@@ -58,6 +59,14 @@ public final class AppConsole extends JmolConsole implements EnterListener{
   protected ConsoleTextPane console;
   private JButton varButton, haltButton, closeButton, clearButton, 
                   questButton, helpButton, undoButton, redoButton;
+  
+  private JButton checkButton;
+  protected JButton stepButton;
+  private JButton topButton;
+
+  
+
+
 
   /*
    * methods sendConsoleEcho, sendConsoleMessage(strStatus), notifyScriptStart(), notifyScriptTermination()
@@ -74,61 +83,48 @@ public final class AppConsole extends JmolConsole implements EnterListener{
     setLocationRelativeTo(frame);
   }
 
+  JButton setButton(String s) {
+    JButton b = new JButton(s);
+    b.addActionListener(this);
+    buttonPanel.add(b);
+    return b;
+  }
+  
+  JPanel buttonPanel = new JPanel();
+  
   void layoutWindow(Container container) {
     console = new ConsoleTextPane(this);    
     console.setPrompt();
     console.setDragEnabled(true);
     JScrollPane consolePane = new JScrollPane(console);
         
-    JPanel buttonPanel = new JPanel();
+    
+    
+    editButton = setButton(GT._("Editor"));
+    checkButton = setButton(GT._("Check"));
+    topButton = setButton(GT._("Top"));
+    stepButton = setButton(GT._("Step"));
 
-    editButton = new JButton("Editor");
-    editButton.addActionListener(this);
-    buttonPanel.add(editButton);
 
-    //questButton = new JButton("?");
+    //questButton = setButton("?");
     //questButton.addActionListener(this);
     //buttonPanel.add(questButton);
 
-    varButton = new JButton(GT._("Variables"));
-    varButton.addActionListener(this);
-    buttonPanel.add(varButton);
-    //haltButton.setEnabled(false);
+    varButton = setButton(GT._("Variables"));
+    clearButton = setButton(GT._("Clear"));
+    haltButton = setButton(GT._("Halt"));
 
-    clearButton = new JButton(GT._("Clear"));
-    clearButton.addActionListener(this);
-    buttonPanel.add(clearButton);
+    historyButton = setButton(GT._("History"));
+    stateButton = setButton(GT._("State"));
 
-    haltButton = new JButton(GT._("Halt"));
-    haltButton.addActionListener(this);
-    buttonPanel.add(haltButton);
-    //haltButton.setEnabled(false);
+    helpButton = setButton(GT._("Help"));
+    closeButton = setButton(GT._("Close"));
+    undoButton = setButton(GT._("Undo"));
+    redoButton = setButton(GT._("Redo"));
 
-    historyButton = new JButton(GT._("History"));
-    historyButton.addActionListener(this);
-    buttonPanel.add(historyButton);
-
-    stateButton = new JButton(GT._("State"));
-    stateButton.addActionListener(this);
-    buttonPanel.add(stateButton);
-
-    helpButton = new JButton(GT._("Help"));
-    helpButton.addActionListener(this);
-    buttonPanel.add(helpButton);
-
-    closeButton = new JButton(GT._("Close"));
-    closeButton.addActionListener(this);
-    buttonPanel.add(closeButton);
-
-    undoButton = new JButton(GT._("Undo"));
-    undoButton.addActionListener(this);
     undoButton.setEnabled(false);
-    buttonPanel.add(undoButton);
-
-    redoButton = new JButton(GT._("Redo"));
-    redoButton.addActionListener(this);
     redoButton.setEnabled(false);
-    buttonPanel.add(redoButton);
+
 
     
 //    container.setLayout(new BorderLayout());
@@ -372,9 +368,34 @@ public final class AppConsole extends JmolConsole implements EnterListener{
     console.clearContent(text);
   }
 
+  ScriptEditor scriptEditor;
+  
+  void setScriptEditor(ScriptEditor se) {
+    scriptEditor = se;
+  }
+  
   public void actionPerformed(ActionEvent e) {
     console.grabFocus(); // always grab the focus (e.g., after clear)
     Object source = e.getSource();
+
+    if (source == topButton) {
+      if (scriptEditor != null)
+        scriptEditor.gotoTop();
+      return;
+    }
+    if (source == checkButton) {
+      if (scriptEditor != null)
+        scriptEditor.checkScript();
+    }
+    if (source == stepButton) {
+      if (scriptEditor != null)
+        scriptEditor.doStep();
+      return;
+    }
+
+    
+    
+    
     if (source == closeButton) {
       setVisible(false);
       return;

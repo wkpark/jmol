@@ -637,6 +637,11 @@ public class FileManager {
     fileName = names[1];
   }
 
+  
+  static String shortNameOf(String name) {
+    name = TextFormat.trim(name.replace('\\', '/'), "/");
+    return name.substring(name.lastIndexOf("/") + 1);
+  }
   /**
    * 
    * @param name

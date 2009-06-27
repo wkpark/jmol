@@ -87,6 +87,7 @@ class ScriptEvaluator {
   private Hashtable definedAtomSets;
   private StringBuffer outputBuffer;
 
+  private String contextPath = "";
   private String filename;
   private String functionName;
   private boolean isStateScript;
@@ -111,12 +112,12 @@ class ScriptEvaluator {
 
   private boolean tQuiet;
   private boolean debugScript;
-  private boolean fileOpenCheck = true;
+  private boolean isCmdLine_C_Option = true;
   private boolean historyDisabled;
 
   protected boolean logMessages;
   protected boolean isSyntaxCheck;
-  protected boolean checkingScriptOnly;
+  protected boolean isCmdLine_c_or_C_Option;
 
   // created by Compiler:
   private Token[][] aatoken;
@@ -316,14 +317,14 @@ class ScriptEvaluator {
   void runEval(boolean checkScriptOnly, boolean openFiles,
                boolean historyDisabled, boolean listCommands) {
     // only one reference now -- in Viewer
-    boolean tempOpen = fileOpenCheck;
-    fileOpenCheck = openFiles;
+    boolean tempOpen = isCmdLine_C_Option;
+    isCmdLine_C_Option = openFiles && checkScriptOnly;
     viewer.pushHoldRepaint("runEval");
     interruptExecution = executionPaused = false;
     executionStepping = false;
     isExecuting = true;
     currentThread = Thread.currentThread();
-    isSyntaxCheck = checkingScriptOnly = checkScriptOnly;
+    isSyntaxCheck = isCmdLine_c_or_C_Option = checkScriptOnly;
     timeBeginExecution = System.currentTimeMillis();
     this.historyDisabled = historyDisabled;
     setErrorMessage(null);
@@ -349,12 +350,12 @@ class ScriptEvaluator {
           : "ScriptException"), errorMessage, errorMessageUntranslated);
     }
     timeEndExecution = System.currentTimeMillis();
-    fileOpenCheck = tempOpen;
+    isCmdLine_C_Option = tempOpen;
     if (errorMessage == null && interruptExecution)
       setErrorMessage("execution interrupted");
     else if (!tQuiet && !isSyntaxCheck)
       viewer.scriptStatus(ScriptManager.SCRIPT_COMPLETED);
-    isExecuting = isSyntaxCheck = checkingScriptOnly = historyDisabled = false;
+    isExecuting = isSyntaxCheck = isCmdLine_c_or_C_Option = historyDisabled = false;
     viewer.setTainted(true);
     viewer.popHoldRepaint("runEval");
   }
@@ -372,6 +373,7 @@ class ScriptEvaluator {
     errorMessageUntranslated = null;
     if (err == null) {
       error = false;
+      errorType = null;
       errorMessage = null;
       iCommandError = -1;
       return;
@@ -391,6 +393,8 @@ class ScriptEvaluator {
       throws ScriptException {
     // a = script("xxxx")
     pushContext(null);
+    contextPath += " >> script() ";
+
     this.outputBuffer = outputBuffer;
     if (loadScript(null, script+JmolConstants.SCRIPT_EDITOR_IGNORE, false))
       instructionDispatchLoop(false);
@@ -402,18 +406,23 @@ class ScriptEvaluator {
       error(ERROR_tooManyScriptLevels);
     ScriptContext context = getScriptContext();
     stack[scriptLevel++] = context;
-    if (checkingScriptOnly)
+    if (isCmdLine_c_or_C_Option)
       Logger.info("-->>-------------".substring(0, scriptLevel + 5) + filename);
   }
 
   ScriptContext getScriptContext() {
     ScriptContext context = new ScriptContext();
+    context.contextPath = contextPath;
     context.filename = filename;
     context.functionName = functionName;
     context.script = script;
     context.lineNumbers = lineNumbers;
     context.lineIndices = lineIndices;
     context.aatoken = aatoken;
+    
+    System.out.println("getSCriptContext " + context + " " 
+        + aatoken.length
+        + " " + pc + " li=" + lineIndices[pc][0] + " " + lineIndices[pc][1]);
     context.statement = statement;
     context.statementLength = statementLength;
     context.pc = pc;
@@ -456,6 +465,7 @@ class ScriptEvaluator {
       return;
     }
     
+    contextPath = context.contextPath;
     filename = context.filename;
     functionName = context.functionName;
     statement = context.statement;
@@ -469,7 +479,7 @@ class ScriptEvaluator {
   }
   
   private void popContext() {
-    if (checkingScriptOnly)
+    if (isCmdLine_c_or_C_Option)
       Logger.info("--<<-------------".substring(0, scriptLevel + 5) + filename);
     if (scriptLevel == 0)
       return;
@@ -507,10 +517,10 @@ class ScriptEvaluator {
     if (pt == Integer.MIN_VALUE)
       return 0;
     for (pc = 0; pc < lineIndices.length; pc++) {
-      if (lineIndices[pc][0] > pt)
+      if (lineIndices[pc][0] > pt || lineIndices[pc][1] >= pt)
         break;
     }
-    if (pc > 0)
+    if (pc > 0 && pc < lineIndices.length && lineIndices[pc][0] > pt)
       --pc;
     return pc;
   }
@@ -536,6 +546,7 @@ class ScriptEvaluator {
                                    ScriptVariable tokenAtom)
       throws ScriptException {
     pushContext(null);
+    contextPath += " >> function " + name;
     loadFunction(name, params);
     if (tokenAtom != null)
       contextVariables.put("_x", tokenAtom);
@@ -551,7 +562,7 @@ class ScriptEvaluator {
       return sc;
     getScriptContext(sc, false);
     isSyntaxCheck = true;
-    checkingScriptOnly = false;
+    isCmdLine_c_or_C_Option = false;
     pc = 0;
     try {
       instructionDispatchLoop(false);
@@ -580,6 +591,7 @@ class ScriptEvaluator {
   boolean loadScriptFile(String filename, boolean tQuiet) {
     // from viewer
     clearState(tQuiet);
+    contextPath += " >> " + filename;
     return loadScriptFileInternal(filename);
   }
 
@@ -594,6 +606,7 @@ class ScriptEvaluator {
       setErrorMessage("io error reading " + data[0] + ": " + data[1]);
       return false;
     }
+    this.filename = filename;
     return loadScript(filename, data[1], debugScript);
   }
 
@@ -781,50 +794,59 @@ class ScriptEvaluator {
   void stepPausedExecution() {
     executionStepping = true;
     executionPaused = false;
+    //releases a paused thread but
+    //sets it to pause for the next command.
   }
 
   private boolean checkContinue() {
-    if (!interruptExecution) {
-      if (!executionPaused)
-        return true;
-      if (Logger.debugging) {
-        Logger.debug("script execution paused at this command: " + thisCommand);
-      }
-      try {
-        while (executionPaused) {
-          viewer.popHoldRepaint("pause");
-          Thread.sleep(100);
-          refresh();
-          String script = viewer.getInterruptScript();
-          if (script != "") {
-            resumePausedExecution();
-            setErrorMessage(null);
-            pc--; // in case there is an error, we point to the PAUSE command
-            try {
-              runScript(script);
-            } catch (Exception e) {
-              setErrorMessage("" + e);
-            } catch (Error er) {
-              setErrorMessage("" + er);
-            }
-            if (error) {
-              popContext();
-              scriptStatusOrBuffer(errorMessage);
-              setErrorMessage(null);
-            }
-            pc++;
-            pauseExecution();
+    if (interruptExecution)
+      return false;
+
+    if (executionStepping && isCommandDisplayable(pc)) {
+      viewer.scriptStatus("Next: " + getNextStatement(), "stepping -- type RESUME to continue", 0, null);
+      executionPaused = true;
+    } else if (!executionPaused) {
+      return true;
+    }
+  
+    if (true || Logger.debugging) {
+      Logger.info("script execution paused at this command: " + pc + " level " + scriptLevel + " " + thisCommand);
+    }
+      
+    try {
+      while (executionPaused) {
+        viewer.popHoldRepaint("pause");
+        Thread.sleep(100);
+        refresh();
+        String script = viewer.getInterruptScript();
+        if (script != "") {
+          resumePausedExecution();
+          setErrorMessage(null);
+          pc--; // in case there is an error, we point to the PAUSE command
+          try {
+            runScript(script);
+          } catch (Exception e) {
+            setErrorMessage("" + e);
+          } catch (Error er) {
+            setErrorMessage("" + er);
           }
-          viewer.pushHoldRepaint("pause");
+          if (error) {
+            popContext();
+            scriptStatusOrBuffer(errorMessage);
+            setErrorMessage(null);
+          }
+          pc++;
+          pauseExecution();
         }
-        if (!isSyntaxCheck && !interruptExecution && !executionStepping) {
-          viewer.scriptStatus("script execution " + (error || interruptExecution ? "interrupted" : "resumed"));
-        }
-      } catch (Exception e) {
         viewer.pushHoldRepaint("pause");
       }
-      Logger.debug("script execution resumed");
+      if (!isSyntaxCheck && !interruptExecution && !executionStepping) {
+        viewer.scriptStatus("script execution " + (error || interruptExecution ? "interrupted" : "resumed"));
+      }
+    } catch (Exception e) {
+      viewer.pushHoldRepaint("pause");
     }
+    Logger.debug("script execution resumed");
     // once more to trap quit during pause
     return !error && !interruptExecution;
   }
@@ -983,11 +1005,13 @@ class ScriptEvaluator {
     String lastCommand = "";
     
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
-      if (!checkContinue())
+      
+      System.out.println("pc = " + pc + " scriptlevel = " + scriptLevel + " " + getCommand(pc, true,true));
+      
+      if (!isSyntaxCheck && !checkContinue())
         break;
       if (lineNumbers[pc] > lineEnd)
         break;
-      // System.out.println("pc line " + pc + " " + lineNumbers[pc]);
       Token token = (aatoken[pc].length == 0 ? null : aatoken[pc][0]);
       // when checking scripts, we can't check statments
       // containing @{...}
@@ -1020,7 +1044,7 @@ class ScriptEvaluator {
         }
       }
       if (isSyntaxCheck) {
-        if (checkingScriptOnly)
+        if (isCmdLine_c_or_C_Option)
           Logger.info(thisCommand);
         if (statementLength == 1 && statement[0].tok != Token.function)
           // && !Token.tokAttr(token.tok, Token.unimplemented))
@@ -1034,15 +1058,6 @@ class ScriptEvaluator {
       if (token == null)
         continue;
       
-      if (!isSyntaxCheck) {
-        if (executionStepping) 
-          viewer.scriptStatus(getNextStatement(), "stepping -- type RESUME to continue", 0, null);
-       // nope -- this results in a huge number of null pointer exceptions 
-        // within the AWT framework. It apparently just cannot keep up.
-         // else if (viewer.isScriptEditorVisible())
-         // viewer.scriptStatus("", "running", 0, null);
-      }
-
       switch (token.tok) {
       case Token.nada:
         break;
@@ -1372,11 +1387,18 @@ class ScriptEvaluator {
       }
       if (!isSyntaxCheck)
         viewer.setCursor(Viewer.CURSOR_DEFAULT);
+      // at end because we could use continue to avoid it
       if (executionStepping) {
-        executionStepping = false;
-        executionPaused = true;
+        executionPaused = (isCommandDisplayable(pc + 1));
       }
     }
+  }
+
+  private boolean isCommandDisplayable(int i) {
+    if (i >= aatoken.length || i >= pcEnd || aatoken[i] == null)
+      return false;
+    System.out.println(Token.nameOf(aatoken[i][0].tok)+" " + lineIndices[i][0] + "," + lineIndices[i][1]);
+    return (lineIndices[i][1] > lineIndices[i][0]);
   }
 
   private void flowControl(int tok) throws ScriptException {
@@ -1906,8 +1928,6 @@ class ScriptEvaluator {
         rpn.addXNum(new ScriptVariable(instruction));
         break;
       default:
-        // System.out.println(" " + instruction +" " +(new
-        // Token(Token.isaromatic)) );
         if (Token.tokAttr(instruction.tok, Token.mathop))
           rpn.addOp(instruction);
         else
@@ -4218,8 +4238,7 @@ class ScriptEvaluator {
     dataType = dataType.substring(0, dataType.indexOf(" "));
     boolean isModel = dataType.equals("model");
     boolean isAppend = dataType.equals("append");
-    boolean processModel = ((isModel || isAppend) && (!isSyntaxCheck || checkingScriptOnly
-        && fileOpenCheck));
+    boolean processModel = ((isModel || isAppend) && (!isSyntaxCheck || isCmdLine_C_Option));
     if ((isModel || isAppend) && dataString == null)
       error(ERROR_invalidArgument);
     int userType = -1;
@@ -4725,12 +4744,12 @@ class ScriptEvaluator {
         filenames[j] = (String) fNames.get(j);
         filename += (j == 0 ? "" : "; ") + filenames[j];
       }
-      if (!isSyntaxCheck || checkingScriptOnly && fileOpenCheck) {
+      if (!isSyntaxCheck || isCmdLine_C_Option) {
         viewer.openFiles(modelName, filenames, null, isAppend, htParams);
       }
       needToLoad = false;
     }
-    if (needToLoad && (!isSyntaxCheck || checkingScriptOnly && fileOpenCheck)) {
+    if (needToLoad && (!isSyntaxCheck || isCmdLine_C_Option)) {
       if (filename.startsWith("@") && filename.length() > 1) {
         htParams.put("fileData", getStringParameter(filename.substring(1),
             false));
@@ -4744,7 +4763,7 @@ class ScriptEvaluator {
           .get("fullPathName")));
       loadScript.append(sOptions);
     }
-    if (isSyntaxCheck && !(checkingScriptOnly && fileOpenCheck)) {
+    if (isSyntaxCheck && !(isCmdLine_C_Option)) {
       viewer.deallocateReaderThreads();
       return;
     }
@@ -4757,7 +4776,7 @@ class ScriptEvaluator {
       // int millis = (int)(System.currentTimeMillis() - timeBegin);
       // Logger.debug("!!!!!!!!! took " + millis + " ms");
     }
-    if (errMsg != null && !checkingScriptOnly) {
+    if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (errMsg.indexOf("file recognized as a script file:") >= 0) {
         viewer.addLoadScript("-");
         script(Token.script);
@@ -4785,14 +4804,14 @@ class ScriptEvaluator {
     }
     if (msg.length() > 0)
       Logger.info(msg);
-    if (defaultScript.length() > 0 && !checkingScriptOnly) // NOT checking
+    if (defaultScript.length() > 0 && !isCmdLine_c_or_C_Option) // NOT checking
                                                            // embedded
       // scripts here
       runScript(defaultScript);
   }
 
   private String getFullPathName() throws ScriptException {
-    String filename = (!isSyntaxCheck || checkingScriptOnly && fileOpenCheck ? viewer
+    String filename = (!isSyntaxCheck || isCmdLine_C_Option ? viewer
         .getFullPathName()
         : "test.xyz");
     if (filename == null)
@@ -5435,15 +5454,16 @@ class ScriptEvaluator {
       }
       checkLength(doStep ? i + 1 : i);
     }
-    if (isSyntaxCheck && !checkingScriptOnly)
+    if (isSyntaxCheck && !isCmdLine_c_or_C_Option)
       return;
-    if (checkingScriptOnly)
+    if (isCmdLine_c_or_C_Option)
       isCheck = true;
     boolean wasSyntaxCheck = isSyntaxCheck;
-    boolean wasScriptCheck = checkingScriptOnly;
+    boolean wasScriptCheck = isCmdLine_c_or_C_Option;
     if (isCheck)
-      isSyntaxCheck = checkingScriptOnly = true;
+      isSyntaxCheck = isCmdLine_c_or_C_Option = true;
     pushContext(null);
+    contextPath += " >> " + filename;
     if (theScript == null ? loadScriptFileInternal(filename) : loadScript(null,
         theScript, false)) {
       this.pcEnd = pcEnd;
@@ -5451,13 +5471,13 @@ class ScriptEvaluator {
       while (pc < lineNumbers.length && lineNumbers[pc] < lineNumber)
         pc++;
       this.pc = pc;
-      boolean saveLoadCheck = fileOpenCheck;
-      fileOpenCheck = fileOpenCheck && loadCheck;
-      executionStepping = doStep;
+      boolean saveLoadCheck = isCmdLine_C_Option;
+      isCmdLine_C_Option = isCmdLine_C_Option && loadCheck;
+      executionStepping |= doStep;
       instructionDispatchLoop(isCheck);
       if (debugScript && viewer.getMessageStyleChime())
         viewer.scriptStatus("script <exiting>");
-      fileOpenCheck = saveLoadCheck;
+      isCmdLine_C_Option = saveLoadCheck;
       popContext();
     } else {
       Logger.error(GT._("script ERROR: ") + errorMessage);
@@ -5470,11 +5490,11 @@ class ScriptEvaluator {
     }
 
     isSyntaxCheck = wasSyntaxCheck;
-    checkingScriptOnly = wasScriptCheck;
+    isCmdLine_c_or_C_Option = wasScriptCheck;
   }
 
   private void function() throws ScriptException {
-    if (isSyntaxCheck && !checkingScriptOnly)
+    if (isSyntaxCheck && !isCmdLine_c_or_C_Option)
       return;
     String name = (String) getToken(0).value;
     if (!viewer.isFunction(name)) {
@@ -5493,6 +5513,7 @@ class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
     pushContext(null);
+    contextPath += " >> function " + name;
     loadFunction(name, params);
     instructionDispatchLoop(false);
     popContext();

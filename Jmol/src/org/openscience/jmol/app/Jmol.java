@@ -225,6 +225,7 @@ public class Jmol extends JPanel {
       appConsole = new AppConsole(viewer, frame);
       say(GT._("Initializing Script Editor..."));
       scriptEditor = new ScriptEditor(viewer, frame, appConsole);
+      appConsole.setScriptEditor(scriptEditor);
     }
 
     say(GT._("Initializing Measurements..."));
@@ -1919,6 +1920,7 @@ public class Jmol extends JPanel {
             if (msWalltime == -2)
               scriptEditor.notifyScriptStart();
           } else if (scriptEditor.isVisible() && ((String) data[2]).length() > 0 || data[4] != null) {
+            System.out.println("Jmol notifyContext " + data[1]);
             scriptEditor.notifyContext((ScriptContext)viewer.getProperty("DATA_API", "scriptContext", null), data);
           }
         }

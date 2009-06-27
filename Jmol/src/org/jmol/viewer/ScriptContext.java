@@ -31,6 +31,7 @@ public class ScriptContext {
   /**
    * 
    */
+  public String fullpath = "";
   public String filename;
   public String functionName;
   public String script;
@@ -56,6 +57,7 @@ public class ScriptContext {
   public boolean executionStepping;
   public boolean executionPaused;
   public String scriptExtensions;
+  public String contextPath = " >> ";
 
   ScriptContext() {
   }

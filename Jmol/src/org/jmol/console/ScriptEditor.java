@@ -57,14 +57,17 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   private JButton closeButton;
   private JButton loadButton;
   private JButton topButton;
+  private JButton checkButton;
   private JButton runButton;
   private JButton pauseButton;
-  private JButton stepButton;
   private JButton haltButton;
   private JButton clearButton;
-  private JButton resumeButton;
   private JButton stateButton;
   private JButton consoleButton;
+  
+  protected JButton stepButton;
+  protected JButton resumeButton;
+
   JmolViewer viewer;
 
   /*
@@ -91,7 +94,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   protected SimpleAttributeSet attError;
 
   public ScriptEditor(JmolViewer viewer, JFrame frame, JmolConsole jmolConsole) {
-    super(frame, null, false);
+    super(frame, null, false); //was frame
     setAttributes();
     setTitle(title = GT._("Jmol Script Editor"));
     this.viewer = viewer;
@@ -117,60 +120,35 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     StyleConstants.setBold(attError, true);
 
   }
+  
+  JButton setButton(String s) {
+    JButton b = new JButton(s);
+    b.addActionListener(this);
+    buttonPanel.add(b);
+    return b;
+  }
+  
+  JPanel buttonPanel = new JPanel();
+
   void layoutWindow(Container container) {
     editor = new EditorTextPane(this);
     editor.setDragEnabled(true);
     JScrollPane editorPane = new JScrollPane(editor);
 
-    JPanel buttonPanel = new JPanel();
-
-    consoleButton = new JButton(GT._("Console"));
-    consoleButton.addActionListener(this);
-    buttonPanel.add(consoleButton);
-
-    stateButton = new JButton(GT._("State"));
-    stateButton.addActionListener(this);
-    buttonPanel.add(stateButton);
-
-    loadButton = new JButton(GT._("Script"));
-    loadButton.addActionListener(this);
-    buttonPanel.add(loadButton);
-    
-    
-    topButton = new JButton(GT._("Check"));
-    topButton.addActionListener(this);
-    buttonPanel.add(topButton);
-
-    runButton = new JButton(GT._("Run"));
-    runButton.addActionListener(this);
-    buttonPanel.add(runButton);
-
-    pauseButton = new JButton(GT._("Pause"));
-    pauseButton.addActionListener(this);
-    buttonPanel.add(pauseButton);
+    consoleButton = setButton(GT._("Console"));
+    loadButton = setButton(GT._("Script"));
+    checkButton = setButton(GT._("Check"));
+    topButton = setButton(GT._("Top"));
+    stepButton = setButton(GT._("Step"));
+    runButton = setButton(GT._("Run"));
+    pauseButton = setButton(GT._("Pause"));
     pauseButton.setEnabled(true);
-
-    stepButton = new JButton(GT._("Step"));
-    stepButton.addActionListener(this);
-    buttonPanel.add(stepButton);
-
-    resumeButton = new JButton(GT._("Resume"));
-    resumeButton.addActionListener(this);
-    buttonPanel.add(resumeButton);
+    resumeButton = setButton(GT._("Resume"));
     resumeButton.setEnabled(false);
-
-    haltButton = new JButton(GT._("Halt"));
-    haltButton.addActionListener(this);
-    buttonPanel.add(haltButton);
+    haltButton = setButton(GT._("Halt"));
     haltButton.setEnabled(false);
-
-    clearButton = new JButton(GT._("Clear"));
-    clearButton.addActionListener(this);
-    buttonPanel.add(clearButton);
-
-    closeButton = new JButton(GT._("Close"));
-    closeButton.addActionListener(this);
-    buttonPanel.add(closeButton);
+    clearButton = setButton(GT._("Clear"));
+    closeButton = setButton(GT._("Close"));
 
     // container.setLayout(new BorderLayout());
     // container.add(editorPane, BorderLayout.CENTER);
@@ -195,7 +173,8 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   }
 
   public void notifyScriptStart() {
-    runButton.setEnabled(true);
+    runButton.setEnabled(false);
+    resumeButton.setEnabled(false);
     haltButton.setEnabled(true);
     pauseButton.setEnabled(true);
   }
@@ -203,7 +182,10 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   public void notifyScriptTermination() {
     runButton.setEnabled(true);
     pauseButton.setEnabled(false);
+    resumeButton.setEnabled(false);
     haltButton.setEnabled(false);
+    editor.editorDoc.clearHighlight();
+    editor.setCaretPosition(editor.editorDoc.getLength());
   }
 
   public void setVisible(boolean b) {
@@ -258,24 +240,27 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
   String filename;
   
-  private synchronized void setContext(ScriptContext scriptContext) {
-    if (scriptContext.script.indexOf(JmolConstants.SCRIPT_EDITOR_IGNORE) >= 0)
-      return;
-    ScriptContext context = parsedContext = scriptContext;
-    String s = context.script;
+  private synchronized void setContext(ScriptContext context) {
+    pauseButton.setEnabled(viewer.isScriptExecuting());
+    if (context.script.indexOf(JmolConstants.SCRIPT_EDITOR_IGNORE) >= 0)
+      return; 
+    parsedContext = context;
     filename = context.filename;
+    setTitle(title + parsedContext.contextPath);
     if (filename == null && context.functionName != null)
       filename = "function " + context.functionName; 
-    editor.clearContent(s);
+    //pcLast = context.pc;
+    parsedData = editor.editorDoc.outputEcho(context.script);
     boolean isPaused = context.executionPaused || context.executionStepping;
-    System.out.println(context.executionPaused + " "+ context.executionStepping);
+    pauseButton.setEnabled(!isPaused && viewer.isScriptExecuting());
     resumeButton.setEnabled(isPaused);
-    //System.out.println(context.pc + " " + context.executionPaused + " " + context.executionStepping);
-    gotoCommand(context.pc + (context.executionPaused ? 0 : 1), isPaused, attHighlight);
+    System.out.println(context.pc + " " + context.executionPaused + " " + context.executionStepping);
+    gotoCommand(context.pc, isPaused, attHighlight);
   }
   
   private void gotoCommand(int pt, boolean isPaused, SimpleAttributeSet attr) {    
     ScriptContext context = parsedContext;
+    System.out.println("goto " + pt);
     try {
       try {
         setVisible(true);
@@ -296,6 +281,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
         if (isPaused) {
           editor.setCaretPosition(pt1);
           editor.editorDoc.doHighlight(pt1, pt2, attr);
+          System.out.println("highlighting /" + editor.editorDoc.getText(pt1,pt2 - pt1) + "/");
         }
         //editor.grabFocus();
       } catch (Exception e) {
@@ -330,9 +316,14 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       gotoTop();
       return;
     }
+    if (source == checkButton) {
+      checkScript();
+      return;
+    }
     if (source == runButton) {
       notifyScriptStart();
-      jmolConsole.execute(editor.getText() + "\0##");
+      String s = editor.getText();
+      jmolConsole.execute(s + "\0##");
       return;
     }
     if (source == pauseButton) {
@@ -340,7 +331,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       return;
     }
     if (source == resumeButton) {
-      jmolConsole.execute("!resume\0##");
+      doResume();
       return;
     }
     if (source == stepButton) {
@@ -362,13 +353,17 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
   }
  
-  private void gotoTop() {
+  public void gotoTop() {
     editor.setCaretPosition(0);
     editor.grabFocus();
     gotoPosition(0, 0);
-    parseScript(editor.getText());
   }
 
+  public void checkScript() {
+    parsedContext = null;
+    parseScript(editor.getText());
+  }
+  
   protected void parseScript(String text) {
     if (text == null || text.length() == 0) {
       parsedContext = null;
@@ -376,23 +371,31 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       setTitle(title);
       return;
     }
-    if (text.equals(parsedData) && parsedContext != null)
-      return;
-    parsedData = text;
-    parsedContext = (ScriptContext) viewer.getProperty("DATA_API","scriptCheck", text);
-    setTitle(title + (filename == null ? "" : "[" + filename + "]") 
+    if (parsedContext == null || !text.equals(parsedData)) {
+      parsedData = text;
+      parsedContext = (ScriptContext) viewer.getProperty("DATA_API","scriptCheck", text);
+    }
+    gotoParsedLine();
+  }
+
+  private void gotoParsedLine() {
+    setTitle(title + parsedContext.contextPath 
         + " -- " + (parsedContext.aatoken == null ? "" : parsedContext.aatoken.length + " commands ") 
         + (parsedContext.iCommandError < 0 ? "" : " ERROR: " + parsedContext.errorType));
     boolean isError = (parsedContext.iCommandError >= 0);
     gotoCommand(isError ? parsedContext.iCommandError : 0, true, isError ? attError : attHighlight);
   }
 
-  private void doStep() {
+  public void doStep() {
     boolean isPaused = viewer.getBooleanProperty("executionPaused");
     jmolConsole.execute(isPaused ? "!step\0##" 
         : editor.getText() + "\0##SCRIPT_STEP\n##SCRIPT_START=" +  editor.getCaretPosition());
   }
 
+  protected void doResume() {
+    editor.clearContent();
+    jmolConsole.execute("!resume\0##");
+  }
   private void gotoPosition(int i, int j) {
     editor.scrollRectToVisible(new Rectangle(i, j));
   }
@@ -421,27 +424,37 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       parseScript(text);
     }
     
-    protected void processKeyEvent(KeyEvent ke)
-    {
-       // Id Control key is down, captures events does command
-       // history recall and inhibits caret vertical shift.
-
+    protected void processKeyEvent(KeyEvent ke) {
       int kcode = ke.getKeyCode();
       int kid = ke.getID();
-      if (kcode == KeyEvent.VK_Z
-          && kid == KeyEvent.KEY_PRESSED
-          && ke.isControlDown()) {
-          editor.editorDoc.undo();
-       } else if (kcode == KeyEvent.VK_Z
-           && kid == KeyEvent.KEY_PRESSED
-           && ke.isShiftDown() && ke.isControlDown()
-         || kcode == KeyEvent.VK_Y
-         && kid == KeyEvent.KEY_PRESSED
-         && ke.isControlDown()) {
-           editor.editorDoc.redo();
-       } else {
-         super.processKeyEvent(ke);
-       }
+      if (kid == KeyEvent.KEY_PRESSED) {
+        switch (kcode) {
+        case KeyEvent.VK_Z:
+          if (ke.isControlDown()) {
+            if (ke.isShiftDown())
+              editor.editorDoc.redo();
+            else
+              editor.editorDoc.undo();
+            return;
+          }
+          break;
+        case KeyEvent.VK_Y:
+          if (ke.isControlDown()) {
+            editor.editorDoc.redo();
+            return;
+          }
+          break;
+        case KeyEvent.VK_F5:
+          if (stepButton.isEnabled())
+            doStep();
+          return;
+        case KeyEvent.VK_F8:
+          if (resumeButton.isEnabled())
+            doResume();
+          return;
+        }
+      }
+      super.processKeyEvent(ke);
     }
   }
 
@@ -459,14 +472,20 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       this.EditorTextPane = EditorTextPane;
     }
 
+    
+    
     void doHighlight(int from, int to, SimpleAttributeSet attr) {
-      setCharacterAttributes(0, editor.editorDoc.getLength(), attEcho, true);
+      clearHighlight();
       if (from >= to)
         return;
       setCharacterAttributes(from, to - from, attr, true);
       editor.select(from, to);
       editor.setSelectedTextColor(attr == attError ? Color.RED : Color.black);
 
+    }
+
+    void clearHighlight() {
+      setCharacterAttributes(0, editor.editorDoc.getLength(), attEcho, true);
     }
 
     protected UndoManager undo = new UndoManager();
@@ -507,15 +526,18 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       }
     }
 
-    void outputEcho(String text) {
+    String outputEcho(String text) {
       clearContent();
       if (text == null)
-        return;
+        return "";
+      if (!text.endsWith("\n"))
+        text += "\n";
       try {
         super.insertString(0, text, attEcho);
       } catch (Exception e) {
         e.printStackTrace();
       }
+      return text;
     }
   }
 

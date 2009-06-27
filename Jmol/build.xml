@@ -391,6 +391,27 @@ support for assertions (which were introduced in 1.4).
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
     <!-- to verify that a .jar file is signed: jarsigner -verify foo.jar -->
+    <delete file="${jmol.build.dir}/JmolUnsigned.jar"/>
+    <jar destfile="${jmol.build.dir}/JmolUnsignedF.jar"
+         manifest="manifest/applicationFrameless.txt">
+      <fileset dir="${classes.dir}" >
+        <exclude name="**/.*" />
+        <exclude name="**/*.dx" />
+        <exclude name="**/Test*.class" />
+        <exclude name="**/jmol/applet/*" />
+        <include name="**/jmol/**" />
+        <include name="com/**" />
+        <include name="freeware/**" />
+      </fileset>
+      <fileset dir="${appjars.dir}" includes="**/*"/>
+      <fileset dir="src/org/jmol/translation/Jmol" includes="Messages*.class"/>
+    </jar>
+    <signjar jar="${jmol.build.dir}/JmolUnsignedF.jar"
+             signedjar="${jmol.build.dir}/JmolFrameless.jar"
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+    <!-- to verify that a .jar file is signed: jarsigner -verify foo.jar -->
+    <delete file="${jmol.build.dir}/JmolUnsignedF.jar"/>
     <copy todir="${jmol.build.dir}">
       <fileset dir=".">
         <include name="jmol" />
@@ -398,7 +419,6 @@ support for assertions (which were introduced in 1.4).
         <include name="jmol.sh" />
       </fileset>
     </copy>
-    <delete file="${jmol.build.dir}/JmolUnsigned.jar"/>
 
     <jar destfile="${jmol.build.dir}/JvxlUnsigned.jar"
          manifest="manifest/jvxl.txt">
@@ -1018,9 +1038,11 @@ support for assertions (which were introduced in 1.4).
     <delete>
       <fileset dir=".">
         <include name="Jmol.jar" />
+        <include name="JmolFrameless.jar" />
         <include name="JmolApplet*.jar" />
         <include name="${jmol.build.dir}/Jmol.jar" />
         <include name="${jmol.applet.build.dir}/JmolApplet*.jar" />
+        <include name="${jmol.build.dir}/JmolFrameless.jar" />
       </fileset>
     </delete>
   </target>

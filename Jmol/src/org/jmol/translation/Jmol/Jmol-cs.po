@@ -261,8 +261,8 @@ msgid "Open &URL"
 msgstr "Otevřít &URL"
 
 #: org/openscience/jmol/app/GuiMap.java:51
-msgid "Scrip&t..."
-msgstr "Scrip&t..."
+msgid "Output &Console..."
+msgstr "Output &Console..."
 
 #: org/openscience/jmol/app/GuiMap.java:52
 #, fuzzy
@@ -749,8 +749,8 @@ msgid "What's New"
 msgstr "Co je nového?"
 
 #: org/openscience/jmol/app/GuiMap.java:174
-msgid "Jmol Java &Console"
-msgstr "Jmol Java &Konzole"
+msgid "&Java Output Console"
+msgstr "Jmol &Java Konzole"
 
 #: org/openscience/jmol/app/GuiMap.java:175
 msgid "Hydrogens"

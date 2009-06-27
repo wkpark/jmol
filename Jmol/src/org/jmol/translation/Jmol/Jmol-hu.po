@@ -255,7 +255,7 @@ msgid "Open &URL"
 msgstr "Web&cím megnyitása"
 
 #: org/openscience/jmol/app/GuiMap.java:51
-msgid "Scrip&t..."
+msgid "Output &Console..."
 msgstr "&Parancsfájl..."
 
 #: org/openscience/jmol/app/GuiMap.java:52
@@ -686,8 +686,8 @@ msgid "What's New"
 msgstr "őjdonságok"
 
 #: org/openscience/jmol/app/GuiMap.java:174
-msgid "Jmol Java &Console"
-msgstr "Jmol Java konzol"
+msgid "&Java Output Console"
+msgstr "&Jmol Java konzol"
 
 #: org/openscience/jmol/app/GuiMap.java:175
 msgid "Hydrogens"

@@ -40,6 +40,10 @@ class GuiMap {
   
   Hashtable labels = null;
   
+  // keys here refer to keys listed in org.openscience.jmol.Properties.Jmol-resources.properties
+  // actions are either defined there, as xxxScript=, or by 
+  // Actions created in Jmol.java
+  
   private Hashtable setupLabels() {
     Hashtable labels = new Hashtable();
     labels.put("macros", GT._("&Macros"));
@@ -48,7 +52,9 @@ class GuiMap {
     labels.put("open", GT._("&Open"));
     labels.put("openTip", GT._("Open a file."));
     labels.put("openurl", GT._("Open &URL"));
-    labels.put("script", GT._("Scrip&t..."));
+    labels.put("editor", GT._("Scrip&t Editor..."));  // new %t 11.7.45
+    labels.put("console", GT._("Output &Console..."));// was &t
+    labels.put("jconsole", GT._("Jmol Java &Console"));
     labels.put("atomsetchooser", GT._("AtomSet&Chooser..."));
     labels.put("saveas", GT._("&Save As..."));
     labels.put("exportMenu", GT._("&Export"));
@@ -171,7 +177,6 @@ class GuiMap {
     labels.put("about", GT._("About Jmol"));
     labels.put("uguide", GT._("User Guide"));
     labels.put("whatsnew", GT._("What's New"));
-    labels.put("console", GT._("Jmol Java &Console"));
     labels.put("Prefs.showHydrogens", GT._("Hydrogens"));
     labels.put("Prefs.showMeasurements", GT._("Measurements"));
     labels.put("Prefs.perspectiveDepth", GT._("Perspective Depth"));

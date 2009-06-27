@@ -1046,7 +1046,7 @@ public class PovrayDialog extends JDialog {
    */
   private void getPathHistory() {
 
-    java.util.Properties props = Jmol.getHistoryFile().getProperties();
+    java.util.Properties props = JmolPanel.historyFile.getProperties();
     if (povrayPathLabel != null) {
       String povrayPath = props.getProperty("povrayPath",
         System.getProperty("user.home"));
@@ -1070,7 +1070,7 @@ public class PovrayDialog extends JDialog {
     java.util.Properties props = new java.util.Properties();
     props.setProperty("povrayPath", povrayPathLabel.getText());
     props.setProperty("povraySavePath", savePathLabel.getText());
-    Jmol.getHistoryFile().addProperties(props);
+    JmolPanel.historyFile.addProperties(props);
   }
 
   String doubleQuoteIfContainsSpace(String str) {

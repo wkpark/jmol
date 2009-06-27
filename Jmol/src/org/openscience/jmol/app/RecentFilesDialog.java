@@ -98,7 +98,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
 
   private void getFiles() {
 
-    props = Jmol.getHistoryFile().getProperties();
+    props = JmolPanel.historyFile.getProperties();
     for (int i = 0; i < MAX_FILES; i++) {
       files[i] = props.getProperty("recentFilesFile" + i);
     }
@@ -155,7 +155,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
       }
     }
 
-    Jmol.getHistoryFile().addProperties(props);
+    JmolPanel.historyFile.addProperties(props);
   }
 
   /**

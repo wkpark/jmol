@@ -33,21 +33,24 @@ import javax.swing.event.*;
 
 public class DisplayPanel extends JPanel
   implements ComponentListener, Printable {
+  
   StatusBar status;
   GuiMap guimap;
   JmolViewer viewer;
-  
+    
   private String displaySpeed;
 
   private Dimension startupDimension;
   private boolean haveDisplay;
+  Point border;
+  boolean haveBorder;
   
-  public DisplayPanel(StatusBar status, GuiMap guimap, boolean haveDisplay,
-      int startupWidth, int startupHeight) {
-    startupDimension = new Dimension(startupWidth, startupHeight);
-    this.haveDisplay = haveDisplay;
-    this.status = status;
-    this.guimap = guimap;
+  public DisplayPanel(JmolPanel jmol) {
+    status = jmol.status;
+    guimap = jmol.guimap;
+    border = jmol.jmolApp.border;
+    haveDisplay = jmol.jmolApp.haveDisplay;
+    startupDimension = new Dimension(jmol.startupWidth, jmol.startupHeight);
     setFocusable(true);
     if (System.getProperty("painttime", "false").equals("true"))
       showPaintTime = true;
@@ -74,8 +77,12 @@ public class DisplayPanel extends JPanel
     addComponentListener(this);
   }
 
+  AbstractButton buttonRotate;
+  ButtonGroup toolbarButtonGroup = new ButtonGroup();
+
   void setRotateMode() {
-      Jmol.setRotateButton();
+    if (buttonRotate != null)
+      buttonRotate.setSelected(true);
       viewer.setSelectionHalos(false);
   }
     
@@ -110,18 +117,20 @@ public class DisplayPanel extends JPanel
     //System.out.println("DisplayPanel:paint");System.out.flush();
 
     viewer.renderScreenImage(g, dimSize, rectClip);
-    if (Jmol.border == null)
-      Jmol.border = new Point();
-    if (!Jmol.haveBorder.booleanValue())
+    if (border == null)
+      border = new Point();
+    if (!haveBorder)
       setBorder();
     if (showPaintTime)
       stopPaintClock();
   }
-     
+   
   void setBorder() {
-    Jmol.border.x = startupDimension.width - dimSize.width;
-    Jmol.border.y = startupDimension.height - dimSize.height;
-    Jmol.haveBorder = Boolean.TRUE;    
+    if (dimSize.width < 50)
+      return;
+    border.x = startupDimension.width - dimSize.width;
+    border.y = startupDimension.height - dimSize.height;
+    haveBorder = true;    
   }
   
   public int print(Graphics g, PageFormat pf, int pageIndex) {

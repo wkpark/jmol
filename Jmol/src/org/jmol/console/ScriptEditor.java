@@ -194,7 +194,8 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   public void setVisible(boolean b) {
     super.setVisible(b);
     viewer.getProperty("DATA_API", "scriptEditorState", b ? Boolean.TRUE : Boolean.FALSE);
-    editor.grabFocus();
+    if (b)
+      editor.grabFocus();
   }
   
   public Object getMyMenuBar() {

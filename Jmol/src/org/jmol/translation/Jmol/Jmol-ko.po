@@ -254,8 +254,8 @@ msgid "Open &URL"
 msgstr "&URL 열기"
 
 #: org/openscience/jmol/app/GuiMap.java:51
-msgid "Scrip&t..."
-msgstr "스크립트(&t)..."
+msgid "Output &Console..."
+msgstr "스크립트(&C)..."
 
 #: org/openscience/jmol/app/GuiMap.java:52
 msgid "AtomSet&Chooser..."
@@ -686,7 +686,7 @@ msgid "What's New"
 msgstr "새소식"
 
 #: org/openscience/jmol/app/GuiMap.java:174
-msgid "Jmol Java &Console"
+msgid "&Java Output Console"
 msgstr "Jmol 자바 콘솔(&C)"
 
 #: org/openscience/jmol/app/GuiMap.java:175

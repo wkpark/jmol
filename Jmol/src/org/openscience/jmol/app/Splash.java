@@ -36,7 +36,7 @@ import java.awt.event.WindowEvent;
 
 import org.jmol.i18n.GT;
 
-public class Splash extends Window {
+public class Splash extends Window implements SplashInterface {
 
   private Image splashImage;
   private int imgWidth, imgHeight;

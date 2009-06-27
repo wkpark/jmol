@@ -50,7 +50,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
   JCheckBox active = null;
   JCheckBox append = null;
   JFileChooser chooser = null;
-  private JmolPanel display = null;
+  private FPPanel display = null;
 
   /**
    * Constructor
@@ -81,7 +81,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     box.add(active);
 
     // Add a preview area
-    display = new JmolPanel(modelAdapter, appletContext);
+    display = new FPPanel(modelAdapter, appletContext);
     display.setPreferredSize(new Dimension(80, 80));
     display.setMinimumSize(new Dimension(50, 50));
     box.add(display);
@@ -148,10 +148,10 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     //display.repaint();
   }
 
-  private static class JmolPanel extends JPanel {
+  private static class FPPanel extends JPanel {
     JmolViewer viewer;
 
-    JmolPanel(JmolAdapter modelAdapter, String appletContext) {
+    FPPanel(JmolAdapter modelAdapter, String appletContext) {
       viewer = JmolViewer.allocateViewer(this, modelAdapter,
           "", null, null, "#previewOnly " + appletContext, null);
     }

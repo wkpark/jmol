@@ -251,8 +251,8 @@ msgid "Open &URL"
 msgstr "開啓URL(&U)"
 
 #: org/openscience/jmol/app/GuiMap.java:51
-msgid "Scrip&t..."
-msgstr "批次檔(&T)"
+msgid "Output &Console..."
+msgstr "批次檔(&C)"
 
 #: org/openscience/jmol/app/GuiMap.java:52
 msgid "AtomSet&Chooser..."
@@ -678,7 +678,7 @@ msgid "What's New"
 msgstr "更新資訊"
 
 #: org/openscience/jmol/app/GuiMap.java:174
-msgid "Jmol Java &Console"
+msgid "&Java Output Console"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:175

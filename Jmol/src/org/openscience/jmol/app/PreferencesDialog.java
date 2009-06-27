@@ -118,13 +118,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "axesOrientationRasmol",          "true",
   };
 
+  JmolPanel jmol;
   JmolViewer viewer;
   GuiMap guimap;
 
-  public PreferencesDialog(JFrame f, GuiMap guimap,
+  public PreferencesDialog(JmolPanel jmol, JFrame f, GuiMap guimap,
                            JmolViewer viewer) {
 
     super(f, false);
+    this.jmol = jmol;
     this.guimap = guimap;
     this.viewer = viewer;
 
@@ -570,7 +572,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private void save() {
     try {
       FileOutputStream fileOutputStream =
-        new FileOutputStream(Jmol.UserPropsFile);
+        new FileOutputStream(jmol.jmolApp.userPropsFile);
       currentProperties.store(fileOutputStream, "Jmol");
       fileOutputStream.close();
     } catch (Exception e) {
@@ -586,7 +588,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       jmolDefaultProperties.put(jmolDefaults[i], jmolDefaults[i+1]);
     currentProperties = new Properties(jmolDefaultProperties);
     try {
-      BufferedInputStream bis = new BufferedInputStream(new FileInputStream(Jmol.UserPropsFile), 1024);
+      BufferedInputStream bis = new BufferedInputStream(new FileInputStream(jmol.jmolApp.userPropsFile), 1024);
       currentProperties.load(bis);
       bis.close();
     } catch (Exception e2) {

@@ -735,7 +735,7 @@ ActionListener, ChangeListener, Runnable {
   
   public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
     String eventName = propertyChangeEvent.getPropertyName();
-    if (eventName.equals(Jmol.chemFileProperty)) {
+    if (eventName.equals(JmolPanel.chemFileProperty)) {
       createTreeModel(); // all I need to do is to recreate the tree model
     }
   }

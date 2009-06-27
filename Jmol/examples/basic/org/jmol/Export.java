@@ -52,8 +52,8 @@ public class Export {
 
     // build Jmol
     JFrame baseframe = new JFrame();
-    Jmol jmolPanel = Jmol.getJmol(baseframe,300, 300, "");
-    JmolViewer viewer = jmolPanel.viewer;
+    Jmol jmol = Jmol.getJmol(baseframe,300, 300, "");
+    JmolViewer viewer = jmol.viewer;
 
     // build and register event listener (implementation of JmolStatusListener)
     // point "monitor"-variable in event listener to "monitor"

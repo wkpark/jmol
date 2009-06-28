@@ -352,14 +352,16 @@ public abstract class AtomSetCollectionReader {
     }
   }
 
+  private boolean haveModel = false;
   protected boolean doGetModel(int modelNumber) {
     // modelNumber is 1-based, but firstLastStep is 0-based
-    
-    return (bsModels == null ? desiredModelNumber == Integer.MIN_VALUE || modelNumber == desiredModelNumber
+  boolean isOK = (bsModels == null ? desiredModelNumber == Integer.MIN_VALUE || modelNumber == desiredModelNumber
         : modelNumber > lastModelNumber ? false 
-            : modelNumber > 0 && bsModels.get(modelNumber - 1) || atomSetCollection.atomCount > 0 
-            && firstLastStep != null && firstLastStep[1] < 0
+            : modelNumber > 0 && bsModels.get(modelNumber - 1)
+            || haveModel && firstLastStep != null && firstLastStep[1] < 0
             && (firstLastStep[2] < 2 || (modelNumber - 1 - firstLastStep[0]) % firstLastStep[2] == 0));
+  haveModel |= isOK;
+  return isOK;
   }
   
   protected boolean isLastModel(int modelNumber) {

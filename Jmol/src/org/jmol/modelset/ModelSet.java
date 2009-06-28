@@ -194,7 +194,7 @@ abstract public class ModelSet extends ModelCollection {
     BitSet bs = new BitSet();
     int iMax = iFirst + getAtomCountInModel(modelIndex);
     for (int pt = 0, i = iFirst; i < iMax && pt < trajectory.length && trajectory[pt]!= null; i++) {
-      atoms[i].set(trajectory[pt++]);
+      atoms[i].setFractionalCoord(trajectory[pt++]);
       atoms[i].modelIndex = (short) modelIndex;
       bs.set(i);
     }

@@ -30,6 +30,7 @@ import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.export.image.ImageCreator;
 import org.jmol.i18n.GT;
+import org.jmol.util.TextFormat;
 
 public class JmolFrameless {
   
@@ -37,14 +38,32 @@ public class JmolFrameless {
    * no Java Swing to be found. No implementation of any graphics or 
    * containers at all. 
    * 
+   * Just a great little answer machine that can load models, 
+   * do scripted analysis of their structures, and spit out text and
+   * JPG or PNG images.
+   * 
    */
 
-  JmolViewer viewer;
+  public JmolApp jmolApp;
+  public JmolViewer viewer;
   
-  JmolFrameless(JmolApp jmolApp) {
+  public static JmolFrameless getJmol(int width, int height, String commandOptions) {
+    JmolApp jmolApp = new JmolApp();
+    jmolApp.haveDisplay = false;
+    jmolApp.startupHeight = height;
+    jmolApp.startupWidth = width;
+    String[] args = TextFormat.split(commandOptions, ' '); // doesn't allow for double-quoted 
+    jmolApp.parseCommandLine(args);
+    return new JmolFrameless(jmolApp);
+  }
+
+  public JmolFrameless(JmolApp jmolApp) {
+    this.jmolApp = jmolApp;
     viewer = JmolViewer.allocateViewer(null, null, 
         null, null, null, jmolApp.commandOptions, 
         new MyStatusListenerFrameless());
+    viewer.setScreenDimension(new Dimension(jmolApp.startupWidth, jmolApp.startupHeight));
+    jmolApp.startViewer(viewer, null);
   }
   
   public static void main(String[] args) {
@@ -52,10 +71,7 @@ public class JmolFrameless {
     jmolApp.haveDisplay = false;
     jmolApp.exitUponCompletion = true;
     jmolApp.parseCommandLine(args);    
-    JmolFrameless jmol = new JmolFrameless(jmolApp);
-    // this next is just in case write JPG is used without any width/height information
-    jmol.viewer.setScreenDimension(new Dimension(jmolApp.startupWidth, jmolApp.startupHeight));
-    jmolApp.startViewer(jmol.viewer, null);
+    new JmolFrameless(jmolApp);
   }
   
   String createImageStatus(String fileName, String type, Object text_or_bytes,

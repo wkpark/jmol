@@ -333,38 +333,31 @@ class JmolApp {
       script2 = line.getOptionValue("j");
     }
 
-    Dimension size;
-    String vers = System.getProperty("java.version");
-    if (vers.compareTo("1.1.2") < 0) {
-      System.out.println("!!!WARNING: Swing components require a "
-          + "1.1.2 or higher version VM!!!");
+    Point b = null;    
+    if (haveDisplay) {
+      Dimension size;
+      String vers = System.getProperty("java.version");
+      if (vers.compareTo("1.1.2") < 0) {
+        System.out.println("!!!WARNING: Swing components require a "
+            + "1.1.2 or higher version VM!!!");
+      }
+
+      size = historyFile.getWindowSize("Jmol");
+      if (size != null) {
+        startupWidth = size.width;
+        startupHeight = size.height;
+      }
+      historyFile.getWindowBorder("Jmol");
+      // first one is just approximate, but this is set in doClose()
+      // so it will reset properly -- still, not perfect
+      // since it is always one step behind.
+      if (b == null || b.x > 50)
+        border = new Point(12, 116);
+      else
+        border = new Point(b.x, b.y);
+      // note -- the first time this is run after changes it will not work
+      // because there is a bootstrap problem.
     }
-
-    size = historyFile.getWindowSize("Jmol");
-    if (size != null && haveDisplay) {
-      startupWidth = size.width;
-      startupHeight = size.height;
-    }
-
-    // OUTER window dimensions
-    /*
-     * if (line.hasOption("g") && haveDisplay) { String geometry =
-     * line.getOptionValue("g"); int indexX = geometry.indexOf('x'); if (indexX
-     * > 0) { startupWidth = parseInt(geometry.substring(0, indexX));
-     * startupHeight = parseInt(geometry.substring(indexX + 1)); } }
-     */
-
-    Point b = historyFile.getWindowBorder("Jmol");
-    // first one is just approximate, but this is set in doClose()
-    // so it will reset properly -- still, not perfect
-    // since it is always one step behind.
-    if (b == null || b.x > 50)
-      border = new Point(12, 116);
-    else
-      border = new Point(b.x, b.y);
-    // note -- the first time this is run after changes it will not work
-    // because there is a bootstrap problem.
-
     int width = 500;
     int height = 500;
     // INNER frame dimensions
@@ -411,23 +404,27 @@ class JmolApp {
       }
     }
 
-    // no display (and exit)
-    if (line.hasOption("n"))
+    // the next two are coupled -- if the -n command line option is 
+    // given, then the -x is added, but not vice-versa. 
+    // however, if this is an application-embedded object, then
+    // it is ok to have no display and no exit.
+    
+    if (line.hasOption("n")) {
+       // no display (and exit)
       haveDisplay = false;
-    if (!haveDisplay) {
-      commandOptions += "-n";
       exitUponCompletion = true;
-      script2 += ";exitJmol";
     }
-
-    // exit when script completes (or file is read)
     if (line.hasOption("x"))
+      // exit when script completes (or file is read)
       exitUponCompletion = true;
+
+    if (!haveDisplay)
+      commandOptions += "-n";
     if (exitUponCompletion) {
       commandOptions += "-x";
-      if (haveDisplay)
-        script2 += ";exitJmol";
+      script2 += ";exitJmol";
     }
+    
   }
 
   void startViewer(JmolViewer viewer, SplashInterface splash) {  

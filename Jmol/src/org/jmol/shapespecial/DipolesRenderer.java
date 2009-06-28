@@ -75,7 +75,7 @@ public class DipolesRenderer extends ShapeRenderer {
   private boolean transform(Dipole dipole) {
     Vector3f vector = dipole.vector;
     offset.set(vector);
-    if (dipole.center == null) { 
+    if (dipole.center == null) {
       offset.scale(dipole.offsetAngstroms / dipole.dipoleValue);
       if (dipoleVectorScale < 0)
         offset.add(vector);
@@ -84,14 +84,14 @@ public class DipolesRenderer extends ShapeRenderer {
     } else {
       offset.scale(-0.5f * dipoleVectorScale);
       points[cylinderBase].set(dipole.center);
-      points[cylinderBase].add(offset);    
-      if (dipole.offsetAngstroms != 0) { 
+      points[cylinderBase].add(offset);
+      if (dipole.offsetAngstroms != 0) {
         offset.set(vector);
         offset.scale(dipole.offsetAngstroms / dipole.dipoleValue);
-        points[cylinderBase].add(offset);       
+        points[cylinderBase].add(offset);
       }
     }
-    
+
     points[cross].scaleAdd(dipoleVectorScale * crossOffset, vector,
         points[cylinderBase]);
     points[crossEnd].scaleAdd(dipoleVectorScale * (crossOffset + crossWidth),
@@ -103,20 +103,19 @@ public class DipolesRenderer extends ShapeRenderer {
     points[arrowHeadTip].scaleAdd(dipoleVectorScale, vector,
         points[cylinderBase]);
 
-    if (dipole.atoms[0] != null) {
-      if (modelSet.isAtomHidden(dipole.atoms[0].getAtomIndex()))
-        return false;
-      offset.set(points[center]);
+    if (dipole.atoms[0] != null
+        && modelSet.isAtomHidden(dipole.atoms[0].getAtomIndex()))
+      return false;
+    offset.set(points[center]);
+    offset.cross(offset, vector);
+    if (offset.length() == 0) {
+      offset.set(points[center].x + 0.2345f, points[center].y + 0.1234f,
+          points[center].z + 0.4321f);
       offset.cross(offset, vector);
-      if (offset.length() == 0) {
-        offset.set(points[center].x + 0.2345f, points[center].y + 0.1234f,
-            points[center].z + 0.4321f);
-        offset.cross(offset, vector);
-      }
-      offset.scale(dipole.offsetSide / offset.length());
-      for (int i = 0; i < 6; i++)
-        points[i].add(offset);
     }
+    offset.scale(dipole.offsetSide / offset.length());
+    for (int i = 0; i < 6; i++)
+      points[i].add(offset);
     for (int i = 0; i < 6; i++)
       viewer.transformPoint(points[i], screens[i]);
     viewer.transformPoint(points[cross], cross0);

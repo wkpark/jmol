@@ -343,17 +343,17 @@ $SYSTEM OPTIONS
           calculationType += ")";
         }
       }
-      if (!DFTtype.contains("NONE")) {
+      if (DFTtype!=null && !DFTtype.contains("NONE")) {
         if (calculationType.length() > 0)
           calculationType += " ";
         calculationType += DFTtype;
       }
-      if (!CItype.contains("NONE")) {
+      if (CItype !=null && !CItype.contains("NONE")) {
         if (calculationType.length() > 0)
           calculationType += " ";
         calculationType += CItype;
       }
-      if (!CCtype.contains("NONE")) {
+      if (CCtype !=null && !CCtype.contains("NONE")) {
         if (calculationType.length() > 0)
           calculationType += " ";
         calculationType += CCtype;

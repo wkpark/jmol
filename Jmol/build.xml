@@ -830,6 +830,7 @@ support for assertions (which were introduced in 1.4).
       </fileset>
       <fileset dir="${jmol.build.dir}">
         <include name="Jmol.jar" />
+        <include name="JmolFrameless.jar" />
       </fileset>
       <fileset dir=".">
         <include name="jmol" />

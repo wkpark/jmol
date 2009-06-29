@@ -27,6 +27,8 @@ package org.jmol.export;
 
 import java.awt.Image;
 import java.util.BitSet;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -145,7 +147,8 @@ public class _VrmlExporter extends _Exporter {
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, Vector3f[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
-                               int faceVertexMax, short[] polygonColixes, int nPolygons) {
+                               int faceVertexMax, short[] polygonColixes,
+                               int nPolygons) {
 
     if (nVertices == 0)
       return;
@@ -156,39 +159,98 @@ public class _VrmlExporter extends _Exporter {
     if (nFaces == 0)
       return;
 
+    Vector colorList = null;
+    Hashtable htColixes = new Hashtable();
+    if (polygonColixes != null)
+      colorList = getColorList(0, polygonColixes, nPolygons, bsFaces, htColixes);
+    else if (colixes != null)
+      colorList = getColorList(0, colixes, nVertices, null, htColixes);
+
     String color = rgbFractionalFromColix(colix, ' ');
     String translu = translucencyFractionalFromColix(colix);
     output("Shape {\n");
+    if (polygonColixes != null)
+      output(" colorPerVertex FALSE\n");
     output(" appearance Appearance {\n");
-    output("  material Material { diffuseColor " + color  
-        + " transparency " + translu + " }\n");
+    output("  material Material { diffuseColor " + color + " transparency "
+        + translu + " }\n");
     output(" }\n");
     output(" geometry IndexedFaceSet {\n");
-    output("  coord Coordinate {\n");
-    output("   point [\n");
+
+    // coordinates
+    
+    output("coord Coordinate {\n   point [\n");
     for (int i = 0; i < nVertices; i++) {
-      String sep = " ";
-      output(sep + vertices[i].x + " " + vertices[i].y + " " + vertices[i].z
-          + "\n");
-      if (i == 0)
-        sep = ",";
+      output(vertices[i].x + " " + vertices[i].y + " " + vertices[i].z + "\n");
     }
     output("   ]\n");
     output("  }\n");
     output("  coordIndex [\n");
-    String sep = " ";
     for (int i = nPolygons; --i >= 0;) {
       if (!bsFaces.get(i))
         continue;
-      output(sep + indices[i][0] + " " + indices[i][1] + " " + indices[i][2]
+      output(indices[i][0] + " " + indices[i][1] + " " + indices[i][2]
           + " -1\n");
-      if (i == 0)
-        sep = ",";
       if (faceVertexMax == 4 && indices[i].length == 4)
-        output(sep + indices[i][0] + " " + indices[i][2] + " " + indices[i][3]
+        output("," + indices[i][0] + " " + indices[i][2] + " " + indices[i][3]
             + " -1\n");
     }
     output("  ]\n");
+
+    // normals
+    
+    if (normals != null) {
+      output("  normalPerVertex TRUE\n   normal Normal {\n  vector [\n");
+      for (int i = 0; i < nVertices; i++) {
+        output(normals[i].x + " " + normals[i].y + " " + normals[i].z + "\n");
+      }
+      output("   ]\n");
+      output("  }\n");
+      output("  normalIndex [\n");
+      for (int i = nPolygons; --i >= 0;) {
+        if (!bsFaces.get(i))
+          continue;
+        output(indices[i][0] + " " + indices[i][1] + " " + indices[i][2]
+            + " -1\n");
+        if (faceVertexMax == 4 && indices[i].length == 4)
+          output("," + indices[i][0] + " " + indices[i][2] + " "
+              + indices[i][3] + " -1\n");
+      }
+      output("  ]\n");
+    }
+
+    // colors
+    
+    if (colorList != null) {
+      output("  color Color { color [\n");
+      int nColors = colorList.size();
+      for (int i = 0; i < nColors; i++) {
+        color = rgbFractionalFromColix(((Short) colorList.get(i)).shortValue(),
+            ' ');
+        output(" ");
+        output(color);
+        output("\n");
+      }
+      output("  ] } \n");
+      output("  colorIndex [\n");
+      for (int i = nPolygons; --i >= 0;) {
+        if (!bsFaces.get(i))
+          continue;
+        if (polygonColixes == null) {
+          output(htColixes.get("" + colixes[indices[i][0]]) + " "
+              + htColixes.get("" + colixes[indices[i][1]]) + " "
+              + htColixes.get("" + colixes[indices[i][2]]) + " -1\n");
+          if (faceVertexMax == 4 && indices[i].length == 4)
+            output(htColixes.get("" + colixes[indices[i][0]]) + " "
+                + htColixes.get("" + colixes[indices[i][2]]) + " "
+                + htColixes.get("" + colixes[indices[i][3]]) + " -1\n");
+        } else {
+          output(htColixes.get("" + polygonColixes[i]) + "\n");
+        }
+      }
+      output("  ]\n");
+    }
+
     output(" }\n");
     output("}\n");
   }

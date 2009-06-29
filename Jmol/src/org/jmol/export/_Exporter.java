@@ -31,7 +31,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
+import java.util.BitSet;
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Point3f;
@@ -255,5 +258,32 @@ public abstract class _Exporter implements JmolExportInterface {
     if (Graphics3D.isColixTranslucent(colix))
       return new StringBuffer().append(translevel / 255f).toString();
     return new StringBuffer().append(0f).toString();
-  }  
+  }
+  
+  /**
+   * input an array of colixes; returns a Vector for the color list and a HashTable
+   * for correlating the colix with a specific color index
+   * 
+   * @param i0
+   * @param colixes
+   * @param nVertices
+   * @param bsSelected
+   * @param htColixes
+   * @return             Vector and HashTable
+   */
+  protected Vector getColorList(int i0, short[] colixes, int nVertices, BitSet bsSelected, Hashtable htColixes) {
+    String color;
+    int nColix = 0;
+    Vector list = new Vector();
+    for (int i = 0; i < nVertices; i++) 
+      if (bsSelected == null || bsSelected.get(i)) {
+        color = "" + colixes[i];
+        if (!htColixes.containsKey(color)) {
+          list.add(new Short(colixes[i]));
+          htColixes.put(color, "" + (i0 + nColix++));
+        }
+      }
+   return list;
+  }
+
 }

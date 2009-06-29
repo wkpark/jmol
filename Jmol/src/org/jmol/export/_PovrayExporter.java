@@ -28,8 +28,8 @@ package org.jmol.export;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.BitSet;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -434,12 +434,8 @@ public class _PovrayExporter extends _Exporter {
         output("  clip()\n");
         output("}\n");
       }
-
       return;
     }
-
-    Hashtable htColixes = new Hashtable();
-    String color;
 
     output("mesh2 {\n");
     output("vertex_vectors { " + nVertices);
@@ -465,30 +461,20 @@ public class _PovrayExporter extends _Exporter {
       output("\n}\n");
     }
 
+    Hashtable htColixes = new Hashtable();
     if (colixes != null) {
-      int nColix = 0;
-      for (int i = 0; i < nVertices; i++) {
-        color = color4(colixes[i]);
-        if (!htColixes.containsKey(color))
-          htColixes.put(color, new Integer(nColix++));
-      }
-      String[] list = new String[nColix];
-      Enumeration e = htColixes.keys();
-      while (e.hasMoreElements()) {
-        color = (String) e.nextElement();
-        list[((Integer) htColixes.get(color)).intValue()] = color;
-      }
-
+      Vector list = getColorList(0, colixes, nVertices, null, htColixes);
+      int nColix = list.size();
       output("texture_list { " + nColix);
-      for (int i = 0; i < nColix; i++)
-        output("\n, texture{pigment{rgbt<" + list[i] + ">}"
-            + " translucentFinish("
-            + translucencyFractionalFromColix(colixes[0]) + ")}");
       // just using the transparency of the first colix there... 
+      String finish = ">}" + " translucentFinish("
+        + translucencyFractionalFromColix(colixes[0]) + ")}";
+      for (int i = 0; i < nColix; i++)
+        output("\n, texture{pigment{rgbt<" + color4(((Short)list.get(i)).shortValue()) + finish);
       output("\n}\n");
     }
     output("face_indices { " + nFaces);
-    //int p = 0; 
+    //int p = 0;
     for (int i = nPolygons; --i >= 0;) {
       if (!bsFaces.get(i))
         continue;
@@ -496,22 +482,16 @@ public class _PovrayExporter extends _Exporter {
       //  output("\n");
       output(", <" + triad(indices[i]) + ">");
       if (colixes != null) {
-        color = color4(colixes[indices[i][0]]);
-        output("," + ((Integer) htColixes.get(color)).intValue());
-        color = color4(colixes[indices[i][1]]);
-        output("," + ((Integer) htColixes.get(color)).intValue());
-        color = color4(colixes[indices[i][2]]);
-        output("," + ((Integer) htColixes.get(color)).intValue());
+        output("," + htColixes.get("" + colixes[indices[i][0]]));
+        output("," + htColixes.get("" + colixes[indices[i][1]]));
+        output("," + htColixes.get("" + colixes[indices[i][2]]));
       }
       if (faceVertexMax == 4 && indices[i].length == 4) {
         output(", <" + indices[i][0] + "," + indices[i][2] + "," + indices[i][3] + ">");
         if (colixes != null) {
-          color = color4(colixes[indices[i][0]]);
-          output("," + ((Integer) htColixes.get(color)).intValue());
-          color = color4(colixes[indices[i][2]]);
-          output("," + ((Integer) htColixes.get(color)).intValue());
-          color = color4(colixes[indices[i][3]]);
-          output("," + ((Integer) htColixes.get(color)).intValue());
+          output("," + htColixes.get("" + colixes[indices[i][0]]));
+          output("," + htColixes.get("" + colixes[indices[i][2]]));
+          output("," + htColixes.get("" + colixes[indices[i][3]]));
         }
       }
       output("\n");

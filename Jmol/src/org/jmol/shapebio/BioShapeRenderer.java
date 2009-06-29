@@ -96,6 +96,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
     aspectRatio = val;
 
     val = viewer.getHermiteLevel();
+    if (val == 0 && !g3d.canDoTriangles())
+      val = 1;
     val = (val <= 0 ? -val : viewer.getInMotion() ? 0 : val);
     if (val != hermiteLevel && val != 0)
       invalidateMesh = true;
@@ -117,7 +119,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     }
 
     BioShapeCollection mps = (BioShapeCollection) shape;
-    
+    g3d.startShapeBuffer();
     for (int c = mps.bioShapes.length; --c >= 0;) {
       BioShape bioShape = mps.getBioShape(c);
       if ((bioShape.modelVisibilityFlags & myVisibilityFlag) == 0)
@@ -127,6 +129,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         freeTempArrays();
       }
     }
+    g3d.endShapeBuffer();
   }
 
   private void freeTempArrays() {

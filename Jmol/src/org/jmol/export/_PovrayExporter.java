@@ -693,4 +693,18 @@ public class _PovrayExporter extends _Exporter {
     g3d.renderBackground(jmolRenderer);
   }
 
+  public void endShapeBuffer() {
+    // TODO
+    
+  }
+
+  public void startShapeBuffer() {
+    // TODO
+    
+  }
+
+  public boolean canDoTriangles() {
+    return true;
+  }
+
 }

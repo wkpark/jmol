@@ -249,5 +249,19 @@ public class _U3dExporter extends _Exporter {
     // TODO
     
   }
+
+  public void endShapeBuffer() {
+    // TODO
+    
+  }
+
+  public void startShapeBuffer() {
+    // TODO
+    
+  }
+
+  public boolean canDoTriangles() {
+    return false;
+  }
            
 }

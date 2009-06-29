@@ -2978,4 +2978,18 @@ final public class Graphics3D implements JmolRendererInterface {
       plotImage(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, backgroundImage,
           jmolRenderer, (short) 0, 0, 0);
   }
+
+  public void endShapeBuffer() {
+    // TODO
+    
+  }
+
+  public void startShapeBuffer() {
+    // TODO
+    
+  }
+
+  public boolean canDoTriangles() {
+    return true;
+  }
 }

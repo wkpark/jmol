@@ -2504,7 +2504,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return frankOn && modelSet.frankClicked(x, y);
   }
 
-  int findNearestAtomIndex(int x, int y) {
+  public int findNearestAtomIndex(int x, int y) {
     return (modelSet == null || !getAtomPicking() ? -1 : modelSet
         .findNearestAtomIndex(x, y));
   }

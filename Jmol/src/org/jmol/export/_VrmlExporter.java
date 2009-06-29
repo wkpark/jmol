@@ -85,14 +85,18 @@ public class _VrmlExporter extends _Exporter {
   }
 
   public void renderAtom(Atom atom, short colix) {
+    float r = atom.getMadAtom() / 2000f;
+    outputSphere(atom, r, colix);
+  }
+
+  private void outputSphere(Point3f pt, float radius, short colix) {
     String color = rgbFractionalFromColix(colix, ' ');
     String translu = translucencyFractionalFromColix(colix);
-    float r = atom.getMadAtom() / 2000f;
     output("Transform {\n");
-    output(" translation " + atom.x + " " + atom.y + " " + atom.z + "\n");
+    output(" translation " + pt.x + " " + pt.y + " " + pt.z + "\n");
     output(" children [\n");
     output("  Shape {\n");
-    output("   geometry Sphere { radius " + r + " }\n");
+    output("   geometry Sphere { radius " + radius + " }\n");
     output("   appearance Appearance {\n");
     output("    material Material { diffuseColor " + color 
         + " transparency " + translu + " }\n");
@@ -101,7 +105,7 @@ public class _VrmlExporter extends _Exporter {
     output(" ]\n");
     output("}\n");
   }
-
+  
   public void fillCylinder(Point3f atom1, Point3f atom2, short colix1,
                          short colix2, byte endcaps, int madBond, int bondOrder) {
     //ignoring bond order for vrml -- but this needs fixing
@@ -294,7 +298,7 @@ public class _VrmlExporter extends _Exporter {
 
   
   public void fillSphereCentered(short colix, int diameter, Point3f pt) {
-    //cartoons, rockets, trace:    
+    outputSphere(pt, diameter / 2.0f, colix);
   }
 
   final private Point3f pt = new Point3f();
@@ -380,5 +384,37 @@ public class _VrmlExporter extends _Exporter {
     // TODO
     
   }
+
+  //Vector vTriangles;
+  public void startShapeBuffer() {
+    //vTriangles = new Vector();
+    
+    // for now, rather than doing this, it was simpler to 
+    // just set the hermiteLevel to 1 if it is 0
+  }
            
+  public void endShapeBuffer() {
+   //processTrianglesAsIsosurface();
+  }
+
+  public boolean canDoTriangles() {
+    return false;
+  }
+  
+  /*
+  private class Triangle{
+    short colix;
+    Point3f ptA = new Point3f();
+    Point3f ptB = new Point3f();
+    Point3f ptC = new Point3f();
+    Triangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
+      this.colix = colix;
+      this.ptA.set(ptA);
+      this.ptB.set(ptB);
+      this.ptC.set(ptC);
+    }
+  }
+  */  
+
+
 }

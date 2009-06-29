@@ -322,4 +322,10 @@ public interface JmolRendererInterface {
 
   public abstract void drawImage(Image image, int x, int y, int z, int zslab, short bgcolix, int width, int height);
 
+  public abstract void startShapeBuffer();
+
+  public abstract void endShapeBuffer();
+
+  public abstract boolean canDoTriangles();
+
 }

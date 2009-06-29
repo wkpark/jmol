@@ -76,6 +76,10 @@ final public class Export3D implements JmolRendererInterface {
     exporter.setRenderer(this);
   }
   
+  public boolean canDoTriangles() {
+    return exporter.canDoTriangles();
+  }
+
   public void setSlab(int slabValue) {
     slab = slabValue;
     g3d.setSlab(slabValue);
@@ -655,6 +659,15 @@ final public class Export3D implements JmolRendererInterface {
                                         int faceVertexMax, short[] polygonColixes, int nPolygons) {
     exporter.renderIsosurface(vertices, colix, colixes, normals,
                               indices, bsFaces, nVertices, faceVertexMax, null, nPolygons);
+  }
+
+
+  public void startShapeBuffer() {
+    exporter.startShapeBuffer();
+  }
+
+  public void endShapeBuffer() {
+    exporter.endShapeBuffer();
   }
 
   public void renderEllipsoid(int x, int y, int z, int diameter,

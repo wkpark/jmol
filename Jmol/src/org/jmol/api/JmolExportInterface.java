@@ -102,4 +102,10 @@ public interface JmolExportInterface {
                                 double[] coef, Point3i[] selectedPoints);
 
   abstract void renderBackground();
+
+  abstract void startShapeBuffer();
+
+  abstract void endShapeBuffer();
+
+  abstract boolean canDoTriangles();
 }

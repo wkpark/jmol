@@ -97,8 +97,12 @@ class ScriptVariable extends Token {
       return new ScriptVariable();
     if (x instanceof ScriptVariable)
       return (ScriptVariable) x;
-    if (x instanceof String) 
+    if (x instanceof String) {
       x = unescapePointOrBitsetAsVariable((String) x);
+      if (x instanceof ScriptVariable)
+        return (ScriptVariable) x;
+      return new ScriptVariable(string, x);
+    }
     if (x instanceof Boolean)
       return getBoolean(((Boolean)x).booleanValue());
     if (x instanceof Integer)

@@ -240,4 +240,18 @@ public class _MayaExporter extends _Exporter {
     
   }
 
+  public void endShapeBuffer() {
+    // TODO
+    
+  }
+
+  public void startShapeBuffer() {
+    // TODO
+    
+  }
+
+  public boolean canDoTriangles() {
+    return false;
+  }
+
 }

@@ -27,9 +27,11 @@ import java.awt.Point;
 
 import javax.swing.JFrame;
 
+import org.openscience.jmol.app.jmolpanel.*;
+
 public class Jmol extends JmolPanel {
 
-  Jmol(JmolApp jmolApp, Splash splash, JFrame frame, Jmol parent, int startupWidth,
+  public Jmol(JmolApp jmolApp, Splash splash, JFrame frame, Jmol parent, int startupWidth,
       int startupHeight, String commandOptions, Point loc) {
     super(jmolApp, splash, frame, parent, startupWidth, startupHeight, commandOptions, loc);
   }

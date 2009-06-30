@@ -24,7 +24,7 @@
 package org.openscience.jmol.app;
 
 import org.jmol.api.*;
-import org.jmol.export.dialog.HistoryFile;
+import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.*;
@@ -41,28 +41,28 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.HelpFormatter;
 
-class JmolApp {
+public class JmolApp {
 
   /**
    * The data model.
    */
 
-  int startupWidth, startupHeight;
-  Point border;
-  boolean haveBorder;
+  public int startupWidth, startupHeight;
+  public Point border;
+  public boolean haveBorder;
 
-  File userPropsFile;
-  HistoryFile historyFile;
+  public File userPropsFile;
+  public HistoryFile historyFile;
 
-  String menuStructure;
-  String menuFile;
+  public String menuStructure;
+  public String menuFile;
   
-  boolean splashEnabled = true;
-  boolean useIndependentCommandThread;
-  boolean transparentBackground;
-  boolean checkScriptNoFiles;
-  boolean checkScriptAndOpenFiles;
-  boolean exitUponCompletion;
+  public boolean splashEnabled = true;
+  public boolean useIndependentCommandThread;
+  public boolean transparentBackground;
+  public boolean checkScriptNoFiles;
+  public boolean checkScriptAndOpenFiles;
+  public boolean exitUponCompletion;
 
 
   {
@@ -84,29 +84,30 @@ class JmolApp {
         "Jmol's persistent values");
   }
 
-  boolean isSilent = false;
-  boolean haveConsole = true;
-  boolean haveDisplay = true;
-  boolean isPrintOnly = false;
-  boolean listCommands = false;
+  public boolean haveConsole = true;
+  public boolean haveDisplay = true;
+  public boolean isFrameless;
+  public boolean isPrintOnly;
+  public boolean isSilent;
+  public boolean listCommands;
   
-  String commandOptions = "";
-  String modelFilename;
-  String scriptFilename;
-  String script1 = "";
-  String script;
-  String script2 = "";
-  Point jmolPosition;
+  public String commandOptions = "";
+  public String modelFilename;
+  public String scriptFilename;
+  public String script1 = "";
+  public String script;
+  public String script2 = "";
+  public Point jmolPosition;
   
-  JmolViewer viewer;
-  JmolAdapter modelAdapter;
+  public JmolViewer viewer;
+  public JmolAdapter modelAdapter;
 
-  String language;
+  public String language;
 
-  JmolApp() {
+  public JmolApp() {
     // defer parsing until we can set a few options ourselves
   }
-  JmolApp(String[] args) {
+  public JmolApp(String[] args) {
     parseCommandLine(args);
   }
 
@@ -131,7 +132,7 @@ class JmolApp {
 
   }
 
-  Options getOptions(String[] args) {
+  private Options getOptions(String[] args) {
     Options options = new Options();
     options.addOption("b", "backgroundtransparent", false, GT
         ._("transparent background"));
@@ -255,6 +256,8 @@ class JmolApp {
     // set options ourselves. 
     
     // print command output only (implies silent)
+
+    commandOptions = (isFrameless ? "JmolFrameless " : "Jmol ");
     if (line.hasOption("p"))
       isPrintOnly = true;
     if (isPrintOnly) {
@@ -421,12 +424,12 @@ class JmolApp {
       commandOptions += "-n";
     if (exitUponCompletion) {
       commandOptions += "-x";
-      script2 += ";exitJmol";
+      script2 += ";exitJmol // " + commandOptions;
     }
     
   }
 
-  void startViewer(JmolViewer viewer, SplashInterface splash) {  
+  public void startViewer(JmolViewer viewer, SplashInterface splash) {  
     this.viewer = viewer;
     try {
     } catch (Throwable t) {

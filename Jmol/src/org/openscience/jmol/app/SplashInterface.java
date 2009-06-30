@@ -1,7 +1,7 @@
 package org.openscience.jmol.app;
 
-interface SplashInterface {
+public interface SplashInterface {
 
-  void showStatus(String _);
+  public void showStatus(String _);
 
 }

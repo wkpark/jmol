@@ -52,6 +52,7 @@ public class JmolFrameless {
     jmolApp.haveDisplay = false;
     jmolApp.startupHeight = height;
     jmolApp.startupWidth = width;
+    jmolApp.isFrameless = true;
     String[] args = TextFormat.split(commandOptions, ' '); // doesn't allow for double-quoted 
     jmolApp.parseCommandLine(args);
     return new JmolFrameless(jmolApp);
@@ -70,6 +71,7 @@ public class JmolFrameless {
     JmolApp jmolApp = new JmolApp();
     jmolApp.haveDisplay = false;
     jmolApp.exitUponCompletion = true;
+    jmolApp.isFrameless = true;
     jmolApp.parseCommandLine(args);    
     new JmolFrameless(jmolApp);
   }

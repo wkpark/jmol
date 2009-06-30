@@ -43,7 +43,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
-import org.openscience.jmol.app.HelpDialog;
+import org.openscience.jmol.app.jmolpanel.HelpDialog;
 
 /*
  * an abstract class used as the basis for the tabbed panels

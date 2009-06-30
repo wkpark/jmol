@@ -27,7 +27,6 @@ import org.jmol.api.*;
 import org.jmol.export.dialog.HistoryFile;
 import org.jmol.i18n.GT;
 import org.jmol.api.JmolViewer;
-import org.jmol.util.Logger;
 import org.jmol.util.*;
 
 import java.awt.*;
@@ -482,7 +481,11 @@ class JmolApp {
         splash.showStatus(GT._("Executing script 2..."));
       viewer.script(script2);
     }
-
+    
+    if (exitUponCompletion) {
+      System.out.flush();
+      System.exit(0);
+    }
   }
   
 }

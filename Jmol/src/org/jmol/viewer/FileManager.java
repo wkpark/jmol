@@ -449,7 +449,6 @@ public class FileManager {
    * delivers file contents and directory listing for a ZIP/JAR file into sb
    * 
    * 
-   * @param sb
    * @param name
    * @param header
    * @param fileData

@@ -246,7 +246,7 @@ public class Resolver {
   /**
    * a largely untested reader of the DOM - where in a browser there
    * is model actually in XML format already present on the page.
-   * @author Egon Willighagen
+   * -- Egon Willighagen
    * 
    * @param DOMNode
    * @return an AtomSetCollection or a String error

@@ -2974,6 +2974,7 @@ class ScriptEvaluator {
       case Token.amino:
       case Token.backbone:
       case Token.solvent:
+      case Token.helix:
       case Token.sidechain:
       case Token.surface:
         rpn.addX(lookupIdentifierValue((String) value));

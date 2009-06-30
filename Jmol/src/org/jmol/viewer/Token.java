@@ -587,7 +587,7 @@ public class Token {
   // xxx(a,b)
 
   public final static int cross = 1 | 2 << 9 | mathfunc;
-  final static int helix        = 2 | 2 << 9 | mathfunc;
+  final static int helix        = 2 | 2 << 9 | mathfunc | predefinedset;
   final static int load         = 3 | 2 << 9 | mathfunc | command;
   final static int random       = 4 | 2 << 9 | mathfunc;
   final static int script       = 5 | 2 << 9 | mathfunc | command;

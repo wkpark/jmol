@@ -1110,11 +1110,9 @@ final public class Atom extends Point3fi {
    * 
    * @param atom
    * @param tokWhat
-   * @param asInt
    * @return       float value or value*100 (asInt=true) or throw an error if not found
    * 
-   */
-  
+   */  
   public static float atomPropertyFloat(Atom atom, int tokWhat) {
 
     switch (tokWhat) {

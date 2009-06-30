@@ -2475,6 +2475,8 @@ class ScriptEvaluator {
           || msg.indexOf("file recognized as a script file:") >= 0)
         return;
       Logger.error("eval ERROR: " + toString());
+      if (viewer.autoExit)
+        exitJmol();      
     }
 
     protected String getErrorMessageUntranslated() {
@@ -7247,9 +7249,7 @@ class ScriptEvaluator {
       if (name.equalsIgnoreCase("exitjmol")) {
         if (isSyntaxCheck || viewer.isApplet())
           return;
-        Logger.debug("exitJmol -- exiting");
-        System.out.flush();
-        System.exit(0);
+        exitJmol();
       }
       error(ERROR_commandExpected);
     }
@@ -7263,6 +7263,12 @@ class ScriptEvaluator {
     loadFunction(name, params);
     instructionDispatchLoop(false);
     popContext();
+  }
+
+  protected void exitJmol() {
+    Logger.debug("exitJmol -- exiting");
+    System.out.flush();
+    System.exit(0);
   }
 
   private void sync() throws ScriptException {

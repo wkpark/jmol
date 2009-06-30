@@ -198,6 +198,7 @@ public class Resolver {
                         int ptFile) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader = null;
     String atomSetCollectionReaderName;
+    fullName = fullName.replace('\\','/');
     String errMsg = null;
     if (type != null) {
       atomSetCollectionReaderName = getReaderFromType(type);

@@ -3827,6 +3827,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       scriptStatus("Jmol script terminated", strErrorMessage, 1,
           strErrorMessageUntranslated);
     }
+    if (strErrorMessage != null && autoExit)
+      exitJmol();      
     if (isCmdLine_c_or_C_Option) {
       if (strErrorMessage == null)
         Logger.info("--script check ok");
@@ -3843,6 +3845,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // reset to previous status list
     getProperty("object", "jmolStatus", oldStatusList);
     return info;
+  }
+
+  void exitJmol() {
+    Logger.debug("exitJmol -- exiting");
+    System.out.flush();
+    System.exit(0);
   }
 
   private Object scriptCheck(String strScript, boolean returnContext) {

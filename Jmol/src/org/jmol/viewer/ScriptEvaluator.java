@@ -1975,11 +1975,7 @@ class ScriptEvaluator {
     context.script = script;
     context.lineNumbers = lineNumbers;
     context.lineIndices = lineIndices;
-    context.aatoken = aatoken;
-    
-    System.out.println("getSCriptContext " + context + " " 
-        + aatoken.length
-        + " " + pc + " li=" + lineIndices[pc][0] + " " + lineIndices[pc][1]);
+    context.aatoken = aatoken;    
     context.statement = statement;
     context.statementLength = statementLength;
     context.pc = pc;
@@ -2476,7 +2472,7 @@ class ScriptEvaluator {
         return;
       Logger.error("eval ERROR: " + toString());
       if (viewer.autoExit)
-        exitJmol();      
+        viewer.exitJmol();      
     }
 
     protected String getErrorMessageUntranslated() {
@@ -4260,7 +4256,7 @@ class ScriptEvaluator {
           && scriptLevel <= commandHistoryLevelMax && !tQuiet) {
         thisCommand = getCommand(pc, true, true);
         if (token != null && !thisCommand.equals(lastCommand)
-            && !Token.tokAttr(token.tok, Token.flowCommand)
+            && (token.tok == Token.function || !Token.tokAttr(token.tok, Token.flowCommand))
             && thisCommand.length() > 0)
           viewer.addCommand(lastCommand = thisCommand);
       }
@@ -7249,7 +7245,7 @@ class ScriptEvaluator {
       if (name.equalsIgnoreCase("exitjmol")) {
         if (isSyntaxCheck || viewer.isApplet())
           return;
-        exitJmol();
+        viewer.exitJmol();
       }
       error(ERROR_commandExpected);
     }
@@ -7263,12 +7259,6 @@ class ScriptEvaluator {
     loadFunction(name, params);
     instructionDispatchLoop(false);
     popContext();
-  }
-
-  protected void exitJmol() {
-    Logger.debug("exitJmol -- exiting");
-    System.out.flush();
-    System.exit(0);
   }
 
   private void sync() throws ScriptException {

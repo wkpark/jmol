@@ -479,10 +479,7 @@ class JmolApp {
         Logger.info("Executing script: " + script2);
       if (splash != null)
         splash.showStatus(GT._("Executing script 2..."));
-      if (exitUponCompletion)
-        viewer.scriptWait(script2);
-      else
-        viewer.script(script2);
+      viewer.script(script2);
     }    
   }
   

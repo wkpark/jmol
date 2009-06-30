@@ -31,9 +31,11 @@ import javax.vecmath.Vector3f;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Token;
 
 public class AminoMonomer extends AlphaMonomer {
 
@@ -232,6 +234,72 @@ public class AminoMonomer extends AlphaMonomer {
     case 'n':
       return getNitrogenAtomPoint();
     }
+  }
+
+  public Object getHelixData(int tokType, char qType) {
+    int iNext = monomerIndex + 1;
+    AminoMonomer next = (AminoMonomer) (iNext >= bioPolymer.monomers.length ? null
+        : bioPolymer.monomers[iNext]);
+    Quaternion q1 = getQuaternion(qType);
+    Quaternion q2 = (next == null ? null : next.getQuaternion(qType));
+    if (q1 == null || q2 == null)
+      return super.getHelixData(tokType, qType);
+
+    /*
+                b
+           |   /|
+           |  / |
+           | /  |
+           |/   c
+         b'+   / \
+           |  /   \      Vcb = Vab . n
+         n | /     \d    Vac = Vab - Vcb
+           |/theta  \
+         a'+---------a
+                r
+ 
+    *
+    */
+    
+    Quaternion dq = q2.div(q1);// or reverse?
+    float theta = dq.getTheta();
+    if (tokType == Token.angle)
+      return new Float(theta);
+    Vector3f n = dq.getNormal();
+    Point3f a = getQuaternionFrameCenter(qType);
+    Point3f b = next.getQuaternionFrameCenter(qType);
+    Vector3f vab = new Vector3f();
+    vab.sub(b, a);
+    float v_dot_n = vab.dot(n);
+    if (tokType == Token.axis) {
+      n.scale(v_dot_n);
+      return n;
+    }
+    Vector3f vcb = new Vector3f(n);
+    vcb.scale(v_dot_n);
+    Vector3f va_prime_d = new Vector3f();
+    va_prime_d.cross(vab, n);
+    va_prime_d.scale(1/vab.length());
+    Vector3f vda = new Vector3f();
+    vda.sub(vcb, vab);
+    vda.scale(0.5f);
+    va_prime_d.scale((float)(vda.length()/Math.tan(theta / 2 / 180 * Math.PI)));
+    Vector3f r = new Vector3f(va_prime_d);
+    r.add(vda);
+    if (tokType == Token.radius)
+      return r;
+    Point3f pt_a_prime = new Point3f(a);
+    pt_a_prime.sub(r);
+    if (tokType == Token.point) {
+      return pt_a_prime;
+    }
+    n.scale(v_dot_n);
+    if (tokType == Token.draw) {
+      String id = getUniqueID();
+      return "draw ID helixaxis" + id + " VECTOR " + Escape.escape(pt_a_prime) + " " + Escape.escape(n);
+    }
+    //for now... array:
+    return new String[] {Escape.escape(pt_a_prime) , Escape.escape(n), Escape.escape(r)};
   }
 
   public Quaternion getQuaternion(char qType) {

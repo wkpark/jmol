@@ -616,6 +616,8 @@ class ScriptMathProcessor {
     case Token.mul:
     case Token.div:
       return evaluateList(op.intValue, args);
+    case Token.helix:
+      return evaluateHelix(args);
     case Token.label:
     case Token.format:
         return evaluateLabel(op.intValue, args);
@@ -641,6 +643,37 @@ class ScriptMathProcessor {
       return evaluateConnected(args);
     case Token.substructure:
       return evaluateSubstructure(args);
+    }
+    return false;
+  }
+
+  private boolean evaluateHelix(ScriptVariable[] args) {
+    if (args.length < 1)
+      return false;
+    BitSet bs = (args[0].value instanceof BitSet ? (BitSet) args[0].value
+        : eval.compareInt(Token.resno, null, Token.opEQ, ScriptVariable.iValue(args[0])));
+    String type = (args.length == 1 ? "array" : ScriptVariable.sValue(args[1]))
+        .toLowerCase();
+    if (type.equals("point"))
+      return addX(isSyntaxCheck ? new Point3f() : (Point3f) viewer
+          .getHelixData(bs, Token.point));
+    if (type.equals("axis"))
+      return addX(isSyntaxCheck ? new Vector3f() : (Vector3f) viewer
+          .getHelixData(bs, Token.axis));
+    if (type.equals("radius"))
+      return addX(isSyntaxCheck ? new Vector3f() : (Vector3f) viewer
+          .getHelixData(bs, Token.radius));
+    if (type.equals("angle"))
+      return addX(isSyntaxCheck ? 0 : ((Float) viewer
+          .getHelixData(bs, Token.angle)).floatValue());
+    if (type.equals("draw"))
+      return addX(isSyntaxCheck ? "" : (String) viewer
+          .getHelixData(bs, Token.draw));
+    if (type.equals("array")) {
+      String[] data = (String[]) viewer.getHelixData(bs, Token.array);
+      if (data == null)
+        return false;
+      return addX(data);
     }
     return false;
   }

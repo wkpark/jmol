@@ -1242,7 +1242,6 @@ final public class Atom extends Point3fi {
     }
     return null;
   }
- 
 
   /* DEVELOPER NOTE -- ATOM/MODEL DELETION --
    * 

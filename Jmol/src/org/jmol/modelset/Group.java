@@ -27,9 +27,13 @@ import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Token;
 
 import java.util.Hashtable;
 import java.util.BitSet;
+
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 public class Group {
 
@@ -382,6 +386,21 @@ public class Group {
   }
 
   public void setProteinStructureId(int i) {
+  }
+
+  public Object getHelixData(int tokType, char qType) {
+        switch (tokType) {
+        case Token.point:
+          return new Point3f();
+        case Token.axis:
+        case Token.radius:
+          return new Vector3f();
+        case Token.angle:
+          return new Float(Float.NaN);
+        case Token.array:
+          return new String[] {};
+        }
+    return "";
   }
   
 }

@@ -325,6 +325,17 @@ public abstract class Monomer extends Group {
 
   public void resetHydrogenPoint() {
   }
+
+  public String getUniqueID() {
+    char cid = getChainID();
+    Atom a = getLeadAtom();
+    String id = (a == null ? "" : "_" + a.getModelIndex()) + "_" + getResno()
+        + (cid == '\0' ? "" : "" + cid);
+    cid = (a == null ? '\0' : getLeadAtom().getAlternateLocationID());
+    if (cid != '\0')
+      id += cid;
+    return id;
+  }
 }
   
 

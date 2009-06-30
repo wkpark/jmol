@@ -6796,6 +6796,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return ScriptEvaluator.evaluateExpression(this, stringOrTokens);
   }
 
+  Object getHelixData(BitSet bs, int tokType) {
+    return modelSet.getHelixData(bs, tokType);
+  }
+
   public String getPdbData(BitSet bs) {
     if (bs == null)
       bs = getSelectionSet();

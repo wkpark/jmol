@@ -3181,7 +3181,7 @@ class ScriptEvaluator {
     return bs;
   }
 
-  private BitSet compareInt(int tokWhat, float[] data, int tokOperator,
+  protected BitSet compareInt(int tokWhat, float[] data, int tokOperator,
                             int comparisonValue) {
     BitSet bs = new BitSet();
     int propertyValue = Integer.MAX_VALUE;
@@ -4308,7 +4308,7 @@ class ScriptEvaluator {
       case Token.end:
       case Token.breakcmd:
       case Token.continuecmd:
-        flowControl(token.tok, isForCheck);
+        isForCheck = flowControl(token.tok, isForCheck);
         break;
       case Token.backbone:
         proteinShape(JmolConstants.SHAPE_BACKBONE);
@@ -4632,7 +4632,7 @@ class ScriptEvaluator {
     }
   }
 
-  private void flowControl(int tok, boolean isForCheck) throws ScriptException {
+  private boolean flowControl(int tok, boolean isForCheck) throws ScriptException {
     int pt = statement[0].intValue;
     boolean isDone = (pt < 0 && !isSyntaxCheck);
     boolean isOK = true;
@@ -4659,7 +4659,7 @@ class ScriptEvaluator {
       checkLength(2);
       if (getToken(1).tok == Token.function) {
         viewer.addFunction((ScriptFunction) theToken.value);
-        return;
+        return isForCheck;
       }
       isForCheck = (theTok == Token.forcmd);
       isOK = (theTok == Token.ifcmd);
@@ -4727,6 +4727,7 @@ class ScriptEvaluator {
     }
     if (!isOK && !isSyntaxCheck)
       pc = Math.abs(pt) - 1;
+    return isForCheck;
   }
 
   private boolean ifCmd() throws ScriptException {
@@ -8426,7 +8427,7 @@ class ScriptEvaluator {
         if (isSyntaxCheck)
           return;
         if (bs == null)
-          bs = viewer.getModelAtomBitSet(-1, false);
+          bs = viewer.getAtomBitSet(null);
         viewer.calculateStructures(bs);
         viewer.addStateScript(thisCommand, false, true);
         return;

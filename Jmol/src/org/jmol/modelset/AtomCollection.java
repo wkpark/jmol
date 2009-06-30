@@ -247,6 +247,11 @@ abstract public class AtomCollection {
     return atoms[i].group.getQuaternion(qtype);
   } 
 
+  public Object getHelixData(BitSet bs, int tokType) {
+    int iatom = BitSetUtil.firstSetBit(bs);
+    return (iatom < 0 ? "null" : atoms[iatom].group.getHelixData(tokType, viewer.getQuaternionFrame()));
+  }
+  
   protected int getAtomCountInModel(int modelIndex) {
     int n = 0;
     for (int i = atomCount; --i >= 0;)

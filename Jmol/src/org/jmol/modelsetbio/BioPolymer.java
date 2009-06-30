@@ -33,6 +33,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.Token;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -566,12 +567,7 @@ public abstract class BioPolymer extends Polymer {
       Monomer monomer = p.monomers[m];
       if (bsAtoms == null || bsAtoms.get(monomer.getLeadAtomIndex())) {
         Atom a = monomer.getLeadAtom();
-        char cid = monomer.getChainID();
-        String id = "_" + a.getModelIndex() + "_" + monomer.getResno()
-            + (cid == '\0' ? "" : "" + cid);
-        cid = monomer.getLeadAtom().getAlternateLocationID();
-        if (cid != '\0')
-          id += cid;
+        String id = monomer.getUniqueID();
         if (isRamachandran) {
           x = monomer.getPhi();
           y = monomer.getPsi();
@@ -768,6 +764,10 @@ public abstract class BioPolymer extends Polymer {
                   pdbATOM.append("draw " + prefix + "nh" + id + " width 0.1 "
                       + Escape.escape(ptH) + "\n");
               }
+            }
+            if (derivType == 1 && isAmino) {
+              pdbATOM.append(monomer.getHelixData(Token.draw, qtype) + " color " + qColor[1]).append('\n');
+              continue;
             }
             pdbATOM.append(
                 "draw " + prefix + "a" + id + " VECTOR "

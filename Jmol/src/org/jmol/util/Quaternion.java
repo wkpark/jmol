@@ -417,6 +417,11 @@ public class Quaternion {
     return (float) (Math.acos(qTemp.q0) * 2 * 180 / Math.PI);
   }
 
+  public float getThetaRadians() {
+    fixQ(qTemp);
+    return (float) (Math.acos(qTemp.q0) * 2);
+  }
+
   public void getThetaDirected(Point4f axisAngle) {
     //fills in .w;
     float theta = getTheta();

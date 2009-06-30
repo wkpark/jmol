@@ -554,7 +554,7 @@ public class Token {
 
   // xxx(a,b,c,d,e,...)
   
-  final static int array         = 1 | 0 << 9 | mathfunc;
+  public final static int array         = 1 | 0 << 9 | mathfunc;
   public final static int format = 2 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
   public final static int label  = 3 | 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | defaultON | setparam;
   final static int function      = 4 | 0 << 9 | mathfunc | flowCommand | noeval;
@@ -586,10 +586,11 @@ public class Token {
 
   // xxx(a,b)
 
-  public final static int cross        = 1 | 2 << 9 | mathfunc;
-  final static int load         = 2 | 2 << 9 | mathfunc | command;
-  final static int random       = 3 | 2 << 9 | mathfunc;
-  final static int script       = 4 | 2 << 9 | mathfunc | command;
+  public final static int cross = 1 | 2 << 9 | mathfunc;
+  final static int helix        = 2 | 2 << 9 | mathfunc;
+  final static int load         = 3 | 2 << 9 | mathfunc | command;
+  final static int random       = 4 | 2 << 9 | mathfunc;
+  final static int script       = 5 | 2 << 9 | mathfunc | command;
 
   // ___.xxx(a,b)
 
@@ -610,10 +611,10 @@ public class Token {
 
   // xxx(a,b,c,d)
   
-  final static int angle        = 1 | 4 << 9 | mathfunc;
+  public final static int angle        = 1 | 4 << 9 | mathfunc;
   public final static int data  = 2 | 4 << 9 | mathfunc | command;
   final static int plane        = 3 | 4 << 9 | mathfunc;
-  final static int point        = 4 | 4 << 9 | mathfunc;
+  public final static int point        = 4 | 4 << 9 | mathfunc;
   final static int quaternion   = 5 | 4 << 9 | mathfunc | command;
   final static int axisangle    = 6 | 4 << 9 | mathfunc;
 
@@ -641,7 +642,7 @@ public class Token {
   // misc
 
   final static int absolute     = misc |  1;
-  final static int axis         = misc |  3;
+  public final static int axis         = misc |  3;
   final static int babel        = misc |  4;
   final static int back         = misc |  5;
   final public static int backlit      = misc |  6;
@@ -803,6 +804,7 @@ public class Token {
     "goto",              new Token(gotocmd),
     "halo",              new Token(halo),
     "halos",             null,
+    "helix",             new Token(helix),
     "hbond",             new Token(hbond),
     "hbonds",            null,
     "help",              new Token(help),

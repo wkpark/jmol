@@ -259,7 +259,7 @@ msgid "Open &URL"
 msgstr "ADRES Aç"
 
 #: org/openscience/jmol/app/GuiMap.java:51
-msgid "Output &Console..."
+msgid "Output Conso&le..."
 msgstr "Betik..."
 
 #: org/openscience/jmol/app/GuiMap.java:52

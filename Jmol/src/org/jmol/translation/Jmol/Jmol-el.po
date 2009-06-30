@@ -251,7 +251,7 @@ msgid "Open &URL"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:51
-msgid "Output &Console..."
+msgid "Output Conso&le..."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:52

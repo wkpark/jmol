@@ -2118,62 +2118,39 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void zap(boolean notify, boolean resetUndo) {
-System.out.println("zap 1");
     stopAnimationThreads();
-    System.out.println("zap 2");
     if (modelSet != null) {
-      System.out.println("zapping " + modelSet);
       clearModelDependentObjects();
-      System.out.println("zap 11");
       fileManager.clear();
-      System.out.println("zap 12");
       repaintManager.clear();
       animationManager.clear();
-      System.out.println("zap 13");
       transformManager.clear();
-      System.out.println("zap 14");
       pickingManager.clear();
-      System.out.println("zap 15");
       selectionManager.clear();
-      System.out.println("zap 16");
       clearAllMeasurements();
-      System.out.println("zap 17");
       if (minimizer != null)
         minimizer.setProperty("clear", null);
-      System.out.println("zap 18");
       modelSet = modelManager.clear();
-      System.out.println("zap 19");
       if (haveDisplay) {
         mouseManager.clear();
-        System.out.println("zap 20");
       }
       stateManager.clear();
-      System.out.println("zap 21");
       global.clear();
-      System.out.println("zap 22");
       tempManager.clear();
-      System.out.println("zap 23");
       colorManager.clear();
-      System.out.println("zap 24");
       definedAtomSets.clear();
-      System.out.println("zap 25");
       // setRefreshing(true);
       // refresh(0, "Viewer:clear()");
       dataManager.clear();
       System.gc();
     }
-    System.out.println("zap 3");
     modelSet = modelManager.zap();
-    System.out.println("zap 4");
     initializeModel();
-    System.out.println("zap 5");
     if (notify)
       setFileLoadStatus(FILE_STATUS_ZAPPED, null, (resetUndo ? "resetUndo"
           : null), null, null);
-    System.out.println("zap 6");
     if (Logger.debugging)
       Logger.checkMemory();
-    System.out.println("zap 7");
   }
 
   private void zap(String msg) {

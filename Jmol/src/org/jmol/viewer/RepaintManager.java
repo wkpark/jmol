@@ -50,13 +50,9 @@ class RepaintManager {
 
   void pushHoldRepaint() {
     ++holdRepaint;
-    // System.out.println("Repaintmanager pushHold  " + holdRepaint + " " +
-    // repaintPending + " " + Thread.currentThread());
   }
 
   void popHoldRepaint() {
-    // System.out.println("Repaintmanager popHold  " + holdRepaint + " " +
-    // repaintPending + " " + Thread.currentThread());
     --holdRepaint;
     if (holdRepaint <= 0) {
       holdRepaint = 0;
@@ -66,23 +62,16 @@ class RepaintManager {
   }
 
   boolean refresh() {
-    // System.out.println("Repaintmanager refresh  " + holdRepaint + " " +
-    // repaintPending + " " + Thread.currentThread());System.out.flush();
     if (repaintPending)
       return false;
     repaintPending = true;
     if (holdRepaint == 0) {
-      // System.out.println("Repaintmanager refresh  " + holdRepaint + " " +
-      // repaintPending + " " + Thread.currentThread());System.out.flush();
       viewer.repaint();
     }
     return true;
   }
 
   synchronized void requestRepaintAndWait() {
-    // System.out.println("Repaintmanager requestRepaintAndWait  " + holdRepaint
-    // + " " + repaintPending + " " +
-    // Thread.currentThread());System.out.flush();
     viewer.repaint();
     try {
       wait();
@@ -91,27 +80,13 @@ class RepaintManager {
   }
 
   synchronized void repaintDone() {
-    // System.out.println("Repaintmanager repaintDone  " + holdRepaint + " " +
-    // repaintPending + " " + Thread.currentThread());
     repaintPending = false;
     notify(); // to cancel any wait in requestRepaintAndWait()
-  }
-
-  /*
-   * final Rectangle rectOversample = new Rectangle(); boolean tOversample;
-   * 
-   * void setOversample(boolean tOversample) { //not implemented --
-   * this.tOversample = tOversample; }
-   */
-
-  void releaseRenderer(int shapeID) {
-    clear(shapeID);
   }
 
   void render(Graphics3D g3d, ModelSet modelSet) {// , Rectangle rectClip
     if (!viewer.getRefreshing())
       return;
-    // System.out.println("repaint manager render " + modelSet);
     render1(g3d, modelSet); // , rectClip
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null && g3d.setColix(viewer.getColixRubberband()))
@@ -147,16 +122,13 @@ class RepaintManager {
       Logger
           .error("rendering error -- perhaps use \"set refreshing FALSE/TRUE\" ? ");
     }
-
-    // System.out.println((new Date()).getTime() + " render 2");
-
     if (logTime)
       Logger.checkTimer("render time");
   }
 
   private ShapeRenderer[] renderers;
   
-  private void clear(int iShape) {
+  void clear(int iShape) {
     if (renderers ==  null)
       return;
     if (iShape >= 0)

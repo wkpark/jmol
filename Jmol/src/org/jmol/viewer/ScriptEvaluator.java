@@ -3037,11 +3037,8 @@ class ScriptEvaluator {
         }
         if (val instanceof Integer || tokValue == Token.integer) {
           if (isModel) {
-            tokWhat = -Token.model;
-            if (viewer.haveFileSet() && comparisonValue >= 1000
-                && comparisonValue < 1000000)
-              comparisonValue = (comparisonValue / 1000) * 1000000
-                  + comparisonValue % 1000;
+            if (comparisonValue >= 1000000)
+              tokWhat = -Token.model;
           } else if (isIntOrFloat) {
             isFloatProperty = false;
           } else if (isFloatProperty) {

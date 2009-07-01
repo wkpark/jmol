@@ -70,9 +70,8 @@ public abstract class MouseManager implements KeyListener {
 
   abstract boolean handleOldJvm10Event(Event e);
 
-  MouseManager(Viewer viewer) {
+  MouseManager(Component display, Viewer viewer) {
     this.viewer = viewer;
-    Component display = viewer.getAwtComponent();
     if (display != null)
       display.addKeyListener(this);
   }

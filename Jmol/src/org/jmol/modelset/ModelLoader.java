@@ -1154,7 +1154,7 @@ public final class ModelLoader extends ModelSet {
       for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
         if ((shapes[i] = mergeModelSet.shapes[i]) != null)
           shapes[i].setModelSet(this);
-      viewer.getFrameRenderer().clear(-1);
+      viewer.clearShapes();
       merging = false;
       return;
     }

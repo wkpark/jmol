@@ -55,12 +55,16 @@ abstract class Platform3D {
   ClearingThread clearingThread;
 
   static Platform3D createInstance(Component awtComponent) {
+    if (awtComponent == null)
+      return null;
     boolean jvm12orGreater =
       System.getProperty("java.version").compareTo("1.2") >= 0;
     boolean useSwing = jvm12orGreater && !forcePlatformAWT;
     Platform3D platform =(useSwing
                           ? allocateSwing3D() : new Awt3D(awtComponent));
     platform.initialize(desireClearingThread && useSwing);
+    platform.graphicsOffscreen = platform.allocateOffscreenImage(1, 1).getGraphics();
+
     return platform;
   }
 
@@ -171,6 +175,7 @@ abstract class Platform3D {
   void notifyEndOfRendering() {
   }
 
+  Graphics graphicsOffscreen;
   abstract Image allocateOffscreenImage(int width, int height);
   abstract Graphics getGraphics(Image imageOffscreen);
   

@@ -502,6 +502,7 @@ final public class Graphics3D implements JmolRendererInterface {
   public Image backgroundImage;
   
   public void setBackgroundTransparent(boolean TF) {
+    if (platform != null)
     platform.setBackgroundTransparent(TF);
   }
 

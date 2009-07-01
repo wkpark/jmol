@@ -23,13 +23,10 @@
  */
 package org.jmol.g3d;
 
-import java.awt.Graphics;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.font.TextAttribute;
 import java.util.Hashtable;
-
-import org.jmol.util.Logger;
 /**
  *<p>
  * Provides font support using a byte fid
@@ -70,21 +67,15 @@ final public class Font3D {
 
   ////////////////////////////////////////////////////////////////
   
-  static Graphics graphicsOffscreen;
-  static synchronized void initialize(Platform3D platform) {
-    if (graphicsOffscreen == null)
-      graphicsOffscreen = platform.allocateOffscreenImage(1, 1).getGraphics();
-  }
-
   private final static int FONT_ALLOCATION_UNIT = 8;
   private static int fontkeyCount = 1;
   private static int[] fontkeys = new int[FONT_ALLOCATION_UNIT];
   private static Font3D[] font3ds = new Font3D[FONT_ALLOCATION_UNIT];
 
-  static Font3D getFont3D(int fontface, int fontstyle, float fontsize,
+  static synchronized Font3D getFont3D(int fontface, int fontstyle, float fontsize,
                           float fontsizeNominal, Platform3D platform) {
-    if (graphicsOffscreen == null)
-      initialize(platform);
+    if (platform == null)
+      return null;
     if (fontsize > 0xFF)
       fontsize = 0xFF;
     int fontsizeX16 = ((int)fontsize) << 4;
@@ -94,15 +85,19 @@ final public class Font3D {
     for (int i = fontkeyCount; --i > 0; )
       if (fontkey == fontkeys[i] && font3ds[i].fontSizeNominal == fontsizeNominal)
         return font3ds[i];
-    return allocFont3D(fontkey, fontface, fontstyle, fontsize, fontsizeNominal);
+    /*
+    return allocFont3D(fontkey, fontface, fontstyle, fontsize, 
+        fontsizeNominal, platform);
   }
 
   private static synchronized Font3D allocFont3D(int fontkey, int fontface,
-                                                int fontstyle, float fontsize, float fontsizeNominal) {
+                                                int fontstyle, float fontsize, float fontsizeNominal,
+                                                Platform3D platform) {
     // recheck in case another process just allocated one
     for (int i = fontkeyCount; --i > 0; )
       if (fontkey == fontkeys[i] && font3ds[i].fontSizeNominal == fontsizeNominal)
         return font3ds[i];
+        */
     int fontIndexNext = fontkeyCount++;
     if (fontIndexNext == fontkeys.length) {
       int[] t0 = new int[fontIndexNext + FONT_ALLOCATION_UNIT];
@@ -114,9 +109,7 @@ final public class Font3D {
       font3ds = t1;
     }
     Font font = new Font(getFontMap(fontFaces[fontface], fontstyle, fontsize));
-    if (graphicsOffscreen == null)
-      Logger.error("Font3D.graphicsOffscreen not initialized");
-    FontMetrics fontMetrics = graphicsOffscreen.getFontMetrics(font);
+    FontMetrics fontMetrics = platform.graphicsOffscreen.getFontMetrics(font);
     Font3D font3d = new Font3D((byte)fontIndexNext,
                                fontface, fontstyle, fontsize, fontsizeNominal,
                                font, fontMetrics);

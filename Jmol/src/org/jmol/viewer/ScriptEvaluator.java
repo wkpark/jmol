@@ -8270,10 +8270,10 @@ class ScriptEvaluator {
     float startDelay = 1, endDelay = 1;
     if (statementLength > 5)
       error(ERROR_badArgumentCount);
-    int animationMode = RepaintManager.ANIMATION_ONCE;
+    int animationMode = AnimationManager.ANIMATION_ONCE;
     switch (getToken(2).tok) {
     case Token.loop:
-      animationMode = RepaintManager.ANIMATION_LOOP;
+      animationMode = AnimationManager.ANIMATION_LOOP;
       break;
     case Token.identifier:
       String cmd = parameterAsString(2);
@@ -8282,7 +8282,7 @@ class ScriptEvaluator {
         break;
       }
       if (cmd.equalsIgnoreCase("palindrome")) {
-        animationMode = RepaintManager.ANIMATION_PALINDROME;
+        animationMode = AnimationManager.ANIMATION_PALINDROME;
         break;
       }
       error(ERROR_invalidArgument);

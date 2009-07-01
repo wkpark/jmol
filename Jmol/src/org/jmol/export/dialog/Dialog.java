@@ -46,6 +46,7 @@ import java.io.File;
 
 import org.jmol.api.JmolDialogInterface;
 import org.jmol.api.JmolViewer;
+import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
 import org.jmol.util.Escape;
 import org.jmol.viewer.FileManager;

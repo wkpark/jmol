@@ -255,7 +255,7 @@ class ScriptMathProcessor {
 
     // are we skipping due to a ( ? : ) construct?
     int tok0 = (oPt >= 0 ? oStack[oPt].tok : 0);
-    skipping = (ifPt >= 0 && ifStack[ifPt] == 'F');
+    skipping = (ifPt >= 0 && (ifStack[ifPt] == 'F' || ifStack[ifPt] == 'X'));
     if (skipping) {
       switch (op.tok) {
       case Token.leftparen:
@@ -263,8 +263,8 @@ class ScriptMathProcessor {
         return true;
       case Token.colon:
         // dumpStacks("skipping -- :");
-        if (tok0 != Token.colon)
-          return true; // ignore if not a clean opstack
+        if (tok0 != Token.colon || ifStack[ifPt] == 'X')
+          return true; // ignore if not a clean opstack or T already processed
         // no object here because we were skipping
         // set to flag end of this parens
         ifStack[ifPt] = 'T';
@@ -453,7 +453,7 @@ class ScriptMathProcessor {
         return false;
       if (ifPt < 0)
         return false;
-      ifStack[ifPt] = 'F';
+      ifStack[ifPt] = 'X';
       wasX = false;
       skipping = true;
       // dumpStacks("(..True...? ... :<--here ...skip...) ");

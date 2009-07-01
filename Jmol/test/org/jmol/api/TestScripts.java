@@ -268,7 +268,7 @@ class TestScriptsImpl extends TestCase {
   public void runSimpleTest() {
     JUnitLogger.setInformation(file.getPath());
 
-    JmolViewer viewer = JmolViewer.allocateViewer(null, new SmarterJmolAdapter(),
+    JmolViewer viewer = JmolViewer.allocateViewer(new JFrame(), new SmarterJmolAdapter(),
         null, null, null, checkOnly ? "-n -c " : "-n -l ", null);
         //"-n -c " // set no display; checkOnly; no file opening
         //"-n -l " // set no display; list commmands as they execute

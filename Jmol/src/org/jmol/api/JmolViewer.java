@@ -234,7 +234,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String getMeasurementStringValue(int i);
   abstract public int[] getMeasurementCountPlusIndices(int i);
 
-  abstract public Component getAwtComponent();
+  abstract public Component getDisplay();
 
   abstract public BitSet getElementsPresentBitSet(int modelIndex);
 

@@ -112,7 +112,7 @@ public abstract class MouseManager implements KeyListener {
   void setModeMouse(int modeMouse) {
     if (modeMouse == JmolConstants.MOUSE_NONE) {
       startHoverWatcher(false);
-      Component display = viewer.getAwtComponent();
+      Component display = viewer.getDisplay();
       if (display == null)
         return;
       removeMouseListeners11();
@@ -304,7 +304,7 @@ public abstract class MouseManager implements KeyListener {
   final static float wheelClickFractionDown = 1 / wheelClickFractionUp;
 
   void mouseWheel(long time, int rotation, int modifiers) {
-    if (!viewer.getAwtComponent().hasFocus())
+    if (!viewer.getDisplay().hasFocus())
       return;
     // sun bug? noted by Charles Xie that wheeling on a Java page
     // effected inappropriate wheeling on this Java component
@@ -427,8 +427,8 @@ public abstract class MouseManager implements KeyListener {
         && (time - previousClickTime) < MAX_DOUBLE_CLICK_MILLIS) {
       clickCount = previousClickCount + 1;
     }
-    if (!viewer.getAwtComponent().hasFocus())
-      viewer.getAwtComponent().requestFocusInWindow();
+    if (!viewer.getDisplay().hasFocus())
+      viewer.getDisplay().requestFocusInWindow();
     hoverOff();
     xCurrent = previousClickX = x;
     yCurrent = previousClickY = y;

@@ -68,8 +68,9 @@ abstract public class ModelSet extends ModelCollection {
   ////////////////////////////////////////////////////////////////
 
   protected void releaseModelSet() {
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
-      shapes[i] = null;
+    if (shapes != null)
+      for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
+        shapes[i] = null;
     models = null;
     closest[0] = null;
     super.releaseModelSet();
@@ -104,7 +105,8 @@ abstract public class ModelSet extends ModelCollection {
     return modelSetTypeName;
   }
 
-  protected final Shape[] shapes = new Shape[JmolConstants.SHAPE_MAX];
+  protected Shape[] shapes;
+  
   
   private Shape allocateShape(int shapeID) {
     if (shapeID == JmolConstants.SHAPE_HSTICKS || shapeID == JmolConstants.SHAPE_SSSTICKS)
@@ -258,15 +260,18 @@ abstract public class ModelSet extends ModelCollection {
     }
     findNearestAtomIndex(x, y, closest);
 
-    for (int i = 0; i < shapes.length && closest[0] == null; ++i)
-      if (shapes[i] != null)
-        shapes[i].findNearestAtomIndex(x, y, closest);
+    if (shapes != null)
+      for (int i = 0; i < shapes.length && closest[0] == null; ++i)
+        if (shapes[i] != null)
+          shapes[i].findNearestAtomIndex(x, y, closest);
     int closestIndex = (closest[0] == null ? -1 : closest[0].atomIndex);
     closest[0] = null;
     return closestIndex;
   }
 
   public void setShapeSize(int shapeID, int size, float fsize, BitSet bsSelected) {
+    if (shapes == null)
+      return;
     viewer.setShapeErrorState(shapeID, "set size");
     if (size != 0)
       loadShape(shapeID);
@@ -280,6 +285,8 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public Shape loadShape(int shapeID) {
+    if (shapes == null)
+      return null;
     if (shapes[shapeID] == null)
       shapes[shapeID] = allocateShape(shapeID);
     return shapes[shapeID];
@@ -287,7 +294,7 @@ abstract public class ModelSet extends ModelCollection {
 
   public void setShapeProperty(int shapeID, String propertyName, Object value,
                                BitSet bsSelected) {
-    if (shapes[shapeID] == null)
+    if (shapes == null || shapes[shapeID] == null)
       return;
     viewer.setShapeErrorState(shapeID, "set " + propertyName);
     shapes[shapeID].setProperty(
@@ -296,11 +303,12 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public void releaseShape(int shapeID) {
-    shapes[shapeID] = null;  
+    if (shapes != null) 
+      shapes[shapeID] = null;  
   }
   
   public Object getShapeProperty(int shapeID, String propertyName, int index) {
-    if (shapes[shapeID] == null)
+    if (shapes == null || shapes[shapeID] == null)
       return null;
     viewer.setShapeErrorState(shapeID, "get " + propertyName);
     Object result = shapes[shapeID].getProperty(propertyName, index);
@@ -309,13 +317,17 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public int getShapeIdFromObjectName(String objectName) {
-    for (int i = JmolConstants.SHAPE_MIN_SPECIAL; i < JmolConstants.SHAPE_MAX_MESH_COLLECTION; ++i)
-      if (shapes[i] != null && shapes[i].getIndexFromName(objectName) >= 0)
-        return i;
+    if (shapes != null)
+      for (int i = JmolConstants.SHAPE_MIN_SPECIAL; i < JmolConstants.SHAPE_MAX_MESH_COLLECTION; ++i)
+        if (shapes[i] != null && shapes[i].getIndexFromName(objectName) >= 0)
+          return i;
     return -1;
   }
 
   public void setModelVisibility() {
+    if (shapes == null)
+      return;
+
     //named objects must be set individually
     //in the future, we might include here a BITSET of models rather than just a modelIndex
 
@@ -424,18 +436,19 @@ abstract public class ModelSet extends ModelCollection {
   public Hashtable getShapeInfo() {
     Hashtable info = new Hashtable();
     StringBuffer commands = new StringBuffer();
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = shapes[i];
-      if (shape != null) {
-        String shapeType = JmolConstants.shapeClassBases[i];
-        Vector shapeDetail = shape.getShapeDetail();
-        if (shapeDetail != null) {
-          Hashtable shapeinfo = new Hashtable();
-          shapeinfo.put("obj", shapeDetail);
-          info.put(shapeType, shapeinfo);
+    if (shapes != null)
+      for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+        Shape shape = shapes[i];
+        if (shape != null) {
+          String shapeType = JmolConstants.shapeClassBases[i];
+          Vector shapeDetail = shape.getShapeDetail();
+          if (shapeDetail != null) {
+            Hashtable shapeinfo = new Hashtable();
+            shapeinfo.put("obj", shapeDetail);
+            info.put(shapeType, shapeinfo);
+          }
         }
       }
-    }
     if (commands.length() > 0)
       info.put("shapeCommands", commands.toString());
     return info;
@@ -443,17 +456,20 @@ abstract public class ModelSet extends ModelCollection {
 
   public void calculateStructures(BitSet bsAtoms) {
     BitSet bsAllAtoms = new BitSet();
-    BitSet bsDefined = BitSetUtil.invertInPlace(modelsOf(bsAtoms, bsAllAtoms), modelCount);
+    BitSet bsDefined = BitSetUtil.invertInPlace(modelsOf(bsAtoms, bsAllAtoms),
+        modelCount);
     for (int i = 0; i < modelCount; i++)
       if (!bsDefined.get(i))
         addBioPolymerToModel(null, models[i]);
     calculatePolymers(bsDefined);
     calculateStructuresAllExcept(bsDefined, false);
-    for (int i = 0; i < shapes.length; ++i)
-      if (shapes[i] != null && shapes[i].isBioShape) {
-        shapes[i].setSize(0, bsAllAtoms);
-        shapes[i].setProperty("color", new Byte(JmolConstants.PALETTE_CPK), bsAllAtoms);
-      }
+    if (shapes != null)
+      for (int i = 0; i < shapes.length; ++i)
+        if (shapes[i] != null && shapes[i].isBioShape) {
+          shapes[i].setSize(0, bsAllAtoms);
+          shapes[i].setProperty("color", new Byte(JmolConstants.PALETTE_CPK),
+              bsAllAtoms);
+        }
     setStructureIds();
   }
 
@@ -694,16 +710,17 @@ abstract public class ModelSet extends ModelCollection {
 
     setModelVisibility();
 
-    //unnecessary. Removed in 11.5.35 -- oops!
-    
+    // unnecessary. Removed in 11.5.35 -- oops!
+
     commands.append(getProteinStructureState(null, true, false));
 
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = shapes[i];
-      if (shape != null && (isAll || JmolConstants.isShapeSecondary(i))
-          && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
-        commands.append(cmd);
-    }
+    if (shapes != null)
+      for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+        Shape shape = shapes[i];
+        if (shape != null && (isAll || JmolConstants.isShapeSecondary(i))
+            && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
+          commands.append(cmd);
+      }
 
     if (isAll) {
       for (int i = 0; i < modelCount; i++) {
@@ -712,8 +729,8 @@ abstract public class ModelSet extends ModelCollection {
           commands.append("  frame " + getModelNumberDotted(i)
               + "; frame title " + Escape.escape(t) + ";\n");
         if (models[i].orientation != null)
-          commands.append("  frame " + getModelNumberDotted(i)
-              + "; " + models[i].orientation.getMoveToText()+ "\n");
+          commands.append("  frame " + getModelNumberDotted(i) + "; "
+              + models[i].orientation.getMoveToText() + "\n");
       }
 
       commands.append("  set fontScaling " + viewer.getFontScaling() + ";\n");
@@ -755,13 +772,13 @@ abstract public class ModelSet extends ModelCollection {
     BitSet bsModels = getModelBitSet(bsAtoms, false);
     includeAllRelatedFrames(bsModels);
     int nAtomsDeleted = 0;
-    
+
     int nModelsDeleted = BitSetUtil.cardinalityOf(bsModels);
     if (nModelsDeleted == 0)
       return null;
 
     // clear references to this frame if it is a dataFrame
-    
+
     for (int i = 0; i < modelCount; i++)
       if (bsModels.get(i))
         clearDataFrameReference(i);
@@ -772,13 +789,13 @@ abstract public class ModelSet extends ModelCollection {
       viewer.zap(true, false);
       return bsDeleted;
     }
-    
+
     // zero out reproducible arrays
-    
+
     bspf = null;
 
-    // create a new models array, 
-    //   and pre-calculate Model.bsAtoms and Model.atomCount
+    // create a new models array,
+    // and pre-calculate Model.bsAtoms and Model.atomCount
     Model[] newModels = new Model[modelCount - nModelsDeleted];
     Model[] oldModels = models;
     bsDeleted = new BitSet();
@@ -812,24 +829,25 @@ abstract public class ModelSet extends ModelCollection {
       // delete from symmetry set
       BitSetUtil.deleteBits(bsSymmetry, bs);
 
-      // delete from stateScripts, model arrays and bitsets, 
-      //    atom arrays, and atom bitsets
+      // delete from stateScripts, model arrays and bitsets,
+      // atom arrays, and atom bitsets
       deleteModel(mpt, firstAtomIndex, nAtoms, bs, bsBonds);
-      
+
       // adjust all models after this one
-      for (int j = oldModelCount; --j > i; )
-          oldModels[j].fixIndices(mpt, nAtoms, bs);
+      for (int j = oldModelCount; --j > i;)
+        oldModels[j].fixIndices(mpt, nAtoms, bs);
 
       // adjust all shapes
-      Object[] value = new Object[] {newModels, atoms, 
-          new int[] {mpt, firstAtomIndex, nAtoms}};      
-      for (int j = 0; j < JmolConstants.SHAPE_MAX; j++)
-        if (shapes[j] != null)
-          setShapeProperty(j, "deleteModelAtoms", value, bs);
+      Object[] value = new Object[] { newModels, atoms,
+          new int[] { mpt, firstAtomIndex, nAtoms } };
+      if (shapes != null)
+        for (int j = 0; j < JmolConstants.SHAPE_MAX; j++)
+          if (shapes[j] != null)
+            setShapeProperty(j, "deleteModelAtoms", value, bs);
       modelCount--;
     }
-    
-    //set final values
+
+    // set final values
     deleteModel(-1, 0, 0, null, null);
     return bsDeleted;
   }
@@ -843,6 +861,8 @@ abstract public class ModelSet extends ModelCollection {
   }
   
   public void setAtomLabel(String strLabel, int i) {
+    if (shapes == null)
+      return;
     loadShape(JmolConstants.SHAPE_LABELS);
     shapes[JmolConstants.SHAPE_LABELS].setProperty("label:"+strLabel, new Integer(i), null);
   }

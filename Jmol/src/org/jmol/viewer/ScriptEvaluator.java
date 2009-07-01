@@ -7173,6 +7173,10 @@ class ScriptEvaluator {
         i = iToken + 1;
       }
       option = optParameterAsString(i);
+      if (option.equalsIgnoreCase("check")) {
+        isCheck = true;
+        option = optParameterAsString(++i);
+      }
       if (option.equalsIgnoreCase("noload")) {
         loadCheck = false;
         option = optParameterAsString(++i);

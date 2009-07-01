@@ -46,7 +46,7 @@ public class JmolPopupAwt extends JmolPopup {
     super(viewer, asPopup);
     if (asPopup) {
       mainMenu = awtPopup = new PopupMenu("Jmol");
-      jmolComponent.add(awtPopup);
+      display.add(awtPopup);
     } else {
       mainMenu = new Menu("Jmol");
     }
@@ -54,7 +54,7 @@ public class JmolPopupAwt extends JmolPopup {
   }
 
   void showPopupMenu(int x, int y) {
-    awtPopup.show(jmolComponent, x, y);
+    awtPopup.show(display, x, y);
   }
 
   public void installMainMenu(Object objMenuBar) {
@@ -92,11 +92,11 @@ public class JmolPopupAwt extends JmolPopup {
   
   void createFrankPopup() {
     frankPopup = new PopupMenu("Frank");
-    jmolComponent.add((PopupMenu)frankPopup);
+    display.add((PopupMenu)frankPopup);
   }
   
   void showFrankMenu(int x, int y) {
-    ((PopupMenu)frankPopup).show(jmolComponent, x, y);
+    ((PopupMenu)frankPopup).show(display, x, y);
   }
 
   void resetFrankMenu() {

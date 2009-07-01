@@ -406,7 +406,7 @@ public class FileManager {
     else
       image = Toolkit.getDefaultToolkit().createImage(fullPathName);
     try {
-      MediaTracker mediaTracker = new MediaTracker(viewer.getAwtComponent());
+      MediaTracker mediaTracker = new MediaTracker(viewer.getDisplay());
       mediaTracker.addImage(image, 0);
       mediaTracker.waitForID(0);
       /* SUN but here for malformed URL - can't trap

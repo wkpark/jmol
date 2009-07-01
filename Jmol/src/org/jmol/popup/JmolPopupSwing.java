@@ -56,10 +56,10 @@ public class JmolPopupSwing extends JmolPopup {
   }
 
   void showPopupMenu(int x, int y) {
-    if (jmolComponent == null)
+    if (display == null)
       return;
     try {
-      swingPopup.show(jmolComponent, x, y);
+      swingPopup.show(display, x, y);
     } catch (Exception e) {
       System.out.println("popup error: " + e.getMessage());
       // browser in Java 1.6.0_10 is blocking setting WindowAlwaysOnTop 
@@ -109,10 +109,10 @@ public class JmolPopupSwing extends JmolPopup {
   }
 
   void showFrankMenu(int x, int y) {
-    if (jmolComponent == null)
+    if (display == null)
       return;
     try {
-      ((JPopupMenu) frankPopup).show(jmolComponent, x, y);
+      ((JPopupMenu) frankPopup).show(display, x, y);
     } catch (Exception e) {
       // probably a permissions problem in Java 7
     }

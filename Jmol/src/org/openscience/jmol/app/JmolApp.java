@@ -64,29 +64,9 @@ public class JmolApp {
   public boolean checkScriptAndOpenFiles;
   public boolean exitUponCompletion;
 
-
-  {
-    if (System.getProperty("javawebstart.version") != null) {
-
-      // If the property is found, Jmol is running with Java Web Start. To fix
-      // bug 4621090, the security manager is set to null.
-      System.setSecurityManager(null);
-    }
-    if (System.getProperty("user.home") == null) {
-      System.err.println(GT
-          ._("Error starting Jmol: the property 'user.home' is not defined."));
-      System.exit(1);
-    }
-    File ujmoldir = new File(new File(System.getProperty("user.home")), ".jmol");
-    ujmoldir.mkdirs();
-    userPropsFile = new File(ujmoldir, "properties");
-    historyFile = new HistoryFile(new File(ujmoldir, "history"),
-        "Jmol's persistent values");
-  }
-
   public boolean haveConsole = true;
   public boolean haveDisplay = true;
-  public boolean isFrameless;
+  public boolean isDataOnly;
   public boolean isPrintOnly;
   public boolean isSilent;
   public boolean listCommands;
@@ -107,7 +87,31 @@ public class JmolApp {
   public JmolApp() {
     // defer parsing until we can set a few options ourselves
   }
+  
+  /**
+   * standard Jmol application entry point
+   * @param args
+   */
   public JmolApp(String[] args) {
+    
+    if (System.getProperty("javawebstart.version") != null) {
+
+      // If the property is found, Jmol is running with Java Web Start. To fix
+      // bug 4621090, the security manager is set to null.
+      System.setSecurityManager(null);
+    }
+    if (System.getProperty("user.home") == null) {
+      System.err.println(GT
+          ._("Error starting Jmol: the property 'user.home' is not defined."));
+      System.exit(1);
+    }
+    File ujmoldir = new File(new File(System.getProperty("user.home")), ".jmol");
+    ujmoldir.mkdirs();
+    userPropsFile = new File(ujmoldir, "properties");
+    historyFile = new HistoryFile(new File(ujmoldir, "history"),
+        "Jmol's persistent values");
+
+    
     parseCommandLine(args);
   }
 
@@ -257,7 +261,7 @@ public class JmolApp {
     
     // print command output only (implies silent)
 
-    commandOptions = (isFrameless ? "JmolFrameless " : "Jmol ");
+    commandOptions = (isDataOnly ? "JmolData " : "Jmol ");
     if (line.hasOption("p"))
       isPrintOnly = true;
     if (isPrintOnly) {

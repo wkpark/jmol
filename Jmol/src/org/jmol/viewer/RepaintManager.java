@@ -120,14 +120,11 @@ class RepaintManager {
 
   private boolean logTime;
 
-  private ShapeRenderer[] renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
-
   private void render1(Graphics3D g3d, ModelSet modelSet) { // , Rectangle rectClip
 
     if (modelSet == null || !viewer.mustRenderFlag())
       return;
-    // System.out.println("Frame: rendering viewer "+ viewer + " thread " +
-    // Thread.currentThread());
+
     logTime = viewer.getTestFlag1();
 
     viewer.finalizeTransformParameters();
@@ -135,18 +132,14 @@ class RepaintManager {
     if (logTime)
       Logger.startTimer();
 
-    // System.out.println(" render 1");
-
     try {
       g3d.renderBackground(null);
+      if (renderers ==  null)
+        renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
       for (int i = 0; i < JmolConstants.SHAPE_MAX && g3d.currentlyRendering(); ++i) {
         Shape shape = modelSet.getShape(i);
-
         if (shape == null)
           continue;
-
-        // System.out.println("FrameRenderer: " + i + " " +
-        // JmolConstants.getShapeClassName(i));
         getRenderer(i, g3d).render(g3d, modelSet, shape); // , rectClip
       }
 
@@ -161,7 +154,11 @@ class RepaintManager {
       Logger.checkTimer("render time");
   }
 
+  private ShapeRenderer[] renderers;
+  
   private void clear(int iShape) {
+    if (renderers ==  null)
+      return;
     if (iShape >= 0)
       renderers[iShape] = null;
     else

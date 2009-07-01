@@ -53,7 +53,7 @@ abstract public class JmolPopup {
   //}
 
   JmolViewer viewer;
-  Component jmolComponent;
+  Component display;
   MenuItemListener mil;
   CheckboxMenuItemListener cmil;
   boolean asPopup = true;
@@ -101,7 +101,7 @@ abstract public class JmolPopup {
   JmolPopup(JmolViewer viewer, boolean asPopup) {
     this.viewer = viewer;
     this.asPopup = asPopup;
-    jmolComponent = viewer.getAwtComponent();
+    display = viewer.getDisplay();
     mil = new MenuItemListener();
     cmil = new CheckboxMenuItemListener();
     //System.out.println("JmolPopup " + this + " constructor");

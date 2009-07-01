@@ -25,6 +25,7 @@
 
 package org.jmol.modelset;
 
+import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
@@ -72,6 +73,8 @@ public final class ModelLoader extends ModelSet {
   private int[][] group3Counts;
   
   public ModelLoader(Viewer viewer, String name) {
+    if (shapes == null && !viewer.isDataOnly())
+      shapes = new Shape[JmolConstants.SHAPE_MAX];    
     this.viewer = viewer;
     initializeInfo(name, 1, null, null);
     createModelSet(null, null);
@@ -83,8 +86,9 @@ public final class ModelLoader extends ModelSet {
   public ModelLoader(Viewer viewer, Object atomSetCollection, 
       ModelLoader mergeModelSet, String modelSetName) {
     
-    //System.out.println("ModelLoader " + this + " constructed");
-
+    if (shapes == null && !viewer.isDataOnly())
+      shapes = new Shape[JmolConstants.SHAPE_MAX];
+    
     JmolAdapter adapter = viewer.getModelAdapter();
     this.modelSetName = modelSetName;
     this.mergeModelSet = mergeModelSet;
@@ -1150,6 +1154,8 @@ public final class ModelLoader extends ModelSet {
   private void finalizeShapes() {
     if (someModelsHaveAromaticBonds && viewer.getSmartAromatic())
       assignAromaticBonds(false);
+    if (shapes == null)
+      return;
     if (merging) {
       for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
         if ((shapes[i] = mergeModelSet.shapes[i]) != null)

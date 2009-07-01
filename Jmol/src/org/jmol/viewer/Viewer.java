@@ -84,7 +84,7 @@ import java.io.UnsupportedEncodingException;
  * client data structures and render the molecule to the supplied
  * java.awt.Component
  * 
- * The JmolViewer runs on Java 1.1 virtual machines. The 3d graphics rendering
+ * The JmolViewer runs on Java 1.4 virtual machines. The 3d graphics rendering
  * package is a software implementation of a z-buffer. It does not use Java3D
  * and does not use Graphics2D from Java 1.2. Therefore, it is well suited to
  * building web browser applets that will run on a wide variety of system
@@ -97,6 +97,14 @@ import java.io.UnsupportedEncodingException;
  * e.g.
  * 
  * applet.getProperty("jmolApplet").getFullPathName()
+ * 
+ * 
+ * This viewer can also be used with JmolData.jar, which is a 
+ * frameless version of Jmol that can be used to batch-process
+ * scripts from the command line. No shapes, no labels, no export
+ * to JPG -- just raw data checking and output. 
+ * 
+ * 
  * 
  * ****************************************************************
  */
@@ -329,6 +337,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean isCmdLine_C_Option = true;
   private boolean useCommandThread = false;
   private boolean isSignedApplet = false;
+  private boolean isDataOnly;
 
   public void setAppletContext(String fullName, URL documentBase, URL codeBase,
                                String commandOptions) {
@@ -369,6 +378,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       isCmdLine_C_Option = (str.indexOf("-C") >= 0);
       listCommands = (str.indexOf("-l") >= 0);
       autoExit = (str.indexOf("-x") >= 0);
+      isDataOnly = (display == null);
       haveDisplay = (display != null && str.indexOf("-n") < 0);
       if (!haveDisplay)
         display = null;
@@ -406,6 +416,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParameterValue("language", GT.getLanguage());
   }
 
+  public boolean isDataOnly() {
+    return isDataOnly;
+  }
+  
   public static String getJmolVersion() {
     return JmolConstants.version + "  " + JmolConstants.date;
   }
@@ -468,7 +482,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return 0;
   }
 
-  public Component getAwtComponent() {
+  public Component getDisplay() {
     return display;
   }
 
@@ -3425,6 +3439,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String generateOutput(String type, String fileName, int width,
                                int height) {
+    if (isDataOnly)
+      return "";
     mustRender = true;
     saveState("_Export");
     int saveWidth = dimScreen.width;

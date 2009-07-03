@@ -268,6 +268,15 @@ public class AminoMonomer extends AlphaMonomer {
     Point3f b = next.getQuaternionFrameCenter(qType);
     Vector3f vab = new Vector3f();
     vab.sub(b, a);
+    
+    /* testing here to see if directing the normal makes any difference -- 
+     * oddly enough, it does not. When n = -n and theta = -theta
+     * vab.n is reversed, and that magnitude is multiplied by n
+     * in generating the A'-B' vector. 
+     * 
+     * a negative angle implies a left-handed axis (sheets)
+     * 
+     */
     Point4f aa = new Point4f();
     aa.x = vab.x;
     aa.y = vab.y;
@@ -275,8 +284,6 @@ public class AminoMonomer extends AlphaMonomer {
     boolean asdirected = false;
     Quaternion dq = q2.div(q1);
     float theta = (asdirected ? dq.getThetaDirected(aa).w : dq.getTheta());//.Directed(aa).w;
-    if (tokType == Token.angle)
-      return new Float(theta);
     Vector3f n = (asdirected ? dq.getNormalDirected(vab) : dq.getNormal());//Directed(vab);
     
     aa.x = vab.x;
@@ -321,10 +328,13 @@ public class AminoMonomer extends AlphaMonomer {
      // + ";set drawpicking;measure " + Escape.escape(a) + " $helixaxis" + id + "[1] " + " $helixaxis" + id + "[2] " + Escape.escape(b) + "//"
       ;
     }
-    //for now... array:
+    // must calculate directed angle:
     Point3f pt_b_prime = new Point3f(pt_a_prime);
     pt_b_prime.add(n);
     theta = Measure.computeTorsion(a, pt_a_prime, pt_b_prime, b, true);
+    if (tokType == Token.angle)
+      return new Float(theta);
+    //for now... array:
     float residuesPerTurn = 360f / theta;
     float pitch = Math.abs(n.length() * residuesPerTurn);
     return new String[] {

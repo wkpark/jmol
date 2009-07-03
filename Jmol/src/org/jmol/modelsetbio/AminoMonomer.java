@@ -26,6 +26,7 @@ package org.jmol.modelsetbio;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
@@ -33,6 +34,7 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
@@ -245,6 +247,7 @@ public class AminoMonomer extends AlphaMonomer {
     if (q1 == null || q2 == null)
       return super.getHelixData(tokType, qType);
 
+    //System.out.println("q1 = quaternion(" + q1 + "); q2 = quaternion(" + q2 + ")");
     /*
                 b
            |   /|
@@ -261,15 +264,27 @@ public class AminoMonomer extends AlphaMonomer {
     *
     */
     
-    Quaternion dq = q2.div(q1);// or reverse?
-    float theta = dq.getTheta();
-    if (tokType == Token.angle)
-      return new Float(theta);
-    Vector3f n = dq.getNormal();
     Point3f a = getQuaternionFrameCenter(qType);
     Point3f b = next.getQuaternionFrameCenter(qType);
     Vector3f vab = new Vector3f();
     vab.sub(b, a);
+    Point4f aa = new Point4f();
+    aa.x = vab.x;
+    aa.y = vab.y;
+    aa.z = vab.z;
+    boolean asdirected = false;
+    Quaternion dq = q2.div(q1);
+    float theta = (asdirected ? dq.getThetaDirected(aa).w : dq.getTheta());//.Directed(aa).w;
+    if (tokType == Token.angle)
+      return new Float(theta);
+    Vector3f n = (asdirected ? dq.getNormalDirected(vab) : dq.getNormal());//Directed(vab);
+    
+    aa.x = vab.x;
+    aa.y = vab.y;
+    aa.z = vab.z;
+    //System.out.println("res " + getResno() + " " + n + " " + theta + "\n" + dq.getTheta() + " theta/directed " + dq.getThetaDirected(aa).w  + " " + n + " " + dq.getNormalDirected(vab));
+    //System.out.println("dq = " + dq);
+
     float v_dot_n = vab.dot(n);
     if (tokType == Token.axis) {
       n.scale(v_dot_n);
@@ -279,11 +294,15 @@ public class AminoMonomer extends AlphaMonomer {
     vcb.scale(v_dot_n);
     Vector3f va_prime_d = new Vector3f();
     va_prime_d.cross(vab, n);
-    va_prime_d.scale(1/vab.length());
+    va_prime_d.normalize();
     Vector3f vda = new Vector3f();
     vda.sub(vcb, vab);
     vda.scale(0.5f);
     va_prime_d.scale((float)(vda.length()/Math.tan(theta / 2 / 180 * Math.PI)));
+    
+    //System.out.println("vda.length=" + vda.length());
+    //System.out.println("va_prime_d.length= " + va_prime_d.length());
+    //System.out.println("atan2 = " + (Math.atan2(vda.length(), va_prime_d.length()) * 180 / Math.PI));
     Vector3f r = new Vector3f(va_prime_d);
     r.add(vda);
     if (tokType == Token.radius)
@@ -294,14 +313,27 @@ public class AminoMonomer extends AlphaMonomer {
       return pt_a_prime;
     }
     n.scale(v_dot_n);
+    //System.out.println("draw vapd VECTOR " + Escape.escape(pt_a_prime) + " " + Escape.escape(va_prime_d));
     if (tokType == Token.draw) {
       String id = getUniqueID();
-      return "draw ID helixaxis" + id + " VECTOR " + Escape.escape(pt_a_prime) + " " + Escape.escape(n);
+      return "draw ID helixaxis" + id + " VECTOR " + Escape.escape(pt_a_prime) + " " + Escape.escape(n)
+      
+     // + ";set drawpicking;measure " + Escape.escape(a) + " $helixaxis" + id + "[1] " + " $helixaxis" + id + "[2] " + Escape.escape(b) + "//"
+      ;
     }
     //for now... array:
-    return new String[] {Escape.escape(pt_a_prime) , Escape.escape(n), Escape.escape(r)};
+    Point3f pt_b_prime = new Point3f(pt_a_prime);
+    pt_b_prime.add(n);
+    theta = Measure.computeTorsion(a, pt_a_prime, pt_b_prime, b, true);
+    float residuesPerTurn = 360f / theta;
+    float pitch = Math.abs(n.length() * residuesPerTurn);
+    return new String[] {
+        Escape.escape(pt_a_prime) , 
+        Escape.escape(n), 
+        Escape.escape(r),
+        Escape.escape(new Point3f(r.length(), pitch, residuesPerTurn))};
   }
-
+  
   public Quaternion getQuaternion(char qType) {
     /*
      * also NucleicMonomer

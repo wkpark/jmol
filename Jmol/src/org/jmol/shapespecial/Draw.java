@@ -380,12 +380,22 @@ public class Draw extends MeshCollection {
       }
     } else {
       id = axisID;
+      vertexIndex--;
     }
     int meshIndex = getIndexFromName(id);
     DrawMesh m;
-    return (meshIndex < 0 || (m = dmeshes[meshIndex]).vertices == null
-        || m.vertexCount <= vertexIndex ? null 
-        : vertexIndex >= 0 ? m.vertices[vertexIndex] 
+    // >= 0 ? that vertexIndex
+    // < 0 and no ptCenters or modelIndex < 0 -- center point
+    // < 0 center for modelIndex
+    if (meshIndex < 0 || (m = dmeshes[meshIndex]).vertices == null)
+      return null;
+    if (vertexIndex < 0)
+      vertexIndex = m.vertexCount + vertexIndex;
+    if (m.vertexCount <= vertexIndex)
+      vertexIndex = m.vertexCount - 1;
+    else if (vertexIndex < 0)
+      vertexIndex = 0;
+    return (vertexIndex >= 0 ? m.vertices[vertexIndex] 
         : m.ptCenters == null || modelIndex < 0 ? m.ptCenter 
         : m.ptCenters[modelIndex]);
   }

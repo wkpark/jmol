@@ -422,7 +422,15 @@ public class Quaternion {
     return (float) (Math.acos(qTemp.q0) * 2);
   }
 
-  public void getThetaDirected(Point4f axisAngle) {
+  public Vector3f getNormalDirected(Vector3f v0) {
+    Vector3f v = getNormal();
+    if (v0.x * q1 + v0.y * q2 + v0.z * q3 < 0) {
+      v.scale(-1);
+    }
+    return v;
+  }
+
+  public Point4f getThetaDirected(Point4f axisAngle) {
     //fills in .w;
     float theta = getTheta();
     Vector3f v = getNormal();
@@ -431,6 +439,7 @@ public class Quaternion {
       theta = -theta;
     }
     axisAngle.set(v.x, v.y, v.z, theta);
+    return axisAngle;
   }
 
   public Point4f toPoint4f() {

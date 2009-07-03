@@ -10998,12 +10998,17 @@ class ScriptEvaluator {
           havePoints = true;
           break;
         }
-      case Token.reverse:
-        propertyName = "reverse";
+        if (isSavedState)
+          error(ERROR_invalidArgument);
+        isSavedState = !isSavedState;
         break;
       case Token.rightsquare:
-        if ((isSavedState = !isSavedState) == (theTok == Token.rightsquare))
+        if (!isSavedState)
           error(ERROR_invalidArgument);
+        isSavedState = !isSavedState;
+        break;
+      case Token.reverse:
+        propertyName = "reverse";
         break;
       case Token.string:
         propertyValue = stringParameter(i);

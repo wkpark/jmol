@@ -338,7 +338,7 @@ public class AminoMonomer extends AlphaMonomer {
     float residuesPerTurn = 360f / theta;
     float pitch = Math.abs(n.length() * residuesPerTurn);
     return new String[] {
-        Escape.escape(pt_a_prime) , 
+        Escape.escape(pt_a_prime), 
         Escape.escape(n), 
         Escape.escape(r),
         Escape.escape(new Point3f(r.length(), pitch, residuesPerTurn))};

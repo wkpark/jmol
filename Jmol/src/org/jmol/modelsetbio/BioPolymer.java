@@ -766,7 +766,7 @@ public abstract class BioPolymer extends Polymer {
               }
             }
             if (derivType == 1 && isAmino) {
-              pdbATOM.append(monomer.getHelixData(Token.draw, qtype) + " color " + qColor[1]).append('\n');
+              pdbATOM.append(monomer.getHelixData(Token.draw, qtype)).append('\n');
               continue;
             }
             pdbATOM.append(

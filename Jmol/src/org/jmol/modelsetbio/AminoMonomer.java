@@ -320,20 +320,20 @@ public class AminoMonomer extends AlphaMonomer {
       return pt_a_prime;
     }
     n.scale(v_dot_n);
-    //System.out.println("draw vapd VECTOR " + Escape.escape(pt_a_prime) + " " + Escape.escape(va_prime_d));
-    if (tokType == Token.draw) {
-      String id = getUniqueID();
-      return "draw ID helixaxis" + id + " VECTOR " + Escape.escape(pt_a_prime) + " " + Escape.escape(n)
-      
-     // + ";set drawpicking;measure " + Escape.escape(a) + " $helixaxis" + id + "[1] " + " $helixaxis" + id + "[2] " + Escape.escape(b) + "//"
-      ;
-    }
     // must calculate directed angle:
     Point3f pt_b_prime = new Point3f(pt_a_prime);
     pt_b_prime.add(n);
     theta = Measure.computeTorsion(a, pt_a_prime, pt_b_prime, b, true);
     if (tokType == Token.angle)
       return new Float(theta);
+    //System.out.println("draw vapd VECTOR " + Escape.escape(pt_a_prime) + " " + Escape.escape(va_prime_d));
+    if (tokType == Token.draw) {
+      String id = getUniqueID();
+      return "draw ID helixaxis" + id + " VECTOR " + Escape.escape(pt_a_prime) + " " + Escape.escape(n) 
+      + " color " + (theta < 0 ? "{255.0 200.0 0.0}" : "{255.0 0.0 128.0}");
+      
+     // + ";set drawpicking;measure " + Escape.escape(a) + " $helixaxis" + id + "[1] " + " $helixaxis" + id + "[2] " + Escape.escape(b) + "//"
+    }
     //for now... array:
     float residuesPerTurn = 360f / theta;
     float pitch = Math.abs(n.length() * residuesPerTurn);

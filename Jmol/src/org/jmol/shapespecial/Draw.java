@@ -663,9 +663,9 @@ public class Draw extends MeshCollection {
     float dist;
     if (plane != null && (isCircle || isArc)) {
       dist = Graphics3D.distanceToPlane(plane, ptList[0]);
-      vAC.set(plane.x, plane.y, plane.z);
+      vAC.set(-plane.x, -plane.y, -plane.z);
       vAC.normalize();
-      if (dist > 0)
+      if (dist < 0)
         vAC.scale(-1);
       vAC.add(ptList[0]);
       ptList[1]= new Point3f(vAC);

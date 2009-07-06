@@ -430,6 +430,8 @@ class PointGroup {
 
   private boolean isLinear(Point3f[] atoms) {
     Vector3f v1 = null;
+    if (atoms.length < 2)
+      return false;
     for (int i = atoms.length; --i >= 0;) {
       if (i == centerAtomIndex)
         continue;
@@ -941,18 +943,16 @@ class PointGroup {
           if (index > 0 && j + 1 != index)
             continue;
           op = axes[0][j];
-          v.set(op.normalOrAxis);
-          v.scale(0.025f);
-          v.add(center);
           sb.append("draw pgvp").append(m).append(j + 1).append(
-              "disk width " + (scaleFactor * radius * 2) + " cylinder ")
-              .append(Escape.escape(v));
-          v.scaleAdd(-0.05f, op.normalOrAxis, v);
+              "disk scale " + (scaleFactor * radius * 2) + " CIRCLE PLANE ")
+              .append(Escape.escape(center));
+          v.set(op.normalOrAxis);
+          v.add(center);
           sb.append(Escape.escape(v)).append(" color translucent yellow;\n");
           v.set(op.normalOrAxis);
           v.add(center);
           sb.append("draw pgvp").append(m).append(j + 1).append(
-              "ring width 0.05 scale " + (scaleFactor * radius) + " arc ")
+              "ring width 0.05 scale " + (scaleFactor * radius * 2) + " arc ")
               .append(Escape.escape(v));
           v.scaleAdd(-2, op.normalOrAxis, v);
           sb.append(Escape.escape(v));

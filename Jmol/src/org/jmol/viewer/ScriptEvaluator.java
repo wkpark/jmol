@@ -113,7 +113,7 @@ class ScriptEvaluator {
    *   - display/hide commands
    *   - dipole, ellipsoid, geosurface, lcaoCartoon visualizations
    *   - quaternion and ramachandran commands
-   *   - much expanded isosurface and draw commands
+   *   - much expanded isosurface / draw commands
    *   - configuration, disorder, and biomolecule support
    *   - broadly 2D- and 3D-positionable echos
    *   - translateSelected and rotateSelected commands
@@ -4171,7 +4171,7 @@ class ScriptEvaluator {
     }
   
     if (true || Logger.debugging) {
-      Logger.info("script execution paused at this command: " + pc + " level " + scriptLevel + " " + thisCommand);
+      Logger.info("script execution paused at command " + (pc + 1) + " level " + scriptLevel + ": " + thisCommand);
     }
       
     try {

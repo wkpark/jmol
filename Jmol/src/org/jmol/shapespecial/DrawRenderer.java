@@ -108,11 +108,17 @@ public class DrawRenderer extends MeshRenderer {
     default:
       super.render2();
       break;
-    case JmolConstants.DRAW_CIRCLE:
     case JmolConstants.DRAW_CIRCULARPLANE:
+      if (dmesh.scale > 0)
+        width *= dmesh.scale;
+      super.render2();
+      break;
+    case JmolConstants.DRAW_CIRCLE:
       viewer.transformPoint(vertices[0], pt1i);
       if (diameter == 0 && width == 0)
         width = 1.0f;
+      if (dmesh.scale > 0)
+        width *= dmesh.scale;
       if (width > 0)
         diameter = viewer.scaleToScreen(pt1i.z, (int) (width * 1000));
       if (diameter > 0 && (mesh.drawTriangles || mesh.fillTriangles))
@@ -127,9 +133,11 @@ public class DrawRenderer extends MeshRenderer {
       //renderArrowHead(controlHermites[nHermites - 2], controlHermites[nHermites - 1], false);
       // 
       // {pt1} {pt2} {ptref} {starting theta, nDegrees, fractionalOffset}
-      float theta = vertices[3].x;
-      float nDegrees = vertices[3].y;
-      float fractionalOffset = vertices[3].z;
+      float theta = (vertexCount > 3 ? vertices[3].x : 0);
+      float nDegrees = (vertexCount > 3 ? vertices[3].y : 360);
+      if (nDegrees == 0)
+        return;
+      float fractionalOffset = (vertexCount > 3 ? vertices[3].z : 0);
       vTemp.set(vertices[1]);
       vTemp.sub(vertices[0]);
       // crossing point
@@ -138,12 +146,15 @@ public class DrawRenderer extends MeshRenderer {
       Matrix3f mat = new Matrix3f();
       mat.set(new AxisAngle4f(vTemp, (float) (theta * Math.PI / 180)));
       // vector to rotate
-      vTemp2.set(vertices[2]);
+      if (vertexCount > 2)
+        vTemp2.set(vertices[2]);
+      else 
+        vTemp2.set(Draw.randomPoint());
       vTemp2.sub(vertices[0]);
       vTemp2.cross(vTemp, vTemp2);
       vTemp2.cross(vTemp2, vTemp);
       vTemp2.normalize();
-      vTemp2.scale(dmesh.scale);
+      vTemp2.scale(dmesh.scale / 2);
       mat.transform(vTemp2);
       //control points
       float degrees = nDegrees / 5;

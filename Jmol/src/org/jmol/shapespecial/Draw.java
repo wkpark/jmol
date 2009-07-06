@@ -153,6 +153,10 @@ public class Draw extends MeshCollection {
 
     if ("planedef" == propertyName) {
       plane = (Point4f) value;
+      if (isCircle || isArc) {
+        isPlane = true;
+      }
+      vData.add(new Object[] { new Integer(PT_COORD), new Point3f(Float.NaN, Float.NaN, Float.NaN) });
       return;
     }
 
@@ -467,7 +471,8 @@ public class Draw extends MeshCollection {
     thisMesh.diameter = diameter;
     thisMesh.isVector = isVector;
     thisMesh.nohead = noHead;
-    thisMesh.width = (thisMesh.drawType == JmolConstants.DRAW_CYLINDER ? -Math.abs(width) : width);
+    thisMesh.width = (thisMesh.drawType == JmolConstants.DRAW_CYLINDER || 
+        thisMesh.drawType == JmolConstants.DRAW_CIRCULARPLANE ? -Math.abs(width) : width);
     thisMesh.setCenter(-1);
     if (offset != null)
       thisMesh.offset(offset);
@@ -618,7 +623,7 @@ public class Draw extends MeshCollection {
     int nVertices = nPoints; 
     int drawType = JmolConstants.DRAW_POINT;
     if (isArc) {
-      if (nVertices == 4) {
+      if (nVertices >= 2) {
         drawType = JmolConstants.DRAW_ARC;
       } else {
         isArc = false;
@@ -627,13 +632,19 @@ public class Draw extends MeshCollection {
         isArrow = true;
       }
     }
-    if (isCircle)
-      drawType = (isPlane ? JmolConstants.DRAW_CIRCULARPLANE
-          : JmolConstants.DRAW_CIRCLE);
-    else if ((isCurve || isArrow) && nVertices >= 2 && !isArc)
+    if (isCircle) {
+      length = 0;
+      if (nVertices == 2)
+        isPlane = true;
+      if (!isPlane) 
+        drawType = JmolConstants.DRAW_CIRCLE;
+      if (width == 0)
+        width = 1;
+    } else if ((isCurve || isArrow) && nVertices >= 2 && !isArc) {
       drawType = (isLine ? JmolConstants.DRAW_LINE_SEGMENT 
           : isCurve ? JmolConstants.DRAW_CURVE 
           : JmolConstants.DRAW_ARROW);
+    }
     if (isVector && !isArc) {
       if (nVertices > 2)
         nVertices = 2;
@@ -649,11 +660,35 @@ public class Draw extends MeshCollection {
     } else if (nVertices == 2 && isVector) {
       ptList[1].add(ptList[0]);
     }
-    if (drawType == JmolConstants.DRAW_POINT) {
+    float dist;
+    if (plane != null && (isCircle || isArc)) {
+      dist = Graphics3D.distanceToPlane(plane, ptList[0]);
+      vAC.set(plane.x, plane.y, plane.z);
+      vAC.normalize();
+      if (dist > 0)
+        vAC.scale(-1);
+      vAC.add(ptList[0]);
+      ptList[1]= new Point3f(vAC);
+      if (isArc) {
+        dist = Math.abs(dist);
+        if (nVertices > 3 && ptList[3].z != 0) {
+          ptList[3].z *= dist; 
+        } else if (dist != 0) {
+          if (nVertices == 2) {
+            ptList[2] = randomPoint();
+          }
+          ptList[3] = new Point3f(0, 360, dist);
+          nVertices = 4;
+        }
+      }
+      drawType = (isArrow ? JmolConstants.DRAW_ARROW
+          : isArc ? JmolConstants.DRAW_ARC
+              : JmolConstants.DRAW_CIRCULARPLANE);
+      plane = null;
+    } else if (drawType == JmolConstants.DRAW_POINT) {
       Point3f pt;
       Point3f center = new Point3f();
       Vector3f normal = new Vector3f();
-      float dist;
       if (nVertices == 1 && plane != null) {
         dist = Graphics3D.distanceToPlane(plane, ptList[0]);
         vAC.set(plane.x, plane.y, plane.z);
@@ -664,7 +699,9 @@ public class Draw extends MeshCollection {
         nVertices = -2;
         if (isArrow)
           drawType = JmolConstants.DRAW_ARROW;
-      } else if (nVertices == 3 && isPlane && !isPerpendicular) {
+        plane = null;
+      }
+      if (nVertices == 3 && isPlane && !isPerpendicular) {
         // three points define a plane
         pt = new Point3f(ptList[1]);
         pt.sub(ptList[0]);
@@ -739,9 +776,11 @@ public class Draw extends MeshCollection {
         Graphics3D.calcAveragePoint(ptList[0], ptList[1], center);
         normal.set(ptList[1]);
         normal.sub(center);
-        normal.scale(0.5f / normal.length() * length);
+        normal.scale(0.5f / normal.length() * (length == 0 ? 0.01f : length));
+        if (length == 0)
+          center.set(ptList[0]);
         ptList[0].set(center);
-        ptList[1].set(center);
+        ptList[1].set(ptList[0]);
         ptList[0].sub(normal);
         ptList[1].add(normal);
       }
@@ -755,7 +794,8 @@ public class Draw extends MeshCollection {
       case 1:
         break;
       case 2:
-        drawType = (isCylinder ? JmolConstants.DRAW_CYLINDER
+        drawType = (isArc ? JmolConstants.DRAW_ARC : isPlane && isCircle ? JmolConstants.DRAW_CIRCULARPLANE
+            : isCylinder ? JmolConstants.DRAW_CYLINDER
             : JmolConstants.DRAW_LINE);
         break;
       default:
@@ -792,7 +832,8 @@ public class Draw extends MeshCollection {
       return;
     float f = newScale / mesh.scale;
     mesh.scale = newScale;
-    if (mesh.haveXyPoints || mesh.drawType == JmolConstants.DRAW_ARC)
+    System.out.println("setting scale " + newScale + " for " + mesh);
+    if (mesh.haveXyPoints || mesh.drawType == JmolConstants.DRAW_ARC || mesh.drawType == JmolConstants.DRAW_CIRCLE || mesh.drawType == JmolConstants.DRAW_CIRCULARPLANE)
       return; // done in renderer
     Vector3f diff = new Vector3f();
     int iptlast = -1;
@@ -1070,7 +1111,8 @@ public class Draw extends MeshCollection {
     if (mesh.scale != 1 && (mesh.haveXyPoints || mesh.drawType == JmolConstants.DRAW_ARC))
       str.append(" scale ").append(mesh.scale);
     if (mesh.width != 0)
-      str.append(" diameter ").append((mesh.drawType == JmolConstants.DRAW_CYLINDER ? Math.abs(mesh.width) : mesh.width));
+      str.append(" diameter ").append((mesh.drawType == JmolConstants.DRAW_CYLINDER ? Math.abs(mesh.width)
+          : mesh.drawType == JmolConstants.DRAW_CIRCULARPLANE ? Math.abs(mesh.width * mesh.scale) : mesh.width));
     else if (mesh.diameter > 0)
       str.append(" diameter ").append(mesh.diameter);
     int nVertices = mesh.drawVertexCount > 0 ? mesh.drawVertexCount 
@@ -1088,12 +1130,10 @@ public class Draw extends MeshCollection {
     case JmolConstants.DRAW_CIRCLE:
       str.append(" CIRCLE");
       break;
-    case JmolConstants.DRAW_CIRCULARPLANE:
-      str.append(" CIRCLE PLANE");
-      break;
     case JmolConstants.DRAW_CURVE:
       str.append(" CURVE");
       break;
+    case JmolConstants.DRAW_CIRCULARPLANE:
     case JmolConstants.DRAW_CYLINDER:
       str.append(" CYLINDER");
       break;
@@ -1217,7 +1257,7 @@ public class Draw extends MeshCollection {
     return V;
   }
 
- public String getShapeState() {
+  public String getShapeState() {
     StringBuffer s = new StringBuffer("\n");
     appendCmd(s, "draw delete");
     modelCount = viewer.getModelCount();
@@ -1230,6 +1270,10 @@ public class Draw extends MeshCollection {
         s.append("draw off;\n");
     }
     return s.toString();
+  }
+
+  static Point3f randomPoint() {
+    return new Point3f((float) Math.random(), (float) Math.random(), (float) Math.random());
   }
 
 }

@@ -588,13 +588,13 @@ public abstract class BioPolymer extends Polymer {
             // standard dihedral/Jmol definitions for anticlockwise positive
             // angles
             AminoMonomer aa = (AminoMonomer) monomer;
-            pdbATOM.append("draw phi" + id + " arrow arc scale 0.25 ").append(
+            pdbATOM.append("draw phi" + id + " ARROW ARC ").append(
                 Escape.escape(aa.getNitrogenAtomPoint())).append(
                 Escape.escape((Point3f) a)).append(
                 Escape.escape(aa.getCarbonylCarbonAtomPoint())).append(
                 "{" + (-x) + " " + x + " 0.5} \"phi = " + (int) x + "\"")
                 .append(" color ").append(qColor[2]).append('\n');
-            pdbATOM.append("draw psi" + id + " arrow arc scale 0.25 ").append(
+            pdbATOM.append("draw psi" + id + " ARROW ARC ").append(
                 Escape.escape((Point3f) a)).append(
                 Escape.escape(aa.getCarbonylCarbonAtomPoint())).append(
                 Escape.escape(aa.getNitrogenAtomPoint())).append(

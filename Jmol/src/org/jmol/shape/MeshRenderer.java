@@ -100,11 +100,13 @@ public abstract class MeshRenderer extends ShapeRenderer {
   // same method in a subclass.
   
   protected void transform() {
-    //Point3f ptf = new Point3f();
     for (int i = vertexCount; --i >= 0;) {
       viewer.transformPoint(vertices[i], screens[i]);
-      //viewer.transformPoint(vertices[i], ptf);
-      //System.out.println("meshrend " + i + " " + vertices[i] + " " + screens[i] + " " + ptf);
+/*
+      Point3f ptf = new Point3f();
+      viewer.transformPoint(vertices[i], ptf);
+      System.out.println("meshrend " + i + " " + vertices[i] + " " + screens[i] + " " + ptf);
+*/      
     }
   }
   

@@ -192,8 +192,9 @@ final public class JmolConstants {
     case JmolConstants.DRAW_ARC:
       return "arc";
     case JmolConstants.DRAW_CIRCLE:
-    case JmolConstants.DRAW_CIRCULARPLANE:
       return "circle";
+    case JmolConstants.DRAW_CIRCULARPLANE:
+      return "circularPlane";
     case JmolConstants.DRAW_CURVE:
       return "curve";
     }

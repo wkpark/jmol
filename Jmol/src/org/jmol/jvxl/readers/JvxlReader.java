@@ -931,6 +931,8 @@ public class JvxlReader extends VolumeFileReader {
             " VERSION ").append(JVXL_VERSION).append("\n");
       data.append(s);
     }
+    if ("HEADERONLY".equals(msg))
+      return data.toString();
     data.append("# ").append(msg).append('\n');
     if (title != null)
       for (int i = 0; i < title.length; i++)
@@ -967,24 +969,25 @@ public class JvxlReader extends VolumeFileReader {
     }
 
     data.append(sb);
-
-    if (msg != null && !jvxlData.vertexDataOnly)
-      data.append("#-------end of jvxl file data-------\n");
-    data.append(jvxlData.jvxlInfoLine).append('\n');
-    if (jvxlData.vContours != null) {
-      data.append("<jvxlContourData>\n");
-      jvxlEncodeContourData(jvxlData.vContours, data);
-      data.append("</jvxlContourData>\n");
+    if (includeHeader) {
+      if (msg != null && !jvxlData.vertexDataOnly)
+        data.append("#-------end of jvxl file data-------\n");
+      data.append(jvxlData.jvxlInfoLine).append('\n');
+      if (jvxlData.vContours != null) {
+        data.append("<jvxlContourData>\n");
+        jvxlEncodeContourData(jvxlData.vContours, data);
+        data.append("</jvxlContourData>\n");
+      }
+      if (comment != null)
+        data.append("<jvxlSurfaceCommand>\n  ").append(comment).append(
+            "\n</jvxlSurfaceCommand>\n");
+      if (state != null)
+        data.append("<jvxlSurfaceState>\n  ").append(state).append(
+            "\n</jvxlSurfaceState>\n");
+      if (includeHeader)
+        data.append("<jvxlFileTitle>\n").append(jvxlData.jvxlFileTitle).append(
+            "</jvxlFileTitle>\n");
     }
-    if (comment != null)
-      data.append("<jvxlSurfaceCommand>\n  ").append(comment).append(
-          "\n</jvxlSurfaceCommand>\n");
-    if (state != null)
-      data.append("<jvxlSurfaceState>\n  ").append(state).append(
-          "\n</jvxlSurfaceState>\n");
-    if (includeHeader)
-      data.append("<jvxlFileTitle>\n").append(jvxlData.jvxlFileTitle).append(
-          "</jvxlFileTitle>\n");
     return data.toString();
   }
 

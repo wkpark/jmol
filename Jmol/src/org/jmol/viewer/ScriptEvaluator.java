@@ -10767,7 +10767,7 @@ class ScriptEvaluator {
         msg = viewer.getMoInfo(-1);
         len = 3;
       } else {
-        int ptMO = ((len = statementLength) == 2 ? Integer.MAX_VALUE
+        int ptMO = ((len = statementLength) == 2 ? Integer.MIN_VALUE
             : intParameter(2));
         if (!isSyntaxCheck)
           msg = getMoJvxl(ptMO);

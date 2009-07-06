@@ -324,7 +324,10 @@ public class SurfaceGenerator {
 
     if ("init" == propertyName) {
       initializeIsosurface();
-      params.script = (String) value;
+      if (value instanceof Parameters)
+        params = (Parameters) value;
+      else
+        params.script = (String) value;
       return false; //more to do
     }
 

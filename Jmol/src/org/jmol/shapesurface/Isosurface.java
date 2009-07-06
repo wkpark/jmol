@@ -329,7 +329,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("init" == propertyName) {
       setPropertySuper("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
-      if (!(iHaveBitSets = getScriptBitSets((String) value, null))) {
+      if (value instanceof String && !(iHaveBitSets = getScriptBitSets((String) value, null))) {
         sg.setParameter("select", bs);
       }
       initializeIsosurface();
@@ -433,8 +433,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return JvxlReader.jvxlGetFile(this, jvxlData, meshData, title, "", true, index, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     }
+    if (property == "jvxlFileHeader")
+      return JvxlReader.jvxlGetFile(this, jvxlData, null, title, "HEADERONLY", true, index, thisMesh
+              .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     if (property == "jvxlSurfaceData") // MO only
-      return JvxlReader.jvxlGetFile(this, jvxlData, null, title, "", false, 1, thisMesh
+      return JvxlReader.jvxlGetFile(this, jvxlData, null, title, "orbital #" + index, false, 1, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     if (property == "jvxlFileInfo")
       return jvxlData.jvxlInfoLine;

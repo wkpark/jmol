@@ -249,27 +249,32 @@ public class MolecularOrbital extends Isosurface {
       return new Integer(moNumber);
     if (propertyName == "showMO") {
       StringBuffer str = new StringBuffer();
-      String infoType = "jvxlFileData";
       Vector mos = (Vector) (sg.getMoData().get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
-      if (nOrb == 0)
-        return "";
       int thisMO = param;
       int currentMO = moNumber;
+      boolean returnIfNoCurrentMO = (thisMO == Integer.MIN_VALUE);
+      if (nOrb == 0 || currentMO == 0 && returnIfNoCurrentMO)
+        return "";
+      boolean doThisMo = (!returnIfNoCurrentMO && thisMO != Integer.MAX_VALUE);
       if (currentMO == 0)
         thisMO = 0;
+      boolean haveHeader = false;
       int nTotal = (thisMO > 0 ? 1 : nOrb);
       int i0 = (nTotal == 1 && currentMO > 0 ? currentMO : 1);
       for (int i = i0; i <= nOrb; i++)
-        if (thisMO == 0 || thisMO == i || thisMO == Integer.MAX_VALUE
-            && i == currentMO) {
-          if (thisMO != Integer.MAX_VALUE) {
-            super.setProperty("init", "mo_show", null);
+        if (thisMO == 0 || thisMO == i || !doThisMo && i == currentMO) {
+          if (!doThisMo) {
+            Parameters params = sg.getParams();
+            super.setProperty("init", params, null);
             setOrbital(i);
           }
-          str.append(super.getProperty(infoType, nTotal));
-          infoType = "jvxlSurfaceData";
-          if (thisMO != Integer.MAX_VALUE)
+          if (!haveHeader) {
+            str.append(super.getProperty("jvxlFileHeader", nTotal));
+            haveHeader = true;
+          }
+          str.append(super.getProperty("jvxlSurfaceData", i));
+          if (!doThisMo)
             super.setProperty("delete", "mo_show", null);
           if (nTotal == 1)
             break;

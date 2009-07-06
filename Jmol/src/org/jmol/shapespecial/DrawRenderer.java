@@ -132,10 +132,10 @@ public class DrawRenderer extends MeshRenderer {
     case JmolConstants.DRAW_ARC:
       //renderArrowHead(controlHermites[nHermites - 2], controlHermites[nHermites - 1], false);
       // 
-      // {pt1} {pt2} {ptref} {starting theta, nDegrees, fractionalOffset}
-      float theta = (vertexCount > 3 ? vertices[3].x : 0);
-      float nDegrees = (vertexCount > 3 ? vertices[3].y : 360);
-      if (nDegrees == 0)
+      // {pt1} {pt2} {ptref} {nDegreesOffset, theta, fractionalOffset}
+      float nDegreesOffset = (vertexCount > 3 ? vertices[3].x : 0);
+      float theta = (vertexCount > 3 ? vertices[3].y : 360);
+      if (theta == 0)
         return;
       float fractionalOffset = (vertexCount > 3 ? vertices[3].z : 0);
       vTemp.set(vertices[1]);
@@ -144,7 +144,7 @@ public class DrawRenderer extends MeshRenderer {
       pt1f.scaleAdd(fractionalOffset, vTemp, vertices[0]);
       // define rotational axis
       Matrix3f mat = new Matrix3f();
-      mat.set(new AxisAngle4f(vTemp, (float) (theta * Math.PI / 180)));
+      mat.set(new AxisAngle4f(vTemp, (float) (nDegreesOffset * Math.PI / 180)));
       // vector to rotate
       if (vertexCount > 2)
         vTemp2.set(vertices[2]);
@@ -157,13 +157,13 @@ public class DrawRenderer extends MeshRenderer {
       vTemp2.scale(dmesh.scale / 2);
       mat.transform(vTemp2);
       //control points
-      float degrees = nDegrees / 5;
+      float degrees = theta / 5;
       while (Math.abs(degrees) > 5)
         degrees /= 2;
-      nPoints = (int) (nDegrees / degrees + 0.5f) + 1;
+      nPoints = (int) (theta / degrees + 0.5f) + 1;
       while (nPoints < 10) {
         degrees /= 2;
-        nPoints = (int) (nDegrees / degrees + 0.5f) + 1;
+        nPoints = (int) (theta / degrees + 0.5f) + 1;
       }
       mat.set(new AxisAngle4f(vTemp, (float) (degrees * Math.PI / 180)));
       screens = viewer.allocTempScreens(nPoints);

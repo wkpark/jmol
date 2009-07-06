@@ -689,7 +689,7 @@ public class Draw extends MeshCollection {
       Point3f pt;
       Point3f center = new Point3f();
       Vector3f normal = new Vector3f();
-      if (nVertices == 1 && plane != null) {
+      if (nVertices == 2 && plane != null) {
         dist = Graphics3D.distanceToPlane(plane, ptList[0]);
         vAC.set(plane.x, plane.y, plane.z);
         vAC.normalize();

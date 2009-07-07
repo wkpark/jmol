@@ -1442,6 +1442,14 @@ abstract public class AtomCollection {
         if (atoms[i].isCarbohydrate())
           bs.set(i);
       return bs;
+    case Token.helix: //WITHIN -- not ends
+    case Token.sheet: //WITHIN -- not ends
+      byte type = (tokType == Token.helix ? 
+          JmolConstants.PROTEIN_STRUCTURE_HELIX : JmolConstants.PROTEIN_STRUCTURE_SHEET);
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].isWithinStructure(type))
+          bs.set(i);
+      return bs;
     case Token.nucleic:
       for (int i = atomCount; --i >= 0;)
         if (atoms[i].isNucleic())

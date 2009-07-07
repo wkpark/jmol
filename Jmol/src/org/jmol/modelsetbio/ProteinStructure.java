@@ -134,6 +134,11 @@ public abstract class ProteinStructure {
   public int getMonomerCount() {
     return monomerCount;
   }
+  
+  public boolean isWithin(int monomerIndex) {
+    return (monomerIndex > monomerIndexFirst 
+        && monomerIndex < monomerIndexLast);
+  }
 
   public int getMonomerIndex() {
     return monomerIndexFirst;

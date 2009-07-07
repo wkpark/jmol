@@ -402,5 +402,9 @@ public class Group {
         }
     return "";
   }
+
+  public boolean isWithinStructure(byte type) {
+    return false;
+  }
   
 }

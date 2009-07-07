@@ -78,10 +78,11 @@ public class Token {
   final public static int point3f    =  7;
   final public static int point4f    =  8;
   final private static int keyword   =  9;
+  final static int listf             = 10;
 
   final static String[] astrType = {
     "nada", "identifier", "integer", "decimal", "string",
-    "seqcode", "list", "point", "plane", "keyword"
+    "seqcode", "list", "point", "plane", "keyword", "listf"
   };
 
   public static boolean tokAttr(int a, int b) {
@@ -447,6 +448,7 @@ public class Token {
   public final static int max         = 2 << 5;
   public final static int average     = 3 << 5;
   public final static int stddev      = 4 << 5;
+  public final static int allfloat    = 5 << 5;
   final static int minmaxmask /*all*/ = 7 << 5; 
   final static int settable           = 1 << 8;
   
@@ -587,7 +589,7 @@ public class Token {
   // xxx(a,b)
 
   public final static int cross = 1 | 2 << 9 | mathfunc;
-  final static int helix        = 2 | 2 << 9 | mathfunc | predefinedset;
+  public final static int helix = 2 | 2 << 9 | mathfunc | predefinedset;
   final static int load         = 3 | 2 << 9 | mathfunc | command;
   final static int random       = 4 | 2 << 9 | mathfunc;
   final static int script       = 5 | 2 << 9 | mathfunc | command;
@@ -608,6 +610,10 @@ public class Token {
   // xxx(a,b,c)
   
   final static int select       = 1 | 3 << 9 | mathfunc | atomExpressionCommand;
+
+  // ___.xxx(a,b,c)
+  
+  final static int bin          = 1 | 3 << 9 | mathfunc | mathproperty;
 
   // xxx(a,b,c,d)
   
@@ -700,6 +706,7 @@ public class Token {
   final static int scale        = misc | 53;
   final static int shape        = misc | 54;
   final static int shapely      = misc | 55;
+  final public static int sheet = misc | 55 | predefinedset;
   final static int solid        = misc | 56;
   final static int spacegroup   = misc | 57;
   final static int state        = misc | 58;
@@ -1027,6 +1034,7 @@ public class Token {
     "babel",            new Token(babel),
     "back",             new Token(back),    
     "backlit",          new Token(backlit),
+    "bin",              new Token(bin),
     "bondCount",        new Token(bondcount),
     "bottom",           new Token(bottom),
     "branch",           new Token(branch),

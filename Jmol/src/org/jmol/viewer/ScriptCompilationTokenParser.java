@@ -528,6 +528,7 @@ abstract class ScriptCompilationTokenParser {
     case Token.coord:
     case Token.element:
     case Token.group:
+    case Token.helix:
     case Token.hkl:
     case Token.model:
     case Token.molecule:

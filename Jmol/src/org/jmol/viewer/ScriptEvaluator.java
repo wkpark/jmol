@@ -802,12 +802,15 @@ class ScriptEvaluator {
           switch (tok2) {
           case Token.all:
             tok2 = Token.minmaxmask;
+            if (tokAt(iToken + 3) == Token.dot && tokAt(iToken + 4) == Token.bin)
+              tok2 = Token.allfloat;
             // fall through
           case Token.min:
           case Token.max:
           case Token.stddev:
           case Token.average:
-            allowMathFunc = (isUserFunction || tok2 == Token.minmaxmask);
+            allowMathFunc = (isUserFunction 
+                || tok2 == Token.minmaxmask || tok2 == Token.allfloat);
             token.intValue |= tok2;
             getToken(iToken + 2);
           }
@@ -1008,7 +1011,8 @@ class ScriptEvaluator {
     // check minmax flags:
     
     int minmaxtype = tok & Token.minmaxmask;
-    boolean isExplicitlyAll = (minmaxtype == Token.minmaxmask);
+    boolean allFloat = (minmaxtype == Token.allfloat);
+    boolean isExplicitlyAll = (minmaxtype == Token.minmaxmask || allFloat);
     tok &= ~Token.minmaxmask;
     if (tok == Token.nada)
       tok = (isAtoms ? Token.atoms : Token.bonds);
@@ -1030,8 +1034,6 @@ class ScriptEvaluator {
     case Token.distance:
       break;
     default:
-      if (!isAtoms)
-        break;
       isInt = Token.tokAttr(tok, Token.intproperty)
           && !Token.tokAttr(tok, Token.floatproperty);
       // occupancy and radius considered floats here
@@ -1128,11 +1130,11 @@ class ScriptEvaluator {
     ModelSet modelSet = viewer.getModelSet();
  
     int count = 0;
+    int mode = (isPt ? 3 : isString ? 2 : isInt ? 1 : 0);
     if (isAtoms) {
       int iModel = -1;
       int nOps = 0;
       count = (isSyntaxCheck ? 0 : viewer.getAtomCount());
-      int mode = (isPt ? 3 : isString ? 2 : isInt ? 1 : 0);
       for (int i = (haveIndex ? index : 0); i < count; i++) {
         if (!haveIndex && bs != null && !bs.get(i))
           continue;
@@ -1336,6 +1338,28 @@ class ScriptEvaluator {
         for (int i = 0; i < len; i++)
           sb.append((String) vout.get(i));
         return sb.toString();
+      }
+      if (allFloat) {
+        Float[] fout = new Float[len];
+        Point3f zero = (len > 0 && isPt ? new Point3f() : null);
+        for (int i = len; --i >= 0;) {
+          Object v = vout.get(i);
+          switch (mode) {
+          case 0: 
+            fout[i] = (Float) v;
+            break;
+          case 1:
+            fout[i] = new Float(((Integer) v).floatValue());
+            break;
+          case 2:
+            fout[i] = new Float(Parser.parseFloat((String)v));
+            break;
+          case 3:
+            fout[i] = new Float(((Point3f) v).distance(zero));
+            break;
+          }
+        }
+        return fout;
       }
       String[] sout = new String[len];
       for (int i = len; --i >= 0;) {
@@ -4237,7 +4261,8 @@ class ScriptEvaluator {
     if (lineEnd == 0)
       lineEnd = Integer.MAX_VALUE;
     String lastCommand = "";
-    
+    if (aatoken == null)
+      return;
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
       
       //System.out.println("pc = " + pc + " scriptlevel = " + scriptLevel + " " + getCommand(pc, true,true));
@@ -8621,9 +8646,10 @@ class ScriptEvaluator {
     // frame/model difference
     if (statementLength == 1 && offset == 1) {
       int modelIndex = viewer.getCurrentModelIndex();
+      int m;
       if (!isSyntaxCheck && modelIndex >= 0
-          && (modelIndex = viewer.getJmolDataSourceFrame(modelIndex)) >= 0)
-        viewer.setCurrentModelIndex(Integer.MIN_VALUE);
+          && (m = viewer.getJmolDataSourceFrame(modelIndex)) >= 0)
+        viewer.setCurrentModelIndex(m == modelIndex ? Integer.MIN_VALUE : m);
       return;
     }
     String p1 = optParameterAsString(1);
@@ -10508,7 +10534,10 @@ class ScriptEvaluator {
       return;
     }
     int tok;
-    switch (tok = getToken(1).tok) {
+    switch (tok = (getToken(1) instanceof ScriptVariable ? Token.nada : getToken(1).tok)) {
+    case Token.nada:
+      msg = Escape.escape(((ScriptVariable)theToken).value);
+      break;
     case Token.vanderwaals:
       if (statementLength == 2) {
         if (!isSyntaxCheck)
@@ -10844,8 +10873,12 @@ class ScriptEvaluator {
       showString(msg);
     else if (value != null)
       showString(str + " = " + value);
-    else if (str != null)
-      showString(str + " = " + getParameterEscaped(str));
+    else if (str != null) {
+      if (str.indexOf(" ") >= 0)
+        showString(str);
+      else
+        showString(str + " = " + getParameterEscaped(str));
+    }
   }
 
   private String getFunctionCalls(String selectedFunction) {

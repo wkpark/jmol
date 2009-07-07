@@ -1241,6 +1241,10 @@ final public class Atom extends Point3fi {
     return null;
   }
 
+  boolean isWithinStructure(byte type) {
+    return group.isWithinStructure(type);
+  }
+
   /* DEVELOPER NOTE -- ATOM/MODEL DELETION --
    * 
    * The challenge of atom deletion:

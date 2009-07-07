@@ -616,6 +616,8 @@ class ScriptMathProcessor {
     case Token.mul:
     case Token.div:
       return evaluateList(op.intValue, args);
+    case Token.bin:
+      return evaluateBin(args);
     case Token.helix:
       return evaluateHelix(args);
     case Token.label:
@@ -645,6 +647,36 @@ class ScriptMathProcessor {
       return evaluateSubstructure(args);
     }
     return false;
+  }
+
+  private boolean evaluateBin(ScriptVariable[] args) throws ScriptException {
+    if (args.length != 3)
+      return false;
+    ScriptVariable x1 = getX();
+    boolean isListf = (x1.tok == Token.listf);
+    if (isSyntaxCheck || !isListf && x1.tok != Token.list)
+      return addX(x1);
+    float f0 = ScriptVariable.fValue(args[0]);
+    float f1 = ScriptVariable.fValue(args[1]);
+    float df = ScriptVariable.fValue(args[2]);
+    Float[] data = (isListf ? (Float[]) x1.value : null);
+    String[] sdata = (isListf ? null : (String[]) x1.value);
+    int nbins = (int) ((f1 - f0) / df + 0.01f);
+    int[] array = new int[nbins];
+    String[] sout = new String[nbins];
+    int nPoints = (isListf ? data.length : sdata.length);
+    for (int i = 0; i < nPoints; i++) {
+      float v = (isListf ? data[i].floatValue() : Parser.parseFloat(sdata[i]));
+      int bin = (int) ((v - f0) / df);
+      if (bin < 0)
+        bin = 0;
+      else if (bin >= nbins)
+        bin = nbins;
+      array[bin]++;
+    }
+    for (int i = 0; i < nbins; i++)
+      sout[i] = "" + array[i];
+    return addX(sout);
   }
 
   private boolean evaluateHelix(ScriptVariable[] args) {
@@ -1461,7 +1493,7 @@ class ScriptMathProcessor {
       isSequence = !Parser
           .isOneOf(
               withinStr.toLowerCase(),
-              "atomname;atomtype;element;site;group;chain;structure;molecule;model;boundbox");
+              "helix;sheet;atomname;atomtype;element;site;group;chain;structure;molecule;model;boundbox");
     } else if (isDistance) {
       distance = ScriptVariable.fValue(args[0]);
       if (i < 2)
@@ -1476,6 +1508,9 @@ class ScriptMathProcessor {
     switch (i) {
     case 1:
       // within (boundbox)
+      boolean isHelix = withinStr.equalsIgnoreCase("helix"); 
+      if (isHelix || withinStr.equalsIgnoreCase("sheet"))
+        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(isHelix ? Token.helix : Token.sheet, null));
       return (!withinStr.equalsIgnoreCase("boundbox") ? false
           : addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.boundbox, null)));
     case 2:

@@ -424,4 +424,9 @@ public class AminoMonomer extends AlphaMonomer {
     }
     return Quaternion.getQuaternionFrame(vA, vB, vC);
   }
+  
+  public boolean isWithinStructure(byte type) {
+    ProteinStructure s = (ProteinStructure) getStructure();
+    return (s != null && s.isWithin(monomerIndex) && s.type == type);
+  }
 }

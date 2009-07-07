@@ -102,6 +102,6 @@ public class DrawMesh extends Mesh {
     drawVertexCounts = (int[]) ArrayUtil.deleteElements(drawVertexCounts, modelIndex, 1);
     ptCenters = (Point3f[]) ArrayUtil.deleteElements(ptCenters, modelIndex, 1);
     axes = (Vector3f[]) ArrayUtil.deleteElements(axes, modelIndex, 1);
-    title = (String[]) ArrayUtil.deleteElements(title, modelIndex, 1);
+    //no! title = (String[]) ArrayUtil.deleteElements(title, modelIndex, 1);
   }
 }

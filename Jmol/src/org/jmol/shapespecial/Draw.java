@@ -929,7 +929,7 @@ public class Draw extends MeshCollection {
         viewer.setStatusAtomPicked(-2, "[\"draw\",\"" + pickedMesh.thisID + "\"," +
           + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z+"]"
           + (pickedMesh.title == null ? "" 
-               : "\"" + pickedMesh.title[pickedModel]+"\""));
+               : "\"" + pickedMesh.title[0]+"\""));
       return v; 
     }
     if (modifiers == 0 || pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1])

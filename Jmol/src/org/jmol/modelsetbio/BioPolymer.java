@@ -525,6 +525,7 @@ public abstract class BioPolymer extends Polymer {
     if (straightness)
       derivType = 2;
     boolean useQuaternionStraightness = (ctype == 'S');
+    boolean calcRamachandranStraightness = (qtype == 'r' || qtype == 'p' || qtype == 'c');
     if (straightness && Logger.debugging) {
       Logger.debug("For straightness calculation: useQuaternionStraightness = "
           + useQuaternionStraightness + " and quaternionFrame = " + qtype);
@@ -549,7 +550,7 @@ public abstract class BioPolymer extends Polymer {
         pdbATOM.append("w*10___ x*10___ y*10___      z*10__       ");
         break;
       case 'R':
-        if (qtype == 'r')
+        if (calcRamachandranStraightness)
           pdbATOM.append("phi____ psi____ theta        PartialCharge");
         else
           pdbATOM.append("phi____ psi____ omega-180    PartialCharge");
@@ -621,19 +622,31 @@ public abstract class BioPolymer extends Polymer {
           w = a.getPartialCharge();
           float phiNext = (m == p.monomerCount - 1 ? Float.NaN
               : p.monomers[m + 1].getPhi());
-          float angle = Math.abs(y + phiNext - psiLast - x);// | psi[i] +
-                                                            // phi[i+1] -
-                                                            // psi[i-1] - phi[i]
-                                                            // |
+          float psiNext = (m == p.monomerCount - 1 ? Float.NaN
+              : p.monomers[m + 1].getPsi());
+          float angle = 0;
+          switch (qtype) {
+          case 'p':
+          case 'r':
+            float dPhi = (float) ((phiNext - x) / 2 * Math.PI / 180);
+            float dPsi = (float) ((psiNext - y) / 2 * Math.PI / 180);
+            angle = (float) Math.abs(180 / Math.PI * 2 * Math.acos(Math.cos(dPsi) * Math.cos(dPhi) - Math.cos(70*Math.PI/180)* Math.sin(dPsi) * Math.sin(dPhi)));
+            break;
+          case 'c':
+            angle = Math.abs(y + phiNext - psiLast - x);
+            // | psi[i] + phi[i+1] - psi[i-1] - phi[i]
+            // |
+            break;
+          }
           psiLast = y;
           if (Float.isNaN(angle)) {
             strExtra = "";
-            if (qtype == 'r')
+            if (calcRamachandranStraightness)
               continue;
           } else {
             q = new Quaternion(new Point3f(1, 0, 0), angle);
             strExtra = q.getInfo();
-            if (qtype == 'r') {
+            if (calcRamachandranStraightness) {
               z = angle;
             }
           }
@@ -645,7 +658,7 @@ public abstract class BioPolymer extends Polymer {
             qref = new Quaternion(q);
           }
           if (derivType == 2)
-            a.getGroup().setStraightness(Float.NaN);
+            monomer.setStraightness(Float.NaN);
           if (q == null) {
             qprev = null;
             qref = null;
@@ -656,26 +669,47 @@ public abstract class BioPolymer extends Polymer {
               q = null;
               dqprev = null;
             } else {
-              // back up to previous frame pointer
-              a = aprev;
-              q = qprev;
-              monomer = (Monomer) a.getGroup();
+              
+              // we now have two quaternionions, q and qprev
+              // the revised procedure assigns dq for these to group a, not aprev
+              // a/anext: q
+              // aprev: qprev
+              
+              // back up to previous frame pointer - no longer
+              //a = aprev;
+              //q = qprev;
+              //monomer = (Monomer) a.getGroup();
               // get dq or dq* for PREVIOUS atom
               if (isRelativeAlias) {
                 // ctype = 'r';
+                // dq*[i] = q[i-1] \ q[i]
+                // R(v) = q[i-1] \ q(i) * (0, v) * q[i] \ q[i-1]
+                // used for aligning all standard amino acids along X axis
+                // in the second derivative and in an ellipse in the first
+                // derivative
+                //PRE 11.7.47:
                 // dq*[i] = q[i] \ q[i+1]
                 // R(v) = q[i] \ q(i+1) * (0, v) * q[i+1] \ q[i]
                 // used for aligning all standard amino acids along X axis
                 // in the second derivative and in an ellipse in the first
                 // derivative
-                dq = q.leftDifference(qnext);// q.inv().mul(qnext);
+                dq = qprev.leftDifference(q);// qprev.inv().mul(q) = qprev \ q
               } else {
                 // ctype = 'a' or 'w' or 's'
+                
+                // OLD:
                 // the standard "absolute" difference dq
                 // dq[i] = q[i+1] / q[i]
                 // R(v) = q[i+1] / q[i] * (0, v) * q[i] / q[i+1]
                 // used for definition of the local helical axis
-                dq = qnext.rightDifference(q);// qnext.mul(q.inv());
+
+                // NEW:
+                // the standard "absolute" difference dq
+                // dq[i] = q[i] / q[i-1]
+                // R(v) = q[i] / q[i-1] * (0, v) * q[i-1] / q[i]
+                // used for definition of the local helical axis
+
+                dq = q.rightDifference(qprev);// q.mul(qprev.inv());
               }
               if (derivType == 1) {
                 // first deriv:
@@ -685,6 +719,8 @@ public abstract class BioPolymer extends Polymer {
               } else {
                 /*
                  * standard second deriv.
+                 * 
+                 * OLD:
                  * 
                  * ddq[i] =defined= (q[i+1] \/ q[i]) / (q[i] \/ q[i-1])
                  * 
@@ -697,25 +733,35 @@ public abstract class BioPolymer extends Polymer {
                  * 
                  * ddq[i] = dq / dqprev
                  * 
+
+                 * NEW: dq = q[i] \/ q[i-1]    dqprev = q[i-1] \/ q[i-2]
+                 * 
+                 * and so
+                 * 
+                 * ddq[iprev] = dq / dqprev
+                 * 
+                 * 
+                 * 
                  * Looks odd, perhaps, because it is written "dq[i] / dq[i-1]"
                  * but this is correct; we are assigning ddq to the correct
                  * atom.
                  * 
                  * 5.8.2009 -- bh -- changing quaternion straightness to be
                  * assigned to PREVIOUS aa
+                 * 
                  */
                 q = dq.rightDifference(dqprev); // q = dq.mul(dqprev.inv());
                 val1 = getQuaternionStraightness(id, dqprev, dq);
-                val2 = getStraightness(id, dqprev, dq);
+                val2 = get3DStraightness(id, dqprev, dq);
                 if (useQuaternionStraightness)
                   aprev.getGroup().setStraightness(val1);
                 else
-                  a.getGroup().setStraightness(val2);
+                  aprev.getGroup().setStraightness(val2);
               }
               dqprev = dq;
             }
-            aprev = anext;
-            qprev = qnext;
+            aprev = anext; //(a)
+            qprev = qnext; //(q)
           }
           if (q == null) {
             atomno = Integer.MIN_VALUE;
@@ -807,19 +853,18 @@ public abstract class BioPolymer extends Polymer {
     }
   }
 
-  private static float getStraightness(String id, Quaternion dqprev,
-                                       Quaternion dq) {
+  // starting with Jmol 11.7.47, dq is defined so as to LEAD TO
+  // the target atom, not LEAD FROM it. 
+  private static float get3DStraightness(String id, Quaternion dq,
+                                       Quaternion dqnext) {
     // 
-    // Dan Kohler's quaternion straightness = 1 - acos(|dq1.dq2|)/(PI/2)
+    // Normal-only simple dot-product straightness = dq1.normal.DOT.dq2.normal
     //
-    // alignment = near 0 or near 180 --> same - just different rotations.
-    // It's a 90-degree change in direction that corresponds to 0.
-    //
-    return (float) (1 - 2 * Math.acos(Math.abs(dqprev.dot(dq))) / Math.PI);
+    return dq.getNormal().dot(dqnext.getNormal());
   }
 
-  private static float getQuaternionStraightness(String id, Quaternion dqprev,
-                                                 Quaternion dq) {
+  private static float getQuaternionStraightness(String id, Quaternion dq,
+                                                 Quaternion dqnext) {
     // 
     // Dan Kohler's quaternion straightness = 1 - acos(|dq1.dq2|)/(PI/2)
     //
@@ -827,9 +872,9 @@ public abstract class BioPolymer extends Polymer {
     // It's a 90-degree change in direction that corresponds to 0.
     //
     if (Logger.debugging)
-      Logger.debug(id + " getQuaternionStraightness " + dqprev + " " + dq + " "
-          + (1 - 2 * Math.acos(Math.abs(dqprev.dot(dq))) / Math.PI));
-    return (float) (1 - 2 * Math.acos(Math.abs(dqprev.dot(dq))) / Math.PI);
+      Logger.debug(id + " getQuaternionStraightness " + dq + " " + dqnext + " "
+          + (1 - 2 * Math.acos(Math.abs(dq.dot(dqnext))) / Math.PI));
+    return (float) (1 - 2 * Math.acos(Math.abs(dq.dot(dqnext))) / Math.PI);
   }
 
 }

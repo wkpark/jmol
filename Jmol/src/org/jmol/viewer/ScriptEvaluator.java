@@ -4735,8 +4735,8 @@ class ScriptEvaluator {
         if (tokAt(j) == Token.var)
           j++;
       }
-      if (tokAt(j) == Token.identifier) {
-        String key = parameterAsString(j);
+      String key = parameterAsString(j);
+      if (tokAt(j) == Token.identifier || getContextVariableAsVariable(key) != null) {
         if (getToken(++j).tok != Token.opEQ)
           error(ERROR_invalidArgument);
         setVariable(++j, statementLength - 1, key, false, 0);
@@ -6685,7 +6685,8 @@ class ScriptEvaluator {
           + "X {10 0 0} {-10 0 0} color red \"x\";" + "draw quatAxis"
           + modelCount + "Y {0 10 0} {0 -10 0} color green \"y\";"
           + "draw quatAxis" + modelCount
-          + "Z {0 0 10} {0 0 -10} color blue \"z\";" + "color structure";
+          + "Z {0 0 10} {0 0 -10} color blue \"z\";" + "color structure;"
+          + "draw quatCenter" + modelCount + "{0 0 0} scale 0.02";
       break;
     }
     runScript(script);
@@ -10885,7 +10886,10 @@ class ScriptEvaluator {
     StringBuffer s = new StringBuffer();
     int pt = selectedFunction.indexOf("*");
     boolean isGeneric = (pt >= 0);
-    boolean isLocal = (selectedFunction.indexOf("_") == 0);
+    boolean isLocal = (selectedFunction.indexOf("_") != 0);
+    boolean namesOnly = (selectedFunction.equalsIgnoreCase("names") || selectedFunction.equalsIgnoreCase("_names"));
+    if (namesOnly)
+      selectedFunction = "";
     if (isGeneric)
       selectedFunction = selectedFunction.substring(0, pt);
     selectedFunction = selectedFunction.toLowerCase();
@@ -10901,8 +10905,11 @@ class ScriptEvaluator {
         names[n++] = name;
     }
     Arrays.sort(names, 0, n);
-    for (int i = 0; i < n; i++)
-      s.append(((ScriptFunction) ht.get(names[i])).toString());
+    for (int i = 0; i < n; i++) {
+      ScriptFunction f = (ScriptFunction) ht.get(names[i]);
+      s.append(namesOnly ? f.getSignature() : f.toString());
+      s.append('\n');
+    }
     return s.toString();
   }
 

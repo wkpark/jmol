@@ -117,7 +117,7 @@ public class LabelToken {
   /* 'Q' */'Q',  //occupancy 0.0 to 1.0
   /* 'q' */Token.occupancy,
   /* 'R' */Token.resno,
-  /* 'r' */Token.sequence,
+  /* 'r' */'r',
   /* 'S' */Token.site,
   /* 's' */Token.chain,
   /* 'T' */Token.straightness,
@@ -149,6 +149,7 @@ public class LabelToken {
            Token.modelindex,
            Token.property,
            Token.radius,
+           Token.sequence,
            Token.spacefill,
            Token.structure,
            Token.strucno,
@@ -383,6 +384,9 @@ public class LabelToken {
         break;
       case Token.radius:
         floatT = Atom.atomPropertyFloat(atom, t.tok);
+        break;
+      case 'r':
+        strT = atom.getSeqcodeString();
         break;
       case Token.strucno:
         int id = atom.getProteinStructureID();

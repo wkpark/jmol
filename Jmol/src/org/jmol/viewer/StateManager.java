@@ -749,7 +749,7 @@ public class StateManager {
     float pointGroupDistanceTolerance = 0.2f;
     float pointGroupLinearTolerance = 8.0f;
     String propertyColorScheme = "roygb";
-    String quaternionFrame = "c";
+    String quaternionFrame = "p"; // was c prior to Jmol 11.7.47
     float solventProbeRadius = 1.2f;
     int scriptDelay = 0;
     boolean selectAllModels = true;

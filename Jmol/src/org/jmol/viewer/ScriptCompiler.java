@@ -139,6 +139,11 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     }
   }
   
+  private boolean isContextVariable(String ident) {
+    return (thisFunction != null ? thisFunction.isVariable(ident)
+      : contextVariables != null && contextVariables.containsKey(ident));
+  }
+  
   /**
    * allows for three kinds of comments.
    * NOTE: closing involves asterisks and slash together, but that can't be shown here. 
@@ -1183,7 +1188,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (!isSetBrace && theTok != Token.plusPlus && theTok != Token.minusMinus
           && !Token.tokAttr(theTok, Token.identifier)
-          && !Token.tokAttr(theTok, Token.setparam)) {
+          && !Token.tokAttr(theTok, Token.setparam)
+          && !isContextVariable(ident)) {
         commandExpected();
         return ERROR;
       }

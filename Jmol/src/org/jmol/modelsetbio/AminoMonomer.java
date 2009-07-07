@@ -239,11 +239,11 @@ public class AminoMonomer extends AlphaMonomer {
   }
 
   public Object getHelixData(int tokType, char qType) {
-    int iNext = monomerIndex + 1;
-    AminoMonomer next = (AminoMonomer) (iNext >= bioPolymer.monomers.length ? null
-        : bioPolymer.monomers[iNext]);
-    Quaternion q1 = getQuaternion(qType);
-    Quaternion q2 = (next == null ? null : next.getQuaternion(qType));
+    int iPrev = monomerIndex - 1;
+    AminoMonomer prev = (AminoMonomer) (monomerIndex == 0 ? null
+        : bioPolymer.monomers[iPrev]);
+    Quaternion q2 = getQuaternion(qType);
+    Quaternion q1 = (prev == null ? null : prev.getQuaternion(qType));
     if (q1 == null || q2 == null)
       return super.getHelixData(tokType, qType);
 
@@ -264,8 +264,8 @@ public class AminoMonomer extends AlphaMonomer {
     *
     */
     
-    Point3f a = getQuaternionFrameCenter(qType);
-    Point3f b = next.getQuaternionFrameCenter(qType);
+    Point3f a = prev.getQuaternionFrameCenter(qType);
+    Point3f b = getQuaternionFrameCenter(qType);
     Vector3f vab = new Vector3f();
     vab.sub(b, a);
     

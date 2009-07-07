@@ -51,6 +51,12 @@ class ScriptFunction {
   int[][] lineIndices;
   int nParameters;
   Vector names = new Vector();
+
+  Hashtable variables = new Hashtable();
+  public boolean isVariable(String ident) {
+    return variables.containsKey(ident);
+  }
+
   ScriptVariable returnValue;
 
   ScriptFunction(String name) {
@@ -74,24 +80,10 @@ class ScriptFunction {
   }
 
   void addVariable(String name, boolean isParameter) {
+    variables.put(name, name);
     names.add(name);
     if (isParameter)
       nParameters++;
-  }
-
-  public String toString() {
-    StringBuffer s = new StringBuffer("/*\n * ");
-    s.append(name).append("\n */\nfunction ").append(name).append("(");
-    for (int i = 0; i < nParameters; i++) {
-      if (i > 0)
-        s.append(", ");
-      s.append(names.get(i));
-    }
-    s.append(") {\n");
-    if (script != null)
-      s.append(script);
-    s.append("}\n\n");
-    return s.toString();
   }
 
   static void setFunction(ScriptFunction function, String script,
@@ -126,6 +118,27 @@ class ScriptFunction {
     script = s;
     if (script != null && script != "" && !script.endsWith("\n"))
       script += "\n";
+  }
+
+  public String getSignature() {
+    StringBuffer s = new StringBuffer();
+    s.append("function ").append(name).append(" (");
+    for (int i = 0; i < nParameters; i++) {
+      if (i > 0)
+        s.append(", ");
+      s.append(names.get(i));
+    }
+    s.append(")");
+    return s.toString();
+  }
+
+  public String toString() {
+    StringBuffer s = new StringBuffer("/*\n * ");
+    s.append(name).append("\n */\n").append(getSignature()).append("{\n");
+    if (script != null)
+      s.append(script);
+    s.append("}\n");
+    return s.toString();
   }
 
 }

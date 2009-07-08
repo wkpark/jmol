@@ -60,6 +60,7 @@ public class GromacsReader extends AtomSetCollectionReader {
   public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("xyz");
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
     try {
       readAtomSetName();
       int modelAtomCount = readAtomCount();

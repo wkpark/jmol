@@ -99,7 +99,7 @@ public class UccageRenderer extends FontLineShapeRenderer {
     int y = lineheight;
     
     String spaceGroup = symmetry.getSpaceGroupName(); 
-    if (spaceGroup != null) {
+    if (spaceGroup != null & !spaceGroup.equals("-- [--]")) {
       y += lineheight;
       g3d.drawStringNoSlab(spaceGroup, null, x, y, 0);
     }

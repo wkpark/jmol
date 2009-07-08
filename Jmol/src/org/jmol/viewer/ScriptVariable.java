@@ -502,7 +502,10 @@ class ScriptVariable extends Token {
   }
 
   static ScriptVariable selectItem(ScriptVariable var) {
-    if (var.index != Integer.MAX_VALUE)
+    // pass bitsets created by the select() or for() commands
+    // and all arrays by reference
+    if (var.index != Integer.MAX_VALUE || 
+        var.tok == list && var.intValue == Integer.MAX_VALUE)
       return var;
     return (ScriptVariable) selectItem(var, Integer.MIN_VALUE);
   }

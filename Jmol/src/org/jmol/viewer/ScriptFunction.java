@@ -67,16 +67,31 @@ class ScriptFunction {
     int nParams = (params == null ? 0 : params.size());
     for (int i = names.size(); --i >= 0;) {
       String name = ((String) names.get(i)).toLowerCase();
-      contextVariables.put(name, (i < nParameters && i < nParams ? 
-          new ScriptVariable((ScriptVariable) params.get(i)) 
-          : (new ScriptVariable(Token.string, "")).setName(name)));
-
-      
-//      contextVariables.put(name, (i < nParameters && i < nParams ? 
-//          new ScriptVariable().set((ScriptVariable) params.get(i)) 
-//          : (new ScriptVariable(Token.string, "")).setName(name)));
+      ScriptVariable var = (i < nParameters && i < nParams ?
+          (ScriptVariable) params.get(i) : null);
+      if (var != null && var.tok != Token.list)
+        var = new ScriptVariable(var);
+      contextVariables.put(name, (var == null ? 
+          (new ScriptVariable(Token.string, "")).setName(name) : var));
     }
     contextVariables.put("_retval", ScriptVariable.intVariable(0));
+  }
+
+  public void unsetVariables(Hashtable contextVariables, Vector params) {
+    // set list values in case they have changed.
+    int nParams = (params == null ? 0 : params.size());
+    int nNames = names.size();
+    if (nParams == 0 || nNames == 0)
+      return;
+    for (int i = 0; i < nNames && i < nParams; i++) {
+      ScriptVariable global = (ScriptVariable) params.get(i);
+      if (global.tok != Token.list)
+        continue;
+      ScriptVariable local = (ScriptVariable) contextVariables.get(((String) names.get(i)).toLowerCase());
+      if (local.tok != Token.list)
+        continue;
+      global.value = local.value;
+    }
   }
 
   void addVariable(String name, boolean isParameter) {

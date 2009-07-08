@@ -109,10 +109,10 @@ public class GromacsReader extends AtomSetCollectionReader {
         continue;
       }
       Atom atom = new Atom();
-      atom.atomSerial = parseInt(line, 0, 5);
+      atom.sequenceNumber = parseInt(line, 0, 5);
       atom.group3 = parseToken(line, 5, 9).trim();  //allowing for 4 characters
       atom.atomName = line.substring(11, 15).trim();
-      atom.sequenceNumber = parseInt(line, 15, 20);
+      atom.atomSerial = parseInt(line, 15, 20);
       atom.x = parseFloat(line, 20, 28) * 10;
       atom.y = parseFloat(line, 28, 36) * 10;
       atom.z = parseFloat(line, 36, 44) * 10;

@@ -2386,7 +2386,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int GROUPID_AMINO_MAX        = 24;
   
   private final static int GROUPID_WATER           = 42;
-  private final static int GROUPID_SULPHATE        = 46;
+  private final static int GROUPID_SULPHATE        = 48;
   
   public final static String[] predefinedGroup3Names = {
     // taken from PDB spec
@@ -2443,12 +2443,15 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "+U",
     "+I",
     
+    // solvent types:
+    
     "HOH", // 42 water
     "DOD", // 43
     "WAT", // 44
-    
-    "PO4", // 45 phosphate ions
-    "SO4", // 46 sulphate ions
+    "SOL", // 45 gromacs solvent
+    "UREA", // 46 urea
+    "PO4", // 47 phosphate ions
+    "SO4", // 48 sulphate ions
 
   };
   

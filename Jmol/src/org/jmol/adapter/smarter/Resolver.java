@@ -34,6 +34,7 @@ import netscape.javascript.JSObject;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.util.ZipUtil;
 
@@ -426,7 +427,7 @@ public class Resolver {
         nLines++;
     }
 
-    String readerName = checkSpecial(nLines, lines);
+    String readerName = checkSpecial(nLines, lines, false);
     
     if (readerName != null)
       return readerName;
@@ -479,6 +480,12 @@ public class Resolver {
         }
       }
     }
+    
+    readerName = checkSpecial(nLines, lines, true);
+    
+    if (readerName != null)
+      return readerName;
+    
     return (returnLines ? "\n" + lines[0] + "\n" + lines[1] + "\n" + lines[2] + "\n" : null);
   }
 
@@ -561,8 +568,12 @@ public class Resolver {
 
   };
 
-  private final static String checkSpecial(int nLines, String[] lines) {
+  private final static String checkSpecial(int nLines, String[] lines, boolean isEnd) {
     // the order here is CRITICAL
+    if (isEnd) {
+      if (checkGromacs(lines))
+        return "Gromacs";
+    }
     if (nLines == 1 && lines[0].length() > 0
         && Character.isDigit(lines[0].charAt(0)))
       return specialTags[SPECIAL_JME][0]; //only one line, and that line starts with a number 
@@ -587,6 +598,16 @@ public class Resolver {
     return null;
   }
   
+  private static boolean checkGromacs(String[] lines) {
+    if (Parser.parseInt(lines[1]) == Integer.MIN_VALUE)
+      return false;
+    int len = -1;
+    for (int i = 2; i < 16 && len != 0; i++)
+      if ((len = lines[i].length()) != 69 && len != 0)
+        return false;
+    return true;
+  }
+
   private static boolean checkWien2k(String[] lines) {
     return (lines[2].startsWith("MODE OF CALC=") 
         || lines[2].startsWith("             RELA")

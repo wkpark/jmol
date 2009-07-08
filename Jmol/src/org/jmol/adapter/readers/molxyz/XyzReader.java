@@ -75,13 +75,13 @@ public class XyzReader extends AtomSetCollectionReader {
     }
   }
 
-  void skipAtomSet(int modelAtomCount) throws Exception {
+  private void skipAtomSet(int modelAtomCount) throws Exception {
     readLine(); //comment
     for (int i = modelAtomCount; --i >= 0;)
       readLine(); //atoms
   }
 
-  int readAtomCount() throws Exception {
+  private int readAtomCount() throws Exception {
     readLine();
     if (line != null) {
       int atomCount = parseInt(line);
@@ -91,7 +91,7 @@ public class XyzReader extends AtomSetCollectionReader {
     return 0;
   }
 
-  void readAtomSetName() throws Exception {
+  private void readAtomSetName() throws Exception {
     readLineTrimmed();
     checkLineForScript();
     //    newAtomSet(line); // makes that the titles of multi-xyz file gets messed up
@@ -99,7 +99,7 @@ public class XyzReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetName(line);
   }
 
-  void readAtoms(int modelAtomCount) throws Exception {
+  private void readAtoms(int modelAtomCount) throws Exception {
     for (int i = 0; i < modelAtomCount; ++i) {
       readLine();
       String[] tokens = getTokens();

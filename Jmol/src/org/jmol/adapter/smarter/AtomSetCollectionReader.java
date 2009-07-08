@@ -164,7 +164,7 @@ public abstract class AtomSetCollectionReader {
   private boolean doPackUnitCell;
   private boolean doConvertToFractional;
   private boolean fileCoordinatesAreFractional;
-  private boolean ignoreFileUnitCell;
+  protected boolean ignoreFileUnitCell;
   private boolean ignoreFileSpaceGroupName;
   private float symmetryRange;  
   private float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f

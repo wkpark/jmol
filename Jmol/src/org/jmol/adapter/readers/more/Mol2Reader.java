@@ -217,8 +217,6 @@ public class Mol2Reader extends FFReader {
     String[] tokens = getTokens();
     if (tokens.length < 6)
       return;
-    for (int i = 0; i < 6; i++)
-      setUnitCellItem(i, parseFloat(tokens[i]));
     String name = "";
     for (int i = 6; i < tokens.length; i++)
       name += " " + tokens[i];
@@ -228,6 +226,10 @@ public class Mol2Reader extends FFReader {
       name += " *";
     name = name.substring(1);
     setSpaceGroupName(name);
+    if (ignoreFileUnitCell)
+      return;
+    for (int i = 0; i < 6; i++)
+      setUnitCellItem(i, parseFloat(tokens[i]));
     Atom[] atoms = atomSetCollection.getAtoms();
     for (int i = 0; i < atomCount; ++i)
       setAtomCoord(atoms[nAtoms + i]);

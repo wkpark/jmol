@@ -86,6 +86,7 @@ public class GromacsReader extends AtomSetCollectionReader {
     checkLineForScript();
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetName(line);
+    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
   }
 
   /*

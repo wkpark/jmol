@@ -628,14 +628,38 @@ public abstract class BioPolymer extends Polymer {
           switch (qtype) {
           case 'p':
           case 'r':
+            /* 
+             * an approximation by Bob Hanson and Steven Braun 7/7/2009
+             * 
+             * P-straightness utilizes phi[i], psi[i] and phi[i+1], psi[i+1]
+             * and is approximated as:
+             * 
+             *   1 - 2 acos(|cos(theta/2)|) / PI
+             * 
+             * where 
+             * 
+             *   cos(theta/2) = q[i]\q[i-1] = cos(dPsi/2)cos(dPhi/2) - sin(alpha)sin(dPsi/2)sin(dPhi/2)
+             * 
+             * and 
+             * 
+             *   dPhi = phi[i+1] - phi[i]
+             *   dPsi = psi[i+1] - psi[i]
+             * 
+             */ 
             float dPhi = (float) ((phiNext - x) / 2 * Math.PI / 180);
             float dPsi = (float) ((psiNext - y) / 2 * Math.PI / 180);
             angle = (float) Math.abs(180 / Math.PI * 2 * Math.acos(Math.cos(dPsi) * Math.cos(dPhi) - Math.cos(70*Math.PI/180)* Math.sin(dPsi) * Math.sin(dPhi)));
             break;
           case 'c':
-            angle = Math.abs(y + phiNext - psiLast - x);
-            // | psi[i] + phi[i+1] - psi[i-1] - phi[i]
-            // |
+            /* an approximation by Bob Hanson and Dan Kohler, 7/2008
+             * 
+             * The near colinearity of the C_alpha-C and N'-C_alpha'
+             * allows for the remarkably simple relationship
+             * 
+             *  | psi[i] - psi[i-1] + phi[i+1] - phi[i] |
+             *
+             */
+            angle = Math.abs(y - psiLast + phiNext - x);
             break;
           }
           psiLast = y;
@@ -753,10 +777,7 @@ public abstract class BioPolymer extends Polymer {
                 q = dq.rightDifference(dqprev); // q = dq.mul(dqprev.inv());
                 val1 = getQuaternionStraightness(id, dqprev, dq);
                 val2 = get3DStraightness(id, dqprev, dq);
-                if (useQuaternionStraightness)
-                  aprev.getGroup().setStraightness(val1);
-                else
-                  aprev.getGroup().setStraightness(val2);
+                aprev.getGroup().setStraightness(useQuaternionStraightness ? val1 : val2);
               }
               dqprev = dq;
             }

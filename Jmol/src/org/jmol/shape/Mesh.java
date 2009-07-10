@@ -42,6 +42,11 @@ public class Mesh {
   private JmolRendererInterface g3d;
   
   public String[] title = null;
+  public Point3f[] vertices;
+  public short[] normixes;
+  public int[][] polygonIndexes = null;
+  public BitSet[] bitsets; // [0]bsSelected [1]bsIgnore [2]bsTrajectory
+
   public String thisID;
   public boolean isValid = true;
   public String scriptCommand;
@@ -50,10 +55,7 @@ public class Mesh {
   public boolean visible = true;
   public short colix;
   public int vertexCount;
-  public Point3f[] vertices;
-  public short[] normixes;
   public int polygonCount;  // negative number indicates hermite curve
-  public int[][] polygonIndexes = null;
   
   public float scale = 1;
   public boolean haveXyPoints;
@@ -63,7 +65,6 @@ public class Mesh {
   public String meshType = null;
   public Mesh linkedMesh = null; //for lcaoOrbitals
   
-  public BitSet[] bitsets; // [0]bsSelected [1]bsIgnore [2]bsTrajectory
   public int atomIndex = -1;
   public int modelIndex = -1;  // for Isosurface and Draw
   public int visibilityFlags;
@@ -104,8 +105,6 @@ public class Mesh {
   public void clear(String meshType) {
     vertexCount = polygonCount = 0;
     scale = 1;
-    vertices = null;
-    polygonIndexes = null;
     havePlanarContours = false;
     showPoints = false;
     showContourLines = false;
@@ -113,6 +112,12 @@ public class Mesh {
     fillTriangles = true;
     showTriangles = false; //as distinct entitities
     frontOnly = false;
+    title = null;
+    normixes = null;
+    bitsets = null;    
+    vertices = null;
+    polygonIndexes = null;
+    
     this.meshType = meshType;
   }
 

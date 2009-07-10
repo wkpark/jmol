@@ -99,11 +99,14 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.MouseManager;
 import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
+import org.jmol.viewer.StateManager.Orientation;
 import org.jmol.jvxl.readers.JvxlReader;
 
 import java.util.BitSet;
@@ -176,6 +179,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     ////isosurface-only (no calculation required; no calculation parameters to set)
 
+    if ("navigate" == propertyName) {
+      navigate(((Integer)value).intValue());
+      return;
+    }
     if ("delete" == propertyName) {
       setPropertySuper(propertyName, value, bs);
       if (!explicitID)
@@ -395,6 +402,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private void setPropertySuper(String propertyName, Object value, BitSet bs) {
     //System.out.println(propertyName + " " + value);
     //System.out.println(thisMesh + (thisMesh!= null ? thisMesh.thisID : ""));
+    if (propertyName == "thisID" && currentMesh != null 
+        && currentMesh.thisID.equals((String) value))
+      return;
     currentMesh = thisMesh;
     super.setProperty(propertyName, value, bs);
     thisMesh = (IsosurfaceMesh) currentMesh;
@@ -922,6 +932,160 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   private final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
+
+  public Point3f checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
+    if (modifiers !=MouseManager.ALT_LEFT)
+      return null;
+    int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
+    if (g3d.isAntialiased()) {
+      x <<= 1;
+      y <<= 1;
+      dmin2 <<= 1;
+    }
+    int imesh = -1;
+    int jmaxz = -1;
+    int jminz = -1;
+    int maxz = Integer.MIN_VALUE;
+    int minz = Integer.MAX_VALUE;
+    for (int i = 0; i < meshCount && imesh < 0; i++) {
+      IsosurfaceMesh m = isomeshes[i];
+      if (m.visibilityFlags == 0 || m.modelIndex >= 0
+          && !bsVisible.get(m.modelIndex))
+        continue;
+      Point3f[] centers = m.getCenters();
+      for (int j = centers.length; --j >= 0; ) {
+          Point3f v = centers[j];
+          int d2 = coordinateInRange(x, y, v, dmin2);
+          if (d2 >= 0) {
+            imesh = i;
+            if (ptXY.z < minz) {
+              minz = ptXY.z;
+              jminz = j;
+            }
+            if (ptXY.z > maxz) {
+              maxz = ptXY.z;
+              jmaxz = j;
+            }
+          }
+      }
+    }
+    if (imesh < 0)
+      return null;
+    IsosurfaceMesh pickedMesh = isomeshes[imesh];
+    setPropertySuper("thisID", pickedMesh.thisID, null);
+    boolean toFront = false;
+    int iface = (toFront ? jminz : jmaxz);
+    Point3f ptRet = pickedMesh.centers[iface];
+    Vector3f vNorm = new Vector3f();
+    pickedMesh.getFacePlane(iface, vNorm);
+    // get normal to surface
+    vNorm.scale(-1);
+    setHeading(ptRet, vNorm, 2);
+    return ptRet;
+  }
+
+  private void navigate(int dz) {
+    if (thisMesh == null)
+      return;
+    Point3f navPt = new Point3f(viewer.getNavigationOffset());
+    Point3f toPt = new Point3f();
+    viewer.unTransformPoint(navPt, toPt);
+    System.out.println(navPt + " " + toPt);
+    navPt.z += dz;
+    viewer.unTransformPoint(navPt, toPt);
+    System.out.println(navPt + " " + toPt);
+    Point3f ptRet = new Point3f();
+    Vector3f vNorm = new Vector3f();
+    if (!getClosestNormal(thisMesh, toPt, ptRet, vNorm))
+      return;
+    Point3f pt2 = new Point3f(ptRet);
+    pt2.add(vNorm);
+    Point3f pt2s = new Point3f();
+    viewer.transformPoint(pt2, pt2s);
+    if (pt2s.y > navPt.y)
+      vNorm.scale(-1);
+    setHeading(ptRet, vNorm, 0);     
+  }
+
+  private void setHeading(Point3f pt, Vector3f vNorm, int nSeconds) {
+    // general trick here is to save the original orientation, 
+    // then do all the changes and save the new orientation.
+    // Then just do a timed restore.
+
+    Orientation o1 = viewer.getOrientation();
+    
+    // move to point
+    viewer.navigate(0, pt);
+    
+    Point3f toPts = new Point3f();
+    
+    // get screen point along normal
+    Point3f toPt = new Point3f(vNorm);
+    viewer.script("draw test2 vector " + Escape.escape(pt) + " " + Escape.escape(toPt));
+    toPt.add(pt);
+    viewer.transformPoint(toPt, toPts);
+    
+    // subtract the navigation point to get a relative point
+    // that we can project into the xy plane by setting z = 0
+    Point3f navPt = new Point3f(viewer.getNavigationOffset());
+    toPts.sub(navPt);
+    toPts.z = 0;
+    
+    // set the directed angle and rotate normal into yz plane,
+    // less 20 degrees for the normal upward sloping view
+    float angle = Measure.computeTorsion(JmolConstants.axisNY, 
+        JmolConstants.center, JmolConstants.axisZ, toPts, true);
+    viewer.navigate(0, JmolConstants.axisZ, angle);        
+    toPt.set(vNorm);
+    toPt.add(pt);
+    viewer.transformPoint(toPt, toPts);
+    toPts.sub(navPt);
+    angle = Measure.computeTorsion(JmolConstants.axisNY,
+        JmolConstants.center, JmolConstants.axisX, toPts, true);
+    viewer.navigate(0, JmolConstants.axisX, 20 - angle);
+    
+    // save this orientation, restore the first, and then
+    // use TransformManager.moveto to smoothly transition to it
+    // a script is necessary here because otherwise the application
+    // would hang.
+    
+    if (nSeconds <= 0)
+      return;
+    viewer.saveOrientation("_navsurf");
+    o1.restore(0, true);
+    viewer.script("restore orientation _navsurf " + nSeconds);
+  }
+  
+  private boolean getClosestNormal(IsosurfaceMesh m, Point3f toPt, Point3f ptRet, Vector3f normalRet) {
+    Point3f[] centers = m.getCenters();
+    float d;
+    float dmin = Float.MAX_VALUE;
+    int imin = -1;
+    for (int i = centers.length; --i >= 0; ) {
+      if ((d = centers[i].distance(toPt)) >= dmin)
+        continue;
+      dmin = d;
+      imin = i;
+    }
+    if (imin < 0)
+      return false;
+    System.out.println(imin + " " + m.centers[imin] + " " + m.polygonIndexes[imin][0]+ " " + m.polygonIndexes[imin][1]+ " " + m.polygonIndexes[imin][2]);
+    getClosestPoint(m, imin, toPt, ptRet, normalRet);
+    return true;
+  }
+  
+  private void getClosestPoint(IsosurfaceMesh m, int imin, Point3f toPt, Point3f ptRet,
+                               Vector3f normalRet) {
+    Point4f plane = m.getFacePlane(imin, normalRet);
+    float dist = Graphics3D.distanceToPlane(plane, toPt);
+    normalRet.scale(-dist);
+    ptRet.set(toPt);
+    ptRet.add(normalRet);
+    dist = Graphics3D.distanceToPlane(plane, ptRet);
+    if (m.centers[imin].distance(toPt) < ptRet.distance(toPt))
+      ptRet.set(m.centers[imin]);
+    System.out.println(ptRet);
+  }
 
   private String findValue(int x, int y, boolean isPicking,
                                    BitSet bsVisible) {

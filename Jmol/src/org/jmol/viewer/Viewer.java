@@ -49,6 +49,7 @@ import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.TempArray;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.StateManager.Orientation;
 
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -73,7 +74,7 @@ import java.net.URL;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Reader; //import java.io.Reader;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
 /*
@@ -570,12 +571,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return stateManager.listSavedStates();
   }
 
-  void saveOrientation(String saveName) {
+  public void saveOrientation(String saveName) {
     // from Eval
     stateManager.saveOrientation(saveName);
   }
 
-  boolean restoreOrientation(String saveName, float timeSeconds) {
+  public boolean restoreOrientation(String saveName, float timeSeconds) {
     // from Eval
     return stateManager.restoreOrientation(saveName, timeSeconds, true);
   }
@@ -589,6 +590,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         stateManager.getOrientation());
   }
 
+  public Orientation getOrientation() {
+    return stateManager.getOrientation();
+  }
+  
   void restoreModelOrientation(int modelIndex) {
     StateManager.Orientation o = modelSet.getModelOrientation(modelIndex);
     if (o != null)
@@ -704,7 +709,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // refresh(0, "Viewer:setCenterBitSet()");
   }
 
-  Point3f getNavigationCenter() {
+  public Point3f getNavigationCenter() {
     return transformManager.getNavigationCenter();
   }
 
@@ -732,12 +737,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getNavigationOffsetPercent(XorY);
   }
 
-  public boolean getNavigating() {
-    return transformManager.getNavigating();
+  public boolean isNavigating() {
+    return transformManager.isNavigating();
   }
 
-  boolean isInPosition(Point3f pt, float degrees) {
-    return transformManager.isInPosition(pt, degrees);
+  boolean isInPosition(Vector3f axis, float degrees) {
+    return transformManager.isInPosition(axis, degrees);
   }
 
   void move(Vector3f dRot, float dZoom, Vector3f dTrans, float dSlab,
@@ -747,7 +752,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     moveUpdate(floatSecondsTotal);
   }
 
-  void moveTo(float floatSecondsTotal, Point3f center, Point3f pt,
+  void moveTo(float floatSecondsTotal, Point3f center, Vector3f pt,
               float degrees, float zoom, float xTrans, float yTrans,
               float rotationRadius, Point3f navCenter, float xNav, float yNav,
               float navDepth) {
@@ -757,11 +762,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     moveUpdate(floatSecondsTotal);
   }
 
-  void moveTo(float floatSecondsTotal, Matrix3f rotationMatrix, Point3f center,
+  void moveTo(float floatSecondsTotal, Point3f center, Matrix3f rotationMatrix, 
               float zoom, float xTrans, float yTrans, float rotationRadius,
               Point3f navCenter, float xNav, float yNav, float navDepth) {
     // from StateManager -- -1 for time --> no repaint
-    transformManager.moveTo(floatSecondsTotal, rotationMatrix, center, zoom,
+    transformManager.moveTo(floatSecondsTotal, center, rotationMatrix, zoom,
         xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
     moveUpdate(floatSecondsTotal);
   }
@@ -785,7 +790,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     moveUpdate(timeSeconds);
   }
 
-  void navigate(float timeSeconds, Point3f center) {
+  public void navigate(float timeSeconds, Point3f center) {
     if (isJmolDataFrame())
       return;
     transformManager.navigate(timeSeconds, center);
@@ -799,7 +804,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     moveUpdate(timeSeconds);
   }
 
-  void navigate(float timeSeconds, Vector3f rotAxis, float degrees) {
+  void navigateSurface(float timeSeconds, String name) {
+    if (isJmolDataFrame())
+      return;
+    transformManager.navigateSurface(timeSeconds, name);
+    moveUpdate(timeSeconds);
+  }
+
+  public void navigate(float timeSeconds, Vector3f rotAxis, float degrees) {
     if (isJmolDataFrame())
       return;
     transformManager.navigate(timeSeconds, rotAxis, degrees);
@@ -4074,6 +4086,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         .getShapeProperty(shapeType, propertyName, Integer.MIN_VALUE);
   }
 
+  public boolean getShapeProperty(int shapeType, String propertyName, Object[] data) {
+    return modelSet.getShapeProperty(shapeType, propertyName, data);
+  }
+
   Object getShapeProperty(int shapeType, String propertyName, int index) {
     return modelSet.getShapeProperty(shapeType, propertyName, index);
   }
@@ -5528,6 +5544,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setNavigationMode(value);
         break;
       }
+      if (key.equalsIgnoreCase("navigateSurface")) {
+        global.navigateSurface = value;
+        break;
+      }
       if (key.equalsIgnoreCase("hideNavigationPoint")) {
         global.hideNavigationPoint = value;
         break;
@@ -5905,7 +5925,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean getShowNavigationPoint() {
     if (!global.navigationMode || !transformManager.canNavigate())
       return false;
-    return (getNavigating() && !global.hideNavigationPoint
+    return (isNavigating() && !global.hideNavigationPoint
         || global.showNavigationPointAlways || getInMotion());
   }
 
@@ -6117,8 +6137,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // refresh(1,"set navigationMode");
   }
 
-  boolean getNavigationMode() {
+  public boolean getNavigationMode() {
     return global.navigationMode;
+  }
+
+  public boolean getNavigateSurface() {
+    return global.navigateSurface;
   }
 
   private void setPerspectiveModel(int mode) {

@@ -316,6 +316,15 @@ abstract public class ModelSet extends ModelCollection {
     return result;
   }
 
+  public boolean getShapeProperty(int shapeID, String propertyName, Object[] data) {
+    if (shapes == null || shapes[shapeID] == null)
+      return false;
+    viewer.setShapeErrorState(shapeID, "get " + propertyName);
+    boolean result = shapes[shapeID].getProperty(propertyName, data);
+    viewer.setShapeErrorState(-1, null);
+    return result;
+  }
+
   public int getShapeIdFromObjectName(String objectName) {
     if (shapes != null)
       for (int i = JmolConstants.SHAPE_MIN_SPECIAL; i < JmolConstants.SHAPE_MAX_MESH_COLLECTION; ++i)
@@ -409,18 +418,26 @@ abstract public class ModelSet extends ModelCollection {
 
   public Point3f checkObjectClicked(int x, int y, int modifiers,
                                     BitSet bsVisible) {
-    Shape shape = shapes[JmolConstants.SHAPE_ECHO];
+    Shape shape;
     Point3f pt = null;
+    
+    if (viewer.getNavigationMode() && viewer.getNavigateSurface() 
+        && (shape = shapes[JmolConstants.SHAPE_ISOSURFACE]) != null && 
+        (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
+      return pt;
+
     if (modifiers != 0 && viewer.getBondPicking()
         && (pt = shapes[JmolConstants.SHAPE_STICKS].checkObjectClicked(x, y,
             modifiers, bsVisible)) != null)
       return pt;
 
-    if (shape != null && modifiers != 0
+    if ((shape = shapes[JmolConstants.SHAPE_ECHO])!= null && modifiers != 0
         && (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
       return pt;
-    return ((shape = shapes[JmolConstants.SHAPE_DRAW]) == null ? null : shape
-        .checkObjectClicked(x, y, modifiers, bsVisible));
+    if ((shape = shapes[JmolConstants.SHAPE_DRAW]) != null && 
+        (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
+      return pt;
+    return null;
   }
  
   public void checkObjectDragged(int prevX, int prevY, int x, int y,

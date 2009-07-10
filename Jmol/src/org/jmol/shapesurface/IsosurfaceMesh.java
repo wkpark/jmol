@@ -30,6 +30,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
@@ -63,21 +64,22 @@ public class IsosurfaceMesh extends Mesh {
 
   void clear(String meshType, boolean iAddGridPoints) {
     super.clear(meshType);  
-    isColorSolid = true;
-    vertexColixes = null;
-    vertexValues = null;
-    assocGridPointMap = null;
-    assocGridPointNormals = null;
-    vertexSets = null;
+    nSets = 0;
     firstRealVertex = -1;
     hasGridPoints = iAddGridPoints;
     showPoints = iAddGridPoints;
     jvxlData.jvxlSurfaceData = "";
     jvxlData.jvxlEdgeData = "";
     jvxlData.jvxlColorData = "";
+    isColorSolid = true;
+    vertexColixes = null;
+    vertexValues = null;
+    assocGridPointMap = null;
+    assocGridPointNormals = null;
+    vertexSets = null;
+    centers = null;
     jvxlData.vContours = null;
     surfaceSet = null;
-    nSets = 0;
   }  
 
   void allocVertexColixes() {
@@ -263,6 +265,27 @@ public class IsosurfaceMesh extends Mesh {
             .get(assocGridPointMap.get(I)));
       }
     }
+  }
+  
+  Point3f[] centers;
+  Point3f[] getCenters() {
+    if (centers != null)
+      return centers;
+    centers = new Point3f[polygonCount];
+    for (int i = 0; i < polygonCount; i++) {
+      Point3f pt = centers[i] = new Point3f();
+      pt.add(vertices[polygonIndexes[i][0]]);
+      pt.add(vertices[polygonIndexes[i][1]]);
+      pt.add(vertices[polygonIndexes[i][2]]);
+      pt.scale(1/3f);
+    }
+    return centers;
+  }
+  
+  Point4f getFacePlane(int i, Vector3f vNorm) {
+    return Graphics3D.getPlaneThroughPoints(vertices[polygonIndexes[i][0]], 
+        vertices[polygonIndexes[i][1]], vertices[polygonIndexes[i][2]], 
+        vNorm, vAB, vAC);
   }
   
   public static final int CONTOUR_NPOLYGONS = 0;

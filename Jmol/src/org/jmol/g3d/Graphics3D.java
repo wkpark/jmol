@@ -41,6 +41,7 @@ import org.jmol.api.JmolRendererInterface;
 import org.jmol.shape.ShapeRenderer;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.JmolConstants;
 
 /**
  * Provides high-level graphics primitives for 3D visualization.
@@ -2714,6 +2715,14 @@ final public class Graphics3D implements JmolRendererInterface {
    * normals and normal indexes -- normix
    * ***************************************************************/
 
+  public static Point4f getPlaneThroughPoints(Point3f pointA,
+                                              Point3f pointB,
+                                              Point3f pointC, Vector3f vNorm,
+                                              Vector3f vAB, Vector3f vAC) {
+    float w = Graphics3D.getNormalThroughPoints(pointA, pointB, pointC, vNorm, vAB, vAC);
+    return new Point4f(vNorm.x, vNorm.y, vNorm.z, w);
+  }
+  
   public static float distanceToPlane(Point4f plane, Point3f pt) {
     return (plane == null ? Float.NaN 
         : (plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.w)
@@ -2806,11 +2815,11 @@ final public class Graphics3D implements JmolRendererInterface {
     // vector in xy plane perpendicular to a line between two points RMH
     Vector3f axis = new Vector3f(pointA);
     axis.sub(pointB);
-    float phi = axis.angle(new Vector3f(0, 1, 0));
+    float phi = axis.angle(JmolConstants.axisY);
     if (phi == 0) {
       vNormNorm.set(1, 0, 0);
     } else {
-      vNormNorm.cross(axis, new Vector3f(0, 1, 0));
+      vNormNorm.cross(axis, JmolConstants.axisY);
       vNormNorm.normalize();
     }
   }
@@ -2993,4 +3002,5 @@ final public class Graphics3D implements JmolRendererInterface {
   public boolean canDoTriangles() {
     return true;
   }
+
 }

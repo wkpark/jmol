@@ -386,13 +386,12 @@ public class Draw extends MeshCollection {
       id = axisID;
       vertexIndex--;
     }
-    int meshIndex = getIndexFromName(id);
-    DrawMesh m;
+    DrawMesh m = (DrawMesh) getMesh(id);
+    if (m == null || m.vertices == null)
+      return null; 
     // >= 0 ? that vertexIndex
     // < 0 and no ptCenters or modelIndex < 0 -- center point
     // < 0 center for modelIndex
-    if (meshIndex < 0 || (m = dmeshes[meshIndex]).vertices == null)
-      return null;
     if (vertexIndex < 0)
       vertexIndex = m.vertexCount + vertexIndex;
     if (m.vertexCount <= vertexIndex)
@@ -405,10 +404,9 @@ public class Draw extends MeshCollection {
   }
    
   private Vector3f getSpinAxis(String axisID, int modelIndex) {
-    int meshIndex = getIndexFromName(axisID);
-    DrawMesh m;
-    return (meshIndex < 0 || (m = dmeshes[meshIndex]).vertices == null ? null :
-      m.ptCenters == null || modelIndex < 0 ? m.axis : m.axes[modelIndex]);
+    DrawMesh m = (DrawMesh) getMesh(axisID);
+    return (m == null || m.vertices == null ? null 
+        : m.ptCenters == null || modelIndex < 0 ? m.axis : m.axes[modelIndex]);
    }
   
   private boolean setDrawing() {

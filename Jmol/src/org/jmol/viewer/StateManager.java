@@ -328,7 +328,9 @@ public class StateManager {
     float navDepth = Float.NaN;
     boolean windowCenteredFlag;
     boolean navigationMode;
+    boolean navigateSurface;
     String moveToText;
+    
 
     Orientation(boolean asDefault) {
       if (asDefault) {
@@ -348,6 +350,7 @@ public class StateManager {
       windowCenteredFlag = viewer.isWindowCentered();
       rotationRadius = viewer.getRotationRadius();
       navigationMode = viewer.getNavigationMode();
+      navigateSurface = viewer.getNavigateSurface();
       moveToText = viewer.getMoveToText(-1);
       if (navigationMode) {
         navCenter = viewer.getNavigationOffset();
@@ -362,16 +365,16 @@ public class StateManager {
       return moveToText;
     }
     
-    void restore(float timeSeconds, boolean isAll) {
-      //System.out.println("statemanager restore " + isAll + " " + saveName  + " " + moveToText);
+    public void restore(float timeSeconds, boolean isAll) {
       if (!isAll) {
-        viewer.moveTo(timeSeconds, rotationMatrix, null, Float.NaN, Float.NaN,
+        viewer.moveTo(timeSeconds, null, rotationMatrix, Float.NaN, Float.NaN,
             Float.NaN, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
         return;
       }
       viewer.setBooleanProperty("windowCentered", windowCenteredFlag);
       viewer.setBooleanProperty("navigationMode", navigationMode);
-      viewer.moveTo(timeSeconds, rotationMatrix, center, zoom, xTrans, yTrans,
+      viewer.setBooleanProperty("navigateSurface", navigateSurface);
+      viewer.moveTo(timeSeconds, center, rotationMatrix, zoom, xTrans, yTrans,
           rotationRadius, navCenter, xNav, yNav, navDepth);
     }
   }
@@ -501,7 +504,7 @@ public class StateManager {
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
         + ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
         + ";fontscaling;language;loglevel;measureStyleChime"
-        + ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode"
+        + ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode;"
         + ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;specular;specularexponent;specularpercent;specularpower;stateversion"
@@ -767,6 +770,7 @@ public class StateManager {
 
     boolean hideNavigationPoint = false;
     boolean navigationMode = false;
+    boolean navigateSurface = false;
     boolean navigationPeriodic = false;
     float navigationSpeed = 5;
     boolean showNavigationPointAlways = false;
@@ -1258,6 +1262,7 @@ public class StateManager {
       setParameterValue("minimizationRefresh", minimizationRefresh);
       setParameterValue("minimizationCriterion", minimizationCriterion);
       setParameterValue("navigationMode", navigationMode);
+      setParameterValue("navigateSurface", navigateSurface);
       setParameterValue("navigationPeriodic", navigationPeriodic);
       setParameterValue("navigationDepth", 0);
       setParameterValue("navigationSlab", 0);

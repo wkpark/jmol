@@ -66,13 +66,11 @@ public abstract class MeshCollection extends Shape {
       currentMesh = null;
       return null;
     }
-    int meshIndex = getIndexFromName(thisID);
-    if (meshIndex >= 0) {
-      currentMesh = meshes[meshIndex];
-      if (thisID.equals(JmolConstants.PREVIOUS_MESH_ID))
-        linkedMesh = currentMesh.linkedMesh;
-    } else {
+    currentMesh = getMesh(thisID);
+    if (currentMesh == null) {
       allocMesh(thisID);
+    } else if (thisID.equals(JmolConstants.PREVIOUS_MESH_ID)) {
+      linkedMesh = currentMesh.linkedMesh;
     }
     if (currentMesh.thisID == null)
       currentMesh.thisID = myType + (++nUnnamed);
@@ -401,9 +399,8 @@ public abstract class MeshCollection extends Shape {
     if (property == "vertices")
       return getVertices(currentMesh);
     if (property.startsWith("getCenter:")) {
-      int meshIndex = getIndexFromName(property.substring(10));
-      Mesh m;
-      return (meshIndex < 0 || (m = meshes[meshIndex]).vertices == null
+      Mesh m = getMesh(property.substring(10));
+      return (m == null || m.vertices == null
           || m.vertexCount <= index ? null 
           : index >= 0 ? m.vertices[index] : null);
 
@@ -448,6 +445,11 @@ public abstract class MeshCollection extends Shape {
     meshes[--meshCount] = null;
   }
   
+  protected Mesh getMesh(String thisID) {
+    int i = getIndexFromName(thisID);
+    return (i < 0 ? null : meshes[i]);
+  }
+  
   public int getIndexFromName(String thisID) {
     if (JmolConstants.PREVIOUS_MESH_ID.equals(thisID))
       return (previousMeshID == null ? meshCount - 1
@@ -459,12 +461,12 @@ public abstract class MeshCollection extends Shape {
             && TextFormat.isMatch(meshes[i].thisID, thisID, true, true))
           return i;
       }
-    }
-    else
+    } else {
       for (int i = meshCount; --i >= 0;) {
         if (meshes[i] != null && thisID.equalsIgnoreCase(meshes[i].thisID))
           return i;
       }
+    }
     return -1;
   }
   

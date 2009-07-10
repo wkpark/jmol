@@ -147,6 +147,10 @@ public abstract class Shape {
     Logger.warn("unassigned " + JmolConstants.shapeClassBases[shapeID] + " + shape setProperty:" + propertyName + ":" + value);
   }
 
+  public boolean getProperty(String property, Object[] data) {
+    return false;
+  }
+
   public Object getProperty(String property, int index) {
     return null;
   }

@@ -23,14 +23,14 @@
  */
 package org.jmol.util;
 
-import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 final public class Measure {
 
   public final static float radiansPerDegree = (float) (2 * Math.PI / 360);
 
-  public static float computeTorsion(Point3f p1, Point3f p2, Point3f p3, Point3f p4, boolean asDegrees) {
+  public static float computeTorsion(Tuple3f p1, Tuple3f p2, Tuple3f p3, Tuple3f p4, boolean asDegrees) {
   
     float ijx = p1.x - p2.x;
     float ijy = p1.y - p2.y;
@@ -73,14 +73,14 @@ final public class Measure {
     return (asDegrees ? torsion / radiansPerDegree : torsion);
   }
 
-  public static float computeAngle(Point3f pointA, Point3f pointB, Point3f pointC, Vector3f vectorBA, Vector3f vectorBC, boolean asDegrees) {
+  public static float computeAngle(Tuple3f pointA, Tuple3f pointB, Tuple3f pointC, Vector3f vectorBA, Vector3f vectorBC, boolean asDegrees) {
     vectorBA.sub(pointA, pointB);
     vectorBC.sub(pointC, pointB);
     float angle = vectorBA.angle(vectorBC);
     return (asDegrees ? angle / radiansPerDegree : angle);
   }
 
-  public static float computeAngle(Point3f pointA, Point3f pointB, Point3f pointC, boolean asDegrees) {
+  public static float computeAngle(Tuple3f pointA, Tuple3f pointB, Tuple3f pointC, boolean asDegrees) {
     Vector3f vectorBA = new Vector3f();
     Vector3f vectorBC = new Vector3f();        
     return Measure.computeAngle(pointA, pointB, pointC, vectorBA, vectorBC, asDegrees);

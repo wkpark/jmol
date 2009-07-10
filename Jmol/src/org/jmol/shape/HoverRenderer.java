@@ -28,7 +28,7 @@ import org.jmol.modelset.LabelToken;
 
 public class HoverRenderer extends ShapeRenderer {
   protected void render() {
-    if (viewer.getNavigating())
+    if (viewer.isNavigating())
       return;
     Hover hover = (Hover) shape;
     boolean antialias = g3d.isAntialiased();

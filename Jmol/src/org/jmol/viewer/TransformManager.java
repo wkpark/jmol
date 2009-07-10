@@ -26,6 +26,7 @@ package org.jmol.viewer;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
@@ -1171,7 +1172,7 @@ abstract class TransformManager {
     resetNavigationPoint(true);
   }
 
-  boolean getNavigating() {
+  boolean isNavigating() {
     return navigating;
   }
 
@@ -1458,10 +1459,9 @@ abstract class TransformManager {
   protected final Matrix3f matrixEnd = new Matrix3f();
   protected final Vector3f aaStepCenter = new Vector3f();
   protected final Vector3f aaStepNavCenter = new Vector3f();
-  protected Point3f ptMoveToCenter;
 
-  boolean isInPosition(Point3f pt, float degrees) {
-    aaTest1.set(new Vector3f(pt), degrees * (float) Math.PI / 180);
+  boolean isInPosition(Vector3f axis, float degrees) {
+    aaTest1.set(axis, degrees * (float) Math.PI / 180);
     ptTest1.set(4.321f, 1.23456f, 3.14159f);
     getRotation(matrixTest);
     matrixTest.transform(ptTest1, ptTest2);
@@ -1470,12 +1470,12 @@ abstract class TransformManager {
     return (ptTest3.distance(ptTest2) < 0.1);
   }
 
-  void moveTo(float floatSecondsTotal, Point3f center, Point3f pt,
+  void moveTo(float floatSecondsTotal, Point3f center, Tuple3f rotAxis,
               float degrees, float zoom, float xTrans, float yTrans,
               float newRotationRadius, Point3f navCenter, float xNav,
               float yNav, float navDepth) {
 
-    Vector3f axis = new Vector3f(pt);
+    Vector3f axis = new Vector3f(rotAxis);
     if (Float.isNaN(degrees)) {
       getRotation(matrixEnd);
     } else if (degrees < 0.01f && degrees > -0.01f) {
@@ -1496,16 +1496,18 @@ abstract class TransformManager {
       aaMoveTo.set(axis, degrees * (float) Math.PI / 180);
       matrixEnd.set(aaMoveTo);
     }
-    moveTo(floatSecondsTotal, null, center, zoom, xTrans, yTrans,
+    moveTo(floatSecondsTotal, center, null, zoom, xTrans, yTrans,
         newRotationRadius, navCenter, xNav, yNav, navDepth);
   }
 
-  void moveTo(float floatSecondsTotal, Matrix3f end, Point3f center,
+  void moveTo(float floatSecondsTotal, Point3f center, Matrix3f end, 
               float zoom, float xTrans, float yTrans, float newRotationRadius,
               Point3f navCenter, float xNav, float yNav, float navDepth) {
+    
+    
     if (end != null)
       matrixEnd.set(end);
-    ptMoveToCenter = (center == null ? fixedRotationCenter : center);
+    Point3f ptMoveToCenter = (center == null ? fixedRotationCenter : center);
     float startRotationRadius = modelRadius;
     float targetRotationRadius = (center == null ? modelRadius
         : newRotationRadius <= 0 ? viewer.calcRotationRadius(center)
@@ -2321,6 +2323,9 @@ abstract class TransformManager {
   
   void setFrameOffsets(Point3f[] offsets) {
     frameOffsets = offsets;
+  }
+
+  void navigateSurface(float timeSeconds, String name) {
   }
 
 }

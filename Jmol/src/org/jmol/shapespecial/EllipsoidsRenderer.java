@@ -40,6 +40,7 @@ import org.jmol.shape.Shape;
 import org.jmol.shape.ShapeRenderer;
 import org.jmol.shapespecial.Ellipsoids.Ellipsoid;
 import org.jmol.util.Logger;
+import org.jmol.viewer.JmolConstants;
 
 public class EllipsoidsRenderer extends ShapeRenderer {
 
@@ -238,19 +239,12 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
   
   private final static Vector3f[] unitVectors = {
-    new Vector3f(1, 0, 0),
-    new Vector3f(0, 1, 0),
-    new Vector3f(0, 0, 1),
-  };
+    JmolConstants.axisX, JmolConstants.axisY, JmolConstants.axisZ};
   
-  private final static Point3f[] unitAxisPoints = {
-    new Point3f(-1, 0, 0),
-    new Point3f( 1, 0, 0),
-    new Point3f( 0,-1, 0),
-    new Point3f( 0, 1, 0),
-    new Point3f( 0, 0,-1),
-    new Point3f( 0, 0, 1)
-  };
+  private final static Vector3f[] unitAxisVectors = {
+    JmolConstants.axisNX, JmolConstants.axisX, 
+    JmolConstants.axisNY, JmolConstants.axisY, 
+    JmolConstants.axisNZ, JmolConstants.axisZ };
 
   private void setAxes(Point3f center, float f) {
     for (int i = 0; i < 6; i++) {
@@ -258,7 +252,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       int i012 = Math.abs(iAxis) - 1;
       points[i].scaleAdd(f * factoredLengths[i012] * (iAxis < 0 ? -1 : 1),
           axes[i012], center);
-      pt1.set(unitAxisPoints[i]);
+      pt1.set(unitAxisVectors[i]);
       pt1.scale(f);
 
       matEllipsoidToScreen.transform(pt1);

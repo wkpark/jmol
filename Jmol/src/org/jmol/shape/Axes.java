@@ -36,15 +36,6 @@ public class Axes extends FontLineShape {
   Point3f axisXY = new Point3f();
   float scale;
   
-  private final static Point3f[] unitAxisPoints = {
-    new Point3f( 1, 0, 0),
-    new Point3f( 0, 1, 0),
-    new Point3f( 0, 0, 1),
-    new Point3f(-1, 0, 0),
-    new Point3f( 0,-1, 0),
-    new Point3f( 0, 0,-1)
-  };
-
   final Point3f originPoint = new Point3f();
   final Point3f[] axisPoints = new Point3f[6];
   final static Point3f pt0 = new Point3f();
@@ -122,7 +113,7 @@ public class Axes extends FontLineShape {
     corner.set(viewer.getBoundBoxCornerVector());
     for (int i = 6; --i >= 0;) {
       Point3f axisPoint = axisPoints[i];
-      axisPoint.set(unitAxisPoints[i]);
+      axisPoint.set(JmolConstants.unitAxisVectors[i]);
       // we have just set the axisPoint to be a unit on a single axis
    
       // therefore only one of these values (x, y, or z) will be nonzero

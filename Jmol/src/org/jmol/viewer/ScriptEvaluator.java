@@ -3706,10 +3706,8 @@ class ScriptEvaluator {
               JmolConstants.SHAPE_DRAW, "vertices");
           if (points == null || points.length < 3)
             break;
-          Vector3f pv = new Vector3f();
-          float w = Graphics3D.getNormalThroughPoints(points[0], points[1],
-              points[2], pv, vAB, vAC);
-          return new Point4f(pv.x, pv.y, pv.z, w);
+          return Graphics3D.getPlaneThroughPoints(points[0], points[1],
+              points[2], new Vector3f(), vAB, vAC);
         case JmolConstants.SHAPE_ISOSURFACE:
           setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID", id);
           Point4f plane = (Point4f) viewer.getShapeProperty(
@@ -4818,11 +4816,11 @@ class ScriptEvaluator {
         return;
       if (f > 0)
         refresh();
-      viewer.moveTo(f, null, new Point3f(0, 0, 1), 0, 100, 0, 0, 0, null,
+      viewer.moveTo(f, null, JmolConstants.axisZ, 0, 100, 0, 0, 0, null,
           Float.NaN, Float.NaN, Float.NaN);
       return;
     }
-    Point3f pt = new Point3f();
+    Vector3f axis = new Vector3f();
     Point3f center = null;
     int i = 1;
     float floatSecondsTotal = (isFloatParameter(i) ? floatParameter(i++) : 2.0f);
@@ -4835,53 +4833,53 @@ class ScriptEvaluator {
     case Token.leftbrace:
       // {X, Y, Z} deg or {x y z deg}
       if (isPoint3f(i)) {
-        pt = getPoint3f(i, true);
+        axis.set(getPoint3f(i, true));
         i = iToken + 1;
         degrees = floatParameter(i++);
       } else {
         Point4f pt4 = getPoint4f(i);
         i = iToken + 1;
-        pt.set(pt4.x, pt4.y, pt4.z);
+        axis.set(pt4.x, pt4.y, pt4.z);
         degrees = pt4.w;
       }
       break;
     case Token.front:
-      pt.set(1, 0, 0);
+      axis.set(1, 0, 0);
       degrees = 0f;
       i++;
       break;
     case Token.back:
-      pt.set(0, 1, 0);
+      axis.set(0, 1, 0);
       degrees = 180f;
       i++;
       break;
     case Token.left:
-      pt.set(0, 1, 0);
+      axis.set(0, 1, 0);
       i++;
       break;
     case Token.right:
-      pt.set(0, -1, 0);
+      axis.set(0, -1, 0);
       i++;
       checkLength(i);
       break;
     case Token.top:
-      pt.set(1, 0, 0);
+      axis.set(1, 0, 0);
       i++;
       checkLength(i);
       break;
     case Token.bottom:
-      pt.set(-1, 0, 0);
+      axis.set(-1, 0, 0);
       i++;
       checkLength(i);
       break;
     default:
       // X Y Z deg
-      pt = new Point3f(floatParameter(i++), floatParameter(i++),
+      axis = new Vector3f(floatParameter(i++), floatParameter(i++),
           floatParameter(i++));
       degrees = floatParameter(i++);
     }
 
-    boolean isChange = !viewer.isInPosition(pt, degrees);
+    boolean isChange = !viewer.isInPosition(axis, degrees);
     // zoom xTrans yTrans (center) rotationRadius
     float zoom0 = viewer.getZoomSetting();
     if (i != statementLength && !isCenterParameter(i)) {
@@ -4955,7 +4953,7 @@ class ScriptEvaluator {
       floatSecondsTotal = 0;
     if (floatSecondsTotal > 0)
       refresh();
-    viewer.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans, yTrans,
+    viewer.moveTo(floatSecondsTotal, center, axis, degrees, zoom, xTrans, yTrans,
         rotationRadius, navCenter, xNav, yNav, navDepth);
   }
 
@@ -5078,6 +5076,13 @@ class ScriptEvaluator {
           continue;
         }
         break;
+      case Token.surface:
+        if (i != 1)
+          error(ERROR_invalidArgument);
+        if (isSyntaxCheck)
+          return;
+        viewer.navigateSurface(timeSec, optParameterAsString(2));
+        continue;
       case Token.identifier:
         Point3f[] path;
         float[] theta = null; // orientation; null for now
@@ -7679,7 +7684,7 @@ class ScriptEvaluator {
       return;
     if (isSameAtom && Math.abs(zoom - factor) < 1)
       time = 0;
-    viewer.moveTo(time, center, new Point3f(0, 0, 0), Float.NaN, factor,
+    viewer.moveTo(time, center, JmolConstants.center, Float.NaN, factor,
         xTrans, yTrans, radius, null, Float.NaN, Float.NaN, Float.NaN);
   }
 

@@ -34,6 +34,8 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
 
+import javax.vecmath.Vector3f;
+
 final public class JmolConstants {
 
   public final static String copyright = "(C) 2009 Jmol Development";
@@ -200,6 +202,16 @@ final public class JmolConstants {
     }
     return "drawObject";
 }
+
+  public final static Vector3f center = new Vector3f(0, 0, 0);
+  public final static Vector3f axisX = new Vector3f(1, 0, 0);
+  public final static Vector3f axisY = new Vector3f(0, 1, 0);
+  public final static Vector3f axisZ = new Vector3f(0, 0, 1);
+  public final static Vector3f axisNX = new Vector3f(-1, 0, 0);
+  public final static Vector3f axisNY = new Vector3f(0, -1, 0);
+  public final static Vector3f axisNZ = new Vector3f(0, 0, -1);
+  public final static Vector3f[] unitAxisVectors = {
+    axisX, axisY, axisZ, axisNX, axisNY, axisNZ };
 
   public final static int XY_ZTOP = 100; // Z value for [x y] positioned echos and axis origin
   public final static int DEFAULT_PERCENT_VDW_ATOM = 20;

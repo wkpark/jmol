@@ -149,5 +149,4 @@ public class AlphaMonomer extends Monomer {
     return atom1.isBonded(atom2) || atom1.distance(atom2) <= 4.2f;
     // jan reichert in email to miguel on 10 May 2004 said 4.2 looked good
   }
-
 }

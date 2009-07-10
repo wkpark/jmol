@@ -26,18 +26,14 @@ package org.jmol.modelsetbio;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.Token;
 
 public class AminoMonomer extends AlphaMonomer {
 
@@ -239,109 +235,7 @@ public class AminoMonomer extends AlphaMonomer {
   }
 
   public Object getHelixData(int tokType, char qType) {
-    int iPrev = monomerIndex - 1;
-    AminoMonomer prev = (AminoMonomer) (monomerIndex == 0 ? null
-        : bioPolymer.monomers[iPrev]);
-    Quaternion q2 = getQuaternion(qType);
-    Quaternion q1 = (prev == null ? null : prev.getQuaternion(qType));
-    if (q1 == null || q2 == null)
-      return super.getHelixData(tokType, qType);
-
-    //System.out.println("q1 = quaternion(" + q1 + "); q2 = quaternion(" + q2 + ")");
-    /*
-                b
-           |   /|
-           |  / |
-           | /  |
-           |/   c
-         b'+   / \
-           |  /   \      Vcb = Vab . n
-         n | /     \d    Vac = Vab - Vcb
-           |/theta  \
-         a'+---------a
-                r
- 
-    *
-    */
-    
-    Point3f a = prev.getQuaternionFrameCenter(qType);
-    Point3f b = getQuaternionFrameCenter(qType);
-    Vector3f vab = new Vector3f();
-    vab.sub(b, a);
-    
-    /* testing here to see if directing the normal makes any difference -- 
-     * oddly enough, it does not. When n = -n and theta = -theta
-     * vab.n is reversed, and that magnitude is multiplied by n
-     * in generating the A'-B' vector. 
-     * 
-     * a negative angle implies a left-handed axis (sheets)
-     * 
-     */
-    Point4f aa = new Point4f();
-    aa.x = vab.x;
-    aa.y = vab.y;
-    aa.z = vab.z;
-    boolean asdirected = false;
-    Quaternion dq = q2.div(q1);
-    float theta = (asdirected ? dq.getThetaDirected(aa).w : dq.getTheta());//.Directed(aa).w;
-    Vector3f n = (asdirected ? dq.getNormalDirected(vab) : dq.getNormal());//Directed(vab);
-    
-    aa.x = vab.x;
-    aa.y = vab.y;
-    aa.z = vab.z;
-    //System.out.println("res " + getResno() + " " + n + " " + theta + "\n" + dq.getTheta() + " theta/directed " + dq.getThetaDirected(aa).w  + " " + n + " " + dq.getNormalDirected(vab));
-    //System.out.println("dq = " + dq);
-
-    float v_dot_n = vab.dot(n);
-    if (tokType == Token.axis) {
-      n.scale(v_dot_n);
-      return n;
-    }
-    Vector3f vcb = new Vector3f(n);
-    vcb.scale(v_dot_n);
-    Vector3f va_prime_d = new Vector3f();
-    va_prime_d.cross(vab, n);
-    va_prime_d.normalize();
-    Vector3f vda = new Vector3f();
-    vda.sub(vcb, vab);
-    vda.scale(0.5f);
-    va_prime_d.scale((float)(vda.length()/Math.tan(theta / 2 / 180 * Math.PI)));
-    
-    //System.out.println("vda.length=" + vda.length());
-    //System.out.println("va_prime_d.length= " + va_prime_d.length());
-    //System.out.println("atan2 = " + (Math.atan2(vda.length(), va_prime_d.length()) * 180 / Math.PI));
-    Vector3f r = new Vector3f(va_prime_d);
-    r.add(vda);
-    if (tokType == Token.radius)
-      return r;
-    Point3f pt_a_prime = new Point3f(a);
-    pt_a_prime.sub(r);
-    if (tokType == Token.point) {
-      return pt_a_prime;
-    }
-    n.scale(v_dot_n);
-    // must calculate directed angle:
-    Point3f pt_b_prime = new Point3f(pt_a_prime);
-    pt_b_prime.add(n);
-    theta = Measure.computeTorsion(a, pt_a_prime, pt_b_prime, b, true);
-    if (tokType == Token.angle)
-      return new Float(theta);
-    //System.out.println("draw vapd VECTOR " + Escape.escape(pt_a_prime) + " " + Escape.escape(va_prime_d));
-    if (tokType == Token.draw) {
-      String id = getUniqueID();
-      return "draw ID helixaxis" + id + " VECTOR " + Escape.escape(pt_a_prime) + " " + Escape.escape(n) 
-      + " color " + (theta < 0 ? "{255.0 200.0 0.0}" : "{255.0 0.0 128.0}");
-      
-     // + ";set drawpicking;measure " + Escape.escape(a) + " $helixaxis" + id + "[1] " + " $helixaxis" + id + "[2] " + Escape.escape(b) + "//"
-    }
-    //for now... array:
-    float residuesPerTurn = 360f / theta;
-    float pitch = Math.abs(n.length() * residuesPerTurn);
-    return new String[] {
-        Escape.escape(pt_a_prime), 
-        Escape.escape(n), 
-        Escape.escape(r),
-        Escape.escape(new Point3f(r.length(), pitch, residuesPerTurn))};
+    return getHelixData2(tokType, qType);
   }
   
   public Quaternion getQuaternion(char qType) {

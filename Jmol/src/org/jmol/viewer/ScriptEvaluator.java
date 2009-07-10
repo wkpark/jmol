@@ -6615,11 +6615,16 @@ class ScriptEvaluator {
       if (type.equalsIgnoreCase("draw")) {
         isDraw = true;
         type = optParameterAsString(--pt).toLowerCase();
-      }
+      } 
       isDerivative = (type.startsWith("deriv") || type.startsWith("diff"));
       isSecondDerivative = (isDerivative && type.indexOf("2") > 0);
       if (isDerivative)
         pt--;
+      if (type.equalsIgnoreCase("helix") || type.equalsIgnoreCase("axis")) {
+        isDraw = true;
+        isDerivative = true;
+        pt = -1;
+      }
       type = ((pt <= pt0 ? "" : optParameterAsString(pt)) + "w")
           .substring(0, 1);
       if (type == "a" || type == "r")
@@ -10957,6 +10962,9 @@ class ScriptEvaluator {
       pointGroup();
       return;
     case Token.quaternion:
+      dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
+      return;
+    case Token.helix:
       dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
       return;
     case Token.ramachandran:

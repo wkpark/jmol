@@ -27,48 +27,53 @@ package org.jmol.shape;
 
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
-import org.jmol.modelset.Group;
 import org.jmol.viewer.JmolConstants;
 
 import javax.vecmath.*;
 public class BallsRenderer extends ShapeRenderer {
 
-  //int minX, minY, maxX, maxY; 
-  int minZ, maxZ;
-  //boolean isNav;
+  private int minX, minY, minZ, maxX, maxY, maxZ;
+  
   protected void render() {
-    //minX = rectClip.x;
-    //maxX = minX + rectClip.width;
-    //minY = rectClip.y;
-    //maxY = minY + rectClip.height;
-    boolean renderBalls = !viewer.getWireframeRotation() || !viewer.getInMotion();
+    // minX = rectClip.x;
+    // maxX = minX + rectClip.width;
+    // minY = rectClip.y;
+    // maxY = minY + rectClip.height;
+    boolean renderBalls = !viewer.getWireframeRotation()
+        || !viewer.getInMotion();
     slabbing = viewer.getSlabEnabled();
-    //isNav = viewer.getNavigationMode();
+    // isNav = viewer.getNavigationMode();
+    boolean renderCrosshairs = modelSet.getAtomCount() > 0
+        && viewer.getShowNavigationPoint() && !isGenerator
+        && g3d.setColix(Graphics3D.BLACK);
+
+    Point3f navOffset = (renderCrosshairs ? new Point3f(viewer
+        .getNavigationOffset()) : null);
+
     if (slabbing) {
       minZ = g3d.getSlab();
       maxZ = g3d.getDepth();
     }
+    if (renderCrosshairs) {
+      minX = Integer.MAX_VALUE;
+      maxX = Integer.MIN_VALUE;
+      minY = Integer.MAX_VALUE;
+      maxY = Integer.MIN_VALUE;
+    }
+
     Atom[] atoms = modelSet.atoms;
     int atomCount = modelSet.getAtomCount();
-    for (int i = 0; i < atomCount; i++) {
-      Group group = atoms[i].getGroup();
-      group.setMinZ(Integer.MAX_VALUE);
-      i = Math.max(group.getLastAtomIndex(), i); //just in case!
-    }
-    
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_MODEL) == 0)
+      if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_FRAME) == 0)
         continue;
       atom.transform(viewer);
       if (slabbing) {
         if (g3d.isClippedZ(atom.screenZ)) {
           atom.setClickable(0);
-          //note that in the case of navigation, 
-          //maxZ is set to Integer.MAX_VALUE.
-          
-          //if (isNav)
-            //continue;
+          // note that in the case of navigation,
+          // maxZ is set to Integer.MAX_VALUE.
+
           int r = atom.screenDiameter / 2;
           if (atom.screenZ < minZ - r || atom.screenZ > maxZ + r)
             continue;
@@ -77,35 +82,54 @@ public class BallsRenderer extends ShapeRenderer {
         }
       }
       // note: above transform is required for all other renderings
-      Group group = atom.getGroup();
-      if (group != null) {
-        int z = atom.screenZ - atom.screenDiameter / 2 - 2;
-        if (z < group.getMinZ())
-          group.setMinZ(Math.max(1, z));
-      }
-      if (renderBalls && atom.screenDiameter > 0 
+
+      if (renderBalls && atom.screenDiameter > 0
           && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0
-          && g3d.setColix(atom.getColix()))
+          && g3d.setColix(atom.getColix())) {
+        if (renderCrosshairs) {
+          if (atom.screenX < minX)
+            minX = atom.screenX;
+          if (atom.screenX > maxX)
+            maxX = atom.screenX;
+          if (atom.screenY < minY)
+            minY = atom.screenY;
+          if (atom.screenY > maxY)
+            maxY = atom.screenY;
+        }
         renderBall(atom);
+      }
     }
 
-    if (modelSet.getAtomCount() > 0
-        && viewer.getShowNavigationPoint()
-        && !isGenerator
-        && g3d.setColix(viewer.getNavigationCentered() ? Graphics3D.GOLD
-            : Graphics3D.RED)) {
-      Point3f T = new Point3f(viewer.getNavigationOffset());
-      int x = Math.max(Math.min(viewer.getScreenWidth(), (int) T.x), 0);
-      int y = Math.max(Math.min(viewer.getScreenHeight(), (int) T.y), 0);
-      int z = (int) T.z + 1;
-      //TODO: fix for antialiasDisplay
-      g3d.drawRect(x - 10, y, z, 0, 20, 1);
-      g3d.drawRect(x, y - 10, z, 0, 1, 20);
-      g3d.drawRect(x - 4, y - 4, z, 0, 10, 10);
+    // this is the square and crosshairs for the navigator
+    if (renderCrosshairs) {
+      boolean antialiased = g3d.isAntialiased();
+      float navDepth = viewer.getNavigationDepthPercent();
+      g3d.setColix(navDepth < 0 ? Graphics3D.RED : navDepth > 100 ? Graphics3D.GREEN : Graphics3D.GOLD);
+      int x = Math.max(Math.min(viewer.getScreenWidth(), (int) navOffset.x), 0);
+      int y = Math
+          .max(Math.min(viewer.getScreenHeight(), (int) navOffset.y), 0);
+      int z = (int) navOffset.z + 1;
+      // TODO: fix for antialiasDisplay
+      int off = (antialiased ? 8 : 4);
+      int h = (antialiased ? 20 : 10);
+      int w = (antialiased ? 2 : 1);
+        g3d.drawRect(x - off, y, z, 0, h, w);
+        g3d.drawRect(x, y - off, z, 0, w, h);
+        g3d.drawRect(x - off, y - off, z, 0, h, h);
+        off = h;
+        h = h >> 1;
+        g3d.setColix(maxX < navOffset.x ? Graphics3D.YELLOW : Graphics3D.GREEN);
+        g3d.drawRect(x - off, y, z, 0, h, w);
+        g3d.setColix(minX > navOffset.x ? Graphics3D.YELLOW : Graphics3D.GREEN);
+        g3d.drawRect(x + h, y, z, 0, h, w);
+        g3d.setColix(maxY < navOffset.y ? Graphics3D.YELLOW : Graphics3D.GREEN);
+        g3d.drawRect(x, y - off, z, 0, w, h);
+        g3d.setColix(minY > navOffset.y ? Graphics3D.YELLOW : Graphics3D.GREEN);
+        g3d.drawRect(x, y + h, z, 0, w, h);
     }
   }
 
-  protected void renderBall(Atom atom) {
+  private void renderBall(Atom atom) {
     g3d.fillSphereCentered(atom.screenDiameter,
                            atom.screenX, atom.screenY, atom.screenZ);
   }

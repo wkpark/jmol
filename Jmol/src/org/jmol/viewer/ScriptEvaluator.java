@@ -4978,11 +4978,18 @@ class ScriptEvaluator {
       switch (getToken(1).tok) {
       case Token.on:
       case Token.off:
-        setBooleanProperty("navigationMode", theTok == Token.on);
+        if (isSyntaxCheck)
+          return;
+        viewer.setObjectMad(JmolConstants.SHAPE_AXES, "axes", 1);
+        setShapeProperty(JmolConstants.SHAPE_AXES, "position", new Point3f(50, 50, Float.MAX_VALUE));
+        setBooleanProperty("navigationMode", true);
+        viewer.setNavOn(theTok == Token.on);
+        return;
+      case Token.point3f:
+        break;
       default:
         error(ERROR_invalidArgument);
       }
-      return;
     }
     if (!viewer.getNavigationMode())
       setBooleanProperty("navigationMode", true);
@@ -4993,6 +5000,17 @@ class ScriptEvaluator {
       if (!isSyntaxCheck && timeSec > 0)
         refresh();
       switch (getToken(i).tok) {
+      case Token.point3f:
+      case Token.leftbrace:
+        // navigate {x y z}
+        pt = getPoint3f(i, true);
+        iToken++;
+        if (iToken != statementLength)
+          error(ERROR_invalidArgument);
+        if (isSyntaxCheck)
+          return;
+        viewer.setNavXYZ(pt.x, pt.y, pt.z);
+        return;
       case Token.depth:
         float depth = floatParameter(++i);
         if (!isSyntaxCheck)
@@ -9044,6 +9062,10 @@ class ScriptEvaluator {
       checkLength(4);
       setSpin(parameterAsString(2), (int) floatParameter(3));
       return;
+    case Token.navigate:
+      checkLength(4);
+      setNav(parameterAsString(2), (int) floatParameter(3));
+      return;
     case Token.ssbond: // ssBondsBackbone
       setSsbond();
       return;
@@ -9941,6 +9963,16 @@ class ScriptEvaluator {
       return;
     }
     error(ERROR_unrecognizedParameter, "set SPIN ", parameterAsString(2));
+  }
+
+  private void setNav(String key, int value) throws ScriptException {
+    key = key.toUpperCase();
+    if (Parser.isOneOf(key, "X;Y;Z;FPS")) {
+      if (!isSyntaxCheck)
+        viewer.setSpin(key, value);
+      return;
+    }
+    error(ERROR_unrecognizedParameter, "set NAV ", parameterAsString(2));
   }
 
   private void setSsbond() throws ScriptException {

@@ -46,7 +46,7 @@ public class HalosRenderer extends ShapeRenderer {
     BitSet bsSelected = (selectDisplayTrue ? viewer.getSelectionSet() : null);
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
-      if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_MODEL) == 0)
+      if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_FRAME) == 0)
         continue;
       short mad = (halos.mads == null ? 0 : halos.mads[i]);
       short colix = (halos.colixes == null || i >= halos.colixes.length ? Graphics3D.INHERIT_ALL

@@ -713,11 +713,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getNavigationCenter();
   }
 
-  public boolean getNavigationCentered() {
-    return transformManager.isNavigationCentered();
-  }
-
-  float getNavigationDepthPercent() {
+  public float getNavigationDepthPercent() {
     return transformManager.getNavigationDepthPercent();
   }
 
@@ -1094,44 +1090,41 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void setSpin(String key, int value) {
     // Eval
-    if (!Parser.isOneOf(key, "x;y;z;fps"))
+    if (!Parser.isOneOf(key, "x;y;z;fps;X;Y;Z;FPS"))
       return;
-    switch ("x;y;z;fps".indexOf(key)) {
+    int i = "x;y;z;fps;X;Y;Z;FPS".indexOf(key);
+    switch (i) {
     case 0:
-      transformManager.setSpinX(value);
+      transformManager.setSpinXYZ(value, Float.NaN, Float.NaN);
       break;
     case 2:
-      transformManager.setSpinY(value);
+      transformManager.setSpinXYZ(Float.NaN, value, Float.NaN);
       break;
     case 4:
-      transformManager.setSpinZ(value);
+      transformManager.setSpinXYZ(Float.NaN, Float.NaN, value);
       break;
     case 6:
     default:
       transformManager.setSpinFps(value);
       break;
+    case 10:
+      transformManager.setNavXYZ(value, Float.NaN, Float.NaN);
+      break;
+    case 12:
+      transformManager.setNavXYZ(Float.NaN, value, Float.NaN);
+      break;
+    case 14:
+      transformManager.setNavXYZ(Float.NaN, Float.NaN, value);
+      break;
+    case 16:
+      transformManager.setNavFps(value);
+      break;
     }
-    global.setParameterValue("spin" + key, value);
+    global.setParameterValue((i < 10 ? "spin" : "nav") + key, value);
   }
 
   String getSpinState() {
     return transformManager.getSpinState(false);
-  }
-
-  float getSpinX() {
-    return transformManager.spinX;
-  }
-
-  float getSpinY() {
-    return transformManager.spinY;
-  }
-
-  float getSpinZ() {
-    return transformManager.spinZ;
-  }
-
-  float getSpinFps() {
-    return transformManager.spinFps;
   }
 
   void setSpinOn(boolean spinOn) {
@@ -1144,6 +1137,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getSpinOn();
   }
 
+  void setNavOn(boolean navOn) {
+    // Eval
+    // startSpinningAxis
+    transformManager.setNavOn(navOn);
+  }
+
+  boolean getNavOn() {
+    return transformManager.getNavOn();
+  }
+
+  void setNavXYZ(float x, float y, float z) {
+    transformManager.setNavXYZ((int)x, (int)y, (int)z);  
+  }
+  
   String getOrientationText(int type) {
     return transformManager.getOrientationText(type);
   }
@@ -1583,6 +1590,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       clearScriptQueue();
       haltScriptExecution();
       transformManager.setSpinOn(false);
+      transformManager.setNavOn(false);
       transformManager.setVibrationPeriod(0);
       scriptManager.startCommandWatcher(false);
       scriptManager.interruptQueueThreads();
@@ -3413,9 +3421,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
 
     antialiasDisplay = false;
+    
     if (isReset) {
       imageFontScaling = 1;
-      antialiasDisplay = global.antialiasDisplay;// && !getInMotion();
+      antialiasDisplay = global.antialiasDisplay;
     } else if (isImageWrite && !isGenerator) {
       antialiasDisplay = global.antialiasImages;
     }
@@ -4973,6 +4982,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval
     boolean notFound = false;
     while (true) {
+      // 11.7.47
+      if (key.equalsIgnoreCase("navX")) {
+        setSpin("X", (int) value);
+        break;
+      }
+      if (key.equalsIgnoreCase("navY")) {
+        setSpin("Y", (int) value);
+        break;
+      }
+      if (key.equalsIgnoreCase("navZ")) {
+        setSpin("Z", (int) value);
+        break;
+      }
+      if (key.equalsIgnoreCase("navFPS")) {
+        if (Float.isNaN(value))
+          return true;
+        setSpin("FPS", (int) value);
+        break;
+      }
 
       // 11.7.9
       if (key.equalsIgnoreCase("hbondsAngleMinimum")) {
@@ -6122,6 +6150,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void stopAnimationThreads() {
     setVibrationOff();
     setSpinOn(false);
+    setNavOn(false);
     setAnimationOn(false);
   }
 
@@ -6784,8 +6813,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void startSpinningAxis(Point3f pt1, Point3f pt2, boolean isClockwise) {
     // Draw.checkObjectClicked ** could be difficult
     // from draw object click
-    if (getSpinOn()) {
+    if (getSpinOn() || getNavOn()) {
       setSpinOn(false);
+      setNavOn(false);
       return;
     }
     transformManager.rotateAboutPointsInternal(pt1, pt2,

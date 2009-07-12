@@ -410,7 +410,6 @@ support for assertions (which were introduced in 1.4).
         <exclude name="**/jmol/appletwrapper/**" />
         <exclude name="**/jmol/console/**" />
         <exclude name="**/jmol/export/**" />
-        <exclude name="**/jmol/shape/**" />
         <exclude name="**/jmol/shapebio/**" />
         <exclude name="**/jmol/shapespecial/**" />
         <exclude name="**/jmol/shapesurface/**" />

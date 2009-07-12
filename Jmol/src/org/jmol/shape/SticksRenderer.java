@@ -77,7 +77,7 @@ public class SticksRenderer extends ShapeRenderer {
     mad = bond.getMad();
     atomA = bond.getAtom1();
     atomB = bond.getAtom2();
-    if (!atomA.isModelVisible() || !atomB.isModelVisible()
+    if (!atomA.isInFrame() || !atomB.isInFrame()
         || !g3d.isInDisplayRange(atomA.screenX, atomA.screenY)
         || !g3d.isInDisplayRange(atomB.screenX, atomB.screenY)
         || modelSet.isAtomHidden(atomA.getAtomIndex())

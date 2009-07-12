@@ -521,8 +521,8 @@ final public class Atom extends Point3fi {
 //        : group.chain.modelSet.isZeroBased ? atomIndex : atomIndex);
    }
 
-   public boolean isModelVisible() {
-     return ((shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) != 0);
+   public boolean isInFrame() {
+     return ((shapeVisibilityFlags & JmolConstants.ATOM_IN_FRAME) != 0);
    }
 
    public int getShapeVisibilityFlags() {
@@ -530,8 +530,7 @@ final public class Atom extends Point3fi {
    }
    
    public boolean isShapeVisible(int shapeVisibilityFlag) {
-     return (isModelVisible() 
-         && (shapeVisibilityFlags & shapeVisibilityFlag) != 0);
+     return ((shapeVisibilityFlags & shapeVisibilityFlag) != 0);
    }
 
    public float getPartialCharge() {
@@ -874,7 +873,7 @@ final public class Atom extends Point3fi {
 
   public boolean isClickable() {
     // certainly if it is not visible, then it can't be clickable
-    if (!isVisible())
+    if (!isVisible(0))
       return false;
     int flags = shapeVisibilityFlags | group.shapeVisibilityFlags;
     return ((flags & clickabilityFlags) != 0);
@@ -893,14 +892,17 @@ final public class Atom extends Point3fi {
   
   /**
    * determine if an atom or its PDB group is visible
+   * @param flags TODO
    * @return true if the atom is in the "select visible" set
    */
-  public boolean isVisible() {
+  public boolean isVisible(int flags) {
     // Is the atom's model visible? Is the atom NOT hidden?
-    if (!isModelVisible() || group.chain.modelSet.isAtomHidden(atomIndex))
+    if (!isInFrame() || group.chain.modelSet.isAtomHidden(atomIndex))
       return false;
     // Is any shape associated with this atom visible? 
-    int flags = shapeVisibilityFlags;
+    if (flags != 0)
+      return (isShapeVisible(flags));  
+    flags = shapeVisibilityFlags;
     // Is its PDB group visible in any way (cartoon, e.g.)?
     //  An atom is considered visible if its PDB group is visible, even
     //  if it does not show up itself as part of the structure
@@ -909,7 +911,7 @@ final public class Atom extends Point3fi {
     // We know that (flags & AIM), so now we must remove that flag
     // and check to see if any others are remaining.
     // Only then is the atom considered visible.
-    return ((flags & ~JmolConstants.ATOM_IN_MODEL) != 0);
+    return ((flags & ~JmolConstants.ATOM_IN_FRAME) != 0);
   }
 
   public float getGroupPhi() {

@@ -131,14 +131,14 @@ public class Balls extends AtomShape {
     for (int i = atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
       int flag = atom.getShapeVisibilityFlags();
-      flag &= (~JmolConstants.ATOM_IN_MODEL & ~myVisibilityFlag);
+      flag &= (~JmolConstants.ATOM_IN_FRAME & ~myVisibilityFlag);
       atom.setShapeVisibilityFlags(flag);
       if (bsDeleted.get(i) || !showHydrogens && atom.getElementNumber() == 1)
         continue;
       int modelIndex = atom.getModelIndex();
       if (!isOneFrame && bs.get(modelIndex) 
           || modelIndex == displayModelIndex) { 
-        atom.setShapeVisibility(JmolConstants.ATOM_IN_MODEL, true);
+        atom.setShapeVisibility(JmolConstants.ATOM_IN_FRAME, true);
         if (atom.getMadAtom() != 0 &&  !modelSet.isAtomHidden(i))
           atom.setShapeVisibility(myVisibilityFlag, true);
       }

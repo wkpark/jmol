@@ -366,6 +366,8 @@ public class Labels extends AtomShape {
  }
 
   public Object getProperty(String property, int index) {
+    if (property.equals("offsets"))
+      return offsets;
     if (property.equals("defaultState"))
       return getDefaultState();
     if (property.equals("label"))

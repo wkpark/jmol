@@ -359,7 +359,7 @@ public abstract class BioPolymer extends Polymer {
                                    short[] mads, int myVisibilityFlag) {
     for (int i = monomerCount; --i >= 0;) {
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
-          || !monomers[i].getLeadAtom().isVisible())
+          || !monomers[i].getLeadAtom().isVisible(0))
         continue;
       if (mads[i] > 0 || mads[i + 1] > 0)
         monomers[i].findNearestAtomIndex(xMouse, yMouse, closest, mads[i],

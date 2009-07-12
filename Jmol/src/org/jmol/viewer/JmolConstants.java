@@ -2871,7 +2871,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // this atom flag simply associates an atom with the current model
   // but doesn't necessarily mean it is visible
 
-  public final static int ATOM_IN_MODEL    = 1;
+  public final static int ATOM_IN_FRAME    = 1;
 
   // reserved for future use:
   

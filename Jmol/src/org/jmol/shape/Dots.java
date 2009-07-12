@@ -109,8 +109,9 @@ public class Dots extends AtomShape {
       if (mads == null) {
         ec.setMads(null);
         mads = new short[atomCount];
-        for (int i = 0; i < atomCount; i++)
-          if (atoms[i].isShapeVisible(myVisibilityFlag))
+        for (int i = 0; i < atomCount; i++)          
+          if (atoms[i].isInFrame() && atoms[i].isShapeVisible(myVisibilityFlag)) 
+            // was there a reason we were not checking for hidden?
             mads[i] = (short) (ec.getAppropriateRadius(i) * 1000);
         ec.setMads(mads);
       }

@@ -109,6 +109,10 @@ abstract class TransformManager {
 
   void homePosition() {
     // reset, setNavigationMode, setPerspectiveModel
+    setSpinOn(false);
+    setNavOn(false);
+    navFps = 10;
+    navX = navY = navZ = 0;
     rotationCenterDefault.set(viewer.getBoundBoxCenter());
     setFixedRotationCenter(rotationCenterDefault);
     rotationRadiusDefault = setRotationRadius(0, true);
@@ -205,6 +209,11 @@ abstract class TransformManager {
   String getSpinState(boolean isAll) {
     String s = "  set spinX " + (int) spinX + "; set spinY " + (int) spinY
         + "; set spinZ " + (int) spinZ + "; set spinFps " + (int) spinFps + ";";
+    if (!Float.isNaN(navFps))
+      s += "  set navX " + (int) navX + "; set navY " + (int) navY
+          + "; set navZ " + (int) navZ + "; set navFps " + (int) navFps + ";";
+    if (navOn)
+      s += " navigation on;";
     if (!spinOn)
       return s;
     String prefix = (isSpinSelected ? "\n  select "
@@ -227,6 +236,11 @@ abstract class TransformManager {
   protected boolean haveNotifiedNaN = false;
 
   float spinX, spinY = 30f, spinZ, spinFps = 30f;
+  protected float navX;
+  protected float navY;
+  protected float navZ = 2;
+  protected float navFps = Float.NaN;
+
   boolean isSpinInternal = false;
   boolean isSpinFixed = false;
   boolean isSpinSelected = false;
@@ -371,6 +385,7 @@ abstract class TransformManager {
       moveRotationCenter(rotCenter, true);
 
     setSpinOn(false);
+    setNavOn(false);
 
     if (Float.isNaN(degrees) || degrees == 0)
       return;
@@ -408,6 +423,7 @@ abstract class TransformManager {
     // *THE* Viewer INTERNAL frame rotation entry point
 
     setSpinOn(false);
+    setNavOn(false);
 
     if (Float.isNaN(degrees) || degrees == 0)
       return;
@@ -492,6 +508,8 @@ abstract class TransformManager {
 
   float xTranslationFraction = 0.5f;
   float yTranslationFraction = 0.5f;
+  protected float prevZoomSetting, previousX, previousY;
+
 
   void setTranslationFractions() {
     xTranslationFraction = fixedTranslation.x / width;
@@ -1041,7 +1059,7 @@ abstract class TransformManager {
   float scalePixelsPerAngstrom;
   float scaleDefaultPixelsPerAngstrom;
   float scale3DAngstromsPerInch;
-  private boolean antialias;
+  protected boolean antialias;
   private boolean useZoomLarge;
 
   int screenWidth, screenHeight;
@@ -1173,7 +1191,7 @@ abstract class TransformManager {
   }
 
   boolean isNavigating() {
-    return navigating;
+    return navigating || navOn;
   }
 
   synchronized void finalizeTransformParameters() {
@@ -1342,9 +1360,6 @@ abstract class TransformManager {
   }
 
   void transformPoint(Point3f pointAngstroms, Point3f screen) {
-
-    //used solely by RocketsRendr
-
     matrixTransform.transform(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
     if (internalSlab && checkInternalSlab(pointAngstroms))
@@ -1795,20 +1810,13 @@ abstract class TransformManager {
    * Spin support
    ****************************************************************/
 
-  void setSpinX(float degrees) {
-    spinX = degrees;
-    if (isSpinInternal || isSpinFixed)
-      clearSpin();
-  }
-
-  void setSpinY(float degrees) {
-    spinY = degrees;
-    if (isSpinInternal || isSpinFixed)
-      clearSpin();
-  }
-
-  void setSpinZ(float degrees) {
-    spinZ = degrees;
+  void setSpinXYZ(float x, float y, float z) {
+    if (!Float.isNaN(x))
+      spinX = x;
+    if (!Float.isNaN(y))
+      spinY = y;
+    if (!Float.isNaN(z))
+      spinZ = z;
     if (isSpinInternal || isSpinFixed)
       clearSpin();
   }
@@ -1821,17 +1829,41 @@ abstract class TransformManager {
     spinFps = value;
   }
 
+  void setNavXYZ(float x, float y, float z) {
+    if (!Float.isNaN(x))
+      navX = x;
+    if (!Float.isNaN(y))
+      navY = y;
+    if (!Float.isNaN(z))
+      navZ = z;
+  }
+
+  protected void setNavFps(int value) {
+    if (Float.isNaN(navFps))
+      return;
+    if (value <= 0)
+      value = 1;
+    else if (value > 50)
+      value = 50;
+    navFps = value;
+  }
+
   private void clearSpin() {
     setSpinOn(false);
+    setNavOn(false);
     isSpinInternal = false;
     isSpinFixed = false;
     //back to the Chime defaults
   }
 
   protected boolean spinOn;
-
   boolean getSpinOn() {
     return spinOn;
+  }
+
+  protected boolean navOn;
+  boolean getNavOn() {
+    return navOn;
   }
 
   private SpinThread spinThread;
@@ -1841,11 +1873,37 @@ abstract class TransformManager {
   }
 
   private void setSpinOn(boolean spinOn, float endDegrees, BitSet bsAtoms) {
+    if (navOn && spinOn)
+      setNavOn(false);
     this.spinOn = spinOn;
     viewer.getGlobalSettings().setParameterValue("_spinning", spinOn);
     if (spinOn) {
       if (spinThread == null) {
-        spinThread = new SpinThread(endDegrees, bsAtoms);
+        spinThread = new SpinThread(endDegrees, bsAtoms, false);
+        spinThread.start();
+      }
+    } else {
+      if (spinThread != null) {
+        spinThread.interrupt();
+        spinThread = null;
+      }
+    }
+  }
+
+  protected void setNavOn(boolean navOn) {
+    if (Float.isNaN(navFps))
+      return;
+    if (navOn && spinOn)
+      setSpinOn(false, 0, null);
+    this.navOn = navOn;
+    viewer.getGlobalSettings().setParameterValue("_navigating", navOn);
+    if (navOn) {
+      if (navX == 0 && navY == 0 && navZ == 0)
+        navZ = 1;
+      if (navFps == 0)
+        navFps = 10;
+      if (spinThread == null) {
+        spinThread = new SpinThread(0, null, true);
         spinThread.start();
       }
     } else {
@@ -1858,34 +1916,40 @@ abstract class TransformManager {
 
   private class SpinThread extends Thread implements Runnable {
     float endDegrees;
-    float nDegrees = 0;
+    float nDegrees;
     BitSet bsAtoms;
-
-    SpinThread(float endDegrees, BitSet bsAtoms) {
+    boolean isNav;
+    SpinThread(float endDegrees, BitSet bsAtoms, boolean isNav) {
+      setName("SpinThread");
+      this.isNav = isNav;
       this.endDegrees = Math.abs(endDegrees);
-      this.setName("SpinThread");
       this.bsAtoms = bsAtoms;
     }
 
     public void run() {
-      float myFps = spinFps;
-      viewer.getGlobalSettings().setParameterValue("_spinning", true);
+      float myFps = (isNav ? navFps : spinFps);
+      viewer.getGlobalSettings().setParameterValue(isNav ? "_navigating" : "_spinning", true);
       int i = 0;
       long timeBegin = System.currentTimeMillis();
       while (!isInterrupted()) {
-        if (myFps != spinFps) {
+        if (isNav && myFps != navFps) {
+          myFps = navFps;
+          i = 0;
+          timeBegin = System.currentTimeMillis();
+        } else if (!isNav && myFps != spinFps) {
           myFps = spinFps;
           i = 0;
           timeBegin = System.currentTimeMillis();
         }
-        if (myFps == 0 || !spinOn) {
+        if (myFps == 0 || !(isNav ? navOn : spinOn)) {
           setSpinOn(false);
+          setNavOn(false);
           break;
         }
-        boolean refreshNeeded = (isSpinInternal
-            && internalRotationAxis.angle != 0 || isSpinFixed
-            && fixedRotationAxis.angle != 0 || !isSpinFixed && !isSpinInternal
-            && (spinX + spinY + spinZ != 0));
+        boolean refreshNeeded = (isNav ?  navX != 0 || navY != 0 || navZ != 0
+            : isSpinInternal && internalRotationAxis.angle != 0 
+            || isSpinFixed && fixedRotationAxis.angle != 0 
+            || !isSpinFixed && !isSpinInternal && (spinX != 0 || spinY != 0 || spinZ != 0));
         ++i;
         int targetTime = (int) (i * 1000 / myFps);
         int currentTime = (int) (System.currentTimeMillis() - timeBegin);
@@ -1895,12 +1959,12 @@ abstract class TransformManager {
           if (isInMotion)
             sleepTime += 1000;
           try {
-            if (refreshNeeded && spinOn && !isInMotion) {
-              float angle = 0;
-              if (isSpinInternal || isSpinFixed) {
-                angle = (isSpinInternal ? internalRotationAxis
-                    : fixedRotationAxis).angle
-                    / myFps;
+            if (refreshNeeded && (spinOn || navOn) && !isInMotion) {
+              if (isNav) {
+                setNavigationOffsetRelative();
+              } else if (isSpinInternal || isSpinFixed) {
+                float angle = (isSpinInternal ? internalRotationAxis
+                    : fixedRotationAxis).angle / myFps;
                 if (isSpinInternal) {
                   rotateAxisAngleRadiansInternal(angle, bsAtoms);
                 } else {
@@ -1922,7 +1986,7 @@ abstract class TransformManager {
                 Thread.sleep(10);
               }
               viewer.refresh(1, "TransformationManager:SpinThread:run()");
-              if (nDegrees >= endDegrees - 0.00001)
+              if (!isNav && (nDegrees >= endDegrees - 0.00001))
                 setSpinOn(false);
             }
             Thread.sleep(sleepTime);
@@ -1931,7 +1995,7 @@ abstract class TransformManager {
           }
         }
       }
-      viewer.getGlobalSettings().setParameterValue("_spinning", false);
+      viewer.getGlobalSettings().setParameterValue(isNav ? "_navigating" : "_spinning", false);
     }
   }
 
@@ -1948,6 +2012,10 @@ abstract class TransformManager {
 
   void setVibrationScale(float scale) {
     vibrationScale = scale;
+  }
+
+  protected void setNavigationOffsetRelative() {
+   // only in Transformmanager11
   }
 
   /**
@@ -2306,10 +2374,6 @@ abstract class TransformManager {
 
   String getNavigationText(boolean addComments) {
     return "";
-  }
-
-  boolean isNavigationCentered() {
-    return false;
   }
 
   Point3f[] frameOffsets;

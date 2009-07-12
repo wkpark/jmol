@@ -519,7 +519,7 @@ public class StateManager {
         + ";hoverlabel;hydrogen;languagetranslation;measurementunits;navigationdepth;navigationslab"
         + ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred"
         + ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount"
-        + ";spinx;spiny;spinz;spinfps;" + JmolConstants.getCallbackName(-1)
+        + ";spinx;spiny;spinz;spinfps;navx;navy;navz;navfps;" + JmolConstants.getCallbackName(-1)
         + ";undo;";
 
 
@@ -1318,7 +1318,11 @@ public class StateManager {
       setParameterValue("spinX", 0);
       setParameterValue("spinY", 30);
       setParameterValue("spinZ", 0);
+      setParameterValue("navX", 0);
+      setParameterValue("navY", 0);
+      setParameterValue("navZ", 10);
       setParameterValue("spinFps", 30);
+      setParameterValue("navFps", 10);
       setParameterValue("ssbondsBackbone", ssbondsBackbone);
       setParameterValue("stereoDegrees", TransformManager.DEFAULT_STEREO_DEGREES);
       setParameterValue("statusReporting", statusReporting);

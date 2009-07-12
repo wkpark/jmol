@@ -58,10 +58,11 @@ public class LabelsRenderer extends ShapeRenderer {
     float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom(true) * 10000f : 0);
     //System.out.println("labelsRenderer scalePixelsPerMicron=" + scalePixelsPerMicron);
     float imageFontScaling = viewer.getImageFontScaling();
-         
+    int iGroup = -1;
+    int minZ = Integer.MAX_VALUE;
     for (int i = labelStrings.length; --i >= 0;) {
       Atom atom = atoms[i];
-      if (!atom.isShapeVisible(myVisibilityFlag) || modelSet.isAtomHidden(i))
+      if (!atom.isVisible(myVisibilityFlag))
         continue;
       String label = labelStrings[i];
       if (label == null || label.length() == 0)
@@ -87,9 +88,18 @@ public class LabelsRenderer extends ShapeRenderer {
       int zSlab = atom.screenZ - atom.getScreenRadius() - 3;
       if (zSlab < 1)
         zSlab = 1;
-      Group group;
-      int zBox = (labelsFront ? 1 : labelsGroup
-          && (group = atom.getGroup()) != null ? group.getMinZ() : zSlab);
+      int zBox = zSlab;      
+      if (labelsGroup) {
+        Group group = atom.getGroup(); 
+        int ig = group.getGroupIndex();
+        if (ig != iGroup) {
+          minZ = getMinZ(atoms, group);
+          iGroup = ig;
+        }
+        zBox = minZ;
+      } else if (labelsFront) {
+        zBox = 1;
+      }
       if (zBox < 1)
         zBox = 1;
 
@@ -135,5 +145,18 @@ public class LabelsRenderer extends ShapeRenderer {
       text.setPointer(pointer); 
       text.render(g3d, scalePixelsPerMicron, imageFontScaling);
     }
-  }  
+  }
+
+  private int getMinZ(Atom[] atoms, Group group) {
+    int minZ = Integer.MAX_VALUE;
+    int first = group.getFirstAtomIndex();
+    int last = group.getLastAtomIndex();
+    for (int i = first; i <= last; i++) {
+      int z = atoms[i].screenZ - atoms[i].screenDiameter / 2 - 2;
+      if (z < minZ)
+        minZ = Math.max(1, z);
+    }
+    return minZ;
+  }    
+
 }

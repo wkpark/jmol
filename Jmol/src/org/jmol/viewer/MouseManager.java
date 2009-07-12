@@ -206,6 +206,7 @@ public abstract class MouseManager implements KeyListener {
     case KeyEvent.VK_DOWN:
     case KeyEvent.VK_LEFT:
     case KeyEvent.VK_RIGHT:
+    case KeyEvent.VK_SPACE:
       viewer.navigate(i, m);
       break;
     }
@@ -712,7 +713,7 @@ public abstract class MouseManager implements KeyListener {
             int howLong = (int) (currentTime - mouseMovedTime);
             if (howLong > hoverDelay) {
               if (hoverWatcherThread != null && !viewer.getInMotion()
-                  && !viewer.getSpinOn()
+                  && !viewer.getSpinOn() && !viewer.getNavOn()
                   && !viewer.checkObjectHovered(xCurrent, yCurrent)) {
                 int atomIndex = viewer.findNearestAtomIndex(xCurrent, yCurrent);
                 if (atomIndex >= 0)

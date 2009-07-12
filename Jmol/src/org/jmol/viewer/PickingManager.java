@@ -184,7 +184,7 @@ class PickingManager {
     case JmolConstants.PICKING_SPIN:
       if (isDoubleClick)
         return;
-      if (viewer.getSpinOn() || viewer.getPendingMeasurement() != null) {
+      if (viewer.getSpinOn() || viewer.getNavOn() || viewer.getPendingMeasurement() != null) {
         resetMeasurement();
         viewer.script("spin off");
         return;

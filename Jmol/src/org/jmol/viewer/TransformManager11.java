@@ -32,7 +32,6 @@ import javax.vecmath.Vector3f;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.InputEvent;
-import java.util.BitSet;
 
 import org.jmol.g3d.Graphics3D;
 
@@ -43,17 +42,22 @@ class TransformManager11 extends TransformManager {
 
   TransformManager11() {
     super();
+    setNavFps(10);
   }
   
   TransformManager11(Viewer viewer) {
     super(viewer);
+    setNavFps(10);
+  }
+
+  protected void setNavFps(int navFps) {
+    this.navFps = navFps;
   }
 
   TransformManager11(Viewer viewer, int width, int height) {
     super(viewer, width, height);
+    setNavFps(10);
   }
-
-  private float prevZoomSetting, previousX, previousY;
 
   protected void calcCameraFactors() {
     //(m) model coordinates
@@ -82,11 +86,11 @@ class TransformManager11 extends TransformManager {
 
     // model center offset for zoom 100
     float offset100 = (2 * modelRadius) / visualRange * referencePlaneOffset; //(s)
-/*
-    System.out.println("sppA " + scalePixelsPerAngstrom + " pD " + perspectiveDepth 
-        + " spC " + screenPixelCount + " vR " + visualRange 
-        + " sDPPA " + scaleDefaultPixelsPerAngstrom);
-*/
+
+    //System.out.println("sppA " + scalePixelsPerAngstrom + " pD " + perspectiveDepth 
+      //  + " spC " + screenPixelCount + " vR " + visualRange 
+        //+ " sDPPA " + scaleDefaultPixelsPerAngstrom);
+
     if (!isNavigationMode) {
       // nonNavigation mode -- to match Jmol 10.2 at midplane (caffeine.xyz)
       //flag that we have left navigation mode
@@ -192,18 +196,46 @@ class TransformManager11 extends TransformManager {
    * Navigation support
    ****************************************************************/
 
-  boolean isNavigationCentered;
+  final private static int NAV_MODE_IGNORE = -2;
+  final private static int NAV_MODE_ZOOMED = -1;
+  final private static int NAV_MODE_NONE = 0;
+  final private static int NAV_MODE_RESET = 1;
+  final private static int NAV_MODE_NEWXY = 2;
+  final private static int NAV_MODE_NEWXYZ = 3;
+  final private static int NAV_MODE_NEWZ = 4;
+
+  private int navMode = NAV_MODE_RESET;
+
+
+  void setScreenParameters(int screenWidth, int screenHeight,
+                           boolean useZoomLarge, boolean antialias,
+                           boolean resetSlab, boolean resetZoom) {
+    Point3f pt = (isNavigationMode ? new Point3f(navigationCenter) : null);
+    Point3f ptoff = new Point3f(navigationOffset);
+    ptoff.x = ptoff.x / width;
+    ptoff.y = ptoff.y / height;
+    super.setScreenParameters(screenWidth, screenHeight, useZoomLarge, 
+        antialias, resetSlab, resetZoom);
+    if (pt != null) {
+      navigationCenter.set(pt);
+      navTranslatePercent(-1, ptoff.x * width, ptoff.y * height);
+      navigate(0, pt);
+    }
+  }
+
+  float navigationDepth;
 
   /**
    * All the magic happens here.
    *
    */
   protected void calcNavigationPoint() {
-    float depth = getNavigationDepthPercent();
-    isNavigationCentered = (depth < 100 && depth > 0);
+    // called by finalize
+    calcNavigationDepthPercent();
     if (!navigating && navMode != NAV_MODE_RESET) {
       // rotations are different from zoom changes
-      if (isNavigationCentered
+      if (navigationDepth < 100 && navigationDepth > 0
+          && !Float.isNaN(previousX)
           && previousX == fixedTranslation.x 
              && previousY == fixedTranslation.y 
              && navMode != NAV_MODE_ZOOMED)
@@ -230,6 +262,7 @@ class TransformManager11 extends TransformManager {
       // redefine the navigation center based on its old screen position
       newNavigationCenter();
       break;
+    case NAV_MODE_IGNORE:
     case NAV_MODE_NEWXYZ:
       // must just be (not so!) simple navigation
       // navigation center will initially move
@@ -344,18 +377,9 @@ class TransformManager11 extends TransformManager {
   private int nHits;
   private int multiplier = 1;
 
-  final private static int NAV_MODE_ZOOMED = -1;
-  final private static int NAV_MODE_NONE = 0;
-  final private static int NAV_MODE_RESET = 1;
-  final private static int NAV_MODE_NEWXY = 2;
-  final private static int NAV_MODE_NEWXYZ = 3;
-  final private static int NAV_MODE_NEWZ = 4;
-
-  private int navMode = NAV_MODE_RESET;
-
+  
   protected void resetNavigationPoint(boolean doResetSlab) {
 
-    //System.out.println("resetNavigationPoint");
     //no release from navigation mode if too far zoomed in!
 
     if (zoomPercent < 5 && !isNavigationMode) {
@@ -372,11 +396,24 @@ class TransformManager11 extends TransformManager {
     if (doResetSlab)
       slabEnabled = isNavigationMode;
     
-    //System.out.println("resetNaviationPoint" + " " + doResetSlab);
-
     zoomFactor = Float.MAX_VALUE;
     zoomPercentSetting = zoomPercent;
   }
+
+  protected void setNavigationOffsetRelative() {
+    if (navigationDepth < 0 && navZ > 0 
+        || navigationDepth > 100 && navZ < 0) {
+      navZ = 0;
+    }
+    rotateXRadians(radiansPerDegree * -.02f * navY, null);
+    rotateYRadians(radiansPerDegree * .02f * navX, null);    
+    Point3f pt = getNavigationCenter();
+    Point3f pts = new Point3f();
+    transformPoint(pt, pts);
+    pts.z += navZ;
+    unTransformPoint(pts, pt);
+    navigate(0, pt);
+   }
 
   synchronized void navigate(int keyCode, int modifiers) {
     if (!isNavigationMode)
@@ -393,15 +430,30 @@ class TransformManager11 extends TransformManager {
     if (nHits % 10 == 0)
       multiplier *= (multiplier == 4 ? 1 : 2);
     boolean navigateSurface = viewer.getNavigateSurface();
-    boolean isOffsetShifted = ((modifiers & InputEvent.SHIFT_MASK) > 0);
+    boolean isShiftKey = ((modifiers & InputEvent.SHIFT_MASK) > 0);
     boolean isAltKey = ((modifiers & InputEvent.ALT_MASK) > 0);
+    boolean isCtrlKey = ((modifiers & InputEvent.CTRL_MASK) > 0);
+    float speed = viewer.getNavigationSpeed() * (isCtrlKey ? 10 : 1);
     switch (keyCode) {
+    case KeyEvent.VK_SPACE:
+      if (!navOn)
+        return;
+      navX = navY = navZ = 0;
+      return;
     case KeyEvent.VK_UP:
+      if (navOn) {
+        if (isAltKey) {
+          navY += multiplier;
+        } else {
+          navZ += multiplier;
+        }
+        break;
+      }
       if (navigateSurface) {
         viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "navigate", new Integer(2 * multiplier));
         break;
       }
-      if (isOffsetShifted) {
+      if (isShiftKey) {
         navigationOffset.y -= 2 * multiplier;
         navMode = NAV_MODE_NEWXY;
         break;
@@ -411,15 +463,23 @@ class TransformManager11 extends TransformManager {
         navMode = NAV_MODE_NEWXYZ;
         break;
       }
-      modelCenterOffset -= viewer.getNavigationSpeed() * (viewer.getNavigationPeriodic() ? 1 : multiplier);
+      modelCenterOffset -= speed * (viewer.getNavigationPeriodic() ? 1 : multiplier);
       navMode = NAV_MODE_NEWZ;
       break;
     case KeyEvent.VK_DOWN:
+      if (navOn) {
+        if (isAltKey) {
+          navY -= multiplier;
+        } else {
+          navZ -= multiplier;
+        }
+        break;
+      }
       if (navigateSurface) {
         viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "navigate", new Integer(-2 * multiplier));
         break;
       }
-      if (isOffsetShifted) {
+      if (isShiftKey) {
         navigationOffset.y += 2 * multiplier;
         navMode = NAV_MODE_NEWXY;
         break;
@@ -429,14 +489,18 @@ class TransformManager11 extends TransformManager {
         navMode = NAV_MODE_NEWXYZ;
         break;
       }
-      modelCenterOffset += viewer.getNavigationSpeed() * (viewer.getNavigationPeriodic() ? 1 : multiplier);
+      modelCenterOffset += speed * (viewer.getNavigationPeriodic() ? 1 : multiplier);
       navMode = NAV_MODE_NEWZ;
       break;
     case KeyEvent.VK_LEFT:
+      if (navOn) {
+        navX -= multiplier;
+        break;
+      }
       if (navigateSurface) {
         break;
       }
-      if (isOffsetShifted) {
+      if (isShiftKey) {
         navigationOffset.x -= 2 * multiplier;
         navMode = NAV_MODE_NEWXY;
         break;
@@ -445,10 +509,14 @@ class TransformManager11 extends TransformManager {
       navMode = NAV_MODE_NEWXYZ;
       break;
     case KeyEvent.VK_RIGHT:
+      if (navOn) {
+        navX += multiplier;
+        break;
+      }
       if (navigateSurface) {
         break;
       }
-      if (isOffsetShifted) {
+      if (isShiftKey) {
         navigationOffset.x += 2 * multiplier;
         navMode = NAV_MODE_NEWXY;
         break;
@@ -596,10 +664,9 @@ class TransformManager11 extends TransformManager {
             path[iNext2], path[iNext3], points, i * nPer, nPer + 1);
       }
     }
-    int fps = 10;
     int totalSteps = nSteps;
     viewer.setInMotion(true);
-    int frameTimeMillis = 1000 / fps;
+    int frameTimeMillis = (int) (1000 / navFps);
     long targetTime = System.currentTimeMillis();
     for (int iStep = 0; iStep < totalSteps; ++iStep) {
       navigate(0, points[iStep]);
@@ -674,8 +741,8 @@ class TransformManager11 extends TransformManager {
     return navigationCenter;
   }
 
-  boolean isNavigationCentered() {
-    return isNavigationCentered;
+  float getNavigationDepthPercent() {
+    return navigationDepth;
   }
   
   void setNavigationSlabOffsetPercent(float percent) {
@@ -705,9 +772,9 @@ class TransformManager11 extends TransformManager {
     navMode = NAV_MODE_ZOOMED;
   }
 
-  float getNavigationDepthPercent() {
+  private void calcNavigationDepthPercent() {
     calcCameraFactors(); //current
-    return (modelRadiusPixels == 0 ? 50 : 
+    navigationDepth = (modelRadiusPixels == 0 ? 50 : 
       50 * (1 + (modelCenterOffset - referencePlaneOffset) / modelRadiusPixels));
   }
 
@@ -738,86 +805,4 @@ class TransformManager11 extends TransformManager {
         + getNavigationSlabOffsetPercent() + ";\n\n";
   }
   
-  protected boolean navigateOn;
-
-  boolean getNavigateOn() {
-    return navigateOn;
-  }
-
-  private NavigateThread navigateThread;
-
-  void setNavigateOn(boolean navOn) {
-    setNavigationOn(navOn, Float.MAX_VALUE, null);
-  }
-
-  private void setNavigationOn(boolean navigateOn, float endDegrees, BitSet bsAtoms) {
-    this.navigateOn = navigateOn;
-    if (navigateOn) {
-      if (navigateThread == null) {
-        navigateThread = new NavigateThread(endDegrees, bsAtoms);
-        navigateThread.start();
-      }
-    } else {
-      if (navigateThread != null) {
-        navigateThread.interrupt();
-        navigateThread = null;
-      }
-    }
-  }
-
-  private class NavigateThread extends Thread implements Runnable {
-    float endDegrees;
-    float nDegrees = 0;
-    BitSet bsAtoms;
-
-    NavigateThread(float endDegrees, BitSet bsAtoms) {
-      this.endDegrees = Math.abs(endDegrees);
-      this.setName("NavigationThread");
-      this.bsAtoms = bsAtoms;
-    }
-
-    float navigateFps = 30f;
-    
-    public void run() {
-      float myFps = navigateFps;
-      int i = 0;
-      long timeBegin = System.currentTimeMillis();
-      while (!isInterrupted()) {
-        if (myFps != navigateFps) {
-          myFps = navigateFps;
-          i = 0;
-          timeBegin = System.currentTimeMillis();
-        }
-        if (myFps == 0 || !navigateOn) {
-          setNavigateOn(false);
-          break;
-        }
-        boolean refreshNeeded = true;
-        ++i;
-        int targetTime = (int) (i * 1000 / myFps);
-        int currentTime = (int) (System.currentTimeMillis() - timeBegin);
-        int sleepTime = targetTime - currentTime;
-        if (sleepTime > 0) {
-          boolean isInMotion = viewer.getInMotion();
-          if (isInMotion)
-            sleepTime += 1000;
-          try {
-            if (refreshNeeded && navigateOn && !isInMotion) {
-              //xxxxx
-              while (!isInterrupted() && !viewer.getRefreshing()) {
-                Thread.sleep(10);
-              }
-              viewer.refresh(1, "TransformationManager:NavigateThread:run()");
-            }
-            Thread.sleep(sleepTime);
-          } catch (InterruptedException e) {
-            break;
-          }
-        }
-      }
-    }
-  }
-
-
-
 }

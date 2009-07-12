@@ -255,7 +255,7 @@ public class Sticks extends Shape {
         continue;
       Atom atom1 = bond.getAtom1();
       Atom atom2 = bond.getAtom2();
-      if (!atom1.isVisible() || !atom2.isVisible())
+      if (!atom1.isVisible(0) || !atom2.isVisible(0))
         continue;
       v.set(atom1);
       v.add(atom2);

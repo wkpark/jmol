@@ -75,7 +75,7 @@ public class DotsRenderer extends ShapeRenderer {
     for (int i = dots.ec.getDotsConvexMax(); --i >= 0;) {
       Atom atom = modelSet.atoms[i];
       int[] map = maps[i];
-      if (map == null || !atom.isShapeVisible(myVisibilityFlag) || modelSet.isAtomHidden(i)
+      if (map == null || !atom.isVisible(myVisibilityFlag)
           || !g3d.isInDisplayRange(atom.screenX, atom.screenY))
         continue;
       int nPoints = calcScreenPoints(map, dots.ec.getAppropriateRadius(i),

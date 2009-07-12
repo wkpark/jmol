@@ -68,16 +68,6 @@ public class Group {
   
   public int shapeVisibilityFlags = 0;
   
-  private int minZ;
-  
-  public void setMinZ(int z) {
-    minZ = z;
-  }
-  
-  public int getMinZ() {
-    return minZ;
-  }
-  
   protected float phi = Float.NaN;
   protected float psi = Float.NaN;
   protected float omega = Float.NaN;

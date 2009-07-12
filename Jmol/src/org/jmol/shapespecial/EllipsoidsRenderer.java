@@ -133,7 +133,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     Atom[] atoms = modelSet.atoms;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
-      if (!atom.isShapeVisible(myVisibilityFlag) || modelSet.isAtomHidden(i))
+      if (!atom.isVisible(myVisibilityFlag))
         continue;
       if (atom.screenZ <= 1)
         continue;

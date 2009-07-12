@@ -1002,7 +1002,7 @@ abstract public class AtomCollection {
     bsFoundRectangle.and(bsEmpty);
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      if (bsModels.get(atom.modelIndex) && atom.isVisible() 
+      if (bsModels.get(atom.modelIndex) && atom.isVisible(0) 
           && rect.contains(atom.screenX, atom.screenY))
         bsFoundRectangle.set(i);
     }
@@ -1797,7 +1797,7 @@ abstract public class AtomCollection {
   public BitSet getVisibleSet() {
     BitSet bs = new BitSet();
     for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isVisible())
+      if (atoms[i].isVisible(0))
         bs.set(i);
     return bs;
   }

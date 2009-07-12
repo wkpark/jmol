@@ -4985,6 +4985,15 @@ class ScriptEvaluator {
         setBooleanProperty("navigationMode", true);
         viewer.setNavOn(theTok == Token.on);
         return;
+      case Token.string:
+      case Token.identifier:
+        String cmd = parameterAsString(1);
+        if (cmd.equalsIgnoreCase("stop")) {
+          if (!isSyntaxCheck)
+            viewer.setNavXYZ(0, 0, 0);
+          return;
+        }
+        break;
       case Token.point3f:
         break;
       default:

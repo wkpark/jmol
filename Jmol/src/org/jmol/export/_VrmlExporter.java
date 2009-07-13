@@ -153,6 +153,15 @@ public class _VrmlExporter extends _Exporter {
                                int[][] indices, BitSet bsFaces, int nVertices,
                                int faceVertexMax, short[] polygonColixes,
                                int nPolygons) {
+    renderIsosurface(vertices, colix, colixes, normals, indices, bsFaces, nVertices, faceVertexMax, polygonColixes, nPolygons, false);   
+  }
+
+
+  public void renderIsosurface(Point3f[] vertices, short colix,
+                               short[] colixes, Vector3f[] normals,
+                               int[][] indices, BitSet bsFaces, int nVertices,
+                               int faceVertexMax, short[] polygonColixes,
+                               int nPolygons, boolean sideb) {
 
     if (nVertices == 0)
       return;
@@ -206,7 +215,10 @@ public class _VrmlExporter extends _Exporter {
     if (normals != null) {
       output("  normalPerVertex TRUE\n   normal Normal {\n  vector [\n");
       for (int i = 0; i < nVertices; i++) {
-        output(normals[i].x + " " + normals[i].y + " " + normals[i].z + "\n");
+        if (Float.isNaN(normals[i].x))
+          output("0 0 0\n");
+        else
+          output(normals[i].x + " " + normals[i].y + " " + normals[i].z + "\n");
       }
       output("   ]\n");
       output("  }\n");
@@ -298,6 +310,7 @@ public class _VrmlExporter extends _Exporter {
 
   
   public void fillSphereCentered(short colix, int diameter, Point3f pt) {
+    viewer.unTransformPoint(pt, ptAtom);
     outputSphere(pt, diameter / 2.0f, colix);
   }
 

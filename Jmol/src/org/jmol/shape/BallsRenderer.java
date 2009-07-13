@@ -129,7 +129,7 @@ public class BallsRenderer extends ShapeRenderer {
     }
   }
 
-  private void renderBall(Atom atom) {
+  protected void renderBall(Atom atom) {
     g3d.fillSphereCentered(atom.screenDiameter,
                            atom.screenX, atom.screenY, atom.screenZ);
   }

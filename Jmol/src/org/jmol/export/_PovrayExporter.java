@@ -540,6 +540,10 @@ public class _PovrayExporter extends _Exporter {
   }
 
   private Point3f getNormal(Point3f pt, Vector3f normal) {
+    if (Float.isNaN(normal.x)) {
+      tempP3.set(0, 0, 0);
+      return tempP3;
+    }
     tempP1.set(pt);
     tempP1.add(normal);
     viewer.transformPoint(pt, tempP2);

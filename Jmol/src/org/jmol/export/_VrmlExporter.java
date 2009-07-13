@@ -153,7 +153,10 @@ public class _VrmlExporter extends _Exporter {
                                int[][] indices, BitSet bsFaces, int nVertices,
                                int faceVertexMax, short[] polygonColixes,
                                int nPolygons) {
-    renderIsosurface(vertices, colix, colixes, normals, indices, bsFaces, nVertices, faceVertexMax, polygonColixes, nPolygons, false);   
+    renderIsosurface(vertices, colix, colixes, normals, indices, bsFaces, nVertices, faceVertexMax, polygonColixes, nPolygons, false);
+    // this did not work 
+    // if (normals != null)
+     // renderIsosurface(vertices, colix, colixes, normals, indices, bsFaces, nVertices, faceVertexMax, polygonColixes, nPolygons, true);   
   }
 
 
@@ -217,6 +220,8 @@ public class _VrmlExporter extends _Exporter {
       for (int i = 0; i < nVertices; i++) {
         if (Float.isNaN(normals[i].x))
           output("0 0 0\n");
+        else if (sideb)
+          output(-normals[i].x + " " + -normals[i].y + " " + -normals[i].z + "\n");
         else
           output(normals[i].x + " " + normals[i].y + " " + normals[i].z + "\n");
       }

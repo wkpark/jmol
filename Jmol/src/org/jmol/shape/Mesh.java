@@ -198,7 +198,6 @@ public class Mesh {
             for (int j = pi.length - adjustment; --j >= 0;) {
               int k = pi[j];
               vectorSums[k].add(vTemp);
-              System.out.println(k + " " + vTemp);
             }
         }
       } catch (Exception e) {

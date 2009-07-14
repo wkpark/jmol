@@ -222,18 +222,18 @@ public class AminoMonomer extends AlphaMonomer {
   final private Point3f ptTemp = new Point3f();
   final private static float beta = (float) (17 * Math.PI/180);
   
-  Point3f getQuaternionFrameCenter(char qType) {
+  Atom getQuaternionFrameCenter(char qType) {
     switch (qType) {
     default:
     case 'c':
     case 'C':
-      return getLeadAtomPoint();
+      return getLeadAtom();
     case 'q':
     case 'p':
     case 'P':
-      return getCarbonylCarbonAtomPoint();
+      return getCarbonylCarbonAtom();
     case 'n':
-      return getNitrogenAtomPoint();
+      return getNitrogenAtom();
     }
   }
 

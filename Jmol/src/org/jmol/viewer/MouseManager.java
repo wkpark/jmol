@@ -29,10 +29,10 @@ import java.awt.Event;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3fi;
+
 import java.awt.event.*;
 import java.awt.Component;
-
-import javax.vecmath.Point3f;
 
 public abstract class MouseManager implements KeyListener {
 
@@ -471,7 +471,7 @@ public abstract class MouseManager implements KeyListener {
                                        int clickCount) {
     // points are always picked up first, then atoms
     // so that atom picking can be superceded by draw picking
-    Point3f nearestPoint = (drawMode ? null : viewer.checkObjectClicked(x, y,
+    Point3fi nearestPoint = (drawMode ? null : viewer.checkObjectClicked(x, y,
         modifiers));
     int nearestAtomIndex = (drawMode || nearestPoint != null ? -1 : viewer
         .findNearestAtomIndex(x, y));
@@ -657,7 +657,7 @@ public abstract class MouseManager implements KeyListener {
     viewer.setInMotion(true);
   }
 
-  private int addToMeasurement(int atomIndex, Point3f nearestPoint,
+  private int addToMeasurement(int atomIndex, Point3fi nearestPoint,
                                boolean dblClick) {
     if (atomIndex == -1 && nearestPoint == null) {
       exitMeasurementMode();

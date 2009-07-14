@@ -325,7 +325,7 @@ public abstract class Monomer extends Group {
     return true;
   }
 
-  Point3f getQuaternionFrameCenter(char qtype) {
+  Atom getQuaternionFrameCenter(char qtype) {
     return null; 
   }
 
@@ -337,8 +337,8 @@ public abstract class Monomer extends Group {
     Quaternion q1 = (prev == null ? null : prev.getQuaternion(qType));
     if (q1 == null || q2 == null)
       return super.getHelixData(tokType, qType);
-    Point3f a = prev.getQuaternionFrameCenter(qType);
-    Point3f b = getQuaternionFrameCenter(qType);
+    Atom a = prev.getQuaternionFrameCenter(qType);
+    Atom b = getQuaternionFrameCenter(qType);
 
     //System.out.println("q1 = quaternion(" + q1 + "); q2 = quaternion(" + q2 + ")");
     /*
@@ -426,11 +426,13 @@ public abstract class Monomer extends Group {
     // + Escape.escape(va_prime_d));
     if (tokType == Token.draw) {
       String id = getUniqueID();
-      return "draw ID helixaxis" + id + " VECTOR " + Escape.escape(pt_a_prime)
+      String s = "draw ID helixaxis" + id + " VECTOR " + Escape.escape(pt_a_prime)
           + " " + Escape.escape(n) + " color "
           + (theta < 0 ? "{255.0 200.0 0.0}" : "{255.0 0.0 128.0}");
-//          + ";set drawpicking;measure " + Escape.escape(a) + " $helixaxis" + id 
-  //        + "[1] " + " $helixaxis" + id + "[2] " + Escape.escape(b) + "//";
+      if (Logger.debugging)
+          s +=";measure " + Escape.escape(a) + " $helixaxis" + id 
+            + "[1] " + " $helixaxis" + id + "[2] " + Escape.escape(b);
+      return s;
     }
     // for now... array:
     float residuesPerTurn = 360f / theta;

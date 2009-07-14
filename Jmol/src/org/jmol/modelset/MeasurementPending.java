@@ -23,8 +23,6 @@
  */
 package org.jmol.modelset;
 
-import javax.vecmath.Point3f;
-
 import org.jmol.util.Point3fi;
 
 public class MeasurementPending extends Measurement {
@@ -49,7 +47,7 @@ public class MeasurementPending extends Measurement {
     super(modelSet, null, null, Float.NaN, (short) 0, null, 0);
   }
 
-  private boolean checkPoint(Point3f ptClicked) {
+  private boolean checkPoint(Point3fi ptClicked) {
     for (int i = 1; i <= numSet; i++)
       if (countPlusIndices[i] == -1 - i
           && points[i - 1].distance(ptClicked) < 0.01)
@@ -65,7 +63,7 @@ public class MeasurementPending extends Measurement {
   }
 
   int lastIndex = -1;
-  public int addPoint(int atomIndex, Point3f ptClicked, boolean doSet) {
+  public int addPoint(int atomIndex, Point3fi ptClicked, boolean doSet) {
     haveModified = (atomIndex != lastIndex);
     lastIndex = atomIndex;
     if (ptClicked == null) {
@@ -88,9 +86,7 @@ public class MeasurementPending extends Measurement {
       int pt = numSet;
       haveModified = haveTarget = true;
       count = numSet + 1;
-      if (points[pt] == null)
-        points[pt] = new Point3fi();
-      points[pt].set(ptClicked);
+      points[pt] = ptClicked;
       countPlusIndices[count] = -2 - pt;
     }
     countPlusIndices[0] = count;

@@ -28,6 +28,7 @@ package org.jmol.modelset;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3fi;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.api.Interface;
@@ -416,10 +417,10 @@ abstract public class ModelSet extends ModelCollection {
     return false;
   }
 
-  public Point3f checkObjectClicked(int x, int y, int modifiers,
+  public Point3fi checkObjectClicked(int x, int y, int modifiers,
                                     BitSet bsVisible) {
     Shape shape;
-    Point3f pt = null;
+    Point3fi pt = null;
     
     if (viewer.getNavigationMode() && viewer.getNavigateSurface() 
         && (shape = shapes[JmolConstants.SHAPE_ISOSURFACE]) != null && 

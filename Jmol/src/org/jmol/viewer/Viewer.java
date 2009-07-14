@@ -47,6 +47,7 @@ import org.jmol.util.JpegEncoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3fi;
 import org.jmol.util.TempArray;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.StateManager.Orientation;
@@ -4131,7 +4132,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     eval.setDebugging();
   }
 
-  void atomPicked(int atomIndex, Point3f ptClicked, int modifiers,
+  void atomPicked(int atomIndex, Point3fi ptClicked, int modifiers,
                   boolean isDoubleClick) {
     pickingManager.atomPicked(atomIndex, ptClicked, modifiers, isDoubleClick);
   }
@@ -6765,7 +6766,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     axesAreTainted = TF && refreshing;
   }
 
-  Point3f checkObjectClicked(int x, int y, int modifiers) {
+  Point3fi checkObjectClicked(int x, int y, int modifiers) {
     return modelSet.checkObjectClicked(x, y, modifiers,
         getVisibleFramesBitSet());
   }

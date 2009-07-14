@@ -59,7 +59,6 @@ final public class Atom extends Point3fi {
     return screenDiameter / 2;
   }
   
-  short modelIndex;
   private short atomicAndIsotopeNumber;
   private byte formalChargeAndFlags;
   private byte valence;

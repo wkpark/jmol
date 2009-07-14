@@ -101,6 +101,7 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.MouseManager;
@@ -933,7 +934,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
 
-  public Point3f checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
+  public Point3fi checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     if (modifiers !=MouseManager.ALT_LEFT)
       return null;
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
@@ -975,7 +976,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     setPropertySuper("thisID", pickedMesh.thisID, null);
     boolean toFront = false;
     int iface = (toFront ? jminz : jmaxz);
-    Point3f ptRet = pickedMesh.centers[iface];
+    Point3fi ptRet = new Point3fi();
+    ptRet.set(pickedMesh.centers[iface]);
+    ptRet.modelIndex = (short) pickedMesh.modelIndex;
     Vector3f vNorm = new Vector3f();
     pickedMesh.getFacePlane(iface, vNorm);
     // get normal to surface

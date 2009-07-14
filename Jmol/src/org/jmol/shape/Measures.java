@@ -39,8 +39,6 @@ import java.util.BitSet;
 import java.util.Vector;
 import java.util.Hashtable;
 
-import javax.vecmath.Point3f;
-
 public class Measures extends Shape {
 
   private final static int measurementGrowthIncrement = 16;
@@ -139,6 +137,12 @@ public class Measures extends Shape {
       return;
     } 
     
+    if ("clearModelIndex".equals(propertyName)) {
+      for (int i = 0; i < measurementCount; i++)
+        measurements[i].setModelIndex((short) 0);
+      return;
+    }
+    
     //any one of the following clears the "select measures" business
     
     bsSelected = null;
@@ -185,6 +189,7 @@ public class Measures extends Shape {
     } else if ("deleteModelAtoms".equals(propertyName)) {
       atoms = (Atom[])((Object[])value)[1];
       atomCount = modelSet.getAtomCount();
+      int modelIndex = ((int[]) ((Object[]) value)[2])[0];
       int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
       int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
       int atomMax = firstAtomDeleted + nAtomsDeleted;
@@ -199,6 +204,14 @@ public class Measures extends Shape {
               break;
             }
             indices[j] -= nAtomsDeleted;
+          } else if (iAtom < 0) {
+            Point3fi pt = m.getAtom(iAtom);
+            if (pt.modelIndex > modelIndex) {
+              pt.modelIndex--;
+            } else if (pt.modelIndex == modelIndex) {
+              deleteMeasurement(i);
+              break;
+            }
           }
         }
       }
@@ -217,8 +230,7 @@ public class Measures extends Shape {
           return null;
         indices[i + 1] = atomIndex;
       } else {
-        points[i] = new Point3fi();
-        points[i].set((Point3f) value);
+        points[i] = (Point3fi) value;
         indices[i + 1] = -2 - i;
       }
     }
@@ -330,17 +342,16 @@ public class Measures extends Shape {
     BitSet bs;
     for (int i = 0; i < nPoints; i++) {
       Object obj = monitorExpressions.get(i);
-      if (obj instanceof Point3f) {
-        if (points == null)
-          points = new Point3fi[4];
-        points[i] = new Point3fi();
-        points[i].set((Point3f)obj);
-        indices[i + 1] = -2 - i; 
-      } else {
+      if (obj instanceof BitSet) {
         if (BitSetUtil.cardinalityOf((bs = (BitSet) obj)) > 1)
           modelIndex = 0;
         ptLastAtom = i;
         indices[i + 1] = BitSetUtil.firstSetBit(bs);
+      } else {
+        if (points == null)
+          points = new Point3fi[4];
+        points[i] = (Point3fi)obj;
+        indices[i + 1] = -2 - i; 
       }
     }
     nextMeasure(0, ptLastAtom, monitorExpressions, m, modelIndex, isDelete, isShow, isHide);
@@ -561,15 +572,23 @@ public class Measures extends Shape {
   }
   
   void setVisibilityInfo() {
+    BitSet bsModels = viewer.getVisibleFramesBitSet();
     out:
     for (int i = measurementCount; --i >= 0; ) {
-      measurements[i].setVisible(false);
-      if(mad == 0 || measurements[i].isHidden())
+      Measurement m = measurements[i];
+      m.setVisible(false);
+      if(mad == 0 || m.isHidden())
         continue;
-      for (int iAtom = measurements[i].getCount(); iAtom > 0; iAtom--) {
-        int atomIndex = measurements[i].getAtomIndex(iAtom);
-        if (atomIndex >= 0 && !modelSet.getAtomAt(atomIndex).isClickable())
-          continue out;
+      for (int iAtom = m.getCount(); iAtom > 0; iAtom--) {
+        int atomIndex = m.getAtomIndex(iAtom);
+        if (atomIndex >= 0) {
+          if (!modelSet.getAtomAt(atomIndex).isClickable())
+            continue out;
+        } else {
+          int modelIndex = m.getAtom(iAtom).modelIndex;
+          if (modelIndex >= 0 && !bsModels.get(modelIndex))
+            continue out;
+        }
       }
       measurements[i].setVisible(true);
     }

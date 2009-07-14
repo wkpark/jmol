@@ -286,7 +286,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
       }
   }
  
- Point3f getQuaternionFrameCenter(char qType) {
+ Atom getQuaternionFrameCenter(char qType) {
    return (getAtomFromOffsetIndex(isPurine ? N9 : N1));
  }
  

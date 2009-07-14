@@ -28,6 +28,7 @@ package org.jmol.shape;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3fi;
 import org.jmol.viewer.JmolConstants;
 
 import java.util.BitSet;
@@ -227,9 +228,9 @@ public class Sticks extends Shape {
              : "");
   }
   
-  public Point3f checkObjectClicked(int x, int y, int modifiers,
+  public Point3fi checkObjectClicked(int x, int y, int modifiers,
                                     BitSet bsVisible) {
-    Point3f pt = new Point3f();
+    Point3fi pt = new Point3fi();
     Bond bond = findPickedBond(x, y, bsVisible, pt);
     if (bond == null)
       return null;
@@ -239,7 +240,7 @@ public class Sticks extends Shape {
 
   private final static int MAX_BOND_CLICK_DISTANCE_SQUARED = 10 * 10;
 
-  private Bond findPickedBond(int x, int y, BitSet bsVisible, Point3f pt) {
+  private Bond findPickedBond(int x, int y, BitSet bsVisible, Point3fi pt) {
     int dmin2 = MAX_BOND_CLICK_DISTANCE_SQUARED;
     if (g3d.isAntialiased()) {
       x <<= 1;
@@ -265,6 +266,7 @@ public class Sticks extends Shape {
         dmin2 = d2;
         pickedBond = bond;
         pt.set(v);
+        pt.modelIndex = atom1.modelIndex;
       }
     }
     return pickedBond;

@@ -27,6 +27,7 @@ package org.jmol.shape;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3fi;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
@@ -172,7 +173,7 @@ public abstract class Shape {
   public void setModelClickability() {
   }
 
-  public Point3f checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
+  public Point3fi checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     return null;
   }
 

@@ -53,6 +53,7 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 
@@ -6778,6 +6779,7 @@ class ScriptEvaluator {
 
     int nAtoms = 0;
     int expressionCount = 0;
+    int modelIndex = -1;
     int atomIndex = -1;
     int ptFloat = -1;
     int[] countPlusIndexes = new int[5];
@@ -6815,6 +6817,9 @@ class ScriptEvaluator {
         isAll = true;
         isRange = true; // unnecessary
         atomIndex = -1;
+        continue;
+      case Token.modelindex:
+        modelIndex = intParameter(++i);
         continue;
       case Token.identifier:
         if (!parameterAsString(i).equalsIgnoreCase("ALLCONNECTED"))
@@ -6865,6 +6870,12 @@ class ScriptEvaluator {
           value = bs = (BitSet) expressionResult;
           if (!isSyntaxCheck && BitSetUtil.firstSetBit(bs) < 0)
             return;
+        }
+        if (value instanceof Point3f) {
+          Point3fi v = new Point3fi();
+          v.set((Point3f)value);
+          v.modelIndex = (short) modelIndex;
+          value = v;
         }
         if ((nAtoms = ++expressionCount) > 4)
           error(ERROR_badArgumentCount);

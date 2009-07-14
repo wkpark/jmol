@@ -25,10 +25,9 @@ package org.jmol.viewer;
 
 import java.util.BitSet;
 
-import javax.vecmath.Point3f;
-
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+import org.jmol.util.Point3fi;
 
 import org.jmol.i18n.GT;
 import org.jmol.modelset.MeasurementPending;
@@ -135,7 +134,7 @@ class PickingManager {
       return;
     }
   }
-  void atomPicked(int atomIndex, Point3f ptClicked, int modifiers, boolean isDoubleClick) {
+  void atomPicked(int atomIndex, Point3fi ptClicked, int modifiers, boolean isDoubleClick) {
     // atomIndex < 0 is possible here.
     boolean shiftKey = ((modifiers & MouseManager.SHIFT) != 0);
     boolean alternateKey = ((modifiers & MouseManager.ALT) != 0);
@@ -228,7 +227,7 @@ class PickingManager {
     pickSelected("atomindex=" + atomIndex, modifiers, isDoubleClick);
   }
 
-  private int queueAtom(int atomIndex, Point3f ptClicked) {
+  private int queueAtom(int atomIndex, Point3fi ptClicked) {
     int n = measurementQueued.addPoint(atomIndex, ptClicked, true);
     if (atomIndex >= 0)
       viewer.setStatusAtomPicked(atomIndex, "Atom #" + n + ":"

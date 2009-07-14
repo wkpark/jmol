@@ -200,10 +200,7 @@ public class Measurement {
     String str = "";
     boolean asScript = (sep.equals(" "));
     for (int i = 1; i <= count; i++) {
-      int atomIndex = countPlusIndices[i];
-      str += (i > 1 ? sep : " ") + (atomIndex < 0 ? Escape.escape(getAtom(i))
-          : asScript ? "{atomIndex=" + countPlusIndices[i] + "}"
-          : viewer.getAtomInfo(atomIndex)); 
+      str += (i > 1 ? sep : " ") + getLabel(i, !asScript); 
     }
     return str;  
   }
@@ -371,9 +368,19 @@ public class Measurement {
 
   public String getLabel(int i, boolean asBitSet) {
     int atomIndex = countPlusIndices[i];
-    return (atomIndex < 0 ? Escape.escape(getAtom(i))
+    return (atomIndex < 0 
+        ? "modelIndex " + getAtom(i).modelIndex + " " + Escape.escape(getAtom(i))
         : asBitSet ? "({" + atomIndex + "})"
         : viewer.getAtomInfo(atomIndex));
+  }
+
+  public void setModelIndex(short modelIndex) {
+    if (points == null)
+      return;
+    for (int i = 0; i < count; i++) {
+      if (points[i] != null)
+        points[i].modelIndex = modelIndex;
+    }
   }
 
 }

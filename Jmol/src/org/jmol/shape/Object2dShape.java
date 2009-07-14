@@ -4,10 +4,9 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import javax.vecmath.Point3f;
-
 import org.jmol.g3d.Font3D;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Viewer;
 
@@ -197,7 +196,7 @@ public class Object2dShape extends Shape {
     }
   }
 
-  public Point3f checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
+  public Point3fi checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     if (isHover)
       return null;
     Enumeration e = objects.elements();
@@ -207,7 +206,12 @@ public class Object2dShape extends Shape {
         String s = obj.getScript();
         if (s != null)
           viewer.evalStringQuiet(s);
-        return (obj.xyz == null ? new Point3f() : obj.xyz); // may or may not be null
+        Point3fi pt = new Point3fi();
+        if (obj.xyz != null) {
+          pt.set(obj.xyz);
+          pt.modelIndex = (short) obj.modelIndex;
+        }
+        return pt; // may or may not be null
       }
     }
     return null;

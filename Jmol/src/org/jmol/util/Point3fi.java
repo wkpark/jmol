@@ -30,6 +30,7 @@ public class Point3fi extends Point3f {
   public int screenY;
   public int screenZ;
   public short screenDiameter = -1;
+  public short modelIndex = -1;
 
   /* (non-Javadoc)
    * @see java.lang.Object#equals(java.lang.Object)
@@ -43,11 +44,11 @@ public class Point3fi extends Point3f {
       return false;
     }
     Point3fi other = (Point3fi) obj;
-    if ((screenX != other.screenX) ||
-        (screenY != other.screenY) ||
-        (screenZ != other.screenZ)) {
+    if (modelIndex != other.modelIndex
+        || screenX != other.screenX 
+        || screenY != other.screenY 
+        || screenZ != other.screenZ)
       return false;
-    }
     return super.equals(other);
   }
   

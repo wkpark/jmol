@@ -37,6 +37,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.MouseManager;
@@ -913,7 +914,7 @@ public class Draw extends MeshCollection {
   private int pickedVertex;
   private final Point3i ptXY = new Point3i();
   
-  public Point3f checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
+  public Point3fi checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     boolean isPickingMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
     boolean isSpinMode = (viewer.getPickingMode() == JmolConstants.PICKING_SPIN);
     boolean isDrawPicking = viewer.getDrawPicking();
@@ -928,10 +929,11 @@ public class Draw extends MeshCollection {
           + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z+"]"
           + (pickedMesh.title == null ? "" 
                : "\"" + pickedMesh.title[0]+"\""));
-      return v; 
+      return getPickedPoint(v);
     }
-    if (modifiers == 0 || pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1])
-      return (modifiers == 0 ? v : null); // single point
+    if (modifiers == 0 || pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1]) {
+      return (modifiers == 0 ? getPickedPoint(v) : null); 
+    }
     if (pickedVertex == 0) {
       viewer.startSpinningAxis(
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
@@ -944,6 +946,15 @@ public class Draw extends MeshCollection {
           ((modifiers & MouseManager.SHIFT) != 0));
     }
     return null;
+  }
+
+  private Point3fi getPickedPoint(Point3f v) {
+    Point3fi pt = new Point3fi();
+    pt.set(v);
+    pt.modelIndex = (short) pickedMesh.modelIndex;
+    if (pt.modelIndex < 0 && pickedMesh.modelFlags != null && BitSetUtil.cardinalityOf(pickedMesh.modelFlags) == 1)
+      pt.modelIndex = (short) BitSetUtil.firstSetBit(pickedMesh.modelFlags);
+    return pt; 
   }
 
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {

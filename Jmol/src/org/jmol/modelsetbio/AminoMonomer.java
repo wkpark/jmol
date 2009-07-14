@@ -226,8 +226,11 @@ public class AminoMonomer extends AlphaMonomer {
     switch (qType) {
     default:
     case 'c':
+    case 'C':
       return getLeadAtomPoint();
+    case 'q':
     case 'p':
+    case 'P':
       return getCarbonylCarbonAtomPoint();
     case 'n':
       return getNitrogenAtomPoint();

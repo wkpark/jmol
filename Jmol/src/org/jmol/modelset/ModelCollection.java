@@ -912,7 +912,7 @@ abstract public class ModelCollection extends BondCollection {
   public void calculateStraightness() {
     if (getHaveStraightness())
       return;
-    char ctype = (viewer.getTestFlag3() ? 's' : 'S');
+    char ctype = 'S';//(viewer.getTestFlag3() ? 's' : 'S');
     char qtype = viewer.getQuaternionFrame();
     // testflag3 ON  --> preliminary: Hanson's original normal-based straightness
     // testflag3 OFF --> final: Kohler's new quaternion-based straightness

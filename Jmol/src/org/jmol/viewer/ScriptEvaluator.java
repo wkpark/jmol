@@ -10286,7 +10286,7 @@ class ScriptEvaluator {
     case Token.ramachandran:
       pt++;
       type2 = ScriptVariable.sValue(tokenAt(pt, args)).toLowerCase();
-      if (Parser.isOneOf(type2, "r"))
+      if (Parser.isOneOf(type2, "r;c;p"))
         pt++;
       else
         type2 = "";

@@ -369,31 +369,88 @@ public class AminoPolymer extends AlphaPolymer {
     return true;
   }
   
-  private void calcPhiPsiAngles(AminoMonomer leadingResidue,
-                        AminoMonomer trailingResidue) {
+  private void calcPhiPsiAngles(AminoMonomer residue1,
+                        AminoMonomer residue2) {
     
     /*
-     *   N1-Ca1-CO1-N2-Ca2-CO2
-     *   "leading"   "trailing"
-     *   high <-------------low   atomIndex
+     * G N Ramachandran and V. Sasisekharan,
+     * "Conformation of Polypeptides and Proteins" 
+     * in Advances in Protein Chemistry, D.C. Rees, Ed.,
+     * Volume 23, Elsevier, 1969, p 284
      * 
+     *   N1-Ca1-C1-N2-Ca2-C2
+     *    residue1  residue2
+     *   low -----------> high   atomIndex
+     * 
+     * UNfortunately, omega is defined for residue 1 (page 294)
+     * such that the residue having unusual omega is not the
+     * proline itself but the one prior to it.
      * 
      */
-    Point3f nitrogen1 = leadingResidue.getNitrogenAtomPoint();
-    Point3f alphacarbon1 = leadingResidue.getLeadAtomPoint();
-    Point3f carbon1 = leadingResidue.getCarbonylCarbonAtomPoint();
-    Point3f nitrogen2 = trailingResidue.getNitrogenAtomPoint();
-    Point3f alphacarbon2 = trailingResidue.getLeadAtomPoint();
-    Point3f carbon2 = trailingResidue.getCarbonylCarbonAtomPoint();
+    Point3f nitrogen1 = residue1.getNitrogenAtomPoint();
+    Point3f alphacarbon1 = residue1.getLeadAtomPoint();
+    Point3f carbon1 = residue1.getCarbonylCarbonAtomPoint();
+    Point3f nitrogen2 = residue2.getNitrogenAtomPoint();
+    Point3f alphacarbon2 = residue2.getLeadAtomPoint();
+    Point3f carbon2 = residue2.getCarbonylCarbonAtomPoint();
 
-    trailingResidue.setPhi(Measure.computeTorsion(carbon1, nitrogen2,
+    residue2.setPhi(Measure.computeTorsion(carbon1, nitrogen2,
                                             alphacarbon2, carbon2, true));
-    leadingResidue.setPsi(Measure.computeTorsion(nitrogen1, alphacarbon1,
+    residue1.setPsi(Measure.computeTorsion(nitrogen1, alphacarbon1,
       carbon1, nitrogen2, true));
-    leadingResidue.setOmega(Measure.computeTorsion(alphacarbon1,
+    // to offset omega so cis-prolines show up off the plane, 
+    // we would have to use residue2 here:
+    residue1.setOmega(Measure.computeTorsion(alphacarbon1,
 	        carbon1, nitrogen2, alphacarbon2, true));
   }
   
+  protected float calculateRamachandranHelixAngle(int m, char qtype) {
+    float psiLast = (m == 0 ? Float.NaN : monomers[m - 1].getPsi());
+    float psi = monomers[m].getPsi();
+    float phi = monomers[m].getPhi();
+    float phiNext = (m == monomerCount - 1 ? Float.NaN
+        : monomers[m + 1].getPhi());
+    float psiNext = (m == monomerCount - 1 ? Float.NaN
+        : monomers[m + 1].getPsi());
+    switch (qtype) {
+    default:
+    case 'p':
+    case 'r':
+    case 'P':
+      /* 
+       * an approximation by Bob Hanson and Steven Braun 7/7/2009
+       * 
+       * P-straightness utilizes phi[i], psi[i] and phi[i+1], psi[i+1]
+       * and is approximated as:
+       * 
+       *   1 - 2 acos(|cos(theta/2)|) / PI
+       * 
+       * where 
+       * 
+       *   cos(theta/2) = q[i]\q[i-1] = cos(dPsi/2)cos(dPhi/2) - sin(alpha)sin(dPsi/2)sin(dPhi/2)
+       * 
+       * and 
+       * 
+       *   dPhi = phi[i+1] - phi[i]
+       *   dPsi = psi[i+1] - psi[i]
+       * 
+       */ 
+      float dPhi = (float) ((phiNext - phi) / 2 * Math.PI / 180);
+      float dPsi = (float) ((psiNext - psi) / 2 * Math.PI / 180);
+      return (float) (180 / Math.PI * 2 * Math.acos(Math.cos(dPsi) * Math.cos(dPhi) - Math.cos(70*Math.PI/180)* Math.sin(dPsi) * Math.sin(dPhi)));
+    case 'c':
+    case 'C':
+      /* an approximation by Bob Hanson and Dan Kohler, 7/2008
+       * 
+       * The near colinearity of the C_alpha-C and N'-C_alpha'
+       * allows for the remarkably simple relationship
+       * 
+       *  psi[i] - psi[i-1] + phi[i+1] - phi[i]
+       *
+       */
+      return  (psi - psiLast + phiNext - phi);
+    }
+  }
   
   /**
    * 

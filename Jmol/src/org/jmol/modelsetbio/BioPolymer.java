@@ -475,7 +475,9 @@ public abstract class BioPolymer extends Polymer {
                                       BitSet bsSelected, boolean addHeader,
                                       BitSet bsWritten) {
     int atomno = Integer.MIN_VALUE;
-    boolean isRamachandran = (ctype == 'R');
+    boolean calcRamachandranStraightness = (qtype == 'C' || qtype == 'P');
+    boolean isRamachandran = (ctype == 'R' || ctype == 'S' && 
+        calcRamachandranStraightness);
     if (isRamachandran && !p.calcPhiPsiAngles())
       return;
     /*
@@ -519,19 +521,18 @@ public abstract class BioPolymer extends Polymer {
     float val2 = Float.NaN;
     boolean isAmino = (p instanceof AminoPolymer);
     boolean isRelativeAlias = (ctype == 'r');
-    boolean straightness = (ctype == 's' || ctype == 'S');
+    boolean quaternionStraightness = (!isRamachandran && ctype == 'S');
     if (derivType == 2 && isRelativeAlias)
       ctype = 'w';
-    if (straightness)
+    if (quaternionStraightness)
       derivType = 2;
     boolean useQuaternionStraightness = (ctype == 'S');
-    boolean calcRamachandranStraightness = (qtype == 'r' || qtype == 'p' || qtype == 'c');
-    if (straightness && Logger.debugging) {
+    boolean writeRamachandranStraightness = ("rcpCP".indexOf(qtype) >= 0);
+    if (Logger.debugging && (quaternionStraightness  || calcRamachandranStraightness)) {
       Logger.debug("For straightness calculation: useQuaternionStraightness = "
           + useQuaternionStraightness + " and quaternionFrame = " + qtype);
     }
     String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
-    float psiLast = Float.NaN;
     Quaternion q;
     if (addHeader && !isDraw) {
       pdbATOM.append("REMARK   6    AT GRP CH RESNO  ");
@@ -550,8 +551,8 @@ public abstract class BioPolymer extends Polymer {
         pdbATOM.append("w*10___ x*10___ y*10___      z*10__       ");
         break;
       case 'R':
-        if (calcRamachandranStraightness)
-          pdbATOM.append("phi____ psi____ theta        PartialCharge");
+        if (writeRamachandranStraightness)
+          pdbATOM.append("phi____ psi____ theta         Straightness");
         else
           pdbATOM.append("phi____ psi____ omega-180    PartialCharge");
         break;
@@ -570,6 +571,8 @@ public abstract class BioPolymer extends Polymer {
         Atom a = monomer.getLeadAtom();
         String id = monomer.getUniqueID();
         if (isRamachandran) {
+          if (ctype == 'S')
+            monomer.setStraightness(Float.NaN);
           x = monomer.getPhi();
           y = monomer.getPsi();
           z = monomer.getOmega();
@@ -577,7 +580,15 @@ public abstract class BioPolymer extends Polymer {
             z += 360;
           z -= 180; // center on 0
           if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)) {
-            bsAtoms.clear(a.getAtomIndex());
+            if (bsAtoms != null)
+              bsAtoms.clear(a.getAtomIndex());
+            continue;
+          }
+          float angledeg = (writeRamachandranStraightness ? p.calculateRamachandranHelixAngle(m, qtype) : 0);
+          float straightness = (calcRamachandranStraightness ? getStraightness((float) Math.cos(angledeg / 2 / 180 * Math.PI)): 
+            writeRamachandranStraightness ? monomer.getStraightness() : 0);
+          if (ctype == 'S') {
+            monomer.setStraightness(straightness);
             continue;
           }
           if (isDraw) {
@@ -619,60 +630,20 @@ public abstract class BioPolymer extends Polymer {
                     qColor[2]).append('\n');
             continue;
           }
-          w = a.getPartialCharge();
-          float phiNext = (m == p.monomerCount - 1 ? Float.NaN
-              : p.monomers[m + 1].getPhi());
-          float psiNext = (m == p.monomerCount - 1 ? Float.NaN
-              : p.monomers[m + 1].getPsi());
-          float angle = 0;
-          switch (qtype) {
-          case 'p':
-          case 'r':
-            /* 
-             * an approximation by Bob Hanson and Steven Braun 7/7/2009
-             * 
-             * P-straightness utilizes phi[i], psi[i] and phi[i+1], psi[i+1]
-             * and is approximated as:
-             * 
-             *   1 - 2 acos(|cos(theta/2)|) / PI
-             * 
-             * where 
-             * 
-             *   cos(theta/2) = q[i]\q[i-1] = cos(dPsi/2)cos(dPhi/2) - sin(alpha)sin(dPsi/2)sin(dPhi/2)
-             * 
-             * and 
-             * 
-             *   dPhi = phi[i+1] - phi[i]
-             *   dPsi = psi[i+1] - psi[i]
-             * 
-             */ 
-            float dPhi = (float) ((phiNext - x) / 2 * Math.PI / 180);
-            float dPsi = (float) ((psiNext - y) / 2 * Math.PI / 180);
-            angle = (float) Math.abs(180 / Math.PI * 2 * Math.acos(Math.cos(dPsi) * Math.cos(dPhi) - Math.cos(70*Math.PI/180)* Math.sin(dPsi) * Math.sin(dPhi)));
-            break;
-          case 'c':
-            /* an approximation by Bob Hanson and Dan Kohler, 7/2008
-             * 
-             * The near colinearity of the C_alpha-C and N'-C_alpha'
-             * allows for the remarkably simple relationship
-             * 
-             *  | psi[i] - psi[i-1] + phi[i+1] - phi[i] |
-             *
-             */
-            angle = Math.abs(y - psiLast + phiNext - x);
-            break;
-          }
-          psiLast = y;
-          if (Float.isNaN(angle)) {
+          if (Float.isNaN(angledeg)) {
             strExtra = "";
-            if (calcRamachandranStraightness)
+            if (writeRamachandranStraightness)
               continue;
           } else {
-            q = new Quaternion(new Point3f(1, 0, 0), angle);
+            q = new Quaternion(new Point3f(1, 0, 0), angledeg);
             strExtra = q.getInfo();
-            if (calcRamachandranStraightness) {
-              z = angle;
+            if (writeRamachandranStraightness) {
+              z = angledeg;
+              w = getStraightness((float)(angledeg/180 * Math.PI));
+            } else {
+              w = a.getPartialCharge();
             }
+            
           }
         } else {
           // quaternion
@@ -874,6 +845,10 @@ public abstract class BioPolymer extends Polymer {
     }
   }
 
+  protected float calculateRamachandranHelixAngle(int m, char qtype) {
+    return Float.NaN;
+  }
+
   // starting with Jmol 11.7.47, dq is defined so as to LEAD TO
   // the target atom, not LEAD FROM it. 
   private static float get3DStraightness(String id, Quaternion dq,
@@ -892,10 +867,11 @@ public abstract class BioPolymer extends Polymer {
     // alignment = near 0 or near 180 --> same - just different rotations.
     // It's a 90-degree change in direction that corresponds to 0.
     //
-    if (Logger.debugging)
-      Logger.debug(id + " getQuaternionStraightness " + dq + " " + dqnext + " "
-          + (1 - 2 * Math.acos(Math.abs(dq.dot(dqnext))) / Math.PI));
-    return (float) (1 - 2 * Math.acos(Math.abs(dq.dot(dqnext))) / Math.PI);
+    return getStraightness(dq.dot(dqnext));
   }
+  private static float getStraightness(float halfCosTheta) {
+    return (float) (1 - 2 * Math.acos(Math.abs(halfCosTheta))/Math.PI);   
+  }
+
 
 }

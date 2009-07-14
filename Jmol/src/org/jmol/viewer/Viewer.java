@@ -4797,7 +4797,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
       // /11.5.39//
       if (key.equalsIgnoreCase("quaternionFrame")) {
-        global.quaternionFrame = "" + (value.toLowerCase() + "c").charAt(0);
+        if (value.length() == 2 && value.startsWith("R"))
+          // C, P -- straightness from Ramachandran angles
+          global.quaternionFrame = value.substring(0, 2);
+        else
+          global.quaternionFrame = "" + (value.toLowerCase() + "p").charAt(0);
+        if (!Parser.isOneOf(global.quaternionFrame, "n;c;p;q;RC;RP"))
+          global.quaternionFrame = "p";
         modelSet.setHaveStraightness(false);
         break;
       }
@@ -7495,7 +7501,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public char getQuaternionFrame() {
-    return global.quaternionFrame.charAt(0);
+    return global.quaternionFrame.charAt(global.quaternionFrame.length() == 2 ? 1 : 0);
   }
 
   String calculatePointGroup() {

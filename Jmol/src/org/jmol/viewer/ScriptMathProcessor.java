@@ -1073,15 +1073,17 @@ class ScriptMathProcessor {
         && !(tok == Token.add && (args.length == 0 || args.length == 2)))
       return false;
     ScriptVariable x1 = getX();
-    ScriptVariable x2 = (args.length == 0 ? ScriptVariable.vAll : args[0]);
+    ScriptVariable x2;
     int len;
     String[] sList1, sList2, sList3;
 
     if (args.length == 2) {
-      // [xxxx].add([....], "\t")
-      String tab = ScriptVariable.sValue(args[1]);
+      // [xxxx].add("\t", [...])
+      int itab = (args[0].tok == Token.string ? 0 : 1);
+      String tab = ScriptVariable.sValue(args[itab]);
       sList1 = (x1.tok == Token.list ? (String[]) x1.value : TextFormat.split(
           ScriptVariable.sValue(x1), '\n'));
+      x2 = args[1 - itab];
       sList2 = (x2.tok == Token.list ? (String[]) x2.value : TextFormat.split(
           ScriptVariable.sValue(x2), '\n'));
       sList3 = new String[len = Math.max(sList1.length, sList2.length)];
@@ -1090,7 +1092,7 @@ class ScriptMathProcessor {
             + (i >= sList2.length ? "" : sList2[i]);
       return addX(sList3);
     }
-
+    x2 = (args.length == 0 ? ScriptVariable.vAll : args[0]);
     boolean isAll = (x2.tok == Token.all);
     if (x1.tok != Token.list && x1.tok != Token.string) {
       wasX = false;

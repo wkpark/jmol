@@ -200,7 +200,7 @@ public class Measurement {
     String str = "";
     boolean asScript = (sep.equals(" "));
     for (int i = 1; i <= count; i++) {
-      str += (i > 1 ? sep : " ") + getLabel(i, !asScript); 
+      str += (i > 1 ? sep : " ") + getLabel(i, asScript); 
     }
     return str;  
   }

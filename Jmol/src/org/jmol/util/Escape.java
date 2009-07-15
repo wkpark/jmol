@@ -170,9 +170,26 @@ public class Escape {
     }
     s.append("]");
     return s.toString();
-
   }
-  
+
+  public static String escapeDoubleArray(Object x) {
+    // from isosurface area or volume calc
+    if (x == null)
+      return escape("");
+    if (x instanceof Float)
+      return "" + x;
+    StringBuffer s = new StringBuffer();
+    double[] list = (double[]) x;
+    s.append("[");
+    for (int i = 0; i < list.length; i++) {
+      if (i > 0)
+        s.append(", ");
+      s.append(list[i]);
+    }
+    s.append("]");
+    return s.toString();
+  }
+
   private static String escapeNice(String s) {
     float f = Parser.parseFloatStrict(s);
     return (Float.isNaN(f) ? escape(s) : s);

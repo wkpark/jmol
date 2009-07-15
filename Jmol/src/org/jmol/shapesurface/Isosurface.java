@@ -426,9 +426,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (property == "moNumber")
       return new Integer(moNumber);
     if (property == "area")
-      return new Float((thisMesh == null ? Float.NaN : thisMesh.calculateArea()));
+      return (thisMesh == null ? new Float(Float.NaN) : thisMesh.calculateArea());
     if (property == "volume")
-      return new Float((thisMesh == null ? Float.NaN : thisMesh.calculateVolume()));
+      return (thisMesh == null ? new Float(Float.NaN) : thisMesh.calculateVolume());
     if (thisMesh == null)
       return "no current isosurface";
     if (property == "cutoff")
@@ -748,7 +748,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public void notifySurfaceGenerationCompleted() {
     setModelIndex();
     thisMesh.insideOut = sg.isInsideOut();
-    thisMesh.calculatedArea = thisMesh.calculatedVolume = Float.NaN;
+    thisMesh.calculatedArea = null;
+    thisMesh.calculatedVolume = null;
     thisMesh.initialize(sg.getPlane() != null ? JmolConstants.FULLYLIT
         : lighting);
     if (thisMesh.jvxlData.jvxlPlane != null)

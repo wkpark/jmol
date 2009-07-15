@@ -50,8 +50,8 @@ public class IsosurfaceMesh extends Mesh {
   public int vertexIncrement = 1;
   public int firstRealVertex = -1;
   public boolean hasGridPoints;
-  float calculatedArea = Float.NaN;
-  float calculatedVolume = Float.NaN;
+  Object calculatedArea;
+  Object calculatedVolume;
   
   public float[] vertexValues;  
   public short[] vertexColixes;
@@ -203,35 +203,47 @@ public class IsosurfaceMesh extends Mesh {
             || Float.isNaN(vertexValues[iC = vertexIndexes[2]]));
   }
   
-  float calculateArea() {
-    if (!Float.isNaN(calculatedArea))
+  Object calculateArea() {
+    if (calculatedArea != null)
       return calculatedArea;
-    double v = 0;
+    int n = (nSets == 0 ? 1 : nSets);
+    double[] v = new double[n];
     for (int i = polygonCount; --i >= 0;) {
       if (!setABC(i)) 
         continue;
+      int iSet = (nSets == 0 ? 0 : vertexSets[iA]);
       vAB.sub(vertices[iB], vertices[iA]);
       vAC.sub(vertices[iC], vertices[iA]);
       vTemp.cross(vAB, vAC);
-      v += vTemp.length();
+      v[iSet] += vTemp.length();
     }
-    return calculatedArea = (float) (v / 2);
+    for (int i = 0; i < n; i++)
+      v[i] /= 2;
+    if (nSets == 0)
+      return calculatedArea = new Float(v[0]);
+    return calculatedArea = v;
   }
 
-  float calculateVolume() {
-    if (!Float.isNaN(calculatedVolume))
+  Object calculateVolume() {
+    if (calculatedVolume != null)
       return calculatedVolume;
-    double v = 0;
+    int n = (nSets == 0 ? 1 : nSets);
+    double[] v = new double[n];
     for (int i = polygonCount; --i >= 0;) {
       if (!setABC(i)) 
         continue;
+      int iSet = (nSets == 0 ? 0 : vertexSets[iA]);
       vAB.set(vertices[iB]);
       vAC.set(vertices[iC]);
       vTemp.cross(vAB, vAC);
       vAC.set(vertices[iA]);
-      v += vAC.dot(vTemp);
+      v[iSet] += vAC.dot(vTemp);
     }
-    return calculatedVolume = (float) (v / 6);
+    for (int i = 0; i < n; i++)
+      v[i] /= 6;
+    if (nSets == 0)
+      return calculatedVolume = new Float(v[0]);
+    return calculatedVolume = v;
   }
 
   public BitSet[] surfaceSet;

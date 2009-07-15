@@ -116,6 +116,13 @@ class ScriptVariable extends Token {
         s[i] = "" + f[i];
       return new ScriptVariable(list, s);
     }
+    if (x instanceof double[]) {
+      double[] f = (double[]) x;
+      String[] s = new String[f.length];
+      for (int i = f.length; --i >= 0; )
+        s[i] = "" + f[i];
+      return new ScriptVariable(list, s);
+    }
     if (x instanceof Float[])
       return new ScriptVariable(listf, x);
     if (x instanceof String[])

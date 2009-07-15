@@ -157,6 +157,23 @@ class SpaceGroup {
     }
 
     finalOperations = new SymmetryOperation[operationCount];
+    if (doNormalize && count > 0) {
+      // we must apply this first to (x,y,z) JUST IN CASE the 
+      // model center itself is out of bounds, because we want
+      // NO operation for (x,y,z). This requires REDEFINING ATOM LOCATIONS
+      finalOperations[0] = new SymmetryOperation(operations[0], atoms,
+          atomIndex, count, true);
+      Point3f atom = atoms[atomIndex];
+      Point3f c = new Point3f(atom);
+      finalOperations[0].transform(c);
+      if (c.distance(atom) > 0.0001) // not cartesian, but this is OK here
+        for (int i = 0; i < count; i++) {
+          atom = atoms[atomIndex + i];
+          c.set(atom);
+          finalOperations[0].transform(c);
+          atom.set(c);
+        }
+    }
     for (int i = 0; i < operationCount; i++) {
       finalOperations[i] = new SymmetryOperation(operations[i], atoms,
           atomIndex, count, doNormalize);

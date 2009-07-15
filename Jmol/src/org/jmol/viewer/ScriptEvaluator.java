@@ -11982,7 +11982,7 @@ class ScriptEvaluator {
         int atomCount = viewer.getAtomCount();
         data = (isCavity ? new float[0] : new float[atomCount]);
         if (isCavity)// not implemented: && tokProperty !=
-                     // Token.surfacedistance)
+          // Token.surfacedistance)
           error(ERROR_invalidArgument);
         if (!isSyntaxCheck && !isCavity) {
           Atom[] atoms = viewer.getModelSet().atoms;
@@ -12215,13 +12215,11 @@ class ScriptEvaluator {
           break;
         }
         if (str.equalsIgnoreCase("AREA")) {
-          doCalcArea = true;
-          i = iToken;
+          doCalcArea = !isSyntaxCheck;
           break;
         }
         if (str.equalsIgnoreCase("VOLUME")) {
-          doCalcVolume = true;
-          i = iToken;
+          doCalcVolume = !isSyntaxCheck;
           break;
         }
         if (str.equalsIgnoreCase("ATOMICORBITAL")
@@ -12649,17 +12647,23 @@ class ScriptEvaluator {
     }
     if (colorScheme != null)
       setShapeProperty(iShape, "setColorScheme", colorScheme);
-
-    float area = (doCalcArea ? ((Float) viewer.getShapeProperty(iShape, "area"))
-        .floatValue()
-        : Float.NaN);
-    if (doCalcArea)
-      viewer.setFloatProperty("isosurfaceArea", area);
-    float volume = (doCalcVolume ? ((Float) viewer.getShapeProperty(iShape,
-        "volume")).floatValue() : Float.NaN);
-    if (doCalcVolume)
-      viewer.setFloatProperty("isosurfaceVolume", volume);
-
+    Object area = null;
+    Object volume = null;
+    if (doCalcArea) {
+      area = viewer.getShapeProperty(iShape, "area");
+      if (area instanceof Float)
+        viewer.setFloatProperty("isosurfaceArea", ((Float) area).floatValue());
+      else
+        viewer.setUserVariable("isosurfaceArea", ScriptVariable.getVariable(area));
+    }
+    if (doCalcVolume) {
+      volume = (doCalcVolume ? viewer.getShapeProperty(iShape, "volume") : null);
+      if (volume instanceof Float)
+        viewer.setFloatProperty("isosurfaceVolume", ((Float) volume)
+            .floatValue());
+      else
+        viewer.setUserVariable("isosurfaceVolume", ScriptVariable.getVariable(volume));
+    }
     if (surfaceObjectSeen && isIsosurface && !isSyntaxCheck) {
       setShapeProperty(iShape, "finalize", null);
       Integer n = (Integer) viewer.getShapeProperty(iShape, "count");
@@ -12674,16 +12678,16 @@ class ScriptEvaluator {
           s += "\ncolor range " + dataRange[2] + " " + dataRange[3]
               + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
         if (doCalcArea)
-          s += "\nisosurfaceArea = " + area;
+          s += "\nisosurfaceArea = " + Escape.escapeDoubleArray(area);
         if (doCalcVolume)
-          s += "\nisosurfaceVolume = " + volume;
+          s += "\nisosurfaceVolume = " + Escape.escapeDoubleArray(volume);
         showString(s);
       }
     } else if (doCalcArea || doCalcVolume) {
       if (doCalcArea)
-        showString("isosurfaceArea = " + area);
+        showString("isosurfaceArea = " + Escape.escapeDoubleArray(area));
       if (doCalcVolume)
-        showString("isosurfaceVolume = " + volume);
+        showString("isosurfaceVolume = " + Escape.escapeDoubleArray(volume));
     }
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);

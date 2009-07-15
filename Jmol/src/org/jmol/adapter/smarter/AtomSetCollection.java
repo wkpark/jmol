@@ -126,7 +126,6 @@ public class AtomSetCollection {
   // expands to 22 for cartesianToFractional matrix as array (PDB)
   
   public AtomSetCollection(String fileTypeName) {
-    //System.out.println(this + " initialized");
     this.fileTypeName = fileTypeName;
     // set the default PATH properties as defined in the SmarterJmolAdapter
     atomSetCollectionProperties.put("PATH_KEY",
@@ -386,16 +385,8 @@ public class AtomSetCollection {
       atoms = (Atom[])ArrayUtil.doubleLength(atoms);
     atom.atomIndex = atomCount;
     atoms[atomCount++] = atom;
-    //System.out.println("atomsetcollection addatom " + atomCount);
     if (atomSetCount == 0)
       newAtomSet();
-    /*
-     * WAS: {
-      atomSetCount = 1;
-      currentAtomSetIndex = 0;
-      atomSetNumbers[0] = 1;
-    }
-     */
     atom.atomSetIndex = currentAtomSetIndex;
     atom.atomSite = atomSetAtomCounts[currentAtomSetIndex]++;
   }
@@ -532,13 +523,15 @@ public class AtomSetCollection {
     // AROUND the central cell 555 and that
     // we should normalize (z = 1) or pack unit cells (z = -1) or not (z = 0)
     // in addition (Jmol 11.7.36) z = -2 does a full 3x3x3 around the designated cells
-    // but then only delivers the atoms that are within the designated cells. The
+    // but then only delivers the atoms that are within the designated cells. 
+    // Normalization is the moving of the center of mass into the unit cell.
+    
     this.latticeCells = latticeCells;
-    isLatticeRange = (latticeCells[2] == 0 || latticeCells[2] == 1 || latticeCells[2] == -1) 
-        && (latticeCells[0] <= 555  && latticeCells[1] >= 555);
+    isLatticeRange = (latticeCells[2] == 0 || latticeCells[2] == 1 
+        || latticeCells[2] == -1) && (latticeCells[0] <= 555  && latticeCells[1] >= 555);
     doNormalize = (!isLatticeRange || latticeCells[2] == 1);
     this.doPackUnitCell = doPackUnitCell;
-    setApplySymmetryToBonds(applySymmetryToBonds);
+    this.applySymmetryToBonds = applySymmetryToBonds;
   }
   
   SymmetryInterface symmetry;
@@ -774,10 +767,6 @@ public class AtomSetCollection {
     checkSpecial = TF;
   }
   
-  void setApplySymmetryToBonds(boolean TF) {
-    applySymmetryToBonds = TF;
-  }
-  
   private final Point3f ptTemp = new Point3f();
   private final Point3f ptTemp1 = new Point3f();
   private final Point3f ptTemp2 = new Point3f();
@@ -911,7 +900,7 @@ public class AtomSetCollection {
   
   public void applySymmetry(Vector biomts, boolean applySymmetryToBonds, String filter) {
     int len = biomts.size();
-    setApplySymmetryToBonds(applySymmetryToBonds);
+    this.applySymmetryToBonds = applySymmetryToBonds;
     bondCount0 = bondCount;
     boolean addBonds = (bondCount0 > bondIndex0 && applySymmetryToBonds);
     int[] atomMap = (addBonds ? new int[atomCount] : null);
@@ -1092,7 +1081,6 @@ public class AtomSetCollection {
       trajectoryStep[i] = new Point3f(atoms[i]);
     trajectorySteps.addElement(trajectoryStep);
     trajectoryStepCount++;
-    //System.out.println(" trajectoryStepCount:" + trajectoryStepCount + " coord 4: " + trajectoryStep[4]);
   }
   
   void finalizeTrajectory(Vector trajectorySteps) {

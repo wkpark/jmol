@@ -1276,7 +1276,7 @@ public class Draw extends MeshCollection {
         continue;
       s.append(getDrawCommand(mesh, mesh.modelIndex));
       if (!mesh.visible)
-        s.append("draw off;\n");
+        s.append(" draw " + mesh.thisID + " off;\n");
     }
     return s.toString();
   }

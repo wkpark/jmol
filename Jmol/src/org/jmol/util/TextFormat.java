@@ -525,7 +525,7 @@ public class TextFormat {
   }
 
   public static boolean isWild(String s) {
-    return s.indexOf("*") >= 0 || s.indexOf("?") >= 0;
+    return s != null && (s.indexOf("*") >= 0 || s.indexOf("?") >= 0);
   }
 
   public static boolean isMatch(String s, String strWildcard,

@@ -164,6 +164,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       int iA = vertexIndexes[0];
       int iB = vertexIndexes[1];
       int iC = vertexIndexes[2];
+      if (imesh.thisSet >= 0 && imesh.vertexSets[iA] != imesh.thisSet)
+        continue;
       short nA = normixes[iA];
       short nB = normixes[iB];
       short nC = normixes[iC];

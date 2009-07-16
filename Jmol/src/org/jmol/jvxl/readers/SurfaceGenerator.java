@@ -774,15 +774,14 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("getSurfaceSets" == propertyName) {
+      getSurfaceSets();
+      return true;
+    }
+    
     if ("mapColor" == propertyName) {
       if (value instanceof String && ((String) value).equalsIgnoreCase("sets")) {
-        if (meshDataServer == null) {
-          meshData.getSurfaceSet(0);
-        } else {
-          meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
-          meshData.getSurfaceSet(0);
-          meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
-        }
+        getSurfaceSets();
         params.colorBySets = true;
       } else {
         if ((surfaceReader = setFileData(value)) == null) {
@@ -796,6 +795,16 @@ public class SurfaceGenerator {
 
     // continue with operations in calling class...
     return false;
+  }
+
+  private void getSurfaceSets() {
+    if (meshDataServer == null) {
+      meshData.getSurfaceSet();
+    } else {
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+      meshData.getSurfaceSet();
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
+    }
   }
 
   private void processState() {   

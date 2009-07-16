@@ -6412,20 +6412,23 @@ class ScriptEvaluator {
         lattice = getPoint3f(i, false);
         i = iToken + 1;
         tok = tokAt(i);
-        sOptions += " " + Escape.escape(lattice);
       }
+      boolean isPacked = false;
       if (tok == Token.identifier
           && parameterAsString(i).equalsIgnoreCase("packed")) {
         if (lattice == null)
           lattice = new Point3f(555, 555, -1);
-        htParams.put("packed", Boolean.TRUE);
-        sOptions += " PACKED";
+        isPacked = true;
       }
       if (lattice != null) {
         i = iToken + 1;
         htParams.put("lattice", lattice);
         sOptions += " {" + (int) lattice.x + " " + (int) lattice.y + " "
             + (int) lattice.z + "}";
+        if (isPacked) {
+          htParams.put("packed", Boolean.TRUE);
+          sOptions += " PACKED";
+        }
         int iGroup = -1;
         float distance = 0;
         /*
@@ -11924,6 +11927,7 @@ class ScriptEvaluator {
     boolean isFxy = false;
     float[] nlmZ = new float[5];
     float[] data = null;
+    int thisSetNumber = 0;
     int nFiles = 0;
     BitSet bs;
     String str = null;
@@ -12011,6 +12015,10 @@ class ScriptEvaluator {
         propertyName = "select";
         propertyValue = expression(++i);
         i = iToken;
+        if (tokAt(i + 1) == Token.set) {
+          i++;
+          thisSetNumber = intParameter(++i);
+        }
         break;
       case Token.center:
         propertyName = "center";
@@ -12645,6 +12653,8 @@ class ScriptEvaluator {
       setShapeProperty(iShape, "nomap", new Float(0));
       surfaceObjectSeen = true;
     }
+    if (thisSetNumber > 0)
+      setShapeProperty(iShape, "getSurfaceSets", new Integer(thisSetNumber - 1));
     if (colorScheme != null)
       setShapeProperty(iShape, "setColorScheme", colorScheme);
     Object area = null;

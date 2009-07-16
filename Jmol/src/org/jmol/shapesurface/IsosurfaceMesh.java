@@ -45,15 +45,13 @@ import org.jmol.shape.Mesh;
 
 public class IsosurfaceMesh extends Mesh {
   JvxlData jvxlData = new JvxlData();
-  public boolean hideBackground;
-  public int realVertexCount;
-  public int vertexIncrement = 1;
-  public int firstRealVertex = -1;
-  public boolean hasGridPoints;
+  int vertexIncrement = 1;
+  int firstRealVertex = -1;
+  boolean hasGridPoints;
   Object calculatedArea;
   Object calculatedVolume;
   
-  public float[] vertexValues;  
+  float[] vertexValues;  
   public short[] vertexColixes;
   
   IsosurfaceMesh(String thisID, Graphics3D g3d, short colix) {
@@ -65,6 +63,7 @@ public class IsosurfaceMesh extends Mesh {
   void clear(String meshType, boolean iAddGridPoints) {
     super.clear(meshType);  
     nSets = 0;
+    thisSet = -1;
     firstRealVertex = -1;
     hasGridPoints = iAddGridPoints;
     showPoints = iAddGridPoints;
@@ -89,19 +88,6 @@ public class IsosurfaceMesh extends Mesh {
         vertexColixes[i] = colix;
     }
     isColorSolid = false;
-  }
-
-  public void setColorSchemeSets() {
-    allocVertexColixes();
-    int n = 2; //skipping the first two
-    for (int i = 0; i < surfaceSet.length; i++)
-      if (surfaceSet[i] != null) {
-        int c = Graphics3D.getColorArgb(n++);
-        short colix = Graphics3D.getColix(c);
-        for (int j = 0; j < vertexCount; j++)
-          if (surfaceSet[i].get(j))
-            vertexColixes[j] = colix; //not black
-      }
   }
 
   Hashtable assocGridPointMap ;
@@ -206,20 +192,23 @@ public class IsosurfaceMesh extends Mesh {
   Object calculateArea() {
     if (calculatedArea != null)
       return calculatedArea;
-    int n = (nSets == 0 ? 1 : nSets);
+    boolean justOne = (nSets == 0 || thisSet >= 0); 
+    int n = (justOne ? 1 : nSets);
     double[] v = new double[n];
     for (int i = polygonCount; --i >= 0;) {
       if (!setABC(i)) 
         continue;
       int iSet = (nSets == 0 ? 0 : vertexSets[iA]);
+      if (thisSet >= 0 && iSet != thisSet)
+        continue;
       vAB.sub(vertices[iB], vertices[iA]);
       vAC.sub(vertices[iC], vertices[iA]);
       vTemp.cross(vAB, vAC);
-      v[iSet] += vTemp.length();
+      v[justOne ? 0 : iSet] += vTemp.length();
     }
     for (int i = 0; i < n; i++)
       v[i] /= 2;
-    if (nSets == 0)
+    if (justOne)
       return calculatedArea = new Float(v[0]);
     return calculatedArea = v;
   }
@@ -227,28 +216,32 @@ public class IsosurfaceMesh extends Mesh {
   Object calculateVolume() {
     if (calculatedVolume != null)
       return calculatedVolume;
-    int n = (nSets == 0 ? 1 : nSets);
+    boolean justOne = (nSets == 0 || thisSet >= 0); 
+    int n = (justOne ? 1 : nSets);
     double[] v = new double[n];
     for (int i = polygonCount; --i >= 0;) {
-      if (!setABC(i)) 
+      if (!setABC(i))
         continue;
       int iSet = (nSets == 0 ? 0 : vertexSets[iA]);
+      if (thisSet >= 0 && iSet != thisSet)
+        continue;
       vAB.set(vertices[iB]);
       vAC.set(vertices[iC]);
       vTemp.cross(vAB, vAC);
       vAC.set(vertices[iA]);
-      v[iSet] += vAC.dot(vTemp);
+      v[justOne ? 0 : iSet] += vAC.dot(vTemp);
     }
     for (int i = 0; i < n; i++)
       v[i] /= 6;
-    if (nSets == 0)
+    if (justOne)
       return calculatedVolume = new Float(v[0]);
     return calculatedVolume = v;
   }
 
-  public BitSet[] surfaceSet;
-  public int[] vertexSets;
-  public int nSets = 0;
+  BitSet[] surfaceSet;
+  int[] vertexSets;
+  int nSets;
+  int thisSet = -1;
   
   public void sumVertexNormals(Vector3f[] vectorSums) {
     super.sumVertexNormals(vectorSums);

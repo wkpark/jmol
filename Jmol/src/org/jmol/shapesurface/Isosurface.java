@@ -271,6 +271,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     // Isosurface / SurfaceGenerator both interested
     
+    if ("getSurfaceSets" == propertyName) {
+      if (thisMesh != null)
+        thisMesh.thisSet = ((Integer)value).intValue();
+    }
+
     if ("contour" == propertyName) {
       explicitContours = true;  
     }
@@ -731,7 +736,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       thisMesh.surfaceSet = meshData.surfaceSet;
       thisMesh.vertexSets = meshData.vertexSets;
       thisMesh.nSets = meshData.nSets;
-      //thisMesh.setColorSchemeSets();
       return;
     case MeshData.MODE_PUT_VERTICES:
       thisMesh.vertices = meshData.vertices;
@@ -821,7 +825,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.ptCenter.set(center);
   }
 
-  protected void setScriptInfo() {
+  protected void setScriptInfo( ) {
     thisMesh.title = sg.getTitle();
     String script = sg.getScript();
     thisMesh.bitsets = null;

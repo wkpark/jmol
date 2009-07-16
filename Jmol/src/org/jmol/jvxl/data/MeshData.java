@@ -279,12 +279,12 @@ public class MeshData {
       setsSuccessful = false;
       return;
     }
-    if (i == nSets)
-      nSets = i + 1;
     surfaceSet[i] = new BitSet();
     surfaceSet[i].set(v1);
     surfaceSet[i].set(v2);
     surfaceSet[i].set(v3);
+    if (i == nSets)
+      nSets++;
   }
 
   private void mergeSets(int a, int b) {

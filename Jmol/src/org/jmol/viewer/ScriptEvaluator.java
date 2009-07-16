@@ -12015,10 +12015,9 @@ class ScriptEvaluator {
         propertyName = "select";
         propertyValue = expression(++i);
         i = iToken;
-        if (tokAt(i + 1) == Token.set) {
-          i++;
-          thisSetNumber = intParameter(++i);
-        }
+        break;
+      case Token.set:
+        thisSetNumber = intParameter(++i);
         break;
       case Token.center:
         propertyName = "center";

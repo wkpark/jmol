@@ -303,7 +303,7 @@ final public class Export3D implements JmolRendererInterface {
     else
       g3d.setFont(font3d);
     exporter.plotText(xBaseline, yBaseline,
-                z, getColixArgb(colix), str, font3d);
+                z, colix, str, font3d);
   }
   
   public void drawImage(Image image, int x, int y, int z, int zSlab, 

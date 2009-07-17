@@ -38,6 +38,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.g3d.Font3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
+import org.jmol.util.Escape;
 import org.jmol.viewer.Viewer;
 
 public class _VrmlExporter extends _Exporter {
@@ -58,16 +59,20 @@ public class _VrmlExporter extends _Exporter {
     output.append(data);
   }
 
-  String getAppearance(short colix) {
-    String def = getDef("" + colix);
-    String s = " appearance ";
+  void outputAppearance(short colix, boolean isText) {
+    String def = getDef((isText ? "T" : "") + colix);
+    output(" appearance ");
     if (def.charAt(0) == '_') {
       String color = rgbFractionalFromColix(colix, ' ');
-      String translu = translucencyFractionalFromColix(colix);
-      return s + " DEF " + def + " Appearance{material Material{diffuseColor " 
-        + color + " transparency " + translu + "}}";
+      output(" DEF " + def + " Appearance{material Material{diffuseColor ");
+      if (isText)
+        output(" 0 0 0 specularColor 0 0 0 ambientIntensity 0.0 shininess 0.0 emissiveColor " 
+            + color + " }}");
+      else
+        output(color + " transparency " + translucencyFractionalFromColix(colix) + "}}");
+      return;
     }
-    return s + def;
+    output(def);
   }
   
   public void getHeader() {
@@ -107,6 +112,11 @@ public class _VrmlExporter extends _Exporter {
     outputSphere(atom, r, colix);
   }
 
+  public void fillSphereCentered(short colix, int diameter, Point3f pt) {
+    viewer.unTransformPoint(pt, ptAtom);
+    outputSphere(ptAtom, viewer.unscaleToScreen((int)pt.z, diameter) / 2, colix);
+  }
+
   private int iObj;
   Hashtable htDefs = new Hashtable();
   private String getDef(String key) {
@@ -121,16 +131,16 @@ public class _VrmlExporter extends _Exporter {
     String child = getDef("S" + colix + "_" + (int) (radius * 100));
     output("Transform{translation ");
     output(center);
-    output(" children[");
+    output(" children ");
     if (child.charAt(0) == '_') {
       output("DEF " + child);
       output(" Shape{geometry Sphere{radius " + radius + "}");
-      output(getAppearance(colix));
+      outputAppearance(colix, false);
       output("}");
     } else {
       output(child);
     }
-    output("]}\n");
+    output("}\n");
   }
 
   public void fillCylinder(Point3f atom1, Point3f atom2, short colix1,
@@ -156,17 +166,17 @@ public class _VrmlExporter extends _Exporter {
     String child = getDef("C" + colix + "_" + (int) (length * 100) + "_" + madBond
         + "_" + endcaps);
     outputTransRot(pt1, pt2);
-    output(" children[");
+    output(" children ");
     if (child.charAt(0) == '_') {
       float r = madBond / 2000f;
       output("DEF " + child);
       output(" Shape{geometry Cylinder{height " + length + " radius " + r + "}");
-      output(getAppearance(colix));
+      outputAppearance(colix, false);
       output("}");
     } else {
       output(child);
     }
-    output("]}\n");
+    output("}\n");
   }
 
   public void renderIsosurface(Point3f[] vertices, short colix,
@@ -190,7 +200,7 @@ public class _VrmlExporter extends _Exporter {
     else if (colixes != null)
       colorList = getColorList(0, colixes, nVertices, null, htColixes);
     output("Shape {\n");
-    output(getAppearance(colix));
+    outputAppearance(colix, false);
     output(" geometry IndexedFaceSet {\n");
 
     if (polygonColixes != null)
@@ -324,11 +334,11 @@ public class _VrmlExporter extends _Exporter {
     viewer.unTransformPoint(screenTip, tempP2);
     float d = viewer.unscaleToScreen((int)screenBase.z, diameter);
     outputTransRot(tempP1, tempP2);
-    output(" children[Shape{");
+    output(" children Shape{");
     float height = tempP1.distance(tempP2);
     output("geometry Cone{height " + height + " bottomRadius " + d/2 +"}");
-    output(getAppearance(colix));
-    output("}]}\n");
+    outputAppearance(colix, false);
+    output("}}\n");
   }
 
   public void fillCylinder(short colix, byte endcaps, int diameter,
@@ -379,53 +389,43 @@ public class _VrmlExporter extends _Exporter {
     viewer.unTransformPoint(ptC, pt);
     output(pt);
     output("]}coordIndex[ 0 1 2 -1 ]}");
-    output(getAppearance(colix));
+    outputAppearance(colix, false);
     output("}\n");
-  }
-
-  public void fillSphereCentered(short colix, int diameter, Point3f pt) {
-    viewer.unTransformPoint(pt, ptAtom);
-    outputSphere(ptAtom, viewer.unscaleToScreen((int)pt.z, diameter) / 2, colix);
   }
 
   final private Point3f pt = new Point3f();
   final private Point3f ptAtom = new Point3f();
 
-  public void plotText(int x, int y, int z, int argb, String text, Font3D font3d) {
+  public void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
     // if (!haveAtomPoint)
     // return; // texts other than labels are not processed
-    String color = rgbFractionalFromArgb(argb, ' ');
     String useFontStyle = font3d.fontStyle.toUpperCase();
     String preFontFace = font3d.fontFace.toUpperCase();
     String useFontFace = (preFontFace.equals("MONOSPACED") ? "TYPEWRITER"
         : preFontFace.equals("SERIF") ? "SERIF" : "SANS");
-    output("Transform {\n");
+    output("Transform{translation ");
     pt.set(x, y, z);
     viewer.unTransformPoint(pt, ptAtom);
-    output(" translation ");
     output(ptAtom);
-    output("\n");
     // These x y z are 3D coordinates of echo or the atom the label is attached
     // to.
-    output(" children Billboard {\n");
-    output("  axisOfRotation 0 0 0 \n");
-    output("  children [\n");
-    output("   Transform {\n");
-    output("    translation 0.0 0.0 0.0 \n");
-    output("    children Shape {\n");
-    output("     appearance Appearance {\n");
-    output("      material Material { diffuseColor 0 0 0 specularColor 0 0 0 "
-        + "ambientIntensity 0.0 shininess 0.0 emissiveColor " + color + " }\n");
-    output("     }\n");
-    output("     geometry Text {\n");
-    output("      fontStyle FontStyle { size 0.4 " + "family \"" + useFontFace
-        + "\" style \"" + useFontStyle + "\" } \n");
-    output("      string	\"" + text + "\" \n");
-    output("     }\n");
-    output("    }\n");
-    output("   }\n");
-    output("  ]\n");
-    output(" }\n");
+    output(" children ");
+    String child = getDef("T" + colix + useFontFace + useFontStyle + "_" + text);
+    if (child.charAt(0) == '_') {
+      output("DEF " + child + " Billboard{axisOfRotation 0 0 0 children Transform{translation 0.0 0.0 0.0 children Shape{");
+      outputAppearance(colix, true);
+      output(" geometry Text{fontStyle ");
+      String fontstyle = getDef("F" + useFontFace + useFontStyle);
+      if (fontstyle.charAt(0) == '_') {
+        output("DEF " + fontstyle + " FontStyle{size 0.4 family \"" + useFontFace
+            + "\" style \"" + useFontStyle + "\"}");      
+      } else {
+        output(fontstyle);
+      }
+      output(" string " + Escape.escape(text) + "}}}}");
+    } else {
+      output(child);
+    }
     output("}\n");
 
     /*

@@ -202,7 +202,7 @@ public class _MayaExporter extends _Exporter {
     //rockets:    
   }
 
-  public void plotText(int x, int y, int z, int argb, 
+  public void plotText(int x, int y, int z, short colix, 
                        String text, Font3D font3d) {    
   }
 

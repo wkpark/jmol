@@ -76,7 +76,7 @@ public interface JmolExportInterface {
   //rockets:
   abstract void fillSphereCentered(short colix, int diameter, Point3f pt);
   
-  abstract void plotText(int x, int y, int z, int argb, String text, Font3D font3d);
+  abstract void plotText(int x, int y, int z, short colix, String text, Font3D font3d);
 
   abstract void plotImage(int x, int y, int z, Image image, short bgcolix, 
                           int width, int height);

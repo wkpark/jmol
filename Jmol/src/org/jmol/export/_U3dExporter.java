@@ -211,7 +211,7 @@ public class _U3dExporter extends _Exporter {
     //cartoons, rockets, trace:    
   }
 
-  public void plotText(int x, int y, int z, int argb, 
+  public void plotText(int x, int y, int z, short argb, 
                        String text, Font3D font3d) {    
   }
 

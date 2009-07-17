@@ -625,13 +625,13 @@ public class _PovrayExporter extends _Exporter {
 
   int nText;
   int nImage;
-  public void plotText(int x, int y, int z, int argb,
+  public void plotText(int x, int y, int z, short colix,
                        String text, Font3D font3d) {
     // trick here is that we use Jmol's standard g3d package to construct
     // the bitmap, but then output to jmolRenderer, which returns control
     // here via drawPixel.
     output("// start text " + (++nText) + ": " + text + "\n");
-    g3d.plotText(x, y, z, argb, text, font3d, jmolRenderer);
+    g3d.plotText(x, y, z, g3d.getColixArgb(colix), text, font3d, jmolRenderer);
     output("// end text " + nText + ": " + text + "\n");
   }
 

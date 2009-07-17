@@ -108,4 +108,6 @@ public interface JmolExportInterface {
   abstract void endShapeBuffer();
 
   abstract boolean canDoTriangles();
+
+  abstract boolean isCartesianExport();
 }

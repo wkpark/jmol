@@ -263,5 +263,11 @@ public class _U3dExporter extends _Exporter {
   public boolean canDoTriangles() {
     return false;
   }
+  
+  public boolean isCartesianExport() {
+    return true;
+  }
+
+
            
 }

@@ -253,5 +253,9 @@ public class _MayaExporter extends _Exporter {
   public boolean canDoTriangles() {
     return false;
   }
+  
+  public boolean isCartesianExport() {
+    return true;
+  }
 
 }

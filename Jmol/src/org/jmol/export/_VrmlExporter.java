@@ -32,6 +32,7 @@ import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
@@ -142,8 +143,9 @@ public class _VrmlExporter extends _Exporter {
     }
 
     void outputSphere() {
-      output("Transform { translation " + spt.x + " " + spt.y + " " + spt.z
-          + "\n");
+      output("Transform { translation ");
+      output(spt);
+      output("\n");
       output(" children [" + child + "]\n}\n");
     }
   }
@@ -212,8 +214,8 @@ public class _VrmlExporter extends _Exporter {
       tempV1.set(pt2);
       tempV1.add(pt1);
       tempV1.scale(0.5f);
-      output("Transform { translation " + tempV1.x + " " + tempV1.y + " "
-          + tempV1.z + " ");
+      output("Transform { translation ");
+      output(tempV1);
       tempV1.sub(pt1);
       getAxisAngle(tempV1);
       output(" rotation " + tempA.x + " " + tempA.y + " " + tempA.z + " "
@@ -247,13 +249,14 @@ public class _VrmlExporter extends _Exporter {
     String color = rgbFractionalFromColix(colix, ' ');
     String translu = translucencyFractionalFromColix(colix);
     output("Shape {\n");
-    if (polygonColixes != null)
-      output(" colorPerVertex FALSE\n");
     output(" appearance Appearance {\n");
     output("  material Material { diffuseColor " + color + " transparency "
         + translu + " }\n");
     output(" }\n");
     output(" geometry IndexedFaceSet {\n");
+
+    if (polygonColixes != null)
+      output(" colorPerVertex FALSE\n");
 
     // coordinates
 
@@ -315,7 +318,7 @@ public class _VrmlExporter extends _Exporter {
         output(normalMap[indices[i][0]] + " " + normalMap[indices[i][1]] + " "
             + normalMap[indices[i][2]] + " -1\n");
         if (faceVertexMax == 4 && indices[i].length == 4)
-          output("," + normalMap[indices[i][0]] + " "
+          output(normalMap[indices[i][0]] + " "
               + normalMap[indices[i][2]] + " " + normalMap[indices[i][3]]
               + " -1\n");
       }
@@ -367,6 +370,15 @@ public class _VrmlExporter extends _Exporter {
 
   public void fillCylinder(short colix, byte endcaps, int diameter,
                            Point3f screenA, Point3f screenB) {
+    Point3f ptA = new Point3f();
+    Point3f ptB = new Point3f();
+    viewer.unTransformPoint(screenA, ptA);
+    viewer.unTransformPoint(screenB, ptB);
+    int madBond = (int) (viewer.unscaleToScreen(
+        (int)((screenA.z + screenB.z) / 2), diameter) * 1000);      
+    cacheCylinder(ptA, ptB, colix, endcaps, madBond);
+
+    // nucleic base
   }
 
   public void drawCircleCentered(short colix, int diameter, int x, int y,
@@ -387,12 +399,40 @@ public class _VrmlExporter extends _Exporter {
     // text only
   }
 
+  void output(Tuple3f pt) {
+    output(pt.x + " " + pt.y + " " + pt.z);
+  }
+
   public void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
+    // nucleic base
     // cartoons
+    String color = rgbFractionalFromColix(colix, ' ');
+    String translu = translucencyFractionalFromColix(colix);
+    output("Shape {\n");
+    output(" appearance Appearance {\n");
+    output("  material Material { diffuseColor " + color + " transparency "
+        + translu + " }\n");
+    output(" }\n");
+    output(" geometry IndexedFaceSet {\n");
+    output(" solid FALSE\n  coord Coordinate {\n   point [\n");
+    viewer.unTransformPoint(ptA, pt);
+    output(pt);
+    output(" ");
+    viewer.unTransformPoint(ptB, pt);
+    output(pt);
+    output(" ");
+    viewer.unTransformPoint(ptC, pt);
+    output(pt);
+    output("   ]\n");
+    output("  }\n");
+    output("  coordIndex [ 0 1 2 -1 ]\n");
+    output(" }\n");
+    output("}\n");
   }
 
   public void fillCone(short colix, byte endcap, int diameter,
                        Point3f screenBase, Point3f screenTip) {
+    //
   }
 
   public void fillSphereCentered(short colix, int diameter, Point3f pt) {
@@ -414,7 +454,9 @@ public class _VrmlExporter extends _Exporter {
     output("Transform {\n");
     pt.set(x, y, z);
     viewer.unTransformPoint(pt, ptAtom);
-    output(" translation " + ptAtom.x + " " + ptAtom.y + " " + ptAtom.z + "\n");
+    output(" translation ");
+    output(ptAtom);
+    output("\n");
     // These x y z are 3D coordinates of echo or the atom the label is attached
     // to.
     output(" children Billboard {\n");
@@ -471,7 +513,7 @@ public class _VrmlExporter extends _Exporter {
 
   public void renderEllipsoid(short colix, int x, int y, int z, int diameter,
                               double[] coef, Point3i[] selectedPoints) {
-
+    // good luck!
   }
 
   public void plotImage(int x, int y, int z, Image image, short bgcolix,
@@ -485,12 +527,9 @@ public class _VrmlExporter extends _Exporter {
 
   }
 
-  // Vector vTriangles;
   public void startShapeBuffer() {
-    // vTriangles = new Vector();
-
     // for now, rather than doing this, it was simpler to
-    // just set the hermiteLevel to 1 if it is 0
+    // just set the hermiteLevel to 5 if it is 0
   }
 
   public void endShapeBuffer() {
@@ -499,6 +538,10 @@ public class _VrmlExporter extends _Exporter {
 
   public boolean canDoTriangles() {
     return false;
+  }
+
+  public boolean isCartesianExport() {
+    return true;
   }
 
   /*

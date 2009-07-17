@@ -3003,4 +3003,9 @@ final public class Graphics3D implements JmolRendererInterface {
     return true;
   }
 
+  
+  public boolean isCartesianExport() {
+    return false;
+  }
+
 }

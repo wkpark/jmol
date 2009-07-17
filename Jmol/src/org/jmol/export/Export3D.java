@@ -80,6 +80,10 @@ final public class Export3D implements JmolRendererInterface {
     return exporter.canDoTriangles();
   }
 
+  public boolean isCartesianExport() {
+    return exporter.isCartesianExport();
+  }
+
   public void setSlab(int slabValue) {
     slab = slabValue;
     g3d.setSlab(slabValue);

@@ -10450,6 +10450,10 @@ class ScriptEvaluator {
         type = "JPG";
       if (type.equals("MNU"))
         type = "MENU";
+      else if (type.equals("WRL") || type.equals("VRML")) {
+        type = type.substring(0, 1) + type.substring(1).toLowerCase();
+        isExport = true;
+      }
     }
     if (type.equals("data")) {
       if (fileName != null && fileName.indexOf(".") >= 0)

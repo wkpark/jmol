@@ -328,4 +328,6 @@ public interface JmolRendererInterface {
 
   public abstract boolean canDoTriangles();
 
+  public abstract boolean isCartesianExport();
+
 }

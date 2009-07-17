@@ -711,4 +711,8 @@ public class _PovrayExporter extends _Exporter {
     return true;
   }
 
+  public boolean isCartesianExport() {
+    return false;
+  }
+
 }

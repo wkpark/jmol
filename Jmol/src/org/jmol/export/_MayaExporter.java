@@ -154,6 +154,8 @@ public class _MayaExporter extends _Exporter {
         + ".iog\" \":initialShadingGroup.dsm\" -na;\n");
   }
 
+  // not implemented: 
+  
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, Vector3f[] normals,
                                int[][] indices, BitSet bsFaces,
@@ -204,26 +206,6 @@ public class _MayaExporter extends _Exporter {
 
   public void plotText(int x, int y, int z, short colix, 
                        String text, Font3D font3d) {    
-  }
-
-  // not implemented: 
-  
-  public void fillHermite(short colix, int tension, int diameterBeg,
-                          int diameterMid, int diameterEnd,
-                          Point3f s0, Point3f s1, Point3f s2, Point3f s3){
-    //cartoons, rockets, trace:
-  }
-  
-  public void drawHermite(short colix, int tension,
-                             Point3f s0, Point3f s1, Point3f s2, Point3f s3){
-    //strands:
-  }
-
-  public void drawHermite(short colix, boolean fill, boolean border, int tension,
-                            Point3f s0, Point3f s1, Point3f s2, Point3f s3,
-                            Point3f s4, Point3f s5, Point3f s6, Point3f s7,
-                            int aspectRatio) {
-    //cartoons, meshRibbons:
   }
 
   public void renderEllipsoid(short colix, int x, int y, int z, int diameter, double[] coef, Point3i[] selectedPoints) {

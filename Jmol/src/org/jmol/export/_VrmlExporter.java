@@ -59,6 +59,10 @@ public class _VrmlExporter extends _Exporter {
     output.append(data);
   }
 
+  void output(Tuple3f pt) {
+    output.append(pt.x).append(" ").append(pt.y).append(" ").append(pt.z);
+  }
+
   private int iObj;
   Hashtable htDefs = new Hashtable();
   
@@ -226,7 +230,8 @@ public class _VrmlExporter extends _Exporter {
       if (Float.isNaN(vertices[i].x))
         continue;
       coordMap[i] = n++;
-      output(vertices[i].x + " " + vertices[i].y + " " + vertices[i].z + "\n");
+      output(vertices[i]);
+      output("\n");
     }
     output("   ]\n");
     output("  }\n");
@@ -365,28 +370,6 @@ public class _VrmlExporter extends _Exporter {
     // nucleic base
   }
 
-  public void drawCircleCentered(short colix, int diameter, int x, int y,
-                                 int z, boolean doFill) {
-    // draw circle
-  }
-
-  public void fillScreenedCircleCentered(short colix, int diameter, int x,
-                                         int y, int z) {
-    // halos
-  }
-
-  public void drawPixel(short colix, int x, int y, int z) {
-    // measures
-  }
-
-  public void drawTextPixel(int argb, int x, int y, int z) {
-    // text only
-  }
-
-  void output(Tuple3f pt) {
-    output(pt.x + " " + pt.y + " " + pt.z);
-  }
-
   public void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
     // nucleic base
     // cartoons
@@ -450,42 +433,6 @@ public class _VrmlExporter extends _Exporter {
      */
   }
 
-  // not implemented:
-
-  public void fillHermite(short colix, int tension, int diameterBeg,
-                          int diameterMid, int diameterEnd, Point3f s0,
-                          Point3f s1, Point3f s2, Point3f s3) {
-    // cartoons, rockets, trace:
-  }
-
-  public void drawHermite(short colix, int tension, Point3f s0, Point3f s1,
-                          Point3f s2, Point3f s3) {
-    // strands:
-  }
-
-  public void drawHermite(short colix, boolean fill, boolean border,
-                          int tension, Point3f s0, Point3f s1, Point3f s2,
-                          Point3f s3, Point3f s4, Point3f s5, Point3f s6,
-                          Point3f s7, int aspectRatio) {
-    // cartoons, meshRibbons:
-  }
-
-  public void renderEllipsoid(short colix, int x, int y, int z, int diameter,
-                              double[] coef, Point3i[] selectedPoints) {
-    // good luck!
-  }
-
-  public void plotImage(int x, int y, int z, Image image, short bgcolix,
-                        int width, int height) {
-    // TODO
-
-  }
-
-  public void renderBackground() {
-    // TODO
-
-  }
-
   public void startShapeBuffer() {
     // for now, rather than doing this, it was simpler to
     // just set the hermiteLevel to 5 if it is 0
@@ -503,11 +450,40 @@ public class _VrmlExporter extends _Exporter {
     return true;
   }
 
-  /*
-   * private class Triangle{ short colix; Point3f ptA = new Point3f(); Point3f
-   * ptB = new Point3f(); Point3f ptC = new Point3f(); Triangle(short colix,
-   * Point3f ptA, Point3f ptB, Point3f ptC) { this.colix = colix;
-   * this.ptA.set(ptA); this.ptB.set(ptB); this.ptC.set(ptC); } }
-   */
+  // not implemented:
+
+  public void drawCircleCentered(short colix, int diameter, int x, int y,
+                                 int z, boolean doFill) {
+    // draw circle
+  }
+
+  public void fillScreenedCircleCentered(short colix, int diameter, int x,
+                                         int y, int z) {
+    // halos
+  }
+
+  public void drawPixel(short colix, int x, int y, int z) {
+    // measures
+  }
+
+  public void drawTextPixel(int argb, int x, int y, int z) {
+    // text only
+  }
+
+  public void renderEllipsoid(short colix, int x, int y, int z, int diameter,
+                              double[] coef, Point3i[] selectedPoints) {
+    // good luck!
+  }
+
+  public void plotImage(int x, int y, int z, Image image, short bgcolix,
+                        int width, int height) {
+    // TODO
+
+  }
+
+  public void renderBackground() {
+    // TODO
+
+  }
 
 }

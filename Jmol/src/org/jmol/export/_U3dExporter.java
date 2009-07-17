@@ -49,7 +49,7 @@ public class _U3dExporter extends _Exporter {
   }
   
   public void getHeader() {
-    output("not _U3dExporter not implemented");
+    output("_U3dExporter not implemented");
   }
 
   public void getFooter() {
@@ -217,24 +217,6 @@ public class _U3dExporter extends _Exporter {
 
   // not implemented: 
   
-  public void fillHermite(short colix, int tension, int diameterBeg,
-                          int diameterMid, int diameterEnd,
-                          Point3f s0, Point3f s1, Point3f s2, Point3f s3){
-    //cartoons, rockets, trace:
-  }
-  
-  public void drawHermite(short colix, int tension,
-                             Point3f s0, Point3f s1, Point3f s2, Point3f s3){
-    //strands:
-  }
-
-  public void drawHermite(short colix, boolean fill, boolean border, int tension,
-                            Point3f s0, Point3f s1, Point3f s2, Point3f s3,
-                            Point3f s4, Point3f s5, Point3f s6, Point3f s7,
-                            int aspectRatio) {
-    //cartoons, meshRibbons:
-  }
-
   public void renderEllipsoid(short colix, int x, int y, int z, int diameter, double[] coef, Point3i[] selectedPoints) {
     
   }

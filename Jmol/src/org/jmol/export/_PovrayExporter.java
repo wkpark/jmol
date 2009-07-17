@@ -641,33 +641,6 @@ public class _PovrayExporter extends _Exporter {
     g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
     output("// end image " + nImage + "\n");
   }
-  // not needed:
-  
-  public void fillHermite(short colix, int tension, int diameterBeg,
-                          int diameterMid, int diameterEnd, Point3f s0,
-                          Point3f s1, Point3f s2, Point3f s3) {
-    //cartoons, rockets, trace:
-  }
-
-  public void drawHermite(short colix, int tension, Point3f s0, Point3f s1,
-                          Point3f s2, Point3f s3) {
-    //strands, meshribbon:
-  }
-
-  public void drawHermite(short colix, boolean fill, boolean border,
-                          int tension, Point3f s0, Point3f s1, Point3f s2,
-                          Point3f s3, Point3f s4, Point3f s5, Point3f s6,
-                          Point3f s7, int aspectRatio) {
-    //cartoons, meshRibbons:
-  }
-
-  public void renderText(Text t) {
-  }
-
-  public void drawString(short colix, String str, Font3D font3d, int xBaseline,
-                         int yBaseline, int z, int zSlab) {
-  }
-
   
   public void renderEllipsoid(short colix, int ix, int iy, int iz,
                               int diameter, double[] coef,
@@ -675,36 +648,26 @@ public class _PovrayExporter extends _Exporter {
     String s = coef[0] + "," + coef[1] + "," + coef[2] + "," + coef[3] + ","
         + coef[4] + "," + coef[5] + "," + coef[6] + "," + coef[7] + ","
         + coef[8] + "," + coef[9] + "," + color4(colix);
-    //if (true || selectedPoints == null) {
-      output("q(" + s + ")\n");
-    //  return;
-    //}
-    //TODO: The following does not work. 
-    /*
-    tempP1.set(ix, iy, iz);
-    for (int i = 0; i < 3; i++) {
-      tempP1.x += selectedPoints[i].x - ix; 
-      tempP1.y += selectedPoints[i].y - iy; 
-      tempP1.z += selectedPoints[i].z - iz; 
-    }
-    output("qf(" + s + "," + ix + "," + iy + "," + iz 
-        + "," + tempP1.x + "," + tempP1.y + "," + tempP1.z + ")\n");
-    */
+    output("q(" + s + ")\n");
   }
 
   public void renderBackground() {
-    // VERY inefficient, but it works.
     g3d.renderBackground(jmolRenderer);
   }
 
+  // not needed:
+  
+  public void renderText(Text t) {
+  }
+
+  public void drawString(short colix, String str, Font3D font3d, int xBaseline,
+                         int yBaseline, int z, int zSlab) {
+  }
+  
   public void endShapeBuffer() {
-    // TODO
-    
   }
 
   public void startShapeBuffer() {
-    // TODO
-    
   }
 
   public boolean canDoTriangles() {

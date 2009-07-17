@@ -97,7 +97,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
     val = viewer.getHermiteLevel();
     if (val == 0 && !g3d.canDoTriangles())
-      val = 1;
+      val = 5; // forces hermite for exporters
     val = (val <= 0 ? -val : viewer.getInMotion() ? 0 : val);
     if (val != hermiteLevel && val != 0)
       invalidateMesh = true;
@@ -588,7 +588,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     mesh.setVisibilityFlags(1);
     return (meshReady[i] = true);
   }
-
+  
   /*
   void createMeshCone(int i, Point3f pointBegin, Point3f pointEnd, int mad) {
     int level = 5;

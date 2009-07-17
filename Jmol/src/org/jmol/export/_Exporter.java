@@ -262,10 +262,8 @@ public abstract class _Exporter implements JmolExportInterface {
     return new StringBuffer().append(0f).toString();
   }
 
-  protected double round(float number) { //AH
-    int places = 3;
-    double c = Math.pow(10, places);
-    return (double) Math.round(number*c)/c;
+  protected static float round(float number) { //AH
+    return (float) Math.round(number*1000)/1000;  // leave just 3 decimals
   }
   
   /**

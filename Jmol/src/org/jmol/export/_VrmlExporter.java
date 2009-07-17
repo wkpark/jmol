@@ -62,7 +62,7 @@ public class _VrmlExporter extends _Exporter {
   }
 
   private void output(Tuple3f pt) {
-    output.append(pt.x).append(" ").append(pt.y).append(" ").append(pt.z);
+    output.append(round(pt.x)).append(" ").append(round(pt.y)).append(" ").append(round(pt.z));
   }
 
   private int iObj;
@@ -102,7 +102,7 @@ public class _VrmlExporter extends _Exporter {
         + rgbFractionalFromColix(viewer.getObjectColix(0), ' ') + " } \n");
 
     output("Transform {\n");
-    output("translation " + -center.x + " " + -center.y + " " + -center.z
+    output("translation " + round(-center.x) + " " + round(-center.y) + " " + round(-center.z)
         + "\n");
     output("children [\n\n");
   }
@@ -160,6 +160,10 @@ public class _VrmlExporter extends _Exporter {
     output("}\n");
   }
 
+  
+  
+  
+  
   public void fillCylinder(Point3f atom1, Point3f atom2, short colix1,
                            short colix2, byte endcaps, int madBond,
                            int bondOrder) {
@@ -187,7 +191,7 @@ public class _VrmlExporter extends _Exporter {
     if (child.charAt(0) == '_') {
       float r = madBond / 2000f;
       output("DEF " + child);
-      output(" Shape{geometry Cylinder{height " + length + " radius " + r + "}");
+      output(" Shape{geometry Cylinder{height " + round(length) + " radius " + r + "}");
       outputAppearance(colix, false);
       output("}");
     } else {
@@ -261,7 +265,7 @@ public class _VrmlExporter extends _Exporter {
         String s;
         if (Float.isNaN(normals[i].x))
           continue;
-        s = (normals[i].x + " " + normals[i].y + " " + normals[i].z + "\n");
+        s = (round(normals[i].x) + " " + round(normals[i].y) + " " + round(normals[i].z) + "\n");
         if (htNormals.containsKey(s)) {
           normalMap[i] = ((Integer) htNormals.get(s)).intValue();
         } else {
@@ -335,10 +339,10 @@ public class _VrmlExporter extends _Exporter {
     output(tempV1);
     tempV1.sub(pt1);
     getAxisAngle(tempV1);
-    output(" rotation " + tempA.x + " " + tempA.y + " " + tempA.z + " "
-        + tempA.angle);
+    output(" rotation " + round(tempA.x) + " " + round(tempA.y) + " " + round(tempA.z) + " "
+        + round(tempA.angle));
   }
-
+  
   public void fillCone(short colix, byte endcap, int diameter,
                        Point3f screenBase, Point3f screenTip) {
     viewer.unTransformPoint(screenBase, tempP1);
@@ -347,7 +351,7 @@ public class _VrmlExporter extends _Exporter {
     outputTransRot(tempP1, tempP2);
     output(" children Shape{");
     float height = tempP1.distance(tempP2);
-    output("geometry Cone{height " + height + " bottomRadius " + d/2 +"}");
+    output("geometry Cone{height " + round(height) + " bottomRadius " + d/2 +"}");
     outputAppearance(colix, false);
     output("}}\n");
   }

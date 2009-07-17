@@ -250,9 +250,9 @@ public abstract class _Exporter implements JmolExportInterface {
   }
 
   protected String rgbFractionalFromArgb(int argb, char sep) {
-    return "" + (((argb >> 16) & 0xFF) / 255f) + sep 
-        + (((argb >> 8) & 0xFF) / 255f) + sep
-        + (((argb) & 0xFF) / 255f);
+    return "" + round(((argb >> 16) & 0xFF) / 255f) + sep 
+        + round(((argb >> 8) & 0xFF) / 255f) + sep
+        + round(((argb) & 0xFF) / 255f);
   }
 
   protected String translucencyFractionalFromColix(short colix) {
@@ -260,6 +260,12 @@ public abstract class _Exporter implements JmolExportInterface {
     if (Graphics3D.isColixTranslucent(colix))
       return new StringBuffer().append(translevel / 255f).toString();
     return new StringBuffer().append(0f).toString();
+  }
+
+  protected double round(float number) { //AH
+    int places = 3;
+    double c = Math.pow(10, places);
+    return (double) Math.round(number*c)/c;
   }
   
   /**

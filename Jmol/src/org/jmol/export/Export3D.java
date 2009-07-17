@@ -330,7 +330,7 @@ final public class Export3D implements JmolRendererInterface {
 
   void plotPixelClipped(int x, int y, int z) {
     //circle3D, drawPixel, plotPixelClipped(point3)
-    if (g3d.isClipped(x, y, z))
+    if (isClipped(x, y, z))
       return;
     exporter.drawPixel(colix, x, y, z);
   }
@@ -342,7 +342,7 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   public void plotPixelClipped(Point3i screen) {
-    if (g3d.isClipped(screen.x, screen.y, screen.z))
+    if (isClipped(screen.x, screen.y, screen.z))
       return;
     //circle3D, drawPixel, plotPixelClipped(point3)
     exporter.drawPixel(colix, screen.x, screen.y, screen.z);
@@ -353,7 +353,7 @@ final public class Export3D implements JmolRendererInterface {
       int z = coordinates[--i];
       int y = coordinates[--i];
       int x = coordinates[--i];
-      if (g3d.isClipped(x, y, z))
+      if (isClipped(x, y, z))
         continue;
       exporter.drawPixel(colix, x, y, z);
     }
@@ -479,14 +479,6 @@ final public class Export3D implements JmolRendererInterface {
   public void fillHermite(int tension, int diameterBeg,
                           int diameterMid, int diameterEnd,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
-    /*
-    ptA.set(s0.x, s0.y, s0.z);
-    ptB.set(s1.x, s1.y, s1.z);
-    ptC.set(s2.x, s2.y, s2.z);
-    ptD.set(s3.x, s3.y, s3.z);
-    exporter.fillHermite(colix, tension, madBeg, madMid, madEnd,
-        ptA, ptB, ptC, ptD);
-        */
     hermite3d.render(true, tension,
         diameterBeg, diameterMid, diameterEnd,
         s0, s1, s2, s3);
@@ -760,6 +752,8 @@ final public class Export3D implements JmolRendererInterface {
 
 
   public boolean isInDisplayRange(int x, int y) {
+    if(isCartesianExport())
+      return true;
     return g3d.isInDisplayRange(x, y);
   }
   
@@ -768,10 +762,22 @@ final public class Export3D implements JmolRendererInterface {
   }
   
   public boolean isClippedXY(int diameter, int x, int y) {
+    if(isCartesianExport())
+      return false;
     return g3d.isClippedXY(diameter, x, y);
   }
+  
+  public boolean isClipped(int x, int y, int z) {
+    return (g3d.isClippedZ(z) || isClipped(x, y));
+  }
+  
+  protected boolean isClipped(int x, int y) {
+    if(isCartesianExport())
+      return false;
+    return g3d.isClipped(x, y);
+  }
 
-    public int getColixArgb(short colix) {
+  public int getColixArgb(short colix) {
     return g3d.getColixArgb(colix);
   }
 

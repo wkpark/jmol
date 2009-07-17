@@ -436,6 +436,7 @@ final public class Export3D implements JmolRendererInterface {
 
   public void fillCone(byte endcap, int diameter,
                           Point3i pointBase, Point3i screenTip) {
+    // dipole, draw
     ptA.set(pointBase.x, pointBase.y, pointBase.z);
     ptB.set(screenTip.x, screenTip.y, screenTip.z);
     fillCone(endcap, diameter, ptA, ptB);

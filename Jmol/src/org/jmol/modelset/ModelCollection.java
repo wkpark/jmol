@@ -914,13 +914,14 @@ abstract public class ModelCollection extends BondCollection {
       return;
     char ctype = 'S';//(viewer.getTestFlag3() ? 's' : 'S');
     char qtype = viewer.getQuaternionFrame();
+    int mStep = viewer.getHelixStep();
     // testflag3 ON  --> preliminary: Hanson's original normal-based straightness
     // testflag3 OFF --> final: Kohler's new quaternion-based straightness
     for (int i = modelCount; --i >= 0;) {
       Model model = models[i];
       int nPoly = model.getBioPolymerCount();
       for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData(ctype, qtype, 2, false, null, null, null, null, false, new BitSet());
+        model.bioPolymers[p].getPdbData(ctype, qtype, mStep, 2, false, null, null, null, null, false, new BitSet());
     }
     setHaveStraightness(true);
   }
@@ -1024,6 +1025,7 @@ abstract public class ModelCollection extends BondCollection {
           type.charAt(13) : 'R');
     if (qtype == 'r')
       qtype = viewer.getQuaternionFrame();
+    int mStep = viewer.getHelixStep();
     int derivType = (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1 : 2);
     boolean isDraw = (type.indexOf("draw") >= 0); 
     BitSet bsAtoms = getModelAtomBitSet(modelIndex, false);
@@ -1032,7 +1034,7 @@ abstract public class ModelCollection extends BondCollection {
     StringBuffer pdbCONECT = new StringBuffer();
     BitSet bsWritten = new BitSet();
     for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData(ctype, qtype, derivType, isDraw,
+        model.bioPolymers[p].getPdbData(ctype, qtype,mStep, derivType, isDraw,
             bsAtoms, pdbATOM, pdbCONECT, bsSelected, p == 0, bsWritten);
     pdbATOM.append(pdbCONECT);
     String s = pdbATOM.toString();

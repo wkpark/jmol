@@ -469,12 +469,11 @@ public abstract class BioPolymer extends Polymer {
   final private static String[] qColor = { "yellow", "orange", "purple" };
 
   final public static void getPdbData(BioPolymer p, char ctype, char qtype,
-                                      int derivType, boolean isDraw,
+                                      int mStep, int derivType, boolean isDraw,
                                       BitSet bsAtoms, StringBuffer pdbATOM,
                                       StringBuffer pdbCONECT,
                                       BitSet bsSelected, boolean addHeader,
                                       BitSet bsWritten) {
-    int atomno = Integer.MIN_VALUE;
     boolean calcRamachandranStraightness = (qtype == 'C' || qtype == 'P');
     boolean isRamachandran = (ctype == 'R' || ctype == 'S' && 
         calcRamachandranStraightness);
@@ -509,16 +508,6 @@ public abstract class BioPolymer extends Polymer {
      * same as w but for calculating straightness
      */
 
-    Atom aprev = null;
-    Quaternion qprev = null;
-    Quaternion dq = null;
-    Quaternion dqprev = null;
-    Quaternion qref = null;
-    float factor = (ctype == 'R' ? 1f : 10f);
-    float x = 0, y = 0, z = 0, w = 0;
-    String strExtra = "";
-    float val1 = Float.NaN;
-    float val2 = Float.NaN;
     boolean isAmino = (p instanceof AminoPolymer);
     boolean isRelativeAlias = (ctype == 'r');
     boolean quaternionStraightness = (!isRamachandran && ctype == 'S');
@@ -532,8 +521,6 @@ public abstract class BioPolymer extends Polymer {
       Logger.debug("For straightness calculation: useQuaternionStraightness = "
           + useQuaternionStraightness + " and quaternionFrame = " + qtype);
     }
-    String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
-    Quaternion q;
     if (addHeader && !isDraw) {
       pdbATOM.append("REMARK   6    AT GRP CH RESNO  ");
       switch (ctype) {
@@ -565,7 +552,44 @@ public abstract class BioPolymer extends Polymer {
         pdbATOM.append("  NHX_______ NHY_______ NHZ_______");
       pdbATOM.append("\n\n");
     }
-    for (int m = 0; m < p.monomerCount; m++) {
+    if (mStep < 1)
+      mStep = 1;
+    for (int i = 0; i < mStep; i++)
+      getData(i, mStep, p, ctype, qtype, derivType, 
+          bsAtoms, bsSelected, bsWritten, 
+          isDraw, isRamachandran,
+          calcRamachandranStraightness,
+          useQuaternionStraightness,
+          writeRamachandranStraightness,
+          quaternionStraightness,
+          isAmino, isRelativeAlias,
+          pdbATOM, pdbCONECT);
+  }
+
+  private static void getData(int m0, int mStep, BioPolymer p, char ctype,
+                              char qtype, int derivType,
+                              BitSet bsAtoms, BitSet bsSelected, BitSet bsWritten,
+                              boolean isDraw, boolean isRamachandran,
+                              boolean calcRamachandranStraightness,
+                              boolean useQuaternionStraightness,
+                              boolean writeRamachandranStraightness,
+                              boolean quaternionStraightness, boolean isAmino,
+                              boolean isRelativeAlias, StringBuffer pdbATOM,
+                              StringBuffer pdbCONECT) {
+    String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
+    Quaternion q;
+    Atom aprev = null;
+    Quaternion qprev = null;
+    Quaternion dq = null;
+    Quaternion dqprev = null;
+    Quaternion qref = null;
+    int atomno = Integer.MIN_VALUE;
+    float factor = (ctype == 'R' ? 1f : 10f);
+    float x = 0, y = 0, z = 0, w = 0;
+    String strExtra = "";
+    float val1 = Float.NaN;
+    float val2 = Float.NaN;
+    for (int m = m0; m < p.monomerCount; m += mStep) {
       Monomer monomer = p.monomers[m];
       if (bsAtoms == null || bsAtoms.get(monomer.getLeadAtomIndex())) {
         Atom a = monomer.getLeadAtom();
@@ -804,7 +828,7 @@ public abstract class BioPolymer extends Polymer {
               }
             }
             if (derivType == 1) {
-              pdbATOM.append(monomer.getHelixData(Token.draw, qtype)).append('\n');
+              pdbATOM.append(monomer.getHelixData(Token.draw, qtype, mStep)).append('\n');
               continue;
             }
             pdbATOM.append(

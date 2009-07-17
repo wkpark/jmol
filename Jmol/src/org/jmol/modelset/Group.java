@@ -378,7 +378,7 @@ public class Group {
   public void setProteinStructureId(int i) {
   }
 
-  public Object getHelixData(int tokType, char qType) {
+  public Object getHelixData(int tokType, char qType, int mStep) {
         switch (tokType) {
         case Token.point:
           return new Point3f();

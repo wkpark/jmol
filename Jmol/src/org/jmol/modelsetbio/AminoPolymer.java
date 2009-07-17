@@ -603,11 +603,11 @@ public class AminoPolymer extends AlphaPolymer {
    * end old code for assigning SS.
    */
 
-  public void getPdbData(char ctype, char qtype, int derivType,
+  public void getPdbData(char ctype, char qtype, int mStep, int derivType,
                          boolean isDraw, BitSet bsAtoms, 
                          StringBuffer pdbATOM, StringBuffer pdbCONECT, 
                          BitSet bsSelected, boolean addHeader, BitSet bsWritten) {
-    getPdbData(this, ctype, qtype, derivType, isDraw, bsAtoms, pdbATOM, 
+    getPdbData(this, ctype, qtype, mStep, derivType, isDraw, bsAtoms, pdbATOM, 
         pdbCONECT, bsSelected, addHeader, bsWritten);
   }
 

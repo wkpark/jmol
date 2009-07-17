@@ -1014,10 +1014,13 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         return CONTINUE;
       }
       break;
+    case Token.forcmd:
+      if (bracketCount > 0)  // ignore [FOR], as in 1C4D 
+        break;
+      // fall through
     case Token.elseif:
     case Token.whilecmd:
     case Token.ifcmd:
-    case Token.forcmd:
       if (nTokens > 1 && tokCommand != Token.set) {
         isEndOfCommand = true;
         if (flowContext != null)

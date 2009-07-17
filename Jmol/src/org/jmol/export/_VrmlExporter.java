@@ -55,7 +55,7 @@ public class _VrmlExporter extends _Exporter {
     use2dBondOrderCalculation = false;
   }
 
-  private void output(String data) {
+  void output(String data) {
     output.append(data);
   }
   
@@ -80,35 +80,155 @@ public class _VrmlExporter extends _Exporter {
   }
 
   public void getFooter() {
+    // taken care of in finalizeOutput    
+  }
+  
+  public String finalizeOutput() {
+    htSpheres = null;
+    int n = vSpheres.size();
+    for (int i = 0; i < n; i++)
+      ((Sphere)vSpheres.get(i)).outputSphere();
+    vSpheres = null;
+    
+/*
+    htCylinders = null;
+    n = vCylinders.size();
+    for (int i = 0; i < n; i++)
+      ((Cylinder)vCylinders.get(i)).outputCylinder();
+    vCylinders = null;
+*/ 
     output("\n]\n");
     output("}\n");
+    return super.finalizeOutput();
   }
 
   public void renderAtom(Atom atom, short colix) {
     float r = atom.getMadAtom() / 2000f;
-    outputSphere(atom, r, colix);
+    cacheSphere(atom, r, colix);
   }
 
-  private void outputSphere(Point3f pt, float radius, short colix) {
-    String color = rgbFractionalFromColix(colix, ' ');
-    String translu = translucencyFractionalFromColix(colix);
-    output("Transform {\n");
-    output(" translation " + pt.x + " " + pt.y + " " + pt.z + "\n");
-    output(" children [\n");
-    output("  Shape {\n");
-    output("   geometry Sphere { radius " + radius + " }\n");
-    output("   appearance Appearance {\n");
-    output("    material Material { diffuseColor " + color 
-        + " transparency " + translu + " }\n");
-    output("   }\n");
-    output("  }\n");
-    output(" ]\n");
-    output("}\n");
+  private void cacheSphere(Point3f pt, float radius, short colix) {
+    vSpheres.add(new Sphere(pt, radius, colix)); 
   }
   
+  int iSphere;
+  Hashtable htSpheres = new Hashtable();
+  Vector vSpheres = new Vector();
+  
+  private class Sphere {
+    private Point3f spt;
+    private String child;
+    Sphere(Point3f pt, float radius, short colix) {
+       spt = pt;
+       String key = "S_" + colix + "_" + (int) (radius*1000);
+       if (htSpheres.containsKey(key)) {
+         child = "USE " + htSpheres.get(key);
+       } else {
+         String id = "S_" +   (iSphere++);
+         htSpheres.put(key, id);
+         child = "DEF " + id + get(radius, colix);
+       }       
+    }
+
+    private String get(float radius, short colix) {
+      String color = rgbFractionalFromColix(colix, ' ');
+      String translu = translucencyFractionalFromColix(colix);
+      StringBuffer sb = new StringBuffer();
+      sb.append(" Shape {\n")
+      .append("   geometry Sphere { radius " + radius + " }\n")
+      .append("   appearance Appearance {\n")
+      .append("    material Material { diffuseColor " + color 
+          + " transparency " + translu + " }\n")
+      .append("   }\n  }");
+      return sb.toString();
+    }
+    
+    void outputSphere() {
+      output("Transform { translation " + spt.x + " " + spt.y + " " + spt.z + "\n");
+      output(" children [" + child + "]\n}\n");
+    }
+  }
+  
+  /* 
+   * does not work -- rotation is part of the defined object
+
   public void fillCylinder(Point3f atom1, Point3f atom2, short colix1,
-                         short colix2, byte endcaps, int madBond, int bondOrder) {
-    //ignoring bond order for vrml -- but this needs fixing
+                           short colix2, byte endcaps, int madBond, int bondOrder) {
+      //ignoring bond order for vrml -- but this needs fixing
+      if (colix1 == colix2) {
+        cacheCylinder(atom1, atom2, colix1, endcaps, madBond);
+        return;
+      }
+      tempV2.set(atom2);
+      tempV2.add(atom1);
+      tempV2.scale(0.5f);
+      tempP1.set(tempV2);
+      cacheCylinder(atom1, tempP1, colix1, endcaps, madBond);
+      cacheCylinder(tempP1, atom2, colix2, endcaps, madBond);
+    }
+
+  private void cacheCylinder(Point3f pt1, Point3f pt2, short colix,
+                             byte endcaps, int madBond) {
+    vCylinders.add(new Cylinder(pt1, pt2, colix, endcaps, madBond));
+  }
+
+  int iCylinder;
+  Hashtable htCylinders = new Hashtable();
+  Vector vCylinders = new Vector();
+  
+  private class Cylinder {
+    private Point3f pt1, pt2;
+    private String child;
+    public Cylinder(Point3f pt1, Point3f pt2, short colix, byte endcaps,
+        int madBond) {
+      this.pt1 = pt1;
+      this.pt2 = pt2;
+      float length = pt1.distance(pt2);
+      String key = "C_" + colix + "_" + (int)(length * 1000) + "_" + madBond + "_" + endcaps;
+      if (htCylinders.containsKey(key)) {
+        child = "USE " + htCylinders.get(key);
+      } else {
+        String id = "C_" +   (iCylinder++);
+          htCylinders.put(key, id);
+        child = "DEF " + id + get(length, colix, endcaps, madBond);
+      }       
+    }
+
+    private String get(float length, short colix, byte endcaps, int madBond) {
+      String color = rgbFractionalFromColix(colix, ' ');
+      String translu = translucencyFractionalFromColix(colix);
+      float r = madBond / 2000f;
+      StringBuffer sb = new StringBuffer();    
+      sb.append("  Shape {\n");
+      sb.append("   geometry Cylinder { height " + length + " radius " + r + " }\n");
+      sb.append("   appearance Appearance {\n");
+      sb.append("    material Material { diffuseColor " + color 
+          + " transparency " + translu + " }\n");
+      sb.append("   }\n  }\n");
+      return sb.toString();
+    }
+
+    void outputCylinder() {
+      tempV1.set(pt2);
+      tempV1.add(pt1);
+      tempV1.scale(0.5f);
+      output("Transform {\n");
+      output(" translation " + tempV1.x + " " + tempV1.y + " " + tempV1.z + "\n");
+      tempV1.sub(pt1);
+      getAxisAngle(tempV1);
+      output(" rotation " + tempA.x + " " + tempA.y + " " + tempA.z + " " 
+          + tempA.angle + "\n");
+      output(" children [ " + child + " ]\n}\n");
+
+    }
+  }
+  
+   */
+
+  public void fillCylinder(Point3f atom1, Point3f atom2, short colix1,
+                           short colix2, byte endcaps, int madBond,
+                           int bondOrder) {
+    // ignoring bond order for vrml -- but this needs fixing
     if (colix1 == colix2) {
       renderCylinder(atom1, atom2, colix1, endcaps, madBond);
       return;
@@ -124,28 +244,21 @@ public class _VrmlExporter extends _Exporter {
   public void renderCylinder(Point3f pt1, Point3f pt2, short colix,
                              byte endcaps, int madBond) {
     String color = rgbFractionalFromColix(colix, ' ');
-    String translu = translucencyFractionalFromColix(colix);
     float length = pt1.distance(pt2);
     float r = madBond / 2000f;
     tempV1.set(pt2);
     tempV1.add(pt1);
     tempV1.scale(0.5f);
-    output("Transform {\n");
-    output(" translation " + tempV1.x + " " + tempV1.y + " " + tempV1.z + "\n");
+    output("Transform { translation " + tempV1.x + " " + tempV1.y + " " + tempV1.z + " ");
     tempV1.sub(pt1);
     getAxisAngle(tempV1);
-    output(" rotation " + tempA.x + " " + tempA.y + " " + tempA.z + " " 
+    output("rotation " + tempA.x + " " + tempA.y + " " + tempA.z + " "
         + tempA.angle + "\n");
-    output(" children [\n");
-    output("  Shape {\n");
-    output("   geometry Cylinder { height " + length + " radius " + r + " }\n");
-    output("   appearance Appearance {\n");
-    output("    material Material { diffuseColor " + color 
-        + " transparency " + translu + " }\n");
-    output("   }\n");
-    output("  }\n");
-    output(" ]\n");
-    output("}\n");
+    output("children[Shape {\n");
+    output("geometry Cylinder { height " + length + " radius " + r + " }\n");
+    output("appearance Appearance {\n");
+    output("material Material { diffuseColor " + color + " }\n");
+    output("}}]}\n");
   }
 
   public void renderIsosurface(Point3f[] vertices, short colix,
@@ -153,19 +266,6 @@ public class _VrmlExporter extends _Exporter {
                                int[][] indices, BitSet bsFaces, int nVertices,
                                int faceVertexMax, short[] polygonColixes,
                                int nPolygons) {
-    renderIsosurface(vertices, colix, colixes, normals, indices, bsFaces, nVertices, faceVertexMax, polygonColixes, nPolygons, false);
-    // this did not work 
-    // if (normals != null)
-     // renderIsosurface(vertices, colix, colixes, normals, indices, bsFaces, nVertices, faceVertexMax, polygonColixes, nPolygons, true);   
-  }
-
-
-  public void renderIsosurface(Point3f[] vertices, short colix,
-                               short[] colixes, Vector3f[] normals,
-                               int[][] indices, BitSet bsFaces, int nVertices,
-                               int faceVertexMax, short[] polygonColixes,
-                               int nPolygons, boolean sideb) {
-
     if (nVertices == 0)
       return;
     int nFaces = 0;
@@ -196,7 +296,12 @@ public class _VrmlExporter extends _Exporter {
     // coordinates
     
     output("coord Coordinate {\n   point [\n");
+    int[] coordMap = new int[nVertices];
+    int n = 0;
     for (int i = 0; i < nVertices; i++) {
+      if (Float.isNaN(vertices[i].x))
+        continue;
+      coordMap[i] = n++;
       output(vertices[i].x + " " + vertices[i].y + " " + vertices[i].z + "\n");
     }
     output("   ]\n");
@@ -205,37 +310,58 @@ public class _VrmlExporter extends _Exporter {
     for (int i = nPolygons; --i >= 0;) {
       if (!bsFaces.get(i))
         continue;
-      output(indices[i][0] + " " + indices[i][1] + " " + indices[i][2]
+      output(coordMap[indices[i][0]] + " " 
+          + coordMap[indices[i][1]] + " " 
+          + coordMap[indices[i][2]]
           + " -1\n");
       if (faceVertexMax == 4 && indices[i].length == 4)
-        output("," + indices[i][0] + " " + indices[i][2] + " " + indices[i][3]
+        output("," + coordMap[indices[i][0]] + " " 
+            + coordMap[indices[i][2]] + " " 
+            + coordMap[indices[i][3]]
             + " -1\n");
     }
     output("  ]\n");
+    coordMap = null;
 
     // normals
     
     if (normals != null) {
-      output("  normalPerVertex TRUE\n   normal Normal {\n  vector [\n");
+      Hashtable htNormals = new Hashtable();
+      Vector vNormals = new Vector();
+      int[] normalMap = new int[nVertices];
+      output("  solid FALSE\n  normalPerVertex TRUE\n   normal Normal {\n  vector [\n");
       for (int i = 0; i < nVertices; i++) {
+        String s;
         if (Float.isNaN(normals[i].x))
-          output("0 0 0\n");
-        else if (sideb)
-          output(-normals[i].x + " " + -normals[i].y + " " + -normals[i].z + "\n");
-        else
-          output(normals[i].x + " " + normals[i].y + " " + normals[i].z + "\n");
+          continue;
+        s=(normals[i].x + " " + normals[i].y + " " + normals[i].z + "\n");
+        if (htNormals.containsKey(s)) {
+          normalMap[i] = ((Integer)htNormals.get(s)).intValue();
+        } else {
+          normalMap[i] = vNormals.size();
+          vNormals.add(s);
+          htNormals.put(s, new Integer(normalMap[i]));
+        }
       }
+      htNormals = null;
+      n = vNormals.size();
+      for (int i = 0; i < n; i++)
+        output((String)vNormals.get(i));
+      vNormals = null;
       output("   ]\n");
       output("  }\n");
       output("  normalIndex [\n");
       for (int i = nPolygons; --i >= 0;) {
         if (!bsFaces.get(i))
           continue;
-        output(indices[i][0] + " " + indices[i][1] + " " + indices[i][2]
+        output(normalMap[indices[i][0]] + " " 
+            + normalMap[indices[i][1]] + " " 
+            + normalMap[indices[i][2]]
             + " -1\n");
         if (faceVertexMax == 4 && indices[i].length == 4)
-          output("," + indices[i][0] + " " + indices[i][2] + " "
-              + indices[i][3] + " -1\n");
+          output("," + normalMap[indices[i][0]] 
+              + " " + normalMap[indices[i][2]] 
+              + " " + normalMap[indices[i][3]] + " -1\n");
       }
       output("  ]\n");
     }
@@ -316,7 +442,7 @@ public class _VrmlExporter extends _Exporter {
   
   public void fillSphereCentered(short colix, int diameter, Point3f pt) {
     viewer.unTransformPoint(pt, ptAtom);
-    outputSphere(pt, diameter / 2.0f, colix);
+    cacheSphere(pt, diameter / 2.0f, colix);
   }
 
   final private Point3f pt = new Point3f();
@@ -418,7 +544,7 @@ public class _VrmlExporter extends _Exporter {
   public boolean canDoTriangles() {
     return false;
   }
-  
+
   /*
   private class Triangle{
     short colix;

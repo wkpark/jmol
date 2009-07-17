@@ -329,14 +329,15 @@ public abstract class Monomer extends Group {
     return null; 
   }
 
-  protected Object getHelixData2(int tokType, char qType) {
-
-    int iPrev = monomerIndex - 1;
-    Monomer prev = (monomerIndex == 0 ? null : bioPolymer.monomers[iPrev]);
+  protected Object getHelixData2(int tokType, char qType, int mStep) {
+    if (mStep < 1)
+      mStep = 1;
+    int iPrev = monomerIndex - mStep;
+    Monomer prev = (monomerIndex <= 0 ? null : bioPolymer.monomers[iPrev]);
     Quaternion q2 = getQuaternion(qType);
     Quaternion q1 = (prev == null ? null : prev.getQuaternion(qType));
     if (q1 == null || q2 == null)
-      return super.getHelixData(tokType, qType);
+      return super.getHelixData(tokType, qType, mStep);
     Atom a = prev.getQuaternionFrameCenter(qType);
     Atom b = getQuaternionFrameCenter(qType);
 

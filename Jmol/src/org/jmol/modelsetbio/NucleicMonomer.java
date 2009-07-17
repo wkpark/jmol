@@ -290,8 +290,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
    return (getAtomFromOffsetIndex(isPurine ? N9 : N1));
  }
  
- public Object getHelixData(int tokType, char qType) {
-   return getHelixData2(tokType, qType);
+ public Object getHelixData(int tokType, char qType, int mStep) {
+   return getHelixData2(tokType, qType, mStep);
  }
  
 

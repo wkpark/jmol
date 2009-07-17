@@ -742,6 +742,7 @@ public class StateManager {
     String helpPath = JmolConstants.DEFAULT_HELP_PATH;
     boolean fontScaling = false;
     boolean fontCaching = true;
+    int helixStep = 1;
     boolean hideNameInPopup = false;
     int hoverDelayMs = 500;
     float loadAtomDataTolerance = 0.01f;
@@ -1240,6 +1241,7 @@ public class StateManager {
       setParameterValue("hbondsDistanceMaximum", hbondsDistanceMaximum);
       setParameterValue("hbondsBackbone", hbondsBackbone);
       setParameterValue("hbondsSolid", hbondsSolid);
+      setParameterValue("helixStep", helixStep);
       setParameterValue("helpPath", helpPath);
       setParameterValue("hermiteLevel", hermiteLevel);
       setParameterValue("hideNameInPopup", hideNameInPopup);

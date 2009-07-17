@@ -250,7 +250,7 @@ abstract public class AtomCollection {
   public Object getHelixData(BitSet bs, int tokType) {
     int iatom = BitSetUtil.firstSetBit(bs);
     return (iatom < 0 ? "null" : atoms[iatom].group.getHelixData(tokType, 
-        viewer.getQuaternionFrame()));
+        viewer.getQuaternionFrame(), viewer.getHelixStep()));
   }
   
   protected int getAtomCountInModel(int modelIndex) {

@@ -2095,6 +2095,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void calculateStraightness() {
+    modelSet.setHaveStraightness(false);
     modelSet.calculateStraightness();
   }
 
@@ -5189,6 +5190,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     while (true) {
 
+      // 11.8.RC3//
+      if (key.equalsIgnoreCase("helixStep")) {
+        global.helixStep = value;
+        modelSet.setHaveStraightness(false);
+        break;
+      }
+
       // 11.6.RC16//
       if (key.equalsIgnoreCase("propertyDataColumnCount")) {
         break;
@@ -7503,6 +7511,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public char getQuaternionFrame() {
     return global.quaternionFrame.charAt(global.quaternionFrame.length() == 2 ? 1 : 0);
+  }
+
+  public int getHelixStep() {
+    return global.helixStep;
   }
 
   String calculatePointGroup() {

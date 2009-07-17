@@ -53,18 +53,20 @@ public class _VrmlExporter extends _Exporter {
 
   public _VrmlExporter() {
     use2dBondOrderCalculation = false;
+    canDoTriangles = false;
+    isCartesianExport = true;
   }
 
-  void output(String data) {
+  private void output(String data) {
     output.append(data);
   }
 
-  void output(Tuple3f pt) {
+  private void output(Tuple3f pt) {
     output.append(pt.x).append(" ").append(pt.y).append(" ").append(pt.z);
   }
 
   private int iObj;
-  Hashtable htDefs = new Hashtable();
+  private Hashtable htDefs = new Hashtable();
   
   /**
    * Hashtable htDefs contains references to _n where n is a number. 
@@ -116,7 +118,7 @@ public class _VrmlExporter extends _Exporter {
     return super.finalizeOutput();
   }
 
-  void outputAppearance(short colix, boolean isText) {
+  private void outputAppearance(short colix, boolean isText) {
     String def = getDef((isText ? "T" : "") + colix);
     output(" appearance ");
     if (def.charAt(0) == '_') {
@@ -325,7 +327,7 @@ public class _VrmlExporter extends _Exporter {
     output("}\n");
   }
 
-  public void outputTransRot(Point3f pt1, Point3f pt2) {    
+  private void outputTransRot(Point3f pt1, Point3f pt2) {    
     output("Transform{translation ");
     tempV1.set(pt2);
     tempV1.add(pt1);
@@ -335,13 +337,6 @@ public class _VrmlExporter extends _Exporter {
     getAxisAngle(tempV1);
     output(" rotation " + tempA.x + " " + tempA.y + " " + tempA.z + " "
         + tempA.angle);
-  }
-
-  public void renderText(Text t) {
-  }
-
-  public void drawString(short colix, String str, Font3D font3d, int xBaseline,
-                         int yBaseline, int z, int zSlab) {
   }
 
   public void fillCone(short colix, byte endcap, int diameter,
@@ -442,15 +437,14 @@ public class _VrmlExporter extends _Exporter {
     // processTrianglesAsIsosurface();
   }
 
-  public boolean canDoTriangles() {
-    return false;
-  }
-
-  public boolean isCartesianExport() {
-    return true;
-  }
-
   // not implemented:
+
+  public void renderText(Text t) {
+  }
+
+  public void drawString(short colix, String str, Font3D font3d, int xBaseline,
+                         int yBaseline, int z, int zSlab) {
+  }
 
   public void drawCircleCentered(short colix, int diameter, int x, int y,
                                  int z, boolean doFill) {

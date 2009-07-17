@@ -148,7 +148,9 @@ public abstract class _Exporter implements JmolExportInterface {
   protected int slabZ;
   protected int depthZ;
 
-  boolean use2dBondOrderCalculation = false;
+  boolean use2dBondOrderCalculation;
+  boolean canDoTriangles;
+  boolean isCartesianExport;
 
   protected Point3f center = new Point3f();
   protected Point3f tempP1 = new Point3f();

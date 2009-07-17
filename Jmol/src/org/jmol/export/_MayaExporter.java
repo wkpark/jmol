@@ -46,6 +46,8 @@ public class _MayaExporter extends _Exporter {
 
   public _MayaExporter() {
     use2dBondOrderCalculation = false;
+    canDoTriangles = false;
+    isCartesianExport = true;
   }
   
  public void getHeader() {
@@ -230,14 +232,6 @@ public class _MayaExporter extends _Exporter {
   public void startShapeBuffer() {
     // TODO
     
-  }
-
-  public boolean canDoTriangles() {
-    return false;
-  }
-  
-  public boolean isCartesianExport() {
-    return true;
   }
 
 }

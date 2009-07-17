@@ -58,6 +58,8 @@ public class _PovrayExporter extends _Exporter {
 
   public _PovrayExporter() {
     use2dBondOrderCalculation = true;
+    canDoTriangles = true;
+    isCartesianExport = false;
   }
 
   private void output(String data) {
@@ -669,13 +671,4 @@ public class _PovrayExporter extends _Exporter {
 
   public void startShapeBuffer() {
   }
-
-  public boolean canDoTriangles() {
-    return true;
-  }
-
-  public boolean isCartesianExport() {
-    return false;
-  }
-
 }

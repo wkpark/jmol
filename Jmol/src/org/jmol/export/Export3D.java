@@ -48,6 +48,7 @@ import org.jmol.shape.ShapeRenderer;
 
 final public class Export3D implements JmolRendererInterface {
 
+  private _Exporter exporter;
   
   private Graphics3D g3d;
   private short colix;
@@ -55,9 +56,7 @@ final public class Export3D implements JmolRendererInterface {
   private int width;
   private int height;
   private int slab;
-
-//  private ShapeRenderer shapeRenderer;
-  private JmolExportInterface exporter;
+  
   public JmolExportInterface getExporter() {
     return exporter;
   }
@@ -72,16 +71,16 @@ final public class Export3D implements JmolRendererInterface {
     height = g3d.getRenderHeight();
     slab = g3d.getSlab();
 
-    this.exporter = exporter;
+    this.exporter = (_Exporter) exporter;
     exporter.setRenderer(this);
   }
   
   public boolean canDoTriangles() {
-    return exporter.canDoTriangles();
+    return exporter.canDoTriangles;
   }
 
   public boolean isCartesianExport() {
-    return exporter.isCartesianExport();
+    return exporter.isCartesianExport;
   }
 
   public void setSlab(int slabValue) {

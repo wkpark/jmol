@@ -15,6 +15,8 @@ import java.util.BitSet;
 
 public interface JmolExportInterface {
 
+  boolean canDoTriangles = false;
+
   abstract void setRenderer(JmolRendererInterface jmolRenderer);
   
   // This method is implemented in org.jmol.export._Exporter 
@@ -81,33 +83,15 @@ public interface JmolExportInterface {
   abstract void plotImage(int x, int y, int z, Image image, short bgcolix, 
                           int width, int height);
 
+  abstract void startShapeBuffer();
+
+  abstract void endShapeBuffer();
+
   // NOT IMPLEMENTED, but could be if needed:
   
-  //cartoons, meshRibbons:
-  abstract void drawHermite(short colix, boolean fill, boolean border, int tension,
-                   Point3f s0, Point3f s1, Point3f s2, Point3f s3,
-                   Point3f s4, Point3f s5, Point3f s6, Point3f s7,
-                   int aspectRatio);
-  
-  //cartoons, rockets, trace:
-  abstract void fillHermite(short colix, int tension, int diameterBeg,
-                          int diameterMid, int diameterEnd,
-                          Point3f s0, Point3f s1, Point3f s2, Point3f s3);
-  
-  //strands:
-  abstract void drawHermite(short colix, int tension,
-                             Point3f s0, Point3f s1, Point3f s2, Point3f s3);
-
   abstract void renderEllipsoid(short colix, int x, int y, int z, int diameter,
                                 double[] coef, Point3i[] selectedPoints);
 
   abstract void renderBackground();
 
-  abstract void startShapeBuffer();
-
-  abstract void endShapeBuffer();
-
-  abstract boolean canDoTriangles();
-
-  abstract boolean isCartesianExport();
 }

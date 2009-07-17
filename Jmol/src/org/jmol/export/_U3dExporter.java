@@ -42,6 +42,8 @@ public class _U3dExporter extends _Exporter {
 
   public _U3dExporter() {
     use2dBondOrderCalculation = false;
+    canDoTriangles = false;
+    isCartesianExport = true;
   }
 
   private void output(String data) {
@@ -242,14 +244,4 @@ public class _U3dExporter extends _Exporter {
     
   }
 
-  public boolean canDoTriangles() {
-    return false;
-  }
-  
-  public boolean isCartesianExport() {
-    return true;
-  }
-
-
-           
 }

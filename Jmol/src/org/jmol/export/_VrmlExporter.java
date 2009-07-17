@@ -59,20 +59,25 @@ public class _VrmlExporter extends _Exporter {
     output.append(data);
   }
 
-  void outputAppearance(short colix, boolean isText) {
-    String def = getDef((isText ? "T" : "") + colix);
-    output(" appearance ");
-    if (def.charAt(0) == '_') {
-      String color = rgbFractionalFromColix(colix, ' ');
-      output(" DEF " + def + " Appearance{material Material{diffuseColor ");
-      if (isText)
-        output(" 0 0 0 specularColor 0 0 0 ambientIntensity 0.0 shininess 0.0 emissiveColor " 
-            + color + " }}");
-      else
-        output(color + " transparency " + translucencyFractionalFromColix(colix) + "}}");
-      return;
-    }
-    output(def);
+  private int iObj;
+  Hashtable htDefs = new Hashtable();
+  
+  /**
+   * Hashtable htDefs contains references to _n where n is a number. 
+   * we look up a key for anything and see if an object has been assigned.
+   * If it is there, we just return the phrase "USE _n".
+   * It it is not there, we return the DEF name that needs to be assigned.
+   * The calling method must then make that definition.
+   * 
+   * @param key
+   * @return "_n" or "DEF _n"
+   */
+  private String getDef(String key) {
+    if (htDefs.containsKey(key))
+      return "USE " + htDefs.get(key);
+    String id = "_" + (iObj++);
+    htDefs.put(key, id);
+    return id;
   }
   
   public void getHeader() {
@@ -107,6 +112,22 @@ public class _VrmlExporter extends _Exporter {
     return super.finalizeOutput();
   }
 
+  void outputAppearance(short colix, boolean isText) {
+    String def = getDef((isText ? "T" : "") + colix);
+    output(" appearance ");
+    if (def.charAt(0) == '_') {
+      String color = rgbFractionalFromColix(colix, ' ');
+      output(" DEF " + def + " Appearance{material Material{diffuseColor ");
+      if (isText)
+        output(" 0 0 0 specularColor 0 0 0 ambientIntensity 0.0 shininess 0.0 emissiveColor " 
+            + color + " }}");
+      else
+        output(color + " transparency " + translucencyFractionalFromColix(colix) + "}}");
+      return;
+    }
+    output(def);
+  }
+  
   public void renderAtom(Atom atom, short colix) {
     float r = atom.getMadAtom() / 2000f;
     outputSphere(atom, r, colix);
@@ -117,16 +138,6 @@ public class _VrmlExporter extends _Exporter {
     outputSphere(ptAtom, viewer.unscaleToScreen((int)pt.z, diameter) / 2, colix);
   }
 
-  private int iObj;
-  Hashtable htDefs = new Hashtable();
-  private String getDef(String key) {
-    if (htDefs.containsKey(key))
-      return "USE " + htDefs.get(key);
-    String id = "_" + (iObj++);
-    htDefs.put(key, id);
-    return id;
-  }
-  
   private void outputSphere(Point3f center, float radius, short colix) {
     String child = getDef("S" + colix + "_" + (int) (radius * 100));
     output("Transform{translation ");

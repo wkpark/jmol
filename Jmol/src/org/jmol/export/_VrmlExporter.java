@@ -90,13 +90,13 @@ public class _VrmlExporter extends _Exporter {
       ((Sphere)vSpheres.get(i)).outputSphere();
     vSpheres = null;
     
-/*
+
     htCylinders = null;
     n = vCylinders.size();
     for (int i = 0; i < n; i++)
       ((Cylinder)vCylinders.get(i)).outputCylinder();
     vCylinders = null;
-*/ 
+ 
     output("\n]\n");
     output("}\n");
     return super.finalizeOutput();
@@ -149,9 +149,6 @@ public class _VrmlExporter extends _Exporter {
     }
   }
   
-  /* 
-   * does not work -- rotation is part of the defined object
-
   public void fillCylinder(Point3f atom1, Point3f atom2, short colix1,
                            short colix2, byte endcaps, int madBond, int bondOrder) {
       //ignoring bond order for vrml -- but this needs fixing
@@ -162,9 +159,9 @@ public class _VrmlExporter extends _Exporter {
       tempV2.set(atom2);
       tempV2.add(atom1);
       tempV2.scale(0.5f);
-      tempP1.set(tempV2);
-      cacheCylinder(atom1, tempP1, colix1, endcaps, madBond);
-      cacheCylinder(tempP1, atom2, colix2, endcaps, madBond);
+      Point3f pt = new Point3f(tempV2);
+      cacheCylinder(atom1, pt, colix1, endcaps, madBond);
+      cacheCylinder(pt, atom2, colix2, endcaps, madBond);
     }
 
   private void cacheCylinder(Point3f pt1, Point3f pt2, short colix,
@@ -212,8 +209,7 @@ public class _VrmlExporter extends _Exporter {
       tempV1.set(pt2);
       tempV1.add(pt1);
       tempV1.scale(0.5f);
-      output("Transform {\n");
-      output(" translation " + tempV1.x + " " + tempV1.y + " " + tempV1.z + "\n");
+      output("Transform { translation " + tempV1.x + " " + tempV1.y + " " + tempV1.z + " ");
       tempV1.sub(pt1);
       getAxisAngle(tempV1);
       output(" rotation " + tempA.x + " " + tempA.y + " " + tempA.z + " " 
@@ -223,44 +219,6 @@ public class _VrmlExporter extends _Exporter {
     }
   }
   
-   */
-
-  public void fillCylinder(Point3f atom1, Point3f atom2, short colix1,
-                           short colix2, byte endcaps, int madBond,
-                           int bondOrder) {
-    // ignoring bond order for vrml -- but this needs fixing
-    if (colix1 == colix2) {
-      renderCylinder(atom1, atom2, colix1, endcaps, madBond);
-      return;
-    }
-    tempV2.set(atom2);
-    tempV2.add(atom1);
-    tempV2.scale(0.5f);
-    tempP1.set(tempV2);
-    renderCylinder(atom1, tempP1, colix1, endcaps, madBond);
-    renderCylinder(tempP1, atom2, colix2, endcaps, madBond);
-  }
-
-  public void renderCylinder(Point3f pt1, Point3f pt2, short colix,
-                             byte endcaps, int madBond) {
-    String color = rgbFractionalFromColix(colix, ' ');
-    float length = pt1.distance(pt2);
-    float r = madBond / 2000f;
-    tempV1.set(pt2);
-    tempV1.add(pt1);
-    tempV1.scale(0.5f);
-    output("Transform { translation " + tempV1.x + " " + tempV1.y + " " + tempV1.z + " ");
-    tempV1.sub(pt1);
-    getAxisAngle(tempV1);
-    output("rotation " + tempA.x + " " + tempA.y + " " + tempA.z + " "
-        + tempA.angle + "\n");
-    output("children[Shape {\n");
-    output("geometry Cylinder { height " + length + " radius " + r + " }\n");
-    output("appearance Appearance {\n");
-    output("material Material { diffuseColor " + color + " }\n");
-    output("}}]}\n");
-  }
-
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, Vector3f[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
@@ -442,7 +400,7 @@ public class _VrmlExporter extends _Exporter {
   
   public void fillSphereCentered(short colix, int diameter, Point3f pt) {
     viewer.unTransformPoint(pt, ptAtom);
-    cacheSphere(pt, diameter / 2.0f, colix);
+    cacheSphere(new Point3f(pt), diameter / 2.0f, colix);
   }
 
   final private Point3f pt = new Point3f();

@@ -31,6 +31,6 @@ import org.jmol.shape.*;
 public class BallsGenerator extends BallsRenderer {
 
   protected void renderBall(Atom atom) {
-    g3d.getExporter().renderAtom(atom, atom.getColix());
+    ((Export3D)g3d).getExporter().renderAtom(atom, atom.getColix());
   }
 }

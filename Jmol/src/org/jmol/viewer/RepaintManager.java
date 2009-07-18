@@ -23,7 +23,6 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.api.JmolExportInterface;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.*;
 import org.jmol.modelset.ModelSet;
@@ -115,7 +114,7 @@ class RepaintManager {
         Shape shape = modelSet.getShape(i);
         if (shape == null)
           continue;
-        getRenderer(i, g3d).render(g3d, modelSet, shape); // , rectClip
+        getRenderer(i, g3d).render(g3d, modelSet, shape);
       }
 
     } catch (Exception e) {
@@ -162,9 +161,9 @@ class RepaintManager {
 
     viewer.finalizeTransformParameters();
 
-    JmolExportInterface exporter = null;
     JmolRendererInterface g3dExport = null;
     Object output = null;
+    boolean isOK = false;
     try {
       if (fileName == null) {
         output = new StringBuffer();
@@ -175,35 +174,26 @@ class RepaintManager {
           return null;
         output = fileName;
       }
-      Class exporterClass = Class.forName("org.jmol.export._" + type
-          + "Exporter");
-      exporter = (JmolExportInterface) exporterClass.newInstance();
-      exporterClass = Class.forName("org.jmol.export.Export3D");
-      g3dExport = (JmolRendererInterface) exporterClass.newInstance();
+      Class export3Dclass = Class.forName("org.jmol.export.Export3D");
+      g3dExport = (JmolRendererInterface) export3Dclass.newInstance();
+      isOK = g3dExport.initializeExporter(type, viewer, g3d, output);
     } catch (Exception e) {
+    }
+    if (!isOK) {
       Logger.error("Cannot export " + type);
       return null;
     }
-    if (!exporter.initializeOutput(viewer, g3d, output))
-      return null;
-    exporter.getHeader();
-
-    g3dExport.setg3dExporter(g3d, exporter);
-    exporter.renderBackground();
+    g3d.renderBackground(g3dExport);
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = modelSet.getShape(i);
       if (shape == null)
         continue;
       ShapeRenderer generator = getGenerator(i, g3d);
-      if (generator == null)
-        continue;
       generator.setGenerator(true);
-      g3dExport.setRenderer(generator);
       generator.render(g3dExport, modelSet, shape);
+      generator.setGenerator(false);
     }
-    exporter.getFooter();
-
-    return exporter.finalizeOutput();
+    return g3dExport.finalizeOutput();
   }
 
   private ShapeRenderer getGenerator(int shapeID, Graphics3D g3d) {
@@ -215,8 +205,8 @@ class RepaintManager {
       renderer.setViewerG3dShapeID(viewer, g3d, shapeID);
       return renderer;
     } catch (Exception e) {
-      // that's ok -- just not implemented;
+      // no generator -- just use renderer
+      return getRenderer(shapeID, g3d);
     }
-    return null;
   }
 }

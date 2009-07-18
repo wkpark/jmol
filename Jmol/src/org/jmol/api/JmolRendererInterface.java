@@ -11,15 +11,14 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.shape.ShapeRenderer;
+import org.jmol.viewer.Viewer;
 
 public interface JmolRendererInterface {
 
-  public abstract void setg3dExporter(Graphics3D g3d, JmolExportInterface exporter);
+  // these methods are implmented in Export3D and Graphics3D
   
-  public abstract JmolExportInterface getExporter();
-
-  public abstract void setRenderer(ShapeRenderer shapeRenderer);
+  public abstract boolean initializeExporter(String type, Viewer viewer,
+                                             Graphics3D g3d, Object output);
 
   public abstract boolean isAntialiased();
   
@@ -329,5 +328,7 @@ public interface JmolRendererInterface {
   public abstract boolean canDoTriangles();
 
   public abstract boolean isCartesianExport();
+  
+  public abstract String finalizeOutput();
 
 }

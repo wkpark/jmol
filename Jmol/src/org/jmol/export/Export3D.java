@@ -32,12 +32,11 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.api.JmolExportInterface;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Hermite3D;
-import org.jmol.shape.ShapeRenderer;
+import org.jmol.viewer.Viewer;
 
 /**
  * Provides high-level graphics primitives for 3D graphics export.
@@ -57,7 +56,7 @@ final public class Export3D implements JmolRendererInterface {
   private int height;
   private int slab;
   
-  public JmolExportInterface getExporter() {
+  public _Exporter getExporter() {
     return exporter;
   }
 
@@ -65,16 +64,27 @@ final public class Export3D implements JmolRendererInterface {
     this.hermite3d = new Hermite3D(this);
   }
   
-  public void setg3dExporter(Graphics3D g3d, JmolExportInterface exporter) {
+  public boolean initializeExporter(String type, Viewer viewer,
+                                    Graphics3D g3d, Object output) {
+    try {
+      Class exporterClass = Class.forName("org.jmol.export._" + type
+          + "Exporter");
+      exporter = (_Exporter) exporterClass.newInstance();
+    } catch (Exception e) {
+      return false;
+    }
     this.g3d = g3d;
     width = g3d.getRenderWidth();
     height = g3d.getRenderHeight();
     slab = g3d.getSlab();
-
-    this.exporter = (_Exporter) exporter;
     exporter.setRenderer(this);
+    return exporter.initializeOutput(viewer, g3d, output);
   }
-  
+
+  public String finalizeOutput() {
+    return exporter.finalizeOutput();
+  }
+
   public boolean canDoTriangles() {
     return exporter.canDoTriangles;
   }
@@ -88,14 +98,6 @@ final public class Export3D implements JmolRendererInterface {
     g3d.setSlab(slabValue);
   }
   
-  public void setRenderer(ShapeRenderer shapeRenderer) {
- //   this.shapeRenderer = shapeRenderer;
-  }
-  
-  public void renderBackground() {
-    exporter.renderBackground();
-  }
-
   /**
    * draws a screened circle ... every other dot is turned on
    *

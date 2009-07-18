@@ -36,12 +36,11 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 
-import org.jmol.api.JmolExportInterface;
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.shape.ShapeRenderer;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
 
 /**
  * Provides high-level graphics primitives for 3D visualization.
@@ -266,16 +265,6 @@ final public class Graphics3D implements JmolRendererInterface {
     this.cylinder3d = new Cylinder3D(this);
     this.hermite3d = new Hermite3D(this);
     this.normix3d = new Normix3D();
-  }
-  
-  public void setg3dExporter(Graphics3D g3d, JmolExportInterface exporter) {
-  }
-  
-  public JmolExportInterface getExporter() {
-    return null;
-  }
-  
-  public void setRenderer(ShapeRenderer shapeRenderer) {
   }
   
   int newWindowWidth, newWindowHeight;
@@ -2989,23 +2978,29 @@ final public class Graphics3D implements JmolRendererInterface {
           jmolRenderer, (short) 0, 0, 0);
   }
 
+  // implemented only for Export3D:
+  
   public void endShapeBuffer() {
-    // TODO
-    
   }
 
   public void startShapeBuffer() {
-    // TODO
-    
   }
 
   public boolean canDoTriangles() {
     return true;
   }
-
   
   public boolean isCartesianExport() {
     return false;
+  }
+
+  public boolean initializeExporter(String type, Viewer viewer, Graphics3D g3d,
+                                    Object output) {
+    return false;
+  }
+
+  public String finalizeOutput() {
+    return null;
   }
 
 }

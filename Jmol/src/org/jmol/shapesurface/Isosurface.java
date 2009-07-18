@@ -998,10 +998,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     Point3f navPt = new Point3f(viewer.getNavigationOffset());
     Point3f toPt = new Point3f();
     viewer.unTransformPoint(navPt, toPt);
-    System.out.println(navPt + " " + toPt);
+    //System.out.println(navPt + " " + toPt);
     navPt.z += dz;
     viewer.unTransformPoint(navPt, toPt);
-    System.out.println(navPt + " " + toPt);
+    //System.out.println(navPt + " " + toPt);
     Point3f ptRet = new Point3f();
     Vector3f vNorm = new Vector3f();
     if (!getClosestNormal(thisMesh, toPt, ptRet, vNorm))
@@ -1029,7 +1029,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     
     // get screen point along normal
     Point3f toPt = new Point3f(vNorm);
-    viewer.script("draw test2 vector " + Escape.escape(pt) + " " + Escape.escape(toPt));
+    //viewer.script("draw test2 vector " + Escape.escape(pt) + " " + Escape.escape(toPt));
     toPt.add(pt);
     viewer.transformPoint(toPt, toPts);
     
@@ -1077,7 +1077,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     if (imin < 0)
       return false;
-    System.out.println(imin + " " + m.centers[imin] + " " + m.polygonIndexes[imin][0]+ " " + m.polygonIndexes[imin][1]+ " " + m.polygonIndexes[imin][2]);
+    //System.out.println(imin + " " + m.centers[imin] + " " + m.polygonIndexes[imin][0]+ " " + m.polygonIndexes[imin][1]+ " " + m.polygonIndexes[imin][2]);
     getClosestPoint(m, imin, toPt, ptRet, normalRet);
     return true;
   }
@@ -1092,7 +1092,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     dist = Graphics3D.distanceToPlane(plane, ptRet);
     if (m.centers[imin].distance(toPt) < ptRet.distance(toPt))
       ptRet.set(m.centers[imin]);
-    System.out.println(ptRet);
+    //System.out.println(ptRet);
   }
 
   private String findValue(int x, int y, boolean isPicking,

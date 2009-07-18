@@ -1951,14 +1951,15 @@ abstract class TransformManager {
           setNavOn(false);
           break;
         }
-        boolean refreshNeeded = (isNav ?  navX != 0 || navY != 0 || navZ != 0
+        boolean navigatingSurface = viewer.getNavigateSurface();
+        boolean refreshNeeded = (isNav ?  (navigatingSurface || (navX != 0 || navY != 0)) || navZ != 0
             : isSpinInternal && internalRotationAxis.angle != 0 
             || isSpinFixed && fixedRotationAxis.angle != 0 
             || !isSpinFixed && !isSpinInternal && (spinX != 0 || spinY != 0 || spinZ != 0));
         ++i;
         int targetTime = (int) (i * 1000 / myFps);
         int currentTime = (int) (System.currentTimeMillis() - timeBegin);
-        int sleepTime = targetTime - currentTime;
+        int sleepTime = targetTime - currentTime + 1000;
         if (sleepTime > 0) {
           boolean isInMotion = viewer.getInMotion();
           if (isInMotion)
@@ -1966,7 +1967,7 @@ abstract class TransformManager {
           try {
             if (refreshNeeded && (spinOn || navOn) && !isInMotion) {
               if (isNav) {
-                setNavigationOffsetRelative();
+                setNavigationOffsetRelative(navigatingSurface);
               } else if (isSpinInternal || isSpinFixed) {
                 float angle = (isSpinInternal ? internalRotationAxis
                     : fixedRotationAxis).angle / myFps;
@@ -2019,7 +2020,7 @@ abstract class TransformManager {
     vibrationScale = scale;
   }
 
-  protected void setNavigationOffsetRelative() {
+  protected void setNavigationOffsetRelative(boolean navigatingSurface) {
    // only in Transformmanager11
   }
 

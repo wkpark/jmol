@@ -229,11 +229,6 @@ public class _U3dExporter extends _Exporter {
     
   }
 
-  public void renderBackground() {
-    // TODO
-    
-  }
-
   public void endShapeBuffer() {
     // TODO
     

@@ -142,6 +142,10 @@ public class _PovrayExporter extends _Exporter {
     writeMacros();
   }
 
+  public void getFooter() {
+    // no footer
+  }
+
   private void writeMacros() {
     output("#default { finish {\n" + "  ambient "
         + (float) Graphics3D.getAmbientPercent() / 100f + "\n" + "  diffuse "
@@ -323,10 +327,6 @@ public class _PovrayExporter extends _Exporter {
   private String color4(short colix) {
     return rgbFractionalFromColix(colix, ',') + ","
         + translucencyFractionalFromColix(colix);
-  }
-
-  public void getFooter() {
-    // no footer
   }
 
   private String getAuxiliaryFileData() {
@@ -651,10 +651,6 @@ public class _PovrayExporter extends _Exporter {
         + coef[4] + "," + coef[5] + "," + coef[6] + "," + coef[7] + ","
         + coef[8] + "," + coef[9] + "," + color4(colix);
     output("q(" + s + ")\n");
-  }
-
-  public void renderBackground() {
-    g3d.renderBackground(jmolRenderer);
   }
 
   // not needed:

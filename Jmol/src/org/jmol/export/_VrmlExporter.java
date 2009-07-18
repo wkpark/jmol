@@ -108,14 +108,9 @@ public class _VrmlExporter extends _Exporter {
   }
 
   public void getFooter() {
-    // taken care of in finalizeOutput
-  }
-
-  public String finalizeOutput() {
     htDefs = null;
     output("\n]\n");
     output("}\n");
-    return super.finalizeOutput();
   }
 
   private void outputAppearance(short colix, boolean isText) {
@@ -475,13 +470,7 @@ public class _VrmlExporter extends _Exporter {
 
   public void plotImage(int x, int y, int z, Image image, short bgcolix,
                         int width, int height) {
-    // TODO
-
-  }
-
-  public void renderBackground() {
-    // TODO
-
+    // background, for example
   }
 
 }

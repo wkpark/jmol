@@ -400,7 +400,11 @@ class TransformManager11 extends TransformManager {
     zoomPercentSetting = zoomPercent;
   }
 
-  protected void setNavigationOffsetRelative() {
+  protected void setNavigationOffsetRelative(boolean navigatingSurface) {
+    if (navigatingSurface) {
+      navigateSurface();
+      return;
+    }
     if (navigationDepth < 0 && navZ > 0 
         || navigationDepth > 100 && navZ < 0) {
       navZ = 0;
@@ -450,7 +454,7 @@ class TransformManager11 extends TransformManager {
         break;
       }
       if (navigateSurface) {
-        viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "navigate", new Integer(2 * multiplier));
+        navigateSurface();
         break;
       }
       if (isShiftKey) {
@@ -531,6 +535,10 @@ class TransformManager11 extends TransformManager {
     }
     navigating = true;
     finalizeTransformParameters();
+  }
+
+  private void navigateSurface() {
+    viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "navigate", new Integer(2 * multiplier));
   }
 
   void navigate(float seconds, Point3f pt) {

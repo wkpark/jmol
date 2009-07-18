@@ -30,7 +30,7 @@ import org.jmol.shapesurface.PmeshRenderer;
 public class PmeshGenerator extends PmeshRenderer {
 
   protected void renderExport() {
-    g3d.getExporter().renderIsosurface(mesh.vertices, mesh.colix, null,
+    ((Export3D)g3d).getExporter().renderIsosurface(mesh.vertices, mesh.colix, null,
         mesh.getVertexNormals(), mesh.polygonIndexes, bsFaces, 
         mesh.vertexCount, 4, null, mesh.polygonCount);
   }

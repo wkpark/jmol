@@ -29,7 +29,7 @@ import org.jmol.shape.*;
 
 public class SticksGenerator extends SticksRenderer {
   protected void renderBond(int dottedMask) {
-    _Exporter exporter = (_Exporter) g3d.getExporter();
+    _Exporter exporter = (_Exporter) ((Export3D)g3d).getExporter();
     if (exporter.use2dBondOrderCalculation) {
       super.renderBond(dottedMask); //POV-Ray: use fillCylinder
       return;

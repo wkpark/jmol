@@ -69,7 +69,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       return mesh.title != null;
 
     transform();
-    render2();
+    render2(isGenerator);
     viewer.freeTempScreens(screens);
     return true;
   }
@@ -115,15 +115,15 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   //isosurface,meshRenderer::render1 (just about everything)
-  protected void render2() {
+  protected void render2(boolean generateSet) {
     if (!g3d.setColix(colix))
       return;
     if (mesh.showPoints)
       renderPoints();
     if (mesh.drawTriangles)
-      renderTriangles(false, false);
+      renderTriangles(false, false, false);
     if (mesh.fillTriangles)
-      renderTriangles(true, mesh.showTriangles);
+      renderTriangles(true, mesh.showTriangles, generateSet);
   }
   
   protected void renderPoints() {
@@ -133,12 +133,11 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   protected BitSet bsFaces = new BitSet();
-  protected void renderTriangles(boolean fill, boolean iShowTriangles) {
+  private void renderTriangles(boolean fill, boolean iShowTriangles, boolean generateSet) {
     int[][] polygonIndexes = mesh.polygonIndexes;
     colix = mesh.colix;
     //vertexColixes are only isosurface properties of IsosurfaceMesh, not Mesh
     g3d.setColix(colix);
-    boolean generateSet = (isGenerator && fill);
     if (generateSet) {
       frontOnly = false;
       bsFaces.clear();
@@ -209,8 +208,10 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (diameter == 0)
       diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 6 : 3);
     if (width == 0) {
-      g3d.fillCylinder(endCap, diameter, screens[iA], screens[iB]);
-      //System.out.println("meshrenderer: pt=" + screens[iA]);
+      if (iA == iB)
+        g3d.fillSphereCentered(diameter, screens[iA]);
+      else
+        g3d.fillCylinder(endCap, diameter, screens[iA], screens[iB]);
     } else {
       pt1f.set(vertices[iA]);
       pt1f.add(vertices[iB]);

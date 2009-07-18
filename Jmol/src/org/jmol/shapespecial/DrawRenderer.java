@@ -65,7 +65,9 @@ public class DrawRenderer extends MeshRenderer {
           && (dmesh.modelFlags == null || dmesh.modelFlags.get(i)); 
   }
   
-  protected void render2() {
+  protected void render2(boolean isGenerator) {
+    if (isGenerator)
+      System.out.println("draw gen");
     boolean isDrawPickMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
     drawType = dmesh.drawType;
     diameter = dmesh.diameter;
@@ -106,12 +108,12 @@ public class DrawRenderer extends MeshRenderer {
     int tension = 5;
     switch (drawType) {
     default:
-      super.render2();
+      super.render2(false);
       break;
     case JmolConstants.DRAW_CIRCULARPLANE:
       if (dmesh.scale > 0)
         width *= dmesh.scale;
-      super.render2();
+      super.render2(false);
       break;
     case JmolConstants.DRAW_CIRCLE:
       viewer.transformPoint(vertices[0], pt1i);

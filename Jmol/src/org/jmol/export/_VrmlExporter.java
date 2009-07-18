@@ -143,6 +143,12 @@ public class _VrmlExporter extends _Exporter {
     outputSphere(atom, r, colix);
   }
 
+  public void drawPixel(short colix, int x, int y, int z) {
+    pt.set(x, y, z);
+    viewer.unTransformPoint(pt, ptAtom);
+    outputSphere(ptAtom, 0.01f, colix);
+  }
+
   public void fillSphereCentered(short colix, int diameter, Point3f pt) {
     viewer.unTransformPoint(pt, ptAtom);
     outputSphere(ptAtom, viewer.unscaleToScreen((int)pt.z, diameter) / 2, colix);
@@ -527,10 +533,6 @@ public class _VrmlExporter extends _Exporter {
   public void fillScreenedCircleCentered(short colix, int diameter, int x,
                                          int y, int z) {
     // halos
-  }
-
-  public void drawPixel(short colix, int x, int y, int z) {
-    // measures
   }
 
   public void drawTextPixel(int argb, int x, int y, int z) {

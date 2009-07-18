@@ -1169,7 +1169,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getMatrixRotate();
   }
 
-  void getAxisAngle(AxisAngle4f axisAngle) {
+  public void getAxisAngle(AxisAngle4f axisAngle) {
     transformManager.getAxisAngle(axisAngle);
   }
 

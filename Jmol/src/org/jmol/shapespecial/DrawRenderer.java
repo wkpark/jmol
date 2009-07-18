@@ -66,8 +66,6 @@ public class DrawRenderer extends MeshRenderer {
   }
   
   protected void render2(boolean isGenerator) {
-    if (isGenerator)
-      System.out.println("draw gen");
     boolean isDrawPickMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
     drawType = dmesh.drawType;
     diameter = dmesh.diameter;

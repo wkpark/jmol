@@ -762,6 +762,10 @@ final public class Export3D implements JmolRendererInterface {
     return g3d.isClippedZ(z);
   }
   
+  public int clipCode(int x, int y, int z) {
+    return (isCartesianExport() ? g3d.clipCode(z) : g3d.clipCode(x, y, z));
+  }
+  
   public boolean isClippedXY(int diameter, int x, int y) {
     if(isCartesianExport())
       return false;

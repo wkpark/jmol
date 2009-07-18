@@ -43,13 +43,9 @@ final class Circle3D {
 
   void plotCircleCenteredClipped(int xCenter, int yCenter, int zCenter,
                                  int diameter) {
+    if (g3d.isClippedXY(diameter, xCenter, yCenter))
+      return;
     // halo only -- simple window clip
-    {
-      int r = (diameter + 1) >> 1;
-      if (xCenter + r < 0 || xCenter - r >= g3d.width ||
-          yCenter + r < 0 || yCenter - r >= g3d.height)
-        return;
-    }
     int r = diameter / 2;
     this.sizeCorrection = 1 - (diameter & 1);
     this.xCenter = xCenter;
@@ -57,7 +53,7 @@ final class Circle3D {
     this.zCenter = zCenter;
     int x = r;
     int y = 0;
-    int xChange = 1 - 2*r;
+    int xChange = 1 - 2 * r;
     int yChange = 1;
     int radiusError = 0;
     while (x >= y) {
@@ -65,7 +61,7 @@ final class Circle3D {
       ++y;
       radiusError += yChange;
       yChange += 2;
-      if (2*radiusError + xChange > 0) {
+      if (2 * radiusError + xChange > 0) {
         --x;
         radiusError += xChange;
         xChange += 2;

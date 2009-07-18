@@ -79,10 +79,10 @@ class Cylinder3D {
     this.isScreenedA = isScreenedA;
     this.isScreenedB = isScreenedB;
     int r = diameter / 2 + 1;
-    int codeMinA = line3d.clipCode(xA - r, yA - r, zA - r);
-    int codeMaxA = line3d.clipCode(xA + r, yA + r, zA + r);
-    int codeMinB = line3d.clipCode(xB - r, yB - r, zB - r);
-    int codeMaxB = line3d.clipCode(xB + r, yB + r, zB + r);
+    int codeMinA = g3d.clipCode(xA - r, yA - r, zA - r);
+    int codeMaxA = g3d.clipCode(xA + r, yA + r, zA + r);
+    int codeMinB = g3d.clipCode(xB - r, yB - r, zB - r);
+    int codeMaxB = g3d.clipCode(xB + r, yB + r, zB + r);
     //all bits 0 --> no clipping
     clipped = ((codeMinA | codeMaxA | codeMinB | codeMaxB) != 0);
     //any two bits same in all cases --> fully clipped
@@ -133,10 +133,10 @@ class Cylinder3D {
     
     // oops -- problem here if diameter < 0 is that we may have already clipped it!
     int r = diameter / 2 + 1;
-    int codeMinA = line3d.clipCode((int) xA - r, (int) yA - r, (int) zA - r);
-    int codeMaxA = line3d.clipCode((int) xA + r, (int) yA + r, (int) zA + r);
-    int codeMinB = line3d.clipCode((int) xB - r, (int) yB - r, (int) zB - r);
-    int codeMaxB = line3d.clipCode((int) xB + r, (int) yB + r, (int) zB + r);
+    int codeMinA = g3d.clipCode((int) xA - r, (int) yA - r, (int) zA - r);
+    int codeMaxA = g3d.clipCode((int) xA + r, (int) yA + r, (int) zA + r);
+    int codeMinB = g3d.clipCode((int) xB - r, (int) yB - r, (int) zB - r);
+    int codeMaxB = g3d.clipCode((int) xB + r, (int) yB + r, (int) zB + r);
     //all bits 0 --> no clipping
     clipped = ((codeMinA | codeMaxA | codeMinB | codeMaxB) != 0);
     //any two bits same in all cases --> fully clipped

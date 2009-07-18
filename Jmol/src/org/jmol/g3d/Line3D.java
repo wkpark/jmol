@@ -134,8 +134,8 @@ final class Line3D {
 
   int getTrimmedLine() {   // formerly "visibilityCheck()"
 
-    cc1 = clipCode(x1t, y1t, z1t);
-    cc2 = clipCode(x2t, y2t, z2t);
+    cc1 = g3d.clipCode(x1t, y1t, z1t);
+    cc2 = g3d.clipCode(x2t, y2t, z2t);
     if ((cc1 | cc2) == 0)
       return VISIBILITY_UNCLIPPED;
 
@@ -151,23 +151,23 @@ final class Line3D {
       float dy = y2t - y1t;
       float dz = z2t - z1t;
       if (cc1 != 0) { //cohen-sutherland line clipping
-        if ((cc1 & xLT) != 0) {
+        if ((cc1 & Graphics3D.xLT) != 0) {
           y1t += (-x1t * dy) / dx;
           z1t += (-x1t * dz) / dx;
           x1t = 0;
-        } else if ((cc1 & xGT) != 0) {
+        } else if ((cc1 & Graphics3D.xGT) != 0) {
           y1t += ((xLast - x1t) * dy) / dx;
           z1t += ((xLast - x1t) * dz) / dx;
           x1t = xLast;
-        } else if ((cc1 & yLT) != 0) {
+        } else if ((cc1 & Graphics3D.yLT) != 0) {
           x1t += (-y1t * dx) / dy;
           z1t += (-y1t * dz) / dy;
           y1t = 0;
-        } else if ((cc1 & yGT) != 0) {
+        } else if ((cc1 & Graphics3D.yGT) != 0) {
           x1t += ((yLast - y1t) * dx) / dy;
           z1t += ((yLast - y1t) * dz) / dy;
           y1t = yLast;
-        } else if ((cc1 & zLT) != 0) {
+        } else if ((cc1 & Graphics3D.zLT) != 0) {
           x1t += ((slab - z1t) * dx) / dz;
           y1t += ((slab - z1t) * dy) / dz;
           z1t = slab;
@@ -178,25 +178,25 @@ final class Line3D {
           z1t = depth;
         }
 
-        cc1 = clipCode(x1t, y1t, z1t);
+        cc1 = g3d.clipCode(x1t, y1t, z1t);
       } else {
-        if ((cc2 & xLT) != 0) {
+        if ((cc2 & Graphics3D.xLT) != 0) {
           y2t += (-x2t * dy) / dx;
           z2t += (-x2t * dz) / dx;
           x2t = 0;
-        } else if ((cc2 & xGT) != 0) {
+        } else if ((cc2 & Graphics3D.xGT) != 0) {
           y2t += ((xLast - x2t) * dy) / dx;
           z2t += ((xLast - x2t) * dz) / dx;
           x2t = xLast;
-        } else if ((cc2 & yLT) != 0) {
+        } else if ((cc2 & Graphics3D.yLT) != 0) {
           x2t += (-y2t * dx) / dy;
           z2t += (-y2t * dz) / dy;
           y2t = 0;
-        } else if ((cc2 & yGT) != 0) {
+        } else if ((cc2 & Graphics3D.yGT) != 0) {
           x2t += ((yLast - y2t) * dx) / dy;
           z2t += ((yLast - y2t) * dz) / dy;
           y2t = yLast;
-        } else if ((cc2 & zLT) != 0) {
+        } else if ((cc2 & Graphics3D.zLT) != 0) {
           x2t += ((slab - z2t) * dx) / dz;
           y2t += ((slab - z2t) * dy) / dz;
           z2t = slab;
@@ -206,38 +206,11 @@ final class Line3D {
           y2t += ((depth - z2t) * dy) / dz;
           z2t = depth;
         }
-        cc2 = clipCode(x2t, y2t, z2t);
+        cc2 = g3d.clipCode(x2t, y2t, z2t);
       }
     } while ((cc1 | cc2) != 0);
     //System.out.println("trimmed line " + x1t + " " + y1t + " " + z1t + " " + x2t + " " + y2t + " " + z2t + " " + cc1 + "/" + cc2);
     return VISIBILITY_CLIPPED;
-  }
-
-  final static int zLT = 32;
-  final static int zGT = 16;
-  final static int xLT = 8;
-  final static int xGT = 4;
-  final static int yLT = 2;
-  final static int yGT = 1;
-
-  final int clipCode(int x, int y, int z) {
-    int code = 0;
-    if (x < 0)
-      code |= xLT;
-    else if (x >= g3d.width)
-      code |= xGT;
-
-    if (y < 0)
-      code |= yLT;
-    else if (y >= g3d.height)
-      code |= yGT;
-
-    if (z < g3d.slab)
-      code |= zLT;
-    else if (z > g3d.depth) // note that this is .GT., not .GE.
-      code |= zGT;
-
-    return code;
   }
 
   void plotLine(int argbA, boolean tScreenedA, int argbB, boolean tScreenedB,

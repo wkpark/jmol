@@ -184,9 +184,9 @@ class Triangle3D {
   private void fillTriangle(boolean useGouraud) {
     if (az[0] <= 1 || az[1] <= 1 || az[2] <= 1)
       return;
-    int cc0 = line3d.clipCode(ax[0], ay[0], az[0]);
-    int cc1 = line3d.clipCode(ax[1], ay[1], az[1]);
-    int cc2 = line3d.clipCode(ax[2], ay[2], az[2]);
+    int cc0 = g3d.clipCode(ax[0], ay[0], az[0]);
+    int cc1 = g3d.clipCode(ax[1], ay[1], az[1]);
+    int cc2 = g3d.clipCode(ax[2], ay[2], az[2]);
     boolean isClipped = (cc0 | cc1 | cc2) != 0;
     if (isClipped) {
       if ((cc0 & cc1 & cc2) != 0) {

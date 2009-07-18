@@ -1484,11 +1484,45 @@ final public class Graphics3D implements JmolRendererInterface {
     int r = (diameter + 1) >> 1;
     return (x < -r || x >= width + r || y < -r || y >= height + r);
   }
-    
+  
   public boolean isClippedZ(int z) {
     return (z != Integer.MIN_VALUE  && (z < slab || z > depth));
   }
   
+  final static int yGT = 1;
+  final static int yLT = 2;
+  final static int xGT = 4;
+  final static int xLT = 8;
+  final static int zGT = 16;
+  final static int zLT = 32;
+
+  public int clipCode(int x, int y, int z) {
+    int code = 0;
+    if (x < 0)
+      code |= xLT;
+    else if (x >= width)
+      code |= xGT;
+    if (y < 0)
+      code |= yLT;
+    else if (y >= height)
+      code |= yGT;
+    if (z < slab)
+      code |= zLT;
+    else if (z > depth) // note that this is .GT., not .GE.
+      code |= zGT;
+  
+    return code;
+  }
+
+  public int clipCode(int z) {
+    int code = 0;
+    if (z < slab)
+      code |= zLT;
+    else if (z > depth) // note that this is .GT., not .GE.
+      code |= zGT;  
+    return code;
+  }
+
   void plotPixelClipped(int x, int y, int z) {
     //circle3D, drawPixel, plotPixelClipped(point3)
     if (isClipped(x, y, z))
@@ -2218,8 +2252,7 @@ final public class Graphics3D implements JmolRendererInterface {
   private final Vector3f vectorAB = new Vector3f();
   private final Vector3f vectorAC = new Vector3f();
   private final Vector3f vectorNormal = new Vector3f();
-  // these points are in screen coordinates even though 3f
-  
+
   public int calcSurfaceShade(Point3i screenA, Point3i screenB, Point3i screenC) {
     // or center and point, as for an ellipse
     vectorAB.set(screenB.x - screenA.x, screenB.y - screenA.y, screenB.z
@@ -3002,5 +3035,4 @@ final public class Graphics3D implements JmolRendererInterface {
   public String finalizeOutput() {
     return null;
   }
-
 }

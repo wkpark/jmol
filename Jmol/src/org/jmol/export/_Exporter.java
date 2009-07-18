@@ -236,8 +236,8 @@ public abstract class _Exporter {
     return tempV3;
   }
 
-  protected AxisAngle4f getAxisAngle(Vector3f v) {
-    tempV3.set(0, 1, 0);
+  protected AxisAngle4f getAxisAngle(Vector3f v, int x, int y, int z) {
+    tempV3.set(x, y, z);
     tempV2.set(v);
     tempV2.normalize();
     tempV3.add(tempV2);
@@ -268,10 +268,10 @@ public abstract class _Exporter {
     return new StringBuffer().append(0f).toString();
   }
 
-  protected static float round(float number) { //AH
+  protected static float round(double number) { //AH
     return (float) Math.round(number*1000)/1000;  // leave just 3 decimals
   }
-  
+
   /**
    * input an array of colixes; returns a Vector for the color list and a HashTable
    * for correlating the colix with a specific color index

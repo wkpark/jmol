@@ -56,7 +56,7 @@ public class _VrmlExporter extends _Exporter {
   private AxisAngle4f viewpoint = new AxisAngle4f();
   
   public _VrmlExporter() {
-    use2dBondOrderCalculation = false;
+    use2dBondOrderCalculation = true;
     canDoTriangles = false;
     isCartesianExport = true;
   }
@@ -170,23 +170,27 @@ public class _VrmlExporter extends _Exporter {
     output("}\n");
   }
   
-  public void fillCylinder(Point3f atom1, Point3f atom2, short colix1,
-                           short colix2, byte endcaps, int madBond,
+  private final Point3f pt2 = new Point3f();
+  public void fillCylinder(Point3f ptA, Point3f ptB, short colix1,
+                           short colix2, byte endcaps, int diameter,
                            int bondOrder) {
     // ignoring bond order for vrml -- but this needs fixing
+    viewer.unTransformPoint(ptA, ptAtom);
+    viewer.unTransformPoint(ptB, pt2);
+    int madBond = diameter;
     if (colix1 == colix2) {
-      outputCylinder(atom1, atom2, colix1, endcaps, madBond);
+      outputCylinder(ptAtom, pt2, colix1, endcaps, madBond);
     } else {
-      tempV2.set(atom2);
-      tempV2.add(atom1);
+      tempV2.set(pt2);
+      tempV2.add(ptAtom);
       tempV2.scale(0.5f);
       pt.set(tempV2);
-      outputCylinder(atom1, pt, colix1, Graphics3D.ENDCAPS_FLAT, madBond);
-      outputCylinder(pt, atom2, colix2, Graphics3D.ENDCAPS_FLAT, madBond);
+      outputCylinder(ptAtom, pt, colix1, Graphics3D.ENDCAPS_FLAT, madBond);
+      outputCylinder(pt, pt2, colix2, Graphics3D.ENDCAPS_FLAT, madBond);
     }
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-      outputSphere(atom1, madBond / 2000f*1.01f, colix1);
-      outputSphere(atom2, madBond / 2000f*1.01f, colix2);
+      outputSphere(ptAtom, madBond / 2000f*1.01f, colix1);
+      outputSphere(pt2, madBond / 2000f*1.01f, colix2);
     }
   }
 

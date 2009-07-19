@@ -321,6 +321,7 @@ class ScriptMathProcessor {
     case Token.min:
     case Token.max:
     case Token.average:
+    case Token.sum2:
     case Token.stddev:
     case Token.minmaxmask:
       tok = (oPt < 0 ? Token.nada : tok0);
@@ -2112,7 +2113,8 @@ class ScriptMathProcessor {
     case Token.list:
       String[] list = (String[]) x2.value;
       if (op.intValue == Token.min || op.intValue == Token.max
-          || op.intValue == Token.average || op.intValue == Token.stddev) {
+          || op.intValue == Token.average || op.intValue == Token.stddev
+          || op.intValue == Token.sum2) {
         return addX(ArrayUtil.getMinMax(list, op.intValue));
       }
       if (op.intValue == Token.sort || op.intValue == Token.reverse)

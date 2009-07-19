@@ -1372,8 +1372,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         }
       }
       if (bracketCount == 0 && theTok != Token.identifier
-          && !Token.tokAttr(theTok, Token.expression) && theTok != Token.min
-          && theTok != Token.max && theTok != Token.average && theTok != Token.stddev)
+          && !Token.tokAttr(theTok, Token.expression) 
+          && (theTok & Token.minmaxmask) != theTok) 
         return ERROR(ERROR_invalidExpressionToken, ident);
       break;
     case Token.center:

@@ -135,6 +135,8 @@ public class Token {
    *                         x       max
    *                         xx      average
    *                        x        stddev
+   *                        x x      sum2
+   *                        xx       allfloat
    *                        xxx      minmaxmask (all)
    *                       x         settable
    *                    xxx          maximum number of parameters for function
@@ -448,7 +450,8 @@ public class Token {
   public final static int max         = 2 << 5;
   public final static int average     = 3 << 5;
   public final static int stddev      = 4 << 5;
-  public final static int allfloat    = 5 << 5;
+  public final static int sum2        = 5 << 5;
+  public final static int allfloat    = 6 << 5; //not user-selectable
   final static int minmaxmask /*all*/ = 7 << 5; 
   final static int settable           = 1 << 8;
   
@@ -1175,6 +1178,7 @@ public class Token {
     "straightness",     new Token(straightness),
     "sub",              new Token(sub),
     "substructure",     new Token(substructure),
+    "sum2",             new Token(sum2), // sum of squares
     "surface",          new Token(surface),
     "surfaceDistance",  new Token(surfacedistance),
     "symop",            new Token(symop),

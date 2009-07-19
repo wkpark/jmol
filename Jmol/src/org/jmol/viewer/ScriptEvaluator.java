@@ -809,6 +809,7 @@ class ScriptEvaluator {
           case Token.min:
           case Token.max:
           case Token.stddev:
+          case Token.sum2:
           case Token.average:
             allowMathFunc = (isUserFunction 
                 || tok2 == Token.minmaxmask || tok2 == Token.allfloat);
@@ -971,6 +972,7 @@ class ScriptEvaluator {
     case Token.max:
     case Token.average:
     case Token.stddev:
+    case Token.sum2:
     case Token.property:
       break;
     case Token.identifier:
@@ -1074,6 +1076,7 @@ class ScriptEvaluator {
         i = BitSetUtil.length(bsNew) - 1;
         break;
       case Token.stddev:
+      case Token.sum2:
         return new Float(Float.NaN);
       default:
         return bsNew;        
@@ -1180,6 +1183,7 @@ class ScriptEvaluator {
           case Token.all:
             vout.add(new Float(fv));
             break;
+          case Token.sum2:
           case Token.stddev:
             sum2 += ((double) fv) * fv;
             // fall through
@@ -1247,6 +1251,7 @@ class ScriptEvaluator {
           case Token.all:
             vout.add(new Integer(iv));
             break;
+          case Token.sum2:
           case Token.stddev:
             sum2 += ((double) iv) * iv;
             // fall through
@@ -1293,6 +1298,7 @@ class ScriptEvaluator {
           case Token.all:
             vout.add(new Float(fv));
             break;
+          case Token.sum2:
           case Token.stddev:
             sum2 += (double) fv * fv;
             // fall through
@@ -1386,7 +1392,11 @@ class ScriptEvaluator {
     switch (minmaxtype) {
     case Token.min:
     case Token.max:
-      return new Float(fvMinMax);
+      sum = fvMinMax;
+      break;
+    case Token.sum2:
+      sum = sum2;
+      break;
     case Token.stddev:
       // because SUM (x_i - X_av)^2 = SUM(x_i^2) - 2X_av SUM(x_i) + SUM(X_av^2)
       // = SUM(x_i^2) - 2nX_av^2 + nX_av^2

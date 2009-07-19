@@ -262,6 +262,7 @@ final public class ArrayUtil {
         continue;
       n++;
       switch(tok){
+      case Token.sum2:
       case Token.stddev:
         sum2 += ((double) v) * v;
         //fall through
@@ -288,6 +289,10 @@ final public class ArrayUtil {
       if (n == 1)
         return "NaN";
       sum = Math.sqrt((sum2 - sum * sum / n) / (n - 1));
+      break;
+    case Token.sum2:
+      sum = sum2;
+      break;
     }
     return new Float(sum);
   }

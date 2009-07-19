@@ -831,7 +831,6 @@ public class Draw extends MeshCollection {
       return;
     float f = newScale / mesh.scale;
     mesh.scale = newScale;
-    System.out.println("setting scale " + newScale + " for " + mesh);
     if (mesh.haveXyPoints || mesh.drawType == JmolConstants.DRAW_ARC || mesh.drawType == JmolConstants.DRAW_CIRCLE || mesh.drawType == JmolConstants.DRAW_CIRCULARPLANE)
       return; // done in renderer
     Vector3f diff = new Vector3f();

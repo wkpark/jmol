@@ -98,6 +98,11 @@ final public class Export3D implements JmolRendererInterface {
     g3d.setSlab(slabValue);
   }
   
+  public void renderBackground() {
+    if (!exporter.isCartesianExport)
+      g3d.renderBackground(this);
+  }
+  
   /**
    * draws a screened circle ... every other dot is turned on
    *

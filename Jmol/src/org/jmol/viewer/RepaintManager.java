@@ -107,7 +107,7 @@ class RepaintManager {
       Logger.startTimer();
 
     try {
-      g3d.renderBackground(null);
+      g3d.renderBackground();
       if (renderers ==  null)
         renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
       for (int i = 0; i < JmolConstants.SHAPE_MAX && g3d.currentlyRendering(); ++i) {
@@ -183,7 +183,7 @@ class RepaintManager {
       Logger.error("Cannot export " + type);
       return null;
     }
-    g3d.renderBackground(g3dExport);
+    g3dExport.renderBackground();
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = modelSet.getShape(i);
       if (shape == null)

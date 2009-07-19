@@ -399,8 +399,7 @@ public class _VrmlExporter extends _Exporter {
     viewer.unTransformPoint(screenA, ptA);
     viewer.unTransformPoint(screenB, ptB);
     int madBond = (int) (viewer.unscaleToScreen(
-        (int)((screenA.z + screenB.z) / 2), diameter) * 1000);      
-    System.out.println("vrml fillcy " + ptA + " " + ptB);
+        (int)((screenA.z + screenB.z) / 2), diameter) * 1000);
     outputCylinder(ptA, ptB, colix, endcaps, madBond);
 
     // nucleic base
@@ -427,8 +426,10 @@ public class _VrmlExporter extends _Exporter {
   final private Point3f ptAtom = new Point3f();
 
   public void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
-    // if (!haveAtomPoint)
-    // return; // texts other than labels are not processed
+    if (z < 3) {
+      viewer.transformPoint(center, pt);
+      z = (int)pt.z;
+    }
     String useFontStyle = font3d.fontStyle.toUpperCase();
     String preFontFace = font3d.fontFace.toUpperCase();
     String useFontFace = (preFontFace.equals("MONOSPACED") ? "TYPEWRITER"
@@ -553,6 +554,17 @@ public class _VrmlExporter extends _Exporter {
 
   public void drawTextPixel(int argb, int x, int y, int z) {
     // text only
+    pt.set(x, y, z);
+    viewer.unTransformPoint(pt, ptAtom);
+    String color = rgbFractionalFromArgb(argb, ' ');
+    output("Transform{translation ");
+    output(pt);
+    output(" children ");
+      output(" Shape{geometry Sphere{radius 0.01}");
+      output(" appearance Appearance{material Material{diffuseColor 0 0 0 specularColor 0 0 0 ambientIntensity 0.0 shininess 0.0 emissiveColor " 
+          + color + " }}");
+      output("}");
+    output("}\n");
   }
 
   public void renderEllipsoid(short colix, int x, int y, int z, int diameter,
@@ -562,7 +574,7 @@ public class _VrmlExporter extends _Exporter {
 
   public void plotImage(int x, int y, int z, Image image, short bgcolix,
                         int width, int height) {
-    // background, for example
+    g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
   }
 
 }

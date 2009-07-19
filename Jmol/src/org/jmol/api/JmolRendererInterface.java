@@ -63,6 +63,8 @@ public interface JmolRendererInterface {
    */
   public abstract boolean setColix(short colix);
 
+  public abstract void renderBackground();
+  
   /**
    * draws a screened circle ... every other dot is turned on
    *

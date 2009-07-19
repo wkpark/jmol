@@ -3005,6 +3005,10 @@ final public class Graphics3D implements JmolRendererInterface {
     return normix3d.getVector(normix);
   }
 
+  public void renderBackground() {
+    renderBackground(null);
+  }
+  
   public void renderBackground(JmolRendererInterface jmolRenderer) {
     if (backgroundImage != null)
       plotImage(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, backgroundImage,
@@ -3035,4 +3039,5 @@ final public class Graphics3D implements JmolRendererInterface {
   public String finalizeOutput() {
     return null;
   }
+
 }

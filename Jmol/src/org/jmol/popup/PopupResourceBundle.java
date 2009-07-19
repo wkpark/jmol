@@ -216,7 +216,7 @@ class PopupResourceBundle {
           "loadPdb loadFileOrURL loadFileUnitCell - loadScript" },
 
       {   "SIGNEDwriteMenu",
-          "writeFileTextVARIABLE writeState writeHistory - writeJpg writePng writePovray -  writeIsosurface writeVrml writeMaya" },
+          "writeFileTextVARIABLE writeState writeHistory - writeJpg writePng writePovray -  writeIsosurface writeVrml writeX3d writeMaya" },
 
 
       { "[set_spin_X]Menu", "s0 s5 s10 s20 s30 s40 s50" },
@@ -492,8 +492,9 @@ class PopupResourceBundle {
       { "writeJpg", "write image \"?FILEROOT?.jpg\"" },      
       { "writePng", "write image \"?FILEROOT?.png\"" },      
       { "writePovray", "write POVRAY \"?FILEROOT?.pov\"" },      
-      { "writeVrml", "write VRML \"?FILEROOT?.vrml\"" },      
-      { "writeMaya", "write MAYA \"?FILEROOT?.maya\"" },       
+      { "writeVrml", "write VRML \"?FILEROOT?.wml\"" },      
+      { "writeX3d", "write X3D \"?FILEROOT?.x3d\"" },      
+      { "writeMaya", "write MAYA \"?FILEROOT?.ma\"" },       
       { "SYMMETRYshowSymmetry", "console on;show symmetry" },
       { "UNITCELLshow", "console on;show unitcell" },
       { "extractMOL", "console on;getproperty extractModel \"visible\" " },
@@ -884,6 +885,7 @@ class PopupResourceBundle {
         "writePovray", GT._("{0} Image", "POV-Ray"),      
         "writeIsosurface", GT._("JVXL Isosurface"),      
         "writeVrml", GT._("{0} 3D Model", "VRML"),      
+        "writeX3d", GT._("{0} 3D Model", "X3D"),      
         "writeMaya", GT._("{0} 3D Model", "Maya"),      
 
         

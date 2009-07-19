@@ -546,7 +546,9 @@ public class _VrmlExporter extends _Exporter {
 
   public void fillScreenedCircleCentered(short colix, int diameter, int x,
                                          int y, int z) {
-    // halos
+    drawCircleCentered(colix, diameter, x, y, z, false);
+    drawCircleCentered(Graphics3D.getColixTranslucent(colix, true, 0.5f), 
+        diameter, x, y, z, true);
   }
 
   public void drawTextPixel(int argb, int x, int y, int z) {

@@ -174,9 +174,14 @@ public class _VrmlExporter extends _Exporter {
   public void fillCylinder(Point3f ptA, Point3f ptB, short colix1,
                            short colix2, byte endcaps, int diameter,
                            int bondOrder) {
-    // ignoring bond order for vrml -- but this needs fixing
-    viewer.unTransformPoint(ptA, ptAtom);
-    viewer.unTransformPoint(ptB, pt2);
+    if (bondOrder == -1) {
+      // really first order -- but actual coord
+      ptAtom.set(ptA);
+      pt2.set(ptB);
+    } else {
+      viewer.unTransformPoint(ptA, ptAtom);
+      viewer.unTransformPoint(ptB, pt2);
+    }
     int madBond = diameter;
     if (colix1 == colix2) {
       outputCylinder(ptAtom, pt2, colix1, endcaps, madBond);

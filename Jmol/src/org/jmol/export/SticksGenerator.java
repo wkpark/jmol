@@ -30,12 +30,12 @@ import org.jmol.shape.*;
 public class SticksGenerator extends SticksRenderer {
   protected void renderBond(int dottedMask) {
     _Exporter exporter = (_Exporter) ((Export3D)g3d).getExporter();
-    if (exporter.use2dBondOrderCalculation) {
+    if (exporter.use2dBondOrderCalculation 
+        && !(exporter.isCartesianExport && bondOrder == 1))
       super.renderBond(dottedMask); //POV-Ray: use fillCylinder
-      return;
-    }
-    // Maya and Vrml right now don't render bond orders
-    exporter.fillCylinder(atomA, atomB, colixA, colixB, endcaps, mad, bondOrder);
+    else
+    // Maya does not render bond orders
+      exporter.fillCylinder(atomA, atomB, colixA, colixB, endcaps, mad, -1);
   }
   
   protected void fillCylinder(short colixA, short colixB, byte endcaps,

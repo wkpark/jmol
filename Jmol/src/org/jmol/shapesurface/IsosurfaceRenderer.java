@@ -135,12 +135,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
   }
 
-  protected void renderTriangles(boolean fill, boolean iShowTriangles) {
+  protected void renderTriangles(boolean fill, boolean iShowTriangles, boolean isGenerator) {
     int[][] polygonIndexes = imesh.polygonIndexes;
     colix = imesh.colix;
     short[] vertexColixes = imesh.vertexColixes;
     g3d.setColix(imesh.colix);
-    boolean generateSet = (isGenerator && fill);
+    boolean generateSet = isGenerator;
     if (generateSet) {
       frontOnly = false;
       bsFaces.clear();

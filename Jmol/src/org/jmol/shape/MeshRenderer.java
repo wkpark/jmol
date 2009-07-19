@@ -133,7 +133,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   protected BitSet bsFaces = new BitSet();
-  private void renderTriangles(boolean fill, boolean iShowTriangles, boolean generateSet) {
+  protected void renderTriangles(boolean fill, boolean iShowTriangles, boolean generateSet) {
     int[][] polygonIndexes = mesh.polygonIndexes;
     colix = mesh.colix;
     //vertexColixes are only isosurface properties of IsosurfaceMesh, not Mesh

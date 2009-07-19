@@ -206,7 +206,7 @@ public class _VrmlExporter extends _Exporter {
     outputCylinderChild(pt1, pt2, colix, endcaps, madBond);
     output("}\n");
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-      outputSphere(ptAtom, madBond / 2000f*1.01f, colix);
+      outputSphere(pt1, madBond / 2000f*1.01f, colix);
       outputSphere(pt2, madBond / 2000f*1.01f, colix);
     }
   }
@@ -400,6 +400,7 @@ public class _VrmlExporter extends _Exporter {
     viewer.unTransformPoint(screenB, ptB);
     int madBond = (int) (viewer.unscaleToScreen(
         (int)((screenA.z + screenB.z) / 2), diameter) * 1000);      
+    System.out.println("vrml fillcy " + ptA + " " + ptB);
     outputCylinder(ptA, ptB, colix, endcaps, madBond);
 
     // nucleic base

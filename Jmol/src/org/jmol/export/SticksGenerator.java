@@ -37,6 +37,7 @@ public class SticksGenerator extends SticksRenderer {
         exporter.fillCylinder(atomA, atomB, colixA, colixB, endcaps, mad, -1);
     else
       // POVRAY always uses screen coordinates
+      // Vrml will use screen coordinates if double bonds
       super.renderBond(dottedMask); //POV-Ray: use fillCylinder
   }
   

@@ -31,6 +31,8 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Tuple3f;
@@ -644,9 +646,11 @@ public class _PovrayExporter extends _Exporter {
     output("// end image " + nImage + "\n");
   }
   
-  public void renderEllipsoid(short colix, int ix, int iy, int iz,
-                              int diameter, double[] coef,
-                              Point3i[] selectedPoints) {
+  public void renderEllipsoid(Point3f center, Point3f[] points, short colix, 
+                              int x, int y, int z, int diameter,
+                              Matrix3f toEllipsoidal, double[] coef,
+                              Matrix4f deriv, Point3i[] octantPoints) {
+    // no quadrant cut-out here
     String s = coef[0] + "," + coef[1] + "," + coef[2] + "," + coef[3] + ","
         + coef[4] + "," + coef[5] + "," + coef[6] + "," + coef[7] + ","
         + coef[8] + "," + coef[9] + "," + color4(colix);
@@ -665,6 +669,6 @@ public class _PovrayExporter extends _Exporter {
   public void endShapeBuffer() {
   }
 
-  public void startShapeBuffer() {
+  public void startShapeBuffer(int iShape) {
   }
 }

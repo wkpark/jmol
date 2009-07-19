@@ -873,10 +873,10 @@ final public class Graphics3D implements JmolRendererInterface {
     fillSphereCentered(diameter, (int)center.x, (int)center.y, (int)center.z);
   }
 
-  public void renderEllipsoid(int x, int y, int z, int diameter,
-                              Matrix3f mToEllipsoidal, double[] coef,
-                              Matrix4f mDeriv, int selectedOctant, 
-                              Point3i[] octantPoints) {
+  public void renderEllipsoid(Point3f center, Point3f[] points, int x, int y,
+                              int z, int diameter, Matrix3f mToEllipsoidal,
+                              double[] coef, Matrix4f mDeriv,
+                              int selectedOctant, Point3i[] octantPoints) {
     switch (diameter) {
     case 1:
       plotPixelClipped(argbCurrent, x, y, z);
@@ -3020,7 +3020,7 @@ final public class Graphics3D implements JmolRendererInterface {
   public void endShapeBuffer() {
   }
 
-  public void startShapeBuffer() {
+  public void startShapeBuffer(int iShape) {
   }
 
   public boolean canDoTriangles() {
@@ -3038,6 +3038,10 @@ final public class Graphics3D implements JmolRendererInterface {
 
   public String finalizeOutput() {
     return null;
+  }
+
+  public short[] getBgColixes(short[] bgcolixes) {
+    return bgcolixes;
   }
 
 }

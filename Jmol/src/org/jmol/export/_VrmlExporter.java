@@ -31,6 +31,8 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.vecmath.AxisAngle4f;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Tuple3f;
@@ -41,6 +43,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
 import org.jmol.util.Escape;
+import org.jmol.util.Quaternion;
 import org.jmol.viewer.Viewer;
 
 public class _VrmlExporter extends _Exporter {
@@ -183,6 +186,8 @@ public class _VrmlExporter extends _Exporter {
       viewer.unTransformPoint(ptB, pt2);
     }
     int madBond = diameter;
+    if (madBond < 20)
+      madBond = 20;
     if (colix1 == colix2) {
       outputCylinder(ptAtom, pt2, colix1, endcaps, madBond);
     } else {
@@ -384,12 +389,20 @@ public class _VrmlExporter extends _Exporter {
     viewer.unTransformPoint(screenBase, tempP1);
     viewer.unTransformPoint(screenTip, tempP2);
     float d = viewer.unscaleToScreen((int)screenBase.z, diameter);
-    outputTransRot(tempP1, tempP2, 0, 1, 0);
-    output(" children Shape{");
+    if (d < 0.1f)
+      d = 0.1f;
     float height = tempP1.distance(tempP2);
-    output("geometry Cone{height " + round(height) + " bottomRadius " + d/2 +"}");
-    outputAppearance(colix, false);
-    output("}}\n");
+    outputTransRot(tempP1, tempP2, 0, 1, 0);
+    output(" children ");
+    String child = getDef("c" + (int) (height * 100) + "_" + (int) (d * 100));
+    if (child.charAt(0) == '_') {
+      output("DEF " + child +  " Shape{geometry Cone{height " + round(height) + " bottomRadius " + round(d/2) +"}");
+      outputAppearance(colix, false);
+      output("}");
+    } else {
+      output(child);
+    }
+    output("}\n");
   }
 
   public void fillCylinder(short colix, byte endcaps, int diameter,
@@ -400,6 +413,8 @@ public class _VrmlExporter extends _Exporter {
     viewer.unTransformPoint(screenB, ptB);
     int madBond = (int) (viewer.unscaleToScreen(
         (int)((screenA.z + screenB.z) / 2), diameter) * 1000);
+    if (madBond < 20)
+      madBond = 20;
     outputCylinder(ptA, ptB, colix, endcaps, madBond);
 
     // nucleic base
@@ -470,13 +485,22 @@ public class _VrmlExporter extends _Exporter {
      */
   }
 
-  public void startShapeBuffer() {
-    // for now, rather than doing this, it was simpler to
-    // just set the hermiteLevel to 5 if it is 0
+  int iShapeBuffer;
+  
+  public void startShapeBuffer(int iShape) {
+    iShapeBuffer = 1;
+    switch(iShapeBuffer = iShape) {
+    default:
+      
+    }
   }
 
   public void endShapeBuffer() {
-    // processTrianglesAsIsosurface();
+    switch(iShapeBuffer) {
+    default:
+      output("}}\n");
+    }
+    iShapeBuffer = 0;
   }
 
   // not implemented:
@@ -558,23 +582,43 @@ public class _VrmlExporter extends _Exporter {
     viewer.unTransformPoint(pt, ptAtom);
     String color = rgbFractionalFromArgb(argb, ' ');
     output("Transform{translation ");
-    output(pt);
+    output(ptAtom);
     output(" children ");
-      output(" Shape{geometry Sphere{radius 0.01}");
+    String child = getDef("p" + argb);
+    if (child.charAt(0) == '_') {
+      output("DEF " + child + " Shape{geometry Sphere{radius 0.01}");
       output(" appearance Appearance{material Material{diffuseColor 0 0 0 specularColor 0 0 0 ambientIntensity 0.0 shininess 0.0 emissiveColor " 
-          + color + " }}");
-      output("}");
+          + color + " }}}");
+    } else {
+      output(child);
+    }
     output("}\n");
-  }
-
-  public void renderEllipsoid(short colix, int x, int y, int z, int diameter,
-                              double[] coef, Point3i[] selectedPoints) {
-    // good luck!
   }
 
   public void plotImage(int x, int y, int z, Image image, short bgcolix,
                         int width, int height) {
-    g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
+  }
+
+  void renderEllipsoid(Point3f center, Point3f[] points, short colix, int x,
+                       int y, int z, int diameter, Matrix3f toEllipsoidal,
+                       double[] coef, Matrix4f deriv, Point3i[] octantPoints) {
+    output("Transform{translation ");
+    output(center);
+    
+    //Hey, hey -- quaternions to the rescue!
+    // Just send three points to Quaternion to define a plane and return
+    // the AxisAngle required to rotate to that position. That's all there is to it.
+    
+    AxisAngle4f a = Quaternion.getQuaternionFrame(center, points[1], points[3]).toAxisAngle4f();
+    if (!Float.isNaN(a.x))
+      output(" rotation " + a.x + " " + a.y + " " + a.z + " " + a.angle);
+    pt.set(0, 0, 0);
+    float sx = points[1].distance(center);
+    float sy = points[3].distance(center);
+    float sz = points[5].distance(center);
+    output(" scale " + sx + " " + sy + " " + sz + " children ");
+    outputSphere(pt, 1.0f, colix);
+    output("}\n");
   }
 
 }

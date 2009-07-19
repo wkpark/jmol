@@ -28,6 +28,8 @@ package org.jmol.export;
 import java.awt.Image;
 import java.util.BitSet;
 
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Tuple3f;
@@ -209,11 +211,7 @@ public class _MayaExporter extends _Exporter {
   public void plotText(int x, int y, int z, short colix, 
                        String text, Font3D font3d) {    
   }
-
-  public void renderEllipsoid(short colix, int x, int y, int z, int diameter, double[] coef, Point3i[] selectedPoints) {
-    
-  }
-
+  
   public void plotImage(int x, int y, int z, Image image, short bgcolix, int width, int height) {
     // TODO
     
@@ -224,7 +222,14 @@ public class _MayaExporter extends _Exporter {
     
   }
 
-  public void startShapeBuffer() {
+  public void startShapeBuffer(int iShape) {
+    // TODO
+    
+  }
+
+  void renderEllipsoid(Point3f center, Point3f[] points, short colix, int x,
+                       int y, int z, int diameter, Matrix3f toEllipsoidal,
+                       double[] coef, Matrix4f deriv, Point3i[] octantPoints) {
     // TODO
     
   }

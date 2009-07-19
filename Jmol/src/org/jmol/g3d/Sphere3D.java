@@ -160,16 +160,13 @@ public class Sphere3D {
     height = g3d.height;
     if (diameter > maxOddSizeSphere)
       diameter &= ~1;
+    if (g3d.isClippedXY(diameter, x, y))
+      return;
     int radius = (diameter + 1) >> 1;
     minX = x - radius;
     maxX = x + radius;
-    if (maxX < 0 || minX >= width)
-      return;
     minY = y - radius;
     maxY = y + radius;
-    if (maxY < 0 || minY >= height)
-      return;
-
     slab = g3d.slab;
     depth = g3d.depth;
     minZ = z - radius;

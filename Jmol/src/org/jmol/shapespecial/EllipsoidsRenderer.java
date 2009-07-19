@@ -185,6 +185,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
 
   private int dx;
   private float perspectiveFactor;
+  private Point3f center;
   
   private void render1(Atom atom, Object[] ellipsoid) {
     s0.set(atom.screenX, atom.screenY, atom.screenZ);
@@ -201,7 +202,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
     setMatrices();
     //[0] is shortest; [2] is longest
-    setAxes(atom, 1.0f);
+    center = atom;
+    setAxes(1.0f);
     if (g3d.isClippedXY(dx + dx, atom.screenX, atom.screenY))
       return;
     diameter = viewer.scaleToScreen(atom.screenZ, wireframeOnly ? 1 : diameter0);
@@ -246,7 +248,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     JmolConstants.axisNY, JmolConstants.axisY, 
     JmolConstants.axisNZ, JmolConstants.axisZ };
 
-  private void setAxes(Point3f center, float f) {
+  
+  private void setAxes(float f) {
     for (int i = 0; i < 6; i++) {
       int iAxis = axisPoints[i];
       int i012 = Math.abs(iAxis) - 1;
@@ -367,26 +370,27 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
 
 
-  private void renderEllipsoid(Ellipsoid ellipsoid) {
+  protected void renderEllipsoid(Ellipsoid ellipsoid) {
     axes = ellipsoid.axes;
     for (int i = 0; i < 3; i++)
       factoredLengths[i] = ellipsoid.lengths[i];
     viewer.transformPoint(ellipsoid.center, s0);
     setMatrices();
-    setAxes(ellipsoid.center, 1);
+    center = ellipsoid.center;
+    setAxes(1);
     colix = ellipsoid.colix;
     if (!g3d.setColix(colix))
       return;
     renderBall();
   }
  
-  private void renderBall() {
+  protected void renderBall() {
     setSelectedOctant();
     // get equation and differential
     Quadric.getEquationForQuadricWithCenter(s0.x, s0.y, s0.z,
         matScreenToEllipsoid, v1, mTemp, coef, mDeriv);
-    g3d.renderEllipsoid(s0.x, s0.y, s0.z, dx + dx, matScreenToEllipsoid, coef,
-        mDeriv, selectedOctant, selectedOctant >= 0 ? selectedPoints : null);
+    g3d.renderEllipsoid(center, points, s0.x, s0.y, s0.z, dx + dx, matScreenToEllipsoid,
+        coef, mDeriv, selectedOctant, selectedOctant >= 0 ? selectedPoints : null);
   }
 
   private void setSelectedOctant() {

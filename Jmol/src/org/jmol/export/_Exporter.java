@@ -38,6 +38,8 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.vecmath.AxisAngle4f;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
@@ -359,13 +361,12 @@ public abstract class _Exporter {
   abstract void plotImage(int x, int y, int z, Image image, short bgcolix, 
                           int width, int height);
 
-  abstract void startShapeBuffer();
+  abstract void startShapeBuffer(int iShape);
 
   abstract void endShapeBuffer();
 
-  // NOT IMPLEMENTED, but could be if needed:
-  
-  abstract void renderEllipsoid(short colix, int x, int y, int z, int diameter,
-                                double[] coef, Point3i[] selectedPoints);
-
+  abstract void renderEllipsoid(Point3f center, Point3f[] points, short colix, 
+                                int x, int y, int z, int diameter,
+                                Matrix3f toEllipsoidal, double[] coef,
+                                Matrix4f deriv, Point3i[] octantPoints);
 }

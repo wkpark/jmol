@@ -664,20 +664,26 @@ final public class Export3D implements JmolRendererInterface {
                               indices, bsFaces, nVertices, faceVertexMax, null, nPolygons);
   }
 
+  public short[] getBgColixes(short[] bgcolixes) {
+    // Vrml and Maya cannot to background labels
+    return exporter.isCartesianExport ? null : bgcolixes;
+  }
 
-  public void startShapeBuffer() {
-    exporter.startShapeBuffer();
+  public void startShapeBuffer(int iShape) {
+    exporter.startShapeBuffer(iShape);
   }
 
   public void endShapeBuffer() {
     exporter.endShapeBuffer();
   }
 
-  public void renderEllipsoid(int x, int y, int z, int diameter,
+  public void renderEllipsoid(Point3f center, Point3f[] points, 
+                              int x, int y, int z, int diameter,
                               Matrix3f mToEllipsoidal, double[] coef,
                               Matrix4f mDeriv, int selectedOctant,
                               Point3i[] octantPoints) {
-    exporter.renderEllipsoid(colix, x, y, z, diameter, coef, octantPoints);
+    exporter.renderEllipsoid(center, points, colix, x, y, z, 
+        diameter, mToEllipsoidal, coef, mDeriv, octantPoints);
   }
 
   /* ***************************************************************

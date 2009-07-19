@@ -119,7 +119,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
     }
 
     BioShapeCollection mps = (BioShapeCollection) shape;
-    g3d.startShapeBuffer();
     for (int c = mps.bioShapes.length; --c >= 0;) {
       BioShape bioShape = mps.getBioShape(c);
       if ((bioShape.modelVisibilityFlags & myVisibilityFlag) == 0)
@@ -129,7 +128,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
         freeTempArrays();
       }
     }
-    g3d.endShapeBuffer();
   }
 
   private void freeTempArrays() {

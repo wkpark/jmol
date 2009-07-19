@@ -319,11 +319,12 @@ public interface JmolRendererInterface {
 
   public abstract byte getFontFid(float fontSize);
 
-  public abstract void renderEllipsoid(int x, int y, int z, int diameter, Matrix3f mToEllipsoidal, double[] coef, Matrix4f mDeriv, int selectedOctant, Point3i[] octantPoints);
+  public abstract void renderEllipsoid(Point3f center, Point3f[] points, int x, int y, int z, 
+      int diameter, Matrix3f mToEllipsoidal, double[] coef, Matrix4f mDeriv, int selectedOctant, Point3i[] octantPoints);
 
   public abstract void drawImage(Image image, int x, int y, int z, int zslab, short bgcolix, int width, int height);
 
-  public abstract void startShapeBuffer();
+  public abstract void startShapeBuffer(int iShape);
 
   public abstract void endShapeBuffer();
 
@@ -332,5 +333,7 @@ public interface JmolRendererInterface {
   public abstract boolean isCartesianExport();
   
   public abstract String finalizeOutput();
+
+  public abstract short[] getBgColixes(short[] bgcolixes);
 
 }

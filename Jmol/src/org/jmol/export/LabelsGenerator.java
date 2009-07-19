@@ -25,8 +25,12 @@
 
 package org.jmol.export;
 
-import org.jmol.shapespecial.*;
-import org.jmol.shapespecial.Ellipsoids.Ellipsoid;
+import org.jmol.modelset.Atom;
+import org.jmol.shape.*;
 
-public class EllipsoidsGenerator extends EllipsoidsRenderer {
+public class LabelsGenerator extends LabelsRenderer {
+
+  protected void renderBall(Atom atom) {
+    ((Export3D)g3d).getExporter().renderAtom(atom, atom.getColix());
+  }
 }

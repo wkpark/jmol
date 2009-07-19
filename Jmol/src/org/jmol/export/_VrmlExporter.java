@@ -192,10 +192,10 @@ public class _VrmlExporter extends _Exporter {
       pt.set(tempV2);
       outputCylinder(ptAtom, pt, colix1, Graphics3D.ENDCAPS_FLAT, madBond);
       outputCylinder(pt, pt2, colix2, Graphics3D.ENDCAPS_FLAT, madBond);
-    }
-    if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-      outputSphere(ptAtom, madBond / 2000f*1.01f, colix1);
-      outputSphere(pt2, madBond / 2000f*1.01f, colix2);
+      if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
+        outputSphere(ptAtom, madBond / 2000f*1.01f, colix1);
+        outputSphere(pt2, madBond / 2000f*1.01f, colix2);
+      }
     }
   }
 
@@ -203,8 +203,12 @@ public class _VrmlExporter extends _Exporter {
   private void outputCylinder(Point3f pt1, Point3f pt2, short colix,
                              byte endcaps, int madBond) {
     outputTransRot(pt1, pt2, 0, 1, 0);
-    outputCylinderChild(pt1, pt2, colix, Graphics3D.ENDCAPS_FLAT, madBond);
+    outputCylinderChild(pt1, pt2, colix, endcaps, madBond);
     output("}\n");
+    if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
+      outputSphere(ptAtom, madBond / 2000f*1.01f, colix);
+      outputSphere(pt2, madBond / 2000f*1.01f, colix);
+    }
   }
 
   private void outputCylinderChild(Point3f pt1, Point3f pt2, short colix,

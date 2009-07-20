@@ -10467,6 +10467,9 @@ class ScriptEvaluator {
       } else if (type.equals("X3D")) {
         type = "X3d";
         isExport = true;
+      } else if (type.equals("MA")) {
+        type = "Maya";
+        isExport = true;
       }
     }
     if (type.equals("data")) {

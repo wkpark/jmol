@@ -107,22 +107,22 @@ public class _VrmlExporter extends _Exporter {
     // puts the viewer into model-rotation mode
     output("Background { skyColor "
         + rgbFractionalFromColix(viewer.getObjectColix(0), ' ') + " } \n");
-
-    output("Transform {\n");
-    pt.set(center);
-    pt.scale(-1);
-    output("translation ");
-    output(pt);
-    output(" rotation ");
+    // next is an approximation only 
+    output("Transform{translation 0 0 " + (-5.5)*viewer.getBoundBoxCenter().z);
+    output(" children Transform{rotation ");
     viewer.getAxisAngle(viewpoint);
     output(viewpoint.x + " " + viewpoint.y + " " + viewpoint.z + " " + viewpoint.angle);
+    output(" children Transform{translation ");
+    pt.set(center);
+    pt.scale(-1);
+    output(pt);
     output("\nchildren [\n");
   }
 
   public void getFooter() {
     htDefs = null;
     output("\n]\n");
-    output("}\n");
+    output("}}}\n");
   }
 
   private void outputAppearance(short colix, boolean isText) {

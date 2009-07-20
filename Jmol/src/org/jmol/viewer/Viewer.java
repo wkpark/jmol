@@ -6219,6 +6219,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setFrameOffsets(frameOffsets);
   }
 
+  public float getCameraDepth() {
+    return global.cameraDepth;
+  }
+  
   boolean getZoomLarge() {
     return global.zoomLarge;
   }

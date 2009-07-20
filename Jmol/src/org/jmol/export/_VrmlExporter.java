@@ -115,9 +115,10 @@ public class _VrmlExporter extends _Exporter {
     viewer.getAxisAngle(viewpoint);
     output(viewpoint.x + " " + viewpoint.y + " " + viewpoint.z + " " + viewpoint.angle);
     output(" children Transform{translation ");
-    pt.set(center);
-    pt.scale(-1);
-    output(pt);
+    pt.set(screenWidth / 2, screenHeight / 2, viewer.getScreenDim() * 3.5f);
+    viewer.unTransformPoint(pt, ptAtom);
+    ptAtom.scale(-1);
+    output(ptAtom);
     output("\nchildren [\n");
   }
 

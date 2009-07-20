@@ -10364,7 +10364,8 @@ class ScriptEvaluator {
       if (tok == Token.image) {
         pt++;
       } else if (tok == Token.frame) {
-        if (args[++pt].tok == Token.expressionBegin || args[pt].tok == Token.bitset) {
+        if (args[++pt].tok == Token.expressionBegin
+            || args[pt].tok == Token.bitset) {
           bsFrames = expression(args, pt, 0, true, false, true, true);
           pt = iToken + 1;
         } else {
@@ -10461,7 +10462,7 @@ class ScriptEvaluator {
       if (type.equals("MNU"))
         type = "MENU";
       else if (type.equals("WRL") || type.equals("VRML")) {
-        type = type.substring(0, 1) + type.substring(1).toLowerCase();
+        type = "Vrml";
         isExport = true;
       }
     }

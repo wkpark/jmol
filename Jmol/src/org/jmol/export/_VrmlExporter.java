@@ -108,7 +108,9 @@ public class _VrmlExporter extends _Exporter {
     output("Background { skyColor "
         + rgbFractionalFromColix(viewer.getObjectColix(0), ' ') + " } \n");
     // next is an approximation only 
-    output("Transform{translation 0 0 " + (-5.5)*viewer.getBoundBoxCenter().z);
+    float offset = (-5.5f)*viewer.getBoundBoxCenter().z;
+    float scale = viewer.getZoomPercentFloat() / 100f;
+    output("Transform{translation 0 0 " + offset + " scale " + scale + " " + scale + " " + scale);
     output(" children Transform{rotation ");
     viewer.getAxisAngle(viewpoint);
     output(viewpoint.x + " " + viewpoint.y + " " + viewpoint.z + " " + viewpoint.angle);

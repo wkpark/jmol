@@ -10489,7 +10489,7 @@ class ScriptEvaluator {
           ERROR_writeWhat,
           "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
               + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
-          "JPG|JPG64|PNG|GIF|PPM|SPT|JVXL|XYZ|MOL|PDB|MAYA|POVRAY|VRML|X3D"
+          "JPG|JPG64|PNG|GIF|PPM|SPT|JVXL|XYZ|MOL|PDB|"
               + driverList.toUpperCase().replace(';', '|'));
     if (isSyntaxCheck)
       return "";

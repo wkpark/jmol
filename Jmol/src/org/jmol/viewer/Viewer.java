@@ -5228,7 +5228,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
 
       // /11.3.52//
-
+      
       if (key.equalsIgnoreCase("logLevel")) {
         Logger.setLogLevel(value);
         Logger.info("logging level set to " + value);

@@ -552,9 +552,8 @@ public abstract class BioPolymer extends Polymer {
         pdbATOM.append("  NHX_______ NHY_______ NHZ_______");
       pdbATOM.append("\n\n");
     }
-    if (mStep < 1)
-      mStep = 1;
-    for (int i = 0; i < mStep; i++)
+    int iMax = (mStep < 1 ? 1 : mStep);
+    for (int i = 0; i < iMax; i++)
       getData(i, mStep, p, ctype, qtype, derivType, 
           bsAtoms, bsSelected, bsWritten, 
           isDraw, isRamachandran,
@@ -589,7 +588,8 @@ public abstract class BioPolymer extends Polymer {
     String strExtra = "";
     float val1 = Float.NaN;
     float val2 = Float.NaN;
-    for (int m = m0; m < p.monomerCount; m += mStep) {
+    int dm = (mStep <= 1 ? 1 : mStep);
+    for (int m = m0; m < p.monomerCount; m += dm) {
       Monomer monomer = p.monomers[m];
       if (bsAtoms == null || bsAtoms.get(monomer.getLeadAtomIndex())) {
         Atom a = monomer.getLeadAtom();

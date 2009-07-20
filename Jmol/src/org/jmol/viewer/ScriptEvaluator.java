@@ -9242,6 +9242,25 @@ class ScriptEvaluator {
         viewer.setBackgroundModelIndex(modelIndex);
         return;
       }
+      if (key.equalsIgnoreCase("debug")) {
+        if (isSyntaxCheck)
+          return;
+        int iLevel = (tokAt(2) == Token.off 
+            || tokAt(2) == Token.integer && intParameter(2) == 0 ? 4 : 5);
+        Logger.setLogLevel(iLevel);
+        setIntProperty("logLevel", iLevel);
+        if (iLevel == 4) {
+          viewer.setDebugScript(false);
+          if (showing) 
+            viewer.showParameter("debugScript", true, 80);
+        }
+        setDebugging();
+        if (showing) 
+          viewer.showParameter("logLevel", true, 80);
+        return;
+      }
+
+
       if (key.equalsIgnoreCase("language")) {
         // language can be used without quotes in a SET context
         // set language en

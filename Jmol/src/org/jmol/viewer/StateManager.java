@@ -501,7 +501,7 @@ public class StateManager {
         + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor"
         + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
-        + ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
+        + ";debug;debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
         + ";fontscaling;language;loglevel;measureStyleChime"
         + ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode;"
         + ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius"

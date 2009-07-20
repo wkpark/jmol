@@ -23,8 +23,12 @@
  */
 package org.jmol.util;
 
+import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
+
+import org.jmol.viewer.Token;
 
 final public class Measure {
 
@@ -84,6 +88,88 @@ final public class Measure {
     Vector3f vectorBA = new Vector3f();
     Vector3f vectorBC = new Vector3f();        
     return Measure.computeAngle(pointA, pointB, pointC, vectorBA, vectorBC, asDegrees);
+  }
+
+  public static Object computeHelicalAxis(String id, int tokType, Point3f a, Point3f b,
+                                    Quaternion q1, Quaternion q2) {
+    /*
+                b
+           |   /|
+           |  / |
+           | /  |
+           |/   c
+         b'+   / \
+           |  /   \      Vcb = Vab . n
+         n | /     \d    Vda = (Vcb - Vab) / 2
+           |/theta  \
+         a'+---------a
+                r 
+    */
+    
+    Vector3f vab = new Vector3f();
+    vab.sub(b, a);
+    /*
+     * testing here to see if directing the normal makes any difference -- oddly
+     * enough, it does not. When n = -n and theta = -theta vab.n is reversed,
+     * and that magnitude is multiplied by n in generating the A'-B' vector.
+     * 
+     * a negative angle implies a left-handed axis (sheets)
+     */
+    Point4f aa = new Point4f();
+    aa.x = vab.x;
+    aa.y = vab.y;
+    aa.z = vab.z;
+    boolean asdirected = false;
+    Quaternion dq = q2.div(q1);
+    float theta = (asdirected ? dq.getThetaDirected(aa).w : dq.getTheta());// .Directed(aa).w;
+    Vector3f n = (asdirected ? dq.getNormalDirected(vab) : dq.getNormal());// Directed(vab);
+    aa.x = vab.x;
+    aa.y = vab.y;
+    aa.z = vab.z;
+    float v_dot_n = vab.dot(n);
+    if (tokType == Token.axis) {
+      n.scale(v_dot_n);
+      return n;
+    }
+    Vector3f vcb = new Vector3f(n);
+    vcb.scale(v_dot_n);
+    Vector3f va_prime_d = new Vector3f();
+    va_prime_d.cross(vab, n);
+    va_prime_d.normalize();
+    Vector3f vda = new Vector3f();
+    vda.sub(vcb, vab);
+    vda.scale(0.5f);
+    va_prime_d.scale((float) (vda.length() / Math
+        .tan(theta / 2 / 180 * Math.PI)));
+    Vector3f r = new Vector3f(va_prime_d);
+    r.add(vda);
+    if (tokType == Token.radius)
+      return r;
+    Point3f pt_a_prime = new Point3f(a);
+    pt_a_prime.sub(r);
+    if (tokType == Token.point) {
+      return pt_a_prime;
+    }
+    n.scale(v_dot_n);
+    // must calculate directed angle:
+    Point3f pt_b_prime = new Point3f(pt_a_prime);
+    pt_b_prime.add(n);
+    theta = computeTorsion(a, pt_a_prime, pt_b_prime, b, true);
+    if (tokType == Token.angle)
+      return new Float(theta);
+    if (tokType == Token.draw) {
+      String s = "draw ID " + id + " VECTOR " + Escape.escape(pt_a_prime)
+          + " " + Escape.escape(n) + " color "
+          + (theta < 0 ? "{255.0 200.0 0.0}" : "{255.0 0.0 128.0}");
+      if (Logger.debugging)
+          s +=";measure " + Escape.escape(a) + " $" + id 
+            + "[1] " + " $" + id + "[2] " + Escape.escape(b);
+      return s;
+    }
+    // for now... array:
+    float residuesPerTurn = 360f / theta;
+    float pitch = Math.abs(n.length() * residuesPerTurn);
+    return new Object[] {pt_a_prime, n, r, new Float(theta), new Float(pitch), new Float(residuesPerTurn)};
   }
 
 }

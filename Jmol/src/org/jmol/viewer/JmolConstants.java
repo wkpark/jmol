@@ -157,7 +157,7 @@ final public class JmolConstants {
 
   //note: Eval.write() processing requires drivers to be first-letter-capitalized.
   //do not capitalize any other letter in the word. Separate by semicolon.
-  public static final String EXPORT_DRIVER_LIST = "Maya;Vrml;X3d;Povray"; // U3d will go here
+  public static final String EXPORT_DRIVER_LIST = "Maya;Povray;Vrml;X3d"; // U3d will go here
 
   public final static int DRAW_MULTIPLE = -1;
   public final static int DRAW_NONE = 0;

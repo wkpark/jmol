@@ -1116,7 +1116,9 @@ public class Draw extends MeshCollection {
       iModel = 0;
     if (mesh.nohead)
       str.append(" noHead");
-    if (mesh.scale != 1 && (mesh.haveXyPoints || mesh.drawType == JmolConstants.DRAW_ARC))
+    if (mesh.scale != 1 && (mesh.haveXyPoints 
+        || mesh.drawType == JmolConstants.DRAW_CIRCLE
+        || mesh.drawType == JmolConstants.DRAW_ARC))
       str.append(" scale ").append(mesh.scale);
     if (mesh.width != 0)
       str.append(" diameter ").append((mesh.drawType == JmolConstants.DRAW_CYLINDER ? Math.abs(mesh.width)

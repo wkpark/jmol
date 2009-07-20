@@ -1020,6 +1020,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // then do all the changes and save the new orientation.
     // Then just do a timed restore.
 
+    if (Math.abs(vNorm.x - -0.00225893) < 0.0001)
+    System.out.println("isosurface set heading " + vNorm + " " + pt + " " + nSeconds);
     Orientation o1 = viewer.getOrientation();
     
     // move to point
@@ -1036,6 +1038,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // subtract the navigation point to get a relative point
     // that we can project into the xy plane by setting z = 0
     Point3f navPt = new Point3f(viewer.getNavigationOffset());
+    if (navPt.x != 250)
+      System.out.println("isosurface navPt=" + navPt);
     toPts.sub(navPt);
     toPts.z = 0;
     
@@ -1043,6 +1047,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // less 20 degrees for the normal upward sloping view
     float angle = Measure.computeTorsion(JmolConstants.axisNY, 
         JmolConstants.center, JmolConstants.axisZ, toPts, true);
+    System.out.println("isosurface navigate z " + angle);
     viewer.navigate(0, JmolConstants.axisZ, angle);        
     toPt.set(vNorm);
     toPt.add(pt);
@@ -1050,6 +1055,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     toPts.sub(navPt);
     angle = Measure.computeTorsion(JmolConstants.axisNY,
         JmolConstants.center, JmolConstants.axisX, toPts, true);
+    System.out.println("isosurface navigate x " + angle);
     viewer.navigate(0, JmolConstants.axisX, 20 - angle);
     
     // save this orientation, restore the first, and then
@@ -1057,6 +1063,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // a script is necessary here because otherwise the application
     // would hang.
     
+    navPt = new Point3f(viewer.getNavigationOffset());
+    System.out.println("isosurface set heading2 ");
+    if (navPt.x != 250)
+      System.out.println("isosurface navPt=" + navPt);
     if (nSeconds <= 0)
       return;
     viewer.saveOrientation("_navsurf");

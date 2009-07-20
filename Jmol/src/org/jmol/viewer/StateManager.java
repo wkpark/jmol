@@ -353,11 +353,10 @@ public class StateManager {
       navigateSurface = viewer.getNavigateSurface();
       moveToText = viewer.getMoveToText(-1);
       if (navigationMode) {
-        navCenter = viewer.getNavigationOffset();
         xNav = viewer.getNavigationOffsetPercent('X');
         yNav = viewer.getNavigationOffsetPercent('Y');
         navDepth = viewer.getNavigationDepthPercent();
-        navCenter = viewer.getNavigationCenter();
+        navCenter = new Point3f(viewer.getNavigationCenter());
       }
     }
 

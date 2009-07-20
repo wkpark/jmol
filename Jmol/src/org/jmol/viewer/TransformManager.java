@@ -1146,7 +1146,6 @@ abstract class TransformManager {
     if (screenPixelCount > 2)
       screenPixelCount -= 2;
     scaleDefaultPixelsPerAngstrom = defaultScaleToScreen(modelRadius);
-    //System.out.println("transformman -- setScreenParameters modelRadius " + modelRadius + " "  + screenPixelCount + " " + scaleDefaultPixelsPerAngstrom);
   }
 
   short scaleToScreen(int z, int milliAngstroms) {
@@ -1600,8 +1599,9 @@ abstract class TransformManager {
         if (center != null)
           fixedRotationCenter.add(aaStepCenter);
         if (navCenter != null && isNavigationMode) {
-          navigationCenter.add(aaStepNavCenter);
-          navigate(0, navigationCenter);
+          Point3f pt = new Point3f(navigationCenter);
+          pt.add(aaStepNavCenter);
+          navigate(0, pt);
           if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
             navTranslatePercent(0, xNavTransStart + xNavTransDelta * fStep,
                 yNavTransStart + yNavTransDelta * fStep);

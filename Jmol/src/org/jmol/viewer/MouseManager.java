@@ -188,28 +188,34 @@ public abstract class MouseManager implements KeyListener {
 
   boolean isAltKeyReleased = true;
   
+  private boolean keyProcessing;
   public void keyPressed(KeyEvent ke) {
+    if (keyProcessing)
+      return;
+    keyProcessing = true;
     int i = ke.getKeyCode();
     if (i == KeyEvent.VK_ALT) {
       if (dragSelectedMode && isAltKeyReleased)
         viewer.moveSelected(Integer.MIN_VALUE, 0, 0, 0, false);
       isAltKeyReleased = false;
     }
-    if (!viewer.getNavigationMode())
-      return;
-    int m = ke.getModifiers();
-    //if (viewer.getBooleanProperty("showKeyStrokes", false))
-      //viewer.evalStringQuiet("!set echo bottom left;echo "
-        //  + (i == 0 ? "" : i + " " + m));
-    switch (i) {
-    case KeyEvent.VK_UP:
-    case KeyEvent.VK_DOWN:
-    case KeyEvent.VK_LEFT:
-    case KeyEvent.VK_RIGHT:
-    case KeyEvent.VK_SPACE:
-      viewer.navigate(i, m);
-      break;
+    if (viewer.getNavigationMode()) {
+      int m = ke.getModifiers();
+      // if (viewer.getBooleanProperty("showKeyStrokes", false))
+      // viewer.evalStringQuiet("!set echo bottom left;echo "
+      // + (i == 0 ? "" : i + " " + m));
+      switch (i) {
+      case KeyEvent.VK_UP:
+      case KeyEvent.VK_DOWN:
+      case KeyEvent.VK_LEFT:
+      case KeyEvent.VK_RIGHT:
+      case KeyEvent.VK_SPACE:
+      case KeyEvent.VK_PERIOD:
+        viewer.navigate(i, m);
+        break;
+      }
     }
+    keyProcessing = false;
   }
 
   public void keyReleased(KeyEvent ke) {
@@ -292,8 +298,9 @@ public abstract class MouseManager implements KeyListener {
 
   void mouseMoved(long time, int x, int y, int modifiers) {
     hoverOff();
-    if (hoverWatcherThread == null)
-      startHoverWatcher(true);
+    //System.out.println("mouseMoved -- hover off");startHoverWatcher(false);
+    //if (hoverWatcherThread == null)
+      //startHoverWatcher(true);
     timeCurrent = mouseMovedTime = time;
     mouseMovedX = xCurrent = x;
     mouseMovedY = yCurrent = y;

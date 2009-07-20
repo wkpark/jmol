@@ -277,6 +277,7 @@ class TransformManager11 extends TransformManager {
     case NAV_MODE_NEWZ:
       //just untransform the offset to get the new 3D navigation center
       navigationOffset.z = referencePlaneOffset;
+      System.out.println("nav_mode_newz " + navigationOffset);
       unTransformPoint(navigationOffset, navigationCenter);
       break;
     }
@@ -402,7 +403,7 @@ class TransformManager11 extends TransformManager {
 
   protected void setNavigationOffsetRelative(boolean navigatingSurface) {
     if (navigatingSurface) {
-      navigateSurface();
+      navigateSurface(Integer.MAX_VALUE);
       return;
     }
     if (navigationDepth < 0 && navZ > 0 
@@ -439,6 +440,11 @@ class TransformManager11 extends TransformManager {
     boolean isCtrlKey = ((modifiers & InputEvent.CTRL_MASK) > 0);
     float speed = viewer.getNavigationSpeed() * (isCtrlKey ? 10 : 1);
     switch (keyCode) {
+    case KeyEvent.VK_PERIOD:
+      navX = navY = navZ = 0;
+      setNavOn(false);
+      homePosition();
+      return;
     case KeyEvent.VK_SPACE:
       if (!navOn)
         return;
@@ -454,7 +460,7 @@ class TransformManager11 extends TransformManager {
         break;
       }
       if (navigateSurface) {
-        navigateSurface();
+        navigateSurface(Integer.MAX_VALUE);
         break;
       }
       if (isShiftKey) {
@@ -480,7 +486,7 @@ class TransformManager11 extends TransformManager {
         break;
       }
       if (navigateSurface) {
-        viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "navigate", new Integer(-2 * multiplier));
+        navigateSurface(-2 * multiplier);
         break;
       }
       if (isShiftKey) {
@@ -537,8 +543,11 @@ class TransformManager11 extends TransformManager {
     finalizeTransformParameters();
   }
 
-  private void navigateSurface() {
-    viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "navigate", new Integer(2 * multiplier));
+  private void navigateSurface(int dz) {
+    if (viewer.isRepaintPending())
+      return;
+    viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "navigate", new Integer(dz == Integer.MAX_VALUE ? 2 * multiplier : dz));
+    viewer.requestRepaintAndWait();
   }
 
   void navigate(float seconds, Point3f pt) {
@@ -554,6 +563,8 @@ class TransformManager11 extends TransformManager {
   }
 
   void navigate(float seconds, Vector3f rotAxis, float degrees) {
+    if (degrees == 0)
+      return;
     if (seconds > 0) {
       navigateTo(seconds, rotAxis, degrees, null, Float.NaN, Float.NaN,
           Float.NaN);
@@ -787,7 +798,7 @@ class TransformManager11 extends TransformManager {
   }
 
   float getNavigationOffsetPercent(char XorY) {
-    transformPoint(navigationCenter, navigationOffset);
+    getNavigationOffset();
     if (width == 0 || height == 0)
       return 0;
     return (XorY == 'X' ? (navigationOffset.x - width / 2f) * 100f / width
@@ -795,7 +806,7 @@ class TransformManager11 extends TransformManager {
   }
 
   protected String getNavigationText(boolean addComments) {
-    transformPoint(navigationCenter, navigationOffset);
+    getNavigationOffset();
     return (addComments ? " /* navigation center, translation, depth */ " : " ")
         + Escape.escape(navigationCenter) + " "
         + getNavigationOffsetPercent('X') + " "

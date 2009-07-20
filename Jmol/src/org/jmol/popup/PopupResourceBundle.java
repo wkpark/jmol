@@ -492,7 +492,7 @@ class PopupResourceBundle {
       { "writeJpg", "write image \"?FILEROOT?.jpg\"" },      
       { "writePng", "write image \"?FILEROOT?.png\"" },      
       { "writePovray", "write POVRAY \"?FILEROOT?.pov\"" },      
-      { "writeVrml", "write VRML \"?FILEROOT?.wml\"" },      
+      { "writeVrml", "write VRML \"?FILEROOT?.wrl\"" },      
       { "writeX3d", "write X3D \"?FILEROOT?.x3d\"" },      
       { "writeMaya", "write MAYA \"?FILEROOT?.ma\"" },       
       { "SYMMETRYshowSymmetry", "console on;show symmetry" },

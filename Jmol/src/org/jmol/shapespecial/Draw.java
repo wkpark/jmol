@@ -935,13 +935,13 @@ public class Draw extends MeshCollection {
     }
     if (pickedVertex == 0) {
       viewer.startSpinningAxis(
-          pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],
+          pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
           ((modifiers & MouseManager.SHIFT) != 0));
     } else {
       viewer.startSpinningAxis(
-          pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
+          pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],
           ((modifiers & MouseManager.SHIFT) != 0));
     }
     return null;

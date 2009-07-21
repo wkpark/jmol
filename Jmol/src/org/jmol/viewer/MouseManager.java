@@ -693,7 +693,7 @@ public abstract class MouseManager implements KeyListener {
       return;
     int measurementCount = measurementPending.getCount();
     if (measurementCount >= 2 && measurementCount <= 4) {
-      viewer.script("!measure " + measurementPending.getMeasurementScript(" "));
+      viewer.script("!measure " + measurementPending.getMeasurementScript(" ", true));
     }
     exitMeasurementMode();
   }

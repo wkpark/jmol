@@ -428,8 +428,8 @@ abstract class TransformManager {
     if (Float.isNaN(degrees) || degrees == 0)
       return;
 
-    Vector3f axis = new Vector3f(point1);
-    axis.sub(point2);
+    Vector3f axis = new Vector3f(point2);
+    axis.sub(point1);
     if (isClockwise)
       axis.scale(-1f);
     float angle = setRotateInternal(point1, axis, degrees);
@@ -583,7 +583,7 @@ abstract class TransformManager {
     case Token.moveto:
       return getMoveToText(1, false);
     case Token.rotation:
-      return getRotationText(true);
+      return getRotationQuaternion().toString();
     case Token.translation:
       StringBuffer sb = new StringBuffer();
       truncate2(sb, getTranslationXPercent());
@@ -1528,7 +1528,8 @@ abstract class TransformManager {
       matrixEnd.set(end);
     Point3f ptMoveToCenter = (center == null ? fixedRotationCenter : center);
     float startRotationRadius = modelRadius;
-    float targetRotationRadius = (center == null ? modelRadius
+    float targetRotationRadius = (center == null || Float.isNaN(newRotationRadius) 
+        ? modelRadius
         : newRotationRadius <= 0 ? viewer.calcRotationRadius(center)
             : newRotationRadius);
     float startPixelScale = scaleDefaultPixelsPerAngstrom;
@@ -1651,13 +1652,18 @@ abstract class TransformManager {
     viewer.setInMotion(false);
   }
 
-  String getRotationText(boolean asQuaternion) {
+  Quaternion getRotationQuaternion() {
+    axisangleT.set(matrixRotate);
+    float degrees = axisangleT.angle * degreesPerRadian;
+    vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
+    return new Quaternion(vectorT, degrees);
+  }
+  
+  String getRotationText() {
     axisangleT.set(matrixRotate);
     float degrees = axisangleT.angle * degreesPerRadian;
     StringBuffer sb = new StringBuffer();
     vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
-    if (asQuaternion)
-      return new Quaternion(vectorT, degrees).toString();
     if (degrees < 0.01f)
       return "{0 0 1 0}";
     vectorT.normalize();
@@ -1677,7 +1683,7 @@ abstract class TransformManager {
     if (addComments)
       sb.append("/* time, axisAngle */ ");
     sb.append(timespan);
-    sb.append(" ").append(getRotationText(false));
+    sb.append(" ").append(getRotationText());
     if (addComments)
       sb.append(" /* zoom, translation */ ");
     truncate2(sb, zoomPercentSetting);

@@ -58,6 +58,9 @@ public class Quaternion {
 
   public Matrix3f mat;
 
+  public Quaternion() {
+    q0 = 1;
+  }
 
   public Quaternion(Quaternion q) {
     q0 = q.q0;
@@ -88,7 +91,8 @@ public class Quaternion {
   }
 
   public Quaternion(Point4f pt) {
-    float factor = pt.distance(new Point4f(0, 0, 0, 0));
+    final Point4f ptZero = new Point4f();
+    float factor = (pt == null ? 0 : pt.distance(ptZero));
     if (factor == 0) {
       q0 = 1;
       return;
@@ -300,7 +304,7 @@ public class Quaternion {
 
     Quaternion q = new Quaternion(mat);
 
-    /*
+     /*
      System.out.println("Quaternion mat from q \n" + q.getMatrix());
      System.out.println("Quaternion: " + q.getNormal() + " " + q.getTheta());
      AxisAngle4f a = new AxisAngle4f();
@@ -309,7 +313,7 @@ public class Quaternion {
      v.normalize();
      System.out.println("angleAxis: " + v + " "+(a.angle/Math.PI * 180));
      */
-
+     
     return q;
   }
 
@@ -409,6 +413,8 @@ public class Quaternion {
   public Vector3f getNormal() {
     fixQ(qTemp);
     Vector3f v = new Vector3f(qTemp.q1, qTemp.q2, qTemp.q3);
+    if (v.length() == 0)
+      return new Vector3f(0, 0, 1);
     v.normalize();
     return v;
   }

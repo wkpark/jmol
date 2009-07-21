@@ -248,7 +248,7 @@ public class Measures extends Shape {
     if ("stringValue".equals(property))
       return (index < measurementCount ? measurements[index].getString() : null);
     if ("pointInfo".equals(property))
-      return measurements[index / 10].getLabel(index % 10, false);
+      return measurements[index / 10].getLabel(index % 10, false, false);
     if ("info".equals(property))
       return getAllInfo();
     if ("infostring".equals(property))
@@ -567,7 +567,7 @@ public class Measures extends Shape {
     sb.append(count == 2 ? "distance" : count == 3 ? "angle" : "dihedral");
     sb.append(" \t").append(m.getValue()).append(" \t").append(m.getString());
     for (int i = 1; i <= count; i++)
-      sb.append(" \t").append(m.getLabel(i, false));
+      sb.append(" \t").append(m.getLabel(i, false, false));
     return sb.toString();
   }
   
@@ -635,7 +635,7 @@ public class Measures extends Shape {
     int count = m.getCount();
     StringBuffer sb = new StringBuffer("measure");
     for (int i = 1; i <= count; i++)
-      sb.append(" ").append(m.getLabel(i, true));
+      sb.append(" ").append(m.getLabel(i, true, true));
     sb.append("; # " + getInfoAsString(index));
     return sb.toString();
   }

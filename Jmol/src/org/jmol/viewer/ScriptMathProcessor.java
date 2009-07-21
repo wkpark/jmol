@@ -1273,10 +1273,8 @@ class ScriptMathProcessor {
         if (args[0].tok == Token.point4f) {
           p4 = (Point4f) args[0].value;
         } else if (args[0].tok == Token.bitset && tok == Token.quaternion) {
-          int i = BitSetUtil.firstSetBit((BitSet) args[0].value);
-          if (i < 0
-              || (q = viewer.getModelSet().getAtomAt(i).getQuaternion(
-                  viewer.getQuaternionFrame())) == null)
+          q = ScriptEvaluator.getAtomQuaternion(viewer, (BitSet) args[0].value);
+          if (q == null)
             return addX((int) 0);
         } else {
           Object v = Escape.unescapePoint(ScriptVariable.sValue(args[0]));

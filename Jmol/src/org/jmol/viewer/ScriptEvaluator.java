@@ -30,6 +30,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
@@ -2540,7 +2541,6 @@ class ScriptEvaluator {
   }
 
   private String statementAsString(Token[] statement, int iTok) {
-    // System.out.println(statement.length + " " + statementLength);
     if (statement.length == 0)
       return "";
     StringBuffer sb = new StringBuffer();
@@ -3669,6 +3669,7 @@ class ScriptEvaluator {
 
   private Point3f centerParameter(int i) throws ScriptException {
     Point3f center = null;
+    expressionResult = null;
     if (checkToken(i)) {
       switch (getToken(i).tok) {
       case Token.dollarsign:
@@ -4182,7 +4183,6 @@ class ScriptEvaluator {
   private boolean isCommandDisplayable(int i) {
     if (i >= aatoken.length || i >= pcEnd || aatoken[i] == null)
       return false;
-    //System.out.println(Token.nameOf(aatoken[i][0].tok)+" " + lineIndices[i][0] + "," + lineIndices[i][1]);
     return (lineIndices[i][1] > lineIndices[i][0]);
   }
 
@@ -4273,9 +4273,6 @@ class ScriptEvaluator {
     if (aatoken == null)
       return;
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
-      
-      //System.out.println("pc = " + pc + " scriptlevel = " + scriptLevel + " " + getCommand(pc, true,true));
-      
       if (!isSyntaxCheck && !checkContinue())
         break;
       if (lineNumbers[pc] > lineEnd)
@@ -4835,11 +4832,34 @@ class ScriptEvaluator {
     Point3f center = null;
     int i = 1;
     float floatSecondsTotal = (isFloatParameter(i) ? floatParameter(i++) : 2.0f);
-    float zoom = Float.NaN;
-    float xTrans = 0;
-    float yTrans = 0;
     float degrees = 90;
+    BitSet bsCenter = null;
     switch (getToken(i).tok) {
+    case Token.quaternion:
+      i++;
+      Quaternion q;
+      if(tokAt(i) == Token.bitset || tokAt(i) == Token.expressionBegin) {
+        bsCenter = expression(i);
+        q = (isSyntaxCheck ? new Quaternion() : getAtomQuaternion(viewer, bsCenter));
+      } else {
+        q = new Quaternion(getPoint4f(i));
+      }
+      i = iToken + 1;      
+      if (q == null)
+        error(ERROR_invalidArgument);
+      AxisAngle4f aa = q.toAxisAngle4f();
+      axis.set(aa.x, aa.y, aa.z);
+      /*
+       * The quaternion angle represents the angle by which the reference
+       * frame must be rotated to match the frame defined for the residue.
+       * However, to "moveTo" this frame as the REFERENCE frame, what
+       * we have to do is take that quaternion frame and rotate it
+       * BACKWARD by that many degrees. Then it will match the reference
+       * frame, which is ultimately our window frame.
+       * 
+       */
+      degrees = -(float)(aa.angle * 180 / Math.PI);
+      break;
     case Token.point3f:
     case Token.leftbrace:
       // {X, Y, Z} deg or {x y z deg}
@@ -4891,11 +4911,12 @@ class ScriptEvaluator {
     }
 
     boolean isChange = !viewer.isInPosition(axis, degrees);
-    // zoom xTrans yTrans (center) rotationRadius
-    float zoom0 = viewer.getZoomSetting();
-    if (i != statementLength && !isCenterParameter(i)) {
-      zoom = floatParameter(i++);
-    }
+    // optional zoom 
+    float zoom = (i == statementLength || isCenterParameter(i) ?
+        Float.NaN : floatParameter(i++));
+    // optional xTrans yTrans
+    float xTrans = 0;
+    float yTrans = 0;
     if (i != statementLength && !isCenterParameter(i)) {
       xTrans = floatParameter(i++);
       yTrans = floatParameter(i++);
@@ -4904,25 +4925,28 @@ class ScriptEvaluator {
       if (!isChange && Math.abs(yTrans - viewer.getTranslationYPercent()) >= 1)
         isChange = true;
     }
-    float rotationRadius = Float.NaN;
     if (i != statementLength) {
-      int ptCenter = i;
+      // if any more, required (center)
       center = centerParameter(i);
+      if (expressionResult instanceof BitSet)
+        bsCenter = (BitSet) expressionResult;
+      i = iToken + 1;
+    }
+    float rotationRadius = Float.NaN;
+    float zoom0 = viewer.getZoomSetting();
+    if (center != null) {
       if (!isChange && center.distance(viewer.getRotationCenter()) >= 0.1)
         isChange = true;
-      i = iToken + 1;
+      // optional {center} rotationRadius
       if (isFloatParameter(i))
         rotationRadius = floatParameter(i++);
-      float radius = viewer.getRotationRadius();
       if (!isCenterParameter(i)) {
         if ((rotationRadius == 0 || Float.isNaN(rotationRadius))
             && (zoom == 0 || Float.isNaN(zoom))) {
           // alternative (atom expression) 0 zoomFactor
-          float factor = Math.abs(getZoomFactor(i, ptCenter, radius, zoom0));
+          float newZoom = Math.abs(getZoom(i, bsCenter, zoom0));
           i = iToken + 1;
-          if (Float.isNaN(factor))
-            error(ERROR_invalidArgument);
-          zoom = factor;
+          zoom = newZoom;
         } else {
           if (!isChange
               && Math.abs(rotationRadius - viewer.getRotationRadius()) >= 0.1)
@@ -7126,8 +7150,8 @@ class ScriptEvaluator {
           return;
         bsAtoms = viewer.getBranchBitSet(iAtom2, iAtom1);
         isMolecular = true;
-        points[0] = viewer.getAtomPoint3f(iAtom2);
-        points[1] = viewer.getAtomPoint3f(iAtom1);
+        points[0] = viewer.getAtomPoint3f(iAtom1);
+        points[1] = viewer.getAtomPoint3f(iAtom2);
         nPoints = 2;
         i = iToken;
         break;
@@ -7190,11 +7214,11 @@ class ScriptEvaluator {
       // rotate MOLECULAR x 10 (atom1)
       // rotate axisangle MOLECULAR (atom1)
       points[1] = new Point3f(points[0]);
-      points[1].sub(rotAxis);
+      points[1].add(rotAxis);
     }
     if (points[0].distance(points[1]) == 0) {
       points[1] = new Point3f(points[0]);
-      points[1].y -= 1.0;
+      points[1].y += 1.0;
     }
     viewer.rotateAboutPointsInternal(points[0], points[1], degrees, endDegrees,
         isSpin, bsAtoms);
@@ -7686,21 +7710,25 @@ class ScriptEvaluator {
         return;
       }
     }
-    float zoom = viewer.getZoomSetting();
-    float radius = viewer.getRotationRadius();
     Point3f center = null;
     Point3f currentCenter = viewer.getRotationCenter();
     int i = 1;
     // zoomTo time-sec
     float time = (isZoomTo ? (isFloatParameter(i) ? floatParameter(i++) : 2f)
         : 0f);
-    if (time < 0)
-      error(ERROR_invalidArgument);
+    if (time < 0) {
+      //zoom -10
+      i--;
+      time = 0;
+    }
     // zoom {x y z} or (atomno=3)
     int ptCenter = 0;
+    BitSet bsCenter = null;
     if (isCenterParameter(i)) {
       ptCenter = i;
       center = centerParameter(i);
+      if (expressionResult instanceof BitSet)
+        bsCenter = (BitSet) expressionResult;
       i = iToken + 1;
     }
 
@@ -7708,22 +7736,24 @@ class ScriptEvaluator {
     boolean isSameAtom = false && (center != null && currentCenter
         .distance(center) < 0.1);
     // zoom/zoomTo percent|-factor|+factor|*factor|/factor | 0
-    float factor = getZoomFactor(i, ptCenter, radius, zoom);
-
-    if (factor < 0) {
-      factor = -factor;
+    float zoom = viewer.getZoomSetting();
+    float newZoom = getZoom(i, bsCenter, zoom);
+    if (iToken + 1 != statementLength)
+      error(ERROR_invalidArgument);
+    if (newZoom < 0) {
+      newZoom = -newZoom; // currentFactor
       if (isZoomTo) {
         // no factor -- check for no center (zoom out) or same center (zoom in)
         if (statementLength == 1 || isSameAtom)
-          factor *= 2;
+          newZoom *= 2;
         else if (center == null)
-          factor /= 2;
+          newZoom /= 2;
       }
     }
     float xTrans = 0;
     float yTrans = 0;
     float max = viewer.getMaxZoomPercent();
-    if (factor < 5 || factor > max)
+    if (newZoom < 5 || newZoom > max)
       numberOutOfRange(5, max);
     if (!viewer.isWindowCentered()) {
       // do a smooth zoom only if not windowCentered
@@ -7738,56 +7768,58 @@ class ScriptEvaluator {
     }
     if (isSyntaxCheck)
       return;
-    if (isSameAtom && Math.abs(zoom - factor) < 1)
+    if (isSameAtom && Math.abs(zoom - newZoom) < 1)
       time = 0;
-    viewer.moveTo(time, center, JmolConstants.center, Float.NaN, factor,
-        xTrans, yTrans, radius, null, Float.NaN, Float.NaN, Float.NaN);
+    viewer.moveTo(time, center, JmolConstants.center, Float.NaN, newZoom,
+        xTrans, yTrans, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
   }
 
-  private float getZoomFactor(int i, int ptCenter, float radius, float factor0)
+  private float getZoom(int i, BitSet bs, float currentZoom)
       throws ScriptException {
-    BitSet bs = null;
-    float factor = (isFloatParameter(i) ? floatParameter(i) : Float.NaN);
-    if (factor == 0) {
-      switch (statement[ptCenter].tok) {
-      case Token.bitset:
-      case Token.expressionBegin:
-        bs = expression(statement, ptCenter, 0, true, false, false, true);
-      }
+    // moveTo/zoom/zoomTo [optional {center}] percent|-factor|+factor|*factor|/factor
+    // moveTo/zoom/zoomTo {center} 0 [optional -factor|+factor|*factor|/factor]
+    float zoom = (isFloatParameter(i) ? floatParameter(i++) : Float.NaN);
+    if (zoom == 0) {
+      // moveTo/zoom/zoomTo {center} 0
       if (bs == null)
         error(ERROR_invalidArgument);
       float r = viewer.calcRotationRadius(bs);
-      factor0 = radius / r * 100;
-      factor = Float.NaN;
-      i++;
+      currentZoom = viewer.getRotationRadius() / r * 100;
+      zoom = Float.NaN;
     }
-    if (factor < 0) {
-      factor += factor0;
-    } else if (Float.isNaN(factor)) {
-      factor = factor0;
-      if (isFloatParameter(i + 1)) {
-        float value = floatParameter(i + 1);
-        switch (getToken(i++).tok) {
+    if (zoom < 0) {
+      // moveTo/zoom/zoomTo -factor
+      zoom += currentZoom;
+    } else if (Float.isNaN(zoom)) {
+      // moveTo/zoom/zoomTo [optional {center}] percent|+factor|*factor|/factor
+      // moveTo/zoom/zoomTo {center} 0 [optional -factor|+factor|*factor|/factor]
+      int tok = tokAt(i);
+      switch (tok) {
+      case Token.divide:
+      case Token.times:
+      case Token.plus:
+        float value = floatParameter(++i);
+        i++;
+        switch (tok) {
         case Token.divide:
-          factor /= value;
+          zoom = currentZoom / value;
           break;
         case Token.times:
-          factor *= value;
+          zoom = currentZoom * value;
           break;
         case Token.plus:
-          factor += value;
+          zoom = currentZoom + value;
           break;
-        default:
-          error(ERROR_invalidArgument);
         }
-      } else {
+        break;
+      default:
+        // indicate no factor indicated
         if (bs == null)
-          factor = -factor;
-        --i;
+          zoom = -currentZoom;
       }
     }
-    iToken = i;
-    return factor;
+    iToken = i - 1;
+    return zoom;
   }
 
   private void gotocmd() throws ScriptException {
@@ -9333,8 +9365,6 @@ class ScriptEvaluator {
     // from FOR or WHILE, no such check is made
 
     // if both pt and ptMax are 0, then it indicates that
-
-    // System.out.println(thisCommand);
 
     BitSet bs = null;
     String propertyName = "";
@@ -12474,7 +12504,7 @@ class ScriptEvaluator {
         }
         if (str.equalsIgnoreCase("ID")) {
           setShapeId(iShape, ++i, idSeen);
-          isWild = (viewer.getShapeProperty(JmolConstants.SHAPE_DRAW, "ID") == null);
+          isWild = (viewer.getShapeProperty(iShape, "ID") == null);
           i = iToken;
           break;
         }
@@ -12808,6 +12838,14 @@ class ScriptEvaluator {
         --iToken;
     }
     return true;
+  }
+
+  static Quaternion getAtomQuaternion(Viewer viewer, BitSet bs) {
+    int i = BitSetUtil.firstSetBit(bs);
+    if (i < 0)
+      return null;
+    return (i < 0 ? null : viewer.getModelSet().getAtomAt(i).getQuaternion(
+            viewer.getQuaternionFrame()));
   }
   
   // OK, that's all there is to it... Simple enough! ;)

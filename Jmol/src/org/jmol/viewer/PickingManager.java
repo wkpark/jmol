@@ -169,7 +169,7 @@ class PickingManager {
       viewer.setStatusMeasuring("measurePicked", n, measurementQueued.getStringDetail());
       if (pickingMode == JmolConstants.PICKING_MEASURE
           || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON) {
-        viewer.script("measure " + measurementQueued.getMeasurementScript(" "));
+        viewer.script("measure " + measurementQueued.getMeasurementScript(" ", true));
       }
       return;
     case JmolConstants.PICKING_CENTER:
@@ -208,7 +208,7 @@ class PickingManager {
             GT._("pick two atoms in order to spin the model around an axis"));
         return;
       }
-      viewer.script("spin" + measurementQueued.getMeasurementScript(" ") + " " + viewer.getPickingSpinRate());
+      viewer.script("spin" + measurementQueued.getMeasurementScript(" ", false) + " " + viewer.getPickingSpinRate());
     }
     if (ptClicked != null)
       return;

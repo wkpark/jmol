@@ -83,7 +83,7 @@ public class Measurement {
   
   public String getStringDetail() {
     return (count == 2 ? "Distance" : count == 3 ? "Angle" : "Torsion")
-        + getMeasurementScript(" - ") + " : " + value;  
+        + getMeasurementScript(" - ", false) + " : " + value;  
   }
   
   private String strFormat;
@@ -194,14 +194,14 @@ public class Measurement {
   /**
    * Used by MouseManager and Picking Manager to build the script
    * @param sep
+   * @param withModelIndex 
    * @return measure (atomIndex=1) (atomIndex=2)....
    */
-  public String getMeasurementScript(String sep) {
+  public String getMeasurementScript(String sep, boolean withModelIndex) {
     String str = "";
     boolean asScript = (sep.equals(" "));
-    for (int i = 1; i <= count; i++) {
-      str += (i > 1 ? sep : " ") + getLabel(i, asScript); 
-    }
+    for (int i = 1; i <= count; i++)
+      str += (i > 1 ? sep : " ") + getLabel(i, asScript, withModelIndex); 
     return str;  
   }
   
@@ -334,7 +334,7 @@ public class Measurement {
   public Vector toVector() {
     Vector V = new Vector();
     for (int i = 1; i <= count; i++ )
-      V.addElement(getLabel(i, false));
+      V.addElement(getLabel(i, false, false));
     V.addElement(strMeasurement);
     return V;  
   }
@@ -366,10 +366,11 @@ public class Measurement {
     }
   }
 
-  public String getLabel(int i, boolean asBitSet) {
+  public String getLabel(int i, boolean asBitSet, boolean withModelIndex) {
     int atomIndex = countPlusIndices[i];
     return (atomIndex < 0 
-        ? "modelIndex " + getAtom(i).modelIndex + " " + Escape.escape(getAtom(i))
+        ? (withModelIndex ? "modelIndex " + getAtom(i).modelIndex + " " : "")
+            + Escape.escape(getAtom(i))
         : asBitSet ? "({" + atomIndex + "})"
         : viewer.getAtomInfo(atomIndex));
   }

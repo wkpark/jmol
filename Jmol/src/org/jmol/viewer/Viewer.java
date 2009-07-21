@@ -48,6 +48,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
+import org.jmol.util.Quaternion;
 import org.jmol.util.TempArray;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.StateManager.Orientation;
@@ -665,6 +666,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getMatrixtransform();
   }
 
+  Quaternion getRotationQuaternion() {
+    return transformManager.getRotationQuaternion();
+  }
+  
   public float getRotationRadius() {
     return transformManager.getRotationRadius();
   }
@@ -6824,14 +6829,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   int getPickingSpinRate() {
     // PickingManager
     return global.pickingSpinRate;
-  }
-
-  public void startSpinningAxis(int atomIndex1, int atomIndex2,
-                                boolean isClockwise) {
-    // PickingManager.setAtomPicked "set picking SPIN"
-    Point3f pt1 = modelSet.getAtomAt(atomIndex1);
-    Point3f pt2 = modelSet.getAtomAt(atomIndex2);
-    startSpinningAxis(pt1, pt2, isClockwise);
   }
 
   public void startSpinningAxis(Point3f pt1, Point3f pt2, boolean isClockwise) {

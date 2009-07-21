@@ -48,6 +48,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
 import org.jmol.util.Escape;
 import org.jmol.util.Quaternion;
+import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
 
 public class _X3dExporter extends _Exporter {
@@ -89,6 +90,8 @@ public class _X3dExporter extends _Exporter {
     return id;
   }
   
+  final private Point3f ptAtom = new Point3f();
+  
   public void getHeader() {
     output("<X3D profile='Immersive' version='3.1' "
       + "xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' "
@@ -108,27 +111,38 @@ public class _X3dExporter extends _Exporter {
     // puts the viewer into model-rotation mode
     output("<Background skyColor='" 
       + rgbFractionalFromColix(viewer.getObjectColix(0), ' ') + "'/>\n");
-
-    Point3f boxC = viewer.getBoundBoxCenter();
-    Vector3f boxV = viewer.getBoundBoxCornerVector();
-    float viewP = boxC.z + (1.5f)* boxV.z; // to get away from the model, 25% of a boundbox dimension
-    float scale = round( viewer.getZoomPercentFloat() / 100f );
+    // next is an approximation only 
+    getViewpointPosition(ptAtom);
+    adjustViewpointPosition(ptAtom);
+    float angle = getFieldOfView();
     viewer.getAxisAngle(viewpoint);
-    
-    output("<Transform rotation='"
-      + round(viewpoint.x) + " " + round(viewpoint.y) + " " 
-      + round(viewpoint.z) + " " + round(viewpoint.angle) );
-    output("' translation='0 0 " + round(-viewP) 
-      + "' scale='" + scale + " " + scale + " " + scale 
-      + "'>\n");
-    output("<Transform translation='"
-      + round(-boxC.x) + " " + round(-boxC.y) + " " + round(-boxC.z) 
-      + "'>\n");
+    output("<Viewpoint fieldOfView='" + angle
+      + "' position='" + ptAtom.x + " " + ptAtom.y + " " + ptAtom.z 
+      + "' orientation='" + viewpoint.x + " " + viewpoint.y + " " 
+      + (viewpoint.angle == 0 ? 1 : viewpoint.z) + " " + -viewpoint.angle
+      + "'\n jump='TRUE' description='v1'/>\n");
+    output("\n  <!-- Jmol perspective:\n");
+    output("  scalePixelsPerAngstrom: " + viewer.getScalePixelsPerAngstrom(false) + "\n");
+    output("  cameraDepth: " + viewer.getCameraDepth() + "\n");
+    output("  center: " + center + "\n");
+    output("  rotationRadius: " + viewer.getRotationRadius() + "\n");
+    output("  boundboxCenter: " + viewer.getBoundBoxCenter() + "\n");
+    output("  translationOffset: " + viewer.getTranslationScript() + "\n");
+    output("  zoom: " + viewer.getZoomPercentFloat() + "\n");
+    output("  moveto command: " + viewer.getOrientationText(Token.moveto) + "\n");
+    output("  screen width height dim: " + screenWidth + " " + screenHeight + " " 
+      + viewer.getScreenDim() 
+      + "\n  -->\n\n");
+
+    output("<Transform translation='");
+    ptAtom.set(center);
+    ptAtom.scale(-1);
+    output(ptAtom);
+    output("'>\n");
   }
 
   public void getFooter() {
     htDefs = null;
-    output("</Transform>\n");
     output("</Transform>\n");
     output("</Scene>\n");
     output("</X3D>\n");
@@ -431,13 +445,21 @@ public class _X3dExporter extends _Exporter {
     output("<Transform");
     outputTransRot(tempP1, tempP2, 0, 1, 0);
     output(">\n<Shape ");
-    String child = getDef("c" + (int) (height * 100) + "_" + (int) (d * 100));
+    String cone = "o" + (int) (height * 100) + "_" + (int) (d * 100);
+    String child = getDef("c" + cone + "_" + colix);
     if (child.charAt(0) == '_') {
       output("DEF='" + child +  "'>");
-      output("<Cone height='" + round(height) + "' bottomRadius='" + round(d/2) + "'/>");
+      cone = getDef(cone);
+      output("<Cone ");
+      if (cone.charAt(0) == '_') {
+        output("DEF='"+ cone + "' height='" + round(height) 
+          + "' bottomRadius='" + round(d/2) + "'/>");
+      } else {
+        output(cone + "/>");
+      }
       outputAppearance(colix, false);
     } else {
-      output(child + "/>");
+      output(child + ">");
     }
     output("</Shape>\n");
     output("</Transform>\n");
@@ -478,8 +500,6 @@ public class _X3dExporter extends _Exporter {
     outputAppearance(colix, false);
     output("\n</Shape>\n");
   }
-
-  final private Point3f ptAtom = new Point3f();
 
   public void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
     if (z < 3) {

@@ -112,6 +112,7 @@ public class _VrmlExporter extends _Exporter {
         + rgbFractionalFromColix(viewer.getObjectColix(0), ' ') + " } \n");
     // next is an approximation only 
     getViewpointPosition(ptAtom);
+    adjustViewpointPosition(ptAtom);
     float angle = getFieldOfView();
     viewer.getAxisAngle(viewpoint);
     output("Viewpoint{fieldOfView " + angle 
@@ -128,11 +129,7 @@ public class _VrmlExporter extends _Exporter {
     output("#zoom: " + viewer.getZoomPercentFloat() + "\n");
     output("#moveto command: " + viewer.getOrientationText(Token.moveto) + "\n");
     output("#screen width height dim: " + screenWidth + " " + screenHeight + " " + viewer.getScreenDim() + "\n\n");
-    output("Transform{");//scale " + scale + " " + scale + " " + scale);
-    //output(" children Transform{rotation ");
-    //viewer.getAxisAngle(viewpoint);
-    //output(viewpoint.x + " " + viewpoint.y + " " + viewpoint.z + " " + viewpoint.angle);
-    output(" children Transform{translation ");
+    output("Transform{children Transform{translation ");
     ptAtom.set(center);
     ptAtom.scale(-1);
     output(ptAtom);

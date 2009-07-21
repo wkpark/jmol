@@ -229,7 +229,7 @@ public abstract class _Exporter {
   protected float getFieldOfView() {
     float zoffset = (viewer.getCameraDepth()+ 0.5f);
     float scale = viewer.getZoomPercentFloat() / 100f;
-    // I know multiplying by scale makes no sense. 
+    // I know multiplying by scale makes no sense... 
     float angle = scale * (float) (2 * Math.atan(0.5/scale / zoffset));
     return angle;
   }
@@ -237,21 +237,23 @@ public abstract class _Exporter {
   final protected Point3f pt = new Point3f();
 
   protected void getViewpointPosition(Point3f ptAtom) {
-    //float offsetx = 0.5f + viewer.getTranslationXPercent() / 100f;
-    //float offsety = 0.5f + viewer.getTranslationYPercent() / 100f;
+    pt.set(screenWidth / 2, screenHeight / 2, 0);
+    viewer.unTransformPoint(pt, ptAtom);
+    ptAtom.sub(center);
+  }
+
+  protected void adjustViewpointPosition(Point3f ptAtom) {
+    // this is NOT QUITE correct
     float zoffset = (viewer.getCameraDepth()+ 0.5f);
     float scalePixelsPerAngstrom = viewer.getScalePixelsPerAngstrom(false);
     float rotationRadius = viewer.getRotationRadius();
     float scale = viewer.getZoomPercentFloat() / 100f;
+    float z0 = zoffset * 2 * rotationRadius * scalePixelsPerAngstrom / scale;
     //float offsetx = 0.5f + viewer.getTranslationXPercent() / 100f;
     //float offsety = 0.5f + viewer.getTranslationYPercent() / 100f;
-    pt.set(screenWidth / 2, screenHeight / 2, 0);
-    viewer.unTransformPoint(pt, ptAtom);
-    float z0 = zoffset * 2 * rotationRadius * scalePixelsPerAngstrom / scale;
     pt.set(screenWidth / 2, screenHeight / 2, z0);
     viewer.unTransformPoint(pt, pt);
     pt.sub(center);
-    ptAtom.sub(center);
     ptAtom.add(pt);
   }
 

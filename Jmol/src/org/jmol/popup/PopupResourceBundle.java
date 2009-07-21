@@ -213,7 +213,7 @@ class PopupResourceBundle {
 
 
       {   "SIGNEDloadMenu",
-          "loadPdb loadFileOrURL loadFileUnitCell - loadScript" },
+          "loadPdb loadFileOrUrl loadFileUnitCell - loadScript" },
 
       {   "SIGNEDwriteMenu",
           "writeFileTextVARIABLE writeState writeHistory - writeJpg writePng writePovray -  writeIsosurface writeVrml writeX3d writeMaya" },
@@ -481,7 +481,7 @@ class PopupResourceBundle {
       { "showState", "console on;show state" },
       
       { "loadPdb", "load ?PdbId?" },      
-      { "loadFileOrURL", "load ?" },      
+      { "loadFileOrUrl", "load ?" },      
       { "loadFileUnitCell", "load ? {1 1 1}" },      
       { "loadScript", "script ?.spt" },      
 
@@ -872,7 +872,7 @@ class PopupResourceBundle {
         
         "SIGNEDloadMenu", GT._("Load"),      
         "loadPdb", GT._("File from PDB"),      
-        "loadFileOrURL", GT._("File or URL"),      
+        "loadFileOrUrl", GT._("File or URL"),      
         "loadFileUnitCell", GT._("Load full unit cell"),      
         "loadScript", GT._("Script"),      
 

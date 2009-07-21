@@ -408,15 +408,23 @@ public class _VrmlExporter extends _Exporter {
                        Point3f screenBase, Point3f screenTip) {
     viewer.unTransformPoint(screenBase, tempP1);
     viewer.unTransformPoint(screenTip, tempP2);
-    float d = viewer.unscaleToScreen((int)screenBase.z, diameter);
+    float d = viewer.unscaleToScreen((int) screenBase.z, diameter);
     if (d < 0.1f)
       d = 0.1f;
     float height = tempP1.distance(tempP2);
     outputTransRot(tempP1, tempP2, 0, 1, 0);
     output(" children ");
-    String child = getDef("c" + (int) (height * 100) + "_" + (int) (d * 100) + "_" + colix);
+    String cone = "o" + (int) (height * 100) + "_" + (int) (d * 100);
+    String child = getDef("c" + cone + "_" + colix);
     if (child.charAt(0) == '_') {
-      output("DEF " + child +  " Shape{geometry Cone{height " + round(height) + " bottomRadius " + round(d/2) +"}");
+      output("DEF " + child + " Shape{geometry ");
+      cone = getDef(cone);
+      if (cone.charAt(0) == '_') {
+        output("DEF " + cone + " Cone{height " + round(height)
+            + " bottomRadius " + round(d / 2) + "}");
+      } else {
+        output(cone);
+      }
       outputAppearance(colix, false);
       output("}");
     } else {

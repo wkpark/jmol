@@ -109,19 +109,26 @@ public class _X3dExporter extends _Exporter {
     output("<Background skyColor='" 
       + rgbFractionalFromColix(viewer.getObjectColix(0), ' ') + "'/>\n");
 
-    output("<Transform translation='");
-    pt.set(center);
-    pt.scale(-1);
-    output(pt);
-    output("' rotation='");
+    Point3f boxC = viewer.getBoundBoxCenter();
+    Vector3f boxV = viewer.getBoundBoxCornerVector();
+    float viewP = boxC.z + (1.5f)* boxV.z; // to get away from the model, 25% of a boundbox dimension
+    float scale = round( viewer.getZoomPercentFloat() / 100f );
     viewer.getAxisAngle(viewpoint);
-    output(round(viewpoint.x) + " " + round(viewpoint.y) + " " 
-      + round(viewpoint.z) + " " + round(viewpoint.angle)
+    
+    output("<Transform rotation='"
+      + round(viewpoint.x) + " " + round(viewpoint.y) + " " 
+      + round(viewpoint.z) + " " + round(viewpoint.angle) );
+    output("' translation='0 0 " + round(-viewP) 
+      + "' scale='" + scale + " " + scale + " " + scale 
+      + "'>\n");
+    output("<Transform translation='"
+      + round(-boxC.x) + " " + round(-boxC.y) + " " + round(-boxC.z) 
       + "'>\n");
   }
 
   public void getFooter() {
     htDefs = null;
+    output("</Transform>\n");
     output("</Transform>\n");
     output("</Scene>\n");
     output("</X3D>\n");

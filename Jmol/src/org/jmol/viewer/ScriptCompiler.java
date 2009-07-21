@@ -348,8 +348,11 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         continue;
       }
       if (nTokens == 0 || (isNewSet || isSetBrace)
-          && nTokens == ptNewSetModifier)
+          && nTokens == ptNewSetModifier) {
+        if (nTokens == 0 && lookingAtImpliedString())
+          ichEnd = ichToken + cchToken;
         return commandExpected();
+      }
       return error(ERROR_unrecognizedToken, script.substring(ichToken,
           ichToken + 1));
     }
@@ -396,9 +399,11 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private boolean lookingAtEndOfLine() {
-    if (ichToken >= cchScript)
+    int ichT = ichEnd = ichToken;
+    if (ichToken >= cchScript) {
+      ichEnd = cchScript;
       return true;
-    int ichT = ichToken;
+    }
     int n = nCharNewLine(ichT);
     if (n == 0)
       return false;
@@ -2101,9 +2106,10 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   private boolean handleError() {
     errorType = errorMessage;
     errorLine = script.substring(ichCurrentCommand, ichEnd <= ichCurrentCommand ? ichToken : ichEnd);
-    String lineInfo = (ichToken < ichEnd ? errorLine.substring(0,
-        ichToken - ichCurrentCommand)
-        + " >>>> " + errorLine.substring(ichToken - ichCurrentCommand) : errorLine)
+    String lineInfo = (ichToken < ichEnd 
+        ? errorLine.substring(0, ichToken - ichCurrentCommand)
+              + " >>>> " + errorLine.substring(ichToken - ichCurrentCommand) 
+        : errorLine)
         + " <<<<";
     errorMessage = GT._("script compiler ERROR: ") + errorMessage
          + ScriptEvaluator.setErrorLineMessage(null, filename, lineCurrent, iCommand, lineInfo);

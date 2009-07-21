@@ -4839,7 +4839,10 @@ class ScriptEvaluator {
       i++;
       Quaternion q;
       if(tokAt(i) == Token.bitset || tokAt(i) == Token.expressionBegin) {
-        bsCenter = expression(i);
+        center = centerParameter(i);
+        if (!(expressionResult instanceof BitSet))
+          error(ERROR_invalidArgument);  
+        bsCenter = (BitSet) expressionResult;
         q = (isSyntaxCheck ? new Quaternion() : getAtomQuaternion(viewer, bsCenter));
       } else {
         q = new Quaternion(getPoint4f(i));
@@ -4912,12 +4915,11 @@ class ScriptEvaluator {
 
     boolean isChange = !viewer.isInPosition(axis, degrees);
     // optional zoom 
-    float zoom = (i == statementLength || isCenterParameter(i) ?
-        Float.NaN : floatParameter(i++));
+    float zoom = (isFloatParameter(i) ? floatParameter(i++) : Float.NaN);
     // optional xTrans yTrans
     float xTrans = 0;
     float yTrans = 0;
-    if (i != statementLength && !isCenterParameter(i)) {
+    if (isFloatParameter(i) && !isCenterParameter(i)) {
       xTrans = floatParameter(i++);
       yTrans = floatParameter(i++);
       if (!isChange && Math.abs(xTrans - viewer.getTranslationXPercent()) >= 1)
@@ -4925,7 +4927,7 @@ class ScriptEvaluator {
       if (!isChange && Math.abs(yTrans - viewer.getTranslationYPercent()) >= 1)
         isChange = true;
     }
-    if (i != statementLength) {
+    if (bsCenter == null && i != statementLength) {
       // if any more, required (center)
       center = centerParameter(i);
       if (expressionResult instanceof BitSet)
@@ -4944,7 +4946,7 @@ class ScriptEvaluator {
         if ((rotationRadius == 0 || Float.isNaN(rotationRadius))
             && (zoom == 0 || Float.isNaN(zoom))) {
           // alternative (atom expression) 0 zoomFactor
-          float newZoom = Math.abs(getZoom(i, bsCenter, zoom0));
+          float newZoom = Math.abs(getZoom(i, bsCenter, (zoom == 0 ? 0 : zoom0)));
           i = iToken + 1;
           zoom = newZoom;
         } else {
@@ -7180,8 +7182,11 @@ class ScriptEvaluator {
         else {
           endDegrees = degrees;
           degrees = floatParameter(i);
-          if (endDegrees * degrees < 0)
-            degrees = -degrees;
+          if (endDegrees * degrees < 0) {
+            // degrees per second here
+            // but expresses as seconds now
+            degrees = -endDegrees / degrees;
+          }
           isSpin = true;
         }
         continue;
@@ -7778,8 +7783,9 @@ class ScriptEvaluator {
       throws ScriptException {
     // moveTo/zoom/zoomTo [optional {center}] percent|-factor|+factor|*factor|/factor
     // moveTo/zoom/zoomTo {center} 0 [optional -factor|+factor|*factor|/factor]
+
     float zoom = (isFloatParameter(i) ? floatParameter(i++) : Float.NaN);
-    if (zoom == 0) {
+    if (zoom == 0 || currentZoom == 0) {
       // moveTo/zoom/zoomTo {center} 0
       if (bs == null)
         error(ERROR_invalidArgument);
@@ -7814,8 +7820,7 @@ class ScriptEvaluator {
         break;
       default:
         // indicate no factor indicated
-        if (bs == null)
-          zoom = -currentZoom;
+        zoom = (bs == null ? -currentZoom : currentZoom);
       }
     }
     iToken = i - 1;

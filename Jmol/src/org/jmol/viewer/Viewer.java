@@ -939,11 +939,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refresh(1, "Viewer:translate()");
   }
 
-  float getTranslationXPercent() {
+  public float getTranslationXPercent() {
     return transformManager.getTranslationXPercent();
   }
 
-  float getTranslationYPercent() {
+  public float getTranslationYPercent() {
     return transformManager.getTranslationYPercent();
   }
 
@@ -951,7 +951,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getTranslationZPercent();
   }
 
-  String getTranslationScript() {
+  public String getTranslationScript() {
     return transformManager.getTranslationScript();
   }
 
@@ -1162,7 +1162,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setNavXYZ((int)x, (int)y, (int)z);  
   }
   
-  String getOrientationText(int type) {
+  public String getOrientationText(int type) {
     return transformManager.getOrientationText(type);
   }
 

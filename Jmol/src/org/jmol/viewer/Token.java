@@ -292,7 +292,7 @@ public class Token {
 //final static int model        see mathfunc
   final static int monitor      = command | 35 | setparam | expression | defaultON;
   final static int move         = command | 36;
-  final static int moveto       = command | 37;
+  public final static int moveto       = command | 37;
   final static int navigate     = command | 38;
   final static int pmesh        = command | 39;
   final static int polyhedra    = command | 40;

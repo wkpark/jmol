@@ -479,7 +479,6 @@ public class _X3dExporter extends _Exporter {
     output("\n</Shape>\n");
   }
 
-  final private Point3f pt = new Point3f();
   final private Point3f ptAtom = new Point3f();
 
   public void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {

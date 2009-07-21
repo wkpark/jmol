@@ -414,7 +414,7 @@ public class _VrmlExporter extends _Exporter {
     float height = tempP1.distance(tempP2);
     outputTransRot(tempP1, tempP2, 0, 1, 0);
     output(" children ");
-    String child = getDef("c" + (int) (height * 100) + "_" + (int) (d * 100));
+    String child = getDef("c" + (int) (height * 100) + "_" + (int) (d * 100) + "_" + colix);
     if (child.charAt(0) == '_') {
       output("DEF " + child +  " Shape{geometry Cone{height " + round(height) + " bottomRadius " + round(d/2) +"}");
       outputAppearance(colix, false);

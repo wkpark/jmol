@@ -1,20 +1,20 @@
-# Swedish translation for jmol
-# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# Traditional Chinese translation for jmol
+# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
 # This file is distributed under the same license as the jmol package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-07-21 11:09+0200\n"
-"PO-Revision-Date: 2009-01-01 17:37+0000\n"
-"Last-Translator: nanker <Unknown>\n"
-"Language-Team: Swedish <sv@li.org>\n"
+"PO-Revision-Date: 2009-06-30 12:31+0000\n"
+"Last-Translator: Lushih Hsieh <bruce@rssh.kh.edu.tw>\n"
+"Language-Team: Traditional Chinese <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-01-10 15:48+0000\n"
+"X-Launchpad-Export-Date: 2009-07-21 08:56+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/Jmol.java:670
@@ -26,20 +26,25 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
+"Jmol Applet 版本 {0} {1}.\n"
+"\n"
+"OpenScience 計劃.\n"
+"\n"
+"更多訊息請參閱 http://www.jmol.org"
 
 #: org/jmol/applet/Jmol.java:914
 msgid "File Error:"
-msgstr ""
+msgstr "檔案錯誤："
 
 #: org/jmol/applet/Jmol.java:1127
 #, java-format
 msgid ""
 "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
-msgstr ""
+msgstr "Applet 不能新增這個檔案。要用 Base64 JPEC 格式檔，請使用 {0}。"
 
 #: org/jmol/applet/Jmol.java:1130 org/jmol/viewer/StatusManager.java:595
 msgid "File creation failed."
-msgstr ""
+msgstr "新增檔案失敗"
 
 #: org/jmol/applet/Jmol.java:1251
 msgid ""
@@ -47,80 +52,81 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
+"訊息會顯示於此。在以下的視窗中可以輸入指令。線上的求助訊息可以點擊主控台上的 "
+"求助(Help) 選單，求助訊息就可以再新的瀏灠器視窗中顯示。"
 
 #: org/jmol/appletwrapper/AppletWrapper.java:91
 msgid "Loading Jmol applet ..."
-msgstr ""
+msgstr "載入 Jmol applet 中 ..."
 
 #: org/jmol/appletwrapper/AppletWrapper.java:165
 #, java-format
 msgid "  {0} seconds"
-msgstr ""
+msgstr "  {0} 秒"
 
 #: org/jmol/console/AppletConsole.java:79 org/jmol/console/JmolConsole.java:53
 msgid "Jmol Script Console"
-msgstr ""
+msgstr "Jmol Script 主控台"
 
 #: org/jmol/console/AppletConsole.java:81
-#, fuzzy
 msgid "Editor"
-msgstr "Historik"
+msgstr ""
 
 #: org/jmol/console/AppletConsole.java:82
 msgid "State"
-msgstr ""
+msgstr "狀態"
 
 #: org/jmol/console/AppletConsole.java:83
 #: org/jmol/console/ScriptEditor.java:146
-#, fuzzy
 msgid "Run"
-msgstr "Ryska"
+msgstr ""
 
 #: org/jmol/console/AppletConsole.java:84
 msgid "Clear Output"
-msgstr ""
+msgstr "清空輸出"
 
 #: org/jmol/console/AppletConsole.java:85
 msgid "Clear Input"
-msgstr ""
+msgstr "清空輸入"
 
 #: org/jmol/console/AppletConsole.java:86
 #: org/jmol/popup/PopupResourceBundle.java:863
 msgid "History"
-msgstr "Historik"
+msgstr "瀏覽紀錄"
 
 #: org/jmol/console/AppletConsole.java:87
 #: org/jmol/popup/PopupResourceBundle.java:873
 msgid "Load"
-msgstr "Ladda"
+msgstr "載入"
 
 #: org/jmol/console/AppletConsole.java:125
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
+"按下 CTRL-ENTER 來新增一行，或貼上分子模型資料然後點擊 載入 (Load) 選項。"
 
 #: org/jmol/console/AppletConsole.java:349
 msgid "&Help"
-msgstr "&Hjälp"
+msgstr "說明(&H)"
 
 #: org/jmol/console/AppletConsole.java:350
 msgid "&Search..."
-msgstr ""
+msgstr "搜尋 (&S)"
 
 #: org/jmol/console/AppletConsole.java:351
 msgid "&Commands"
-msgstr "&Kommandon"
+msgstr "指令 (&C)"
 
 #: org/jmol/console/AppletConsole.java:352
 msgid "Math &Functions"
-msgstr ""
+msgstr "數學及函數"
 
 #: org/jmol/console/AppletConsole.java:353
 msgid "Set &Parameters"
-msgstr ""
+msgstr "設定參數 (&P)"
 
 #: org/jmol/console/AppletConsole.java:354
 msgid "&More"
-msgstr "&Mer"
+msgstr "更多(&M)"
 
 #: org/jmol/console/ScriptEditor.java:100
 msgid "Jmol Script Editor"
@@ -129,29 +135,28 @@ msgstr ""
 #: org/jmol/console/ScriptEditor.java:139
 #: org/jmol/popup/PopupResourceBundle.java:860
 msgid "Console"
-msgstr ""
+msgstr "主控台"
 
 #: org/jmol/console/ScriptEditor.java:141
 #: org/jmol/export/dialog/Dialog.java:430
 #: org/jmol/export/dialog/Dialog.java:454
 #: org/jmol/export/dialog/Dialog.java:457
 msgid "Open"
-msgstr ""
+msgstr "開啟"
 
 #: org/jmol/console/ScriptEditor.java:142
 #: org/jmol/popup/PopupResourceBundle.java:877
 msgid "Script"
-msgstr ""
+msgstr "指令稿"
 
 #: org/jmol/console/ScriptEditor.java:143
-#, fuzzy
 msgid "Check"
-msgstr "Tjeckiska"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:144
 #: org/jmol/popup/PopupResourceBundle.java:591
 msgid "Top"
-msgstr ""
+msgstr "頂端"
 
 #: org/jmol/console/ScriptEditor.java:145
 msgid "Step"
@@ -160,12 +165,12 @@ msgstr ""
 #: org/jmol/console/ScriptEditor.java:147
 #: org/jmol/popup/PopupResourceBundle.java:818
 msgid "Pause"
-msgstr ""
+msgstr "暫停"
 
 #: org/jmol/console/ScriptEditor.java:149
 #: org/jmol/popup/PopupResourceBundle.java:819
 msgid "Resume"
-msgstr ""
+msgstr "繼續"
 
 #: org/jmol/console/ScriptEditor.java:151
 msgid "Halt"
@@ -181,303 +186,304 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
-msgstr ""
+msgstr "檔案 或 超連結 (URL)："
 
 #: org/jmol/export/dialog/Dialog.java:258
 msgid "Image Type"
-msgstr "Bildtyp"
+msgstr "圖片格式"
 
 #: org/jmol/export/dialog/Dialog.java:273
 #: org/jmol/export/dialog/Dialog.java:314
 #, java-format
 msgid "JPEG Quality ({0})"
-msgstr ""
+msgstr "JPEG 品質 ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:287
 #, java-format
 msgid "PNG Compression  ({0})"
-msgstr ""
+msgstr "PNG 壓縮 ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:317
 #, java-format
 msgid "PNG Quality ({0})"
-msgstr ""
+msgstr "PNG 品質 ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:363
 #: org/jmol/export/dialog/Dialog.java:473
 msgid "Yes"
-msgstr "Ja"
+msgstr "確定"
 
 #: org/jmol/export/dialog/Dialog.java:363
 #: org/jmol/export/dialog/Dialog.java:471
 msgid "No"
-msgstr "Nej"
+msgstr "否"
 
 #: org/jmol/export/dialog/Dialog.java:365
 #, java-format
 msgid "Do you want to overwrite file {0}?"
-msgstr ""
+msgstr "你真的要覆寫這檔案 {0}?"
 
 #: org/jmol/export/dialog/Dialog.java:366
 msgid "Warning"
-msgstr ""
+msgstr "警告"
 
 #: org/jmol/export/dialog/Dialog.java:422
 msgid "All Files"
-msgstr "Alla filer"
+msgstr "所有檔案"
 
 #: org/jmol/export/dialog/Dialog.java:423
 #: org/jmol/export/dialog/Dialog.java:470
 msgid "Cancel"
-msgstr "Avbryt"
+msgstr "取消"
 
 #: org/jmol/export/dialog/Dialog.java:425
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "離開檔案選擇對話框"
 
 #: org/jmol/export/dialog/Dialog.java:427
 #: org/jmol/export/dialog/Dialog.java:428
 msgid "Details"
-msgstr "Detaljer"
+msgstr "詳細資料"
 
 #: org/jmol/export/dialog/Dialog.java:429
 msgid "Directory"
-msgstr ""
+msgstr "資料夾"
 
 #: org/jmol/export/dialog/Dialog.java:432
 msgid "Open selected directory"
-msgstr ""
+msgstr "開始選擇了的資料夾"
 
 #: org/jmol/export/dialog/Dialog.java:433
 msgid "Attributes"
-msgstr ""
+msgstr "屬性"
 
 #: org/jmol/export/dialog/Dialog.java:434
 msgid "Modified"
-msgstr "Ändrad"
+msgstr "已修改"
 
 #: org/jmol/export/dialog/Dialog.java:435
 msgid "Generic File"
-msgstr ""
+msgstr "一般檔案"
 
 #: org/jmol/export/dialog/Dialog.java:436
 msgid "Name"
-msgstr "Namn"
+msgstr "名稱"
 
 #: org/jmol/export/dialog/Dialog.java:437
 msgid "File Name:"
-msgstr "Filnamn:"
+msgstr "檔名："
 
 #: org/jmol/export/dialog/Dialog.java:438
 msgid "Size"
-msgstr "Storlek"
+msgstr "檔案大小"
 
 #: org/jmol/export/dialog/Dialog.java:439
 msgid "Files of Type:"
-msgstr ""
+msgstr "類型檔"
 
 #: org/jmol/export/dialog/Dialog.java:440
 msgid "Type"
-msgstr ""
+msgstr "類型"
 
 #: org/jmol/export/dialog/Dialog.java:441
 msgid "Help"
-msgstr "Hjälp"
+msgstr "說明"
 
 #: org/jmol/export/dialog/Dialog.java:443
 msgid "FileChooser help"
-msgstr ""
+msgstr "檔案選擇器說明"
 
 #: org/jmol/export/dialog/Dialog.java:444
 #: org/jmol/export/dialog/Dialog.java:445
 msgid "Home"
-msgstr "Hem"
+msgstr "家目錄"
 
 #: org/jmol/export/dialog/Dialog.java:446
 #: org/jmol/export/dialog/Dialog.java:447
 msgid "List"
-msgstr "Lista"
+msgstr "清單"
 
 #: org/jmol/export/dialog/Dialog.java:448
 msgid "Look In:"
-msgstr ""
+msgstr "搜索"
 
 #: org/jmol/export/dialog/Dialog.java:450
 msgid "Error creating new folder"
-msgstr ""
+msgstr "新增資料夾錯誤"
 
 #: org/jmol/export/dialog/Dialog.java:451
 msgid "New Folder"
-msgstr "Ny mapp"
+msgstr "新資料夾"
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "Create New Folder"
-msgstr "Skapa ny mapp"
+msgstr "建立新資料夾"
 
 #: org/jmol/export/dialog/Dialog.java:456
 msgid "Open selected file"
-msgstr ""
+msgstr "開始己選的檔案"
 
 #: org/jmol/export/dialog/Dialog.java:458
 #: org/jmol/export/dialog/Dialog.java:461
 #: org/jmol/popup/PopupResourceBundle.java:879
 msgid "Save"
-msgstr "Spara"
+msgstr "儲存"
 
 #: org/jmol/export/dialog/Dialog.java:460
 msgid "Save selected file"
-msgstr ""
+msgstr "儲存己選的檔案"
 
 #: org/jmol/export/dialog/Dialog.java:462
 msgid "Save In:"
-msgstr ""
+msgstr "存在："
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "Update"
-msgstr "Uppdatera"
+msgstr "更新"
 
 #: org/jmol/export/dialog/Dialog.java:465
 msgid "Update directory listing"
-msgstr ""
+msgstr "更新資料夾列表"
 
 #: org/jmol/export/dialog/Dialog.java:466
 msgid "Up"
-msgstr "Upp"
+msgstr "向上"
 
 #: org/jmol/export/dialog/Dialog.java:467
 msgid "Up One Level"
-msgstr ""
+msgstr "向上提升一層"
 
 #: org/jmol/export/dialog/Dialog.java:472
 msgid "OK"
-msgstr "OK"
+msgstr "確定"
 
 #: org/jmol/export/dialog/FilePreview.java:71
 msgid "Preview"
-msgstr "Förhandsvisa"
+msgstr "預灠"
 
 #: org/jmol/export/dialog/FilePreview.java:91
 msgid "Append models"
-msgstr ""
+msgstr "附加模型"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Catalan"
-msgstr "Katalanska"
+msgstr "加泰隆文"
 
 #: org/jmol/i18n/GT.java:119
+#, fuzzy
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "側鏈"
 
 #: org/jmol/i18n/GT.java:120
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "繁體中文"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Czech"
-msgstr "Tjeckiska"
+msgstr "捷克文"
 
 #: org/jmol/i18n/GT.java:122
 msgid "Danish"
-msgstr "Danska"
+msgstr "丹麥文"
 
 #: org/jmol/i18n/GT.java:123
 msgid "Dutch"
-msgstr "Holländska"
+msgstr "荷蘭文"
 
 #: org/jmol/i18n/GT.java:124
 msgid "British English"
-msgstr "Brittisk engelska"
+msgstr "英式英文"
 
 #: org/jmol/i18n/GT.java:125
 msgid "American English"
-msgstr "Amerikansk engelska"
+msgstr "美語"
 
 #: org/jmol/i18n/GT.java:126
 msgid "Estonian"
-msgstr "Estniska"
+msgstr "愛沙尼亞文"
 
 #: org/jmol/i18n/GT.java:127
 msgid "French"
-msgstr "Franska"
+msgstr "法文"
 
 #: org/jmol/i18n/GT.java:128
 msgid "German"
-msgstr "Tyska"
+msgstr "德文"
 
 #: org/jmol/i18n/GT.java:129
 msgid "Greek"
-msgstr "Grekisk"
+msgstr "希臘文"
 
 #: org/jmol/i18n/GT.java:130
 msgid "Hungarian"
-msgstr "Ungerska"
+msgstr "匈牙利文"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Italian"
-msgstr "Italienska"
+msgstr "義大利文"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Korean"
-msgstr "Koreansk"
+msgstr "韓文"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Norwegian Bokmal"
-msgstr "Norska (Bokmål)"
+msgstr "挪威波克默爾語 (Bokmal)"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Polish"
-msgstr "Polska"
+msgstr "波蘭文"
 
 #: org/jmol/i18n/GT.java:135
 msgid "Brazilian Portuguese"
-msgstr "Brasiliansk portugisiska"
+msgstr "巴西葡萄牙文"
 
 #: org/jmol/i18n/GT.java:136
 msgid "Portuguese"
-msgstr "Portugisiska"
+msgstr "葡萄牙文"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Russian"
-msgstr "Ryska"
+msgstr "俄羅斯文"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Slovenian"
-msgstr "Slovenska"
+msgstr "斯洛維尼亞文"
 
 #: org/jmol/i18n/GT.java:139
 msgid "Spanish"
-msgstr "Spanska"
+msgstr "西班牙文"
 
 #: org/jmol/i18n/GT.java:140
 msgid "Swedish"
-msgstr "Svenska"
+msgstr "瑞典文"
 
 #: org/jmol/i18n/GT.java:141
 msgid "Turkish"
-msgstr "Turkiska"
+msgstr "土耳其文"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Ukrainian"
-msgstr ""
+msgstr "烏克蘭文"
 
 #: org/jmol/minimize/Minimizer.java:187
 #, java-format
 msgid "Could not get class for force field {0}"
-msgstr ""
+msgstr "不能取得力場{0}的類別"
 
 #: org/jmol/minimize/Minimizer.java:197
 msgid "No atoms selected -- nothing to do!"
-msgstr ""
+msgstr "沒有選擇任何原子--不需處理!"
 
 #: org/jmol/minimize/Minimizer.java:259
 #, java-format
 msgid "{0} atoms will be minimized."
-msgstr ""
+msgstr "{0} 原子將被最小化"
 
 #: org/jmol/minimize/Minimizer.java:351
 #, java-format
 msgid "could not setup force field {0}"
-msgstr ""
+msgstr "無法設定力埸 {0}"
 
 #: org/jmol/popup/JmolPopup.java:483 org/jmol/popup/JmolPopup.java:523
 #: org/jmol/popup/PopupResourceBundle.java:582
@@ -485,342 +491,342 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:605
 #: org/jmol/popup/PopupResourceBundle.java:622
 msgid "All"
-msgstr "Alla"
+msgstr "全部"
 
 #: org/jmol/popup/JmolPopup.java:557
 msgid "Minimize"
-msgstr "Minimera"
+msgstr "最小化"
 
 #: org/jmol/popup/JmolPopup.java:641
 msgid "Java memory usage"
-msgstr ""
+msgstr "Java 所用的記憶體大小"
 
 #: org/jmol/popup/JmolPopup.java:647
 #, java-format
 msgid "{0} MB total"
-msgstr ""
+msgstr "共 {0} MB"
 
 #: org/jmol/popup/JmolPopup.java:649
 #, java-format
 msgid "{0} MB free"
-msgstr ""
+msgstr "還有 {0} MB未使用"
 
 #: org/jmol/popup/JmolPopup.java:652
 #, java-format
 msgid "{0} MB maximum"
-msgstr ""
+msgstr "最多 {0} MB"
 
 #: org/jmol/popup/JmolPopup.java:655
 msgid "unknown maximum"
-msgstr ""
+msgstr "不知極大值為何"
 
 #: org/jmol/popup/JmolPopup.java:658
 msgid "1 processor"
-msgstr ""
+msgstr "單一處理器"
 
 #: org/jmol/popup/JmolPopup.java:659
 #, java-format
 msgid "{0} processors"
-msgstr ""
+msgstr "{0}個處理器"
 
 #: org/jmol/popup/JmolPopup.java:661
 msgid "unknown processor count"
-msgstr ""
+msgstr "不知道處理器數目"
 
 #: org/jmol/popup/PopupResourceBundle.java:549
 msgid "No atoms loaded"
-msgstr ""
+msgstr "沒有載入原子"
 
 #: org/jmol/popup/PopupResourceBundle.java:551
 msgid "Configurations"
-msgstr ""
+msgstr "配置"
 
 #: org/jmol/popup/PopupResourceBundle.java:552
 msgid "Element"
-msgstr ""
+msgstr "元素"
 
 #: org/jmol/popup/PopupResourceBundle.java:553
 msgid "Model/Frame"
-msgstr ""
+msgstr "模型/框架"
 
 #: org/jmol/popup/PopupResourceBundle.java:554
 msgid "Language"
-msgstr ""
+msgstr "語言"
 
 #: org/jmol/popup/PopupResourceBundle.java:555
 #: org/jmol/popup/PopupResourceBundle.java:556
 #: org/jmol/popup/PopupResourceBundle.java:557
 msgid "By Residue Name"
-msgstr ""
+msgstr "以取代基名字排列"
 
 #: org/jmol/popup/PopupResourceBundle.java:558
 msgid "By HETATM"
-msgstr ""
+msgstr "以 HETATM 排列"
 
 #: org/jmol/popup/PopupResourceBundle.java:559
 msgid "Molecular Orbitals"
-msgstr ""
+msgstr "分子軌域"
 
 #: org/jmol/popup/PopupResourceBundle.java:560
 #: org/jmol/popup/PopupResourceBundle.java:870
 #: org/jmol/popup/PopupResourceBundle.java:907
 msgid "Symmetry"
-msgstr ""
+msgstr "對稱"
 
 #: org/jmol/popup/PopupResourceBundle.java:563
 msgid "Model information"
-msgstr ""
+msgstr "模型的資訊"
 
 #: org/jmol/popup/PopupResourceBundle.java:564
 #, java-format
 msgid "Select ({0})"
-msgstr ""
+msgstr "選擇 ({0})"
 
 #: org/jmol/popup/PopupResourceBundle.java:565
 #, java-format
 msgid "All {0} models"
-msgstr ""
+msgstr "所有{0}的模型"
 
 #: org/jmol/popup/PopupResourceBundle.java:566
 #, java-format
 msgid "Configurations ({0})"
-msgstr ""
+msgstr "配置 ({0})"
 
 #: org/jmol/popup/PopupResourceBundle.java:567
 #, java-format
 msgid "Collection of {0} models"
-msgstr ""
+msgstr "{0}模型的收集"
 
 #: org/jmol/popup/PopupResourceBundle.java:568
 #, java-format
 msgid "atoms: {0}"
-msgstr ""
+msgstr "原子：{0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:569
 #, java-format
 msgid "bonds: {0}"
-msgstr ""
+msgstr "化學鍵：{0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:570
 #, java-format
 msgid "groups: {0}"
-msgstr ""
+msgstr "官能基：{0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:571
 #, java-format
 msgid "chains: {0}"
-msgstr ""
+msgstr "鏈：{0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:572
 #, java-format
 msgid "polymers: {0}"
-msgstr ""
+msgstr "聚合物：{0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:573
 #, java-format
 msgid "model {0}"
-msgstr ""
+msgstr "模型{0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:574
 #, java-format
 msgid "View {0}"
-msgstr ""
+msgstr "檢視 {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:575
 msgid "Main Menu"
-msgstr ""
+msgstr "主選單"
 
 #: org/jmol/popup/PopupResourceBundle.java:576
 msgid "Biomolecules"
-msgstr ""
+msgstr "生物分子"
 
 #: org/jmol/popup/PopupResourceBundle.java:577
 #, java-format
 msgid "biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "生物分子 {0} ({1} 個原子)"
 
 #: org/jmol/popup/PopupResourceBundle.java:578
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "載入生物分子 {0} ({1} 個原子)"
 
 #: org/jmol/popup/PopupResourceBundle.java:583
 #: org/jmol/popup/PopupResourceBundle.java:702
 #: org/jmol/popup/PopupResourceBundle.java:711
 msgid "None"
-msgstr ""
+msgstr "無"
 
 #: org/jmol/popup/PopupResourceBundle.java:584
 msgid "Display Selected Only"
-msgstr ""
+msgstr "只顯示己選取的"
 
 #: org/jmol/popup/PopupResourceBundle.java:585
 msgid "Invert Selection"
-msgstr ""
+msgstr "反向選取"
 
 #: org/jmol/popup/PopupResourceBundle.java:587
 msgid "View"
-msgstr ""
+msgstr "檢視"
 
 #: org/jmol/popup/PopupResourceBundle.java:588
 msgid "Front"
-msgstr ""
+msgstr "前面"
 
 #: org/jmol/popup/PopupResourceBundle.java:589
 msgid "Left"
-msgstr ""
+msgstr "左邊"
 
 #: org/jmol/popup/PopupResourceBundle.java:590
 msgid "Right"
-msgstr ""
+msgstr "右邊"
 
 #: org/jmol/popup/PopupResourceBundle.java:592
 msgid "Bottom"
-msgstr ""
+msgstr "底部"
 
 #: org/jmol/popup/PopupResourceBundle.java:593
 msgid "Back"
-msgstr ""
+msgstr "返回"
 
 #: org/jmol/popup/PopupResourceBundle.java:595
 msgid "Protein"
-msgstr ""
+msgstr "蛋白質"
 
 #: org/jmol/popup/PopupResourceBundle.java:597
 #: org/jmol/popup/PopupResourceBundle.java:608
 #: org/jmol/popup/PopupResourceBundle.java:678
 #: org/jmol/popup/PopupResourceBundle.java:770
 msgid "Backbone"
-msgstr ""
+msgstr "骨幹"
 
 #: org/jmol/popup/PopupResourceBundle.java:598
 msgid "Side Chains"
-msgstr ""
+msgstr "側鏈"
 
 #: org/jmol/popup/PopupResourceBundle.java:599
 msgid "Polar Residues"
-msgstr ""
+msgstr "極性官能基"
 
 #: org/jmol/popup/PopupResourceBundle.java:600
 msgid "Nonpolar Residues"
-msgstr ""
+msgstr "非極性官能基"
 
 #: org/jmol/popup/PopupResourceBundle.java:601
 msgid "Basic Residues (+)"
-msgstr ""
+msgstr "鹼性官能基 (+)"
 
 #: org/jmol/popup/PopupResourceBundle.java:602
 msgid "Acidic Residues (-)"
-msgstr ""
+msgstr "酸性官能基 (+)"
 
 #: org/jmol/popup/PopupResourceBundle.java:603
 msgid "Uncharged Residues"
-msgstr ""
+msgstr "不帶電荷的官能基"
 
 #: org/jmol/popup/PopupResourceBundle.java:604
 msgid "Nucleic"
-msgstr ""
+msgstr "原子核的"
 
 #: org/jmol/popup/PopupResourceBundle.java:606
 msgid "DNA"
-msgstr ""
+msgstr "DNA"
 
 #: org/jmol/popup/PopupResourceBundle.java:607
 msgid "RNA"
-msgstr ""
+msgstr "RNA"
 
 #: org/jmol/popup/PopupResourceBundle.java:609
 msgid "Bases"
-msgstr ""
+msgstr "鹼"
 
 #: org/jmol/popup/PopupResourceBundle.java:610
 msgid "AT pairs"
-msgstr ""
+msgstr "AT 對"
 
 #: org/jmol/popup/PopupResourceBundle.java:611
 msgid "GC pairs"
-msgstr ""
+msgstr "GC 對"
 
 #: org/jmol/popup/PopupResourceBundle.java:612
 msgid "AU pairs"
-msgstr ""
+msgstr "AU 對"
 
 #: org/jmol/popup/PopupResourceBundle.java:613
 msgid "Hetero"
-msgstr ""
+msgstr "異質的"
 
 #: org/jmol/popup/PopupResourceBundle.java:614
 msgid "All PDB \"HETATM\""
-msgstr ""
+msgstr "全部的 PDB \"HETATM\""
 
 #: org/jmol/popup/PopupResourceBundle.java:615
 msgid "All Solvent"
-msgstr ""
+msgstr "所有的溶劑"
 
 #: org/jmol/popup/PopupResourceBundle.java:616
 msgid "All Water"
-msgstr ""
+msgstr "所有的水"
 
 #: org/jmol/popup/PopupResourceBundle.java:618
 msgid "Nonaqueous Solvent"
-msgstr ""
+msgstr "非水溶劑"
 
 #: org/jmol/popup/PopupResourceBundle.java:619
 msgid "Nonaqueous HETATM"
-msgstr ""
+msgstr "非水溶液的 HETATM"
 
 #: org/jmol/popup/PopupResourceBundle.java:620
 msgid "Ligand"
-msgstr ""
+msgstr "配位基"
 
 #: org/jmol/popup/PopupResourceBundle.java:623
 msgid "Carbohydrate"
-msgstr ""
+msgstr "碳水化合物"
 
 #: org/jmol/popup/PopupResourceBundle.java:624
 msgid "None of the above"
-msgstr ""
+msgstr "以上皆非"
 
 #: org/jmol/popup/PopupResourceBundle.java:626
 msgid "Style"
-msgstr ""
+msgstr "樣式"
 
 #: org/jmol/popup/PopupResourceBundle.java:627
 msgid "Scheme"
-msgstr ""
+msgstr "骨架"
 
 #: org/jmol/popup/PopupResourceBundle.java:628
 msgid "CPK Spacefill"
-msgstr ""
+msgstr "CPK 空間填充"
 
 #: org/jmol/popup/PopupResourceBundle.java:629
 msgid "Ball and Stick"
-msgstr ""
+msgstr "球與棒 (原子與鍵)"
 
 #: org/jmol/popup/PopupResourceBundle.java:630
 msgid "Sticks"
-msgstr ""
+msgstr "鍵"
 
 #: org/jmol/popup/PopupResourceBundle.java:631
 msgid "Wireframe"
-msgstr ""
+msgstr "線框"
 
 #: org/jmol/popup/PopupResourceBundle.java:632
 #: org/jmol/popup/PopupResourceBundle.java:679
 #: org/jmol/popup/PopupResourceBundle.java:772
 msgid "Cartoon"
-msgstr ""
+msgstr "卡通"
 
 #: org/jmol/popup/PopupResourceBundle.java:633
 #: org/jmol/popup/PopupResourceBundle.java:684
 #: org/jmol/popup/PopupResourceBundle.java:771
 msgid "Trace"
-msgstr ""
+msgstr "追蹤"
 
 #: org/jmol/popup/PopupResourceBundle.java:635
 #: org/jmol/popup/PopupResourceBundle.java:724
 msgid "Atoms"
-msgstr ""
+msgstr "原子"
 
 #: org/jmol/popup/PopupResourceBundle.java:636
 #: org/jmol/popup/PopupResourceBundle.java:645
@@ -833,7 +839,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:846
 #: org/jmol/popup/PopupResourceBundle.java:905
 msgid "Off"
-msgstr ""
+msgstr "關閉"
 
 #: org/jmol/popup/PopupResourceBundle.java:637
 #: org/jmol/popup/PopupResourceBundle.java:638
@@ -843,12 +849,12 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:642
 #, java-format
 msgid "{0}% van der Waals"
-msgstr ""
+msgstr "{0}% 凡得瓦力"
 
 #: org/jmol/popup/PopupResourceBundle.java:644
 #: org/jmol/popup/PopupResourceBundle.java:766
 msgid "Bonds"
-msgstr ""
+msgstr "鍵"
 
 #: org/jmol/popup/PopupResourceBundle.java:646
 #: org/jmol/popup/PopupResourceBundle.java:656
@@ -857,7 +863,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:691
 #: org/jmol/popup/PopupResourceBundle.java:795
 msgid "On"
-msgstr ""
+msgstr "開啟"
 
 #: org/jmol/popup/PopupResourceBundle.java:647
 #: org/jmol/popup/PopupResourceBundle.java:648
@@ -883,75 +889,75 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:932
 #, java-format
 msgid "{0} Å"
-msgstr ""
+msgstr "{0} Å"
 
 #: org/jmol/popup/PopupResourceBundle.java:653
 #: org/jmol/popup/PopupResourceBundle.java:767
 msgid "Hydrogen Bonds"
-msgstr ""
+msgstr "氫鍵"
 
 #: org/jmol/popup/PopupResourceBundle.java:655
 msgid "Calculate"
-msgstr ""
+msgstr "計算"
 
 #: org/jmol/popup/PopupResourceBundle.java:657
 msgid "Set H-Bonds Side Chain"
-msgstr ""
+msgstr "設定氫鍵側鏈"
 
 #: org/jmol/popup/PopupResourceBundle.java:658
 msgid "Set H-Bonds Backbone"
-msgstr ""
+msgstr "設定氫鍵骨幹"
 
 #: org/jmol/popup/PopupResourceBundle.java:665
 #: org/jmol/popup/PopupResourceBundle.java:768
 msgid "Disulfide Bonds"
-msgstr ""
+msgstr "雙硫鍵"
 
 #: org/jmol/popup/PopupResourceBundle.java:668
 msgid "Set SS-Bonds Side Chain"
-msgstr ""
+msgstr "設定雙硫鍵側鏈"
 
 #: org/jmol/popup/PopupResourceBundle.java:669
 msgid "Set SS-Bonds Backbone"
-msgstr ""
+msgstr "設定雙硫鍵骨幹"
 
 #: org/jmol/popup/PopupResourceBundle.java:676
 #: org/jmol/popup/PopupResourceBundle.java:769
 msgid "Structures"
-msgstr ""
+msgstr "結構"
 
 #: org/jmol/popup/PopupResourceBundle.java:680
 msgid "Cartoon Rockets"
-msgstr ""
+msgstr "Cartoon Rockets"
 
 #: org/jmol/popup/PopupResourceBundle.java:681
 #: org/jmol/popup/PopupResourceBundle.java:773
 msgid "Ribbons"
-msgstr ""
+msgstr "帶狀"
 
 #: org/jmol/popup/PopupResourceBundle.java:682
 #: org/jmol/popup/PopupResourceBundle.java:774
 msgid "Rockets"
-msgstr ""
+msgstr "Rockets"
 
 #: org/jmol/popup/PopupResourceBundle.java:683
 #: org/jmol/popup/PopupResourceBundle.java:775
 msgid "Strands"
-msgstr ""
+msgstr "股"
 
 #: org/jmol/popup/PopupResourceBundle.java:686
 msgid "Vibration"
-msgstr ""
+msgstr "振動"
 
 #: org/jmol/popup/PopupResourceBundle.java:689
 #: org/jmol/popup/PopupResourceBundle.java:779
 msgid "Vectors"
-msgstr ""
+msgstr "向量"
 
 #: org/jmol/popup/PopupResourceBundle.java:692
 #, java-format
 msgid "{0} pixels"
-msgstr ""
+msgstr "{0} 像素"
 
 #: org/jmol/popup/PopupResourceBundle.java:695
 #: org/jmol/popup/PopupResourceBundle.java:696
@@ -960,541 +966,541 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:699
 #, java-format
 msgid "Scale {0}"
-msgstr ""
+msgstr "刻度 {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:701
 msgid "Stereographic"
-msgstr ""
+msgstr "立體圖形"
 
 #: org/jmol/popup/PopupResourceBundle.java:703
 msgid "Red+Cyan glasses"
-msgstr ""
+msgstr "紅+藍綠色玻璃"
 
 #: org/jmol/popup/PopupResourceBundle.java:704
 msgid "Red+Blue glasses"
-msgstr ""
+msgstr "紅+藍玻璃"
 
 #: org/jmol/popup/PopupResourceBundle.java:705
 msgid "Red+Green glasses"
-msgstr ""
+msgstr "紅+藍色玻璃"
 
 #: org/jmol/popup/PopupResourceBundle.java:706
 msgid "Cross-eyed viewing"
-msgstr ""
+msgstr "斗眼觀賞 (Cross-eyed viewing)"
 
 #: org/jmol/popup/PopupResourceBundle.java:707
 msgid "Wall-eyed viewing"
-msgstr ""
+msgstr "牆眼觀賞 (Wall-eyed viewing)"
 
 #: org/jmol/popup/PopupResourceBundle.java:709
 #: org/jmol/popup/PopupResourceBundle.java:776
 msgid "Labels"
-msgstr ""
+msgstr "標記"
 
 #: org/jmol/popup/PopupResourceBundle.java:712
 msgid "With Element Symbol"
-msgstr ""
+msgstr "標示元素符號"
 
 #: org/jmol/popup/PopupResourceBundle.java:713
 msgid "With Atom Name"
-msgstr ""
+msgstr "標示原子名稱"
 
 #: org/jmol/popup/PopupResourceBundle.java:714
 msgid "With Atom Number"
-msgstr ""
+msgstr "標示原子編號"
 
 #: org/jmol/popup/PopupResourceBundle.java:716
 msgid "Position Label on Atom"
-msgstr ""
+msgstr "在原子上放置標示"
 
 #: org/jmol/popup/PopupResourceBundle.java:717
 msgid "Centered"
-msgstr ""
+msgstr "置中"
 
 #: org/jmol/popup/PopupResourceBundle.java:718
 msgid "Upper Right"
-msgstr ""
+msgstr "右上"
 
 #: org/jmol/popup/PopupResourceBundle.java:719
 msgid "Lower Right"
-msgstr ""
+msgstr "右下"
 
 #: org/jmol/popup/PopupResourceBundle.java:720
 msgid "Upper Left"
-msgstr ""
+msgstr "左上"
 
 #: org/jmol/popup/PopupResourceBundle.java:721
 msgid "Lower Left"
-msgstr ""
+msgstr "左下"
 
 #: org/jmol/popup/PopupResourceBundle.java:723
 msgid "Color"
-msgstr ""
+msgstr "顏色"
 
 #: org/jmol/popup/PopupResourceBundle.java:726
 msgid "By Scheme"
-msgstr ""
+msgstr "依結構排列"
 
 #: org/jmol/popup/PopupResourceBundle.java:727
 msgid "Element (CPK)"
-msgstr ""
+msgstr "元素(CPK)"
 
 #: org/jmol/popup/PopupResourceBundle.java:728
 msgid "Alternative Location"
-msgstr ""
+msgstr "可替換的位置"
 
 #: org/jmol/popup/PopupResourceBundle.java:729
 msgid "Molecule"
-msgstr ""
+msgstr "分子"
 
 #: org/jmol/popup/PopupResourceBundle.java:730
 msgid "Formal Charge"
-msgstr ""
+msgstr "形式電荷"
 
 #: org/jmol/popup/PopupResourceBundle.java:731
 msgid "Partial Charge"
-msgstr ""
+msgstr "部份電荷"
 
 #: org/jmol/popup/PopupResourceBundle.java:732
 msgid "Temperature (Relative)"
-msgstr ""
+msgstr "溫度(相對)"
 
 #: org/jmol/popup/PopupResourceBundle.java:733
 msgid "Temperature (Fixed)"
-msgstr ""
+msgstr "溫度(固定)"
 
 #: org/jmol/popup/PopupResourceBundle.java:735
 msgid "Amino Acid"
-msgstr ""
+msgstr "氨基酸"
 
 #: org/jmol/popup/PopupResourceBundle.java:736
 msgid "Secondary Structure"
-msgstr ""
+msgstr "二級結構"
 
 #: org/jmol/popup/PopupResourceBundle.java:737
 msgid "Chain"
-msgstr ""
+msgstr "鏈"
 
 #: org/jmol/popup/PopupResourceBundle.java:738
 msgid "Group"
-msgstr ""
+msgstr "官能基"
 
 #: org/jmol/popup/PopupResourceBundle.java:739
 msgid "Monomer"
-msgstr ""
+msgstr "單體"
 
 #: org/jmol/popup/PopupResourceBundle.java:740
 msgid "Shapely"
-msgstr ""
+msgstr "定形的"
 
 #: org/jmol/popup/PopupResourceBundle.java:742
 msgid "Inherit"
-msgstr ""
+msgstr "遺傳"
 
 #: org/jmol/popup/PopupResourceBundle.java:743
 msgid "Black"
-msgstr ""
+msgstr "黑色"
 
 #: org/jmol/popup/PopupResourceBundle.java:744
 msgid "White"
-msgstr ""
+msgstr "白色"
 
 #: org/jmol/popup/PopupResourceBundle.java:745
 msgid "Cyan"
-msgstr ""
+msgstr "藍綠色"
 
 #: org/jmol/popup/PopupResourceBundle.java:747
 msgid "Red"
-msgstr ""
+msgstr "紅色"
 
 #: org/jmol/popup/PopupResourceBundle.java:748
 msgid "Orange"
-msgstr ""
+msgstr "橘色"
 
 #: org/jmol/popup/PopupResourceBundle.java:749
 msgid "Yellow"
-msgstr ""
+msgstr "黃色"
 
 #: org/jmol/popup/PopupResourceBundle.java:750
 msgid "Green"
-msgstr ""
+msgstr "綠色"
 
 #: org/jmol/popup/PopupResourceBundle.java:751
 msgid "Blue"
-msgstr ""
+msgstr "藍色"
 
 #: org/jmol/popup/PopupResourceBundle.java:752
 msgid "Indigo"
-msgstr ""
+msgstr "靛藍"
 
 #: org/jmol/popup/PopupResourceBundle.java:753
 msgid "Violet"
-msgstr ""
+msgstr "紫色"
 
 #: org/jmol/popup/PopupResourceBundle.java:755
 msgid "Salmon"
-msgstr ""
+msgstr "橙紅色"
 
 #: org/jmol/popup/PopupResourceBundle.java:756
 msgid "Olive"
-msgstr ""
+msgstr "橄欖色"
 
 #: org/jmol/popup/PopupResourceBundle.java:757
 msgid "Maroon"
-msgstr ""
+msgstr "褐紅"
 
 #: org/jmol/popup/PopupResourceBundle.java:758
 msgid "Gray"
-msgstr ""
+msgstr "灰色"
 
 #: org/jmol/popup/PopupResourceBundle.java:759
 msgid "Slate Blue"
-msgstr ""
+msgstr "石板藍色"
 
 #: org/jmol/popup/PopupResourceBundle.java:760
 msgid "Gold"
-msgstr ""
+msgstr "金色"
 
 #: org/jmol/popup/PopupResourceBundle.java:761
 msgid "Orchid"
-msgstr ""
+msgstr "淡紫色"
 
 #: org/jmol/popup/PopupResourceBundle.java:763
 #: org/jmol/popup/PopupResourceBundle.java:903
 msgid "Make Opaque"
-msgstr ""
+msgstr "不透明效果"
 
 #: org/jmol/popup/PopupResourceBundle.java:764
 #: org/jmol/popup/PopupResourceBundle.java:904
 msgid "Make Translucent"
-msgstr ""
+msgstr "半透明效果"
 
 #: org/jmol/popup/PopupResourceBundle.java:777
 msgid "Background"
-msgstr ""
+msgstr "背景"
 
 #: org/jmol/popup/PopupResourceBundle.java:778
 #: org/jmol/popup/PopupResourceBundle.java:895
 msgid "Surfaces"
-msgstr ""
+msgstr "平面"
 
 #: org/jmol/popup/PopupResourceBundle.java:780
 #: org/jmol/popup/PopupResourceBundle.java:914
 #: org/jmol/popup/PopupResourceBundle.java:940
 msgid "Axes"
-msgstr ""
+msgstr "軸"
 
 #: org/jmol/popup/PopupResourceBundle.java:781
 #: org/jmol/popup/PopupResourceBundle.java:915
 #: org/jmol/popup/PopupResourceBundle.java:939
 msgid "Boundbox"
-msgstr ""
+msgstr "有界盒"
 
 #: org/jmol/popup/PopupResourceBundle.java:782
 #: org/jmol/popup/PopupResourceBundle.java:892
 #: org/jmol/popup/PopupResourceBundle.java:916
 #: org/jmol/popup/PopupResourceBundle.java:941
 msgid "Unit cell"
-msgstr ""
+msgstr "單位晶格"
 
 #: org/jmol/popup/PopupResourceBundle.java:784
 msgid "Zoom"
-msgstr ""
+msgstr "縮放"
 
 #: org/jmol/popup/PopupResourceBundle.java:791
 msgid "Zoom In"
-msgstr ""
+msgstr "放大"
 
 #: org/jmol/popup/PopupResourceBundle.java:792
 msgid "Zoom Out"
-msgstr ""
+msgstr "縮小"
 
 #: org/jmol/popup/PopupResourceBundle.java:794
 #: org/jmol/popup/PopupResourceBundle.java:857
 msgid "Spin"
-msgstr ""
+msgstr "旋轉"
 
 #: org/jmol/popup/PopupResourceBundle.java:798
 msgid "Set X Rate"
-msgstr ""
+msgstr "設定X軸速率"
 
 #: org/jmol/popup/PopupResourceBundle.java:799
 msgid "Set Y Rate"
-msgstr ""
+msgstr "設定Y軸速率"
 
 #: org/jmol/popup/PopupResourceBundle.java:800
 msgid "Set Z Rate"
-msgstr ""
+msgstr "設定Z軸速率"
 
 #: org/jmol/popup/PopupResourceBundle.java:801
 #: org/jmol/popup/PopupResourceBundle.java:827
 msgid "Set FPS"
-msgstr ""
+msgstr "設定 FPS"
 
 #: org/jmol/popup/PopupResourceBundle.java:811
 msgid "Animation"
-msgstr ""
+msgstr "動畫"
 
 #: org/jmol/popup/PopupResourceBundle.java:812
 msgid "Animation Mode"
-msgstr ""
+msgstr "動畫模式"
 
 #: org/jmol/popup/PopupResourceBundle.java:813
 msgid "Play Once"
-msgstr ""
+msgstr "播放一次"
 
 #: org/jmol/popup/PopupResourceBundle.java:814
 msgid "Palindrome"
-msgstr ""
+msgstr "迴文"
 
 #: org/jmol/popup/PopupResourceBundle.java:815
 msgid "Loop"
-msgstr ""
+msgstr "循環播放"
 
 #: org/jmol/popup/PopupResourceBundle.java:817
 msgid "Play"
-msgstr ""
+msgstr "播放"
 
 #: org/jmol/popup/PopupResourceBundle.java:820
 msgid "Stop"
-msgstr ""
+msgstr "停止"
 
 #: org/jmol/popup/PopupResourceBundle.java:821
 msgid "Next Frame"
-msgstr ""
+msgstr "下一格"
 
 #: org/jmol/popup/PopupResourceBundle.java:822
 msgid "Previous Frame"
-msgstr ""
+msgstr "上一格"
 
 #: org/jmol/popup/PopupResourceBundle.java:823
 msgid "Rewind"
-msgstr ""
+msgstr "倒帶"
 
 #: org/jmol/popup/PopupResourceBundle.java:824
 msgid "Reverse"
-msgstr ""
+msgstr "倒帶"
 
 #: org/jmol/popup/PopupResourceBundle.java:825
 msgid "Restart"
-msgstr ""
+msgstr "重新開始"
 
 #: org/jmol/popup/PopupResourceBundle.java:834
 #: org/jmol/popup/PopupResourceBundle.java:865
 msgid "Measurements"
-msgstr ""
+msgstr "測量"
 
 #: org/jmol/popup/PopupResourceBundle.java:835
 msgid "Double-Click begins and ends all measurements"
-msgstr ""
+msgstr "按二下來開始及結束所有測量"
 
 #: org/jmol/popup/PopupResourceBundle.java:836
 msgid "Click for distance measurement"
-msgstr ""
+msgstr "按一下來測量距離"
 
 #: org/jmol/popup/PopupResourceBundle.java:837
 msgid "Click for angle measurement"
-msgstr ""
+msgstr "按一下來測量角度"
 
 #: org/jmol/popup/PopupResourceBundle.java:838
 msgid "Click for torsion (dihedral) measurement"
-msgstr ""
+msgstr "按一下來測量(兩平面間的)扭力"
 
 #: org/jmol/popup/PopupResourceBundle.java:839
 msgid "Delete measurements"
-msgstr ""
+msgstr "移除量測值"
 
 #: org/jmol/popup/PopupResourceBundle.java:840
 msgid "List measurements"
-msgstr ""
+msgstr "列出量測值"
 
 #: org/jmol/popup/PopupResourceBundle.java:841
 msgid "Distance units nanometers"
-msgstr ""
+msgstr "距離單位 奈米"
 
 #: org/jmol/popup/PopupResourceBundle.java:842
 msgid "Distance units Angstroms"
-msgstr ""
+msgstr "距離單位 埃"
 
 #: org/jmol/popup/PopupResourceBundle.java:843
 msgid "Distance units picometers"
-msgstr ""
+msgstr "距離單位 微微米"
 
 #: org/jmol/popup/PopupResourceBundle.java:845
 msgid "Set picking"
-msgstr ""
+msgstr "設定挑選 (Set picking)"
 
 #: org/jmol/popup/PopupResourceBundle.java:847
 msgid "Center"
-msgstr ""
+msgstr "將分子置於工作視窗中央"
 
 #: org/jmol/popup/PopupResourceBundle.java:849
 msgid "Identity"
-msgstr ""
+msgstr "分子資訊"
 
 #: org/jmol/popup/PopupResourceBundle.java:850
 msgid "Label"
-msgstr ""
+msgstr "標記"
 
 #: org/jmol/popup/PopupResourceBundle.java:851
 msgid "Select atom"
-msgstr ""
+msgstr "選取原子"
 
 #: org/jmol/popup/PopupResourceBundle.java:852
 msgid "Select chain"
-msgstr ""
+msgstr "選取鏈"
 
 #: org/jmol/popup/PopupResourceBundle.java:853
 msgid "Select element"
-msgstr ""
+msgstr "選取元素"
 
 #: org/jmol/popup/PopupResourceBundle.java:854
 msgid "Select group"
-msgstr ""
+msgstr "選取官能基"
 
 #: org/jmol/popup/PopupResourceBundle.java:855
 msgid "Select molecule"
-msgstr ""
+msgstr "選取分子"
 
 #: org/jmol/popup/PopupResourceBundle.java:856
 msgid "Select site"
-msgstr ""
+msgstr "選取位置"
 
 #: org/jmol/popup/PopupResourceBundle.java:859
 msgid "Show"
-msgstr ""
+msgstr "顯示"
 
 #: org/jmol/popup/PopupResourceBundle.java:861
 msgid "File Contents"
-msgstr ""
+msgstr "檔案內容"
 
 #: org/jmol/popup/PopupResourceBundle.java:862
 msgid "File Header"
-msgstr ""
+msgstr "檔案標頭"
 
 #: org/jmol/popup/PopupResourceBundle.java:864
 msgid "Isosurface JVXL data"
-msgstr ""
+msgstr "等面的 JVXL資料"
 
 #: org/jmol/popup/PopupResourceBundle.java:866
 msgid "Molecular orbital JVXL data"
-msgstr ""
+msgstr "分子軌域的 JVXL 資料"
 
 #: org/jmol/popup/PopupResourceBundle.java:867
 msgid "Model"
-msgstr ""
+msgstr "模型"
 
 #: org/jmol/popup/PopupResourceBundle.java:868
 msgid "Orientation"
-msgstr ""
+msgstr "方向"
 
 #: org/jmol/popup/PopupResourceBundle.java:869
 msgid "Space group"
-msgstr ""
+msgstr "空間群"
 
 #: org/jmol/popup/PopupResourceBundle.java:871
 msgid "Current state"
-msgstr ""
+msgstr "現在狀態"
 
 #: org/jmol/popup/PopupResourceBundle.java:874
 msgid "File from PDB"
-msgstr ""
+msgstr "PDB 來的檔案"
 
 #: org/jmol/popup/PopupResourceBundle.java:875
 msgid "File or URL"
-msgstr ""
+msgstr "檔案或網址(URL)"
 
 #: org/jmol/popup/PopupResourceBundle.java:876
 msgid "Load full unit cell"
-msgstr ""
+msgstr "載入全部晶格"
 
 #: org/jmol/popup/PopupResourceBundle.java:880
 #, java-format
 msgid "File {0}"
-msgstr ""
+msgstr "檔案 {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:881
 msgid "Script with state"
-msgstr ""
+msgstr "含狀態指令稿"
 
 #: org/jmol/popup/PopupResourceBundle.java:882
 msgid "Script with history"
-msgstr ""
+msgstr "含記錄的指令稿"
 
 #: org/jmol/popup/PopupResourceBundle.java:883
 #: org/jmol/popup/PopupResourceBundle.java:884
 #: org/jmol/popup/PopupResourceBundle.java:885
 #, java-format
 msgid "{0} Image"
-msgstr ""
+msgstr "{0} 圖形"
 
 #: org/jmol/popup/PopupResourceBundle.java:886
 msgid "JVXL Isosurface"
-msgstr ""
+msgstr "JVXL 等位面"
 
 #: org/jmol/popup/PopupResourceBundle.java:887
 #: org/jmol/popup/PopupResourceBundle.java:888
 #: org/jmol/popup/PopupResourceBundle.java:889
 #, java-format
 msgid "{0} 3D Model"
-msgstr ""
+msgstr "{0} 3D 模型"
 
 #: org/jmol/popup/PopupResourceBundle.java:893
 msgid "Extract MOL data"
-msgstr ""
+msgstr "擷取 MOL 資料"
 
 #: org/jmol/popup/PopupResourceBundle.java:896
 msgid "Dot Surface"
-msgstr ""
+msgstr "斑點表面"
 
 #: org/jmol/popup/PopupResourceBundle.java:897
 msgid "van der Waals Surface"
-msgstr ""
+msgstr "凡得瓦表面"
 
 #: org/jmol/popup/PopupResourceBundle.java:898
 msgid "Molecular Surface"
-msgstr ""
+msgstr "分子表面"
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 #, java-format
 msgid "Solvent Surface ({0}-Angstrom probe)"
-msgstr ""
+msgstr "溶劑表面積 (以 {0}-埃 來探查)"
 
 #: org/jmol/popup/PopupResourceBundle.java:901
 #, java-format
 msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
-msgstr ""
+msgstr "溶劑可及表面積 (VDW + {0} 埃)"
 
 #: org/jmol/popup/PopupResourceBundle.java:902
 msgid "Molecular Electrostatic Potential"
-msgstr ""
+msgstr "分子靜電位能"
 
 #: org/jmol/popup/PopupResourceBundle.java:908
 #: org/jmol/popup/PopupResourceBundle.java:909
 #, java-format
 msgid "Reload {0}"
-msgstr ""
+msgstr "重新載入 {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:910
 #, java-format
 msgid "Reload {0} + Display {1}"
-msgstr ""
+msgstr "重新載入 {0} + 顯示 {1}"
 
 #: org/jmol/popup/PopupResourceBundle.java:911
 msgid "Reload + Polyhedra"
-msgstr ""
+msgstr "重析載入 + 多面體"
 
 #: org/jmol/popup/PopupResourceBundle.java:918
 msgid "Hide"
-msgstr ""
+msgstr "隱藏"
 
 #: org/jmol/popup/PopupResourceBundle.java:919
 msgid "Dotted"
-msgstr ""
+msgstr "點狀"
 
 #: org/jmol/popup/PopupResourceBundle.java:921
 msgid "Pixel Width"
-msgstr ""
+msgstr "像素寬度"
 
 #: org/jmol/popup/PopupResourceBundle.java:922
 #: org/jmol/popup/PopupResourceBundle.java:923
@@ -1502,416 +1508,413 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:925
 #, java-format
 msgid "{0} px"
-msgstr ""
+msgstr "{0} 像素"
 
 #: org/jmol/popup/PopupResourceBundle.java:927
 msgid "Angstrom Width"
-msgstr ""
+msgstr "幾個埃大小的寬度"
 
 #: org/jmol/popup/PopupResourceBundle.java:935
 msgid "Selection Halos"
-msgstr ""
+msgstr "選擇光圈"
 
 #: org/jmol/popup/PopupResourceBundle.java:936
 msgid "Show Hydrogens"
-msgstr ""
+msgstr "顯示氫原子"
 
 #: org/jmol/popup/PopupResourceBundle.java:937
 msgid "Show Measurements"
-msgstr ""
+msgstr "顯示量測結果"
 
 #: org/jmol/popup/PopupResourceBundle.java:938
 msgid "Perspective Depth"
-msgstr ""
+msgstr "透視深度"
 
 #: org/jmol/popup/PopupResourceBundle.java:942
 msgid "RasMol Colors"
-msgstr ""
+msgstr "RasMol顏色"
 
 #: org/jmol/popup/PopupResourceBundle.java:943
 msgid "About Jmol"
-msgstr ""
+msgstr "關於Jmol"
 
 #: org/jmol/popup/PopupResourceBundle.java:948
 msgid "Mouse Manual"
-msgstr ""
+msgstr "滑鼠使用手冊"
 
 #: org/jmol/popup/PopupResourceBundle.java:949
 msgid "Translations"
-msgstr ""
+msgstr "翻譯"
 
 #: org/jmol/viewer/PickingManager.java:207
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr ""
+msgstr "請再多選一個原子來使分子可以一個軸旋轉"
 
 #: org/jmol/viewer/PickingManager.java:208
 msgid "pick two atoms in order to spin the model around an axis"
-msgstr ""
+msgstr "請選二個原子來使分子可以繞一個軸旋轉"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1091
 #: org/jmol/viewer/ScriptEvaluator.java:2285
 msgid "bad argument count"
-msgstr ""
+msgstr "參數數目錯誤"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1094
 #, java-format
 msgid "invalid context for {0}"
-msgstr ""
+msgstr "對{0}而言其前後關連無效"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1097
 #: org/jmol/viewer/ScriptEvaluator.java:2309
 msgid "command expected"
-msgstr ""
+msgstr "預期的指令"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1100
 msgid "{ number number number } expected"
-msgstr ""
+msgstr "預期的 {數值 數值 數值}"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1103
 #: org/jmol/viewer/ScriptEvaluator.java:2318
 msgid "unexpected end of script command"
-msgstr ""
+msgstr "指令稿指令 (script command) 非預期的中止執行"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1106
 msgid "end of expression expected"
-msgstr ""
+msgstr "預料之中的表示式結束"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1109
 msgid "identifier or residue specification expected"
-msgstr ""
+msgstr "預期的識別符號或殘基規格"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1112
 msgid "invalid atom specification"
-msgstr ""
+msgstr "不合理的原子規格"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1115
 msgid "invalid chain specification"
-msgstr ""
+msgstr "不合理的化學鏈規格"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1118
 #, java-format
 msgid "invalid expression token: {0}"
-msgstr ""
+msgstr "不合理的表示式符號：{0}"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1121
 msgid "invalid model specification"
-msgstr ""
+msgstr "不合理的模型規格"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1124
 #, java-format
 msgid "missing END for {0}"
-msgstr ""
+msgstr "消失了{0}的結束符號"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1127
 #: org/jmol/viewer/ScriptEvaluator.java:2382
 msgid "number expected"
-msgstr ""
+msgstr "預期的數值"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1130
 msgid "number or variable name expected"
-msgstr ""
+msgstr "預期的數字或變數名稱"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1133
 msgid "residue specification (ALA, AL?, A*) expected"
-msgstr ""
+msgstr "預期的殘留物規範 (ALA, AL?, A*)"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1136
 #, java-format
 msgid "{0} expected"
-msgstr ""
+msgstr "預期的{0}"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1139
 #, java-format
 msgid "{0} unexpected"
-msgstr ""
+msgstr "料想不到的{0}"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1142
 #, java-format
 msgid "unrecognized expression token: {0}"
-msgstr ""
+msgstr "不能辦識的表達式：{0}"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1145
 #: org/jmol/viewer/ScriptEvaluator.java:2431
 #, java-format
 msgid "unrecognized {0} parameter"
-msgstr ""
+msgstr "不能辦識的參數 {0}"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1148
 #, java-format
 msgid "unrecognized token: {0}"
-msgstr ""
+msgstr "不能辦識的符號{0}"
 
 #: org/jmol/viewer/ScriptCompiler.java:2108
 msgid "script compiler ERROR: "
-msgstr ""
+msgstr "script 編譯器錯誤： "
 
 #: org/jmol/viewer/ScriptEvaluator.java:2147
 #: org/jmol/viewer/ScriptEvaluator.java:7315
 msgid "script ERROR: "
-msgstr ""
+msgstr "script 錯誤： "
 
 #: org/jmol/viewer/ScriptEvaluator.java:2279
 msgid "x y z axis expected"
-msgstr ""
+msgstr "預期的 x y z 軸"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2282
 #, java-format
 msgid "{0} not allowed with background model displayed"
-msgstr ""
+msgstr "{0}不允許背景中出現其它模型"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2288
 msgid "Miller indices cannot all be zero."
-msgstr ""
+msgstr "米勒指數(Miller Index)不可為 0"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2291
 msgid "bad [R,G,B] color"
-msgstr ""
+msgstr "錯的 [R,G,B] 顏色數值"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2294
 msgid "boolean expected"
-msgstr ""
+msgstr "預期的真假值"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2297
 msgid "boolean or number expected"
-msgstr ""
+msgstr "預期的布林值或數值"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2300
 #, java-format
 msgid "boolean, number, or {0} expected"
-msgstr ""
+msgstr "預期的布林值、數值或{0}"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2303
 msgid "color expected"
-msgstr ""
+msgstr "預期的顏色"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2306
 msgid "a color or palette name (Jmol, Rasmol) is required"
-msgstr ""
+msgstr "一定要有顏色或調色盤名字 (Jmol, Rasmol)"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2312
 msgid "{x y z} or $name or (atom expression) required"
-msgstr ""
+msgstr "一定要有{x y z}或 $name 或 (原子表示式)"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2315
 msgid "draw object not defined"
-msgstr ""
+msgstr "沒有定義繪圖物件"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2321
 msgid "valid (atom expression) expected"
-msgstr ""
+msgstr "預期有正確的(原子表示式)"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2324
 msgid "(atom expression) or integer expected"
-msgstr ""
+msgstr "預期有(原子表示式)或整數"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2327
 msgid "filename expected"
-msgstr ""
+msgstr "預期有檔名"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2330
 msgid "file not found"
-msgstr ""
+msgstr "沒有找到檔案"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2333
 msgid "incompatible arguments"
-msgstr ""
+msgstr "不相容的參數"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2336
 msgid "insufficient arguments"
-msgstr ""
+msgstr "不足的參數"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2339
 msgid "integer expected"
-msgstr ""
+msgstr "預期為整數"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2342
 #, java-format
 msgid "integer out of range ({0} - {1})"
-msgstr ""
+msgstr "整數超出({0} - {1})範圍"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2345
 msgid "invalid argument"
-msgstr ""
+msgstr "無效的參數"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2348
 msgid "invalid parameter order"
-msgstr ""
+msgstr "不合理的參數順序"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2351
 msgid "keyword expected"
-msgstr ""
+msgstr "參數順序無效"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2354
 msgid "no MO coefficient data available"
-msgstr ""
+msgstr "沒有分子軌域(MO)的參數資料可用"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2357
 #, java-format
 msgid "An MO index from 1 to {0} is required"
-msgstr ""
+msgstr "分子軌域(MO)索引值必須介在1到{0}之間"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2360
 msgid "no MO basis/coefficient data available for this frame"
-msgstr ""
+msgstr "這個結構沒有分子軌域(MO)的基底(basis)或參數資料可用"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2363
 msgid "no MO occupancy data available"
-msgstr ""
+msgstr "沒有佔用分子軌域(MO)的資料可用"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2366
 msgid "Only one molecular orbital is available in this file"
-msgstr ""
+msgstr "在這個檔案中只有一個分子軌域(MO)資料可用"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2369
 #, java-format
 msgid "{0} require that only one model be displayed"
-msgstr ""
+msgstr "{0}只能顯示一個模型"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2372
 msgid "No data available"
-msgstr "Inga data tillgängliga"
+msgstr "沒有可用的資料"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2376
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
-msgstr ""
+msgstr "檔案中沒有部份電荷資料；Jmol需要部份電荷資料來渲染繪製 MEP 資料。"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2379
 msgid "No unit cell"
-msgstr ""
+msgstr "沒有單位晶格"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2385
 #, java-format
 msgid "number must be ({0} or {1})"
-msgstr ""
+msgstr "數值必需是({0} 或 {1})"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2388
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
-msgstr ""
+msgstr "十進位數值超出({0} - {1})之間"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2391
 msgid "object name expected after '$'"
-msgstr ""
+msgstr "物件名必需在'$'之後"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2395
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
-msgstr ""
+msgstr "預期有一個平面存在--不是3個點或原子表示式就是{0} 或 {1} 或 {2}"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2398
 msgid "property name expected"
-msgstr ""
+msgstr "預期的屬性名"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2401
 #, java-format
 msgid "space group {0} was not found."
-msgstr ""
+msgstr "沒有發現空間群{0}"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2404
 msgid "quoted string expected"
-msgstr ""
+msgstr "預期有加引號的字串"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2407
 msgid "quoted string or identifier expected"
-msgstr ""
+msgstr "預期有加引號的字串或識別符號"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2410
 msgid "too many rotation points were specified"
-msgstr ""
+msgstr "太多被期待的旋轉點"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2413
 msgid "too many script levels"
-msgstr ""
+msgstr "太多層指令(script levels)"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2416
 msgid "unrecognized atom property"
-msgstr ""
+msgstr "無法辯識的原子屬性"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2419
 msgid "unrecognized bond property"
-msgstr ""
+msgstr "無法辯識的化學鍵屬性"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2422
 msgid "unrecognized command"
-msgstr ""
+msgstr "無法辨識的指令"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2425
 msgid "runtime unrecognized expression"
-msgstr ""
+msgstr "執行時無法辨識的表示式"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2428
 msgid "unrecognized object"
-msgstr ""
+msgstr "無法辦識的物件"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2435
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr ""
+msgstr "Jmol 狀態指令稿中不被認識的參數{0}"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2438
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
-msgstr ""
+msgstr "不能識別 SHOW 的參數 -- 使用了{0}"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2444
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
-msgstr ""
+msgstr "寫什麼呢？{0} 或 {1} \"檔名\""
 
 #: org/jmol/viewer/ScriptEvaluator.java:5488
 #, java-format
 msgid "{0} connections deleted"
-msgstr ""
+msgstr "己刪除{0}個連結"
 
 #: org/jmol/viewer/ScriptEvaluator.java:5509
 #, java-format
 msgid "{0} new bonds; {1} modified"
-msgstr ""
+msgstr "{0} 個新化學鍵; {1} 個己修改"
 
 #: org/jmol/viewer/ScriptEvaluator.java:7447
 #: org/jmol/viewer/ScriptEvaluator.java:7670
 #, java-format
 msgid "{0} atoms deleted"
-msgstr ""
+msgstr "己刪除{0}個原子"
 
 #: org/jmol/viewer/ScriptEvaluator.java:8159
 #, java-format
 msgid "{0} hydrogen bonds"
-msgstr ""
+msgstr "{0}個氫鍵"
 
 #: org/jmol/viewer/SelectionManager.java:77
 #: org/jmol/viewer/SelectionManager.java:94
 #, java-format
 msgid "{0} atoms hidden"
-msgstr ""
+msgstr "己隱藏{0}個原子"
 
 #: org/jmol/viewer/SelectionManager.java:131
 #, java-format
 msgid "{0} atoms selected"
-msgstr ""
+msgstr "己選擇{0}個原子"
 
 #: org/jmol/viewer/Viewer.java:4959
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
-msgstr ""
+msgstr "錯誤：不能把布林旗標設定為字串：{0}"
 
 #: org/jmol/viewer/Viewer.java:5171 org/jmol/viewer/Viewer.java:5354
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-msgstr ""
+msgstr "錯誤：不能把布林旗標設定為數字：{0}"
 
 #: org/jmol/viewer/Viewer.java:5874
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-msgstr ""
+msgstr "錯誤：不能把這個變數值設定至布林值：{0}"
 
 #: org/jmol/viewer/Viewer.java:7206
 msgid "clipboard is not accessible -- use signed applet"
-msgstr ""
-
-#~ msgid "Execute"
-#~ msgstr "Kör"
+msgstr "不能存取剪貼簿--請用使用簽署過的程序 (applet)"

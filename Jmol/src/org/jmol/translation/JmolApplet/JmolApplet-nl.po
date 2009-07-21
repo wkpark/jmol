@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-07-21 09:13+0200\n"
+"POT-Creation-Date: 2009-07-21 11:09+0200\n"
 "PO-Revision-Date: 2009-03-20 10:48+0000\n"
 "Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
@@ -383,94 +383,99 @@ msgid "Catalan"
 msgstr "Catalaans"
 
 #: org/jmol/i18n/GT.java:119
-msgid "Czech"
-msgstr "Tsjechisch"
+#, fuzzy
+msgid "Simplified Chinese"
+msgstr "Zijketens"
 
 #: org/jmol/i18n/GT.java:120
-msgid "Danish"
-msgstr "Deens"
-
-#: org/jmol/i18n/GT.java:121
-msgid "Dutch"
-msgstr "Nederlands"
-
-#: org/jmol/i18n/GT.java:122
-msgid "British English"
-msgstr "Brits"
-
-#: org/jmol/i18n/GT.java:123
-msgid "American English"
-msgstr "Amerikaans"
-
-#: org/jmol/i18n/GT.java:124
-msgid "Estonian"
-msgstr "Estlands"
-
-#: org/jmol/i18n/GT.java:125
-msgid "French"
-msgstr "Frans"
-
-#: org/jmol/i18n/GT.java:126
-msgid "German"
-msgstr "Duits"
-
-#: org/jmol/i18n/GT.java:127
-msgid "Greek"
-msgstr "Grieks"
-
-#: org/jmol/i18n/GT.java:128
-msgid "Hungarian"
-msgstr "Hongaars"
-
-#: org/jmol/i18n/GT.java:129
-msgid "Italian"
-msgstr "Italiaans"
-
-#: org/jmol/i18n/GT.java:130
-msgid "Korean"
-msgstr "Koreaans"
-
-#: org/jmol/i18n/GT.java:131
-msgid "Norwegian Bokmal"
-msgstr "Noors"
-
-#: org/jmol/i18n/GT.java:132
-msgid "Polish"
-msgstr "Pools"
-
-#: org/jmol/i18n/GT.java:133
-msgid "Brazilian Portuguese"
-msgstr "Braziliaans"
-
-#: org/jmol/i18n/GT.java:134
-msgid "Portuguese"
-msgstr "Portugees"
-
-#: org/jmol/i18n/GT.java:135
-msgid "Russian"
-msgstr "Russisch"
-
-#: org/jmol/i18n/GT.java:136
-msgid "Slovenian"
-msgstr "Sloveens"
-
-#: org/jmol/i18n/GT.java:137
-msgid "Spanish"
-msgstr "Spaans"
-
-#: org/jmol/i18n/GT.java:138
-msgid "Swedish"
-msgstr "Zweeds"
-
-#: org/jmol/i18n/GT.java:139
 msgid "Traditional Chinese"
 msgstr ""
 
+#: org/jmol/i18n/GT.java:121
+msgid "Czech"
+msgstr "Tsjechisch"
+
+#: org/jmol/i18n/GT.java:122
+msgid "Danish"
+msgstr "Deens"
+
+#: org/jmol/i18n/GT.java:123
+msgid "Dutch"
+msgstr "Nederlands"
+
+#: org/jmol/i18n/GT.java:124
+msgid "British English"
+msgstr "Brits"
+
+#: org/jmol/i18n/GT.java:125
+msgid "American English"
+msgstr "Amerikaans"
+
+#: org/jmol/i18n/GT.java:126
+msgid "Estonian"
+msgstr "Estlands"
+
+#: org/jmol/i18n/GT.java:127
+msgid "French"
+msgstr "Frans"
+
+#: org/jmol/i18n/GT.java:128
+msgid "German"
+msgstr "Duits"
+
+#: org/jmol/i18n/GT.java:129
+msgid "Greek"
+msgstr "Grieks"
+
+#: org/jmol/i18n/GT.java:130
+msgid "Hungarian"
+msgstr "Hongaars"
+
+#: org/jmol/i18n/GT.java:131
+msgid "Italian"
+msgstr "Italiaans"
+
+#: org/jmol/i18n/GT.java:132
+msgid "Korean"
+msgstr "Koreaans"
+
+#: org/jmol/i18n/GT.java:133
+msgid "Norwegian Bokmal"
+msgstr "Noors"
+
+#: org/jmol/i18n/GT.java:134
+msgid "Polish"
+msgstr "Pools"
+
+#: org/jmol/i18n/GT.java:135
+msgid "Brazilian Portuguese"
+msgstr "Braziliaans"
+
+#: org/jmol/i18n/GT.java:136
+msgid "Portuguese"
+msgstr "Portugees"
+
+#: org/jmol/i18n/GT.java:137
+msgid "Russian"
+msgstr "Russisch"
+
+#: org/jmol/i18n/GT.java:138
+msgid "Slovenian"
+msgstr "Sloveens"
+
+#: org/jmol/i18n/GT.java:139
+msgid "Spanish"
+msgstr "Spaans"
+
 #: org/jmol/i18n/GT.java:140
+msgid "Swedish"
+msgstr "Zweeds"
+
+#: org/jmol/i18n/GT.java:141
 msgid "Turkish"
 msgstr "Turks"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:142
 msgid "Ukrainian"
 msgstr ""
 

@@ -108,8 +108,8 @@ public class _VrmlExporter extends _Exporter {
 
     output("NavigationInfo { type \"EXAMINE\" } \n");
     // puts the viewer into model-rotation mode
-    output("Background { skyColor "
-        + rgbFractionalFromColix(viewer.getObjectColix(0), ' ') + " } \n");
+    output("Background { skyColor ["
+        + rgbFractionalFromColix(viewer.getObjectColix(0), ' ']) + " } \n");
     // next is an approximation only 
     getViewpointPosition(ptAtom);
     adjustViewpointPosition(ptAtom);

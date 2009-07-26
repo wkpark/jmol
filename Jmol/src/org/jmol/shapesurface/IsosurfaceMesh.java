@@ -50,12 +50,13 @@ public class IsosurfaceMesh extends Mesh {
   boolean hasGridPoints;
   Object calculatedArea;
   Object calculatedVolume;
+  public boolean isSolvent;
   
   float[] vertexValues;  
   public short[] vertexColixes;
   
-  IsosurfaceMesh(String thisID, Graphics3D g3d, short colix) {
-    super(thisID, g3d, colix);
+  IsosurfaceMesh(String thisID, Graphics3D g3d, short colix, int index) {
+    super(thisID, g3d, colix, index);
     haveCheckByte = true;
     jvxlData.version = Viewer.getJmolVersion();
   }

@@ -90,9 +90,9 @@ public class Quaternion {
     this.q3 = q3;
   }
 
+  private final static Point4f qZero = new Point4f();
   public Quaternion(Point4f pt) {
-    final Point4f ptZero = new Point4f();
-    float factor = (pt == null ? 0 : pt.distance(ptZero));
+    float factor = (pt == null ? 0 : pt.distance(qZero));
     if (factor == 0) {
       q0 = 1;
       return;

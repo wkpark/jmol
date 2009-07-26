@@ -65,6 +65,7 @@ public class Mesh {
   public String meshType = null;
   public Mesh linkedMesh = null; //for lcaoOrbitals
   
+  public int index;
   public int atomIndex = -1;
   public int modelIndex = -1;  // for Isosurface and Draw
   public int visibilityFlags;
@@ -86,14 +87,13 @@ public class Mesh {
   
   public final static int SEED_COUNT = 25; //optimized for cartoon mesh hermites
   
-  public Mesh() {}
-  
-  public Mesh(String thisID, JmolRendererInterface g3d, short colix) {  //for mps
+  public Mesh(String thisID, JmolRendererInterface g3d, short colix, int index) {
     if (PREVIOUS_MESH_ID.equals(thisID))
       thisID = null;
     this.thisID = thisID;
     this.g3d = g3d;
     this.colix = colix;
+    this.index = index;
     //System.out.println("Mesh " + this + " constructed");
   }
 

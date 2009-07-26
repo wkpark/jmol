@@ -277,7 +277,7 @@ class TransformManager11 extends TransformManager {
     case NAV_MODE_NEWZ:
       //just untransform the offset to get the new 3D navigation center
       navigationOffset.z = referencePlaneOffset;
-      System.out.println("nav_mode_newz " + navigationOffset);
+      //System.out.println("nav_mode_newz " + navigationOffset);
       unTransformPoint(navigationOffset, navigationCenter);
       break;
     }
@@ -316,7 +316,7 @@ class TransformManager11 extends TransformManager {
     depthValue = Integer.MAX_VALUE;
     if (!slabEnabled)
       return;
-    slabValue = (int) (referencePlaneOffset - navigationSlabOffset);
+    slabValue = (isNavigationMode ? 10 : (int) (referencePlaneOffset - navigationSlabOffset));
     depthValue = zValueFromPercent(depthPercentSetting);
 
     viewer.getGlobalSettings().setParameterValue("navigationDepth",getNavigationDepthPercent());

@@ -33,6 +33,7 @@ import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
+import org.jmol.modelset.ModelCollection.StateScript;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.*;
@@ -41,6 +42,7 @@ import org.jmol.atomdata.AtomDataServer;
 import org.jmol.g3d.*;
 import org.jmol.util.Base64;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.CifDataReader;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Escape;
 import org.jmol.util.JpegEncoder;
@@ -74,9 +76,11 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 import java.net.URL;
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
 /*
@@ -2142,16 +2146,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.fillAtomData(atomData, mode);
   }
 
-  void addStateScript(String script, boolean addFrameNumber,
+  StateScript addStateScript(String script, boolean addFrameNumber,
                       boolean postDefinitions) {
-    addStateScript(script, null, null, null, null, addFrameNumber,
+    return addStateScript(script, null, null, null, null, addFrameNumber,
         postDefinitions);
   }
 
-  void addStateScript(String script1, BitSet bsBonds, BitSet bsAtoms1,
+  StateScript addStateScript(String script1, BitSet bsBonds, BitSet bsAtoms1,
                       BitSet bsAtoms2, String script2, boolean addFrameNumber,
                       boolean postDefinitions) {
-    modelSet.addStateScript(script1, bsBonds, bsAtoms1, bsAtoms2, script2,
+    return modelSet.addStateScript(script1, bsBonds, bsAtoms1, bsAtoms2, script2,
         addFrameNumber, postDefinitions);
   }
 
@@ -2686,6 +2690,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   String getFileHeader() {
     return modelSet.getFileHeader(animationManager.currentModelIndex);
+  }
+
+  Object getFileData() {
+    return modelSet.getFileData(animationManager.currentModelIndex);
+  }
+
+  public Hashtable getCifData(int modelIndex) {
+    String name = getModelFileName(modelIndex);
+    String data = getFileAsString(name);
+    if (data == null)
+      return null;
+    return CifDataReader.readCifData(new BufferedReader(new StringReader(data)));
   }
 
   String getPDBHeader() {
@@ -4814,7 +4830,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           global.quaternionFrame = value.substring(0, 2);
         else
           global.quaternionFrame = "" + (value.toLowerCase() + "p").charAt(0);
-        if (!Parser.isOneOf(global.quaternionFrame, "n;c;p;q;RC;RP"))
+        if (!Parser.isOneOf(global.quaternionFrame, "a;n;c;p;q;RC;RP"))
           global.quaternionFrame = "p";
         modelSet.setHaveStraightness(false);
         break;
@@ -7683,5 +7699,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   boolean isRepaintPending() {
     return repaintManager.repaintPending;
   }
+
 
 }

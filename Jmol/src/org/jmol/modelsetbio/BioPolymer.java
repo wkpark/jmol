@@ -809,10 +809,9 @@ public abstract class BioPolymer extends Polymer {
             w = q.q1;
             break;
           }
-          Point3f ptCenter = (isAmino ? ((AminoMonomer) monomer)
-              .getQuaternionFrameCenter(qtype)
-              : p instanceof NucleicPolymer ? ((NucleicMonomer) monomer)
-                  .getQuaternionFrameCenter(qtype) : new Point3f());
+          Point3f ptCenter = monomer.getQuaternionFrameCenter(qtype);
+          if (ptCenter == null)
+            ptCenter = new Point3f();
           if (isDraw) {
             if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
               continue;

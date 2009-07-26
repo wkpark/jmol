@@ -205,7 +205,7 @@ public class Measures extends Shape {
             }
             indices[j] -= nAtomsDeleted;
           } else if (iAtom < 0) {
-            Point3fi pt = m.getAtom(iAtom);
+            Point3fi pt = m.getAtom(j);
             if (pt.modelIndex > modelIndex) {
               pt.modelIndex--;
             } else if (pt.modelIndex == modelIndex) {

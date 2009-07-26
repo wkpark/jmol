@@ -48,13 +48,20 @@ import org.jmol.shape.MeshCollection;
 public class Draw extends MeshCollection {
 
   // bob hanson hansonr@stolaf.edu 3/2006
+  
+  public Draw() {
+    htObjects = new Hashtable();
+  }
 
   DrawMesh[] dmeshes = new DrawMesh[4];
   DrawMesh thisMesh;
   
   public void allocMesh(String thisID) {
-    meshes = dmeshes = (DrawMesh[])ArrayUtil.ensureLength(dmeshes, meshCount + 1);
-    currentMesh = thisMesh = dmeshes[meshCount++] = new DrawMesh(thisID, g3d, colix);
+    int index = meshCount++;
+    meshes = dmeshes = (DrawMesh[])ArrayUtil.ensureLength(dmeshes, meshCount * 2);
+    currentMesh = thisMesh = dmeshes[index] = new DrawMesh(thisID, g3d, colix, index);
+    if (thisID != null && thisID != JmolConstants.PREVIOUS_MESH_ID && htObjects != null)
+      htObjects.put(thisID.toUpperCase(), currentMesh);
   }
 
   void setPropertySuper(String propertyName, Object value, BitSet bs) {
@@ -338,11 +345,17 @@ public class Draw extends MeshCollection {
       //int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
       //int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
       for (int i = meshCount; --i >= 0;) {
-        if (meshes[i] == null)
+        DrawMesh m = dmeshes[i];
+        if (m == null)
           continue;
-        if (dmeshes[i].modelFlags != null) {
-          dmeshes[i].deleteAtoms(modelIndex);
-        } else if (meshes[i].modelIndex == modelIndex) {
+        boolean deleteMesh = (m.modelIndex == modelIndex);
+        if (m.modelFlags != null) {
+          m.deleteAtoms(modelIndex);
+          deleteMesh = (BitSetUtil.firstSetBit(m.modelFlags) < 0);
+          if (!deleteMesh)
+            continue;
+        } 
+        if (deleteMesh) {
           meshCount--;
           if (meshes[i] == currentMesh)
             currentMesh = thisMesh = null;
@@ -352,13 +365,23 @@ public class Draw extends MeshCollection {
           meshes[i].modelIndex--;
         }
       }
+      resetObjects();
       return;
     }
 
     setPropertySuper(propertyName, value, bs);
   }
 
- public Object getProperty(String property, int index) {
+ private void resetObjects() {
+    htObjects.clear();
+    for (int i = 0; i < meshCount; i++) {
+      Mesh m = meshes[i];
+      m.index = i;
+      htObjects.put(m.thisID.toUpperCase(), m);
+    }    
+  }
+
+public Object getProperty(String property, int index) {
     if (property == "command")
       return getDrawCommand(thisMesh);
     if (property == "type")
@@ -389,7 +412,7 @@ public class Draw extends MeshCollection {
     }
     DrawMesh m = (DrawMesh) getMesh(id);
     if (m == null || m.vertices == null)
-      return null; 
+      return (Point3f) null; 
     // >= 0 ? that vertexIndex
     // < 0 and no ptCenters or modelIndex < 0 -- center point
     // < 0 center for modelIndex
@@ -477,6 +500,7 @@ public class Draw extends MeshCollection {
       thisMesh.offset(offset);
     if (thisMesh.thisID == null) {
       thisMesh.thisID = JmolConstants.getDrawTypeName(thisMesh.drawType) + (++nUnnamed);
+      htObjects.put(thisMesh.thisID, thisMesh);
     }
     return true;
   }
@@ -619,7 +643,7 @@ public class Draw extends MeshCollection {
   private final Vector3f vAC = new Vector3f();
 
   private void setPolygon(int nPoly) {
-    int nVertices = nPoints; 
+    int nVertices = nPoints;
     int drawType = JmolConstants.DRAW_POINT;
     if (isArc) {
       if (nVertices >= 2) {
@@ -635,14 +659,13 @@ public class Draw extends MeshCollection {
       length = 0;
       if (nVertices == 2)
         isPlane = true;
-      if (!isPlane) 
+      if (!isPlane)
         drawType = JmolConstants.DRAW_CIRCLE;
       if (width == 0)
         width = 1;
     } else if ((isCurve || isArrow) && nVertices >= 2 && !isArc) {
-      drawType = (isLine ? JmolConstants.DRAW_LINE_SEGMENT 
-          : isCurve ? JmolConstants.DRAW_CURVE 
-          : JmolConstants.DRAW_ARROW);
+      drawType = (isLine ? JmolConstants.DRAW_LINE_SEGMENT
+          : isCurve ? JmolConstants.DRAW_CURVE : JmolConstants.DRAW_ARROW);
     }
     if (isVector && !isArc) {
       if (nVertices > 2)
@@ -659,31 +682,45 @@ public class Draw extends MeshCollection {
     } else if (nVertices == 2 && isVector) {
       ptList[1].add(ptList[0]);
     }
-    float dist;
-    if (plane != null && (isCircle || isArc)) {
-      dist = Graphics3D.distanceToPlane(plane, ptList[0]);
-      vAC.set(-plane.x, -plane.y, -plane.z);
-      vAC.normalize();
-      if (dist < 0)
-        vAC.scale(-1);
-      vAC.add(ptList[0]);
-      ptList[1]= new Point3f(vAC);
+    float dist = 0;
+    if (isArc || plane != null && isCircle) {
+      if (plane != null) {
+        dist = Graphics3D.distanceToPlane(plane, ptList[0]);
+        vAC.set(-plane.x, -plane.y, -plane.z);
+        vAC.normalize();
+        if (dist < 0)
+          vAC.scale(-1);
+        if (isCircle) {
+          vAC.scale(0.005f);
+          ptList[0].sub(vAC);
+          vAC.scale(2);
+        }
+        vAC.add(ptList[0]);
+        ptList[1] = new Point3f(vAC);
+        drawType = (isArrow ? JmolConstants.DRAW_ARROW
+            : isArc ? JmolConstants.DRAW_ARC : JmolConstants.DRAW_CIRCULARPLANE);
+        plane = null;
+      }
       if (isArc) {
         dist = Math.abs(dist);
-        if (nVertices > 3 && ptList[3].z != 0) {
-          ptList[3].z *= dist; 
-        } else if (dist != 0) {
+        if (nVertices > 3) {
+          // draw arc {center} {pt2} {ptRef} {angleOffset theta
+          // fractionalAxisOffset}
+        } else if (nVertices == 3) {
+          // draw arc {center} {pt2} {angleOffset theta fractionalAxisOffset}
+          ptList[3] = new Point3f(ptList[2]);
+          ptList[2] = randomPoint();
+        } else {
           if (nVertices == 2) {
+            // draw arc {center} {pt2}
             ptList[2] = randomPoint();
           }
-          ptList[3] = new Point3f(0, 360, dist);
-          nVertices = 4;
+          ptList[3] = new Point3f(0, 360, 0);
         }
+        if (nVertices < 4)
+          ptList[3].z *= dist;
+        nVertices = 4;
       }
-      drawType = (isArrow ? JmolConstants.DRAW_ARROW
-          : isArc ? JmolConstants.DRAW_ARC
-              : JmolConstants.DRAW_CIRCULARPLANE);
-      plane = null;
     } else if (drawType == JmolConstants.DRAW_POINT) {
       Point3f pt;
       Point3f center = new Point3f();
@@ -694,7 +731,7 @@ public class Draw extends MeshCollection {
         vAC.normalize();
         vAC.scale(-dist);
         vAC.add(ptList[0]);
-        ptList[1]= new Point3f(vAC);
+        ptList[1] = new Point3f(vAC);
         nVertices = -2;
         if (isArrow)
           drawType = JmolConstants.DRAW_ARROW;
@@ -736,11 +773,11 @@ public class Draw extends MeshCollection {
           ptList[2].sub(normal);
           pt = new Point3f(center);
           pt.add(normal);
-          //          pt
-          //          |
-          //  0-------+--------1
-          //          |
-          //          2
+          // pt
+          // |
+          // 0-------+--------1
+          // |
+          // 2
           Graphics3D.calcNormalizedNormal(ptList[0], ptList[1], ptList[2],
               normal, vAB, vAC);
           normal.scale(dist);
@@ -750,11 +787,11 @@ public class Draw extends MeshCollection {
           ptList[1].sub(normal);
           ptList[0].set(pt);
           //             
-          //       pt,0 1
-          //          |/
-          //   -------+--------
-          //         /|
-          //        3 2
+          // pt,0 1
+          // |/
+          // -------+--------
+          // /|
+          // 3 2
 
           if (isRotated45) {
             Graphics3D.calcAveragePoint(ptList[0], ptList[1], ptList[0]);
@@ -793,9 +830,10 @@ public class Draw extends MeshCollection {
       case 1:
         break;
       case 2:
-        drawType = (isArc ? JmolConstants.DRAW_ARC : isPlane && isCircle ? JmolConstants.DRAW_CIRCULARPLANE
-            : isCylinder ? JmolConstants.DRAW_CYLINDER
-            : JmolConstants.DRAW_LINE);
+        drawType = (isArc ? JmolConstants.DRAW_ARC
+            : isPlane && isCircle ? JmolConstants.DRAW_CIRCULARPLANE
+                : isCylinder ? JmolConstants.DRAW_CYLINDER
+                    : JmolConstants.DRAW_LINE);
         break;
       default:
         drawType = JmolConstants.DRAW_PLANE;

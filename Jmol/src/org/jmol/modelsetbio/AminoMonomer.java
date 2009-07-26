@@ -225,6 +225,7 @@ public class AminoMonomer extends AlphaMonomer {
   Atom getQuaternionFrameCenter(char qType) {
     switch (qType) {
     default:
+    case 'a':
     case 'c':
     case 'C':
       return getLeadAtom();
@@ -237,10 +238,6 @@ public class AminoMonomer extends AlphaMonomer {
     }
   }
 
-  public Object getHelixData(int tokType, char qType, int mStep) {
-    return getHelixData2(tokType, qType, mStep);
-  }
-  
   public Quaternion getQuaternion(char qType) {
     /*
      * also NucleicMonomer
@@ -287,13 +284,15 @@ public class AminoMonomer extends AlphaMonomer {
     Vector3f vC = null;
     
     switch (qType) {
-    default:
+    case 'a':
+      return super.getQuaternion('a');
     case 'c':
       //vA = ptC - ptCa
       //vB = ptN - ptCa
       vA.sub(ptC, ptCa);
       vB.sub(getNitrogenAtomPoint(), ptCa);
       break;
+    default:
     case 'p':
       //Bob's idea for a peptide plane frame
       //vA = ptCa - ptC

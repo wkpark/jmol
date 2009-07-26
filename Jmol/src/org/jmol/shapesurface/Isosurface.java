@@ -109,6 +109,7 @@ import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
 import org.jmol.jvxl.readers.JvxlReader;
+import org.jmol.jvxl.readers.Parameters;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -133,10 +134,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private IsosurfaceMesh thisMesh;
 
   public void allocMesh(String thisID) {
+    int index = meshCount++;
     meshes = isomeshes = (IsosurfaceMesh[]) ArrayUtil.ensureLength(isomeshes,
-        meshCount + 1);
-    currentMesh = thisMesh = isomeshes[meshCount++] = new IsosurfaceMesh(
-        thisID, g3d, colix);
+        meshCount * 2);
+    currentMesh = thisMesh = isomeshes[index] = new IsosurfaceMesh(
+        thisID, g3d, colix, index);
       sg.setJvxlData(jvxlData = thisMesh.jvxlData);
     //System.out.println("Isosurface allocMesh thisMesh:" + thisMesh.thisID + " " + thisMesh);
   }
@@ -758,6 +760,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         : lighting);
     if (thisMesh.jvxlData.jvxlPlane != null)
       allowContourLines = false;
+    thisMesh.isSolvent = ((sg.getDataType() & Parameters.IS_SOLVENTTYPE) != 0);
   }
 
   public void notifySurfaceMappingCompleted() {

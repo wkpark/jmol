@@ -173,6 +173,16 @@ public class LcaoCartoon extends Isosurface {
   }
 
   private void setLcaoOn(boolean TF) {
+    if (TextFormat.isWild(lcaoID)) {
+      String key = lcaoID.toLowerCase();
+      for (int i = meshCount; --i >= 0; ) {
+        if (TextFormat.isMatch(meshes[i].thisID.toLowerCase(), key, true, true))
+          meshes[i].visible = TF;
+      }
+      return;
+    }
+    // older method
+
     int atomCount = viewer.getAtomCount();
     for (int i = atomCount; --i >= 0;)
       if (lcaoID != null || thisSet.get(i))
@@ -187,6 +197,11 @@ public class LcaoCartoon extends Isosurface {
   }
 
   private void deleteLcaoCartoon() {
+    if (TextFormat.isWild(lcaoID)) {
+      deleteMesh(lcaoID);
+      return;
+    }
+    // older method does not use * but still deletes multiple lobes
     int atomCount = viewer.getAtomCount();
     for (int i = atomCount; --i >= 0;)
       if (lcaoID != null || thisSet.get(i))

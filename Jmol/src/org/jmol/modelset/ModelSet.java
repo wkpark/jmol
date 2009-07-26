@@ -885,5 +885,18 @@ abstract public class ModelSet extends ModelCollection {
     shapes[JmolConstants.SHAPE_LABELS].setProperty("label:"+strLabel, new Integer(i), null);
   }
 
+  public Object getFileData(int modelIndex) {
+    if (modelIndex < 0)
+      return "";
+    Hashtable fileData = (Hashtable) getModelAuxiliaryInfo(modelIndex, "fileData");
+    if (fileData != null)
+      return fileData;
+    if (!getModelAuxiliaryInfoBoolean(modelIndex, "isCIF"))
+      return getPDBHeader(modelIndex);
+    fileData = viewer.getCifData(modelIndex);
+    setModelAuxiliaryInfo(modelIndex, "fileData", fileData);
+    return fileData;
+  }
+
 }
 

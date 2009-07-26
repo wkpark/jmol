@@ -25,11 +25,13 @@ package org.jmol.adapter.readers.cifpdb;
 
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolLineReader;
 
 
 import java.io.BufferedReader;
 import java.util.Hashtable;
 
+import org.jmol.util.CifDataReader;
 import org.jmol.util.Logger;
 
 /**
@@ -56,9 +58,9 @@ import org.jmol.util.Logger;
  *  applySymmetryAndSetTrajectory()
  *  
  */
-public class CifReader extends AtomSetCollectionReader {
+public class CifReader extends AtomSetCollectionReader implements JmolLineReader {
 
-  private RidiculousFileFormatTokenizer tokenizer = new RidiculousFileFormatTokenizer();
+  private CifDataReader tokenizer = new CifDataReader(this);
 
   private String thisDataSetName = "";
   private String chemicalName = "";
@@ -417,7 +419,7 @@ public class CifReader extends AtomSetCollectionReader {
     while (tokenizer.getData()) {
       String atomTypeSymbol = null;
       float oxidationNumber = Float.NaN;
-      for (int i = 0; i < fieldCount; ++i) {
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
           break;
@@ -578,7 +580,7 @@ public class CifReader extends AtomSetCollectionReader {
     }
     while (tokenizer.getData()) {
       Atom atom = new Atom();
-      for (int i = 0; i < fieldCount; ++i) {
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
           break;
@@ -674,7 +676,7 @@ public class CifReader extends AtomSetCollectionReader {
             if (j != NONE) {
               if (atom.anisoBorU == null)
                 atom.anisoBorU = new float[8];
-              atom.anisoBorU[7] = parseFloat(loopData[j]);
+              atom.anisoBorU[7] = parseFloat(tokenizer.loopData[j]);
               atom.anisoBorU[6] = 8; // Ortep Type 8: D = 2pi^2, C = 2, a*b*
             }
           }
@@ -753,6 +755,7 @@ public class CifReader extends AtomSetCollectionReader {
           .setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     }
+    atomSetCollection.setAtomSetAuxiliaryInfo("isCIF", Boolean.TRUE);
     return true;
   }
      
@@ -791,7 +794,7 @@ public class CifReader extends AtomSetCollectionReader {
     while (tokenizer.getData()) {
       int atomIndex1 = -1;
       int atomIndex2 = -1;
-      for (int i = 0; i < fieldCount; ++i) {
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
           break;
@@ -870,7 +873,7 @@ public class CifReader extends AtomSetCollectionReader {
     while (tokenizer.getData()) {
       String groupName = null;
       String hetName = null;
-      for (int i = 0; i < fieldCount; ++i) {
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
           break;
@@ -899,7 +902,7 @@ public class CifReader extends AtomSetCollectionReader {
     while (tokenizer.getData()) {
       String groupName = null;
       String hetName = null;
-      for (int i = 0; i < fieldCount; ++i) {
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
         case NONPOLY_ENTITY_ID:
@@ -966,7 +969,7 @@ public class CifReader extends AtomSetCollectionReader {
       }
     while (tokenizer.getData()) {
       Structure structure = new Structure();
-      for (int i = 0; i < fieldCount; ++i) {
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
           break;
@@ -1033,7 +1036,7 @@ public class CifReader extends AtomSetCollectionReader {
     while (tokenizer.getData()) {
       Structure structure = new Structure();
       structure.structureType = "sheet";
-      for (int i = 0; i < fieldCount; ++i) {
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case BEG_ASYM_ID:
           structure.startChainID = firstChar;
@@ -1125,7 +1128,7 @@ _struct_site_gen.details
     Hashtable htSite = null;
     htSites = new Hashtable();
     while (tokenizer.getData()) {
-      for (int i = 0; i < fieldCount; ++i) {
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case SITE_ID:
           if (group != "") {
@@ -1203,7 +1206,7 @@ _struct_site_gen.details
       return;
     }
     while (tokenizer.getData()) {
-      for (int i = 0; i < fieldCount; ++i) {
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case SYMOP_XYZ:
         case SYM_EQUIV_XYZ:
@@ -1215,13 +1218,11 @@ _struct_site_gen.details
   }
   
   private int fieldProperty(int i) {
-    return ((field = loopData[i]).length() > 0 
+    return ((field = tokenizer.loopData[i]).length() > 0 
         && (firstChar = field.charAt(0)) != '\0' ? 
             propertyOf[i] : NONE);
   }
 
-  int fieldCount;
-  String[] loopData;
   String field;
   
   private char firstChar;
@@ -1237,7 +1238,7 @@ _struct_site_gen.details
    * @throws Exception
    */
   private void parseLoopParameters(String[] fields) throws Exception {
-    fieldCount = 0;
+    tokenizer.fieldCount = 0;
     for (int i = fields.length; --i >= 0; )
       fieldOf[i] = NONE;
 
@@ -1245,25 +1246,33 @@ _struct_site_gen.details
     while (true) {
       String str = tokenizer.peekToken();
       if (str == null) {
-        fieldCount = 0;
+        tokenizer.fieldCount = 0;
         break;
       }
       if (str.charAt(0) != '_')
         break;
       tokenizer.getTokenPeeked();
-      propertyOf[fieldCount] = NONE;
+      propertyOf[tokenizer.fieldCount] = NONE;
       for (int i = fields.length; --i >= 0;)
         if (isMatch(str, fields[i])) {
-          propertyOf[fieldCount] = i;
-          fieldOf[i] = (byte) fieldCount;
+          propertyOf[tokenizer.fieldCount] = i;
+          fieldOf[i] = (byte) tokenizer.fieldCount;
           break;
         }
-      fieldCount++;
+      tokenizer.fieldCount++;
     }
-    if (fieldCount > 0)
-      loopData = new String[fieldCount];
+    if (tokenizer.fieldCount > 0)
+      tokenizer.loopData = new String[tokenizer.fieldCount];
+    readLine();
   }
 
+  public String readLine() throws Exception {
+    super.readLine();
+    if (line.indexOf("#jmolscript:") >= 0)
+      checkLineForScript();
+    return line;
+  }
+  
   /**
    * 
    * used for turning off fractional or nonfractional coord.
@@ -1288,8 +1297,8 @@ _struct_site_gen.details
       str  = tokenizer.getTokenPeeked();
     while (tokenizer.getNextDataToken() != null) {
     }
-  }
-
+  }  
+  
   /**
    * 
    * @param str1
@@ -1315,314 +1324,5 @@ _struct_site_gen.details
         return false;
     }
     return true;
-  }
-
-  ////////////////////////////////////////////////////////////////
-  // special tokenizer class
-  ////////////////////////////////////////////////////////////////
-
-  /**
-   * A special tokenizer class for dealing with quoted strings in CIF files.
-   *<p>
-   * regarding the treatment of single quotes vs. primes in
-   * cif file, PMR wrote:
-   *</p>
-   *<p>
-   *   * There is a formal grammar for CIF
-   * (see http://www.iucr.org/iucr-top/cif/index.html)
-   * which confirms this. The textual explanation is
-   *<p />
-   *<p>
-   * 14. Matching single or double quote characters (' or ") may
-   * be used to bound a string representing a non-simple data value
-   * provided the string does not extend over more than one line.
-   *<p />
-   *<p>
-   * 15. Because data values are invariably separated from other
-   * tokens in the file by white space, such a quote-delimited
-   * character string may contain instances of the character used
-   * to delimit the string provided they are not followed by white
-   * space. For example, the data item
-   *<code>
-   *  _example  'a dog's life'
-   *</code>
-   * is legal; the data value is a dog's life.
-   *</p>
-   *<p>
-   * [PMR - the terminating character(s) are quote+whitespace.
-   * That would mean that:
-   *<code>
-   *  _example 'Jones' life'
-   *</code>
-   * would be an error
-   *</p>
-   *<p>
-   * The CIF format was developed in that late 1980's under the aegis of the
-   * International Union of Crystallography (I am a consultant to the COMCIFs 
-   * committee). It was ratified by the Union and there have been several 
-   * workshops. mmCIF is an extension of CIF which includes a relational 
-   * structure. The formal publications are:
-   *</p>
-   *<p>
-   * Hall, S. R. (1991). "The STAR File: A New Format for Electronic Data 
-   * Transfer and Archiving", J. Chem. Inform. Comp. Sci., 31, 326-333.
-   * Hall, S. R., Allen, F. H. and Brown, I. D. (1991). "The Crystallographic
-   * Information File (CIF): A New Standard Archive File for Crystallography",
-   * Acta Cryst., A47, 655-685.
-   * Hall, S.R. & Spadaccini, N. (1994). "The STAR File: Detailed 
-   * Specifications," J. Chem. Info. Comp. Sci., 34, 505-508.
-   *</p>
-   */
-
-  class RidiculousFileFormatTokenizer {
-    String str;
-    int ich;
-    int cch;
-    boolean wasUnQuoted;
-
-    /**
-     * sets a string to be parsed from the beginning
-     * 
-     * @param str
-     */
-    private void setString(String str) {
-      this.str = str;
-      cch = (str == null ? 0 : str.length());
-      ich = 0;
-    }
-
-    /*
-     * http://www.iucr.org/iucr-top/cif/spec/version1.1/cifsyntax.html#syntax
-     * 
-     * 17. The special sequence of end-of-line followed 
-     * immediately by a semicolon in column one (denoted "<eol>;") 
-     * may also be used as a delimiter at the beginning and end 
-     * of a character string comprising a data value. The complete 
-     * bounded string is called a text field, and may be used to 
-     * convey multi-line values. The end-of-line associated with 
-     * the closing semicolon does not form part of the data value. 
-     * Within a multi-line text field, leading white space within 
-     * text lines must be retained as part of the data value; trailing 
-     * white space on a line may however be elided.
-     * 
-     * 18. A text field delimited by the <eol>; digraph may not 
-     * include a semicolon at the start of a line of text as 
-     * part of its value.
-     * 
-     * 20. For example, the data value foo may be expressed 
-     * equivalently as an unquoted string foo, as a quoted 
-     * string 'foo' or as a text field
-     *
-     *;foo
-     *;
-     *
-     * By contrast the value of the text field
-     *
-     *; foo
-     *  bar
-     *;
-     *
-     * is  foo<eol>  bar (where <eol> represents an end-of-line); 
-     * the embedded space characters are significant.
-     * 
-     * 
-     * I (BH) note, however, that we sometimes have:
-     * 
-     * _some_name
-     * ;
-     * the name here
-     * ;
-     * 
-     * so this should actually be
-     * 
-     * ;the name here
-     * ;
-     * 
-     * for this, we use fullTrim();
-     * 
-     */
-    
-    /**
-     * 
-     * sets the string for parsing to be from the next line 
-     * when the token buffer is empty, and if ';' is at the 
-     * beginning of that line, extends the string to include
-     * that full multiline string. Uses \1 to indicate that 
-     * this is a special quotation. 
-     * 
-     * @return  the next line or null if EOF
-     * @throws Exception
-     */
-    String setStringNextLine() throws Exception {
-      setString(readLine());
-      if (line == null || line.length() == 0 || line.charAt(0) != ';')
-        return line;
-      ich = 1;
-      String str = '\1' + line.substring(1) + '\n';
-      while (readLine() != null) {
-        if (line.startsWith(";")) {
-          // remove trailing <eol> only, and attach rest of next line
-          str = str.substring(0, str.length() - 1)
-            + '\1' + line.substring(1);
-          break;
-        }
-        str += line + '\n';
-      }
-      setString(str);
-      return line = str;
-    }
-
-    /**
-     * @return TRUE if there are more tokens in the line buffer
-     * 
-     */
-    boolean hasMoreTokens() {
-      if (str == null)
-        return false;
-      char ch = '#';
-      while (ich < cch && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
-        ++ich;
-      if (str.indexOf("#jmolscript:") >= 0)
-        checkLineForScript();
-      return (ich < cch && ch != '#');
-    }
-
-    /**
-     * assume that hasMoreTokens() has been called and that
-     * ich is pointing at a non-white character. Also sets
-     * boolean wasUnQuoted, because we need to know if we should 
-     * be checking for a control keyword. 'loop_' is different from just 
-     * loop_ without the quotes.
-     *
-     * @return null if no more tokens, "\0" if '.' or '?', or next token 
-     */
-    String nextToken() {
-      if (ich == cch)
-        return null;
-      int ichStart = ich;
-      char ch = str.charAt(ichStart);
-      if (ch != '\'' && ch != '"' && ch != '\1') {
-        wasUnQuoted = true;
-        while (ich < cch && (ch = str.charAt(ich)) != ' ' && ch != '\t')
-          ++ich;
-        if (ich == ichStart + 1)
-          if (str.charAt(ichStart) == '.' || str.charAt(ichStart) == '?')
-            return "\0";
-        return str.substring(ichStart, ich);
-      }
-      wasUnQuoted = false;
-      char chOpeningQuote = ch;
-      boolean previousCharacterWasQuote = false;
-      while (++ich < cch) {
-        ch = str.charAt(ich);
-        if (previousCharacterWasQuote && (ch == ' ' || ch == '\t'))
-          break;
-        previousCharacterWasQuote = (ch == chOpeningQuote);
-      }
-      if (ich == cch) {
-        if (previousCharacterWasQuote) // close quote was last char of string
-          return str.substring(ichStart + 1, ich - 1);
-        // reached the end of the string without finding closing '
-        return str.substring(ichStart, ich);
-      }
-      ++ich; // throw away the last white character
-      return str.substring(ichStart + 1, ich - 2);
-    }
-
-    /**
-     * general reader for loop data
-     * fills loopData with fieldCount fields
-     * 
-     * @return false if EOF
-     * @throws Exception
-     */
-    boolean getData() throws Exception {
-      // line is already present, and we leave with the next line to parse
-      for (int i = 0; i < fieldCount; ++i)
-        if ((loopData[i] = getNextDataToken()) == null)
-          return false;
-      return true;
-    }
-
-    /**
-     * 
-     * first checks to see if the next token is an unquoted
-     * control code, and if so, returns null 
-     * 
-     * @return next data token or null
-     * @throws Exception
-     */
-    String getNextDataToken() throws Exception { 
-      String str = peekToken();
-      if (str == null)
-        return null;
-      if (wasUnQuoted)
-        if (str.charAt(0) == '_' || str.startsWith("loop_")
-            || str.startsWith("data_")
-            || str.startsWith("stop_")
-            || str.startsWith("global_"))
-          return null;
-      return getTokenPeeked();
-    }
-    
-    /**
-     * 
-     * @return the next token of any kind, or null
-     * @throws Exception
-     */
-    String getNextToken() throws Exception {
-      while (!hasMoreTokens())
-        if (setStringNextLine() == null)
-          return null;
-      return nextToken();
-    }
-
-    String strPeeked;
-    int ichPeeked;
-    
-    /**
-     * just look at the next token. Saves it for retrieval 
-     * using getTokenPeeked()
-     * 
-     * @return next token or null if EOF
-     * @throws Exception
-     */
-    String peekToken() throws Exception {
-      while (!hasMoreTokens())
-        if (setStringNextLine() == null)
-          return null;
-      int ich = this.ich;
-      strPeeked = nextToken();
-      ichPeeked= this.ich;
-      this.ich = ich;
-      return strPeeked;
-    }
-    
-    /**
-     * 
-     * @return the token last acquired; may be null
-     */
-    String getTokenPeeked() {
-      this.ich = ichPeeked;
-      return strPeeked;
-    }
-    
-    /**
-     * specially for names that might be multiline
-     * 
-     * @param str
-     * @return str without any leading/trailing white space, and no '\n'
-     */
-    String fullTrim(String str) {
-      int pt0 = 0;
-      int pt1 = str.length();
-      for (;pt0 < pt1; pt0++)
-        if ("\n\t ".indexOf(str.charAt(pt0)) < 0)
-          break;
-      for (;pt0 < pt1; pt1--)
-        if ("\n\t ".indexOf(str.charAt(pt1 - 1)) < 0)
-          break;
-      return str.substring(pt0, pt1);
-    }
-  }
+  }  
 }

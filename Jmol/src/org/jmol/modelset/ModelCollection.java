@@ -431,7 +431,7 @@ abstract public class ModelCollection extends BondCollection {
    */
   private int thisStateModel = 0;
 
-  public void addStateScript(String script1, BitSet bsBonds, BitSet bsAtoms1,
+  public StateScript addStateScript(String script1, BitSet bsBonds, BitSet bsAtoms1,
                              BitSet bsAtoms2, String script2,
                              boolean addFrameNumber, boolean postDefinitions) {
     if (addFrameNumber) {
@@ -448,15 +448,16 @@ abstract public class ModelCollection extends BondCollection {
         bsAtoms2, script2, postDefinitions);
     if (stateScript.isValid())
       stateScripts.addElement(stateScript);
+    return stateScript;
   }
 
-  protected static class StateScript {
-    int modelIndex;
-    BitSet bsBonds;
-    BitSet bsAtoms1;
-    BitSet bsAtoms2;
-    String script1;
-    String script2;
+  public static class StateScript {
+    private int modelIndex;
+    private BitSet bsBonds;
+    private BitSet bsAtoms1;
+    private BitSet bsAtoms2;
+    private String script1;
+    private String script2;
     boolean postDefinitions;
     
     StateScript(int modelIndex, String script1, BitSet bsBonds, BitSet bsAtoms1,
@@ -501,12 +502,20 @@ abstract public class ModelCollection extends BondCollection {
     
     public boolean deleteAtoms(int modelIndex, BitSet bsBonds, BitSet bsAtoms) {
       //false return means delete this script
-      if (modelIndex <= this.modelIndex)
-        return (this.modelIndex < modelIndex);
+      if (modelIndex == this.modelIndex) 
+        return true;
+      if (modelIndex < this.modelIndex) {
+//        this.modelIndex--;
+        return false;
+      }
       BitSetUtil.deleteBits(this.bsBonds, bsBonds);
       BitSetUtil.deleteBits(this.bsAtoms1, bsAtoms);
       BitSetUtil.deleteBits(this.bsAtoms2, bsAtoms);
       return isValid();
+    }
+
+    public void setModelIndex(int index) {
+      modelIndex = index; // for creating data frames 
     }
   }
   

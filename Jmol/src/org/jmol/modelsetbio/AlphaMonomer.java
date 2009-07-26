@@ -24,9 +24,11 @@
 package org.jmol.modelsetbio;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
+import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 
 public class AlphaMonomer extends Monomer {
@@ -149,4 +151,59 @@ public class AlphaMonomer extends Monomer {
     return atom1.isBonded(atom2) || atom1.distance(atom2) <= 4.2f;
     // jan reichert in email to miguel on 10 May 2004 said 4.2 looked good
   }
+  
+  Atom getQuaternionFrameCenter(char qType) {
+    switch (qType) {
+    default:
+    case 'a':
+    case 'c':
+    case 'C':
+      return getLeadAtom();
+    case 'q':
+    case 'p':
+    case 'P':
+    case 'n':
+      return null;
+    }
+  }
+
+  public Object getHelixData(int tokType, char qType, int mStep) {
+    return getHelixData2(tokType, qType, mStep);
+  }
+  
+  public Quaternion getQuaternion(char qType) {
+    /*
+     * also NucleicMonomer, AminoMonomer
+     * 
+     * This definition is only for alpha-only chains
+     *   
+     */
+    
+    Vector3f vA = new Vector3f();
+    Vector3f vB = new Vector3f();
+    Vector3f vC = null;
+
+    switch (qType) {
+    case 'a':
+      //vA = ptCa(i+1) - ptCa
+      //vB = ptCa(i-1) - ptCa
+      if (monomerIndex == 0 
+          || monomerIndex == bioPolymer.monomerCount - 1)
+        return null;
+      Point3f ptCa = getLeadAtomPoint();
+      Point3f ptCaNext = bioPolymer.getLeadPoint(monomerIndex + 1);
+      Point3f ptCaPrev = bioPolymer.getLeadPoint(monomerIndex - 1);
+      vA.sub(ptCaNext, ptCa);
+      vB.sub(ptCaPrev, ptCa);
+      break;
+    default:
+    case 'c':
+    case 'n':
+    case 'p':
+      return null;
+    }
+    return Quaternion.getQuaternionFrame(vA, vB, vC);
+  }
+  
+
 }

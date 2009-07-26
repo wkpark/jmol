@@ -31,13 +31,14 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.shape.Mesh;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.g3d.Graphics3D;
 
 public class DrawMesh extends Mesh {
   
-  DrawMesh(String thisID, Graphics3D g3d, short colix) {
-    super(thisID, g3d, colix);
+  DrawMesh(String thisID, Graphics3D g3d, short colix, int index) {
+    super(thisID, g3d, colix, index);
   }
 
   BitSet modelFlags;
@@ -102,6 +103,9 @@ public class DrawMesh extends Mesh {
     drawVertexCounts = (int[]) ArrayUtil.deleteElements(drawVertexCounts, modelIndex, 1);
     ptCenters = (Point3f[]) ArrayUtil.deleteElements(ptCenters, modelIndex, 1);
     axes = (Vector3f[]) ArrayUtil.deleteElements(axes, modelIndex, 1);
+    BitSet bs = new BitSet();
+    bs.set(modelIndex);
+    BitSetUtil.deleteBits(modelFlags, bs);
     //no! title = (String[]) ArrayUtil.deleteElements(title, modelIndex, 1);
   }
 }

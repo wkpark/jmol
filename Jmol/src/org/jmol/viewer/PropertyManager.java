@@ -82,7 +82,7 @@ class PropertyManager {
     "menu"            , "<type>", "current",
     "minimizationInfo", "", "",
     "PointGroupInfo"  , atomExpression, "(visible)",
-    "PdbInfo"         , "<type>", "",
+    "FileInfo"         , "<type>", "",
     "errorMessage", "", "",
   };
 
@@ -123,7 +123,7 @@ class PropertyManager {
   private final static int PROP_MENU = 29;
   private final static int PROP_MINIMIZATION_INFO = 30;
   private final static int PROP_POINTGROUP_INFO = 31;
-  private final static int PROP_PDB_INFO = 32;
+  private final static int PROP_FILE_INFO = 32;
   private final static int PROP_ERROR_MESSAGE = 33;
   private final static int PROP_COUNT = 34;
 
@@ -363,8 +363,8 @@ class PropertyManager {
       return viewer.getStateInfo(myParam.toString());
     case PROP_POINTGROUP_INFO:
       return viewer.getPointGroupInfo(myParam);
-    case PROP_PDB_INFO:
-      return getPdbInfo(viewer.getPDBHeader(), myParam.toString());
+    case PROP_FILE_INFO:
+      return getFileInfo(viewer.getFileData(), myParam.toString());
     case PROP_ERROR_MESSAGE:
       return viewer.getErrorMessageUntranslated();
     case PROP_TRANSFORM_INFO:
@@ -390,14 +390,17 @@ class PropertyManager {
     return info;
   }
   
-  static Object getPdbInfo(String header, String type) {
+  static Object getFileInfo(Object objHeader, String type) {
     Hashtable ht = new Hashtable();
-    if (header == null)
+    if (objHeader == null)
       return ht;
-    String[] lines = TextFormat.split(header, '\n');
+    boolean haveType = (type != null && type.length() > 0);
+    if (objHeader instanceof Hashtable) {
+      return (haveType ? ((Hashtable) objHeader).get(type) : objHeader);
+    }
+    String[] lines = TextFormat.split((String)objHeader, '\n');
     String keyLast = "";
     StringBuffer sb = new StringBuffer();
-    boolean haveType = (type != null && type.length() > 0);
     if (haveType)
       type = type.toUpperCase();
     String key = "";

@@ -491,7 +491,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     boolean isEccentric = (aspectRatio != 1 && wingVectors != null);
     int nHermites = (hermiteLevel + 1) * 2 + 1; // 4 for hermiteLevel = 1
     int nPer = (nHermites - 1) * 2 - 2; // 6 for hermiteLevel 1
-    Mesh mesh = meshes[i] = new Mesh("mesh_" + shapeID + "_" + i, g3d, (short) 0);
+    Mesh mesh = meshes[i] = new Mesh("mesh_" + shapeID + "_" + i, g3d, (short) 0, i);
     boolean variableRadius = (madBeg != madMid || madMid != madEnd);
     if (controlHermites == null || controlHermites.length < nHermites + 1) {
       controlHermites = new Point3f[nHermites + 1];

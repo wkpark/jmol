@@ -228,10 +228,7 @@ public abstract class _Exporter {
 
   protected float getFieldOfView() {
     float zoffset = (viewer.getCameraDepth()+ 0.5f);
-    float scale = viewer.getZoomPercentFloat() / 100f;
-    // I know multiplying by scale makes no sense... 
-    float angle = scale * (float) (2 * Math.atan(0.5/scale / zoffset));
-    return angle;
+    return (float) (2 * Math.atan(0.5 / zoffset));
   }
 
   final protected Point3f pt = new Point3f();

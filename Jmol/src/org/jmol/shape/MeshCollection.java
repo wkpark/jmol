@@ -29,6 +29,9 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 
 import java.util.BitSet;
+import java.util.Hashtable;
+
+import javax.vecmath.Point3f;
 
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -72,15 +75,25 @@ public abstract class MeshCollection extends Shape {
     } else if (thisID.equals(JmolConstants.PREVIOUS_MESH_ID)) {
       linkedMesh = currentMesh.linkedMesh;
     }
-    if (currentMesh.thisID == null)
+    if (currentMesh.thisID == null) {
       currentMesh.thisID = myType + (++nUnnamed);
+      if (htObjects != null)
+        htObjects.put(currentMesh.thisID.toUpperCase(), currentMesh);
+    }
     previousMeshID = currentMesh.thisID;
     return currentMesh;
   }
 
+  protected Hashtable htObjects;
+  
   public void allocMesh(String thisID) {
-    meshes = (Mesh[])ArrayUtil.ensureLength(meshes, meshCount + 1);
-    currentMesh = meshes[meshCount++] = new Mesh(thisID, g3d, colix);
+    // this particular version is only run from privately;
+    // isosurface and draw both have overriding methods
+    int index = meshCount++;
+    meshes = (Mesh[])ArrayUtil.ensureLength(meshes, meshCount * 2);
+    currentMesh = meshes[index] = new Mesh(thisID, g3d, colix, index);
+    if (thisID != null && htObjects != null)
+      htObjects.put(thisID.toUpperCase(), currentMesh);
     previousMeshID = null;
   }
 
@@ -343,10 +356,11 @@ public abstract class MeshCollection extends Shape {
   }
  
  public Object getProperty(String property, int index) {
+   Mesh m;
     if (property == "count") {
       int n = 0;
       for (int i = 0; i < meshCount; i++)
-        if (meshes[i] != null && meshes[i].vertexCount > 0)
+        if ((m = meshes[i]) != null && m.vertexCount > 0)
           n++;
       return new Integer(n);
     }
@@ -356,9 +370,8 @@ public abstract class MeshCollection extends Shape {
       StringBuffer sb = new StringBuffer();
       int k = 0;
       for (int i = 0; i < meshCount; i++) {
-        if (meshes[i] == null || meshes[i].vertexCount == 0)
+         if ((m = meshes[i]) == null || m.vertexCount == 0)
           continue;
-        Mesh m = meshes[i];
         sb.append((++k)).append(" id:" + m.thisID).append(
             "; model:" + viewer.getModelNumberDotted(m.modelIndex)).append(
             "; vertices:" + m.vertexCount).append(
@@ -398,13 +411,12 @@ public abstract class MeshCollection extends Shape {
     }
     if (property == "vertices")
       return getVertices(currentMesh);
-    if (property.startsWith("getCenter:")) {
-      Mesh m = getMesh(property.substring(10));
-      return (m == null || m.vertices == null
-          || m.vertexCount <= index ? null 
-          : index >= 0 ? m.vertices[index] : null);
-
-    }
+    if (property.startsWith("getCenter:"))
+      return (index < 0 
+          || (m = getMesh(property.substring(10))) == null 
+          || m.vertices == null
+          || m.vertexCount <= index ? (Point3f) null 
+          : m.vertices[index]);
     return null;
   }
 
@@ -415,33 +427,37 @@ public abstract class MeshCollection extends Shape {
   }
  
   private void deleteMesh() {
-    int i = 0;
-    if (explicitID && currentMesh != null) {
-      for (i = meshCount; meshes[--i] != currentMesh;) {
-      }
-      deleteMesh(i);
-    } else {
-      String key = (explicitID && previousMeshID != null
+    if (explicitID && currentMesh != null)
+      deleteMesh(currentMesh.index);
+    else
+      deleteMesh(explicitID && previousMeshID != null
           && TextFormat.isWild(previousMeshID) ?  
-              previousMeshID.toUpperCase() : null);
-      if (key == null || key.length() == 0) {
-        for (i = meshCount; --i >= 0; )
-          meshes[i] = null;
-        meshCount = 0;
-        nUnnamed = 0;
-      } else {
-        for (i = meshCount; --i >= 0; ) {
-          if (TextFormat.isMatch(meshes[i].thisID.toUpperCase(), key, true, true))
-            deleteMesh(i);
-        }
-      }
-    }
+              previousMeshID : null);
     currentMesh = null;
   }
 
+  protected void deleteMesh(String key) {
+    if (key == null || key.length() == 0) {
+      for (int i = meshCount; --i >= 0; )
+        meshes[i] = null;
+      meshCount = 0;
+      nUnnamed = 0;
+      if (htObjects != null)
+        htObjects.clear();
+    } else {
+      key = key.toLowerCase();
+      for (int i = meshCount; --i >= 0; ) {
+        if (TextFormat.isMatch(meshes[i].thisID.toLowerCase(), key, true, true))
+          deleteMesh(i);
+      }
+    }
+  }
+
   public void deleteMesh(int i) {
+    if (htObjects != null)
+      htObjects.remove(meshes[i].thisID.toUpperCase());
     for (int j = i + 1; j < meshCount; ++j)
-      meshes[j - 1] = meshes[j];
+      meshes[--meshes[j].index] = meshes[j];
     meshes[--meshCount] = null;
   }
   
@@ -462,6 +478,10 @@ public abstract class MeshCollection extends Shape {
           return i;
       }
     } else {
+      if (htObjects != null) {
+        Mesh m = (Mesh)(htObjects.get(thisID.toUpperCase()));
+        return (m == null ? -1 : m.index);
+      }
       for (int i = meshCount; --i >= 0;) {
         if (meshes[i] != null && thisID.equalsIgnoreCase(meshes[i].thisID))
           return i;

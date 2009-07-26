@@ -48,6 +48,7 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.Bond.BondSet;
+import org.jmol.modelset.ModelCollection.StateScript;
 import org.jmol.shape.Object2d;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
@@ -6714,8 +6715,6 @@ class ScriptEvaluator {
       return;
     }
     int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, type);
-    if (isQuaternion && ptDataFrame < 0 && statementLength == 1)
-      ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, "quaternion");
     if (ptDataFrame > 0) {
       // data frame can't be 0.
       viewer.setCurrentModelIndex(ptDataFrame, true);
@@ -6725,7 +6724,6 @@ class ScriptEvaluator {
       // viewer.display(BitSetUtil.setAll(viewer.getAtomCount()), bs2, tQuiet);
       return;
     }
-    viewer.addStateScript(type, true, false);
     String[] savedFileInfo = viewer.getFileInfo();
     boolean oldAppendNew = viewer.getAppendNew();
     viewer.setAppendNew(true);
@@ -6735,6 +6733,7 @@ class ScriptEvaluator {
     viewer.setFileInfo(savedFileInfo);
     if (!isOK)
       return;
+    StateScript ss = viewer.addStateScript(type, true, false);
     int modelCount = viewer.getModelCount();
     viewer.setJmolDataFrame(type, modelIndex, modelCount - 1);
     String script;
@@ -6754,10 +6753,11 @@ class ScriptEvaluator {
     case JmolConstants.JMOL_DATA_QUATERNION:
       viewer.setFrameTitle(modelCount - 1, type + " for model "
           + viewer.getModelNumberDotted(modelIndex));
+      String color = (Escape.escapeColor(viewer.getColixArgb(viewer.getColixBackgroundContrast())));
       script = "frame 0.0; frame last; reset;"
           + "select visible; wireframe 0; " + "isosurface quatSphere"
           + modelCount
-          + " resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;"
+          + " resolution 1.0 color " + color + " sphere 10.0 mesh nofill frontonly translucent 0.8;"
           + "draw quatAxis" + modelCount
           + "X {10 0 0} {-10 0 0} color red \"x\";" + "draw quatAxis"
           + modelCount + "Y {0 10 0} {0 -10 0} color green \"y\";"
@@ -6767,6 +6767,7 @@ class ScriptEvaluator {
       break;
     }
     runScript(script);
+    ss.setModelIndex(viewer.getCurrentModelIndex());
     viewer.setRotationRadius(isQuaternion ? 12.5f : 260f, true);
     viewer.loadShape(JmolConstants.SHAPE_ECHO);
     showString("frame " + viewer.getModelNumberDotted(modelCount - 1)

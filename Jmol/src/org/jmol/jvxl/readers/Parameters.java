@@ -144,7 +144,7 @@ public class Parameters {
 
   final static int NO_ANISOTROPY = 1 << 5;
   final static int IS_SILENT = 1 << 6;
-  final static int IS_SOLVENTTYPE = 1 << 7;
+  final public static int IS_SOLVENTTYPE = 1 << 7;
   final static int HAS_MAXGRID = 1 << 8;
   final static int CAN_CONTOUR = 1 << 9;
   

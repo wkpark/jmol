@@ -318,7 +318,8 @@ class IsoSolventReader extends AtomDataReader {
               v *= v;
               if (Float.isNaN(voxelData[i][j][k]))
                 voxelData[i][j][k] = 0;
-              property[i][j][k] += atomProp[iAtom] * v;
+              if (!Float.isNaN(atomProp[iAtom]))
+                property[i][j][k] += atomProp[iAtom] * v;
               voxelData[i][j][k] += v;
             } else if (v < voxelData[i][j][k]) {
               voxelData[i][j][k] = (isNearby || isWithin

@@ -276,8 +276,6 @@ final public class Atom extends Point3fi {
     mad = (short) size;
     if (mad < 0)
       mad = 0;
-    if (mad == 1)
-      System.out.println("testing Atom");
     return mad; 
   }
 

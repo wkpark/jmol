@@ -138,7 +138,7 @@ public class CifDataReader {
 
   public String readLine() {
     try {
-      return (reader != null ? reader.readLine() : br.readLine());
+      return (line = (reader != null ? reader.readLine() : br.readLine()));
     } catch (Exception e) {
       return null;
     }
@@ -260,7 +260,7 @@ public class CifDataReader {
       str += line + '\n';
     }
     setString(str);
-    return line = str;
+    return str;
   }
 
   /**

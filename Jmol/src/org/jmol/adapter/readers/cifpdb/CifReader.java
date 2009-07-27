@@ -311,7 +311,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private boolean getData() throws Exception {
     key = tokenizer.getTokenPeeked();
     data = tokenizer.getNextToken();
-    System.out.println(key  + " " + data);
+    if (Logger.debugging)
+      Logger.debug(key  + " " + data);
     if (data == null) {
       Logger.warn("CIF ERROR ? end of file; data missing: " + key);
       return false;

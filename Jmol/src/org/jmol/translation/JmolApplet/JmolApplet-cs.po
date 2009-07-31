@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-07-31 16:38+0200\n"
-"PO-Revision-Date: 2009-07-17 11:36+0000\n"
+"PO-Revision-Date: 2009-07-25 09:09+0000\n"
 "Last-Translator: Martin Slavík <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-07-21 08:52+0000\n"
+"X-Launchpad-Export-Date: 2009-07-31 16:36+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
@@ -76,7 +76,7 @@ msgstr "Jmol skriptovací konzole"
 
 #: org/jmol/console/AppletConsole.java:81
 msgid "Editor"
-msgstr ""
+msgstr "Editor"
 
 #: org/jmol/console/AppletConsole.java:82
 msgid "State"
@@ -85,7 +85,7 @@ msgstr "Stav"
 #: org/jmol/console/AppletConsole.java:83
 #: org/jmol/console/ScriptEditor.java:146
 msgid "Run"
-msgstr ""
+msgstr "Spustit"
 
 #: org/jmol/console/AppletConsole.java:84
 msgid "Clear Output"
@@ -137,7 +137,7 @@ msgstr "&Více"
 
 #: org/jmol/console/ScriptEditor.java:100
 msgid "Jmol Script Editor"
-msgstr ""
+msgstr "Jmol Skript Editor"
 
 #: org/jmol/console/ScriptEditor.java:139
 #: org/jmol/popup/PopupResourceBundle.java:860
@@ -158,7 +158,7 @@ msgstr "Skript"
 
 #: org/jmol/console/ScriptEditor.java:143
 msgid "Check"
-msgstr ""
+msgstr "Zkontrolovat"
 
 #: org/jmol/console/ScriptEditor.java:144
 #: org/jmol/popup/PopupResourceBundle.java:591
@@ -167,7 +167,7 @@ msgstr "Shora"
 
 #: org/jmol/console/ScriptEditor.java:145
 msgid "Step"
-msgstr ""
+msgstr "Krok"
 
 #: org/jmol/console/ScriptEditor.java:147
 #: org/jmol/popup/PopupResourceBundle.java:818
@@ -181,15 +181,15 @@ msgstr "Pokračovat"
 
 #: org/jmol/console/ScriptEditor.java:151
 msgid "Halt"
-msgstr ""
+msgstr "Zastavit"
 
 #: org/jmol/console/ScriptEditor.java:153
 msgid "Clear"
-msgstr ""
+msgstr "Vymazat"
 
 #: org/jmol/console/ScriptEditor.java:154
 msgid "Close"
-msgstr ""
+msgstr "Zavřít"
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
@@ -377,9 +377,8 @@ msgid "Catalan"
 msgstr "Katalánština"
 
 #: org/jmol/i18n/GT.java:119
-#, fuzzy
 msgid "Simplified Chinese"
-msgstr "Postranní řetězce"
+msgstr "Zjednodušená čínština"
 
 #: org/jmol/i18n/GT.java:120
 msgid "Traditional Chinese"
@@ -1229,7 +1228,7 @@ msgstr "Rotace"
 
 #: org/jmol/popup/PopupResourceBundle.java:798
 msgid "Set X Rate"
-msgstr ""
+msgstr "Nastavit rychlost rotace kolem osy X"
 
 #: org/jmol/popup/PopupResourceBundle.java:799
 msgid "Set Y Rate"
@@ -1867,7 +1866,8 @@ msgstr "neznámý objekt"
 #: org/jmol/viewer/ScriptEvaluator.java:2437
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "nerozpoznaný {0} parameter v Jmol stavovém skriptu (přesto nastavený)"
+msgstr ""
+"nerozpoznaný {0} parameter v Jmol stavovém skriptu (přesto nastavený)"
 
 #: org/jmol/viewer/ScriptEvaluator.java:2440
 #, java-format

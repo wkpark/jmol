@@ -838,46 +838,58 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     moveUpdate(timeSeconds);
   }
 
+  private boolean mouseEnabled = true;
+  public void setMouseEnabled(boolean TF) {
+    mouseEnabled = TF;
+  }
+  
   void zoomBy(int pixels) {
     // MouseManager.mouseSinglePressDrag
-    transformManager.zoomBy(pixels);
+    if (mouseEnabled)
+      transformManager.zoomBy(pixels);
     refresh(2, statusManager.syncingMouse ? "Mouse: zoomBy " + pixels : "");
   }
 
   void zoomByFactor(float factor) {
     // MouseManager.mouseWheel
-    transformManager.zoomByFactor(factor);
+    if (mouseEnabled)
+      transformManager.zoomByFactor(factor);
     refresh(2, statusManager.syncingMouse ? "Mouse: zoomByFactor " + factor
         : "");
   }
 
   void rotateXYBy(int xDelta, int yDelta) {
     // mouseSinglePressDrag
-    transformManager.rotateXYBy(xDelta, yDelta, null);
+    if (mouseEnabled)
+      transformManager.rotateXYBy(xDelta, yDelta, null);
     refresh(2, statusManager.syncingMouse ? "Mouse: rotateXYBy " + xDelta + " "
         + yDelta : "");
   }
 
   void rotateZBy(int zDelta) {
     // mouseSinglePressDrag
-    transformManager.rotateZBy(zDelta);
+    if (mouseEnabled)
+      transformManager.rotateZBy(zDelta);
     refresh(2, statusManager.syncingMouse ? "Mouse: rotateZBy " + zDelta : "");
   }
 
   void rotateMolecule(int deltaX, int deltaY) {
     if (isJmolDataFrame())
       return;
-    transformManager.setRotateMolecule(true);
-    transformManager.rotateXYBy(deltaX, deltaY, selectionManager.bsSelection);
-    transformManager.setRotateMolecule(false);
-    refreshMeasures();
+    if (mouseEnabled) {
+      transformManager.setRotateMolecule(true);
+      transformManager.rotateXYBy(deltaX, deltaY, selectionManager.bsSelection);
+      transformManager.setRotateMolecule(false);
+      refreshMeasures();
+    }
     refresh(2, statusManager.syncingMouse ? "Mouse: rotateMolecule " + deltaX
         + " " + deltaY : "");
   }
 
   void translateXYBy(int xDelta, int yDelta) {
     // mouseDoublePressDrag, mouseSinglePressDrag
-    transformManager.translateXYBy(xDelta, yDelta);
+    if (mouseEnabled)
+      transformManager.translateXYBy(xDelta, yDelta);
     refresh(2, statusManager.syncingMouse ? "Mouse: translateXYBy " + xDelta
         + " " + yDelta : "");
   }
@@ -4001,16 +4013,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   int hoverAtomIndex = -1;
   String hoverText;
 
-  public void hoverOn(int atomIndex) {
+  void hoverOn(int atomIndex, int modifiers) {
     if (eval != null && isScriptExecuting() || atomIndex == hoverAtomIndex
         || global.hoverDelayMs == 0)
       return;
     if (!isInSelectionSubset(atomIndex))
       return;
     loadShape(JmolConstants.SHAPE_HOVER);
+    Atom atom;
+    if (modifiers == MouseManager.SHIFT 
+        && getPickingMode() == JmolConstants.PICKING_LABEL
+        && (atom = modelSet.getAtomAt(atomIndex)) != null
+        && atom.isShapeVisible(JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_LABELS))) {
+      setShapeProperty(JmolConstants.SHAPE_HOVER, "specialLabel", GT._("Drag to move label"));
+    }
     setShapeProperty(JmolConstants.SHAPE_HOVER, "text", null);
-    setShapeProperty(JmolConstants.SHAPE_HOVER, "target",
-        new Integer(atomIndex));
+    setShapeProperty(JmolConstants.SHAPE_HOVER, "target", new Integer(atomIndex));
     hoverText = null;
     hoverAtomIndex = atomIndex;
     refresh(3, "hover on atom");
@@ -4027,6 +4045,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     loadShape(JmolConstants.SHAPE_HOVER);
     setShapeProperty(JmolConstants.SHAPE_HOVER, "xy", new Point3i(x, y, 0));
     setShapeProperty(JmolConstants.SHAPE_HOVER, "target", null);
+    setShapeProperty(JmolConstants.SHAPE_HOVER, "specialLabel", null);
     setShapeProperty(JmolConstants.SHAPE_HOVER, "text", text);
     hoverAtomIndex = -1;
     hoverText = text;
@@ -4042,6 +4061,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setShapeProperty(JmolConstants.SHAPE_HOVER, "text", null);
       hoverText = null;
     }
+    setShapeProperty(JmolConstants.SHAPE_HOVER, "specialLabel", null);
     refresh(3, "hover off");
   }
 
@@ -4720,6 +4740,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     statusManager.showUrl(urlString);
   }
 
+  /**
+   * an external applet or app with class that extends org.jmol.jvxl.MeshCreator might execute:
+   * 
+   * org.jmol.viewer.Viewer viewer = applet.getViewer();
+   * viewer.setMeshCreator(this);
+   *
+   * then that class's updateMesh(String id) method will be called
+   * whenever a mesh is rendered. 
+   * 
+   * @param meshCreator
+   */
+  public void setMeshCreator(Object meshCreator) {
+    loadShape(JmolConstants.SHAPE_ISOSURFACE);
+    setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "meshCreator", meshCreator);
+  }
+  
   void showConsole(boolean showConsole) {
     // Eval
     statusManager.showConsole(showConsole);
@@ -6215,6 +6251,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.navigateSurface;
   }
 
+  /** for an external application
+   * 
+   * @param transformManager
+   */
+  public void setTransformManager(TransformManager transformManager) {
+    stopAnimationThreads();
+    this.transformManager = transformManager;
+    transformManager.setViewer(this, dimScreen.width, dimScreen.height);
+    setTransformManagerDefaults();
+    transformManager.homePosition();      
+  }
+  
   private void setPerspectiveModel(int mode) {
     stopAnimationThreads();
     switch (mode) {
@@ -6816,8 +6864,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void checkObjectDragged(int prevX, int prevY, int x, int y, int modifiers) {
+    int iShape = 0;
+    switch (getPickingMode()) {
+    case JmolConstants.PICKING_LABEL:
+      iShape = JmolConstants.SHAPE_LABELS;
+      break;
+    case JmolConstants.PICKING_DRAW:
+      iShape = JmolConstants.SHAPE_DRAW;
+      break;
+    }
     modelSet.checkObjectDragged(prevX, prevY, x, y, modifiers,
-        getVisibleFramesBitSet());
+        getVisibleFramesBitSet(), iShape);
   }
 
   void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
@@ -7624,8 +7681,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         : errorMessageUntranslated;
   }
 
-  int currentShapeID = -1;
-  String currentShapeState;
+  private int currentShapeID = -1;
+  private String currentShapeState;
+  
+  public Shape getShape(int i) {
+    return (modelSet == null ? null : modelSet.getShape(i));
+  }
 
   public void setShapeErrorState(int shapeID, String state) {
     currentShapeID = shapeID;

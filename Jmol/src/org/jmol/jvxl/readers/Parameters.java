@@ -148,7 +148,7 @@ public class Parameters {
   final static int HAS_MAXGRID = 1 << 8;
   final static int CAN_CONTOUR = 1 << 9;
   
-  int dataType;
+  public int dataType;
   int surfaceType;
 
   final static int SURFACE_NONE = 0;
@@ -159,8 +159,10 @@ public class Parameters {
   final static int SURFACE_ELLIPSOID3 = 3 | IS_SILENT;
   final static int SURFACE_LOBE = 4 | IS_SILENT;
   final static int SURFACE_LCAOCARTOON = 5 | IS_SILENT;
-  final static int SURFACE_FUNCTIONXY = 6 | CAN_CONTOUR;
-  final static int SURFACE_FUNCTIONXYZ = 7;
+  final static public int SURFACE_LONEPAIR = 6 | IS_SILENT;
+  final static public int SURFACE_RADICAL = 7 | IS_SILENT;
+  final static int SURFACE_FUNCTIONXY = 8 | CAN_CONTOUR;
+  final static int SURFACE_FUNCTIONXYZ = 9;
 
   // getSurface or mapColor:
   final static int SURFACE_SOLVENT = 11 | IS_SOLVENTTYPE | NO_ANISOTROPY;
@@ -420,6 +422,34 @@ public class Parameters {
     isSilent = !logMessages;
     script = " center " + Escape.escape(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale) + " LOBE {" + v.x + " "
+        + v.y + " " + v.z + " " + v.w + "};";
+  }
+  
+  void setLp(Point4f v) {
+    dataType = SURFACE_LONEPAIR;
+    setEccentricity(v);
+    if (cutoff == Float.MAX_VALUE) {
+      cutoff = defaultOrbitalCutoff;
+      if (isSquared)
+        cutoff = cutoff * cutoff;
+    }
+    isSilent = !logMessages;
+    script = " center " + Escape.escape(center)
+        + (Float.isNaN(scale) ? "" : " scale " + scale) + " LP {" + v.x + " "
+        + v.y + " " + v.z + " " + v.w + "};";
+  }
+  
+  void setRadical(Point4f v) {
+    dataType = SURFACE_RADICAL;
+    setEccentricity(v);
+    if (cutoff == Float.MAX_VALUE) {
+      cutoff = defaultOrbitalCutoff;
+      if (isSquared)
+        cutoff = cutoff * cutoff;
+    }
+    isSilent = !logMessages;
+    script = " center " + Escape.escape(center)
+        + (Float.isNaN(scale) ? "" : " scale " + scale) + " RAD {" + v.x + " "
         + v.y + " " + v.z + " " + v.w + "};";
   }
   

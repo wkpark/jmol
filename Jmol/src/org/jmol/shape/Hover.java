@@ -45,6 +45,7 @@ public class Hover extends TextShape {
   String text;
   String labelFormat = "%U";
   String[] atomFormats;
+  String specialLabel;
 
   public void initShape() {
     super.initShape();
@@ -78,6 +79,11 @@ public class Hover extends TextShape {
       text = (String) value;
       if (text != null && text.length() == 0)
         text = null;
+      return;
+    }
+
+    if ("specialLabel" == propertyName) {
+      specialLabel = (String) value;
       return;
     }
 

@@ -27,8 +27,10 @@ import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.jvxl.readers.Parameters;
 import org.jmol.shape.MeshRenderer;
 import org.jmol.util.Logger;
 
@@ -40,9 +42,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected short backgroundColix;
   protected int nError = 0;
   protected float[] vertexValues;
-  
-  
-
   protected IsosurfaceMesh imesh;
 
   protected void render() {
@@ -72,12 +71,47 @@ public class IsosurfaceRenderer extends MeshRenderer {
   }
   
   protected void render2(boolean isGenerator) {
+    switch (imesh.dataType) {
+    case Parameters.SURFACE_LONEPAIR:
+      renderLonePair(false);
+      return;
+    case Parameters.SURFACE_RADICAL:
+      renderLonePair(true);
+      return;
+    }
     isBicolorMap = imesh.jvxlData.isBicolorMap;
     super.render2(isGenerator);
     if (!g3d.setColix(Graphics3D.BLACK)) // must be 1st pass
       return;
     if (imesh.showContourLines)
       renderContourLines();
+  }
+  
+  private void renderLonePair(boolean isRadical) {
+    pt2f.set(imesh.vertices[1]);
+    viewer.transformPoint(pt2f, pt2f);
+    int r = viewer.scaleToScreen((int)pt2f.z, 100);
+    if (r < 1)
+      r = 1;
+    if (!isRadical) {
+      Vector3f v1 = new Vector3f();
+      Vector3f v2 = new Vector3f();
+      pt1f.set(imesh.vertices[0]);
+      viewer.transformPoint(pt1f, pt1f);
+      v1.sub(pt2f, pt1f);
+      v2.set(v1.x, v1.y, v1.z + 1);
+      v2.cross(v2,v1);
+      v2.normalize();
+      float f = viewer.scaleToScreen((int)pt1f.z, 100);
+      v2.scale(f);
+      pt1f.set(pt2f);
+      pt1f.add(v2);
+      pt2f.sub(v2);
+      screens[0].set((int)pt1f.x,(int)pt1f.y,(int)pt1f.z);
+      g3d.fillSphereCentered(r, screens[0]);
+    }
+    screens[1].set((int)pt2f.x,(int)pt2f.y,(int)pt2f.z);
+    g3d.fillSphereCentered(r, screens[1]);
   }
   
   private void renderContourLines() {

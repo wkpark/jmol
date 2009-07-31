@@ -382,5 +382,9 @@ public abstract class Object2d {
     
     return false;
   }
+
+  public static int getOffset(int xOffset, int yOffset) {
+    return ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
+  }
   
 }

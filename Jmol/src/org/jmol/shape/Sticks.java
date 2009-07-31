@@ -239,6 +239,7 @@ public class Sticks extends Shape {
   }
 
   private final static int MAX_BOND_CLICK_DISTANCE_SQUARED = 10 * 10;
+  private final Point3i ptXY = new Point3i();
 
   private Bond findPickedBond(int x, int y, BitSet bsVisible, Point3fi pt) {
     int dmin2 = MAX_BOND_CLICK_DISTANCE_SQUARED;
@@ -261,7 +262,7 @@ public class Sticks extends Shape {
       v.set(atom1);
       v.add(atom2);
       v.scale(0.5f);
-      int d2 = coordinateInRange(x, y, v, dmin2);
+      int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
       if (d2 >= 0) {
         dmin2 = d2;
         pickedBond = bond;
@@ -271,12 +272,4 @@ public class Sticks extends Shape {
     }
     return pickedBond;
   }
-
-  private final Point3i ptXY = new Point3i();
-  private int coordinateInRange(int x, int y, Point3f vertex, int dmin2) {
-    viewer.transformPoint(vertex, ptXY);
-    int d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);
-    return (d2 < dmin2 ? d2 : -1);
-  }
- 
 }

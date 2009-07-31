@@ -84,6 +84,7 @@ public class LabelsRenderer extends ShapeRenderer {
       int offsetFull = (offsets == null || i >= offsets.length ? 0 : offsets[i]);
       boolean labelsFront = ((offsetFull & Labels.FRONT_FLAG) != 0);
       boolean labelsGroup = ((offsetFull & Labels.GROUP_FLAG) != 0);
+      boolean isExact = ((offsetFull & Labels.EXACT_OFFSET_FLAG) != 0);
       int offset = offsetFull >> Labels.FLAG_OFFSET;
       int textAlign = Labels.getAlignment(offsetFull);
       int pointer = offsetFull & Labels.POINTER_FLAGS;
@@ -134,7 +135,7 @@ public class LabelsRenderer extends ShapeRenderer {
           boxXY[1] = atom.screenY;
           Text.renderSimpleLabel(g3d, font3d, label, colix, bgcolix, boxXY, 
               zBox, zSlab, Object2d.getXOffset(offset), Object2d.getYOffset(offset), 
-              ascent, descent, doPointer, pointerColix);
+              ascent, descent, doPointer, pointerColix, isExact);
           continue;
         }
         text = new Text(g3d, font3d, label, colix, bgcolix, atom.screenX,
@@ -145,7 +146,7 @@ public class LabelsRenderer extends ShapeRenderer {
       if (textAlign != Object2d.ALIGN_NONE)
         text.setAlignment(textAlign);
       text.setPointer(pointer); 
-      text.render(g3d, scalePixelsPerMicron, imageFontScaling);
+      text.render(g3d, scalePixelsPerMicron, imageFontScaling, isExact);
     }
   }
 

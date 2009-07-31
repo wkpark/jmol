@@ -461,7 +461,7 @@ public abstract class MeshCollection extends Shape {
     meshes[--meshCount] = null;
   }
   
-  protected Mesh getMesh(String thisID) {
+  public Mesh getMesh(String thisID) {
     int i = getIndexFromName(thisID);
     return (i < 0 ? null : meshes[i]);
   }

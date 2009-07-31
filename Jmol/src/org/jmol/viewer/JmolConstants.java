@@ -103,8 +103,9 @@ final public class JmolConstants {
   public final static int CALLBACK_SCRIPT = 11;
   public final static int CALLBACK_SYNC = 12;
   public final static int CALLBACK_COUNT = 13;
+  public final static int CALLBACK_SET_MESH_CREATOR = 14;
 
-  public final static int SHOW_EDITOR = 14;
+  public final static int SHOW_EDITOR = 15;
 
   private final static String[] callbackNames = {
     "animFrameCallback",

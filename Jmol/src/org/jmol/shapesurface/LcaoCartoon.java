@@ -56,6 +56,8 @@ public class LcaoCartoon extends Isosurface {
   private float translucentLevel;
   private Integer lcaoColorPos;
   private Integer lcaoColorNeg;
+  boolean isLonePair;
+  boolean isRadical;
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -66,11 +68,13 @@ public class LcaoCartoon extends Isosurface {
     // in the case of molecular orbitals, we just cache the information and
     // then send it all at once. 
 
+    boolean setInfo = false;
+    
     if ("init" == propertyName) {
       myColorPt = 0;
       lcaoID = null;
       thisSet = bs;
-      isMolecular = false;
+      isMolecular = isLonePair = isRadical = false;
       thisType = null;
       rotationAxis = null;
       // overide bitset selection
@@ -150,6 +154,24 @@ public class LcaoCartoon extends Isosurface {
       return;
     }
 
+    if ("lonePair" == propertyName) {
+      isLonePair = true;
+      return;
+    }
+
+    if ("lp" == propertyName) {
+      isLonePair = setInfo = true;
+    }
+
+    if ("radical" == propertyName) {
+      isRadical = true;
+      return;
+    }
+
+    if ("rad" == propertyName) {
+      isRadical = setInfo = true;
+    }
+
     if ("delete" == propertyName) {
       deleteLcaoCartoon();
       return;
@@ -168,7 +190,7 @@ public class LcaoCartoon extends Isosurface {
     super.setProperty(propertyName, value, bs);
     
     //from the state:
-    if ("lobe" == propertyName || "sphere" == propertyName)
+    if (setInfo || "lobe" == propertyName || "sphere" == propertyName)
       setScriptInfo();
   }
 
@@ -265,7 +287,7 @@ public class LcaoCartoon extends Isosurface {
         || thisType.equalsIgnoreCase("s")
         || viewer.getHybridizationAndAxes(iAtom, axes[0], axes[1], thisType,
             true) != null) {
-      super.setProperty("lcaoCartoon", axes, null);
+      super.setProperty((isRadical ? "radical" : isLonePair ? "lonePair" : "lcaoCartoon"), axes, null);
     }
     if (isTranslucent)
       for (int i = meshCount; --i >= 0;)
@@ -277,7 +299,7 @@ public class LcaoCartoon extends Isosurface {
     // remove "-" from "-px" "-py" "-pz" because we never want to have
     // both "pz" and "-pz" on the same atom
     // but we can have "-sp3a" and "sp3a"
-    return (id != null ? id : "lcao_" + (i + 1) + "_")
+    return (id != null ? id : (isLonePair || isRadical ? "lp_" : "lcao_") + (i + 1) + "_")
         + (thisType == null ? "" : TextFormat.simpleReplace(thisType, "-",
             (thisType.indexOf("-p") == 0 ? "" : "_")));
   }

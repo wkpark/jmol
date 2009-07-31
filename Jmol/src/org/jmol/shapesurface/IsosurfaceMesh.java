@@ -47,12 +47,13 @@ public class IsosurfaceMesh extends Mesh {
   JvxlData jvxlData = new JvxlData();
   int vertexIncrement = 1;
   int firstRealVertex = -1;
+  int dataType;
   boolean hasGridPoints;
   Object calculatedArea;
   Object calculatedVolume;
   public boolean isSolvent;
   
-  float[] vertexValues;  
+  public float[] vertexValues;  
   public short[] vertexColixes;
   
   IsosurfaceMesh(String thisID, Graphics3D g3d, short colix, int index) {
@@ -151,9 +152,9 @@ public class IsosurfaceMesh extends Mesh {
         || vertexValues != null
         && (Float.isNaN(vertexValues[vertexA])
             || Float.isNaN(vertexValues[vertexB]) || Float
-            .isNaN(vertexValues[vertexC])))
-      return;
-    if (Float.isNaN(vertices[vertexA].x) || Float.isNaN(vertices[vertexB].x)
+            .isNaN(vertexValues[vertexC]))
+        || Float.isNaN(vertices[vertexA].x) 
+        || Float.isNaN(vertices[vertexB].x)
         || Float.isNaN(vertices[vertexC].x))
       return;
     if (polygonCount == 0)

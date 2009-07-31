@@ -92,7 +92,7 @@ abstract class TransformManager {
     setViewer(viewer, width, height);
   }
 
-  private void setViewer(Viewer viewer, int width, int height) {
+  void setViewer(Viewer viewer, int width, int height) {
     this.viewer = viewer;
     setScreenParameters(width, height, true, false, true, true);
   }

@@ -6695,7 +6695,7 @@ class ScriptEvaluator {
       }
       type = ((pt <= pt0 ? "" : optParameterAsString(pt)) + "w")
           .substring(0, 1);
-      if (type == "a" || type == "r")
+      if (type.equals("a") || type.equals("r"))
         isDerivative = true;
       if (!Parser.isOneOf(type, "w;x;y;z;r;a")) // a absolute; r relative
         evalError("QUATERNION [w,x,y,z,a,r] [difference][2]", null);
@@ -9914,7 +9914,7 @@ class ScriptEvaluator {
       if (str.equals("offset")) {
         int xOffset = intParameter(2, -100, 100);
         int yOffset = intParameter(3, -100, 100);
-        propertyValue = new Integer(((xOffset & 0xFF) << 8) | (yOffset & 0xFF));
+        propertyValue = new Integer(Object2d.getOffset(xOffset, yOffset));
         break;
       }
       if (str.equals("alignment")) {
@@ -10152,6 +10152,9 @@ class ScriptEvaluator {
       break;
     case Token.select:
       str = "atom";
+      break;
+    case Token.label:
+      str = "label";
       break;
     case Token.bonds: // not implemented
       str = "bond";
@@ -11697,6 +11700,12 @@ class ScriptEvaluator {
         } else if (str.equalsIgnoreCase("MOLECULAR")) {
           propertyName = "molecular";
           break;
+        } else if (str.equalsIgnoreCase("LONEPAIR")) {
+          propertyName = "lonePair";
+          break;
+        } else if (str.equalsIgnoreCase("RADICAL")) {
+          propertyName = "radical";
+          break;
         } else if (str.equalsIgnoreCase("CREATE")) {
           propertyValue = parameterAsString(++i);
           propertyName = "create";
@@ -12533,10 +12542,12 @@ class ScriptEvaluator {
           propertyName = "link";
           break;
         }
-        if (str.equalsIgnoreCase("LOBE")) {
+        if (str.equalsIgnoreCase("LOBE") 
+            || str.equalsIgnoreCase("LP") 
+            || str.equalsIgnoreCase("RAD")) {
           // lobe {eccentricity}
           surfaceObjectSeen = true;
-          propertyName = "lobe";
+          propertyName = str.toLowerCase();
           propertyValue = getPoint4f(++i);
           i = iToken;
           break;

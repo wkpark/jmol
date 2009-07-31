@@ -50,7 +50,7 @@ public class EchoRenderer extends ShapeRenderer {
         t.setZs(z, z);
       }
       // only 3D echos sent to VRML generator (for now at least)
-      t.render(g3d, scalePixelsPerMicron, imageFontScaling);
+      t.render(g3d, scalePixelsPerMicron, imageFontScaling, false);
     }
     String frameTitle = viewer.getFrameTitle();
     if (frameTitle != null && frameTitle.length() > 0)

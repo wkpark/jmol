@@ -176,7 +176,7 @@ public class Text extends Object2d {
   }
 
   void render(JmolRendererInterface g3d, float scalePixelsPerMicron,
-              float imageFontScaling) {
+              float imageFontScaling, boolean isExact) {
     if (text == null)
       return;
     setWindow(g3d, scalePixelsPerMicron);
@@ -191,7 +191,7 @@ public class Text extends Object2d {
       boxXY[0] = movableX;
       boxXY[1] = movableY;
       setBoxXY(boxWidth, boxHeight, offsetX * imageFontScaling, offsetY
-          * imageFontScaling, boxXY);
+          * imageFontScaling, boxXY, isExact);
     } else {
       setPosition(fontScale);
     }
@@ -308,12 +308,12 @@ public class Text extends Object2d {
 
   }
 
-  private static void setBoxXY(float boxWidth, float boxHeight,
-                               float xOffset, float yOffset, float[] boxXY) {
+  private static void setBoxXY(float boxWidth, float boxHeight, float xOffset,
+                               float yOffset, float[] boxXY, boolean isExact) {
     float xBoxOffset, yBoxOffset;
 
     // these are based on a standard |_ grid, so y is reversed.
-    if (xOffset > 0) {
+    if (xOffset > 0 || isExact) {
       xBoxOffset = xOffset;
     } else {
       xBoxOffset = -boxWidth;
@@ -323,18 +323,19 @@ public class Text extends Object2d {
         xBoxOffset += xOffset;
     }
 
-    if (yOffset > 0) {
-      yBoxOffset = yOffset;
-    } else {
-      if (yOffset == 0)
-        yBoxOffset = -boxHeight / 2; //- 2; removed in Jmol 11.7.45  06/24/2009
-      else
+    if (isExact) {
+      yBoxOffset = -boxHeight + yOffset;
+    } else if (yOffset < 0) {
         yBoxOffset = -boxHeight + yOffset;
+    } else if (yOffset == 0) {
+      yBoxOffset = -boxHeight / 2; // - 2; removed in Jmol 11.7.45 06/24/2009
+    } else {
+      yBoxOffset = yOffset;
     }
 
     boxXY[0] += xBoxOffset;
     boxXY[1] += yBoxOffset;
-  
+
   }
   
   private static void showBox(JmolRendererInterface g3d, short colix,
@@ -358,7 +359,7 @@ public class Text extends Object2d {
                                  float[] boxXY, int z, int zSlab,
                                  int xOffset, int yOffset, float ascent,
                                  int descent, boolean doPointer,
-                                 short pointerColix) {
+                                 short pointerColix, boolean isExact) {
 
     // old static style -- quick, simple, no line breaks, odd alignment?
     // LabelsRenderer only
@@ -369,7 +370,7 @@ public class Text extends Object2d {
     int x0 = (int) boxXY[0];
     int y0 = (int) boxXY[1];
     
-    setBoxXY(boxWidth, boxHeight, xOffset, yOffset, boxXY);
+    setBoxXY(boxWidth, boxHeight, xOffset, yOffset, boxXY, isExact);
 
     float x = boxXY[0];
     float y = boxXY[1];

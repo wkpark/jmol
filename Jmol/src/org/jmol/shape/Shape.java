@@ -37,6 +37,8 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
+
 import java.util.BitSet;
 import java.util.Vector;
 import java.util.Hashtable;
@@ -186,6 +188,12 @@ public abstract class Shape {
     return false;
   }
 
+  protected int coordinateInRange(int x, int y, Point3f vertex, int dmin2, Point3i ptXY) {
+    viewer.transformPoint(vertex, ptXY);
+    int d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);
+    return (d2 < dmin2 ? d2 : -1);
+  }
+  
   public short setColix(short colix, byte paletteID, int atomIndex) {
     return setColix(colix, paletteID, modelSet.getAtomAt(atomIndex));
   }

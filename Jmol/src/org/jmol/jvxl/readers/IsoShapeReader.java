@@ -73,6 +73,14 @@ class IsoShapeReader extends VolumeDataReader {
       maxGrid = 40;
       type = "hydrogen-like orbital";
       break;
+    case Parameters.SURFACE_LONEPAIR:
+    case Parameters.SURFACE_RADICAL:
+      type = "lp";
+      vertexDataOnly = true;
+      radius = 0;
+      ppa = 1;
+      maxGrid = 1;
+      break;
     case Parameters.SURFACE_LOBE:
       allowNegative = false;
       calcFactors(psi_n, psi_l, psi_m);
@@ -233,5 +241,20 @@ class IsoShapeReader extends VolumeDataReader {
     if (Math.abs(phi_m) < 0.0000000001)
       phi_m = 0;
     return rnl * theta_lm * phi_m;
+  }
+  
+  protected void readSurfaceData(boolean isMapData) throws Exception {
+    switch (params.dataType) {
+    case Parameters.SURFACE_LONEPAIR:
+    case Parameters.SURFACE_RADICAL:
+      ptPsi.set(0, 0, eccentricityScale / 2);
+      eccentricityMatrixInverse.transform(ptPsi);
+      ptPsi.add(center);
+      addVertexCopy(center, 0, 0);
+      addVertexCopy(ptPsi, 0, 0);
+      addTriangleCheck(0, 0, 0, 0, false, 0);
+      return;
+    }
+    super.readSurfaceData(isMapData);
   }
 }

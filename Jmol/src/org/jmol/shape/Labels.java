@@ -56,7 +56,8 @@ public class Labels extends AtomShape {
   private short defaultBgcolix;
   private byte defaultPaletteID;
   private int defaultPointer;
-  private int zeroOffset;
+  private static int zeroOffset = (JmolConstants.LABEL_DEFAULT_X_OFFSET << 8)
+      | JmolConstants.LABEL_DEFAULT_Y_OFFSET;
 
   byte zeroFontId;
 
@@ -71,8 +72,7 @@ public class Labels extends AtomShape {
         JmolConstants.DEFAULT_FONTSTYLE, JmolConstants.LABEL_DEFAULT_FONTSIZE).fid;
     defaultColix = 0; //"none" -- inherit from atom
     defaultBgcolix = 0; //"none" -- off
-    defaultOffset = zeroOffset = (JmolConstants.LABEL_DEFAULT_X_OFFSET << 8)
-        | JmolConstants.LABEL_DEFAULT_Y_OFFSET;
+    defaultOffset = zeroOffset;
     defaultZPos = 0;
     translucentAllowed = false;
   }
@@ -413,7 +413,7 @@ public class Labels extends AtomShape {
   final static int GROUP_FLAG    = 0x10;
   final static int FRONT_FLAG    = 0x20;
   final static int SCALE_FLAG    = 0x40;
-  //final static int TEXT_FLAG     = 0x80;
+  final static int EXACT_OFFSET_FLAG = 0x80;
   final static int FLAGS         = 0xFF;
   final static int FLAG_OFFSET   = 8;
 
@@ -572,4 +572,53 @@ public class Labels extends AtomShape {
         + getShapeCommands(null, temp3, atomCount);
   }
 
+  int pickedAtom = -1;
+  int pickedOffset = 0;
+  public synchronized boolean checkObjectDragged(int prevX, int prevY, int x,
+                                                 int y, int modifiers,
+                                                 BitSet bsVisible) {
+    if (viewer.getPickingMode() != JmolConstants.PICKING_LABEL)
+      return false;
+    // mouse down ?
+    if (prevX == Integer.MIN_VALUE) {
+      int iAtom = viewer.findNearestAtomIndex(x, y);
+      if (iAtom >= 0 && atoms[iAtom].isVisible(myVisibilityFlag)) {
+        pickedAtom = iAtom;
+        pickedOffset = (offsets == null 
+            || pickedAtom >= offsets.length ? 0 
+                : offsets[pickedAtom]) >> FLAG_OFFSET;
+        return true;
+      }
+      return false;
+    }
+    // mouse up ?
+    if (prevX == Integer.MAX_VALUE) {
+      pickedAtom = -1;
+      return false;
+    }
+    if (pickedAtom < 0)
+      return false;
+    move2D(pickedAtom, x, y);
+    return true;
+  }
+                         
+  private void move2D(int pickedAtom, int x, int y) {
+    if (g3d.isAntialiased()) {
+      x <<= 1;
+      y <<= 1;
+    }
+    Atom atom = atoms[pickedAtom];
+    int xOffset = Object2d.getXOffset(pickedOffset);
+    int yOffset = -Object2d.getYOffset(pickedOffset);
+    xOffset += x - atom.screenX;
+    yOffset += atom.screenY - y;
+    int offset = Object2d.getOffset(xOffset, yOffset);
+    if (offset == 0)
+      offset = Short.MAX_VALUE;
+    else if (offset == zeroOffset)
+      offset = 0;
+    setOffsets(pickedAtom, offset);
+    offsets[pickedAtom] |= EXACT_OFFSET_FLAG;
+  }
+  
 }

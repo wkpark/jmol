@@ -241,7 +241,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
-    if ("lcaoCartoon" == propertyName) {
+    if ("lcaoCartoon" == propertyName || "lonePair" == propertyName || "radical" == propertyName) {
       // z x center rotationAxis (only one of x, y, or z is nonzero; in radians) 
       Vector3f[] info = (Vector3f[]) value;
       if (!explicitID) {
@@ -249,7 +249,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       }
       //center (info[2]) is set in SurfaceGenerator
       if (!sg.setParameter("lcaoCartoonCenter", info[2]))
-        drawLcaoCartoon(info[0], info[1], info[3]);
+        drawLcaoCartoon(info[0], info[1], info[3], 
+        ("lonePair" == propertyName ? 2 : "radical" == propertyName ? 1 : 0));
       return;
     }
 
@@ -583,7 +584,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private int nLCAO = 0;
 
-  private void drawLcaoCartoon(Vector3f z, Vector3f x, Vector3f rotAxis) {
+  private void drawLcaoCartoon(Vector3f z, Vector3f x, Vector3f rotAxis, int nElectrons) {
     String lcaoCartoon = sg.setLcao();
     //really rotRadians is just one of these -- x, y, or z -- not all
     float rotRadians = rotAxis.x + rotAxis.y + rotAxis.z;
@@ -611,17 +612,18 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     if (thisMesh == null && nLCAO == 0)
       nLCAO = meshCount;
-    String id = (thisMesh == null ? "lcao" + (++nLCAO) + "_" + lcaoCartoon
+    String id = (thisMesh == null ? (nElectrons > 0 ? "lp" : "lcao") + (++nLCAO) + "_" + lcaoCartoon
         : thisMesh.thisID);
     if (thisMesh == null)
       allocMesh(id);
-
     if (lcaoCartoon.equals("px")) {
       thisMesh.thisID += "a";
       Mesh meshA = thisMesh;
-      createLcaoLobe(x, sense);
+      createLcaoLobe(x, sense, nElectrons);
+      if (nElectrons > 0) 
+        return;
       setProperty("thisID", id + "b", null);
-      createLcaoLobe(x, -sense);
+      createLcaoLobe(x, -sense, nElectrons);
       thisMesh.colix = Graphics3D.getColix(colorNeg);
       linkedMesh = thisMesh.linkedMesh = meshA;
       return;
@@ -629,9 +631,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (lcaoCartoon.equals("py")) {
       thisMesh.thisID += "a";
       Mesh meshA = thisMesh;
-      createLcaoLobe(y, sense);
+      createLcaoLobe(y, sense, nElectrons);
+      if (nElectrons > 0) 
+        return;
       setProperty("thisID", id + "b", null);
-      createLcaoLobe(y, -sense);
+      createLcaoLobe(y, -sense, nElectrons);
       thisMesh.colix = Graphics3D.getColix(colorNeg);
       linkedMesh = thisMesh.linkedMesh = meshA;
       return;
@@ -639,50 +643,52 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (lcaoCartoon.equals("pz")) {
       thisMesh.thisID += "a";
       Mesh meshA = thisMesh;
-      createLcaoLobe(z, sense);
+      createLcaoLobe(z, sense, nElectrons);
+      if (nElectrons > 0) 
+        return;
       setProperty("thisID", id + "b", null);
-      createLcaoLobe(z, -sense);
+      createLcaoLobe(z, -sense, nElectrons);
       thisMesh.colix = Graphics3D.getColix(colorNeg);
       linkedMesh = thisMesh.linkedMesh = meshA;
       return;
     }
     if (lcaoCartoon.equals("pxa")) {
-      createLcaoLobe(x, sense);
+      createLcaoLobe(x, sense, nElectrons);
       return;
     }
     if (lcaoCartoon.equals("pxb")) {
-      createLcaoLobe(x, -sense);
+      createLcaoLobe(x, -sense, nElectrons);
       return;
     }
     if (lcaoCartoon.equals("pya")) {
-      createLcaoLobe(y, sense);
+      createLcaoLobe(y, sense, nElectrons);
       return;
     }
     if (lcaoCartoon.equals("pyb")) {
-      createLcaoLobe(y, -sense);
+      createLcaoLobe(y, -sense, nElectrons);
       return;
     }
     if (lcaoCartoon.equals("pza")) {
-      createLcaoLobe(z, sense);
+      createLcaoLobe(z, sense, nElectrons);
       return;
     }
     if (lcaoCartoon.equals("pzb")) {
-      createLcaoLobe(z, -sense);
+      createLcaoLobe(z, -sense, nElectrons);
       return;
     }
     if (lcaoCartoon.indexOf("sp") == 0 || lcaoCartoon.indexOf("lp") == 0) {
-      createLcaoLobe(z, sense);
+      createLcaoLobe(z, sense, nElectrons);
       return;
     }
 
     // assume s
-    createLcaoLobe(null, 1);
+    createLcaoLobe(null, 1, nElectrons);
     return;
   }
 
   private Point4f lcaoDir = new Point4f();
 
-  private void createLcaoLobe(Vector3f lobeAxis, float factor) {
+  private void createLcaoLobe(Vector3f lobeAxis, float factor, int nElectrons) {
     initState();
     if (Logger.debugging) {
       Logger.debug("creating isosurface ID " + thisMesh.thisID);
@@ -695,7 +701,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       lcaoDir.y = lobeAxis.y * factor;
       lcaoDir.z = lobeAxis.z * factor;
       lcaoDir.w = 0.7f;
-      setProperty("lobe", lcaoDir, null);
+      setProperty(nElectrons == 2 ? "lp" : nElectrons == 1 ? "rad" : "lobe", 
+          lcaoDir, null);
     }
     setScriptInfo();
   }
@@ -828,9 +835,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.ptCenter.set(center);
   }
 
-  protected void setScriptInfo( ) {
+  protected void setScriptInfo() {
     thisMesh.title = sg.getTitle();
     String script = sg.getScript();
+    thisMesh.dataType = sg.getParams().dataType;
     thisMesh.bitsets = null;
     if (script != null) {
       if (script.charAt(0) == ' ') { // lobe only
@@ -941,6 +949,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   private final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
+  private final Point3i ptXY = new Point3i();
 
   public Point3fi checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     if (modifiers !=MouseManager.ALT_LEFT)
@@ -964,7 +973,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       Point3f[] centers = m.getCenters();
       for (int j = centers.length; --j >= 0; ) {
           Point3f v = centers[j];
-          int d2 = coordinateInRange(x, y, v, dmin2);
+          int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
           if (d2 >= 0) {
             imesh = i;
             if (ptXY.z < minz) {
@@ -1023,8 +1032,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // then do all the changes and save the new orientation.
     // Then just do a timed restore.
 
-    if (Math.abs(vNorm.x - -0.00225893) < 0.0001)
-    System.out.println("isosurface set heading " + vNorm + " " + pt + " " + nSeconds);
+    //if (Math.abs(vNorm.x - -0.00225893) < 0.0001)System.out.println("isosurface set heading " + vNorm + " " + pt + " " + nSeconds);
     Orientation o1 = viewer.getOrientation();
     
     // move to point
@@ -1041,8 +1049,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // subtract the navigation point to get a relative point
     // that we can project into the xy plane by setting z = 0
     Point3f navPt = new Point3f(viewer.getNavigationOffset());
-    if (navPt.x != 250)
-      System.out.println("isosurface navPt=" + navPt);
+    //if (navPt.x != 250)System.out.println("isosurface navPt=" + navPt);
     toPts.sub(navPt);
     toPts.z = 0;
     
@@ -1050,7 +1057,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // less 20 degrees for the normal upward sloping view
     float angle = Measure.computeTorsion(JmolConstants.axisNY, 
         JmolConstants.center, JmolConstants.axisZ, toPts, true);
-    System.out.println("isosurface navigate z " + angle);
+    //System.out.println("isosurface navigate z " + angle);
     viewer.navigate(0, JmolConstants.axisZ, angle);        
     toPt.set(vNorm);
     toPt.add(pt);
@@ -1058,7 +1065,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     toPts.sub(navPt);
     angle = Measure.computeTorsion(JmolConstants.axisNY,
         JmolConstants.center, JmolConstants.axisX, toPts, true);
-    System.out.println("isosurface navigate x " + angle);
+    //System.out.println("isosurface navigate x " + angle);
     viewer.navigate(0, JmolConstants.axisX, 20 - angle);
     
     // save this orientation, restore the first, and then
@@ -1067,9 +1074,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // would hang.
     
     navPt = new Point3f(viewer.getNavigationOffset());
-    System.out.println("isosurface set heading2 ");
-    if (navPt.x != 250)
-      System.out.println("isosurface navPt=" + navPt);
+    //System.out.println("isosurface set heading2 ");
+    //if (navPt.x != 250)System.out.println("isosurface navPt=" + navPt);
     if (nSeconds <= 0)
       return;
     viewer.saveOrientation("_navsurf");
@@ -1129,7 +1135,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         int n = vc.size() - 1;
         for (int k = IsosurfaceMesh.CONTOUR_POINTS; k < n; k++) {
           Point3f v = (Point3f) vc.get(k);
-          int d2 = coordinateInRange(x, y, v, dmin2);
+          int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
           if (d2 >= 0) {
             dmin2 = d2;
             pickedContour = vc;
@@ -1142,7 +1148,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         int pickedVertex = -1;
         for (int k = m.vertexCount; --k >= m.firstRealVertex; ) {
           Point3f v = m.vertices[k];
-          int d2 = coordinateInRange(x, y, v, dmin2);
+          int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
           if (d2 >= 0) {
             dmin2 = d2;
             pickedVertex = k;
@@ -1154,18 +1160,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     return null;
   }
-  private final Point3i ptXY = new Point3i();
 
-  private int coordinateInRange(int x, int y, Point3f vertex, int dmin2) {
-    int d2 = dmin2;
-    viewer.transformPoint(vertex, ptXY);
-    d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);
-    return (d2 < dmin2 ? d2 : -1);
-  }
-  
   public int getColixArgb(short colix) {
     return viewer.getColixArgb(colix);
   }
-
 
 }

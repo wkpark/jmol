@@ -1099,7 +1099,7 @@ public Object getProperty(String property, int index) {
               || iModel >= m.polygonIndexes.length || m.polygonIndexes[iModel] == null)
             continue;
           for (int iVertex = m.polygonIndexes[iModel].length; --iVertex >= 0;) {
-            int d2 = coordinateInRange(x, y, m.vertices[m.polygonIndexes[iModel][iVertex]], dmin2);
+            int d2 = coordinateInRange(x, y, m.vertices[m.polygonIndexes[iModel][iVertex]], dmin2, ptXY);
             if (d2 >= 0) {
               pickedMesh = m;
               dmin2 = d2;
@@ -1113,13 +1113,6 @@ public Object getProperty(String property, int index) {
     return (pickedMesh != null);
   }
 
-  private int coordinateInRange(int x, int y, Point3f vertex, int dmin2) {
-    int d2 = dmin2;
-    viewer.transformPoint(vertex, ptXY);
-    d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);
-    return (d2 < dmin2 ? d2 : -1);
-  }
-  
   private String getDrawCommand(DrawMesh mesh) {
     modelCount = viewer.getModelCount();
     if (mesh != null)

@@ -46,6 +46,7 @@ public abstract class MouseManager implements KeyListener {
   protected long timeCurrent = -1;
 
   private boolean drawMode = false;
+  private boolean labelMode = false;
   private boolean dragSelectedMode = false;
   private boolean measuresEnabled = true;
   private MeasurementPending measurementPending;
@@ -198,6 +199,8 @@ public abstract class MouseManager implements KeyListener {
       if (dragSelectedMode && isAltKeyReleased)
         viewer.moveSelected(Integer.MIN_VALUE, 0, 0, 0, false);
       isAltKeyReleased = false;
+    } else if (i == KeyEvent.VK_SHIFT) {
+      mouseMovedModifiers = SHIFT;
     }
     if (viewer.getNavigationMode()) {
       int m = ke.getModifiers();
@@ -224,6 +227,8 @@ public abstract class MouseManager implements KeyListener {
       if (dragSelectedMode)
         viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, false);
       isAltKeyReleased = true;
+    } else if (i == KeyEvent.VK_SHIFT) {
+      mouseMovedModifiers = 0;
     }
     if (!viewer.getNavigationMode())
       return;
@@ -333,9 +338,10 @@ public abstract class MouseManager implements KeyListener {
     }
   }
 
+  int mouseMovedModifiers = Integer.MAX_VALUE;
+
   void mousePressed(long time, int x, int y, int modifiers,
                     boolean isPopupTrigger) {
-
     if (previousPressedX == x && previousPressedY == y
         && previousPressedModifiers == modifiers
         && (time - previousPressedTime) < MAX_DOUBLE_CLICK_MILLIS) {
@@ -372,7 +378,7 @@ public abstract class MouseManager implements KeyListener {
     case CTRL_ALT_RIGHT:
     case SHIFT_LEFT:
     case ALT_SHIFT_LEFT:
-      if (drawMode)
+      if (drawMode || labelMode)
         viewer.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, modifiers);
     }
     if (dragSelectedMode)
@@ -413,7 +419,7 @@ public abstract class MouseManager implements KeyListener {
     case CTRL_ALT_RIGHT:
     case SHIFT_LEFT:
     case ALT_SHIFT_LEFT:
-      if (drawMode)
+      if (drawMode || labelMode)
         viewer.checkObjectDragged(Integer.MAX_VALUE, 0, x, y, modifiers);
     }
     if (dragSelectedMode)
@@ -449,7 +455,7 @@ public abstract class MouseManager implements KeyListener {
   }
 
   void setMouseMode() {
-    drawMode = false;
+    drawMode = labelMode = false;
     dragSelectedMode = viewer.getBooleanProperty("dragSelected");
     rubberbandSelectionMode = (viewer.getPickingStyle() == JmolConstants.PICKINGSTYLE_SELECT_DRAG);
     measuresEnabled = !dragSelectedMode;
@@ -465,6 +471,9 @@ public abstract class MouseManager implements KeyListener {
         break;
       //other cases here?
       case JmolConstants.PICKING_LABEL:
+        labelMode = true;
+        measuresEnabled = false;
+        break;
       case JmolConstants.PICKING_MEASURE_DISTANCE:
       case JmolConstants.PICKING_MEASURE_ANGLE:
       case JmolConstants.PICKING_MEASURE_TORSION:
@@ -536,7 +545,7 @@ public abstract class MouseManager implements KeyListener {
         if (measurementPending != null) {
           addToMeasurement(nearestAtomIndex, nearestPoint, true);
           toggleMeasurement();
-        } else if (!drawMode && !dragSelectedMode && measuresEnabled) {
+        } else if (!drawMode && !labelMode && !dragSelectedMode && measuresEnabled) {
           enterMeasurementMode();
           addToMeasurement(nearestAtomIndex, nearestPoint, true);
         }
@@ -566,13 +575,15 @@ public abstract class MouseManager implements KeyListener {
     modifiers &= BUTTON_MODIFIER_MASK;
     switch (pressedCount) {
     case 2:
-      //viewer.setStatusUserAction("mouseDoublePressDrag: " + modifiers);
       switch (modifiers) {
       case SHIFT_LEFT:
       case ALT_LEFT:
       case CTRL_ALT_RIGHT:
       case MIDDLE:
         checkMotion();
+        if (labelMode && modifiers == SHIFT_LEFT) {
+          return;
+        }
         viewer.translateXYBy(deltaX, deltaY);
         return;
       case CTRL_SHIFT_LEFT:
@@ -601,7 +612,7 @@ public abstract class MouseManager implements KeyListener {
         }
       case SHIFT_LEFT:
       case ALT_SHIFT_LEFT:
-        if (drawMode) {
+        if (drawMode || labelMode) {
           checkMotion();
           viewer.checkObjectDragged(previousDragX, previousDragY, x, y,
               modifiers);
@@ -615,6 +626,7 @@ public abstract class MouseManager implements KeyListener {
           viewer.refresh(3, "mouse-drag selection");
           return;
         }
+        // fall through
       case MIDDLE:
         //      if (deltaY < 0 && deltaX > deltaY || deltaY > 0 && deltaX < deltaY)
         if (Math.abs(deltaY) > 5 * Math.abs(deltaX))
@@ -699,7 +711,7 @@ public abstract class MouseManager implements KeyListener {
   }
 
   void hoverOn(int atomIndex) {
-    viewer.hoverOn(atomIndex);
+      viewer.hoverOn(atomIndex, mouseMovedModifiers);
   }
 
   void hoverOff() {

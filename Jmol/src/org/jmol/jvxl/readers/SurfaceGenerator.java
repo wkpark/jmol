@@ -680,6 +680,20 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("lp" == propertyName) {
+      params.setLp((Point4f) value);
+      surfaceReader = new IsoShapeReader(this, 3, 2, 0, 15);
+      generateSurface();
+      return true;
+    }
+
+    if ("rad" == propertyName) {
+      params.setRadical((Point4f) value);
+      surfaceReader = new IsoShapeReader(this, 3, 2, 0, 15);
+      generateSurface();
+      return true;
+    }
+
     if ("lobe" == propertyName) {
       params.setLobe((Point4f) value);
       surfaceReader = new IsoShapeReader(this, 3, 2, 0, 15);

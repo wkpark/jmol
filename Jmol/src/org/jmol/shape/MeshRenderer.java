@@ -206,7 +206,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
         : width < 0 || iA != iB && isTranslucent ? Graphics3D.ENDCAPS_FLAT
         : Graphics3D.ENDCAPS_SPHERICAL);
     if (diameter == 0)
-      diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 6 : 3);
+      diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 7 : 3);
     if (width == 0) {
       if (iA == iB)
         g3d.fillSphereCentered(diameter, screens[iA]);

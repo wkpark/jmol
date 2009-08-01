@@ -163,7 +163,6 @@ ActionListener, ChangeListener, Runnable {
  //   super(frame,"AtomSetChooser", false);
     super(GT._("AtomSetChooser"));
     this.viewer = viewer;
-    saveChooser = new JFileChooser();
     
     // initialize the treeModel
     treeModel = new DefaultTreeModel(new DefaultMutableTreeNode(GT._("No AtomSets")));
@@ -512,6 +511,8 @@ ActionListener, ChangeListener, Runnable {
       return;
     }
 
+    if (saveChooser == null)
+      saveChooser = new JFileChooser();
     int retval = saveChooser.showSaveDialog(this);
     if (retval == 0) {
       File file = saveChooser.getSelectedFile();

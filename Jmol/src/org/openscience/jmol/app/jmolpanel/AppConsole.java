@@ -53,6 +53,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Token;
 
 public final class AppConsole extends JmolConsole implements EnterListener{
   
@@ -488,69 +489,77 @@ public final class AppConsole extends JmolConsole implements EnterListener{
       setPrompt();
     }
     
-     /* (non-Javadoc)
-      * @see java.awt.Component#processKeyEvent(java.awt.event.KeyEvent)
-      */
-      
-     /**
-      * Custom key event processing for command 0 implementation.
-      * 
-      * Captures key up and key down strokes to call command history
-      * and redefines the same events with control down to allow
-      * caret vertical shift.
-      * 
-      * @see java.awt.Component#processKeyEvent(java.awt.event.KeyEvent)
-      */
-     protected void processKeyEvent(KeyEvent ke)
-     {
-        // Id Control key is down, captures events does command
-        // history recall and inhibits caret vertical shift.
+     /*
+     * (non-Javadoc)
+     * 
+     * @see java.awt.Component#processKeyEvent(java.awt.event.KeyEvent)
+     */
 
-       int kcode = ke.getKeyCode();
-       int kid = ke.getID();
-       if (kcode == KeyEvent.VK_UP
-           && kid == KeyEvent.KEY_PRESSED
-           && !ke.isControlDown()) {
-           recallCommand(true);
-        } else if (
-           kcode == KeyEvent.VK_DOWN
-              && kid == KeyEvent.KEY_PRESSED
-              && !ke.isControlDown()) {
-           recallCommand(false);
-        } else if (
-           (kcode == KeyEvent.VK_DOWN
-              || kcode == KeyEvent.VK_UP)
-              && kid == KeyEvent.KEY_PRESSED
-              && ke.isControlDown()) {
-          // If Control key is down, redefines the event as if it 
-          // where a key up or key down stroke without modifiers.  
-          // This allows to move the caret up and down
-          // with no command history recall.
-           super
-              .processKeyEvent(new KeyEvent(
-                 (Component) ke.getSource(),
-                 kid,
-                 ke.getWhen(),
-                 0,         // No modifiers
-                 kcode, 
-                 ke.getKeyChar(), 
-                 ke.getKeyLocation()));
-        } else {
-          // Standard processing for other events.
-           super.processKeyEvent(ke);
-           //check command for compiler-identifyable syntax issues
-           //this may have to be taken out if people start complaining
-           //that only some of the commands are being checked
-           //that is -- that the script itself is not being fully checked
-           
-           //not perfect -- help here?
-           if (kid == KeyEvent.KEY_RELEASED && ke.getModifiers() < 2
-               && (kcode > KeyEvent.VK_DOWN  && kcode < 400 || kcode == KeyEvent.VK_BACK_SPACE))
-             checkCommand();
+    /**
+     * Custom key event processing for command 0 implementation.
+     * 
+     * Captures key up and key down strokes to call command history and
+     * redefines the same events with control down to allow caret vertical
+     * shift.
+     * 
+     * @see java.awt.Component#processKeyEvent(java.awt.event.KeyEvent)
+     */
+    protected void processKeyEvent(KeyEvent ke) {
+      // Id Control key is down, captures events does command
+      // history recall and inhibits caret vertical shift.
+
+      int kcode = ke.getKeyCode();
+      int kid = ke.getID();
+      if (kcode == KeyEvent.VK_TAB) {
+        nTab++;
+        completeCommand();
+        return;
+      } 
+      nTab = 0;
+      if (kcode == KeyEvent.VK_UP && kid == KeyEvent.KEY_PRESSED
+          && !ke.isControlDown()) {
+        recallCommand(true);
+      } else if (kcode == KeyEvent.VK_DOWN && kid == KeyEvent.KEY_PRESSED
+          && !ke.isControlDown()) {
+        recallCommand(false);
+      } else if ((kcode == KeyEvent.VK_DOWN || kcode == KeyEvent.VK_UP)
+          && kid == KeyEvent.KEY_PRESSED && ke.isControlDown()) {
+        // If Control key is down, redefines the event as if it
+        // where a key up or key down stroke without modifiers.
+        // This allows to move the caret up and down
+        // with no command history recall.
+        super.processKeyEvent(new KeyEvent((Component) ke.getSource(), kid, ke
+            .getWhen(), 0, // No modifiers
+            kcode, ke.getKeyChar(), ke.getKeyLocation()));
+      } else {
+        // Standard processing for other events.
+        super.processKeyEvent(ke);
+        // check command for compiler-identifyable syntax issues
+        // this may have to be taken out if people start complaining
+        // that only some of the commands are being checked
+        // that is -- that the script itself is not being fully checked
+
+        // not perfect -- help here?
+        if (kid == KeyEvent.KEY_RELEASED
+            && ke.getModifiers() < 2
+            && (kcode > KeyEvent.VK_DOWN && kcode < 400 || kcode == KeyEvent.VK_BACK_SPACE))
+          checkCommand();
+      }
+    }
+
+     private int nTab = 0;
+     private void completeCommand() {
+       String strCommand = consoleDoc.getCommandString();
+       String cmd = Token.completeCommand(strCommand, nTab);
+       if (!cmd.equals(strCommand))
+        try {
+          consoleDoc.replaceCommand(cmd, false);
+        } catch (BadLocationException e) {
+          //
         }
-     }
+    }
 
-     /**
+    /**
      * Recall command history.
      * 
      * @param up

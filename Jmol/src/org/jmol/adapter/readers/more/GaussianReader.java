@@ -408,7 +408,10 @@ but:
           data[i] = new Vector();
           mos[i].put("symmetry", tokens[i]);
         }
-        tokens = getStrings(readLine().substring(21), nThisLine, 10);
+        line = readLine().substring(21);
+        tokens = getTokens();
+        if (tokens.length != nThisLine)
+          tokens = getStrings(line, nThisLine, 10);
         for (int i = 0; i < nThisLine; i++)
           mos[i].put("energy", new Float(tokens[i]));
         continue;

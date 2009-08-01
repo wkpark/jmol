@@ -1331,6 +1331,43 @@ public class Token {
       return qw;
     return nada;
   }
+
+  public static String completeCommand(String strCommand, int n) {
+    if (strCommand == null)
+      return null;
+    int i = strCommand.lastIndexOf(" ");
+    if (true || i == strCommand.length() - 1)
+      return strCommand;
+    // not quite working
+    String str = strCommand.substring(i + 1, strCommand.length()).toLowerCase();
+    if (str.length() > 1 && n > 1)
+      str = str.substring(0, 1);
+    int nFound = 0;
+    int n0 = n;
+    String nameFound = null;
+    out:
+    while (n >= 0) {
+      Enumeration e = map.keys();
+      while (e.hasMoreElements()) {
+        String name = (String) e.nextElement();
+        if (name.toLowerCase().startsWith(str)) {
+          System.out.println(name);
+          nameFound = name;
+          nFound++;
+          if (--n <= 0)
+            break out;
+        }
+      }
+      // found a bunch, but n is too large
+      if (nFound == 0)
+        return strCommand;
+      n = n0 % nFound;
+      if (false)
+        break;
+    }
+    return strCommand.substring(0, i + 1) + nameFound;
+  }
+
   
 /*
   public static String getSetParameters() {

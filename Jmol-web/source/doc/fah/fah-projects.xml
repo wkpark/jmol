@@ -3899,9 +3899,9 @@
     credit="57" frames="100" code="G" contact="esorin" contrib="konpas1986"/>
   <fah_proj number="1740" name="p1740_1740_BCHE_NAT_300_03" public="n" file="xyz"
     contrib="John Deas"/>
-  <fah_proj number="1741" name="p1741_BCHE_NAT_300_03-33" public="n"
+  <fah_proj number="1741" name="p1741_BCHE_NAT_300_03-33" public="n" file="xyz"
     server="134.139.127.31" atoms="98813" preferred="14" deadline="28"
-    credit="2137.6" frames="100" code="A0" contact="esorin"/>
+    credit="2137.6" frames="100" code="A0" contact="esorin" contrib="John Deas"/>
   <fah_proj number="1750" name="p1750_ACHE_NAT_300_03" public="y"
     server="134.139.127.32" atoms="98996" preferred="14" deadline="28"
     credit="2137.6" frames="100" code="G" contact="esorin"/>
@@ -6764,9 +6764,9 @@
   <fah_proj number="4436" name="p4436_" public="y" file="xyz"
     server="171.67.108.20" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman" contrib="Ursomor"/>
-  <fah_proj number="4437" name="p4437_" public="y"
+  <fah_proj number="4437" name="p4437_" public="y" file="xyz"
     server="171.67.108.20" preferred="43" deadline="63"
-    credit="225" frames="100" code="G" contact="gbowman"/>
+    credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
   <fah_proj number="4438" name="p4438_Seq41_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7885" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman"/>

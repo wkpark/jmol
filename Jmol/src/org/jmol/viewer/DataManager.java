@@ -149,7 +149,7 @@ class DataManager {
   }
 
   Object[] getData(String type) {
-    if (dataValues == null)
+    if (dataValues == null || type == null)
       return null;
     if (type.equalsIgnoreCase("types")) {
       String[] info = new String[2];

@@ -298,6 +298,13 @@ public abstract class _Exporter {
     return new StringBuffer().append(0f).toString();
   }
 
+  protected String opacityFractionalFromColix(short colix) {
+    int translevel = Graphics3D.getColixTranslucencyLevel(colix);
+    if (Graphics3D.isColixTranslucent(colix))
+      return new StringBuffer().append(1 - translevel / 255f).toString();
+    return new StringBuffer().append(1f).toString();
+  }
+
   protected static float round(double number) { //AH
     return (float) Math.round(number*1000)/1000;  // leave just 3 decimals
   }

@@ -164,9 +164,10 @@ public class _VrmlExporter extends _Exporter {
   }
 
   public void drawPixel(short colix, int x, int y, int z) {
+    // dots
     pt.set(x, y, z);
     viewer.unTransformPoint(pt, ptAtom);
-    outputSphere(ptAtom, 0.01f, colix);
+    outputSphere(ptAtom, 0.02f, colix);
   }
 
   public void fillSphereCentered(short colix, int diameter, Point3f pt) {
@@ -507,25 +508,13 @@ public class _VrmlExporter extends _Exporter {
      */
   }
 
-  int iShapeBuffer;
-  
+  // not implemented:
+
   public void startShapeBuffer(int iShape) {
-    iShapeBuffer = 1;
-    switch(iShapeBuffer = iShape) {
-    default:
-      
-    }
   }
 
   public void endShapeBuffer() {
-    switch(iShapeBuffer) {
-    default:
-      output("}}\n");
-    }
-    iShapeBuffer = 0;
   }
-
-  // not implemented:
 
   public void renderText(Text t) {
   }

@@ -10432,7 +10432,7 @@ class ScriptEvaluator {
         if (!isSyntaxCheck)
           bsFrames = viewer.getModelBitSet(bsFrames, true);
       } else if (Parser.isOneOf(type, driverList.toLowerCase())) {
-        // povray, maya, vrml, u3d
+        // povray, maya, vrml, idtf
         pt++;
         type = type.substring(0, 1).toUpperCase() + type.substring(1);
         isExport = true;
@@ -10524,6 +10524,9 @@ class ScriptEvaluator {
         isExport = true;
       } else if (type.equals("X3D")) {
         type = "X3d";
+        isExport = true;
+      } else if (type.equals("IDTF")) {
+        type = "Idtf";
         isExport = true;
       } else if (type.equals("MA")) {
         type = "Maya";

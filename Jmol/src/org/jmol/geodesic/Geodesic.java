@@ -115,15 +115,15 @@ import java.util.Hashtable;
 
 public class Geodesic {
   
-  final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));
-  final static float oneFifth = 2 * (float)Math.PI / 5;
-  final static float oneTenth = oneFifth / 2;
+  private final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));
+  private final static float oneFifth = 2 * (float)Math.PI / 5;
+  private final static float oneTenth = oneFifth / 2;
   
   // miguel 2005 01 11
   // within the context of this code, the term 'vertex' is used
   // to refer to a short which is an index into the tables
   // of vertex information.
-  final static short[] faceVertexesIcosahedron = {
+  private final static short[] faceVertexesIcosahedron = {
     0, 1, 2,
     0, 2, 3,
     0, 3, 4,
@@ -150,7 +150,7 @@ public class Geodesic {
   };
 
   // every vertex has 6 neighbors ... except at the beginning of the world
-  final static short[] neighborVertexesIcosahedron = {
+  private final static short[] neighborVertexesIcosahedron = {
     1, 2, 3, 4, 5,-1, // 0
     0, 5,10, 6, 2,-1, // 1
     0, 1, 6, 7, 3,-1, // 2

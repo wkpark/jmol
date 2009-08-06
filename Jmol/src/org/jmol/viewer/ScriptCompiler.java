@@ -865,14 +865,14 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       }
     } else if (tokCommand == Token.write) {
       int pt = cchToken;
-      // write image spt filename
+      // write image 300 300 filename
       // write script filename
       // write spt filename
       // write jpg filename
       // write filename
       if (nTokens == 2 && lastToken.tok == Token.frame)
         iHaveQuotedString = true;
-      if (nTokens > 2 && !iHaveQuotedString && lookingAtImpliedString()) {
+      if (!iHaveQuotedString && lookingAtImpliedString()) {
         String str = script.substring(ichToken, ichToken + cchToken);
         if (str.startsWith("@{")) {
           iHaveQuotedString = true;

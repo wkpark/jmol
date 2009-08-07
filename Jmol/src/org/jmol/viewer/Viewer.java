@@ -7385,8 +7385,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         if (useDialog)
           fileName = fileName.substring(1);
         fileName = FileManager.setLocalPathForWritingFile(this, fileName);
-        err = statusManager.createImage((useDialog ? "?" : "") + fileName,
-            type, text_or_bytes, quality);
+        if (isApplet) {
+          // applet calls creatImage itself
+          err = statusManager.createImage((useDialog ? "?" : "") + fileName,
+              type, text_or_bytes, quality);
+        } else {
+          // application can do it here
+          JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
+             .getOptionInterface("export.image.ImageCreator");
+          c.setViewer(this);
+          err = (String) c.createImage(fileName, type, text_or_bytes, quality);
+          statusManager.createImage(err, type, null, quality);
+        }
       }
       // err may be null if user cancels operation involving dialog and "?"
     } catch (Throwable er) {

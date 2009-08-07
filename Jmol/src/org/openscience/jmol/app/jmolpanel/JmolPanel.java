@@ -1306,11 +1306,13 @@ public class JmolPanel extends JPanel implements SplashInterface {
    */
   String createImageStatus(String fileName, String type, Object text_or_bytes,
                            int quality) {
-    String msg = (String) (new ImageCreator(viewer)).createImage(fileName,
-        type, text_or_bytes, quality);
-    if (msg == null || msg.startsWith("OK"))
-      return msg;
-    if (status != null) {
+    String msg;
+    if (text_or_bytes == null)
+      msg = fileName;
+    else
+      msg = (String) (new ImageCreator(viewer)).createImage(fileName,
+          type, text_or_bytes, quality);
+    if (msg != null && !msg.startsWith("OK") && status != null) {
       status.setStatus(1, GT._("IO Exception:"));
       status.setStatus(2, msg);
     }

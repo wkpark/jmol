@@ -55,43 +55,44 @@ import javax.vecmath.Vector3f;
 
 public class Quaternion {
   public float q0, q1, q2, q3;
-
   public Matrix3f mat;
 
+  private final static Point4f qZero = new Point4f();
+  private final static Quaternion qTemp = new Quaternion(0, 0, 0, 0);
+  
   public Quaternion() {
     q0 = 1;
   }
 
   public Quaternion(Quaternion q) {
-    q0 = q.q0;
-    q1 = q.q1;
-    q2 = q.q2;
-    q3 = q.q3;
+    set(q);
   }
 
-  public void setRef(Quaternion qref) {
-    if (qref == null) {
-      fixQ(this);
-      return;
-    }
-    if (this.dot(qref) >= 0)
-      return;
-    q0 *= -1;
-    q1 *= -1;
-    q2 *= -1;
-    q3 *= -1;
+  public Quaternion(Tuple3f pt, float theta) {
+    set(pt, theta);
+  }
+
+  public Quaternion(Matrix3f mat) {
+    set(mat);
+  }
+
+  public Quaternion(AxisAngle4f a) {
+    set(a);
+  }
+
+  public Quaternion(Point4f pt) {
+    set(pt);
   }
 
   // create a new object with the given components
-  private Quaternion(float q0, float q1, float q2, float q3) {
+  public Quaternion(float q0, float q1, float q2, float q3) {
     this.q0 = q0;
     this.q1 = q1;
     this.q2 = q2;
     this.q3 = q3;
   }
 
-  private final static Point4f qZero = new Point4f();
-  public Quaternion(Point4f pt) {
+  private void set(Point4f pt) {
     float factor = (pt == null ? 0 : pt.distance(qZero));
     if (factor == 0) {
       q0 = 1;
@@ -103,7 +104,7 @@ public class Quaternion {
     q3 = pt.z / factor;
   }
 
-  public Quaternion(Tuple3f pt, float theta) {
+  public void set(Tuple3f pt, float theta) {
     if (pt.x == 0 && pt.y == 0 && pt.z == 0) {
       q0 = 1;
       return;
@@ -116,7 +117,7 @@ public class Quaternion {
     q3 = (float) (pt.z * fact);
   }
 
-  public Quaternion(Matrix3f mat) {
+  public void set(Matrix3f mat) {
 
     /*
      * Changed 7/16/2008 to double precision for 11.5.48.
@@ -254,7 +255,35 @@ public class Quaternion {
      }
 
      */
+  }
 
+  public void set(AxisAngle4f a) {
+    AxisAngle4f aa = new AxisAngle4f(a);
+    if (aa.angle == 0)
+      aa.y = 1;
+    Matrix3f m3 = new Matrix3f();
+    m3.set(aa);
+    set(m3);
+  }
+
+  public void set(Quaternion q) {
+    q0 = q.q0;
+    q1 = q.q1;
+    q2 = q.q2;
+    q3 = q.q3;
+  }
+
+  public void setRef(Quaternion qref) {
+    if (qref == null) {
+      fixQ(this);
+      return;
+    }
+    if (this.dot(qref) >= 0)
+      return;
+    q0 *= -1;
+    q1 *= -1;
+    q2 *= -1;
+    q3 *= -1;
   }
 
   public static final Quaternion getQuaternionFrame(Point3f center, Point3f x, Point3f xy) {
@@ -344,9 +373,8 @@ public class Quaternion {
 
   public Quaternion mul(float x) {
     // UNIT multiplication
-    if (x == 1)
-      return new Quaternion(q0, q1, q2, q3);
-    return new Quaternion(getNormal(), getTheta() * x);
+    return (x == 1 ? new Quaternion(q0, q1, q2, q3) : 
+      new Quaternion(getNormal(), getTheta() * x));
   }
 
   public Quaternion mul(Quaternion p) {
@@ -386,8 +414,6 @@ public class Quaternion {
     qNew.q3 = q3 * f;
   }
 
-  private final static Quaternion qTemp = new Quaternion(0, 0, 0, 0);
-  
   public String toString() {
     return "{" + q1 + " " + q2 + " " + q3 + " " + q0 + "}";
   }

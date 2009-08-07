@@ -105,14 +105,12 @@ public class _IdtfExporter extends _Exporter {
     getViewpointPosition(ptAtom);
     adjustViewpointPosition(ptAtom);
     viewer.getAxisAngle(viewpoint);
+    Quaternion q0 = new Quaternion(viewpoint);
+    Quaternion q = new Quaternion(new Point4f(0.5258319f, -0.3542887f, -0.43182528f, 0.6414883f));
+    q = q.mul(q0);
+    viewpoint.set(q.getMatrix());
     if (viewpoint.angle == 0)
-      viewpoint.y = 1;
-    Matrix3f m3 = new Matrix3f();
-    m3.set(viewpoint);
-    Quaternion q = new Quaternion(new Point4f(0.48537543f, -0.38002273f, -0.4436077f, 0.6505426f));
-    Quaternion q2 = new Quaternion(m3);
-    q2 = q.mul(q2);
-    viewpoint.set(q2.getMatrix());
+      viewpoint.z = 1;
     m.set(viewpoint);
     ptAtom.set(center);
     ptAtom.scale(-1);
@@ -813,55 +811,14 @@ public class _IdtfExporter extends _Exporter {
   }
 
   public void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
+    // trick here is that we use Jmol's standard g3d package to construct
+    // the bitmap, but then output to jmolRenderer, which returns control
+    // here via drawPixel.
     if (z < 3) {
       viewer.transformPoint(center, pt);
       z = (int)pt.z;
     }
-/*    String useFontStyle = font3d.fontStyle.toUpperCase();
-    String preFontFace = font3d.fontFace.toUpperCase();
-    String useFontFace = (preFontFace.equals("MONOSPACED") ? "TYPEWRITER"
-        : preFontFace.equals("SERIF") ? "SERIF" : "SANS");
-    output("<Transform translation='");
-    pt.set(x, y, z);
-    viewer.unTransformPoint(pt, ptAtom);
-    output(ptAtom);
-    output("'>");
-    // These x y z are 3D coordinates of echo or the atom the label is attached
-    // to.
-    output("<Billboard ");
-    String child = getDef("T" + colix + useFontFace + useFontStyle + "_" + text);
-    if (child.charAt(0) == '_') {
-      output("DEF='" + child + "' axisOfRotation='0 0 0'>"
-        + "<Transform translation='0.0 0.0 0.0'>"
-        + "<Shape>");
-      outputAppearance(colix, true);
-      output("<Text string=" + Escape.escape(text) + ">");
-      output("<FontStyle ");
-      String fontstyle = getDef("F" + useFontFace + useFontStyle);
-      if (fontstyle.charAt(0) == '_') {
-        output("DEF='" + fontstyle + "' size='0.4' family='" + useFontFace
-            + "' style='" + useFontStyle + "'/>");      
-      } else {
-        output(fontstyle + "/>");
-      }
-      output("</Text>");
-      output("</Shape>");
-      output("</Transform>");
-    } else {
-      output(child + ">");
-    }
-    output("</Billboard>\n");
-    output("</Transform>\n");
-*/
-    /*
-     * Unsolved issues: # Non-label texts: echos, measurements :: need to get
-     * space coordinates, not screen coord. # Font size: not implemented; 0.4A
-     * is hardcoded (resizes with zoom) Java VRML font3d.fontSize = 13.0 size
-     * (numeric), but in angstroms, not pixels font3d.fontSizeNominal = 13.0 #
-     * Label offsets: not implemented; hardcoded to 0.25A in each x,y,z #
-     * Multi-line labels: only the first line is received # Sub/superscripts not
-     * interpreted
-     */
+    g3d.plotText(x, y, z, g3d.getColixArgb(colix), text, font3d, jmolRenderer);
   }
 
   public void startShapeBuffer(int iShape) {
@@ -955,7 +912,7 @@ public class _IdtfExporter extends _Exporter {
     pt.set(x, y, z);
     viewer.unTransformPoint(pt, ptAtom);
     short colix = Graphics3D.getColix(argb); 
-    outputSphere(ptAtom, 0.01f, colix);
+    outputSphere(ptAtom, 0.02f, colix);
   }
 
   public void plotImage(int x, int y, int z, Image image, short bgcolix,

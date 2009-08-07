@@ -836,68 +836,32 @@ public class _IdtfExporter extends _Exporter {
 
   public void drawCircleCentered(short colix, int diameter, int x, int y,
                                  int z, boolean doFill) {
-    
-    /*
-     * 
-     
+
     pt.set(x, y, z);
     viewer.unTransformPoint(pt, ptAtom);
     float d = viewer.unscaleToScreen(z, diameter);
+    int mad = (int) (d * 1000);
     pt.set(x, y, z + 1);
     viewer.unTransformPoint(pt, pt);
-
     if (doFill) {
-
-      // draw filled circle
-      
-      output("<Transform translation='");
-      tempV1.set(pt);
-      tempV1.add(ptAtom);
-      tempV1.scale(0.5f);
-      output(tempV1);
-      output("'><Billboard axisOfRotation='0 0 0'><Transform rotation='1 0 0 1.5708'>");
-      outputCylinderChild(ptAtom, pt, colix, Graphics3D.ENDCAPS_FLAT, (int) (d * 1000));
-      output("</Transform></Billboard>");
-      output("</Transform>\n");
-      
+      outputCircle(ptAtom, pt, colix, mad);
       return;
     }
-    
-    // draw a thin torus
-
-    String child = getDef("C" + colix + "_" + d);
-    output("<Transform");
-    outputTransRot(pt, ptAtom, 0, 0, 1);
-    pt.set(1, 1, 1);
-    pt.scale(d/2);
-    output(" scale='");
-    output(pt);
-    output("'>\n<Billboard ");
-    if (child.charAt(0) == '_') {
-      output("DEF='" + child + "'");
-      output(" axisOfRotation='0 0 0'><Transform>");
-      output("<Shape><Extrusion beginCap='FALSE' convex='FALSE' endCap='FALSE' creaseAngle='1.57'");
-      output(" crossSection='");
-      float rpd = 3.1415926f / 180;
-      float scale = 0.02f * 2 / d;
-      for (int i = 0; i <= 360; i += 10) {
-        output(round(Math.cos(i * rpd) * scale) + " ");
-        output(round(Math.sin(i * rpd) * scale) + " ");
-      }
-      output("' spine='");
-      for (int i = 0; i <= 360; i += 10) {
-        output(round(Math.cos(i * rpd)) + " ");
-        output(round(Math.sin(i * rpd)) + " 0 ");
-      }
-      output("'/>");
-      outputAppearance(colix, false);
-      output("</Shape></Transform>");
-    } else {
-      output(child + ">");
+    if (true)
+      return;
+    // the halo edges really slow rendering and aren't that important.
+    float rpd = 3.1415926f / 180;
+    Point3f[] pts = new Point3f[73];
+    for (int i = 0, p = 0; i <= 360; i += 5, p++) {
+      pts[p] = new Point3f((float) (Math.cos(i * rpd) * d / 2), (float) (Math
+          .sin(i * rpd)
+          * d / 2), 0);
+      pts[p].add(ptAtom);
     }
-    output("</Billboard>\n");
-    output("</Transform>\n");
-    */
+    mad = (int) (0.02f * 2 / d * 1000);
+    for (int i = 0; i < 72; i++) {
+      outputCylinder(pts[i], pts[i+1], colix, Graphics3D.ENDCAPS_FLAT, mad);
+    }
   }
 
   public void fillScreenedCircleCentered(short colix, int diameter, int x,

@@ -789,6 +789,9 @@ public final class ModelLoader extends ModelSet {
         if (!iterStructure.getStructureType().equals("turn")) {
           defineStructure(iterStructure.getModelIndex(),
               iterStructure.getStructureType(),
+              iterStructure.getStructureID(), 
+              iterStructure.getSerialID(),
+              iterStructure.getStrandCount(),
               iterStructure.getStartChainID(), iterStructure
                   .getStartSequenceNumber(), iterStructure
                   .getStartInsertionCode(), iterStructure.getEndChainID(),
@@ -806,6 +809,7 @@ public final class ModelLoader extends ModelSet {
         if (iterStructure.getStructureType().equals("turn"))
           defineStructure(iterStructure.getModelIndex(),
               iterStructure.getStructureType(),
+              iterStructure.getStructureID(), 1, 1,
               iterStructure.getStartChainID(), iterStructure
                   .getStartSequenceNumber(), iterStructure
                   .getStartInsertionCode(), iterStructure.getEndChainID(),
@@ -815,6 +819,7 @@ public final class ModelLoader extends ModelSet {
   }
   
   protected void defineStructure(int modelIndex, String structureType,
+                                 String structureID, int serialID, int strandCount, 
                                  char startChainID, int startSequenceNumber,
                                  char startInsertionCode, char endChainID,
                                  int endSequenceNumber, char endInsertionCode) {
@@ -823,14 +828,18 @@ public final class ModelLoader extends ModelSet {
         modelIndex = 0;
       modelIndex += baseModelIndex;
       structuresDefinedInFile.set(modelIndex);
-      super.defineStructure(modelIndex, structureType, startChainID,
+      super.defineStructure(modelIndex, structureType, 
+          structureID, serialID, 
+          strandCount, startChainID,
           startSequenceNumber, startInsertionCode, endChainID,
           endSequenceNumber, endInsertionCode);
       return;
     }
     for (int i = baseModelIndex; i < modelCount; i++) {
       structuresDefinedInFile.set(i);
-      super.defineStructure(i, structureType, startChainID,
+      super.defineStructure(i, structureType, 
+          structureID, serialID, 
+          strandCount, startChainID,
           startSequenceNumber, startInsertionCode, endChainID,
           endSequenceNumber, endInsertionCode);
     }

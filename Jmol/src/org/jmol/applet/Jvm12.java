@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2009-06-26 04:01:47 -0500 (Fri, 26 Jun 2009) $
+ * $Revision: 11126 $
  *
  * Copyright (C) 2002-2005  The Jmol Development Team
  *
@@ -34,9 +34,8 @@ import org.jmol.api.*;
  public class Jvm12 {
 
   protected JmolViewer viewer;
-  private Component awtComponent;
-  public JmolAppletConsoleInterface console;
-  JmolScriptEditorInterface scriptEditor;
+  public Component awtComponent;
+  public JmolAppConsoleInterface console;
   
   protected String appletContext;
 
@@ -63,21 +62,8 @@ import org.jmol.api.*;
     return awtComponent.getSize(dimSize);
   }
 
-  void showConsole(boolean showConsole) {
-    if (!showConsole) {
-      if (console != null) {
-        console.setVisible(false);
-        console = null;
-      }
-      return;
-    }
-    getConsole();
-    if (console != null)
-      console.setVisible(true);
-  }
-
   void consoleMessage(String message) {
-    console.output(message);
+    console.sendConsoleMessage(message);
   }
 
   boolean haveConsole() {
@@ -86,13 +72,14 @@ import org.jmol.api.*;
 
   void getConsole() {
     if (console == null) {
-      console = (JmolAppletConsoleInterface) Interface.getOptionInterface("console.AppletConsole");
+      console = (JmolAppConsoleInterface) Interface.getOptionInterface("console.AppletConsole");
       if (console == null) {
-        console = (JmolAppletConsoleInterface) Interface.getOptionInterface("console.AppletConsole");
+        console = (JmolAppConsoleInterface) Interface.getOptionInterface("console.AppletConsole");
       }
     }
     if (console != null)
       console.set(viewer, this);
+    viewer.getProperty("DATA_API", "getAppConsole", console);
   }
 
   String getConsoleMessage() {
@@ -195,17 +182,4 @@ import org.jmol.api.*;
     c.setViewer(viewer);
     return c.getClipboardText();
   }
-
-  public void showEditor(boolean showEditor, String filename, String msg) {
-    if (scriptEditor == null) {
-      scriptEditor = (JmolScriptEditorInterface) Interface.getOptionInterface("console.ScriptEditor");
-      scriptEditor = scriptEditor.getScriptEditor(viewer, awtComponent, console);
-    }
-    if (msg != null) {
-      scriptEditor.setFilename(filename);
-      scriptEditor.output(msg);
-    }
-    scriptEditor.setVisible(showEditor);
-  }
-
 }

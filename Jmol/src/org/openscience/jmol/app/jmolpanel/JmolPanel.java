@@ -24,24 +24,15 @@
 package org.openscience.jmol.app.jmolpanel;
 
 import org.jmol.api.*;
-import org.jmol.console.ScriptEditor;
 import org.jmol.export.dialog.Dialog;
 import org.jmol.export.history.HistoryFile;
 import org.jmol.export.image.ImageCreator;
-import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 import org.jmol.util.*;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.ScriptContext;
-import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.*;
 import org.openscience.jmol.app.webexport.WebExport;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfTemplate;
-import com.lowagie.text.pdf.PdfWriter;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
 import java.awt.event.*;
@@ -53,8 +44,6 @@ import java.net.URI;
 import java.util.*;
 
 import javax.swing.*;
-
-import java.io.FileOutputStream;
 
 public class JmolPanel extends JPanel implements SplashInterface {
 
@@ -74,14 +63,9 @@ public class JmolPanel extends JPanel implements SplashInterface {
   MeasurementTable measurementTable;
   RecentFilesDialog recentFiles;
   //private JMenu recentFilesMenu;
-  public AppConsole appConsole;
-  public ScriptEditor scriptEditor;
   public AtomSetChooser atomSetChooser;
   private ExecuteScriptAction executeScriptAction;
   protected JFrame frame;
-
-  JmolPopup jmolpopup;
-  String language;
 
   // private CDKPluginManager pluginManager;
 
@@ -111,9 +95,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
   
   String appletContext;
   
-  String menuStructure;
-  String menuFile;
-
   static HistoryFile historyFile;
 
   public JmolPanel(JmolApp jmolApp, Splash splash, JFrame frame, JmolPanel parent,
@@ -140,7 +121,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     setBorder(BorderFactory.createEtchedBorder());
     setLayout(new BorderLayout());
-    language = GT.getLanguage();
 
     status = (StatusBar) createStatusBar();
     say(GT._("Initializing 3D display..."));
@@ -182,11 +162,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
     say(GT._("Initializing Recent Files..."));
     recentFiles = new RecentFilesDialog(frame);
     say(GT._("Initializing Script Window..."));
-    appConsole = new AppConsole(viewer, frame);
-    say(GT._("Initializing Script Editor..."));
-    scriptEditor = new ScriptEditor(viewer, frame, appConsole);
-    appConsole.setScriptEditor(scriptEditor);
-    say(GT._("Initializing Measurements..."));
+    viewer.getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
     measurementTable = new MeasurementTable(viewer, frame);
 
 
@@ -239,10 +215,9 @@ public class JmolPanel extends JPanel implements SplashInterface {
     say(GT._("Starting display..."));
     display.start();
 
-    if (menuFile != null) {
-      menuStructure = viewer.getFileAsString(menuFile);
+    if (jmolApp.menuFile != null) {
+      viewer.getProperty("DATA_API", "setMenu", viewer.getFileAsString(jmolApp.menuFile));
     }
-    jmolpopup = JmolPopup.newJmolPopup(viewer, true, menuStructure, true);
 
     // prevent new Jmol from covering old Jmol
     if (loc != null) {
@@ -269,10 +244,12 @@ public class JmolPanel extends JPanel implements SplashInterface {
     frame.setIconImage(iconImage);
 
     // Repositionning windows
-    if (appConsole != null)
-      historyFile.repositionWindow(SCRIPT_WINDOW_NAME, appConsole, 200, 100);
-    if (scriptEditor != null)
-      historyFile.repositionWindow(EDITOR_WINDOW_NAME, scriptEditor, 150, 50);
+    Component c = (Component) viewer.getProperty("DATA_API","getAppConsole", null);
+    if (c != null)
+      historyFile.repositionWindow(SCRIPT_WINDOW_NAME, c, 200, 100);
+    c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
+    if (c != null)
+      historyFile.repositionWindow(EDITOR_WINDOW_NAME, c, 150, 50);
 
     say(GT._("Setting up Drag-and-Drop..."));
     FileDropper dropper = new FileDropper();
@@ -401,8 +378,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
     Point location = jmol.frame.getLocation();
     Dimension size = jmol.frame.getSize();
     Dimension consoleSize = historyFile.getWindowSize(name);
-    Point consolePosition = historyFile
-        .getWindowPosition(name);
+    Point consolePosition = historyFile.getWindowPosition(name);
     if ((consoleSize != null) && (consolePosition != null)) {
       frame.setBounds(consolePosition.x, consolePosition.y,
           consoleSize.width, consoleSize.height);
@@ -411,8 +387,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
           size.width, 200);
     }
 
-    Boolean consoleVisible = historyFile
-        .getWindowVisibility(name);
+    Boolean consoleVisible = historyFile.getWindowVisibility(name);
     if ((consoleVisible != null) && (consoleVisible.equals(Boolean.TRUE))) {
       frame.setVisible(true);
     }
@@ -478,10 +453,12 @@ public class JmolPanel extends JPanel implements SplashInterface {
   }
 
   private void dispose(JFrame f) {
-    if (historyFile != null && appConsole != null)
-      historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, appConsole, null);
-    if (historyFile != null && scriptEditor != null)
-      historyFile.addWindowInfo(EDITOR_WINDOW_NAME, scriptEditor, null);
+    Component c = (Component) viewer.getProperty("DATA_API","getAppConsole", null);
+    if (c != null)
+      historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, c, null);
+    c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
+    if (c != null)
+      historyFile.addWindowInfo(EDITOR_WINDOW_NAME, c, null);
     if (historyFile != null && webExport != null) {
       WebExport.saveHistory();
       WebExport.cleanUp();
@@ -496,12 +473,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
       viewer.setModeMouse(JmolConstants.MOUSE_NONE);
       try {
         f.dispose();
-        if (appConsole != null) {
-          appConsole.dispose();
-        }
-        if (scriptEditor != null) {
-          scriptEditor.dispose();
-        }
       } catch (Exception e) {
         System.out.println("frame disposal exception");
         // ignore
@@ -1186,36 +1157,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
           return; // make no assumptions - require a type by extension
         sType = sType.substring(i + 1).toUpperCase();
       }
-      String msg = (sType.equals("PDF") ?createPdfDocument(new File(fileName))
-          : createImageStatus(fileName, sType, (String) null, sd.getQuality(sType)));
-      Logger.info(msg);
-    }
-
-    private String createPdfDocument(File file) {
-      // PDF is application-only
-      Document document = new Document();
-      try {
-        PdfWriter writer = PdfWriter.getInstance(document,
-            new FileOutputStream(file));
-        document.open();
-        int w = display.getWidth();
-        int h = display.getHeight();
-        PdfContentByte cb = writer.getDirectContent();
-        PdfTemplate tp = cb.createTemplate(w, h);
-        Graphics2D g2 = tp.createGraphics(w, h);
-        g2.setStroke(new BasicStroke(0.1f));
-        tp.setWidth(w);
-        tp.setHeight(h);
-        display.print(g2);
-        g2.dispose();
-        cb.addTemplate(tp, 72, 720 - h);
-      } catch (DocumentException de) {
-        return de.getMessage();
-      } catch (IOException ioe) {
-        return ioe.getMessage();
-      }
-      document.close();
-      return "OK PDF " + file.length() + " " + file.getAbsolutePath();
+      Logger.info(viewer.createImage(fileName, sType, (String) null, sd.getQuality(sType), 0, 0));
     }
 
   }
@@ -1242,8 +1184,9 @@ public class JmolPanel extends JPanel implements SplashInterface {
     }
 
     public void actionPerformed(ActionEvent e) {
-      if (appConsole != null)
-        appConsole.setVisible(true);
+      Component c = (Component) viewer.getProperty("DATA_API","getAppConsole", null);
+      if (c != null)
+        c.setVisible(true);
     }
   }
 
@@ -1254,8 +1197,9 @@ public class JmolPanel extends JPanel implements SplashInterface {
     }
 
     public void actionPerformed(ActionEvent e) {
-      if (scriptEditor != null)
-        scriptEditor.setVisible(true);
+      Component c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
+      if (c != null)
+        c.setVisible(true);
     }
   }
 
@@ -1291,27 +1235,27 @@ public class JmolPanel extends JPanel implements SplashInterface {
       String fileName = (new Dialog()).getSaveFileNameFromDialog(viewer,
           null, "SPT");
       if (fileName != null)
-        Logger.info(createImageStatus(fileName, "SPT", viewer.getStateInfo(),
-            Integer.MIN_VALUE));
+        Logger.info(viewer.createImage(fileName, "SPT", viewer.getStateInfo(),
+            Integer.MIN_VALUE, 0, 0));
     }
   }
 
   /**
    * 
+   * Starting with Jmol 11.8.RC5, this is just informational
+   * if type == null and null is returned, then it means "Jmol, you handle it"
+   * 
    * @param fileName
    * @param type
    * @param text_or_bytes
    * @param quality
-   * @return          null (canceled) or a message starting with OK or an error message
+   * @return          null (you do it) or a message starting with OK or an error message
    */
   String createImageStatus(String fileName, String type, Object text_or_bytes,
                            int quality) {
-    String msg;
-    if (text_or_bytes == null)
-      msg = fileName;
-    else
-      msg = (String) (new ImageCreator(viewer)).createImage(fileName,
-          type, text_or_bytes, quality);
+    if (fileName != null && text_or_bytes != null)
+      return null; // "Jmol, you do it."
+    String msg = fileName;
     if (msg != null && !msg.startsWith("OK") && status != null) {
       status.setStatus(1, GT._("IO Exception:"));
       status.setStatus(2, msg);
@@ -1364,19 +1308,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
         viewer, fileName, historyFile, FILE_OPEN_WINDOW_NAME, (fileName == null));
   }
 
-  void showEditor(boolean showEditor, String text) {
-    if (scriptEditor == null)
-      return;
-    if (showEditor) {
-      scriptEditor.setVisible(true);
-      if (text != null)
-        scriptEditor.output(text);
-    } else {
-      scriptEditor.setVisible(false);
-    }
-  }
-
-
   public static final String chemFileProperty = "chemFile";
 
   class MyStatusListener implements JmolStatusListener {
@@ -1407,7 +1338,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     public boolean notifyEnabled(int type) {
       switch (type) {
-      case JmolConstants.SHOW_EDITOR:
       case JmolConstants.CALLBACK_ANIMFRAME:
       case JmolConstants.CALLBACK_ECHO:
       case JmolConstants.CALLBACK_LOADSTRUCT:
@@ -1430,9 +1360,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
       String strInfo = (data == null || data[1] == null ? null : data[1]
           .toString());
       switch (type) {
-      case JmolConstants.SHOW_EDITOR:
-        showEditor(true, strInfo);
-        return;
       case JmolConstants.CALLBACK_LOADSTRUCT:
         notifyFileLoaded(strInfo, (String) data[2], (String) data[3],
             (String) data[4]);
@@ -1440,6 +1367,13 @@ public class JmolPanel extends JPanel implements SplashInterface {
       case JmolConstants.CALLBACK_ANIMFRAME:
         int[] iData = (int[]) data[1];
         notifyFrameChanged(iData[0], iData[1], iData[2]);
+        break;
+      case JmolConstants.CALLBACK_SCRIPT:
+        int msWalltime = ((Integer) data[3]).intValue();
+        if (msWalltime == 0) {
+          if (data[2] != null && display != null)
+              display.status.setStatus(1, (String) data[2]);  
+        }
         break;
       case JmolConstants.CALLBACK_ECHO:
         sendConsoleEcho(strInfo);
@@ -1462,56 +1396,22 @@ public class JmolPanel extends JPanel implements SplashInterface {
       case JmolConstants.CALLBACK_PICK:
         notifyAtomPicked(strInfo);
         break;
-      case JmolConstants.CALLBACK_SCRIPT:
-        int msWalltime = ((Integer) data[3]).intValue();
-        if (appConsole != null) {
-          // general message has msWalltime = 0
-          // special messages have msWalltime < 0
-          // termination message has msWalltime > 0 (1 + msWalltime)
-          // "script started"/"pending"/"script terminated"/"script completed"
-          //   do not get sent to console
-          if (msWalltime == 0) {
-            appConsole.sendConsoleMessage(strInfo);
-            if (data[2] != null && display != null)
-                display.status.setStatus(1, (String) data[2]);  
-          }
-        }
-        if (scriptEditor != null) {
-          // general message has msWalltime = 0
-          // special messages have msWalltime < 0
-          // termination message has msWalltime > 0 (1 + msWalltime)
-          // "script started"/"pending"/"script terminated"/"script completed"
-          //   do not get sent to console
-          if (msWalltime > 0) {
-            // termination -- button legacy
-            scriptEditor.notifyScriptTermination();
-          } else if (msWalltime < 0) {
-            if (msWalltime == -2)
-              scriptEditor.notifyScriptStart();
-          } else if (scriptEditor.isVisible() && ((String) data[2]).length() > 0 || data[4] != null) {
-            System.out.println("Jmol notifyContext " + data[1]);
-            scriptEditor.notifyContext((ScriptContext)viewer.getProperty("DATA_API", "scriptContext", null), data);
-          }
-        }
-        break;
-      case JmolConstants.CALLBACK_RESIZE:
-      case JmolConstants.CALLBACK_SYNC:
+      case JmolConstants.CALLBACK_ERROR:
       case JmolConstants.CALLBACK_HOVER:
       case JmolConstants.CALLBACK_MINIMIZATION:
+      case JmolConstants.CALLBACK_RESIZE:
+      case JmolConstants.CALLBACK_SYNC:
+      //applet only (but you could change this for your listener)
         break;
       }
     }
 
     public void setCallbackFunction(String callbackType, String callbackFunction) {
       if (callbackType.equalsIgnoreCase("menu")) {
-        menuStructure = callbackFunction;
-        menuFile = null;
         setupNewFrame(viewer.getStateInfo());
         return;
       }
       if (callbackType.equalsIgnoreCase("language")) {
-        new GT(callbackFunction);
-        language = GT.getLanguage();
         Dialog.setupUIManager();
         if (webExport != null) {
           WebExport.saveHistory();
@@ -1520,15 +1420,13 @@ public class JmolPanel extends JPanel implements SplashInterface {
               WEB_MAKER_WINDOW_NAME);
         }
         setupNewFrame(viewer.getStateInfo());
+        return;
       }
     }
     
     /// end of JmolCallbackListener interface ///
 
     public String eval(String strEval) {
-      if (strEval.startsWith("_GET_MENU"))
-        return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version "
-            + Viewer.getJmolVersion() + "|" + strEval));
       sendConsoleMessage("javascript: " + strEval);
       return "# 'eval' is implemented only for the applet.";
     }
@@ -1539,14 +1437,15 @@ public class JmolPanel extends JPanel implements SplashInterface {
      * @param type
      * @param text_or_bytes
      * @param quality
-     * @return          null (canceled) or a message starting with OK or an error message
+     * @return          null ("you do it" or canceled) or a message starting with OK or an error message
      */
     public String createImage(String fileName, String type, Object text_or_bytes,
                               int quality) {
-      return createImageStatus(fileName, type, text_or_bytes, quality);
+      return null;
     }
 
     private void notifyAtomPicked(String info) {
+      JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer.getProperty("DATA_API", "getAppConsole", null);
       if (appConsole != null) {
         appConsole.sendConsoleMessage(info);
         appConsole.sendConsoleMessage("\n");
@@ -1560,24 +1459,18 @@ public class JmolPanel extends JPanel implements SplashInterface {
       }
       if (!jmolApp.haveDisplay)
         return;
-      
+
       // this code presumes only ptLoad = -1 (error), 0 (zap), or 3 (completed)
-      
-      //      jmolpopup.updateComputedMenus();
+
+      // jmolpopup.updateComputedMenus();
       String title = "Jmol";
-      if (fullPathName == null) {
-        if (fileName != null && appConsole != null)
-          appConsole.undoClear();
-        // a 'clear/zap' operation
-      } else {
-        if (modelName != null && fileName != null)
-          title = fileName + " - " + modelName;
-        else if (fileName != null)
-          title = fileName;
-        else if (modelName != null)
-          title = modelName;
-        recentFiles.notifyFileOpen(fullPathName);
-      }
+      if (modelName != null && fileName != null)
+        title = fileName + " - " + modelName;
+      else if (fileName != null)
+        title = fileName;
+      else if (modelName != null)
+        title = modelName;
+      recentFiles.notifyFileOpen(fullPathName);
       frame.setTitle(title);
       if (atomSetChooser == null) {
         atomSetChooser = new AtomSetChooser(viewer, frame);
@@ -1587,46 +1480,20 @@ public class JmolPanel extends JPanel implements SplashInterface {
     }
 
     private void notifyFrameChanged(int frameNo, int file, int model) {
-      // Note: twos-complement. To get actual frame number, use 
-      // Math.max(frameNo, -2 - frameNo)
-      // -1 means all frames are now displayed
-      boolean isAnimationRunning = (frameNo <= -2);
-
-      /*
-       * animationDirection is set solely by the "animation direction +1|-1" script command
-       * currentDirection is set by operations such as "anim playrev" and coming to the end of 
-       * a sequence in "anim mode palindrome"
-       * 
-       * It is the PRODUCT of these two numbers that determines what direction the animation is
-       * going.
-       * 
-       */
-      //int animationDirection = (firstNo < 0 ? -1 : 1);
-      //int currentDirection = (lastNo < 0 ? -1 : 1);
-      //System.out.println("notifyFrameChange " + frameNo + " " + fileNo + " " + modelNo + " " + firstNo + " " + lastNo + " " + animationDirection + " " + currentDirection);
       if (display != null)
         display.status.setStatus(1, file + "." + model);
-      if (jmolpopup == null || isAnimationRunning)
-        return;
-      jmolpopup.updateComputedMenus();
     }
 
     private void sendConsoleEcho(String strEcho) {
+      JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer.getProperty("DATA_API", "getAppConsole", null);
       if (appConsole != null)
         appConsole.sendConsoleEcho(strEcho);
     }
 
     private void sendConsoleMessage(String strStatus) {
+      JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer.getProperty("DATA_API", "getAppConsole", null);
       if (appConsole != null)
         appConsole.sendConsoleMessage(strStatus);
-    }
-
-    public void handlePopupMenu(int x, int y) {
-      if (!language.equals(GT.getLanguage())) {
-        jmolpopup = JmolPopup.newJmolPopup(viewer, true, menuStructure, true);
-        language = GT.getLanguage();
-      }
-      jmolpopup.show(x, y);
     }
 
     public void showUrl(String url) {
@@ -1639,6 +1506,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
         browse.invoke(deskTop, arguments);
       } catch (Exception e) {
         System.out.println(e.getMessage());
+        JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer.getProperty("DATA_API", "getAppConsole", null);
         if (appConsole != null) {
           appConsole
               .sendConsoleMessage("Java 6 Desktop.browse() capability unavailable. Could not open "
@@ -1649,15 +1517,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
                   + url);
         }
       }
-    }
-
-    public void showConsole(boolean showConsole) {
-      if (appConsole == null)
-        return;
-      if (showConsole)
-        appConsole.setVisible(true);
-      else
-        appConsole.setVisible(false);
     }
 
     /**

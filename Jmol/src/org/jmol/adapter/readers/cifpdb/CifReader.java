@@ -945,6 +945,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   final private static byte END_ASYM_ID = 4;
   final private static byte END_SEQ_ID = 5;
   final private static byte END_INS_CODE = 6;
+  final private static byte STRUCT_ID = 7;
+  final private static byte SERIAL_NO = 8;
 
   final private static String[] structConfFields = { 
       "_struct_conf_conf_type_id",
@@ -953,7 +955,9 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       "_struct_conf_pdbx_beg_PDB_ins_code",
       "_struct_conf_end_auth_asym_id", 
       "_struct_conf_end_auth_seq_id",
-      "_struct_conf_pdbx_end_PDB_ins_code", 
+      "_struct_conf_pdbx_end_PDB_ins_code",
+      "_struct_conf_id", 
+      "_struct_conf_pdbx_PDB_helix_id", 
   };
 
   /**
@@ -1001,15 +1005,23 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case END_INS_CODE:
           structure.endInsertionCode = firstChar;
           break;
+        case STRUCT_ID:
+          structure.structureID = field;
+          break;
+        case SERIAL_NO:
+          structure.serialID = parseInt(field);
+          break;
         }
       }
       atomSetCollection.addStructure(structure);
     }
   }
-
   ////////////////////////////////////////////////////////////////
   // sheet structure data
   ////////////////////////////////////////////////////////////////
+
+  final private static byte SHEET_ID = 0;
+  final private static byte STRAND_ID = 7;
 
   final private static String[] structSheetRangeFields = {
     "_struct_sheet_range_sheet_id",  //unused placeholder
@@ -1019,6 +1031,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     "_struct_sheet_range_end_auth_asym_id",
     "_struct_sheet_range_end_auth_seq_id",
     "_struct_sheet_range_pdbx_end_PDB_ins_code", 
+    "_struct_sheet_range_id",
   };
 
   /**
@@ -1057,6 +1070,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           break;
         case END_INS_CODE:
           structure.endInsertionCode = firstChar;
+          break;
+        case SHEET_ID:
+          structure.strandCount = 1;
+          structure.structureID = field;
+          break;
+        case STRAND_ID:
+          structure.serialID = parseInt(field);
           break;
         }
       }

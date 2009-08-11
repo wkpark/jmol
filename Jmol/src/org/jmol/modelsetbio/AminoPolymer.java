@@ -299,7 +299,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 3) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, start,
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, null, 0, 0, start,
               end);
         }
         start = end;
@@ -313,7 +313,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 3) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, start,
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, null, 0, 0, start,
               end);
         }
         start = end;
@@ -328,7 +328,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 2) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET, start,
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET, null, 0, 0, start,
               end);
         }
         start = end;
@@ -343,7 +343,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 2) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_TURN, start,
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_TURN, null, 0, 0, start,
               end);
         }
         start = end;

@@ -33,6 +33,7 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 
 public class AminoMonomer extends AlphaMonomer {
@@ -325,4 +326,22 @@ public class AminoMonomer extends AlphaMonomer {
     ProteinStructure s = (ProteinStructure) getStructure();
     return (s != null && s.isWithin(monomerIndex) && s.type == type);
   }
+  
+  public String getStructureId() {
+    if (proteinStructure == null || proteinStructure.structureID == null)
+      return "";
+    return proteinStructure.structureID;
+  }
+  
+  public String getProteinStructureTag() {
+    if (proteinStructure == null || proteinStructure.structureID == null)
+      return null;
+    String tag = "%3N %2ID";
+    tag = TextFormat.formatString(tag, "N", proteinStructure.serialID);
+    tag = TextFormat.formatString(tag, "ID", proteinStructure.structureID);
+    if (proteinStructure.type == JmolConstants.PROTEIN_STRUCTURE_SHEET)
+      tag += " " + proteinStructure.strandCount;
+    return tag;
+  }
+  
 }

@@ -594,6 +594,7 @@ TURN     1  T1 GLY    42  TYR    44
     int startIndex;
     int endChainIDIndex;
     int endIndex;
+    int strandCount = 0;
     if (line.startsWith("HELIX ")) {
       structureType = "helix";
       startChainIDIndex = 19;
@@ -606,6 +607,7 @@ TURN     1  T1 GLY    42  TYR    44
       startIndex = 22;
       endChainIDIndex = 32;
       endIndex = 33;
+      strandCount = parseInt(line.substring(14, 16));
     } else if (line.startsWith("TURN  ")) {
       structureType = "turn";
       startChainIDIndex = 19;
@@ -618,6 +620,8 @@ TURN     1  T1 GLY    42  TYR    44
     if (lineLength < endIndex + 4)
       return;
 
+    String structureID = line.substring(11,15).trim();
+    int serialID = parseInt(line.substring(7,10));
     char startChainID = line.charAt(startChainIDIndex);
     int startSequenceNumber = parseInt(line, startIndex, startIndex + 4);
     char startInsertionCode = line.charAt(startIndex + 4);
@@ -631,8 +635,8 @@ TURN     1  T1 GLY    42  TYR    44
     // this should probably call Structure.validateAndAllocate
     // in order to check validity of parameters
     // model number set to -1 here to indicate ALL MODELS
-    Structure structure = new Structure(-1, structureType, startChainID,
-                                        startSequenceNumber,
+    Structure structure = new Structure(-1, structureType, structureID, serialID, 
+                                        strandCount, startChainID, startSequenceNumber,
                                         startInsertionCode, endChainID,
                                         endSequenceNumber, endInsertionCode);
     atomSetCollection.addStructure(structure);

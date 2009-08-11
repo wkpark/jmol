@@ -38,6 +38,7 @@ public class AlphaPolymer extends BioPolymer {
   }
 
   public void addSecondaryStructure(byte type,
+                                    String structureID, int serialID, int strandCount,
                              char startChainID, int startSeqcode,
                              char endChainID, int endSeqcode) {
     int indexStart, indexEnd;
@@ -45,10 +46,12 @@ public class AlphaPolymer extends BioPolymer {
         (indexEnd = getIndex(endChainID, endSeqcode)) == -1)
       return;
     //System.out.println("AlphaPolymer addSecStr " + type + " " + indexStart + " " + indexEnd);
-    addSecondaryStructure(type, indexStart, indexEnd);
+    addSecondaryStructure(type, structureID, serialID, strandCount, indexStart, indexEnd);
   }
 
-  void addSecondaryStructure(byte type, int indexStart, int indexEnd) {
+  void addSecondaryStructure(byte type, 
+                             String structureID, int serialID, int strandCount,
+                             int indexStart, int indexEnd) {
 
     //System.out.println("alphapolymer add2ndryStruct " + monomers[indexStart].getModelIndex() + " " + type + " " + indexStart + " " + indexEnd);
 
@@ -76,6 +79,9 @@ public class AlphaPolymer extends BioPolymer {
       Logger.error("unrecognized secondary structure type");
       return;
     }
+    proteinstructure.structureID = structureID;
+    proteinstructure.serialID = serialID;
+    proteinstructure.strandCount = strandCount;
     for (int i = indexStart; i <= indexEnd; ++i)
       monomers[i].setStructure(proteinstructure);
   }
@@ -85,7 +91,7 @@ public class AlphaPolymer extends BioPolymer {
   }
 
   /**
-   * Uses Levitt & Greer algorithm to calculate protien secondary
+   * Uses Levitt & Greer algorithm to calculate protein secondary
    * structures using only alpha-carbon atoms.
    *<p>
    * Levitt and Greer <br />
@@ -224,7 +230,7 @@ public class AlphaPolymer extends BioPolymer {
            iMax < monomerCount && tags[iMax] == tag;
            ++iMax)
         { }
-      addSecondaryStructure(tag, i, iMax - 1);
+      addSecondaryStructure(tag, null, 0, 0, i, iMax - 1);
       i = iMax;
     }
   }

@@ -600,8 +600,17 @@ public class SmarterJmolAdapter extends JmolAdapter {
     public int getModelIndex() {
       return structure.modelIndex;
     }
+
     public String getStructureType() {
       return structure.structureType;
+    }
+
+    public String getStructureID() {
+      return structure.structureID;
+    }
+
+    public int getSerialID() {
+      return structure.serialID;
     }
 
     public char getStartChainID() {
@@ -626,6 +635,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
       
     public char getEndInsertionCode() {
       return structure.endInsertionCode;
+    }
+
+    public int getStrandCount() {
+      return structure.strandCount;
     }
   }
 }

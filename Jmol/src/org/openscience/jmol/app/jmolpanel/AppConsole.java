@@ -45,6 +45,8 @@ import javax.swing.text.StyleConstants;
 import javax.swing.JScrollPane;
 import java.util.Vector;
 
+import org.jmol.api.JmolAppConsoleInterface;
+import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.console.JmolConsole;
 import org.jmol.console.ScriptEditor;
@@ -54,8 +56,9 @@ import org.jmol.util.CommandHistory;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
+import org.jmol.viewer.Viewer;
 
-public final class AppConsole extends JmolConsole implements EnterListener{
+public final class AppConsole extends JmolConsole implements JmolAppConsoleInterface, EnterListener{
   
   protected ConsoleTextPane console;
   private JButton varButton, haltButton, closeButton, clearButton, 
@@ -64,7 +67,7 @@ public final class AppConsole extends JmolConsole implements EnterListener{
   private JButton checkButton;
   protected JButton stepButton;
   private JButton topButton;
-
+  private JFrame frame;
   
 
 
@@ -76,12 +79,34 @@ public final class AppConsole extends JmolConsole implements EnterListener{
    */
   
 
+  public AppConsole() {
+    // required for Class.forName  
+    // should be used only in the context:
+    // appConsole = ((JmolApplicationConsoleInterface) Interface
+    //       .getApplicationInterface("jmolpanel.AppConsole")).getAppConsole(viewer, display);
+  }
+  
+  public JmolAppConsoleInterface getAppConsole(Viewer viewer, Component display) {
+    return new AppConsole(viewer, ((DisplayPanel)display).getFrame());
+  }
+
+  public void set(JmolViewer viewer, Object jvm12) {
+    // not used in application
+  }
+
   public AppConsole(JmolViewer viewer, JFrame frame) {
     super(frame, GT._("Jmol Script Console"), false);
+    this.frame = frame;
     this.viewer = viewer;
     layoutWindow(getContentPane());
     setSize(645, 400);
     setLocationRelativeTo(frame);
+  }
+
+  public JmolScriptEditorInterface getScriptEditor() {
+    return (scriptEditor == null ? 
+        (scriptEditor = new ScriptEditor(viewer, frame, this))
+        : scriptEditor);
   }
 
   JButton setButton(String s) {
@@ -247,7 +272,11 @@ public final class AppConsole extends JmolConsole implements EnterListener{
   int undoPointer = 0;
   boolean undoSaved = false;
  
-  void undoClear() {
+  public void zap() {
+    undoClear();
+  }
+  
+  private void undoClear() {
     for (int i = 0; i < MAXUNDO; i++)
       undoStack[i] = null;
     undoPointer = 0;
@@ -812,6 +841,13 @@ public final class AppConsole extends JmolConsole implements EnterListener{
     }
   }
 
+  public Object getMyMenuBar() {
+    return null;
+  }
+
+  public String getText() {
+    return console.getText();
+  }
 
 }
 

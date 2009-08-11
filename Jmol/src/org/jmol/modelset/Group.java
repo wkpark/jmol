@@ -169,7 +169,7 @@ public class Group {
     return null;
   }
 
-  public int getProteinStructureID() {
+  public int getStrucNo() {
     return 0;
   }
   
@@ -395,6 +395,14 @@ public class Group {
 
   public boolean isWithinStructure(byte type) {
     return false;
+  }
+
+  public String getProteinStructureTag() {
+    return null;
+  }
+
+  public String getStructureId() {
+    return "";
   }
   
 }

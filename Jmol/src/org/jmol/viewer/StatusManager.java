@@ -30,10 +30,10 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolStatusListener;
 
-import org.jmol.i18n.GT;
 /**
  * 
  * The StatusManager class handles all details of status reporting, including:
@@ -341,7 +341,12 @@ class StatusManager {
   synchronized void setFileLoadStatus(String fullPathName, String fileName,
                                         String modelName, String errorMsg,
                                         int ptLoad, boolean doCallback) {
-    
+    if (fullPathName == null) {
+      JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer.getProperty("DATA_API", "getAppConsole", null);
+      if (fileName != null && appConsole != null)
+        appConsole.zap();
+      return;
+    }
     setStatusChanged("fileLoaded", ptLoad, fullPathName, false);
     if (errorMsg != null)
       setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
@@ -369,6 +374,10 @@ class StatusManager {
           new Object[] { sJmol,
               new int[] { frameNo, fileNo, modelNo, firstNo, lastNo } });
     }
+    
+    if (viewer.jmolpopup != null && !isAnimationRunning)
+      viewer.jmolpopup.updateComputedMenus();
+
   }
 
   synchronized void setScriptEcho(String strEcho,
@@ -418,7 +427,8 @@ class StatusManager {
   synchronized void setScriptStatus(String strStatus, String statusMessage,
                                     int msWalltime,
                                     String strErrorMessageUntranslated) {
-    // only allow trapping of script information of type 0 
+    // only allow trapping of script information of type 0
+
     if (msWalltime < -1) {
       int iscript = -2 - msWalltime;
       setStatusChanged("scriptStarted", iscript, statusMessage, false);
@@ -440,18 +450,53 @@ class StatusManager {
             false);
     }
 
-    if (jmolStatusListener != null) {
-      if (isScriptCompletion && viewer.getMessageStyleChime()
-          && viewer.getDebugScript()) {
-        jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
-            new Object[] { null, "script <exiting>", statusMessage,
-                new Integer(-1), strErrorMessageUntranslated });
-        strStatus = "Jmol script completed.";
+    Object[] data;
+    if (isScriptCompletion && viewer.getMessageStyleChime()
+        && viewer.getDebugScript()) {
+      data = new Object[] { null, "script <exiting>", statusMessage,
+          new Integer(-1), strErrorMessageUntranslated };
+      if (notifyEnabled(JmolConstants.CALLBACK_SCRIPT))
+        jmolCallbackListener
+            .notifyCallback(JmolConstants.CALLBACK_SCRIPT, data);
+      processScript(data);
+      strStatus = "Jmol script completed.";
+    }
+    data = new Object[] { sJmol, strStatus, statusMessage,
+        new Integer(isScriptCompletion ? -1 : msWalltime),
+        strErrorMessageUntranslated };
+    if (notifyEnabled(JmolConstants.CALLBACK_SCRIPT))
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT, data);
+    processScript(data);
+  }
+
+  private void processScript(Object[] data) {
+    int msWalltime = ((Integer) data[3]).intValue();
+    // general message has msWalltime = 0
+    // special messages have msWalltime < 0
+    // termination message has msWalltime > 0 (1 + msWalltime)
+    // "script started"/"pending"/"script terminated"/"script completed"
+    // do not get sent to console
+    
+    if (viewer.scriptEditor != null) {
+      if (msWalltime > 0) {
+        // termination -- button legacy
+        viewer.scriptEditor.notifyScriptTermination();
+      } else if (msWalltime < 0) {
+        if (msWalltime == -2)
+          viewer.scriptEditor.notifyScriptStart();
+      } else if (viewer.scriptEditor.isVisible()
+          && ((String) data[2]).length() > 0) {
+        viewer.scriptEditor.notifyContext((ScriptContext) viewer.getProperty(
+            "DATA_API", "scriptContext", null), data);
       }
-      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
-          new Object[] { sJmol, strStatus, statusMessage,
-              new Integer(isScriptCompletion ? -1 : msWalltime),
-              strErrorMessageUntranslated });
+    }
+
+    if (viewer.appConsole != null) {
+      if (msWalltime == 0) {
+        String strInfo = (data == null || data[1] == null ? null : data[1]
+            .toString());
+        viewer.appConsole.sendConsoleMessage(strInfo);
+      }
     }
   }
   
@@ -468,11 +513,6 @@ class StatusManager {
         syncSend(mouseCommand, "*");
     } else if (!syncingScripts)
       syncSend("!" + viewer.getMoveToText(minSyncRepeatMs / 1000f), "*");
-  }
-
-  synchronized void popupMenu(int x, int y) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.handlePopupMenu(x, y);
   }
 
   boolean drivingSync = false;
@@ -553,21 +593,6 @@ class StatusManager {
       jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_MESSAGE, null);
   }
 
-  synchronized void showConsole(boolean showConsole) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.showConsole(showConsole);
-  }
-  
-  synchronized void showEditor(String[] file_text) {
-    if (file_text == null)
-      file_text = new String[]{ null, null };
-    if (file_text[1] == null)
-      file_text[1] = "<no data>";
-    if (jmolStatusListener != null)
-      jmolCallbackListener.notifyCallback(JmolConstants.SHOW_EDITOR, 
-          new Object[] { null, file_text[1], file_text[0] });
-  }
-  
   float[][] functionXY(String functionName, int nX, int nY) {
     return (jmolStatusListener == null ? new float[Math.abs(nX)][Math.abs(nY)] :
       jmolStatusListener.functionXY(functionName, nX, nY));
@@ -588,21 +613,23 @@ class StatusManager {
    * @param type
    * @param text_or_bytes
    * @param quality
-   * @return          null (canceled) or a message starting with OK or an error message
+   * @return null (canceled) or a message starting with OK or an error message
    */
-  String createImage(String fileName, String type, Object text_or_bytes, int quality) {
-    if (jmolStatusListener == null)
-      return GT._("File creation failed.");
+  String createImage(String fileName, String type, Object text_or_bytes,
+                     int quality) {
+    if (fileName == null) // check for embedding program action
+      return (jmolStatusListener == null ? null : jmolStatusListener
+          .createImage(null, type, text_or_bytes, quality));
     if (fileName != null && fileName.startsWith("?")) {
       fileName = fileName.substring(1);
       if (!viewer.isSignedApplet()) {
-        fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save" : "saveImage",
-            fileName);
+        fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save"
+            : "saveImage", fileName);
       }
     }
-    if (fileName == null)
-      return null;
-    return jmolStatusListener.createImage(fileName, type, text_or_bytes, quality);
+    return (fileName == null // user canceled operation 
+        || jmolStatusListener == null ? null : jmolStatusListener.createImage(
+        fileName, type, text_or_bytes, quality));
   }
 
   Hashtable getRegistryInfo() {
@@ -629,11 +656,5 @@ class StatusManager {
       return jmolStatusListener.dialogAsk(type, fileName);
     return "";
   }
-
-  String getMenu(String type) {
-    return (jmolStatusListener == null ? "" : jmolStatusListener
-        .eval("_GET_MENU|" + type));
-  }
-
 }
 

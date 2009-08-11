@@ -557,4 +557,5 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   public void setFilename(String filename) {
     this.filename = filename;
   }
+
 }

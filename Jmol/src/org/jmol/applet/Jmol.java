@@ -26,10 +26,8 @@ package org.jmol.applet;
 
 import org.jmol.api.*;
 import org.jmol.appletwrapper.*;
-import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.ScriptContext;
 import org.jmol.viewer.Viewer;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -131,18 +129,15 @@ import netscape.javascript.JSObject;
 public class Jmol implements WrappedApplet {
 
   Jvm12 jvm12;
-  JmolPopup jmolpopup;
 
   boolean mayScript;
   boolean haveDocumentAccess;
-  boolean popupMenuAllowed = true;
   boolean needPopupMenu;
   boolean loading;
 
   String[] callbacks = new String[JmolConstants.CALLBACK_COUNT];
 
   String language;
-  String menuStructure;
   String htmlName;
   String fullName;
   String syncId;
@@ -210,10 +205,7 @@ public class Jmol implements WrappedApplet {
     viewer.setModeMouse(JmolConstants.MOUSE_NONE);
     viewer = null;
     if (jvm12 != null) {
-      if (jvm12.console != null) {
-        jvm12.console.dispose();
-        jvm12.console = null;
-      }
+      jvm12.console = null;
       jvm12 = null;
     }
     System.out.println("Jmol applet " + fullName + " destroyed");
@@ -250,7 +242,7 @@ public class Jmol implements WrappedApplet {
         appletWrapper.getCodeBase(), options, new MyStatusListener());
     String menuFile = getParameter("menuFile");
     if (menuFile != null)
-      menuStructure = viewer.getFileAsString(menuFile);
+      viewer.getProperty("DATA_API", "setMenu", viewer.getFileAsString(menuFile));
     jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)
       jvm12 = new Jvm12(appletWrapper, viewer, options);
@@ -398,10 +390,7 @@ public class Jmol implements WrappedApplet {
       // should the popupMenu be loaded ?
       needPopupMenu = getBooleanValue("popupMenu", true);
       if (needPopupMenu)
-        getPopupMenu(false);
-      //if (needPopupMenu)
-      //loadPopupMenuAsBackgroundTask();
-
+        viewer.getProperty("DATA_API", "getPopupMenu", Boolean.FALSE);
       loadNodeId(getValue("loadNodeId", null));
 
       String loadParam;
@@ -818,7 +807,6 @@ public class Jmol implements WrappedApplet {
 
     public boolean notifyEnabled(int type) {
       switch (type) {
-      case JmolConstants.SHOW_EDITOR:
       case JmolConstants.CALLBACK_ANIMFRAME:
       case JmolConstants.CALLBACK_ECHO:
       case JmolConstants.CALLBACK_ERROR:
@@ -848,16 +836,11 @@ public class Jmol implements WrappedApplet {
       String strInfo = (data == null || data[1] == null ? null : data[1]
           .toString());
 
-      //System.out.println("Jmol.java notifyCallback " + type + " " + callback
-      //  + " " + strInfo);
+      // System.out.println("Jmol.java notifyCallback " + type + " " + callback
+      // + " " + strInfo);
       switch (type) {
-      case JmolConstants.SHOW_EDITOR:
-        String filename = (String) data[2];
-        if (jvm12 != null)
-          jvm12.showEditor(true, filename, strInfo);
-        return;
       case JmolConstants.CALLBACK_ANIMFRAME:
-        // Note: twos-complement. To get actual frame number, use 
+        // Note: twos-complement. To get actual frame number, use
         // Math.max(frameNo, -2 - frameNo)
         // -1 means all frames are now displayed
         int[] iData = (int[]) data[1];
@@ -871,13 +854,13 @@ public class Jmol implements WrappedApplet {
         int currentDirection = (lastNo < 0 ? -1 : 1);
 
         /*
-         * animationDirection is set solely by the "animation direction +1|-1" script command
-         * currentDirection is set by operations such as "anim playrev" and coming to the end of 
-         * a sequence in "anim mode palindrome"
+         * animationDirection is set solely by the "animation direction +1|-1"
+         * script command currentDirection is set by operations such as
+         * "anim playrev" and coming to the end of a sequence in
+         * "anim mode palindrome"
          * 
-         * It is the PRODUCT of these two numbers that determines what direction the animation is
-         * going.
-         * 
+         * It is the PRODUCT of these two numbers that determines what direction
+         * the animation is going.
          */
         if (doCallback) {
           data = new Object[] { htmlName,
@@ -887,8 +870,6 @@ public class Jmol implements WrappedApplet {
               new Integer(isAnimationRunning ? 1 : 0),
               new Integer(animationDirection), new Integer(currentDirection) };
         }
-        if (jmolpopup != null && !isAnimationRunning)
-          jmolpopup.updateComputedMenus();
         break;
       case JmolConstants.CALLBACK_ECHO:
         boolean isScriptQueued = (((Integer) data[2]).intValue() == 1);
@@ -917,11 +898,11 @@ public class Jmol implements WrappedApplet {
         }
         break;
       case JmolConstants.CALLBACK_MEASURE:
-        //pending, deleted, or completed
+        // pending, deleted, or completed
         if (!doCallback)
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
-        String status = (String) data[3]; 
-        if (status.indexOf("Picked") >= 0) {//picking mode
+        String status = (String) data[3];
+        if (status.indexOf("Picked") >= 0) {// picking mode
           showStatusAndConsole(strInfo, true); // set picking measure distance
         } else if (status.indexOf("Completed") >= 0) {
           strInfo = status + ": " + strInfo;
@@ -937,13 +918,13 @@ public class Jmol implements WrappedApplet {
           return;
         break;
       case JmolConstants.CALLBACK_MINIMIZATION:
-        //just send it
+        // just send it
         break;
       case JmolConstants.CALLBACK_PICK:
         showStatusAndConsole(strInfo, true);
         break;
       case JmolConstants.CALLBACK_RESIZE:
-        //just send it
+        // just send it
         break;
       case JmolConstants.CALLBACK_SCRIPT:
         int msWalltime = ((Integer) data[3]).intValue();
@@ -951,25 +932,15 @@ public class Jmol implements WrappedApplet {
         // special messages have msWalltime < 0
         // termination message has msWalltime > 0 (1 + msWalltime)
         // "script started"/"pending"/"script terminated"/"script completed"
-        //   do not get sent to console
-        if (jvm12 != null && jvm12.scriptEditor != null) {
-            if (msWalltime > 0) {
-              // termination -- button legacy
-              jvm12.scriptEditor.notifyScriptTermination();
-            } else if (msWalltime < 0) {
-              if (msWalltime == -2)
-                jvm12.scriptEditor.notifyScriptStart();
-            } else if (jvm12.scriptEditor.isVisible() && ((String) data[2]).length() > 0) {
-              jvm12.scriptEditor.notifyContext((ScriptContext)viewer.getProperty("DATA_API", "scriptContext", null), data);
-            }
-          }
+        // do not get sent to console
         boolean toConsole = (msWalltime == 0);
         if (msWalltime > 0) {
           // termination -- button legacy
           notifyScriptTermination();
         } else if (!doCallback) {
-          //termination messsage ONLY if script callback enabled -- not to message queue
-          //for compatibility reasons
+          // termination messsage ONLY if script callback enabled -- not to
+          // message queue
+          // for compatibility reasons
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
         }
         showStatusAndConsole(strInfo, toConsole);
@@ -1027,17 +998,7 @@ public class Jmol implements WrappedApplet {
 
     public void setCallbackFunction(String callbackName, String callbackFunction) {
       //also serves to change language for callbacks and menu
-      if (callbackName.equalsIgnoreCase("menu")) {
-        menuStructure = callbackFunction;
-        if (needPopupMenu)
-          getPopupMenu(false);
-        return;
-      }
       if (callbackName.equalsIgnoreCase("language")) {
-        new GT(callbackFunction);
-        language = GT.getLanguage();
-        if (needPopupMenu)
-          getPopupMenu(true);
         clearDefaultConsoleMessage();
         if (jvm12 != null && isSigned)
           Jvm12.newDialog(true);
@@ -1065,9 +1026,6 @@ public class Jmol implements WrappedApplet {
       if (pt >= 0)
         return sendScript(strEval.substring(pt + 1), strEval.substring(0, pt),
             false, false);
-      if (strEval.startsWith("_GET_MENU"))
-        return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version "
-            + Viewer.getJmolVersion() + "|" + strEval));
       if (!haveDocumentAccess)
         return "NO EVAL ALLOWED";
       JSObject jsoWindow = null;
@@ -1196,20 +1154,6 @@ public class Jmol implements WrappedApplet {
       return fxyz;
     }
 
-    public void handlePopupMenu(int x, int y) {
-      if (!popupMenuAllowed) {
-        showConsole(true);
-        return;
-      }
-      if (jmolpopup == null)
-        return;
-      if (!language.equals(GT.getLanguage())) {
-        getPopupMenu(true);
-        language = GT.getLanguage();
-      }
-      jmolpopup.show(x, y);
-    }
-
     public void showUrl(String urlString) {
       if (Logger.debugging) {
         Logger.debug("showUrl(" + urlString + ")");
@@ -1260,12 +1204,6 @@ public class Jmol implements WrappedApplet {
       }
       output(message);
       sendJsTextareaStatus(message);
-    }
-
-    public void showConsole(boolean showConsole) {
-      //Logger.info("JmolApplet.showConsole(" + showConsole + ")");
-      if (jvm12 != null)
-        jvm12.showConsole(showConsole);
     }
 
     private String sendScript(String script, String appletName, boolean isSync,
@@ -1328,17 +1266,5 @@ public class Jmol implements WrappedApplet {
       return jvm12.dialogAsk(type, fileName);
     }
 
-  }
-
-  public void getPopupMenu(boolean forceNewConsole) {
-    jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate, menuStructure,
-        popupMenuAllowed);
-    if (jmolpopup != null && jvm12 != null && !popupMenuAllowed) {
-      if (forceNewConsole)
-        jvm12.showConsole(false);
-      if (jvm12.console == null)
-        jvm12.getConsole();
-      jmolpopup.installMainMenu(jvm12.console.getMyMenuBar());
-    }
   }
 }

@@ -57,7 +57,7 @@ public class AlphaMonomer extends Monomer {
 
   boolean isAlphaMonomer() { return true; }
 
-  private ProteinStructure proteinStructure;
+  protected ProteinStructure proteinStructure;
   protected Point3f nitrogenHydrogenPoint;
   
   public ProteinStructure getProteinStructure() { return proteinStructure; }
@@ -80,7 +80,7 @@ public class AlphaMonomer extends Monomer {
         : proteinStructure.type;
   }
 
-  public int getProteinStructureID() {
+  public int getStrucNo() {
     return proteinStructure != null ? proteinStructure.uniqueID : 0;
   }
 

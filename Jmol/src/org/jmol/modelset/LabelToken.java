@@ -153,6 +153,7 @@ public class LabelToken {
            Token.spacefill,
            Token.structure,
            Token.strucno,
+           Token.strucid,
            Token.symbol,
            Token.unitX,
            Token.unitY,
@@ -388,8 +389,11 @@ public class LabelToken {
       case 'r':
         strT = atom.getSeqcodeString();
         break;
+      case Token.strucid:
+        strT = atom.getStructureId();
+        break;
       case Token.strucno:
-        int id = atom.getProteinStructureID();
+        int id = atom.getStrucNo();
         strT = (id <= 0 ? "" : "" + id);
         break;
       case Token.straightness:

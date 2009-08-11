@@ -54,7 +54,6 @@ public class JmolApp {
   public File userPropsFile;
   public HistoryFile historyFile;
 
-  public String menuStructure;
   public String menuFile;
   
   public boolean splashEnabled = true;
@@ -81,8 +80,6 @@ public class JmolApp {
   
   public JmolViewer viewer;
   public JmolAdapter modelAdapter;
-
-  public String language;
 
   public JmolApp() {
     // defer parsing until we can set a few options ourselves

@@ -519,7 +519,9 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
   
-  protected void defineStructure(int modelIndex, String structureType, char startChainID,
+  protected void defineStructure(int modelIndex, String structureType, 
+                                 String structureID, int serialID, int strandCount, 
+                                 char startChainID,
                        int startSequenceNumber, char startInsertionCode,
                        char endChainID, int endSequenceNumber,
                        char endInsertionCode) {
@@ -527,7 +529,8 @@ abstract public class ModelCollection extends BondCollection {
       structures = (Structure[]) ArrayUtil.setLength(structures,
           structureCount + 10);
     structures[structureCount++] = new Structure(modelIndex, structureType,
-        startChainID,
+        structureID, serialID, 
+        strandCount, startChainID,
         Group.getSeqcode(startSequenceNumber, startInsertionCode), endChainID,
         Group.getSeqcode(endSequenceNumber, endInsertionCode));
   }
@@ -823,6 +826,7 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = structureCount; --i >= 0;) {
       Structure structure = structures[i];
       models[structure.modelIndex].addSecondaryStructure(structure.type,
+          structure.structureID, structure.serialID, structure.strandCount,
           structure.startChainID, structure.startSeqcode, structure.endChainID,
           structure.endSeqcode);
     }
@@ -943,11 +947,19 @@ abstract public class ModelCollection extends BondCollection {
     char endChainID;
     int endSeqcode;
     int modelIndex;
+    String structureID;
+    int serialID;
+    int strandCount;
 
-    Structure(int modelIndex, String typeName, char startChainID,
+    Structure(int modelIndex, String typeName, 
+        String structureID, int serialID, int strandCount, 
+        char startChainID,
         int startSeqcode, char endChainID, int endSeqcode) {
       this.modelIndex = modelIndex;
       this.typeName = typeName;
+      this.structureID = structureID;
+      this.strandCount = strandCount; 
+      this.serialID = serialID;
       this.startChainID = startChainID;
       this.startSeqcode = startSeqcode;
       this.endChainID = endChainID;
@@ -2273,7 +2285,7 @@ abstract public class ModelCollection extends BondCollection {
         lastmodel = imodel;
         lastid = -1;
       }
-      if ((id = atoms[i].getProteinStructureID()) != lastid 
+      if ((id = atoms[i].getStrucNo()) != lastid 
                && id != 0) {
         atoms[i].getGroup().setProteinStructureId(++idnew);
         lastid = idnew;
@@ -2295,6 +2307,7 @@ abstract public class ModelCollection extends BondCollection {
     int lastId = -1;
     int res1 = 0;
     int res2 = 0;
+    String sid = "";
     String group1 = "";
     String group2 = "";
     String chain1 = "";
@@ -2318,7 +2331,7 @@ abstract public class ModelCollection extends BondCollection {
         if (taintedOnly && !bsTainted.get(i))
           continue;
         id = 0;
-        if (i == atomCount || (id = atoms[i].getProteinStructureID()) != lastId) {
+        if (i == atomCount || (id = atoms[i].getStrucNo()) != lastId) {
           if (bs != null) {
             if (itype == JmolConstants.PROTEIN_STRUCTURE_HELIX
                 || itype == JmolConstants.PROTEIN_STRUCTURE_TURN
@@ -2334,7 +2347,6 @@ abstract public class ModelCollection extends BondCollection {
               } else {
                 String str;
                 int nx;
-                String sid;
                 StringBuffer sb;
                 //       NNN III GGG C RRRR  GGG C RRRR
                 //HELIX   99  99 LYS F  281  LEU F  293  1 
@@ -2345,25 +2357,27 @@ abstract public class ModelCollection extends BondCollection {
                 switch (itype) {
                 case JmolConstants.PROTEIN_STRUCTURE_HELIX:
                   nx = ++nHelix;
-                  sid = "H" + nx;
-                  str = "HELIX  %3N %3ID %3GROUPA %1CA %4RESA  %3GROUPB %1CB %4RESB\n";
+                  if (sid == null)
+                    sid = nx + " H" + nx;
+                  str = "HELIX  %ID %3GROUPA %1CA %4RESA  %3GROUPB %1CB %4RESB";
                   sb = sbHelix;
                   break;
                 case JmolConstants.PROTEIN_STRUCTURE_SHEET:
                   nx = ++nSheet;
-                  sid = "S" + nx;
-                  str = "SHEET  %3N %3ID 2 %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB\n";
+                  if (sid == null)
+                    sid = nx + " S" + nx + " 0";
+                  str = "SHEET  %ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB";
                   sb = sbSheet;
                   break;
                 case JmolConstants.PROTEIN_STRUCTURE_TURN:
                 default:
                   nx = ++nTurn;
-                  sid = "T" + nx;
-                  str = "TURN   %3N %3ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB\n";
+                if (sid == null)
+                  sid = nx + " T" + nx;
+                  str = "TURN   %ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB";
                   sb = sbTurn;
                   break;
                 }
-                str = TextFormat.formatString(str, "N", nx);
                 str = TextFormat.formatString(str, "ID", sid);
                 str = TextFormat.formatString(str, "GROUPA", group1);
                 str = TextFormat.formatString(str, "CA", chain1);
@@ -2371,7 +2385,7 @@ abstract public class ModelCollection extends BondCollection {
                 str = TextFormat.formatString(str, "GROUPB", group2);
                 str = TextFormat.formatString(str, "CB", chain2);
                 str = TextFormat.formatString(str, "RESB", res2);
-                sb.append(str);
+                sb.append(str).append (" strucno= ").append(lastId).append("\n");
 
                 /*
                  HELIX    1  H1 ILE      7  PRO     19  1 3/10 CONFORMATION RES 17,19    1CRN  55
@@ -2400,6 +2414,7 @@ abstract public class ModelCollection extends BondCollection {
           chain1 = "" + ch;
         }
         itype = atoms[i].getProteinStructureType();
+        sid = atoms[i].getProteinStructureTag();
         bs.set(i);
         lastId = id;
         res2 = atoms[i].getResno();

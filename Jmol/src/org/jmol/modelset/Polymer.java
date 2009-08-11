@@ -72,7 +72,9 @@ abstract public class Polymer {
     return 0;
   }
 
-  public void addSecondaryStructure(byte type, char startChainID,
+  public void addSecondaryStructure(byte type, 
+                                    String structureID, int serialID, int strandCount,
+                                    char startChainID,
                                     int startSeqcode, char endChainID,
                                     int endSeqcode) {
   }

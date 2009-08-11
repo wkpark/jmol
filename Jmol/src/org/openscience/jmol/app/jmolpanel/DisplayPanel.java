@@ -47,8 +47,13 @@ public class DisplayPanel extends JPanel
   private boolean haveDisplay;
   Point border;
   boolean haveBorder;
+  private JFrame frame;
+  JFrame getFrame() {
+    return frame;
+  }
   
   public DisplayPanel(JmolPanel jmol) {
+    frame = jmol.frame;
     status = jmol.status;
     guimap = jmol.guimap;
     border = jmol.jmolApp.border;

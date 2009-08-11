@@ -32,7 +32,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import org.jmol.api.Interface;
 import org.jmol.api.JmolImageCreatorInterface;
+import org.jmol.api.JmolPdfCreatorInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.Base64;
 import org.jmol.util.JpegEncoder;
@@ -149,8 +151,9 @@ public class ImageCreator implements JmolImageCreatorInterface {
                               OutputStream os) throws IOException {
     byte[] bytes = null;
     String errMsg = null;
-    boolean isOsTemp = (os == null && fileName != null);
-    boolean asBytes = (os == null && fileName == null);
+    boolean isPDF = type.equalsIgnoreCase("PDF");
+    boolean isOsTemp = (os == null && fileName != null && !isPDF);
+    boolean asBytes = (os == null && fileName == null && !isPDF);
     Image image = viewer.getScreenImage();
     try {
       if (image == null) {
@@ -202,6 +205,12 @@ public class ImageCreator implements JmolImageCreatorInterface {
             GifEncoder.write(image, os);
             bytes = null;
           }
+        } else if (type.equalsIgnoreCase("PDF")) {
+          // applet will not have this interface
+          // PDF is application-only because it is such a HUGE package
+            JmolPdfCreatorInterface pci = (JmolPdfCreatorInterface) Interface
+                .getApplicationInterface("jmolpanel.PdfCreator");
+            errMsg = pci.createPdfDocument(fileName, image);
         }
         if (os != null)
           os.flush();

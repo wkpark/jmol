@@ -36,8 +36,9 @@ import javax.swing.text.*;
 
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
 
-public class AppletConsole extends JmolConsole implements JmolAppletConsoleInterface {
+public class AppletConsole extends JmolConsole implements JmolAppConsoleInterface {
   private final JTextArea input = new ControlEnterTextArea();
   private final JTextPane output = new JTextPane();
   private final Document outputDocument = output.getDocument();
@@ -53,6 +54,7 @@ public class AppletConsole extends JmolConsole implements JmolAppletConsoleInter
 
   private JMenuBar menubar; // requiring Swing here for now
   private JButton clearOutButton, clearInButton, loadButton;
+  private JmolScriptEditorInterface scriptEditor;
 
 
   public Object getMyMenuBar() {
@@ -67,12 +69,36 @@ public class AppletConsole extends JmolConsole implements JmolAppletConsoleInter
   public AppletConsole() {
   }
   
-  public void set(JmolViewer viewer, Jvm12 jvm12) {
+  public JmolAppConsoleInterface getAppConsole(Viewer viewer, Object arg2) {
+    // used in application only
+    return null;
+  }
+
+  public JmolScriptEditorInterface getScriptEditor() {
+    if (scriptEditor == null) {
+      scriptEditor = (JmolScriptEditorInterface) Interface.getOptionInterface("console.ScriptEditor");
+      scriptEditor = scriptEditor.getScriptEditor(viewer, jvm12.awtComponent, this);
+    }
+    return scriptEditor;
+  }
+
+  public void sendConsoleEcho(String strEcho) {
+    output(strEcho);
+  }
+
+  public void sendConsoleMessage(String strInfo) {
+    output(strInfo);
+  }
+
+  public void zap() {
+  }
+
+  public void set(JmolViewer viewer, Object jvm12) {
     //Logger.debug("Console constructor");
     //System.out.println("Console " + this + " constructed");
 
     this.viewer = viewer;
-    this.jvm12 = jvm12;
+    this.jvm12 = (Jvm12) jvm12;
     boolean doTranslate = GT.getDoTranslate();
     GT.setDoTranslate(true);
 
@@ -232,7 +258,7 @@ public class AppletConsole extends JmolConsole implements JmolAppletConsoleInter
     input.requestFocus();
   }
 
-  public void output(String message) {
+  private void output(String message) {
     output(message, null);
   }
 
@@ -447,5 +473,11 @@ public class AppletConsole extends JmolConsole implements JmolAppletConsoleInter
       return key;
     }
   }
+
+  public JmolAppConsoleInterface getAppConsole(Viewer viewer, Component display) {
+    // TODO
+    return null;
+  }
+
 
 }

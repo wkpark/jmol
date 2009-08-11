@@ -61,6 +61,10 @@ public interface JmolStatusListener extends JmolCallbackListener {
   public float[][][] functionXYZ(String functionName, int nx, int ny, int nz);
 
   /**
+   * Starting with Jmol 11.8.RC5, for a context where the Jmol application
+   * is embedded in another application simply to send the returned message
+   * to the application. In this way any application can have access to the WRITE
+   * command.
    * 
    * @param fileName
    * @param type
@@ -72,10 +76,6 @@ public interface JmolStatusListener extends JmolCallbackListener {
 
   public Hashtable getRegistryInfo();
 
-  public void handlePopupMenu(int x, int y);
-
-  public void showConsole(boolean showConsole);
-  
   public void showUrl(String url);
 
   public String dialogAsk(String type, String fileName);

@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.popup.JmolPopup;
 import org.jmol.shape.Shape;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
@@ -1622,6 +1623,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       scriptManager.startCommandWatcher(false);
       scriptManager.interruptQueueThreads();
       g3d.destroy();
+      if (appConsole != null) {
+        appConsole.dispose();
+        appConsole = null;
+      }
+      if (scriptEditor != null) {
+        scriptEditor.dispose();
+        scriptEditor = null;
+      }
     }
   }
 
@@ -1700,7 +1709,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // assumes a Jmol script file if no other file type
     allowScript &= (type == null);
     if (scriptEditorVisible && allowScript)
-      statusManager.showEditor(new String[] { fileName, getFileAsString(fileName) });
+      showEditor(new String[] { fileName, getFileAsString(fileName) });
     else
       evalString((allowScript ? "script " : "load ")
          + Escape.escape(fileName));
@@ -4296,12 +4305,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void popupMenu(int x, int y) {
     if (isPreviewOnly || global.disablePopupMenu)
       return;
-    // setFrankOn(true);
-    statusManager.popupMenu(x, y);
+    if (jmolpopup == null)
+      jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
+    jmolpopup.show(x, y);
   }
 
   String getMenu(String type) {
-    return statusManager.getMenu(type);
+    return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version "
+            + Viewer.getJmolVersion() + "|_GET_MENU|" + type));
   }
 
   void setMenu(String fileOrText, boolean isFile) {
@@ -4313,6 +4324,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       fileOrText = null;
     else if (isFile)
       fileOrText = getFileAsString(fileOrText);
+    getProperty("DATA_API", "setMenu", fileOrText);
     statusManager.setCallbackFunction("menu", fileOrText);
   }
 
@@ -4758,7 +4770,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   
   void showConsole(boolean showConsole) {
     // Eval
-    statusManager.showConsole(showConsole);
+      if (appConsole == null)
+        return;
+      appConsole.setVisible(showConsole);
   }
 
   void clearConsole() {
@@ -4881,7 +4895,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // /11.1.30//
       if (key.equalsIgnoreCase("language")) {
         // fr cs en none, etc.
-        statusManager.setCallbackFunction("language", value);
+        setLanguage(value);
         value = GT.getLanguage();
         break;
       }
@@ -5023,6 +5037,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.setParameterValue(key, value);
     else
       global.setUserVariable(key, new ScriptVariable(Token.string, value));
+  }
+
+  private String language = GT.getLanguage();
+  public String getLanguage() {
+    return language;
+  }
+  
+  private void setLanguage(String value) {
+    //also serves to change language for callbacks and menu
+      new GT(value);
+      language = GT.getLanguage();
+      if (jmolpopup != null)
+        jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
+      statusManager.setCallbackFunction("language", language);
   }
 
   private void setPropertyError(String msg) {
@@ -6791,6 +6819,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return scriptEditorVisible;
   }
   
+  JmolAppConsoleInterface appConsole;
+  JmolScriptEditorInterface scriptEditor;
+  JmolPopup jmolpopup;
+  String menuStructure;
+  
   public Object getProperty(String returnType, String infoType, Object paramInfo) {
     // accepts a BitSet paramInfo
     // return types include "JSON", "String", "readable", and anything else
@@ -6802,22 +6835,63 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       switch (("scriptCheck........." 
               +"scriptContext......."
               +"scriptEditor........"
-              +"scriptEditorState...").indexOf(infoType)) {
+              +"scriptEditorState..."
+              +"getAppConsole......."
+              +"getScriptEditor....."
+              +"setMenu.............").indexOf(infoType)) {
+
       case 0:
         return scriptCheck((String) paramInfo, true);
       case 20:
         return eval.getScriptContext();
       case 40:
-        statusManager.showEditor((String[]) paramInfo);
+        showEditor((String[]) paramInfo);
         return null;
       case 60:
         scriptEditorVisible = ((Boolean)paramInfo).booleanValue();
         return null;
+      case 80:
+        if (paramInfo instanceof JmolAppConsoleInterface) {
+          appConsole = (JmolAppConsoleInterface) paramInfo;
+        } else if (appConsole == null && paramInfo != null && ((Boolean) paramInfo).booleanValue()) {
+          appConsole = ((JmolAppConsoleInterface) Interface
+              .getApplicationInterface("jmolpanel.AppConsole")).getAppConsole(this, display);
+        }
+        scriptEditor = (appConsole == null ? null : appConsole.getScriptEditor());
+        return appConsole;
+      case 100:
+        if (appConsole == null && paramInfo != null && ((Boolean) paramInfo).booleanValue()) {
+          getProperty("DATA_API", "appConsole", Boolean.TRUE);
+          scriptEditor = (appConsole == null ? null : appConsole.getScriptEditor());
+        }
+        return scriptEditor;
+      case 120:
+        return menuStructure = (String) paramInfo;
+      default:
+        System.out.println("ERROR IN getProperty DATA_API: " + returnType);
+        return null;
       }
-    }
+        
+    } 
     return PropertyManager.getProperty(this, returnType, infoType, paramInfo);
   }
 
+  void showEditor(String[] file_text) {
+    if (file_text == null)
+      file_text = new String[] { null, null };
+    if (file_text[1] == null)
+      file_text[1] = "<no data>";
+    String filename = file_text[1];
+    String msg = file_text[0];
+    JmolScriptEditorInterface scriptEditor = (JmolScriptEditorInterface) getProperty(
+        "DATA_API", "getScriptEditor", Boolean.TRUE);
+    if (msg != null) {
+      scriptEditor.setFilename(filename);
+      scriptEditor.output(msg);
+    }
+    scriptEditor.setVisible(true);
+  }
+  
   String getModelExtract(Object atomExpression) {
     return fileManager.getFullPathName() + "\nJmol version " + getJmolVersion()
         + "\nEXTRACT: " + atomExpression + "\n"
@@ -7390,12 +7464,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           err = statusManager.createImage((useDialog ? "?" : "") + fileName,
               type, text_or_bytes, quality);
         } else {
-          // application can do it here
-          JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
-             .getOptionInterface("export.image.ImageCreator");
-          c.setViewer(this);
-          err = (String) c.createImage(fileName, type, text_or_bytes, quality);
-          statusManager.createImage(err, type, null, quality);
+          // application can do it itself or allow Jmol to do it here
+          err = statusManager.createImage(fileName, type, text_or_bytes, quality);
+          if (err == null) {
+            JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
+               .getOptionInterface("export.image.ImageCreator");
+            c.setViewer(this);
+            err = (String) c.createImage(fileName, type, text_or_bytes, quality);
+            statusManager.createImage(err, type, null, quality);
+          }
         }
       }
       // err may be null if user cancels operation involving dialog and "?"
@@ -7770,6 +7847,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   boolean isRepaintPending() {
     return repaintManager.repaintPending;
   }
-
-
+  
 }

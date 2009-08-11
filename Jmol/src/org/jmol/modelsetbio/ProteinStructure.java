@@ -44,6 +44,9 @@ public abstract class ProteinStructure {
   final Vector3f vectorProjection = new Vector3f();
   Point3f[] segments;
   int uniqueID;
+  public String structureID;
+  public int serialID;
+  public int strandCount;
   
   ProteinStructure(AlphaPolymer apolymer, byte type,
                    int monomerIndex, int monomerCount, int id) {

@@ -989,8 +989,16 @@ final public class Atom extends Point3fi {
     return group.getProteinStructureType();
   }
   
-  public int getProteinStructureID() {
-    return group.getProteinStructureID();
+  public int getStrucNo() {
+    return group.getStrucNo();
+  }
+
+  public String getStructureId() {
+    return group.getStructureId();
+  }
+
+  public String getProteinStructureTag() {
+    return group.getProteinStructureTag();
   }
 
   public short getGroupID() {
@@ -1096,7 +1104,7 @@ final public class Atom extends Point3fi {
     case Token.structure:
       return atom.getProteinStructureType();
     case Token.strucno:
-      return atom.getProteinStructureID();
+      return atom.getStrucNo();
     case Token.valence:
       return atom.getValence();
     }
@@ -1211,6 +1219,8 @@ final public class Atom extends Point3fi {
       return s;
     case Token.structure:
       return JmolConstants.getProteinStructureName(atom.getProteinStructureType());
+    case Token.strucid:
+      return atom.getStructureId();
     case Token.symbol:
       return atom.getElementSymbol(false);
     case Token.symmetry:

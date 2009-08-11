@@ -440,6 +440,9 @@ abstract public Object getAtomSetCollectionFromReader(String name, String type,
     public abstract boolean hasNext();
     public abstract int getModelIndex();
     public abstract String getStructureType();
+    public abstract String getStructureID();
+    public abstract int getSerialID();
+    public abstract int getStrandCount();
     public abstract char getStartChainID();
     public abstract int getStartSequenceNumber();
     public abstract char getStartInsertionCode();

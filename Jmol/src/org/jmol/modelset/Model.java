@@ -164,12 +164,13 @@ public final class Model {
     this.nInsertions = nInsertions;  
   }
   
-  void addSecondaryStructure(byte type,
+  void addSecondaryStructure(byte type, 
+                             String structureID, int serialID, int strandCount,
                              char startChainID, int startSeqcode,
                              char endChainID, int endSeqcode) {
     for (int i = bioPolymerCount; --i >= 0; ) {
       Polymer polymer = bioPolymers[i];
-      polymer.addSecondaryStructure(type, startChainID, startSeqcode,
+      polymer.addSecondaryStructure(type, structureID, serialID, strandCount, startChainID, startSeqcode,
                                     endChainID, endSeqcode);
     }
   }

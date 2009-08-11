@@ -146,24 +146,10 @@ class MyStatusListener implements JmolStatusListener {
 
 
   /* (non-Javadoc)
-   * @see org.jmol.api.JmolStatusListener#handlePopupMenu(int, int)
-   */
-  public void handlePopupMenu(int x, int y) {
-    System.out.println("");
-  }
-
-  /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#showUrl(java.lang.String)
    */
   public void showUrl(String url) {
     System.out.println(url);
-  }
-
-  /* (non-Javadoc)
-   * @see org.jmol.api.JmolStatusListener#showConsole(boolean)
-   */
-  public void showConsole(boolean showConsole) {
-    System.out.println("Status of Console " + showConsole);
   }
 
   /* (non-Javadoc)

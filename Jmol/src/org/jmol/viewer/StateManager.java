@@ -511,7 +511,8 @@ public class StateManager {
         + ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomenabled"
         +
         //    saved in the hash table but not considered part of the state:
-        ";scriptqueue;scriptreportinglevel;syncscript;syncmouse;syncstereo;currentlocalpath;defaultdirectorylocal"
+        ";scriptqueue;scriptreportinglevel;syncscript;syncmouse;syncstereo;" +
+        ";defaultdirectory;currentlocalpath;defaultdirectorylocal"
         +
         //    more settable Jmol variables    
         ";ambient;bonds;colorrasmol;diffuse;frank;hetero;hidenotselected"
@@ -616,7 +617,7 @@ public class StateManager {
         appendCmd(str, "set axesOrientationRasmol true");
       appendCmd(str, "set bondRadiusMilliAngstroms " + bondRadiusMilliAngstroms);
       appendCmd(str, "set bondTolerance " + bondTolerance);
-      appendCmd(str, "set defaultDirectory " + Escape.escape(defaultDirectory));
+      //appendCmd(str, "set defaultDirectory " + Escape.escape(defaultDirectory));
       appendCmd(str, "set defaultLattice " + Escape.escape(ptDefaultLattice));
       appendCmd(str, "set defaultLoadScript \"\"");
       if (defaultLoadScript.length() > 0)

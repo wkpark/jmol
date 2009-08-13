@@ -63,8 +63,8 @@ public class Integration {
     frame.setVisible(true);
 
     JmolSimpleViewer viewer = jmolPanel.getViewer();
-    // this initial ZAP command is REQUIRED in Jmol 11.4.
-    viewer.evalString("zap");
+    // this initial ZAP command was required in Jmol 11.4.
+    // viewer.evalString("zap");
     //    viewer.openFile("../samples/caffeine.xyz");
     
     String strError = viewer.openFile("http://chemapps.stolaf.edu/jmol/docs/examples-11/data/caffeine.xyz");

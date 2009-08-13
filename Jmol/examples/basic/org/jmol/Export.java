@@ -122,7 +122,7 @@ class MyStatusListener implements JmolStatusListener {
     case JmolConstants.CALLBACK_MEASURE:
       break;
     case JmolConstants.CALLBACK_MESSAGE:
-      sendConsoleMessage((String) data[1]);
+      sendConsoleMessage(data == null ? null : (String) data[1]);
       break;
     case JmolConstants.CALLBACK_MINIMIZATION:
       break;

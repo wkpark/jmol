@@ -33,7 +33,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.jmol.adapter.cdk.CdkJmolAdapter;
+import org.jmol.adapter.cdk.CdkJmolAdapter; // doesn't exist
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
 

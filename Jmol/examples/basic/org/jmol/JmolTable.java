@@ -66,9 +66,11 @@ public class JmolTable {
 
     public static void main(String[] args) {
 
+    if (args.length == 0)
+      args = new String[] {"caffeine.xyz", "C6H6.smol" };
     int nobject = args.length;
     int ncol = 2;
-
+    
     Object[][] data = new Object[nobject][ncol];
     for (int i = 0; i < nobject; i++) {
       data[i][0] = new JmolPanel();
@@ -231,6 +233,7 @@ class JmolPanel extends JPanel {
     JmolPanel() {
         adapter = new SmarterJmolAdapter();
         viewer = JmolViewer.allocateViewer(this, adapter);
+        viewer.scriptWait("frank off;set defaultDirectory 'http://chemapps.stolaf.edu/jmol/docs/examples-11/data/'");
     }
 
     public JmolViewer getViewer() {
@@ -238,6 +241,7 @@ class JmolPanel extends JPanel {
     }
     final Dimension currentSize = new Dimension();
     public void paint(Graphics g) {
+      System.out.println("JmolTable paint " + viewer + "\n" + g);
         viewer.setScreenDimension(getSize(currentSize));
         Rectangle rectClip = new Rectangle();
         g.getClipBounds(rectClip);

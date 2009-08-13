@@ -65,9 +65,14 @@ public class _IdtfExporter extends _Exporter {
    * IDTFConverter.exe -input t.idtf -output t.u3d
    * 
    * see http://sourceforge.net/projects/u3d/
-   * see http://en.wikipedia.org/wiki/Universal_3D
-   * see http://www.ecma-international.org/publications/standards/Ecma-363.htm
-   * in the downloadable zip file, see docs/IntermediateFormat/IDTF Format Description.pdf
+   * 
+   *   especially http://u3d.svn.sourceforge.net/viewvc/u3d/trunk/Docs/IntermediateFormat/IDTF%20Format%20Description.pdf
+   *   and in the downloadable zip file, see Bin/Win32/Release/IDTFConverter.exe
+   *     
+   * see also http://en.wikipedia.org/wiki/Universal_3D
+   * see also http://www.ecma-international.org/publications/standards/Ecma-363.htm
+   * 
+   * for the complete Windows package, see also http://chemapps.stolaf.edu/jmol/docs/misc/idtf.zip
    * 
    */
   private AxisAngle4f viewpoint = new AxisAngle4f();

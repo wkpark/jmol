@@ -30,6 +30,7 @@ import org.jmol.shape.Shape;
 import org.jmol.shape.ShapeRenderer;
 import org.jmol.util.Logger;
 
+import java.awt.Component;
 import java.awt.Rectangle;
 
 class RepaintManager {
@@ -56,7 +57,7 @@ class RepaintManager {
     if (holdRepaint <= 0) {
       holdRepaint = 0;
       repaintPending = true;
-      viewer.repaint();
+      repaintDisplay();
     }
   }
 
@@ -65,17 +66,24 @@ class RepaintManager {
       return false;
     repaintPending = true;
     if (holdRepaint == 0) {
-      viewer.repaint();
+      repaintDisplay();
     }
     return true;
   }
 
   synchronized void requestRepaintAndWait() {
-    viewer.repaint();
+    repaintDisplay();
     try {
       wait();
     } catch (InterruptedException e) {
     }
+  }
+
+  private void repaintDisplay() {
+    Component display = viewer.getDisplay();
+    if (display == null)
+      return;
+    display.repaint();
   }
 
   synchronized void repaintDone() {

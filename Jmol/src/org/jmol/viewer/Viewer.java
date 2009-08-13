@@ -1694,7 +1694,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public String openFile(String fileName) {
     zap(false, false);
-    fileManager.createAtomSetCollectionFromFile(fileName, null, null, false);
+    fileManager.createAtomSetCollectionFromFile(fileName, new Hashtable(), null, false);
     return createModelSetAndReturnError(false);
   }
 
@@ -3092,14 +3092,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // ///////////////////////////////////////////////////////////////
   // delegated to RepaintManager
   // ///////////////////////////////////////////////////////////////
-
-  void repaint() {
-    // from RepaintManager
-    if (display == null)
-      return;
-    //System.out.println("viewer.repaint --> display.repaint()" + Thread.currentThread());
-    display.repaint();
-  }
 
   void setAnimationDirection(int direction) {// 1 or -1
     // Eval
@@ -4771,7 +4763,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void showConsole(boolean showConsole) {
     // Eval
       if (appConsole == null)
-        return;
+        getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
       appConsole.setVisible(showConsole);
   }
 

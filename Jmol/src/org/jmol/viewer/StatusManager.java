@@ -589,6 +589,9 @@ class StatusManager {
   }
 
   synchronized void clearConsole() {
+    if (viewer.appConsole != null) {
+      viewer.appConsole.sendConsoleMessage(null);
+    }
     if (jmolStatusListener != null)
       jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_MESSAGE, null);
   }

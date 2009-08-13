@@ -87,7 +87,9 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
   }
   
   public JmolAppConsoleInterface getAppConsole(Viewer viewer, Component display) {
-    return new AppConsole(viewer, ((DisplayPanel)display).getFrame());
+    return new AppConsole(viewer, display instanceof DisplayPanel ? 
+        ((DisplayPanel)display).getFrame() 
+        : display instanceof JFrame ? (JFrame) display : null);
   }
 
   public void set(JmolViewer viewer, Object jvm12) {

@@ -243,11 +243,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     stateManager = new StateManager(this);
     g3d = new Graphics3D(display);
     colorManager = new ColorManager(this, g3d);
-    // initialize();
     statusManager = new StatusManager(this);
     scriptManager = new ScriptManager(this);
     transformManager = new TransformManager11(this);
-    // transformManager = new TransformManager10(this);
     selectionManager = new SelectionManager(this);
     pickingManager = new PickingManager(this);
     if (display != null) {
@@ -505,7 +503,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     axesAreTainted = true;
     transformManager.homePosition();
     if (modelSet.setCrystallographicDefaults())
-      stateManager.setCrystallographicDefaults();// modelSet.someModelsHavePeriodicOrigin);
+      stateManager.setCrystallographicDefaults();
     else
       setAxesModeMolecular(false);
     prevFrame = Integer.MIN_VALUE;
@@ -1384,7 +1382,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private static void setSpecular(boolean specular) {
     // Eval
     ColorManager.setSpecular(specular);
-    // global.specular = specular;
   }
 
   boolean getSpecular() {
@@ -1394,19 +1391,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private static void setSpecularPower(int specularPower) {
     // Eval
     ColorManager.setSpecularPower(Math.abs(specularPower));
-    // global.specularPower = specularPower;
   }
 
   private static void setSpecularExponent(int specularExponent) {
     // Eval
     ColorManager.setSpecularPower(-Math.abs(specularExponent));
-    // global.specularExponent = specularExponent;
   }
 
   private static void setAmbientPercent(int ambientPercent) {
     // Eval
     ColorManager.setAmbientPercent(ambientPercent);
-    // global.ambientPercent = ambientPercent;
   }
 
   static int getAmbientPercent() {
@@ -1416,7 +1410,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private static void setDiffusePercent(int diffusePercent) {
     // Eval
     ColorManager.setDiffusePercent(diffusePercent);
-    // global.diffusePercent = diffusePercent;
   }
 
   static int getDiffusePercent() {
@@ -1426,7 +1419,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private static void setSpecularPercent(int specularPercent) {
     // Eval
     ColorManager.setSpecularPercent(specularPercent);
-    // global.specularPercent = specularPercent;
   }
 
   static int getSpecularPercent() {
@@ -2908,9 +2900,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   int autoHbond(BitSet bsBonds) {
     // Eval
-    // modelSet.addStateScript("select", null, selectionManager.bsSelection,
-    // null,
-    // "; calculate hbonds;", false);
     return autoHbond(selectionManager.bsSelection,
         selectionManager.bsSelection, bsBonds, 0, 0);
   }
@@ -3278,10 +3267,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void setInMotion(boolean inMotion) {
     // MouseManager, TransformManager
-    // Logger.debug("viewer.setInMotion("+inMotion+")");
     if (wasInMotion ^ inMotion) {
       animationManager.setInMotion(inMotion);
-      // resizeImage(0, 0, false, false, true);
       if (inMotion) {
         ++motionEventNumber;
       } else {
@@ -3301,7 +3288,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void pushHoldRepaint(String why) {
-    // System.out.println("Viewer pushHoldRepaint " + why);
     repaintManager.pushHoldRepaint();
   }
 
@@ -3310,7 +3296,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void popHoldRepaint(String why) {
-    // System.out.println("Viewer popHoldRepaint " + why);
     repaintManager.popHoldRepaint();
   }
 
@@ -4989,8 +4974,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
             "ERROR: cannot set boolean flag to string value: {0}", key));
         return;
       }
-      // Logger.warn(key + " -- string variable defined (" + value.length()
-      // + " bytes)");
     }
     if (isJmol)
       global.setParameterValue(key, value);
@@ -5085,7 +5068,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (key.equalsIgnoreCase("ellipsoidAxisDiameter")) {
         if (isInt)
           value = value / 1000;
-        // ellipsoidAxisDiameter" just handled as getParameter()
         break;
       }
 
@@ -5215,8 +5197,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
             "ERROR: cannot set boolean flag to numeric value: {0}", key));
         return true;
       }
-      // Logger.warn("viewer.setFloatProperty(" + key + "," + value
-      // + ") - float variable defined");
     }
     if (isJmol)
       global.setParameterValue(key, value);
@@ -5397,8 +5377,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
             "ERROR: cannot set boolean flag to numeric value: {0}", key));
         return;
       }
-      // Logger.info("viewer.setIntProperty(" + key + "," + value
-      // + ") - integer variable defined");
     }
     if (!defineNew)
       return;
@@ -5749,8 +5727,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (key.equalsIgnoreCase("testFlag1")) {
         global.testFlag1 = value;
-
-        // fileManager.getFileAsBytes("C:/temp/test/n-butane1.spardir/M0001/Molecule");
         break;
       }
       if (key.equalsIgnoreCase("testFlag2")) {
@@ -6218,7 +6194,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       transformManager.homePosition();
     }
     transformManager.setNavigationMode(TF);
-    // refresh(1,"set navigationMode");
   }
 
   public boolean getNavigationMode() {
@@ -6307,8 +6282,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                         int connectOperation, BitSet bsA, BitSet bsB,
                         BitSet bsBonds, boolean isBonds) {
     // eval
-    // System.out.println((new Date()).getTime() + " connect" + minDistance +
-    // " " + maxDistance);
     clearModelDependentObjects();
     clearAllMeasurements(); // necessary for serialization
     return modelSet.makeConnections(minDistance, maxDistance, order,

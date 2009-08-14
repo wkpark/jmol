@@ -14,13 +14,13 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-08-14 18:53+0200\n"
-"PO-Revision-Date: 2009-03-05 14:28+0000\n"
+"PO-Revision-Date: 2009-08-14 17:45+0000\n"
 "Last-Translator: Keruskerfuerst <armin_mohring@web.de>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-03-07 16:04+0000\n"
+"X-Launchpad-Export-Date: 2009-08-14 18:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/Jmol.java:659
@@ -79,9 +79,8 @@ msgid "Jmol Script Console"
 msgstr "Jmol Skript Konsole"
 
 #: org/jmol/console/AppletConsole.java:107
-#, fuzzy
 msgid "Editor"
-msgstr "Historie"
+msgstr "Editor"
 
 #: org/jmol/console/AppletConsole.java:108
 msgid "State"
@@ -89,9 +88,8 @@ msgstr "Zustand"
 
 #: org/jmol/console/AppletConsole.java:109
 #: org/jmol/console/ScriptEditor.java:146
-#, fuzzy
 msgid "Run"
-msgstr "Russisch"
+msgstr "Ausführen"
 
 #: org/jmol/console/AppletConsole.java:110
 msgid "Clear Output"
@@ -142,9 +140,8 @@ msgid "&More"
 msgstr "&Mehr"
 
 #: org/jmol/console/ScriptEditor.java:100
-#, fuzzy
 msgid "Jmol Script Editor"
-msgstr "Jmol Skript Konsole"
+msgstr "Jmol Skript Editor"
 
 #: org/jmol/console/ScriptEditor.java:139
 #: org/jmol/popup/PopupResourceBundle.java:860
@@ -164,9 +161,8 @@ msgid "Script"
 msgstr "Skript"
 
 #: org/jmol/console/ScriptEditor.java:143
-#, fuzzy
 msgid "Check"
-msgstr "Tschechisch"
+msgstr "Prüfen"
 
 #: org/jmol/console/ScriptEditor.java:144
 #: org/jmol/popup/PopupResourceBundle.java:591
@@ -174,9 +170,8 @@ msgid "Top"
 msgstr "Oben"
 
 #: org/jmol/console/ScriptEditor.java:145
-#, fuzzy
 msgid "Step"
-msgstr "Anhalten"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:147
 #: org/jmol/popup/PopupResourceBundle.java:818
@@ -190,17 +185,15 @@ msgstr "Fortsetzen"
 
 #: org/jmol/console/ScriptEditor.java:151
 msgid "Halt"
-msgstr ""
+msgstr "Stoppen"
 
 #: org/jmol/console/ScriptEditor.java:153
-#, fuzzy
 msgid "Clear"
-msgstr "Eingabe leeren"
+msgstr "Leeren"
 
 #: org/jmol/console/ScriptEditor.java:154
-#, fuzzy
 msgid "Close"
-msgstr "Konsole"
+msgstr "Schließen"
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
@@ -388,13 +381,12 @@ msgid "Catalan"
 msgstr "Katalanisch"
 
 #: org/jmol/i18n/GT.java:119
-#, fuzzy
 msgid "Simplified Chinese"
-msgstr "Seitenketten"
+msgstr "Chinesisch, vereinfacht"
 
 #: org/jmol/i18n/GT.java:120
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "Chinesisch, traditionell"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Czech"
@@ -482,7 +474,7 @@ msgstr "Türkisch"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Ukrainian"
-msgstr ""
+msgstr "Ukrainisch"
 
 #: org/jmol/minimize/Minimizer.java:187
 #, java-format
@@ -1955,9 +1947,6 @@ msgstr ""
 #~ msgid "Execute"
 #~ msgstr "Ausführen"
 
-#~ msgid "Portuguese - Brazil"
-#~ msgstr "Brasilianisches Portugiesisch"
-
 #~ msgid "all"
 #~ msgstr "Alles"
 
@@ -2115,8 +2104,8 @@ msgstr ""
 #~ msgstr "Drahtgitter-Rotation"
 
 #~ msgid ""
-#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
-#~ "for more information"
+#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org for "
+#~ "more information"
 #~ msgstr ""
 #~ "Jmol-Applet - Teil des OpenScience-Projekts. Mehr Informationen unter "
 #~ "http://www.jmol.org."

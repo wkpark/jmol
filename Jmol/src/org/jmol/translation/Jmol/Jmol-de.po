@@ -14,13 +14,13 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-08-14 18:53+0200\n"
-"PO-Revision-Date: 2009-03-05 14:27+0000\n"
+"PO-Revision-Date: 2009-08-14 17:50+0000\n"
 "Last-Translator: Keruskerfuerst <armin_mohring@web.de>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-03-07 16:12+0000\n"
+"X-Launchpad-Export-Date: 2009-08-14 18:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -64,7 +64,7 @@ msgstr "Befehle während Skript-Ausführung auflisten"
 
 #: org/openscience/jmol/app/JmolApp.java:152
 msgid "start with no splash screen"
-msgstr ""
+msgstr "Starte ohne \"splash screen\""
 
 #: org/openscience/jmol/app/JmolApp.java:154
 msgid "no console -- all output to sysout"
@@ -72,7 +72,7 @@ msgstr "keine Konsole -- gesamte Ausgabe nach SYSOUT"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr ""
+msgstr "sende nur Ausgaben von print Nachrichten zur Konsole"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent commmand thread"
@@ -83,9 +83,8 @@ msgid "exit after script (implicit with -n)"
 msgstr "nach Skript automatisch beenden (wird von -n impliziert)"
 
 #: org/openscience/jmol/app/JmolApp.java:164
-#, fuzzy
 msgid "script file to execute or '-' for System.in"
-msgstr "Skript, das geladen werden soll"
+msgstr "Skript Datei zum Ausführen oder '-' für System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "Jmol script to execute BEFORE -s option"
@@ -165,9 +164,8 @@ msgid "Jmol Script Console"
 msgstr "Jmol Skript Konsole"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:131
-#, fuzzy
 msgid "Editor"
-msgstr "&Bearbeiten"
+msgstr "Editor"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:132
 msgid "Check"
@@ -179,13 +177,12 @@ msgid "Top"
 msgstr "&Oben"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:134
-#, fuzzy
 msgid "Step"
-msgstr "Zustand"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:141
 msgid "Variables"
-msgstr ""
+msgstr "Variablen"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:142
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:312
@@ -438,16 +435,15 @@ msgstr "&URL öffnen"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:55
 msgid "Scrip&t Editor..."
-msgstr ""
+msgstr "Skrip&t Editor..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
 msgid "Output Conso&le..."
 msgstr "Skrip&t..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
-#, fuzzy
 msgid "Jmol Java &Console"
-msgstr "Jmol Java Konsole"
+msgstr "Jmol Java &Konsole"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:58
 msgid "AtomSet&Chooser..."
@@ -813,36 +809,32 @@ msgid "&Rewind to first frame"
 msgstr "Zu&rück zum ersten Frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
-#, fuzzy
 msgid "Rewind to first frame"
-msgstr "Zu&rück zum ersten Frame"
+msgstr "Zurück zum ersten Frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
 msgid "Go to &next frame"
 msgstr "Zum &nächsten Frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
-#, fuzzy
 msgid "Go to next frame"
-msgstr "Zum &nächsten Frame"
+msgstr "Zum nächsten Frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "Go to &previous frame"
 msgstr "Zum &vorherigen Frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
-#, fuzzy
 msgid "Go to previous frame"
-msgstr "Zum &vorherigen Frame"
+msgstr "Zum vorherigen Frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "Go to &last frame"
 msgstr "Zum &letzten Frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
-#, fuzzy
 msgid "Go to last frame"
-msgstr "Zum &letzten Frame"
+msgstr "Gehe zum letzten Frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "Start &vibration"
@@ -919,9 +911,8 @@ msgid "Rotate molecule."
 msgstr "Molekül drehen."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
-#, fuzzy
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr "Wähle einen Satz von Atomen mittels UMSCHALTEN-LINKS-  ZIEHEN."
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
 msgid "Click atoms to measure distances"
@@ -972,9 +963,8 @@ msgid "Launching main frame..."
 msgstr "Starte Hauptframe..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:304
-#, fuzzy
 msgid "Jmol Console"
-msgstr "Jmol Java Konsole"
+msgstr "Jmol Konsole"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:326
 msgid "Could not create ConsoleTextArea: "
@@ -1506,147 +1496,11 @@ msgstr ""
 msgid "compressing large data file to"
 msgstr "komprimiere große große Daten-Dateien nach"
 
-#, fuzzy
-#~ msgid "Initializing Script Editor..."
-#~ msgstr "Initialisiere Skriptfenster..."
-
 #~ msgid "Initializing Measurements..."
 #~ msgstr "Initialisiere Messungen..."
 
-#~ msgid "&Java Output Console"
-#~ msgstr "Jmol &Java Konsole"
-
 #~ msgid "Run"
 #~ msgstr "Ausführen"
-
-#~ msgid "Select Atoms"
-#~ msgstr "Atome auswählen"
-
-#~ msgid "Preview"
-#~ msgstr "Vorschau"
-
-#~ msgid "Append models"
-#~ msgstr "Modelle anhängen"
-
-#~ msgid "Make crystal..."
-#~ msgstr "Kristall erzeugen..."
-
-#~ msgid "Name"
-#~ msgstr "Name"
-
-#~ msgid "Measurements..."
-#~ msgstr "Messungen..."
-
-#~ msgid "Render in pov-ray."
-#~ msgstr "In POV-Ray rendern."
-
-#~ msgid "Select an atom or region."
-#~ msgstr "Ein Atom oder einen Bereich markieren."
-
-#~ msgid "View measurement table."
-#~ msgstr "Messungen-Tabelle anzeigen."
-
-#~ msgid "Image Type"
-#~ msgstr "Bildtyp"
-
-#~ msgid "JPEG Quality"
-#~ msgstr "JPEG-Qualität"
-
-#~ msgid "Initializing AtomSetChooser Window..."
-#~ msgstr "Initialisiere AtomSetChooser-Fenster..."
-
-#~ msgid "Setting up File Choosers..."
-#~ msgstr "Richte Dateifilter ein..."
-
-#~ msgid "All Files"
-#~ msgstr "Alle Dateien"
-
-#~ msgid "Abort file chooser dialog"
-#~ msgstr "Dialogfeld für Dateiauswahl abbrechen"
-
-#~ msgid "Details"
-#~ msgstr "Einzelheiten"
-
-#~ msgid "Directory"
-#~ msgstr "Verzeichnis"
-
-#~ msgid "Open selected directory"
-#~ msgstr "Markiertes Verzeichnis öffnen"
-
-#~ msgid "Attributes"
-#~ msgstr "Attribut"
-
-#~ msgid "Modified"
-#~ msgstr "Geändert"
-
-#~ msgid "Generic File"
-#~ msgstr "Allgemeine Datei"
-
-#~ msgid "Size"
-#~ msgstr "Größe"
-
-#~ msgid "Files of Type:"
-#~ msgstr "Dateityp:"
-
-#~ msgid "Type"
-#~ msgstr "Typ"
-
-#~ msgid "FileChooser help"
-#~ msgstr "Hilfe für Dateiauswahl"
-
-#~ msgid "Home"
-#~ msgstr "Home"
-
-#~ msgid "List"
-#~ msgstr "Liste"
-
-#~ msgid "Look In:"
-#~ msgstr "Suchen in:"
-
-#~ msgid "Error creating new folder"
-#~ msgstr "Fehler beim Erstellen eines neuen Ordners"
-
-#~ msgid "New Folder"
-#~ msgstr "Neuer Ordner"
-
-#~ msgid "Create New Folder"
-#~ msgstr "Neuen Ordner erstellen"
-
-#~ msgid "Open selected file"
-#~ msgstr "Ausgewählte Datei öffnen"
-
-#~ msgid "Save selected file"
-#~ msgstr "Ausgewählte Datei speichern"
-
-#~ msgid "Save In:"
-#~ msgstr "Speichern in:"
-
-#~ msgid "Update"
-#~ msgstr "Aktualisieren"
-
-#~ msgid "Update directory listing"
-#~ msgstr "Verzeichnisliste aktualisieren"
-
-#~ msgid "Up"
-#~ msgstr "Höher"
-
-#~ msgid "Up One Level"
-#~ msgstr "Eine Ebene höher"
-
-#~ msgid "No"
-#~ msgstr "Nein"
-
-#~ msgid "Yes"
-#~ msgstr "Ja"
-
-#~ msgid "Jmol-to-POV-Ray Conversion"
-#~ msgstr "Jmol-zu-POV-Ray-Konvertierung"
-
-#~ msgid "Height : "
-#~ msgstr "Höhe: "
-
-#~ msgid "POV-Ray Executable Location"
-#~ msgstr "POV-Ray-Pfad"
 
 #~ msgid "Image size"
 #~ msgstr "Bildgröße"
@@ -1757,3 +1611,6 @@ msgstr "komprimiere große große Daten-Dateien nach"
 
 #~ msgid "Cartoon of Page:"
 #~ msgstr "Symbolische Ansicht der Seite:"
+
+#~ msgid "&Java Output Console"
+#~ msgstr "Jmol &Java Konsole"

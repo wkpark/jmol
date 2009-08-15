@@ -2823,7 +2823,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   String getProteinStructureState() {
     return modelSet.getProteinStructureState(selectionManager.bsSelection,
-        false, false);
+        false, false, false);
   }
 
   public String getCoordinateState(BitSet bsSelected) {
@@ -3623,7 +3623,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } else {
       c.setViewer(this);
       try {
-        bytes = c.getImageBytes(type, quality, fileName, os);
+        bytes = c.getImageBytes(type, quality, fileName, null, os);
       } catch (IOException e) {
         bytes = e;
         setErrorMessage("Error creating image: " + e);
@@ -7337,6 +7337,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public String createImage(String fileName, String type, Object text_or_bytes,
                             int quality, int width, int height) {
+
     /*
      * 
      * org.jmol.export.image.AviCreator does create AVI animations from Jpegs

@@ -21,6 +21,7 @@ public interface JmolImageCreatorInterface {
    */
   abstract public Object createImage(String fileName, String type, Object text_or_bytes, int quality);
   
-  abstract public Object getImageBytes(String type, int quality, String fileName, OutputStream os) throws IOException;
+  abstract public Object getImageBytes(String type, int quality, String fileName, Object appendtext_or_bytes, 
+                                       OutputStream os) throws IOException;
 
 }

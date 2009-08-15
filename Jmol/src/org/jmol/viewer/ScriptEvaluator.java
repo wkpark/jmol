@@ -10329,6 +10329,7 @@ class ScriptEvaluator {
     boolean isShow = false;
     boolean isExport = false;
     BitSet bsFrames = null;
+    boolean appendState = false;
     int quality = Integer.MIN_VALUE;
     if (tok == Token.string) {
       Token t = Token.getTokenFromName(ScriptVariable.sValue(args[pt]));
@@ -10440,6 +10441,10 @@ class ScriptEvaluator {
       } else if (type.equals("menu")) {
         pt++;
         type = "MENU";
+      } else if (type.equals("imagespt")){
+        pt++;
+        type = "image";
+        appendState = true;
       } else {
         type = "(image)";
       }
@@ -10635,6 +10640,10 @@ class ScriptEvaluator {
       len = -1;
       if (quality < 0)
         quality = -1;
+      if (appendState)
+        data = "/**" + JmolConstants.EMBEDDED_SCRIPT_TAG 
+        + "\n" + (String) viewer.getProperty("string", "stateInfo", null)
+        + "\n **/";
     }
     if (data == null)
       data = "";
@@ -10659,6 +10668,8 @@ class ScriptEvaluator {
     } else {
       if (bytes == null && (!isImage || fileName != null))
         bytes = data;
+      if (appendState && bytes != null)
+        bytes = new Object[] { bytes };
       String msg = viewer.createImage(fileName, type, bytes, quality, width,
           height, bsFrames);
       if (msg != null) {

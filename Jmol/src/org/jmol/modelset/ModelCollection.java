@@ -1066,7 +1066,7 @@ abstract public class ModelCollection extends BondCollection {
       remark += "  quaternionFrame = \"" + qtype + "\"";
     remark += "\nREMARK   6 Jmol Version " + Viewer.getJmolVersion();
     bsSelected.and(bsAtoms);
-    remark += "\n\n" + getProteinStructureState(bsWritten, false, ctype == 'R');
+    remark += "\n\n" + getProteinStructureState(bsWritten, false, ctype == 'R', true);
     return remark + s;
   }
 
@@ -2295,7 +2295,7 @@ abstract public class ModelCollection extends BondCollection {
   
 
   public String getProteinStructureState(BitSet bsAtoms, boolean taintedOnly,
-                                         boolean needPhiPsi) {
+                                         boolean needPhiPsi, boolean pdbFormat) {
     BitSet bs = null;
     StringBuffer cmd = new StringBuffer();
     StringBuffer sbTurn = new StringBuffer();
@@ -2348,32 +2348,34 @@ abstract public class ModelCollection extends BondCollection {
                 String str;
                 int nx;
                 StringBuffer sb;
-                //       NNN III GGG C RRRR  GGG C RRRR
-                //HELIX   99  99 LYS F  281  LEU F  293  1 
-                //       NNN III 2 GGG CRRRR  GGG CRRRR
-                //SHEET    1   A 8 ILE A  43  ASP A  45  0 
-                //       NNN III GGG CRRRR  GGG CRRRR                                    
-                //TURN     1  T1 PRO A  41  TYR A  44
+                // NNN III GGG C RRRR GGG C RRRR
+                // HELIX 99 99 LYS F 281 LEU F 293 1
+                // NNN III 2 GGG CRRRR GGG CRRRR
+                // SHEET 1 A 8 ILE A 43 ASP A 45 0
+                // NNN III GGG CRRRR GGG CRRRR
+                // TURN 1 T1 PRO A 41 TYR A 44
                 switch (itype) {
                 case JmolConstants.PROTEIN_STRUCTURE_HELIX:
                   nx = ++nHelix;
-                  if (sid == null)
-                    sid = nx + " H" + nx;
+                  if (sid == null || pdbFormat)
+                    sid = TextFormat.formatString("%3N %3N", "N", nx);
                   str = "HELIX  %ID %3GROUPA %1CA %4RESA  %3GROUPB %1CB %4RESB";
                   sb = sbHelix;
                   break;
                 case JmolConstants.PROTEIN_STRUCTURE_SHEET:
                   nx = ++nSheet;
-                  if (sid == null)
-                    sid = nx + " S" + nx + " 0";
+                  if (sid == null || pdbFormat) {
+                    sid = TextFormat.formatString("%3N %3A 0", "N", nx);
+                    sid = TextFormat.formatString(sid, "A", "S" + nx);
+                  }
                   str = "SHEET  %ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB";
                   sb = sbSheet;
                   break;
                 case JmolConstants.PROTEIN_STRUCTURE_TURN:
                 default:
                   nx = ++nTurn;
-                if (sid == null)
-                  sid = nx + " T" + nx;
+                  if (sid == null || pdbFormat)
+                    sid = TextFormat.formatString("%3N %3N", "N", nx);
                   str = "TURN   %ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB";
                   sb = sbTurn;
                   break;
@@ -2385,20 +2387,22 @@ abstract public class ModelCollection extends BondCollection {
                 str = TextFormat.formatString(str, "GROUPB", group2);
                 str = TextFormat.formatString(str, "CB", chain2);
                 str = TextFormat.formatString(str, "RESB", res2);
-                sb.append(str).append (" strucno= ").append(lastId).append("\n");
+                sb.append(str);
+                if (!pdbFormat)
+                  sb.append(" strucno= ").append(lastId);
+                sb.append("\n");
 
                 /*
-                 HELIX    1  H1 ILE      7  PRO     19  1 3/10 CONFORMATION RES 17,19    1CRN  55
-                 HELIX    2  H2 GLU     23  THR     30  1 DISTORTED 3/10 AT RES 30       1CRN  56
-                 SHEET    1  S1 2 THR     1  CYS     4  0                                1CRNA  4
-                 SHEET    2  S1 2 CYS    32  ILE    35 -1                                1CRN  58
-                 TURN     1  T1 PRO    41  TYR    44                                     1CRN  59
+                 * HELIX 1 H1 ILE 7 PRO 19 1 3/10 CONFORMATION RES 17,19 1CRN 55
+                 * HELIX 2 H2 GLU 23 THR 30 1 DISTORTED 3/10 AT RES 30 1CRN 56
+                 * SHEET 1 S1 2 THR 1 CYS 4 0 1CRNA 4 SHEET 2 S1 2 CYS 32 ILE 35
                  */
               }
             }
             bs = null;
           }
-          if (id == 0 || bsAtoms != null
+          if (id == 0
+              || bsAtoms != null
               && needPhiPsi
               && (Float.isNaN(atoms[i].getGroupPhi()) || Float.isNaN(atoms[i]
                   .getGroupPsi())))

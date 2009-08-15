@@ -587,6 +587,17 @@ SHEET    1  S1 2 THR     2  CYS     4
 SHEET    2  S2 2 CYS    32  ILE    35
 SHEET    3  S3 2 THR    39  PRO    41
 TURN     1  T1 GLY    42  TYR    44
+
+HELIX     1 H1 ILE A    7  PRO A   19
+HELIX     2 H2 GLU A   23  THR A   30
+SHEET     1 S1 0 CYS A   3  CYS A   4
+SHEET     2 S2 0 CYS A  32  ILE A  35
+
+HELIX  113 113 ASN H  307  ARG H  327  1                                  21    
+SHEET    1   A 6 ASP A  77  HIS A  80  0                                        
+SHEET    2   A 6 GLU A  47  ILE A  51  1  N  ILE A  48   O  ASP A  77           
+SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47           
+
    */
   void structure() {
     String structureType = "none";

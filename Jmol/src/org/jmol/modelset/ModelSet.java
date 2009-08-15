@@ -731,7 +731,7 @@ abstract public class ModelSet extends ModelCollection {
 
     // unnecessary. Removed in 11.5.35 -- oops!
 
-    commands.append(getProteinStructureState(null, true, false));
+    commands.append(getProteinStructureState(null, true, false, false));
 
     if (shapes != null)
       for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {

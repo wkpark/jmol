@@ -40,7 +40,6 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
-import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
@@ -74,6 +73,94 @@ public class _IdtfExporter extends _Exporter {
    * 
    * for the complete Windows package, see also http://chemapps.stolaf.edu/jmol/docs/misc/idtf.zip
    * 
+   * Development comment:
+   * 
+   * I have spent quite a bit of time now tearing my hair out trying to 
+   * figure out how to do this right. The documentation is so opaque, 
+   * I can hardly believe it. Nowhere is there a definition of what the 
+   * view matrix really means, how a view relates to actual camera position
+   * or how translations are to be applied. For example, I simply cannot
+   * figure out how to invoke a default view within a PDF or DeepView short
+   * of having the user go in and choose the view. But then when I get that
+   * going, the zoom is terribly wrong. A "view" has "units" that are
+   * either in pixels or "percent". Here is all we have on that:
+   * 
+     9.5.4.4 U32: View Node Attributes
+     View Node Attributes is a bitfield used to indicate different modes of operation of the view
+     node. View Node Attributes are defined for projection mode and for screen position units
+     mode. 
+   * 
+   * Period. That's it. What the heck is "screen position units mode"? Beats me. 
+   * Nowhere can I find any documentation that actually demonstrates how do 
+   * use this resource.
+   * 
+   * It's interesting, as well, that the two viewers -- 3D PDF and DeepView --
+   * do not give the same result with some of my tests. I can only conclude that
+   * view model is ill defined. 
+   * 
+   * Amazingly, with VRML it was straightforward to convert from Jmol. We have a
+   * viewing axisAngle that we can pop straight into VRML and get the proper view.
+   * Not so here. I can get initial orientation, but the zoom is all wrong.
+   * 
+   * So the U3D documentation reads:
+   * 
+     The default node is a group node with no parents. The default node is located at the world origin
+     (the identity transform).
+     There is no default model node, default light node, nor default view node.
+     
+     The default light resource is an ambient light that is enabled, no specularity, and color values
+     rgb(0.75, 0.75, 0.75).
+     
+     A scene graph can have several view nodes that define different viewpoints in the world.
+     Although there is no default view node, there is a preference for having the coordinate system
+     oriented such that the Z-axis is in the up direction with the Y-axis oriented in the direction of
+     the view.
+     The default view resource has the following properties: pass count one, root node is the default
+     node, and fog disabled.
+
+   * Right, OK. But obviously in a real viewer there IS a default for all of these.
+   * I have instead implemented a default view using animation. This is a total hack. 
+   * The true default view in both 3D-PDF and DeepView appears to be the rotation associated
+   * with quaternion (0.6414883, -0.5258319, 0.3542887, 0.43182528)  
+   *  
+   * The problem that the documentation itself is totally unhelpful.
+   * I had to go through the C++ code for IDTFConverter to find the correct set 
+   * of IDTF format fields for the modifiers. Has anyone actually done this??
+   * 
+   * As it turns out, you can get a default view, at least for orientation. 
+   * You just add an animation modifier that negates that default quaternion and applies
+   * the correct one. However, ZOOM is a completely different issue. I simply
+   * cannot get the default zoom to work here.
+   * 
+   * Bob Hanson 8/15/2009
+   * 
+   */
+  
+  
+  /* IDTF documentation is in error with regard to motion resources. This is correct:
+   * 
+ RESOURCE_LIST "MOTION" {
+  RESOURCE_COUNT 1
+  RESOURCE 0 {
+    RESOURCE_NAME "Motion0"
+    MOTION_TRACK_COUNT 1
+    MOTION_TRACK_LIST {
+      MOTION_TRACK 0 {
+        MOTION_TRACK_NAME "M00"
+        MOTION_TRACK_SAMPLE_COUNT 1
+        KEY_FRAME_LIST {
+          KEY_FRAME 0 {
+            KEY_FRAME_TIME 0
+            KEY_FRAME_DISPLACEMENT 0 0 0
+            KEY_FRAME_ROTATION 1 0 0 0
+            KEY_FRAME_SCALE 1 1 1
+          }
+        }
+      }
+    }
+  }
+ }
+
    */
   private AxisAngle4f viewpoint = new AxisAngle4f();
   private boolean haveSphere;
@@ -87,12 +174,28 @@ public class _IdtfExporter extends _Exporter {
     isCartesianExport = true;
   }
 
-  private void output(String data) {
-    output.append(data);
-  }
-
-  private void output(Tuple3f pt, StringBuffer sb) {
+  private void output(Tuple3f pt, StringBuffer sb,boolean checkpt) {
+    if (checkpt)
+      checkPoint(pt);
     sb.append(round(pt.x)).append(" ").append(round(pt.y)).append(" ").append(round(pt.z)).append(" ");
+  }
+  
+  private Point3f ptMin = new Point3f(1e10f,1e10f,1e10f);
+  private Point3f ptMax = new Point3f(-1e10f,-1e10f,-1e10f);
+  
+  private void checkPoint(Tuple3f pt) {
+    if (pt.x < ptMin.x)
+      ptMin.x = pt.x;
+    if (pt.y < ptMin.y)
+      ptMin.y = pt.y;
+    if (pt.z < ptMin.z)
+      ptMin.z = pt.z;
+    if (pt.x > ptMax.x)
+      ptMax.x = pt.x;
+    if (pt.y > ptMax.y)
+      ptMax.y = pt.y;
+    if (pt.z > ptMax.z)
+      ptMax.z = pt.z;
   }
   
   private int iObj;
@@ -103,31 +206,13 @@ public class _IdtfExporter extends _Exporter {
 
   final private StringBuffer models = new StringBuffer();
   final private StringBuffer resources = new StringBuffer();
-  final private StringBuffer shading = new StringBuffer();
+  final private StringBuffer modifiers = new StringBuffer();
 
   public void getHeader() {
     // next is an approximation only 
-    getViewpointPosition(ptAtom);
-    adjustViewpointPosition(ptAtom);
-    viewer.getAxisAngle(viewpoint);
-    Quaternion q0 = new Quaternion(viewpoint);
-    Quaternion q = new Quaternion(new Point4f(0.5258319f, -0.3542887f, -0.43182528f, 0.6414883f));
-    q = q.mul(q0);
-    viewpoint.set(q.getMatrix());
-    if (viewpoint.angle == 0)
-      viewpoint.z = 1;
-    m.set(viewpoint);
-    ptAtom.set(center);
-    ptAtom.scale(-1);
-    m.m03 = ptAtom.x;
-    m.m13 = ptAtom.y;
-    m.m23 = ptAtom.z;
-    m.m33 = 1;
-    
-    output("FILE_FORMAT \"IDTF\"\nFORMAT_VERSION 100\n");
-    
-    /* the view idea did not work -- no default view??
-     * 
+    output.append("FILE_FORMAT \"IDTF\"\nFORMAT_VERSION 100\n");
+
+    /*
     float angle = getFieldOfView();
     output("NODE \"VIEW\" {\n");
     output("NODE_NAME \"DefaultView\"\n");
@@ -141,28 +226,26 @@ public class _IdtfExporter extends _Exporter {
     output("VIEW_TYPE \"PERSPECTIVE\"\n"); 
     output("VIEW_PROJECTION " + (angle * 180 / Math.PI) + "\n"); 
     output("}}\n");
-    resources.append("RESOURCE_LIST \"VIEW\" {\n");
-    resources.append("\tRESOURCE_COUNT 1\n");
-    resources.append("\tRESOURCE 0 {\n");
-    resources.append("\t\tRESOURCE_NAME \"View0\"\n");
-    resources.append("\t\tVIEW_PASS_COUNT 1\n");
-    resources.append("\t\tVIEW_ROOT_NODE_LIST {\n");
-    resources.append("\t\t\tROOT_NODE 0 {\n");
-    resources.append("\t\t\t\tROOT_NODE_NAME \"\"\n");
-    resources.append("\t\t\t}\n");
-    resources.append("\t\t}\n");
-    resources.append("\t}\n");
-    resources.append("}\n\n");
-     */
+    */
 
-    /* not ideal */
+    m.setIdentity();
+    
+    
+//    ptAtom.set(center);
+//    ptAtom.scale(-1);
+//    m.m03 = ptAtom.x;
+//    m.m13 = ptAtom.y;
+//    m.m23 = ptAtom.z;
+//    m.m33 = 1;
 
-    output("NODE \"GROUP\" {\n");
-    output("NODE_NAME \"jmol\"\n");
-    output("PARENT_LIST {\nPARENT_COUNT 1\n"); 
-    output("PARENT 0 {\n");
-    output(getParentItem("", m));
-    output("}}}\n");
+    
+
+    output.append("NODE \"GROUP\" {\n");
+    output.append("NODE_NAME \"Jmol\"\n");
+    output.append("PARENT_LIST {\nPARENT_COUNT 1\n"); 
+    output.append("PARENT 0 {\n");
+    output.append(getParentItem("", m));
+    output.append("}}}\n");
     
   }
 
@@ -206,24 +289,123 @@ public class _IdtfExporter extends _Exporter {
   }
   
   private void addShader(String key, short colix) {
-    shading.append("MODIFIER \"SHADING\" {\n");
-    shading.append("MODIFIER_NAME \"" + key + "\"\n");
-    shading.append("PARAMETERS {\n");
-    shading.append("SHADER_LIST_COUNT 1\n");
-    shading.append("SHADING_GROUP {\n");
-    shading.append("SHADER_LIST 0 {\n");
-    shading.append("SHADER_COUNT 1\n");
-    shading.append("SHADER_NAME_LIST {\n");
-    shading.append("SHADER 0 NAME: \"Shader_" + colix +"\"\n");
-    shading.append("}}}}}\n");
+    modifiers.append("MODIFIER \"SHADING\" {\n");
+    modifiers.append("MODIFIER_NAME \"" + key + "\"\n");
+    modifiers.append("PARAMETERS {\n");
+    modifiers.append("SHADER_LIST_COUNT 1\n");
+    modifiers.append("SHADING_GROUP {\n");
+    modifiers.append("SHADER_LIST 0 {\n");
+    modifiers.append("SHADER_COUNT 1\n");
+    modifiers.append("SHADER_NAME_LIST {\n");
+    modifiers.append("SHADER 0 NAME: \"Shader_" + colix +"\"\n");
+    modifiers.append("}}}}}\n");
   }
 
   public void getFooter() {
     htDefs = null;
     outputNodes();
-    output(models.toString());
-    output(resources.toString());    
-    output(shading.toString());    
+    output.append(models);
+    output.append(resources);    
+    
+    output.append("RESOURCE_LIST \"VIEW\" {\n");
+    output.append("\tRESOURCE_COUNT 1\n");
+    output.append("\tRESOURCE 0 {\n");
+    output.append("\t\tRESOURCE_NAME \"View0\"\n");
+    output.append("\t\tVIEW_PASS_COUNT 1\n");
+    output.append("\t\tVIEW_ROOT_NODE_LIST {\n");
+    output.append("\t\t\tROOT_NODE 0 {\n");
+    output.append("\t\t\t\tROOT_NODE_NAME \"\"\n");
+    output.append("\t\t\t}\n");
+    output.append("\t\t}\n");
+    output.append("\t}\n");
+    output.append("}\n\n");
+
+    
+    // unfortunately, this next bit does not work. 
+    // there is something about "key frame displacements" that
+    // I can't make out. 
+    // The first (default) orientation frame has the correct orientation
+    // but the wrong zoom, and I simply cannot get the zoom to work out
+    // in the second key frame (end of animation). 
+    // instead, what happens is the center shifts. I can't figure out where
+    // it is going!
+    
+    //getViewpointPosition(ptAtom);
+    //adjustViewpointPosition(ptAtom);
+    viewer.getAxisAngle(viewpoint);
+    Quaternion q = new Quaternion(viewpoint);
+    viewpoint.set(q.getMatrix());
+    if (viewpoint.angle == 0)
+      viewpoint.z = 1;
+    Quaternion q0 = new Quaternion(0.6414883f, -0.5258319f, 0.3542887f, 0.43182528f);
+    q = q0.inv().mul(q);
+    
+    // the next is just an approximation of the true center of the drawing,
+    // which DeepView or 3D-PDF will use as the default center of rotation
+    pt.set(ptMax);
+    pt.add(ptMin);
+    pt.scale(0.5f);
+    // transform difference to true center -- we will be close unless there are other objects
+    pt.sub(center);
+    ptAtom.set(q.transform(pt));
+    float zoom = viewer.getZoomPercentFloat() / 100f;
+    ptAtom.scale(zoom);
+    String dxyz = ptAtom.x + " " + ptAtom.y + " " + ptAtom.z;
+    String scale = " " + zoom;
+    scale = scale + scale + scale;
+
+    // the apparent default rotation in DeepView and 3D-PDF
+
+    output.append("\nRESOURCE_LIST \"MOTION\" {");
+    output.append("\n  RESOURCE_COUNT 1");
+    output.append("\n  RESOURCE 0 {");
+    output.append("\n    RESOURCE_NAME \"Motion0\"");
+    output.append("\n    MOTION_TRACK_COUNT 1");
+    output.append("\n    MOTION_TRACK_LIST {");
+    output.append("\n      MOTION_TRACK 0 {");
+    output.append("\n        MOTION_TRACK_NAME \"M00\"");
+    output.append("\n        MOTION_TRACK_SAMPLE_COUNT 2");
+    output.append("\n        KEY_FRAME_LIST {");
+    output.append("\n          KEY_FRAME 0 {");
+    output.append("\n            KEY_FRAME_TIME 0");
+    output.append("\n            KEY_FRAME_DISPLACEMENT 0 0 0");
+    output.append("\n            KEY_FRAME_ROTATION " + q.toString0123());
+    output.append("\n            KEY_FRAME_SCALE 1 1 1");
+    output.append("\n          }");
+    output.append("\n          KEY_FRAME 1 {");
+    output.append("\n            KEY_FRAME_TIME 1");
+    output.append("\n            KEY_FRAME_DISPLACEMENT " + dxyz);
+    output.append("\n            KEY_FRAME_ROTATION " + q.toString0123());
+    output.append("\n            KEY_FRAME_SCALE" + scale);
+    output.append("\n          }");
+    output.append("\n         }");
+    output.append("\n      }");
+    output.append("\n    }");
+    output.append("\n  }");
+    output.append("\n}\n");
+    output.append("\nMODIFIER \"ANIMATION\" {");
+    output.append("\n  MODIFIER_NAME \"Jmol\"");
+    output.append("\n  PARAMETERS {");
+    output.append("\n    ATTRIBUTE_ANIMATION_PLAYING \"TRUE\"");
+    output.append("\n    ATTRIBUTE_ROOT_BONE_LOCKED \"TRUE\"");
+    output.append("\n    ATTRIBUTE_SINGLE_TRACK \"TRUE\"");
+    output.append("\n    ATTRIBUTE_AUTO_BLEND \"FALSE\"");
+    output.append("\n    TIME_SCALE 1.0");
+    output.append("\n    BLEND_TIME 0.0");
+    output.append("\n    MOTION_COUNT 1");
+    output.append("\n    MOTION_INFO_LIST {");
+    output.append("\n      MOTION_INFO 0 {");
+    output.append("\n        MOTION_NAME \"Motion0\"");
+    output.append("\n        ATTRIBUTE_LOOP \"FALSE\"");
+    output.append("\n        ATTRIBUTE_SYNC \"FALSE\"");
+    output.append("\n        TIME_OFFSET 0.0");
+    output.append("\n        TIME_SCALE 1.0");
+    output.append("\n      }");
+    output.append("\n    }");
+    output.append("\n  }");
+    output.append("\n}\n");
+
+    output.append(modifiers);    
   }
 
   private Hashtable htNodes = new Hashtable();
@@ -233,20 +415,20 @@ public class _IdtfExporter extends _Exporter {
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
       Vector v = (Vector) htNodes.get(key);
-      output("NODE \"MODEL\" {\n");
-      output("NODE_NAME \"" + key + "\"\n");
+      output.append("NODE \"MODEL\" {\n");
+      output.append("NODE_NAME \"" + key + "\"\n");
       int n = v.size();
-      output("PARENT_LIST {\nPARENT_COUNT " + n + "\n"); 
+      output.append("PARENT_LIST {\nPARENT_COUNT " + n + "\n"); 
       for (int i = 0; i < n; i++) {
-        output("PARENT " + i + " {\n");
-        output((String)v.get(i));
-        output("}\n");
+        output.append("PARENT " + i + " {\n");
+        output.append((String)v.get(i));
+        output.append("}\n");
       }
-      output("}\n");
+      output.append("}\n");
       int i = key.indexOf("_");
       if (i > 0)
         key = key.substring(0,i);
-      output("RESOURCE_NAME \"" + key + "_Mesh\"\n}\n");
+      output.append("RESOURCE_NAME \"" + key + "_Mesh\"\n}\n");
     }
   }
 
@@ -279,6 +461,7 @@ public class _IdtfExporter extends _Exporter {
       haveSphere = true;
       sphereMatrix = new Matrix4f();
     }
+    checkPoint(center);
     addColix(colix, false);
     String key = "Sphere_" + colix;
     Vector v = (Vector) htNodes.get(key);
@@ -306,7 +489,7 @@ public class _IdtfExporter extends _Exporter {
     sphereMatrix.m13 = center.y;
     sphereMatrix.m23 = center.z;
     sphereMatrix.m33 = 1;
-    v.add(getParentItem("jmol", sphereMatrix));
+    v.add(getParentItem("Jmol", sphereMatrix));
   }
 
   private String getSphereResource() {
@@ -348,11 +531,11 @@ public class _IdtfExporter extends _Exporter {
     sb.append("}\n");
     sb.append("MODEL_POSITION_LIST { ");
     for (int i = 0; i < vertexCount; i++)
-      output(vertexes[i], sb);
+      output(vertexes[i], sb, false);
     sb.append("}\n");
     sb.append("MODEL_NORMAL_LIST { ");
     for (int i = 0; i < normalCount; i++)
-      output(normals[i], sb);
+      output(normals[i], sb, false);
     sb.append("}\n}}}\n");
     return sb.toString();
   }
@@ -424,6 +607,8 @@ public class _IdtfExporter extends _Exporter {
       haveCylinder = true;
       cylinderMatrix = new Matrix4f();
     }
+    checkPoint(pt1);
+    checkPoint(pt2);
     addColix(colix, false);
     String key = "Cylinder_" + colix;
     Vector v = (Vector) htNodes.get(key);
@@ -438,7 +623,7 @@ public class _IdtfExporter extends _Exporter {
     cylinderMatrix.m13 = pt1.y;
     cylinderMatrix.m23 = pt1.z;
     cylinderMatrix.m33 = 1;
-    v.add(getParentItem("jmol", cylinderMatrix));
+    v.add(getParentItem("Jmol", cylinderMatrix));
   }
 
   private void outputCircle(Point3f ptCenter, Point3f ptPerp, short colix, int madBond) {
@@ -455,13 +640,14 @@ public class _IdtfExporter extends _Exporter {
       htNodes.put(key, v);
       addShader(key, colix);
     }
+    checkPoint(ptCenter);
     float radius = madBond / 2000f;
     cylinderMatrix.set(getRotationMatrix(ptCenter, ptPerp, radius));
     cylinderMatrix.m03 = ptCenter.x;
     cylinderMatrix.m13 = ptCenter.y;
     cylinderMatrix.m23 = ptCenter.z;
     cylinderMatrix.m33 = 1;
-    v.add(getParentItem("jmol", cylinderMatrix));
+    v.add(getParentItem("Jmol", cylinderMatrix));
   }
 
   private Matrix3f getRotationMatrix(Point3f pt1, Point3f pt2, float radius) {    
@@ -470,6 +656,8 @@ public class _IdtfExporter extends _Exporter {
     if (pt2.x == pt1.x && pt2.y == pt1.y) {
       m1 = new Matrix3f();
       m1.setIdentity();
+      if (pt1.z > pt2.z)
+        m1.mul(-1);
     } else {
       tempV1.set(pt2);
       tempV1.sub(pt1);
@@ -628,7 +816,7 @@ public class _IdtfExporter extends _Exporter {
     for (int i = 0; i < nVertices; i++) {
       if (Float.isNaN(vertices[i].x))
         continue;
-      output(vertices[i], sbCoords);
+      output(vertices[i], sbCoords, true);
     }
     coordMap = null;
 
@@ -664,7 +852,7 @@ public class _IdtfExporter extends _Exporter {
     htNodes.put(key, v);
     addShader(key, colix);
     cylinderMatrix.setIdentity();
-    v.add(getParentItem("jmol", cylinderMatrix));
+    v.add(getParentItem("Jmol", cylinderMatrix));
   }
 
   private void addMeshData(String key, int nFaces, int nCoord, int nNormals, int nColors, 
@@ -708,6 +896,8 @@ public class _IdtfExporter extends _Exporter {
       models.append(getConeResource());
       haveCone = true;
     }
+    checkPoint(tempP1);
+    checkPoint(tempP2);
     addColix(colix, false);
     String key = "Cone_" + colix;
     Vector v = (Vector) htNodes.get(key);
@@ -721,7 +911,7 @@ public class _IdtfExporter extends _Exporter {
     cylinderMatrix.m13 = tempP1.y;
     cylinderMatrix.m23 = tempP1.z;
     cylinderMatrix.m33 = 1;
-    v.add(getParentItem("jmol", cylinderMatrix));
+    v.add(getParentItem("Jmol", cylinderMatrix));
   }
 
   private Object getConeResource() {
@@ -798,7 +988,7 @@ public class _IdtfExporter extends _Exporter {
     if (cylinderMatrix == null)
       cylinderMatrix = new Matrix4f();
     cylinderMatrix.setIdentity();
-    v.add(getParentItem("jmol", cylinderMatrix));
+    v.add(getParentItem("Jmol", cylinderMatrix));
   }
 
   private Object getTriangleResource(String key, Point3f pt1,

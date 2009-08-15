@@ -414,10 +414,6 @@ public class Quaternion {
     qNew.q3 = q3 * f;
   }
 
-  public String toString() {
-    return "{" + q1 + " " + q2 + " " + q3 + " " + q0 + "}";
-  }
-
   public Vector3f getVector(int i) {
     return getVector(i, 1f);
   }
@@ -545,4 +541,13 @@ public class Quaternion {
         + "draw " + prefix + "z" + id + strV
         + Escape.escape(getVector(2, scale)) + " color blue\n";
   }
+
+  public String toString() {
+    return "{" + q1 + " " + q2 + " " + q3 + " " + q0 + "}";
+  }
+
+  public String toString0123() {
+    return q0 + " " + q1  + " " + q2 + " " + q3;
+  }
+
 }

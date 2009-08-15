@@ -336,7 +336,7 @@ public class _PovrayExporter extends _Exporter {
         + "\n; Creation date: " + getExportDate() 
         + "\n; File created: "  + fileName + " (" + nBytes + " bytes)\n\n" 
         + (commandLineOptions != null ? commandLineOptions :
-          "\n; Jmol state: " + fileName + ".spt" 
+          "\n; Jmol state: (embedded in input file)" 
         + "\nInput_File_Name=" + fileName 
         + "\nOutput_to_File=true"
         + "\nOutput_File_Type=N"

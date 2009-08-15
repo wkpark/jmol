@@ -192,7 +192,7 @@ public abstract class _Exporter {
         commandLineOptions = fileName.substring(pt + 3);
         fileName = fileName.substring(0, pt);
       }
-      viewer.writeTextFile(fileName + ".spt", viewer.getSavedState("_Export"));
+      //viewer.writeTextFile(fileName + ".spt", viewer.getSavedState("_Export"));
       try {
         os = new FileOutputStream(fileName);
         bw = new BufferedWriter(new OutputStreamWriter(os));

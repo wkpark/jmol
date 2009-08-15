@@ -93,10 +93,13 @@ public class ImageCreator implements JmolImageCreatorInterface {
    * @param quality
    * @return          null (canceled) or a message starting with OK or an error message
    */
-  public Object createImage(String fileName, String type, Object text_or_bytes,
+  public Object createImage(String fileName, String type, Object text_or_bytes, 
                             int quality) {
     // returns message starting with OK or an error message
     boolean isBytes = (text_or_bytes instanceof byte[]);
+    boolean appendText = (text_or_bytes instanceof Object[]);
+    if (appendText)
+      text_or_bytes = ((Object[])text_or_bytes)[0];
     String text = (isBytes ? null : (String) text_or_bytes);
     boolean isText = (quality == Integer.MIN_VALUE);
     if ((isText || isBytes) && text_or_bytes == null)
@@ -120,7 +123,8 @@ public class ImageCreator implements JmolImageCreatorInterface {
         os = null;
       } else { 
         len = 1;
-        Object bytesOrError = getImageBytes(type, quality, fileName, null);
+        Object bytesOrError = getImageBytes(type, quality, fileName, 
+            (appendText ? text_or_bytes :  null ), null);
         if (bytesOrError instanceof String)
           return (String) bytesOrError;
         byte[] bytes = (byte[]) bytesOrError;
@@ -148,7 +152,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
   }
 
   public Object getImageBytes(String type, int quality, String fileName,
-                              OutputStream os) throws IOException {
+                              Object appendText, OutputStream os) throws IOException {
     byte[] bytes = null;
     String errMsg = null;
     boolean isPDF = type.equalsIgnoreCase("PDF");
@@ -212,6 +216,11 @@ public class ImageCreator implements JmolImageCreatorInterface {
                 .getApplicationInterface("jmolpanel.PdfCreator");
             errMsg = pci.createPdfDocument(fileName, image);
         }
+        if (appendText != null && os != null)
+          os.write(
+              (appendText instanceof byte[] ? 
+                  (byte[]) appendText 
+                : ((String) appendText).getBytes()));
         if (os != null)
           os.flush();
         if (isOsTemp)

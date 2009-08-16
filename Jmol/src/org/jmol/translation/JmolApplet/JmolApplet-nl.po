@@ -7,20 +7,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-08-14 18:53+0200\n"
-"PO-Revision-Date: 2009-03-20 10:48+0000\n"
+"POT-Creation-Date: 2009-08-16 19:47+0200\n"
+"PO-Revision-Date: 2009-08-15 08:00+0000\n"
 "Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-03-22 18:20+0000\n"
+"X-Launchpad-Export-Date: 2009-08-16 17:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Nederlands\n"
 "X-Poedit-Language: Dutch\n"
 "X-Poedit-Basepath: ../../../..\n"
 
-#: org/jmol/applet/Jmol.java:659
+#: org/jmol/applet/Jmol.java:657
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -35,11 +35,11 @@ msgstr ""
 "\n"
 "Zie http://www.jmol.org voor meer informatie."
 
-#: org/jmol/applet/Jmol.java:895
+#: org/jmol/applet/Jmol.java:893
 msgid "File Error:"
 msgstr "Bestandsfout:"
 
-#: org/jmol/applet/Jmol.java:1085
+#: org/jmol/applet/Jmol.java:1083
 #, java-format
 msgid ""
 "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
@@ -47,11 +47,11 @@ msgstr ""
 "Bestand aanmaken niet toegestaan voor deze applet. Voor Base64 JPEG formaat, "
 "gebruik {0}."
 
-#: org/jmol/applet/Jmol.java:1088
+#: org/jmol/applet/Jmol.java:1086
 msgid "File creation failed."
 msgstr "Aanmaken bestand mislukt."
 
-#: org/jmol/applet/Jmol.java:1195
+#: org/jmol/applet/Jmol.java:1194
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
@@ -70,133 +70,125 @@ msgstr "Laden Jmol applet ..."
 msgid "  {0} seconds"
 msgstr "  {0} seconden"
 
-#: org/jmol/console/AppletConsole.java:105
-#: org/jmol/console/JmolConsole.java:53
+#: org/jmol/console/AppletConsole.java:96 org/jmol/console/JmolConsole.java:67
 msgid "Jmol Script Console"
 msgstr "Jmol Script Console"
 
-#: org/jmol/console/AppletConsole.java:107
-#, fuzzy
+#: org/jmol/console/AppletConsole.java:98
 msgid "Editor"
-msgstr "Geschiedenis"
+msgstr "Editor"
 
-#: org/jmol/console/AppletConsole.java:108
+#: org/jmol/console/AppletConsole.java:99
 msgid "State"
 msgstr "Toestand"
 
-#: org/jmol/console/AppletConsole.java:109
-#: org/jmol/console/ScriptEditor.java:146
-#, fuzzy
+#: org/jmol/console/AppletConsole.java:100
+#: org/jmol/console/ScriptEditor.java:136
 msgid "Run"
-msgstr "Russisch"
+msgstr "Uitvoeren"
 
-#: org/jmol/console/AppletConsole.java:110
+#: org/jmol/console/AppletConsole.java:101
 msgid "Clear Output"
 msgstr "Wis uitvoer"
 
-#: org/jmol/console/AppletConsole.java:111
+#: org/jmol/console/AppletConsole.java:102
 msgid "Clear Input"
 msgstr "Wis invoer"
 
-#: org/jmol/console/AppletConsole.java:112
+#: org/jmol/console/AppletConsole.java:103
 #: org/jmol/popup/PopupResourceBundle.java:863
 msgid "History"
 msgstr "Geschiedenis"
 
-#: org/jmol/console/AppletConsole.java:113
+#: org/jmol/console/AppletConsole.java:104
 #: org/jmol/popup/PopupResourceBundle.java:873
 msgid "Load"
 msgstr "Laden"
 
-#: org/jmol/console/AppletConsole.java:151
+#: org/jmol/console/AppletConsole.java:142
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
 "Druk CTRL-ENTER for een nieuwe regel of het plakken van data en daarna Load"
 
-#: org/jmol/console/AppletConsole.java:375
+#: org/jmol/console/AppletConsole.java:370
 msgid "&Help"
 msgstr "&Help"
 
-#: org/jmol/console/AppletConsole.java:376
+#: org/jmol/console/AppletConsole.java:371
 msgid "&Search..."
 msgstr "&Zoeken"
 
-#: org/jmol/console/AppletConsole.java:377
+#: org/jmol/console/AppletConsole.java:372
 msgid "&Commands"
 msgstr "&Commando's"
 
-#: org/jmol/console/AppletConsole.java:378
+#: org/jmol/console/AppletConsole.java:373
 msgid "Math &Functions"
 msgstr "Wiskundige &Functies"
 
-#: org/jmol/console/AppletConsole.java:379
+#: org/jmol/console/AppletConsole.java:374
 msgid "Set &Parameters"
 msgstr "Verander &Parameters"
 
-#: org/jmol/console/AppletConsole.java:380
+#: org/jmol/console/AppletConsole.java:375
 msgid "&More"
 msgstr "&Meer"
 
-#: org/jmol/console/ScriptEditor.java:100
-#, fuzzy
+#: org/jmol/console/ScriptEditor.java:97
 msgid "Jmol Script Editor"
-msgstr "Jmol Script Console"
+msgstr "Jmol Script Editor"
 
-#: org/jmol/console/ScriptEditor.java:139
+#: org/jmol/console/ScriptEditor.java:129
 #: org/jmol/popup/PopupResourceBundle.java:860
 msgid "Console"
 msgstr "Console..."
 
-#: org/jmol/console/ScriptEditor.java:141
+#: org/jmol/console/ScriptEditor.java:131
 #: org/jmol/export/dialog/Dialog.java:430
 #: org/jmol/export/dialog/Dialog.java:454
 #: org/jmol/export/dialog/Dialog.java:457
 msgid "Open"
 msgstr "Openen"
 
-#: org/jmol/console/ScriptEditor.java:142
+#: org/jmol/console/ScriptEditor.java:132
 #: org/jmol/popup/PopupResourceBundle.java:877
 msgid "Script"
 msgstr "Script"
 
-#: org/jmol/console/ScriptEditor.java:143
-#, fuzzy
+#: org/jmol/console/ScriptEditor.java:133
 msgid "Check"
-msgstr "Tsjechisch"
+msgstr "Controleer"
 
-#: org/jmol/console/ScriptEditor.java:144
+#: org/jmol/console/ScriptEditor.java:134
 #: org/jmol/popup/PopupResourceBundle.java:591
 msgid "Top"
 msgstr "Bovenkant"
 
-#: org/jmol/console/ScriptEditor.java:145
-#, fuzzy
+#: org/jmol/console/ScriptEditor.java:135
 msgid "Step"
-msgstr "Stoppen"
+msgstr "Stap"
 
-#: org/jmol/console/ScriptEditor.java:147
+#: org/jmol/console/ScriptEditor.java:137
 #: org/jmol/popup/PopupResourceBundle.java:818
 msgid "Pause"
 msgstr "Pauzeren"
 
-#: org/jmol/console/ScriptEditor.java:149
+#: org/jmol/console/ScriptEditor.java:139
 #: org/jmol/popup/PopupResourceBundle.java:819
 msgid "Resume"
 msgstr "Hervatten"
 
-#: org/jmol/console/ScriptEditor.java:151
+#: org/jmol/console/ScriptEditor.java:141
 msgid "Halt"
-msgstr ""
+msgstr "Stoppen"
 
-#: org/jmol/console/ScriptEditor.java:153
-#, fuzzy
+#: org/jmol/console/ScriptEditor.java:143
 msgid "Clear"
-msgstr "Wis invoer"
+msgstr "Wissen"
 
-#: org/jmol/console/ScriptEditor.java:154
-#, fuzzy
+#: org/jmol/console/ScriptEditor.java:144
 msgid "Close"
-msgstr "Console..."
+msgstr "Sluiten"
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
@@ -384,13 +376,12 @@ msgid "Catalan"
 msgstr "Catalaans"
 
 #: org/jmol/i18n/GT.java:119
-#, fuzzy
 msgid "Simplified Chinese"
-msgstr "Zijketens"
+msgstr "Vereenvoudigd Chinees"
 
 #: org/jmol/i18n/GT.java:120
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "Traditioneel Chinees"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Czech"
@@ -478,7 +469,7 @@ msgstr "Turks"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Ukrainian"
-msgstr ""
+msgstr "Oekraïns"
 
 #: org/jmol/minimize/Minimizer.java:187
 #, java-format
@@ -1917,36 +1908,33 @@ msgstr "{0} verborgen atomen"
 msgid "{0} atoms selected"
 msgstr "{0} atomen geselecteerd"
 
-#: org/jmol/viewer/Viewer.java:3985
+#: org/jmol/viewer/Viewer.java:3989
 msgid "Drag to move label"
-msgstr ""
+msgstr "Sleep om de label te verplaatsen"
 
-#: org/jmol/viewer/Viewer.java:4974
+#: org/jmol/viewer/Viewer.java:4978
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr "FOUT: kan een booleaans niet vullen met een tekenreeks: {0}"
 
-#: org/jmol/viewer/Viewer.java:5197 org/jmol/viewer/Viewer.java:5377
+#: org/jmol/viewer/Viewer.java:5201 org/jmol/viewer/Viewer.java:5381
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr "FOUT: kan een booleaans niet vullen met een numerieke waarde: {0}"
 
-#: org/jmol/viewer/Viewer.java:5888
+#: org/jmol/viewer/Viewer.java:5892
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 "FOUT: Kan de waarde van deze variabele niet veranderen naar een booleaans: "
 "{0}"
 
-#: org/jmol/viewer/Viewer.java:7269
+#: org/jmol/viewer/Viewer.java:7275
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "clipboard is niet toegankelijke -- gebruik de gesigneerde applet"
 
 #~ msgid "Execute"
 #~ msgstr "Uitvoeren"
-
-#~ msgid "Portuguese - Brazil"
-#~ msgstr "Portugees (Brazilië)"
 
 #~ msgid "all"
 #~ msgstr "Alles"

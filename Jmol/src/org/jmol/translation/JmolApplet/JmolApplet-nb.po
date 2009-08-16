@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-08-14 18:53+0200\n"
-"PO-Revision-Date: 2009-01-03 18:08+0000\n"
+"POT-Creation-Date: 2009-08-16 19:47+0200\n"
+"PO-Revision-Date: 2009-08-15 15:43+0000\n"
 "Last-Translator: Anders Oftedal <anders.oftedal@gmail.com>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-01-10 15:44+0000\n"
+"X-Launchpad-Export-Date: 2009-08-16 17:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: org/jmol/applet/Jmol.java:659
+#: org/jmol/applet/Jmol.java:657
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -27,21 +27,21 @@ msgid ""
 "See http://www.jmol.org for more information"
 msgstr ""
 
-#: org/jmol/applet/Jmol.java:895
+#: org/jmol/applet/Jmol.java:893
 msgid "File Error:"
 msgstr "Fil feil:"
 
-#: org/jmol/applet/Jmol.java:1085
+#: org/jmol/applet/Jmol.java:1083
 #, java-format
 msgid ""
 "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 msgstr ""
 
-#: org/jmol/applet/Jmol.java:1088
+#: org/jmol/applet/Jmol.java:1086
 msgid "File creation failed."
 msgstr ""
 
-#: org/jmol/applet/Jmol.java:1195
+#: org/jmol/applet/Jmol.java:1194
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
@@ -57,134 +57,129 @@ msgstr ""
 msgid "  {0} seconds"
 msgstr "  {0} sekunder"
 
-#: org/jmol/console/AppletConsole.java:105
-#: org/jmol/console/JmolConsole.java:53
+#: org/jmol/console/AppletConsole.java:96 org/jmol/console/JmolConsole.java:67
 msgid "Jmol Script Console"
 msgstr "Jmol skript konsoll"
 
-#: org/jmol/console/AppletConsole.java:107
-#, fuzzy
+#: org/jmol/console/AppletConsole.java:98
 msgid "Editor"
-msgstr "Historikk"
+msgstr ""
 
-#: org/jmol/console/AppletConsole.java:108
+#: org/jmol/console/AppletConsole.java:99
 msgid "State"
 msgstr ""
 
-#: org/jmol/console/AppletConsole.java:109
-#: org/jmol/console/ScriptEditor.java:146
-#, fuzzy
+#: org/jmol/console/AppletConsole.java:100
+#: org/jmol/console/ScriptEditor.java:136
 msgid "Run"
-msgstr "Russisk"
+msgstr "Kjør"
 
-#: org/jmol/console/AppletConsole.java:110
+#: org/jmol/console/AppletConsole.java:101
 msgid "Clear Output"
 msgstr ""
 
-#: org/jmol/console/AppletConsole.java:111
+#: org/jmol/console/AppletConsole.java:102
 msgid "Clear Input"
 msgstr ""
 
-#: org/jmol/console/AppletConsole.java:112
+#: org/jmol/console/AppletConsole.java:103
 #: org/jmol/popup/PopupResourceBundle.java:863
 msgid "History"
 msgstr "Historikk"
 
-#: org/jmol/console/AppletConsole.java:113
+#: org/jmol/console/AppletConsole.java:104
 #: org/jmol/popup/PopupResourceBundle.java:873
 msgid "Load"
 msgstr "Last inn"
 
-#: org/jmol/console/AppletConsole.java:151
+#: org/jmol/console/AppletConsole.java:142
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
 "trykk CTRL-ENTER for ny linje eller lim inn modelldata og trykk last inn"
 
-#: org/jmol/console/AppletConsole.java:375
+#: org/jmol/console/AppletConsole.java:370
 msgid "&Help"
 msgstr "&Hjelp"
 
-#: org/jmol/console/AppletConsole.java:376
+#: org/jmol/console/AppletConsole.java:371
 msgid "&Search..."
 msgstr "&Søk..."
 
-#: org/jmol/console/AppletConsole.java:377
+#: org/jmol/console/AppletConsole.java:372
 msgid "&Commands"
 msgstr "&Kommandoer"
 
-#: org/jmol/console/AppletConsole.java:378
+#: org/jmol/console/AppletConsole.java:373
 msgid "Math &Functions"
 msgstr ""
 
-#: org/jmol/console/AppletConsole.java:379
+#: org/jmol/console/AppletConsole.java:374
 msgid "Set &Parameters"
 msgstr ""
 
-#: org/jmol/console/AppletConsole.java:380
+#: org/jmol/console/AppletConsole.java:375
 msgid "&More"
 msgstr "&Mer"
 
-#: org/jmol/console/ScriptEditor.java:100
-#, fuzzy
+#: org/jmol/console/ScriptEditor.java:97
 msgid "Jmol Script Editor"
-msgstr "Jmol skript konsoll"
-
-#: org/jmol/console/ScriptEditor.java:139
-#: org/jmol/popup/PopupResourceBundle.java:860
-msgid "Console"
 msgstr ""
 
-#: org/jmol/console/ScriptEditor.java:141
+#: org/jmol/console/ScriptEditor.java:129
+#: org/jmol/popup/PopupResourceBundle.java:860
+msgid "Console"
+msgstr "Konsoll"
+
+#: org/jmol/console/ScriptEditor.java:131
 #: org/jmol/export/dialog/Dialog.java:430
 #: org/jmol/export/dialog/Dialog.java:454
 #: org/jmol/export/dialog/Dialog.java:457
 msgid "Open"
 msgstr "Åpne"
 
-#: org/jmol/console/ScriptEditor.java:142
+#: org/jmol/console/ScriptEditor.java:132
 #: org/jmol/popup/PopupResourceBundle.java:877
 msgid "Script"
+msgstr "Skript"
+
+#: org/jmol/console/ScriptEditor.java:133
+msgid "Check"
 msgstr ""
 
-#: org/jmol/console/ScriptEditor.java:143
-#, fuzzy
-msgid "Check"
-msgstr "Tsjekkisk"
-
-#: org/jmol/console/ScriptEditor.java:144
+#: org/jmol/console/ScriptEditor.java:134
 #: org/jmol/popup/PopupResourceBundle.java:591
 msgid "Top"
 msgstr "Øverst"
 
-#: org/jmol/console/ScriptEditor.java:145
+#: org/jmol/console/ScriptEditor.java:135
 msgid "Step"
-msgstr ""
+msgstr "Steg"
 
-#: org/jmol/console/ScriptEditor.java:147
+#: org/jmol/console/ScriptEditor.java:137
 #: org/jmol/popup/PopupResourceBundle.java:818
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
-#: org/jmol/console/ScriptEditor.java:149
+#: org/jmol/console/ScriptEditor.java:139
 #: org/jmol/popup/PopupResourceBundle.java:819
 msgid "Resume"
-msgstr ""
+msgstr "Gjenoppta"
 
-#: org/jmol/console/ScriptEditor.java:151
+#: org/jmol/console/ScriptEditor.java:141
 msgid "Halt"
 msgstr ""
 
-#: org/jmol/console/ScriptEditor.java:153
+#: org/jmol/console/ScriptEditor.java:143
 msgid "Clear"
-msgstr ""
+msgstr "Tøm"
 
-#: org/jmol/console/ScriptEditor.java:154
+#: org/jmol/console/ScriptEditor.java:144
 msgid "Close"
-msgstr ""
+msgstr "Lukk"
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
-msgstr ""
+msgstr "Fil eller URL:"
 
 #: org/jmol/export/dialog/Dialog.java:258
 msgid "Image Type"
@@ -253,7 +248,7 @@ msgstr "Åpne valgt mappe"
 
 #: org/jmol/export/dialog/Dialog.java:433
 msgid "Attributes"
-msgstr ""
+msgstr "Attributter"
 
 #: org/jmol/export/dialog/Dialog.java:434
 msgid "Modified"
@@ -369,11 +364,11 @@ msgstr "Katalansk"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "Forenklet kinesisk"
 
 #: org/jmol/i18n/GT.java:120
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "Tradisjonell kinesisk"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Czech"
@@ -461,7 +456,7 @@ msgstr "Tyrkisk"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Ukrainian"
-msgstr ""
+msgstr "Ukrainsk"
 
 #: org/jmol/minimize/Minimizer.java:187
 #, java-format
@@ -786,7 +781,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:626
 msgid "Style"
-msgstr ""
+msgstr "Stil"
 
 #: org/jmol/popup/PopupResourceBundle.java:627
 msgid "Scheme"
@@ -798,11 +793,11 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:629
 msgid "Ball and Stick"
-msgstr ""
+msgstr "Kuler og pinner"
 
 #: org/jmol/popup/PopupResourceBundle.java:630
 msgid "Sticks"
-msgstr ""
+msgstr "Pinner"
 
 #: org/jmol/popup/PopupResourceBundle.java:631
 msgid "Wireframe"
@@ -812,18 +807,18 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:679
 #: org/jmol/popup/PopupResourceBundle.java:772
 msgid "Cartoon"
-msgstr ""
+msgstr "Tegneserie"
 
 #: org/jmol/popup/PopupResourceBundle.java:633
 #: org/jmol/popup/PopupResourceBundle.java:684
 #: org/jmol/popup/PopupResourceBundle.java:771
 msgid "Trace"
-msgstr ""
+msgstr "Spor"
 
 #: org/jmol/popup/PopupResourceBundle.java:635
 #: org/jmol/popup/PopupResourceBundle.java:724
 msgid "Atoms"
-msgstr ""
+msgstr "Atomer"
 
 #: org/jmol/popup/PopupResourceBundle.java:636
 #: org/jmol/popup/PopupResourceBundle.java:645
@@ -836,7 +831,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:846
 #: org/jmol/popup/PopupResourceBundle.java:905
 msgid "Off"
-msgstr ""
+msgstr "Av"
 
 #: org/jmol/popup/PopupResourceBundle.java:637
 #: org/jmol/popup/PopupResourceBundle.java:638
@@ -860,7 +855,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:691
 #: org/jmol/popup/PopupResourceBundle.java:795
 msgid "On"
-msgstr ""
+msgstr "På"
 
 #: org/jmol/popup/PopupResourceBundle.java:647
 #: org/jmol/popup/PopupResourceBundle.java:648
@@ -895,7 +890,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:655
 msgid "Calculate"
-msgstr ""
+msgstr "Beregn"
 
 #: org/jmol/popup/PopupResourceBundle.java:657
 msgid "Set H-Bonds Side Chain"
@@ -921,7 +916,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:676
 #: org/jmol/popup/PopupResourceBundle.java:769
 msgid "Structures"
-msgstr ""
+msgstr "Strukturer"
 
 #: org/jmol/popup/PopupResourceBundle.java:680
 msgid "Cartoon Rockets"
@@ -944,17 +939,17 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:686
 msgid "Vibration"
-msgstr ""
+msgstr "Vibrasjon"
 
 #: org/jmol/popup/PopupResourceBundle.java:689
 #: org/jmol/popup/PopupResourceBundle.java:779
 msgid "Vectors"
-msgstr ""
+msgstr "Vektorer"
 
 #: org/jmol/popup/PopupResourceBundle.java:692
 #, java-format
 msgid "{0} pixels"
-msgstr ""
+msgstr "{0} piksler"
 
 #: org/jmol/popup/PopupResourceBundle.java:695
 #: org/jmol/popup/PopupResourceBundle.java:696
@@ -967,7 +962,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:701
 msgid "Stereographic"
-msgstr ""
+msgstr "Stereografisk"
 
 #: org/jmol/popup/PopupResourceBundle.java:703
 msgid "Red+Cyan glasses"
@@ -992,7 +987,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:709
 #: org/jmol/popup/PopupResourceBundle.java:776
 msgid "Labels"
-msgstr ""
+msgstr "Etiketter"
 
 #: org/jmol/popup/PopupResourceBundle.java:712
 msgid "With Element Symbol"
@@ -1000,11 +995,11 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:713
 msgid "With Atom Name"
-msgstr ""
+msgstr "Med atomnavn"
 
 #: org/jmol/popup/PopupResourceBundle.java:714
 msgid "With Atom Number"
-msgstr ""
+msgstr "Med atomnummer"
 
 #: org/jmol/popup/PopupResourceBundle.java:716
 msgid "Position Label on Atom"
@@ -1012,27 +1007,27 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:717
 msgid "Centered"
-msgstr ""
+msgstr "Midtstilt"
 
 #: org/jmol/popup/PopupResourceBundle.java:718
 msgid "Upper Right"
-msgstr ""
+msgstr "Øverst til høyre"
 
 #: org/jmol/popup/PopupResourceBundle.java:719
 msgid "Lower Right"
-msgstr ""
+msgstr "Nederst til høyre"
 
 #: org/jmol/popup/PopupResourceBundle.java:720
 msgid "Upper Left"
-msgstr ""
+msgstr "Øverst til venstre"
 
 #: org/jmol/popup/PopupResourceBundle.java:721
 msgid "Lower Left"
-msgstr ""
+msgstr "Nederst til venstre"
 
 #: org/jmol/popup/PopupResourceBundle.java:723
 msgid "Color"
-msgstr ""
+msgstr "Farge"
 
 #: org/jmol/popup/PopupResourceBundle.java:726
 msgid "By Scheme"
@@ -1048,7 +1043,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:729
 msgid "Molecule"
-msgstr ""
+msgstr "Molekyl"
 
 #: org/jmol/popup/PopupResourceBundle.java:730
 msgid "Formal Charge"
@@ -1076,11 +1071,11 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:737
 msgid "Chain"
-msgstr ""
+msgstr "Kjede"
 
 #: org/jmol/popup/PopupResourceBundle.java:738
 msgid "Group"
-msgstr ""
+msgstr "Gruppe"
 
 #: org/jmol/popup/PopupResourceBundle.java:739
 msgid "Monomer"
@@ -1096,51 +1091,51 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:743
 msgid "Black"
-msgstr ""
+msgstr "Svart"
 
 #: org/jmol/popup/PopupResourceBundle.java:744
 msgid "White"
-msgstr ""
+msgstr "Hvit"
 
 #: org/jmol/popup/PopupResourceBundle.java:745
 msgid "Cyan"
-msgstr ""
+msgstr "Cyanblå"
 
 #: org/jmol/popup/PopupResourceBundle.java:747
 msgid "Red"
-msgstr ""
+msgstr "Rød"
 
 #: org/jmol/popup/PopupResourceBundle.java:748
 msgid "Orange"
-msgstr ""
+msgstr "Oransje"
 
 #: org/jmol/popup/PopupResourceBundle.java:749
 msgid "Yellow"
-msgstr ""
+msgstr "Gul"
 
 #: org/jmol/popup/PopupResourceBundle.java:750
 msgid "Green"
-msgstr ""
+msgstr "Grønn"
 
 #: org/jmol/popup/PopupResourceBundle.java:751
 msgid "Blue"
-msgstr ""
+msgstr "Blå"
 
 #: org/jmol/popup/PopupResourceBundle.java:752
 msgid "Indigo"
-msgstr ""
+msgstr "Indigo"
 
 #: org/jmol/popup/PopupResourceBundle.java:753
 msgid "Violet"
-msgstr ""
+msgstr "Fiolett"
 
 #: org/jmol/popup/PopupResourceBundle.java:755
 msgid "Salmon"
-msgstr ""
+msgstr "Lakserød"
 
 #: org/jmol/popup/PopupResourceBundle.java:756
 msgid "Olive"
-msgstr ""
+msgstr "Olivengrønn"
 
 #: org/jmol/popup/PopupResourceBundle.java:757
 msgid "Maroon"
@@ -1148,7 +1143,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:758
 msgid "Gray"
-msgstr ""
+msgstr "Grå"
 
 #: org/jmol/popup/PopupResourceBundle.java:759
 msgid "Slate Blue"
@@ -1156,7 +1151,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:760
 msgid "Gold"
-msgstr ""
+msgstr "Gull"
 
 #: org/jmol/popup/PopupResourceBundle.java:761
 msgid "Orchid"
@@ -1170,22 +1165,22 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:764
 #: org/jmol/popup/PopupResourceBundle.java:904
 msgid "Make Translucent"
-msgstr ""
+msgstr "Gjør gjennomskinnelig"
 
 #: org/jmol/popup/PopupResourceBundle.java:777
 msgid "Background"
-msgstr ""
+msgstr "Bakgrunn"
 
 #: org/jmol/popup/PopupResourceBundle.java:778
 #: org/jmol/popup/PopupResourceBundle.java:895
 msgid "Surfaces"
-msgstr ""
+msgstr "Overflater"
 
 #: org/jmol/popup/PopupResourceBundle.java:780
 #: org/jmol/popup/PopupResourceBundle.java:914
 #: org/jmol/popup/PopupResourceBundle.java:940
 msgid "Axes"
-msgstr ""
+msgstr "Akser"
 
 #: org/jmol/popup/PopupResourceBundle.java:781
 #: org/jmol/popup/PopupResourceBundle.java:915
@@ -1202,20 +1197,20 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:784
 msgid "Zoom"
-msgstr ""
+msgstr "Forstørr"
 
 #: org/jmol/popup/PopupResourceBundle.java:791
 msgid "Zoom In"
-msgstr ""
+msgstr "Zoom Inn"
 
 #: org/jmol/popup/PopupResourceBundle.java:792
 msgid "Zoom Out"
-msgstr ""
+msgstr "Zoom Ut"
 
 #: org/jmol/popup/PopupResourceBundle.java:794
 #: org/jmol/popup/PopupResourceBundle.java:857
 msgid "Spin"
-msgstr ""
+msgstr "Snurr"
 
 #: org/jmol/popup/PopupResourceBundle.java:798
 msgid "Set X Rate"
@@ -1236,11 +1231,11 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:811
 msgid "Animation"
-msgstr ""
+msgstr "Animasjon"
 
 #: org/jmol/popup/PopupResourceBundle.java:812
 msgid "Animation Mode"
-msgstr ""
+msgstr "Animasjonsmodus"
 
 #: org/jmol/popup/PopupResourceBundle.java:813
 msgid "Play Once"
@@ -1256,11 +1251,11 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:817
 msgid "Play"
-msgstr ""
+msgstr "Spill av"
 
 #: org/jmol/popup/PopupResourceBundle.java:820
 msgid "Stop"
-msgstr ""
+msgstr "Stopp"
 
 #: org/jmol/popup/PopupResourceBundle.java:821
 msgid "Next Frame"
@@ -1272,15 +1267,15 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:823
 msgid "Rewind"
-msgstr ""
+msgstr "Spol tilbake"
 
 #: org/jmol/popup/PopupResourceBundle.java:824
 msgid "Reverse"
-msgstr ""
+msgstr "Bakover"
 
 #: org/jmol/popup/PopupResourceBundle.java:825
 msgid "Restart"
-msgstr ""
+msgstr "Start på nytt"
 
 #: org/jmol/popup/PopupResourceBundle.java:834
 #: org/jmol/popup/PopupResourceBundle.java:865
@@ -1333,31 +1328,31 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:849
 msgid "Identity"
-msgstr ""
+msgstr "Identitet"
 
 #: org/jmol/popup/PopupResourceBundle.java:850
 msgid "Label"
-msgstr ""
+msgstr "Etikett"
 
 #: org/jmol/popup/PopupResourceBundle.java:851
 msgid "Select atom"
-msgstr ""
+msgstr "Velg atom"
 
 #: org/jmol/popup/PopupResourceBundle.java:852
 msgid "Select chain"
-msgstr ""
+msgstr "Velg kjede"
 
 #: org/jmol/popup/PopupResourceBundle.java:853
 msgid "Select element"
-msgstr ""
+msgstr "Velg element"
 
 #: org/jmol/popup/PopupResourceBundle.java:854
 msgid "Select group"
-msgstr ""
+msgstr "Velg gruppe"
 
 #: org/jmol/popup/PopupResourceBundle.java:855
 msgid "Select molecule"
-msgstr ""
+msgstr "Velg molekyl"
 
 #: org/jmol/popup/PopupResourceBundle.java:856
 msgid "Select site"
@@ -1365,11 +1360,11 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:859
 msgid "Show"
-msgstr ""
+msgstr "Vis"
 
 #: org/jmol/popup/PopupResourceBundle.java:861
 msgid "File Contents"
-msgstr ""
+msgstr "Filinnhold"
 
 #: org/jmol/popup/PopupResourceBundle.java:862
 msgid "File Header"
@@ -1385,7 +1380,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:867
 msgid "Model"
-msgstr ""
+msgstr "Modell"
 
 #: org/jmol/popup/PopupResourceBundle.java:868
 msgid "Orientation"
@@ -1405,7 +1400,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:875
 msgid "File or URL"
-msgstr ""
+msgstr "Fil eller URL"
 
 #: org/jmol/popup/PopupResourceBundle.java:876
 msgid "Load full unit cell"
@@ -1414,7 +1409,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:880
 #, java-format
 msgid "File {0}"
-msgstr ""
+msgstr "Fil {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:881
 msgid "Script with state"
@@ -1429,7 +1424,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:885
 #, java-format
 msgid "{0} Image"
-msgstr ""
+msgstr "{0} Bilde"
 
 #: org/jmol/popup/PopupResourceBundle.java:886
 msgid "JVXL Isosurface"
@@ -1440,7 +1435,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:889
 #, java-format
 msgid "{0} 3D Model"
-msgstr ""
+msgstr "{0} 3D Modell"
 
 #: org/jmol/popup/PopupResourceBundle.java:893
 msgid "Extract MOL data"
@@ -1489,15 +1484,15 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:918
 msgid "Hide"
-msgstr ""
+msgstr "Skjul"
 
 #: org/jmol/popup/PopupResourceBundle.java:919
 msgid "Dotted"
-msgstr ""
+msgstr "Prikket"
 
 #: org/jmol/popup/PopupResourceBundle.java:921
 msgid "Pixel Width"
-msgstr ""
+msgstr "Pikselbredde"
 
 #: org/jmol/popup/PopupResourceBundle.java:922
 #: org/jmol/popup/PopupResourceBundle.java:923
@@ -1517,7 +1512,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:936
 msgid "Show Hydrogens"
-msgstr ""
+msgstr "Vis hydrogener"
 
 #: org/jmol/popup/PopupResourceBundle.java:937
 msgid "Show Measurements"
@@ -1533,7 +1528,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:943
 msgid "About Jmol"
-msgstr ""
+msgstr "Om Jmol"
 
 #: org/jmol/popup/PopupResourceBundle.java:948
 msgid "Mouse Manual"
@@ -1621,12 +1616,12 @@ msgstr ""
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1136
 #, java-format
 msgid "{0} expected"
-msgstr ""
+msgstr "{0} forventet"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1139
 #, java-format
 msgid "{0} unexpected"
-msgstr ""
+msgstr "{0} uventet"
 
 #: org/jmol/viewer/ScriptCompilationTokenParser.java:1142
 #, java-format
@@ -1879,7 +1874,7 @@ msgstr ""
 #: org/jmol/viewer/ScriptEvaluator.java:7700
 #, java-format
 msgid "{0} atoms deleted"
-msgstr ""
+msgstr "{0} slettede atomer"
 
 #: org/jmol/viewer/ScriptEvaluator.java:8197
 #, java-format
@@ -1890,41 +1885,38 @@ msgstr ""
 #: org/jmol/viewer/SelectionManager.java:94
 #, java-format
 msgid "{0} atoms hidden"
-msgstr ""
+msgstr "{0} skjulte atomer"
 
 #: org/jmol/viewer/SelectionManager.java:131
 #, java-format
 msgid "{0} atoms selected"
-msgstr ""
+msgstr "{0} valgte atomer"
 
-#: org/jmol/viewer/Viewer.java:3985
+#: org/jmol/viewer/Viewer.java:3989
 msgid "Drag to move label"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4974
+#: org/jmol/viewer/Viewer.java:4978
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:5197 org/jmol/viewer/Viewer.java:5377
+#: org/jmol/viewer/Viewer.java:5201 org/jmol/viewer/Viewer.java:5381
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:5888
+#: org/jmol/viewer/Viewer.java:5892
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:7269
+#: org/jmol/viewer/Viewer.java:7275
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 
 #~ msgid "Execute"
 #~ msgstr "Kjør"
-
-#~ msgid "Portuguese - Brazil"
-#~ msgstr "Portugisisk - Brazil"
 
 #~ msgid "all"
 #~ msgstr "alle"

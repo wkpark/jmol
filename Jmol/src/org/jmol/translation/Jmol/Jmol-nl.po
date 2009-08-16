@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-08-14 18:53+0200\n"
-"PO-Revision-Date: 2008-12-10 01:09+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2009-08-15 08:18+0000\n"
+"Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-04-08 04:48+0000\n"
+"X-Launchpad-Export-Date: 2009-08-16 17:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: The Netherlands\n"
 "X-Poedit-Language: Dutch\n"
@@ -22,7 +22,8 @@ msgstr ""
 #: org/openscience/jmol/app/JmolApp.java:102
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr "Kan Jmol niet starten: de syteemvariabele 'user.home' is not defined."
+msgstr ""
+"Kan Jmol niet starten: de syteemvariabele 'user.home' is not defined."
 
 #: org/openscience/jmol/app/JmolApp.java:139
 msgid "transparent background"
@@ -38,15 +39,15 @@ msgstr "geen scherm (en sluit ook af wanneer klaar)"
 
 #: org/openscience/jmol/app/JmolApp.java:144
 msgid "check script syntax only - no file loading"
-msgstr ""
+msgstr "controleer alleen de script syntax - maar laad het niet"
 
 #: org/openscience/jmol/app/JmolApp.java:146
 msgid "check script syntax only - with file loading"
-msgstr ""
+msgstr "controleer alleen de script syntax - en laad het ook"
 
 #: org/openscience/jmol/app/JmolApp.java:147
 msgid "debug"
-msgstr ""
+msgstr "debug"
 
 #: org/openscience/jmol/app/JmolApp.java:148
 msgid "silent startup operation"
@@ -58,7 +59,7 @@ msgstr "toon commando's tijdens het uitvoeren van het script"
 
 #: org/openscience/jmol/app/JmolApp.java:152
 msgid "start with no splash screen"
-msgstr ""
+msgstr "starten zonder startscherm"
 
 #: org/openscience/jmol/app/JmolApp.java:154
 msgid "no console -- all output to sysout"
@@ -67,6 +68,7 @@ msgstr "geen console -- alle uitvoer naar de command line"
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
 msgstr ""
+"stuur alleen input van print berichten naar de console (impliceert -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent commmand thread"
@@ -78,15 +80,15 @@ msgstr "afsluiten na einde script (impliciet met -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:164
 msgid "script file to execute or '-' for System.in"
-msgstr ""
+msgstr "scriptbestand om te starten or '-' voor System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "Jmol script to execute BEFORE -s option"
-msgstr ""
+msgstr "Jmol script om te starten VOOR de -s optie"
 
 #: org/openscience/jmol/app/JmolApp.java:176
 msgid "Jmol script to execute AFTER -s option"
-msgstr ""
+msgstr "Jmol script om te starten NA de -s optie"
 
 #: org/openscience/jmol/app/JmolApp.java:185
 msgid "property=value"
@@ -124,15 +126,15 @@ msgstr "De -D opties zijn (standaard waarden tussen haakjes):"
 
 #: org/openscience/jmol/app/JmolApp.java:454
 msgid "Executing script 1..."
-msgstr ""
+msgstr "Bezig met uitvoeren van script 1..."
 
 #: org/openscience/jmol/app/JmolApp.java:464
 msgid "Executing script file..."
-msgstr ""
+msgstr "Bezig met uitvoeren van een scriptbestand..."
 
 #: org/openscience/jmol/app/JmolApp.java:485
 msgid "Executing script 2..."
-msgstr ""
+msgstr "Executing script 2..."
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
@@ -158,27 +160,24 @@ msgid "Jmol Script Console"
 msgstr "Jmol Script Console"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:131
-#, fuzzy
 msgid "Editor"
-msgstr "B&ewerken"
+msgstr "Editor"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:132
 msgid "Check"
-msgstr ""
+msgstr "Controleer"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:133
-#, fuzzy
 msgid "Top"
-msgstr "&Boven"
+msgstr "Boven"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:134
-#, fuzzy
 msgid "Step"
-msgstr "Toestand"
+msgstr "Stap"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:141
 msgid "Variables"
-msgstr ""
+msgstr "Variabelen"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:142
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:312
@@ -325,71 +324,71 @@ msgstr "Wis Atomen"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
-msgstr ""
+msgstr "Exporteer Gaussian invoerbestand"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:194
 msgid "Basic"
-msgstr ""
+msgstr "Standaard"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:196
 msgid "Advanced"
-msgstr ""
+msgstr "Geavanceerd"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:224
 msgid "Checkpoint File: "
-msgstr ""
+msgstr "Checkpoint Bestand: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
-msgstr ""
+msgstr "Hoeveelheid Geheugen:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:235
 msgid "Number of Processors:"
-msgstr ""
+msgstr "Aantal processoren:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:248
 msgid "Route"
-msgstr ""
+msgstr "Route"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:254
 msgid "Method: "
-msgstr ""
+msgstr "Methode: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:261
 msgid "Basis Set: "
-msgstr ""
+msgstr "Basis set: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr ""
+msgstr "Density Fitting Basis Set (alleen DFT): "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr ""
+msgstr "Opties voor de Berekening: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:288
 msgid "Molecular Properties"
-msgstr ""
+msgstr "Moleculaire Eigenschappen"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:294
 msgid "Total Charge: "
-msgstr ""
+msgstr "Totale lading: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:301
 msgid "Multiplicity: "
-msgstr ""
+msgstr "Mutlipliciteit: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:308
 msgid "Selection: "
-msgstr ""
+msgstr "Selectie: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
-msgstr ""
+msgstr "Gaussian Invoer Bestandsnaam"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:349
 msgid "File..."
-msgstr ""
+msgstr "Bestand..."
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:360
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:759
@@ -429,16 +428,15 @@ msgstr "Open &URL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:55
 msgid "Scrip&t Editor..."
-msgstr ""
+msgstr "Scrip&t Editor..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
 msgid "Output Conso&le..."
 msgstr "Output Conso&le..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
-#, fuzzy
 msgid "Jmol Java &Console"
-msgstr "Jmol Java Console"
+msgstr "Jmol Java &Console"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:58
 msgid "AtomSet&Chooser..."
@@ -572,7 +570,7 @@ msgstr "Fosfor"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:91
 msgid "Sulfur"
-msgstr ""
+msgstr "Zwavel"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
 msgid "Amino"
@@ -745,7 +743,7 @@ msgstr "&Tools"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
 msgid "&Gaussian..."
-msgstr ""
+msgstr "&Gaussian..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 msgid "Distance &Units"
@@ -907,7 +905,7 @@ msgstr "Roteer molecuul."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr ""
+msgstr "Selecteer een of meer atomen met SHIFT-LEFT-DRAG"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
 msgid "Click atoms to measure distances"
@@ -958,9 +956,8 @@ msgid "Launching main frame..."
 msgstr "Starten mainwindow..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:304
-#, fuzzy
 msgid "Jmol Console"
-msgstr "Jmol Java Console"
+msgstr "Jmol Console"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:326
 msgid "Could not create ConsoleTextArea: "
@@ -1490,156 +1487,11 @@ msgstr ""
 msgid "compressing large data file to"
 msgstr "comprimeren groot bestand naar"
 
-#, fuzzy
-#~ msgid "Initializing Script Editor..."
-#~ msgstr "Initialiseren Script-window..."
-
 #~ msgid "Initializing Measurements..."
 #~ msgstr "Initialiseren Metingen...."
 
-#~ msgid "&Java Output Console"
-#~ msgstr "&Java Output Console"
-
 #~ msgid "Run"
 #~ msgstr "Starten"
-
-#~ msgid "Select Atoms"
-#~ msgstr "Atomen Selecteren"
-
-#~ msgid "Preview"
-#~ msgstr "Preview"
-
-#~ msgid "Append models"
-#~ msgstr "Modellen toevoegen"
-
-#~ msgid "Make crystal..."
-#~ msgstr "Maak kristal..."
-
-#~ msgid "Name"
-#~ msgstr "Naam"
-
-#~ msgid "Measurements..."
-#~ msgstr "Metingen..."
-
-#~ msgid "Export view to an image or script file."
-#~ msgstr "Exporteer de weergave of een script naar bestand."
-
-#~ msgid "Render in pov-ray."
-#~ msgstr "Render in pov-ray."
-
-#~ msgid "Select an atom or region."
-#~ msgstr "Selecteer een atoom of gebied."
-
-#~ msgid "View measurement table."
-#~ msgstr "Laat Metingentabel zien."
-
-#~ msgid "Image Type"
-#~ msgstr "Figuurformaat"
-
-#~ msgid "JPEG Quality"
-#~ msgstr "JPEG-kwaliteit"
-
-#~ msgid "Initializing AtomSetChooser Window..."
-#~ msgstr "Initialiseren AtoomSetMenu WIndow...."
-
-#~ msgid "Setting up File Choosers..."
-#~ msgstr "Make van Bestanskiezer..."
-
-#~ msgid "All Files"
-#~ msgstr "Alle bestanden"
-
-#~ msgid "Abort file chooser dialog"
-#~ msgstr "Sluit BestandKiezer"
-
-#~ msgid "Details"
-#~ msgstr "Details"
-
-#~ msgid "Directory"
-#~ msgstr "Werkfolder"
-
-#~ msgid "Open selected directory"
-#~ msgstr "Geselecteerde folder openen"
-
-#~ msgid "Attributes"
-#~ msgstr "Eigenschappen"
-
-#~ msgid "Modified"
-#~ msgstr "Veranderd"
-
-#~ msgid "Generic File"
-#~ msgstr "Onbekend formaat"
-
-#~ msgid "Size"
-#~ msgstr "Grootte"
-
-#~ msgid "Files of Type:"
-#~ msgstr "Bestanden van het type:"
-
-#~ msgid "Type"
-#~ msgstr "Type"
-
-#~ msgid "FileChooser help"
-#~ msgstr "Help BestandsKiezer"
-
-#~ msgid "Home"
-#~ msgstr "Thuis"
-
-#~ msgid "List"
-#~ msgstr "Lijst"
-
-#~ msgid "Look In:"
-#~ msgstr "Kijken in:"
-
-#~ msgid "Error creating new folder"
-#~ msgstr "Fout tijdens maken van nieuwe folder"
-
-#~ msgid "New Folder"
-#~ msgstr "Nieuwe folder"
-
-#~ msgid "Create New Folder"
-#~ msgstr "Nieuw folder maken"
-
-#~ msgid "Open selected file"
-#~ msgstr "Geselecteerd bestand openen"
-
-#~ msgid "Save selected file"
-#~ msgstr "Geselecteerd bestand opslaan"
-
-#~ msgid "Save In:"
-#~ msgstr "Opslaan in:"
-
-#~ msgid "Update"
-#~ msgstr "Verversen"
-
-#~ msgid "Update directory listing"
-#~ msgstr "Folderinhoud verversen"
-
-#~ msgid "Up"
-#~ msgstr "Omhoog"
-
-#~ msgid "Up One Level"
-#~ msgstr "Een nivo omhoog"
-
-#~ msgid "No"
-#~ msgstr "Geen"
-
-#~ msgid "Yes"
-#~ msgstr "Ja"
-
-#~ msgid "Jmol-to-POV-Ray Conversion"
-#~ msgstr "Jmol-naar-POV-Ray conversie"
-
-#~ msgid "Filename"
-#~ msgstr "Bestandsnaam"
-
-#~ msgid "Height : "
-#~ msgstr "Hoogte : "
-
-#~ msgid "POV-Ray Executable Location"
-#~ msgstr "Locatie POV-Ray executable"
-
-#~ msgid "Export &PDF..."
-#~ msgstr "&PDF exporteren..."
 
 #~ msgid "Image size"
 #~ msgstr "Figuurgrootte"
@@ -1694,3 +1546,6 @@ msgstr "comprimeren groot bestand naar"
 
 #~ msgid "Failed to delete scratch file {0}."
 #~ msgstr "Het wissen van de werkfolder {0} is mislukt."
+
+#~ msgid "&Java Output Console"
+#~ msgstr "&Java Output Console"

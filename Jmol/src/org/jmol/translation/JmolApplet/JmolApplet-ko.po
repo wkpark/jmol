@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-08-14 18:53+0200\n"
+"POT-Creation-Date: 2009-08-16 19:47+0200\n"
 "PO-Revision-Date: 2008-10-01 21:49+0000\n"
 "Last-Translator: Won Kyu Park <wkpark@gmail.com>\n"
 "Language-Team: Korean <Jmol-developers@lists.sf.net>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Launchpad-Export-Date: 2008-10-02 20:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: org/jmol/applet/Jmol.java:659
+#: org/jmol/applet/Jmol.java:657
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -32,11 +32,11 @@ msgstr ""
 "\n"
 "더 많은 정보는 http://www.jmol.org를 참조하세요"
 
-#: org/jmol/applet/Jmol.java:895
+#: org/jmol/applet/Jmol.java:893
 msgid "File Error:"
 msgstr "파일 오류:"
 
-#: org/jmol/applet/Jmol.java:1085
+#: org/jmol/applet/Jmol.java:1083
 #, java-format
 msgid ""
 "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
@@ -44,11 +44,11 @@ msgstr ""
 "애플릿이 파일을 만들 수 없습니다. Base64 방식의 JPEG 포맷은 {0}을(를) 사용하"
 "세요."
 
-#: org/jmol/applet/Jmol.java:1088
+#: org/jmol/applet/Jmol.java:1086
 msgid "File creation failed."
 msgstr "파일 생성 오류."
 
-#: org/jmol/applet/Jmol.java:1195
+#: org/jmol/applet/Jmol.java:1194
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
@@ -64,131 +64,130 @@ msgstr "Jmol 애플릿 부르기 ..."
 msgid "  {0} seconds"
 msgstr "  {0} 초"
 
-#: org/jmol/console/AppletConsole.java:105
-#: org/jmol/console/JmolConsole.java:53
+#: org/jmol/console/AppletConsole.java:96 org/jmol/console/JmolConsole.java:67
 msgid "Jmol Script Console"
 msgstr "Jmol 스크립트 콘솔"
 
-#: org/jmol/console/AppletConsole.java:107
+#: org/jmol/console/AppletConsole.java:98
 #, fuzzy
 msgid "Editor"
 msgstr "기록"
 
-#: org/jmol/console/AppletConsole.java:108
+#: org/jmol/console/AppletConsole.java:99
 msgid "State"
 msgstr "상태"
 
-#: org/jmol/console/AppletConsole.java:109
-#: org/jmol/console/ScriptEditor.java:146
+#: org/jmol/console/AppletConsole.java:100
+#: org/jmol/console/ScriptEditor.java:136
 #, fuzzy
 msgid "Run"
 msgstr "러시아어"
 
-#: org/jmol/console/AppletConsole.java:110
+#: org/jmol/console/AppletConsole.java:101
 msgid "Clear Output"
 msgstr "출력 지우기"
 
-#: org/jmol/console/AppletConsole.java:111
+#: org/jmol/console/AppletConsole.java:102
 msgid "Clear Input"
 msgstr "입력 지우기"
 
-#: org/jmol/console/AppletConsole.java:112
+#: org/jmol/console/AppletConsole.java:103
 #: org/jmol/popup/PopupResourceBundle.java:863
 msgid "History"
 msgstr "기록"
 
-#: org/jmol/console/AppletConsole.java:113
+#: org/jmol/console/AppletConsole.java:104
 #: org/jmol/popup/PopupResourceBundle.java:873
 msgid "Load"
 msgstr "불러옴"
 
-#: org/jmol/console/AppletConsole.java:151
+#: org/jmol/console/AppletConsole.java:142
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
 "CTRL-ENTER를 누르면 다음줄로 넘어가며 혹은 모델 데이타를 붙여넣기한 후에 불러"
 "옴을 누르세요"
 
-#: org/jmol/console/AppletConsole.java:375
+#: org/jmol/console/AppletConsole.java:370
 msgid "&Help"
 msgstr "도움말(&H)"
 
-#: org/jmol/console/AppletConsole.java:376
+#: org/jmol/console/AppletConsole.java:371
 msgid "&Search..."
 msgstr "찾기(&S)..."
 
-#: org/jmol/console/AppletConsole.java:377
+#: org/jmol/console/AppletConsole.java:372
 msgid "&Commands"
 msgstr "명령(&C)"
 
-#: org/jmol/console/AppletConsole.java:378
+#: org/jmol/console/AppletConsole.java:373
 msgid "Math &Functions"
 msgstr "수학 함수(&F)"
 
-#: org/jmol/console/AppletConsole.java:379
+#: org/jmol/console/AppletConsole.java:374
 msgid "Set &Parameters"
 msgstr "파라메터 설정(&P)"
 
-#: org/jmol/console/AppletConsole.java:380
+#: org/jmol/console/AppletConsole.java:375
 msgid "&More"
 msgstr ""
 
-#: org/jmol/console/ScriptEditor.java:100
+#: org/jmol/console/ScriptEditor.java:97
 #, fuzzy
 msgid "Jmol Script Editor"
 msgstr "Jmol 스크립트 콘솔"
 
-#: org/jmol/console/ScriptEditor.java:139
+#: org/jmol/console/ScriptEditor.java:129
 #: org/jmol/popup/PopupResourceBundle.java:860
 msgid "Console"
 msgstr "콘솔"
 
-#: org/jmol/console/ScriptEditor.java:141
+#: org/jmol/console/ScriptEditor.java:131
 #: org/jmol/export/dialog/Dialog.java:430
 #: org/jmol/export/dialog/Dialog.java:454
 #: org/jmol/export/dialog/Dialog.java:457
 msgid "Open"
 msgstr ""
 
-#: org/jmol/console/ScriptEditor.java:142
+#: org/jmol/console/ScriptEditor.java:132
 #: org/jmol/popup/PopupResourceBundle.java:877
 msgid "Script"
 msgstr "스크립트"
 
-#: org/jmol/console/ScriptEditor.java:143
+#: org/jmol/console/ScriptEditor.java:133
 #, fuzzy
 msgid "Check"
 msgstr "체코어"
 
-#: org/jmol/console/ScriptEditor.java:144
+#: org/jmol/console/ScriptEditor.java:134
 #: org/jmol/popup/PopupResourceBundle.java:591
 msgid "Top"
 msgstr "위"
 
-#: org/jmol/console/ScriptEditor.java:145
+#: org/jmol/console/ScriptEditor.java:135
 #, fuzzy
 msgid "Step"
 msgstr "정지"
 
-#: org/jmol/console/ScriptEditor.java:147
+#: org/jmol/console/ScriptEditor.java:137
 #: org/jmol/popup/PopupResourceBundle.java:818
 msgid "Pause"
 msgstr "멈춤"
 
-#: org/jmol/console/ScriptEditor.java:149
+#: org/jmol/console/ScriptEditor.java:139
 #: org/jmol/popup/PopupResourceBundle.java:819
 msgid "Resume"
 msgstr "다시"
 
-#: org/jmol/console/ScriptEditor.java:151
+#: org/jmol/console/ScriptEditor.java:141
 msgid "Halt"
 msgstr ""
 
-#: org/jmol/console/ScriptEditor.java:153
+#: org/jmol/console/ScriptEditor.java:143
 #, fuzzy
 msgid "Clear"
 msgstr "입력 지우기"
 
-#: org/jmol/console/ScriptEditor.java:154
+#: org/jmol/console/ScriptEditor.java:144
 #, fuzzy
 msgid "Close"
 msgstr "콘솔"
@@ -1917,26 +1916,26 @@ msgstr "{0} 원자 숨김"
 msgid "{0} atoms selected"
 msgstr "{0} 원자 선택"
 
-#: org/jmol/viewer/Viewer.java:3985
+#: org/jmol/viewer/Viewer.java:3989
 msgid "Drag to move label"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4974
+#: org/jmol/viewer/Viewer.java:4978
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr "오류: 문자열값에 부울린값을 지정할 수 없음: {0}"
 
-#: org/jmol/viewer/Viewer.java:5197 org/jmol/viewer/Viewer.java:5377
+#: org/jmol/viewer/Viewer.java:5201 org/jmol/viewer/Viewer.java:5381
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr "오류: 숫자에 부울린값을 지정할 수 없음: {0}"
 
-#: org/jmol/viewer/Viewer.java:5888
+#: org/jmol/viewer/Viewer.java:5892
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "오류: 부울린에 이 값을 넣을 수 없음: {0}"
 
-#: org/jmol/viewer/Viewer.java:7269
+#: org/jmol/viewer/Viewer.java:7275
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 

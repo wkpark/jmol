@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-08-14 18:53+0200\n"
+"POT-Creation-Date: 2009-08-16 19:47+0200\n"
 "PO-Revision-Date: 2009-08-01 22:54-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "X-Poedit-Language: Portuguese\n"
 "X-Poedit-Basepath: ../../../..\n"
 
-#: org/jmol/applet/Jmol.java:659
+#: org/jmol/applet/Jmol.java:657
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -34,11 +34,11 @@ msgstr ""
 "\n"
 "Veja http://www.jmol.org para mais informações"
 
-#: org/jmol/applet/Jmol.java:895
+#: org/jmol/applet/Jmol.java:893
 msgid "File Error:"
 msgstr "Erro no arquivo:"
 
-#: org/jmol/applet/Jmol.java:1085
+#: org/jmol/applet/Jmol.java:1083
 #, java-format
 msgid ""
 "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
@@ -46,11 +46,11 @@ msgstr ""
 "Criação de arquivo por este \"applet\" não é permitida. Para formato Base64 "
 "JPEG, use {0}."
 
-#: org/jmol/applet/Jmol.java:1088
+#: org/jmol/applet/Jmol.java:1086
 msgid "File creation failed."
 msgstr "Criação de arquivo falhou."
 
-#: org/jmol/applet/Jmol.java:1195
+#: org/jmol/applet/Jmol.java:1194
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
@@ -69,125 +69,124 @@ msgstr "Carregando o applet Jmol ..."
 msgid "  {0} seconds"
 msgstr "  {0} segundos"
 
-#: org/jmol/console/AppletConsole.java:105
-#: org/jmol/console/JmolConsole.java:53
+#: org/jmol/console/AppletConsole.java:96 org/jmol/console/JmolConsole.java:67
 msgid "Jmol Script Console"
 msgstr "Console de \"script\" do Jmol"
 
-#: org/jmol/console/AppletConsole.java:107
+#: org/jmol/console/AppletConsole.java:98
 msgid "Editor"
 msgstr "Editor"
 
-#: org/jmol/console/AppletConsole.java:108
+#: org/jmol/console/AppletConsole.java:99
 msgid "State"
 msgstr "Estado"
 
-#: org/jmol/console/AppletConsole.java:109
-#: org/jmol/console/ScriptEditor.java:146
+#: org/jmol/console/AppletConsole.java:100
+#: org/jmol/console/ScriptEditor.java:136
 msgid "Run"
 msgstr "Executar"
 
-#: org/jmol/console/AppletConsole.java:110
+#: org/jmol/console/AppletConsole.java:101
 msgid "Clear Output"
 msgstr "Apagar saída"
 
-#: org/jmol/console/AppletConsole.java:111
+#: org/jmol/console/AppletConsole.java:102
 msgid "Clear Input"
 msgstr "Apagar entrada"
 
-#: org/jmol/console/AppletConsole.java:112
+#: org/jmol/console/AppletConsole.java:103
 #: org/jmol/popup/PopupResourceBundle.java:863
 msgid "History"
 msgstr "Histórico"
 
-#: org/jmol/console/AppletConsole.java:113
+#: org/jmol/console/AppletConsole.java:104
 #: org/jmol/popup/PopupResourceBundle.java:873
 msgid "Load"
 msgstr "Carregar"
 
-#: org/jmol/console/AppletConsole.java:151
+#: org/jmol/console/AppletConsole.java:142
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
 "pressione CTRL-ENTER para uma nova linha ou cole os dados do modelo e "
 "pressione Carregar"
 
-#: org/jmol/console/AppletConsole.java:375
+#: org/jmol/console/AppletConsole.java:370
 msgid "&Help"
 msgstr "Ajuda"
 
-#: org/jmol/console/AppletConsole.java:376
+#: org/jmol/console/AppletConsole.java:371
 msgid "&Search..."
 msgstr "Procurar..."
 
-#: org/jmol/console/AppletConsole.java:377
+#: org/jmol/console/AppletConsole.java:372
 msgid "&Commands"
 msgstr "&Comandos"
 
-#: org/jmol/console/AppletConsole.java:378
+#: org/jmol/console/AppletConsole.java:373
 msgid "Math &Functions"
 msgstr "&Funções matemáticas"
 
-#: org/jmol/console/AppletConsole.java:379
+#: org/jmol/console/AppletConsole.java:374
 msgid "Set &Parameters"
 msgstr "Ajustar &parâmetros"
 
-#: org/jmol/console/AppletConsole.java:380
+#: org/jmol/console/AppletConsole.java:375
 msgid "&More"
 msgstr "&Mais"
 
-#: org/jmol/console/ScriptEditor.java:100
+#: org/jmol/console/ScriptEditor.java:97
 msgid "Jmol Script Editor"
 msgstr "Editor de \"script\" do Jmol"
 
-#: org/jmol/console/ScriptEditor.java:139
+#: org/jmol/console/ScriptEditor.java:129
 #: org/jmol/popup/PopupResourceBundle.java:860
 msgid "Console"
 msgstr "Console"
 
-#: org/jmol/console/ScriptEditor.java:141
+#: org/jmol/console/ScriptEditor.java:131
 #: org/jmol/export/dialog/Dialog.java:430
 #: org/jmol/export/dialog/Dialog.java:454
 #: org/jmol/export/dialog/Dialog.java:457
 msgid "Open"
 msgstr "Abrir"
 
-#: org/jmol/console/ScriptEditor.java:142
+#: org/jmol/console/ScriptEditor.java:132
 #: org/jmol/popup/PopupResourceBundle.java:877
 msgid "Script"
 msgstr "\"Script\""
 
-#: org/jmol/console/ScriptEditor.java:143
+#: org/jmol/console/ScriptEditor.java:133
 msgid "Check"
 msgstr "Conferir"
 
-#: org/jmol/console/ScriptEditor.java:144
+#: org/jmol/console/ScriptEditor.java:134
 #: org/jmol/popup/PopupResourceBundle.java:591
 msgid "Top"
 msgstr "Superior"
 
-#: org/jmol/console/ScriptEditor.java:145
+#: org/jmol/console/ScriptEditor.java:135
 msgid "Step"
 msgstr "Passo"
 
-#: org/jmol/console/ScriptEditor.java:147
+#: org/jmol/console/ScriptEditor.java:137
 #: org/jmol/popup/PopupResourceBundle.java:818
 msgid "Pause"
 msgstr "Pausa"
 
-#: org/jmol/console/ScriptEditor.java:149
+#: org/jmol/console/ScriptEditor.java:139
 #: org/jmol/popup/PopupResourceBundle.java:819
 msgid "Resume"
 msgstr "Continuar"
 
-#: org/jmol/console/ScriptEditor.java:151
+#: org/jmol/console/ScriptEditor.java:141
 msgid "Halt"
 msgstr "Parar"
 
-#: org/jmol/console/ScriptEditor.java:153
+#: org/jmol/console/ScriptEditor.java:143
 msgid "Clear"
 msgstr "Apagar"
 
-#: org/jmol/console/ScriptEditor.java:154
+#: org/jmol/console/ScriptEditor.java:144
 msgid "Close"
 msgstr "Fechar"
 
@@ -1913,28 +1912,28 @@ msgstr "{0} átomo(s) oculto(s)"
 msgid "{0} atoms selected"
 msgstr "{0} átomo(s) selecionado(s)"
 
-#: org/jmol/viewer/Viewer.java:3985
+#: org/jmol/viewer/Viewer.java:3989
 msgid "Drag to move label"
 msgstr "Arraste para mover rótulo"
 
-#: org/jmol/viewer/Viewer.java:4974
+#: org/jmol/viewer/Viewer.java:4978
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 "ERRO: impossível designar um sinalizador booleano para uma \"string\": {0}"
 
-#: org/jmol/viewer/Viewer.java:5197 org/jmol/viewer/Viewer.java:5377
+#: org/jmol/viewer/Viewer.java:5201 org/jmol/viewer/Viewer.java:5381
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
 "ERRO: impossível designar um sinalizador booleano para um valor numérico: {0}"
 
-#: org/jmol/viewer/Viewer.java:5888
+#: org/jmol/viewer/Viewer.java:5892
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "ERRO: impossível designar o valor desta variável para um booleano: {0}"
 
-#: org/jmol/viewer/Viewer.java:7269
+#: org/jmol/viewer/Viewer.java:7275
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "área de transferência não está acessível -- use o \"applet\" assinado"
 

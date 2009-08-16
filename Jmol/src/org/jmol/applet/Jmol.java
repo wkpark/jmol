@@ -204,10 +204,8 @@ public class Jmol implements WrappedApplet {
     JmolAppletRegistry.checkOut(fullName);
     viewer.setModeMouse(JmolConstants.MOUSE_NONE);
     viewer = null;
-    if (jvm12 != null) {
-      jvm12.console = null;
+    if (jvm12 != null)
       jvm12 = null;
-    }
     System.out.println("Jmol applet " + fullName + " destroyed");
   }
 
@@ -1188,18 +1186,19 @@ public class Jmol implements WrappedApplet {
     }
 
     private void consoleMessage(String message) {
-      if (jvm12 != null && jvm12.haveConsole()) {
+      JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer.getProperty("DATA_API", "getAppConsole", null);
+      if (appConsole != null) {
         if (defaultMessage == null) {
           GT.setDoTranslate(true);
           defaultMessage = GT
               ._("Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window.");
           GT.setDoTranslate(doTranslate);
         }
-        if (jvm12.getConsoleMessage().startsWith(defaultMessage))
-          jvm12.consoleMessage("");
-        jvm12.consoleMessage(message);
+        if (appConsole.getText().startsWith(defaultMessage))
+          appConsole.sendConsoleMessage("");
+        appConsole.sendConsoleMessage(message);
         if (message == null) {
-          jvm12.consoleMessage(defaultMessage);
+          appConsole.sendConsoleMessage(defaultMessage);
         }
       }
       output(message);

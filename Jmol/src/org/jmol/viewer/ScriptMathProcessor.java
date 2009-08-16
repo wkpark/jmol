@@ -646,8 +646,24 @@ class ScriptMathProcessor {
       return evaluateConnected(args);
     case Token.substructure:
       return evaluateSubstructure(args);
+    case Token.symop:
+      return evaluateSymop(args);
     }
     return false;
+  }
+
+  private boolean evaluateSymop(ScriptVariable[] args) throws ScriptException {
+    if (args.length == 0)
+      return false;
+    ScriptVariable x1 = getX();
+    if (isSyntaxCheck)
+      return addX(new Point3f());
+    if (x1.tok != Token.bitset)
+      return false;
+    String xyz = (args[0].tok == Token.string ? ScriptVariable.sValue(args[0]) : null);
+    int iOp = (xyz == null ? ScriptVariable.iValue(args[0]) : 0);
+    Point3f pt = (args.length == 2 ? ptValue(args[1]) : null);
+    return addX(viewer.applySymmetry((BitSet) x1.value, xyz, iOp, pt));
   }
 
   private boolean evaluateBin(ScriptVariable[] args) throws ScriptException {

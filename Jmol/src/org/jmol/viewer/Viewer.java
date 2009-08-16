@@ -167,13 +167,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private SymmetryInterface symmetry;
 
-  SymmetryInterface getSymmetry() {
+  public SymmetryInterface getSymmetry() {
     if (symmetry == null)
       symmetry = (SymmetryInterface) Interface
           .getOptionInterface("symmetry.Symmetry");
     return symmetry;
   }
 
+  public Point3f applySymmetry(BitSet bsAtoms, String xyz, int op, Point3f pt) {
+    return modelSet.applySymmetry(BitSetUtil.firstSetBit(bsAtoms), xyz, op, pt);
+  }
+  
   private void clearModelDependentObjects() {
     setFrameOffsets(null);
     if (minimizer != null) {
@@ -6773,8 +6777,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         if (paramInfo instanceof JmolAppConsoleInterface) {
           appConsole = (JmolAppConsoleInterface) paramInfo;
         } else if (appConsole == null && paramInfo != null && ((Boolean) paramInfo).booleanValue()) {
-          appConsole = ((JmolAppConsoleInterface) Interface
-              .getApplicationInterface("jmolpanel.AppConsole")).getAppConsole(this, display);
+          appConsole = (isApplet ? 
+              (JmolAppConsoleInterface) Interface.getOptionInterface("console.AppletConsole")
+              : (JmolAppConsoleInterface) Interface.getApplicationInterface("jmolpanel.AppConsole"))
+                  .getAppConsole(this, display);
         }
         scriptEditor = (appConsole == null ? null : appConsole.getScriptEditor());
         return appConsole;
@@ -7767,5 +7773,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   boolean isRepaintPending() {
     return repaintManager.repaintPending;
   }
-  
+
 }

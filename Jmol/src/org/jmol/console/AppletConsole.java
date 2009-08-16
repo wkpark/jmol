@@ -24,7 +24,6 @@
 package org.jmol.console;
 
 import org.jmol.api.*;
-import org.jmol.applet.Jvm12;
 import org.jmol.i18n.*;
 
 import java.awt.*;
@@ -44,7 +43,6 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   private final Document outputDocument = output.getDocument();
   
   private JFrame jf;
-  private Jvm12 jvm12;
 
   private final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
 
@@ -54,8 +52,6 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
   private JMenuBar menubar; // requiring Swing here for now
   private JButton clearOutButton, clearInButton, loadButton;
-  private JmolScriptEditorInterface scriptEditor;
-
 
   public Object getMyMenuBar() {
     return menubar;
@@ -69,17 +65,13 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   public AppletConsole() {
   }
   
-  public JmolAppConsoleInterface getAppConsole(Viewer viewer, Object arg2) {
-    // used in application only
-    return null;
+  public JmolAppConsoleInterface getAppConsole(Viewer viewer, Component display) {
+    return new AppletConsole(viewer, display);
   }
 
-  public JmolScriptEditorInterface getScriptEditor() {
-    if (scriptEditor == null) {
-      scriptEditor = (JmolScriptEditorInterface) Interface.getOptionInterface("console.ScriptEditor");
-      scriptEditor = scriptEditor.getScriptEditor(viewer, jvm12.awtComponent, this);
-    }
-    return scriptEditor;
+  private AppletConsole(Viewer viewer, Component display) {
+    this.display = display;
+    set(viewer);
   }
 
   public void sendConsoleEcho(String strEcho) {
@@ -93,12 +85,11 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   public void zap() {
   }
 
-  public void set(JmolViewer viewer, Object jvm12) {
+  private void set(JmolViewer viewer) {
     //Logger.debug("Console constructor");
     //System.out.println("Console " + this + " constructed");
 
     this.viewer = viewer;
-    this.jvm12 = (Jvm12) jvm12;
     boolean doTranslate = GT.getDoTranslate();
     GT.setDoTranslate(true);
 
@@ -357,11 +348,15 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   ////////////////////////////////////////////////////////////////
 
   public void windowClosed(WindowEvent we) {
-    jvm12.console = null;
+    destroyConsole();
+  }
+
+  private void destroyConsole() {
+    viewer.getProperty("DATA_API", "getAppletConsole", (JmolAppConsoleInterface) null);
   }
 
   public void windowClosing(WindowEvent we) {
-    jvm12.console = null;
+    destroyConsole();
   }
 
   /// Graphical User Interface for applet ///
@@ -473,11 +468,5 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
       return key;
     }
   }
-
-  public JmolAppConsoleInterface getAppConsole(Viewer viewer, Component display) {
-    // TODO
-    return null;
-  }
-
 
 }

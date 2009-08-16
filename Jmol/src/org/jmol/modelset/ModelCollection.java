@@ -2866,6 +2866,34 @@ abstract public class ModelCollection extends BondCollection {
           "or \"C m m m\" or \"x, y, z;-x ,-y, -z\"" : info + strOperations);
   }
   
+  public Point3f applySymmetry(int iAtom, String xyz, int op, Point3f pt) {
+    Point3f sympt = new Point3f();
+    if (iAtom < 0)
+      return sympt;
+    int iModel = atoms[iAtom].modelIndex;
+    SymmetryInterface uc = getUnitCell(iModel);
+    if (uc == null)
+      return sympt;
+    SymmetryInterface sym;
+    if (xyz == null) {
+      String[] ops = uc.getSymmetryOperations();
+      if (ops == null || op < 1 || op > ops.length)
+        return sympt;
+      xyz = ops[op - 1 ];
+    }
+    if (symTemp == null)
+      symTemp = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+    sym = symTemp; 
+    sym.setSpaceGroup(false);
+    int iSym = sym.addSpaceGroupOperation(xyz);
+    sym.setUnitCell(uc.getNotionalUnitCell());
+    Point3f ptuc = new Point3f(pt == null ? atoms[iAtom] : pt);
+    uc.toFractional(ptuc);
+    sym.newSpaceGroupPoint(iSym, ptuc, sympt, 0, 0, 0);
+    sym.toCartesian(sympt);
+    return sympt;
+  }
+
   protected void deleteModel(int modelIndex, int firstAtomIndex, int nAtoms,
                           BitSet bsAtoms, BitSet bsBonds) {
     /*

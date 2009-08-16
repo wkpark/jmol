@@ -26,6 +26,7 @@ package org.jmol.console;
 import org.jmol.api.*;
 import org.jmol.i18n.*;
 
+import java.awt.Component;
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -33,8 +34,21 @@ import javax.swing.*;
 public abstract class JmolConsole extends JDialog implements ActionListener, WindowListener {
 
   public JmolViewer viewer;
+  protected Component display;
 
   // common:
+  
+  protected ScriptEditor scriptEditor;
+  
+  void setScriptEditor(ScriptEditor se) {
+    scriptEditor = se;
+  }
+  
+  public JmolScriptEditorInterface getScriptEditor() {
+    return (scriptEditor == null ? 
+        (scriptEditor = new ScriptEditor(viewer, display instanceof JFrame ? (JFrame) display : null, this))
+        : scriptEditor);
+  }
   
   protected JButton editButton, runButton, historyButton, stateButton;
 
@@ -49,8 +63,10 @@ public abstract class JmolConsole extends JDialog implements ActionListener, Win
   public JmolConsole() {
   }
   
-  public JmolConsole(JFrame frame, String _, boolean b) {
+  public JmolConsole(JmolViewer viewer, JFrame frame, String _, boolean b) {
     super(frame, GT._("Jmol Script Console"), false);
+    this.viewer = viewer;
+    display = frame;
   }
 
   abstract protected void clearContent(String text);

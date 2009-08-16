@@ -46,10 +46,8 @@ import javax.swing.JScrollPane;
 import java.util.Vector;
 
 import org.jmol.api.JmolAppConsoleInterface;
-import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.console.JmolConsole;
-import org.jmol.console.ScriptEditor;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
@@ -67,10 +65,6 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
   private JButton checkButton;
   protected JButton stepButton;
   private JButton topButton;
-  private JFrame frame;
-  
-
-
 
   /*
    * methods sendConsoleEcho, sendConsoleMessage(strStatus), notifyScriptStart(), notifyScriptTermination()
@@ -92,23 +86,11 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
         : display instanceof JFrame ? (JFrame) display : null);
   }
 
-  public void set(JmolViewer viewer, Object jvm12) {
-    // not used in application
-  }
-
   public AppConsole(JmolViewer viewer, JFrame frame) {
-    super(frame, GT._("Jmol Script Console"), false);
-    this.frame = frame;
-    this.viewer = viewer;
+    super(viewer, frame, GT._("Jmol Script Console"), false);
     layoutWindow(getContentPane());
     setSize(645, 400);
     setLocationRelativeTo(frame);
-  }
-
-  public JmolScriptEditorInterface getScriptEditor() {
-    return (scriptEditor == null ? 
-        (scriptEditor = new ScriptEditor(viewer, frame, this))
-        : scriptEditor);
   }
 
   JButton setButton(String s) {
@@ -400,12 +382,6 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
     console.clearContent(text);
   }
 
-  ScriptEditor scriptEditor;
-  
-  void setScriptEditor(ScriptEditor se) {
-    scriptEditor = se;
-  }
-  
   public void actionPerformed(ActionEvent e) {
     console.grabFocus(); // always grab the focus (e.g., after clear)
     Object source = e.getSource();

@@ -51,6 +51,7 @@ class SymmetryOperation extends Matrix4f {
   String xyzOriginal;
   String xyz;
   boolean doNormalize = true;
+  boolean isFinalized;
 
   SymmetryOperation() {
   }
@@ -69,11 +70,16 @@ class SymmetryOperation extends Matrix4f {
     xyzOriginal = op.xyzOriginal;
     xyz = op.xyz;
     set(op); // sets the underlying Matrix4f
+    doFinalize();
+    if (doNormalize)
+      setOffset(atoms, atomIndex, count);
+  }
+
+  void doFinalize() {
     m03 /= 12f;
     m13 /= 12f;
     m23 /= 12f;
-    if (doNormalize)
-      setOffset(atoms, atomIndex, count);
+    isFinalized = true;
   }
   
   String getXyz(boolean normalized) {
@@ -119,6 +125,7 @@ class SymmetryOperation extends Matrix4f {
      */
     if (xyz == null)
       return false;
+    System.out.println("symmetryoperation setmatrixfromxyz " + xyz);
     xyzOriginal = xyz;
     xyz = xyz.toLowerCase();
     float[] temp = new float[16];
@@ -222,6 +229,7 @@ class SymmetryOperation extends Matrix4f {
         if (rowPt == 2) {
           set(temp);
           this.xyz = strOut;
+          System.out.println((Matrix4f)this);
           rowPt = 0;
           return true;
         }

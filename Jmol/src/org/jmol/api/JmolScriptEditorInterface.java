@@ -12,8 +12,6 @@ public interface JmolScriptEditorInterface {
 
   void dispose();
   
-  JmolScriptEditorInterface getScriptEditor(JmolViewer viewer, Object frame, Object jmolConsole);
-
   boolean isVisible();
 
   void notifyContext(ScriptContext property, Object[] data);

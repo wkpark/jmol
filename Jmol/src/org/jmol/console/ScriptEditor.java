@@ -53,7 +53,7 @@ import org.jmol.viewer.ScriptContext;
 
 public final class ScriptEditor extends JDialog implements JmolScriptEditorInterface, ActionListener {
 
-  EditorTextPane editor;
+  protected EditorTextPane editor;
   private JButton openButton;
   private JButton closeButton;
   private JButton loadButton;
@@ -69,7 +69,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   protected JButton stepButton;
   protected JButton resumeButton;
 
-  JmolViewer viewer;
+  private JmolViewer viewer;
 
   /*
    * methods sendeditorEcho, sendeditorMessage(strStatus), notifyScriptStart(),
@@ -82,20 +82,17 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
   private JmolConsole jmolConsole;
 
-  public JmolScriptEditorInterface getScriptEditor(JmolViewer viewer, Object frame, Object jmolConsole) {
-    return new ScriptEditor(viewer, null, (JmolConsole) jmolConsole);
-  }
-  
   protected String title;
-  protected  String parsedData = "";
+  protected String parsedData = "";
   protected ScriptContext parsedContext;
   
   protected SimpleAttributeSet attHighlight;
   protected SimpleAttributeSet attEcho;
   protected SimpleAttributeSet attError;
 
-  public ScriptEditor(JmolViewer viewer, JFrame frame, JmolConsole jmolConsole) {
-    super(frame, null, false); //was frame
+  ScriptEditor(JmolViewer viewer, JFrame frame, JmolConsole jmolConsole) {
+    super(frame, null, false);
+    // from appConsole only;
     setAttributes();
     setTitle(title = GT._("Jmol Script Editor"));
     this.viewer = viewer;
@@ -106,7 +103,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       setLocationRelativeTo(frame);
   }
 
-  void setAttributes() {
+  private void setAttributes() {
     attHighlight = new SimpleAttributeSet();
     StyleConstants.setBackground(attHighlight, Color.LIGHT_GRAY);
     StyleConstants.setForeground(attHighlight, Color.blue);
@@ -122,14 +119,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
   }
   
-  JButton setButton(String s) {
-    JButton b = new JButton(s);
-    b.addActionListener(this);
-    buttonPanel.add(b);
-    return b;
-  }
-  
-  JPanel buttonPanel = new JPanel();
+  private JPanel buttonPanel = new JPanel();
 
   void layoutWindow(Container container) {
     editor = new EditorTextPane(this);
@@ -175,6 +165,13 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
   }
 
+  private JButton setButton(String s) {
+    JButton b = new JButton(s);
+    b.addActionListener(this);
+    buttonPanel.add(b);
+    return b;
+  }
+  
   public void notifyScriptStart() {
     runButton.setEnabled(false);
     resumeButton.setEnabled(false);
@@ -242,7 +239,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       setContext(context); 
   }
 
-  String filename;
+  protected String filename;
   
   private synchronized void setContext(ScriptContext context) {
     pauseButton.setEnabled(viewer.isScriptExecuting());
@@ -359,7 +356,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
   }
  
-  static String[] lastOpened = {"?.spt", null} ;
+  private static String[] lastOpened = {"?.spt", null} ;
   private void doOpen() {
     viewer.getFileAsString(lastOpened, Integer.MAX_VALUE, false);
     editor.clearContent(lastOpened[1]);

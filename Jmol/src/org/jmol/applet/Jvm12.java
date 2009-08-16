@@ -35,7 +35,6 @@ import org.jmol.api.*;
 
   protected JmolViewer viewer;
   public Component awtComponent;
-  public JmolAppConsoleInterface console;
   
   protected String appletContext;
 
@@ -60,30 +59,6 @@ import org.jmol.api.*;
 
   public Dimension getSize() {
     return awtComponent.getSize(dimSize);
-  }
-
-  void consoleMessage(String message) {
-    console.sendConsoleMessage(message);
-  }
-
-  boolean haveConsole() {
-    return (console != null);
-  }
-
-  void getConsole() {
-    if (console == null) {
-      console = (JmolAppConsoleInterface) Interface.getOptionInterface("console.AppletConsole");
-      if (console == null) {
-        console = (JmolAppConsoleInterface) Interface.getOptionInterface("console.AppletConsole");
-      }
-    }
-    if (console != null)
-      console.set(viewer, this);
-    viewer.getProperty("DATA_API", "getAppConsole", console);
-  }
-
-  String getConsoleMessage() {
-    return console.getText();
   }
 
   final protected static String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM" };

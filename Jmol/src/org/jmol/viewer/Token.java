@@ -515,7 +515,6 @@ public class Token {
   public final static int resno         = intproperty | 15;
   final public static int site          = intproperty | 16;
   final public static int strucno       = intproperty | 18;
-  public final static int symop         = intproperty | 19; 
   final public static int valence       = intproperty | 20 | settable;
 
   // float values must be multiplied by 100 prior to comparing to integer values
@@ -597,6 +596,7 @@ public class Token {
   final static int load         = 3 | 2 << 9 | mathfunc | command;
   final static int random       = 4 | 2 << 9 | mathfunc;
   final static int script       = 5 | 2 << 9 | mathfunc | command;
+  public final static int symop = 6 | 2 << 9 | mathfunc | intproperty; 
 
   // ___.xxx(a,b)
 

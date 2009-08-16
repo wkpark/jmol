@@ -26,7 +26,7 @@ public interface SymmetryInterface {
 
   public abstract void setSpaceGroup(boolean doNormalize);
 
-  public abstract boolean addSpaceGroupOperation(String xyz);
+  public abstract int addSpaceGroupOperation(String xyz);
 
   /**
    * set symmetry lattice type using Hall rotations

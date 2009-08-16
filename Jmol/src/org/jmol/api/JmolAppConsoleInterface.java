@@ -10,8 +10,6 @@ public interface JmolAppConsoleInterface {
 
   JmolAppConsoleInterface getAppConsole(Viewer viewer, Component display);
 
-  void set(JmolViewer viewer, Object jvm12);
-
   String getText();
 
   Object getMyMenuBar();

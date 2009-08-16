@@ -106,7 +106,7 @@ public class Symmetry implements SymmetryInterface {
       spaceGroup = new SpaceGroup(doNormalize);
   }
 
-  public boolean addSpaceGroupOperation(String xyz) {
+  public int addSpaceGroupOperation(String xyz) {
     return spaceGroup.addSymmetry(xyz);
   }
 
@@ -170,6 +170,13 @@ public class Symmetry implements SymmetryInterface {
 
   public void newSpaceGroupPoint(int i, Point3f atom1, Point3f atom2,
                        int transX, int transY, int transZ) {
+    if (spaceGroup.finalOperations == null) {
+      // temporary spacegroups don't have to have finalOperations
+      if (!spaceGroup.operations[i].isFinalized)
+        spaceGroup.operations[i].doFinalize();
+      spaceGroup.operations[i].newPoint(atom1, atom2, transX, transY, transZ);
+      return;
+    }
     spaceGroup.finalOperations[i].newPoint(atom1, atom2, transX, transY, transZ);
   }
     

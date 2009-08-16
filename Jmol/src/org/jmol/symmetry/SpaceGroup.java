@@ -25,6 +25,7 @@
 package org.jmol.symmetry;
 
 import java.util.Arrays;
+import java.util.Hashtable;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4f;
@@ -131,17 +132,11 @@ class SpaceGroup {
     return (i >=0 ? spaceGroupDefinitions[i] : null);
   }
 
-  boolean addSymmetry(String xyz) {
+  int addSymmetry(String xyz) {
     xyz = xyz.toLowerCase();
     if (xyz.indexOf("x") < 0 || xyz.indexOf("y") < 0 || xyz.indexOf("z") < 0)
-      return false;
-    SymmetryOperation symmetryOperation = new SymmetryOperation(doNormalize);
-    if (!symmetryOperation.setMatrixFromXYZ(xyz)) {
-      Logger.error("couldn't interpret symmetry operation: " + xyz);      
-      return false;
-    }
-    addOperation(symmetryOperation);
-    return true;
+      return -1;
+    return addOperation(xyz);
   }
    
   SymmetryOperation[] finalOperations;
@@ -589,19 +584,26 @@ class SpaceGroup {
     return '\0';
   }
 
-  String xyzList = "";
-  private void addOperation(SymmetryOperation symmetryOperation) {
-    if (symmetryOperation == null) {
-      xyzList = "";
-      return;
+  Hashtable xyzList = new Hashtable();
+  private int addOperation(String xyz0) {
+    if (xyz0 == null) {
+      xyzList = new Hashtable();
+      return -1;
     }
+    if (xyzList.containsKey(xyz0))
+      return ((Integer)xyzList.get(xyz0)).intValue();
 
+    SymmetryOperation symmetryOperation = new SymmetryOperation(doNormalize);
+    if (!symmetryOperation.setMatrixFromXYZ(xyz0)) {
+      Logger.error("couldn't interpret symmetry operation: " + xyz0);      
+      return -1;
+    }
     String xyz = symmetryOperation.xyz;
-    String key = "|" + xyz + "|";
-    if (xyzList.indexOf(key) >= 0)
-      return;
-    xyzList += key;
-
+    if (xyzList.containsKey(xyz))
+      return ((Integer)xyzList.get(xyz)).intValue();
+    xyzList.put(xyz, new Integer(operationCount));
+    if (!xyz.equals(xyz0))
+      xyzList.put(xyz0, new Integer(operationCount));
     if (operations == null) {
       operations = new SymmetryOperation[4];
       operationCount = 0;
@@ -613,8 +615,9 @@ class SpaceGroup {
     if (Logger.debugging)
         Logger.debug("\naddOperation " + operationCount
         + symmetryOperation.dumpInfo());
+    return operationCount - 1;
   }
- 
+
   private void generateOperatorsFromXyzInfo(String xyzInfo) {
     addOperation(null);
     addSymmetry("x,y,z");
@@ -666,10 +669,11 @@ class SpaceGroup {
   }
 
   private void addSymmetry(String xyz, Matrix4f operation) {
-    SymmetryOperation symmetryOperation = new SymmetryOperation();
+    int iop = addOperation(xyz);
+    if (iop < 0)
+      return;
+    SymmetryOperation symmetryOperation = operations[iop];
     symmetryOperation.set(operation);
-    symmetryOperation.xyz = xyz;
-    addOperation(symmetryOperation);
   }
 
   ///  utilities  ///

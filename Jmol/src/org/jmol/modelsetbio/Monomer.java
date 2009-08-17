@@ -26,7 +26,6 @@ package org.jmol.modelsetbio;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
@@ -36,7 +35,6 @@ import org.jmol.viewer.Token;
 import java.util.Hashtable;
 import java.util.BitSet;
 import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
 
 public abstract class Monomer extends Group {
 
@@ -338,19 +336,8 @@ public abstract class Monomer extends Group {
       return super.getHelixData(tokType, qType, mStep);
     Point3f a = (mStep < 1 ? new Point3f(0, 0, 0) : (Point3f) prev.getQuaternionFrameCenter(qType));
     Point3f b = getQuaternionFrameCenter(qType);
-    Object ret = Measure.computeHelicalAxis(tokType == Token.draw ? "helixaxis" + getUniqueID() : null, 
-        tokType, (Point3f) a, (Point3f) b, q1, q2);
-    if (!(ret instanceof Object[]))
-      return ret;
-    Object[] o = (Object[])ret; 
-    return new String[] { 
-        Escape.escape((Tuple3f)o[0]), // a' 
-        Escape.escape((Tuple3f)o[1]), // n
-        Escape.escape((Tuple3f)o[2]), // r
-        "" + o[3], // theta (degrees)
-        "" + o[4], // pitch
-        "" + o[5], // residuesPerTurn
-               };
+    return Measure.computeHelicalAxis(tokType == Token.draw ? "helixaxis" + getUniqueID() : null, 
+        tokType, (Point3f) a, (Point3f) b, q2.div(q1));
   }
 
   public void resetHydrogenPoint() {

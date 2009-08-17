@@ -91,7 +91,7 @@ final public class Measure {
   }
 
   public static Object computeHelicalAxis(String id, int tokType, Point3f a, Point3f b,
-                                    Quaternion q1, Quaternion q2) {
+                                    Quaternion dq) {
     /*
                 b
            |   /|
@@ -120,17 +120,21 @@ final public class Measure {
     aa.y = vab.y;
     aa.z = vab.z;
     boolean asdirected = false;
-    Quaternion dq = q2.div(q1);
     float theta = (asdirected ? dq.getThetaDirected(aa).w : dq.getTheta());// .Directed(aa).w;
     Vector3f n = (asdirected ? dq.getNormalDirected(vab) : dq.getNormal());// Directed(vab);
     aa.x = vab.x;
     aa.y = vab.y;
     aa.z = vab.z;
     float v_dot_n = vab.dot(n);
+    if (Math.abs(v_dot_n) < 0.0001f)
+      v_dot_n = 0;
     if (tokType == Token.axis) {
-      n.scale(v_dot_n);
+      if (v_dot_n != 0)
+        n.scale(v_dot_n);
       return n;
     }
+    if (v_dot_n == 0)
+      v_dot_n = Float.MIN_VALUE; // allow for perpendicular axis to vab
     Vector3f vcb = new Vector3f(n);
     vcb.scale(v_dot_n);
     Vector3f va_prime_d = new Vector3f();
@@ -139,10 +143,11 @@ final public class Measure {
     Vector3f vda = new Vector3f();
     vda.sub(vcb, vab);
     vda.scale(0.5f);
-    va_prime_d.scale((float) (vda.length() / Math
+    va_prime_d.scale(theta == 0 ? 0 : (float) (vda.length() / Math
         .tan(theta / 2 / 180 * Math.PI)));
     Vector3f r = new Vector3f(va_prime_d);
-    r.add(vda);
+    if (theta != 0)
+      r.add(vda);
     if (tokType == Token.radius)
       return r;
     Point3f pt_a_prime = new Point3f(a);
@@ -150,11 +155,14 @@ final public class Measure {
     if (tokType == Token.point) {
       return pt_a_prime;
     }
-    n.scale(v_dot_n);
+    if (v_dot_n != Float.MIN_VALUE)
+      n.scale(v_dot_n);
     // must calculate directed angle:
     Point3f pt_b_prime = new Point3f(pt_a_prime);
     pt_b_prime.add(n);
     theta = computeTorsion(a, pt_a_prime, pt_b_prime, b, true);
+    if (Float.isNaN(theta))
+      theta = (float) (dq.getTheta() / 180 * Math.PI); // allow for r = 0
     if (tokType == Token.angle)
       return new Float(theta);
     if (tokType == Token.draw) {
@@ -167,9 +175,19 @@ final public class Measure {
       return s;
     }
     // for now... array:
-    float residuesPerTurn = 360f / theta;
-    float pitch = Math.abs(n.length() * residuesPerTurn);
-    return new Object[] {pt_a_prime, n, r, new Float(theta), new Float(pitch), new Float(residuesPerTurn)};
+    float residuesPerTurn = (theta == 0 ? 0 : 360f / theta);
+    float pitch = Math.abs(v_dot_n == Float.MIN_VALUE ? 0 : n.length() * theta / 360f);
+    Object[] ret = new Object[] {pt_a_prime, n, r, new Point3f(theta, pitch, residuesPerTurn)};
+    if (tokType == Token.array)
+      return ret;
+    else if (tokType == Token.list)
+      return new String[] { 
+          Escape.escape(pt_a_prime), // a' 
+          Escape.escape(n), // n
+          Escape.escape(r), // r
+          Escape.escape(new Point3f(theta /*(degrees)*/,pitch, residuesPerTurn))
+          };
+    return null;
   }
 
 }

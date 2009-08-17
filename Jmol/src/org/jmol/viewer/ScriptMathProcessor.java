@@ -696,33 +696,66 @@ class ScriptMathProcessor {
     return addX(sout);
   }
 
-  private boolean evaluateHelix(ScriptVariable[] args) {
+  private boolean evaluateHelix(ScriptVariable[] args) throws ScriptException {
     if (args.length < 1)
       return false;
-    BitSet bs = (args[0].value instanceof BitSet ? (BitSet) args[0].value
-        : eval.compareInt(Token.resno, null, Token.opEQ, ScriptVariable.iValue(args[0])));
-    String type = (args.length == 1 ? "array" : ScriptVariable.sValue(args[1]))
-        .toLowerCase();
-    if (type.equals("point"))
-      return addX(isSyntaxCheck ? new Point3f() : (Point3f) viewer
-          .getHelixData(bs, Token.point));
-    if (type.equals("axis"))
-      return addX(isSyntaxCheck ? new Vector3f() : (Vector3f) viewer
-          .getHelixData(bs, Token.axis));
-    if (type.equals("radius"))
-      return addX(isSyntaxCheck ? new Vector3f() : (Vector3f) viewer
-          .getHelixData(bs, Token.radius));
-    if (type.equals("angle"))
-      return addX(isSyntaxCheck ? 0 : ((Float) viewer
-          .getHelixData(bs, Token.angle)).floatValue());
-    if (type.equals("draw"))
-      return addX(isSyntaxCheck ? "" : (String) viewer
-          .getHelixData(bs, Token.draw));
-    if (type.equals("array")) {
-      String[] data = (String[]) viewer.getHelixData(bs, Token.array);
-      if (data == null)
+    // helix({resno=3})
+    // helix({resno=3},"point|axis|radius|angle|draw|array")
+    // helix(resno,"point|axis|radius|angle|draw|array")
+    // helix(pt1, pt2, dq, "point|axis|radius|angle|array|[someID]")
+    // helix(pt1, pt2, dq)
+    int pt = (args.length > 2 ? 3 : 1);
+    String type = (pt >= args.length ? "array" : ScriptVariable
+        .sValue(args[pt])).toLowerCase();
+    Token t = Token.getTokenFromName(type);
+    if (args.length > 2) {
+      Point3f pta = ptValue(args[0]);
+      Point3f ptb = ptValue(args[1]);
+      if (args[2].tok != Token.point4f)
         return false;
-      return addX(data);
+      Quaternion dq = new Quaternion((Point4f) args[2].value);
+      switch (t == null ? Token.nada : t.tok) {
+      case Token.nada:
+        break;
+      case Token.point:
+      case Token.axis:
+      case Token.radius:
+      case Token.angle:
+        return addX(Measure.computeHelicalAxis(null, t.tok, pta, ptb, dq));
+      case Token.array:
+        String[] data = (String[]) Measure.computeHelicalAxis(null, Token.list, pta, ptb, dq);
+        if (data == null)
+          return false;
+        return addX(data);
+      default:
+        return addX(Measure.computeHelicalAxis(type, Token.draw, pta, ptb, dq));
+      }
+    } else {
+      BitSet bs = (args[0].value instanceof BitSet ? (BitSet) args[0].value
+          : eval.compareInt(Token.resno, null, Token.opEQ, ScriptVariable
+              .iValue(args[0])));
+      switch (t == null ? Token.nada : t.tok) {
+      case Token.point:
+        return addX(isSyntaxCheck ? new Point3f() : (Point3f) viewer
+            .getHelixData(bs, Token.point));
+      case Token.axis:
+        return addX(isSyntaxCheck ? new Vector3f() : (Vector3f) viewer
+            .getHelixData(bs, Token.axis));
+      case Token.radius:
+        return addX(isSyntaxCheck ? new Vector3f() : (Vector3f) viewer
+            .getHelixData(bs, Token.radius));
+      case Token.angle:
+        return addX(isSyntaxCheck ? 0 : ((Float) viewer.getHelixData(bs,
+            Token.angle)).floatValue());
+      case Token.draw:
+        return addX(isSyntaxCheck ? "" : (String) viewer.getHelixData(bs,
+            Token.draw));
+      case Token.array:
+        String[] data = (String[]) viewer.getHelixData(bs, Token.list);
+        if (data == null)
+          return false;
+        return addX(data);
+      }
     }
     return false;
   }

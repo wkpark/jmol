@@ -74,7 +74,7 @@ public class Token {
   final static int decimal           =  3;
   final public static int string     =  4;
   final static int seqcode           =  5;
-  final static int list              =  6;
+  public final static int list              =  6;
   final public static int point3f    =  7;
   final public static int point4f    =  8;
   final private static int keyword   =  9;
@@ -590,13 +590,12 @@ public class Token {
   final static int trim         = 6 | 1 << 9 | mathfunc | mathproperty;  
 
   // xxx(a,b)
-
+  
   public final static int cross = 1 | 2 << 9 | mathfunc;
-  public final static int helix = 2 | 2 << 9 | mathfunc | predefinedset;
-  final static int load         = 3 | 2 << 9 | mathfunc | command;
-  final static int random       = 4 | 2 << 9 | mathfunc;
-  final static int script       = 5 | 2 << 9 | mathfunc | command;
-  public final static int symop = 6 | 2 << 9 | mathfunc | intproperty; 
+  final static int load         = 2 | 2 << 9 | mathfunc | command;
+  final static int random       = 3 | 2 << 9 | mathfunc;
+  final static int script       = 4 | 2 << 9 | mathfunc | command;
+  public final static int symop = 5 | 2 << 9 | mathfunc | intproperty; 
 
   // ___.xxx(a,b)
 
@@ -621,12 +620,13 @@ public class Token {
 
   // xxx(a,b,c,d)
   
-  public final static int angle        = 1 | 4 << 9 | mathfunc;
+  public final static int angle = 1 | 4 << 9 | mathfunc;
   public final static int data  = 2 | 4 << 9 | mathfunc | command;
-  final static int plane        = 3 | 4 << 9 | mathfunc;
-  public final static int point        = 4 | 4 << 9 | mathfunc;
-  final static int quaternion   = 5 | 4 << 9 | mathfunc | command;
-  final static int axisangle    = 6 | 4 << 9 | mathfunc;
+  public final static int helix = 3 | 4 << 9 | mathfunc | predefinedset;
+  final static int plane        = 4 | 4 << 9 | mathfunc;
+  public final static int point = 5 | 4 << 9 | mathfunc;
+  final static int quaternion   = 6 | 4 << 9 | mathfunc | command;
+  final static int axisangle    = 7 | 4 << 9 | mathfunc;
 
   // xxx(a,b,c,d,e)
   

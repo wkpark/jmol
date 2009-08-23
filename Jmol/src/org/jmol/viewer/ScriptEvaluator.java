@@ -10441,9 +10441,6 @@ class ScriptEvaluator {
       } else if (type.equals("menu")) {
         pt++;
         type = "MENU";
-      } else if (type.equals("imagespt")){
-        pt++;
-        type = "image";
       } else {
         type = "(image)";
       }

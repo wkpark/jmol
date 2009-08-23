@@ -119,9 +119,8 @@ final public class Measure {
     aa.x = vab.x;
     aa.y = vab.y;
     aa.z = vab.z;
-    boolean asdirected = false;
-    float theta = (asdirected ? dq.getThetaDirected(aa).w : dq.getTheta());// .Directed(aa).w;
-    Vector3f n = (asdirected ? dq.getNormalDirected(vab) : dq.getNormal());// Directed(vab);
+    float theta = dq.getTheta();
+    Vector3f n = dq.getNormal();
     aa.x = vab.x;
     aa.y = vab.y;
     aa.z = vab.z;
@@ -133,14 +132,15 @@ final public class Measure {
         n.scale(v_dot_n);
       return n;
     }
-    if (v_dot_n == 0)
-      v_dot_n = Float.MIN_VALUE; // allow for perpendicular axis to vab
-    Vector3f vcb = new Vector3f(n);
-    vcb.scale(v_dot_n);
     Vector3f va_prime_d = new Vector3f();
     va_prime_d.cross(vab, n);
-    va_prime_d.normalize();
+    if (va_prime_d.dot(va_prime_d) != 0)
+      va_prime_d.normalize();
     Vector3f vda = new Vector3f();
+    Vector3f vcb = new Vector3f(n);
+    if (v_dot_n == 0)
+      v_dot_n = Float.MIN_VALUE; // allow for perpendicular axis to vab
+    vcb.scale(v_dot_n);
     vda.sub(vcb, vab);
     vda.scale(0.5f);
     va_prime_d.scale(theta == 0 ? 0 : (float) (vda.length() / Math
@@ -161,8 +161,11 @@ final public class Measure {
     Point3f pt_b_prime = new Point3f(pt_a_prime);
     pt_b_prime.add(n);
     theta = computeTorsion(a, pt_a_prime, pt_b_prime, b, true);
-    if (Float.isNaN(theta))
-      theta = (float) (dq.getTheta() / 180 * Math.PI); // allow for r = 0
+    if (Float.isNaN(theta) || r.length() < 0.0001f) {
+      aa.set(n.x, n.y, n.z, 0);
+      dq.getThetaDirected(aa); // allow for r = 0
+      theta = aa.w;
+    }
     if (tokType == Token.angle)
       return new Float(theta);
     if (tokType == Token.draw) {
@@ -177,17 +180,19 @@ final public class Measure {
     // for now... array:
     float residuesPerTurn = (theta == 0 ? 0 : 360f / theta);
     float pitch = Math.abs(v_dot_n == Float.MIN_VALUE ? 0 : n.length() * theta / 360f);
-    Object[] ret = new Object[] {pt_a_prime, n, r, new Point3f(theta, pitch, residuesPerTurn)};
-    if (tokType == Token.array)
-      return ret;
-    else if (tokType == Token.list)
+    switch (tokType) {
+    case Token.array:
+      return new Object[] {pt_a_prime, n, r,  new Point3f(theta, pitch, residuesPerTurn)};
+    case Token.list:
       return new String[] { 
           Escape.escape(pt_a_prime), // a' 
           Escape.escape(n), // n
           Escape.escape(r), // r
           Escape.escape(new Point3f(theta /*(degrees)*/,pitch, residuesPerTurn))
           };
-    return null;
+    default:
+      return null;
+    }
   }
 
 }

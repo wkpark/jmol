@@ -74,11 +74,13 @@ public class MarchingCubes {
   private boolean isCutoffAbsolute;
   private boolean isSquared;
   private boolean isXLowToHigh;
-
+ 
   private int cubeCountX, cubeCountY, cubeCountZ;
   private int nY, nZ;
   private int yzCount;
-
+  
+  private float fractionOutside;
+  private boolean integrateSquared = true;
   private BitSet bsVoxels;
 
   private StringBuffer edgeData = new StringBuffer();
@@ -262,6 +264,8 @@ public class MarchingCubes {
             if (isInside) {
               bsVoxels.set(pti);
               insideMask |= 1 << i;
+            } else {
+              fractionOutside += (integrateSquared ? vertexValues[i] * vertexValues[i] : vertexValues[i]);
             }
           }
 
@@ -296,6 +300,7 @@ public class MarchingCubes {
 
     //Logger.checkTimer("Jmol mc getEdgeData");
 
+    System.out.println("MarchingCubes: fractionOutside = " + fractionOutside/8);
     return edgeData.toString();
   }
 

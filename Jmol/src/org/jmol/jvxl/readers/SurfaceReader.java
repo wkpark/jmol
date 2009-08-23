@@ -327,6 +327,7 @@ public abstract class SurfaceReader implements VertexDataServer {
         meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_COLOR_INDEXES);
       }
       jvxlData.jvxlColorData = readColorData();
+      updateSurfaceData();
       if (meshDataServer != null)
         meshDataServer.notifySurfaceMappingCompleted();
     }

@@ -2837,13 +2837,10 @@ final public class Graphics3D implements JmolRendererInterface {
     // vector in xy plane perpendicular to a line between two points RMH
     Vector3f axis = new Vector3f(pointA);
     axis.sub(pointB);
-    float phi = axis.angle(JmolConstants.axisY);
-    if (phi == 0) {
+    vNormNorm.cross(axis, JmolConstants.axisY);
+    vNormNorm.normalize();
+    if (Float.isNaN(vNormNorm.x))
       vNormNorm.set(1, 0, 0);
-    } else {
-      vNormNorm.cross(axis, JmolConstants.axisY);
-      vNormNorm.normalize();
-    }
   }
   
   public static void projectOntoAxis (Point3f point, Point3f axisA, Vector3f axisUnitVector, Vector3f vectorProjection) {

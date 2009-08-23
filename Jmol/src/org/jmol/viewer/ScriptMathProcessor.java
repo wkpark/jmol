@@ -28,6 +28,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
@@ -583,9 +584,10 @@ class ScriptMathProcessor {
     if (isSyntaxCheck)
       return (op.tok == Token.propselector ? true : addX(true));
     switch (tok) {
+    case Token.dot:
     case Token.distance:
       if (op.tok == Token.propselector)
-        return evaluateDistance(args);
+        return evaluateDistance(args, tok);
       // fall through
     case Token.angle:
       return evaluateMeasure(args, op.tok == Token.angle);
@@ -598,6 +600,8 @@ class ScriptMathProcessor {
       return evaluateReplace(args);
     case Token.array:
       return evaluateArray(args);
+    case Token.abs:
+    case Token.acos:
     case Token.cos:
     case Token.sin:
     case Token.sqrt:
@@ -662,8 +666,11 @@ class ScriptMathProcessor {
       return false;
     String xyz = (args[0].tok == Token.string ? ScriptVariable.sValue(args[0]) : null);
     int iOp = (xyz == null ? ScriptVariable.iValue(args[0]) : 0);
-    Point3f pt = (args.length == 2 ? ptValue(args[1]) : null);
-    return addX(viewer.applySymmetry((BitSet) x1.value, xyz, iOp, pt));
+    Point3f pt = (args.length > 1 ? ptValue(args[1]) : null);
+    if (args.length < 3)
+      return addX((Point3f) viewer.getSymmetryInfo((BitSet) x1.value, xyz, iOp, pt, null, Token.point));
+    return addX((String) viewer.getSymmetryInfo((BitSet) x1.value, xyz, iOp, pt, 
+          ScriptVariable.sValue(args[2]), Token.draw));
   }
 
   private boolean evaluateBin(ScriptVariable[] args) throws ScriptException {
@@ -760,7 +767,7 @@ class ScriptMathProcessor {
     return false;
   }
 
-  private boolean evaluateDistance(ScriptVariable[] args)
+  private boolean evaluateDistance(ScriptVariable[] args, int tok)
       throws ScriptException {
     ScriptVariable x1 = getX();
     if (args.length != 1)
@@ -770,11 +777,19 @@ class ScriptMathProcessor {
     ScriptVariable x2 = args[0];
     Point3f pt2 = ptValue(x2);
     Point4f plane2 = planeValue(x2);
-    if (x1.tok == Token.bitset)
+    if (x1.tok == Token.bitset && tok != Token.dot)
       return addX(eval.getBitsetProperty(ScriptVariable.bsSelect(x1),
           Token.distance, pt2, plane2, x1.value, null, false, x1.index));
     Point3f pt1 = ptValue(x1);
     Point4f plane1 = planeValue(x1);
+    if (tok == Token.dot) {
+      if (pt1 == null)
+        pt1 = new Point3f(plane1.x, plane1.y, plane1.z);
+      if (pt2 == null)
+        pt2 = new Point3f(plane2.x, plane2.y, plane2.z);
+      return addX(pt1.x * pt2.x + pt1.y * pt2.y + pt2.z * pt2.z);
+    }
+
     if (plane1 == null)
       return addX(plane2 == null ? pt2.distance(pt1) : Graphics3D
           .distanceToPlane(plane2, pt1));
@@ -1342,8 +1357,15 @@ class ScriptMathProcessor {
       return false;
     if (isSyntaxCheck)
       return addX(1);
+    if (tok == Token.abs) {
+      if (args[0].tok == Token.integer) 
+        return addX(Math.abs(ScriptVariable.iValue(args[0])));
+      return addX(Math.abs(ScriptVariable.fValue(args[0])));
+    }
     double x = ScriptVariable.fValue(args[0]);
     switch (tok) {
+    case Token.acos:
+      return addX((float) Math.acos(x));
     case Token.cos:
       return addX((float) Math.cos(x * Math.PI / 180));
     case Token.sin:
@@ -2013,7 +2035,7 @@ class ScriptMathProcessor {
       // Point3f / Point3f divides by magnitude
       // float * Point3f gets magnitude
       // Point4f % n returns q0, q1, q2, q3, or theta
-
+      // Point4f % Point4f
       s = null;
       int n = ScriptVariable.iValue(x2);
       switch (x1.tok) {
@@ -2074,6 +2096,7 @@ class ScriptMathProcessor {
         // q%-3 Matrix column 0
         // q%-4 Matrix column 1
         // q%-5 Matrix column 2
+        // q%-6 AxisAngle format
         case 0:
           return addX(q.w);
         case 1:
@@ -2094,6 +2117,9 @@ class ScriptMathProcessor {
           return addX((new Quaternion(q)).getVector(1));
         case -5:
           return addX((new Quaternion(q)).getVector(2));
+        case -6:
+          AxisAngle4f ax = (new Quaternion(q)).toAxisAngle4f();
+          return addX(new Point4f(ax.x, ax.y, ax.z, (float) (ax.angle * 180 / Math.PI)));
         default:
           return addX(q);
         }
@@ -2118,11 +2144,11 @@ class ScriptMathProcessor {
           return addX(new Point3f(Float.NaN, Float.NaN, Float.NaN));
         return addX(new Point3f(pt.x / f2, pt.y / f2, pt.z / f2));
       case Token.point4f:
-        if (f2 == 0)
-          return addX(new Point4f(Float.NaN, Float.NaN, Float.NaN, Float.NaN));
         if (x2.tok == Token.point4f)
           return addX(new Quaternion((Point4f) x1.value).div(
               new Quaternion((Point4f) x2.value)).toPoint4f());
+        if (f2 == 0)
+          return addX(new Point4f(Float.NaN, Float.NaN, Float.NaN, Float.NaN));
         return addX(new Quaternion((Point4f) x1.value).mul(1 / f2).toPoint4f());
       }
     case Token.leftdivide:

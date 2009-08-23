@@ -132,7 +132,7 @@ public class Symmetry implements SymmetryInterface {
     spaceGroup = SpaceGroup.createSpaceGroup(desiredSpaceGroupIndex, name,
         notionalUnitCell, doNormalize);
     if (spaceGroup != null && Logger.debugging)
-      Logger.debug("using generated space group " + spaceGroup.dumpInfo());
+      Logger.debug("using generated space group " + spaceGroup.dumpInfo(null));
     return spaceGroup != null;
   }
 
@@ -144,8 +144,8 @@ public class Symmetry implements SymmetryInterface {
     return SpaceGroup.determineSpaceGroupIndex(name);
   }
 
-  public String getSpaceGroupInfo(String name, float[] unitCell) {
-    return SpaceGroup.getInfo(name, unitCell);
+  public String getSpaceGroupInfo(String name, SymmetryInterface cellInfo) {
+    return SpaceGroup.getInfo(name, cellInfo);
   }
 
   public Object getLatticeDesignation() {
@@ -300,5 +300,11 @@ public class Symmetry implements SymmetryInterface {
   public String getUnitCellInfo() {
     return (unitCell == null ? "no unit cell information" 
         : unitCell.dumpInfo(false));
+  }
+
+  public Object[] getSymmetryOperationDescription(int isym,
+                                                SymmetryInterface cellInfo, 
+                                                Point3f pt00, String id) {
+    return spaceGroup.operations[isym].getDescription(cellInfo, pt00, id);
   }
 }  

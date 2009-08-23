@@ -39,6 +39,7 @@ import org.jmol.api.JmolViewer;
 import org.jmol.util.Base64;
 import org.jmol.util.JpegEncoder;
 import org.jmol.util.Logger;
+import org.jmol.viewer.Viewer;
 
 public class ImageCreator implements JmolImageCreatorInterface {
   
@@ -169,15 +170,15 @@ public class ImageCreator implements JmolImageCreatorInterface {
           if (quality <= 0)
             quality = 75;
           if (asBytes) {
-            bytes = JpegEncoder.getBytes(image, quality);
+            bytes = JpegEncoder.getBytes(image, quality, Viewer.getJmolVersion());
           } else {
-            JpegEncoder.write(image, quality, os);
+            JpegEncoder.write(image, quality, os, (String) viewer.getProperty("DATA_API","wrappedState", null));
             bytes = null;
           }
         } else if (type.equalsIgnoreCase("JPG64") || type.equalsIgnoreCase("JPEG64")) {
           if (quality <= 0)
             quality = 75;
-          bytes = JpegEncoder.getBytes(image, quality);
+          bytes = JpegEncoder.getBytes(image, quality, Viewer.getJmolVersion());
           if (asBytes) {
             bytes = Base64.getBytes64(bytes);
           } else {
@@ -193,6 +194,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
             bytes = PngEncoder.getBytes(image, quality);
           } else {
             PngEncoder.write(image, quality, os);
+            os.write(((String) viewer.getProperty("DATA_API","wrappedState", null)).getBytes());
             bytes = null;
           }
         } else if (type.equalsIgnoreCase("PPM")) {

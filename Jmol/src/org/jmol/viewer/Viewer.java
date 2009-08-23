@@ -174,8 +174,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return symmetry;
   }
 
-  public Point3f applySymmetry(BitSet bsAtoms, String xyz, int op, Point3f pt) {
-    return modelSet.applySymmetry(BitSetUtil.firstSetBit(bsAtoms), xyz, op, pt);
+  public Object getSymmetryInfo(BitSet bsAtoms, String xyz, int op, Point3f pt,
+                                String id, int type) {
+    if (bsAtoms == null)
+      bsAtoms = getVisibleSet();
+    return modelSet.getSymmetryInfo(BitSetUtil.firstSetBit(bsAtoms), xyz, op,
+        pt, id, type);
   }
   
   private void clearModelDependentObjects() {
@@ -3612,7 +3616,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         try {
           if (quality < 0)
             quality = 75;
-          bytes = JpegEncoder.getBytes(eImage, quality);
+          bytes = JpegEncoder.getBytes(eImage, quality, "");
           releaseScreenImage();
           if (type.equals("jpg64") || type.equals("jpeg64"))
             bytes = (bytes == null ? "" : Base64.getBase64((byte[]) bytes)
@@ -5408,6 +5412,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean doRepaint = true;
     while (true) {
 
+      // 11.8.RC6
+      
+      if (key.equalsIgnoreCase("imageState")) {
+        global.imageState = value;
+        break;
+      }
+      
       // 11.7.40
       
       if (key.equalsIgnoreCase("useMinimizationThread")) {
@@ -6761,7 +6772,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
               +"scriptEditorState..."
               +"getAppConsole......."
               +"getScriptEditor....."
-              +"setMenu.............").indexOf(infoType)) {
+              +"setMenu............."
+              +"wrappedState........"
+              ).indexOf(infoType)) {
 
       case 0:
         return scriptCheck((String) paramInfo, true);
@@ -6792,6 +6805,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         return scriptEditor;
       case 120:
         return menuStructure = (String) paramInfo;
+      case 140:
+        if (!global.imageState)
+          return "";
+        return "\n/**" + JmolConstants.EMBEDDED_SCRIPT_TAG + " \n" + getStateInfo() + "\n**/";
       default:
         System.out.println("ERROR IN getProperty DATA_API: " + returnType);
         return null;

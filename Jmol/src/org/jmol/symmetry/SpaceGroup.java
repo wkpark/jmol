@@ -31,6 +31,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.SymmetryInterface;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 
@@ -199,14 +200,14 @@ class SpaceGroup {
         ptTemp2);
   }
 
-  static String getInfo(String spaceGroup, float[] unitCell) {
+  static String getInfo(String spaceGroup, SymmetryInterface cellInfo) {
     SpaceGroup sg;
-    if (unitCell != null) {
+    if (cellInfo != null) {
       if (spaceGroup.indexOf("[") >= 0)
         spaceGroup = spaceGroup.substring(0, spaceGroup.indexOf("[")).trim();
       if (spaceGroup.equals("unspecified *"))
         return "no space group identified in file";
-      sg = SpaceGroup.determineSpaceGroup(spaceGroup, unitCell);
+      sg = SpaceGroup.determineSpaceGroup(spaceGroup, cellInfo.getNotionalUnitCell());
     } else if (spaceGroup.equalsIgnoreCase("ALL")) {
       return SpaceGroup.dumpAll();
     } else if (spaceGroup.equalsIgnoreCase("ALLSEITZ")) {
@@ -218,19 +219,19 @@ class SpaceGroup {
       } else {
         StringBuffer sb = new StringBuffer();
         while (sg != null) {
-          sb.append(sg.dumpInfo());
+          sb.append(sg.dumpInfo(null));
           sg = SpaceGroup.determineSpaceGroup(spaceGroup, sg);
         }
         return sb.toString();
       }
     }
-    return sg == null ? "?" : sg.dumpInfo();
+    return sg == null ? "?" : sg.dumpInfo(cellInfo);
   }
   
-  String dumpInfo() {
+  String dumpInfo(SymmetryInterface cellInfo) {
     Object info  = dumpCanonicalSeitzList();
     if (info instanceof SpaceGroup)
-      return ((SpaceGroup)info).dumpInfo();
+      return ((SpaceGroup)info).dumpInfo(null);
     StringBuffer sb = new StringBuffer("\nHermann-Mauguin symbol: ");
     sb.append(hmSymbol).append(hmSymbolExt.length() > 0 ? ":" + hmSymbolExt : "")
         .append("\ninternational table number: ").append(intlTableNumber)
@@ -238,8 +239,9 @@ class SpaceGroup {
         .append("\n\n").append(operationCount).append(" operators")
         .append(!hallInfo.hallSymbol.equals("--") ? " from Hall symbol "  + hallInfo.hallSymbol: "")
         .append(": ");
-    for (int i = 0; i < operationCount; i++)
+    for (int i = 0; i < operationCount; i++) {
       sb.append("\n").append(operations[i].xyz);
+    }
     sb.append("\n\n").append(hallInfo == null ? "invalid Hall symbol" : hallInfo.dumpInfo());
 
     sb.append("\n\ncanonical Seitz: ").append((String) info) 
@@ -366,7 +368,7 @@ class SpaceGroup {
   private final static String dumpAll() {
    StringBuffer sb = new StringBuffer();
    for (int i = 0; i < spaceGroupDefinitions.length; i++)
-     sb.append("\n----------------------\n" + spaceGroupDefinitions[i].dumpInfo());
+     sb.append("\n----------------------\n" + spaceGroupDefinitions[i].dumpInfo(null));
    return sb.toString();
   }
   
@@ -599,9 +601,12 @@ class SpaceGroup {
       return -1;
     }
     String xyz = symmetryOperation.xyz;
-    if (xyzList.containsKey(xyz))
-      return ((Integer)xyzList.get(xyz)).intValue();
-    xyzList.put(xyz, new Integer(operationCount));
+    if (xyz0.charAt(0) != '!') {
+      // ! in character 0 indicates we are using the symop() function and want to be explicit
+      if (xyzList.containsKey(xyz))
+        return ((Integer)xyzList.get(xyz)).intValue();
+      xyzList.put(xyz, new Integer(operationCount));
+    }
     if (!xyz.equals(xyz0))
       xyzList.put(xyz0, new Integer(operationCount));
     if (operations == null) {
@@ -650,7 +655,6 @@ class SpaceGroup {
     // and setIdentity() outside the loop. That caused a multiplication of
     // operations, not a resetting of them each time. 
     for (int i = 0; i < h.nRotations; i++) {
-      //System.out.println(h.nRotations + " " + i + " " + h.hallSymbol + " " + h.rotationTerms[i].getXYZ(true));
       mat1.set(h.rotationTerms[i].seitzMatrix12ths);
       int nRot = h.rotationTerms[i].order;
       // this would iterate int nOps = operationCount;

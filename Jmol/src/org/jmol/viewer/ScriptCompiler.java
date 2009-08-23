@@ -775,7 +775,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
             bracketCount++;
             return CONTINUE;
           case '.':
-            addTokenToPrefix(new Token(Token.dot, "."));
+            addTokenToPrefix(new Token(Token.period, "."));
             return CONTINUE;
           case '-':
           case '+':
@@ -1058,7 +1058,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       if (parenCount == 0 && bracketCount == 0)
         setEqualPt = ichToken;
       break;
-    case Token.dot:
+    case Token.period:
       if (tokCommand == Token.set && parenCount == 0 && bracketCount == 0 && ichToken < setEqualPt) {
         ltoken.insertElementAt(Token.tokenExpressionBegin, 1);
         addTokenToPrefix(Token.tokenExpressionEnd);

@@ -51,7 +51,7 @@ public interface SymmetryInterface {
 
   public abstract int determineSpaceGroupIndex(String name);
 
-  public abstract String getSpaceGroupInfo(String name, float[] unitCell);
+  public abstract String getSpaceGroupInfo(String name, SymmetryInterface cellInfo);
 
   public abstract Object getLatticeDesignation();
 
@@ -117,5 +117,9 @@ public interface SymmetryInterface {
   public abstract boolean isPeriodic();
 
   public abstract void setSymmetryInfo(int modelIndex, Hashtable modelAuxiliaryInfo);
+
+  public abstract Object[] getSymmetryOperationDescription(int iSym,
+                                                         SymmetryInterface cellInfo, 
+                                                         Point3f pt00, String id);
 
 }

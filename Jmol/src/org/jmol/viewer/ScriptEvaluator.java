@@ -587,7 +587,7 @@ class ScriptEvaluator {
     out: for (int i = pt; i < ptMax; i++) {
       v = null;
       int tok = getToken(i).tok;
-      if (isImplicitAtomProperty && tokAt(i + 1) != Token.dot) {
+      if (isImplicitAtomProperty && tokAt(i + 1) != Token.period) {
         ScriptVariable token = (localVars != null
             && localVars.containsKey(theToken.value) ? null
             : getBitsetPropertySelector(i, false));
@@ -793,7 +793,7 @@ class ScriptEvaluator {
         if (!rpn.addOp(theToken))
           error(ERROR_invalidArgument);
         break;
-      case Token.dot:
+      case Token.period:
         ScriptVariable token = getBitsetPropertySelector(i + 1, false);
         if (token == null)
           error(ERROR_invalidArgument);
@@ -801,11 +801,11 @@ class ScriptEvaluator {
         boolean isUserFunction = (token.intValue == Token.function);
         boolean allowMathFunc = true;
         int tok2 = tokAt(iToken + 2);
-        if (tokAt(iToken + 1) == Token.dot) {
+        if (tokAt(iToken + 1) == Token.period) {
           switch (tok2) {
           case Token.all:
             tok2 = Token.minmaxmask;
-            if (tokAt(iToken + 3) == Token.dot && tokAt(iToken + 4) == Token.bin)
+            if (tokAt(iToken + 3) == Token.period && tokAt(iToken + 4) == Token.bin)
               tok2 = Token.allfloat;
             // fall through
           case Token.min:
@@ -8072,11 +8072,13 @@ class ScriptEvaluator {
     return id;
   }
 
-  private void setShapeId(int iShape, int i, boolean idSeen)
+  private String setShapeId(int iShape, int i, boolean idSeen)
       throws ScriptException {
     if (idSeen)
       error(ERROR_invalidArgument);
-    setShapeProperty(iShape, "thisID", getShapeNameParameter(i).toLowerCase());
+    String name = getShapeNameParameter(i).toLowerCase();
+    setShapeProperty(iShape, "thisID", name);
+    return name;
   }
 
   private void setAtomShapeSize(int shape, int defOn) throws ScriptException {
@@ -8553,7 +8555,6 @@ class ScriptEvaluator {
           bs = viewer.getAtomBitSet(null);
         viewer.calculateStructures(bs);
         viewer.addStateScript(thisCommand, false, true);
-        return;
       }
     }
     error(
@@ -9387,7 +9388,7 @@ class ScriptEvaluator {
       pt = iToken + 1;
       isExpression = true;
     }
-    if (tokAt(pt) == Token.dot) {
+    if (tokAt(pt) == Token.period) {
       settingProperty = true;
       ScriptVariable token = getBitsetPropertySelector(++pt, true);
       if (token == null)
@@ -10496,7 +10497,7 @@ class ScriptEvaluator {
     case Token.identifier:
     case Token.string:
       fileName = ScriptVariable.sValue(tokenAt(pt, args));
-      if (pt == argCount - 3 && tokAt(pt + 1, args) == Token.dot) {
+      if (pt == argCount - 3 && tokAt(pt + 1, args) == Token.period) {
         // write filename.xxx gets separated as filename .spt
         // write isosurface filename.xxx also
         fileName += "." + ScriptVariable.sValue(tokenAt(pt + 2, args));
@@ -11130,8 +11131,8 @@ class ScriptEvaluator {
     String swidth = "";
     int iptDisplayProperty = 0;
     Point3f center = null;
-    String thisId = null;
-    boolean idSeen = initIsosurface(JmolConstants.SHAPE_DRAW);
+    String thisId = initIsosurface(JmolConstants.SHAPE_DRAW);
+    boolean idSeen = (thisId != null);
     boolean isWild = (idSeen && viewer.getShapeProperty(
         JmolConstants.SHAPE_DRAW, "ID") == null);
     for (int i = iToken; i < statementLength; ++i) {
@@ -11139,6 +11140,22 @@ class ScriptEvaluator {
       Object propertyValue = null;
       int tok = getToken(i).tok;
       switch (tok) {
+      case Token.symop:
+        String xyz = null;
+        int iSym = 0;
+        if (tokAt(++i) == Token.string) {
+          xyz = stringParameter(i);
+        } else {
+          iSym = intParameter(i);
+        }
+        center = centerParameter(++i);
+        // draw ID xxx symop [n or "x,-y,-z"] {center}
+        i = iToken + 1;
+        checkLength(iToken + 1);
+        if (!isSyntaxCheck)
+          runScript((String) viewer.getSymmetryInfo(null, xyz, iSym, center,
+              thisId, Token.draw));
+        return;
       case Token.frame:
         isFrame = true;
         // draw ID xxx frame {center} {q1 q2 q3 q4}
@@ -11252,7 +11269,7 @@ class ScriptEvaluator {
       case Token.identifier:
         String str = parameterAsString(i);
         if (str.equalsIgnoreCase("id")) {
-          setShapeId(JmolConstants.SHAPE_DRAW, ++i, idSeen);
+          thisId = setShapeId(JmolConstants.SHAPE_DRAW, ++i, idSeen);
           isWild = (viewer.getShapeProperty(JmolConstants.SHAPE_DRAW, "ID") == null);
           i = iToken;
           break;
@@ -11965,7 +11982,7 @@ class ScriptEvaluator {
     setShapeProperty(shape, "clear", null);
   }
 
-  private boolean initIsosurface(int iShape) throws ScriptException {
+  private String initIsosurface(int iShape) throws ScriptException {
 
     // handle isosurface/mo/pmesh delete and id delete here
 
@@ -11979,7 +11996,7 @@ class ScriptEvaluator {
         setShapeProperty(iShape, "init", fullCommand);
         setShapeProperty(iShape, "thisID", JmolConstants.PREVIOUS_MESH_ID);
       }
-      return false;
+      return null;
     }
     iToken = 1;
     if (!setMeshDisplayProperty(iShape, 0, tokAt(1))) {
@@ -11988,12 +12005,12 @@ class ScriptEvaluator {
         setShapeProperty(iShape, "title", new String[] { thisCommand });
       if (tokAt(2) == Token.times
           && !parameterAsString(1).equalsIgnoreCase("id")) {
-        setShapeId(iShape, 1, false);
+        String id = setShapeId(iShape, 1, false);
         iToken++;
-        return true;
+        return id;
       }
     }
-    return false;
+    return null;
   }
 
   private String getNextComment() {
@@ -12033,7 +12050,7 @@ class ScriptEvaluator {
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getDisplayModelIndex());
     if (!isSyntaxCheck)
       viewer.setCursor(Viewer.CURSOR_WAIT);
-    boolean idSeen = initIsosurface(iShape);
+    boolean idSeen = (initIsosurface(iShape) != null);
     boolean isWild = (idSeen && viewer.getShapeProperty(iShape, "ID") == null);
     String translucency = null;
     String colorScheme = null;

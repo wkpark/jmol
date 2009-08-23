@@ -90,8 +90,8 @@ abstract class ScriptCompilationTokenParser {
 
   protected boolean compileExpressions() {
     isEmbeddedExpression = (tokCommand != Token.nada
-        && tokCommand != Token.function && tokCommand != Token.end && !Token
-        .tokAttrOr(tokCommand, Token.atomExpressionCommand,
+        && (tokCommand != Token.function || tokenCommand.intValue != Integer.MAX_VALUE) 
+        && tokCommand != Token.end && !Token.tokAttrOr(tokCommand, Token.atomExpressionCommand,
             Token.implicitStringCommand));
     boolean checkExpression = isEmbeddedExpression
         || (Token.tokAttr(tokCommand, Token.atomExpressionCommand));
@@ -828,7 +828,7 @@ abstract class ScriptCompilationTokenParser {
       specSeen = true;
       tok = tokPeek();
     }
-    if (tok == Token.dot) {
+    if (tok == Token.period) {
       if (!clauseAtomSpec())
         return false;
       specSeen = true;
@@ -1017,7 +1017,7 @@ abstract class ScriptCompilationTokenParser {
   }
 
   private boolean clauseAtomSpec() {
-    if (!tokenNext(Token.dot))
+    if (!tokenNext(Token.period))
       return error(ERROR_invalidAtomSpecification);
     if (getToken() == null)
       return true;

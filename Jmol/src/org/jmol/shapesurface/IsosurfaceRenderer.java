@@ -63,6 +63,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected void transform() {
     vertexValues = imesh.vertexValues;
     for (int i = vertexCount; --i >= 0;) {
+      if (Float.isNaN(vertices[i].x))
+        continue;
       if (vertexValues == null || !Float.isNaN(vertexValues[i])
           || imesh.hasGridPoints) {
         viewer.transformPoint(vertices[i], screens[i]);
@@ -199,8 +201,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
     // two-sided means like a plane, with no front/back distinction
     for (int i = imesh.polygonCount; --i >= 0;) {
-      //if (i < 733 || i > 733)
-      //continue;
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes == null)
         continue;
@@ -245,6 +245,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
           g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
               screens[iC], colixC, nC, 0.1f);
         } else {
+          //System.out.println(iA + " " + screens[iA] + " " + screens[iB] + " " + screens[iC]);
           try {
             g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
                 screens[iC], colixC, nC);
@@ -277,18 +278,19 @@ public class IsosurfaceRenderer extends MeshRenderer {
     if (!g3d.setColix(Graphics3D.WHITE))
       return;
     for (int i = vertexCount; --i >= 0;) {
-      if (vertexValues != null && !Float.isNaN(vertexValues[i]))
+      if (vertexValues != null && !Float.isNaN(vertexValues[i])) {
         //if ((i % 3) == 0) { //investigate vertex normixes
           ptTemp.set(mesh.vertices[i]);
           short n = mesh.normixes[i];
           // -n is an intensity2sided and does not correspond to a true normal index
           if (n >= 0) {
+            System.out.println(i + " " + n);
             ptTemp.add(g3d.getNormixVector(n));
             viewer.transformPoint(ptTemp, ptTempi);
             g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 1,
                 screens[i], ptTempi);
           }
-        //}
+      }
     }
   }
 

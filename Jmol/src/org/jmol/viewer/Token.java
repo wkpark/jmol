@@ -345,7 +345,7 @@ public class Token {
   final public static int branch       = expression | 4;
   final static int coord               = expression | 6;
   final static int dollarsign          = expression | 7;
-  final static int dot                 = expression | 8;
+  final static int period              = expression | 8;
   final public static int isaromatic   = expression | 9;
   final static int leftbrace           = expression | 10;
   final static int none                = expression | 11;
@@ -568,14 +568,16 @@ public class Token {
 
   // xxx(a)
   
-  final static int substructure = 2 | 1 << 9 | mathfunc;
-  final static int javascript   = 3 | 1 << 9 | mathfunc | implicitStringCommand;
+  final static int substructure = 1 | 1 << 9 | mathfunc;
+  final static int javascript   = 2 | 1 << 9 | mathfunc | implicitStringCommand;
+  final static int acos         = 3 | 1 << 9 | mathfunc;
   final static int sin          = 4 | 1 << 9 | mathfunc;
   final static int cos          = 5 | 1 << 9 | mathfunc;
   final static int sqrt         = 6 | 1 << 9 | mathfunc;
   public final static int file  = 7 | 1 << 9 | mathfunc | intproperty | command;
   final static int forcmd       = 8 | 1 << 9 | mathfunc | flowCommand;
   final static int ifcmd        = 9 | 1 << 9 | mathfunc | flowCommand;
+  final static int abs          = 10 | 1 << 9 | mathfunc;
 
   // ___.xxx(a)
   
@@ -583,7 +585,8 @@ public class Token {
   // two parameters and it CAN be a dot-function (but not both together)
   
   final static int div          = 0 | 1 << 9 | mathfunc | mathproperty;
-  final static int join         = 1 | 1 << 9 | mathfunc | mathproperty;
+  final static int dot          = 1 | 1 << 9 | mathfunc | mathproperty;
+  final static int join         = 2 | 1 << 9 | mathfunc | mathproperty;
   final static int mul          = 3 | 1 << 9 | mathfunc | mathproperty;
   final static int split        = 4 | 1 << 9 | mathfunc | mathproperty;
   final static int sub          = 5 | 1 << 9 | mathfunc | mathproperty;
@@ -595,7 +598,6 @@ public class Token {
   final static int load         = 2 | 2 << 9 | mathfunc | command;
   final static int random       = 3 | 2 << 9 | mathfunc;
   final static int script       = 4 | 2 << 9 | mathfunc | command;
-  public final static int symop = 5 | 2 << 9 | mathfunc | intproperty; 
 
   // ___.xxx(a,b)
 
@@ -617,6 +619,7 @@ public class Token {
   // ___.xxx(a,b,c)
   
   final static int bin          = 1 | 3 << 9 | mathfunc | mathproperty;
+  public final static int symop = 2 | 3 << 9 | mathfunc | mathproperty | intproperty; 
 
   // xxx(a,b,c,d)
   
@@ -791,6 +794,7 @@ public class Token {
     "dipoles",           null,
     "cd",                new Token(cd),
     "display",           new Token(display),
+    "dot",               new Token(dot),
     "dots",              new Token(dots),
     "draw",              new Token(draw),
     "echo",              new Token(echo),
@@ -996,7 +1000,7 @@ public class Token {
     "!=",           new Token(opNE),
     "<>",           null,
     "within",       new Token(within),
-    ".",            new Token(dot),
+    ".",            new Token(period),
     "[",            new Token(leftsquare),
     "]",            new Token(rightsquare),
     "{",            new Token(leftbrace),
@@ -1014,8 +1018,10 @@ public class Token {
     "\\",           new Token(leftdivide),
 
     // misc
-        
+
+    "abs",              new Token(abs),
     "absolute",         new Token(absolute),
+    "acos",              new Token(acos),
     "add",              new Token(add),
     "adpmax",           new Token(adpmax),
     "adpmin",           new Token(adpmin),

@@ -1262,19 +1262,6 @@ abstract public class ModelCollection extends BondCollection {
     return (str == null ? "" : str);
   }
 
-  private String getModelSymmetryList(int modelIndex) {
-    if (unitCells == null || unitCells[modelIndex] == null)
-      return "";
-    String[] list = unitCells[modelIndex].getSymmetryOperations();
-    if (list == null)
-      return "\n no symmetry operations employed";
-    String str = "\n" + list.length + " symmetry operations employed:";
-    if (list != null)
-      for (int i = 0; i < list.length; i++)
-        str += "\n" + list[i];
-    return str;
-  }
-
   public int getModelSymmetryCount(int modelIndex) {
     String[] operations;
     if (unitCells == null || unitCells[modelIndex] == null ||
@@ -1402,10 +1389,8 @@ abstract public class ModelCollection extends BondCollection {
           atoms[i].add(center);          
         } else {
           ptTemp.add(atoms[i]);
-          //System.out.println((Point3f)atoms[i]);
           matTemp.transform(atoms[i]);
           ptTemp.sub(atoms[i]);
-          //System.out.println((Point3f)atoms[i]);
         }
         taint(i, TAINT_COORD);
         n++;
@@ -1969,8 +1954,6 @@ abstract public class ModelCollection extends BondCollection {
             && iterWithin.foundDistance2() <= d2)
           bsResult.set(iAtom);
     }
-    // System.out.println("modelCollection iter distance " +
-    // (System.currentTimeMillis() - timeBegin));
     return bsResult;
   }
  
@@ -2846,52 +2829,72 @@ abstract public class ModelCollection extends BondCollection {
 
   public String getSpaceGroupInfoText(String spaceGroup) {
     String strOperations = "";
-    float[] unitCell = null;
+    SymmetryInterface cellInfo = null;
     if (spaceGroup == null) {
       int modelIndex = viewer.getCurrentModelIndex();
       if (modelIndex < 0)
         return "no single current model";
-      if (unitCells == null)
+      if (unitCells == null || unitCells[modelIndex] == null)
         return "not applicable";
-      SymmetryInterface cellInfo = unitCells[modelIndex];      
+      cellInfo = unitCells[modelIndex];      
       spaceGroup = cellInfo.getSpaceGroupName();
-      unitCell = cellInfo.getNotionalUnitCell();
-      strOperations = getModelSymmetryList(modelIndex);
+      String[] list = unitCells[modelIndex].getSymmetryOperations();
+      if (list == null) {
+        strOperations = "\n no symmetry operations employed";
+      } else {
+        if (symTemp == null)
+          symTemp = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+        symTemp.setSpaceGroup(false);
+        strOperations = "\n" + list.length + " symmetry operations employed:";
+        for (int i = 0; i < list.length; i++) {
+          int iSym = symTemp.addSpaceGroupOperation("!" + list[i]);
+          if (iSym >= 0) {
+            Object[] info =  symTemp.getSymmetryOperationDescription(iSym, cellInfo, null, null);
+            strOperations += "\n" + info[0] + "\t" + info[2];
+          } else {
+            strOperations += "\n" + list[i];
+          }
+        }
+      }
     }
-    if (symTemp == null)
-      symTemp = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
-    String info = symTemp.getSpaceGroupInfo(spaceGroup, unitCell);
+    String info = symTemp.getSpaceGroupInfo(spaceGroup, cellInfo);
     return (info == null ? "could not identify space group from name: " + spaceGroup 
       + "\nformat: show spacegroup \"2\" or \"P 2c\" " +
           "or \"C m m m\" or \"x, y, z;-x ,-y, -z\"" : info + strOperations);
   }
   
-  public Point3f applySymmetry(int iAtom, String xyz, int op, Point3f pt) {
-    Point3f sympt = new Point3f();
+  public Object getSymmetryInfo(int iAtom, String xyz, int op, Point3f pt, String id, int type) {
+    Object ret = (type == Token.point ? (Object) new Point3f() : "");
     if (iAtom < 0)
-      return sympt;
+      return ret;
     int iModel = atoms[iAtom].modelIndex;
     SymmetryInterface uc = getUnitCell(iModel);
     if (uc == null)
-      return sympt;
+      return ret;
     SymmetryInterface sym;
     if (xyz == null) {
       String[] ops = uc.getSymmetryOperations();
       if (ops == null || op < 1 || op > ops.length)
-        return sympt;
+        return ret;
       xyz = ops[op - 1 ];
     }
     if (symTemp == null)
       symTemp = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
     sym = symTemp; 
     sym.setSpaceGroup(false);
-    int iSym = sym.addSpaceGroupOperation(xyz);
+    int iSym = sym.addSpaceGroupOperation("!" + xyz);
+    if (iSym < 0)
+      return ret;
     sym.setUnitCell(uc.getNotionalUnitCell());
     Point3f ptuc = new Point3f(pt == null ? atoms[iAtom] : pt);
-    uc.toFractional(ptuc);
-    sym.newSpaceGroupPoint(iSym, ptuc, sympt, 0, 0, 0);
-    sym.toCartesian(sympt);
-    return sympt;
+    if (type == Token.point) {
+      uc.toFractional(ptuc);
+      Point3f sympt = (Point3f)ret;
+      sym.newSpaceGroupPoint(iSym, ptuc, sympt, 0, 0, 0);
+      sym.toCartesian(sympt);
+      return sympt;
+    }
+    return (String)sym.getSymmetryOperationDescription(iSym, uc, ptuc, id)[8];
   }
 
   protected void deleteModel(int modelIndex, int firstAtomIndex, int nAtoms,

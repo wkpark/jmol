@@ -435,10 +435,11 @@ class IsoSolventReader extends AtomDataReader {
   }
 
   void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0, Point3i pt1) {
+    int n = (isProperty ? 4 : 1);
     volumeData.xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
-    pt0.x -= 1;
-    pt0.y -= 1;
-    pt0.z -= 1;
+    pt0.x -= n;
+    pt0.y -= n;
+    pt0.z -= n;
     if (pt0.x < 0)
       pt0.x = 0;
     if (pt0.y < 0)
@@ -446,9 +447,9 @@ class IsoSolventReader extends AtomDataReader {
     if (pt0.z < 0)
       pt0.z = 0;
     volumeData.xyzToVoxelPt(ptA.x + rA, ptA.y + rA, ptA.z + rA, pt1);
-    pt1.x += 2;
-    pt1.y += 2;
-    pt1.z += 2;
+    pt1.x += n + 1;
+    pt1.y += n + 1;
+    pt1.z += n + 1;
     if (pt1.x >= nPointsX)
       pt1.x = nPointsX;
     if (pt1.y >= nPointsY)

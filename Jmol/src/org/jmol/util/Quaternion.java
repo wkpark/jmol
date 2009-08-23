@@ -30,7 +30,6 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-
 //import javax.vecmath.AxisAngle4f;
 //import javax.vecmath.Point3f;
 //import javax.vecmath.Quat4f;
@@ -92,6 +91,18 @@ public class Quaternion {
     this.q3 = q3;
   }
 
+  public void set(Quaternion q) {
+    q0 = q.q0;
+    q1 = q.q1;
+    q2 = q.q2;
+    q3 = q.q3;
+  }
+
+  /**
+   * {x y z w} --> {q1 q2 q3 q0} and factored
+   * 
+   * @param pt
+   */
   private void set(Point4f pt) {
     float factor = (pt == null ? 0 : pt.distance(qZero));
     if (factor == 0) {
@@ -104,6 +115,12 @@ public class Quaternion {
     q3 = pt.z / factor;
   }
 
+  /**
+   * q = (cos(theta/2), sin(theta/2) * n)
+   * 
+   * @param pt
+   * @param theta
+   */
   public void set(Tuple3f pt, float theta) {
     if (pt.x == 0 && pt.y == 0 && pt.z == 0) {
       q0 = 1;
@@ -115,6 +132,15 @@ public class Quaternion {
     q1 = (float) (pt.x * fact);
     q2 = (float) (pt.y * fact);
     q3 = (float) (pt.z * fact);
+  }
+
+  public void set(AxisAngle4f a) {
+    AxisAngle4f aa = new AxisAngle4f(a);
+    if (aa.angle == 0)
+      aa.y = 1;
+    Matrix3f m3 = new Matrix3f();
+    m3.set(aa);
+    set(m3);
   }
 
   public void set(Matrix3f mat) {
@@ -171,6 +197,8 @@ public class Quaternion {
      *
      */
 
+    this.mat = mat;
+    
     double trace = mat.m00 + mat.m11 + mat.m22;
     double temp;
     double w, x, y, z;
@@ -257,28 +285,18 @@ public class Quaternion {
      */
   }
 
-  public void set(AxisAngle4f a) {
-    AxisAngle4f aa = new AxisAngle4f(a);
-    if (aa.angle == 0)
-      aa.y = 1;
-    Matrix3f m3 = new Matrix3f();
-    m3.set(aa);
-    set(m3);
-  }
-
-  public void set(Quaternion q) {
-    q0 = q.q0;
-    q1 = q.q1;
-    q2 = q.q2;
-    q3 = q.q3;
-  }
-
+  /*
+   * if qref is null, "fix" this quaternion
+   * otherwise, return a quaternion that is CLOSEST to the given quaternion
+   * that is, one that gives a positive dot product
+   * 
+   */
   public void setRef(Quaternion qref) {
     if (qref == null) {
       fixQ(this);
       return;
     }
-    if (this.dot(qref) >= 0)
+    if (dot(qref) >= 0)
       return;
     q0 *= -1;
     q1 *= -1;
@@ -367,12 +385,12 @@ public class Quaternion {
   }
 
   public Quaternion add(float x) {
-    // UNIT addition 
+    // scalar theta addition (degrees) 
    return new Quaternion(getNormal(), getTheta() + x);
   }
 
   public Quaternion mul(float x) {
-    // UNIT multiplication
+    // scalar theta multiplication
     return (x == 1 ? new Quaternion(q0, q1, q2, q3) : 
       new Quaternion(getNormal(), getTheta() * x));
   }
@@ -405,6 +423,17 @@ public class Quaternion {
     return new Quaternion(-q0, -q1, -q2, -q3);
   }
 
+  /*
+   * return a quaternion having:
+   * 1) q0 > 0
+   * or
+   * 2) q0 = 0 and q1 > 0
+   * or
+   * 3) q0 = 0 and q1 = 0 and q2 > 0
+   * or
+   * 4) q0 = 0 and q1 = 0 and q2 = 0 and q3 > 0
+   * 
+   */
   private void fixQ(Quaternion qNew) {
     float f = (q0 < 0 || q0 == 0
         && (q1 < 0 || q1 == 0 && (q2 < 0 || q2 == 0 && q3 < 0)) ? -1 : 1);
@@ -432,6 +461,10 @@ public class Quaternion {
     return v;
   }
 
+  /**
+   * 
+   * @return  vector such that 0 <= angle <= 180
+   */
   public Vector3f getNormal() {
     fixQ(qTemp);
     Vector3f v = new Vector3f(qTemp.q1, qTemp.q2, qTemp.q3);
@@ -441,6 +474,10 @@ public class Quaternion {
     return v;
   }
 
+  /**
+   * 
+   * @return 0 <= angle <= 180 in degrees
+   */
   public float getTheta() {
     fixQ(qTemp);
     return (float) (Math.acos(qTemp.q0) * 2 * 180 / Math.PI);
@@ -451,6 +488,12 @@ public class Quaternion {
     return (float) (Math.acos(qTemp.q0) * 2);
   }
 
+  /**
+   * 
+   * @param v0
+   * @return    vector option closest to v0
+   * 
+   */
   public Vector3f getNormalDirected(Vector3f v0) {
     Vector3f v = getNormal();
     if (v0.x * q1 + v0.y * q2 + v0.z * q3 < 0) {
@@ -459,6 +502,11 @@ public class Quaternion {
     return v;
   }
 
+  /**
+   * 
+   * @param axisAngle
+   * @return   fill in theta of axisAngle such that 
+   */
   public Point4f getThetaDirected(Point4f axisAngle) {
     //fills in .w;
     float theta = getTheta();

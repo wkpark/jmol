@@ -678,6 +678,7 @@ public class StateManager {
 
     boolean antialiasDisplay = false;
     boolean antialiasImages = true;
+    boolean imageState = true;
     boolean antialiasTranslucent = true;
     boolean displayCellParameters = true;
     boolean dotsSelectedOnly = false;
@@ -1250,6 +1251,7 @@ public class StateManager {
       setParameterValue("highResolution", highResolutionFlag);
       setParameterValue("historyLevel", 0);
       setParameterValue("hoverDelay", hoverDelayMs / 1000f);
+      setParameterValue("imageState", imageState);
       setParameterValue("isosurfacePropertySmoothing",
           isosurfacePropertySmoothing);
       setParameterValue("justifyMeasurements", justifyMeasurements);

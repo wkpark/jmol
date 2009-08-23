@@ -55,7 +55,7 @@ public class JpegEncoder extends Frame
   private int Quality;
   //int code;
 
-  public JpegEncoder(Image image, int quality, OutputStream out)
+  public JpegEncoder(Image image, int quality, OutputStream out, String comment)
   {
     MediaTracker tracker = new MediaTracker(this);
     tracker.addImage(image, 0);
@@ -76,16 +76,16 @@ public class JpegEncoder extends Frame
      * Getting picture information
      * It takes the Width, Height and RGB scans of the image. 
      */
-    JpegObj = new JpegInfo(image);
+    JpegObj = new JpegInfo(image, comment);
     
     outStream = new BufferedOutputStream(out);
     dct = new DCT(Quality);
     Huf=new Huffman(JpegObj.imageWidth,JpegObj.imageHeight);
   }
   
-  public static byte[] getBytes(Image image, int quality) {
+  public static byte[] getBytes(Image image, int quality, String comment) {
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    write(image, quality, os);
+    write(image, quality, os, comment);
     try {
       os.flush();
       os.close();
@@ -95,8 +95,8 @@ public class JpegEncoder extends Frame
     return os.toByteArray();
   }
 
-  public static void write(Image image, int quality, OutputStream os) {
-    (new JpegEncoder(image, quality, os)).Compress();
+  public static void write(Image image, int quality, OutputStream os, String comment) {
+    (new JpegEncoder(image, quality, os, comment)).Compress();
   }
 
   public void setQuality(int quality) {
@@ -1191,7 +1191,7 @@ class JpegInfo
   private int MaxVsampFactor;
   
   
-  public JpegInfo(Image image)
+  public JpegInfo(Image image, String comment)
   {
     Components = new float[NumberOfComponents][][];
     compWidth = new int[NumberOfComponents];
@@ -1201,7 +1201,7 @@ class JpegInfo
     imageobj = image;
     imageWidth = image.getWidth(null);
     imageHeight = image.getHeight(null);
-    Comment = "JPEG Encoder Copyright 1998, James R. Weeks and BioElectroMech.  ";
+    Comment = comment + "\n\nJPEG Encoder Copyright 1998, James R. Weeks and BioElectroMech.  ";
     getYCCArray();
   }
 /*  

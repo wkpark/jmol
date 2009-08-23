@@ -513,9 +513,8 @@ class SymmetryOperation extends Matrix4f {
        * The question is this: Say you have an rotation/inversion taking A to
        * A'. The relationships are:
        * 
-       * 6-fold screw x for inverted frame corresponds to 6-bar at i for actual
-       * frame 3-fold screw i for inverted frame corresponds to 3-bar at x for
-       * actual frame
+       * 6-fold screw x for inverted frame corresponds to 6-bar at i for actual frame 
+       * 3-fold screw i for inverted frame corresponds to 3-bar at x for actual frame
        * 
        * The proof of this follows. Consider point x. Point x can transform A to
        * A' as a clockwise 6-fold screw axis. So, say we get that result for the
@@ -652,6 +651,7 @@ class SymmetryOperation extends Matrix4f {
       info1 += "|inversion center at " + fcoord(ipt);
     }
 
+    Logger.info(xyz + ": " + info1);
     if (typeOnly)
       return new Object[] { xyz, xyzOriginal, info1, ftrans, ipt, pa1, ax1,
           new Integer(ang1), null };

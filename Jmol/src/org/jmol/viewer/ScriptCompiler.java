@@ -949,6 +949,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     if (tokCommand == Token.structure && nTokens == 2
         || tokCommand == Token.frame && nTokens == 2
+        || tokCommand == Token.polyhedra
         || lastToken.tok == Token.select
         || lastToken.tok == Token.within
         || !(lastToken.tok == Token.identifier || tokenAttr(lastToken,
@@ -957,6 +958,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       // select ({...})
       // within({...})
       // structure helix ({...})
+      // polyhedra n TO ({...})
       // NOT myfunc({...})
       // NOT mathFunc({...})
       // if you want to use a bitset there, you must use

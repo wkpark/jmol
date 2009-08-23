@@ -393,6 +393,8 @@ class SymmetryOperation extends Matrix4f {
 
       // undo inversion for quaternion analysis (requires proper rotations only)
 
+      ptemp.set(1,0,0);
+      ptemp.scaleAdd(2,new Point3f(0,1,0), new Point3f(0,0,1));
       p1.scaleAdd(-2, v01, p1);
       p2.scaleAdd(-2, v02, p2);
       p3.scaleAdd(-2, v03, p3);
@@ -490,7 +492,18 @@ class SymmetryOperation extends Matrix4f {
        * rotation-inversion. The relationship involves two adjacent equilateral
        * triangles:
        * 
-       * o / \ / \ i' / \ / i \ A/_________\A' \ / \ j / \ / \ / \ / x
+       *      o 
+       *     / \
+       *    /   \    i'
+       *   /     \ 
+       *  /   i   \
+       *A/_________\A' 
+       * \         / 
+       *  \   j   / 
+       *   \     / 
+       *    \   / 
+       *     \ / 
+       *      x
        * 
        * Points i and j are at the centers of the triangles. Points A and A' are
        * the frame centers; an operation at point i, j, x, or o is taking A to
@@ -532,13 +545,17 @@ class SymmetryOperation extends Matrix4f {
 
       Vector3f d = (pitch1 == 0 ? new Vector3f() : ax1);
       float f = 0;
-      if (ang1 == 60) { // 6_1 at x to 6-bar at i
+      switch (ang1) {
+      case 60: // 6_1 at x to 6-bar at i
         f = 2f / 3f;
-      } else if (ang1 == 120) { // 3_1 at i to 3-bar at x
+        break;
+      case 120: // 3_1 at i to 3-bar at x
         f = 2;
-      } else if (ang1 == 90) { // 4_1 to 4-bar at opposite corner
+        break;
+      case 90: // 4_1 to 4-bar at opposite corner
         f = 1;
-      } else if (ang1 == 180) { // 2_1 to mirror plane
+        break;
+      case 180: // 2_1 to mirror plane
         // C2 with inversion is a mirror plane -- but could have a glide
         // component.
         pt0 = new Point3f();
@@ -678,7 +695,7 @@ class SymmetryOperation extends Matrix4f {
             .append(Escape.escape(p0));
       } else if (pitch1 == 0) {
         draw1.append(drawid).append("rotRotation arrow ").append(
-            Escape.escape(pt00)).append(Escape.escape(pt0));
+            Escape.escape(pt00)).append(Escape.escape(p0));
         draw1.append(drawid).append("rotLine1 ").append(Escape.escape(pt00))
             .append(Escape.escape(pa1));
         draw1.append(drawid).append("rotLine2 ").append(Escape.escape(p0))
@@ -745,17 +762,20 @@ class SymmetryOperation extends Matrix4f {
               " color indigo");
       if (!isinversion) {
         ptemp.set(ptinv);
-        ptemp.scaleAdd(-1, pt01, pt00);
+        ptemp.add(pt00);
+        ptemp.sub(pt01);
         draw1.append(drawid).append("invFrameX diameter 0.15 ").append(
             Escape.escape(ptinv)).append(Escape.escape(ptemp)).append(
             " color translucent red");
         ptemp.set(ptinv);
-        ptemp.scaleAdd(-1, pt02, pt00);
+        ptemp.add(pt00);
+        ptemp.sub(pt02);
         draw1.append(drawid).append("invFrameY diameter 0.15 ").append(
             Escape.escape(ptinv)).append(Escape.escape(ptemp)).append(
             " color translucent green");
         ptemp.set(ptinv);
-        ptemp.scaleAdd(-1, pt03, pt00);
+        ptemp.add(pt00);
+        ptemp.sub(pt03);
         draw1.append(drawid).append("invFrameZ diameter 0.15 ").append(
             Escape.escape(ptinv)).append(Escape.escape(ptemp)).append(
             " color translucent blue");

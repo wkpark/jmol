@@ -446,7 +446,7 @@ class SymmetryOperation extends Matrix4f {
     boolean ismirrorplane = false;
     Point3f ptinv = null; // inverted point for translucent frame
     Point3f ipt = null; // inversion center
-    Point3f pt0 = new Point3f(pt00); // reflection center
+    Point3f pt0 = null; // reflection center
 
     boolean istranslation = (ang1 == 0 && ang2 == 0 && ang3 == 0);
 
@@ -533,7 +533,7 @@ class SymmetryOperation extends Matrix4f {
       Vector3f d = (pitch1 == 0 ? new Vector3f() : ax1);
       float f = 0;
       if (ang1 == 60) { // 6_1 at x to 6-bar at i
-        f = 3f / 3f;
+        f = 2f / 3f;
       } else if (ang1 == 120) { // 3_1 at i to 3-bar at x
         f = 2;
       } else if (ang1 == 90) { // 4_1 to 4-bar at opposite corner

@@ -524,21 +524,23 @@ public class Resolver {
   private final static int SPECIAL_CUBE               = 7;
   private final static int SPECIAL_ALCHEMY            = 8;
   private final static int SPECIAL_WIEN               = 9;
+  private final static int SPECIAL_CASTEP             = 10;
+  private final static int SPECIAL_AIMS               = 11;
   
   // these next are needed by the XML reader
   
-  public final static int SPECIAL_ARGUS_XML   = 10;
-  public final static int SPECIAL_CML_XML     = 11;
-  public final static int SPECIAL_CHEM3D_XML  = 12;
-  public final static int SPECIAL_MOLPRO_XML  = 13;
-  public final static int SPECIAL_ODYSSEY_XML = 14;
-  public final static int SPECIAL_XSD_XML     = 15;
-  public final static int SPECIAL_ARGUS_DOM   = 16;
-  public final static int SPECIAL_CML_DOM     = 17;
-  public final static int SPECIAL_CHEM3D_DOM  = 18;
-  public final static int SPECIAL_MOLPRO_DOM  = 19;
-  public final static int SPECIAL_ODYSSEY_DOM = 20;
-  public final static int SPECIAL_XSD_DOM     = 21; // not implemented
+  public final static int SPECIAL_ARGUS_XML   = 12;
+  public final static int SPECIAL_CML_XML     = 13;
+  public final static int SPECIAL_CHEM3D_XML  = 14;
+  public final static int SPECIAL_MOLPRO_XML  = 15;
+  public final static int SPECIAL_ODYSSEY_XML = 16;
+  public final static int SPECIAL_XSD_XML     = 17;
+  public final static int SPECIAL_ARGUS_DOM   = 18;
+  public final static int SPECIAL_CML_DOM     = 19;
+  public final static int SPECIAL_CHEM3D_DOM  = 20;
+  public final static int SPECIAL_MOLPRO_DOM  = 21;
+  public final static int SPECIAL_ODYSSEY_DOM = 22;
+  public final static int SPECIAL_XSD_DOM     = 23; // not implemented
 
   public final static String[][] specialTags = {
     { "Jme" },
@@ -551,6 +553,8 @@ public class Resolver {
     { "Cube" },
     { "Alchemy" },
     { "Wien2k" },
+    { "Castep" },
+    { "Aims" },
     
     { "XmlArgus" }, 
     { "XmlCml" },
@@ -597,6 +601,10 @@ public class Resolver {
       return specialTags[SPECIAL_CUBE][0];
     if (checkWien2k(lines))
       return specialTags[SPECIAL_WIEN][0];
+    if (checkCastep(lines))
+      return specialTags[SPECIAL_CASTEP][0];
+    if (checkAims(lines))
+      return specialTags[SPECIAL_AIMS][0];
     return null;
   }
   
@@ -615,6 +623,29 @@ public class Resolver {
         || lines[2].startsWith("             RELA")
         || lines[2].startsWith("             NREL"));
   }
+
+  private static boolean checkCastep(String[] lines) {
+    for ( int i = 0; i<lines.length; i++ ) {
+      if ( lines[i].toUpperCase().startsWith("%BLOCK LATTICE_ABC") ) return true;
+      if ( lines[i].toUpperCase().startsWith("%BLOCK LATTICE_CART") ) return true;
+      if ( lines[i].toUpperCase().startsWith("%BLOCK POSITIONS_FRAC") ) return true;
+      if ( lines[i].toUpperCase().startsWith("%BLOCK POSITIONS_ABS") ) return true;
+    }
+    return false;
+  }
+
+  private static boolean checkAims(String[] lines) {
+
+    // use same tokenizing mechanism as in AimsReader.java to also recognize
+    // AIMS geometry files with indented keywords
+    for ( int i = 0; i<lines.length; i++ ) {
+      String[] tokens = Parser.getTokens(lines[i]);
+      if ( tokens[0].toLowerCase().startsWith("atom") ) return true;
+      if ( tokens[0].toLowerCase().startsWith("lattice_vector") ) return true;
+    }
+    return false; 
+  }
+
 
   private final static String getReaderFromType(String type) {
     type = type.toLowerCase();

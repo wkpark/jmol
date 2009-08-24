@@ -447,8 +447,8 @@ class SymmetryOperation extends Matrix4f {
 
       // undo inversion for quaternion analysis (requires proper rotations only)
 
-      ptemp.set(1,0,0);
-      ptemp.scaleAdd(2,new Point3f(0,1,0), new Point3f(0,0,1));
+      ptemp.set(1, 0, 0);
+      ptemp.scaleAdd(2, new Point3f(0, 1, 0), new Point3f(0, 0, 1));
       p1.scaleAdd(-2, v01, p1);
       p2.scaleAdd(-2, v02, p2);
       p3.scaleAdd(-2, v03, p3);
@@ -546,6 +546,7 @@ class SymmetryOperation extends Matrix4f {
        * rotation-inversion. The relationship involves two adjacent equilateral
        * triangles:
        * 
+       * 
        *      o 
        *     / \
        *    /   \    i'
@@ -567,8 +568,9 @@ class SymmetryOperation extends Matrix4f {
        * The question is this: Say you have an rotation/inversion taking A to
        * A'. The relationships are:
        * 
-       * 6-fold screw x for inverted frame corresponds to 6-bar at i for actual frame 
-       * 3-fold screw i for inverted frame corresponds to 3-bar at x for actual frame
+       * 6-fold screw x for inverted frame corresponds to 6-bar at i for actual
+       * frame 3-fold screw i for inverted frame corresponds to 3-bar at x for
+       * actual frame
        * 
        * The proof of this follows. Consider point x. Point x can transform A to
        * A' as a clockwise 6-fold screw axis. So, say we get that result for the
@@ -709,21 +711,22 @@ class SymmetryOperation extends Matrix4f {
 
     Logger.info(xyz + ": " + info1);
     if (typeOnly)
-      return new Object[] { xyz, xyzOriginal, info1, null, trans, ipt, pa1, ax1,
-          new Integer(ang1) };
+      return new Object[] { xyz, xyzOriginal, info1, null, trans, ipt, pa1,
+          ax1, new Integer(ang1) };
 
     drawid = "\ndraw ID " + id + "_";
-    
+
     // delete previous elements of this user-settable ID
-    
+
     draw1 = new StringBuffer();
-    
-    Logger.debug("// " + xyzOriginal + "|" + xyzOriginal + "|" + xyz + "\n" + (Matrix4f)this + "\n" + info1);
-    
+
+    Logger.debug("// " + xyzOriginal + "|" + xyzOriginal + "|" + xyz + "\n"
+        + (Matrix4f) this + "\n" + info1);
+
     draw1.append("// " + xyzOriginal + "|" + xyz + "|" + info1 + "\n");
 
     draw1.append(drawid).append("* delete");
-    
+
     // draw the initial frame
 
     drawLine("frame1X", 0.15f, pt00, pt01, "red");
@@ -731,7 +734,7 @@ class SymmetryOperation extends Matrix4f {
     drawLine("frame1Z", 0.15f, pt00, pt03, "blue");
 
     // draw the final frame just a bit fatter and shorter, in case they overlap
-    
+
     ptemp.set(p1);
     ptemp.sub(p0);
     ptemp.scaleAdd(0.9f, ptemp, p0);
@@ -750,12 +753,12 @@ class SymmetryOperation extends Matrix4f {
     if (isrotation) {
 
       Point3f pt1 = new Point3f();
-      
+
       color = "red";
-      
+
       int ang = ang1;
       float scale = 1.0f;
-      
+
       // draw the lines associated with a rotation
 
       if (haveinversion) {
@@ -781,12 +784,13 @@ class SymmetryOperation extends Matrix4f {
         ptemp.set(ax1);
         ptemp.scale(-1);
         draw1.append(drawid).append("rotVector2 vector diameter 0.1 ").append(
-            Escape.escape(pa1)).append(Escape.escape(ptemp)).append(" color red");
+            Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
+            " color red");
         pt1.set(pa1);
         ptemp.scaleAdd(1, pt1, ax1);
         ang = (int) Measure.computeTorsion(pt00, pa1, ptemp, p0, true);
         if (ang == 0)
-          ang = ang1;  
+          ang = ang1;
         if (pitch1 == 0 && pt00.distance(p0) < 0.2)
           pt1.scaleAdd(0.5f, pt1, ax1);
       } else {
@@ -801,44 +805,48 @@ class SymmetryOperation extends Matrix4f {
         pt1.scaleAdd(0.5f, ax1, pa1);
         ang = (int) (Measure.computeTorsion(pt00, pa1, ptemp, p0, true) * 0.9);
       }
-      
+
       // draw arc arrow
-      
+
       ptemp.set(pt1);
       ptemp.add(ax1);
       if (haveinversion && pitch1 != 0) {
-        draw1.append(drawid).append("rotRotLine1").append(Escape.escape(pt1)).append(Escape.escape(ptinv)).append(" color red");
-        draw1.append(drawid).append("rotRotLine2").append(Escape.escape(pt1)).append(Escape.escape(p0)).append(" color red");
+        draw1.append(drawid).append("rotRotLine1").append(Escape.escape(pt1))
+            .append(Escape.escape(ptinv)).append(" color red");
+        draw1.append(drawid).append("rotRotLine2").append(Escape.escape(pt1))
+            .append(Escape.escape(p0)).append(" color red");
       }
-      draw1.append(drawid).append("rotRotArrow arrow width 0.10 scale " + scale + " arc ")
-          .append(Escape.escape(pt1)).append(Escape.escape(ptemp));
-      if (haveinversion) 
+      draw1.append(drawid).append(
+          "rotRotArrow arrow width 0.10 scale " + scale + " arc ").append(
+          Escape.escape(pt1)).append(Escape.escape(ptemp));
+      if (haveinversion)
         ptemp.set(ptinv);
       else
         ptemp.set(pt00);
       if (ptemp.distance(p0) < 0.1f)
-        ptemp.set((float) Math.random(),(float) Math.random(),(float) Math.random());
+        ptemp.set((float) Math.random(), (float) Math.random(), (float) Math
+            .random());
       draw1.append(Escape.escape(ptemp));
       ptemp.set(0, ang, 0);
       draw1.append(Escape.escape(ptemp)).append(" color red");
-      // draw the main vector 
-      
+      // draw the main vector
+
       draw1.append(drawid).append("rotVector1 vector diameter 0.1 ").append(
           Escape.escape(pa1)).append(Escape.escape(ax1)).append("color ")
           .append(color);
     }
 
     if (ismirrorplane) {
-      
+
       // indigo arrow across plane from pt00 to pt0
-      
+
       if (pt00.distance(pt0) > 0.2)
         draw1.append(drawid).append("planeVector arrow ").append(
             Escape.escape(pt00)).append(Escape.escape(pt0)).append(
             " color indigo");
-      
+
       // faint inverted frame if trans is not null
-      
+
       if (trans != null) {
         ptemp.scaleAdd(-1, p0, p1);
         ptemp.add(pt0);
@@ -850,21 +858,22 @@ class SymmetryOperation extends Matrix4f {
         ptemp.add(pt0);
         drawLine("planeFrameZ", 0.15f, pt0, ptemp, "translucent blue");
       }
-      
+
       color = (trans == null ? "green" : "blue");
-      
-      // ok, now HERE's a good trick. We use the Marching Cubes 
+
+      // ok, now HERE's a good trick. We use the Marching Cubes
       // algorithm to find the intersection points of a plane and the unit cell.
       // We expand the unit cell by 5% in all directions just so we are
       // guaranteed to get cutoffs.
-      
+
       Point3f[] vertices = new Point3f[8];
-      TriangleServer ts = (TriangleServer) Interface.getOptionInterface("jvxl.calc.TriangleData");
+      TriangleServer ts = (TriangleServer) Interface
+          .getOptionInterface("jvxl.calc.TriangleData");
       Point3i[] offsets = ts.getCubeVertexOffsets();
       for (int i = 0; i < 8; i++) {
-        ptemp.set(offsets[i].x == 0 ? -0.05f : 1.05f, 
-            offsets[i].y == 0 ? -0.05f : 1.05f, 
-            offsets[i].z == 0 ? -0.05f : 1.05f);
+        ptemp.set(offsets[i].x == 0 ? -0.05f : 1.05f,
+            offsets[i].y == 0 ? -0.05f : 1.05f, offsets[i].z == 0 ? -0.05f
+                : 1.05f);
         uc.toCartesian(ptemp);
         vertices[i] = new Point3f(ptemp);
       }
@@ -876,19 +885,19 @@ class SymmetryOperation extends Matrix4f {
       Point4f plane = new Point4f(vtemp.x, vtemp.y, vtemp.z, w);
       Vector v = ts.intersectPlane(plane, vertices, 3);
       // returns triangles and lines
-      for (int i = v.size(); --i >= 0; ) {
-        Point3f[] pts = (Point3f[]) v.get(i);
-        draw1.append(drawid).append("planep").append(i)
-            .append(Escape.escape(pts[0]))
-            .append(Escape.escape(pts[1]));
-        if (pts.length == 3)
-          draw1.append(Escape.escape(pts[2]));
-        draw1.append(" color translucent ").append(color);
-      }
-      
+      if (v != null)
+        for (int i = v.size(); --i >= 0;) {
+          Point3f[] pts = (Point3f[]) v.get(i);
+          draw1.append(drawid).append("planep").append(i).append(
+              Escape.escape(pts[0])).append(Escape.escape(pts[1]));
+          if (pts.length == 3)
+            draw1.append(Escape.escape(pts[2]));
+          draw1.append(" color translucent ").append(color);
+        }
+
       // and JUST in case that does not work, at least draw a circle
-      
-      if (v.size() == 0) {
+
+      if (v == null || v.size() == 0) {
         ptemp.set(pa1);
         ptemp.add(ax1);
         draw1.append(drawid).append("planeCircle scale 2.0 circle ").append(
@@ -953,8 +962,8 @@ class SymmetryOperation extends Matrix4f {
     String cmds = draw1.toString();
     draw1 = null;
     drawid = null;
-    return new Object[] { xyz, xyzOriginal, info1, cmds, 
-        ftrans, ipt, pa1, ax1, new Integer(ang1) };
+    return new Object[] { xyz, xyzOriginal, info1, cmds, ftrans, ipt, pa1, ax1,
+        new Integer(ang1) };
   }
 
   private void drawLine(String id, float diameter, Point3f pt0, Point3f pt1,

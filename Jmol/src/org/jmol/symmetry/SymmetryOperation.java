@@ -717,6 +717,11 @@ class SymmetryOperation extends Matrix4f {
     // delete previous elements of this user-settable ID
     
     draw1 = new StringBuffer();
+    
+    Logger.debug("// " + xyzOriginal + "|" + xyzOriginal + "|" + xyz + "\n" + (Matrix4f)this + "\n" + info1);
+    
+    draw1.append("// " + xyzOriginal + "|" + xyz + "|" + info1 + "\n");
+
     draw1.append(drawid).append("* delete");
     
     // draw the initial frame
@@ -758,7 +763,7 @@ class SymmetryOperation extends Matrix4f {
         pt1.add(ax1);
         ang = (int) Measure.computeTorsion(ptinv, pa1, pt1, p0, true);
         if (pitch1 == 0)
-          pt1.set(pa1);
+          pt1.set(ptinv);
         scale = p0.distance(pt1);
         draw1.append(drawid).append("rotLine1 ").append(Escape.escape(pt1))
             .append(Escape.escape(ptinv)).append(" color red");

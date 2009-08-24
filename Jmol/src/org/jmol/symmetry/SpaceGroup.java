@@ -592,6 +592,8 @@ class SpaceGroup {
       xyzList = new Hashtable();
       return -1;
     }
+    boolean isSpecial = (xyz0.charAt(0) == '!');
+    if (isSpecial) xyz0 = xyz0.substring(1);
     if (xyzList.containsKey(xyz0))
       return ((Integer)xyzList.get(xyz0)).intValue();
 
@@ -601,7 +603,7 @@ class SpaceGroup {
       return -1;
     }
     String xyz = symmetryOperation.xyz;
-    if (xyz0.charAt(0) != '!') {
+    if (!isSpecial) {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
       if (xyzList.containsKey(xyz))
         return ((Integer)xyzList.get(xyz)).intValue();

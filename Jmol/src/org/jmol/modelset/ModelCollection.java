@@ -2929,7 +2929,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     // null id means "text info only" but here we want the draw commands
     return (String)sym.getSymmetryOperationDescription(iSym, uc, pt, 
-        (id == null ? "sym_" : id))[3];
+        (id == null ? "sym" : id))[3];
   }
 
   protected void deleteModel(int modelIndex, int firstAtomIndex, int nAtoms,

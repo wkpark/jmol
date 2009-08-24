@@ -82,7 +82,7 @@ class PopupResourceBundle {
               + "languageComputedMenu aboutComputedMenu" },
               
       {   "selectMenuText",
-          "hideNotSelectedCheckbox showSelectionsCheckbox - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYComputedMenu - "
+          "hideNotSelectedCheckbox showSelectionsCheckbox - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYSelectComputedMenu - "
               + "PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarboMenu PDBnoneOfTheAbove" },
 
       {   "PDBproteinMenu", 
@@ -232,7 +232,7 @@ class PopupResourceBundle {
           "surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular CHARGEsurfMEP surfMoComputedMenu - surfOpaque surfTranslucent surfOff" },
 
       {   "SYMMETRYUNITCELLMenu",
-          "UNITCELLone UNITCELLnine UNITCELLnineRestricted UNITCELLninePoly" },
+          "SYMMETRYShowComputedMenu SYMMETRYhide UNITCELLone UNITCELLnine UNITCELLnineRestricted UNITCELLninePoly" },
 
       {   "[set_axes]Menu", 
           "off#axes dotted - byPixelMenu byAngstromMenu" },
@@ -511,7 +511,7 @@ class PopupResourceBundle {
       { "surfOpaque", "mo opaque;isosurface opaque" },
       { "surfTranslucent", "mo translucent;isosurface translucent" },
       { "surfOff", "mo delete;isosurface delete;select *;dots off" },
-
+      { "SYMMETRYhide", "draw sym_* delete" },
       { "UNITCELLone",
           "save orientation;load \"\" {1 1 1} ;restore orientation;center" },
       { "UNITCELLnine",
@@ -557,9 +557,9 @@ class PopupResourceBundle {
         "PDBcarboResiduesComputedMenu", GT._("By Residue Name"),
         "PDBheteroComputedMenu", GT._("By HETATM"),
         "surfMoComputedMenu", GT._("Molecular Orbitals"),
-        "SYMMETRYComputedMenu", GT._("Symmetry"),
-        
-        
+        "SYMMETRYSelectComputedMenu", GT._("Symmetry"),
+        "SYMMETRYShowComputedMenu", GT._("Space Group"),
+        "SYMMETRYhide", GT._("Hide Symmetry"),
         "hiddenModelSetText", GT._("Model information"),
         "selectMenuText", GT._("Select ({0})"),
         "allModelsText", GT._("All {0} models"),

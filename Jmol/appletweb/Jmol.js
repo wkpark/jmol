@@ -302,11 +302,20 @@ function jmolCommandInput(label, size, id, title) {
     size = 60;
   ++_jmol.cmdCount;
   var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input name='" + id + "' id='" + id + 
-          "' size='"+size+"'><input type=button value = '"+label+"' onclick='jmolScript(document.getElementById(\""+id+"\").value" + _jmol.targetText + ")' /></span>";
+          "' size='"+size+"' onkeypress='_jmolCommandKeyPress(event,\""+id+"\"" + _jmol.targetText + ")'><input type=button value = '"+label+"' onclick='jmolScript(document.getElementById(\""+id+"\").value" + _jmol.targetText + ")' /></span>";
   if (_jmol.debugAlert)
     alert(t);
   return _jmolDocumentWrite(t);
 }
+
+function _jmolCommandKeyPress(e, id, target) {
+	var keycode = (window.event ? window.event.keyCode : e ? e.which : 0);
+	if (keycode == 13) {
+		jmolScript(document.getElementById(id).value, target)
+	}
+}
+
+
 
 function jmolMenu(arrayOfMenuItems, size, id, title) {
   _jmolInitCheck();

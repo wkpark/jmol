@@ -191,7 +191,7 @@ abstract public class JmolPopup {
     updatePDBComputedMenus();
     updateMode = UPDATE_CONFIG;
     updateConfigurationComputedMenu();
-    updateSYMMETRYComputedMenu();
+    updateSYMMETRYComputedMenus();
     updateFRAMESbyModelComputedMenu();
     updateModelSetComputedMenu();
     updateLanguageSubmenu();
@@ -437,8 +437,47 @@ abstract public class JmolPopup {
     return nItems;
   }
 
-  void updateSYMMETRYComputedMenu() {
-    Object menu = htMenus.get("SYMMETRYComputedMenu");
+  void updateSYMMETRYComputedMenus() {
+    updateSYMMETRYSelectComputedMenu();
+    updateSYMMETRYShowComputedMenu();
+  }
+
+  private void updateSYMMETRYShowComputedMenu() {
+    Object menu = htMenus.get("SYMMETRYShowComputedMenu");
+    if (menu == null)
+      return;
+    removeAll(menu);
+    enableMenu(menu, false);
+    if (!isSymmetry || modelIndex < 0)
+      return;
+    Hashtable info = (Hashtable) viewer.getProperty("DATA_API", "spaceGroupInfo", null);
+    if (info == null)
+      return;
+    Object[][] infolist = (Object[][]) info.get("operations");
+    if (infolist == null)
+      return;
+    String name = (String) info.get("spaceGroupName");
+    setLabel(menu, name == null ? GT._("Space Group") : name);
+    Object subMenu = menu;
+    int nmod = MAX_ITEMS;
+    int pt = (infolist.length > MAX_ITEMS ? 0 : Integer.MIN_VALUE);
+    for (int i = 0; i < infolist.length; i++) {
+      if (pt >= 0 && (pt++ % nmod) == 0) {
+        String id = "drawsymop" + pt + "Menu";
+        subMenu = newMenu((i + 1) + "..."
+            + Math.min(i + MAX_ITEMS, infolist.length), getId(menu) + "." + id);
+        addMenuSubMenu(menu, subMenu);
+        htMenus.put(id, subMenu);
+        pt = 1;
+      }
+      String entryName = (i + 1) + " " + infolist[i][2] + " (" + infolist[i][0] + ")";
+      enableMenuItem(addMenuItem(subMenu, entryName, "draw SYMOP " + (i + 1), null), true);
+    }
+    enableMenu(menu, true);
+  }
+
+  private void updateSYMMETRYSelectComputedMenu() {
+    Object menu = htMenus.get("SYMMETRYSelectComputedMenu");
     if (menu == null)
       return;
     removeAll(menu);

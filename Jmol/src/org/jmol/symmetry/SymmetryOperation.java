@@ -24,13 +24,18 @@
 
 package org.jmol.symmetry;
 
+import java.util.Vector;
+
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 import javax.vecmath.Point4f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
+import org.jmol.api.TriangleServer;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -330,15 +335,64 @@ class SymmetryOperation extends Matrix4f {
     return (s.charAt(0) == '0' ? "" : n12ths > 0 ? "+" + s : s);
   }
 
+  Point3f atomTest = new Point3f();
+
+  private void setOffset(Point3f[] atoms, int atomIndex, int count) {
+    /*
+     * the center of mass of the full set of atoms is moved into the cell with this
+     *  
+     */
+    int i1 = atomIndex;
+    int i2 = i1 + count;
+    float x = 0;
+    float y = 0;
+    float z = 0;
+    for (int i = i1; i < i2; i++) {
+      newPoint(atoms[i], atomTest, 0, 0, 0);
+      x += atomTest.x;
+      y += atomTest.y;
+      z += atomTest.z;
+    }
+    
+    while (x < -0.001 || x >= count + 0.001) {
+      m03 += (x < 0 ? 1 : -1);
+      x += (x < 0 ? count : -count);
+    }
+    while (y < -0.001 || y >= count + 0.001) {
+      m13 += (y < 0 ? 1 : -1);
+      y += (y < 0 ? count : -count);
+    }
+    while (z < -0.001 || z >= count + 0.001) {
+      m23 += (z < 0 ? 1 : -1);
+      z += (z < 0 ? count : -count);
+    }
+  }
+
+  private void transformCartesian(UnitCell unitcell, Point3f pt) {
+    unitcell.toFractional(pt);
+    transform(pt);
+    unitcell.toCartesian(pt);
+
+  }
   
-  private static float approx(float f) {
-    return approx(f, 100);
+  Vector3f[] rotateEllipsoid(Point3f cartCenter, Vector3f[] vectors,
+                                    UnitCell unitcell, Point3f ptTemp1, Point3f ptTemp2) {
+    Vector3f[] vRot = new Vector3f[3];
+    ptTemp2.set(cartCenter);
+    transformCartesian(unitcell, ptTemp2);
+    for (int i = vectors.length; --i >= 0;) {
+      ptTemp1.set(cartCenter);
+      ptTemp1.add(vectors[i]);
+      transformCartesian(unitcell, ptTemp1);
+      vRot[i] = new Vector3f(ptTemp1);
+      vRot[i].sub(ptTemp2);
+    }
+    return vRot;
   }
-
-  private static float approx(float f, float n) {
-    return ((int) (f * n + 0.5f * (f < 0 ? -1 : 1)) / n);
-  }
-
+  
+  private StringBuffer draw1;
+  private String drawid;
+  
   public Object[] getDescription(SymmetryInterface uc, Point3f pt00, String id) {
 
     if (!isFinalized)
@@ -347,8 +401,8 @@ class SymmetryOperation extends Matrix4f {
     Point3f ptemp = new Point3f();
     Point3f ftrans = new Point3f();
 
-    boolean typeOnly = (pt00 == null);
-    if (typeOnly)
+    boolean typeOnly = (id == null);
+    if (pt00 == null)
       pt00 = new Point3f();
 
     Point3f pt01 = new Point3f(1, 0, 0);
@@ -610,8 +664,9 @@ class SymmetryOperation extends Matrix4f {
     String info1 = "";
 
     if (isinversion) {
-      uc.toFractional(ipt);
-      info1 = "inversion center|" + fcoord(ipt);
+      ptemp.set(ipt);
+      uc.toFractional(ptemp);
+      info1 = "inversion center|" + fcoord(ptemp);
     } else if (isrotation) {
       if (haveinversion) {
         info1 = "" + (360 / ang1) + "-bar axis";
@@ -647,114 +702,200 @@ class SymmetryOperation extends Matrix4f {
     }
 
     if (haveinversion && !isinversion) {
-      uc.toFractional(ipt);
-      info1 += "|inversion center at " + fcoord(ipt);
+      ptemp.set(ipt);
+      uc.toFractional(ptemp);
+      info1 += "|inversion center at " + fcoord(ptemp);
     }
 
     Logger.info(xyz + ": " + info1);
     if (typeOnly)
-      return new Object[] { xyz, xyzOriginal, info1, ftrans, ipt, pa1, ax1,
-          new Integer(ang1), null };
+      return new Object[] { xyz, xyzOriginal, info1, null, trans, ipt, pa1, ax1,
+          new Integer(ang1) };
 
-    if (id == null)
-      id = "sym_";
-
-    StringBuffer draw1 = new StringBuffer();
-    String drawid = "\ndraw ID " + id + "_";
+    drawid = "\ndraw ID " + id + "_";
+    
+    // delete previous elements of this user-settable ID
+    
+    draw1 = new StringBuffer();
     draw1.append(drawid).append("* delete");
-    draw1.append(drawid).append("frame1X diameter 0.15 ").append(
-        Escape.escape(pt00)).append(Escape.escape(pt01)).append("color red");
-    draw1.append(drawid).append("frame1Y diameter 0.15 ").append(
-        Escape.escape(pt00)).append(Escape.escape(pt02)).append("color green");
-    draw1.append(drawid).append("frame1Z diameter 0.15 ").append(
-        Escape.escape(pt00)).append(Escape.escape(pt03)).append("color blue");
+    
+    // draw the initial frame
+
+    drawLine("frame1X", 0.15f, pt00, pt01, "red");
+    drawLine("frame1Y", 0.15f, pt00, pt02, "green");
+    drawLine("frame1Z", 0.15f, pt00, pt03, "blue");
+
+    // draw the final frame just a bit fatter and shorter, in case they overlap
+    
     ptemp.set(p1);
     ptemp.sub(p0);
     ptemp.scaleAdd(0.9f, ptemp, p0);
-    draw1.append(drawid).append("frame2X diameter 0.20").append(
-        Escape.escape(p0)).append(Escape.escape(ptemp)).append("color red");
+    drawLine("frame2X", 0.2f, p0, ptemp, "red");
     ptemp.set(p2);
     ptemp.sub(p0);
     ptemp.scaleAdd(0.9f, ptemp, p0);
-    draw1.append(drawid).append("frame2Y diameter 0.20").append(
-        Escape.escape(p0)).append(Escape.escape(ptemp)).append("color green");
+    drawLine("frame2Y", 0.2f, p0, ptemp, "green");
     ptemp.set(p3);
     ptemp.sub(p0);
     ptemp.scaleAdd(0.9f, ptemp, p0);
-    draw1.append(drawid).append("frame2Z diameter 0.20").append(
-        Escape.escape(p0)).append(Escape.escape(ptemp)).append("color purple");
+    drawLine("frame2Z", 0.2f, p0, ptemp, "purple");
 
-    // draw the lines associated with a rotation
+    String color;
 
     if (isrotation) {
-      String col = "red";
+
+      Point3f pt1 = new Point3f();
+      
+      color = "red";
+      
+      int ang = ang1;
+      float scale = 1.0f;
+      
+      // draw the lines associated with a rotation
+
       if (haveinversion) {
-        draw1.append(drawid).append("invRotation arrow ").append(
-            Escape.escape(ptinv)).append(Escape.escape(p0));
-        draw1.append(drawid).append("invLine ").append(Escape.escape(ipt))
-            .append(Escape.escape(p0));
+        pt1.set(pa1);
+        pt1.add(ax1);
+        ang = (int) Measure.computeTorsion(ptinv, pa1, pt1, p0, true);
+        if (pitch1 == 0)
+          pt1.set(pa1);
+        scale = p0.distance(pt1);
+        draw1.append(drawid).append("rotLine1 ").append(Escape.escape(pt1))
+            .append(Escape.escape(ptinv)).append(" color red");
+        draw1.append(drawid).append("rotLine2 ").append(Escape.escape(pt1))
+            .append(Escape.escape(p0)).append(" color red");
       } else if (pitch1 == 0) {
-        draw1.append(drawid).append("rotRotation arrow ").append(
-            Escape.escape(pt00)).append(Escape.escape(p0));
-        draw1.append(drawid).append("rotLine1 ").append(Escape.escape(pt00))
-            .append(Escape.escape(pa1));
-        draw1.append(drawid).append("rotLine2 ").append(Escape.escape(p0))
-            .append(Escape.escape(pa1));
+        boolean isSpecial = (pt00.distance(p0) < 0.2f);
+        if (!isSpecial) {
+          draw1.append(drawid).append("rotLine1 ").append(Escape.escape(pt00))
+              .append(Escape.escape(pa1)).append(" color red");
+          draw1.append(drawid).append("rotLine2 ").append(Escape.escape(p0))
+              .append(Escape.escape(pa1)).append(" color red");
+        }
         ax1.scale(3);
-        col = "orange";
         ptemp.set(ax1);
         ptemp.scale(-1);
         draw1.append(drawid).append("rotVector2 vector diameter 0.1 ").append(
-            Escape.escape(pa1)).append(Escape.escape(ptemp)).append(" color ")
-            .append(col);
+            Escape.escape(pa1)).append(Escape.escape(ptemp)).append(" color red");
+        pt1.set(pa1);
+        ptemp.scaleAdd(1, pt1, ax1);
+        ang = (int) Measure.computeTorsion(pt00, pa1, ptemp, p0, true);
+        if (ang == 0)
+          ang = ang1;  
+        if (pitch1 == 0 && pt00.distance(p0) < 0.2)
+          pt1.scaleAdd(0.5f, pt1, ax1);
       } else {
+        // screw
+        color = "orange";
         draw1.append(drawid).append("rotLine1 ").append(Escape.escape(pt00))
-            .append(Escape.escape(pa1));
+            .append(Escape.escape(pa1)).append(" color red");
         ptemp.set(pa1);
         ptemp.add(ax1);
         draw1.append(drawid).append("rotLine2 ").append(Escape.escape(p0))
-            .append(Escape.escape(ptemp));
+            .append(Escape.escape(ptemp)).append(" color red");
+        pt1.scaleAdd(0.5f, ax1, pa1);
+        ang = (int) (Measure.computeTorsion(pt00, pa1, ptemp, p0, true) * 0.9);
       }
+      
+      // draw arc arrow
+      
+      ptemp.set(pt1);
+      ptemp.add(ax1);
+      if (haveinversion && pitch1 != 0) {
+        draw1.append(drawid).append("rotRotLine1").append(Escape.escape(pt1)).append(Escape.escape(ptinv)).append(" color red");
+        draw1.append(drawid).append("rotRotLine2").append(Escape.escape(pt1)).append(Escape.escape(p0)).append(" color red");
+      }
+      draw1.append(drawid).append("rotRotArrow arrow width 0.10 scale " + scale + " arc ")
+          .append(Escape.escape(pt1)).append(Escape.escape(ptemp));
+      if (haveinversion) 
+        ptemp.set(ptinv);
+      else
+        ptemp.set(pt00);
+      if (ptemp.distance(p0) < 0.1f)
+        ptemp.set((float) Math.random(),(float) Math.random(),(float) Math.random());
+      draw1.append(Escape.escape(ptemp));
+      ptemp.set(0, ang, 0);
+      draw1.append(Escape.escape(ptemp)).append(" color red");
+      // draw the main vector 
+      
       draw1.append(drawid).append("rotVector1 vector diameter 0.1 ").append(
           Escape.escape(pa1)).append(Escape.escape(ax1)).append("color ")
-          .append(col);
+          .append(color);
     }
 
-    // draw the mirror plane
-
     if (ismirrorplane) {
+      
+      // indigo arrow across plane from pt00 to pt0
+      
       if (pt00.distance(pt0) > 0.2)
         draw1.append(drawid).append("planeVector arrow ").append(
             Escape.escape(pt00)).append(Escape.escape(pt0)).append(
             " color indigo");
-      ptemp.set(pa1);
-      ptemp.add(ax1);
-      draw1.append(drawid).append("planeCircle scale 2.0 circle ").append(
-          Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
-          " color translucent ").append(trans == null ? "green" : "blue")
-          .append(" mesh fill");
+      
+      // faint inverted frame if trans is not null
+      
       if (trans != null) {
-        ptemp.set(pt0);
         ptemp.scaleAdd(-1, p0, p1);
-        draw1.append(drawid).append("planeFrameX diameter 0.15 ").append(
-            Escape.escape(pt0)).append(Escape.escape(ptemp)).append(
-            " color translucent red");
-        ptemp.set(pt0);
+        ptemp.add(pt0);
+        drawLine("planeFrameX", 0.15f, pt0, ptemp, "translucent red");
         ptemp.scaleAdd(-1, p0, p2);
-        draw1.append(drawid).append("planeFrameY diameter 0.15 ").append(
-            Escape.escape(pt0)).append(Escape.escape(ptemp)).append(
-            " color translucent green");
-        ptemp.set(pt0);
+        ptemp.add(pt0);
+        drawLine("planeFrameY", 0.15f, pt0, ptemp, "translucent green");
         ptemp.scaleAdd(-1, p0, p3);
-        draw1.append(drawid).append("planeFrameZ diameter 0.15 ").append(
-            Escape.escape(pt0)).append(Escape.escape(ptemp)).append(
-            " color translucent blue");
+        ptemp.add(pt0);
+        drawLine("planeFrameZ", 0.15f, pt0, ptemp, "translucent blue");
+      }
+      
+      color = (trans == null ? "green" : "blue");
+      
+      // ok, now HERE's a good trick. We use the Marching Cubes 
+      // algorithm to find the intersection points of a plane and the unit cell.
+      // We expand the unit cell by 5% in all directions just so we are
+      // guaranteed to get cutoffs.
+      
+      Point3f[] vertices = new Point3f[8];
+      TriangleServer ts = (TriangleServer) Interface.getOptionInterface("jvxl.calc.TriangleData");
+      Point3i[] offsets = ts.getCubeVertexOffsets();
+      for (int i = 0; i < 8; i++) {
+        ptemp.set(offsets[i].x == 0 ? -0.05f : 1.05f, 
+            offsets[i].y == 0 ? -0.05f : 1.05f, 
+            offsets[i].z == 0 ? -0.05f : 1.05f);
+        uc.toCartesian(ptemp);
+        vertices[i] = new Point3f(ptemp);
+      }
+      vtemp.set(ax1);
+      vtemp.normalize();
+      // ax + by + cz + d = 0
+      // so if a point is in the plane, then N dot X = -d
+      float w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
+      Point4f plane = new Point4f(vtemp.x, vtemp.y, vtemp.z, w);
+      Vector v = ts.intersectPlane(plane, vertices, 3);
+      // returns triangles and lines
+      for (int i = v.size(); --i >= 0; ) {
+        Point3f[] pts = (Point3f[]) v.get(i);
+        draw1.append(drawid).append("planep").append(i)
+            .append(Escape.escape(pts[0]))
+            .append(Escape.escape(pts[1]));
+        if (pts.length == 3)
+          draw1.append(Escape.escape(pts[2]));
+        draw1.append(" color translucent ").append(color);
+      }
+      
+      // and JUST in case that does not work, at least draw a circle
+      
+      if (v.size() == 0) {
+        ptemp.set(pa1);
+        ptemp.add(ax1);
+        draw1.append(drawid).append("planeCircle scale 2.0 circle ").append(
+            Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
+            " color translucent ").append(color).append(" mesh fill");
       }
     }
 
-    // draw a faint frame showing the inversion
-
     if (haveinversion) {
+
+      // draw a faint frame showing the inversion
+
       draw1.append(drawid).append("invPoint diameter 0.4 ").append(
           Escape.escape(ipt));
       draw1.append(drawid).append("invArrow arrow ")
@@ -764,21 +905,15 @@ class SymmetryOperation extends Matrix4f {
         ptemp.set(ptinv);
         ptemp.add(pt00);
         ptemp.sub(pt01);
-        draw1.append(drawid).append("invFrameX diameter 0.15 ").append(
-            Escape.escape(ptinv)).append(Escape.escape(ptemp)).append(
-            " color translucent red");
+        drawLine("invFrameX", 0.15f, ptinv, ptemp, "translucent red");
         ptemp.set(ptinv);
         ptemp.add(pt00);
         ptemp.sub(pt02);
-        draw1.append(drawid).append("invFrameY diameter 0.15 ").append(
-            Escape.escape(ptinv)).append(Escape.escape(ptemp)).append(
-            " color translucent green");
+        drawLine("invFrameY", 0.15f, ptinv, ptemp, "translucent green");
         ptemp.set(ptinv);
         ptemp.add(pt00);
         ptemp.sub(pt03);
-        draw1.append(drawid).append("invFrameZ diameter 0.15 ").append(
-            Escape.escape(ptinv)).append(Escape.escape(ptemp)).append(
-            " color translucent blue");
+        drawLine("invFrameZ", 0.15f, ptinv, ptemp, "translucent blue");
       }
     }
 
@@ -808,8 +943,18 @@ class SymmetryOperation extends Matrix4f {
         Escape.escape(v03)).append("*0.9} color purple");
     draw1.append("\n}}\n");
 
-    return new Object[] { xyz, xyzOriginal, info1, ftrans, ipt, pa1, ax1,
-        new Integer(ang1), draw1.toString() };
+    String cmds = draw1.toString();
+    draw1 = null;
+    drawid = null;
+    return new Object[] { xyz, xyzOriginal, info1, cmds, 
+        ftrans, ipt, pa1, ax1, new Integer(ang1) };
+  }
+
+  private void drawLine(String id, float diameter, Point3f pt0, Point3f pt1,
+                        String color) {
+    draw1.append(drawid).append(id).append(" diameter ").append(diameter)
+        .append(Escape.escape(pt0)).append(Escape.escape(pt1))
+        .append(" color ").append(color);
   }
 
   private String fcoord(Tuple3f p) {
@@ -817,71 +962,21 @@ class SymmetryOperation extends Matrix4f {
   }
 
   private String fc(float x) {
+    float xabs = Math.abs(x);
+    int x24 = (int) approx(xabs * 24);
+    if (x24%8 != 0)
+      return twelfthsOf(x24 >> 1);
     String m = (x < 0 ? "-" : "");
-    if (x < 0) x = -x;
-    int x24 = (int) approx(x * 24);
-    if (x24 == 0)return "0";
-    if (x24 == 24)return m + "1";
-    if (x24 == 12)return m + "1/2";
-    if (x24%8 == 0)return m + (x24/8) + "/3";
-    if (x24%6 == 0)return m + (x24/6) + "/4";
-    if (x24%4 == 0)return m + (x24/4) + "/6";
-    if (x24%3 == 0)return m + (x24/3) + "/8";
-    return m + x;
+    return (x24 == 0 ? "0" : x24 == 24 ? m + "1" : m + (x24/8) + "/3");
   }
 
-  Point3f atomTest = new Point3f();
-
-  private void setOffset(Point3f[] atoms, int atomIndex, int count) {
-    /*
-     * the center of mass of the full set of atoms is moved into the cell with this
-     *  
-     */
-    int i1 = atomIndex;
-    int i2 = i1 + count;
-    float x = 0;
-    float y = 0;
-    float z = 0;
-    for (int i = i1; i < i2; i++) {
-      newPoint(atoms[i], atomTest, 0, 0, 0);
-      x += atomTest.x;
-      y += atomTest.y;
-      z += atomTest.z;
-    }
-    
-    while (x < -0.001 || x >= count + 0.001) {
-      m03 += (x < 0 ? 1 : -1);
-      x += (x < 0 ? count : -count);
-    }
-    while (y < -0.001 || y >= count + 0.001) {
-      m13 += (y < 0 ? 1 : -1);
-      y += (y < 0 ? count : -count);
-    }
-    while (z < -0.001 || z >= count + 0.001) {
-      m23 += (z < 0 ? 1 : -1);
-      z += (z < 0 ? count : -count);
-    }
+  private static float approx(float f) {
+    return approx(f, 100);
   }
 
-  private void transformCartesian(UnitCell unitcell, Point3f pt) {
-    unitcell.toFractional(pt);
-    transform(pt);
-    unitcell.toCartesian(pt);
+  private static float approx(float f, float n) {
+    return ((int) (f * n + 0.5f * (f < 0 ? -1 : 1)) / n);
+  }
 
-  }
-  
-  Vector3f[] rotateEllipsoid(Point3f cartCenter, Vector3f[] vectors,
-                                    UnitCell unitcell, Point3f ptTemp1, Point3f ptTemp2) {
-    Vector3f[] vRot = new Vector3f[3];
-    ptTemp2.set(cartCenter);
-    transformCartesian(unitcell, ptTemp2);
-    for (int i = vectors.length; --i >= 0;) {
-      ptTemp1.set(cartCenter);
-      ptTemp1.add(vectors[i]);
-      transformCartesian(unitcell, ptTemp1);
-      vRot[i] = new Vector3f(ptTemp1);
-      vRot[i].sub(ptTemp2);
-    }
-    return vRot;
-  }
+
 }

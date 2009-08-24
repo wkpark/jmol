@@ -10879,15 +10879,19 @@ class ScriptEvaluator {
       }
       break;
     case Token.spacegroup:
+      Hashtable info = null;
       if ((len = statementLength) == 2) {
+        if (!isSyntaxCheck) {
+          info = viewer.getSpaceGroupInfo(null);
+        }
+      } else {
+        String sg = parameterAsString(2);
         if (!isSyntaxCheck)
-          msg = viewer.getSpaceGroupInfoText(null);
-        break;
-      }
-      String sg = parameterAsString(2);
-      if (!isSyntaxCheck)
-        msg = viewer.getSpaceGroupInfoText(TextFormat.simpleReplace(sg, "''",
+          info = viewer.getSpaceGroupInfo(TextFormat.simpleReplace(sg, "''",
             "\""));
+      }
+      if (info != null)
+        msg = "" + info.get("spaceGroupInfo") + info.get("symmetryInfo");
       break;
     case Token.dollarsign:
       len = 3;
@@ -11137,8 +11141,8 @@ class ScriptEvaluator {
         } else {
           iSym = intParameter(i);
         }
-        center = centerParameter(++i);
-        // draw ID xxx symop [n or "x,-y,-z"] {center}
+        center = (i + 1 == statementLength ? null : centerParameter(++i));
+        // draw ID xxx symop [n or "x,-y,-z"] [optional {center}]
         i = iToken + 1;
         checkLength(iToken + 1);
         if (!isSyntaxCheck)

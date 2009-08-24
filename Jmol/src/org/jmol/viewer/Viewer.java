@@ -176,10 +176,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Object getSymmetryInfo(BitSet bsAtoms, String xyz, int op, Point3f pt,
                                 String id, int type) {
-    if (bsAtoms == null)
-      bsAtoms = getVisibleSet();
-    return modelSet.getSymmetryInfo(BitSetUtil.firstSetBit(bsAtoms), xyz, op,
-        pt, id, type);
+    return modelSet.getSymmetryInfo(bsAtoms, xyz, op, pt, id, type);
   }
   
   private void clearModelDependentObjects() {
@@ -2261,8 +2258,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getUnitCellInfoText();
   }
 
-  public String getSpaceGroupInfoText(String spaceGroup) {
-    return modelSet.getSpaceGroupInfoText(spaceGroup);
+  public Hashtable getSpaceGroupInfo(String spaceGroup) {
+    return modelSet.getSpaceGroupInfo(spaceGroup);
   }
 
   void getPolymerPointsAndVectors(BitSet bs, Vector vList) {
@@ -6774,6 +6771,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
               +"getScriptEditor....."
               +"setMenu............."
               +"wrappedState........"
+              +"spaceGroupInfo......"
               ).indexOf(infoType)) {
 
       case 0:
@@ -6809,6 +6807,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         if (!global.imageState)
           return "";
         return "\n/**" + JmolConstants.EMBEDDED_SCRIPT_TAG + " \n" + getStateInfo() + "\n**/";
+      case 160:
+        return getSpaceGroupInfo(null);
       default:
         System.out.println("ERROR IN getProperty DATA_API: " + returnType);
         return null;

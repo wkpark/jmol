@@ -920,6 +920,8 @@ class SymmetryOperation extends Matrix4f {
     // and display translation if still not {0 0 0}
 
     if (trans != null) {
+      if (pt0 == null)
+        pt0 = new Point3f(pt00);
       draw1.append(drawid).append("transVector vector ").append(
           Escape.escape(pt0)).append(Escape.escape(trans));
     }

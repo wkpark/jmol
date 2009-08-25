@@ -168,15 +168,12 @@ final public class Measure {
     }
     if (tokType == Token.angle)
       return new Float(theta);
-    if (tokType == Token.draw) {
-      String s = "draw ID " + id + " VECTOR " + Escape.escape(pt_a_prime)
+    if (tokType == Token.draw)
+      return "draw ID " + id + " VECTOR " + Escape.escape(pt_a_prime)
           + " " + Escape.escape(n) + " color "
           + (theta < 0 ? "{255.0 200.0 0.0}" : "{255.0 0.0 128.0}");
-      if (Logger.debugging)
-          s +=";measure " + Escape.escape(a) + " $" + id 
-            + "[1] " + " $" + id + "[2] " + Escape.escape(b);
-      return s;
-    }
+    if (tokType == Token.monitor)
+      return "measure " + Escape.escape(a) + Escape.escape(pt_a_prime) + Escape.escape(pt_b_prime) + Escape.escape(b);
     // for now... array:
     float residuesPerTurn = Math.abs(theta == 0 ? 0 : 360f / theta);
     float pitch = Math.abs(v_dot_n == Float.MIN_VALUE ? 0 : n.length() * (theta == 0 ? 1 : 360f / theta));

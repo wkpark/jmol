@@ -290,7 +290,7 @@ public class Token {
   final static int minimize     = command | 33;
   final static int mo           = command | 34;
 //final static int model        see mathfunc
-  final static int monitor      = command | 35 | setparam | expression | defaultON;
+  public final static int monitor      = command | 35 | setparam | expression | defaultON;
   final static int move         = command | 36;
   public final static int moveto       = command | 37;
   final static int navigate     = command | 38;
@@ -625,7 +625,6 @@ public class Token {
   
   public final static int angle = 1 | 4 << 9 | mathfunc;
   public final static int data  = 2 | 4 << 9 | mathfunc | command;
-  public final static int helix = 3 | 4 << 9 | mathfunc | predefinedset;
   final static int plane        = 4 | 4 << 9 | mathfunc;
   public final static int point = 5 | 4 << 9 | mathfunc;
   final static int quaternion   = 6 | 4 << 9 | mathfunc | command;
@@ -635,6 +634,7 @@ public class Token {
   
   final static int within           = 1 | 5 << 9 | mathfunc;
   final public static int connected = 2 | 5 << 9 | mathfunc;
+  public final static int helix     = 3 | 5 << 9 | mathfunc | predefinedset;
   
   // more SET parameters
   

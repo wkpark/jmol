@@ -707,15 +707,17 @@ class ScriptMathProcessor {
     if (args.length < 1)
       return false;
     // helix({resno=3})
-    // helix({resno=3},"point|axis|radius|angle|draw|array")
-    // helix(resno,"point|axis|radius|angle|draw|array")
-    // helix(pt1, pt2, dq, "point|axis|radius|angle|array|[someID]")
+    // helix({resno=3},"point|axis|radius|angle|draw|measure|array")
+    // helix(resno,"point|axis|radius|angle|draw|measure|array")
+    // helix(pt1, pt2, dq, "point|axis|radius|angle|draw|measure|array|")
+    // helix(pt1, pt2, dq, "draw","someID")
     // helix(pt1, pt2, dq)
     int pt = (args.length > 2 ? 3 : 1);
     String type = (pt >= args.length ? "array" : ScriptVariable
         .sValue(args[pt])).toLowerCase();
     Token t = Token.getTokenFromName(type);
     if (args.length > 2) {
+      // helix(pt1, pt2, dq ...)
       Point3f pta = ptValue(args[0]);
       Point3f ptb = ptValue(args[1]);
       if (args[2].tok != Token.point4f)
@@ -728,6 +730,7 @@ class ScriptMathProcessor {
       case Token.axis:
       case Token.radius:
       case Token.angle:
+      case Token.monitor:
         return addX(Measure.computeHelicalAxis(null, t.tok, pta, ptb, dq));
       case Token.array:
         String[] data = (String[]) Measure.computeHelicalAxis(null, Token.list, pta, ptb, dq);
@@ -755,8 +758,9 @@ class ScriptMathProcessor {
         return addX(isSyntaxCheck ? 0 : ((Float) viewer.getHelixData(bs,
             Token.angle)).floatValue());
       case Token.draw:
+      case Token.monitor:
         return addX(isSyntaxCheck ? "" : (String) viewer.getHelixData(bs,
-            Token.draw));
+            t.tok));
       case Token.array:
         String[] data = (String[]) viewer.getHelixData(bs, Token.list);
         if (data == null)

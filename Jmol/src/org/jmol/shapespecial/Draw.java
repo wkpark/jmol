@@ -716,7 +716,7 @@ public Object getProperty(String property, int index) {
           }
           ptList[3] = new Point3f(0, 360, 0);
         }
-        if (nVertices < 4 && plane != null)
+        if (plane != null)
           ptList[3].z *= dist;
         nVertices = 4;
       }

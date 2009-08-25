@@ -640,7 +640,9 @@ public class Resolver {
     // AIMS geometry files with indented keywords
     for ( int i = 0; i<lines.length; i++ ) {
       String[] tokens = Parser.getTokens(lines[i]);
-      if ( tokens[0].toLowerCase().startsWith("atom") ) return true;
+      //No -- can't do this -- it's incompatible with PDB 
+      // for such files you will have to force the reader with "aims::"
+      // if ( tokens[0].toLowerCase().startsWith("atom") ) return true;
       if ( tokens[0].toLowerCase().startsWith("lattice_vector") ) return true;
     }
     return false; 

@@ -699,7 +699,6 @@ public Object getProperty(String property, int index) {
         ptList[1] = new Point3f(vAC);
         drawType = (isArrow ? JmolConstants.DRAW_ARROW
             : isArc ? JmolConstants.DRAW_ARC : JmolConstants.DRAW_CIRCULARPLANE);
-        plane = null;
       }
       if (isArc) {
         dist = Math.abs(dist);
@@ -717,10 +716,11 @@ public Object getProperty(String property, int index) {
           }
           ptList[3] = new Point3f(0, 360, 0);
         }
-        if (nVertices < 4)
+        if (nVertices < 4 && plane != null)
           ptList[3].z *= dist;
         nVertices = 4;
       }
+      plane = null;
     } else if (drawType == JmolConstants.DRAW_POINT) {
       Point3f pt;
       Point3f center = new Point3f();

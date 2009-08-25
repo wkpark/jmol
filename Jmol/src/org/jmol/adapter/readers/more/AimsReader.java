@@ -21,7 +21,7 @@
  */
 
 /* 
- * Copyright (C) 2009  Jörg Meyer, FHI Berlin
+ * Copyright (C) 2009  J. Meyer, FHI Berlin
  *
  * Contact: meyer@fhi-berlin.mpg.de
  *

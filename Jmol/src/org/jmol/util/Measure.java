@@ -179,7 +179,7 @@ final public class Measure {
     }
     // for now... array:
     float residuesPerTurn = Math.abs(theta == 0 ? 0 : 360f / theta);
-    float pitch = Math.abs(v_dot_n == Float.MIN_VALUE ? 0 : n.length() * theta / 360f);
+    float pitch = Math.abs(v_dot_n == Float.MIN_VALUE ? 0 : n.length() * (theta == 0 ? 1 : 360f / theta));
     switch (tokType) {
     case Token.array:
       return new Object[] {pt_a_prime, n, r,  new Point3f(theta, pitch, residuesPerTurn)};

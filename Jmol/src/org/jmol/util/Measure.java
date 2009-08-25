@@ -178,7 +178,7 @@ final public class Measure {
       return s;
     }
     // for now... array:
-    float residuesPerTurn = (theta == 0 ? 0 : 360f / theta);
+    float residuesPerTurn = Math.abs(theta == 0 ? 0 : 360f / theta);
     float pitch = Math.abs(v_dot_n == Float.MIN_VALUE ? 0 : n.length() * theta / 360f);
     switch (tokType) {
     case Token.array:

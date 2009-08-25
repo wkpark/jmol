@@ -52,6 +52,8 @@ import java.io.BufferedReader;
 /*
  * FHI-AIMS geometry.in file format
  * 
+ * http://www.fhi-berlin.mpg.de/aims
+ * 
  * contributed by Joerg Meyer, j-meyer@sourceforge.net
  * 
  */

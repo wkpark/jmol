@@ -447,8 +447,6 @@ class SymmetryOperation extends Matrix4f {
 
       // undo inversion for quaternion analysis (requires proper rotations only)
 
-      ptemp.set(1, 0, 0);
-      ptemp.scaleAdd(2, new Point3f(0, 1, 0), new Point3f(0, 0, 1));
       p1.scaleAdd(-2, v01, p1);
       p2.scaleAdd(-2, v02, p2);
       p3.scaleAdd(-2, v03, p3);
@@ -469,17 +467,6 @@ class SymmetryOperation extends Matrix4f {
     Vector3f ax1 = (Vector3f) info[1];
     int ang1 = (int) Math.abs(approx(((Point3f) info[3]).x, 1));
     float pitch1 = approx(((Point3f) info[3]).y);
-    info = (Object[]) Measure.computeHelicalAxis(null, Token.array, pt00, p0,
-        Quaternion.getQuaternionFrame(p0, p2, p3).div(
-            Quaternion.getQuaternionFrame(pt00, pt02, pt03)));
-    Vector3f ax2 = (Vector3f) info[1];
-    int ang2 = (int) Math.abs(approx(((Point3f) info[3]).x, 1));
-
-    info = (Object[]) Measure.computeHelicalAxis(null, Token.array, pt00, p0,
-        Quaternion.getQuaternionFrame(p0, p3, p1).div(
-            Quaternion.getQuaternionFrame(pt00, pt03, pt01)));
-    Vector3f ax3 = (Vector3f) info[1];
-    int ang3 = (int) Math.abs(approx(((Point3f) info[3]).x, 1));
 
     if (haveinversion) {
 
@@ -498,26 +485,14 @@ class SymmetryOperation extends Matrix4f {
 
     // ////////// determination of type of operation from first principles
 
-    boolean isinversion = false;
-    boolean ismirrorplane = false;
     Point3f ptinv = null; // inverted point for translucent frame
     Point3f ipt = null; // inversion center
     Point3f pt0 = null; // reflection center
 
-    boolean istranslation = (ang1 == 0 && ang2 == 0 && ang3 == 0);
-
-    // unit axes
-
-    Vector3f n1 = new Vector3f(ax1);
-    Vector3f n2 = new Vector3f(ax2);
-    Vector3f n3 = new Vector3f(ax3);
-    n1.normalize();
-    n2.normalize();
-    n3.normalize();
-
-    boolean isrotation = !istranslation && approx(Math.abs(n1.dot(n2))) == 1
-        && approx(Math.abs(n2.dot(n3))) == 1
-        && approx(Math.abs(n3.dot(n1))) == 1;
+    boolean istranslation = (ang1 == 0);
+    boolean isrotation = !istranslation;
+    boolean isinversion = false;
+    boolean ismirrorplane = false;
 
     if (isrotation || haveinversion)
       trans = null;

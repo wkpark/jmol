@@ -7951,6 +7951,42 @@
   <fah_proj number="5785" name="p5785_GB95_T0498" public="n"
     server="171.67.108.21" atoms="920" preferred="15" deadline="25"
     credit="783" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5787" name="p5787_drkN_300K" public="y"
+    server="171.64.65.106" atoms="941" preferred="10" deadline="15"
+    credit="787" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5788" name="p5788_drkN_330K" public="y"
+    server="171.64.65.106" atoms="941" preferred="10" deadline="15"
+    credit="787" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5789" name="p5789_drkN_350K" public="y"
+    server="171.64.65.106" atoms="941" preferred="10" deadline="15"
+    credit="787" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5790" name="p5790_drkN_370K" public="y"
+    server="171.64.65.106" atoms="941" preferred="10" deadline="15"
+    credit="787" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5791" name="p5791_drkN_400K" public="y"
+    server="171.64.65.106" atoms="941" preferred="10" deadline="15"
+    credit="787" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5792" name="p5792_drkN_450K" public="y"
+    server="171.64.65.106" atoms="941" preferred="10" deadline="15"
+    credit="787" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5793" name="p5793_drkN_T22G_300K" public="y"
+    server="171.64.65.106" atoms="934" preferred="10" deadline="15"
+    credit="787" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5794" name="p5794_drkN_T22G_330K" public="y"
+    server="171.64.65.106" atoms="934" preferred="10" deadline="15"
+    credit="787" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5795" name="p5795_drkN_T22G_350K" public="y"
+    server="171.64.65.106" atoms="934" preferred="10" deadline="15"
+    credit="787" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5796" name="p5796_drkN_T22G_370K" public="y"
+    server="171.64.65.106" atoms="934" preferred="10" deadline="15"
+    credit="787" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5797" name="p5797_drkN_T22G_400K" public="y"
+    server="171.64.65.106" atoms="934" preferred="10" deadline="15"
+    credit="787" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5798" name="p5798_drkN_T22G_450K" public="y"
+    server="171.64.65.106" atoms="934" preferred="10" deadline="15"
+    credit="787" frames="100" code="GG2" contact="vvoelz"/>
 
   <!-- Projects 5800 to 5899 -->
   <fah_proj number="5800" name="p5800_supervillin_e1" public="y"
@@ -8046,6 +8082,9 @@
   <fah_proj number="6306" name="p6306_Peptide dimer in TIP3P water" public="n" file="xyz"
     server="171.64.65.111" atoms="5768" preferred="10" deadline="15"
     credit="57" frames="100" code="G" contact="vvoelz" contrib="Hyperlife"/>
+  <fah_proj number="6307" name="p6307_sh3_with_ALA_PRO_frags" public="y"
+    server="171.64.65.111" atoms="15111" preferred="36" deadline="52"
+    credit="336" frames="100" code="G" contact="vvoelz"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

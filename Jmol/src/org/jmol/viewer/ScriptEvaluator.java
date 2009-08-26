@@ -54,6 +54,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
@@ -1161,7 +1162,7 @@ class ScriptEvaluator {
             break;
           case Token.distance:
             if (planeRef != null)
-              fv = Graphics3D.distanceToPlane(planeRef, atom);
+              fv = Measure.distanceToPlane(planeRef, atom);
             else
               fv = atom.distance(ptRef);
             break;
@@ -3719,7 +3720,7 @@ class ScriptEvaluator {
               JmolConstants.SHAPE_DRAW, "vertices");
           if (points == null || points.length < 3)
             break;
-          return Graphics3D.getPlaneThroughPoints(points[0], points[1],
+          return Measure.getPlaneThroughPoints(points[0], points[1],
               points[2], new Vector3f(), vAB, vAC);
         case JmolConstants.SHAPE_ISOSURFACE:
           setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID", id);
@@ -3771,7 +3772,7 @@ class ScriptEvaluator {
         Point3f pt3 = atomCenterOrCoordinateParameter(iToken);
         i = iToken;
         Vector3f plane = new Vector3f();
-        float w = Graphics3D.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB,
+        float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB,
             vAC);
         Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
         if (!isSyntaxCheck && Logger.debugging) {
@@ -3817,7 +3818,7 @@ class ScriptEvaluator {
     viewer.toCartesian(pt2);
     viewer.toCartesian(pt3);
     Vector3f plane = new Vector3f();
-    float w = Graphics3D.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
+    float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
     Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
     if (!isSyntaxCheck && Logger.debugging)
       Logger.info("defined plane: " + p);

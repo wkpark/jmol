@@ -36,6 +36,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
+import org.jmol.util.Measure;
 import org.jmol.viewer.Viewer;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.readers.JvxlReader;
@@ -290,7 +291,7 @@ public class IsosurfaceMesh extends Mesh {
   }
   
   Point4f getFacePlane(int i, Vector3f vNorm) {
-    return Graphics3D.getPlaneThroughPoints(vertices[polygonIndexes[i][0]], 
+    return Measure.getPlaneThroughPoints(vertices[polygonIndexes[i][0]], 
         vertices[polygonIndexes[i][1]], vertices[polygonIndexes[i][2]], 
         vNorm, vAB, vAC);
   }

@@ -123,7 +123,6 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.util.*;
 import org.jmol.atomdata.AtomDataServer;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.data.MeshData;
@@ -1071,7 +1070,7 @@ public class SurfaceGenerator {
                                               Point3f ptb, Point3f ptc) {
     // ax + by + cz + d = 0
 
-    float d = Graphics3D.getDirectedNormalThroughPoints(pta, ptb, ptc, ptRef, vNorm, vAB, vAC);
+    float d = Measure.getDirectedNormalThroughPoints(pta, ptb, ptc, ptRef, vNorm, vAB, vAC);
     return (vNorm.x * x + vNorm.y * y + d) / -vNorm.z;
   }
   

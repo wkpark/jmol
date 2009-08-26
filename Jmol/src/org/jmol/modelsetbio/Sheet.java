@@ -26,7 +26,7 @@ package org.jmol.modelsetbio;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
+import org.jmol.util.Measure;
 import org.jmol.viewer.JmolConstants;
 
 public class Sheet extends ProteinStructure {
@@ -61,7 +61,7 @@ public class Sheet extends ProteinStructure {
     if (lowerNeighborIsHelixOrSheet()) {
       //System.out.println("ok"); 
     } else {
-      Graphics3D
+      Measure
           .projectOntoAxis(tempA, axisA, axisUnitVector, vectorProjection);
     }
     Point3f tempB = new Point3f();
@@ -69,7 +69,7 @@ public class Sheet extends ProteinStructure {
     if (upperNeighborIsHelixOrSheet()) {
       //System.out.println("ok");       
     } else {
-      Graphics3D
+      Measure
           .projectOntoAxis(tempB, axisA, axisUnitVector, vectorProjection);
     }
     axisA = tempA;

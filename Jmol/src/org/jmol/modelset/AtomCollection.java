@@ -42,6 +42,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
@@ -1787,7 +1788,7 @@ abstract public class AtomCollection {
     BitSet bsResult = new BitSet();
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      float d = Graphics3D.distanceToPlane(plane, atom);
+      float d = Measure.distanceToPlane(plane, atom);
       if (distance > 0 && d >= -0.1 && d <= distance || distance < 0
           && d <= 0.1 && d >= distance || distance == 0 && Math.abs(d) < 0.01)
         bsResult.set(atom.atomIndex);

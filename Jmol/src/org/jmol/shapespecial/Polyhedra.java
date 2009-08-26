@@ -38,7 +38,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
+import org.jmol.util.Measure;
 
 public class Polyhedra extends AtomShape {
 
@@ -419,10 +419,10 @@ public class Polyhedra extends AtomShape {
           // if center is on the face, then we need a different point to 
           // define the normal
           if (isFaceCentered)
-            Graphics3D.getNormalFromCenter(randomPoint, points[i], points[j],
+            Measure.getNormalFromCenter(randomPoint, points[i], points[j],
                 points[k], false, normal);
           else
-            Graphics3D.getNormalFromCenter(points[ptCenter], points[i],
+            Measure.getNormalFromCenter(points[ptCenter], points[i],
                 points[j], points[k], true, normal);
           normal.scale(isCollapsed && !isFaceCentered ? faceCenterOffset
               : 0.001f);
@@ -443,7 +443,7 @@ public class Polyhedra extends AtomShape {
             planesT[ipt++] = (byte) i;
             planesT[ipt++] = (byte) j;
             planesT[ipt++] = (byte) nRef;
-            Graphics3D.getNormalFromCenter(points[k], points[i], points[j],
+            Measure.getNormalFromCenter(points[k], points[i], points[j],
                 ptRef, false, normal);
             normixesT[planeCount++] = (isFaceCentered ? g3d
                 .get2SidedNormix(normal) : g3d.getNormix(normal));
@@ -454,7 +454,7 @@ public class Polyhedra extends AtomShape {
             planesT[ipt++] = (byte) i;
             planesT[ipt++] = (byte) nRef;
             planesT[ipt++] = (byte) k;
-            Graphics3D.getNormalFromCenter(points[j], points[i], ptRef,
+            Measure.getNormalFromCenter(points[j], points[i], ptRef,
                 points[k], false, normal);
             normixesT[planeCount++] = (isFaceCentered ? g3d
                 .get2SidedNormix(normal) : g3d.getNormix(normal));
@@ -465,7 +465,7 @@ public class Polyhedra extends AtomShape {
             planesT[ipt++] = (byte) nRef;
             planesT[ipt++] = (byte) j;
             planesT[ipt++] = (byte) k;
-            Graphics3D.getNormalFromCenter(points[i], ptRef, points[j],
+            Measure.getNormalFromCenter(points[i], ptRef, points[j],
                 points[k], false, normal);
             normixesT[planeCount++] = (isFaceCentered ? g3d
                 .get2SidedNormix(normal) : g3d.getNormix(normal));
@@ -515,8 +515,8 @@ public class Polyhedra extends AtomShape {
      * 
      */
     Vector3f norm = new Vector3f();
-    float w = Graphics3D.getNormalThroughPoints(pt1, pt2, pt3, norm, vAB, vAC);
-    float d = Graphics3D.distanceToPlane(norm, w, ptX);
+    float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, norm, vAB, vAC);
+    float d = Measure.distanceToPlane(norm, w, ptX);
     return (Math.abs(d) < minDistanceForPlanarity);
   }
 

@@ -42,11 +42,11 @@ import org.jmol.api.JmolBioResolver;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
@@ -1449,7 +1449,7 @@ abstract public class ModelCollection extends BondCollection {
         * plane.z);
     for (int i = atomCount; --i >= 0;)
       if (bs.get(i)) {
-        float twoD = -Graphics3D.distanceToPlane(plane, d, atoms[i]) * 2;
+        float twoD = -Measure.distanceToPlane(plane, d, atoms[i]) * 2;
         float x = norm.x * twoD;
         float y = norm.y * twoD;
         float z = norm.z * twoD;

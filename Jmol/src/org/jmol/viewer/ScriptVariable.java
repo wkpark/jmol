@@ -30,11 +30,11 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
@@ -325,7 +325,7 @@ class ScriptVariable extends Token {
     case point3f:
       return ((Point3f) x.value).distance(pt0);
     case point4f:
-      return Graphics3D.distanceToPlane((Point4f) x.value, pt0);
+      return Measure.distanceToPlane((Point4f) x.value, pt0);
     default:
       return 0;
     }

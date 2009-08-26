@@ -29,6 +29,7 @@ import java.util.Vector;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
+import org.jmol.util.Measure;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.*;
@@ -188,7 +189,7 @@ public class Mesh {
       int[] pi = polygonIndexes[i];
       try {
         if (pi != null) {
-          Graphics3D.calcNormalizedNormal(vertices[pi[0]], vertices[pi[1]],
+          Measure.calcNormalizedNormal(vertices[pi[0]], vertices[pi[1]],
               vertices[pi[2]], vTemp, vAB, vAC);
           // general 10.? error here was not watching out for 
           // occurrances of intersection AT a corner, leading to

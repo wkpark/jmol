@@ -1104,11 +1104,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private void getClosestPoint(IsosurfaceMesh m, int imin, Point3f toPt, Point3f ptRet,
                                Vector3f normalRet) {
     Point4f plane = m.getFacePlane(imin, normalRet);
-    float dist = Graphics3D.distanceToPlane(plane, toPt);
+    float dist = Measure.distanceToPlane(plane, toPt);
     normalRet.scale(-dist);
     ptRet.set(toPt);
     ptRet.add(normalRet);
-    dist = Graphics3D.distanceToPlane(plane, ptRet);
+    dist = Measure.distanceToPlane(plane, ptRet);
     if (m.centers[imin].distance(toPt) < ptRet.distance(toPt))
       ptRet.set(m.centers[imin]);
     //System.out.println(ptRet);

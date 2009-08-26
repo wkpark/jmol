@@ -26,7 +26,7 @@ package org.jmol.modelsetbio;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
+import org.jmol.util.Measure;
 import org.jmol.viewer.JmolConstants;
 
 public class Helix extends ProteinStructure {
@@ -46,9 +46,9 @@ public class Helix extends ProteinStructure {
     }
     axisA = new Point3f();
     axisUnitVector = new Vector3f();
-    Graphics3D.calcBestAxisThroughPoints(points, axisA, axisUnitVector, vectorProjection, 4);
+    Measure.calcBestAxisThroughPoints(points, axisA, axisUnitVector, vectorProjection, 4);
     axisB = new Point3f(points[monomerCount]);
-    Graphics3D.projectOntoAxis(axisB, axisA, axisUnitVector, vectorProjection);
+    Measure.projectOntoAxis(axisB, axisA, axisUnitVector, vectorProjection);
   }
 
   /****************************************************************

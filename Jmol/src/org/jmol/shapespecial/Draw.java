@@ -37,6 +37,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Measure;
 import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
@@ -685,7 +686,7 @@ public Object getProperty(String property, int index) {
     float dist = 0;
     if (isArc || plane != null && isCircle) {
       if (plane != null) {
-        dist = Graphics3D.distanceToPlane(plane, ptList[0]);
+        dist = Measure.distanceToPlane(plane, ptList[0]);
         vAC.set(-plane.x, -plane.y, -plane.z);
         vAC.normalize();
         if (dist < 0)
@@ -726,7 +727,7 @@ public Object getProperty(String property, int index) {
       Point3f center = new Point3f();
       Vector3f normal = new Vector3f();
       if (nVertices == 2 && plane != null) {
-        dist = Graphics3D.distanceToPlane(plane, ptList[0]);
+        dist = Measure.distanceToPlane(plane, ptList[0]);
         vAC.set(plane.x, plane.y, plane.z);
         vAC.normalize();
         vAC.scale(-dist);
@@ -748,10 +749,10 @@ public Object getProperty(String property, int index) {
         nVertices = 4;
       } else if (nVertices >= 3 && !isPlane && isPerpendicular) {
         // normal to plane
-        Graphics3D.calcNormalizedNormal(ptList[0], ptList[1], ptList[2],
+        Measure.calcNormalizedNormal(ptList[0], ptList[1], ptList[2],
             normal, vAB, vAC);
         center = new Point3f();
-        Graphics3D.calcAveragePointN(ptList, nVertices, center);
+        Measure.calcAveragePointN(ptList, nVertices, center);
         dist = (length == Float.MAX_VALUE ? ptList[0].distance(center) : length);
         normal.scale(dist);
         ptList[0].set(center);
@@ -760,13 +761,13 @@ public Object getProperty(String property, int index) {
         nVertices = 2;
       } else if (nVertices == 2 && isPerpendicular) {
         // perpendicular line to line or plane to line
-        Graphics3D.calcAveragePoint(ptList[0], ptList[1], center);
+        Measure.calcAveragePoint(ptList[0], ptList[1], center);
         dist = (length == Float.MAX_VALUE ? ptList[0].distance(center) : length);
         if (isPlane && length != Float.MAX_VALUE)
           dist /= 2f;
         if (isPlane && isRotated45)
           dist *= 1.4142f;
-        g3d.calcXYNormalToLine(ptList[0], ptList[1], normal);
+        Measure.calcXYNormalToLine(ptList[0], ptList[1], normal);
         normal.scale(dist);
         if (isPlane) {
           ptList[2] = new Point3f(center);
@@ -778,7 +779,7 @@ public Object getProperty(String property, int index) {
           // 0-------+--------1
           // |
           // 2
-          Graphics3D.calcNormalizedNormal(ptList[0], ptList[1], ptList[2],
+          Measure.calcNormalizedNormal(ptList[0], ptList[1], ptList[2],
               normal, vAB, vAC);
           normal.scale(dist);
           ptList[3] = new Point3f(center);
@@ -794,10 +795,10 @@ public Object getProperty(String property, int index) {
           // 3 2
 
           if (isRotated45) {
-            Graphics3D.calcAveragePoint(ptList[0], ptList[1], ptList[0]);
-            Graphics3D.calcAveragePoint(ptList[1], ptList[2], ptList[1]);
-            Graphics3D.calcAveragePoint(ptList[2], ptList[3], ptList[2]);
-            Graphics3D.calcAveragePoint(ptList[3], pt, ptList[3]);
+            Measure.calcAveragePoint(ptList[0], ptList[1], ptList[0]);
+            Measure.calcAveragePoint(ptList[1], ptList[2], ptList[1]);
+            Measure.calcAveragePoint(ptList[2], ptList[3], ptList[2]);
+            Measure.calcAveragePoint(ptList[3], pt, ptList[3]);
           }
           nVertices = 4;
         } else {
@@ -809,7 +810,7 @@ public Object getProperty(String property, int index) {
         if (isArrow && nVertices != -2)
           isArrow = false;
       } else if (nVertices == 2 && length != Float.MAX_VALUE) {
-        Graphics3D.calcAveragePoint(ptList[0], ptList[1], center);
+        Measure.calcAveragePoint(ptList[0], ptList[1], center);
         normal.set(ptList[1]);
         normal.sub(center);
         normal.scale(0.5f / normal.length() * (length == 0 ? 0.01f : length));
@@ -912,7 +913,7 @@ public Object getProperty(String property, int index) {
             m.vertices[p[1]]);
         n++;
       } else {
-        Graphics3D.calcNormalizedNormal(m.vertices[p[0]],
+        Measure.calcNormalizedNormal(m.vertices[p[0]],
             m.vertices[p[1]],
             m.vertices[p[2]], m.axes[i], m.vAB, m.vAC);
         n++;

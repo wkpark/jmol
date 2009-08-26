@@ -795,9 +795,9 @@ class ScriptMathProcessor {
     }
 
     if (plane1 == null)
-      return addX(plane2 == null ? pt2.distance(pt1) : Graphics3D
+      return addX(plane2 == null ? pt2.distance(pt1) : Measure
           .distanceToPlane(plane2, pt1));
-    return addX(Graphics3D.distanceToPlane(plane1, pt2));
+    return addX(Measure.distanceToPlane(plane1, pt2));
   }
 
   private Point3f ptValue(ScriptVariable x) throws ScriptException {
@@ -1061,7 +1061,7 @@ class ScriptMathProcessor {
         Vector3f vAB = new Vector3f();
         Vector3f vAC = new Vector3f();
         Vector3f norm = new Vector3f();
-        float nd = Graphics3D.getDirectedNormalThroughPoints(pt1, pt2, pt3,
+        float nd = Measure.getDirectedNormalThroughPoints(pt1, pt2, pt3,
             (args.length == 4 ? ptValue(args[3]) : null), norm, vAB, vAC);
         return addX(new Point4f(norm.x, norm.y, norm.z, nd));
       default:

@@ -6184,7 +6184,7 @@ class ScriptEvaluator {
         }
         data[2] = atomMap;
       } else {
-        data[2] = bs;
+        data[2] = BitSetUtil.copy(bs);
       }
       data[1] = dataString;
       viewer.setData(dataType, data, atomCount, atomNumberField,
@@ -9447,7 +9447,7 @@ class ScriptEvaluator {
       }
       if (propertyName.startsWith("property_")) {
         viewer.setData(propertyName, new Object[] { propertyName,
-            ScriptVariable.sValue(tv), bs }, viewer.getAtomCount(), 0, 0,
+            ScriptVariable.sValue(tv), BitSetUtil.copy(bs) }, viewer.getAtomCount(), 0, 0,
             tv.tok == Token.list ? Integer.MAX_VALUE : Integer.MIN_VALUE, 0);
         return;
       }
@@ -9468,7 +9468,7 @@ class ScriptEvaluator {
       if (v instanceof String[])
         v = TextFormat.join((String[]) v, '\n', 0);
       viewer.setData(key,
-          new Object[] { key, "" + v, viewer.getSelectionSet() }, n, 0, 0,
+          new Object[] { key, "" + v, BitSetUtil.copy(viewer.getSelectionSet()) }, n, 0, 0,
           Integer.MIN_VALUE, 0);
       return;
     }

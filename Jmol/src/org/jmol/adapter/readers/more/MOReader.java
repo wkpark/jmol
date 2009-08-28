@@ -313,7 +313,7 @@ abstract class MOReader extends AtomSetCollectionReader {
 ...
  TOTAL NUMBER OF BASIS SET SHELLS             =  101
    *
-   * NBO:
+   * NBO: --- note, "-" can be in column with " " causing tokenization failure
    * 
           AO         1       2       3       4       5       6       7       8
       ---------- ------- ------- ------- ------- ------- ------- ------- -------
@@ -331,9 +331,12 @@ abstract class MOReader extends AtomSetCollectionReader {
     Hashtable[] mos = null;
     Vector[] data = null;
     Vector coeffLabels = null;
+    int ptOffset = -1;
+    int fieldSize = 0;
     int nThisLine = 0;
     readLine();
     int moCount = 0;
+    int nSkip = -1;
     if (line.indexOf("---") >= 0)
       readLine();
     while (readLine() != null) {
@@ -391,8 +394,15 @@ abstract class MOReader extends AtomSetCollectionReader {
       //read the data line:
       if (nThisLine == 0) {
         nThisLine = tokens.length;
-        if (tokens[0].equals("AO")) // NBOs
+        if (tokens[0].equals("AO")) {
+          //01234567890123456789
+          // 480. Li31 (s)   -7.3005  1.8135 -9.4655 -0.5137 -5.1614-23.4537-20.3894-37.6613
           nThisLine--;
+          ptOffset = 16;
+          fieldSize = 8;
+          nSkip = 3;
+            // NBOs
+        }
         if (mos == null || nThisLine > mos.length) {
            mos = new Hashtable[nThisLine];
            data = new Vector[nThisLine];
@@ -405,11 +415,17 @@ abstract class MOReader extends AtomSetCollectionReader {
         coeffLabels = new Vector();
         continue;
       }
-
-      int nSkip = tokens.length - nThisLine;
+      if (ptOffset < 0) {
+        nSkip = tokens.length - nThisLine;
+        for (int i = 0; i < nThisLine; i++)
+          data[i].addElement(tokens[i + nSkip]);
+      } else {
+        int pt = ptOffset;
+        for (int i = 0; i < nThisLine; i++, pt += fieldSize)
+          data[i].addElement(line.substring(pt, pt + fieldSize).trim());
+      }
       coeffLabels.addElement(JmolAdapter.canonicalizeQuantumSubshellTag(tokens[nSkip - 1].toUpperCase()));
-      for (int i = 0; i < nThisLine; i++)
-        data[i].addElement(tokens[i + nSkip]);
+      
       line = "";
     }
     energyUnits = "a.u.";

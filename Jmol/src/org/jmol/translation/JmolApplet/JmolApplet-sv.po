@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-08-26 23:22+0200\n"
+"POT-Creation-Date: 2009-08-29 09:38+0200\n"
 "PO-Revision-Date: 2009-08-15 09:08+0000\n"
 "Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -358,102 +358,106 @@ msgid "Append models"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:118
+msgid "Arabic"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:119
 msgid "Catalan"
 msgstr "Katalanska"
 
-#: org/jmol/i18n/GT.java:119
+#: org/jmol/i18n/GT.java:120
 msgid "Simplified Chinese"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:120
+#: org/jmol/i18n/GT.java:121
 msgid "Traditional Chinese"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:121
+#: org/jmol/i18n/GT.java:122
 msgid "Czech"
 msgstr "Tjeckiska"
 
-#: org/jmol/i18n/GT.java:122
+#: org/jmol/i18n/GT.java:123
 msgid "Danish"
 msgstr "Danska"
 
-#: org/jmol/i18n/GT.java:123
+#: org/jmol/i18n/GT.java:124
 msgid "Dutch"
 msgstr "Holländska"
 
-#: org/jmol/i18n/GT.java:124
+#: org/jmol/i18n/GT.java:125
 msgid "British English"
 msgstr "Brittisk engelska"
 
-#: org/jmol/i18n/GT.java:125
+#: org/jmol/i18n/GT.java:126
 msgid "American English"
 msgstr "Amerikansk engelska"
 
-#: org/jmol/i18n/GT.java:126
+#: org/jmol/i18n/GT.java:127
 msgid "Estonian"
 msgstr "Estniska"
 
-#: org/jmol/i18n/GT.java:127
+#: org/jmol/i18n/GT.java:128
 msgid "French"
 msgstr "Franska"
 
-#: org/jmol/i18n/GT.java:128
+#: org/jmol/i18n/GT.java:129
 msgid "German"
 msgstr "Tyska"
 
-#: org/jmol/i18n/GT.java:129
+#: org/jmol/i18n/GT.java:130
 msgid "Greek"
 msgstr "Grekisk"
 
-#: org/jmol/i18n/GT.java:130
+#: org/jmol/i18n/GT.java:131
 msgid "Hungarian"
 msgstr "Ungerska"
 
-#: org/jmol/i18n/GT.java:131
+#: org/jmol/i18n/GT.java:132
 msgid "Italian"
 msgstr "Italienska"
 
-#: org/jmol/i18n/GT.java:132
+#: org/jmol/i18n/GT.java:133
 msgid "Korean"
 msgstr "Koreansk"
 
-#: org/jmol/i18n/GT.java:133
+#: org/jmol/i18n/GT.java:134
 msgid "Norwegian Bokmal"
 msgstr "Norska (Bokmål)"
 
-#: org/jmol/i18n/GT.java:134
+#: org/jmol/i18n/GT.java:135
 msgid "Polish"
 msgstr "Polska"
 
-#: org/jmol/i18n/GT.java:135
+#: org/jmol/i18n/GT.java:136
 msgid "Brazilian Portuguese"
 msgstr "Brasiliansk portugisiska"
 
-#: org/jmol/i18n/GT.java:136
+#: org/jmol/i18n/GT.java:137
 msgid "Portuguese"
 msgstr "Portugisiska"
 
-#: org/jmol/i18n/GT.java:137
+#: org/jmol/i18n/GT.java:138
 msgid "Russian"
 msgstr "Ryska"
 
-#: org/jmol/i18n/GT.java:138
+#: org/jmol/i18n/GT.java:139
 msgid "Slovenian"
 msgstr "Slovenska"
 
-#: org/jmol/i18n/GT.java:139
+#: org/jmol/i18n/GT.java:140
 msgid "Spanish"
 msgstr "Spanska"
 
-#: org/jmol/i18n/GT.java:140
+#: org/jmol/i18n/GT.java:141
 msgid "Swedish"
 msgstr "Svenska"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:142
 msgid "Turkish"
 msgstr "Turkiska"
 
-#: org/jmol/i18n/GT.java:142
+#: org/jmol/i18n/GT.java:143
 msgid "Ukrainian"
 msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-08-26 23:22+0200\n"
+"POT-Creation-Date: 2009-08-29 09:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -357,102 +357,106 @@ msgid "Append models"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:118
-msgid "Catalan"
+msgid "Arabic"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:119
-msgid "Simplified Chinese"
+msgid "Catalan"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:120
-msgid "Traditional Chinese"
+msgid "Simplified Chinese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:121
-msgid "Czech"
+msgid "Traditional Chinese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:122
-msgid "Danish"
+msgid "Czech"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:123
-msgid "Dutch"
+msgid "Danish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:124
-msgid "British English"
+msgid "Dutch"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:125
-msgid "American English"
+msgid "British English"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:126
-msgid "Estonian"
+msgid "American English"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:127
-msgid "French"
+msgid "Estonian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:128
-msgid "German"
+msgid "French"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:129
-msgid "Greek"
+msgid "German"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:130
-msgid "Hungarian"
+msgid "Greek"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:131
-msgid "Italian"
+msgid "Hungarian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:132
-msgid "Korean"
+msgid "Italian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:133
-msgid "Norwegian Bokmal"
+msgid "Korean"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:134
-msgid "Polish"
+msgid "Norwegian Bokmal"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:135
-msgid "Brazilian Portuguese"
+msgid "Polish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:136
-msgid "Portuguese"
+msgid "Brazilian Portuguese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:137
-msgid "Russian"
+msgid "Portuguese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:138
-msgid "Slovenian"
+msgid "Russian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:139
-msgid "Spanish"
+msgid "Slovenian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:140
-msgid "Swedish"
+msgid "Spanish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:141
-msgid "Turkish"
+msgid "Swedish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:142
+msgid "Turkish"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:143
 msgid "Ukrainian"
 msgstr ""
 

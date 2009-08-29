@@ -1,4 +1,4 @@
-# Ukrainian translation for jmol
+# Arabic translation for jmol
 # Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
 # This file is distributed under the same license as the jmol package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-08-29 09:38+0200\n"
-"PO-Revision-Date: 2009-05-15 20:02+0000\n"
-"Last-Translator: svv <skrypnychuk@gmail.com>\n"
-"Language-Team: Ukrainian <uk@li.org>\n"
+"PO-Revision-Date: 2009-08-26 12:56+0000\n"
+"Last-Translator: Dilmi Fethi <delphiexile@gmail.com>\n"
+"Language-Team: Arabic <ar@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-05-16 11:52+0000\n"
+"X-Launchpad-Export-Date: 2009-08-26 22:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/Jmol.java:657
@@ -26,25 +26,27 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
-"Додаток Jmol, версія {0} {1}.\n"
+"Jmol Applet version {0} {1}.\n"
 "\n"
-"Проект OpenScience.\n"
+"An OpenScience project.\n"
 "\n"
-"Див. http://www.jmol.org для отримання додаткової інформації"
+"See http://www.jmol.org for more information"
 
 #: org/jmol/applet/Jmol.java:893
 msgid "File Error:"
-msgstr "Помилка файла:"
+msgstr "خطأ في الملف:"
 
 #: org/jmol/applet/Jmol.java:1083
 #, java-format
 msgid ""
 "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 msgstr ""
+"الملف المنشأ بواسطة هذا البرنامج غير مسموح به، لأجل صيغة JPEG Base64 إستعمل "
+"{0}"
 
 #: org/jmol/applet/Jmol.java:1086
 msgid "File creation failed."
-msgstr "Не вдалося створити файл."
+msgstr "فشل إنشاء ملف"
 
 #: org/jmol/applet/Jmol.java:1194
 msgid ""
@@ -55,316 +57,313 @@ msgstr ""
 
 #: org/jmol/appletwrapper/AppletWrapper.java:91
 msgid "Loading Jmol applet ..."
-msgstr "Завантаження додатку Jmol..."
+msgstr "تحميل بريمج Applet جارٍ"
 
 #: org/jmol/appletwrapper/AppletWrapper.java:165
 #, java-format
 msgid "  {0} seconds"
-msgstr "  {0} секунд"
+msgstr "  {0} ثانية"
 
 #: org/jmol/console/AppletConsole.java:96 org/jmol/console/JmolConsole.java:67
 msgid "Jmol Script Console"
-msgstr ""
+msgstr "محرر الطرفية لـ Jmol"
 
 #: org/jmol/console/AppletConsole.java:98
-#, fuzzy
 msgid "Editor"
-msgstr "Історія"
+msgstr "المُحرّر"
 
 #: org/jmol/console/AppletConsole.java:99
 msgid "State"
-msgstr "Стан"
+msgstr "الحالة"
 
 #: org/jmol/console/AppletConsole.java:100
 #: org/jmol/console/ScriptEditor.java:136
-#, fuzzy
 msgid "Run"
-msgstr "Російська"
+msgstr "نفذ"
 
 #: org/jmol/console/AppletConsole.java:101
 msgid "Clear Output"
-msgstr ""
+msgstr "امسح المخرجات"
 
 #: org/jmol/console/AppletConsole.java:102
 msgid "Clear Input"
-msgstr ""
+msgstr "امسح المدخلات"
 
 #: org/jmol/console/AppletConsole.java:103
 #: org/jmol/popup/PopupResourceBundle.java:863
 msgid "History"
-msgstr "Історія"
+msgstr "المحفوظات"
 
 #: org/jmol/console/AppletConsole.java:104
 #: org/jmol/popup/PopupResourceBundle.java:873
 msgid "Load"
-msgstr "Завантажити"
+msgstr "تحميل"
 
 #: org/jmol/console/AppletConsole.java:142
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
+"اظغط CTRL+ENTER لإضافة سطر جديد أو ألصق نموذج البيانات ثم أنقر زر تحميل"
 
 #: org/jmol/console/AppletConsole.java:370
 msgid "&Help"
-msgstr "&Довідка"
+msgstr "م&ساعدة"
 
 #: org/jmol/console/AppletConsole.java:371
 msgid "&Search..."
-msgstr "По&шук..."
+msgstr "ا&بحث..."
 
 #: org/jmol/console/AppletConsole.java:372
 msgid "&Commands"
-msgstr "&Команди"
+msgstr "&تحكم"
 
 #: org/jmol/console/AppletConsole.java:373
 msgid "Math &Functions"
-msgstr ""
+msgstr "رياضيات ودوال"
 
 #: org/jmol/console/AppletConsole.java:374
 msgid "Set &Parameters"
-msgstr ""
+msgstr "احفظ &الإعدادات"
 
 #: org/jmol/console/AppletConsole.java:375
 msgid "&More"
-msgstr ""
+msgstr "&المزيد"
 
 #: org/jmol/console/ScriptEditor.java:97
 msgid "Jmol Script Editor"
-msgstr ""
+msgstr "المحرر النصي لـ jmol"
 
 #: org/jmol/console/ScriptEditor.java:129
 #: org/jmol/popup/PopupResourceBundle.java:860
 msgid "Console"
-msgstr ""
+msgstr "الطرفية"
 
 #: org/jmol/console/ScriptEditor.java:131
 #: org/jmol/export/dialog/Dialog.java:430
 #: org/jmol/export/dialog/Dialog.java:454
 #: org/jmol/export/dialog/Dialog.java:457
 msgid "Open"
-msgstr "Відкрити"
+msgstr "إفتح"
 
 #: org/jmol/console/ScriptEditor.java:132
 #: org/jmol/popup/PopupResourceBundle.java:877
 msgid "Script"
-msgstr ""
+msgstr "برنامج نصّي"
 
 #: org/jmol/console/ScriptEditor.java:133
-#, fuzzy
 msgid "Check"
-msgstr "Чеська"
+msgstr "تحقق"
 
 #: org/jmol/console/ScriptEditor.java:134
 #: org/jmol/popup/PopupResourceBundle.java:591
 msgid "Top"
-msgstr ""
+msgstr "أعلى"
 
 #: org/jmol/console/ScriptEditor.java:135
-#, fuzzy
 msgid "Step"
-msgstr "Стан"
+msgstr "خطوة"
 
 #: org/jmol/console/ScriptEditor.java:137
 #: org/jmol/popup/PopupResourceBundle.java:818
 msgid "Pause"
-msgstr ""
+msgstr "أوقف مؤقتاً"
 
 #: org/jmol/console/ScriptEditor.java:139
 #: org/jmol/popup/PopupResourceBundle.java:819
 msgid "Resume"
-msgstr ""
+msgstr "إستأنف"
 
 #: org/jmol/console/ScriptEditor.java:141
 msgid "Halt"
-msgstr ""
+msgstr "أوقف"
 
 #: org/jmol/console/ScriptEditor.java:143
 msgid "Clear"
-msgstr ""
+msgstr "امسح"
 
 #: org/jmol/console/ScriptEditor.java:144
 msgid "Close"
-msgstr ""
+msgstr "أغلق"
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
-msgstr "Файл або URL:"
+msgstr "ملف أو رابط URL"
 
 #: org/jmol/export/dialog/Dialog.java:258
 msgid "Image Type"
-msgstr "Тип зображення"
+msgstr "نوع الصورة"
 
 #: org/jmol/export/dialog/Dialog.java:273
 #: org/jmol/export/dialog/Dialog.java:314
 #, java-format
 msgid "JPEG Quality ({0})"
-msgstr "Якість JPEG ({0})"
+msgstr "JPEG جودة عادية ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:287
 #, java-format
 msgid "PNG Compression  ({0})"
-msgstr "Стискання PNG ({0})"
+msgstr "PNG مظغوط ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:317
 #, java-format
 msgid "PNG Quality ({0})"
-msgstr "Якість PNG ({0})"
+msgstr "PNG جودة عادية ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:363
 #: org/jmol/export/dialog/Dialog.java:473
 msgid "Yes"
-msgstr "Так"
+msgstr "نعم"
 
 #: org/jmol/export/dialog/Dialog.java:363
 #: org/jmol/export/dialog/Dialog.java:471
 msgid "No"
-msgstr "Ні"
+msgstr "لا"
 
 #: org/jmol/export/dialog/Dialog.java:365
 #, java-format
 msgid "Do you want to overwrite file {0}?"
-msgstr "Ви бажаєте перезаписати файл {0}?"
+msgstr "هل تريد الكتابة على الملف؟ {0}"
 
 #: org/jmol/export/dialog/Dialog.java:366
 msgid "Warning"
-msgstr "Увага"
+msgstr "تحذير"
 
 #: org/jmol/export/dialog/Dialog.java:422
 msgid "All Files"
-msgstr "Усі файли"
+msgstr "كل الملفات"
 
 #: org/jmol/export/dialog/Dialog.java:423
 #: org/jmol/export/dialog/Dialog.java:470
 msgid "Cancel"
-msgstr "Скасувати"
+msgstr "ألغ الأمر"
 
 #: org/jmol/export/dialog/Dialog.java:425
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "أحبط الملف المختار"
 
 #: org/jmol/export/dialog/Dialog.java:427
 #: org/jmol/export/dialog/Dialog.java:428
 msgid "Details"
-msgstr "Подробиці"
+msgstr "التفاصيل"
 
 #: org/jmol/export/dialog/Dialog.java:429
 msgid "Directory"
-msgstr ""
+msgstr "الدليل"
 
 #: org/jmol/export/dialog/Dialog.java:432
 msgid "Open selected directory"
-msgstr ""
+msgstr "إفتح المسار المحدد"
 
 #: org/jmol/export/dialog/Dialog.java:433
 msgid "Attributes"
-msgstr "Атрибути"
+msgstr "سمات"
 
 #: org/jmol/export/dialog/Dialog.java:434
 msgid "Modified"
-msgstr "Змінено"
+msgstr "عدل"
 
 #: org/jmol/export/dialog/Dialog.java:435
 msgid "Generic File"
-msgstr ""
+msgstr "ملف عام"
 
 #: org/jmol/export/dialog/Dialog.java:436
 msgid "Name"
-msgstr ""
+msgstr "الإسم"
 
 #: org/jmol/export/dialog/Dialog.java:437
 msgid "File Name:"
-msgstr "Назва файла:"
+msgstr "إسم الملف:"
 
 #: org/jmol/export/dialog/Dialog.java:438
 msgid "Size"
-msgstr "Розмір"
+msgstr "الحجم"
 
 #: org/jmol/export/dialog/Dialog.java:439
 msgid "Files of Type:"
-msgstr ""
+msgstr "الملفات حسب النوع:"
 
 #: org/jmol/export/dialog/Dialog.java:440
 msgid "Type"
-msgstr "Тип"
+msgstr "النوع"
 
 #: org/jmol/export/dialog/Dialog.java:441
 msgid "Help"
-msgstr "Довідка"
+msgstr "المساعدة"
 
 #: org/jmol/export/dialog/Dialog.java:443
 msgid "FileChooser help"
-msgstr ""
+msgstr "تعليمات حول الملف المختار"
 
 #: org/jmol/export/dialog/Dialog.java:444
 #: org/jmol/export/dialog/Dialog.java:445
 msgid "Home"
-msgstr ""
+msgstr "البداية"
 
 #: org/jmol/export/dialog/Dialog.java:446
 #: org/jmol/export/dialog/Dialog.java:447
 msgid "List"
-msgstr "Список"
+msgstr "قائمة"
 
 #: org/jmol/export/dialog/Dialog.java:448
 msgid "Look In:"
-msgstr ""
+msgstr "نظرة أقرب"
 
 #: org/jmol/export/dialog/Dialog.java:450
 msgid "Error creating new folder"
-msgstr ""
+msgstr "خطأ في إنشاء مجلد"
 
 #: org/jmol/export/dialog/Dialog.java:451
 msgid "New Folder"
-msgstr "Нова тека"
+msgstr "مجلد جديد"
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "Create New Folder"
-msgstr "Створити нову теку"
+msgstr "أنشء مجلداً جديداً"
 
 #: org/jmol/export/dialog/Dialog.java:456
 msgid "Open selected file"
-msgstr "Відкрити обраний файл"
+msgstr "إفتح الملفات المحددة"
 
 #: org/jmol/export/dialog/Dialog.java:458
 #: org/jmol/export/dialog/Dialog.java:461
 #: org/jmol/popup/PopupResourceBundle.java:879
 msgid "Save"
-msgstr "Зберегти"
+msgstr "إحفظ"
 
 #: org/jmol/export/dialog/Dialog.java:460
 msgid "Save selected file"
-msgstr "Зберегти обраний файл"
+msgstr "إحفظ الملفات المحددة"
 
 #: org/jmol/export/dialog/Dialog.java:462
 msgid "Save In:"
-msgstr "Зберегти у:"
+msgstr "إحفظ بالداخل:"
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "Update"
-msgstr "Оновлення"
+msgstr "تحديث"
 
 #: org/jmol/export/dialog/Dialog.java:465
 msgid "Update directory listing"
-msgstr ""
+msgstr "تحديث قائمة الدليل"
 
 #: org/jmol/export/dialog/Dialog.java:466
 msgid "Up"
-msgstr "Вгору"
+msgstr "رفع"
 
 #: org/jmol/export/dialog/Dialog.java:467
 msgid "Up One Level"
-msgstr "Рівнем вище"
+msgstr "ارفع بمستوى واحد للأعلى"
 
 #: org/jmol/export/dialog/Dialog.java:472
 msgid "OK"
-msgstr "Гаразд"
+msgstr "موافق"
 
 #: org/jmol/export/dialog/FilePreview.java:71
 msgid "Preview"
-msgstr "Перегляд"
+msgstr "معاينة"
 
 #: org/jmol/export/dialog/FilePreview.java:91
 msgid "Append models"
-msgstr ""
+msgstr "إلحاق النماذج"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
@@ -372,103 +371,103 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
-msgstr "Каталонська"
+msgstr "كتلونية"
 
 #: org/jmol/i18n/GT.java:120
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "صينية مبسّطة"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Traditional Chinese"
-msgstr "Китайська традиційна"
+msgstr "صينية تقليدية"
 
 #: org/jmol/i18n/GT.java:122
 msgid "Czech"
-msgstr "Чеська"
+msgstr "تشيكية"
 
 #: org/jmol/i18n/GT.java:123
 msgid "Danish"
-msgstr "Данська"
+msgstr "دنماركية"
 
 #: org/jmol/i18n/GT.java:124
 msgid "Dutch"
-msgstr "Нідерландська"
+msgstr "هولندية"
 
 #: org/jmol/i18n/GT.java:125
 msgid "British English"
-msgstr "Британська англійська"
+msgstr "إنجليزية بريطانية"
 
 #: org/jmol/i18n/GT.java:126
 msgid "American English"
-msgstr "Американська англійська"
+msgstr "إنجليزية أمريكية"
 
 #: org/jmol/i18n/GT.java:127
 msgid "Estonian"
-msgstr "Естонська"
+msgstr "إستونية"
 
 #: org/jmol/i18n/GT.java:128
 msgid "French"
-msgstr "Французька"
+msgstr "فرنسية"
 
 #: org/jmol/i18n/GT.java:129
 msgid "German"
-msgstr "Німецька"
+msgstr "ألمانية"
 
 #: org/jmol/i18n/GT.java:130
 msgid "Greek"
-msgstr "Грецька"
+msgstr "يونانية"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Hungarian"
-msgstr "Угорська"
+msgstr "هنغارية"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Italian"
-msgstr "Італійська"
+msgstr "إيطالية"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Korean"
-msgstr "Корейська"
+msgstr "كورية"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Norwegian Bokmal"
-msgstr "Норвезька (Бокмал)"
+msgstr "نرويجية بوكمال"
 
 #: org/jmol/i18n/GT.java:135
 msgid "Polish"
-msgstr "Польська"
+msgstr "بولندية"
 
 #: org/jmol/i18n/GT.java:136
 msgid "Brazilian Portuguese"
-msgstr "Бразильська португальська"
+msgstr "برتغالية البرازيل"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Portuguese"
-msgstr "Португальська"
+msgstr "برتغالية"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Russian"
-msgstr "Російська"
+msgstr "روسية"
 
 #: org/jmol/i18n/GT.java:139
 msgid "Slovenian"
-msgstr "Словенська"
+msgstr "سلوفينية"
 
 #: org/jmol/i18n/GT.java:140
 msgid "Spanish"
-msgstr "Іспанська"
+msgstr "إسبانية"
 
 #: org/jmol/i18n/GT.java:141
 msgid "Swedish"
-msgstr "Шведська"
+msgstr "سويدية"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Turkish"
-msgstr "Турецька"
+msgstr "تركية"
 
 #: org/jmol/i18n/GT.java:143
 msgid "Ukrainian"
-msgstr ""
+msgstr "أوكرانية"
 
 #: org/jmol/minimize/Minimizer.java:187
 #, java-format
@@ -477,12 +476,12 @@ msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:197
 msgid "No atoms selected -- nothing to do!"
-msgstr ""
+msgstr "لم يتم تحديد أي ذرة! لا شيئ أفعله!"
 
 #: org/jmol/minimize/Minimizer.java:259
 #, java-format
 msgid "{0} atoms will be minimized."
-msgstr ""
+msgstr "{0} ذرات سيتم تصغيرها إلى الحد الأدنى"
 
 #: org/jmol/minimize/Minimizer.java:351
 #, java-format
@@ -491,8 +490,9 @@ msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:460
 #: org/jmol/popup/PopupResourceBundle.java:561
+#, fuzzy
 msgid "Space Group"
-msgstr ""
+msgstr "مجموعة"
 
 #: org/jmol/popup/JmolPopup.java:522 org/jmol/popup/JmolPopup.java:562
 #: org/jmol/popup/PopupResourceBundle.java:582
@@ -500,59 +500,59 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:605
 #: org/jmol/popup/PopupResourceBundle.java:622
 msgid "All"
-msgstr "Все"
+msgstr "الكل"
 
 #: org/jmol/popup/JmolPopup.java:596
 msgid "Minimize"
-msgstr "Мінімізувати"
+msgstr "صغّر"
 
 #: org/jmol/popup/JmolPopup.java:680
 msgid "Java memory usage"
-msgstr "Java використання пам'яті"
+msgstr "المساحة المستعملة من برنامج  الـ Java"
 
 #: org/jmol/popup/JmolPopup.java:686
 #, java-format
 msgid "{0} MB total"
-msgstr "Всього {0} МБ"
+msgstr "الحجم الكلي {0} ميغابايت"
 
 #: org/jmol/popup/JmolPopup.java:688
 #, java-format
 msgid "{0} MB free"
-msgstr "{0} MБ вільно"
+msgstr "المساحة الحرة {0} ميغابايت"
 
 #: org/jmol/popup/JmolPopup.java:691
 #, java-format
 msgid "{0} MB maximum"
-msgstr "{0} MБ максимум"
+msgstr "الحجم الأقصى  {0} ميغابايت"
 
 #: org/jmol/popup/JmolPopup.java:694
 msgid "unknown maximum"
-msgstr ""
+msgstr "الحد الأقصى غير معلوم"
 
 #: org/jmol/popup/JmolPopup.java:697
 msgid "1 processor"
-msgstr "1 процесор"
+msgstr "معالج واحد"
 
 #: org/jmol/popup/JmolPopup.java:698
 #, java-format
 msgid "{0} processors"
-msgstr "{0} процесорів"
+msgstr "{0} معالج"
 
 #: org/jmol/popup/JmolPopup.java:700
 msgid "unknown processor count"
-msgstr ""
+msgstr "لا يوجد معالج"
 
 #: org/jmol/popup/PopupResourceBundle.java:549
 msgid "No atoms loaded"
-msgstr ""
+msgstr "لا ذرة محملة"
 
 #: org/jmol/popup/PopupResourceBundle.java:551
 msgid "Configurations"
-msgstr ""
+msgstr "ظبط"
 
 #: org/jmol/popup/PopupResourceBundle.java:552
 msgid "Element"
-msgstr "Елемент"
+msgstr "عنصر"
 
 #: org/jmol/popup/PopupResourceBundle.java:553
 msgid "Model/Frame"
@@ -560,13 +560,13 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:554
 msgid "Language"
-msgstr "Мова"
+msgstr "لغات"
 
 #: org/jmol/popup/PopupResourceBundle.java:555
 #: org/jmol/popup/PopupResourceBundle.java:556
 #: org/jmol/popup/PopupResourceBundle.java:557
 msgid "By Residue Name"
-msgstr ""
+msgstr "حسب إسم"
 
 #: org/jmol/popup/PopupResourceBundle.java:558
 msgid "By HETATM"
@@ -574,18 +574,17 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:559
 msgid "Molecular Orbitals"
-msgstr "Молекулярні орбіталі"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:560
 #: org/jmol/popup/PopupResourceBundle.java:870
 #: org/jmol/popup/PopupResourceBundle.java:907
 msgid "Symmetry"
-msgstr "Симетрія"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:562
-#, fuzzy
 msgid "Hide Symmetry"
-msgstr "Симетрія"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:563
 msgid "Model information"
@@ -594,7 +593,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:564
 #, java-format
 msgid "Select ({0})"
-msgstr ""
+msgstr "إختر ({0})"
 
 #: org/jmol/popup/PopupResourceBundle.java:565
 #, java-format
@@ -624,7 +623,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:570
 #, java-format
 msgid "groups: {0}"
-msgstr ""
+msgstr "المجموعات: {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:571
 #, java-format
@@ -644,15 +643,15 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:574
 #, java-format
 msgid "View {0}"
-msgstr ""
+msgstr "عرض {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:575
 msgid "Main Menu"
-msgstr "Головне меню"
+msgstr "القائمة الرئيسية"
 
 #: org/jmol/popup/PopupResourceBundle.java:576
 msgid "Biomolecules"
-msgstr "Біомолекули"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:577
 #, java-format
@@ -668,7 +667,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:702
 #: org/jmol/popup/PopupResourceBundle.java:711
 msgid "None"
-msgstr ""
+msgstr "لا شيء"
 
 #: org/jmol/popup/PopupResourceBundle.java:584
 msgid "Display Selected Only"
@@ -676,35 +675,35 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:585
 msgid "Invert Selection"
-msgstr ""
+msgstr "إعكس التحديد"
 
 #: org/jmol/popup/PopupResourceBundle.java:587
 msgid "View"
-msgstr ""
+msgstr "عرض"
 
 #: org/jmol/popup/PopupResourceBundle.java:588
 msgid "Front"
-msgstr ""
+msgstr "الواجهة"
 
 #: org/jmol/popup/PopupResourceBundle.java:589
 msgid "Left"
-msgstr ""
+msgstr "اليسار"
 
 #: org/jmol/popup/PopupResourceBundle.java:590
 msgid "Right"
-msgstr ""
+msgstr "اليمين"
 
 #: org/jmol/popup/PopupResourceBundle.java:592
 msgid "Bottom"
-msgstr ""
+msgstr "الأسفل"
 
 #: org/jmol/popup/PopupResourceBundle.java:593
 msgid "Back"
-msgstr ""
+msgstr "عودة"
 
 #: org/jmol/popup/PopupResourceBundle.java:595
 msgid "Protein"
-msgstr ""
+msgstr "البروتين"
 
 #: org/jmol/popup/PopupResourceBundle.java:597
 #: org/jmol/popup/PopupResourceBundle.java:608
@@ -751,7 +750,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:609
 msgid "Bases"
-msgstr ""
+msgstr "الأسس"
 
 #: org/jmol/popup/PopupResourceBundle.java:610
 msgid "AT pairs"
@@ -803,11 +802,11 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:626
 msgid "Style"
-msgstr ""
+msgstr "الشكل"
 
 #: org/jmol/popup/PopupResourceBundle.java:627
 msgid "Scheme"
-msgstr ""
+msgstr "مخطط"
 
 #: org/jmol/popup/PopupResourceBundle.java:628
 msgid "CPK Spacefill"
@@ -823,24 +822,24 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:631
 msgid "Wireframe"
-msgstr ""
+msgstr "الإطار السلكي"
 
 #: org/jmol/popup/PopupResourceBundle.java:632
 #: org/jmol/popup/PopupResourceBundle.java:679
 #: org/jmol/popup/PopupResourceBundle.java:772
 msgid "Cartoon"
-msgstr ""
+msgstr "كرتون"
 
 #: org/jmol/popup/PopupResourceBundle.java:633
 #: org/jmol/popup/PopupResourceBundle.java:684
 #: org/jmol/popup/PopupResourceBundle.java:771
 msgid "Trace"
-msgstr ""
+msgstr "تعقّب"
 
 #: org/jmol/popup/PopupResourceBundle.java:635
 #: org/jmol/popup/PopupResourceBundle.java:724
 msgid "Atoms"
-msgstr ""
+msgstr "ذرات"
 
 #: org/jmol/popup/PopupResourceBundle.java:636
 #: org/jmol/popup/PopupResourceBundle.java:645
@@ -853,7 +852,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:846
 #: org/jmol/popup/PopupResourceBundle.java:905
 msgid "Off"
-msgstr ""
+msgstr "مقفل"
 
 #: org/jmol/popup/PopupResourceBundle.java:637
 #: org/jmol/popup/PopupResourceBundle.java:638
@@ -868,7 +867,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:644
 #: org/jmol/popup/PopupResourceBundle.java:766
 msgid "Bonds"
-msgstr ""
+msgstr "روابط"
 
 #: org/jmol/popup/PopupResourceBundle.java:646
 #: org/jmol/popup/PopupResourceBundle.java:656
@@ -877,7 +876,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:691
 #: org/jmol/popup/PopupResourceBundle.java:795
 msgid "On"
-msgstr ""
+msgstr "مفعّل"
 
 #: org/jmol/popup/PopupResourceBundle.java:647
 #: org/jmol/popup/PopupResourceBundle.java:648
@@ -912,7 +911,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:655
 msgid "Calculate"
-msgstr ""
+msgstr "حساب"
 
 #: org/jmol/popup/PopupResourceBundle.java:657
 msgid "Set H-Bonds Side Chain"
@@ -938,11 +937,11 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:676
 #: org/jmol/popup/PopupResourceBundle.java:769
 msgid "Structures"
-msgstr ""
+msgstr "التراكيب"
 
 #: org/jmol/popup/PopupResourceBundle.java:680
 msgid "Cartoon Rockets"
-msgstr ""
+msgstr "صواريخ الكرتون"
 
 #: org/jmol/popup/PopupResourceBundle.java:681
 #: org/jmol/popup/PopupResourceBundle.java:773
@@ -961,12 +960,12 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:686
 msgid "Vibration"
-msgstr ""
+msgstr "إهتزاز"
 
 #: org/jmol/popup/PopupResourceBundle.java:689
 #: org/jmol/popup/PopupResourceBundle.java:779
 msgid "Vectors"
-msgstr ""
+msgstr "المتجهات"
 
 #: org/jmol/popup/PopupResourceBundle.java:692
 #, java-format
@@ -984,7 +983,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:701
 msgid "Stereographic"
-msgstr ""
+msgstr "التصوير المجسامي"
 
 #: org/jmol/popup/PopupResourceBundle.java:703
 msgid "Red+Cyan glasses"
@@ -1009,7 +1008,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:709
 #: org/jmol/popup/PopupResourceBundle.java:776
 msgid "Labels"
-msgstr ""
+msgstr "علامات"
 
 #: org/jmol/popup/PopupResourceBundle.java:712
 msgid "With Element Symbol"
@@ -1017,39 +1016,39 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:713
 msgid "With Atom Name"
-msgstr ""
+msgstr "بإسم الذرة"
 
 #: org/jmol/popup/PopupResourceBundle.java:714
 msgid "With Atom Number"
-msgstr ""
+msgstr "برقم الذرة"
 
 #: org/jmol/popup/PopupResourceBundle.java:716
 msgid "Position Label on Atom"
-msgstr ""
+msgstr "موقع العلامة على الذرة"
 
 #: org/jmol/popup/PopupResourceBundle.java:717
 msgid "Centered"
-msgstr ""
+msgstr "توسيط"
 
 #: org/jmol/popup/PopupResourceBundle.java:718
 msgid "Upper Right"
-msgstr ""
+msgstr "اليمين العلوي"
 
 #: org/jmol/popup/PopupResourceBundle.java:719
 msgid "Lower Right"
-msgstr ""
+msgstr "اليمين السفلي"
 
 #: org/jmol/popup/PopupResourceBundle.java:720
 msgid "Upper Left"
-msgstr ""
+msgstr "اليسار العلوي"
 
 #: org/jmol/popup/PopupResourceBundle.java:721
 msgid "Lower Left"
-msgstr ""
+msgstr "اليسار السفلي"
 
 #: org/jmol/popup/PopupResourceBundle.java:723
 msgid "Color"
-msgstr ""
+msgstr "اللون"
 
 #: org/jmol/popup/PopupResourceBundle.java:726
 msgid "By Scheme"
@@ -1065,7 +1064,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:729
 msgid "Molecule"
-msgstr ""
+msgstr "جزيئ"
 
 #: org/jmol/popup/PopupResourceBundle.java:730
 msgid "Formal Charge"
@@ -1093,11 +1092,11 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:737
 msgid "Chain"
-msgstr ""
+msgstr "سلسلة"
 
 #: org/jmol/popup/PopupResourceBundle.java:738
 msgid "Group"
-msgstr ""
+msgstr "مجموعة"
 
 #: org/jmol/popup/PopupResourceBundle.java:739
 msgid "Monomer"
@@ -1113,51 +1112,51 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:743
 msgid "Black"
-msgstr ""
+msgstr "أسود"
 
 #: org/jmol/popup/PopupResourceBundle.java:744
 msgid "White"
-msgstr ""
+msgstr "أبيض"
 
 #: org/jmol/popup/PopupResourceBundle.java:745
 msgid "Cyan"
-msgstr ""
+msgstr "سماوي"
 
 #: org/jmol/popup/PopupResourceBundle.java:747
 msgid "Red"
-msgstr ""
+msgstr "أحمر"
 
 #: org/jmol/popup/PopupResourceBundle.java:748
 msgid "Orange"
-msgstr ""
+msgstr "برتقالي"
 
 #: org/jmol/popup/PopupResourceBundle.java:749
 msgid "Yellow"
-msgstr ""
+msgstr "أصفر"
 
 #: org/jmol/popup/PopupResourceBundle.java:750
 msgid "Green"
-msgstr ""
+msgstr "أخضر"
 
 #: org/jmol/popup/PopupResourceBundle.java:751
 msgid "Blue"
-msgstr ""
+msgstr "أزرق"
 
 #: org/jmol/popup/PopupResourceBundle.java:752
 msgid "Indigo"
-msgstr ""
+msgstr "نيلي"
 
 #: org/jmol/popup/PopupResourceBundle.java:753
 msgid "Violet"
-msgstr ""
+msgstr "بنفسجي"
 
 #: org/jmol/popup/PopupResourceBundle.java:755
 msgid "Salmon"
-msgstr ""
+msgstr "سالمون"
 
 #: org/jmol/popup/PopupResourceBundle.java:756
 msgid "Olive"
-msgstr ""
+msgstr "أخضر زيتوني"
 
 #: org/jmol/popup/PopupResourceBundle.java:757
 msgid "Maroon"
@@ -1165,7 +1164,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:758
 msgid "Gray"
-msgstr ""
+msgstr "رمادي"
 
 #: org/jmol/popup/PopupResourceBundle.java:759
 msgid "Slate Blue"
@@ -1173,7 +1172,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:760
 msgid "Gold"
-msgstr ""
+msgstr "ذهبي"
 
 #: org/jmol/popup/PopupResourceBundle.java:761
 msgid "Orchid"
@@ -1187,22 +1186,22 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:764
 #: org/jmol/popup/PopupResourceBundle.java:904
 msgid "Make Translucent"
-msgstr ""
+msgstr "إجعله شبه شفاف"
 
 #: org/jmol/popup/PopupResourceBundle.java:777
 msgid "Background"
-msgstr ""
+msgstr "الخلفية"
 
 #: org/jmol/popup/PopupResourceBundle.java:778
 #: org/jmol/popup/PopupResourceBundle.java:895
 msgid "Surfaces"
-msgstr ""
+msgstr "أسطح"
 
 #: org/jmol/popup/PopupResourceBundle.java:780
 #: org/jmol/popup/PopupResourceBundle.java:914
 #: org/jmol/popup/PopupResourceBundle.java:940
 msgid "Axes"
-msgstr ""
+msgstr "محاور"
 
 #: org/jmol/popup/PopupResourceBundle.java:781
 #: org/jmol/popup/PopupResourceBundle.java:915
@@ -1219,20 +1218,20 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:784
 msgid "Zoom"
-msgstr ""
+msgstr "الحجم"
 
 #: org/jmol/popup/PopupResourceBundle.java:791
 msgid "Zoom In"
-msgstr ""
+msgstr "تكبير"
 
 #: org/jmol/popup/PopupResourceBundle.java:792
 msgid "Zoom Out"
-msgstr ""
+msgstr "تصغير"
 
 #: org/jmol/popup/PopupResourceBundle.java:794
 #: org/jmol/popup/PopupResourceBundle.java:857
 msgid "Spin"
-msgstr ""
+msgstr "لف"
 
 #: org/jmol/popup/PopupResourceBundle.java:798
 msgid "Set X Rate"
@@ -1253,7 +1252,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:811
 msgid "Animation"
-msgstr ""
+msgstr "حركة"
 
 #: org/jmol/popup/PopupResourceBundle.java:812
 msgid "Animation Mode"
@@ -1269,7 +1268,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:815
 msgid "Loop"
-msgstr ""
+msgstr "تكرار"
 
 #: org/jmol/popup/PopupResourceBundle.java:817
 msgid "Play"
@@ -1277,7 +1276,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:820
 msgid "Stop"
-msgstr ""
+msgstr "أوقف"
 
 #: org/jmol/popup/PopupResourceBundle.java:821
 msgid "Next Frame"
@@ -1936,6 +1935,3 @@ msgstr ""
 #: org/jmol/viewer/Viewer.java:7292
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
-
-#~ msgid "Execute"
-#~ msgstr "Виконати"

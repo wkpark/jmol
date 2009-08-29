@@ -107,6 +107,7 @@ public class Mesh {
     vertexCount = polygonCount = 0;
     scale = 1;
     havePlanarContours = false;
+    haveXyPoints = false;
     showPoints = false;
     showContourLines = false;
     drawTriangles = false;

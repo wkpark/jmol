@@ -144,12 +144,12 @@ public class Mesh {
   public void initializeNormixes(int lighting, Vector3f[] vectorSums) {
     isTwoSided = (lighting == JmolConstants.FULLYLIT);
     normixes = new short[vertexCount];
-    if (haveXyPoints) 
+    if (haveXyPoints)
       for (int i = vertexCount; --i >= 0;)
         normixes[i] = Graphics3D.NORMIX_NULL;
     else
-    for (int i = vertexCount; --i >= 0;)
-      normixes[i] = g3d.getNormix(vectorSums[i]);
+      for (int i = vertexCount; --i >= 0;)
+        normixes[i] = g3d.getNormix(vectorSums[i]);
     this.lighting = JmolConstants.FRONTLIT;
     if (insideOut)
       invertNormixes();

@@ -1369,7 +1369,7 @@ class ScriptMathProcessor {
     double x = ScriptVariable.fValue(args[0]);
     switch (tok) {
     case Token.acos:
-      return addX((float) Math.acos(x));
+      return addX((float) (Math.acos(x) * 180 / Math.PI));
     case Token.cos:
       return addX((float) Math.cos(x * Math.PI / 180));
     case Token.sin:

@@ -132,7 +132,6 @@ public class Jmol implements WrappedApplet {
 
   boolean mayScript;
   boolean haveDocumentAccess;
-  boolean needPopupMenu;
   boolean loading;
 
   String[] callbacks = new String[JmolConstants.CALLBACK_COUNT];
@@ -386,9 +385,8 @@ public class Jmol implements WrappedApplet {
       }
 
       // should the popupMenu be loaded ?
-      needPopupMenu = getBooleanValue("popupMenu", true);
-      if (needPopupMenu)
-        viewer.getProperty("DATA_API", "getPopupMenu", Boolean.FALSE);
+      if (!getBooleanValue("popupMenu", true))
+        viewer.getProperty("DATA_API", "disablePopupMenu", null);
       loadNodeId(getValue("loadNodeId", null));
 
       String loadParam;
@@ -816,6 +814,7 @@ public class Jmol implements WrappedApplet {
       case JmolConstants.CALLBACK_SYNC:
       case JmolConstants.CALLBACK_SCRIPT:
         return true;
+      case JmolConstants.CALLBACK_CLICK:
       case JmolConstants.CALLBACK_HOVER:
       case JmolConstants.CALLBACK_MINIMIZATION:
       case JmolConstants.CALLBACK_RESIZE:
@@ -837,6 +836,17 @@ public class Jmol implements WrappedApplet {
       // System.out.println("Jmol.java notifyCallback " + type + " " + callback
       // + " " + strInfo);
       switch (type) {
+      case JmolConstants.CALLBACK_MINIMIZATION:
+      case JmolConstants.CALLBACK_RESIZE:
+      case JmolConstants.CALLBACK_EVAL:
+      case JmolConstants.CALLBACK_HOVER:
+      case JmolConstants.CALLBACK_ERROR:
+        // just send it
+        break;
+      case JmolConstants.CALLBACK_CLICK:
+        if ("alert".equals(callback))
+          strInfo = "x=" + data[1] + " y=" + data[2] + " modifiers=" + data[3] + " clickCount=" + data[4];
+        break;
       case JmolConstants.CALLBACK_ANIMFRAME:
         // Note: twos-complement. To get actual frame number, use
         // Math.max(frameNo, -2 - frameNo)
@@ -882,10 +892,6 @@ public class Jmol implements WrappedApplet {
         if (doOutput)
           output(strInfo);
         break;
-      case JmolConstants.CALLBACK_EVAL:
-      case JmolConstants.CALLBACK_HOVER:
-      case JmolConstants.CALLBACK_ERROR:
-        break;
       case JmolConstants.CALLBACK_LOADSTRUCT:
         String errorMsg = (String) data[4];
         if (errorMsg != null) {
@@ -915,14 +921,8 @@ public class Jmol implements WrappedApplet {
         if (strInfo == null)
           return;
         break;
-      case JmolConstants.CALLBACK_MINIMIZATION:
-        // just send it
-        break;
       case JmolConstants.CALLBACK_PICK:
         showStatusAndConsole(strInfo, true);
-        break;
-      case JmolConstants.CALLBACK_RESIZE:
-        // just send it
         break;
       case JmolConstants.CALLBACK_SCRIPT:
         int msWalltime = ((Integer) data[3]).intValue();

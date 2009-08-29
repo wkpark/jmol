@@ -245,6 +245,8 @@ class Normix3D {
   }
 
   byte getIntensity(short normix) {
+    if (normix == ~Graphics3D.NORMIX_NULL || normix == Graphics3D.NORMIX_NULL)
+      return 0;
     if (normix < 0)
       return intensities2Sided[~normix];
     return intensities[normix];
@@ -292,14 +294,14 @@ class Normix3D {
     return calcFaceNormixes(level);
   }
 
-  static double dist2(Vector3f v1, Vector3f v2) {
+  private static double dist2(Vector3f v1, Vector3f v2) {
     double dx = v1.x - v2.x;
     double dy = v1.y - v2.y;
     double dz = v1.z - v2.z;
     return dx*dx + dy*dy + dz*dz;
   }
     
-  static double dist2(Vector3f v1, double x, double y, double z) {
+  private static double dist2(Vector3f v1, double x, double y, double z) {
     double dx = v1.x - x;
     double dy = v1.y - y;
     double dz = v1.z - z;

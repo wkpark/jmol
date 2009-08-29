@@ -102,8 +102,8 @@ final public class JmolConstants {
   public final static int CALLBACK_RESIZE = 10;
   public final static int CALLBACK_SCRIPT = 11;
   public final static int CALLBACK_SYNC = 12;
-  public final static int CALLBACK_COUNT = 13;
-  public final static int CALLBACK_SET_MESH_CREATOR = 14;
+  public final static int CALLBACK_CLICK = 13;
+  public final static int CALLBACK_COUNT = 14;
 
   private final static String[] callbackNames = {
     "animFrameCallback",
@@ -119,6 +119,7 @@ final public class JmolConstants {
     "resizeCallback", 
     "scriptCallback",
     "syncCallback", 
+    "clickCallback"
   };
   
   public static String getCallbackName(int i) {

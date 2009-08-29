@@ -1343,6 +1343,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
       case JmolConstants.CALLBACK_LOADSTRUCT:
       case JmolConstants.CALLBACK_MEASURE:
       case JmolConstants.CALLBACK_MESSAGE:
+      case JmolConstants.CALLBACK_CLICK:
       case JmolConstants.CALLBACK_PICK:
       case JmolConstants.CALLBACK_SCRIPT:
         return true;
@@ -1379,19 +1380,24 @@ public class JmolPanel extends JPanel implements SplashInterface {
         sendConsoleEcho(strInfo);
         break;
       case JmolConstants.CALLBACK_MEASURE:
-        String status = (String) data[3]; 
-        if (status.indexOf("Picked") >= 0) //picking mode
+        String mystatus = (String) data[3]; 
+        if (mystatus.indexOf("Picked") >= 0) //picking mode
           notifyAtomPicked(strInfo);
-        else if (status.indexOf("Completed") >= 0)
+        else if (mystatus.indexOf("Completed") >= 0)
           sendConsoleEcho(strInfo.substring(strInfo.lastIndexOf(",") + 2,
               strInfo.length() - 1));
-        if (status.indexOf("Pending") < 0) {
+        if (mystatus.indexOf("Pending") < 0) {
           //System.out.println("jmol callback measure" + status); 
           measurementTable.updateTables();
         }
         break;
       case JmolConstants.CALLBACK_MESSAGE:
         sendConsoleMessage(data == null ? null : strInfo);
+        break;
+      case JmolConstants.CALLBACK_CLICK:
+        //x, y, modifiers, int[] {modifiers}
+        // the fourth parameter allows an application to change the modifier
+        status.setStatus(1, "(" + data[1] + "," + data[2] + ") [" + data[3] + "]");
         break;
       case JmolConstants.CALLBACK_PICK:
         notifyAtomPicked(strInfo);
@@ -1450,6 +1456,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
         appConsole.sendConsoleMessage(info);
         appConsole.sendConsoleMessage("\n");
       }
+      status.setStatus(1, info);
     }
 
     private void notifyFileLoaded(String fullPathName, String fileName,

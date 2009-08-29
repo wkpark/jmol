@@ -358,6 +358,13 @@ public abstract class MouseManager implements KeyListener {
 
     //viewer.setStatusUserAction("mousePressed: " + modifiers);
     modifiers &= BUTTON_MODIFIER_MASK;
+    
+    if (modifiers != 0) {
+      modifiers = viewer.notifyMouseClicked(x, y, modifiers, 0);
+      if (modifiers == 0)
+        return;
+    }
+
     switch (modifiers) {
     /****************************************************************
      * mth 2004 03 17
@@ -414,6 +421,8 @@ public abstract class MouseManager implements KeyListener {
     }
     rubberbandSelectionMode = false;
     rectRubber.x = Integer.MAX_VALUE;
+    if (previousPressedX != x || previousPressedY != y)
+      viewer.notifyMouseClicked(x, y, 0, pressedCount);
     switch (modifiers) {
     case ALT_LEFT:
     case CTRL_ALT_RIGHT:
@@ -487,6 +496,11 @@ public abstract class MouseManager implements KeyListener {
                                        int clickCount) {
     // points are always picked up first, then atoms
     // so that atom picking can be superceded by draw picking
+    if (modifiers != 0) {
+      modifiers = viewer.notifyMouseClicked(x, y, modifiers, clickCount);
+      if (modifiers == 0)
+        return;
+    }
     Point3fi nearestPoint = (drawMode ? null : viewer.checkObjectClicked(x, y,
         modifiers));
     int nearestAtomIndex = (drawMode || nearestPoint != null ? -1 : viewer
@@ -571,7 +585,11 @@ public abstract class MouseManager implements KeyListener {
     timeCurrent = time;
     xCurrent = previousDragX = x;
     yCurrent = previousDragY = y;
-
+    if (modifiers != 0) {
+      modifiers = viewer.notifyMouseClicked(x, y, modifiers, -pressedCount);
+      if (modifiers == 0)
+        return;
+    }
     modifiers &= BUTTON_MODIFIER_MASK;
     switch (pressedCount) {
     case 2:

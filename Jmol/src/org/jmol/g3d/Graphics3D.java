@@ -739,8 +739,6 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   void setColorNoisy(int intensity) {
-    //if (isPass2)
-      //return;
     currentIntensity = intensity;
     argbCurrent = shadesCurrent[intensity];
     argbNoisyUp = shadesCurrent[intensity < shadeLast ? intensity + 1 : shadeLast];
@@ -2734,6 +2732,8 @@ final public class Graphics3D implements JmolRendererInterface {
   /* ***************************************************************
    * normals and normal indexes -- normix
    * ***************************************************************/
+
+  public static final short NORMIX_NULL = 9999;
 
   public short getNormix(Vector3f vector) {
     return normix3d.getNormix(vector.x, vector.y, vector.z,

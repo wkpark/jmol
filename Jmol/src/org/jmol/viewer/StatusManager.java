@@ -324,6 +324,17 @@ class StatusManager {
           new Object[] { sJmol, strInfo, new Integer(atomIndex) });
   }
 
+  synchronized int setStatusClicked(int x, int y, int modifiers, int clickCount) {
+    String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_CLICK);
+    if (!notifyEnabled(JmolConstants.CALLBACK_CLICK))
+      return modifiers;
+    // allows modification of modifiers
+    int[] m = new int[] { modifiers };
+    jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_CLICK,
+        new Object[] { sJmol, new Integer(x), new Integer(y), new Integer(modifiers), new Integer(clickCount), m });
+    return m[0];
+  }
+
   synchronized void setStatusResized(int width, int height){
     String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_RESIZE);
     if (notifyEnabled(JmolConstants.CALLBACK_RESIZE))
@@ -659,5 +670,6 @@ class StatusManager {
       return jmolStatusListener.dialogAsk(type, fileName);
     return "";
   }
+
 }
 

@@ -6763,15 +6763,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // for getting and returning script data from the console and editor
 
     if ("DATA_API".equals(returnType)) {
-      switch (("scriptCheck........." 
-              +"scriptContext......."
-              +"scriptEditor........"
-              +"scriptEditorState..."
-              +"getAppConsole......."
-              +"getScriptEditor....."
-              +"setMenu............."
-              +"wrappedState........"
-              +"spaceGroupInfo......"
+      switch (("scriptCheck........." //0 
+              +"scriptContext......." //20
+              +"scriptEditor........" //40
+              +"scriptEditorState..." //60
+              +"getAppConsole......." //80
+              +"getScriptEditor....." //100
+              +"setMenu............." //120
+              +"wrappedState........" //140
+              +"spaceGroupInfo......" //160
+              +"disablePopupMenu...." //180
               ).indexOf(infoType)) {
 
       case 0:
@@ -6809,8 +6810,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         return "\n/**" + JmolConstants.EMBEDDED_SCRIPT_TAG + " \n" + getStateInfo() + "\n**/";
       case 160:
         return getSpaceGroupInfo(null);
+      case 180:
+        global.disablePopupMenu = true; // no false here, because it's a one-time setting
+        return null;
       default:
-        System.out.println("ERROR IN getProperty DATA_API: " + returnType);
+        System.out.println("ERROR in getProperty DATA_API: " + infoType);
         return null;
       }
         
@@ -6866,6 +6870,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void setTainted(boolean TF) {
     isTainted = TF && refreshing;
     axesAreTainted = TF && refreshing;
+  }
+
+  public int notifyMouseClicked(int x, int y, int modifiers, int clickCount) {
+    // change y to 0 at bottom
+    global.setParameterValue("_mouseX", x);
+    global.setParameterValue("_mouseY", dimScreen.height - y);
+    global.setParameterValue("_mouseModifiers", modifiers);
+    global.setParameterValue("_clickCount", modifiers);
+    return statusManager.setStatusClicked(x, dimScreen.height - y, modifiers, clickCount);
   }
 
   Point3fi checkObjectClicked(int x, int y, int modifiers) {

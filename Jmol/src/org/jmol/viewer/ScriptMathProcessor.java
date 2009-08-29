@@ -787,9 +787,14 @@ class ScriptMathProcessor {
     Point3f pt1 = ptValue(x1);
     Point4f plane1 = planeValue(x1);
     if (tok == Token.dot) {
-      if (pt1 == null)
+      if (plane1 != null && plane2 != null)
+        // q1.dot(q2) assume quaternions
+        return addX(plane1.x * plane2.x + plane1.y * plane2.y + plane1.z * plane2.z + plane1.w * plane2.w);
+        // plane.dot(point) = 
+      if (plane1 != null)
         pt1 = new Point3f(plane1.x, plane1.y, plane1.z);
-      if (pt2 == null)
+      // point.dot(plane)
+      if (plane2 != null)
         pt2 = new Point3f(plane2.x, plane2.y, plane2.z);
       return addX(pt1.x * pt2.x + pt1.y * pt2.y + pt2.z * pt2.z);
     }

@@ -246,12 +246,13 @@ class Normix3D {
 
   byte getIntensity(short normix) {
     if (normix == ~Graphics3D.NORMIX_NULL || normix == Graphics3D.NORMIX_NULL)
-      return 0;
+      return nullIntensity;
     if (normix < 0)
       return intensities2Sided[~normix];
     return intensities[normix];
   }
 
+  private static byte nullIntensity = 50;
   void setRotationMatrix(Matrix3f rotationMatrix) {
     this.rotationMatrix.set(rotationMatrix);
     for (int i = normixCount; --i >= 0; ) {

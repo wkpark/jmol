@@ -5207,6 +5207,9 @@
   <fah_proj number="2682" name="p2682_" public="y"
     server="171.67.108.22" preferred="4" deadline="6"
     credit="25403" frames="100" code="GC" contact="kasson"/>
+  <fah_proj number="2683" name="p2683_" public="y"
+    server="171.67.108.22" preferred="4" deadline="6"
+    credit="25403" frames="100" code="GC" contact="kasson"/>
 
   <!-- Projects 2700 to 2799 -->
   <fah_proj number="2711" name="p2711_GPUlambda" public="y"
@@ -6444,9 +6447,9 @@
   <fah_proj number="3863" name="p3863_opls_relative_ligand" public="y" file="xyz"
     server="128.143.48.226" atoms="2772" preferred="6" deadline="60"
     credit="604" frames="100" code="DC" contact="mrshirts" contrib="k-epsilon"/>
-  <fah_proj number="3864" name="p3864_fkbprelative_complex" public="y"
+  <fah_proj number="3864" name="p3864_fkbprelative_complex" public="y" file="xyz"
     server="128.143.48.226" atoms="14907" preferred="6" deadline="60"
-    credit="623" frames="100" code="DC" contact="mrshirts"/>
+    credit="623" frames="100" code="DC" contact="mrshirts" contrib="Neil Klopfenstein"/>
 
   <!-- Projects 3900 to 3999 -->
   <fah_proj number="3900" name="p3900_Protein in POPC" public="n"

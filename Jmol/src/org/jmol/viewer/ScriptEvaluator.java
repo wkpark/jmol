@@ -8475,7 +8475,7 @@ class ScriptEvaluator {
     else if (theTok != Token.plus)
       error(ERROR_invalidArgument);
     int direction = intParameter(3);
-    if (direction != 1)
+    if (direction != 1 && direction != -1)
       error(ERROR_numberMustBe, "-1", "1");
     if (negative)
       direction = -direction;

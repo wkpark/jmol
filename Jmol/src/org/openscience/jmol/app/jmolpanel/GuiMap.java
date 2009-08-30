@@ -42,7 +42,7 @@ class GuiMap {
   
   // keys here refer to keys listed in org.openscience.jmol.Properties.Jmol-resources.properties
   // actions are either defined there, as xxxScript=, or by 
-  // Actions created in Jmol.java
+  // Actions created in DisplayPanel.java
   
   private Hashtable setupLabels() {
     Hashtable labels = new Hashtable();

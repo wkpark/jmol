@@ -31,6 +31,7 @@ import javax.vecmath.Matrix3f;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 
 /**
@@ -153,7 +154,12 @@ class PropertyManager {
   static Object getProperty(Viewer viewer, String returnType, String infoType, Object paramInfo) {
     if (propertyTypes.length != PROP_COUNT * 3)
       Logger.warn("propertyTypes is not the right length: " + propertyTypes.length + " != " + PROP_COUNT * 3);
-    Object info = getPropertyAsObject(viewer, infoType, paramInfo, returnType);
+    Object info;
+    if (infoType.indexOf(".") >= 0) {
+      info = getModelProperty(viewer, infoType, paramInfo);
+    } else {
+      info = getPropertyAsObject(viewer, infoType, paramInfo, returnType);
+    }
     if (returnType == null)
       return info;
     boolean requestedReadable = returnType.equalsIgnoreCase("readable");
@@ -167,6 +173,23 @@ class PropertyManager {
     return info;
   }
   
+  static Object getModelProperty(Viewer viewer, String propertyName, Object propertyValue) {
+    propertyName = propertyName.replace(']', ' ').replace('[', ' ').replace(
+        '.', ' ');
+    propertyName = TextFormat.simpleReplace(propertyName, "  ", " ");
+    String[] names = TextFormat.split(TextFormat.trim(propertyName, " "), " ");
+    ScriptVariable[] args = new ScriptVariable[names.length];
+    propertyName = names[0];
+    int n;
+    for (int i = 1; i < names.length; i++) {
+      if ((n = Parser.parseInt(names[i])) != Integer.MIN_VALUE)
+        args[i] = new ScriptVariable(Token.integer, n);
+      else
+        args[i] = new ScriptVariable(Token.string, names[i]);
+    }
+    return extractProperty(getProperty(viewer, null, propertyName, propertyValue), args, 1);
+  }
+
   static Object extractProperty(Object property, ScriptVariable[] args, int ptr) {
     if (ptr >= args.length)
       return property;

@@ -25,6 +25,7 @@
 package org.jmol.viewer;
 
 import java.util.BitSet;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -109,6 +110,13 @@ class ScriptVariable extends Token {
       return new ScriptVariable(integer, ((Integer) x).intValue());
     if (x instanceof Float)
       return new ScriptVariable(decimal, x);
+    if (x instanceof int[]) {
+      int[] ix = (int[]) x;
+      String[] s = new String[ix.length];
+      for (int i = ix.length; --i >= 0; )
+        s[i] = "" + ix[i];
+      return new ScriptVariable(list, s);
+    }
     if (x instanceof float[]) {
       float[] f = (float[]) x;
       String[] s = new String[f.length];
@@ -139,7 +147,39 @@ class ScriptVariable extends Token {
       return new ScriptVariable(bitset, x);
     if (x instanceof Quaternion)
       return new ScriptVariable(point4f, ((Quaternion)x).toPoint4f());
+    if (x instanceof Vector) {
+        Vector v = (Vector) x;
+        int len = v.size();
+        String[] list = new String[len];
+        for (int i = 0; i < len; i++) {
+          Object o = v.elementAt(i);
+          if (o instanceof String)
+            list[i] = (String) o;
+          else
+            list[i] = Escape.toReadable(o);
+        }
+        return getVariable(list);
+    }
     return null;
+  }
+
+  static boolean isVariableType(Object x) {
+    return (x instanceof ScriptVariable
+        || x instanceof BitSet
+        || x instanceof Boolean
+        || x instanceof Float
+        || x instanceof Integer
+        || x instanceof Point3f
+        || x instanceof Point4f
+        || x instanceof Quaternion
+        || x instanceof String
+        || x instanceof Vector
+        || x instanceof Vector3f
+        || x instanceof double[]
+        || x instanceof float[]
+        || x instanceof Float[]
+        || x instanceof int[]
+        || x instanceof String[]);
   }
 
   ScriptVariable set(ScriptVariable v) {

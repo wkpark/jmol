@@ -5548,12 +5548,16 @@ class ScriptEvaluator {
       return;
     String retValue = "";
     String property = optParameterAsString(1);
+    String name = property;
+    if (name.indexOf(".") >= 0)
+      name = name.substring(0, name.indexOf("."));
+    int propertyID = PropertyManager.getPropertyNumber(name);
     String param = optParameterAsString(2);
     int tok = tokAt(2);
     BitSet bs = (tok == Token.expressionBegin || tok == Token.bitset ? expression(2)
         : null);
-    int propertyID = PropertyManager.getPropertyNumber(property);
     if (property.length() > 0 && propertyID < 0) {
+      // no such property
       property = ""; // produces a list from Property Manager
       param = "";
     } else if (propertyID >= 0 && statementLength < 3) {
@@ -5567,7 +5571,7 @@ class ScriptEvaluator {
         param += parameterAsString(i);
     }
     retValue = (String) viewer.getProperty("readable", property,
-        (bs == null ? (Object) param : (Object) bs));
+       (bs == null ? (Object) param : (Object) bs));
     showString(retValue);
   }
 

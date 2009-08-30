@@ -969,53 +969,11 @@ class ScriptMathProcessor {
               && PropertyManager.acceptsStringParameter(propertyName) ? args[pt++].value
               : (Object) "");
     }
-    if (args.length == pt && propertyName.indexOf(".") >= 0
-        || propertyName.indexOf("[") >= 0) {
-      propertyName = propertyName.replace(']', ' ').replace('[', ' ').replace(
-          '.', ' ');
-      propertyName = TextFormat.simpleReplace(propertyName, "  ", " ");
-      String[] names = TextFormat
-          .split(TextFormat.trim(propertyName, " "), " ");
-      if (names.length > 0) {
-        args = new ScriptVariable[names.length];
-        propertyName = names[0];
-        int n;
-        for (int i = 1; i < names.length; i++) {
-          if ((n = Parser.parseInt(names[i])) != Integer.MIN_VALUE)
-            args[i] = new ScriptVariable(Token.integer, n);
-          else
-            args[i] = new ScriptVariable(Token.string, names[i]);
-        }
-        pt = 1;
-      }
-    }
     Object property = viewer.getProperty(null, propertyName, propertyValue);
     if (pt < args.length)
       property = PropertyManager.extractProperty(property, args, pt);
-    if (property instanceof String)
-      return addX(property);
-    if (property instanceof Integer)
-      return addX(property);
-    if (property instanceof Float)
-      return addX(property);
-    if (property instanceof Point3f)
-      return addX(property);
-    if (property instanceof Vector3f)
-      return addX(new Point3f((Vector3f) property));
-    if (property instanceof Vector) {
-      Vector v = (Vector) property;
-      int len = v.size();
-      String[] list = new String[len];
-      for (int i = 0; i < len; i++) {
-        Object o = v.elementAt(i);
-        if (o instanceof String)
-          list[i] = (String) o;
-        else
-          list[i] = Escape.toReadable(o);
-      }
-      return addX(list);
-    }
-    return addX(Escape.toReadable(property));
+    return addX(ScriptVariable.isVariableType(property) ? property : Escape
+        .toReadable(property));
   }
 
   private boolean evaluatePoint(ScriptVariable[] args) {

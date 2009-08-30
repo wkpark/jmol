@@ -7299,21 +7299,27 @@ class ScriptEvaluator {
       if (option.equalsIgnoreCase("line") || option.equalsIgnoreCase("lines")) {
         i++;
         lineEnd = lineNumber = Math.max(intParameter(i++), 0);
-        if (checkToken(i))
-          if (getToken(i++).tok == Token.minus)
-            lineEnd = (checkToken(i) ? intParameter(i++) : 0);
+        if (checkToken(i)) {
+          if (getToken(i).tok == Token.minus)
+            lineEnd = (checkToken(++i) ? intParameter(i++) : 0);
           else
+            lineEnd = -intParameter(i++);
+          if (lineEnd <= 0)
             error(ERROR_invalidArgument);
+        }
       } else if (option.equalsIgnoreCase("command")
           || option.equalsIgnoreCase("commands")) {
         i++;
         pc = Math.max(intParameter(i++) - 1, 0);
         pcEnd = pc + 1;
-        if (checkToken(i))
-          if (getToken(i++).tok == Token.minus)
-            pcEnd = (checkToken(i) ? intParameter(i++) : 0);
+        if (checkToken(i)) {
+          if (getToken(i).tok == Token.minus)
+            pcEnd = (checkToken(++i) ? intParameter(i++) : 0);
           else
+            pcEnd = -intParameter(i++);
+          if (pcEnd <= 0)
             error(ERROR_invalidArgument);
+        }
       }
       checkLength(doStep ? i + 1 : i);
     }
@@ -8467,18 +8473,26 @@ class ScriptEvaluator {
   }
 
   private void animationDirection() throws ScriptException {
-    checkLength(4);
-    boolean negative = false;
-    getToken(2);
-    if (theTok == Token.minus)
-      negative = true;
-    else if (theTok != Token.plus)
+    int i = 2;
+    int direction = 0;
+    switch (tokAt(i)) {
+    case Token.minus:
+      direction = -intParameter(++i);
+      break;
+    case Token.plus:
+      direction = intParameter(++i);
+      break;
+    case Token.integer:
+      direction = intParameter(i);
+      if (direction > 0)
+        direction = 0;
+      break;
+    default:           
       error(ERROR_invalidArgument);
-    int direction = intParameter(3);
+    }
+    checkLength(++i);
     if (direction != 1 && direction != -1)
       error(ERROR_numberMustBe, "-1", "1");
-    if (negative)
-      direction = -direction;
     if (!isSyntaxCheck)
       viewer.setAnimationDirection(direction);
   }
@@ -8806,6 +8820,12 @@ class ScriptEvaluator {
         if (nFrames == 2)
           error(ERROR_invalidArgument);
         int iFrame = statement[i].intValue;
+        if (iFrame == -1) {
+          checkLength(offset + 1);
+          if (!isSyntaxCheck)
+            viewer.setAnimationPrevious();
+          return;
+        }
         if (iFrame >= 1000 && iFrame < 1000000 && viewer.haveFileSet())
           iFrame = (iFrame / 1000) * 1000000 + (iFrame % 1000); // initial way
         if (!useModelNumber && iFrame == 0)

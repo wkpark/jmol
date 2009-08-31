@@ -227,13 +227,13 @@ public class Token {
   final static int set          = 3 | mathExpressionCommand;
   final static int var          = 4 | mathExpressionCommand | noeval | setparam;
 
-  public final static int echo         = 1 | implicitStringCommand | setparam;
+  public final static int echo  = 1 | implicitStringCommand | setparam;
   final static int help         = 2 | implicitStringCommand;
-  public final static int hover        = 3 | implicitStringCommand | defaultON;
+  public final static int hover = 3 | implicitStringCommand | defaultON;
 //final static int javascript   see mathfunc
 //final static int label        see mathfunc
   final static int message      = 4 | implicitStringCommand;
-  public final static int pause        = 5 | implicitStringCommand;
+  public final static int pause = 5 | implicitStringCommand;
 
   //these commands control flow
   //sorry about GOTO!
@@ -377,7 +377,7 @@ public class Token {
   public final static int rna           = predefinedset | 9;
   public final static int selected      = predefinedset | 10;
   final static int solvent              = predefinedset | 11 | setparam;
-  public final static int sidechain            = predefinedset | 12;
+  public final static int sidechain     = predefinedset | 12;
   final static int surface              = predefinedset | 13;
   final static int thismodel            = predefinedset | 14;
 
@@ -424,14 +424,14 @@ public class Token {
   final static int minus        = 0 | mathop | 9 << 4;
   final static int plus         = 1 | mathop | 9 << 4;
  
-  final static int divide       = 0 | mathop | 10 << 4;
-  final static int times        = 1 | mathop | 10 << 4;
-  public final static int percent      = 2 | mathop | 10 << 4;
-  final static int leftdivide   = 3 | mathop | 10 << 4;  //   quaternion1 \ quaternion2
+  final static int divide         = 0 | mathop | 10 << 4;
+  final static int times          = 1 | mathop | 10 << 4;
+  public final static int percent = 2 | mathop | 10 << 4;
+  final static int leftdivide     = 3 | mathop | 10 << 4;  //   quaternion1 \ quaternion2
   
   final static int unaryMinus   = 0 | mathop | 11 << 4;
-  final static int minusMinus = 1 | mathop | 11 << 4;
-  final static int plusPlus   = 2 | mathop | 11 << 4;
+  final static int minusMinus   = 1 | mathop | 11 << 4;
+  final static int plusPlus     = 2 | mathop | 11 << 4;
   
   
   final static int propselector = 1 | mathop | 12 << 4;
@@ -559,7 +559,7 @@ public class Token {
 
   // xxx(a,b,c,d,e,...)
   
-  public final static int array         = 1 | 0 << 9 | mathfunc;
+  public final static int array  = 1 | 0 << 9 | mathfunc;
   public final static int format = 2 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
   public final static int label  = 3 | 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | defaultON | setparam;
   final static int function      = 4 | 0 << 9 | mathfunc | flowCommand | noeval;
@@ -638,19 +638,19 @@ public class Token {
   
   // more SET parameters
   
-  public final static int ambient       = setparam |  1;
-  final static int bondmode      = setparam |  2;
-  final static int fontsize      = setparam |  3;
-  final static int picking       = setparam |  4;
-  final static int specular      = setparam |  5;
-  final static int specpercent   = setparam |  6;  
-  final static int specpower     = setparam |  7;
-  final static int specexponent  = setparam |  8;
-  final static int transparent   = setparam |  9;
-  final static int defaultColors = setparam | 10;
-  final static int scale3d       = setparam | 11;
-  final static int diffuse       = setparam | 12;
-  final static int pickingStyle  = setparam | 13;
+  public final static int ambient = setparam |  1;
+  final static int bondmode       = setparam |  2;
+  final static int fontsize       = setparam |  3;
+  final static int picking        = setparam |  4;
+  final static int specular       = setparam |  5;
+  final static int specpercent    = setparam |  6;  
+  final static int specpower      = setparam |  7;
+  final static int specexponent   = setparam |  8;
+  final static int transparent    = setparam |  9;
+  final static int defaultColors  = setparam | 10;
+  final static int scale3d        = setparam | 11;
+  final static int diffuse        = setparam | 12;
+  final static int pickingStyle   = setparam | 13;
 
   // misc
 

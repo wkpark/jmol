@@ -68,13 +68,13 @@ public class Token {
     return new Token(integer, intValue);
   }
 
-  public final static int nada              =  0;
+  public final static int nada       =  0;
   public final static int identifier =  1;
-  public final static int integer           =  2;
-  public final static int decimal           =  3;
+  public final static int integer    =  2;
+  public final static int decimal    =  3;
   public final static int string     =  4;
   final static int seqcode           =  5;
-  public final static int list              =  6;
+  public final static int list       =  6;
   public final static int point3f    =  7;
   public final static int point4f    =  8;
   final private static int keyword   =  9;

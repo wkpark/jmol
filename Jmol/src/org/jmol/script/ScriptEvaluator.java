@@ -5354,6 +5354,7 @@ public class ScriptEvaluator {
     BitSet bsBonds = new BitSet();
     boolean isBonds = false;
     int expression2 = 0;
+    int ptColor = 0;
     /*
      * connect [<=2 distance parameters] [<=2 atom sets] [<=1 bond type] [<=1
      * operation]
@@ -5365,13 +5366,8 @@ public class ScriptEvaluator {
     }
 
     for (int i = index; i < statementLength; ++i) {
-      if (isColorParam(i)) {
-        color = getArgbParam(i);
-        i = iToken;
-        isColorOrRadius = true;
-        continue;
-      }
-      switch (getToken(i).tok) {
+      int tok = getToken(i).tok;
+      switch (tok) {
       case Token.on:
       case Token.off:
         checkLength(2);
@@ -5414,8 +5410,29 @@ public class ScriptEvaluator {
         }
         i = iToken;
         break;
+      case Token.color:
+        tok = tokAt(i + 1);
+        if (tok != Token.translucent && tok != Token.opaque)          ptColor = i + 1;
+        continue;
+      case Token.translucent:
+      case Token.opaque:
+        if (translucency != null)
+          error(ERROR_invalidArgument);
+        isColorOrRadius = true;
+        translucency = parameterAsString(i);
+        if (theTok == Token.translucent && isFloatParameter(i + 1))
+          translucentLevel = getTranslucentLevel(++i);
+        ptColor = i + 1;
+        break;
       case Token.identifier:
       case Token.hbond:
+        if (ptColor == i)
+          break;
+        // I know -- should have required the COLOR keyword
+        if (isColorParam(i)) {
+          ptColor = -i;
+          break;
+        }
         String cmd = parameterAsString(i);
         if (cmd.equalsIgnoreCase("pdb")) {
           boolean isAuto = (optParameterAsString(2).equalsIgnoreCase("auto"));
@@ -5458,15 +5475,6 @@ public class ScriptEvaluator {
         }
         bondOrder = bo;
         break;
-      case Token.translucent:
-      case Token.opaque:
-        if (translucency != null)
-          error(ERROR_invalidArgument);
-        isColorOrRadius = true;
-        translucency = parameterAsString(i);
-        if (theTok == Token.translucent && isFloatParameter(i + 1))
-          translucentLevel = getTranslucentLevel(++i);
-        break;
       case Token.radius:
         radius = floatParameter(++i);
         isColorOrRadius = true;
@@ -5481,6 +5489,15 @@ public class ScriptEvaluator {
         isDelete = true;
         break;
       default:
+        ptColor = i;
+        break;
+      }
+      // now check for color -- -i means we've already checked
+      if (ptColor == -i || ptColor == i && isColorParam(i)) {
+        color = getArgbParam(i);
+        i = iToken;
+        isColorOrRadius = true;
+      } else if (ptColor == i) {
         error(ERROR_invalidArgument);
       }
     }

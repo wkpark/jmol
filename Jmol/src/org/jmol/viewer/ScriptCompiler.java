@@ -851,7 +851,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         iHaveQuotedString = true;
         return CONTINUE;
       }
-    } else if (tokCommand == Token.script) {
+    } else if (tokCommand == Token.script || tokCommand == Token.getproperty) {
       if (!iHaveQuotedString && lookingAtImpliedString()) {
         String str = script.substring(ichToken, ichToken + cchToken);
         int pt = str.indexOf(" ");

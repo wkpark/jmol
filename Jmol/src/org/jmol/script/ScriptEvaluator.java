@@ -68,7 +68,7 @@ public class ScriptEvaluator {
 
   /*
    * The ScriptEvaluator class, the Viewer, the xxxxManagers, the
-   * Graphics3D rendeing engine, the Shape classes, and the Adapter file
+   * Graphics3D rendering engine, the ModelSet and Shape classes, and the Adapter file
    * reader classes form the core of the Jmol molecular visualization framework.
    * 
    * The ScriptEvaluator has just a few entry points, which you will find

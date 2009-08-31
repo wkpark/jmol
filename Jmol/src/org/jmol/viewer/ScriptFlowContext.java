@@ -25,7 +25,7 @@
 
 package org.jmol.viewer;
 
-class ScriptFlowContext {
+public class ScriptFlowContext {
   /*
    * Flow Contexts in Jmol 11.3.23+  -- Bob Hanson
    * 

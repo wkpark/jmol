@@ -40,7 +40,7 @@ import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 
-class ScriptVariable extends Token {
+public class ScriptVariable extends Token {
 
   final private static ScriptVariable vT = new ScriptVariable(on, 1, "true");
   final private static ScriptVariable vF = new ScriptVariable(off, 0, "false");

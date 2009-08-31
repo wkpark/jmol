@@ -60,7 +60,7 @@ import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 
-class ScriptEvaluator {
+public class ScriptEvaluator {
 
   /*
    * The ScriptEvaluator class, the Viewer, the xxxxManagers, the

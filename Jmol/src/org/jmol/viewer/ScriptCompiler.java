@@ -34,7 +34,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.BitSet;
 
-class ScriptCompiler extends ScriptCompilationTokenParser {
+public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   /**
    * The Compiler clas is really two parts -- 

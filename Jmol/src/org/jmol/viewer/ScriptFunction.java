@@ -26,7 +26,7 @@ package org.jmol.viewer;
 import java.util.Hashtable;
 import java.util.Vector;
 
-class ScriptFunction {
+public class ScriptFunction {
 
   // / functions
 

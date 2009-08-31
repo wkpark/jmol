@@ -46,7 +46,7 @@ import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.ScriptEvaluator.ScriptException;
 
-class ScriptMathProcessor {
+public class ScriptMathProcessor {
   /**
    * Reverse Polish Notation Engine for IF, SET, and %{...} -- Bob Hanson
    * 2/16/2007 Just a (not so simple?) RPN processor that can handle boolean,

@@ -31,7 +31,7 @@ import java.util.Vector;
 
 import javax.vecmath.Point3f;
 
-abstract class ScriptCompilationTokenParser {
+abstract public class ScriptCompilationTokenParser {
   
   /*
    * An abstract class taking care of the second phase of 

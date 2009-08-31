@@ -467,32 +467,33 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   final private static byte DUMMY_ATOM = 18;
   final private static byte DISORDER_GROUP = 19;
   final private static byte ANISO_LABEL = 20;
-  final private static byte ANISO_U11 = 21;
-  final private static byte ANISO_U22 = 22;
-  final private static byte ANISO_U33 = 23;
-  final private static byte ANISO_U12 = 24;
-  final private static byte ANISO_U13 = 25;
-  final private static byte ANISO_U23 = 26;
-  final private static byte ANISO_MMCIF_U11 = 27;
-  final private static byte ANISO_MMCIF_U22 = 28;
-  final private static byte ANISO_MMCIF_U33 = 29;
-  final private static byte ANISO_MMCIF_U12 = 30;
-  final private static byte ANISO_MMCIF_U13 = 31;
-  final private static byte ANISO_MMCIF_U23 = 32;
-  final private static byte U_ISO_OR_EQUIV = 33;
-  final private static byte ANISO_B11 = 34;
-  final private static byte ANISO_B22 = 35;
-  final private static byte ANISO_B33 = 36;
-  final private static byte ANISO_B12 = 37;
-  final private static byte ANISO_B13 = 38;
-  final private static byte ANISO_B23 = 39;
-  final private static byte ANISO_Beta_11 = 40;
-  final private static byte ANISO_Beta_22 = 41;
-  final private static byte ANISO_Beta_33 = 42;
-  final private static byte ANISO_Beta_12 = 43;
-  final private static byte ANISO_Beta_13 = 44;
-  final private static byte ANISO_Beta_23 = 45;
-  final private static byte ADP_TYPE = 46;
+  final private static byte ANISO_MMCIF_ID = 21;
+  final private static byte ANISO_U11 = 22;
+  final private static byte ANISO_U22 = 23;
+  final private static byte ANISO_U33 = 24;
+  final private static byte ANISO_U12 = 25;
+  final private static byte ANISO_U13 = 26;
+  final private static byte ANISO_U23 = 27;
+  final private static byte ANISO_MMCIF_U11 = 28;
+  final private static byte ANISO_MMCIF_U22 = 29;
+  final private static byte ANISO_MMCIF_U33 = 30;
+  final private static byte ANISO_MMCIF_U12 = 31;
+  final private static byte ANISO_MMCIF_U13 = 32;
+  final private static byte ANISO_MMCIF_U23 = 33;
+  final private static byte U_ISO_OR_EQUIV = 34;
+  final private static byte ANISO_B11 = 35;
+  final private static byte ANISO_B22 = 36;
+  final private static byte ANISO_B33 = 37;
+  final private static byte ANISO_B12 = 38;
+  final private static byte ANISO_B13 = 39;
+  final private static byte ANISO_B23 = 40;
+  final private static byte ANISO_Beta_11 = 41;
+  final private static byte ANISO_Beta_22 = 42;
+  final private static byte ANISO_Beta_33 = 43;
+  final private static byte ANISO_Beta_12 = 44;
+  final private static byte ANISO_Beta_13 = 45;
+  final private static byte ANISO_Beta_23 = 46;
+  final private static byte ADP_TYPE = 47;
 
   final private static String[] atomFields = { 
       "_atom_site_type_symbol",
@@ -516,6 +517,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       "_atom_site_calc_flag", 
       "_atom_site_disorder_group",
       "_atom_site_aniso_label", 
+      "_atom_site_anisotrop_id",
       "_atom_site_aniso_U_11",
       "_atom_site_aniso_U_22",
       "_atom_site_aniso_U_33",
@@ -563,6 +565,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   boolean processAtomSiteLoopBlock() throws Exception {
     int currentModelNO = -1;
     boolean isPDB = false;
+    boolean isAnisoData = false;
     parseLoopParameters(atomFields);
     if (fieldOf[CARTN_X] != NONE) {
       setFractionalCoordinates(false);
@@ -575,11 +578,17 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       disableField(CARTN_Y);
       disableField(CARTN_Z);
     } else if (fieldOf[ANISO_LABEL] != NONE) {
+      // standard CIF
+      isAnisoData = true;
+    } else if (fieldOf[ANISO_MMCIF_ID] != NONE) {
+      // MMCIF
+      isAnisoData = true;
     } else {
       // it is a different kind of _atom_site loop block
       skipLoop();
       return false;
     }
+    int iAtom = 0;
     while (tokenizer.getData()) {
       Atom atom = new Atom();
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
@@ -684,10 +693,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           }
           break;
         case ANISO_LABEL:
-          int iAtom = atomSetCollection.getAtomNameIndex(field);
+          iAtom = atomSetCollection.getAtomNameIndex(field);
           if (iAtom < 0)
             return false;
           atom = atomSetCollection.getAtom(iAtom);
+          break;
+        case ANISO_MMCIF_ID:
+          atom = atomSetCollection.getAtom(iAtom++);
           break;
         case ANISO_U11:
         case ANISO_U22:
@@ -701,11 +713,12 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case ANISO_MMCIF_U12:
         case ANISO_MMCIF_U13:
         case ANISO_MMCIF_U23:
-          if (atom.anisoBorU == null)
+          if (atom.anisoBorU == null) {
             atom.anisoBorU = new float[8];
+            atom.anisoBorU[6] = 8; // Ortep type 8: D = 2pi^2, C = 2, a*b*
+          }
           int iType = (propertyOf[i] - ANISO_U11) % 6;
           atom.anisoBorU[iType] = parseFloat(field);
-          atom.anisoBorU[6] = 8; // Ortep type 8: D = 2pi^2, C = 2, a*b*
           break;
         case ANISO_B11:
         case ANISO_B22:
@@ -713,11 +726,12 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case ANISO_B12:
         case ANISO_B13:
         case ANISO_B23:
-           if (atom.anisoBorU == null)
+           if (atom.anisoBorU == null) {
              atom.anisoBorU = new float[8];
+             atom.anisoBorU[6] = 4; // Ortep Type 4: D = 1/4, C = 2, a*b*
+           }
            int iTypeB = (propertyOf[i] - ANISO_B11) % 6;
            atom.anisoBorU[iTypeB] = parseFloat(field);
-           atom.anisoBorU[6] = 4; // Ortep Type 4: D = 1/4, C = 2, a*b*
           break;
         case ANISO_Beta_11:
         case ANISO_Beta_22:
@@ -725,11 +739,12 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case ANISO_Beta_12:
         case ANISO_Beta_13:
         case ANISO_Beta_23:
-           if (atom.anisoBorU == null)
+           if (atom.anisoBorU == null) {
              atom.anisoBorU = new float[8];
+             atom.anisoBorU[6] = 0; // Ortep Type 0: D = 1, c = 2 -- see org.jmol.symmetry/UnitCell.java
+           }
            int iTypeBeta = (propertyOf[i] - ANISO_Beta_11) % 6;
            atom.anisoBorU[iTypeBeta] = parseFloat(field);
-           atom.anisoBorU[6] = 0; // Ortep Type 0: D = 1, c = 2 -- see org.jmol.symmetry/UnitCell.java
           break;
         }
       }
@@ -737,7 +752,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         Logger.warn("atom " + atom.atomName
             + " has invalid/unknown coordinates");
       } else {
-        if (fieldOf[ANISO_LABEL] != NONE)
+        if (isAnisoData)
           continue;
         if (filter != null)
           if (!filterAtom(atom))

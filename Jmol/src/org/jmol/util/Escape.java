@@ -322,19 +322,6 @@ public class Escape {
     return "\"" + infoType + "\": " + info;
   }
 
-  private static String packageReadable(String infoName, String infoType,
-                                        StringBuffer sb) {
-    return packageReadable(infoName, infoType, sb.toString());
-  }
-  
-  private static String packageReadable(String infoName, String infoType,
-                                        String info) {
-    String s = (infoType == null ? "" : infoType + "\t");
-    if (infoName == null)
-      return s + info;
-    return "\n" + infoName + "\t" + info;
-  }
-
   private static String fixString(String s) {
     if (s == null || s.indexOf("{\"") == 0) //don't doubly fix JSON strings when retrieving status
       return s;
@@ -452,42 +439,42 @@ public class Escape {
     return toReadable(null, info);
   }
   
-  public static String toReadable(String infoType, Object info) {
+  public static String toReadable(String name, Object info) {
     StringBuffer sb =new StringBuffer();
     String sep = "";
     if (info == null)
       return "null";
     if (info instanceof String)
-      return packageReadable(infoType, null, escape((String) info));
+      return packageReadable(name, null, escape((String) info));
     if (info instanceof String[]) {
-      sb.append("array(");
+      sb.append("[");
       int imax = ((String[]) info).length;
       for (int i = 0; i < imax; i++) {
         sb.append(sep).append(escape(((String[]) info)[i]));
         sep = ",";
       }
-      sb.append(")");
-      return packageReadable(infoType, "String[" + imax + "]", sb);
+      sb.append("]");
+      return packageReadable(name, "String[" + imax + "]", sb);
     }
     if (info instanceof int[]) {
-      sb.append("array(");
+      sb.append("[");
       int imax = ((int[]) info).length;
       for (int i = 0; i < imax; i++) {
         sb.append(sep).append(((int[]) info)[i]);
         sep = ",";
       }
-      sb.append(")");
-      return packageReadable(infoType, "int[" + imax + "]", sb);
+      sb.append("]");
+      return packageReadable(name, "int[" + imax + "]", sb);
     }
     if (info instanceof float[]) {
-      sb.append("array(");
+      sb.append("[");
       int imax = ((float[]) info).length;
       for (int i = 0; i < imax; i++) {
         sb.append(sep).append(((float[]) info)[i]);
         sep = ",";
       }
-      sb.append(")");
-      return packageReadable(infoType, "float[" + imax + "]", sb);
+      sb.append("]");
+      return packageReadable(name, "float[" + imax + "]", sb);
     }
     if (info instanceof int[][]) {
       sb.append("[");
@@ -497,7 +484,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageReadable(infoType, "int[" + imax + "][]", sb);
+      return packageReadable(name, "int[" + imax + "][]", sb);
     }
     if (info instanceof float[][]) {
       sb.append("[\n");
@@ -507,16 +494,16 @@ public class Escape {
         sep = ",\n";
       }
       sb.append("]");
-      return packageReadable(infoType, "float[][]", sb);
+      return packageReadable(name, "float[][]", sb);
     }
     if (info instanceof Vector) {
       sb.append("");
       int imax = ((Vector) info).size();
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(toReadable(null, ((Vector) info).get(i)));
-        sep = ",";
+        sb.append(sep).append(toReadable(name + "[" + (i + 1) + "]", ((Vector) info).get(i)));
+        //sep = ",";
       }
-      return packageReadable(infoType, "Vector[" + imax + "]", sb);
+      return packageReadable(name, "Vector[" + imax + "]", sb);
     }
     if (info instanceof Matrix3f) {
       sb.append("[[").append(((Matrix3f) info).m00).append(",")
@@ -528,24 +515,36 @@ public class Escape {
       .append(",[").append(((Matrix3f) info).m20).append(",")
       .append(((Matrix3f) info).m21).append(",")
       .append(((Matrix3f) info).m22).append("]]");
-      return packageReadable(infoType, null, sb);
+      return packageReadable(name, null, sb);
     }
     if (info instanceof Tuple3f) {
       sb.append(escape((Tuple3f) info));
-      return packageReadable(infoType, null, sb);
+      return packageReadable(name, null, sb);
     }
     if (info instanceof Hashtable) {
       Enumeration e = ((Hashtable) info).keys();
       while (e.hasMoreElements()) {
         String key = (String) e.nextElement();
-        sb.append(sep).append(packageReadable(key, null, toReadable(null, ((Hashtable) info)
-                .get(key))));
+        sb.append(sep).append(toReadable(name + "." + key, ((Hashtable) info).get(key)));
         sep = "";
       }
-      sb.append("\n");
-      return packageReadable(infoType, null, sb);
+      //sb.append("\n");
+      return sb.toString();//packageReadable(name, null, sb);
     }
-    return packageReadable(infoType, null, info.toString());
+    return packageReadable(name, null, info.toString());
+  }
+
+  private static String packageReadable(String infoName, String infoType,
+                                        StringBuffer sb) {
+    return packageReadable(infoName, infoType, sb.toString());
+  }
+  
+  private static String packageReadable(String infoName, String infoType,
+                                        String info) {
+    String s = (infoType == null ? "" : infoType + "\t");
+    if (infoName == null)
+      return s + info;
+    return "\n" + infoName + "\t" + (infoType == null ? "" : "*" + infoType + "\t") + info;
   }
 
   public static String escapeModelFileNumber(int iv) {

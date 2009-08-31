@@ -2855,9 +2855,7 @@ abstract public class ModelCollection extends BondCollection {
       if (list == null) {
         strOperations = "\n no symmetry operations employed";
       } else {
-        if (symTemp == null)
-          symTemp = (SymmetryInterface) Interface
-              .getOptionInterface("symmetry.Symmetry");
+        getSymTemp();
         symTemp.setSpaceGroup(false);
         strOperations = "\n" + list.length + " symmetry operations employed:";
         infolist = new Object[list.length][];
@@ -2875,6 +2873,7 @@ abstract public class ModelCollection extends BondCollection {
       info = new Hashtable();
     }
     info.put("spaceGroupName", spaceGroup);
+    getSymTemp();
     String data = symTemp.getSpaceGroupInfo(spaceGroup, cellInfo);
     if (infolist != null) {
       info.put("operations", infolist);
@@ -2904,32 +2903,34 @@ abstract public class ModelCollection extends BondCollection {
     SymmetryInterface uc = getUnitCell(iModel);
     if (uc == null)
       return ret;
-    SymmetryInterface sym;
     if (xyz == null) {
       String[] ops = uc.getSymmetryOperations();
       if (ops == null || op < 1 || op > ops.length)
         return ret;
       xyz = ops[op - 1 ];
     }
-    if (symTemp == null)
-      symTemp = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
-    sym = symTemp; 
-    sym.setSpaceGroup(false);
-    int iSym = sym.addSpaceGroupOperation("!" + xyz);
+    getSymTemp(); 
+    symTemp.setSpaceGroup(false);
+    int iSym = symTemp.addSpaceGroupOperation("!" + xyz);
     if (iSym < 0)
       return ret;
-    sym.setUnitCell(uc.getNotionalUnitCell());
+    symTemp.setUnitCell(uc.getNotionalUnitCell());
     pt = new Point3f(pt == null ? atoms[iAtom] : pt);
     if (type == Token.point) {
       uc.toFractional(pt);
       Point3f sympt = (Point3f)ret;
-      sym.newSpaceGroupPoint(iSym, pt, sympt, 0, 0, 0);
-      sym.toCartesian(sympt);
+      symTemp.newSpaceGroupPoint(iSym, pt, sympt, 0, 0, 0);
+      symTemp.toCartesian(sympt);
       return sympt;
     }
     // null id means "text info only" but here we want the draw commands
-    return (String)sym.getSymmetryOperationDescription(iSym, uc, pt, 
+    return (String)symTemp.getSymmetryOperationDescription(iSym, uc, pt, 
         (id == null ? "sym" : id))[3];
+  }
+
+  private void getSymTemp() {
+    if (symTemp == null)
+      symTemp = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
   }
 
   protected void deleteModel(int modelIndex, int firstAtomIndex, int nAtoms,

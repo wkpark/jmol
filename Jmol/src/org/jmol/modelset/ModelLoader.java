@@ -706,12 +706,8 @@ public final class ModelLoader extends ModelSet {
       bfactor100s = ArrayUtil.setLength(bfactor100s, newLength);
     if (partialCharges != null)
       partialCharges = ArrayUtil.setLength(partialCharges, newLength);
-    if (ellipsoids != null) {
-      Object[][] ellipsoids2 = new Object[newLength][];
-      for (int i = 0; i < ellipsoids.length; i++)
-        ellipsoids2[i] = ellipsoids[i];
-      ellipsoids = ellipsoids2;
-    }
+    if (ellipsoids != null)
+      ellipsoids = (Object[][]) ArrayUtil.setLength(ellipsoids, newLength);
     if (atomNames != null)
       atomNames = ArrayUtil.setLength(atomNames, newLength);
     if (atomTypes != null)

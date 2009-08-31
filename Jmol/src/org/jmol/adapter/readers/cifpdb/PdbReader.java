@@ -104,9 +104,11 @@ public class PdbReader extends AtomSetCollectionReader {
     isNMRdata = false;
     boolean iHaveModel = false;
     boolean iHaveModelStatement = false;
+    boolean iHaveLine = false;
     StringBuffer pdbHeader = (getHeader ? new StringBuffer() : null);
     try {
-      while (readLine() != null) {
+      while (iHaveLine || readLine() != null) {
+        iHaveLine = false;
         int ptOption = ((lineLength = line.length()) < 6 ? -1 : lineOptions
             .indexOf(line.substring(0, 6))) >> 3;
         boolean isAtom = (ptOption == 0 || ptOption == 1);
@@ -203,6 +205,12 @@ public class PdbReader extends AtomSetCollectionReader {
           //if (line.startsWith("REMARK")) {
           if (line.startsWith("REMARK 350")) {
             remark350();
+            iHaveLine = true;
+            continue;
+          }
+          if (line.startsWith("REMARK 290")) {
+            remark290();
+            iHaveLine = true;
             continue;
           }
           checkLineForScript();
@@ -394,6 +402,46 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
     if (nBiomt > 0)
       Logger.info("biomolecule " + iMolecule + ": number of transforms: "
           + nBiomt);
+  }
+
+  /*
+REMARK 290                                                                      
+REMARK 290 CRYSTALLOGRAPHIC SYMMETRY                                            
+REMARK 290 SYMMETRY OPERATORS FOR SPACE GROUP: P 1 21 1                         
+REMARK 290                                                                      
+REMARK 290      SYMOP   SYMMETRY                                                
+REMARK 290     NNNMMM   OPERATOR                                                
+REMARK 290       1555   X,Y,Z                                                   
+REMARK 290       2555   -X,Y+1/2,-Z                                             
+REMARK 290                                                                      
+REMARK 290     WHERE NNN -> OPERATOR NUMBER                                     
+REMARK 290           MMM -> TRANSLATION VECTOR                                  
+REMARK 290                                                                      
+REMARK 290 CRYSTALLOGRAPHIC SYMMETRY TRANSFORMATIONS                            
+REMARK 290 THE FOLLOWING TRANSFORMATIONS OPERATE ON THE ATOM/HETATM             
+REMARK 290 RECORDS IN THIS ENTRY TO PRODUCE CRYSTALLOGRAPHICALLY                
+REMARK 290 RELATED MOLECULES.                                                   
+REMARK 290   SMTRY1   1  1.000000  0.000000  0.000000        0.00000            
+REMARK 290   SMTRY2   1  0.000000  1.000000  0.000000        0.00000            
+REMARK 290   SMTRY3   1  0.000000  0.000000  1.000000        0.00000            
+REMARK 290   SMTRY1   2 -1.000000  0.000000  0.000000        0.00000            
+REMARK 290   SMTRY2   2  0.000000  1.000000  0.000000        9.32505            
+REMARK 290   SMTRY3   2  0.000000  0.000000 -1.000000        0.00000            
+REMARK 290                                                                      
+REMARK 290 REMARK: NULL                                                         
+
+   */
+  private void remark290() throws Exception {
+    while (readLine() != null && line.startsWith("REMARK 290")) {
+      if (line.indexOf("NNNMMM   OPERATOR") >= 0) {
+        while (readLine() != null) {
+          String[] tokens = getTokens();
+          if (tokens.length < 4)
+            break;
+          setSymmetryOperator(tokens[3]);
+        }
+      }
+    }
   }
 
   int atomCount;
@@ -843,6 +891,7 @@ Details
       data[i] /= 10000f;
     }
     atom.anisoBorU = data;
+    atom.anisoBorU[6] = 8; // Ortep Type 8: D = 2pi^2, C = 2, a*b*
   }
   /*
    * http://www.wwpdb.org/documentation/format23/sect7.html

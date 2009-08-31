@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-08-29 09:38+0200\n"
+"POT-Creation-Date: 2009-08-31 20:46+0200\n"
 "PO-Revision-Date: 2008-09-30 15:16+0000\n"
 "Last-Translator: Andrew Schofield <andrew_s@fahmon.net>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Launchpad-Export-Date: 2008-10-01 15:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: org/jmol/applet/Jmol.java:657
+#: org/jmol/applet/Jmol.java:655
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -32,7 +32,7 @@ msgstr ""
 "\n"
 "See http://www.jmol.org for more information"
 
-#: org/jmol/applet/Jmol.java:893
+#: org/jmol/applet/Jmol.java:899
 msgid "File Error:"
 msgstr "File Error:"
 
@@ -1573,6 +1573,347 @@ msgstr "Mouse Manual"
 msgid "Translations"
 msgstr "Translations"
 
+#: org/jmol/script/ScriptCompilationTokenParser.java:1092
+#: org/jmol/script/ScriptEvaluator.java:2297
+msgid "bad argument count"
+msgstr "bad argument count"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1095
+#, java-format
+msgid "invalid context for {0}"
+msgstr "invalid context for {0}"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1098
+#: org/jmol/script/ScriptEvaluator.java:2321
+msgid "command expected"
+msgstr "command expected"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1101
+msgid "{ number number number } expected"
+msgstr "{ number number number } expected"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1104
+#: org/jmol/script/ScriptEvaluator.java:2330
+msgid "unexpected end of script command"
+msgstr "unexpected end of script command"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1107
+msgid "end of expression expected"
+msgstr "end of expression expected"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1110
+msgid "identifier or residue specification expected"
+msgstr "identifier or residue specification expected"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1113
+msgid "invalid atom specification"
+msgstr "invalid atom specification"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1116
+msgid "invalid chain specification"
+msgstr "invalid chain specification"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1119
+#, java-format
+msgid "invalid expression token: {0}"
+msgstr "invalid expression token: {0}"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1122
+msgid "invalid model specification"
+msgstr "invalid model specification"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1125
+#, java-format
+msgid "missing END for {0}"
+msgstr "missing END for {0}"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1128
+#: org/jmol/script/ScriptEvaluator.java:2394
+msgid "number expected"
+msgstr "number expected"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1131
+msgid "number or variable name expected"
+msgstr "number or variable name expected"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1134
+msgid "residue specification (ALA, AL?, A*) expected"
+msgstr "residue specification (ALA, AL?, A*) expected"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1137
+#, java-format
+msgid "{0} expected"
+msgstr "{0} expected"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1140
+#, java-format
+msgid "{0} unexpected"
+msgstr "{0} unexpected"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1143
+#, java-format
+msgid "unrecognized expression token: {0}"
+msgstr "unrecognised expression token: {0}"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1146
+#: org/jmol/script/ScriptEvaluator.java:2443
+#, java-format
+msgid "unrecognized {0} parameter"
+msgstr "unrecognised {0} parameter"
+
+#: org/jmol/script/ScriptCompilationTokenParser.java:1149
+#, java-format
+msgid "unrecognized token: {0}"
+msgstr "unrecognised token: {0}"
+
+#: org/jmol/script/ScriptCompiler.java:2118
+#, fuzzy
+msgid "script compiler ERROR: "
+msgstr "script ERROR: "
+
+#: org/jmol/script/ScriptEvaluator.java:2159
+#: org/jmol/script/ScriptEvaluator.java:7383
+msgid "script ERROR: "
+msgstr "script ERROR: "
+
+#: org/jmol/script/ScriptEvaluator.java:2291
+msgid "x y z axis expected"
+msgstr "x y z axis expected"
+
+#: org/jmol/script/ScriptEvaluator.java:2294
+#, java-format
+msgid "{0} not allowed with background model displayed"
+msgstr "{0} not allowed with background model displayed"
+
+#: org/jmol/script/ScriptEvaluator.java:2300
+msgid "Miller indices cannot all be zero."
+msgstr "Miller indices cannot all be zero."
+
+#: org/jmol/script/ScriptEvaluator.java:2303
+msgid "bad [R,G,B] color"
+msgstr "bad [R,G,B] colour"
+
+#: org/jmol/script/ScriptEvaluator.java:2306
+msgid "boolean expected"
+msgstr "boolean expected"
+
+#: org/jmol/script/ScriptEvaluator.java:2309
+msgid "boolean or number expected"
+msgstr "boolean or number expected"
+
+#: org/jmol/script/ScriptEvaluator.java:2312
+#, java-format
+msgid "boolean, number, or {0} expected"
+msgstr "boolean, number, or {0} expected"
+
+#: org/jmol/script/ScriptEvaluator.java:2315
+msgid "color expected"
+msgstr "colour expected"
+
+#: org/jmol/script/ScriptEvaluator.java:2318
+msgid "a color or palette name (Jmol, Rasmol) is required"
+msgstr "a colour or palette name (Jmol, Rasmol) is required"
+
+#: org/jmol/script/ScriptEvaluator.java:2324
+#, fuzzy
+msgid "{x y z} or $name or (atom expression) required"
+msgstr " {x y z} or $name or (atom expression) required"
+
+#: org/jmol/script/ScriptEvaluator.java:2327
+msgid "draw object not defined"
+msgstr "draw object not defined"
+
+#: org/jmol/script/ScriptEvaluator.java:2333
+msgid "valid (atom expression) expected"
+msgstr "valid (atom expression) expected"
+
+#: org/jmol/script/ScriptEvaluator.java:2336
+msgid "(atom expression) or integer expected"
+msgstr "(atom expression) or integer expected"
+
+#: org/jmol/script/ScriptEvaluator.java:2339
+msgid "filename expected"
+msgstr "filename expected"
+
+#: org/jmol/script/ScriptEvaluator.java:2342
+msgid "file not found"
+msgstr "file not found"
+
+#: org/jmol/script/ScriptEvaluator.java:2345
+msgid "incompatible arguments"
+msgstr "incompatible arguments"
+
+#: org/jmol/script/ScriptEvaluator.java:2348
+msgid "insufficient arguments"
+msgstr "insufficient arguments"
+
+#: org/jmol/script/ScriptEvaluator.java:2351
+msgid "integer expected"
+msgstr "integer expected"
+
+#: org/jmol/script/ScriptEvaluator.java:2354
+#, java-format
+msgid "integer out of range ({0} - {1})"
+msgstr "integer out of range ({0} - {1})"
+
+#: org/jmol/script/ScriptEvaluator.java:2357
+msgid "invalid argument"
+msgstr "invalid argument"
+
+#: org/jmol/script/ScriptEvaluator.java:2360
+msgid "invalid parameter order"
+msgstr "invalid parameter order"
+
+#: org/jmol/script/ScriptEvaluator.java:2363
+msgid "keyword expected"
+msgstr "keyword expected"
+
+#: org/jmol/script/ScriptEvaluator.java:2366
+msgid "no MO coefficient data available"
+msgstr "no MO coefficient data available"
+
+#: org/jmol/script/ScriptEvaluator.java:2369
+#, java-format
+msgid "An MO index from 1 to {0} is required"
+msgstr "An MO index from 1 to {0} is required"
+
+#: org/jmol/script/ScriptEvaluator.java:2372
+msgid "no MO basis/coefficient data available for this frame"
+msgstr "no MO basis/coefficient data available for this frame"
+
+#: org/jmol/script/ScriptEvaluator.java:2375
+msgid "no MO occupancy data available"
+msgstr "no MO occupancy data available"
+
+#: org/jmol/script/ScriptEvaluator.java:2378
+msgid "Only one molecular orbital is available in this file"
+msgstr "Only one molecular orbital is available in this file"
+
+#: org/jmol/script/ScriptEvaluator.java:2381
+#, java-format
+msgid "{0} require that only one model be displayed"
+msgstr "{0} require that only one model be displayed"
+
+#: org/jmol/script/ScriptEvaluator.java:2384
+msgid "No data available"
+msgstr "No data available"
+
+#: org/jmol/script/ScriptEvaluator.java:2388
+msgid ""
+"No partial charges were read from the file; Jmol needs these to render the "
+"MEP data."
+msgstr ""
+"No partial charges were read from the file; Jmol needs these to render the "
+"MEP data."
+
+#: org/jmol/script/ScriptEvaluator.java:2391
+msgid "No unit cell"
+msgstr "No unit cell"
+
+#: org/jmol/script/ScriptEvaluator.java:2397
+#, java-format
+msgid "number must be ({0} or {1})"
+msgstr "number must be ({0} or {1})"
+
+#: org/jmol/script/ScriptEvaluator.java:2400
+#, java-format
+msgid "decimal number out of range ({0} - {1})"
+msgstr "decimal number out of range ({0} - {1})"
+
+#: org/jmol/script/ScriptEvaluator.java:2403
+msgid "object name expected after '$'"
+msgstr "object name expected after '$'"
+
+#: org/jmol/script/ScriptEvaluator.java:2407
+#, java-format
+msgid ""
+"plane expected -- either three points or atom expressions or {0} or {1} or "
+"{2}"
+msgstr ""
+"plane expected -- either three points or atom expressions or {0} or {1} or "
+"{2}"
+
+#: org/jmol/script/ScriptEvaluator.java:2410
+msgid "property name expected"
+msgstr "property name expected"
+
+#: org/jmol/script/ScriptEvaluator.java:2413
+#, java-format
+msgid "space group {0} was not found."
+msgstr "space group {0} was not found."
+
+#: org/jmol/script/ScriptEvaluator.java:2416
+msgid "quoted string expected"
+msgstr "quoted string expected"
+
+#: org/jmol/script/ScriptEvaluator.java:2419
+msgid "quoted string or identifier expected"
+msgstr "quoted string or identifier expected"
+
+#: org/jmol/script/ScriptEvaluator.java:2422
+msgid "too many rotation points were specified"
+msgstr "too many rotation points were specified"
+
+#: org/jmol/script/ScriptEvaluator.java:2425
+msgid "too many script levels"
+msgstr "too many script levels"
+
+#: org/jmol/script/ScriptEvaluator.java:2428
+msgid "unrecognized atom property"
+msgstr "unrecognised atom property"
+
+#: org/jmol/script/ScriptEvaluator.java:2431
+msgid "unrecognized bond property"
+msgstr "unrecognised bond property"
+
+#: org/jmol/script/ScriptEvaluator.java:2434
+msgid "unrecognized command"
+msgstr "unrecognised command"
+
+#: org/jmol/script/ScriptEvaluator.java:2437
+msgid "runtime unrecognized expression"
+msgstr "runtime unrecognised expression"
+
+#: org/jmol/script/ScriptEvaluator.java:2440
+msgid "unrecognized object"
+msgstr "unrecognised object"
+
+#: org/jmol/script/ScriptEvaluator.java:2447
+#, java-format
+msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
+msgstr "unrecognised {0} parameter in Jmol state script (set anyway)"
+
+#: org/jmol/script/ScriptEvaluator.java:2450
+#, java-format
+msgid "unrecognized SHOW parameter --  use {0}"
+msgstr "unrecognised SHOW parameter --  use {0}"
+
+#: org/jmol/script/ScriptEvaluator.java:2456
+#, java-format
+msgid "write what? {0} or {1} \"filename\""
+msgstr "write what? {0} or {1} \"filename\""
+
+#: org/jmol/script/ScriptEvaluator.java:5543
+#, java-format
+msgid "{0} connections deleted"
+msgstr "{0} connections deleted"
+
+#: org/jmol/script/ScriptEvaluator.java:5564
+#, java-format
+msgid "{0} new bonds; {1} modified"
+msgstr "{0} new bonds; {1} modified"
+
+#: org/jmol/script/ScriptEvaluator.java:7515
+#: org/jmol/script/ScriptEvaluator.java:7738
+#, java-format
+msgid "{0} atoms deleted"
+msgstr "{0} atoms deleted"
+
+#: org/jmol/script/ScriptEvaluator.java:8237
+#, java-format
+msgid "{0} hydrogen bonds"
+msgstr "{0} hydrogen bonds"
+
 #: org/jmol/viewer/PickingManager.java:207
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "pick one more atom in order to spin the model around an axis"
@@ -1581,378 +1922,37 @@ msgstr "pick one more atom in order to spin the model around an axis"
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "pick two atoms in order to spin the model around an axis"
 
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1091
-#: org/jmol/viewer/ScriptEvaluator.java:2288
-msgid "bad argument count"
-msgstr "bad argument count"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1094
-#, java-format
-msgid "invalid context for {0}"
-msgstr "invalid context for {0}"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1097
-#: org/jmol/viewer/ScriptEvaluator.java:2312
-msgid "command expected"
-msgstr "command expected"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1100
-msgid "{ number number number } expected"
-msgstr "{ number number number } expected"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1103
-#: org/jmol/viewer/ScriptEvaluator.java:2321
-msgid "unexpected end of script command"
-msgstr "unexpected end of script command"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1106
-msgid "end of expression expected"
-msgstr "end of expression expected"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1109
-msgid "identifier or residue specification expected"
-msgstr "identifier or residue specification expected"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1112
-msgid "invalid atom specification"
-msgstr "invalid atom specification"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1115
-msgid "invalid chain specification"
-msgstr "invalid chain specification"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1118
-#, java-format
-msgid "invalid expression token: {0}"
-msgstr "invalid expression token: {0}"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1121
-msgid "invalid model specification"
-msgstr "invalid model specification"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1124
-#, java-format
-msgid "missing END for {0}"
-msgstr "missing END for {0}"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1127
-#: org/jmol/viewer/ScriptEvaluator.java:2385
-msgid "number expected"
-msgstr "number expected"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1130
-msgid "number or variable name expected"
-msgstr "number or variable name expected"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1133
-msgid "residue specification (ALA, AL?, A*) expected"
-msgstr "residue specification (ALA, AL?, A*) expected"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1136
-#, java-format
-msgid "{0} expected"
-msgstr "{0} expected"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1139
-#, java-format
-msgid "{0} unexpected"
-msgstr "{0} unexpected"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1142
-#, java-format
-msgid "unrecognized expression token: {0}"
-msgstr "unrecognised expression token: {0}"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1145
-#: org/jmol/viewer/ScriptEvaluator.java:2434
-#, java-format
-msgid "unrecognized {0} parameter"
-msgstr "unrecognised {0} parameter"
-
-#: org/jmol/viewer/ScriptCompilationTokenParser.java:1148
-#, java-format
-msgid "unrecognized token: {0}"
-msgstr "unrecognised token: {0}"
-
-#: org/jmol/viewer/ScriptCompiler.java:2116
-#, fuzzy
-msgid "script compiler ERROR: "
-msgstr "script ERROR: "
-
-#: org/jmol/viewer/ScriptEvaluator.java:2150
-#: org/jmol/viewer/ScriptEvaluator.java:7346
-msgid "script ERROR: "
-msgstr "script ERROR: "
-
-#: org/jmol/viewer/ScriptEvaluator.java:2282
-msgid "x y z axis expected"
-msgstr "x y z axis expected"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2285
-#, java-format
-msgid "{0} not allowed with background model displayed"
-msgstr "{0} not allowed with background model displayed"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2291
-msgid "Miller indices cannot all be zero."
-msgstr "Miller indices cannot all be zero."
-
-#: org/jmol/viewer/ScriptEvaluator.java:2294
-msgid "bad [R,G,B] color"
-msgstr "bad [R,G,B] colour"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2297
-msgid "boolean expected"
-msgstr "boolean expected"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2300
-msgid "boolean or number expected"
-msgstr "boolean or number expected"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2303
-#, java-format
-msgid "boolean, number, or {0} expected"
-msgstr "boolean, number, or {0} expected"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2306
-msgid "color expected"
-msgstr "colour expected"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2309
-msgid "a color or palette name (Jmol, Rasmol) is required"
-msgstr "a colour or palette name (Jmol, Rasmol) is required"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2315
-#, fuzzy
-msgid "{x y z} or $name or (atom expression) required"
-msgstr " {x y z} or $name or (atom expression) required"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2318
-msgid "draw object not defined"
-msgstr "draw object not defined"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2324
-msgid "valid (atom expression) expected"
-msgstr "valid (atom expression) expected"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2327
-msgid "(atom expression) or integer expected"
-msgstr "(atom expression) or integer expected"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2330
-msgid "filename expected"
-msgstr "filename expected"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2333
-msgid "file not found"
-msgstr "file not found"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2336
-msgid "incompatible arguments"
-msgstr "incompatible arguments"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2339
-msgid "insufficient arguments"
-msgstr "insufficient arguments"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2342
-msgid "integer expected"
-msgstr "integer expected"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2345
-#, java-format
-msgid "integer out of range ({0} - {1})"
-msgstr "integer out of range ({0} - {1})"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2348
-msgid "invalid argument"
-msgstr "invalid argument"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2351
-msgid "invalid parameter order"
-msgstr "invalid parameter order"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2354
-msgid "keyword expected"
-msgstr "keyword expected"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2357
-msgid "no MO coefficient data available"
-msgstr "no MO coefficient data available"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2360
-#, java-format
-msgid "An MO index from 1 to {0} is required"
-msgstr "An MO index from 1 to {0} is required"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2363
-msgid "no MO basis/coefficient data available for this frame"
-msgstr "no MO basis/coefficient data available for this frame"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2366
-msgid "no MO occupancy data available"
-msgstr "no MO occupancy data available"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2369
-msgid "Only one molecular orbital is available in this file"
-msgstr "Only one molecular orbital is available in this file"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2372
-#, java-format
-msgid "{0} require that only one model be displayed"
-msgstr "{0} require that only one model be displayed"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2375
-msgid "No data available"
-msgstr "No data available"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2379
-msgid ""
-"No partial charges were read from the file; Jmol needs these to render the "
-"MEP data."
-msgstr ""
-"No partial charges were read from the file; Jmol needs these to render the "
-"MEP data."
-
-#: org/jmol/viewer/ScriptEvaluator.java:2382
-msgid "No unit cell"
-msgstr "No unit cell"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2388
-#, java-format
-msgid "number must be ({0} or {1})"
-msgstr "number must be ({0} or {1})"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2391
-#, java-format
-msgid "decimal number out of range ({0} - {1})"
-msgstr "decimal number out of range ({0} - {1})"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2394
-msgid "object name expected after '$'"
-msgstr "object name expected after '$'"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2398
-#, java-format
-msgid ""
-"plane expected -- either three points or atom expressions or {0} or {1} or "
-"{2}"
-msgstr ""
-"plane expected -- either three points or atom expressions or {0} or {1} or "
-"{2}"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2401
-msgid "property name expected"
-msgstr "property name expected"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2404
-#, java-format
-msgid "space group {0} was not found."
-msgstr "space group {0} was not found."
-
-#: org/jmol/viewer/ScriptEvaluator.java:2407
-msgid "quoted string expected"
-msgstr "quoted string expected"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2410
-msgid "quoted string or identifier expected"
-msgstr "quoted string or identifier expected"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2413
-msgid "too many rotation points were specified"
-msgstr "too many rotation points were specified"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2416
-msgid "too many script levels"
-msgstr "too many script levels"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2419
-msgid "unrecognized atom property"
-msgstr "unrecognised atom property"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2422
-msgid "unrecognized bond property"
-msgstr "unrecognised bond property"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2425
-msgid "unrecognized command"
-msgstr "unrecognised command"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2428
-msgid "runtime unrecognized expression"
-msgstr "runtime unrecognised expression"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2431
-msgid "unrecognized object"
-msgstr "unrecognised object"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2438
-#, java-format
-msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "unrecognised {0} parameter in Jmol state script (set anyway)"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2441
-#, java-format
-msgid "unrecognized SHOW parameter --  use {0}"
-msgstr "unrecognised SHOW parameter --  use {0}"
-
-#: org/jmol/viewer/ScriptEvaluator.java:2447
-#, java-format
-msgid "write what? {0} or {1} \"filename\""
-msgstr "write what? {0} or {1} \"filename\""
-
-#: org/jmol/viewer/ScriptEvaluator.java:5516
-#, java-format
-msgid "{0} connections deleted"
-msgstr "{0} connections deleted"
-
-#: org/jmol/viewer/ScriptEvaluator.java:5537
-#, java-format
-msgid "{0} new bonds; {1} modified"
-msgstr "{0} new bonds; {1} modified"
-
-#: org/jmol/viewer/ScriptEvaluator.java:7478
-#: org/jmol/viewer/ScriptEvaluator.java:7701
-#, java-format
-msgid "{0} atoms deleted"
-msgstr "{0} atoms deleted"
-
-#: org/jmol/viewer/ScriptEvaluator.java:8200
-#, java-format
-msgid "{0} hydrogen bonds"
-msgstr "{0} hydrogen bonds"
-
-#: org/jmol/viewer/SelectionManager.java:77
-#: org/jmol/viewer/SelectionManager.java:94
+#: org/jmol/viewer/SelectionManager.java:78
+#: org/jmol/viewer/SelectionManager.java:95
 #, java-format
 msgid "{0} atoms hidden"
 msgstr "{0} atoms hidden"
 
-#: org/jmol/viewer/SelectionManager.java:131
+#: org/jmol/viewer/SelectionManager.java:132
 #, java-format
 msgid "{0} atoms selected"
 msgstr "{0} atoms selected"
 
-#: org/jmol/viewer/Viewer.java:3990
+#: org/jmol/viewer/Viewer.java:3987
 msgid "Drag to move label"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4979
+#: org/jmol/viewer/Viewer.java:4978
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr "ERROR: cannot set boolean flag to string value: {0}"
 
-#: org/jmol/viewer/Viewer.java:5202 org/jmol/viewer/Viewer.java:5382
+#: org/jmol/viewer/Viewer.java:5201 org/jmol/viewer/Viewer.java:5381
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr "ERROR: cannot set boolean flag to numeric value: {0}"
 
-#: org/jmol/viewer/Viewer.java:5900
+#: org/jmol/viewer/Viewer.java:5899
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"
 
-#: org/jmol/viewer/Viewer.java:7292
+#: org/jmol/viewer/Viewer.java:7309
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 

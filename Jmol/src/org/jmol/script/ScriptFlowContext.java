@@ -25,7 +25,7 @@
 
 package org.jmol.script;
 
-public class ScriptFlowContext {
+class ScriptFlowContext {
   /*
    * Flow Contexts in Jmol 11.3.23+  -- Bob Hanson
    * 
@@ -187,7 +187,7 @@ public class ScriptFlowContext {
     return pt0;
   }
 
-  public void setLine() {
+  void setLine() {
     ptLine = this.compiler.lineCurrent;
     ptCommand = this.compiler.iCommand + 1;
   }

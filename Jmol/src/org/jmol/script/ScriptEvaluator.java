@@ -4854,7 +4854,8 @@ public class ScriptEvaluator {
         if (!(expressionResult instanceof BitSet))
           error(ERROR_invalidArgument);  
         bsCenter = (BitSet) expressionResult;
-        q = (isSyntaxCheck ? new Quaternion() : getAtomQuaternion(viewer, bsCenter));
+        q = (isSyntaxCheck ? new Quaternion() 
+            : viewer.getAtomQuaternion(BitSetUtil.firstSetBit(bsCenter)));
       } else {
         q = new Quaternion(getPoint4f(i));
       }
@@ -12889,13 +12890,4 @@ public class ScriptEvaluator {
     }
     return true;
   }
-
-  static Quaternion getAtomQuaternion(Viewer viewer, BitSet bs) {
-    int i = BitSetUtil.firstSetBit(bs);
-    if (i < 0)
-      return null;
-    return (i < 0 ? null : viewer.getModelSet().getAtomAt(i).getQuaternion(
-            viewer.getQuaternionFrame()));
-  }
-
 }

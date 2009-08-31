@@ -1307,7 +1307,7 @@ class ScriptMathProcessor {
         if (args[0].tok == Token.point4f) {
           p4 = (Point4f) args[0].value;
         } else if (args[0].tok == Token.bitset && tok == Token.quaternion) {
-          q = ScriptEvaluator.getAtomQuaternion(viewer, (BitSet) args[0].value);
+          q = viewer.getAtomQuaternion(BitSetUtil.firstSetBit((BitSet) args[0].value));
           if (q == null)
             return addX((int) 0);
         } else {

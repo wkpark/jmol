@@ -44,7 +44,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
 import org.jmol.util.Escape;
 import org.jmol.util.Quaternion;
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
 public class _VrmlExporter extends _Exporter {

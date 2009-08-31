@@ -26,7 +26,7 @@
 package org.jmol.modelset;
 
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.Graphics3D;

@@ -1,6 +1,6 @@
 package org.jmol.api;
 
-import org.jmol.viewer.ScriptContext;
+import org.jmol.script.ScriptContext;
 
 public interface JmolScriptEditorInterface {
 

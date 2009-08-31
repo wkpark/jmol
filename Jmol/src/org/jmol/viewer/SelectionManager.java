@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -116,9 +117,9 @@ class SelectionManager {
   void select(BitSet bs, boolean isQuiet) {
     if (bs == null) {
       selectAll(true);
-      if (!viewer.getRasmolHydrogenSetting())
+      if (!viewer.getRasmolSetting(Token.hydrogen))
         excludeSelectionSet(viewer.getAtomBits(Token.hydrogen, null));
-      if (!viewer.getRasmolHeteroSetting())
+      if (!viewer.getRasmolSetting(Token.hetero))
         excludeSelectionSet(viewer.getAtomBits(Token.hetero, null));
       selectionChanged(false);
     } else {

@@ -410,8 +410,8 @@ class TransformManager11 extends TransformManager {
         || navigationDepth > 100 && navZ < 0) {
       navZ = 0;
     }
-    rotateXRadians(radiansPerDegree * -.02f * navY, null);
-    rotateYRadians(radiansPerDegree * .02f * navX, null);    
+    rotateXRadians(JmolConstants.radiansPerDegree * -.02f * navY, null);
+    rotateYRadians(JmolConstants.radiansPerDegree * .02f * navX, null);    
     Point3f pt = getNavigationCenter();
     Point3f pts = new Point3f();
     transformPoint(pt, pts);
@@ -469,7 +469,7 @@ class TransformManager11 extends TransformManager {
         break;
       }
       if (isAltKey) {
-        rotateXRadians(radiansPerDegree * -.2f * multiplier, null);
+        rotateXRadians(JmolConstants.radiansPerDegree * -.2f * multiplier, null);
         navMode = NAV_MODE_NEWXYZ;
         break;
       }
@@ -495,7 +495,7 @@ class TransformManager11 extends TransformManager {
         break;
       }
       if (isAltKey) {
-        rotateXRadians(radiansPerDegree * .2f * multiplier, null);
+        rotateXRadians(JmolConstants.radiansPerDegree * .2f * multiplier, null);
         navMode = NAV_MODE_NEWXYZ;
         break;
       }
@@ -515,7 +515,7 @@ class TransformManager11 extends TransformManager {
         navMode = NAV_MODE_NEWXY;
         break;
       }
-      rotateYRadians(radiansPerDegree * 3 * -.2f * multiplier, null);
+      rotateYRadians(JmolConstants.radiansPerDegree * 3 * -.2f * multiplier, null);
       navMode = NAV_MODE_NEWXYZ;
       break;
     case KeyEvent.VK_RIGHT:
@@ -531,7 +531,7 @@ class TransformManager11 extends TransformManager {
         navMode = NAV_MODE_NEWXY;
         break;
       }
-      rotateYRadians(radiansPerDegree * 3 * .2f * multiplier, null);
+      rotateYRadians(JmolConstants.radiansPerDegree * 3 * .2f * multiplier, null);
       navMode = NAV_MODE_NEWXYZ;
       break;
     default:

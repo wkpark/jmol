@@ -227,7 +227,6 @@ class ScriptManager {
   }
 
   boolean useCommandWatcherThread = false;
-  static final String SCRIPT_COMPLETED = "Script completed";
 
   synchronized void startCommandWatcher(boolean isStart) {
     useCommandWatcherThread = isStart;

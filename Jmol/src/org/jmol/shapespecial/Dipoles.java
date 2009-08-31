@@ -30,7 +30,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;

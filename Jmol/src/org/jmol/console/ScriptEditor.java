@@ -49,7 +49,7 @@ import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.ScriptContext;
+import org.jmol.script.ScriptContext;
 
 public final class ScriptEditor extends JDialog implements JmolScriptEditorInterface, ActionListener {
 
@@ -214,7 +214,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
   /*
    * (non-Javadoc)
-   * @see org.jmol.api.JmolScriptEditorInterface#notifyContext(org.jmol.viewer.ScriptContext, java.lang.Object[])
+   * @see org.jmol.api.JmolScriptEditorInterface#notifyContext(org.jmol.script.ScriptContext, java.lang.Object[])
    * 
    * from org.jmol.viewer.StatusManager:
    * 

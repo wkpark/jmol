@@ -33,6 +33,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
 import org.jmol.g3d.Text3D;
+import org.jmol.script.Token;
 import org.jmol.util.Escape;
 import org.jmol.util.Quaternion;
 
@@ -44,7 +45,6 @@ abstract class TransformManager {
   Viewer viewer;
 
   final static float twoPI = (float) (2 * Math.PI);
-  final static float radiansPerDegree = (float) (2 * Math.PI / 360);
   final static float degreesPerRadian = (float) (360 / (2 * Math.PI));
 
   protected int perspectiveModel = 11;
@@ -297,7 +297,7 @@ abstract class TransformManager {
   float setRotateInternal(Point3f center, Vector3f axis, float degrees) {
     internalRotationCenter.set(center);
     rotationAxis.set(axis);
-    float radians = degrees * radiansPerDegree;
+    float radians = degrees * JmolConstants.radiansPerDegree;
     rotationRate = degrees;
     internalRotationAxis.set(axis, radians);
     return radians;
@@ -306,7 +306,7 @@ abstract class TransformManager {
   float setRotateFixed(Point3f center, Vector3f axis, float degrees) {
     setFixedRotationCenter(center);
     rotationAxis.set(axis);
-    float radians = degrees * radiansPerDegree;
+    float radians = degrees * JmolConstants.radiansPerDegree;
     rotationRate = degrees;
     fixedRotationAxis.set(axis, radians);
     return radians;
@@ -314,8 +314,8 @@ abstract class TransformManager {
 
   void rotateXYBy(int xDelta, int yDelta, BitSet bsAtoms) {
     // from mouse action
-    rotateXRadians(yDelta * radiansPerDegree, bsAtoms);
-    rotateYRadians(xDelta * radiansPerDegree, bsAtoms);
+    rotateXRadians(yDelta * JmolConstants.radiansPerDegree, bsAtoms);
+    rotateYRadians(xDelta * JmolConstants.radiansPerDegree, bsAtoms);
   }
 
   void rotateZBy(int zDelta) {
@@ -1985,13 +1985,13 @@ abstract class TransformManager {
                 nDegrees += Math.abs(angle / twoPI * 360f);
               } else { // old way: Rx * Ry * Rz
                 if (spinX != 0) {
-                  rotateXRadians(spinX * radiansPerDegree / myFps, null);
+                  rotateXRadians(spinX * JmolConstants.radiansPerDegree / myFps, null);
                 }
                 if (spinY != 0) {
-                  rotateYRadians(spinY * radiansPerDegree / myFps, null);
+                  rotateYRadians(spinY * JmolConstants.radiansPerDegree / myFps, null);
                 }
                 if (spinZ != 0) {
-                  rotateZRadians(spinZ * radiansPerDegree / myFps);
+                  rotateZRadians(spinZ * JmolConstants.radiansPerDegree / myFps);
                 }
               }
               while (!isInterrupted() && !viewer.getRefreshing()) {
@@ -2128,7 +2128,6 @@ abstract class TransformManager {
   // stereo support
   ////////////////////////////////////////////////////////////////
 
-  final static int DEFAULT_STEREO_DEGREES = -5;
   int stereoMode;
   int[] stereoColors;
 
@@ -2147,7 +2146,7 @@ abstract class TransformManager {
 
   void setStereoDegrees(float stereoDegrees) {
     this.stereoDegrees = stereoDegrees;
-    stereoRadians = stereoDegrees * radiansPerDegree;
+    stereoRadians = stereoDegrees * JmolConstants.radiansPerDegree;
   }
 
   boolean stereoFrame;

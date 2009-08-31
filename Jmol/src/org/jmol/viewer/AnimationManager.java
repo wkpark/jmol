@@ -258,10 +258,6 @@ class AnimationManager {
   // 1 = loop
   // 2 = palindrome
   
-  final static int ANIMATION_ONCE = 0;
-  final static int ANIMATION_LOOP = 1;
-  final static int ANIMATION_PALINDROME = 2;
-  
   int animationReplayMode = 0;
   float firstFrameDelay, lastFrameDelay;
   int firstFrameDelayMs, lastFrameDelayMs;
@@ -272,7 +268,7 @@ class AnimationManager {
     firstFrameDelayMs = (int)(this.firstFrameDelay * 1000);
     this.lastFrameDelay = lastFrameDelay > 0 ? lastFrameDelay : 0;
     lastFrameDelayMs = (int)(this.lastFrameDelay * 1000);
-    if (animationReplayMode >= ANIMATION_ONCE && animationReplayMode <= ANIMATION_PALINDROME)
+    if (animationReplayMode >= JmolConstants.ANIMATION_ONCE && animationReplayMode <= JmolConstants.ANIMATION_PALINDROME)
       this.animationReplayMode = animationReplayMode;
     else
       Logger.error("invalid animationReplayMode:" + animationReplayMode);
@@ -371,13 +367,13 @@ class AnimationManager {
         && modelIndexNext < lastModelIndex);    
     if (isDone) {
       switch (animationReplayMode) {
-      case ANIMATION_ONCE:
+      case JmolConstants.ANIMATION_ONCE:
         return false;
-      case ANIMATION_LOOP:
+      case JmolConstants.ANIMATION_LOOP:
         modelIndexNext = (animationDirection == currentDirection ? firstModelIndex
             : lastModelIndex);
         break;
-      case ANIMATION_PALINDROME:
+      case JmolConstants.ANIMATION_PALINDROME:
         currentDirection = -currentDirection;
         modelIndexNext -= 2 * frameStep;
       }
@@ -392,9 +388,9 @@ class AnimationManager {
   
   String getAnimationModeName() {
     switch (animationReplayMode) {
-    case ANIMATION_LOOP:
+    case JmolConstants.ANIMATION_LOOP:
       return "LOOP";
-    case ANIMATION_PALINDROME:
+    case JmolConstants.ANIMATION_PALINDROME:
       return "PALINDROME";
     default:
       return "ONCE";

@@ -34,6 +34,8 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
+import org.jmol.script.ScriptFunction;
+import org.jmol.script.ScriptVariable;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -68,7 +70,7 @@ public class StateManager {
   public final static int OBJ_MAX = 7;
   private final static String objectNameList = "background axis1      axis2      axis3      boundbox   unitcell   frank      ";
 
-  static String getVariableList(Hashtable htVariables, int nMax) {
+  public static String getVariableList(Hashtable htVariables, int nMax) {
     StringBuffer sb = new StringBuffer();
     //user variables only:
     int n = 0;
@@ -90,7 +92,7 @@ public class StateManager {
     return sb.toString();
   }
   
-  static int getObjectIdFromName(String name) {
+  public static int getObjectIdFromName(String name) {
     if (name == null)
       return -1;
     int objID = objectNameList.indexOf(name.toLowerCase());
@@ -459,7 +461,7 @@ public class StateManager {
     }
   }
 
-  static boolean isMeasurementUnit(String units) {
+  public static boolean isMeasurementUnit(String units) {
     return Parser.isOneOf(units.toLowerCase(),
         "angstroms;au;bohr;nanometers;nm;picometers;pm");
   }
@@ -1328,7 +1330,7 @@ public class StateManager {
       setParameterValue("spinFps", 30);
       setParameterValue("navFps", 10);
       setParameterValue("ssbondsBackbone", ssbondsBackbone);
-      setParameterValue("stereoDegrees", TransformManager.DEFAULT_STEREO_DEGREES);
+      setParameterValue("stereoDegrees", JmolConstants.DEFAULT_STEREO_DEGREES);
       setParameterValue("statusReporting", statusReporting);
       setParameterValue("strandCount", strandCountForStrands);
       setParameterValue("strandCountForStrands", strandCountForStrands);

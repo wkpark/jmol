@@ -31,7 +31,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
 import org.jmol.api.Interface;

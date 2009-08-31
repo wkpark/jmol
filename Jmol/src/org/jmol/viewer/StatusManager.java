@@ -23,6 +23,8 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.script.ScriptContext;
+import org.jmol.script.ScriptEvaluator;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
@@ -449,7 +451,7 @@ class StatusManager {
     }
     String sJmol = (msWalltime == 0 ? jmolScriptCallback(JmolConstants.CALLBACK_SCRIPT)
         : null);
-    boolean isScriptCompletion = (strStatus == ScriptManager.SCRIPT_COMPLETED);
+    boolean isScriptCompletion = (strStatus == ScriptEvaluator.SCRIPT_COMPLETED);
 
     if (recordStatus("script")) {
       boolean isError = (strErrorMessageUntranslated != null);

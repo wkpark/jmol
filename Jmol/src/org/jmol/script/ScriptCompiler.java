@@ -21,11 +21,13 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.viewer;
+package org.jmol.script;
 
 import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Parser;
+import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Bond.BondSet;
@@ -53,7 +55,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    */
   private static final String LOAD_TYPES = "append;files;menu;trajectory;models;" + JmolConstants.LOAD_ATOM_DATA_TYPES;
   
-  ScriptCompiler(Viewer viewer) {
+  public ScriptCompiler(Viewer viewer) {
     this.viewer = viewer;
   }
   
@@ -1754,7 +1756,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * @param len
    * @return     position of "}"
    */
-  static int ichMathTerminator(String script, int ichT, int len) {
+  public static int ichMathTerminator(String script, int ichT, int len) {
     int nP = 1;
     char chFirst = '\0';
     char chLast = '\0';

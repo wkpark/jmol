@@ -29,6 +29,7 @@ import java.util.Hashtable;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
+import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;

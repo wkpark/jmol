@@ -27,7 +27,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 
 import java.util.Hashtable;
 import java.util.BitSet;

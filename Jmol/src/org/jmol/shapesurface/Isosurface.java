@@ -105,7 +105,7 @@ import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.MouseManager;
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
 import org.jmol.jvxl.readers.JvxlReader;

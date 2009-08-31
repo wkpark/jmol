@@ -30,7 +30,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;

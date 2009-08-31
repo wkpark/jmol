@@ -29,6 +29,9 @@ import java.util.Vector;
 
 import javax.vecmath.Matrix3f;
 
+import org.jmol.script.ScriptEvaluator;
+import org.jmol.script.ScriptVariable;
+import org.jmol.script.Token;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -42,7 +45,7 @@ import org.jmol.util.TextFormat;
  *
  */
 
-class PropertyManager {
+public class PropertyManager {
 
   private final static String atomExpression = "<atom selection>";
   
@@ -90,7 +93,7 @@ class PropertyManager {
   private final static int PROP_APPLET_INFO = 0;
   private final static int PROP_FILENAME = 1;
   private final static int PROP_FILEHEADER = 2;
-          final static int PROP_FILECONTENTS_PATH = 3;
+          public final static int PROP_FILECONTENTS_PATH = 3;
   private final static int PROP_FILECONTENTS = 4;
   
   private final static int PROP_ANIMATION_INFO = 5;
@@ -130,7 +133,7 @@ class PropertyManager {
 
   //// static methods used by Eval and Viewer ////
   
-  static int getPropertyNumber(String infoType) {
+  public static int getPropertyNumber(String infoType) {
     if (infoType == null)
       return -1;
     for(int i = 0; i < PROP_COUNT; i++)
@@ -139,19 +142,19 @@ class PropertyManager {
     return -1;
   }
   
-  static String getDefaultParam(int propID) {
+  public static String getDefaultParam(int propID) {
     if (propID < 0)
       return "";
     return propertyTypes[propID * 3 + 2];
   }
   
-  static boolean acceptsStringParameter(String name) {
+  public static boolean acceptsStringParameter(String name) {
     int propID = getPropertyNumber(name);
     String type = getParamType(propID);
     return (type.length() > 0 && type != atomExpression);
   }
   
-  static Object getProperty(Viewer viewer, String returnType, String infoType, Object paramInfo) {
+  public static Object getProperty(Viewer viewer, String returnType, String infoType, Object paramInfo) {
     if (propertyTypes.length != PROP_COUNT * 3)
       Logger.warn("propertyTypes is not the right length: " + propertyTypes.length + " != " + PROP_COUNT * 3);
     Object info;
@@ -190,7 +193,7 @@ class PropertyManager {
     return extractProperty(getProperty(viewer, null, propertyName, propertyValue), args, 1);
   }
 
-  static Object extractProperty(Object property, ScriptVariable[] args, int ptr) {
+  public static Object extractProperty(Object property, ScriptVariable[] args, int ptr) {
     if (ptr >= args.length)
       return property;
     int pt;

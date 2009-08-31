@@ -21,7 +21,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.viewer;
+package org.jmol.script;
 
 import java.util.Hashtable;
 import java.util.Vector;
@@ -44,9 +44,9 @@ public class ScriptFunction {
   int pt0;
   int chpt0;
   int cmdpt0 = -1;
-  String name;
+  public String name;
   String script;
-  Token[][] aatoken;
+  public Token[][] aatoken;
   short[] lineNumbers;
   int[][] lineIndices;
   int nParameters;

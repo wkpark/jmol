@@ -24,6 +24,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.script.Token;
 import org.jmol.util.Logger;
 
 import java.io.BufferedInputStream;
@@ -448,7 +449,7 @@ final public class JmolConstants {
     BOND_ORDER_UNSPECIFIED
   };
 
-  final static short getBondOrderFromString(String bondOrderString) {
+  public final static short getBondOrderFromString(String bondOrderString) {
     for (int i = 0; i < bondOrderNumbers.length; i++) {
       if (bondOrderNames[i].equalsIgnoreCase(bondOrderString))
         return bondOrderValues[i];
@@ -464,7 +465,7 @@ final public class JmolConstants {
    * @param bondOrderInteger
    * @return Bond order partial mask
    */
-  final static short getPartialBondOrderFromInteger(int bondOrderInteger) {
+  public final static short getPartialBondOrderFromInteger(int bondOrderInteger) {
     return (short) ((((bondOrderInteger / 1000000) % 6) << 5)
     + ((bondOrderInteger % 1000000) & 0x1F));
   }
@@ -477,7 +478,7 @@ final public class JmolConstants {
     return (order & 0x1F);
   }
   
-  final static short getBondOrderFromFloat(float fOrder) {
+  public final static short getBondOrderFromFloat(float fOrder) {
     for (int i = 0; i < bondOrderNumbers.length; i++) {
       if (Float.valueOf(bondOrderNumbers[i]).floatValue() == Math.abs(fOrder)) {
         if (fOrder > 0)
@@ -2847,7 +2848,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     }
   }
 
-  final static int shapeTokenIndex(int tok) {
+  public final static int shapeTokenIndex(int tok) {
     for (int i = shapeToks.length; --i >= 0;)
       if (tok == shapeToks[i])
         return i;
@@ -2897,18 +2898,21 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   ////////////////////////////////////////////////////////////////
   // Stereo modes
   ////////////////////////////////////////////////////////////////
-  final static int STEREO_UNKNOWN  = -1;
-  final static int STEREO_NONE     = 0;
-  final static int STEREO_DOUBLE   = 1;
-  final static int STEREO_REDCYAN  = 2;
-  final static int STEREO_REDBLUE  = 3;
-  final static int STEREO_REDGREEN = 4;
-  final static int STEREO_CUSTOM   = 5;
+
+  public final static int DEFAULT_STEREO_DEGREES = -5;
+
+  public final static int STEREO_UNKNOWN  = -1;
+  public final static int STEREO_NONE     = 0;
+  public final static int STEREO_DOUBLE   = 1;
+  public final static int STEREO_REDCYAN  = 2;
+  public final static int STEREO_REDBLUE  = 3;
+  public final static int STEREO_REDGREEN = 4;
+  public final static int STEREO_CUSTOM   = 5;
   
   private final static String[] stereoModes = 
      { "OFF", "", "REDCYAN", "REDBLUE", "REDGREEN" };
 
-  static int getStereoMode(String id) {
+  public static int getStereoMode(String id) {
     for (int i = 0; i < STEREO_CUSTOM; i++)
       if (id.equalsIgnoreCase(stereoModes[i]))
         return i;
@@ -2982,6 +2986,13 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   };
   
   public static final String LOAD_ATOM_DATA_TYPES = "xyz;vxyz;vibration;temperature;occupancy;partialcharge";
+
+  public final static int ANIMATION_ONCE = 0;
+  public final static int ANIMATION_LOOP = 1;
+  public final static int ANIMATION_PALINDROME = 2;
+  
+  public final static float radiansPerDegree = (float) (Math.PI / 180);
+
   
   final public static int getQuantumShellTagID(String tag) {
     for (int i = quantumShellTags.length; --i >= 0;)
@@ -3023,7 +3034,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return shellOrder[shell][subshell];
   }
 
-  static int modelValue(String strDecimal) {
+  public static int modelValue(String strDecimal) {
     //this will overflow, but it doesn't matter -- it's only for file.model
     //2147483647 is maxvalue, so this allows loading
     //simultaneously up to 2147 files. Yeah, sure!

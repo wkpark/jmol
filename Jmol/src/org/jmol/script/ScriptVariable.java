@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.viewer;
+package org.jmol.script;
 
 import java.util.BitSet;
 import java.util.Vector;
@@ -55,7 +55,7 @@ public class ScriptVariable extends Token {
 
   int flags = ~FLAG_CANINCREMENT & FLAG_LOCALVAR;
 
-  ScriptVariable() {
+  public ScriptVariable() {
     tok = string;
     value = "";
   }
@@ -68,11 +68,11 @@ public class ScriptVariable extends Token {
     super(tok, intValue, value);
   }
 
-  ScriptVariable(int tok, Object value) {
+  public ScriptVariable(int tok, Object value) {
     super(tok, value);
   }
 
-  ScriptVariable(int tok, int intValue) {
+  public ScriptVariable(int tok, int intValue) {
     super(tok, intValue);
   }
 
@@ -93,7 +93,7 @@ public class ScriptVariable extends Token {
    * @return  a ScriptVariable of the input type, or if x is null, then a new ScriptVariable,
    *     or, if the type is not found, null
    */
-  static ScriptVariable getVariable(Object x) {
+  public static ScriptVariable getVariable(Object x) {
     if (x == null)
       return new ScriptVariable();
     if (x instanceof ScriptVariable)
@@ -196,14 +196,14 @@ public class ScriptVariable extends Token {
     return this;
   }
 
-  ScriptVariable setName(String name) {
+  public ScriptVariable setName(String name) {
     this.name = name;
     flags |= FLAG_CANINCREMENT;
     //System.out.println("Variable: " + name + " " + intValue + " " + value);
     return this;
   }
 
-  ScriptVariable setGlobal() {
+  public ScriptVariable setGlobal() {
     flags &= ~FLAG_LOCALVAR;
     return this;
   }
@@ -264,11 +264,11 @@ public class ScriptVariable extends Token {
 
   final static Point3f pt0 = new Point3f();
 
-  final static ScriptVariable intVariable(int intValue) {
+  public final static ScriptVariable intVariable(int intValue) {
     return new ScriptVariable(integer, intValue);
   }
 
-  static Object oValue(ScriptVariable x) {
+  public static Object oValue(ScriptVariable x) {
     switch (x == null ? nada : x.tok) {
     case on:
       return Boolean.TRUE;
@@ -322,7 +322,7 @@ public class ScriptVariable extends Token {
     }
   }
 
-  static int iValue(Token x) {
+  public static int iValue(Token x) {
     switch (x == null ? nada : x.tok) {
     case on:
       return 1;
@@ -379,7 +379,7 @@ public class ScriptVariable extends Token {
     return Parser.parseFloatStrict(s);
   }
 
-  static String sValue(Token x) {
+  public static String sValue(Token x) {
     if (x == null)
       return "";
     int i;
@@ -712,7 +712,7 @@ public class ScriptVariable extends Token {
     return true;
   }
 
-  String escape() {
+  public String escape() {
     switch (tok) {
     case Token.on:
       return "true";
@@ -746,7 +746,7 @@ public class ScriptVariable extends Token {
     return s;
   }
 
-  static ScriptVariable getBoolean(boolean value) {
+  public static ScriptVariable getBoolean(boolean value) {
     return new ScriptVariable(value ? vT : vF);
   }
   

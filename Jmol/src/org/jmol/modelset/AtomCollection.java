@@ -47,7 +47,7 @@ import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
 abstract public class AtomCollection {

@@ -665,6 +665,7 @@ support for assertions (which were introduced in 1.4).
         <include name="org/jmol/geodesic/**" />
         <include name="org/jmol/i18n/**" />
         <include name="org/jmol/modelset/**" />
+        <include name="org/jmol/script/**" />
         <include name="org/jmol/shape/**" />
         <include name="org/jmol/util/**" />
         <include name="org/jmol/viewer/**" />
@@ -808,6 +809,7 @@ support for assertions (which were introduced in 1.4).
 		<include name="org/jmol/g3d/**" />
 		<include name="org/jmol/geodesic/**" />
 		<include name="org/jmol/modelset/**" />
+        <include name="org/jmol/script/**" />
 		<include name="org/jmol/shape/**" />
 		<include name="org/jmol/viewer/**" />
 		<include name="org/jmol/util/**" />

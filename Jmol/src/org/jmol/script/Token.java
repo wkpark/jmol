@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.viewer;
+package org.jmol.script;
 
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -64,19 +64,19 @@ public class Token {
     this.value = value;
   }
 
-  final public static Token intToken(int intValue) {
+  public final static Token intToken(int intValue) {
     return new Token(integer, intValue);
   }
 
-  final static int nada              =  0;
-  final public static int identifier =  1;
-  final static int integer           =  2;
-  final static int decimal           =  3;
-  final public static int string     =  4;
+  public final static int nada              =  0;
+  public final static int identifier =  1;
+  public final static int integer           =  2;
+  public final static int decimal           =  3;
+  public final static int string     =  4;
   final static int seqcode           =  5;
   public final static int list              =  6;
-  final public static int point3f    =  7;
-  final public static int point4f    =  8;
+  public final static int point3f    =  7;
+  public final static int point4f    =  8;
   final private static int keyword   =  9;
   final static int listf             = 10;
 
@@ -158,7 +158,7 @@ public class Token {
    * 
    */
    
-  final public static int command            = (1 << 12);
+  public final static int command            = (1 << 12);
   
   // the command assumes an atom expression as the first parameter
   // -- center, define, delete, display, hide, restrict, select, subset, zap
@@ -227,13 +227,13 @@ public class Token {
   final static int set          = 3 | mathExpressionCommand;
   final static int var          = 4 | mathExpressionCommand | noeval | setparam;
 
-  final static int echo         = 1 | implicitStringCommand | setparam;
+  public final static int echo         = 1 | implicitStringCommand | setparam;
   final static int help         = 2 | implicitStringCommand;
-  final static int hover        = 3 | implicitStringCommand | defaultON;
+  public final static int hover        = 3 | implicitStringCommand | defaultON;
 //final static int javascript   see mathfunc
 //final static int label        see mathfunc
   final static int message      = 4 | implicitStringCommand;
-  final static int pause        = 5 | implicitStringCommand;
+  public final static int pause        = 5 | implicitStringCommand;
 
   //these commands control flow
   //sorry about GOTO!
@@ -250,61 +250,61 @@ public class Token {
   
   final static int animation    = command | 1;
   public final static int axes         = command | 2 | setparam | defaultON;
-  final static int backbone     = command | 3 | predefinedset | defaultON;
+  public final static int backbone     = command | 3 | predefinedset | defaultON;
   final static int background   = command | 4 | setparam;
   final static int bondorder    = command | 5;
 //final static int boundbox     see mathproperty
   final static int calculate    = command | 6;
-  final static int cartoon      = command | 7 | defaultON;
+  public final static int cartoon      = command | 7 | defaultON;
   final static int cd           = command | 7 | implicitStringCommand;
   final static int centerAt     = command | 8;
 //final static int color        see intproperty
   final static int configuration = command | 9;
-  final public static int connect = command | 10;
+  public final static int connect = command | 10;
   final static int console      = command | 11 | defaultON;
 //final static int data         see mathfunc
   final static int delay        = command | 12 | defaultON;
   final static int depth        = command | 13 | defaultON;
-  final static int dipole       = command | 14;
-  final public static int dots         = command | 15 | defaultON;
-  final public static int draw         = command | 16;
-  final static int ellipsoid    = command | 17 | defaultON;
+  public final static int dipole       = command | 14;
+  public final static int dots         = command | 15 | defaultON;
+  public final static int draw         = command | 16;
+  public final static int ellipsoid    = command | 17 | defaultON;
   final static int exit         = command | 18 | noArgs;
 //final static int file         see intproperty
   final static int font         = command | 19;
   final static int frame        = command | 20;
-  final static int frank        = command | 21 | setparam | defaultON;
-  final static int geosurface   = command | 22 | defaultON;
+  public final static int frank        = command | 21 | setparam | defaultON;
+  public final static int geosurface   = command | 22 | defaultON;
 //final static int getproperty  see mathfunc
   final static int gotocmd      = command | 23 | implicitStringCommand;
-  final static int halo         = command | 24 | defaultON;
-  final static int hbond        = command | 25 | setparam | expression | defaultON;
+  public final static int halo         = command | 24 | defaultON;
+  public final static int hbond        = command | 25 | setparam | expression | defaultON;
   final static int history      = command | 26 | setparam;
   final static int initialize   = command | 27 | noArgs;
   final static int invertSelected = command | 28;
-  final static int isosurface   = command | 29;
-  final static int lcaocartoon  = command | 30;
+  public final static int isosurface   = command | 29;
+  public final static int lcaocartoon  = command | 30;
 //final static int load         see mathfunc
   final static int loop         = command | 31 | defaultON;
-  final static int meshRibbon   = command | 32 | defaultON;
+  public final static int meshRibbon   = command | 32 | defaultON;
   final static int minimize     = command | 33;
-  final static int mo           = command | 34;
+  public final static int mo           = command | 34;
 //final static int model        see mathfunc
   public final static int monitor      = command | 35 | setparam | expression | defaultON;
   final static int move         = command | 36;
   public final static int moveto       = command | 37;
   final static int navigate     = command | 38;
-  final static int pmesh        = command | 39;
-  final static int polyhedra    = command | 40;
+  public final static int pmesh        = command | 39;
+  public final static int polyhedra    = command | 40;
 //final static int quaternion   see mathfunc
   final static int quit         = command | 41 | noArgs;
   final static int ramachandran = command | 42 | expression;
   final static int refresh      = command | 43 | noArgs;
   final static int reset        = command | 44;
   final static int restore      = command | 45;
-  final static int resume       = command | 46 | noArgs;
-  final static int ribbon       = command | 46 | defaultON;
-  final static int rocket       = command | 47 | defaultON;
+  public final static int resume       = command | 46 | noArgs;
+  public final static int ribbon       = command | 46 | defaultON;
+  public final static int rocket       = command | 47 | defaultON;
   final static int rotate       = command | 48 | defaultON;
   final static int rotateSelected = command | 49;
   final static int save         = command | 50;
@@ -312,20 +312,20 @@ public class Token {
   final static int selectionHalo = command | 51 | setparam | defaultON;
   final static int show         = command | 52;
   final static int slab         = command | 53 | defaultON;
-  //final public static int spacefill see floatproperty
+  //public final static int spacefill see floatproperty
   final static int spin         = command | 55 | setparam | defaultON;
-  final static int ssbond       = command | 56 | setparam | defaultON;
-  final static int star         = command | 57 | defaultON;
+  public final static int ssbond       = command | 56 | setparam | defaultON;
+  public final static int star         = command | 57 | defaultON;
   final static int step         = command | 57 | noArgs;
   final static int stereo       = command | 58 | defaultON;
-  final static int strands      = command | 59 | setparam | defaultON;
+  public final static int strands      = command | 59 | setparam | defaultON;
 //final static int structure    see intproperty
   final static int sync         = command | 60;
-  final static int trace        = command | 61 | defaultON;
+  public final static int trace        = command | 61 | defaultON;
   final static int translate    = command | 62;
   final static int translateSelected = command | 63;
-  final public static int unitcell = command | 64 | setparam | expression | predefinedset | defaultON;
-  final static int vector       = command | 65;
+  public final static int unitcell = command | 64 | setparam | expression | predefinedset | defaultON;
+  public final static int vector       = command | 65;
   public final static int vibration    = command | 66;
   public final static int wireframe     = command |67 | defaultON;
   //final static int write   see mathfunc
@@ -342,51 +342,51 @@ public class Token {
   final static int expressionBegin     = expression | 1;
   final static int expressionEnd       = expression | 2;
   final static int all                 = expression | 3;
-  final public static int branch       = expression | 4;
+  public final static int branch       = expression | 4;
   final static int coord               = expression | 6;
   final static int dollarsign          = expression | 7;
   final static int period              = expression | 8;
-  final public static int isaromatic   = expression | 9;
+  public final static int isaromatic   = expression | 9;
   final static int leftbrace           = expression | 10;
   final static int none                = expression | 11;
-  final public static int off          = expression | 12; //for within(dist,false,...)
-  final public static int on           = expression | 13; //for within(dist,true,...)
+  public final static int off          = expression | 12; //for within(dist,false,...)
+  public final static int on           = expression | 13; //for within(dist,true,...)
   final static int rightbrace          = expression | 14;
   final static int semicolon           = expression | 15;
 
   // generated by compiler:
   
-  final public static int spec_alternate       = expression | 31;
-  final public static int spec_atom            = expression | 32;
-  final public static int spec_chain           = expression | 33;
-  final public static int spec_model           = expression | 34;  // /3, /4
+  public final static int spec_alternate       = expression | 31;
+  public final static int spec_atom            = expression | 32;
+  public final static int spec_chain           = expression | 33;
+  public final static int spec_model           = expression | 34;  // /3, /4
   final static int spec_model2                 = expression | 35;  // 1.2, 1.3
-  final public static int spec_name_pattern    = expression | 36;
-  final public static int spec_resid           = expression | 37;
-  final public static int spec_seqcode         = expression | 38;
-  final public static int spec_seqcode_range   = expression | 39;
+  public final static int spec_name_pattern    = expression | 36;
+  public final static int spec_resid           = expression | 37;
+  public final static int spec_seqcode         = expression | 38;
+  public final static int spec_seqcode_range   = expression | 39;
 
   final static int amino                = predefinedset | 1;
-  final public static int dna           = predefinedset | 2;
-  final public static int hetero        = predefinedset | 3 | setparam;
-  final public static int hydrogen      = predefinedset | 4 | setparam;
-  final public static int nucleic       = predefinedset | 5;
-  final public static int protein       = predefinedset | 6;
-  final public static int purine        = predefinedset | 7;
-  final public static int pyrimidine    = predefinedset | 8;
-  final public static int rna           = predefinedset | 9;
-  final public static int selected      = predefinedset | 10;
+  public final static int dna           = predefinedset | 2;
+  public final static int hetero        = predefinedset | 3 | setparam;
+  public final static int hydrogen      = predefinedset | 4 | setparam;
+  public final static int nucleic       = predefinedset | 5;
+  public final static int protein       = predefinedset | 6;
+  public final static int purine        = predefinedset | 7;
+  public final static int pyrimidine    = predefinedset | 8;
+  public final static int rna           = predefinedset | 9;
+  public final static int selected      = predefinedset | 10;
   final static int solvent              = predefinedset | 11 | setparam;
   public final static int sidechain            = predefinedset | 12;
   final static int surface              = predefinedset | 13;
   final static int thismodel            = predefinedset | 14;
 
   // these next are predefined in the sense that they are known quantities
-  final public static int carbohydrate    = predefinedset | 21;
+  public final static int carbohydrate    = predefinedset | 21;
   final static int clickable              = predefinedset | 22;
   final static int displayed              = predefinedset | 23;
   final static int hidden                 = predefinedset | 24;
-  final public static int specialposition = predefinedset | 25;
+  public final static int specialposition = predefinedset | 25;
   final static int visible                = predefinedset | 27;
 
   
@@ -418,7 +418,7 @@ public class Token {
   final static int opGE         = 1 | comparator | 8 << 4;
   final static int opLE         = 2 | comparator | 8 << 4;
   final static int opLT         = 3 | comparator | 8 << 4;
-  final public static int opEQ  = 4 | comparator | 8 << 4;
+  public final static int opEQ  = 4 | comparator | 8 << 4;
   final static int opNE         = 5 | comparator | 8 << 4;
    
   final static int minus        = 0 | mathop | 9 << 4;
@@ -460,90 +460,90 @@ public class Token {
   
   // ___.xxx math properties and all atom properties 
     
-  final public static int atoms     = 1 | mathproperty;
-  final public static int bonds     = 2 | mathproperty | setparam;
+  public final static int atoms     = 1 | mathproperty;
+  public final static int bonds     = 2 | mathproperty | setparam;
   final static int length           = 3 | mathproperty;
   final static int lines            = 4 | mathproperty;
-  final public static int reverse   = 5 | mathproperty;
+  public final static int reverse   = 5 | mathproperty;
   final static int size             = 6 | mathproperty;
-  final public static int sort      = 7 | mathproperty;
-  final public static int type      = 8 | mathproperty;
-  final public static int boundbox  = 9 | mathproperty | setparam | command | defaultON;
-  final public static int xyz       =10 | mathproperty | atomproperty | settable;
-  final public static int fracXyz   =11 | mathproperty | atomproperty | settable;
-  final public static int unitXyz   =12 | mathproperty | atomproperty;
-  final public static int vibXyz    =13 | mathproperty | atomproperty | settable;
+  public final static int sort      = 7 | mathproperty;
+  public final static int type      = 8 | mathproperty;
+  public final static int boundbox  = 9 | mathproperty | setparam | command | defaultON;
+  public final static int xyz       =10 | mathproperty | atomproperty | settable;
+  public final static int fracXyz   =11 | mathproperty | atomproperty | settable;
+  public final static int unitXyz   =12 | mathproperty | atomproperty;
+  public final static int vibXyz    =13 | mathproperty | atomproperty | settable;
   
   // occupancy, radius, and structure are odd, because they takes different meanings when compared
   
-  final public static int occupancy     = intproperty | floatproperty | 2 | settable;
+  public final static int occupancy     = intproperty | floatproperty | 2 | settable;
   public final static int radius        = intproperty | floatproperty | 1 | setparam | settable;
-  final public static int structure     = intproperty | strproperty   | 3 | command;
+  public final static int structure     = intproperty | strproperty   | 3 | command;
 
   // any new int, float, or string property should be added also to LabelToken.labelTokenIds
   // and the appropriate Atom.atomPropertyXXXX() method
   
-  final public static int atomType      = strproperty | 1 | settable;
-  final public static int atomName      = strproperty | 2 | settable;
+  public final static int atomType      = strproperty | 1 | settable;
+  public final static int atomName      = strproperty | 2 | settable;
   public final static int altloc        = strproperty | 3;
-  final public static int chain         = strproperty | 4;
-  final public static int element       = strproperty | 5 | settable;
-  final public static int group         = strproperty | 6;
-  final public static int group1        = strproperty | 7;
-  final public static int sequence      = strproperty | 8;
+  public final static int chain         = strproperty | 4;
+  public final static int element       = strproperty | 5 | settable;
+  public final static int group         = strproperty | 6;
+  public final static int group1        = strproperty | 7;
+  public final static int sequence      = strproperty | 8;
   public final static int identify      = strproperty | 9;
-  final public static int insertion     = strproperty |10;
-  final public static int strucid       = strproperty |11;
-  final public static int symbol        = strproperty |12 | settable;
-  final public static int symmetry      = strproperty |13 | predefinedset;
+  public final static int insertion     = strproperty |10;
+  public final static int strucid       = strproperty |11;
+  public final static int symbol        = strproperty |12 | settable;
+  public final static int symmetry      = strproperty |13 | predefinedset;
 
-  final public static int atomno        = intproperty | 1;
+  public final static int atomno        = intproperty | 1;
   public final static int atomID        = intproperty | 2;
   public final static int atomIndex     = intproperty | 3;
   public final static int bondcount     = intproperty | 4;
-  final public static int cell          = intproperty | 5;
-  final public static int color         = intproperty | 6 | command | setparam | settable;
-  final public static int elemno        = intproperty | 7 | settable;
+  public final static int cell          = intproperty | 5;
+  public final static int color         = intproperty | 6 | command | setparam | settable;
+  public final static int elemno        = intproperty | 7 | settable;
   //file: see xxx(a)
-  final public static int formalCharge  = intproperty | 8 | setparam | settable;
+  public final static int formalCharge  = intproperty | 8 | setparam | settable;
   public final static int groupID       = intproperty | 9;
   public final static int groupindex    = intproperty | 10;
-  final public static int model         = intproperty | 11 | command;
-  final public static int modelindex    = intproperty | 12;
-  final public static int molecule      = intproperty | 13;
+  public final static int model         = intproperty | 11 | command;
+  public final static int modelindex    = intproperty | 12;
+  public final static int molecule      = intproperty | 13;
   public final static int polymerLength = intproperty | 14;
   public final static int resno         = intproperty | 15;
-  final public static int site          = intproperty | 16;
-  final public static int strucno       = intproperty | 18;
-  final public static int valence       = intproperty | 20 | settable;
+  public final static int site          = intproperty | 16;
+  public final static int strucno       = intproperty | 18;
+  public final static int valence       = intproperty | 20 | settable;
 
   // float values must be multiplied by 100 prior to comparing to integer values
   
-  final public static int adpmax          = floatproperty | 1;
-  final public static int adpmin          = floatproperty | 2;
-  final public static int atomX           = floatproperty | 3 | settable;
-  final public static int atomY           = floatproperty | 4 | settable;
-  final public static int atomZ           = floatproperty | 5 | settable;
-  final public static int covalent        = floatproperty | 5;
-  final public static int fracX           = floatproperty | 6 | settable;
-  final public static int fracY           = floatproperty | 7 | settable;
-  final public static int fracZ           = floatproperty | 8 | settable;
-  final public static int ionic           = floatproperty | 9;
-  final public static int partialCharge   = floatproperty | 10 | settable;
+  public final static int adpmax          = floatproperty | 1;
+  public final static int adpmin          = floatproperty | 2;
+  public final static int atomX           = floatproperty | 3 | settable;
+  public final static int atomY           = floatproperty | 4 | settable;
+  public final static int atomZ           = floatproperty | 5 | settable;
+  public final static int covalent        = floatproperty | 5;
+  public final static int fracX           = floatproperty | 6 | settable;
+  public final static int fracY           = floatproperty | 7 | settable;
+  public final static int fracZ           = floatproperty | 8 | settable;
+  public final static int ionic           = floatproperty | 9;
+  public final static int partialCharge   = floatproperty | 10 | settable;
   public final static int phi             = floatproperty | 11;
   public final static int psi             = floatproperty | 12;
   public final static int property        = floatproperty | 13 | mathproperty | setparam | settable;
-  final public static int spacefill       = floatproperty | 14 | command | defaultON | settable;
-  final public static int straightness    = floatproperty | 15;
+  public final static int spacefill       = floatproperty | 14 | command | defaultON | settable;
+  public final static int straightness    = floatproperty | 15;
   public final static int surfacedistance = floatproperty | 16;
-  final public static int temperature     = floatproperty | 17 | settable;
-  final public static int unitX           = floatproperty | 18;
-  final public static int unitY           = floatproperty | 19;
-  final public static int unitZ           = floatproperty | 20;
-  final public static int vanderwaals     = floatproperty | 21 | settable;
-  final public static int vibX            = floatproperty | 22 | settable;
-  final public static int vibY            = floatproperty | 23 | settable;
-  final public static int vibZ            = floatproperty | 24 | settable;
+  public final static int temperature     = floatproperty | 17 | settable;
+  public final static int unitX           = floatproperty | 18;
+  public final static int unitY           = floatproperty | 19;
+  public final static int unitZ           = floatproperty | 20;
+  public final static int vanderwaals     = floatproperty | 21 | settable;
+  public final static int vibX            = floatproperty | 22 | settable;
+  public final static int vibY            = floatproperty | 23 | settable;
+  public final static int vibZ            = floatproperty | 24 | settable;
   
   // mathfunc               means x = somefunc(a,b,c)
   // mathfunc|mathproperty  means x = y.somefunc(a,b,c)
@@ -633,12 +633,12 @@ public class Token {
   // xxx(a,b,c,d,e)
   
   final static int within           = 1 | 5 << 9 | mathfunc;
-  final public static int connected = 2 | 5 << 9 | mathfunc;
+  public final static int connected = 2 | 5 << 9 | mathfunc;
   public final static int helix     = 3 | 5 << 9 | mathfunc | predefinedset;
   
   // more SET parameters
   
-  final public static int ambient       = setparam |  1;
+  public final static int ambient       = setparam |  1;
   final static int bondmode      = setparam |  2;
   final static int fontsize      = setparam |  3;
   final static int picking       = setparam |  4;
@@ -655,74 +655,74 @@ public class Token {
   // misc
 
   final static int absolute     = misc |  1;
-  public final static int axis         = misc |  3;
+  public final static int axis  = misc |  3;
   final static int babel        = misc |  4;
   final static int back         = misc |  5;
-  final public static int backlit      = misc |  6;
-  final public static int bitset= misc |  7;
+  public final static int backlit = misc |  6;
+  public final static int bitset= misc |  7;
   final static int bondset      = misc |  8;
   final static int bottom       = misc |  9;
   final static int clear        = misc | 10;
   final static int clipboard    = misc | 11;
   final static int constraint   = misc | 12;
-  final public static int contourlines = misc | 112;
+  public final static int contourlines = misc | 112;
   final static int direction    = misc | 13;
   final static int displacement = misc | 14;
   final static int dotted       = misc | 15;
-  final public static int fill         = misc | 16;
+  public final static int fill  = misc | 16;
   final static int fixedtemp    = misc | 17; // color option
-  final public static int front        = misc | 18;
-  final public static int frontlit     = misc | 19;
-  final public static int frontonly    = misc | 20;
-  final public static int fullylit     = misc | 21;
+  public final static int front        = misc | 18;
+  public final static int frontlit     = misc | 19;
+  public final static int frontonly    = misc | 20;
+  public final static int fullylit     = misc | 21;
   final static int hkl                 = misc | 120;
   final static int image               = misc | 121;  //11.5.53
-  final public static int info  = misc | 122;
-  final static int jmol         = misc | 23;
-  final static int last         = misc | 24;
-  final static int left         = misc | 25;
-  final static int mep          = misc | 26;
-  final public static int mesh         = misc | 27;
-  final static int mode         = misc | 28;
-  final static int monomer      = misc | 29;
-  final static int next         = misc | 30;
-  final public static int nocontourlines = misc | 130;
-  final public static int nodots       = misc | 31;
-  final public static int nofill       = misc | 32;
-  final public static int nomesh       = misc | 33;
-  final static int normal       = misc | 34;
-  final public static int notfrontonly = misc | 35;
-  final public static int notriangles  = misc | 36;
+  public final static int info         = misc | 122;
+  public final static int jmol         = misc | 23;
+  public final static int last         = misc | 24;
+  final static int left                = misc | 25;
+  final static int mep                 = misc | 26;
+  public final static int mesh         = misc | 27;
+  final static int mode                = misc | 28;
+  final static int monomer             = misc | 29;
+  public final static int next         = misc | 30;
+  public final static int nocontourlines = misc | 130;
+  public final static int nodots       = misc | 31;
+  public final static int nofill       = misc | 32;
+  public final static int nomesh       = misc | 33;
+  final static int normal              = misc | 34;
+  public final static int notfrontonly = misc | 35;
+  public final static int notriangles  = misc | 36;
   final static int only         = misc | 136;
   final static int opaque       = misc | 37;
   final static int orientation  = misc | 38;
   final static int pdbheader    = misc | 39;
-  final static int play         = misc | 40;
-  final static int playrev      = misc | 41;
+  public final static int play         = misc | 40;
+  public final static int playrev      = misc | 41;
   final static int pointgroup   = misc | 411;
   final static int polymer      = misc | 42;
-  final static int prev         = misc | 43;
-  final static int range        = misc | 44;
-  final static int rasmol       = misc | 45;
-  final public static int residue= misc | 46;
-  final static int rewind       = misc | 48;
-  final static int right        = misc | 49;
-  final static int rotation     = misc | 50;
-  final static int rubberband   = misc | 51;
-  final static int sasurface    = misc | 52;
+  public final static int prev         = misc | 43;
+  final static int range               = misc | 44;
+  public final static int rasmol       = misc | 45;
+  public final static int residue      = misc | 46;
+  public final static int rewind       = misc | 48;
+  final static int right               = misc | 49;
+  public final static int rotation     = misc | 50;
+  final static int rubberband          = misc | 51;
+  final static int sasurface           = misc | 52;
   final static int scale        = misc | 53;
   final static int shape        = misc | 54;
   final static int shapely      = misc | 55;
-  final public static int sheet = misc | 55 | predefinedset;
+  public final static int sheet = misc | 55 | predefinedset;
   final static int solid        = misc | 56;
   final static int spacegroup   = misc | 57;
   final static int state        = misc | 58;
   final static int top          = misc | 59;
   final static int torsion      = misc | 60;
   final static int transform    = misc | 61;
-  final static int translation  = misc | 62;
-  final public static int translucent  = misc | 63;
-  final public static int triangles    = misc | 64;
+  public final static int translation  = misc | 62;
+  public final static int translucent  = misc | 63;
+  public final static int triangles    = misc | 64;
   final static int url          = misc | 65; 
   final static int user         = misc | 66; //color option
   final static int qw           = misc | 67;
@@ -733,22 +733,22 @@ public class Token {
   final static Token tokenOff = new Token(off, 0, "off");
   final static Token tokenAll = new Token(all, "all");
   final static Token tokenIf = new Token(ifcmd, "if");
-  final public static Token tokenAnd = new Token(opAnd, "and");
-  final public static Token tokenOr  = new Token(opOr, "or");
-  final public static Token tokenOpIf  = new Token(opIf, "?");
-  final public static Token tokenComma = new Token(comma, ",");
+  public final static Token tokenAnd = new Token(opAnd, "and");
+  public final static Token tokenOr  = new Token(opOr, "or");
+  public final static Token tokenOpIf  = new Token(opIf, "?");
+  public final static Token tokenComma = new Token(comma, ",");
   final static Token tokenPlus = new Token(plus, "+");
   final static Token tokenMinus = new Token(minus, "-");
   final static Token tokenTimes = new Token(times, "*");
   final static Token tokenDivide = new Token(divide, "/");
 
-  final public static Token tokenLeftParen = new Token(leftparen, "(");
-  final public static Token tokenRightParen = new Token(rightparen, ")");
+  public final static Token tokenLeftParen = new Token(leftparen, "(");
+  public final static Token tokenRightParen = new Token(rightparen, ")");
   final static Token tokenArray = new Token(array, "[");
   final static Token tokenArraySelector = new Token(leftsquare, "[");
  
-  final public static Token tokenExpressionBegin = new Token(expressionBegin, "expressionBegin");
-  final public static Token tokenExpressionEnd   = new Token(expressionEnd, "expressionEnd");
+  public final static Token tokenExpressionBegin = new Token(expressionBegin, "expressionBegin");
+  public final static Token tokenExpressionEnd   = new Token(expressionEnd, "expressionEnd");
   final static Token tokenCoordinateBegin = new Token(leftbrace, "{");
   final static Token tokenCoordinateEnd   = new Token(rightbrace, "}");
   final static Token tokenColon           = new Token(colon, ':');
@@ -1304,7 +1304,7 @@ public class Token {
     return cmds;
   }
   
-  static String[] getTokensLike(String type) {
+  public static String[] getTokensLike(String type) {
     int attr = (type.equals("setparam") ? setparam 
         : type.equals("misc") ? misc 
         : type.equals("mathfunc") ? mathfunc : command);

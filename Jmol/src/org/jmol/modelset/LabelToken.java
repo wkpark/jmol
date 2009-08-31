@@ -31,7 +31,7 @@ import java.util.Hashtable;
 import javax.vecmath.Tuple3f;
 
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
 public class LabelToken {

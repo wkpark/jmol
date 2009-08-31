@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import java.util.BitSet;

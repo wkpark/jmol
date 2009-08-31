@@ -53,7 +53,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
 public final class AppConsole extends JmolConsole implements JmolAppConsoleInterface, EnterListener{

@@ -41,7 +41,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 
 /*
  * Bob Hanson 4/2006

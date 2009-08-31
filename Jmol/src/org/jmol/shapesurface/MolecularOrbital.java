@@ -34,7 +34,7 @@ import javax.vecmath.Point4f;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 import org.jmol.jvxl.readers.Parameters;
 
 public class MolecularOrbital extends Isosurface {

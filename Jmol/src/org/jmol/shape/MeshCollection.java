@@ -26,7 +26,7 @@ package org.jmol.shape;
 
 import org.jmol.g3d.*;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 
 import java.util.BitSet;
 import java.util.Hashtable;

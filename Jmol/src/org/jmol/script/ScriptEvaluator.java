@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.viewer;
+package org.jmol.script;
 
 import java.awt.Image;
 import java.util.Arrays;
@@ -59,6 +59,10 @@ import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.PropertyManager;
+import org.jmol.viewer.StateManager;
+import org.jmol.viewer.Viewer;
 
 public class ScriptEvaluator {
 
@@ -180,7 +184,9 @@ public class ScriptEvaluator {
    *   hansonr@stolaf.edu
    */
   
-  ScriptEvaluator(Viewer viewer) {
+  public static final String SCRIPT_COMPLETED = "Script completed";
+
+  public ScriptEvaluator(Viewer viewer) {
     this.viewer = viewer;
     compiler = viewer.compiler;
     definedAtomSets = viewer.definedAtomSets;
@@ -244,7 +250,7 @@ public class ScriptEvaluator {
     if (errorMessage == null && interruptExecution)
       setErrorMessage("execution interrupted");
     else if (!tQuiet && !isSyntaxCheck)
-      viewer.scriptStatus(ScriptManager.SCRIPT_COMPLETED);
+      viewer.scriptStatus(SCRIPT_COMPLETED);
     isExecuting = isSyntaxCheck = isCmdLine_c_or_C_Option = historyDisabled = false;
     viewer.setTainted(true);
     viewer.popHoldRepaint("runEval");
@@ -307,7 +313,7 @@ public class ScriptEvaluator {
   protected boolean logMessages;
   private boolean debugScript;
   
-  void setDebugging() {
+  public void setDebugging() {
     debugScript = viewer.getDebugScript();
     logMessages = (debugScript && Logger.debugging);
   }
@@ -320,16 +326,16 @@ public class ScriptEvaluator {
   private long timeBeginExecution;
   private long timeEndExecution;
 
-  int getExecutionWalltime() {
+  public int getExecutionWalltime() {
     return (int) (timeEndExecution - timeBeginExecution);
   }
 
-  void haltExecution() {
+  public void haltExecution() {
     resumePausedExecution();
     interruptExecution = true;
   }
 
-  void pauseExecution() {
+  public void pauseExecution() {
     if (isSyntaxCheck)
       return;
     delay(-100);
@@ -338,27 +344,27 @@ public class ScriptEvaluator {
     executionPaused = true;
   }
 
-  void stepPausedExecution() {
+  public void stepPausedExecution() {
     executionStepping = true;
     executionPaused = false;
     //releases a paused thread but
     //sets it to pause for the next command.
   }
 
-  void resumePausedExecution() {
+  public void resumePausedExecution() {
     executionPaused = false;
     executionStepping = false;
   }
 
-  boolean isScriptExecuting() {
+  public boolean isScriptExecuting() {
     return isExecuting && !interruptExecution;
   }
 
-  boolean isExecutionPaused() {
+  public boolean isExecutionPaused() {
     return executionPaused;
   }
 
-  boolean isExecutionStepping() {
+  public boolean isExecutionStepping() {
     return executionStepping;
   }
 
@@ -367,7 +373,7 @@ public class ScriptEvaluator {
    * 
    * @return  a string indicating the statement
    */
-  String getNextStatement() {
+  public String getNextStatement() {
     return (pc < aatoken.length ? 
         setErrorLineMessage(functionName, filename,
             getLinenumber(null), pc, statementAsString(aatoken[pc], -9999)) : "");  
@@ -456,18 +462,18 @@ public class ScriptEvaluator {
    *         String, Point3f, BitSet
    */
 
-  static Object evaluateExpression(Viewer viewer, Object expr) {
+  public static Object evaluateExpression(Viewer viewer, Object expr) {
     // Text.formatText for MESSAGE and ECHO
     ScriptEvaluator e = new ScriptEvaluator(viewer);
     try {
       if (expr instanceof String) {
         if (e.compileScript(null, EXPRESSION_KEY + " = " + expr, false)) {
-          e.contextVariables = viewer.eval.contextVariables;
+          e.contextVariables = viewer.getContextVariables();
           e.setStatement(0);
           return e.parameterExpression(2, 0, "", false);
         }
       } else if (expr instanceof Token[]) {
-        e.contextVariables = viewer.eval.contextVariables;
+        e.contextVariables = viewer.getContextVariables();
         return e.expression((Token[]) expr, 0, 0, true, false, true, false);
       }
     } catch (Exception ex) {
@@ -484,7 +490,7 @@ public class ScriptEvaluator {
    * @return                is a bitset indicating the selected atoms
    * 
    */
-  static BitSet getAtomBitSet(ScriptEvaluator e, Object atomExpression) {
+  public static BitSet getAtomBitSet(ScriptEvaluator e, Object atomExpression) {
     if (atomExpression instanceof BitSet)
       return (BitSet) atomExpression;
     BitSet bs = new BitSet();
@@ -512,7 +518,7 @@ public class ScriptEvaluator {
    * @param atomExpression
    * @return                vector list of selected atoms
    */
-  static Vector getAtomBitSetVector(ScriptEvaluator e, int atomCount,
+  public static Vector getAtomBitSetVector(ScriptEvaluator e, int atomCount,
                                     Object atomExpression) {
     Vector V = new Vector();
     BitSet bs = getAtomBitSet(e, atomExpression);
@@ -1525,9 +1531,12 @@ public class ScriptEvaluator {
   private short[] lineNumbers;
   private int[][] lineIndices;
   private Hashtable contextVariables;
-  private String script;
+  public Hashtable getContextVariables() {
+    return contextVariables;
+  }
 
-  String getScript() {
+  private String script;
+  public String getScript() {
     return script;
   }
 
@@ -1542,7 +1551,7 @@ public class ScriptEvaluator {
   private int pcEnd;
   private String scriptExtensions;
 
-  String getState() {
+  public String getState() {
     return getFunctionCalls("");
   }
 
@@ -1847,7 +1856,7 @@ public class ScriptEvaluator {
     return lookupValue(setName, true);
   }
 
-  void deleteAtomsInVariables(BitSet bsDeleted) {
+  public void deleteAtomsInVariables(BitSet bsDeleted) {
     Enumeration e = definedAtomSets.keys();
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
@@ -2005,7 +2014,7 @@ public class ScriptEvaluator {
       Logger.info("-->>-------------".substring(0, scriptLevel + 5) + filename);
   }
 
-  ScriptContext getScriptContext() {
+  public ScriptContext getScriptContext() {
     ScriptContext context = new ScriptContext();
     context.contextPath = contextPath;
     context.filename = filename;
@@ -2126,11 +2135,11 @@ public class ScriptEvaluator {
   
 
 
-  String getErrorMessage() {
+  public String getErrorMessage() {
     return errorMessage;
   }
 
-  String getErrorMessageUntranslated() {
+  public String getErrorMessageUntranslated() {
     return errorMessageUntranslated == null ? errorMessage
         : errorMessageUntranslated;
   }
@@ -5273,7 +5282,7 @@ public class ScriptEvaluator {
     // stereo color1 color2 6
     // stereo redgreen 5
 
-    float degrees = TransformManager.DEFAULT_STEREO_DEGREES;
+    float degrees = JmolConstants.DEFAULT_STEREO_DEGREES;
     boolean degreesSeen = false;
     int[] colors = null;
     int colorpt = 0;
@@ -8409,10 +8418,10 @@ public class ScriptEvaluator {
     float startDelay = 1, endDelay = 1;
     if (statementLength > 5)
       error(ERROR_badArgumentCount);
-    int animationMode = AnimationManager.ANIMATION_ONCE;
+    int animationMode = JmolConstants.ANIMATION_ONCE;
     switch (getToken(2).tok) {
     case Token.loop:
-      animationMode = AnimationManager.ANIMATION_LOOP;
+      animationMode = JmolConstants.ANIMATION_LOOP;
       break;
     case Token.identifier:
       String cmd = parameterAsString(2);
@@ -8421,7 +8430,7 @@ public class ScriptEvaluator {
         break;
       }
       if (cmd.equalsIgnoreCase("palindrome")) {
-        animationMode = AnimationManager.ANIMATION_PALINDROME;
+        animationMode = JmolConstants.ANIMATION_PALINDROME;
         break;
       }
       error(ERROR_invalidArgument);
@@ -8790,7 +8799,7 @@ public class ScriptEvaluator {
       if (getToken(offset).tok != Token.integer || intParameter(offset) != 1)
         error(ERROR_invalidArgument);
       if (!isSyntaxCheck)
-        viewer.setAnimationPrevious();
+        viewer.setAnimation(Token.prev);
       return;
     }
     boolean isPlay = false;
@@ -8827,7 +8836,7 @@ public class ScriptEvaluator {
         if (iFrame == -1) {
           checkLength(offset + 1);
           if (!isSyntaxCheck)
-            viewer.setAnimationPrevious();
+            viewer.setAnimation(Token.prev);
           return;
         }
         if (iFrame >= 1000 && iFrame < 1000000 && viewer.haveFileSet())
@@ -8915,7 +8924,7 @@ public class ScriptEvaluator {
           : modelIndex >= 0 ? modelIndex : 0, false);
     }
     if (isPlay)
-      viewer.resumeAnimation();
+      viewer.setAnimation(Token.resume);
   }
 
   BitSet bitSetForModelFileNumber(int m) {
@@ -8953,7 +8962,6 @@ public class ScriptEvaluator {
   private void frameControl(int i, boolean isSubCmd) throws ScriptException {
     checkLength(i + 1);
     int tok = getToken(i).tok;
-    if (isSyntaxCheck)
       switch (tok) {
       case Token.playrev:
       case Token.play:
@@ -8963,31 +8971,8 @@ public class ScriptEvaluator {
       case Token.prev:
       case Token.rewind:
       case Token.last:
-        return;
-      }
-    else
-      switch (tok) {
-      case Token.playrev:
-        viewer.reverseAnimation();
-        // fall through
-      case Token.play:
-      case Token.resume:
-        viewer.resumeAnimation();
-        return;
-      case Token.pause:
-        viewer.pauseAnimation();
-        return;
-      case Token.next:
-        viewer.setAnimationNext();
-        return;
-      case Token.prev:
-        viewer.setAnimationPrevious();
-        return;
-      case Token.rewind:
-        viewer.rewindAnimation();
-        return;
-      case Token.last:
-        viewer.setAnimationLast();
+        if (!isSyntaxCheck)
+          viewer.setAnimation(tok);
         return;
       }
     error(ERROR_invalidArgument);
@@ -10840,10 +10825,10 @@ public class ScriptEvaluator {
           + (viewer.getSelectionHaloEnabled() ? "ON" : "OFF");
       break;
     case Token.hetero:
-      msg = "set selectHetero " + viewer.getRasmolHeteroSetting();
+      msg = "set selectHetero " + viewer.getRasmolSetting(tok);
       break;
     case Token.hydrogen:
-      msg = "set selectHydrogens " + viewer.getRasmolHydrogenSetting();
+      msg = "set selectHydrogens " + viewer.getRasmolSetting(tok);
       break;
     case Token.ambient:
     case Token.diffuse:
@@ -11659,7 +11644,7 @@ public class ScriptEvaluator {
         case Token.identifier:
           String str = parameterAsString(i);
           float radians = floatParameter(++i)
-              * TransformManager.radiansPerDegree;
+              * JmolConstants.radiansPerDegree;
           if (str.equalsIgnoreCase("x")) {
             rotAxis.set(radians, 0, 0);
             break;
@@ -12738,8 +12723,7 @@ public class ScriptEvaluator {
           sdata = TextFormat.replaceAllCharacters(sdata, "{,}|", ' ');
           if (logMessages)
             Logger.debug("pmesh inline data:\n" + sdata);
-          t = (isSyntaxCheck ? null : FileManager
-              .getBufferedReaderForString(sdata));
+          t = (isSyntaxCheck ? null : viewer.getBufferedReaderForString(sdata));
         } else {
           if (thisCommand.indexOf("# FILE" + nFiles + "=") >= 0)
             filename = extractCommandOption("# FILE" + nFiles);
@@ -12913,7 +12897,5 @@ public class ScriptEvaluator {
     return (i < 0 ? null : viewer.getModelSet().getAtomAt(i).getQuaternion(
             viewer.getQuaternionFrame()));
   }
-  
-  // OK, that's all there is to it... Simple enough! ;)
 
 }

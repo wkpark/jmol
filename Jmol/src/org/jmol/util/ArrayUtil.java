@@ -26,7 +26,7 @@ package org.jmol.util;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 
 final public class ArrayUtil {
 

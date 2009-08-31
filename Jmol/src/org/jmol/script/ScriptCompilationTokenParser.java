@@ -21,10 +21,11 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.viewer;
+package org.jmol.script;
 
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.i18n.GT;
 
 import java.util.Vector;

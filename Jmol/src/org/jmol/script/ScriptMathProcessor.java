@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.viewer;
+package org.jmol.script;
 
 import java.util.BitSet;
 import java.util.Vector;
@@ -36,6 +36,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.Bond.BondSet;
+import org.jmol.script.ScriptEvaluator.ScriptException;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -44,7 +45,9 @@ import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.ScriptEvaluator.ScriptException;
+import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.PropertyManager;
+import org.jmol.viewer.Viewer;
 
 public class ScriptMathProcessor {
   /**

@@ -33,7 +33,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.Token;
+import org.jmol.script.Token;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;

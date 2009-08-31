@@ -32,6 +32,7 @@ org/jmol/modelsetbio/*.java
 
 org/jmol/popup/*.java
 org/jmol/quantum/*.java
+org/jmol/script/*.java
 org/jmol/shape/*.java
 org/jmol/shapebio/*.java
 org/jmol/shapespecial/*.java

@@ -578,6 +578,7 @@ public final class ModelLoader extends ModelSet {
         atomSite, atomicAndIsotopeNumber, size, formalCharge, x, y, z, isHetero,
         chainID, alternateLocationID, radius);
     atoms[atomCount] = atom;
+    System.out.println("modelload " + bfactor);
     setBFactor(atomCount, bfactor);
     setOccupancy(atomCount, occupancy);
     setPartialCharge(atomCount, partialCharge);

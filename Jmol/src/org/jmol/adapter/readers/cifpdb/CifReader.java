@@ -640,7 +640,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
             atom.occupancy = (int) (floatOccupancy * 100);
           break;
         case B_ISO:
-          atom.bfactor = parseFloat(field) * 100f;
+          atom.bfactor = parseFloat(field) * (isPDB ? 1 : 100f);
           break;
         case COMP_ID:
           atom.group3 = field;

@@ -6618,6 +6618,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getAtomNumber(i);
   }
 
+  public Quaternion getAtomQuaternion(int i) {
+    return (i < 0 ? null 
+        : modelSet.getQuaternion(i, getQuaternionFrame()));
+  }
+
   float getAtomX(int i) {
     return modelSet.getAtomX(i);
   }

@@ -497,11 +497,9 @@ public class Escape {
       return packageReadable(name, "float[][]", sb);
     }
     if (info instanceof Vector) {
-      sb.append("");
       int imax = ((Vector) info).size();
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(toReadable(name + "[" + (i + 1) + "]", ((Vector) info).get(i)));
-        //sep = ",";
+        sb.append(toReadable(name + "[" + (i + 1) + "]", ((Vector) info).get(i)));
       }
       return packageReadable(name, "Vector[" + imax + "]", sb);
     }
@@ -525,12 +523,10 @@ public class Escape {
       Enumeration e = ((Hashtable) info).keys();
       while (e.hasMoreElements()) {
         String key = (String) e.nextElement();
-        sb.append(sep).append(toReadable((name == null ? "" : name + ".") + key,
+        sb.append(toReadable((name == null ? "" : name + ".") + key,
             ((Hashtable) info).get(key)));
-        sep = "";
       }
-      //sb.append("\n");
-      return sb.toString();//packageReadable(name, null, sb);
+      return sb.toString();
     }
     return packageReadable(name, null, info.toString());
   }

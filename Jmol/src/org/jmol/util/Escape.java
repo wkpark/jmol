@@ -525,7 +525,8 @@ public class Escape {
       Enumeration e = ((Hashtable) info).keys();
       while (e.hasMoreElements()) {
         String key = (String) e.nextElement();
-        sb.append(sep).append(toReadable(name + "." + key, ((Hashtable) info).get(key)));
+        sb.append(sep).append(toReadable((name == null ? "" : name + ".") + key,
+            ((Hashtable) info).get(key)));
         sep = "";
       }
       //sb.append("\n");

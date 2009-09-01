@@ -158,7 +158,7 @@ public class PropertyManager {
     if (propertyTypes.length != PROP_COUNT * 3)
       Logger.warn("propertyTypes is not the right length: " + propertyTypes.length + " != " + PROP_COUNT * 3);
     Object info;
-    if (infoType.indexOf(".") >= 0) {
+    if (infoType.indexOf(".") >= 0 || infoType.indexOf("[") >= 0) {
       info = getModelProperty(viewer, infoType, paramInfo);
     } else {
       info = getPropertyAsObject(viewer, infoType, paramInfo, returnType);

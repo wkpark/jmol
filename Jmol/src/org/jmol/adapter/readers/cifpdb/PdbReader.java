@@ -245,6 +245,15 @@ public class PdbReader extends AtomSetCollectionReader {
     }
   }
 
+  public void applySymmetryAndSetTrajectory() throws Exception {
+    // This speeds up calculation, because no crosschecking
+    // No special-position atoms in mmCIF files, because there will
+    // be no center of symmetry, no rotation-inversions, 
+    // no atom-centered rotation axes, and no mirror or glide planes. 
+    atomSetCollection.setCheckSpecial(false);
+    super.applySymmetryAndSetTrajectory();
+  }
+
   private void header() {
     if (lineLength < 8)
       return;
@@ -312,8 +321,9 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
 
 */
  
- Vector biomolecules;
- Vector biomts;
+  private Vector biomolecules;
+  private Vector biomts;
+  
   private void remark350() throws Exception {
     Vector biomts = null;
     biomolecules = new Vector();
@@ -444,11 +454,11 @@ REMARK 290 REMARK: NULL
     }
   }
 
-  int atomCount;
-  String lastAtomData;
-  int lastAtomIndex;
+  private int atomCount;
+  private String lastAtomData;
+  private int lastAtomIndex;
   
-  void atom() {
+  private void atom() {
     boolean isHetero = line.startsWith("HETATM");
     char charAlternateLocation = line.charAt(16);
 
@@ -507,7 +517,7 @@ REMARK 290 REMARK: NULL
     int occupancy = readOccupancy();
     float partialCharge = readPartialCharge();
     float radius = readRadius();
-
+    
     /****************************************************************
      * coordinates
      ****************************************************************/
@@ -581,7 +591,7 @@ REMARK 290 REMARK: NULL
     return Float.NaN; 
   }
   
-  String deduceElementSymbol(boolean isHetero) {
+  private String deduceElementSymbol(boolean isHetero) {
     if (lineLength >= 78) {
       char ch76 = line.charAt(76);
       char ch77 = line.charAt(77);
@@ -607,7 +617,7 @@ REMARK 290 REMARK: NULL
     return "Xx";
   }
 
-  void conect() {
+  private void conect() {
     int sourceSerial = -1;
     sourceSerial = parseInt(line, 6, 11);
     if (sourceSerial < 0)
@@ -647,7 +657,7 @@ SHEET    2   A 6 GLU A  47  ILE A  51  1  N  ILE A  48   O  ASP A  77
 SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47           
 
    */
-  void structure() {
+  private void structure() {
     String structureType = "none";
     int startChainIDIndex;
     int startIndex;
@@ -712,7 +722,8 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
       return 0;
     }
   }
-  void model(int modelNumber) {
+  
+  private void model(int modelNumber) {
     /****************************************************************
      * mth 2004 02 28
      * note that the pdb spec says:
@@ -730,17 +741,17 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
       atomSetCollection.setAtomSetNumber(modelNumber);
   }
 
-  void cryst1() throws Exception {
+  private void cryst1() throws Exception {
     setUnitCell(getFloat(6, 9), getFloat(15, 9), getFloat(24, 9), getFloat(33,
         7), getFloat(40, 7), getFloat(47, 7));
     setSpaceGroupName(parseTrimmed(line, 55, 66));
   }
 
-  float getFloat(int ich, int cch) throws Exception {
+  private float getFloat(int ich, int cch) throws Exception {
     return parseFloat(line, ich, ich+cch);
   }
 
-  void scale(int n) throws Exception {
+  private void scale(int n) throws Exception {
     int pt = n * 4 + 2;
     setUnitCellItem(pt++,getFloat(10, 10));
     setUnitCellItem(pt++,getFloat(20, 10));
@@ -748,13 +759,13 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
     setUnitCellItem(pt++,getFloat(45, 10));
   }
 
-  void expdta() {
+  private void expdta() {
     String technique = parseTrimmed(line, 10).toLowerCase();
     if (technique.regionMatches(true, 0, "nmr", 0, 3))
       isNMRdata = true;
   }
 
-  void formul() {
+  private void formul() {
     String groupName = parseToken(line, 12, 15);
     String formula = parseTrimmed(line, 19, 70);
     int ichLeftParen = formula.indexOf('(');
@@ -783,7 +794,7 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
     }
   }
   
-  void het() {
+  private void het() {
     if (line.length() < 30)
       return;
     if (htHetero == null)
@@ -795,7 +806,7 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
     htHetero.put(groupName, hetName);
   }
   
-  void hetnam() {
+  private void hetnam() {
     if (htHetero == null)
       htHetero = new Hashtable();
     String groupName = parseToken(line, 11, 14);
@@ -860,9 +871,9 @@ Details
 
 * The anisotropic temperature factors are stored in the same coordinate frame as the atomic coordinate records. 
    */
-  boolean  haveMappedSerials;
+  private boolean  haveMappedSerials;
   
-  void anisou() {
+  private void anisou() {
     float[] data = new float[8];
     data[6] = 1; //U not B
     int serial = parseInt(line, 6, 11);
@@ -952,15 +963,6 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
         groups += ":" + chainID;
       htSite.put("groups", groups);
     }
-  }
-
-  public void applySymmetryAndSetTrajectory() throws Exception {
-    // This speeds up calculation, because no crosschecking
-    // No special-position atoms in mmCIF files, because there will
-    // be no center of symmetry, no rotation-inversions, 
-    // no atom-centered rotation axes, and no mirror or glide planes. 
-    atomSetCollection.setCheckSpecial(false);
-    super.applySymmetryAndSetTrajectory();
   }
 }
 

@@ -5578,6 +5578,8 @@ public class ScriptEvaluator {
     String name = property;
     if (name.indexOf(".") >= 0)
       name = name.substring(0, name.indexOf("."));
+    if (name.indexOf("[") >= 0)
+      name = name.substring(0, name.indexOf("["));
     int propertyID = PropertyManager.getPropertyNumber(name);
     String param = optParameterAsString(2);
     int tok = tokAt(2);

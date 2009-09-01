@@ -521,6 +521,14 @@ public class Quaternion {
 
   public Point4f toPoint4f() {
     // NO q0 normalization here
+
+    // note: for quaternions, we save them {q1, q2, q3, q0} 
+    // While this may seem odd, it is so that for any point4 -- 
+    // planes, axisangles, and quaternions -- we can use the 
+    // first three coordinates to determine the relavent axis
+    // the fourth then gives us offset to {0,0,0} (plane), 
+    // rotation angle (axisangle), and cos(theta/2) (quaternion).
+    
     return new Point4f(q1, q2, q3, q0);
   }
 

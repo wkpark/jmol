@@ -882,8 +882,7 @@ class PointGroup {
   
   Object getInfo(int modelIndex, boolean asDraw, boolean asInfo, String type,
                  int index, float scaleFactor) {
-    if (asInfo)
-      info = new Hashtable();
+    info = (asInfo ? new Hashtable() : null);
     Vector3f v = new Vector3f();
     Operation op;
     if (scaleFactor == 0)

@@ -2855,7 +2855,7 @@ abstract public class ModelCollection extends BondCollection {
       if (list == null) {
         strOperations = "\n no symmetry operations employed";
       } else {
-        getSymTemp();
+        getSymTemp(true);
         symTemp.setSpaceGroup(false);
         strOperations = "\n" + list.length + " symmetry operations employed:";
         infolist = new Object[list.length][];
@@ -2873,7 +2873,7 @@ abstract public class ModelCollection extends BondCollection {
       info = new Hashtable();
     }
     info.put("spaceGroupName", spaceGroup);
-    getSymTemp();
+    getSymTemp(true);
     String data = symTemp.getSpaceGroupInfo(spaceGroup, cellInfo);
     if (infolist != null) {
       info.put("operations", infolist);
@@ -2909,7 +2909,7 @@ abstract public class ModelCollection extends BondCollection {
         return ret;
       xyz = ops[op - 1 ];
     }
-    getSymTemp(); 
+    getSymTemp(false); 
     symTemp.setSpaceGroup(false);
     int iSym = symTemp.addSpaceGroupOperation("!" + xyz);
     if (iSym < 0)
@@ -2928,8 +2928,8 @@ abstract public class ModelCollection extends BondCollection {
         (id == null ? "sym" : id))[3];
   }
 
-  private void getSymTemp() {
-    if (symTemp == null)
+  private void getSymTemp(boolean forceNew) {
+    if (symTemp == null || forceNew)
       symTemp = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
   }
 

@@ -1159,7 +1159,7 @@ public class ScriptEvaluator {
           switch (tok) {
           case Token.function:
             bsAtom.set(i);
-            fv = ScriptVariable.fValue((Token) getFunctionReturn(userFunction,
+            fv = ScriptVariable.fValue(getFunctionReturn(userFunction,
                 params, tokenAtom));
             bsAtom.clear(i);
             break;
@@ -9260,11 +9260,11 @@ public class ScriptEvaluator {
         Vector v = (Vector) parameterExpression(2, 0, "XXX", true);
         if (v == null || v.size() == 0)
           error(ERROR_invalidArgument);
-        Token token = (ScriptVariable) v.elementAt(0);
-        if (token.tok == Token.point3f)
-          pt = (Point3f) token.value;
+        ScriptVariable var = (ScriptVariable) v.elementAt(0);
+        if (var.tok == Token.point3f)
+          pt = (Point3f) var.value;
         else {
-          int ijk = ScriptVariable.iValue(token);
+          int ijk = ScriptVariable.iValue(var);
           if (ijk < 555)
             pt = new Point3f();
           else

@@ -76,13 +76,17 @@ public class Token {
   final static int seqcode           =  5;
   public final static int list       =  6;
   public final static int point3f    =  7;
-  public final static int point4f    =  8;
-  final private static int keyword   =  9;
-  final static int listf             = 10;
+  public final static int point4f    =  8;  
+  // listf "list-float" is specifically for xxx.all.bin, 
+  // but it could be developed further
+  final static int listf             = 9;     
+
+  final private static int keyword   =  10;
+  
 
   final static String[] astrType = {
     "nada", "identifier", "integer", "decimal", "string",
-    "seqcode", "list", "point", "plane", "keyword", "listf"
+    "seqcode", "array", "point", "point4", "listf", "keyword"
   };
 
   public static boolean tokAttr(int a, int b) {
@@ -1257,7 +1261,7 @@ public class Token {
    
   public String toString() {
     return "Token["
-        + astrType[tok <= keyword ? tok : keyword]
+        + astrType[tok < keyword ? tok : keyword]
         + "("+(tok%(1<<9))+"/0x" + Integer.toHexString(tok) + ")"
         + ((intValue == Integer.MAX_VALUE) ? "" : " intValue=" + intValue
             + "(0x" + Integer.toHexString(intValue) + ")")

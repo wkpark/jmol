@@ -67,7 +67,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private String thisStructuralFormula = "";
   private String thisFormula = "";
   private boolean iHaveDesiredModel;
-
+  private boolean isPDB = false;
   private Hashtable htHetero;
 
   public void readAtomSetCollection(BufferedReader reader) {
@@ -173,6 +173,15 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     } catch (Exception e) {
       setError(e);
     }
+  }
+
+  public void applySymmetryAndSetTrajectory() throws Exception {
+    // This speeds up calculation, because no crosschecking
+    // No special-position atoms in mmCIF files, because there will
+    // be no center of symmetry, no rotation-inversions, 
+    // no atom-centered rotation axes, and no mirror or glide planes. 
+    atomSetCollection.setCheckSpecial(!isPDB);
+    super.applySymmetryAndSetTrajectory();
   }
 
   ////////////////////////////////////////////////////////////////
@@ -546,7 +555,6 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       "_atom_site_adp_type",
   };
 
-
   /* to: hansonr@stolaf.edu
    * from: Zukang Feng zfeng@rcsb.rutgers.edu
    * re: Two mmCIF issues
@@ -564,7 +572,6 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
    */
   boolean processAtomSiteLoopBlock() throws Exception {
     int currentModelNO = -1;
-    boolean isPDB = false;
     boolean isAnisoData = false;
     parseLoopParameters(atomFields);
     if (fieldOf[CARTN_X] != NONE) {

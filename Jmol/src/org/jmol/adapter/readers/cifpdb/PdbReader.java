@@ -955,13 +955,10 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   }
 
   public void applySymmetryAndSetTrajectory() throws Exception {
-    if (needToApplySymmetry && !isNMRdata) {
-      // problem with PDB is that they don't give origins, 
-      // so we must force the issue
-      if(spaceGroup.indexOf(":") < 0)
-        spaceGroup += ":?";
-    }
-    //speeds up calculation, because no crosschecking
+    // This speeds up calculation, because no crosschecking
+    // No special-position atoms in mmCIF files, because there will
+    // be no center of symmetry, no rotation-inversions, 
+    // no atom-centered rotation axes, and no mirror or glide planes. 
     atomSetCollection.setCheckSpecial(false);
     super.applySymmetryAndSetTrajectory();
   }

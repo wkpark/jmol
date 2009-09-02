@@ -181,7 +181,7 @@ class ScriptMathProcessor {
         break;
       case Token.decimal:
         float f = ((Float) x.value).floatValue();
-        if (f < 0) {
+        if (f < 0 || f == 0 && 1/f == Float.NEGATIVE_INFINITY) {
           addOp(Token.tokenMinus);
           x = new ScriptVariable(Token.decimal, new Float(-f));
         }

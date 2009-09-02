@@ -946,6 +946,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           return ERROR(ERROR_badContext, (String) tokenCommand.value);
         ((Token) ltoken.get(0)).intValue = f.getPt0(); // copy
       }
+      if (val == 0 && intString.equals("-0"))
+        addTokenToPrefix(Token.tokenMinus);
       addTokenToPrefix(new Token(Token.integer, val, intString));
       return CONTINUE;
     }

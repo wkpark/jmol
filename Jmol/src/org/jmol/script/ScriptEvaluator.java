@@ -419,8 +419,8 @@ public class ScriptEvaluator {
       //for (i =  s.length(); --i >= 0 && !ScriptCompiler.eol(s.charAt(i), 0); ){
       //}      
       //s = s.substring(0, i + 1);
-      if (s.length() > 0 && !s.endsWith(";") && !s.endsWith("{")
-          && !s.endsWith("}"))
+      if (s.length() > 0 && !s.endsWith(";")/* && !s.endsWith("{")
+          && !s.endsWith("}")*/)
         s += ";";
     } catch (Exception e) {
       Logger.error("darn problem in Eval getCommand: ichBegin=" + ichBegin
@@ -730,6 +730,9 @@ public class ScriptEvaluator {
         break;
       case Token.semicolon: // for (i = 1; i < 3; i=i+1)
         break out;
+      case Token.decimal:
+        rpn.addXNum(ScriptVariable.getVariable(theToken.value));
+        break;
       case Token.spec_seqcode:
       case Token.integer:
         rpn.addXNum(ScriptVariable.intVariable(theToken.intValue));
@@ -760,7 +763,6 @@ public class ScriptEvaluator {
       case Token.on:
       case Token.off:
       case Token.string:
-      case Token.decimal:
       case Token.point3f:
       case Token.point4f:
       case Token.bitset:

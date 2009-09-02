@@ -1008,9 +1008,10 @@ public class FileManager {
    * 
    * @param script
    * @param dataPath
+   * @param isLocal 
    * @return revised script
    */
-  public static String setScriptFileReferences(String script, String dataPath) {
+  public static String setScriptFileReferences(String script, String dataPath, boolean isLocal) {
     if (dataPath == null)
       return script;
     if (dataPath.equals("."))
@@ -1023,7 +1024,7 @@ public class FileManager {
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name = (String) fileNames.get(iFile);
       int itype = urlTypeIndex(name);
-      if (itype < 0 || itype == URL_LOCAL) {
+      if (isLocal == (itype < 0 || itype == URL_LOCAL)) {
         int pt = (noPath ? -1 : name.indexOf("/" + dataPath + "/"));
         if (pt >= 0) {
           name = name.substring(pt + 1);

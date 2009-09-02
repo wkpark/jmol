@@ -208,7 +208,7 @@ public class ScriptEvaluator {
   public boolean compileScriptFile(String filename, boolean tQuiet) {
     clearState(tQuiet);
     contextPath = filename;
-    return compileScriptFileInternal(filename, null);
+    return compileScriptFileInternal(filename, null, null);
   }
 
   public void evaluateCompiledScript(boolean isCmdLine_c_or_C_Option,
@@ -1600,7 +1600,7 @@ public class ScriptEvaluator {
     runScript(script, outputBuffer);
   }
 
-  private boolean compileScriptFileInternal(String filename, String path) {
+  private boolean compileScriptFileInternal(String filename, String localPath, String remotePath) {
     // from "script" command, with push/pop surrounding or viewer
     if (filename.toLowerCase().indexOf("javascript:") == 0)
       return compileScript(filename, viewer.jsEval(filename.substring(11)),
@@ -1612,8 +1612,10 @@ public class ScriptEvaluator {
       return false;
     }
     this.filename = filename;
-    if (path != null)
-      data[1] = FileManager.setScriptFileReferences(data[1], path);
+    if (localPath != null)
+      data[1] = FileManager.setScriptFileReferences(data[1], localPath, true);
+    if (remotePath != null)
+      data[1] = FileManager.setScriptFileReferences(data[1], remotePath, false);
     return compileScript(filename, data[1], debugScript);
   }
 
@@ -7291,7 +7293,8 @@ public class ScriptEvaluator {
     int pcEnd = 0;
     int i = 2;
     String filename = null;
-    String path = null;
+    String localPath = null;
+    String remotePath = null;
     String theScript = parameterAsString(1);
     if (tok == Token.javascript) {
       checkLength(2);
@@ -7323,8 +7326,13 @@ public class ScriptEvaluator {
       if (filename.equalsIgnoreCase("inline")) {
         theScript = parameterExpression(2, (doStep ? statementLength - 1 : 0), "_script", false).toString();
         i = iToken + 1;
-      } else if (filename.equalsIgnoreCase("localPath")) {
-        path = parameterAsString(i++);
+      }
+      while (filename.equalsIgnoreCase("localPath")
+          || filename.equalsIgnoreCase("remotePath")) {
+        if (filename.equalsIgnoreCase("localPath"))
+          localPath = parameterAsString(i++);
+        else
+          remotePath = parameterAsString(i++);
         filename = parameterAsString(i++);
       }
       option = optParameterAsString(i);
@@ -7373,7 +7381,7 @@ public class ScriptEvaluator {
       isSyntaxCheck = isCmdLine_c_or_C_Option = true;
     pushContext(null);
     contextPath += " >> " + filename;
-    if (theScript == null ? compileScriptFileInternal(filename, path) 
+    if (theScript == null ? compileScriptFileInternal(filename, localPath, remotePath) 
         : compileScript(null, theScript, false)) {
       this.pcEnd = pcEnd;
       this.lineEnd = lineEnd;
@@ -10367,7 +10375,8 @@ public class ScriptEvaluator {
     boolean isShow = false;
     boolean isExport = false;
     BitSet bsFrames = null;
-    String path = null;
+    String localPath = null;
+    String remotePath = null;
     String val = null;
     int quality = Integer.MIN_VALUE;
     if (tok == Token.string) {
@@ -10433,9 +10442,12 @@ public class ScriptEvaluator {
     case Token.state:
     case Token.script:
       val = ScriptVariable.sValue(tokenAt(++pt, args)).toLowerCase();
-      if (val.equalsIgnoreCase("localPath")) {
-        path = ScriptVariable.sValue(tokenAt(++pt, args)).toLowerCase();
-        pt++;
+      while (val.equals("localpath") || val.equals("remotepath")) {
+        if (val.equals("localpath"))
+          localPath = ScriptVariable.sValue(tokenAt(++pt, args));
+        else
+          remotePath = ScriptVariable.sValue(tokenAt(++pt, args));
+        val = ScriptVariable.sValue(tokenAt(++pt, args)).toLowerCase();
       }
       type = "SPT";
       break;
@@ -10661,8 +10673,10 @@ public class ScriptEvaluator {
         viewer.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
       } else {
         data = (String) viewer.getProperty("string", "stateInfo", null);
-        if (path != null)
-          data = FileManager.setScriptFileReferences(data, path);
+        if (localPath != null)
+          data = FileManager.setScriptFileReferences(data, localPath, true);
+        if (remotePath != null)
+          data = FileManager.setScriptFileReferences(data, remotePath, false);
       }
     } else if (data == "HIS") {
       data = viewer.getSetHistory(Integer.MAX_VALUE);

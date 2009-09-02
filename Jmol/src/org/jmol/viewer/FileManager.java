@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.CompoundDocument;
+import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.util.ZipUtil;
 
@@ -40,6 +41,7 @@ import java.net.MalformedURLException;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.BufferedInputStream;
 import java.io.FilterInputStream;
@@ -51,8 +53,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.Reader;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipInputStream;
 import java.util.Hashtable;
+import java.util.Vector;
 
 /* ***************************************************************
  * will not work with applet
@@ -959,6 +963,92 @@ public class FileManager {
     return ZipUtil
         .getZipDirectoryAsStringAndClose((InputStream) getInputStreamOrErrorMessageFromName(
             fileName, false));
+  }
+
+  public static String writeFileZipped(String[] retName, byte[] data,
+                                       int maxUnzipped) {
+    String err = null;
+    try {
+      boolean doCompress = false;
+      if (data.length > maxUnzipped) {
+        // don't compress binary files of any sort
+        // as judged by having a nonASCII byte in first 10 bytes
+        doCompress = true;
+        for (int i = 0; i < 10; i++)
+          if (data[i] < 10)
+            doCompress = false;
+      }
+      if (doCompress) {
+        // gzip it
+        retName[0] += ".gz";
+        GZIPOutputStream gzFile = new GZIPOutputStream(new FileOutputStream(
+            retName[0]));
+        gzFile.write(data);
+        gzFile.flush();
+        gzFile.close();
+      } else {
+        FileOutputStream os = new FileOutputStream(retName[0]);
+        os.write(data);
+        os.flush();
+        os.close();
+      }
+    } catch (IOException e) {
+      err = e.getMessage();
+    }
+    return err;
+  }
+
+  /**
+   * Sets all local file references in a script file to point to files within
+   * dataPath. If a file reference contains dataPath, then the file reference is
+   * left with that RELATIVE path. Otherwise, it is changed to a relative file
+   * name within that dataPath. 
+   * 
+   * Only file references starting with "file://" are changed.
+   * 
+   * @param script
+   * @param dataPath
+   * @return revised script
+   */
+  public static String setScriptFileReferences(String script, String dataPath) {
+    if (dataPath == null)
+      return script;
+    if (dataPath.equals("."))
+      dataPath = "";
+    boolean noPath = (dataPath.length() == 0);
+    Vector fileNames = new Vector();
+    getFileReferences(script, fileNames);
+    Vector newFileNames = new Vector();
+    int nFiles = fileNames.size();
+    for (int iFile = 0; iFile < nFiles; iFile++) {
+      String name = (String) fileNames.get(iFile);
+      int itype = urlTypeIndex(name);
+      if (itype < 0 || itype == URL_LOCAL) {
+        int pt = (noPath ? -1 : name.indexOf("/" + dataPath + "/"));
+        if (pt >= 0) {
+          name = name.substring(pt + 1);
+        } else {
+          pt = name.lastIndexOf("/");
+          if (pt < 0 && !noPath)
+            name = "/" + name;
+          if (pt < 0 || noPath)
+            pt++;
+          name = dataPath + name.substring(pt);
+        }
+      }
+      newFileNames.add(name);
+    }
+    return TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
+  }
+
+  static String[] scriptFilePrefixes = new String[] { "/*file*/", "FILE0=", "FILE1=" };
+  public static void getFileReferences(String script, Vector fileList) {
+    for (int ipt = 0; ipt < scriptFilePrefixes.length; ipt++) {
+      String tag = scriptFilePrefixes[ipt];
+      int i = -1;
+      while ((i = script.indexOf(tag, i + 1)) >= 0)
+        fileList.add(Parser.getNextQuotedString(script, i));
+    }
   }
 
   class DOMReaderThread implements Runnable {

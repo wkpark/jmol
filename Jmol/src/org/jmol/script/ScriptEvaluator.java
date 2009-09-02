@@ -59,6 +59,7 @@ import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.PropertyManager;
 import org.jmol.viewer.StateManager;
@@ -207,7 +208,7 @@ public class ScriptEvaluator {
   public boolean compileScriptFile(String filename, boolean tQuiet) {
     clearState(tQuiet);
     contextPath = filename;
-    return compileScriptFileInternal(filename);
+    return compileScriptFileInternal(filename, null);
   }
 
   public void evaluateCompiledScript(boolean isCmdLine_c_or_C_Option,
@@ -1599,7 +1600,7 @@ public class ScriptEvaluator {
     runScript(script, outputBuffer);
   }
 
-  private boolean compileScriptFileInternal(String filename) {
+  private boolean compileScriptFileInternal(String filename, String path) {
     // from "script" command, with push/pop surrounding or viewer
     if (filename.toLowerCase().indexOf("javascript:") == 0)
       return compileScript(filename, viewer.jsEval(filename.substring(11)),
@@ -1611,6 +1612,8 @@ public class ScriptEvaluator {
       return false;
     }
     this.filename = filename;
+    if (path != null)
+      data[1] = FileManager.setScriptFileReferences(data[1], path);
     return compileScript(filename, data[1], debugScript);
   }
 
@@ -7288,6 +7291,7 @@ public class ScriptEvaluator {
     int pcEnd = 0;
     int i = 2;
     String filename = null;
+    String path = null;
     String theScript = parameterAsString(1);
     if (tok == Token.javascript) {
       checkLength(2);
@@ -7319,6 +7323,9 @@ public class ScriptEvaluator {
       if (filename.equalsIgnoreCase("inline")) {
         theScript = parameterExpression(2, (doStep ? statementLength - 1 : 0), "_script", false).toString();
         i = iToken + 1;
+      } else if (filename.equalsIgnoreCase("localPath")) {
+        path = parameterAsString(i++);
+        filename = parameterAsString(i++);
       }
       option = optParameterAsString(i);
       if (option.equalsIgnoreCase("check")) {
@@ -7366,8 +7373,8 @@ public class ScriptEvaluator {
       isSyntaxCheck = isCmdLine_c_or_C_Option = true;
     pushContext(null);
     contextPath += " >> " + filename;
-    if (theScript == null ? compileScriptFileInternal(filename) : compileScript(null,
-        theScript, false)) {
+    if (theScript == null ? compileScriptFileInternal(filename, path) 
+        : compileScript(null, theScript, false)) {
       this.pcEnd = pcEnd;
       this.lineEnd = lineEnd;
       while (pc < lineNumbers.length && lineNumbers[pc] < lineNumber)
@@ -10360,6 +10367,8 @@ public class ScriptEvaluator {
     boolean isShow = false;
     boolean isExport = false;
     BitSet bsFrames = null;
+    String path = null;
+    String val = null;
     int quality = Integer.MIN_VALUE;
     if (tok == Token.string) {
       Token t = Token.getTokenFromName(ScriptVariable.sValue(args[pt]));
@@ -10423,7 +10432,12 @@ public class ScriptEvaluator {
       break;
     case Token.state:
     case Token.script:
-      pt++;
+      val = ScriptVariable.sValue(tokenAt(++pt, args)).toLowerCase();
+      if (val.equalsIgnoreCase("localPath")) {
+        path = ScriptVariable.sValue(tokenAt(++pt, args)).toLowerCase();
+        pt++;
+      }
+      type = "SPT";
       break;
     case Token.mo:
       type = "MO";
@@ -10480,7 +10494,7 @@ public class ScriptEvaluator {
       }
       break;
     }
-    String val = ScriptVariable.sValue(tokenAt(pt, args));
+    val = ScriptVariable.sValue(tokenAt(pt, args));
     if (val.equalsIgnoreCase("clipboard")) {
       if (isSyntaxCheck)
         return "";
@@ -10512,7 +10526,7 @@ public class ScriptEvaluator {
 
     if (pt + 2 == argCount) {
       data = ScriptVariable.sValue(tokenAt(++pt, args));
-      if (data.charAt(0) != '.')
+      if (data.length() > 0 && data.charAt(0) != '.')
         type = val.toUpperCase();
     }
     switch (tokAt(pt, args)) {
@@ -10647,6 +10661,8 @@ public class ScriptEvaluator {
         viewer.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
       } else {
         data = (String) viewer.getProperty("string", "stateInfo", null);
+        if (path != null)
+          data = FileManager.setScriptFileReferences(data, path);
       }
     } else if (data == "HIS") {
       data = viewer.getSetHistory(Integer.MAX_VALUE);

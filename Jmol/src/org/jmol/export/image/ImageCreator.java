@@ -194,7 +194,8 @@ public class ImageCreator implements JmolImageCreatorInterface {
             bytes = PngEncoder.getBytes(image, quality);
           } else {
             PngEncoder.write(image, quality, os);
-            os.write(((String) viewer.getProperty("DATA_API","wrappedState", null)).getBytes());
+            if (appendText == null)
+              os.write(((String) viewer.getProperty("DATA_API","wrappedState", null)).getBytes());
             bytes = null;
           }
         } else if (type.equalsIgnoreCase("PPM")) {

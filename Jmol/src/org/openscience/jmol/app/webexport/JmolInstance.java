@@ -64,20 +64,19 @@ class JmolInstance {
         LogPanel.log(GT._("Attempt to make scratch directory failed."));
       }
     }
-    String pictfile = scratchpath + "/" + javaname + ".png";
-    this.pictFile = pictfile;
-    viewer.createImage(pictfile, "PNG", null, 2, width, height);
-    this.pictIsScratchFile = true;
+    pictFile = scratchpath + "/" + javaname + ".png";
+    // note -- the current Jmol State for THIS computer is saved in the PNG
+    viewer.createImage(pictFile, "PNG", null, 2, width, height);
+    pictIsScratchFile = true;
   }
 
   boolean movepict(String dirpath) throws IOException {
     String imagename = dirpath + "/" + this.javaname + ".png";
-    if (this.pictFile.equals(imagename))
+    if (pictFile.equals(imagename))
       return false;
-    String scratchname = this.pictFile;
     FileInputStream is = null;
     try {
-      is = new FileInputStream(scratchname);
+      is = new FileInputStream(pictFile);
     } catch (IOException ise) {
       throw ise;
     }

@@ -26,6 +26,8 @@
 package org.jmol.util;
 
 import java.text.DecimalFormat;
+import java.util.Vector;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 
@@ -593,5 +595,19 @@ public class TextFormat {
       sb.append(c).append(s[i]);
     return sb.toString();
   }
+
+  public static String replaceQuotedStrings(String s, Vector list,
+                                            Vector newList) {
+    int n = list.size();
+    for (int i = 0; i < n; i++) {
+      String name = (String) list.get(i);
+      String newName = (String) newList.get(i);
+      if (!newName.equals(name))
+        s = TextFormat.simpleReplace(s, "\"" + name + "\"", "\"" + newName
+            + "\"");
+    }
+    return s;
+  }
+
 
 }

@@ -2037,9 +2037,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
     }
     String pathName = modelManager.getModelSetPathName();
-    if (pathName == null)
-      return "";
-    return fileManager.getFileAsBytes(pathName);
+    return (pathName == null ? "" : getFileAsBytes(pathName));
   }
 
   public Object getFileAsBytes(String pathName) {

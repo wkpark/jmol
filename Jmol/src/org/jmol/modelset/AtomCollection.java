@@ -367,6 +367,38 @@ abstract public class AtomCollection {
     return surfaceDistanceMax;
   }
 
+  public float calculateVolume(BitSet bs) {
+    // ColorManager, Eval
+    float volume = 0;
+    float thirdPi = (float) (Math.PI / 3);
+    for (int i = 0; i < atomCount; i++)
+      if (bs.get(i)) {
+        Atom atom = atoms[i];
+        float r1 = atom.getVanderwaalsRadiusFloat();
+        volume += 4 * thirdPi * r1 * r1 * r1;
+        Bond[] bonds = atom.bonds;
+        for (int j = 0; j < bonds.length; j++) {
+          if (!bonds[j].isCovalent())
+            continue;
+          Atom atom2 = bonds[j].getOtherAtom(atom);
+          float r2 = atom2.getVanderwaalsRadiusFloat();
+          float d = atom.distance(atom2);
+          if (d > r1 + r2)
+            continue;
+          if (d <= r2 - r1) {
+            volume -= 4 * thirdPi * r1 * r1 * r1;
+            continue;
+          }
+
+          // calculate hidden spherical cap height and volume
+
+          float h2 = r2 - (r2*r2 + d*d - r1*r1) / (2 * d);
+          volume -= thirdPi * h2 * h2 * (3 * r2 - h2);
+        }
+      }
+    return volume;
+  }
+
   private BitSet bsSurface;
   private int nSurfaceAtoms;
 

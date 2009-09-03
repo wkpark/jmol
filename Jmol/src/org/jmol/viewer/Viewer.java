@@ -2106,7 +2106,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to ModelManager
   // ///////////////////////////////////////////////////////////////
 
-  public void autoCalculate(int tokProperty) {
+  public float autoCalculate(int tokProperty) {
     switch (tokProperty) {
     case Token.surfacedistance:
       modelSet.getSurfaceDistanceMax();
@@ -2114,7 +2114,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.straightness:
       modelSet.calculateStraightness();
       break;
+    case Token.spacefill:
+      return modelSet.calculateVolume(selectionManager.bsSelection);
     }
+    return 0;
   }
   
   int getSurfaceDistanceMax() {

@@ -367,21 +367,26 @@ abstract public class AtomCollection {
     return surfaceDistanceMax;
   }
 
-  public float calculateVolume(BitSet bs) {
+  public float calculateVolume(BitSet bs, String type) {
     // ColorManager, Eval
     float volume = 0;
+    int iType = (type == null ? -1 : JmolConstants.getVdwType(type));
     float thirdPi = (float) (Math.PI / 3);
     for (int i = 0; i < atomCount; i++)
       if (bs.get(i)) {
         Atom atom = atoms[i];
-        float r1 = atom.getVanderwaalsRadiusFloat();
+        float r1 = (iType == -1 ? atom.userDefinedVanDerWaalRadius : Float.NaN);
+        if (Float.isNaN(r1))
+            r1 = viewer.getVanderwaalsMar(atom.getElementNumber(), iType) / 1000f;
         volume += 4 * thirdPi * r1 * r1 * r1;
         Bond[] bonds = atom.bonds;
         for (int j = 0; j < bonds.length; j++) {
           if (!bonds[j].isCovalent())
             continue;
           Atom atom2 = bonds[j].getOtherAtom(atom);
-          float r2 = atom2.getVanderwaalsRadiusFloat();
+          float r2 = (iType == -1 ? atom2.userDefinedVanDerWaalRadius : Float.NaN);
+          if (Float.isNaN(r2))
+              r2= viewer.getVanderwaalsMar(atom2.getElementNumber(), iType) / 1000f;
           float d = atom.distance(atom2);
           if (d > r1 + r2)
             continue;
@@ -399,6 +404,7 @@ abstract public class AtomCollection {
     return volume;
   }
 
+  
   private BitSet bsSurface;
   private int nSurfaceAtoms;
 

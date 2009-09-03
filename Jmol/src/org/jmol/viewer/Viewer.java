@@ -2106,7 +2106,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to ModelManager
   // ///////////////////////////////////////////////////////////////
 
-  public float autoCalculate(int tokProperty) {
+  public void autoCalculate(int tokProperty) {
     switch (tokProperty) {
     case Token.surfacedistance:
       modelSet.getSurfaceDistanceMax();
@@ -2114,12 +2114,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.straightness:
       modelSet.calculateStraightness();
       break;
-    case Token.spacefill:
-      return modelSet.calculateVolume(selectionManager.bsSelection);
     }
-    return 0;
   }
-  
+ 
+  public float getVolume(BitSet bs, String type) {
+    if (bs == null)
+      bs = selectionManager.bsSelection;
+    return modelSet.calculateVolume(bs, type);
+  }
   int getSurfaceDistanceMax() {
     return modelSet.getSurfaceDistanceMax();
   }
@@ -7591,7 +7593,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getVanderwaalsMar(int i, int iMode) {
-    if (iMode == JmolConstants.VDW_USER && dataManager.bsUserVdws == null)
+    if (iMode < 0 || iMode == JmolConstants.VDW_USER && dataManager.bsUserVdws == null)
       iMode = dataManager.defaultVdw;
     return (iMode == JmolConstants.VDW_USER ? dataManager.userVdwMars[i]
         : JmolConstants.getVanderwaalsMar(i, iMode));

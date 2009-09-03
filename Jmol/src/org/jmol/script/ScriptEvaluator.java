@@ -8591,20 +8591,20 @@ public class ScriptEvaluator {
           return;
         viewer.calculateSurface(bs, (isFrom ? Float.MAX_VALUE : -1));
         return;
+      case Token.volume:
+        if (!isSyntaxCheck) {
+          float val = viewer.getVolume(null, null);
+          showString("" + Math.round(val * 10)/10f + " A^3; " + Math.round(val * 6.02)/10f 
+              + " cm^3/mole (VDW " + viewer.getDefaultVdw(Integer.MIN_VALUE) + ")" );
+          return;
+        }
+        break;
       case Token.identifier:
         String calc = parameterAsString(1);
         checkLength(2);
         if (calc.equalsIgnoreCase("AROMATIC")) {
           if (!isSyntaxCheck)
             viewer.assignAromaticBonds();
-          return;
-        }
-        if (calc.equalsIgnoreCase("volume")) {
-          if (!isSyntaxCheck) {
-            float val = viewer.autoCalculate(Token.spacefill);
-            showString("" + Math.round(val * 10)/10f + " A^3; " + Math.round(val * 6.02)/10f 
-                + " cm^3/mole (VDW " + viewer.getDefaultVdw(Integer.MIN_VALUE) + ")" );
-          }
           return;
         }
         break;

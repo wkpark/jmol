@@ -53,7 +53,7 @@ final public class Atom extends Point3fi {
   int atomIndex;
   BitSet atomSymmetry;
   int atomSite;
-  private float userDefinedVanDerWaalRadius;
+  float userDefinedVanDerWaalRadius;
   
   public int getScreenRadius() {
     return screenDiameter / 2;

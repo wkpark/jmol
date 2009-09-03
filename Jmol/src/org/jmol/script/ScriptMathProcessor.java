@@ -594,6 +594,8 @@ class ScriptMathProcessor {
       // fall through
     case Token.angle:
       return evaluateMeasure(args, op.tok == Token.angle);
+    case Token.volume:
+      return evaluateVolume(args);
     case Token.function:
       return evaluateUserFunction((String) op.value, args, op.intValue,
           op.tok == Token.propselector);
@@ -657,6 +659,16 @@ class ScriptMathProcessor {
       return evaluateSymop(args);
     }
     return false;
+  }
+
+  private boolean evaluateVolume(ScriptVariable[] args) throws ScriptException {
+    ScriptVariable x1 = getX();
+    if (isSyntaxCheck)
+      return addX(0.0f);
+    if (x1.tok != Token.bitset)
+      return false;
+    String type = (args.length == 0 ? null : ScriptVariable.sValue(args[0]));
+    return addX(viewer.getVolume((BitSet)x1.value, type));
   }
 
   private boolean evaluateSymop(ScriptVariable[] args) throws ScriptException {

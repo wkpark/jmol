@@ -595,6 +595,7 @@ public class Token {
   final static int split        = 4 | 1 << 9 | mathfunc | mathproperty;
   final static int sub          = 5 | 1 << 9 | mathfunc | mathproperty;
   final static int trim         = 6 | 1 << 9 | mathfunc | mathproperty;  
+  final static int volume       = 7 | 1 << 9 | mathfunc | mathproperty;  
 
   // xxx(a,b)
   
@@ -917,6 +918,7 @@ public class Token {
     "vector",            new Token(vector),
     "vectors",           null,
     "vibration",         new Token(vibration),
+    "volume",            new Token(volume),
     "while",             new Token(whilecmd),
     "wireframe",         new Token(wireframe),
     "write",             new Token(write),

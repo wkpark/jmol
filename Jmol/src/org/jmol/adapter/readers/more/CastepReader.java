@@ -49,11 +49,13 @@ import javax.vecmath.Vector3f;
 
 import java.io.BufferedReader;
 
-/*
- * CASTEP .cell file format
- * 
- * contributed by Joerg Meyer, j-meyer@sourceforge.net
- * 
+/**
+ * CASTEP (http://www.castep.org) .cell file format
+ *
+ * relevant section of .cell file are included as comments below
+ *
+ * @author Joerg Meyer, FHI Berlin 2009 (meyer@fhi-berlin.mpg.de)
+ * @version 1.1
  */
 
 public class CastepReader extends AtomSetCollectionReader {
@@ -78,23 +80,53 @@ public class CastepReader extends AtomSetCollectionReader {
 
       while (tokenizeCastepCell() > 0) {
 
+
         if ((tokens.length >= 2) && (tokens[0].equalsIgnoreCase("%BLOCK"))) {
 
           /*
-           * unit cell can only be set later (to get symmetry properly
-           * initialized) ...
+           * unit cell can only be set later
+           * to get symmetry properly initialized -
+           * see below!
            */
+
+          /*
+%BLOCK LATTICE_ABC
+ang
+  16.66566792 8.33283396  16.82438907
+  90.0    90.0    90.0
+%ENDBLOCK LATTICE_ABC
+          */
           if (tokens[1].equalsIgnoreCase("LATTICE_ABC")) {
             readLatticeAbc();
           }
+          /*
+%BLOCK LATTICE_CART
+ang
+  16.66566792 0.0   0.0
+  0.0   8.33283396  0.0
+  0.0   0.0   16.82438907
+%ENDBLOCK LATTICE_CART
+          */
           if (tokens[1].equalsIgnoreCase("LATTICE_CART")) {
             readLatticeCart();
           }
-          /* ... while coordinates are (conveniently!) set immediately */
+
+          /* coordinates are set immediately */
+          /*
+%BLOCK POSITIONS_FRAC
+   Pd         0.0 0.0 0.0
+%ENDBLOCK POSITIONS_FRAC
+          */
           if (tokens[1].equalsIgnoreCase("POSITIONS_FRAC")) {
             readPositionsFrac();
             iHaveFractionalCoordinates = true;
           }
+          /*
+%BLOCK POSITIONS_ABS
+ang
+   Pd         0.00000000         0.00000000       0.00000000 
+%ENDBLOCK POSITIONS_ABS
+          */
           if (tokens[1].equalsIgnoreCase("POSITIONS_ABS")) {
             readPositionsAbs();
             iHaveFractionalCoordinates = false;

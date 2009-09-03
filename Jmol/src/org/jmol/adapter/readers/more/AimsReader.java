@@ -21,7 +21,7 @@
  */
 
 /* 
- * Copyright (C) 2009  J. Meyer, FHI Berlin
+ * Copyright (C) 2009  Joerg Meyer, FHI Berlin
  *
  * Contact: meyer@fhi-berlin.mpg.de
  *
@@ -49,12 +49,13 @@ import javax.vecmath.Vector3f;
 
 import java.io.BufferedReader;
 
-/*
- * FHI-AIMS geometry.in file format
- * 
- * http://www.fhi-berlin.mpg.de/aims
- * 
- * contributed by Joerg Meyer, j-meyer@sourceforge.net
+/**
+ * FHI-AIMS (http://www.fhi-berlin.mpg.de/aims) geometry.in file format
+ *
+ * samples of relevant lines in geometry.in file are included as comments below
+ *
+ * @author Joerg Meyer, FHI Berlin 2009 (meyer@fhi-berlin.mpg.de)
+ * @version 1.1
  * 
  */
 
@@ -76,7 +77,10 @@ public class AimsReader extends AtomSetCollectionReader {
 
         if (tokens.length == 0) continue;
 
-        if (tokens[0].equalsIgnoreCase("atom")) {
+        /*
+atom       2.750645380     2.750645380    25.000000000   Pd 
+        */
+        if (tokens[0].equals("atom")) {
            if (tokens.length != 5) {
               Logger.warn("cannot read line with AIMS atom data: " + line);
            } else {
@@ -89,7 +93,10 @@ public class AimsReader extends AtomSetCollectionReader {
           }
         }
 
-        if (tokens[0].equalsIgnoreCase("lattice_vector")) { 
+        /*
+lattice_vector      16.503872273     0.000000000     0.000000000 
+        */
+        if (tokens[0].equals("lattice_vector")) { 
            if (nLatticeVectors > 2) {
               Logger.warn("more than 3 AIMS lattice vectors found with line: " + line);
            } else {

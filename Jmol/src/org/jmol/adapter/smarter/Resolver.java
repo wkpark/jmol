@@ -638,13 +638,12 @@ public class Resolver {
 
     // use same tokenizing mechanism as in AimsReader.java to also recognize
     // AIMS geometry files with indented keywords
+    // "atom" is a VERY generic term. 
     for (int i = 0; i < lines.length; i++) {
       String[] tokens = Parser.getTokens(lines[i]);
-      // No -- can't do this -- it's incompatible with PDB
-      // for such files you will have to force the reader with "aims::"
-      // if ( tokens[0].toLowerCase().startsWith("atom") ) return true;
       if (tokens.length > 0
-          && tokens[0].toLowerCase().startsWith("lattice_vector"))
+          && (tokens[0].startsWith("atom")
+          || tokens[0].startsWith("lattice_vector")))
         return true;
     }
     return false;

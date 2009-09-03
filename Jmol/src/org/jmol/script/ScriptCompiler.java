@@ -397,7 +397,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
       ++ichT;
     return (lookingAtLookupToken(ichT) 
-        && tokLastMath != 0);
+        && tokLastMath == 1);
   }
 
   private boolean lookingAtEndOfLine() {
@@ -905,7 +905,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       return CONTINUE;
     }
     if (lookingAtDecimal()) {
-      value =
+      value = 
       // can't use parseFloat with jvm 1.1
       // Float.parseFloat(script.substring(ichToken, ichToken +
       // cchToken));
@@ -2024,7 +2024,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           ++ichT;
         }
       }
-      tokLastMath++;
+      tokLastMath = 1;
       break;
     case '/':
       if (ichT < cchScript && script.charAt(ichT) == '/')
@@ -2034,16 +2034,18 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case '!':
       if (ichT < cchScript && script.charAt(ichT) == '=')
         ++ichT;
-      tokLastMath++;
+      tokLastMath = 1;
       break;
     case ')':
     case ']':
     case '}':
     case '.':
       break;
+    case '{':
+      tokLastMath = 2; // NOT considered a continuation if at beginning of a line
+      break;
     case '(':
     case ',':
-    case '{':
     case '$':
     case ':':
     case ';':
@@ -2053,7 +2055,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       tokLastMath = 1;
       break;
     case '<':
-  case '=':
+    case '=':
     case '>':
       if (ichT < cchScript
           && ((ch = script.charAt(ichT)) == '<' || ch == '=' || ch == '>'))

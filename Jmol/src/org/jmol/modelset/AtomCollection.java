@@ -371,36 +371,9 @@ abstract public class AtomCollection {
     // ColorManager, Eval
     float volume = 0;
     int iType = (type == null ? -1 : JmolConstants.getVdwType(type));
-    float thirdPi = (float) (Math.PI / 3);
     for (int i = 0; i < atomCount; i++)
-      if (bs.get(i)) {
-        Atom atom = atoms[i];
-        float r1 = (iType == -1 ? atom.userDefinedVanDerWaalRadius : Float.NaN);
-        if (Float.isNaN(r1))
-            r1 = viewer.getVanderwaalsMar(atom.getElementNumber(), iType) / 1000f;
-        volume += 4 * thirdPi * r1 * r1 * r1;
-        Bond[] bonds = atom.bonds;
-        for (int j = 0; j < bonds.length; j++) {
-          if (!bonds[j].isCovalent())
-            continue;
-          Atom atom2 = bonds[j].getOtherAtom(atom);
-          float r2 = (iType == -1 ? atom2.userDefinedVanDerWaalRadius : Float.NaN);
-          if (Float.isNaN(r2))
-              r2= viewer.getVanderwaalsMar(atom2.getElementNumber(), iType) / 1000f;
-          float d = atom.distance(atom2);
-          if (d > r1 + r2)
-            continue;
-          if (d <= r2 - r1) {
-            volume -= 4 * thirdPi * r1 * r1 * r1;
-            continue;
-          }
-
-          // calculate hidden spherical cap height and volume
-
-          float h2 = r2 - (r2*r2 + d*d - r1*r1) / (2 * d);
-          volume -= thirdPi * h2 * h2 * (3 * r2 - h2);
-        }
-      }
+      if (bs.get(i))
+        volume += atoms[i].getVolume(iType);
     return volume;
   }
 

@@ -1125,7 +1125,8 @@ final public class Atom extends Point3fi {
     switch (tokWhat) {
     case Token.radius:
       return atom.getRadius();
-      
+    case Token.volume:
+      return atom.getVolume(-1);
     case Token.surfacedistance:
       atom.group.chain.modelSet.getSurfaceDistanceMax();
       return atom.getSurfaceDistance100() / 100f;
@@ -1183,6 +1184,35 @@ final public class Atom extends Point3fi {
       return atom.getVibrationCoord('Z');
     }
     return atomPropertyInt(atom, tokWhat);
+  }
+
+  private static float thirdPi = (float) (Math.PI / 3);
+
+  float getVolume(int iType) {
+    float r1 = (iType == -1 ? userDefinedVanDerWaalRadius : Float.NaN);
+    if (Float.isNaN(r1))
+        r1 = group.chain.modelSet.viewer.getVanderwaalsMar(getElementNumber(), iType) / 1000f;
+    float volume = 0;
+    for (int j = 0; j < bonds.length; j++) {
+      if (!bonds[j].isCovalent())
+        continue;
+      Atom atom2 = bonds[j].getOtherAtom(this);
+      float r2 = (iType == -1 ? atom2.userDefinedVanDerWaalRadius : Float.NaN);
+      if (Float.isNaN(r2))
+          r2= group.chain.modelSet.viewer.getVanderwaalsMar(atom2.getElementNumber(), iType) / 1000f;
+      float d = distance(atom2);
+      if (d > r1 + r2)
+        continue;
+      if (d + r1 <= r2)
+        return 0;
+
+      // calculate hidden spherical cap height and volume
+      // A.Bondi, J. Phys. Chem. 68, 1964, 441-451.
+      
+      float h2 = r2 - (r2*r2 + d*d - r1*r1) / (2 * d);
+      volume -= thirdPi * h2 * h2 * (3 * r2 - h2);
+    }
+    return volume + 4 * thirdPi * r1 * r1 * r1;
   }
 
   public static String atomPropertyString(Atom atom, int tokWhat) {

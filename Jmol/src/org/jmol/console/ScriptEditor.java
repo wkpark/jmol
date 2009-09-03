@@ -48,6 +48,7 @@ import javax.swing.JScrollPane;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.ScriptContext;
 
@@ -131,7 +132,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       openButton = setButton(GT._("Open"));
     loadButton = setButton(GT._("Script"));
     checkButton = setButton(GT._("Check"));
-    topButton = setButton(GT._(" Top "));
+    topButton = setButton(TextFormat.split(GT._("Top[as in \"go to the top\" - (translators: remove this bracketed part]"), '[')[0]);
     stepButton = setButton(GT._("Step"));
     runButton = setButton(GT._("Run"));
     pauseButton = setButton(GT._("Pause"));

@@ -2041,6 +2041,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case '}':
     case '.':
       break;
+    case '@':
     case '{':
       tokLastMath = 2; // NOT considered a continuation if at beginning of a line
       break;
@@ -2049,7 +2050,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case '$':
     case ':':
     case ';':
-    case '@':
     case '%':
     case '[':
       tokLastMath = 1;

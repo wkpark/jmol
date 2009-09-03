@@ -821,6 +821,7 @@ public class ScriptEvaluator {
           case Token.min:
           case Token.max:
           case Token.stddev:
+          case Token.sum:
           case Token.sum2:
           case Token.average:
             allowMathFunc = (isUserFunction 
@@ -984,6 +985,7 @@ public class ScriptEvaluator {
     case Token.max:
     case Token.average:
     case Token.stddev:
+    case Token.sum:
     case Token.sum2:
     case Token.property:
       break;
@@ -1088,6 +1090,7 @@ public class ScriptEvaluator {
         i = BitSetUtil.length(bsNew) - 1;
         break;
       case Token.stddev:
+      case Token.sum:
       case Token.sum2:
         return new Float(Float.NaN);
       default:
@@ -1199,6 +1202,7 @@ public class ScriptEvaluator {
           case Token.stddev:
             sum2 += ((double) fv) * fv;
             // fall through
+          case Token.sum:
           default:
             sum += fv;
           }
@@ -1267,6 +1271,7 @@ public class ScriptEvaluator {
           case Token.stddev:
             sum2 += ((double) iv) * iv;
             // fall through
+          case Token.sum:
           default:
             sum += iv;
           }
@@ -1314,6 +1319,7 @@ public class ScriptEvaluator {
           case Token.stddev:
             sum2 += (double) fv * fv;
             // fall through
+          case Token.sum:
           default:
             sum += fv;
           }
@@ -1405,6 +1411,8 @@ public class ScriptEvaluator {
     case Token.min:
     case Token.max:
       sum = fvMinMax;
+      break;
+    case Token.sum:
       break;
     case Token.sum2:
       sum = sum2;
@@ -12386,6 +12394,9 @@ public class ScriptEvaluator {
             .getSolventProbeRadius());
         propertyValue = new Float(radius);
         break;
+      case Token.volume:
+        doCalcVolume = !isSyntaxCheck;
+        break;
       case Token.identifier:
         if (str.equalsIgnoreCase("ADDHYDROGENS")) {
           propertyName = "addHydrogens";
@@ -12404,10 +12415,6 @@ public class ScriptEvaluator {
         }
         if (str.equalsIgnoreCase("AREA")) {
           doCalcArea = !isSyntaxCheck;
-          break;
-        }
-        if (str.equalsIgnoreCase("VOLUME")) {
-          doCalcVolume = !isSyntaxCheck;
           break;
         }
         if (str.equalsIgnoreCase("ATOMICORBITAL")

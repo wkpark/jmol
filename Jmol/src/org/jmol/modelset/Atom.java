@@ -1209,8 +1209,8 @@ final public class Atom extends Point3fi {
       // calculate hidden spherical cap height and volume
       // A.Bondi, J. Phys. Chem. 68, 1964, 441-451.
       
-      float h2 = r2 - (r2*r2 + d*d - r1*r1) / (2 * d);
-      volume -= thirdPi * h2 * h2 * (3 * r2 - h2);
+      float h = r1 - (r1*r1 + d*d - r2*r2) / (2 * d);
+      volume -= thirdPi * h * h * (3 * r1 - h);
     }
     return volume + 4 * thirdPi * r1 * r1 * r1;
   }

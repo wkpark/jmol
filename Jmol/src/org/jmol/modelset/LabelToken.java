@@ -162,6 +162,7 @@ public class LabelToken {
            Token.vibX,
            Token.vibY,
            Token.vibZ,
+           Token.volume,
            Token.unitXyz,
            Token.fracXyz,
            Token.xyz,

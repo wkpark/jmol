@@ -266,6 +266,7 @@ final public class ArrayUtil {
       case Token.stddev:
         sum2 += ((double) v) * v;
         //fall through
+      case Token.sum:
       case Token.average:
         sum += v;
         break;
@@ -289,6 +290,10 @@ final public class ArrayUtil {
       if (n == 1)
         return "NaN";
       sum = Math.sqrt((sum2 - sum * sum / n) / (n - 1));
+      break;
+    case Token.min:
+    case Token.max:
+    case Token.sum:
       break;
     case Token.sum2:
       sum = sum2;

@@ -325,6 +325,7 @@ class ScriptMathProcessor {
     case Token.min:
     case Token.max:
     case Token.average:
+    case Token.sum:
     case Token.sum2:
     case Token.stddev:
     case Token.minmaxmask:
@@ -719,7 +720,7 @@ class ScriptMathProcessor {
   }
 
   private boolean evaluateHelix(ScriptVariable[] args) throws ScriptException {
-    if (args.length < 1)
+    if (args.length < 1 || args.length > 5)
       return false;
     // helix({resno=3})
     // helix({resno=3},"point|axis|radius|angle|draw|measure|array")
@@ -1524,7 +1525,7 @@ class ScriptMathProcessor {
   }
 
   private boolean evaluateWithin(ScriptVariable[] args) {
-    if (args.length < 1)
+    if (args.length < 1 || args.length > 5)
       return false;
     int i = args.length;
     Object withinSpec = args[0].value;
@@ -1627,6 +1628,9 @@ class ScriptMathProcessor {
      * 
      * the first returns an atom bitset; the second returns a bond bitset.
      */
+    
+    if (args.length > 5)
+      return false;
     float min = Integer.MIN_VALUE, max = Integer.MAX_VALUE;
     float fmin = 0, fmax = Float.MAX_VALUE;
 
@@ -2169,7 +2173,7 @@ class ScriptMathProcessor {
       String[] list = (String[]) x2.value;
       if (op.intValue == Token.min || op.intValue == Token.max
           || op.intValue == Token.average || op.intValue == Token.stddev
-          || op.intValue == Token.sum2) {
+          || op.intValue == Token.sum || op.intValue == Token.sum2) {
         return addX(ArrayUtil.getMinMax(list, op.intValue));
       }
       if (op.intValue == Token.sort || op.intValue == Token.reverse)

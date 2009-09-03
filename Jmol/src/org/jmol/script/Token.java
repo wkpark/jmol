@@ -138,12 +138,14 @@ public class Token {
    *                          x      min
    *                         x       max
    *                         xx      average
-   *                        x        stddev
+   *                        x        sum
    *                        x x      sum2
-   *                        xx       allfloat
-   *                        xxx      minmaxmask (all)
-   *                       x         settable
-   *                    xxx          maximum number of parameters for function
+   *                        xx       stddev
+   *                        xxx      allfloat
+   *                       x???      [available] 
+   *                       xxxx      minmaxmask (all)
+   *                     xx          maximum number of parameters for function
+   *                    x            settable
    *                   
    * 3         2         1         0
    * 0987654321098765432109876543210
@@ -446,18 +448,23 @@ public class Token {
   // x.atoms
   // myset.bonds
   
-  // .min and .max, and .all are bitfields added to a preceding property selector
+  // .min and .max, .average, .sum, .sum2, .stddev, and .all 
+  // are bitfields added to a preceding property selector
   // for example, x.atoms.max, x.atoms.all
   // .all gets incorporated as minmaxmask
-
+  // .allfloat is a special flag used by Jmol to pass
+  // temporary float arrays to the .bin() function
+  
+  final static int minmaxmask /*all*/ = 0xF << 5; 
   public final static int min         = 1 << 5;
   public final static int max         = 2 << 5;
   public final static int average     = 3 << 5;
-  public final static int stddev      = 4 << 5;
+  public final static int sum         = 4 << 5;
   public final static int sum2        = 5 << 5;
-  public final static int allfloat    = 6 << 5; //not user-selectable
-  final static int minmaxmask /*all*/ = 7 << 5; 
-  final static int settable           = 1 << 8;
+  public final static int stddev      = 6 << 5;
+  public final static int allfloat    = 7 << 5; //not user-selectable
+
+  final static int settable           = 1 << 11;
   
   // bits 0 - 4 are for an identifier -- DO NOT GO OVER 31!
   // but, note that we can have more than 1 provided other parameters differ
@@ -561,6 +568,9 @@ public class Token {
     return  ((tokCommand >> 9) & 0x7);
   }
 
+  // 0 << 9 indicates that ScriptMathProcessor 
+  // will check length in second stage of compilation
+
   // xxx(a,b,c,d,e,...)
   
   public final static int array  = 1 | 0 << 9 | mathfunc;
@@ -570,6 +580,21 @@ public class Token {
   final static int getproperty   = 5 | 0 << 9 | mathfunc | command;
   final static int write         = 6 | 0 << 9 | mathfunc | command;
 
+  // xxx(a,b,c,d)
+  
+  public final static int angle = 7 | 0 << 9 | mathfunc;
+  public final static int data  = 8 | 0 << 9 | mathfunc | command;
+  final static int plane        = 9 | 0 << 9 | mathfunc;
+  public final static int point = 10 | 0 << 9 | mathfunc;
+  final static int quaternion   = 11 | 0 << 9 | mathfunc | command;
+  final static int axisangle    = 12 | 0 << 9 | mathfunc;
+
+  // xxx(a,b,c,d,e)
+  
+  final static int within           = 13 | 0 << 9 | mathfunc;
+  public final static int connected = 14 | 0 << 9 | mathfunc;
+  public final static int helix     = 15 | 0 << 9 | mathfunc | predefinedset;
+  
   // xxx(a)
   
   final static int substructure = 1 | 1 << 9 | mathfunc;
@@ -595,7 +620,7 @@ public class Token {
   final static int split        = 4 | 1 << 9 | mathfunc | mathproperty;
   final static int sub          = 5 | 1 << 9 | mathfunc | mathproperty;
   final static int trim         = 6 | 1 << 9 | mathfunc | mathproperty;  
-  public final static int volume = 7 | 1 << 9 | mathfunc | mathproperty;  
+  public final static int volume = 7 | 1 << 9 | mathfunc | mathproperty | floatproperty;  
 
   // xxx(a,b)
   
@@ -626,20 +651,7 @@ public class Token {
   final static int bin          = 1 | 3 << 9 | mathfunc | mathproperty;
   public final static int symop = 2 | 3 << 9 | mathfunc | mathproperty | intproperty; 
 
-  // xxx(a,b,c,d)
-  
-  public final static int angle = 1 | 4 << 9 | mathfunc;
-  public final static int data  = 2 | 4 << 9 | mathfunc | command;
-  final static int plane        = 4 | 4 << 9 | mathfunc;
-  public final static int point = 5 | 4 << 9 | mathfunc;
-  final static int quaternion   = 6 | 4 << 9 | mathfunc | command;
-  final static int axisangle    = 7 | 4 << 9 | mathfunc;
-
-  // xxx(a,b,c,d,e)
-  
-  final static int within           = 1 | 5 << 9 | mathfunc;
-  public final static int connected = 2 | 5 << 9 | mathfunc;
-  public final static int helix     = 3 | 5 << 9 | mathfunc | predefinedset;
+  // anything beyond 3 are set "unlimited"
   
   // more SET parameters
   
@@ -1192,6 +1204,7 @@ public class Token {
     "straightness",     new Token(straightness),
     "sub",              new Token(sub),
     "substructure",     new Token(substructure),
+    "sum",              new Token(sum), // sum
     "sum2",             new Token(sum2), // sum of squares
     "surface",          new Token(surface),
     "surfaceDistance",  new Token(surfacedistance),

@@ -131,7 +131,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       openButton = setButton(GT._("Open"));
     loadButton = setButton(GT._("Script"));
     checkButton = setButton(GT._("Check"));
-    topButton = setButton(GT._("Top"));
+    topButton = setButton(GT._(" Top "));
     stepButton = setButton(GT._("Step"));
     runButton = setButton(GT._("Run"));
     pauseButton = setButton(GT._("Pause"));

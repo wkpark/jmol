@@ -638,12 +638,11 @@ public class Resolver {
 
     // use same tokenizing mechanism as in AimsReader.java to also recognize
     // AIMS geometry files with indented keywords
-    // "atom" is a VERY generic term. 
+    // "atom" is a VERY generic term; just "atom" breaks HIN reader. 
     for (int i = 0; i < lines.length; i++) {
       String[] tokens = Parser.getTokens(lines[i]);
-      if (tokens.length > 0
-          && (tokens[0].startsWith("atom")
-          || tokens[0].startsWith("lattice_vector")))
+      if (tokens.length == 5 && tokens[0].startsWith("atom") 
+          || tokens.length == 4 && tokens[0].startsWith("lattice_vector"))
         return true;
     }
     return false;

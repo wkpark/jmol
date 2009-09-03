@@ -1143,6 +1143,7 @@ public class StateManager {
         debugScript = g.debugScript;
         disablePopupMenu = g.disablePopupMenu;
         messageStyleChime = g.messageStyleChime;
+        defaultDirectory = g.defaultDirectory;
         zShade = g.zShade;
       }
       

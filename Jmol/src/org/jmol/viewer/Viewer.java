@@ -7421,24 +7421,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         boolean useDialog = (fileName.indexOf("?") == 0);
         if (useDialog)
           fileName = fileName.substring(1);
+        boolean forceDialog = (fileName.indexOf("?") == 0);
+        if (forceDialog)
+          fileName = fileName.substring(1);
         fileName = FileManager.setLocalPathForWritingFile(this, fileName);
-        if (isApplet) {
+        String[] aFileName = new String[] {(forceDialog || isApplet && useDialog ? "?" : "") 
+            + fileName};
+        err = statusManager.createImage(aFileName, type, text_or_bytes, quality);
+        if (!isApplet && err == null) {
           // applet calls creatImage itself
-          err = statusManager.createImage((useDialog ? "?" : "") + fileName,
-              type, text_or_bytes, quality);
-        } else {
           // application can do it itself or allow Jmol to do it here
-          err = statusManager.createImage(fileName, type, text_or_bytes, quality);
-          if (err == null) {
-            JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
-               .getOptionInterface("export.image.ImageCreator");
-            c.setViewer(this);
-            err = (String) c.createImage(fileName, type, text_or_bytes, quality);
-            statusManager.createImage(err, type, null, quality);
-          }
+          JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
+             .getOptionInterface("export.image.ImageCreator");
+          c.setViewer(this);
+          err = (String) c.createImage(aFileName[0], type, text_or_bytes, quality);
+          statusManager.createImage(new String[] { err }, type, null, quality);
         }
       }
-      // err may be null if user cancels operation involving dialog and "?"
     } catch (Throwable er) {
       Logger.error(setErrorMessage(err = "ERROR creating image: " + er));
     }
@@ -7446,7 +7445,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (quality != Integer.MIN_VALUE) {
       resizeImage(saveWidth, saveHeight, true, false, true);
     }
-    return err;
+    return ("CANCELED".equals(err) ? null : err);
   }
 
   private void setImageFontScaling(int width, int height) {

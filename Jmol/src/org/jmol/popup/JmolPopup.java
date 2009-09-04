@@ -212,17 +212,16 @@ abstract public class JmolPopup {
     isApplet = viewer.isApplet();
     isSigned = (viewer.getBooleanProperty("_signedApplet"));
     modelSetName = viewer.getModelSetName();
-    modelSetRoot = (modelSetName == null 
-        || modelSetName.indexOf("<") >= 0 
-        || modelSetName.indexOf("[") >= 0
-        || modelSetName.indexOf(" ") >= 0 ? "Jmol"
-            : modelSetName);
-
     modelSetFileName = viewer.getModelSetFileName();
-    if ("string".equals(modelSetFileName))
-        modelSetFileName = "";
-                
+    int i = modelSetFileName.lastIndexOf(".");
     isZapped = ("zapped".equals(modelSetName));
+    if (isZapped || "string".equals(modelSetFileName) 
+        || "files".equals(modelSetFileName) 
+        || "string[]".equals(modelSetFileName))
+      modelSetFileName = "";
+    modelSetRoot = modelSetFileName.substring(0, i < 0 ? modelSetFileName.length() : i);
+    if (modelSetRoot.length() == 0)
+      modelSetRoot = "Jmol";
     modelIndex = viewer.getDisplayModelIndex();
     modelCount = viewer.getModelCount();
     atomCount = viewer.getAtomCountInModel(modelIndex);
@@ -908,12 +907,11 @@ abstract public class JmolPopup {
         script = "[] " + script;
       return TextFormat.simpleReplace(script, "[]", id); 
     } else if (script.indexOf("?FILEROOT?") >= 0) {
-      script = TextFormat.simpleReplace(script, "FILEROOT?", modelSetRoot);
+      script = TextFormat.simpleReplace(script, "FILEROOT?", "?" + modelSetRoot);
     } else if (script.indexOf("?FILE?") >= 0) {
-      script = TextFormat.simpleReplace(script, "FILE?", modelSetFileName);
+      script = TextFormat.simpleReplace(script, "FILE?", "?" + modelSetFileName);
     } else if (script.indexOf("?PdbId?") >= 0) {
-      script = TextFormat.simpleReplace(script, "PdbId?", 
-          "=" + (modelSetRoot.length() == 4 && modelSetRoot.indexOf(".") < 0 ? modelSetRoot : "1crn"));
+      script = TextFormat.simpleReplace(script, "PdbId?", "?=xxxx");
     }
     return script;
   }

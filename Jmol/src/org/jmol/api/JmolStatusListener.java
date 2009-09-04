@@ -68,7 +68,7 @@ public interface JmolStatusListener extends JmolCallbackListener {
    * 
    * @param fileName
    * @param type
-   * @param text_or_bytes
+   * @param text_or_bytes information or null indicates message AFTER Jmol creates the image
    * @param quality
    * @return          null (canceled) or a message starting with OK or an error message
    */

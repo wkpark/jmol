@@ -625,14 +625,16 @@ class StatusManager {
 
   /**
    * 
+   * @param aFileName 
    * @param fileName
    * @param type
    * @param text_or_bytes
    * @param quality
    * @return null (canceled) or a message starting with OK or an error message
    */
-  String createImage(String fileName, String type, Object text_or_bytes,
+  String createImage(String[] aFileName, String type, Object text_or_bytes,
                      int quality) {
+    String fileName = aFileName[0];
     if (fileName == null) // check for embedding program action
       return (jmolStatusListener == null ? null : jmolStatusListener
           .createImage(null, type, text_or_bytes, quality));
@@ -642,10 +644,10 @@ class StatusManager {
         fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save"
             : "saveImage", fileName);
       }
+      aFileName[0] = fileName;
     }
-    return (fileName == null // user canceled operation 
-        || jmolStatusListener == null ? null : jmolStatusListener.createImage(
-        fileName, type, text_or_bytes, quality));
+    return (fileName == null ? "CANCELED" : jmolStatusListener == null  ? null :
+      jmolStatusListener.createImage(fileName, type, text_or_bytes, quality));
   }
 
   Hashtable getRegistryInfo() {

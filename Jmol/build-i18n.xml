@@ -64,7 +64,7 @@
     <delete file="${Jmol.translation.dir}/translations.tgz"/>
     <tar tarfile="${Jmol.translation.dir}/translations.tgz" compression="gzip">
       <tarfileset dir="${Jmol.translation.dir}"
-                  includes="Jmol/Jmol.pot,Jmol/Jmol-*.po,JmolApplet/JmolApplet.pot,JmolApplet/JmolApplet-*.po"/>
+                  includes="Jmol/Jmol.pot,Jmol/*.po,JmolApplet/JmolApplet.pot,JmolApplet/*.po"/>
     </tar>
   </target>
 
@@ -80,7 +80,7 @@
   <!-- create Jmol.pot -->
   <target name="check-uptodate-application-pot">
     <condition property="uptodate-application-pot">
-      <uptodate targetfile="${Jmol.po.dir}/tstamp.Jmol.pot">
+      <uptodate targetfile="${Jmol.po.dir}/Jmol.pot.tstamp">
         <srcfiles refid="Jmol.java.files"/>
         <srcfiles file="${Jmol.po.dir}/Jmol.pot"/>
       </uptodate>
@@ -94,7 +94,7 @@
       <istrue value="${do.create.pot}" />
       <then>
         <echo message="Generating Jmol.pot (gettext PO-template) file in ${Jmol.po.dir} ..."/>
-        <delete file="${Jmol.po.dir}/tstamp.Jmol.pot"/>
+        <delete file="${Jmol.po.dir}/Jmol.pot.tstamp"/>
         <!-- generate new Jmol.pot -->
         <mkdir dir="${Jmol.po.dir}/tmp"/>
         <apply executable="${gettext.xgettext}" dir="${basedir}/${src.dir}" parallel="true"
@@ -145,7 +145,7 @@
             </if>
           </else>
         </if>
-        <touch file="${Jmol.po.dir}/tstamp.Jmol.pot"/>
+        <touch file="${Jmol.po.dir}/Jmol.pot.tstamp"/>
         <delete dir="${Jmol.po.dir}/tmp"/>
       </then>
       <else>
@@ -157,7 +157,7 @@
   <!-- create JmolApplet.pot -->
   <target name="check-uptodate-applet-pot">
     <condition property="uptodate-applet-pot">
-      <uptodate targetfile="${JmolApplet.po.dir}/tstamp.JmolApplet.pot">
+      <uptodate targetfile="${JmolApplet.po.dir}/JmolApplet.pot.tstamp">
         <srcfiles refid="JmolApplet.java.files"/>
         <srcfiles file="${JmolApplet.po.dir}/JmolApplet.pot"/>
       </uptodate>
@@ -171,7 +171,7 @@
       <istrue value="${do.create.pot}" />
       <then>
         <echo message="Generating JmolApplet.pot (gettext PO-template) file in ${JmolApplet.po.dir} ..."/>
-        <delete file="${JmolApplet.po.dir}/tstamp.JmolApplet.pot"/>
+        <delete file="${JmolApplet.po.dir}/JmolApplet.pot.tstamp"/>
         <!-- generate new JmolApplet.pot -->
         <mkdir dir="${JmolApplet.po.dir}/tmp"/>
         <apply executable="${gettext.xgettext}" dir="${basedir}/${src.dir}" parallel="true"
@@ -227,7 +227,7 @@
             </if>
           </else>
         </if>
-        <touch file="${JmolApplet.po.dir}/tstamp.JmolApplet.pot"/>
+        <touch file="${JmolApplet.po.dir}/JmolApplet.pot.tstamp"/>
         <delete dir="${JmolApplet.po.dir}/tmp"/>
       </then>
       <else>
@@ -264,9 +264,9 @@
 
   <target name="check-uptodate-application-po">
     <condition property="uptodate-application-po-${Jmol_lang_value}">
-      <uptodate targetfile="${Jmol.po.dir}/tstamp.${Jmol_lang_value}.po">
+      <uptodate targetfile="${Jmol.po.dir}/${Jmol_lang_value}.po.tstamp">
         <srcfiles file="${Jmol.po.dir}/Jmol.pot"/>
-        <srcfiles file="${Jmol.po.dir}/Jmol-${Jmol_lang_value}.po"/>
+        <srcfiles file="${Jmol.po.dir}/${Jmol_lang_value}.po"/>
       </uptodate>
     </condition>
   </target>
@@ -274,12 +274,12 @@
   <target name="update-application-po-lang" id="update-application-po-lang"
           depends="check-uptodate-application-po"
           if="exist_msgmerge" unless="uptodate-application-po-${Jmol_lang_value}">
-    <echo message="Updating Jmol-${Jmol_lang_value}.po gettext file for Jmol ..."/>
-    <delete file="${Jmol.po.dir}/tstamp.${Jmol_lang_value}.po"/>
+    <echo message="Updating ${Jmol_lang_value}.po gettext file for Jmol ..."/>
+    <delete file="${Jmol.po.dir}/${Jmol_lang_value}.po.tstamp"/>
     <exec executable="${gettext.msgmerge}" dir="${basedir}/${Jmol.po.dir}">
-      <arg line="-U Jmol-${Jmol_lang_value}.po Jmol.pot"/>
+      <arg line="-U ${Jmol_lang_value}.po Jmol.pot"/>
     </exec>
-    <touch file="${Jmol.po.dir}/tstamp.${Jmol_lang_value}.po"/>
+    <touch file="${Jmol.po.dir}/${Jmol_lang_value}.po.tstamp"/>
   </target>
   
   <!-- update JmolApplet po files using newly created JmolApplet.pot file -->
@@ -306,9 +306,9 @@
   
   <target name="check-uptodate-applet-po">
     <condition property="uptodate-applet-po-${JmolApplet_lang_value}">
-      <uptodate targetfile="${JmolApplet.po.dir}/tstamp.${JmolApplet_lang_value}.po">
+      <uptodate targetfile="${JmolApplet.po.dir}/${JmolApplet_lang_value}.po.tstamp">
         <srcfiles file="${JmolApplet.po.dir}/JmolApplet.pot"/>
-        <srcfiles file="${JmolApplet.po.dir}/JmolApplet-${JmolApplet_lang_value}.po"/>
+        <srcfiles file="${JmolApplet.po.dir}/${JmolApplet_lang_value}.po"/>
       </uptodate>
     </condition>
   </target>
@@ -316,12 +316,12 @@
   <target name="update-applet-po-lang" id="update-applet-po-lang"
           depends="check-uptodate-applet-po"
           if="exist_msgmerge" unless="uptodate-applet-po-${JmolApplet_lang_value}">
-    <echo message="Updating JmolApplet-${JmolApplet_lang_value}.po gettext file for JmolApplet ..."/>
-    <delete file="${JmolApplet.po.dir}/tstamp.${JmolApplet_lang_value}.po"/>
+    <echo message="Updating ${JmolApplet_lang_value}.po gettext file for JmolApplet ..."/>
+    <delete file="${JmolApplet.po.dir}/${JmolApplet_lang_value}.po.tstamp"/>
     <exec executable="${gettext.msgmerge}" dir="${basedir}/${JmolApplet.po.dir}">
-      <arg line="-U JmolApplet-${JmolApplet_lang_value}.po JmolApplet.pot"/>
+      <arg line="-U ${JmolApplet_lang_value}.po JmolApplet.pot"/>
     </exec>
-    <touch file="${JmolApplet.po.dir}/tstamp.${JmolApplet_lang_value}.po"/>
+    <touch file="${JmolApplet.po.dir}/${JmolApplet_lang_value}.po.tstamp"/>
   </target>
   
   <!-- Update message cataloges and create messages_LANG.class files -->
@@ -344,7 +344,7 @@
 
   <target name="check-uptodate-application-catalog">
     <condition property="uptodate-application-catalog-${Jmol_lang_value}">
-      <uptodate srcfile="${Jmol.po.dir}/Jmol-${Jmol_lang_value}.po"
+      <uptodate srcfile="${Jmol.po.dir}/${Jmol_lang_value}.po"
                 targetfile="${classes.dir}/org/jmol/translation/Jmol/${Jmol_lang_value}/Messages_${Jmol_lang_value}.class"/>
     </condition>
   </target>
@@ -363,7 +363,7 @@
       <arg value="${basedir}/${classes.dir}"/>
       <arg value="-r"/>
       <arg value="org.jmol.translation.Jmol.${Jmol_lang_value}.Messages"/>
-      <arg value="Jmol-${Jmol_lang_value}.po"/>
+      <arg value="${Jmol_lang_value}.po"/>
     </exec>
   </target>
 
@@ -383,7 +383,7 @@
 
   <target name="check-uptodate-applet-catalog">
     <condition property="uptodate-applet-catalog-${JmolApplet_lang_value}">
-      <uptodate srcfile="${JmolApplet.po.dir}/JmolApplet-${JmolApplet_lang_value}.po"
+      <uptodate srcfile="${JmolApplet.po.dir}/${JmolApplet_lang_value}.po"
                 targetfile="${classes.dir}/org/jmol/translation/JmolApplet/${JmolApplet_lang_value}/Messages_${JmolApplet_lang_value}.class"/>
     </condition>
   </target>
@@ -401,7 +401,7 @@
       <arg value="${basedir}/${classes.dir}"/>
       <arg value="-r"/>
       <arg value="org.jmol.translation.JmolApplet.${JmolApplet_lang_value}.Messages"/>
-      <arg value="JmolApplet-${JmolApplet_lang_value}.po"/>
+      <arg value="${JmolApplet_lang_value}.po"/>
     </exec>
   </target>
   

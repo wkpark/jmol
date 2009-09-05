@@ -556,7 +556,7 @@ public class MarchingSquares {
        * 
        */
       int insideCount = generateContourData(i, cutoff);
-      Logger.info("contour " + (i + 1) + " cutoff=" + cutoff + " insideCount=" + insideCount + " centerIsLow=" + centerIsLow);
+      Logger.debug("contour " + (i + 1) + " cutoff=" + cutoff + " insideCount=" + insideCount + " centerIsLow=" + centerIsLow);
       if (lastInside < 0)
         lastInside = insideCount;
       else if (lastInside > insideCount) {

@@ -27,6 +27,8 @@ package org.jmol.script;
 import java.util.BitSet;
 import java.util.Vector;
 
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
@@ -114,12 +116,16 @@ public class ScriptVariable extends Token {
     case on:
     case off:
       return "boolean";
+    case bitset:
+      return (x.value instanceof BondSet ? "bondset" : "bitset");
     case integer:
     case decimal:
     case point3f:
     case point4f:
     case string:
     case list:
+    case matrix3f:
+    case matrix4f:
       return astrType[tok];
     }
     return "?";
@@ -140,6 +146,10 @@ public class ScriptVariable extends Token {
       return -8;
     case point4f:
       return -16;
+    case matrix3f:
+      return -32;
+    case matrix4f:
+      return -64;
     case string:
       return ((String) x.value).length();
     case list:
@@ -199,6 +209,10 @@ public class ScriptVariable extends Token {
     // rotation angle (axisangle), and cos(theta/2) (quaternion).
     if (x instanceof Quaternion)
       return new ScriptVariable(point4f, ((Quaternion)x).toPoint4f());
+    if (x instanceof Matrix3f)
+      return new ScriptVariable(matrix3f, x);
+    if (x instanceof Matrix4f)
+      return new ScriptVariable(matrix4f, x);
     if (x instanceof BitSet)
       return new ScriptVariable(bitset, x);
     if (x instanceof String[])
@@ -255,7 +269,7 @@ public class ScriptVariable extends Token {
     index = v.index;
     intValue = v.intValue;
     tok = v.tok;
-    if (tok == Token.list) {
+    if (tok == list) {
       int n = ((String[])v.value).length;
       value = new String[n];
       System.arraycopy(v.value, 0, value, 0, n);
@@ -396,6 +410,8 @@ public class ScriptVariable extends Token {
       return iValue(x) != 0;
     case point3f:
     case point4f:
+    case matrix3f:
+    case matrix4f:
       return Math.abs(fValue(x)) > 0.0001f;
     default:
       return false;
@@ -415,6 +431,8 @@ public class ScriptVariable extends Token {
     case string:
     case point3f:
     case point4f:
+    case matrix3f:
+    case matrix4f:
       return (int) fValue(x);
     case bitset:
       return BitSetUtil.cardinalityOf(bsSelect(x));
@@ -446,6 +464,14 @@ public class ScriptVariable extends Token {
       return ((Point3f) x.value).distance(pt0);
     case point4f:
       return Measure.distanceToPlane((Point4f) x.value, pt0);
+    case matrix3f:
+      Point3f pt = new Point3f();
+      ((Matrix3f) x.value).transform(pt);
+      return pt.distance(pt0);
+    case matrix4f:
+      Point3f pt1 = new Point3f();
+      ((Matrix4f) x.value).transform(pt1);
+      return pt1.distance(pt0);
     default:
       return 0;
     }
@@ -466,6 +492,10 @@ public class ScriptVariable extends Token {
       return Escape.escape((Point3f) x.value);
     case point4f:
       return Escape.escape((Point4f) x.value);
+    case matrix3f:
+      return Escape.escape((Matrix3f) x.value);
+    case matrix4f:
+      return Escape.escape((Matrix4f) x.value);
     case bitset:
       return Escape.escape(bsSelect(x), !(x.value instanceof BondSet));
     case list:
@@ -707,20 +737,24 @@ public class ScriptVariable extends Token {
 
   public String escape() {
     switch (tok) {
-    case Token.on:
+    case on:
       return "true";
-    case Token.off:
+    case off:
       return "false";
-    case Token.integer:
+    case integer:
       return "" + intValue;
-    case Token.bitset:
+    case bitset:
       return Escape.escape((BitSet)value);
-    case Token.list:
+    case list:
       return Escape.escape((String[])value);
-    case Token.point3f:
+    case point3f:
       return Escape.escape((Point3f)value);
-    case Token.point4f:
+    case point4f:
       return Escape.escape((Point4f)value);
+    case matrix3f:
+      return Escape.escape((Matrix3f)value);
+    case matrix4f:
+      return Escape.escape((Matrix4f)value);
     default:
       return Escape.escape(value);
     }
@@ -729,13 +763,17 @@ public class ScriptVariable extends Token {
   public static Object unescapePointOrBitsetAsVariable(String s) {
     if (s == null || s.length() == 0)
       return s;
-    Object v = Escape.unescapePointOrBitset(s);
+    Object v = Escape.unescapePointOrBitsetOrMatrix(s);
     if (v instanceof Point3f)
-      return (new ScriptVariable(Token.point3f, v));
+      return (new ScriptVariable(point3f, v));
     if (v instanceof Point4f)
-      return new ScriptVariable(Token.point4f, v);
+      return new ScriptVariable(point4f, v);
     if (v instanceof BitSet)
-      return new ScriptVariable(Token.bitset, v);
+      return new ScriptVariable(bitset, v);
+    if (v instanceof Matrix3f)
+      return (new ScriptVariable(matrix3f, v));
+    if (v instanceof Matrix4f)
+      return new ScriptVariable(matrix4f, v);
     return s;
   }
 
@@ -751,10 +789,10 @@ public class ScriptVariable extends Token {
     float[] vf = (strFormat.indexOf("f") >= 0 ? new float[1] : null);
     double[] ve = (strFormat.indexOf("e") >= 0 ? new double[1] : null);
     boolean getS = (strFormat.indexOf("s") >= 0);
-    boolean getP = (strFormat.indexOf("p") >= 0 && var.tok == Token.point3f
-        || strFormat.indexOf("q") >= 0 && var.tok == Token.point4f);
+    boolean getP = (strFormat.indexOf("p") >= 0 && var.tok == point3f
+        || strFormat.indexOf("q") >= 0 && var.tok == point4f);
     Object[] of = new Object[] { vd, vf, ve, null, null};
-    if (var.tok != Token.list)
+    if (var.tok != list)
       return sprintf(strFormat, var, of, vd, vf, ve, getS, getP);
     String[] list = (String[]) var.value;
     String[] list2 = new String[list.length];

@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
@@ -205,7 +206,7 @@ public class Escape {
   public static Object unescapePoint(String strPoint) {
     if (strPoint == null || strPoint.length() == 0)
       return strPoint;
-    String str = TextFormat.simpleReplace(strPoint, "\n", " ").trim();
+    String str = strPoint.replace('\n', ' ').trim();
     if (str.charAt(0) != '{' || str.charAt(str.length() - 1) != '}')
       return strPoint;
     float[] points = new float[5];
@@ -267,6 +268,32 @@ public class Escape {
     return bs;
   }
 
+  public static Object unescapeMatrix(String strMatrix) {
+    if (strMatrix == null || strMatrix.length() == 0)
+      return strMatrix;
+    String str = strMatrix.replace('\n', ' ').trim();
+    if (!str.startsWith("[[") || !str.endsWith("]]"))
+      return strMatrix;
+    float[] points = new float[16];
+    str = str.substring(2, str.length() - 2).replace('[',' ').replace(']',',');
+    int[] next = new int[1];
+    int nPoints = 0;
+    for (; nPoints < 16; nPoints++) {
+      points[nPoints] = Parser.parseFloat(str, next);
+      if (Float.isNaN(points[nPoints])) {
+        if (next[0] >= str.length() || str.charAt(next[0]) != ',')
+          break;
+        next[0]++;
+        nPoints--;
+      }
+    }
+    if (nPoints == 9)
+      return new Matrix3f(points);
+    if (nPoints == 16)
+      return new Matrix4f(points);
+    return strMatrix;
+  }
+
   /**
    * accepts [xRRGGBB] or [0xRRGGBB] or [0xFFRRGGBB] 
    * or #RRGGBB or [red,green,blue]
@@ -314,6 +341,41 @@ public class Escape {
     return escape(bs, true);
   }
 
+  public static String escape(Matrix3f m3) {
+    StringBuffer sb = new StringBuffer();
+    sb.append("[[").append(m3.m00).append(",")
+    .append(m3.m01).append(",")
+    .append(m3.m02).append("]")
+    .append(",[").append(m3.m10).append(",")
+    .append(m3.m11).append(",")
+    .append(m3.m12).append("]")
+    .append(",[").append(m3.m20).append(",")
+    .append(m3.m21).append(",")
+    .append(m3.m22).append("]]");
+   return sb.toString();
+  }
+  
+  public static String escape(Matrix4f m4) {
+    StringBuffer sb = new StringBuffer();
+    sb.append("[[").append(m4.m00).append(",")
+    .append(m4.m01).append(",")
+    .append(m4.m02).append(",")
+    .append(m4.m03).append("]")
+    .append(",[").append(m4.m10).append(",")
+    .append(m4.m11).append(",")
+    .append(m4.m12).append(",")
+    .append(m4.m13).append("]")
+    .append(",[").append(m4.m20).append(",")
+    .append(m4.m21).append(",")
+    .append(m4.m22).append(",")
+    .append(m4.m23).append("]")
+    .append(",[").append(m4.m30).append(",")
+    .append(m4.m31).append(",")
+    .append(m4.m32).append(",")
+    .append(m4.m33).append("]]");
+   return sb.toString();
+  }
+  
   private static String packageJSON(String infoType, StringBuffer sb) {
     return packageJSON(infoType, sb.toString());
   }
@@ -404,16 +466,12 @@ public class Escape {
       sb.append(" ]");
       return packageJSON(infoType, sb);
     }
+    if (info instanceof Matrix4f) {
+      sb.append(escape((Matrix4f) info));
+      return packageJSON(infoType, sb);
+    }
     if (info instanceof Matrix3f) {
-      sb.append("[[").append(((Matrix3f) info).m00).append(",")
-        .append(((Matrix3f) info).m01).append(",")
-        .append(((Matrix3f) info).m02).append("]")
-        .append(",[").append(((Matrix3f) info).m10).append(",")
-        .append(((Matrix3f) info).m11).append(",")
-        .append(((Matrix3f) info).m12).append("]")
-        .append(",[").append(((Matrix3f) info).m20).append(",")
-        .append(((Matrix3f) info).m21).append(",")
-        .append(((Matrix3f) info).m22).append("]]");
+      sb.append(escape((Matrix3f) info));
       return packageJSON(infoType, sb);
     }
     if (info instanceof Tuple3f) {
@@ -506,15 +564,7 @@ public class Escape {
       return packageReadable(name, "Vector[" + imax + "]", sb);
     }
     if (info instanceof Matrix3f) {
-      sb.append("[[").append(((Matrix3f) info).m00).append(",")
-      .append(((Matrix3f) info).m01).append(",")
-      .append(((Matrix3f) info).m02).append("]")
-      .append(",[").append(((Matrix3f) info).m10).append(",")
-      .append(((Matrix3f) info).m11).append(",")
-      .append(((Matrix3f) info).m12).append("]")
-      .append(",[").append(((Matrix3f) info).m20).append(",")
-      .append(((Matrix3f) info).m21).append(",")
-      .append(((Matrix3f) info).m22).append("]]");
+      sb.append(escape((Matrix3f) info));
       return packageReadable(name, null, sb);
     }
     if (info instanceof Tuple3f) {
@@ -557,7 +607,7 @@ public class Escape {
         : data) + "    END \"" + name + "\";\n";
   }
 
-  public static Object unescapePointOrBitset(String s) {
+  public static Object unescapePointOrBitsetOrMatrix(String s) {
     Object v = s;
     if (s.charAt(0) == '{')
       v = unescapePoint(s);
@@ -565,6 +615,8 @@ public class Escape {
       v = unescapeBitset(s);
     else if (s.indexOf("[{") == 0)
       v = new BondSet(unescapeBitset(s));
+    else if (s.indexOf("[[") == 0)
+      v = unescapeMatrix(s);
     return v;
   }
 }

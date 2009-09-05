@@ -73,20 +73,25 @@ public class Token {
   public final static int integer    =  2;
   public final static int decimal    =  3;
   public final static int string     =  4;
+  
   final static int seqcode           =  5;
   public final static int list       =  6;
   public final static int point3f    =  7;
   public final static int point4f    =  8;  
+  public final static int bitset     =  9;
+  
+  public final static int matrix3f   = 10;  
+  public final static int matrix4f   = 11;  
   // listf "list-float" is specifically for xxx.all.bin, 
   // but it could be developed further
-  final static int listf             = 9;     
-
-  final private static int keyword   =  10;
+  final static int listf             = 12;     
+  final private static int keyword   = 13;
   
 
   final static String[] astrType = {
     "nada", "identifier", "integer", "decimal", "string",
-    "seqcode", "array", "point", "point4", "listf", "keyword"
+    "seqcode", "array", "point", "point4", "bitset",
+    "matrix3f",  "matrix4f", "listf", "keyword"
   };
 
   public static boolean tokAttr(int a, int b) {
@@ -676,7 +681,6 @@ public class Token {
   final static int babel        = misc |  4;
   final static int back         = misc |  5;
   public final static int backlit = misc |  6;
-  public final static int bitset= misc |  7;
   final static int bondset      = misc |  8;
   final static int bottom       = misc |  9;
   final static int clear        = misc | 10;

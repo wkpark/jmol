@@ -29,6 +29,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.vecmath.AxisAngle4f;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
@@ -1243,6 +1245,35 @@ class ScriptMathProcessor {
     if (isSyntaxCheck)
       return addX("");
     int len = args.length;
+    if (len == 4 || len == 3) {
+      boolean isMatrix = true;
+      for (int i = 0; i < len; i++) {
+        if (args[i].tok != Token.list
+            || ((String[]) args[i].value).length != len) {
+          isMatrix = false;
+          break;
+        }
+      }
+      if (isMatrix) {
+        float[] points = new float[len * len];
+        int pt = 0;
+        out: for (int i = 0; i < len; i++) {
+          for (int j = 0; j < len; j++) {
+            float x = Parser.parseFloat(((String[]) args[i].value)[j]);
+            if (Float.isNaN(x)) {
+              isMatrix = false;
+              break out;
+            }
+            points[pt++] = x;
+          }
+        }
+        if (isMatrix) {
+          if (len == 3)
+            return addX(new Matrix3f(points));
+          return addX(new Matrix4f(points));
+        }
+      }
+    }
     String[] array = new String[len];
     for (int i = 0; i < args.length; i++)
       array[i] = ScriptVariable.sValue(args[i]);
@@ -1732,7 +1763,8 @@ class ScriptMathProcessor {
   private boolean operate() throws ScriptException {
 
     Token op = oStack[oPt--];
-
+    Point3f pt;
+    
     if (logMessages) {
       dumpStacks("operate: " + op);
     }
@@ -1777,15 +1809,26 @@ class ScriptMathProcessor {
       case Token.type:
         return addX(ScriptVariable.typeOf(x2));
       case Token.lines:
-        String s = (x2.tok == Token.string ? (String) x2.value : ScriptVariable
-            .sValue(x2));
+        String s;
+        switch (x2.tok) {
+        case Token.matrix3f:
+        case Token.matrix4f:
+          s = ScriptVariable.sValue(x2);
+          s = TextFormat.simpleReplace(s.substring(1, s.length()-1), "],[", "]\n[");
+          break;
+        case Token.string:
+          s = (String) x2.value;
+          break;
+        default:
+          s = ScriptVariable.sValue(x2);
+        }          
         s = TextFormat.simpleReplace(s, "\n\r", "\n").replace('\r', '\n');
         return addX(TextFormat.split(s, '\n'));
       case Token.color:
         switch (x2.tok) {
         case Token.string:
         case Token.list:
-          Point3f pt = new Point3f();
+          pt = new Point3f();
           return addX(Graphics3D.colorPointFromString(
               ScriptVariable.sValue(x2), pt));
         case Token.integer:
@@ -1908,7 +1951,7 @@ class ScriptMathProcessor {
           return addX(q1.mul(new Quaternion((Point4f) x2.value)).toPoint4f());
         }
       case Token.point3f:
-        Point3f pt = new Point3f((Point3f) x1.value);
+        pt = new Point3f((Point3f) x1.value);
         switch (x2.tok) {
         case Token.point3f:
           pt.add((Point3f) x2.value);
@@ -1941,7 +1984,7 @@ class ScriptMathProcessor {
       default:
         return addX(ScriptVariable.fValue(x1) - ScriptVariable.fValue(x2));
       case Token.point3f:
-        Point3f pt = new Point3f((Point3f) x1.value);
+        pt = new Point3f((Point3f) x1.value);
         switch (x2.tok) {
         default:
           float f = ScriptVariable.fValue(x2);
@@ -1972,7 +2015,7 @@ class ScriptMathProcessor {
       case Token.integer:
         return addX(-ScriptVariable.iValue(x2));
       case Token.point3f:
-        Point3f pt = new Point3f((Point3f) x2.value);
+        pt = new Point3f((Point3f) x2.value);
         pt.scale(-1f);
         return addX(pt);
       case Token.point4f:
@@ -1990,8 +2033,38 @@ class ScriptMathProcessor {
       switch (x1.tok) {
       default:
         return addX(ScriptVariable.fValue(x1) * ScriptVariable.fValue(x2));
+      case Token.matrix3f:
+        Matrix3f m3 = (Matrix3f) x1.value;
+        switch (x2.tok) {
+        case Token.point3f:
+          pt = new Point3f((Point3f) x2.value);
+          m3.transform(pt);
+          return addX(pt);
+        case Token.matrix3f:
+          Matrix3f m = new Matrix3f((Matrix3f) x2.value);
+          m.mul(m3, m);
+          return addX(m);
+        default:
+          float f = ScriptVariable.fValue(x2);
+          AxisAngle4f aa = new AxisAngle4f();
+          aa.set(m3);
+          aa.angle *= f;
+          Matrix3f m2 = new Matrix3f();
+          m2.set(aa);
+          return addX(m2);
+        }
+      case Token.matrix4f:
+        Matrix4f m4 = (Matrix4f) x1.value;
+        switch (x2.tok) {
+        case Token.point3f:
+          pt = new Point3f((Point3f) x2.value);
+          m4.transform(pt);
+          return addX(pt);
+        default:
+          return addX("NaN");
+        }
       case Token.point3f:
-        Point3f pt = new Point3f((Point3f) x1.value);
+        pt = new Point3f((Point3f) x1.value);
         switch (x2.tok) {
         case Token.point3f:
           Point3f pt2 = ((Point3f) x2.value);
@@ -2063,7 +2136,7 @@ class ScriptMathProcessor {
         }
         return addX(listout);
       case Token.point3f:
-        Point3f pt = new Point3f((Point3f) x1.value);
+        pt = new Point3f((Point3f) x1.value);
         viewer.toUnitCell(pt, new Point3f(n, n, n));
         return addX(pt);
       case Token.point4f:
@@ -2129,7 +2202,7 @@ class ScriptMathProcessor {
               : Float.POSITIVE_INFINITY);
         return addX(f1 / f2);
       case Token.point3f:
-        Point3f pt = new Point3f((Point3f) x1.value);
+        pt = new Point3f((Point3f) x1.value);
         if (f2 == 0)
           return addX(new Point3f(Float.NaN, Float.NaN, Float.NaN));
         return addX(new Point3f(pt.x / f2, pt.y / f2, pt.z / f2));

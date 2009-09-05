@@ -32,6 +32,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
@@ -2931,13 +2932,13 @@ abstract public class ModelCollection extends BondCollection {
      *  xyz (Jones-Faithful calculated from matrix)
      *  xyzOriginal (Provided by operation) 
      *  description ("C2 axis", for example) 
-     *  draw commands 
      *  translation vector (fractional)  
      *  translation vector (cartesian)
      *  inversion point 
      *  axis point 
      *  axis vector
      *  angle of rotation
+     *  matrix representation
      */
     if (type == Token.array)
       return info;
@@ -2954,7 +2955,8 @@ abstract public class ModelCollection extends BondCollection {
         Escape.escape((Point3f)info[6]),
         Escape.escape((Point3f)info[7]),
         Escape.escape((Vector3f)info[8]),
-        "" + info[9]
+        "" + info[9],
+        "" + Escape.escape((Matrix4f)info[10])
       };
       return sinfo;
     }

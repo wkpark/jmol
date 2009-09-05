@@ -1013,7 +1013,7 @@ class SymmetryOperation extends Matrix4f {
     if (ax1 != null)
       ax1.normalize();
     return new Object[] { xyz, xyzOriginal, info1, cmds, ftrans, trans, ipt,
-        pa1, ax1, new Integer(ang1) };
+        pa1, ax1, new Integer(ang1), m };
   }
 
   private static void drawLine(StringBuffer s, String id, float diameter, Point3f pt0, Point3f pt1,

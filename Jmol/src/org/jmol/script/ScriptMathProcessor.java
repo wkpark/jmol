@@ -680,15 +680,17 @@ class ScriptMathProcessor {
       return addX(new Point3f());
     if (x1 != null && x1.tok != Token.bitset)
       return false;
-    BitSet bs = (x1 == null ? viewer.getModelAtomBitSet(-1, false) : (BitSet) x1.value);
+    BitSet bs = (x1 != null ? (BitSet) x1.value 
+        : args.length > 2 && args[1].tok == Token.bitset ? (BitSet) args[1].value 
+        : viewer.getModelAtomBitSet(-1, false));
     String xyz = (args[0].tok == Token.string ? ScriptVariable.sValue(args[0]) : null);
     int iOp = (xyz == null ? ScriptVariable.iValue(args[0]) : 0);
     Point3f pt = (args.length > 1 ? ptValue(args[1]) : null);
     if (args.length == 2)
-      return addX((Point3f) viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, Token.point));
-    String desc = (args.length == 1 ? "" : ScriptVariable.sValue(args[2]));
+      return addX(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, Token.point));
+    String desc = (args.length == 1 ? "array" : ScriptVariable.sValue(args[2]));
     return addX(viewer.getSymmetryInfo(bs, xyz, iOp, pt, 
-          desc, desc.length() == 0 ? Token.list : Token.draw));
+          desc, desc.equalsIgnoreCase("array") ? Token.list : Token.draw));
   }
 
   private boolean evaluateBin(ScriptVariable[] args) throws ScriptException {

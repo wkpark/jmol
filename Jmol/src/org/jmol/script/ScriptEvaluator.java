@@ -11225,10 +11225,12 @@ public class ScriptEvaluator {
         }
         center = (i + 1 == statementLength ? null : centerParameter(++i));
         // draw ID xxx symop [n or "x,-y,-z"] [optional {center}]
+        BitSet bsAtoms = (tokAt(i) == Token.bitset || tokAt(i) == Token.expressionBegin ?
+            expression(i) : null);
         i = iToken + 1;
         checkLength(iToken + 1);
         if (!isSyntaxCheck)
-          runScript((String) viewer.getSymmetryInfo(null, xyz, iSym, center,
+          runScript((String) viewer.getSymmetryInfo(bsAtoms, xyz, iSym, center,
               thisId, Token.draw));
         return;
       case Token.frame:

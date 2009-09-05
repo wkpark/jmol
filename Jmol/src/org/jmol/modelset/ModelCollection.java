@@ -2888,50 +2888,38 @@ abstract public class ModelCollection extends BondCollection {
   }
   
   public Object getSymmetryInfo(BitSet bsAtoms, String xyz, int op, Point3f pt, String id, int type) {
-    Object ret;
-    switch (type) {
-    case Token.point:
-      ret = new Point3f();
-      break;
-    case Token.array:
-      ret = new Object[]{};
-      break;
-    case Token.list:
-      ret = new String[] {};
-      break;
-    default:
-      ret = "";
-    }
     int iModel = -1;
     if (bsAtoms == null) {
       iModel = viewer.getCurrentModelIndex();
       if (iModel < 0)
-        return ret;
+        return "";
       bsAtoms = getModelAtomBitSet(iModel, false);
     }
     int iAtom = BitSetUtil.firstSetBit(bsAtoms);
     if (iAtom < 0)
-      return ret;
+      return "";
     iModel = atoms[iAtom].modelIndex;
     SymmetryInterface uc = getUnitCell(iModel);
     if (uc == null)
-      return ret;
+      return "";
     if (xyz == null) {
       String[] ops = uc.getSymmetryOperations();
       if (ops == null || op < 1 || op > ops.length)
-        return ret;
+        return "";
       xyz = ops[op - 1 ];
     }
     getSymTemp(false); 
     symTemp.setSpaceGroup(false);
     int iSym = symTemp.addSpaceGroupOperation("!" + xyz);
     if (iSym < 0)
-      return ret;
+      return "";
     symTemp.setUnitCell(uc.getNotionalUnitCell());
     pt = new Point3f(pt == null ? atoms[iAtom] : pt);
     if (type == Token.point) {
       uc.toFractional(pt);
-      Point3f sympt = (Point3f)ret;
+      if (Float.isNaN(pt.x))
+        return "";
+      Point3f sympt = new Point3f();
       symTemp.newSpaceGroupPoint(iSym, pt, sympt, 0, 0, 0);
       symTemp.toCartesian(sympt);
       return sympt;

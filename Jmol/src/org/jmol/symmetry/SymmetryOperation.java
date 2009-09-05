@@ -664,7 +664,7 @@ class SymmetryOperation extends Matrix4f {
 
     // time to get the description
 
-    String info1 = "";
+    String info1 = "identity";
     StringBuffer draw1 = new StringBuffer();
     String drawid;
 

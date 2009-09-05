@@ -781,7 +781,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (thisMesh.jvxlData.jvxlPlane != null)
       allowContourLines = false;
     if (thisMesh.jvxlData.nContours != 0 && thisMesh.jvxlData.nContours != -1)
-      explicitContours = true;
+      explicitContours = thisMesh.havePlanarContours = true;
     setPropertySuper("token", new Integer(explicitContours ? Token.nofill : Token.fill), null);
     setPropertySuper("token", new Integer(explicitContours ? Token.contourlines : Token.nocontourlines), null);
     thisMesh.colorCommand = "color $" + thisMesh.thisID + " "

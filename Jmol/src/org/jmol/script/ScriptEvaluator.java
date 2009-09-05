@@ -10608,6 +10608,8 @@ public class ScriptEvaluator {
       } else if (type.equals("MA")) {
         type = "Maya";
         isExport = true;
+      } else if (type.equals("JVXL")) {
+        type = "ISO";
       }
     }
     if (type.equals("data")) {
@@ -12507,6 +12509,11 @@ public class ScriptEvaluator {
         }
         if (str.equalsIgnoreCase("FIXED")) {
           propertyName = "fixed";
+          propertyValue = Boolean.TRUE;
+          break;
+        }
+        if (str.equalsIgnoreCase("FULLPLANE")) {
+          propertyName = "fullPlane";
           propertyValue = Boolean.TRUE;
           break;
         }

@@ -643,6 +643,10 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("fullPlane" == propertyName) {
+      params.contourFromZero = !((Boolean) value).booleanValue();
+      return true;
+    }
     /// final actions ///
 
     if ("property" == propertyName) {

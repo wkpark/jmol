@@ -8085,9 +8085,9 @@
   <fah_proj number="6306" name="p6306_Peptide dimer in TIP3P water" public="n" file="xyz"
     server="171.64.65.111" atoms="5768" preferred="10" deadline="15"
     credit="57" frames="100" code="G" contact="vvoelz" contrib="Hyperlife"/>
-  <fah_proj number="6307" name="p6307_sh3_with_ALA_PRO_frags" public="y"
+  <fah_proj number="6307" name="p6307_sh3_with_ALA_PRO_frags" public="y" file="xyz"
     server="171.64.65.111" atoms="15111" preferred="36" deadline="52"
-    credit="336" frames="100" code="G" contact="vvoelz"/>
+    credit="336" frames="100" code="G" contact="vvoelz" contrib="Gor"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

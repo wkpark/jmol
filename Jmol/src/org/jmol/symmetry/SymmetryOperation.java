@@ -1030,9 +1030,9 @@ class SymmetryOperation extends Matrix4f {
   private static String fc(float x) {
     float xabs = Math.abs(x);
     int x24 = (int) approx(xabs * 24);
-    if (x24%8 != 0)
-      return twelfthsOf(x24 >> 1);
     String m = (x < 0 ? "-" : "");
+    if (x24%8 != 0)
+      return m + twelfthsOf(x24 >> 1);
     return (x24 == 0 ? "0" : x24 == 24 ? m + "1" : m + (x24/8) + "/3");
   }
 

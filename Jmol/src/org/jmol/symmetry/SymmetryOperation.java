@@ -179,17 +179,15 @@ class SymmetryOperation extends Matrix4f {
         if (Math.abs(v) < 0.00001f)
           v = 0;
         if (i % 4 == 3)
-          v = normalizeTwelfths((v < 0 ? -1 : 1) * (int)(Math.abs(v) * 12.001f));
+          v = normalizeTwelfths((v < 0 ? -1 : 1) * Math.round(Math.abs(v)));
         temp[i] = v;
       }
       return true;
     }
     
     xyz += ",";
-    //Logger.debug(xyz.length() + " " + xyz);
     for (int i = 0; i < xyz.length(); i++) {
       ch = xyz.charAt(i);
-      //Logger.debug("char = " + ch + isDecimal);
       switch (ch) {
       case '\'':
       case ' ':
@@ -234,7 +232,7 @@ class SymmetryOperation extends Matrix4f {
         strT += (x == 0 ? "" : x < 0 ? "-x" : strT.length() == 0 ? "x" : "+x");
         strT += (y == 0 ? "" : y < 0 ? "-y" : strT.length() == 0 ? "y" : "+y");
         strT += (z == 0 ? "" : z < 0 ? "-z" : strT.length() == 0 ? "z" : "+z");
-        strT += xyzFraction(iValue, false);
+        strT += xyzFraction(iValue, false, true);
         strOut += (strOut == "" ? "" : ",") + strT;
         //note: when ptLatt[3] = -1, ptLatt[rowPt] MUST be 0.
         if (rowPt == 2) {
@@ -292,7 +290,8 @@ class SymmetryOperation extends Matrix4f {
     return iValue;
   }
 
-  final static String getXYZFromMatrix(Matrix4f mat, boolean allPositive) {
+  final static String getXYZFromMatrix(Matrix4f mat, boolean is12ths,
+                                       boolean allPositive, boolean halfOrLess) {
     String str = "";
     float[] row = new float[4];
     for (int i = 0; i < 3; i++) {
@@ -304,7 +303,8 @@ class SymmetryOperation extends Matrix4f {
         term += (row[1] < 0 ? "-" : "+") + "y";
       if (row[2] != 0)
         term += (row[2] < 0 ? "-" : "+") + "z";
-      term += xyzFraction(row[3], allPositive);
+      term += xyzFraction((is12ths ? row[3] : row[3] * 12), allPositive,
+          halfOrLess);
       if (term.length() > 0 && term.charAt(0) == '+')
         term = term.substring(1);
       str += "," + term;
@@ -318,17 +318,18 @@ class SymmetryOperation extends Matrix4f {
       str = "-";
       n12ths = -n12ths;
     }
-    return str + twelfths[((int) n12ths) % 12];  
+    return str + twelfths[(Math.round(n12ths)) % 12];  
   }
   
   private final static String[] twelfths = { "0", "1/12", "1/6", "1/4", "1/3",
       "5/12", "1/2", "7/12", "2/3", "3/4", "5/6", "11/12" };
 
-  private final static String xyzFraction(float n12ths, boolean allPositive) {
+  private final static String xyzFraction(float n12ths, boolean allPositive, boolean halfOrLess) {
+    n12ths = Math.round(n12ths);
     if (allPositive) {
       while (n12ths < 0)
         n12ths += 12f;
-    } else if (n12ths > 6f) {
+    } else if (halfOrLess && n12ths > 6f) {
       n12ths -= 12f;
     }
     String s = twelfthsOf(n12ths);
@@ -390,17 +391,49 @@ class SymmetryOperation extends Matrix4f {
     return vRot;
   }
   
-  private StringBuffer draw1;
-  private String drawid;
-  
-  public Object[] getDescription(SymmetryInterface uc, Point3f pt00, String id) {
-
+  public Object[] getProduct(SymmetryOperation op2, SymmetryInterface uc, Point3f pt00, String id) {
     if (!isFinalized)
       doFinalize();
+    if (!op2.isFinalized)
+      op2.doFinalize();
+    Matrix4f m = new Matrix4f(op2);
+    m.mul(this);
+    m.m03 = op2.m03 + m03;
+    m.m13 = op2.m13 + m13;
+    m.m23 = op2.m23 + m23;
+    m.m33 = 1;
+    return getDescription(m, "(" + op2.xyz + ") * (" + xyz + ")", uc, pt00, id);
+  }
+
+  /**
+   * 
+   * @param uc
+   * @param pt00
+   * @param id
+   * @return Object[] containing: 
+   *                    xyz (Jones-Faithful calculated from matrix)
+   *                    xyzOriginal (Provided by calling method) 
+   *                    info ("C2 axis", for example) 
+   *                    draw commands, 
+   *                    translation vector (as a Poin3f)  
+   *                    inversion point, 
+   *                    axis point 0, 
+   *                    axis vector,
+   *                    angle of rotation
+   */
+  public Object[] getDescription(SymmetryInterface uc, Point3f pt00, String id) {
+    if (!isFinalized)
+      doFinalize();
+    return getDescription(this, xyzOriginal, uc, pt00, id);
+  }
+  
+  private static Object[] getDescription(Matrix4f m, String xyzOriginal,
+                                         SymmetryInterface uc, Point3f pt00,
+                                         String id) {
     Vector3f vtemp = new Vector3f();
     Point3f ptemp = new Point3f();
-    Point3f ftrans = new Point3f();
-
+    Vector3f ftrans = new Vector3f();
+    String xyz = getXYZFromMatrix(m, false, false, false);
     boolean typeOnly = (id == null);
     if (pt00 == null)
       pt00 = new Point3f();
@@ -421,10 +454,10 @@ class SymmetryOperation extends Matrix4f {
     uc.toFractional(p1);
     uc.toFractional(p2);
     uc.toFractional(p3);
-    transform(p0, p0);
-    transform(p1, p1);
-    transform(p2, p2);
-    transform(p3, p3);
+    m.transform(p0, p0);
+    m.transform(p1, p1);
+    m.transform(p2, p2);
+    m.transform(p3, p3);
     uc.toCartesian(p0);
     uc.toCartesian(p1);
     uc.toCartesian(p2);
@@ -508,7 +541,6 @@ class SymmetryOperation extends Matrix4f {
       ipt.scale(0.5f);
       ptinv = p0;
       isinversion = true;
-
     } else if (haveinversion) {
 
       /*
@@ -522,18 +554,7 @@ class SymmetryOperation extends Matrix4f {
        * triangles:
        * 
        * 
-       *      o 
-       *     / \
-       *    /   \    i'
-       *   /     \ 
-       *  /   i   \
-       *A/_________\A' 
-       * \         / 
-       *  \   j   / 
-       *   \     / 
-       *    \   / 
-       *     \ / 
-       *      x
+       * o / \ / \ i' / \ / i \A/_________\A' \ / \ j / \ / \ / \ / x
        * 
        * Points i and j are at the centers of the triangles. Points A and A' are
        * the frame centers; an operation at point i, j, x, or o is taking A to
@@ -595,8 +616,9 @@ class SymmetryOperation extends Matrix4f {
         if (pt0.distance(p0) > 0.1f) {
           trans = new Vector3f(p0);
           trans.sub(pt0);
-          ftrans.set(trans);
-          uc.toFractional(ftrans);
+          ptemp.set(trans);
+          uc.toFractional(ptemp);
+          ftrans.set(ptemp);
         } else {
           trans = null;
         }
@@ -626,19 +648,25 @@ class SymmetryOperation extends Matrix4f {
       // get rid of unnecessary translations added to keep most operations
       // within cell 555
 
-      ftrans.set(trans);
-      uc.toFractional(ftrans);
-      if (approx(ftrans.x) == 1)
-        ftrans.x = 0;
-      if (approx(ftrans.y) == 1)
-        ftrans.y = 0;
-      if (approx(ftrans.z) == 1)
-        ftrans.z = 0;
+      ptemp.set(trans);
+      uc.toFractional(ptemp);
+      ftrans.set(ptemp);
+      if (approx(ftrans.x) == 1) {
+        trans.x = ftrans.x = 0;
+      }
+      if (approx(ftrans.y) == 1) {
+        trans.y = ftrans.y = 0;
+      }
+      if (approx(ftrans.z) == 1) {
+        trans.z = ftrans.z = 0;
+      }
     }
 
     // time to get the description
 
     String info1 = "";
+    StringBuffer draw1 = new StringBuffer();
+    String drawid;
 
     if (isinversion) {
       ptemp.set(ipt);
@@ -649,6 +677,9 @@ class SymmetryOperation extends Matrix4f {
         info1 = "" + (360 / ang1) + "-bar axis";
       } else if (pitch1 != 0) {
         info1 = "" + (360 / ang1) + "-fold screw axis";
+        ptemp.set(ax1);
+        uc.toFractional(ptemp);
+        info1 += "|translation: " + fcoord(ptemp);
       } else {
         info1 = "C" + (360 / ang1) + " axis";
       }
@@ -685,274 +716,318 @@ class SymmetryOperation extends Matrix4f {
     }
 
     Logger.info(xyz + ": " + info1);
-    if (typeOnly)
-      return new Object[] { xyz, xyzOriginal, info1, null, trans, ipt, pa1,
-          ax1, new Integer(ang1) };
+    String cmds = null;
+    if (!typeOnly) {
+      drawid = "\ndraw ID " + id + "_";
 
-    drawid = "\ndraw ID " + id + "_";
+      // delete previous elements of this user-settable ID
 
-    // delete previous elements of this user-settable ID
+      draw1 = new StringBuffer();
 
-    draw1 = new StringBuffer();
+      Logger.debug("// " + xyzOriginal + "|" + xyz + "\n" + m + "\n" + info1);
 
-    Logger.debug("// " + xyzOriginal + "|" + xyzOriginal + "|" + xyz + "\n"
-        + (Matrix4f) this + "\n" + info1);
+      draw1.append("// " + xyzOriginal + "|" + xyz + "|" + info1 + "\n");
 
-    draw1.append("// " + xyzOriginal + "|" + xyz + "|" + info1 + "\n");
+      draw1.append(drawid).append("* delete");
 
-    draw1.append(drawid).append("* delete");
+      // draw the initial frame
 
-    // draw the initial frame
+      drawLine(draw1, drawid + "frame1X", 0.15f, pt00, pt01, "red");
+      drawLine(draw1, drawid + "frame1Y", 0.15f, pt00, pt02, "green");
+      drawLine(draw1, drawid + "frame1Z", 0.15f, pt00, pt03, "blue");
 
-    drawLine("frame1X", 0.15f, pt00, pt01, "red");
-    drawLine("frame1Y", 0.15f, pt00, pt02, "green");
-    drawLine("frame1Z", 0.15f, pt00, pt03, "blue");
+      // draw the final frame just a bit fatter and shorter, in case they
+      // overlap
 
-    // draw the final frame just a bit fatter and shorter, in case they overlap
+      ptemp.set(p1);
+      ptemp.sub(p0);
+      ptemp.scaleAdd(0.9f, ptemp, p0);
+      drawLine(draw1, drawid + "frame2X", 0.2f, p0, ptemp, "red");
+      ptemp.set(p2);
+      ptemp.sub(p0);
+      ptemp.scaleAdd(0.9f, ptemp, p0);
+      drawLine(draw1, drawid + "frame2Y", 0.2f, p0, ptemp, "green");
+      ptemp.set(p3);
+      ptemp.sub(p0);
+      ptemp.scaleAdd(0.9f, ptemp, p0);
+      drawLine(draw1, drawid + "frame2Z", 0.2f, p0, ptemp, "purple");
 
-    ptemp.set(p1);
-    ptemp.sub(p0);
-    ptemp.scaleAdd(0.9f, ptemp, p0);
-    drawLine("frame2X", 0.2f, p0, ptemp, "red");
-    ptemp.set(p2);
-    ptemp.sub(p0);
-    ptemp.scaleAdd(0.9f, ptemp, p0);
-    drawLine("frame2Y", 0.2f, p0, ptemp, "green");
-    ptemp.set(p3);
-    ptemp.sub(p0);
-    ptemp.scaleAdd(0.9f, ptemp, p0);
-    drawLine("frame2Z", 0.2f, p0, ptemp, "purple");
+      String color;
 
-    String color;
+      if (isrotation) {
 
-    if (isrotation) {
+        Point3f pt1 = new Point3f();
 
-      Point3f pt1 = new Point3f();
+        color = "red";
 
-      color = "red";
+        int ang = ang1;
+        float scale = 1.0f;
+        vtemp.set(ax1);
 
-      int ang = ang1;
-      float scale = 1.0f;
+        // draw the lines associated with a rotation
 
-      // draw the lines associated with a rotation
-
-      if (haveinversion) {
-        pt1.set(pa1);
-        pt1.add(ax1);
-        ang = (int) Measure.computeTorsion(ptinv, pa1, pt1, p0, true);
-        if (pitch1 == 0)
-          pt1.set(ptinv);
-        scale = p0.distance(pt1);
-        draw1.append(drawid).append("rotLine1 ").append(Escape.escape(pt1))
-            .append(Escape.escape(ptinv)).append(" color red");
-        draw1.append(drawid).append("rotLine2 ").append(Escape.escape(pt1))
-            .append(Escape.escape(p0)).append(" color red");
-      } else if (pitch1 == 0) {
-        boolean isSpecial = (pt00.distance(p0) < 0.2f);
-        if (!isSpecial) {
+        if (haveinversion) {
+          pt1.set(pa1);
+          pt1.add(vtemp);
+          ang = (int) Measure.computeTorsion(ptinv, pa1, pt1, p0, true);
+          if (pitch1 == 0)
+            pt1.set(ptinv);
+          scale = p0.distance(pt1);
+          draw1.append(drawid).append("rotLine1 ").append(Escape.escape(pt1))
+              .append(Escape.escape(ptinv)).append(" color red");
+          draw1.append(drawid).append("rotLine2 ").append(Escape.escape(pt1))
+              .append(Escape.escape(p0)).append(" color red");
+        } else if (pitch1 == 0) {
+          boolean isSpecial = (pt00.distance(p0) < 0.2f);
+          if (!isSpecial) {
+            draw1.append(drawid).append("rotLine1 ")
+                .append(Escape.escape(pt00)).append(Escape.escape(pa1)).append(
+                    " color red");
+            draw1.append(drawid).append("rotLine2 ").append(Escape.escape(p0))
+                .append(Escape.escape(pa1)).append(" color red");
+          }
+          vtemp.scale(3);
+          ptemp.set(vtemp);
+          ptemp.scale(-1);
+          draw1.append(drawid).append("rotVector2 vector diameter 0.1 ")
+              .append(Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
+                  " color red");
+          pt1.set(pa1);
+          ptemp.scaleAdd(1, pt1, vtemp);
+          ang = (int) Measure.computeTorsion(pt00, pa1, ptemp, p0, true);
+          if (ang == 0)
+            ang = ang1;
+          if (pitch1 == 0 && pt00.distance(p0) < 0.2)
+            pt1.scaleAdd(0.5f, pt1, vtemp);
+        } else {
+          // screw
+          color = "orange";
           draw1.append(drawid).append("rotLine1 ").append(Escape.escape(pt00))
               .append(Escape.escape(pa1)).append(" color red");
+          ptemp.set(pa1);
+          ptemp.add(vtemp);
           draw1.append(drawid).append("rotLine2 ").append(Escape.escape(p0))
-              .append(Escape.escape(pa1)).append(" color red");
+              .append(Escape.escape(ptemp)).append(" color red");
+          pt1.scaleAdd(0.5f, vtemp, pa1);
+          ang = (int) (Measure.computeTorsion(pt00, pa1, ptemp, p0, true) * 0.9);
         }
-        ax1.scale(3);
-        ptemp.set(ax1);
-        ptemp.scale(-1);
-        draw1.append(drawid).append("rotVector2 vector diameter 0.1 ").append(
-            Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
-            " color red");
-        pt1.set(pa1);
-        ptemp.scaleAdd(1, pt1, ax1);
-        ang = (int) Measure.computeTorsion(pt00, pa1, ptemp, p0, true);
-        if (ang == 0)
-          ang = ang1;
-        if (pitch1 == 0 && pt00.distance(p0) < 0.2)
-          pt1.scaleAdd(0.5f, pt1, ax1);
-      } else {
-        // screw
-        color = "orange";
-        draw1.append(drawid).append("rotLine1 ").append(Escape.escape(pt00))
-            .append(Escape.escape(pa1)).append(" color red");
-        ptemp.set(pa1);
-        ptemp.add(ax1);
-        draw1.append(drawid).append("rotLine2 ").append(Escape.escape(p0))
-            .append(Escape.escape(ptemp)).append(" color red");
-        pt1.scaleAdd(0.5f, ax1, pa1);
-        ang = (int) (Measure.computeTorsion(pt00, pa1, ptemp, p0, true) * 0.9);
+
+        // draw arc arrow
+
+        ptemp.set(pt1);
+        ptemp.add(vtemp);
+        if (haveinversion && pitch1 != 0) {
+          draw1.append(drawid).append("rotRotLine1").append(Escape.escape(pt1))
+              .append(Escape.escape(ptinv)).append(" color red");
+          draw1.append(drawid).append("rotRotLine2").append(Escape.escape(pt1))
+              .append(Escape.escape(p0)).append(" color red");
+        }
+        draw1.append(drawid).append(
+            "rotRotArrow arrow width 0.10 scale " + scale + " arc ").append(
+            Escape.escape(pt1)).append(Escape.escape(ptemp));
+        if (haveinversion)
+          ptemp.set(ptinv);
+        else
+          ptemp.set(pt00);
+        if (ptemp.distance(p0) < 0.1f)
+          ptemp.set((float) Math.random(), (float) Math.random(), (float) Math
+              .random());
+        draw1.append(Escape.escape(ptemp));
+        ptemp.set(0, ang, 0);
+        draw1.append(Escape.escape(ptemp)).append(" color red");
+        // draw the main vector
+
+        draw1.append(drawid).append("rotVector1 vector diameter 0.1 ").append(
+            Escape.escape(pa1)).append(Escape.escape(vtemp)).append("color ")
+            .append(color);
       }
 
-      // draw arc arrow
+      if (ismirrorplane) {
 
-      ptemp.set(pt1);
-      ptemp.add(ax1);
-      if (haveinversion && pitch1 != 0) {
-        draw1.append(drawid).append("rotRotLine1").append(Escape.escape(pt1))
-            .append(Escape.escape(ptinv)).append(" color red");
-        draw1.append(drawid).append("rotRotLine2").append(Escape.escape(pt1))
-            .append(Escape.escape(p0)).append(" color red");
+        // indigo arrow across plane from pt00 to pt0
+
+        if (pt00.distance(pt0) > 0.2)
+          draw1.append(drawid).append("planeVector arrow ").append(
+              Escape.escape(pt00)).append(Escape.escape(pt0)).append(
+              " color indigo");
+
+        // faint inverted frame if trans is not null
+
+        if (trans != null) {
+          ptemp.scaleAdd(-1, p0, p1);
+          ptemp.add(pt0);
+          drawLine(draw1, drawid + "planeFrameX", 0.15f, pt0, ptemp,
+              "translucent red");
+          ptemp.scaleAdd(-1, p0, p2);
+          ptemp.add(pt0);
+          drawLine(draw1, drawid + "planeFrameY", 0.15f, pt0, ptemp,
+              "translucent green");
+          ptemp.scaleAdd(-1, p0, p3);
+          ptemp.add(pt0);
+          drawLine(draw1, drawid + "planeFrameZ", 0.15f, pt0, ptemp,
+              "translucent blue");
+        }
+
+        color = (trans == null ? "green" : "blue");
+
+        // ok, now HERE's a good trick. We use the Marching Cubes
+        // algorithm to find the intersection points of a plane and the unit
+        // cell.
+        // We expand the unit cell by 5% in all directions just so we are
+        // guaranteed to get cutoffs.
+
+        Point3f[] vertices = new Point3f[8];
+        TriangleServer ts = (TriangleServer) Interface
+            .getOptionInterface("jvxl.calc.TriangleData");
+        Point3i[] offsets = ts.getCubeVertexOffsets();
+        for (int i = 0; i < 8; i++) {
+          ptemp.set(offsets[i].x == 0 ? -0.05f : 1.05f,
+              offsets[i].y == 0 ? -0.05f : 1.05f, offsets[i].z == 0 ? -0.05f
+                  : 1.05f);
+          uc.toCartesian(ptemp);
+          vertices[i] = new Point3f(ptemp);
+        }
+        vtemp.set(ax1);
+        vtemp.normalize();
+        // ax + by + cz + d = 0
+        // so if a point is in the plane, then N dot X = -d
+        float w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
+        Point4f plane = new Point4f(vtemp.x, vtemp.y, vtemp.z, w);
+        Vector v = ts.intersectPlane(plane, vertices, 3);
+        // returns triangles and lines
+        if (v != null)
+          for (int i = v.size(); --i >= 0;) {
+            Point3f[] pts = (Point3f[]) v.get(i);
+            draw1.append(drawid).append("planep").append(i).append(
+                Escape.escape(pts[0])).append(Escape.escape(pts[1]));
+            if (pts.length == 3)
+              draw1.append(Escape.escape(pts[2]));
+            draw1.append(" color translucent ").append(color);
+          }
+
+        // and JUST in case that does not work, at least draw a circle
+
+        if (v == null || v.size() == 0) {
+          ptemp.set(pa1);
+          ptemp.add(ax1);
+          draw1.append(drawid).append("planeCircle scale 2.0 circle ").append(
+              Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
+              " color translucent ").append(color).append(" mesh fill");
+        }
       }
-      draw1.append(drawid).append(
-          "rotRotArrow arrow width 0.10 scale " + scale + " arc ").append(
-          Escape.escape(pt1)).append(Escape.escape(ptemp));
-      if (haveinversion)
-        ptemp.set(ptinv);
-      else
-        ptemp.set(pt00);
-      if (ptemp.distance(p0) < 0.1f)
-        ptemp.set((float) Math.random(), (float) Math.random(), (float) Math
-            .random());
-      draw1.append(Escape.escape(ptemp));
-      ptemp.set(0, ang, 0);
-      draw1.append(Escape.escape(ptemp)).append(" color red");
-      // draw the main vector
 
-      draw1.append(drawid).append("rotVector1 vector diameter 0.1 ").append(
-          Escape.escape(pa1)).append(Escape.escape(ax1)).append("color ")
-          .append(color);
-    }
+      if (haveinversion) {
 
-    if (ismirrorplane) {
+        // draw a faint frame showing the inversion
 
-      // indigo arrow across plane from pt00 to pt0
-
-      if (pt00.distance(pt0) > 0.2)
-        draw1.append(drawid).append("planeVector arrow ").append(
-            Escape.escape(pt00)).append(Escape.escape(pt0)).append(
+        draw1.append(drawid).append("invPoint diameter 0.4 ").append(
+            Escape.escape(ipt));
+        draw1.append(drawid).append("invArrow arrow ").append(
+            Escape.escape(pt00)).append(Escape.escape(ptinv)).append(
             " color indigo");
+        if (!isinversion) {
+          ptemp.set(ptinv);
+          ptemp.add(pt00);
+          ptemp.sub(pt01);
+          drawLine(draw1, drawid + "invFrameX", 0.15f, ptinv, ptemp,
+              "translucent red");
+          ptemp.set(ptinv);
+          ptemp.add(pt00);
+          ptemp.sub(pt02);
+          drawLine(draw1, drawid + "invFrameY", 0.15f, ptinv, ptemp,
+              "translucent green");
+          ptemp.set(ptinv);
+          ptemp.add(pt00);
+          ptemp.sub(pt03);
+          drawLine(draw1, drawid + "invFrameZ", 0.15f, ptinv, ptemp,
+              "translucent blue");
+        }
+      }
 
-      // faint inverted frame if trans is not null
+      // and display translation if still not {0 0 0}
 
       if (trans != null) {
-        ptemp.scaleAdd(-1, p0, p1);
-        ptemp.add(pt0);
-        drawLine("planeFrameX", 0.15f, pt0, ptemp, "translucent red");
-        ptemp.scaleAdd(-1, p0, p2);
-        ptemp.add(pt0);
-        drawLine("planeFrameY", 0.15f, pt0, ptemp, "translucent green");
-        ptemp.scaleAdd(-1, p0, p3);
-        ptemp.add(pt0);
-        drawLine("planeFrameZ", 0.15f, pt0, ptemp, "translucent blue");
+        if (pt0 == null)
+          pt0 = new Point3f(pt00);
+        draw1.append(drawid).append("transVector vector ").append(
+            Escape.escape(pt0)).append(Escape.escape(trans));
       }
 
-      color = (trans == null ? "green" : "blue");
+      // color the targeted atoms opaque and add another frame if necessary
 
-      // ok, now HERE's a good trick. We use the Marching Cubes
-      // algorithm to find the intersection points of a plane and the unit cell.
-      // We expand the unit cell by 5% in all directions just so we are
-      // guaranteed to get cutoffs.
+      draw1.append("\nvar pt00 = " + Escape.escape(pt00));
+      draw1.append("\nvar p0 = " + Escape.escape(p0));
+      draw1.append("\nif (within(0.2,p0).length == 0) {");
+      draw1.append("\nvar set2 = within(0.2,p0.uxyz.xyz)");
+      draw1.append("\nif (set2) {");
+      draw1.append(drawid)
+          .append("cellOffsetVector arrow @p0 @set2 color grey");
+      draw1.append(drawid).append(
+          "offsetFrameX diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
+          Escape.escape(v01)).append("*0.9} color red");
+      draw1.append(drawid).append(
+          "offsetFrameY diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
+          Escape.escape(v02)).append("*0.9} color green");
+      draw1.append(drawid).append(
+          "offsetFrameZ diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
+          Escape.escape(v03)).append("*0.9} color purple");
+      draw1.append("\n}}\n");
 
-      Point3f[] vertices = new Point3f[8];
-      TriangleServer ts = (TriangleServer) Interface
-          .getOptionInterface("jvxl.calc.TriangleData");
-      Point3i[] offsets = ts.getCubeVertexOffsets();
-      for (int i = 0; i < 8; i++) {
-        ptemp.set(offsets[i].x == 0 ? -0.05f : 1.05f,
-            offsets[i].y == 0 ? -0.05f : 1.05f, offsets[i].z == 0 ? -0.05f
-                : 1.05f);
-        uc.toCartesian(ptemp);
-        vertices[i] = new Point3f(ptemp);
+      cmds = draw1.toString();
+      draw1 = null;
+      drawid = null;
+    }
+    if (trans == null)
+      ftrans = null;
+    if (isrotation) {
+      if (haveinversion) {
+      } else if (pitch1 == 0) {
+      } else {
+        // screw
+        trans = new Vector3f(ax1);
+        ptemp.set(trans);
+        uc.toFractional(ptemp);
+        ftrans = new Vector3f(ptemp);
       }
-      vtemp.set(ax1);
-      vtemp.normalize();
-      // ax + by + cz + d = 0
-      // so if a point is in the plane, then N dot X = -d
-      float w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
-      Point4f plane = new Point4f(vtemp.x, vtemp.y, vtemp.z, w);
-      Vector v = ts.intersectPlane(plane, vertices, 3);
-      // returns triangles and lines
-      if (v != null)
-        for (int i = v.size(); --i >= 0;) {
-          Point3f[] pts = (Point3f[]) v.get(i);
-          draw1.append(drawid).append("planep").append(i).append(
-              Escape.escape(pts[0])).append(Escape.escape(pts[1]));
-          if (pts.length == 3)
-            draw1.append(Escape.escape(pts[2]));
-          draw1.append(" color translucent ").append(color);
-        }
-
-      // and JUST in case that does not work, at least draw a circle
-
-      if (v == null || v.size() == 0) {
-        ptemp.set(pa1);
-        ptemp.add(ax1);
-        draw1.append(drawid).append("planeCircle scale 2.0 circle ").append(
-            Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
-            " color translucent ").append(color).append(" mesh fill");
+      if (haveinversion && pitch1 != 0) {
       }
     }
-
+    if (ismirrorplane) {
+      if (trans != null) {
+      }
+      ang1 = 0;
+    }
     if (haveinversion) {
-
-      // draw a faint frame showing the inversion
-
-      draw1.append(drawid).append("invPoint diameter 0.4 ").append(
-          Escape.escape(ipt));
-      draw1.append(drawid).append("invArrow arrow ")
-          .append(Escape.escape(pt00)).append(Escape.escape(ptinv)).append(
-              " color indigo");
-      if (!isinversion) {
-        ptemp.set(ptinv);
-        ptemp.add(pt00);
-        ptemp.sub(pt01);
-        drawLine("invFrameX", 0.15f, ptinv, ptemp, "translucent red");
-        ptemp.set(ptinv);
-        ptemp.add(pt00);
-        ptemp.sub(pt02);
-        drawLine("invFrameY", 0.15f, ptinv, ptemp, "translucent green");
-        ptemp.set(ptinv);
-        ptemp.add(pt00);
-        ptemp.sub(pt03);
-        drawLine("invFrameZ", 0.15f, ptinv, ptemp, "translucent blue");
+      if (isinversion) {
+        pa1 = null;
+        ax1 = null;
+        trans = null;
+        ftrans = null;
       }
+    } else if (istranslation) {
+      pa1 = null;
+      ax1 = null;
     }
-
+ 
     // and display translation if still not {0 0 0}
-
-    if (trans != null) {
-      if (pt0 == null)
-        pt0 = new Point3f(pt00);
-      draw1.append(drawid).append("transVector vector ").append(
-          Escape.escape(pt0)).append(Escape.escape(trans));
-    }
-
-    // color the targeted atoms opaque and add another frame if necessary
-
-    draw1.append("\nvar pt00 = " + Escape.escape(pt00));
-    draw1.append("\nvar p0 = " + Escape.escape(p0));
-    draw1.append("\nif (within(0.2,p0).length == 0) {");
-    draw1.append("\nvar set2 = within(0.2,p0.uxyz.xyz)");
-    draw1.append("\nif (set2) {");
-    draw1.append(drawid).append("cellOffsetVector arrow @p0 @set2 color grey");
-    draw1.append(drawid).append(
-        "offsetFrameX diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
-        Escape.escape(v01)).append("*0.9} color red");
-    draw1.append(drawid).append(
-        "offsetFrameY diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
-        Escape.escape(v02)).append("*0.9} color green");
-    draw1.append(drawid).append(
-        "offsetFrameZ diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
-        Escape.escape(v03)).append("*0.9} color purple");
-    draw1.append("\n}}\n");
-
-    String cmds = draw1.toString();
-    draw1 = null;
-    drawid = null;
-    return new Object[] { xyz, xyzOriginal, info1, cmds, ftrans, ipt, pa1, ax1,
-        new Integer(ang1) };
+    if (ax1 != null)
+      ax1.normalize();
+    return new Object[] { xyz, xyzOriginal, info1, cmds, ftrans, trans, ipt,
+        pa1, ax1, new Integer(ang1) };
   }
 
-  private void drawLine(String id, float diameter, Point3f pt0, Point3f pt1,
+  private static void drawLine(StringBuffer s, String id, float diameter, Point3f pt0, Point3f pt1,
                         String color) {
-    draw1.append(drawid).append(id).append(" diameter ").append(diameter)
+    s.append(id).append(" diameter ").append(diameter)
         .append(Escape.escape(pt0)).append(Escape.escape(pt1))
         .append(" color ").append(color);
   }
 
-  private String fcoord(Tuple3f p) {
+  private static String fcoord(Tuple3f p) {
     return fc(p.x) + " " + fc(p.y) + " " + fc(p.z);
   }
 
-  private String fc(float x) {
+  private static String fc(float x) {
     float xabs = Math.abs(x);
     int x24 = (int) approx(xabs * 24);
     if (x24%8 != 0)

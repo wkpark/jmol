@@ -657,7 +657,7 @@ class ScriptMathProcessor {
     case Token.substructure:
       return evaluateSubstructure(args);
     case Token.symop:
-      return evaluateSymop(args);
+      return evaluateSymop(args, op.tok == Token.propselector);
     }
     return false;
   }
@@ -672,21 +672,23 @@ class ScriptMathProcessor {
     return addX(viewer.getVolume((BitSet)x1.value, type));
   }
 
-  private boolean evaluateSymop(ScriptVariable[] args) throws ScriptException {
+  private boolean evaluateSymop(ScriptVariable[] args, boolean haveBitSet) throws ScriptException {
     if (args.length == 0)
       return false;
-    ScriptVariable x1 = getX();
+    ScriptVariable x1 = (haveBitSet ? getX() : null);
     if (isSyntaxCheck)
       return addX(new Point3f());
-    if (x1.tok != Token.bitset)
+    if (x1 != null && x1.tok != Token.bitset)
       return false;
+    BitSet bs = (x1 == null ? viewer.getModelAtomBitSet(-1, false) : (BitSet) x1.value);
     String xyz = (args[0].tok == Token.string ? ScriptVariable.sValue(args[0]) : null);
     int iOp = (xyz == null ? ScriptVariable.iValue(args[0]) : 0);
     Point3f pt = (args.length > 1 ? ptValue(args[1]) : null);
-    if (args.length < 3)
-      return addX((Point3f) viewer.getSymmetryInfo((BitSet) x1.value, xyz, iOp, pt, null, Token.point));
-    return addX((String) viewer.getSymmetryInfo((BitSet) x1.value, xyz, iOp, pt, 
-          ScriptVariable.sValue(args[2]), Token.draw));
+    if (args.length == 2)
+      return addX((Point3f) viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, Token.point));
+    String desc = (args.length == 1 ? "" : ScriptVariable.sValue(args[2]));
+    return addX(viewer.getSymmetryInfo(bs, xyz, iOp, pt, 
+          desc, desc.length() == 0 ? Token.list : Token.draw));
   }
 
   private boolean evaluateBin(ScriptVariable[] args) throws ScriptException {

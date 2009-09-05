@@ -61,6 +61,8 @@ public class Escape {
   }
 
   public static String escape(Tuple3f xyz) {
+    if (xyz == null)
+      return "null";
     return "{" + xyz.x + " " + xyz.y + " " + xyz.z + "}";
   }
 

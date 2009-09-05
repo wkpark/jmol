@@ -2888,7 +2888,20 @@ abstract public class ModelCollection extends BondCollection {
   }
   
   public Object getSymmetryInfo(BitSet bsAtoms, String xyz, int op, Point3f pt, String id, int type) {
-    Object ret = (type == Token.point ? (Object) new Point3f() : "");
+    Object ret;
+    switch (type) {
+    case Token.point:
+      ret = new Point3f();
+      break;
+    case Token.array:
+      ret = new Object[]{};
+      break;
+    case Token.list:
+      ret = new String[] {};
+      break;
+    default:
+      ret = "";
+    }
     int iModel = -1;
     if (bsAtoms == null) {
       iModel = viewer.getCurrentModelIndex();
@@ -2924,8 +2937,40 @@ abstract public class ModelCollection extends BondCollection {
       return sympt;
     }
     // null id means "text info only" but here we want the draw commands
-    return (String)symTemp.getSymmetryOperationDescription(iSym, uc, pt, 
-        (id == null ? "sym" : id))[3];
+    Object[] info = symTemp.getSymmetryOperationDescription(iSym, uc, pt, 
+        (id == null ? "sym" : id));
+    /*
+     *  xyz (Jones-Faithful calculated from matrix)
+     *  xyzOriginal (Provided by operation) 
+     *  description ("C2 axis", for example) 
+     *  draw commands 
+     *  translation vector (fractional)  
+     *  translation vector (cartesian)
+     *  inversion point 
+     *  axis point 
+     *  axis vector
+     *  angle of rotation
+     */
+    if (type == Token.array)
+      return info;
+    if (type == Token.draw)
+      return (String)info[3];
+    if (type == Token.list) {
+      String[] sinfo = new String[] {
+        (String) info[0],
+        (String) info[1],
+        (String) info[2],
+        // skipping DRAW commands here
+        Escape.escape((Vector3f)info[4]),
+        Escape.escape((Vector3f)info[5]),
+        Escape.escape((Point3f)info[6]),
+        Escape.escape((Point3f)info[7]),
+        Escape.escape((Vector3f)info[8]),
+        "" + info[9]
+      };
+      return sinfo;
+    }
+    return (String) info[2]; // description only
   }
 
   private void getSymTemp(boolean forceNew) {

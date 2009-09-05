@@ -219,7 +219,7 @@ class HallInfo {
     }
     
    String getXYZ(boolean allPositive) {
-     return SymmetryOperation.getXYZFromMatrix(seitzMatrix12ths, allPositive);
+     return SymmetryOperation.getXYZFromMatrix(seitzMatrix12ths, false, allPositive, true);
    }
    
     private void getRotationInfo(String code, int prevOrder, char prevAxisType) {

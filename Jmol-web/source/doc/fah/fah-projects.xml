@@ -5207,7 +5207,7 @@
   <fah_proj number="2682" name="p2682_" public="y"
     server="171.67.108.22" preferred="4" deadline="6"
     credit="25403" frames="100" code="GC" contact="kasson"/>
-  <fah_proj number="2683" name="p2683_" public="y"
+  <fah_proj number="2683" name="p2683_Translocon_GLX2" public="y" file="xyz"
     server="171.67.108.22" preferred="4" deadline="6"
     credit="25403" frames="100" code="GC" contact="kasson"/>
 

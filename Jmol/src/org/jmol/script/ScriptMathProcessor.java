@@ -1789,14 +1789,35 @@ class ScriptMathProcessor {
       putX(x2); // reverse getX()
       return true;
     }
-
-    if (op.tok == Token.opNot)
-      return (isSyntaxCheck ? addX(true) : x2.tok == Token.point4f ? // quaternion
-      addX((new Quaternion((Point4f) x2.value)).inv().toPoint4f())
-          : x2.tok == Token.bitset ? addX(BitSetUtil.copyInvert(ScriptVariable
+    if (op.tok == Token.opNot) {
+      if (isSyntaxCheck) 
+        return addX(true);
+      switch (x2.tok) {
+      case Token.point4f:  // quaternion
+        return addX((new Quaternion((Point4f) x2.value)).inv().toPoint4f());
+      case Token.matrix3f:
+        Matrix3f m = new Matrix3f();
+        m.set((Matrix3f)x2.value);
+        m.invert();
+        return addX(m);
+      case Token.matrix4f:
+        Matrix4f m4 = new Matrix4f();
+        Matrix4f m4b = (Matrix4f) x2.value;
+        m4.set(m4b);
+        m4.m03 = m4.m13 = m4.m23 = 0;
+        m4.invert();
+        m4.m03 = -m4b.m03;
+        m4.m13 = -m4b.m13;
+        m4.m23 = -m4b.m23;
+        return addX(m4);
+      case Token.bitset:
+        return addX(BitSetUtil.copyInvert(ScriptVariable
               .bsSelect(x2), (x2.value instanceof BondSet ? viewer
-              .getBondCount() : viewer.getAtomCount()))) : addX(!ScriptVariable
-              .bValue(x2)));
+              .getBondCount() : viewer.getAtomCount())));
+      default:
+        return addX(!ScriptVariable.bValue(x2));
+      }
+    }
     int iv = op.intValue & ~Token.minmaxmask;
     if (op.tok == Token.propselector) {
       switch (iv) {
@@ -2160,6 +2181,7 @@ class ScriptMathProcessor {
         // q%-4 Matrix column 1
         // q%-5 Matrix column 2
         // q%-6 AxisAngle format
+        // q%-9 Matrix format
         case 0:
           return addX(q.w);
         case 1:
@@ -2183,6 +2205,8 @@ class ScriptMathProcessor {
         case -6:
           AxisAngle4f ax = (new Quaternion(q)).toAxisAngle4f();
           return addX(new Point4f(ax.x, ax.y, ax.z, (float) (ax.angle * 180 / Math.PI)));
+        case -9:
+          return addX((new Quaternion(q)).getMatrix());
         default:
           return addX(q);
         }

@@ -3065,12 +3065,26 @@ public class ScriptEvaluator {
         int tokValue = code[pc].tok;
         comparisonValue = code[pc].intValue;
         float comparisonFloat = Float.NaN;
-        if (val instanceof String) {
+        if (val instanceof Point3f) {
+          if (tokWhat == Token.color) {
+            comparisonValue = colorPtToInt((Point3f) val);
+            tokValue = Token.integer;
+            isIntProperty = true;
+          }
+        } else if (val instanceof String) {
           if (tokWhat == Token.color) {
             comparisonValue = Graphics3D.getArgbFromString((String) val);
             if (comparisonValue == 0 && tokValue == Token.identifier) {
               val = getStringParameter((String) val, true);
-              comparisonValue = Graphics3D.getArgbFromString((String) val);
+              if (((String)val).startsWith("{")) {
+                val = Escape.unescapePoint((String) val);
+                if (val instanceof Point3f)
+                  comparisonValue = colorPtToInt((Point3f) val);
+                else
+                  comparisonValue = 0;
+              } else {
+                comparisonValue = Graphics3D.getArgbFromString((String) val);
+              }
             }
             tokValue = Token.integer;
             isIntProperty = true;

@@ -37,6 +37,7 @@ import javax.vecmath.Matrix3f;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Viewer;
 
@@ -2672,12 +2673,11 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   /**
-   * accepts [xRRGGBB] or [0xRRGGBB] or [0xFFRRGGBB] 
-   * or #RRGGBB or [red,green,blue]
-   * or a valid JavaScript color
+   * accepts [xRRGGBB] or [0xRRGGBB] or [0xFFRRGGBB] or #RRGGBB or
+   * [red,green,blue] or a valid JavaScript color
    * 
    * @param strColor
-   * @return 0 if invalid or integer color 
+   * @return 0 if invalid or integer color
    */
   public static int getArgbFromString(String strColor) {
     int len = 0;
@@ -2687,17 +2687,16 @@ final public class Graphics3D implements JmolRendererInterface {
     if (strColor.charAt(0) == '[' && strColor.charAt(len - 1) == ']') {
       String check;
       if (strColor.indexOf(",") >= 0) {
-        String[] tokens = TextFormat.split(strColor.substring(1, strColor.length() - 1), ",");
+        String[] tokens = TextFormat.split(strColor.substring(1, strColor
+            .length() - 1), ",");
         if (tokens.length != 3)
           return 0;
-        try {
-          red = Integer.parseInt(tokens[0]);
-          grn = Integer.parseInt(tokens[1]);
-          blu = Integer.parseInt(tokens[2]);
-          return (0xFF000000 | (red & 0xFF) << 16 | (grn & 0xFF) << 8 | (blu & 0xFF));
-        } catch (NumberFormatException e) {
-          return 0;
-        }
+        red = Parser.parseInt(tokens[0]);
+        grn = Parser.parseInt(tokens[1]);
+        blu = Parser.parseInt(tokens[2]);
+        return (red < 0 || grn < 0 || blu < 0 || red > 255 || grn > 255
+            || blu > 255 ? 0 : 0xFF000000 | (red & 0xFF) << 16
+            | (grn & 0xFF) << 8 | (blu & 0xFF));
       }
       switch (len) {
       case 9:
@@ -2724,8 +2723,8 @@ final public class Graphics3D implements JmolRendererInterface {
         return 0;
       }
     }
-    Integer boxedArgb = 
-        (Integer) mapJavaScriptColors.get(strColor.toLowerCase());
+    Integer boxedArgb = (Integer) mapJavaScriptColors.get(strColor
+        .toLowerCase());
     return (boxedArgb == null ? 0 : boxedArgb.intValue());
   }
 

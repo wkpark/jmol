@@ -31,6 +31,8 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.vecmath.AxisAngle4f;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
@@ -1978,6 +1980,10 @@ public class ScriptEvaluator {
           fixed[j] = new Token(Token.point3f, v);
         } else if (v instanceof Point4f) {
           fixed[j] = new Token(Token.point4f, v);
+        } else if (v instanceof Matrix3f) {
+          fixed[j] = new Token(Token.matrix3f, v);
+        } else if (v instanceof Matrix4f) {
+          fixed[j] = new Token(Token.matrix4f, v);
         } else if (v instanceof String[]) {
           fixed[j] = new Token(Token.string, Escape.escape((String[])v));
         } else {
@@ -11232,9 +11238,14 @@ public class ScriptEvaluator {
       case Token.symop:
         String xyz = null;
         int iSym = 0;
-        if (tokAt(++i) == Token.string) {
+        switch (tokAt(++i)) {
+        case Token.string:
           xyz = stringParameter(i);
-        } else {
+          break;
+        case Token.matrix4f:
+          xyz = ScriptVariable.sValue(getToken(i));
+          break;
+        default:
           iSym = intParameter(i);
         }
         center = (i + 1 == statementLength ? null : centerParameter(++i));

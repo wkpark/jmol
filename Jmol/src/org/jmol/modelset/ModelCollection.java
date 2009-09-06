@@ -2942,8 +2942,10 @@ abstract public class ModelCollection extends BondCollection {
      */
     if (type == Token.array)
       return info;
+    if (type == Token.matrix4f)
+      return info[10];
     if (type == Token.draw)
-      return (String)info[3];
+      return info[3];
     if (type == Token.list) {
       String[] sinfo = new String[] {
         (String) info[0],

@@ -150,25 +150,24 @@ class SymmetryOperation extends Matrix4f {
     String strOut = "";
     String strT;
     int rowPt = -1;
-    temp[15] = 1;
     float decimalMultiplier = 1f;
-    if (xyz.indexOf("xyz matrix: ") == 0) {
+    if (xyz.indexOf("xyz matrix:") == 0) {
       /* note: these terms must in unit cell fractional coordinates!
-       * CML matrix is in fractional coordinates, but do not take into accout
+       * CASTEP CML matrix is in fractional coordinates, but do not take into accout
        * hexagonal systems. Thus, in wurtzite.cml, for P 6c 2'c:
        *
-       * xyz matrix: 
+       * "transform3": 
        * 
        * -5.000000000000e-1  8.660254037844e-1  0.000000000000e0   0.000000000000e0 
        * -8.660254037844e-1 -5.000000000000e-1  0.000000000000e0   0.000000000000e0 
        *  0.000000000000e0   0.000000000000e0   1.000000000000e0   0.000000000000e0 
        *  0.000000000000e0   0.000000000000e0   0.000000000000e0   1.000000000000e0
        *
-       * I see that these are "fractional coordinates" but they do not take into 
-       * account the real xy transform, which is something like y,-x,z here.
+       * These are transformations of the STANDARD xyz axes, not the unit cell. 
+       * But, then, what coordinate would you feed this? Fractional coordinates of what?
+       * The real transform is something like x-y,x,z here.
        * 
-       * I think it's a bug in the CML, actually. -- Bob Hanson 9/2008
-       * 
+       * The coordinates we are using here 
        */
       this.xyz = xyz;
       Parser.parseFloatArray(xyz, null, temp);
@@ -179,12 +178,27 @@ class SymmetryOperation extends Matrix4f {
         if (Math.abs(v) < 0.00001f)
           v = 0;
         if (i % 4 == 3)
-          v = normalizeTwelfths((v < 0 ? -1 : 1) * Math.round(Math.abs(v)));
+          v = normalizeTwelfths((v < 0 ? -1 : 1) * Math.round(Math.abs(v * 12)));
         temp[i] = v;
       }
+      temp[15] = 1;
+      set(temp);
+      this.xyz = getXYZFromMatrix(this, true, false, false);
       return true;
     }
-    
+    if (xyz.indexOf("[[") == 0) {
+      xyz = xyz.replace('[',' ').replace(']',' ').replace(',',' ');
+      Parser.parseFloatArray(xyz, null, temp);
+      for (int i = 0; i < 16; i++) {
+        if (Float.isNaN(temp[i]))
+          return false;
+      }
+      set(temp);
+      isFinalized = true;
+      this.xyz = getXYZFromMatrix(this, false, false, false);
+      System.out.println("SymmetryOperation: " + xyz + "\n" + (Matrix4f)this + "\n" + this.xyz);
+      return true;
+    }
     xyz += ",";
     for (int i = 0; i < xyz.length(); i++) {
       ch = xyz.charAt(i);
@@ -236,6 +250,7 @@ class SymmetryOperation extends Matrix4f {
         strOut += (strOut == "" ? "" : ",") + strT;
         //note: when ptLatt[3] = -1, ptLatt[rowPt] MUST be 0.
         if (rowPt == 2) {
+          temp[15] = 1;    
           set(temp);
           this.xyz = strOut;
           if (Logger.debugging)
@@ -314,11 +329,13 @@ class SymmetryOperation extends Matrix4f {
 
   private final static String twelfthsOf(float n12ths) {
     String str = "";
-    if (n12ths < 0) {
-      str = "-";
-      n12ths = -n12ths;
+    int i12ths = Math.round(n12ths);
+    if (i12ths < 0) {
+      i12ths = -i12ths;
+      if (i12ths % 12 != 0)
+        str = "-";
     }
-    return str + twelfths[(Math.round(n12ths)) % 12];  
+    return str + twelfths[i12ths % 12];  
   }
   
   private final static String[] twelfths = { "0", "1/12", "1/6", "1/4", "1/3",
@@ -435,7 +452,7 @@ class SymmetryOperation extends Matrix4f {
     Vector3f ftrans = new Vector3f();
     String xyz = getXYZFromMatrix(m, false, false, false);
     boolean typeOnly = (id == null);
-    if (pt00 == null)
+    if (pt00 == null || Float.isNaN(pt00.x))
       pt00 = new Point3f();
 
     Point3f pt01 = new Point3f(1, 0, 0);
@@ -723,11 +740,7 @@ class SymmetryOperation extends Matrix4f {
       // delete previous elements of this user-settable ID
 
       draw1 = new StringBuffer();
-
-      Logger.debug("// " + xyzOriginal + "|" + xyz + "\n" + m + "\n" + info1);
-
       draw1.append("// " + xyzOriginal + "|" + xyz + "|" + info1 + "\n");
-
       draw1.append(drawid).append("* delete");
 
       // draw the initial frame
@@ -770,8 +783,15 @@ class SymmetryOperation extends Matrix4f {
           pt1.set(pa1);
           pt1.add(vtemp);
           ang = (int) Measure.computeTorsion(ptinv, pa1, pt1, p0, true);
-          if (pitch1 == 0)
-            pt1.set(ptinv);
+          if (pitch1 == 0) {
+            pt1.set(ipt);
+            vtemp.scale(3);
+            ptemp.set(vtemp);
+            ptemp.scale(-1);
+            draw1.append(drawid).append("rotVector2 vector diameter 0.1 ")
+                .append(Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
+                    " color red");
+          }
           scale = p0.distance(pt1);
           draw1.append(drawid).append("rotLine1 ").append(Escape.escape(pt1))
               .append(Escape.escape(ptinv)).append(" color red");

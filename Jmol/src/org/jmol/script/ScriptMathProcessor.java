@@ -685,14 +685,24 @@ class ScriptMathProcessor {
     BitSet bs = (x1 != null ? (BitSet) x1.value 
         : args.length > 2 && args[1].tok == Token.bitset ? (BitSet) args[1].value 
         : viewer.getModelAtomBitSet(-1, false));
-    String xyz = (args[0].tok == Token.string ? ScriptVariable.sValue(args[0]) : null);
+    String xyz;
+    switch (args[0].tok) {
+    case Token.string:
+      xyz = ScriptVariable.sValue(args[0]);
+      break;
+    case Token.matrix4f:
+      xyz = args[0].escape();
+      break;
+    default:
+      xyz = null;
+    }
     int iOp = (xyz == null ? ScriptVariable.iValue(args[0]) : 0);
     Point3f pt = (args.length > 1 ? ptValue(args[1]) : null);
-    if (args.length == 2)
+    if (args.length == 2 && !Float.isNaN(pt.x))
       return addX(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, Token.point));
-    String desc = (args.length == 1 ? "array" : ScriptVariable.sValue(args[2]));
+    String desc = (args.length == 1 ? "" : ScriptVariable.sValue(args[args.length - 1]));
     return addX(viewer.getSymmetryInfo(bs, xyz, iOp, pt, 
-          desc, desc.equalsIgnoreCase("array") ? Token.list : Token.draw));
+          desc, args.length == 1 ? Token.matrix4f : desc.equalsIgnoreCase("array") ? Token.list : Token.draw));
   }
 
   private boolean evaluateBin(ScriptVariable[] args) throws ScriptException {
@@ -2081,6 +2091,10 @@ class ScriptMathProcessor {
           pt = new Point3f((Point3f) x2.value);
           m4.transform(pt);
           return addX(pt);
+        case Token.matrix4f:
+          Matrix4f m4b = new Matrix4f();
+          m4b.mul(m4, (Matrix4f) x2.value);
+          return addX(m4b);
         default:
           return addX("NaN");
         }

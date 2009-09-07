@@ -626,7 +626,6 @@ class StatusManager {
   /**
    * 
    * @param aFileName 
-   * @param fileName
    * @param type
    * @param text_or_bytes
    * @param quality

@@ -679,16 +679,18 @@ class SymmetryOperation extends Matrix4f {
 
       ptemp.set(trans);
       uc.toFractional(ptemp);
+      if (approx(ptemp.x) == 1) {
+        ptemp.x = 0;
+      }
+      if (approx(ptemp.y) == 1) {
+        ptemp.y = 0;
+      }
+      if (approx(ptemp.z) == 1) {
+        ptemp.z = 0;
+      }
       ftrans.set(ptemp);
-      if (approx(ftrans.x) == 1) {
-        trans.x = ftrans.x = 0;
-      }
-      if (approx(ftrans.y) == 1) {
-        trans.y = ftrans.y = 0;
-      }
-      if (approx(ftrans.z) == 1) {
-        trans.z = ftrans.z = 0;
-      }
+      uc.toCartesian(ptemp);
+      trans.set(ptemp);
     }
 
     // fix angle based on direction of axis

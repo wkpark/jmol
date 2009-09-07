@@ -117,7 +117,7 @@ class ScriptMathProcessor {
         if (x == null)
           x = xStack[0];
         if (x.tok == Token.bitset || x.tok == Token.list
-            || x.tok == Token.string)
+            || x.tok == Token.string || x.tok == Token.matrix3f || x.tok == Token.matrix4f)
           x = ScriptVariable.selectItem(x);
         return x;
       }
@@ -539,7 +539,10 @@ class ScriptMathProcessor {
     case Token.bitset:
     case Token.list:
     case Token.string:
+    case Token.matrix3f:
+    case Token.matrix4f:
       xStack[xPt] = ScriptVariable.selectItem(var, i);
+      break;
     }
     return true;
   }
@@ -1313,6 +1316,7 @@ class ScriptMathProcessor {
 
   private boolean evaluateMath(ScriptVariable[] args, int tok) {
     if (tok == Token.quaternion || tok == Token.axisangle) {
+      // quaternion(matrix)
       // quaternion(vector, theta)
       // quaternion(q0, q1, q2, q3)
       // quaternion("{x, y, z, w"})
@@ -1383,7 +1387,9 @@ class ScriptMathProcessor {
               ScriptVariable.fValue(args[3]));
         break;
       default:
-        if (args[0].tok == Token.point4f) {
+        if (args[0].tok == Token.matrix3f) {
+          q = new Quaternion((Matrix3f)args[0].value);
+        } else if (args[0].tok == Token.point4f) {
           p4 = (Point4f) args[0].value;
         } else if (args[0].tok == Token.bitset && tok == Token.quaternion) {
           q = viewer.getAtomQuaternion(BitSetUtil.firstSetBit((BitSet) args[0].value));
@@ -1810,7 +1816,7 @@ class ScriptMathProcessor {
 
     // unary:
 
-    if (x2.tok == Token.list)
+    if (x2.tok == Token.list || x2.tok == Token.matrix3f || x2.tok == Token.matrix4f)
       x2 = ScriptVariable.selectItem(x2);
 
     if (op.tok == Token.minusMinus || op.tok == Token.plusPlus) {
@@ -1833,13 +1839,8 @@ class ScriptMathProcessor {
         return addX(m);
       case Token.matrix4f:
         Matrix4f m4 = new Matrix4f();
-        Matrix4f m4b = (Matrix4f) x2.value;
-        m4.set(m4b);
-        m4.m03 = m4.m13 = m4.m23 = 0;
+        m4.set((Matrix4f)x2.value);
         m4.invert();
-        m4.m03 = -m4b.m03;
-        m4.m13 = -m4b.m13;
-        m4.m23 = -m4b.m23;
         return addX(m4);
       case Token.bitset:
         return addX(BitSetUtil.copyInvert(ScriptVariable

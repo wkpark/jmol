@@ -272,7 +272,7 @@ public class Escape {
     if (strMatrix == null || strMatrix.length() == 0)
       return strMatrix;
     String str = strMatrix.replace('\n', ' ').trim();
-    if (!str.startsWith("[[") || !str.endsWith("]]"))
+    if (str.lastIndexOf("[[") != 0 || str.indexOf("]]") != str.length() - 2)
       return strMatrix;
     float[] points = new float[16];
     str = str.substring(2, str.length() - 2).replace('[',' ').replace(']',',');

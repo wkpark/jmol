@@ -193,8 +193,6 @@ public class ScriptVariable extends Token {
         return (ScriptVariable) x;
       return new ScriptVariable(string, x);
     }
-    if (x instanceof String)
-      return new ScriptVariable(string, x);
     if (x instanceof Point3f)
       return new ScriptVariable(point3f, x);
     if (x instanceof Vector3f)
@@ -583,8 +581,16 @@ public class ScriptVariable extends Token {
   }
 
   public static Token selectItem(Token tokenIn, int i2) {
-    if (tokenIn.tok != bitset && tokenIn.tok != list && tokenIn.tok != string)
+    switch (tokenIn.tok) {
+    case matrix3f:
+    case matrix4f:
+    case bitset:
+    case list:
+    case string:
+      break;
+    default:
       return tokenIn;
+    }
 
     // negative number is a count from the end
 
@@ -603,8 +609,7 @@ public class ScriptVariable extends Token {
       return new ScriptVariable(tokenIn.tok, i2, tokenIn.value);
     }
     int len = 0;
-    boolean isInputSelected = (tokenIn instanceof ScriptVariable 
-        && ((ScriptVariable) tokenIn).index != Integer.MAX_VALUE);
+    boolean isInputSelected = (tokenIn instanceof ScriptVariable && ((ScriptVariable) tokenIn).index != Integer.MAX_VALUE);
     ScriptVariable tokenOut = new ScriptVariable(tokenIn.tok, Integer.MAX_VALUE);
 
     switch (tokenIn.tok) {
@@ -627,6 +632,49 @@ public class ScriptVariable extends Token {
     case string:
       s = (String) tokenIn.value;
       len = s.length();
+      break;
+    case matrix3f:
+      len = -3;
+      break;
+    case matrix4f:
+      len = -4;
+      break;
+    }
+
+    if (len < 0) {
+      // matrix mode [1][3] or [13]
+      len = -len;
+      if (i1 > 0 && Math.abs(i1) > len) {
+        int col = i1 % 10;
+        int row = (i1 - col) / 10;
+        if (col > 0 && col <= len && row <= len) {
+          if (tokenIn.tok == matrix3f)
+            return new ScriptVariable(decimal, new Float(
+                ((Matrix3f) tokenIn.value).getElement(row - 1, col - 1)));
+          return new ScriptVariable(decimal, new Float(
+              ((Matrix4f) tokenIn.value).getElement(row - 1, col - 1)));
+        }
+        return new ScriptVariable(string, "");
+      }
+      if (Math.abs(i1) > len)
+        return new ScriptVariable(string, "");
+      float[] data = new float[len];
+      if (len == 3) {
+        if (i1 < 0)
+          ((Matrix3f) tokenIn.value).getColumn(-1 - i1, data);
+        else
+          ((Matrix3f) tokenIn.value).getRow(i1 - 1, data);
+      } else {
+        if (i1 < 0)
+          ((Matrix4f) tokenIn.value).getColumn(-1 - i1, data);
+        else
+          ((Matrix4f) tokenIn.value).getRow(i1 - 1, data);
+      }
+      if (i2 == Integer.MIN_VALUE)
+        return getVariable(data);
+      if (i2 < 1 || i2 > len)
+        return new ScriptVariable(string, "");
+      return getVariable(new Float(data[i2 - 1]));
     }
 
     // "testing"[0] gives "g"
@@ -702,10 +750,57 @@ public class ScriptVariable extends Token {
   }
 
   public boolean setSelectedValue(int selector, ScriptVariable var) {
-    if (selector == Integer.MAX_VALUE || tok != string && tok != list)
+    if (selector == Integer.MAX_VALUE)
       return false;
-    String s = sValue(var);
     switch (tok) {
+    case matrix3f:
+    case matrix4f:
+      int len = (tok == matrix3f ? 3 : 4);
+      if (selector > 10) {
+        int col = selector % 10;
+        int row = (selector - col) / 10;
+        if (col > 0 && col <= len && row <= len) {
+          if (tok == matrix3f)
+            ((Matrix3f) value).setElement(row - 1, col - 1, fValue(var));
+          else
+            ((Matrix4f) value).setElement(row - 1, col - 1, fValue(var));
+          return true;
+        }
+      }
+      if (selector != 0 && Math.abs(selector) <= len
+          && var.value instanceof String[]) {
+        String[] s = (String[]) var.value;
+        if (s.length == len) {
+          float[] data = new float[len];
+          for (int i = 0; i < len; i++)
+            data[i] = toFloat(s[i]);
+          if (selector > 0) {
+            if (tok == matrix3f)
+              ((Matrix3f) value).setRow(selector - 1, data);
+            else
+              ((Matrix4f) value).setRow(selector - 1, data);
+          } else {
+            if (tok == matrix3f)
+              ((Matrix3f) value).setColumn(-1 - selector, data);
+            else
+              ((Matrix4f) value).setColumn(-1 - selector, data);
+          }
+          return true;
+        }
+      }
+      return false;
+    case string:
+      String str = (String) value;
+      int pt = str.length();
+      if (selector <= 0)
+        selector = pt + selector;
+      if (--selector < 0)
+        selector = 0;
+      while (selector >= str.length())
+        str += " ";
+      value = str.substring(0, selector) + sValue(var)
+          + str.substring(selector + 1);
+      return true;
     case list:
       String[] array = (String[]) value;
       if (selector <= 0)
@@ -718,21 +813,10 @@ public class ScriptVariable extends Token {
         for (int i = array.length; i <= selector; i++)
           arrayNew[i] = "";
       }
-      arrayNew[selector] = s;
-      break;
-    case string:
-      String str = (String) value;
-      int pt = str.length();
-      if (selector <= 0)
-        selector = pt + selector;
-      if (--selector < 0)
-        selector = 0;
-      while (selector >= str.length())
-        str += " ";
-      value = str.substring(0, selector) + s + str.substring(selector + 1);
-      break;
+      arrayNew[selector] = sValue(var);
+      return true;
     }
-    return true;
+    return false;
   }
 
   public String escape() {

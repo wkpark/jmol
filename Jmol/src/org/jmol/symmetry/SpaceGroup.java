@@ -589,12 +589,13 @@ class SpaceGroup {
 
   Hashtable xyzList = new Hashtable();
   private int addOperation(String xyz0) {
-    if (xyz0 == null) {
+    if (xyz0 == null || xyz0.length() < 3) {
       xyzList = new Hashtable();
       return -1;
     }
-    boolean isSpecial = (xyz0.charAt(0) == '!');
+    boolean isSpecial = (xyz0.charAt(0) == '=');
     if (isSpecial) xyz0 = xyz0.substring(1);
+    boolean isReverse = (xyz0.charAt(0) == '!');
     if (xyzList.containsKey(xyz0))
       return ((Integer)xyzList.get(xyz0)).intValue();
 

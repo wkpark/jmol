@@ -142,6 +142,9 @@ class SymmetryOperation extends Matrix4f {
     boolean isDenominator = false;
     boolean isDecimal = false;
     boolean isNegative = false;
+    boolean isReverse = (xyz.startsWith("!"));
+    if (isReverse)
+      xyz = xyz.substring(1);
     char ch;
     int x = 0;
     int y = 0;
@@ -183,6 +186,9 @@ class SymmetryOperation extends Matrix4f {
       }
       temp[15] = 1;
       set(temp);
+      isFinalized = true;
+      if (isReverse)
+        invert(this);
       this.xyz = getXYZFromMatrix(this, true, false, false);
       return true;
     }
@@ -195,6 +201,8 @@ class SymmetryOperation extends Matrix4f {
       }
       set(temp);
       isFinalized = true;
+      if (isReverse)
+        invert(this);
       this.xyz = getXYZFromMatrix(this, false, false, false);
       //System.out.println("SymmetryOperation: " + xyz + "\n" + (Matrix4f)this + "\n" + this.xyz);
       return true;
@@ -252,7 +260,12 @@ class SymmetryOperation extends Matrix4f {
         if (rowPt == 2) {
           temp[15] = 1;    
           set(temp);
-          this.xyz = strOut;
+          if (isReverse) {
+            invert(this);
+            this.xyz = getXYZFromMatrix(this, true, false, false);
+          } else {
+            this.xyz = strOut;
+          }
           if (Logger.debugging)
             Logger.debug("" + (Matrix4f)this);
           rowPt = 0;

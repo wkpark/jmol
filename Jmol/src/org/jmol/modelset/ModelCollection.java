@@ -2861,7 +2861,7 @@ abstract public class ModelCollection extends BondCollection {
         strOperations = "\n" + list.length + " symmetry operations employed:";
         infolist = new Object[list.length][];
         for (int i = 0; i < list.length; i++) {
-          int iSym = symTemp.addSpaceGroupOperation("!" + list[i]);
+          int iSym = symTemp.addSpaceGroupOperation("=" + list[i]);
           if (iSym < 0)
             continue;
           infolist[i] = symTemp.getSymmetryOperationDescription(iSym, cellInfo,
@@ -2905,16 +2905,23 @@ abstract public class ModelCollection extends BondCollection {
       return "";
     if (xyz == null) {
       String[] ops = uc.getSymmetryOperations();
-      if (ops == null || op < 1 || op > ops.length)
+      if (ops == null || op == 0 || Math.abs(op) > ops.length)
         return "";
-      xyz = ops[op - 1 ];
+      if (op > 0) {
+        xyz = ops[op - 1 ];
+      } else {
+        xyz = ops[-1 - op];
+      }
+    } else {
+      op = 0;
     }
     getSymTemp(false); 
     symTemp.setSpaceGroup(false);
-    int iSym = symTemp.addSpaceGroupOperation("!" + xyz);
+    int iSym = symTemp.addSpaceGroupOperation((op < 0 ? "!" : "=") + xyz);
     if (iSym < 0)
       return "";
     symTemp.setUnitCell(uc.getNotionalUnitCell());
+    Object[] info;
     pt = new Point3f(pt == null ? atoms[iAtom] : pt);
     if (type == Token.point) {
       uc.toFractional(pt);
@@ -2925,8 +2932,8 @@ abstract public class ModelCollection extends BondCollection {
       symTemp.toCartesian(sympt);
       return sympt;
     }
-    // null id means "text info only" but here we want the draw commands
-    Object[] info = symTemp.getSymmetryOperationDescription(iSym, uc, pt, 
+    // null id means "array info only" but here we want the draw commands
+    info = symTemp.getSymmetryOperationDescription(iSym, uc, pt, 
         (id == null ? "sym" : id));
     int ang = ((Integer)info[9]).intValue();
     /*

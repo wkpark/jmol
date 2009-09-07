@@ -354,11 +354,11 @@ class StatusManager {
   synchronized void setFileLoadStatus(String fullPathName, String fileName,
                                         String modelName, String errorMsg,
                                         int ptLoad, boolean doCallback) {
-    if (fullPathName == null) {
+    if (fullPathName == null && fileName != null && fileName.equals("resetUndo")) {
       JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer.getProperty("DATA_API", "getAppConsole", null);
-      if (fileName != null && appConsole != null)
+      if (appConsole != null)
         appConsole.zap();
-      return;
+      fileName = "zapped";
     }
     setStatusChanged("fileLoaded", ptLoad, fullPathName, false);
     if (errorMsg != null)

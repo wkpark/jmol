@@ -2214,7 +2214,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     initializeModel();
     if (notify)
       setFileLoadStatus(FILE_STATUS_ZAPPED, null, (resetUndo ? "resetUndo"
-          : null), null, null);
+          : "zapped"), null, null);
     if (Logger.debugging)
       Logger.checkMemory();
   }

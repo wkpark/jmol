@@ -5201,7 +5201,7 @@
   <fah_proj number="2677" name="p2677_IBX in water" public="y" file="xyz"
     server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson"/>
-  <fah_proj number="2681" name="p2681_" public="y"
+  <fah_proj number="2681" name="p2681_Translocon_GLX2" public="y" file="xyz"
     server="171.67.108.22" preferred="4" deadline="6"
     credit="25403" frames="100" code="GC" contact="kasson"/>
   <fah_proj number="2682" name="p2682_" public="y"

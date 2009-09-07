@@ -75,10 +75,10 @@ class PopupResourceBundle {
       {   "@AXESCOLOR", "gray salmon maroon olive slateblue gold orchid"},
       
       {   "popupMenu",
-          "modelSetMenu SIGNEDloadMenu SIGNEDwriteMenu FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYUNITCELLMenu - "
+          "FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYUNITCELLMenu - "
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
-              + "measureMenu pickingMenu - JVM12showConsole JVM12showMenu - "
+              + "measureMenu pickingMenu - JVM12showConsole JVM12showMenu SIGNEDfileMenu computationMenu - "
               + "languageComputedMenu aboutComputedMenu" },
               
       {   "selectMenuText",
@@ -205,19 +205,21 @@ class PopupResourceBundle {
           "pickOff pickCenter pickIdent pickLabel pickAtom "
               + "pickMolecule pickElement PDBpickChain PDBpickGroup SYMMETRYpickSite pickSpin" },
 
+      {   "computationMenu",
+          "minimize"
+              /* calculateVolume*/ },
 
+              
       {   "JVM12showMenu",
           "showHistory showFile showFileHeader - "
               + "showOrient showMeasure - "
               + "showSpacegroup showState SYMMETRYshowSymmetry UNITCELLshow - showIsosurface showMo - extractMOL" },
 
-
-      {   "SIGNEDloadMenu",
-          "loadPdb loadFileOrUrl loadFileUnitCell - loadScript" },
-
-      {   "SIGNEDwriteMenu",
-          "writeFileTextVARIABLE writeState writeHistory - writeJpg writePng writePovray -  writeIsosurface writeVrml writeX3d writeMaya" },
-
+      {   "SIGNEDfileMenu",
+          "loadFileOrUrl loadPdb loadScript - "
+              + "reload loadFileUnitCell - "
+              + "writeFileTextVARIABLE writeState writeHistory writeIsosurface exportToWeb - writeGif writeJpg writePng writePovray - "
+              + "writeVrml writeX3d writeIdtf writeMaya writeGaussian" },
 
       { "[set_spin_X]Menu", "s0 s5 s10 s20 s30 s40 s50" },
       { "[set_spin_Y]Menu", null },
@@ -251,8 +253,12 @@ class PopupResourceBundle {
           "rasmolChimeCompatibility" },
 */
 
+/*  this was not working, but now these entries are inserted dynamically into a submenu:
       {   "aboutComputedMenu", 
-          "APPLETjmolUrl APPLETmouseManualUrl APPLETtranslationUrl" },
+          "APPLETjmolUrl APPLETmouseManualUrl APPLETtranslationUrl - " },
+*/
+      {   "aboutComputedMenu", 
+          "- " },
 
   };
   
@@ -480,6 +486,7 @@ class PopupResourceBundle {
       { "showSpacegroup", "console on;show spacegroup" },
       { "showState", "console on;show state" },
       
+      { "reload", "load \"\"" },
       { "loadPdb", "load ?PdbId?" },      
       { "loadFileOrUrl", "load ?" },      
       { "loadFileUnitCell", "load ? {1 1 1}" },      
@@ -489,16 +496,24 @@ class PopupResourceBundle {
       { "writeState", "write state \"?FILEROOT?.spt\"" },      
       { "writeHistory", "write history \"?FILEROOT?.his\"" },     
       { "writeIsosurface", "write isosurface \"?FILEROOT?.jvxl\"" },      
+      { "writeGif", "write image \"?FILEROOT?.gif\"" },      
       { "writeJpg", "write image \"?FILEROOT?.jpg\"" },      
       { "writePng", "write image \"?FILEROOT?.png\"" },      
       { "writePovray", "write POVRAY \"?FILEROOT?.pov\"" },      
       { "writeVrml", "write VRML \"?FILEROOT?.wrl\"" },      
       { "writeX3d", "write X3D \"?FILEROOT?.x3d\"" },      
+      { "writeIdtf", "write IDTF \"?FILEROOT?.x3d\"" },      
       { "writeMaya", "write MAYA \"?FILEROOT?.ma\"" },       
       { "SYMMETRYshowSymmetry", "console on;show symmetry" },
       { "UNITCELLshow", "console on;show unitcell" },
       { "extractMOL", "console on;getproperty extractModel \"visible\" " },
-
+          // these 2 need to be implemented:
+      { "writeGaussian", "" },
+      { "exportToWeb", "" },
+      
+       { "minimize", "minimize" },    
+      //  { "calculateVolume", "console on;print \"Volume = \" + {*}.volume() + \" Ang^3\"" },     
+      
       { "surfDots", "dots on" },
       { "surfVDW", "isosurface delete resolution 0 solvent 0 translucent" },
       { "surfMolecular", "isosurface delete resolution 0 molecular translucent" },
@@ -536,9 +551,12 @@ class PopupResourceBundle {
 //        "set color rasmol; set zeroBasedXyzRasmol on; "
   //          + "set axesOrientationRasmol on; load \"\"; select *; cpk off; wireframe on; " },
 
+  /* now these entries are inserted dynamically into a submenu:  
       { "APPLETjmolUrl", "show url \"http://www.jmol.org\"" },
       { "APPLETmouseManualUrl", "show url \"http://wiki.jmol.org/index.php/Mouse_Manual\"" },
-      { "APPLETtranslationUrl", "show url \"http://wiki.jmol.org/index.php/Internationalisation\"" }, };
+      { "APPLETtranslationUrl", "show url \"http://wiki.jmol.org/index.php/Internationalisation\"" }, 
+  */
+  };
   
   private String[] getWordContents() {
     
@@ -870,25 +888,32 @@ class PopupResourceBundle {
         "SYMMETRYshowSymmetry", GT._("Symmetry"),
         "showState", GT._("Current state"),
         
-        "SIGNEDloadMenu", GT._("Load"),      
-        "loadPdb", GT._("File from PDB"),      
-        "loadFileOrUrl", GT._("File or URL"),      
+        "SIGNEDfileMenu", GT._("File"),
+        "reload", GT._("Reload"),      
+        "loadPdb", GT._("Open from PDB"),      
+        "loadFileOrUrl", GT._("Open file or URL"),      
         "loadFileUnitCell", GT._("Load full unit cell"),      
-        "loadScript", GT._("Script"),      
+        "loadScript", GT._("Open script"),      
 
-        "SIGNEDwriteMenu", GT._("Save"),      
-        "writeFileTextVARIABLE", GT._("File {0}"),
-        "writeState", GT._("Script with state"),      
-        "writeHistory", GT._("Script with history"),      
-        "writeJpg", GT._("{0} Image", "JPG"),      
-        "writePng", GT._("{0} Image", "PNG"),      
-        "writePovray", GT._("{0} Image", "POV-Ray"),      
-        "writeIsosurface", GT._("JVXL Isosurface"),      
-        "writeVrml", GT._("{0} 3D Model", "VRML"),      
-        "writeX3d", GT._("{0} 3D Model", "X3D"),      
-        "writeMaya", GT._("{0} 3D Model", "Maya"),      
+        "writeFileTextVARIABLE", GT._("Save a copy of {0}"),
+        "writeState", GT._("Save script with state"),      
+        "writeHistory", GT._("Save script with history"),      
+        "writeJpg", GT._("Export {0} image", "JPG"),      
+        "writePng", GT._("Export {0} image", "PNG"),      
+        "writeGif", GT._("Export {0} image", "GIF"),    
+        "writePovray", GT._("Export {0} image", "POV-Ray"),      
+        "writeIsosurface", GT._("Save JVXL isosurface"),      
+        "writeVrml", GT._("Export {0} 3D model", "VRML"),      
+        "writeX3d", GT._("Export {0} 3D model", "X3D"),      
+        "writeIdtf", GT._("Export {0} 3D model", "IDTF"),      
+        "writeMaya", GT._("Export {0} 3D model", "Maya"),      
+        "writeGaussian", GT._("Export Gaussian"),      
+        "exportToWeb", GT._("Export to web page"),  
 
-        
+        "computationMenu", GT._("Computation"),      
+        "minimize", GT._("Optimize structure"),      
+        //"calculateVolume", GT._("Molecular volume"),   
+                
         "UNITCELLshow", GT._("Unit cell"),
         "extractMOL", GT._("Extract MOL data"),
 
@@ -940,7 +965,7 @@ class PopupResourceBundle {
         "showAxesCheckbox", GT._("Axes"),
         "showUNITCELLCheckbox", GT._("Unit cell"),      
         "colorrasmolCheckbox", GT._("RasMol Colors"),
-        "aboutComputedMenu", GT._("About Jmol"),
+        "aboutComputedMenu", GT._("About..."),
         
         //"rasmolChimeCompatibility", GT._("RasMol/Chime Settings"),
 

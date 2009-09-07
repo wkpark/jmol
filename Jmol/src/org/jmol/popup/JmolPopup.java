@@ -183,7 +183,7 @@ abstract public class JmolPopup {
     getViewerData();
     //System.out.println("jmolPopup updateComputedMenus " + modelSetFileName + " " + modelSetName + " " + atomCount);
     updateSelectMenu();
-    updateWriteMenu();
+    updateFileMenu();
     updateElementsComputedMenu(viewer.getElementsPresentBitSet(modelIndex));
     updateHeteroComputedMenu(viewer.getHeteroList(modelIndex));
     updateSurfMoComputedMenu((Hashtable) modelInfo.get("moData"));
@@ -198,14 +198,19 @@ abstract public class JmolPopup {
     updateAboutSubmenu();
   }
 
-  private void updateWriteMenu() {
-    Object menu = htMenus.get("SIGNEDwriteMenu");
+  private void updateFileMenu() {
+    Object menu = htMenus.get("SIGNEDfileMenu");
     if (menu == null)
       return;
     String text = getMenuText("writeFileTextVARIABLE");
     menu = htMenus.get("writeFileTextVARIABLE");
-    setLabel(menu, GT._(text, modelSetFileName, true));
-    enableMenuItem(menu, !modelSetFileName.equals("zapped"));
+    if (modelSetFileName.equals("zapped") || modelSetFileName.equals("")) {
+      setLabel(menu, GT._("No atoms loaded"));
+      enableMenuItem(menu, false);
+    } else {
+      setLabel(menu, GT._(text, modelSetFileName, true));
+      enableMenuItem(menu, true);
+    }
   }
 
   private void getViewerData() {
@@ -578,6 +583,7 @@ abstract public class JmolPopup {
     enableMenu(htMenus.get("surfaceMenu"), !isZapped);
     enableMenu(htMenus.get("measureMenu"), !isZapped);
     enableMenu(htMenus.get("pickingMenu"), !isZapped);
+    enableMenu(htMenus.get("computationMenu"), !isZapped);
     if (modelSetName == null || isZapped)
       return;
     if (isMultiFrame) {
@@ -592,8 +598,7 @@ abstract public class JmolPopup {
     renameMenu(menu, modelSetName);
     enableMenu(menu, true);
     // 100 here is totally arbitrary. You can do a minimization on any number of atoms
-    enableMenuItem(addMenuItem(menu, GT._("Minimize"), "minimize", null), atomCount <= 100);
-    addMenuSeparator(menu);
+    enableMenu(htMenus.get("computationMenu"), atomCount <= 100);
     addMenuItem(menu, GT._(getMenuText("atomsText"), atomCount, true));
     addMenuItem(menu, GT._(getMenuText("bondsText"), viewer
         .getBondCountInModel(modelIndex), true));
@@ -669,34 +674,51 @@ abstract public class JmolPopup {
       return;
     for (int i = getMenuItemCount(menu); --i >= aboutComputedMenuBaseCount;)
       removeMenuItem(menu, i);
-    addMenuSeparator(menu);
-    addMenuItem(menu, "Jmol " + JmolConstants.version + (isSigned ? " (signed)" : ""));
-    addMenuItem(menu, JmolConstants.date);
-    addMenuItem(menu, viewer.getOperatingSystemName());
-    addMenuItem(menu, viewer.getJavaVendor());
-    addMenuItem(menu, viewer.getJavaVersion());
-    addMenuSeparator(menu);
-    addMenuItem(menu, GT._("Java memory usage", true));
+      
+    Object subMenu = newMenu("About molecule", "modelSetMenu");  
+      // No need to localize this, as it will be overwritten with the model's name      
+    addMenuSubMenu(menu, subMenu);
+    htMenus.put("modelSetMenu", subMenu);
+    updateModelSetComputedMenu();
+
+    subMenu = newMenu("Jmol " + JmolConstants.version + (isSigned ? " (signed)" : ""), "aboutJmolMenu");
+    addMenuSubMenu(menu, subMenu);
+    htMenus.put("aboutJmolMenu", subMenu);
+    addMenuItem(subMenu, JmolConstants.date);
+    addMenuItem(subMenu, "http://www.jmol.org", "show url \"http://www.jmol.org\"", null);
+    addMenuItem(subMenu, GT._("Mouse Manual"), "show url \"http://wiki.jmol.org/index.php/Mouse_Manual\"", null);
+    addMenuItem(subMenu, GT._("Translations"), "show url \"http://wiki.jmol.org/index.php/Internationalisation\"", null);
+
+    subMenu = newMenu(GT._("System", true), "systemMenu");        
+    addMenuSubMenu(menu, subMenu);
+    htMenus.put("systemMenu", subMenu);
+    addMenuItem(subMenu, viewer.getOperatingSystemName());
+    int availableProcessors = availableProcessorsForNewerJvm();
+    if (availableProcessors > 0)
+      addMenuItem(subMenu, (availableProcessors == 1) ? GT._("1 processor", true)
+          : GT._("{0} processors", availableProcessors, true));
+    else
+      addMenuItem(subMenu, GT._("unknown processor count", true));      
+    addMenuSeparator(subMenu);
+    addMenuItem(subMenu, GT._("Java version:", true));
+    addMenuItem(subMenu, viewer.getJavaVendor());
+    addMenuItem(subMenu, viewer.getJavaVersion());
+    addMenuSeparator(subMenu);
+    addMenuItem(subMenu, GT._("Java memory usage:", true));    
     Runtime runtime = Runtime.getRuntime();
     //runtime.gc();
     long mbTotal = convertToMegabytes(runtime.totalMemory());
     long mbFree = convertToMegabytes(runtime.freeMemory());
     long mbMax = convertToMegabytes(maxMemoryForNewerJvm());
-    addMenuItem(menu, GT._("{0} MB total", new Object[] { new Long(mbTotal) },
+    addMenuItem(subMenu, GT._("{0} MB total", new Object[] { new Long(mbTotal) },
         true));
-    addMenuItem(menu, GT._("{0} MB free", new Object[] { new Long(mbFree) },
+    addMenuItem(subMenu, GT._("{0} MB free", new Object[] { new Long(mbFree) },
         true));
     if (mbMax > 0)
-      addMenuItem(menu, GT._("{0} MB maximum",
+      addMenuItem(subMenu, GT._("{0} MB maximum",
           new Object[] { new Long(mbMax) }, true));
     else
-      addMenuItem(menu, GT._("unknown maximum", true));
-    int availableProcessors = availableProcessorsForNewerJvm();
-    if (availableProcessors > 0)
-      addMenuItem(menu, (availableProcessors == 1) ? GT._("1 processor", true)
-          : GT._("{0} processors", availableProcessors, true));
-    else
-      addMenuItem(menu, GT._("unknown processor count", true));
+      addMenuItem(subMenu, GT._("unknown maximum", true));
   }
 
   private void updateLanguageSubmenu() {

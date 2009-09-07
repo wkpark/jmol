@@ -196,7 +196,7 @@ class SymmetryOperation extends Matrix4f {
       set(temp);
       isFinalized = true;
       this.xyz = getXYZFromMatrix(this, false, false, false);
-      System.out.println("SymmetryOperation: " + xyz + "\n" + (Matrix4f)this + "\n" + this.xyz);
+      //System.out.println("SymmetryOperation: " + xyz + "\n" + (Matrix4f)this + "\n" + this.xyz);
       return true;
     }
     xyz += ",";
@@ -408,20 +408,6 @@ class SymmetryOperation extends Matrix4f {
     return vRot;
   }
   
-  public Object[] getProduct(SymmetryOperation op2, SymmetryInterface uc, Point3f pt00, String id) {
-    if (!isFinalized)
-      doFinalize();
-    if (!op2.isFinalized)
-      op2.doFinalize();
-    Matrix4f m = new Matrix4f(op2);
-    m.mul(this);
-    m.m03 = op2.m03 + m03;
-    m.m13 = op2.m13 + m13;
-    m.m23 = op2.m23 + m23;
-    m.m33 = 1;
-    return getDescription(m, "(" + op2.xyz + ") * (" + xyz + ")", uc, pt00, id);
-  }
-
   /**
    * 
    * @param uc
@@ -431,12 +417,14 @@ class SymmetryOperation extends Matrix4f {
    *                    xyz (Jones-Faithful calculated from matrix)
    *                    xyzOriginal (Provided by calling method) 
    *                    info ("C2 axis", for example) 
-   *                    draw commands, 
-   *                    translation vector (as a Poin3f)  
-   *                    inversion point, 
-   *                    axis point 0, 
-   *                    axis vector,
+   *                    draw commands 
+   *                    translation vector (fractional)  
+   *                    translation vector (Cartesian)  
+   *                    inversion point 
+   *                    axis point 
+   *                    axis vector
    *                    angle of rotation
+   *                    matrix representation
    */
   public Object[] getDescription(SymmetryInterface uc, Point3f pt00, String id) {
     if (!isFinalized)
@@ -571,8 +559,19 @@ class SymmetryOperation extends Matrix4f {
        * triangles:
        * 
        * 
-       * o / \ / \ i' / \ / i \A/_________\A' \ / \ j / \ / \ / \ / x
-       * 
+       *       o 
+       *      / \
+       *     /   \    i'
+       *    /     \ 
+       *   /   i   \
+       * A/_________\A' 
+       *  \         / 
+       *   \   j   / 
+       *    \     / 
+       *     \   / 
+       *      \ / 
+       *       x
+       *      
        * Points i and j are at the centers of the triangles. Points A and A' are
        * the frame centers; an operation at point i, j, x, or o is taking A to
        * A'. Point i is 2/3 of the way from x to o. In addition, point j is half
@@ -679,6 +678,46 @@ class SymmetryOperation extends Matrix4f {
       }
     }
 
+    // fix angle based on direction of axis
+    
+    int ang = ang1;
+    approx(ax1);
+    
+    if (isrotation) {
+
+      Point3f pt1 = new Point3f();
+
+      vtemp.set(ax1);
+
+      // draw the lines associated with a rotation
+
+      int ang2 = ang1;
+      if (haveinversion) {
+        pt1.set(pa1);
+        pt1.add(vtemp);
+        ang2 = (int) Measure.computeTorsion(ptinv, pa1, pt1, p0, true);
+      } else if (pitch1 == 0) {
+        pt1.set(pa1);
+        ptemp.scaleAdd(1, pt1, vtemp);
+        ang2 = (int) Measure.computeTorsion(pt00, pa1, ptemp, p0, true);
+      } else {
+        ptemp.set(pa1);
+        ptemp.add(vtemp);
+        pt1.scaleAdd(0.5f, vtemp, pa1);
+        ang2 = (int) Measure.computeTorsion(pt00, pa1, ptemp, p0, true);
+      }
+
+      if (ang2 != 0)
+        ang1 = ang2;
+    }
+
+    if (isrotation && !haveinversion && pitch1 == 0) {
+      if (ax1.z < 0 || ax1.z == 0 && (ax1.y < 0 || ax1.y == 0 && ax1.x < 0)) {
+        ax1.scale(-1);
+        ang1 = -ang1;
+      }
+    }
+    
     // time to get the description
 
     String info1 = "identity";
@@ -691,14 +730,14 @@ class SymmetryOperation extends Matrix4f {
       info1 = "inversion center|" + fcoord(ptemp);
     } else if (isrotation) {
       if (haveinversion) {
-        info1 = "" + (360 / ang1) + "-bar axis";
+        info1 = "" + (360 / ang) + "-bar axis";
       } else if (pitch1 != 0) {
-        info1 = "" + (360 / ang1) + "-fold screw axis";
+        info1 = "" + (360 / ang) + "-fold screw axis";
         ptemp.set(ax1);
         uc.toFractional(ptemp);
         info1 += "|translation: " + fcoord(ptemp);
       } else {
-        info1 = "C" + (360 / ang1) + " axis";
+        info1 = "C" + (360 / ang) + " axis";
       }
     } else if (trans != null) {
       String s = " " + fcoord(ftrans);
@@ -719,7 +758,6 @@ class SymmetryOperation extends Matrix4f {
           info1 = "b-";
         else
           info1 = "c-";
-
         info1 += "glide plane |translation:" + s;
       }
     } else if (ismirrorplane) {
@@ -773,7 +811,7 @@ class SymmetryOperation extends Matrix4f {
 
         color = "red";
 
-        int ang = ang1;
+        ang = ang1;
         float scale = 1.0f;
         vtemp.set(ax1);
 
@@ -782,13 +820,11 @@ class SymmetryOperation extends Matrix4f {
         if (haveinversion) {
           pt1.set(pa1);
           pt1.add(vtemp);
-          ang = (int) Measure.computeTorsion(ptinv, pa1, pt1, p0, true);
           if (pitch1 == 0) {
             pt1.set(ipt);
             vtemp.scale(3);
-            ptemp.set(vtemp);
-            ptemp.scale(-1);
-            draw1.append(drawid).append("rotVector2 vector diameter 0.1 ")
+            ptemp.scaleAdd(-1, vtemp, pa1);
+            draw1.append(drawid).append("rotVector2 diameter 0.1 ")
                 .append(Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
                     " color red");
           }
@@ -807,16 +843,11 @@ class SymmetryOperation extends Matrix4f {
                 .append(Escape.escape(pa1)).append(" color red");
           }
           vtemp.scale(3);
-          ptemp.set(vtemp);
-          ptemp.scale(-1);
-          draw1.append(drawid).append("rotVector2 vector diameter 0.1 ")
+          ptemp.scaleAdd(-1, vtemp, pa1);
+          draw1.append(drawid).append("rotVector2 diameter 0.1 ")
               .append(Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
                   " color red");
           pt1.set(pa1);
-          ptemp.scaleAdd(1, pt1, vtemp);
-          ang = (int) Measure.computeTorsion(pt00, pa1, ptemp, p0, true);
-          if (ang == 0)
-            ang = ang1;
           if (pitch1 == 0 && pt00.distance(p0) < 0.2)
             pt1.scaleAdd(0.5f, pt1, vtemp);
         } else {
@@ -829,7 +860,6 @@ class SymmetryOperation extends Matrix4f {
           draw1.append(drawid).append("rotLine2 ").append(Escape.escape(p0))
               .append(Escape.escape(ptemp)).append(" color red");
           pt1.scaleAdd(0.5f, vtemp, pa1);
-          ang = (int) (Measure.computeTorsion(pt00, pa1, ptemp, p0, true) * 0.9);
         }
 
         // draw arc arrow
@@ -1032,8 +1062,11 @@ class SymmetryOperation extends Matrix4f {
     // and display translation if still not {0 0 0}
     if (ax1 != null)
       ax1.normalize();
-    return new Object[] { xyz, xyzOriginal, info1, cmds, ftrans, trans, ipt,
-        pa1, ax1, new Integer(ang1), m };
+    return new Object[] { 
+        xyz, xyzOriginal, info1, 
+        cmds, approx(ftrans), approx(trans), 
+        approx(ipt), approx(pa1), approx(ax1), 
+        new Integer(ang1), m };
   }
 
   private static void drawLine(StringBuffer s, String id, float diameter, Point3f pt0, Point3f pt1,
@@ -1056,6 +1089,18 @@ class SymmetryOperation extends Matrix4f {
     return (x24 == 0 ? "0" : x24 == 24 ? m + "1" : m + (x24/8) + "/3");
   }
 
+  private static Tuple3f approx(Tuple3f pt) {
+    if (pt != null) {
+      if (Math.abs(pt.x) < 0.0001f)
+        pt.x = 0;
+      if (Math.abs(pt.y) < 0.0001f)
+        pt.y = 0;
+      if (Math.abs(pt.z) < 0.0001f)
+        pt.z = 0;
+    }
+    return pt;
+  }
+  
   private static float approx(float f) {
     return approx(f, 100);
   }

@@ -223,7 +223,7 @@ public class Token {
   final static int setparam          = (1 << 29); // parameter to set command
   final static int misc              = (1 << 30); // misc parameter
 
-  final static int center       = 1 | atomExpressionCommand;
+  public final static int center       = 1 | atomExpressionCommand;
   final static int define       = 2 | atomExpressionCommand | expression | setparam;
   public final static int delete       = 3 | atomExpressionCommand;
   final static int display      = 4 | atomExpressionCommand | setparam;
@@ -589,7 +589,7 @@ public class Token {
   
   public final static int angle = 7 | 0 << 9 | mathfunc;
   public final static int data  = 8 | 0 << 9 | mathfunc | command;
-  final static int plane        = 9 | 0 << 9 | mathfunc;
+  public final static int plane        = 9 | 0 << 9 | mathfunc;
   public final static int point = 10 | 0 << 9 | mathfunc;
   final static int quaternion   = 11 | 0 << 9 | mathfunc | command;
   final static int axisangle    = 12 | 0 << 9 | mathfunc;

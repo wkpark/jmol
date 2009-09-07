@@ -700,9 +700,30 @@ class ScriptMathProcessor {
     Point3f pt = (args.length > 1 ? ptValue(args[1]) : null);
     if (args.length == 2 && !Float.isNaN(pt.x))
       return addX(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, Token.point));
-    String desc = (args.length == 1 ? "" : ScriptVariable.sValue(args[args.length - 1]));
-    return addX(viewer.getSymmetryInfo(bs, xyz, iOp, pt, 
-          desc, args.length == 1 ? Token.matrix4f : desc.equalsIgnoreCase("array") ? Token.list : Token.draw));
+    String desc = (args.length == 1 ? "" : ScriptVariable.sValue(args[args.length - 1])).toLowerCase();
+    int tok = Token.draw;
+    if (args.length == 1 || desc.equalsIgnoreCase("matrix")) {
+      tok = Token.matrix4f;
+    } else if (desc.equalsIgnoreCase("array") || desc.equalsIgnoreCase("list")) {
+      tok = Token.list;
+    } else if (desc.equalsIgnoreCase("description")) {
+      tok = Token.label;
+    } else if (desc.equalsIgnoreCase("xyz")) {
+      tok = Token.info;      
+    } else if (desc.equalsIgnoreCase("translation")) {
+      tok = Token.translation;
+    } else if (desc.equalsIgnoreCase("axis")) {
+      tok = Token.axis;
+    } else if (desc.equalsIgnoreCase("plane")) {
+      tok = Token.plane;
+    } else if (desc.equalsIgnoreCase("angle")) {
+      tok = Token.angle;
+    } else if (desc.equalsIgnoreCase("axispoint")) {
+      tok = Token.point;
+    } else if (desc.equalsIgnoreCase("center")) {
+      tok = Token.center;
+    } 
+    return addX(viewer.getSymmetryInfo(bs, xyz, iOp, pt, desc, tok));
   }
 
   private boolean evaluateBin(ScriptVariable[] args) throws ScriptException {

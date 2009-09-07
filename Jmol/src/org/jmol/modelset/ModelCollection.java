@@ -2928,6 +2928,7 @@ abstract public class ModelCollection extends BondCollection {
     // null id means "text info only" but here we want the draw commands
     Object[] info = symTemp.getSymmetryOperationDescription(iSym, uc, pt, 
         (id == null ? "sym" : id));
+    int ang = ((Integer)info[9]).intValue();
     /*
      *  xyz (Jones-Faithful calculated from matrix)
      *  xyzOriginal (Provided by operation) 
@@ -2940,29 +2941,46 @@ abstract public class ModelCollection extends BondCollection {
      *  angle of rotation
      *  matrix representation
      */
-    if (type == Token.array)
+    switch (type) {
+    case Token.array:
       return info;
-    if (type == Token.matrix4f)
-      return info[10];
-    if (type == Token.draw)
-      return info[3];
-    if (type == Token.list) {
+    case Token.list:
       String[] sinfo = new String[] {
-        (String) info[0],
-        (String) info[1],
-        (String) info[2],
-        // skipping DRAW commands here
-        Escape.escape((Vector3f)info[4]),
-        Escape.escape((Vector3f)info[5]),
-        Escape.escape((Point3f)info[6]),
-        Escape.escape((Point3f)info[7]),
-        Escape.escape((Vector3f)info[8]),
-        "" + info[9],
-        "" + Escape.escape((Matrix4f)info[10])
-      };
-      return sinfo;
-    }
-    return (String) info[2]; // description only
+          (String) info[0],
+          (String) info[1],
+          (String) info[2],
+          // skipping DRAW commands here
+          Escape.escape((Vector3f)info[4]),
+          Escape.escape((Vector3f)info[5]),
+          Escape.escape((Point3f)info[6]),
+          Escape.escape((Point3f)info[7]),
+          Escape.escape((Vector3f)info[8]),
+          "" + info[9],
+          "" + Escape.escape((Matrix4f)info[10])
+        };
+        return sinfo;
+    case Token.info:
+      return info[0];
+    default:
+    case Token.label:
+      return info[2];
+    case Token.draw:
+      return info[3];
+    case Token.translation: 
+      // skipping fractional translation
+      return info[5]; // cartesian translation
+    case Token.center:
+      return info[6];
+    case Token.point:
+      return info[7];
+    case Token.axis:
+    case Token.plane:
+      return ((ang == 0) == (type == Token.plane)? (Vector3f) info[8] : (Vector3f) null);
+    case Token.angle:
+      return info[9];
+    case Token.matrix4f:
+      return info[10];
+    } 
   }
 
   private void getSymTemp(boolean forceNew) {

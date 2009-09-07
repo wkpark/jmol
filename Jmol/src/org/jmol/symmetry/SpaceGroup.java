@@ -595,7 +595,7 @@ class SpaceGroup {
     }
     boolean isSpecial = (xyz0.charAt(0) == '=');
     if (isSpecial) xyz0 = xyz0.substring(1);
-    boolean isReverse = (xyz0.charAt(0) == '!');
+    //boolean isReverse = (xyz0.charAt(0) == '!');
     if (xyzList.containsKey(xyz0))
       return ((Integer)xyzList.get(xyz0)).intValue();
 

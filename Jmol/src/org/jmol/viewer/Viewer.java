@@ -3582,6 +3582,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         : getStereoImage(transformManager.stereoMode));
   }
 
+  public Object getImageAs(String type, int quality, int width, int height,
+                           String fileName, OutputStream os) {
+    return getImageAs(type, quality, width, height, fileName, os, "");
+  }
+
   /**
    * @param type
    *          "PNG", "JPG", "JPEG", "JPG64", "PPM", "GIF"
@@ -3590,10 +3595,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param height
    * @param fileName
    * @param os
+   * @param comment 
    * @return base64-encoded or binary version of the image
    */
   public Object getImageAs(String type, int quality, int width, int height,
-                           String fileName, OutputStream os) {
+                           String fileName, OutputStream os, String comment) {
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
     mustRender = true;
@@ -3617,7 +3623,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         try {
           if (quality < 0)
             quality = 75;
-          bytes = JpegEncoder.getBytes(eImage, quality, "");
+          bytes = JpegEncoder.getBytes(eImage, quality, comment);
           releaseScreenImage();
           if (type.equals("jpg64") || type.equals("jpeg64"))
             bytes = (bytes == null ? "" : Base64.getBase64((byte[]) bytes)
@@ -7817,5 +7823,4 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public Hashtable getContextVariables() {
     return eval.getContextVariables();
   }
-
 }

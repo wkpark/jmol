@@ -314,14 +314,6 @@ public class FileManager {
     fileReaderThread.run();
   }
 
-  static boolean isGzip(InputStream is) throws Exception {
-    byte[] abMagic = new byte[4];
-    is.mark(5);
-    int countRead = is.read(abMagic, 0, 4);
-    is.reset();
-    return (countRead == 4 && abMagic[0] == (byte) 0x1F && abMagic[1] == (byte) 0x8B);
-  }
-
   public Object getFileAsBytes(String name) {
     //?? used by eval of "WRITE FILE"
     // will be full path name
@@ -512,7 +504,7 @@ public class FileManager {
         fileData.put(name0, sb.toString());
       } else {
         BufferedReader br = new BufferedReader(new InputStreamReader(
-            isGzip(bis) ? new GZIPInputStream(bis) : (InputStream) bis));
+            ZipUtil.isGzip(bis) ? new GZIPInputStream(bis) : (InputStream) bis));
         String line;
         sb = new StringBuffer();
         if (header != null)
@@ -928,10 +920,10 @@ public class FileManager {
       if (CompoundDocument.isCompoundDocument(is)) {
         CompoundDocument doc = new CompoundDocument(bis);
         return getBufferedReaderForString(doc.getAllData("Molecule").toString());
-      } else if (isGzip(is)) {
+      } else if (ZipUtil.isGzip(is)) {
         do {
           is = new BufferedInputStream(new GZIPInputStream(is));
-        } while (isGzip(is));
+        } while (ZipUtil.isGzip(is));
       } else if (ZipUtil.isZipFile(is)) {
         if (allowZipStream)
           return new ZipInputStream(bis);
@@ -1050,6 +1042,50 @@ public class FileManager {
       while ((i = script.indexOf(tag, i + 1)) >= 0)
         fileList.add(Parser.getNextQuotedString(script, i));
     }
+  }
+
+  public String createZipSet(String fileName, String script, boolean includeRemoteFiles) {
+    Vector v = new Vector();
+    Vector fileNames = new Vector();
+    getFileReferences(script, fileNames);
+    Vector newFileNames = new Vector();
+    int nFiles = fileNames.size();
+    Object ret;
+    for (int iFile = 0; iFile < nFiles; iFile++) {
+      String name = (String) fileNames.get(iFile);
+      int itype = urlTypeIndex(name);
+      boolean isLocal = (itype < 0 || itype == URL_LOCAL);
+      if (isLocal || includeRemoteFiles) {
+        v.add(name);
+        String newName = "$SCRIPT_PATH$/" + name.substring(name.lastIndexOf("/") + 1);
+        if (isLocal && name.indexOf("|") < 0) {
+          v.add((byte[]) null);
+        } else {
+          ret = getFileAsBytes(name);
+          if (!(ret instanceof byte[]))
+            return (String) ret;
+          v.add(ret);
+        }
+        name = newName;
+      }
+      newFileNames.add(name);
+    }
+    String id = ("" + Math.random() + "00000").substring(2, 7);
+    String sname = "Jmol" + id + ".spt";
+    v.add("JmolManifest");
+    v.add(sname.getBytes());
+    script = TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
+    v.add(sname);
+    v.add(script.getBytes());
+    Object bytes = viewer.getImageAs("JPEG", -1, -1, -1, null, null);
+    if (bytes instanceof byte[]) {
+      v.add("Jmol" + id + ".jpg");
+      v.add((byte[]) bytes);
+    }
+    ret = ZipUtil.writeZipFile(fileName, v, false);
+    if (ret instanceof String)
+      return (String) ret;
+    return "OK "  + ret + " bytes "+ fileName;
   }
 
   class DOMReaderThread implements Runnable {

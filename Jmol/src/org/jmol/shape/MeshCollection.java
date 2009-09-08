@@ -515,6 +515,7 @@ public abstract class MeshCollection extends Shape {
  private void getMeshCommand(StringBuffer sb, int i) {
    Mesh mesh = meshes[i];
    String cmd = mesh.scriptCommand;
+   //System.out.println("meshcollection getmeshcommand " + cmd);
    if (cmd == null)
      return;
    cmd = cmd.replace('\t',' ');
@@ -523,6 +524,7 @@ public abstract class MeshCollection extends Shape {
    if (pt >= 0)
        cmd = cmd.substring(0, pt + 1);
    cmd = TextFormat.trim(cmd, ";") + ";";
+   //System.out.println("meshcollection now " + cmd);
    if (mesh.bitsets != null)  {
      cmd += "# "
          + (mesh.bitsets[0] == null ? "({null})" : Escape.escape(mesh.bitsets[0]))
@@ -551,6 +553,7 @@ public abstract class MeshCollection extends Shape {
      cmd = Escape.encapsulateData(name, mesh.data2.elementAt(5)) 
          + "  " + cmd + "# DATA2=\"" + name + "\"";
    }
+   //System.out.println("meshcollection now " + cmd);
    
    if (mesh.modelIndex >= 0 && modelCount > 1)
      appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));

@@ -224,6 +224,7 @@ public class SurfaceGenerator {
   }
 
   public String getScript() {
+    //System.out.println("getting script " + params.script);
     return params.script;
   }
   
@@ -327,10 +328,15 @@ public class SurfaceGenerator {
 
     if ("init" == propertyName) {
       initializeIsosurface();
-      if (value instanceof Parameters)
+      if (value instanceof Parameters) {
         params = (Parameters) value;
-      else
+      } else {
         params.script = (String) value;
+        if (params.script.indexOf(";#") >= 0) {
+          // crude hack for ScriptEvaluator messing up
+          params.script = TextFormat.simpleReplace(params.script, ";#", "; #");
+        }
+      }
       return false; //more to do
     }
 
@@ -341,8 +347,11 @@ public class SurfaceGenerator {
 
     if ("commandOption" == propertyName) {
       String s = " # " + (String) value;
+      //System.out.println("sg commandOption0  " + params.script + " and " + propertyName);
       if (params.script.indexOf(s) < 0)
         params.script += s;
+      //System.out.println("sg commandOption1  " + params.script);
+
       return true;
     }
 

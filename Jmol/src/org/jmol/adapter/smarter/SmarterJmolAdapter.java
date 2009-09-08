@@ -279,9 +279,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
             return "unknown zip reader error";
           }
         } else {
-          String sData = (CompoundDocument.isCompoundDocument(bytes) ? (new CompoundDocument(
-              new BufferedInputStream(new ByteArrayInputStream(bytes))))
-              .getAllData("Molecule").toString()
+          String sData = (CompoundDocument.isCompoundDocument(bytes) 
+              ? (new CompoundDocument(new BufferedInputStream(new ByteArrayInputStream(bytes))))
+                 .getAllData("Molecule").toString() 
+              : ZipUtil.isGzip(bytes) ? ZipUtil.getGzippedBytesAsString(bytes)
               : new String(bytes));
           BufferedReader reader = new BufferedReader(new StringReader(sData));
           if (asBufferedReader) {

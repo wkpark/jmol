@@ -2044,6 +2044,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return fileManager.getFileAsBytes(pathName);
   }
 
+  public String createZipSet(String fileName, String script, boolean includeRemoteFiles) {
+    return fileManager.createZipSet(fileName, script, includeRemoteFiles); 
+  }
+
   public String getCurrentFileAsString() {
     String filename = getFullPathName();
     if (filename == "string") {

@@ -1573,6 +1573,12 @@ public class ScriptEvaluator {
   private boolean compileScript(String filename, String strScript,
                                 boolean debugCompiler) {
     this.filename = filename;
+    if (strScript.indexOf("$SCRIPT_PATH$") >= 0 && filename != null) {
+      String path = filename;
+      int pt = Math.max(filename.lastIndexOf("|"), filename.lastIndexOf("/"));
+      path = path.substring(0, pt + 1);
+      strScript = TextFormat.simpleReplace(strScript, "$SCRIPT_PATH$/", path);
+    }
     getScriptContext(compiler.compile(filename, strScript, false, false,
         debugCompiler, false), false);
     isStateScript = (script.indexOf(Viewer.STATE_VERSION_STAMP) >= 0);
@@ -6685,9 +6691,9 @@ public class ScriptEvaluator {
       // Logger.debug("!!!!!!!!! took " + millis + " ms");
     }
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
-      if (errMsg.indexOf("file recognized as a script file:") >= 0) {
+      if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
         viewer.addLoadScript("-");
-        script(Token.script);
+        runScript("script " + errMsg.substring(40));
         return;
       }
       evalError(errMsg, null);
@@ -10537,6 +10543,12 @@ public class ScriptEvaluator {
       } else if (type.equals("menu")) {
         pt++;
         type = "MENU";
+      } else if (type.equals("zip")) {
+        type = "ZIP";
+        pt++;
+      } else if (type.equals("zipall")) {
+        type = "ZIPALL";
+        pt++;
       } else {
         type = "(image)";
       }
@@ -10644,10 +10656,10 @@ public class ScriptEvaluator {
     if (!isImage
         && !isExport
         && !Parser.isOneOf(type,
-            "SPT;HIS;MO;ISO;VAR;FILE;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
+            "ZIP;ZIPALL;SPT;HIS;MO;ISO;VAR;FILE;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
       error(
           ERROR_writeWhat,
-          "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
+          "ALL|COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
               + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
           "JPG|JPG64|PNG|GIF|PPM|SPT|JVXL|XYZ|MOL|PDB|"
               + driverList.toUpperCase().replace(';', '|'));
@@ -10720,6 +10732,9 @@ public class ScriptEvaluator {
         if (remotePath != null)
           data = FileManager.setScriptFileReferences(data, remotePath, false);
       }
+    } else if (data == "ZIP" || data == "ZIPALL") {
+      data = (String) viewer.getProperty("string", "stateInfo", null);
+      bytes = viewer.createZipSet(fileName, data, type.equals("ZIPALL"));
     } else if (data == "HIS") {
       data = viewer.getSetHistory(Integer.MAX_VALUE);
       type = "SPT";

@@ -218,8 +218,8 @@ class PopupResourceBundle {
       {   "SIGNEDfileMenu",
           "loadFileOrUrl loadPdb loadScript - "
               + "reload loadFileUnitCell - "
-              + "writeFileTextVARIABLE writeState writeHistory writeIsosurface exportToWeb - writeGif writeJpg writePng writePovray - "
-              + "writeVrml writeX3d writeIdtf writeMaya writeGaussian" },
+              + "writeFileTextVARIABLE writeState writeHistory writeIsosurface - writeGif writeJpg writePng writePovray - "
+              + "writeVrml writeX3d writeIdtf writeMaya" },
 
       { "[set_spin_X]Menu", "s0 s5 s10 s20 s30 s40 s50" },
       { "[set_spin_Y]Menu", null },
@@ -507,9 +507,6 @@ class PopupResourceBundle {
       { "SYMMETRYshowSymmetry", "console on;show symmetry" },
       { "UNITCELLshow", "console on;show unitcell" },
       { "extractMOL", "console on;getproperty extractModel \"visible\" " },
-          // these 2 need to be implemented:
-      { "writeGaussian", "" },
-      { "exportToWeb", "" },
       
        { "minimize", "minimize" },    
       //  { "calculateVolume", "console on;print \"Volume = \" + {*}.volume() + \" Ang^3\"" },     
@@ -907,8 +904,6 @@ class PopupResourceBundle {
         "writeX3d", GT._("Export {0} 3D model", "X3D"),      
         "writeIdtf", GT._("Export {0} 3D model", "IDTF"),      
         "writeMaya", GT._("Export {0} 3D model", "Maya"),      
-        "writeGaussian", GT._("Export Gaussian"),      
-        "exportToWeb", GT._("Export to web page"),  
 
         "computationMenu", GT._("Computation"),      
         "minimize", GT._("Optimize structure"),      

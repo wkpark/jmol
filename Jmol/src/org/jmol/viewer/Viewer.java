@@ -6824,7 +6824,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       case 140:
         if (!global.imageState)
           return "";
-        return "\n/**" + JmolConstants.EMBEDDED_SCRIPT_TAG + " \n" + getStateInfo() + "\n**/";
+        return JmolConstants.embedScript(getStateInfo());
       case 160:
         return getSpaceGroupInfo(null);
       case 180:

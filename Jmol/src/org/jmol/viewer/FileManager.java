@@ -1077,7 +1077,8 @@ public class FileManager {
     script = TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
     v.add(sname);
     v.add(script.getBytes());
-    Object bytes = viewer.getImageAs("JPEG", -1, -1, -1, null, null, script);
+    Object bytes = viewer.getImageAs("JPEG", -1, -1, -1, null, null, 
+        JmolConstants.embedScript(script));
     if (bytes instanceof byte[]) {
       v.add("Jmol" + id + ".jpg");
       v.add((byte[]) bytes);

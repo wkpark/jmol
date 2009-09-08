@@ -88,6 +88,10 @@ final public class JmolConstants {
 
   public final static String EMBEDDED_SCRIPT_TAG = "**** Jmol Embedded Script ****";
 
+  public static String embedScript(String s) {
+    return "\n/**" + EMBEDDED_SCRIPT_TAG + " \n" + s + "\n**/";
+  }
+  
   public static final String SCRIPT_EDITOR_IGNORE = "\0## EDITOR_IGNORE ##";
 
   public final static int CALLBACK_ANIMFRAME = 0;

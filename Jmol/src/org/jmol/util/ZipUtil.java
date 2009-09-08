@@ -27,6 +27,7 @@ package org.jmol.util;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -255,6 +256,10 @@ public class ZipUtil {
     }
     return s;
   }
+
+  public static boolean isJmolManifest(String thisEntry) {
+    return thisEntry.startsWith("JmolManifest");
+  }
   
   private static String[] getZipDirectoryOrErrorAndClose(InputStream is, boolean addManifest) throws IOException {
     Vector v = new Vector();
@@ -263,8 +268,8 @@ public class ZipUtil {
     String manifest = null;
     while ((ze = zis.getNextEntry()) != null) {
       String fileName = ze.getName();
-      if (addManifest && fileName.equals("JmolManifest"))
-        manifest = getZipEntryAsString(zis); 
+      if (addManifest && isJmolManifest(fileName))
+        manifest = getZipEntryAsString(zis);
       else if (!fileName.startsWith("__MACOS")) // resource fork not nec.
         v.addElement(fileName);
     }
@@ -323,52 +328,63 @@ public class ZipUtil {
   }
 
   /**
-   * generic method to create a zip file based on http://www.exampledepot.com/egs/java.util.zip/CreateZip.html
-   *   
+   * generic method to create a zip file based on
+   * http://www.exampledepot.com/egs/java.util.zip/CreateZip.html
+   * 
    * @param outFileName
-   * @param fileNamesAndByteArrays Vector of [filename1, bytes|null, filename2, bytes|null, ...]
-   * @param preservePath 
-   * @return either Integer(nBytesOut) or String errorMessage
+   * @param fileNamesAndByteArrays
+   *          Vector of [filename1, bytes|null, filename2, bytes|null, ...]
+   * @param preservePath
+   * @param msg 
+   * @return msg bytes filename or errorMessage
    */
-  public static Object writeZipFile(String outFileName, Vector fileNamesAndByteArrays, boolean preservePath) {
+  public static String writeZipFile(String outFileName,
+                                    Vector fileNamesAndByteArrays,
+                                    boolean preservePath, String msg) {
     byte[] buf = new byte[1024];
-    int nBytesOut = 0;
+    long nBytesOut = 0;
+    long nBytes = 0;
     Logger.info("creating zip file " + outFileName + "...");
+    String fullFilePath = null;
     try {
-        ZipOutputStream os = new ZipOutputStream(new FileOutputStream(outFileName));
-        for (int i=0; i<fileNamesAndByteArrays.size(); i += 2) {
-          String fname = (String) fileNamesAndByteArrays.get(i);
-          byte[] bytes = (byte[]) fileNamesAndByteArrays.get(i + 1);
-          String fnameShort = fname;
-          if (!preservePath || fname.indexOf("|") >= 0) {
-            int pt = Math.max(fname.lastIndexOf("|"), fname.lastIndexOf("/"));
-            fnameShort = fnameShort.substring(pt + 1);
-          }
-          Logger.info("...adding " + fname);
-          os.putNextEntry(new ZipEntry(fnameShort));
-          if (bytes == null) {
-            // get data from disk
-            FileInputStream in = new FileInputStream(fname);
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                os.write(buf, 0, len);
-                nBytesOut += len;
-            }
-            in.close();
-          } else {
-            // data are already in byte form
-            os.write(bytes, 0, bytes.length);
-            nBytesOut += bytes.length;
-          }
-          os.closeEntry();
+      ZipOutputStream os = new ZipOutputStream(
+          new FileOutputStream(outFileName));
+      for (int i = 0; i < fileNamesAndByteArrays.size(); i += 2) {
+        String fname = (String) fileNamesAndByteArrays.get(i);
+        byte[] bytes = (byte[]) fileNamesAndByteArrays.get(i + 1);
+        String fnameShort = fname;
+        if (!preservePath || fname.indexOf("|") >= 0) {
+          int pt = Math.max(fname.lastIndexOf("|"), fname.lastIndexOf("/"));
+          fnameShort = fnameShort.substring(pt + 1);
         }
-        os.close();
+        Logger.info("...adding " + fname);
+        os.putNextEntry(new ZipEntry(fnameShort));
+        if (bytes == null) {
+          // get data from disk
+          FileInputStream in = new FileInputStream(fname);
+          int len;
+          while ((len = in.read(buf)) > 0) {
+            os.write(buf, 0, len);
+            nBytesOut += len;
+          }
+          in.close();
+        } else {
+          // data are already in byte form
+          os.write(bytes, 0, bytes.length);
+          nBytesOut += bytes.length;
+        }
+        os.closeEntry();
+      }
+      os.close();
+      File f = new File(outFileName);
+      fullFilePath = f.getAbsolutePath().replace('\\','/');
+      nBytes = f.length();
     } catch (IOException e) {
       Logger.info(e.getMessage());
       return e.getMessage();
     }
     Logger.info(nBytesOut + " bytes prior to compression");
-    return new Integer(nBytesOut);
+    return msg + " " + nBytes + " " + fullFilePath;
   }
 
   public static boolean isGzip(byte[] bytes) {    
@@ -397,5 +413,5 @@ public class ZipUtil {
       return "";
     }
   }
-  
+
 }

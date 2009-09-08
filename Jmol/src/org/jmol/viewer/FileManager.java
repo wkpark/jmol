@@ -52,9 +52,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.Reader;
+import java.text.DateFormat;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipInputStream;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -125,6 +127,8 @@ public class FileManager {
       return viewer.getModelAdapter().getFileTypeName((BufferedReader) br);
     if (br instanceof ZipInputStream) {
       String zipDirectory = getZipDirectoryAsString(fileName);
+      if (zipDirectory.indexOf("JmolManifest") >= 0)
+        return "Jmol";
       return viewer.getModelAdapter().getFileTypeName(
           getBufferedReaderForString(zipDirectory));
     }
@@ -1050,7 +1054,9 @@ public class FileManager {
     getFileReferences(script, fileNames);
     Vector newFileNames = new Vector();
     int nFiles = fileNames.size();
-    Object ret;
+    String fileRoot = fileName.substring(fileName.lastIndexOf("/") + 1);
+    if (fileRoot.indexOf(".") >= 0)
+      fileRoot = fileRoot.substring(0, fileRoot.indexOf("."));
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name = (String) fileNames.get(iFile);
       int itype = urlTypeIndex(name);
@@ -1061,7 +1067,7 @@ public class FileManager {
         if (isLocal && name.indexOf("|") < 0) {
           v.add((byte[]) null);
         } else {
-          ret = getFileAsBytes(name);
+          Object ret = getFileAsBytes(name);
           if (!(ret instanceof byte[]))
             return (String) ret;
           v.add(ret);
@@ -1070,23 +1076,24 @@ public class FileManager {
       }
       newFileNames.add(name);
     }
-    String id = ("" + Math.random() + "00000").substring(2, 7);
-    String sname = "Jmol" + id + ".spt";
-    v.add("JmolManifest");
-    v.add(sname.getBytes());
+    String sname = fileRoot + ".spt";
+    v.add("JmolManifest.txt");
+    String sinfo = "# Jmol Mmanifest Zip Format 1.0\n"
+      + "# Created "
+      + DateFormat.getDateInstance().format(new Date()) + "\n"
+      + "# JmolVersion " + Viewer.getJmolVersion() + "\n"
+      + sname;
+    v.add(sinfo.getBytes());
     script = TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
     v.add(sname);
     v.add(script.getBytes());
     Object bytes = viewer.getImageAs("JPEG", -1, -1, -1, null, null, 
         JmolConstants.embedScript(script));
     if (bytes instanceof byte[]) {
-      v.add("Jmol" + id + ".jpg");
+      v.add(fileRoot + ".jpg");
       v.add((byte[]) bytes);
     }
-    ret = ZipUtil.writeZipFile(fileName, v, false);
-    if (ret instanceof String)
-      return (String) ret;
-    return "OK "  + ret + " bytes "+ fileName;
+    return ZipUtil.writeZipFile(fileName, v, false, "OK JMOL");
   }
 
   class DOMReaderThread implements Runnable {
@@ -1148,7 +1155,7 @@ public class FileManager {
               : (String) t);
         }
       }
-      if (errorMessage != null) {
+      if (errorMessage != null && !errorMessage.startsWith("NOTE:")) {
         Logger.error("file ERROR: " + fullPathNameInThread + "\n"
             + errorMessage);
       }

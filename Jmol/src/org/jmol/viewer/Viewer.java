@@ -1698,8 +1698,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!allowScript)
       fileName = fileName.substring(1);
     fileName = fileName.replace('\\', '/');
-    String type = (fileName.indexOf(".zip") >= 0 ? "zip" 
-        : fileManager.getFileTypeName(fileName));
+    String type = fileManager.getFileTypeName(fileName);
     checkHalt("exit");
     // assumes a Jmol script file if no other file type
     allowScript &= (type == null);

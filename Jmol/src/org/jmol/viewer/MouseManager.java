@@ -733,7 +733,11 @@ public abstract class MouseManager implements KeyListener {
   }
 
   void hoverOff() {
+    try {
     viewer.hoverOff();
+    } catch (Exception e) {
+      // ignore
+    }
   }
 
   class HoverWatcher implements Runnable {

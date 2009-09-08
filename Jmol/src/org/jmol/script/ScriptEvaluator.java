@@ -10642,6 +10642,8 @@ public class ScriptEvaluator {
         isExport = true;
       } else if (type.equals("JVXL")) {
         type = "ISO";
+      } else if (type.equals("JMOL")) {
+        type = "ZIPALL";
       }
     }
     if (type.equals("data")) {

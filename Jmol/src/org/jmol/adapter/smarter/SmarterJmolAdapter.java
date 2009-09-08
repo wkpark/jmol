@@ -246,7 +246,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
         String thisEntry = ze.getName();
         if (subFileName != null && !thisEntry.equals(subFileName))
           continue;
-        if (thisEntry.equals("JmolManifest") || haveManifest
+        if (ZipUtil.isJmolManifest(thisEntry) || haveManifest 
             && exceptFiles == manifest.indexOf("|" + thisEntry + "|") >= 0)
           continue;
         if (ZipUtil.isZipFile(bytes)) {

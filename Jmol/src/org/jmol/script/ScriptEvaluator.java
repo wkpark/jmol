@@ -10736,7 +10736,7 @@ public class ScriptEvaluator {
       }
     } else if (data == "ZIP" || data == "ZIPALL") {
       data = (String) viewer.getProperty("string", "stateInfo", null);
-      bytes = viewer.createZipSet(fileName, data, type.equals("ZIPALL"));
+      bytes = viewer.createImage(fileName, type, data, Integer.MIN_VALUE, -1, -1);
     } else if (data == "HIS") {
       data = viewer.getSetHistory(Integer.MAX_VALUE);
       type = "SPT";

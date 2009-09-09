@@ -54,8 +54,9 @@ import java.io.StringReader;
 import java.io.Reader;
 import java.text.DateFormat;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -793,7 +794,7 @@ public class FileManager {
       viewer.setStringProperty("defaultDirectoryLocal", path);
   }
 
-  public static String setLocalPathForWritingFile(JmolViewer viewer, String file) {
+  static String setLocalPathForWritingFile(JmolViewer viewer, String file) {
     if (file.indexOf("file:/") == 0)
       return file.substring(6);
     if (file.indexOf("/") == 0 || file.indexOf(":") >= 0)
@@ -820,7 +821,7 @@ public class FileManager {
     return getInputStream(name, showMsg, appletDocumentBase, appletProxy);
   }
 
-  public static Object getInputStream(String name, boolean showMsg,
+  private static Object getInputStream(String name, boolean showMsg,
                                       URL appletDocumentBase, String appletProxy) {
     String errorMessage = null;
     int iurlPrefix;
@@ -862,7 +863,7 @@ public class FileManager {
     return errorMessage;
   }
 
-  public static BufferedReader getBufferedReaderForString(String string) {
+  static BufferedReader getBufferedReaderForString(String string) {
     return new BufferedReader(new StringReader(string));
   }
 
@@ -961,39 +962,6 @@ public class FileManager {
             fileName, false));
   }
 
-  public static String writeFileZipped(String[] retName, byte[] data,
-                                       int maxUnzipped) {
-    String err = null;
-    try {
-      boolean doCompress = false;
-      if (data.length > maxUnzipped) {
-        // don't compress binary files of any sort
-        // as judged by having a nonASCII byte in first 10 bytes
-        doCompress = true;
-        for (int i = 0; i < 10; i++)
-          if (data[i] < 10)
-            doCompress = false;
-      }
-      if (doCompress) {
-        // gzip it
-        retName[0] += ".gz";
-        GZIPOutputStream gzFile = new GZIPOutputStream(new FileOutputStream(
-            retName[0]));
-        gzFile.write(data);
-        gzFile.flush();
-        gzFile.close();
-      } else {
-        FileOutputStream os = new FileOutputStream(retName[0]);
-        os.write(data);
-        os.flush();
-        os.close();
-      }
-    } catch (IOException e) {
-      err = e.getMessage();
-    }
-    return err;
-  }
-
   /**
    * Sets all local file references in a script file to point to files within
    * dataPath. If a file reference contains dataPath, then the file reference is
@@ -1048,12 +1016,13 @@ public class FileManager {
     }
   }
 
-  public String createZipSet(String fileName, String script, boolean includeRemoteFiles) {
+  String createZipSet(String fileName, String script, boolean includeRemoteFiles) {
     Vector v = new Vector();
     Vector fileNames = new Vector();
     getFileReferences(script, fileNames);
     Vector newFileNames = new Vector();
     int nFiles = fileNames.size();
+    fileName = fileName.replace('\\', '/');
     String fileRoot = fileName.substring(fileName.lastIndexOf("/") + 1);
     if (fileRoot.indexOf(".") >= 0)
       fileRoot = fileRoot.substring(0, fileRoot.indexOf("."));
@@ -1093,8 +1062,69 @@ public class FileManager {
       v.add(fileRoot + ".jpg");
       v.add((byte[]) bytes);
     }
-    return ZipUtil.writeZipFile(fileName, v, false, "OK JMOL");
+    return writeZipFile(fileName, v, false, "OK JMOL");
   }
+
+  /**
+   * generic method to create a zip file based on
+   * http://www.exampledepot.com/egs/java.util.zip/CreateZip.html
+   * 
+   * @param outFileName
+   * @param fileNamesAndByteArrays
+   *          Vector of [filename1, bytes|null, filename2, bytes|null, ...]
+   * @param preservePath
+   * @param msg 
+   * @return msg bytes filename or errorMessage
+   */
+  private static String writeZipFile(String outFileName,
+                                    Vector fileNamesAndByteArrays,
+                                    boolean preservePath, String msg) {
+    byte[] buf = new byte[1024];
+    long nBytesOut = 0;
+    long nBytes = 0;
+    Logger.info("creating zip file " + outFileName + "...");
+    String fullFilePath = null;
+    try {
+      ZipOutputStream os = new ZipOutputStream(
+          new FileOutputStream(outFileName));
+      for (int i = 0; i < fileNamesAndByteArrays.size(); i += 2) {
+        String fname = (String) fileNamesAndByteArrays.get(i);
+        byte[] bytes = (byte[]) fileNamesAndByteArrays.get(i + 1);
+        String fnameShort = fname;
+        if (!preservePath || fname.indexOf("|") >= 0) {
+          int pt = Math.max(fname.lastIndexOf("|"), fname.lastIndexOf("/"));
+          fnameShort = fnameShort.substring(pt + 1);
+        }
+        Logger.info("...adding " + fname);
+        os.putNextEntry(new ZipEntry(fnameShort));
+        if (bytes == null) {
+          // get data from disk
+          FileInputStream in = new FileInputStream(fname);
+          int len;
+          while ((len = in.read(buf)) > 0) {
+            os.write(buf, 0, len);
+            nBytesOut += len;
+          }
+          in.close();
+        } else {
+          // data are already in byte form
+          os.write(bytes, 0, bytes.length);
+          nBytesOut += bytes.length;
+        }
+        os.closeEntry();
+      }
+      os.close();
+      File f = new File(outFileName);
+      fullFilePath = f.getAbsolutePath().replace('\\','/');
+      nBytes = f.length();
+    } catch (IOException e) {
+      Logger.info(e.getMessage());
+      return e.getMessage();
+    }
+    Logger.info(nBytesOut + " bytes prior to compression");
+    return msg + " " + nBytes + " " + fullFilePath;
+  }
+
 
   class DOMReaderThread implements Runnable {
     //boolean terminated;

@@ -356,7 +356,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean isSignedApplet = false;
   private boolean isDataOnly;
 
-  public void setAppletContext(String fullName, URL documentBase, URL codeBase,
+  public synchronized void setAppletContext(String fullName, URL documentBase, URL codeBase,
                                String commandOptions) {
     this.fullName = fullName = (fullName == null ? "" : fullName);
     appletDocumentBase = (documentBase == null ? "" : documentBase.toString());
@@ -2042,10 +2042,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Object getFileAsBytes(String pathName) {
     return fileManager.getFileAsBytes(pathName);
-  }
-
-  public String createZipSet(String fileName, String script, boolean includeRemoteFiles) {
-    return fileManager.createZipSet(fileName, script, includeRemoteFiles); 
   }
 
   public String getCurrentFileAsString() {
@@ -7404,15 +7400,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      * where for now we just read param[0] as frames per second
      * 
      * 
-     * if (text_or_bytes != null && text_or_bytes instanceof Object[]) {
-     * Object[] obj = (Object[]) text_or_bytes; String[] files = (String[])
-     * obj[0]; String outputFileName = (String) obj[1]; int[] params = (int[])
-     * obj[2]; int fps = params[0]; JmolMovieCreatorInterface ac =
-     * (JmolMovieCreatorInterface) Interface
-     * .getOptionInterface("export.image.AviCreator"); if (ac == null) return
-     * "could not initialize org.jmol.export.image.AviCreator"; String ret =
-     * ac.createMovie(this, files, width, height, fps, outputFileName); return
-     * (ret == null ? "OK" : ret); }
+     * Note: this method is the gateway to all file writing for the applet.
+     * 
      */
 
     int saveWidth = dimScreen.width;
@@ -7431,21 +7420,32 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         boolean useDialog = (fileName.indexOf("?") == 0);
         if (useDialog)
           fileName = fileName.substring(1);
-        boolean forceDialog = (fileName.indexOf("?") == 0);
-        if (forceDialog)
-          fileName = fileName.substring(1);
+        useDialog |= isApplet;
+        if (fileName.startsWith("."))
+          fileName = "jmol" + fileName;
         fileName = FileManager.setLocalPathForWritingFile(this, fileName);
-        String[] aFileName = new String[] {(forceDialog || isApplet && useDialog ? "?" : "") 
-            + fileName};
-        err = statusManager.createImage(aFileName, type, text_or_bytes, quality);
-        if (!isApplet && err == null) {
+        if (useDialog) {
+          if (!isSignedApplet()) {
+            fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save"
+                : "saveImage", fileName);
+          }
+        }
+        if (fileName == null)
+          err = "CANCELED";
+        else if (type.equals("ZIP") || type.equals("ZIPALL"))
+          err = fileManager.createZipSet(fileName, (String) text_or_bytes,
+              type.equals("ZIPALL"));
+        else // see if application wants to do it (returns non-null String)
+          err = statusManager.createImage(fileName, type, text_or_bytes, quality);
+        if (err == null && !isApplet) {
           // applet calls creatImage itself
           // application can do it itself or allow Jmol to do it here
           JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
-             .getOptionInterface("export.image.ImageCreator");
+              .getOptionInterface("export.image.ImageCreator");
           c.setViewer(this);
-          err = (String) c.createImage(aFileName[0], type, text_or_bytes, quality);
-          statusManager.createImage(new String[] { err }, type, null, quality);
+          err = (String) c.createImage(fileName, type, text_or_bytes, quality);
+          // report error status (text_or_bytes == null)
+          statusManager.createImage(err, type, null, quality);
         }
       }
     } catch (Throwable er) {

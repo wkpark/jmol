@@ -624,29 +624,19 @@ class StatusManager {
   }
 
   /**
+   * offer to let application do the image creation.
+   * if text_or_bytes == null, then this is an error report.
    * 
-   * @param aFileName 
+   * @param fileNameOrError 
    * @param type
    * @param text_or_bytes
    * @param quality
    * @return null (canceled) or a message starting with OK or an error message
    */
-  String createImage(String[] aFileName, String type, Object text_or_bytes,
+  String createImage(String fileNameOrError, String type, Object text_or_bytes,
                      int quality) {
-    String fileName = aFileName[0];
-    if (fileName == null) // check for embedding program action
-      return (jmolStatusListener == null ? null : jmolStatusListener
-          .createImage(null, type, text_or_bytes, quality));
-    if (fileName != null && fileName.startsWith("?")) {
-      fileName = fileName.substring(1);
-      if (!viewer.isSignedApplet()) {
-        fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save"
-            : "saveImage", fileName);
-      }
-      aFileName[0] = fileName;
-    }
-    return (fileName == null ? "CANCELED" : jmolStatusListener == null  ? null :
-      jmolStatusListener.createImage(fileName, type, text_or_bytes, quality));
+    return (jmolStatusListener == null  ? null :
+      jmolStatusListener.createImage(fileNameOrError, type, text_or_bytes, quality));
   }
 
   Hashtable getRegistryInfo() {

@@ -929,11 +929,11 @@ abstract public class JmolPopup {
         script = "[] " + script;
       return TextFormat.simpleReplace(script, "[]", id); 
     } else if (script.indexOf("?FILEROOT?") >= 0) {
-      script = TextFormat.simpleReplace(script, "FILEROOT?", "?" + modelSetRoot);
+      script = TextFormat.simpleReplace(script, "FILEROOT?", modelSetRoot);
     } else if (script.indexOf("?FILE?") >= 0) {
-      script = TextFormat.simpleReplace(script, "FILE?", "?" + modelSetFileName);
+      script = TextFormat.simpleReplace(script, "FILE?", modelSetFileName);
     } else if (script.indexOf("?PdbId?") >= 0) {
-      script = TextFormat.simpleReplace(script, "PdbId?", "?=xxxx");
+      script = TextFormat.simpleReplace(script, "PdbId?", "=xxxx");
     }
     return script;
   }

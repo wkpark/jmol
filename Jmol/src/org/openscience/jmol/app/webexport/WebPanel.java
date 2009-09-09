@@ -34,6 +34,7 @@ import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.zip.GZIPOutputStream;
 
 import javax.swing.*;
 
@@ -516,7 +517,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         byte[] data = (byte[]) ret;
         String[] retName = new String[] { name };
         int maxUnzipped = (name.indexOf(".js") >= 0 ? Integer.MAX_VALUE : 100000);
-        String err = FileManager.writeFileZipped(retName, data, maxUnzipped);
+        String err = writeFileZipped(retName, data, maxUnzipped);
         if (!retName[0].equals(name))
           LogPanel.log("      ..." + GT._("compressing large data file to") + "\n" + (name = retName[0]));
         LogPanel.log(name);
@@ -529,6 +530,39 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return name;
   }
   
+  private static String writeFileZipped(String[] retName, byte[] data,
+                                       int maxUnzipped) {
+    String err = null;
+    try {
+      boolean doCompress = false;
+      if (data.length > maxUnzipped) {
+        // don't compress binary files of any sort
+        // as judged by having a nonASCII byte in first 10 bytes
+        doCompress = true;
+        for (int i = 0; i < 10; i++)
+          if (data[i] < 10)
+            doCompress = false;
+      }
+      if (doCompress) {
+        // gzip it
+        retName[0] += ".gz";
+        GZIPOutputStream gzFile = new GZIPOutputStream(new FileOutputStream(
+            retName[0]));
+        gzFile.write(data);
+        gzFile.flush();
+        gzFile.close();
+      } else {
+        FileOutputStream os = new FileOutputStream(retName[0]);
+        os.write(data);
+        os.flush();
+        os.close();
+      }
+    } catch (IOException e) {
+      err = e.getMessage();
+    }
+    return err;
+  }
+
   void syncLists() {
     JList list = webPanels[1 - panelIndex].instanceList;
     DefaultListModel model1 = (DefaultListModel) instanceList.getModel();

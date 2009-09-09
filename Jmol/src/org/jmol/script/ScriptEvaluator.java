@@ -6693,7 +6693,7 @@ public class ScriptEvaluator {
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
         viewer.addLoadScript("-");
-        runScript("script " + errMsg.substring(40));
+        runScript("script \"" + errMsg.substring(40) + "\"");
         return;
       }
       evalError(errMsg, null);

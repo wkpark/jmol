@@ -1573,12 +1573,7 @@ public class ScriptEvaluator {
   private boolean compileScript(String filename, String strScript,
                                 boolean debugCompiler) {
     this.filename = filename;
-    if (strScript.indexOf("$SCRIPT_PATH$") >= 0 && filename != null) {
-      String path = filename;
-      int pt = Math.max(filename.lastIndexOf("|"), filename.lastIndexOf("/"));
-      path = path.substring(0, pt + 1);
-      strScript = TextFormat.simpleReplace(strScript, "$SCRIPT_PATH$/", path);
-    }
+    strScript = fixScriptPath(strScript, filename);
     getScriptContext(compiler.compile(filename, strScript, false, false,
         debugCompiler, false), false);
     isStateScript = (script.indexOf(Viewer.STATE_VERSION_STAMP) >= 0);
@@ -1589,6 +1584,18 @@ public class ScriptEvaluator {
       viewer.scriptStatus("");
     script = s;
     return !error;
+  }
+
+  private String fixScriptPath(String strScript, String filename) {
+    if (filename != null && strScript.indexOf("$SCRIPT_PATH$") >= 0) {
+      String path = filename;
+      int pt = Math.max(filename.lastIndexOf("|"), filename.lastIndexOf("/"));
+      path = path.substring(0, pt + 1);
+      strScript = TextFormat.simpleReplace(strScript, "$SCRIPT_PATH$/", path);
+      if (path.length() > 0)
+        strScript = TextFormat.simpleReplace(strScript, "$SCRIPT_PATH$", path.substring(0, path.length() - 1));
+    }
+    return strScript;
   }
 
   private int setScriptExtensions() {
@@ -1630,11 +1637,12 @@ public class ScriptEvaluator {
       return false;
     }
     this.filename = filename;
+    String script = fixScriptPath(data[1], filename);
     if (localPath != null)
-      data[1] = FileManager.setScriptFileReferences(data[1], localPath, true);
+      script = FileManager.setScriptFileReferences(script, localPath, true);
     if (remotePath != null)
-      data[1] = FileManager.setScriptFileReferences(data[1], remotePath, false);
-    return compileScript(filename, data[1], debugScript);
+      script = FileManager.setScriptFileReferences(script, remotePath, false);
+    return compileScript(filename, script, debugScript);
   }
 
 

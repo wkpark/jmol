@@ -7417,6 +7417,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (fileName == null) {
         err = clipImage((String) text_or_bytes);
       } else {
+        boolean isZip = (type.equals("ZIP") || type.equals("ZIPALL"));
         boolean useDialog = (fileName.indexOf("?") == 0);
         if (useDialog)
           fileName = fileName.substring(1);
@@ -7424,15 +7425,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         if (fileName.startsWith("."))
           fileName = "jmol" + fileName;
         fileName = FileManager.setLocalPathForWritingFile(this, fileName);
-        if (useDialog) {
-          if (!isSignedApplet()) {
+        
+        if (useDialog && (isZip || !isSignedApplet()))
             fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save"
                 : "saveImage", fileName);
-          }
-        }
         if (fileName == null)
           err = "CANCELED";
-        else if (type.equals("ZIP") || type.equals("ZIPALL"))
+        else if (isZip)
           err = fileManager.createZipSet(fileName, (String) text_or_bytes,
               type.equals("ZIPALL"));
         else // see if application wants to do it (returns non-null String)

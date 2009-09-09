@@ -1089,6 +1089,8 @@ public class FileManager {
           new FileOutputStream(outFileName));
       for (int i = 0; i < fileNamesAndByteArrays.size(); i += 2) {
         String fname = (String) fileNamesAndByteArrays.get(i);
+        if (fname.indexOf("file:/") == 0)
+          fname = fname.substring(6);
         byte[] bytes = (byte[]) fileNamesAndByteArrays.get(i + 1);
         String fnameShort = fname;
         if (!preservePath || fname.indexOf("|") >= 0) {

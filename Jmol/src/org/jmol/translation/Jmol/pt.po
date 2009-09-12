@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-09-04 22:32+0200\n"
-"PO-Revision-Date: 2008-11-18 15:28+0000\n"
+"PO-Revision-Date: 2009-09-11 23:37+0000\n"
 "Last-Translator: Tiago Silva <Unknown>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-11-19 23:36+0000\n"
+"X-Launchpad-Export-Date: 2009-09-12 17:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Portugal\n"
 "X-Poedit-Language: Portuguese\n"
@@ -114,26 +114,23 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:223
 msgid "For example:"
-msgstr ""
+msgstr "Por exemplo:"
 
 #: org/openscience/jmol/app/JmolApp.java:229
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr "As opções -D são as seguintes (pré-definição em parentesis):"
 
 #: org/openscience/jmol/app/JmolApp.java:454
-#, fuzzy
 msgid "Executing script 1..."
-msgstr "Executando um script..."
+msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:464
-#, fuzzy
 msgid "Executing script file..."
-msgstr "Executando um script..."
+msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:485
-#, fuzzy
 msgid "Executing script 2..."
-msgstr "Executando um script..."
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
@@ -159,9 +156,8 @@ msgid "Jmol Script Console"
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
-#, fuzzy
 msgid "Editor"
-msgstr "&Editar"
+msgstr "Editor"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:114
 msgid "Check"
@@ -177,7 +173,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:123
 msgid "Variables"
-msgstr ""
+msgstr "Variáveis"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:312
@@ -194,7 +190,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:128
 msgid "State"
-msgstr ""
+msgstr "Estado"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:130
 msgid "Help"
@@ -344,7 +340,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:235
 msgid "Number of Processors:"
-msgstr ""
+msgstr "Número de Processadores:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:248
 msgid "Route"
@@ -380,7 +376,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:308
 msgid "Selection: "
-msgstr ""
+msgstr "Selecção: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
@@ -388,7 +384,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:349
 msgid "File..."
-msgstr ""
+msgstr "Ficheiro..."
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:360
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:759
@@ -518,7 +514,7 @@ msgstr "Desseleccionar todos"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:78
 msgid "Copy &Image"
-msgstr ""
+msgstr "Copiar &Imagem"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:79
 msgid "Copy Script"
@@ -526,7 +522,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:80
 msgid "Pr&eferences..."
-msgstr ""
+msgstr "Pr&eferências..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
 msgid "&Paste"
@@ -534,7 +530,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:83
 msgid "&Select"
-msgstr ""
+msgstr "&Seleccionar"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:84
 msgid "&All"
@@ -570,7 +566,7 @@ msgstr "Fósforo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:91
 msgid "Sulfur"
-msgstr ""
+msgstr "Enxofre"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
 msgid "Amino"
@@ -619,7 +615,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:121
 #, java-format
 msgid "{0} Å"
-msgstr ""
+msgstr "{0} Å"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:109
 msgid "&Label"
@@ -627,15 +623,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:111
 msgid "&Symbol"
-msgstr ""
+msgstr "&Símbolo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:112
 msgid "&Name"
-msgstr ""
+msgstr "&Nome"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:113
 msgid "&Number"
-msgstr ""
+msgstr "&Número"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:114
 msgid "&Centered"
@@ -678,7 +674,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:132
 #, java-format
 msgid "{0}%"
-msgstr ""
+msgstr "{0}%"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:133
 msgid "&Perspective Depth"
@@ -1211,7 +1207,8 @@ msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:425
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr "Tolerância da ligação- somatório de dois raios covalentes+ este valor"
+msgstr ""
+"Tolerância da ligação- somatório de dois raios covalentes+ este valor"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:476
 msgid "Minimum Bonding Distance"
@@ -1472,209 +1469,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:521
 msgid "compressing large data file to"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Initializing Script Editor..."
-#~ msgstr "Inicializando a Janela de script..."
-
-#~ msgid "Initializing Measurements..."
-#~ msgstr "Inicializando medições..."
-
-#~ msgid "Run"
-#~ msgstr "Executar"
-
-#~ msgid "Select Atoms"
-#~ msgstr "Escolha de átomos"
-
-#~ msgid "Preview"
-#~ msgstr "Prever"
-
-#~ msgid "Make crystal..."
-#~ msgstr "Fazer cristal..."
-
-#~ msgid "Name"
-#~ msgstr "Nome"
-
-#~ msgid "Measurements..."
-#~ msgstr "Medições..."
-
-#~ msgid "Render in pov-ray."
-#~ msgstr "Renderizar em \"pov-ray\""
-
-#~ msgid "Select an atom or region."
-#~ msgstr "Escolher átomo ou região"
-
-#~ msgid "View measurement table."
-#~ msgstr "Ver tabela de medições"
-
-#~ msgid "Image Type"
-#~ msgstr "Tipo de imagem"
-
-#~ msgid "JPEG Quality"
-#~ msgstr "Qualidade JPEG"
-
-#~ msgid "Initializing AtomSetChooser Window..."
-#~ msgstr "Inicializando a Janeal 'AtomSetChooser'..."
-
-#~ msgid "Setting up File Choosers..."
-#~ msgstr "Definir 'File Choosers'..."
-
-#~ msgid "Jmol-to-POV-Ray Conversion"
-#~ msgstr "Conversão Jmol para POV-Ray"
-
-#~ msgid "Height : "
-#~ msgstr "Altura "
-
-#~ msgid "POV-Ray Executable Location"
-#~ msgstr "Localização do executável Pov-Ray"
-
-#~ msgid "Image size"
-#~ msgstr "Tamanho da imagem"
-
-#~ msgid "Output format : "
-#~ msgstr "Formato de saida "
-
-#~ msgid "Select the file format of the output file"
-#~ msgstr "Seleccionar o formato do ficheiro"
-
-#~ msgid "Command Line to Execute"
-#~ msgstr "linha de comandos para executar"
-
-#~ msgid "The actual command which will be executed"
-#~ msgstr "O comando actual irá ser executado"
-
-#~ msgid "null component string"
-#~ msgstr "Componente nulo do filamento"
-
-#~ msgid "Filename Stem"
-#~ msgstr "Filename Stem"
-
-#~ msgid "Use .ini file"
-#~ msgstr "Usar ficheiro .ini"
-
-#~ msgid "Save options in a .ini file"
-#~ msgstr "Gravar opções num ficheiro .ini"
-
-#~ msgid "Render all frames"
-#~ msgstr "Renderizar todos os frames"
-
-#~ msgid "Render each model (not only the currently displayed one)"
-#~ msgstr "Renderizar cada modelo (não só o que está a ser visualizado)"
-
-#~ msgid "Turn on POV-Ray anti-aliasing"
-#~ msgstr "Ligar 'anti-aliasing' do POV-Ray"
-
-#~ msgid "Use povray's slower but higher quality anti-aliasing mode"
-#~ msgstr ""
-#~ "Usar modo 'anti-aliasing' mais lento (mas com melhor qualidade)  do povray"
-
-#~ msgid "Render in pov-ray..."
-#~ msgstr "Renderizar em pov-ray..."
-
-#~ msgid "File not loaded"
-#~ msgstr "Ficheiro não carregado"
-
-#~ msgid "Wi&reframe Rotation"
-#~ msgstr "Rotação de FrameLi&gado"
-
-#~ msgid "Wireframe Rotation"
-#~ msgstr "Rotação de frame"
-
-#~ msgid "Colors"
-#~ msgstr "Cores"
-
-#~ msgid "Background"
-#~ msgstr "Fundo"
-
-#~ msgid "Set the Background Color"
-#~ msgstr "Definir cor de fundo"
-
-#~ msgid "Background Color"
-#~ msgstr "Cores do fundo"
-
-#~ msgid "Picked Atoms"
-#~ msgstr "Átomos escolhidos"
-
-#~ msgid "Set the Color for Picked Atoms"
-#~ msgstr "Definir cor de átomos escolhidos"
-
-#~ msgid "Picked Atom Color"
-#~ msgstr "Cor do átomo escolhido"
-
-#~ msgid "Text"
-#~ msgstr "Texto"
-
-#~ msgid "Set the Color for Text"
-#~ msgstr "Definir cor do texto"
-
-#~ msgid "Text Color"
-#~ msgstr "Cor do texto"
-
-#~ msgid "Set the Color for Bonds"
-#~ msgstr "Definir cor para as ligações"
-
-#~ msgid "Bond Color"
-#~ msgstr "Cor da ligação"
-
-#~ msgid "Set the Vector Color"
-#~ msgstr "Definir cor do Vector"
-
-#~ msgid "Vector Color"
-#~ msgstr "Cor do vector"
-
-#~ msgid "Color for distance, angle, & torsion measurements"
-#~ msgstr "Cor para a distância, ângulo, e medições de torção"
-
-#~ msgid "Measurements Color"
-#~ msgstr "Cor das meidções"
-
-#~ msgid "Loading plugins..."
-#~ msgstr "Carregamento de plugins..."
-
-#~ msgid "15% vanderWaals"
-#~ msgstr "15% vanderWaals"
-
-#~ msgid "25% vanderWaals"
-#~ msgstr "20% vanderWaals"
-
-#~ msgid "100% vanderWaals"
-#~ msgstr "20% vanderWaals"
-
-#~ msgid "0.10 Å"
-#~ msgstr "0.10 Å"
-
-#~ msgid "0.15 Å"
-#~ msgstr "0.15 Å"
-
-#~ msgid "0.20 Å"
-#~ msgstr "0.15 Å"
-
-#~ msgid "0.05 Å"
-#~ msgstr "0.05 Å"
-
-#~ msgid "Scale 0.5"
-#~ msgstr "Escala 0.5"
-
-#~ msgid "Scale 1"
-#~ msgstr "Escala 1"
-
-#~ msgid "Scale 2"
-#~ msgstr "Escala 2"
-
-#~ msgid "Scale 5"
-#~ msgstr "Escala 5"
-
-#~ msgid "100%"
-#~ msgstr "100%"
-
-#~ msgid "150%"
-#~ msgstr "150%"
-
-#~ msgid "200%"
-#~ msgstr "200%"
-
-#~ msgid "400%"
-#~ msgstr "400%"
-
-#~ msgid "800%"
-#~ msgstr "800%"

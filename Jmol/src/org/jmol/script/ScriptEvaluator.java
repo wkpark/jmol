@@ -1589,11 +1589,12 @@ public class ScriptEvaluator {
   private String fixScriptPath(String strScript, String filename) {
     if (filename != null && strScript.indexOf("$SCRIPT_PATH$") >= 0) {
       String path = filename;
+      // we first check for paths into ZIP files and adjust accordingly
       int pt = Math.max(filename.lastIndexOf("|"), filename.lastIndexOf("/"));
       path = path.substring(0, pt + 1);
       strScript = TextFormat.simpleReplace(strScript, "$SCRIPT_PATH$/", path);
-      if (path.length() > 0)
-        strScript = TextFormat.simpleReplace(strScript, "$SCRIPT_PATH$", path.substring(0, path.length() - 1));
+      // now replace the variable itself
+      strScript = TextFormat.simpleReplace(strScript, "$SCRIPT_PATH$", path);
     }
     return strScript;
   }
@@ -1637,7 +1638,7 @@ public class ScriptEvaluator {
       return false;
     }
     this.filename = filename;
-    String script = fixScriptPath(data[1], filename);
+    String script = fixScriptPath(data[1], data[0]);
     if (localPath != null)
       script = FileManager.setScriptFileReferences(script, localPath, true);
     if (remotePath != null)

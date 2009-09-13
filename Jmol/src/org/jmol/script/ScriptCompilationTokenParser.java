@@ -1031,6 +1031,7 @@ abstract class ScriptCompilationTokenParser {
     switch (theToken.tok) {
     case Token.times:
       return true;
+    case Token.opIf:
     case Token.identifier:
       break;
     default:

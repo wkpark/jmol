@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-09-09 18:32+0200\n"
-"PO-Revision-Date: 2009-08-01 22:54-0300\n"
-"Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
+"PO-Revision-Date: 2009-09-16 19:14-0300\n"
+"Last-Translator: Sérgio Ceroni da Silva <sergio.ceroni@ufrgs.br>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -40,25 +40,16 @@ msgstr "Erro no arquivo:"
 
 #: org/jmol/applet/Jmol.java:1083
 #, java-format
-msgid ""
-"File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
-msgstr ""
-"Criação de arquivo por este \"applet\" não é permitida. Para formato Base64 "
-"JPEG, use {0}."
+msgid "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+msgstr "Criação de arquivo por este \"applet\" não é permitida. Para formato Base64 JPEG, use {0}."
 
 #: org/jmol/applet/Jmol.java:1086
 msgid "File creation failed."
 msgstr "Criação de arquivo falhou."
 
 #: org/jmol/applet/Jmol.java:1194
-msgid ""
-"Messages will appear here. Enter commands in the box below. Click the "
-"console Help menu item for on-line help, which will appear in a new browser "
-"window."
-msgstr ""
-"Mensagens aparecerão aqui. Entre com os comandos na caixa abaixo. Clique no "
-"menu de ajuda do console para ajuda via Internet, a qual será mostrada em "
-"nova janela do navegador."
+msgid "Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window."
+msgstr "Mensagens aparecerão aqui. Entre com os comandos na caixa abaixo. Clique no menu de ajuda do console para ajuda via Internet, a qual será mostrada em nova janela do navegador."
 
 #: org/jmol/appletwrapper/AppletWrapper.java:91
 msgid "Loading Jmol applet ..."
@@ -69,7 +60,8 @@ msgstr "Carregando o applet Jmol ..."
 msgid "  {0} seconds"
 msgstr "  {0} segundos"
 
-#: org/jmol/console/AppletConsole.java:96 org/jmol/console/JmolConsole.java:67
+#: org/jmol/console/AppletConsole.java:96
+#: org/jmol/console/JmolConsole.java:67
 msgid "Jmol Script Console"
 msgstr "Console de \"script\" do Jmol"
 
@@ -105,9 +97,7 @@ msgstr "Carregar"
 
 #: org/jmol/console/AppletConsole.java:142
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"pressione CTRL-ENTER para uma nova linha ou cole os dados do modelo e "
-"pressione Carregar"
+msgstr "pressione CTRL-ENTER para uma nova linha ou cole os dados do modelo e pressione Carregar"
 
 #: org/jmol/console/AppletConsole.java:370
 msgid "&Help"
@@ -159,7 +149,7 @@ msgstr "Conferir"
 
 #: org/jmol/console/ScriptEditor.java:135
 msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
-msgstr ""
+msgstr "Início"
 
 #: org/jmol/console/ScriptEditor.java:136
 msgid "Step"
@@ -369,7 +359,7 @@ msgstr "Anexar  modelos"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
-msgstr ""
+msgstr "Árabe"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
@@ -497,11 +487,11 @@ msgstr "Nenhum átomo foi carregado"
 
 #: org/jmol/popup/JmolPopup.java:464
 #: org/jmol/popup/PopupResourceBundle.java:576
-#, fuzzy
 msgid "Space Group"
 msgstr "Grupo Espacial"
 
-#: org/jmol/popup/JmolPopup.java:526 org/jmol/popup/JmolPopup.java:566
+#: org/jmol/popup/JmolPopup.java:526
+#: org/jmol/popup/JmolPopup.java:566
 #: org/jmol/popup/PopupResourceBundle.java:597
 #: org/jmol/popup/PopupResourceBundle.java:611
 #: org/jmol/popup/PopupResourceBundle.java:620
@@ -520,9 +510,8 @@ msgid "Translations"
 msgstr "Traduções"
 
 #: org/jmol/popup/JmolPopup.java:692
-#, fuzzy
 msgid "System"
-msgstr "Passo"
+msgstr "Sistema"
 
 #: org/jmol/popup/JmolPopup.java:698
 msgid "1 processor"
@@ -539,12 +528,11 @@ msgstr "número de processadores desconhecido"
 
 #: org/jmol/popup/JmolPopup.java:703
 msgid "Java version:"
-msgstr ""
+msgstr "Versão do Java:"
 
 #: org/jmol/popup/JmolPopup.java:707
-#, fuzzy
 msgid "Java memory usage:"
-msgstr "Memória usada pelo Java"
+msgstr "Memória usada pelo Java:"
 
 #: org/jmol/popup/JmolPopup.java:713
 #, java-format
@@ -602,9 +590,8 @@ msgid "Symmetry"
 msgstr "Simetria"
 
 #: org/jmol/popup/PopupResourceBundle.java:577
-#, fuzzy
 msgid "Hide Symmetry"
-msgstr "Simetria"
+msgstr "Ocultar Simetria"
 
 #: org/jmol/popup/PopupResourceBundle.java:578
 msgid "Model information"
@@ -1440,24 +1427,20 @@ msgid "Current state"
 msgstr "Estado atual"
 
 #: org/jmol/popup/PopupResourceBundle.java:888
-#, fuzzy
 msgid "File"
-msgstr "Arquivo {0}"
+msgstr "Arquivo"
 
 #: org/jmol/popup/PopupResourceBundle.java:889
-#, fuzzy
 msgid "Reload"
-msgstr "Recarregar {0}"
+msgstr "Recarregar"
 
 #: org/jmol/popup/PopupResourceBundle.java:890
-#, fuzzy
 msgid "Open from PDB"
-msgstr "Arquivo do PDB"
+msgstr "Abrir de arquivo PDB"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
-#, fuzzy
 msgid "Open file or URL"
-msgstr "Arquivo ou URL"
+msgstr "Abrir arquivo ou URL"
 
 #: org/jmol/popup/PopupResourceBundle.java:892
 msgid "Load full unit cell"
@@ -1465,52 +1448,48 @@ msgstr "Carregar cela unitária completa"
 
 #: org/jmol/popup/PopupResourceBundle.java:893
 msgid "Open script"
-msgstr ""
+msgstr "Abrir \"script\""
 
 #: org/jmol/popup/PopupResourceBundle.java:895
 #, java-format
 msgid "Save a copy of {0}"
-msgstr ""
+msgstr "Gravar uma cópia de {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:896
-#, fuzzy
 msgid "Save script with state"
-msgstr "\"Script\" com estado"
+msgstr "Gravar \"script\" com estado"
 
 #: org/jmol/popup/PopupResourceBundle.java:897
-#, fuzzy
 msgid "Save script with history"
-msgstr "\"Script\" com histórico"
+msgstr "Gravar \"script\" com histórico"
 
 #: org/jmol/popup/PopupResourceBundle.java:898
 #: org/jmol/popup/PopupResourceBundle.java:899
 #: org/jmol/popup/PopupResourceBundle.java:900
 #: org/jmol/popup/PopupResourceBundle.java:901
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} image"
-msgstr "{0} Imagem"
+msgstr "Exportar {0} imagem"
 
 #: org/jmol/popup/PopupResourceBundle.java:902
-#, fuzzy
 msgid "Save JVXL isosurface"
-msgstr "Isosuperfície JVXL"
+msgstr "Gravar isosuperfície JVXL"
 
 #: org/jmol/popup/PopupResourceBundle.java:903
 #: org/jmol/popup/PopupResourceBundle.java:904
 #: org/jmol/popup/PopupResourceBundle.java:905
 #: org/jmol/popup/PopupResourceBundle.java:906
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} 3D model"
-msgstr "{0} modelos 3D"
+msgstr "Exportar {0} modelo(s) 3D"
 
 #: org/jmol/popup/PopupResourceBundle.java:908
-#, fuzzy
 msgid "Computation"
-msgstr "Configurações"
+msgstr "Computação"
 
 #: org/jmol/popup/PopupResourceBundle.java:909
 msgid "Optimize structure"
-msgstr ""
+msgstr "Otimizar estrutura"
 
 #: org/jmol/popup/PopupResourceBundle.java:913
 msgid "Extract MOL data"
@@ -1603,7 +1582,7 @@ msgstr "Cores conforme RasMol"
 
 #: org/jmol/popup/PopupResourceBundle.java:963
 msgid "About..."
-msgstr ""
+msgstr "Sobre..."
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1092
 #: org/jmol/script/ScriptEvaluator.java:2332
@@ -1829,12 +1808,8 @@ msgid "No data available"
 msgstr "Nenhum dado disponível"
 
 #: org/jmol/script/ScriptEvaluator.java:2423
-msgid ""
-"No partial charges were read from the file; Jmol needs these to render the "
-"MEP data."
-msgstr ""
-"Nenhuma carga parcial foi lida do arquivo; Jmol necessita destas para "
-"renderizar os dados de MEP"
+msgid "No partial charges were read from the file; Jmol needs these to render the MEP data."
+msgstr "Nenhuma carga parcial foi lida do arquivo; Jmol necessita destas para renderizar os dados de MEP"
 
 #: org/jmol/script/ScriptEvaluator.java:2426
 msgid "No unit cell"
@@ -1856,12 +1831,8 @@ msgstr "esperado um nome de objeto depois de '$'"
 
 #: org/jmol/script/ScriptEvaluator.java:2442
 #, java-format
-msgid ""
-"plane expected -- either three points or atom expressions or {0} or {1} or "
-"{2}"
-msgstr ""
-"esperado um plano -- três pontos ou uma \"atom expression\" ou {0} ou {1} ou "
-"{2}"
+msgid "plane expected -- either three points or atom expressions or {0} or {1} or {2}"
+msgstr "esperado um plano -- três pontos ou uma \"atom expression\" ou {0} ou {1} ou {2}"
 
 #: org/jmol/script/ScriptEvaluator.java:2445
 msgid "property name expected"
@@ -1911,9 +1882,7 @@ msgstr "objeto não identificável"
 #: org/jmol/script/ScriptEvaluator.java:2482
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr ""
-"parâmetro {0} não identificável no \"script\" de estado do Jmol (mesmo assim "
-"foi definido)"
+msgstr "parâmetro {0} não identificável no \"script\" de estado do Jmol (mesmo assim foi definido)"
 
 #: org/jmol/script/ScriptEvaluator.java:2485
 #, java-format
@@ -1948,8 +1917,7 @@ msgstr "{0} ponte(s) de Hidrogênio"
 
 #: org/jmol/viewer/PickingManager.java:207
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr ""
-"selecione um átomo adicional para poder girar o modelo em torno de um eixo"
+msgstr "selecione um átomo adicional para poder girar o modelo em torno de um eixo"
 
 #: org/jmol/viewer/PickingManager.java:208
 msgid "pick two atoms in order to spin the model around an axis"
@@ -1973,14 +1941,13 @@ msgstr "Arraste para mover rótulo"
 #: org/jmol/viewer/Viewer.java:4987
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
-msgstr ""
-"ERRO: impossível designar um sinalizador booleano para uma \"string\": {0}"
+msgstr "ERRO: impossível designar um sinalizador booleano para uma \"string\": {0}"
 
-#: org/jmol/viewer/Viewer.java:5210 org/jmol/viewer/Viewer.java:5390
+#: org/jmol/viewer/Viewer.java:5210
+#: org/jmol/viewer/Viewer.java:5390
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-msgstr ""
-"ERRO: impossível designar um sinalizador booleano para um valor numérico: {0}"
+msgstr "ERRO: impossível designar um sinalizador booleano para um valor numérico: {0}"
 
 #: org/jmol/viewer/Viewer.java:5908
 #, java-format
@@ -1993,16 +1960,12 @@ msgstr "área de transferência não está acessível -- use o \"applet\" assina
 
 #~ msgid "Minimize"
 #~ msgstr "Minimizar"
-
 #~ msgid "About Jmol"
 #~ msgstr "Sobre o Jmol"
-
 #~ msgid "Execute"
 #~ msgstr "Executar"
-
 #~ msgid "English - United Kingdom"
 #~ msgstr "Inglês - Reino Unido"
-
 #~ msgid "Portuguese - Brazil"
 #~ msgstr "Português - Brasil"
 
@@ -2017,295 +1980,205 @@ msgstr "área de transferência não está acessível -- use o \"applet\" assina
 #, fuzzy
 #~ msgid "SPT History"
 #~ msgstr "Histórico"
-
 #~ msgid "This applet cannot open file dialogs."
 #~ msgstr "Este \"applet\" não pode abrir menus de arquivo."
-
 #~ msgid "all"
 #~ msgstr "todos"
-
 #~ msgid "Structure"
 #~ msgstr "Estrutura"
-
 #~ msgid "Surface"
 #~ msgstr "Superfície"
-
 #~ msgid "Unitcell"
 #~ msgstr "Cela unitária"
-
 #~ msgid "Measure"
 #~ msgstr "Medida"
-
 #~ msgid "Bound Box"
 #~ msgstr "Caixa limitante"
-
 #~ msgid "Unit Cell"
 #~ msgstr "Cela unitária"
-
 #~ msgid "commandExpected"
 #~ msgstr "esperado um comando"
-
 #~ msgid "comma or right parenthesis expected"
 #~ msgstr "esperada uma vírgula ou um parêntese à direita"
-
 #~ msgid "comparison operator expected"
 #~ msgstr "esperado um operador de comparação"
-
 #~ msgid "equal sign expected"
 #~ msgstr "esperado um sinal de igualdade"
-
 #~ msgid "left parenthesis expected"
 #~ msgstr "esperado um parêntese à esquerda"
-
 #~ msgid "right brace expected"
 #~ msgstr "esperada uma chave à direita"
-
 #~ msgid "right bracket expected"
 #~ msgstr "esperado um colchete à direita"
-
 #~ msgid "right parenthesis expected"
 #~ msgstr "esperado um parêntese à direita"
-
 #~ msgid "rotation points cannot be identical"
 #~ msgstr "pontos de rotação não podem ser idênticos"
-
 #~ msgid "too many parentheses"
 #~ msgstr "número excessivo de parênteses"
-
 #~ msgid "bad atom number"
 #~ msgstr "número de átomo errôneo"
-
 #~ msgid "Calculate what?"
 #~ msgstr "Calcular o quê?"
-
 #~ msgid "invalid {0} control keyword"
 #~ msgstr "palavra-chave de controle {0} inválida"
-
 #~ msgid "save what?"
 #~ msgstr "gravar o quê?"
-
 #~ msgid "restore what?"
 #~ msgstr "restaurar o quê?"
-
 #~ msgid "trajectory not applicable in this context"
 #~ msgstr "trajetória não aplicável neste contexto"
-
 #~ msgid "{0} connections modified or created"
 #~ msgstr "{0} conexão(ões) modificada(s) ou criada(s)"
-
 #~ msgid "Select"
 #~ msgstr "Selecionar"
-
 #~ msgid "Too many nested {0} commands"
 #~ msgstr "Excessivos comandos {0} aninhados"
-
 #~ msgid "Invalid {0} command"
 #~ msgstr "Comando {0} inválido"
-
 #~ msgid "Compatibility"
 #~ msgstr "Compatibilidade"
-
 #~ msgid "RasMol/Chime Settings"
 #~ msgstr "Definições conforme RasMol/Chime"
-
 #~ msgid "Axes RasMol/Chime"
 #~ msgstr "Eixos conforme RasMol/Chime"
-
 #~ msgid "Zero-Based Xyz Rasmol"
 #~ msgstr "Rasmol Xyz \"zero-based\""
-
 #~ msgid "The {0} command is not available for the applet."
 #~ msgstr "O comando {0} não está disponível para uso com o applet."
-
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Jmol está a executar o script..."
 
 #, fuzzy
 #~ msgid "use {0}"
 #~ msgstr "Escala 0.2"
-
 #~ msgid "Animate"
 #~ msgstr "Animar"
-
 #~ msgid "Set Select Mode"
 #~ msgstr "Definir o modo de selecção"
-
 #~ msgid "Replace Selection"
 #~ msgstr "Substítuir Selecção"
-
 #~ msgid "Add to Selection (OR)"
 #~ msgstr "Adicionar à selecção (OR)"
-
 #~ msgid "Narrow Selection (AND)"
 #~ msgstr "Limitar a selecção (AND)"
-
 #~ msgid "Render"
 #~ msgstr "Renderizar"
-
 #~ msgid "Crimson"
 #~ msgstr "Crimson"
-
 #~ msgid "Dark Red"
 #~ msgstr "Vermelho Escuro"
-
 #~ msgid "Firebrick"
 #~ msgstr "Tijolo"
-
 #~ msgid "Indian Red"
 #~ msgstr "Vermelho Indiano"
-
 #~ msgid "Dark Magenta"
 #~ msgstr "Magenta Escuro"
-
 #~ msgid "Dark Salmon"
 #~ msgstr "Salmão Escuro"
-
 #~ msgid "Light Salmon"
 #~ msgstr "Samão claro"
-
 #~ msgid "Deep Pink"
 #~ msgstr "Rosa escuro"
-
 #~ msgid "Light Pink"
 #~ msgstr "Rosa claro"
-
 #~ msgid "Goldenrod"
 #~ msgstr "Haste dourada"
-
 #~ msgid "Lemon Chiffon"
 #~ msgstr "'Lemon Chiffon'"
-
 #~ msgid "Yellow-Green"
 #~ msgstr "Amarelo-Esverdeado"
-
 #~ msgid "Lime"
 #~ msgstr "lima"
-
 #~ msgid "Seagreen"
 #~ msgstr "Verde oceano"
-
 #~ msgid "Green-Blue"
 #~ msgstr "Verde-Azulado"
-
 #~ msgid "Spring Green"
 #~ msgstr "Verde primavera"
-
 #~ msgid "Aqua"
 #~ msgstr "Azul Aquático"
-
 #~ msgid "Azure"
 #~ msgstr "Azul celeste"
-
 #~ msgid "Carolina Blue"
 #~ msgstr "'Carolina Blue'"
-
 #~ msgid "Cadet Blue"
 #~ msgstr "'Cadet Blue'"
-
 #~ msgid "Cornflower"
 #~ msgstr "'Cornflower'"
-
 #~ msgid "Dark Slate Blue"
 #~ msgstr "'Dark Slate Blue'"
-
 #~ msgid "Light Steel Blue"
 #~ msgstr "'Light Steel Blue'"
-
 #~ msgid "Charge"
 #~ msgstr "Carga"
-
 #~ msgid "Crystal"
 #~ msgstr "Cristal"
-
 #~ msgid "Aquamarine"
 #~ msgstr "'Aquamarine'"
-
 #~ msgid "Forest Green"
 #~ msgstr "Verde Floresta"
-
 #~ msgid "Hot Pink"
 #~ msgstr "Rosa forte"
-
 #~ msgid "Options"
 #~ msgstr "Opções"
 
 #, fuzzy
 #~ msgid "Show Selected Atoms"
 #~ msgstr "Mostrar halos de selecção"
-
 #~ msgid "Jmol Colors"
 #~ msgstr "Cores Jmol"
 
 #, fuzzy
 #~ msgid "or dotted"
 #~ msgstr "Tracejado"
-
 #~ msgid "Except Solvent"
 #~ msgstr "Excipiente solvente"
-
 #~ msgid "Except Water"
 #~ msgstr "Excipiente água"
-
 #~ msgid "Other"
 #~ msgstr "Outro"
-
 #~ msgid "Lipid"
 #~ msgstr "Lípido"
-
 #~ msgid "Nanometers"
 #~ msgstr "Nanómetros"
-
 #~ msgid "Angstroms"
 #~ msgstr "Angstroms"
-
 #~ msgid "Picometers"
 #~ msgstr "Picómetros"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotação de frameligado"
-
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Jmol Applet. Parte do projecto OpenScience. Visite http://www.jmol.org "
 #~ "para mais informação"
-
 #~ msgid ""
 #~ "ERROR: Cannot set value of a boolean to another type. use \"{0}\" first."
 #~ msgstr ""
 #~ "ERRO: impossível usar o valor de um booleano para outro tipo. Usar \"{0}"
 #~ "\" primeiro"
-
 #~ msgid "20% vanderWaals"
 #~ msgstr "20% vanderWaals"
-
 #~ msgid "25% vanderWaals"
 #~ msgstr "25% vanderWaals"
-
 #~ msgid "75% vanderWaals"
 #~ msgstr "75% vanderWaals"
-
 #~ msgid "100% vanderWaals"
 #~ msgstr "100% vanderWaals"
-
 #~ msgid "Scale 0.5"
 #~ msgstr "Escala 0.5"
-
 #~ msgid "Scale 1"
 #~ msgstr "Escala 1"
-
 #~ msgid "Scale 2"
 #~ msgstr "Escala 2"
-
 #~ msgid "Scale 5"
 #~ msgstr "Escala 5"
-
 #~ msgid "1 px"
 #~ msgstr "1 px"
-
 #~ msgid "3 px"
 #~ msgstr "3 px"
-
 #~ msgid "5 px"
 #~ msgstr "% px"
+

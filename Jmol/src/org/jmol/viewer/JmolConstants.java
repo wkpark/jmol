@@ -2829,33 +2829,79 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     }
   }
 
-  //.hbond and .ssbonds will return a class, 
-  //but the class is never loaded, so it is skipped in each case.
-  //coloring and sizing of hydrogen bonds and S-S bonds is now 
-  //done by Sticks.
-  
-  public final static int[] shapeToks = { 
-    Token.atoms, Token.bonds, Token.hbond, Token.ssbond, 
-    Token.label, Token.monitor, Token.dots, Token.star, Token.halo, 
-    Token.backbone, Token.trace, Token.cartoon, Token.strands,
-    Token.meshRibbon, Token.ribbon, Token.rocket, 
-    Token.dipole, Token.vector, Token.geosurface, Token.ellipsoid, Token.polyhedra, 
-    Token.draw, Token.isosurface, Token.lcaocartoon, Token.mo, Token.pmesh,
-    Token.echo, Token.axes, Token.boundbox, Token.unitcell, Token.hover,
-    Token.frank
-  };
-
-  static {
-    if (shapeToks.length != SHAPE_MAX) {
-      Logger.error("the shapeToks array has the wrong length");
-      throw new NullPointerException();
-    }
-  }
+  // .hbond and .ssbonds will return a class,
+  // but the class is never loaded, so it is skipped in each case.
+  // coloring and sizing of hydrogen bonds and S-S bonds is now
+  // done by Sticks.
 
   public final static int shapeTokenIndex(int tok) {
-    for (int i = shapeToks.length; --i >= 0;)
-      if (tok == shapeToks[i])
-        return i;
+    switch (tok) {
+    case Token.atoms:
+      return SHAPE_BALLS;
+    case Token.bonds:
+    case Token.wireframe:
+      return SHAPE_STICKS;
+    case Token.hbond:
+      return SHAPE_HSTICKS;
+    case Token.ssbond:
+      return SHAPE_SSSTICKS;
+    case Token.label:
+      return SHAPE_LABELS;
+    case Token.monitor:
+      return SHAPE_MEASURES;
+    case Token.dots:
+      return SHAPE_DOTS;
+    case Token.star:
+      return SHAPE_STARS;
+    case Token.halo:
+      return SHAPE_HALOS;
+    case Token.backbone:
+      return SHAPE_BACKBONE;
+    case Token.trace:
+      return SHAPE_TRACE;
+    case Token.cartoon:
+      return SHAPE_CARTOON;
+    case Token.strands:
+      return SHAPE_STRANDS;
+    case Token.meshRibbon:
+      return SHAPE_MESHRIBBON;
+    case Token.ribbon:
+      return SHAPE_RIBBONS;
+    case Token.rocket:
+      return SHAPE_ROCKETS;
+    case Token.dipole:
+      return SHAPE_DIPOLES;
+    case Token.vector:
+      return SHAPE_VECTORS;
+    case Token.geosurface:
+      return SHAPE_GEOSURFACE;
+    case Token.ellipsoid:
+      return SHAPE_ELLIPSOIDS;
+    case Token.polyhedra:
+      return SHAPE_POLYHEDRA;
+    case Token.draw:
+      return SHAPE_DRAW;
+    case Token.isosurface:
+      return SHAPE_ISOSURFACE;
+    case Token.lcaocartoon:
+      return SHAPE_LCAOCARTOON;
+    case Token.mo:
+      return SHAPE_MO;
+    case Token.pmesh:
+      return SHAPE_PMESH;
+    case Token.echo:
+      return SHAPE_ECHO;
+    case Token.axes:
+      return SHAPE_AXES;
+    case Token.boundbox:
+      return SHAPE_BBCAGE;
+    case Token.unitcell:
+      return SHAPE_UCCAGE;
+    case Token.hover:
+      return SHAPE_HOVER;
+    case Token.frank:
+      return SHAPE_FRANK;
+    }
     return -1;
   }
   

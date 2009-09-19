@@ -322,12 +322,12 @@ class PopupResourceBundle {
       { "bottom", Box( "moveto 1.0 front;moveto 2.0 bottom;delay 1"  ) },
       { "back", Box( "moveto 1.0 front;moveto 2.0 back;delay 1"  ) },
 
-      { "renderCpkSpacefill", "restrict not selected;select not selected;spacefill 100%;color cpk" },
-      { "renderBallAndStick", "restrict not selected;select not selected;spacefill 20%;wireframe 0.15;color cpk" },
-      { "renderSticks", "restrict not selected;select not selected;wireframe 0.3;color cpk" },
-      { "renderWireframe", "restrict not selected;select not selected;wireframe on;color cpk" },
-      { "PDBrenderCartoonsOnly", "restrict not selected;select not selected;cartoons on;color structure" },
-      { "PDBrenderTraceOnly", "restrict not selected;select not selected;trace on;color structure" },
+      { "renderCpkSpacefill", "restrict bonds not selected;select not selected;spacefill 100%;color cpk" },
+      { "renderBallAndStick", "restrict bonds not selected;select not selected;spacefill 20%;wireframe 0.15;color cpk" },
+      { "renderSticks", "restrict bonds not selected;select not selected;wireframe 0.3;color cpk" },
+      { "renderWireframe", "restrict bonds not selected;select not selected;wireframe on;color cpk" },
+      { "PDBrenderCartoonsOnly", "restrict bonds not selected;select not selected;cartoons on;color structure" },
+      { "PDBrenderTraceOnly", "restrict bonds not selected;select not selected;trace on;color structure" },
 
       { "atomNone", "cpk off" },
       { "atom15", "cpk 15%" },

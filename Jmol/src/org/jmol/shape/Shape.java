@@ -34,6 +34,7 @@ import org.jmol.viewer.Viewer;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelSet;
 
 import javax.vecmath.Point3f;
@@ -295,6 +296,14 @@ public abstract class Shape {
     return Graphics3D.getColixInherited(
         (colixes == null || i >= colixes.length ? Graphics3D.INHERIT_ALL
             : colixes[i]), atom.getColix());
+  }
+
+  public int getSize(int atomIndex) {
+    return 0;
+  }
+
+  public int getSize(Group group) {
+    return 0;
   }
 
 }

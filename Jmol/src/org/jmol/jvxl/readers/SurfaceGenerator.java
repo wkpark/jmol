@@ -332,7 +332,7 @@ public class SurfaceGenerator {
         params = (Parameters) value;
       } else {
         params.script = (String) value;
-        if (params.script.indexOf(";#") >= 0) {
+        if (params.script != null && params.script.indexOf(";#") >= 0) {
           // crude hack for ScriptEvaluator messing up
           params.script = TextFormat.simpleReplace(params.script, ";#", "; #");
         }

@@ -131,6 +131,20 @@ abstract public class ModelSet extends ModelCollection {
     return shapes[i];
   }
   
+  float getAtomShapeValue(int atomIndex, int tok) {
+    int iShape = JmolConstants.shapeTokenIndex(tok);
+    if (iShape < 0 || shapes[iShape] == null) 
+      return 0;
+    int mad = shapes[iShape].getSize(atomIndex);
+    if (mad == 0) {
+      Group group = atoms[atomIndex].getGroup();
+      if ((group.shapeVisibilityFlags & shapes[iShape].myVisibilityFlag) == 0)
+        return 0;
+      mad = shapes[iShape].getSize(group);
+    }
+    return mad / 2000f;
+  }
+
   public int getModelNumberIndex(int modelNumber, boolean useModelNumber,
                                  boolean doSetTrajectory) {
     if (useModelNumber) {
@@ -877,6 +891,31 @@ abstract public class ModelSet extends ModelCollection {
       setShapeSize(JmolConstants.SHAPE_LABELS, 0, Float.NaN, bsSelection);
     }
     setShapeProperty(JmolConstants.SHAPE_LABELS, "label", strLabel, bsSelection);
+  }
+  
+  public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue,
+                              String sValue, float[] values, String[] list) {
+    switch (tok) {
+    case Token.dots:
+    case Token.geosurface:
+      if (values != null)
+        return;
+      setShapeSize(JmolConstants.shapeTokenIndex(tok), -1, fValue, bs);
+      return;
+    case Token.backbone:
+    case Token.cartoon:
+    case Token.meshRibbon:
+    case Token.ribbon:
+    case Token.trace:
+    case Token.ellipsoid:
+    case Token.halo:
+    case Token.star:
+      if (values != null)
+        return;
+      setShapeSize(JmolConstants.shapeTokenIndex(tok), (int) (fValue * 2000), Float.NaN, bs);
+      return;
+    }
+    super.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);
   }
   
   public void setAtomLabel(String strLabel, int i) {

@@ -63,6 +63,10 @@ public abstract class AtomShape extends Shape {
     setSize(size, Float.NaN, bsSelected);
   }
 
+  public int getSize(int atomIndex) {
+    return (mads == null ? 0 : mads[atomIndex]);
+  }
+  
   public void setSize(int size, float fsize, BitSet bsSelected) {
     // Halos Stars Vectors only
     isActive = true;

@@ -261,12 +261,10 @@ public class Token {
   
   final static int animation    = command | 1;
   public final static int axes         = command | 2 | setparam | defaultON;
-  public final static int backbone     = command | 3 | predefinedset | defaultON;
   final static int background   = command | 4 | setparam;
   final static int bondorder    = command | 5;
 //final static int boundbox     see mathproperty
   final static int calculate    = command | 6;
-  public final static int cartoon      = command | 7 | defaultON;
   final static int cd           = command | 7 | implicitStringCommand;
   final static int centerAt     = command | 8;
 //final static int color        see intproperty
@@ -277,18 +275,14 @@ public class Token {
   final static int delay        = command | 12 | defaultON;
   final static int depth        = command | 13 | defaultON;
   public final static int dipole       = command | 14;
-  public final static int dots         = command | 15 | defaultON;
   public final static int draw         = command | 16;
-  public final static int ellipsoid    = command | 17 | defaultON;
   final static int exit         = command | 18 | noArgs;
 //final static int file         see intproperty
   final static int font         = command | 19;
   final static int frame        = command | 20;
   public final static int frank        = command | 21 | setparam | defaultON;
-  public final static int geosurface   = command | 22 | defaultON;
 //final static int getproperty  see mathfunc
   final static int gotocmd      = command | 23 | implicitStringCommand;
-  public final static int halo         = command | 24 | defaultON;
   public final static int hbond        = command | 25 | setparam | expression | defaultON;
   final static int history      = command | 26 | setparam;
   final static int initialize   = command | 27 | noArgs;
@@ -297,7 +291,6 @@ public class Token {
   public final static int lcaocartoon  = command | 30;
 //final static int load         see mathfunc
   final static int loop         = command | 31 | defaultON;
-  public final static int meshRibbon   = command | 32 | defaultON;
   final static int minimize     = command | 33;
   public final static int mo           = command | 34;
 //final static int model        see mathfunc
@@ -314,8 +307,6 @@ public class Token {
   final static int reset        = command | 44;
   final static int restore      = command | 45;
   public final static int resume       = command | 46 | noArgs;
-  public final static int ribbon       = command | 46 | defaultON;
-  public final static int rocket       = command | 47 | defaultON;
   final static int rotate       = command | 48 | defaultON;
   final static int rotateSelected = command | 49;
   final static int save         = command | 50;
@@ -326,19 +317,16 @@ public class Token {
   //public final static int spacefill see floatproperty
   final static int spin         = command | 55 | setparam | defaultON;
   public final static int ssbond       = command | 56 | setparam | defaultON;
-  public final static int star         = command | 57 | defaultON;
   final static int step         = command | 57 | noArgs;
   final static int stereo       = command | 58 | defaultON;
-  public final static int strands      = command | 59 | setparam | defaultON;
 //final static int structure    see intproperty
   final static int sync         = command | 60;
-  public final static int trace        = command | 61 | defaultON;
   final static int translate    = command | 62;
   final static int translateSelected = command | 63;
   public final static int unitcell = command | 64 | setparam | expression | predefinedset | defaultON;
   public final static int vector       = command | 65;
   public final static int vibration    = command | 66;
-  public final static int wireframe     = command |67 | defaultON;
+  public final static int wireframe    = command | 67 | defaultON;
   //final static int write   see mathfunc
   final static int zoom         = command | 68;
   final static int zoomTo       = command | 69;
@@ -549,7 +537,6 @@ public class Token {
   public final static int phi             = floatproperty | 11;
   public final static int psi             = floatproperty | 12;
   public final static int property        = floatproperty | 13 | mathproperty | setparam | settable;
-  public final static int spacefill       = floatproperty | 14 | command | defaultON | settable;
   public final static int straightness    = floatproperty | 15;
   public final static int surfacedistance = floatproperty | 16;
   public final static int temperature     = floatproperty | 17 | settable;
@@ -561,6 +548,20 @@ public class Token {
   public final static int vibY            = floatproperty | 23 | settable;
   public final static int vibZ            = floatproperty | 24 | settable;
   
+  public final static int backbone     = floatproperty | command | 1 | predefinedset | defaultON | settable;
+  public final static int cartoon      = floatproperty | command | 2 | defaultON | settable;
+  public final static int dots         = floatproperty | command | 3 | defaultON;
+  public final static int ellipsoid    = floatproperty | command | 4 | defaultON;
+  public final static int geosurface   = floatproperty | command | 5 | defaultON;
+  public final static int halo         = floatproperty | command | 6 | defaultON | settable;
+  public final static int meshRibbon   = floatproperty | command | 7 | defaultON | settable;
+  public final static int ribbon       = floatproperty | command | 9 | defaultON | settable;
+  public final static int rocket       = floatproperty | command | 10 | defaultON | settable;
+  public final static int spacefill    = floatproperty | command | 11 | defaultON | settable;
+  public final static int star         = floatproperty | command | 12 | defaultON | settable;
+  public final static int strands      = floatproperty | command | 13 | setparam | defaultON | settable;
+  public final static int trace        = floatproperty | command | 14 | defaultON | settable;
+
   // mathfunc               means x = somefunc(a,b,c)
   // mathfunc|mathproperty  means x = y.somefunc(a,b,c)
   // 

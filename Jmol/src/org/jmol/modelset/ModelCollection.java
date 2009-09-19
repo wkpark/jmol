@@ -419,7 +419,7 @@ abstract public class ModelCollection extends BondCollection {
         && viewer.getSmartAromatic())
       assignAromaticBonds();
   }
-
+  
   protected Vector stateScripts = new Vector();
   /*
    * stateScripts are connect commands that must be executed in sequence.

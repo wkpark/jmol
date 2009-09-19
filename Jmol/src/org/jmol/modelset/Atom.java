@@ -1166,6 +1166,18 @@ final public class Atom extends Point3fi {
       return atom.getGroupPsi();
     case Token.spacefill:
       return atom.getRadius();
+    case Token.backbone:
+    case Token.cartoon:
+    case Token.dots:
+    case Token.ellipsoid:
+    case Token.geosurface:
+    case Token.halo:
+    case Token.meshRibbon:
+    case Token.ribbon:
+    case Token.rocket:
+    case Token.star:
+    case Token.trace:
+      return atom.group.chain.modelSet.getAtomShapeValue(atom.atomIndex, tokWhat);
     case Token.straightness:
       return atom.getStraightness();
     case Token.unitX:

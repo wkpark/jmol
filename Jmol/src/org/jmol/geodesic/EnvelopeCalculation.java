@@ -254,6 +254,10 @@ public final class EnvelopeCalculation {
     setDotsConvexMax();
   }
   
+  public float getRadius(int atomIndex) {
+    return atomData.atomRadius[atomIndex];
+  }
+  
   private void setRadii(boolean useVanderwaalsRadius) {
     for (int i = 0; i < atomCount; i++) {
       atomData.atomRadius[i] = (mads != null ? mads[i] / 1000f

@@ -135,7 +135,12 @@ abstract class ScriptCompilationTokenParser {
     ltokenPostfix = new Vector();
     itokenInfix = 0;
     Token tokenBegin = null;
-    for (int i = 0; i < firstToken && addNextToken(); i++) {
+    if (tokCommand == Token.restrict && tokAt(1) == Token.bonds) {
+      addNextToken();
+      addNextToken();
+    } else {
+      for (int i = 0; i < firstToken && addNextToken(); i++) {
+      }
     }
     while (moreTokens()) {
       if (isEmbeddedExpression) {

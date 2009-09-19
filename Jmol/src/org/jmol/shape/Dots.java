@@ -59,6 +59,11 @@ public class Dots extends AtomShape {
     ec = new EnvelopeCalculation(viewer, atomCount, mads);
   }
 
+  public int getSize(int atomIndex) {
+    // mads are actually radii not diameters
+    return (mads == null ? (int) (ec.getRadius(atomIndex) * 2000) : mads[atomIndex]*2);
+  }
+  
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if (Logger.debugging) {

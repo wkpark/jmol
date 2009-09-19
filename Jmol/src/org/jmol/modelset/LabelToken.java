@@ -136,6 +136,19 @@ public class LabelToken {
 
   // not having letter equivalents:
   
+           //new for Jmol 11.9.5:
+           Token.backbone,
+           Token.cartoon,
+           Token.dots,
+           Token.ellipsoid,
+           Token.geosurface,
+           Token.halo,
+           Token.meshRibbon,
+           Token.ribbon,
+           Token.rocket,
+           Token.star,
+           Token.trace,
+
            Token.adpmax,
            Token.adpmin,
            Token.atomID,

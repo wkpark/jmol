@@ -30,8 +30,10 @@ import java.util.Hashtable;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.Group;
 import org.jmol.modelset.Model;
 import org.jmol.modelsetbio.BioPolymer;
+import org.jmol.modelsetbio.Monomer;
 import org.jmol.shape.Shape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
@@ -68,6 +70,21 @@ public abstract class BioShapeCollection extends Shape {
     initialize();
   }
 
+  public int getSize(Group group) {
+    Monomer m = (Monomer) group;
+    int groupIndex = m.getGroupIndex();
+    int leadAtomIndex = m.getLeadAtom().getAtomIndex();
+    for (int i = bioShapes.length; --i >= 0;) {
+      BioShape bioShape = bioShapes[i];
+      for (int j = 0; j < bioShape.monomerCount; j++) {
+        if (bioShape.monomers[j].getGroupIndex() == groupIndex 
+          && bioShape.monomers[j].getLeadAtom().getAtomIndex() == leadAtomIndex)
+            return bioShape.mads[j];
+      }
+    }
+    return 0;
+  }
+  
   public void setSize(int size, BitSet bsSelected) {
     short mad = (short) size;
     initialize();

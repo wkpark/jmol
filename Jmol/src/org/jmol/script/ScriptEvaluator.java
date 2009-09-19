@@ -3889,7 +3889,7 @@ public class ScriptEvaluator {
     int mad = 1;
     switch (getToken(1).tok) {
     case Token.only:
-      restrictSelected(false);
+      restrictSelected(false, false);
       break;
     case Token.on:
       break;
@@ -4476,7 +4476,7 @@ public class ScriptEvaluator {
         minimize();
         break;
       case Token.select:
-        select();
+        select(1);
         break;
       case Token.translate:
         translate();
@@ -7069,13 +7069,14 @@ public class ScriptEvaluator {
   }
 
   private void restrict() throws ScriptException {
-    select();
+    boolean isBond = (tokAt(1) == Token.bonds);
+    select(isBond ? 2 : 1);
     if (isSyntaxCheck)
       return;
-    restrictSelected(true);
+    restrictSelected(isBond, true);
   }
 
-  private void restrictSelected(boolean doInvert) {
+  private void restrictSelected(boolean isBond, boolean doInvert) {
     BitSet bsSelected = BitSetUtil.copy(viewer.getSelectionSet());
     if (doInvert)
       viewer.invertSelection();
@@ -7089,7 +7090,9 @@ public class ScriptEvaluator {
     }
     BitSetUtil.andNot(bsSelected, viewer.getDeletedAtoms());
     boolean bondmode = viewer.getBondSelectionModeOr();
-    setBooleanProperty("bondModeOr", true);
+    
+    if (!isBond)
+      setBooleanProperty("bondModeOr", true);
     setShapeSize(JmolConstants.SHAPE_STICKS, 0);
 
     // also need to turn off backbones, ribbons, strands, cartoons
@@ -7099,7 +7102,8 @@ public class ScriptEvaluator {
     setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "delete", null);
     viewer.setLabel(null);
 
-    setBooleanProperty("bondModeOr", bondmode);
+    if (!isBond)
+      setBooleanProperty("bondModeOr", bondmode);
     viewer.setSelectionSet(bsSelected);
   }
 
@@ -7666,7 +7670,7 @@ public class ScriptEvaluator {
     }
   }
 
-  private void select() throws ScriptException {
+  private void select(int i) throws ScriptException {
     // NOTE this is called by restrict()
     if (statementLength == 1) {
       viewer.select(null, tQuiet || scriptLevel > scriptReportingLevel);
@@ -7703,7 +7707,7 @@ public class ScriptEvaluator {
       checkLength(++iToken);
       bs = (BitSet) v;
     } else {
-      bs = expression(1);
+      bs = expression(i);
     }
     if (isSyntaxCheck)
       return;
@@ -8188,7 +8192,7 @@ public class ScriptEvaluator {
     int tok = tokAt(1);
     switch (tok) {
     case Token.only:
-      restrictSelected(false);
+      restrictSelected(false, false);
       code = defOn;
       break;
     case Token.on:
@@ -8716,7 +8720,7 @@ public class ScriptEvaluator {
     int ipt = 1;
     switch (getToken(1).tok) {
     case Token.only:
-      restrictSelected(false);
+      restrictSelected(false, false);
       code = 1;
       break;
     case Token.on:
@@ -8775,7 +8779,7 @@ public class ScriptEvaluator {
     case Token.only:
       if (isSyntaxCheck)
         return;
-      restrictSelected(false);
+      restrictSelected(false, false);
       mad = -1;
       break;
     case Token.on:

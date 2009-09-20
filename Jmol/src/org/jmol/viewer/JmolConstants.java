@@ -134,7 +134,7 @@ final public class JmolConstants {
         s.append(callbackNames[c].toLowerCase()).append(";");
       return s.toString();
     }    
-    return callbackNames[i];
+    return (i >= callbackNames.length ? null : callbackNames[i]);
   }
  
   public static int getCallbackId(String callbackName) {

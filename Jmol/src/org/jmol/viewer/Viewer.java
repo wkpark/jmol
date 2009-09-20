@@ -578,6 +578,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     animationManager.setAnimationFps(global.animationFps);
 
     statusManager.setAllowStatusReporting(global.statusReporting);
+    setBooleanProperty("antialiasDisplay", global.antialiasDisplay);
 
     setTransformManagerDefaults();
 

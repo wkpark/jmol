@@ -1146,19 +1146,13 @@ public class StateManager {
         defaultDirectory = g.defaultDirectory;
         zShade = g.zShade;
       }
-      
-      resetParameterStringValue("animFrameCallback", g);
-      resetParameterStringValue("echoCallback", g);
-      resetParameterStringValue("evalCallback", g);
-      resetParameterStringValue("hoverCallback", g);
-      resetParameterStringValue("loadStructCallback", g);
-      resetParameterStringValue("measureCallback", g);
-      resetParameterStringValue("messageCallback", g);
-      resetParameterStringValue("minimizationCallback", g);
-      resetParameterStringValue("pickCallback", g);
-      resetParameterStringValue("resizeCallback", g);
-      resetParameterStringValue("scriptCallback", g);
-      resetParameterStringValue("syncCallback", g);
+
+      for (int i = 0;;i++) {        
+        String callbackName = JmolConstants.getCallbackName(i);
+        if (callbackName == null)
+          break;
+        resetParameterStringValue(callbackName, g);        
+      }
 
       // some of these are just placeholders so that the math processor
       // knows they are Jmol variables. They are held by other managers

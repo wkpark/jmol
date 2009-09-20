@@ -298,7 +298,8 @@ class AnimationManager {
       setAnimationOff(false);
       return;
     }
-    viewer.refresh(3, "Viewer:setAnimationOn");
+    if (!viewer.getSpinOn())
+      viewer.refresh(3, "Viewer:setAnimationOn");
     setAnimationRange(-1, -1);
     resumeAnimation();
   }
@@ -309,7 +310,8 @@ class AnimationManager {
       animationThread = null;
     }
     animationPaused = isPaused;
-    viewer.refresh(3, "Viewer:setAnimationOff");
+    if (!viewer.getSpinOn())
+      viewer.refresh(3, "Viewer:setAnimationOff");
     animationOn(false);
     setStatusFrameChanged();
   }
@@ -452,7 +454,8 @@ class AnimationManager {
           while(!isInterrupted() && animationOn && !viewer.getRefreshing()) {
             Thread.sleep(10); 
           }
-          viewer.refresh(1, "animationThread");
+          if (!viewer.getSpinOn())
+            viewer.refresh(1, "animationThread");
           sleepTime = targetTime
               - (int) (System.currentTimeMillis() - timeBegin);
           if (sleepTime > 0)

@@ -209,7 +209,7 @@ abstract public class ModelSet extends ModelCollection {
     models[baseModel].selectedTrajectory = modelIndex;
     Point3f[] trajectory = (Point3f[]) trajectorySteps.get(modelIndex);
     BitSet bs = new BitSet();
-    int iMax = iFirst + getAtomCountInModel(modelIndex);
+    int iMax = iFirst + getAtomCountInModel(baseModel);
     for (int pt = 0, i = iFirst; i < iMax && pt < trajectory.length && trajectory[pt]!= null; i++) {
       atoms[i].setFractionalCoord(trajectory[pt++]);
       atoms[i].modelIndex = (short) modelIndex;

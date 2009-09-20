@@ -907,6 +907,7 @@ abstract public class ModelSet extends ModelCollection {
     case Token.meshRibbon:
     case Token.ribbon:
     case Token.rocket:
+    case Token.strands:
     case Token.trace:
     case Token.ellipsoid:
     case Token.halo:

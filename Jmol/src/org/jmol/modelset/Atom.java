@@ -1176,6 +1176,7 @@ final public class Atom extends Point3fi {
     case Token.ribbon:
     case Token.rocket:
     case Token.star:
+    case Token.strands:
     case Token.trace:
       return atom.group.chain.modelSet.getAtomShapeValue(atom.atomIndex, tokWhat);
     case Token.straightness:

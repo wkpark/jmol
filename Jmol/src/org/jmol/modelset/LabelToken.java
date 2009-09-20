@@ -147,6 +147,7 @@ public class LabelToken {
            Token.ribbon,
            Token.rocket,
            Token.star,
+           Token.strands,
            Token.trace,
 
            Token.adpmax,

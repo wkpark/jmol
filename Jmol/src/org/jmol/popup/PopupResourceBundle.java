@@ -67,8 +67,9 @@ class PopupResourceBundle {
   private Properties words = new Properties();
   
   private static String Box(String cmd) {
-    return "if not(showBoundBox);if not(showUnitcell);boundbox on;"+cmd+";boundbox off;else;"+cmd+";endif;endif;";
+    return "if (showBoundBox or showUnitcell) {"+cmd+"} else {boundbox on;"+cmd+";boundbox off}";
   }
+
   private static String[][] menuContents = {
     
       {   "@COLOR", "black white red orange yellow green cyan blue indigo violet"},      

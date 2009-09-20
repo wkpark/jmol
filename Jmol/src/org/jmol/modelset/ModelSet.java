@@ -896,12 +896,6 @@ abstract public class ModelSet extends ModelCollection {
   public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue,
                               String sValue, float[] values, String[] list) {
     switch (tok) {
-    case Token.dots:
-    case Token.geosurface:
-      if (values != null)
-        return;
-      setShapeSize(JmolConstants.shapeTokenIndex(tok), -1, fValue, bs);
-      return;
     case Token.backbone:
     case Token.cartoon:
     case Token.meshRibbon:
@@ -909,11 +903,16 @@ abstract public class ModelSet extends ModelCollection {
     case Token.rocket:
     case Token.strands:
     case Token.trace:
-    case Token.ellipsoid:
+      if (fValue > Shape.RADIUS_MAX)
+        fValue = Shape.RADIUS_MAX;
     case Token.halo:
     case Token.star:
       if (values != null)
         return;
+      if (fValue > Atom.RADIUS_MAX)
+        fValue = Atom.RADIUS_MAX;
+      if (fValue < 0)
+        fValue = 0;
       setShapeSize(JmolConstants.shapeTokenIndex(tok), (int) (fValue * 2000), Float.NaN, bs);
       return;
     }

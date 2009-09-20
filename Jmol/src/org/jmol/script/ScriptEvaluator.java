@@ -52,6 +52,7 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
 import org.jmol.shape.Object2d;
+import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
@@ -2768,10 +2769,6 @@ public class ScriptEvaluator {
                                 Object propertyValue) {
     if (!isSyntaxCheck)
       viewer.setShapeProperty(shapeType, propertyName, propertyValue);
-  }
-
-  private void setShapeSize(int shapeType, int size) {
-    setShapeSize(shapeType, size, Float.NaN);
   }
 
   private void setShapeSize(int shapeType, int size, float fsize) {
@@ -7093,12 +7090,12 @@ public class ScriptEvaluator {
     
     if (!isBond)
       setBooleanProperty("bondModeOr", true);
-    setShapeSize(JmolConstants.SHAPE_STICKS, 0);
+    setShapeSize(JmolConstants.SHAPE_STICKS, 0, Float.NaN);
 
     // also need to turn off backbones, ribbons, strands, cartoons
     for (int shapeType = JmolConstants.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --shapeType >= 0;)
       if (shapeType != JmolConstants.SHAPE_MEASURES)
-        setShapeSize(shapeType, 0);
+        setShapeSize(shapeType, 0, Float.NaN);
     setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "delete", null);
     viewer.setLabel(null);
 
@@ -8148,7 +8145,7 @@ public class ScriptEvaluator {
     default:
       error(ERROR_invalidArgument);
     }
-    setShapeSize(JmolConstants.SHAPE_ELLIPSOIDS, mad);
+    setShapeSize(JmolConstants.SHAPE_ELLIPSOIDS, mad, Float.NaN);
   }
 
   private String getShapeNameParameter(int i) throws ScriptException {
@@ -8284,13 +8281,13 @@ public class ScriptEvaluator {
       return;
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_COVALENT_MASK));
-    setShapeSize(JmolConstants.SHAPE_STICKS, mad);
+    setShapeSize(JmolConstants.SHAPE_STICKS, mad, Float.NaN);
   }
 
   private void ssbond() throws ScriptException {
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_SULFUR_MASK));
-    setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
+    setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter(), Float.NaN);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_COVALENT_MASK));
   }
@@ -8311,7 +8308,7 @@ public class ScriptEvaluator {
     }
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_HYDROGEN_MASK));
-    setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
+    setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter(), Float.NaN);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_COVALENT_MASK));
   }
@@ -8798,7 +8795,7 @@ public class ScriptEvaluator {
       mad = (intParameter(1, 0, 499) * 8);
       break;
     case Token.decimal:
-      mad = (int) (floatParameter(1, 0, 4) * 2000);
+      mad = (int) (floatParameter(1, 0, Shape.RADIUS_MAX) * 2000);
       break;
     case Token.bitset:
       if (!isSyntaxCheck)
@@ -8808,7 +8805,7 @@ public class ScriptEvaluator {
     default:
       error(ERROR_booleanOrNumberExpected);
     }
-    setShapeSize(shapeType, mad);
+    setShapeSize(shapeType, mad, Float.NaN);
   }
 
   private void animation() throws ScriptException {
@@ -10107,7 +10104,7 @@ public class ScriptEvaluator {
       setMeasurementUnits(parameterAsString(2));
       return;
     }
-    setShapeSize(JmolConstants.SHAPE_MEASURES, getSetAxesTypeMad(2));
+    setShapeSize(JmolConstants.SHAPE_MEASURES, getSetAxesTypeMad(2), Float.NaN);
   }
 
   private boolean setMeasurementUnits(String units) throws ScriptException {

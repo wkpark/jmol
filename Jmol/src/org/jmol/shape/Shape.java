@@ -90,6 +90,7 @@ public abstract class Shape {
   //  System.out.println("Shape " + shapeID + " " + this + " finalized");
   //}
   
+  public static final float RADIUS_MAX = 4;
   public Viewer viewer; //public for now for Backbone
   public ModelSet modelSet;
   public Graphics3D g3d;

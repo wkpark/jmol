@@ -575,7 +575,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setSpecularExponent(global.specularExponent);
     setSpecularPower(global.specularPower);
 
-    animationManager.setAnimationOn(false);
+    if (modelSet != null)
+      animationManager.setAnimationOn(false);
     animationManager.setAnimationFps(global.animationFps);
 
     statusManager.setAllowStatusReporting(global.statusReporting);

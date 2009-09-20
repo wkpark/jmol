@@ -91,6 +91,7 @@ final class JmolAppletRegistry {
   synchronized public static void findApplets(String appletName,
                                                 String mySyncId,
                                                 String excludeName, Vector apps) {
+    
     if (appletName.indexOf(",") >= 0) {
       String[] names = TextFormat.split(appletName, ",");
       for (int i = 0; i < names.length; i++)
@@ -102,16 +103,18 @@ final class JmolAppletRegistry {
       Enumeration keys = htRegistry.keys();
       while (keys.hasMoreElements()) {
         appletName = (String) keys.nextElement();
-        if (!appletName.equals(excludeName) && appletName.indexOf(ext) > 0)
+        if (!appletName.equals(excludeName) && appletName.indexOf(ext) > 0) {
           apps.addElement(appletName);
+        }
       }
     } else {
       if (appletName.indexOf("__") < 0)
         appletName += ext;
       if (!htRegistry.containsKey(appletName))
         appletName = "jmolApplet" + appletName;
-      if (!appletName.equals(excludeName) && htRegistry.containsKey(appletName))
+      if (!appletName.equals(excludeName) && htRegistry.containsKey(appletName)) {
         apps.addElement(appletName);
+      }
     }
   }
 }

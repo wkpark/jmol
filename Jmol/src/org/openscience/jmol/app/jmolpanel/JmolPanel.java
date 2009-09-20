@@ -1576,26 +1576,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
     public Hashtable getRegistryInfo() {
       return null;
     }
-
-    public String dialogAsk(String type, String fileName) {
-      if (type.equals("load"))
-        return getOpenFileNameFromDialog(fileName);
-      if (type.equals("save")) {
-        return (new Dialog()).getSaveFileNameFromDialog(viewer, fileName,
-            null);
-      }
-      if (type.equals("saveImage")) {
-        Dialog sd = new Dialog();
-        fileName = sd.getImageFileNameFromDialog(viewer,
-            fileName, imageType, imageChoices, imageExtensions, qualityJPG,
-            qualityPNG);
-        imageType = sd.getType();
-        qualityJPG = sd.getQuality("JPG");
-        qualityPNG = sd.getQuality("PNG");
-        return fileName;
-      }
-      return null;
-    }
   }
 
   class ExecuteScriptAction extends AbstractAction {

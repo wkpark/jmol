@@ -43,8 +43,8 @@ import org.jmol.viewer.Viewer;
 
 public class ImageCreator implements JmolImageCreatorInterface {
   
-  JmolViewer viewer;
-  
+  private JmolViewer viewer;
+  private double privateKey;
   
   public ImageCreator() {
     // can set viewer later
@@ -54,8 +54,9 @@ public class ImageCreator implements JmolImageCreatorInterface {
     this.viewer = viewer;
   }
  
-  public void setViewer(JmolViewer viewer) {
+  public void setViewer(JmolViewer viewer, double privateKey) {
     this.viewer = viewer;
+    this.privateKey = privateKey;
   }
   
   public String clipImage(String text) {
@@ -96,6 +97,8 @@ public class ImageCreator implements JmolImageCreatorInterface {
    */
   public Object createImage(String fileName, String type, Object text_or_bytes, 
                             int quality) {
+    if (!viewer.checkPrivateKey(privateKey))
+      return "NO SECURITY";
     // returns message starting with OK or an error message
     boolean isBytes = (text_or_bytes instanceof byte[]);
     boolean appendText = (text_or_bytes instanceof Object[]);

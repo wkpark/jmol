@@ -78,6 +78,4 @@ public interface JmolStatusListener extends JmolCallbackListener {
 
   public void showUrl(String url);
 
-  public String dialogAsk(String type, String fileName);
-
 }

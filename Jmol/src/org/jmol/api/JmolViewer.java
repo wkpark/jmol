@@ -438,5 +438,9 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String getErrorMessage();
   abstract public String getErrorMessageUntranslated();
 
+  public boolean checkPrivateKey(double privateKey) {
+    return false;
+  }
+
 }
 

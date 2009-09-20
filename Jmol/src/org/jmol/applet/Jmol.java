@@ -998,9 +998,6 @@ public class Jmol implements WrappedApplet {
       //also serves to change language for callbacks and menu
       if (callbackName.equalsIgnoreCase("language")) {
         clearDefaultConsoleMessage();
-        if (jvm12 != null && isSigned)
-          Jvm12.newDialog(true);
-        return;
       }
       int id = JmolConstants.getCallbackId(callbackName);
       if (id >= 0 && (loading || id != JmolConstants.CALLBACK_EVAL)) {
@@ -1069,21 +1066,7 @@ public class Jmol implements WrappedApplet {
      */
     public String createImage(String fileName, String type, Object text_or_bytes,
                               int quality) {
-      boolean isImage = (quality != Integer.MIN_VALUE); 
-      if (isSigned) {
-        if (jvm12 != null) {
-          try {
-            return jvm12.createImage(fileName, type, text_or_bytes, quality);
-          } catch (Exception e) {
-          }
-        }
-      } else if (isImage) {
-        return GT
-            ._(
-                "File creation by this applet is not allowed. For Base64 JPEG format, use {0}.",
-                "jmolGetPropertyAsString('image')");
-      }
-      return GT._("File creation failed.");
+      return null;
     }
 
     public float[][] functionXY(String functionName, int nX, int nY) {
@@ -1258,12 +1241,5 @@ public class Jmol implements WrappedApplet {
       JmolAppletRegistry.checkIn(null, null); //cleans registry
       return JmolAppletRegistry.htRegistry;
     }
-
-    public String dialogAsk(String type, String fileName) {
-      if (!isSigned || jvm12 == null)
-        return null;
-      return jvm12.dialogAsk(type, fileName);
-    }
-
   }
 }

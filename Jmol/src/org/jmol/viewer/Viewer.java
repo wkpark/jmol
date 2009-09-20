@@ -355,9 +355,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean useCommandThread = false;
   private boolean isSignedApplet = false;
   private boolean isDataOnly;
+  String appletContext;
 
   public synchronized void setAppletContext(String fullName, URL documentBase, URL codeBase,
                                String commandOptions) {
+    appletContext = commandOptions;
     this.fullName = fullName = (fullName == null ? "" : fullName);
     appletDocumentBase = (documentBase == null ? "" : documentBase.toString());
     appletCodeBase = (codeBase == null ? "" : codeBase.toString());
@@ -3635,7 +3637,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         }
       }
     } else {
-      c.setViewer(this);
+      c.setViewer(this, privateKey);
       try {
         bytes = c.getImageBytes(type, quality, fileName, null, os);
       } catch (IOException e) {
@@ -7316,7 +7318,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     try {
       c = (JmolImageCreatorInterface) Interface
           .getOptionInterface("util.ImageCreator");
-      c.setViewer(this);
+      c.setViewer(this, privateKey);
       return c.clipImage(text);
     } catch (Error er) {
       // unsigned applet will not have this interface
@@ -7406,7 +7408,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      * 
      * 
      * Note: this method is the gateway to all file writing for the applet.
-     * 
      */
 
     int saveWidth = dimScreen.width;
@@ -7430,26 +7431,30 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         if (fileName.startsWith("."))
           fileName = "jmol" + fileName;
         fileName = FileManager.setLocalPathForWritingFile(this, fileName);
-        
-        if (useDialog && (isZip || !isSignedApplet()))
-            fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save"
-                : "saveImage", fileName);
+
+        if (useDialog)
+          fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save"
+              : "saveImage", fileName);
         if (fileName == null)
           err = "CANCELED";
-        else if (isZip)
-          err = fileManager.createZipSet(fileName, (String) text_or_bytes,
-              type.equals("ZIPALL"));
-        else // see if application wants to do it (returns non-null String)
-          err = statusManager.createImage(fileName, type, text_or_bytes, quality);
-        if (err == null && !isApplet) {
-          // applet calls creatImage itself
-          // application can do it itself or allow Jmol to do it here
-          JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
-              .getOptionInterface("export.image.ImageCreator");
-          c.setViewer(this);
-          err = (String) c.createImage(fileName, type, text_or_bytes, quality);
-          // report error status (text_or_bytes == null)
-          statusManager.createImage(err, type, null, quality);
+        else if (isZip) {
+          err = fileManager.createZipSet(fileName, (String) text_or_bytes, type
+              .equals("ZIPALL"));
+        } else {
+          // see if application wants to do it (returns non-null String)
+          // both Jmol application and applet return null
+          err = statusManager.createImage(fileName, type, text_or_bytes,
+              quality);
+          if (err == null) {
+            // application can do it itself or allow Jmol to do it here
+            JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
+                .getOptionInterface("export.image.ImageCreator");
+            c.setViewer(this, privateKey);
+            err = (String) c
+                .createImage(fileName, type, text_or_bytes, quality);
+            // report error status (text_or_bytes == null)
+            statusManager.createImage(err, type, null, quality);
+          }
         }
       }
     } catch (Throwable er) {
@@ -7826,5 +7831,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Hashtable getContextVariables() {
     return eval.getContextVariables();
+  }
+
+  private double privateKey = Math.random();
+  
+  /**
+   * Simple method to ensure that the image creator (which writes files)
+   * was in fact opened by this viewer and not by some manipulation of the
+   * applet. When the image creator is used it requires both a viewer
+   * object and that viewer's private key. But the private key is private,
+   * so it is not possible to create a useable image creator without
+   * working through a viewer's own methods.  Bob Hanson, 9/20/2009
+   * 
+   * @param privateKey 
+   * @return true if privateKey matches
+   * 
+   */
+  
+  public boolean checkPrivateKey(double privateKey) {
+    return privateKey == this.privateKey;
   }
 }

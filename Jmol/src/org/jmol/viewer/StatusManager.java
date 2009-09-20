@@ -32,8 +32,12 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.swing.SwingUtilities;
+
+import org.jmol.api.Interface;
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
+import org.jmol.api.JmolDialogInterface;
 import org.jmol.api.JmolStatusListener;
 
 /**
@@ -74,6 +78,11 @@ viewerRefreshed
 
 class StatusManager {
 
+  protected Viewer viewer;
+  private JmolStatusListener jmolStatusListener;
+  private JmolCallbackListener jmolCallbackListener;
+  private String statusList = "";
+
   StatusManager(Viewer viewer) {
     this.viewer = viewer;
   }
@@ -84,11 +93,6 @@ class StatusManager {
      allowStatusReporting = TF;
   }
   
-  private Viewer viewer;
-  private JmolStatusListener jmolStatusListener;
-  private JmolCallbackListener jmolCallbackListener;
-  private String statusList = "";
-
   String getStatusList() {
     return statusList;
   }
@@ -658,10 +662,64 @@ class StatusManager {
     return (jmolStatusListener == null ? null : jmolStatusListener.getRegistryInfo());
   }
 
+  String inputFileName;
+  String outputFileName;
+  String dialogType;
+  
+  final protected static String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM" };
+  final protected static String[] imageExtensions = { "jpg", "png", "gif", "ppm" };
+
+  static JmolDialogInterface newDialog(boolean forceNewTranslation) {
+    JmolDialogInterface sd = (JmolDialogInterface) Interface
+        .getOptionInterface("export.dialog.Dialog");
+    sd.setupUI(forceNewTranslation);
+    return sd;
+  }
+
+  int qualityJPG = -1;
+  int qualityPNG = -1;
+  String imageType;
+  int imageQuality;
+
   String dialogAsk(String type, String fileName) {
-    if (jmolStatusListener != null)
-      return jmolStatusListener.dialogAsk(type, fileName);
-    return "";
+    inputFileName = fileName;
+    dialogType = type;
+    //System.out.println("Jvm12 thread: " + Thread.currentThread().getName());
+    try {
+      SwingUtilities.invokeAndWait(new Runnable() {
+        public void run() {
+          if (dialogType.equals("load")) {
+            outputFileName = newDialog(false).getOpenFileNameFromDialog(
+                viewer.appletContext, viewer, inputFileName, null, null, false);
+            return;
+          }
+          JmolDialogInterface sd = newDialog(false);
+          if (dialogType.equals("save")) {
+            outputFileName = sd.getSaveFileNameFromDialog(viewer,
+                inputFileName, null);
+            return;
+          }
+          if (dialogType.startsWith("saveImage")) {
+            outputFileName = sd.getImageFileNameFromDialog(viewer,
+                inputFileName, imageType, imageChoices, imageExtensions,
+                qualityJPG, qualityPNG);
+            qualityJPG = sd.getQuality("JPG");
+            qualityPNG = sd.getQuality("PNG");
+            String sType = sd.getType();
+            if (sType != null)
+              imageType = sType;
+            int iQuality = sd.getQuality(sType);
+            if (iQuality >= 0)
+              imageQuality = iQuality;
+            return;
+          }
+          outputFileName = null;
+        }
+      });
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+    return outputFileName;
   }
 
 }

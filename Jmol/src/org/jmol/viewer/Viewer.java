@@ -4268,6 +4268,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getMenu(String type) {
+    if (jmolpopup == null)
+      jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
     return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version "
             + Viewer.getJmolVersion() + "|_GET_MENU|" + type));
   }

@@ -141,8 +141,8 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
       if (fileName.indexOf(".spt") >= 0) 
         script = "script " + script;
       else
-        script = "zap;load " + script
-            + " 1;if({1-10000}.size);cartoons only;color structure;endif"; 
+        script = "zap;set zoomlarge false;load " + script
+            + " 1;select protein or dna;cartoons only;color structure;"; 
     }
     display.getViewer().evalStringQuiet(script);
     //display.repaint();

@@ -1624,7 +1624,8 @@ public class ScriptEvaluator {
   }
 
   private void runScript(String script) throws ScriptException {
-    runScript(script, outputBuffer);
+    if (!viewer.isPreviewOnly())
+      runScript(script, outputBuffer);
   }
 
   private boolean compileScriptFileInternal(String filename, String localPath, String remotePath) {
@@ -6724,9 +6725,8 @@ public class ScriptEvaluator {
     }
     if (msg.length() > 0)
       Logger.info(msg);
-    if (defaultScript.length() > 0 && !isCmdLine_c_or_C_Option) // NOT checking
-                                                           // embedded
-      // scripts here
+    if (defaultScript.length() > 0 && !isCmdLine_c_or_C_Option) 
+      // NOT checking embedded scripts in some cases
       runScript(defaultScript);
   }
 

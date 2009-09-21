@@ -71,7 +71,7 @@ public class UccageRenderer extends FontLineShapeRenderer {
     boolean drawAllLines = (viewer.getObjectMad(StateManager.OBJ_AXIS1) == 0 
         || viewer.getAxesScale() < 2 || axisPoints == null);
     render(mad, verticesT, screens, axisPoints, drawAllLines ? 0 : 3);
-    if (viewer.getDisplayCellParameters() && !symmetry.isPeriodic())
+    if (viewer.getDisplayCellParameters() && !viewer.isPreviewOnly() && !symmetry.isPeriodic())
       renderInfo(symmetry);
   }
   

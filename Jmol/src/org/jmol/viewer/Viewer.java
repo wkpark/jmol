@@ -341,7 +341,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private boolean isPreviewOnly = false;
 
-  boolean isPreviewOnly() {
+  public boolean isPreviewOnly() {
     return isPreviewOnly;
   }
 

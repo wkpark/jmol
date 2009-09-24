@@ -1710,7 +1710,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (scriptEditorVisible && allowScript)
       showEditor(new String[] { fileName, getFileAsString(fileName) });
     else
-      evalString((allowScript ? "script " : "load ")
+      evalString((allowScript ? "script " : "zap;load ")
          + Escape.escape(fileName));
   }
 

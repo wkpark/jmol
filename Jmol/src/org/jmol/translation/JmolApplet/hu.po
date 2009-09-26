@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-09-21 21:02+0200\n"
-"PO-Revision-Date: 2009-03-03 15:36+0000\n"
-"Last-Translator: Zoltán Zörgő <Unknown>\n"
+"PO-Revision-Date: 2009-09-25 06:38+0000\n"
+"Last-Translator: Muszela Balázs <bazsi86@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-03-07 16:00+0000\n"
+"X-Launchpad-Export-Date: 2009-09-26 12:32+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: HUNGARY\n"
 "X-Poedit-Language: Hungarian\n"
@@ -46,8 +46,8 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
-"Az üzenetek itt fognak megjelenni. A parancsokat az alábbi mezőbe írja be."
-"Kattintson a konzol Súgó menüpontjára segítségért, mely egy új böngésző-"
+"Az üzenetek itt fognak megjelenni. A parancsokat az alábbi mezőbe írja "
+"be.Kattintson a konzol Súgó menüpontjára segítségért, mely egy új böngésző-"
 "ablakban fog megjelenni."
 
 #: org/jmol/appletwrapper/AppletWrapper.java:91
@@ -64,9 +64,8 @@ msgid "Jmol Script Console"
 msgstr "Jmol parancsnyelvi konzol"
 
 #: org/jmol/console/AppletConsole.java:98
-#, fuzzy
 msgid "Editor"
-msgstr "Előzmények"
+msgstr "Szerkesztő"
 
 #: org/jmol/console/AppletConsole.java:99
 msgid "State"
@@ -74,9 +73,8 @@ msgstr "Státus"
 
 #: org/jmol/console/AppletConsole.java:100
 #: org/jmol/console/ScriptEditor.java:137
-#, fuzzy
 msgid "Run"
-msgstr "Orosz"
+msgstr "Futtat"
 
 #: org/jmol/console/AppletConsole.java:101
 msgid "Clear Output"
@@ -126,9 +124,8 @@ msgid "&More"
 msgstr "&Továbbiak"
 
 #: org/jmol/console/ScriptEditor.java:98
-#, fuzzy
 msgid "Jmol Script Editor"
-msgstr "Jmol parancsnyelvi konzol"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/PopupResourceBundle.java:876
@@ -147,18 +144,17 @@ msgid "Script"
 msgstr "Skript"
 
 #: org/jmol/console/ScriptEditor.java:134
-#, fuzzy
 msgid "Check"
-msgstr "Cseh"
+msgstr "Ellenőrzés"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
-#, fuzzy
 msgid "Step"
-msgstr "Leállít"
+msgstr "Lépés"
 
 #: org/jmol/console/ScriptEditor.java:138
 #: org/jmol/popup/PopupResourceBundle.java:834
@@ -172,17 +168,15 @@ msgstr "Folytatás"
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
-msgstr ""
+msgstr "Leállít"
 
 #: org/jmol/console/ScriptEditor.java:144
-#, fuzzy
 msgid "Clear"
-msgstr "Bemenet törlése"
+msgstr "Törlés"
 
 #: org/jmol/console/ScriptEditor.java:145
-#, fuzzy
 msgid "Close"
-msgstr "Konzol"
+msgstr "Bezár"
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
@@ -366,20 +360,19 @@ msgstr "Modellek hozzáfűzése"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
-msgstr ""
+msgstr "Arab"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
 msgstr "Katalán"
 
 #: org/jmol/i18n/GT.java:120
-#, fuzzy
 msgid "Simplified Chinese"
-msgstr "Oldalláncok"
+msgstr "Egyszerűsített kínai"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "Kínai (hagyományos)"
 
 #: org/jmol/i18n/GT.java:122
 msgid "Czech"
@@ -468,7 +461,7 @@ msgstr "Török"
 
 #: org/jmol/i18n/GT.java:143
 msgid "Ukrainian"
-msgstr ""
+msgstr "Ukrán"
 
 #: org/jmol/minimize/Minimizer.java:187
 #, java-format
@@ -496,9 +489,8 @@ msgstr "Nincs atom betöltve"
 
 #: org/jmol/popup/JmolPopup.java:464
 #: org/jmol/popup/PopupResourceBundle.java:577
-#, fuzzy
 msgid "Space Group"
-msgstr "Térbeli csoport"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:526 org/jmol/popup/JmolPopup.java:566
 #: org/jmol/popup/PopupResourceBundle.java:598
@@ -519,9 +511,8 @@ msgid "Translations"
 msgstr "Fordítások"
 
 #: org/jmol/popup/JmolPopup.java:692
-#, fuzzy
 msgid "System"
-msgstr "Leállít"
+msgstr "Rendszer"
 
 #: org/jmol/popup/JmolPopup.java:698
 msgid "1 processor"
@@ -541,9 +532,8 @@ msgid "Java version:"
 msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:707
-#, fuzzy
 msgid "Java memory usage:"
-msgstr "Java memóriahasználat"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:713
 #, java-format
@@ -601,9 +591,8 @@ msgid "Symmetry"
 msgstr "Szimmetria"
 
 #: org/jmol/popup/PopupResourceBundle.java:578
-#, fuzzy
 msgid "Hide Symmetry"
-msgstr "Szimmetria"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:579
 msgid "Model information"
@@ -1439,24 +1428,20 @@ msgid "Current state"
 msgstr "Aktuállis állapot"
 
 #: org/jmol/popup/PopupResourceBundle.java:889
-#, fuzzy
 msgid "File"
-msgstr "{0} fájl"
+msgstr "Fájl"
 
 #: org/jmol/popup/PopupResourceBundle.java:890
-#, fuzzy
 msgid "Reload"
-msgstr "{0} újratöltése"
+msgstr "Újratölt"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
-#, fuzzy
 msgid "Open from PDB"
-msgstr "Fájl PDB-ből"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:892
-#, fuzzy
 msgid "Open file or URL"
-msgstr "Fájl vagy URL:"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:893
 msgid "Load full unit cell"
@@ -1472,40 +1457,36 @@ msgid "Save a copy of {0}"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:897
-#, fuzzy
 msgid "Save script with state"
-msgstr "Skript állapottal"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:898
-#, fuzzy
 msgid "Save script with history"
-msgstr "Skript történettel"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 #: org/jmol/popup/PopupResourceBundle.java:900
 #: org/jmol/popup/PopupResourceBundle.java:901
 #: org/jmol/popup/PopupResourceBundle.java:902
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} image"
-msgstr "{0} kép"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:903
-#, fuzzy
 msgid "Save JVXL isosurface"
-msgstr "JVXL Iso-felület"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:904
 #: org/jmol/popup/PopupResourceBundle.java:905
 #: org/jmol/popup/PopupResourceBundle.java:906
 #: org/jmol/popup/PopupResourceBundle.java:907
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} 3D model"
-msgstr "{0} 3D modell"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:909
-#, fuzzy
 msgid "Computation"
-msgstr "Beállítások"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:910
 msgid "Optimize structure"
@@ -1602,7 +1583,7 @@ msgstr "RasMol színek"
 
 #: org/jmol/popup/PopupResourceBundle.java:964
 msgid "About..."
-msgstr ""
+msgstr "Névjegy…"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1098
 #: org/jmol/script/ScriptEvaluator.java:2335
@@ -1986,208 +1967,18 @@ msgstr "HIBA: ezt a változót nem lehet logikai értékre állítani: {0}"
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "a vágólap nem érhető el, használjon aláírt Java kisalkalmazást"
 
+#~ msgid "About Jmol"
+#~ msgstr "A Jmol programról"
+
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "A kisalkalmazás nem hozhat létre fájlt. A Base64 JPEG formátumhoz "
-#~ "használja ezt: {0}."
+#~ "A kisalkalmazás nem hozhat létre fájlt. A Base64 JPEG formátumhoz használja "
+#~ "ezt: {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Fájl létrehozása sikertelen."
 
 #~ msgid "Minimize"
 #~ msgstr "Minimalizál"
-
-#~ msgid "About Jmol"
-#~ msgstr "A Jmol programról"
-
-#~ msgid "Execute"
-#~ msgstr "Végrehajtás"
-
-#~ msgid "Portuguese - Brazil"
-#~ msgstr "Brazil - portugál"
-
-#~ msgid "all"
-#~ msgstr "Mind"
-
-#~ msgid "Structure"
-#~ msgstr "Struktúra"
-
-#~ msgid "Surface"
-#~ msgstr "Felület"
-
-#~ msgid "Unitcell"
-#~ msgstr "Egységcella"
-
-#~ msgid "Measure"
-#~ msgstr "Méretezések"
-
-#~ msgid "Bound Box"
-#~ msgstr "Befoglaló doboz"
-
-#~ msgid "Unit Cell"
-#~ msgstr "Egységcella"
-
-#~ msgid "rotation points cannot be identical"
-#~ msgstr "a forgáspontok nem lehetnek azonosak"
-
-#~ msgid "Calculate what?"
-#~ msgstr "Mit számoljak ki?"
-
-#~ msgid "invalid {0} control keyword"
-#~ msgstr "Hibás {0} kulcsszó"
-
-#~ msgid "save what?"
-#~ msgstr "Mit mentsek?"
-
-#~ msgid "restore what?"
-#~ msgstr "Mit állítsak vissza?"
-
-#~ msgid "Select"
-#~ msgstr "Kiválasztás"
-
-#~ msgid "Compatibility"
-#~ msgstr "Kompatibilitás"
-
-#~ msgid "RasMol/Chime Settings"
-#~ msgstr "RasMol/Chime beállítások"
-
-#~ msgid "Axes RasMol/Chime"
-#~ msgstr "RasMol/Chime tengelyek"
-
-#~ msgid "The {0} command is not available for the applet."
-#~ msgstr "A {0} panacs ebben a kisalkalmazásban nem érhető el."
-
-#~ msgid "Jmol executing script ..."
-#~ msgstr "Jmol parancsfájlt hajt végre"
-
-#~ msgid "use {0}"
-#~ msgstr "használd: {0}"
-
-#~ msgid "Animate"
-#~ msgstr "Animálás"
-
-#~ msgid "Set Select Mode"
-#~ msgstr "Kiválasztási mód"
-
-#~ msgid "Replace Selection"
-#~ msgstr "Kiválasztás lecserélése"
-
-#~ msgid "Add to Selection (OR)"
-#~ msgstr "Kiválasztáhzoz hozzávesz (VAGY)"
-
-#~ msgid "Narrow Selection (AND)"
-#~ msgstr "Kiválasztásból elvesz (ÉS)"
-
-#~ msgid "Render"
-#~ msgstr "Renderelés"
-
-#~ msgid "Crimson"
-#~ msgstr "Bíbor"
-
-#~ msgid "Dark Red"
-#~ msgstr "Sötétvörös"
-
-#~ msgid "Firebrick"
-#~ msgstr "Téglavörös"
-
-#~ msgid "Indian Red"
-#~ msgstr "Indiánvörös"
-
-#~ msgid "Light Pink"
-#~ msgstr "Világos pink"
-
-#~ msgid "Goldenrod"
-#~ msgstr "Barsnássárga"
-
-#~ msgid "Yellow-Green"
-#~ msgstr "Sárgászöld"
-
-#~ msgid "Seagreen"
-#~ msgstr "Tengerzöld"
-
-#~ msgid "Green-Blue"
-#~ msgstr "Zöldeskék"
-
-#~ msgid "Spring Green"
-#~ msgstr "Tavasz zöld"
-
-#~ msgid "Aqua"
-#~ msgstr "Óceánkék"
-
-#~ msgid "Azure"
-#~ msgstr "Azúrkék"
-
-#~ msgid "Cornflower"
-#~ msgstr "Kukoricavirágsárga"
-
-#~ msgid "Dark Slate Blue"
-#~ msgstr "Sötét angolkék"
-
-#~ msgid "Light Steel Blue"
-#~ msgstr "Acékék"
-
-#~ msgid "Charge"
-#~ msgstr "Töltés"
-
-#~ msgid "Crystal"
-#~ msgstr "Kristály"
-
-#~ msgid "Aquamarine"
-#~ msgstr "Aquamarin"
-
-#~ msgid "Forest Green"
-#~ msgstr "Erdőzöld"
-
-#~ msgid "Options"
-#~ msgstr "Beállítások"
-
-#~ msgid "Jmol Colors"
-#~ msgstr "Jmol szinek"
-
-#~ msgid "or dotted"
-#~ msgstr "vagy pontozott"
-
-#~ msgid "Except Solvent"
-#~ msgstr "Oldószeren kívül"
-
-#~ msgid "Except Water"
-#~ msgstr "Vizen kívül"
-
-#~ msgid "Other"
-#~ msgstr "Más"
-
-#~ msgid "Lipid"
-#~ msgstr "Lipid"
-
-#~ msgid "Nanometers"
-#~ msgstr "Nanomméter"
-
-#~ msgid "Angstroms"
-#~ msgstr "Ångström"
-
-#~ msgid "Picometers"
-#~ msgstr "Picométer"
-
-#~ msgid "Wireframe Rotation"
-#~ msgstr "Rács forgatása"
-
-#~ msgid ""
-#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
-#~ "for more information"
-#~ msgstr ""
-#~ "Jmol-kisalkalmazás - Része a OpenScience-Projektnek. További információk:"
-#~ "http://www.jmol.org."
-
-#~ msgid "Jmol Molecular Visualization http://www.jmol.org"
-#~ msgstr "Jmol molekula-vizualizáció, http://www.jmol.org"
-
-#~ msgid "Load PDB"
-#~ msgstr "PDB betöltés"
-
-#~ msgid "SPT State"
-#~ msgstr "SPT Státus"
-
-#~ msgid "SPT History"
-#~ msgstr "SPT Előzmények"

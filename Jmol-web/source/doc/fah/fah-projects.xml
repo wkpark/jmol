@@ -6417,6 +6417,9 @@
   <fah_proj number="3770" name="p3770_" public="y"
     server="171.67.108.20" preferred="36" deadline="53"
     credit="186" frames="100" code="G" contact="gbowman"/>
+  <fah_proj number="3771" name="p3771_AD AMYLOIDchk" public="n" file="xyz"
+    server="171.67.108.20" atoms="21379" preferred="37" deadline="54"
+    credit="173" frames="100" code="G" contact="lin5" contrib="John Deas"/>
   <fah_proj number="3798" name="p3798_" public="y" file="xyz"
     server="171.64.122.139" preferred="0.01" deadline="2"
     credit="250" frames="100" code="GC" contact="joseph" contrib="k-epsilon"/>

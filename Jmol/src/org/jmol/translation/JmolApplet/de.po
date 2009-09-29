@@ -14,13 +14,13 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-09-21 21:02+0200\n"
-"PO-Revision-Date: 2009-08-14 17:45+0000\n"
+"PO-Revision-Date: 2009-09-29 06:48+0000\n"
 "Last-Translator: Keruskerfuerst <armin_mohring@web.de>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-08-14 18:20+0000\n"
+"X-Launchpad-Export-Date: 2009-09-29 09:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/Jmol.java:655
@@ -150,12 +150,13 @@ msgid "Check"
 msgstr "Prüfen"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
-msgstr ""
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgstr "An die Spitze"
 
 #: org/jmol/console/ScriptEditor.java:136
 msgid "Step"
-msgstr ""
+msgstr "Stufe"
 
 #: org/jmol/console/ScriptEditor.java:138
 #: org/jmol/popup/PopupResourceBundle.java:834
@@ -361,7 +362,7 @@ msgstr "Modelle anhängen"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
-msgstr ""
+msgstr "arabisch"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
@@ -489,7 +490,6 @@ msgstr "Keine Atome geladen"
 
 #: org/jmol/popup/JmolPopup.java:464
 #: org/jmol/popup/PopupResourceBundle.java:577
-#, fuzzy
 msgid "Space Group"
 msgstr "Raumgruppe"
 
@@ -513,7 +513,7 @@ msgstr "Übersetzungen"
 
 #: org/jmol/popup/JmolPopup.java:692
 msgid "System"
-msgstr ""
+msgstr "System"
 
 #: org/jmol/popup/JmolPopup.java:698
 msgid "1 processor"
@@ -530,12 +530,11 @@ msgstr "Prozessoranzahl unbekannt"
 
 #: org/jmol/popup/JmolPopup.java:703
 msgid "Java version:"
-msgstr ""
+msgstr "Java Version"
 
 #: org/jmol/popup/JmolPopup.java:707
-#, fuzzy
 msgid "Java memory usage:"
-msgstr "Java Speichernutzung"
+msgstr "Speicherbedarf von Java:"
 
 #: org/jmol/popup/JmolPopup.java:713
 #, java-format
@@ -593,9 +592,8 @@ msgid "Symmetry"
 msgstr "Symmetrie"
 
 #: org/jmol/popup/PopupResourceBundle.java:578
-#, fuzzy
 msgid "Hide Symmetry"
-msgstr "Symmetrie"
+msgstr "Symetrie verstecken"
 
 #: org/jmol/popup/PopupResourceBundle.java:579
 msgid "Model information"
@@ -1435,24 +1433,20 @@ msgid "Current state"
 msgstr "Aktueller Zustand"
 
 #: org/jmol/popup/PopupResourceBundle.java:889
-#, fuzzy
 msgid "File"
-msgstr "Datei {0}"
+msgstr "Datei"
 
 #: org/jmol/popup/PopupResourceBundle.java:890
-#, fuzzy
 msgid "Reload"
-msgstr "Erneut laden {0}"
+msgstr "Neu Laden"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
-#, fuzzy
 msgid "Open from PDB"
-msgstr "Datei aus PDB"
+msgstr "Aus PDB öffnen"
 
 #: org/jmol/popup/PopupResourceBundle.java:892
-#, fuzzy
 msgid "Open file or URL"
-msgstr "Datei oder URL"
+msgstr "Datei oder URL öffnen"
 
 #: org/jmol/popup/PopupResourceBundle.java:893
 msgid "Load full unit cell"
@@ -1460,52 +1454,48 @@ msgstr "Lade gesamte Elementarzelle"
 
 #: org/jmol/popup/PopupResourceBundle.java:894
 msgid "Open script"
-msgstr ""
+msgstr "Skript öffnen"
 
 #: org/jmol/popup/PopupResourceBundle.java:896
 #, java-format
 msgid "Save a copy of {0}"
-msgstr ""
+msgstr "Eine Kopie von {0} speichern"
 
 #: org/jmol/popup/PopupResourceBundle.java:897
-#, fuzzy
 msgid "Save script with state"
-msgstr "Skript mit Zustand"
+msgstr "Skript mit Status speichern"
 
 #: org/jmol/popup/PopupResourceBundle.java:898
-#, fuzzy
 msgid "Save script with history"
-msgstr "Skript mit Historie"
+msgstr "Skript mit Verlauf speichern"
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 #: org/jmol/popup/PopupResourceBundle.java:900
 #: org/jmol/popup/PopupResourceBundle.java:901
 #: org/jmol/popup/PopupResourceBundle.java:902
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} image"
-msgstr "{0} Grafik"
+msgstr "exportiere {0} Abbild"
 
 #: org/jmol/popup/PopupResourceBundle.java:903
-#, fuzzy
 msgid "Save JVXL isosurface"
-msgstr "JVXL Isofläche"
+msgstr "speichere JVXL Isooberfläche"
 
 #: org/jmol/popup/PopupResourceBundle.java:904
 #: org/jmol/popup/PopupResourceBundle.java:905
 #: org/jmol/popup/PopupResourceBundle.java:906
 #: org/jmol/popup/PopupResourceBundle.java:907
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} 3D model"
-msgstr "{0} 3D Modell"
+msgstr "expotiere {0} 3D Modell"
 
 #: org/jmol/popup/PopupResourceBundle.java:909
-#, fuzzy
 msgid "Computation"
-msgstr "Einstellungen"
+msgstr "Berechnung"
 
 #: org/jmol/popup/PopupResourceBundle.java:910
 msgid "Optimize structure"
-msgstr ""
+msgstr "optimiere Struktur"
 
 #: org/jmol/popup/PopupResourceBundle.java:914
 msgid "Extract MOL data"
@@ -1598,7 +1588,7 @@ msgstr "RasMol Farben"
 
 #: org/jmol/popup/PopupResourceBundle.java:964
 msgid "About..."
-msgstr ""
+msgstr "Über..."
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1098
 #: org/jmol/script/ScriptEvaluator.java:2335
@@ -1960,7 +1950,7 @@ msgstr "{0} Atome ausgewählt"
 
 #: org/jmol/viewer/Viewer.java:4001
 msgid "Drag to move label"
-msgstr ""
+msgstr "Ziehen um Beschriftung zu bewegen."
 
 #: org/jmol/viewer/Viewer.java:4994
 #, java-format
@@ -1984,187 +1974,18 @@ msgstr ""
 "auf den Notizblock kann nicht zugegriffen werden -- verwenden Sie das "
 "signierte Miniprogramm"
 
+#~ msgid "About Jmol"
+#~ msgstr "Über Jmol"
+
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Dateierstellung mit diesem Applet ist nicht zulässig. Für das Base64 "
-#~ "Format, benutzen Sie {0}."
+#~ "Dateierstellung mit diesem Applet ist nicht zulässig. Für das Base64 Format, "
+#~ "benutzen Sie {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Dateierstellung fehlgeschlagen."
 
 #~ msgid "Minimize"
 #~ msgstr "Minimieren"
-
-#~ msgid "About Jmol"
-#~ msgstr "Über Jmol"
-
-#~ msgid "Execute"
-#~ msgstr "Ausführen"
-
-#~ msgid "all"
-#~ msgstr "Alles"
-
-#~ msgid "Structure"
-#~ msgstr "Struktur"
-
-#~ msgid "Surface"
-#~ msgstr "Oberfläche"
-
-#~ msgid "Unitcell"
-#~ msgstr "Elementarzelle"
-
-#~ msgid "Measure"
-#~ msgstr "Messen"
-
-#~ msgid "Bound Box"
-#~ msgstr "Zeichen-Box"
-
-#~ msgid "Unit Cell"
-#~ msgstr "Elementarzelle"
-
-#~ msgid "Calculate what?"
-#~ msgstr "Was soll berechnet werden?"
-
-#~ msgid "invalid {0} control keyword"
-#~ msgstr "Unzulässiges Kontrollschlüsselwort {0}."
-
-#~ msgid "save what?"
-#~ msgstr "Was soll gespeichert werden?"
-
-#~ msgid "restore what?"
-#~ msgstr "Was soll wiederhergestellt werden?"
-
-#~ msgid "Select"
-#~ msgstr "Auswahl"
-
-#~ msgid "Compatibility"
-#~ msgstr "Kompatibilität"
-
-#~ msgid "RasMol/Chime Settings"
-#~ msgstr "RasMol/Chime Einstellungen"
-
-#~ msgid "Axes RasMol/Chime"
-#~ msgstr "RasMol/Chime Achsen"
-
-#~ msgid "The {0} command is not available for the applet."
-#~ msgstr "Das Kommando {0} ist für das Applet nicht verfügbar."
-
-#~ msgid "Jmol executing script ..."
-#~ msgstr "Jmol führt Skript aus ..."
-
-#~ msgid "Animate"
-#~ msgstr "Animieren"
-
-#~ msgid "Set Select Mode"
-#~ msgstr "Auswahlmodus wählen"
-
-#~ msgid "Replace Selection"
-#~ msgstr "Auswahl ersetzen"
-
-#~ msgid "Add to Selection (OR)"
-#~ msgstr "Zur Auswahl hinzufügen (ODER)"
-
-#~ msgid "Narrow Selection (AND)"
-#~ msgstr "Azswahl einschränken (UND)"
-
-#~ msgid "Render"
-#~ msgstr "Rendern"
-
-#~ msgid "Crimson"
-#~ msgstr "Purpur"
-
-#~ msgid "Dark Red"
-#~ msgstr "Dunkelrot"
-
-#~ msgid "Firebrick"
-#~ msgstr "Ziegelrot"
-
-#~ msgid "Indian Red"
-#~ msgstr "India-Rot"
-
-#~ msgid "Light Pink"
-#~ msgstr "Pink hell"
-
-#~ msgid "Goldenrod"
-#~ msgstr "Goldrot"
-
-#~ msgid "Yellow-Green"
-#~ msgstr "Gelb-Grün"
-
-#~ msgid "Seagreen"
-#~ msgstr "Seegrün"
-
-#~ msgid "Green-Blue"
-#~ msgstr "Grün-Blau"
-
-#~ msgid "Spring Green"
-#~ msgstr "Frühlingsgrün"
-
-#~ msgid "Aqua"
-#~ msgstr "Ozeanblau"
-
-#~ msgid "Azure"
-#~ msgstr "Azur"
-
-#~ msgid "Cornflower"
-#~ msgstr "Kornblumenblau"
-
-#~ msgid "Dark Slate Blue"
-#~ msgstr "Dunkles Schieferblau"
-
-#~ msgid "Light Steel Blue"
-#~ msgstr "Stahlblau"
-
-#~ msgid "Charge"
-#~ msgstr "Ladung"
-
-#~ msgid "Crystal"
-#~ msgstr "Kristall"
-
-#~ msgid "Aquamarine"
-#~ msgstr "Aquamarin"
-
-#~ msgid "Forest Green"
-#~ msgstr "Waldgrün"
-
-#~ msgid "Options"
-#~ msgstr "Einstellungen"
-
-#~ msgid "Jmol Colors"
-#~ msgstr "Jmol-Farben"
-
-#~ msgid "Except Solvent"
-#~ msgstr "Außer Lösungsmittel"
-
-#~ msgid "Except Water"
-#~ msgstr "Außer Wasser"
-
-#~ msgid "Other"
-#~ msgstr "Andere"
-
-#~ msgid "Lipid"
-#~ msgstr "Lipid"
-
-#~ msgid "Nanometers"
-#~ msgstr "Nanometer"
-
-#~ msgid "Angstroms"
-#~ msgstr "Ångström"
-
-#~ msgid "Picometers"
-#~ msgstr "Picometer"
-
-#~ msgid "Wireframe Rotation"
-#~ msgstr "Drahtgitter-Rotation"
-
-#~ msgid ""
-#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
-#~ "for more information"
-#~ msgstr ""
-#~ "Jmol-Applet - Teil des OpenScience-Projekts. Mehr Informationen unter "
-#~ "http://www.jmol.org."
-
-#~ msgid "Jmol Molecular Visualization http://www.jmol.org"
-#~ msgstr "Jmol Molekül-Visualisierung, http://www.jmol.org"

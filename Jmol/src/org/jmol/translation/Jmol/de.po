@@ -14,13 +14,13 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-09-04 22:32+0200\n"
-"PO-Revision-Date: 2009-08-14 17:50+0000\n"
+"PO-Revision-Date: 2009-09-29 06:42+0000\n"
 "Last-Translator: Keruskerfuerst <armin_mohring@web.de>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-08-14 18:16+0000\n"
+"X-Launchpad-Export-Date: 2009-09-29 09:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -169,16 +169,15 @@ msgstr "Editor"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:114
 msgid "Check"
-msgstr ""
+msgstr "Überprüfen"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:115
-#, fuzzy
 msgid "Top"
-msgstr "&Oben"
+msgstr "Oben"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:116
 msgid "Step"
-msgstr ""
+msgstr "Stufe"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:123
 msgid "Variables"
@@ -912,7 +911,7 @@ msgstr "Molekül drehen."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr ""
+msgstr "Wähle einen Satz von Atomen mit UMSCHALTEN-LINKS-ZIEHEN."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
 msgid "Click atoms to measure distances"
@@ -1495,122 +1494,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:521
 msgid "compressing large data file to"
 msgstr "komprimiere große große Daten-Dateien nach"
-
-#~ msgid "Initializing Measurements..."
-#~ msgstr "Initialisiere Messungen..."
-
-#~ msgid "Run"
-#~ msgstr "Ausführen"
-
-#~ msgid "Image size"
-#~ msgstr "Bildgröße"
-
-#~ msgid "Output format : "
-#~ msgstr "Ausgabeformat: "
-
-#~ msgid "Select the file format of the output file"
-#~ msgstr "Das Format für die Ausgabedatei auswählen"
-
-#~ msgid "Command Line to Execute"
-#~ msgstr "Auszuführende Kommandozeile"
-
-#~ msgid "The actual command which will be executed"
-#~ msgstr "Kommando, das ausgeführt werden wird"
-
-#~ msgid "null component string"
-#~ msgstr "String ohne Komponenten"
-
-#~ msgid "Filename Stem"
-#~ msgstr "Stamm des Dateinamens"
-
-#~ msgid "Use .ini file"
-#~ msgstr "Eine .ini-Datei erstellen"
-
-#~ msgid "Save options in a .ini file"
-#~ msgstr "Optionen in einer .ini-Datei speichern"
-
-#~ msgid "Render all frames"
-#~ msgstr "Alle Frames rendern"
-
-#~ msgid "Render each model (not only the currently displayed one)"
-#~ msgstr "Jedes Modell rendern (nicht nur das aktuell gezeigte)"
-
-#~ msgid "Turn on POV-Ray anti-aliasing"
-#~ msgstr "Anti-Aliasing für POV-Ray einschalten"
-
-#~ msgid "Use povray's slower but higher quality anti-aliasing mode"
-#~ msgstr ""
-#~ "Den langsameren und qualitativ besseren Anti-Aliasing-Modus von POV-Ray "
-#~ "benutzen"
-
-#~ msgid "Render in pov-ray..."
-#~ msgstr "In POV-Ray rendern..."
-
-#~ msgid "File not loaded"
-#~ msgstr "Datei wurde nicht geladen"
-
-#~ msgid "Wi&reframe Rotation"
-#~ msgstr "&Rotation des Drahtgitter-Modells"
-
-#~ msgid "Wireframe Rotation"
-#~ msgstr "Rotation des Drahtgitter-Modells"
-
-#~ msgid "Colors"
-#~ msgstr "Farben"
-
-#~ msgid "Background"
-#~ msgstr "Hintergrund"
-
-#~ msgid "Set the Background Color"
-#~ msgstr "Hintergrundfarbe festlegen"
-
-#~ msgid "Background Color"
-#~ msgstr "Hintergrundfarbe"
-
-#~ msgid "Picked Atoms"
-#~ msgstr "Markierte Atome"
-
-#~ msgid "Set the Color for Picked Atoms"
-#~ msgstr "Farbe für markierte Atome festlegen"
-
-#~ msgid "Picked Atom Color"
-#~ msgstr "Farbe der markierten Atome"
-
-#~ msgid "Text"
-#~ msgstr "Text"
-
-#~ msgid "Set the Color for Text"
-#~ msgstr "Textfarbe festlegen"
-
-#~ msgid "Text Color"
-#~ msgstr "Textfarbe"
-
-#~ msgid "Set the Color for Bonds"
-#~ msgstr "Farbe der Bindungen festlegen"
-
-#~ msgid "Bond Color"
-#~ msgstr "Farbe der Bindungen"
-
-#~ msgid "Set the Vector Color"
-#~ msgstr "Farbe der Vektoren festlegen"
-
-#~ msgid "Vector Color"
-#~ msgstr "Farbe der Vektoren"
-
-#~ msgid "Color for distance, angle, & torsion measurements"
-#~ msgstr "Farbe der Distanz-, Winkel- und Torsionsmessungen"
-
-#~ msgid "Measurements Color"
-#~ msgstr "Farbe der Messungen"
-
-#~ msgid "Loading plugins..."
-#~ msgstr "Lade Plugins..."
-
-#~ msgid "Couldn't find file: WebExportIntro.html"
-#~ msgstr "Kann Datei nicht finden: WebExportIntro.html"
-
-#~ msgid "Cartoon of Page:"
-#~ msgstr "Symbolische Ansicht der Seite:"
-
-#~ msgid "&Java Output Console"
-#~ msgstr "Jmol &Java Konsole"

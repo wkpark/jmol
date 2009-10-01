@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-09-04 22:32+0200\n"
-"PO-Revision-Date: 2009-03-20 11:27+0000\n"
-"Last-Translator: Jerome Pansanel <jpansanel@pansanel.net>\n"
+"PO-Revision-Date: 2009-09-30 13:33+0000\n"
+"Last-Translator: Matthieu de Montmollin <mouloud@beer.com>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-04-08 04:52+0000\n"
+"X-Launchpad-Export-Date: 2009-10-01 17:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -56,11 +56,11 @@ msgstr "lancement silencieux"
 
 #: org/openscience/jmol/app/JmolApp.java:150
 msgid "list commands during script execution"
-msgstr ""
+msgstr "liste les commandes pendant l'exécution du script"
 
 #: org/openscience/jmol/app/JmolApp.java:152
 msgid "start with no splash screen"
-msgstr ""
+msgstr "démarrer sans fenêtre d'attente (splash screen)"
 
 #: org/openscience/jmol/app/JmolApp.java:154
 msgid "no console -- all output to sysout"
@@ -84,11 +84,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "Jmol script to execute BEFORE -s option"
-msgstr ""
+msgstr "script Jmol à exécuter AVANT l'option -s"
 
 #: org/openscience/jmol/app/JmolApp.java:176
 msgid "Jmol script to execute AFTER -s option"
-msgstr ""
+msgstr "script Jmol à exécuter APRES l'option -s"
 
 #: org/openscience/jmol/app/JmolApp.java:185
 msgid "property=value"
@@ -127,15 +127,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:454
 msgid "Executing script 1..."
-msgstr ""
+msgstr "Script 1 en cours d'exécution..."
 
 #: org/openscience/jmol/app/JmolApp.java:464
 msgid "Executing script file..."
-msgstr ""
+msgstr "Fichier de script en cours d'exécution..."
 
 #: org/openscience/jmol/app/JmolApp.java:485
 msgid "Executing script 2..."
-msgstr ""
+msgstr "Script 2 en cours d'exécution..."
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
@@ -161,23 +161,20 @@ msgid "Jmol Script Console"
 msgstr "Console Script Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
-#, fuzzy
 msgid "Editor"
-msgstr "&Edition"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:114
 msgid "Check"
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:115
-#, fuzzy
 msgid "Top"
-msgstr "&Haut"
+msgstr "Haut"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:116
-#, fuzzy
 msgid "Step"
-msgstr "Etat"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:123
 msgid "Variables"
@@ -439,9 +436,8 @@ msgid "Output Conso&le..."
 msgstr "Output Conso&le..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
-#, fuzzy
 msgid "Jmol Java &Console"
-msgstr "Console Java Jmol"
+msgstr "&Console Java Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:58
 msgid "AtomSet&Chooser..."
@@ -961,9 +957,8 @@ msgid "Launching main frame..."
 msgstr "Affichage de la frame principale..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:304
-#, fuzzy
 msgid "Jmol Console"
-msgstr "Console Java Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:326
 msgid "Could not create ConsoleTextArea: "
@@ -1479,265 +1474,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:521
 msgid "compressing large data file to"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Initializing Script Editor..."
-#~ msgstr "Initialisation de la fenêtre de script..."
-
-#~ msgid "Initializing Measurements..."
-#~ msgstr "Initialisation des mesures..."
-
-#~ msgid "&Java Output Console"
-#~ msgstr "Console &Java Jmol"
-
-#~ msgid "Run"
-#~ msgstr "Exécuter"
-
-#~ msgid "Select Atoms"
-#~ msgstr "Sélectionner les atomes"
-
-#~ msgid "Preview"
-#~ msgstr "Prévisualisation"
-
-#~ msgid "Append models"
-#~ msgstr "Ajouter les modèles"
-
-#~ msgid "Make crystal..."
-#~ msgstr "Créer un cristal..."
-
-#~ msgid "Name"
-#~ msgstr "Nom"
-
-#~ msgid "Measurements..."
-#~ msgstr "Mesures..."
-
-#~ msgid "Export view to an image or script file."
-#~ msgstr "Exporter la vue dans un fichier image ou script."
-
-#~ msgid "Render in pov-ray."
-#~ msgstr "Rendu dans pov-ray."
-
-#~ msgid "Select an atom or region."
-#~ msgstr "Sélectionner un atome ou une région."
-
-#~ msgid "View measurement table."
-#~ msgstr "Voir la table des mesures."
-
-#~ msgid "Image Type"
-#~ msgstr "Type d'Image"
-
-#~ msgid "JPEG Quality"
-#~ msgstr "Qualité JPEG"
-
-#~ msgid "Initializing AtomSetChooser Window..."
-#~ msgstr "Initialisation de la fenêtre AtomSetChooser..."
-
-#~ msgid "Setting up File Choosers..."
-#~ msgstr "Installation des Sélecteurs de fichier..."
-
-#~ msgid "All Files"
-#~ msgstr "Tous les fichiers"
-
-#~ msgid "Abort file chooser dialog"
-#~ msgstr "Ferme la boîte de dialogue du sélecteur de fichiers"
-
-#~ msgid "Details"
-#~ msgstr "Détails"
-
-#~ msgid "Directory"
-#~ msgstr "Répertoire"
-
-#~ msgid "Open selected directory"
-#~ msgstr "Ouvrir le répertoire sélectionné"
-
-#~ msgid "Attributes"
-#~ msgstr "Attributs"
-
-#~ msgid "Modified"
-#~ msgstr "Modifié"
-
-#~ msgid "Generic File"
-#~ msgstr "Fichier générique"
-
-#~ msgid "Size"
-#~ msgstr "Taille"
-
-#~ msgid "Files of Type:"
-#~ msgstr "Fichiers du type :"
-
-#~ msgid "Type"
-#~ msgstr "Type"
-
-#~ msgid "FileChooser help"
-#~ msgstr "Aide sur le sélecteur de fichiers"
-
-#~ msgid "Home"
-#~ msgstr "Répertoire d'accueil"
-
-#~ msgid "List"
-#~ msgstr "Liste"
-
-#~ msgid "Look In:"
-#~ msgstr "Rechercher dans :"
-
-#~ msgid "Error creating new folder"
-#~ msgstr "Erreur lors de la création du nouveau dossier"
-
-#~ msgid "New Folder"
-#~ msgstr "Nouveau dossier"
-
-#~ msgid "Create New Folder"
-#~ msgstr "Crée un nouveau dossier."
-
-#~ msgid "Open selected file"
-#~ msgstr "Ouvre le fichier sélectionné"
-
-#~ msgid "Save selected file"
-#~ msgstr "Enregistre le fichier sélectionné"
-
-#~ msgid "Save In:"
-#~ msgstr "Enregistrer dans :"
-
-#~ msgid "Update"
-#~ msgstr "Mise à jour"
-
-#~ msgid "Update directory listing"
-#~ msgstr "Met à jour la liste des répertoires"
-
-#~ msgid "Up"
-#~ msgstr "Vers le haut"
-
-#~ msgid "Up One Level"
-#~ msgstr "Remonte d'un niveau."
-
-#~ msgid "No"
-#~ msgstr "Non"
-
-#~ msgid "Yes"
-#~ msgstr "Oui"
-
-#~ msgid "Jmol-to-POV-Ray Conversion"
-#~ msgstr "Conversion de Jmol vers POV-Ray"
-
-#~ msgid "Filename"
-#~ msgstr "Nom de fichier"
-
-#~ msgid "Height : "
-#~ msgstr "Hauteur : "
-
-#~ msgid "POV-Ray Executable Location"
-#~ msgstr "Emplacement de l'exécutable POV-Ray"
-
-#~ msgid "Image size"
-#~ msgstr "Taille de l'image"
-
-#~ msgid "Output format : "
-#~ msgstr "Format de sortie : "
-
-#~ msgid "Select the file format of the output file"
-#~ msgstr "Sélectionner le format du fichier de sortie"
-
-#~ msgid "Command Line to Execute"
-#~ msgstr "Ligne de commande à exécuter"
-
-#~ msgid "The actual command which will be executed"
-#~ msgstr "La commande qui sera réellement exécutée"
-
-#~ msgid "null component string"
-#~ msgstr "Chaîne vide"
-
-#~ msgid "Filename Stem"
-#~ msgstr "Racine du nom de fichier"
-
-#~ msgid "Use .ini file"
-#~ msgstr "Utiliser un fichier .ini"
-
-#~ msgid "Save options in a .ini file"
-#~ msgstr "Enregistre les options dans un fichier .ini"
-
-#~ msgid "Render all frames"
-#~ msgstr "Calculer toutes les images"
-
-#~ msgid "Render each model (not only the currently displayed one)"
-#~ msgstr ""
-#~ "Crée une image pour chaque modèle (pas seulement pour celui actuellement "
-#~ "affiché)"
-
-#~ msgid "Turn on POV-Ray anti-aliasing"
-#~ msgstr "Activer l'anti-aliasing de POV-Ray"
-
-#~ msgid "Use povray's slower but higher quality anti-aliasing mode"
-#~ msgstr ""
-#~ "Utiliser l'anti-aliasing de povray, plus lent mais de meilleure qualité"
-
-#~ msgid "Render in pov-ray..."
-#~ msgstr "Rendu dans pov-ray..."
-
-#~ msgid "File not loaded"
-#~ msgstr "Fichier non chargé"
-
-#~ msgid "no display"
-#~ msgstr "sans affichage"
-
-#~ msgid "Jmol executing script ..."
-#~ msgstr "Exécution du script par Jmol..."
-
-#~ msgid "Wi&reframe Rotation"
-#~ msgstr "Rotation &fil de fer"
-
-#~ msgid "Wireframe Rotation"
-#~ msgstr "Rotation fil de fer"
-
-#~ msgid "Colors"
-#~ msgstr "Couleurs"
-
-#~ msgid "Background"
-#~ msgstr "Arrière-plan"
-
-#~ msgid "Set the Background Color"
-#~ msgstr "Régler la couleur d'Arrière-plan"
-
-#~ msgid "Background Color"
-#~ msgstr "Couleur d'Arrière-plan"
-
-#~ msgid "Picked Atoms"
-#~ msgstr "Atomes Choisis"
-
-#~ msgid "Set the Color for Picked Atoms"
-#~ msgstr "Régler la Couleur pour les Atomes Choisis"
-
-#~ msgid "Picked Atom Color"
-#~ msgstr "Couleur de l'Atome Choisi"
-
-#~ msgid "Text"
-#~ msgstr "Texte"
-
-#~ msgid "Set the Color for Text"
-#~ msgstr "Régler la Couleur pour le Texte"
-
-#~ msgid "Text Color"
-#~ msgstr "Couleur du Texte"
-
-#~ msgid "Set the Color for Bonds"
-#~ msgstr "Régler la Couleur pour les Liens"
-
-#~ msgid "Bond Color"
-#~ msgstr "Couleur des Liens"
-
-#~ msgid "Set the Vector Color"
-#~ msgstr "Régler la Couleur de Vecteur"
-
-#~ msgid "Vector Color"
-#~ msgstr "Couleur de Vecteur"
-
-#~ msgid "Color for distance, angle, & torsion measurements"
-#~ msgstr "Couleur pour les mesures de distance, angle & torsion"
-
-#~ msgid "Measurements Color"
-#~ msgstr "Couleur des Mesures"
-
-#~ msgid "Loading plugins..."
-#~ msgstr "Chargement des plugins..."
-
-#~ msgid "run script and exit"
-#~ msgstr "exécuter le script et terminer"

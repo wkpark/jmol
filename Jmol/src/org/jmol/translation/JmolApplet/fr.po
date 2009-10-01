@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-09-21 21:02+0200\n"
-"PO-Revision-Date: 2009-03-20 11:17+0000\n"
+"PO-Revision-Date: 2009-09-29 20:23+0000\n"
 "Last-Translator: Jerome Pansanel <jpansanel@pansanel.net>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-03-22 18:24+0000\n"
+"X-Launchpad-Export-Date: 2009-10-01 18:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -60,9 +60,8 @@ msgid "Jmol Script Console"
 msgstr "Console de Script Jmol"
 
 #: org/jmol/console/AppletConsole.java:98
-#, fuzzy
 msgid "Editor"
-msgstr "Historique"
+msgstr "Éditeur"
 
 #: org/jmol/console/AppletConsole.java:99
 msgid "State"
@@ -70,9 +69,8 @@ msgstr "Etat"
 
 #: org/jmol/console/AppletConsole.java:100
 #: org/jmol/console/ScriptEditor.java:137
-#, fuzzy
 msgid "Run"
-msgstr "Russe"
+msgstr "Lancer"
 
 #: org/jmol/console/AppletConsole.java:101
 msgid "Clear Output"
@@ -122,9 +120,8 @@ msgid "&More"
 msgstr "&Plus"
 
 #: org/jmol/console/ScriptEditor.java:98
-#, fuzzy
 msgid "Jmol Script Editor"
-msgstr "Console de Script Jmol"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/PopupResourceBundle.java:876
@@ -143,18 +140,17 @@ msgid "Script"
 msgstr "Script"
 
 #: org/jmol/console/ScriptEditor.java:134
-#, fuzzy
 msgid "Check"
-msgstr "Tchèque"
+msgstr "Vérifier"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
-#, fuzzy
 msgid "Step"
-msgstr "Arrêter"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:138
 #: org/jmol/popup/PopupResourceBundle.java:834
@@ -168,17 +164,15 @@ msgstr "Reprendre"
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
-msgstr ""
+msgstr "Arrêter"
 
 #: org/jmol/console/ScriptEditor.java:144
-#, fuzzy
 msgid "Clear"
-msgstr "Effacer la saisie"
+msgstr "Effacer"
 
 #: org/jmol/console/ScriptEditor.java:145
-#, fuzzy
 msgid "Close"
-msgstr "Console"
+msgstr "Fermer"
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
@@ -234,7 +228,7 @@ msgstr "Annuler"
 
 #: org/jmol/export/dialog/Dialog.java:425
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "Ferme la boîte de dialogue du sélecteur de fichiers"
 
 #: org/jmol/export/dialog/Dialog.java:427
 #: org/jmol/export/dialog/Dialog.java:428
@@ -362,20 +356,19 @@ msgstr "Ajouter les modèles"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
-msgstr ""
+msgstr "Arabe"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
 msgstr "Catalan"
 
 #: org/jmol/i18n/GT.java:120
-#, fuzzy
 msgid "Simplified Chinese"
-msgstr "Chaînes latérales"
+msgstr "Chinois Simplifié"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "Chinois traditionnel"
 
 #: org/jmol/i18n/GT.java:122
 msgid "Czech"
@@ -463,7 +456,7 @@ msgstr "Turc"
 
 #: org/jmol/i18n/GT.java:143
 msgid "Ukrainian"
-msgstr ""
+msgstr "Ukrainien"
 
 #: org/jmol/minimize/Minimizer.java:187
 #, java-format
@@ -491,9 +484,8 @@ msgstr "Aucun atome chargé"
 
 #: org/jmol/popup/JmolPopup.java:464
 #: org/jmol/popup/PopupResourceBundle.java:577
-#, fuzzy
 msgid "Space Group"
-msgstr "Groupe spatial"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:526 org/jmol/popup/JmolPopup.java:566
 #: org/jmol/popup/PopupResourceBundle.java:598
@@ -514,9 +506,8 @@ msgid "Translations"
 msgstr "Traductions"
 
 #: org/jmol/popup/JmolPopup.java:692
-#, fuzzy
 msgid "System"
-msgstr "Arrêter"
+msgstr "Système"
 
 #: org/jmol/popup/JmolPopup.java:698
 msgid "1 processor"
@@ -533,12 +524,11 @@ msgstr "Nombre de processeurs inconnu"
 
 #: org/jmol/popup/JmolPopup.java:703
 msgid "Java version:"
-msgstr ""
+msgstr "Version de Java :"
 
 #: org/jmol/popup/JmolPopup.java:707
-#, fuzzy
 msgid "Java memory usage:"
-msgstr "Utilisation mémoire de Java"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:713
 #, java-format
@@ -596,9 +586,8 @@ msgid "Symmetry"
 msgstr "Symétrie"
 
 #: org/jmol/popup/PopupResourceBundle.java:578
-#, fuzzy
 msgid "Hide Symmetry"
-msgstr "Symétrie"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:579
 msgid "Model information"
@@ -1434,23 +1423,20 @@ msgid "Current state"
 msgstr "Etat courant"
 
 #: org/jmol/popup/PopupResourceBundle.java:889
-#, fuzzy
 msgid "File"
-msgstr "Fichier {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:890
-#, fuzzy
 msgid "Reload"
-msgstr "Recharger {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:891
 msgid "Open from PDB"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:892
-#, fuzzy
 msgid "Open file or URL"
-msgstr "Fichier ou URL"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:893
 msgid "Load full unit cell"
@@ -1477,27 +1463,25 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:900
 #: org/jmol/popup/PopupResourceBundle.java:901
 #: org/jmol/popup/PopupResourceBundle.java:902
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} image"
-msgstr "{0} Image"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:903
-#, fuzzy
 msgid "Save JVXL isosurface"
-msgstr "Isosurface JVXL"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:904
 #: org/jmol/popup/PopupResourceBundle.java:905
 #: org/jmol/popup/PopupResourceBundle.java:906
 #: org/jmol/popup/PopupResourceBundle.java:907
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} 3D model"
-msgstr "{0} Modèle 3D"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:909
-#, fuzzy
 msgid "Computation"
-msgstr "Configurations"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:910
 msgid "Optimize structure"
@@ -1978,309 +1962,18 @@ msgstr ""
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "Le presse-papiers est inacessible -- utiliser l'applet signée"
 
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr ""
-#~ "La création de fichier par cette n''est pas autorisée. Pour le format "
-#~ "JPEG Base64, utiliser {0}."
+#~ msgid "About Jmol"
+#~ msgstr "A propos de Jmol"
 
 #~ msgid "File creation failed."
 #~ msgstr "Création du fichier échoué"
 
+#, java-format
+#~ msgid ""
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ msgstr ""
+#~ "La création de fichier par cette n''est pas autorisée. Pour le format JPEG "
+#~ "Base64, utiliser {0}."
+
 #~ msgid "Minimize"
 #~ msgstr "Réduire"
-
-#~ msgid "About Jmol"
-#~ msgstr "A propos de Jmol"
-
-#~ msgid "Execute"
-#~ msgstr "Exécuter"
-
-#~ msgid "Portuguese - Brazil"
-#~ msgstr "Portugais - Brésil"
-
-#~ msgid "all"
-#~ msgstr "tout"
-
-#~ msgid "Structure"
-#~ msgstr "Structure"
-
-#~ msgid "Surface"
-#~ msgstr "Surface"
-
-#~ msgid "Unitcell"
-#~ msgstr "Cellule unitaire"
-
-#~ msgid "Measure"
-#~ msgstr "Mesure"
-
-#~ msgid "Bound Box"
-#~ msgstr "Boîte englobante"
-
-#~ msgid "Unit Cell"
-#~ msgstr "Cellule Unitaire"
-
-#~ msgid "comma or right parenthesis expected"
-#~ msgstr "virgule ou parenthèse fermante attendue"
-
-#~ msgid "comparison operator expected"
-#~ msgstr "opérateur de comparaison attendu"
-
-#~ msgid "equal sign expected"
-#~ msgstr "signe égal attendu"
-
-#~ msgid "left parenthesis expected"
-#~ msgstr "parenthèse ouvrante attendue"
-
-#~ msgid "right brace expected"
-#~ msgstr "crochet fermant attendue"
-
-#~ msgid "right bracket expected"
-#~ msgstr "crochet fermant attendu"
-
-#~ msgid "right parenthesis expected"
-#~ msgstr "parenthèse fermante attendue"
-
-#~ msgid "rotation points cannot be identical"
-#~ msgstr "les points de rotation ne peuvent être identiques"
-
-#~ msgid "too many parentheses"
-#~ msgstr "trop de parenthèses"
-
-#~ msgid "bad atom number"
-#~ msgstr "mauvais numéro d'atome"
-
-#~ msgid "Calculate what?"
-#~ msgstr "Calculer quoi?"
-
-#~ msgid "invalid {0} control keyword"
-#~ msgstr "mot clé de contrôle {0} incorrect"
-
-#~ msgid "save what?"
-#~ msgstr "sauver quoi?"
-
-#~ msgid "restore what?"
-#~ msgstr "restaurer quoi?"
-
-#~ msgid "trajectory not applicable in this context"
-#~ msgstr "les trajectoires ne sont pas autorisées dans ce contexte"
-
-#~ msgid "{0} connections modified or created"
-#~ msgstr "{0} connexions modifiées ou créées"
-
-#~ msgid "MO isosurfaces require that only one model be displayed"
-#~ msgstr "Les isosurfaces MO requièrent qu'un seul modèle soit affiché"
-
-#~ msgid "Select"
-#~ msgstr "Sélectionner"
-
-#~ msgid "Too many nested {0} commands"
-#~ msgstr "Trop de commandes {0} imbriquées"
-
-#~ msgid "Invalid {0} command"
-#~ msgstr "Commande {0} incorrect"
-
-#~ msgid "Compatibility"
-#~ msgstr "Compatibilité"
-
-#~ msgid "RasMol/Chime Settings"
-#~ msgstr "Options RasMol/Chime"
-
-#~ msgid "Axes RasMol/Chime"
-#~ msgstr "Axes RasMol/Chime"
-
-#~ msgid "Zero-Based Xyz Rasmol"
-#~ msgstr "Origine Xyz en zéro (Rasmol)"
-
-#~ msgid "The {0} command is not available for the applet."
-#~ msgstr "La commande {0} n'est pas disponible pour l'applet."
-
-#~ msgid "nonnegative integer expected"
-#~ msgstr "entier positif attendu"
-
-#~ msgid "boolean or percent expected"
-#~ msgstr "booléen ou pourcentage attendu"
-
-#~ msgid "(atom expression) or decimal number expected"
-#~ msgstr "(expression d'atomes) ou nombre décimal attendu"
-
-#~ msgid "variable undefined"
-#~ msgstr "variable non définie"
-
-#~ msgid "number out of range"
-#~ msgstr "nombre en dehors de la plage de valeurs"
-
-#~ msgid "atom expression compiler error - stack over/underflow"
-#~ msgstr "Erreur du compilateur d'expression d'atomes - stack over/underflow"
-
-#~ msgid "Jmol executing script ..."
-#~ msgstr "Jmol exécute un script ..."
-
-#~ msgid "interpreter error - setspecial should not be here"
-#~ msgstr "Erreur de l'interpéteur - setspecial ne devrait pas être ici"
-
-#~ msgid "Unrecognized {0} parameter"
-#~ msgstr "Paramètre {0} non reconnu"
-
-#~ msgid "use {0}"
-#~ msgstr "utiliser {0}"
-
-#~ msgid "unrecognized subcommand"
-#~ msgstr "sous-commande non reconnue"
-
-#~ msgid "error loading script"
-#~ msgstr "erreur au chargement du script"
-
-#~ msgid "Currently the {0} command only works for the applet"
-#~ msgstr "Actuellement, la commande {0} ne marche que pour l'applet"
-
-#~ msgid "Animate"
-#~ msgstr "Animer"
-
-#~ msgid "Set Select Mode"
-#~ msgstr "Choisir le mode de sélection"
-
-#~ msgid "Replace Selection"
-#~ msgstr "Remplacer la sélection"
-
-#~ msgid "Add to Selection (OR)"
-#~ msgstr "Ajouter à la sélection (OU)"
-
-#~ msgid "Narrow Selection (AND)"
-#~ msgstr "Restreindre la sélection (ET)"
-
-#~ msgid "Render"
-#~ msgstr "Rendu"
-
-#~ msgid "Crimson"
-#~ msgstr "Cramoisi"
-
-#~ msgid "Dark Red"
-#~ msgstr "Rouge sombre"
-
-#~ msgid "Firebrick"
-#~ msgstr "Rouge brique"
-
-#~ msgid "Indian Red"
-#~ msgstr "Rouge indien"
-
-#~ msgid "Dark Magenta"
-#~ msgstr "Magenta foncé"
-
-#~ msgid "Dark Salmon"
-#~ msgstr "Saumon foncé"
-
-#~ msgid "Light Salmon"
-#~ msgstr "Saumon clair"
-
-#~ msgid "Deep Pink"
-#~ msgstr "Rose foncé"
-
-#~ msgid "Light Pink"
-#~ msgstr "Rose clair"
-
-#~ msgid "Goldenrod"
-#~ msgstr "Doré"
-
-#~ msgid "Lemon Chiffon"
-#~ msgstr "Jaune citron"
-
-#~ msgid "Yellow-Green"
-#~ msgstr "Jaune-vert"
-
-#~ msgid "Lime"
-#~ msgstr "Lime"
-
-#~ msgid "Seagreen"
-#~ msgstr "Vert d'eau"
-
-#~ msgid "Green-Blue"
-#~ msgstr "Vert-Bleu"
-
-#~ msgid "Spring Green"
-#~ msgstr "Vert printemps"
-
-#~ msgid "Aqua"
-#~ msgstr "Aqua"
-
-#~ msgid "Azure"
-#~ msgstr "Azur"
-
-#~ msgid "Carolina Blue"
-#~ msgstr "Bleu Caroline"
-
-#~ msgid "Cadet Blue"
-#~ msgstr "Cadet blue"
-
-#~ msgid "Cornflower"
-#~ msgstr "Bleu barbeau"
-
-#~ msgid "Dark Slate Blue"
-#~ msgstr "Bleu ardoise foncé"
-
-#~ msgid "Light Steel Blue"
-#~ msgstr "Bleu acier clair"
-
-#~ msgid "Charge"
-#~ msgstr "Charge"
-
-#~ msgid "Crystal"
-#~ msgstr "Cristal"
-
-#~ msgid "Aquamarine"
-#~ msgstr "Aigue marine"
-
-#~ msgid "Forest Green"
-#~ msgstr "Vert forêt"
-
-#~ msgid "Hot Pink"
-#~ msgstr "Rose vif"
-
-#~ msgid "Options"
-#~ msgstr "Options"
-
-#~ msgid "Show Selected Atoms"
-#~ msgstr "Afficher les atomes sélectionnés"
-
-#~ msgid "Jmol Colors"
-#~ msgstr "Couleurs Jmol"
-
-#~ msgid "Except Solvent"
-#~ msgstr "Excepté le solvant"
-
-#~ msgid "Except Water"
-#~ msgstr "Excepté l'eau"
-
-#~ msgid "Other"
-#~ msgstr "Autre"
-
-#~ msgid "Lipid"
-#~ msgstr "Lipide"
-
-#~ msgid "Nanometers"
-#~ msgstr "Nanomètres"
-
-#~ msgid "Angstroms"
-#~ msgstr "Angströms"
-
-#~ msgid "Picometers"
-#~ msgstr "Picomètres"
-
-#~ msgid "Wireframe Rotation"
-#~ msgstr "Rotation fil de fer"
-
-#~ msgid "Jmol Molecular Visualization http://www.jmol.org"
-#~ msgstr "Jmol Visualisation Moléculaire http://www.jmol.org"
-
-#~ msgid "the {0} command requires that only one model be displayed"
-#~ msgstr "La commande {0} requiert qu'un seul modèle soit affiché"
-
-#~ msgid "command ignored (not implemented): {0}"
-#~ msgstr "commande ignorée (non implémentée): {0}"
-
-#~ msgid "zapped"
-#~ msgstr "vide"
-
-#~ msgid "English - United Kingdom"
-#~ msgstr "Anglais - Royaume Uni"

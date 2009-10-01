@@ -591,7 +591,7 @@ class StatusManager {
 
   void syncSend(String script, String appletName) {
     // no jmolscript option for syncSend
-    if (jmolStatusListener != null)
+    if (notifyEnabled(JmolConstants.CALLBACK_SYNC))
       jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_SYNC,
           new Object[] { null, script, appletName });
   }

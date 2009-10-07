@@ -1859,10 +1859,7 @@ abstract public class ModelCollection extends BondCollection {
       SymmetryInterface unitcell = viewer.getCurrentUnitCell();
       if (unitcell == null)
         return bs;
-      Point3f cell = new Point3f(unitcell.getFractionalOffset());
-      cell.x += 1;
-      cell.y += 1;
-      cell.z += 1;
+      Point3f cell = new Point3f(1,1,1);
       for (int i = atomCount; --i >= 0;)
         if (isInLatticeCell(i, cell))
           bs.set(i);

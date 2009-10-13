@@ -38,7 +38,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
 /**
- * Reader for Gaussian 94/98/03 output files.
+ * Reader for Gaussian 94/98/03/09 output files.
  * 
  * 4/11/2009 -- hansonr -- added NBO support as extension of MOReader
  *

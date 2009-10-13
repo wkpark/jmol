@@ -187,7 +187,7 @@ public class GaussianReader extends MOReader {
       calculationType = line.substring(31).trim();
       return true;
     }
-    if (line.startsWith(" AO basis set:")) {
+    if (line.startsWith(" AO basis set")) {
       readBasis();
       return true;
     }
@@ -211,27 +211,39 @@ public class GaussianReader extends MOReader {
   
   /**
    * Interprets the SCF Done: section.
-   *
-   * <p>The energyKey and energyString will be set for further AtomSets that have
-   * the same molecular geometry (e.g., frequencies).
-   * The energy, convergence, -V/T and S**2 values will be set as properties
-   * for the atomSet.
-   *
-   * @throws Exception If an error occurs
+   * 
+   * <p>
+   * The energyKey and energyString will be set for further AtomSets that have
+   * the same molecular geometry (e.g., frequencies). The energy, convergence,
+   * -V/T and S**2 values will be set as properties for the atomSet.
+   * 
+   * @throws Exception
+   *           If an error occurs
    **/
   private void readSCFDone() throws Exception {
-    String tokens[] = getTokens(line,11);
+    String tokens[] = getTokens(line, 11);
+    if (tokens.length < 4)
+      return;
     energyKey = tokens[0];
-    energyString = tokens[2]+" "+tokens[3];
+    energyString = tokens[2] + " " + tokens[3];
     // now set the names for the last equivalentAtomSets
-    atomSetCollection.setAtomSetNames(energyKey+" = " + energyString, equivalentAtomSets);
+    atomSetCollection.setAtomSetNames(energyKey + " = " + energyString,
+        equivalentAtomSets);
     // also set the properties for them
-    atomSetCollection.setAtomSetProperties(energyKey, energyString, equivalentAtomSets);
+    atomSetCollection.setAtomSetProperties(energyKey, energyString,
+        equivalentAtomSets);
     tokens = getTokens(readLine());
-    atomSetCollection.setAtomSetProperties(tokens[0], tokens[2], equivalentAtomSets);
-    atomSetCollection.setAtomSetProperties(tokens[3], tokens[5], equivalentAtomSets);
-    tokens = getTokens(readLine());
-    atomSetCollection.setAtomSetProperties(tokens[0], tokens[2], equivalentAtomSets);
+    if (tokens.length > 2) {
+      atomSetCollection.setAtomSetProperties(tokens[0], tokens[2],
+          equivalentAtomSets);
+      if (tokens.length > 5)
+        atomSetCollection.setAtomSetProperties(tokens[3], tokens[5],
+            equivalentAtomSets);
+      tokens = getTokens(readLine());
+    }
+    if (tokens.length > 2)
+      atomSetCollection.setAtomSetProperties(tokens[0], tokens[2],
+          equivalentAtomSets);
   }
   
   /**

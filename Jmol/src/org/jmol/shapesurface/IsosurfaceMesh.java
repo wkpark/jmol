@@ -150,8 +150,9 @@ public class IsosurfaceMesh extends Mesh {
   public void setDiscreteColixes(float[] contours, short[] colixes) {
     if (vertices == null || vertexValues == null || contours == null || colixes == null)
       return;
-    int n = Math.min(contours.length, colixes.length);
+    int n = contours.length;
     isColorSolid = true;
+    colorCommand = null;
     polygonColixes = new short[polygonCount];
     for (int i = 0; i < polygonCount; i++) {
       int[] pi = polygonIndexes[i];
@@ -162,7 +163,7 @@ public class IsosurfaceMesh extends Mesh {
       v /= 3;
       for (int j = n; --j >= 0;) {
         if (v > contours[j]) {
-          polygonColixes[i] = colixes[j];
+          polygonColixes[i] = colixes[j % colixes.length];
           break;
         }
       }

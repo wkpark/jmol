@@ -218,6 +218,8 @@ public class Parameters {
     mappedDataMin = Float.MAX_VALUE;
     minSet = 0;
     nContours = 0;
+    contourIncrements = null;
+    contoursDiscrete = null;
     pocket = null;
     rangeDefined = false;
     resolution = Float.MAX_VALUE;
@@ -713,7 +715,9 @@ public class Parameters {
   float resolution;
   int downsampleFactor;
   int maxSet;
-
+  public float[] contoursDiscrete;
+  Point3f contourIncrements;
+  
   void setMapRanges(SurfaceReader surfaceReader) {
     if (colorByPhase || colorBySign || (thePlane != null || isBicolorMap) && !isContoured) {
       mappedDataMin = -1;

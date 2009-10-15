@@ -182,6 +182,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     ////isosurface-only (no calculation required; no calculation parameters to set)
 
+    if ("colorDiscrete" == propertyName) {
+      if (thisMesh == null)
+        return;
+      thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, (short[])value);
+      return;
+    }
+    
     if ("navigate" == propertyName) {
       navigate(((Integer)value).intValue());
       return;

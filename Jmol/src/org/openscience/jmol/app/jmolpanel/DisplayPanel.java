@@ -44,15 +44,16 @@ public class DisplayPanel extends JPanel
   private String displaySpeed;
 
   private Dimension startupDimension;
-  private boolean haveDisplay;
+  boolean haveDisplay;
   Point border;
   boolean haveBorder;
   private JFrame frame;
+  MeasurementTable measurementTable;
   JFrame getFrame() {
     return frame;
   }
   
-  public DisplayPanel(JmolPanel jmol) {
+  DisplayPanel(JmolPanel jmol) {
     frame = jmol.frame;
     status = jmol.status;
     guimap = jmol.guimap;
@@ -69,8 +70,10 @@ public class DisplayPanel extends JPanel
     setDoubleBuffered(false);
   }
 
-  public void setViewer(JmolViewer viewer) {
+  void setViewer(JmolViewer viewer) {
     this.viewer = viewer;
+    if (haveDisplay)
+      measurementTable = new MeasurementTable(viewer, frame);
     viewer.setScreenDimension(haveDisplay? getSize(dimSize) : startupDimension);
   }
 

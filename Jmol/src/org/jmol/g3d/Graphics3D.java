@@ -193,10 +193,10 @@ final public class Graphics3D implements JmolRendererInterface {
   int slab, depth;
   boolean zShade;
   int xLast, yLast;
-  private int[] pbuf;
-  private int[] pbufT;
+  int[] pbuf;
+  int[] pbufT;
   int[] zbuf;
-  private int[] zbufT;
+  int[] zbufT;
   int bufferSize;
 
   //int clipX;
@@ -553,15 +553,28 @@ final public class Graphics3D implements JmolRendererInterface {
     slab = slabValue < 0 ? 0 : slabValue;
     depth = depthValue < 0 ? 0 : depthValue;
     this.zShade = zShade;
+    if (zShade) {
+      zShadeR = bgcolor & 0xFF;
+      zShadeG = (bgcolor & 0xFF00) >> 8;
+      zShadeB = (bgcolor & 0xFF0000) >> 16;
+      pixel = new ShadePixel();
+    } else {
+      pixel = new Pixel();
+    }
   }
+
+  Pixel pixel;
+  int zShadeR;
+  int zShadeG;
+  int zShadeB;
 
   public void setSlab(int slabValue) {
     slab = slabValue;
   }
   
-  int getZShift(int z) {
-    return (zShade ? (z - slab) * 5 / (depth - slab): 0);
-  }
+//  int getZShift(int z) {
+//    return (zShade ? (z - slab) * 5 / (depth - slab): 0);
+//  }
   
   private void downsampleFullSceneAntialiasing(boolean downsampleZBuffer) {
     //System.out.println("downsample " + antialiasThisFrame + " " + downsampleZBuffer + " " + pbuf.length + " " + width);
@@ -569,7 +582,7 @@ final public class Graphics3D implements JmolRendererInterface {
     int offset1 = 0;
     int offset4 = 0;
     int bgcheck = bgcolor;
-    // now is the time we have to put in the correct backgroudn color
+    // now is the time we have to put in the correct background color
     // this was a bug in 11.6.0-11.6.2. 
     
     // we must downsample the Z Buffer if there are translucent
@@ -581,7 +594,7 @@ final public class Graphics3D implements JmolRendererInterface {
     // because the colors will be blurred anyway.
     
     if (downsampleZBuffer)
-      bgcheck += ((bgcheck & 0xFF) == 0xFF ? -1 : 1); 
+      bgcheck += ((bgcheck & 0xFF) == 0xFF ? -1 : 1);
     for (int i =0; i < pbuf.length; i++)
       if (pbuf[i] == 0)
         pbuf[i] = bgcheck;
@@ -751,33 +764,53 @@ final public class Graphics3D implements JmolRendererInterface {
   void setZMargin(int dz) {
     zMargin = dz;
   }
-  
+
   void addPixel(int offset, int z, int p) {
-    addPixelT(offset, z, p, zbuf, pbuf, zbufT, pbufT, translucencyMask, isPass2, zMargin, bgcolor);
+    pixel.addPixel(offset, z, p);
   }
   
-  final static void addPixelT(int offset, int z, int p, int[] zbuf, int[] pbuf, int[] zbufT, int[] pbufT, int translucencyMask, boolean isPass2, int zMargin, int bgcolor) {
-    if (!isPass2) {
-      zbuf[offset] = z;
-      pbuf[offset] = p;
-      return;
-    }
-    int zT = zbufT[offset]; 
-    if (z < zT) {
-      //new in front -- merge old translucent with opaque
-      //if (zT != Integer.MAX_VALUE)
-      int argb = pbufT[offset];
-      if (argb != 0 && zT - z > zMargin)
-        mergeBufferPixel(pbuf, argb, offset, bgcolor);
-      zbufT[offset] = z;
-      pbufT[offset] = p & translucencyMask;
-    } else if (z == zT) {
-    } else {
-      //oops-out of order
-      if (z - zT > zMargin)
-        mergeBufferPixel(pbuf, p & translucencyMask, offset, bgcolor);
+  class Pixel {
+    void addPixel(int offset, int z, int p) {
+      if (!isPass2) {
+        zbuf[offset] = z;
+        pbuf[offset] = p;
+        return;
+      }
+      int zT = zbufT[offset];
+      if (z < zT) {
+        // new in front -- merge old translucent with opaque
+        // if (zT != Integer.MAX_VALUE)
+        int argb = pbufT[offset];
+        if (argb != 0 && zT - z > zMargin)
+          mergeBufferPixel(pbuf, argb, offset, bgcolor);
+        zbufT[offset] = z;
+        pbufT[offset] = p & translucencyMask;
+      } else if (z == zT) {
+      } else {
+        // oops-out of order
+        if (z - zT > zMargin)
+          mergeBufferPixel(pbuf, p & translucencyMask, offset, bgcolor);
+      }
     }
   }
+  
+  class ShadePixel extends Pixel {
+    void addPixel(int offset, int z, int p) {
+      if (z <= depth && z >= slab) {
+        int pR = p & 0xFF;
+        int pG = (p & 0xFF00) >> 8;
+        int pB = (p & 0xFF0000) >> 16;
+        float f = depth - z;
+        f /= (depth - slab);
+        pR = zShadeR + (int) (f * (pR - zShadeR));
+        pG = zShadeG + (int) (f * (pG - zShadeG));
+        pB = zShadeB + (int) (f * (pB - zShadeB));        
+        p = (pB << 16) + (pG << 8) + pR;
+      }
+      super.addPixel(offset, z, p);
+    }
+  }
+
 
   /**
    * draws a screened circle ... every other dot is turned on

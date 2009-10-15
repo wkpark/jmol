@@ -264,6 +264,7 @@ public class MarchingCubes extends TriangleData  {
               if (isSquared)
                 vertexValues[i] *= vertexValues[i];
               isInside = isInside(vertexValues[i], cutoff, isCutoffAbsolute);
+              //System.out.println("marchingcubes " + vertexValues[i] + " " + isInside);
             }
             if (isInside) {
               bsVoxels.set(pti);

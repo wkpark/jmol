@@ -62,8 +62,6 @@ public class Sphere3D {
     this.g3d = g3d;
   }
 
-  private int zShift;
-  
   private final static int maxSphereCache = 128;
   private final static int maxOddSizeSphere = 49;
   final static int maxSphereDiameter = 1000;
@@ -200,7 +198,6 @@ public class Sphere3D {
         this.octantPoints = null;
       }
     } else {
-      zShift = g3d.getZShift(z);
       int[] ss = getSphereShape(diameter);
       if (minX < 0 || maxX >= width || minY < 0 || maxY >= height
           || minZ < slab || z > depth)
@@ -232,16 +229,16 @@ public class Sphere3D {
           int zPixel = z - (packed & 0x7F);
           if (zPixel < zbuf[offsetSE])
             g3d.addPixel(offsetSE, zPixel,
-                shades[((packed >> 7) & 0x3F) >> zShift]);
+                shades[((packed >> 7) & 0x3F)]);
           if (zPixel < zbuf[offsetSW])
             g3d.addPixel(offsetSW, zPixel,
-                shades[((packed >> 13) & 0x3F) >> zShift]);
+                shades[((packed >> 13) & 0x3F)]);
           if (zPixel < zbuf[offsetNE])
             g3d.addPixel(offsetNE, zPixel,
-                shades[((packed >> 19) & 0x3F) >> zShift]);
+                shades[((packed >> 19) & 0x3F)]);
           if (zPixel < zbuf[offsetNW])
             g3d.addPixel(offsetNW, zPixel,
-                shades[((packed >> 25) & 0x3F) >> zShift]);
+                shades[((packed >> 25) & 0x3F)]);
           ++offsetSE;
           --offsetSW;
           ++offsetNE;
@@ -272,16 +269,16 @@ public class Sphere3D {
         int zPixel = z - (packed & 0x7F);
         if ((flipflops & 1) != 0 && zPixel < zbuf[offsetSE])
             g3d.addPixel(offsetSE, zPixel,
-                shades[((packed >> 7) & 0x3F) >> zShift]);
+                shades[((packed >> 7) & 0x3F)]);
         if ((flipflops & 2) != 0 && zPixel < zbuf[offsetSW])        
           g3d.addPixel(offsetSW, zPixel,
-              shades[((packed >> 13) & 0x3F) >> zShift]);
+              shades[((packed >> 13) & 0x3F)]);
         if ((flipflops & 4) != 0 && zPixel < zbuf[offsetNE])        
           g3d.addPixel(offsetNE, zPixel,
-              shades[((packed >> 19) & 0x3F) >> zShift]);
+              shades[((packed >> 19) & 0x3F)]);
         if ((flipflops & 8) != 0 && zPixel < zbuf[offsetNW])
           g3d.addPixel(offsetNW, zPixel,
-              shades[((packed >> 25) & 0x3F) >> zShift]);
+              shades[((packed >> 25) & 0x3F)]);
         ++offsetSE;
         --offsetSW;
         ++offsetNE;
@@ -347,13 +344,13 @@ public class Sphere3D {
                 && zPixel < zbuf[offsetSE]) {
               int i = (isCore ? SHADE_SLAB_CLIPPED - 3 + ((randu >> 7) & 0x07)
                   : (packed >> 7) & 0x3F);
-              g3d.addPixel(offsetSE, zPixel, shades[i >> zShift]);
+              g3d.addPixel(offsetSE, zPixel, shades[i]);
             }
             if (tWestVisible && (addAllPixels || (flipflops & 2) != 0)
                 && zPixel < zbuf[offsetSW]) {
               int i = (isCore ? SHADE_SLAB_CLIPPED - 3 + ((randu >> 13) & 0x07)
                   : (packed >> 13) & 0x3F);
-              g3d.addPixel(offsetSW, zPixel, shades[i >> zShift]);
+              g3d.addPixel(offsetSW, zPixel, shades[i]);
             }
           }
           if (tNorthVisible) {
@@ -361,13 +358,13 @@ public class Sphere3D {
                 && zPixel < zbuf[offsetNE]) {
               int i = (isCore ? SHADE_SLAB_CLIPPED - 3 + ((randu >> 19) & 0x07)
                   : (packed >> 19) & 0x3F);
-              g3d.addPixel(offsetNE, zPixel, shades[i >> zShift]);
+              g3d.addPixel(offsetNE, zPixel, shades[i]);
             }
             if (tWestVisible && (!tScreened || (flipflops & 8) != 0)
                 && zPixel < zbuf[offsetNW]) {
               int i = (isCore ? SHADE_SLAB_CLIPPED - 3 + ((randu >> 25) & 0x07)
                   : (packed >> 25) & 0x3F);
-              g3d.addPixel(offsetNW, zPixel, shades[i >> zShift]);
+              g3d.addPixel(offsetNW, zPixel, shades[i]);
             }
           }
         }
@@ -451,7 +448,7 @@ public class Sphere3D {
           if (zbuf[offset] <= z0)
             continue;
           int x8 = ((j * xSign + radius) << 8) / dDivisor;
-          g3d.addPixel(offset,z0, shades[Shade3D.sphereIntensities[((y8 << 8) + x8) >> zShift]]);
+          g3d.addPixel(offset,z0, shades[Shade3D.sphereIntensities[((y8 << 8) + x8)]]);
         }
       }
     }
@@ -551,7 +548,7 @@ public class Sphere3D {
           continue;
         switch(mode) {
         case 0: //core
-          iShade = (SHADE_SLAB_CLIPPED - 3 + ((randu >> 8) & 0x07)) >> zShift;
+          iShade = (SHADE_SLAB_CLIPPED - 3 + ((randu >> 8) & 0x07));
           randu = ((randu << 16) + (randu << 1) + randu) & 0x7FFFFFFF;
           mode = 1;
           break;
@@ -562,7 +559,7 @@ public class Sphere3D {
           break;
         default: //sphere
           int x8 = ((j * xSign + radius) << 8) / dDivisor;
-          iShade = Shade3D.sphereIntensities[(y8 << 8) + x8] >> zShift;
+          iShade = Shade3D.sphereIntensities[(y8 << 8) + x8];
           break;
         }
         g3d.addPixel(offset, zPixel, shades[iShade]);

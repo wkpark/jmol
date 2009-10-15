@@ -642,13 +642,36 @@ public class SurfaceGenerator {
 
     if ("contour" == propertyName) {
       params.isContoured = true;
-      int n = ((Integer) value).intValue();
-      if (n == 0)
-        params.nContours = MarchingSquares.defaultContourCount;
-      else if (n > 0)
+      int n;
+      if (value instanceof float[]) {
+        // discrete values
+        params.contoursDiscrete = (float[]) value;
+        params.nContours = params.contoursDiscrete.length;
+      } else if (value instanceof Point3f) {
+        Point3f pt = params.contourIncrements = (Point3f) value;
+        float from = pt.x;
+        float to = pt.y;
+        float step = pt.z;
+        if (step <= 0)
+          step = 1;
+        n = 0;
+        for (float p = from; p <= to + step/10; p += step, n++) {
+        }
+        params.contoursDiscrete = new float[n];
+        float p = from;
+        for (int i = 0; i < n; i++, p+= step) {
+          params.contoursDiscrete[i] = p;
+        }
         params.nContours = n;
-      else
-        params.thisContour = -n;
+      } else {
+        n = ((Integer) value).intValue();
+        if (n == 0)
+          params.nContours = MarchingSquares.defaultContourCount;
+        else if (n > 0)
+          params.nContours = n;
+        else
+          params.thisContour = -n;
+      }
       return true;
     }
 

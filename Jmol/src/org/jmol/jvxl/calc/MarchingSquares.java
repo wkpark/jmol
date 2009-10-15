@@ -86,22 +86,29 @@ public class MarchingSquares {
   }
 
   private boolean contourFromZero = true;
+  private float[] contoursDiscrete;
    
   public MarchingSquares(VertexDataServer surfaceReader, VolumeData volumeData,
-      Point4f thePlane, int nContours, int thisContour, boolean contourFromZero) {
+      Point4f thePlane, float[] contoursDiscrete, int nContours, int thisContour, boolean contourFromZero) {
     this.surfaceReader = surfaceReader;
     this.volumeData = volumeData;
     this.thePlane = thePlane;
     this.thisContour = thisContour;
     is3DContour = (thePlane == null);
+    this.contoursDiscrete = contoursDiscrete;
     nContoursSpecified = nContours;
     this.contourFromZero = contourFromZero; //set false for MEP to complete the plane
-    int i = (contourFromZero ? 1  : is3DContour ? 1 : 2);
-    nContourSegments = (nContours == 0 ? defaultContourCount + i
-        : nContours + i);
-    if (nContourSegments > nContourMax)
-      nContourSegments = nContourMax;
-    
+    if (contoursDiscrete == null) {
+      int i = (contourFromZero ? 1  : is3DContour ? 1 : 2);
+      nContourSegments = (nContours == 0 ? defaultContourCount + i
+          : nContours + i);
+      if (nContourSegments > nContourMax)
+        nContourSegments = nContourMax;
+    } else {
+      nContours = contoursDiscrete.length;
+      nContourSegments = nContours; 
+      contourFromZero = true;
+    }
     setContourType();
   }
 
@@ -546,8 +553,8 @@ public class MarchingSquares {
         + " nContours=" + (nContourSegments-1) + " (" + nContoursSpecified + " specified) contourFromZero=" + contourFromZero);
     for (int i = 0; i < nContourSegments; i++) {
       contourIndex = i;
-      float cutoff = 
-        (contourFromZero ? min + (i * 1f / nContourSegments) * diff : 
+      float cutoff = (contoursDiscrete != null ? contoursDiscrete[i] :
+        contourFromZero ? min + (i * 1f / nContourSegments) * diff : 
             i == 0 ? -Float.MAX_VALUE : i == nContourSegments - 1 ? Float.MAX_VALUE 
                 : min + ((i - 1) * 1f / (nContourSegments-1)) * diff);
         
@@ -586,8 +593,10 @@ public class MarchingSquares {
     for (int i = squareCountY; --i >= 0;)
       isoPointIndexes2d[i][0] = isoPointIndexes2d[i][1] = isoPointIndexes2d[i][2] = isoPointIndexes2d[i][3] = -1;
 
+    //TODO: Should review if this is appropriate:
     if (Math.abs(contourCutoff) < 0.0001)
       contourCutoff = (contourCutoff < 0 ? -0.0001f : 0.0001f);
+    
     int insideCount = 0, contourCount = 0;
     for (int x = squareCountX; --x >= 0;) {
       for (int y = squareCountY; --y >= 0;) {

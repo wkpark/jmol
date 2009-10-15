@@ -68,8 +68,6 @@ class Cylinder3D {
   boolean clipped;
   private boolean drawBackside;
 
-  private int zShift;
-
   void render(short colixA, short colixB, boolean isScreenedA,
               boolean isScreenedB, byte endcaps, int diameter, int xA, int yA,
               int zA, int xB, int yB, int zB) {
@@ -91,8 +89,6 @@ class Cylinder3D {
     dxB = xB - xA;
     dyB = yB - yA;
     dzB = zB - zA;
-    zShift = g3d.getZShift((zA + zB) >> 1);
-
     if (diameter <= 1) {
       line3d.plotLineDelta(g3d.getColixArgb(colixA), isScreenedA, g3d
           .getColixArgb(colixB), isScreenedB, xA, yA, zA, dxB, dyB, dzB,
@@ -188,7 +184,7 @@ class Cylinder3D {
   }
 
   private void plotRasterBits(int i) {
-    int fpz = fp8IntensityUp[i] >> (8 + zShift);
+    int fpz = fp8IntensityUp[i] >> (8);
     int fpzBack = fpz >> 1;
     int x = xRaster[i];
     int y = yRaster[i];
@@ -427,7 +423,7 @@ class Cylinder3D {
   }
 
   private void plotRaster(int i) {
-    int fpz = fp8IntensityUp[i] >> (8 + zShift);
+    int fpz = fp8IntensityUp[i] >> (8);
     int fpzBack = fpz >> 1;
     int x = xRaster[i];
     int y = yRaster[i];
@@ -602,7 +598,7 @@ class Cylinder3D {
       g3d.plotPixelClipped(argbEndcap, isScreenedA, (int) xDn, (int) yDn,
           (int) zDn);
     }
-    int fpz = fp8IntensityUp[i] >> (8 + zShift);
+    int fpz = fp8IntensityUp[i] >> (8);
 
     if (argb != 0) {
       line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,

@@ -3603,14 +3603,51 @@ public class ScriptEvaluator {
     return 0;
   }
 
-  private int floatParameterSet(int i, float[] fparams) throws ScriptException {
-    if (tokAt(i) == Token.leftbrace)
+  private float[] floatParameterSet(int i, int nMin, int nMax)
+      throws ScriptException {
+    if (tokAt(i) == Token.leftbrace || tokAt(i) == Token.leftsquare)
       i++;
-    for (int j = 0; j < fparams.length; j++)
-      fparams[j] = floatParameter(i++);
-    if (tokAt(i) == Token.rightbrace)
+    Vector v = new Vector();
+    int tok = tokAt(i);
+    switch (tok) {
+    case Token.string:
+      break;  
+    case Token.point3f:
+      Point3f pt = getPoint3f(i, false);
+      v.add(new Float(pt.x));
+      v.add(new Float(pt.y));
+      v.add(new Float(pt.z));
+      break;
+    case Token.point4f:
+      Point4f pt4 = getPoint4f(i);
+      v.add(new Float(pt4.x));
+      v.add(new Float(pt4.y));
+      v.add(new Float(pt4.z));
+      v.add(new Float(pt4.w));
+      break;
+    default:
+      for (int j = 0; j < nMax; j++) {
+        tok = tokAt(i);
+        if (tok == Token.rightbrace || tok == Token.rightsquare) {
+          break;
+        } else if (tok == Token.comma) {
+          i++;
+          j--;
+          continue;
+        }
+        v.add(new Float(floatParameter(i++)));
+      }
+    }
+    if (tokAt(i) == Token.rightbrace || tokAt(i) == Token.rightsquare)
       i++;
-    return i;
+    iToken = i - 1;
+    int n = v.size();
+    if (n < nMin || n > nMax)
+      error(ERROR_invalidArgument);
+    float[] fparams = new float[n];
+    for (int j = 0; j < n; j++)
+      fparams[j] = ((Float) v.get(j)).floatValue();
+    return fparams;
   }
 
   private String stringParameter(int index) throws ScriptException {
@@ -6594,8 +6631,8 @@ public class ScriptEvaluator {
         if (tokAt(i) == Token.unitcell) {
           ++i;
           htParams.put("spaceGroupIndex", new Integer(iGroup));
-          float[] fparams = new float[6];
-          i = floatParameterSet(i, fparams);
+          float[] fparams = floatParameterSet(i, 6, 6);
+          i = iToken;
           sOptions += " unitcell {";
           for (int j = 0; j < 6; j++)
             sOptions += (j == 0 ? "" : " ") + fparams[j];
@@ -12184,6 +12221,7 @@ public class ScriptEvaluator {
     boolean isWild = (idSeen && viewer.getShapeProperty(iShape, "ID") == null);
     String translucency = null;
     String colorScheme = null;
+    short[] discreteColixes = null;
     if (isPmesh)
       setShapeProperty(iShape, "fileType", "Pmesh");
     for (int i = iToken; i < statementLength; ++i) {
@@ -12278,8 +12316,19 @@ public class ScriptEvaluator {
          * the term COLOR is too general.
          */
         colorRangeStage = 0;
-        if (getToken(i + 1).tok == Token.string)
+        if (getToken(i + 1).tok == Token.string) {
           colorScheme = parameterAsString(++i);
+          if (colorScheme.indexOf(" ") > 0) {
+            String[] colors = Parser.getTokens(colorScheme);
+            discreteColixes = new short[colors.length];
+            for (int j = 0; j < colors.length; j++) {
+              discreteColixes[j] = Graphics3D.getColix(Graphics3D
+                  .getArgbFromString(colors[j]));
+              if (discreteColixes[j] == 0)
+                error(ERROR_badRGBColor);
+            }
+          }
+        }
         if ((theTok = tokAt(i + 1)) == Token.translucent
             || tokAt(i + 1) == Token.opaque) {
           translucency = setColorOptions(i + 1, JmolConstants.SHAPE_ISOSURFACE,
@@ -12356,8 +12405,8 @@ public class ScriptEvaluator {
         } catch (ScriptException e) {
         }
         try {
-          float[] fparams = new float[6];
-          i = floatParameterSet(i, fparams);
+          float[] fparams = floatParameterSet(i, 6, 6);
+          i = iToken;
           propertyValue = fparams;
           propertyName = "ellipsoid";
           break;
@@ -12526,8 +12575,20 @@ public class ScriptEvaluator {
         }
         if (str.equalsIgnoreCase("CONTOUR")) {
           propertyName = "contour";
-          propertyValue = new Integer(
-              tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
+          str = optParameterAsString(i + 1);
+          if (str.equalsIgnoreCase("DISCRETE")) {
+            propertyValue = floatParameterSet(i + 2, 2, Integer.MAX_VALUE);
+            i = iToken;
+          } else if (str.equalsIgnoreCase("INCREMENT")) {
+            Point3f pt = getPoint3f(i + 2, false);
+            if (pt.z <= 0)
+              error(ERROR_invalidArgument); // from to step
+            propertyValue = pt;
+            i = iToken;
+          } else {
+            propertyValue = new Integer(
+                tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
+          }
           break;
         }
         if (str.equalsIgnoreCase("CUTOFF")) {
@@ -12707,8 +12768,7 @@ public class ScriptEvaluator {
           propertyName = "link";
           break;
         }
-        if (str.equalsIgnoreCase("LOBE") 
-            || str.equalsIgnoreCase("LP") 
+        if (str.equalsIgnoreCase("LOBE") || str.equalsIgnoreCase("LP")
             || str.equalsIgnoreCase("RAD")) {
           // lobe {eccentricity}
           surfaceObjectSeen = true;
@@ -12905,7 +12965,9 @@ public class ScriptEvaluator {
     }
     if (thisSetNumber > 0)
       setShapeProperty(iShape, "getSurfaceSets", new Integer(thisSetNumber - 1));
-    if (colorScheme != null)
+    if (discreteColixes != null) {
+      setShapeProperty(iShape, "colorDiscrete", discreteColixes);
+    } else if (colorScheme != null)
       setShapeProperty(iShape, "setColorScheme", colorScheme);
     Object area = null;
     Object volume = null;
@@ -12914,7 +12976,8 @@ public class ScriptEvaluator {
       if (area instanceof Float)
         viewer.setFloatProperty("isosurfaceArea", ((Float) area).floatValue());
       else
-        viewer.setUserVariable("isosurfaceArea", ScriptVariable.getVariable(area));
+        viewer.setUserVariable("isosurfaceArea", ScriptVariable
+            .getVariable(area));
     }
     if (doCalcVolume) {
       volume = (doCalcVolume ? viewer.getShapeProperty(iShape, "volume") : null);
@@ -12922,7 +12985,8 @@ public class ScriptEvaluator {
         viewer.setFloatProperty("isosurfaceVolume", ((Float) volume)
             .floatValue());
       else
-        viewer.setUserVariable("isosurfaceVolume", ScriptVariable.getVariable(volume));
+        viewer.setUserVariable("isosurfaceVolume", ScriptVariable
+            .getVariable(volume));
     }
     if (surfaceObjectSeen && isIsosurface && !isSyntaxCheck) {
       setShapeProperty(iShape, "finalize", null);

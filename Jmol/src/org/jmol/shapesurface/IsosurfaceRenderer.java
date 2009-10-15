@@ -219,8 +219,9 @@ public class IsosurfaceRenderer extends MeshRenderer {
       if (colorSolid) {
         if (colorArrayed && i < imesh.polygonColixes.length) {
           short c = imesh.polygonColixes[i];
-          if (c != 0)
-            colix = c;
+          if (c == 0)
+            continue;
+          colix = c;
         }
         colixA = colixB = colixC = colix;
       } else {

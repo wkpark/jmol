@@ -594,7 +594,7 @@ public class MarchingSquares {
       isoPointIndexes2d[i][0] = isoPointIndexes2d[i][1] = isoPointIndexes2d[i][2] = isoPointIndexes2d[i][3] = -1;
 
     //TODO: Should review if this is appropriate:
-    if (Math.abs(contourCutoff) < 0.0001)
+    if (contoursDiscrete == null && Math.abs(contourCutoff) < 0.0001)
       contourCutoff = (contourCutoff < 0 ? -0.0001f : 0.0001f);
     
     int insideCount = 0, contourCount = 0;

@@ -346,11 +346,9 @@ public class MarchingSquares {
     x += offsets.x;
     y += offsets.y;
     z += offsets.z;
-    //System.out.println(x + " " + y + " " + z + " " + vertexXYZ);
     int vPt = surfaceReader.addVertexCopy(vertexXYZ, value, VERTEX_POINT);
     contourVertexes[contourVertexCount++] = new ContourVertex(x, y, z,
         vertexXYZ, vPt);
-    //System.out.println("vertex xyz " + x + " " + y + " " + z + " " + vPt + " coord:" + vertexXYZ);
     return vPt;
   }
 
@@ -574,7 +572,6 @@ public class MarchingSquares {
         centerIsLow = false;
         lastInside = 0;
       }
-      System.out.println("generatcont in=" + insideCount + " out=" + " " + contourIndex + " " + centerIsLow + " cutoff=" + cutoff);
     }
     return centerIsLow;
   }
@@ -602,8 +599,6 @@ public class MarchingSquares {
       for (int y = squareCountY; --y >= 0;) {
         int squareIndex = x * squareCountY + y;
         PlanarSquare ps = planarSquares[squareIndex];
-        //if (iContour == 2 && squareIndex == 826)
-          //System.out.println("propag826");
         int[] pixelPointIndexes = propagateNeighborPointIndexes2d(x, y,
             isoPointIndexes2d, squareFractions2d);
         int insideMask = 0;
@@ -620,8 +615,6 @@ public class MarchingSquares {
             ++insideCount;
           }
         }
-        //if (insideMask == 5 || insideMask == 10)
-          // System.out.println("classic ambiguity in square " + squareIndex + " for contour " + iContour);
         if (insideMask == 0x0F) {
           ps.addEdgeMask(contourIndex, 0, 0x0F);
           continue;
@@ -651,7 +644,6 @@ public class MarchingSquares {
   }
 
   private boolean isInside2d(float voxelValue, float max) {
-    //System.out.println("isinside2d " + voxelValue + " " + max + " " + contourFromZero);
     return contourFromZero ? 
         (max > 0 && voxelValue >= max) || (max <= 0 && voxelValue <= max)
         : voxelValue < max;
@@ -926,7 +918,6 @@ public class MarchingSquares {
             if (edgeMask0 != 0) {
               int andMask = (edgeMask & edgeMask0 & 0xF0) >> 4;
               if (andMask != 0) { // we have two on same edge
-                //System.out.println(" for contour " + contourIndex + " we have edgeMask[n-1]=" + Integer.toBinaryString(edgeMask0) + " and we have edgeMask[n]=" + Integer.toBinaryString(edgeMask));
                 for (int i = 0; i < 4; i++)
                   if ((andMask & (1 << i)) != 0) {
                     lowerFirst = (square.fractions[contourIndex][i] > square.fractions[contourIndex +offset][i]);
@@ -955,7 +946,6 @@ public class MarchingSquares {
   private final BitSet bsMesh2 = new BitSet();
   private void fillSquare(PlanarSquare square, int squareIndex, int contourIndex, int edgeMask,
                   boolean lowerFirst, int offset) {
-    System.out.println("MS - test22");
     int nIntersect = 0;
     int vPt = 0;
     bsMesh0.clear();
@@ -984,7 +974,6 @@ public class MarchingSquares {
       boolean thisIntersect = ((maskN & (1 << i)) != 0);
       boolean lowerIntersect = ((maskN0 & (1 << i)) != 0);
       
-      //System.out.println("i=" + i + " newVertex=" + newVertex + " thisIntersect=" + thisIntersect + " lowerIntersect=" + lowerIntersect + " lowerFirst=" + lowerFirst);
       //this vertex inside?
       
       if (newVertex) {

@@ -354,10 +354,6 @@ public class MarchingSquares {
     return vPt;
   }
 
-  public int getContourVertexCount() {
-    return contourVertexCount;
-  }
-  
   public void setContourData(int i, float value) {
     contourVertexes[i].setValue(value, volumeData);  
   }
@@ -544,13 +540,18 @@ public class MarchingSquares {
   private float contourPlaneMaximumValue;
 
   private int contourIndex;
-
+  private float[] contourValuesUsed;
+  public float[] getContourValues() {
+    return contourValuesUsed;
+  }
+  
   public boolean createContours(float min, float max) {
     float diff = max - min;
     boolean centerIsLow = true; //molecular surface-like
     int lastInside = -1;
     Logger.info("generateContourData min=" + min + " max=" + max
         + " nContours=" + (nContourSegments-1) + " (" + nContoursSpecified + " specified) contourFromZero=" + contourFromZero);
+    contourValuesUsed = new float[nContourSegments];
     for (int i = 0; i < nContourSegments; i++) {
       contourIndex = i;
       float cutoff = (contoursDiscrete != null ? contoursDiscrete[i] :
@@ -562,6 +563,9 @@ public class MarchingSquares {
        * cutoffs right near zero cause problems, so we adjust just a tad
        * 
        */
+      if (contoursDiscrete == null && Math.abs(cutoff) < 0.0001)
+        cutoff = (cutoff < 0 ? -0.0001f : 0.0001f);
+      contourValuesUsed[i] = cutoff;
       int insideCount = generateContourData(i, cutoff);
       Logger.debug("contour " + (i + 1) + " cutoff=" + cutoff + " insideCount=" + insideCount + " centerIsLow=" + centerIsLow);
       if (lastInside < 0)
@@ -570,7 +574,7 @@ public class MarchingSquares {
         centerIsLow = false;
         lastInside = 0;
       }
-      //System.out.println("generatcont " + insideCount + " " + contourIndex + " " + centerIsLow);
+      System.out.println("generatcont in=" + insideCount + " out=" + " " + contourIndex + " " + centerIsLow + " cutoff=" + cutoff);
     }
     return centerIsLow;
   }
@@ -593,10 +597,6 @@ public class MarchingSquares {
     for (int i = squareCountY; --i >= 0;)
       isoPointIndexes2d[i][0] = isoPointIndexes2d[i][1] = isoPointIndexes2d[i][2] = isoPointIndexes2d[i][3] = -1;
 
-    //TODO: Should review if this is appropriate:
-    if (contoursDiscrete == null && Math.abs(contourCutoff) < 0.0001)
-      contourCutoff = (contourCutoff < 0 ? -0.0001f : 0.0001f);
-    
     int insideCount = 0, contourCount = 0;
     for (int x = squareCountX; --x >= 0;) {
       for (int y = squareCountY; --y >= 0;) {
@@ -952,13 +952,15 @@ public class MarchingSquares {
 
   private final BitSet bsMesh0 = new BitSet();
   private final BitSet bsMesh1 = new BitSet();
+  private final BitSet bsMesh2 = new BitSet();
   private void fillSquare(PlanarSquare square, int squareIndex, int contourIndex, int edgeMask,
                   boolean lowerFirst, int offset) {
-
+    System.out.println("MS - test22");
     int nIntersect = 0;
     int vPt = 0;
     bsMesh0.clear();
     bsMesh1.clear();
+    bsMesh2.clear();
     int nValid = 4;
     int pt0 = 0;
     for (int i = 0; i < 4; i++) {
@@ -991,6 +993,7 @@ public class MarchingSquares {
 
       //intersection of next lower contour on this edge?
       if (lowerFirst && lowerIntersect) {
+        bsMesh2.set(vPt);
         triangleVertexList[vPt++] = square.intersectionPoints[contourIndex + offset][i];
         nIntersect++;
       }
@@ -1006,6 +1009,7 @@ public class MarchingSquares {
       //intersection of next lower contour on this edge?
 
       if (!lowerFirst && lowerIntersect) {
+        bsMesh2.set(vPt);
         triangleVertexList[vPt++] = square.intersectionPoints[contourIndex + offset][i];
         nIntersect++;
       }
@@ -1020,7 +1024,7 @@ public class MarchingSquares {
       }
       
       if (i == 2 && iOption > 0) {
-        createTriangleSet(pt0, vPt, nValid, bsMesh1);
+        createTriangleSet(pt0, vPt, nValid, contourIndex, contourIndex + offset);
         vPt = pt0;
         pt0 = 0;
         BitSetUtil.copy(bsMesh0, bsMesh1);
@@ -1036,10 +1040,10 @@ public class MarchingSquares {
      //System.out.println(dumpIntArray(triangleVertexList, vPt));
 
     if (vPt > 2)
-      createTriangleSet(pt0, vPt, nValid, bsMesh1);
+      createTriangleSet(pt0, vPt, nValid, contourIndex, contourIndex + offset);
   }
 
-  private void createTriangleSet(int pt0, int nVertex, int nValid, BitSet bsMesh1) {
+  private void createTriangleSet(int pt0, int nVertex, int nValid, int contourIndex, int contourIndex2) {
     // 0 1 2
     // 0 2 3
     // 0 3 4 // etc.
@@ -1062,14 +1066,11 @@ public class MarchingSquares {
       int iB = triangleVertexList[i2];
       int iC = triangleVertexList[i3];
       if (iA >= 0 && iB >= 0 && iC >= 0) {
-        int check = (bsMesh1.get(i1) && bsMesh1.get(i2) ? 1 
-            : bsMesh1.get(i2) && bsMesh1.get(i3) ? 2 
-            : bsMesh1.get(i3) && bsMesh1.get(i1) ? 4 
-            : 0);
-      surfaceReader.addTriangleCheck(iA, iB, iC, check, false, 0);
-      //bsMesh1.clear(i1);
-      //bsMesh1.clear(i2);
-      //bsMesh1.clear(i3);
+        int check = (bsMesh1.get(i1) && bsMesh1.get(i2) ? 1 : bsMesh1.get(i2)
+            && bsMesh1.get(i3) ? 2 : bsMesh1.get(i3) && bsMesh1.get(i1) ? 4 : 0);
+        int check2 = (check > 0 ? 0 : bsMesh2.get(i1) && bsMesh2.get(i2) ? 1 : bsMesh2.get(i2)
+            && bsMesh2.get(i3) ? 2 : bsMesh2.get(i3) && bsMesh2.get(i1) ? 4 : 0);
+        surfaceReader.addTriangleCheck(iA, iB, iC, Math.max(check, check2), (check > 0 ? contourIndex : contourIndex2), false, 0);
       }
       if (iC >= 0)
         i2 = i3;

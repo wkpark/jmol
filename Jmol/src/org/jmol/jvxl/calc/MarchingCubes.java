@@ -315,7 +315,7 @@ public class MarchingCubes extends TriangleData  {
 
     surfaceReader.addTriangleCheck(edgePointIndexes[ia], 
         edgePointIndexes[ib], edgePointIndexes[ic], 
-        edgeType, isCutoffAbsolute, 0);
+        edgeType, 0, isCutoffAbsolute, 0);
   }
 
 

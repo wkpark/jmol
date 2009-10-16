@@ -172,6 +172,7 @@ public class JvxlData {
 
   public Vector[] vContours;
   public int[] contourColors;
+  public float[] contourValuesUsed;
 
   public short minColorIndex = -1;
   public short maxColorIndex = 0;

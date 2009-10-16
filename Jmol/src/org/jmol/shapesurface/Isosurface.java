@@ -333,6 +333,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
     if ("finalize" == propertyName) {
+      thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, null);
       setScriptInfo();
       setJvxlInfo();
       clearSg();
@@ -467,7 +468,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     if (property == "jvxlFileInfo")
       return jvxlData.jvxlInfoLine;
-    return super.getProperty(property, index);
+    return null;
   }
 
   protected void getColorState(StringBuffer sb, Mesh mesh) {
@@ -831,10 +832,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   public void addTriangleCheck(int iA, int iB, int iC, int check,
-                               boolean isAbsolute, int color) {
+                               int check2, boolean isAbsolute, int color) {
     if (isAbsolute && !MeshData.checkCutoff(iA, iB, iC, thisMesh.vertexValues))
       return;
-    thisMesh.addTriangleCheck(iA, iB, iC, check, color);
+    thisMesh.addTriangleCheck(iA, iB, iC, check, check2, color);
   }
 
   ////////////////////////////////////////////////////////////////////
@@ -894,6 +895,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       info.put("modelIndex", new Integer(mesh.modelIndex));
       if (mesh.title != null)
         info.put("title", mesh.title);
+      if (mesh.contourValues != null || mesh.jvxlData.vContours != null
+          || mesh.jvxlData.contourColors != null)
+        info.put("contours", mesh.getContourList(viewer));
       V.addElement(info);
     }
     return V;

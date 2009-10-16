@@ -150,11 +150,11 @@ class ObjReader extends PolygonFileReader {
           int vertexCount = (id == Integer.MIN_VALUE ? 3 : 4);
           if (vertexCount == 4) {
             nTriangles += 2;
-            addTriangleCheck(ia - 1, ib - 1, ic - 1, 5, false, color);
-            addTriangleCheck(ib - 1, ic - 1, id - 1, 3, false, color);
+            addTriangleCheck(ia - 1, ib - 1, ic - 1, 5, 0, false, color);
+            addTriangleCheck(ib - 1, ic - 1, id - 1, 3, 0, false, color);
           } else {
             nTriangles++;
-            addTriangleCheck(ia - 1, ib - 1, ic - 1, 7, false, color);
+            addTriangleCheck(ia - 1, ib - 1, ic - 1, 7, 0, false, color);
           }
         } else if (line.indexOf("g ") == 0) {
           if (!params.readAllData)

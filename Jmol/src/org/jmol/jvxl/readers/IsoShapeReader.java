@@ -252,7 +252,7 @@ class IsoShapeReader extends VolumeDataReader {
       ptPsi.add(center);
       addVertexCopy(center, 0, 0);
       addVertexCopy(ptPsi, 0, 0);
-      addTriangleCheck(0, 0, 0, 0, false, 0);
+      addTriangleCheck(0, 0, 0, 0, 0, false, 0);
       return;
     }
     super.readSurfaceData(isMapData);

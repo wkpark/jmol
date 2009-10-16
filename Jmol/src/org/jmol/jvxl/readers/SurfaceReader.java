@@ -509,14 +509,14 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   public void addTriangleCheck(int iA, int iB, int iC, int check,
-                               boolean isAbsolute, int color) {
+                               int check2, boolean isAbsolute, int color) {
     if (meshDataServer == null) {
       if (isAbsolute
           && !MeshData.checkCutoff(iA, iB, iC, meshData.vertexValues))
         return;
-      meshData.addTriangleCheck(iA, iB, iC, check, color);
+      meshData.addTriangleCheck(iA, iB, iC, check, check2, color);
     } else {
-      meshDataServer.addTriangleCheck(iA, iB, iC, check, isAbsolute, color);
+      meshDataServer.addTriangleCheck(iA, iB, iC, check, check2, isAbsolute, color);
     }
   }
 
@@ -538,12 +538,14 @@ public abstract class SurfaceReader implements VertexDataServer {
     if (meshDataServer != null) {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
     }
+
     if (params.isContoured && marchingSquares != null) {
       params.setMapRanges(this);
       marchingSquares.setMinMax(params.valueMappedToRed,
           params.valueMappedToBlue);
       contourVertexCount = marchingSquares
           .generateContourData(jvxlDataIs2dContour);
+      jvxlData.contourValuesUsed = marchingSquares.getContourValues();
       if (meshDataServer != null)
         meshDataServer.notifySurfaceGenerationCompleted();
     }
@@ -552,7 +554,6 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.nContours = (params.contourFromZero 
         ? params.nContours : -1 - params.nContours);
     jvxlData.jvxlExtraLine = JvxlReader.jvxlExtraLine(jvxlData, 1);
-
     jvxlData.jvxlFileMessage = "mapped: min = " + params.valueMappedToRed
         + "; max = " + params.valueMappedToBlue;
   }

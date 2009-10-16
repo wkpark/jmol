@@ -177,7 +177,7 @@ public class MeshData {
   private int lastColor;
   private short lastColix;
 
-  public void addTriangleCheck(int vertexA, int vertexB, int vertexC, int check, int color) {
+  public void addTriangleCheck(int vertexA, int vertexB, int vertexC, int check, int check2, int color) {
   if (vertexValues != null && (Float.isNaN(vertexValues[vertexA])||Float.isNaN(vertexValues[vertexB])||Float.isNaN(vertexValues[vertexC])))
     return;
   if (Float.isNaN(vertices[vertexA].x)||Float.isNaN(vertices[vertexB].x)||Float.isNaN(vertices[vertexC].x))
@@ -196,7 +196,7 @@ public class MeshData {
     }
     polygonColixes[polygonCount] = (color == lastColor ? lastColix : (lastColix = Graphics3D.getColix(lastColor = color)));
   }    
-  polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC, check};
+  polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC, check, check2};
  }
   
   public BitSet[] getSurfaceSet() {

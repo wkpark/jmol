@@ -126,7 +126,7 @@ class EfvetReader extends PolygonFileReader {
     nTriangles = parseInt();
     for (int i = 0; i < nTriangles; i++) {
       skipTo("<triangle", "vertex");
-      addTriangleCheck(parseInt() - 1, parseInt() - 1, parseInt() - 1, 7, false, 0);
+      addTriangleCheck(parseInt() - 1, parseInt() - 1, parseInt() - 1, 7, 0, false, 0);
     }
   }
 

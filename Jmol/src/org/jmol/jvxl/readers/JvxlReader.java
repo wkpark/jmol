@@ -1632,7 +1632,7 @@ public class JvxlReader extends VolumeFileReader {
             } 
             nColors--;
           }
-          addTriangleCheck(triangle[0], triangle[1], triangle[2], 7, false, color);
+          addTriangleCheck(triangle[0], triangle[1], triangle[2], 7, 0, false, color);
         }
       }
     }

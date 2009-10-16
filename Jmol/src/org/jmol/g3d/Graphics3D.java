@@ -2527,10 +2527,6 @@ final public class Graphics3D implements JmolRendererInterface {
     "yellowtint",           // F6F675
   };
 
-  public static int getColorArgb(int i) {
-    return colorArgbs[i % colorArgbs.length];
-  }
-
   private final static int[] colorArgbs = {
     0xFF000000, // black
     // plus the PE chain colors

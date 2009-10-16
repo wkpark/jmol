@@ -1011,6 +1011,9 @@ class ScriptMathProcessor {
     int pt = 0;
     String propertyName = (args.length > pt ? ScriptVariable.sValue(args[pt++])
         .toLowerCase() : "");
+    if (propertyName.startsWith("$")) {
+//TODO      
+    }
     Object propertyValue;
     if (propertyName.equalsIgnoreCase("fileContents") && args.length > 2) {
       String s = ScriptVariable.sValue(args[1]);
@@ -1801,6 +1804,7 @@ class ScriptMathProcessor {
 
     Token op = oStack[oPt--];
     Point3f pt;
+    String s;
     
     if (logMessages) {
       dumpStacks("operate: " + op);
@@ -1862,7 +1866,6 @@ class ScriptMathProcessor {
       case Token.type:
         return addX(ScriptVariable.typeOf(x2));
       case Token.lines:
-        String s;
         switch (x2.tok) {
         case Token.matrix3f:
         case Token.matrix4f:
@@ -1881,9 +1884,9 @@ class ScriptMathProcessor {
         switch (x2.tok) {
         case Token.string:
         case Token.list:
+          s = ScriptVariable.sValue(x2);
           pt = new Point3f();
-          return addX(Graphics3D.colorPointFromString(
-              ScriptVariable.sValue(x2), pt));
+          return addX(Graphics3D.colorPointFromString(s, pt));
         case Token.integer:
         case Token.decimal:
           return addX(viewer.getColorPointForPropertyValue(ScriptVariable
@@ -1913,7 +1916,6 @@ class ScriptMathProcessor {
     }
 
     // binary:
-    String s;
     ScriptVariable x1 = getX();
     if (isSyntaxCheck)
       return addX(new ScriptVariable(x1));

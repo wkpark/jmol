@@ -927,9 +927,9 @@ public class MarchingSquares {
                     break;
                   }
               }
-              System.out.print("em=" + Integer.toBinaryString(edgeMask) + " em0=" +  Integer.toBinaryString(edgeMask0) );
+              //System.out.print("em=" + Integer.toBinaryString(edgeMask) + " em0=" +  Integer.toBinaryString(edgeMask0) );
               edgeMask ^= edgeMask0 & 0x0F0F;
-              System.out.println(" em=" + Integer.toBinaryString(edgeMask) );
+              //System.out.println(" em=" + Integer.toBinaryString(edgeMask) );
             }
           }
 
@@ -1069,7 +1069,7 @@ public class MarchingSquares {
     default:
       square.iOption = 0;
     }
-    System.out.println(contourIndex + " marchingsquares edgemask=" + Integer.toBinaryString(edgeMask) + " " + iOption);
+    //System.out.println(contourIndex + " marchingsquares edgemask=" + Integer.toBinaryString(edgeMask) + " " + iOption);
     for (int i = 0; i < 4; i++) {
       newVertex = ((maskV & (1 << i)) != 0);
       boolean thisIntersect = ((maskN & (1 << i)) != 0);

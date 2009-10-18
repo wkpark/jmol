@@ -929,7 +929,7 @@ public class JvxlReader extends VolumeFileReader {
     info.append("\n  precisionColor=\"" + jvxlData.isJvxlPrecisionColor + "\"");
     info.append("\n  nColorData=\"" + nColorData + "\"");
     info.append("\n  version=\"" + jvxlData.version + "\"");
-    return "<jvxlSurfaceInfo>" + info.toString() + "\n</jvxlSurfaceInfo>";
+    return "<jvxlSurfaceInfo" + info.toString() + "\n></jvxlSurfaceInfo>";
   }
 
   protected static String jvxlExtraLine(JvxlData jvxlData, int n) {

@@ -550,7 +550,7 @@ public class MarchingSquares {
     boolean centerIsLow = true; //molecular surface-like
     int lastInside = -1;
     Logger.info("generateContourData min=" + min + " max=" + max
-        + " nContours=" + (nContourSegments-1) + " (" + nContoursSpecified + " specified) contourFromZero=" + contourFromZero);
+        + " nContours=" + nContourSegments + " (" + nContoursSpecified + " specified) contourFromZero=" + contourFromZero);
     contourValuesUsed = new float[nContourSegments];
     for (int i = 0; i < nContourSegments; i++) {
       contourIndex = i;

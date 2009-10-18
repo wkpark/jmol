@@ -296,9 +296,7 @@ public interface JmolRendererInterface {
 
   public abstract boolean isClippedXY(int i, int screenX, int screenY);
 
-  public abstract int getColixArgb(short colix);
-
-  public abstract String getHexColorFromIndex(short colix);
+  public abstract int getColorArgbOrGray(short colix);
 
   public abstract int calcSurfaceShade(Point3i screenA, Point3i screenB,
                                         Point3i screenC);

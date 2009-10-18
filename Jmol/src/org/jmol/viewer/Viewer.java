@@ -1222,8 +1222,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.defaultTranslucent;
   }
 
-  public int getColixArgb(short colix) {
-    return g3d.getColixArgb(colix);
+  public int getColorArgbOrGray(short colix) {
+    return g3d.getColorArgbOrGray(colix);
   }
 
   public void setRubberbandArgb(int argb) {
@@ -1472,7 +1472,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Point3f getColorPointForPropertyValue(float val) {
     // x = {atomno=3}.partialcharge.color
-    return Graphics3D.colorPointFromInt2(g3d.getColixArgb(colorManager
+    return Graphics3D.colorPointFromInt2(g3d.getColorArgbOrGray(colorManager
         .getColixForPropertyValue(val)));
   }
 
@@ -6663,7 +6663,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getAtomArgb(int i) {
-    return g3d.getColixArgb(modelSet.getAtomColix(i));
+    return g3d.getColorArgbOrGray(modelSet.getAtomColix(i));
   }
 
   String getAtomChain(int i) {
@@ -6699,7 +6699,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getBondArgb1(int i) {
-    return g3d.getColixArgb(modelSet.getBondColix1(i));
+    return g3d.getColorArgbOrGray(modelSet.getBondColix1(i));
   }
 
   public int getBondModelIndex(int i) {
@@ -6708,7 +6708,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getBondArgb2(int i) {
-    return g3d.getColixArgb(modelSet.getBondColix2(i));
+    return g3d.getColorArgbOrGray(modelSet.getBondColix2(i));
   }
 
   public Point3f[] getPolymerLeadMidPoints(int modelIndex, int polymerIndex) {
@@ -6861,10 +6861,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return fileManager.getFullPathName() + "\nJmol version " + getJmolVersion()
         + "\nEXTRACT: " + atomExpression + "\n"
         + modelSet.getModelExtract(getAtomBitSet(atomExpression));
-  }
-
-  public String getHexColorFromIndex(short colix) {
-    return g3d.getHexColorFromIndex(colix);
   }
 
   // ////////////////////////////////////////////////

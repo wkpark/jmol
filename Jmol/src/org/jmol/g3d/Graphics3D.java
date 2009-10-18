@@ -748,7 +748,7 @@ final public class Graphics3D implements JmolRendererInterface {
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
     currentIntensity = -1; 
-    argbCurrent = argbNoisyUp = argbNoisyDn = getColixArgb(colix);
+    argbCurrent = argbNoisyUp = argbNoisyDn = getColorArgbOrGray(colix);
     return true;
   }
 
@@ -2007,6 +2007,13 @@ final public class Graphics3D implements JmolRendererInterface {
     return pt;
   }
 
+  public static int colorPtToInt(Point3f pt) {
+    return 0xFF000000 
+        | (((int) pt.x) & 0xFF) << 16
+        | (((int) pt.y) & 0xFF) << 8 
+        | (((int) pt.z) & 0xFF);
+  }
+
   public final static Point3f colorPointFromInt2(int color) {
     return new Point3f((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
   }
@@ -2092,7 +2099,7 @@ final public class Graphics3D implements JmolRendererInterface {
     return applyColorTranslucencyLevel(colix, translucentLevel);
   }
 
-  public int getColixArgb(short colix) {
+  public int getColorArgbOrGray(short colix) {
     if (colix < 0)
       colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
@@ -2164,9 +2171,8 @@ final public class Graphics3D implements JmolRendererInterface {
   }
  */
   
-  public String getHexColorFromIndex(short colix) {
-    int argb = getColixArgb(colix);
-    return getHexColorFromRGB(argb);
+  public static int getArgb(short colix) {
+    return Colix3D.getArgb(colix);  
   }
   
   public static String getHexColorFromRGB(int argb) {

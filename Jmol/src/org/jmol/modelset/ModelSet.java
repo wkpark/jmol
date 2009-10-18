@@ -475,11 +475,8 @@ abstract public class ModelSet extends ModelCollection {
         if (shape != null) {
           String shapeType = JmolConstants.shapeClassBases[i];
           Vector shapeDetail = shape.getShapeDetail();
-          if (shapeDetail != null) {
-            Hashtable shapeinfo = new Hashtable();
-            shapeinfo.put("obj", shapeDetail);
-            info.put(shapeType, shapeinfo);
-          }
+          if (shapeDetail != null)
+            info.put(shapeType, shapeDetail);
         }
       }
     if (commands.length() > 0)

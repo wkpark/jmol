@@ -1067,7 +1067,7 @@ final public class Atom extends Point3fi {
     case Token.bondcount:
       return atom.getCovalentBondCount();
     case Token.color:
-      return atom.group.chain.modelSet.viewer.getColixArgb(atom.getColix());
+      return atom.group.chain.modelSet.viewer.getColorArgbOrGray(atom.getColix());
     case Token.element:
     case Token.elemno:
       return atom.getElementNumber();
@@ -1287,7 +1287,7 @@ final public class Atom extends Point3fi {
       return atom;
     case Token.color:
       return Graphics3D.colorPointFromInt2(
-          atom.group.chain.modelSet.viewer.getColixArgb(atom.getColix())
+          atom.group.chain.modelSet.viewer.getColorArgbOrGray(atom.getColix())
           );
     }
     return null;

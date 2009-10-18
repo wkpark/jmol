@@ -32,5 +32,4 @@ public interface MeshDataServer extends VertexDataServer {
   public abstract void notifySurfaceGenerationCompleted();
   public abstract void notifySurfaceMappingCompleted();
   public abstract Point3f[] calculateGeodesicSurface(BitSet bsSelected, float envelopeRadius);  
-  public abstract int getColixArgb(short colix);
 }

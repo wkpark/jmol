@@ -1013,7 +1013,7 @@ public class _IdtfExporter extends _Exporter {
       viewer.transformPoint(center, pt);
       z = (int)pt.z;
     }
-    g3d.plotText(x, y, z, g3d.getColixArgb(colix), text, font3d, jmolRenderer);
+    g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d, jmolRenderer);
   }
 
   public void startShapeBuffer(int iShape) {

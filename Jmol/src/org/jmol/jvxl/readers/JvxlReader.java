@@ -32,7 +32,7 @@ import java.util.Vector;
 
 import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.*;
-import org.jmol.jvxl.api.MeshDataServer;
+import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.data.VolumeData;
@@ -263,6 +263,8 @@ public class JvxlReader extends VolumeFileReader {
   }
 
   private void jvxlReadDefinitionLine(boolean showMsg) throws Exception {
+    // params values come from user adding options to the isosurface command
+    // jvxlData values are from this file
     String comment = skipComments(true);
     if (showMsg)
       Logger.info("reading jvxl data set: " + comment + line);
@@ -307,7 +309,7 @@ public class JvxlReader extends VolumeFileReader {
             .error("Error reading 4 floats for PLANE definition -- setting to 0 0 1 0  (z=0)");
         params.thePlane = new Point4f(0, 0, 1, 0);
       }
-      Logger.info("JVXL read: {" + params.thePlane.x + " " + params.thePlane.y
+      Logger.info("JVXL read: plane {" + params.thePlane.x + " " + params.thePlane.y
           + " " + params.thePlane.z + " " + params.thePlane.w + "}");
       if (param2 == -1 && param3 < 0)
         param3 = -param3;
@@ -320,7 +322,15 @@ public class JvxlReader extends VolumeFileReader {
       // could be plane or functionXY
       params.isContoured = (param3 != 0);
       int nContoursRead = parseInt();
-      if (nContoursRead != Integer.MIN_VALUE) {
+      if (nContoursRead == Integer.MIN_VALUE) {
+        if (line.charAt(next[0]) == '[') {
+           jvxlData.contourValues = params.contoursDiscrete = parseFloatArray();
+           Logger.info("JVXL read: contourValues " + Escape.escapeArray(jvxlData.contourValues));            
+           jvxlData.contourColixes = params.contourColixes = Parser.getColixArray(getNextQuotedString());
+           Logger.info("JVXL read: contourColixes " + Escape.escapeColors(jvxlData.contourColixes)); 
+           params.nContours = jvxlData.contourValues.length;
+                 }
+      } else {
         if (nContoursRead < 0) {
           nContoursRead = -1 - nContoursRead;
           params.contourFromZero = false; //MEP data to complete the plane
@@ -367,7 +377,7 @@ public class JvxlReader extends VolumeFileReader {
         }
         params.mappedDataMin = dataMin;
         params.mappedDataMax = dataMax;
-        Logger.info("JVXL read: data min/max: " + params.mappedDataMin + "/"
+        Logger.info("JVXL read: data_min/max " + params.mappedDataMin + "/"
             + params.mappedDataMax);
       }
       if (!params.rangeDefined)
@@ -869,10 +879,23 @@ public class JvxlReader extends VolumeFileReader {
         info.append("\n  plane=\"{ " + s + " }\"");
     }
     if (jvxlData.isContoured) {
-      if (isInfo)
-        info.append("\n  nContours=\"" + Math.abs(jvxlData.nContours) + "\"");
-      else
-        definitionLine += " " + jvxlData.nContours;
+      if (jvxlData.contourValues == null) {
+        if (isInfo)
+          info.append("\n  nContours=\"" + Math.abs(jvxlData.nContours) + "\"");
+        else
+          definitionLine += " " + jvxlData.nContours;
+      } else {
+        if (isInfo)
+          info.append("\n  contourValues=\"")
+              .append(Escape.escapeArray(jvxlData.contourValues))
+              .append("\"")
+              .append("\n  contourColors=")
+              .append(Escape.escapeColors(jvxlData.contourColixes));
+        else
+          definitionLine += " "
+            + Escape.escapeArray(jvxlData.contourValues)
+            + " " + Escape.escapeColors(jvxlData.contourColixes);
+      }
     }
     // ...  mappedDataMin  mappedDataMax  valueMappedToRed  valueMappedToBlue ...
     float min = (jvxlData.mappedDataMin == Float.MAX_VALUE ? 0f
@@ -916,8 +939,7 @@ public class JvxlReader extends VolumeFileReader {
     //0.9e adds color contours for planes and min/max range, contour settings
   }
 
-  public static String jvxlGetFile(MeshDataServer meshDataServer,
-                                   JvxlData jvxlData, MeshData meshData,
+  public static String jvxlGetFile(JvxlData jvxlData, MeshData meshData,
                                    String[] title, String msg,
                                    boolean includeHeader, int nSurfaces,
                                    String state, String comment) {
@@ -946,7 +968,7 @@ public class JvxlReader extends VolumeFileReader {
       sb.append("<jvxlSurfaceData>\n");
       sb.append(jvxlEncodeTriangleData(meshData.polygonIndexes,
           meshData.polygonCount, vertexIdNew));
-      sb.append(jvxlEncodeVertexData(meshDataServer, jvxlData, vertexIdNew,
+      sb.append(jvxlEncodeVertexData(jvxlData, vertexIdNew,
           meshData.vertices, meshData.vertexValues, meshData.vertexCount,
           meshData.polygonColixes, meshData.polygonCount,
           jvxlData.jvxlColorData.length() > 0));
@@ -1001,8 +1023,8 @@ public class JvxlReader extends VolumeFileReader {
       sb.append(" value=\"" + contours[i].get(IsosurfaceMesh.CONTOUR_VALUE)
           + "\"");
       sb.append(" color=\""
-          + Escape.escapeColor(((int[]) contours[i]
-              .get(IsosurfaceMesh.CONTOUR_COLOR))[0]) + "\"");
+          + Escape.escapeColor(((short[]) contours[i]
+              .get(IsosurfaceMesh.CONTOUR_COLIX))[0]) + "\"");
       sb.append(" npolygons=\"" + nPolygons + "\"");
       StringBuffer sb1 = new StringBuffer();
       jvxlEncodeBitSet((BitSet) contours[i].get(IsosurfaceMesh.CONTOUR_BITSET),
@@ -1264,7 +1286,6 @@ public class JvxlReader extends VolumeFileReader {
    * The resultant string is really two strings of length nData
    * where the first string lists the "high" part of the positions,
    * and the second string lists the "low" part of the positions.
-   * @param meshDataServer 
    * 
    * @param jvxlData
    * @param vertexIdNew
@@ -1276,8 +1297,7 @@ public class JvxlReader extends VolumeFileReader {
    * @param addColorData
    * @return              string of encoded data
    */
-  public static String jvxlEncodeVertexData(MeshDataServer meshDataServer,
-                                            JvxlData jvxlData,
+  public static String jvxlEncodeVertexData(JvxlData jvxlData,
                                             int[] vertexIdNew,
                                             Point3f[] vertices,
                                             float[] vertexValues,
@@ -1334,7 +1354,7 @@ public class JvxlReader extends VolumeFileReader {
         if (done || polygonColixes[i] != colix) {
           if (count != 0)
             list1.append(" ").append(count).append(" ").append(
-                (colix == 0 ? 0 : meshDataServer.getColixArgb(colix)));
+                (colix == 0 ? 0 : Graphics3D.getArgb(colix)));
           if (done)
             break;
           colix = polygonColixes[i];
@@ -1396,17 +1416,27 @@ public class JvxlReader extends VolumeFileReader {
       String s = getXmlData("jvxlContour", data.substring(pt), true);
       int n = parseInt(getXmlAttrib(s, "npolygons"));
       float value = parseFloat(getXmlAttrib(s, "value"));
-      int color = Escape.unescapeColor(getXmlAttrib(s, "color"));
+      short colix = Graphics3D.getColix(Escape.unescapeColor(getXmlAttrib(s,
+          "color")));
       String fData = getXmlAttrib(s, "data");
       BitSet bs = jvxlDecodeBitSet(s.substring(s.lastIndexOf("\">") + 2));
-      IsosurfaceMesh.setContourVector(v, n, bs, value, color, new StringBuffer(fData));
-      //if (s.indexOf("i=\"5\"")  >= 0)
+      IsosurfaceMesh.setContourVector(v, n, bs, value, colix, new StringBuffer(
+          fData));
       vs.add(v);
     }
 
     vContours = new Vector[vs.size()];
-    for (int i = 0; i < vs.size(); i++)
-      vContours[i] = (Vector) vs.get(i);
+    if (jvxlData.vContours != null) {
+      // 3D contour values and colors
+      int n = vs.size();
+      jvxlData.contourColixes = params.contourColixes = new short[n];
+      jvxlData.contourValues = params.contoursDiscrete = new float[n];
+      for (int i = 0; i < n; i++) {
+        vContours[i] = (Vector) vs.get(i);
+        jvxlData.contourValues[i] = ((Float) vContours[i].get(2)).floatValue();
+        jvxlData.contourColixes[i] = ((short[]) vContours[i].get(3))[0];
+      }
+    }
   }
 
   public static void set3dContourVector(Vector v, int[][] polygonIndexes, Point3f[] vertices) {

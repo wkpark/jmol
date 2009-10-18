@@ -264,7 +264,7 @@ public abstract class Shape {
     return "color " + type + " " + encodeTransColor(pid, colix, translucentAllowed);
   }
 
-  private String encodeTransColor(byte pid, short colix,
+  private static String encodeTransColor(byte pid, short colix,
                                   boolean translucentAllowed) {
     if (pid == JmolConstants.PALETTE_UNKNOWN && colix == Graphics3D.INHERIT_ALL)
       return "";
@@ -282,10 +282,10 @@ public abstract class Shape {
         ? JmolConstants.getPaletteName(pid) : encodeColor(colix));
   }
 
-  String encodeColor(short colix) {
+  static String encodeColor(short colix) {
     // used also by labels for background state (no translucent issues there?)
     return (Graphics3D.isColixColorInherited(colix) ? "none" : Escape
-        .escapeColor(g3d.getColixArgb(colix)));
+        .escapeColor(colix));
   }
 
   private static String getTranslucentLabel(short colix) {

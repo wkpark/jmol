@@ -203,16 +203,8 @@ public class Bond {
     return Graphics3D.getColixInherited(colix, atom1.colixAtom);
   }
 
-  int getArgb1() {
-    return atom1.group.chain.modelSet.viewer.getColixArgb(getColix1());
-  }
-
   short getColix2() {
     return Graphics3D.getColixInherited(colix, atom2.colixAtom);
-  }
-
-  int getArgb2() {
-    return atom1.group.chain.modelSet.viewer.getColixArgb(getColix2());
   }
 
   public Atom getOtherAtom(Atom thisAtom) {

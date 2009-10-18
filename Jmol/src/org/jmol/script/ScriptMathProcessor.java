@@ -1892,8 +1892,7 @@ class ScriptMathProcessor {
           return addX(viewer.getColorPointForPropertyValue(ScriptVariable
               .fValue(x2)));
         case Token.point3f:
-          return addX(Escape.escapeColor(ScriptEvaluator
-              .colorPtToInt((Point3f) x2.value)));
+          return addX(Escape.escapeColor(Graphics3D.colorPtToInt((Point3f) x2.value)));
         default:
           // handle bitset later
         }

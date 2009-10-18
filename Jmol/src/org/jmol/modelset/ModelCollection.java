@@ -2670,7 +2670,7 @@ abstract public class ModelCollection extends BondCollection {
     info.put("clickabilityFlags", new Integer(atom.clickabilityFlags));
     info.put("visibilityFlags", new Integer(atom.shapeVisibilityFlags));
     info.put("spacefill", new Float(atom.getRadius()));
-    String strColor = viewer.getHexColorFromIndex(atom.colixAtom);
+    String strColor = Escape.escapeColor(viewer.getColorArgbOrGray(atom.colixAtom));
     if (strColor != null)
       info.put("color", strColor);
     info.put("colix", new Integer(atom.colixAtom));
@@ -2732,7 +2732,7 @@ abstract public class ModelCollection extends BondCollection {
     info.put("radius", new Float(bond.mad/2000.));
     info.put("length_Ang",new Float(atom1.distance(atom2)));
     info.put("visible", Boolean.valueOf(bond.shapeVisibilityFlags != 0));
-    String strColor = viewer.getHexColorFromIndex(bond.colix);
+    String strColor = Escape.escapeColor(viewer.getColorArgbOrGray(bond.colix));
     if (strColor != null) 
       info.put("color", strColor);
     info.put("colix", new Integer(bond.colix));

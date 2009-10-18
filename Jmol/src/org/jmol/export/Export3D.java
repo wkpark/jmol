@@ -220,7 +220,7 @@ final public class Export3D implements JmolRendererInterface {
 
   private void drawHLine(int x, int y, int z, int w) {
     // hover, labels only
-    int argbCurrent = g3d.getColixArgb(colix);
+    int argbCurrent = g3d.getColorArgbOrGray(colix);
     if (w < 0) {
       x += w;
       w = -w;
@@ -232,7 +232,7 @@ final public class Export3D implements JmolRendererInterface {
 
   private void drawVLine(int x, int y, int z, int h) {
     // hover, labels only
-    int argbCurrent = g3d.getColixArgb(colix);
+    int argbCurrent = g3d.getColorArgbOrGray(colix);
     if (h < 0) {
       y += h;
       h = -h;
@@ -793,12 +793,8 @@ final public class Export3D implements JmolRendererInterface {
     return g3d.isClipped(x, y);
   }
 
-  public int getColixArgb(short colix) {
-    return g3d.getColixArgb(colix);
-  }
-
-  public String getHexColorFromIndex(short colix) {
-    return g3d.getHexColorFromIndex(colix);
+  public int getColorArgbOrGray(short colix) {
+    return g3d.getColorArgbOrGray(colix);
   }
 
   public int calcSurfaceShade(Point3i pointA, Point3i pointB, Point3i pointC) {

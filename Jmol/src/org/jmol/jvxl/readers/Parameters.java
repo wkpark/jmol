@@ -220,6 +220,7 @@ public class Parameters {
     nContours = 0;
     contourIncrements = null;
     contoursDiscrete = null;
+    contourColixes = null;
     pocket = null;
     rangeDefined = false;
     resolution = Float.MAX_VALUE;
@@ -716,6 +717,7 @@ public class Parameters {
   int downsampleFactor;
   int maxSet;
   public float[] contoursDiscrete;
+  public short[] contourColixes;
   Point3f contourIncrements;
   
   void setMapRanges(SurfaceReader surfaceReader) {

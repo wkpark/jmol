@@ -76,8 +76,9 @@ public class IsosurfaceMesh extends Mesh {
     isColorSolid = true;
     vertexColixes = null;
     vertexValues = null;
-    contourValues = null;
-    contourColixes = null;
+    jvxlData.contourValues = null;
+    jvxlData.contourValuesUsed = null;
+    jvxlData.contourColixes = null;
     assocGridPointMap = null;
     assocGridPointNormals = null;
     vertexSets = null;
@@ -301,7 +302,7 @@ public class IsosurfaceMesh extends Mesh {
   public static final int CONTOUR_NPOLYGONS = 0;
   public static final int CONTOUR_BITSET = 1;
   public static final int CONTOUR_VALUE = 2;
-  public static final int CONTOUR_COLOR = 3;
+  public static final int CONTOUR_COLIX = 3;
   public static final int CONTOUR_FDATA = 4;
   public static final int CONTOUR_POINTS = 5;
 
@@ -328,7 +329,8 @@ public class IsosurfaceMesh extends Mesh {
     int n = jvxlData.nContours;
     if (n == 0 || polygonIndexes == null)
       return null;
-    if ((havePlanarContours = (jvxlData.jvxlPlane != null)) == true)
+    havePlanarContours = (jvxlData.jvxlPlane != null);
+    if (havePlanarContours)
       return null; // not necessary; 
     if (n < 0)
       n = -1 - n;
@@ -346,32 +348,44 @@ public class IsosurfaceMesh extends Mesh {
     vContours = new Vector[n];
     for (int i = 0; i < n; i++)
       vContours[i] = new Vector();
-    float dv = (jvxlData.valueMappedToBlue - jvxlData.valueMappedToRed)
-        / (n + 1);
-    // n + 1 because we want n lines between n + 1 slices
-    for (int i = 0; i < n; i++) {
-      float value = jvxlData.valueMappedToRed + (i + 1) * dv;
-      //if (i == 5)
-      get3dContour(vContours[i], value, jvxlData.contourColors[i]);
+    if (jvxlData.contourValuesUsed == null) {
+      float dv = (jvxlData.valueMappedToBlue - jvxlData.valueMappedToRed)
+          / (n + 1);
+      // n + 1 because we want n lines between n + 1 slices
+      for (int i = 0; i < n; i++) {
+        float value = jvxlData.valueMappedToRed + (i + 1) * dv;
+        get3dContour(vContours[i], value, jvxlData.contourColixes[i]);
+      }
+      Logger.info(n + " contour lines; separation = " + dv);
+    } else {
+      for (int i = 0; i < n; i++) {
+        float value = jvxlData.contourValuesUsed[i];
+        get3dContour(vContours[i], value, jvxlData.contourColixes[i]);
+      }      
     }
-    Logger.info(n + " contour lines; separation = " + dv);
+    jvxlData.contourColixes = new short[n];
+    jvxlData.contourValues = new float[n];
+    for (int i = 0; i < n; i++) {
+      jvxlData.contourValues[i] = ((Float) vContours[i].get(2)).floatValue();
+      jvxlData.contourColixes[i] = ((short[]) vContours[i].get(3))[0];
+    }
     return jvxlData.vContours = vContours;
   }
   
   public static void setContourVector(Vector v, int nPolygons,
-                                      BitSet bsContour, float value, int color,
+                                      BitSet bsContour, float value, short colix,
                                       StringBuffer fData) {
     v.add(new Integer(nPolygons));
     v.add(bsContour);
     v.add(new Float(value));
-    v.add(new int[] { color });
+    v.add(new short[] { colix });
     v.add(fData);
   }
 
-  private void get3dContour(Vector v, float value, int color) {
+  private void get3dContour(Vector v, float value, short colix) {
     BitSet bsContour = new BitSet(polygonCount);
     StringBuffer fData = new StringBuffer();
-    setContourVector(v, polygonCount, bsContour, value, color, fData);
+    setContourVector(v, polygonCount, bsContour, value, colix, fData);
     for (int i = 0; i < polygonCount; i++) {
       if (!setABC(i))
         continue;
@@ -428,17 +442,19 @@ public class IsosurfaceMesh extends Mesh {
   float[] contourValues;
   short[] contourColixes;
   public void setDiscreteColixes(float[] values, short[] colixes) {
-    this.contourValues = values;
-    if (colixes == null && this.contourColixes != null)
+    if (values != null)
+      jvxlData.contourValues = values;
+    if (colixes == null && jvxlData.contourColixes != null)
       return;
-    this.contourColixes = colixes;
+    jvxlData.contourColixes = colixes;
     if (vertices == null || vertexValues == null || values == null)
       return;
     int n = values.length;
+    float vMax = values[n - 1];
     isColorSolid = true;
     colorCommand = null;
-    boolean haveColixes = (colixes == null && colixes.length > 0);
-    short defaultColix = (haveColixes ? colixes[0] : 0);
+    boolean haveColixes = (colixes != null && colixes.length > 0);
+    short defaultColix = 0;
     polygonColixes = new short[polygonCount];
     for (int i = 0; i < polygonCount; i++) {
       int[] pi = polygonIndexes[i];
@@ -449,12 +465,12 @@ public class IsosurfaceMesh extends Mesh {
       }
       v /= 3;
       for (int j = n; --j >= 0;) {
-        if (v > values[j]) {
-          polygonColixes[i] = (haveColixes ? 0 : colixes[j % colixes.length]);
+        if (v > values[j] && v < vMax) {
+          polygonColixes[i] = (haveColixes ? colixes[j % colixes.length] : 0);
           break;
         }
       }
-    } 
+    }
   }
 
   /**
@@ -465,32 +481,14 @@ public class IsosurfaceMesh extends Mesh {
    */
   Hashtable getContourList(Viewer viewer) {
     Hashtable ht = new Hashtable();
-    if (contourValues != null)
-      ht.put("values", contourValues);
+    ht.put("values", (jvxlData.contourValuesUsed == null ? jvxlData.contourValues : jvxlData.contourValuesUsed));
     Vector colors = new Vector();
-    if (contourColixes != null) {
-      // user-specified
-      for (int i = 0;i < contourValues.length - 1; i++)
-        colors.add(Graphics3D.colorPointFromInt2(viewer
-            .getColixArgb(contourColixes[i % contourColixes.length])));
-      ht.put("colors", colors);
-    } else if (jvxlData.contourColors != null) {
+    if (jvxlData.contourColixes != null) {
       // set in SurfaceReader.colorData()
-      for (int i = 0; i < jvxlData.contourColors.length; i++) {
-        colors.add(Graphics3D.colorPointFromInt2(jvxlData.contourColors[i]));
+      for (int i = 0; i < jvxlData.contourColixes.length; i++) {
+        colors.add(Graphics3D.colorPointFromInt2(Graphics3D.getArgb(jvxlData.contourColixes[i])));
       }
       ht.put("colors", colors);
-    }
-    if (jvxlData.vContours != null) {
-      // 3D contour values and colors
-      float[] f = new float[jvxlData.vContours.length];
-      for (int i = 0; i < jvxlData.vContours.length; i++) {
-        f[i] = ((Float) jvxlData.vContours[i].get(2)).floatValue();
-      }
-      ht.put("values", f);
-    } else if (jvxlData.contourValuesUsed != null) {
-      // determined by Jmol
-      ht.put("values", jvxlData.contourValuesUsed);      
     }
     return ht;
   }

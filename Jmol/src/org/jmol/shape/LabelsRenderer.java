@@ -75,7 +75,7 @@ public class LabelsRenderer extends ShapeRenderer {
         colix = Graphics3D.getColixTranslucent(colix, false, 0);
       short bgcolix = (bgcolixes == null || i >= bgcolixes.length) ? 0
           : bgcolixes[i];
-      if (bgcolix == 0 && g3d.getColixArgb(colix) == backgroundColor)
+      if (bgcolix == 0 && g3d.getColorArgbOrGray(colix) == backgroundColor)
         colix = backgroundColixContrast;
       if (!g3d.setColix(colix))
         continue;

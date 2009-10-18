@@ -140,6 +140,14 @@ abstract class SurfaceFileReader extends SurfaceReader {
     return Parser.parseInt(s, next);
   }
     
+  float[] parseFloatArray() {
+    return Parser.parseFloatArray(line, next);
+  }
+
+  String getNextQuotedString() {
+    return Parser.getNextQuotedString(line, next);
+  }
+
   protected void skipTo(String info, String what) throws Exception {
     if (info != null)
       while ((line = br.readLine()).indexOf(info) < 0) {

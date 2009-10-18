@@ -182,13 +182,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     ////isosurface-only (no calculation required; no calculation parameters to set)
 
-    if ("colorDiscrete" == propertyName) {
-      if (thisMesh == null)
-        return;
-      thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, (short[])value);
-      return;
-    }
-    
     if ("navigate" == propertyName) {
       navigate(((Integer)value).intValue());
       return;
@@ -333,7 +326,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
     if ("finalize" == propertyName) {
-      thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, null);
+      thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, sg.getParams().contourColixes);
       setScriptInfo();
       setJvxlInfo();
       clearSg();
@@ -457,14 +450,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         meshData = new MeshData();
         fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
       }
-      return JvxlReader.jvxlGetFile(this, jvxlData, meshData, title, "", true, index, thisMesh
+      return JvxlReader.jvxlGetFile(jvxlData, meshData, title, "", true, index, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     }
     if (property == "jvxlFileHeader")
-      return JvxlReader.jvxlGetFile(this, jvxlData, null, title, "HEADERONLY", true, index, thisMesh
+      return JvxlReader.jvxlGetFile(jvxlData, null, title, "HEADERONLY", true, index, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     if (property == "jvxlSurfaceData") // MO only
-      return JvxlReader.jvxlGetFile(this, jvxlData, null, title, "orbital #" + index, false, 1, thisMesh
+      return JvxlReader.jvxlGetFile(jvxlData, null, title, "orbital #" + index, false, 1, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     if (property == "jvxlFileInfo")
       return jvxlData.jvxlInfoLine;
@@ -895,8 +888,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       info.put("modelIndex", new Integer(mesh.modelIndex));
       if (mesh.title != null)
         info.put("title", mesh.title);
-      if (mesh.contourValues != null || mesh.jvxlData.vContours != null
-          || mesh.jvxlData.contourColors != null)
+      if (mesh.jvxlData.contourValues != null || mesh.jvxlData.contourValuesUsed != null)
         info.put("contours", mesh.getContourList(viewer));
       V.addElement(info);
     }
@@ -923,8 +915,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (contours != null) {
       for (int i = contours.length; --i >= 0; ) {
         float value = ((Float)contours[i].get(IsosurfaceMesh.CONTOUR_VALUE)).floatValue();
-        int[] color = ((int[])contours[i].get(IsosurfaceMesh.CONTOUR_COLOR));
-        color[0] = viewer.getColixArgb(viewer.getColixForPropertyValue(value));
+        short[] colix = ((short[])contours[i].get(IsosurfaceMesh.CONTOUR_COLIX));
+        colix[0] = viewer.getColixForPropertyValue(value);
       }
     }
     float[] range = viewer.getCurrentColorRange();
@@ -1127,8 +1119,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     //System.out.println(ptRet);
   }
 
-  private String findValue(int x, int y, boolean isPicking,
-                                   BitSet bsVisible) {
+  private String findValue(int x, int y, boolean isPicking, BitSet bsVisible) {
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
     if (g3d.isAntialiased()) {
       x <<= 1;
@@ -1142,24 +1133,27 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           && !bsVisible.get(m.modelIndex))
         continue;
       Vector[] vs = m.jvxlData.vContours;
-      if (vs != null) {
-      for (int j = 0; j < vs.length; j++) {
-        Vector vc = vs[j];
-        int n = vc.size() - 1;
-        for (int k = IsosurfaceMesh.CONTOUR_POINTS; k < n; k++) {
-          Point3f v = (Point3f) vc.get(k);
-          int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
-          if (d2 >= 0) {
-            dmin2 = d2;
-            pickedContour = vc;
+      if (!viewer.getTestFlag3() && vs != null) {
+        int thisk = 0;
+        for (int j = 0; j < vs.length; j++) {
+          Vector vc = vs[j];
+          int n = vc.size() - 1;
+          for (int k = IsosurfaceMesh.CONTOUR_POINTS; k < n; k++) {
+            Point3f v = (Point3f) vc.get(k);
+            int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
+            if (d2 >= 0) {
+              dmin2 = d2;
+              pickedContour = vc;
+              thisk = k;
+            }
           }
         }
-      }
-      if (pickedContour != null)
-        return pickedContour.get(IsosurfaceMesh.CONTOUR_VALUE).toString();
+        if (pickedContour != null)
+          return pickedContour.get(IsosurfaceMesh.CONTOUR_VALUE).toString()
+              + " " + i + ":" + thisk;
       } else if (m.jvxlData.jvxlPlane != null && m.vertexValues != null) {
         int pickedVertex = -1;
-        for (int k = m.vertexCount; --k >= m.firstRealVertex; ) {
+        for (int k = m.vertexCount; --k >= m.firstRealVertex;) {
           Point3f v = m.vertices[k];
           int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
           if (d2 >= 0) {
@@ -1172,10 +1166,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       }
     }
     return null;
-  }
-
-  public int getColixArgb(short colix) {
-    return viewer.getColixArgb(colix);
   }
 
 }

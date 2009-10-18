@@ -276,13 +276,13 @@ public abstract class _Exporter {
   }
 
   protected String rgbFromColix(short colix, char sep) {
-    int argb = g3d.getColixArgb(colix);
+    int argb = g3d.getColorArgbOrGray(colix);
     return new StringBuffer().append((argb >> 16) & 0xFF).append(sep).append(
         (argb >> 8) & 0xFF).append(sep).append((argb) & 0xFF).toString();
   }
 
   protected String rgbFractionalFromColix(short colix, char sep) {
-    return rgbFractionalFromArgb(g3d.getColixArgb(colix), sep);
+    return rgbFractionalFromArgb(g3d.getColorArgbOrGray(colix), sep);
   }
 
   protected String rgbFractionalFromArgb(int argb, char sep) {

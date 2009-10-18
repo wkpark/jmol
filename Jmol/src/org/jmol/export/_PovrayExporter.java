@@ -635,7 +635,7 @@ public class _PovrayExporter extends _Exporter {
     // the bitmap, but then output to jmolRenderer, which returns control
     // here via drawPixel.
     output("// start text " + (++nText) + ": " + text + "\n");
-    g3d.plotText(x, y, z, g3d.getColixArgb(colix), text, font3d, jmolRenderer);
+    g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d, jmolRenderer);
     output("// end text " + nText + ": " + text + "\n");
   }
 

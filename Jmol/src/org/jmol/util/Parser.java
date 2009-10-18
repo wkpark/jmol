@@ -27,6 +27,8 @@ package org.jmol.util;
 
 import java.util.BitSet;
 
+import org.jmol.g3d.Graphics3D;
+
 public class Parser {
 
   /// general static string-parsing class ///
@@ -48,18 +50,45 @@ public class Parser {
     parseFloatArray(getTokens(str), bs, data);
   }
 
-  public static void parseFloatArray(String[] tokens, BitSet bs, float[] data) {
+  /**
+   * @param str 
+   * @param next 
+   * @return array of float values
+   *
+   */
+  public static float[] parseFloatArray(String str, int[] next) {
+    int pt = str.indexOf("[", next[0]);
+    if (pt >= 0)
+      str = str.substring(pt + 1);
+    next[0] = pt + 1;
+    pt = str.indexOf("]");
+    if (pt < 0)
+      pt = str.length();
+    else
+      str = str.substring(0, pt);
+    next[0] += pt + 1;
+    String[] tokens = getTokens(str);
+    float[] f = new float[tokens.length];
+    int n = parseFloatArray(tokens, null, f);
+    for (int i = n; i < f.length; i++)
+      f[i] = Float.NaN;
+    return f;
+  }
+  
+  public static int parseFloatArray(String[] tokens, BitSet bs, float[] data) {
     int len = data.length;
     int nTokens = tokens.length;
     int n = 0;
+    int max = 0;
     for (int i = 0; i < len && n < nTokens; i++) {
       if (bs != null && !bs.get(i))
         continue;
       float f;
       while (Float.isNaN(f = Parser.parseFloat(tokens[n++])) && n < nTokens) {
       }
-      data[i] = f;
+      data[(max = i)] = f;
     }
+    return max + 1;
   }
 
   public static float[][] parseFloatArray2d(String str) {
@@ -208,6 +237,18 @@ public class Parser {
 
   public static int parseInt(String str) {
     return parseInt(str, new int[] {0});
+  }
+
+  public static short[] getColixArray(String colorNames) {
+    String[] colors = Parser.getTokens(colorNames);
+    short[] colixes = new short[colors.length];
+    for (int j = 0; j < colors.length; j++) {
+      colixes[j] = Graphics3D.getColix(Graphics3D
+          .getArgbFromString(colors[j]));
+      if (colixes[j] == 0)
+        return null;
+    }
+    return colixes;
   }
 
   public static String[] getTokens(String line) {
@@ -465,15 +506,22 @@ public class Parser {
   }
   
   public static String getNextQuotedString(String line, int ipt0) {
+    int[] next = new int[ipt0];
+    return getNextQuotedString(line, next);
+  }
+  
+  public static String getNextQuotedString(String line, int[] next) {
     String value = line;
-    int i = value.indexOf("\"", ipt0);
+    int i = value.indexOf("\"", next[0]);
     if (i < 0)
       return "";
-    value = value.substring(i + 1);
+    next[0] = ++i;
+    value = value.substring(i);
     i = -1;
     while (++i < value.length() && value.charAt(i) != '"')
       if (value.charAt(i) == '\\')
         i++;
+    next[0] += i + 1;
     return value.substring(0, i);
   }
   

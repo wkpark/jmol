@@ -118,14 +118,14 @@ public class IsosurfaceRenderer extends MeshRenderer {
   
   private void renderContourLines() {
     Vector[] vContours = imesh.getContours();
-    if (vContours == null)
+    if (viewer.getTestFlag3() || vContours == null)
       return;
     for (int i = vContours.length; --i >= 0;) {
       Vector v = vContours[i];
       if (v.size() < IsosurfaceMesh.CONTOUR_POINTS)
         continue;
-      if (!g3d.setColix(mesh.fillTriangles ? Graphics3D.BLACK : Graphics3D
-          .getColix(((int[]) v.get(IsosurfaceMesh.CONTOUR_COLOR))[0])))
+      if (!g3d.setColix(mesh.fillTriangles ? Graphics3D.BLACK 
+          : ((short[]) v.get(IsosurfaceMesh.CONTOUR_COLIX))[0]))
         return;
       int n = v.size() - 1;
       for (int j = IsosurfaceMesh.CONTOUR_POINTS; j < n; j++) {
@@ -198,7 +198,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       colix = Graphics3D.BLACK;
     }
     boolean colorArrayed = (colorSolid && imesh.polygonColixes != null);
-
+    short[] contourColixes = imesh.jvxlData.contourColixes;
     // two-sided means like a plane, with no front/back distinction
     for (int i = imesh.polygonCount; --i >= 0;) {
       int[] vertexIndexes = polygonIndexes[i];
@@ -260,7 +260,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
         if (vertexColixes == null) {
           g3d.drawTriangle(screens[iA], screens[iB], screens[iC], check);
         } else if (colorArrayed) {
-          g3d.setColix(imesh.contourColixes[vertexIndexes[4] % imesh.contourColixes.length]);
+          g3d.setColix(mesh.fillTriangles ? Graphics3D.BLACK 
+              : contourColixes[vertexIndexes[4] % contourColixes.length]);
           g3d.drawTriangle(screens[iA], screens[iB], screens[iC], check);
         } else {
           g3d.drawTriangle(screens[iA], colixA, screens[iB], colixB,

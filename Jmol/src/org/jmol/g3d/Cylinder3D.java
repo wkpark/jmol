@@ -90,8 +90,8 @@ class Cylinder3D {
     dyB = yB - yA;
     dzB = zB - zA;
     if (diameter <= 1) {
-      line3d.plotLineDelta(g3d.getColixArgb(colixA), isScreenedA, g3d
-          .getColixArgb(colixB), isScreenedB, xA, yA, zA, dxB, dyB, dzB,
+      line3d.plotLineDelta(g3d.getColorArgbOrGray(colixA), isScreenedA, g3d
+          .getColorArgbOrGray(colixB), isScreenedB, xA, yA, zA, dxB, dyB, dzB,
           clipped);
       return;
     }
@@ -142,8 +142,8 @@ class Cylinder3D {
     dyBf = yB - yA;
     dzBf = zB - zA;
     if (diameter == 0 || diameter == 1) {
-      line3d.plotLineDelta(g3d.getColixArgb(colixA), isScreenedA, g3d
-          .getColixArgb(colixB), isScreenedB, (int) xA, (int) yA, (int) zA,
+      line3d.plotLineDelta(g3d.getColorArgbOrGray(colixA), isScreenedA, g3d
+          .getColorArgbOrGray(colixB), isScreenedB, (int) xA, (int) yA, (int) zA,
           (int) dxBf, (int) dyBf, (int) dzBf, clipped);
       return;
     }

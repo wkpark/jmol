@@ -577,7 +577,6 @@ public class SurfaceGenerator {
         params.isBicolorMap = true;
         surfaceReader.applyColorScale();
       }
-
       return true;
     }
 
@@ -675,6 +674,11 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("colorDiscrete" == propertyName) {
+      params.contourColixes = (short[])value;
+      return true;
+    }
+    
     if ("fullPlane" == propertyName) {
       params.contourFromZero = !((Boolean) value).booleanValue();
       return true;
@@ -985,7 +989,7 @@ public class SurfaceGenerator {
   
   public Object getProperty(String property, int index) {
     if (property == "jvxlFileData")
-      return JvxlReader.jvxlGetFile(meshDataServer, jvxlData, null, params.title, "", true,
+      return JvxlReader.jvxlGetFile(jvxlData, null, params.title, "", true,
           index, null, null);
     if (property == "jvxlFileInfo")
       return jvxlData.jvxlInfoLine; // for Jvxl.java

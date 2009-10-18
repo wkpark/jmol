@@ -1342,7 +1342,7 @@ public class ScriptEvaluator {
           }
           break;
         case Token.color:
-          Graphics3D.colorPointFromInt(viewer.getColixArgb(bond.getColix()),
+          Graphics3D.colorPointFromInt(viewer.getColorArgbOrGray(bond.getColix()),
               ptT);
           switch (minmaxtype) {
           case Token.all:
@@ -1464,7 +1464,7 @@ public class ScriptEvaluator {
       return;
     case Token.color:
       if (tokenValue.tok == Token.point3f)
-        iValue = colorPtToInt((Point3f) tokenValue.value);
+        iValue = Graphics3D.colorPtToInt((Point3f) tokenValue.value);
       else if (tokenValue.tok == Token.list) {
         list = (String[]) tokenValue.value;
         if ((nValues = list.length) == 0)
@@ -1473,7 +1473,7 @@ public class ScriptEvaluator {
         for (int i = nValues; --i >= 0;) {
           Object pt = Escape.unescapePoint(list[i]);
           if (pt instanceof Point3f)
-            values[i] = colorPtToInt((Point3f) pt);
+            values[i] = Graphics3D.colorPtToInt((Point3f) pt);
           else
             values[i] = Graphics3D.getArgbFromString(list[i]);
           if (values[i] == 0
@@ -3086,7 +3086,7 @@ public class ScriptEvaluator {
         float comparisonFloat = Float.NaN;
         if (val instanceof Point3f) {
           if (tokWhat == Token.color) {
-            comparisonValue = colorPtToInt((Point3f) val);
+            comparisonValue = Graphics3D.colorPtToInt((Point3f) val);
             tokValue = Token.integer;
             isIntProperty = true;
           }
@@ -3098,7 +3098,7 @@ public class ScriptEvaluator {
               if (((String)val).startsWith("{")) {
                 val = Escape.unescapePoint((String) val);
                 if (val instanceof Point3f)
-                  comparisonValue = colorPtToInt((Point3f) val);
+                  comparisonValue = Graphics3D.colorPtToInt((Point3f) val);
                 else
                   comparisonValue = 0;
               } else {
@@ -4004,12 +4004,7 @@ public class ScriptEvaluator {
     }
     if (pt == null)
       error(ERROR_colorExpected);
-    return colorPtToInt(pt);
-  }
-
-  static int colorPtToInt(Point3f pt) {
-    return 0xFF000000 | (((int) pt.x) & 0xFF) << 16
-        | (((int) pt.y) & 0xFF) << 8 | (((int) pt.z) & 0xFF);
+    return Graphics3D.colorPtToInt(pt);
   }
 
   private int getColorTriad(int i) throws ScriptException {
@@ -4043,7 +4038,7 @@ public class ScriptEvaluator {
           continue;
         case Token.rightsquare:
           if (n == 3)
-            return colorPtToInt(new Point3f(colors[0], colors[1], colors[2]));
+            return Graphics3D.colorPtToInt(new Point3f(colors[0], colors[1], colors[2]));
         default:
           error(ERROR_badRGBColor);
         }
@@ -4062,7 +4057,7 @@ public class ScriptEvaluator {
     if (getToken(++i).tok != Token.rightsquare)
       error(ERROR_badRGBColor);
     if (pt != null)
-      return colorPtToInt(pt);
+      return Graphics3D.colorPtToInt(pt);
     if ((n = Graphics3D.getArgbFromString("[" + hex + "]")) == 0)
       error(ERROR_badRGBColor);
     return n;
@@ -6872,7 +6867,7 @@ public class ScriptEvaluator {
     case JmolConstants.JMOL_DATA_QUATERNION:
       viewer.setFrameTitle(modelCount - 1, type + " for model "
           + viewer.getModelNumberDotted(modelIndex));
-      String color = (Escape.escapeColor(viewer.getColixArgb(viewer.getColixBackgroundContrast())));
+      String color = (Escape.escapeColor(viewer.getColixBackgroundContrast()));
       script = "frame 0.0; frame last; reset;"
           + "select visible; wireframe 0; " + "isosurface quatSphere"
           + modelCount
@@ -12319,14 +12314,9 @@ public class ScriptEvaluator {
         if (getToken(i + 1).tok == Token.string) {
           colorScheme = parameterAsString(++i);
           if (colorScheme.indexOf(" ") > 0) {
-            String[] colors = Parser.getTokens(colorScheme);
-            discreteColixes = new short[colors.length];
-            for (int j = 0; j < colors.length; j++) {
-              discreteColixes[j] = Graphics3D.getColix(Graphics3D
-                  .getArgbFromString(colors[j]));
-              if (discreteColixes[j] == 0)
-                error(ERROR_badRGBColor);
-            }
+            discreteColixes = Parser.getColixArray(colorScheme);
+            if (discreteColixes == null)
+              error(ERROR_badRGBColor);
           }
         }
         if ((theTok = tokAt(i + 1)) == Token.translucent
@@ -12573,11 +12563,11 @@ public class ScriptEvaluator {
           colorScheme = parameterAsString(++i);
           break;
         }
-        if (str.equalsIgnoreCase("CONTOUR")) {
+        if (str.equalsIgnoreCase("CONTOUR") || str.equalsIgnoreCase("CONTOURS")) {
           propertyName = "contour";
           str = optParameterAsString(i + 1);
           if (str.equalsIgnoreCase("DISCRETE")) {
-            propertyValue = floatParameterSet(i + 2, 2, Integer.MAX_VALUE);
+            propertyValue = floatParameterSet(i + 2, 1, Integer.MAX_VALUE);
             i = iToken;
           } else if (str.equalsIgnoreCase("INCREMENT")) {
             Point3f pt = getPoint3f(i + 2, false);
@@ -13002,16 +12992,16 @@ public class ScriptEvaluator {
           s += "\ncolor range " + dataRange[2] + " " + dataRange[3]
               + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
         if (doCalcArea)
-          s += "\nisosurfaceArea = " + Escape.escapeDoubleArray(area);
+          s += "\nisosurfaceArea = " + Escape.escapeArray(area);
         if (doCalcVolume)
-          s += "\nisosurfaceVolume = " + Escape.escapeDoubleArray(volume);
+          s += "\nisosurfaceVolume = " + Escape.escapeArray(volume);
         showString(s);
       }
     } else if (doCalcArea || doCalcVolume) {
       if (doCalcArea)
-        showString("isosurfaceArea = " + Escape.escapeDoubleArray(area));
+        showString("isosurfaceArea = " + Escape.escapeArray(area));
       if (doCalcVolume)
-        showString("isosurfaceVolume = " + Escape.escapeDoubleArray(volume));
+        showString("isosurfaceVolume = " + Escape.escapeArray(volume));
     }
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);

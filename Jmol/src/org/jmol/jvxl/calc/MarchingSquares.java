@@ -107,7 +107,7 @@ public class MarchingSquares {
     } else {
       nContours = contoursDiscrete.length;
       nContourSegments = nContours; 
-      contourFromZero = true;
+      this.contourFromZero = false;
     }
     setContourType();
   }
@@ -459,8 +459,10 @@ public class MarchingSquares {
     //int x, y;
     //Point3f origin;
     final int[] vertexes = new int[] {-1, -1, -1, -1 };
+    final float[] values = new float[4];
     float[][] fractions;
     int[][] intersectionPoints;
+    int iOption;
 
     PlanarSquare(int index, int nContourSegments) {
       this.index = index;
@@ -610,6 +612,7 @@ public class MarchingSquares {
           if (ps.vertexes[i] == -1) {
             vertexValues2d[i] = Float.NaN;
           }
+          ps.values[i] = vertexValues2d[i];
           if (isInside2d(vertexValues2d[i], contourCutoff)) {
             insideMask |= 1 << i;
             ++insideCount;
@@ -774,7 +777,7 @@ public class MarchingSquares {
     /*
      * Y
      *  3 ---c---- 2
-     *  |          |           binar edgeMask is dcba 3210
+     *  |          |           binary edgeMask is dcba 3210
      *  |          |           dcba: 1 is intersection
      *  d          b           3210: 1 is Inside
      *  |          |                 
@@ -892,7 +895,7 @@ public class MarchingSquares {
       if (thisContour <= 0 || thisContour == contourIndex + 1) {
         for (int squareIndex = 0; squareIndex < nSquares; squareIndex++) {
 
-          //if (squareIndex <= 1738 || squareIndex >= 1740)continue;
+//          if (squareIndex != 680)continue;
 
 
           /*
@@ -920,11 +923,13 @@ public class MarchingSquares {
               if (andMask != 0) { // we have two on same edge
                 for (int i = 0; i < 4; i++)
                   if ((andMask & (1 << i)) != 0) {
-                    lowerFirst = (square.fractions[contourIndex][i] > square.fractions[contourIndex +offset][i]);
+                    lowerFirst = (square.fractions[contourIndex][i] > square.fractions[contourIndex + offset][i]);
                     break;
                   }
               }
+              System.out.print("em=" + Integer.toBinaryString(edgeMask) + " em0=" +  Integer.toBinaryString(edgeMask0) );
               edgeMask ^= edgeMask0 & 0x0F0F;
+              System.out.println(" em=" + Integer.toBinaryString(edgeMask) );
             }
           }
 
@@ -947,6 +952,7 @@ public class MarchingSquares {
   private void fillSquare(PlanarSquare square, int squareIndex, int contourIndex, int edgeMask,
                   boolean lowerFirst, int offset) {
     int nIntersect = 0;
+    
     int vPt = 0;
     bsMesh0.clear();
     bsMesh1.clear();
@@ -962,15 +968,110 @@ public class MarchingSquares {
     int maskN = (edgeMask >> 4) & 0xF;
     int maskN0 = (edgeMask >> 8) & 0xF;
     int maskV = edgeMask & 0xF;
-    int iOption = -1;
-    if (maskN == 0xF && maskN0 != 0) {
-      iOption = 1;
-      // ambiguity
-      if (maskN0 == 9 || maskN0 == 6)
-        iOption = 2; //b1001 or b0110
-     }
+    
+    /*
+     *  
+     *  The classic ambiguity is when a contour crosses a square twice. 
+     *  That is, maskN = 0xF. In this case, we have two options:
+     *  
+     *  Which is it?
+     *  
+     *      /   
+     *  3 -c-----[2]/
+     *  | /        b           
+     *  |/  fill  /| "option 1"
+     *  d        / |           
+     * /|       /  |
+     *  [0]----a-- 1  
+     *        /
+     *      
+     *        
+     *         \
+     *  3 ------c[2]
+     * \|        \f|  "option -2"         
+     *  d         \|           
+     *  |\         b           
+     *  |f\        |\
+     * [0]-a------ 1  
+     *      \
+     *  
+     *  
+     *         \
+     * [3]------c--2
+     * \|        \ |  "option -1"         
+     *  d         \|           
+     *  |\  fill   b           
+     *  | \        |\
+     *  0 -a------[1]  
+     *      \
+     *      
+     *      /   
+     * [3]-c------ 2/
+     *  |f/        b           
+     *  |/        /| "option 2"
+     *  d        / |           
+     * /|       / f|
+     *  0 -----a--[1]  
+     *        /
+     *        
+     * Options -1 and 2 have to be handled specially.
+     * 
+     * The idea here is to go with what was true for the
+     * PREVIOUS contour. If that contour was 1001 or 0110, 
+     * then we can go with option -1 or -2; 
+     * otherwise we go with option 1 or 2.
+     * 
+     * Also, if we have "all outside" (maskV = 0000) for the square, we
+     * still have to know what to do if the previous one was one of these.
+     *        
+     */
+    
+    boolean newVertex = ((maskV & 1) != 0);
+    int iOption = 0;
+    switch (maskN) {
+    case 0xF:
+      if (square.iOption < 0) {
+        iOption = (newVertex ? -2 : -1);
+      } else {
+        iOption = (newVertex ? 1 : 2);
+      }
+      square.iOption = iOption;
+      break;
+    case 0x0:
+      if (maskN0 == 0xF) {
+        switch (square.iOption) {
+        case -1:
+          iOption = -2;
+          break;
+        case 1:
+          iOption = 2;
+          break;
+        case -2:
+          iOption = -1;
+          break;
+        case 2:
+          iOption = 1;
+          break;          
+        }
+      }
+      square.iOption = iOption;
+      break;
+    case 9: // b1001
+    case 6: // b0110
+      // 
+      square.iOption = -1;
+      break;
+    case 12: // b1100
+    case 3: // b0011
+      // 
+      square.iOption = 1;
+      break;
+    default:
+      square.iOption = 0;
+    }
+    System.out.println(contourIndex + " marchingsquares edgemask=" + Integer.toBinaryString(edgeMask) + " " + iOption);
     for (int i = 0; i < 4; i++) {
-      boolean newVertex = ((maskV & (1 << i)) != 0);
+      newVertex = ((maskV & (1 << i)) != 0);
       boolean thisIntersect = ((maskN & (1 << i)) != 0);
       boolean lowerIntersect = ((maskN0 & (1 << i)) != 0);
       
@@ -1007,17 +1108,24 @@ public class MarchingSquares {
         lowerFirst = !lowerFirst;
       }
       
-      if (i == 0 && iOption > 0) {
+      if (i == 0 && iOption == -2) {
         BitSetUtil.copy(bsMesh1, bsMesh0);
         pt0 = vPt;
       }
       
-      if (i == 2 && iOption > 0) {
+      if (i == 2 && iOption == -2) {
         createTriangleSet(pt0, vPt, nValid, contourIndex, contourIndex + offset);
         vPt = pt0;
         pt0 = 0;
         BitSetUtil.copy(bsMesh0, bsMesh1);
       }
+      
+      if (i == 1 && iOption == 2) {
+        createTriangleSet(pt0, vPt, nValid, contourIndex, contourIndex + offset);
+        vPt = 0;
+        bsMesh1.clear();
+      }
+      
 
     }
 

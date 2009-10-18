@@ -31,6 +31,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.*;
+import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.*;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.api.VertexDataServer;
@@ -345,6 +346,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.jvxlSurfaceData = "";
     jvxlData.jvxlEdgeData = "";
     jvxlData.jvxlColorData = "";
+    //TODO: more resets of jvxlData?
     edgeCount = 0;
     edgeFractionBase = JvxlReader.defaultEdgeFractionBase;
     edgeFractionRange = JvxlReader.defaultEdgeFractionRange;
@@ -583,6 +585,7 @@ public abstract class SurfaceReader implements VertexDataServer {
         : meshData.vertexCount);
     jvxlData.minColorIndex = -1;
     jvxlData.maxColorIndex = 0;
+    jvxlData.contourValues = params.contoursDiscrete;
     jvxlData.isColorReversed = params.isColorReversed;
     if (params.isBicolorMap && !params.isContoured || params.colorBySign) {
       jvxlData.minColorIndex = ColorEncoder
@@ -651,13 +654,13 @@ public abstract class SurfaceReader implements VertexDataServer {
       }
     }
 
-    if (params.nContours > 0) {
+    if (params.nContours > 0 && jvxlData.contourColixes == null) {
       int n = params.nContours;
-      int[] colors = jvxlData.contourColors = new int[n];
+      short[] colors = jvxlData.contourColixes = new short[n];
       float dv = (valueBlue - valueRed) / (n + 1);
       // n + 1 because we want n lines between n + 1 slices
       for (int i = 0; i < n; i++)
-        colors[i] = getArgbFromPalette(valueRed + (i + 1) * dv);
+        colors[i] = Graphics3D.getColix(getArgbFromPalette(valueRed + (i + 1) * dv));
     }
   }
   

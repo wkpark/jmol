@@ -171,7 +171,8 @@ public class JvxlData {
   public int vertexCount;
 
   public Vector[] vContours;
-  public int[] contourColors;
+  public short[] contourColixes;
+  public float[] contourValues;
   public float[] contourValuesUsed;
 
   public short minColorIndex = -1;

@@ -444,6 +444,8 @@ public class IsosurfaceMesh extends Mesh {
   public void setDiscreteColixes(float[] values, short[] colixes) {
     if (values != null)
       jvxlData.contourValues = values;
+    if (values == null)
+      values = jvxlData.contourValues = jvxlData.contourValuesUsed;
     if (colixes == null && jvxlData.contourColixes != null)
       return;
     jvxlData.contourColixes = colixes;

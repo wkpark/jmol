@@ -124,8 +124,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       Vector v = vContours[i];
       if (v.size() < IsosurfaceMesh.CONTOUR_POINTS)
         continue;
-      if (!g3d.setColix(mesh.fillTriangles ? Graphics3D.BLACK 
-          : ((short[]) v.get(IsosurfaceMesh.CONTOUR_COLIX))[0]))
+      if (!g3d.setColix(((short[]) v.get(IsosurfaceMesh.CONTOUR_COLIX))[0]))
         return;
       int n = v.size() - 1;
       for (int j = IsosurfaceMesh.CONTOUR_POINTS; j < n; j++) {
@@ -135,6 +134,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
         viewer.transformPoint(pt2, pt2i);
         if (Float.isNaN(pt1.x) || Float.isNaN(pt2.x))
           break;
+        pt1i.z -= 2;
+        pt2i.z -= 2;
         g3d.drawLine(pt1i, pt2i);
       }
     }

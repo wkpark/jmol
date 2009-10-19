@@ -1133,8 +1133,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           && !bsVisible.get(m.modelIndex))
         continue;
       Vector[] vs = m.jvxlData.vContours;
-      if (!viewer.getTestFlag3() && vs != null) {
-        int thisk = 0;
+      if (vs != null) {
         for (int j = 0; j < vs.length; j++) {
           Vector vc = vs[j];
           int n = vc.size() - 1;
@@ -1144,13 +1143,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
             if (d2 >= 0) {
               dmin2 = d2;
               pickedContour = vc;
-              thisk = k;
             }
           }
         }
         if (pickedContour != null)
-          return pickedContour.get(IsosurfaceMesh.CONTOUR_VALUE).toString()
-              + " " + i + ":" + thisk;
+          return pickedContour.get(IsosurfaceMesh.CONTOUR_VALUE).toString();
       } else if (m.jvxlData.jvxlPlane != null && m.vertexValues != null) {
         int pickedVertex = -1;
         for (int k = m.vertexCount; --k >= m.firstRealVertex;) {

@@ -1426,16 +1426,14 @@ public class JvxlReader extends VolumeFileReader {
     }
 
     vContours = new Vector[vs.size()];
-    if (jvxlData.vContours != null) {
-      // 3D contour values and colors
-      int n = vs.size();
-      jvxlData.contourColixes = params.contourColixes = new short[n];
-      jvxlData.contourValues = params.contoursDiscrete = new float[n];
-      for (int i = 0; i < n; i++) {
-        vContours[i] = (Vector) vs.get(i);
-        jvxlData.contourValues[i] = ((Float) vContours[i].get(2)).floatValue();
-        jvxlData.contourColixes[i] = ((short[]) vContours[i].get(3))[0];
-      }
+    // 3D contour values and colors
+    int n = vs.size();
+    jvxlData.contourColixes = params.contourColixes = new short[n];
+    jvxlData.contourValues = params.contoursDiscrete = new float[n];
+    for (int i = 0; i < n; i++) {
+      vContours[i] = (Vector) vs.get(i);
+      jvxlData.contourValues[i] = ((Float) vContours[i].get(2)).floatValue();
+      jvxlData.contourColixes[i] = ((short[]) vContours[i].get(3))[0];
     }
   }
 

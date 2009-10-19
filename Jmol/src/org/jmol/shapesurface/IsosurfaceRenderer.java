@@ -118,7 +118,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   
   private void renderContourLines() {
     Vector[] vContours = imesh.getContours();
-    if (viewer.getTestFlag3() || vContours == null)
+    if (vContours == null)
       return;
     for (int i = vContours.length; --i >= 0;) {
       Vector v = vContours[i];

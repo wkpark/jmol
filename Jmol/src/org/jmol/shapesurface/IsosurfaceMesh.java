@@ -456,6 +456,13 @@ public class IsosurfaceMesh extends Mesh {
     isColorSolid = true;
     colorCommand = null;
     boolean haveColixes = (colixes != null && colixes.length > 0);
+    if (jvxlData.vContours != null) {
+      if (haveColixes)
+        for (int i = 0; i < jvxlData.vContours.length; i++)
+          ((short[]) jvxlData.vContours[i].get(3))[0] = colixes[i
+              % colixes.length];
+      return;
+    }
     short defaultColix = 0;
     polygonColixes = new short[polygonCount];
     for (int i = 0; i < polygonCount; i++) {

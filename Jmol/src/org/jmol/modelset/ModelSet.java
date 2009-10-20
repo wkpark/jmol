@@ -428,6 +428,10 @@ abstract public class ModelSet extends ModelCollection {
     if (shape != null && viewer.getDrawHover() 
         && shape.checkObjectHovered(x, y, bsVisible))
       return true;
+    shape = shapes[JmolConstants.SHAPE_FRANK];
+    if (viewer.getShowFrank() && shape != null  
+        && shape.checkObjectHovered(x, y, bsVisible))
+      return true;
     return false;
   }
 

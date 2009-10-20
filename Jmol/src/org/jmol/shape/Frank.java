@@ -25,8 +25,10 @@
 package org.jmol.shape;
 
 import org.jmol.g3d.Font3D;
+import org.jmol.i18n.GT;
 
 import java.awt.FontMetrics;
+import java.util.BitSet;
 
 public class Frank extends FontLineShape {
 
@@ -43,6 +45,7 @@ public class Frank extends FontLineShape {
   int frankWidth;
   int frankAscent;
   int frankDescent;
+  int x, y, dx, dy;
 
   public void initShape() {
     super.initShape();
@@ -59,6 +62,18 @@ public class Frank extends FontLineShape {
         && y > height - frankAscent - frankMargin);
   }
 
+  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
+    if (!wasClicked(x, y))
+      return false;
+    if (g3d.isDisplayAntialiased()) {
+      //because hover rendering is done in FIRST pass only
+      x <<= 1;
+      y <<= 1;
+    }      
+    viewer.hoverOn(x, y, GT._("Click for menu..."));
+    return true;
+  }
+  
   void calcMetrics() {
     if (viewer.isSignedApplet())
       frankString = "Jmol_S";

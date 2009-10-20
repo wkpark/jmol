@@ -2577,8 +2577,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBondsForSelectedAtoms(bsAtoms, global.bondModeOr || BitSetUtil.cardinalityOf(bsAtoms) == 1);
   }
 
-  boolean frankClicked(int x, int y) {
-    return frankOn && modelSet.frankClicked(x, y);
+  public boolean frankClicked(int x, int y) {
+    return !global.disablePopupMenu && getShowFrank() && modelSet.frankClicked(x, y);
   }
 
   public int findNearestAtomIndex(int x, int y) {
@@ -6438,7 +6438,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return getObjectMad(StateManager.OBJ_AXIS1) != 0;
   }
 
-  boolean frankOn = true;
+  private boolean frankOn = true;
 
   public void setFrankOn(boolean TF) {
     if (isPreviewOnly)

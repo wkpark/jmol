@@ -59,12 +59,14 @@ public class PqrReader extends PdbReader {
     return Float.MAX_VALUE; 
   }
   
+  String[] tokens;
   protected float readPartialCharge() {
-    return parseFloat(line, 55, 62);
+    tokens = getTokens();
+    return parseFloat(tokens[tokens.length - 2]);
   }
   
   protected float readRadius() {
-    return parseFloat(line, 63, 69);
+    return parseFloat(tokens[tokens.length - 1]);
   }
   
 

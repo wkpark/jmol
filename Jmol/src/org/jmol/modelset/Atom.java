@@ -225,6 +225,7 @@ final public class Atom extends Point3fi {
         break;
       case -100: // simple van der waals
         size = getVanderwaalsMad(viewer);
+        break;
       default:
         if (size <= Short.MIN_VALUE) { // ADPMIN
           float d = 2000 * getADPMinMax(false);

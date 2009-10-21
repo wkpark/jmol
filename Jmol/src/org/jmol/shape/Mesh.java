@@ -189,7 +189,7 @@ public class Mesh {
   public Vector data2;
   
   public void sumVertexNormals(Vector3f[] vectorSums) {
-    int adjustment = (haveCheckByte ? 1 : 0);
+    int adjustment = (haveCheckByte ? 2 : 0);
     for (int i = polygonCount; --i >= 0;) {
       int[] pi = polygonIndexes[i];
       try {

@@ -191,6 +191,7 @@ final public class Graphics3D implements JmolRendererInterface {
   
   int displayMinX, displayMaxX, displayMinY, displayMaxY;
   int slab, depth;
+  int zSlab, zDepth;
   boolean zShade;
   int xLast, yLast;
   int[] pbuf;
@@ -547,13 +548,17 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param slabValue front clipping percentage [0,100]
    * @param depthValue rear clipping percentage [0,100]
    * @param zShade whether to shade along z front to back
+   * @param zSlab for zShade
+   * @param zDepth for zShade
    */
   public void setSlabAndDepthValues(int slabValue, int depthValue,
-                                    boolean zShade) {
+                                    boolean zShade, int zSlab, int zDepth) {
     slab = slabValue < 0 ? 0 : slabValue;
     depth = depthValue < 0 ? 0 : depthValue;
     this.zShade = zShade;
     if (zShade) {
+      this.zSlab = zSlab < 0 ? 0 : zSlab;
+      this.zDepth = zDepth < 0 ? 0 : zDepth;
       zShadeR = bgcolor & 0xFF;
       zShadeG = (bgcolor & 0xFF00) >> 8;
       zShadeB = (bgcolor & 0xFF0000) >> 16;
@@ -796,12 +801,14 @@ final public class Graphics3D implements JmolRendererInterface {
   
   class ShadePixel extends Pixel {
     void addPixel(int offset, int z, int p) {
-      if (z <= depth && z >= slab) {
+      if (z > zDepth)
+        return;
+      if (z <= zDepth && z >= zSlab) {
         int pR = p & 0xFF;
         int pG = (p & 0xFF00) >> 8;
         int pB = (p & 0xFF0000) >> 16;
-        float f = depth - z;
-        f /= (depth - slab);
+        float f = zDepth - z;
+        f /= (zDepth - zSlab);
         pR = zShadeR + (int) (f * (pR - zShadeR));
         pG = zShadeG + (int) (f * (pG - zShadeG));
         pB = zShadeB + (int) (f * (pB - zShadeB));        

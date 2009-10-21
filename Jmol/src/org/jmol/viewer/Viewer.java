@@ -1060,7 +1060,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     transformManager.finalizeTransformParameters();
     g3d.setSlabAndDepthValues(transformManager.slabValue,
-        transformManager.depthValue, global.zShade);
+        transformManager.depthValue, global.zShade, 
+        transformManager.zSlabValue, transformManager.zDepthValue);
   }
 
   public void rotatePoint(Point3f pt, Point3f ptRot) {

@@ -743,7 +743,9 @@ abstract class TransformManager {
 
   int slabValue;
   int depthValue;
-
+  int zSlabValue;
+  int zDepthValue;
+  
   void setSlabEnabled(boolean slabEnabled) {
     this.slabEnabled = slabEnabled;
     viewer.getGlobalSettings().setParameterValue("slabEnabled", slabEnabled);
@@ -1233,8 +1235,8 @@ abstract class TransformManager {
    */
 
   protected void calcSlabAndDepthValues() {
-    slabValue = zValueFromPercent(slabPercentSetting);
-    depthValue = zValueFromPercent(depthPercentSetting);
+    zSlabValue = slabValue = zValueFromPercent(slabPercentSetting);
+    zDepthValue = depthValue = zValueFromPercent(depthPercentSetting);
     viewer.getGlobalSettings().setParameterValue("_slabPlane",
         Escape.escape(getSlabDepthPlane(false)));
     viewer.getGlobalSettings().setParameterValue("_depthPlane",

@@ -134,13 +134,17 @@ abstract public class GamessReader extends MOReader {
     //not for GamessUK yet
     int totalFrequencyCount = 0;
     int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+    int atomIndex = atomSetCollection.getLastAtomSetAtomIndex();
+    // For the case when HSSEND=.TRUE. atoms[]
+    // now contains all atoms across all models (optimization steps).
+    // We only want to set vetor data corresponding to new cloned
+    // models and not interfere with the previous ones.
     float[] xComponents = new float[5];
     float[] yComponents = new float[5];
     float[] zComponents = new float[5];
     float[] frequencies = new float[5];
     discardLinesUntilContains("FREQUENCY:");
     while (line != null && line.indexOf("FREQUENCY:") >= 0) {
-      int lineBaseFreqCount = totalFrequencyCount;
       int lineFreqCount = 0;
       String[] tokens = getTokens();
       for (int i = 0; i < tokens.length; i++) {
@@ -169,8 +173,10 @@ abstract public class GamessReader extends MOReader {
       }
       for (int i = 0; i < lineFreqCount; i++) {
         ++totalFrequencyCount;
+        // The last model should be cloned because we might
+        // have done an optimization with HSSEND=.TRUE.
         if (totalFrequencyCount > 1)
-          atomSetCollection.cloneFirstAtomSet();
+          atomSetCollection.cloneLastAtomSet();
         atomSetCollection.setAtomSetName(frequencies[i] + " cm-1");
         atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
             + " cm-1");
@@ -184,21 +190,29 @@ abstract public class GamessReader extends MOReader {
       }
       Atom[] atoms = atomSetCollection.getAtoms();
       discardLinesUntilBlank();
+      //This loop is over the atoms in the first clone.
+      //The number of atoms will not change.
+      int index0 = atomIndex - atomCount;
       for (int i = 0; i < atomCount; ++i) {
+        atomIndex = index0 + i;
         readLine();
         readComponents(lineFreqCount, xComponents);
         readLine();
         readComponents(lineFreqCount, yComponents);
         readLine();
         readComponents(lineFreqCount, zComponents);
+        //This loop applies the normal mode displacements 
+        //to atom i across all clones (frequencies) by finding
+        //its position in atoms[].
         for (int j = 0; j < lineFreqCount; ++j) {
-          int atomIndex = (lineBaseFreqCount + j) * atomCount + i;
+          atomIndex += atomCount;
           Atom atom = atoms[atomIndex];
           atom.vectorX = xComponents[j];
           atom.vectorY = yComponents[j];
           atom.vectorZ = zComponents[j];
         }
       }
+      atomIndex++;
       discardLines(12);
       readLine();
     }
@@ -220,7 +234,7 @@ abstract public class GamessReader extends MOReader {
     }
     return line;
   }
-
+  
   /*
   BASIS OPTIONS
   -------------

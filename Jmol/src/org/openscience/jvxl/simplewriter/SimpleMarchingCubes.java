@@ -30,6 +30,10 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
+import org.jmol.jvxl.data.JvxlCoder;
+import org.jmol.jvxl.data.JvxlData;
+import org.jmol.jvxl.data.VolumeData;
+
 //import org.jmol.util.Logger;
 
 public class SimpleMarchingCubes {
@@ -56,16 +60,7 @@ public class SimpleMarchingCubes {
   private float calculatedArea = Float.NaN;
   private float calculatedVolume = Float.NaN;
   private Vector surfacePoints;
-  
-  
-  public float getCalculatedArea() {
-    return calculatedArea;
-  }
-  
-  public float getCalculatedVolume() {
-    return calculatedVolume;
-  }
-  
+    
   private StringBuffer fractionData = new StringBuffer();
 
   private int cubeCountX, cubeCountY, cubeCountZ;
@@ -74,10 +69,6 @@ public class SimpleMarchingCubes {
 
   private BitSet bsVoxels = new BitSet();
 
-  public BitSet getBsVoxels() {
-    return bsVoxels;
-  }
-  
   private int mode;
   private final static int MODE_CUBE = 1;
   private final static int MODE_BITSET = 2;
@@ -86,8 +77,7 @@ public class SimpleMarchingCubes {
   private VoxelDataCreator vdc;
   
   public SimpleMarchingCubes(VoxelDataCreator vdc, VolumeData volumeData,
-      float cutoff, boolean isCutoffAbsolute, boolean isXLowToHigh,
-      Vector surfacePointsReturn, boolean doCalcArea) {
+      JvxlData jvxlData, Vector surfacePointsReturn, float[] areaVolumeReturn) {
 
     // when just creating a JVXL file all you really need are:
     //
@@ -100,10 +90,10 @@ public class SimpleMarchingCubes {
 
     this.vdc = vdc;
     this.volumeData = volumeData;
-    this.cutoff = cutoff;
-    this.isCutoffAbsolute = isCutoffAbsolute;
-    this.isXLowToHigh = isXLowToHigh;
-    this.doCalcArea = doCalcArea;
+    cutoff = jvxlData.cutoff;
+    isCutoffAbsolute = jvxlData.isCutoffAbsolute;
+    isXLowToHigh = jvxlData.isXLowToHigh;
+    doCalcArea = (areaVolumeReturn != null);
     surfacePoints = surfacePointsReturn;
     if (surfacePoints == null && doCalcArea)
       surfacePoints = new Vector();
@@ -127,6 +117,16 @@ public class SimpleMarchingCubes {
     xyPlanes = (mode == MODE_GETXYZ ? new float[2][yzCount] : null);
     setLinearOffsets();
     calcVoxelVertexVectors();
+    jvxlData.jvxlEdgeData = getEdgeData();
+    jvxlData.nPointsX = volumeData.voxelCounts[0];
+    jvxlData.nPointsY = volumeData.voxelCounts[1];
+    jvxlData.nPointsZ = volumeData.voxelCounts[2];
+    jvxlData.setSurfaceInfoFromBitSet(bsVoxels, null);
+    jvxlData.updateInfoLines();
+    if (doCalcArea) {
+      areaVolumeReturn[0] = calculatedArea;
+      areaVolumeReturn[1] = calculatedVolume;
+    }    
   }
 
   private final float[] vertexValues = new float[8];
@@ -352,8 +352,8 @@ public class SimpleMarchingCubes {
   BitSet bsValues = new BitSet();
 
   private float getValue(int i, int x, int y, int z, int pt, float[] tempValues) {
-    //if (bsValues.get(pt))
-      //return tempValues[pt % yzCount];
+    if (bsValues.get(pt))
+      return tempValues[pt % yzCount];
     bsValues.set(pt);
     float value = vdc.getValue(x, y, z);
     tempValues[pt % yzCount] = value;
@@ -503,7 +503,7 @@ public class SimpleMarchingCubes {
         newVertex(pointA, edgeVectors[iEdge], f);
       //System.out.println(" pt=" + pt + " edge" + iEdge + " xyz " + x + " " + y + " " + z + " vertexAB=" + vertexA + " " + vertexB + " valueAB=" + valueA + " " + valueB + " f= " + (cutoff - valueA) / (valueB - valueA));
       //System.out.println(f);
-      fractionData.append(JvxlWrite.jvxlFractionAsCharacter(f));
+      fractionData.append(JvxlCoder.jvxlFractionAsCharacter(f));
       
     }
     return !isNaN;

@@ -119,6 +119,7 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 
 import org.jmol.api.VolumeDataInterface;
+import org.jmol.util.Escape;
 
 public class VolumeData implements VolumeDataInterface {
 
@@ -135,6 +136,7 @@ public class VolumeData implements VolumeDataInterface {
   private float thePlaneNormalMag;
   private final Point3f ptXyzTemp = new Point3f();
   private final Vector3f pointVector = new Vector3f();
+  public String xmlData;
   
   public VolumeData() {
     volumetricVectors[0] = new Vector3f();
@@ -334,6 +336,19 @@ public class VolumeData implements VolumeDataInterface {
           if (d >= 0 || d > value)
             voxelData[x][y][z] = d;
         }
+  }
+
+  public String setVolumetricXml() {
+      StringBuffer data = new StringBuffer();
+      data.append("<jvxlVolumeData origin=\"" + Escape.escape(volumetricOrigin)
+          + "\">\n");
+      for (int i = 0; i < 3; i++) {
+        data.append("<jvxlVolumeVector type=\"" + i + "\" count=\""
+            + voxelCounts[i] + "\" vector=\""
+            + Escape.escape(volumetricVectors[i]) + "\"></jvxlVolumeVector>\n");
+      }
+      data.append("</jvxlVolumeData>\n");
+      return xmlData = data.toString();
   }
 
 }

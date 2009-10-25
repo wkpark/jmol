@@ -933,8 +933,7 @@ final public class Atom extends Point3fi {
   }
 
   public float getVibrationCoord(char ch) {
-    Point3f pt = getFractionalUnitCoord(false);
-    return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
+    return group.chain.modelSet.getVibrationCoord(atomIndex, ch);
   }
 
 

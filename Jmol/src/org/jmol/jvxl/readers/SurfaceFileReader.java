@@ -47,7 +47,9 @@ abstract class SurfaceFileReader extends SurfaceReader {
     String line;
     LimitedLineReader br = new LimitedLineReader(bufferedReader, 16000);
     //sure bets, but not REQUIRED:
-    if ((line = br.info()).indexOf("#JVXL+") >= 0)
+    if ((line = br.info()).indexOf("<jvxl") >= 0 && line.indexOf("<?xml") >= 0)
+      return "JvxlXML";
+    if (line.indexOf("#JVXL+") >= 0)
       return "Jvxl+";
     if (line.indexOf("#JVXL") >= 0)
       return "Jvxl";
@@ -140,6 +142,11 @@ abstract class SurfaceFileReader extends SurfaceReader {
     return Parser.parseInt(s, next);
   }
     
+  float[] parseFloatArray(String s) {
+    next[0] = 0;
+    return Parser.parseFloatArray(s, next);
+  }
+
   float[] parseFloatArray() {
     return Parser.parseFloatArray(line, next);
   }

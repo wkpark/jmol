@@ -25,6 +25,8 @@ package org.jmol.jvxl.readers;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.jvxl.data.JvxlCoder;
+
 class IsoShapeReader extends VolumeDataReader {
 
   private int psi_n = 2;
@@ -165,7 +167,7 @@ class IsoShapeReader extends VolumeDataReader {
     jvxlFileHeaderBuffer.append(
             isAnisotropic ? " anisotropy=(" + anisotropy[0] + ","
                 + anisotropy[1] + "," + anisotropy[2] + ")\n" : "\n");
-    JvxlReader.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
+    JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
   
   private float autoScaleOrbital() {

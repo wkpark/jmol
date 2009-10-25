@@ -25,7 +25,6 @@
 
 package org.jmol.shape;
 
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
 import org.jmol.viewer.JmolConstants;
@@ -284,8 +283,8 @@ public abstract class Shape {
 
   static String encodeColor(short colix) {
     // used also by labels for background state (no translucent issues there?)
-    return (Graphics3D.isColixColorInherited(colix) ? "none" : Escape
-        .escapeColor(colix));
+    return (Graphics3D.isColixColorInherited(colix) ? "none" : Graphics3D
+        .getHexCode(colix));
   }
 
   private static String getTranslucentLabel(short colix) {

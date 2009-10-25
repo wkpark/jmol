@@ -23,6 +23,7 @@
  */
 package org.jmol.script;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -2312,10 +2313,10 @@ class ScriptMathProcessor {
       if (op.intValue == Token.min || op.intValue == Token.max
           || op.intValue == Token.average || op.intValue == Token.stddev
           || op.intValue == Token.sum || op.intValue == Token.sum2) {
-        return addX(ArrayUtil.getMinMax(list, op.intValue));
+        return addX(getMinMax(list, op.intValue));
       }
       if (op.intValue == Token.sort || op.intValue == Token.reverse)
-        return addX(ArrayUtil.sortOrReverse(x2.value, op.intValue, true));
+        return addX(sortOrReverse(x2.value, op.intValue, true));
       String[] list2 = new String[list.length];
       for (int i = 0; i < list.length; i++) {
         Object v = ScriptVariable.unescapePointOrBitsetAsVariable(list[i]);
@@ -2383,6 +2384,120 @@ class ScriptMathProcessor {
       return addX(val);
     }
     return false;
+  }
+
+  private static Object getMinMax(Object floatOrStringArray, int tok) {
+    float[] data;
+    if (floatOrStringArray instanceof String[]) {
+      data = new float[((String[])floatOrStringArray).length];
+      Parser.parseFloatArray((String[])floatOrStringArray, data);
+    } else {
+      data = (float[]) floatOrStringArray;
+    }
+    double sum;
+    switch (tok) {
+    case Token.min:
+      sum = Float.MAX_VALUE;
+      break;
+    case Token.max:
+      sum = -Float.MAX_VALUE;
+      break;
+    default:
+      sum = 0;
+    }
+    double sum2 = 0;
+    int n = 0;
+    for (int i = data.length; --i >= 0; ) {
+      float v;
+      if (Float.isNaN(v = data[i]))
+        continue;
+      n++;
+      switch(tok){
+      case Token.sum2:
+      case Token.stddev:
+        sum2 += ((double) v) * v;
+        //fall through
+      case Token.sum:
+      case Token.average:
+        sum += v;
+        break;
+      case Token.min:
+        if (v < sum)
+          sum = v;
+        break;
+      case Token.max:
+        if (v > sum)
+          sum = v;
+        break;
+      }
+    }
+    if (n == 0)
+      return "NaN";
+    switch (tok) {
+    case Token.average:
+      sum /= n;
+      break;
+    case Token.stddev:
+      if (n == 1)
+        return "NaN";
+      sum = Math.sqrt((sum2 - sum * sum / n) / (n - 1));
+      break;
+    case Token.min:
+    case Token.max:
+    case Token.sum:
+      break;
+    case Token.sum2:
+      sum = sum2;
+      break;
+    }
+    return new Float(sum);
+  }
+
+  private static Object sortOrReverse(Object list, int tok, boolean checkFloat) {
+    float[] f = null;
+    if (list instanceof String[]) {
+      String[] s = (String[]) list;
+      if (s.length < 2)
+        return list;
+      if (checkFloat && !Float.isNaN(Parser.parseFloat(s[0]))) {
+        f = new float[s.length];
+        Parser.parseFloatArray(s, f);
+      } else {
+        String[] s2 = new String[s.length];
+        System.arraycopy(s, 0, s2, 0, s.length);
+        switch (tok) {
+        case Token.sort:
+          Arrays.sort(s2);
+          return s2;
+        case Token.reverse:
+          for (int left = 0, right = s2.length - 1; left < right; left++, right--) {
+            String temp = s2[left];
+            s2[left] = s2[right];
+            s2[right] = temp;
+          }
+          return s2;
+        }
+      }
+    } else if (list instanceof float[]) {
+      f = new float[((float[]) list).length];
+      System.arraycopy(list, 0, f, 0, f.length);
+      if (f.length < 2)
+        return list;
+    } else {
+      return list;
+    }
+    switch (tok) {
+    case Token.sort:
+      Arrays.sort(f);
+      break;
+    case Token.reverse:
+      for (int left = 0, right = f.length - 1; left < right; left++, right--) {
+        float ftemp = f[left];
+        f[left] = f[right];
+        f[right] = ftemp;
+      }
+    }
+    return f;
   }
 
 }

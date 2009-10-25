@@ -30,6 +30,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.readers.Parameters;
 import org.jmol.shape.MeshRenderer;
 import org.jmol.util.Logger;
@@ -122,12 +123,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
       return;
     for (int i = vContours.length; --i >= 0;) {
       Vector v = vContours[i];
-      if (v.size() < IsosurfaceMesh.CONTOUR_POINTS)
+      if (v.size() < JvxlCoder.CONTOUR_POINTS)
         continue;
-      if (!g3d.setColix(((short[]) v.get(IsosurfaceMesh.CONTOUR_COLIX))[0]))
+      if (!g3d.setColix(((short[]) v.get(JvxlCoder.CONTOUR_COLIX))[0]))
         return;
       int n = v.size() - 1;
-      for (int j = IsosurfaceMesh.CONTOUR_POINTS; j < n; j++) {
+      for (int j = JvxlCoder.CONTOUR_POINTS; j < n; j++) {
         Point3f pt1 = (Point3f) v.get(j);
         Point3f pt2 = (Point3f) v.get(++j);
         viewer.transformPoint(pt1, pt1i);

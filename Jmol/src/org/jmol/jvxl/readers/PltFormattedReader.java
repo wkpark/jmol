@@ -26,6 +26,7 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
@@ -60,7 +61,7 @@ class PltFormattedReader extends VolumeFileReader {
         Logger.info("voxel grid origin:" + volumetricOrigin);
         for (int i = 0; i < 3; ++i)
           Logger.info("voxel grid vector:" + volumetricVectors[i]);
-        JvxlReader.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
+        JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
       return readExtraLine();
     } catch (Exception e) {
       Logger.error(e.toString());

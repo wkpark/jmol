@@ -123,6 +123,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.util.*;
 import org.jmol.atomdata.AtomDataServer;
+import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.data.MeshData;
@@ -556,6 +557,7 @@ public class SurfaceGenerator {
     }
 
     if ("progressive" == propertyName) {
+      // an option for JVXL.java
       params.isXLowToHigh = true;
       return true;
     }
@@ -989,7 +991,7 @@ public class SurfaceGenerator {
   
   public Object getProperty(String property, int index) {
     if (property == "jvxlFileData")
-      return JvxlReader.jvxlGetFile(jvxlData, null, params.title, "", true,
+      return JvxlCoder.jvxlGetFile(jvxlData, null, params.title, "", true,
           index, null, null);
     if (property == "jvxlFileInfo")
       return jvxlData.jvxlInfoLine; // for Jvxl.java
@@ -1015,6 +1017,8 @@ public class SurfaceGenerator {
       return new JvxlReader(this, br);
     if (fileType.equals("Jvxl"))
       return new JvxlReader(this, br);
+    if (fileType.equals("JvxlXML"))
+      return new JvxlXmlReader(this, br);
     if (fileType.equals("Apbs"))
       return new ApbsReader(this, br);
     if (fileType.equals("Cube"))

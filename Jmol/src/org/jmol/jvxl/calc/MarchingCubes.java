@@ -30,8 +30,8 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.jvxl.api.VertexDataServer;
+import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.VolumeData;
-import org.jmol.jvxl.readers.JvxlReader;
 //import org.jmol.util.Logger;
 
 public class MarchingCubes extends TriangleData  {
@@ -475,7 +475,7 @@ public class MarchingCubes extends TriangleData  {
               cubeVertexOffsets[vertexA], vertexA, vertexB, valueA, valueB,
               pointA, edgeVectors[iEdge], iType == contourType, fReturn);
 
-      edgeData.append(JvxlReader.jvxlFractionAsCharacter(fReturn[0]));
+      edgeData.append(JvxlCoder.jvxlFractionAsCharacter(fReturn[0]));
     }
     //System.out.println("");
     return !isNaN;

@@ -6239,9 +6239,16 @@ public class ScriptEvaluator {
       return;
     }
     if (dataType.indexOf("data2d_") == 0) {
-      // data2d someName
+      // data2d_someName
       data[0] = dataLabel;
       data[1] = Parser.parseFloatArray2d(dataString);
+      viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
+      return;
+    }
+    if (dataType.indexOf("data3d_") == 0) {
+      // data3d_someName
+      data[0] = dataLabel;
+      data[1] = Parser.parseFloatArray3d(dataString);
       viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
       return;
     }
@@ -6867,7 +6874,7 @@ public class ScriptEvaluator {
     case JmolConstants.JMOL_DATA_QUATERNION:
       viewer.setFrameTitle(modelCount - 1, type + " for model "
           + viewer.getModelNumberDotted(modelIndex));
-      String color = (Escape.escapeColor(viewer.getColixBackgroundContrast()));
+      String color = (Graphics3D.getHexCode(viewer.getColixBackgroundContrast()));
       script = "frame 0.0; frame last; reset;"
           + "select visible; wireframe 0; " + "isosurface quatSphere"
           + modelCount
@@ -8100,7 +8107,8 @@ public class ScriptEvaluator {
   private void ellipsoid() throws ScriptException {
     int mad = 0;
     int i = 1;
-    switch (getToken(1).tok) {
+    int tok;
+    switch (tok = getToken(1).tok) {
     case Token.on:
       mad = 50;
       break;
@@ -8109,10 +8117,11 @@ public class ScriptEvaluator {
     case Token.integer:
       mad = intParameter(1);
       break;
+    case Token.id:
     case Token.times:
     case Token.identifier:
       viewer.loadShape(JmolConstants.SHAPE_ELLIPSOIDS);
-      if (parameterAsString(i).equalsIgnoreCase("ID"))
+      if (tok == Token.id)
         i++;
       setShapeId(JmolConstants.SHAPE_ELLIPSOIDS, i, false);
       i = iToken;
@@ -8469,14 +8478,13 @@ public class ScriptEvaluator {
       case Token.calculate:
         propertyName = "calculate";
         break;
+      case Token.id:
+        setShapeId(JmolConstants.SHAPE_DIPOLES, ++i, idSeen);
+        i = iToken;
+        break;
       case Token.times:
       case Token.identifier:
         String cmd = parameterAsString(i);
-        if (cmd.equalsIgnoreCase("id")) {
-          setShapeId(JmolConstants.SHAPE_DIPOLES, ++i, idSeen);
-          i = iToken;
-          break;
-        }
         if (cmd.equalsIgnoreCase("cross")) {
           propertyName = "cross";
           propertyValue = Boolean.TRUE;
@@ -10760,9 +10768,8 @@ public class ScriptEvaluator {
         fileName = "?Jmol." + viewer.getParameter("_fileType");
       quality = Integer.MIN_VALUE;
     } else if (data == "VAR") {
-      data = ""
-          + getParameter(ScriptVariable
-              .sValue(tokenAt(isCommand ? 2 : 1, args)), false);
+      data = ScriptVariable.sValue((ScriptVariable) getParameter(ScriptVariable
+              .sValue(tokenAt(isCommand ? 2 : 1, args)), true));
       type = "TXT";
     } else if (data == "SPT") {
       if (isCoord) {
@@ -11427,15 +11434,14 @@ public class ScriptEvaluator {
         }
         error(ERROR_numberExpected);
         break;
+      case Token.id:
+        thisId = setShapeId(JmolConstants.SHAPE_DRAW, ++i, idSeen);
+        isWild = (viewer.getShapeProperty(JmolConstants.SHAPE_DRAW, "ID") == null);
+        i = iToken;
+        break;
       case Token.times:
       case Token.identifier:
         String str = parameterAsString(i);
-        if (str.equalsIgnoreCase("id")) {
-          thisId = setShapeId(JmolConstants.SHAPE_DRAW, ++i, idSeen);
-          isWild = (viewer.getShapeProperty(JmolConstants.SHAPE_DRAW, "ID") == null);
-          i = iToken;
-          break;
-        }
         if (str.equalsIgnoreCase("LINE")) {
           propertyName = "line";
           propertyValue = Boolean.TRUE;
@@ -11792,7 +11798,8 @@ public class ScriptEvaluator {
     for (int i = 1; i < statementLength; i++) {
       String propertyName = null;
       Object propertyValue = null;
-      switch (getToken(i).tok) {
+      int tok;
+      switch (tok = getToken(i).tok) {
       case Token.center:
         // serialized lcaoCartoon in isosurface format
         isosurface(JmolConstants.SHAPE_LCAOCARTOON);
@@ -11885,9 +11892,10 @@ public class ScriptEvaluator {
         propertyName = "scale";
         propertyValue = new Float(floatParameter(++i));
         break;
+      case Token.id:
       case Token.identifier:
         String str = parameterAsString(i);
-        if (str.equalsIgnoreCase("ID")) {
+        if (tok == Token.id) {
           str = getShapeNameParameter(++i);
           i = iToken;
         } else if (str.equalsIgnoreCase("MOLECULAR")) {
@@ -12165,8 +12173,7 @@ public class ScriptEvaluator {
       setShapeProperty(iShape, "thisID", JmolConstants.PREVIOUS_MESH_ID);
       if (iShape != JmolConstants.SHAPE_DRAW)
         setShapeProperty(iShape, "title", new String[] { thisCommand });
-      if (tokAt(2) == Token.times
-          && !parameterAsString(1).equalsIgnoreCase("id")) {
+      if (tokAt(2) == Token.times && tokAt(1) != Token.id) {
         String id = setShapeId(iShape, 1, false);
         iToken++;
         return id;
@@ -12314,7 +12321,7 @@ public class ScriptEvaluator {
         if (getToken(i + 1).tok == Token.string) {
           colorScheme = parameterAsString(++i);
           if (colorScheme.indexOf(" ") > 0) {
-            discreteColixes = Parser.getColixArray(colorScheme);
+            discreteColixes = Graphics3D.getColixArray(colorScheme);
             if (discreteColixes == null)
               error(ERROR_badRGBColor);
           }
@@ -12493,6 +12500,11 @@ public class ScriptEvaluator {
       case Token.volume:
         doCalcVolume = !isSyntaxCheck;
         break;
+      case Token.id:
+        setShapeId(iShape, ++i, idSeen);
+        isWild = (viewer.getShapeProperty(iShape, "ID") == null);
+        i = iToken;
+        break;
       case Token.identifier:
         if (str.equalsIgnoreCase("ADDHYDROGENS")) {
           propertyName = "addHydrogens";
@@ -12635,7 +12647,7 @@ public class ScriptEvaluator {
           String dataName = extractCommandOption("# DATA" + (isFxy ? "2" : ""));
           if (dataName != null)
             fName = dataName;
-          boolean isXYZ = (fName.indexOf("data2d_xyz") == 0);
+          boolean isXYZ = (fName.indexOf("data2d_") == 0);
           v.addElement(fName); // (0) = name
           v.addElement(getPoint3f(i, false)); // (1) = {origin}
           Point4f pt;
@@ -12696,7 +12708,10 @@ public class ScriptEvaluator {
                 "functionXYZ must be followed by a function name in quotes.");
           String fName = parameterAsString(i++);
           // override of function or data name when saved as a state
-          String dataName = extractCommandOption("# DATA");
+          String dataName = extractCommandOption("# DATA" + (isFxy ? "2" : ""));
+          if (dataName != null)
+            fName = dataName;
+          boolean isXYZV = (fName.indexOf("data3d_") == 0);
           if (dataName != null)
             fName = dataName;
           v.addElement(fName); // (0) = name
@@ -12714,13 +12729,22 @@ public class ScriptEvaluator {
           if (nX == 0 || nY == 0)
             error(ERROR_invalidArgument);
           if (!isSyntaxCheck) {
-            float[][][] xyzdata = viewer.functionXYZ(fName, nX, nY, nZ);
+            float[][][] xyzdata = (isXYZV ? viewer.getDataFloat3D(fName) : viewer
+                .functionXYZ(fName, nX, nY, nZ));
             nX = Math.abs(nX);
             nY = Math.abs(nY);
             if (xyzdata == null) {
               iToken = ptX;
               error(ERROR_what, "xyzdata is null.");
-            }
+            } 
+            if (xyzdata.length != nX || xyzdata[0].length != nY 
+                || xyzdata[0][0].length != nZ) {
+              iToken = ptX;
+              error(ERROR_what, "xyzdata[" + xyzdata.length 
+                  + "][" + xyzdata[0].length 
+                  + "][" + xyzdata[0][0].length + "] is not of size [" 
+                  + nX + "][" + nY + "][" + nZ + "]");
+            } 
             v.addElement(xyzdata); // (5) = float[][][] data
           }
           i = iToken;
@@ -12731,12 +12755,6 @@ public class ScriptEvaluator {
         }
         if (str.equalsIgnoreCase("GRIDPOINTS")) {
           propertyName = "gridPoints";
-          break;
-        }
-        if (str.equalsIgnoreCase("ID")) {
-          setShapeId(iShape, ++i, idSeen);
-          isWild = (viewer.getShapeProperty(iShape, "ID") == null);
-          i = iToken;
           break;
         }
         if (str.equalsIgnoreCase("IGNORE")) {

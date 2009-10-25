@@ -27,6 +27,7 @@ import java.io.BufferedReader;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
 
@@ -94,7 +95,7 @@ class PmeshReader extends PolygonFileReader {
     jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer
         .append("pmesh file format\nvertices and triangles only\n");
-    JvxlReader.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData,
+    JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData,
         jvxlFileHeaderBuffer);
     isBinary = checkBinary(fileName);
   }

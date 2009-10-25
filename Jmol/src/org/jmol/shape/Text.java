@@ -457,13 +457,13 @@ public class Text extends Object2d {
     s.append("; color echo");
     if (Graphics3D.isColixTranslucent(colix))
       s.append(" translucent " + Graphics3D.getColixTranslucencyLevel(colix));
-    s.append(" ").append(Escape.escapeColor(colix));
+    s.append(" ").append(Graphics3D.getHexCode(colix));
     if (bgcolix != 0) {
       s.append("; color echo background");
       if (Graphics3D.isColixTranslucent(bgcolix))
         s.append(" translucent "
             + Graphics3D.getColixTranslucencyLevel(bgcolix));
-      s.append(" ").append(Escape.escapeColor(bgcolix));
+      s.append(" ").append(Graphics3D.getHexCode(bgcolix));
     }
     s.append(";\n");
     return s.toString();

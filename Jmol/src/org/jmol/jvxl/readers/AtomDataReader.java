@@ -35,6 +35,7 @@ import org.jmol.util.TextFormat;
 
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
+import org.jmol.jvxl.data.JvxlCoder;
 
 abstract class AtomDataReader extends VolumeDataReader {
 
@@ -281,7 +282,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     setVoxelRange(0, xyzMin.x, xyzMax.x, ptsPerAngstrom, maxGrid);
     setVoxelRange(1, xyzMin.y, xyzMax.y, ptsPerAngstrom, maxGrid);
     setVoxelRange(2, xyzMin.z, xyzMax.z, ptsPerAngstrom, maxGrid);
-    JvxlReader.jvxlCreateHeader(volumeData, nWritten, atomXyz,
+    JvxlCoder.jvxlCreateHeader(volumeData, nWritten, atomXyz,
         atomNo, jvxlFileHeaderBuffer);
   }
   

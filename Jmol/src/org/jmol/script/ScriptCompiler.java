@@ -1392,8 +1392,30 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           && !Token.tokAttr(theTok, Token.expression))
         return ERROR(ERROR_invalidExpressionToken, ident);
       break;
+    case Token.pmesh:
+    case Token.isosurface:
+      // isosurface ... name.xxx
+      if (parenCount == 0 && ".:/\\+-!?".indexOf(nextChar())>= 0)
+        checkUnquotedFileName();
     }
     return OK;
+  }
+
+  private char nextChar() {
+    int ich = ichToken + cchToken;
+    return (ich >= cchScript ? ' ' : script.charAt(ich));
+  }
+
+  private void checkUnquotedFileName() {
+    int ichT = ichToken;
+    char ch;
+    while (++ichT < cchScript 
+        && !Character.isWhitespace(ch = script.charAt(ichT)) 
+        && ch != '#' && ch != ';' ) {
+    }
+    String name = script.substring(ichToken, ichT).replace('\\','/');
+    cchToken = ichT - ichToken;
+    theToken = new Token(Token.string, name);   
   }
 
   private boolean checkFlowStartBrace(boolean atEnd) {

@@ -36,6 +36,7 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
@@ -2007,6 +2008,34 @@ final public class Graphics3D implements JmolRendererInterface {
     return Colix3D.getColix(argb); 
   }
 
+  public static String getHexCodes(short[] colixes) {
+    if (colixes == null)
+      return null;
+    StringBuffer s = new StringBuffer();
+    for (int i = 0; i < colixes.length; i++)
+      s.append(i == 0 ? '"' : ' ')
+        .append(getHexCode(colixes[i]));
+    s.append('"');
+    return s.toString();
+  }
+
+  public static String getHexCode(short colix) {
+    return Escape.escapeColor(getArgb(colix));
+  }
+
+  public static short[] getColixArray(String colorNames) {
+    if (colorNames == null || colorNames.length() == 0)
+      return null;
+    String[] colors = Parser.getTokens(colorNames);
+    short[] colixes = new short[colors.length];
+    for (int j = 0; j < colors.length; j++) {
+      colixes[j] = getColix(getArgbFromString(colors[j]));
+      if (colixes[j] == 0)
+        return null;
+    }
+    return colixes;
+  }
+
   public final static Point3f colorPointFromInt(int color, Point3f pt) {
     pt.z = color & 0xFF;
     pt.y = (color >> 8) & 0xFF;
@@ -2182,18 +2211,6 @@ final public class Graphics3D implements JmolRendererInterface {
     return Colix3D.getArgb(colix);  
   }
   
-  public static String getHexColorFromRGB(int argb) {
-    if (argb == 0)
-      return null;
-    String r  = "00" + Integer.toHexString((argb >> 16) & 0xFF);
-    r = r.substring(r.length() - 2);
-    String g  = "00" + Integer.toHexString((argb >> 8) & 0xFF);
-    g = g.substring(g.length() - 2);
-    String b  = "00" + Integer.toHexString(argb & 0xFF);
-    b = b.substring(b.length() - 2);
-    return r + g + b;
-  }
-
   /****************************************************************
    * changeable colixes
    * give me a short ID and a color, and I will give you a colix

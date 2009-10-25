@@ -27,6 +27,7 @@ import java.io.BufferedReader;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 
 /*
@@ -40,7 +41,7 @@ class EfvetReader extends PolygonFileReader {
     super(sg, br);
     jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer.append("efvet file format\nvertices and triangles only\n");
-    JvxlReader.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
+    JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
     hasColorData = true;
   }
 

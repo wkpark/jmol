@@ -26,6 +26,8 @@ package org.jmol.jvxl.readers;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 
+import org.jmol.jvxl.data.JvxlCoder;
+
 class IsoFxyReader extends VolumeDataReader {
   
   IsoFxyReader(SurfaceGenerator sg) {
@@ -55,7 +57,7 @@ class IsoFxyReader extends VolumeDataReader {
         //volumetricVectors[i].scale(ANGSTROMS_PER_BOHR);
     }
     data = (float[][]) params.functionXYinfo.get(5);
-    JvxlReader.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
+    JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
 
   public float getValue(int x, int y, int z) {

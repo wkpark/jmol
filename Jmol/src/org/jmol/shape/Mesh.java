@@ -119,6 +119,8 @@ public class Mesh {
     bitsets = null;    
     vertices = null;
     polygonIndexes = null;
+    data1 = null;
+    data2 = null;
     
     this.meshType = meshType;
   }

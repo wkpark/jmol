@@ -38,8 +38,8 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.viewer.Viewer;
+import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
-import org.jmol.jvxl.readers.JvxlReader;
 
 import org.jmol.jvxl.calc.MarchingSquares;
 import org.jmol.shape.Mesh;
@@ -73,12 +73,14 @@ public class IsosurfaceMesh extends Mesh {
     jvxlData.jvxlSurfaceData = "";
     jvxlData.jvxlEdgeData = "";
     jvxlData.jvxlColorData = "";
+    jvxlData.jvxlVolumeDataXml = "";
     isColorSolid = true;
     vertexColixes = null;
     vertexValues = null;
     jvxlData.contourValues = null;
     jvxlData.contourValuesUsed = null;
     jvxlData.contourColixes = null;
+    jvxlData.contourColors = null;
     assocGridPointMap = null;
     assocGridPointNormals = null;
     vertexSets = null;
@@ -299,13 +301,6 @@ public class IsosurfaceMesh extends Mesh {
         vNorm, vAB, vAC);
   }
   
-  public static final int CONTOUR_NPOLYGONS = 0;
-  public static final int CONTOUR_BITSET = 1;
-  public static final int CONTOUR_VALUE = 2;
-  public static final int CONTOUR_COLIX = 3;
-  public static final int CONTOUR_FDATA = 4;
-  public static final int CONTOUR_POINTS = 5;
-
   /**
    * create a set of contour data. Each contour is a
    * Vector containing:
@@ -337,9 +332,9 @@ public class IsosurfaceMesh extends Mesh {
     Vector[] vContours = jvxlData.vContours;
     if (vContours != null) {
       for (int i = 0; i < n; i++) {
-        if (vContours[i].size() > CONTOUR_POINTS)
+        if (vContours[i].size() > JvxlCoder.CONTOUR_POINTS)
           return jvxlData.vContours;
-        JvxlReader.set3dContourVector(vContours[i], polygonIndexes, vertices);
+        JvxlCoder.set3dContourVector(vContours[i], polygonIndexes, vertices);
       }
       //dumpData();
       return jvxlData.vContours;
@@ -372,73 +367,28 @@ public class IsosurfaceMesh extends Mesh {
     return jvxlData.vContours = vContours;
   }
   
-  public static void setContourVector(Vector v, int nPolygons,
-                                      BitSet bsContour, float value, short colix,
-                                      StringBuffer fData) {
-    v.add(new Integer(nPolygons));
-    v.add(bsContour);
-    v.add(new Float(value));
-    v.add(new short[] { colix });
-    v.add(fData);
-  }
-
   private void get3dContour(Vector v, float value, short colix) {
     BitSet bsContour = new BitSet(polygonCount);
     StringBuffer fData = new StringBuffer();
-    setContourVector(v, polygonCount, bsContour, value, colix, fData);
-    for (int i = 0; i < polygonCount; i++) {
-      if (!setABC(i))
-        continue;
-      int type = 0;
-      float f1, f2;
-      f1 = checkPt(iA, iB, value);
-      if (!Float.isNaN(f1)) {
-        type |= 1;
-        v.add(getContourPoint(vertices, iA, iB, f1));
-      }
-      f2 = checkPt(iB, iC, value);
-        if (!Float.isNaN(f2)) {
-          if (type == 0)
-            f1 = f2;
-          type |= 2;
-          v.add(getContourPoint(vertices, iB, iC, f2));
-        }
-      switch(type){
-      case 0:
-        continue;
-      case 3:
-        break;
-      default:
-        f2 = checkPt(iC, iA, value);
-        type |= 4;
-        v.add(getContourPoint(vertices, iC, iA, f2));
-      }
-      bsContour.set(i);
-      fData.append(type);
-      fData.append(JvxlReader.jvxlFractionAsCharacter(f1));
-      fData.append(JvxlReader.jvxlFractionAsCharacter(f2));
-      
-      //System.out.println("ifor poly " + i + " " + type);
-    }
-    v.add(new Point3f(Float.NaN, Float.NaN, Float.NaN));
+    int color = Graphics3D.getArgb(colix);
+    setContourVector(v, polygonCount, bsContour, value, colix, color, fData);
+    for (int i = 0; i < polygonCount; i++)
+      if (setABC(i))
+        JvxlCoder.addContourPoints(v, bsContour, i, fData, vertices,
+            vertexValues, iA, iB, iC, value);
   }
 
-  private float checkPt(int i, int j, float f) {
-    float f1, f2;
-    return (((f1 = vertexValues[i]) <= f) == (f < (f2 = vertexValues[j]))
-        ? (f - f1) / (f2 - f1) : Float.NaN);
+  public static void setContourVector(Vector v, int nPolygons,
+                                      BitSet bsContour, float value, short colix,
+                                      int color, StringBuffer fData) {
+    v.add(JvxlCoder.CONTOUR_NPOLYGONS, new Integer(nPolygons));
+    v.add(JvxlCoder.CONTOUR_BITSET, bsContour);
+    v.add(JvxlCoder.CONTOUR_VALUE, new Float(value));
+    v.add(JvxlCoder.CONTOUR_COLIX, new short[] { colix });
+    v.add(JvxlCoder.CONTOUR_COLOR, new int[] { color });
+    v.add(JvxlCoder.CONTOUR_FDATA, fData);
   }
 
-  public static Point3f getContourPoint(Point3f[] vertices, int i, int j, float f) {
-    Point3f pt = new Point3f();
-    pt.set(vertices[j]);
-    pt.sub(vertices[i]);
-    pt.scale(f);
-    pt.add(vertices[i]);
-    //System.out.println(i + " " + j + " " + f + " " + vertices[i] + " " + vertices[j] + " " + pt);
-    return pt;
-  }
-   
   float[] contourValues;
   short[] contourColixes;
   public void setDiscreteColixes(float[] values, short[] colixes) {
@@ -446,16 +396,19 @@ public class IsosurfaceMesh extends Mesh {
       jvxlData.contourValues = values;
     if (values == null)
       values = jvxlData.contourValues = jvxlData.contourValuesUsed;
-    if (colixes == null && jvxlData.contourColixes != null)
-      return;
-    jvxlData.contourColixes = colixes;
+    if (colixes == null && jvxlData.contourColixes != null) {
+      colixes = jvxlData.contourColixes;
+    } else {
+      jvxlData.contourColixes = colixes;
+      jvxlData.contourColors = Graphics3D.getHexCodes(colixes);
+    }
     if (vertices == null || vertexValues == null || values == null)
       return;
     int n = values.length;
     float vMax = values[n - 1];
-    isColorSolid = true;
     colorCommand = null;
     boolean haveColixes = (colixes != null && colixes.length > 0);
+    isColorSolid = haveColixes;
     if (jvxlData.vContours != null) {
       if (haveColixes)
         for (int i = 0; i < jvxlData.vContours.length; i++)

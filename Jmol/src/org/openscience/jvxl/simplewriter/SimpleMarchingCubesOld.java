@@ -27,6 +27,8 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3i;
 
+import org.jmol.jvxl.data.JvxlCoder;
+import org.jmol.jvxl.data.VolumeData;
 import org.jmol.util.Logger;
 
 public class SimpleMarchingCubesOld {
@@ -37,6 +39,14 @@ public class SimpleMarchingCubesOld {
    * and an array of size [nCubesY*nCubesZ][12] to hold a slice of cubes in memory.
    * Turns out it is slower by about 10% and consumes far more memory than the 
    * new algorithm I wrote Feb 10, 2008. Saved here for posterity -- Bob Hanson 
+   * 
+   * timing: SimpleMarchingCubes with 100,100,100:
+   * 
+   * getEdgeData: 641 ms
+   * getEdgeData: 1625 ms
+   * 
+   * old getEdgeData: 688 ms
+   * old getEdgeData: 1672 ms
    * 
    * An adaptation of Marching Cubes to include data slicing and the option
    * for progressive reading of the data. Associated SurfaceReader and VoxelData
@@ -428,7 +438,7 @@ public class SimpleMarchingCubesOld {
       
       voxelPointIndexes[iEdge] = edgeCount++;
       //System.out.println(" pt=" + pt + " edge" + iEdge + " xyz " + x + " " + y + " " + z + " vertexAB=" + vertexA + " " + vertexB + " valueAB=" + valueA + " " + valueB + " f= " + (cutoff - valueA) / (valueB - valueA));
-      fractionData.append(JvxlWrite.jvxlFractionAsCharacter((cutoff - valueA) / (valueB - valueA)));
+      fractionData.append(JvxlCoder.jvxlFractionAsCharacter((cutoff - valueA) / (valueB - valueA)));
     }
     return !isNaN;
   }

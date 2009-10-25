@@ -300,7 +300,7 @@ class StatusListener implements JmolStatusListener {
           float x = i / ((nX - 1) / 2f) - 1;
           float y = j / ((nY - 1) / 2f) - 1;
           float z = k / ((nZ - 1) / 2f) - 1;
-          f[i][j][k] = (float) x * x + y - z * z;
+          f[i][j][k] = x * x + y * y - z * z;//(float) x * x + y - z * z;
           // if (i == 22 || i == 23)
           // System.out.println(" functionXYZ " + i + " " + j + " " + k + " " +
           // f[i][j][k]);

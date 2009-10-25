@@ -99,9 +99,8 @@ public class MarchingSquares {
     nContoursSpecified = nContours;
     this.contourFromZero = contourFromZero; //set false for MEP to complete the plane
     if (contoursDiscrete == null) {
-      int i = (contourFromZero ? 1  : is3DContour ? 1 : 2);
-      nContourSegments = (nContours == 0 ? defaultContourCount + i
-          : nContours + i);
+      int i = (true ? 0 : contourFromZero ? 1  : is3DContour ? 1 : 2);
+      nContourSegments = (nContours == 0 ? defaultContourCount : nContours) + i;
       if (nContourSegments > nContourMax)
         nContourSegments = nContourMax;
     } else {

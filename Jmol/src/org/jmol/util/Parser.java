@@ -27,8 +27,6 @@ package org.jmol.util;
 
 import java.util.BitSet;
 
-import org.jmol.g3d.Graphics3D;
-
 public class Parser {
 
   /// general static string-parsing class ///
@@ -57,7 +55,10 @@ public class Parser {
    *
    */
   public static float[] parseFloatArray(String str, int[] next) {
-    int pt = str.indexOf("[", next[0]);
+    int pt = next[0];
+    if (pt < 0)
+      return new float[0];
+    pt = str.indexOf("[", pt);
     if (pt >= 0)
       str = str.substring(pt + 1);
     next[0] = pt + 1;
@@ -97,9 +98,42 @@ public class Parser {
     int[] lines = markLines(str, '\n');
     int nLines = lines.length;
     float[][] data = new float[nLines][];
-    for (int iLine = 0, pt = 0; iLine < lines.length; pt = lines[iLine++]) {
+    for (int iLine = 0, pt = 0; iLine < nLines; pt = lines[iLine++]) {
       String[] tokens = getTokens(str.substring(pt, lines[iLine]));
       parseFloatArray(tokens, data[iLine] = new float[tokens.length]);
+    }
+    return data;
+  }
+
+  public static float[][][] parseFloatArray3d(String str) {
+    str = str.replace(';', str.indexOf('\n') < 0 ? '\n' : ' ');
+    str = TextFormat.trim(str, "\n \t");
+    int[] lines = markLines(str, '\n');
+    int nLines = lines.length;
+    String[] tokens = getTokens(str.substring(0, lines[0]));
+    if (tokens.length != 3)
+      return new float[0][0][0];
+    int nX = parseInt(tokens[0]);
+    int nY = parseInt(tokens[1]);
+    int nZ = parseInt(tokens[2]);
+    if (nX < 1 || nY < 1 || nZ < 1)
+      return new float[1][1][1];
+    float[][][] data = new float[nX][nY][];
+    int iX = 0;
+    int iY = 0;
+    for (int iLine = 1, pt = lines[0]; iLine < nLines && iX < nX; pt = lines[iLine++]) {
+      tokens = getTokens(str.substring(pt, lines[iLine]));
+      if (tokens.length < nZ)
+        continue;
+      parseFloatArray(tokens, data[iX][iY] = new float[tokens.length]);
+      if (++iY == nY) {
+        iX++;
+        iY = 0;
+      } 
+    }
+    if (iX != nX) {
+      Logger.info("Error reading 3D data -- nX = " + nX + ", but only " + iX + " blocks read");      
+      return new float[1][1][1];
     }
     return data;
   }
@@ -239,18 +273,6 @@ public class Parser {
     return parseInt(str, new int[] {0});
   }
 
-  public static short[] getColixArray(String colorNames) {
-    String[] colors = Parser.getTokens(colorNames);
-    short[] colixes = new short[colors.length];
-    for (int j = 0; j < colors.length; j++) {
-      colixes[j] = Graphics3D.getColix(Graphics3D
-          .getArgbFromString(colors[j]));
-      if (colixes[j] == 0)
-        return null;
-    }
-    return colixes;
-  }
-
   public static String[] getTokens(String line) {
     return getTokens(line, 0);
   }
@@ -291,7 +313,7 @@ public class Parser {
 
   public static float parseFloat(String str, int[] next) {
     int cch = str.length();
-    if (next[0] >= cch)
+    if (next[0] < 0 || next[0] >= cch)
       return Float.NaN;
     return parseFloatChecked(str, cch, next, false);
   }
@@ -300,7 +322,7 @@ public class Parser {
     int cch = str.length();
     if (ichMax > cch)
       ichMax = cch;
-    if (next[0] >= ichMax)
+    if (next[0] < 0 || next[0] >= ichMax)
       return Float.NaN;
     return parseFloatChecked(str, ichMax, next, false);
   }
@@ -381,7 +403,7 @@ public class Parser {
   
   public static int parseInt(String str, int[] next) {
     int cch = str.length();
-    if (next[0] >= cch)
+    if (next[0] < 0 || next[0] >= cch)
       return Integer.MIN_VALUE;
     return parseIntChecked(str, cch, next);
   }
@@ -390,7 +412,7 @@ public class Parser {
     int cch = str.length();
     if (ichMax > cch)
       ichMax = cch;
-    if (next[0] >= ichMax)
+    if (next[0] < 0 || next[0] >= ichMax)
       return Integer.MIN_VALUE;
     return parseIntChecked(str, ichMax, next);
   }
@@ -399,6 +421,8 @@ public class Parser {
     boolean digitSeen = false;
     int value = 0;
     int ich = next[0];
+    if (ich < 0)
+      return Integer.MIN_VALUE;
     char ch;
     while (ich < ichMax && isWhiteSpace(str, ich))
       ++ich;
@@ -424,7 +448,7 @@ public class Parser {
     if (line == null)
       return null;
     int cchLine = line.length();
-    if (ich > cchLine)
+    if (ich < 0 || ich > cchLine)
       return null;
     int tokenCount = countTokens(line, ich);
     String[] tokens = new String[tokenCount];
@@ -435,7 +459,7 @@ public class Parser {
     return tokens;
   }
 
-  public static int countTokens(String line, int ich) {
+  private static int countTokens(String line, int ich) {
     int tokenCount = 0;
     if (line != null) {
       int ichMax = line.length();
@@ -455,7 +479,7 @@ public class Parser {
 
   public static String parseToken(String str, int[] next) {
     int cch = str.length();
-    if (next[0] >= cch)
+    if (next[0] < 0 || next[0] >= cch)
       return null;
     return parseTokenChecked(str, cch, next);
   }
@@ -464,7 +488,7 @@ public class Parser {
     int cch = str.length();
     if (ichMax > cch)
       ichMax = cch;
-    if (next[0] >= ichMax)
+    if (next[0] < 0 || next[0] >= ichMax)
       return null;
     return parseTokenChecked(str, ichMax, next);
   }
@@ -506,14 +530,14 @@ public class Parser {
   }
   
   public static String getNextQuotedString(String line, int ipt0) {
-    int[] next = new int[ipt0];
+    int[] next = new int[] { ipt0 };
     return getNextQuotedString(line, next);
   }
   
   public static String getNextQuotedString(String line, int[] next) {
     String value = line;
-    int i = value.indexOf("\"", next[0]);
-    if (i < 0)
+    int i = next[0];
+    if (i < 0 || (i = value.indexOf("\"", i)) < 0)
       return "";
     next[0] = ++i;
     value = value.substring(i);
@@ -527,7 +551,7 @@ public class Parser {
   
   private static boolean isWhiteSpace(String str, int ich) {
     char ch;
-    return ((ch = str.charAt(ich)) == ' ' || ch == '\t' || ch == '\n');
+    return (ich >= 0 && ((ch = str.charAt(ich)) == ' ' || ch == '\t' || ch == '\n'));
   }
 
   public static boolean isOneOf(String key, String semiList) {

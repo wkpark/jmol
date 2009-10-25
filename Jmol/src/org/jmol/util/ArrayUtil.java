@@ -24,9 +24,6 @@
 package org.jmol.util;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
-
-import org.jmol.script.Token;
 
 final public class ArrayUtil {
 
@@ -198,14 +195,15 @@ final public class ArrayUtil {
     return t;
   }
 
-  public static void swap(short[] array, int indexA, int indexB) {
-    short t = array[indexA];
+  public static void swap(int[] array, int indexA, int indexB) {
+    int t = array[indexA];
     array[indexA] = array[indexB];
     array[indexB] = t;
   }
 
-  public static void swap(int[] array, int indexA, int indexB) {
-    int t = array[indexA];
+  /*
+  public static void swap(short[] array, int indexA, int indexB) {
+    short t = array[indexA];
     array[indexA] = array[indexB];
     array[indexB] = t;
   }
@@ -215,6 +213,7 @@ final public class ArrayUtil {
     array[indexA] = array[indexB];
     array[indexB] = t;
   }
+  */
   
   public static String dumpArray(String msg, float[][] A, int x1, int x2, int y1, int y2) {
     String s = "dumpArray: " + msg + "\n";
@@ -235,117 +234,4 @@ final public class ArrayUtil {
     return str;
   }
 
-  public static Object getMinMax(Object floatOrStringArray, int tok) {
-    float[] data;
-    if (floatOrStringArray instanceof String[]) {
-      data = new float[((String[])floatOrStringArray).length];
-      Parser.parseFloatArray((String[])floatOrStringArray, data);
-    } else {
-      data = (float[]) floatOrStringArray;
-    }
-    double sum;
-    switch (tok) {
-    case Token.min:
-      sum = Float.MAX_VALUE;
-      break;
-    case Token.max:
-      sum = -Float.MAX_VALUE;
-      break;
-    default:
-      sum = 0;
-    }
-    double sum2 = 0;
-    int n = 0;
-    for (int i = data.length; --i >= 0; ) {
-      float v;
-      if (Float.isNaN(v = data[i]))
-        continue;
-      n++;
-      switch(tok){
-      case Token.sum2:
-      case Token.stddev:
-        sum2 += ((double) v) * v;
-        //fall through
-      case Token.sum:
-      case Token.average:
-        sum += v;
-        break;
-      case Token.min:
-        if (v < sum)
-          sum = v;
-        break;
-      case Token.max:
-        if (v > sum)
-          sum = v;
-        break;
-      }
-    }
-    if (n == 0)
-      return "NaN";
-    switch (tok) {
-    case Token.average:
-      sum /= n;
-      break;
-    case Token.stddev:
-      if (n == 1)
-        return "NaN";
-      sum = Math.sqrt((sum2 - sum * sum / n) / (n - 1));
-      break;
-    case Token.min:
-    case Token.max:
-    case Token.sum:
-      break;
-    case Token.sum2:
-      sum = sum2;
-      break;
-    }
-    return new Float(sum);
-  }
-
-  public static Object sortOrReverse(Object list, int tok, boolean checkFloat) {
-    float[] f = null;
-    if (list instanceof String[]) {
-      String[] s = (String[]) list;
-      if (s.length < 2)
-        return list;
-      if (checkFloat && !Float.isNaN(Parser.parseFloat(s[0]))) {
-        f = new float[s.length];
-        Parser.parseFloatArray(s, f);
-      } else {
-        String[] s2 = new String[s.length];
-        System.arraycopy(s, 0, s2, 0, s.length);
-        switch (tok) {
-        case Token.sort:
-          Arrays.sort(s2);
-          return s2;
-        case Token.reverse:
-          for (int left = 0, right = s2.length - 1; left < right; left++, right--) {
-            String temp = s2[left];
-            s2[left] = s2[right];
-            s2[right] = temp;
-          }
-          return s2;
-        }
-      }
-    } else if (list instanceof float[]) {
-      f = new float[((float[]) list).length];
-      System.arraycopy(list, 0, f, 0, f.length);
-      if (f.length < 2)
-        return list;
-    } else {
-      return list;
-    }
-    switch (tok) {
-    case Token.sort:
-      Arrays.sort(f);
-      break;
-    case Token.reverse:
-      for (int left = 0, right = f.length - 1; left < right; left++, right--) {
-        float ftemp = f[left];
-        f[left] = f[right];
-        f[right] = ftemp;
-      }
-    }
-    return f;
-  }
 }

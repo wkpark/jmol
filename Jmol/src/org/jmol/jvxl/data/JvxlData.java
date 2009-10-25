@@ -28,11 +28,6 @@
  * The JVXL file format
  * --------------------
  * 
- * as of 3/29/07 this code is COMPLETELY untested. It was hacked out of the
- * Jmol code, so there is probably more here than is needed.
- * 
- * 
- * 
  * see http://www.stolaf.edu/academics/chemapps/jmol/docs/misc/JVXL-format.pdf
  *
  * The JVXL (Jmol VoXeL) format is a file format specifically designed
@@ -48,7 +43,7 @@
  * The classes Parser, ArrayUtil, and TextFormat are condensed versions
  * of the classes found in org.jmol.util.
  * 
- * All code relating to JVXL format is copyrighted 2006/2007 and invented by 
+ * All code relating to JVXL format is copyrighted 2006-2009 and invented by 
  * Robert M. Hanson, 
  * Professor of Chemistry, 
  * St. Olaf College, 
@@ -62,81 +57,41 @@
  * implementing marching squares; see 
  * http://www.secam.ex.ac.uk/teaching/ug/studyres/COM3404/COM3404-2006-Lecture15.pdf
  * 
- * lines through coordinates are identical to CUBE files
- * after that, we have a line that starts with a negative number to indicate this
- * is a JVXL file:
- * 
- * line1:  (int)-nSurfaces  (int)edgeFractionBase (int)edgeFractionRange  
- * (nSurface lines): (float)cutoff (int)nBytesData (int)nBytesFractions
- * 
- * definition1
- * edgedata1
- * fractions1
- * colordata1
- * ....
- * definition2
- * edgedata2
- * fractions2
- * colordata2
- * ....
- * 
- * definitions: a line with detail about what sort of compression follows
- * 
- * edgedata: a list of the count of vertices ouside and inside the cutoff, whatever
- * that may be, ordered by nested for loops for(x){for(y){for(z)}}}.
- * 
- * nOutside nInside nOutside nInside...
- * 
- * fractions: an ascii list of characters represting the fraction of distance each
- * encountered surface point is along each voxel cube edge found to straddle the 
- * surface. The order written is dictated by the reader algorithm and is not trivial
- * to describe. Each ascii character is constructed by taking a base character and 
- * adding onto it the fraction times a range. This gives a character that can be
- * quoted EXCEPT for backslash, which MAY be substituted for by '!'. Jmol uses the 
- * range # - | (35 - 124), reserving ! and } for special meanings.
- * 
- * colordata: same deal here, but with possibility of "double precision" using two bytes.
- * 
- * 
- * 
- * THIS READER
- * -----------
- * 
- * This is a first attempt at a generic JVXL file reader and writer class.
- * It is an extraction of Jmol org.jmol.viewer.Isosurface.Java and related pieces.
- * 
- * The goal of the reader is to be able to read CUBE-like data and 
- * convert that data to JVXL file data.
- * 
- * 
  */
 
 package org.jmol.jvxl.data;
 
+import java.util.BitSet;
 import java.util.Vector;
 
 import javax.vecmath.Point4f;
 
-import org.jmol.jvxl.readers.JvxlReader;
 
+/*
+ * the JvxlData class holds parameters and data
+ * that needs to be passed among IsosurfaceMesh, 
+ * marching cubes/squares, JvxlCoder, and JvxlReader. 
+ * 
+ */
 public class JvxlData {
   public JvxlData() {    
   }
  
   //for now, all public, no accessors
 
+  public boolean asXml = true;
   public boolean wasJvxl;
   public boolean wasCubic;
   
   public String jvxlFileTitle;
   public String jvxlFileMessage;
   public String jvxlFileHeader;
-  public String jvxlExtraLine;
   public String jvxlDefinitionLine;
   public String jvxlSurfaceData;
   public String jvxlEdgeData;
   public String jvxlColorData;
   public String jvxlInfoLine;
+  public String jvxlVolumeDataXml;
   
   public Point4f jvxlPlane;
 
@@ -146,16 +101,17 @@ public class JvxlData {
   public boolean jvxlDataIs2dContour;
   public boolean isColorReversed;
   
-  public int edgeFractionBase = JvxlReader.defaultEdgeFractionBase;
-  public int edgeFractionRange = JvxlReader.defaultEdgeFractionRange;
-  public int colorFractionBase = JvxlReader.defaultColorFractionBase;
-  public int colorFractionRange = JvxlReader.defaultColorFractionRange;
+  public int edgeFractionBase = JvxlCoder.defaultEdgeFractionBase;
+  public int edgeFractionRange = JvxlCoder.defaultEdgeFractionRange;
+  public int colorFractionBase = JvxlCoder.defaultColorFractionBase;
+  public int colorFractionRange = JvxlCoder.defaultColorFractionRange;
 
   public boolean insideOut;
   public boolean isXLowToHigh;
   public boolean isContoured;
   public boolean isBicolorMap;
   public boolean isTruncated;
+  public boolean isCutoffAbsolute;
   public boolean vertexDataOnly;
   public float mappedDataMin;
   public float mappedDataMax;
@@ -170,8 +126,13 @@ public class JvxlData {
   public int nSurfaceInts;
   public int vertexCount;
 
+  // contour data is here instead of in MeshData because
+  // sometimes it comes from the file or marching squares
+  // directly. 
+  
   public Vector[] vContours;
   public short[] contourColixes;
+  public String contourColors;
   public float[] contourValues;
   public float[] contourValuesUsed;
 
@@ -180,6 +141,40 @@ public class JvxlData {
 
   public String[] title;
   public String version;
+  
+  public void setSurfaceInfo(Point4f thePlane, int nSurfaceInts, String surfaceData) {
+    jvxlSurfaceData = surfaceData;
+    if (jvxlSurfaceData.indexOf("--") == 0)
+      jvxlSurfaceData = jvxlSurfaceData.substring(2);
+    jvxlPlane = thePlane;
+    this.nSurfaceInts = nSurfaceInts;
+  }
+
+  public void setSurfaceInfoFromBitSet(BitSet bs, Point4f thePlane) {
+    StringBuffer sb = new StringBuffer();
+    int nPoints = nPointsX * nPointsY * nPointsZ;
+    int nSurfaceInts = JvxlCoder.jvxlEncodeBitSet(bs, nPoints, sb);
+    setSurfaceInfo(thePlane, nSurfaceInts, sb.toString());
+  }
+    
+  public void jvxlUpdateInfo(String[] title, int nBytes) {
+    this.title = title;
+    this.nBytes = nBytes;
+    updateInfoLines();
+  }
+
+  public void updateInfoLines() {
+    jvxlDefinitionLine = JvxlCoder.jvxlGetInfo(this, false);
+    jvxlInfoLine = JvxlCoder.jvxlGetInfo(this, true);
+  }
+
+  public void updateSurfaceData(float[] vertexValues, int vertexCount, int vertexIncrement, char isNaN) { 
+    char[] chars = jvxlEdgeData.toCharArray();
+    for (int i = 0, ipt = 0; i < vertexCount; i+= vertexIncrement, ipt++)
+      if (Float.isNaN(vertexValues[i]))
+          chars[ipt] = isNaN;
+    jvxlEdgeData = String.copyValueOf(chars);
+  }
   
 }
 

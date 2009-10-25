@@ -26,6 +26,7 @@ package org.jmol.jvxl.readers;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix3f;
 
+import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 //import org.jmol.viewer.Viewer;
 
@@ -83,7 +84,7 @@ class VolumeDataReader extends SurfaceReader {
     //as is, just the volumeData as we have it.
     //but subclasses can modify this behavior.
     jvxlFileHeaderBuffer = new StringBuffer("volume data read from file\n\n");
-    JvxlReader.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
+    JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
   
   boolean readVolumeParameters() {

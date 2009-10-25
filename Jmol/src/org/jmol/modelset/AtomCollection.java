@@ -605,9 +605,9 @@ abstract public class AtomCollection {
     if (vibrationVectors == null || vibrationVectors[atomIndex] == null)
       return 0;
     switch (c) {
-    case 'x':
+    case 'X':
       return vibrationVectors[atomIndex].x;
-    case 'y':
+    case 'Y':
       return vibrationVectors[atomIndex].y;
     default:
       return vibrationVectors[atomIndex].z;

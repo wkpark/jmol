@@ -2895,9 +2895,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return dataManager.getDataFloat2D(label);
   }
 
-  float[][][] getDataFloat3D(String label) {
-    return null;
-    // not implemented yet return dataManager.getDataFloat3D(label);
+  public float[][][] getDataFloat3D(String label) {
+    return dataManager.getDataFloat3D(label);
   }
 
   public float getDataFloat(String label, int atomIndex) {

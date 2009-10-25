@@ -852,8 +852,11 @@ public class ScriptVariable extends Token {
       return (new ScriptVariable(point3f, v));
     if (v instanceof Point4f)
       return new ScriptVariable(point4f, v);
-    if (v instanceof BitSet)
+    if (v instanceof BitSet) {
+      if (s.indexOf("[{") == 0)
+        v = new BondSet((BitSet) v);
       return new ScriptVariable(bitset, v);
+    }
     if (v instanceof Matrix3f)
       return (new ScriptVariable(matrix3f, v));
     if (v instanceof Matrix4f)

@@ -24,7 +24,6 @@
 package org.jmol.jvxl.readers;
 
 import java.util.BitSet;
-import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -205,7 +204,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData = sg.getJvxlData();
     setVolumeData(sg.getVolumeData());
     meshDataServer = sg.getMeshDataServer();
-    cJvxlEdgeNaN = (char) (JvxlReader.defaultEdgeFractionBase + JvxlReader.defaultEdgeFractionRange);
+    cJvxlEdgeNaN = (char) (JvxlCoder.defaultEdgeFractionBase + JvxlCoder.defaultEdgeFractionRange);
   }
 
   final static float ANGSTROMS_PER_BOHR = 0.5291772f;
@@ -258,7 +257,6 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected String jvxlEdgeDataRead = "";
   protected String jvxlColorDataRead = "";
   protected BitSet jvxlVoxelBitSet;
-  protected Vector[] vContours;
   protected boolean jvxlDataIsColorMapped;
   protected boolean jvxlDataIsPrecisionColor;
   protected boolean jvxlDataIs2dContour;
@@ -269,7 +267,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected int contourVertexCount;
 
   void jvxlUpdateInfo() {
-    JvxlReader.jvxlUpdateInfo(jvxlData, params.title, nBytes);
+    jvxlData.jvxlUpdateInfo(params.title, nBytes);
   }
 
   boolean createIsosurface(boolean justForPlane) {
@@ -283,6 +281,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.nPointsX = nPointsX;
     jvxlData.nPointsY = nPointsY;
     jvxlData.nPointsZ = nPointsZ;
+    jvxlData.jvxlVolumeDataXml = volumeData.xmlData;
     if (justForPlane) {
       float[][][] voxelDataTemp =  volumeData.voxelData;
       volumeData.setDataDistanceToPlane(params.thePlane);
@@ -301,15 +300,15 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.jvxlFileTitle = s.substring(0, i);
     jvxlData.jvxlFileHeader = s;
     jvxlData.cutoff = (isJvxl ? jvxlCutoff : params.cutoff);
+    jvxlData.isCutoffAbsolute = params.isCutoffAbsolute;
     jvxlData.pointsPerAngstrom = 1f/volumeData.volumetricVectorLengths[0];
     jvxlData.jvxlColorData = "";
     jvxlData.jvxlPlane = params.thePlane;
     jvxlData.jvxlEdgeData = edgeData;
     jvxlData.isBicolorMap = params.isBicolorMap;
     jvxlData.isContoured = params.isContoured;
-    jvxlData.vContours = vContours;
-    if (vContours != null)
-      params.nContours = vContours.length;
+    if (jvxlData.vContours != null)
+      params.nContours = jvxlData.vContours.length;
     jvxlData.nContours = (params.contourFromZero 
         ? params.nContours : -1 - params.nContours);
     jvxlData.nEdges = edgeCount;
@@ -332,12 +331,11 @@ public abstract class SurfaceReader implements VertexDataServer {
       if (meshDataServer != null)
         meshDataServer.notifySurfaceMappingCompleted();
     }
-    jvxlData.jvxlExtraLine = JvxlReader.jvxlExtraLine(jvxlData, 1);
     return true;
   }
 
   void resetIsosurface() {
-    meshData.clear("isosurface");
+    meshData = new MeshData();
     if (meshDataServer != null)
       meshDataServer.fillMeshData(null, 0);
     contourVertexCount = 0;
@@ -348,10 +346,10 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.jvxlColorData = "";
     //TODO: more resets of jvxlData?
     edgeCount = 0;
-    edgeFractionBase = JvxlReader.defaultEdgeFractionBase;
-    edgeFractionRange = JvxlReader.defaultEdgeFractionRange;
-    colorFractionBase = JvxlReader.defaultColorFractionBase;
-    colorFractionRange = JvxlReader.defaultColorFractionRange;
+    edgeFractionBase = JvxlCoder.defaultEdgeFractionBase;
+    edgeFractionRange = JvxlCoder.defaultEdgeFractionRange;
+    colorFractionBase = JvxlCoder.defaultColorFractionBase;
+    colorFractionRange = JvxlCoder.defaultColorFractionRange;
     params.mappedDataMin = Float.MAX_VALUE;
   }
 
@@ -435,8 +433,7 @@ public abstract class SurfaceReader implements VertexDataServer {
         params.isContoured, contourType, params.cutoff,
         params.isCutoffAbsolute, params.isSquared, isXLowToHigh);
     edgeData = marchingCubes.getEdgeData();
-    JvxlReader.setSurfaceInfoFromBitSet(jvxlData,
-        marchingCubes.getBsVoxels(), params.thePlane);
+    jvxlData.setSurfaceInfoFromBitSet(marchingCubes.getBsVoxels(), params.thePlane);
     if (isJvxl)
       edgeData = jvxlEdgeDataRead;
   }
@@ -510,15 +507,26 @@ public abstract class SurfaceReader implements VertexDataServer {
     return meshDataServer.addVertexCopy(vertexXYZ, value, assocVertex);
   }
 
-  public void addTriangleCheck(int iA, int iB, int iC, int check,
-                               int check2, boolean isAbsolute, int color) {
+  private int lastColor;
+  private short lastColix;
+
+  public void addTriangleCheck(int iA, int iB, int iC, int check, int check2,
+                               boolean isAbsolute, int color) {
     if (meshDataServer == null) {
       if (isAbsolute
           && !MeshData.checkCutoff(iA, iB, iC, meshData.vertexValues))
         return;
-      meshData.addTriangleCheck(iA, iB, iC, check, check2, color);
+      int i = meshData.addTriangleCheck(iA, iB, iC, check, check2);
+      if (i >= 0 && color != 0) {
+        if (i == 0)
+          lastColor = 0;
+        short colix = (color == lastColor ? lastColix : (lastColix = Graphics3D
+            .getColix(lastColor = color)));
+        meshData.addPolygonColix(i, colix);
+      }
     } else {
-      meshDataServer.addTriangleCheck(iA, iB, iC, check, check2, isAbsolute, color);
+      meshDataServer.addTriangleCheck(iA, iB, iC, check, check2, isAbsolute,
+          color);
     }
   }
 
@@ -555,14 +563,13 @@ public abstract class SurfaceReader implements VertexDataServer {
     applyColorScale();
     jvxlData.nContours = (params.contourFromZero 
         ? params.nContours : -1 - params.nContours);
-    jvxlData.jvxlExtraLine = JvxlReader.jvxlExtraLine(jvxlData, 1);
     jvxlData.jvxlFileMessage = "mapped: min = " + params.valueMappedToRed
         + "; max = " + params.valueMappedToBlue;
   }
 
   void applyColorScale() {
-    colorFractionBase = jvxlData.colorFractionBase = JvxlReader.defaultColorFractionBase;
-    colorFractionRange = jvxlData.colorFractionRange = JvxlReader.defaultColorFractionRange;
+    colorFractionBase = jvxlData.colorFractionBase = JvxlCoder.defaultColorFractionBase;
+    colorFractionRange = jvxlData.colorFractionRange = JvxlCoder.defaultColorFractionRange;
     if (params.colorPhase == 0)
       params.colorPhase = 1;
     if (meshDataServer == null) {
@@ -621,7 +628,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       }
     colorData();
 
-    JvxlReader.jvxlCreateColorData(jvxlData,
+    JvxlCoder.jvxlCreateColorData(jvxlData,
         (saveColorData ? meshData.vertexValues : null));
 
     if (meshDataServer != null && params.colorBySets)
@@ -654,13 +661,16 @@ public abstract class SurfaceReader implements VertexDataServer {
       }
     }
 
-    if (params.nContours > 0 && jvxlData.contourColixes == null) {
-      int n = params.nContours;
+    if ((params.nContours > 0 || jvxlData.contourValues != null) && jvxlData.contourColixes == null) {
+      int n = (jvxlData.contourValues == null ? params.nContours : jvxlData.contourValues.length);
       short[] colors = jvxlData.contourColixes = new short[n];
       float dv = (valueBlue - valueRed) / (n + 1);
       // n + 1 because we want n lines between n + 1 slices
-      for (int i = 0; i < n; i++)
-        colors[i] = Graphics3D.getColix(getArgbFromPalette(valueRed + (i + 1) * dv));
+      for (int i = 0; i < n; i++) {
+        float v = (jvxlData.contourValues == null ? valueRed + (i + 1) * dv : jvxlData.contourValues[i]);
+        colors[i] = Graphics3D.getColix(getArgbFromPalette(v));
+      }
+      jvxlData.contourColors = Graphics3D.getHexCodes(colors);
     }
   }
   
@@ -772,7 +782,7 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   void updateSurfaceData() {
     updateTriangles();
-    JvxlReader.jvxlUpdateSurfaceData(jvxlData, meshData.vertexValues,
+    jvxlData.updateSurfaceData(meshData.vertexValues,
         meshData.vertexCount, meshData.vertexIncrement, cJvxlEdgeNaN);
   }
 

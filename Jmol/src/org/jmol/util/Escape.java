@@ -36,13 +36,6 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 
-import org.jmol.g3d.Graphics3D;
-import org.jmol.modelset.Bond.BondSet;
-
-/**
- * For defining the state, mostly
- * 
- */
 public class Escape {
 
   public static String escape(Object x) {
@@ -53,12 +46,20 @@ public class Escape {
     return x.toString();
   }
 
-  public static String escapeColor(short colix) {
-    return escapeColor(Graphics3D.getArgb(colix));
-  }
-  
   public static String escapeColor(int argb) {
-    return "[x" + Graphics3D.getHexColorFromRGB(argb) + "]";
+    return "[x" + getHexColorFromRGB(argb) + "]";
+  }
+
+  public static String getHexColorFromRGB(int argb) {
+    if (argb == 0)
+      return null;
+    String r  = "00" + Integer.toHexString((argb >> 16) & 0xFF);
+    r = r.substring(r.length() - 2);
+    String g  = "00" + Integer.toHexString((argb >> 8) & 0xFF);
+    g = g.substring(g.length() - 2);
+    String b  = "00" + Integer.toHexString(argb & 0xFF);
+    b = b.substring(b.length() - 2);
+    return r + g + b;
   }
 
   public static String escape(Point4f xyzw) {
@@ -90,6 +91,27 @@ public class Escape {
           sb.append(eol);
         for (int j = 0; j < f[i].length; j++)
           sb.append(f[i][j]).append('\t');
+      }
+    return sb.toString();
+  }
+
+  public static String escape(float[][][] f, boolean addSemi) {
+    StringBuffer sb = new StringBuffer();
+    String eol = (addSemi ? ";\n" : "\n");
+    if (f[0] == null || f[0][0] == null)
+      return "0 0 0" + eol;
+    sb.append(f.length).append(" ")
+      .append(f[0].length).append(" ")
+      .append(f[0][0].length);
+    for (int i = 0; i < f.length; i++)
+      if (f[i] != null) {
+        sb.append(eol);
+        for (int j = 0; j < f[i].length; j++)
+          if (f[i][j] != null) {
+            sb.append(eol);
+            for (int k = 0; k < f[i][j].length; k++)
+              sb.append(f[i][j][k]).append('\t');
+          }
       }
     return sb.toString();
   }
@@ -217,6 +239,18 @@ public class Escape {
     return "\\u" + s.substring(s.length() - 4);
   }
 
+  public static Object unescapePointOrBitsetOrMatrix(String s) {
+    Object v = s;
+    if (s.charAt(0) == '{')
+      v = unescapePoint(s);
+    else if (s.indexOf("({") == 0 && s.indexOf("({") == s.lastIndexOf("({")
+        || s.indexOf("[{") == 0 && s.indexOf("[{") == s.lastIndexOf("[{"))
+      v = unescapeBitset(s);
+    else if (s.indexOf("[[") == 0)
+      v = unescapeMatrix(s);
+    return v;
+  }
+
   public static Object unescapePoint(String strPoint) {
     if (strPoint == null || strPoint.length() == 0)
       return strPoint;
@@ -308,27 +342,6 @@ public class Escape {
     return strMatrix;
   }
 
-  /**
-   * accepts [xRRGGBB] or [0xRRGGBB] or [0xFFRRGGBB] 
-   * or #RRGGBB or [red,green,blue]
-   * or a valid JavaScript color
-   * 
-   * @param strColor
-   * @return 0 if invalid or integer color 
-   */
-  public static int unescapeColor(String strColor) {
-    return Graphics3D.getArgbFromString(strColor);
-  }
-  
-  public static String escapeColors(short[] colixes) {
-    StringBuffer s = new StringBuffer();
-    for (int i = 0; i < colixes.length; i++)
-      s.append(i == 0 ? '"' : ' ')
-        .append(escapeColor(colixes[i]));
-    s.append('"');
-    return s.toString();
-  }
-  
   public static String escape(BitSet bs, boolean isAtoms) {
     char chOpen = (isAtoms ? '(' : '[');
     char chClose = (isAtoms ? ')' : ']');
@@ -627,19 +640,9 @@ public class Escape {
     return "  DATA \"" + name + "\"\n" + 
         (data instanceof float[][] ?
           escape((float[][]) data, true) + ";\n"
-        : data) + "    END \"" + name + "\";\n";
+          : data instanceof float[][][] ?
+              escape((float[][][]) data, true) + ";\n"
+          : data) + "    END \"" + name + "\";\n";
   }
 
-  public static Object unescapePointOrBitsetOrMatrix(String s) {
-    Object v = s;
-    if (s.charAt(0) == '{')
-      v = unescapePoint(s);
-    else if (s.indexOf("({") == 0 && s.indexOf("({") == s.lastIndexOf("({"))
-      v = unescapeBitset(s);
-    else if (s.indexOf("[{") == 0)
-      v = new BondSet(unescapeBitset(s));
-    else if (s.indexOf("[[") == 0)
-      v = unescapeMatrix(s);
-    return v;
-  }
 }

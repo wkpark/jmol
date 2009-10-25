@@ -195,6 +195,15 @@ class DataManager {
     return (float[][]) data[1];
   }
 
+  float[][][] getDataFloat3D(String label) {
+    if (dataValues == null)
+      return null;
+    Object[] data = getData(label);
+    if (data == null || !(data[1] instanceof float[][][]))
+      return null;
+    return (float[][][]) data[1];
+  }
+
   protected void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bsDeleted) {
     if (dataValues == null)
       return;

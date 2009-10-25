@@ -30,6 +30,7 @@ import org.jmol.script.Token;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
 
@@ -537,22 +538,10 @@ public abstract class MeshCollection extends Shape {
      cmd += "# MODEL({" + mesh.modelIndex + "})";
    if (mesh.linkedMesh != null)
      cmd += " LINK";
-   if (mesh.data1 != null) {
-     String name = ((String) mesh.data1.elementAt(0)).toLowerCase();
-     if (name.indexOf("data2d_") != 0)
-       name = "data2d_" + name;
-     name = TextFormat.simpleReplace(name, "_xyz", "_");
-     cmd = Escape.encapsulateData(name, mesh.data1.elementAt(5)) 
-         + "  " + cmd + "# DATA=\"" + name + "\"";
-   }
-   if (mesh.data2 != null) {
-     String name = ((String) mesh.data2.elementAt(0)).toLowerCase();
-     if (name.indexOf("data2d_") != 0)
-       name = "data2d_" + name;
-     name = TextFormat.simpleReplace(name, "_xyz", "_");
-     cmd = Escape.encapsulateData(name, mesh.data2.elementAt(5)) 
-         + "  " + cmd + "# DATA2=\"" + name + "\"";
-   }
+   if (mesh.data1 != null)
+     cmd = encapsulateData(cmd, mesh.data1, "");
+   if (mesh.data2 != null)
+     cmd = encapsulateData(cmd, mesh.data2, "2");
    //System.out.println("meshcollection now " + cmd);
    
    if (mesh.modelIndex >= 0 && modelCount > 1)
@@ -569,6 +558,18 @@ public abstract class MeshCollection extends Shape {
      getColorState(sb, mesh);
    }
  }
+
+private String encapsulateData(String cmd, Vector data, String ext) {
+  String name = ((String) data.elementAt(0)).toLowerCase();
+  Object array = data.elementAt(5);
+  if (array instanceof float[][] && name.indexOf("data2d_") != 0)
+    name = "data2d_" + name;
+  else if (array instanceof float[][][] && name.indexOf("data3d_") != 0)
+    name = "data3d_" + name;    
+  cmd = Escape.encapsulateData(name, array) 
+      + "  " + cmd + "# DATA" + ext + "=\"" + name + "\"";
+  return cmd;
+}
 
 protected void getColorState(StringBuffer sb, Mesh mesh) {
   getColorState(sb, mesh);

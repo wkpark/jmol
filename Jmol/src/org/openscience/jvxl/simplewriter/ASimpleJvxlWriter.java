@@ -31,40 +31,46 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
 
+import org.jmol.jvxl.data.JvxlCoder;
+import org.jmol.jvxl.data.JvxlData;
+import org.jmol.jvxl.data.VolumeData;
+
 public class ASimpleJvxlWriter {
 
   // example for how to create simple JVXL files from cube data
   // no color mapping, no planes, just simple surfaces.
+  // requires also:
+  
+  // org.jmol.jvxl.data.JvxlCoder
+  // org.jmol.jvxl.data.JvxlData
+  // org.jmol.jvxl.data.MeshData
+  // org.jmol.jvxl.data.VolumeData
+  
+  // org.jmol.util.ArrayUtil.java
+  // org.jmol.util.Escape.java
+  // org.jmol.util.Parser.java
+  // org.jmol.util.TextFormat.java
 
   public static void main(String[] args) {
 
     // parameters that need setting:
 
     String outputFile = "c:/temp/simple.jvxl";
-    float cutoff = 0.01f;
-    boolean isCutoffAbsolute = false;
+    JvxlData jvxlData = new JvxlData();
+    jvxlData.cutoff = 0.01f;
+    jvxlData.isCutoffAbsolute = false;
+    jvxlData.asXml = true; // set false to see version 1.0 format
+    jvxlData.version = "ASimpleJvxlWriter -- version 2.1";
+
     int nX = 31;
     int nY = 31;
     int nZ = 31;
 
-    /*
-     * timing: SimpleMarchingCubes with 100,100,100:
-     * 
-     * getEdgeData: 641 ms
-     * getEdgeData: 1625 ms
-     * 
-     * old getEdgeData: 688 ms
-     * old getEdgeData: 1672 ms
-     * 
-     */
-    String title = "created by SimpleJvxlWriter "
-        + new SimpleDateFormat("yyyy-MM-dd', 'HH:mm").format(new Date())
-        + "\naddional comment line\n";
+    String[] title = new String[] {"created by SimpleJvxlWriter "
+        + new SimpleDateFormat("yyyy-MM-dd', 'HH:mm").format(new Date()) };
 
     VolumeData volumeData;
     VoxelDataCreator vdc;
-    JvxlData jvxlData;
-
     volumeData = new VolumeData();
     volumeData.setVolumetricOrigin(0, 0, 0);
     volumeData.setVolumetricVector(0, 1f, 0f, 0f);
@@ -75,9 +81,6 @@ public class ASimpleJvxlWriter {
 
     vdc = new VoxelDataCreator(volumeData);
     vdc.createVoxelData();
-    jvxlData = new JvxlData();
-    jvxlData.cutoff = cutoff;
-    jvxlData.isCutoffAbsolute = isCutoffAbsolute;
 
     // areaVolumeReturn and surfacePointsReturn are optional
     // -- set to null for faster calculation of JVXL data
@@ -86,7 +89,7 @@ public class ASimpleJvxlWriter {
     Vector surfacePointsReturn = new Vector(); // or null;
 
     jvxlData.isXLowToHigh = false;
-    writeFile(outputFile + "A", JvxlWrite.jvxlGetData(null, jvxlData,
+    writeFile(outputFile + "A", jvxlGetData(null, jvxlData, 
         volumeData, title, surfacePointsReturn, areaVolumeReturn));
 
     if (areaVolumeReturn != null)
@@ -97,11 +100,20 @@ public class ASimpleJvxlWriter {
     // streaming option: null voxelData
     volumeData.setVoxelData(null);
     jvxlData.isXLowToHigh = true;
-    writeFile(outputFile + "B", JvxlWrite.jvxlGetData(vdc, jvxlData,
+    writeFile(outputFile + "B", jvxlGetData(vdc, jvxlData, 
         volumeData, title, surfacePointsReturn, areaVolumeReturn));
 
     System.out.flush();
     System.exit(0);
+  }
+
+  public static String jvxlGetData(VoxelDataCreator vdc, JvxlData jvxlData,
+                                   VolumeData volumeData, String[] title,
+                                   Vector surfacePointsReturn,
+                                   float[] areaVolumeReturn) {
+    new SimpleMarchingCubes(vdc, volumeData, jvxlData,
+        surfacePointsReturn, areaVolumeReturn);
+    return JvxlCoder.jvxlGetFile(volumeData, jvxlData, title);
   }
 
   static void writeFile(String fileName, String text) {
@@ -115,5 +127,5 @@ public class ASimpleJvxlWriter {
       System.out.println("IO Exception: " + e.toString());
     }
   }
-  
+
 }

@@ -2,6 +2,8 @@ package org.openscience.jvxl.simplewriter;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.jvxl.data.VolumeData;
+
 public class VoxelDataCreator {
 
   VolumeData volumeData;

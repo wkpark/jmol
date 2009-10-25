@@ -108,7 +108,6 @@ import org.jmol.viewer.MouseManager;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
-import org.jmol.jvxl.readers.JvxlReader;
 import org.jmol.jvxl.readers.Parameters;
 
 import java.util.BitSet;
@@ -124,6 +123,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.api.MeshDataServer;
+import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.readers.SurfaceGenerator;
@@ -449,19 +449,43 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (jvxlData.vertexDataOnly) {
         meshData = new MeshData();
         fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+        meshData.polygonColorData = getColorData(meshData.polygonCount, meshData.polygonColixes);
       }
-      return JvxlReader.jvxlGetFile(jvxlData, meshData, title, "", true, index, thisMesh
+      return JvxlCoder.jvxlGetFile(jvxlData, meshData, title, "", true, index, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     }
     if (property == "jvxlFileHeader")
-      return JvxlReader.jvxlGetFile(jvxlData, null, title, "HEADERONLY", true, index, thisMesh
+      return JvxlCoder.jvxlGetFile(jvxlData, null, title, "HEADERONLY", true, index, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     if (property == "jvxlSurfaceData") // MO only
-      return JvxlReader.jvxlGetFile(jvxlData, null, title, "orbital #" + index, false, 1, thisMesh
+      return JvxlCoder.jvxlGetFile(jvxlData, null, title, "orbital #" + index, false, 1, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     if (property == "jvxlFileInfo")
       return jvxlData.jvxlInfoLine;
     return null;
+  }
+
+  public static String getColorData(int ccount, short[] colixes) {
+    if (colixes == null)
+      return null;
+    StringBuffer list1 = new StringBuffer();
+    int count = 0;
+    short colix = 0;
+    boolean done = false;
+    for (int i = 0; i < ccount || (done = true) == true; i++) {
+      if (done || colixes[i] != colix) {
+        if (count != 0)
+          list1.append(" ").append(count).append(" ").append(
+              (colix == 0 ? 0 : Graphics3D.getArgb(colix)));
+        if (done)
+          break;
+        colix = colixes[i];
+        count = 1;
+      } else {
+        count++;
+      }
+    }
+    return list1.toString();
   }
 
   protected void getColorState(StringBuffer sb, Mesh mesh) {
@@ -867,9 +891,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private void setJvxlInfo() {
     if (sg.getJvxlData() != jvxlData || sg.getJvxlData() != thisMesh.jvxlData)
       jvxlData = thisMesh.jvxlData = sg.getJvxlData();
-    jvxlData.jvxlDefinitionLine = JvxlReader.jvxlGetDefinitionLine(jvxlData,
-        false);
-    jvxlData.jvxlInfoLine = JvxlReader.jvxlGetDefinitionLine(jvxlData, true);
+    jvxlData.updateInfoLines();
   }
 
   public Vector getShapeDetail() {
@@ -914,16 +936,26 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     Vector[] contours = thisMesh.getContours();
     if (contours != null) {
       for (int i = contours.length; --i >= 0; ) {
-        float value = ((Float)contours[i].get(IsosurfaceMesh.CONTOUR_VALUE)).floatValue();
-        short[] colix = ((short[])contours[i].get(IsosurfaceMesh.CONTOUR_COLIX));
+        float value = ((Float)contours[i].get(JvxlCoder.CONTOUR_VALUE)).floatValue();
+        short[] colix = ((short[])contours[i].get(JvxlCoder.CONTOUR_COLIX));
         colix[0] = viewer.getColixForPropertyValue(value);
+        int[] color = ((int[])contours[i].get(JvxlCoder.CONTOUR_COLOR));
+        color[0] = Graphics3D.getArgb(colix[0]);
       }
+    }
+    //TODO -- still not right.
+    if (thisMesh.contourValues != null) {
+      thisMesh.contourColixes = new short[thisMesh.contourValues.length];
+      for (int i = 0; i < thisMesh.contourValues.length; i++) {
+        thisMesh.contourColixes[i] = viewer.getColixForPropertyValue(thisMesh.contourValues[i]);
+      }
+      thisMesh.setDiscreteColixes(null, null);
     }
     float[] range = viewer.getCurrentColorRange();
     jvxlData.valueMappedToRed = Math.min(range[0], range[1]);
     jvxlData.valueMappedToBlue = Math.max(range[0], range[1]);
     jvxlData.isJvxlPrecisionColor = true;
-    JvxlReader.jvxlCreateColorData(jvxlData, vertexValues);
+    JvxlCoder.jvxlCreateColorData(jvxlData, vertexValues);
     String schemeName = viewer.getPropertyColorScheme();
     thisMesh.colorCommand = "color $" + thisMesh.thisID + " "
         + getUserColorScheme(schemeName) + " range " + range[0] + " "
@@ -1137,7 +1169,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         for (int j = 0; j < vs.length; j++) {
           Vector vc = vs[j];
           int n = vc.size() - 1;
-          for (int k = IsosurfaceMesh.CONTOUR_POINTS; k < n; k++) {
+          for (int k = JvxlCoder.CONTOUR_POINTS; k < n; k++) {
             Point3f v = (Point3f) vc.get(k);
             int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
             if (d2 >= 0) {
@@ -1147,7 +1179,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           }
         }
         if (pickedContour != null)
-          return pickedContour.get(IsosurfaceMesh.CONTOUR_VALUE).toString();
+          return pickedContour.get(JvxlCoder.CONTOUR_VALUE).toString();
       } else if (m.jvxlData.jvxlPlane != null && m.vertexValues != null) {
         int pickedVertex = -1;
         for (int k = m.vertexCount; --k >= m.firstRealVertex;) {

@@ -446,6 +446,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return jvxlData.jvxlPlane;
     if (property == "jvxlFileData") {
       MeshData meshData = null;
+      jvxlData.asXml = viewer.getTestFlag4();
       if (jvxlData.vertexDataOnly) {
         meshData = new MeshData();
         fillMeshData(meshData, MeshData.MODE_GET_VERTICES);

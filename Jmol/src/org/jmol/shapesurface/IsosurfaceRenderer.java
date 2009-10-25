@@ -46,7 +46,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected IsosurfaceMesh imesh;
 
   protected void render() {
-    iShowNormals = viewer.getTestFlag4();
+    iShowNormals = viewer.getTestFlag2();
     Isosurface isosurface = (Isosurface) shape;
     int slabValue = (viewer.getNavigationMode() ? g3d.getSlab() : Integer.MAX_VALUE);
     for (int i = isosurface.meshCount; --i >= 0;) {

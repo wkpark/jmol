@@ -163,15 +163,15 @@ public class JvxlCoder {
       } else if (nColorData > 0) {
           info.append("\n  colorMapped=\"true\"");
       }
-      if (jvxlData.isJvxlPrecisionColor)
-        info.append("\n  precisionColor=\"true\"");
       if (jvxlData.vContours != null)
         info.append("\n  nContourData=\"" + jvxlData.vContours.length + "\"");
     } else {
       if (nColorData > 0)
         info.append("\n  colorMapped=\"true\"");
-      info.append("\n  plane=\"" + Escape.escape(jvxlData.jvxlPlane)+ " }\"");
+      info.append("\n  plane=\"" + Escape.escape(jvxlData.jvxlPlane)+ "\"");
     }
+    if (jvxlData.isJvxlPrecisionColor)
+      info.append("\n  precisionColor=\"true\"");
     if (jvxlData.isContoured) {
       if (jvxlData.contourValues == null || jvxlData.contourColixes == null) {
         if (jvxlData.vContours == null)
@@ -239,7 +239,7 @@ public class JvxlCoder {
                                    boolean includeHeader, int nSurfaces,
                                    String state, String comment) {
     
-    if (jvxlData.asXml || jvxlData.vContours != null || jvxlData.vertexDataOnly && meshData != null) 
+    if (jvxlData.asXml) 
       return jvxlGetFileXml(jvxlData, meshData, title, msg, includeHeader, nSurfaces, state, comment);
     return jvxlGetFileVersion1(jvxlData, meshData, title, msg, includeHeader, nSurfaces, state, comment);
   }

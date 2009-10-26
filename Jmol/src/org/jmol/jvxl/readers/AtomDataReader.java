@@ -30,6 +30,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
@@ -200,7 +201,7 @@ abstract class AtomDataReader extends VolumeDataReader {
       if (pt.z + rA > xyzMax.z)
         xyzMax.z = pt.z + rA;
     }
-    Logger.info("surface range " + xyzMin + " to " + xyzMax);
+    Logger.info("boundbox corners " + Escape.escape(xyzMin) + " " + Escape.escape(xyzMax));
 
     if (!Float.isNaN(params.scale)) {
       Vector3f v = new Vector3f(xyzMax);

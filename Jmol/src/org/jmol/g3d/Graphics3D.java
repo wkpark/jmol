@@ -2013,9 +2013,8 @@ final public class Graphics3D implements JmolRendererInterface {
       return null;
     StringBuffer s = new StringBuffer();
     for (int i = 0; i < colixes.length; i++)
-      s.append(i == 0 ? '"' : ' ')
+      s.append(i == 0 ? "" : " ")
         .append(getHexCode(colixes[i]));
-    s.append('"');
     return s.toString();
   }
 

@@ -141,6 +141,7 @@ public class JvxlCoder {
     int bytesUncompressedEdgeData = (jvxlData.vertexDataOnly ? 0
         : jvxlData.jvxlEdgeData.length() - 1);
     int nColorData = (jvxlData.jvxlColorData == null ? -1 : (jvxlData.jvxlColorData.length() - 1));
+    info.append("\n  asXML=\"" + jvxlData.asXml + "\"");
     if (!jvxlData.vertexDataOnly) {
       info.append("\n  cutoff=\"" + jvxlData.cutoff + "\"");
       info.append("\n  isCutoffAbsolute=\"" + jvxlData.isCutoffAbsolute + "\"");
@@ -180,6 +181,9 @@ public class JvxlCoder {
         if (jvxlData.vContours == null)
           info.append("\n  nContours=\"" + Math.abs(jvxlData.nContours) + "\"");
       } else {
+        if (jvxlData.jvxlPlane != null)
+          info.append("\n  contoured=\"true\"");
+        info.append("\n  nContours=\"" + jvxlData.contourValues.length + "\"");
         info.append("\n  contourValues=\"").append(
             Escape.escapeArray(jvxlData.contourValues)).append("\"").append(
             "\n  contourColors=\"").append(jvxlData.contourColors).append("\"");

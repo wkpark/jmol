@@ -270,12 +270,18 @@ abstract class AtomDataReader extends VolumeDataReader {
   }
 
   protected void setHeader(String calcType, String line2) {
-    Logger.info(calcType + " range " + xyzMin + " to " + xyzMax);
     jvxlFileHeaderBuffer = new StringBuffer();
     if (atomData.programInfo != null)
       jvxlFileHeaderBuffer.append("#created by ").append(atomData.programInfo).append(" on ").append(new Date()).append("\n");
-    jvxlFileHeaderBuffer.append(calcType).append(" range ").append(xyzMin)
-    .append(" to ").append(xyzMax).append("\n").append(line2).append("\n");
+    jvxlFileHeaderBuffer.append("boundbox corners ")
+        .append(Escape.escape(xyzMin))
+        .append(" ")
+        .append(Escape.escape(xyzMax))
+        .append(" #")
+        .append(calcType)
+        .append("\n")
+        .append(line2)
+        .append("\n");
   }
 
   protected void setRangesAndAddAtoms(float ptsPerAngstrom, int maxGrid,

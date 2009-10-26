@@ -331,6 +331,7 @@ public class JvxlCoder {
                                             int nSurfaces, String state,
                                             String comment) {
     // pre-XML
+    jvxlData.jvxlInfoLine = TextFormat.simpleReplace(jvxlData.jvxlInfoLine, "asXML=\"true", "asXML=\"false");
     StringBuffer data = new StringBuffer();
     if (includeHeader) {
       String s = jvxlData.jvxlFileHeader

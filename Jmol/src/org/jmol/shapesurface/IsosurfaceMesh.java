@@ -77,6 +77,7 @@ public class IsosurfaceMesh extends Mesh {
     isColorSolid = true;
     vertexColixes = null;
     vertexValues = null;
+    polygonColixes = null;
     jvxlData.contourValues = null;
     jvxlData.contourValuesUsed = null;
     jvxlData.contourColixes = null;

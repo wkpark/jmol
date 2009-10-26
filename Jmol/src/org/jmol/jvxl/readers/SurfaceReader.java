@@ -424,7 +424,8 @@ public abstract class SurfaceReader implements VertexDataServer {
 
     if (params.thePlane != null || params.isContoured) {
       marchingSquares = new MarchingSquares(this, volumeData, params.thePlane,
-          params.contoursDiscrete, params.nContours, params.thisContour, params.contourFromZero);
+          params.contoursDiscrete, params.nContours, params.thisContour,
+          params.contourFromZero);
       contourType = marchingSquares.getContourType();
       marchingSquares.setMinMax(params.valueMappedToRed,
           params.valueMappedToBlue);
@@ -432,8 +433,11 @@ public abstract class SurfaceReader implements VertexDataServer {
     marchingCubes = new MarchingCubes(this, volumeData, jvxlVoxelBitSet,
         params.isContoured, contourType, params.cutoff,
         params.isCutoffAbsolute, params.isSquared, isXLowToHigh);
-    edgeData = marchingCubes.getEdgeData();
-    jvxlData.setSurfaceInfoFromBitSet(marchingCubes.getBsVoxels(), params.thePlane);
+    String data = marchingCubes.getEdgeData();
+    if (params.thePlane == null)
+      edgeData = data;
+    jvxlData.setSurfaceInfoFromBitSet(marchingCubes.getBsVoxels(),
+        params.thePlane);
     if (isJvxl)
       edgeData = jvxlEdgeDataRead;
   }

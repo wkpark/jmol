@@ -32,7 +32,8 @@ import org.jmol.util.Escape;
 
 public class JvxlCoder {
 
-  final public static String JVXL_VERSION = "2.1";
+  final public static String JVXL_VERSION1 = "2.0";
+  final public static String JVXL_VERSION_XML = "2.1"; 
   
   // 1.4 adds -nContours to indicate contourFromZero for MEP data mapped onto planes
   // 2.0 adds vertex/triangle compression when no grid is present 
@@ -146,9 +147,11 @@ public class JvxlCoder {
       info.append("\n  pointsPerAngstrom=\"" + jvxlData.pointsPerAngstrom
           + "\"");
       info.append("\n  isXLowToHigh=\"" + jvxlData.isXLowToHigh + "\"");
-      info.append("\n  nSurfaceInts=\"" + nSurfaceInts + "\"");
-      info.append("\n  nBytesUncompressedEdgeData=\""
-          + bytesUncompressedEdgeData + "\"");
+      if (jvxlData.jvxlPlane == null) {
+        info.append("\n  nSurfaceInts=\"" + nSurfaceInts + "\"");
+        info.append("\n  nBytesUncompressedEdgeData=\""
+            + bytesUncompressedEdgeData + "\"");
+      }
       if (nColorData > 0)
         info.append("\n  nBytesUncompressedColorData=\"" + nColorData + "\"");
       info.append("\n  nBytesData=\""
@@ -251,7 +254,7 @@ public class JvxlCoder {
 
     StringBuffer data = new StringBuffer();
     data.append("<?xml version=\"1.0\"?>\n").append("<jvxl version=\"").append(
-        JVXL_VERSION).append("\" Jmol version=\"").append(jvxlData.version)
+        JVXL_VERSION_XML).append("\" Jmol version=\"").append(jvxlData.version)
         .append("\">\n");
     if (jvxlData.jvxlFileTitle != null)
       data.append("<jvxlFileTitle>\n")
@@ -328,10 +331,10 @@ public class JvxlCoder {
       String s = jvxlData.jvxlFileHeader
           + (nSurfaces > 0 ? -nSurfaces : -1) +" " + jvxlData.edgeFractionBase + " "
           + jvxlData.edgeFractionRange + " " + jvxlData.colorFractionBase + " "
-          + jvxlData.colorFractionRange + " Jmol voxel format version " +  JVXL_VERSION + "\n";
+          + jvxlData.colorFractionRange + " Jmol voxel format version " +  JVXL_VERSION1 + "\n";
       if (s.indexOf("#JVXL") != 0)
         data.append("#JVXL").append(jvxlData.isXLowToHigh ? "+" : "").append(
-            " VERSION ").append(JVXL_VERSION).append("\n");
+            " VERSION ").append(JVXL_VERSION1).append("\n");
       data.append(s);
     }
     if ("HEADERONLY".equals(msg))
@@ -876,7 +879,7 @@ public class JvxlCoder {
   public static String jvxlExtraLine(JvxlData jvxlData, int n) {
     return (-n) + " " + jvxlData.edgeFractionBase + " "
         + jvxlData.edgeFractionRange + " " + jvxlData.colorFractionBase + " "
-        + jvxlData.colorFractionRange + " Jmol voxel format version " +  JVXL_VERSION + "\n";
+        + jvxlData.colorFractionRange + " Jmol voxel format version " +  JVXL_VERSION1 + "\n";
   }
 
   public static String fixAtomLineVersion1(int atomCount, String atomLine,

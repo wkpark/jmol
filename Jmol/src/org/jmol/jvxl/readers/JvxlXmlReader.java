@@ -136,12 +136,12 @@ public class JvxlXmlReader extends JvxlReader {
     if (s.indexOf("{") >= 0) {
       try {
         params.thePlane = (Point4f) Escape.unescapePoint(s);
+        Logger.info("JVXL read: plane " + params.thePlane);
       } catch (Exception e) {
         Logger
             .error("Error reading 4 floats for PLANE definition -- setting to 0 0 1 0  (z=0)");
         params.thePlane = new Point4f(0, 0, 1, 0);
       }
-      jvxlDataIs2dContour = (jvxlDataIsColorMapped && params.isContoured);
       surfaceDataCount = 0;
       edgeDataCount = 0;
     } else {
@@ -150,6 +150,9 @@ public class JvxlXmlReader extends JvxlReader {
       edgeDataCount = parseInt(getXmlAttrib(data, "nBytesUncompressedEdgeData"));
     }
     colorDataCount = Math.max(0, parseInt(getXmlAttrib(data, "nBytesUncompressedColorData")));
+    jvxlDataIs2dContour = (params.thePlane != null && jvxlDataIsColorMapped);
+    if (jvxlDataIs2dContour)
+      params.isContoured = true;
     
     if (params.colorBySign)
       params.isBicolorMap = true;

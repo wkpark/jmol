@@ -153,7 +153,7 @@ public class JvxlData {
   public void setSurfaceInfoFromBitSet(BitSet bs, Point4f thePlane) {
     StringBuffer sb = new StringBuffer();
     int nPoints = nPointsX * nPointsY * nPointsZ;
-    int nSurfaceInts = JvxlCoder.jvxlEncodeBitSet(bs, nPoints, sb);
+    int nSurfaceInts = (thePlane != null ? 0 : JvxlCoder.jvxlEncodeBitSet(bs, nPoints, sb));
     setSurfaceInfo(thePlane, nSurfaceInts, sb.toString());
   }
     

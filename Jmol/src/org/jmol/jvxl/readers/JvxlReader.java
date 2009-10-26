@@ -292,8 +292,7 @@ public class JvxlReader extends VolumeFileReader {
             .error("Error reading 4 floats for PLANE definition -- setting to 0 0 1 0  (z=0)");
         params.thePlane = new Point4f(0, 0, 1, 0);
       }
-      Logger.info("JVXL read: plane {" + params.thePlane.x + " " + params.thePlane.y
-          + " " + params.thePlane.z + " " + params.thePlane.w + "}");
+      Logger.info("JVXL read: plane " + params.thePlane);
       if (param2 == -1 && param3 < 0)
         param3 = -param3;
       //error in some versions of Jmol. (fixed in 11.3.54)

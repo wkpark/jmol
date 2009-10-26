@@ -305,7 +305,7 @@ public class MarchingCubes extends TriangleData  {
 
     //Logger.checkTimer("Jmol mc getEdgeData");
 
-    System.out.println("MarchingCubes: fractionOutside = " + fractionOutside/8);
+    //System.out.println("MarchingCubes: fractionOutside = " + fractionOutside/8);
     return edgeData.toString();
   }
 

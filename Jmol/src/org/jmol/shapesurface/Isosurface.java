@@ -428,7 +428,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (ret != null)
       return ret;
     if (property == "dataRange")
-      return (thisMesh == null ? null : new float[] {
+      return (thisMesh == null || jvxlData.jvxlPlane != null && !jvxlData.jvxlDataIsColorMapped ? null : new float[] {
           jvxlData.mappedDataMin, jvxlData.mappedDataMax,
           jvxlData.valueMappedToRed,
           jvxlData.valueMappedToBlue });

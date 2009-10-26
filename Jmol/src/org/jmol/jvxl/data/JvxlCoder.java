@@ -163,6 +163,7 @@ public class JvxlCoder {
     if (jvxlData.jvxlPlane == null) {
       if (jvxlData.isContoured) {
         info.append("\n  contoured=\"true\"");
+        info.append("\n  colorMapped=\"true\"");
       } else if (jvxlData.isBicolorMap) {
         info.append("\n  bicolorMap=\"true\"");
       } else if (nColorData > 0) {
@@ -676,7 +677,7 @@ public class JvxlCoder {
       }
     }
     return list.append(
-        "  <jvxlTriangleData data=\"").append(list1).append("\"></jvxlTriangleData>\n")
+        "  <jvxlTriangleData count=\"" + nData + "\" data=\"").append(list1).append("\"></jvxlTriangleData>\n")
         .toString();
   }
 

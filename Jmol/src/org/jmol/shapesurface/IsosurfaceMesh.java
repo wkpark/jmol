@@ -409,7 +409,7 @@ public class IsosurfaceMesh extends Mesh {
     float vMax = values[n - 1];
     colorCommand = null;
     boolean haveColixes = (colixes != null && colixes.length > 0);
-    isColorSolid = haveColixes;
+    isColorSolid = haveColixes && jvxlData.jvxlPlane != null;
     if (jvxlData.vContours != null) {
       if (haveColixes)
         for (int i = 0; i < jvxlData.vContours.length; i++)

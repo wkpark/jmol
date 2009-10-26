@@ -801,6 +801,7 @@ public class JvxlReader extends VolumeFileReader {
       Logger.info("Reading " + vertexCount + " vertices");
     Point3f min = getXmlPoint(data, "min");
     Point3f range = getXmlPoint(data, "max");
+    range.sub(min);
     int colorFractionBase = jvxlData.colorFractionBase;
     int colorFractionRange = jvxlData.colorFractionRange;
     int ptCount = vertexCount * 3;
@@ -857,7 +858,7 @@ public class JvxlReader extends VolumeFileReader {
     int p = 0;
     int b0 = (int) '\\';
     for (int i = 0, pt = -1; i < nData;) {
-      char ch = data.charAt(++pt);
+      char ch = s.charAt(++pt);
       int idiff;
       switch (ch) {
       case '!':
@@ -883,7 +884,7 @@ public class JvxlReader extends VolumeFileReader {
       case '8':
       case '9':
         nextp[0] = pt;
-        idiff = Parser.parseInt(data, nextp);
+        idiff = Parser.parseInt(s, nextp);
         pt = nextp[0] - 1;
         break;
       default:

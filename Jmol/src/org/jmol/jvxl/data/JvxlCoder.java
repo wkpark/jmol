@@ -29,6 +29,7 @@ import java.util.Vector;
 
 import org.jmol.util.Parser;
 import org.jmol.util.Escape;
+import org.jmol.util.TextFormat;
 
 public class JvxlCoder {
 
@@ -246,7 +247,7 @@ public class JvxlCoder {
                                    boolean includeHeader, int nSurfaces,
                                    String state, String comment) {
     
-    if (jvxlData.asXml) 
+    if (jvxlData.asXml || jvxlData.vContours != null || jvxlData.contourValues != null) 
       return jvxlGetFileXml(jvxlData, meshData, title, msg, includeHeader, nSurfaces, state, comment);
     return jvxlGetFileVersion1(jvxlData, meshData, title, msg, includeHeader, nSurfaces, state, comment);
   }
@@ -255,7 +256,7 @@ public class JvxlCoder {
                                        String[] title, String msg,
                                        boolean includeHeader, int nSurfaces,
                                        String state, String comment) {
-
+    jvxlData.jvxlInfoLine = TextFormat.simpleReplace(jvxlData.jvxlInfoLine, "asXML=\"false", "asXML=\"true");
     StringBuffer data = new StringBuffer();
     data.append("<?xml version=\"1.0\"?>\n").append("<jvxl version=\"").append(
         JVXL_VERSION_XML).append("\" Jmol version=\"").append(jvxlData.version)

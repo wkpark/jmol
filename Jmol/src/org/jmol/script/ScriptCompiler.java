@@ -1395,7 +1395,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case Token.pmesh:
     case Token.isosurface:
       // isosurface ... name.xxx
-      if (parenCount == 0 && ".:/\\+-!?".indexOf(nextChar())>= 0)
+      if (parenCount == 0 && bracketCount == 0 && ".:/\\+-!?".indexOf(nextChar())>= 0)
         checkUnquotedFileName();
     }
     return OK;

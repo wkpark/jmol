@@ -62,7 +62,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
       if ((thisAtom = qmAtoms[atomIndex]) == null)
         continue;
       float charge = charges[atomIndex];
-      System.out.println("process map for atom " + atomIndex + " nX,nY,nZ=" + nX + "," + nY + "," + nZ + " charge=" + charge);
+      //System.out.println("process map for atom " + atomIndex + " nX,nY,nZ=" + nX + "," + nY + "," + nZ + " charge=" + charge);
       thisAtom.setXYZ(true);
       for (int ix = xMax; --ix >= xMin;) {
         float dX = X2[ix];
@@ -72,8 +72,8 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
             float d2 = dXY + Z2[iz];
             voxelData[ix][iy][iz] += (d2 == 0 ? charge
                 * Float.POSITIVE_INFINITY : charge / (float) Math.sqrt(d2));
-if (iy == 2 && iz == 4 && (ix == 0 || ix == 7))
-  System.out.println("atom " + atomIndex + " " + thisAtom + " ix=" + ix + " data:" + voxelData[ix][iy][iz] + " x2 y2 z2 d2=" + X2[ix] + " " + Y2[iy] + " " + Z2[iz] + " " + d2);
+//if (iy == 2 && iz == 4 && (ix == 0 || ix == 7))
+  //System.out.println("atom " + atomIndex + " " + thisAtom + " ix=" + ix + " data:" + voxelData[ix][iy][iz] + " x2 y2 z2 d2=" + X2[ix] + " " + Y2[iy] + " " + Z2[iz] + " " + d2);
           }
         }
       }

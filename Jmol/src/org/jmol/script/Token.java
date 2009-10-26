@@ -600,7 +600,9 @@ public class Token {
   final static int within           = 13 | 0 << 9 | mathfunc;
   public final static int connected = 14 | 0 << 9 | mathfunc;
   public final static int helix     = 15 | 0 << 9 | mathfunc | predefinedset;
-  
+
+  final static int now          = 16 | 0 << 9 | mathfunc;
+
   // xxx(a)
   
   final static int substructure = 1 | 1 << 9 | mathfunc;
@@ -1160,6 +1162,7 @@ public class Token {
     "noContourLines",   new Token(nocontourlines),
     "notFrontOnly",     new Token(notfrontonly),
     "noTriangles",      new Token(notriangles),
+    "now",              new Token(now),
     "nucleic",          new Token(nucleic),
     "occupancy",        new Token(occupancy),
     "off",              tokenOff, 

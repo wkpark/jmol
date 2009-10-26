@@ -4411,6 +4411,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
 
   public void scriptEcho(String strEcho) {
+    if (!Logger.isActiveLevel(Logger.LEVEL_INFO))
+      return;
     statusManager.setScriptEcho(strEcho, isScriptQueued);
     if (listCommands && strEcho != null && strEcho.indexOf("$[") == 0)
       Logger.info(strEcho);
@@ -5961,7 +5963,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void showString(String str, boolean isPrint) {
     if (isScriptQueued && (!isSilent || isPrint))
-      Logger.warn(str);
+      Logger.info(str);
     scriptEcho(str);
   }
 

@@ -849,11 +849,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         associateNormals);
   }
 
-  public void addTriangleCheck(int iA, int iB, int iC, int check,
+  public int addTriangleCheck(int iA, int iB, int iC, int check,
                                int check2, boolean isAbsolute, int color) {
     if (isAbsolute && !MeshData.checkCutoff(iA, iB, iC, thisMesh.vertexValues))
-      return;
-    thisMesh.addTriangleCheck(iA, iB, iC, check, check2, color);
+      return -1;
+    return thisMesh.addTriangleCheck(iA, iB, iC, check, check2, color);
   }
 
   ////////////////////////////////////////////////////////////////////

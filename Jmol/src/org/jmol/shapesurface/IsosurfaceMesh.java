@@ -153,7 +153,7 @@ public class IsosurfaceMesh extends Mesh {
   private int lastColor;
   private short lastColix;
   
-  void addTriangleCheck(int vertexA, int vertexB, int vertexC, int check, int check2,
+  int addTriangleCheck(int vertexA, int vertexB, int vertexC, int check, int check2,
                         int color) {
     if (vertices == null
         || vertexValues != null
@@ -163,23 +163,25 @@ public class IsosurfaceMesh extends Mesh {
         || Float.isNaN(vertices[vertexA].x) 
         || Float.isNaN(vertices[vertexB].x)
         || Float.isNaN(vertices[vertexC].x))
-      return;
-    if (polygonCount == 0)
+      return -1;
+    int n = polygonCount;
+    if (n == 0)
       polygonIndexes = new int[SEED_COUNT][];
-    else if (polygonCount == polygonIndexes.length)
+    else if (n == polygonIndexes.length)
       polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
     if (color != 0) {
       if (polygonColixes == null) {
         polygonColixes = new short[SEED_COUNT];
         lastColor = 0;
-      } else if (polygonCount == polygonColixes.length) {
+      } else if (n == polygonColixes.length) {
         polygonColixes = (short[]) ArrayUtil.doubleLength(polygonColixes);
       }
-      polygonColixes[polygonCount] = (color == lastColor ? lastColix
+      polygonColixes[n] = (color == lastColor ? lastColix
           : (lastColix = Graphics3D.getColix(lastColor = color)));
     }
     polygonIndexes[polygonCount++] = new int[] { vertexA, vertexB, vertexC,
         check, check2 };
+    return n;
   }
   
   void invalidateTriangles() {

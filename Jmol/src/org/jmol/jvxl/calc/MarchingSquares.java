@@ -309,7 +309,7 @@ public class MarchingSquares {
   // (2) calculate the grid points
 
   private int contourVertexCount;
-  private ContourVertex[] contourVertexes;
+  protected ContourVertex[] contourVertexes;
 
   private static class ContourVertex extends Point3f {
     Point3i voxelLocation;
@@ -397,20 +397,23 @@ public class MarchingSquares {
           continue;
         int vi = (nSquares < 2 ? -1 : c.vertexIndex);
         if (x != squareCountX && y != squareCountY) {
-          planarSquares[x * squareCountY + y].setVertex(0, vi);
+          planarSquares[x * squareCountY + y].setVertex(0, vi, i);
         }
         if (x != 0 && y != squareCountY) {
-          planarSquares[(x - 1) * squareCountY + y].setVertex(1, vi);
+          planarSquares[(x - 1) * squareCountY + y].setVertex(1, vi, i);
         }
         if (y != 0 && x != squareCountX) {
-          planarSquares[x * squareCountY + y - 1].setVertex(3, vi);
+          planarSquares[x * squareCountY + y - 1].setVertex(3, vi, i);
         }
         if (y != 0 && x != 0) {
-          planarSquares[(x - 1) * squareCountY + y - 1].setVertex(2,vi);
+          planarSquares[(x - 1) * squareCountY + y - 1].setVertex(2, vi, i);
         }
       } else {
         Logger.error("loadPixelData out of bounds: " + pt.x + " " + pt.y + "?");
       }
+    }
+    for (int i = 0; i < nSquares; i++) {
+      planarSquares[i].checkVertices();
     }
   }
 
@@ -458,6 +461,7 @@ public class MarchingSquares {
     //int x, y;
     //Point3f origin;
     final int[] vertexes = new int[] {-1, -1, -1, -1 };
+    final int[] contourIndexes = new int[4];
     final float[] values = new float[4];
     float[][] fractions;
     int[][] intersectionPoints;
@@ -481,13 +485,33 @@ public class MarchingSquares {
       }
     }
 
-    void setVertex(int iV, int pt) {
+    void setVertex(int iV, int pt, int contourIndex) {
       if (vertexes[iV] != -1 && vertexes[iV] != pt)
         Logger
             .error("iV IS NOT -1 or pt:" + iV + " " + vertexes[iV] + "!=" + pt);
       vertexes[iV] = pt;
+      contourIndexes[iV] = contourIndex;
     }
 
+    void checkVertices() {
+      /*
+      int iNaN = -1;
+      for (int i = 0; i < 4; i++) 
+        if (vertexes[i] < 0) {
+          if (iNaN >= 0) {
+            iNaN = -1;
+            break;
+          }
+          iNaN = i;
+        }
+      if (iNaN >= 0) {
+        System.out.println(iNaN + " " + vertexes[iNaN] + " " + );
+        vertexes[iNaN] = vertexes[(iNaN + 1) % 4];        
+        values[iNaN] = values[(iNaN + 1) % 4];        
+      }
+      */
+    }
+    
     void addEdgeMask(int contourIndex, int edgeMask4, int insideMask) {
       /*
        * binary abcd abcd vvvv  where abcd is edge intersection mask and
@@ -553,11 +577,12 @@ public class MarchingSquares {
     contourValuesUsed = new float[nContourSegments];
     for (int i = 0; i < nContourSegments; i++) {
       contourIndex = i;
-      float cutoff = (contoursDiscrete != null ? contoursDiscrete[i] :
-        contourFromZero ? min + (i * 1f / nContourSegments) * diff : 
-            i == 0 ? -Float.MAX_VALUE : i == nContourSegments - 1 ? Float.MAX_VALUE 
-                : min + ((i - 1) * 1f / (nContourSegments-1)) * diff);
-        
+      float cutoff = (
+        contoursDiscrete != null ? contoursDiscrete[i] 
+            : contourFromZero ? min + (i * 1f / nContourSegments) * diff 
+            : i == 0 ? -Float.MAX_VALUE 
+            : i == nContourSegments - 1 ? Float.MAX_VALUE 
+            : min + ((i - 1) * 1f / (nContourSegments-1)) * diff);        
       /*
        * cutoffs right near zero cause problems, so we adjust just a tad
        * 
@@ -591,7 +616,7 @@ public class MarchingSquares {
 
     int[][] isoPointIndexes2d = new int[squareCountY][4];
     float[][] squareFractions2d = new float[squareCountY][4];
-    
+
     for (int i = squareCountY; --i >= 0;)
       isoPointIndexes2d[i][0] = isoPointIndexes2d[i][1] = isoPointIndexes2d[i][2] = isoPointIndexes2d[i][3] = -1;
 
@@ -754,8 +779,9 @@ public class MarchingSquares {
 
   private float calcContourPoint(float cutoff, float valueA, float valueB,
                          Point3f contourPoint) {
-    float fraction = (Float.isNaN(valueA) ? 1 
-        : Float.isNaN(valueB) ? 0 
+    //TODO - re-enable? problem is that this causes many overlapping triangles on edge of surface
+    float fraction = (false && Float.isNaN(valueA) ? 1 
+        : false && Float.isNaN(valueB) ? 0 
         : (cutoff - valueA) / (valueB - valueA));
     edgeVector.sub(pointB, pointA);
     contourPoint.scaleAdd(fraction, edgeVector, pointA);
@@ -1166,7 +1192,7 @@ public class MarchingSquares {
             && bsMesh1.get(i3) ? 2 : bsMesh1.get(i3) && bsMesh1.get(i1) ? 4 : 0);
         int check2 = (check > 0 ? 0 : bsMesh2.get(i1) && bsMesh2.get(i2) ? 1 : bsMesh2.get(i2)
             && bsMesh2.get(i3) ? 2 : bsMesh2.get(i3) && bsMesh2.get(i1) ? 4 : 0);
-        surfaceReader.addTriangleCheck(iA, iB, iC, Math.max(check, check2), (check > 0 ? contourIndex : contourIndex2), false, 0);
+        /*index=*/ surfaceReader.addTriangleCheck(iA, iB, iC, Math.max(check, check2), (check > 0 ? contourIndex : contourIndex2), false, 0);
       }
       if (iC >= 0)
         i2 = i3;

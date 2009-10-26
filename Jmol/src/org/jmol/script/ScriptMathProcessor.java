@@ -612,6 +612,7 @@ class ScriptMathProcessor {
       return evaluateReplace(args);
     case Token.array:
       return evaluateArray(args);
+    case Token.now:
     case Token.abs:
     case Token.acos:
     case Token.cos:
@@ -1411,6 +1412,10 @@ class ScriptMathProcessor {
       if (q == null)
         q = new Quaternion(p4);
       return addX(q.toPoint4f());
+    }
+    if (tok == Token.now) {
+      return addX(((int) System.currentTimeMillis() & 0x7FFFFFFF) 
+          - (args.length == 0 ? 0 : ScriptVariable.iValue(args[0])));
     }
     if (args.length != 1)
       return false;

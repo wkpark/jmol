@@ -682,6 +682,15 @@ public class SurfaceGenerator {
     }
     
     if ("fullPlane" == propertyName) {
+      // fullPlane == true --> params.contourFromZero is false
+      // fullPlane == false --> params.contourFromZero is true
+      // this only relates to projections onto a plane
+      // the default is contourFromZero TRUE
+      // but MEP default is contourFromZero FALSE
+      // the setting is ignored when discrete contours
+      // are specified, because in that case we just
+      // define the triangle color by their centers
+      
       params.contourFromZero = !((Boolean) value).booleanValue();
       return true;
     }

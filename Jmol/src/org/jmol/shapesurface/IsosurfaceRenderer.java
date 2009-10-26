@@ -149,8 +149,11 @@ public class IsosurfaceRenderer extends MeshRenderer {
     int incr = imesh.vertexIncrement;
     int diam = 4;
     boolean showNumbers = viewer.getTestFlag2();
+    int cX = (showNumbers ? viewer.getScreenWidth()/2 : 0);
+    int cY = (showNumbers ? viewer.getScreenHeight()/2 : 0);
+    
     if (showNumbers)
-      g3d.setFont(g3d.getFontFid("Monospaced", 10));
+      g3d.setFont(g3d.getFontFid("Monospaced", 24));
     for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0
         : imesh.firstRealVertex); i < vertexCount; i += incr) {
       if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
@@ -158,11 +161,18 @@ public class IsosurfaceRenderer extends MeshRenderer {
         continue;
       if (imesh.vertexColixes != null)
         g3d.setColix(imesh.vertexColixes[i]);
-      g3d.fillSphereCentered(diam, screens[i]);
-      if (showNumbers && screens[i].z > 10)
-        g3d.drawStringNoSlab(i
-            + (imesh.isColorSolid ? "" : " " + imesh.vertexValues[i]), null,
+      if (showNumbers && screens[i].z > 10
+         && Math.abs(screens[i].x - cX) < 50
+         && Math.abs(screens[i].y - cY) < 50
+        ) {
+        String s = i + (imesh.isColorSolid ? "" : " " + imesh.vertexValues[i]);
+        System.out.println("IsoSurfaceRenderer i=" + s + " " 
+            + imesh.vertices[i] + " " + imesh.vertexValues[i]);
+        g3d.drawStringNoSlab(s, null,
             screens[i].x, screens[i].y, screens[i].z);
+      }
+      diam = (i == 1066 ? 8 : 4);
+      g3d.fillSphereCentered(diam, screens[i]);
     }
     if (incr != 3)
       return;

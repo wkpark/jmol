@@ -77,8 +77,6 @@ public class JvxlData {
   public JvxlData() {    
   }
  
-  //for now, all public, no accessors
-
   public boolean asXml = true;
   public boolean wasJvxl;
   public boolean wasCubic;

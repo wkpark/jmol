@@ -1411,7 +1411,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     char ch;
     while (++ichT < cchScript 
         && !Character.isWhitespace(ch = script.charAt(ichT)) 
-        && ch != '#' && ch != ';' ) {
+        && ch != '#' && ch != ';' && ch != '}') {
     }
     String name = script.substring(ichToken, ichT).replace('\\','/');
     cchToken = ichT - ichToken;

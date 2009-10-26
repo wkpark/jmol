@@ -396,84 +396,13 @@ public class JvxlReader extends VolumeFileReader {
     try {
       while (str.length() < nPoints) {
         line = br.readLine();
-        str += jvxlUncompressString(line);
+        str += JvxlCoder.jvxlUncompressString(line);
       }
     } catch (Exception e) {
       Logger.error("Error reading " + type + " data " + e);
       throw new NullPointerException();
     }
     return str;
-  }
-
-  public static String jvxlCompressString(String data) {
-    /* just a simple compression, but allows 2000-6000:1 CUBE:JVXL for planes!
-     * 
-     *   "X~nnn " means "nnn copies of character X" 
-     *   
-     *   ########## becomes "#~10 " 
-     *   ~ becomes "~~" 
-     *
-     */
-    StringBuffer dataOut = new StringBuffer();
-    char chLast = '\0';
-    data += '\0';
-    int nLast = 0;
-    for (int i = 0; i < data.length(); i++) {
-      char ch = data.charAt(i);
-      if (ch == '\n' || ch == '\r')
-        continue;
-      if (ch == chLast) {
-        ++nLast;
-        if (ch != '~')
-          ch = '\0';
-      } else if (nLast > 0) {
-        if (nLast < 4 || chLast == '~' || chLast == ' '
-            || chLast == '\t')
-          while (--nLast >= 0)
-            dataOut.append(chLast);
-        else 
-          dataOut.append("~" + nLast + " ");
-        nLast = 0;
-      }
-      if (ch != '\0') {
-        dataOut.append(ch);
-        chLast = ch;
-      }
-    }
-    return dataOut.toString();
-  }
-
-  protected static String jvxlUncompressString(String data) {
-    if (data.indexOf("~") < 0)
-      return data;
-    StringBuffer dataOut = new StringBuffer();
-    char chLast = '\0';
-    int[] next = new int[1];
-    for (int i = 0; i < data.length(); i++) {
-      char ch = data.charAt(i);
-      if (ch == '~') {
-        next[0] = ++i;
-        int nChar = Parser.parseInt(data, next);
-        if (nChar == Integer.MIN_VALUE) {
-          if (chLast == '~') {
-            dataOut.append('~');
-            while ((ch = data.charAt(++i)) == '~')
-              dataOut.append('~');
-          } else {
-            Logger.error("Error uncompressing string " + data.substring(0, i)
-                + "?");
-          }
-        } else {
-          for (int c = 0; c < nChar; c++)
-            dataOut.append(chLast);
-          i = next[0];
-        }
-      } else {
-        dataOut.append(ch);
-        chLast = ch;
-      }
-    }
-    return dataOut.toString();
   }
 
   protected BitSet bsVoxelBitSet;
@@ -659,7 +588,7 @@ public class JvxlReader extends VolumeFileReader {
     int n = 0;
     while (n < nPoints) {
       line = br.readLine();
-      n += (isInt ? countData(line) : jvxlUncompressString(line).length());
+      n += (isInt ? countData(line) : JvxlCoder.jvxlUncompressString(line).length());
     }
   }
 
@@ -685,7 +614,7 @@ public class JvxlReader extends VolumeFileReader {
     String polygonColorData = getXmlData("jvxlPolygonColorData", data, false);
     jvxlDecodeTriangleData(getXmlData("jvxlTriangleData", data, true), polygonColorData);
     Logger.info("Checking for vertex values");
-    data = jvxlUncompressString(getXmlData("jvxlColorData", data, true));
+    data = JvxlCoder.jvxlUncompressString(getXmlData("jvxlColorData", data, true));
     jvxlData.isJvxlPrecisionColor = getXmlAttrib(data, "precision").equals("true");
     jvxlColorDataRead = getXmlAttrib(data, "data");
     if (jvxlColorDataRead.length() == 0)
@@ -728,61 +657,6 @@ public class JvxlReader extends VolumeFileReader {
       jvxlData.contourColixes[i] = ((short[]) jvxlData.vContours[i].get(3))[0];
     }
     jvxlData.contourColors = Graphics3D.getHexCodes(jvxlData.contourColixes);
-  }
-
-  /**
-   * a relatively simple XML reader for this specific application.
-   * 
-   * @param name
-   * @param data
-   * @param withTag
-   * @return            trimmed contents or tag + contents, never closing tag 
-   * @throws Exception
-   */
-  protected String getXmlData(String name, String data, boolean withTag)
-      throws Exception {
-    //crude
-    String closer = "</" + name + ">";
-    String tag = "<" + name;
-    if (data == null) {
-      StringBuffer sb = new StringBuffer();
-      try {
-        while (line.indexOf(tag) < 0) {
-          line = br.readLine();
-        }
-      } catch (Exception e) {
-        return null;
-      }
-      sb.append(line);
-      while (line.indexOf(closer) < 0)
-        sb.append(line = br.readLine());
-      data = sb.toString();
-    }
-    int pt1 = data.indexOf(tag);
-    if (pt1 < 0)
-      return "";
-    int pt2 = data.indexOf(closer, pt1);
-    if (pt2 < 0)
-      return "";
-    if (withTag) {
-      pt2 += closer.length();
-    } else {
-      boolean quoted = false;
-      for (;pt1 < pt2; pt1++) {
-        char ch;
-        if ((ch = data.charAt(pt1)) == '"')
-          quoted = !quoted;
-        else if (quoted && ch == '\\')
-          pt1++;
-        else if (!quoted && ch == '>')
-          break;
-      }
-      if (pt1 >= pt2)
-        return "";
-      while (Character.isWhitespace(data.charAt(++pt1))) {        
-      }
-    }
-    return data.substring(pt1, pt2);
   }
 
   /**
@@ -911,12 +785,59 @@ public class JvxlReader extends VolumeFileReader {
     return triangles;
   }
 
-  protected Point3f getXmlPoint(String data, String key) {
-    String spt = getXmlAttrib(data, key).replace('(', '{').replace(')', '}');
-    Object value = Escape.unescapePoint(spt);
-    if (value instanceof Point3f)
-      return (Point3f) value;
-    return new Point3f();
+  /**
+   * a relatively simple XML reader for this specific application.
+   * 
+   * @param name
+   * @param data
+   * @param withTag
+   * @return            trimmed contents or tag + contents, never closing tag 
+   * @throws Exception
+   */
+  protected String getXmlData(String name, String data, boolean withTag)
+      throws Exception {
+    //crude
+    String closer = "</" + name + ">";
+    String tag = "<" + name;
+    if (data == null) {
+      StringBuffer sb = new StringBuffer();
+      try {
+        while (line.indexOf(tag) < 0) {
+          line = br.readLine();
+        }
+      } catch (Exception e) {
+        return null;
+      }
+      sb.append(line);
+      while (line.indexOf(closer) < 0)
+        sb.append(line = br.readLine());
+      data = sb.toString();
+    }
+    int pt1 = data.indexOf(tag);
+    if (pt1 < 0)
+      return "";
+    int pt2 = data.indexOf(closer, pt1);
+    if (pt2 < 0)
+      return "";
+    if (withTag) {
+      pt2 += closer.length();
+    } else {
+      boolean quoted = false;
+      for (;pt1 < pt2; pt1++) {
+        char ch;
+        if ((ch = data.charAt(pt1)) == '"')
+          quoted = !quoted;
+        else if (quoted && ch == '\\')
+          pt1++;
+        else if (!quoted && ch == '>')
+          break;
+      }
+      if (pt1 >= pt2)
+        return "";
+      while (Character.isWhitespace(data.charAt(++pt1))) {        
+      }
+    }
+    return data.substring(pt1, pt2);
   }
 
   protected static String getXmlAttrib(String data, String what) {
@@ -929,6 +850,7 @@ public class JvxlReader extends VolumeFileReader {
     int pt1 = setNext(data, "\"", nexta, -1);
     return (pt1 <= 0 ? "" : data.substring(pt, pt1));
   }
+  
   /**
    * shift pointer to a new tag or field contents
    * 
@@ -944,4 +866,14 @@ public class JvxlReader extends VolumeFileReader {
       return -1;
     return next[0] = ipt + what.length() + offset;
   }
+  
+  protected Point3f getXmlPoint(String data, String key) {
+    String spt = getXmlAttrib(data, key).replace('(', '{').replace(')', '}');
+    Object value = Escape.unescapePoint(spt);
+    if (value instanceof Point3f)
+      return (Point3f) value;
+    return new Point3f();
+  }
+
+
 }

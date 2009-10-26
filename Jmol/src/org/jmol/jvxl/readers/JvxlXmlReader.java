@@ -223,6 +223,6 @@ public class JvxlXmlReader extends JvxlReader {
       Logger.error("Error reading " + type + " data " + e);
       throw new NullPointerException();
     }
-    return jvxlUncompressString(str);
+    return JvxlCoder.jvxlUncompressString(str);
   }
 }

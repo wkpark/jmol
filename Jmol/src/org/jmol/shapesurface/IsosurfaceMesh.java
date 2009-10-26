@@ -377,7 +377,7 @@ public class IsosurfaceMesh extends Mesh {
     setContourVector(v, polygonCount, bsContour, value, colix, color, fData);
     for (int i = 0; i < polygonCount; i++)
       if (setABC(i))
-        JvxlCoder.addContourPoints(v, bsContour, i, fData, vertices,
+        addContourPoints(v, bsContour, i, fData, vertices,
             vertexValues, iA, iB, iC, value);
   }
 
@@ -390,6 +390,109 @@ public class IsosurfaceMesh extends Mesh {
     v.add(JvxlCoder.CONTOUR_COLIX, new short[] { colix });
     v.add(JvxlCoder.CONTOUR_COLOR, new int[] { color });
     v.add(JvxlCoder.CONTOUR_FDATA, fData);
+  }
+
+  public static void addContourPoints(Vector v, BitSet bsContour, int i,
+                                      StringBuffer fData, Point3f[] vertices,
+                                      float[] vertexValues, int iA, int iB,
+                                      int iC, float value) {
+    Point3f pt1 = null;
+    Point3f pt2 = null;
+    int type = 0;
+    float f1 = checkPt(vertexValues, iA, iB, value);
+    if (!Float.isNaN(f1)) {
+      pt1 = getContourPoint(vertices, iA, iB, f1);
+      type |= 1;
+    }
+    float f2 = (f1 == 1f ? Float.NaN : checkPt(vertexValues, iB, iC, value));
+    if (!Float.isNaN(f2)) {
+      pt2 = getContourPoint(vertices, iB, iC, f2);
+      if (type == 0) {
+        f1 = f2;
+        pt1 = pt2;
+      }
+      type |= 2;
+    }
+    switch (type) {
+    case 0:
+      return;
+    case 1:
+      if (f1 == 0)
+        return;
+      // fall through
+    case 2:
+      f2 = (f2 == 1.0 ? Float.NaN : checkPt(vertexValues, iC, iA, value));
+      if (!Float.isNaN(f2)) {
+        pt2 = getContourPoint(vertices, iC, iA, f2);
+        type |= 4;
+      }
+      break;
+    case 3:
+      break;
+    }
+    switch (type) {
+    case 3:
+    case 5:
+    case 6:
+      break;
+    default:
+      return;
+    }
+    bsContour.set(i);
+    v.add(pt1);
+    v.add(pt2);
+    JvxlCoder.appendContourTriangleIntersection(type, f1, f2, fData);
+  }
+
+  /**
+   *  two values -- v1, and v2, which need not be ordered v1 < v2.
+   *  v == v1 --> 0
+   *  v [v1,v2] --> f
+   *  v == v2 --> 1
+   *
+   *  We check AB, then BC, then CA.
+   *  
+   *  What if two end points are identical values?
+   *  So, for example, if v = 1.0 and:
+   *  
+   *      A             1.0         0.5        1.0         1.0      
+   *     / \            /  \        /  \       /  \        /  \
+   *    /   \          /    \      /    \     /    \      /    \
+   *   C-----B        1.0--0.5    1.0--1.0   0.5--1.0   1.0---1.0
+   *                   case I      case II   case III    case IV
+   *                   
+   *     case I: AB[0] and BC[1], type == 3 --> CA not tested.
+   *    case II: AB[1] and CA[0]; f1 == 1.0 --> BC not tested.
+   *   case III: AB[0] and BC[0], type == 3 --> CA not tested.
+   *   case  IV: AB[0] and BC[0], type == 3 --> CA not tested.
+   *  
+   *  what if v = 0.5?
+   *  
+   *     case I: AB[1]; BC not tested --> type == 1, invalid.
+   *    case II: AB[0]; type == 1, f1 == 0.0 --> CA not tested.
+   *   case III: BC[1]; f2 == 1.0 --> CA not tested.
+   *   
+   * @param vertexValues
+   * @param i
+   * @param j
+   * @param v
+   * @return fraction along the edge or NaN
+   */
+  private static float checkPt(float[] vertexValues, int i, int j, float v) {
+    float v1, v2;
+    return (v == (v1 = vertexValues[i]) ? 0 
+        : v == (v2 = vertexValues[j]) ? 1 
+        : (v1 <= v) == (v < v2)
+        ? (v - v1) / (v2 - v1) : Float.NaN);
+  }
+
+  private static Point3f getContourPoint(Point3f[] vertices, int i, int j, float f) {
+    Point3f pt = new Point3f();
+    pt.set(vertices[j]);
+    pt.sub(vertices[i]);
+    pt.scale(f);
+    pt.add(vertices[i]);
+    return pt;
   }
 
   float[] contourValues;

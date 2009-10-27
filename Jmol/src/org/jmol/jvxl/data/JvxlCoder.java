@@ -285,7 +285,6 @@ public class JvxlCoder {
           + "\"");
       sb.append(" color=\"" + Escape.escapeColor(((int[]) contours[i]
               .get(CONTOUR_COLOR))[0]) + "\"");
-      sb.append(" npolygons=\"" + nPolygons + "\"");
       StringBuffer sb1 = new StringBuffer();
       jvxlEncodeBitSet((BitSet) contours[i].get(CONTOUR_BITSET),
           nPolygons, sb1);
@@ -623,7 +622,7 @@ public class JvxlCoder {
           list2);
     }
     String s = jvxlCompressString(list1.append(list2).toString());
-    return list.append("  <jvxlColorData precision=\"true\" data=\"").append(s)
+    return list.append("  <jvxlColorData  data=\"").append(s)
         .append("\"></jvxlColorData>\n").toString();
   }
 

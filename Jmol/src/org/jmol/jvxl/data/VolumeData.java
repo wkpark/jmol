@@ -339,16 +339,18 @@ public class VolumeData implements VolumeDataInterface {
   }
 
   public String setVolumetricXml() {
-      StringBuffer data = new StringBuffer();
-      data.append("<jvxlVolumeData origin=\"" + Escape.escape(volumetricOrigin)
-          + "\">\n");
-      for (int i = 0; i < 3; i++) {
-        data.append("<jvxlVolumeVector type=\"" + i + "\" count=\""
-            + voxelCounts[i] + "\" vector=\""
-            + Escape.escape(volumetricVectors[i]) + "\"></jvxlVolumeVector>\n");
-      }
-      data.append("</jvxlVolumeData>\n");
-      return xmlData = data.toString();
+    if (voxelCounts[0] == 0)
+      return "<jvxlVolumeData>\n</jvxlVolumeData>\n";
+    StringBuffer data = new StringBuffer();
+    data.append("<jvxlVolumeData origin=\"" + Escape.escape(volumetricOrigin)
+        + "\">\n");
+    for (int i = 0; i < 3; i++) {
+      data.append("<jvxlVolumeVector type=\"" + i + "\" count=\""
+          + voxelCounts[i] + "\" vector=\""
+          + Escape.escape(volumetricVectors[i]) + "\"></jvxlVolumeVector>\n");
+    }
+    data.append("</jvxlVolumeData>\n");
+    return xmlData = data.toString();
   }
 
 }

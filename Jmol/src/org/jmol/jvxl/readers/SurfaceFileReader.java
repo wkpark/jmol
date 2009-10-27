@@ -109,18 +109,18 @@ abstract class SurfaceFileReader extends SurfaceReader {
     super.discardTempData(discardAll);
   }
      
-  String line;
-  int[] next = new int[1];
+  protected String line;
+  protected int[] next = new int[1];
   
-  String[] getTokens() {
+  protected String[] getTokens() {
     return Parser.getTokens(line, 0);
   }
 
-  float parseFloat() {
+  protected float parseFloat() {
     return Parser.parseFloat(line, next);
   }
 
-  float parseFloat(String s) {
+  protected float parseFloat(String s) {
     next[0] = 0;
     return Parser.parseFloat(s, next);
   }
@@ -129,29 +129,29 @@ abstract class SurfaceFileReader extends SurfaceReader {
     return Parser.parseFloat(s, next);
   }
 */
-  int parseInt() {
+  protected int parseInt() {
     return Parser.parseInt(line, next);
   }
   
-  int parseInt(String s) {
+  protected int parseInt(String s) {
     next[0] = 0;
     return Parser.parseInt(s, next);
   }
   
-  int parseIntNext(String s) {
+  protected int parseIntNext(String s) {
     return Parser.parseInt(s, next);
   }
     
-  float[] parseFloatArray(String s) {
+  protected float[] parseFloatArray(String s) {
     next[0] = 0;
     return Parser.parseFloatArray(s, next);
   }
 
-  float[] parseFloatArray() {
+  protected float[] parseFloatArray() {
     return Parser.parseFloatArray(line, next);
   }
 
-  String getNextQuotedString() {
+  protected String getNextQuotedString() {
     return Parser.getNextQuotedString(line, next);
   }
 
@@ -177,7 +177,6 @@ class LimitedLineReader {
   private char[] buf;
   private int cchBuf;
   private int ichCurrent;
-  private int iLine;
 
   LimitedLineReader(BufferedReader bufferedReader, int readLimit) {
     buf = new char[readLimit];
@@ -190,15 +189,11 @@ class LimitedLineReader {
     }
   }
 
-  String info() {
+  protected String info() {
     return new String(buf);  
   }
   
-  int iLine() {
-    return iLine;
-  }
-  
-  String readNonCommentLine() {
+  protected String readNonCommentLine() {
     while (ichCurrent < cchBuf) {
       int ichBeginningOfLine = ichCurrent;
       char ch = 0;
@@ -208,7 +203,6 @@ class LimitedLineReader {
       int cchLine = ichCurrent - ichBeginningOfLine;
       if (ch == '\r' && ichCurrent < cchBuf && buf[ichCurrent] == '\n')
         ++ichCurrent;
-      iLine++;
       if (buf[ichBeginningOfLine] == '#') // flush comment lines;
         continue;
       StringBuffer sb = new StringBuffer(cchLine);

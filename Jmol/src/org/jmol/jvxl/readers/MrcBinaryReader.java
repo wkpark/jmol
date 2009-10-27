@@ -159,7 +159,7 @@ class MrcBinaryReader extends VolumeFileReader {
   }
   
   protected void readAtomCountAndOrigin() {
-    JvxlReader.jvxlCheckAtomLine(isXLowToHigh, isAngstroms, "0",
+    VolumeFileReader.checkAtomLine(isXLowToHigh, isAngstroms, "0",
         "0 " + (-mrcHeader.originX) + " " + (-mrcHeader.originY) + " " +  (-mrcHeader.originZ), 
         jvxlFileHeaderBuffer);
     volumetricOrigin.set(-mrcHeader.originX, -mrcHeader.originY, -mrcHeader.originZ);

@@ -97,8 +97,8 @@ class JaguarReader extends VolumeFileReader {
     if (tokens.length == 4 && tokens[0].equals("origin=")) {
       volumetricOrigin.set(parseFloat(tokens[1]), parseFloat(tokens[2]),
           parseFloat(tokens[3]));
-      JvxlReader
-          .jvxlCheckAtomLine(isXLowToHigh, isAngstroms, "0", "0 " + tokens[1]
+      VolumeFileReader
+          .checkAtomLine(isXLowToHigh, isAngstroms, "0", "0 " + tokens[1]
               + " " + tokens[2] + " " + tokens[3], jvxlFileHeaderBuffer);
       if (!isAngstroms)
         volumetricOrigin.scale(ANGSTROMS_PER_BOHR);

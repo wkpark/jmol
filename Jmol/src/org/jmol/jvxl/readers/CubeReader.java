@@ -50,7 +50,7 @@ class CubeReader extends VolumeFileReader {
       atomCount = -atomCount;
     volumetricOrigin.set(parseFloat(tokens[1]), parseFloat(tokens[2]),
         parseFloat(tokens[3]));
-    JvxlReader.jvxlCheckAtomLine(isXLowToHigh, isAngstroms, tokens[0],
+    VolumeFileReader.checkAtomLine(isXLowToHigh, isAngstroms, tokens[0],
         atomLine, jvxlFileHeaderBuffer);
     if (!isAngstroms)
       volumetricOrigin.scale(ANGSTROMS_PER_BOHR);

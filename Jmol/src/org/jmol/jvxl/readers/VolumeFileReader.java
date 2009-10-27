@@ -27,7 +27,10 @@ import java.io.BufferedReader;
 import java.util.BitSet;
 
 import javax.vecmath.Vector3f;
+
+import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 
 //import org.jmol.viewer.Viewer;
@@ -64,7 +67,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     if (!gotoAndReadVoxelData(isMapData))
       return false;
     if (!vertexDataOnly)
-      Logger.info("Read " + nPointsX + " x " + nPointsY + " x " + nPointsZ
+      Logger.info("JVXL read: " + nPointsX + " x " + nPointsY + " x " + nPointsZ
           + " data points");
     return true;
   }
@@ -101,7 +104,9 @@ abstract class VolumeFileReader extends SurfaceFileReader {
         if (!isAngstroms)
           volumetricVectors[i].scale(ANGSTROMS_PER_BOHR);
       }
-      JvxlReader.jvxlReadAtoms(br, jvxlFileHeaderBuffer, atomCount, volumeData);
+      volumeData.setVolumetricXml();
+      for (int i = 0; i < atomCount; ++i)
+        jvxlFileHeaderBuffer.append(br.readLine() + "\n");
       return readExtraLine();
     } catch (Exception e) {
       Logger.error(e.toString());
@@ -239,8 +244,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     return null;  
   }
   
-  protected float getNextVoxelValue() throws Exception {
-    //overloaded in JvxlReader, where sb is appended to
+  private float getNextVoxelValue() throws Exception {
     float voxelValue = 0;
     if (nSurfaces > 1 && !params.blockCubeData) {
       for (int i = 1; i < params.fileIndex; i++)
@@ -303,6 +307,40 @@ abstract class VolumeFileReader extends SurfaceFileReader {
         ++ich;
     }
     return count;
+  }
+
+  /**
+   * checks an atom line for "ANGSTROMS", possibly overriding the data's 
+   * natural units, BOHR (similar to Gaussian CUBE files).
+   * 
+   * @param isXLowToHigh
+   * @param isAngstroms
+   * @param strAtomCount
+   * @param atomLine
+   * @param bs
+   * @return  isAngstroms
+   */
+  protected static boolean checkAtomLine(boolean isXLowToHigh, boolean isAngstroms,
+                                   String strAtomCount, String atomLine,
+                                   StringBuffer bs) {
+    if (atomLine.indexOf("ANGSTROMS") >= 0)
+      isAngstroms = true;
+    int atomCount = (strAtomCount == null ? Integer.MAX_VALUE : Parser.parseInt(strAtomCount));
+    switch(atomCount) {
+    case Integer.MIN_VALUE:
+        atomCount = 0;
+        atomLine = " " + atomLine.substring(atomLine.indexOf(" ") + 1);
+      break;
+    case Integer.MAX_VALUE:
+      atomCount = Integer.MIN_VALUE;
+      break;
+    default:
+        String s = "" + atomCount;
+        atomLine = atomLine.substring(atomLine.indexOf(s) + s.length());
+      }
+    atomLine = JvxlCoder.fixAtomLineVersion1(atomCount, atomLine, isXLowToHigh, isAngstroms);
+    bs.append(atomLine);
+    return isAngstroms;
   }
   
 }

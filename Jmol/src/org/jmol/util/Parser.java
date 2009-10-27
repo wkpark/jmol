@@ -387,6 +387,10 @@ public class Parser {
     } else {
        next[0] = ich; // the exponent code finds its own ichNextParse
     }
+    if (value == Float.NEGATIVE_INFINITY)
+      value = -Float.MAX_VALUE;
+    else if (value == Float.POSITIVE_INFINITY)
+      value= Float.MAX_VALUE;
     return (!isStrict 
         || (!isExponent || isDecimal) && checkTrailingText(str, next[0], ichMax) 
         ? value : Float.NaN);

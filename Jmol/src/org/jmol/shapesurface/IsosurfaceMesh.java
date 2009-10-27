@@ -399,37 +399,40 @@ public class IsosurfaceMesh extends Mesh {
     Point3f pt1 = null;
     Point3f pt2 = null;
     int type = 0;
+    // check AB
     float f1 = checkPt(vertexValues, iA, iB, value);
     if (!Float.isNaN(f1)) {
       pt1 = getContourPoint(vertices, iA, iB, f1);
       type |= 1;
     }
-    float f2 = (f1 == 1f ? Float.NaN : checkPt(vertexValues, iB, iC, value));
+    // check BC only if v not found only at B already in testing AB
+    float f2 = (f1 == 1 ? Float.NaN : checkPt(vertexValues, iB, iC, value));
     if (!Float.isNaN(f2)) {
       pt2 = getContourPoint(vertices, iB, iC, f2);
       if (type == 0) {
-        f1 = f2;
         pt1 = pt2;
+        f1 = f2;
       }
       type |= 2;
     }
+    // only check CA under certain circumstances
     switch (type) {
     case 0:
-      return;
+      return; // not in AB or BC, so ignore
     case 1:
       if (f1 == 0)
-        return;
+        return; //because at A and not along BC, so only at A
       // fall through
     case 2:
-      f2 = (f2 == 1.0 ? Float.NaN : checkPt(vertexValues, iC, iA, value));
+      // check CA only if v not found only at C already in testing BC
+      f2 = (f2 == 1 ? Float.NaN : checkPt(vertexValues, iC, iA, value));
       if (!Float.isNaN(f2)) {
         pt2 = getContourPoint(vertices, iC, iA, f2);
         type |= 4;
       }
       break;
-    case 3:
-      break;
     }
+    // only types AB-BC, AB-CA, or BC-CA are valid intersections
     switch (type) {
     case 3:
     case 5:
@@ -439,18 +442,20 @@ public class IsosurfaceMesh extends Mesh {
       return;
     }
     bsContour.set(i);
+    JvxlCoder.appendContourTriangleIntersection(type, f1, f2, fData);
     v.add(pt1);
     v.add(pt2);
-    JvxlCoder.appendContourTriangleIntersection(type, f1, f2, fData);
   }
 
   /**
    *  two values -- v1, and v2, which need not be ordered v1 < v2.
    *  v == v1 --> 0
-   *  v [v1,v2] --> f
    *  v == v2 --> 1
+   *  v1 < v < v2 --> f in (0,1)
+   *  v2 < v < v1 --> f in (0,1) 
+   *  i.e. (v1 < v) == (v < v2)
    *
-   *  We check AB, then BC, then CA.
+   *  We check AB, then (usually) BC, then (sometimes) CA.
    *  
    *  What if two end points are identical values?
    *  So, for example, if v = 1.0 and:
@@ -482,7 +487,7 @@ public class IsosurfaceMesh extends Mesh {
     float v1, v2;
     return (v == (v1 = vertexValues[i]) ? 0 
         : v == (v2 = vertexValues[j]) ? 1 
-        : (v1 <= v) == (v < v2)
+        : (v1 < v) == (v < v2)
         ? (v - v1) / (v2 - v1) : Float.NaN);
   }
 

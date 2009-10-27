@@ -487,8 +487,8 @@ public class IsosurfaceMesh extends Mesh {
     float v1, v2;
     return (v == (v1 = vertexValues[i]) ? 0 
         : v == (v2 = vertexValues[j]) ? 1 
-        : (v1 < v) == (v < v2)
-        ? (v - v1) / (v2 - v1) : Float.NaN);
+        : (v1 < v) == (v < v2) ? (v - v1) / (v2 - v1) 
+        : Float.NaN);
   }
 
   private static Point3f getContourPoint(Point3f[] vertices, int i, int j, float f) {

@@ -123,7 +123,7 @@ public class JvxlCoder {
       attr += " plane=\"" + Escape.escape(jvxlData.jvxlPlane)+ "\"";
     sb.append("<jvxlSurfaceData").append(attr).append(">\n");
     if (jvxlData.vertexDataOnly) {
-      jvxlAppendMeshXml(sb, jvxlData, meshData);
+      jvxlAppendMeshXml(sb, jvxlData, meshData, true);
     } else if (jvxlData.jvxlPlane == null) {
       appendXmlEdgeData(sb, jvxlData);
       appendXmlColorData(sb, "jvxlColorData", jvxlData.jvxlColorData, 
@@ -159,7 +159,7 @@ public class JvxlCoder {
         "count", "" + (jvxlData.jvxlEdgeData.length() - 1),
         "encoding", "base90f1",
         "isXLowToHigh", "" + jvxlData.isXLowToHigh,
-        "data", jvxlCompressString(jvxlData.jvxlEdgeData) }, jvxlData.jvxlSurfaceData, "\n");
+        "data", jvxlCompressString(jvxlData.jvxlEdgeData, true) }, jvxlData.jvxlSurfaceData, "\n");
   }
 
   private static void appendTag(StringBuffer sb, String key, String sep,
@@ -211,7 +211,7 @@ public class JvxlCoder {
         "encoding", "base90f" + (isPrecisionColor ? "2" : "1"),
         "min", "" + value1,
         "max", "" + value2,
-        "data", jvxlCompressString(data) }, null, null);
+        "data", jvxlCompressString(data, true) }, null, null);
   }
 
   public static String jvxlGetInfo(JvxlData jvxlData, boolean asXml) {
@@ -337,7 +337,7 @@ public class JvxlCoder {
           "color", Escape.escapeColor(((int[]) contours[i]
               .get(CONTOUR_COLOR))[0]),
           "encoding", "base90iff1",
-          "data", contours[i].get(CONTOUR_FDATA).toString() }, sb1.toString(), "\n");
+          "data", jvxlCompressString(contours[i].get(CONTOUR_FDATA).toString(), true) }, sb1.toString(), "\n");
     }
     sb.append("</jvxlContourData>\n");
   }
@@ -470,14 +470,14 @@ public class JvxlCoder {
    **********************************************************/
 
   private static void jvxlAppendMeshXml(StringBuffer sb, 
-                                        JvxlData jvxlData, MeshData meshData) {
+                                        JvxlData jvxlData, MeshData meshData, boolean escapeXml) {
     int[] vertexIdNew = new int[meshData.vertexCount];
     if (appendXmlTriangleData(sb, meshData.polygonIndexes,
-        meshData.polygonCount, vertexIdNew))
+        meshData.polygonCount, vertexIdNew, escapeXml))
       appendXmlVertexData(sb, jvxlData, vertexIdNew,
           meshData.vertices, meshData.vertexValues, meshData.vertexCount,
           meshData.polygonColorData, meshData.polygonCount,
-          jvxlData.jvxlColorData.length() > 0);
+          jvxlData.jvxlColorData.length() > 0, escapeXml);
   }
 
   /**
@@ -524,10 +524,11 @@ public class JvxlCoder {
    * @param triangles
    * @param nData
    * @param vertexIdNew
+   * @param escapeXml 
    * @return (triangles are present)
    */
   private static boolean appendXmlTriangleData(StringBuffer sb, int[][] triangles, int nData,
-                                              int[] vertexIdNew) {
+                                              int[] vertexIdNew, boolean escapeXml) {
     StringBuffer list1 = new StringBuffer();
     int ilast = 1;
     int p = 0;
@@ -573,7 +574,7 @@ public class JvxlCoder {
     appendTag(sb, "jvxlTriangleData", " ", new String[] {
         "count", "" + nTri,
         "encoding", "jvxltdiff",
-        "data" , list1.toString() }, null, null);
+        "data" , jvxlCompressString(list1.toString(), escapeXml) }, null, null);
     return true;
   }
 
@@ -619,6 +620,7 @@ public class JvxlCoder {
    * @param polygonColorData 
    * @param polygonCount 
    * @param addColorData
+   * @param escapeXml 
    */
   private static void appendXmlVertexData(StringBuffer sb,
                                             JvxlData jvxlData,
@@ -628,7 +630,7 @@ public class JvxlCoder {
                                             int vertexCount,
                                             String polygonColorData, 
                                             int polygonCount,
-                                            boolean addColorData) {
+                                            boolean addColorData, boolean escapeXml) {
     Point3f min = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     Point3f max = new Point3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
     int colorFractionBase = jvxlData.colorFractionBase;
@@ -670,7 +672,7 @@ public class JvxlCoder {
         "min", Escape.escape(min),
         "max", Escape.escape(max),
         "encoding", "base90xyz2",
-        "data", list1.toString() }, null, null);
+        "data", jvxlCompressString(list1.toString(), escapeXml) }, null, null);
     if (polygonColorData != null)
       appendTag(sb, "jvxlPolygonColorData", " ", new String[] {
           "encoding", "jvxlnc" }, polygonColorData, "\n");
@@ -813,41 +815,81 @@ public class JvxlCoder {
   
   /////// string data compression/decompression
   
-  public static String jvxlCompressString(String data) {
+  public static String jvxlCompressString(String data, boolean escapeXml) {
+    
+    
     /* just a simple compression, but allows 2000-6000:1 CUBE:JVXL for planes!
      * 
      *   "X~nnn " means "nnn copies of character X" 
      *   
      *   ########## becomes "#~10 " 
-     *   ~ becomes "~~" 
+     *   
+     *   ~ is not encoded, as it is ASC(126), outside the range of 33--125.
+     *   
+     *   for escaping XML, we also do:
+     *
+     *   < becomes "~;0 "
+     *   & becomes "~%0 "
+     *   
+     *   and repeats of those become:
+     *   
+     *   "~;nnn "
+     *   "~%nnn "
      *
      */
+    if (data.indexOf("~") >= 0)
+      return data;
     StringBuffer dataOut = new StringBuffer();
     char chLast = '\0';
-    data += '\0';
+    boolean escaped = false;
+    boolean lastEscaped = false;
     int nLast = 0;
-    for (int i = 0; i < data.length(); i++) {
-      char ch = data.charAt(i);
-      if (ch == '\n' || ch == '\r')
+    int n = data.length();
+    for (int i = 0; i <= n; i++) {
+      char ch = (i == n ? '\0' : data.charAt(i));
+      switch (ch) {
+      case '\n':
+      case '\r':
         continue;
+      case '&':
+      case '<':
+        escaped = escapeXml;
+        break;
+      default:
+        escaped = false;
+      }
       if (ch == chLast) {
         ++nLast;
-        if (ch != '~')
-          ch = '\0';
-      } else if (nLast > 0) {
-        if (nLast < 4 || chLast == '~' || chLast == ' '
-            || chLast == '\t')
+        ch = '\0';
+      } else if (nLast > 0 || lastEscaped) {
+        if (nLast < 4 && !lastEscaped || chLast == ' '
+            || chLast == '\t') {
           while (--nLast >= 0)
             dataOut.append(chLast);
-        else 
-          dataOut.append("~" + nLast + " ");
+        } else {
+          if (lastEscaped)
+            lastEscaped = false;
+          else
+            dataOut.append('~');
+          dataOut.append(nLast);
+          dataOut.append(' ');
+        }
         nLast = 0;
       }
       if (ch != '\0') {
+        if (escaped) {
+          lastEscaped = true;
+          escaped = false;
+          dataOut.append('~');
+          chLast = ch;
+          --ch;
+        } else {
+          chLast = ch;          
+        }
         dataOut.append(ch);
-        chLast = ch;
       }
     }
+    
     return dataOut.toString();
   }
 
@@ -861,25 +903,35 @@ public class JvxlCoder {
       char ch = data.charAt(i);
       if (ch == '~') {
         next[0] = ++i;
-        int nChar = Parser.parseInt(data, next);
-        if (nChar == Integer.MIN_VALUE) {
-          if (chLast == '~') {
-            dataOut.append('~');
-            while ((ch = data.charAt(++i)) == '~')
-              dataOut.append('~');
-          } else {
-            Logger.error("Error uncompressing string " + data.substring(0, i)
-                + "?");
-          }
-        } else {
+        switch (ch = data.charAt(i)) {
+        case ';':
+        case '%':
+          next[0]++;
+          dataOut.append(chLast = ++ch);
+          //fall through
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+          int nChar = Parser.parseInt(data, next);
           for (int c = 0; c < nChar; c++)
             dataOut.append(chLast);
           i = next[0];
+          continue;
+        case '~':
+          --i;
+          break;
+        default:
+          Logger.error("Error uncompressing string " + data.substring(0, i) + "?");
         }
-      } else {
-        dataOut.append(ch);
-        chLast = ch;
       }
+      dataOut.append(ch);
+      chLast = ch;
     }
     return dataOut.toString();
   }
@@ -1038,15 +1090,15 @@ public class JvxlCoder {
     String colorData = (jvxlData.jvxlColorData == null ? "" : jvxlData.jvxlColorData);
     if (jvxlData.vertexDataOnly) {
       sb.append("<jvxlSurfaceData>\n");
-      jvxlAppendMeshXml(sb, jvxlData, meshData);
+      jvxlAppendMeshXml(sb, jvxlData, meshData, false);
       sb.append("</jvxlSurfaceData>\n");
     } else if (jvxlData.jvxlPlane == null) {
       //no real point in compressing this unless it's a sign-based coloring
       sb.append(jvxlData.jvxlSurfaceData);
-      sb.append(jvxlCompressString(jvxlData.jvxlEdgeData)).append('\n').append(
-          jvxlCompressString(colorData)).append('\n');
+      sb.append(jvxlCompressString(jvxlData.jvxlEdgeData, false)).append('\n').append(
+          jvxlCompressString(colorData, false)).append('\n');
     } else if (colorData != null) {
-      sb.append(jvxlCompressString(colorData)).append('\n');
+      sb.append(jvxlCompressString(colorData, false)).append('\n');
     }
     int len = sb.length();
     if (len > 0) {

@@ -318,7 +318,7 @@ public class JvxlXmlReader extends VolumeFileReader {
       Logger.error("Error reading " + type + " data " + e);
       throw new NullPointerException();
     }
-    return JvxlCoder.jvxlUncompressString(str);
+    return str;
   }
   
   protected BitSet bsVoxelBitSet;
@@ -482,11 +482,12 @@ public class JvxlXmlReader extends VolumeFileReader {
    */
   protected void getEncodedVertexData() throws Exception {
     String data = getXmlData("jvxlSurfaceData", null, true);
+    String tData = getXmlData("jvxlTriangleData", data, true);
     jvxlDecodeVertexData(getXmlData("jvxlVertexData", data, true), false);
     String polygonColorData = getXmlData("jvxlPolygonColorData", data, false);
-    jvxlDecodeTriangleData(getXmlData("jvxlTriangleData", data, true), polygonColorData);
+    jvxlDecodeTriangleData(tData, polygonColorData);
     Logger.info("Checking for vertex values");
-    data = JvxlCoder.jvxlUncompressString(getXmlData("jvxlColorData", data, true));
+    data = getXmlData("jvxlColorData", data, true);
     jvxlData.isJvxlPrecisionColor = getXmlAttrib(data, "precision").equals("true");
     jvxlColorDataRead = getXmlAttrib(data, "data");
     if (jvxlColorDataRead.length() == 0)
@@ -721,7 +722,8 @@ public class JvxlXmlReader extends VolumeFileReader {
     if (pt < 2)
       return "";
     int pt1 = setNext(data, "\"", nexta, -1);
-    return (pt1 <= 0 ? "" : data.substring(pt, pt1));
+    data = (pt1 <= 0 ? "" : data.substring(pt, pt1));
+    return (what == "data" ? JvxlCoder.jvxlUncompressString(data) : data);
   }
   
   /**

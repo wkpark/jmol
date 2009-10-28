@@ -24,6 +24,7 @@
 package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
+import java.util.Date;
 
 import javax.vecmath.Point3f;
 
@@ -78,7 +79,6 @@ class ObjReader extends PolygonFileReader {
 
   ObjReader(SurfaceGenerator sg, String fileName, BufferedReader br) {
     super(sg, br);
-    jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer
         .append("pmesh file format\nvertices and triangles only\n");
     JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData,

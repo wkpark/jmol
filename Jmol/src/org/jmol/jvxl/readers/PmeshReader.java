@@ -92,7 +92,6 @@ class PmeshReader extends PolygonFileReader {
 
   PmeshReader(SurfaceGenerator sg, String fileName, BufferedReader br) {
     super(sg, br);
-    jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer
         .append("pmesh file format\nvertices and triangles only\n");
     JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData,

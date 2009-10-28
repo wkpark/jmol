@@ -5750,7 +5750,7 @@ public class ScriptEvaluator {
           break;
         case Token.show:
           if (iShape == JmolConstants.SHAPE_ISOSURFACE && !isWild)
-            return getIsosurfaceJvxl();
+            return getIsosurfaceJvxl(true);
           s += (String) viewer.getShapeProperty(iShape, "command") + "\n";
         case Token.color:
           colorShape(iShape, iTok + 1, false);
@@ -10693,6 +10693,8 @@ public class ScriptEvaluator {
         isExport = true;
       } else if (type.equals("JVXL")) {
         type = "ISO";
+      } else if (type.equals("XJVXL")) {
+        type = "ISOX";
       } else if (type.equals("JMOL")) {
         type = "ZIPALL";
       }
@@ -10709,12 +10711,12 @@ public class ScriptEvaluator {
     if (!isImage
         && !isExport
         && !Parser.isOneOf(type,
-            "ZIP;ZIPALL;SPT;HIS;MO;ISO;VAR;FILE;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
+            "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;VAR;FILE;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
       error(
           ERROR_writeWhat,
           "ALL|COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
               + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
-          "JPG|JPG64|PNG|GIF|PPM|SPT|JVXL|XYZ|MOL|PDB|"
+          "JPG|JPG64|PNG|GIF|PPM|SPT|JVXL|XJVXL|XYZ|MOL|PDB|"
               + driverList.toUpperCase().replace(';', '|'));
     if (isSyntaxCheck)
       return "";
@@ -10793,13 +10795,15 @@ public class ScriptEvaluator {
     } else if (data == "MO") {
       data = getMoJvxl(Integer.MAX_VALUE);
       type = "JVXL";
-    } else if (data == "ISO") {
-      if ((data = getIsosurfaceJvxl()) == null)
+    } else if (data == "ISO" || data == "ISOX") {
+      if (fileName.toUpperCase().indexOf("XJVXL") >= 0)
+        data = "ISOX";
+      type = (data == "ISOX" ? "XJVXL" : "JVXL");
+      if ((data = getIsosurfaceJvxl(data == "ISOX")) == null)
         error(ERROR_noData);
       if (!isShow)
         showString((String) viewer.getShapeProperty(
             JmolConstants.SHAPE_ISOSURFACE, "jvxlFileInfo"));
-      type = "JVXL";
     } else {
       // image
       len = -1;
@@ -11234,11 +11238,11 @@ public class ScriptEvaluator {
     return s.toString();
   }
 
-  private String getIsosurfaceJvxl() {
+  private String getIsosurfaceJvxl(boolean asXML) {
     if (isSyntaxCheck)
       return "";
     return (String) viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
-        "jvxlFileData");
+        (asXML ? "jvxlFileDataXml" : "jvxlFileData"));
   }
 
   private String getMoJvxl(int ptMO) throws ScriptException {

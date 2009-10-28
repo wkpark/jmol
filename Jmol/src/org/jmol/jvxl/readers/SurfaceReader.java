@@ -516,6 +516,7 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   public int addTriangleCheck(int iA, int iB, int iC, int check, int check2,
                               boolean isAbsolute, int color) {
+    //System.out.println("add triangle check " + iA + " " + iB + " " + iC);
     if (meshDataServer == null) {
       if (isAbsolute
           && !MeshData.checkCutoff(iA, iB, iC, meshData.vertexValues))

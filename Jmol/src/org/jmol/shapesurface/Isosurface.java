@@ -444,13 +444,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return new Float(jvxlData.cutoff);
     if (property == "plane")
       return jvxlData.jvxlPlane;
-    if (property == "jvxlFileData") {
+    if (property == "jvxlFileData" || property == "jvxlFileDataXml") {
       MeshData meshData = null;
-      jvxlData.asXml = viewer.getTestFlag4();
+      jvxlData.asXml = (property == "jvxlFileDataXml");
       if (jvxlData.vertexDataOnly) {
         meshData = new MeshData();
         fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
-        meshData.polygonColorData = getColorData(meshData.polygonCount, meshData.polygonColixes);
+        meshData.polygonColorData = getPolygonColorData(meshData.polygonCount, meshData.polygonColixes);
       }
       return JvxlCoder.jvxlGetFile(jvxlData, meshData, title, "", true, index, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
@@ -466,7 +466,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return null;
   }
 
-  public static String getColorData(int ccount, short[] colixes) {
+  public static String getPolygonColorData(int ccount, short[] colixes) {
     if (colixes == null)
       return null;
     StringBuffer list1 = new StringBuffer();
@@ -486,6 +486,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         count++;
       }
     }
+    list1.append("\n");
     return list1.toString();
   }
 

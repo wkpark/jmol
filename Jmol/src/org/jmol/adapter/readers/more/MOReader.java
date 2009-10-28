@@ -139,7 +139,7 @@ abstract class MOReader extends AtomSetCollectionReader {
 
   private void initializeMoReader(BufferedReader reader, String type) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("type");
+    atomSetCollection = new AtomSetCollection(type);
     line = "\nNBOs in the AO basis:";
     getNBOs = filterMO();
     line = "\nNBOcharges";

@@ -167,6 +167,8 @@ public class JvxlData {
   }
 
   public void updateSurfaceData(float[] vertexValues, int vertexCount, int vertexIncrement, char isNaN) { 
+    if (jvxlEdgeData.length() == 0)
+      return;
     char[] chars = jvxlEdgeData.toCharArray();
     for (int i = 0, ipt = 0; i < vertexCount; i+= vertexIncrement, ipt++)
       if (Float.isNaN(vertexValues[i]))

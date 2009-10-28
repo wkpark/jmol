@@ -2631,7 +2631,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // these must be removed after various script commands so that they stay current
   
   public static String[] predefinedVariable = {
-    //
+    //  
     // main isotope (variable because we can do {xxx}.element = n;
     //
     "@_1H _H & !(_2H,_3H)",
@@ -2642,7 +2642,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // solvent
     //
     "@water _g>=" + GROUPID_WATER + " & _g<" + (GROUPID_WATER + 3)
-        +", oxygen & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium or tritium) & connected(oxygen & connected(2, hydrogen or deuterium or tritium))",
+        + ", oxygen & connected(2) & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium or tritium) & connected(oxygen & connected(2) & connected(2, hydrogen or deuterium or tritium))",
     "@hoh water",
     
     // structure

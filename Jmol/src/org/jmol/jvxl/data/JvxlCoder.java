@@ -88,7 +88,7 @@ public class JvxlCoder {
     jvxlData.jvxlInfoLine = TextFormat.simpleReplace(jvxlData.jvxlInfoLine, "asXML=\"false", "asXML=\"true");
     StringBuffer data = new StringBuffer();
     data.append("<?xml version=\"1.0\"?>\n").append("<jvxl version=\"").append(
-        JVXL_VERSION_XML).append("\" Jmol version=\"").append(jvxlData.version)
+        JVXL_VERSION_XML).append("\" JmolVersion=\"").append(jvxlData.version)
         .append("\">\n");
     if (jvxlData.jvxlFileTitle != null)
       data.append("<jvxlFileTitle>\n")

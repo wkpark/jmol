@@ -106,7 +106,7 @@ public class JvxlCoder {
     data.append("<jvxlSurface type=\"").append(type).append("\">\n");
     data.append(jvxlGetInfo(jvxlData));
     data.append("\n");
-    jvxlAppendCommandState(data, comment, state);
+    jvxlAppendCommandState(data, comment, state, true);
     if (title != null || msg != null && msg.length() > 0) {
       sb = new StringBuffer();
       if (msg != null && msg.length() > 0)
@@ -192,12 +192,12 @@ public class JvxlCoder {
   }
 
   private static void jvxlAppendCommandState(StringBuffer data, String cmd,
-                                             String state) {
+                                             String state, boolean asXml) {
     if (cmd != null)
       appendTag(data, "jvxlIsosurfaceCommand", null, null,
-          (cmd.indexOf("#") < 0 ? cmd : cmd.substring(0, cmd.indexOf("#"))) + "\n", "<![CDATA[\n");
+          (cmd.indexOf("#") < 0 ? cmd : cmd.substring(0, cmd.indexOf("#"))) + "\n", (asXml ? "<![CDATA[\n" : ""));
     if (state != null)
-      appendTag(data, "jvxlIsosurfaceState", null, null, state + "\n", "<![CDATA[\n");
+      appendTag(data, "jvxlIsosurfaceState", null, null, state + "\n",  (asXml ? "<![CDATA[\n" : ""));
   }
 
   private static void appendXmlColorData(StringBuffer sb, String key, 
@@ -1057,7 +1057,7 @@ public class JvxlCoder {
         data.append("#-------end of jvxl file data-------\n");
       String infoLine = TextFormat.simpleReplace(jvxlGetInfo(jvxlData), "asXML=\"true", "asXML=\"false");
       data.append(infoLine).append('\n');
-        jvxlAppendCommandState(data, comment, state);
+        jvxlAppendCommandState(data, comment, state, false);
       if (includeHeader)
         data.append("<jvxlFileTitle>\n").append(jvxlData.jvxlFileTitle).append(
             "</jvxlFileTitle>\n");

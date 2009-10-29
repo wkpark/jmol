@@ -101,6 +101,7 @@ public class JvxlCoder {
         jvxlData.vertexDataOnly ? "pmesh" 
       : jvxlData.jvxlPlane == null ? "isosurface"
       : "plane");
+    //TODO: contours mentioned here? when discrete?
     if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length() > 0)
       type = "mapped " + type;
     data.append("<jvxlSurface type=\"").append(type).append("\">\n");
@@ -226,26 +227,31 @@ public class JvxlCoder {
     int bytesUncompressedEdgeData = (jvxlData.vertexDataOnly ? 0
         : jvxlData.jvxlEdgeData.length() - 1);
     int nColorData = (jvxlData.jvxlColorData == null ? -1 : (jvxlData.jvxlColorData.length() - 1));
+    // informational only:
     appendAttrib(info, "\n  ", "axXML", "" + (jvxlData.asXml && notVersion1));
     if (!jvxlData.vertexDataOnly) {
+      // informational only:
       appendAttrib(info, "\n  ", "cutoff", "" + jvxlData.cutoff);
       appendAttrib(info, "\n  ", "isCutoffAbsolute", "" + jvxlData.isCutoffAbsolute);
       appendAttrib(info, "\n  ", "pointsPerAngstrom", "" + jvxlData.pointsPerAngstrom);
+      int n = jvxlData.jvxlSurfaceData.length() 
+          + bytesUncompressedEdgeData + nColorData + 1;
+      if (n > 0)
+        appendAttrib(info, "\n  ", "nBytesData", "" + n);
+
+      //TODO: these should only be for information purposes, but are not:
       appendAttrib(info, "\n  ", "isXLowToHigh", "" + jvxlData.isXLowToHigh);
       if (jvxlData.jvxlPlane == null) {
         appendAttrib(info, "\n  ", "nSurfaceInts", "" + nSurfaceInts);
         appendAttrib(info, "\n  ", "nBytesUncompressedEdgeData", "" + bytesUncompressedEdgeData);
       }
       if (nColorData > 0)
-        appendAttrib(info, "\n  ", "nBytesUncompressedColorData", "" + nColorData);
-      int n = jvxlData.jvxlSurfaceData.length() 
-        + bytesUncompressedEdgeData + nColorData + 1;
-      if (n > 0)
-        appendAttrib(info, "\n  ", "nBytesData", "" + n);
+        appendAttrib(info, "\n  ", "nBytesUncompressedColorData", "" + nColorData); // TODO: later?
     }
+    //TODO: which are required?
     if (jvxlData.jvxlPlane == null) {
       if (jvxlData.isContoured) {
-        appendAttrib(info, "\n  ", "contoured", "true");
+        appendAttrib(info, "\n  ", "contoured", "true"); 
         appendAttrib(info, "\n  ", "colorMapped", "true");
       } else if (jvxlData.isBicolorMap) {
         appendAttrib(info, "\n  ", "biolorMap", "true");
@@ -259,6 +265,7 @@ public class JvxlCoder {
         appendAttrib(info, "\n  ", "colorMapped", "true");
       appendAttrib(info, "\n  ", "plane", Escape.escape(jvxlData.jvxlPlane));
     }
+    // should not be becessary:
     if (jvxlData.isJvxlPrecisionColor)
       appendAttrib(info, "\n  ", "precisionColor", "true");
     if (jvxlData.isContoured) {
@@ -274,6 +281,7 @@ public class JvxlCoder {
       }
     }
     // ... mappedDataMin mappedDataMax valueMappedToRed valueMappedToBlue ...
+    //TODO: again, these really should not be necessary here
     float min = (jvxlData.mappedDataMin == Float.MAX_VALUE ? 0f
         : jvxlData.mappedDataMin);
     if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length() > 0 && !jvxlData.isBicolorMap) {
@@ -282,8 +290,11 @@ public class JvxlCoder {
       appendAttrib(info, "\n  ", "valueMappedToRed", "" + jvxlData.valueMappedToRed);
       appendAttrib(info, "\n  ", "valueMappedToBlue", "" + jvxlData.valueMappedToBlue);
     }
+    //TODO: confusing flag insideOut:
     if (jvxlData.insideOut)
       appendAttrib(info, "\n  ", "insideOut", "true");
+    
+    // rest is information only:
     if (jvxlData.isXLowToHigh)
       appendAttrib(info, "\n  ", "note", "progressive JVXL+ -- X values read from low(0) to high("
               + (jvxlData.nPointsX - 1) + ")");

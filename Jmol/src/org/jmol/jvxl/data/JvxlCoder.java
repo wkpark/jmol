@@ -104,7 +104,7 @@ public class JvxlCoder {
     if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length() > 0)
       type = "mapped " + type;
     data.append("<jvxlSurface type=\"").append(type).append("\">\n");
-    data.append(jvxlGetInfo(jvxlData, true));
+    data.append(jvxlGetInfo(jvxlData));
     data.append("\n");
     jvxlAppendCommandState(data, comment, state);
     if (title != null || msg != null && msg.length() > 0) {
@@ -214,13 +214,7 @@ public class JvxlCoder {
         "data", jvxlCompressString(data, true) }, null, null);
   }
 
-  public static String jvxlGetInfo(JvxlData jvxlData, boolean asXml) {
-    if (asXml)
-      return jvxlGetSurfaceInfo(jvxlData);
-    return jvxlGetDefinitionLineVersion1(jvxlData);
-  }
-   
-  public static String jvxlGetSurfaceInfo(JvxlData jvxlData) {
+  public static String jvxlGetInfo(JvxlData jvxlData) {
     if (jvxlData.jvxlSurfaceData == null)
       return "";
     StringBuffer info = new StringBuffer();
@@ -1097,7 +1091,7 @@ public class JvxlCoder {
       for (int i = 0; i < title.length; i++)
         data.append("# ").append(title[i]).append('\n');
     state = (state == null ? "" : " rendering:" + state);
-    String definitionLine = jvxlGetInfo(jvxlData, false);
+    String definitionLine = jvxlGetDefinitionLineVersion1(jvxlData);
     data.append(definitionLine).append(state).append('\n');
     StringBuffer sb = new StringBuffer();
     String colorData = (jvxlData.jvxlColorData == null ? "" : jvxlData.jvxlColorData);
@@ -1118,7 +1112,7 @@ public class JvxlCoder {
     if (includeHeader) {
       if (msg != null && !jvxlData.vertexDataOnly)
         data.append("#-------end of jvxl file data-------\n");
-      String infoLine = TextFormat.simpleReplace(jvxlGetInfo(jvxlData, true), "asXML=\"true", "asXML=\"false");
+      String infoLine = TextFormat.simpleReplace(jvxlGetInfo(jvxlData), "asXML=\"true", "asXML=\"false");
       data.append(infoLine).append('\n');
         jvxlAppendCommandState(data, comment, state);
       if (includeHeader)

@@ -104,8 +104,8 @@ function jmolInitialize(codebaseDirectory, fileNameOrUseSignedApplet) {
   if (_jmol.initialized)
     return;
   _jmol.initialized = true;
-  if(allowJMOLJAR && document.location.search.indexOf("JMOLJAR=")>=0) {
-    var f = document.location.search.split("JMOLJAR=")[1].split("&")[0];
+  if(allowJMOLJAR && top.location.search.indexOf("JMOLJAR=")>=0) {
+    var f = top.location.search.split("JMOLJAR=")[1].split("&")[0];
     if (f.indexOf("/") >= 0) {
       alert ("This web page URL is requesting that the applet used be " + f + ". This is a possible security risk, particularly if the applet is signed, because signed applets can read and write files on your local machine or network.")
       var ok = prompt("Do you want to use applet " + f + "? ","yes or no")
@@ -1554,7 +1554,7 @@ function jmolSetAtomCoordRelative(i,x,y,z,targetSuffix){
 ///////////////applet fake for testing buttons/////////////
 
 
-if(document.location.search.indexOf("NOAPPLET")>=0){
+if(top.location.search.indexOf("NOAPPLET")>=0){
 	jmolApplet = function(w){
 		var s="<table style='background-color:black' width="+w+"><tr height="+w+">"
 		+"<td align=center valign=center style='background-color:white'>"

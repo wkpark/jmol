@@ -34,6 +34,8 @@ import org.jmol.util.TextFormat;
 
 public class JvxlCoder {
 
+  //TODO -- need to escapeXml for text data
+  
   final public static String JVXL_VERSION1 = "2.0";
   final public static String JVXL_VERSION_XML = "2.1"; 
   
@@ -89,14 +91,12 @@ public class JvxlCoder {
         JVXL_VERSION_XML).append("\" jmolVersion=\"").append(jvxlData.version)
         .append("\">\n");
     if (jvxlData.jvxlFileTitle != null)
-      data.append("<jvxlFileTitle>\n")
-          .append(jvxlData.jvxlFileTitle)
-          .append("</jvxlFileTitle>\n");
+      appendTag(data, "jvxlFileTitle", null, null, jvxlData.jvxlFileTitle, "<![CDATA[\n");
     if (jvxlData.jvxlVolumeDataXml == null)
         jvxlData.jvxlVolumeDataXml = (new VolumeData()).setVolumetricXml();
     data.append(jvxlData.jvxlVolumeDataXml);
     data.append("<jvxlSurfaceSet count=\"1\">\n");
-    StringBuffer sb = new StringBuffer();
+    StringBuffer sb;
     String type = (
         jvxlData.vertexDataOnly ? "pmesh" 
       : jvxlData.jvxlPlane == null ? "isosurface"
@@ -108,17 +108,18 @@ public class JvxlCoder {
     data.append("\n");
     jvxlAppendCommandState(data, comment, state);
     if (title != null || msg != null && msg.length() > 0) {
-      data.append("<jvxlSurfaceTitle>\n");
+      sb = new StringBuffer();
       if (msg != null && msg.length() > 0)
-        data.append(msg).append("\n");
+        sb.append(msg).append("\n");
       if (title != null)
         for (int i = 0; i < title.length; i++)
-          data.append(title[i]).append('\n');
-      data.append("</jvxlSurfaceTitle>\n");
+          sb.append(title[i]).append('\n');
+      appendTag(data, "jvxlSurfaceTitle", null, null, sb.toString(), "<![CDATA[\n");
     }
     String attr = "";
     if (jvxlData.jvxlPlane != null)
       attr += " plane=\"" + Escape.escape(jvxlData.jvxlPlane)+ "\"";
+    sb = new StringBuffer();
     sb.append("<jvxlSurfaceData").append(attr).append(">\n");
     if (jvxlData.vertexDataOnly) {
       jvxlAppendMeshXml(sb, jvxlData, meshData, true);
@@ -165,11 +166,15 @@ public class JvxlCoder {
   private static void appendTag(StringBuffer sb, String key, String sep,
                                 String[] attributes, String data, String term) {
     sb.append("<").append(key);
-    for (int i = 0; i < attributes.length; i += 2)
-      appendAttrib(sb, sep, attributes[i], attributes[i + 1]);
+    if (attributes != null)
+      for (int i = 0; i < attributes.length; i += 2)
+        appendAttrib(sb, sep, attributes[i], attributes[i + 1]);
     sb.append(">");
-    if (data != null)
+    if (data != null) {
       sb.append(term).append(data);
+      if (term.startsWith("<![CDATA["))
+        sb.append("]]>");
+    }
     sb.append("</").append(key).append(">\n");
   }
 
@@ -182,18 +187,17 @@ public class JvxlCoder {
    */
   private static void appendAttrib(StringBuffer sb, String sep, String name,
                                    String value) {
-    sb.append(sep).append(name).append("=\"").append(value).append("\"");
+    if (value != null)
+      sb.append(sep).append(name).append("=\"").append(value).append("\"");
   }
 
   private static void jvxlAppendCommandState(StringBuffer data, String cmd,
                                              String state) {
     if (cmd != null)
-      data.append("<jvxlSurfaceCommand>\n  ").append(
-          cmd.indexOf("#") < 0 ? cmd : cmd.substring(0, cmd.indexOf("#")))
-          .append("\n</jvxlSurfaceCommand>\n");
+      appendTag(data, "jvxlIsosurfaceCommand", null, null,
+          (cmd.indexOf("#") < 0 ? cmd : cmd.substring(0, cmd.indexOf("#"))) + "\n", "<![CDATA[\n");
     if (state != null)
-      data.append("<jvxlSurfaceState>\n  ").append(state).append(
-          "\n</jvxlSurfaceState>\n");
+      appendTag(data, "jvxlIsosurfaceState", null, null, state + "\n", "<![CDATA[\n");
   }
 
   private static void appendXmlColorData(StringBuffer sb, String key, 
@@ -1033,11 +1037,12 @@ public class JvxlCoder {
     data.append(definitionLine).append(state).append('\n');
     StringBuffer sb = new StringBuffer();
     String colorData = (jvxlData.jvxlColorData == null ? "" : jvxlData.jvxlColorData);
-    if (jvxlData.vertexDataOnly) {
+    /* if (jvxlData.vertexDataOnly) {  // see XML version
       sb.append("<jvxlSurfaceData>\n");
       jvxlAppendMeshXml(sb, jvxlData, meshData, false);
       sb.append("</jvxlSurfaceData>\n");
-    } else if (jvxlData.jvxlPlane == null) {
+    } else */ 
+    if (jvxlData.jvxlPlane == null) {
       //no real point in compressing this unless it's a sign-based coloring
       sb.append(jvxlData.jvxlSurfaceData);
       sb.append(jvxlCompressString(jvxlData.jvxlEdgeData, false)).append('\n').append(
@@ -1061,12 +1066,11 @@ public class JvxlCoder {
   }
 
   private static String jvxlGetDefinitionLineVersion1(JvxlData jvxlData) {
-    String definitionLine = (jvxlData.vContours == null ? ""
-        : "#+contourlines\n")
-        + jvxlData.cutoff + " ";
+    String definitionLine = /*(jvxlData.vContours == null ? ""
+        : "#+contourlines\n")+ */jvxlData.cutoff + " ";
 
     //  optional comment line for compatibility with earlier Jmol versions:
-    //  #+contourlines
+    //  #+contourlines (no longer used -- see XML version)
     //  cutoff       nInts     (+/-)bytesEdgeData (+/-)bytesColorData
     //               param1              param2         param3    
     //                 |                   |              |

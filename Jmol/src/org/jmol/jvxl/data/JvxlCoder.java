@@ -963,7 +963,8 @@ public class JvxlCoder {
     return dataOut.toString();
   }
 
-  // // VERSION 1 methods -- deprecated but still used --
+  // VERSION 1 methods -- deprecated but still available in 
+  // case original jvxl needs to be written.
   
   public static void jvxlCreateHeaderWithoutTitleOrAtoms(VolumeData v, StringBuffer bs) {
     jvxlCreateHeader(v, Integer.MAX_VALUE, null, null, bs);
@@ -1004,7 +1005,62 @@ public class JvxlCoder {
         .append(pt.z).append(" //BOGUS He ATOM ADDED FOR JVXL FORMAT\n");
   }
 
-  public static String jvxlGetDefinitionLineVersion1(JvxlData jvxlData) {
+  private static String jvxlGetFileVersion1(JvxlData jvxlData,
+                                            MeshData meshData, String[] title,
+                                            String msg, boolean includeHeader,
+                                            int nSurfaces, String state,
+                                            String comment) {
+    // pre-XML
+    StringBuffer data = new StringBuffer();
+    if (includeHeader) {
+      String s = jvxlData.jvxlFileHeader
+          + (nSurfaces > 0 ? -nSurfaces : -1) +" " + jvxlData.edgeFractionBase + " "
+          + jvxlData.edgeFractionRange + " " + jvxlData.colorFractionBase + " "
+          + jvxlData.colorFractionRange + " Jmol voxel format version " +  JVXL_VERSION1 + "\n";
+      if (s.indexOf("#JVXL") != 0)
+        data.append("#JVXL").append(jvxlData.isXLowToHigh ? "+" : "").append(
+            " VERSION ").append(JVXL_VERSION1).append("\n");
+      data.append(s);
+    }
+    if ("HEADERONLY".equals(msg))
+      return data.toString();
+    data.append("# ").append(msg).append('\n');
+    if (title != null)
+      for (int i = 0; i < title.length; i++)
+        data.append("# ").append(title[i]).append('\n');
+    state = (state == null ? "" : " rendering:" + state);
+    String definitionLine = jvxlGetDefinitionLineVersion1(jvxlData);
+    data.append(definitionLine).append(state).append('\n');
+    StringBuffer sb = new StringBuffer();
+    String colorData = (jvxlData.jvxlColorData == null ? "" : jvxlData.jvxlColorData);
+    if (jvxlData.vertexDataOnly) {
+      sb.append("<jvxlSurfaceData>\n");
+      jvxlAppendMeshXml(sb, jvxlData, meshData, false);
+      sb.append("</jvxlSurfaceData>\n");
+    } else if (jvxlData.jvxlPlane == null) {
+      //no real point in compressing this unless it's a sign-based coloring
+      sb.append(jvxlData.jvxlSurfaceData);
+      sb.append(jvxlCompressString(jvxlData.jvxlEdgeData, false)).append('\n').append(
+          jvxlCompressString(colorData, false)).append('\n');
+    } else if (colorData != null) {
+      sb.append(jvxlCompressString(colorData, false)).append('\n');
+    }
+    int len = sb.length();
+    data.append(sb);
+    if (includeHeader) {
+      if (msg != null && !jvxlData.vertexDataOnly)
+        data.append("#-------end of jvxl file data-------\n");
+      String infoLine = TextFormat.simpleReplace(jvxlGetInfo(jvxlData), "asXML=\"true", "asXML=\"false");
+      data.append(infoLine).append('\n');
+        jvxlAppendCommandState(data, comment, state);
+      if (includeHeader)
+        data.append("<jvxlFileTitle>\n").append(jvxlData.jvxlFileTitle).append(
+            "</jvxlFileTitle>\n");
+    }
+    return jvxlSetCompressionRatio(data, jvxlData, len);
+  }
+
+  private static String jvxlGetDefinitionLineVersion1(JvxlData jvxlData) {
     String definitionLine = (jvxlData.vContours == null ? ""
         : "#+contourlines\n")
         + jvxlData.cutoff + " ";
@@ -1065,61 +1121,6 @@ public class JvxlCoder {
       definitionLine += " insideOut";
     }
     return definitionLine;
-  }
-
-  private static String jvxlGetFileVersion1(JvxlData jvxlData,
-                                            MeshData meshData, String[] title,
-                                            String msg, boolean includeHeader,
-                                            int nSurfaces, String state,
-                                            String comment) {
-    // pre-XML
-    StringBuffer data = new StringBuffer();
-    if (includeHeader) {
-      String s = jvxlData.jvxlFileHeader
-          + (nSurfaces > 0 ? -nSurfaces : -1) +" " + jvxlData.edgeFractionBase + " "
-          + jvxlData.edgeFractionRange + " " + jvxlData.colorFractionBase + " "
-          + jvxlData.colorFractionRange + " Jmol voxel format version " +  JVXL_VERSION1 + "\n";
-      if (s.indexOf("#JVXL") != 0)
-        data.append("#JVXL").append(jvxlData.isXLowToHigh ? "+" : "").append(
-            " VERSION ").append(JVXL_VERSION1).append("\n");
-      data.append(s);
-    }
-    if ("HEADERONLY".equals(msg))
-      return data.toString();
-    data.append("# ").append(msg).append('\n');
-    if (title != null)
-      for (int i = 0; i < title.length; i++)
-        data.append("# ").append(title[i]).append('\n');
-    state = (state == null ? "" : " rendering:" + state);
-    String definitionLine = jvxlGetDefinitionLineVersion1(jvxlData);
-    data.append(definitionLine).append(state).append('\n');
-    StringBuffer sb = new StringBuffer();
-    String colorData = (jvxlData.jvxlColorData == null ? "" : jvxlData.jvxlColorData);
-    if (jvxlData.vertexDataOnly) {
-      sb.append("<jvxlSurfaceData>\n");
-      jvxlAppendMeshXml(sb, jvxlData, meshData, false);
-      sb.append("</jvxlSurfaceData>\n");
-    } else if (jvxlData.jvxlPlane == null) {
-      //no real point in compressing this unless it's a sign-based coloring
-      sb.append(jvxlData.jvxlSurfaceData);
-      sb.append(jvxlCompressString(jvxlData.jvxlEdgeData, false)).append('\n').append(
-          jvxlCompressString(colorData, false)).append('\n');
-    } else if (colorData != null) {
-      sb.append(jvxlCompressString(colorData, false)).append('\n');
-    }
-    int len = sb.length();
-    data.append(sb);
-    if (includeHeader) {
-      if (msg != null && !jvxlData.vertexDataOnly)
-        data.append("#-------end of jvxl file data-------\n");
-      String infoLine = TextFormat.simpleReplace(jvxlGetInfo(jvxlData), "asXML=\"true", "asXML=\"false");
-      data.append(infoLine).append('\n');
-        jvxlAppendCommandState(data, comment, state);
-      if (includeHeader)
-        data.append("<jvxlFileTitle>\n").append(jvxlData.jvxlFileTitle).append(
-            "</jvxlFileTitle>\n");
-    }
-    return jvxlSetCompressionRatio(data, jvxlData, len);
   }
 
 

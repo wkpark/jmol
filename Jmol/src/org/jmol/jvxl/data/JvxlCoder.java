@@ -333,9 +333,10 @@ public class JvxlCoder {
           nPolygons, sb1);
       appendTag(sb, "jvxlContour", " ", new String[] {
           "index", "" + i,
-          "value", contours[i].get(CONTOUR_VALUE).toString(),
+          "value", "" + contours[i].get(CONTOUR_VALUE),
           "color", Escape.escapeColor(((int[]) contours[i]
               .get(CONTOUR_COLOR))[0]),
+          "count", "" + contours[i].get(CONTOUR_NPOLYGONS),
           "encoding", "base90iff1",
           "data", jvxlCompressString(contours[i].get(CONTOUR_FDATA).toString(), true) }, sb1.toString(), "\n");
     }

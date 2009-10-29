@@ -1699,6 +1699,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void openFileAsynchronously(String fileName) {
     // Jmol app file dropper, main, OpenUrlAction, RecentFilesAction
+    if (fileName.indexOf(".jvxl") >= 0 || fileName.indexOf(".xjvxl") >= 0) {
+      evalString("isosurface " + Escape.escape(fileName));
+      return;
+    }
     boolean allowScript = (!fileName.startsWith("\t"));
     if (!allowScript)
       fileName = fileName.substring(1);

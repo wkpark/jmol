@@ -632,7 +632,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     while ((pt = data.indexOf("<jvxlContour", pt + 1)) >= 0) {
       Vector v = new Vector();
       String s = getXmlData("jvxlContour", data.substring(pt), true);
-      int n = parseInt(getXmlAttrib(s, "npolygons"));
+      int n = parseInt(getXmlAttrib(s, "count"));
       float value = parseFloat(getXmlAttrib(s, "value"));
       short colix = Graphics3D.getColix(Graphics3D.getArgbFromString(getXmlAttrib(s,
           "color")));
@@ -715,11 +715,13 @@ public class JvxlXmlReader extends VolumeFileReader {
   }
 
   protected static String getXmlAttrib(String data, String what) {
-    // presumes what="xxxx" exactly like that, no whitespace around =
-    // no escaped "; no check for spurious "what"
+    // TODO
+    // presumes what = "xxxx" 
+    // no check for spurious "what"; skips check for "=" entirely
+    // uses Jmol's decoding, not standard XML decoding (of &xxx;)
     int[] nexta = new int[1];
-    int pt = setNext(data, what, nexta, 2);
-    if (pt < 2)
+    int pt = setNext(data, what, nexta, 1);
+    if (pt < 2 || (pt = setNext(data, "\"", nexta, 0)) < 2)
       return "";
     int pt1 = setNext(data, "\"", nexta, -1);
     data = (pt1 <= 0 ? "" : data.substring(pt, pt1));

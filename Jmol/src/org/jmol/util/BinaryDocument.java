@@ -83,13 +83,11 @@ public class BinaryDocument {
   }
 
   public void readByteArray(byte[] b) throws Exception {
-    nBytes += b.length;
-   stream.read(b);
+    nBytes += stream.read(b);
   }
 
   public void readByteArray(byte[] b, int off, int len) throws Exception {
-    nBytes += len;
-    stream.read(b, off, len);
+    nBytes += stream.read(b, off, len);
   }
 
   public short readShort() throws Exception {

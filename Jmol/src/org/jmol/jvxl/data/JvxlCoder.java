@@ -104,7 +104,7 @@ public class JvxlCoder {
     if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length() > 0)
       type = "mapped " + type;
     data.append("<jvxlSurface type=\"").append(type).append("\">\n");
-    data.append(jvxlGetInfo(jvxlData));
+    data.append(jvxlGetInfo(jvxlData, true));
     data.append("\n");
     jvxlAppendCommandState(data, comment, state, true);
     if (title != null || msg != null && msg.length() > 0) {
@@ -218,7 +218,7 @@ public class JvxlCoder {
         "data", jvxlCompressString(data, true) }, null, null);
   }
 
-  public static String jvxlGetInfo(JvxlData jvxlData) {
+  public static String jvxlGetInfo(JvxlData jvxlData, boolean notVersion1) {
     if (jvxlData.jvxlSurfaceData == null)
       return "";
     StringBuffer info = new StringBuffer();
@@ -226,7 +226,7 @@ public class JvxlCoder {
     int bytesUncompressedEdgeData = (jvxlData.vertexDataOnly ? 0
         : jvxlData.jvxlEdgeData.length() - 1);
     int nColorData = (jvxlData.jvxlColorData == null ? -1 : (jvxlData.jvxlColorData.length() - 1));
-    appendAttrib(info, "\n  ", "axXML", "" + jvxlData.asXml);
+    appendAttrib(info, "\n  ", "axXML", "" + (jvxlData.asXml && notVersion1));
     if (!jvxlData.vertexDataOnly) {
       appendAttrib(info, "\n  ", "cutoff", "" + jvxlData.cutoff);
       appendAttrib(info, "\n  ", "isCutoffAbsolute", "" + jvxlData.isCutoffAbsolute);
@@ -1055,8 +1055,7 @@ public class JvxlCoder {
     if (includeHeader) {
       if (msg != null && !jvxlData.vertexDataOnly)
         data.append("#-------end of jvxl file data-------\n");
-      String infoLine = TextFormat.simpleReplace(jvxlGetInfo(jvxlData), "asXML=\"true", "asXML=\"false");
-      data.append(infoLine).append('\n');
+      data.append(jvxlGetInfo(jvxlData, false)).append('\n');
         jvxlAppendCommandState(data, comment, state, false);
       if (includeHeader)
         appendTag(data, "jvxlFileTitle", null, null, jvxlData.jvxlFileTitle, "");

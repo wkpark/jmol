@@ -462,7 +462,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return JvxlCoder.jvxlGetFile(jvxlData, null, title, "orbital #" + index, false, 1, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     if (property == "jvxlFileInfo")
-      return JvxlCoder.jvxlGetInfo(jvxlData);
+      return JvxlCoder.jvxlGetInfo(jvxlData, true);
     return null;
   }
 
@@ -906,7 +906,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       info.put("vertexCount", new Integer(mesh.vertexCount));
       if (mesh.ptCenter.x != Float.MAX_VALUE)
         info.put("center", mesh.ptCenter);
-      String s = JvxlCoder.jvxlGetInfo(mesh.jvxlData);
+      String s = JvxlCoder.jvxlGetInfo(mesh.jvxlData, true);
       if (s != null)
         info.put("jvxlInfo", s.replace('\n', ' '));
       info.put("modelIndex", new Integer(mesh.modelIndex));

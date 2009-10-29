@@ -49,7 +49,6 @@ public class JvxlCoder {
     jvxlData.nPointsX = counts[0];
     jvxlData.nPointsY = counts[1];
     jvxlData.nPointsZ = counts[2];
-    jvxlData.updateInfoLines();
     jvxlData.jvxlVolumeDataXml = volumeData.setVolumetricXml();
 
     String msg = null;
@@ -85,7 +84,6 @@ public class JvxlCoder {
                                        String[] title, String msg,
                                        boolean includeHeader, int nSurfaces,
                                        String state, String comment) {
-    jvxlData.jvxlInfoLine = TextFormat.simpleReplace(jvxlData.jvxlInfoLine, "asXML=\"false", "asXML=\"true");
     StringBuffer data = new StringBuffer();
     data.append("<?xml version=\"1.0\"?>\n").append("<jvxl version=\"").append(
         JVXL_VERSION_XML).append("\" jmolVersion=\"").append(jvxlData.version)
@@ -106,7 +104,7 @@ public class JvxlCoder {
     if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length() > 0)
       type = "mapped " + type;
     data.append("<jvxlSurface type=\"").append(type).append("\">\n");
-    data.append(jvxlData.jvxlInfoLine);
+    data.append(jvxlGetInfo(jvxlData, true));
     data.append("\n");
     jvxlAppendCommandState(data, comment, state);
     if (title != null || msg != null && msg.length() > 0) {
@@ -136,13 +134,6 @@ public class JvxlCoder {
     }
     sb.append("</jvxlSurfaceData>\n");
     int len = sb.length();
-    if (len > 0) {
-      if (jvxlData.wasCubic && jvxlData.nBytes > 0)
-        jvxlData.jvxlCompressionRatio = (int) (((float) jvxlData.nBytes) / len);
-      else
-        jvxlData.jvxlCompressionRatio = (int) (((float) (jvxlData.nPointsX
-            * jvxlData.nPointsY * jvxlData.nPointsZ * 13)) / len);
-    }
     data.append(sb);
     if (jvxlData.vContours != null && jvxlData.vContours.length > 0) {
       jvxlEncodeContourData(jvxlData.vContours, data);
@@ -150,7 +141,16 @@ public class JvxlCoder {
     data.append("</jvxlSurface>\n");
     data.append("</jvxlSurfaceSet>\n");
     data.append("</jvxl>");
-    return data.toString();
+    return jvxlSetCompressionRatio(data, jvxlData, len);
+  }
+
+  private static String jvxlSetCompressionRatio(StringBuffer data,
+                                                JvxlData jvxlData, int len) {
+    String s = data.toString();
+    int r = (int) (jvxlData.nBytes > 0 ? ((float) jvxlData.nBytes) / len
+        : ((float) (jvxlData.nPointsX
+          * jvxlData.nPointsY * jvxlData.nPointsZ * 13)) / len);
+    return TextFormat.simpleReplace(s, "#RATIO#", (r > 0 ? "" + r : "?"));
   }
 
   private static void appendXmlEdgeData(StringBuffer sb, JvxlData jvxlData) {
@@ -284,14 +284,12 @@ public class JvxlCoder {
       appendAttrib(info, "\n  ", "valueMappedToRed", "" + jvxlData.valueMappedToRed);
       appendAttrib(info, "\n  ", "valueMappedToBlue", "" + jvxlData.valueMappedToBlue);
     }
-    if (jvxlData.jvxlCompressionRatio > 0)
-      appendAttrib(info, "\n  ", "approximateCompressionRatio", ""
-          + jvxlData.jvxlCompressionRatio + ":1");
+    if (jvxlData.insideOut)
+      appendAttrib(info, "\n  ", "insideOut", "true");
     if (jvxlData.isXLowToHigh)
       appendAttrib(info, "\n  ", "note", "progressive JVXL+ -- X values read from low(0) to high("
               + (jvxlData.nPointsX - 1) + ")");
-    if (jvxlData.insideOut)
-      appendAttrib(info, "\n  ", "insideOut", "true");
+    appendAttrib(info, "\n  ", "approximateCompressionRatio", "#RATIO#:1");
     appendAttrib(info, "\n  ", "jmolVersion", jvxlData.version);
     return "<jvxlSurfaceInfo" + info + ">\n</jvxlSurfaceInfo>";
   }
@@ -307,15 +305,30 @@ public class JvxlCoder {
   /**
    * contour data are appended to a string buffer in the form of a 
    * <jmolContourData count="[nContours]">
-   *   <jmolContour index="0" data="fractional data">triangle bitset data</jmolContour>
-   *   <jmolContour index="1" data="fractional data">triangle bitset data</jmolContour>
-   *   <jmolContour index="2" data="fractional data">triangle bitset data</jmolContour>
+   *   <jmolContour index="0" value="-0.033" color="[xff0000]" encoding="base90iff1" data="fractional data">triangle bitset data</jmolContour>
+   *   <jmolContour index="1" value=" 0.000" color="[xffff00]" encoding="base90iff1" data="fractional data">triangle bitset data</jmolContour>
+   *   <jmolContour index="2" value=" 0.033" color="[x00ffff]" encoding="base90iff1" data="fractional data">triangle bitset data</jmolContour>
    *   ...
    * </jmolContourData>
    * 
    * One presumes an ordered set of triangles.
    * The contour intersects these triangles along two edges or at two vertices. 
    * (see IsosurfaceMesh for details)
+   * Each contour is a Vector containing:
+   *   0 Integer number of polygons (length of BitSet) 
+   *   1 BitSet of critical triangles
+   *   2 Float value
+   *   3 int[] [colorArgb]
+   *   4 StringBuffer containing encoded data for each segment:
+   *     char type ('3', '6', '5') indicating which two edges
+   *       of the triangle are connected: 
+   *         '3' 0x011 AB-BC
+   *         '5' 0x101 AB-CA
+   *         '6' 0x110 BC-CA
+   *     char fraction along first edge (jvxlFractionToCharacter)
+   *     char fraction along second edge (jvxlFractionToCharacter)
+   *   5- stream of pairs of points for rendering (created
+   * 
    * 
    * @param contours
    * @param sb
@@ -329,35 +342,55 @@ public class JvxlCoder {
       int nPolygons = ((Integer) contours[i]
           .get(CONTOUR_NPOLYGONS)).intValue();
       StringBuffer sb1 = new StringBuffer();
-      jvxlEncodeBitSet((BitSet) contours[i].get(CONTOUR_BITSET),
-          nPolygons, sb1);
+      BitSet bs = (BitSet) contours[i].get(CONTOUR_BITSET);
+      jvxlEncodeBitSet(bs, nPolygons, sb1);
       appendTag(sb, "jvxlContour", " ", new String[] {
           "index", "" + i,
           "value", "" + contours[i].get(CONTOUR_VALUE),
           "color", Escape.escapeColor(((int[]) contours[i]
               .get(CONTOUR_COLOR))[0]),
-          "count", "" + contours[i].get(CONTOUR_NPOLYGONS),
+          "count", "" + bs.length(),
           "encoding", "base90iff1",
           "data", jvxlCompressString(contours[i].get(CONTOUR_FDATA).toString(), true) }, sb1.toString(), "\n");
     }
     sb.append("</jvxlContourData>\n");
   }
 
+  /**
+   * Interpret fractional data in terms of actual vertex positions and
+   * create the elements of a Vector in Vector[] vContours starting at 
+   * the CONTOUR_POINTS position.
+   *  
+   * @param v
+   * @param polygonIndexes
+   * @param vertices
+   */
   public static void set3dContourVector(Vector v, int[][] polygonIndexes, Point3f[] vertices) {
     // we must add points only after the MarchingCubes process has completed.
     if (v.size() < CONTOUR_POINTS)
       return;
-    String fData = ((StringBuffer) v.get(CONTOUR_FDATA)).toString();
+    StringBuffer fData = (StringBuffer) v.get(CONTOUR_FDATA);
     BitSet bs = (BitSet) v.get(CONTOUR_BITSET);
     int nPolygons = ((Integer)v.get(CONTOUR_NPOLYGONS)).intValue();
     int pt = 0;
+    int nBuf = fData.length();
+    int type = 0;
+    char c1 = ' ';
+    char c2 = ' ';
     for (int i = 0; i < nPolygons; i++) {
       if (!bs.get(i))
         continue;
       int[] vertexIndexes = polygonIndexes[i];
-      int type = ((int) fData.charAt(pt++)) - 48;
-      char c1 = fData.charAt(pt++);
-      char c2 = fData.charAt(pt++);
+      while (pt < nBuf && !Character.isDigit(c1 = fData.charAt(pt++))) {
+        // skip non-digit data
+      }
+      type = ((int) c1) - 48;
+      while (pt < nBuf && Character.isWhitespace(c1 = fData.charAt(pt++))) {
+        // skip whitespace
+      }
+      while (pt < nBuf && Character.isWhitespace(c2 = fData.charAt(pt++))) {
+        // skip whitespace
+      }
       float f1 = jvxlFractionFromCharacter(c1, defaultEdgeFractionBase, defaultEdgeFractionRange, 0);
       float f2 = jvxlFractionFromCharacter(c2, defaultEdgeFractionBase, defaultEdgeFractionRange, 0);
       int i1, i2, i3, i4;
@@ -451,7 +484,6 @@ public class JvxlCoder {
             colorFractionBase, colorFractionRange));
     }
     jvxlData.jvxlColorData = list1.append(list2).append('\n').toString();
-    jvxlData.updateInfoLines();
   }
 
   /* ******************************************************************
@@ -962,37 +994,19 @@ public class JvxlCoder {
         .append(v.volumetricVectors[i].x).append(' ')
         .append(v.volumetricVectors[i].y).append(' ')
         .append(v.volumetricVectors[i].z).append('\n');
-    if (nAtoms == Integer.MAX_VALUE || nAtoms == Integer.MIN_VALUE) {
-      JvxlCoder.jvxlAddDummyAtomList(v, sb);
-      return;
-    }
-    nAtoms = Math.abs(nAtoms);
+    if (nAtoms != Integer.MAX_VALUE && nAtoms != Integer.MIN_VALUE) {
+      nAtoms = Math.abs(nAtoms);
       for (int i = 0, n = 0; i < nAtoms; i++)
         sb.append((n = Math.abs(atomNo[i])) + " " + n + ".0 "
             + atomXyz[i].x + " " + atomXyz[i].y + " " + atomXyz[i].z + "\n");
-  }
-
-  public static String fixAtomLineVersion1(int atomCount, String atomLine,
-                                           boolean isXLowToHigh,
-                                           boolean isAngstroms) {
-    if (isAngstroms) {
-      if (atomLine.indexOf("ANGSTROM") < 0)
-        atomLine += " ANGSTROMS";
-    } else {
-      if (atomLine.indexOf("BOHR") < 0)
-        atomLine += " BOHR";
+      return;
     }
-    return (atomCount == Integer.MIN_VALUE ? "" : (isXLowToHigh ? "+" : "-")
-        + Math.abs(atomCount)) + atomLine + "\n";
-  }
-
-  public static void jvxlAddDummyAtomList(VolumeData v, StringBuffer bs) {
     Point3f pt = new Point3f(v.volumetricOrigin);
-    bs.append("1 1.0 ").append(pt.x).append(' ').append(pt.y).append(' ')
+    sb.append("1 1.0 ").append(pt.x).append(' ').append(pt.y).append(' ')
         .append(pt.z).append(" //BOGUS H ATOM ADDED FOR JVXL FORMAT\n");
     for (int i = 0; i < 3; i++)
       pt.scaleAdd(v.voxelCounts[i] - 1, v.volumetricVectors[i], pt);
-    bs.append("2 2.0 ").append(pt.x).append(' ').append(pt.y).append(' ')
+    sb.append("2 2.0 ").append(pt.x).append(' ').append(pt.y).append(' ')
         .append(pt.z).append(" //BOGUS He ATOM ADDED FOR JVXL FORMAT\n");
   }
 
@@ -1065,7 +1079,6 @@ public class JvxlCoder {
                                             int nSurfaces, String state,
                                             String comment) {
     // pre-XML
-    jvxlData.jvxlInfoLine = TextFormat.simpleReplace(jvxlData.jvxlInfoLine, "asXML=\"true", "asXML=\"false");
     StringBuffer data = new StringBuffer();
     if (includeHeader) {
       String s = jvxlData.jvxlFileHeader
@@ -1084,9 +1097,8 @@ public class JvxlCoder {
       for (int i = 0; i < title.length; i++)
         data.append("# ").append(title[i]).append('\n');
     state = (state == null ? "" : " rendering:" + state);
-    data.append(jvxlData.jvxlDefinitionLine + state)
-        .append('\n');
-
+    String definitionLine = jvxlGetInfo(jvxlData, false);
+    data.append(definitionLine).append(state).append('\n');
     StringBuffer sb = new StringBuffer();
     String colorData = (jvxlData.jvxlColorData == null ? "" : jvxlData.jvxlColorData);
     if (jvxlData.vertexDataOnly) {
@@ -1102,25 +1114,18 @@ public class JvxlCoder {
       sb.append(jvxlCompressString(colorData, false)).append('\n');
     }
     int len = sb.length();
-    if (len > 0) {
-      if (jvxlData.wasCubic && jvxlData.nBytes > 0)
-        jvxlData.jvxlCompressionRatio = (int) (((float) jvxlData.nBytes) / len);
-      else
-        jvxlData.jvxlCompressionRatio = (int) (((float) (jvxlData.nPointsX
-            * jvxlData.nPointsY * jvxlData.nPointsZ * 13)) / len);
-    }
-
     data.append(sb);
     if (includeHeader) {
       if (msg != null && !jvxlData.vertexDataOnly)
         data.append("#-------end of jvxl file data-------\n");
-      data.append(jvxlData.jvxlInfoLine).append('\n');
+      String infoLine = TextFormat.simpleReplace(jvxlGetInfo(jvxlData, true), "asXML=\"true", "asXML=\"false");
+      data.append(infoLine).append('\n');
         jvxlAppendCommandState(data, comment, state);
       if (includeHeader)
         data.append("<jvxlFileTitle>\n").append(jvxlData.jvxlFileTitle).append(
             "</jvxlFileTitle>\n");
     }
-    return data.toString();
+    return jvxlSetCompressionRatio(data, jvxlData, len);
   }
 
 

@@ -199,32 +199,27 @@ class MrcBinaryReader extends VolumeFileReader {
     switch(mrcHeader.mode) {
     case 0:
       voxelValue = binarydoc.readByte();
-      nBytes++;
       break;
     case 1:
       voxelValue = binarydoc.readShort();
-      nBytes += 2;
       break;
     case 3:
       //read first component only
       voxelValue = binarydoc.readShort();
       binarydoc.readShort();
-      nBytes += 4;
       break;
     case 4:
       //read first component only
       voxelValue = binarydoc.readFloat();
       binarydoc.readFloat();
-      nBytes += 8;
       break;
     case 6:
       voxelValue = binarydoc.readUnsignedShort();
-      nBytes += 2;
       break;
     default:
       voxelValue = binarydoc.readFloat();
-      nBytes += 4;
     }
+    nBytes = binarydoc.getPosition();
     return voxelValue;
   }
 

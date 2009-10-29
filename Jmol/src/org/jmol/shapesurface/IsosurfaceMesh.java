@@ -305,8 +305,9 @@ public class IsosurfaceMesh extends Mesh {
   }
   
   /**
-   * create a set of contour data. Each contour is a
-   * Vector containing:
+   * create a set of contour data. 
+   * 
+   * Each contour is a Vector containing:
    *   0 Integer number of polygons (length of BitSet) 
    *   1 BitSet of critical triangles
    *   2 Float value

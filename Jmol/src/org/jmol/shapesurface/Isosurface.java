@@ -462,7 +462,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return JvxlCoder.jvxlGetFile(jvxlData, null, title, "orbital #" + index, false, 1, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     if (property == "jvxlFileInfo")
-      return jvxlData.jvxlInfoLine;
+      return JvxlCoder.jvxlGetInfo(jvxlData, true);
     return null;
   }
 
@@ -893,7 +893,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private void setJvxlInfo() {
     if (sg.getJvxlData() != jvxlData || sg.getJvxlData() != thisMesh.jvxlData)
       jvxlData = thisMesh.jvxlData = sg.getJvxlData();
-    jvxlData.updateInfoLines();
   }
 
   public Vector getShapeDetail() {
@@ -907,8 +906,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       info.put("vertexCount", new Integer(mesh.vertexCount));
       if (mesh.ptCenter.x != Float.MAX_VALUE)
         info.put("center", mesh.ptCenter);
-      if (mesh.jvxlData.jvxlDefinitionLine != null)
-        info.put("jvxlDefinitionLine", mesh.jvxlData.jvxlDefinitionLine);
+      String s = JvxlCoder.jvxlGetInfo(mesh.jvxlData, true);
+      if (s != null)
+        info.put("jvxlInfo", s.replace('\n', ' '));
       info.put("modelIndex", new Integer(mesh.modelIndex));
       if (mesh.title != null)
         info.put("title", mesh.title);

@@ -84,16 +84,13 @@ public class JvxlData {
   public String jvxlFileTitle;
   public String jvxlFileMessage;
   public String jvxlFileHeader;
-  public String jvxlDefinitionLine;
   public String jvxlSurfaceData;
   public String jvxlEdgeData;
   public String jvxlColorData;
-  public String jvxlInfoLine;
   public String jvxlVolumeDataXml;
   
   public Point4f jvxlPlane;
 
-  public int jvxlCompressionRatio;
   public boolean isJvxlPrecisionColor;
   public boolean jvxlDataIsColorMapped;
   public boolean jvxlDataIs2dContour;
@@ -118,7 +115,7 @@ public class JvxlData {
   public float cutoff;
   public float pointsPerAngstrom; 
   public int nPointsX, nPointsY, nPointsZ;
-  public int nBytes;
+  public long nBytes;
   public int nContours;
   public int nEdges;
   public int nSurfaceInts;
@@ -155,15 +152,9 @@ public class JvxlData {
     setSurfaceInfo(thePlane, nSurfaceInts, sb.toString());
   }
     
-  public void jvxlUpdateInfo(String[] title, int nBytes) {
+  public void jvxlUpdateInfo(String[] title, long nBytes) {
     this.title = title;
     this.nBytes = nBytes;
-    updateInfoLines();
-  }
-
-  public void updateInfoLines() {
-    jvxlDefinitionLine = JvxlCoder.jvxlGetInfo(this, false);
-    jvxlInfoLine = JvxlCoder.jvxlGetInfo(this, true);
   }
 
   public void updateSurfaceData(float[] vertexValues, int vertexCount, int vertexIncrement, char isNaN) { 

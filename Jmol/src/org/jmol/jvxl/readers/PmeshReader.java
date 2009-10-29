@@ -223,6 +223,8 @@ class PmeshReader extends PolygonFileReader {
         addTriangleCheck(vertices[0], vertices[1], vertices[2], 7, 0, false, 0);
       }
     }
+    if (isBinary)
+      nBytes = binarydoc.getPosition();
     return true;
   }
 
@@ -234,7 +236,7 @@ class PmeshReader extends PolygonFileReader {
   private String nextToken() throws Exception {
     while (iToken >= tokens.length) { 
       iToken = 0;
-      line = br.readLine();
+      readLine();
       tokens = getTokens();
     }
     return tokens[iToken++];

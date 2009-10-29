@@ -241,7 +241,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   // CUBE/APBS/JVXL file reading stuff
   ////////////////////////////////////////////////////////////////
 
-  protected int nBytes;
+  protected long nBytes;
   protected int nDataPoints;
   protected int nPointsX, nPointsY, nPointsZ;
 

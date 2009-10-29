@@ -24,7 +24,6 @@
 package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
-import java.util.Date;
 
 import javax.vecmath.Point3f;
 
@@ -111,7 +110,7 @@ class ObjReader extends PolygonFileReader {
   private boolean readVertices() throws Exception {
     pmeshError = "pmesh ERROR: invalid vertex list";
     Point3f pt = new Point3f();
-    while ((line = br.readLine()) != null) {
+    while (readLine() != null) {
       if (line.length() == 0 || nVertices == 0 && line.indexOf("v ") != 0)
         continue;
       if (line.indexOf("v ") != 0)
@@ -131,12 +130,12 @@ class ObjReader extends PolygonFileReader {
       if (!params.readAllData) {
         for (int i = 0; i < params.fileIndex; i++) {
           while (line != null && line.indexOf("g ") != 0)
-            line = br.readLine();
+            readLine();
           if (line == null)
             break;
           color = Graphics3D.getArgbFromString("[x" + line.substring(3) + "]");
           //System.out.println("[x" + line.substring(3) + "]" + " " + color);
-          line = br.readLine();
+          readLine();
         }
       }
 
@@ -162,7 +161,7 @@ class ObjReader extends PolygonFileReader {
             break;
           color = Graphics3D.getArgbFromString("[x" + line.substring(3) + "]");
         }
-        line = br.readLine();
+        readLine();
       }
     } catch (Exception e) {
       if (line != null)

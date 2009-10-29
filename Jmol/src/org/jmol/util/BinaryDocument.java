@@ -78,34 +78,41 @@ public class BinaryDocument {
   }
   
   public byte readByte() throws Exception {
+    nBytes++;
     return stream.readByte();
   }
 
   public void readByteArray(byte[] b) throws Exception {
-    stream.read(b);
+    nBytes += b.length;
+   stream.read(b);
   }
 
   public void readByteArray(byte[] b, int off, int len) throws Exception {
+    nBytes += len;
     stream.read(b, off, len);
   }
 
   public short readShort() throws Exception {
+    nBytes += 2;
     return (isBigEndian ? stream.readShort()
         : (short) ((((int) stream.readByte()) & 0xff) 
                  | (((int) stream.readByte()) & 0xff) << 8));
   }
 
   public int readInt() throws Exception {
+    nBytes += 4;
     return (isBigEndian ? stream.readInt() : readLEInt());
   }
   
   public int readUnsignedShort() throws Exception {
+    nBytes += 2;
     int a = (((int) stream.readByte()) & 0xff);
     int b = (((int) stream.readByte()) & 0xff);
     return (isBigEndian ? (a << 8) + b : (b << 8) + a);
   }
   
   public long readLong() throws Exception {
+    nBytes += 8;
     return (isBigEndian ? stream.readLong()
        : ((((long) stream.readByte()) & 0xff)
         | (((long) stream.readByte()) & 0xff) << 8
@@ -118,11 +125,13 @@ public class BinaryDocument {
   }
 
   public float readFloat() throws Exception {
+    nBytes += 4;
     return (isBigEndian ? stream.readFloat() 
         : Float.intBitsToFloat(readLEInt()));
   }
   
   public double readDouble() throws Exception {
+    nBytes += 8;
     return (isBigEndian ? stream.readDouble() : Double.longBitsToDouble(readLELong()));  
   }
   
@@ -150,9 +159,16 @@ public class BinaryDocument {
     try {
       stream.reset();
       stream.skipBytes((int)offset);
+      nBytes = offset;
     } catch (Exception e) {
       Logger.error(null, e);
     }
+  }
+
+  long nBytes;
+  
+  public long getPosition() {
+    return nBytes;
   }
 
 /*  random access -- application only:

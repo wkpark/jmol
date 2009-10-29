@@ -625,6 +625,8 @@ public class JvxlXmlReader extends VolumeFileReader {
 
   protected void jvxlDecodeContourData(JvxlData jvxlData, String data) throws Exception {
     Vector vs = new Vector();
+    StringBuffer values = new StringBuffer();
+    StringBuffer colors = new StringBuffer();
     int pt = -1;
     jvxlData.vContours = null;
     if (data == null)
@@ -632,13 +634,15 @@ public class JvxlXmlReader extends VolumeFileReader {
     while ((pt = data.indexOf("<jvxlContour", pt + 1)) >= 0) {
       Vector v = new Vector();
       String s = getXmlData("jvxlContour", data.substring(pt), true);
-      int n = parseInt(getXmlAttrib(s, "count"));
       float value = parseFloat(getXmlAttrib(s, "value"));
+      values.append(" ").append(value);
       short colix = Graphics3D.getColix(Graphics3D.getArgbFromString(getXmlAttrib(s,
           "color")));
       int color = Graphics3D.getArgb(colix);
+      colors.append(" ").append(Escape.escapeColor(color));
       String fData = getXmlAttrib(s, "data");
       BitSet bs = JvxlCoder.jvxlDecodeBitSet(getXmlData("jvxlContour", s, false));
+      int n = bs.length();
       IsosurfaceMesh.setContourVector(v, n, bs, value, colix, color, new StringBuffer(
           fData));
       vs.add(v);
@@ -655,6 +659,8 @@ public class JvxlXmlReader extends VolumeFileReader {
       jvxlData.contourColixes[i] = ((short[]) jvxlData.vContours[i].get(3))[0];
     }
     Logger.info("JVXL read: " + n + " discrete contours");
+    Logger.info("JVXL read: contour values: " + values);
+    Logger.info("JVXL read: contour colors: " + colors);
     jvxlData.contourColors = Graphics3D.getHexCodes(jvxlData.contourColixes);
   }
 

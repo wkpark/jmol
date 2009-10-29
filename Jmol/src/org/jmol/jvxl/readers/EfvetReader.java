@@ -93,7 +93,7 @@ class EfvetReader extends PolygonFileReader {
 
   private void getHeader() throws Exception {
     skipTo("<efvet", null);
-    while((line = br.readLine()).length() > 0 && line.indexOf(">") < 0)
+    while(readLine().length() > 0 && line.indexOf(">") < 0)
       jvxlFileHeaderBuffer.append("# " + line + "\n");
     Logger.info(jvxlFileHeaderBuffer.toString());
   }

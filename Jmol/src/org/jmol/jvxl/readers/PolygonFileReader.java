@@ -63,4 +63,10 @@ abstract class PolygonFileReader extends SurfaceFileReader {
   }
 
   abstract void getSurfaceData() throws Exception;
+  
+  protected String readLine() throws Exception {
+    line = br.readLine();
+    nBytes += line.length();
+    return line;
+  }  
 }

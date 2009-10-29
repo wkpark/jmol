@@ -28,7 +28,6 @@ import java.util.BitSet;
 
 import javax.vecmath.Vector3f;
 
-import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
@@ -310,35 +309,46 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   }
 
   /**
-   * checks an atom line for "ANGSTROMS", possibly overriding the data's 
-   * natural units, BOHR (similar to Gaussian CUBE files).
+   * checks an atom line for "ANGSTROMS", possibly overriding the data's natural
+   * units, BOHR (similar to Gaussian CUBE files).
    * 
    * @param isXLowToHigh
    * @param isAngstroms
    * @param strAtomCount
    * @param atomLine
    * @param bs
-   * @return  isAngstroms
+   * @return isAngstroms
    */
-  protected static boolean checkAtomLine(boolean isXLowToHigh, boolean isAngstroms,
-                                   String strAtomCount, String atomLine,
-                                   StringBuffer bs) {
+  protected static boolean checkAtomLine(boolean isXLowToHigh,
+                                         boolean isAngstroms,
+                                         String strAtomCount, String atomLine,
+                                         StringBuffer bs) {
     if (atomLine.indexOf("ANGSTROMS") >= 0)
       isAngstroms = true;
-    int atomCount = (strAtomCount == null ? Integer.MAX_VALUE : Parser.parseInt(strAtomCount));
-    switch(atomCount) {
+    int atomCount = (strAtomCount == null ? Integer.MAX_VALUE : Parser
+        .parseInt(strAtomCount));
+    switch (atomCount) {
     case Integer.MIN_VALUE:
-        atomCount = 0;
-        atomLine = " " + atomLine.substring(atomLine.indexOf(" ") + 1);
+      atomCount = 0;
+      atomLine = " " + atomLine.substring(atomLine.indexOf(" ") + 1);
       break;
     case Integer.MAX_VALUE:
       atomCount = Integer.MIN_VALUE;
       break;
     default:
-        String s = "" + atomCount;
-        atomLine = atomLine.substring(atomLine.indexOf(s) + s.length());
-      }
-    atomLine = JvxlCoder.fixAtomLineVersion1(atomCount, atomLine, isXLowToHigh, isAngstroms);
+      String s = "" + atomCount;
+      atomLine = atomLine.substring(atomLine.indexOf(s) + s.length());
+    }
+    if (isAngstroms) {
+      if (atomLine.indexOf("ANGSTROM") < 0)
+        atomLine += " ANGSTROMS";
+    } else {
+      if (atomLine.indexOf("BOHR") < 0)
+        atomLine += " BOHR";
+    }
+    atomLine = (atomCount == Integer.MIN_VALUE ? ""
+        : (isXLowToHigh ? "+" : "-") + Math.abs(atomCount))
+        + atomLine + "\n";
     bs.append(atomLine);
     return isAngstroms;
   }

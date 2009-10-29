@@ -122,7 +122,6 @@ public class SimpleMarchingCubes {
     jvxlData.nPointsY = volumeData.voxelCounts[1];
     jvxlData.nPointsZ = volumeData.voxelCounts[2];
     jvxlData.setSurfaceInfoFromBitSet(bsVoxels, null);
-    jvxlData.updateInfoLines();
     if (doCalcArea) {
       areaVolumeReturn[0] = calculatedArea;
       areaVolumeReturn[1] = calculatedVolume;

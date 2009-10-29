@@ -1059,8 +1059,7 @@ public class JvxlCoder {
       data.append(infoLine).append('\n');
         jvxlAppendCommandState(data, comment, state, false);
       if (includeHeader)
-        data.append("<jvxlFileTitle>\n").append(jvxlData.jvxlFileTitle).append(
-            "</jvxlFileTitle>\n");
+        appendTag(data, "jvxlFileTitle", null, null, jvxlData.jvxlFileTitle, "");
     }
     return jvxlSetCompressionRatio(data, jvxlData, len);
   }

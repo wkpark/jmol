@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-09-21 21:02+0200\n"
-"PO-Revision-Date: 2009-08-19 11:04+0000\n"
-"Last-Translator: Lushih Hsieh <bruce@rssh.kh.edu.tw>\n"
+"POT-Creation-Date: 2009-11-01 20:06+0100\n"
+"PO-Revision-Date: 2009-10-24 08:38+0000\n"
+"Last-Translator: iychiang <iychiang1809@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-08-20 18:44+0000\n"
+"X-Launchpad-Export-Date: 2009-11-01 18:12+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/Jmol.java:655
@@ -143,7 +143,7 @@ msgstr "勾選"
 
 #: org/jmol/console/ScriptEditor.java:135
 msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
-msgstr ""
+msgstr "回到頂端"
 
 #: org/jmol/console/ScriptEditor.java:136
 msgid "Step"
@@ -353,7 +353,7 @@ msgstr "附加模型"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
-msgstr ""
+msgstr "阿拉伯文"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
@@ -481,7 +481,6 @@ msgstr "沒有載入原子"
 
 #: org/jmol/popup/JmolPopup.java:464
 #: org/jmol/popup/PopupResourceBundle.java:577
-#, fuzzy
 msgid "Space Group"
 msgstr "空間群"
 
@@ -504,9 +503,8 @@ msgid "Translations"
 msgstr "翻譯"
 
 #: org/jmol/popup/JmolPopup.java:692
-#, fuzzy
 msgid "System"
-msgstr "步進"
+msgstr "系統"
 
 #: org/jmol/popup/JmolPopup.java:698
 msgid "1 processor"
@@ -523,12 +521,11 @@ msgstr "不知道處理器數目"
 
 #: org/jmol/popup/JmolPopup.java:703
 msgid "Java version:"
-msgstr ""
+msgstr "Java 版本:"
 
 #: org/jmol/popup/JmolPopup.java:707
-#, fuzzy
 msgid "Java memory usage:"
-msgstr "Java 所用的記憶體大小"
+msgstr "Java 之記憶體使用率:"
 
 #: org/jmol/popup/JmolPopup.java:713
 #, java-format
@@ -586,9 +583,8 @@ msgid "Symmetry"
 msgstr "對稱"
 
 #: org/jmol/popup/PopupResourceBundle.java:578
-#, fuzzy
 msgid "Hide Symmetry"
-msgstr "對稱"
+msgstr "隱藏對稱"
 
 #: org/jmol/popup/PopupResourceBundle.java:579
 msgid "Model information"
@@ -1424,24 +1420,20 @@ msgid "Current state"
 msgstr "現在狀態"
 
 #: org/jmol/popup/PopupResourceBundle.java:889
-#, fuzzy
 msgid "File"
-msgstr "檔案 {0}"
+msgstr "檔案"
 
 #: org/jmol/popup/PopupResourceBundle.java:890
-#, fuzzy
 msgid "Reload"
-msgstr "重新載入 {0}"
+msgstr "重新載入"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
-#, fuzzy
 msgid "Open from PDB"
-msgstr "PDB 來的檔案"
+msgstr "自 PDB 開啟"
 
 #: org/jmol/popup/PopupResourceBundle.java:892
-#, fuzzy
 msgid "Open file or URL"
-msgstr "檔案或網址(URL)"
+msgstr "開啟檔案或連結"
 
 #: org/jmol/popup/PopupResourceBundle.java:893
 msgid "Load full unit cell"
@@ -1449,52 +1441,48 @@ msgstr "載入全部晶格"
 
 #: org/jmol/popup/PopupResourceBundle.java:894
 msgid "Open script"
-msgstr ""
+msgstr "開啟腳本"
 
 #: org/jmol/popup/PopupResourceBundle.java:896
 #, java-format
 msgid "Save a copy of {0}"
-msgstr ""
+msgstr "將 {0} 儲存一份"
 
 #: org/jmol/popup/PopupResourceBundle.java:897
-#, fuzzy
 msgid "Save script with state"
-msgstr "含狀態指令稿"
+msgstr "儲存腳本及狀態"
 
 #: org/jmol/popup/PopupResourceBundle.java:898
-#, fuzzy
 msgid "Save script with history"
-msgstr "含記錄的指令稿"
+msgstr "儲存腳本及歷史"
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 #: org/jmol/popup/PopupResourceBundle.java:900
 #: org/jmol/popup/PopupResourceBundle.java:901
 #: org/jmol/popup/PopupResourceBundle.java:902
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} image"
-msgstr "{0} 圖形"
+msgstr "匯出 {0} 影像"
 
 #: org/jmol/popup/PopupResourceBundle.java:903
-#, fuzzy
 msgid "Save JVXL isosurface"
-msgstr "JVXL 等位面"
+msgstr "儲存 JVXL 等值面"
 
 #: org/jmol/popup/PopupResourceBundle.java:904
 #: org/jmol/popup/PopupResourceBundle.java:905
 #: org/jmol/popup/PopupResourceBundle.java:906
 #: org/jmol/popup/PopupResourceBundle.java:907
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} 3D model"
-msgstr "{0} 3D 模型"
+msgstr "匯出 {0} 3D 模式"
 
 #: org/jmol/popup/PopupResourceBundle.java:909
-#, fuzzy
 msgid "Computation"
-msgstr "配置"
+msgstr "計算"
 
 #: org/jmol/popup/PopupResourceBundle.java:910
 msgid "Optimize structure"
-msgstr ""
+msgstr "最適化結構"
 
 #: org/jmol/popup/PopupResourceBundle.java:914
 msgid "Extract MOL data"
@@ -1587,7 +1575,7 @@ msgstr "RasMol顏色"
 
 #: org/jmol/popup/PopupResourceBundle.java:964
 msgid "About..."
-msgstr ""
+msgstr "關於..."
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1098
 #: org/jmol/script/ScriptEvaluator.java:2335
@@ -1682,12 +1670,12 @@ msgstr "不能辦識的參數 {0}"
 msgid "unrecognized token: {0}"
 msgstr "不能辦識的符號{0}"
 
-#: org/jmol/script/ScriptCompiler.java:2122
+#: org/jmol/script/ScriptCompiler.java:2144
 msgid "script compiler ERROR: "
 msgstr "script 編譯器錯誤： "
 
 #: org/jmol/script/ScriptEvaluator.java:2197
-#: org/jmol/script/ScriptEvaluator.java:7447
+#: org/jmol/script/ScriptEvaluator.java:7486
 msgid "script ERROR: "
 msgstr "script 錯誤： "
 
@@ -1903,26 +1891,30 @@ msgstr "不能識別 SHOW 的參數 -- 使用了{0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "寫什麼呢？{0} 或 {1} \"檔名\""
 
-#: org/jmol/script/ScriptEvaluator.java:5591
+#: org/jmol/script/ScriptEvaluator.java:5623
 #, java-format
 msgid "{0} connections deleted"
 msgstr "己刪除{0}個連結"
 
-#: org/jmol/script/ScriptEvaluator.java:5612
+#: org/jmol/script/ScriptEvaluator.java:5644
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} 個新化學鍵; {1} 個己修改"
 
-#: org/jmol/script/ScriptEvaluator.java:7579
-#: org/jmol/script/ScriptEvaluator.java:7802
+#: org/jmol/script/ScriptEvaluator.java:7618
+#: org/jmol/script/ScriptEvaluator.java:7841
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "己刪除{0}個原子"
 
-#: org/jmol/script/ScriptEvaluator.java:8301
+#: org/jmol/script/ScriptEvaluator.java:8342
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0}個氫鍵"
+
+#: org/jmol/shape/Frank.java:73
+msgid "Click for menu..."
+msgstr ""
 
 #: org/jmol/viewer/PickingManager.java:207
 msgid "pick one more atom in order to spin the model around an axis"
@@ -1943,26 +1935,26 @@ msgstr "己隱藏{0}個原子"
 msgid "{0} atoms selected"
 msgstr "己選擇{0}個原子"
 
-#: org/jmol/viewer/Viewer.java:4001
+#: org/jmol/viewer/Viewer.java:4004
 msgid "Drag to move label"
 msgstr "拖著移走標記"
 
-#: org/jmol/viewer/Viewer.java:4994
+#: org/jmol/viewer/Viewer.java:4999
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr "錯誤：不能把布林旗標設定為字串：{0}"
 
-#: org/jmol/viewer/Viewer.java:5217 org/jmol/viewer/Viewer.java:5397
+#: org/jmol/viewer/Viewer.java:5222 org/jmol/viewer/Viewer.java:5402
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr "錯誤：不能把布林旗標設定為數字：{0}"
 
-#: org/jmol/viewer/Viewer.java:5915
+#: org/jmol/viewer/Viewer.java:5920
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "錯誤：不能把這個變數值設定至布林值：{0}"
 
-#: org/jmol/viewer/Viewer.java:7325
+#: org/jmol/viewer/Viewer.java:7326
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "不能存取剪貼簿--請用使用簽署過的程序 (applet)"
 

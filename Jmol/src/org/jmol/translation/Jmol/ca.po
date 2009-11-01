@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-09-04 22:32+0200\n"
-"PO-Revision-Date: 2009-04-09 23:04+0000\n"
+"PO-Revision-Date: 2009-10-25 22:19+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.cat>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-04-27 21:20+0000\n"
+"X-Launchpad-Export-Date: 2009-11-01 18:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
@@ -60,7 +60,7 @@ msgstr "llista les ordres durant l'execució de l'script"
 
 #: org/openscience/jmol/app/JmolApp.java:152
 msgid "start with no splash screen"
-msgstr ""
+msgstr "inicia sense pantalla de presentació"
 
 #: org/openscience/jmol/app/JmolApp.java:154
 msgid "no console -- all output to sysout"
@@ -69,6 +69,7 @@ msgstr "no hi ha consola -- tota lo sortida serà al sistema"
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
 msgstr ""
+"envia només a sortida els missatge d'impressió a la consola (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent commmand thread"
@@ -79,9 +80,8 @@ msgid "exit after script (implicit with -n)"
 msgstr "surt després de l'script (implícit amb -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:164
-#, fuzzy
 msgid "script file to execute or '-' for System.in"
-msgstr "fitxer script per executar"
+msgstr "fitxer d'script que s'executarà o '-' per a System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "Jmol script to execute BEFORE -s option"
@@ -163,27 +163,24 @@ msgid "Jmol Script Console"
 msgstr "Consola script del Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
-#, fuzzy
 msgid "Editor"
-msgstr "&Edita"
+msgstr "Editor"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:114
 msgid "Check"
-msgstr ""
+msgstr "Comprova"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:115
-#, fuzzy
 msgid "Top"
-msgstr "A&dalt"
+msgstr "De dalt"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:116
-#, fuzzy
 msgid "Step"
-msgstr "Estat"
+msgstr "Pas"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:123
 msgid "Variables"
-msgstr ""
+msgstr "Variables"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:312
@@ -434,16 +431,15 @@ msgstr "Obre un &URL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:55
 msgid "Scrip&t Editor..."
-msgstr ""
+msgstr "Editor d'scrip&ts"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
 msgid "Output Conso&le..."
 msgstr "Scrip&t…"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
-#, fuzzy
 msgid "Jmol Java &Console"
-msgstr "Consola Java del Jmol"
+msgstr "&Consola de Java del Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:58
 msgid "AtomSet&Chooser..."
@@ -963,9 +959,8 @@ msgid "Launching main frame..."
 msgstr "S'està executant el fotograma principal…"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:304
-#, fuzzy
 msgid "Jmol Console"
-msgstr "Consola Java del Jmol"
+msgstr "Consola del Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:326
 msgid "Could not create ConsoleTextArea: "
@@ -1500,244 +1495,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:521
 msgid "compressing large data file to"
 msgstr "s'està comprimint un fitxer de gran extensió a"
-
-#, fuzzy
-#~ msgid "Initializing Script Editor..."
-#~ msgstr "S'està inicialitzant la finestra d'scripts…"
-
-#~ msgid "Initializing Measurements..."
-#~ msgstr "S'estan inicialitzant les mesures…"
-
-#~ msgid "&Java Output Console"
-#~ msgstr "Consola de &Java del Jmol"
-
-#~ msgid "Run"
-#~ msgstr "Executa"
-
-#~ msgid "Select Atoms"
-#~ msgstr "Selecciona els àtoms"
-
-#~ msgid "Preview"
-#~ msgstr "Visualització prèvia"
-
-#~ msgid "Append models"
-#~ msgstr "Afegeix els models"
-
-#~ msgid "Make crystal..."
-#~ msgstr "Fes un cristall…"
-
-#~ msgid "Name"
-#~ msgstr "Nom"
-
-#~ msgid "Measurements..."
-#~ msgstr "Mesures…"
-
-#~ msgid "Export view to an image or script file."
-#~ msgstr "Exporta la visualització a un fitxer d'imatge o script."
-
-#~ msgid "Render in pov-ray."
-#~ msgstr "Renderitza en el POV-Ray."
-
-#~ msgid "Select an atom or region."
-#~ msgstr "Selecciona un àtom o una regió."
-
-#~ msgid "View measurement table."
-#~ msgstr "Visualitza la taula de mesures."
-
-#~ msgid "Image Type"
-#~ msgstr "Tipus d'imatge"
-
-#~ msgid "JPEG Quality"
-#~ msgstr "Qualitat de JPEG"
-
-#~ msgid "Initializing AtomSetChooser Window..."
-#~ msgstr "S'està inicialitzant la finestra del selector de conjunts d'atoms…"
-
-#~ msgid "Setting up File Choosers..."
-#~ msgstr "Configuració dels selectors de fitxer…"
-
-#~ msgid "All Files"
-#~ msgstr "Tots els fitxers"
-
-#~ msgid "Abort file chooser dialog"
-#~ msgstr "Avorta el diàleg de selecció de fitxers"
-
-#~ msgid "Details"
-#~ msgstr "Detalls"
-
-#~ msgid "Attributes"
-#~ msgstr "Atributs"
-
-#~ msgid "Modified"
-#~ msgstr "Modificat"
-
-#~ msgid "Generic File"
-#~ msgstr "Fitxer genèric"
-
-#~ msgid "Size"
-#~ msgstr "Mida"
-
-#~ msgid "Files of Type:"
-#~ msgstr "Fitxers del tipus:"
-
-#~ msgid "Type"
-#~ msgstr "Tipus"
-
-#~ msgid "FileChooser help"
-#~ msgstr "Ajuda del selector de fitxers"
-
-#~ msgid "Home"
-#~ msgstr "Inici"
-
-#~ msgid "List"
-#~ msgstr "Llista"
-
-#~ msgid "Look In:"
-#~ msgstr "Cerca a:"
-
-#~ msgid "Error creating new folder"
-#~ msgstr "S'ha produït un error en crear la carpeta nova"
-
-#~ msgid "New Folder"
-#~ msgstr "Carpeta nova"
-
-#~ msgid "Create New Folder"
-#~ msgstr "Crea una carpeta nova"
-
-#~ msgid "Update"
-#~ msgstr "Actualitza"
-
-#~ msgid "Update directory listing"
-#~ msgstr "Actualitza la llista de directoris"
-
-#~ msgid "Up"
-#~ msgstr "Amunt"
-
-#~ msgid "Up One Level"
-#~ msgstr "Un nivell amunt"
-
-#~ msgid "Yes"
-#~ msgstr "Sí"
-
-#~ msgid "check script syntax only"
-#~ msgstr "comprova només la sintaxi dels scripts"
-
-#~ msgid "Jmol-to-POV-Ray Conversion"
-#~ msgstr "Conversió de Jmol a POV-Ray"
-
-#~ msgid "Height : "
-#~ msgstr "Alçada: "
-
-#~ msgid "POV-Ray Executable Location"
-#~ msgstr "Ubicació de l'executable POV-Ray"
-
-#~ msgid "Image size"
-#~ msgstr "Mida de la imatge"
-
-#~ msgid "Output format : "
-#~ msgstr "Format de sortida: "
-
-#~ msgid "Select the file format of the output file"
-#~ msgstr "Selecciona el format de fitxer del fitxer de sortida"
-
-#~ msgid "Command Line to Execute"
-#~ msgstr "La línia d'ordre que s'executarà"
-
-#~ msgid "The actual command which will be executed"
-#~ msgstr "L'ordre en concret que s'executarà"
-
-#~ msgid "null component string"
-#~ msgstr "cadena de component nul"
-
-#~ msgid "Filename Stem"
-#~ msgstr "Arrel del nom de fitxer"
-
-#~ msgid "Use .ini file"
-#~ msgstr "Utilitza un fitxer .ini"
-
-#~ msgid "Save options in a .ini file"
-#~ msgstr "Desa les opcions en un fitxer .ini"
-
-#~ msgid "Render all frames"
-#~ msgstr "Renderitza tots els fotogrames"
-
-#~ msgid "Render each model (not only the currently displayed one)"
-#~ msgstr "Renderitza tots els models (no només el que es visualitza)"
-
-#~ msgid "Turn on POV-Ray anti-aliasing"
-#~ msgstr "Activa l'antialiasing del POV-Ray"
-
-#~ msgid "Use povray's slower but higher quality anti-aliasing mode"
-#~ msgstr "Utilitza l'antialiasing del POV-Ray, més lent però millor"
-
-#~ msgid "Render in pov-ray..."
-#~ msgstr "Renderitza en el POV-Ray…"
-
-#~ msgid "File not loaded"
-#~ msgstr "No s'ha carregat el fitxer"
-
-#~ msgid "no display"
-#~ msgstr "sense visualització"
-
-#~ msgid "Jmol executing script ..."
-#~ msgstr "El Jmol està executant l'script…"
-
-#~ msgid "Wi&reframe Rotation"
-#~ msgstr "Rotació en mode filfe&rro"
-
-#~ msgid "Wireframe Rotation"
-#~ msgstr "Rotació en mode filferro"
-
-#~ msgid "Colors"
-#~ msgstr "Colors"
-
-#~ msgid "Background"
-#~ msgstr "Fons"
-
-#~ msgid "Set the Background Color"
-#~ msgstr "Defineix el color de fons"
-
-#~ msgid "Background Color"
-#~ msgstr "Color de fons"
-
-#~ msgid "Picked Atoms"
-#~ msgstr "Àtoms triats"
-
-#~ msgid "Set the Color for Picked Atoms"
-#~ msgstr "Defineix el color per als àtoms triats"
-
-#~ msgid "Picked Atom Color"
-#~ msgstr "Color dels àtoms triats"
-
-#~ msgid "Text"
-#~ msgstr "Text"
-
-#~ msgid "Set the Color for Text"
-#~ msgstr "Defineix el color per al text"
-
-#~ msgid "Text Color"
-#~ msgstr "Color del text"
-
-#~ msgid "Set the Color for Bonds"
-#~ msgstr "Defineix el color dels enllaços"
-
-#~ msgid "Bond Color"
-#~ msgstr "Color dels enllaços"
-
-#~ msgid "Set the Vector Color"
-#~ msgstr "Defineix el color dels vectors"
-
-#~ msgid "Vector Color"
-#~ msgstr "Color dels vectors"
-
-#~ msgid "Color for distance, angle, & torsion measurements"
-#~ msgstr "Color per a les mesures de distància, angle i torsió"
-
-#~ msgid "Measurements Color"
-#~ msgstr "Color de les mesures"
-
-#~ msgid "Loading plugins..."
-#~ msgstr "S'estan carregant els connectors…"
-
-#~ msgid "&Vibrate…"
-#~ msgstr "&Vibra…"

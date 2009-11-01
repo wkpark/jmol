@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-09-21 21:02+0200\n"
+"POT-Creation-Date: 2009-11-01 20:06+0100\n"
 "PO-Revision-Date: 2009-09-08 21:06+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -1670,12 +1670,12 @@ msgstr "no se reconoce el parámetro {0}"
 msgid "unrecognized token: {0}"
 msgstr "no se reconoce la palabra clave {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2122
+#: org/jmol/script/ScriptCompiler.java:2144
 msgid "script compiler ERROR: "
 msgstr "ERROR del compilador de guiones: "
 
 #: org/jmol/script/ScriptEvaluator.java:2197
-#: org/jmol/script/ScriptEvaluator.java:7447
+#: org/jmol/script/ScriptEvaluator.java:7486
 msgid "script ERROR: "
 msgstr "ERROR en guión: "
 
@@ -1897,26 +1897,30 @@ msgstr "no se reconoce el parámetro SHOW; utilice {0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "¿qué escribir? {0} o {1} \"nombre de archivo\""
 
-#: org/jmol/script/ScriptEvaluator.java:5591
+#: org/jmol/script/ScriptEvaluator.java:5623
 #, java-format
 msgid "{0} connections deleted"
 msgstr "se han borrado {0} conexiones"
 
-#: org/jmol/script/ScriptEvaluator.java:5612
+#: org/jmol/script/ScriptEvaluator.java:5644
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} enlaces nuevos; {1} modificados"
 
-#: org/jmol/script/ScriptEvaluator.java:7579
-#: org/jmol/script/ScriptEvaluator.java:7802
+#: org/jmol/script/ScriptEvaluator.java:7618
+#: org/jmol/script/ScriptEvaluator.java:7841
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "se han borrado {0} átomos"
 
-#: org/jmol/script/ScriptEvaluator.java:8301
+#: org/jmol/script/ScriptEvaluator.java:8342
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} enlaces de hidrógeno"
+
+#: org/jmol/shape/Frank.java:73
+msgid "Click for menu..."
+msgstr ""
 
 #: org/jmol/viewer/PickingManager.java:207
 msgid "pick one more atom in order to spin the model around an axis"
@@ -1937,30 +1941,30 @@ msgstr "{0} átomos ocultos"
 msgid "{0} atoms selected"
 msgstr "{0} átomos seleccionados"
 
-#: org/jmol/viewer/Viewer.java:4001
+#: org/jmol/viewer/Viewer.java:4004
 msgid "Drag to move label"
 msgstr "Arrastra para mover la etiqueta"
 
-#: org/jmol/viewer/Viewer.java:4994
+#: org/jmol/viewer/Viewer.java:4999
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 "ERROR: no es posible dar valor de texto a una variable lógica booleana: {0}"
 
-#: org/jmol/viewer/Viewer.java:5217 org/jmol/viewer/Viewer.java:5397
+#: org/jmol/viewer/Viewer.java:5222 org/jmol/viewer/Viewer.java:5402
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
 "ERROR: no es posible dar valor numérico a una variable lógica booleana: {0}"
 
-#: org/jmol/viewer/Viewer.java:5915
+#: org/jmol/viewer/Viewer.java:5920
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 "ERROR: no es posible ajustar el valor de esta variable a un valor lógico "
 "booleano: {0}"
 
-#: org/jmol/viewer/Viewer.java:7325
+#: org/jmol/viewer/Viewer.java:7326
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 "no es posible acceder al portapapeles; utilice la miniaplicación firmada"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-09-21 21:02+0200\n"
+"POT-Creation-Date: 2009-11-01 20:06+0100\n"
 "PO-Revision-Date: 2009-09-25 06:38+0000\n"
 "Last-Translator: Muszela Balázs <bazsi86@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -46,8 +46,8 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
-"Az üzenetek itt fognak megjelenni. A parancsokat az alábbi mezőbe írja "
-"be.Kattintson a konzol Súgó menüpontjára segítségért, mely egy új böngésző-"
+"Az üzenetek itt fognak megjelenni. A parancsokat az alábbi mezőbe írja be."
+"Kattintson a konzol Súgó menüpontjára segítségért, mely egy új böngésző-"
 "ablakban fog megjelenni."
 
 #: org/jmol/appletwrapper/AppletWrapper.java:91
@@ -148,8 +148,7 @@ msgid "Check"
 msgstr "Ellenőrzés"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -1678,12 +1677,12 @@ msgstr "ismeretlen {0} paraméter"
 msgid "unrecognized token: {0}"
 msgstr "ismeretlen elem: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2122
+#: org/jmol/script/ScriptCompiler.java:2144
 msgid "script compiler ERROR: "
 msgstr "skript fordítási HIBA: "
 
 #: org/jmol/script/ScriptEvaluator.java:2197
-#: org/jmol/script/ScriptEvaluator.java:7447
+#: org/jmol/script/ScriptEvaluator.java:7486
 msgid "script ERROR: "
 msgstr "skript HIBA: "
 
@@ -1904,26 +1903,30 @@ msgstr "ismeretlen SHOW paraméter, használja ezt: {0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "mit írjak? {0} vagy {1} \"fájlnév\""
 
-#: org/jmol/script/ScriptEvaluator.java:5591
+#: org/jmol/script/ScriptEvaluator.java:5623
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} kapcsolat törölve"
 
-#: org/jmol/script/ScriptEvaluator.java:5612
+#: org/jmol/script/ScriptEvaluator.java:5644
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} új kötés, {1} módosítva"
 
-#: org/jmol/script/ScriptEvaluator.java:7579
-#: org/jmol/script/ScriptEvaluator.java:7802
+#: org/jmol/script/ScriptEvaluator.java:7618
+#: org/jmol/script/ScriptEvaluator.java:7841
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atom tötölve"
 
-#: org/jmol/script/ScriptEvaluator.java:8301
+#: org/jmol/script/ScriptEvaluator.java:8342
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} hidrogénkötés"
+
+#: org/jmol/shape/Frank.java:73
+msgid "Click for menu..."
+msgstr ""
 
 #: org/jmol/viewer/PickingManager.java:207
 msgid "pick one more atom in order to spin the model around an axis"
@@ -1944,38 +1947,38 @@ msgstr "{0} atom elrejtve"
 msgid "{0} atoms selected"
 msgstr "{0} atom kiválasztva"
 
-#: org/jmol/viewer/Viewer.java:4001
+#: org/jmol/viewer/Viewer.java:4004
 msgid "Drag to move label"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4994
+#: org/jmol/viewer/Viewer.java:4999
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr "HIBA: a logikai jelzőt nem lehet {0} string értékre állítani"
 
-#: org/jmol/viewer/Viewer.java:5217 org/jmol/viewer/Viewer.java:5397
+#: org/jmol/viewer/Viewer.java:5222 org/jmol/viewer/Viewer.java:5402
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr "HIBA: a logikai jelzőt nem lehet {0} számértékre állítani"
 
-#: org/jmol/viewer/Viewer.java:5915
+#: org/jmol/viewer/Viewer.java:5920
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "HIBA: ezt a változót nem lehet logikai értékre állítani: {0}"
 
-#: org/jmol/viewer/Viewer.java:7325
+#: org/jmol/viewer/Viewer.java:7326
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "a vágólap nem érhető el, használjon aláírt Java kisalkalmazást"
 
 #~ msgid "About Jmol"
 #~ msgstr "A Jmol programról"
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 #~ msgstr ""
-#~ "A kisalkalmazás nem hozhat létre fájlt. A Base64 JPEG formátumhoz használja "
-#~ "ezt: {0}."
+#~ "A kisalkalmazás nem hozhat létre fájlt. A Base64 JPEG formátumhoz "
+#~ "használja ezt: {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Fájl létrehozása sikertelen."

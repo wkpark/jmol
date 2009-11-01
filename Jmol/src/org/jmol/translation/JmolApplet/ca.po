@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-09-21 21:02+0200\n"
-"PO-Revision-Date: 2009-04-25 16:31+0000\n"
+"POT-Creation-Date: 2009-11-01 20:06+0100\n"
+"PO-Revision-Date: 2009-10-25 22:22+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.cat>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-04-27 21:24+0000\n"
+"X-Launchpad-Export-Date: 2009-11-01 18:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
@@ -63,9 +63,8 @@ msgid "Jmol Script Console"
 msgstr "Consola script del Jmol"
 
 #: org/jmol/console/AppletConsole.java:98
-#, fuzzy
 msgid "Editor"
-msgstr "Historial"
+msgstr "Editor"
 
 #: org/jmol/console/AppletConsole.java:99
 msgid "State"
@@ -73,9 +72,8 @@ msgstr "Estat"
 
 #: org/jmol/console/AppletConsole.java:100
 #: org/jmol/console/ScriptEditor.java:137
-#, fuzzy
 msgid "Run"
-msgstr "Rus"
+msgstr "Executa"
 
 #: org/jmol/console/AppletConsole.java:101
 msgid "Clear Output"
@@ -125,9 +123,8 @@ msgid "&More"
 msgstr "&Més"
 
 #: org/jmol/console/ScriptEditor.java:98
-#, fuzzy
 msgid "Jmol Script Editor"
-msgstr "Consola script del Jmol"
+msgstr "Editor d'scripts del Jmol"
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/PopupResourceBundle.java:876
@@ -146,18 +143,16 @@ msgid "Script"
 msgstr "Script"
 
 #: org/jmol/console/ScriptEditor.java:134
-#, fuzzy
 msgid "Check"
-msgstr "Txec"
+msgstr "Comprova"
 
 #: org/jmol/console/ScriptEditor.java:135
 msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
-msgstr ""
+msgstr "A dalt"
 
 #: org/jmol/console/ScriptEditor.java:136
-#, fuzzy
 msgid "Step"
-msgstr "Atura"
+msgstr "Pas"
 
 #: org/jmol/console/ScriptEditor.java:138
 #: org/jmol/popup/PopupResourceBundle.java:834
@@ -171,17 +166,15 @@ msgstr "Reprén"
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
-msgstr ""
+msgstr "Atura"
 
 #: org/jmol/console/ScriptEditor.java:144
-#, fuzzy
 msgid "Clear"
-msgstr "Neteja l'entrada"
+msgstr "Neteja"
 
 #: org/jmol/console/ScriptEditor.java:145
-#, fuzzy
 msgid "Close"
-msgstr "Consola"
+msgstr "Tanca"
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
@@ -365,16 +358,15 @@ msgstr "Afegeix els models"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
-msgstr ""
+msgstr "Àrab"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
 msgstr "Català"
 
 #: org/jmol/i18n/GT.java:120
-#, fuzzy
 msgid "Simplified Chinese"
-msgstr "Cadenes laterals"
+msgstr "Xinès simplificat"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Traditional Chinese"
@@ -494,7 +486,6 @@ msgstr "No s'ha carregat cap àtom"
 
 #: org/jmol/popup/JmolPopup.java:464
 #: org/jmol/popup/PopupResourceBundle.java:577
-#, fuzzy
 msgid "Space Group"
 msgstr "Grup espacial"
 
@@ -517,9 +508,8 @@ msgid "Translations"
 msgstr "Translacions"
 
 #: org/jmol/popup/JmolPopup.java:692
-#, fuzzy
 msgid "System"
-msgstr "Atura"
+msgstr "Sistema"
 
 #: org/jmol/popup/JmolPopup.java:698
 msgid "1 processor"
@@ -536,12 +526,11 @@ msgstr "recompte de processadors desconegut"
 
 #: org/jmol/popup/JmolPopup.java:703
 msgid "Java version:"
-msgstr ""
+msgstr "Versió del Java:"
 
 #: org/jmol/popup/JmolPopup.java:707
-#, fuzzy
 msgid "Java memory usage:"
-msgstr "Ús de memòria de Java"
+msgstr "Ús de memòria del Java"
 
 #: org/jmol/popup/JmolPopup.java:713
 #, java-format
@@ -599,9 +588,8 @@ msgid "Symmetry"
 msgstr "Simetria"
 
 #: org/jmol/popup/PopupResourceBundle.java:578
-#, fuzzy
 msgid "Hide Symmetry"
-msgstr "Simetria"
+msgstr "Amaga la simetria"
 
 #: org/jmol/popup/PopupResourceBundle.java:579
 msgid "Model information"
@@ -1437,24 +1425,20 @@ msgid "Current state"
 msgstr "Estat actual"
 
 #: org/jmol/popup/PopupResourceBundle.java:889
-#, fuzzy
 msgid "File"
-msgstr "Fitxer {0}"
+msgstr "Fitxer"
 
 #: org/jmol/popup/PopupResourceBundle.java:890
-#, fuzzy
 msgid "Reload"
-msgstr "Recarrega {0}"
+msgstr "Torna a carregar"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
-#, fuzzy
 msgid "Open from PDB"
-msgstr "Fitxer del PDB"
+msgstr "Obre del PDB"
 
 #: org/jmol/popup/PopupResourceBundle.java:892
-#, fuzzy
 msgid "Open file or URL"
-msgstr "Fitxer o URL"
+msgstr "Obre un fitxer o un URL"
 
 #: org/jmol/popup/PopupResourceBundle.java:893
 msgid "Load full unit cell"
@@ -1462,52 +1446,48 @@ msgstr "Carrega la cel·la unitat sencera"
 
 #: org/jmol/popup/PopupResourceBundle.java:894
 msgid "Open script"
-msgstr ""
+msgstr "Obre un script"
 
 #: org/jmol/popup/PopupResourceBundle.java:896
 #, java-format
 msgid "Save a copy of {0}"
-msgstr ""
+msgstr "Desa una còpia de {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:897
-#, fuzzy
 msgid "Save script with state"
-msgstr "Script amb estat"
+msgstr "Desa un script amb estat"
 
 #: org/jmol/popup/PopupResourceBundle.java:898
-#, fuzzy
 msgid "Save script with history"
-msgstr "Script amb historial"
+msgstr "Desa l'script amb historial"
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 #: org/jmol/popup/PopupResourceBundle.java:900
 #: org/jmol/popup/PopupResourceBundle.java:901
 #: org/jmol/popup/PopupResourceBundle.java:902
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} image"
-msgstr "Imatge {0}"
+msgstr "Exporta la imatge {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:903
-#, fuzzy
 msgid "Save JVXL isosurface"
-msgstr "Isosuperfície JVXL"
+msgstr "Desa la isosuperfície JVXL"
 
 #: org/jmol/popup/PopupResourceBundle.java:904
 #: org/jmol/popup/PopupResourceBundle.java:905
 #: org/jmol/popup/PopupResourceBundle.java:906
 #: org/jmol/popup/PopupResourceBundle.java:907
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} 3D model"
-msgstr "Model 3D {0}"
+msgstr "Exporta el model 3D {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:909
-#, fuzzy
 msgid "Computation"
-msgstr "Configuracions"
+msgstr "Càlcul"
 
 #: org/jmol/popup/PopupResourceBundle.java:910
 msgid "Optimize structure"
-msgstr ""
+msgstr "Optimitza l'estructura"
 
 #: org/jmol/popup/PopupResourceBundle.java:914
 msgid "Extract MOL data"
@@ -1600,7 +1580,7 @@ msgstr "Colors del RasMol"
 
 #: org/jmol/popup/PopupResourceBundle.java:964
 msgid "About..."
-msgstr ""
+msgstr "Quant a..."
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1098
 #: org/jmol/script/ScriptEvaluator.java:2335
@@ -1695,12 +1675,12 @@ msgstr "el paràmetre {0} no està reconegut"
 msgid "unrecognized token: {0}"
 msgstr "no es reconeix el testimoni: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2122
+#: org/jmol/script/ScriptCompiler.java:2144
 msgid "script compiler ERROR: "
 msgstr "Error del compilador script: "
 
 #: org/jmol/script/ScriptEvaluator.java:2197
-#: org/jmol/script/ScriptEvaluator.java:7447
+#: org/jmol/script/ScriptEvaluator.java:7486
 msgid "script ERROR: "
 msgstr "Error de l'script: "
 
@@ -1921,26 +1901,30 @@ msgstr "no es reconeix el paràmetre SHOW -- utilitzeu {0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "què s'ha d'escriure? {0} o «nomdefitxer» {1}"
 
-#: org/jmol/script/ScriptEvaluator.java:5591
+#: org/jmol/script/ScriptEvaluator.java:5623
 #, java-format
 msgid "{0} connections deleted"
 msgstr "s''han suprimit {0} connexions"
 
-#: org/jmol/script/ScriptEvaluator.java:5612
+#: org/jmol/script/ScriptEvaluator.java:5644
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} enllaços nous; {1} modificats"
 
-#: org/jmol/script/ScriptEvaluator.java:7579
-#: org/jmol/script/ScriptEvaluator.java:7802
+#: org/jmol/script/ScriptEvaluator.java:7618
+#: org/jmol/script/ScriptEvaluator.java:7841
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} àtoms suprimits"
 
-#: org/jmol/script/ScriptEvaluator.java:8301
+#: org/jmol/script/ScriptEvaluator.java:8342
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} enllaços d'hidrogen"
+
+#: org/jmol/shape/Frank.java:73
+msgid "Click for menu..."
+msgstr ""
 
 #: org/jmol/viewer/PickingManager.java:207
 msgid "pick one more atom in order to spin the model around an axis"
@@ -1961,32 +1945,38 @@ msgstr "{0} àtoms amagats"
 msgid "{0} atoms selected"
 msgstr "{0} àtoms seleccionats"
 
-#: org/jmol/viewer/Viewer.java:4001
+#: org/jmol/viewer/Viewer.java:4004
 msgid "Drag to move label"
-msgstr ""
+msgstr "Arrossegueu per a moure l'etiqueta"
 
-#: org/jmol/viewer/Viewer.java:4994
+#: org/jmol/viewer/Viewer.java:4999
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 "ERROR: No s'ha pogut definir el senyal d'un booleà a un valor de cadena: {0}"
 
-#: org/jmol/viewer/Viewer.java:5217 org/jmol/viewer/Viewer.java:5397
+#: org/jmol/viewer/Viewer.java:5222 org/jmol/viewer/Viewer.java:5402
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
 "ERROR: No s'ha pogut definir el senyal d'un booleà a un valor numèric: {0}"
 
-#: org/jmol/viewer/Viewer.java:5915
+#: org/jmol/viewer/Viewer.java:5920
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 "ERROR: No ha pogut definir-se el valor de la variable com a booleà: {0}"
 
-#: org/jmol/viewer/Viewer.java:7325
+#: org/jmol/viewer/Viewer.java:7326
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 "el porta-retalls no és accessible -- utilitzeu una miniaplicació signada"
+
+#~ msgid "About Jmol"
+#~ msgstr "Quant al Jmol"
+
+#~ msgid "File creation failed."
+#~ msgstr "La creació de fitxer ha falalt"
 
 #~ msgid ""
 #~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
@@ -1995,296 +1985,5 @@ msgstr ""
 #~ "Aquesta miniaplicació no té permisos per a creació de fitxers. Per al "
 #~ "format JPEG Base64, utilitzeu {0}."
 
-#~ msgid "File creation failed."
-#~ msgstr "La creació de fitxer ha falalt"
-
 #~ msgid "Minimize"
 #~ msgstr "Minimitza"
-
-#~ msgid "About Jmol"
-#~ msgstr "Quant al Jmol"
-
-#~ msgid "Execute"
-#~ msgstr "Executa"
-
-#~ msgid "Portuguese - Brazil"
-#~ msgstr "Portuguès de Brasil"
-
-#~ msgid "all"
-#~ msgstr "tot"
-
-#~ msgid "Structure"
-#~ msgstr "Estructures"
-
-#~ msgid "Surface"
-#~ msgstr "Superfície"
-
-#~ msgid "Unitcell"
-#~ msgstr "Cel·la unitat"
-
-#~ msgid "Measure"
-#~ msgstr "Mesura"
-
-#~ msgid "Bound Box"
-#~ msgstr "Quadre de lligament"
-
-#~ msgid "Unit Cell"
-#~ msgstr "Cel·la unitat"
-
-#~ msgid "comma or right parenthesis expected"
-#~ msgstr "s'esperava una coma o un parèntesis dret"
-
-#~ msgid "comparison operator expected"
-#~ msgstr "s'esperava un operador de comparació"
-
-#~ msgid "equal sign expected"
-#~ msgstr "s'esperava un signe igual"
-
-#~ msgid "right brace expected"
-#~ msgstr "s'esperava un claudàtor dret"
-
-#~ msgid "right bracket expected"
-#~ msgstr "s'esperava un claudàtor dret"
-
-#~ msgid "right parenthesis expected"
-#~ msgstr "s'esperava un parèntesis dret"
-
-#~ msgid "rotation points cannot be identical"
-#~ msgstr "els punts de rotació no poden ser idèntics"
-
-#~ msgid "too many parentheses"
-#~ msgstr "masses parèntesis"
-
-#~ msgid "bad atom number"
-#~ msgstr "número de l'àtom incorrecte"
-
-#~ msgid "Calculate what?"
-#~ msgstr "Què s'ha de calcular?"
-
-#~ msgid "invalid {0} control keyword"
-#~ msgstr "la paraula clau de control {0} no és vàlida"
-
-#~ msgid "save what?"
-#~ msgstr "què s'ha de desar?"
-
-#~ msgid "restore what?"
-#~ msgstr "què s'ha de restaurar?"
-
-#~ msgid "trajectory not applicable in this context"
-#~ msgstr "no es permet una trajectoria en aquest context"
-
-#~ msgid "{0} connections modified or created"
-#~ msgstr "s'han modificat o creat {0} connexions"
-
-#~ msgid "MO isosurfaces require that only one model be displayed"
-#~ msgstr "Per a les isosuperfícies dels OM cal que només es mostri un model"
-
-#~ msgid "Select"
-#~ msgstr "Selecció"
-
-#~ msgid "Too many nested {0} commands"
-#~ msgstr "Hi ha masses ordres {0} imbricades"
-
-#~ msgid "Invalid {0} command"
-#~ msgstr "Ordre {0} invàlida"
-
-#~ msgid "Compatibility"
-#~ msgstr "Compatibilitat"
-
-#~ msgid "RasMol/Chime Settings"
-#~ msgstr "Paràmetres del RasMol/Chime"
-
-#~ msgid "Axes RasMol/Chime"
-#~ msgstr "Eixos del RasMol/Chime"
-
-#~ msgid "Zero-Based Xyz Rasmol"
-#~ msgstr "Coordenades Xyz en zero del RasMol"
-
-#~ msgid "The {0} command is not available for the applet."
-#~ msgstr "L'ordre {0} no està disponible a la miniaplicació."
-
-#~ msgid "boolean or percent expected"
-#~ msgstr "s'esperava un booleà o un percentatge"
-
-#~ msgid "(atom expression) or decimal number expected"
-#~ msgstr "s'esperava una (expressió atòmica) o un nombre decimal"
-
-#~ msgid "variable undefined"
-#~ msgstr "la variable no està definida"
-
-#~ msgid "number out of range"
-#~ msgstr "el nombre està fora de l'abast"
-
-#~ msgid "atom expression compiler error - stack over/underflow"
-#~ msgstr ""
-#~ "s'ha produït un error en la complilació de l'expressió atòmica - sobre/"
-#~ "sotaeixement de la pila"
-
-#~ msgid "Jmol executing script ..."
-#~ msgstr "El Jmol està executant l'script..."
-
-#~ msgid "interpreter error - setspecial should not be here"
-#~ msgstr "error de l'intèrpret - setspecial no hauria d'estar ací"
-
-#~ msgid "Unrecognized {0} parameter"
-#~ msgstr "El paràmetre {0} no està reconegut"
-
-#~ msgid "use {0}"
-#~ msgstr "utilitzeu {0}"
-
-#~ msgid "unrecognized subcommand"
-#~ msgstr "la subordre no està reconeguda"
-
-#~ msgid "error loading script"
-#~ msgstr "s'ha produït un error en carregar l'script"
-
-#~ msgid "Currently the {0} command only works for the applet"
-#~ msgstr "Actualment l'ordre {0} només funciona amb la miniaplicació"
-
-#~ msgid "Animate"
-#~ msgstr "Animació"
-
-#~ msgid "Set Select Mode"
-#~ msgstr "Defineix el mode de selecció"
-
-#~ msgid "Replace Selection"
-#~ msgstr "Reemplaça la selecció"
-
-#~ msgid "Add to Selection (OR)"
-#~ msgstr "Afegeix a la selecció (AND)"
-
-#~ msgid "Narrow Selection (AND)"
-#~ msgstr "Restringeix la selecció (AND)"
-
-#~ msgid "Render"
-#~ msgstr "Renderització"
-
-#~ msgid "Crimson"
-#~ msgstr "Carmesí"
-
-#~ msgid "Dark Red"
-#~ msgstr "Vermell fosc"
-
-#~ msgid "Firebrick"
-#~ msgstr "Vermell de totxo"
-
-#~ msgid "Indian Red"
-#~ msgstr "Vermell indià"
-
-#~ msgid "Dark Magenta"
-#~ msgstr "Magenta fosc"
-
-#~ msgid "Dark Salmon"
-#~ msgstr "Salmó fosc"
-
-#~ msgid "Light Salmon"
-#~ msgstr "Salmó clar"
-
-#~ msgid "Deep Pink"
-#~ msgstr "Rosa fosc"
-
-#~ msgid "Light Pink"
-#~ msgstr "Rosa clar"
-
-#~ msgid "Goldenrod"
-#~ msgstr "Or vell"
-
-#~ msgid "Lemon Chiffon"
-#~ msgstr "Llimona"
-
-#~ msgid "Yellow-Green"
-#~ msgstr "Groc verdós"
-
-#~ msgid "Lime"
-#~ msgstr "Llima"
-
-#~ msgid "Seagreen"
-#~ msgstr "Verd marí"
-
-#~ msgid "Green-Blue"
-#~ msgstr "Verd blavós"
-
-#~ msgid "Spring Green"
-#~ msgstr "Verd primavera"
-
-#~ msgid "Aqua"
-#~ msgstr "Turquesa"
-
-#~ msgid "Azure"
-#~ msgstr "Blau cel"
-
-#~ msgid "Carolina Blue"
-#~ msgstr "Blau Carolina"
-
-#~ msgid "Cadet Blue"
-#~ msgstr "Blau cadet"
-
-#~ msgid "Cornflower"
-#~ msgstr "Blauet"
-
-#~ msgid "Dark Slate Blue"
-#~ msgstr "Blau pissarra fosc"
-
-#~ msgid "Light Steel Blue"
-#~ msgstr "Blau pissarra clar"
-
-#~ msgid "Charge"
-#~ msgstr "Càrrega"
-
-#~ msgid "Crystal"
-#~ msgstr "Cristall"
-
-#~ msgid "Aquamarine"
-#~ msgstr "Aiguamarina"
-
-#~ msgid "Forest Green"
-#~ msgstr "Verd bosc"
-
-#~ msgid "Hot Pink"
-#~ msgstr "Rosa intens"
-
-#~ msgid "Options"
-#~ msgstr "Opcions"
-
-#~ msgid "Show Selected Atoms"
-#~ msgstr "Mostra els àtoms seleccionats"
-
-#~ msgid "Jmol Colors"
-#~ msgstr "Colors del Jmol"
-
-#~ msgid "or dotted"
-#~ msgstr "o puntejat"
-
-#~ msgid "Except Solvent"
-#~ msgstr "Excepte el solvent"
-
-#~ msgid "Except Water"
-#~ msgstr "Excepte l'aigua"
-
-#~ msgid "Other"
-#~ msgstr "Altres"
-
-#~ msgid "Lipid"
-#~ msgstr "Lípid"
-
-#~ msgid "Nanometers"
-#~ msgstr "Nanòmetres"
-
-#~ msgid "Angstroms"
-#~ msgstr "Àngstroms"
-
-#~ msgid "Picometers"
-#~ msgstr "Picòmetres"
-
-#~ msgid "Wireframe Rotation"
-#~ msgstr "Rotació en mode filferro"
-
-#~ msgid ""
-#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
-#~ "for more information"
-#~ msgstr ""
-#~ "Miniaplicació Jmol. Part del projecte OpenScience. Consulteu http://www."
-#~ "jmol.org per a més informació"
-
-#~ msgid "English - United Kingdom"
-#~ msgstr "Anglès (Regne Unit)"

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-09-04 22:32+0200\n"
-"PO-Revision-Date: 2009-08-19 11:07+0000\n"
-"Last-Translator: Lushih Hsieh <bruce@rssh.kh.edu.tw>\n"
+"PO-Revision-Date: 2009-10-24 08:18+0000\n"
+"Last-Translator: iychiang <iychiang1809@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-08-20 18:48+0000\n"
+"X-Launchpad-Export-Date: 2009-11-01 18:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -103,9 +103,7 @@ msgstr "視窗的 寬度 x 高度,例如 {0}"
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
-msgstr ""
-"JPG 影像壓縮品質(1-100;預設 75) 或 PNG 影像壓縮品質(0-9;預設 2,最大壓縮值為 "
-"9)"
+msgstr "JPG 影像壓縮品質(1-100;預設 75) 或 PNG 影像壓縮品質(0-9;預設 2,最大壓縮值為 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:209
 #, java-format
@@ -1208,7 +1206,7 @@ msgstr "(埃)"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:425
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr ""
+msgstr "化學鍵誤差--二共價鍵半徑和 + 這個值"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:476
 msgid "Minimum Bonding Distance"
@@ -1306,8 +1304,7 @@ msgstr "輸出至在{1}上的網頁功能{0}可產生網頁架構及JavaScript�
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
-msgstr ""
-"可以手動取得3-D模型，按{0}中的{1}。第一次載入applet時，須要相當長的下載時間。"
+msgstr "可以手動取得3-D模型，按{0}中的{1}。第一次載入applet時，須要相當長的下載時間。"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:308
 msgid "Insert the page TITLE here."
@@ -1475,6 +1472,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:521
 msgid "compressing large data file to"
 msgstr "正在壓縮大的資料檔至"
-
-#~ msgid "Initializing Measurements..."
-#~ msgstr "啟始測量..."

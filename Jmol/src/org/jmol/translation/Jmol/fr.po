@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-09-04 22:32+0200\n"
-"PO-Revision-Date: 2009-09-30 13:33+0000\n"
+"PO-Revision-Date: 2009-10-01 19:31+0000\n"
 "Last-Translator: Matthieu de Montmollin <mouloud@beer.com>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-10-01 17:52+0000\n"
+"X-Launchpad-Export-Date: 2009-11-01 18:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -215,7 +215,7 @@ msgstr "Répéter"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:164
 msgid "AtomSetChooser"
-msgstr "AtomSetChooser"
+msgstr "Atom Set Sélecteur"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:168
 msgid "No AtomSets"
@@ -243,7 +243,7 @@ msgstr "Info"
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:608
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:629
 msgid "Select"
-msgstr "Sélectionner"
+msgstr "Sélection"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:253
 msgid "Repeat"
@@ -457,7 +457,7 @@ msgstr "Exporter une &Image..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:62
 msgid "Save current view as an image."
-msgstr ""
+msgstr "GUardar vista actual como una imagen"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:63
 msgid "Export to &Web Page..."
@@ -465,7 +465,7 @@ msgstr "Exporter dans une page &Web"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "Export one or more views to a web page."
-msgstr ""
+msgstr "Exportar una o mas vistas a la página web"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Render in POV-&Ray..."
@@ -478,11 +478,11 @@ msgstr "Rendu dans POV-Ray"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "Write &State..."
-msgstr ""
+msgstr "Escritura & Estado"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
 msgid "Save current view as a Jmol state script."
-msgstr ""
+msgstr "Guardar la vista actual como un script de estado Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
 msgid "&Print..."
@@ -519,7 +519,7 @@ msgstr "Tout désélectionner"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:78
 msgid "Copy &Image"
-msgstr ""
+msgstr "Copiar & Imagen"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:79
 msgid "Copy Script"
@@ -611,7 +611,7 @@ msgstr "&Lien"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:105
 msgid "&Wireframe"
-msgstr ""
+msgstr "&Estructura de malla"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:106
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:107
@@ -644,7 +644,7 @@ msgstr "&centré"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:115
 msgid "&Upper right"
-msgstr ""
+msgstr "&Superior derecha"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:116
 msgid "&Vector"
@@ -652,7 +652,7 @@ msgstr "&Vecteur"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:118
 msgid "&On"
-msgstr ""
+msgstr "Activado"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:119
 #, java-format
@@ -683,7 +683,7 @@ msgstr "{0}%"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:133
 msgid "&Perspective Depth"
-msgstr ""
+msgstr "&Perspectiva"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:134
 msgid "A&xes"
@@ -691,7 +691,7 @@ msgstr "A&xes"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:135
 msgid "B&ounding Box"
-msgstr ""
+msgstr "B&ounding Box"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:136
 msgid "&Hydrogens"
@@ -712,7 +712,7 @@ msgstr "&Vue"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
 msgid "&Front"
-msgstr ""
+msgstr "&Front"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
 msgid "&Top"
@@ -768,7 +768,7 @@ msgstr "&Animer..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
 msgid "&Vibrate..."
-msgstr ""
+msgstr "&Vibrer"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
 msgid "&Graph..."
@@ -784,7 +784,7 @@ msgstr "&Propriétés du Cristal..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
 msgid "&Once"
-msgstr ""
+msgstr "Une fois"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
 msgid "&Loop"
@@ -800,7 +800,7 @@ msgstr "&Stopper l'animation"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:163
 msgid "&Rewind to first frame"
-msgstr ""
+msgstr "&Retour rapide pour la première image"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
 msgid "Rewind to first frame"
@@ -808,7 +808,7 @@ msgstr "Revenir à la première trame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
 msgid "Go to &next frame"
-msgstr ""
+msgstr "Aller à &l'écran suivant"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
 msgid "Go to next frame"
@@ -816,7 +816,7 @@ msgstr "Aller à la trame suivante"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "Go to &previous frame"
-msgstr ""
+msgstr "Accès à l'écran &précédent"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
 msgid "Go to previous frame"
@@ -824,7 +824,7 @@ msgstr "Aller à la trame précédente"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "Go to &last frame"
-msgstr ""
+msgstr "Aller à &la dernière image"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 msgid "Go to last frame"
@@ -832,7 +832,7 @@ msgstr "Aller à la dernière trame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "Start &vibration"
-msgstr ""
+msgstr "Début de &vibration"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
 msgid "&Stop vibration"

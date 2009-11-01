@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-09-21 21:02+0200\n"
-"PO-Revision-Date: 2009-07-25 09:09+0000\n"
-"Last-Translator: Martin Slavík <Unknown>\n"
+"POT-Creation-Date: 2009-11-01 20:06+0100\n"
+"PO-Revision-Date: 2009-10-14 13:08+0000\n"
+"Last-Translator: Augustin <augustin.zidek@gmail.com>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-07-31 16:36+0000\n"
+"X-Launchpad-Export-Date: 2009-11-01 18:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
@@ -358,7 +358,7 @@ msgstr "Připojené modely"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
-msgstr ""
+msgstr "arabština"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
@@ -486,7 +486,6 @@ msgstr "Žádný atom nenahrán"
 
 #: org/jmol/popup/JmolPopup.java:464
 #: org/jmol/popup/PopupResourceBundle.java:577
-#, fuzzy
 msgid "Space Group"
 msgstr "Prostorová grupa"
 
@@ -509,9 +508,8 @@ msgid "Translations"
 msgstr "Nastavit jazyk"
 
 #: org/jmol/popup/JmolPopup.java:692
-#, fuzzy
 msgid "System"
-msgstr "Krok"
+msgstr "Systém"
 
 #: org/jmol/popup/JmolPopup.java:698
 msgid "1 processor"
@@ -528,12 +526,11 @@ msgstr "neznámý počet procesorů"
 
 #: org/jmol/popup/JmolPopup.java:703
 msgid "Java version:"
-msgstr ""
+msgstr "Verze Javy:"
 
 #: org/jmol/popup/JmolPopup.java:707
-#, fuzzy
 msgid "Java memory usage:"
-msgstr "Využití Java  paměti"
+msgstr "Využití paměti Javy:"
 
 #: org/jmol/popup/JmolPopup.java:713
 #, java-format
@@ -591,9 +588,8 @@ msgid "Symmetry"
 msgstr "Symetrie"
 
 #: org/jmol/popup/PopupResourceBundle.java:578
-#, fuzzy
 msgid "Hide Symmetry"
-msgstr "Symetrie"
+msgstr "Skryj symetrii"
 
 #: org/jmol/popup/PopupResourceBundle.java:579
 msgid "Model information"
@@ -1429,24 +1425,20 @@ msgid "Current state"
 msgstr "Současný stav"
 
 #: org/jmol/popup/PopupResourceBundle.java:889
-#, fuzzy
 msgid "File"
-msgstr "Soubor {0}"
+msgstr "Soubor"
 
 #: org/jmol/popup/PopupResourceBundle.java:890
-#, fuzzy
 msgid "Reload"
-msgstr "Znovu načíst {0}"
+msgstr "Obnovit"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
-#, fuzzy
 msgid "Open from PDB"
-msgstr "Soubor z PDB"
+msgstr "Otevřít z PDB"
 
 #: org/jmol/popup/PopupResourceBundle.java:892
-#, fuzzy
 msgid "Open file or URL"
-msgstr "Soubor nebo URL"
+msgstr "Otevřít soubor nebo URL"
 
 #: org/jmol/popup/PopupResourceBundle.java:893
 msgid "Load full unit cell"
@@ -1454,52 +1446,48 @@ msgstr "Načti úplnou elementární buňku"
 
 #: org/jmol/popup/PopupResourceBundle.java:894
 msgid "Open script"
-msgstr ""
+msgstr "Otevřít script"
 
 #: org/jmol/popup/PopupResourceBundle.java:896
 #, java-format
 msgid "Save a copy of {0}"
-msgstr ""
+msgstr "Uložit kopii {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:897
-#, fuzzy
 msgid "Save script with state"
-msgstr "Skript se stavem"
+msgstr "Uložit script se stavem"
 
 #: org/jmol/popup/PopupResourceBundle.java:898
-#, fuzzy
 msgid "Save script with history"
-msgstr "Skript s historií"
+msgstr "Uložit script s historií"
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 #: org/jmol/popup/PopupResourceBundle.java:900
 #: org/jmol/popup/PopupResourceBundle.java:901
 #: org/jmol/popup/PopupResourceBundle.java:902
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} image"
-msgstr "{0} obrázek"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:903
-#, fuzzy
 msgid "Save JVXL isosurface"
-msgstr "JVXL izopovrch"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:904
 #: org/jmol/popup/PopupResourceBundle.java:905
 #: org/jmol/popup/PopupResourceBundle.java:906
 #: org/jmol/popup/PopupResourceBundle.java:907
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} 3D model"
-msgstr "{0} 3D Modelů"
+msgstr "Exportovat {0} 3D model"
 
 #: org/jmol/popup/PopupResourceBundle.java:909
-#, fuzzy
 msgid "Computation"
-msgstr "Konfigurace"
+msgstr "Výpočet"
 
 #: org/jmol/popup/PopupResourceBundle.java:910
 msgid "Optimize structure"
-msgstr ""
+msgstr "Optimalizovat strukturu"
 
 #: org/jmol/popup/PopupResourceBundle.java:914
 msgid "Extract MOL data"
@@ -1592,7 +1580,7 @@ msgstr "RasMol barvy"
 
 #: org/jmol/popup/PopupResourceBundle.java:964
 msgid "About..."
-msgstr ""
+msgstr "O aplikaci..."
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1098
 #: org/jmol/script/ScriptEvaluator.java:2335
@@ -1687,12 +1675,12 @@ msgstr "neznámý parametr: {0}"
 msgid "unrecognized token: {0}"
 msgstr "nerozpoznaný token: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2122
+#: org/jmol/script/ScriptCompiler.java:2144
 msgid "script compiler ERROR: "
 msgstr "Chyba kompilátoru skriptu ERROR: "
 
 #: org/jmol/script/ScriptEvaluator.java:2197
-#: org/jmol/script/ScriptEvaluator.java:7447
+#: org/jmol/script/ScriptEvaluator.java:7486
 msgid "script ERROR: "
 msgstr "Chyba skriptu ERROR: "
 
@@ -1912,26 +1900,30 @@ msgstr "nerozpoznaný SHOW parametr --  použij {0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "Co zapsat? {0} nebo {1} \"název souboru\""
 
-#: org/jmol/script/ScriptEvaluator.java:5591
+#: org/jmol/script/ScriptEvaluator.java:5623
 #, java-format
 msgid "{0} connections deleted"
 msgstr "vymazaná spojení: {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:5612
+#: org/jmol/script/ScriptEvaluator.java:5644
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} nových vazeb; {1} změněných"
 
-#: org/jmol/script/ScriptEvaluator.java:7579
-#: org/jmol/script/ScriptEvaluator.java:7802
+#: org/jmol/script/ScriptEvaluator.java:7618
+#: org/jmol/script/ScriptEvaluator.java:7841
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atomů smazáno"
 
-#: org/jmol/script/ScriptEvaluator.java:8301
+#: org/jmol/script/ScriptEvaluator.java:8342
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} vodíkových můstků"
+
+#: org/jmol/shape/Frank.java:73
+msgid "Click for menu..."
+msgstr ""
 
 #: org/jmol/viewer/PickingManager.java:207
 msgid "pick one more atom in order to spin the model around an axis"
@@ -1952,28 +1944,31 @@ msgstr "skryté atomy: {0}"
 msgid "{0} atoms selected"
 msgstr "{0} atomů vybráno"
 
-#: org/jmol/viewer/Viewer.java:4001
+#: org/jmol/viewer/Viewer.java:4004
 msgid "Drag to move label"
-msgstr ""
+msgstr "Táhni myší pro přesun popisku"
 
-#: org/jmol/viewer/Viewer.java:4994
+#: org/jmol/viewer/Viewer.java:4999
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr "ERROR: cannot set boolean flag to string value: {0}"
 
-#: org/jmol/viewer/Viewer.java:5217 org/jmol/viewer/Viewer.java:5397
+#: org/jmol/viewer/Viewer.java:5222 org/jmol/viewer/Viewer.java:5402
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr "ERROR: cannot set boolean flag to numeric value: {0}"
 
-#: org/jmol/viewer/Viewer.java:5915
+#: org/jmol/viewer/Viewer.java:5920
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"
 
-#: org/jmol/viewer/Viewer.java:7325
+#: org/jmol/viewer/Viewer.java:7326
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "schránka není přístupná -- použijte podepsaný applet"
+
+#~ msgid "About Jmol"
+#~ msgstr "O programu Jmol"
 
 #~ msgid ""
 #~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
@@ -1987,102 +1982,3 @@ msgstr "schránka není přístupná -- použijte podepsaný applet"
 
 #~ msgid "Minimize"
 #~ msgstr "Minimalizovat"
-
-#~ msgid "About Jmol"
-#~ msgstr "O programu Jmol"
-
-#~ msgid "all"
-#~ msgstr "vše"
-
-#~ msgid "Structure"
-#~ msgstr "Struktura"
-
-#~ msgid "Surface"
-#~ msgstr "Povrch"
-
-#~ msgid "Unitcell"
-#~ msgstr "Elementární buňka"
-
-#~ msgid "Measure"
-#~ msgstr "Změřit"
-
-#~ msgid "Bound Box"
-#~ msgstr "Hraniční box"
-
-#~ msgid "Unit Cell"
-#~ msgstr "Elementární buňka"
-
-#~ msgid "rotation points cannot be identical"
-#~ msgstr "rotační body nemohou být identické"
-
-#~ msgid "bad atom number"
-#~ msgstr "špatné protonové číslo"
-
-#~ msgid "Calculate what?"
-#~ msgstr "Co vypočítat?"
-
-#~ msgid "invalid {0} control keyword"
-#~ msgstr "neplatné klíčové slovo: {0}"
-
-#~ msgid "save what?"
-#~ msgstr "Co uložit?"
-
-#~ msgid "restore what?"
-#~ msgstr "Co obnovit?"
-
-#~ msgid "{0} connections modified or created"
-#~ msgstr "upravená nebo vytvořená spojení: {0}"
-
-#~ msgid "MO isosurfaces require that only one model be displayed"
-#~ msgstr "MO isopovrchy vyžadují zobrazení právě jednoho modelu"
-
-#~ msgid "Select"
-#~ msgstr "Vybrat"
-
-#~ msgid "Too many nested {0} commands"
-#~ msgstr "Příliš mnoho vložených příkazů: {0}"
-
-#~ msgid "Invalid {0} command"
-#~ msgstr "Neplatný příkaz: {0}"
-
-#~ msgid "Compatibility"
-#~ msgstr "Kompatibilita"
-
-#~ msgid "RasMol/Chime Settings"
-#~ msgstr "RasMol/Chime nastavení"
-
-#~ msgid "Axes RasMol/Chime"
-#~ msgstr "Osy RasMol/Chime"
-
-#~ msgid "The {0} command is not available for the applet."
-#~ msgstr "Příkaz {0} není dostupný pro aplet."
-
-#~ msgid "boolean or percent expected"
-#~ msgstr "očekáván booleovský parametr nebo procentuální údaj"
-
-#~ msgid "(atom expression) or decimal number expected"
-#~ msgstr "očekáváno označení atomu nebo desetinné číslo"
-
-#~ msgid "variable undefined"
-#~ msgstr "nedefinovaná proměnná"
-
-#~ msgid "number out of range"
-#~ msgstr "číslo mimo rozsah"
-
-#~ msgid "Jmol executing script ..."
-#~ msgstr "Jmol provádí skript..."
-
-#~ msgid "Unrecognized {0} parameter"
-#~ msgstr "Neznámý parametr: {0}"
-
-#~ msgid "use {0}"
-#~ msgstr "použít {0}"
-
-#~ msgid "unrecognized subcommand"
-#~ msgstr "neznámý dílčí příkaz"
-
-#~ msgid "error loading script"
-#~ msgstr "chyba při nahrávání skriptu"
-
-#~ msgid "Currently the {0} command only works for the applet"
-#~ msgstr "tento příkaz {0} je funkční pouze v apletu"

@@ -97,7 +97,7 @@ abstract public class BondCollection extends AtomCollection {
   }
   
   public int getBondModelIndex(int i) {
-    return bonds[i].atom1.atomIndex;
+    return bonds[i].atom1.modelIndex;
   }
 
   /**

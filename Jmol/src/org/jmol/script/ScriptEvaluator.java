@@ -2906,7 +2906,7 @@ public class ScriptEvaluator {
         val = getParameter((String) value, false);
         if (val instanceof String)
           val = getStringObjectAsVariable((String) val, null);
-        if (val instanceof String)
+        if (val instanceof String || val instanceof String[])
           val = lookupIdentifierValue((String) value);
         rpn.addX(val);
         break;

@@ -41,6 +41,9 @@ public class CoreType {
       if (code.equalsIgnoreCase(A0GROMACS._code)) {
         return A0GROMACS;
       }
+      if (code.equalsIgnoreCase(A3GROMACS._code)) {
+        return A3GROMACS;
+      }
       if (code.equalsIgnoreCase(A4GROMACS._code)) {
         return A4GROMACS;
       }
@@ -115,6 +118,9 @@ public class CoreType {
     if (name != null) {
       if (name.equalsIgnoreCase(A0GROMACS._name)) {
         return A0GROMACS;
+      }
+      if (name.equalsIgnoreCase(A3GROMACS._name)) {
+        return A3GROMACS;
       }
       if (name.equalsIgnoreCase(A4GROMACS._name)) {
         return A4GROMACS;
@@ -204,6 +210,7 @@ public class CoreType {
   // Cores
   static public final CoreType UNKNOWN      = new CoreType(null, null, true);
   static public final CoreType A0GROMACS    = new CoreType("Gromacs33", "A0", true); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType A3GROMACS    = new CoreType("GRO-A3", "A3", false); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType A4GROMACS    = new CoreType("GRO-A4", "A4", false); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType AMBER        = new CoreType("Amber", "A", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType ATI_DEV      = new CoreType("ATI-DEV", "AD", false); //$NON-NLS-1$ //$NON-NLS-2$

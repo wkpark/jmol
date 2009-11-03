@@ -5498,6 +5498,9 @@
   <fah_proj number="2934" name="p2934_p4715_supervillin_e1" public="y"
     server="171.64.65.20" atoms="576" preferred="2" deadline="3"
     credit="122" frames="100" code="GG2" contact="huangx"/>
+  <fah_proj number="2935" name="p2935_p4715_supervillin_e1" public="y"
+    server="171.64.65.20" atoms="576" preferred="2" deadline="3"
+    credit="122" frames="100" code="GG2" contact="huangx"/>
   <fah_proj number="2951" name="p2951_fs_simtemp_nat" public="y" file="xyz"
     server="171.65.103.158" atoms="6384" preferred="10" deadline="14"
     credit="44" frames="100" code="GST" contact="huangx"/>
@@ -8074,9 +8077,15 @@
   <fah_proj number="6010" name="p6010_p5601_Calmodulin" public="y"
     server="130.237.232.236" atoms="1132" preferred="2" deadline="3"
     credit="100" frames="100" code="A4" contact="kasson"/>
-  <fah_proj number="6011" name="p6011_p5600_Calmodulin" public="y"
-    server="130.237.232.236" atoms="1133" preferred="2" deadline="3"
-    credit="100" frames="100" code="A4" contact="kasson"/>
+  <fah_proj number="6011" name="p6011_IBX in water" public="y"
+    server="130.237.232.140" atoms="146808" preferred="1" deadline="1"
+    credit="40" frames="100" code="A3" contact="kasson"/>
+  <fah_proj number="6012" name="p6012_hafp3" public="y"
+    server="130.237.232.140" atoms="77445" preferred="3" deadline="6"
+    credit="1420" frames="100" code="A3" contact="kasson"/>
+  <fah_proj number="6013" name="p6013_IBX in water" public="y"
+    server="130.237.232.140" atoms="146808" preferred="3" deadline="3"
+    credit="1920" frames="100" code="A3" contact="kasson"/>
 
   <!-- Projects 6300 to 6399 -->
   <fah_proj number="6300" name="p6300_Peptide dimer in TIP3P water" public="y" file="xyz"
@@ -8103,6 +8112,21 @@
   <fah_proj number="6307" name="p6307_sh3_with_ALA_PRO_frags" public="y" file="xyz"
     server="171.64.65.111" atoms="15111" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz" contrib="Gor"/>
+  <fah_proj number="6313" name="p6313_sh3_with_ALA_frags" public="y" file="xyz"
+    server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
+    credit="336" frames="100" code="G" contact="vvoelz" contrib="John Deas"/>
+  <fah_proj number="6314" name="p6314_sh3_with_ALA_frags" public="y"
+    server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
+    credit="336" frames="100" code="G" contact="vvoelz"/>
+  <fah_proj number="6315" name="p6315_sh3_with_ALA_frags" public="y"
+    server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
+    credit="336" frames="100" code="G" contact="vvoelz"/>
+  <fah_proj number="6316" name="p6316_sh3_with_ALA_frags" public="y"
+    server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
+    credit="336" frames="100" code="G" contact="vvoelz"/>
+  <fah_proj number="6317" name="p6317_sh3_with_ALA_frags" public="n" file="xyz"
+    server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
+    credit="336" frames="100" code="G" contact="vvoelz" contrib="John Deas"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

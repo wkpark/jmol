@@ -466,35 +466,68 @@ public class StateManager {
         "angstroms;au;bohr;nanometers;nm;picometers;pm");
   }
 
-  private final static Hashtable globalFunctions = new Hashtable();
+  private final static Hashtable staticFunctions = new Hashtable();
   private Hashtable localFunctions = new Hashtable();
 
-  public Hashtable getFunctions(boolean isLocal) {
-    return (isLocal ? localFunctions : globalFunctions);
+  Hashtable getFunctions(boolean isStatic) {
+    return (isStatic ? staticFunctions : localFunctions);
+  }
+
+  String getFunctionCalls(String selectedFunction) {
+    if (selectedFunction == null)
+      selectedFunction = "";
+    StringBuffer s = new StringBuffer();
+    int pt = selectedFunction.indexOf("*");
+    boolean isGeneric = (pt >= 0);
+    boolean isStatic = (selectedFunction.indexOf("static_") == 0);
+    boolean namesOnly = (selectedFunction.equalsIgnoreCase("names") || selectedFunction.equalsIgnoreCase("static_names"));
+    if (namesOnly)
+      selectedFunction = "";
+    if (isGeneric)
+      selectedFunction = selectedFunction.substring(0, pt);
+    selectedFunction = selectedFunction.toLowerCase();
+    Hashtable ht = getFunctions(isStatic);
+    String[] names = new String[ht.size()];
+    Enumeration e = ht.keys();
+    int n = 0;
+    while (e.hasMoreElements()) {
+      String name = (String) e.nextElement();
+      if (selectedFunction.length() == 0 && !name.startsWith("_")
+          || name.equalsIgnoreCase(selectedFunction) || isGeneric
+          && name.toLowerCase().indexOf(selectedFunction) == 0)
+        names[n++] = name;
+    }
+    Arrays.sort(names, 0, n);
+    for (int i = 0; i < n; i++) {
+      ScriptFunction f = (ScriptFunction) ht.get(names[i]);
+      s.append(namesOnly ? f.getSignature() : f.toString());
+      s.append('\n');
+    }
+    return s.toString();
   }
 
   public void clearFunctions() {
-    globalFunctions.clear();
+    staticFunctions.clear();
     localFunctions.clear();
   }
 
-  private static boolean isGlobalFunction(String name) {
-    return name.startsWith("global_");  
+  private static boolean isStaticFunction(String name) {
+    return name.startsWith("static_");  
   }
   
   boolean isFunction(String name) {
-    return (isGlobalFunction(name) ? globalFunctions : localFunctions).containsKey(name);
+    return (isStaticFunction(name) ? staticFunctions : localFunctions).containsKey(name);
   }
 
   void addFunction(ScriptFunction function) {
-    (isGlobalFunction(function.name) ? globalFunctions
+    (isStaticFunction(function.name) ? staticFunctions
         : localFunctions).put(function.name, function);
   }
 
   ScriptFunction getFunction(String name) {
     if (name == null)
       return null;
-    ScriptFunction function = (ScriptFunction) (isGlobalFunction(name) ? globalFunctions
+    ScriptFunction function = (ScriptFunction) (isStaticFunction(name) ? staticFunctions
         : localFunctions).get(name);
     return (function == null || function.aatoken == null ? null : function);
   }

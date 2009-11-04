@@ -69,7 +69,7 @@ import java.awt.Dimension;
 import java.awt.MediaTracker;
 import java.awt.Rectangle;
 import java.awt.Component;
-import java.awt.Event; //import java.util.Date;
+import java.awt.Event;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
@@ -2798,7 +2798,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isAll || type.equalsIgnoreCase("windowState"))
       s.append(global.getWindowState(sfunc));
     if (isAll)
-      s.append(eval.getState());
+      s.append(getFunctionCalls(null));
     // file state
     if (isAll || type.equalsIgnoreCase("fileState"))
       s.append(fileManager.getState(sfunc));
@@ -7811,8 +7811,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return stateManager.isFunction(name);
   }
 
-  public Hashtable getFunctions(boolean isLocal) {
-    return stateManager.getFunctions(isLocal);
+  public String getFunctionCalls(String selectedFunction) {
+    return stateManager.getFunctionCalls(selectedFunction);
   }
 
   public void showMessage(String s) {

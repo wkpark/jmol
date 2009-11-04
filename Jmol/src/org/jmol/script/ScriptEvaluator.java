@@ -24,7 +24,6 @@
 package org.jmol.script;
 
 import java.awt.Image;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -1564,10 +1563,6 @@ public class ScriptEvaluator {
   private int lineEnd;
   private int pcEnd;
   private String scriptExtensions;
-
-  public String getState() {
-    return getFunctionCalls("");
-  }
 
   //////////////////////// supporting methods for compilation and loading //////////
 
@@ -10759,7 +10754,7 @@ public class ScriptEvaluator {
       data = viewer.getPdbData(modelIndex, type2);
       type = "PDB";
     } else if (data == "FUNCS") {
-      data = getFunctionCalls("");
+      data = viewer.getFunctionCalls(null);
       type = "TXT";
     } else if (data == "FILE") {
       if (isShow)
@@ -10875,7 +10870,7 @@ public class ScriptEvaluator {
     case Token.function:
       checkLength23();
       if (!isSyntaxCheck)
-        showString(getFunctionCalls(optParameterAsString(2)));
+        showString(viewer.getFunctionCalls(optParameterAsString(2)));
       return;
     case Token.set:
       checkLength(2);
@@ -11205,37 +11200,6 @@ public class ScriptEvaluator {
       else
         showString(str + " = " + getParameterEscaped(str));
     }
-  }
-
-  private String getFunctionCalls(String selectedFunction) {
-    StringBuffer s = new StringBuffer();
-    int pt = selectedFunction.indexOf("*");
-    boolean isGeneric = (pt >= 0);
-    boolean isLocal = (selectedFunction.indexOf("_") != 0);
-    boolean namesOnly = (selectedFunction.equalsIgnoreCase("names") || selectedFunction.equalsIgnoreCase("_names"));
-    if (namesOnly)
-      selectedFunction = "";
-    if (isGeneric)
-      selectedFunction = selectedFunction.substring(0, pt);
-    selectedFunction = selectedFunction.toLowerCase();
-    Hashtable ht = viewer.getFunctions(isLocal);
-    String[] names = new String[ht.size()];
-    Enumeration e = ht.keys();
-    int n = 0;
-    while (e.hasMoreElements()) {
-      String name = (String) e.nextElement();
-      if (selectedFunction.length() == 0
-          || name.equalsIgnoreCase(selectedFunction) || isGeneric
-          && name.toLowerCase().indexOf(selectedFunction) == 0)
-        names[n++] = name;
-    }
-    Arrays.sort(names, 0, n);
-    for (int i = 0; i < n; i++) {
-      ScriptFunction f = (ScriptFunction) ht.get(names[i]);
-      s.append(namesOnly ? f.getSignature() : f.toString());
-      s.append('\n');
-    }
-    return s.toString();
   }
 
   private String getIsosurfaceJvxl(boolean asXML) {

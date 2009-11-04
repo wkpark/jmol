@@ -337,6 +337,7 @@ abstract class MOReader extends AtomSetCollectionReader {
     readLine();
     int moCount = 0;
     int nSkip = -1;
+    boolean haveMOs = false;
     if (line.indexOf("---") >= 0)
       readLine();
     while (readLine() != null) {
@@ -351,6 +352,8 @@ abstract class MOReader extends AtomSetCollectionReader {
         if (readLine() == null)
           break;
       } else if (line.indexOf(" BETA SET ") >= 0) {
+        if (haveMOs)
+          break;
         alphaBeta = "beta";
         if (readLine() == null)
           break;
@@ -379,6 +382,7 @@ abstract class MOReader extends AtomSetCollectionReader {
               iCoeff++;
             }
           }
+          haveMOs = true;
           mos[iMo].put("coefficients", coefs);
           if (alphaBeta.length() > 0)
             mos[iMo].put("type", alphaBeta);

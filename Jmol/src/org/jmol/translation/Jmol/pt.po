@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-09-04 22:32+0200\n"
-"PO-Revision-Date: 2009-09-11 23:37+0000\n"
-"Last-Translator: Tiago Silva <Unknown>\n"
+"PO-Revision-Date: 2009-11-01 23:25+0000\n"
+"Last-Translator: WRdHat <wag.guillen@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-09-12 17:48+0000\n"
+"X-Launchpad-Export-Date: 2009-11-04 06:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Portugal\n"
 "X-Poedit-Language: Portuguese\n"
@@ -26,7 +26,7 @@ msgstr "Erro ao iniciar o Jmol: a propriedade 'user.home' não está definida"
 
 #: org/openscience/jmol/app/JmolApp.java:139
 msgid "transparent background"
-msgstr ""
+msgstr "fundo transparente"
 
 #: org/openscience/jmol/app/JmolApp.java:140
 msgid "give this help page"
@@ -34,23 +34,23 @@ msgstr "Dar esta página de ajuda"
 
 #: org/openscience/jmol/app/JmolApp.java:142
 msgid "no display (and also exit when done)"
-msgstr ""
+msgstr "não mostrar (e também sair quando terminar)"
 
 #: org/openscience/jmol/app/JmolApp.java:144
 msgid "check script syntax only - no file loading"
-msgstr ""
+msgstr "sintaxe de seleção só script - carregar nenhum arquivo"
 
 #: org/openscience/jmol/app/JmolApp.java:146
 msgid "check script syntax only - with file loading"
-msgstr ""
+msgstr "sintaxe de seleção script só - com carga de arquivo"
 
 #: org/openscience/jmol/app/JmolApp.java:147
 msgid "debug"
-msgstr ""
+msgstr "depurar"
 
 #: org/openscience/jmol/app/JmolApp.java:148
 msgid "silent startup operation"
-msgstr ""
+msgstr "operação de inicialização silenciosa"
 
 #: org/openscience/jmol/app/JmolApp.java:150
 msgid "list commands during script execution"
@@ -70,7 +70,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent commmand thread"
-msgstr ""
+msgstr "discussão commmand independente"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"

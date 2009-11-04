@@ -7804,8 +7804,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void clearFunctions() {
-    StateManager.globalFunctions.clear();
-    stateManager.localFunctions.clear();
+    stateManager.clearFunctions();
   }
 
   public boolean isFunction(String name) {
@@ -7813,8 +7812,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Hashtable getFunctions(boolean isLocal) {
-    return (isLocal ? stateManager.localFunctions
-        : StateManager.globalFunctions);
+    return stateManager.getFunctions(isLocal);
   }
 
   public void showMessage(String s) {

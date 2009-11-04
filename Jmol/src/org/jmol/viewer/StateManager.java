@@ -466,22 +466,35 @@ public class StateManager {
         "angstroms;au;bohr;nanometers;nm;picometers;pm");
   }
 
-  final static Hashtable globalFunctions = new Hashtable();
-  Hashtable localFunctions = new Hashtable();
+  private final static Hashtable globalFunctions = new Hashtable();
+  private Hashtable localFunctions = new Hashtable();
 
+  public Hashtable getFunctions(boolean isLocal) {
+    return (isLocal ? localFunctions : globalFunctions);
+  }
+
+  public void clearFunctions() {
+    globalFunctions.clear();
+    localFunctions.clear();
+  }
+
+  private static boolean isGlobalFunction(String name) {
+    return name.startsWith("global_");  
+  }
+  
   boolean isFunction(String name) {
-    return (name.indexOf("_") == 0 ? globalFunctions : localFunctions).containsKey(name);
+    return (isGlobalFunction(name) ? globalFunctions : localFunctions).containsKey(name);
   }
 
   void addFunction(ScriptFunction function) {
-    (function.name.indexOf("_") == 0 ? globalFunctions
+    (isGlobalFunction(function.name) ? globalFunctions
         : localFunctions).put(function.name, function);
   }
 
   ScriptFunction getFunction(String name) {
     if (name == null)
       return null;
-    ScriptFunction function = (ScriptFunction) (name.indexOf("_") == 0 ? globalFunctions
+    ScriptFunction function = (ScriptFunction) (isGlobalFunction(name) ? globalFunctions
         : localFunctions).get(name);
     return (function == null || function.aatoken == null ? null : function);
   }
@@ -1425,5 +1438,4 @@ public class StateManager {
       return;
     s.append("  ").append(cmd).append(";\n");
   }
-
 }

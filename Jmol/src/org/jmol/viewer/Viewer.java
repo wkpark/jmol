@@ -1868,6 +1868,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         : openStringsInline(arrayModels, null, isAppend));
   }
 
+  public String loadInline(Vector arrayData, boolean isAppend) {
+    // loadInline
+    if (arrayData == null || arrayData.size() == 0)
+      return null;
+    if (!isAppend)
+      zap(true, false);
+    fileManager.createAtomSeCollectionFromArrayData(arrayData,
+        setLoadParameters(null), isAppend);
+    return createModelSetAndReturnError(isAppend);
+  }
+
   public boolean getApplySymmetryToBonds() {
     return global.applySymmetryToBonds;
   }
@@ -5770,6 +5781,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (key.equalsIgnoreCase("testFlag4")) {
+        jmolTest();
         global.testFlag4 = value;
         break;
       }
@@ -5931,6 +5943,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setTainted(true);
     }
     return true;
+  }
+
+  private void jmolTest() {
+//    Vector v = new Vector();
+//    v.add(new String[] {"3","testing","C 0 0 0","O 0 1 0","N 0 0 1"} );
+//    v.add("3\ntesting\nC 0 0 0\nO 0 1 0\nN 0 0 1\n");  
+//    loadInline(v, false);
   }
 
   public boolean getPdbLoadInfo(int type) {

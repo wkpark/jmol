@@ -36,6 +36,7 @@ import java.net.URL;
 import java.util.BitSet;
 import java.util.Properties;
 import java.util.Hashtable;
+import java.util.Vector;
 //import java.io.Reader;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -247,10 +248,26 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String scriptWait(String script);
   abstract public Object scriptWaitStatus(String script, String statusList);
   abstract public String loadInline(String strModel);
-  abstract public String loadInline(String strModel, boolean isMerge);
+  abstract public String loadInline(String strModel, boolean isAppend);
   abstract public String loadInline(String strModel, char newLine);
   abstract public String loadInline(String[] arrayModels);
-  abstract public String loadInline(String[] arrayModels, boolean isMerge);
+  /**
+   * 
+   * @param arrayModels and array of models, each of which is a String
+   * @param isAppend
+   * @return null or error message
+   */
+  abstract public String loadInline(String[] arrayModels, boolean isAppend);
+  /**
+   * 
+   * NOTE: THIS METHOD DOES NOT PRESERVE THE STATE
+   * 
+   * @param arrayData a Vector of models, where each model is either a String
+   *                  or a String[]
+   * @param isAppend TRUE to append models (no ZAP)
+   * @return null or error message
+   */
+  abstract public String loadInline(Vector arrayData, boolean isAppend);
 
   abstract public String evalStringQuiet(String script);
   abstract public boolean isScriptExecuting();

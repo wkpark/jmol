@@ -268,29 +268,53 @@ public class FileManager {
                                       boolean isAppend) {
     String oldSep = "\"" + viewer.getDataSeparator() + "\"";
     String tag = "\"" + (isAppend ? "append" : "model") + " inline\"";
-    String script = "set dataSeparator \"~~~next file~~~\";\ndata " + tag;
+    StringBuffer sb = new StringBuffer("set dataSeparator \"~~~next file~~~\";\ndata ");
+    sb.append(tag);
     for (int i = 0; i < arrayModels.length; i++) {
       if (i > 0)
-        script += "~~~next file~~~";
-      script += arrayModels[i];
+        sb.append("~~~next file~~~");
+      sb.append(arrayModels[i]);
     }
-    script += "end " + tag + ";set dataSeparator " + oldSep;
-    setLoadScript(script, isAppend);
+    sb.append("end ").append(tag).append(";set dataSeparator ").append(oldSep);
+    setLoadScript(sb.toString(), isAppend);
     Logger.info("FileManager.getAtomSetCollectionFromStrings(string[])");
     openErrorMessage = null;
     fullPathName = fileName = "string[]";
     inlineData = "";
     //just too complicated and space-absorbing inlineDataArray = arrayModels;
     String[] fullPathNames = new String[arrayModels.length];
-    StringReader[] readers = new StringReader[arrayModels.length];
+    StringDataReader[] readers = new StringDataReader[arrayModels.length];
     for (int i = 0; i < arrayModels.length; i++) {
       fullPathNames[i] = "string[" + i + "]";
-      readers[i] = new StringReader(arrayModels[i]);
+      readers[i] = new StringDataReader(arrayModels[i]);
     }
     filesReaderThread = new FilesReaderThread(fullPathNames, fullPathNames,
         null, readers, null);
     filesReaderThread.run();
   }
+
+  void createAtomSeCollectionFromArrayData(Vector arrayData, Hashtable htParams,
+                                         boolean isAppend) {
+    // NO STATE SCRIPT -- HERE WE ARE TRYING TO CONSERVE SPACE
+       Logger.info("FileManager.getAtomSetCollectionFromArrayData(Vector)");
+       openErrorMessage = null;
+       fullPathName = fileName = "String[]";
+       inlineData = "";
+       int nModels = arrayData.size();
+       String[] fullPathNames = new String[nModels];
+       DataReader[] readers = new DataReader[nModels];
+       for (int i = 0; i < nModels; i++) {
+         fullPathNames[i] = "String[" + i + "]";
+         Object data = arrayData.get(i);
+         if (data instanceof String)
+           readers[i] = new StringDataReader((String) arrayData.get(i));
+         else // String[] implied
+           readers[i] = new ArrayDataReader((String[]) arrayData.get(i));
+       }
+       filesReaderThread = new FilesReaderThread(fullPathNames, fullPathNames,
+           null, readers, null);
+       filesReaderThread.run();
+     }
 
   void createAtomSetCollectionFromDOM(Object DOMNode) {
     openErrorMessage = null;
@@ -1228,12 +1252,12 @@ public class FileManager {
     private String[] namesAsGivenInThread;
     private String[] fileTypesInThread;
     Object atomSetCollection;
-    private Reader[] stringReaders;
+    private DataReader[] stringReaders;
     private Hashtable[] htParamsSet;
     private Hashtable htParams;
 
     FilesReaderThread(String[] name, String[] nameAsGiven, String[] types,
-        Reader[] readers, Hashtable htParams) {
+        DataReader[] readers, Hashtable htParams) {
       fullPathNamesInThread = name;
       namesAsGivenInThread = nameAsGiven;
       fileTypesInThread = types;
@@ -1283,7 +1307,7 @@ public class FileManager {
      */
     public BufferedReader getBufferedReader(int i) {
       if (stringReaders != null)
-        return new BufferedReader(stringReaders[i]);
+        return stringReaders[i].getBufferedReader();
       String name = fullPathNamesInThread[i];
       String[] subFileList = null;
       Hashtable htParams = htParamsSet[0]; // for now -- just reusing this

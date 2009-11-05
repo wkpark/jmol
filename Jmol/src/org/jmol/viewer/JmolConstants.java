@@ -77,7 +77,7 @@ final public class JmolConstants {
     version = (tmpVersion != null ? tmpVersion : "(Unknown version)");
   }
     
-  public final static String cvsDate = "$Date$";
+  public final static String cvsDate = "$Date$"; //
   public final static String date = cvsDate.substring(7, 23);
     
   public final static boolean officialRelease = false;

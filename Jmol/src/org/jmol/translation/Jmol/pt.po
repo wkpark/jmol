@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-09-04 22:32+0200\n"
-"PO-Revision-Date: 2009-11-01 23:25+0000\n"
-"Last-Translator: WRdHat <wag.guillen@gmail.com>\n"
+"PO-Revision-Date: 2009-11-05 18:57+0000\n"
+"Last-Translator: Frederico Tavares <Unknown>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-11-04 06:24+0000\n"
+"X-Launchpad-Export-Date: 2009-11-05 19:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Portugal\n"
 "X-Poedit-Language: Portuguese\n"
@@ -99,13 +99,15 @@ msgstr "opções suportadas são referidas em baixo"
 #: org/openscience/jmol/app/JmolApp.java:194
 #, java-format
 msgid "window width x height, e.g. {0}"
-msgstr ""
+msgstr "janela largura x altura, e.g. {0}"
 
 #: org/openscience/jmol/app/JmolApp.java:204
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
+"Qualidade de imagem JPG (1-100; padrão 75) ou compreesão PNG (0-9; padrão 2, "
+"compressão máxima 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:209
 #, java-format
@@ -316,7 +318,7 @@ msgstr "Erro de leitura em \"BufferedReader\": {0}"
 
 #: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:189
 msgid "Delete atoms"
-msgstr ""
+msgstr "Apagar átomos"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
@@ -336,7 +338,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
-msgstr ""
+msgstr "Quantidade de Memória:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:235
 msgid "Number of Processors:"
@@ -360,7 +362,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr ""
+msgstr "Opções de Trabalho: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:288
 msgid "Molecular Properties"
@@ -368,11 +370,11 @@ msgstr "Propriedades Moleculares"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:294
 msgid "Total Charge: "
-msgstr ""
+msgstr "Carga Total: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:301
 msgid "Multiplicity: "
-msgstr ""
+msgstr "Multiplicidade: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:308
 msgid "Selection: "
@@ -448,7 +450,7 @@ msgstr "&Exportar"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:61
 msgid "Export &Image..."
-msgstr ""
+msgstr "Exportar &Imagem..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:62
 msgid "Save current view as an image."
@@ -456,11 +458,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:63
 msgid "Export to &Web Page..."
-msgstr ""
+msgstr "Exportar para Página &Web..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "Export one or more views to a web page."
-msgstr ""
+msgstr "Exportar uma ou mais vistas para uma página web."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Render in POV-&Ray..."
@@ -497,7 +499,7 @@ msgstr "E&xit"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:73
 msgid "Recent &Files..."
-msgstr ""
+msgstr "&Ficheiros Recentes..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:74
 msgid "&Edit"
@@ -590,7 +592,7 @@ msgstr "&Display"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:97
 msgid "&Atom"
-msgstr ""
+msgstr "&Atomo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:99
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:100
@@ -602,7 +604,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:103
 msgid "&Bond"
-msgstr ""
+msgstr "&Ligação"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:105
 msgid "&Wireframe"
@@ -635,15 +637,15 @@ msgstr "&Número"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:114
 msgid "&Centered"
-msgstr ""
+msgstr "&Centrado"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:115
 msgid "&Upper right"
-msgstr ""
+msgstr "&Superior direito"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:116
 msgid "&Vector"
-msgstr ""
+msgstr "&Vector"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:118
 msgid "&On"
@@ -678,7 +680,7 @@ msgstr "{0}%"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:133
 msgid "&Perspective Depth"
-msgstr ""
+msgstr "Profundidade da &Perspectiva"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:134
 msgid "A&xes"
@@ -686,7 +688,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:135
 msgid "B&ounding Box"
-msgstr ""
+msgstr "Caixa de Ligaç&oes"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:136
 msgid "&Hydrogens"
@@ -694,7 +696,7 @@ msgstr "&Hidrogénios"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
 msgid "V&ectors"
-msgstr ""
+msgstr "V&ectores"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
@@ -707,7 +709,7 @@ msgstr "&Ver"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
 msgid "&Front"
-msgstr ""
+msgstr "&Frente"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
 msgid "&Top"
@@ -727,11 +729,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:145
 msgid "Tr&ansform..."
-msgstr ""
+msgstr "Tr&ansformar..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:146
 msgid "Define &Center"
-msgstr ""
+msgstr "Definir &Centro"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:147
 msgid "&Tools"
@@ -743,27 +745,27 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 msgid "Distance &Units"
-msgstr ""
+msgstr "&Unidades de Distância"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 msgid "&Nanometers 1E-9"
-msgstr ""
+msgstr "&Nanometros 1E-9"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:152
 msgid "&Angstroms 1E-10"
-msgstr ""
+msgstr "&Angstroms 1E-10"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
 msgid "&Picometers 1E-12"
-msgstr ""
+msgstr "&Picometross 1E-12"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
 msgid "&Animate..."
-msgstr ""
+msgstr "&Animar..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
 msgid "&Vibrate..."
-msgstr ""
+msgstr "&Vibrar..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
 msgid "&Graph..."
@@ -799,15 +801,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
 msgid "Rewind to first frame"
-msgstr ""
+msgstr "Rebobinar até à 1ª frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
 msgid "Go to &next frame"
-msgstr ""
+msgstr "Ir para a &próxima frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
 msgid "Go to next frame"
-msgstr ""
+msgstr "Ir para a próxima frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "Go to &previous frame"
@@ -815,7 +817,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
 msgid "Go to previous frame"
-msgstr ""
+msgstr "Ir para a frame anterior"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "Go to &last frame"
@@ -823,11 +825,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 msgid "Go to last frame"
-msgstr ""
+msgstr "Ir para a última frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "Start &vibration"
-msgstr ""
+msgstr "Iniciar &vibração"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
 msgid "&Stop vibration"
@@ -905,7 +907,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
 msgid "Click atoms to measure distances"
-msgstr ""
+msgstr "Clique nos átomos para medir a distância"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:198
 msgid "Return molecule to home position."
@@ -1046,7 +1048,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:267
 msgid "width:"
-msgstr ""
+msgstr "largura:"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:269
 msgid "Image width"
@@ -1055,7 +1057,7 @@ msgstr "Largura da imagem"
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:284
 #: org/openscience/jmol/app/webexport/PopInJmol.java:61
 msgid "height:"
-msgstr ""
+msgstr "altura:"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:286
 msgid "Image height"
@@ -1248,7 +1250,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:59
 msgid "Applet width:"
-msgstr ""
+msgstr "Largura do Applet:"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:79
 #, java-format
@@ -1276,7 +1278,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:100
 msgid "Couldn't find file: {0}"
-msgstr ""
+msgstr "Não é psosível encontrar o ficheiro: {0}"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:119
 msgid "Introduction"
@@ -1307,14 +1309,16 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
+"Para obter um modelo 3-D manipulável, clicar {0}aqui{1}. O tempo de "
+"desacarga pode ser maior da primeira vez que tentatr descarregar o apple."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:308
 msgid "Insert the page TITLE here."
-msgstr ""
+msgstr "Insira o TÍTULO da página aqui."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:309
 msgid "Insert the page INTRODUCTION here."
-msgstr ""
+msgstr "Insira a INTRODUÇÃO da página aqui."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:311
 #, java-format
@@ -1327,10 +1331,12 @@ msgid ""
 "Insert additonal explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
+"Insira um texto de explicação aqui. Textos grandes serão ajustados em torno "
+"do modelo de Jmol {0}.."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:314
 msgid "Insert your TITLE and INTRODUCTION here."
-msgstr ""
+msgstr "Insira o TÍTULO e a INTRODUÇÃO aqui."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:316
 #, java-format

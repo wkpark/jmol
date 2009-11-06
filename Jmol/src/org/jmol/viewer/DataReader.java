@@ -7,7 +7,7 @@ import java.io.Reader;
  * Just a simple abstract class to join a String reader and a String[]
  * reader under the same BufferedReader umbrella.
  * 
- * Subclassed as StringDataReader and ArrayDataReader
+ * Subclassed as StringDataReader, ArrayDataReader, and VectorDataReader
  * 
  */
 

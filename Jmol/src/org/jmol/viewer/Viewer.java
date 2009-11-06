@@ -5944,16 +5944,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void jmolTest() {
+    /*
     Vector v = new Vector();
+    Vector m = new Vector();
+    v.add(m);
+    m.add("MODEL     2");
+    m.add("HETATM    1 H1   UNK     1       2.457   0.000   0.000  1.00  0.00           H  ");
+    m.add("HETATM    2 C1   UNK     1       1.385   0.000   0.000  1.00  0.00           C  ");
+    m.add("HETATM    3 C2   UNK     1      -1.385  -0.000   0.000  1.00  0.00           C  ");
     v.add(new String[] {
-        "MODEL     2",
-        "HETATM    1 H1   UNK     1       2.457   0.000   0.000  1.00  0.00           H  ",
-        "HETATM    2 C1   UNK     1       1.385   0.000   0.000  1.00  0.00           C  ",
-        "HETATM    3 C2   UNK     1      -1.385  -0.000   0.000  1.00  0.00           C  ",
+       "MODEL     2",
+       "HETATM    1 H1   UNK     1       2.457   0.000   0.000  1.00  0.00           H  ",
+       "HETATM    2 C1   UNK     1       1.385   0.000   0.000  1.00  0.00           C  ",
+       "HETATM    3 C2   UNK     1      -1.385  -0.000   0.000  1.00  0.00           C  ",
     });
-    //v.add(new String[] {"3","testing","C 0 0 0","O 0 1 0","N 0 0 1"} );
-    //v.add("3\ntesting\nC 0 0 0\nO 0 1 0\nN 0 0 1\n");  
+    v.add(new String[] {"3","testing","C 0 0 0","O 0 1 0","N 0 0 1"} );
+    v.add("3\ntesting\nC 0 0 0\nO 0 1 0\nN 0 0 1\n");  
     loadInline(v, false);
+    */
   }
 
   public boolean getPdbLoadInfo(int type) {

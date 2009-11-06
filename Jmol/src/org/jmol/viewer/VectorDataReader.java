@@ -1,5 +1,6 @@
 package org.jmol.viewer;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.Vector;
 
@@ -22,27 +23,12 @@ public class VectorDataReader extends DataReader {
     len = data.size();
   }
 
-  public String readLine() {
-    return (pt < len ? (String) data.get(pt++) : null);
+  public int read(char[] buf) throws IOException {
+    return readBuf(buf);
   }
   
-  public int read(char[] buf) {
-    int nRead = 0;
-    String line = readLine();
-    int linept = 0;
-    int linelen = (line == null ? -1 : line.length());
-    for (int i = 0; i < buf.length && linelen >= 0; i++) {
-        if (linept >= linelen) {
-          linept = 0;
-          buf[i] = '\n';
-          line = readLine();
-          linelen = (line == null ? -1 : line.length());
-        } else {
-          buf[i] = line.charAt(linept++);
-        }
-        nRead++;
-    }
-    return nRead;
+  public String readLine() {
+    return (pt < len ? (String) data.get(pt++) : null);
   }
   
   int ptMark;

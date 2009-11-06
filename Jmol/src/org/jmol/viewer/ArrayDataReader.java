@@ -1,5 +1,6 @@
 package org.jmol.viewer;
 
+import java.io.IOException;
 import java.io.StringReader;
 
 /**
@@ -20,27 +21,12 @@ public class ArrayDataReader extends DataReader {
     len = data.length;
   }
 
+  public int read(char[] buf) throws IOException {
+    return readBuf(buf);
+  }
+    
   public String readLine() {
     return (pt < len ? data[pt++] : null);
-  }
-  
-  public int read(char[] buf) {
-    int nRead = 0;
-    String line = readLine();
-    int linept = 0;
-    int linelen = (line == null ? -1 : line.length());
-    for (int i = 0; i < buf.length && linelen >= 0; i++) {
-        if (linept >= linelen) {
-          linept = 0;
-          buf[i] = '\n';
-          line = readLine();
-          linelen = (line == null ? -1 : line.length());
-        } else {
-          buf[i] = line.charAt(linept++);
-        }
-        nRead++;
-    }
-    return nRead;
   }
   
   int ptMark;

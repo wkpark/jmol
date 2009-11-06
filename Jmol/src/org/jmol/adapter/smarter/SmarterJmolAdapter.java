@@ -392,24 +392,24 @@ public class SmarterJmolAdapter extends JmolAdapter {
     if (atomSetCollectionOrReader instanceof BufferedReader)
       return Resolver.getFileType((BufferedReader)atomSetCollectionOrReader);
     if (atomSetCollectionOrReader instanceof AtomSetCollection)
-      return ((AtomSetCollection)atomSetCollectionOrReader).fileTypeName;
+      return ((AtomSetCollection)atomSetCollectionOrReader).getFileTypeName();
     return null;
   }
 
   public String getAtomSetCollectionName(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).collectionName;
+    return ((AtomSetCollection)atomSetCollection).getCollectionName();
   }
   
   public Properties getAtomSetCollectionProperties(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).atomSetCollectionProperties;
+    return ((AtomSetCollection)atomSetCollection).getAtomSetCollectionProperties();
   }
 
   public Hashtable getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).atomSetCollectionAuxiliaryInfo;
+    return ((AtomSetCollection)atomSetCollection).getAtomSetCollectionAuxiliaryInfo();
   }
 
   public int getAtomSetCount(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).atomSetCount;
+    return ((AtomSetCollection)atomSetCollection).getAtomSetCount();
   }
 
   public int getAtomSetNumber(Object atomSetCollection, int atomSetIndex) {
@@ -484,7 +484,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   public JmolAdapter.StructureIterator
     getStructureIterator(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).structureCount == 0 ? 
+    return ((AtomSetCollection)atomSetCollection).getStructureCount() == 0 ? 
         null : new StructureIterator((AtomSetCollection)atomSetCollection);
   }
 
@@ -492,16 +492,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * the frame iterators
    * **************************************************************/
   class AtomIterator extends JmolAdapter.AtomIterator {
-    AtomSetCollection atomSetCollection;
-    int iatom;
-    Atom atom;
-    int atomCount;
-    Atom[] atoms;
+    private int iatom;
+    private Atom atom;
+    private int atomCount;
+    private Atom[] atoms;
 
     AtomIterator(AtomSetCollection atomSetCollection) {
-      this.atomSetCollection = atomSetCollection;
-      this.atomCount = atomSetCollection.atomCount;
-      this.atoms = atomSetCollection.atoms;
+      atomCount = atomSetCollection.getAtomCount();
+      atoms = atomSetCollection.getAtoms();
       iatom = 0;
     }
     public boolean hasNext() {
@@ -547,19 +545,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
 
   class BondIterator extends JmolAdapter.BondIterator {
-    AtomSetCollection atomSetCollection;
-    //Atom[] atoms;
-    Bond[] bonds;
-    int ibond;
-    Bond bond;
-    int bondCount;
+    private Bond[] bonds;
+    private int ibond;
+    private Bond bond;
+    private int bondCount;
     
     BondIterator(AtomSetCollection atomSetCollection) {
-      this.atomSetCollection = atomSetCollection;
-      //atoms = atomSetCollection.atoms;
-      bonds = atomSetCollection.bonds;
-      bondCount = atomSetCollection.bondCount;
-      
+      bonds = atomSetCollection.getBonds();
+      bondCount = atomSetCollection.getBondCount();      
       ibond = 0;
     }
     public boolean hasNext() {
@@ -580,14 +573,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
 
   public class StructureIterator extends JmolAdapter.StructureIterator {
-    int structureCount;
-    Structure[] structures;
-    Structure structure;
-    int istructure;
+    private int structureCount;
+    private Structure[] structures;
+    private Structure structure;
+    private int istructure;
     
     StructureIterator(AtomSetCollection atomSetCollection) {
-      structureCount = atomSetCollection.structureCount;
-      structures = atomSetCollection.structures;
+      structureCount = atomSetCollection.getStructureCount();
+      structures = atomSetCollection.getStructures();
       istructure = 0;
     }
 

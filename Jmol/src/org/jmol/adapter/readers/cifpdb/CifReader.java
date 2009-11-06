@@ -73,7 +73,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   public void readAtomSetCollection(BufferedReader reader) {
     int nAtoms = 0;
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("cif");
+    atomSetCollection = new AtomSetCollection("cif", this);
 
     /*
      * Modified for 10.9.64 9/23/06 by Bob Hanson to remove as much as possible of line dependence.

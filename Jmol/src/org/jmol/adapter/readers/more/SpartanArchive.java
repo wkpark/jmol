@@ -376,7 +376,7 @@ public class SpartanArchive {
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo(keyName, vector);
   }
 
-  //Logger.debug("reading property line:" + line);
+  // Logger.debug("reading property line:" + line);
 
   void readVibFreqs() throws Exception {
     readLine();
@@ -385,13 +385,17 @@ public class SpartanArchive {
     Vector vibrations = new Vector();
     Vector freqs = new Vector();
     if (Logger.debugging) {
-      Logger.debug(
-          "reading VIBFREQ vibration records: frequencyCount = " + frequencyCount);
+      Logger.debug("reading VIBFREQ vibration records: frequencyCount = "
+          + frequencyCount);
     }
+    boolean[] ignore = new boolean[frequencyCount];
     for (int i = 0; i < frequencyCount; ++i) {
       int atomCount0 = atomSetCollection.getAtomCount();
-      atomSetCollection.cloneLastAtomSet();
-      addBonds(bondData, atomCount0);
+      ignore[i] = !r.doGetVibration(i + 1);
+      if (!ignore[i] && r.desiredVibrationNumber <= 0) {
+        atomSetCollection.cloneLastAtomSet();
+        addBonds(bondData, atomCount0);
+      }
       readLine();
       Hashtable info = new Hashtable();
       float freq = parseFloat(line);
@@ -400,17 +404,18 @@ public class SpartanArchive {
           && !(label = line.substring(15, line.length())).equals("???"))
         info.put("label", label);
       freqs.addElement(info);
-      atomSetCollection.setAtomSetName(label + " " + freq + " cm^-1");
-      atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
-          "Frequencies");
+      if (!ignore[i]) {
+        atomSetCollection.setAtomSetName(label + " " + freq + " cm^-1");
+        atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
+            "Frequencies");
+      }
     }
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
     int atomCount = atomSetCollection.getFirstAtomSetAtomCount();
-    Atom[] atoms = atomSetCollection.getAtoms();
     Vector vib = new Vector();
     Vector vibatom = new Vector();
     int ifreq = 0;
-    int iatom = atomCount; // add vibrations starting at second atomset
+    int iatom = atomCount;
     int nValues = 3;
     float[] atomInfo = new float[3];
     while (readLine() != null) {
@@ -420,21 +425,21 @@ public class SpartanArchive {
         atomInfo[i % nValues] = f;
         vibatom.addElement(new Float(f));
         if ((i + 1) % nValues == 0) {
-          //Logger.debug(ifreq + " atom " + iatom + "/" + atomCount
-          //      + " vectors: " + atomInfo[0] + " " + atomInfo[1] + " "
-          //      + atomInfo[2]);
-          atoms[iatom]
-              .addVibrationVector(atomInfo[0], atomInfo[1], atomInfo[2]);
-          vib.addElement(vibatom);
-          vibatom = new Vector();
+          if (!ignore[ifreq]) {
+            atomSetCollection.addVibrationVector(iatom, atomInfo[0], atomInfo[1],
+                atomInfo[2]);
+            vib.addElement(vibatom);
+            vibatom = new Vector();
+          }
           ++iatom;
         }
       }
       if (iatom % atomCount == 0) {
-        vibrations.addElement(vib);
+        if (!ignore[ifreq])
+          vibrations.addElement(vib);
         vib = new Vector();
         if (++ifreq == frequencyCount)
-          break; ///loop exit
+          break; // /loop exit
       }
     }
     atomSetCollection
@@ -472,13 +477,14 @@ public class SpartanArchive {
     }
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
     int atomCount = atomSetCollection.getFirstAtomSetAtomCount();
-    Atom[] atoms = atomSetCollection.getAtoms();
     int iatom = atomCount; // add vibrations starting at second atomset
     for (int i = 0; i < frequencyCount; i++) {
+      if (!r.doGetVibration(i + 1))
+        continue;
       int ipt = 0;
       Vector vib = new Vector();
       Vector mode = (Vector) freq_modes.get(i);
-      for (int ia = 0; ia < atomCount; ia++) {
+      for (int ia = 0; ia < atomCount; ia++, iatom++) {
         Vector vibatom = new Vector();
         float vx = ((Float)(v = mode.get(ipt++))).floatValue();
         vibatom.addElement(v);
@@ -486,11 +492,10 @@ public class SpartanArchive {
         vibatom.addElement(v);
         float vz = ((Float)(v = mode.get(ipt++))).floatValue();
         vibatom.addElement(v);
-        atoms[iatom++].addVibrationVector(vx, vy, vz);
+        atomSetCollection.addVibrationVector(iatom, vx, vy, vz);
         vib.addElement(vibatom);
       }
       vibrations.addElement(vib);
-      vib = new Vector();
     }
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
   }

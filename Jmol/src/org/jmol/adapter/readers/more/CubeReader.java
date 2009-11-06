@@ -66,7 +66,7 @@ public class CubeReader extends AtomSetCollectionReader {
   
  public void readAtomSetCollection(BufferedReader br) {
     reader = br;
-    atomSetCollection = new AtomSetCollection("cube");
+    atomSetCollection = new AtomSetCollection("cube", this);
     try {
       atomSetCollection.newAtomSet();
       readTitleLines();

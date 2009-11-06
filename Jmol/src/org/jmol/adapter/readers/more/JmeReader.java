@@ -61,7 +61,7 @@ public class JmeReader extends AtomSetCollectionReader {
   
  public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("jme");
+    atomSetCollection = new AtomSetCollection("jme", this);
 
     try {
       readLine();

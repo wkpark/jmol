@@ -47,7 +47,7 @@ public class MopacReader extends AtomSetCollectionReader {
  public void readAtomSetCollection(BufferedReader reader) {
 
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("mopac");
+    atomSetCollection = new AtomSetCollection("mopac", this);
     //frameInfo = null;
     try {
       while (readLine() != null && !line.startsWith(" ---")) {
@@ -216,6 +216,8 @@ void processAtomicCharges() throws Exception {
         data = new String[nAtoms * 3 + 1][];
         fillDataBlock(data);
         for (int i = 0; i < frequencyCount; ++i) {
+          if (!doGetVibration(++vibrationNumber))
+            continue;
           float freq = parseFloat(data[0][i]);
           Hashtable info = new Hashtable();
           info.put("freq", new Float(freq));
@@ -223,7 +225,6 @@ void processAtomicCharges() throws Exception {
           freqs.addElement(info);
           baseAtomIndex = atomSetCollection.getAtomCount();
           atomSetCollection.cloneLastAtomSet();
-          Atom[] atoms = atomSetCollection.getAtoms();
           atomSetCollection.setAtomSetName(freq + " cm^-1");
           atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
               "Frequencies");
@@ -232,7 +233,7 @@ void processAtomicCharges() throws Exception {
             float dx = parseFloat(data[dataPt++][i + 1]);
             float dy = parseFloat(data[dataPt++][i + 1]);
             float dz = parseFloat(data[dataPt++][i + 1]);
-            atoms[baseAtomIndex + iatom].addVibrationVector(dx, dy, dz);
+            atomSetCollection.addVibrationVector(baseAtomIndex + iatom, dx, dy, dz);
             Vector vibatom = new Vector();
             vibatom.addElement(new Float(dx));
             vibatom.addElement(new Float(dy));

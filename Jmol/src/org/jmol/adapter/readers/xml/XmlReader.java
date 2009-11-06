@@ -113,7 +113,7 @@ public class XmlReader extends AtomSetCollectionReader {
     this.reader = reader;
     XMLReader xmlReader = getXMLReader();
     if (xmlReader == null) {
-      atomSetCollection = new AtomSetCollection("xml");
+      atomSetCollection = new AtomSetCollection("xml", this);
       atomSetCollection.errorMessage = "No XML reader found";
       return;
     }
@@ -166,7 +166,7 @@ public class XmlReader extends AtomSetCollectionReader {
   }
 
   private Object processXml(XMLReader xmlReader) throws Exception {
-    atomSetCollection = new AtomSetCollection(readerName);
+    atomSetCollection = new AtomSetCollection(readerName, this);
     Object res = getXmlReader();
     if (res instanceof String)
       return res;
@@ -219,7 +219,7 @@ public class XmlReader extends AtomSetCollectionReader {
   }
 
   private Object processXml(JSObject DOMNode) {
-    atomSetCollection = new AtomSetCollection(readerName);
+    atomSetCollection = new AtomSetCollection(readerName, this);
     String className = null;
     Class atomSetCollectionReaderClass;
     String err = null;

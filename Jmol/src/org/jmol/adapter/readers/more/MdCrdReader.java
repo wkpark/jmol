@@ -45,7 +45,7 @@ public class MdCrdReader extends AtomSetCollectionReader {
  private Vector trajectorySteps;
  public void readAtomSetCollection(BufferedReader br) {
     reader = br;
-    atomSetCollection = new AtomSetCollection("mdcrd");
+    atomSetCollection = new AtomSetCollection("mdcrd", this);
     // add a dummy atom, just so not "no atoms found"
     atomSetCollection.addAtom(new Atom()); 
     trajectorySteps = (Vector) htParams.get("trajectorySteps");

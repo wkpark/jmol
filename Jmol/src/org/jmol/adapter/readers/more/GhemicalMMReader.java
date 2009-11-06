@@ -74,7 +74,7 @@ public class GhemicalMMReader extends AtomSetCollectionReader {
  public void readAtomSetCollection(BufferedReader reader) {
 
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("ghemicalMM");
+    atomSetCollection = new AtomSetCollection("ghemicalMM", this);
 
     try {
       while (readLine() != null) {

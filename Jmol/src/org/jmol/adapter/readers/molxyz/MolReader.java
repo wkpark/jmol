@@ -53,7 +53,7 @@ public class MolReader extends AtomSetCollectionReader {
 
   String header = "";
  public void readAtomSetCollection(BufferedReader reader) {
-    atomSetCollection = new AtomSetCollection("mol");
+    atomSetCollection = new AtomSetCollection("mol", this);
     this.reader = reader;
     try {
       while (readLine() != null) {

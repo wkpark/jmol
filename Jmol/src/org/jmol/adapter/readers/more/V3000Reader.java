@@ -45,7 +45,7 @@ public class V3000Reader extends AtomSetCollectionReader {
 
  public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("v3000");
+    atomSetCollection = new AtomSetCollection("v3000", this);
     try {
       while (readLine() != null) {
         if (doGetModel(++modelNumber)) {

@@ -56,11 +56,13 @@ public class XyzReader extends AtomSetCollectionReader {
 
   public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("xyz");
+    atomSetCollection = new AtomSetCollection("xyz", this);
     try {
       int modelAtomCount;
       while ((modelAtomCount = readAtomCount()) > 0) {
-        if (doGetModel(++modelNumber)) {
+        // models and vibrations are the same for XYZ files
+        vibrationNumber = ++modelNumber;
+        if (desiredVibrationNumber <= 0 ? doGetModel(modelNumber) : doGetVibration(vibrationNumber)) {
           readAtomSetName();
           readAtoms(modelAtomCount);
           applySymmetryAndSetTrajectory();
@@ -155,9 +157,7 @@ public class XyzReader extends AtomSetCollectionReader {
         float vz = parseFloat(tokens[vpt++]);
         if (Float.isNaN(vx) || Float.isNaN(vy) || Float.isNaN(vz))
           continue;
-        atom.vectorX = vx;
-        atom.vectorY = vy;
-        atom.vectorZ = vz;
+        atomSetCollection.addVibrationVector(atom.atomIndex, vx, vy, vz);
       }
     }
   }

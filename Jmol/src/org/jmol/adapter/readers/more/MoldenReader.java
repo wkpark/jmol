@@ -24,7 +24,7 @@ public class MoldenReader extends MopacDataReader {
   
 	public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("molden");
+    atomSetCollection = new AtomSetCollection("molden", this);
     modelNumber = 0;
     try {
       readLine();
@@ -265,13 +265,13 @@ public class MoldenReader extends MopacDataReader {
     
     final int nFreqs = frequencies.size();
     final int nAtoms = atomSetCollection.getFirstAtomSetAtomCount();
-    
     atomSetCollection.cloneLastAtomSet();
     atomSetCollection.setAtomSetName("frequency base geometry");
     Atom[] atoms = atomSetCollection.getAtoms();
+    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
     for (int nAtom = 0; nAtom < nAtoms; nAtom++) {
       tokens = getTokens(readLine());
-      Atom atom = atoms[nAtom + atomSetCollection.getLastAtomSetAtomIndex()];
+      Atom atom = atoms[nAtom + i0];
       atom.atomName = tokens[0];
       atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
       atom.scale(ANGSTROMS_PER_BOHR);      
@@ -285,14 +285,19 @@ public class MoldenReader extends MopacDataReader {
       if (readLine().indexOf("Vibration") < 0)
         throw new Exception("error reading normal modes: expected vibration data");
       atomSetCollection.cloneLastAtomSet();
-      atomSetCollection.setAtomSetName(frequencies.get(nFreq) + " cm-1");
-      atoms = atomSetCollection.getAtoms();
+      boolean ignore = !doGetVibration(nFreq + 1);
+      if (!ignore) {
+        atomSetCollection.setAtomSetName(frequencies.get(nFreq) + " cm-1");
+        i0 = atomSetCollection.getLastAtomSetAtomIndex();
+      }
       for (int nAtom = 0; nAtom < nAtoms; nAtom++) {
-        Atom atom = atoms[nAtom + atomSetCollection.getLastAtomSetAtomIndex()];
         tokens = getTokens(readLine());
-        atom.vectorX = parseFloat(tokens[0]) * ANGSTROMS_PER_BOHR;
-        atom.vectorY = parseFloat(tokens[1]) * ANGSTROMS_PER_BOHR;
-        atom.vectorZ = parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR;
+        if (!ignore)
+          atomSetCollection.addVibrationVector(nAtom + i0,
+              parseFloat(tokens[0]) * ANGSTROMS_PER_BOHR,
+              parseFloat(tokens[1]) * ANGSTROMS_PER_BOHR,
+              parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR
+          );
       }      
     }
     readLine();

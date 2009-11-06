@@ -45,7 +45,7 @@ public class OdysseyXMLReader extends AtomSetCollectionReader {
 
  public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("odyssey(XML)");
+    atomSetCollection = new AtomSetCollection("odyssey(XML)", this);
     try {
       if (discardLinesUntilContains("<description") != null)
         readDescription();

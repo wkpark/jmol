@@ -60,7 +60,7 @@ public class MdTopReader extends FFReader {
 
   public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("mdtop");
+    atomSetCollection = new AtomSetCollection("mdtop", this);
     try {
       setUserAtomTypes();
       readLine();

@@ -72,7 +72,7 @@ public class CastepReader extends AtomSetCollectionReader {
   public void readAtomSetCollection(BufferedReader br) {
 
     reader = br;
-    atomSetCollection = new AtomSetCollection("castep");
+    atomSetCollection = new AtomSetCollection("castep", this);
 
     boolean iHaveFractionalCoordinates = false;
 

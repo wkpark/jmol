@@ -171,64 +171,69 @@ public class QchemReader extends MOReader {
   
   /**
    * Interprets the Harmonic frequencies section.
-   *
-   * <p>The vectors are added to a clone of the last read AtomSet.
-   * Only the Frequencies, reduced masses, force constants and IR intensities
-   * are set as properties for each of the frequency type AtomSet generated.
-   *
-   * @throws Exception If no frequences were encountered
-   * @throws IOException If an I/O error occurs
+   * 
+   * <p>
+   * The vectors are added to a clone of the last read AtomSet. Only the
+   * Frequencies, reduced masses, force constants and IR intensities are set as
+   * properties for each of the frequency type AtomSet generated.
+   * 
+   * @throws Exception
+   *           If no frequences were encountered
+   * @throws IOException
+   *           If an I/O error occurs
    **/
   private void readFrequencies() throws Exception, IOException {
-    String[] tokens; String[] frequencies;
-    
+    String[] tokens;
+    String[] frequencies;
+
     // first get the the proper line with the Frequencies:
     frequencies = getTokens(discardLinesUntilStartsWith(" Frequency:"));
-   
+
     // G98 ends the frequencies with a line with a space (03 an empty line)
     // so I decided to read till the line is too short
-    while (true)
-    {
+
+    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+    int firstModelAtom = atomSetCollection.getAtomCount();
+
+    while (true) {
       int frequencyCount = frequencies.length;
-      
+      boolean[] ignore = new boolean[frequencyCount];
       for (int i = 1; i < frequencyCount; ++i) {
+        ignore[i] = !doGetVibration(i);
+        if (ignore[i])
+          continue;
         atomSetCollection.cloneLastAtomSet();
-        atomSetCollection.setAtomSetName(frequencies[i]+" cm**-1");
+        atomSetCollection.setAtomSetName(frequencies[i] + " cm^-1");
         // set the properties
-        atomSetCollection.setAtomSetProperty("Frequency",
-            frequencies[i]+" cm**-1");
+        atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
+            + " cm^-1");
         atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
-            "Calculation " + calculationNumber+
-            SmarterJmolAdapter.PATH_SEPARATOR+"Frequencies");
+            "Calculation " + calculationNumber
+                + SmarterJmolAdapter.PATH_SEPARATOR + "Frequencies");
       }
-      
-      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-      int firstModelAtom =
-        atomSetCollection.getAtomCount() - frequencyCount * atomCount;
-      
+
       // position to start reading the displacement vectors
       discardLinesUntilStartsWith("               X");
-      
+
       // read the displacement vectors for every atom and frequency
-      float x, y, z;
-      Atom[] atoms = atomSetCollection.getAtoms();
       for (int i = 0; i < atomCount; ++i) {
         tokens = getTokens(readLine());
-        for (int j = 1, offset=1; j < frequencyCount; ++j) {
-          int atomOffset = firstModelAtom+j*atomCount + i ;
-          Atom atom = atoms[atomOffset];
-          x = parseFloat(tokens[offset++]);
-          y = parseFloat(tokens[offset++]);
-          z = parseFloat(tokens[offset++]);
-          atom.addVibrationVector(x, y, z);
+        for (int j = 1, offset = 1; j < frequencyCount; ++j) {
+          float x = parseFloat(tokens[offset++]);
+          float y = parseFloat(tokens[offset++]);
+          float z = parseFloat(tokens[offset++]);
+          if (!ignore[j])
+            atomSetCollection.addVibrationVector(i + firstModelAtom + j
+                * atomCount, x, y, z);
         }
       }
       // Position the reader to have the next frequencies already tokenized
-      while ((line= readLine()) != null && line.length() > 0) { }
+      while ((line = readLine()) != null && line.length() > 0) {
+      }
       // I am now either at the next Frequency line or Mode line or STANDARD
-      line=readLine();
-      if (line.indexOf("STANDARD")>=0) {
-        break;  // we are done with the frequencies
+      line = readLine();
+      if (line.indexOf("STANDARD") >= 0) {
+        break; // we are done with the frequencies
       } else if (line.indexOf(" Frequency:") == -1) {
         frequencies = getTokens(discardLinesUntilStartsWith(" Frequency:"));
       } else {

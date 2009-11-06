@@ -44,7 +44,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     this.reader = reader;
     try {
       readLine();
-      atomSetCollection = new AtomSetCollection("spartan smol");
+      atomSetCollection = new AtomSetCollection("spartan smol", this);
       boolean iHaveModelStatement = false;
       boolean iHaveModel = false;
       while (line != null) {

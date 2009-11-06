@@ -151,6 +151,8 @@ public abstract class AtomSetCollectionReader {
   protected boolean getHeader;
   protected int templateAtomCount;
   protected int modelNumber;
+  protected int vibrationNumber;
+  public int desiredVibrationNumber = Integer.MIN_VALUE;
   protected BitSet bsModels;
   protected BitSet bsFilter;
   protected String filter;
@@ -158,7 +160,6 @@ public abstract class AtomSetCollectionReader {
   protected String spaceGroup;
   protected boolean havePartialChargeFilter;
   public String calculationType = "?";
-
   // private state variables
   private boolean iHaveFractionalCoordinates;
   private boolean doPackUnitCell;
@@ -210,7 +211,8 @@ public abstract class AtomSetCollectionReader {
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("calculationType",
           calculationType);
 
-    String fileType = atomSetCollection.fileTypeName;
+    String name = atomSetCollection.getFileTypeName();
+    String fileType = name;
     if (fileType.indexOf("(") >= 0)
       fileType = fileType.substring(0, fileType.indexOf("("));
     for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;) {
@@ -220,10 +222,9 @@ public abstract class AtomSetCollectionReader {
     atomSetCollection.freeze();
     if (atomSetCollection.errorMessage != null)
       return atomSetCollection.errorMessage + "\nfor file " + filename
-          + "\ntype " + atomSetCollection.fileTypeName;
-    if (atomSetCollection.atomCount == 0)
-      return "No atoms found\nfor file " + filename + "\ntype "
-          + atomSetCollection.fileTypeName;
+          + "\ntype " + name;
+    if (atomSetCollection.getAtomCount() == 0)
+      return "No atoms found\nfor file " + filename + "\ntype " + name;
     return atomSetCollection;
   }
 
@@ -237,13 +238,15 @@ public abstract class AtomSetCollectionReader {
           + ":\n" + line + "\n" + e.getMessage();
   }
   
-  void initialize(Hashtable htParams) {
+  private void initialize(Hashtable htParams) {
 
     initializeSymmetry();
     this.htParams = htParams;
     getHeader = htParams.containsKey("getHeader");
     readerName = (String) htParams.get("readerName");
-    if (htParams.containsKey("modelNumber"))
+    if (htParams.containsKey("vibrationNumber"))
+      desiredVibrationNumber = ((Integer) htParams.get("vibrationNumber")).intValue();
+    else if (htParams.containsKey("modelNumber"))
       desiredModelNumber = ((Integer) htParams.get("modelNumber")).intValue();
     applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
     filter = (String) htParams.get("filter");
@@ -355,9 +358,9 @@ public abstract class AtomSetCollectionReader {
   private boolean haveModel = false;
   protected boolean doGetModel(int modelNumber) {
     // modelNumber is 1-based, but firstLastStep is 0-based
-  boolean isOK = (bsModels == null ? desiredModelNumber == Integer.MIN_VALUE || modelNumber == desiredModelNumber
+  boolean isOK = (bsModels == null ? desiredModelNumber < 1 || modelNumber == desiredModelNumber
         : modelNumber > lastModelNumber ? false 
-            : modelNumber > 0 && bsModels.get(modelNumber - 1)
+        : modelNumber > 0 && bsModels.get(modelNumber - 1)
             || haveModel && firstLastStep != null && firstLastStep[1] < 0
             && (firstLastStep[2] < 2 || (modelNumber - 1 - firstLastStep[0]) % firstLastStep[2] == 0));
   haveModel |= isOK;
@@ -365,7 +368,12 @@ public abstract class AtomSetCollectionReader {
   }
   
   protected boolean isLastModel(int modelNumber) {
-    return (desiredModelNumber != Integer.MIN_VALUE || modelNumber >= lastModelNumber);
+    return (desiredModelNumber > 0 || modelNumber >= lastModelNumber);
+  }
+
+  public boolean doGetVibration(int vibrationNumber) {
+    // vibrationNumber is 1-based
+  return (desiredVibrationNumber <= 0 || vibrationNumber == desiredVibrationNumber);
   }
 
   private void initializeSymmetry() {
@@ -384,10 +392,10 @@ public abstract class AtomSetCollectionReader {
   }
 
   protected void newAtomSet(String name) {
-    if (atomSetCollection.currentAtomSetIndex >= 0) {
+    if (atomSetCollection.getCurrentAtomSetIndex() >= 0) {
       atomSetCollection.newAtomSet();
       atomSetCollection.setCollectionName("<collection of "
-          + (atomSetCollection.currentAtomSetIndex + 1) + " models>");
+          + (atomSetCollection.getCurrentAtomSetIndex() + 1) + " models>");
     } else {
       atomSetCollection.setCollectionName(name);
     }
@@ -486,7 +494,7 @@ public abstract class AtomSetCollectionReader {
 
   protected boolean filterAtom(Atom atom) {
     //cif, pdb readers
-    return (!haveAtomFilter || filterAtom(atom, atomSetCollection.atomCount));
+    return (!haveAtomFilter || filterAtom(atom, atomSetCollection.getAtomCount()));
   }
 
   /**

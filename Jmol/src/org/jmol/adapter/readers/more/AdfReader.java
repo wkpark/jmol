@@ -61,7 +61,7 @@ public class AdfReader extends AtomSetCollectionReader {
    * @param reader  input stream
    */
   public void readAtomSetCollection(BufferedReader reader) {
-    atomSetCollection = new AtomSetCollection("adf");
+    atomSetCollection = new AtomSetCollection("adf", this);
     this.reader = reader;
     boolean iHaveAtoms = false;
     modelNumber = 0;
@@ -176,11 +176,15 @@ OR
       readLine(); // -------- -------- --------
       int frequencyCount = frequencies.length;
       int firstModelAtom = atomSetCollection.getAtomCount();
+      boolean[] ignore = new boolean[frequencyCount];
       for (int i = 0; i < frequencyCount; ++i) {
+        ignore[i] = !doGetVibration(++vibrationNumber);
         atomSetCollection.cloneLastAtomSet();
-        atomSetCollection.setAtomSetName(frequencies[i] + " cm**-1");
+        if (ignore[i])
+          continue;
+        atomSetCollection.setAtomSetName(frequencies[i] + " cm^-1");
         atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
-            + " cm**-1");
+            + " cm^-1");
         atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
             "Frequencies");
       }
@@ -192,13 +196,13 @@ OR
           continue;
         float x, y, z;
         int offset = 1;
-        for (int j = 0; j < frequencyCount; ++j) {
-          int atomOffset = firstModelAtom + j * atomCount + atomPt;
-          Atom atom = atomSetCollection.getAtom(atomOffset);
+        for (int i = 0; i < frequencyCount; ++i) {
           x = parseFloat(tokens[offset++]);
           y = parseFloat(tokens[offset++]);
           z = parseFloat(tokens[offset++]);
-          atom.addVibrationVector(x, y, z);
+          if (!ignore[i])
+            atomSetCollection.addVibrationVector(atomPt + firstModelAtom + i
+                * atomCount, x, y, z);
         }
         atomPt++;
       }

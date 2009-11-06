@@ -57,7 +57,7 @@ public class CsfReader extends MopacDataReader {
   
  public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("csf");
+    atomSetCollection = new AtomSetCollection("csf", this);
     try {
       readLine();
       while (line != null) {
@@ -393,7 +393,6 @@ public class CsfReader extends MopacDataReader {
 
   void processVibrationObject() throws Exception {
     //int iatom = atomSetCollection.getFirstAtomSetAtomCount();
-    Atom[] atoms = atomSetCollection.getAtoms();
     float[][] vibData = new float[nVibrations][nAtoms * 3];
     float[] energies = new float[nVibrations];
     readLine();
@@ -418,15 +417,19 @@ public class CsfReader extends MopacDataReader {
       }
     }
     for (int i = 0; i < nVibrations; i++) {
+      if (!doGetVibration(i + 1))
+        continue;
       atomSetCollection.cloneFirstAtomSetWithBonds(nBonds);
-      atomSetCollection.setAtomSetName(energies[i] + " cm^-1", i + 1);
+      atomSetCollection.setAtomSetName(energies[i] + " cm^-1");
       atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
           "Frequencies");
       int ipt = 0;
       int baseAtom = nAtoms * (i + 1);
       for (int iAtom = 0; iAtom < nAtoms; iAtom++)
-        atoms[baseAtom + iAtom].addVibrationVector(vibData[i][ipt++],
-            vibData[i][ipt++], vibData[i][ipt++]);
+        atomSetCollection.addVibrationVector(baseAtom + iAtom,
+            vibData[i][ipt++],
+            vibData[i][ipt++], 
+            vibData[i][ipt++]);
     }
   }
 

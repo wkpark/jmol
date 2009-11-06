@@ -38,7 +38,7 @@ public class Atom extends Point3f implements Cloneable {
   public int formalCharge = Integer.MIN_VALUE;
   {set(Float.NaN, Float.NaN, Float.NaN);}
   public float partialCharge = Float.NaN;
-  public float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
+  float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
   public float bfactor = Float.NaN;
   public int occupancy = 100;
   public float radius = Float.NaN;
@@ -91,13 +91,6 @@ public class Atom extends Point3f implements Cloneable {
     return elementSymbol;
   }
 
-  public void addVibrationVector(float vectorX, float vectorY, float vectorZ) {
-    this.vectorX = vectorX;
-    this.vectorY = vectorY;
-    this.vectorZ = vectorZ;
-  }
-  
- 
   /**
    * Bits which indicate whether or not an element symbol is valid.
    *<p>

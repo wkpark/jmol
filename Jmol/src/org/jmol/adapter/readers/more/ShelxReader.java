@@ -64,7 +64,7 @@ public class ShelxReader extends AtomSetCollectionReader {
 
  public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("shelx");
+    atomSetCollection = new AtomSetCollection("shelx", this);
     try {
       setFractionalCoordinates(true);
       int lineLength;

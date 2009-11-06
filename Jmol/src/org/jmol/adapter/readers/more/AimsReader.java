@@ -63,7 +63,7 @@ public class AimsReader extends AtomSetCollectionReader {
 
   public void readAtomSetCollection(BufferedReader br) {
     reader = br;
-    atomSetCollection = new AtomSetCollection("aims");
+    atomSetCollection = new AtomSetCollection("aims", this);
     //boolean iHaveAtoms = false;  // unused
 
     String tokens[];

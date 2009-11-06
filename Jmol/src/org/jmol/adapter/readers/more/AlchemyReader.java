@@ -48,7 +48,7 @@ public class AlchemyReader extends AtomSetCollectionReader {
 
   public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("Alchemy");
+    atomSetCollection = new AtomSetCollection("Alchemy", this);
     try {
       atomSetCollection.newAtomSet();
       String[] tokens = getTokens(readLine());

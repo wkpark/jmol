@@ -50,11 +50,6 @@ public class GaussianReader extends MOReader {
    * orientation block.
    */
   private final static int STD_ORIENTATION_ATOMIC_NUMBER_OFFSET = 1;
-  /**
-   * Word index of the first X vector of the first frequency in the
-   * frequency output.
-   */
-  private final static int FREQ_FIRST_VECTOR_OFFSET = 2;
   
   /** Calculated energy with units (if possible). */
   private String energyString = "";
@@ -499,8 +494,7 @@ but:
     String[] tokens; String[] symmetries; String[] frequencies;
     String[] red_masses; String[] frc_consts; String[] intensities;
     
-    while (readLine() != null &&
-        line.indexOf(":")<0) {
+    while (readLine() != null && line.indexOf(":") < 0) {
     }
     if (line == null)
       throw (new Exception("No frequencies encountered"));
@@ -519,19 +513,25 @@ but:
       frc_consts = getTokens(discardLinesUntilStartsWith(" Frc consts"), 15);
       intensities = getTokens(discardLinesUntilStartsWith(" IR Inten"), 15);
       int frequencyCount = frequencies.length;
+      int firstModelAtom = atomSetCollection.getAtomCount();
+      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
       
+      boolean[] ignore = new boolean[frequencyCount];
       for (int i = 0; i < frequencyCount; ++i) {
+        ignore[i] = !doGetVibration(++vibrationNumber);
+        if (ignore[i])
+          continue;  
         atomSetCollection.cloneLastAtomSet();
         atomSetCollection.setAtomSetName(
             symmetries[i] + " "
-            + frequencies[i]+" cm**-1"
+            + frequencies[i]+" cm^-1"
 //            + ", Inten = " + intensities[i] + " KM/Mole "
 //            + energyKey + " = " + energyString
         );
         // set the properties
         atomSetCollection.setAtomSetProperty(energyKey, energyString);
         atomSetCollection.setAtomSetProperty("Frequency",
-            frequencies[i]+" cm**-1");
+            frequencies[i]+" cm^-1");
         atomSetCollection.setAtomSetProperty("Reduced Mass",
             red_masses[i]+" AMU");
         atomSetCollection.setAtomSetProperty("Force Constant",
@@ -543,27 +543,21 @@ but:
             SmarterJmolAdapter.PATH_SEPARATOR+"Frequencies");
       }
       
-      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-      int firstModelAtom =
-        atomSetCollection.getAtomCount() - frequencyCount * atomCount;
-      
       // position to start reading the displacement vectors
       discardLinesUntilStartsWith(" Atom AN");
       
       // read the displacement vectors for every atom and frequency
-      float x, y, z;
-      Atom[] atoms = atomSetCollection.getAtoms();
       for (int i = 0; i < atomCount; ++i) {
         tokens = getTokens(readLine());
-        int atomCenterNumber = parseInt(tokens[0]);
-        for (int j = 0, offset=FREQ_FIRST_VECTOR_OFFSET;
-        j < frequencyCount; ++j) {
-          int atomOffset = firstModelAtom+j*atomCount + atomCenterNumber - 1 ;
-          Atom atom = atoms[atomOffset];
-          x = parseFloat(tokens[offset++]);
-          y = parseFloat(tokens[offset++]);
-          z = parseFloat(tokens[offset++]);
-          atom.addVibrationVector(x, y, z);
+        int iAtom = parseInt(tokens[0]) - 1;
+        int offset = 2;
+        for (int j = 0; j < frequencyCount; ++j) {
+          float x = parseFloat(tokens[offset++]);
+          float y = parseFloat(tokens[offset++]);
+          float z = parseFloat(tokens[offset++]);
+          if (!ignore[j])
+            atomSetCollection.addVibrationVector(iAtom + firstModelAtom + j
+                * atomCount, x, y, z);
         }
       }
     }

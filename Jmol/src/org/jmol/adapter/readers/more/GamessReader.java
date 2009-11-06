@@ -132,9 +132,8 @@ abstract public class GamessReader extends MOReader {
 
   protected void readFrequencies() throws Exception {
     //not for GamessUK yet
-    int totalFrequencyCount = 0;
-    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
     int atomIndex = atomSetCollection.getLastAtomSetAtomIndex();
+    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
     // For the case when HSSEND=.TRUE. atoms[]
     // now contains all atoms across all models (optimization steps).
     // We only want to set vetor data corresponding to new cloned
@@ -156,7 +155,7 @@ abstract public class GamessReader extends MOReader {
         frequencies[lineFreqCount] = frequency;
         lineFreqCount++;
         if (Logger.debugging) {
-          Logger.debug(totalFrequencyCount + " frequency=" + frequency);
+          Logger.debug((vibrationNumber + 1) + " frequency=" + frequency);
         }
         if (lineFreqCount == 5)
           break;
@@ -171,11 +170,14 @@ abstract public class GamessReader extends MOReader {
       if (line.indexOf("INTENS") >= 0) {
         intensities = getTokens();
       }
+      boolean[] ignore = new boolean[lineFreqCount];
       for (int i = 0; i < lineFreqCount; i++) {
-        ++totalFrequencyCount;
+        ignore[i] = !doGetVibration(++vibrationNumber);
         // The last model should be cloned because we might
         // have done an optimization with HSSEND=.TRUE.
-        if (totalFrequencyCount > 1)
+        if (ignore[i])
+          continue;
+        if (vibrationNumber > 1)
           atomSetCollection.cloneLastAtomSet();
         atomSetCollection.setAtomSetName(frequencies[i] + " cm-1");
         atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
@@ -188,10 +190,9 @@ abstract public class GamessReader extends MOReader {
             + " D^2/AMU-Angstrom^2");
 
       }
-      Atom[] atoms = atomSetCollection.getAtoms();
       discardLinesUntilBlank();
-      //This loop is over the atoms in the first clone.
-      //The number of atoms will not change.
+      //This loop is over the atoms in the most recent set.
+      //The number of atoms will not change, but atomIndex will have been updated
       int index0 = atomIndex - atomCount;
       for (int i = 0; i < atomCount; ++i) {
         atomIndex = index0 + i;
@@ -206,10 +207,9 @@ abstract public class GamessReader extends MOReader {
         //its position in atoms[].
         for (int j = 0; j < lineFreqCount; ++j) {
           atomIndex += atomCount;
-          Atom atom = atoms[atomIndex];
-          atom.vectorX = xComponents[j];
-          atom.vectorY = yComponents[j];
-          atom.vectorZ = zComponents[j];
+          if (!ignore[j])
+            atomSetCollection
+               .addVibrationVector(atomIndex, xComponents[j], yComponents[j], zComponents[j]);
         }
       }
       atomIndex++;

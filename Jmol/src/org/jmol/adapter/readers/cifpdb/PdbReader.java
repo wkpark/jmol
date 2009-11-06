@@ -96,7 +96,7 @@ public class PdbReader extends AtomSetCollectionReader {
  public void readAtomSetCollection(BufferedReader reader) {
     //System.out.println(this + " initialized");
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection(fileType);
+    atomSetCollection = new AtomSetCollection(fileType, this);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
     setFractionalCoordinates(false);
     htFormul.clear();

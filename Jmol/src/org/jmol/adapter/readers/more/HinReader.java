@@ -48,7 +48,7 @@ public class HinReader extends AtomSetCollectionReader {
   
  public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("hin");
+    atomSetCollection = new AtomSetCollection("hin", this);
     try {
       readAtoms();
     } catch (Exception e) {

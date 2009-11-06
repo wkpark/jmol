@@ -1935,7 +1935,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Object atomSetCollection = fileManager.getAtomSetCollectionOrError();
     fileManager.deallocateReaderThreads();
     String errMsg;
-    if (atomSetCollection instanceof String || atomSetCollection == null) {
+    if (atomSetCollection instanceof String) {
       errMsg = (String) atomSetCollection;
       setFileLoadStatus(FILE_STATUS_NOT_LOADED, fullPathName, null, null,
           errMsg);
@@ -1951,8 +1951,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setFileLoadStatus(FILE_STATUS_MODELSET_CREATED, fullPathName, fileName,
           getModelSetName(), errMsg);
       if (isAppend) {
-        selectAll(); // could be an issue here. Do we really want to
-                     // "select all"?
+        selectAll();
         setTainted(true);
       }
       atomSetCollection = null;
@@ -1965,11 +1964,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Object atomSetCollection = fileManager.getAtomSetCollectionOrError();
     fileManager.deallocateReaderThreads();
     String errMsg;
-    if (atomSetCollection instanceof String || atomSetCollection == null) {
+    if (atomSetCollection instanceof String)
       errMsg = (String) atomSetCollection;
-    } else {
+    else
       errMsg = createAtomDataSet(tokType, atomSetCollection);
-    }
     return errMsg;
   }
 
@@ -5946,10 +5944,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void jmolTest() {
-//    Vector v = new Vector();
-//    v.add(new String[] {"3","testing","C 0 0 0","O 0 1 0","N 0 0 1"} );
-//    v.add("3\ntesting\nC 0 0 0\nO 0 1 0\nN 0 0 1\n");  
-//    loadInline(v, false);
+    Vector v = new Vector();
+    v.add(new String[] {
+        "MODEL     2",
+        "HETATM    1 H1   UNK     1       2.457   0.000   0.000  1.00  0.00           H  ",
+        "HETATM    2 C1   UNK     1       1.385   0.000   0.000  1.00  0.00           C  ",
+        "HETATM    3 C2   UNK     1      -1.385  -0.000   0.000  1.00  0.00           C  ",
+    });
+    //v.add(new String[] {"3","testing","C 0 0 0","O 0 1 0","N 0 0 1"} );
+    //v.add("3\ntesting\nC 0 0 0\nO 0 1 0\nN 0 0 1\n");  
+    loadInline(v, false);
   }
 
   public boolean getPdbLoadInfo(int type) {

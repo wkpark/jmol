@@ -6489,7 +6489,6 @@ public class ScriptEvaluator {
         if (atomDataOnly) {
           htParams.put("atomDataOnly", Boolean.TRUE);
           htParams.put("modelNumber", new Integer(1));
-          isAppend = true;
           tokType = Token.getTokenFromName(modelName.toLowerCase()).tok;
           if (tokType == Token.vibration)
             tokType = Token.vibXyz;
@@ -6502,6 +6501,8 @@ public class ScriptEvaluator {
           loadScript.append(" " + modelName);
           i++;
         }
+        if (atomDataOnly)
+          isAppend = true;
         if (modelName.equalsIgnoreCase("trajectory")
             || modelName.equalsIgnoreCase("models")) {
           if (modelName.equalsIgnoreCase("trajectory"))
@@ -6555,9 +6556,12 @@ public class ScriptEvaluator {
         tok = tokAt(++i);
       }
       if (tok == Token.integer) {
-        int modelNumber = intParameter(i);
-        sOptions += " " + modelNumber;
-        htParams.put("modelNumber", new Integer(modelNumber));
+        int n = intParameter(i);
+        sOptions += " " + n;
+        if (n < 0)
+          htParams.put("vibrationNumber", new Integer(-n));
+        else
+          htParams.put("modelNumber", new Integer(n));
         tok = tokAt(++i);
       }
       Point3f lattice = null;

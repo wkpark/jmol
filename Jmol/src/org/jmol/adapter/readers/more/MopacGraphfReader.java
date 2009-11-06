@@ -44,7 +44,7 @@ public class MopacGraphfReader extends MopacDataReader {
  public void readAtomSetCollection(BufferedReader reader) {
 
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("mopacGraphf");
+    atomSetCollection = new AtomSetCollection("mopacGraphf", this);
     //frameInfo = null;
     try {
       readAtoms();

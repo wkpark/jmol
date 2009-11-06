@@ -362,6 +362,9 @@ public class JaguarReader extends MOReader {
     while (line != null && line.startsWith("  frequencies ")) {
       String[] frequencies = getTokens();
       int freqCount = frequencies.length - 1;
+      boolean[] ignore = new boolean[freqCount];
+      for (int i = 0; i < freqCount; i++)
+        ignore[i] = !doGetVibration(++vibrationNumber);
       // skip to "intensity" or "force" line
       String[] symmetries = null;
       while (line != null 
@@ -380,12 +383,13 @@ public class JaguarReader extends MOReader {
         for (int j = 0; j < freqCount; j++) {
           if (i == 0) {
             atomSetCollection.cloneFirstAtomSet();
-            atomSetCollection.setAtomSetName(frequencies[j + 1] + " cm-1"
-                + (symmetries == null ? "" : " (" + symmetries[j + 1] + ")"));
-            atomSetCollection.setAtomSetProperty("Frequency", frequencies[j + 1]
-                + " cm-1");
+            if (!ignore[j]) {
+              atomSetCollection.setAtomSetName(frequencies[j + 1] + " cm-1"
+                  + (symmetries == null ? "" : " (" + symmetries[j + 1] + ")"));
+              atomSetCollection.setAtomSetProperty("Frequency", frequencies[j + 1]
+                  + " cm-1");
+            }
           }
-          int iAtom = (iModel + j) * atomCount + i;
           float x = parseFloat(tokensX[j + 2]);
           float y = parseFloat(tokensY[j + 2]);
           float z = parseFloat(tokensZ[j + 2]);
@@ -393,10 +397,9 @@ public class JaguarReader extends MOReader {
             Logger.info("Error reading frequency line: " + line);
             break;
           }
-          Atom atom = atomSetCollection.getAtom(iAtom);
-          atom.vectorX = x;
-          atom.vectorY = y;
-          atom.vectorZ = z;
+          if (!ignore[j])
+            atomSetCollection.addVibrationVector(i + (iModel + j) * atomCount,
+                x, y, z);
         }
       }
       iModel += freqCount;

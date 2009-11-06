@@ -60,7 +60,7 @@ public class Mol2Reader extends FFReader {
 
   public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("mol2");
+    atomSetCollection = new AtomSetCollection("mol2", this);
     try {
       setUserAtomTypes();
       setFractionalCoordinates(false);

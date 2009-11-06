@@ -45,7 +45,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
   
   public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("wien2k");
+    atomSetCollection = new AtomSetCollection("wien2k", this);
     doSymmetry = !spaceGroup.equals("none");
     try {
       setFractionalCoordinates(true);

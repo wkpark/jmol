@@ -59,7 +59,7 @@ public class GromacsReader extends AtomSetCollectionReader {
 
   public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("xyz");
+    atomSetCollection = new AtomSetCollection("xyz", this);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
     try {
       readAtomSetName();
@@ -130,11 +130,9 @@ public class GromacsReader extends AtomSetCollectionReader {
       float vx = parseFloat(line, 44, 52) * 10;
       float vy = parseFloat(line, 52, 60) * 10;
       float vz = parseFloat(line, 60, 68) * 10;
-        if (Float.isNaN(vx) || Float.isNaN(vy) || Float.isNaN(vz))
-          continue;
-        atom.vectorX = vx;
-        atom.vectorY = vy;
-        atom.vectorZ = vz;
+      if (Float.isNaN(vx) || Float.isNaN(vy) || Float.isNaN(vz))
+        continue;
+      atomSetCollection.addVibrationVector(atom.atomIndex, vx, vy, vz);
     }
   }
 

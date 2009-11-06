@@ -74,54 +74,55 @@ public class XmlMolproReader extends XmlCmlReader {
     ((MolproHandler) (new MolproHandler())).walkDOMTree(DOMNode);
   }
 
-  int frequencyCount;
-
   public void processStartElement2(String namespaceURI, String localName,
                                    String qName, HashMap atts) {
     if (localName.equals("normalCoordinate")) {
-      //int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-      String wavenumber = "";
-      String units = "";
+      keepChars = false;
+      if (!doGetVibration(++vibrationNumber))
+        return;
       try {
         atomSetCollection.cloneLastAtomSet();
       } catch (Exception e) {
         e.printStackTrace();
         atomSetCollection.errorMessage = "Error processing normalCoordinate: " + e.getMessage();
-        frequencyCount = 0;
+        vibrationNumber = 0;
         return;
       }
-      frequencyCount++;
       if (atts.containsKey("wavenumber")) {
-        wavenumber = (String) atts.get("wavenumber");
-        if (atts.containsKey("units"))
+        String wavenumber = (String) atts.get("wavenumber");
+        String units = "cm^-1";
+        if (atts.containsKey("units")) {
           units = (String) atts.get("units");
-
-        //never fully implemented
-
-        atomSetCollection.setAtomSetProperty("Frequency", wavenumber + " "
-            + units);
+          if (units.startsWith("inverseCent"))
+            units = "cm^-1";
+        }
+        atomSetCollection.setAtomSetName(wavenumber + " " + units);
+        atomSetCollection.setAtomSetProperty("Frequency", wavenumber + " " + units);
+        atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, "Frequencies");
         keepChars = true;
       }
       return;
     }
 
     if (localName.equals("vibrations")) {
-      frequencyCount = 0;
+      vibrationNumber = 0;
       return;
     }
   }
 
   public void processEndElement2(String uri, String localName, String qName) {
     if (localName.equals("normalCoordinate")) {
+      if (!keepChars)
+        return;
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+      int baseAtomIndex = atomSetCollection.getLastAtomSetAtomIndex();
       tokens = getTokens(chars);
-      Atom[] atoms = atomSetCollection.getAtoms();
-      int baseAtomIndex = atomSetCollection.getCurrentAtomSetIndex() * atomCount;
       for (int offset = tokens.length - atomCount * 3, i = 0; i < atomCount; i++) {
-        Atom atom = atoms[i + baseAtomIndex];
-        atom.vectorX = parseFloat(tokens[offset++]);
-        atom.vectorY = parseFloat(tokens[offset++]);
-        atom.vectorZ = parseFloat(tokens[offset++]);
+        atomSetCollection.addVibrationVector(i + baseAtomIndex,
+            parseFloat(tokens[offset++]),
+            parseFloat(tokens[offset++]),
+            parseFloat(tokens[offset++])
+        );
       }
     }
   }

@@ -48,7 +48,7 @@ public class WebMOReader extends MopacDataReader {
 
  public void readAtomSetCollection(BufferedReader reader)  {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("webmo");
+    atomSetCollection = new AtomSetCollection("webmo", this);
     modelNumber = 0;
     try {
       readLine();

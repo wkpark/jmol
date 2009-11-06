@@ -49,7 +49,7 @@ public class SpartanReader extends AtomSetCollectionReader {
 
  public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("spartan");
+    atomSetCollection = new AtomSetCollection("spartan", this);
     String cartesianHeader = "Cartesian Coordinates (Ang";
     try {
       if (isSpartanArchive(cartesianHeader)) {
@@ -99,38 +99,34 @@ public class SpartanReader extends AtomSetCollectionReader {
   }
 
   void readFrequencies() throws Exception {
-    int totalFrequencyCount = 0;
-
+    int atomCount = atomSetCollection.getFirstAtomSetAtomCount();
     while (true) {
       discardLinesUntilNonBlank();
-      int lineBaseFreqCount = totalFrequencyCount;
+      int lineBaseFreqCount = vibrationNumber;
       next[0] = 16;
       int lineFreqCount;
+      boolean[] ignore = new boolean[3];
       for (lineFreqCount = 0; lineFreqCount < 3; ++lineFreqCount) {
         float frequency = parseFloat();
         if (Float.isNaN(frequency))
           break; //////////////// loop exit is here
-        ++totalFrequencyCount;
-        if (totalFrequencyCount > 1)
+        ignore[lineFreqCount] = !doGetVibration(++vibrationNumber);
+        if (!ignore[lineFreqCount] && vibrationNumber > 1)
           atomSetCollection.cloneFirstAtomSet();
       }
       if (lineFreqCount == 0)
         return;
-      Atom[] atoms = atomSetCollection.getAtoms();
       discardLines(2);
-      int firstAtomSetAtomCount = atomSetCollection.getFirstAtomSetAtomCount();
-      for (int i = 0; i < firstAtomSetAtomCount; ++i) {
+      for (int i = 0; i < atomCount; ++i) {
         readLine();
         for (int j = 0; j < lineFreqCount; ++j) {
           int ichCoords = j * 23 + 10;
           float x = parseFloat(line, ichCoords, ichCoords + 7);
           float y = parseFloat(line, ichCoords + 7, ichCoords + 14);
           float z = parseFloat(line, ichCoords + 14, ichCoords + 21);
-          int atomIndex = (lineBaseFreqCount + j) * firstAtomSetAtomCount + i;
-          Atom atom = atoms[atomIndex];
-          atom.vectorX = x;
-          atom.vectorY = y;
-          atom.vectorZ = z;
+          if (!ignore[lineFreqCount])
+            atomSetCollection.addVibrationVector(i + (lineBaseFreqCount + j)
+                * atomCount, x, y, z);
         }
       }
     }

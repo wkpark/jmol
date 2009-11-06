@@ -41,30 +41,52 @@ import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 
 public class AtomSetCollection {
-  
-  String fileTypeName;
-  String collectionName;
-  Properties atomSetCollectionProperties = new Properties();
-  Hashtable atomSetCollectionAuxiliaryInfo = new Hashtable();
 
+  private String fileTypeName;
+  public String getFileTypeName() {
+    return fileTypeName;
+  }
   
-  final static String[] globalBooleans = {"someModelsHaveFractionalCoordinates",
+  private String collectionName;
+  public String getCollectionName() {
+    return collectionName;
+  }
+
+  public void setCollectionName(String collectionName) {
+    if (collectionName != null) {
+      collectionName = collectionName.trim();
+      if (collectionName.length() == 0)
+        return;
+      this.collectionName = collectionName;
+    }
+  }
+
+  private Properties atomSetCollectionProperties = new Properties();
+  public Properties getAtomSetCollectionProperties() {
+    return atomSetCollectionProperties;
+  }
+
+  private Hashtable atomSetCollectionAuxiliaryInfo = new Hashtable();
+  public Hashtable getAtomSetCollectionAuxiliaryInfo() {
+    return atomSetCollectionAuxiliaryInfo;
+  }
+  
+  private final static String[] globalBooleans = {"someModelsHaveFractionalCoordinates",
     "someModelsHaveSymmetry", "someModelsHaveUnitcells", "isPDB"};
 
-  final static int GLOBAL_FRACTCOORD = 0;
-  final static int GLOBAL_SYMMETRY = 1;
-  final static int GLOBAL_latticeCells = 2;
+  private final static int GLOBAL_FRACTCOORD = 0;
+  private final static int GLOBAL_SYMMETRY = 1;
+  private final static int GLOBAL_latticeCells = 2;
   
-   final public static String[] notionalUnitcellTags =
+  final public static String[] notionalUnitcellTags =
   { "a", "b", "c", "alpha", "beta", "gamma" };
 
-  int atomCount;
+  private int atomCount;
   public int getAtomCount() {
     return atomCount;
   }
   
-  Atom[] atoms = new Atom[256];
-  
+  private Atom[] atoms = new Atom[256];
   public Atom[] getAtoms() {
     return atoms;
   }
@@ -73,14 +95,12 @@ public class AtomSetCollection {
     return atoms[i];
   }
   
-  int bondCount;
-  
+  private int bondCount;
   public int getBondCount() {
     return bondCount;
   }
   
-  Bond[] bonds = new Bond[256];
-  
+  private Bond[] bonds = new Bond[256];
   public Bond[] getBonds() {
     return bonds;
   }
@@ -89,44 +109,51 @@ public class AtomSetCollection {
     return bonds[i];
   }
   
-  int structureCount;
-  Structure[] structures = new Structure[16];
-  int atomSetCount;
+  private int structureCount;
+  public int getStructureCount() {
+    return structureCount;
+  }
+  
+  private Structure[] structures = new Structure[16];
+  public Structure[] getStructures() {
+    return structures;
+  }
+  
+  private int atomSetCount;
   public int getAtomSetCount() {
     return atomSetCount;
   }
   
-  int currentAtomSetIndex = -1;
+  private int currentAtomSetIndex = -1;
   public int getCurrentAtomSetIndex() {
     return currentAtomSetIndex;
   }
 
-  int[] atomSetNumbers = new int[16];
-  String[] atomSetNames = new String[16];
-  int[] atomSetAtomCounts = new int[16];
-  int[] atomSetBondCounts = new int[16];
-  Properties[] atomSetProperties = new Properties[16];
-  Hashtable[] atomSetAuxiliaryInfo = new Hashtable[16];
-  int[] latticeCells;
+  private int[] atomSetNumbers = new int[16];
+  private String[] atomSetNames = new String[16];
+  private int[] atomSetAtomCounts = new int[16];
+  private int[] atomSetBondCounts = new int[16];
+  private Properties[] atomSetProperties = new Properties[16];
+  private Hashtable[] atomSetAuxiliaryInfo = new Hashtable[16];
+  private int[] latticeCells;
 
   public String errorMessage;
 
   //float wavelength = Float.NaN;
   boolean coordinatesAreFractional;
-  private boolean isTrajectory;
-  public boolean isTrajectory() {
-    return isTrajectory;
-  }
+  private boolean isTrajectory;  
+  private int trajectoryStepCount = 0;
+  private Point3f[] trajectoryStep;
+  private Vector trajectorySteps;
   
-  int trajectoryStepCount = 0;
-  Point3f[] trajectoryStep;
-  Vector trajectorySteps;
-
   float[] notionalUnitCell = new float[6]; 
   // expands to 22 for cartesianToFractional matrix as array (PDB)
+
+  private boolean allowMultiple;
   
-  public AtomSetCollection(String fileTypeName) {
+  public AtomSetCollection(String fileTypeName, AtomSetCollectionReader atomSetCollectionReader) {
     this.fileTypeName = fileTypeName;
+    allowMultiple = (atomSetCollectionReader.desiredVibrationNumber < 0);
     // set the default PATH properties as defined in the SmarterJmolAdapter
     atomSetCollectionProperties.put("PATH_KEY",
                                     SmarterJmolAdapter.PATH_KEY);
@@ -142,7 +169,7 @@ public class AtomSetCollection {
    */
   
   public AtomSetCollection(AtomSetCollection[] array) {
-    this("Array");
+    this("Array", null);
     setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
     for (int i = 0; i < array.length; i++) {
       appendAtomSetCollection(i, array[i]);
@@ -157,7 +184,7 @@ public class AtomSetCollection {
    */
   
   public AtomSetCollection(Vector list) {
-    this("Array");
+    this("Array", null);
     setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
     appendAtomSetCollection(list);
   }
@@ -310,6 +337,9 @@ public class AtomSetCollection {
     for (int i = atomSetNames.length; --i >= 0; ) {
       atomSetAtomCounts[i] = 0;
       atomSetNames[i] = null;
+      atomSetBondCounts[i] = 0;
+      atomSetProperties[i] = null;
+      atomSetAuxiliaryInfo[i] = null;
     }
   }
 
@@ -331,12 +361,16 @@ public class AtomSetCollection {
   // to an atomSet, like the bonds (which probably should be remade...)
   // but also the atomSetProperties and atomSetName...
   public void cloneFirstAtomSet() throws Exception {
+    if (!allowMultiple)
+      return;
     newAtomSet();
     for (int i = 0, firstCount = atomSetAtomCounts[0]; i < firstCount; ++i)
       newCloneAtom(atoms[i]);
   }
 
   public void cloneFirstAtomSetWithBonds(int nBonds) throws Exception {
+    if (!allowMultiple)
+      return;
     cloneFirstAtomSet();
     int firstCount = atomSetAtomCounts[0];
     for (int bondNum = 0; bondNum < nBonds; bondNum++) {
@@ -344,21 +378,16 @@ public class AtomSetCollection {
       addNewBond(bond.atomIndex1 + firstCount, bond.atomIndex2 + firstCount,
           bond.order);
     }
-
   }
 
   public void cloneLastAtomSet() throws Exception {
-    //Logger.debug("cloneLastAtomSet");
-    //Logger.debug("b4 atomCount=" + atomCount);
-    //Logger.debug("atomSetCount=" + atomSetCount);
-    //Logger.debug("atomSetAtomCount=" +
-    //                       atomSetAtomCounts[currentAtomSetIndex]);
+    if (!allowMultiple)
+      return;
     int count = getLastAtomSetAtomCount();
     int atomIndex = getLastAtomSetAtomIndex();
     newAtomSet();
     for ( ; --count >= 0; ++atomIndex)
       newCloneAtom(atoms[atomIndex]);
-    //Logger.debug("after atomCount=" + atomCount);
   }
   
   public int getFirstAtomSetAtomCount() {
@@ -505,6 +534,15 @@ public class AtomSetCollection {
       for (; i < structureCount; i++) 
         structures[i].strandCount = n;
     }
+  }
+
+  public void addVibrationVector(int iatom, float x, float y, float z) {
+    if (!allowMultiple)
+      iatom = iatom % atomCount;
+    Atom atom = atoms[iatom];
+    atom.vectorX = x;
+    atom.vectorY = y;
+    atom.vectorZ = z;
   }
 
   void setAtomSetSpaceGroupName(String spaceGroupName) {
@@ -968,15 +1006,6 @@ public class AtomSetCollection {
 
   }
   
-  public void setCollectionName(String collectionName) {
-    if (collectionName != null) {
-      collectionName = collectionName.trim();
-      if (collectionName.length() == 0)
-        return;
-        this.collectionName = collectionName;
-    }
-  }
-
   Hashtable atomSymbolicMap = new Hashtable();
 
   void mapMostRecentAtomName() {
@@ -1115,6 +1144,8 @@ public class AtomSetCollection {
   }
  
   public void newAtomSet() {
+    if (!allowMultiple && currentAtomSetIndex >= 0)
+      discardPreviousAtoms();
     bondIndex0 = bondCount;
     if (isTrajectory) {
       if (trajectoryStep == null && atomCount > 0)

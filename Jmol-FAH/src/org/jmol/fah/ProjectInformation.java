@@ -138,7 +138,7 @@ public class ProjectInformation {
    */
   Information createInfo(int projectNum) {
     Information info = new Information();
-    if (projectNum < 9999) { // To avoid test projects
+    if (projectNum != 9999) { // To avoid test projects
       if (this._projectInfo.size() <= projectNum) {
         this._projectInfo.setSize(projectNum + 1);
       }

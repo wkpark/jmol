@@ -8184,4 +8184,8 @@
     server="171.64.122.137" atoms="222" preferred="1.2" deadline="3.5"
     credit="100" frames="100" code="G3" contact="luttmann"/>
 
+  <!-- Projects 10000 to 10099 -->
+  <fah_proj number="10001" name="p10001_ProFormol" public="n" file="xyz"
+    contrib="John Deas"/>
+
 </fah_projects>

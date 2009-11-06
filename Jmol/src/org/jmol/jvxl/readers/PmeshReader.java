@@ -170,6 +170,8 @@ class PmeshReader extends PolygonFileReader {
     Point3f pt = new Point3f();
     for (int i = 0; i < nVertices; i++) {
       pt.set(getFloat(), getFloat(), getFloat());
+      if (Logger.debugging)
+        Logger.debug(i + ": " + pt);
       addVertexCopy(pt, 0, i);
     }
     pmeshError = null;
@@ -226,6 +228,13 @@ class PmeshReader extends PolygonFileReader {
     if (isBinary)
       nBytes = binarydoc.getPosition();
     return true;
+  }
+
+  public int addTriangleCheck(int iA, int iB, int iC, int check,
+                               int check2, boolean isAbsolute, int color) {
+    if (Logger.debugging)
+      Logger.debug("tri: " + iA + " " + iB + " " + iC);
+    return super.addTriangleCheck(iA, iB, iC, check, check2, isAbsolute, color); 
   }
 
   //////////// file reading

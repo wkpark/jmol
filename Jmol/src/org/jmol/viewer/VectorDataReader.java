@@ -1,6 +1,5 @@
 package org.jmol.viewer;
 
-import java.io.Reader;
 import java.io.StringReader;
 import java.util.Vector;
 
@@ -12,13 +11,11 @@ import java.util.Vector;
  * 
  */
 public class VectorDataReader extends DataReader {
-  public VectorDataReader(Reader in) {
-    super(in);
-  }
+
+  private Vector data;
+  private int pt;
+  private int len;
   
-  Vector data;
-  int pt;
-  int len;
   public VectorDataReader(Vector data) {
     super(new StringReader(""));
     this.data = data;

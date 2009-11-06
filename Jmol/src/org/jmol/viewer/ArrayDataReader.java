@@ -1,6 +1,5 @@
 package org.jmol.viewer;
 
-import java.io.Reader;
 import java.io.StringReader;
 
 /**
@@ -11,19 +10,18 @@ import java.io.StringReader;
  * 
  */
 public class ArrayDataReader extends DataReader {
-  public ArrayDataReader(Reader in) {
-    super(in);
-  }
+  private String[] data;
+  private int pt;
+  private int len;
   
-  String[] data;
-  int pt = 0;
   public ArrayDataReader(String[] data) {
     super(new StringReader(""));
     this.data = data;
+    len = data.length;
   }
 
   public String readLine() {
-    return (pt < data.length ? data[pt++] : null);
+    return (pt < len ? data[pt++] : null);
   }
   
   public int read(char[] buf) {

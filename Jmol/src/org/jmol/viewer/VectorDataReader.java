@@ -7,7 +7,7 @@ import java.util.Vector;
  * 
  * VectorDataReader subclasses BufferedReader and overrides its
  * read, readLine, mark, and reset methods so that JmolAdapter 
- * works with Vector<string> arrays without any further adaptation. 
+ * works with Vector<String> arrays without any further adaptation. 
  * 
  */
 public class VectorDataReader extends DataReader {

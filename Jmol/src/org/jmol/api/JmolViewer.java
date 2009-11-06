@@ -263,7 +263,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * NOTE: THIS METHOD DOES NOT PRESERVE THE STATE
    * 
    * @param arrayData a Vector of models, where each model is either a String
-   *                  or a String[]
+   *                  or a String[] or a Vector<String>
    * @param isAppend TRUE to append models (no ZAP)
    * @return null or error message
    */

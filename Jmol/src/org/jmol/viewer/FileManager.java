@@ -308,8 +308,10 @@ public class FileManager {
          Object data = arrayData.get(i);
          if (data instanceof String)
            readers[i] = new StringDataReader((String) arrayData.get(i));
-         else // String[] implied
+         else if (data instanceof String[]) 
            readers[i] = new ArrayDataReader((String[]) arrayData.get(i));
+         else if (data instanceof Vector) 
+           readers[i] = new VectorDataReader((Vector) arrayData.get(i));
        }
        filesReaderThread = new FilesReaderThread(fullPathNames, fullPathNames,
            null, readers, null);

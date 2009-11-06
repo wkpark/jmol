@@ -153,7 +153,8 @@ public class AtomSetCollection {
   
   public AtomSetCollection(String fileTypeName, AtomSetCollectionReader atomSetCollectionReader) {
     this.fileTypeName = fileTypeName;
-    allowMultiple = (atomSetCollectionReader.desiredVibrationNumber < 0);
+    allowMultiple = (atomSetCollectionReader == null 
+        || atomSetCollectionReader.desiredVibrationNumber < 0);
     // set the default PATH properties as defined in the SmarterJmolAdapter
     atomSetCollectionProperties.put("PATH_KEY",
                                     SmarterJmolAdapter.PATH_KEY);

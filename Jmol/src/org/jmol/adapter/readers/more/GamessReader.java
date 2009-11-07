@@ -24,8 +24,6 @@
 
 package org.jmol.adapter.readers.more;
 
-import org.jmol.adapter.smarter.*;
-
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -132,33 +130,26 @@ abstract public class GamessReader extends MOReader {
 
   protected void readFrequencies() throws Exception {
     //not for GamessUK yet
-    int atomIndex = atomSetCollection.getLastAtomSetAtomIndex();
-    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
     // For the case when HSSEND=.TRUE. atoms[]
     // now contains all atoms across all models (optimization steps).
     // We only want to set vetor data corresponding to new cloned
     // models and not interfere with the previous ones.
-    float[] xComponents = new float[5];
-    float[] yComponents = new float[5];
-    float[] zComponents = new float[5];
-    float[] frequencies = new float[5];
     discardLinesUntilContains("FREQUENCY:");
     while (line != null && line.indexOf("FREQUENCY:") >= 0) {
-      int lineFreqCount = 0;
+      int frequencyCount = 0;
       String[] tokens = getTokens();
+      float[] frequencies = new float[tokens.length];
       for (int i = 0; i < tokens.length; i++) {
         float frequency = parseFloat(tokens[i]);
         if (tokens[i].equals("I"))
-          frequencies[lineFreqCount - 1] = -frequencies[lineFreqCount - 1];
+          frequencies[frequencyCount - 1] = -frequencies[frequencyCount - 1];
         if (Float.isNaN(frequency))
           continue; // may be "I" for imaginary
-        frequencies[lineFreqCount] = frequency;
-        lineFreqCount++;
+        frequencies[frequencyCount] = frequency;
+        frequencyCount++;
         if (Logger.debugging) {
           Logger.debug((vibrationNumber + 1) + " frequency=" + frequency);
         }
-        if (lineFreqCount == 5)
-          break;
       }
       String[] red_masses = null;
       String[] intensities = null;
@@ -170,8 +161,10 @@ abstract public class GamessReader extends MOReader {
       if (line.indexOf("INTENS") >= 0) {
         intensities = getTokens();
       }
-      boolean[] ignore = new boolean[lineFreqCount];
-      for (int i = 0; i < lineFreqCount; i++) {
+      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+      int iAtom0 = atomSetCollection.getAtomCount() - atomCount;
+      boolean[] ignore = new boolean[frequencyCount];
+      for (int i = 0; i < frequencyCount; i++) {
         ignore[i] = !doGetVibration(++vibrationNumber);
         // The last model should be cloned because we might
         // have done an optimization with HSSEND=.TRUE.
@@ -183,44 +176,19 @@ abstract public class GamessReader extends MOReader {
         atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
             + " cm-1");
         if (red_masses != null)
-          atomSetCollection.setAtomSetProperty("Reduced Mass", red_masses[i + 2]
-            + " AMU");
+          atomSetCollection.setAtomSetProperty("Reduced Mass",
+              red_masses[red_masses.length - frequencyCount + i] + " AMU");
         if (intensities != null)
-          atomSetCollection.setAtomSetProperty("IR Intensity", intensities[i + 2]
-            + " D^2/AMU-Angstrom^2");
+          atomSetCollection.setAtomSetProperty("IR Intensity",
+              intensities[intensities.length - frequencyCount + i]
+                  + " D^2/AMU-Angstrom^2");
 
       }
       discardLinesUntilBlank();
-      //This loop is over the atoms in the most recent set.
-      //The number of atoms will not change, but atomIndex will have been updated
-      int index0 = atomIndex - atomCount;
-      for (int i = 0; i < atomCount; ++i) {
-        atomIndex = index0 + i;
-        readLine();
-        readComponents(lineFreqCount, xComponents);
-        readLine();
-        readComponents(lineFreqCount, yComponents);
-        readLine();
-        readComponents(lineFreqCount, zComponents);
-        //This loop applies the normal mode displacements 
-        //to atom i across all clones (frequencies) by finding
-        //its position in atoms[].
-        for (int j = 0; j < lineFreqCount; ++j) {
-          atomIndex += atomCount;
-          if (!ignore[j])
-            atomSetCollection
-               .addVibrationVector(atomIndex, xComponents[j], yComponents[j], zComponents[j]);
-        }
-      }
-      atomIndex++;
+      fillFrequencyData(iAtom0, atomCount, ignore, false, 20, 12);
       discardLines(12);
       readLine();
     }
-  }
-
-  private void readComponents(int count, float[] components) {
-    for (int i = 0, start = 20; i < count; ++i, start += 12)
-      components[i] = parseFloat(line, start, start + 12);
   }
 
   protected static String fixBasisLine(String line) {

@@ -685,10 +685,55 @@ public abstract class AtomSetCollectionReader {
     return "Xx";
   }
 
+  protected void fillDataBlock(String[][] data, int col0, int colWidth) throws Exception {
+    if (colWidth == 0) {
+      fillDataBlock(data);
+      return;
+    }
+    int nLines = data.length;
+    for (int i = 0; i < nLines; i++) {
+      discardLinesUntilNonBlank();
+      int nFields = (line.length() - col0) / colWidth;
+      data[i] = new String[nFields];
+      for (int j = 0, start = col0; j < nFields; j++, start += colWidth)
+        data[i][j] = line.substring(start, start + colWidth);
+    }
+  }
+  
   protected void fillDataBlock(String[][] data) throws Exception {
     int nLines = data.length;
     for (int i = 0; i < nLines; i++)
       data[i] = getTokens(discardLinesUntilNonBlank());
+  }
+
+  protected void fillFrequencyData(int iAtom0, int atomCount, 
+                                   boolean[] ignore, boolean isWide,
+                                   int col0, int colWidth)
+                                                     throws Exception {
+    String[][] data = new String[isWide ? atomCount : atomCount * 3][];
+    fillDataBlock(data, col0, colWidth);
+    fillFrequencies(data, iAtom0, atomCount, ignore, isWide);
+  }
+
+  protected void fillFrequencies(String[][] data, int iAtom0, int atomCount,
+                               boolean[] ignore, boolean isWide) {
+    int nFreq = ignore.length;
+    int nLines = data.length;
+    for (int i = 0, atomPt = 0; i < nLines; i++, atomPt++) {
+      String[] values = data[i];
+      String[] valuesY = (isWide ? null : data[++i]);
+      String[] valuesZ = (isWide ? null : data[++i]);
+      int dataPt = values.length - (isWide ? nFreq * 3 : nFreq) - 1;
+      for (int j = 0; j < nFreq; j++) {
+        float vx = parseFloat(values[++dataPt]);
+        float vy = parseFloat(isWide ? values[++dataPt] : valuesY[dataPt]);
+        float vz = parseFloat(isWide ? values[++dataPt] : valuesZ[dataPt]);
+        if (ignore[j])
+          continue;
+        int iAtom = iAtom0 + atomCount * j + atomPt;
+        atomSetCollection.addVibrationVector(iAtom, vx, vy, vz);
+      }
+    }
   }
 
   protected void discardLines(int nLines) throws Exception {

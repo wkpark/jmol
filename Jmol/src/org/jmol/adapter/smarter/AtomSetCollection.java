@@ -1186,6 +1186,8 @@ public class AtomSetCollection {
   */
   public void setAtomSetName(String atomSetName) {
     setAtomSetName(atomSetName, currentAtomSetIndex);
+    if (!allowMultiple)
+      setCollectionName(atomSetName);
   }
   
   /**
@@ -1200,12 +1202,15 @@ public class AtomSetCollection {
   
   /**
    * Sets the atom set names of the last n atomSets
-   * @param atomSetName The name
-   * @param n The number of last AtomSets that need these set
+   * 
+   * @param atomSetName
+   *          The name
+   * @param n
+   *          The number of last AtomSets that needs these set
    */
   public void setAtomSetNames(String atomSetName, int n) {
-    for (int idx = currentAtomSetIndex; --n >= 0; --idx)
-      setAtomSetName( atomSetName, idx);
+    for (int idx = currentAtomSetIndex; --n >= 0 && idx >= 0; --idx)
+      setAtomSetName(atomSetName, idx);
   }
 
   /**
@@ -1294,14 +1299,18 @@ public class AtomSetCollection {
 
   /**
    * Sets the same properties for the last n atomSets.
-   * @param key The key for the property
-   * @param value The value of the property
-   * @param n The number of last AtomSets that need these set
+   * 
+   * @param key
+   *          The key for the property
+   * @param value
+   *          The value of the property
+   * @param n
+   *          The number of last AtomSets that needs these set
    */
   public void setAtomSetProperties(String key, String value, int n) {
-    for (int idx=currentAtomSetIndex; --n >= 0; --idx) {
+    for (int idx = currentAtomSetIndex; --n >= 0 && idx >= 0; --idx) {
       setAtomSetProperty(key, value, idx);
-    }    
+    }
   }
   
 

@@ -24,11 +24,8 @@
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
-
-
+import org.jmol.util.Parser;
 import java.io.BufferedReader;
-import java.util.Vector;
-import java.util.Hashtable;
 
 /**
  * Reads Mopac 93, 97 or 2002 output files, but was tested only
@@ -205,46 +202,32 @@ void processAtomicCharges() throws Exception {
    *             If an I/O error occurs
    */
   private void readFrequencies() throws Exception {
-    Vector freqs = new Vector();
-    Vector vibrations = new Vector();
-    String[][] data;
-    int nAtoms = atomSetCollection.getLastAtomSetAtomCount();
     while (readLine() != null
         && line.indexOf("DESCRIPTION") < 0)
-      if (line.indexOf("ROOT") >= 0) {
+      if (line.toUpperCase().indexOf("ROOT") >= 0) {
         int frequencyCount = getTokens().length - 2;
-        data = new String[nAtoms * 3 + 1][];
-        fillDataBlock(data);
+        discardLinesUntilNonBlank();
+        String[] fdata = getTokens();
+        String[] ldata = null;
+        if (Float.isNaN(Parser.parseFloatStrict(fdata[0]))) {
+          ldata = fdata;
+          discardLinesUntilNonBlank();
+          fdata = getTokens();
+        }
+        int iAtom0 = atomSetCollection.getAtomCount();
+        int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+        boolean[] ignore = new boolean[frequencyCount];
         for (int i = 0; i < frequencyCount; ++i) {
-          if (!doGetVibration(++vibrationNumber))
-            continue;
-          float freq = parseFloat(data[0][i]);
-          Hashtable info = new Hashtable();
-          info.put("freq", new Float(freq));
-          info.put("label", "");
-          freqs.addElement(info);
-          baseAtomIndex = atomSetCollection.getAtomCount();
+          ignore[i] = !doGetVibration(++vibrationNumber);
+          if (ignore[i])
+            continue;  
           atomSetCollection.cloneLastAtomSet();
-          atomSetCollection.setAtomSetName(freq + " cm^-1");
+          atomSetCollection.setAtomSetName(fdata[i] + " cm^-1"
+              + (ldata == null ? "" : " " + ldata[i]));
           atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
               "Frequencies");
-          Vector vib = new Vector();
-          for (int iatom = 0, dataPt = 1; iatom < nAtoms; ++iatom) {
-            float dx = parseFloat(data[dataPt++][i + 1]);
-            float dy = parseFloat(data[dataPt++][i + 1]);
-            float dz = parseFloat(data[dataPt++][i + 1]);
-            atomSetCollection.addVibrationVector(baseAtomIndex + iatom, dx, dy, dz);
-            Vector vibatom = new Vector();
-            vibatom.addElement(new Float(dx));
-            vibatom.addElement(new Float(dy));
-            vibatom.addElement(new Float(dz));
-            vib.addElement(vibatom);
-          }
-          vibrations.addElement(vib);
         }
+        fillFrequencyData(iAtom0, atomCount, ignore, false, 0, 0);
       }
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
-    atomSetCollection
-        .setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
   }
 }

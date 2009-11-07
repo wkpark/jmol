@@ -356,17 +356,16 @@ public class JaguarReader extends MOReader {
    */
 
   private void readFrequencies() throws Exception {
-    int iModel = 1;
     int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+    int iAtom0 = atomSetCollection.getAtomCount() - atomCount;
     discardLinesUntilStartsWith("  frequencies ");
     while (line != null && line.startsWith("  frequencies ")) {
       String[] frequencies = getTokens();
-      int freqCount = frequencies.length - 1;
-      boolean[] ignore = new boolean[freqCount];
-      for (int i = 0; i < freqCount; i++)
-        ignore[i] = !doGetVibration(++vibrationNumber);
+      int frequencyCount = frequencies.length - 1;
+      boolean[] ignore = new boolean[frequencyCount];
       // skip to "intensity" or "force" line
       String[] symmetries = null;
+      String[] intensities = null;
       while (line != null 
           && !line.startsWith("  intensities ") 
           && !line.startsWith("  force ")) {
@@ -374,35 +373,22 @@ public class JaguarReader extends MOReader {
         if (line.indexOf("symmetries") >= 0)
           symmetries = getTokens();
       }
-      for (int i = 0; i < atomCount; i++) {
-        // this assumes that the atoms are given in the same order as their
-        // atomic coordinates, and disregards the label
-        String[] tokensX = getTokens(readLine());
-        String[] tokensY = getTokens(readLine());
-        String[] tokensZ = getTokens(readLine());
-        for (int j = 0; j < freqCount; j++) {
-          if (i == 0) {
-            atomSetCollection.cloneFirstAtomSet();
-            if (!ignore[j]) {
-              atomSetCollection.setAtomSetName(frequencies[j + 1] + " cm-1"
-                  + (symmetries == null ? "" : " (" + symmetries[j + 1] + ")"));
-              atomSetCollection.setAtomSetProperty("Frequency", frequencies[j + 1]
-                  + " cm-1");
-            }
-          }
-          float x = parseFloat(tokensX[j + 2]);
-          float y = parseFloat(tokensY[j + 2]);
-          float z = parseFloat(tokensZ[j + 2]);
-          if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)) {
-            Logger.info("Error reading frequency line: " + line);
-            break;
-          }
-          if (!ignore[j])
-            atomSetCollection.addVibrationVector(i + (iModel + j) * atomCount,
-                x, y, z);
-        }
+      if (line.startsWith("  intensities"))
+        intensities = getTokens();
+      for (int i = 0; i < frequencyCount; i++) {
+        ignore[i] = !doGetVibration(++vibrationNumber);
+        if (ignore[i]) 
+          continue;
+        atomSetCollection.cloneFirstAtomSet();
+        atomSetCollection.setAtomSetName(frequencies[i + 1] + " cm-1"
+            + (symmetries == null ? "" : " (" + symmetries[i + 1] + ")"));
+        atomSetCollection.setAtomSetProperty("Frequency", frequencies[i + 1]
+            + " cm-1");
+        if (intensities != null)
+          atomSetCollection.setAtomSetProperty("IR Intensity",
+              intensities[i + 1] + " km/mol");
       }
-      iModel += freqCount;
+      fillFrequencyData(iAtom0, atomCount, ignore, false, 0, 0);
       readLine();
       readLine();
     }

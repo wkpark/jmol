@@ -183,29 +183,22 @@ public class QchemReader extends MOReader {
    *           If an I/O error occurs
    **/
   private void readFrequencies() throws Exception, IOException {
-    String[] tokens;
-    String[] frequencies;
-
-    // first get the the proper line with the Frequencies:
-    frequencies = getTokens(discardLinesUntilStartsWith(" Frequency:"));
-
-    // G98 ends the frequencies with a line with a space (03 an empty line)
-    // so I decided to read till the line is too short
-
-    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-    int firstModelAtom = atomSetCollection.getAtomCount();
-
-    while (true) {
-      int frequencyCount = frequencies.length;
+    while (readLine() != null && line.indexOf("STANDARD") < 0) {
+      if (!line.startsWith(" Frequency:"))
+        discardLinesUntilStartsWith(" Frequency:");
+      String[] frequencies = getTokens();
+      int frequencyCount = frequencies.length - 1;
       boolean[] ignore = new boolean[frequencyCount];
-      for (int i = 1; i < frequencyCount; ++i) {
-        ignore[i] = !doGetVibration(i);
+      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+      int iAtom0 = atomSetCollection.getAtomCount();
+      for (int i = 0; i < frequencyCount; ++i) {
+        ignore[i] = !doGetVibration(++vibrationNumber);
         if (ignore[i])
           continue;
         atomSetCollection.cloneLastAtomSet();
-        atomSetCollection.setAtomSetName(frequencies[i] + " cm^-1");
+        atomSetCollection.setAtomSetName(frequencies[i + 1] + " cm^-1");
         // set the properties
-        atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
+        atomSetCollection.setAtomSetProperty("Frequency", frequencies[i + 1]
             + " cm^-1");
         atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
             "Calculation " + calculationNumber
@@ -214,31 +207,8 @@ public class QchemReader extends MOReader {
 
       // position to start reading the displacement vectors
       discardLinesUntilStartsWith("               X");
-
-      // read the displacement vectors for every atom and frequency
-      for (int i = 0; i < atomCount; ++i) {
-        tokens = getTokens(readLine());
-        for (int j = 1, offset = 1; j < frequencyCount; ++j) {
-          float x = parseFloat(tokens[offset++]);
-          float y = parseFloat(tokens[offset++]);
-          float z = parseFloat(tokens[offset++]);
-          if (!ignore[j])
-            atomSetCollection.addVibrationVector(i + firstModelAtom + j
-                * atomCount, x, y, z);
-        }
-      }
-      // Position the reader to have the next frequencies already tokenized
-      while ((line = readLine()) != null && line.length() > 0) {
-      }
-      // I am now either at the next Frequency line or Mode line or STANDARD
-      line = readLine();
-      if (line.indexOf("STANDARD") >= 0) {
-        break; // we are done with the frequencies
-      } else if (line.indexOf(" Frequency:") == -1) {
-        frequencies = getTokens(discardLinesUntilStartsWith(" Frequency:"));
-      } else {
-        frequencies = getTokens(line);
-      }
+      fillFrequencyData(iAtom0, atomCount, ignore, true, 0, 0);
+      discardLinesUntilBlank();
     }
   }
 

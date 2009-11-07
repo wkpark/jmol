@@ -491,31 +491,23 @@ but:
    * @throws IOException If an I/O error occurs
    **/
   private void readFrequencies() throws Exception, IOException {
-    String[] tokens; String[] symmetries; String[] frequencies;
-    String[] red_masses; String[] frc_consts; String[] intensities;
-    
-    while (readLine() != null && line.indexOf(":") < 0) {
-    }
+    discardLinesUntilContains(":");
     if (line == null)
       throw (new Exception("No frequencies encountered"));
-    
-    // G98 ends the frequencies with a line with a space (03 an empty line)
-    // so I decided to read till the line is too short
-    while ((line= readLine()) != null &&
-        line.length() > 15)
-    {
+    while ((line= readLine()) != null && line.length() > 15) {
       // we now have the line with the vibration numbers in them, but don't need it
-      symmetries = getTokens(readLine()); // read symmetry labels
-      // TODO I should really read all the properties of the vibrations listed
-      // and not limit myself to only IR type ones..
-      frequencies = getTokens(discardLinesUntilStartsWith(" Frequencies"), 15);
-      red_masses = getTokens(discardLinesUntilStartsWith(" Red. masses"), 15);
-      frc_consts = getTokens(discardLinesUntilStartsWith(" Frc consts"), 15);
-      intensities = getTokens(discardLinesUntilStartsWith(" IR Inten"), 15);
-      int frequencyCount = frequencies.length;
-      int firstModelAtom = atomSetCollection.getAtomCount();
+      String[] symmetries = getTokens(readLine());
+      String[] frequencies = getTokens(
+          discardLinesUntilStartsWith(" Frequencies"), 15);
+      String[] red_masses = getTokens(
+          discardLinesUntilStartsWith(" Red. masses"), 15);
+      String[] frc_consts = getTokens(
+          discardLinesUntilStartsWith(" Frc consts"), 15);
+      String[] intensities = getTokens(
+          discardLinesUntilStartsWith(" IR Inten"), 15);
+      int iAtom0 = atomSetCollection.getAtomCount();
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-      
+      int frequencyCount = frequencies.length;
       boolean[] ignore = new boolean[frequencyCount];
       for (int i = 0; i < frequencyCount; ++i) {
         ignore[i] = !doGetVibration(++vibrationNumber);
@@ -523,11 +515,7 @@ but:
           continue;  
         atomSetCollection.cloneLastAtomSet();
         atomSetCollection.setAtomSetName(
-            symmetries[i] + " "
-            + frequencies[i]+" cm^-1"
-//            + ", Inten = " + intensities[i] + " KM/Mole "
-//            + energyKey + " = " + energyString
-        );
+            symmetries[i] + " " + frequencies[i]+" cm^-1");
         // set the properties
         atomSetCollection.setAtomSetProperty(energyKey, energyString);
         atomSetCollection.setAtomSetProperty("Frequency",
@@ -542,24 +530,8 @@ but:
             "Calculation " + calculationNumber+
             SmarterJmolAdapter.PATH_SEPARATOR+"Frequencies");
       }
-      
-      // position to start reading the displacement vectors
       discardLinesUntilStartsWith(" Atom AN");
-      
-      // read the displacement vectors for every atom and frequency
-      for (int i = 0; i < atomCount; ++i) {
-        tokens = getTokens(readLine());
-        int iAtom = parseInt(tokens[0]) - 1;
-        int offset = 2;
-        for (int j = 0; j < frequencyCount; ++j) {
-          float x = parseFloat(tokens[offset++]);
-          float y = parseFloat(tokens[offset++]);
-          float z = parseFloat(tokens[offset++]);
-          if (!ignore[j])
-            atomSetCollection.addVibrationVector(iAtom + firstModelAtom + j
-                * atomCount, x, y, z);
-        }
-      }
+      fillFrequencyData(iAtom0, atomCount, ignore, true, 0, 0);
     }
   }
   

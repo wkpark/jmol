@@ -78,7 +78,7 @@ public class XmlMolproReader extends XmlCmlReader {
                                    String qName, HashMap atts) {
     if (localName.equals("normalCoordinate")) {
       keepChars = false;
-      if (!doGetVibration(++vibrationNumber))
+      if (!parent.doGetVibration(++vibrationNumber))
         return;
       try {
         atomSetCollection.cloneLastAtomSet();

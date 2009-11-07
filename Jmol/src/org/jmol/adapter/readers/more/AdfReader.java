@@ -54,6 +54,7 @@ public class AdfReader extends AtomSetCollectionReader {
   
 
   String energy = null;
+  int nXX = 0;
 
   /**
    * Read the ADF output.
@@ -122,13 +123,16 @@ OR
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetName("" + energy); // start with an empty name
     discardLinesUntilContains("----");
+    nXX = 0;
     while (readLine() != null && !line.startsWith(" -----")) {
       String[] tokens = getTokens();
       if (tokens.length < 5)
         break;
       String symbol = tokens[1];
-      if (JmolAdapter.getElementNumber(symbol) < 1)
+      if (JmolAdapter.getElementNumber(symbol) < 1) {
+        nXX++;
         continue;
+      }
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = symbol;
       atom.set(parseFloat(tokens[2]), parseFloat(tokens[3]), parseFloat(tokens[4]));
@@ -162,20 +166,18 @@ OR
    * @exception Exception  if an I/O error occurs
    */
   private void readFrequencies() throws Exception {
-    String[] tokens;
-    String[] frequencies;
     readLine();
-    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
     while (readLine() != null) {
       while (readLine() != null && line.indexOf(".") < 0
           && line.indexOf("====") < 0) {
       }
       if (line == null || line.indexOf(".") < 0)
         return;
-      frequencies = getTokens();
+      String[] frequencies = getTokens();
       readLine(); // -------- -------- --------
+      int iAtom0 = atomSetCollection.getAtomCount();
+      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
       int frequencyCount = frequencies.length;
-      int firstModelAtom = atomSetCollection.getAtomCount();
       boolean[] ignore = new boolean[frequencyCount];
       for (int i = 0; i < frequencyCount; ++i) {
         ignore[i] = !doGetVibration(++vibrationNumber);
@@ -188,24 +190,8 @@ OR
         atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
             "Frequencies");
       }
-      int atomPt = 0;
-      while (readLine() != null && line.indexOf(".") >= 0) {
-        tokens = getTokens();
-        String symbol = tokens[0].substring(tokens[0].indexOf(".") + 1);
-        if (JmolAdapter.getElementNumber(symbol) < 1)
-          continue;
-        float x, y, z;
-        int offset = 1;
-        for (int i = 0; i < frequencyCount; ++i) {
-          x = parseFloat(tokens[offset++]);
-          y = parseFloat(tokens[offset++]);
-          z = parseFloat(tokens[offset++]);
-          if (!ignore[i])
-            atomSetCollection.addVibrationVector(atomPt + firstModelAtom + i
-                * atomCount, x, y, z);
-        }
-        atomPt++;
-      }
+      discardLines(nXX);
+      fillFrequencyData(iAtom0, atomCount, ignore, true, 0, 0);
     }
   }
 }

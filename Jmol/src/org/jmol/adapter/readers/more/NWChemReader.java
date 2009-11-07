@@ -149,10 +149,10 @@ public class NWChemReader extends MOReader {
   private void setEnergies(String key, String value, int nAtomSets) {
     energyKey = key;
     energyValue = value;
-    atomSetCollection.setAtomSetProperties(
-        energyKey, energyValue, equivalentAtomSets);
-    atomSetCollection.setAtomSetNames(
-        energyKey+" = "+energyValue, equivalentAtomSets);
+    atomSetCollection.setAtomSetProperties(energyKey, energyValue,
+        equivalentAtomSets);
+    atomSetCollection.setAtomSetNames(energyKey + " = " + energyValue,
+        equivalentAtomSets);
     haveEnergy = true;
   }
 
@@ -404,8 +404,7 @@ public class NWChemReader extends MOReader {
    * @throws Exception If an error occurs.
    **/
   private void readFrequencies() throws Exception {
-    String tokens[];
-
+    int firstFrequencyAtomSetIndex = atomSetCollection.getAtomSetCount();
     String path = "Task " + taskNumber + SmarterJmolAdapter.PATH_SEPARATOR
         + "Frequencies";
 
@@ -414,6 +413,7 @@ public class NWChemReader extends MOReader {
     discardLines(2);
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, path);
+    String tokens[];
     while (readLine() != null && line.indexOf("---") < 0) {
       tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
@@ -422,30 +422,22 @@ public class NWChemReader extends MOReader {
       atom.scale(ANGSTROMS_PER_BOHR);
     }
 
-    // the first atomsetindex for the frequencies needed to add properties later
-    int firstFrequencyAtomSetIndex = atomSetCollection.getCurrentAtomSetIndex();
-    // the number of frequencies read
-    int totalFrequencies = 0;
-    // the number of atoms in each atomset that the vectors are added to
-    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-    // flag for first time: 1 model less to duplicate..
-    boolean firstTime = true;
-
-    // position myself to start reading the frequencies themselves
     discardLinesUntilContains("(Projected Frequencies expressed in cm-1)");
     discardLines(3); // step over the line with the numbers
 
+    boolean firstTime = true;
     while (readLine() != null && line.indexOf("P.Frequency") >= 0) {
-
       tokens = getTokens(line, 12);
-
-      // the number of frequencies to interpret in this set of lines
-      int nFreq = tokens.length;
-      boolean[] ignore = new boolean[nFreq];
+      int frequencyCount = tokens.length;
+      int iAtom0 = atomSetCollection.getAtomCount();
+      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+      if (firstTime)
+        iAtom0 -= atomCount;
+      boolean[] ignore = new boolean[frequencyCount];
       // clone the last atom set nFreq-1 times the first time, later nFreq times.
 
       // assign the frequency values to each atomset's name and property
-      for (int i = 0; i < nFreq; ++i) {
+      for (int i = 0; i < frequencyCount; ++i) {
         ignore[i] = !doGetVibration(++vibrationNumber);
         if (ignore[i])
           continue;
@@ -453,46 +445,13 @@ public class NWChemReader extends MOReader {
           atomSetCollection.cloneLastAtomSet();
           atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, path);
         }
-        int idx = firstFrequencyAtomSetIndex + (desiredVibrationNumber <= 0 ? totalFrequencies + i : 0);
         String frequencyString = tokens[i] + " cm^-1";
-        atomSetCollection.setAtomSetName(frequencyString, idx);
-        atomSetCollection.setAtomSetProperty("Frequency", frequencyString, idx);
+        atomSetCollection.setAtomSetName(frequencyString);
+        atomSetCollection.setAtomSetProperty("Frequency", frequencyString);
       }
       firstTime = false;
-
-      // firstModelAtom is the index in atomSetCollection.atoms that has the
-      // first atom of the first model where the first to be read vibration
-      // needs to go
-      int firstModelAtom = atomSetCollection.getAtomCount() 
-          - nFreq * atomCount;
-
-      discardLines(1); // skip over empty line
-
-      // rows are frequency displacement for all frequencies
-      // row index (i) 3n = x, 3n+1 = y, 3n+2=z
-      float vx = 0;
-      float vy = 0;
-      for (int i = 0; i < atomCount * 3; ++i) {
-        if (readLine() == null)
-          return;
-        tokens = getTokens();
-        for (int j = 0; j < nFreq; ++j) {
-          float val = parseFloat(tokens[j + 1]);
-          switch (i % 3) {
-          case 0:
-            vx = val;
-            break;
-          case 1:
-            vy = val;
-            break;
-          case 2:
-            if (!ignore[j])
-              atomSetCollection.addVibrationVector((i / 3) + firstModelAtom + j
-                  * atomCount, vx, vy, val);
-          }
-        }
-      }
-      totalFrequencies += nFreq;
+      discardLines(1);
+      fillFrequencyData(iAtom0, atomCount, ignore, false, 0, 0);
       discardLines(3);
     }
 
@@ -502,7 +461,7 @@ public class NWChemReader extends MOReader {
     try {
       discardLinesUntilContains("Projected Infra Red Intensities");
       discardLines(2);
-      for (int i = totalFrequencies, idx = firstFrequencyAtomSetIndex; --i >= 0;) {
+      for (int i = vibrationNumber, idx = firstFrequencyAtomSetIndex; --i >= 0;) {
         if (readLine() == null)
           return;
         if (!doGetVibration(i + 1))
@@ -513,7 +472,6 @@ public class NWChemReader extends MOReader {
         atomSetCollection.setAtomSetProperty("Frequency", frequencyString, idx);
         atomSetCollection.setAtomSetProperty("IR Intensity", tokens[5]
             + " KM/mol", idx);
-        //      atomSetCollection.setAtomSetProperty("vector","frequency");
         idx++;
       }
     } catch (Exception e) {

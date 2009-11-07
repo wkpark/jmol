@@ -8118,7 +8118,7 @@
   <fah_proj number="6314" name="p6314_sh3_with_ALA_frags" public="y" file="xyz"
     server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz" contrib="Smoking2000"/>
-  <fah_proj number="6315" name="p6315_sh3_with_ALA_frags" public="y"
+  <fah_proj number="6315" name="p6315_sh3_with_ALA_frags" public="y" file="xyz"
     server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz"/>
   <fah_proj number="6316" name="p6316_sh3_with_ALA_frags" public="y" file="xyz"

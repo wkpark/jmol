@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-09-04 22:32+0200\n"
-"PO-Revision-Date: 2009-10-01 19:31+0000\n"
-"Last-Translator: Matthieu de Montmollin <mouloud@beer.com>\n"
+"PO-Revision-Date: 2009-11-06 22:15+0000\n"
+"Last-Translator: Jerome Pansanel <j.pansanel@pansanel.net>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-11-01 18:20+0000\n"
+"X-Launchpad-Export-Date: 2009-11-07 11:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -40,15 +40,15 @@ msgstr "pas d'affichage (et quitter quand c'est fini)"
 
 #: org/openscience/jmol/app/JmolApp.java:144
 msgid "check script syntax only - no file loading"
-msgstr ""
+msgstr "Vérifiez la syntaxe du script - aucun fichier en chargement"
 
 #: org/openscience/jmol/app/JmolApp.java:146
 msgid "check script syntax only - with file loading"
-msgstr ""
+msgstr "Vérifiez la syntaxe du script - avec le fichier en chargement"
 
 #: org/openscience/jmol/app/JmolApp.java:147
 msgid "debug"
-msgstr ""
+msgstr "débogage"
 
 #: org/openscience/jmol/app/JmolApp.java:148
 msgid "silent startup operation"
@@ -69,6 +69,8 @@ msgstr "pas de console -- tout est redirigé sur la sortie standard"
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
 msgstr ""
+"envoyer uniquement la sortie des messages affichés vers la console (implique "
+"-i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent commmand thread"
@@ -80,7 +82,7 @@ msgstr "terminer après le script (implicite avec -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:164
 msgid "script file to execute or '-' for System.in"
-msgstr ""
+msgstr "fichier de script à exécuter ou '-' pour System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "Jmol script to execute BEFORE -s option"
@@ -162,11 +164,11 @@ msgstr "Console Script Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
 msgid "Editor"
-msgstr ""
+msgstr "Éditeur"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:114
 msgid "Check"
-msgstr ""
+msgstr "Vérifier"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:115
 msgid "Top"
@@ -174,11 +176,11 @@ msgstr "Haut"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:116
 msgid "Step"
-msgstr ""
+msgstr "Étape"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:123
 msgid "Variables"
-msgstr ""
+msgstr "Variables"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:312
@@ -325,7 +327,7 @@ msgstr "Effacer les atomes"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
-msgstr ""
+msgstr "Exporter au format de fichier d'entrée Gaussian"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:194
 msgid "Basic"
@@ -349,7 +351,7 @@ msgstr "Nombre de processeurs:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:248
 msgid "Route"
-msgstr ""
+msgstr "Itinéraire"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:254
 msgid "Method: "
@@ -365,7 +367,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr ""
+msgstr "Options de la tâche : "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:288
 msgid "Molecular Properties"
@@ -429,7 +431,7 @@ msgstr "Ouvrir une &URL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:55
 msgid "Scrip&t Editor..."
-msgstr ""
+msgstr "Éditeur de scrip&t ..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
 msgid "Output Conso&le..."
@@ -441,7 +443,7 @@ msgstr "&Console Java Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:58
 msgid "AtomSet&Chooser..."
-msgstr ""
+msgstr "&Sélection d'un ensemble d'atomes"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:59
 msgid "&Save As..."
@@ -844,11 +846,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:174
 msgid "&Next frequency"
-msgstr ""
+msgstr "Prochai&ne fréquence"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:175
 msgid "&Previous frequency"
-msgstr ""
+msgstr "Fréquence &précédente"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
 msgid "&Help"
@@ -907,6 +909,7 @@ msgstr "Faire tourner la molécule."
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
 msgstr ""
+"Sélectionner un ensemble d'atomes en utilisant MAJUSCULE-GAUCHE-GLISSER"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
 msgid "Click atoms to measure distances"
@@ -958,7 +961,7 @@ msgstr "Affichage de la frame principale..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:304
 msgid "Jmol Console"
-msgstr ""
+msgstr "Console Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:326
 msgid "Could not create ConsoleTextArea: "
@@ -1010,7 +1013,7 @@ msgstr "Valeur"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:152
 msgid "Conversion from Jmol to POV-Ray"
-msgstr ""
+msgstr "Conversion de Jmol vers POV-Ray"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:156
 msgid "File Name:"
@@ -1049,6 +1052,7 @@ msgstr "Afficher pendant le calcul"
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:244
 msgid "Should POV-Ray attempt to display while rendering?"
 msgstr ""
+"Est-ce que POV-Ray doit essayer d'afficher le rendu durant le calcul ?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:267
 msgid "width:"
@@ -1121,7 +1125,7 @@ msgstr "Taille de départ : "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:412
 msgid "Initial size of the tiles"
-msgstr ""
+msgstr "Taille initiale des pièces"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:428
 msgid "End size : "
@@ -1277,11 +1281,11 @@ msgstr "% de la fenêtre pour la largeur de l'applet"
 #: org/openscience/jmol/app/webexport/WebExport.java:191
 #: org/openscience/jmol/app/webexport/WebExport.java:261
 msgid "Jmol Web Page Maker"
-msgstr ""
+msgstr "Créateur de Page Web Jmol"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:100
 msgid "Couldn't find file: {0}"
-msgstr ""
+msgstr "Impossible de trouver le fichier : {0}"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:119
 msgid "Introduction"
@@ -1297,7 +1301,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:147
 msgid "Log"
-msgstr ""
+msgstr "Historique"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:162
 #, java-format

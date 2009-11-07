@@ -710,15 +710,10 @@ public abstract class AtomSetCollectionReader {
                                    boolean[] ignore, boolean isWide,
                                    int col0, int colWidth)
                                                      throws Exception {
-    String[][] data = new String[isWide ? atomCount : atomCount * 3][];
-    fillDataBlock(data, col0, colWidth);
-    fillFrequencies(data, iAtom0, atomCount, ignore, isWide);
-  }
-
-  protected void fillFrequencies(String[][] data, int iAtom0, int atomCount,
-                               boolean[] ignore, boolean isWide) {
+    int nLines = (isWide ? atomCount : atomCount * 3);
     int nFreq = ignore.length;
-    int nLines = data.length;
+    String[][] data = new String[nLines][];
+    fillDataBlock(data, col0, colWidth);
     for (int i = 0, atomPt = 0; i < nLines; i++, atomPt++) {
       String[] values = data[i];
       String[] valuesY = (isWide ? null : data[++i]);
@@ -731,6 +726,8 @@ public abstract class AtomSetCollectionReader {
         if (ignore[j])
           continue;
         int iAtom = iAtom0 + atomCount * j + atomPt;
+        if (Logger.debugging)
+          Logger.debug("vib " + iAtom + "/" + j + ": " + vx + " " + vy + " " + vz);
         atomSetCollection.addVibrationVector(iAtom, vx, vy, vz);
       }
     }

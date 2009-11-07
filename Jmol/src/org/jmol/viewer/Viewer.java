@@ -6280,6 +6280,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   
   private void setPerspectiveModel(int mode) {
+    if (transformManager.perspectiveModel == mode)
+      return;
     stopAnimationThreads();
     switch (mode) {
     case 10:

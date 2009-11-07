@@ -232,7 +232,7 @@ class TestSmarterJmolAdapterImpl extends TestCase {
     assertFalse("Error returned for " + file.getPath() + ": " + result, result instanceof String);
     assertTrue("Not an AtomSetCollection for " + file.getPath(), result instanceof AtomSetCollection);
     AtomSetCollection collection = (AtomSetCollection) result;
-    assertTrue("No atoms loaded for " + file.getPath(), collection.atomCount > 0);
+    assertTrue("No atoms loaded for " + file.getPath(), collection.getAtomCount() > 0);
   }
 
   /* (non-Javadoc)

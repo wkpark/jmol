@@ -29,6 +29,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 
 
@@ -1369,43 +1370,28 @@ public class Token {
     return nada;
   }
 
-  public static String completeCommand(String strCommand, int n) {
-    if (strCommand == null)
-      return null;
-    int i = strCommand.lastIndexOf(" ");
-    if (true || i == strCommand.length() - 1)
-      return strCommand;
-    // not quite working
-    String str = strCommand.substring(i + 1, strCommand.length()).toLowerCase();
-    if (str.length() > 1 && n > 1)
-      str = str.substring(0, 1);
-    int nFound = 0;
-    int n0 = n;
-    String nameFound = null;
-    out:
-    while (n >= 0) {
-      Enumeration e = map.keys();
-      while (e.hasMoreElements()) {
-        String name = (String) e.nextElement();
-        if (name.toLowerCase().startsWith(str)) {
-          System.out.println(name);
-          nameFound = name;
-          nFound++;
-          if (--n <= 0)
-            break out;
-        }
-      }
-      // found a bunch, but n is too large
-      if (nFound == 0)
-        return strCommand;
-      n = n0 % nFound;
-      if (false)
-        break;
+  public static String completeCommand(Hashtable map, 
+                                       boolean asCommand, 
+                                       String str, int n) {
+    if (map == null)
+      map = Token.map;
+    else
+      asCommand = false;
+    Vector v = new Vector();
+    Enumeration e = map.keys();
+    String name;
+    while (e.hasMoreElements()) {
+      name = (String) e.nextElement();
+      if (!name.startsWith(str))
+        continue;
+      Token t = getTokenFromName(name);
+      if ((!asCommand || tokAttr(t.tok, command))
+          /*&& name.equals((String) t.value)*/)
+        v.add(name);
     }
-    return strCommand.substring(0, i + 1) + nameFound;
+    return ArrayUtil.sortedItem(v, n);
   }
 
-  
 /*
   public static String getSetParameters() {
     String cmds = "";

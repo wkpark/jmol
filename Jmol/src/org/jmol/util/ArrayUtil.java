@@ -24,6 +24,8 @@
 package org.jmol.util;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Vector;
 
 final public class ArrayUtil {
 
@@ -232,6 +234,18 @@ final public class ArrayUtil {
     for (int i = 0; i < n; i++)
       str += " " + A[i];
     return str;
+  }
+
+  public static String sortedItem(Vector v, int n) {
+    if (v.size() == 0)
+      return null;
+    if (v.size() == 1)
+      return (String) v.get(0);    
+    String[] keys = new String[v.size()];
+    for (int i = 0; i < keys.length; i++)
+      keys[i] = (String) v.get(i);
+    Arrays.sort(keys);
+    return keys[n % keys.length];
   }
 
 }

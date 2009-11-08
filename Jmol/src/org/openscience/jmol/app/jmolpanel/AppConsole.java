@@ -29,6 +29,8 @@ import java.awt.Container;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.net.URL;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -43,16 +45,20 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.JScrollPane;
+
 import java.util.Vector;
 
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.console.JmolConsole;
 import org.jmol.i18n.GT;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.script.ScriptCompiler;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
@@ -517,12 +523,14 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
 
       int kcode = ke.getKeyCode();
       int kid = ke.getID();
-      if (kcode == KeyEvent.VK_TAB) {
-        nTab++;
-        completeCommand();
-        return;
-      } 
-      nTab = 0;
+      if (kid == KeyEvent.KEY_PRESSED) {
+        if (kcode == KeyEvent.VK_TAB) {
+          nTab++;
+          completeCommand();
+          return;
+        }
+        nTab = 0;
+      }
       if (kcode == KeyEvent.VK_UP && kid == KeyEvent.KEY_PRESSED
           && !ke.isControlDown()) {
         recallCommand(true);
@@ -554,11 +562,38 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
       }
     }
 
-     private int nTab = 0;
-     private void completeCommand() {
-       String strCommand = consoleDoc.getCommandString();
-       String cmd = Token.completeCommand(strCommand, nTab);
-       if (!cmd.equals(strCommand))
+    
+    private int nTab = 0;
+    private String incompleteCmd;
+    private void completeCommand() {
+      String thisCmd = consoleDoc.getCommandString();
+      if (thisCmd.length() == 0)
+        return;
+      String strCommand = (nTab <= 1 || incompleteCmd == null ? 
+          thisCmd : incompleteCmd);
+      incompleteCmd = strCommand;
+      String[] splitCmd = ScriptCompiler.splitCommandLine(thisCmd);
+      if (splitCmd == null)
+        return;
+      boolean asCommand = splitCmd[2] == null;
+      String notThis = splitCmd[asCommand ? 1 : 2];
+      if (notThis.length() == 0)
+        return;
+      splitCmd = ScriptCompiler.splitCommandLine(strCommand);
+      String cmd = null;
+      if (!asCommand && (notThis.charAt(0) == '"' || notThis.charAt(0) == '\'')) {
+        char q = notThis.charAt(0);
+        notThis = TextFormat.trim(notThis, "\"\'");
+        String stub = TextFormat.trim(splitCmd[2], "\"\'");
+        cmd = nextFileName(stub, nTab);
+        cmd = splitCmd[0] + splitCmd[1] + q + (cmd == null ? notThis : cmd) + q;
+      } else {
+        cmd = Token.completeCommand(null, asCommand, asCommand ? splitCmd[1] : splitCmd[2], 
+            nTab);
+        cmd = splitCmd[0] + (cmd == null ? notThis 
+            : asCommand ? cmd : splitCmd[1] + cmd);
+      }
+      if (cmd != null && !cmd.equals(strCommand))
         try {
           consoleDoc.replaceCommand(cmd, false);
         } catch (BadLocationException e) {
@@ -823,6 +858,35 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
     return null;
   }
 
+  public String nextFileName(String stub, int nTab) {
+    File dir = FileManager.getLocalDirectory(viewer, false);
+    dir = new File(dir.toString().replace('\\', '/'));
+    FileChecker fileChecker = new FileChecker(stub);
+    dir.list(fileChecker);
+    return fileChecker.getFile(nTab);
+  }
+
+  protected class FileChecker implements FilenameFilter {
+    private String stub;
+    private Vector v = new Vector();
+    
+    protected FileChecker(String stub) {
+      this.stub = stub.toLowerCase();
+    }
+
+    public boolean accept(File dir, String name) {
+      name = name.toLowerCase();
+      if (!name.toLowerCase().startsWith(stub))
+        return false;
+      v.add(name); 
+      return true;
+    }
+    
+    protected String getFile(int n) {
+      return ArrayUtil.sortedItem(v, n);
+    }
+  }
+  
   public String getText() {
     return console.getText();
   }

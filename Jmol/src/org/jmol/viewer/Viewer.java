@@ -6831,6 +6831,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
               +"wrappedState........" //140
               +"spaceGroupInfo......" //160
               +"disablePopupMenu...." //180
+              +"defaultDirectory...." //200
               ).indexOf(infoType)) {
 
       case 0:
@@ -6871,6 +6872,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       case 180:
         global.disablePopupMenu = true; // no false here, because it's a one-time setting
         return null;
+      case 200:
+        return global.defaultDirectory;
       default:
         System.out.println("ERROR in getProperty DATA_API: " + infoType);
         return null;

@@ -2979,7 +2979,7 @@ abstract public class ModelCollection extends BondCollection {
       return info[7];
     case Token.axis:
     case Token.plane:
-      return ((ang == 0) == (type == Token.plane)? (Vector3f) info[8] : (Vector3f) null);
+      return ((ang == 0) == (type == Token.plane)? (Vector3f) info[8] : null);
     case Token.angle:
       return info[9];
     case Token.matrix4f:

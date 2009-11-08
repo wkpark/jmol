@@ -33,6 +33,8 @@ import java.util.Hashtable;
 import javax.swing.*;
 import javax.swing.text.*;
 
+import org.jmol.script.ScriptCompiler;
+import org.jmol.script.Token;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
@@ -310,27 +312,31 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
   class ControlEnterTextArea extends JTextArea {
     public void processComponentKeyEvent(KeyEvent ke) {
+      int kcode = ke.getKeyCode();
       switch (ke.getID()) {
       case KeyEvent.KEY_PRESSED:
-        if (ke.getKeyCode() == KeyEvent.VK_ENTER && !ke.isControlDown()) {
+        if (kcode == KeyEvent.VK_TAB) {
+          nTab++;
+          completeCommand();
+          ke.consume();
+          return;
+        }
+        nTab = 0;
+        if (kcode == KeyEvent.VK_ENTER && !ke.isControlDown()) {
           execute(null);
           return;
         }
-        if (ke.getKeyCode() == KeyEvent.VK_UP) {
-          recallCommand(true);
-          return;
-        }
-        if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
-          recallCommand(false);
+        if (kcode == KeyEvent.VK_UP || kcode == KeyEvent.VK_DOWN) {
+          recallCommand(kcode == KeyEvent.VK_UP);
           return;
         }
         break;
       case KeyEvent.KEY_RELEASED:
-        if (ke.getKeyCode() == KeyEvent.VK_ENTER && !ke.isControlDown())
+        if (kcode == KeyEvent.VK_ENTER && !ke.isControlDown())
           return;
         break;
       }
-      if (ke.getKeyCode() == KeyEvent.VK_ENTER)
+      if (kcode == KeyEvent.VK_ENTER)
         ke.setModifiers(0);
       super.processComponentKeyEvent(ke);
     }
@@ -340,6 +346,33 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
       if (cmd == null)
         return;
       setText(cmd);
+    }
+
+    private int nTab = 0;
+    private String incompleteCmd;
+    protected void completeCommand() {
+      String thisCmd = getText();
+      if (thisCmd.length() == 0)
+        return;
+      String strCommand = (nTab <= 1 || incompleteCmd == null ? 
+          thisCmd : incompleteCmd);
+      incompleteCmd = strCommand;
+      String[] splitCmd = ScriptCompiler.splitCommandLine(thisCmd);
+      if (splitCmd == null)
+        return;
+      boolean asCommand = splitCmd[2] == null;
+      String notThis = splitCmd[asCommand ? 1 : 2];
+      if (notThis.length() == 0)
+        return;
+      splitCmd = ScriptCompiler.splitCommandLine(strCommand);
+      if (notThis.charAt(0) == '"' || notThis.charAt(0) == '\'')
+        return;
+      String cmd = Token.completeCommand(null, asCommand, asCommand ? splitCmd[1] : splitCmd[2], 
+            nTab);
+        cmd = splitCmd[0] + (cmd == null ? notThis 
+            : asCommand ? cmd : splitCmd[1] + cmd);
+      if (!cmd.equals(strCommand))
+        setText(cmd.replace('\t',' '));
     }
   }
 
@@ -352,7 +385,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   private void destroyConsole() {
-    viewer.getProperty("DATA_API", "getAppletConsole", (JmolAppConsoleInterface) null);
+    viewer.getProperty("DATA_API", "getAppConsole", Boolean.FALSE);
   }
 
   public void windowClosing(WindowEvent we) {

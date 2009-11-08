@@ -413,7 +413,7 @@ public Object getProperty(String property, int index) {
     }
     DrawMesh m = (DrawMesh) getMesh(id);
     if (m == null || m.vertices == null)
-      return (Point3f) null; 
+      return null; 
     // >= 0 ? that vertexIndex
     // < 0 and no ptCenters or modelIndex < 0 -- center point
     // < 0 center for modelIndex

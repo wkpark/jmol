@@ -1152,7 +1152,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
           return; // make no assumptions - require a type by extension
         sType = sType.substring(i + 1).toUpperCase();
       }
-      Logger.info(viewer.createImage(fileName, sType, (String) null, sd.getQuality(sType), 0, 0));
+      Logger.info(viewer.createImage(fileName, sType, null, sd.getQuality(sType), 0, 0));
     }
 
   }

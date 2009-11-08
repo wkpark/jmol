@@ -5689,7 +5689,7 @@ public class ScriptEvaluator {
         return;
       Hashtable htParams = new Hashtable();
       String file = parameterAsString(++i);
-      Object image = (Image) null;
+      Object image = null;
       if (!file.equalsIgnoreCase("none") && file.length() > 0)
         image = viewer.getFileAsImage(file, htParams);
       if (image instanceof String)
@@ -5712,7 +5712,7 @@ public class ScriptEvaluator {
     // from center (atom) or from zoomTo under conditions of not
     // windowCentered()
     if (statementLength == 1) {
-      viewer.setNewRotationCenter((Point3f) null);
+      viewer.setNewRotationCenter(null);
       return;
     }
     Point3f center = centerParameter(i);
@@ -13019,8 +13019,8 @@ public class ScriptEvaluator {
     case Token.hidden:
     case Token.display:
     case Token.displayed:
-      if (iToken == 1)
-        setShapeProperty(shape, "thisID", (String) null);
+      if (iToken == 1)        
+        setShapeProperty(shape, "thisID", null);
       if (tok == Token.nada)
         return (iToken == 1);
       if (checkOnly)

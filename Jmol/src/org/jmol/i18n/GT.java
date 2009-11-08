@@ -357,7 +357,7 @@ public class GT {
   //forced translations
   
   public static String _(String string, boolean t) {
-    return _(string, (Object[])null, t);
+    return _(string, (Object[]) null, t);
   }
 
   public static String _(String string, String item, boolean t) {

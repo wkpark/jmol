@@ -32,8 +32,6 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import javax.vecmath.Point3f;
-
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -366,7 +364,7 @@ public abstract class MeshCollection extends Shape {
       return new Integer(n);
     }
     if (property == "ID")
-      return (currentMesh == null ? (String) null : currentMesh.thisID);
+      return (currentMesh == null ? null : currentMesh.thisID);
     if (property == "list") {
       StringBuffer sb = new StringBuffer();
       int k = 0;
@@ -416,7 +414,7 @@ public abstract class MeshCollection extends Shape {
       return (index < 0 
           || (m = getMesh(property.substring(10))) == null 
           || m.vertices == null
-          || m.vertexCount <= index ? (Point3f) null 
+          || m.vertexCount <= index ? null 
           : m.vertices[index]);
     return null;
   }

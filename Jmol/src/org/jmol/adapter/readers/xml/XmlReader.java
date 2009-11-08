@@ -403,10 +403,11 @@ public class XmlReader extends AtomSetCollectionReader {
       JSObject attributes = (JSObject) DOMNode.getMember("attributes");
       getAttributes(attributes);
       startElement(namespaceURI, localName, qName);
-      if (((Boolean) DOMNode.call("hasChildNodes", (Object[]) null))
+      if (((Boolean) DOMNode.call("hasChildNodes", null))
           .booleanValue()) {
-        for (JSObject nextNode = (JSObject) DOMNode.getMember("firstChild"); nextNode != (JSObject) null; nextNode = (JSObject) nextNode
-            .getMember("nextSibling"))
+        for (JSObject nextNode = (JSObject) DOMNode.getMember("firstChild"); 
+               nextNode != null; 
+               nextNode = (JSObject) nextNode.getMember("nextSibling"))
           walkDOMTree(nextNode);
       }
       endElement(namespaceURI, localName, qName);

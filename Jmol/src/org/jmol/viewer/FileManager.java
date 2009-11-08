@@ -1060,7 +1060,7 @@ public class FileManager {
         v.add(name);
         String newName = "$SCRIPT_PATH$/" + name.substring(name.lastIndexOf("/") + 1);
         if (isLocal && name.indexOf("|") < 0) {
-          v.add((byte[]) null);
+          v.add(null);
         } else {
           Object ret = getFileAsBytes(name);
           if (!(ret instanceof byte[]))

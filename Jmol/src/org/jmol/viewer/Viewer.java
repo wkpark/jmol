@@ -6847,6 +6847,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       case 80:
         if (paramInfo instanceof JmolAppConsoleInterface) {
           appConsole = (JmolAppConsoleInterface) paramInfo;
+        } else if (paramInfo != null && !((Boolean) paramInfo).booleanValue()) {
+          appConsole = null;
         } else if (appConsole == null && paramInfo != null && ((Boolean) paramInfo).booleanValue()) {
           appConsole = (isApplet ? 
               (JmolAppConsoleInterface) Interface.getOptionInterface("console.AppletConsole")

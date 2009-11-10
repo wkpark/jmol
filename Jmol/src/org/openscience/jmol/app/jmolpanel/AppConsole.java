@@ -526,7 +526,6 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
               nTab++;
               try {
                 consoleDoc.replaceCommand(cmd, false);
-                checkCommand();
               } catch (BadLocationException e) {
                 //
               }

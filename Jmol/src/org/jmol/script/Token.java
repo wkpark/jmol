@@ -686,17 +686,18 @@ public class Token {
 
   final static int absolute      = misc | 1;
   final static int addhydrogens  = misc | 2;// new
-  final static int align         = misc | 3;// new
-  final static int allconnected  = misc | 4;// new
-  final static int angstroms     = misc | 5;// new
-  final static int anisotropy    = misc | 6;// new
+  final static int adjust        = misc | 3;// new
+  final static int align         = misc | 4;// new
+  final static int allconnected  = misc | 5;// new
+  final static int angstroms     = misc | 6;// new
+  final static int anisotropy    = misc | 7;// new
   final static int applet        = misc | 8;// new
   final static int arc           = misc | 9 | expression;// new
   final static int area          = misc | 10;// new
   final static int aromatic      = misc | 11 | predefinedset;// new
   final static int arrow         = misc | 12;// new
   final static int atomicorbital = misc | 13;// new
-  final static int auto          = misc | 14;// new
+  public final static int auto   = misc | 14;// new
   public final static int axis   = misc | 16;
   final static int babel         = misc | 17;
   final static int back          = misc | 18;
@@ -720,12 +721,12 @@ public class Token {
   public final static int contourlines  = misc | 37;
   final static int contours      = misc | 38;// new
   final static int corners       = misc | 39;// new
-  final static int create        = misc | 40;// new
+  public final static int create = misc | 40;// new
   final static int crossed       = misc | 41;// new
   final static int curve         = misc | 42;// new
   final static int cutoff        = misc | 43;// new
   final static int cylinder      = misc | 44;// new
-  final static int debug         = misc | 45;// new
+  final static int debug         = misc | 45 | setparam;// new
   final static int diameter       = misc | 50;// new
   final static int direction      = misc | 52;
   final static int discrete       = misc | 53;// new
@@ -774,10 +775,12 @@ public class Token {
   final static int manifest       = misc | 102;// new
   final static int map            = misc | 103 | expression;// new
   final static int maxset         = misc | 104;// new
-  final static int mep            = misc | 108 | expression;
-  public final static int mesh    = misc | 109;
-  final static int minset         = misc | 110;// new
-  final static int mode           = misc | 111;
+  final static int mep            = misc | 106 | expression;
+  public final static int mesh    = misc | 107;
+  final static int minset         = misc | 108;// new
+  final static int mode           = misc | 109;
+  public final static int modify         = misc | 110;// new
+  public final static int modifyorcreate = misc | 111;// new
   final static int modelbased     = misc | 112;// new
   final static int molecular      = misc | 113;// new
   final static int monomer        = misc | 114;
@@ -1261,6 +1264,8 @@ public class Token {
     "mesh",             new Token(mesh),
     "min",              new Token(min),
     "mode",             new Token(mode),
+    "modify",           new Token(modify),
+    "modifyorcreate",   new Token(modifyorcreate),
     "molecule",         new Token(molecule),
     "molecules",        null, 
     "modelindex",        new Token(modelindex),

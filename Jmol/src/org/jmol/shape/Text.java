@@ -257,7 +257,6 @@ public class Text extends Object2d {
           * windowWidth / 100 : is3dEcho ? movableX : movableX * scale);
       float offsetX = this.offsetX * scale;
       xLeft = xRight = xCenter = x + offsetX;
-      //System.out.print("movableX = " + movableX + " offsetX = " + offsetX);
     } else {
       xLeft = 5 * scale;
       xCenter = windowWidth / 2;
@@ -293,7 +292,6 @@ public class Text extends Object2d {
       boxXY[1] = (is3dEcho ? y : (windowHeight - y)) + offsetY * scale;
     }
 
-    //System.out.print("boxXY[1]=" + boxXY[1]);
     if (align == ALIGN_CENTER)
       boxXY[1] -= (image != null ? boxHeight : xyz != null ? boxHeight 
           : ascent - boxHeight) / 2;
@@ -301,11 +299,6 @@ public class Text extends Object2d {
       boxXY[1] -= 0;
     else if (xyz != null)
       boxXY[1] -= ascent / 2;
-
-    //System.out.println(" movableY = " + movableY + " offsetY = " + offsetY
-      //  + " boxXY[1]=" + boxXY[1] + " boxHeight=" + boxHeight + " ascent="
-        //+ ascent + " " + text);
-
   }
 
   private static void setBoxXY(float boxWidth, float boxHeight, float xOffset,
@@ -332,7 +325,6 @@ public class Text extends Object2d {
     } else {
       yBoxOffset = yOffset;
     }
-
     boxXY[0] += xBoxOffset;
     boxXY[1] += yBoxOffset;
 

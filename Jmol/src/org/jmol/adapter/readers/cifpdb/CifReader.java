@@ -376,10 +376,6 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       processStructSheetRangeLoopBlock();
       return;
     }
-    if (str.startsWith("_struct_sheet_range")) {
-      processStructSheetRangeLoopBlock();
-      return;
-    }
     if (str.startsWith("_symmetry_equiv_pos")
         || str.startsWith("space_group_symop")) {
       if (ignoreFileSymmetryOperators) {

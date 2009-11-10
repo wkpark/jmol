@@ -177,13 +177,13 @@ public class Labels extends AtomShape {
       return;
     }
 
-    if ("offset" == propertyName) {
+    if ("offset" == propertyName || "offsetexact" == propertyName) {
       int offset = ((Integer) value).intValue();
-      System.out.println("labels " + offset);
       // 0 must be the default, because we initialize the array
       // in segments and so there will be extra 0s.
       // but this "0" only means that "zero" offset; you 
       // can change the default to anything you want.
+      boolean isExact = (propertyName == "offsetexact");
       if (offset == 0)
         offset = Short.MAX_VALUE;
       else if (offset == zeroOffset)
@@ -191,7 +191,7 @@ public class Labels extends AtomShape {
       if (!setDefaults)
         for (int i = atomCount; --i >= 0;)
           if (bsSelected.get(i))
-            setOffsets(i, offset);
+            setOffsets(i, offset, isExact);
       if (setDefaults || !defaultsOnlyForNone)
         defaultOffset = offset;
       return;
@@ -310,7 +310,6 @@ public class Labels extends AtomShape {
     boolean isScaled = viewer.getFontScaling();
     float scalePixelsPerMicron = (isScaled ? viewer
         .getScalePixelsPerAngstrom(false) * 10000f : 0);
-    //System.out.println("labels scalePixelsPerMicron=" + scalePixelsPerMicron);
     for (int i = atomCount; --i >= 0;)
       if (bsSelected.get(i)) 
         setLabel(strLabel, i, isScaled, scalePixelsPerMicron);
@@ -324,7 +323,6 @@ public class Labels extends AtomShape {
     boolean isScaled = viewer.getFontScaling();
     float scalePixelsPerMicron = (isScaled ? viewer
         .getScalePixelsPerAngstrom(false) * 10000f : 0);
-    //System.out.println("labels scalePixelsPerMicron=" + scalePixelsPerMicron);
     setLabel(strLabel, i, isScaled, scalePixelsPerMicron);
   }
   
@@ -348,7 +346,7 @@ public class Labels extends AtomShape {
         text.setText(label);
       }
       if (defaultOffset != zeroOffset)
-        setOffsets(i, defaultOffset);
+        setOffsets(i, defaultOffset, false);
       if (defaultAlignment != Object2d.ALIGN_LEFT)
         setAlignment(i, defaultAlignment);
       if ((defaultZPos & FRONT_FLAG) != 0)
@@ -417,7 +415,7 @@ public class Labels extends AtomShape {
   final static int FLAGS         = 0xFF;
   final static int FLAG_OFFSET   = 8;
 
-  private void setOffsets(int i, int offset) {
+  private void setOffsets(int i, int offset, boolean isExact) {
     //entry is just xxxxxxxxyyyyyyyy
     //  3         2         1        
     // 10987654321098765432109876543210
@@ -428,13 +426,15 @@ public class Labels extends AtomShape {
     //                         ||||_labels group 0x10
     //                         |||_labels front  0x20
     //                         ||_scaled
-    //                         |_text (not simple)
+    //                         |_exact offset
     if (offsets == null || i >= offsets.length) {
       if (offset == 0)
         return;
       offsets = ArrayUtil.ensureLength(offsets, i + 1);
     }
     offsets[i] = (offsets[i] & FLAGS) | (offset << FLAG_OFFSET);
+    if (isExact)
+      offsets[i] |= EXACT_OFFSET_FLAG;
     text = getLabel(i);
     if (text != null)
       text.setOffset(offset);
@@ -551,7 +551,9 @@ public class Labels extends AtomShape {
         setStateInfo(temp2, i, "set labelScaleReference " + (10000f / sppm));
       if (offsets != null && offsets.length > i) {
         int offsetFull = offsets[i];
-        setStateInfo(temp2, i, "set labelOffset " + Object2d.getXOffset(offsetFull >> FLAG_OFFSET)
+        setStateInfo(temp2, i, "set " + ((offsetFull & EXACT_OFFSET_FLAG) == EXACT_OFFSET_FLAG 
+            ? "labelOffsetExact " : "labelOffset ") 
+              + Object2d.getXOffset(offsetFull >> FLAG_OFFSET)
               + " " + (-Object2d.getYOffset(offsetFull >> FLAG_OFFSET)));
         String align = Object2d.getAlignment(offsetFull >> 2);
         String pointer = Object2d.getPointer(offsetFull);
@@ -619,9 +621,7 @@ public class Labels extends AtomShape {
       offset = Short.MAX_VALUE;
     else if (offset == zeroOffset)
       offset = 0;
-    setOffsets(pickedAtom, offset);
-        
-    offsets[pickedAtom] |= EXACT_OFFSET_FLAG;
+    setOffsets(pickedAtom, offset, true);
   }
   
 }

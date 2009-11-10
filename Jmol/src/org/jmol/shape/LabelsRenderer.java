@@ -58,7 +58,6 @@ public class LabelsRenderer extends ShapeRenderer {
     short backgroundColixContrast = viewer.getColixBackgroundContrast();
     int backgroundColor = viewer.getBackgroundArgb();
     float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom(true) * 10000f : 0);
-    //System.out.println("labelsRenderer scalePixelsPerMicron=" + scalePixelsPerMicron);
     float imageFontScaling = viewer.getImageFontScaling();
     int iGroup = -1;
     int minZ = Integer.MAX_VALUE;

@@ -229,10 +229,10 @@ final public class JmolConstants {
 
 
   public final static int CONNECT_DELETE_BONDS     = 0;
-  public final static int CONNECT_MODIFY_ONLY      = 1;
-  public final static int CONNECT_CREATE_ONLY      = 2;
-  public final static int CONNECT_MODIFY_OR_CREATE = 3;
-  public final static int CONNECT_AUTO_BOND        = 4;
+  public final static int CONNECT_MODIFY_ONLY      = Token.modify;
+  public final static int CONNECT_CREATE_ONLY      = Token.create;
+  public final static int CONNECT_MODIFY_OR_CREATE = Token.modifyorcreate;
+  public final static int CONNECT_AUTO_BOND        = Token.auto;
   public final static int CONNECT_IDENTIFY_ONLY    = 5;
   public final static float DEFAULT_MAX_CONNECT_DISTANCE = 100000000f;
   public final static float DEFAULT_MIN_CONNECT_DISTANCE = 0.1f;
@@ -240,14 +240,6 @@ final public class JmolConstants {
   private final static String[] connectOperationStrings =
   { "delete", "modify", "create", "modifyOrCreate", "auto", "adjust" };
 
-  public static int connectOperationFromString(String connectOperationString) {
-    int i;
-    for (i = connectOperationStrings.length; --i >= 0; )
-      if (connectOperationStrings[i].equalsIgnoreCase(connectOperationString))
-        break;
-    return i;
-  }
-  
   public static String connectOperationName(int i) {
     return connectOperationStrings[i];
   }

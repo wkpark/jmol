@@ -525,12 +525,13 @@ public class AtomSetCollection {
                                                       structureCount + 32);
     structure.modelIndex = currentAtomSetIndex;
     structures[structureCount++] = structure;
-    if (structure.strandCount == 1) {
+    if (structure.strandCount >= 1) {
       int i = structureCount;
       for (i = structureCount; --i >= 0 
         && structures[i].modelIndex == currentAtomSetIndex
         && structures[i].structureID.equals(structure.structureID); ) {
       }
+      i++;
       int n = structureCount - i;
       for (; i < structureCount; i++) 
         structures[i].strandCount = n;

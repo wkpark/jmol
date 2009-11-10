@@ -987,11 +987,10 @@ public class ScriptEvaluator {
     case Token.sum2:
     case Token.property:
       break;
-    case Token.identifier:
     default:
       if (Token.tokAttrOr(tok, Token.atomproperty, Token.mathproperty))
         break;
-      if (!Token.tokAttr(tok, Token.misc))
+      if (!Token.tokAttr(tok, Token.identifier))
         return null;
       String name = parameterAsString(i);
       switch (tok = Token.getSettableTokFromString(name)) {
@@ -1826,7 +1825,8 @@ public class ScriptEvaluator {
       return;
     }
     int tok = statement[iToken = 1].tok;
-    if (tok != Token.identifier && !Token.tokAttr(tok, Token.predefinedset)) {
+    if (!Token.tokAttr(tok, Token.identifier) 
+        && !Token.tokAttr(tok, Token.predefinedset)) {
       viewer.scriptStatus("JmolConstants.java ERROR: invalid variable name:"
           + script);
       return;
@@ -2898,15 +2898,6 @@ public class ScriptEvaluator {
         isInMath = false;
         rpn.addOp(instruction);
         break;
-      case Token.identifier:
-        //TODO: With fewer identifiers, does this still work?
-        val = getParameter((String) value, false);
-        if (val instanceof String)
-          val = getStringObjectAsVariable((String) val, null);
-        if (val instanceof String || val instanceof String[])
-          val = lookupIdentifierValue((String) value);
-        rpn.addX(val);
-        break;
       case Token.define:
         rpn.addX(getAtomBitSet(this, (String) value));
         break;
@@ -3183,10 +3174,20 @@ public class ScriptEvaluator {
         rpn.addXNum(new ScriptVariable(instruction));
         break;
       default:
-        if (Token.tokAttr(instruction.tok, Token.mathop))
+        if (Token.tokAttr(instruction.tok, Token.mathop)) {
           rpn.addOp(instruction);
-        else
-          error(ERROR_unrecognizedExpression);
+          break;
+        } 
+        if (Token.tokAttr(instruction.tok, Token.identifier)) {
+          val = getParameter((String) value, false);
+          if (val instanceof String)
+            val = getStringObjectAsVariable((String) val, null);
+          if (val instanceof String || val instanceof String[])
+            val = lookupIdentifierValue((String) value);
+          rpn.addX(val);
+          break;
+        }
+        error(ERROR_unrecognizedExpression);
       }
     }
     expressionResult = rpn.getResult(allowUnderflow, null);
@@ -5518,6 +5519,21 @@ public class ScriptEvaluator {
         if (!isSyntaxCheck)
           viewer.setPdbConectBonding(isAuto);
         return;
+      case Token.adjust:
+      case Token.auto:
+      case Token.create:
+      case Token.modify:
+      case Token.modifyorcreate:
+        // must be an operation and must be last argument
+        haveOperation = true;
+        if (++i != statementLength)
+          error(ERROR_invalidParameterOrder);
+        operation = tok;
+        if (tok == Token.auto
+            && !(bondOrder == JmolConstants.BOND_ORDER_NULL
+                || bondOrder == JmolConstants.BOND_H_REGULAR || bondOrder == JmolConstants.BOND_AROMATIC))
+          error(ERROR_invalidArgument);
+        break;
       case Token.identifier:
       case Token.hbond:
         if (ptColor == i)
@@ -5529,17 +5545,7 @@ public class ScriptEvaluator {
         }
         String cmd = parameterAsString(i);
         if ((bo = JmolConstants.getBondOrderFromString(cmd)) == JmolConstants.BOND_ORDER_NULL) {
-          // must be an operation and must be last argument
-          haveOperation = true;
-          if (++i != statementLength)
-            error(ERROR_invalidParameterOrder);
-          if ((operation = JmolConstants.connectOperationFromString(cmd)) < 0)
-            error(ERROR_invalidArgument);
-          if (operation == JmolConstants.CONNECT_AUTO_BOND
-              && !(bondOrder == JmolConstants.BOND_ORDER_NULL
-                  || bondOrder == JmolConstants.BOND_H_REGULAR || bondOrder == JmolConstants.BOND_AROMATIC))
-            error(ERROR_invalidArgument);
-          break;
+          error(ERROR_invalidArgument);
         }
         // must be bond type
         if (haveType)
@@ -8500,12 +8506,12 @@ public class ScriptEvaluator {
         propertyName = "width";
         propertyValue = new Float(floatParameter(++i));
         break;
-      case Token.times:
-      case Token.identifier:
-        setShapeId(JmolConstants.SHAPE_DIPOLES, i, idSeen);
-        i = iToken;
-        break;
       default:
+        if (theTok == Token.times || Token.tokAttr(theTok, Token.identifier)) {
+          setShapeId(JmolConstants.SHAPE_DIPOLES, i, idSeen);
+          i = iToken;
+          break;
+        }
         error(ERROR_invalidArgument);
       }
       idSeen = (theTok != Token.delete && theTok != Token.calculate);
@@ -9354,7 +9360,7 @@ public class ScriptEvaluator {
       if (key.toLowerCase().indexOf("label") == 0
           && Parser
               .isOneOf(key.substring(5).toLowerCase(),
-                  "front;group;atom;offset;pointer;alignment;toggle;scalereference")) {
+                  "front;group;atom;offset;offsetexact;pointer;alignment;toggle;scalereference")) {
         if (setLabel(key.substring(5)))
           return;
       }
@@ -9861,6 +9867,14 @@ public class ScriptEvaluator {
     case Token.all:
       checkLength(3);
       // fall through
+    case Token.left:
+    case Token.right:
+    case Token.top:
+    case Token.bottom:
+    case Token.center:
+    case Token.identifier:
+      propertyValue = parameterAsString(2);
+      break;
     case Token.model:
       int modelIndex = modelNumberParameter(3);
       if (isSyntaxCheck)
@@ -10016,7 +10030,7 @@ public class ScriptEvaluator {
         propertyValue = new Float(scaleAngstromsPerPixel);
         break;
       }
-      if (str.equals("offset")) {
+      if (str.equals("offset") || str.equals("offsetexact")) {
         int xOffset = intParameter(2, -127, 127);
         int yOffset = intParameter(3, -127, 127);
         propertyValue = new Integer(Object2d.getOffset(xOffset, yOffset));
@@ -11234,8 +11248,7 @@ public class ScriptEvaluator {
     for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
-      int tok = getToken(i).tok;
-      switch (tok) {
+      switch (getToken(i).tok) {
       case Token.symop:
         String xyz = null;
         int iSym = 0;
@@ -11267,7 +11280,7 @@ public class ScriptEvaluator {
       case Token.point4f:
       case Token.point3f:
         // {X, Y, Z}
-        if (tok == Token.point4f || !isPoint3f(i)) {
+        if (theTok == Token.point4f || !isPoint3f(i)) {
           propertyValue = getPoint4f(i);
           if (isFrame) {
             checkLength(iToken + 1);
@@ -11434,12 +11447,6 @@ public class ScriptEvaluator {
         swidth = (String) propertyName
             + (tokAt(i) == Token.decimal ? " " + f : " " + ((int) f));
         break;        
-      case Token.times:
-        //TODO -- why this?
-      case Token.identifier:
-        setShapeId(JmolConstants.SHAPE_DRAW, i, idSeen);
-        i = iToken;
-        break;
       case Token.dollarsign:
         // $drawObject[m]
         if (tokAt(i + 2) == Token.leftsquare || isFrame) {
@@ -11481,10 +11488,16 @@ public class ScriptEvaluator {
         idSeen = true;
         continue;
       default:
+        if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, 0, theTok)) {
+          if (theTok == Token.times || Token.tokAttr(theTok, Token.identifier)) {
+            thisId = setShapeId(JmolConstants.SHAPE_DRAW, i, idSeen);
+            i = iToken;
+            break;
+          }
+          error(ERROR_invalidArgument);
+        }
         if (iptDisplayProperty == 0)
           iptDisplayProperty = i;
-        if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, 0, theTok))
-          error(ERROR_invalidArgument);
         continue;
       }
       idSeen = (theTok != Token.delete);
@@ -11708,8 +11721,7 @@ public class ScriptEvaluator {
     for (int i = 1; i < statementLength; i++) {
       String propertyName = null;
       Object propertyValue = null;
-      int tok;
-      switch (tok = getToken(i).tok) {
+      switch (getToken(i).tok) {
       case Token.center:
         // serialized lcaoCartoon in isosurface format
         isosurface(JmolConstants.SHAPE_LCAOCARTOON);
@@ -11821,21 +11833,22 @@ public class ScriptEvaluator {
           propertyName = "molecular";
         }
         break;
-      case Token.all:
       case Token.id:
-      case Token.identifier:
-        switch(tok) {
-        case Token.id:
-          propertyValue = getShapeNameParameter(++i);
-          i = iToken;
-          break;
-        case Token.identifier:
-          propertyValue = parameterAsString(i);
-          break;
-        }
+        propertyValue = getShapeNameParameter(++i);
+        i = iToken;
         if (idSeen)
           error(ERROR_invalidArgument);
         propertyName = "lcaoID";
+        break;
+      default:
+        if (theTok == Token.times || Token.tokAttr(theTok, Token.identifier)) {
+          if (theTok != Token.times)
+            propertyValue = parameterAsString(i);
+          if (idSeen)
+            error(ERROR_invalidArgument);
+          propertyName = "lcaoID";
+          break;
+        }
         break;
       }
       if (theTok != Token.delete)
@@ -12754,18 +12767,6 @@ public class ScriptEvaluator {
         }
         propertyValue = data;
         break;
-      case Token.identifier:
-        if (str.equalsIgnoreCase("LINK")) { // for state of lcaoCartoon
-          propertyName = "link";
-          break;
-        }
-        if (str.equalsIgnoreCase("REMAPPABLE")) { // testing only
-          propertyName = "remappable";
-          break;
-        }
-        setShapeId(iShape, i, idSeen);
-        i = iToken;
-        break;
       case Token.string:
         propertyName = surfaceObjectSeen || planeSeen ? "mapColor" : "readFile";
         /*
@@ -12831,13 +12832,29 @@ public class ScriptEvaluator {
         }
         propertyValue = t;
         break;
+      case Token.identifier:
+        if (str.equalsIgnoreCase("LINK")) { // for state of lcaoCartoon
+          propertyName = "link";
+          break;
+        }
+        if (str.equalsIgnoreCase("REMAPPABLE")) { // testing only
+          propertyName = "remappable";
+          break;
+        }
+        // fall through
       default:
         if (planeSeen && !surfaceObjectSeen) {
           setShapeProperty(iShape, "nomap", new Float(0));
           surfaceObjectSeen = true;
         }
-        if (!setMeshDisplayProperty(iShape, i, theTok))
+        if (!setMeshDisplayProperty(iShape, i, theTok)) {
+          if (Token.tokAttr(tok, Token.identifier) && !idSeen) {
+            setShapeId(iShape, i, idSeen);
+            i = iToken;
+            break;
+          }
           error(ERROR_invalidArgument);
+        }
         i = iToken;
       }
       idSeen = (theTok != Token.delete);

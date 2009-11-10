@@ -523,12 +523,13 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
           if (consoleDoc.isAtEnd()) {
             String cmd = completeCommand(consoleDoc.getCommandString());
             if (cmd != null)
-              nTab++;
               try {
                 consoleDoc.replaceCommand(cmd, false);
               } catch (BadLocationException e) {
                 //
               }
+            nTab++;
+            //checkCommand();
             return;
           }
         }

@@ -218,7 +218,7 @@ public abstract class Object2d {
     case Short.MAX_VALUE:
       return 0;
     default:
-      return (byte) ((offset >> 8) & 0xFF);
+      return - - (int) (byte) ((offset >> 8) & 0xFF);
     }
   }
 
@@ -384,6 +384,8 @@ public abstract class Object2d {
   }
 
   public static int getOffset(int xOffset, int yOffset) {
+    xOffset = Math.min(Math.max(xOffset, -127), 127);
+    yOffset = Math.min(Math.max(yOffset, -127), 127);
     return ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
   }
   

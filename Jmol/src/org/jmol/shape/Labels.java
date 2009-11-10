@@ -179,6 +179,7 @@ public class Labels extends AtomShape {
 
     if ("offset" == propertyName) {
       int offset = ((Integer) value).intValue();
+      System.out.println("labels " + offset);
       // 0 must be the default, because we initialize the array
       // in segments and so there will be extra 0s.
       // but this "0" only means that "zero" offset; you 
@@ -253,9 +254,7 @@ public class Labels extends AtomShape {
             formats = ArrayUtil.ensureLength(formats, atomIndex + 1);
           if (strings != null && strings.length > atomIndex
               && strings[atomIndex] != null) {
-            strings[atomIndex] = null;
-            formats[atomIndex] = null;
-            bsSizeSet.clear(atomIndex);
+            mads[atomIndex] = (short) (mads[atomIndex] < 0 ? 1 : -1);
           } else {
             String strLabel = viewer.getStandardLabelFormat();
             strings = ArrayUtil.ensureLength(strings, atomIndex + 1);
@@ -265,6 +264,7 @@ public class Labels extends AtomShape {
             if ((bsBgColixSet == null || !bsBgColixSet.get(atomIndex))
                 && defaultBgcolix != 0)
               setBgcolix(atomIndex, defaultBgcolix);
+            mads[atomIndex] = 1;
           }
           atom.setShapeVisibility(myVisibilityFlag, strings != null
               && atomIndex < strings.length && strings[atomIndex] != null);
@@ -565,6 +565,8 @@ public class Labels extends AtomShape {
         if (align.length() > 0)
           setStateInfo(temp3, i, "set labelAlignment " + align);
       }
+      if (mads[i] < 0)
+        setStateInfo(temp2, i, "set toggleLabel");
       if (bsFontSet != null && bsFontSet.get(i))
         setStateInfo(temp2, i, getFontCommand("label", Font3D.getFont3D(fids[i])));
     }
@@ -618,6 +620,7 @@ public class Labels extends AtomShape {
     else if (offset == zeroOffset)
       offset = 0;
     setOffsets(pickedAtom, offset);
+        
     offsets[pickedAtom] |= EXACT_OFFSET_FLAG;
   }
   

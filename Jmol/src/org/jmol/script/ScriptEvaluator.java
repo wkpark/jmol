@@ -10017,8 +10017,8 @@ public class ScriptEvaluator {
         break;
       }
       if (str.equals("offset")) {
-        int xOffset = intParameter(2, -100, 100);
-        int yOffset = intParameter(3, -100, 100);
+        int xOffset = intParameter(2, -127, 127);
+        int yOffset = intParameter(3, -127, 127);
         propertyValue = new Integer(Object2d.getOffset(xOffset, yOffset));
         break;
       }

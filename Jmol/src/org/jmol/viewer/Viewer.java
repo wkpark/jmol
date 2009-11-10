@@ -4059,7 +4059,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (bs == null)
       bs = selectionManager.bsSelection;
     loadShape(JmolConstants.SHAPE_LABELS);
-    setShapeSize(JmolConstants.SHAPE_LABELS, 0, Float.NaN, bs);
+    //setShapeSize(JmolConstants.SHAPE_LABELS, 0, Float.NaN, bs);
     modelSet.setShapeProperty(JmolConstants.SHAPE_LABELS, "toggleLabel", null,
         bs);
   }

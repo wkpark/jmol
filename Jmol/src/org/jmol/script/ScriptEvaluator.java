@@ -1979,6 +1979,13 @@ public class ScriptEvaluator {
               // they will be processed differently.
               // a filename with only letters and numbers will be 
               // read incorrectly here as an identifier.
+              
+              // note that command keywords cannot be implemented as variables 
+              // because they are not Token.identifiers in the first place.
+              // but the identifier tok is important here because just below
+              // there is a check for SET parameter name assignments.
+              // even those may not work...
+              
               tok = (isClauseDefine || forceString 
                   || s.indexOf(".") >= 0
                   || s.indexOf(" ") >= 0 || s.indexOf("=") >= 0
@@ -2742,10 +2749,8 @@ public class ScriptEvaluator {
         } else if (token.intValue != Integer.MAX_VALUE)
           sb.append(Token.nameOf(token.intValue)).append(" ");
         break;
-      case Token.identifier:
-        break;
       default:
-        if (!logMessages)
+        if (Token.tokAttr(token.tok, Token.identifier) || !logMessages)
           break;
         sb.append('\n').append(token.toString()).append('\n');
         continue;
@@ -3081,7 +3086,7 @@ public class ScriptEvaluator {
         } else if (val instanceof String) {
           if (tokWhat == Token.color) {
             comparisonValue = Graphics3D.getArgbFromString((String) val);
-            if (comparisonValue == 0 && tokValue == Token.identifier) {
+            if (comparisonValue == 0 && Token.tokAttr(tokValue, Token.identifier)) {
               val = getStringParameter((String) val, true);
               if (((String)val).startsWith("{")) {
                 val = Escape.unescapePoint((String) val);
@@ -3096,10 +3101,10 @@ public class ScriptEvaluator {
             tokValue = Token.integer;
             isIntProperty = true;
           } else if (isStringProperty) {
-            if (tokValue == Token.identifier)
+            if (Token.tokAttr(tokValue, Token.identifier))
               val = getStringParameter((String) val, true);
           } else {
-            if (tokValue == Token.identifier || Token.tokAttr(tokValue, Token.misc))
+            if (Token.tokAttr(tokValue, Token.identifier))
               val = getNumericParameter((String) val);
             if (val instanceof String) {
               if (tokWhat == Token.structure || tokWhat == Token.element)
@@ -3965,8 +3970,10 @@ public class ScriptEvaluator {
 
   private boolean isColorParam(int i) {
     int tok = tokAt(i);
-    return (tok == Token.leftsquare || tok == Token.point3f || isPoint3f(i) || (tok == Token.string || tok == Token.identifier)
-        && Graphics3D.getArgbFromString((String) statement[i].value) != 0);
+    return (tok == Token.leftsquare || tok == Token.point3f 
+        || isPoint3f(i) || (tok == Token.string 
+        || Token.tokAttr(tok, Token.identifier))
+            && Graphics3D.getArgbFromString((String) statement[i].value) != 0);
   }
 
   private int getArgbParam(int index) throws ScriptException {
@@ -3984,8 +3991,10 @@ public class ScriptEvaluator {
     Point3f pt = null;
     if (checkToken(index)) {
       switch (getToken(index).tok) {
-      case Token.identifier:
-      case Token.string:
+      default:
+        if (theTok != Token.string 
+            && !Token.tokAttr(theTok, Token.identifier))
+          break;
         return Graphics3D.getArgbFromString(parameterAsString(index));
       case Token.leftsquare:
         return getColorTriad(++index);
@@ -5451,8 +5460,7 @@ public class ScriptEvaluator {
     }
 
     for (int i = index; i < statementLength; ++i) {
-      int tok = getToken(i).tok;
-      switch (tok) {
+      switch (getToken(i).tok) {
       case Token.on:
       case Token.off:
         checkLength(2);
@@ -5496,7 +5504,7 @@ public class ScriptEvaluator {
         i = iToken;
         break;
       case Token.color:
-        tok = tokAt(i + 1);
+        int tok = tokAt(i + 1);
         if (tok != Token.translucent && tok != Token.opaque)
           ptColor = i + 1;
         continue;
@@ -5528,8 +5536,8 @@ public class ScriptEvaluator {
         haveOperation = true;
         if (++i != statementLength)
           error(ERROR_invalidParameterOrder);
-        operation = tok;
-        if (tok == Token.auto
+        operation = theTok;
+        if (theTok == Token.auto
             && !(bondOrder == JmolConstants.BOND_ORDER_NULL
                 || bondOrder == JmolConstants.BOND_H_REGULAR || bondOrder == JmolConstants.BOND_AROMATIC))
           error(ERROR_invalidArgument);
@@ -6964,9 +6972,8 @@ public class ScriptEvaluator {
     Vector monitorExpressions = new Vector();
     BitSet bs = new BitSet();
     Object value = null;
-    int tok;
     for (int i = 1; i < statementLength; ++i) {
-      switch (tok = getToken(i).tok) {
+      switch (getToken(i).tok) {
       default:
         error(ERROR_expressionOrIntegerExpected);
       case Token.on:
@@ -6994,7 +7001,7 @@ public class ScriptEvaluator {
         continue;
       case Token.allconnected:
       case Token.all:
-        isAllConnected = (tok == Token.allconnected);
+        isAllConnected = (theTok == Token.allconnected);
         atomIndex = -1;
         isAll = true;
         continue;
@@ -8100,8 +8107,7 @@ public class ScriptEvaluator {
   private void ellipsoid() throws ScriptException {
     int mad = 0;
     int i = 1;
-    int tok;
-    switch (tok = getToken(1).tok) {
+    switch (getToken(1).tok) {
     case Token.on:
       mad = 50;
       break;
@@ -8114,7 +8120,7 @@ public class ScriptEvaluator {
     case Token.times:
     case Token.identifier:
       viewer.loadShape(JmolConstants.SHAPE_ELLIPSOIDS);
-      if (tok == Token.id)
+      if (theTok == Token.id)
         i++;
       setShapeId(JmolConstants.SHAPE_ELLIPSOIDS, i, false);
       i = iToken;
@@ -9078,20 +9084,19 @@ public class ScriptEvaluator {
 
   private void frameControl(int i, boolean isSubCmd) throws ScriptException {
     checkLength(i + 1);
-    int tok = getToken(i).tok;
-      switch (tok) {
-      case Token.playrev:
-      case Token.play:
-      case Token.resume:
-      case Token.pause:
-      case Token.next:
-      case Token.prev:
-      case Token.rewind:
-      case Token.last:
-        if (!isSyntaxCheck)
-          viewer.setAnimation(tok);
-        return;
-      }
+    switch (getToken(i).tok) {
+    case Token.playrev:
+    case Token.play:
+    case Token.resume:
+    case Token.pause:
+    case Token.next:
+    case Token.prev:
+    case Token.rewind:
+    case Token.last:
+      if (!isSyntaxCheck)
+        viewer.setAnimation(theTok);
+      return;
+    }
     error(ERROR_invalidArgument);
   }
 
@@ -9840,11 +9845,11 @@ public class ScriptEvaluator {
   private void setEcho() throws ScriptException {
     String propertyName = "target";
     Object propertyValue = null;
+    System.out.println("scripteval test setecho");
     boolean echoShapeActive = true;
     // set echo xxx
     int len = 3;
-    int tok = getToken(2).tok;
-    switch (tok) {
+    switch (getToken(2).tok) {
     case Token.off:
       checkLength(3);
       echoShapeActive = false;
@@ -9899,7 +9904,7 @@ public class ScriptEvaluator {
       echo(2, false);
       return;
     default:
-      if (!Token.tokAttr(tok, Token.identifier))
+      if (!Token.tokAttr(theTok, Token.identifier))
         error(ERROR_invalidArgument);
       propertyValue = parameterAsString(2);
       break;
@@ -9941,8 +9946,16 @@ public class ScriptEvaluator {
         propertyName = "model";
         propertyValue = new Integer(modelIndex);
         break;
+      case Token.left:
+      case Token.right:
+      case Token.top:
+      case Token.bottom:
+      case Token.center:
+      case Token.identifier:
+        propertyValue = parameterAsString(3);
+        break;
       default:
-        if (!Token.tokAttr(tok, Token.identifier))
+        if (!Token.tokAttr(theTok, Token.identifier))
           error(ERROR_invalidArgument);
         propertyValue = parameterAsString(3);
         break;
@@ -11563,8 +11576,7 @@ public class ScriptEvaluator {
       }
       String propertyName = null;
       Object propertyValue = null;
-      int tok = getToken(i).tok;
-      switch (tok) {
+      switch (getToken(i).tok) {
       case Token.opEQ:
       case Token.comma:
         continue;
@@ -11605,7 +11617,7 @@ public class ScriptEvaluator {
       case Token.collapsed:
       case Token.flat:
         propertyName = "collapsed";
-        propertyValue = (tok == Token.collapsed ? Boolean.TRUE : Boolean.FALSE);
+        propertyValue = (theTok == Token.collapsed ? Boolean.TRUE : Boolean.FALSE);
         if (typeSeen)
           error(ERROR_incompatibleArguments);
         typeSeen = true;
@@ -12158,11 +12170,11 @@ public class ScriptEvaluator {
       }
       String propertyName = null;
       Object propertyValue = null;
-      int tok = getToken(i).tok;
-      if (tok == Token.identifier
+      getToken(i);
+      if (theTok == Token.identifier
           && (str = parameterAsString(i)).equalsIgnoreCase("inline"))
-        tok = Token.string;
-      switch (tok) {
+        theTok = Token.string;
+      switch (theTok) {
       case Token.pmesh:
         setShapeProperty(iShape, "fileType", "Pmesh");
         continue;
@@ -12535,7 +12547,7 @@ public class ScriptEvaluator {
       case Token.debug:
       case Token.nodebug:
         propertyName = "debug";
-        propertyValue = (tok == Token.debug ? Boolean.TRUE : Boolean.FALSE);
+        propertyValue = (theTok == Token.debug ? Boolean.TRUE : Boolean.FALSE);
         break;
       case Token.fixed:
         propertyName = "fixed";
@@ -12848,7 +12860,7 @@ public class ScriptEvaluator {
           surfaceObjectSeen = true;
         }
         if (!setMeshDisplayProperty(iShape, i, theTok)) {
-          if (Token.tokAttr(tok, Token.identifier) && !idSeen) {
+          if (Token.tokAttr(theTok, Token.identifier) && !idSeen) {
             setShapeId(iShape, i, idSeen);
             i = iToken;
             break;

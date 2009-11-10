@@ -6851,7 +6851,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           appConsole = null;
         } else if (appConsole == null && paramInfo != null && ((Boolean) paramInfo).booleanValue()) {
           appConsole = (isApplet ? 
-              (JmolAppConsoleInterface) Interface.getOptionInterface("console.AppletConsole")
+              (JmolAppConsoleInterface) Interface.getOptionInterface("applet.AppletConsole")
               : (JmolAppConsoleInterface) Interface.getApplicationInterface("jmolpanel.AppConsole"))
                   .getAppConsole(this, display);
         }
@@ -7469,7 +7469,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         useDialog |= isApplet;
         if (fileName.startsWith("."))
           fileName = "jmol" + fileName;
-        fileName = FileManager.setLocalPathForWritingFile(this, fileName);
+        fileName = FileManager.getLocalPathForWritingFile(this, fileName);
 
         if (useDialog)
           fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save"

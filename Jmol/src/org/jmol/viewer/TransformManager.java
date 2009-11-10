@@ -44,8 +44,8 @@ abstract class TransformManager {
 
   Viewer viewer;
 
-  final static float twoPI = (float) (2 * Math.PI);
-  final static float degreesPerRadian = (float) (360 / (2 * Math.PI));
+  final static double twoPI = 2 * Math.PI;
+  final static double degreesPerRadian = 180 / Math.PI;
 
   protected int perspectiveModel = 11;
   protected float cameraScaleFactor;
@@ -599,6 +599,12 @@ abstract class TransformManager {
     Hashtable info = new Hashtable();
     info.put("moveTo", getMoveToText(1, false));
     info.put("center", "center " + getCenterText());
+    info.put("centerPt", fixedRotationCenter);
+    AxisAngle4f aa = new AxisAngle4f();
+    getAxisAngle(aa);
+    info.put("axisAngle", aa);
+    info.put("quaternion", new Quaternion(aa).toPoint4f());
+    info.put("rotationMatrix", matrixRotate);
     info.put("rotateZYZ", getRotateZyzText(false));
     info.put("rotateXYZ", getRotateXyzText());
     info.put("transXPercent", new Float(getTranslationXPercent()));
@@ -1656,14 +1662,14 @@ abstract class TransformManager {
 
   Quaternion getRotationQuaternion() {
     axisangleT.set(matrixRotate);
-    float degrees = axisangleT.angle * degreesPerRadian;
+    float degrees = (float) (axisangleT.angle * degreesPerRadian);
     vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
     return new Quaternion(vectorT, degrees);
   }
   
   String getRotationText() {
     axisangleT.set(matrixRotate);
-    float degrees = axisangleT.angle * degreesPerRadian;
+    float degrees = (float) (axisangleT.angle * degreesPerRadian);
     StringBuffer sb = new StringBuffer();
     vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
     if (degrees < 0.01f)
@@ -1708,17 +1714,17 @@ abstract class TransformManager {
   private String getRotateXyzText() {
     StringBuffer sb = new StringBuffer();
     float m20 = matrixRotate.m20;
-    float rY = -(float) Math.asin(m20) * degreesPerRadian;
+    float rY = -(float) (Math.asin(m20) * degreesPerRadian);
     float rX, rZ;
     if (m20 > .999f || m20 < -.999f) {
-      rX = -(float) Math.atan2(matrixRotate.m12, matrixRotate.m11)
-          * degreesPerRadian;
+      rX = -(float) (Math.atan2(matrixRotate.m12, matrixRotate.m11)
+          * degreesPerRadian);
       rZ = 0;
     } else {
-      rX = (float) Math.atan2(matrixRotate.m21, matrixRotate.m22)
-          * degreesPerRadian;
-      rZ = (float) Math.atan2(matrixRotate.m10, matrixRotate.m00)
-          * degreesPerRadian;
+      rX = (float) (Math.atan2(matrixRotate.m21, matrixRotate.m22)
+          * degreesPerRadian);
+      rZ = (float) (Math.atan2(matrixRotate.m10, matrixRotate.m00)
+          * degreesPerRadian);
     }
     sb.append("reset");
     sb.append(";center ").append(getCenterText());
@@ -1776,17 +1782,17 @@ abstract class TransformManager {
   private String getRotateZyzText(boolean iAddComment) {
     StringBuffer sb = new StringBuffer();
     float m22 = matrixRotate.m22;
-    float rY = (float) Math.acos(m22) * degreesPerRadian;
+    float rY = (float) (Math.acos(m22) * degreesPerRadian);
     float rZ1, rZ2;
     if (m22 > .999f || m22 < -.999f) {
-      rZ1 = (float) Math.atan2(matrixRotate.m10, matrixRotate.m11)
-          * degreesPerRadian;
+      rZ1 = (float) (Math.atan2(matrixRotate.m10, matrixRotate.m11)
+          * degreesPerRadian);
       rZ2 = 0;
     } else {
-      rZ1 = (float) Math.atan2(matrixRotate.m21, -matrixRotate.m20)
-          * degreesPerRadian;
-      rZ2 = (float) Math.atan2(matrixRotate.m12, matrixRotate.m02)
-          * degreesPerRadian;
+      rZ1 = (float) (Math.atan2(matrixRotate.m21, -matrixRotate.m20)
+          * degreesPerRadian);
+      rZ2 = (float) (Math.atan2(matrixRotate.m12, matrixRotate.m02)
+          * degreesPerRadian);
     }
     if (rZ1 != 0 && rY != 0 && rZ2 != 0 && iAddComment)
       sb.append("#Follows Z-Y-Z convention for Euler angles\n");
@@ -1984,7 +1990,7 @@ abstract class TransformManager {
                 } else {
                   rotateAxisAngleRadiansFixed(angle, bsAtoms);
                 }
-                nDegrees += Math.abs(angle / twoPI * 360f);
+                nDegrees += Math.abs(angle * degreesPerRadian);
               } else { // old way: Rx * Ry * Rz
                 if (spinX != 0) {
                   rotateXRadians(spinX * JmolConstants.radiansPerDegree / myFps, null);
@@ -2060,7 +2066,7 @@ abstract class TransformManager {
   }
 
   protected void setVibrationT(float t) {
-    vibrationRadians = t * twoPI;
+    vibrationRadians = (float) (t * twoPI);
     if (vibrationScale == 0)
       vibrationScale = viewer.getVibrationScale();
     vibrationAmplitude = (float) Math.cos(vibrationRadians) * vibrationScale;

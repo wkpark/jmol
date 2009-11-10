@@ -746,7 +746,7 @@ public class FileManager {
     return (names == null ? "" : name.substring(0, name.lastIndexOf("/")));
   }
 
-  private String fixPath(String path) {
+  public static String fixPath(String path) {
     path = path.replace('\\', '/');
     path = TextFormat.simpleReplace(path, "/./", "/");
     int pt = path.lastIndexOf("//") + 1;
@@ -805,7 +805,7 @@ public class FileManager {
     if (localDir.length() == 0)
       return (viewer.isApplet() ? null : new File(System.getProperty("user.dir")));
     if (viewer.isApplet() && localDir.indexOf("file:/") == 0)
-        localDir =setLocalPathForWritingFile(viewer, localDir);
+        localDir = getLocalPathForWritingFile(viewer, localDir);
     
     File f = new File(localDir);
     return f.isDirectory() ? f : f.getParentFile();
@@ -820,13 +820,13 @@ public class FileManager {
       viewer.setStringProperty("defaultDirectoryLocal", path);
   }
 
-  static String setLocalPathForWritingFile(JmolViewer viewer, String file) {
+  public static String getLocalPathForWritingFile(JmolViewer viewer, String file) {
     if (file.indexOf("file:/") == 0)
       return file.substring(6);
     if (file.indexOf("/") == 0 || file.indexOf(":") >= 0)
       return file;
     File dir = getLocalDirectory(viewer, false);
-    return (dir == null ? file : dir.toString().replace('\\', '/') + "/" + file);
+    return (dir == null ? file : fixPath(dir.toString() + "/" + file));
   }
 
   private static String addDirectory(String defaultDirectory, String name) {

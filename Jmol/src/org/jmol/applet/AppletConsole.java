@@ -21,9 +21,10 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.console;
+package org.jmol.applet;
 
 import org.jmol.api.*;
+import org.jmol.console.JmolConsole;
 import org.jmol.i18n.*;
 
 import java.awt.*;
@@ -33,14 +34,12 @@ import java.util.Hashtable;
 import javax.swing.*;
 import javax.swing.text.*;
 
-import org.jmol.script.ScriptCompiler;
-import org.jmol.script.Token;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 public class AppletConsole extends JmolConsole implements JmolAppConsoleInterface {
-  private final JTextArea input = new ControlEnterTextArea();
+  final JTextArea input = new ControlEnterTextArea();
   private final JTextPane output = new JTextPane();
   private final Document outputDocument = output.getDocument();
   
@@ -316,10 +315,14 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
       switch (ke.getID()) {
       case KeyEvent.KEY_PRESSED:
         if (kcode == KeyEvent.VK_TAB) {
-          nTab++;
-          completeCommand();
           ke.consume();
-          return;
+          if (input.getCaretPosition() == input.getText().length()) {
+            String cmd = completeCommand(getText());
+            if (cmd != null)
+              setText(cmd.replace('\t',' '));
+            nTab++;
+            return;
+          }
         }
         nTab = 0;
         if (kcode == KeyEvent.VK_ENTER && !ke.isControlDown()) {
@@ -346,33 +349,6 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
       if (cmd == null)
         return;
       setText(cmd);
-    }
-
-    private int nTab = 0;
-    private String incompleteCmd;
-    protected void completeCommand() {
-      String thisCmd = getText();
-      if (thisCmd.length() == 0)
-        return;
-      String strCommand = (nTab <= 1 || incompleteCmd == null ? 
-          thisCmd : incompleteCmd);
-      incompleteCmd = strCommand;
-      String[] splitCmd = ScriptCompiler.splitCommandLine(thisCmd);
-      if (splitCmd == null)
-        return;
-      boolean asCommand = splitCmd[2] == null;
-      String notThis = splitCmd[asCommand ? 1 : 2];
-      if (notThis.length() == 0)
-        return;
-      splitCmd = ScriptCompiler.splitCommandLine(strCommand);
-      if (notThis.charAt(0) == '"' || notThis.charAt(0) == '\'')
-        return;
-      String cmd = Token.completeCommand(null, asCommand, asCommand ? splitCmd[1] : splitCmd[2], 
-            nTab);
-        cmd = splitCmd[0] + (cmd == null ? notThis 
-            : asCommand ? cmd : splitCmd[1] + cmd);
-      if (!cmd.equals(strCommand))
-        setText(cmd.replace('\t',' '));
     }
   }
 

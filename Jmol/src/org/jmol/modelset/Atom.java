@@ -1199,13 +1199,11 @@ final public class Atom extends Point3fi {
     return atomPropertyInt(atom, tokWhat);
   }
 
-  private static float thirdPi = (float) (Math.PI / 3);
-
   float getVolume(int iType) {
     float r1 = (iType == -1 ? userDefinedVanDerWaalRadius : Float.NaN);
     if (Float.isNaN(r1))
         r1 = group.chain.modelSet.viewer.getVanderwaalsMar(getElementNumber(), iType) / 1000f;
-    float volume = 0;
+    double volume = 0;
     for (int j = 0; j < bonds.length; j++) {
       if (!bonds[j].isCovalent())
         continue;
@@ -1222,10 +1220,10 @@ final public class Atom extends Point3fi {
       // calculate hidden spherical cap height and volume
       // A.Bondi, J. Phys. Chem. 68, 1964, 441-451.
       
-      float h = r1 - (r1*r1 + d*d - r2*r2) / (2 * d);
-      volume -= thirdPi * h * h * (3 * r1 - h);
+      double h = r1 - (r1*r1 + d*d - r2*r2) / (2.0 * d);
+      volume -= Math.PI / 3 * h * h * (3 * r1 - h);
     }
-    return volume + 4 * thirdPi * r1 * r1 * r1;
+    return (float) (volume + 4 * Math.PI / 3 * r1 * r1 * r1);
   }
 
   public static String atomPropertyString(Atom atom, int tokWhat) {

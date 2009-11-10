@@ -777,7 +777,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
             bracketCount++;
             return CONTINUE;
           case '.':
-            addTokenToPrefix(new Token(Token.period, "."));
+            addTokenToPrefix(new Token(Token.per, "."));
             return CONTINUE;
           case '-':
           case '+':
@@ -1064,7 +1064,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (parenCount == 0 && bracketCount == 0)
         setEqualPt = ichToken;
       break;
-    case Token.period:
+    case Token.per:
       if (tokCommand == Token.set && parenCount == 0 && bracketCount == 0 && ichToken < setEqualPt) {
         ltoken.insertElementAt(Token.tokenExpressionBegin, 1);
         addTokenToPrefix(Token.tokenExpressionEnd);
@@ -1186,7 +1186,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (theTok != Token.leftbrace)
         lastFlowCommand = null;
 
-      if (Token.tokAttr(tokCommand, Token.command))
+      if (Token.tokAttr(tokCommand, Token.scriptCommand))
         break;
 
       // not the standard command
@@ -1201,10 +1201,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           flowContext.forceEndIf = false;
       }
       if (!isSetBrace && theTok != Token.plusPlus && theTok != Token.minusMinus
-          && !Token.tokAttr(theTok, Token.identifier)
+          && theTok != Token.identifier
+          && !Token.tokAttr(theTok, Token.misc)
           && !Token.tokAttr(theTok, Token.setparam)
           && !isContextVariable(ident)) {
-        commandExpected();
+         commandExpected();
         return ERROR;
       }
       tokCommand = Token.set;
@@ -1384,6 +1385,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (bracketCount == 0 && theTok != Token.identifier
           && !Token.tokAttr(theTok, Token.expression) 
+          && !Token.tokAttr(theTok, Token.misc) 
           && (theTok & Token.minmaxmask) != theTok) 
         return ERROR(ERROR_invalidExpressionToken, ident);
       break;

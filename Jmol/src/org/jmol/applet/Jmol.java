@@ -39,6 +39,8 @@ import java.net.MalformedURLException;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.swing.UIManager;
+
 import netscape.javascript.JSObject;
 
 /*
@@ -128,8 +130,6 @@ import netscape.javascript.JSObject;
 
 public class Jmol implements WrappedApplet {
 
-  Jvm12 jvm12;
-
   boolean mayScript;
   boolean haveDocumentAccess;
   boolean loading;
@@ -146,7 +146,6 @@ public class Jmol implements WrappedApplet {
   protected JmolViewer viewer;
 
   private final static boolean REQUIRE_PROGRESSBAR = true;
-  private boolean jvm12orGreater;
   private boolean hasProgressBar;
 
   protected boolean doTranslate = true;
@@ -203,8 +202,6 @@ public class Jmol implements WrappedApplet {
     JmolAppletRegistry.checkOut(fullName);
     viewer.setModeMouse(JmolConstants.MOUSE_NONE);
     viewer = null;
-    if (jvm12 != null)
-      jvm12 = null;
     System.out.println("Jmol applet " + fullName + " destroyed");
   }
 
@@ -234,15 +231,19 @@ public class Jmol implements WrappedApplet {
     s = getValue("JmolAppletProxy", null);
     if (s != null)
       options += "-appletProxy " + s;
-    viewer = JmolViewer.allocateViewer(appletWrapper,
-        null, fullName, appletWrapper.getDocumentBase(),
-        appletWrapper.getCodeBase(), options, new MyStatusListener());
+    viewer = JmolViewer.allocateViewer(appletWrapper, null, fullName,
+        appletWrapper.getDocumentBase(), appletWrapper.getCodeBase(), options,
+        new MyStatusListener());
     String menuFile = getParameter("menuFile");
     if (menuFile != null)
-      viewer.getProperty("DATA_API", "setMenu", viewer.getFileAsString(menuFile));
-    jvm12orGreater = viewer.isJvm12orGreater();
-    if (jvm12orGreater)
-      jvm12 = new Jvm12(appletWrapper, viewer, options);
+      viewer.getProperty("DATA_API", "setMenu", viewer
+          .getFileAsString(menuFile));
+    try {
+      UIManager.setLookAndFeel(UIManager
+          .getCrossPlatformLookAndFeelClassName());
+    } catch (Exception exc) {
+      System.err.println("Error loading L&F: " + exc);
+    }
     if (Logger.debugging) {
       Logger.debug("checking for jsoWindow mayScript=" + mayScript);
     }
@@ -485,7 +486,8 @@ public class Jmol implements WrappedApplet {
     isUpdating = true;
     if (showPaintTime)
       startPaintClock();
-    Dimension size = jvm12orGreater ? jvm12.getSize() : appletWrapper.size();
+    Dimension size = new Dimension();
+    appletWrapper.getSize(size);
     viewer.setScreenDimension(size);
     //Rectangle rectClip = jvm12orGreater ? jvm12.getClipBounds(g) : g.getClipRect();
     ++paintCounter;

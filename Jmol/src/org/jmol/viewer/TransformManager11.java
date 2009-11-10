@@ -570,7 +570,7 @@ class TransformManager11 extends TransformManager {
           Float.NaN);
       return;
     }
-    rotateAxisAngle(rotAxis, degrees / degreesPerRadian);
+    rotateAxisAngle(rotAxis, (float) (degrees / degreesPerRadian));
     navMode = NAV_MODE_NEWXYZ;
     navigating = true;
     finalizeTransformParameters();
@@ -730,7 +730,7 @@ class TransformManager11 extends TransformManager {
     float angle = vPath.angle(v);
     v.cross(vPath, v);
     if (angle != 0)
-      navigate(0, v, angle * degreesPerRadian);
+      navigate(0, v, (float) (angle * degreesPerRadian));
     matrixRotate.transform(pt0, pt0s);
     Point3f pt2 = new Point3f(ptVectorWing);
     pt2.add(pt0);
@@ -745,7 +745,7 @@ class TransformManager11 extends TransformManager {
       angle = -angle;
     v.set(0, 0, 1);
     if (angle != 0)
-      navigate(0, v, angle * degreesPerRadian);
+      navigate(0, v, (float) (angle * degreesPerRadian));
     if (viewer.getNavigateSurface()) {
       // set downward viewpoint 20 degrees to horizon
       v.set(1, 0, 0);

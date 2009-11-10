@@ -30,6 +30,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -64,6 +65,10 @@ public class Escape {
 
   public static String escape(Point4f xyzw) {
     return "{" + xyzw.x + " " + xyzw.y + " " + xyzw.z + " " + xyzw.w + "}";
+  }
+
+  public static String escape(AxisAngle4f a) {
+    return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";
   }
 
   public static String escape(Tuple3f xyz) {
@@ -511,9 +516,26 @@ public class Escape {
       return packageJSON(infoType, sb);
     }
     if (info instanceof Tuple3f) {
-      sb.append("[").append(((Tuple3f) info).x).append(",")
+      sb.append("[")
+        .append(((Tuple3f) info).x).append(",")
         .append(((Tuple3f) info).y).append(",")
         .append(((Tuple3f) info).z).append("]");
+      return packageJSON(infoType, sb);
+    }
+    if (info instanceof AxisAngle4f) {
+      sb.append("[")
+      .append(((AxisAngle4f) info).x).append(",")
+      .append(((AxisAngle4f) info).y).append(",")
+      .append(((AxisAngle4f) info).z).append(",")
+      .append((float)(((AxisAngle4f) info).angle * 180d/Math.PI)).append("]");
+    return packageJSON(infoType, sb);
+    }
+    if (info instanceof Point4f) {
+      sb.append("[")
+        .append(((Point4f) info).x).append(",")
+        .append(((Point4f) info).y).append(",")
+        .append(((Point4f) info).z).append(",")
+        .append(((Point4f) info).w).append("]");
       return packageJSON(infoType, sb);
     }
     if (info instanceof Hashtable) {
@@ -605,6 +627,14 @@ public class Escape {
     }
     if (info instanceof Tuple3f) {
       sb.append(escape((Tuple3f) info));
+      return packageReadable(name, null, sb);
+    }
+    if (info instanceof Point4f) {
+      sb.append(escape((Point4f) info));
+      return packageReadable(name, null, sb);
+    }
+    if (info instanceof AxisAngle4f) {
+      sb.append(escape((AxisAngle4f) info));
       return packageReadable(name, null, sb);
     }
     if (info instanceof Hashtable) {

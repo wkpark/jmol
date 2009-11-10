@@ -364,29 +364,6 @@ abstract class ScriptCompilationTokenParser {
     case Token.decimal:
       // create a file_model integer as part of the token
       return addTokenToPostfix(Token.spec_model2, getToken().intValue, theValue);
-
-    case Token.colon:
-    case Token.identifier:
-    case Token.integer:
-    case Token.leftsquare:
-    case Token.percent:
-    case Token.seqcode:
-    case Token.times:
-      // may be a residue specification
-      if (clauseResidueSpec())
-        return true;
-    //fall through for integer and identifier specifically
-    default:
-      if (Token.tokAttr(tok, Token.atomproperty)) {
-        int itemp = itokenInfix;
-        boolean isOK = clauseComparator(Token.tokAttr(tok, Token.predefinedset));
-        if (isOK || itokenInfix != itemp)
-            return isOK;
-      }
-      if (tok != Token.integer && !Token.tokAttr(tok, Token.predefinedset))
-        break;
-      return addNextToken();
-
     case Token.cell:
       return clauseCell();
     case Token.connected:
@@ -395,13 +372,11 @@ abstract class ScriptCompilationTokenParser {
       return clauseSubstructure();
     case Token.within:
       return clauseWithin();
-
     case Token.define:
       addNextToken();
       if (tokPeek() == Token.nada)
         return error(ERROR_endOfCommandUnexpected);
       return clauseDefine();
-      
     case Token.bonds:
     case Token.monitor:
       addNextToken();
@@ -421,6 +396,20 @@ abstract class ScriptCompilationTokenParser {
       return checkForItemSelector();
     case Token.leftbrace:
       return checkForCoordinate(isImplicitExpression);
+    default:
+      // may be a residue specification
+      if (clauseResidueSpec())
+        return true;
+      if (Token.tokAttr(tok, Token.atomproperty)) {
+        int itemp = itokenInfix;
+        boolean isOK = clauseComparator(Token.tokAttr(tok, Token.predefinedset));
+        if (isOK || itokenInfix != itemp)
+            return isOK;
+      }
+      if (tok != Token.integer && !Token.tokAttr(tok, Token.predefinedset))
+        break;
+      return addNextToken();
+
     }
     return error(ERROR_unrecognizedExpressionToken, "" + valuePeek());
   }
@@ -642,7 +631,6 @@ abstract class ScriptCompilationTokenParser {
       if (addNextTokenIf(Token.decimal))
         if (!addNextTokenIf(Token.comma))
           break;
-      if (tokPeek() == Token.identifier || tokPeek() == Token.hbond) {
         String strOrder = (String) getToken().value;
         int intType = JmolConstants.getBondOrderFromString(strOrder);
         if (intType == JmolConstants.BOND_ORDER_NULL) {
@@ -652,7 +640,6 @@ abstract class ScriptCompilationTokenParser {
           if (!addNextTokenIf(Token.comma))
             break;
         }
-      }
       if (addNextTokenIf(Token.rightparen))
         return true;
       if (!clauseOr(tokPeek(Token.leftparen))) // *expression*
@@ -723,7 +710,8 @@ abstract class ScriptCompilationTokenParser {
     case Token.define:
       break;
     default:
-      return error(ERROR_numberOrVariableNameExpected);
+      if (!Token.tokAttr(theToken.tok, Token.misc))
+        return error(ERROR_numberOrVariableNameExpected);
     }
     addTokenToPostfix(tokenComparator.tok, tokenAtomProperty.tok,
         tokenComparator.value + (isNegative ? " -" : ""));
@@ -799,18 +787,34 @@ abstract class ScriptCompilationTokenParser {
   }
 
   private boolean clauseResidueSpec() {
+    int tok = tokPeek();
+    boolean checkResNameSpec = false;
+    switch (tok) {
+    case Token.nada:
+      return false;
+    case Token.colon:
+    case Token.integer:
+    case Token.percent:
+    case Token.seqcode:
+      break;
+    case Token.times:
+    case Token.leftsquare:
+    case Token.identifier:
+      checkResNameSpec = true;
+      break;
+    default:
+      if (Token.tokAttr(tok, Token.comparator))
+        return false;
+      String str = "" + valuePeek();
+      checkResNameSpec = (str.length() == 2 || str.length() == 3);
+      // note: there are many groups that could
+      // in principle be here, for example:
+      // "AND" "SET" "TO*"
+      // these need to have attribute expression to be here
+    }
     boolean specSeen = false;
     residueSpecCodeGenerated = false;
-    int tok = tokPeek();
-    if (tok == Token.times || tok == Token.leftsquare
-        || tok == Token.identifier) {
-
-      //note: there are many groups that could
-      //in principle be escaped here, for example:
-      //"AND" "SET" and others
-      //rather than do this, just have people
-      //use [AND] [SET], which is no problem.
-
+    if (checkResNameSpec) {
       if (!clauseResNameSpec())
         return false;
       specSeen = true;
@@ -819,7 +823,6 @@ abstract class ScriptCompilationTokenParser {
     boolean wasInteger = false;
     if (tok == Token.times || tok == Token.integer || tok == Token.seqcode) {
       wasInteger = (tok == Token.integer);
-      
       if (tokPeek(Token.times))
         getToken();
       else if (!clauseSequenceSpec())
@@ -834,7 +837,7 @@ abstract class ScriptCompilationTokenParser {
       specSeen = true;
       tok = tokPeek();
     }
-    if (tok == Token.period) {
+    if (tok == Token.per) {
       if (!clauseAtomSpec())
         return false;
       specSeen = true;
@@ -863,9 +866,10 @@ abstract class ScriptCompilationTokenParser {
 
   private boolean clauseResNameSpec() {
     getToken();
-    if (isToken(Token.times) || isToken(Token.nada))
-      return (!isToken(Token.nada));
-    if (isToken(Token.leftsquare)) {
+    switch (theToken.tok) {
+    case Token.times:
+      return true;
+    case Token.leftsquare:
       String strSpec = "";
       while (getToken() != null && !isToken(Token.rightsquare))
         strSpec += theValue;
@@ -879,21 +883,17 @@ abstract class ScriptCompilationTokenParser {
         return error(ERROR_residueSpecificationExpected);
       strSpec = strSpec.toUpperCase();
       return generateResidueSpecCode(new Token(Token.spec_name_pattern, strSpec));
-    }
+    default:
+      //check for a * in the next token, which
+      //would indicate this must be a name with wildcard
 
-    // no [ ]:
-
-    if (!isToken(Token.identifier))
-      return error(ERROR_identifierOrResidueSpecificationExpected);
-    //check for a * in the next token, which
-    //would indicate this must be a name with wildcard
-
-    if (tokPeek(Token.times)) {
-      String res = theValue + "*";
-      getToken();
+      String res = (String) theValue;
+      if (tokPeek(Token.times)) {
+        res = theValue + "*";
+        getToken();
+      }
       return generateResidueSpecCode(new Token(Token.identifier, res));
     }
-    return generateResidueSpecCode(theToken);
   }
 
   private boolean clauseSequenceSpec() {
@@ -941,10 +941,10 @@ abstract class ScriptCompilationTokenParser {
         return generateResidueSpecCode(new Token(Token.spec_chain, '\0',
             "spec_chain"));
     }
-    if (tok == Token.times)
-      return (getToken() != null);
     char chain;
     switch (tok) {
+    case Token.times:
+      return (getToken() != null);
     case Token.integer:
       getToken();
       int val = theToken.intValue;
@@ -952,7 +952,7 @@ abstract class ScriptCompilationTokenParser {
         return error(ERROR_invalidChainSpecification);
       chain = (char) ('0' + val);
       break;
-    case Token.identifier:
+    default:
       String strChain = (String) getToken().value;
       if (strChain.length() != 1)
         return error(ERROR_invalidChainSpecification);
@@ -960,8 +960,6 @@ abstract class ScriptCompilationTokenParser {
       if (chain == '?')
         return true;
       break;
-    default:
-      return error(ERROR_invalidChainSpecification);
     }
     return generateResidueSpecCode(new Token(Token.spec_chain, chain,
         "spec_chain"));
@@ -1023,7 +1021,7 @@ abstract class ScriptCompilationTokenParser {
   }
 
   private boolean clauseAtomSpec() {
-    if (!tokenNext(Token.period))
+    if (!tokenNext(Token.per))
       return error(ERROR_invalidAtomSpecification);
     if (getToken() == null)
       return true;
@@ -1036,13 +1034,16 @@ abstract class ScriptCompilationTokenParser {
     switch (theToken.tok) {
     case Token.times:
       return true;
-    case Token.opIf:
-    case Token.identifier:
-      break;
-    default:
-      return error(ERROR_invalidAtomSpecification);
+      // here we cannot depend upon the atom spec being an identifier
+      // in other words, not a known Jmol word. As long as the period 
+      // was there, we accept whatever is next
+      //case Token.opIf:
+      //case Token.identifier:
+      //break;
+      //default:
+      //return error(ERROR_invalidAtomSpecification);
     }
-    atomSpec += theValue;
+    atomSpec += "" + theToken.value;
     if (tokPeek(Token.times)) {
       tokenNext();
       // this one is a '*' as a prime, not a wildcard

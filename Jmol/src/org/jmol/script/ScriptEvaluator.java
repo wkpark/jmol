@@ -9845,7 +9845,6 @@ public class ScriptEvaluator {
   private void setEcho() throws ScriptException {
     String propertyName = "target";
     Object propertyValue = null;
-    System.out.println("scripteval test setecho");
     boolean echoShapeActive = true;
     // set echo xxx
     int len = 3;

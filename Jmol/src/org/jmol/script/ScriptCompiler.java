@@ -890,7 +890,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         && !(tokCommand == Token.script && iHaveQuotedString)
         && lookingAtImpliedString()) {
       String str = script.substring(ichToken, ichToken + cchToken);
-      addTokenToPrefix(new Token(Token.string, str));
+      if (tokCommand == Token.label 
+          && Parser.isOneOf(str.toLowerCase(), "on;off;hide;display"))
+        addTokenToPrefix(Token.getTokenFromName(str));
+      else
+        addTokenToPrefix(new Token(Token.string, str));
       return CONTINUE;
     }
     float value;

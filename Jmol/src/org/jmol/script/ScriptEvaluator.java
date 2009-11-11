@@ -6451,19 +6451,22 @@ public class ScriptEvaluator {
   private void label(int index) throws ScriptException {
     if (isSyntaxCheck)
       return;
-    String strLabel = parameterAsString(index++);
-    if (strLabel.equalsIgnoreCase("on")) {
-      strLabel = viewer.getStandardLabelFormat();
-    } else if (strLabel.equalsIgnoreCase("off")) {
-      strLabel = null;
-    } else if (strLabel.equalsIgnoreCase("display")) {
-      setShapeProperty(JmolConstants.SHAPE_LABELS, "display", Boolean.TRUE);
-      return;      
-    } else if (strLabel.equalsIgnoreCase("hide")) {
-      setShapeProperty(JmolConstants.SHAPE_LABELS, "display", Boolean.FALSE);
-      return;
-    }
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
+    String strLabel = null;
+    switch (getToken(index).tok) {
+    case Token.on:
+      strLabel = viewer.getStandardLabelFormat();
+      break;
+    case Token.off:
+      break;
+    case Token.hide:
+    case Token.display:
+      setShapeProperty(JmolConstants.SHAPE_LABELS, "display", 
+          theTok == Token.display ? Boolean.TRUE : Boolean.FALSE);
+      return;
+    default:
+      strLabel = parameterAsString(index);
+    }
     viewer.setLabel(strLabel);
   }
 

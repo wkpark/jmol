@@ -55,7 +55,7 @@ import java.io.BufferedReader;
  * relevant section of .cell file are included as comments below
  *
  * @author Joerg Meyer, FHI Berlin 2009 (meyer@fhi-berlin.mpg.de)
- * @version 1.1
+ * @version 1.2
  */
 
 public class CastepReader extends AtomSetCollectionReader {
@@ -68,6 +68,7 @@ public class CastepReader extends AtomSetCollectionReader {
   private float alpha = 0.0f;
   private float beta = 0.0f;
   private float gamma = 0.0f;
+  private Vector3f[] abc = new Vector3f[3];
 
   public void readAtomSetCollection(BufferedReader br) {
 
@@ -136,7 +137,21 @@ ang
 
       doApplySymmetry = true;
       setFractionalCoordinates(iHaveFractionalCoordinates);
+      // relay length of and angles between cell vectors to Jmol
       setUnitCell(a, b, c, alpha, beta, gamma);
+      /*
+       * IMPORTANT: 
+       * also hand over (matrix of) unit cell vectors to trigger
+       * the calculation of the correct transformation matrices
+       * from cartesian to fractional coordinates (which are used
+       * internally by Jmol)
+       */
+      float[] lv = new float[3];
+      for (int n = 0; n < 3; n++) {
+        abc[n].get(lv);
+        addPrimitiveLatticeVector(n, lv);
+      }
+
       int nAtoms = atomSetCollection.getAtomCount();
       /*
        * this needs to be run either way (i.e. even if coordinates are already
@@ -154,15 +169,9 @@ ang
   }
 
   private void readLatticeAbc() throws Exception {
-
-    float factor = 1.0f;
-
     if (tokenizeCastepCell() == 0)
       return;
-    if (tokens[0].equalsIgnoreCase("bohr"))
-      factor = ANGSTROMS_PER_BOHR;
-    if (tokens.length < 3)
-      tokenizeCastepCell();
+    float factor = readLengthUnit();
     if (tokens.length >= 3) {
       a = parseFloat(tokens[0]) * factor;
       b = parseFloat(tokens[1]) * factor;
@@ -183,26 +192,24 @@ ang
       Logger
           .warn("error reading alpha,beta,gamma in %BLOCK LATTICE_ABC in CASTEP .cell file");
     }
+
+    // initialize lattice vectors to NaN - since not present in .cell file
+    for (int n = 0; n < 3; n++) {
+      abc[n] = new Vector3f(Float.NaN, Float.NaN, Float.NaN);
+    }
   }
 
   private void readLatticeCart() throws Exception {
-
-    float factor = 1.0f;
-    float x, y, z;
-    Vector3f[] lv = new Vector3f[3];
-
     if (tokenizeCastepCell() == 0)
       return;
-    if (tokens[0].equalsIgnoreCase("bohr"))
-      factor = ANGSTROMS_PER_BOHR;
-    if (tokens.length < 3)
-      tokenizeCastepCell();
+    float factor = readLengthUnit();
+    float x, y, z;
     for (int n = 0; n < 3; n++) {
       if (tokens.length >= 3) {
         x = parseFloat(tokens[0]) * factor;
         y = parseFloat(tokens[1]) * factor;
         z = parseFloat(tokens[2]) * factor;
-        lv[n] = new Vector3f(x, y, z);
+        abc[n] = new Vector3f(x, y, z);
       } else {
         Logger.warn("error reading coordinates of lattice vector "
             + Integer.toString(n + 1)
@@ -212,46 +219,55 @@ ang
       if (tokenizeCastepCell() == 0)
         return;
     }
-
-    a = lv[0].length();
-    b = lv[1].length();
-    c = lv[2].length();
-    alpha = (float) Math.toDegrees(lv[1].angle(lv[2]));
-    beta = (float) Math.toDegrees(lv[2].angle(lv[0]));
-    gamma = (float) Math.toDegrees(lv[0].angle(lv[1]));
+    a = abc[0].length();
+    b = abc[1].length();
+    c = abc[2].length();
+    alpha = (float) Math.toDegrees(abc[1].angle(abc[2]));
+    beta = (float) Math.toDegrees(abc[2].angle(abc[0]));
+    gamma = (float) Math.toDegrees(abc[0].angle(abc[1]));
   }
 
   private void readPositionsFrac() throws Exception {
-
     if (tokenizeCastepCell() == 0)
       return;
     readAtomData(1.0f);
   }
 
   private void readPositionsAbs() throws Exception {
-
     if (tokenizeCastepCell() == 0)
       return;
-    if (tokens[0].equalsIgnoreCase("bohr")) {
-      tokenizeCastepCell();
-      readAtomData(ANGSTROMS_PER_BOHR);
-    } else if (tokens[0].equalsIgnoreCase("ang")){
-      tokenizeCastepCell();
-      readAtomData(1.0f);
-    } else {
-      readAtomData(1.0f);
+    float factor = readLengthUnit();
+    readAtomData(factor);
+  }
+
+  /*
+     to be kept in sync with Utilities/io.F90
+  */
+  private final static String[] lengthUnitIds = {
+    "bohr", "m", "cm", "nm", "ang", "a0" };
+
+  private final static float[] lengthUnitFactors = {
+    ANGSTROMS_PER_BOHR, 1E10f, 1E8f, 1E1f, 1.0f, ANGSTROMS_PER_BOHR };
+
+  private final static int lengthUnits = lengthUnitIds.length;
+
+  private float readLengthUnit() throws Exception {
+
+    float factor = 1.0f;
+    for (int i=0; i<lengthUnits; i++) {
+      if (tokens[0].equalsIgnoreCase(lengthUnitIds[i])) {
+        factor = lengthUnitFactors[i];
+        tokenizeCastepCell();
+      }
     }
+    return factor;
   }
 
   private void readAtomData(float factor) throws Exception {
-
     float x, y, z;
-
     do {
-
       if (tokens[0].equalsIgnoreCase("%ENDBLOCK"))
         break;
-
       if (tokens.length >= 4) {
         Atom atom = atomSetCollection.addNewAtom();
         x = parseFloat(tokens[1]) * factor;
@@ -266,7 +282,6 @@ ang
   }
 
   private int tokenizeCastepCell() throws Exception {
-
     while (true) {
       if (readLine() == null)
         return 0;
@@ -280,5 +295,4 @@ ang
     }
     return tokens.length;
   }
-
 }

@@ -638,11 +638,18 @@ public class Resolver {
 
     // use same tokenizing mechanism as in AimsReader.java to also recognize
     // AIMS geometry files with indented keywords
+    // use same tokenizing mechanism as in AimsReader.java 
+    //  to reliably recognize FHI-aims files
     // "atom" is a VERY generic term; just "atom" breaks HIN reader. 
+    // >= token.length are necessary to allow for comments at the end of valid lines
+    //  (as perfectly legal in simple Fortran list based IO) 
     for (int i = 0; i < lines.length; i++) {
       String[] tokens = Parser.getTokens(lines[i]);
-      if (tokens.length == 5 && tokens[0].startsWith("atom") 
-          || tokens.length == 4 && tokens[0].startsWith("lattice_vector"))
+      if (tokens.length == 0)
+        continue;
+      if (tokens[0].startsWith("atom") && tokens.length >= 5
+          || tokens[0].startsWith("multipole") && tokens.length >= 6
+          || tokens[0].startsWith("lattice_vector") && tokens.length >= 4)
         return true;
     }
     return false;

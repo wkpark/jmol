@@ -245,8 +245,12 @@ public class Labels extends AtomShape {
       return;
     }
 
-    if ("toggleLabel" == propertyName) {
+    if ("display" == propertyName || "toggleLabel" == propertyName) {
       // toggle
+      int mode = ("toggleLabel" == propertyName ? 0 
+          : ((Boolean) value).booleanValue() ? 1 : -1);
+      if (mads == null)
+        mads = new short[atomCount];
       for (int atomIndex = atomCount; --atomIndex >= 0;) {
         if (bsSelected.get(atomIndex)) {
           Atom atom = atoms[atomIndex];
@@ -254,8 +258,11 @@ public class Labels extends AtomShape {
             formats = ArrayUtil.ensureLength(formats, atomIndex + 1);
           if (strings != null && strings.length > atomIndex
               && strings[atomIndex] != null) {
-            mads[atomIndex] = (short) (mads[atomIndex] < 0 ? 1 : -1);
+            mads[atomIndex] = (short) (mode == 0 && mads[atomIndex] < 0  
+                || mode == 1 ? 1 : -1);
           } else {
+            if (bsSizeSet == null)
+              bsSizeSet = new BitSet();
             String strLabel = viewer.getStandardLabelFormat();
             strings = ArrayUtil.ensureLength(strings, atomIndex + 1);
             strings[atomIndex] = LabelToken.formatLabel(atom, strLabel);
@@ -264,10 +271,11 @@ public class Labels extends AtomShape {
             if ((bsBgColixSet == null || !bsBgColixSet.get(atomIndex))
                 && defaultBgcolix != 0)
               setBgcolix(atomIndex, defaultBgcolix);
-            mads[atomIndex] = 1;
+            mads[atomIndex] = (short) (mode >= 0 ? 1 : -1);
           }
           atom.setShapeVisibility(myVisibilityFlag, strings != null
-              && atomIndex < strings.length && strings[atomIndex] != null);
+              && atomIndex < strings.length && strings[atomIndex] != null
+              && mads[atomIndex] >= 0);
           //        } else if (strings != null && atomIndex < strings.length) {
           //        strings[atomIndex] = null;          
         }

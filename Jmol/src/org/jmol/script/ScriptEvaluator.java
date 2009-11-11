@@ -6456,6 +6456,12 @@ public class ScriptEvaluator {
       strLabel = viewer.getStandardLabelFormat();
     } else if (strLabel.equalsIgnoreCase("off")) {
       strLabel = null;
+    } else if (strLabel.equalsIgnoreCase("display")) {
+      setShapeProperty(JmolConstants.SHAPE_LABELS, "display", Boolean.TRUE);
+      return;      
+    } else if (strLabel.equalsIgnoreCase("hide")) {
+      setShapeProperty(JmolConstants.SHAPE_LABELS, "display", Boolean.FALSE);
+      return;
     }
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
     viewer.setLabel(strLabel);

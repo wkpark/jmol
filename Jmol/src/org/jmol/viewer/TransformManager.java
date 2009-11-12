@@ -1489,6 +1489,8 @@ abstract class TransformManager {
   protected final Vector3f aaStepNavCenter = new Vector3f();
 
   boolean isInPosition(Vector3f axis, float degrees) {
+    if (Float.isNaN(degrees))
+      return true;
     aaTest1.set(axis, degrees * (float) Math.PI / 180);
     ptTest1.set(4.321f, 1.23456f, 3.14159f);
     getRotation(matrixTest);

@@ -5029,7 +5029,7 @@ public class ScriptEvaluator {
           floatParameter(i++));
       degrees = floatParameter(i++);
     }
-    if (Float.isNaN(axis.x))
+    if (Float.isNaN(axis.x) || Float.isNaN(axis.y) || Float.isNaN(axis.z))
       axis.set(0, 0, 0);
     else if (axis.length() == 0 && degrees == 0)
       degrees = Float.NaN;

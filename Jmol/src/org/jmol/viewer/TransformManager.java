@@ -637,7 +637,8 @@ abstract class TransformManager {
   }
 
   void setRotation(Matrix3f matrixRotation) {
-    matrixRotate.set(matrixRotation);
+    if (!Float.isNaN(matrixRotation.m00))
+      matrixRotate.set(matrixRotation);
   }
 
   void getRotation(Matrix3f matrixRotation) {
@@ -1504,7 +1505,7 @@ abstract class TransformManager {
 
     Vector3f axis = new Vector3f(rotAxis);
     if (Float.isNaN(degrees)) {
-      getRotation(matrixEnd);
+      matrixEnd.m00 = Float.NaN;
     } else if (degrees < 0.01f && degrees > -0.01f) {
       //getRotation(matrixEnd);
       matrixEnd.setIdentity();
@@ -1547,10 +1548,8 @@ abstract class TransformManager {
       zoom = zoomPercent;
     getRotation(matrixStart);
     matrixStartInv.invert(matrixStart);
-
     matrixStep.mul(matrixEnd, matrixStartInv);
     aaTotal.set(matrixStep);
-
     int fps = 30;
     int totalSteps = (int) (floatSecondsTotal * fps);
     if (floatSecondsTotal > 0)
@@ -1583,18 +1582,19 @@ abstract class TransformManager {
 
       for (int iStep = 1; iStep < totalSteps; ++iStep) {
 
-        getRotation(matrixStart);
-        matrixStartInv.invert(matrixStart);
-        matrixStep.mul(matrixEnd, matrixStartInv);
-        aaTotal.set(matrixStep);
-
-        aaStep.set(aaTotal);
-        aaStep.angle /= (totalSteps - iStep);
-        if (aaStep.angle == 0)
-          matrixStep.setIdentity();
-        else
-          matrixStep.set(aaStep);
-        matrixStep.mul(matrixStart);
+        if (!Float.isNaN(matrixEnd.m00)) {
+          getRotation(matrixStart);
+          matrixStartInv.invert(matrixStart);
+          matrixStep.mul(matrixEnd, matrixStartInv);
+          aaTotal.set(matrixStep);
+          aaStep.set(aaTotal);
+          aaStep.angle /= (totalSteps - iStep);
+          if (aaStep.angle == 0)
+            matrixStep.setIdentity();
+          else
+            matrixStep.set(aaStep);
+          matrixStep.mul(matrixStart);
+        }
         float fStep = iStep / (totalSteps - 1f);
         modelRadius = startRotationRadius + rotationRadiusDelta * fStep;
         scaleDefaultPixelsPerAngstrom = startPixelScale + pixelScaleDelta

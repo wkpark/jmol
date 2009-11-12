@@ -770,12 +770,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     moveUpdate(floatSecondsTotal);
   }
 
-  public void moveTo(float floatSecondsTotal, Point3f center, Vector3f pt,
+  public void moveTo(float floatSecondsTotal, Point3f center, Vector3f rotAxis,
               float degrees, float zoom, float xTrans, float yTrans,
               float rotationRadius, Point3f navCenter, float xNav, float yNav,
               float navDepth) {
     // from Eval
-    transformManager.moveTo(floatSecondsTotal, center, pt, degrees, zoom,
+    transformManager.moveTo(floatSecondsTotal, center, rotAxis, degrees, zoom,
         xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
     moveUpdate(floatSecondsTotal);
   }

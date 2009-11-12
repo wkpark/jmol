@@ -7904,8 +7904,7 @@ public class ScriptEvaluator {
     float yTrans = Float.NaN;
     if (i != statementLength) {
       xTrans = floatParameter(i++);
-      if (i != statementLength)
-        yTrans = floatParameter(i++);
+      yTrans = floatParameter(i++);
     }
     if (i != statementLength)
       error(ERROR_invalidArgument);

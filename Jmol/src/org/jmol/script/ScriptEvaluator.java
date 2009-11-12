@@ -7898,7 +7898,15 @@ public class ScriptEvaluator {
     // zoom/zoomTo percent|-factor|+factor|*factor|/factor | 0
     float zoom = viewer.getZoomSetting();
     float newZoom = getZoom(i, bsCenter, zoom);
-    if (iToken + 1 != statementLength)
+    i = iToken + 1;
+    float xTrans = Float.NaN;
+    float yTrans = Float.NaN;
+    if (i != statementLength) {
+      xTrans = floatParameter(i++);
+      if (i != statementLength)
+        yTrans = floatParameter(i++);
+    }
+    if (i != statementLength)
       error(ERROR_invalidArgument);
     if (newZoom < 0) {
       newZoom = -newZoom; // currentFactor
@@ -7910,8 +7918,6 @@ public class ScriptEvaluator {
           newZoom /= 2;
       }
     }
-    float xTrans = 0;
-    float yTrans = 0;
     float max = viewer.getMaxZoomPercent();
     if (newZoom < 5 || newZoom > max)
       numberOutOfRange(5, max);
@@ -7923,11 +7929,17 @@ public class ScriptEvaluator {
           viewer.setCenterBitSet(bs, false);
       }
       center = viewer.getRotationCenter();
-      xTrans = viewer.getTranslationXPercent();
-      yTrans = viewer.getTranslationYPercent();
+      if (Float.isNaN(xTrans))
+        xTrans = viewer.getTranslationXPercent();
+      if (Float.isNaN(yTrans))
+        yTrans = viewer.getTranslationYPercent();
     }
     if (isSyntaxCheck)
       return;
+    if (Float.isNaN(xTrans))
+      xTrans = 0;
+    if (Float.isNaN(yTrans))
+      yTrans = 0;
     if (isSameAtom && Math.abs(zoom - newZoom) < 1)
       time = 0;
     viewer.moveTo(time, center, JmolConstants.center, Float.NaN, newZoom,

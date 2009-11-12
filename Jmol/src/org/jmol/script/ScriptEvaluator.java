@@ -4931,7 +4931,7 @@ public class ScriptEvaluator {
           Float.NaN, Float.NaN, Float.NaN);
       return;
     }
-    Vector3f axis = new Vector3f();
+    Vector3f axis = new Vector3f(Float.NaN, 0, 0);
     Point3f center = null;
     int i = 1;
     float floatSecondsTotal = (isFloatParameter(i) ? floatParameter(i++) : 2.0f);
@@ -4941,7 +4941,8 @@ public class ScriptEvaluator {
     case Token.quaternion:
       Quaternion q;
       boolean isMolecular = false;
-      if (optParameterAsString(++i).equalsIgnoreCase("molecular")) {
+      if (tokAt(++i) == Token.molecular) {
+        // see comment below 
         isMolecular = true;
         i++;
       }
@@ -4992,8 +4993,6 @@ public class ScriptEvaluator {
         axis.set(pt4.x, pt4.y, pt4.z);
         degrees = pt4.w;
       }
-      if (axis.length() == 0 && degrees == 0)
-        degrees = Float.NaN;
       break;
     case Token.front:
       axis.set(1, 0, 0);
@@ -5030,6 +5029,10 @@ public class ScriptEvaluator {
           floatParameter(i++));
       degrees = floatParameter(i++);
     }
+    if (Float.isNaN(axis.x))
+      axis.set(0, 0, 0);
+    else if (axis.length() == 0 && degrees == 0)
+      degrees = Float.NaN;
     boolean isChange = !viewer.isInPosition(axis, degrees);
     // optional zoom 
     float zoom = (isFloatParameter(i) ? floatParameter(i++) : Float.NaN);

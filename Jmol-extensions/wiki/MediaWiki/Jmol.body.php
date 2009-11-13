@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Nicolas Vervelle, Jmol Development team
+ * @author Nicolas Vervelle, Angel Herraez, Jmol Development team
  * @package Jmol
  */
 //<source lang=php>
@@ -495,13 +495,13 @@ class Jmol {
         $this->mValName = $data;
         break;
       case "SCRIPT":
-        $this->mValScript = $data;
+        $this->mValScript = str_replace("%26", "&", $data);
         break;
       case "SCRIPTWHENCHECKED":
-        $this->mValScriptWhenChecked = $data;
+        $this->mValScriptWhenChecked = str_replace("%26", "&", $data);
         break;
       case "SCRIPTWHENUNCHECKED":
-        $this->mValScriptWhenUnchecked = $data;
+        $this->mValScriptWhenUnchecked = str_replace("%26", "&", $data);
         break;
       case "SIGNED":
         if ($wgJmolAuthorizeChoosingSignedApplet) {
@@ -530,7 +530,7 @@ class Jmol {
         $this->mValUploadedFileContents = $data;
         break;
       case "URLCONTENTS":
-        $this->mValUrlContents = $data;
+        $this->mValUrlContents = str_replace("%26", "&", $data);
         break;
       case "VERTICAL":
         $this->mValVertical = $data;
@@ -554,7 +554,7 @@ class Jmol {
           $this->mValChecked = $data;
           break;
         case "SCRIPT":
-          $this->mValScript = $data;
+          $this->mValScript = str_replace("%26", "&", $data);
           break;
         case "TEXT":
           $this->mValText = $data;

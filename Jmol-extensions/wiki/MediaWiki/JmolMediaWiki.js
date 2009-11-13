@@ -18,10 +18,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-// Dec. 08 - several fixes by AH
-/* Jun. 09 - Addition of support for pop-in applet, by AH
-		and some code cleanup (extensionPath no longer used)
-*/
+// (version notes moved to Jmol.php)
 
 function jmolWikiPopupWindow(windowTitle, windowSize, windowLeft, windowTop, windowCode) {
   var windowWidth = parseInt(windowSize) + 15;

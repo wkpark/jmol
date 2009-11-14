@@ -133,11 +133,11 @@ class StatusListener implements JmolStatusListener {
       sendConsoleMessage(data == null ? null : strInfo);
       break;
     case JmolConstants.CALLBACK_CLICK:
-      // x, y, modifiers, int[] {modifiers}
-      // the fourth parameter allows an application to change the modifier
+      // x, y, action, int[] {action}
+      // the fourth parameter allows an application to change the action
       if (display.haveDisplay)
         display.status
-          .setStatus(1, "(" + data[1] + "," + data[2] + ") [" + data[3] + "]");
+          .setStatus(1, "(" + data[1] + "," + data[2] + ")");
       break;
     case JmolConstants.CALLBACK_PICK:
       notifyAtomPicked(strInfo);

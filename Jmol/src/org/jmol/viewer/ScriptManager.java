@@ -63,6 +63,7 @@ class ScriptManager {
   public Object addScript(String returnType, String strScript,
                           String statusList, boolean isScriptFile,
                           boolean isQuiet) {
+    //System.out.println("ScriptMan addScript " + strScript);
     if (!useQueue) {
       clearQueue();
       viewer.haltScriptExecution();

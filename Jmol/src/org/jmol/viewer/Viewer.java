@@ -61,6 +61,7 @@ import org.jmol.util.Quaternion;
 import org.jmol.util.TempArray;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.StateManager.Orientation;
+import org.jmol.viewer.binding.Binding;
 
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -204,10 +205,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private AnimationManager animationManager;
   private DataManager dataManager;
   private FileManager fileManager;
+  private ActionManager actionManager;
   private ModelManager modelManager;
   private ModelSet modelSet;
-  public MouseManager mouseManager;
-  private PickingManager pickingManager;
+  private MouseManager mouseManager;
   private RepaintManager repaintManager;
   private ScriptManager scriptManager;
   private SelectionManager selectionManager;
@@ -258,14 +259,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     scriptManager = new ScriptManager(this);
     transformManager = new TransformManager11(this);
     selectionManager = new SelectionManager(this);
-    pickingManager = new PickingManager(this);
     if (display != null) {
+      actionManager = new ActionManager(this);
       if (jvm14orGreater)
-        mouseManager = MouseWrapper14.alloc(display, this);
+        mouseManager = new MouseManager14(display, this, actionManager);
       else if (jvm11orGreater)
-        mouseManager = MouseWrapper11.alloc(display, this);
+        mouseManager = new MouseManager11(display, this, actionManager);
       else
-        mouseManager = new MouseManager10(display, this);
+        mouseManager = new MouseManager10(display, this, actionManager);
     }
     modelManager = new ModelManager(this);
     tempManager = new TempArray();
@@ -1630,15 +1631,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   Rectangle getRubberBandSelection() {
-    return mouseManager.getRubberBand();
+    return actionManager.getRubberBand();
   }
 
+  public boolean isBound(int action, int gesture) {
+    return actionManager.isBound(action, gesture);
+    
+  }
   public int getCursorX() {
-    return mouseManager.xCurrent;
+    return actionManager.xCurrent;
   }
 
   public int getCursorY() {
-    return mouseManager.yCurrent;
+    return actionManager.yCurrent;
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -2211,7 +2216,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       repaintManager.clear();
       animationManager.clear();
       transformManager.clear();
-      pickingManager.clear();
+      actionManager.clear();
       selectionManager.clear();
       clearAllMeasurements();
       if (minimizer != null)
@@ -2270,7 +2275,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setBackgroundModelIndex(-1);
     setFrankOn(getShowFrank());
     if (haveDisplay)
-      mouseManager.startHoverWatcher(true);
+      actionManager.startHoverWatcher(true);
     setTainted(true);
     finalizeTransformParameters();
   }
@@ -2600,11 +2605,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         .findNearestAtomIndex(x, y));
   }
 
-  void selectRectangle(Rectangle rect, int modifiers) {
-    BitSet bs = modelSet.findAtomsInRectangle(rect, getVisibleFramesBitSet());
-    if (BitSetUtil.firstSetBit(bs) < 0)
-      return;
-    pickingManager.atomsPicked(bs, modifiers);
+  BitSet findAtomsInRectangle(Rectangle rect) {
+    return modelSet.findAtomsInRectangle(rect, getVisibleFramesBitSet());
   }
 
   public void toCartesian(Point3f pt) {
@@ -3998,7 +4000,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   int hoverAtomIndex = -1;
   String hoverText;
 
-  void hoverOn(int atomIndex, int modifiers) {
+  void hoverOn(int atomIndex, int action) {
     if (eval != null && isScriptExecuting() || atomIndex == hoverAtomIndex
         || global.hoverDelayMs == 0)
       return;
@@ -4006,7 +4008,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     loadShape(JmolConstants.SHAPE_HOVER);
     Atom atom;
-    if (modifiers == MouseManager.SHIFT 
+    if (isBound(action, ActionManager.ACTION_dragLabel) 
         && getPickingMode() == JmolConstants.PICKING_LABEL
         && (atom = modelSet.getAtomAt(atomIndex)) != null
         && atom.isShapeVisible(JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_LABELS))) {
@@ -4055,7 +4057,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void togglePickingLabel(BitSet bs) {
-    // eval label toggle (atomset) and pickingManager
+    // eval label toggle (atomset) and actionManager
     if (bs == null)
       bs = selectionManager.bsSelection;
     loadShape(JmolConstants.SHAPE_LABELS);
@@ -4162,13 +4164,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     eval.setDebugging();
   }
 
-  void atomPicked(int atomIndex, Point3fi ptClicked, int modifiers,
-                  boolean isDoubleClick) {
-    pickingManager.atomPicked(atomIndex, ptClicked, modifiers, isDoubleClick);
-  }
-
   void clearClickCount() {
-    // mouseManager.clearClickCount();
     setTainted(true);
   }
 
@@ -4204,17 +4200,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     display.setCursor(Cursor.getPredefinedCursor(c));
   }
 
-  private void setPickingMode(String mode) {
-    int pickingMode = JmolConstants.getPickingMode(mode);
-    if (pickingMode < 0)
-      pickingMode = JmolConstants.PICKING_IDENT;
-    pickingManager.setPickingMode(pickingMode);
+  private void setgestureMode(String mode) {
+    int gestureMode = JmolConstants.getPickingMode(mode);
+    if (gestureMode < 0)
+      gestureMode = JmolConstants.PICKING_IDENT;
+    actionManager.setPickingMode(gestureMode);
     global.setParameterValue("picking", JmolConstants
-        .getPickingModeName(pickingManager.getPickingMode()));
+        .getPickingModeName(actionManager.getPickingMode()));
   }
 
   public int getPickingMode() {
-    return pickingManager.getPickingMode();
+    return actionManager.getPickingMode();
   }
 
   public boolean getDrawPicking() {
@@ -4233,21 +4229,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int pickingStyle = JmolConstants.getPickingStyle(style);
     if (pickingStyle < 0)
       pickingStyle = JmolConstants.PICKINGSTYLE_SELECT_JMOL;
-    pickingManager.setPickingStyle(pickingStyle);
+    actionManager.setPickingStyle(pickingStyle);
     global.setParameterValue("pickingStyle", JmolConstants
-        .getPickingStyleName(pickingManager.getPickingStyle()));
-  }
-
-  int getPickingStyle() {
-    return pickingManager.getPickingStyle();
+        .getPickingStyleName(actionManager.getPickingStyle()));
   }
 
   public boolean getDrawHover() {
-    return pickingManager.getDrawHover();
+    return actionManager.getDrawHover();
   }
 
   public String getAtomInfo(int atomIndex) {
-    // only for MeasurementTable and PickingManager
+    // only for MeasurementTable and actionManager
     return (atomIndex >= 0 ? modelSet.getAtomInfo(atomIndex, null)
         : (String) modelSet.getShapeProperty(JmolConstants.SHAPE_MEASURES,
             "pointInfo", -atomIndex));
@@ -4548,7 +4540,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * [Si #3, O #8, Si #7, 60.1 <degrees mark>]
    * 
    * Viewer.setStatusMeasuring Measures.clear Measures.define
-   * Measures.deleteMeasurement Measures.pending PickingManager.atomPicked
+   * Measures.deleteMeasurement Measures.pending actionManager.atomPicked
    */
 
   public void setStatusMeasuring(String status, int intInfo, String strMeasure) {
@@ -4603,8 +4595,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 
    * Viewer.setStatusAtomPicked Draw.checkObjectClicked (set picking DRAW)
    * Sticks.checkObjectClicked (set bondPicking TRUE; set picking IDENTIFY)
-   * PickingManager.atomPicked (set atomPicking TRUE; set picking IDENTIFY)
-   * PickingManager.queueAtom (during measurements)
+   * actionManager.atomPicked (set atomPicking TRUE; set picking IDENTIFY)
+   * actionManager.queueAtom (during measurements)
    */
 
   public void setStatusAtomPicked(int atomIndex, String info) {
@@ -4658,7 +4650,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * Eval.hbond Eval.load (logMessages message) Eval.message Eval.runEval (error
    * message) Eval.write (error reading file) Eval.zap (error message)
    * FileManager.createAtomSetCollectionFromFile "requesting..." for Chime-like
-   * compatibility PickingManager.atomPicked
+   * compatibility actionManager.atomPicked
    * "pick one more atom in order to spin..." for example
    * Viewer.evalStringWaitStatus -- see above -2, 0 only if error, >=1 at
    * termination Viewer.reportSelection "xxx atoms selected"
@@ -4979,7 +4971,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (key.equalsIgnoreCase("picking")) {
-        setPickingMode(value);
+        setgestureMode(value);
         return;
       }
       if (key.equalsIgnoreCase("pickingStyle")) {
@@ -5647,7 +5639,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (key.equalsIgnoreCase("drawHover")) {
-        pickingManager.setDrawHover(value);
+        actionManager.setDrawHover(value);
         break;
       }
       if (key.equalsIgnoreCase("navigationMode")) {
@@ -6931,13 +6923,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     axesAreTainted = TF && refreshing;
   }
 
-  public int notifyMouseClicked(int x, int y, int modifiers, int clickCount) {
+  public int notifyMouseClicked(int x, int y, int action) {
     // change y to 0 at bottom
+    int modifiers = Binding.getModifiers(action);
+    int clickCount = Binding.getClickCount(action);
     global.setParameterValue("_mouseX", x);
     global.setParameterValue("_mouseY", dimScreen.height - y);
+    global.setParameterValue("_mouseAction", action);
     global.setParameterValue("_mouseModifiers", modifiers);
-    global.setParameterValue("_clickCount", modifiers);
-    return statusManager.setStatusClicked(x, dimScreen.height - y, modifiers, clickCount);
+    global.setParameterValue("_clickCount", clickCount);
+    return statusManager.setStatusClicked(x, dimScreen.height - y, action, clickCount);
   }
 
   Point3fi checkObjectClicked(int x, int y, int modifiers) {
@@ -6951,7 +6946,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.checkObjectHovered(x, y, getVisibleFramesBitSet());
   }
 
-  void checkObjectDragged(int prevX, int prevY, int x, int y, int modifiers) {
+  void checkObjectDragged(int prevX, int prevY, int x, int y, int action) {
     int iShape = 0;
     switch (getPickingMode()) {
     case JmolConstants.PICKING_LABEL:
@@ -6961,7 +6956,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       iShape = JmolConstants.SHAPE_DRAW;
       break;
     }
-    modelSet.checkObjectDragged(prevX, prevY, x, y, modifiers,
+    modelSet.checkObjectDragged(prevX, prevY, x, y, action,
         getVisibleFramesBitSet(), iShape);
   }
 
@@ -6988,7 +6983,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   int getPickingSpinRate() {
-    // PickingManager
+    // actionManager
     return global.pickingSpinRate;
   }
 

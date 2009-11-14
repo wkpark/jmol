@@ -846,8 +846,10 @@ public class Jmol implements WrappedApplet {
         // just send it
         break;
       case JmolConstants.CALLBACK_CLICK:
+        // x, y, action, int[] {action}
+        // the fourth parameter allows an application to change the action
         if ("alert".equals(callback))
-          strInfo = "x=" + data[1] + " y=" + data[2] + " modifiers=" + data[3] + " clickCount=" + data[4];
+          strInfo = "x=" + data[1] + " y=" + data[2] + " action=" + data[3] + " clickCount=" + data[4];
         break;
       case JmolConstants.CALLBACK_ANIMFRAME:
         // Note: twos-complement. To get actual frame number, use

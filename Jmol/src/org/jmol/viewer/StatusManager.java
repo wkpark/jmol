@@ -330,14 +330,14 @@ class StatusManager {
           new Object[] { sJmol, strInfo, new Integer(atomIndex) });
   }
 
-  synchronized int setStatusClicked(int x, int y, int modifiers, int clickCount) {
+  synchronized int setStatusClicked(int x, int y, int action, int clickCount) {
     String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_CLICK);
     if (!notifyEnabled(JmolConstants.CALLBACK_CLICK))
-      return modifiers;
-    // allows modification of modifiers
-    int[] m = new int[] { modifiers };
+      return action;
+    // allows modification of action
+    int[] m = new int[] { action };
     jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_CLICK,
-        new Object[] { sJmol, new Integer(x), new Integer(y), new Integer(modifiers), new Integer(clickCount), m });
+        new Object[] { sJmol, new Integer(x), new Integer(y), new Integer(action), new Integer(clickCount), m });
     return m[0];
   }
 

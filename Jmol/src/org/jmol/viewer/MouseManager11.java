@@ -30,14 +30,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import org.jmol.viewer.binding.Binding;
+
 class MouseManager11 extends MouseManager
   implements MouseListener, MouseMotionListener {
 
-  MouseManager11(Component display, Viewer viewer) {
-    super(display, viewer);
-    if (display == null)
-      return;
-    //Logger.debug("MouseManager11 implemented");
+  MouseManager11(Component display, Viewer viewer, ActionManager actionManager) {
+    super(display, viewer, actionManager);
     display.addMouseListener(this);
     display.addMouseMotionListener(this);
   }
@@ -80,8 +79,8 @@ class MouseManager11 extends MouseManager
      * if you left-drag then none of the modifiers are selected
      * we will try to fix that here
      ****************************************************************/
-    if ((modifiers & LEFT_MIDDLE_RIGHT) == 0)
-      modifiers |= LEFT;
+    if ((modifiers & Binding.LEFT_MIDDLE_RIGHT) == 0)
+      modifiers |= Binding.LEFT;
     /****************************************************************/      
     mouseDragged(e.getWhen(), e.getX(), e.getY(), modifiers);
   }

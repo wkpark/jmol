@@ -309,6 +309,10 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
       input.requestFocus();
   }
 
+  protected String completeCommand(String thisCmd) {
+    return super.completeCommand(thisCmd);
+  }
+  
   class ControlEnterTextArea extends JTextArea {
     public void processComponentKeyEvent(KeyEvent ke) {
       int kcode = ke.getKeyCode();

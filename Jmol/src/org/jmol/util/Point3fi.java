@@ -36,6 +36,14 @@ public class Point3fi extends Point3f {
    * @see java.lang.Object#equals(java.lang.Object)
    */
   
+  public Point3fi() {
+    super();
+  }
+
+  public Point3fi(float x, float y, float z) {
+    super(x, y, z);
+  }
+
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;

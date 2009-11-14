@@ -40,8 +40,8 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.MouseManager;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
@@ -951,8 +951,9 @@ public Object getProperty(String property, int index) {
   private int pickedModel;
   private int pickedVertex;
   private final Point3i ptXY = new Point3i();
+  private final Point3fi PT_NAN = new Point3fi(Float.NaN, 0.0f, 0.0f);
   
-  public Point3fi checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
+  public Point3fi checkObjectClicked(int x, int y, int action, BitSet bsVisible) {
     boolean isPickingMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
     boolean isSpinMode = (viewer.getPickingMode() == JmolConstants.PICKING_SPIN);
     boolean isDrawPicking = viewer.getDrawPicking();
@@ -962,28 +963,29 @@ public Object getProperty(String property, int index) {
       return null;
     Point3f v = pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][pickedVertex]];
     if (isDrawPicking && !isPickingMode) {
-      if (modifiers != 0) // not mouseMove
+      if (action != 0) // not mouseMove
         viewer.setStatusAtomPicked(-2, "[\"draw\",\"" + pickedMesh.thisID + "\"," +
           + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z+"]"
           + (pickedMesh.title == null ? "" 
                : "\"" + pickedMesh.title[0]+"\""));
       return getPickedPoint(v);
     }
-    if (modifiers == 0 || pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1]) {
-      return (modifiers == 0 ? getPickedPoint(v) : null); 
+    if (action == 0 || pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1]) {
+      return (action == 0 ? getPickedPoint(v) : null); 
     }
+    boolean isClockwise = viewer.isBound(action, ActionManager.ACTION_spinDrawObjectCW);
     if (pickedVertex == 0) {
       viewer.startSpinningAxis(
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
-          ((modifiers & MouseManager.SHIFT) != 0));
+          isClockwise);
     } else {
       viewer.startSpinningAxis(
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],
-          ((modifiers & MouseManager.SHIFT) != 0));
+          isClockwise);
     }
-    return null;
+    return PT_NAN;
   }
 
   private Point3fi getPickedPoint(Point3f v) {
@@ -1011,32 +1013,31 @@ public Object getProperty(String property, int index) {
     return true;
   }
 
-  public synchronized boolean checkObjectDragged(int prevX, int prevY, int x, int y,
-                          int modifiers, BitSet bsVisible) {
+  public synchronized boolean checkObjectDragged(int prevX, int prevY, int x,
+                                                 int y, int action,
+                                                 BitSet bsVisible) {
+    //TODO -- can dispense with this first check:
     if (viewer.getPickingMode() != JmolConstants.PICKING_DRAW)
       return false;
-    //  mouse down ?
-    if (prevX == Integer.MIN_VALUE) 
+    boolean moveAll = viewer.isBound(action,
+        ActionManager.ACTION_dragDrawObject);
+    boolean movePoint = viewer.isBound(action,
+        ActionManager.ACTION_dragDrawPoint);
+    if (!moveAll && !movePoint)
+      return false;
+    // mouse down ?
+    if (prevX == Integer.MIN_VALUE)
       return findPickedObject(x, y, true, bsVisible);
-    //  mouse up ?
+    // mouse up ?
     if (prevX == Integer.MAX_VALUE) {
       pickedMesh = null;
       return false;
     }
     if (pickedMesh == null)
       return false;
-    boolean moveAll = false;
-    switch (modifiers) {
-    case MouseManager.SHIFT_LEFT:
-      moveAll = true;
-      //fall through
-    case MouseManager.ALT_SHIFT_LEFT:
-    case MouseManager.ALT_LEFT:
-      move2D(pickedMesh, pickedMesh.polygonIndexes[pickedModel], pickedVertex,
-          x, y, moveAll);
-      thisMesh = pickedMesh;
-      break;
-    }
+    move2D(pickedMesh, pickedMesh.polygonIndexes[pickedModel], pickedVertex, x,
+        y, moveAll);
+    thisMesh = pickedMesh;
     return true;
   }
   

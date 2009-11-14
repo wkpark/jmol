@@ -1905,6 +1905,7 @@ abstract class TransformManager {
       }
     } else {
       if (spinThread != null) {
+        //System.out.println("interrupting spin thread");
         spinThread.interrupt();
         spinThread = null;
       }
@@ -1930,6 +1931,7 @@ abstract class TransformManager {
     } else {
       if (spinThread != null) {
         spinThread.interrupt();
+        //System.out.println("interrupting spin thread");
         spinThread = null;
       }
     }

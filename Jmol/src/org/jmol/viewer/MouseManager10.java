@@ -27,16 +27,18 @@ package org.jmol.viewer;
 import java.awt.Component;
 import java.awt.Event;
 
+import org.jmol.viewer.binding.Binding;
+
 class MouseManager10 extends MouseManager {
 
-  MouseManager10(Component display, Viewer viewer) {
-    super(display, viewer);
-    //Logger.debug("MouseManager10 implemented");
+  MouseManager10(Component display, Viewer viewer, ActionManager actionManager) {
+    super(display, viewer, actionManager);
   }
 
   private int applyLeftMouse(int modifiers) {
     // if neither BUTTON2 or BUTTON3 then it must be BUTTON1
-    return ((modifiers & MIDDLE_RIGHT) == 0)  ? (modifiers | LEFT) : modifiers;
+    return ((modifiers & Binding.LEFT_MIDDLE_RIGHT) == 0) 
+        ? (modifiers | Binding.LEFT) : modifiers;
   }
 
   int xWhenPressed, yWhenPressed, modifiersWhenPressed10;

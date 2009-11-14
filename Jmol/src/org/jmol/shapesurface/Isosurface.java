@@ -103,8 +103,8 @@ import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.MouseManager;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
@@ -990,8 +990,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
   private final Point3i ptXY = new Point3i();
 
-  public Point3fi checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
-    if (modifiers !=MouseManager.ALT_LEFT)
+  public Point3fi checkObjectClicked(int x, int y, int action, BitSet bsVisible) {
+    if (!viewer.isBound(action, ActionManager.ACTION_pickIsosurface))
       return null;
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
     if (g3d.isAntialiased()) {

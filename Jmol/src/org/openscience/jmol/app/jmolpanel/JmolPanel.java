@@ -58,7 +58,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
   StatusBar status;
   protected GaussianDialog gaussianDialog;
   private PreferencesDialog preferencesDialog;
-  MeasurementTable measurementTable;
   RecentFilesDialog recentFiles;
   //private JMenu recentFilesMenu;
   public AtomSetChooser atomSetChooser;
@@ -1286,7 +1285,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
     }
 
     public void actionPerformed(ActionEvent e) {
-      measurementTable.activate();
+      display.measurementTable.activate();
     }
   }
 
@@ -1326,7 +1325,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
     public void actionPerformed(ActionEvent e) {
       String script = e.getActionCommand();
       if (script.indexOf("#showMeasurementTable") >= 0)
-        measurementTable.activate();
+        display.measurementTable.activate();
       //      viewer.script("set picking measure distance;set pickingstyle measure");
       viewer.evalStringQuiet(script);
     }

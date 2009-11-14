@@ -68,7 +68,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 
 // bh 5/2009  -- Support for XHTML using jmolSetXHTML(id)
 // ah & bh 6/2009 -- New jmolResizeApplet() more flexible, similar to jmolApplet() size syntax
-
+// bh 11/2009 -- care in accessing top.document
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
 
@@ -91,9 +91,6 @@ var defaultjar = "JmolApplet.jar"
 // simply set this next line to read "var allowJMOLJAR = false".
 
 
-var allowJMOLJAR = true  
-
-
 var undefined; // for IE 5 ... wherein undefined is undefined
 
 ////////////////////////////////////////////////////////////////
@@ -104,8 +101,8 @@ function jmolInitialize(codebaseDirectory, fileNameOrUseSignedApplet) {
   if (_jmol.initialized)
     return;
   _jmol.initialized = true;
-  if(allowJMOLJAR && top.location.search.indexOf("JMOLJAR=")>=0) {
-    var f = top.location.search.split("JMOLJAR=")[1].split("&")[0];
+  if(_jmol.jmoljar) {
+    var f = _jmol.jmoljar;
     if (f.indexOf("/") >= 0) {
       alert ("This web page URL is requesting that the applet used be " + f + ". This is a possible security risk, particularly if the applet is signed, because signed applets can read and write files on your local machine or network.")
       var ok = prompt("Do you want to use applet " + f + "? ","yes or no")
@@ -611,6 +608,10 @@ var _jmol = {
   archivePath: null, // JmolApplet0.jar OR JmolAppletSigned0.jar
 
   previousOnloadHandler: null,
+
+  jmoljar: null,  
+  useNoApplet: false,
+
   ready: {}
 }
 
@@ -688,11 +689,18 @@ with (_jmol) {
    (os != "mac" && browser == "mozilla" && browserVersion >= 5) ||
    (os == "win" && browser == "opera" && browserVersion >= 8) ||
    (os == "mac" && browser == "safari" && browserVersion >= 412.2);
-
- doTranslate = true;
- haveSetTranslate = false;
+ try {
+  if (top.location.search.indexOf("JMOLJAR=")>=0)
+    jmoljar = top.location.search.split("JMOLJAR=")[1].split("&")[0];
+ } catch(e) {
+  // can't access top.location
+ }
+ try {
+  useNoApplet = (top.location.search.indexOf("NOAPPLET")>=0);
+ } catch(e) {
+  // can't access top.document
+ }
 }
-
 
 function jmolSetCallback(callbackName,funcName) {
   _jmol.params[callbackName] = funcName
@@ -1554,7 +1562,7 @@ function jmolSetAtomCoordRelative(i,x,y,z,targetSuffix){
 ///////////////applet fake for testing buttons/////////////
 
 
-if(top.location.search.indexOf("NOAPPLET")>=0){
+if(_jmol.useNoApplet){
 	jmolApplet = function(w){
 		var s="<table style='background-color:black' width="+w+"><tr height="+w+">"
 		+"<td align=center valign=center style='background-color:white'>"

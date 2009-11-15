@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-11-11 09:13+0100\n"
-"PO-Revision-Date: 2009-03-15 22:16+0000\n"
-"Last-Translator: Muhammet Kara <Unknown>\n"
+"PO-Revision-Date: 2009-11-14 20:50+0000\n"
+"Last-Translator: Mustafa Yılmaz <apshalasha@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-03-22 18:28+0000\n"
+"X-Launchpad-Export-Date: 2009-11-15 22:36+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: Turkish\n"
 
@@ -23,9 +23,8 @@ msgid "Jmol Script Console"
 msgstr "Jmol Betik Uçbirimi"
 
 #: org/jmol/applet/AppletConsole.java:99
-#, fuzzy
 msgid "Editor"
-msgstr "Geçmiş"
+msgstr "Düzenleyici"
 
 #: org/jmol/applet/AppletConsole.java:100
 msgid "State"
@@ -34,7 +33,7 @@ msgstr "Durum"
 #: org/jmol/applet/AppletConsole.java:101
 #: org/jmol/console/ScriptEditor.java:137
 msgid "Run"
-msgstr ""
+msgstr "Çalıştır"
 
 #: org/jmol/applet/AppletConsole.java:102
 msgid "Clear Output"
@@ -122,9 +121,8 @@ msgid "  {0} seconds"
 msgstr "  {0} saniye"
 
 #: org/jmol/console/ScriptEditor.java:98
-#, fuzzy
 msgid "Jmol Script Editor"
-msgstr "Jmol Betik Uçbirimi"
+msgstr "Jmol Betik Düzenleyicisi"
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/PopupResourceBundle.java:876
@@ -140,21 +138,20 @@ msgstr "Aç"
 
 #: org/jmol/console/ScriptEditor.java:133
 msgid "Script"
-msgstr ""
+msgstr "Betik"
 
 #: org/jmol/console/ScriptEditor.java:134
-#, fuzzy
 msgid "Check"
-msgstr "Çekçe"
+msgstr "Denetle"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
-msgstr ""
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgstr "Yukarı"
 
 #: org/jmol/console/ScriptEditor.java:136
-#, fuzzy
 msgid "Step"
-msgstr "Durdur"
+msgstr "Adım"
 
 #: org/jmol/console/ScriptEditor.java:138
 #: org/jmol/popup/PopupResourceBundle.java:834
@@ -168,17 +165,15 @@ msgstr "Devam Et"
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
-msgstr ""
+msgstr "Durdur"
 
 #: org/jmol/console/ScriptEditor.java:144
-#, fuzzy
 msgid "Clear"
-msgstr "Girdiyi Sil"
+msgstr "Temizle"
 
 #: org/jmol/console/ScriptEditor.java:145
-#, fuzzy
 msgid "Close"
-msgstr "Uçbirim"
+msgstr "Kapat"
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
@@ -275,11 +270,11 @@ msgstr "Boyut"
 
 #: org/jmol/export/dialog/Dialog.java:439
 msgid "Files of Type:"
-msgstr ""
+msgstr "Tür Dosyaları:"
 
 #: org/jmol/export/dialog/Dialog.java:440
 msgid "Type"
-msgstr ""
+msgstr "Tür"
 
 #: org/jmol/export/dialog/Dialog.java:441
 msgid "Help"
@@ -301,81 +296,80 @@ msgstr "Liste"
 
 #: org/jmol/export/dialog/Dialog.java:448
 msgid "Look In:"
-msgstr ""
+msgstr "Bak:"
 
 #: org/jmol/export/dialog/Dialog.java:450
 msgid "Error creating new folder"
-msgstr ""
+msgstr "Yeni klasör oluşturulurken hata"
 
 #: org/jmol/export/dialog/Dialog.java:451
 msgid "New Folder"
-msgstr ""
+msgstr "Yeni Klasör"
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "Create New Folder"
-msgstr ""
+msgstr "Yeni Klasör Oluştur"
 
 #: org/jmol/export/dialog/Dialog.java:456
 msgid "Open selected file"
-msgstr ""
+msgstr "Seçilen dosyayı aç"
 
 #: org/jmol/export/dialog/Dialog.java:458
 #: org/jmol/export/dialog/Dialog.java:461
 msgid "Save"
-msgstr ""
+msgstr "Kaydet"
 
 #: org/jmol/export/dialog/Dialog.java:460
 msgid "Save selected file"
-msgstr ""
+msgstr "Seçilen dosyayı kaydet"
 
 #: org/jmol/export/dialog/Dialog.java:462
 msgid "Save In:"
-msgstr ""
+msgstr "İçine kaydet:"
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "Update"
-msgstr ""
+msgstr "Güncelleme"
 
 #: org/jmol/export/dialog/Dialog.java:465
 msgid "Update directory listing"
-msgstr ""
+msgstr "Dizin listelemesini güncelle"
 
 #: org/jmol/export/dialog/Dialog.java:466
 msgid "Up"
-msgstr ""
+msgstr "Yukarı"
 
 #: org/jmol/export/dialog/Dialog.java:467
 msgid "Up One Level"
-msgstr ""
+msgstr "Bir Seviye Yukarı"
 
 #: org/jmol/export/dialog/Dialog.java:472
 msgid "OK"
-msgstr ""
+msgstr "Tamam"
 
 #: org/jmol/export/dialog/FilePreview.java:71
 msgid "Preview"
-msgstr ""
+msgstr "Önizleme"
 
 #: org/jmol/export/dialog/FilePreview.java:91
 msgid "Append models"
-msgstr ""
+msgstr "Modelleri Birleştir"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
-msgstr ""
+msgstr "Arapça"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
 msgstr "Katalanca"
 
 #: org/jmol/i18n/GT.java:120
-#, fuzzy
 msgid "Simplified Chinese"
-msgstr "Yan Zincirler"
+msgstr "Basitleştirilmiş Çince"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "Geleneksel Çince"
 
 #: org/jmol/i18n/GT.java:122
 msgid "Czech"
@@ -383,7 +377,7 @@ msgstr "Çekçe"
 
 #: org/jmol/i18n/GT.java:123
 msgid "Danish"
-msgstr ""
+msgstr "Danca"
 
 #: org/jmol/i18n/GT.java:124
 msgid "Dutch"
@@ -391,11 +385,11 @@ msgstr "Hollandaca"
 
 #: org/jmol/i18n/GT.java:125
 msgid "British English"
-msgstr ""
+msgstr "İngiliz İngilizcesi"
 
 #: org/jmol/i18n/GT.java:126
 msgid "American English"
-msgstr ""
+msgstr "Amerikan İngilizcesi"
 
 #: org/jmol/i18n/GT.java:127
 msgid "Estonian"
@@ -411,31 +405,31 @@ msgstr "Almanca"
 
 #: org/jmol/i18n/GT.java:130
 msgid "Greek"
-msgstr ""
+msgstr "Yunanca"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Hungarian"
-msgstr ""
+msgstr "Macarca"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Italian"
-msgstr ""
+msgstr "İtalyanca"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Korean"
-msgstr ""
+msgstr "Korece"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Norwegian Bokmal"
-msgstr ""
+msgstr "Norveç Bokmal"
 
 #: org/jmol/i18n/GT.java:135
 msgid "Polish"
-msgstr ""
+msgstr "Lehçe"
 
 #: org/jmol/i18n/GT.java:136
 msgid "Brazilian Portuguese"
-msgstr ""
+msgstr "Brezilya Portekizcesi"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Portuguese"
@@ -443,11 +437,11 @@ msgstr "Portekizce"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Russian"
-msgstr ""
+msgstr "Rusça"
 
 #: org/jmol/i18n/GT.java:139
 msgid "Slovenian"
-msgstr ""
+msgstr "Slovence"
 
 #: org/jmol/i18n/GT.java:140
 msgid "Spanish"
@@ -455,7 +449,7 @@ msgstr "İspanyolca"
 
 #: org/jmol/i18n/GT.java:141
 msgid "Swedish"
-msgstr ""
+msgstr "İsveççe"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Turkish"
@@ -463,26 +457,26 @@ msgstr "Türkçe"
 
 #: org/jmol/i18n/GT.java:143
 msgid "Ukrainian"
-msgstr ""
+msgstr "Ukraynaca"
 
 #: org/jmol/minimize/Minimizer.java:187
 #, java-format
 msgid "Could not get class for force field {0}"
-msgstr ""
+msgstr "Güç alanı sınıfı alınamadı {0}"
 
 #: org/jmol/minimize/Minimizer.java:197
 msgid "No atoms selected -- nothing to do!"
-msgstr ""
+msgstr "Herhangi bir atom seçili değil -- yapacak bir şey yok!"
 
 #: org/jmol/minimize/Minimizer.java:259
 #, java-format
 msgid "{0} atoms will be minimized."
-msgstr ""
+msgstr "{0} atom simge küçültülecek"
 
 #: org/jmol/minimize/Minimizer.java:351
 #, java-format
 msgid "could not setup force field {0}"
-msgstr ""
+msgstr "Güç alanını ayarlanamadı {0}"
 
 #: org/jmol/popup/JmolPopup.java:208
 #: org/jmol/popup/PopupResourceBundle.java:565
@@ -491,7 +485,6 @@ msgstr "Hiç atom yüklenmedi"
 
 #: org/jmol/popup/JmolPopup.java:464
 #: org/jmol/popup/PopupResourceBundle.java:577
-#, fuzzy
 msgid "Space Group"
 msgstr "Uzay grubu"
 
@@ -514,9 +507,8 @@ msgid "Translations"
 msgstr "Çeviriler"
 
 #: org/jmol/popup/JmolPopup.java:692
-#, fuzzy
 msgid "System"
-msgstr "Durdur"
+msgstr "Sistem"
 
 #: org/jmol/popup/JmolPopup.java:698
 msgid "1 processor"
@@ -533,12 +525,11 @@ msgstr "bilinmeyen işlemci sayısı"
 
 #: org/jmol/popup/JmolPopup.java:703
 msgid "Java version:"
-msgstr ""
+msgstr "Java sürümü:"
 
 #: org/jmol/popup/JmolPopup.java:707
-#, fuzzy
 msgid "Java memory usage:"
-msgstr "Java hafıza kullanımı"
+msgstr "Java hafıza kullanımı:"
 
 #: org/jmol/popup/JmolPopup.java:713
 #, java-format
@@ -596,9 +587,8 @@ msgid "Symmetry"
 msgstr "Simetri"
 
 #: org/jmol/popup/PopupResourceBundle.java:578
-#, fuzzy
 msgid "Hide Symmetry"
-msgstr "Simetri"
+msgstr "Simetriyi Gizle"
 
 #: org/jmol/popup/PopupResourceBundle.java:579
 msgid "Model information"
@@ -665,17 +655,17 @@ msgstr "Ana Menü"
 
 #: org/jmol/popup/PopupResourceBundle.java:592
 msgid "Biomolecules"
-msgstr ""
+msgstr "Biyomoleküller"
 
 #: org/jmol/popup/PopupResourceBundle.java:593
 #, java-format
 msgid "biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "biyomolkül {0} ({1} atom)"
 
 #: org/jmol/popup/PopupResourceBundle.java:594
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "biyomolkül yükle {0} ({1} atom)"
 
 #: org/jmol/popup/PopupResourceBundle.java:599
 #: org/jmol/popup/PopupResourceBundle.java:718
@@ -1094,11 +1084,11 @@ msgstr "Kısmi Yük"
 
 #: org/jmol/popup/PopupResourceBundle.java:748
 msgid "Temperature (Relative)"
-msgstr ""
+msgstr "Sıcaklık (Görece)"
 
 #: org/jmol/popup/PopupResourceBundle.java:749
 msgid "Temperature (Fixed)"
-msgstr ""
+msgstr "Sıcaklık (Sabit)"
 
 #: org/jmol/popup/PopupResourceBundle.java:751
 msgid "Amino Acid"
@@ -1114,15 +1104,15 @@ msgstr "Zincir"
 
 #: org/jmol/popup/PopupResourceBundle.java:754
 msgid "Group"
-msgstr ""
+msgstr "Grup"
 
 #: org/jmol/popup/PopupResourceBundle.java:755
 msgid "Monomer"
-msgstr ""
+msgstr "Monomer"
 
 #: org/jmol/popup/PopupResourceBundle.java:756
 msgid "Shapely"
-msgstr ""
+msgstr "Güzel biçimli"
 
 #: org/jmol/popup/PopupResourceBundle.java:758
 msgid "Inherit"
@@ -1319,7 +1309,7 @@ msgstr "Tekrar Başlat"
 #: org/jmol/popup/PopupResourceBundle.java:850
 #: org/jmol/popup/PopupResourceBundle.java:881
 msgid "Measurements"
-msgstr ""
+msgstr "Ölçümler"
 
 #: org/jmol/popup/PopupResourceBundle.java:851
 msgid "Double-Click begins and ends all measurements"
@@ -1367,7 +1357,7 @@ msgstr "Merkez"
 
 #: org/jmol/popup/PopupResourceBundle.java:865
 msgid "Identity"
-msgstr ""
+msgstr "Kimlik"
 
 #: org/jmol/popup/PopupResourceBundle.java:866
 msgid "Label"
@@ -1434,44 +1424,41 @@ msgid "Current state"
 msgstr "Mevcut durum"
 
 #: org/jmol/popup/PopupResourceBundle.java:889
-#, fuzzy
 msgid "File"
-msgstr "Tüm Dosyalar"
+msgstr "Dosya"
 
 #: org/jmol/popup/PopupResourceBundle.java:890
-#, fuzzy
 msgid "Reload"
-msgstr "Tekrar Yükle {0}"
+msgstr "Yeniden yükle"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
 msgid "Open from PDB"
-msgstr ""
+msgstr "PDB'den aç"
 
 #: org/jmol/popup/PopupResourceBundle.java:892
-#, fuzzy
 msgid "Open file or URL"
-msgstr "Dosya ya da internet adresi:"
+msgstr "Dosya veya URL aç"
 
 #: org/jmol/popup/PopupResourceBundle.java:893
 msgid "Load full unit cell"
-msgstr ""
+msgstr "Tam birim hüce yükle"
 
 #: org/jmol/popup/PopupResourceBundle.java:894
 msgid "Open script"
-msgstr ""
+msgstr "Betik aç"
 
 #: org/jmol/popup/PopupResourceBundle.java:896
 #, java-format
 msgid "Save a copy of {0}"
-msgstr ""
+msgstr "{0} ın bir kopyasını kaydet"
 
 #: org/jmol/popup/PopupResourceBundle.java:897
 msgid "Save script with state"
-msgstr ""
+msgstr "Betiği durum ile kaydet"
 
 #: org/jmol/popup/PopupResourceBundle.java:898
 msgid "Save script with history"
-msgstr ""
+msgstr "Betiği geçmiş ile kaydet"
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 #: org/jmol/popup/PopupResourceBundle.java:900
@@ -1479,28 +1466,27 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:902
 #, java-format
 msgid "Export {0} image"
-msgstr ""
+msgstr "{0} resim dışa aktar"
 
 #: org/jmol/popup/PopupResourceBundle.java:903
 msgid "Save JVXL isosurface"
-msgstr ""
+msgstr "JVXL eşyüzeyini kaydet"
 
 #: org/jmol/popup/PopupResourceBundle.java:904
 #: org/jmol/popup/PopupResourceBundle.java:905
 #: org/jmol/popup/PopupResourceBundle.java:906
 #: org/jmol/popup/PopupResourceBundle.java:907
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} 3D model"
-msgstr "Tüm {0} modeller"
+msgstr "{0} 3B model dışa aktar"
 
 #: org/jmol/popup/PopupResourceBundle.java:909
-#, fuzzy
 msgid "Computation"
-msgstr "Ayarlar"
+msgstr "Hesaplama"
 
 #: org/jmol/popup/PopupResourceBundle.java:910
 msgid "Optimize structure"
-msgstr ""
+msgstr "İyileştirilmiş yapı"
 
 #: org/jmol/popup/PopupResourceBundle.java:914
 msgid "Extract MOL data"
@@ -1541,7 +1527,7 @@ msgstr "Tekrar Yükle {0}"
 #: org/jmol/popup/PopupResourceBundle.java:931
 #, java-format
 msgid "Reload {0} + Display {1}"
-msgstr ""
+msgstr "{0} + Ektan {1} i Yeniden Yükle"
 
 #: org/jmol/popup/PopupResourceBundle.java:932
 msgid "Reload + Polyhedra"
@@ -1593,7 +1579,7 @@ msgstr "RasMol Renkleri"
 
 #: org/jmol/popup/PopupResourceBundle.java:964
 msgid "About..."
-msgstr ""
+msgstr "Hakkında..."
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1099
 #: org/jmol/script/ScriptEvaluator.java:2338
@@ -1603,7 +1589,7 @@ msgstr "Yanlış bağımsız değişken hesabı"
 #: org/jmol/script/ScriptCompilationTokenParser.java:1102
 #, java-format
 msgid "invalid context for {0}"
-msgstr ""
+msgstr "{0} için geçersiz içerik"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1105
 #: org/jmol/script/ScriptEvaluator.java:2362
@@ -1647,7 +1633,7 @@ msgstr "geçersiz model belirtimi"
 #: org/jmol/script/ScriptCompilationTokenParser.java:1132
 #, java-format
 msgid "missing END for {0}"
-msgstr ""
+msgstr "{0} için END bulunamıyor"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1135
 #: org/jmol/script/ScriptEvaluator.java:2435
@@ -1665,12 +1651,12 @@ msgstr "artık belirtimi (ALA, AL?, A*) bekleniyor"
 #: org/jmol/script/ScriptCompilationTokenParser.java:1144
 #, java-format
 msgid "{0} expected"
-msgstr ""
+msgstr "{0} bekleniyor"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1147
 #, java-format
 msgid "{0} unexpected"
-msgstr ""
+msgstr "{0} beklenmiyor"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1150
 #, java-format
@@ -1690,12 +1676,12 @@ msgstr "tanınmayan belirtke: {0}"
 
 #: org/jmol/script/ScriptCompiler.java:2150
 msgid "script compiler ERROR: "
-msgstr ""
+msgstr "betik derteyici HATASI: "
 
 #: org/jmol/script/ScriptEvaluator.java:2200
 #: org/jmol/script/ScriptEvaluator.java:7508
 msgid "script ERROR: "
-msgstr ""
+msgstr "betik HATASI: "
 
 #: org/jmol/script/ScriptEvaluator.java:2332
 msgid "x y z axis expected"
@@ -1737,7 +1723,7 @@ msgstr "bir renk ya da palet adı (Jmol,Rasmol) gerekli"
 
 #: org/jmol/script/ScriptEvaluator.java:2365
 msgid "{x y z} or $name or (atom expression) required"
-msgstr ""
+msgstr "{x y z} veya $name veya (atom ifadesi) gerekiyor"
 
 #: org/jmol/script/ScriptEvaluator.java:2368
 msgid "draw object not defined"
@@ -1812,7 +1798,7 @@ msgstr "Bu dosyada sadece bir kullanılabilir moleküler orbital var"
 #: org/jmol/script/ScriptEvaluator.java:2422
 #, java-format
 msgid "{0} require that only one model be displayed"
-msgstr ""
+msgstr "{0} sadece bir modelin gösterilmesine ihtiyaç duyuyor"
 
 #: org/jmol/script/ScriptEvaluator.java:2425
 msgid "No data available"
@@ -1902,6 +1888,7 @@ msgstr "tanınmayan nesne"
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr ""
+"Jmol durum betiğinde bilinmeyen {0} parametre (ne olursa olsun ayarlandı)"
 
 #: org/jmol/script/ScriptEvaluator.java:2491
 #, java-format
@@ -1921,13 +1908,13 @@ msgstr "{0} bağlantı(lar) silindi"
 #: org/jmol/script/ScriptEvaluator.java:5661
 #, java-format
 msgid "{0} new bonds; {1} modified"
-msgstr ""
+msgstr "{0} yeni bağ; {1} düzenlenmiş"
 
 #: org/jmol/script/ScriptEvaluator.java:7634
 #: org/jmol/script/ScriptEvaluator.java:7853
 #, java-format
 msgid "{0} atoms deleted"
-msgstr ""
+msgstr "{0} atom silindi"
 
 #: org/jmol/script/ScriptEvaluator.java:8350
 #, java-format
@@ -1936,11 +1923,12 @@ msgstr "{0} hidrojen bağ(lar)ı"
 
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
-msgstr ""
+msgstr "Menü için tıklayın..."
 
 #: org/jmol/viewer/PickingManager.java:207
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr "modeli bir eksen etrafında döndürebilmek için bir tane daha atom seçin"
+msgstr ""
+"modeli bir eksen etrafında döndürebilmek için bir tane daha atom seçin"
 
 #: org/jmol/viewer/PickingManager.java:208
 msgid "pick two atoms in order to spin the model around an axis"
@@ -1959,177 +1947,36 @@ msgstr "{0} atom(lar) seçildi"
 
 #: org/jmol/viewer/Viewer.java:4013
 msgid "Drag to move label"
-msgstr ""
+msgstr "Etiketi taşımak için sürükleyin"
 
 #: org/jmol/viewer/Viewer.java:5008
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
-msgstr ""
+msgstr "HATA: ikili işaret yazı değerine atanamadı: {0}"
 
 #: org/jmol/viewer/Viewer.java:5231 org/jmol/viewer/Viewer.java:5411
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-msgstr ""
+msgstr "HATA: ikili işaret sayısal değere atanamadı: {0}"
 
 #: org/jmol/viewer/Viewer.java:5930
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-msgstr ""
+msgstr "HATA: Bu değişkenin değeri bir ikiliye atanamadı: {0}"
 
 #: org/jmol/viewer/Viewer.java:7364
 msgid "clipboard is not accessible -- use signed applet"
-msgstr ""
-
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr ""
-#~ "Bu programcık tarafından dosya oluşturulmasına izin verilmemektedir. "
-#~ "Base64 JPEG biçimi için {0} kullanın."
-
-#~ msgid "File creation failed."
-#~ msgstr "Dosya oluşturulamadı."
+msgstr "panoya erişilemiyor -- işaretli uygulamacığı kullanın"
 
 #~ msgid "About Jmol"
 #~ msgstr "Jmol Hakkında"
 
-#~ msgid "Execute"
-#~ msgstr "Çalıştır"
+#, java-format
+#~ msgid ""
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ msgstr ""
+#~ "Bu programcık tarafından dosya oluşturulmasına izin verilmemektedir. Base64 "
+#~ "JPEG biçimi için {0} kullanın."
 
-#~ msgid "Portuguese - Brazil"
-#~ msgstr "Portekizce - Brezilya"
-
-#~ msgid "all"
-#~ msgstr "tümü"
-
-#~ msgid "Structure"
-#~ msgstr "Yapı"
-
-#~ msgid "Surface"
-#~ msgstr "Yüzey"
-
-#~ msgid "Unitcell"
-#~ msgstr "Birimhücre"
-
-#~ msgid "Measure"
-#~ msgstr "Ölç"
-
-#~ msgid "Bound Box"
-#~ msgstr "Bağlantı Kutusu"
-
-#~ msgid "Unit Cell"
-#~ msgstr "Birim Hücre"
-
-#~ msgid "comma or right parenthesis expected"
-#~ msgstr "virgül ya da parantez (sağ) bekleniyor"
-
-#~ msgid "comparison operator expected"
-#~ msgstr "karşılaştırma operatörü bekleniyor"
-
-#~ msgid "equal sign expected"
-#~ msgstr "eşittir işareti bekleniyor"
-
-#~ msgid "right brace expected"
-#~ msgstr "kaşlı ayraç (sağ) bekleniyor"
-
-#~ msgid "right bracket expected"
-#~ msgstr "köşeli ayraç (sağ) bekleniyor"
-
-#~ msgid "right parenthesis expected"
-#~ msgstr "sağ parantez bekleniyor"
-
-#~ msgid "rotation points cannot be identical"
-#~ msgstr "dönme noktaları aynı olamaz"
-
-#~ msgid "too many parentheses"
-#~ msgstr "çok fazla parantez"
-
-#~ msgid "bad atom number"
-#~ msgstr "yanlış ato numarası"
-
-#~ msgid "Calculate what?"
-#~ msgstr "Neyi hesapla?"
-
-#~ msgid "invalid {0} control keyword"
-#~ msgstr "geçersiz {0} kontrol anahtar sözcüğü"
-
-#~ msgid "save what?"
-#~ msgstr "neyi kaydet?"
-
-#~ msgid "restore what?"
-#~ msgstr "neyi geri yükle?"
-
-#~ msgid "trajectory not applicable in this context"
-#~ msgstr "bu bağlamda yörünge uygulanabilir değil"
-
-#~ msgid "{0} connections modified or created"
-#~ msgstr "{0} bağlantı(lar) değiştirildi ya da silindi"
-
-#~ msgid "MO isosurfaces require that only one model be displayed"
-#~ msgstr "MO eşyüzeyler sadece bir model gösterilmesine izin verir"
-
-#~ msgid "Select"
-#~ msgstr "Seç"
-
-#~ msgid "Too many nested {0} commands"
-#~ msgstr "Çok fazla iç içe {0} komut"
-
-#~ msgid "Invalid {0} command"
-#~ msgstr "Geçersiz {0} komut"
-
-#~ msgid "Compatibility"
-#~ msgstr "Uygunluk"
-
-#~ msgid "RasMol/Chime Settings"
-#~ msgstr "RasMol/Uyum Ayarları"
-
-#~ msgid "Axes RasMol/Chime"
-#~ msgstr "RasMol/Uyum Eksenleri"
-
-#~ msgid "Zero-Based Xyz Rasmol"
-#~ msgstr "Sıfır tabanlı Xyz Rasmol"
-
-#~ msgid "The {0} command is not available for the applet."
-#~ msgstr "{0} komutu applet için kullanılabilir değil."
-
-#~ msgid "boolean or percent expected"
-#~ msgstr "boole veya yüzde gerekli"
-
-#~ msgid "(atom expression) or decimal number expected"
-#~ msgstr "(atom ifadesi) veya ondalık sayı gerekli"
-
-#~ msgid "variable undefined"
-#~ msgstr "değişken tanımlanmamış"
-
-#~ msgid "number out of range"
-#~ msgstr "alan dışı sayı"
-
-#~ msgid "atom expression compiler error - stack over/underflow"
-#~ msgstr "Atom ifade derleyici hatası - fazla yığılma/aşağı taşma"
-
-#~ msgid "Jmol executing script ..."
-#~ msgstr "Jmol betiği yürütüyor ..."
-
-#~ msgid "interpreter error - setspecial should not be here"
-#~ msgstr "Yorumlayıcı hatası - özelayar burda olmamalıydı"
-
-#~ msgid "Unrecognized {0} parameter"
-#~ msgstr "Tanınmayan {0} parametre"
-
-#~ msgid "use {0}"
-#~ msgstr "{0} kullan"
-
-#~ msgid "unrecognized subcommand"
-#~ msgstr "tanınmayan altkomut"
-
-#~ msgid "error loading script"
-#~ msgstr "Komut dosyası yüklemede hata oluştu"
-
-#~ msgid "Currently the {0} command only works for the applet"
-#~ msgstr "Şu anda {0} komutu sadece küçük uygulama için çalışır"
-
-#~ msgid "Animate"
-#~ msgstr "Canlandır"
-
-#~ msgid "the {0} command requires that only one model be displayed"
-#~ msgstr "{0} komutu sadece bir model gösterilmesine ihtiyaç duyuyor"
+#~ msgid "File creation failed."
+#~ msgstr "Dosya oluşturulamadı."

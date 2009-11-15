@@ -315,6 +315,8 @@ abstract class TransformManager {
   void spinXYBy(int xDelta, int yDelta, float speed) {
     // from mouse action
     clearSpin();
+    if (xDelta == 0 && yDelta == 0)
+      return;
     Point3f pt1 = new Point3f(fixedRotationCenter);
     Point3f ptScreen = new Point3f();
     transformPoint(pt1, ptScreen);

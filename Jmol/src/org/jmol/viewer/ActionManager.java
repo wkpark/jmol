@@ -46,6 +46,7 @@ public class ActionManager {
   public final static int ACTION_zoom = 3;
   public final static int ACTION_translateXY = 4;
   public final static int ACTION_rotateMolecule = 5;
+  public final static int ACTION_slideZoom = 6;
 
   public final static int ACTION_dragSelected = 101;
   public final static int ACTION_dragLabel = 102;
@@ -92,6 +93,7 @@ public class ActionManager {
   
   private final static long MAX_DOUBLE_CLICK_MILLIS = 700;
   private static final long MININUM_GESTURE_DELAY_MILLISECONDS = 50;
+  private static final int SLIDE_ZOOM_X_PERCENT = 98;
  
   protected Viewer viewer;
   
@@ -383,12 +385,16 @@ public class ActionManager {
       viewer.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, action);
       return;
     }
-    if (dragSelectedMode)
+    if (dragSelectedMode) {
       viewer.moveSelected(Integer.MIN_VALUE, 0, 0, 0, false);
+      return;
+    }
+    checkMotionRotateZoom(action, x, 0, 0);
   }
 
   void mouseReleased(long time, int x, int y, int mods) {
     hoverOff();
+    viewer.spinXYBy(0, 0, 0);
     timeCurrent = time;
     xCurrent = x;
     yCurrent = y;
@@ -458,18 +464,24 @@ public class ActionManager {
       viewer.translateXYBy(deltaX, deltaY);
       return;
     }
-    if (isBound(action, ACTION_rotateXY)) {
-        checkMotion();
-        viewer.rotateXYBy(deltaX, deltaY);
-        return;
+
+    if (checkMotionRotateZoom(action, x, deltaX, deltaY)) {
+      viewer.zoomBy(deltaY);
+      return;
     }
+    
+    if (isBound(action, ACTION_rotateXY)) {
+      viewer.rotateXYBy(deltaX, deltaY);
+      return;      
+    }
+
     if (dragSelectedMode && isBound(action, ACTION_dragSelected)) {
-      checkMotion();
+      checkMotion(Viewer.CURSOR_MOVE);
       viewer.moveSelected(deltaX, deltaY, x, y, false);
       return;
     }
     if (viewer.allowRotateSelected() && isBound(action, ACTION_rotateMolecule)) {
-      checkMotion();
+      checkMotion(Viewer.CURSOR_MOVE);
       viewer.rotateMolecule(deltaX, deltaY);
       return;
     }
@@ -477,13 +489,13 @@ public class ActionManager {
           isBound(action, ACTION_dragDrawObject)
           || isBound(action, ACTION_dragDrawPoint))
           || labelMode && isBound(action, ACTION_dragLabel)) {
-      checkMotion();
+      checkMotion(Viewer.CURSOR_MOVE);
       viewer.checkObjectDragged(previousDragX, previousDragY, x, y,
           action);
       return;
     }
     if (dragSelectedMode && isBound(action, ACTION_dragSelected)) {
-      checkMotion();
+      checkMotion(Viewer.CURSOR_MOVE);
       viewer.moveSelected(deltaX, deltaY, x, y, true);
       return;
     } 
@@ -501,20 +513,20 @@ public class ActionManager {
     if (isZoom && isRotateZ) {
       if (Math.abs(deltaY) > 5 * Math.abs(deltaX)) {
         //      if (deltaY < 0 && deltaX > deltaY || deltaY > 0 && deltaX < deltaY)
-        checkMotion();
+        checkMotion(Viewer.CURSOR_ZOOM);
         viewer.zoomBy(deltaY);
       } else if (Math.abs(deltaX) > 5 * Math.abs(deltaY)) {
         //      if (deltaX < 0 && deltaY > deltaX || deltaX > 0 && deltaY < deltaX)
-        checkMotion();
+        checkMotion(Viewer.CURSOR_MOVE);
         viewer.rotateZBy(-deltaX);
       }
       return;
     } else if (isZoom) {
-      checkMotion();
+      checkMotion(Viewer.CURSOR_ZOOM);
       viewer.zoomBy(deltaY);
       return;
     } else if (isRotateZ) {
-      checkMotion();
+      checkMotion(Viewer.CURSOR_MOVE);
       viewer.rotateZBy(-deltaX);
       return;
     }
@@ -532,6 +544,24 @@ public class ActionManager {
         return;
       }
     }
+  }
+
+  private boolean checkMotionRotateZoom(int action, int x, int deltaX, int deltaY) {
+    boolean isZoom = isBound(action, ACTION_zoom);
+    boolean isSlideZoom = isBound(action, ACTION_slideZoom);
+    boolean isRotateXY = isBound(action, ACTION_rotateXY); 
+    if (!isZoom  && !isSlideZoom && !isRotateXY) 
+      return false;
+    if (isRotateXY && isSlideZoom)
+      isSlideZoom = isZoomArea(x)
+          && (deltaX == 0 || Math.abs(deltaY) > 5 * Math.abs(deltaX));
+    checkMotion(isZoom || isSlideZoom ? Viewer.CURSOR_ZOOM 
+        : isRotateXY ? Viewer.CURSOR_MOVE : Viewer.CURSOR_DEFAULT);
+    return isSlideZoom;
+  }
+
+  private boolean isZoomArea(int x) {
+    return x > viewer.getScreenWidth()* SLIDE_ZOOM_X_PERCENT / 100f;
   }
 
   private void checkPointOrAtomClicked(int x, int y, int mods,
@@ -612,33 +642,8 @@ public class ActionManager {
     }
   }
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-
-  void checkMotion() {
-    if (!viewer.getInMotion())
-      viewer.setCursor(Viewer.CURSOR_MOVE);
+  private void checkMotion(int cursor) {
+    viewer.setCursor(cursor);
     viewer.setInMotion(true);
   }
 

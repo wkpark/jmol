@@ -24,6 +24,7 @@ public class JmolBinding extends Binding {
     
     bind(getMouseAction(SINGLE_CLICK,SHIFT_LEFT), ActionManager.ACTION_zoom);
     bind(getMouseAction(SINGLE_CLICK,MIDDLE), ActionManager.ACTION_zoom);
+    bind(getMouseAction(SINGLE_CLICK,LEFT), ActionManager.ACTION_slideZoom);
 
     bind(getMouseAction(SINGLE_CLICK,LEFT), ActionManager.ACTION_rotateXY);
 

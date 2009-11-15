@@ -4180,6 +4180,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public final static int CURSOR_CROSSHAIR = 2;
   public final static int CURSOR_MOVE = 3;
   public final static int CURSOR_WAIT = 4;
+  public final static int CURSOR_ZOOM = 5;
 
   private int currentCursor = CURSOR_DEFAULT;
 
@@ -4193,6 +4194,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       break;
     case CURSOR_MOVE:
       c = Cursor.MOVE_CURSOR;
+      break;
+    case CURSOR_ZOOM:
+      c = Cursor.N_RESIZE_CURSOR;
       break;
     case CURSOR_CROSSHAIR:
       c = Cursor.CROSSHAIR_CURSOR;

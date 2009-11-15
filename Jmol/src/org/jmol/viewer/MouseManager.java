@@ -177,7 +177,7 @@ public abstract class MouseManager implements KeyListener {
   void mousePressed(long time, int x, int y, int modifiers,
                     boolean isPopupTrigger) {
     clearKeyBuffer();
-    actionManager.mousePressed(time, x, y, modifiers, isPopupTrigger);
+    actionManager.mousePressed(time, x, y, modifiers);
   }
 
   void mouseReleased(long time, int x, int y, int modifiers) {

@@ -879,6 +879,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + yDelta : "");
   }
 
+  void spinXYBy(int xDelta, int yDelta, float speed) {
+    if (mouseEnabled)
+      transformManager.spinXYBy(xDelta, yDelta, speed);
+    refresh(2, statusManager.syncingMouse ? "Mouse: spinXYBy " + xDelta + " "
+        + yDelta  + " " + speed : "");
+  }
+
   void rotateZBy(int zDelta) {
     // mouseSinglePressDrag
     if (mouseEnabled)
@@ -6978,7 +6985,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (Float.isNaN(degrees) || degrees == 0)
       return;
     transformManager.rotateAboutPointsInternal(point1, point2, degrees,
-        endDegrees, false, isSpin, bsSelected);
+        endDegrees, false, isSpin, bsSelected, false);
     refresh(-1, "rotateAxisAboutPointsInternal");
   }
 
@@ -6996,7 +7003,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     }
     transformManager.rotateAboutPointsInternal(pt1, pt2,
-        global.pickingSpinRate, Float.MAX_VALUE, isClockwise, true, null);
+        global.pickingSpinRate, Float.MAX_VALUE, isClockwise, true, null, false);
   }
 
   public Vector3f getModelDipole() {
@@ -7601,6 +7608,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       else if (key.equals("rotateMolecule"))
         rotateMolecule(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]));
       break;
+    case 5:
+      if (key.equals("spinXYBy"))
+        spinXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]), Parser.parseFloat(tokens[4]));
     }
     if (disableSend)
       setSyncDriver(StatusManager.SYNC_ENABLE);

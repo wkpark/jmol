@@ -312,6 +312,19 @@ abstract class TransformManager {
     return radians;
   }
 
+  void spinXYBy(int xDelta, int yDelta, float speed) {
+    // from mouse action
+    clearSpin();
+    Point3f pt1 = new Point3f(fixedRotationCenter);
+    Point3f ptScreen = new Point3f();
+    transformPoint(pt1, ptScreen);
+    Point3f pt2 = new Point3f(-yDelta, xDelta, 0);
+    pt2.add(ptScreen);
+    unTransformPoint(pt2, pt2);
+    viewer.setInMotion(false);
+    rotateAboutPointsInternal(pt2, pt1, 10 * speed, Float.NaN, false, true, null, true);
+  }
+
   void rotateXYBy(int xDelta, int yDelta, BitSet bsAtoms) {
     // from mouse action
     rotateXRadians(yDelta * JmolConstants.radiansPerDegree, bsAtoms);
@@ -398,7 +411,7 @@ abstract class TransformManager {
       isSpinInternal = false;
       isSpinFixed = true;
       isSpinSelected = (bsAtoms != null);
-      setSpinOn(true, endDegrees, bsAtoms);
+      setSpinOn(true, endDegrees, bsAtoms, false);
       return;
     }
     rotateAxisAngleRadiansFixed(angle, bsAtoms);
@@ -418,7 +431,7 @@ abstract class TransformManager {
 
   void rotateAboutPointsInternal(Point3f point1, Point3f point2, float degrees,
                                  float endDegrees, boolean isClockwise,
-                                 boolean isSpin, BitSet bsAtoms) {
+                                 boolean isSpin, BitSet bsAtoms, boolean isGesture) {
 
     // *THE* Viewer INTERNAL frame rotation entry point
 
@@ -438,7 +451,7 @@ abstract class TransformManager {
       isSpinInternal = true;
       isSpinFixed = false;
       isSpinSelected = isSelected;
-      setSpinOn(true, endDegrees, bsAtoms);
+      setSpinOn(true, endDegrees, bsAtoms, isGesture);
       return;
     }
     rotateAxisAngleRadiansInternal(angle, bsAtoms);
@@ -1890,22 +1903,21 @@ abstract class TransformManager {
   private SpinThread spinThread;
 
   void setSpinOn(boolean spinOn) {
-    setSpinOn(spinOn, Float.MAX_VALUE, null);
+    setSpinOn(spinOn, Float.MAX_VALUE, null, false);
   }
 
-  private void setSpinOn(boolean spinOn, float endDegrees, BitSet bsAtoms) {
+  private void setSpinOn(boolean spinOn, float endDegrees, BitSet bsAtoms, boolean isGesture) {
     if (navOn && spinOn)
       setNavOn(false);
     this.spinOn = spinOn;
     viewer.getGlobalSettings().setParameterValue("_spinning", spinOn);
     if (spinOn) {
       if (spinThread == null) {
-        spinThread = new SpinThread(endDegrees, bsAtoms, false);
+        spinThread = new SpinThread(endDegrees, bsAtoms, false, isGesture);
         spinThread.start();
       }
     } else {
       if (spinThread != null) {
-        //System.out.println("interrupting spin thread");
         spinThread.interrupt();
         spinThread = null;
       }
@@ -1916,7 +1928,7 @@ abstract class TransformManager {
     if (Float.isNaN(navFps))
       return;
     if (navOn && spinOn)
-      setSpinOn(false, 0, null);
+      setSpinOn(false, 0, null, false);
     this.navOn = navOn;
     viewer.getGlobalSettings().setParameterValue("_navigating", navOn);
     if (navOn) {
@@ -1925,7 +1937,7 @@ abstract class TransformManager {
       if (navFps == 0)
         navFps = 10;
       if (spinThread == null) {
-        spinThread = new SpinThread(0, null, true);
+        spinThread = new SpinThread(0, null, true, false);
         spinThread.start();
       }
     } else {
@@ -1942,11 +1954,14 @@ abstract class TransformManager {
     float nDegrees;
     BitSet bsAtoms;
     boolean isNav;
-    SpinThread(float endDegrees, BitSet bsAtoms, boolean isNav) {
+    boolean isGesture;
+    
+    SpinThread(float endDegrees, BitSet bsAtoms, boolean isNav, boolean isGesture) {
       setName("SpinThread");
-      this.isNav = isNav;
       this.endDegrees = Math.abs(endDegrees);
       this.bsAtoms = bsAtoms;
+      this.isNav = isNav;
+      this.isGesture = isGesture;
     }
 
     public void run() {
@@ -1977,11 +1992,14 @@ abstract class TransformManager {
         ++i;
         int targetTime = (int) (i * 1000 / myFps);
         int currentTime = (int) (System.currentTimeMillis() - timeBegin);
-        int sleepTime = targetTime - currentTime + 1000;
+        int sleepTime = (targetTime - currentTime);
         if (sleepTime > 0) {
           boolean isInMotion = viewer.getInMotion();
-          if (isInMotion)
+          if (isInMotion) {
+            if (isGesture)
+              break;
             sleepTime += 1000;
+          }
           try {
             if (refreshNeeded && (spinOn || navOn) && !isInMotion) {
               if (isNav) {

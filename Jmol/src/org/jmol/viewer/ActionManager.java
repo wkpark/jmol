@@ -51,9 +51,7 @@ public class ActionManager {
   public final static int ACTION_dragLabel = 102;
   public final static int ACTION_dragDrawPoint = 103;
   public final static int ACTION_dragDrawObject = 104;
-  public final static int ACTION_rubberBandSelectToggle = 105;
-  public final static int ACTION_rubberBandSelectOr = 106;
-  public final static int ACTION_rubberBandSelectAndNot = 107;
+  public final static int ACTION_dragSpin = 105;
 
   public final static int ACTION_spinDrawObjectCW = 201;
   public final static int ACTION_spinDrawObjectCCW = 202;
@@ -82,13 +80,18 @@ public class ActionManager {
   public static final int ACTION_selectAndNot = 705;
   public static final int ACTION_selectOr = 706;
 
-  public final static int ACTION_reset = 999;
+  public final static int ACTION_rubberBandSelectToggle = 801;
+  public final static int ACTION_rubberBandSelectOr = 802;
+  public final static int ACTION_rubberBandSelectAndNot = 803;
+
+  public final static int ACTION_reset = 9999;
 
   final static float wheelClickFractionUp = 1.15f;
   final static float wheelClickFractionDown = 1 / wheelClickFractionUp;
 
   
   private final static long MAX_DOUBLE_CLICK_MILLIS = 700;
+  private static final long MININUM_GESTURE_DELAY_MILLISECONDS = 50;
  
   protected Viewer viewer;
   
@@ -174,7 +177,11 @@ public class ActionManager {
 
   private int mouseMovedModifiers = Integer.MAX_VALUE;
 
-  public void keyPressed(KeyEvent ke) {
+  /**
+   * called by MouseManager.keyPressed
+   * @param ke
+   */
+  void keyPressed(KeyEvent ke) {
     if (keyProcessing)
       return;
     keyProcessing = true;
@@ -344,8 +351,7 @@ public class ActionManager {
     viewer.zoomByFactor(zoomFactor);
   }
 
-  void mousePressed(long time, int x, int y, int mods,
-                    boolean isPopupTrigger) {
+  void mousePressed(long time, int x, int y, int mods) {
     if (previousPressedX == x && previousPressedY == y
         && previousPressedModifiers == mods
         && (time - previousPressedTime) < MAX_DOUBLE_CLICK_MILLIS) {
@@ -353,14 +359,14 @@ public class ActionManager {
     } else {
       pressedCount = 1;
     }
-
+    int action = Binding.getMouseAction(pressedCount, mods);
+    dragGesture.setAction(action, time);
     hoverOff();
     xAnchor = previousPressedX = previousDragX = xCurrent = x;
     yAnchor = previousPressedY = previousDragY = yCurrent = y;
     previousPressedModifiers = mods;
     previousPressedTime = timeCurrent = time;
 
-    int action = Binding.getMouseAction(pressedCount, mods);
     if (Binding.getModifiers(action) != 0) {
       action = viewer.notifyMouseClicked(x, y, action);
       if (action == 0)
@@ -389,11 +395,13 @@ public class ActionManager {
     viewer.setInMotion(false);
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
     int action = Binding.getMouseAction(pressedCount, mods);
-    if (rubberbandSelectionMode && 
+    dragGesture.add(action, x, y, time);
+    boolean isRbAction = (rubberbandSelectionMode && 
         (  isBound(action, ACTION_rubberBandSelectToggle)
         || isBound(action, ACTION_rubberBandSelectOr)
         || isBound(action, ACTION_rubberBandSelectAndNot)
-        )) {
+        ));
+    if (isRbAction) {
       BitSet bs = viewer.findAtomsInRectangle(rectRubber);
       if (BitSetUtil.firstSetBit(bs) >= 0) {
         String s = Escape.escape(bs);
@@ -419,6 +427,13 @@ public class ActionManager {
     }
     if (dragSelectedMode)
       viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, false);
+    if (dragGesture.getTimeDifference(2) <= MININUM_GESTURE_DELAY_MILLISECONDS
+        && dragGesture.getPointCount(10, 5) == 10
+        && isBound(action, ACTION_dragSpin)) {
+      float speed = dragGesture.getSpeedPixelsPerMillisecond(10, 5);
+      viewer.spinXYBy(dragGesture.getDX(10, 5), dragGesture.getDY(10,5), speed * 30);
+      return;
+    }
   }
 
   void mouseDragged(long time, int x, int y, int mods) {
@@ -430,6 +445,7 @@ public class ActionManager {
     xCurrent = previousDragX = x;
     yCurrent = previousDragY = y;
     int action = Binding.getMouseAction(pressedCount, mods);
+    dragGesture.add(action, x, y, time);
     if (Binding.getModifiers(action) != 0) {
       int newAction = viewer.notifyMouseClicked(x, y,  Binding.getMouseAction(-pressedCount, mods));
       if (newAction == 0)
@@ -909,5 +925,104 @@ public class ActionManager {
     viewer.script("select " + select + item);
   }
 
+  protected class MotionPoint {
+    int index;
+    int x;
+    int y;
+    long time;
 
+    void set(int index, int x, int y, long time) {
+      this.index = index;
+      this.x = x;
+      this.y = y;
+      this.time = time;
+    }
+  }
+  
+  private Gesture dragGesture = new Gesture(20);
+  
+  protected class Gesture {
+    private int action;
+    MotionPoint[] nodes;
+    private int ptNext;
+    private long time0;
+
+    Gesture(int nPoints) {
+      nodes = new MotionPoint[nPoints];
+      for (int i = 0; i < nPoints; i++)
+        nodes[i] = new MotionPoint();
+    }
+    
+    void setAction(int action, long time) {
+      this.action = action;
+      ptNext = 0;
+      time0 = time;
+      for (int i = 0; i < nodes.length; i++)
+        nodes[i].index = -1;
+    }
+    
+    int getAction() {
+      return action;
+    }
+    
+    int add(int action, int x, int y, long time) {
+      this.action = action;
+      getNode(ptNext).set(ptNext, x, y, time - time0);
+      ptNext++;
+      return ptNext;
+    }
+    
+    long getTimeDifference(int nPoints) {
+      nPoints = getPointCount(nPoints, 0);
+      if (nPoints < 2)
+        return 0;
+      MotionPoint mp1 = getNode(ptNext - 1);
+      MotionPoint mp0 = getNode(ptNext - nPoints);
+      return mp1.time - mp0.time;
+    }
+
+    float getSpeedPixelsPerMillisecond(int nPoints, int nPointsPrevious) {
+      nPoints = getPointCount(nPoints, nPointsPrevious);
+      if (nPoints < 2)
+        return 0;
+      MotionPoint mp1 = getNode(ptNext - 1 - nPointsPrevious);
+      MotionPoint mp0 = getNode(ptNext - nPoints - nPointsPrevious);
+      float dx = mp1.x - mp0.x;
+      float dy = mp1.y - mp0.y;
+      float speed = (float) Math.sqrt(dx * dx + dy * dy) / (mp1.time - mp0.time);
+      return speed;
+    }
+
+    int getDX(int nPoints, int nPointsPrevious) {
+      nPoints = getPointCount(nPoints, nPointsPrevious);
+      if (nPoints < 2)
+        return 0;
+      MotionPoint mp1 = getNode(ptNext - 1 - nPointsPrevious);
+      MotionPoint mp0 = getNode(ptNext - nPoints - nPointsPrevious);
+      return mp1.x - mp0.x;
+    }
+
+    int getDY(int nPoints, int nPointsPrevious) {
+      nPoints = getPointCount(nPoints, nPointsPrevious);
+      if (nPoints < 2)
+        return 0;
+      MotionPoint mp1 = getNode(ptNext - 1 - nPointsPrevious);
+      MotionPoint mp0 = getNode(ptNext - nPoints - nPointsPrevious);
+      return mp1.y - mp0.y;
+    }
+
+    int getPointCount(int nPoints, int nPointsPrevious) {
+      if (nPoints > nodes.length - nPointsPrevious)
+        nPoints = nodes.length - nPointsPrevious;
+      int n = nPoints + 1;
+      for (; --n >= 0; )
+        if (getNode(ptNext - n - nPointsPrevious).index >= 0)
+          break;
+      return n;
+    }
+
+    MotionPoint getNode(int i) {
+      return nodes[(i + nodes.length + nodes.length) % nodes.length];
+    }
+  }
 } 

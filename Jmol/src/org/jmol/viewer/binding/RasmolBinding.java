@@ -10,7 +10,7 @@ public class RasmolBinding extends JmolBinding {
   }
     
   private void setSelectBindings() {
-    bind(getMouseAction(SINGLE_CLICK,SHIFT_LEFT), ActionManager.ACTION_selectToggle);
+    bind(SINGLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_selectToggle);
   }
 
 }

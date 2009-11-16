@@ -6009,6 +6009,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.getAllSettings(prefix);
   }
 
+  public String getBindingInfo(String qualifiers) {
+    return (actionManager == null ? "" : actionManager.getBindingInfo(qualifiers));  
+  }
+
   // ////// flags and settings ////////
 
   public boolean getDotSurfaceFlag() {

@@ -4886,7 +4886,13 @@ public class ScriptEvaluator {
   private void help() throws ScriptException {
     if (isSyntaxCheck)
       return;
-    String what = (statementLength == 1 ? "" : parameterAsString(1));
+    String what = optParameterAsString(1);
+    int pt = 0;
+    if (what.toLowerCase().startsWith("mouse")
+        && (pt = what.indexOf(" ")) >= 0 && pt == what.lastIndexOf(" ")) {
+      showString(viewer.getBindingInfo(what.substring(pt + 1)));
+      return;
+    }    
     Token t = Token.getTokenFromName(what);
     if (t != null && (t.tok & Token.scriptCommand) != 0)
       what = "?command=" + what;
@@ -10957,11 +10963,18 @@ public class ScriptEvaluator {
             + viewer.getStrandCount(JmolConstants.SHAPE_MESHRIBBON);
       } else if (str.equalsIgnoreCase("trajectory")
           || str.equalsIgnoreCase("trajectories")) {
-        msg = viewer.getTrajectoryInfo();
+        if (!isSyntaxCheck)
+          msg = viewer.getTrajectoryInfo();
+      } else if (str.equalsIgnoreCase("mouse")) {
+        String qualifiers = ((len = statementLength) == 2 
+            ? null : parameterAsString(2));
+        if (!isSyntaxCheck)
+          msg = viewer.getBindingInfo(qualifiers);
       }
       break;
     case Token.minimize:
-      msg = viewer.getMinimizationInfo();
+      if (!isSyntaxCheck)
+        msg = viewer.getMinimizationInfo();
       break;
     case Token.axes:
       switch (viewer.getAxesMode()) {
@@ -10979,17 +10992,19 @@ public class ScriptEvaluator {
       msg = "set bondMode " + (viewer.getBondSelectionModeOr() ? "OR" : "AND");
       break;
     case Token.strands:
-      msg = "set strandCountForStrands "
-          + viewer.getStrandCount(JmolConstants.SHAPE_STRANDS)
-          + "; set strandCountForMeshRibbon "
-          + viewer.getStrandCount(JmolConstants.SHAPE_MESHRIBBON);
+      if (!isSyntaxCheck)
+        msg = "set strandCountForStrands "
+            + viewer.getStrandCount(JmolConstants.SHAPE_STRANDS)
+            + "; set strandCountForMeshRibbon "
+            + viewer.getStrandCount(JmolConstants.SHAPE_MESHRIBBON);
       break;
     case Token.hbond:
       msg = "set hbondsBackbone " + viewer.getHbondsBackbone()
           + ";set hbondsSolid " + viewer.getHbondsSolid();
       break;
     case Token.spin:
-      msg = viewer.getSpinState();
+      if (!isSyntaxCheck)
+        msg = viewer.getSpinState();
       break;
     case Token.ssbond:
       msg = "set ssbondsBackbone " + viewer.getSsbondsBackbone();
@@ -11010,7 +11025,8 @@ public class ScriptEvaluator {
     case Token.specular:
     case Token.specpower:
     case Token.specexponent:
-      msg = viewer.getSpecularState();
+      if (!isSyntaxCheck)
+        msg = viewer.getSpecularState();
       break;
     case Token.save:
       if (!isSyntaxCheck)

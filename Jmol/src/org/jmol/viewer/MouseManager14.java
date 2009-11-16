@@ -23,11 +23,12 @@
  */
 package org.jmol.viewer;
 
-
 import java.awt.Component;
 
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+
+import org.jmol.viewer.binding.Binding;
 
 class MouseManager14 extends MouseManager11
   implements MouseWheelListener {
@@ -45,6 +46,7 @@ class MouseManager14 extends MouseManager11
   }
 
  public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
+    mouseWheel(e.getWhen(), e.getWheelRotation(),
+        (e.getModifiers() & ~Binding.MIDDLE) | Binding.WHEEL);
   }
 }

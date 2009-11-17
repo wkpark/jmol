@@ -138,7 +138,7 @@ public class ActionManager {
 
   
   private final static long MAX_DOUBLE_CLICK_MILLIS = 700;
-  private static final long MININUM_GESTURE_DELAY_MILLISECONDS = 50;
+  private static final long MININUM_GESTURE_DELAY_MILLISECONDS = 5;
   private static final int SLIDE_ZOOM_X_PERCENT = 98;
  
   protected Viewer viewer;
@@ -490,13 +490,14 @@ public class ActionManager {
     }
     if (dragSelectedMode)
       viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, false);
-    if (dragGesture.getTimeDifference(2) <= MININUM_GESTURE_DELAY_MILLISECONDS
-        && dragGesture.getPointCount(10, 5) == 10
-        && isBound(action, ACTION_dragSpin)) {
-      float speed = dragGesture.getSpeedPixelsPerMillisecond(10, 5);
-      viewer.spinXYBy(dragGesture.getDX(10, 5), dragGesture.getDY(10,5), speed * 30);
-      return;
-    }
+    if (viewer.getBooleanProperty("allowGestures"))
+      if (dragGesture.getTimeDifference(2) <= MININUM_GESTURE_DELAY_MILLISECONDS
+          && dragGesture.getPointCount(10, 5) == 10
+          && isBound(action, ACTION_dragSpin)) {
+        float speed = dragGesture.getSpeedPixelsPerMillisecond(10, 5);
+        viewer.spinXYBy(dragGesture.getDX(10, 5), dragGesture.getDY(10,5), speed * 30);
+        return;
+      }
   }
 
   private boolean isRubberBandSelect(int action) {
@@ -608,7 +609,8 @@ public class ActionManager {
 
   private boolean checkMotionRotateZoom(int action, int x, int deltaX, int deltaY) {
     boolean isZoom = isBound(action, ACTION_zoom);
-    boolean isSlideZoom = isBound(action, ACTION_slideZoom);
+    boolean isSlideZoom = (viewer.getBooleanProperty("allowGestures") 
+        && isBound(action, ACTION_slideZoom));
     boolean isRotateXY = isBound(action, ACTION_rotateXY);
     boolean isRotateZorZoom = isBound(action, ACTION_rotateZorZoom);
     if (!isZoom && !isSlideZoom && !isRotateXY && !isRotateZorZoom) 

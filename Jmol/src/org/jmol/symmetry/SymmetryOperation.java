@@ -97,12 +97,12 @@ class SymmetryOperation extends Matrix4f {
     return (normalized || xyzOriginal == null ? xyz : xyzOriginal);
   }
 
-  private Point4f temp = new Point4f();
+  private Point3f temp3 = new Point3f();
   void newPoint(Point3f atom1, Point3f atom2,
                        int transX, int transY, int transZ) {
-    temp.set(atom1.x, atom1.y, atom1.z, 1);
-    transform(temp, temp);
-    atom2.set(temp.x + transX, temp.y + transY, temp.z + transZ);
+    temp3.set(atom1);
+    transform(temp3, temp3);
+    atom2.set(temp3.x + transX, temp3.y + transY, temp3.z + transZ);
   }
 
   String dumpInfo() {
@@ -1124,5 +1124,10 @@ class SymmetryOperation extends Matrix4f {
     return ((int) (f * n + 0.5f * (f < 0 ? -1 : 1)) / n);
   }
 
+  public static void normalizeTranslation(Matrix4f operation) {
+    operation.m03 = ((int)operation.m03 + 12) % 12;
+    operation.m13 = ((int)operation.m13 + 12) % 12;
+    operation.m23 = ((int)operation.m23 + 12) % 12;    
+  }
 
 }

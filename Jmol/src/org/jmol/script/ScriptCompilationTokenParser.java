@@ -400,6 +400,8 @@ abstract class ScriptCompilationTokenParser {
       // may be a residue specification
       if (clauseResidueSpec())
         return true;
+      if (isError())
+        return false;
       if (Token.tokAttr(tok, Token.atomproperty)) {
         int itemp = itokenInfix;
         boolean isOK = clauseComparator(Token.tokAttr(tok, Token.predefinedset));
@@ -788,6 +790,7 @@ abstract class ScriptCompilationTokenParser {
 
   private boolean clauseResidueSpec() {
     int tok = tokPeek();
+    residueSpecCodeGenerated = false;
     boolean checkResNameSpec = false;
     switch (tok) {
     case Token.nada:
@@ -811,9 +814,10 @@ abstract class ScriptCompilationTokenParser {
       // in principle be here, for example:
       // "AND" "SET" "TO*"
       // these need to have attribute expression to be here
+      if (!checkResNameSpec)
+        return false;
     }
     boolean specSeen = false;
-    residueSpecCodeGenerated = false;
     if (checkResNameSpec) {
       if (!clauseResNameSpec())
         return false;
@@ -1190,6 +1194,10 @@ abstract class ScriptCompilationTokenParser {
     return error(strError, strUntranslated);
   }
 
+  private boolean isError() {
+    return errorMessage != null;
+  }
+  
   protected boolean error(String errorMessage, String strUntranslated) {
     this.errorMessage = errorMessage;
     errorMessageUntranslated = strUntranslated;

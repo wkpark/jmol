@@ -222,7 +222,7 @@ class HallInfo {
      return SymmetryOperation.getXYZFromMatrix(seitzMatrix12ths, true, allPositive, true);
    }
    
-    private void getRotationInfo(String code, int prevOrder, char prevAxisType) {
+   private void getRotationInfo(String code, int prevOrder, char prevAxisType) {
       this.inputCode = code;
       code += "   ";
       if (code.charAt(0) == '-') {
@@ -245,8 +245,8 @@ class HallInfo {
           diagonalReferenceAxis = c;
           c = code.charAt(2);
           ptr++;
-        }     
-        //fall through
+        }
+        // fall through
       case '*':
         axisType = c;
         break;
@@ -266,51 +266,55 @@ class HallInfo {
         break;
       default:
         // implicit axis type
-        axisType = (order == 1 ? '_'// no axis for 1 
-            : nRotations == 0 ? 'z' // z  implied for first rotation
-            : nRotations == 2 ? '*' // 3* implied for third rotation
-            : prevOrder == 2 || prevOrder == 4 ? 'x' // x implied for 2 or 4 
-            : '\''  // a-b (') implied for 3 or 6 previous
-              );
+        axisType = (order == 1 ? '_'// no axis for 1
+            : nRotations == 0 ? 'z' // z implied for first rotation
+                : nRotations == 2 ? '*' // 3* implied for third rotation
+                    : prevOrder == 2 || prevOrder == 4 ? 'x' // x implied for 2
+                        // or 4
+                        : '\'' // a-b (') implied for 3 or 6 previous
+        );
         code = code.substring(0, 1) + axisType + code.substring(1);
       }
       primitiveCode += (axisType == '_' ? "1" : code.substring(0, 2));
       if (diagonalReferenceAxis != '\0') {
         // 2' needs x or y or z designation
-        code = code.substring(0, 1) + diagonalReferenceAxis + axisType + code.substring(ptr);
+        code = code.substring(0, 1) + diagonalReferenceAxis + axisType
+            + code.substring(ptr);
         primitiveCode += diagonalReferenceAxis;
         ptr = 3;
-      }       
+      }
       lookupCode = code.substring(0, ptr);
       rotation = Rotation.lookup(lookupCode);
       if (rotation == null) {
-        Logger.error("Rotation lookup could not find " + inputCode + " ? " + lookupCode);
+        Logger.error("Rotation lookup could not find " + inputCode + " ? "
+            + lookupCode);
         return;
       }
 
       // now for translational part 1 2 3 4 5 6 a b c n u v w d r
-      // The "r" is my addition to handle rhombohedral lattice with 
-      // primitive notation. This made coding FAR simpler -- all lattice 
+      // The "r" is my addition to handle rhombohedral lattice with
+      // primitive notation. This made coding FAR simpler -- all lattice
       // operations indicated by one to three 1xxx or -1 extensions.
-      
+
       translation = new Translation();
-      translationString = "";      
+      translationString = "";
       int len = code.length();
       for (int i = ptr; i < len; i++) {
         char translationCode = code.charAt(i);
         Translation t = new Translation(translationCode, order);
         if (t.translationCode != '\0') {
-          translationString += "" + t.translationCode; 
+          translationString += "" + t.translationCode;
           translation.rotationShift12ths += t.rotationShift12ths;
           translation.vectorShift12ths.add(t.vectorShift12ths);
         }
       }
-      primitiveCode = (isImproper ? "-": "") + primitiveCode + translationString;
-      
+      primitiveCode = (isImproper ? "-" : "") + primitiveCode
+          + translationString;
+
       // set matrix, including translations and vector adjustment
-      
+
       if (isImproper) {
-        seitzMatrix12ths.set(rotation.seitzMatrixInv);        
+        seitzMatrix12ths.set(rotation.seitzMatrixInv);
       } else {
         seitzMatrix12ths.set(rotation.seitzMatrix);
       }
@@ -328,7 +332,7 @@ class HallInfo {
         seitzMatrix12ths.m23 += translation.rotationShift12ths;
         break;
       }
-      
+
       if (vectorCode.length() > 0) {
         Matrix4f m1 = new Matrix4f();
         Matrix4f m2 = new Matrix4f();
@@ -344,9 +348,8 @@ class HallInfo {
         seitzMatrix12ths.mul(m2);
       }
       if (Logger.debugging) {
-        Logger.debug(
-            "code = "+code + "; primitive code ="+primitiveCode+
-            "\n Seitz Matrix(12ths):"+seitzMatrix12ths);
+        Logger.debug("code = " + code + "; primitive code =" + primitiveCode
+            + "\n Seitz Matrix(12ths):" + seitzMatrix12ths);
       }
     }
   }  

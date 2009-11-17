@@ -103,6 +103,8 @@ public class GaussianReader extends MOReader {
   private int stepNumber = 0;
 
   protected boolean checkLine() throws Exception {
+    if (Logger.debugging)
+      Logger.debug(line);
     if (line.startsWith(" Step number")) {
       equivalentAtomSets = 0;
       stepNumber++;
@@ -530,7 +532,7 @@ but:
             "Calculation " + calculationNumber+
             SmarterJmolAdapter.PATH_SEPARATOR+"Frequencies");
       }
-      discardLinesUntilStartsWith(" Atom AN");
+      discardLinesUntilContains(" AN ");
       fillFrequencyData(iAtom0, atomCount, ignore, true, 0, 0);
     }
   }

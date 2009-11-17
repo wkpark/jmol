@@ -5470,6 +5470,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         global.allowKeyStrokes = value;
         break;
       }
+      
+      if (key.equalsIgnoreCase("allowGestures")) {
+        global.allowGestures = value;
+        break;
+      }
 
       if (key.equalsIgnoreCase("showKeyStrokes")) {
         global.showKeyStrokes = value;
@@ -7901,4 +7906,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean checkPrivateKey(double privateKey) {
     return privateKey == this.privateKey;
   }
+
 }

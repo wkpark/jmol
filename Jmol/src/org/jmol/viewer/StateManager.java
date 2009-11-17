@@ -736,7 +736,6 @@ public class StateManager {
     boolean greyscaleRendering = false;
     boolean isosurfacePropertySmoothing = true;
     boolean showHiddenSelectionHalos = false;
-    boolean allowKeyStrokes = false;
     boolean showKeyStrokes = true;
     boolean showMeasurements = true;
     boolean zoomLarge = true; //false would be like Chime
@@ -772,6 +771,8 @@ public class StateManager {
 
     //misc
 
+    boolean allowGestures = false;
+    boolean allowKeyStrokes = false;
     int animationFps = 10;
     boolean autoFps = false;
     boolean axesOrientationRasmol = false;
@@ -1191,6 +1192,8 @@ public class StateManager {
         messageStyleChime = g.messageStyleChime;
         defaultDirectory = g.defaultDirectory;
         zShade = g.zShade;
+        allowGestures = g.allowGestures;
+        allowKeyStrokes = g.allowKeyStrokes;
       }
 
       for (int i = 0;;i++) {        
@@ -1212,6 +1215,7 @@ public class StateManager {
 
       setParameterValue("allowEmbeddedScripts", allowEmbeddedScripts);
       setParameterValue("allowKeyStrokes", allowKeyStrokes);
+      setParameterValue("allowGestures", allowGestures);
       setParameterValue("allowRotateSelected", allowRotateSelected);
       setParameterValue("ambientPercent", ambientPercent);
       setParameterValue("animationFps", animationFps);

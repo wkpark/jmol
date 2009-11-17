@@ -3815,7 +3815,8 @@ public class ScriptEvaluator {
           setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", id);
           Point3f[] points = (Point3f[]) viewer.getShapeProperty(
               JmolConstants.SHAPE_DRAW, "vertices");
-          if (points == null || points.length < 3)
+          if (points == null || points.length < 3 
+              || points[0] == null || points[1] == null || points[2] == null)
             break;
           return Measure.getPlaneThroughPoints(points[0], points[1],
               points[2], new Vector3f(), vAB, vAC);

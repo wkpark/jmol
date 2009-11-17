@@ -668,8 +668,9 @@ class SpaceGroup {
         newOps[0].set(newOps[j]);
         for (int k = 0; k < nOps; k++) {
           operation.mul(newOps[j], operations[k]);
-          addSymmetry(SymmetryOperation.getXYZFromMatrix(operation, true, true, true),
-              operation);
+          SymmetryOperation.normalizeTranslation(operation);
+          String xyz = SymmetryOperation.getXYZFromMatrix(operation, true, true, true);
+          addSymmetry(xyz, operation);
         }
       }
     }

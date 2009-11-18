@@ -404,12 +404,11 @@ public class ActionManager {
     // effected inappropriate wheeling on this Java component
     hoverOff();
     timeCurrent = time;
-    int action = Binding.getMouseAction(1, mods);
     int deltaX = 0;
     int deltaY = rotation;
     int x = previousDragX;
     int y = previousDragY;
-    checkAction(action, x, y, deltaX, deltaY, time);
+    checkAction(Binding.getMouseAction(0, mods), x, y, deltaX, deltaY, time);
   }
 
   void mousePressed(long time, int x, int y, int mods) {
@@ -550,7 +549,6 @@ public class ActionManager {
 
     if (dragSelectedMode && isBound(action, ACTION_dragSelected)) {
       checkMotion(Viewer.CURSOR_MOVE);
-      System.out.println(deltaX + " " + deltaY + " " + x + " " + y);
       viewer.moveSelected(deltaX, deltaY, x, y, true);
       return;
     }

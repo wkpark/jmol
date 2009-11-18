@@ -46,7 +46,6 @@ class MouseManager14 extends MouseManager11
   }
 
  public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(),
-        (e.getModifiers() & ~Binding.MIDDLE) | Binding.WHEEL);
+    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers() | Binding.WHEEL);
   }
 }

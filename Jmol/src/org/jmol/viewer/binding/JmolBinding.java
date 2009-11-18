@@ -22,7 +22,7 @@ public class JmolBinding extends Binding {
     
     bind(SINGLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_rotateZorZoom);
     bind(SINGLE_CLICK+MIDDLE, ActionManager.ACTION_rotateZorZoom);
-    bind(SINGLE_CLICK+WHEEL, ActionManager.ACTION_zoom);
+    bind(SINGLE_CLICK+WHEEL, ActionManager.ACTION_wheelZoom);
     bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_slideZoom);
 
     bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_rotateXY);

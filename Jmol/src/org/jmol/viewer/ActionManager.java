@@ -92,7 +92,7 @@ public class ActionManager {
   }
   
   public final static int ACTION_rotateXY = 0;
-  public final static int ACTION_zoom = 1;
+  public final static int ACTION_wheelZoom = 1;
   public final static int ACTION_rotateZ = 2;
   public final static int ACTION_rotateZorZoom = 3;
   public final static int ACTION_translateXY = 4;
@@ -133,9 +133,7 @@ public class ActionManager {
 
   public final static int ACTION_reset = 33;
 
-  final static float wheelClickFractionUp = 1.15f;
-  final static float wheelClickFractionDown = 1 / wheelClickFractionUp;
-
+  final static float ZOOM_FACTOR = 1.15f;
   
   private final static long MAX_DOUBLE_CLICK_MILLIS = 700;
   private static final long MININUM_GESTURE_DELAY_MILLISECONDS = 5;
@@ -393,6 +391,10 @@ public class ActionManager {
     mouseMovedY = yCurrent = y;
     if (measurementPending != null || hoverActive)
       checkPointOrAtomClicked(x, y, 0, 0);
+    else if (isZoomArea(x))
+      checkMotionRotateZoom(Binding.getMouseAction(1, Binding.LEFT), 0, 0, 0);
+    else
+      checkMotion(Viewer.CURSOR_DEFAULT);
   }
 
   void mouseWheel(long time, int rotation, int mods) {
@@ -402,16 +404,12 @@ public class ActionManager {
     // effected inappropriate wheeling on this Java component
     hoverOff();
     timeCurrent = time;
-    if (rotation == 0 || Binding.getMouseAction(0, mods) != 0)
-      return;
-    float zoomFactor = 1f;
-    if (rotation > 0)
-      while (--rotation >= 0)
-        zoomFactor *= wheelClickFractionUp;
-    else
-      while (++rotation <= 0)
-        zoomFactor *= wheelClickFractionDown;
-    viewer.zoomByFactor(zoomFactor);
+    int action = Binding.getMouseAction(1, mods);
+    int deltaX = 0;
+    int deltaY = rotation;
+    int x = previousDragX;
+    int y = previousDragY;
+    checkAction(action, x, y, deltaX, deltaY, time);
   }
 
   void mousePressed(long time, int x, int y, int mods) {
@@ -429,7 +427,6 @@ public class ActionManager {
     yAnchor = previousPressedY = previousDragY = yCurrent = y;
     previousPressedModifiers = mods;
     previousPressedTime = timeCurrent = time;
-
     if (Binding.getModifiers(action) != 0) {
       action = viewer.notifyMouseClicked(x, y, action);
       if (action == 0)
@@ -517,6 +514,12 @@ public class ActionManager {
     xCurrent = previousDragX = x;
     yCurrent = previousDragY = y;
     int action = Binding.getMouseAction(pressedCount, mods);
+    checkAction(action, x, y, deltaX, deltaY, time);
+  }
+
+  private void checkAction(int action, int x, int y, int deltaX, int deltaY,
+                           long time) {
+    int mods = Binding.getModifiers(action);
     dragGesture.add(action, x, y, time);
     if (Binding.getModifiers(action) != 0) {
       int newAction = viewer.notifyMouseClicked(x, y,  Binding.getMouseAction(-pressedCount, mods));
@@ -582,9 +585,12 @@ public class ActionManager {
         viewer.rotateZBy(-deltaX);
       }
       return;
-    } else if (isBound(action, ACTION_zoom)) {
+    } else if (isBound(action, ACTION_wheelZoom)) {
       checkMotion(Viewer.CURSOR_ZOOM);
-      viewer.zoomBy(deltaY);
+      if (deltaY == 0)
+        return;
+      float zoomFactor = (float) Math.pow(ZOOM_FACTOR, deltaY);
+      viewer.zoomByFactor(zoomFactor);
       return;
     } else if (isBound(action, ACTION_rotateZ)) {
       checkMotion(Viewer.CURSOR_MOVE);
@@ -608,19 +614,17 @@ public class ActionManager {
   }
 
   private boolean checkMotionRotateZoom(int action, int x, int deltaX, int deltaY) {
-    boolean isZoom = isBound(action, ACTION_zoom);
-    boolean isSlideZoom = (viewer.getBooleanProperty("allowGestures") 
-        && isBound(action, ACTION_slideZoom));
+    boolean isSlideZoom = isBound(action, ACTION_slideZoom);
     boolean isRotateXY = isBound(action, ACTION_rotateXY);
     boolean isRotateZorZoom = isBound(action, ACTION_rotateZorZoom);
-    if (!isZoom && !isSlideZoom && !isRotateXY && !isRotateZorZoom) 
+    if (!isSlideZoom && !isRotateXY && !isRotateZorZoom) 
       return false;
+    boolean isZoom = false;
     if (isRotateZorZoom)
       isZoom = (deltaX == 0 || Math.abs(deltaY) > 5 * Math.abs(deltaX));
     if (isSlideZoom)
-      isZoom = (isZoomArea(x)
-          && (deltaX == 0 || Math.abs(deltaY) > 5 * Math.abs(deltaX)));
-    checkMotion(isZoom ? Viewer.CURSOR_ZOOM 
+      isZoom = isZoomArea(mouseMovedX);
+    checkMotion(isZoom || isBound(action, ACTION_wheelZoom) ? Viewer.CURSOR_ZOOM 
         : isRotateXY || isRotateZorZoom ? Viewer.CURSOR_MOVE : Viewer.CURSOR_DEFAULT);
     return isZoom;
   }

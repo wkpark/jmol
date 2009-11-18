@@ -132,9 +132,7 @@ public abstract class MeshCollection extends Shape {
     if ("thisID" == propertyName) {
       String id = (String) value;
       setMesh(id);
-      explicitID = (id != null && !id.equals(JmolConstants.PREVIOUS_MESH_ID));
-      if (explicitID)
-        previousMeshID = id;
+      checkExplicit(id);
       return;
     }
 
@@ -258,7 +256,13 @@ public abstract class MeshCollection extends Shape {
     super.setProperty(propertyName, value, bs);
   }
 
- private void setProperty(int tokProp, boolean bProp) {
+  protected void checkExplicit(String id) {
+    explicitID = (id != null && !id.equals(JmolConstants.PREVIOUS_MESH_ID));
+    if (explicitID)
+      previousMeshID = id;
+  } 
+  
+  private void setProperty(int tokProp, boolean bProp) {
     if (currentMesh != null) {
       switch (tokProp) {
       case Token.on:
@@ -514,7 +518,6 @@ public abstract class MeshCollection extends Shape {
  private void getMeshCommand(StringBuffer sb, int i) {
    Mesh mesh = meshes[i];
    String cmd = mesh.scriptCommand;
-   //System.out.println("meshcollection getmeshcommand " + cmd);
    if (cmd == null)
      return;
    cmd = cmd.replace('\t',' ');
@@ -523,7 +526,6 @@ public abstract class MeshCollection extends Shape {
    if (pt >= 0)
        cmd = cmd.substring(0, pt + 1);
    cmd = TextFormat.trim(cmd, ";") + ";";
-   //System.out.println("meshcollection now " + cmd);
    if (mesh.bitsets != null)  {
      cmd += "# "
          + (mesh.bitsets[0] == null ? "({null})" : Escape.escape(mesh.bitsets[0]))
@@ -540,7 +542,6 @@ public abstract class MeshCollection extends Shape {
      cmd = encapsulateData(cmd, mesh.data1, "");
    if (mesh.data2 != null)
      cmd = encapsulateData(cmd, mesh.data2, "2");
-   //System.out.println("meshcollection now " + cmd);
    
    if (mesh.modelIndex >= 0 && modelCount > 1)
      appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));

@@ -12889,10 +12889,12 @@ public class ScriptEvaluator {
         if (str.equalsIgnoreCase("LINK")) { // for state of lcaoCartoon
           propertyName = "link";
           break;
-        }
-        if (str.equalsIgnoreCase("REMAPPABLE")) { // testing only
+        } else if (str.equalsIgnoreCase("REMAPPABLE")) { // testing only
           propertyName = "remappable";
           break;
+        } else {
+          propertyName = "thisID";
+          propertyValue = str;
         }
         // fall through
       default:

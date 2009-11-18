@@ -892,7 +892,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       String str = script.substring(ichToken, ichToken + cchToken);
       if (tokCommand == Token.label 
           && Parser.isOneOf(str.toLowerCase(), "on;off;hide;display"))
-        addTokenToPrefix(Token.getTokenFromName(str));
+        addTokenToPrefix(Token.getTokenFromName(str.toLowerCase()));
       else
         addTokenToPrefix(new Token(Token.string, str));
       return CONTINUE;

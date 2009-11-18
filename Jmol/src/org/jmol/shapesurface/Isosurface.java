@@ -140,7 +140,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     currentMesh = thisMesh = isomeshes[index] = new IsosurfaceMesh(
         thisID, g3d, colix, index);
       sg.setJvxlData(jvxlData = thisMesh.jvxlData);
-    //System.out.println("Isosurface allocMesh thisMesh:" + thisMesh.thisID + " " + thisMesh);
   }
 
   public void initShape() {
@@ -410,11 +409,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }  
 
   private void setPropertySuper(String propertyName, Object value, BitSet bs) {
-    //System.out.println(propertyName + " " + value);
-    //System.out.println(thisMesh + (thisMesh!= null ? thisMesh.thisID : ""));
     if (propertyName == "thisID" && currentMesh != null 
-        && currentMesh.thisID.equals((String) value))
+        && currentMesh.thisID.equals((String) value)) {
+      checkExplicit((String) value);
       return;
+    }
     currentMesh = thisMesh;
     super.setProperty(propertyName, value, bs);
     thisMesh = (IsosurfaceMesh) currentMesh;
@@ -1049,10 +1048,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     Point3f navPt = new Point3f(viewer.getNavigationOffset());
     Point3f toPt = new Point3f();
     viewer.unTransformPoint(navPt, toPt);
-    //System.out.println(navPt + " " + toPt);
     navPt.z += dz;
     viewer.unTransformPoint(navPt, toPt);
-    //System.out.println(navPt + " " + toPt);
     Point3f ptRet = new Point3f();
     Vector3f vNorm = new Vector3f();
     if (!getClosestNormal(thisMesh, toPt, ptRet, vNorm))
@@ -1071,7 +1068,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // then do all the changes and save the new orientation.
     // Then just do a timed restore.
 
-    //if (Math.abs(vNorm.x - -0.00225893) < 0.0001)System.out.println("isosurface set heading " + vNorm + " " + pt + " " + nSeconds);
     Orientation o1 = viewer.getOrientation();
     
     // move to point
@@ -1088,7 +1084,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // subtract the navigation point to get a relative point
     // that we can project into the xy plane by setting z = 0
     Point3f navPt = new Point3f(viewer.getNavigationOffset());
-    //if (navPt.x != 250)System.out.println("isosurface navPt=" + navPt);
     toPts.sub(navPt);
     toPts.z = 0;
     
@@ -1096,7 +1091,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // less 20 degrees for the normal upward sloping view
     float angle = Measure.computeTorsion(JmolConstants.axisNY, 
         JmolConstants.center, JmolConstants.axisZ, toPts, true);
-    //System.out.println("isosurface navigate z " + angle);
     viewer.navigate(0, JmolConstants.axisZ, angle);        
     toPt.set(vNorm);
     toPt.add(pt);
@@ -1104,7 +1098,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     toPts.sub(navPt);
     angle = Measure.computeTorsion(JmolConstants.axisNY,
         JmolConstants.center, JmolConstants.axisX, toPts, true);
-    //System.out.println("isosurface navigate x " + angle);
     viewer.navigate(0, JmolConstants.axisX, 20 - angle);
     
     // save this orientation, restore the first, and then
@@ -1113,8 +1106,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // would hang.
     
     navPt = new Point3f(viewer.getNavigationOffset());
-    //System.out.println("isosurface set heading2 ");
-    //if (navPt.x != 250)System.out.println("isosurface navPt=" + navPt);
     if (nSeconds <= 0)
       return;
     viewer.saveOrientation("_navsurf");
@@ -1135,7 +1126,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     if (imin < 0)
       return false;
-    //System.out.println(imin + " " + m.centers[imin] + " " + m.polygonIndexes[imin][0]+ " " + m.polygonIndexes[imin][1]+ " " + m.polygonIndexes[imin][2]);
     getClosestPoint(m, imin, toPt, ptRet, normalRet);
     return true;
   }
@@ -1150,7 +1140,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     dist = Measure.distanceToPlane(plane, ptRet);
     if (m.centers[imin].distance(toPt) < ptRet.distance(toPt))
       ptRet.set(m.centers[imin]);
-    //System.out.println(ptRet);
   }
 
   private String findValue(int x, int y, boolean isPicking, BitSet bsVisible) {

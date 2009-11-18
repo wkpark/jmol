@@ -394,7 +394,7 @@ public class ActionManager {
     else if (isZoomArea(x))
       checkMotionRotateZoom(Binding.getMouseAction(1, Binding.LEFT), 0, 0, 0);
     else
-      checkMotion(Viewer.CURSOR_DEFAULT);
+      viewer.setCursor(Viewer.CURSOR_DEFAULT);
   }
 
   void mouseWheel(long time, int rotation, int mods) {
@@ -469,7 +469,8 @@ public class ActionManager {
           viewer.script("select selected or " + s);
         else if (isBound(action, ACTION_selectAndNot))
           viewer.script("select selected and not " + s);
-        else // ACTION_selectToggle
+        else
+          // ACTION_selectToggle
           viewer.script("select selected tog " + s);
       }
       viewer.refresh(3, "mouseReleased");
@@ -478,23 +479,26 @@ public class ActionManager {
     rectRubber.x = Integer.MAX_VALUE;
     if (previousPressedX != x || previousPressedY != y)
       viewer.notifyMouseClicked(x, y, Binding.getMouseAction(pressedCount, 0));
-    if (drawMode && (
-        isBound(action, ACTION_dragDrawObject)
-        || isBound(action, ACTION_dragDrawPoint))
-        || labelMode && isBound(action, ACTION_dragLabel)) {
+    if (drawMode
+        && (isBound(action, ACTION_dragDrawObject) || isBound(action,
+            ACTION_dragDrawPoint)) || labelMode
+        && isBound(action, ACTION_dragLabel)) {
       viewer.checkObjectDragged(Integer.MAX_VALUE, 0, x, y, action);
       return;
     }
     if (dragSelectedMode)
       viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, false);
-    if (viewer.getBooleanProperty("allowGestures"))
-      if (dragGesture.getTimeDifference(2) <= MININUM_GESTURE_DELAY_MILLISECONDS
-          && dragGesture.getPointCount(10, 5) == 10
-          && isBound(action, ACTION_dragSpin)) {
-        float speed = dragGesture.getSpeedPixelsPerMillisecond(10, 5);
-        viewer.spinXYBy(dragGesture.getDX(10, 5), dragGesture.getDY(10,5), speed * 30);
-        return;
+    if (viewer.getBooleanProperty("allowGestures")) {
+      if (isBound(action, ACTION_dragSpin)) {
+        if (dragGesture.getTimeDifference(2) <= MININUM_GESTURE_DELAY_MILLISECONDS
+            && dragGesture.getPointCount(10, 5) == 10) {
+          float speed = dragGesture.getSpeedPixelsPerMillisecond(10, 5);
+          viewer.spinXYBy(dragGesture.getDX(10, 5), dragGesture.getDY(10, 5),
+              speed * 30);
+          return;
+        }
       }
+    }
   }
 
   private boolean isRubberBandSelect(int action) {
@@ -514,13 +518,13 @@ public class ActionManager {
     xCurrent = previousDragX = x;
     yCurrent = previousDragY = y;
     int action = Binding.getMouseAction(pressedCount, mods);
+    dragGesture.add(action, x, y, time);
     checkAction(action, x, y, deltaX, deltaY, time);
   }
 
   private void checkAction(int action, int x, int y, int deltaX, int deltaY,
                            long time) {
     int mods = Binding.getModifiers(action);
-    dragGesture.add(action, x, y, time);
     if (Binding.getModifiers(action) != 0) {
       int newAction = viewer.notifyMouseClicked(x, y,  Binding.getMouseAction(-pressedCount, mods));
       if (newAction == 0)

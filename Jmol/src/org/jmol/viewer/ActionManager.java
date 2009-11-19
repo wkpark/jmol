@@ -756,13 +756,13 @@ public class ActionManager {
     Object obj;
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
-      if (key.indexOf(action + "_") != 0 
-          || !((obj = ht.get(key)) instanceof String))
+      if (key.indexOf(action + "\t") != 0 
+          || !((obj = ht.get(key)) instanceof String[]))
         continue;
-      String script = (String) obj;
+      String script = ((String[]) obj)[1];
       script = TextFormat.simpleReplace(script,"_ACTION", "" + action);
       script = TextFormat.simpleReplace(script,"_X", "" + x);
-      script = TextFormat.simpleReplace(script,"_Y", "" + y);
+      script = TextFormat.simpleReplace(script,"_Y", "" + (viewer.getScreenHeight() - y));
       script = TextFormat.simpleReplace(script,"_DELTAX", "" + deltaX);
       script = TextFormat.simpleReplace(script,"_DELTAY", "" + deltaY);
       script = TextFormat.simpleReplace(script,"_TIME", "" + time);

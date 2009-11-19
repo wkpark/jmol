@@ -6,6 +6,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.jmol.util.Escape;
+import org.jmol.util.Logger;
+
 abstract public class Binding {
 
   public final static int WHEEL = 32; 
@@ -39,13 +42,13 @@ abstract public class Binding {
   }
   
   public final void bind(int mouseAction, int jmolAction) {
-    //System.out.println("binding " + mouseAction + "_" + jmolAction);
-    bindings.put(mouseAction + "_" + jmolAction, new int[] {mouseAction, jmolAction});
+    //System.out.println("binding " + mouseAction + "\t" + jmolAction);
+    addBinding(mouseAction + "\t" + jmolAction, new int[] {mouseAction, jmolAction});
   }
   
   public void bind(int mouseAction, String name) {
-    bindings.put(mouseAction + "_", Boolean.TRUE);
-    bindings.put(mouseAction + "_" + name, new String[] { getMouseActionName(mouseAction, false), name });
+    addBinding(mouseAction + "\t", Boolean.TRUE);
+    addBinding(mouseAction + "\t" + name, new String[] { getMouseActionName(mouseAction, false), name });
   }
 
 
@@ -53,52 +56,63 @@ abstract public class Binding {
     if (mouseAction == 0)
       unbindJmolAction(jmolAction);
     else
-      bindings.remove(mouseAction + "_" + jmolAction);
+      removeBinding(mouseAction + "\t" + jmolAction);
   }
   
   public final void unbind(int mouseAction, String name) {
     if (name == null)
       unbindMouseAction(mouseAction);
     else
-      bindings.remove(mouseAction + "_" + name);
+      removeBinding(mouseAction + "\t" + name);
   }
   
   public final void unbindJmolAction(int jmolAction) {
     Enumeration e = bindings.keys();
-    String skey = "_" + jmolAction;
+    String skey = "\t" + jmolAction;
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
       if (key.endsWith(skey))
-        bindings.remove(key);
+        removeBinding(key);
     }
+  }
+  
+  private void addBinding(String key, Object value) {
+    if (Logger.debugging)
+      Logger.debug("adding binding " + key + "\t==\t" + Escape.escape(value));
+    bindings.put(key, value);
+  }
+  private void removeBinding(String key) {
+    if (Logger.debugging)
+      Logger.debug("removing binding " + key);
+    bindings.remove(key); 
   }
   
   public final void unbindUserAction(String script) {
     Enumeration e = bindings.keys();
-    String skey = "_" + script;
+    String skey = "\t" + script;
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
       if (key.endsWith(skey))
-        bindings.remove(key);
+        removeBinding(key);
     }
   }
   
   public final void unbindMouseAction(int mouseAction) {
     Enumeration e = bindings.keys();
-    String skey = mouseAction + "_";
+    String skey = mouseAction + "\t";
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
       if (key.startsWith(skey))
-        bindings.remove(key);
+        removeBinding(key);
     }
   }
   
   public final boolean isBound(int mouseAction, int action) {
-    return bindings.containsKey(mouseAction + "_" + action);
+    return bindings.containsKey(mouseAction + "\t" + action);
   }
   
   public final boolean isUserAction(int mouseAction) {
-    return bindings.containsKey(mouseAction + "_");
+    return bindings.containsKey(mouseAction + "\t");
   }
 
   public static int getMouseAction(int clickCount, int modifiers) {
@@ -177,7 +191,7 @@ abstract public class Binding {
         continue;
       Object[] list = names[i].toArray();
       Arrays.sort(list);
-      sb.append(actionNames[i]).append('\t');
+      sb.append(actionNames[i]).append("\t");
       String sep = "";
       for (int j = 0; j < n; j++) {
         sb.append(sep);

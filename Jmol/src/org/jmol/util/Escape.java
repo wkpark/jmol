@@ -44,6 +44,8 @@ public class Escape {
       return escape("" + x);
     if (x instanceof String[])
       return escape((String[]) x);
+    if (x instanceof int[]) 
+      return toJSON(null, x);
     return x.toString();
   }
 

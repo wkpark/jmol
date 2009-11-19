@@ -122,46 +122,46 @@ public class ActionManager {
 
   private final static String[] actionNames = new String[] {
     //0
-    "rotate",
-    "wheelZoom",
-    "rotateZ",
-    "rotateZorZoom",
-    "translate",
+    "_rotate",
+    "_wheelZoom",
+    "_rotateZ",
+    "_rotateZorZoom",
+    "_translate",
     //5
-    "slideZoom",
-    "dragSelected",
-    "rotateSelected",
-    "dragLabel",
-    "dragDrawPoint",
+    "_slideZoom",
+    "_dragSelected",
+    "_rotateSelected",
+    "_dragLabel",
+    "_dragDrawPoint",
     //10
-    "dragDrawObject",
-    "swipe",
-    "spinDrawObjectCW",
-    "spinDrawObjectCCW",
-    "slab",
+    "_dragDrawObject",
+    "_swipe",
+    "_spinDrawObjectCW",
+    "_spinDrawObjectCCW",
+    "_slab",
     //15    
-    "depth",
-    "slabAndDepth",
-    "popupMenu",
-    "clickFrank",
-    "navTranslate",
+    "_depth",
+    "_slabAndDepth",
+    "_popupMenu",
+    "_clickFrank",
+    "_navTranslate",
     //20
-    "pickAtom",
-    "pickPoint",
-    "pickLabel",
-    "pickMeasure",
-    "setMeasure",
+    "_pickAtom",
+    "_pickPoint",
+    "_pickLabel",
+    "_pickMeasure",
+    "_setMeasure",
     //25
-    "pickIsosurface",
-    "pickNavigate",
-    "select",
-    "selectNone",
-    "selectToggle",
+    "_pickIsosurface",
+    "_pickNavigate",
+    "_select",
+    "_selectNone",
+    "_selectToggle",
     //30
-    "selectAndNot",
-    "selectOr",
-    "selectToggleOr",
-    "reset",
+    "_selectAndNot",
+    "_selectOr",
+    "_selectToggleOr",
+    "_reset",
   };
   public static String getActionName(int i) {
     return (i < actionNames.length ? actionNames[i] : null);
@@ -257,6 +257,9 @@ public class ActionManager {
       binding.unbind(mouseAction, jmolAction);
     else
       binding.unbind(mouseAction, name);
+    if (name == null)
+      binding.unbindUserAction(desc);
+      
   }
 
   protected Thread hoverWatcherThread;

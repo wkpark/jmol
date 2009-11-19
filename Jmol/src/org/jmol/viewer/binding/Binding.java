@@ -73,12 +73,21 @@ abstract public class Binding {
     }
   }
   
+  public final void unbindUserAction(String script) {
+    Enumeration e = bindings.keys();
+    String skey = "_" + script;
+    while (e.hasMoreElements()) {
+      String key = (String) e.nextElement();
+      if (key.endsWith(skey))
+        bindings.remove(key);
+    }
+  }
+  
   public final void unbindMouseAction(int mouseAction) {
     Enumeration e = bindings.keys();
     String skey = mouseAction + "_";
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
-      System.out.println(skey + " " + key);
       if (key.startsWith(skey))
         bindings.remove(key);
     }

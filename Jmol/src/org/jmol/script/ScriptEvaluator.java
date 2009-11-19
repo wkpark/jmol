@@ -4754,10 +4754,10 @@ public class ScriptEvaluator {
         break;
       case Token.bind:
         bind();
-        return;
+        break;
       case Token.unbind:
         unbind();
-        return;
+        break;
       default:
         error(ERROR_unrecognizedCommand);
       }

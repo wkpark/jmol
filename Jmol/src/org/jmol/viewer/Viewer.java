@@ -7919,7 +7919,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void unBindAction(String desc, String name) {
-    if (haveDisplay)
+    if (!haveDisplay)
+      return;
+    if (desc == null && name == null)
+      mouseManager.setActionManager(actionManager = new ActionManager(this));
+    else
       actionManager.unbindAction(desc, name);
   }
 

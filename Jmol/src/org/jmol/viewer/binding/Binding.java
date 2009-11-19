@@ -26,6 +26,9 @@ abstract public class Binding {
   
   private String name;
   private Hashtable bindings = new Hashtable();
+  public Hashtable getBindings() {
+    return bindings;
+  }
     
   public Binding(String name) {
     this.name = name;  
@@ -40,11 +43,24 @@ abstract public class Binding {
     bindings.put(mouseAction + "_" + jmolAction, new int[] {mouseAction, jmolAction});
   }
   
+  public void bind(int mouseAction, String name) {
+    bindings.put(mouseAction + "_", Boolean.TRUE);
+    bindings.put(mouseAction + "_" + name, new String[] { getMouseActionName(mouseAction, false), name });
+  }
+
+
   public final void unbind(int mouseAction, int jmolAction) {
     if (mouseAction == 0)
       unbindJmolAction(jmolAction);
     else
       bindings.remove(mouseAction + "_" + jmolAction);
+  }
+  
+  public final void unbind(int mouseAction, String name) {
+    if (name == null)
+      unbindMouseAction(mouseAction);
+    else
+      bindings.remove(mouseAction + "_" + name);
   }
   
   public final void unbindJmolAction(int jmolAction) {
@@ -57,11 +73,12 @@ abstract public class Binding {
     }
   }
   
-  public final void unbindmouseAction(int mouseAction) {
+  public final void unbindMouseAction(int mouseAction) {
     Enumeration e = bindings.keys();
     String skey = mouseAction + "_";
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
+      System.out.println(skey + " " + key);
       if (key.startsWith(skey))
         bindings.remove(key);
     }
@@ -71,6 +88,10 @@ abstract public class Binding {
     return bindings.containsKey(mouseAction + "_" + action);
   }
   
+  public final boolean isUserAction(int mouseAction) {
+    return bindings.containsKey(mouseAction + "_");
+  }
+
   public static int getMouseAction(int clickCount, int modifiers) {
     if (clickCount > 2)
       clickCount = 2;
@@ -95,14 +116,15 @@ abstract public class Binding {
     if (desc.contains("SHIFT"))
       action |= SHIFT;
           
-    if (desc.contains("LEFT"))
-      action |= LEFT;
-    else if (desc.contains("MIDDLE"))
+    if (desc.contains("MIDDLE"))
       action |= MIDDLE;
     else if (desc.contains("RIGHT"))
       action |= RIGHT;
     else if (desc.contains("WHEEL"))
       action |= WHEEL;
+    else
+      action |= LEFT;
+      
     
     if (desc.contains("DOUBLE"))
       action |= DOUBLE_CLICK;
@@ -131,11 +153,14 @@ abstract public class Binding {
           : null);
     Enumeration e = bindings.keys();
     while (e.hasMoreElements()) {
-      int[] info = (int[]) (bindings.get((String) e.nextElement()));
+      Object obj = bindings.get((String) e.nextElement());
+      if (!(obj instanceof int[]))
+        continue;
+      int[] info = (int[]) obj;
       int i = info[1];
       if (names[i] == null)
         continue;
-      names[i].add(getMouseActionName(info[0]));
+      names[i].add(getMouseActionName(info[0], true));
     }
     for (int i = 0; i < actionNames.length; i++) {
       int n;
@@ -158,13 +183,12 @@ abstract public class Binding {
   private static boolean includes(int mouseAction, int mod) {
     return ((mouseAction & mod) == mod);
   }
-  private static String getMouseActionName(int mouseAction) {
+  public static String getMouseActionName(int mouseAction, boolean addSortCode) {
     StringBuffer sb = new StringBuffer();
     if (mouseAction == 0)
       return "";
-    boolean isMiddle = (includes(mouseAction, MIDDLE) 
-        && !includes(mouseAction, LEFT) 
-        && !includes(mouseAction, RIGHT));
+    boolean isMiddle = (includes(mouseAction, MIDDLE)
+        && !includes(mouseAction, LEFT) && !includes(mouseAction, RIGHT));
     char[] code = "      ".toCharArray();
     if (includes(mouseAction, CTRL)) {
       sb.append("CTRL+");
@@ -178,7 +202,7 @@ abstract public class Binding {
       sb.append("SHIFT+");
       code[2] = 'S';
     }
-    
+
     if (includes(mouseAction, LEFT)) {
       code[1] = 'L';
       sb.append("LEFT");
@@ -191,23 +215,12 @@ abstract public class Binding {
     } else if (includes(mouseAction, WHEEL)) {
       code[1] = 'W';
       sb.append("WHEEL");
-    } 
+    }
     if (includes(mouseAction, DOUBLE_CLICK)) {
       sb.append("+double-click");
       code[0] = '2';
     }
-    return new String(code) + ":" + sb.toString();
+    return (addSortCode ? new String(code) + ":" + sb.toString() : sb
+        .toString());
   }
-
-  public Hashtable getBindingInfo() {
-    Hashtable info = new Hashtable();
-    Vector vb = new Vector();
-    Enumeration e = bindings.elements();
-    while (e.hasMoreElements())
-      vb.add(e.nextElement());
-    info.put("bindings", vb);
-    info.put("bindingName", name);
-    return info;
-  }
-
 }

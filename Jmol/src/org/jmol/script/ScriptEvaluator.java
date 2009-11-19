@@ -61,6 +61,7 @@ import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.PropertyManager;
@@ -4760,7 +4761,7 @@ public class ScriptEvaluator {
       default:
         error(ERROR_unrecognizedCommand);
       }
-      if (!isSyntaxCheck)
+      if (!isSyntaxCheck && !tQuiet)
         viewer.setCursor(Viewer.CURSOR_DEFAULT);
       // at end because we could use continue to avoid it
       if (executionStepping) {
@@ -13064,12 +13065,12 @@ public class ScriptEvaluator {
   
   private void bind() throws ScriptException {
     /*
-     * bind actionName "MOUSE-ACTION" 
-     * bind myName "MOUSE-ACTION" range [xyrange] [xyrange]
+     * bind "MOUSE-ACTION" actionName
+     * bind "MOUSE-ACTION" "script" range [xyrange] [xyrange]
      *  
      */
-    String name = parameterAsString(1);
-    String mouseAction = stringParameter(2);
+    String mouseAction = stringParameter(1);
+    String name = parameterAsString(2);
     Point3f range1 = null;
     Point3f range2 = null;
     if (tokAt(3) == Token.range) {
@@ -13084,17 +13085,22 @@ public class ScriptEvaluator {
   }
   private void unbind() throws ScriptException {
     /*
-     * unbind  myName|actionName|all ["MOUSE-ACTION"]
+     * unbind  "MOUSE-ACTION"|all ["...script..."|actionName|all]
+     * 
      */
-    checkLength23();
-    String name = parameterAsString(1);
-    String mouseAction = optParameterAsString(2);
-    if (tokAt(1) == Token.all)
-      name = null;
-    if (mouseAction.length() == 0 || tokAt(2) == Token.all)
+    if (statementLength != 1)
+      checkLength23();
+    String mouseAction = optParameterAsString(1);
+    String name = optParameterAsString(2);
+    if (mouseAction.length() == 0 || tokAt(1) == Token.all)
       mouseAction = null;
-    if (name == null && mouseAction == null)
-      return;
+    if (name.length() == 0 || tokAt(2) == Token.all)
+      name = null;
+    if (name == null && mouseAction != null 
+        && ActionManager.getActionFromName(mouseAction) >= 0) {
+      name = mouseAction;
+      mouseAction = null;
+    }
     if (!isSyntaxCheck)
       viewer.unBindAction(mouseAction, name);
   }

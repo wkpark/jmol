@@ -26,7 +26,9 @@ package org.jmol.viewer;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.BitSet;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
 
@@ -96,11 +98,26 @@ public class ActionManager {
   }
 
   public Hashtable getMouseInfo() {
-    Hashtable info = binding.getBindingInfo();
+    Hashtable info = new Hashtable();
+    Vector vb = new Vector();
+    Enumeration e = binding.getBindings().elements();
+    while (e.hasMoreElements()) {
+      Object obj = e.nextElement();
+      if (obj instanceof Boolean)
+        continue;
+      if (obj instanceof int[]) {
+        int[] binding = (int[]) obj;
+        obj = new String[] { Binding.getMouseActionName(binding[0], false),
+            getActionName(binding[1]) };
+      }
+      vb.add(obj);
+    }
+    info.put("bindings", vb);
+    info.put("bindingName", binding.getName());
     info.put("actionNames", actionNames);
     info.put("actionInfo", actionInfo);
     info.put("bindingInfo", TextFormat.split(getBindingInfo(null), '\n'));
-    return info;  
+    return info;
   }
 
   private final static String[] actionNames = new String[] {
@@ -229,14 +246,17 @@ public class ActionManager {
     if (jmolAction >= 0) {
       binding.bind(mouseAction, jmolAction);
     } else {
-      // TODO: user action
+      binding.bind(mouseAction, name);
     }
   }
 
   void unbindAction(String desc, String name) {
     int jmolAction = getActionFromName(name);
     int mouseAction = Binding.getMouseAction(desc);
-    binding.unbind(mouseAction, jmolAction);
+    if (jmolAction >= 0)
+      binding.unbind(mouseAction, jmolAction);
+    else
+      binding.unbind(mouseAction, name);
   }
 
   protected Thread hoverWatcherThread;
@@ -502,7 +522,7 @@ public class ActionManager {
     int deltaY = rotation;
     int x = previousDragX;
     int y = previousDragY;
-    checkAction(Binding.getMouseAction(0, mods), x, y, deltaX, deltaY, time);
+    checkAction(Binding.getMouseAction(0, mods), x, y, deltaX, deltaY, time, 3);
   }
 
   void mousePressed(long time, int x, int y, int mods) {
@@ -525,6 +545,9 @@ public class ActionManager {
       if (action == 0)
         return;
     }    
+    
+    if (checkUserAction(action, x, y, 0, 0, time, 0))
+      return;
     if (isBound(action, ACTION_popupMenu)) {
       viewer.popupMenu(x, y);
       return;
@@ -572,6 +595,7 @@ public class ActionManager {
     rectRubber.x = Integer.MAX_VALUE;
     if (previousPressedX != x || previousPressedY != y)
       viewer.notifyMouseClicked(x, y, Binding.getMouseAction(pressedCount, 0));
+    
     if (drawMode
         && (isBound(action, ACTION_dragDrawObject) || isBound(action,
             ACTION_dragDrawPoint)) || labelMode
@@ -581,6 +605,10 @@ public class ActionManager {
     }
     if (dragSelectedMode)
       viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, false);
+    
+    if (checkUserAction(action, x, y, 0, 0, time, 2))
+      return;
+    
     if (viewer.getBooleanProperty("allowGestures")) {
       if (isBound(action, ACTION_swipe)) {
         if (dragGesture.getTimeDifference(2) <= MININUM_GESTURE_DELAY_MILLISECONDS
@@ -612,11 +640,11 @@ public class ActionManager {
     yCurrent = previousDragY = y;
     int action = Binding.getMouseAction(pressedCount, mods);
     dragGesture.add(action, x, y, time);
-    checkAction(action, x, y, deltaX, deltaY, time);
+    checkAction(action, x, y, deltaX, deltaY, time, 1);
   }
 
   private void checkAction(int action, int x, int y, int deltaX, int deltaY,
-                           long time) {
+                           long time, int mode) {
     int mods = Binding.getModifiers(action);
     if (Binding.getModifiers(action) != 0) {
       int newAction = viewer.notifyMouseClicked(x, y,  Binding.getMouseAction(-pressedCount, mods));
@@ -625,6 +653,15 @@ public class ActionManager {
       if (newAction > 0)
         action = newAction;
     }
+    
+    if (isRubberBandSelect(action)) {
+      calcRectRubberBand();
+      viewer.refresh(3, "rubberBand selection");
+      return;
+    }
+
+    if (checkUserAction(action, x, y, deltaX, deltaY, time, mode))
+      return;
     
     if (isBound(action, ACTION_translate)) {
       viewer.translateXYBy(deltaX, deltaY);
@@ -646,6 +683,7 @@ public class ActionManager {
       viewer.moveSelected(deltaX, deltaY, x, y, true);
       return;
     }
+
     if (viewer.allowRotateSelected() && isBound(action, ACTION_rotateSelected)) {
       checkMotion(Viewer.CURSOR_MOVE);
       viewer.rotateMolecule(deltaX, deltaY);
@@ -665,11 +703,6 @@ public class ActionManager {
       viewer.moveSelected(deltaX, deltaY, x, y, true);
       return;
     } 
-    if (isRubberBandSelect(action)) {
-      calcRectRubberBand();
-      viewer.refresh(3, "mouse-drag selection");
-      return;
-    }
     if (isBound(action, ACTION_rotateZorZoom)) {
       if (Math.abs(deltaY) > 5 * Math.abs(deltaX)) {
         //      if (deltaY < 0 && deltaX > deltaY || deltaY > 0 && deltaX < deltaY)
@@ -707,6 +740,33 @@ public class ActionManager {
         return;
       }
     }
+  }
+
+  private boolean checkUserAction(int action, int x, int y, 
+                                  int deltaX, int deltaY, long time, int mode) {
+    if (!binding.isUserAction(action))
+      return false;
+    Hashtable ht = binding.getBindings();
+    Enumeration e = ht.keys();
+    boolean ret = false;
+    Object obj;
+    while (e.hasMoreElements()) {
+      String key = (String) e.nextElement();
+      if (key.indexOf(action + "_") != 0 
+          || !((obj = ht.get(key)) instanceof String))
+        continue;
+      String script = (String) obj;
+      script = TextFormat.simpleReplace(script,"_ACTION", "" + action);
+      script = TextFormat.simpleReplace(script,"_X", "" + x);
+      script = TextFormat.simpleReplace(script,"_Y", "" + y);
+      script = TextFormat.simpleReplace(script,"_DELTAX", "" + deltaX);
+      script = TextFormat.simpleReplace(script,"_DELTAY", "" + deltaY);
+      script = TextFormat.simpleReplace(script,"_TIME", "" + time);
+      script = TextFormat.simpleReplace(script,"_MODE", "" + mode);
+      viewer.evalStringQuiet(script);
+      ret = true;
+    }
+    return ret;
   }
 
   private boolean checkMotionRotateZoom(int action, int x, int deltaX, int deltaY) {

@@ -26,6 +26,9 @@ package org.jmol.viewer;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.BitSet;
+import java.util.Hashtable;
+
+import javax.vecmath.Point3f;
 
 import org.jmol.i18n.GT;
 import org.jmol.modelset.MeasurementPending;
@@ -33,6 +36,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.binding.DragBinding;
 import org.jmol.viewer.binding.Binding;
 import org.jmol.viewer.binding.PfaatBinding;
@@ -41,7 +45,7 @@ import org.jmol.viewer.binding.JmolBinding;
 
 public class ActionManager {
 
-  final static String[] actionNames = new String[] {
+  private final static String[] actionInfo = new String[] {
     //0
     GT._("rotate"),
     GT._("zoom"),
@@ -88,29 +92,91 @@ public class ActionManager {
   };
 
   public String getBindingInfo(String qualifiers) {
-    return binding.getBindingInfo(actionNames, qualifiers);  
+    return binding.getBindingInfo(actionInfo, qualifiers);  
+  }
+
+  public Hashtable getMouseInfo() {
+    Hashtable info = binding.getBindingInfo();
+    info.put("actionNames", actionNames);
+    info.put("actionInfo", actionInfo);
+    info.put("bindingInfo", TextFormat.split(getBindingInfo(null), '\n'));
+    return info;  
+  }
+
+  private final static String[] actionNames = new String[] {
+    //0
+    "rotate",
+    "wheelZoom",
+    "rotateZ",
+    "rotateZorZoom",
+    "translate",
+    //5
+    "slideZoom",
+    "dragSelected",
+    "rotateSelected",
+    "dragLabel",
+    "dragDrawPoint",
+    //10
+    "dragDrawObject",
+    "swipe",
+    "spinDrawObjectCW",
+    "spinDrawObjectCCW",
+    "slab",
+    //15    
+    "depth",
+    "slabAndDepth",
+    "popupMenu",
+    "clickFrank",
+    "navTranslate",
+    //20
+    "pickAtom",
+    "pickPoint",
+    "pickLabel",
+    "pickMeasure",
+    "setMeasure",
+    //25
+    "pickIsosurface",
+    "pickNavigate",
+    "select",
+    "selectNone",
+    "selectToggle",
+    //30
+    "selectAndNot",
+    "selectOr",
+    "selectToggleOr",
+    "reset",
+  };
+  public static String getActionName(int i) {
+    return (i < actionNames.length ? actionNames[i] : null);
   }
   
-  public final static int ACTION_rotateXY = 0;
+  public static int getActionFromName(String name) {
+    for (int i = 0; i < actionNames.length; i++)
+      if (actionNames[i].equalsIgnoreCase(name))
+        return i;
+    return -1;
+  }
+  
+  public final static int ACTION_rotate = 0;
   public final static int ACTION_wheelZoom = 1;
   public final static int ACTION_rotateZ = 2;
   public final static int ACTION_rotateZorZoom = 3;
-  public final static int ACTION_translateXY = 4;
+  public final static int ACTION_translate = 4;
   public final static int ACTION_slideZoom = 5;
-
+  
   public final static int ACTION_dragSelected = 6;
   public final static int ACTION_rotateSelected = 7;
   public final static int ACTION_dragLabel = 8;
   public final static int ACTION_dragDrawPoint = 9;
   public final static int ACTION_dragDrawObject = 10;
-  public final static int ACTION_dragSpin = 11;
+  public final static int ACTION_swipe = 11;
 
   public final static int ACTION_spinDrawObjectCW = 12;
   public final static int ACTION_spinDrawObjectCCW = 13;
 
   public final static int ACTION_slab = 14;
   public final static int ACTION_depth = 15;
-  public final static int ACTION_slabDepth = 16;
+  public final static int ACTION_slabAndDepth = 16;
 
   public final static int ACTION_popupMenu = 17;
   public final static int ACTION_clickFrank = 18;
@@ -142,14 +208,35 @@ public class ActionManager {
   protected Viewer viewer;
   
   Binding binding;
+  Binding jmolBinding;
+  Binding pfaatBinding;
+  Binding dragBinding;
+  Binding rasmolBinding;
 
   ActionManager(Viewer viewer) {
     this.viewer = viewer;
-    binding = new JmolBinding();
+    binding = jmolBinding = new JmolBinding();
   }
 
-  public boolean isBound(int gesture, int action) {
+  boolean isBound(int gesture, int action) {
     return binding.isBound(gesture, action);
+  }
+
+  void bindAction(String desc, String name, Point3f range1,
+                         Point3f range2) {
+    int jmolAction = getActionFromName(name);
+    int mouseAction = Binding.getMouseAction(desc);
+    if (jmolAction >= 0) {
+      binding.bind(mouseAction, jmolAction);
+    } else {
+      // TODO: user action
+    }
+  }
+
+  void unbindAction(String desc, String name) {
+    int jmolAction = getActionFromName(name);
+    int mouseAction = Binding.getMouseAction(desc);
+    binding.unbind(mouseAction, jmolAction);
   }
 
   protected Thread hoverWatcherThread;
@@ -157,6 +244,13 @@ public class ActionManager {
   private int previousDragX, previousDragY;
   protected int xCurrent = -1000;
   protected int yCurrent = -1000;
+  int getCurrentX() {
+    return xCurrent;
+  }
+  int getCurrentY() {
+    return yCurrent;
+  }
+
   protected long timeCurrent = -1;
 
   private boolean drawMode = false;
@@ -488,7 +582,7 @@ public class ActionManager {
     if (dragSelectedMode)
       viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, false);
     if (viewer.getBooleanProperty("allowGestures")) {
-      if (isBound(action, ACTION_dragSpin)) {
+      if (isBound(action, ACTION_swipe)) {
         if (dragGesture.getTimeDifference(2) <= MININUM_GESTURE_DELAY_MILLISECONDS
             && dragGesture.getPointCount(10, 5) == 10) {
           float speed = dragGesture.getSpeedPixelsPerMillisecond(10, 5);
@@ -532,7 +626,7 @@ public class ActionManager {
         action = newAction;
     }
     
-    if (isBound(action, ACTION_translateXY)) {
+    if (isBound(action, ACTION_translate)) {
       viewer.translateXYBy(deltaX, deltaY);
       return;
     }
@@ -542,7 +636,7 @@ public class ActionManager {
       return;
     }
     
-    if (isBound(action, ACTION_rotateXY)) {
+    if (isBound(action, ACTION_rotate)) {
       viewer.rotateXYBy(deltaX, deltaY);
       return;      
     }
@@ -608,7 +702,7 @@ public class ActionManager {
         viewer.slabByPixels(deltaY);
         return;
       }
-      if (isBound(action, ACTION_slabDepth)) {
+      if (isBound(action, ACTION_slabAndDepth)) {
         viewer.slabDepthByPixels(deltaY);
         return;
       }
@@ -617,7 +711,7 @@ public class ActionManager {
 
   private boolean checkMotionRotateZoom(int action, int x, int deltaX, int deltaY) {
     boolean isSlideZoom = isBound(action, ACTION_slideZoom);
-    boolean isRotateXY = isBound(action, ACTION_rotateXY);
+    boolean isRotateXY = isBound(action, ACTION_rotate);
     boolean isRotateZorZoom = isBound(action, ACTION_rotateZorZoom);
     if (!isSlideZoom && !isRotateXY && !isRotateZorZoom) 
       return false;
@@ -834,20 +928,19 @@ public class ActionManager {
     switch (pickingStyleSelect) {
     case JmolConstants.PICKINGSTYLE_SELECT_PFAAT:
       if (binding.getName() != "Pfaat")
-        binding = new PfaatBinding();
+        binding = pfaatBinding = (pfaatBinding == null ? new PfaatBinding() : pfaatBinding);
       break;
     case JmolConstants.PICKINGSTYLE_SELECT_DRAG:
       if (binding.getName() != "Drag")
-        binding = new DragBinding();
+        binding = dragBinding = (dragBinding == null ? new DragBinding() : dragBinding);
       rubberbandSelectionMode = true;
       break;
     case JmolConstants.PICKINGSTYLE_SELECT_RASMOL:
       if (binding.getName() != "Rasmol")
-        binding = new RasmolBinding();
+        binding = rasmolBinding = (rasmolBinding == null ? new RasmolBinding() : rasmolBinding);
       break;
     default:
-      if (binding.getName() != "Jmol")
-      binding = new JmolBinding();
+      binding = jmolBinding;
     }
   }
   

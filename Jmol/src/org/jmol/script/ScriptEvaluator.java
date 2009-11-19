@@ -4751,6 +4751,12 @@ public class ScriptEvaluator {
         if (!isSyntaxCheck)
           resumePausedExecution();
         break;
+      case Token.bind:
+        bind();
+        return;
+      case Token.unbind:
+        unbind();
+        return;
       default:
         error(ERROR_unrecognizedCommand);
       }
@@ -13054,5 +13060,42 @@ public class ScriptEvaluator {
         --iToken;
     }
     return true;
+  }
+  
+  private void bind() throws ScriptException {
+    /*
+     * bind actionName "MOUSE-ACTION" 
+     * bind myName "MOUSE-ACTION" range [xyrange] [xyrange]
+     *  
+     */
+    String name = parameterAsString(1);
+    String mouseAction = stringParameter(2);
+    Point3f range1 = null;
+    Point3f range2 = null;
+    if (tokAt(3) == Token.range) {
+      range1 = xypParameter(4);
+      range2 = xypParameter(++iToken);
+      checkLength(++iToken);
+    } else {
+      checkLength(3);
+    }
+    if (!isSyntaxCheck)
+      viewer.bindAction(mouseAction, name, range1, range2); 
+  }
+  private void unbind() throws ScriptException {
+    /*
+     * unbind  myName|actionName|all ["MOUSE-ACTION"]
+     */
+    checkLength23();
+    String name = parameterAsString(1);
+    String mouseAction = optParameterAsString(2);
+    if (tokAt(1) == Token.all)
+      name = null;
+    if (mouseAction.length() == 0 || tokAt(2) == Token.all)
+      mouseAction = null;
+    if (name == null && mouseAction == null)
+      return;
+    if (!isSyntaxCheck)
+      viewer.unBindAction(mouseAction, name);
   }
 }

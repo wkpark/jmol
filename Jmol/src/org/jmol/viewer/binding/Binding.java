@@ -23,7 +23,7 @@ abstract public class Binding {
 
   private final static int BUTTON_MODIFIER_MASK = 
     CTRL_ALT | SHIFT | LEFT | MIDDLE | RIGHT | WHEEL;
-
+  
   private String name;
   private Hashtable bindings = new Hashtable();
     
@@ -35,18 +35,21 @@ abstract public class Binding {
     return name;
   }
   
-  public final void bind(int gesture, int action) {
-    //System.out.println("binding " + gesture + "_" + action);
-    bindings.put(gesture + "_" + action, new int[] {gesture, action});
+  public final void bind(int mouseAction, int jmolAction) {
+    //System.out.println("binding " + mouseAction + "_" + jmolAction);
+    bindings.put(mouseAction + "_" + jmolAction, new int[] {mouseAction, jmolAction});
   }
   
-  public final void unbind(int gesture, int action) {
-    bindings.remove(gesture + "_" + action);
+  public final void unbind(int mouseAction, int jmolAction) {
+    if (mouseAction == 0)
+      unbindJmolAction(jmolAction);
+    else
+      bindings.remove(mouseAction + "_" + jmolAction);
   }
   
-  public final void unbindAction(int action) {
+  public final void unbindJmolAction(int jmolAction) {
     Enumeration e = bindings.keys();
-    String skey = "_" + action;
+    String skey = "_" + jmolAction;
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
       if (key.endsWith(skey))
@@ -54,9 +57,9 @@ abstract public class Binding {
     }
   }
   
-  public final void unbindGesture(int gesture) {
+  public final void unbindmouseAction(int mouseAction) {
     Enumeration e = bindings.keys();
-    String skey = gesture + "_";
+    String skey = mouseAction + "_";
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
       if (key.startsWith(skey))
@@ -64,8 +67,8 @@ abstract public class Binding {
     }
   }
   
-  public final boolean isBound(int gesture, int action) {
-    return bindings.containsKey(gesture + "_" + action);
+  public final boolean isBound(int mouseAction, int action) {
+    return bindings.containsKey(mouseAction + "_" + action);
   }
   
   public static int getMouseAction(int clickCount, int modifiers) {
@@ -74,12 +77,47 @@ abstract public class Binding {
     return (modifiers & BUTTON_MODIFIER_MASK) | (clickCount << 8);   
   }
 
-  public static int getModifiers(int gesture) {
-    return gesture & BUTTON_MODIFIER_MASK;
+  /**
+   * create an action code from a string such as "CTRL-LEFT-double click"
+   * @param desc
+   * @return      action code
+   */
+  public static int getMouseAction(String desc) {
+    if (desc == null)
+      return 0;
+    int action = 0;
+    desc = desc.toUpperCase();
+
+    if (desc.contains("CTRL"))
+      action |= CTRL;
+    if (desc.contains("ALT"))
+      action |= ALT;
+    if (desc.contains("SHIFT"))
+      action |= SHIFT;
+          
+    if (desc.contains("LEFT"))
+      action |= LEFT;
+    else if (desc.contains("MIDDLE"))
+      action |= MIDDLE;
+    else if (desc.contains("RIGHT"))
+      action |= RIGHT;
+    else if (desc.contains("WHEEL"))
+      action |= WHEEL;
+    
+    if (desc.contains("DOUBLE"))
+      action |= DOUBLE_CLICK;
+    else if ((action & WHEEL) == 0 || desc.contains("SINGLE"))
+      action |= SINGLE_CLICK;
+
+    return action;
+  }
+
+  public static int getModifiers(int mouseAction) {
+    return mouseAction & BUTTON_MODIFIER_MASK;
   }
   
-  public static int getClickCount(int gesture) {
-    return gesture >> 8;
+  public static int getClickCount(int mouseAction) {
+    return mouseAction >> 8;
   }
 
   public String getBindingInfo(String[] actionNames, String qualifiers) {
@@ -97,7 +135,7 @@ abstract public class Binding {
       int i = info[1];
       if (names[i] == null)
         continue;
-      names[i].add(getGestureName(info[0]));
+      names[i].add(getMouseActionName(info[0]));
     }
     for (int i = 0; i < actionNames.length; i++) {
       int n;
@@ -117,48 +155,59 @@ abstract public class Binding {
     return sb.toString();
   }
 
-  private static boolean includes(int gesture, int mod) {
-    return ((gesture & mod) == mod);
+  private static boolean includes(int mouseAction, int mod) {
+    return ((mouseAction & mod) == mod);
   }
-  private static String getGestureName(int gesture) {
+  private static String getMouseActionName(int mouseAction) {
     StringBuffer sb = new StringBuffer();
-    if (gesture == 0)
+    if (mouseAction == 0)
       return "";
-    boolean isMiddle = (includes(gesture, MIDDLE) 
-        && !includes(gesture, LEFT) 
-        && !includes(gesture, RIGHT));
+    boolean isMiddle = (includes(mouseAction, MIDDLE) 
+        && !includes(mouseAction, LEFT) 
+        && !includes(mouseAction, RIGHT));
     char[] code = "      ".toCharArray();
-    if (includes(gesture, CTRL)) {
+    if (includes(mouseAction, CTRL)) {
       sb.append("CTRL+");
       code[4] = 'C';
     }
-    if (!isMiddle && includes(gesture, ALT)) {
+    if (!isMiddle && includes(mouseAction, ALT)) {
       sb.append("ALT+");
       code[3] = 'A';
     }
-    if (includes(gesture, SHIFT)) {
+    if (includes(mouseAction, SHIFT)) {
       sb.append("SHIFT+");
       code[2] = 'S';
     }
     
-    if (includes(gesture, LEFT)) {
+    if (includes(mouseAction, LEFT)) {
       code[1] = 'L';
       sb.append("LEFT");
-    } else if (includes(gesture, RIGHT)) {
+    } else if (includes(mouseAction, RIGHT)) {
       code[1] = 'R';
       sb.append("RIGHT");
     } else if (isMiddle) {
       code[1] = 'W';
       sb.append("MIDDLE");
-    } else if (includes(gesture, WHEEL)) {
+    } else if (includes(mouseAction, WHEEL)) {
       code[1] = 'W';
       sb.append("WHEEL");
     } 
-    if (includes(gesture, DOUBLE_CLICK)) {
+    if (includes(mouseAction, DOUBLE_CLICK)) {
       sb.append("+double-click");
       code[0] = '2';
     }
     return new String(code) + ":" + sb.toString();
+  }
+
+  public Hashtable getBindingInfo() {
+    Hashtable info = new Hashtable();
+    Vector vb = new Vector();
+    Enumeration e = bindings.elements();
+    while (e.hasMoreElements())
+      vb.add(e.nextElement());
+    info.put("bindings", vb);
+    info.put("bindingName", name);
+    return info;
   }
 
 }

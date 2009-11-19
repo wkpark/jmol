@@ -25,17 +25,17 @@ public class JmolBinding extends Binding {
     bind(WHEEL, ActionManager.ACTION_wheelZoom);
     bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_slideZoom);
 
-    bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_rotateXY);
+    bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_rotate);
 
-    bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_dragSpin);
+    bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_swipe);
 
     bind(SINGLE_CLICK+ALT+LEFT, ActionManager.ACTION_rotateZ);
     bind(SINGLE_CLICK+SHIFT+RIGHT, ActionManager.ACTION_rotateZ);
 
-    bind(SINGLE_CLICK+CTRL+ALT+LEFT, ActionManager.ACTION_translateXY);
-    bind(SINGLE_CLICK+CTRL+RIGHT, ActionManager.ACTION_translateXY);
-    bind(DOUBLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_translateXY); 
-    bind(DOUBLE_CLICK+MIDDLE, ActionManager.ACTION_translateXY);
+    bind(SINGLE_CLICK+CTRL+ALT+LEFT, ActionManager.ACTION_translate);
+    bind(SINGLE_CLICK+CTRL+RIGHT, ActionManager.ACTION_translate);
+    bind(DOUBLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_translate); 
+    bind(DOUBLE_CLICK+MIDDLE, ActionManager.ACTION_translate);
     
     bind(SINGLE_CLICK+ALT+SHIFT+LEFT, ActionManager.ACTION_dragSelected);
     bind(SINGLE_CLICK+ALT+LEFT, ActionManager.ACTION_rotateSelected);
@@ -55,7 +55,7 @@ public class JmolBinding extends Binding {
 
     bind(SINGLE_CLICK+CTRL+SHIFT+LEFT, ActionManager.ACTION_slab);
     bind(DOUBLE_CLICK+CTRL+SHIFT+LEFT, ActionManager.ACTION_depth); 
-    bind(SINGLE_CLICK+CTRL+ALT+SHIFT+LEFT, ActionManager.ACTION_slabDepth);
+    bind(SINGLE_CLICK+CTRL+ALT+SHIFT+LEFT, ActionManager.ACTION_slabAndDepth);
     
     bind(DOUBLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_reset);
     bind(DOUBLE_CLICK+MIDDLE, ActionManager.ACTION_reset); 

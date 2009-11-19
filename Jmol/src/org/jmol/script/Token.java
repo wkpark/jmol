@@ -264,7 +264,8 @@ public class Token {
   
   final static int animation    = scriptCommand | 1;
   public final static int axes         = scriptCommand | 2 | setparam | defaultON;
-  final static int background   = scriptCommand | 4 | setparam;
+  final static int background   = scriptCommand | 3 | setparam;
+  final static int bind         = scriptCommand | 4;
   final static int bondorder    = scriptCommand | 5;
 //final static int boundbox     see mathproperty
   final static int calculate    = scriptCommand | 6;
@@ -325,8 +326,9 @@ public class Token {
   final static int stereo       = scriptCommand | 58 | defaultON;
 //final static int structure    see intproperty
   final static int sync         = scriptCommand | 60;
-  final static int translate    = scriptCommand | 62;
-  final static int translateSelected = scriptCommand | 63;
+  final static int translate    = scriptCommand | 61;
+  final static int translateSelected = scriptCommand | 62;
+  final static int unbind       = scriptCommand | 63;
   public final static int unitcell = scriptCommand | 64 | setparam | expression | predefinedset | defaultON;
   public final static int vector       = scriptCommand | 65;
   public final static int vibration    = scriptCommand | 66;
@@ -912,6 +914,7 @@ public class Token {
     "axes",              new Token(axes),
     "backbone",          new Token(backbone),
     "background",        new Token(background),
+    "bind",              new Token(bind),
     "bondorder",         new Token(bondorder),
     "boundbox",          new Token(boundbox),
     "break",             new Token(breakcmd),
@@ -1050,6 +1053,7 @@ public class Token {
     "trace",             new Token(trace),
     "translate",         new Token(translate),
     "translateSelected", new Token(translateSelected),
+    "unbind",            new Token(unbind),
     "unitcell",          new Token(unitcell),
     "var",               new Token(var),
     "vector",            new Token(vector),

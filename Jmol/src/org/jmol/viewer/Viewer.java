@@ -1642,15 +1642,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean isBound(int action, int gesture) {
-    return actionManager.isBound(action, gesture);
+    return (haveDisplay && actionManager.isBound(action, gesture));
     
   }
   public int getCursorX() {
-    return actionManager.xCurrent;
+    return (haveDisplay ? actionManager.getCurrentX() : 0);
   }
 
   public int getCursorY() {
-    return actionManager.yCurrent;
+    return (haveDisplay ? actionManager.getCurrentY() : 0);
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -2223,7 +2223,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       repaintManager.clear();
       animationManager.clear();
       transformManager.clear();
-      actionManager.clear();
       selectionManager.clear();
       clearAllMeasurements();
       if (minimizer != null)
@@ -2231,6 +2230,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       modelSet = modelManager.clear();
       if (haveDisplay) {
         mouseManager.clear();
+        actionManager.clear();
       }
       stateManager.clear();
       global.clear();
@@ -4211,17 +4211,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     display.setCursor(Cursor.getPredefinedCursor(c));
   }
 
-  private void setgestureMode(String mode) {
-    int gestureMode = JmolConstants.getPickingMode(mode);
-    if (gestureMode < 0)
-      gestureMode = JmolConstants.PICKING_IDENT;
-    actionManager.setPickingMode(gestureMode);
+  private void setPickingMode(String mode) {
+    if (!haveDisplay)
+      return;
+    int pickingMode = JmolConstants.getPickingMode(mode);
+    if (pickingMode < 0)
+      pickingMode = JmolConstants.PICKING_IDENT;
+      actionManager.setPickingMode(pickingMode);
     global.setParameterValue("picking", JmolConstants
         .getPickingModeName(actionManager.getPickingMode()));
   }
 
   public int getPickingMode() {
-    return actionManager.getPickingMode();
+    return (haveDisplay ? actionManager.getPickingMode() : 0);
   }
 
   public boolean getDrawPicking() {
@@ -4237,6 +4239,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void setPickingStyle(String style) {
+    if (!haveDisplay)
+      return;
     int pickingStyle = JmolConstants.getPickingStyle(style);
     if (pickingStyle < 0)
       pickingStyle = JmolConstants.PICKINGSTYLE_SELECT_JMOL;
@@ -4246,7 +4250,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean getDrawHover() {
-    return actionManager.getDrawHover();
+    return haveDisplay && actionManager.getDrawHover();
   }
 
   public String getAtomInfo(int atomIndex) {
@@ -4982,7 +4986,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (key.equalsIgnoreCase("picking")) {
-        setgestureMode(value);
+        setPickingMode(value);
         return;
       }
       if (key.equalsIgnoreCase("pickingStyle")) {
@@ -5655,7 +5659,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (key.equalsIgnoreCase("drawHover")) {
-        actionManager.setDrawHover(value);
+        if (haveDisplay)
+          actionManager.setDrawHover(value);
         break;
       }
       if (key.equalsIgnoreCase("navigationMode")) {
@@ -6015,7 +6020,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getBindingInfo(String qualifiers) {
-    return (actionManager == null ? "" : actionManager.getBindingInfo(qualifiers));  
+    return (haveDisplay ? actionManager.getBindingInfo(qualifiers) : "");  
   }
 
   // ////// flags and settings ////////
@@ -7905,6 +7910,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   
   public boolean checkPrivateKey(double privateKey) {
     return privateKey == this.privateKey;
+  }
+
+  public void bindAction(String desc, String name, Point3f range1,
+                         Point3f range2) {
+    if (haveDisplay)
+      actionManager.bindAction(desc, name, range1, range2);
+  }
+
+  public void unBindAction(String desc, String name) {
+    if (haveDisplay)
+      actionManager.unbindAction(desc, name);
+  }
+
+  public Object getMouseInfo() {
+    return (haveDisplay ? actionManager.getMouseInfo() : null);
   }
 
 }

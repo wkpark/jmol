@@ -88,6 +88,7 @@ public class PropertyManager {
     "PointGroupInfo"  , atomExpression, "(visible)",
     "FileInfo"         , "<type>", "",
     "errorMessage", "", "",
+    "mouseInfo", "", "",
   };
 
   private final static int PROP_APPLET_INFO = 0;
@@ -129,7 +130,8 @@ public class PropertyManager {
   private final static int PROP_POINTGROUP_INFO = 31;
   private final static int PROP_FILE_INFO = 32;
   private final static int PROP_ERROR_MESSAGE = 33;
-  private final static int PROP_COUNT = 34;
+  private final static int PROP_MOUSE_INFO = 34;
+  private final static int PROP_COUNT = 35;
 
   //// static methods used by Eval and Viewer ////
   
@@ -397,6 +399,8 @@ public class PropertyManager {
       return viewer.getMatrixRotate();
     case PROP_DATA_INFO:
       return viewer.getData(myParam.toString());
+    case PROP_MOUSE_INFO:
+      return viewer.getMouseInfo();
     case PROP_EVALUATE:
       return ScriptEvaluator.evaluateExpression(viewer, myParam.toString());
     case PROP_IMAGE:

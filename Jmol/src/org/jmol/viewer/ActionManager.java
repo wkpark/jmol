@@ -133,7 +133,7 @@ public class ActionManager {
 
   public final static int ACTION_reset = 33;
 
-  final static float ZOOM_FACTOR = 1.15f;
+  final static float ZOOM_FACTOR = 1.02f;
   
   private final static long MAX_DOUBLE_CLICK_MILLIS = 700;
   private static final long MININUM_GESTURE_DELAY_MILLISECONDS = 5;

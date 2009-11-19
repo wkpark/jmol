@@ -212,7 +212,7 @@ public class ActionManager {
   public static final int ACTION_selectToggle = 29;  
   public static final int ACTION_selectAndNot = 30;
   public static final int ACTION_selectOr = 31;
-  public static final int ACTION_selectToggleOr = 32;  
+  public static final int ACTION_selectToggleExtended = 32;  
 
   public final static int ACTION_reset = 33;
 
@@ -470,6 +470,7 @@ public class ActionManager {
         labelMode = true;
         measuresEnabled = false;
         break;
+      case JmolConstants.PICKING_SELECT_ATOM:
       case JmolConstants.PICKING_MEASURE_DISTANCE:
       case JmolConstants.PICKING_MEASURE_ANGLE:
       case JmolConstants.PICKING_MEASURE_TORSION:
@@ -956,7 +957,6 @@ public class ActionManager {
   
   //////////////// picking ///////////////////
   
-  
   private int pickingMode = JmolConstants.PICKING_IDENT;
   private int pickingStyleSelect = JmolConstants.PICKINGSTYLE_SELECT_JMOL;
   private int pickingStyleMeasure = JmolConstants.PICKINGSTYLE_MEASURE_OFF;
@@ -1146,12 +1146,18 @@ public class ActionManager {
   }
 
   private void applySelectStyle(String item, int action) {
-    viewer.script("select " + 
-        (isBound(action, ACTION_selectAndNot) ? "selected and not " 
+    if (measurementPending != null)
+      return;
+    String s = (isBound(action, ACTION_selectAndNot) ? "selected and not " 
          : isBound(action, ACTION_selectOr) ? "selected or " 
          : isBound(action, ACTION_selectToggle) ? 
              "selected and not (" + item + ") or (not selected) and "
-         : "") + "(" + item + ")");
+         : isBound(action, ACTION_selectToggleExtended) ?
+             "selected tog " 
+         : isBound(action, ACTION_select) ? "" : null);
+    if (s == null)
+      return;
+    viewer.script("select " + s + "(" + item + ")");
   }
 
   protected class MotionPoint {

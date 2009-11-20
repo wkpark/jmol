@@ -213,8 +213,15 @@ public class ActionManager {
   public static final int ACTION_selectAndNot = 30;
   public static final int ACTION_selectOr = 31;
   public static final int ACTION_selectToggleExtended = 32;  
-
   public final static int ACTION_reset = 33;
+  public final static int ACTION_count = 34;
+  
+  static {
+    if (actionNames.length != ACTION_count)
+      System.out.println("ERROR IN ActionManager: actionNames length?");
+    if (actionInfo.length != ACTION_count)
+      System.out.println("ERROR IN ActionManager: actionInfo length?");
+  }
 
   final static float ZOOM_FACTOR = 1.02f;
   

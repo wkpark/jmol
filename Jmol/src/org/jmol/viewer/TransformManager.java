@@ -314,9 +314,12 @@ abstract class TransformManager {
 
   void spinXYBy(int xDelta, int yDelta, float speed) {
     // from mouse action
-    clearSpin();
-    if (xDelta == 0 && yDelta == 0)
+    if (xDelta == 0 && yDelta == 0) {
+      if (spinThread != null && spinThread.isGesture)
+        clearSpin();
       return;
+    }
+    clearSpin();
     Point3f pt1 = new Point3f(fixedRotationCenter);
     Point3f ptScreen = new Point3f();
     transformPoint(pt1, ptScreen);
@@ -1099,24 +1102,15 @@ abstract class TransformManager {
     height = (antialias ? screenHeight * 2 : screenHeight);
     scaleFitToScreen(false, useZoomLarge, resetSlab, resetZoom);
     finalizeTransformParameters();
-    //System.out.println("transformManager setScreenParameters sppa="  + scalePixelsPerAngstrom 
-    //  + " screenWidth,Height, useZoomLarge, antialias, resetSlab, resetZoom " 
-    //+ useZoomLarge + ","+antialias + "," + resetSlab + "," + resetZoom);
   }
 
   void setAntialias(boolean TF) {
-    //System.out.println("setAntialias antialias=" + antialias + " TF=" + TF
-    //    + " width=" + width + " height=" + height + " screenWidth/height" +
-    //    screenWidth + "," + screenHeight);
-
     boolean isNew = (antialias != TF);
     antialias = TF;
     width = (antialias ? screenWidth * 2 : screenWidth);
     height = (antialias ? screenHeight * 2 : screenHeight);
     if (isNew)
       scaleFitToScreen(false, useZoomLarge, false, false);
-    //System.out.println("setAntialias2 " + TF + "width=" + width + " height=" + height 
-    //    + " screenWidth/height" + screenWidth + "," + screenHeight);
   }
 
   private float defaultScaleToScreen(float radius) {
@@ -1136,17 +1130,11 @@ abstract class TransformManager {
   }
 
   void scaleFitToScreen(boolean andCenter) {
-    //System.out.println("transformManager scaleFitToSreen " + andCenter);
     scaleFitToScreen(andCenter, viewer.getZoomLarge(), true, true);
   }
 
   void scaleFitToScreen(boolean andCenter, boolean zoomLarge,
                         boolean resetSlab, boolean resetZoom) {
-    //System.out.println("transformManager scaleFitToScreen andcenter " + andCenter 
-    //    + " screenWidth,Height, " + screenWidth + "," + screenHeight +
-    //    " zoomLarge, antialias, resetSlab, resetZoom width/height "
-    //    + zoomLarge + ","+antialias + "," + resetSlab + "," + resetZoom
-    //    + "  " + width + "/" + height);
     if (width == 0 || height == 0) {
       screenPixelCount = 1;
     } else {
@@ -1291,8 +1279,6 @@ abstract class TransformManager {
     // cale to screen coordinates
     matrixTemp.setZero();
     matrixTemp.set(scalePixelsPerAngstrom);
-
-    //System.out.println("calcTransMatrix scalepixelsperangstrom=" + scalePixelsPerAngstrom);
     // negate y (for screen) and z (for zbuf)
     matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;
 
@@ -1301,9 +1287,6 @@ abstract class TransformManager {
     matrixTransform.m23 += modelCenterOffset;
 
     // note that the image is still centered at 0, 0 in the xy plane
-
-    //  System.out.println("modelCenterOffset + matrixTransform: " + modelCenterOffset
-    //      + matrixTransform);
 
   }
 
@@ -1403,7 +1386,6 @@ abstract class TransformManager {
   void unTransformPoint(Point3f screenPt, Point3f coordPt) {
     //draw move2D
     pointT.set(screenPt);
-    //System.out.println("unTransformPt screenpt " + pointT + " " + fixedRotationOffset);
     if (isNavigationMode) {
       pointT.x -= navigationOffset.x;
       pointT.y -= navigationOffset.y;
@@ -1421,7 +1403,6 @@ abstract class TransformManager {
       pointT.y += navigationShiftXY.y;
     }
     matrixUnTransform(pointT, coordPt);
-    //System.out.println("unTransformPt pointT " + pointT);
   }
 
   protected void matrixUnTransform(Point3f screen, Point3f angstroms) {
@@ -1945,7 +1926,6 @@ abstract class TransformManager {
     } else {
       if (spinThread != null) {
         spinThread.interrupt();
-        //System.out.println("interrupting spin thread");
         spinThread = null;
       }
     }
@@ -2039,7 +2019,7 @@ abstract class TransformManager {
           }
         }
       }
-      viewer.getGlobalSettings().setParameterValue(isNav ? "_navigating" : "_spinning", false);
+      setSpinOn(false);
     }
   }
 

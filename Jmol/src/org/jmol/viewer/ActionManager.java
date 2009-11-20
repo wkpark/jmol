@@ -285,7 +285,6 @@ public class ActionManager {
   private boolean hoverActive = false;
 
   private boolean rubberbandSelectionMode = false;
-  private int xAnchor, yAnchor;
   private final Rectangle rectRubber = new Rectangle();
 
   private int previousClickX, previousClickY;
@@ -354,16 +353,17 @@ public class ActionManager {
       if (dragSelectedMode && isAltKeyReleased)
         viewer.moveSelected(Integer.MIN_VALUE, 0, 0, 0, false);
       isAltKeyReleased = false;
-      mouseMovedModifiers &= Binding.ALT;
+      mouseMovedModifiers |= Binding.ALT;
       break;
     case KeyEvent.VK_SHIFT:
-      mouseMovedModifiers &= Binding.SHIFT;
+      mouseMovedModifiers |= Binding.SHIFT;
       break;
     case KeyEvent.VK_CONTROL:
-      mouseMovedModifiers &= Binding.CTRL;
+      mouseMovedModifiers |= Binding.CTRL;
     }
     int action = Binding.LEFT+Binding.SINGLE_CLICK+mouseMovedModifiers;
-    checkMotionRotateZoom(action, xCurrent, 0, 0);
+    if(!binding.isUserAction(action))
+      checkMotionRotateZoom(action, xCurrent, 0, 0, false);
     if (viewer.getNavigationMode()) {
       int m = ke.getModifiers();
       // if (viewer.getBooleanProperty("showKeyStrokes", false))
@@ -399,7 +399,7 @@ public class ActionManager {
       mouseMovedModifiers &= ~Binding.CTRL;
     }
     if (mouseMovedModifiers == 0)
-      checkMotion(Viewer.CURSOR_DEFAULT);
+      viewer.setCursor(Viewer.CURSOR_DEFAULT);
     if (!viewer.getNavigationMode())
       return;
     //if (viewer.getBooleanProperty("showKeyStrokes", false))
@@ -421,19 +421,19 @@ public class ActionManager {
   }
 
   private void calcRectRubberBand() {
-    if (xCurrent < xAnchor) {
+    if (xCurrent < previousPressedX) {
       rectRubber.x = xCurrent;
-      rectRubber.width = xAnchor - xCurrent;
+      rectRubber.width = previousPressedX - xCurrent;
     } else {
-      rectRubber.x = xAnchor;
-      rectRubber.width = xCurrent - xAnchor;
+      rectRubber.x = previousPressedX;
+      rectRubber.width = xCurrent - previousPressedX;
     }
-    if (yCurrent < yAnchor) {
+    if (yCurrent < previousPressedY) {
       rectRubber.y = yCurrent;
-      rectRubber.height = yAnchor - yCurrent;
+      rectRubber.height = previousPressedY - yCurrent;
     } else {
-      rectRubber.y = yAnchor;
-      rectRubber.height = yCurrent - yAnchor;
+      rectRubber.y = previousPressedY;
+      rectRubber.height = yCurrent - previousPressedY;
     }
   }
 
@@ -510,7 +510,7 @@ public class ActionManager {
     if (measurementPending != null || hoverActive)
       checkPointOrAtomClicked(x, y, 0, 0);
     else if (isZoomArea(x))
-      checkMotionRotateZoom(Binding.getMouseAction(1, Binding.LEFT), 0, 0, 0);
+      checkMotionRotateZoom(Binding.getMouseAction(1, Binding.LEFT), 0, 0, 0, false);
     else
       viewer.setCursor(Viewer.CURSOR_DEFAULT);
   }
@@ -540,8 +540,8 @@ public class ActionManager {
     int action = Binding.getMouseAction(pressedCount, mods);
     dragGesture.setAction(action, time);
     hoverOff();
-    xAnchor = previousPressedX = previousDragX = xCurrent = x;
-    yAnchor = previousPressedY = previousDragY = yCurrent = y;
+    previousPressedX = previousDragX = xCurrent = x;
+    previousPressedY = previousDragY = yCurrent = y;
     previousPressedModifiers = mods;
     previousPressedTime = timeCurrent = time;
     if (Binding.getModifiers(action) != 0) {
@@ -567,7 +567,7 @@ public class ActionManager {
       viewer.moveSelected(Integer.MIN_VALUE, 0, 0, 0, false);
       return;
     }
-    checkMotionRotateZoom(action, x, 0, 0);
+    checkMotionRotateZoom(action, x, 0, 0, true);
   }
 
   void mouseReleased(long time, int x, int y, int mods) {
@@ -576,6 +576,7 @@ public class ActionManager {
     timeCurrent = time;
     xCurrent = x;
     yCurrent = y;
+    boolean dragRelease = (previousPressedX != x || previousPressedY != y);
     viewer.setInMotion(false);
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
     int action = Binding.getMouseAction(pressedCount, mods);
@@ -597,7 +598,7 @@ public class ActionManager {
     }
     rubberbandSelectionMode = false;
     rectRubber.x = Integer.MAX_VALUE;
-    if (previousPressedX != x || previousPressedY != y)
+    if (dragRelease)
       viewer.notifyMouseClicked(x, y, Binding.getMouseAction(pressedCount, 0));
     
     if (drawMode
@@ -610,7 +611,7 @@ public class ActionManager {
     if (dragSelectedMode)
       viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, false);
     
-    if (checkUserAction(action, x, y, 0, 0, time, 2))
+    if (dragRelease && checkUserAction(action, x, y, 0, 0, time, 2))
       return;
     
     if (viewer.getBooleanProperty("allowGestures")) {
@@ -672,7 +673,7 @@ public class ActionManager {
       return;
     }
 
-    if (checkMotionRotateZoom(action, x, deltaX, deltaY)) {
+    if (checkMotionRotateZoom(action, x, deltaX, deltaY, true)) {
       viewer.zoomBy(deltaY);
       return;
     }
@@ -773,7 +774,9 @@ public class ActionManager {
     return ret;
   }
 
-  private boolean checkMotionRotateZoom(int action, int x, int deltaX, int deltaY) {
+  private boolean checkMotionRotateZoom(int action, int x, 
+                                        int deltaX, int deltaY,
+                                        boolean inMotion) {
     boolean isSlideZoom = isBound(action, ACTION_slideZoom);
     boolean isRotateXY = isBound(action, ACTION_rotate);
     boolean isRotateZorZoom = isBound(action, ACTION_rotateZorZoom);
@@ -784,8 +787,11 @@ public class ActionManager {
       isZoom = (deltaX == 0 || Math.abs(deltaY) > 5 * Math.abs(deltaX));
     if (isSlideZoom)
       isZoom = isZoomArea(mouseMovedX);
-    checkMotion(isZoom || isBound(action, ACTION_wheelZoom) ? Viewer.CURSOR_ZOOM 
+    int cursor = (isZoom || isBound(action, ACTION_wheelZoom) ? Viewer.CURSOR_ZOOM 
         : isRotateXY || isRotateZorZoom ? Viewer.CURSOR_MOVE : Viewer.CURSOR_DEFAULT);
+    viewer.setCursor(cursor);
+    if (inMotion)
+      viewer.setInMotion(true);
     return isZoom;
   }
 

@@ -1175,7 +1175,6 @@ public class StateManager {
     }
 
     private boolean doReportProperty(String name) {
-      //System.out.println(unreportedProperties);
       return (name.charAt(0) != '_' && unreportedProperties.indexOf(";" + name
           + ";") < 0);
     }

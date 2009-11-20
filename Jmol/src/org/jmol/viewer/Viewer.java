@@ -882,6 +882,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void spinXYBy(int xDelta, int yDelta, float speed) {
     if (mouseEnabled)
       transformManager.spinXYBy(xDelta, yDelta, speed);
+    if (xDelta == 0 && yDelta == 0)
+      return;
     refresh(2, statusManager.syncingMouse ? "Mouse: spinXYBy " + xDelta + " "
         + yDelta  + " " + speed : "");
   }
@@ -3307,7 +3309,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       wasInMotion = inMotion;
     }
-  }
+  } 
 
   public boolean getInMotion() {
     // mps
@@ -3374,7 +3376,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // refresh(3) is used by operations to ONLY do a repaint -- no syncing
     if (repaintManager == null || !refreshing)
       return;
-    //System.out.println(" viewer.refresh " + strWhy);System.out.flush();
     if (mode > 0)
       repaintManager.refresh();
     if (mode % 3 != 0 && statusManager.doSync())
@@ -3859,9 +3860,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                            boolean isScriptFile,
                                            boolean isQuiet, boolean isQueued) {
     // from the scriptManager or scriptWait()
-    // System.out.println("DEBUG: evalStringWaitStatus " +
-    // Thread.currentThread().getName()
-    // + " " + Thread.currentThread().getId());
     if (strScript == null)
       return null;
     String str = checkScriptExecution(strScript);
@@ -7795,8 +7793,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private String setErrorMessage(String errMsg, String errMsgUntranslated) {
     errorMessageUntranslated = errMsgUntranslated;
-    // System.out.println("viewer setErrorMessage " + errMsg + " " +
-    // errMsgUntranslated);
     return (errorMessage = errMsg);
   }
 
@@ -7805,8 +7801,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getErrorMessageUntranslated() {
-    // System.out.println("viewer getErrorMessage " + errorMessage + " " +
-    // errorMessageUntranslated);
     return errorMessageUntranslated == null ? errorMessage
         : errorMessageUntranslated;
   }

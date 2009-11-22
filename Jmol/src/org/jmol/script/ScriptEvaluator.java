@@ -6758,6 +6758,9 @@ public class ScriptEvaluator {
             false));
         filename = "string";
       }
+    }
+    errMsg = viewer.loadModelFromFile(filename, filenames, isAppend, htParams, tokType);
+    if (filenames == null) {
       loadScript.append(" ");
       if (!filename.equals("string") && !filename.equals("string[]"))
         loadScript.append("/*file*/");
@@ -6765,7 +6768,6 @@ public class ScriptEvaluator {
           .get("fullPathName")));
       loadScript.append(sOptions);
     }
-    errMsg = viewer.loadModelFromFile(filename, filenames, isAppend, htParams, tokType);
     if (tokType == 0)
       viewer.addLoadScript(loadScript.toString());
     if (errMsg != null && !isCmdLine_c_or_C_Option) {

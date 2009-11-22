@@ -200,7 +200,7 @@ abstract public Object getAtomSetCollectionFromReader(String name, String type,
     return getAtomSetCollectionFromReader(name, type, bufferedReader, null);
   }
 
-  abstract public Object getAtomSetCollectionFromDOM(Object DOMNode);
+  abstract public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable htParams);
 
   public void finish(Object atomSetCollection) {}
 

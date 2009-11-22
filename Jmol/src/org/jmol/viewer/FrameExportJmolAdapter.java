@@ -36,6 +36,9 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
 
 
+/* I have no idea what this is for -- Bob Hanson, 11/2009
+ * 
+ */
 final public class FrameExportJmolAdapter extends JmolAdapter {
 
   Viewer viewer;
@@ -127,7 +130,7 @@ final public class FrameExportJmolAdapter extends JmolAdapter {
     return null;
   }
 
-  public Object getAtomSetCollectionFromDOM(Object DOMNode) {
+  public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable htParams) {
     // TODO
     return null;
   }

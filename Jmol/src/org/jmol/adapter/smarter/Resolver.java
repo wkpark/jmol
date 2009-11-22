@@ -251,14 +251,14 @@ public class Resolver {
    * -- Egon Willighagen
    * 
    * @param DOMNode
+   * @param htParams 
    * @return an AtomSetCollection or a String error
    * @throws Exception
    */
-  static Object DOMResolve(Object DOMNode) throws Exception {
+  static Object DOMResolve(Object DOMNode, Hashtable htParams) throws Exception {
     String className = null;
     Class atomSetCollectionReaderClass;
     AtomSetCollectionReader atomSetCollectionReader; 
-    Hashtable htParams = new Hashtable();
     String atomSetCollectionReaderName = getXmlType((JSObject) DOMNode);
     if (Logger.debugging) {
       Logger.debug("The Resolver thinks " + atomSetCollectionReaderName);

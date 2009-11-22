@@ -111,11 +111,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
     AtomSetCollection[] atomSetCollections = new AtomSetCollection[size];
     for (int i = 0; i < size; i++) {
       try {
-        BufferedReader reader = fileReader.getBufferedReader(i);
-        if (reader == null)
-          return null;
+        Object reader = fileReader.getBufferedReader(i);
+        if (!(reader instanceof BufferedReader))
+          return reader;
         Object atomSetCollectionOrErrorMessage = Resolver.getAtomCollectionAndCloseReader(names[i],
-            (types == null ? null : types[i]), reader, (htparamsSet == null ? null
+            (types == null ? null : types[i]), (BufferedReader) reader, (htparamsSet == null ? null
                 : htparamsSet[i]), i);
         if (atomSetCollectionOrErrorMessage instanceof String)
           return atomSetCollectionOrErrorMessage;
@@ -355,14 +355,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
   }
 
-  public Object getAtomSetCollectionFromDOM(Object DOMNode) {
-    return staticGetAtomSetCollectionFromDOM(DOMNode);
-  }
-
-  private static Object staticGetAtomSetCollectionFromDOM(Object DOMNode) {
+  public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable htParams) {
     try {
       Object atomSetCollectionOrErrorMessage = 
-        Resolver.DOMResolve(DOMNode);
+        Resolver.DOMResolve(DOMNode, htParams);
       if (atomSetCollectionOrErrorMessage instanceof String)
         return atomSetCollectionOrErrorMessage;
       if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {

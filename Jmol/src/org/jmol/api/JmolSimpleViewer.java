@@ -59,6 +59,7 @@ abstract public class JmolSimpleViewer {
   abstract public String openStringInline(String strModel);
   abstract public String openDOM(Object DOMNode);
   abstract public String openFile(String fileName);
+  abstract public String openFiles(String[] fileNames);
   // File reading now returns the error directly.
   // The following was NOT what you think it was:
   //   abstract public String getOpenFileError();

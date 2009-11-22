@@ -6507,7 +6507,6 @@ public class ScriptEvaluator {
     int modelCount = viewer.getModelCount()
         - (viewer.getFileName().equals("zapped") ? 1 : 0);
     boolean appendNew = viewer.getAppendNew();
-    boolean atomDataOnly = false;
     StringBuffer loadScript = new StringBuffer("load");
     int nFiles = 1;
     Hashtable htParams = new Hashtable();
@@ -6515,9 +6514,11 @@ public class ScriptEvaluator {
     // ignore optional file format
     // String filename = "";
     String modelName = null;
-    String filename;
+    String filename = null;
+    String[] filenames = null;
     int tokType = 0;
-    boolean needToLoad = true;
+    boolean doLoadFiles = (!isSyntaxCheck || isCmdLine_C_Option); 
+    String errMsg = null;
     String sOptions = "";
     if (statementLength == 1) {
       i = 0;
@@ -6534,7 +6535,7 @@ public class ScriptEvaluator {
         i = 2;
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
-        atomDataOnly = Parser.isOneOf(modelName.toLowerCase(),
+        boolean atomDataOnly = Parser.isOneOf(modelName.toLowerCase(),
             JmolConstants.LOAD_ATOM_DATA_TYPES);
         if (atomDataOnly) {
           htParams.put("atomDataOnly", Boolean.TRUE);
@@ -6584,7 +6585,7 @@ public class ScriptEvaluator {
         zap(false);
         return;
       }
-      if (filename.equals("string[]"))
+      if (filename.indexOf("[]") >= 0)
         return;
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
@@ -6596,7 +6597,7 @@ public class ScriptEvaluator {
         zap(false);
         return;
       }
-      if (filename.equals("string[]"))
+      if (filename.indexOf("[]") >= 0)
         return;
       int tok;
       if ((tok = tokAt(i)) == Token.manifest) {
@@ -6743,24 +6744,20 @@ public class ScriptEvaluator {
       if (firstLastSteps != null)
         htParams.put("firstLastSteps", firstLastSteps);
       nFiles = fNames.size();
-      filename = "";
-      String[] filenames = new String[nFiles];
-      for (int j = 0; j < nFiles; j++) {
+      filenames = new String[nFiles];
+      for (int j = 0; j < nFiles; j++)
         filenames[j] = (String) fNames.get(j);
-        filename += (j == 0 ? "" : "; ") + filenames[j];
-      }
-      if (!isSyntaxCheck || isCmdLine_C_Option) {
-        viewer.openFiles(modelName, filenames, null, isAppend, htParams);
-      }
-      needToLoad = false;
+      filename = modelName;
     }
-    if (needToLoad && (!isSyntaxCheck || isCmdLine_C_Option)) {
+    if (!doLoadFiles)
+      return;
+    if (filenames == null) {
+      //standard file loading here
       if (filename.startsWith("@") && filename.length() > 1) {
         htParams.put("fileData", getStringParameter(filename.substring(1),
             false));
         filename = "string";
       }
-      viewer.openFile(filename, htParams, null, isAppend);
       loadScript.append(" ");
       if (!filename.equals("string") && !filename.equals("string[]"))
         loadScript.append("/*file*/");
@@ -6768,19 +6765,9 @@ public class ScriptEvaluator {
           .get("fullPathName")));
       loadScript.append(sOptions);
     }
-    if (isSyntaxCheck && !isCmdLine_C_Option) {
-      viewer.deallocateReaderThreads();
-      return;
-    }
-    String errMsg = null;
-    if (atomDataOnly) {
-      errMsg = viewer.loadAtomDataAndReturnError(tokType);
-    } else {
+    errMsg = viewer.loadModelFromFile(filename, filenames, isAppend, htParams, tokType);
+    if (tokType == 0)
       viewer.addLoadScript(loadScript.toString());
-      errMsg = viewer.createModelSetAndReturnError(isAppend);
-      // int millis = (int)(System.currentTimeMillis() - timeBegin);
-      // Logger.debug("!!!!!!!!! took " + millis + " ms");
-    }
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
         viewer.addLoadScript("-");
@@ -6894,7 +6881,7 @@ public class ScriptEvaluator {
     boolean oldAppendNew = viewer.getAppendNew();
     viewer.setAppendNew(true);
     String data = viewer.getPdbData(modelIndex, type);
-    boolean isOK = (data != null && viewer.loadInline(data, '\n', true) == null);
+    boolean isOK = (data != null && viewer.loadInline(data, true) == null);
     viewer.setAppendNew(oldAppendNew);
     viewer.setFileInfo(savedFileInfo);
     if (!isOK)

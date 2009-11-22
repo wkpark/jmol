@@ -47,27 +47,22 @@ class RepaintManager {
 
   private int holdRepaint = 0;
   boolean repaintPending;
+  private boolean repaintInterrupted = false;
 
   void pushHoldRepaint() {
     ++holdRepaint;
   }
 
   void popHoldRepaint() {
-    --holdRepaint;
-    if (holdRepaint <= 0) {
-      holdRepaint = 0;
-      repaintPending = true;
+    if (--holdRepaint <= 0)
       repaintDisplay();
-    }
   }
 
   boolean refresh() {
     if (repaintPending)
       return false;
-    repaintPending = true;
-    if (holdRepaint == 0) {
+    if (holdRepaint == 0)
       repaintDisplay();
-    }
     return true;
   }
 
@@ -80,10 +75,26 @@ class RepaintManager {
   }
 
   private void repaintDisplay() {
+    holdRepaint = 0;
+    repaintPending = true;
+    repaintInterrupted = false;
     Component display = viewer.getDisplay();
     if (display == null)
       return;
     display.repaint();
+  }
+
+  synchronized void cancelRendering() {
+    if (!repaintPending || repaintInterrupted)
+      return;
+    repaintInterrupted = true;
+    try {
+      //System.out.println("repaintManager waiting for rendering to complete");
+      wait();
+    } catch (InterruptedException e) {
+    }
+    repaintInterrupted = false;
+    //System.out.println("repaintManager continuing");
   }
 
   synchronized void repaintDone() {
@@ -94,17 +105,19 @@ class RepaintManager {
   void render(Graphics3D g3d, ModelSet modelSet) {// , Rectangle rectClip
     if (!viewer.getRefreshing())
       return;
-    render1(g3d, modelSet); // , rectClip
-    Rectangle band = viewer.getRubberBandSelection();
-    if (band != null && g3d.setColix(viewer.getColixRubberband()))
-      g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
+    try {
+      render1(g3d, modelSet); // , rectClip
+    } catch (Exception e) {
+      System.out.println("rendering Exception " + e.getMessage());
+    }
   }
 
   private boolean logTime;
 
   private void render1(Graphics3D g3d, ModelSet modelSet) { // , Rectangle rectClip
 
-    if (modelSet == null || !viewer.mustRenderFlag())
+    if (modelSet == null || !viewer.mustRenderFlag()
+        || repaintInterrupted)
       return;
 
     logTime = viewer.getTestFlag1();
@@ -118,12 +131,19 @@ class RepaintManager {
       g3d.renderBackground();
       if (renderers ==  null)
         renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
-      for (int i = 0; i < JmolConstants.SHAPE_MAX && g3d.currentlyRendering(); ++i) {
+      for (int i = 0; i < JmolConstants.SHAPE_MAX 
+      && g3d.currentlyRendering(); ++i) {
+        if (repaintInterrupted)
+          return;
         Shape shape = modelSet.getShape(i);
         if (shape == null)
           continue;
+        //System.out.println("rendering " + JmolConstants.getShapeClassName(i));
         getRenderer(i, g3d).render(g3d, modelSet, shape);
       }
+      Rectangle band = viewer.getRubberBandSelection();
+      if (band != null && g3d.setColix(viewer.getColixRubberband()))
+        g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
 
     } catch (Exception e) {
       Logger

@@ -494,7 +494,7 @@ public class Jmol implements WrappedApplet {
     if (REQUIRE_PROGRESSBAR && !isSigned && !hasProgressBar
         && paintCounter < 30 && (paintCounter & 1) == 0) {
       printProgressbarMessage(g);
-      viewer.repaintView();
+      viewer.notifyViewerRepaintDone();
     } else {
       //System.out.println("UPDATE1: " + source + " " + Thread.currentThread());
       //System.out.println(fullName + " update gRight = " + gRight);
@@ -513,7 +513,8 @@ public class Jmol implements WrappedApplet {
   private final static String[] progressbarMsgs = {
       "Jmol developer alert!",
       "",
-      "Please use jmol.js. You are missing the require 'progressbar' parameter.",
+      "Please use jmol.js. You are missing the ",
+      "required 'progressbar' parameter.",
       "  <param name='progressbar' value='true' />", };
 
   private void printProgressbarMessage(Graphics g) {

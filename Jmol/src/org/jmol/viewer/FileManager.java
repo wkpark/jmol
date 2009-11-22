@@ -61,42 +61,97 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Vector;
 
-/* ***************************************************************
- * will not work with applet
- import java.net.URI;
- import java.net.URISyntaxException;
- import java.util.Enumeration;
- import org.openscience.jmol.io.ChemFileReader;
- import org.openscience.jmol.io.ReaderFactory;
- */
-
 public class FileManager {
 
   protected Viewer viewer;
+
+  FileManager(Viewer viewer) {
+    this.viewer = viewer;
+    clear();
+  }
+
+  void clear() {
+    setLoadScript("", false);
+    fullPathName = fileName = nameAsGiven = "zapped";
+  }
+
+  private String loadScript;
+
+  String getLoadScript() {
+    return loadScript;
+  }
+
+  private void setLoadScript(String script, boolean isAppend) {
+    if (loadScript == null || !isAppend)
+      loadScript = "";
+    loadScript += viewer.getLoadState();
+    addLoadScript(script);
+  }
+
+  void addLoadScript(String script) {
+    if (script == null)
+      return;
+    if (script.equals("-")) {
+      loadScript = "";
+      return;
+    }
+    loadScript += "  " + script + ";\n";
+  }
+  
+  private String nameAsGiven = "zapped";
+  private String fullPathName;
+  private String fileName;
+  private String inlineData;
+  //TODO: We might consider an option to not preserve inlineData in certain cases where
+  //      data are huge. The reason to save the data is that we can then use load ""
+  //      
+
+  void setFileInfo(String[] fileInfo) {
+    // used by ScriptEvaluator dataFrame and load methods to temporarily save the state here
+    fullPathName = fileInfo[0];
+    fileName = fileInfo[1];
+    nameAsGiven = fileInfo[2];
+    inlineData = fileInfo[3];
+    loadScript = fileInfo[4];
+  }
+
+  String[] getFileInfo() {
+    // used by ScriptEvaluator dataFrame method
+    return new String[] { fullPathName, fileName, nameAsGiven, inlineData, loadScript };
+  }
+
+  String getFullPathName() {
+    return fullPathName != null ? fullPathName : nameAsGiven;
+  }
+
+  String getFileName() {
+    return fileName != null ? fileName : nameAsGiven;
+  }
+
+  String getInlineData(int iData) {
+    return (iData < 0 ? inlineData : "");  
+  }
 
   // for applet proxy
   private URL appletDocumentBase = null;
   private URL appletCodeBase = null; //unused currently
   private String appletProxy;
 
-  // for expanding names into full path names
-  //private boolean isURL;
-  private String nameAsGiven = "zapped";
-  private String fullPathName;
-  private String fileName;
-  private String fileType;
-
-  private String inlineData;
-
-  String getInlineData(int iData) {
-    return (iData < 0 ? inlineData : "");  
+  String getAppletDocumentBase() {
+    return (appletDocumentBase == null ? "" : appletDocumentBase.toString());
   }
 
-  private String loadScript;
+  void setAppletContext(URL documentBase, URL codeBase, String jmolAppletProxy) {
+    appletDocumentBase = documentBase;
+    appletCodeBase = codeBase;
+    appletProxy = jmolAppletProxy;
+    Logger.info("appletDocumentBase=" + appletDocumentBase
+        + "\nappletCodeBase=" + appletCodeBase);
+  }
 
-  FileManager(Viewer viewer) {
-    this.viewer = viewer;
-    clear();
+  void setAppletProxy(String appletProxy) {
+    this.appletProxy = (appletProxy == null || appletProxy.length() == 0 ? null
+        : appletProxy);
   }
 
   String getState(StringBuffer sfunc) {
@@ -134,35 +189,22 @@ public class FileManager {
     return null;
   }
 
-  void clear() {
-    setLoadScript("", false);
-    fullPathName = fileName = nameAsGiven = "zapped";
+  private static BufferedReader getBufferedReaderForString(String string) {
+    return new BufferedReader(new StringReader(string));
   }
 
-  String getLoadScript() {
-    return loadScript;
+  private String getZipDirectoryAsString(String fileName) {
+    return ZipUtil
+        .getZipDirectoryAsStringAndClose((InputStream) getInputStreamOrErrorMessageFromName(
+            fileName, false));
   }
 
-  private void setLoadScript(String script, boolean isAppend) {
-    if (loadScript == null || !isAppend)
-      loadScript = "";
-    loadScript += viewer.getLoadState();
-    addLoadScript(script);
-  }
-
-  void addLoadScript(String script) {
-    if (script == null)
-      return;
-    if (script.equals("-")) {
-      loadScript = "";
-      return;
-    }
-    loadScript += "  " + script + ";\n";
-  }
-
+  /////////////// createAtomSetCollectionFromXXX methods /////////////////
+  
+  // where XXX = File, Files, String, Strings, ArrayData, DOM, Reader
   
   /*
-   * note -- getAtomSetCollectionFromXXX methods
+   * note -- createAtomSetCollectionFromXXX methods
    * were "openXXX" before refactoring 11/29/2008 -- BH
    * 
    * The problem was that while they did open the file, they
@@ -188,7 +230,7 @@ public class FileManager {
       setLoadScript(loadScript, isAppend);
     int pt = name.indexOf("::");
     nameAsGiven = (pt >= 0 ? name.substring(pt + 2) : name);
-    fileType = (pt >= 0 ? name.substring(0, pt) : null);
+    String fileType = (pt >= 0 ? name.substring(0, pt) : null);
     Logger.info("\nFileManager.getAtomSetCollectionFromFile(" + nameAsGiven
         + ")" + (name.equals(nameAsGiven) ? "" : " //" + name));
     fullPathName = null;
@@ -218,7 +260,7 @@ public class FileManager {
     for (int i = 0; i < fileNames.length; i++) {
       int pt = fileNames[i].indexOf("::");
       nameAsGiven = (pt >= 0 ? fileNames[i].substring(pt + 2) : fileNames[i]);
-      fileType = (pt >= 0 ? fileNames[i].substring(0, pt) : null);
+      String fileType = (pt >= 0 ? fileNames[i].substring(0, pt) : null);
       String[] names = classifyName(nameAsGiven, true);
       if (names.length == 1)
         return names[0];
@@ -326,14 +368,256 @@ public class FileManager {
                                       Reader reader, Hashtable htParams) {
     this.fullPathName = fullPathName;
     fileName = name;
-    fileType = null;
     FileReader fileReader = new FileReader(fullPathName, fullPathName,
-        fileType, new BufferedReader(reader), htParams);
+        null, new BufferedReader(reader), htParams);
     fileReader.run();
     return fileReader.atomSetCollection;
   }
 
-  public Object getFileAsBytes(String name) {
+  /////////////// generally useful file I/O methods /////////////////
+  
+  // mostly internal to FileManager and its enclosed classes
+  
+  BufferedInputStream getBufferedInputStream(String fullPathName) {
+    Object ret = getBufferedReaderOrErrorMessageFromName(fullPathName,
+        new String[2], true, true);
+    return (ret instanceof BufferedInputStream ? (BufferedInputStream) ret
+        : null);
+  }
+
+  Object getInputStreamOrErrorMessageFromName(String name, boolean showMsg) {
+    String errorMessage = null;
+    int iurlPrefix;
+    for (iurlPrefix = urlPrefixes.length; --iurlPrefix >= 0;)
+      if (name.startsWith(urlPrefixes[iurlPrefix]))
+        break;
+    boolean isURL = (iurlPrefix >= 0);
+    boolean isApplet = (appletDocumentBase != null);
+    InputStream in = null;
+    //int length;
+    try {
+      if (isApplet || isURL) {
+        if (isApplet && isURL && appletProxy != null)
+          name = appletProxy + "?url=" + URLEncoder.encode(name, "utf-8");
+        URL url = (isApplet ? new URL(appletDocumentBase, name) : new URL(name));
+        name = url.toString();
+        if (showMsg)
+          Logger.info("FileManager opening " + url.toString());
+        URLConnection conn = url.openConnection();
+        //length = conn.getContentLength();
+        in = conn.getInputStream();
+      } else {
+        if (showMsg)
+          Logger.info("FileManager opening " + name);
+        File file = new File(name);
+        //length = (int) file.length();
+        in = new FileInputStream(file);
+      }
+      return in;
+    } catch (Exception e) {
+      try {
+        if (in != null)
+          in.close();
+      } catch (IOException e1) {
+      }
+      errorMessage = "" + e;
+    }
+    return errorMessage;
+  }
+
+  Object getBufferedReaderOrErrorMessageFromName(String name,
+                                                 String[] fullPathNameReturn,
+                                                 boolean isBinary, boolean doSpecialLoad) {
+    String[] names = classifyName(name, true);
+    if (names == null)
+      return "cannot read file name: " + name;
+    if (fullPathNameReturn != null)
+      fullPathNameReturn[0] = names[0].replace('\\', '/');
+    return getUnzippedBufferedReaderOrErrorMessageFromName(names[0], false,
+        isBinary, false, doSpecialLoad);
+  }
+
+  Object getUnzippedBufferedReaderOrErrorMessageFromName(
+                                                         String name,
+                                                         boolean allowZipStream,
+                                                         boolean asInputStream,
+                                                         boolean isTypeCheckOnly,
+                                                         boolean doSpecialLoad) {
+    String[] subFileList = null;
+    String[] info = (doSpecialLoad ? viewer.getModelAdapter().specialLoad(name,
+        "filesNeeded?") : null);
+    if (info != null) {
+      if (isTypeCheckOnly)
+        return info;
+      if (info[2] != null) {
+        String header = info[1];
+        Hashtable fileData = new Hashtable();
+        if (info.length == 3) {
+          // we need information from the output file, info[2]
+          String name0 = getObjectAsSections(info[2], header, fileData);
+          fileData.put("OUTPUT", name0);
+          info = viewer.getModelAdapter().specialLoad(name,
+              (String) fileData.get(name0));
+          if (info.length == 3) {
+            // might have a second option
+            name0 = getObjectAsSections(info[2], header, fileData);
+            fileData.put("OUTPUT", name0);
+            info = viewer.getModelAdapter().specialLoad(info[1],
+                (String) fileData.get(name0));
+          }
+        }
+        // load each file individually, but return files IN ORDER
+        StringBuffer sb = new StringBuffer();
+        sb.append(fileData.get(fileData.get("OUTPUT")));
+        for (int i = 2; i < info.length; i++) {
+          name = info[i];
+          name = getObjectAsSections(name, header, fileData);
+          Logger.info("reading " + name);
+          String s = (String) fileData.get(name);
+          sb.append(s);
+        }
+        return getBufferedReaderForString(sb.toString());
+      }
+      // continuing...
+      // here, for example, for an SPT file load that is not just a type check
+      // (type check is only for application file opening and drag-drop to
+      // determine if
+      // script or load command should be used)
+    }
+    if (name.indexOf("|") >= 0)
+      name = (subFileList = TextFormat.split(name, "|"))[0];
+    Object t = getInputStreamOrErrorMessageFromName(name, true);
+    if (t instanceof String)
+      return t;
+    try {
+      BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
+      InputStream is = bis;
+      if (CompoundDocument.isCompoundDocument(is)) {
+        CompoundDocument doc = new CompoundDocument(bis);
+        return getBufferedReaderForString(doc.getAllData("Molecule").toString());
+      } else if (ZipUtil.isGzip(is)) {
+        do {
+          is = new BufferedInputStream(new GZIPInputStream(is));
+        } while (ZipUtil.isGzip(is));
+      } else if (ZipUtil.isZipFile(is)) {
+        if (allowZipStream)
+          return new ZipInputStream(bis);
+        if (asInputStream)
+          return (InputStream) ZipUtil.getZipFileContents(is, subFileList, 1,
+              true);
+        // danger -- converting bytes to String here.
+        // we lose 128-156 or so.
+        String s = (String) ZipUtil.getZipFileContents(is, subFileList, 1,
+            false);
+        is.close();
+        return getBufferedReaderForString(s);
+      }
+      if (asInputStream)
+        return is;
+      return new BufferedReader(new InputStreamReader(is));
+    } catch (Exception ioe) {
+      return ioe.getMessage();
+    }
+  }
+
+  String[] getZipDirectory(String fileName, boolean addManifest) {
+    return ZipUtil.getZipDirectoryAndClose(
+        (InputStream) getInputStreamOrErrorMessageFromName(fileName, false),
+        addManifest);
+  }
+
+  /**
+   * delivers file contents and directory listing for a ZIP/JAR file into sb
+   * 
+   * 
+   * @param name
+   * @param header
+   * @param fileData
+   * @return name of entry
+   */
+  private String getObjectAsSections(String name, String header,
+                                     Hashtable fileData) {
+    if (name == null)
+      return null;
+    String[] subFileList = null;
+    boolean asBinaryString = false;
+    String name0 = name.replace('\\', '/');
+    if (name.indexOf(":asBinaryString") >= 0) {
+      asBinaryString = true;
+      name = name.substring(0, name.indexOf(":asBinaryString"));
+    }
+    StringBuffer sb = null;
+    if (fileData.containsKey(name0))
+      return name0;
+    if (name.indexOf("#JMOL_MODEL ") >= 0) {
+      fileData.put(name0, name0 + "\n");
+      return name0;
+    }
+    if (name.indexOf("|") >= 0) {
+      name = (subFileList = TextFormat.split(name, "|"))[0];
+    }
+    BufferedInputStream bis = null;
+    try {
+      Object t = getInputStreamOrErrorMessageFromName(name, false);
+      if (t instanceof String) {
+        fileData.put(name0, (String) t + "\n");
+        return name0;
+      }
+      bis = new BufferedInputStream((InputStream) t, 8192);
+      if (CompoundDocument.isCompoundDocument(bis)) {
+        CompoundDocument doc = new CompoundDocument(bis);
+        doc.getAllData(name.replace('\\', '/'), "Molecule", fileData);
+      } else if (ZipUtil.isZipFile(bis)) {
+        ZipUtil.getAllData(bis, subFileList, name.replace('\\', '/'), "Molecule", fileData);
+      } else if (asBinaryString) {
+        // used for Spartan binary file reading
+        BinaryDocument bd = new BinaryDocument();
+        bd.setStream(bis, false);
+        sb = new StringBuffer();
+        //note -- these headers must match those in ZipUtil.getAllData and CompoundDocument.getAllData
+        if (header != null)
+          sb.append("BEGIN Directory Entry " + name0 + "\n");
+        try {
+          while (true)
+            sb.append(Integer.toHexString(((int) bd.readByte()) & 0xFF))
+                .append(' ');
+        } catch (Exception e1) {
+          sb.append('\n');
+        }
+        if (header != null)
+          sb.append("\nEND Directory Entry " + name0 + "\n");
+        fileData.put(name0, sb.toString());
+      } else {
+        BufferedReader br = new BufferedReader(new InputStreamReader(
+            ZipUtil.isGzip(bis) ? new GZIPInputStream(bis) : (InputStream) bis));
+        String line;
+        sb = new StringBuffer();
+        if (header != null)
+          sb.append("BEGIN Directory Entry " + name0 + "\n");
+        while ((line = br.readLine()) != null) {
+          sb.append(line);
+          sb.append('\n');
+        }
+        br.close();
+        if (header != null)
+          sb.append("\nEND Directory Entry " + name0 + "\n");
+        fileData.put(name0, sb.toString());
+      }
+    } catch (Exception ioe) {
+      fileData.put(name0, ioe.getMessage());
+    }
+    if (bis != null)
+      try {
+        bis.close();
+      } catch (Exception e) {
+        //
+      }
+    if (!fileData.containsKey(name0))
+      fileData.put(name0, "FILE NOT FOUND: " + name0 + "\n");
+    return name0;
+  }
+
+  Object getFileAsBytes(String name) {
     //?? used by eval of "WRITE FILE"
     // will be full path name
     if (name == null)
@@ -445,155 +729,6 @@ public class FileManager {
     return image;
   }
 
-  private String getObjectAsSections(String[] info, Hashtable fileData) {
-    // load each file individually, but return files IN ORDER
-    String header = info[1];
-    StringBuffer sb = new StringBuffer();
-    sb.append(fileData.get(fileData.get("OUTPUT")));
-    for (int i = 2; i < info.length; i++) {
-      String name = info[i];
-      name = getObjectAsSections(name, header, fileData);
-      Logger.info("reading " + name);
-      String s = (String) fileData.get(name);
-      sb.append(s);
-    }
-    return sb.toString();
-  }
-
-  /**
-   * delivers file contents and directory listing for a ZIP/JAR file into sb
-   * 
-   * 
-   * @param name
-   * @param header
-   * @param fileData
-   * @return name of entry
-   */
-  private String getObjectAsSections(String name, String header,
-                                     Hashtable fileData) {
-    if (name == null)
-      return null;
-    String[] subFileList = null;
-    boolean asBinaryString = false;
-    String name0 = name.replace('\\', '/');
-    if (name.indexOf(":asBinaryString") >= 0) {
-      asBinaryString = true;
-      name = name.substring(0, name.indexOf(":asBinaryString"));
-    }
-    StringBuffer sb = null;
-    if (fileData.containsKey(name0))
-      return name0;
-    if (name.indexOf("#JMOL_MODEL ") >= 0) {
-      fileData.put(name0, name0 + "\n");
-      return name0;
-    }
-    if (name.indexOf("|") >= 0) {
-      name = (subFileList = TextFormat.split(name, "|"))[0];
-    }
-    BufferedInputStream bis = null;
-    try {
-      Object t = getInputStreamOrErrorMessageFromName(name, false);
-      if (t instanceof String) {
-        fileData.put(name0, (String) t + "\n");
-        return name0;
-      }
-      bis = new BufferedInputStream((InputStream) t, 8192);
-      if (CompoundDocument.isCompoundDocument(bis)) {
-        CompoundDocument doc = new CompoundDocument(bis);
-        doc.getAllData(name.replace('\\', '/'), "Molecule", fileData);
-      } else if (ZipUtil.isZipFile(bis)) {
-        ZipUtil.getAllData(bis, subFileList, name.replace('\\', '/'), "Molecule", fileData);
-      } else if (asBinaryString) {
-        // used for Spartan binary file reading
-        BinaryDocument bd = new BinaryDocument();
-        bd.setStream(bis, false);
-        sb = new StringBuffer();
-        //note -- these headers must match those in ZipUtil.getAllData and CompoundDocument.getAllData
-        if (header != null)
-          sb.append("BEGIN Directory Entry " + name0 + "\n");
-        try {
-          while (true)
-            sb.append(Integer.toHexString(((int) bd.readByte()) & 0xFF))
-                .append(' ');
-        } catch (Exception e1) {
-          sb.append('\n');
-        }
-        if (header != null)
-          sb.append("\nEND Directory Entry " + name0 + "\n");
-        fileData.put(name0, sb.toString());
-      } else {
-        BufferedReader br = new BufferedReader(new InputStreamReader(
-            ZipUtil.isGzip(bis) ? new GZIPInputStream(bis) : (InputStream) bis));
-        String line;
-        sb = new StringBuffer();
-        if (header != null)
-          sb.append("BEGIN Directory Entry " + name0 + "\n");
-        while ((line = br.readLine()) != null) {
-          sb.append(line);
-          sb.append('\n');
-        }
-        br.close();
-        if (header != null)
-          sb.append("\nEND Directory Entry " + name0 + "\n");
-        fileData.put(name0, sb.toString());
-      }
-    } catch (Exception ioe) {
-      fileData.put(name0, ioe.getMessage());
-    }
-    if (bis != null)
-      try {
-        bis.close();
-      } catch (Exception e) {
-        //
-      }
-    if (!fileData.containsKey(name0))
-      fileData.put(name0, "FILE NOT FOUND: " + name0 + "\n");
-    return name0;
-  }
-
-  String getFullPathName() {
-    return fullPathName != null ? fullPathName : nameAsGiven;
-  }
-
-  void setFileInfo(String[] fileInfo) {
-    try {
-      fullPathName = fileInfo[0];
-      fileName = fileInfo[1];
-      inlineData = fileInfo[2];
-      loadScript = fileInfo[3];
-    } catch (Exception e) {
-      Logger.error("Exception saving file info: " + e.getMessage());
-    }
-  }
-
-  String[] getFileInfo() {
-    return new String[] { fullPathName, fileName, inlineData, loadScript };
-  }
-
-  String getFileName() {
-    return fileName != null ? fileName : nameAsGiven;
-  }
-
-  String getAppletDocumentBase() {
-    if (appletDocumentBase == null)
-      return "";
-    return appletDocumentBase.toString();
-  }
-
-  void setAppletContext(URL documentBase, URL codeBase, String jmolAppletProxy) {
-    appletDocumentBase = documentBase;
-    appletCodeBase = codeBase;
-    Logger.info("appletDocumentBase=" + appletDocumentBase
-        + "\nappletCodeBase=" + appletCodeBase);
-    //    dumpDocumentBase("" + documentBase);
-    appletProxy = jmolAppletProxy;
-  }
-
-  void setAppletProxy(String appletProxy) {
-    this.appletProxy = (appletProxy == null || appletProxy.length() == 0 ? null
-        : appletProxy);
-  }
-
   private final static int URL_LOCAL = 3;
   private final static String[] urlPrefixes = { "http:", "https:", "ftp:",
       "file:" };
@@ -607,10 +742,6 @@ public class FileManager {
     return -1;
   }
 
-  static String shortNameOf(String name) {
-    name = TextFormat.trim(name.replace('\\', '/'), "/");
-    return name.substring(name.lastIndexOf("/") + 1);
-  }
   /**
    * 
    * @param name
@@ -675,6 +806,20 @@ public class FileManager {
     return names;
   }
 
+  private static String addDirectory(String defaultDirectory, String name) {
+    if (defaultDirectory.length() == 0)
+      return name;
+    char ch = (name.length() > 0 ? name.charAt(0) : ' ');
+    String s = defaultDirectory.toLowerCase();
+    if ((s.endsWith(".zip") || s.endsWith(".tar")) && ch != '|' && ch != '/')
+      defaultDirectory += "|";
+    return defaultDirectory
+        + (ch == '/'
+            || ch == '/'
+            || (ch = defaultDirectory.charAt(defaultDirectory.length() - 1)) == '|'
+            || ch == '/' ? "" : "/") + name;
+  }
+
   String getDefaultDirectory(String name) {
     String[] names = classifyName(name, true);
     if (names == null)
@@ -683,7 +828,7 @@ public class FileManager {
     return (names == null ? "" : name.substring(0, name.lastIndexOf("/")));
   }
 
-  public static String fixPath(String path) {
+  private static String fixPath(String path) {
     path = path.replace('\\', '/');
     path = TextFormat.simpleReplace(path, "/./", "/");
     int pt = path.lastIndexOf("//") + 1;
@@ -705,7 +850,7 @@ public class FileManager {
     return protocol + path;
   }
 
-  public String getFullPath(String name, boolean addUrlPrefix) {
+  String getFullPath(String name, boolean addUrlPrefix) {
     String[] names = classifyName(name, false);
     return (names == null ? "" : addUrlPrefix ? names[2] : names[0].replace(
         '\\', '/'));
@@ -766,159 +911,6 @@ public class FileManager {
     return (dir == null ? file : fixPath(dir.toString() + "/" + file));
   }
 
-  private static String addDirectory(String defaultDirectory, String name) {
-    if (defaultDirectory.length() == 0)
-      return name;
-    char ch = (name.length() > 0 ? name.charAt(0) : ' ');
-    String s = defaultDirectory.toLowerCase();
-    if ((s.endsWith(".zip") || s.endsWith(".tar")) && ch != '|' && ch != '/')
-      defaultDirectory += "|";
-    return defaultDirectory
-        + (ch == '/'
-            || ch == '/'
-            || (ch = defaultDirectory.charAt(defaultDirectory.length() - 1)) == '|'
-            || ch == '/' ? "" : "/") + name;
-  }
-
-  Object getInputStreamOrErrorMessageFromName(String name, boolean showMsg) {
-    String errorMessage = null;
-    int iurlPrefix;
-    for (iurlPrefix = urlPrefixes.length; --iurlPrefix >= 0;)
-      if (name.startsWith(urlPrefixes[iurlPrefix]))
-        break;
-    boolean isURL = (iurlPrefix >= 0);
-    boolean isApplet = (appletDocumentBase != null);
-    InputStream in = null;
-    //int length;
-    try {
-      if (isApplet || isURL) {
-        if (isApplet && isURL && appletProxy != null)
-          name = appletProxy + "?url=" + URLEncoder.encode(name, "utf-8");
-        URL url = (isApplet ? new URL(appletDocumentBase, name) : new URL(name));
-        name = url.toString();
-        if (showMsg)
-          Logger.info("FileManager opening " + url.toString());
-        URLConnection conn = url.openConnection();
-        //length = conn.getContentLength();
-        in = conn.getInputStream();
-      } else {
-        if (showMsg)
-          Logger.info("FileManager opening " + name);
-        File file = new File(name);
-        //length = (int) file.length();
-        in = new FileInputStream(file);
-      }
-      return in;
-    } catch (Exception e) {
-      try {
-        if (in != null)
-          in.close();
-      } catch (IOException e1) {
-      }
-      errorMessage = "" + e;
-    }
-    return errorMessage;
-  }
-
-  static BufferedReader getBufferedReaderForString(String string) {
-    return new BufferedReader(new StringReader(string));
-  }
-
-  Object getBufferedReaderOrErrorMessageFromName(String name,
-                                                 String[] fullPathNameReturn,
-                                                 boolean isBinary, boolean doSpecialLoad) {
-    String[] names = classifyName(name, true);
-    if (names == null)
-      return "cannot read file name: " + name;
-    if (fullPathNameReturn != null)
-      fullPathNameReturn[0] = names[0].replace('\\', '/');
-    return getUnzippedBufferedReaderOrErrorMessageFromName(names[0], false,
-        isBinary, false, doSpecialLoad);
-  }
-
-  Object getUnzippedBufferedReaderOrErrorMessageFromName(
-                                                         String name,
-                                                         boolean allowZipStream,
-                                                         boolean asInputStream,
-                                                         boolean isTypeCheckOnly, boolean doSpecialLoad) {
-    String[] subFileList = null;
-    String[] info = (doSpecialLoad ? viewer.getModelAdapter().specialLoad(name, "filesNeeded?") : null);
-    if (info != null) {
-      if (isTypeCheckOnly)
-        return info;
-      if (info[2] != null) {
-        String header = info[1];
-        Hashtable fileData = new Hashtable();
-        if (info.length == 3) {
-          // we need information from the output file, info[2]
-          String name0 = getObjectAsSections(info[2], header, fileData);
-          fileData.put("OUTPUT", name0);
-          info = viewer.getModelAdapter().specialLoad(name,
-              (String) fileData.get(name0));
-          if (info.length == 3) {
-            // might have a second option
-            name0 = getObjectAsSections(info[2], header, fileData);
-            fileData.put("OUTPUT", name0);
-            info = viewer.getModelAdapter().specialLoad(info[1],
-                (String) fileData.get(name0));
-          }
-        }
-        return getBufferedReaderForString(getObjectAsSections(info, fileData));
-      }
-      // continuing...
-      // here, for example, for an SPT file load that is not just a type check
-      // (type check is only for application file opening and drag-drop to
-      // determine if
-      // script or load command should be used)
-    }
-    if (name.indexOf("|") >= 0)
-      name = (subFileList = TextFormat.split(name, "|"))[0];
-    Object t = getInputStreamOrErrorMessageFromName(name, true);
-    if (t instanceof String)
-      return t;
-    try {
-      BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
-      InputStream is = bis;
-      if (CompoundDocument.isCompoundDocument(is)) {
-        CompoundDocument doc = new CompoundDocument(bis);
-        return getBufferedReaderForString(doc.getAllData("Molecule").toString());
-      } else if (ZipUtil.isGzip(is)) {
-        do {
-          is = new BufferedInputStream(new GZIPInputStream(is));
-        } while (ZipUtil.isGzip(is));
-      } else if (ZipUtil.isZipFile(is)) {
-        if (allowZipStream)
-          return new ZipInputStream(bis);
-        if (asInputStream)
-          return (InputStream) ZipUtil.getZipFileContents(is, subFileList, 1,
-              true);
-        // danger -- converting bytes to String here.
-        // we lose 128-156 or so.
-        String s = (String) ZipUtil.getZipFileContents(is, subFileList, 1,
-            false);
-        is.close();
-        return getBufferedReaderForString(s);
-      }
-      if (asInputStream)
-        return is;
-      return new BufferedReader(new InputStreamReader(is));
-    } catch (Exception ioe) {
-      return ioe.getMessage();
-    }
-  }
-
-  String[] getZipDirectory(String fileName, boolean addManifest) {
-    return ZipUtil.getZipDirectoryAndClose(
-        (InputStream) getInputStreamOrErrorMessageFromName(fileName, false),
-        addManifest);
-  }
-
-  String getZipDirectoryAsString(String fileName) {
-    return ZipUtil
-        .getZipDirectoryAsStringAndClose((InputStream) getInputStreamOrErrorMessageFromName(
-            fileName, false));
-  }
-
   /**
    * Sets all local file references in a script file to point to files within
    * dataPath. If a file reference contains dataPath, then the file reference is
@@ -963,7 +955,7 @@ public class FileManager {
     return TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
   }
 
-  static String[] scriptFilePrefixes = new String[] { "/*file*/", "FILE0=", "FILE1=" };
+  private static String[] scriptFilePrefixes = new String[] { "/*file*/", "FILE0=", "FILE1=" };
   public static void getFileReferences(String script, Vector fileList) {
     for (int ipt = 0; ipt < scriptFilePrefixes.length; ipt++) {
       String tag = scriptFilePrefixes[ipt];

@@ -45,6 +45,8 @@ public abstract class MouseManager implements KeyListener {
   }
 
   void setActionManager(ActionManager actionManager) {
+    if (this.actionManager != null)
+      actionManager.clear();
     this.actionManager = actionManager;
   }
   

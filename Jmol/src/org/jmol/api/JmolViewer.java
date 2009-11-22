@@ -361,7 +361,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public boolean showModelSetDownload();
   
-  abstract public void repaintView();
+  abstract public void notifyViewerRepaintDone();
 
   abstract public boolean getBooleanProperty(String propertyName);
   abstract public boolean getBooleanProperty(String key, boolean doICare);

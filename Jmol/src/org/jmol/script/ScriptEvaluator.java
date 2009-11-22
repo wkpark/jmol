@@ -24,6 +24,8 @@
 package org.jmol.script;
 
 import java.awt.Image;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -6516,8 +6518,9 @@ public class ScriptEvaluator {
     String modelName = null;
     String filename = null;
     String[] filenames = null;
+    String[] tempFileInfo = null;
     int tokType = 0;
-    boolean doLoadFiles = (!isSyntaxCheck || isCmdLine_C_Option); 
+    boolean doLoadFiles = (!isSyntaxCheck || isCmdLine_C_Option);
     String errMsg = null;
     String sOptions = "";
     if (statementLength == 1) {
@@ -6535,14 +6538,15 @@ public class ScriptEvaluator {
         i = 2;
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
-        boolean atomDataOnly = Parser.isOneOf(modelName.toLowerCase(),
-            JmolConstants.LOAD_ATOM_DATA_TYPES);
-        if (atomDataOnly) {
+        tokType = (Parser.isOneOf(modelName.toLowerCase(),
+            JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token
+            .getTokenFromName(modelName.toLowerCase()).tok : 0);
+        if (tokType > 0) {
           htParams.put("atomDataOnly", Boolean.TRUE);
           htParams.put("modelNumber", new Integer(1));
-          tokType = Token.getTokenFromName(modelName.toLowerCase()).tok;
           if (tokType == Token.vibration)
             tokType = Token.vibXyz;
+          tempFileInfo = viewer.getFileInfo();
         }
         if (isAppend
             && ((filename = optParameterAsString(2))
@@ -6552,7 +6556,7 @@ public class ScriptEvaluator {
           loadScript.append(" " + modelName);
           i++;
         }
-        if (atomDataOnly)
+        if (tokType > 0)
           isAppend = true;
         if (modelName.equalsIgnoreCase("trajectory")
             || modelName.equalsIgnoreCase("models")) {
@@ -6752,15 +6756,29 @@ public class ScriptEvaluator {
     if (!doLoadFiles)
       return;
     if (filenames == null) {
-      //standard file loading here
+      // standard file loading here
       if (filename.startsWith("@") && filename.length() > 1) {
         htParams.put("fileData", getStringParameter(filename.substring(1),
             false));
         filename = "string";
       }
     }
-    errMsg = viewer.loadModelFromFile(filename, filenames, isAppend, htParams, tokType);
+    
+    // OK, we are ready to load the data and create the model set
+    
+    errMsg = viewer.loadModelFromFile(filename, filenames, isAppend, htParams,
+        tokType);
+    
+    if (tokType > 0) {
+      // we are just loading an atom property
+      // reset the file info in FileManager, check for errors, and return
+      viewer.setFileInfo(tempFileInfo);
+      if (errMsg != null && !isCmdLine_c_or_C_Option)
+        evalError(errMsg, null);
+      return;
+    }
     if (filenames == null) {
+      // a single file or string -- complete the loadScript
       loadScript.append(" ");
       if (!filename.equals("string") && !filename.equals("string[]"))
         loadScript.append("/*file*/");
@@ -6768,18 +6786,16 @@ public class ScriptEvaluator {
           .get("fullPathName")));
       loadScript.append(sOptions);
     }
-    if (tokType == 0)
-      viewer.addLoadScript(loadScript.toString());
+    viewer.addLoadScript(loadScript.toString());
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
         viewer.addLoadScript("-");
-        errMsg = TextFormat.trim(errMsg,"\n");
+        errMsg = TextFormat.trim(errMsg, "\n");
         runScript("script \"" + errMsg.substring(40) + "\"");
         return;
       }
       evalError(errMsg, null);
     }
-
     if (isAppend && (appendNew || nFiles > 1)) {
       viewer.setAnimationRange(-1, -1);
       viewer.setCurrentModelIndex(modelCount);
@@ -6799,7 +6815,7 @@ public class ScriptEvaluator {
     }
     if (msg.length() > 0)
       Logger.info(msg);
-    if (defaultScript.length() > 0 && !isCmdLine_c_or_C_Option) 
+    if (defaultScript.length() > 0 && !isCmdLine_c_or_C_Option)
       // NOT checking embedded scripts in some cases
       runScript(defaultScript);
   }
@@ -12863,7 +12879,7 @@ public class ScriptEvaluator {
           sdata = TextFormat.replaceAllCharacters(sdata, "{,}|", ' ');
           if (logMessages)
             Logger.debug("pmesh inline data:\n" + sdata);
-          t = (isSyntaxCheck ? null : viewer.getBufferedReaderForString(sdata));
+          t = (isSyntaxCheck ? null : new BufferedReader(new StringReader(sdata)));
         } else {
           if (thisCommand.indexOf("# FILE" + nFiles + "=") >= 0)
             filename = extractCommandOption("# FILE" + nFiles);

@@ -237,8 +237,10 @@ public class ActionManager {
   Binding dragBinding;
   Binding rasmolBinding;
 
+  ActionManager aman;
   ActionManager(Viewer viewer) {
     this.viewer = viewer;
+    aman = this;
     binding = jmolBinding = new JmolBinding();
   }
 
@@ -940,8 +942,7 @@ public class ActionManager {
       Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
       int hoverDelay;
       try {
-        while (hoverWatcherThread != null
-            && (hoverDelay = viewer.getHoverDelay()) > 0) {
+        while (Thread.currentThread().equals(hoverWatcherThread) && (hoverDelay = viewer.getHoverDelay()) > 0) {
           Thread.sleep(hoverDelay);
           if (xCurrent == mouseMovedX && yCurrent == mouseMovedY
               && timeCurrent == mouseMovedTime) { // the last event was mouse
@@ -949,12 +950,13 @@ public class ActionManager {
             long currentTime = System.currentTimeMillis();
             int howLong = (int) (currentTime - mouseMovedTime);
             if (howLong > hoverDelay) {
-              if (hoverWatcherThread != null && !viewer.getInMotion()
+              if (Thread.currentThread().equals(hoverWatcherThread) && !viewer.getInMotion()
                   && !viewer.getSpinOn() && !viewer.getNavOn()
                   && !viewer.checkObjectHovered(xCurrent, yCurrent)) {
                 int atomIndex = viewer.findNearestAtomIndex(xCurrent, yCurrent);
-                if (atomIndex >= 0)
+                if (atomIndex >= 0) {
                   hoverOn(atomIndex);
+                }
               }
             }
           }
@@ -964,7 +966,6 @@ public class ActionManager {
       } catch (Exception ie) {
         Logger.debug("Hover Exception: " + ie);
       }
-      hoverWatcherThread = null;
     }
   }
   

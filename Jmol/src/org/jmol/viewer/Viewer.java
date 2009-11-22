@@ -1663,20 +1663,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.defaultDirectory;
   }
 
-  public Object getBufferedReaderForString(String sdata) {
-    return FileManager.getBufferedReaderForString(sdata);
-  }
-
   public BufferedInputStream getBufferedInputStream(String fullPathName) {
-    Object ret = getBufferedReaderOrErrorMessageFromName(fullPathName,
-        new String[2], true);
-    return (ret instanceof BufferedInputStream ? (BufferedInputStream) ret
-        : null);
+    // used by some JVXL readers
+    return fileManager.getBufferedInputStream(fullPathName);
   }
 
   public Object getBufferedReaderOrErrorMessageFromName(String name,
                                                  String[] fullPathNameReturn,
                                                  boolean isBinary) {
+    // used by isosurface reader
     return fileManager.getBufferedReaderOrErrorMessageFromName(name,
         fullPathNameReturn, isBinary, true);
   }
@@ -2006,7 +2001,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private String openStringInline(String strModel, Hashtable htParams,
                                       boolean isAppend) {
-    // loadInline, openFile, openStringInline
+    // loadInline, openStringInline
     if (!isAppend)
       zap(true, false);
     Object atomSetCollection = fileManager.createAtomSetCollectionFromString(strModel,
@@ -2016,7 +2011,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private String openStringsInline(String[] arrayModels, Hashtable htParams,
                                    boolean isAppend) {
-    // loadInline, openFile, openStringInline
+    // loadInline
     if (!isAppend)
       zap(true, false);
     Object atomSetCollection = fileManager.createAtomSeCollectionFromStrings(arrayModels,
@@ -3413,7 +3408,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       statusManager.setSync(null);
   }
 
-  public void repaintView() {
+  public void notifyViewerRepaintDone() {
     repaintManager.repaintDone();
   }
 
@@ -3550,7 +3545,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       render1(gRight, getImage(true), 0, 0);
       render1(gLeft, getImage(false), 0, 0);
     }
-    repaintView();
+    notifyViewerRepaintDone();
   }
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
@@ -6279,6 +6274,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setSpinOn(false);
     setNavOn(false);
     setAnimationOn(false);
+    repaintManager.cancelRendering();
   }
 
   private void setNavigationMode(boolean TF) {

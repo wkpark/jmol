@@ -294,7 +294,7 @@ class AnimationManager {
   
   boolean animationPaused = false;
   void setAnimationOn(boolean animationOn) {
-    if (! animationOn || ! viewer.haveModelSet()) {
+    if (!animationOn || !viewer.haveModelSet()) {
       setAnimationOff(false);
       return;
     }

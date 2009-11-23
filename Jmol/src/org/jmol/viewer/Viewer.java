@@ -2039,9 +2039,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   private String createModelSet(String fullPathName, String fileName,
                                 Object atomSetCollection, boolean isAppend) {
-    // maybe there needs to be a call to clear()
-    // or something like that here
-    // for when CdkEditBus calls this directly
     // null fullPathName implies we are doing a merge
     pushHoldRepaint("createModelSet");
     setErrorMessage(null);
@@ -2230,7 +2227,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       clearAllMeasurements();
       if (minimizer != null)
         minimizer.setProperty("clear", null);
-      modelSet = modelManager.clear();
+      //modelSet = modelManager.clear();
       if (haveDisplay) {
         mouseManager.clear();
         actionManager.clear();

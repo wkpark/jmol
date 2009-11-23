@@ -39,18 +39,9 @@ class ModelManager {
     this.viewer = viewer;
   }
 
-  ModelSet clear() {
-    fullPathName = fileName = null;
-    modelLoader = null;
-    return null;
-  }
-
   ModelSet zap() {
-    clear();
-    fullPathName = fileName;
-    //System.out.println(modelLoader + " zap old");
+    fullPathName = fileName = null;
     modelLoader = new ModelLoader(viewer, "empty");
-    //System.out.println(modelLoader + " zap new");
     return (ModelSet) modelLoader;
   }
   
@@ -62,39 +53,32 @@ class ModelManager {
     return fullPathName;
   }
 
-  ModelSet merge(Object atomSetCollection ) {
-    //System.out.println(modelLoader + " merging a");
-    modelLoader = new ModelLoader(viewer, atomSetCollection,
-        modelLoader, "merge");
-    if (modelLoader.getAtomCount() == 0)
+  ModelSet createModelSet(String fullPathName, String fileName,
+                          Object atomSetCollection, boolean isAppend) {
+    // 11.9.10 11/22/2009 bh adjusted to never allow a null return
+    if (isAppend) {
+      if (atomSetCollection != null)
+        modelLoader = new ModelLoader(viewer, atomSetCollection, modelLoader,
+            "merge");
+    } else if (atomSetCollection == null) {
       zap();
-    //System.out.println(modelLoader + " merging b");
-    return (ModelSet) modelLoader;
-  }
-  
-  ModelSet createModelSet(String fullPathName, String fileName, Object atomSetCollection, boolean isAppend) {
-    if (atomSetCollection == null) {
-      clear();
-      return null;
+    } else {
+      this.fullPathName = fullPathName;
+      this.fileName = fileName;
+      String modelSetName = viewer.getModelAdapter().getAtomSetCollectionName(
+          atomSetCollection);
+      if (modelSetName != null) {
+        modelSetName = modelSetName.trim();
+        if (modelSetName.length() == 0)
+          modelSetName = null;
+      }
+      if (modelSetName == null)
+        modelSetName = reduceFilename(fileName);
+      modelLoader = new ModelLoader(viewer, atomSetCollection, null,
+          modelSetName);
+      if (modelLoader.getAtomCount() == 0)
+        zap();
     }
-    if (isAppend)
-      return merge(atomSetCollection);
-    this.fullPathName = fullPathName;
-    this.fileName = fileName;
-    String modelSetName = viewer.getModelAdapter().getAtomSetCollectionName(atomSetCollection);
-    if (modelSetName != null) {
-      modelSetName = modelSetName.trim();
-      if (modelSetName.length() == 0)
-        modelSetName = null;
-    }
-    if (modelSetName == null)
-      modelSetName = reduceFilename(fileName);
-    //System.out.println(modelLoader + " setclient a");
-    modelLoader = new ModelLoader(viewer, atomSetCollection, null, modelSetName);
-    //haveFile = true;
-    //System.out.println(modelLoader + " setclient b");
-    if (modelLoader.getAtomCount() == 0)
-      zap();
     return (ModelSet) modelLoader;
   }
 

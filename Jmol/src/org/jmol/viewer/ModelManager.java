@@ -61,7 +61,7 @@ class ModelManager {
         modelLoader = new ModelLoader(viewer, atomSetCollection, modelLoader,
             "merge");
     } else if (atomSetCollection == null) {
-      zap();
+      return zap();
     } else {
       this.fullPathName = fullPathName;
       this.fileName = fileName;
@@ -76,9 +76,9 @@ class ModelManager {
         modelSetName = reduceFilename(fileName);
       modelLoader = new ModelLoader(viewer, atomSetCollection, null,
           modelSetName);
-      if (modelLoader.getAtomCount() == 0)
-        zap();
     }
+    if (modelLoader.getAtomCount() == 0)
+      zap();
     return (ModelSet) modelLoader;
   }
 

@@ -2227,6 +2227,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       clearAllMeasurements();
       if (minimizer != null)
         minimizer.setProperty("clear", null);
+      modelSet = modelManager.zap();
       if (haveDisplay) {
         mouseManager.clear();
         actionManager.clear();
@@ -2238,8 +2239,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       definedAtomSets.clear();
       dataManager.clear();
       System.gc();
+    } else {
+      modelSet = modelManager.zap();
     } 
-    modelSet = modelManager.zap();
     initializeModel();
     if (notify)
       setFileLoadStatus(FILE_STATUS_ZAPPED, null, (resetUndo ? "resetUndo"

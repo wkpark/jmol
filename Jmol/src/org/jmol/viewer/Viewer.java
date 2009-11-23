@@ -3711,10 +3711,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return scriptManager.addScript(strFilename, true, false);
   }
 
-  public String script(String strScript) {
-    return evalString(strScript);
-  }
-
   String interruptScript = "";
 
   public String getInterruptScript() {
@@ -3725,11 +3721,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return s;
   }
 
+  public String script(String strScript) {
+    // JmolViewer -- just an alias for evalString
+    return evalString(strScript);
+  }
+
   public String evalString(String strScript) {
+    // JmolSimpleViewer
     return evalStringQuiet(strScript, false, true);
   }
 
   public String evalStringQuiet(String strScript) {
+    // JmolViewer
     return evalStringQuiet(strScript, true, true);
   }
 

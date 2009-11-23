@@ -85,18 +85,18 @@ class AnimationManager {
       setBackgroundModelIndex(-1);  
     viewer.setTainted(true);
     setFrameRangeVisible();
+    setStatusFrameChanged();
     if (modelSet != null) {
-      setStatusFrameChanged();
       if (!viewer.getSelectAllModels())
         viewer.setSelectionSubset(viewer.getModelAtomBitSet(currentModelIndex, false));
     }
   
   }
 
-  
   private void setStatusFrameChanged() {
-    viewer.setStatusFrameChanged(animationOn ? -2 - currentModelIndex
-        : currentModelIndex);
+    if (viewer.getModelSet() != null)
+      viewer.setStatusFrameChanged(animationOn ? -2 - currentModelIndex
+          : currentModelIndex);
   }
   
   int backgroundModelIndex = -1;

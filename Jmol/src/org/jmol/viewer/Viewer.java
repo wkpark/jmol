@@ -314,23 +314,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                           String fullName, URL documentBase,
                                           URL codeBase, String commandOptions,
                                           JmolStatusListener statusListener) {
-    JmolViewer viewer = new Viewer(display, modelAdapter);
+    Viewer viewer = new Viewer(display, modelAdapter);
     viewer.setAppletContext(fullName, documentBase, codeBase, commandOptions);
     viewer.setJmolStatusListener(statusListener);
     return viewer;
   }
 
   /**
-   * deprecated because setAppletContext needs to be invoked as well.
    * 
-   * @deprecated
    * @param display
    * @param modelAdapter
    * @return a viewer instance
    */
   public static JmolViewer allocateViewer(Component display,
                                           JmolAdapter modelAdapter) {
-    return new Viewer(display, modelAdapter);
+    return allocateViewer(display, modelAdapter, null, null, null, null, null);
   }
 
   private boolean isSilent = false;
@@ -346,34 +344,37 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return isPreviewOnly;
   }
 
-  public boolean autoExit = false;
   public boolean haveDisplay = true;
-  private boolean isPrintOnly = false;
+  public boolean autoExit = false;
+  
   private boolean mustRender = true;
+  private boolean isPrintOnly = false;
+  private boolean isCmdLine_C_Option = false;
   private boolean isCmdLine_c_or_C_Option = false;
   private boolean listCommands = false;
-  private boolean isCmdLine_C_Option = true;
   private boolean useCommandThread = false;
   private boolean isSignedApplet = false;
-  private boolean isDataOnly;
-  String appletContext;
+  private boolean isDataOnly = false;
+
+  private String appletContext;
+  String getAppletContext() {
+    return appletContext;
+  }
 
   public synchronized void setAppletContext(String fullName, URL documentBase, URL codeBase,
                                String commandOptions) {
-    appletContext = commandOptions;
+    appletContext = (commandOptions == null ? "" : commandOptions);
     this.fullName = fullName = (fullName == null ? "" : fullName);
     appletDocumentBase = (documentBase == null ? "" : documentBase.toString());
     appletCodeBase = (codeBase == null ? "" : codeBase.toString());
     int i = fullName.lastIndexOf("[");
     htmlName = (i < 0 ? fullName : fullName.substring(0, i));
     syncId = (i < 0 ? "" : fullName.substring(i + 1, fullName.length() - 1));
-    if (commandOptions == null)
-      commandOptions = "";
-    String str = "" + commandOptions;
-    isPrintOnly = (commandOptions.indexOf("-p") >= 0);
-    isApplet = (commandOptions.indexOf("-applet") >= 0);
+    String str = appletContext;
+    isPrintOnly = (appletContext.indexOf("-p") >= 0);
+    isApplet = (appletContext.indexOf("-applet") >= 0);
     if (isApplet) {
-      Logger.info("applet context: " + commandOptions);
+      Logger.info("applet context: " + appletContext);
       String appletProxy = null;
       // -appletProxy must be the last flag added
       if ((i = str.indexOf("-appletProxy ")) >= 0) {

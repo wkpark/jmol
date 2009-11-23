@@ -690,7 +690,7 @@ class StatusManager {
         public void run() {
           if (dialogType.equals("load")) {
             outputFileName = newDialog(false).getOpenFileNameFromDialog(
-                viewer.appletContext, viewer, inputFileName, null, null, false);
+                viewer.getAppletContext(), viewer, inputFileName, null, null, false);
             return;
           }
           JmolDialogInterface sd = newDialog(false);

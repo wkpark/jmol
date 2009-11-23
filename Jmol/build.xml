@@ -32,7 +32,7 @@
   <property name="javadoc.dir" value="build/javadoc" />
   <property name="jmol.applet.build.dir" value="build" />
   <property name="jmol.build.dir" value="build" />
-  <property name="docbook-xsl" value="docbook-xsl-1.74.0" />
+  <property name="docbook-xsl" value="docbook-xsl-1.75.2" />
   <property name="docbook-xml" value="docbook-xml-4.4" />
   <property name="vecmath.jar" value="vecmath1.2-1.14.jar" />
   <property name="itext.jar" value="itext-1.4.5.jar" />

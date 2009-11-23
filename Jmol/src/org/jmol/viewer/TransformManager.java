@@ -187,6 +187,8 @@ abstract class TransformManager {
     commands.append("  slab ").append(slabPercentSetting).append(";depth ")
         .append(depthPercentSetting).append(
             slabEnabled && !isNavigationMode ? ";slab on" : "").append(";\n");
+    if (zShadeEnabled)
+      commands.append("  set zShade;\n");
     if (slabPlane != null)
       commands.append("  slab plane ").append(Escape.escape(slabPlane)).append(
           ";\n");
@@ -762,6 +764,7 @@ abstract class TransformManager {
 
   boolean slabEnabled = false;
   boolean internalSlab = false;
+  boolean zShadeEnabled = false;
 
   int slabPercentSetting;
   int depthPercentSetting;
@@ -776,12 +779,18 @@ abstract class TransformManager {
     viewer.getGlobalSettings().setParameterValue("slabEnabled", slabEnabled);
   }
 
+  void setZShadeEnabled(boolean zShadeEnabled) {
+    this.zShadeEnabled = zShadeEnabled;
+    viewer.getGlobalSettings().setParameterValue("zShade", zShadeEnabled);
+  }
+
   void slabReset() {
     slabToPercent(100);
     depthToPercent(0);
     depthPlane = null;
     slabPlane = null;
     setSlabEnabled(false);
+    setZShadeEnabled(false);
   }
 
   int getSlabPercentSetting() {

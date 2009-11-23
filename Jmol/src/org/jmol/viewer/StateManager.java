@@ -554,7 +554,7 @@ public class StateManager {
         + ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode;"
         + ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
-        + ";slabenabled;specular;specularexponent;specularpercent;specularpower;stateversion"
+        + ";slabenabled;zshade;specular;specularexponent;specularpercent;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate"
         + ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomenabled"
         +
@@ -739,7 +739,6 @@ public class StateManager {
     boolean showKeyStrokes = true;
     boolean showMeasurements = true;
     boolean zoomLarge = true; //false would be like Chime
-    boolean zShade = false;
     String backgroundImageFileName;
     
     //atoms and bonds
@@ -1190,7 +1189,8 @@ public class StateManager {
         disablePopupMenu = g.disablePopupMenu;
         messageStyleChime = g.messageStyleChime;
         defaultDirectory = g.defaultDirectory;
-        zShade = g.zShade;
+        // no, not persistent, because slab and depth are not
+        // zShade = g.zShade;
         allowGestures = g.allowGestures;
         allowKeyStrokes = g.allowKeyStrokes;
       }
@@ -1398,7 +1398,7 @@ public class StateManager {
       setParameterValue("wireframeRotation", wireframeRotation);
       setParameterValue("zoomEnabled", true);
       setParameterValue("zoomLarge", zoomLarge);
-      setParameterValue("zShade", zShade);
+      setParameterValue("zShade", false);
       setParameterValue("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
     }
 

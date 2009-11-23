@@ -1071,7 +1071,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     transformManager.finalizeTransformParameters();
     g3d.setSlabAndDepthValues(transformManager.slabValue,
-        transformManager.depthValue, global.zShade, 
+        transformManager.depthValue, transformManager.zShadeEnabled, 
         transformManager.zSlabValue, transformManager.zDepthValue);
   }
 
@@ -1451,10 +1451,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   static int getSpecularPercent() {
     return ColorManager.getSpecularPercent();
-  }
-
-  boolean getZShade() {
-    return global.zShade;
   }
 
   public short getColixAtomPalette(Atom atom, byte pid) {
@@ -2371,8 +2367,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         .getClientAtomStringProperty(clientAtom, propertyName));
   }
 
-  /*****************************************************************************
-   * This is the method that should be used to extract the model data from Jmol.
+  /* ****************************************************************************
+   * This is the method that was originally used to extract the model data from Jmol.
+   * It was never fully developed and has been abandoned.
+   * 
+   * Much simpler is to use the public methods in JmolViewer and Viewer directly.
+   *
+   * See Jmol 11.8 for a version including FrameExportJmolAdapter.java if desired. 
+   * 
+   * LEGACY NOTES:
+   * 
    * Note that the API provided by JmolAdapter is used to import data into Jmol
    * and to export data out of Jmol.
    * 
@@ -2397,13 +2401,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return A JmolAdapter
    ****************************************************************************/
 
+  /*
   JmolAdapter getExportJmolAdapter() {
-    /*
-     * 
-     * return new FrameExportJmolAdapter(this, modelSet);
-     */
-    return null;
+    return new FrameExportJmolAdapter(this, modelSet);
   }
+  */
 
   public ModelSet getModelSet() {
     return modelSet;
@@ -5668,7 +5670,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (key.equalsIgnoreCase("zShade")) {
-        global.zShade = value;
+        transformManager.setZShadeEnabled(value);
         break;
       }
       if (key.equalsIgnoreCase("drawHover")) {

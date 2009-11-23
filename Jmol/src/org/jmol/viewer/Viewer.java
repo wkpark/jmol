@@ -2352,11 +2352,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getModelBitSet(atomList, allTrajectories);
   }
 
-  Object getClientFile() {
-    // DEPRECATED - use getExportJmolAdapter()
-    return null;
-  }
-
   // this is a problem. SmarterJmolAdapter doesn't implement this;
   // it can only return null.
 
@@ -2366,46 +2361,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         || propertyName.length() == 0 ? null : modelAdapter
         .getClientAtomStringProperty(clientAtom, propertyName));
   }
-
-  /* ****************************************************************************
-   * This is the method that was originally used to extract the model data from Jmol.
-   * It was never fully developed and has been abandoned.
-   * 
-   * Much simpler is to use the public methods in JmolViewer and Viewer directly.
-   *
-   * See Jmol 11.8 for a version including FrameExportJmolAdapter.java if desired. 
-   * 
-   * LEGACY NOTES:
-   * 
-   * Note that the API provided by JmolAdapter is used to import data into Jmol
-   * and to export data out of Jmol.
-   * 
-   * When exporting, a few of the methods in JmolAdapter do not make sense.
-   * openBufferedReader(...) Others may be implemented in the future, but are
-   * not currently all pdb specific things Just pass in null for the methods
-   * that want a clientFile. The main methods to use are getFrameCount(null) ->
-   * currently always returns 1 getAtomCount(null, 0) getAtomIterator(null, 0)
-   * getBondIterator(null, 0)
-   * 
-   * The AtomIterator and BondIterator return Objects as unique IDs to identify
-   * the atoms. atomIterator.getAtomUid() bondIterator.getAtomUid1() &
-   * bondIterator.getAtomUid2() The ExportJmolAdapter will return the 0-based
-   * atom index as a boxed Integer. That means that you can cast the results to
-   * get a zero-based atom index int atomIndex =
-   * ((Integer)atomIterator.getAtomUid()).intValue(); ... int bondedAtom1 =
-   * ((Integer)bondIterator.getAtomUid1()).intValue(); int bondedAtom2 =
-   * ((Integer)bondIterator.getAtomUid2()).intValue();
-   * 
-   * post questions to jmol-developers@lists.sf.net
-   * 
-   * @return A JmolAdapter
-   ****************************************************************************/
-
-  /*
-  JmolAdapter getExportJmolAdapter() {
-    return new FrameExportJmolAdapter(this, modelSet);
-  }
-  */
 
   public ModelSet getModelSet() {
     return modelSet;

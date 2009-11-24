@@ -25,7 +25,7 @@ package org.jmol.viewer;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.viewer.StateManager.Orientation;
+//import org.jmol.viewer.StateManager.Orientation;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -316,8 +316,8 @@ class TransformManager11 extends TransformManager {
     depthValue = Integer.MAX_VALUE;
     if (!slabEnabled)
       return;
-    slabValue = (isNavigationMode ? 10 : (int) (referencePlaneOffset - navigationSlabOffset));
-    depthValue = zValueFromPercent(depthPercentSetting);
+    zSlabValue = slabValue = (isNavigationMode ? -100 : 0) + (int) (referencePlaneOffset - navigationSlabOffset);
+    zDepthValue = depthValue = zValueFromPercent(depthPercentSetting);
 
     viewer.getGlobalSettings().setParameterValue("navigationDepth",getNavigationDepthPercent());
     viewer.getGlobalSettings().setParameterValue("navigationSlab",getNavigationSlabOffsetPercent());
@@ -619,10 +619,12 @@ class TransformManager11 extends TransformManager {
     navigating = false;
   }
 
+  protected Point3f ptMoveToCenter;
+
   private void navigateTo(float floatSecondsTotal, Vector3f axis,
                           float degrees, Point3f center, float depthPercent,
                           float xTrans, float yTrans) {
-
+/*
     Orientation o = viewer.getOrientation();
     if (!Float.isNaN(degrees) && degrees != 0)
       navigate(0, axis, degrees);
@@ -636,6 +638,83 @@ class TransformManager11 extends TransformManager {
     Orientation o1 = viewer.getOrientation();
     o.restore(0, true);
     o1.restore(floatSecondsTotal, true);
+    */
+    
+    ptMoveToCenter = (center == null ? navigationCenter : center);
+    int fps = 30;
+    int totalSteps = (int) (floatSecondsTotal * fps);
+    if (floatSecondsTotal > 0)
+      viewer.setInMotion(true);
+    if (degrees == 0)
+      degrees = Float.NaN;
+    if (totalSteps > 1) {
+      int frameTimeMillis = 1000 / fps;
+      long targetTime = System.currentTimeMillis();
+      float depthStart = getNavigationDepthPercent();
+      float depthDelta = depthPercent - depthStart;
+      float xTransStart = navigationOffset.x;
+      float xTransDelta = xTrans - xTransStart;
+      float yTransStart = navigationOffset.y;
+      float yTransDelta = yTrans - yTransStart;
+      float degreeStep = degrees / totalSteps;
+      aaStepCenter.set(ptMoveToCenter);
+      aaStepCenter.sub(navigationCenter);
+      aaStepCenter.scale(1f / totalSteps);
+      Point3f centerStart = new Point3f(navigationCenter);
+      for (int iStep = 1; iStep < totalSteps; ++iStep) {
+
+        navigating = true;
+        float fStep = iStep / (totalSteps - 1f);
+        if (!Float.isNaN(degrees))
+          navigate(0, axis, degreeStep);
+        if (center != null) {
+          centerStart.add(aaStepCenter);
+          navigate(0, centerStart);
+        }
+        if (!Float.isNaN(xTrans) || !Float.isNaN(yTrans)) {
+          float x = Float.NaN;
+          float y = Float.NaN;
+          if (!Float.isNaN(xTrans))
+            x = xTransStart + xTransDelta * fStep;
+          if (!Float.isNaN(yTrans))
+            y = yTransStart + yTransDelta * fStep;
+          navTranslatePercent(-1, x, y);
+        }
+
+        if (!Float.isNaN(depthPercent)) {
+          setNavigationDepthPercent(depthStart + depthDelta * fStep);
+        }
+        navigating = false;
+        targetTime += frameTimeMillis;
+        if (System.currentTimeMillis() < targetTime) {
+          viewer.requestRepaintAndWait();
+          if (!viewer.isScriptExecuting())
+            break;
+          int sleepTime = (int) (targetTime - System.currentTimeMillis());
+          if (sleepTime > 0) {
+            try {
+              Thread.sleep(sleepTime);
+            } catch (InterruptedException ie) {
+            }
+          }
+        }
+      }
+    } else {
+      int sleepTime = (int) (floatSecondsTotal * 1000) - 30;
+      if (sleepTime > 0) {
+        try {
+          Thread.sleep(sleepTime);
+        } catch (InterruptedException ie) {
+        }
+      }
+    }
+    //if (center != null)
+    //navigate(0, center);
+    if (!Float.isNaN(xTrans) || !Float.isNaN(yTrans))
+      navTranslatePercent(-1, xTrans, yTrans);
+    if (!Float.isNaN(depthPercent))
+      setNavigationDepthPercent(depthPercent);
+    viewer.setInMotion(false);
   }
 
   void navigate(float seconds, Point3f[][] pathGuide) {

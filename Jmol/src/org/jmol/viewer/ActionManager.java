@@ -964,7 +964,7 @@ public class ActionManager {
     }
     if (timeouts == null)
       timeouts = new Hashtable();
-    if (script == null || mSec == 0) {
+    if (mSec == 0) {
       Thread t = (Thread) timeouts.get(name);
       if (t != null) {
         t.interrupt();
@@ -972,7 +972,12 @@ public class ActionManager {
       }
       return;
     }
-    Thread t = new TimeoutThread(name, mSec, script);
+    TimeoutThread t = (TimeoutThread) timeouts.get(name);
+    if (t != null) {
+      t.set(mSec, script);
+      return;
+    }
+    t = new TimeoutThread(name, mSec, script);
     timeouts.put(name, t);
     t.start();
   }
@@ -994,9 +999,15 @@ public class ActionManager {
         Logger.debug(toString());
     }
     
+    void set(int ms, String script) {
+      this.ms = ms;
+      if (script != null && script.length() != 0)
+        this.script = script; 
+    }
+
     public String toString() {
       return "timeout name=" + name + " executions=" + status + " mSec=" + ms 
-      + " timeRemaining=" + (targetTime - System.currentTimeMillis()) + " script=" + script;      
+      + " secRemaining=" + (targetTime - System.currentTimeMillis())/1000f + " script=" + script;      
     }
     
     public void run() {

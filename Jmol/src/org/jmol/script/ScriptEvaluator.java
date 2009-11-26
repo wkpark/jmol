@@ -409,6 +409,8 @@ public class ScriptEvaluator {
         }
       if (pt1 == script.length() - 1 && script.endsWith("}"))
         pt1++;
+      if (pt0 == script.length())
+        return "";
       return script.substring(Math.max(pt0, 0), Math.min(script.length(), pt1));
     }
     int ichBegin = lineIndices[pc][0];
@@ -9549,6 +9551,8 @@ public class ScriptEvaluator {
 
   private void setTimeout() throws ScriptException {
     // set timeout "mytimeout" mSec "script"
+    // msec < 0 --> repeat indefinitely
+    // set timeout "mytimeout" 1000
     // set timeout "mytimeout" OFF
     // set timeout OFF
     String name = null;
@@ -9560,8 +9564,8 @@ public class ScriptEvaluator {
         error(ERROR_invalidArgument);
       break;
     case 4:
-      if (tokAt(iToken = 3) != Token.off) 
-        error(ERROR_invalidArgument);
+      if (tokAt(iToken = 3) != Token.off)
+        mSec = intParameter(3);
       name = parameterAsString(2);
       break;
     default:

@@ -1010,9 +1010,11 @@ public class ActionManager {
             continue;
           status++;
           targetTime += Math.abs(ms);
+          if (ms > 0)
+            timeouts.remove(name);
           if (Logger.debugging)
             viewer.script(script);
-          else
+          else 
             viewer.evalStringQuiet(script);
           if (ms > 0)
             break;

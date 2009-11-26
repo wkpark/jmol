@@ -1619,9 +1619,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // applet is being destroyed
       clearScriptQueue();
       haltScriptExecution();
-      transformManager.setSpinOn(false);
-      transformManager.setNavOn(false);
-      transformManager.setVibrationPeriod(0);
+      stopAnimationThreads();
       scriptManager.startCommandWatcher(false);
       scriptManager.interruptQueueThreads();
       g3d.destroy();

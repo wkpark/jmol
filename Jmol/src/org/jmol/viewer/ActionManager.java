@@ -260,6 +260,13 @@ public class ActionManager {
   }
 
   void unbindAction(String desc, String name) {
+    if (desc == null && name == null) {
+      binding = jmolBinding = new JmolBinding();
+      pfaatBinding = null;
+      dragBinding = null;
+      rasmolBinding = null;      
+      return;
+    }
     int jmolAction = getActionFromName(name);
     int mouseAction = Binding.getMouseAction(desc);
     if (jmolAction >= 0)
@@ -313,6 +320,7 @@ public class ActionManager {
 
   void clear() {
     startHoverWatcher(false);
+    clearTimeouts();
     pickingMode = JmolConstants.PICKING_IDENT;
     drawHover = false;
   }
@@ -925,6 +933,99 @@ public class ActionManager {
     exitMeasurementMode();
   }
 
+  Hashtable timeouts;
+  
+  String showTimeout(String name) {
+    StringBuffer sb = new StringBuffer();
+    if (timeouts != null) {
+      Enumeration e = timeouts.elements();
+      while (e.hasMoreElements()) {
+        TimeoutThread t = (TimeoutThread) e.nextElement();
+        if (name == null || t.name.equalsIgnoreCase(name))
+          sb.append(t.toString()).append("\n");
+      }
+    }
+    return (sb.length() > 0 ? sb.toString() : "<no timeouts set>");
+  }
+
+  void clearTimeouts() {
+    if (timeouts == null)
+      return;
+    Enumeration e = timeouts.elements();
+    while (e.hasMoreElements())
+      ((Thread) e.nextElement()).interrupt();
+    timeouts.clear();    
+  }
+  
+  void setTimeout(String name, int mSec, String script) {
+    if (name == null) {
+      clearTimeouts();
+      return;
+    }
+    if (timeouts == null)
+      timeouts = new Hashtable();
+    if (script == null || mSec == 0) {
+      Thread t = (Thread) timeouts.get(name);
+      if (t != null) {
+        t.interrupt();
+        timeouts.remove(name);
+      }
+      return;
+    }
+    Thread t = new TimeoutThread(name, mSec, script);
+    timeouts.put(name, t);
+    t.start();
+  }
+
+  class TimeoutThread extends Thread {
+    String name;
+    private int ms;
+    private long targetTime;
+    private int status;
+    private String script;
+    
+    TimeoutThread(String name, int ms, String script) {
+      this.name = name;
+      this.ms = ms;
+      this.script = script;
+      Thread.currentThread().setName("timeout " + name);
+      targetTime = System.currentTimeMillis() + Math.abs(ms);
+      if (Logger.debugging) 
+        Logger.debug(toString());
+    }
+    
+    public String toString() {
+      return "timeout name=" + name + " executions=" + status + " mSec=" + ms 
+      + " timeRemaining=" + (targetTime - System.currentTimeMillis()) + " script=" + script;      
+    }
+    
+    public void run() {
+      if (script == null || script.length() == 0 || ms == 0)
+        return;
+      Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+      try {
+        while (true) {
+          Thread.sleep(10);
+          if (targetTime > System.currentTimeMillis())
+            continue;
+          status++;
+          targetTime += Math.abs(ms);
+          if (Logger.debugging)
+            viewer.script(script);
+          else
+            viewer.evalStringQuiet(script);
+          if (ms > 0)
+            break;
+        }
+      } catch (InterruptedException ie) {
+        Logger.debug("Timeout " + name + " interrupted");
+      } catch (Exception ie) {
+        Logger.debug("Timeout " + name + " Exception: " + ie);
+      }
+      timeouts.remove(name);
+    }
+  }
+  
   void hoverOn(int atomIndex) {
     viewer.hoverOn(atomIndex, Binding.getMouseAction(previousClickCount, mouseMovedModifiers));
   }
@@ -962,7 +1063,7 @@ public class ActionManager {
           }
         }
       } catch (InterruptedException ie) {
-        Logger.debug("Hover InterruptedException!");
+        Logger.debug("Hover interrupted");
       } catch (Exception ie) {
         Logger.debug("Hover Exception: " + ie);
       }
@@ -1274,4 +1375,5 @@ public class ActionManager {
       return nodes[(i + nodes.length + nodes.length) % nodes.length];
     }
   }
+
 } 

@@ -7892,13 +7892,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void unBindAction(String desc, String name) {
     if (!haveDisplay)
       return;
-    if (desc == null && name == null)
-      mouseManager.setActionManager(actionManager = new ActionManager(this));
-    else
-      actionManager.unbindAction(desc, name);
+    actionManager.unbindAction(desc, name);
   }
 
   public Object getMouseInfo() {
     return (haveDisplay ? actionManager.getMouseInfo() : null);
+  }
+
+  public void setTimeout(String name, int mSec, String script) {
+    if (!haveDisplay)
+      return;
+    actionManager.setTimeout(name, mSec, script);    
+  }
+
+  public String showTimeout(String name) {
+    return actionManager.showTimeout(name);
   }
 }

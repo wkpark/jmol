@@ -9410,6 +9410,10 @@ public class ScriptEvaluator {
         if (setLabel("toggle"))
           return;
       }
+      if (key.equalsIgnoreCase("timeout")) {
+        setTimeout();
+        return;
+      }
       if (key.toLowerCase().indexOf("label") == 0
           && Parser
               .isOneOf(key.substring(5).toLowerCase(),
@@ -9541,6 +9545,33 @@ public class ScriptEvaluator {
     }
     if (showing)
       viewer.showParameter(key, true, 80);
+  }
+
+  private void setTimeout() throws ScriptException {
+    // set timeout "mytimeout" mSec "script"
+    // set timeout "mytimeout" OFF
+    // set timeout OFF
+    String name = null;
+    int mSec = 0;
+    String script = null;
+    switch (statementLength) {
+    case 3:
+      if (tokAt(iToken = 2) != Token.off) 
+        error(ERROR_invalidArgument);
+      break;
+    case 4:
+      if (tokAt(iToken = 3) != Token.off) 
+        error(ERROR_invalidArgument);
+      name = parameterAsString(2);
+      break;
+    default:
+      checkLength(5);
+      name = parameterAsString(2);
+      mSec = intParameter(3);
+      script = parameterAsString(4);
+    }
+    if (!isSyntaxCheck)
+      viewer.setTimeout(name, mSec, script);
   }
 
   private void setVariable(int pt, int ptMax, String key, boolean showing,
@@ -10987,6 +11018,9 @@ public class ScriptEvaluator {
             ? null : parameterAsString(2));
         if (!isSyntaxCheck)
           msg = viewer.getBindingInfo(qualifiers);
+      } else if (str.equalsIgnoreCase("timeouts")) {
+        msg = viewer.showTimeout((len = statementLength) == 2 
+            ? null : parameterAsString(2));
       }
       break;
     case Token.minimize:

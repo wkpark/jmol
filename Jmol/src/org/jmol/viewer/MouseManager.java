@@ -44,14 +44,8 @@ public abstract class MouseManager implements KeyListener {
     display.addKeyListener(this);
   }
 
-  void setActionManager(ActionManager actionManager) {
-    if (this.actionManager != null)
-      actionManager.clear();
-    this.actionManager = actionManager;
-  }
-  
   void clear() {
-    // nothing to do here now
+    // nothing to do here now -- see ActionManager
   }
 
   void removeMouseListeners11() {
@@ -65,7 +59,7 @@ public abstract class MouseManager implements KeyListener {
       Component display = viewer.getDisplay();
       if (display == null)
         return;
-      actionManager.startHoverWatcher(false);
+      actionManager.clear();
       removeMouseListeners11();
       removeMouseListeners14();
       display.removeKeyListener(this);

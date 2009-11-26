@@ -421,6 +421,7 @@ class TransformManager11 extends TransformManager {
    }
 
   synchronized void navigate(int keyCode, int modifiers) {
+    // 0 0 here means "key released"
     if (!isNavigationMode)
       return;
     if (keyCode == 0) {
@@ -439,10 +440,10 @@ class TransformManager11 extends TransformManager {
     boolean isAltKey = ((modifiers & InputEvent.ALT_MASK) > 0);
     boolean isCtrlKey = ((modifiers & InputEvent.CTRL_MASK) > 0);
     float speed = viewer.getNavigationSpeed() * (isCtrlKey ? 10 : 1);
+    // race condition viewer.cancelRendering();
     switch (keyCode) {
     case KeyEvent.VK_PERIOD:
       navX = navY = navZ = 0;
-      setNavOn(false);
       homePosition();
       return;
     case KeyEvent.VK_SPACE:

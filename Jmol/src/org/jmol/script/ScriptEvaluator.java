@@ -397,14 +397,19 @@ public class ScriptEvaluator {
     if (pc >= lineIndices.length)
       return "";
     if (allThisLine) {
-      StringBuffer sb = new StringBuffer();
+      int pt0 = -1;
+      int pt1 = script.length();
       for (int i = 0; i < lineNumbers.length; i++)
-        if (lineNumbers[i] == lineNumbers[pc])
-          sb.append(getCommand(i, false, false));
-        else if (lineNumbers[i] == 0 || lineNumbers[i] > lineNumbers[pc]) {
+        if (lineNumbers[i] == lineNumbers[pc]) {
+          if (pt0 < 0)
+            pt0 = lineIndices[i][0];
+          pt1 = lineIndices[i][1];
+        } else if (lineNumbers[i] == 0 || lineNumbers[i] > lineNumbers[pc]) {
           break;
         }
-      return sb.toString();
+      if (pt1 == script.length() - 1 && script.endsWith("}"))
+        pt1++;
+      return script.substring(Math.max(pt0, 0), Math.min(script.length(), pt1));
     }
     int ichBegin = lineIndices[pc][0];
     int ichEnd = lineIndices[pc][1];
@@ -4384,11 +4389,10 @@ public class ScriptEvaluator {
       // containing @{...}
       if (!historyDisabled && !isSyntaxCheck
           && scriptLevel <= commandHistoryLevelMax && !tQuiet) {
-        thisCommand = getCommand(pc, true, true);
-        if (token != null && !thisCommand.equals(lastCommand)
-            && (token.tok == Token.function || !Token.tokAttr(token.tok, Token.flowCommand))
-            && thisCommand.length() > 0)
-          viewer.addCommand(lastCommand = thisCommand);
+        String cmdLine = getCommand(pc, true, true);
+        if (token != null && cmdLine.length() > 0 && !cmdLine.equals(lastCommand)
+            && (token.tok == Token.function || !Token.tokAttr(token.tok, Token.flowCommand)))
+          viewer.addCommand(lastCommand = cmdLine);
       }
       if (!setStatement(pc)) {
         Logger.info(getCommand(pc, true, false)

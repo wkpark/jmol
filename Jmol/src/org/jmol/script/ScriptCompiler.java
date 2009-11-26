@@ -1106,6 +1106,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           vBraces.add(theToken);
           iBrace++;
           isEndOfCommand = true;
+          ichEnd = ichToken;
           return CONTINUE;
         }
       }
@@ -1277,6 +1278,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case Token.whilecmd:
       if (nTokens > 2 && braceCount == 0 && parenCount == 0) {
         isEndOfCommand = true;
+        ichEnd = ichToken + 1;
         flowContext.setLine();
       }
       break;
@@ -1284,6 +1286,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case Token.ifcmd:
       if (nTokens > 2 && braceCount == 0 && parenCount == 0) {
         isEndOfCommand = true;
+        ichEnd = ichToken + 1;
         flowContext.setLine();
       }
       break;
@@ -1297,6 +1300,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         addContextVariable(ident);
       } else if (braceCount == 0 && parenCount == 0) {
         isEndOfCommand = true;
+        ichEnd = ichToken + 1;
         flowContext.setLine();
       }
       break;

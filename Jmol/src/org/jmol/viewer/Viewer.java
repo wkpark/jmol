@@ -745,7 +745,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmolDataFrame())
       return;
     transformManager.navigate(keyWhere, modifiers);
-    if (!transformManager.vibrationOn)
+    if (!transformManager.vibrationOn && keyWhere != 0)
       refresh(1, "Viewer:navigate()");
   }
 
@@ -6233,6 +6233,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setSpinOn(false);
     setNavOn(false);
     setAnimationOn(false);
+    cancelRendering();
+  }
+  
+  void cancelRendering() {
     repaintManager.cancelRendering();
   }
 

@@ -235,10 +235,10 @@ public class Jmol implements WrappedApplet {
       options += "-signed";
     if (getBooleanValue("useCommandThread", isSigned))
       options += "-threaded";
-    if (isSigned && getBooleanValue("multiTouchSparshUI", false))
-      options += "-multitouch-sparshui";
     if (isSigned && getBooleanValue("multiTouchSparshUI-simulated", false))
       options += "-multitouch-sparshui-simulated";
+    else if (isSigned && getBooleanValue("multiTouchSparshUI", false))
+      options += "-multitouch-sparshui";
     String s = getValue("MaximumSize", null);
     if (s != null)
       options += "-maximumSize " + s;

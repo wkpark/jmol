@@ -165,6 +165,13 @@ public class JmolApp {
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("s"));
 
+    OptionBuilder.withLongOpt("multitouch");
+    OptionBuilder.withDescription(GT
+        ._("use multitouch interface (requires \"sparshui\" parameter"));
+    OptionBuilder.hasArg();
+    options.addOption(OptionBuilder.create("M"));
+
+
     OptionBuilder.withLongOpt("jmolscript1");
     OptionBuilder.withDescription(GT
         ._("Jmol script to execute BEFORE -s option"));
@@ -322,6 +329,11 @@ public class JmolApp {
     if (line.hasOption("J")) {
       commandOptions += "-J";
       script1 = line.getOptionValue("J");
+    }
+
+    // use SparshUI
+    if (line.hasOption("M")) {
+      commandOptions += "-multitouch-" + line.getOptionValue("M");
     }
 
     // run script from file

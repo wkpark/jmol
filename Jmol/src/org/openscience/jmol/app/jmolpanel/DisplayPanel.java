@@ -98,16 +98,20 @@ public class DisplayPanel extends JPanel
   }
     
   public void componentHidden(java.awt.event.ComponentEvent e) {
+    //System.out.println("DisplayPanel.componentHidden");
   }
 
   public void componentMoved(java.awt.event.ComponentEvent e) {
+    //System.out.println("DisplayPanel.componentMoved " + e.getComponent().getX() + " " + e.getComponent().getY());
   }
 
   public void componentResized(java.awt.event.ComponentEvent e) {
+    //System.out.println("DisplayPanel.componentResized");
     updateSize();
   }
 
   public void componentShown(java.awt.event.ComponentEvent e) {
+    //System.out.println("DisplayPanel.componentShown");
     updateSize();
   }
 

@@ -124,6 +124,17 @@ import netscape.javascript.JSObject;
  * 
  * see JmolConstants for callback types.
  * 
+ * 
+ * 
+ * new for Jmol 11.9.11:
+ * 
+ * [param name="multiTouchSparshUI" value="true"]
+ * [param name="multiTouchSparshUI-simulated" value="true"]
+ * 
+ * (signed applet only) loads the SparshUI client adapter
+ *  requires the SparshUI gesture server to be running already
+ *  at 127.0.0.1 port 5945. (see http://code.google.com/p/sparsh-ui/)
+ * 
  * The use of jmolButtons is fully deprecated and NOT recommended.
  * 
  */
@@ -224,6 +235,10 @@ public class Jmol implements WrappedApplet {
       options += "-signed";
     if (getBooleanValue("useCommandThread", isSigned))
       options += "-threaded";
+    if (isSigned && getBooleanValue("multiTouchSparshUI", false))
+      options += "-multitouch-sparshui";
+    if (isSigned && getBooleanValue("multiTouchSparshUI-simulated", false))
+      options += "-multitouch-sparshui-simulated";
     String s = getValue("MaximumSize", null);
     if (s != null)
       options += "-maximumSize " + s;

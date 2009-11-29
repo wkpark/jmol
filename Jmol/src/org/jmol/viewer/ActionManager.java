@@ -91,6 +91,8 @@ public class ActionManager {
     GT._("if all are selected, unselect all, otherwise select if not selected (requires {0})", "SET PICKINGSTYLE DRAG"),    
 
     GT._("reset (when clicked off the model)"),
+    
+    GT._("simulate multi-touch using the mouse)"),
   };
 
   public String getBindingInfo(String qualifiers) {
@@ -162,6 +164,7 @@ public class ActionManager {
     "_selectOr",
     "_selectToggleOr",
     "_reset",
+    "_multiTouchSimulation",
   };
   public static String getActionName(int i) {
     return (i < actionNames.length ? actionNames[i] : null);
@@ -214,7 +217,8 @@ public class ActionManager {
   public static final int ACTION_selectOr = 31;
   public static final int ACTION_selectToggleExtended = 32;  
   public final static int ACTION_reset = 33;
-  public final static int ACTION_count = 34;
+  public final static int ACTION_multiTouchSimulation = 34;
+  public final static int ACTION_count = 35;
   
   static {
     if (actionNames.length != ACTION_count)
@@ -241,7 +245,7 @@ public class ActionManager {
   ActionManager(Viewer viewer) {
     this.viewer = viewer;
     aman = this;
-    binding = jmolBinding = new JmolBinding();
+    setBinding(jmolBinding = new JmolBinding());
   }
 
   boolean isBound(int gesture, int action) {
@@ -259,12 +263,16 @@ public class ActionManager {
     }
   }
 
+  protected void clearBindings() {
+    setBinding(jmolBinding = new JmolBinding());
+    pfaatBinding = null;
+    dragBinding = null;
+    rasmolBinding = null; 
+  }
+  
   void unbindAction(String desc, String name) {
     if (desc == null && name == null) {
-      binding = jmolBinding = new JmolBinding();
-      pfaatBinding = null;
-      dragBinding = null;
-      rasmolBinding = null;      
+      clearBindings();
       return;
     }
     int jmolAction = getActionFromName(name);
@@ -274,13 +282,12 @@ public class ActionManager {
     else
       binding.unbind(mouseAction, name);
     if (name == null)
-      binding.unbindUserAction(desc);
-      
+      binding.unbindUserAction(desc);    
   }
 
   protected Thread hoverWatcherThread;
 
-  private int previousDragX, previousDragY;
+  protected int previousDragX, previousDragY;
   protected int xCurrent = -1000;
   protected int yCurrent = -1000;
   int getCurrentX() {
@@ -310,13 +317,17 @@ public class ActionManager {
   private int previousPressedX, previousPressedY;
   private int previousPressedModifiers;
   private long previousPressedTime;
-  private int pressedCount;
+  protected int pressedCount;
 
   protected int mouseMovedX, mouseMovedY;
   protected long mouseMovedTime;
 
   boolean isAltKeyReleased = true;  
   private boolean keyProcessing;
+
+  void dispose() {
+    clear();
+  }
 
   void clear() {
     startHoverWatcher(false);
@@ -431,29 +442,6 @@ public class ActionManager {
     }
   }
 
-  Rectangle getRubberBand() {
-    if (!rubberbandSelectionMode || rectRubber.x == Integer.MAX_VALUE)
-      return null;
-    return rectRubber;
-  }
-
-  private void calcRectRubberBand() {
-    if (xCurrent < previousPressedX) {
-      rectRubber.x = xCurrent;
-      rectRubber.width = previousPressedX - xCurrent;
-    } else {
-      rectRubber.x = previousPressedX;
-      rectRubber.width = xCurrent - previousPressedX;
-    }
-    if (yCurrent < previousPressedY) {
-      rectRubber.y = yCurrent;
-      rectRubber.height = previousPressedY - yCurrent;
-    } else {
-      rectRubber.y = previousPressedY;
-      rectRubber.height = yCurrent - previousPressedY;
-    }
-  }
-
   void mouseEntered(long time, int x, int y) {
     hoverOff();
     timeCurrent = time;
@@ -519,7 +507,7 @@ public class ActionManager {
     checkPointOrAtomClicked(x, y, modifiers, clickCount);
   }
 
-  protected void mouseMoved(long time, int x, int y, int modifiers) {
+  void mouseMoved(long time, int x, int y, int modifiers) {
     hoverOff();
     timeCurrent = mouseMovedTime = time;
     mouseMovedX = xCurrent = x;
@@ -533,7 +521,7 @@ public class ActionManager {
   }
 
   void mouseWheel(long time, int rotation, int mods) {
-    if (!viewer.getDisplay().hasFocus())
+    if (viewer.isApplet() && !viewer.getDisplay().hasFocus())
       return;
     // sun bug? noted by Charles Xie that wheeling on a Java page
     // effected inappropriate wheeling on this Java component
@@ -644,14 +632,6 @@ public class ActionManager {
     }
   }
 
-  private boolean isRubberBandSelect(int action) {
-    return rubberbandSelectionMode && 
-        (  isBound(action, ACTION_selectToggle)
-        || isBound(action, ACTION_selectOr)
-        || isBound(action, ACTION_selectAndNot)
-        );
-  }
-
   void mouseDragged(long time, int x, int y, int mods) {
     setMouseMode();
     int deltaX = x - previousDragX;
@@ -663,6 +643,37 @@ public class ActionManager {
     int action = Binding.getMouseAction(pressedCount, mods);
     dragGesture.add(action, x, y, time);
     checkAction(action, x, y, deltaX, deltaY, time, 1);
+  }
+
+  private boolean isRubberBandSelect(int action) {
+    return rubberbandSelectionMode && 
+        (  isBound(action, ACTION_selectToggle)
+        || isBound(action, ACTION_selectOr)
+        || isBound(action, ACTION_selectAndNot)
+        );
+  }
+
+  Rectangle getRubberBand() {
+    if (!rubberbandSelectionMode || rectRubber.x == Integer.MAX_VALUE)
+      return null;
+    return rectRubber;
+  }
+
+  private void calcRectRubberBand() {
+    if (xCurrent < previousPressedX) {
+      rectRubber.x = xCurrent;
+      rectRubber.width = previousPressedX - xCurrent;
+    } else {
+      rectRubber.x = previousPressedX;
+      rectRubber.width = xCurrent - previousPressedX;
+    }
+    if (yCurrent < previousPressedY) {
+      rectRubber.y = yCurrent;
+      rectRubber.height = previousPressedY - yCurrent;
+    } else {
+      rectRubber.y = previousPressedY;
+      rectRubber.height = yCurrent - previousPressedY;
+    }
   }
 
   private void checkAction(int action, int x, int y, int deltaX, int deltaY,
@@ -894,7 +905,7 @@ public class ActionManager {
     }
   }
 
-  private void checkMotion(int cursor) {
+  protected void checkMotion(int cursor) {
     viewer.setCursor(cursor);
     viewer.setInMotion(true);
   }
@@ -1118,21 +1129,26 @@ public class ActionManager {
     rubberbandSelectionMode = false;
     switch (pickingStyleSelect) {
     case JmolConstants.PICKINGSTYLE_SELECT_PFAAT:
-      if (binding.getName() != "Pfaat")
-        binding = pfaatBinding = (pfaatBinding == null ? new PfaatBinding() : pfaatBinding);
+      if (binding.getName() != "Pfaat") 
+        setBinding(pfaatBinding = (pfaatBinding == null ? new PfaatBinding() : pfaatBinding));
       break;
     case JmolConstants.PICKINGSTYLE_SELECT_DRAG:
       if (binding.getName() != "Drag")
-        binding = dragBinding = (dragBinding == null ? new DragBinding() : dragBinding);
+        setBinding(dragBinding = (dragBinding == null ? new DragBinding() : dragBinding));
       rubberbandSelectionMode = true;
       break;
     case JmolConstants.PICKINGSTYLE_SELECT_RASMOL:
       if (binding.getName() != "Rasmol")
-        binding = rasmolBinding = (rasmolBinding == null ? new RasmolBinding() : rasmolBinding);
+        setBinding(rasmolBinding = (rasmolBinding == null ? new RasmolBinding() : rasmolBinding));
       break;
     default:
-      binding = jmolBinding;
+      if (binding != jmolBinding)
+        setBinding(jmolBinding);
     }
+  }
+
+  protected void setBinding(Binding newBinding) {
+    binding = newBinding;
   }
   
   int getPickingStyle() {

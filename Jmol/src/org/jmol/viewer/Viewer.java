@@ -236,8 +236,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean jvm11orGreater = false;
   private boolean jvm12orGreater = false;
   private boolean jvm14orGreater = false;
+  private boolean multiTouchSparsh = false;
 
-  public Viewer(Component display, JmolAdapter modelAdapter) {
+  private Viewer(Component display, JmolAdapter modelAdapter, String commandOptions) {
+    // use allocateViewer
     if (Logger.debugging) {
       Logger.debug("Viewer constructor " + this);
     }
@@ -252,6 +254,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         && strJavaVersion.compareTo("1.1.5") <= 0 && "Mac OS".equals(strOSName)));
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
+    multiTouchSparsh = (commandOptions != null && commandOptions.contains("-multitouch-sparshui"));
+    boolean isSimulatedMultiTouch = (multiTouchSparsh && commandOptions.contains("-multitouch-sparshui-simulated"));
     stateManager = new StateManager(this);
     g3d = new Graphics3D(display);
     colorManager = new ColorManager(this, g3d);
@@ -260,7 +264,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager = new TransformManager11(this);
     selectionManager = new SelectionManager(this);
     if (display != null) {
-      actionManager = new ActionManager(this);
+      if (multiTouchSparsh)
+        actionManager = new ActionManagerMT(this, isSimulatedMultiTouch);
+      else
+        actionManager = new ActionManager(this);
       if (jvm14orGreater)
         mouseManager = new MouseManager14(display, this, actionManager);
       else if (jvm11orGreater)
@@ -314,7 +321,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                           String fullName, URL documentBase,
                                           URL codeBase, String commandOptions,
                                           JmolStatusListener statusListener) {
-    Viewer viewer = new Viewer(display, modelAdapter);
+    Viewer viewer = new Viewer(display, modelAdapter, commandOptions);
     viewer.setAppletContext(fullName, documentBase, codeBase, commandOptions);
     viewer.setJmolStatusListener(statusListener);
     return viewer;
@@ -1613,8 +1620,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setModeMouse(int modeMouse) {
     // call before setting viewer=null
-    if (haveDisplay)
-      mouseManager.setModeMouse(modeMouse);
+    if (haveDisplay && modeMouse == JmolConstants.MOUSE_NONE)
+      mouseManager.dispose();
     if (modeMouse == JmolConstants.MOUSE_NONE) {
       // applet is being destroyed
       clearScriptQueue();

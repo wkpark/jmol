@@ -35,7 +35,7 @@ public abstract class MouseManager implements KeyListener {
 
   protected Viewer viewer;
   private ActionManager actionManager;
-  
+
   abstract boolean handleOldJvm10Event(Event e);
 
   MouseManager(Component display, Viewer viewer, ActionManager actionManager) {
@@ -54,29 +54,28 @@ public abstract class MouseManager implements KeyListener {
   void removeMouseListeners14() {
   }
 
-  void setModeMouse(int modeMouse) {
-    if (modeMouse == JmolConstants.MOUSE_NONE) {
-      Component display = viewer.getDisplay();
-      if (display == null)
-        return;
-      actionManager.clear();
-      removeMouseListeners11();
-      removeMouseListeners14();
-      display.removeKeyListener(this);
-    }
+  void dispose() {
+    Component display = viewer.getDisplay();
+    if (display == null)
+      return;
+    actionManager.dispose();
+    removeMouseListeners11();
+    removeMouseListeners14();
+    display.removeKeyListener(this);
   }
 
   private String keyBuffer = "";
-  
+
   private void clearKeyBuffer() {
     if (keyBuffer.length() == 0)
       return;
     keyBuffer = "";
     if (viewer.getBooleanProperty("showKeyStrokes", true))
-      viewer.evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo \"\"");
+      viewer
+          .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo \"\"");
   }
 
-  private void addKeyBuffer(char ch){
+  private void addKeyBuffer(char ch) {
     if (ch == 10) {
       sendKeyBuffer();
       return;
@@ -88,23 +87,28 @@ public abstract class MouseManager implements KeyListener {
       keyBuffer += ch;
     }
     if (viewer.getBooleanProperty("showKeyStrokes", true))
-      viewer.evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo " + Escape.escape("\0" + keyBuffer));
+      viewer
+          .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
+              + Escape.escape("\0" + keyBuffer));
   }
-  
+
   private void sendKeyBuffer() {
-     String kb = keyBuffer;
-     if (viewer.getBooleanProperty("showKeyStrokes", true))
-       viewer.evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo " + Escape.escape(keyBuffer));
-     clearKeyBuffer();
-     viewer.script(kb);
+    String kb = keyBuffer;
+    if (viewer.getBooleanProperty("showKeyStrokes", true))
+      viewer
+          .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
+              + Escape.escape(keyBuffer));
+    clearKeyBuffer();
+    viewer.script(kb);
   }
-  
+
   public void keyTyped(KeyEvent ke) {
     if (viewer.getDisablePopupMenu())
       return;
     char ch = ke.getKeyChar();
     int modifiers = ke.getModifiers() & Binding.CTRL_ALT;
-    //System.out.println(ch + " " + (0+ch) + " " + modifiers + " " + CTRL + " " + ALT);
+    // System.out.println(ch + " " + (0+ch) + " " + modifiers + " " + CTRL + " "
+    // + ALT);
     if (modifiers != 0) {
       switch (ch) {
       case (char) 11:
@@ -124,10 +128,10 @@ public abstract class MouseManager implements KeyListener {
         clearKeyBuffer();
         viewer.refresh(3, "showkey");
       }
-      return;        
+      return;
     }
     if (!viewer.getBooleanProperty("allowKeyStrokes"))
-        return;
+      return;
     addKeyBuffer(ch);
   }
 
@@ -140,7 +144,7 @@ public abstract class MouseManager implements KeyListener {
   }
 
   protected void processKeyEvent(KeyEvent ke) {
-    //System.out.println("processKeyEvent"+ke);
+    // System.out.println("processKeyEvent"+ke);
   }
 
   void mouseEntered(long time, int x, int y) {
@@ -155,7 +159,7 @@ public abstract class MouseManager implements KeyListener {
     clearKeyBuffer();
     actionManager.setMouseMode();
   }
-  
+
   void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
     clearKeyBuffer();
     actionManager.mouseClicked(time, x, y, modifiers, clickCount);

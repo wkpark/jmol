@@ -31,18 +31,15 @@ import org.jmol.viewer.JmolConstants;
 public class Interface {
 
   public static Object getOptionInterface(String name) {
-    try {
-      name = JmolConstants.CLASSBASE_OPTIONS + name;
-      return Class.forName(name).newInstance();
-    } catch (Exception e) {
-      Logger.error("Interface.java Error creating instance for " + name + ": \n" + e.getMessage());
-      return null;
-    }
+    return getInterface(JmolConstants.CLASSBASE_OPTIONS + name);
   }
 
   public static Object getApplicationInterface(String name) {
+    return getInterface("org.openscience.jmol.app." + name);
+  }
+
+  public static Object getInterface(String name) {
     try {
-      name = "org.openscience.jmol.app." + name;
       return Class.forName(name).newInstance();
     } catch (Exception e) {
       Logger.error("Interface.java Error creating instance for " + name + ": \n" + e.getMessage());

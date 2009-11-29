@@ -48,10 +48,9 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
   
   ActionManagerMT(Viewer viewer, boolean isSimulated) {
     super(viewer);
-    
-    // testing only:
-    isSimulated = true;
-    Logger.error("ActionManagerMT -- for now just using touch simulation.\nPress CTRL-LEFT and then draw two traces on the window.");
+
+    if (isSimulated)
+      Logger.error("ActionManagerMT -- for now just using touch simulation.\nPress CTRL-LEFT and then draw two traces on the window.");
     
     Component display = viewer.getDisplay();
     adapter = (JmolSparshAdapter) Interface

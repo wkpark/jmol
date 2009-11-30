@@ -177,14 +177,13 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
     case ZOOM_EVENT:
       float scale = pt.z;
       if (scale == -1 || scale == 1) {
-        previousDragX = (int) pt.x;
-        previousDragY = (int) pt.y;
-        mouseWheel(time, (int) scale, Binding.WHEEL);
+        pt.z = Float.NaN;
+        zoomByFactor((int)scale, (int) pt.x, (int) pt.y);
       }
       break;
     case ROTATE_EVENT:
       checkMotion(Viewer.CURSOR_MOVE);
-      viewer.rotateZBy((int) pt.z);
+      viewer.rotateZBy((int) pt.z, (int) pt.x, (int) pt.y);
       break;
     case DRAG_EVENT:
       if (iData == 2) {

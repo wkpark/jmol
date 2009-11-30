@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import javax.vecmath.Vector3f;
 
+import org.jmol.util.Logger;
 import org.jmol.viewer.ActionManagerMT;
 
 import com.sparshui.common.Event;
@@ -181,7 +182,8 @@ public class TwoPointGesture extends StandardDynamicGesture {
         _myType = ActionManagerMT.ZOOM_GESTURE;
       }
     }
-    // TODO scale and rotation values
+    if (Logger.debugging)
+      Logger.debug("TwoPointGesture type=" + _myType + " cos:" + cos01 + "/" + cos02 + "/" + cos12);
   }
 
   private boolean updateCentroid() {

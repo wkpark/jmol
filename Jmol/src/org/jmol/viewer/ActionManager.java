@@ -581,7 +581,8 @@ public class ActionManager {
     timeCurrent = time;
     xCurrent = x;
     yCurrent = y;
-    boolean dragRelease = (previousPressedX != x || previousPressedY != y);
+    boolean dragRelease = (pressedCount == 1 && 
+        (previousPressedX != x || previousPressedY != y));
     viewer.setInMotion(false);
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
     int action = Binding.getMouseAction(pressedCount, mods);
@@ -744,19 +745,15 @@ public class ActionManager {
       } else if (Math.abs(deltaX) > 5 * Math.abs(deltaY)) {
         //      if (deltaX < 0 && deltaY > deltaX || deltaX > 0 && deltaY < deltaX)
         checkMotion(Viewer.CURSOR_MOVE);
-        viewer.rotateZBy(-deltaX);
+        viewer.rotateZBy(-deltaX, Integer.MAX_VALUE, Integer.MAX_VALUE);
       }
       return;
     } else if (isBound(action, ACTION_wheelZoom)) {
-      checkMotion(Viewer.CURSOR_ZOOM);
-      if (deltaY == 0)
-        return;
-      float zoomFactor = (float) Math.pow(ZOOM_FACTOR, deltaY);
-      viewer.zoomByFactor(zoomFactor);
+      zoomByFactor(deltaY, Integer.MAX_VALUE, Integer.MAX_VALUE);
       return;
     } else if (isBound(action, ACTION_rotateZ)) {
       checkMotion(Viewer.CURSOR_MOVE);
-      viewer.rotateZBy(-deltaX);
+      viewer.rotateZBy(-deltaX, Integer.MAX_VALUE, Integer.MAX_VALUE);
       return;
     }
     if (viewer.getSlabEnabled()) {
@@ -773,6 +770,13 @@ public class ActionManager {
         return;
       }
     }
+  }
+
+  protected void zoomByFactor(int dz, int x, int y) {
+    checkMotion(Viewer.CURSOR_ZOOM);
+    if (dz == 0)
+      return;
+    viewer.zoomByFactor((float) Math.pow(ZOOM_FACTOR, dz), x, y);
   }
 
   private boolean checkUserAction(int action, int x, int y, 

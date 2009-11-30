@@ -871,12 +871,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refresh(2, statusManager.syncingMouse ? "Mouse: zoomBy " + pixels : "");
   }
 
-  void zoomByFactor(float factor) {
+  void zoomByFactor(float factor, int x, int y) {
     // MouseManager.mouseWheel
     if (mouseEnabled)
-      transformManager.zoomByFactor(factor);
-    refresh(2, statusManager.syncingMouse ? "Mouse: zoomByFactor " + factor
-        : "");
+      transformManager.zoomByFactor(factor, x, y);
+    refresh(2, !statusManager.syncingMouse ? "" : "Mouse: zoomByFactor " + factor 
+        + (x == Integer.MAX_VALUE ? "" : " " + x + " " + y));
   }
 
   void rotateXYBy(int xDelta, int yDelta) {
@@ -896,11 +896,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + yDelta  + " " + speed : "");
   }
 
-  void rotateZBy(int zDelta) {
+  void rotateZBy(int zDelta, int x, int y) {
     // mouseSinglePressDrag
     if (mouseEnabled)
-      transformManager.rotateZBy(zDelta);
-    refresh(2, statusManager.syncingMouse ? "Mouse: rotateZBy " + zDelta : "");
+      transformManager.rotateZBy(zDelta, x, y);
+    refresh(2, statusManager.syncingMouse ? "Mouse: rotateZBy " + zDelta  
+        + (x == Integer.MAX_VALUE ? "" :  " " + x + " " + y): "");
   }
 
   void rotateMolecule(int deltaX, int deltaY) {
@@ -7592,11 +7593,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     switch (tokens.length) {
     case 3:
       if (key.equals("zoomByFactor"))
-        zoomByFactor(Parser.parseFloat(tokens[2]));
+        zoomByFactor(Parser.parseFloat(tokens[2]), Integer.MAX_VALUE, Integer.MAX_VALUE);
       else if (key.equals("zoomBy"))
         zoomBy(Parser.parseInt(tokens[2]));
       else if (key.equals("rotateZBy"))
-        rotateZBy(Parser.parseInt(tokens[2]));
+        rotateZBy(Parser.parseInt(tokens[2]), Integer.MAX_VALUE, Integer.MAX_VALUE);
       break;
     case 4:
       if (key.equals("rotateXYBy"))
@@ -7609,6 +7610,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case 5:
       if (key.equals("spinXYBy"))
         spinXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]), Parser.parseFloat(tokens[4]));
+      else if (key.equals("zoomByFactor"))
+        zoomByFactor(Parser.parseFloat(tokens[2]), Parser.parseInt(tokens[3]), Parser.parseInt(tokens[4]));
+      else if (key.equals("rotateZBy"))
+        rotateZBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]), Parser.parseInt(tokens[4]));
+      break;
     }
     if (disableSend)
       setSyncDriver(StatusManager.SYNC_ENABLE);

@@ -338,7 +338,9 @@ abstract class TransformManager {
     rotateYRadians(xDelta * JmolConstants.radiansPerDegree, bsAtoms);
   }
 
-  void rotateZBy(int zDelta) {
+  void rotateZBy(int zDelta, int x, int y) {
+    if (x != Integer.MAX_VALUE && y != Integer.MAX_VALUE)
+      resetXYCenter(x, y);
     rotateZRadians((float) Math.PI * zDelta / 180);
   }
 
@@ -715,11 +717,24 @@ abstract class TransformManager {
     zoomPercentSetting = newZoomPercent;
   }
   
-  void zoomByFactor(float factor) {
+  void zoomByFactor(float factor, int x, int y) {
     if (factor <= 0)
       return;
     zoomRatio = factor;
     zoomPercentSetting *= factor;
+    resetXYCenter(x, y);
+  }
+
+  private void resetXYCenter(int x, int y) {
+    if (x == Integer.MAX_VALUE || y == Integer.MAX_VALUE)
+      return;
+    if (windowCentered)
+      viewer.setBooleanProperty("windowCentered", false);
+    transformPoint(fixedRotationCenter, pointT);
+    pointT.set(x, y, pointT.z);
+    unTransformPoint(pointT, pointT);
+    fixedTranslation.set(x, y, 0);
+    setFixedRotationCenter(pointT);
   }
 
   void zoomByPercent(float percentZoom) {

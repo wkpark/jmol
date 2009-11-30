@@ -65,7 +65,7 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
       .getInterface("com.sparshui.inputdevice.JmolTouchSimulator");
       if (simulator != null) {
         Logger.info("ActionManagerMT simulating SparshUI");
-        simulator.initialize(display);
+        simulator.startSimulator(display);
       }
     }
     setBinding(binding);

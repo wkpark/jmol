@@ -4,7 +4,7 @@ import java.awt.Component;
 
 public interface JmolTouchSimulatorInterface {
 
-  public abstract boolean initialize(Component display);
+  public abstract boolean startSimulator(Component display);
 
   public abstract void toggleMode();
 

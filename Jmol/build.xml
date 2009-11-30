@@ -549,6 +549,8 @@ support for assertions (which were introduced in 1.4).
       <fileset dir="${applet.classes.dir}" >
         <include name="**/*" />
         <exclude name="org/jmol/export/**/*" />
+        <exclude name="org/jmol/multitouch/**/*" />
+        <exclude name="com/sparshui/**/*" />
       </fileset>
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
@@ -673,7 +675,7 @@ support for assertions (which were introduced in 1.4).
 
       <!-- changes to this must be replicated below for the signed applet -->
       <indexjars>
-      	<!-- no export here - this is the unsigned applet -->
+      	<!-- no export or multitouch here - this is the unsigned applet -->
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Console.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Popup.jar" />
@@ -718,6 +720,20 @@ support for assertions (which were introduced in 1.4).
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+
+    <jar destfile="${jmol.applet.build.dir}/JmolApplet_MultiTouch.jar.temp"
+    	manifest="manifest/appletMonolithic.txt" index="true" >
+      <fileset dir="${applet.classes.dir}" >
+        <include name="org/jmol/multitouch/**" />
+        <include name="com/sparshui/**" />
+      </fileset>
+      <fileset dir="${appletjars.dir}" includes="**/*"/>
+    </jar>
+  	<signjar jar="${jmol.applet.build.dir}/JmolApplet_MultiTouch.jar.temp"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_MultiTouch.jar"
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+    <delete  file="${jmol.applet.build.dir}/JmolApplet_MultiTouch.jar.temp" />
 
     <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Popup.jar"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar"
@@ -818,6 +834,7 @@ support for assertions (which were introduced in 1.4).
       <indexjars>
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Console.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_MultiTouch.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Quantum.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersCifPdb.jar" />

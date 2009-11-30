@@ -30,6 +30,15 @@ org/jmol/minimize/forcefield/*.java
 org/jmol/modelset/*.java
 org/jmol/modelsetbio/*.java
 
+org/jmol/multitouch/sparshui/*.java
+com/sparshui/client/*.java
+com/sparshui/common/*.java
+com/sparshui/common/messages/events/*.java
+com/sparshui/common/utils/*.java
+com/sparshui/gestures/*.java
+com/sparshui/inputdevice/*.java
+com/sparshui/server/*.java
+
 org/jmol/popup/*.java
 org/jmol/quantum/*.java
 org/jmol/script/*.java

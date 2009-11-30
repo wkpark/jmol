@@ -24,6 +24,23 @@ import com.sparshui.gestures.StandardDynamicGesture;
  * about the ID of the incoming points from the input device but instead
  * operating from position on the screen.
  * 
+ * ZOOM IN:    <---- x ----->  (at any angle)
+ * ZOOM OUT:   ----> x <-----  (at any angle)  
+ * 
+ * ROTATE CW:    ^        |
+ *               |   x    |    (at any angle)
+ *               |        V
+ *    
+ * ROTATE CCW:   |        ^
+ *               |   x    |    (at any angle)
+ *               V        |
+ *    
+ * 2-point drag:
+ * 
+ *      --------->  
+ *     x             (Jmol will recognize horizontal as "next frame")
+ *      --------->    
+ *    
  * It should work with any simple two-point touchpad.
  * 
  * Bob Hanson 11/29/2009

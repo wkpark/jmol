@@ -283,6 +283,12 @@ final public class Graphics3D implements JmolRendererInterface {
       endRendering();
   }
   
+  public void setNewWindowParametersForExport() {
+    windowWidth = newWindowWidth;
+    windowHeight = newWindowHeight;
+    setWidthHeight(false);
+  }
+
   private void setWidthHeight(boolean isAntialiased) {
     width = windowWidth;
     height = windowHeight;
@@ -2859,5 +2865,4 @@ final public class Graphics3D implements JmolRendererInterface {
   public short[] getBgColixes(short[] bgcolixes) {
     return bgcolixes;
   }
-
 }

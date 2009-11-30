@@ -74,10 +74,11 @@ final public class Export3D implements JmolRendererInterface {
       return false;
     }
     this.g3d = g3d;
+    exporter.setRenderer(this);
+    g3d.setNewWindowParametersForExport();
+    slab = g3d.getSlab();
     width = g3d.getRenderWidth();
     height = g3d.getRenderHeight();
-    slab = g3d.getSlab();
-    exporter.setRenderer(this);
     return exporter.initializeOutput(viewer, g3d, output);
   }
 

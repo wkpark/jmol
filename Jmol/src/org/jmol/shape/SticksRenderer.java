@@ -77,6 +77,8 @@ public class SticksRenderer extends ShapeRenderer {
     mad = bond.getMad();
     atomA = bond.getAtom1();
     atomB = bond.getAtom2();
+    if (isGenerator)
+      System.out.println("Sticksrenderer");
     if (!atomA.isInFrame() || !atomB.isInFrame()
         || !g3d.isInDisplayRange(atomA.screenX, atomA.screenY)
         || !g3d.isInDisplayRange(atomB.screenX, atomB.screenY)

@@ -693,7 +693,6 @@ public class Token {
   final static int allconnected  = misc | 5;// new
   final static int angstroms     = misc | 6;// new
   final static int anisotropy    = misc | 7;// new
-  final static int applet        = misc | 8;// new
   final static int arc           = misc | 9 | expression;// new
   final static int area          = misc | 10;// new
   final static int aromatic      = misc | 11 | predefinedset;// new
@@ -1375,7 +1374,6 @@ public class Token {
     "allconnected", new Token(allconnected),
     "angstroms", new Token(angstroms),
     "anisotropy", new Token(anisotropy),
-    "applet", new Token(applet),
     "arc", new Token(arc),
     "area", new Token(area),
     "aromatic", new Token(aromatic),

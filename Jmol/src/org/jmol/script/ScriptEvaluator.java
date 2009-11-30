@@ -7442,7 +7442,10 @@ public class ScriptEvaluator {
       return;
     }
     tok = tokAt(1);
-    if (tok == Token.applet) {
+    if (tok != Token.string)
+      error(ERROR_filenameExpected);
+    filename = parameterAsString(1);
+    if (filename.equalsIgnoreCase("applet")) {
       // script APPLET x "....."
       String appID = parameterAsString(2);
       theScript = parameterExpression(3, 0, "_script", false).toString();
@@ -7456,10 +7459,7 @@ public class ScriptEvaluator {
         if (!appID.equals("*"))
           return;
       }
-    } else if (tok != Token.string) {
-      error(ERROR_filenameExpected);
     } else {
-      filename = parameterAsString(1);
       theScript = null;
       tok = tokAt(statementLength - 1);
       doStep = (tok == Token.step);

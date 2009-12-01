@@ -289,7 +289,8 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public boolean modelHasVibrationVectors(int modelIndex);
 
   abstract public int getModelCount();
-  abstract public int getDisplayModelIndex(); // can return -2 - modelIndex if a background model is displayed
+  abstract public int getDisplayModelIndex();
+  abstract public BitSet getVisibleFramesBitSet();
   abstract public int getAtomCount();
   abstract public int getBondCount(); // NOT THE REAL BOND COUNT -- just an array maximum
   abstract public int getGroupCount();

@@ -355,17 +355,24 @@ public class Dipoles extends Shape {
     System.out.println("Unkown dipole property! " + Token.nameOf(tok));
   }
 
-  public Object getProperty(String property, int index) {
-    if (property.startsWith("checkID:")) {
-      // returns FIRST match
-      String key = property.substring(8).toUpperCase();
+  public boolean getProperty(String property, Object[] data) {
+    if (property == "checkID") {
+      String key = ((String) data[0]).toUpperCase();
       boolean isWild = TextFormat.isWild(key);
       for (int i = dipoleCount; --i >= 0;) {
-        String id = dipoles[i].thisID.toUpperCase();
-        if (id.equals(key) || isWild && TextFormat.isMatch(id, key, true, true))
-          return id;
+        String id = dipoles[i].thisID;
+        if (id.equalsIgnoreCase(key) || isWild
+            && TextFormat.isMatch(id.toUpperCase(), key, true, true)) {
+          data[1] = id;
+          return true;
+        }
       }
+      return false;
     }
+    return false;
+  }
+  
+  public Object getProperty(String property, int index) {
     if (property.equals("list")) {
       return getShapeState();
     }

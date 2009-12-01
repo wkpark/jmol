@@ -97,7 +97,6 @@ public class Draw extends MeshCollection {
   private boolean isRotated45;
   private boolean isCrossed;
   private boolean isValid;
-  private boolean isIntersect;
   private boolean noHead;
   private int indicatedModelIndex = -1;
   private int[] modelInfo;
@@ -138,6 +137,7 @@ public class Draw extends MeshCollection {
       vData = new Vector();
       modelCount = viewer.getModelCount();
       bsAllModels = null;
+      intersectID = null;
       setPropertySuper("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
       setPropertySuper("init", value, bs);
       return;
@@ -154,12 +154,14 @@ public class Draw extends MeshCollection {
     }
 
     if ("intersect" == propertyName) {
-      isIntersect = true;
+      intersectID = (String) value;
       return;
     }
     
     if ("lineData" == propertyName) {
       lineData = new Vector();
+      if (indicatedModelIndex < 0)
+        indicatedModelIndex = viewer.getCurrentModelIndex();
       float[] fdata = (float[]) value;
       int n = fdata.length / 6;
       for (int i = 0, pt = 0; i < n; i++)
@@ -182,11 +184,11 @@ public class Draw extends MeshCollection {
 
     if ("planedef" == propertyName) {
       plane = (Point4f) value;
-      if (isCircle || isArc) {
+      if (intersectID != null)
+        return;
+     if (isCircle || isArc)
         isPlane = true;
-      }
-      if (!isIntersect)
-        vData.add(new Object[] { new Integer(PT_COORD), new Point3f(Float.NaN, Float.NaN, Float.NaN) });
+      vData.add(new Object[] { new Integer(PT_COORD), new Point3f(Float.NaN, Float.NaN, Float.NaN) });
       return;
     }
 
@@ -298,10 +300,6 @@ public class Draw extends MeshCollection {
 
     if ("identifier" == propertyName) {
       String thisID = (String) value;
-      if (isIntersect) {
-        intersectID = thisID;
-        return;
-      }
       int meshIndex = getIndexFromName(thisID);
       if (meshIndex >= 0) {
         vData.add(new Object[] { new Integer(PT_IDENTIFIER),
@@ -408,15 +406,27 @@ public class Draw extends MeshCollection {
     }    
   }
 
-public Object getProperty(String property, int index) {
+  public boolean getProperty(String property, Object[] data) {
+    if (property == "getCenter") {
+      String id = (String) data[0];
+      int index = ((Integer) data[1]).intValue();
+      data[2] = getSpinCenter(id, index, Integer.MIN_VALUE);
+      return (data[2] != null);
+    }
+    if (property == "getSpinAxis") {
+      String id = (String) data[0];
+      int index = ((Integer) data[1]).intValue();
+      data[2] =  getSpinAxis(id, index);
+      return (data[2] != null);
+    }
+    return super.getProperty(property, data);
+  }
+
+  public Object getProperty(String property, int index) {
     if (property == "command")
       return getDrawCommand(thisMesh);
     if (property == "type")
       return new Integer(thisMesh == null ? JmolConstants.DRAW_NONE : thisMesh.drawType);
-    if (property.indexOf("getCenter:") == 0)
-      return getSpinCenter(property.substring(10), index, Integer.MIN_VALUE);
-    if (property.indexOf("getSpinAxis:") == 0)
-      return getSpinAxis(property.substring(12), index);
     return super.getProperty(property, index);
   }
 
@@ -466,38 +476,33 @@ public Object getProperty(String property, int index) {
     thisMesh.clear("draw");
     thisMesh.diameter = diameter;
     thisMesh.width = width;
-    if (isIntersect) {
-      thisMesh.setCenter(-1);
-      return setIntersectData();
-    }
-    if (lineData != null) {
-      thisMesh.lineData = lineData;
-      thisMesh.setCenter(-1);
-      return lineData.size() > 0;
-    }
-      
-    int nData = vData.size();
-    if (nData == 0)
+    if (intersectID != null)
+      setIntersectData();
+    if (lineData == null ? vData.size() == 0 : lineData.size() == 0)
       return false;
-    if (indicatedModelIndex < 0
+    if (lineData != null || indicatedModelIndex < 0
         && (isFixed || isArrow || isCurve || isCircle || isCylinder || modelCount == 1)) {
       // make just ONE copy 
       // arrows and curves simply can't be handled as
       // multiple frames yet
-      thisMesh.isFixed = isFixed;
-      thisMesh.modelIndex = viewer.getDisplayModelIndex();
+      thisMesh.isFixed = (lineData == null);
+      thisMesh.modelIndex = (lineData == null ? viewer.getCurrentModelIndex() : indicatedModelIndex);
       if (thisMesh.modelIndex < 0)
         thisMesh.modelIndex = 0;
       if (isFixed && !isArrow && !isCurve && modelCount > 1)
         thisMesh.modelIndex = -1;
-      thisMesh.setPolygonCount(1);
       thisMesh.ptCenters = null;
       thisMesh.modelFlags = null;
       thisMesh.drawTypes = null;
-      thisMesh.drawVertexCounts = null;
-      if (setPoints(-1, -1))
-        setPoints(-1, nPoints);
-      setPolygon(0); 
+      thisMesh.drawVertexCounts = null;      
+      if (lineData == null) {
+        thisMesh.setPolygonCount(1);      
+        if (setPoints(-1, -1))
+          setPoints(-1, nPoints);
+        setPolygon(0); 
+      } else {
+        thisMesh.lineData = lineData;
+      }
     } else {
       // multiple copies, one for each model involved
       thisMesh.modelIndex = -1;
@@ -543,13 +548,17 @@ public Object getProperty(String property, int index) {
     return true;
   }
 
-  private boolean setIntersectData() {
-    if (plane == null)
-      return false;
-    thisMesh.lineData = new Vector();
-    viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "intersection",
-        new Object[] { intersectID, plane, thisMesh.lineData });
-    return (thisMesh.lineData.size() > 0);
+  private void setIntersectData() {
+    if (plane != null) {
+      Vector vData = new Vector();
+      Object[] data = new Object[] { intersectID, plane, vData, null };
+      viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "intersectPlane",
+          data);
+      if (vData.size() == 0)
+        return;
+      indicatedModelIndex = ((Integer)data[3]).intValue();
+      lineData = vData;
+    }
   }
 
   private void addPoint(Point3f newPt, int iModel) {

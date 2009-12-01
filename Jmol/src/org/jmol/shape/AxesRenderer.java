@@ -62,7 +62,8 @@ public class AxesRenderer extends FontLineShapeRenderer {
     int labelPtr = 0;
     SymmetryInterface[] cellInfos = modelSet.getCellInfos();
     boolean isXY = (axes.axisXY.z != 0);
-    int modelIndex = viewer.getDisplayModelIndex();
+    int modelIndex = viewer.getCurrentModelIndex();
+    // includes check here for background model present
     if (viewer.isJmolDataFrame(modelIndex))
       return;
     if (axesMode == JmolConstants.AXES_MODE_UNITCELL

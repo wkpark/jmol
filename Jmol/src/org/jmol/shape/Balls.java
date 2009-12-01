@@ -122,8 +122,6 @@ public class Balls extends AtomShape {
  }
   
  public void setVisibilityFlags(BitSet bs) {
-    int displayModelIndex = viewer.getDisplayModelIndex();
-    boolean isOneFrame = (displayModelIndex >= 0); 
     boolean showHydrogens = viewer.getShowHydrogens();
     BitSet bsDeleted = viewer.getDeletedAtoms();
     if (bsDeleted == null)
@@ -136,8 +134,7 @@ public class Balls extends AtomShape {
       if (bsDeleted.get(i) || !showHydrogens && atom.getElementNumber() == 1)
         continue;
       int modelIndex = atom.getModelIndex();
-      if (!isOneFrame && bs.get(modelIndex) 
-          || modelIndex == displayModelIndex) { 
+      if (bs.get(modelIndex)) { 
         atom.setShapeVisibility(JmolConstants.ATOM_IN_FRAME, true);
         if (atom.getMadAtom() != 0 &&  !modelSet.isAtomHidden(i))
           atom.setShapeVisibility(myVisibilityFlag, true);

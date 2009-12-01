@@ -358,7 +358,35 @@ public abstract class MeshCollection extends Shape {
     }
   }
  
- public Object getProperty(String property, int index) {
+  public boolean getProperty(String property, Object[] data) {
+    if (property == "checkID") {
+      String key = ((String) data[0]).toUpperCase();
+      boolean isWild = TextFormat.isWild(key);
+      for (int i = meshCount; --i >= 0;) {
+        String id = meshes[i].thisID;
+        if (id.equalsIgnoreCase(key) || isWild
+            && TextFormat.isMatch(id.toUpperCase(), key, true, true)) {
+          data[1] = id;
+          return true;
+        }
+      }
+      return false;
+    }
+    if (property == "getCenter") {
+      String id = (String) data[0];
+      int index = ((Integer)data[1]).intValue();
+      Mesh m;
+      if (index < 0 || (m = getMesh(id)) == null 
+          || m.vertices == null
+          || m.vertexCount <= index)
+          return false;
+      data[2] = m.vertices[index];
+      return true;
+    }
+    return false;
+  }
+
+  public Object getProperty(String property, int index) {
    Mesh m;
     if (property == "count") {
       int n = 0;
@@ -402,24 +430,8 @@ public abstract class MeshCollection extends Shape {
       }
       return sb.toString();
     }
-    if (property.startsWith("checkID:")) {
-      // returns FIRST match
-      String key = property.substring(8).toUpperCase();
-      boolean isWild = TextFormat.isWild(key);
-      for (int i = meshCount; --i >= 0;) {
-        String id = meshes[i].thisID.toUpperCase();
-        if (id.equals(key) || isWild && TextFormat.isMatch(id, key, true, true))
-          return id;
-      }
-    }
     if (property == "vertices")
       return getVertices(currentMesh);
-    if (property.startsWith("getCenter:"))
-      return (index < 0 
-          || (m = getMesh(property.substring(10))) == null 
-          || m.vertices == null
-          || m.vertexCount <= index ? null 
-          : m.vertices[index]);
     return null;
   }
 

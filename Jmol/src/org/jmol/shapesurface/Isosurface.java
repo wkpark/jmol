@@ -430,16 +430,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   public boolean getProperty(String property, Object[] data) {
-    if (property == "intersection") {
-      String id = (String) data[0];
-      IsosurfaceMesh mesh = (IsosurfaceMesh) getMesh(id);
+    if (property == "intersectPlane") {
+      IsosurfaceMesh mesh = (IsosurfaceMesh) getMesh((String) data[0]);
       if (mesh == null)
         return false;
-      Point4f plane = (Point4f) data[1];
-      Vector vData = (Vector) data[2];
-      return mesh.getIntersection(plane, vData);
+      data[3] = new Integer(mesh.modelIndex);
+      return mesh.getIntersection((Point4f) data[1], (Vector) data[2]);
     }
-    return false;
+    return super.getProperty(property, data);
   }
 
   public Object getProperty(String property, int index) {
@@ -463,11 +461,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return new Float(jvxlData.cutoff);
     if (property == "plane")
       return jvxlData.jvxlPlane;
-    if (property.startsWith("meshData:")) {
-      MeshData meshData = new MeshData();
-      fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
-      return meshData;
-    }
     if (property == "jvxlFileData" || property == "jvxlFileDataXml") {
       MeshData meshData = null;
       jvxlData.asXml = (property == "jvxlFileDataXml");

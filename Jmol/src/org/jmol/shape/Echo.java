@@ -158,20 +158,24 @@ public class Echo extends TextShape {
     super.setProperty(propertyName, value, null);
   }
 
-  public Object getProperty(String property, int index) {
-    if (property.startsWith("checkID:")) {
-      // returns FIRST match
-      String key = property.substring(8).toUpperCase();
+  public boolean getProperty(String property, Object[] data) {
+    if (property == "checkID") {
+      String key = ((String) data[0]).toUpperCase();
       boolean isWild = TextFormat.isWild(key);
       Enumeration e = objects.elements();
       while (e.hasMoreElements()) {
-        String id = ((Text) e.nextElement()).target.toUpperCase(); 
-        if (id.equals(key) || isWild && TextFormat.isMatch(id, key, true, true))
-          return id;
+        String id = ((Text) e.nextElement()).target;
+        if (id.equalsIgnoreCase(key) || isWild
+            && TextFormat.isMatch(id.toUpperCase(), key, true, true)) {
+          data[1] = id;
+          return true;
+        }
       }
+      return false;
     }
-    return null;
+    return super.getProperty(property, data);
   }
+
   public String getShapeState() {
     StringBuffer s = new StringBuffer("\n  set echo off;\n");
     Enumeration e = objects.elements();

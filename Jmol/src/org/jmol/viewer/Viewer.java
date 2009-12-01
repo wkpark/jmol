@@ -2946,7 +2946,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public SymmetryInterface getCurrentUnitCell() {
-    return modelSet.getUnitCell(getDisplayModelIndex());
+    return modelSet.getUnitCell(getCurrentModelIndex());
   }
 
   public void setCurrentUnitCellOffset(int offset) {
@@ -3238,10 +3238,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getDisplayModelIndex() {
-    // modified to indicate if there is also a background model index
-    int modelIndex = animationManager.currentModelIndex;
-    int backgroundIndex = getBackgroundModelIndex();
-    return (backgroundIndex >= 0 ? -2 - modelIndex : modelIndex);
+    // abandoned
+    return getCurrentModelIndex();
   }
 
   public boolean haveFileSet() {
@@ -3255,10 +3253,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         .getModelNumberDotted(modelIndex));
   }
 
-  public int getBackgroundModelIndex() {
-    return animationManager.backgroundModelIndex;
-  }
-  
   void setFrameVariables(int firstModelIndex, int lastModelIndex) {
     global.setParameterValue("_firstFrame",
         getModelNumberDotted(firstModelIndex));
@@ -7006,11 +7000,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Vector3f getModelDipole() {
-    return modelSet.getModelDipole(getDisplayModelIndex());
+    return modelSet.getModelDipole(getCurrentModelIndex());
   }
 
   public Vector3f calculateMolecularDipole() {
-    return modelSet.calculateMolecularDipole(getDisplayModelIndex());
+    return modelSet.calculateMolecularDipole(getCurrentModelIndex());
   }
 
   public float getDipoleScale() {

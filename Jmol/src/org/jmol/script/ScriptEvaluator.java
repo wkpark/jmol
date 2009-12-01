@@ -5779,6 +5779,7 @@ public class ScriptEvaluator {
   private String setObjectProperty() throws ScriptException {
     String s = "";
     String id = getShapeNameParameter(2);
+    Object[] data = new Object[] { id, null };
     if (isSyntaxCheck)
       return "";
     int iTok = iToken;
@@ -5786,7 +5787,7 @@ public class ScriptEvaluator {
     boolean isWild = TextFormat.isWild(id);
     for (int iShape = JmolConstants.SHAPE_DIPOLES;;) {
       if (iShape != JmolConstants.SHAPE_MO
-          && viewer.getShapeProperty(iShape, "checkID:" + id) != null) {
+          && viewer.getShapeProperty(iShape, "checkID", data)) {
         setShapeProperty(iShape, "thisID", id);
         switch (tokCommand) {
         case Token.delete:
@@ -7414,17 +7415,17 @@ public class ScriptEvaluator {
   }
 
   private Point3f getObjectCenter(String axisID, int index) {
-    Point3f pt = (Point3f) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
-        "getCenter:" + axisID, index);
-    if (pt == null)
-      pt = (Point3f) viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
-          "getCenter:" + axisID, index);
-    return pt;
+    Object[] data = new Object[] { axisID, new Integer(index), null };
+    return (viewer
+        .getShapeProperty(JmolConstants.SHAPE_DRAW, "getCenter", data)
+        || viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getCenter",
+            data) ? (Point3f) data[2] : null);
   }
 
   private Vector3f getDrawObjectAxis(String axisID) {
-    return (Vector3f) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
-        "getSpinAxis:" + axisID);
+    Object[] data = new Object[] { axisID, null };
+    return (viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
+        "getSpinAxis", data) ? (Vector3f) data[2] : null);
   }
 
   private void script(int tok) throws ScriptException {
@@ -8410,8 +8411,8 @@ public class ScriptEvaluator {
   }
 
   private void configuration() throws ScriptException {
-    if (!isSyntaxCheck && viewer.getDisplayModelIndex() <= -2)
-      error(ERROR_backgroundModelError, "\"CONFIGURATION\"");
+    //if (!isSyntaxCheck && viewer.getDisplayModelIndex() <= -2)
+    //  error(ERROR_backgroundModelError, "\"CONFIGURATION\"");
     BitSet bsConfigurations;
     if (statementLength == 1) {
       bsConfigurations = viewer.setConformation();
@@ -11305,7 +11306,7 @@ public class ScriptEvaluator {
   private String getMoJvxl(int ptMO) throws ScriptException {
     // 0: all; Integer.MAX_VALUE: current;
     viewer.loadShape(JmolConstants.SHAPE_MO);
-    int modelIndex = viewer.getDisplayModelIndex();
+    int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
       error(ERROR_multipleModelsNotOK, "MO isosurfaces");
     Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
@@ -11437,8 +11438,13 @@ public class ScriptEvaluator {
         havePoints = true;
         break;
       case Token.intersection:
-        isIntersect = true;
         propertyName = "intersect";
+        if (tokAt(++i) != Token.dollarsign)
+          error(ERROR_invalidArgument);
+        propertyValue = objectNameParameter(++i);
+        i = iToken;
+        isIntersect = true;
+        havePoints = true;
         break;
       case Token.bitset:
       case Token.expressionBegin:
@@ -11582,7 +11588,7 @@ public class ScriptEvaluator {
         break;
       case Token.dollarsign:
         // $drawObject[m]
-        if (!isIntersect && (tokAt(i + 2) == Token.leftsquare || isFrame)) {
+        if ((tokAt(i + 2) == Token.leftsquare || isFrame)) {
           Point3f pto = center = centerParameter(i);
           i = iToken;
           propertyName = "coord";
@@ -12145,7 +12151,7 @@ public class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
     if (modelIndex < 0) {
-      modelIndex = viewer.getDisplayModelIndex();
+      modelIndex = viewer.getCurrentModelIndex();
       if (modelIndex < 0)
         error(ERROR_multipleModelsNotOK, "MO isosurfaces");
     }
@@ -12269,7 +12275,7 @@ public class ScriptEvaluator {
     int nX, nY, nZ, ptX, ptY;
     BitSet bs;
     String str = null;
-    int modelIndex = (isSyntaxCheck ? 0 : viewer.getDisplayModelIndex());
+    int modelIndex = (isSyntaxCheck ? 0 : viewer.getCurrentModelIndex());
     if (!isSyntaxCheck)
       viewer.setCursor(Viewer.CURSOR_WAIT);
     boolean idSeen = (initIsosurface(iShape) != null);

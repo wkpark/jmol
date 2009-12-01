@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-12-01 19:41+0100\n"
+"POT-Creation-Date: 2009-12-01 22:20+0100\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -2004,7 +2004,7 @@ msgstr "Määra Z Kiirus"
 
 #: org/jmol/viewer/ActionManager.java:55
 msgid ""
-"rotate Z (horizontal motion of mouse) or zoom (vertical motion of moouse)"
+"rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:56

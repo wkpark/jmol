@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-12-01 19:41+0100\n"
+"POT-Creation-Date: 2009-12-01 22:20+0100\n"
 "PO-Revision-Date: 2009-08-15 08:00+0000\n"
 "Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
@@ -1952,7 +1952,7 @@ msgstr "Toestand"
 
 #: org/jmol/viewer/ActionManager.java:55
 msgid ""
-"rotate Z (horizontal motion of mouse) or zoom (vertical motion of moouse)"
+"rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:56

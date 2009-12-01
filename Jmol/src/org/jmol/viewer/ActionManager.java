@@ -52,7 +52,7 @@ public class ActionManager {
     GT._("rotate"),
     GT._("zoom"),
     GT._("rotate Z"),
-    GT._("rotate Z (horizontal motion of mouse) or zoom (vertical motion of moouse)"),
+    GT._("rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"),
     GT._("translate"),
     //5
     GT._("zoom (along right edge of window)"),

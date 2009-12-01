@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-11-19 20:18+0100\n"
+"POT-Creation-Date: 2009-12-01 19:41+0100\n"
 "PO-Revision-Date: 2009-09-25 06:38+0000\n"
 "Last-Translator: Muszela Balázs <bazsi86@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -85,7 +85,7 @@ msgstr "Paraméterek &beállítása"
 msgid "&More"
 msgstr "&Továbbiak"
 
-#: org/jmol/applet/Jmol.java:657
+#: org/jmol/applet/Jmol.java:673
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -100,11 +100,11 @@ msgstr ""
 "\n"
 "További információk a http://www.jmol.org oldalon"
 
-#: org/jmol/applet/Jmol.java:903
+#: org/jmol/applet/Jmol.java:919
 msgid "File Error:"
 msgstr "Adathiba:"
 
-#: org/jmol/applet/Jmol.java:1181
+#: org/jmol/applet/Jmol.java:1197
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
@@ -1585,7 +1585,7 @@ msgid "About..."
 msgstr "Névjegy…"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1103
-#: org/jmol/script/ScriptEvaluator.java:2339
+#: org/jmol/script/ScriptEvaluator.java:2348
 msgid "bad argument count"
 msgstr "nem megfelelő argumentumszám"
 
@@ -1595,7 +1595,7 @@ msgid "invalid context for {0}"
 msgstr "érvénytelen környezet {0} számára"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1109
-#: org/jmol/script/ScriptEvaluator.java:2363
+#: org/jmol/script/ScriptEvaluator.java:2372
 msgid "command expected"
 msgstr "parancsot vártam"
 
@@ -1604,7 +1604,7 @@ msgid "{ number number number } expected"
 msgstr "{ szám szám szám } várva"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1115
-#: org/jmol/script/ScriptEvaluator.java:2372
+#: org/jmol/script/ScriptEvaluator.java:2381
 msgid "unexpected end of script command"
 msgstr "a skriptnek váratlanul lett vége"
 
@@ -1639,7 +1639,7 @@ msgid "missing END for {0}"
 msgstr "hiányzik a {0} végeleme"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1139
-#: org/jmol/script/ScriptEvaluator.java:2436
+#: org/jmol/script/ScriptEvaluator.java:2445
 msgid "number expected"
 msgstr "számot vártam"
 
@@ -1667,7 +1667,7 @@ msgid "unrecognized expression token: {0}"
 msgstr "ismeretlen kifejezés elem: {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1157
-#: org/jmol/script/ScriptEvaluator.java:2485
+#: org/jmol/script/ScriptEvaluator.java:2494
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "ismeretlen {0} paraméter"
@@ -1677,137 +1677,137 @@ msgstr "ismeretlen {0} paraméter"
 msgid "unrecognized token: {0}"
 msgstr "ismeretlen elem: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2150
+#: org/jmol/script/ScriptCompiler.java:2154
 msgid "script compiler ERROR: "
 msgstr "skript fordítási HIBA: "
 
-#: org/jmol/script/ScriptEvaluator.java:2201
-#: org/jmol/script/ScriptEvaluator.java:7527
+#: org/jmol/script/ScriptEvaluator.java:2210
+#: org/jmol/script/ScriptEvaluator.java:7544
 msgid "script ERROR: "
 msgstr "skript HIBA: "
 
-#: org/jmol/script/ScriptEvaluator.java:2333
+#: org/jmol/script/ScriptEvaluator.java:2342
 msgid "x y z axis expected"
 msgstr "x y z tengelyeket vártam"
 
-#: org/jmol/script/ScriptEvaluator.java:2336
+#: org/jmol/script/ScriptEvaluator.java:2345
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr "{0} nem megengedett látható háttérmodell mellett"
 
-#: org/jmol/script/ScriptEvaluator.java:2342
+#: org/jmol/script/ScriptEvaluator.java:2351
 msgid "Miller indices cannot all be zero."
 msgstr "A Miller-index nem lehet zéró"
 
-#: org/jmol/script/ScriptEvaluator.java:2345
+#: org/jmol/script/ScriptEvaluator.java:2354
 msgid "bad [R,G,B] color"
 msgstr "rossz RGB színkód"
 
-#: org/jmol/script/ScriptEvaluator.java:2348
+#: org/jmol/script/ScriptEvaluator.java:2357
 msgid "boolean expected"
 msgstr "logikai adatot vártam"
 
-#: org/jmol/script/ScriptEvaluator.java:2351
+#: org/jmol/script/ScriptEvaluator.java:2360
 msgid "boolean or number expected"
 msgstr "logikai adatot vagy számot vártam"
 
-#: org/jmol/script/ScriptEvaluator.java:2354
+#: org/jmol/script/ScriptEvaluator.java:2363
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "logikai értéket, számot vagy {0}-t vártam"
 
-#: org/jmol/script/ScriptEvaluator.java:2357
+#: org/jmol/script/ScriptEvaluator.java:2366
 msgid "color expected"
 msgstr "színt vártam"
 
-#: org/jmol/script/ScriptEvaluator.java:2360
+#: org/jmol/script/ScriptEvaluator.java:2369
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "egy szín vagy paletta név (Jmol, Rasmol) szükséges"
 
-#: org/jmol/script/ScriptEvaluator.java:2366
+#: org/jmol/script/ScriptEvaluator.java:2375
 msgid "{x y z} or $name or (atom expression) required"
 msgstr "{x y z} vagy $name vagy (atom kifejezés) szükséges"
 
-#: org/jmol/script/ScriptEvaluator.java:2369
+#: org/jmol/script/ScriptEvaluator.java:2378
 msgid "draw object not defined"
 msgstr "rajzobjektum nincs definiálva"
 
-#: org/jmol/script/ScriptEvaluator.java:2375
+#: org/jmol/script/ScriptEvaluator.java:2384
 msgid "valid (atom expression) expected"
 msgstr "érvényes (atom kifejezést) vártam"
 
-#: org/jmol/script/ScriptEvaluator.java:2378
+#: org/jmol/script/ScriptEvaluator.java:2387
 msgid "(atom expression) or integer expected"
 msgstr "(atom kifejezést) vagy egészt vártam"
 
-#: org/jmol/script/ScriptEvaluator.java:2381
+#: org/jmol/script/ScriptEvaluator.java:2390
 msgid "filename expected"
 msgstr "fájnevet vártam"
 
-#: org/jmol/script/ScriptEvaluator.java:2384
+#: org/jmol/script/ScriptEvaluator.java:2393
 msgid "file not found"
 msgstr "A fájl nem található"
 
-#: org/jmol/script/ScriptEvaluator.java:2387
+#: org/jmol/script/ScriptEvaluator.java:2396
 msgid "incompatible arguments"
 msgstr "összeférhetetlen argumentumok"
 
-#: org/jmol/script/ScriptEvaluator.java:2390
+#: org/jmol/script/ScriptEvaluator.java:2399
 msgid "insufficient arguments"
 msgstr "elégtelen argumentum"
 
-#: org/jmol/script/ScriptEvaluator.java:2393
+#: org/jmol/script/ScriptEvaluator.java:2402
 msgid "integer expected"
 msgstr "egészt vártam"
 
-#: org/jmol/script/ScriptEvaluator.java:2396
+#: org/jmol/script/ScriptEvaluator.java:2405
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "az egésznek a {0}-{1} tartományba kell esni"
 
-#: org/jmol/script/ScriptEvaluator.java:2399
+#: org/jmol/script/ScriptEvaluator.java:2408
 msgid "invalid argument"
 msgstr "érvénytelen argumentum"
 
-#: org/jmol/script/ScriptEvaluator.java:2402
+#: org/jmol/script/ScriptEvaluator.java:2411
 msgid "invalid parameter order"
 msgstr "érvéntelen paramétersorrend"
 
-#: org/jmol/script/ScriptEvaluator.java:2405
+#: org/jmol/script/ScriptEvaluator.java:2414
 msgid "keyword expected"
 msgstr "kulcszót vártam"
 
-#: org/jmol/script/ScriptEvaluator.java:2408
+#: org/jmol/script/ScriptEvaluator.java:2417
 msgid "no MO coefficient data available"
 msgstr "nincs MO együttható adat"
 
-#: org/jmol/script/ScriptEvaluator.java:2411
+#: org/jmol/script/ScriptEvaluator.java:2420
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "Egy 1 és {0} közé eső MO sorszám kell"
 
-#: org/jmol/script/ScriptEvaluator.java:2414
+#: org/jmol/script/ScriptEvaluator.java:2423
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "nincs MO bázis/együttható adat ebben a keretben"
 
-#: org/jmol/script/ScriptEvaluator.java:2417
+#: org/jmol/script/ScriptEvaluator.java:2426
 msgid "no MO occupancy data available"
 msgstr "nincs MO térfoglalási adat"
 
-#: org/jmol/script/ScriptEvaluator.java:2420
+#: org/jmol/script/ScriptEvaluator.java:2429
 msgid "Only one molecular orbital is available in this file"
 msgstr "Ebben a fájlban csak egy elérhető molekuláris orbitál van."
 
-#: org/jmol/script/ScriptEvaluator.java:2423
+#: org/jmol/script/ScriptEvaluator.java:2432
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "{0} megköveteli, hogy csak egy modell legyen látható"
 
-#: org/jmol/script/ScriptEvaluator.java:2426
+#: org/jmol/script/ScriptEvaluator.java:2435
 msgid "No data available"
 msgstr "Nincs adat"
 
-#: org/jmol/script/ScriptEvaluator.java:2430
+#: org/jmol/script/ScriptEvaluator.java:2439
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
@@ -1815,25 +1815,25 @@ msgstr ""
 "Nem lett részleges töltés kiolvasva a fájlból; a Jmol-nak ezekre szükségevan "
 "a MEP adatok rendereléséhez."
 
-#: org/jmol/script/ScriptEvaluator.java:2433
+#: org/jmol/script/ScriptEvaluator.java:2442
 msgid "No unit cell"
 msgstr "Nincs egységcella"
 
-#: org/jmol/script/ScriptEvaluator.java:2439
+#: org/jmol/script/ScriptEvaluator.java:2448
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "A szám csak {0} vagy {1} lehet"
 
-#: org/jmol/script/ScriptEvaluator.java:2442
+#: org/jmol/script/ScriptEvaluator.java:2451
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "A számnak {0} - {1} közé kell esni"
 
-#: org/jmol/script/ScriptEvaluator.java:2445
+#: org/jmol/script/ScriptEvaluator.java:2454
 msgid "object name expected after '$'"
 msgstr "objektumnév kell legyen a '$' után"
 
-#: org/jmol/script/ScriptEvaluator.java:2449
+#: org/jmol/script/ScriptEvaluator.java:2458
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
@@ -1842,84 +1842,84 @@ msgstr ""
 "síkot vártam -- vagy három pontot, vagy atom kifejezést vagy {0} vagy {1} "
 "vagy {2}"
 
-#: org/jmol/script/ScriptEvaluator.java:2452
+#: org/jmol/script/ScriptEvaluator.java:2461
 msgid "property name expected"
 msgstr "tulajdonságnevet vártam"
 
-#: org/jmol/script/ScriptEvaluator.java:2455
+#: org/jmol/script/ScriptEvaluator.java:2464
 #, java-format
 msgid "space group {0} was not found."
 msgstr "A {0} tércsoport nem található"
 
-#: org/jmol/script/ScriptEvaluator.java:2458
+#: org/jmol/script/ScriptEvaluator.java:2467
 msgid "quoted string expected"
 msgstr "idézőjeles stringet vártam"
 
-#: org/jmol/script/ScriptEvaluator.java:2461
+#: org/jmol/script/ScriptEvaluator.java:2470
 msgid "quoted string or identifier expected"
 msgstr "idézőjeles stringet vagy azonosítót vártam"
 
-#: org/jmol/script/ScriptEvaluator.java:2464
+#: org/jmol/script/ScriptEvaluator.java:2473
 msgid "too many rotation points were specified"
 msgstr "ez túl sok forgáspont"
 
-#: org/jmol/script/ScriptEvaluator.java:2467
+#: org/jmol/script/ScriptEvaluator.java:2476
 msgid "too many script levels"
 msgstr "túl kevés parancsfájl szint"
 
-#: org/jmol/script/ScriptEvaluator.java:2470
+#: org/jmol/script/ScriptEvaluator.java:2479
 msgid "unrecognized atom property"
 msgstr "ismeretlen atomjellemző"
 
-#: org/jmol/script/ScriptEvaluator.java:2473
+#: org/jmol/script/ScriptEvaluator.java:2482
 msgid "unrecognized bond property"
 msgstr "ismeretlen kötésjellemző"
 
-#: org/jmol/script/ScriptEvaluator.java:2476
+#: org/jmol/script/ScriptEvaluator.java:2485
 msgid "unrecognized command"
 msgstr "ismeretlen parancs"
 
-#: org/jmol/script/ScriptEvaluator.java:2479
+#: org/jmol/script/ScriptEvaluator.java:2488
 msgid "runtime unrecognized expression"
 msgstr "futási időben értelmezhetetlen kifejezés"
 
-#: org/jmol/script/ScriptEvaluator.java:2482
+#: org/jmol/script/ScriptEvaluator.java:2491
 msgid "unrecognized object"
 msgstr "ismeretlen objektum"
 
-#: org/jmol/script/ScriptEvaluator.java:2489
+#: org/jmol/script/ScriptEvaluator.java:2498
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr ""
 "ismeretlen {0} paraméter a Jmol állapot parancsfájlban (mindenképp beállítva)"
 
-#: org/jmol/script/ScriptEvaluator.java:2492
+#: org/jmol/script/ScriptEvaluator.java:2501
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "ismeretlen SHOW paraméter, használja ezt: {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2498
+#: org/jmol/script/ScriptEvaluator.java:2507
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "mit írjak? {0} vagy {1} \"fájlnév\""
 
-#: org/jmol/script/ScriptEvaluator.java:5659
+#: org/jmol/script/ScriptEvaluator.java:5672
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} kapcsolat törölve"
 
-#: org/jmol/script/ScriptEvaluator.java:5680
+#: org/jmol/script/ScriptEvaluator.java:5693
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} új kötés, {1} módosítva"
 
-#: org/jmol/script/ScriptEvaluator.java:7653
-#: org/jmol/script/ScriptEvaluator.java:7872
+#: org/jmol/script/ScriptEvaluator.java:7670
+#: org/jmol/script/ScriptEvaluator.java:7889
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atom tötölve"
 
-#: org/jmol/script/ScriptEvaluator.java:8380
+#: org/jmol/script/ScriptEvaluator.java:8397
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} hidrogénkötés"
@@ -2097,11 +2097,15 @@ msgstr ""
 msgid "reset (when clicked off the model)"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1089
+#: org/jmol/viewer/ActionManager.java:95
+msgid "simulate multi-touch using the mouse)"
+msgstr ""
+
+#: org/jmol/viewer/ActionManager.java:1237
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "válassz ki még egy atomot, hogy a modell a tengely körül forogjon"
 
-#: org/jmol/viewer/ActionManager.java:1090
+#: org/jmol/viewer/ActionManager.java:1238
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "válassz ki két atomot, hogy a modell a tengely körül forogjon"
 
@@ -2116,26 +2120,26 @@ msgstr "{0} atom elrejtve"
 msgid "{0} atoms selected"
 msgstr "{0} atom kiválasztva"
 
-#: org/jmol/viewer/Viewer.java:4022
+#: org/jmol/viewer/Viewer.java:3992
 msgid "Drag to move label"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:5015
+#: org/jmol/viewer/Viewer.java:4985
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr "HIBA: a logikai jelzőt nem lehet {0} string értékre állítani"
 
-#: org/jmol/viewer/Viewer.java:5238 org/jmol/viewer/Viewer.java:5418
+#: org/jmol/viewer/Viewer.java:5208 org/jmol/viewer/Viewer.java:5388
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr "HIBA: a logikai jelzőt nem lehet {0} számértékre állítani"
 
-#: org/jmol/viewer/Viewer.java:5943
+#: org/jmol/viewer/Viewer.java:5913
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "HIBA: ezt a változót nem lehet logikai értékre állítani: {0}"
 
-#: org/jmol/viewer/Viewer.java:7384
+#: org/jmol/viewer/Viewer.java:7359
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "a vágólap nem érhető el, használjon aláírt Java kisalkalmazást"
 

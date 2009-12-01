@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-09-04 22:32+0200\n"
+"POT-Creation-Date: 2009-12-01 19:41+0100\n"
 "PO-Revision-Date: 2008-10-01 21:54+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -80,27 +80,31 @@ msgid "script file to execute or '-' for System.in"
 msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:170
+msgid "use multitouch interface (requires \"sparshui\" parameter"
+msgstr ""
+
+#: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:176
+#: org/openscience/jmol/app/JmolApp.java:183
 msgid "Jmol script to execute AFTER -s option"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:185
+#: org/openscience/jmol/app/JmolApp.java:192
 msgid "property=value"
 msgstr "속성=값"
 
-#: org/openscience/jmol/app/JmolApp.java:188
+#: org/openscience/jmol/app/JmolApp.java:195
 msgid "supported options are given below"
 msgstr "지원되는 옵션은 아래에 주어져있음"
 
-#: org/openscience/jmol/app/JmolApp.java:194
+#: org/openscience/jmol/app/JmolApp.java:201
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "창 너비 x 높이, 예) . {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:204
+#: org/openscience/jmol/app/JmolApp.java:211
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -108,30 +112,30 @@ msgstr ""
 "JPG 이미지 화질 (1-100: 기본값 75) 혹은 PNG 이미지 압축률 (0-9: 기본값 2, 최"
 "대 압축률 9)"
 
-#: org/openscience/jmol/app/JmolApp.java:209
+#: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:223
+#: org/openscience/jmol/app/JmolApp.java:230
 msgid "For example:"
 msgstr "예:"
 
-#: org/openscience/jmol/app/JmolApp.java:229
+#: org/openscience/jmol/app/JmolApp.java:236
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:454
+#: org/openscience/jmol/app/JmolApp.java:466
 #, fuzzy
 msgid "Executing script 1..."
 msgstr "스크립트 실행..."
 
-#: org/openscience/jmol/app/JmolApp.java:464
+#: org/openscience/jmol/app/JmolApp.java:476
 #, fuzzy
 msgid "Executing script file..."
 msgstr "스크립트 실행..."
 
-#: org/openscience/jmol/app/JmolApp.java:485
+#: org/openscience/jmol/app/JmolApp.java:497
 #, fuzzy
 msgid "Executing script 2..."
 msgstr "스크립트 실행..."
@@ -183,7 +187,7 @@ msgid "Variables"
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:312
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:306
 msgid "Clear"
 msgstr "지움"
 
@@ -321,7 +325,7 @@ msgstr "{0} 콜렉션의 맨 마지막으로"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "BufferedReader로 읽기 실패: {0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:189
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:196
 msgid "Delete atoms"
 msgstr "원자 지움"
 
@@ -932,76 +936,76 @@ msgstr "처음 위치로 돌아가기"
 msgid "Jmol Help"
 msgstr "Jmol 도움말"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:126
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:123
 msgid "Initializing 3D display..."
 msgstr "3D 장면 초기화..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:160
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:155
 msgid "Initializing Preferences..."
 msgstr "환경 초기화..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:162
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:157
 msgid "Initializing Recent Files..."
 msgstr "최근 파일 초기화..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:164
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:159
 msgid "Initializing Script Window..."
 msgstr "스크립트 창 초기화..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:188
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:182
 msgid "Building Command Hooks..."
 msgstr "명령 후크 구성..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:199
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:193
 msgid "Building Menubar..."
 msgstr "메뉴바 구성..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:215
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:209
 msgid "Starting display..."
 msgstr "디스플레이 시작..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:254
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:248
 msgid "Setting up Drag-and-Drop..."
 msgstr "드랙-앤-드롭 셋업..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:275
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:269
 msgid "Launching main frame..."
 msgstr "기본 프레임 적제..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:304
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:298
 #, fuzzy
 msgid "Jmol Console"
 msgstr "Jmol 자바 콘솔"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:326
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:320
 msgid "Could not create ConsoleTextArea: "
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:343
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:337
 msgid "Creating main window..."
 msgstr "기본 창 구성..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:344
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:338
 msgid "Initializing Swing..."
 msgstr "Swing 초기화..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:356
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:350
 msgid "Initializing Jmol..."
 msgstr "Jmol 초기화..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:468
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:462
 msgid "Closing Jmol..."
 msgstr "Jmol 닫기..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1088
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1082
 msgid "Open URL"
 msgstr "URL 열기"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1089
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1083
 msgid "Enter URL of molecular model"
 msgstr "분자 모델의 URL을 넣으세요"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1260
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1254
 msgid "IO Exception:"
 msgstr "IO 예외"
 
@@ -1361,121 +1365,121 @@ msgstr ""
 msgid "Insert more information for {0} here."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:109
+#: org/openscience/jmol/app/webexport/WebPanel.java:110
 msgid "A web page containing Jmol applets"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:133
+#: org/openscience/jmol/app/webexport/WebPanel.java:134
 msgid "double-click and drag to reorder"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:137
+#: org/openscience/jmol/app/webexport/WebPanel.java:138
 msgid "Add Present Jmol State as Instance..."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:142
+#: org/openscience/jmol/app/webexport/WebPanel.java:143
 msgid "Show Selected"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:144
+#: org/openscience/jmol/app/webexport/WebPanel.java:145
 msgid "Delete Selected"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:175
+#: org/openscience/jmol/app/webexport/WebPanel.java:176
 msgid "Jmol Instances:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:195
+#: org/openscience/jmol/app/webexport/WebPanel.java:196
 msgid "Help/Instructions"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:202
-#: org/openscience/jmol/app/webexport/WebPanel.java:210
+#: org/openscience/jmol/app/webexport/WebPanel.java:203
+#: org/openscience/jmol/app/webexport/WebPanel.java:211
 msgid "Cartoon of Page"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:215
+#: org/openscience/jmol/app/webexport/WebPanel.java:216
 msgid "Save HTML as..."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:225
+#: org/openscience/jmol/app/webexport/WebPanel.java:226
 msgid "Relative server path to jar files:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:231
+#: org/openscience/jmol/app/webexport/WebPanel.java:232
 msgid "Relative local path to jar files:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:237
+#: org/openscience/jmol/app/webexport/WebPanel.java:238
 msgid "Author (your name):"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:244
+#: org/openscience/jmol/app/webexport/WebPanel.java:245
 msgid "Browser window title for this web page:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:298
+#: org/openscience/jmol/app/webexport/WebPanel.java:299
 msgid "Give the occurrence of Jmol a name:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:318
+#: org/openscience/jmol/app/webexport/WebPanel.java:319
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:328
+#: org/openscience/jmol/app/webexport/WebPanel.java:329
 #, java-format
 msgid "added Instance {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:331
+#: org/openscience/jmol/app/webexport/WebPanel.java:332
 #, java-format
 msgid "updated Instance {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:368
+#: org/openscience/jmol/app/webexport/WebPanel.java:369
 msgid "Select a directory to create or an HTML file to save"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:386
+#: org/openscience/jmol/app/webexport/WebPanel.java:387
 msgid "Call to FileWriter unsuccessful."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:424
+#: org/openscience/jmol/app/webexport/WebPanel.java:425
 #, java-format
 msgid "Using directory {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:425
+#: org/openscience/jmol/app/webexport/WebPanel.java:426
 msgid "adding JmolPopIn.js"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:434
+#: org/openscience/jmol/app/webexport/WebPanel.java:435
 #, java-format
 msgid "adding {0}.png"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:455
+#: org/openscience/jmol/app/webexport/WebPanel.java:456
 #, java-format
 msgid "adding {0}.spt"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:486
+#: org/openscience/jmol/app/webexport/WebPanel.java:487
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:489
+#: org/openscience/jmol/app/webexport/WebPanel.java:490
 #, java-format
 msgid "creating {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:513
+#: org/openscience/jmol/app/webexport/WebPanel.java:514
 #, java-format
 msgid ""
 "Could not find or open:\n"
 "{0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:515
+#: org/openscience/jmol/app/webexport/WebPanel.java:516
 #, java-format
 msgid ""
 "copying\n"
@@ -1483,7 +1487,7 @@ msgid ""
 "         to"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:521
+#: org/openscience/jmol/app/webexport/WebPanel.java:522
 msgid "compressing large data file to"
 msgstr ""
 

@@ -24,6 +24,8 @@
 package org.jmol.shapespecial;
 
 
+import java.util.Vector;
+
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
@@ -66,10 +68,14 @@ public class DrawRenderer extends MeshRenderer {
   }
   
   protected void render2(boolean isGenerator) {
-    boolean isDrawPickMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
     drawType = dmesh.drawType;
     diameter = dmesh.diameter;
     width = dmesh.width;
+    if (mesh.lineData != null) {
+      drawLineData(mesh.lineData);
+      return;
+    }
+    boolean isDrawPickMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
     int nPoints = vertexCount;
     boolean isCurved = (
         (drawType == JmolConstants.DRAW_CURVE 
@@ -210,7 +216,7 @@ public class DrawRenderer extends MeshRenderer {
       }
     } else if (isSegments) {
       for (int i = 0; i < nPoints - 1; i++)
-        drawLine(i, i + 1, true);
+        drawLine(i, i + 1, true, vertices[i], vertices[i + 1], screens[i], screens[i + 1]);
     }
     
     if (isDrawPickMode && !isGenerator) {
@@ -218,6 +224,17 @@ public class DrawRenderer extends MeshRenderer {
     }
   }
   
+  private void drawLineData(Vector lineData) {
+    if (diameter == 0)
+      diameter = 3;
+    for (int i = lineData.size(); --i >= 0;) {
+      Point3f[] pts = (Point3f[]) lineData.get(i);
+      viewer.transformPoint(pts[0], pt1i);
+      viewer.transformPoint(pts[1], pt2i);
+      drawLine(-1, -2, true, pts[0], pts[1], pt1i, pt2i);
+    }
+  }
+
   private void renderXyArrow(int ptXY) {
     int ptXYZ = 1 - ptXY;
     Point3f[] arrowPt = new Point3f[2];

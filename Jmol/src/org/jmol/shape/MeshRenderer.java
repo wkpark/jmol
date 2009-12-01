@@ -51,6 +51,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
 
   protected final Point3i pt1i = new Point3i();
   protected final Point3i pt2i = new Point3i();
+  protected final Point3i pt3i = new Point3i();
 
   protected void render() {
     antialias = g3d.isAntialiased();
@@ -70,27 +71,31 @@ public abstract class MeshRenderer extends ShapeRenderer {
 
     transform();
     render2(isGenerator);
-    viewer.freeTempScreens(screens);
+    if (screens != null)
+      viewer.freeTempScreens(screens);
     return true;
   }
   
   private boolean setVariables() {
     slabbing = viewer.getSlabEnabled();
-    vertices = mesh.vertices; //because DRAW might have a text associated with it
+    vertices = mesh.vertices; // because DRAW might have a text associated with
+                              // it
     colix = mesh.colix;
-    if (mesh == null || mesh.visibilityFlags == 0  
-        || (vertexCount = mesh.vertexCount) == 0
-        || mesh.polygonCount == 0)
+    if (mesh.visibilityFlags == 0)
       return false;
-    normixes = mesh.normixes;
-    if (normixes == null || vertices == null)
-      return false;
-    //this can happen when user switches windows 
-    // during a surface calculation
-    
-    frontOnly = !slabbing && mesh.frontOnly && !mesh.isTwoSided;
-    screens = viewer.allocTempScreens(vertexCount);
-    transformedVectors = g3d.getTransformedVertexVectors();
+    if (mesh.lineData == null) {
+      if ((vertexCount = mesh.vertexCount) == 0 || mesh.polygonCount == 0)
+        return false;
+      normixes = mesh.normixes;
+      if (normixes == null || vertices == null)
+        return false;
+      // this can happen when user switches windows
+      // during a surface calculation
+
+      frontOnly = !slabbing && mesh.frontOnly && !mesh.isTwoSided;
+      screens = viewer.allocTempScreens(vertexCount);
+      transformedVectors = g3d.getTransformedVertexVectors();
+    }
     isTranslucent = Graphics3D.isColixTranslucent(mesh.colix);
     return true;
   }
@@ -151,7 +156,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
       int iC = vertexIndexes[2];
       if (iB == iC) {
         //line or point
-        drawLine(iA, iB, fill);
+        drawLine(iA, iB, fill, vertices[iA], vertices[iB], 
+            screens[iA], screens[iB]);
         continue;
       }
       switch (vertexIndexes.length) {
@@ -201,7 +207,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
       renderExport();
   }
 
-  protected void drawLine(int iA, int iB, boolean fill) {
+  protected void drawLine(int iA, int iB, boolean fill, 
+                          Point3f vA, Point3f vB, 
+                          Point3i sA, Point3i sB) {
     byte endCap = (iA != iB  && !fill ? Graphics3D.ENDCAPS_NONE 
         : width < 0 || iA != iB && isTranslucent ? Graphics3D.ENDCAPS_FLAT
         : Graphics3D.ENDCAPS_SPHERICAL);
@@ -209,24 +217,20 @@ public abstract class MeshRenderer extends ShapeRenderer {
       diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 7 : 3);
     if (width == 0) {
       if (iA == iB)
-        g3d.fillSphereCentered(diameter, screens[iA]);
+        g3d.fillSphereCentered(diameter, sA);
       else
-        g3d.fillCylinder(endCap, diameter, screens[iA], screens[iB]);
+        g3d.fillCylinder(endCap, diameter, sA, sB);
     } else {
-      pt1f.set(vertices[iA]);
-      pt1f.add(vertices[iB]);
+      pt1f.set(vA);
+      pt1f.add(vB);
       pt1f.scale(1f / 2f);
       viewer.transformPoint(pt1f, pt1i);      
       diameter = viewer.scaleToScreen(pt1i.z,
           (int) (Math.abs(width) * 1000));
       if (diameter == 0)
         diameter = 1;
-      viewer.transformPoint(vertices[iA], pt1f);
-      viewer.transformPoint(vertices[iB], pt2f);
-      if (mesh.scale != 0 && mesh.haveXyPoints) {
-        
-      }
-
+      viewer.transformPoint(vA, pt1f);
+      viewer.transformPoint(vB, pt2f);
       g3d.fillCylinderBits(endCap, diameter, pt1f, pt2f);
     }    
   }

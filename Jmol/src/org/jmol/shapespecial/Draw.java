@@ -97,6 +97,7 @@ public class Draw extends MeshCollection {
   private boolean isRotated45;
   private boolean isCrossed;
   private boolean isValid;
+  private boolean isIntersect;
   private boolean noHead;
   private int indicatedModelIndex = -1;
   private int[] modelInfo;
@@ -107,6 +108,8 @@ public class Draw extends MeshCollection {
   private BitSet bsAllModels;
   
   private Vector vData;
+  private String intersectID;
+  private Vector lineData;
   private final static int PT_COORD = 1;
   private final static int PT_IDENTIFIER = 2;
   private final static int PT_BITSET = 3;
@@ -150,6 +153,23 @@ public class Draw extends MeshCollection {
       return;
     }
 
+    if ("intersect" == propertyName) {
+      isIntersect = true;
+      return;
+    }
+    
+    if ("lineData" == propertyName) {
+      lineData = new Vector();
+      float[] fdata = (float[]) value;
+      int n = fdata.length / 6;
+      for (int i = 0, pt = 0; i < n; i++)
+        lineData.add(new Point3f[] {
+            new Point3f(fdata[pt++], fdata[pt++], fdata[pt++]),
+            new Point3f(fdata[pt++], fdata[pt++], fdata[pt++])
+            });
+      return;
+    }
+    
     if ("modelIndex" == propertyName) {
       //from saved state -- used to set modelVertices
       indicatedModelIndex = ((Integer) value).intValue();
@@ -165,7 +185,8 @@ public class Draw extends MeshCollection {
       if (isCircle || isArc) {
         isPlane = true;
       }
-      vData.add(new Object[] { new Integer(PT_COORD), new Point3f(Float.NaN, Float.NaN, Float.NaN) });
+      if (!isIntersect)
+        vData.add(new Object[] { new Integer(PT_COORD), new Point3f(Float.NaN, Float.NaN, Float.NaN) });
       return;
     }
 
@@ -277,6 +298,10 @@ public class Draw extends MeshCollection {
 
     if ("identifier" == propertyName) {
       String thisID = (String) value;
+      if (isIntersect) {
+        intersectID = thisID;
+        return;
+      }
       int meshIndex = getIndexFromName(thisID);
       if (meshIndex >= 0) {
         vData.add(new Object[] { new Integer(PT_IDENTIFIER),
@@ -338,6 +363,7 @@ public class Draw extends MeshCollection {
       }
       nPoints = -1; // for later scaling
       vData = null;
+      lineData = null;
       return;
     }
     
@@ -438,6 +464,18 @@ public Object getProperty(String property, int index) {
     if (thisMesh == null)
       allocMesh(null);
     thisMesh.clear("draw");
+    thisMesh.diameter = diameter;
+    thisMesh.width = width;
+    if (isIntersect) {
+      thisMesh.setCenter(-1);
+      return setIntersectData();
+    }
+    if (lineData != null) {
+      thisMesh.lineData = lineData;
+      thisMesh.setCenter(-1);
+      return lineData.size() > 0;
+    }
+      
     int nData = vData.size();
     if (nData == 0)
       return false;
@@ -491,10 +529,9 @@ public Object getProperty(String property, int index) {
         }
       }
     }
-    thisMesh.diameter = diameter;
     thisMesh.isVector = isVector;
     thisMesh.nohead = noHead;
-    thisMesh.width = (thisMesh.drawType == JmolConstants.DRAW_CYLINDER || 
+    thisMesh.width= (thisMesh.drawType == JmolConstants.DRAW_CYLINDER || 
         thisMesh.drawType == JmolConstants.DRAW_CIRCULARPLANE ? -Math.abs(width) : width);
     thisMesh.setCenter(-1);
     if (offset != null)
@@ -504,6 +541,15 @@ public Object getProperty(String property, int index) {
       htObjects.put(thisMesh.thisID, thisMesh);
     }
     return true;
+  }
+
+  private boolean setIntersectData() {
+    if (plane == null)
+      return false;
+    thisMesh.lineData = new Vector();
+    viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "intersection",
+        new Object[] { intersectID, plane, thisMesh.lineData });
+    return (thisMesh.lineData.size() > 0);
   }
 
   private void addPoint(Point3f newPt, int iModel) {
@@ -1136,12 +1182,12 @@ public Object getProperty(String property, int index) {
   }
 
   private String getDrawCommand(DrawMesh mesh, int iModel) {
-    if (mesh.drawType == JmolConstants.DRAW_NONE
-       || mesh.drawVertexCount == 0 && mesh.drawVertexCounts == null)
+    if (mesh.drawType == JmolConstants.DRAW_NONE || mesh.lineData == null
+        && mesh.drawVertexCount == 0 && mesh.drawVertexCounts == null)
       return "";
     StringBuffer str = new StringBuffer();
     if (!mesh.isFixed && iModel >= 0 && modelCount > 1)
-      appendCmd(str,"frame " + viewer.getModelNumberDotted(iModel));
+      appendCmd(str, "frame " + viewer.getModelNumberDotted(iModel));
     str.append("  draw ID ").append(Escape.escape(mesh.thisID));
     if (mesh.isFixed)
       str.append(" fixed");
@@ -1149,55 +1195,70 @@ public Object getProperty(String property, int index) {
       iModel = 0;
     if (mesh.nohead)
       str.append(" noHead");
-    if (mesh.scale != 1 && (mesh.haveXyPoints 
-        || mesh.drawType == JmolConstants.DRAW_CIRCLE
-        || mesh.drawType == JmolConstants.DRAW_ARC))
+    if (mesh.scale != 1
+        && (mesh.haveXyPoints || mesh.drawType == JmolConstants.DRAW_CIRCLE || mesh.drawType == JmolConstants.DRAW_ARC))
       str.append(" scale ").append(mesh.scale);
     if (mesh.width != 0)
-      str.append(" diameter ").append((mesh.drawType == JmolConstants.DRAW_CYLINDER ? Math.abs(mesh.width)
-          : mesh.drawType == JmolConstants.DRAW_CIRCULARPLANE ? Math.abs(mesh.width * mesh.scale) : mesh.width));
+      str.append(" diameter ").append(
+          (mesh.drawType == JmolConstants.DRAW_CYLINDER ? Math.abs(mesh.width)
+              : mesh.drawType == JmolConstants.DRAW_CIRCULARPLANE ? Math
+                  .abs(mesh.width * mesh.scale) : mesh.width));
     else if (mesh.diameter > 0)
       str.append(" diameter ").append(mesh.diameter);
-    int nVertices = mesh.drawVertexCount > 0 ? mesh.drawVertexCount 
-      : mesh.drawVertexCounts[iModel >= 0 ? iModel : 0];
-    switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
-    case JmolConstants.DRAW_LINE_SEGMENT:
-      str.append(" LINE");
-      break;
-    case JmolConstants.DRAW_ARC:
-      str.append(mesh.isVector ? " ARROW ARC" : " ARC");
-      break;
-    case JmolConstants.DRAW_ARROW:
-      str.append(mesh.isVector ? " VECTOR" : " ARROW");
-      break;
-    case JmolConstants.DRAW_CIRCLE:
-      str.append(" CIRCLE");
-      break;
-    case JmolConstants.DRAW_CURVE:
-      str.append(" CURVE");
-      break;
-    case JmolConstants.DRAW_CIRCULARPLANE:
-    case JmolConstants.DRAW_CYLINDER:
-      str.append(" CYLINDER");
-      break;
-    case JmolConstants.DRAW_POINT:
-      nVertices = 1; // because this might be multiple points
-      break;
-    case JmolConstants.DRAW_LINE:
-      nVertices = 2; // because this might be multiple lines
-      break;
-    }
-    if (mesh.modelIndex < 0 && !mesh.isFixed) {
-      for (int i = 0; i < modelCount; i++)
-        if (isPolygonDisplayable(mesh, i)) {
-          if (nVertices == 0)
-            nVertices = mesh.drawVertexCounts[i];
-          str.append(" [ " + i);
-          str.append(getVertexList(mesh, i, nVertices));
-          str.append(" ] ");
-        }
+    if (mesh.lineData != null) {
+      str.append("  lineData [");
+      int n = mesh.lineData.size();
+      for (int j = 0; j < n;) {
+        Point3f[] pts = (Point3f[]) mesh.lineData.get(j);
+        str.append(Escape.escape(pts[0]));
+        str.append(" ");
+        str.append(Escape.escape(pts[1]));
+        if (++j < n)
+          str.append(", ");
+      }
+      str.append("]");
     } else {
-      str.append(getVertexList(mesh, iModel, nVertices));
+      int nVertices = mesh.drawVertexCount > 0 ? mesh.drawVertexCount
+          : mesh.drawVertexCounts[iModel >= 0 ? iModel : 0];
+      switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
+      case JmolConstants.DRAW_LINE_SEGMENT:
+        str.append(" LINE");
+        break;
+      case JmolConstants.DRAW_ARC:
+        str.append(mesh.isVector ? " ARROW ARC" : " ARC");
+        break;
+      case JmolConstants.DRAW_ARROW:
+        str.append(mesh.isVector ? " VECTOR" : " ARROW");
+        break;
+      case JmolConstants.DRAW_CIRCLE:
+        str.append(" CIRCLE");
+        break;
+      case JmolConstants.DRAW_CURVE:
+        str.append(" CURVE");
+        break;
+      case JmolConstants.DRAW_CIRCULARPLANE:
+      case JmolConstants.DRAW_CYLINDER:
+        str.append(" CYLINDER");
+        break;
+      case JmolConstants.DRAW_POINT:
+        nVertices = 1; // because this might be multiple points
+        break;
+      case JmolConstants.DRAW_LINE:
+        nVertices = 2; // because this might be multiple lines
+        break;
+      }
+      if (mesh.modelIndex < 0 && !mesh.isFixed) {
+        for (int i = 0; i < modelCount; i++)
+          if (isPolygonDisplayable(mesh, i)) {
+            if (nVertices == 0)
+              nVertices = mesh.drawVertexCounts[i];
+            str.append(" [ " + i);
+            str.append(getVertexList(mesh, i, nVertices));
+            str.append(" ] ");
+          }
+      } else {
+        str.append(getVertexList(mesh, iModel, nVertices));
+      }
     }
     if (mesh.title != null) {
       String s = "";
@@ -1306,7 +1367,7 @@ public Object getProperty(String property, int index) {
     modelCount = viewer.getModelCount();
     for (int i = 0; i < meshCount; i++) {
       DrawMesh mesh = dmeshes[i];
-      if (mesh.vertexCount == 0)
+      if (mesh.vertexCount == 0 && mesh.lineData == null)
         continue;
       s.append(getDrawCommand(mesh, mesh.modelIndex));
       if (!mesh.visible)

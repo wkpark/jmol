@@ -104,7 +104,7 @@ class IsoSolventReader extends AtomDataReader {
   public void selectPocket(boolean doExclude) {
     if (meshDataServer == null)
       return; //can't do this without help!
-    meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+    meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     //mark VERTICES for proximity to surface
     Point3f[] v = meshData.vertices;
     int nVertices = meshData.vertexCount;
@@ -142,7 +142,7 @@ class IsoSolventReader extends AtomDataReader {
     updateSurfaceData();
     if (!doExclude)
       meshData.surfaceSet = null;
-    meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
+    meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
     meshData = new MeshData();
   }
   

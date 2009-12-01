@@ -3618,11 +3618,13 @@ public class ScriptEvaluator {
 
   private float[] floatParameterSet(int i, int nMin, int nMax)
       throws ScriptException {
-    if (tokAt(i) == Token.leftbrace || tokAt(i) == Token.leftsquare)
-      i++;
-    Vector v = new Vector();
     int tok = tokAt(i);
-    switch (tok) {
+    boolean haveBrace = (tok == Token.leftbrace);
+    boolean haveSquare = (tok == Token.leftsquare);
+    Vector v = new Vector();
+    if (haveBrace || haveSquare)
+      i++;
+    switch (tokAt(i)) {
     case Token.string:
       break;  
     case Token.point3f:
@@ -3641,9 +3643,9 @@ public class ScriptEvaluator {
     default:
       for (int j = 0; j < nMax; j++) {
         tok = tokAt(i);
-        if (tok == Token.rightbrace || tok == Token.rightsquare) {
+        if (haveBrace && tok == Token.rightbrace || haveSquare && tok == Token.rightsquare) {
           break;
-        } else if (tok == Token.comma) {
+        } else if (tok == Token.comma || tok == Token.leftbrace || tok == Token.rightbrace) {
           i++;
           j--;
           continue;
@@ -3651,7 +3653,10 @@ public class ScriptEvaluator {
         v.add(new Float(floatParameter(i++)));
       }
     }
-    if (tokAt(i) == Token.rightbrace || tokAt(i) == Token.rightsquare)
+    if (haveBrace && tokAt(i) != Token.rightbrace
+        || haveSquare && tokAt(i) != Token.rightsquare)
+      error(ERROR_invalidArgument);
+    if (haveBrace || haveSquare)
       i++;
     iToken = i - 1;
     int n = v.size();
@@ -11342,6 +11347,7 @@ public class ScriptEvaluator {
     boolean isInitialized = false;
     boolean isSavedState = false;
     boolean isTranslucent = false;
+    boolean isIntersect = false;
     boolean isFrame = false;
     float translucentLevel = Float.MAX_VALUE;
     int colorArgb = Integer.MIN_VALUE;
@@ -11372,8 +11378,8 @@ public class ScriptEvaluator {
         }
         center = (i + 1 == statementLength ? null : centerParameter(++i));
         // draw ID xxx symop [n or "x,-y,-z"] [optional {center}]
-        BitSet bsAtoms = (tokAt(i) == Token.bitset || tokAt(i) == Token.expressionBegin ?
-            expression(i) : null);
+        BitSet bsAtoms = (tokAt(i) == Token.bitset
+            || tokAt(i) == Token.expressionBegin ? expression(i) : null);
         i = iToken + 1;
         checkLength(iToken + 1);
         if (!isSyntaxCheck)
@@ -11407,13 +11413,32 @@ public class ScriptEvaluator {
         havePoints = true;
         break;
       case Token.plane:
-        if (havePoints) {
+        if (havePoints || isIntersect) {
           propertyValue = planeParameter(++i);
           i = iToken;
           propertyName = "planedef";
         } else {
           propertyName = "plane";
         }
+        break;
+      case Token.hkl:
+        // miller indices hkl for use with INTERSECTION
+        if (havePoints || isIntersect) {
+          propertyName = "planedef";
+          propertyValue = hklParameter(++i);
+          i = iToken;
+          havePoints = true;
+        }
+        break;
+      case Token.linedata:
+        propertyName = "lineData";
+        propertyValue = floatParameterSet(++i, 0, Integer.MAX_VALUE);
+        i = iToken;
+        havePoints = true;
+        break;
+      case Token.intersection:
+        isIntersect = true;
+        propertyName = "intersect";
         break;
       case Token.bitset:
       case Token.expressionBegin:
@@ -11554,10 +11579,10 @@ public class ScriptEvaluator {
         propertyName = (tokAt(i) == Token.decimal ? "width" : "diameter");
         swidth = (String) propertyName
             + (tokAt(i) == Token.decimal ? " " + f : " " + ((int) f));
-        break;        
+        break;
       case Token.dollarsign:
         // $drawObject[m]
-        if (tokAt(i + 2) == Token.leftsquare || isFrame) {
+        if (!isIntersect && (tokAt(i + 2) == Token.leftsquare || isFrame)) {
           Point3f pto = center = centerParameter(i);
           i = iToken;
           propertyName = "coord";
@@ -12236,6 +12261,7 @@ public class ScriptEvaluator {
     boolean doCalcVolume = false;
     boolean isCavity = false;
     boolean isFxy = false;
+    boolean isColorMesh = false;
     float[] nlmZ = new float[5];
     float[] data = null;
     int thisSetNumber = 0;
@@ -12257,7 +12283,8 @@ public class ScriptEvaluator {
       if (isColorParam(i)) {
         if (i != signPt)
           error(ERROR_invalidParameterOrder);
-        setShapeProperty(iShape, "colorRGB", new Integer(getArgbParam(i)));
+        setShapeProperty(iShape, (isColorMesh ? "colorMesh" : "colorRGB"), 
+            new Integer(getArgbParam(i)));
         i = iToken;
         signPt = i + 1;
         idSeen = true;
@@ -12323,7 +12350,7 @@ public class ScriptEvaluator {
         }
         propertyName = "modelIndex";
         propertyValue = new Integer(modelIndex);
-        break;
+         break;
       case Token.select:
         propertyName = "select";
         propertyValue = expression(++i);
@@ -12352,6 +12379,9 @@ public class ScriptEvaluator {
             if (discreteColixes == null)
               error(ERROR_badRGBColor);
           }
+        } else if (theTok == Token.mesh) {
+          isColorMesh = true;
+          i++;
         }
         if ((theTok = tokAt(i + 1)) == Token.translucent
             || tokAt(i + 1) == Token.opaque) {

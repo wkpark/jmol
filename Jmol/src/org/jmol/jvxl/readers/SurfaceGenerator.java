@@ -869,9 +869,9 @@ public class SurfaceGenerator {
     if (meshDataServer == null) {
       meshData.getSurfaceSet();
     } else {
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
       meshData.getSurfaceSet();
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
     }
   }
 

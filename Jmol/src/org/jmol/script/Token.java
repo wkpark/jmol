@@ -765,10 +765,12 @@ public class Token {
   final static int insideout      = misc | 89;// new
   final static int interior       = misc | 90;// new
   final static int internal       = misc | 91;// new
-  public final static int jmol    = misc | 92;
+  final static int intersection   = misc | 92;// new
+  public final static int jmol    = misc | 93;
   public final static int last    = misc | 94;
   final static int left           = misc | 95;
   final static int line           = misc | 96;// new
+  final static int linedata       = misc | 97;// new
   final static int lobe           = misc | 98;// new
   final static int lonepair       = misc | 99;// new
   final static int lp             = misc | 100;// new
@@ -1426,8 +1428,10 @@ public class Token {
     "increment", new Token(increment),
     "insideout", new Token(insideout),
     "interior", new Token(interior),
+    "intersection", new Token(intersection),
     "internal", new Token(internal),
     "line", new Token(line),
+    "linedata", new Token(linedata),
     "lobe", new Token(lobe),
     "lonepair", new Token(lonepair),
     "lp", new Token(lp),

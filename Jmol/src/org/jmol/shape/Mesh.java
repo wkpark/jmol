@@ -47,6 +47,7 @@ public class Mesh {
   public short[] normixes;
   public int[][] polygonIndexes = null;
   public BitSet[] bitsets; // [0]bsSelected [1]bsIgnore [2]bsTrajectory
+  public Vector lineData;
 
   public String thisID;
   public boolean isValid = true;

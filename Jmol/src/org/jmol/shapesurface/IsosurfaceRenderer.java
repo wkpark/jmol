@@ -192,17 +192,19 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
   }
 
-  protected void renderTriangles(boolean fill, boolean iShowTriangles, boolean isGenerator) {
+  protected void renderTriangles(boolean fill, boolean iShowTriangles,
+                                 boolean isGenerator) {
     int[][] polygonIndexes = imesh.polygonIndexes;
-    colix = imesh.colix;
+    colix = (!fill && imesh.meshColix != 0 ? imesh.meshColix : imesh.colix);
     short[] vertexColixes = imesh.vertexColixes;
-    g3d.setColix(imesh.colix);
+    g3d.setColix(colix);
     boolean generateSet = isGenerator;
     if (generateSet) {
       frontOnly = false;
       bsFaces.clear();
     }
     boolean colorSolid = (vertexColixes == null || imesh.isColorSolid);
+    boolean noColor = (vertexColixes == null || !fill && imesh.meshColix != 0);
     short colix = this.colix;
     if (!colorSolid && !fill && imesh.fillTriangles
         && imesh.jvxlData.jvxlPlane != null) {
@@ -269,16 +271,21 @@ public class IsosurfaceRenderer extends MeshRenderer {
         int check = vertexIndexes[3] & 7;
         if (check == 0)
           continue;
-        if (vertexColixes == null) {
-          g3d.drawTriangle(screens[iA], screens[iB], screens[iC], check);
+        pt1i.set(screens[iA]);
+        pt2i.set(screens[iB]);
+        pt3i.set(screens[iC]);
+        pt1i.z -= 2;
+        pt2i.z -= 2;
+        pt3i.z -= 2;
+        if (noColor) {
         } else if (colorArrayed) {
-          g3d.setColix(mesh.fillTriangles ? Graphics3D.BLACK 
+          g3d.setColix(mesh.fillTriangles ? Graphics3D.BLACK
               : contourColixes[vertexIndexes[4] % contourColixes.length]);
-          g3d.drawTriangle(screens[iA], screens[iB], screens[iC], check);
         } else {
-          g3d.drawTriangle(screens[iA], colixA, screens[iB], colixB,
-              screens[iC], colixC, check);
+          g3d.drawTriangle(pt1i, colixA, pt2i, colixB, pt3i, colixC, check);
+          continue;
         }
+        g3d.drawTriangle(pt1i, pt2i, pt3i, check);
       }
     }
     if (generateSet)

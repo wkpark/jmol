@@ -503,6 +503,8 @@ public class IsosurfaceMesh extends Mesh {
 
   float[] contourValues;
   short[] contourColixes;
+  short meshColix;
+  
   public void setDiscreteColixes(float[] values, short[] colixes) {
     if (values != null)
       jvxlData.contourValues = values;
@@ -567,6 +569,53 @@ public class IsosurfaceMesh extends Mesh {
     return ht;
   }
 
+  boolean getIntersection(Point4f plane, Vector vData) {
+    for (int i = 0; i < polygonIndexes.length; i++) {
+      if (!setABC(i))
+        continue;
+      Point3f vA, vB, vC;
+      float d1 = Measure.distanceToPlane(plane, vA = vertices[iA]);
+      float d2 = Measure.distanceToPlane(plane, vB = vertices[iB]);
+      float d3 = Measure.distanceToPlane(plane, vC = vertices[iC]);
+      int test = (d1 < 0 ? 1 : 0) + (d2 < 0 ? 2 : 0) + (d3 < 0 ? 4 : 0);
+      Point3f[] pts;
+      switch (test) {
+      case 0:
+      case 7:
+      default:
+        // all on the same side
+        continue;
+      case 1:
+      case 6:
+        // BC on same side
+        pts = new Point3f[] { interpolatePoint(vA, vB, -d1, d2),
+            interpolatePoint(vA, vC, -d1, d3)};
+        break;
+      case 2:
+      case 5:
+        //AC on same side
+        pts = new Point3f[] { interpolatePoint(vB, vA, -d2, d1),
+            interpolatePoint(vB, vC, -d2, d3)};
+        break;
+      case 3:
+      case 4:
+        //AB on same side need A-C, B-C
+        pts = new Point3f[] { interpolatePoint(vC, vA, -d3, d1),
+            interpolatePoint(vC, vB, -d3, d2)};
+        break;
+      }
+      vData.add(pts);
+    }
+    return false;
+  }
+
+  private Point3f interpolatePoint(Point3f v1, Point3f v2, float d1, float d2) {
+    float f = d1 / (d1 + d2);
+    return new Point3f(v1.x + (v2.x - v1.x) * f, 
+        v1.y + (v2.y - v1.y) * f, 
+        v1.z + (v2.z - v1.z) * f);    
+  }
+  
   //private void dumpData() {
     //for (int i =0;i<10;i++) {
     //  System.out.println("P["+i+"]="+polygonIndexes[i][0]+" "+polygonIndexes[i][1]+" "+polygonIndexes[i][2]+" "+ polygonIndexes[i][3]+" "+vertices[i]);

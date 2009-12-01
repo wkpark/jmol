@@ -516,47 +516,50 @@ public abstract class MeshCollection extends Shape {
   }
 
  private void getMeshCommand(StringBuffer sb, int i) {
-   Mesh mesh = meshes[i];
-   String cmd = mesh.scriptCommand;
-   if (cmd == null)
-     return;
-   cmd = cmd.replace('\t',' ');
-   int pt = cmd.indexOf(";#");
-   //not perfect -- user may have that in a title, I suppose...
-   if (pt >= 0)
-       cmd = cmd.substring(0, pt + 1);
-   cmd = TextFormat.trim(cmd, ";") + ";";
-   if (mesh.bitsets != null)  {
-     cmd += "# "
-         + (mesh.bitsets[0] == null ? "({null})" : Escape.escape(mesh.bitsets[0]))
-         + " " + (mesh.bitsets[1] == null ? "({null})" : Escape.escape(mesh.bitsets[1]))
-         + (mesh.bitsets[2] == null ? "" : "/" + Escape.escape(mesh.bitsets[2]));
-   }
-   if (cmd.toLowerCase().indexOf(" id ") < 0 && !myType.equals("mo"))
-       cmd += "# ID=\"" + mesh.thisID + "\"";
-   if (mesh.modelIndex >= 0)
-     cmd += "# MODEL({" + mesh.modelIndex + "})";
-   if (mesh.linkedMesh != null)
-     cmd += " LINK";
-   if (mesh.data1 != null)
-     cmd = encapsulateData(cmd, mesh.data1, "");
-   if (mesh.data2 != null)
-     cmd = encapsulateData(cmd, mesh.data2, "2");
-   
-   if (mesh.modelIndex >= 0 && modelCount > 1)
-     appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
-   appendCmd(sb, cmd);
-   if (cmd.charAt(0) != '#') {
-     if (allowMesh)
-     appendCmd(sb, mesh.getState(myType));
-     if (mesh.colorCommand != null) {
-       if (!mesh.isColorSolid && Graphics3D.isColixTranslucent(mesh.colix))
-         appendCmd(sb, getColorCommand(myType, mesh.colix));
-       appendCmd(sb, mesh.colorCommand);
-     }
-     getColorState(sb, mesh);
-   }
- }
+    Mesh mesh = meshes[i];
+    String cmd = mesh.scriptCommand;
+    if (cmd == null)
+      return;
+    cmd = cmd.replace('\t', ' ');
+    int pt = cmd.indexOf(";#");
+    // not perfect -- user may have that in a title, I suppose...
+    if (pt >= 0)
+      cmd = cmd.substring(0, pt + 1);
+    cmd = TextFormat.trim(cmd, ";") + ";";
+    if (mesh.bitsets != null) {
+      cmd += "# "
+          + (mesh.bitsets[0] == null ? "({null})" : Escape
+              .escape(mesh.bitsets[0]))
+          + " "
+          + (mesh.bitsets[1] == null ? "({null})" : Escape
+              .escape(mesh.bitsets[1]))
+          + (mesh.bitsets[2] == null ? "" : "/"
+              + Escape.escape(mesh.bitsets[2]));
+    }
+    if (cmd.toLowerCase().indexOf(" id ") < 0 && !myType.equals("mo"))
+      cmd += "# ID=\"" + mesh.thisID + "\"";
+    if (mesh.modelIndex >= 0)
+      cmd += "# MODEL({" + mesh.modelIndex + "})";
+    if (mesh.linkedMesh != null)
+      cmd += " LINK";
+    if (mesh.data1 != null)
+      cmd = encapsulateData(cmd, mesh.data1, "");
+    if (mesh.data2 != null)
+      cmd = encapsulateData(cmd, mesh.data2, "2");
+    if (mesh.modelIndex >= 0 && modelCount > 1)
+      appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
+    appendCmd(sb, cmd);
+    if (cmd.charAt(0) != '#') {
+      if (allowMesh)
+        appendCmd(sb, mesh.getState(myType));
+      if (mesh.colorCommand != null) {
+        if (!mesh.isColorSolid && Graphics3D.isColixTranslucent(mesh.colix))
+          appendCmd(sb, getColorCommand(myType, mesh.colix));
+        appendCmd(sb, mesh.colorCommand);
+      }
+      getColorState(sb, mesh);
+    }
+  }
 
 private String encapsulateData(String cmd, Vector data, String ext) {
   String name = ((String) data.elementAt(0)).toLowerCase();

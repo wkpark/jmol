@@ -163,6 +163,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private int atomIndex;
   private int moNumber;
   private short defaultColix;
+  private short meshColix;
   private Point3f center;
   private boolean isPhaseColored;
   private boolean isColorExplicit;
@@ -269,6 +270,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("ignore" == propertyName) {
       if (iHaveBitSets)
         return;
+    }
+
+    if ("colorMesh" == propertyName) {
+      int rgb = ((Integer) value).intValue();
+      meshColix = Graphics3D.getColix(rgb);
+      return;
     }
 
     // Isosurface / SurfaceGenerator both interested
@@ -422,6 +429,19 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       sg.setJvxlData(jvxlData);
   }
 
+  public boolean getProperty(String property, Object[] data) {
+    if (property == "intersection") {
+      String id = (String) data[0];
+      IsosurfaceMesh mesh = (IsosurfaceMesh) getMesh(id);
+      if (mesh == null)
+        return false;
+      Point4f plane = (Point4f) data[1];
+      Vector vData = (Vector) data[2];
+      return mesh.getIntersection(plane, vData);
+    }
+    return false;
+  }
+
   public Object getProperty(String property, int index) {
     Object ret = super.getProperty(property, index);
     if (ret != null)
@@ -443,12 +463,17 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return new Float(jvxlData.cutoff);
     if (property == "plane")
       return jvxlData.jvxlPlane;
+    if (property.startsWith("meshData:")) {
+      MeshData meshData = new MeshData();
+      fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+      return meshData;
+    }
     if (property == "jvxlFileData" || property == "jvxlFileDataXml") {
       MeshData meshData = null;
       jvxlData.asXml = (property == "jvxlFileDataXml");
       if (jvxlData.vertexDataOnly) {
         meshData = new MeshData();
-        fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+        fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
         meshData.polygonColorData = getPolygonColorData(meshData.polygonCount, meshData.polygonColixes);
       }
       return JvxlCoder.jvxlGetFile(jvxlData, meshData, title, "", true, index, thisMesh
@@ -544,7 +569,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     explicitContours = false;
     atomIndex = -1;
     colix = Graphics3D.ORANGE;
-    defaultColix = 0;
+    defaultColix = meshColix = 0;
     isPhaseColored = isColorExplicit = false;
     allowContourLines = true; //but not for f(x,y) or plane, which use mesh
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
@@ -739,47 +764,51 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.invalidateTriangles();
   }
 
-  public void fillMeshData(MeshData meshData, int mode) {
+  public void fillMeshData(MeshData meshData, int mode, IsosurfaceMesh mesh) {
     if (meshData == null) {
       if (thisMesh == null)
         allocMesh(null);
       thisMesh.clear("isosurface", sg.getIAddGridPoints());
       thisMesh.colix = getDefaultColix();
+      thisMesh.meshColix = meshColix;
       if (isPhaseColored || thisMesh.jvxlData.isBicolorMap)
         thisMesh.isColorSolid = false;
       return;
     }
+    if (mesh == null)
+      mesh = thisMesh;
+    if (mesh == null)
+      return;
     switch (mode) {
-
     case MeshData.MODE_GET_VERTICES:
-      meshData.vertices = thisMesh.vertices;
-      meshData.vertexValues = thisMesh.vertexValues;
-      meshData.vertexCount = thisMesh.vertexCount;
-      meshData.vertexIncrement = thisMesh.vertexIncrement;
-      meshData.polygonCount = thisMesh.polygonCount;
-      meshData.polygonIndexes = thisMesh.polygonIndexes;
-      meshData.polygonColixes = thisMesh.polygonColixes;
+      meshData.vertices = mesh.vertices;
+      meshData.vertexValues = mesh.vertexValues;
+      meshData.vertexCount = mesh.vertexCount;
+      meshData.vertexIncrement = mesh.vertexIncrement;
+      meshData.polygonCount = mesh.polygonCount;
+      meshData.polygonIndexes = mesh.polygonIndexes;
+      meshData.polygonColixes = mesh.polygonColixes;
       return;
     case MeshData.MODE_GET_COLOR_INDEXES:
-      if (thisMesh.vertexColixes == null
-          || thisMesh.vertexCount > thisMesh.vertexColixes.length)
-        thisMesh.vertexColixes = new short[thisMesh.vertexCount];
-      meshData.vertexColixes = thisMesh.vertexColixes;
+      if (mesh.vertexColixes == null
+          || mesh.vertexCount > mesh.vertexColixes.length)
+        mesh.vertexColixes = new short[mesh.vertexCount];
+      meshData.vertexColixes = mesh.vertexColixes;
       meshData.polygonIndexes = null;
       return;
     case MeshData.MODE_PUT_SETS:
-      thisMesh.surfaceSet = meshData.surfaceSet;
-      thisMesh.vertexSets = meshData.vertexSets;
-      thisMesh.nSets = meshData.nSets;
+      mesh.surfaceSet = meshData.surfaceSet;
+      mesh.vertexSets = meshData.vertexSets;
+      mesh.nSets = meshData.nSets;
       return;
     case MeshData.MODE_PUT_VERTICES:
-      thisMesh.vertices = meshData.vertices;
-      thisMesh.vertexValues = meshData.vertexValues;
-      thisMesh.vertexCount = meshData.vertexCount;
-      thisMesh.vertexIncrement = meshData.vertexIncrement;
-      thisMesh.polygonCount = meshData.polygonCount;
-      thisMesh.polygonIndexes = meshData.polygonIndexes;
-      thisMesh.polygonColixes = meshData.polygonColixes;
+      mesh.vertices = meshData.vertices;
+      mesh.vertexValues = meshData.vertexValues;
+      mesh.vertexCount = meshData.vertexCount;
+      mesh.vertexIncrement = meshData.vertexIncrement;
+      mesh.polygonCount = meshData.polygonCount;
+      mesh.polygonIndexes = meshData.polygonIndexes;
+      mesh.polygonColixes = meshData.polygonColixes;
       return;
     }
   }

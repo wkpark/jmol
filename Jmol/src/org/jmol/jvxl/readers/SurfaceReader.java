@@ -286,7 +286,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       float[][][] voxelDataTemp =  volumeData.voxelData;
       volumeData.setDataDistanceToPlane(params.thePlane);
       if (meshDataServer != null)
-        meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+        meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
       params.setMapRanges(this);
       generateSurfaceData();
       volumeData.voxelData = voxelDataTemp;
@@ -323,8 +323,8 @@ public abstract class SurfaceReader implements VertexDataServer {
 
     if (jvxlDataIsColorMapped) {
       if (meshDataServer != null) {
-        meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
-        meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_COLOR_INDEXES);
+        meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+        meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_COLOR_INDEXES, null);
       }
       jvxlData.jvxlColorData = readColorData();
       updateSurfaceData();
@@ -337,7 +337,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   void resetIsosurface() {
     meshData = new MeshData();
     if (meshDataServer != null)
-      meshDataServer.fillMeshData(null, 0);
+      meshDataServer.fillMeshData(null, 0, null);
     contourVertexCount = 0;
     if (params.cutoff == Float.MAX_VALUE)
       params.cutoff = defaultCutoff;
@@ -551,7 +551,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     }
 */
     if (meshDataServer != null) {
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     }
 
     if (params.isContoured && marchingSquares != null) {
@@ -580,8 +580,8 @@ public abstract class SurfaceReader implements VertexDataServer {
     if (meshDataServer == null) {
       meshData.vertexColixes = new short[meshData.vertexCount];
     } else {
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_COLOR_INDEXES);
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_COLOR_INDEXES, null);
     }
     params.setMapRanges(this);
     //colorBySign is true when colorByPhase is true, but not vice-versa
@@ -637,7 +637,7 @@ public abstract class SurfaceReader implements VertexDataServer {
         (saveColorData ? meshData.vertexValues : null));
 
     if (meshDataServer != null && params.colorBySets)
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
   }
 
   private void colorData() {
@@ -797,7 +797,7 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   void excludeMinimumSet() {
     if (meshDataServer != null)
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     meshData.getSurfaceSet();
     BitSet bs;
     for (int i = meshData.nSets; --i >= 0;)
@@ -812,12 +812,12 @@ public abstract class SurfaceReader implements VertexDataServer {
       }
     updateSurfaceData();
     if (meshDataServer != null)
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
   }
 
   void excludeMaximumSet() {
     if (meshDataServer != null)
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     meshData.getSurfaceSet();
     BitSet bs;
     for (int i = meshData.nSets; --i >= 0;)
@@ -832,7 +832,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       }
     updateSurfaceData();
     if (meshDataServer != null)
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
   }
   
 }

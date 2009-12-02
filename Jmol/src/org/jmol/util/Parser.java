@@ -48,6 +48,10 @@ public class Parser {
     parseFloatArray(getTokens(str), bs, data);
   }
 
+  public static float[] parseFloatArray(String str) {
+    return parseFloatArray(str, new int[1]);
+  }
+
   /**
    * @param str 
    * @param next 

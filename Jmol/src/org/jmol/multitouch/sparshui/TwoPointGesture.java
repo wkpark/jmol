@@ -58,7 +58,6 @@ public class TwoPointGesture extends StandardDynamicGesture {
   protected Location _offset = null;
 
   protected Location _offsetCentroid = null;
-  private float[] _centroidWeights = new float[] { 0.5f, 0.5f };
   private Vector _traces1 = new Vector();
   private Vector _traces2 = new Vector();
   private int _nTraces = 0;
@@ -208,34 +207,33 @@ public class TwoPointGesture extends StandardDynamicGesture {
     Location loc20 = (Location) _traces2.firstElement();
     Location loc11 = (Location) _traces1.lastElement();
     Location loc21 = (Location) _traces2.lastElement();
+    float d1 = loc11.distance(loc10);
+    float d2 = loc21.distance(loc20);
     switch (_myType) {
-    case ActionManagerMT.ZOOM_GESTURE:
     case ActionManagerMT.ROTATE_GESTURE:
-      float d1 = loc11.distance(loc10);
-      float d2 = loc21.distance(loc20);
-      _centroidWeights[0] = d2 / (d1 + d2);
-      _centroidWeights[1] = d1 / (d1 + d2);
-      _offsetCentroid = new Location(loc10.getX() * _centroidWeights[0]
-          + loc20.getX() * _centroidWeights[1], loc10.getY()
-          * _centroidWeights[1] + loc20.getY() * _centroidWeights[1]);
-      if (_myType == ActionManagerMT.ZOOM_GESTURE) {
-        d1 = loc21.distance(loc11);
-        _scale = (d1 < _distance0 ? -1 : 1);
+      _offsetCentroid = new Location((loc10.getX() + loc20.getX()) / 2, 
+          (loc10.getY() + loc20.getY()) / 2);
+      Vector3f v1;
+      Vector3f v2;
+      if (d2 < 2) {
+        loc10 = (Location) _traces1.get(_traces1.size() - 2);
+        v1 = loc20.directionTo(loc10);
+        v2 = loc20.directionTo(loc11);
       } else {
-        Vector3f v1;
-        Vector3f v2;
-        if (d2 < 2) {
-          loc10 = (Location) _traces1.get(_traces1.size() - 2);
-          v1 = loc20.directionTo(loc10);
-          v2 = loc20.directionTo(loc11);
-        } else {
-          loc20 = (Location) _traces2.get(_traces2.size() - 2);
-          v1 = loc10.directionTo(loc20);
-          v2 = loc10.directionTo(loc21);
-        }
-        v1.cross(v1, v2);
-        _rotation = (v1.z < 0 ? 1 : -1);
+        loc20 = (Location) _traces2.get(_traces2.size() - 2);
+        v1 = loc10.directionTo(loc20);
+        v2 = loc10.directionTo(loc21);
       }
+      v1.cross(v1, v2);
+      _rotation = (v1.z < 0 ? 1 : -1);
+      return true;
+    case ActionManagerMT.ZOOM_GESTURE:
+      float w1 = d2 / (d1 + d2);
+      float w2 = 1 - w1;
+      _offsetCentroid = new Location(loc10.getX() * w1 + loc20.getX() * w2,
+          loc10.getY() * w1 + loc20.getY() * w2);
+      d1 = loc21.distance(loc11);
+      _scale = (d1 < _distance0 ? -1 : 1);
       return true;
     case ActionManagerMT.MULTI_POINT_DRAG_GESTURE:
       _offsetCentroid = new Location((loc11.getX() + loc21.getX()) / 2, (loc11

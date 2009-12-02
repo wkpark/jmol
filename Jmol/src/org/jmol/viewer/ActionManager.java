@@ -443,17 +443,11 @@ public class ActionManager {
   }
 
   void mouseEntered(long time, int x, int y) {
-    hoverOff();
-    timeCurrent = time;
-    xCurrent = x;
-    yCurrent = y;
+    setCurrent(time, x, y, false);
   }
 
   void mouseExited(long time, int x, int y) {
-    hoverOff();
-    timeCurrent = time;
-    xCurrent = x;
-    yCurrent = y;
+    setCurrent(time, x, y, false);
     exitMeasurementMode();
   }
 
@@ -490,20 +484,19 @@ public class ActionManager {
     // so we will just deal with it ourselves
     //viewer.setStatusUserAction("mouseClicked: " + modifiers);
     setMouseMode();
+    setCurrent(time, x, y, false);
     clickCount = 1;
     if (previousClickX == x && previousClickY == y
         && previousClickModifiers == modifiers
         && (time - previousClickTime) < MAX_DOUBLE_CLICK_MILLIS) {
       clickCount = previousClickCount + 1;
     }
-    if (!viewer.getDisplay().hasFocus())
-      viewer.getDisplay().requestFocusInWindow();
-    hoverOff();
-    xCurrent = previousClickX = x;
-    yCurrent = previousClickY = y;
+    previousClickX = x;
+    previousClickY = y;
     previousClickModifiers = modifiers;
     previousClickCount = clickCount;
-    timeCurrent = previousClickTime = time;
+    previousClickTime = time;
+    setFocus();
     checkPointOrAtomClicked(x, y, modifiers, clickCount);
   }
 
@@ -535,6 +528,7 @@ public class ActionManager {
   }
 
   void mousePressed(long time, int x, int y, int mods) {
+    setCurrent(time, x, y, false);
     if (previousPressedX == x && previousPressedY == y
         && previousPressedModifiers == mods
         && (time - previousPressedTime) < MAX_DOUBLE_CLICK_MILLIS) {
@@ -542,13 +536,13 @@ public class ActionManager {
     } else {
       pressedCount = 1;
     }
+    previousPressedX = previousDragX = x;
+    previousPressedY = previousDragY = y;
+    previousPressedModifiers = mods;
+    previousPressedTime = time;
+    setFocus();
     int action = Binding.getMouseAction(pressedCount, mods);
     dragGesture.setAction(action, time);
-    hoverOff();
-    previousPressedX = previousDragX = xCurrent = x;
-    previousPressedY = previousDragY = yCurrent = y;
-    previousPressedModifiers = mods;
-    previousPressedTime = timeCurrent = time;
     if (Binding.getModifiers(action) != 0) {
       action = viewer.notifyMouseClicked(x, y, action);
       if (action == 0)
@@ -575,12 +569,25 @@ public class ActionManager {
     checkMotionRotateZoom(action, x, 0, 0, true);
   }
 
+  protected void setFocus() {
+    if (!viewer.getDisplay().hasFocus())
+      viewer.getDisplay().requestFocusInWindow();
+  }
+
+  void mouseDragged(long time, int x, int y, int mods) {
+    setMouseMode();
+    int deltaX = x - previousDragX;
+    int deltaY = y - previousDragY;
+    previousDragX = x;
+    previousDragY = y;
+    setCurrent(time, x, y, false);
+    int action = Binding.getMouseAction(pressedCount, mods);
+    dragGesture.add(action, x, y, time);
+    checkAction(action, x, y, deltaX, deltaY, time, 1);
+  }
+
   void mouseReleased(long time, int x, int y, int mods) {
-    hoverOff();
-    viewer.spinXYBy(0, 0, 0);
-    timeCurrent = time;
-    xCurrent = x;
-    yCurrent = y;
+    setCurrent(time, x, y, true);
     boolean dragRelease = (pressedCount == 1 && 
         (previousPressedX != x || previousPressedY != y));
     viewer.setInMotion(false);
@@ -633,19 +640,15 @@ public class ActionManager {
     }
   }
 
-  void mouseDragged(long time, int x, int y, int mods) {
-    setMouseMode();
-    int deltaX = x - previousDragX;
-    int deltaY = y - previousDragY;
+  protected void setCurrent(long time, int x, int y, boolean resetSpin) {
     hoverOff();
     timeCurrent = time;
-    xCurrent = previousDragX = x;
-    yCurrent = previousDragY = y;
-    int action = Binding.getMouseAction(pressedCount, mods);
-    dragGesture.add(action, x, y, time);
-    checkAction(action, x, y, deltaX, deltaY, time, 1);
+    xCurrent = x;
+    yCurrent = y;
+    if (resetSpin)
+      viewer.spinXYBy(0, 0, 0);
   }
-
+  
   private boolean isRubberBandSelect(int action) {
     return rubberbandSelectionMode && 
         (  isBound(action, ACTION_selectToggle)

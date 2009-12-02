@@ -3604,6 +3604,8 @@ public class ScriptEvaluator {
     if (checkToken(index)) {
       getToken(index);
       switch (theTok) {
+      case Token.spec_seqcode_range:
+        return -theToken.intValue;
       case Token.spec_seqcode:
       case Token.integer:
         return theToken.intValue;
@@ -3616,55 +3618,77 @@ public class ScriptEvaluator {
     return 0;
   }
 
+  /**
+   * process a general string or set of parameters as an
+   * array of floats, allowing for relatively free form input
+   * 
+   * @param i
+   * @param nMin
+   * @param nMax
+   * @return array of floats
+   * @throws ScriptException
+   */
   private float[] floatParameterSet(int i, int nMin, int nMax)
       throws ScriptException {
     int tok = tokAt(i);
     boolean haveBrace = (tok == Token.leftbrace);
     boolean haveSquare = (tok == Token.leftsquare);
+    float[] fparams = null;
     Vector v = new Vector();
+    int n = 0;
     if (haveBrace || haveSquare)
       i++;
-    switch (tokAt(i)) {
-    case Token.string:
-      break;  
-    case Token.point3f:
-      Point3f pt = getPoint3f(i, false);
-      v.add(new Float(pt.x));
-      v.add(new Float(pt.y));
-      v.add(new Float(pt.z));
-      break;
-    case Token.point4f:
-      Point4f pt4 = getPoint4f(i);
-      v.add(new Float(pt4.x));
-      v.add(new Float(pt4.y));
-      v.add(new Float(pt4.z));
-      v.add(new Float(pt4.w));
-      break;
-    default:
-      for (int j = 0; j < nMax; j++) {
+    Point3f pt;
+    if (tokAt(i) == Token.string) {
+      String s = stringParameter(i);
+      s = TextFormat.replaceAllCharacters(s, "{},[]\"'", ' ');
+      fparams = Parser.parseFloatArray(s);
+      n = fparams.length;
+    } else {
+      while (n < nMax) {
         tok = tokAt(i);
-        if (haveBrace && tok == Token.rightbrace || haveSquare && tok == Token.rightsquare) {
+        if (haveBrace && tok == Token.rightbrace || haveSquare && tok == Token.rightsquare)
           break;
-        } else if (tok == Token.comma || tok == Token.leftbrace || tok == Token.rightbrace) {
-          i++;
-          j--;
-          continue;
+        switch (tok) {
+        case Token.comma:
+        case Token.leftbrace:
+        case Token.rightbrace:
+          break;
+        case Token.string:
+          break;
+        case Token.point3f:
+          pt = getPoint3f(i, false);
+          v.add(new Float(pt.x));
+          v.add(new Float(pt.y));
+          v.add(new Float(pt.z));
+          n += 3;
+          break;
+        case Token.point4f:
+          Point4f pt4 = getPoint4f(i);
+          v.add(new Float(pt4.x));
+          v.add(new Float(pt4.y));
+          v.add(new Float(pt4.z));
+          v.add(new Float(pt4.w));
+          n += 4;
+          break;
+        default:
+          v.add(new Float(floatParameter(i)));
+          n++;
         }
-        v.add(new Float(floatParameter(i++)));
+        i++;
       }
     }
-    if (haveBrace && tokAt(i) != Token.rightbrace
-        || haveSquare && tokAt(i) != Token.rightsquare)
+    if (haveBrace && tokAt(i++) != Token.rightbrace
+        || haveSquare && tokAt(i++) != Token.rightsquare)
       error(ERROR_invalidArgument);
-    if (haveBrace || haveSquare)
-      i++;
     iToken = i - 1;
-    int n = v.size();
     if (n < nMin || n > nMax)
       error(ERROR_invalidArgument);
-    float[] fparams = new float[n];
-    for (int j = 0; j < n; j++)
-      fparams[j] = ((Float) v.get(j)).floatValue();
+    if (fparams == null) {
+      fparams = new float[n];
+      for (int j = 0; j < n; j++)
+        fparams[j] = ((Float) v.get(j)).floatValue();
+    }
     return fparams;
   }
 
@@ -12465,10 +12489,9 @@ public class ScriptEvaluator {
         } catch (ScriptException e) {
         }
         try {
-          float[] fparams = floatParameterSet(i, 6, 6);
-          i = iToken;
-          propertyValue = fparams;
           propertyName = "ellipsoid";
+          propertyValue = floatParameterSet(i, 6, 6);
+          i = iToken;
           break;
         } catch (ScriptException e) {
         }

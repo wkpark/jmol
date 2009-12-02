@@ -170,9 +170,6 @@ public abstract class MouseManager implements KeyListener {
     actionManager.mouseMoved(time, x, y, modifiers);
   }
 
-  final static float wheelClickFractionUp = 1.15f;
-  final static float wheelClickFractionDown = 1 / wheelClickFractionUp;
-
   void mouseWheel(long time, int rotation, int modifiers) {
     clearKeyBuffer();
     actionManager.mouseWheel(time, rotation, modifiers);

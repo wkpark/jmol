@@ -226,8 +226,8 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
     super.mouseExited(time, x, y);    
   }
   
-  void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
-    super.mouseClicked(time, x, y, modifiers, clickCount);
+  void mouseClicked(long time, int x, int y, int modifiers) {
+    super.mouseClicked(time, x, y, modifiers);
   }
 
   void mouseMoved(long time, int x, int y, int modifiers) {
@@ -243,7 +243,7 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
     if (simulator != null) {
       int action = Binding.getMouseAction(1, mods);
       if (binding.isBound(action, ACTION_multiTouchSimulation)) {
-        setCurrent(0, x, y, false);
+        setCurrent(0, x, y, mods);
         setFocus();
         if (simulationPhase++ == 0)
           simulator.startRecording();
@@ -257,7 +257,7 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
 
   void mouseDragged(long time, int x, int y, int mods) {
     if (simulator != null && simulationPhase > 0) {
-      setCurrent(time, x, y, false);
+      setCurrent(time, x, y, mods);
       simulator.mouseDragged(time, x, y);
       return;
     }
@@ -266,8 +266,8 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
 
   void mouseReleased(long time, int x, int y, int mods) {
     if (simulator != null && simulationPhase > 0) {
-      setCurrent(time, x, y, true);
-      setFocus();
+      setCurrent(time, x, y, mods);
+      viewer.spinXYBy(0, 0, 0);
       simulator.mouseReleased(time, x, y);
       if (simulationPhase >= 2) {
         // two strokes only

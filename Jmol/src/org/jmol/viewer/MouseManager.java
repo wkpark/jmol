@@ -162,7 +162,9 @@ public abstract class MouseManager implements KeyListener {
 
   void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
     clearKeyBuffer();
-    actionManager.mouseClicked(time, x, y, modifiers, clickCount);
+    // clickedCount is not reliable on some platforms
+    // so we will just deal with it ourselves
+    actionManager.mouseClicked(time, x, y, modifiers);
   }
 
   protected void mouseMoved(long time, int x, int y, int modifiers) {

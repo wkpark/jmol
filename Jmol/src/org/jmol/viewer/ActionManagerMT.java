@@ -248,6 +248,7 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
         simulator.mousePressed(time, x, y);
         return;
       }
+      simulationPhase = 0;
     }
     super.mousePressed(time, x, y, mods);
   }

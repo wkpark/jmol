@@ -287,17 +287,52 @@ public class ActionManager {
 
   protected Thread hoverWatcherThread;
 
-  protected int previousDragX, previousDragY;
-  protected int xCurrent = -1000;
-  protected int yCurrent = -1000;
+  protected class Mouse {
+    protected int x = -1000;
+    protected int y = -1000;
+    protected int modifiers = 0;
+    protected long time = -1;
+    
+    protected void set(long time, int x, int y, int modifiers) {
+      this.time = time;
+      this.x = x;
+      this.y = y;
+      this.modifiers = modifiers;
+    }
+
+    protected void setCurrent() {
+      time = current.time;
+      x = current.x;
+      y = current.y;
+      modifiers = current.modifiers;
+    }
+
+    public boolean check(int x, int y, int modifiers, long time, long delayMax) {
+      return (this.x == x && this.y == y && this.modifiers == modifiers
+        && (time - this.time) < delayMax);
+    }
+  }
+  
+  protected final Mouse current = new Mouse();
+  protected final Mouse moved = new Mouse();
+  private final Mouse clicked = new Mouse();
+  private final Mouse pressed = new Mouse();
+  private final Mouse dragged = new Mouse();
+
+  protected void setCurrent(long time, int x, int y, int mods) {
+    hoverOff();
+    current.set(time, x, y, mods);
+  }
+  
   int getCurrentX() {
-    return xCurrent;
+    return current.x;
   }
   int getCurrentY() {
-    return yCurrent;
+    return current.y;
   }
 
-  protected long timeCurrent = -1;
+  protected int pressedCount;
+  private int clickedCount;
 
   private boolean drawMode = false;
   private boolean labelMode = false;
@@ -309,18 +344,6 @@ public class ActionManager {
 
   private boolean rubberbandSelectionMode = false;
   private final Rectangle rectRubber = new Rectangle();
-
-  private int previousClickX, previousClickY;
-  private int previousClickModifiers, previousClickCount;
-  private long previousClickTime;
-
-  private int previousPressedX, previousPressedY;
-  private int previousPressedModifiers;
-  private long previousPressedTime;
-  protected int pressedCount;
-
-  protected int mouseMovedX, mouseMovedY;
-  protected long mouseMovedTime;
 
   boolean isAltKeyReleased = true;  
   private boolean keyProcessing;
@@ -343,14 +366,14 @@ public class ActionManager {
       if (isStart) {
         if (hoverWatcherThread != null)
           return;
-        timeCurrent = -1;
+        current.time = -1;
         hoverWatcherThread = new Thread(new HoverWatcher());
         hoverWatcherThread.setName("HoverWatcher");
         hoverWatcherThread.start();
       } else {
         if (hoverWatcherThread == null)
           return;
-        timeCurrent = -1;
+        current.time = -1;
         hoverWatcherThread.interrupt();
         hoverWatcherThread = null;
       }
@@ -364,8 +387,6 @@ public class ActionManager {
       startHoverWatcher(false);
     }
   }
-
-  private int mouseMovedModifiers = 0;
 
   /**
    * called by MouseManager.keyPressed
@@ -381,17 +402,17 @@ public class ActionManager {
       if (dragSelectedMode && isAltKeyReleased)
         viewer.moveSelected(Integer.MIN_VALUE, 0, 0, 0, false);
       isAltKeyReleased = false;
-      mouseMovedModifiers |= Binding.ALT;
+      moved.modifiers |= Binding.ALT;
       break;
     case KeyEvent.VK_SHIFT:
-      mouseMovedModifiers |= Binding.SHIFT;
+      moved.modifiers |= Binding.SHIFT;
       break;
     case KeyEvent.VK_CONTROL:
-      mouseMovedModifiers |= Binding.CTRL;
+      moved.modifiers |= Binding.CTRL;
     }
-    int action = Binding.LEFT+Binding.SINGLE_CLICK+mouseMovedModifiers;
+    int action = Binding.LEFT+Binding.SINGLE_CLICK+moved.modifiers;
     if(!binding.isUserAction(action))
-      checkMotionRotateZoom(action, xCurrent, 0, 0, false);
+      checkMotionRotateZoom(action, current.x, 0, 0, false);
     if (viewer.getNavigationMode()) {
       int m = ke.getModifiers();
       // if (viewer.getBooleanProperty("showKeyStrokes", false))
@@ -418,15 +439,15 @@ public class ActionManager {
       if (dragSelectedMode)
         viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, false);
       isAltKeyReleased = true;
-      mouseMovedModifiers &= ~Binding.ALT;
+      moved.modifiers &= ~Binding.ALT;
       break;
     case KeyEvent.VK_SHIFT:
-      mouseMovedModifiers &= ~Binding.SHIFT;
+      moved.modifiers &= ~Binding.SHIFT;
       break;
     case KeyEvent.VK_CONTROL:
-      mouseMovedModifiers &= ~Binding.CTRL;
+      moved.modifiers &= ~Binding.CTRL;
     }
-    if (mouseMovedModifiers == 0)
+    if (moved.modifiers == 0)
       viewer.setCursor(Viewer.CURSOR_DEFAULT);
     if (!viewer.getNavigationMode())
       return;
@@ -443,11 +464,11 @@ public class ActionManager {
   }
 
   void mouseEntered(long time, int x, int y) {
-    setCurrent(time, x, y, false);
+    setCurrent(time, x, y, 0);
   }
 
   void mouseExited(long time, int x, int y) {
-    setCurrent(time, x, y, false);
+    setCurrent(time, x, y, 0);
     exitMeasurementMode();
   }
 
@@ -479,32 +500,19 @@ public class ActionManager {
     exitMeasurementMode();
   }
   
-  void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
-    // clickCount is not reliable on some platforms
-    // so we will just deal with it ourselves
-    //viewer.setStatusUserAction("mouseClicked: " + modifiers);
+  void mouseClicked(long time, int x, int y, int modifiers) {
     setMouseMode();
-    setCurrent(time, x, y, false);
-    clickCount = 1;
-    if (previousClickX == x && previousClickY == y
-        && previousClickModifiers == modifiers
-        && (time - previousClickTime) < MAX_DOUBLE_CLICK_MILLIS) {
-      clickCount = previousClickCount + 1;
-    }
-    previousClickX = x;
-    previousClickY = y;
-    previousClickModifiers = modifiers;
-    previousClickCount = clickCount;
-    previousClickTime = time;
+    setCurrent(time, x, y, modifiers);
+    clickedCount = (clicked.check(x, y, modifiers, time, MAX_DOUBLE_CLICK_MILLIS)
+        ? clickedCount + 1 : 1);
+    clicked.setCurrent();
     setFocus();
-    checkPointOrAtomClicked(x, y, modifiers, clickCount);
+    checkPointOrAtomClicked(x, y, modifiers, clickedCount);
   }
 
   void mouseMoved(long time, int x, int y, int modifiers) {
-    hoverOff();
-    timeCurrent = mouseMovedTime = time;
-    mouseMovedX = xCurrent = x;
-    mouseMovedY = yCurrent = y;
+    setCurrent(time, x, y, modifiers);
+    moved.setCurrent();
     if (measurementPending != null || hoverActive)
       checkPointOrAtomClicked(x, y, 0, 0);
     else if (isZoomArea(x))
@@ -518,28 +526,16 @@ public class ActionManager {
       return;
     // sun bug? noted by Charles Xie that wheeling on a Java page
     // effected inappropriate wheeling on this Java component
-    hoverOff();
-    timeCurrent = time;
-    int deltaX = 0;
-    int deltaY = rotation;
-    int x = previousDragX;
-    int y = previousDragY;
-    checkAction(Binding.getMouseAction(0, mods), x, y, deltaX, deltaY, time, 3);
+    setCurrent(time, current.x, current.y, mods);
+    checkAction(Binding.getMouseAction(0, mods), current.x, current.y, 0, rotation, time, 3);
   }
 
   void mousePressed(long time, int x, int y, int mods) {
-    setCurrent(time, x, y, false);
-    if (previousPressedX == x && previousPressedY == y
-        && previousPressedModifiers == mods
-        && (time - previousPressedTime) < MAX_DOUBLE_CLICK_MILLIS) {
-      ++pressedCount;
-    } else {
-      pressedCount = 1;
-    }
-    previousPressedX = previousDragX = x;
-    previousPressedY = previousDragY = y;
-    previousPressedModifiers = mods;
-    previousPressedTime = time;
+    setCurrent(time, x, y, mods);
+    pressedCount = (pressed.check(x, y, mods, time, MAX_DOUBLE_CLICK_MILLIS)
+        ? pressedCount + 1 : 1);
+    pressed.setCurrent();
+    dragged.setCurrent();
     setFocus();
     int action = Binding.getMouseAction(pressedCount, mods);
     dragGesture.setAction(action, time);
@@ -576,20 +572,19 @@ public class ActionManager {
 
   void mouseDragged(long time, int x, int y, int mods) {
     setMouseMode();
-    int deltaX = x - previousDragX;
-    int deltaY = y - previousDragY;
-    previousDragX = x;
-    previousDragY = y;
-    setCurrent(time, x, y, false);
+    int deltaX = x - dragged.x;
+    int deltaY = y - dragged.y;
+    setCurrent(time, x, y, mods);
+    dragged.setCurrent();
     int action = Binding.getMouseAction(pressedCount, mods);
     dragGesture.add(action, x, y, time);
     checkAction(action, x, y, deltaX, deltaY, time, 1);
   }
 
   void mouseReleased(long time, int x, int y, int mods) {
-    setCurrent(time, x, y, true);
-    boolean dragRelease = (pressedCount == 1 && 
-        (previousPressedX != x || previousPressedY != y));
+    setCurrent(time, x, y, mods);
+    viewer.spinXYBy(0, 0, 0);
+    boolean dragRelease = !pressed.check(x, y, mods, time, Long.MAX_VALUE);
     viewer.setInMotion(false);
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
     int action = Binding.getMouseAction(pressedCount, mods);
@@ -640,15 +635,6 @@ public class ActionManager {
     }
   }
 
-  protected void setCurrent(long time, int x, int y, boolean resetSpin) {
-    hoverOff();
-    timeCurrent = time;
-    xCurrent = x;
-    yCurrent = y;
-    if (resetSpin)
-      viewer.spinXYBy(0, 0, 0);
-  }
-  
   private boolean isRubberBandSelect(int action) {
     return rubberbandSelectionMode && 
         (  isBound(action, ACTION_selectToggle)
@@ -664,19 +650,19 @@ public class ActionManager {
   }
 
   private void calcRectRubberBand() {
-    if (xCurrent < previousPressedX) {
-      rectRubber.x = xCurrent;
-      rectRubber.width = previousPressedX - xCurrent;
+    if (current.x < pressed.x) {
+      rectRubber.x = current.x;
+      rectRubber.width = pressed.x - current.x;
     } else {
-      rectRubber.x = previousPressedX;
-      rectRubber.width = xCurrent - previousPressedX;
+      rectRubber.x = pressed.x;
+      rectRubber.width = current.x - pressed.x;
     }
-    if (yCurrent < previousPressedY) {
-      rectRubber.y = yCurrent;
-      rectRubber.height = previousPressedY - yCurrent;
+    if (current.y < pressed.y) {
+      rectRubber.y = current.y;
+      rectRubber.height = pressed.y - current.y;
     } else {
-      rectRubber.y = previousPressedY;
-      rectRubber.height = yCurrent - previousPressedY;
+      rectRubber.y = pressed.y;
+      rectRubber.height = current.y - pressed.y;
     }
   }
 
@@ -731,7 +717,7 @@ public class ActionManager {
           || isBound(action, ACTION_dragDrawPoint))
           || labelMode && isBound(action, ACTION_dragLabel)) {
       checkMotion(Viewer.CURSOR_MOVE);
-      viewer.checkObjectDragged(previousDragX, previousDragY, x, y,
+      viewer.checkObjectDragged(dragged.x, dragged.y, x, y,
           action);
       return;
     }
@@ -821,7 +807,7 @@ public class ActionManager {
     if (isRotateZorZoom)
       isZoom = (deltaX == 0 || Math.abs(deltaY) > 5 * Math.abs(deltaX));
     if (isSlideZoom)
-      isZoom = isZoomArea(mouseMovedX);
+      isZoom = isZoomArea(moved.x);
     int cursor = (isZoom || isBound(action, ACTION_wheelZoom) ? Viewer.CURSOR_ZOOM 
         : isRotateXY || isRotateZorZoom ? Viewer.CURSOR_MOVE : Viewer.CURSOR_DEFAULT);
     viewer.setCursor(cursor);
@@ -835,12 +821,12 @@ public class ActionManager {
   }
 
   private void checkPointOrAtomClicked(int x, int y, int mods,
-                                       int clickCount) {
+                                       int clickedCount) {
     if (!viewer.haveModelSet())
       return;
     // points are always picked up first, then atoms
     // so that atom picking can be superceded by draw picking
-    int action = Binding.getMouseAction(clickCount, mods);
+    int action = Binding.getMouseAction(clickedCount, mods);
     if (action != 0) {
       action = viewer.notifyMouseClicked(x, y, action);
       if (action == 0)
@@ -852,11 +838,11 @@ public class ActionManager {
       return;
     int nearestAtomIndex = (drawMode || nearestPoint != null ? -1 : viewer
         .findNearestAtomIndex(x, y));
-    if (nearestAtomIndex >= 0 && (clickCount > 0 || measurementPending == null)
+    if (nearestAtomIndex >= 0 && (clickedCount > 0 || measurementPending == null)
         && !viewer.isInSelectionSubset(nearestAtomIndex))
       nearestAtomIndex = -1;
     
-    if (clickCount == 0) {
+    if (clickedCount == 0) {
       // mouse move
       if (measurementPending == null)
         return;
@@ -884,7 +870,7 @@ public class ActionManager {
     if (measurementPending != null && isBound(action, ACTION_pickMeasure)) {
       atomPicked(nearestAtomIndex, nearestPoint, action);
       if (addToMeasurement(nearestAtomIndex, nearestPoint, false) == 4) {
-        previousClickCount = 0;
+        clickedCount = 0;
         toggleMeasurement();
       }
       return;
@@ -1058,7 +1044,7 @@ public class ActionManager {
   }
   
   void hoverOn(int atomIndex) {
-    viewer.hoverOn(atomIndex, Binding.getMouseAction(previousClickCount, mouseMovedModifiers));
+    viewer.hoverOn(atomIndex, Binding.getMouseAction(clickedCount, moved.modifiers));
   }
 
   void hoverOff() {
@@ -1076,16 +1062,16 @@ public class ActionManager {
       try {
         while (Thread.currentThread().equals(hoverWatcherThread) && (hoverDelay = viewer.getHoverDelay()) > 0) {
           Thread.sleep(hoverDelay);
-          if (xCurrent == mouseMovedX && yCurrent == mouseMovedY
-              && timeCurrent == mouseMovedTime) { // the last event was mouse
+          if (current.x == moved.x && current.y == moved.y
+              && current.time == moved.time) { // the last event was mouse
                                                   // move
             long currentTime = System.currentTimeMillis();
-            int howLong = (int) (currentTime - mouseMovedTime);
+            int howLong = (int) (currentTime - moved.time);
             if (howLong > hoverDelay) {
               if (Thread.currentThread().equals(hoverWatcherThread) && !viewer.getInMotion()
                   && !viewer.getSpinOn() && !viewer.getNavOn()
-                  && !viewer.checkObjectHovered(xCurrent, yCurrent)) {
-                int atomIndex = viewer.findNearestAtomIndex(xCurrent, yCurrent);
+                  && !viewer.checkObjectHovered(current.x, current.y)) {
+                int atomIndex = viewer.findNearestAtomIndex(current.x, current.y);
                 if (atomIndex >= 0) {
                   hoverOn(atomIndex);
                 }

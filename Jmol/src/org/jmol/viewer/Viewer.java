@@ -925,6 +925,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + " " + yDelta : "");
   }
 
+  void centerAt(int x, int y, Point3f pt) {
+    if (mouseEnabled)
+      transformManager.centerAt(x, y, pt);
+    refresh(2, statusManager.syncingMouse ? "Mouse: centerAt " + x
+        + " " + y  +  " " + pt.x + " " + pt.y + " " + pt.z : "");
+  }
+
   public void rotateFront() {
     // deprecated
     transformManager.rotateFront();
@@ -7600,6 +7607,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         translateXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]));
       else if (key.equals("rotateMolecule"))
         rotateMolecule(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]));
+      else if (key.equals("centerAt"))
+        centerAt(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]), null);
       break;
     case 5:
       if (key.equals("spinXYBy"))
@@ -7609,6 +7618,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       else if (key.equals("rotateZBy"))
         rotateZBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]), Parser.parseInt(tokens[4]));
       break;
+    case 7:
+      if (key.equals("centerAt"))
+        centerAt(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]), new Point3f(
+            Parser.parseFloat(tokens[4]), Parser.parseFloat(tokens[5]), Parser.parseFloat(tokens[6])));
     }
     if (disableSend)
       setSyncDriver(StatusManager.SYNC_ENABLE);
@@ -7913,4 +7926,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String showTimeout(String name) {
     return actionManager.showTimeout(name);
   }
+
 }

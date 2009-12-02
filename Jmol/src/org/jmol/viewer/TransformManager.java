@@ -340,7 +340,7 @@ abstract class TransformManager {
 
   void rotateZBy(int zDelta, int x, int y) {
     if (x != Integer.MAX_VALUE && y != Integer.MAX_VALUE)
-      resetXYCenter(x, y);
+      resetXYCenter(x, y, null);
     rotateZRadians((float) Math.PI * zDelta / 180);
   }
 
@@ -545,6 +545,18 @@ abstract class TransformManager {
     setTranslationFractions();
   }
 
+  public void centerAt(int x, int y, Point3f pt) {
+    if (pt == null) {
+      translateXYBy(x, y);
+      return;
+    }
+    if (windowCentered)
+      viewer.setBooleanProperty("windowCentered", false);
+    fixedTranslation.x = x;
+    fixedTranslation.y = y;
+    setFixedRotationCenter(pt);
+  }
+
   int percentToPixels(char xyz, float percent) {
     switch(xyz) {
     case 'x':
@@ -722,19 +734,23 @@ abstract class TransformManager {
       return;
     zoomRatio = factor;
     zoomPercentSetting *= factor;
-    resetXYCenter(x, y);
+    resetXYCenter(x, y, null);
   }
 
-  private void resetXYCenter(int x, int y) {
+  private void resetXYCenter(int x, int y, Point3f pt) {
     if (x == Integer.MAX_VALUE || y == Integer.MAX_VALUE)
       return;
     if (windowCentered)
       viewer.setBooleanProperty("windowCentered", false);
-    transformPoint(fixedRotationCenter, pointT);
-    pointT.set(x, y, pointT.z);
-    unTransformPoint(pointT, pointT);
-    fixedTranslation.set(x, y, 0);
-    setFixedRotationCenter(pointT);
+    if (pt == null) {
+      transformPoint(fixedRotationCenter, pointT);
+      pointT.set(x, y, pointT.z);
+      unTransformPoint(pointT, pointT);
+      fixedTranslation.set(x, y, 0);
+      setFixedRotationCenter(pointT);
+    } else {
+      transformPoint(pt, pointT);
+    }
   }
 
   void zoomByPercent(float percentZoom) {

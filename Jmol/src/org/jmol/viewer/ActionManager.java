@@ -55,37 +55,38 @@ public class ActionManager {
     GT._("rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"),
     GT._("translate"),
     //5
+    GT._("center"),
     GT._("zoom (along right edge of window)"),
     GT._("move selected atoms (requires {0})", "SET DRAGSELECTED"), 
     GT._("rotate selected atoms (requires {0})", "SET DRAGSELECTED"),
     GT._("move label (requires {0})", "SET PICKING LABEL"),
-    GT._("move specific DRAW point (requires {0})", "SET PICKING DRAW"),
     //10
+    GT._("move specific DRAW point (requires {0})", "SET PICKING DRAW"),
     GT._("move whole DRAW object (requires {0})", "SET PICKING DRAW"),
     GT._("spin model (swipe and release button and stop motion simultaneously)"),
     GT._("click on two points to spin around axis clockwise (requires SET PICKING SPIN)"),
     GT._("click on two points to spin around axis counterclockwise (requires SET PICKING SPIN)"),
-    GT._("adjust slab (front plane; requires {0})", "SLAB ON"),
     //15
+    GT._("adjust slab (front plane; requires {0})", "SLAB ON"),
     GT._("adjust depth (back plane; requires {0})", "SLAB ON"),
     GT._("move slab/depth window (both planes; requires {0})", "SLAB ON"),
     GT._("pop up the full context menu"),
     GT._("pop up recent context menu (click on Jmol frank)"),
-    GT._("translate navigation point (requires {0} and {1})", new String[] {"SET NAVIGATIONMODE", "SET PICKING NAVIGATE"}),
     //20
+    GT._("translate navigation point (requires {0} and {1})", new String[] {"SET NAVIGATIONMODE", "SET PICKING NAVIGATE"}),
     GT._("pick an atom"),
     GT._("pick a DRAW point (for measurements)"),
     GT._("pick a label to toggle it hidden/displayed (requires {0})", "SET PICKING LABEL"),
     GT._("pick an atom to include it in a measurement (after starting a measurement or after {0})", "SET PICKING DISTANCE/ANGLE/TORSION"),
-    GT._("pick an atom to initiate or conclude a measurement"),
     //25
+    GT._("pick an atom to initiate or conclude a measurement"),
     GT._("pick an ISOSURFACE point"),
     GT._("pick a point or atom to navigate to (requires SET NAVIGATIONMODE; undocumented)"),
     GT._("select an atom (requires {0})", "SET PICKINGSTYLE EXTENDEDSELECT"),
     GT._("select NONE (requires {0})", "SET PICKINGSTYLE EXTENDEDSELECT"),
+    //30
     GT._("toggle selection (requires {0} or {1})", new String[] {
         "SET PICKINGSTYLE DRAG/EXTENDEDSELECT/RASMOL"}),
-    //30
     GT._("click and drag to unselect this group of atoms (requires {0})", "DRAG/EXTENDEDSELECT"),
     GT._("click and drag to add this group of atoms to the set of selected atoms (requires {0})", "SET PICKINGSTYLE DRAG/EXTENDEDSELECT"),
     GT._("if all are selected, unselect all, otherwise add this group of atoms to the set of selected atoms (requires {0})", "SET PICKINGSTYLE DRAG"),    
@@ -130,40 +131,42 @@ public class ActionManager {
     "_rotateZorZoom",
     "_translate",
     //5
+    "_center",
     "_slideZoom",
     "_dragSelected",
     "_rotateSelected",
     "_dragLabel",
-    "_dragDrawPoint",
     //10
+    "_dragDrawPoint",
     "_dragDrawObject",
     "_swipe",
     "_spinDrawObjectCW",
     "_spinDrawObjectCCW",
-    "_slab",
     //15    
+    "_slab",
     "_depth",
     "_slabAndDepth",
     "_popupMenu",
     "_clickFrank",
-    "_navTranslate",
     //20
+    "_navTranslate",
     "_pickAtom",
     "_pickPoint",
     "_pickLabel",
     "_pickMeasure",
-    "_setMeasure",
     //25
+    "_setMeasure",
     "_pickIsosurface",
     "_pickNavigate",
     "_select",
     "_selectNone",
-    "_selectToggle",
     //30
+    "_selectToggle",
     "_selectAndNot",
     "_selectOr",
     "_selectToggleOr",
     "_reset",
+    //35
     "_multiTouchSimulation",
   };
   public static String getActionName(int i) {
@@ -182,43 +185,45 @@ public class ActionManager {
   public final static int ACTION_rotateZ = 2;
   public final static int ACTION_rotateZorZoom = 3;
   public final static int ACTION_translate = 4;
-  public final static int ACTION_slideZoom = 5;
   
-  public final static int ACTION_dragSelected = 6;
-  public final static int ACTION_rotateSelected = 7;
-  public final static int ACTION_dragLabel = 8;
-  public final static int ACTION_dragDrawPoint = 9;
-  public final static int ACTION_dragDrawObject = 10;
-  public final static int ACTION_swipe = 11;
+  public final static int ACTION_center = 5;
+  public final static int ACTION_slideZoom = 6;
+  public final static int ACTION_dragSelected = 7;
+  public final static int ACTION_rotateSelected = 8;
+  public final static int ACTION_dragLabel = 9;
+  public final static int ACTION_dragDrawPoint = 10;
+  public final static int ACTION_dragDrawObject = 11;
+  public final static int ACTION_swipe = 12;
 
-  public final static int ACTION_spinDrawObjectCW = 12;
-  public final static int ACTION_spinDrawObjectCCW = 13;
+  public final static int ACTION_spinDrawObjectCW = 13;
+  public final static int ACTION_spinDrawObjectCCW = 14;
 
-  public final static int ACTION_slab = 14;
-  public final static int ACTION_depth = 15;
-  public final static int ACTION_slabAndDepth = 16;
+  public final static int ACTION_slab = 15;
+  public final static int ACTION_depth = 16;
+  public final static int ACTION_slabAndDepth = 17;
 
-  public final static int ACTION_popupMenu = 17;
-  public final static int ACTION_clickFrank = 18;
-  public final static int ACTION_navTranslate = 19;
+  public final static int ACTION_popupMenu = 18;
+  public final static int ACTION_clickFrank = 19;
+  public final static int ACTION_navTranslate = 20;
 
-  public final static int ACTION_pickAtom = 20;
-  public final static int ACTION_pickPoint = 21;
-  public final static int ACTION_pickLabel = 22;
-  public final static int ACTION_pickMeasure = 23;
-  public final static int ACTION_setMeasure = 24;
-  public static final int ACTION_pickIsosurface = 25;
-  public static final int ACTION_pickNavigate = 26;
+  public final static int ACTION_pickAtom = 21;
+  public final static int ACTION_pickPoint = 22;
+  public final static int ACTION_pickLabel = 23;
+  public final static int ACTION_pickMeasure = 24;
+  public final static int ACTION_setMeasure = 25;
+  public static final int ACTION_pickIsosurface = 26;
+  public static final int ACTION_pickNavigate = 27;
   
-  public static final int ACTION_select = 27;
-  public static final int ACTION_selectNone = 28;
-  public static final int ACTION_selectToggle = 29;  
-  public static final int ACTION_selectAndNot = 30;
-  public static final int ACTION_selectOr = 31;
-  public static final int ACTION_selectToggleExtended = 32;  
-  public final static int ACTION_reset = 33;
-  public final static int ACTION_multiTouchSimulation = 34;
-  public final static int ACTION_count = 35;
+  public static final int ACTION_select = 28;
+  public static final int ACTION_selectNone = 29;
+  public static final int ACTION_selectToggle = 30;  
+  public static final int ACTION_selectAndNot = 31;
+  public static final int ACTION_selectOr = 32;
+  public static final int ACTION_selectToggleExtended = 33;
+  
+  public final static int ACTION_reset = 34;
+  public final static int ACTION_multiTouchSimulation = 35;
+  public final static int ACTION_count = 36;
   
   static {
     if (actionNames.length != ACTION_count)
@@ -332,6 +337,8 @@ public class ActionManager {
   }
 
   protected int pressedCount;
+  private int pressedAtomIndex;
+  
   private int clickedCount;
 
   private boolean drawMode = false;
@@ -544,7 +551,7 @@ public class ActionManager {
       if (action == 0)
         return;
     }    
-    
+    pressedAtomIndex = Integer.MAX_VALUE;
     if (checkUserAction(action, x, y, 0, 0, time, 0))
       return;
     if (isBound(action, ACTION_popupMenu)) {
@@ -688,6 +695,17 @@ public class ActionManager {
     
     if (isBound(action, ACTION_translate)) {
       viewer.translateXYBy(deltaX, deltaY);
+      return;
+    }
+
+    if (isBound(action, ACTION_center)) { 
+      if (pressedAtomIndex == Integer.MAX_VALUE)
+        pressedAtomIndex = viewer.findNearestAtomIndex(pressed.x, pressed.y);
+      Point3f pt = (pressedAtomIndex < 0 ? null : viewer.getAtomPoint3f(pressedAtomIndex));
+      if (pt == null)
+        viewer.translateXYBy(deltaX, deltaY);
+      else
+        viewer.centerAt(x, y, pt);
       return;
     }
 

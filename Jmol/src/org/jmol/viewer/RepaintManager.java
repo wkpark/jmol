@@ -66,6 +66,7 @@ class RepaintManager {
     return true;
   }
 
+  
   synchronized void requestRepaintAndWait() {
     repaintDisplay();
     try {

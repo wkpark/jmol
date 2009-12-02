@@ -552,9 +552,14 @@ abstract class TransformManager {
     }
     if (windowCentered)
       viewer.setBooleanProperty("windowCentered", false);
+    //transformPoint(pt, pointT);
+    //float z = pointT.z;
     fixedTranslation.x = x;
     fixedTranslation.y = y;
     setFixedRotationCenter(pt);
+    //transformPoint(pt, pointT);
+    //finalizeTransformParameters();
+    //System.out.println("trans man ");
   }
 
   int percentToPixels(char xyz, float percent) {

@@ -3346,6 +3346,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 
    */
   public void refresh(int mode, String strWhy) {
+    //System.out.println(strWhy);
     // refresh(2) indicates this is a mouse motion -- not going through Eval
     // so we bypass Eval and mainline on the other viewer!
     // refresh(-1) is used in stateManager to force no repaint
@@ -4028,12 +4029,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setShapeProperty(JmolConstants.SHAPE_HOVER, "target", null);
       hoverAtomIndex = -1;
     }
-    if (hoverText != null) {
+    boolean isHover = (hoverText != null);
+    if (isHover) {
       setShapeProperty(JmolConstants.SHAPE_HOVER, "text", null);
       hoverText = null;
     }
     setShapeProperty(JmolConstants.SHAPE_HOVER, "specialLabel", null);
-    refresh(3, "hover off");
+    if (isHover)
+      refresh(3, "hover off");
   }
 
   public void setLabel(String strLabel) {

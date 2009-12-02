@@ -583,6 +583,7 @@ public class ActionManager {
     int deltaY = y - dragged.y;
     setCurrent(time, x, y, mods);
     dragged.setCurrent();
+    exitMeasurementMode();
     int action = Binding.getMouseAction(pressedCount, mods);
     dragGesture.add(action, x, y, time);
     checkAction(action, x, y, deltaX, deltaY, time, 1);

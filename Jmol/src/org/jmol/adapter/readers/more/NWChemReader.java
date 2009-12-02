@@ -502,23 +502,25 @@ public class NWChemReader extends MOReader {
   }
 
   /**
-   * Returns a modified identifier for a tag, so that the element can be determined
-   * from it in the {@link Atom}.
-   *<p> The result is that a tag that started with Bq (case insensitive) will
-   * be renamed to have the Bq removed and '-Bq' appended to it.
-   * <br>A tag consisting only of Bq (case insensitive) will return X. This
-   * can happen in a frequency analysis.
+   * Returns a modified identifier for a tag, so that the element can be
+   * determined from it in the {@link Atom}.
+   *<p>
+   * The result is that a tag that started with Bq (case insensitive) will be
+   * renamed to have the Bq removed and '-Bq' appended to it. <br>
+   * A tag consisting only of Bq (case insensitive) will return X. This can
+   * happen in a frequency analysis.
    * 
-   * @param tag the tag to be modified
+   * @param tag
+   *          the tag to be modified
    * @return a possibly modified tag
    **/
   private String fixTag(String tag) {
-    String lctag = tag.toLowerCase();
     // make sure that Bq's are not interpreted as boron
-    if (lctag.equals("bq"))
+    if (tag.equalsIgnoreCase("bq"))
       return "X";
-    if (lctag.startsWith("bq"))
-      return tag.substring(2)+"-Bq";
-    return tag;
+    if (tag.toLowerCase().startsWith("bq"))
+      tag = tag.substring(2) + "-Bq";
+    return "" + Character.toUpperCase(tag.charAt(0))
+        + (tag.length() == 1 ? "" : "" + Character.toLowerCase(tag.charAt(1)));
   }
 }

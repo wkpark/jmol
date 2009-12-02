@@ -7607,8 +7607,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         translateXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]));
       else if (key.equals("rotateMolecule"))
         rotateMolecule(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]));
-      else if (key.equals("centerAt"))
-        centerAt(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]), null);
       break;
     case 5:
       if (key.equals("spinXYBy"))

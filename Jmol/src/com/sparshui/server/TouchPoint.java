@@ -122,7 +122,6 @@ public class TouchPoint {
 	 */
 	public void setGroup(Group group) {
 		_group = group;
-		//System.out.println("Group set, group = " + _group.toString());
 		_group.update(this);
 	}
 	

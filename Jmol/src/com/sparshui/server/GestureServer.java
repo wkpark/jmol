@@ -131,23 +131,25 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   }
 
   /**
-   * This method was tucked into InputDeviceConnection but really has to 
-   * do more with server-to-client interaction, so I moved it here. BH
+   * This method was tucked into InputDeviceConnection but really has to do more
+   * with server-to-client interaction, so I moved it here. BH
    * 
-   * @param inputDeviceTouchPoints container for this input device's touchPoints
+   * @param inputDeviceTouchPoints
+   *          container for this input device's touchPoints
    * @param id
    * @param location
    * @param state
    * @return doConsume;
    */
-  boolean processTouchPoint(HashMap inputDeviceTouchPoints, int id, Location location,
-                                int state) {
+  boolean processTouchPoint(HashMap inputDeviceTouchPoints, int id,
+                            Location location, int state) {
     Integer iid = new Integer(id);
-    if(inputDeviceTouchPoints.containsKey(iid)) {
+    if (inputDeviceTouchPoints.containsKey(iid)) {
       TouchPoint touchPoint = (TouchPoint) inputDeviceTouchPoints.get(iid);
-      if (touchPoint.isValid())
-      synchronized(touchPoint) {
-        touchPoint.update(location, state);
+      if (touchPoint.isValid()) {
+        synchronized (touchPoint) {
+          touchPoint.update(location, state);
+        }
       }
       return true;
     }

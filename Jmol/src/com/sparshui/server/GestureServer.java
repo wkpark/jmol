@@ -115,7 +115,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
    * @throws IOException
    */
   private void acceptClientConnection(Socket socket) throws IOException {
-    Logger.info("[GestureServer] ClientConnection Accepted");
+    Logger.info("[GestureServer] ClientConnection claimed");
     ClientConnection cc = new ClientConnection(socket);
     _clients.add(cc);
   }
@@ -126,7 +126,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
    * @throws IOException
    */
   private void acceptInputDeviceConnection(Socket socket) throws IOException {
-    Logger.info("[GestureServer] InputDeviceConnection Accepted");
+    Logger.info("[GestureServer] InputDeviceConnection claimed");
     new InputDeviceConnection(this, socket);
   }
 
@@ -139,14 +139,14 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
    * @param id
    * @param location
    * @param state
-   * @return doConsume;
+   * @return whether a client has claimed this touchPoint;
    */
   boolean processTouchPoint(HashMap inputDeviceTouchPoints, int id,
                             Location location, int state) {
     Integer iid = new Integer(id);
     if (inputDeviceTouchPoints.containsKey(iid)) {
       TouchPoint touchPoint = (TouchPoint) inputDeviceTouchPoints.get(iid);
-      if (!touchPoint.isValid())
+      if (!touchPoint.isClaimed())
         return false;
       synchronized (touchPoint) {
         touchPoint.update(location, state);
@@ -164,18 +164,18 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
    * 
    * @param touchPoint
    *          The new touch point.
-   * @return whether a client has accepted this touchPoint as its own.
+   * @return whether a client has claimed this touchPoint as its own.
    * 
    */
   private boolean processBirth(TouchPoint touchPoint) {
     Vector clients_to_remove = null;
-    boolean isAccepted = false;
+    boolean isClaimed = false;
     for (int i = 0; i < _clients.size(); i++) {
       ClientConnection client = (ClientConnection) _clients.get(i);
       // Return if the client claims the touch point
       try {
-        isAccepted = client.processBirth(touchPoint);
-        if (isAccepted)
+        isClaimed = client.processBirth(touchPoint);
+        if (isClaimed)
           break;
       } catch (IOException e) {
         // This occurs if there is a communication error
@@ -191,7 +191,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
         _clients.remove(clients_to_remove.elementAt(i));
         Logger.info("[GestureServer] Client Disconnected");
       }
-    return isAccepted;
+    return isClaimed;
   }
 
 

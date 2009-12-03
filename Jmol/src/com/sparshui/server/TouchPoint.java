@@ -53,10 +53,10 @@ public class TouchPoint {
 	 * can tell the input device whether or not to
 	 * consume the event.
 	 * 
-	 * @return whether a client is bound to this touchPoint
+	 * @return whether a client has claimed this touchPoint
 	 * 
 	 */
-	public boolean isValid() {
+	public boolean isClaimed() {
 	  return (_group != null);
 	}
 	/**

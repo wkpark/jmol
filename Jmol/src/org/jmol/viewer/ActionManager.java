@@ -87,8 +87,8 @@ public class ActionManager {
     //30
     GT._("toggle selection (requires {0} or {1})", new String[] {
         "SET PICKINGSTYLE DRAG/EXTENDEDSELECT/RASMOL"}),
-    GT._("click and drag to unselect this group of atoms (requires {0})", "DRAG/EXTENDEDSELECT"),
-    GT._("click and drag to add this group of atoms to the set of selected atoms (requires {0})", "SET PICKINGSTYLE DRAG/EXTENDEDSELECT"),
+    GT._("unselect this group of atoms (requires {0})", "SET PICKINGSTYLE DRAG/EXTENDEDSELECT"),
+    GT._("add this group of atoms to the set of selected atoms (requires {0})", "SET PICKINGSTYLE DRAG/EXTENDEDSELECT"),
     GT._("if all are selected, unselect all, otherwise add this group of atoms to the set of selected atoms (requires {0})", "SET PICKINGSTYLE DRAG"),    
 
     GT._("reset (when clicked off the model)"),

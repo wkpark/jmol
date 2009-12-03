@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-12-02 20:08+0100\n"
+"POT-Creation-Date: 2009-12-03 21:07+0100\n"
 "PO-Revision-Date: 2009-09-25 06:38+0000\n"
 "Last-Translator: Muszela Balázs <bazsi86@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -2083,14 +2083,12 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:90
 #, java-format
-msgid "click and drag to unselect this group of atoms (requires {0})"
+msgid "unselect this group of atoms (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:91
 #, java-format
-msgid ""
-"click and drag to add this group of atoms to the set of selected atoms "
-"(requires {0})"
+msgid "add this group of atoms to the set of selected atoms (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:92
@@ -2108,11 +2106,11 @@ msgstr ""
 msgid "simulate multi-touch using the mouse)"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1244
+#: org/jmol/viewer/ActionManager.java:1245
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "válassz ki még egy atomot, hogy a modell a tengely körül forogjon"
 
-#: org/jmol/viewer/ActionManager.java:1245
+#: org/jmol/viewer/ActionManager.java:1246
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "válassz ki két atomot, hogy a modell a tengely körül forogjon"
 
@@ -2127,26 +2125,26 @@ msgstr "{0} atom elrejtve"
 msgid "{0} atoms selected"
 msgstr "{0} atom kiválasztva"
 
-#: org/jmol/viewer/Viewer.java:3999
+#: org/jmol/viewer/Viewer.java:4000
 msgid "Drag to move label"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4992
+#: org/jmol/viewer/Viewer.java:4995
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr "HIBA: a logikai jelzőt nem lehet {0} string értékre állítani"
 
-#: org/jmol/viewer/Viewer.java:5215 org/jmol/viewer/Viewer.java:5395
+#: org/jmol/viewer/Viewer.java:5218 org/jmol/viewer/Viewer.java:5398
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr "HIBA: a logikai jelzőt nem lehet {0} számértékre állítani"
 
-#: org/jmol/viewer/Viewer.java:5920
+#: org/jmol/viewer/Viewer.java:5923
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "HIBA: ezt a változót nem lehet logikai értékre állítani: {0}"
 
-#: org/jmol/viewer/Viewer.java:7366
+#: org/jmol/viewer/Viewer.java:7369
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "a vágólap nem érhető el, használjon aláírt Java kisalkalmazást"
 

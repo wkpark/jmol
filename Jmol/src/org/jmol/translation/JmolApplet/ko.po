@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-12-02 20:08+0100\n"
+"POT-Creation-Date: 2009-12-03 21:07+0100\n"
 "PO-Revision-Date: 2008-10-01 21:49+0000\n"
 "Last-Translator: Won Kyu Park <wkpark@gmail.com>\n"
 "Language-Team: Korean <Jmol-developers@lists.sf.net>\n"
@@ -2094,14 +2094,12 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:90
 #, java-format
-msgid "click and drag to unselect this group of atoms (requires {0})"
+msgid "unselect this group of atoms (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:91
 #, java-format
-msgid ""
-"click and drag to add this group of atoms to the set of selected atoms "
-"(requires {0})"
+msgid "add this group of atoms to the set of selected atoms (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:92
@@ -2119,11 +2117,11 @@ msgstr ""
 msgid "simulate multi-touch using the mouse)"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1244
+#: org/jmol/viewer/ActionManager.java:1245
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "축상으로 돌리기위해 하나 혹은 더 많은 원자를 고르세요"
 
-#: org/jmol/viewer/ActionManager.java:1245
+#: org/jmol/viewer/ActionManager.java:1246
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "모델을 축상으로 회전하기 위해 두개의 원자를 고르세요"
 
@@ -2138,26 +2136,26 @@ msgstr "{0} 원자 숨김"
 msgid "{0} atoms selected"
 msgstr "{0} 원자 선택"
 
-#: org/jmol/viewer/Viewer.java:3999
+#: org/jmol/viewer/Viewer.java:4000
 msgid "Drag to move label"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4992
+#: org/jmol/viewer/Viewer.java:4995
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr "오류: 문자열값에 부울린값을 지정할 수 없음: {0}"
 
-#: org/jmol/viewer/Viewer.java:5215 org/jmol/viewer/Viewer.java:5395
+#: org/jmol/viewer/Viewer.java:5218 org/jmol/viewer/Viewer.java:5398
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr "오류: 숫자에 부울린값을 지정할 수 없음: {0}"
 
-#: org/jmol/viewer/Viewer.java:5920
+#: org/jmol/viewer/Viewer.java:5923
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "오류: 부울린에 이 값을 넣을 수 없음: {0}"
 
-#: org/jmol/viewer/Viewer.java:7366
+#: org/jmol/viewer/Viewer.java:7369
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 

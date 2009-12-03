@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -43,17 +44,28 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	
 	private Component _display;
 	
+  private DataInputStream _in;
 	private DataOutputStream _out;
 
 	public JmolTouchSimulator() {
 	}
 
 	public void dispose() {
-	  try {
-	    _out.close();
-	  } catch (Exception e) {
-	    
-	  }
+    try {
+      _in.close();
+    } catch (Exception e) {
+      
+    }
+    try {
+      _out.close();
+    } catch (Exception e) {
+      
+    }
+    try {
+     _timer.cancel();
+    } catch (Exception e) {
+      
+    }
 	}
 	
 	/* (non-Javadoc)
@@ -65,6 +77,7 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	    _timer = new Timer();
 	    try {
 	      Socket socket = new Socket(address, NetworkConfiguration.PORT);
+        _in = new DataInputStream(socket.getInputStream());
 	      _out = new DataOutputStream(socket.getOutputStream());
 	      _out.writeByte(ConnectionType.INPUT_DEVICE);
 	      return true;
@@ -160,7 +173,17 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 		_events.clear();
 		_touchID = 0;
 	}
-	
+
+	/**
+	 * protocol modified by Bob Hanson for Jmol to demonstrate 
+	 * extended SparshUI protocol to include a return from the
+	 * server indicating whether or not to consume this event.
+	 * 
+	 * server return == (byte) 1 --> do consume this event
+	 * server return == (byte) 0 --> do not consume this event
+	 * 
+	 * @param e
+	 */
 	protected void dispatchTouchEvent(TouchData e) {
     Toolkit tk = Toolkit.getDefaultToolkit();
     Dimension dim = tk.getScreenSize();
@@ -172,6 +195,9 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
       _out.writeFloat(((float) e.x / (float) dim.width));
       _out.writeFloat(((float) e.y / (float) dim.height));
       _out.writeByte((byte) e.type);
+      boolean doConsume = (_in.readByte() == 1);
+      if (Logger.debugging)
+        System.out.println("[JmolTouchSimulator] doConsume=" + doConsume);
     } catch (IOException e1) {
       System.err.println("Failed to send event to server.");
     }

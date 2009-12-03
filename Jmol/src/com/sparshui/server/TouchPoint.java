@@ -48,6 +48,18 @@ public class TouchPoint {
 	private Group _group;
 
 	/**
+	 * The GestureServer needs to know whether an incoming
+	 * touchPoint is bound to a client or not so that it
+	 * can tell the input device whether or not to
+	 * consume the event.
+	 * 
+	 * @return whether a client is bound to this touchPoint
+	 * 
+	 */
+	public boolean isValid() {
+	  return (_group != null);
+	}
+	/**
 	 * 
 	 * @param location
 	 */

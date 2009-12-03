@@ -8,7 +8,6 @@ import java.util.Vector;
 
 import com.sparshui.common.ClientProtocol;
 import com.sparshui.common.Event;
-import com.sparshui.common.Location;
 import com.sparshui.common.utils.Converter;
 
 /**
@@ -32,6 +31,7 @@ public class ServerToClientProtocol extends ClientProtocol {
     super(socket);
     _buffer = new ByteArrayOutputStream();
     _bufferOut = new DataOutputStream(_buffer);
+    Thread.currentThread().setName("SparshUI Server->ClientConnection");
   }
 
   /**
@@ -79,19 +79,20 @@ public class ServerToClientProtocol extends ClientProtocol {
    * 4 bytes - x coordinate 
    * 4 bytes - y coordinate
    * 
-   * @param location
+   * @param touchPoint
    *          The data point for the group to retrieve from
    * @return The Group ID
    * @throws IOException
    *           If an error occurs during communication with the client.
    */
-  public int getGroupID(Location location) throws IOException {
+  public int getGroupID(TouchPoint touchPoint) throws IOException {
     byte[] tempFloat = new byte[4];
     // Event Type
+    
     sendType(MessageType.GET_GROUP_ID);
-    Converter.floatToByteArray(tempFloat, 0, location.getX());
+    Converter.floatToByteArray(tempFloat, 0, touchPoint.getLocation().getX());
     _bufferOut.write(tempFloat);
-    Converter.floatToByteArray(tempFloat, 0, location.getY());
+    Converter.floatToByteArray(tempFloat, 0, touchPoint.getLocation().getY());
     _bufferOut.write(tempFloat);
 
     // Send the length, x and y coordinates

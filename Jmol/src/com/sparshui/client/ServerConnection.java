@@ -47,7 +47,7 @@ public class ServerConnection extends Thread {
 	 */
 	//@override
 	public void run() {
-	  Thread.currentThread().setName("SparshUI ServerConnection");
+	  Thread.currentThread().setName("SparshUI Client->ServerConnection");
 		while(_socket.isConnected()) {
 			if (!_protocol.processRequest(_client)) //BH -- must allow for server failure
 			  break;

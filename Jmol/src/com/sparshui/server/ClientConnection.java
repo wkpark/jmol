@@ -5,8 +5,6 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Vector;
 
-import com.sparshui.common.Location;
-
 /**
  * Represents a network connection to a client.
  * 
@@ -49,7 +47,7 @@ class ClientConnection {
    */
   boolean processBirth(TouchPoint touchPoint) throws IOException {
 
-    int groupID = getGroupID(touchPoint.getLocation());
+    int groupID = getGroupID(touchPoint);
     int jmolFlags = (groupID & 0xF0000000);
     if (jmolFlags != 0) {
       switch (jmolFlags) {
@@ -86,12 +84,12 @@ class ClientConnection {
 
 	/**
 	 * 
-	 * @param location 
+	 * @param touchPoint
 	 * @return groupId
 	 * @throws IOException
 	 */
-	private int getGroupID(Location location) throws IOException {
-		return _protocol.getGroupID(location);
+	private int getGroupID(TouchPoint touchPoint) throws IOException {
+		return _protocol.getGroupID(touchPoint);
 	}
 
 	/**

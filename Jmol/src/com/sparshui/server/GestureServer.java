@@ -3,12 +3,14 @@ package com.sparshui.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.jmol.api.JmolGestureServerInterface;
 import org.jmol.util.Logger;
 
 import com.sparshui.common.ConnectionType;
+import com.sparshui.common.Location;
 import com.sparshui.common.NetworkConfiguration;
 
 /**
@@ -57,38 +59,6 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
       acceptConnections();
     } catch (Exception e) {
       Logger.info("[GestureServer] connection unavailable");
-    }
-  }
-
-  /**
-   * Process a touch point birth by getting the groupID and gestures for the
-   * touch point.
-   * 
-   * @param touchPoint
-   *          The new touch point.
-   */
-  void processBirth(TouchPoint touchPoint) {
-    Vector clients_to_remove = null;
-    for (int i = 0; i < _clients.size(); i++) {
-      ClientConnection client = (ClientConnection) _clients.get(i);
-      // Return if the client claims the touch point
-      try {
-        if (client.processBirth(touchPoint))
-          break;
-      } catch (IOException e) {
-        // This occurs if there is a communication error
-        // with the client. In this case, we will want
-        // to remove the client.
-        if (clients_to_remove == null)
-          clients_to_remove = new Vector();
-        clients_to_remove.add(client);
-      }
-    }
-    if (clients_to_remove == null)
-      return;
-    for (int i = 0; i < clients_to_remove.size(); i++) {
-      _clients.remove(clients_to_remove.elementAt(i));
-      Logger.info("[GestureServer] Client Disconnected");
     }
   }
 
@@ -159,4 +129,69 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
     Logger.info("[GestureServer] InputDeviceConnection Accepted");
     new InputDeviceConnection(this, socket);
   }
+
+  /**
+   * This method was tucked into InputDeviceConnection but really has to 
+   * do more with server-to-client interaction, so I moved it here. BH
+   * 
+   * @param inputDeviceTouchPoints container for this input device's touchPoints
+   * @param id
+   * @param location
+   * @param state
+   * @return doConsume;
+   */
+  boolean processTouchPoint(HashMap inputDeviceTouchPoints, int id, Location location,
+                                int state) {
+    Integer iid = new Integer(id);
+    if(inputDeviceTouchPoints.containsKey(iid)) {
+      TouchPoint touchPoint = (TouchPoint) inputDeviceTouchPoints.get(iid);
+      if (touchPoint.isValid())
+      synchronized(touchPoint) {
+        touchPoint.update(location, state);
+      }
+      return true;
+    }
+    TouchPoint touchPoint = new TouchPoint(location);
+    boolean doConsume = processBirth(touchPoint);
+    inputDeviceTouchPoints.put(iid, touchPoint);
+    return doConsume;
+  }
+
+  /**
+   * Process a touch point birth by getting the groupID and gestures for the
+   * touch point.
+   * 
+   * @param touchPoint
+   *          The new touch point.
+   * @return doConsume
+   * 
+   */
+  private boolean processBirth(TouchPoint touchPoint) {
+    Vector clients_to_remove = null;
+    boolean doConsume = false;
+    for (int i = 0; i < _clients.size(); i++) {
+      ClientConnection client = (ClientConnection) _clients.get(i);
+      // Return if the client claims the touch point
+      try {
+        doConsume = client.processBirth(touchPoint);
+        if (doConsume)
+          break;
+      } catch (IOException e) {
+        // This occurs if there is a communication error
+        // with the client. In this case, we will want
+        // to remove the client.
+        if (clients_to_remove == null)
+          clients_to_remove = new Vector();
+        clients_to_remove.add(client);
+      }
+    }
+    if (clients_to_remove != null)
+      for (int i = 0; i < clients_to_remove.size(); i++) {
+        _clients.remove(clients_to_remove.elementAt(i));
+        Logger.info("[GestureServer] Client Disconnected");
+      }
+    return doConsume;
+  }
+
+
 }

@@ -78,7 +78,7 @@ class TransformManager11 extends TransformManager {
 
     // conversion factor Angstroms --> pixels
     // so that "full window" is visualRange
-    scalePixelsPerAngstrom = (scale3D && !perspectiveDepth && !isNavigationMode ? 
+    scalePixelsPerAngstrom = (scale3D && !perspectiveDepth && mode != MODE_NAVIGATION ? 
         72 / scale3DAngstromsPerInch : screenPixelCount / visualRange);  //(s/m)
 
     // model radius in pixels
@@ -91,7 +91,7 @@ class TransformManager11 extends TransformManager {
       //  + " spC " + screenPixelCount + " vR " + visualRange 
         //+ " sDPPA " + scaleDefaultPixelsPerAngstrom);
 
-    if (!isNavigationMode) {
+    if (mode != MODE_NAVIGATION) {
       // nonNavigation mode -- to match Jmol 10.2 at midplane (caffeine.xyz)
       //flag that we have left navigation mode
       zoomFactor = Float.MAX_VALUE;
@@ -162,25 +162,37 @@ class TransformManager11 extends TransformManager {
 
     // at this point coordinates are centered on rotation center
 
+    
+    switch (mode) {
+    case MODE_NAVIGATION:
+      // move nav center to 0; refOffset = Nav - Rot
+      point3fScreenTemp.x -= navigationShiftXY.x;
+      point3fScreenTemp.y -= navigationShiftXY.y;
+      break;
+    case MODE_PERSPECTIVE_CENTER:
+      point3fScreenTemp.x -= perspectiveShiftXY.x;
+      point3fScreenTemp.y -= perspectiveShiftXY.y;
+      break;
+    }
     if (perspectiveDepth) {
-      if (isNavigationMode) {
-        // move nav center to 0; refOffset = Nav - Rot
-        point3fScreenTemp.x -= navigationShiftXY.x;
-        point3fScreenTemp.y -= navigationShiftXY.y;
-      }
       // apply perspective factor
       float factor = getPerspectiveFactor(z);
       point3fScreenTemp.x *= factor;
       point3fScreenTemp.y *= factor;
     }
-
-    //now move the center point to where it needs to be
-    if (isNavigationMode) {
+    switch (mode) {
+    case MODE_NAVIGATION:
       point3fScreenTemp.x += navigationOffset.x;
       point3fScreenTemp.y += navigationOffset.y;
-    } else {
+      break;
+    case MODE_PERSPECTIVE_CENTER:
+      point3fScreenTemp.x += perspectiveOffset.x;
+      point3fScreenTemp.y += perspectiveOffset.y;
+      break;
+    case MODE_STANDARD:
       point3fScreenTemp.x += fixedRotationOffset.x;
       point3fScreenTemp.y += fixedRotationOffset.y;
+      break;
     }
 
     if (Float.isNaN(point3fScreenTemp.x) && !haveNotifiedNaN) {
@@ -210,7 +222,7 @@ class TransformManager11 extends TransformManager {
   void setScreenParameters(int screenWidth, int screenHeight,
                            boolean useZoomLarge, boolean antialias,
                            boolean resetSlab, boolean resetZoom) {
-    Point3f pt = (isNavigationMode ? new Point3f(navigationCenter) : null);
+    Point3f pt = (mode == MODE_NAVIGATION ? new Point3f(navigationCenter) : null);
     Point3f ptoff = new Point3f(navigationOffset);
     ptoff.x = ptoff.x / width;
     ptoff.y = ptoff.y / height;
@@ -316,7 +328,7 @@ class TransformManager11 extends TransformManager {
     depthValue = Integer.MAX_VALUE;
     if (!slabEnabled)
       return;
-    zSlabValue = slabValue = (isNavigationMode ? -100 : 0) + (int) (referencePlaneOffset - navigationSlabOffset);
+    zSlabValue = slabValue = (mode == MODE_NAVIGATION ? -100 : 0) + (int) (referencePlaneOffset - navigationSlabOffset);
     zDepthValue = depthValue = zValueFromPercent(depthPercentSetting);
 
     viewer.getGlobalSettings().setParameterValue("navigationDepth",getNavigationDepthPercent());
@@ -355,7 +367,7 @@ class TransformManager11 extends TransformManager {
       //                      Point3f navigationCenter) {
     
     //fixedRotationCenter, navigationOffset, navigationCenter
-    isNavigationMode = false;
+    mode = defaultMode;
     //get the rotation center's Z offset and move X and Y to 0,0
     transformPoint(fixedRotationCenter, pointT);
     pointT.x -= navigationOffset.x;
@@ -368,7 +380,7 @@ class TransformManager11 extends TransformManager {
     //now untransform that point to give the center that would
     //deliver this fixedModel position
     matrixUnTransform(pointT, navigationCenter);
-    isNavigationMode = true;
+    mode = MODE_NAVIGATION;
   }
 
   boolean canNavigate() {
@@ -383,11 +395,12 @@ class TransformManager11 extends TransformManager {
 
     //no release from navigation mode if too far zoomed in!
 
-    if (zoomPercent < 5 && !isNavigationMode) {
-      isNavigationMode = perspectiveDepth = true;
+    if (zoomPercent < 5 && mode != MODE_NAVIGATION) {
+      perspectiveDepth = true;
+      mode = MODE_NAVIGATION;
       return;
     }
-    if (isNavigationMode) {
+    if (mode == MODE_NAVIGATION) {
       navMode = NAV_MODE_RESET;
       slabPercentSetting = 0;
       perspectiveDepth = true;
@@ -395,8 +408,7 @@ class TransformManager11 extends TransformManager {
       slabPercentSetting = 100;
     }
     if (doResetSlab)
-      slabEnabled = isNavigationMode;
-    
+      slabEnabled = (mode == MODE_NAVIGATION);
     zoomFactor = Float.MAX_VALUE;
     zoomPercentSetting = zoomPercent;
   }
@@ -422,7 +434,7 @@ class TransformManager11 extends TransformManager {
 
   synchronized void navigate(int keyCode, int modifiers) {
     // 0 0 here means "key released"
-    if (!isNavigationMode)
+    if (mode != MODE_NAVIGATION)
       return;
     if (keyCode == 0) {
       nHits = 0;
@@ -894,7 +906,7 @@ class TransformManager11 extends TransformManager {
   }
 
   protected String getNavigationState() {
-    if (!isNavigationMode)
+    if (mode != MODE_NAVIGATION)
       return "";
     return "# navigation state;\nnavigate 0 center "
         + Escape.escape(getNavigationCenter())

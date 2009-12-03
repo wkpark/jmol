@@ -45,6 +45,11 @@ public class ClientToServerProtocol extends ClientProtocol {
 	public boolean processRequest(Client client) {
 		try {
 			// Read the message type
+		  // SparshUI client waits here for server message:
+		  // byte TYPE
+		  // int LENGTH
+		  // byte[] DATA
+		  
 			int type = recvType();
 			// Read the length of the message
 			int length = _in.readInt();

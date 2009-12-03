@@ -176,6 +176,7 @@ ActionManagerMT.processEvent groupID=16777100 eventType=6 iData=0 pt=(-1.0, -1.0
       return;
     if (event == null) {
       dispose();
+      client.processEvent(Integer.MAX_VALUE, -1, -1, -1, null, -1);
       return;
     }
     int id = 0;

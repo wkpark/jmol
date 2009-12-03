@@ -139,7 +139,7 @@ abstract class TransformManager {
         rotateX((float) Math.PI);
     }
     viewer.saveOrientation("default");
-    if (isNavigationMode)
+    if (mode == MODE_NAVIGATION)
       setNavigationMode(true);
   }
 
@@ -169,7 +169,7 @@ abstract class TransformManager {
     if (!isWindowCentered())
       StateManager.appendCmd(commands, "set windowCentered false");
     StateManager.appendCmd(commands, "set cameraDepth " + cameraDepth);
-    if (isNavigationMode)
+    if (mode == MODE_NAVIGATION)
       StateManager.appendCmd(commands, "set navigationMode true");
     StateManager.appendCmd(commands, viewer.getBoundBoxCommand(false));
     StateManager.appendCmd(commands, "center "
@@ -182,11 +182,11 @@ abstract class TransformManager {
               : Escape.escapeColor(stereoColors[0])
                   + " " + Escape.escapeColor(stereoColors[1]))
           + " " + stereoDegrees);
-    if (!isNavigationMode && !zoomEnabled)
+    if (mode != MODE_NAVIGATION && !zoomEnabled)
       StateManager.appendCmd(commands, "zoom off");
     commands.append("  slab ").append(slabPercentSetting).append(";depth ")
         .append(depthPercentSetting).append(
-            slabEnabled && !isNavigationMode ? ";slab on" : "").append(";\n");
+            slabEnabled && mode != MODE_NAVIGATION ? ";slab on" : "").append(";\n");
     if (zShadeEnabled)
       commands.append("  set zShade;\n");
     if (slabPlane != null)
@@ -198,7 +198,7 @@ abstract class TransformManager {
     commands.append(getSpinState(true)).append("\n");
     if (viewer.modelSetHasVibrationVectors() && vibrationOn)
       StateManager.appendCmd(commands, "vibration ON");
-    if (isNavigationMode) {
+    if (mode == MODE_NAVIGATION) {
       commands.append(getNavigationState());
       if (depthPlane != null || slabPlane != null)
         commands.append("  slab on;\n");
@@ -249,6 +249,8 @@ abstract class TransformManager {
 
   protected final Point3f fixedRotationOffset = new Point3f();
   protected final Point3f fixedRotationCenter = new Point3f();
+  protected final Point3f perspectiveOffset = new Point3f();
+  protected final Point3f perspectiveShiftXY = new Point3f();
 
   private final Point3f rotationCenterDefault = new Point3f();
   private float rotationRadiusDefault;
@@ -527,6 +529,7 @@ abstract class TransformManager {
    * TRANSLATIONS
    ****************************************************************/
   protected final Point3f fixedTranslation = new Point3f();
+  
 
   float xTranslationFraction = 0.5f;
   float yTranslationFraction = 0.5f;
@@ -589,7 +592,7 @@ abstract class TransformManager {
   }
 
   void translateToZPercent(float percent) {
-    if (!isNavigationMode)
+    if (mode != MODE_NAVIGATION)
       return;
     setNavigationDepthPercent(0, percent);
   }
@@ -650,7 +653,7 @@ abstract class TransformManager {
     info.put("transYPercent", new Float(getTranslationYPercent()));
     info.put("zoom", new Float(zoomPercent));
     info.put("modelRadius", new Float(modelRadius));
-    if (isNavigationMode) {
+    if (mode == MODE_NAVIGATION) {
       info.put("navigationCenter", "navigate center "
           + Escape.escape(navigationCenter));
       info.put("navigationOffsetXPercent", new Float(
@@ -1244,10 +1247,17 @@ abstract class TransformManager {
   private final Point3f point3fVibrationTemp = new Point3f();
 
   protected boolean navigating = false;
-  protected boolean isNavigationMode = false;
+  protected final static int MODE_STANDARD = 0;
+  protected final static int MODE_NAVIGATION = 1;
+  protected final static int MODE_PERSPECTIVE_CENTER = 2;
+  protected int mode = MODE_STANDARD;
+  protected int defaultMode = MODE_STANDARD;
 
   void setNavigationMode(boolean TF) {
-    isNavigationMode = (TF && canNavigate());
+    if (TF && canNavigate())
+      mode = MODE_NAVIGATION;
+    else
+      mode = defaultMode;
     resetNavigationPoint(true);
   }
 
@@ -1267,7 +1277,7 @@ abstract class TransformManager {
     }
     calcCameraFactors();
     calcTransformMatrix();
-    if (isNavigationMode)
+    if (mode == MODE_NAVIGATION)
       calcNavigationPoint();
     else
       calcSlabAndDepthValues();
@@ -1278,7 +1288,7 @@ abstract class TransformManager {
       zoomPercentSetting = 5;
     if (zoomPercentSetting > MAXIMUM_ZOOM_PERCENTAGE)
       zoomPercentSetting = MAXIMUM_ZOOM_PERCENTAGE;
-    return (zoomEnabled || isNavigationMode ? zoomPercentSetting : 100);
+    return (zoomEnabled || mode == MODE_NAVIGATION ? zoomPercentSetting : 100);
   }
 
   /**
@@ -1431,10 +1441,16 @@ abstract class TransformManager {
   void unTransformPoint(Point3f screenPt, Point3f coordPt) {
     //draw move2D
     pointT.set(screenPt);
-    if (isNavigationMode) {
+    switch (mode) {
+    case MODE_NAVIGATION:
       pointT.x -= navigationOffset.x;
       pointT.y -= navigationOffset.y;
-    } else {
+      break;
+    case MODE_PERSPECTIVE_CENTER:
+      pointT.x -= perspectiveOffset.x;
+      pointT.y -= perspectiveOffset.y;
+      break;
+    case MODE_STANDARD:
       pointT.x -= fixedRotationOffset.x;
       pointT.y -= fixedRotationOffset.y;
     }
@@ -1443,9 +1459,15 @@ abstract class TransformManager {
       pointT.x /= factor;
       pointT.y /= factor;
     }
-    if (isNavigationMode) {
+    switch (mode) {
+    case MODE_NAVIGATION:
       pointT.x += navigationShiftXY.x;
       pointT.y += navigationShiftXY.y;
+      break;
+    case MODE_PERSPECTIVE_CENTER:
+      pointT.x += perspectiveShiftXY.x;
+      pointT.y += perspectiveShiftXY.y;
+      break;
     }
     matrixUnTransform(pointT, coordPt);
   }
@@ -1611,7 +1633,7 @@ abstract class TransformManager {
       aaStepCenter.scale(1f / totalSteps);
       float pixelScaleDelta = (targetPixelScale - startPixelScale);
       float rotationRadiusDelta = (targetRotationRadius - startRotationRadius);
-      if (navCenter != null && isNavigationMode) {
+      if (navCenter != null && mode == MODE_NAVIGATION) {
         aaStepNavCenter.set(navCenter);
         aaStepNavCenter.sub(navigationCenter);
         aaStepNavCenter.scale(1f / totalSteps);
@@ -1650,7 +1672,7 @@ abstract class TransformManager {
         setRotation(matrixStep);
         if (center != null)
           fixedRotationCenter.add(aaStepCenter);
-        if (navCenter != null && isNavigationMode) {
+        if (navCenter != null && mode == MODE_NAVIGATION) {
           Point3f pt = new Point3f(navigationCenter);
           pt.add(aaStepNavCenter);
           navigate(0, pt);
@@ -1693,7 +1715,7 @@ abstract class TransformManager {
       translateToYPercent(yTrans);
     }
     setRotation(matrixEnd);
-    if (navCenter != null && isNavigationMode) {
+    if (navCenter != null && mode == MODE_NAVIGATION) {
       navigationCenter.set(navCenter);
       if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
         navTranslatePercent(0, xNav, yNav);
@@ -1811,7 +1833,7 @@ abstract class TransformManager {
       truncate2(sb, modelRadius);
       sb.append(";");
     }
-    if (isNavigationMode) {
+    if (mode == MODE_NAVIGATION) {
       sb.append("navigate 0 center ").append(Escape.escape(navigationCenter));
       sb.append(";navigate 0 translate");
       truncate2(sb, getNavigationOffsetPercent('X'));

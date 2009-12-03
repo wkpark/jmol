@@ -48,18 +48,26 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
   
   ActionManagerMT(Viewer viewer, boolean isSimulated) {
     super(viewer);
-
-    if (isSimulated)
-      Logger.error("ActionManagerMT -- for now just using touch simulation.\nPress CTRL-LEFT and then draw two traces on the window.");
-    
-    Component display = viewer.getDisplay();
     adapter = (JmolSparshAdapter) Interface
     .getOptionInterface("multitouch.sparshui.JmolSparshClientAdapter");
-    if (adapter == null)
-      return;
-    adapter.setSparshClient(display, this);
     groupID = ((int) (Math.random() * 0xFFFFFF)) << 4;
     Logger.info("ActionManagerMT SparshUI groupID=" + groupID);
+    startSparshUIService(isSimulated);
+    setBinding(binding);
+  }
+
+  private void startSparshUIService(boolean isSimulated) {
+    if (adapter == null)
+      return;
+    if (simulator != null) { // a restart
+      simulator.dispose();
+      simulator = null;
+    }
+    if (isSimulated)
+      Logger.error("ActionManagerMT -- for now just using touch simulation.\nPress CTRL-LEFT and then draw two traces on the window.");    
+
+    Component display = viewer.getDisplay();
+    adapter.setSparshClient(display, this);
     if (isSimulated) {
       simulator = (JmolTouchSimulatorInterface) Interface
       .getInterface("com.sparshui.inputdevice.JmolTouchSimulator");
@@ -68,7 +76,6 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
         simulator.startSimulator(display);
       }
     }
-    setBinding(binding);
   }
 
   protected void setBinding(Binding newBinding) {
@@ -115,6 +122,7 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
   //these must match those in com.sparshui.common.messages.events.EventType
   // reproduced here so there are no references to that code in applet module
   
+  public static final int SERVICE_LOST = -1;
   public static final int DRAG_EVENT = 0;
   public static final int ROTATE_EVENT = 1;
   public static final int SPIN_EVENT = 2;
@@ -174,6 +182,9 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
           + Integer.toHexString(groupID) + " eventType=" + eventType + "("
           + getEventName(eventType) + ") iData=" + iData + " pt=" + pt);
     switch (eventType) {
+    case SERVICE_LOST:
+      startSparshUIService(simulator != null);  
+      break;
     case ZOOM_EVENT:
       float scale = pt.z;
       if (scale == -1 || scale == 1) {

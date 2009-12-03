@@ -48,7 +48,8 @@ public interface Client {
 	/**
 	 * This method processes events from the Gesture Server.  It
 	 * should handle each event by sending it to the appropriate
-	 * group specified by groupID.
+	 * group specified by groupID. If groupID == Integer.MAX_VALUE
+	 * and event is null, then the server connection has been lost.
 	 * 
 	 * @param groupID
 	 * 		The group that this event was detected on.

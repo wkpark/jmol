@@ -146,13 +146,12 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
     Integer iid = new Integer(id);
     if (inputDeviceTouchPoints.containsKey(iid)) {
       TouchPoint touchPoint = (TouchPoint) inputDeviceTouchPoints.get(iid);
-      if (touchPoint.isValid()) {
-        synchronized (touchPoint) {
-          touchPoint.update(location, state);
-        }
-        return true;
+      if (!touchPoint.isValid())
+        return false;
+      synchronized (touchPoint) {
+        touchPoint.update(location, state);
       }
-      return false;
+      return true;
     }
     TouchPoint touchPoint = new TouchPoint(location);
     inputDeviceTouchPoints.put(iid, touchPoint);

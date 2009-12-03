@@ -164,18 +164,18 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
    * 
    * @param touchPoint
    *          The new touch point.
-   * @return doConsume
+   * @return whether a client has accepted this touchPoint as its own.
    * 
    */
   private boolean processBirth(TouchPoint touchPoint) {
     Vector clients_to_remove = null;
-    boolean doConsume = false;
+    boolean isAccepted = false;
     for (int i = 0; i < _clients.size(); i++) {
       ClientConnection client = (ClientConnection) _clients.get(i);
       // Return if the client claims the touch point
       try {
-        doConsume = client.processBirth(touchPoint);
-        if (doConsume)
+        isAccepted = client.processBirth(touchPoint);
+        if (isAccepted)
           break;
       } catch (IOException e) {
         // This occurs if there is a communication error
@@ -191,7 +191,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
         _clients.remove(clients_to_remove.elementAt(i));
         Logger.info("[GestureServer] Client Disconnected");
       }
-    return doConsume;
+    return isAccepted;
   }
 
 

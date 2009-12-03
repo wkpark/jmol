@@ -150,13 +150,13 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
         synchronized (touchPoint) {
           touchPoint.update(location, state);
         }
+        return true;
       }
-      return true;
+      return false;
     }
     TouchPoint touchPoint = new TouchPoint(location);
-    boolean doConsume = processBirth(touchPoint);
     inputDeviceTouchPoints.put(iid, touchPoint);
-    return doConsume;
+    return processBirth(touchPoint);
   }
 
   /**

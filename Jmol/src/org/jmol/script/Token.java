@@ -636,7 +636,8 @@ public class Token {
   final static int sub          = 5 | 1 << 9 | mathfunc | mathproperty;
   final static int trim         = 6 | 1 << 9 | mathfunc | mathproperty;  
   public final static int volume = 7 | 1 << 9 | mathfunc | mathproperty | floatproperty;  
-
+  final static int col           = 8 | 1 << 9 | mathfunc | mathproperty;
+  final static int row           = 9 | 1 << 9 | mathfunc | mathproperty;
   // xxx(a,b)
   
   public final static int cross = 1 | 2 << 9 | mathfunc;
@@ -702,17 +703,17 @@ public class Token {
   public final static int axis   = misc | 16;
   final static int babel         = misc | 17;
   final static int back          = misc | 18;
-  public final static int backlit = misc | 20;
-  final static int binary        = misc | 21;// new
-  final static int blockdata     = misc | 22;// new
-  final static int bondset       = misc | 23;
-  final static int bottom        = misc | 24;
-  final static int cap           = misc | 25 | expression;// new
-  final static int cavity        = misc | 26;// new
-  final static int check         = misc | 27;// new
-  final static int circle        = misc | 28;// new
-  final static int clear         = misc | 29;
-  final static int clipboard     = misc | 30;
+  public final static int backlit = misc | 19;
+  final static int binary        = misc | 20;// new
+  final static int blockdata     = misc | 21;// new
+  final static int bondset       = misc | 22;
+  final static int bottom        = misc | 23;
+  final static int cap           = misc | 24 | expression;// new
+  final static int cavity        = misc | 25;// new
+  final static int check         = misc | 26;// new
+  final static int circle        = misc | 27;// new
+  final static int clear         = misc | 28;
+  final static int clipboard     = misc | 29;
   final static int collapsed     = misc | 31;// new
   final static int colorscheme   = misc | 32;// new
   final static int command       = misc | 33;// new
@@ -839,9 +840,9 @@ public class Token {
   final static int right          = misc | 165;
   final static int rotate45       = misc | 166;// new
   public final static int rotation = misc | 167;
-  final static int rubberband     = misc | 168;
-  final static int sasurface      = misc | 169;
-  final static int scale          = misc | 170;
+  final static int rubberband     = misc | 169;
+  final static int sasurface      = misc | 170;
+  final static int scale          = misc | 171;
   final static int selection      = misc | 172;// new
   final static int shape          = misc | 173;
   final static int shapely        = misc | 174;
@@ -1104,6 +1105,7 @@ public class Token {
     "residue",           new Token(residue),
     "residues",          null,
     "rotation",          new Token(rotation),
+    "row",               new Token(row),
     "sequence",          new Token(sequence),
     "shape",             new Token(shape),
     "state",             new Token(state),
@@ -1389,6 +1391,7 @@ public class Token {
     "check", new Token(check),
     "circle", new Token(circle),
     "collapsed", new Token(collapsed),
+    "col", new Token(col),
     "colorscheme", new Token(colorscheme),
     "command", new Token(command),
     "commands", new Token(commands),

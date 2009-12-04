@@ -494,7 +494,7 @@ class ScriptMathProcessor {
       break;
     case Token.rightsquare:
       wasX = true;
-      if (squareCount-- <= 0)
+      if (squareCount-- <= 0 || oPt < 0)
         return false;
       if (oStack[oPt].tok == Token.array)
         return evaluateFunction();
@@ -597,7 +597,7 @@ class ScriptMathProcessor {
     case Token.dot:
     case Token.distance:
       if (op.tok == Token.propselector)
-        return evaluateDistance(args, tok);
+        return evaluateDot(args, tok);
       // fall through
     case Token.angle:
       return evaluateMeasure(args, op.tok == Token.angle);
@@ -610,6 +610,9 @@ class ScriptMathProcessor {
       return evaluateFind(args);
     case Token.replace:
       return evaluateReplace(args);
+    case Token.row:
+    case Token.col:
+      return evaluateRowCol(args, tok);
     case Token.array:
       return evaluateArray(args);
     case Token.now:
@@ -829,13 +832,13 @@ class ScriptMathProcessor {
     return false;
   }
 
-  private boolean evaluateDistance(ScriptVariable[] args, int tok)
+  private boolean evaluateDot(ScriptVariable[] args, int tok)
       throws ScriptException {
-    ScriptVariable x1 = getX();
     if (args.length != 1)
       return false;
     if (isSyntaxCheck)
       return addX(1f);
+    ScriptVariable x1 = getX();
     ScriptVariable x2 = args[0];
     Point3f pt2 = ptValue(x2);
     Point4f plane2 = planeValue(x2);
@@ -847,23 +850,25 @@ class ScriptMathProcessor {
     if (tok == Token.dot) {
       if (plane1 != null && plane2 != null)
         // q1.dot(q2) assume quaternions
-        return addX(plane1.x * plane2.x + plane1.y * plane2.y + plane1.z * plane2.z + plane1.w * plane2.w);
-        // plane.dot(point) = 
+        return addX(plane1.x * plane2.x + plane1.y * plane2.y + plane1.z
+            * plane2.z + plane1.w * plane2.w);
+      // plane.dot(point) =
       if (plane1 != null)
         pt1 = new Point3f(plane1.x, plane1.y, plane1.z);
       // point.dot(plane)
       if (plane2 != null)
         pt2 = new Point3f(plane2.x, plane2.y, plane2.z);
-      return addX(pt1.x * pt2.x + pt1.y * pt2.y + pt2.z * pt2.z);
+      return addX(pt1.x * pt2.x + pt1.y * pt2.y + pt1.z * pt2.z);
     }
 
     if (plane1 == null)
-      return addX(plane2 == null ? pt2.distance(pt1) : Measure
-          .distanceToPlane(plane2, pt1));
+      return addX(plane2 == null ? pt2.distance(pt1) : Measure.distanceToPlane(
+          plane2, pt1));
     return addX(Measure.distanceToPlane(plane1, pt2));
   }
 
   private Point3f ptValue(ScriptVariable x) throws ScriptException {
+    Object pt;
     if (isSyntaxCheck)
       return new Point3f();
     switch (x.tok) {
@@ -873,8 +878,12 @@ class ScriptMathProcessor {
       return (Point3f) eval.getBitsetProperty(ScriptVariable.bsSelect(x),
           Token.xyz, null, null, x.value, null, false, Integer.MAX_VALUE);
     case Token.string:
+      pt = Escape.unescapePoint(ScriptVariable.sValue(x));
+      if (pt instanceof Point3f)
+        return (Point3f) pt;
+      break;
     case Token.list:
-      Object pt = Escape.unescapePoint(ScriptVariable.sValue(x));
+      pt = Escape.unescapePoint("{" + ScriptVariable.sValue(x) + "}");
       if (pt instanceof Point3f)
         return (Point3f) pt;
       break;
@@ -1169,7 +1178,6 @@ class ScriptMathProcessor {
     ScriptVariable x2;
     int len;
     String[] sList1, sList2, sList3;
-
     if (args.length == 2) {
       // [xxxx].add("\t", [...])
       int itab = (args[0].tok == Token.string ? 0 : 1);
@@ -1280,6 +1288,51 @@ class ScriptMathProcessor {
     return addX(sList3);
   }
 
+  private boolean evaluateRowCol(ScriptVariable[] args, int tok)
+      throws ScriptException {
+    if (args.length != 1)
+      return false;
+    if (isSyntaxCheck)
+      return addX("");
+    int n = ScriptVariable.iValue(args[0]) - 1;
+    ScriptVariable x1 = getX();
+    float[] f;
+    switch (x1.tok) {
+    case Token.matrix3f:
+      if (n < 0 || n > 2)
+        return false;
+      Matrix3f m = (Matrix3f) x1.value;
+      switch (tok) {
+      case Token.row:
+        f = new float[3];
+        m.getRow(n, f);
+        return addX(f);
+      case Token.col:
+      default:
+        f = new float[3];
+        m.getColumn(n, f);
+        return addX(f);
+      }
+    case Token.matrix4f:
+      if (n < 0 || n > 2)
+        return false;
+      Matrix4f m4 = (Matrix4f) x1.value;
+      switch (tok) {
+      case Token.row:
+        f = new float[4];
+        m4.getRow(n, f);
+        return addX(f);
+      case Token.col:
+      default:
+        f = new float[4];
+        m4.getColumn(n, f);
+        return addX(f);
+      }
+    }
+    return false;
+
+  }
+  
   private boolean evaluateArray(ScriptVariable[] args) {
     if (isSyntaxCheck)
       return addX("");
@@ -1811,7 +1864,7 @@ class ScriptMathProcessor {
     Token op = oStack[oPt--];
     Point3f pt;
     String s;
-    
+
     if (logMessages) {
       dumpStacks("operate: " + op);
     }
@@ -1826,7 +1879,8 @@ class ScriptMathProcessor {
 
     // unary:
 
-    if (x2.tok == Token.list || x2.tok == Token.matrix3f || x2.tok == Token.matrix4f)
+    if (x2.tok == Token.list || x2.tok == Token.matrix3f
+        || x2.tok == Token.matrix4f)
       x2 = ScriptVariable.selectItem(x2);
 
     if (op.tok == Token.minusMinus || op.tok == Token.plusPlus) {
@@ -1837,25 +1891,25 @@ class ScriptMathProcessor {
       return true;
     }
     if (op.tok == Token.opNot) {
-      if (isSyntaxCheck) 
+      if (isSyntaxCheck)
         return addX(true);
       switch (x2.tok) {
-      case Token.point4f:  // quaternion
+      case Token.point4f: // quaternion
         return addX((new Quaternion((Point4f) x2.value)).inv().toPoint4f());
       case Token.matrix3f:
         Matrix3f m = new Matrix3f();
-        m.set((Matrix3f)x2.value);
+        m.set((Matrix3f) x2.value);
         m.invert();
         return addX(m);
       case Token.matrix4f:
         Matrix4f m4 = new Matrix4f();
-        m4.set((Matrix4f)x2.value);
+        m4.set((Matrix4f) x2.value);
         m4.invert();
         return addX(m4);
       case Token.bitset:
-        return addX(BitSetUtil.copyInvert(ScriptVariable
-              .bsSelect(x2), (x2.value instanceof BondSet ? viewer
-              .getBondCount() : viewer.getAtomCount())));
+        return addX(BitSetUtil.copyInvert(ScriptVariable.bsSelect(x2),
+            (x2.value instanceof BondSet ? viewer.getBondCount() : viewer
+                .getAtomCount())));
       default:
         return addX(!ScriptVariable.bValue(x2));
       }
@@ -1876,14 +1930,15 @@ class ScriptMathProcessor {
         case Token.matrix3f:
         case Token.matrix4f:
           s = ScriptVariable.sValue(x2);
-          s = TextFormat.simpleReplace(s.substring(1, s.length()-1), "],[", "]\n[");
+          s = TextFormat.simpleReplace(s.substring(1, s.length() - 1), "],[",
+              "]\n[");
           break;
         case Token.string:
           s = (String) x2.value;
           break;
         default:
           s = ScriptVariable.sValue(x2);
-        }          
+        }
         s = TextFormat.simpleReplace(s, "\n\r", "\n").replace('\r', '\n');
         return addX(TextFormat.split(s, '\n'));
       case Token.color:
@@ -1898,7 +1953,8 @@ class ScriptMathProcessor {
           return addX(viewer.getColorPointForPropertyValue(ScriptVariable
               .fValue(x2)));
         case Token.point3f:
-          return addX(Escape.escapeColor(Graphics3D.colorPtToInt((Point3f) x2.value)));
+          return addX(Escape.escapeColor(Graphics3D
+              .colorPtToInt((Point3f) x2.value)));
         default:
           // handle bitset later
         }
@@ -2120,9 +2176,13 @@ class ScriptMathProcessor {
           pt = new Point3f((Point3f) x2.value);
           m4.transform(pt);
           return addX(pt);
+        case Token.point4f:
+          Point4f pt4 = new Point4f((Point4f) x2.value);
+          m4.transform(pt4);
+          return addX(pt4);
         case Token.matrix4f:
-          Matrix4f m4b = new Matrix4f();
-          m4b.mul(m4, (Matrix4f) x2.value);
+          Matrix4f m4b = new Matrix4f((Matrix4f) x2.value);
+          m4b.mul(m4, m4b);
           return addX(m4b);
         default:
           return addX("NaN");
@@ -2247,7 +2307,8 @@ class ScriptMathProcessor {
           return addX((new Quaternion(q)).getVector(2));
         case -6:
           AxisAngle4f ax = (new Quaternion(q)).toAxisAngle4f();
-          return addX(new Point4f(ax.x, ax.y, ax.z, (float) (ax.angle * 180 / Math.PI)));
+          return addX(new Point4f(ax.x, ax.y, ax.z,
+              (float) (ax.angle * 180 / Math.PI)));
         case -9:
           return addX((new Quaternion(q)).getMatrix());
         default:

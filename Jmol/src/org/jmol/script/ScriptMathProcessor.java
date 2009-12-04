@@ -2162,6 +2162,41 @@ class ScriptMathProcessor {
           : x2.tok == Token.matrix3f ? ptValue(x1, false) : null);
       pt4 = (x1.tok == Token.matrix4f ? planeValue(x2)
           : x2.tok == Token.matrix4f ? planeValue(x1) : null);
+      // checking here to make sure arrays remain arrays and
+      // points remain points with matrix operations.
+      // we check x2, because x1 could be many things.
+      switch (x2.tok) {
+      case Token.matrix3f:
+        if (pt != null) {
+          // pt * m
+          Matrix3f m3b = new Matrix3f((Matrix3f) x2.value);
+          m3b.transpose();
+          m3b.transform(pt);
+          if (x1.tok == Token.list)
+            return addX(ScriptVariable.getVariable(new float[] { pt.x, pt.y,
+                pt.z }));
+          return addX(pt);
+        }
+        if (pt4 != null) {
+          // q * m --> q
+          return addX(((new Quaternion(pt4)).mul(new Quaternion(
+              (Matrix3f) x2.value))));
+        }
+        break;
+      case Token.matrix4f:
+        // pt4 * m4
+        // [a b c d] * m4
+        if (pt4 != null) {
+          Matrix4f m4b = new Matrix4f((Matrix4f) x2.value);
+          m4b.transpose();
+          m4b.transform(pt4);
+          if (x1.tok == Token.list)
+            return addX(ScriptVariable.getVariable(new float[] { pt4.x, pt4.y,
+                pt4.z, pt4.w }));
+          return addX(pt4);
+        }
+        break;
+      }
       switch (x1.tok) {
       default:
         return addX(ScriptVariable.fValue(x1) * ScriptVariable.fValue(x2));
@@ -2169,6 +2204,9 @@ class ScriptMathProcessor {
         Matrix3f m3 = (Matrix3f) x1.value;
         if (pt != null) {
           m3.transform(pt);
+          if (x2.tok == Token.list)
+            return addX(ScriptVariable.getVariable(new float[] { pt.x, pt.y,
+                pt.z }));
           return addX(pt);
         }
         switch (x2.tok) {
@@ -2176,6 +2214,10 @@ class ScriptMathProcessor {
           Matrix3f m = new Matrix3f((Matrix3f) x2.value);
           m.mul(m3, m);
           return addX(m);
+        case Token.point4f:
+          // m * q
+          return addX((new Quaternion(m3)).mul(new Quaternion(
+              (Point4f) x2.value)).getMatrix());
         default:
           float f = ScriptVariable.fValue(x2);
           AxisAngle4f aa = new AxisAngle4f();
@@ -2189,10 +2231,16 @@ class ScriptMathProcessor {
         Matrix4f m4 = (Matrix4f) x1.value;
         if (pt != null) {
           m4.transform(pt);
+          if (x2.tok == Token.list)
+            return addX(ScriptVariable.getVariable(new float[] { pt.x, pt.y,
+                pt.z }));
           return addX(pt);
         }
         if (pt4 != null) {
           m4.transform(pt4);
+          if (x2.tok == Token.list)
+            return addX(ScriptVariable.getVariable(new float[] { pt4.x, pt4.y,
+                pt4.z, pt4.w }));
           return addX(pt4);
         }
         switch (x2.tok) {
@@ -2209,24 +2257,18 @@ class ScriptMathProcessor {
         case Token.point3f:
           Point3f pt2 = ((Point3f) x2.value);
           return addX(pt.x * pt2.x + pt.y * pt2.y + pt.z * pt2.z);
-        case Token.matrix3f:
-          Matrix3f m3b = new Matrix3f((Matrix3f) x2.value);
-          m3b.transpose();
-          m3b.transform(pt);
-          return addX(pt);
         default:
           float f = ScriptVariable.fValue(x2);
           return addX(new Point3f(pt.x * f, pt.y * f, pt.z * f));
         }
       case Token.point4f:
-        if (x2.tok == Token.point4f) {
+        switch (x2.tok) {
+        case Token.point4f:
           // quaternion multiplication
           // note that Point4f is {x,y,z,w} so we use that for
           // quaternion notation as well here.
-          Quaternion q1 = new Quaternion((Point4f) x1.value);
-          Quaternion q = new Quaternion((Point4f) x2.value);
-          q = q1.mul(q);
-          return addX(new Point4f(q.q1, q.q2, q.q3, q.q0));
+          return addX((new Quaternion((Point4f) x1.value)).mul(new Quaternion(
+              (Point4f) x2.value)));
         }
         return addX(new Quaternion((Point4f) x1.value).mul(
             ScriptVariable.fValue(x2)).toPoint4f());

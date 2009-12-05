@@ -874,6 +874,8 @@ public class Token {
   final static int fix             = misc | 206;// new
   final static int energy          = misc | 207;// new
   final static int criterion       = misc | 208;// new
+  final static int in              = misc | 209;// new
+  final static int out             = misc | 210;// new
   
   
   // predefined Tokens: 
@@ -977,6 +979,7 @@ public class Token {
     "history",           new Token(history),
     "hover",             new Token(hover),
     "if",                new Token(ifcmd),
+    "in",                new Token(in),
     "initialize",        new Token(initialize),
     "invertSelected",    new Token(invertSelected),
     "isosurface",        new Token(isosurface),
@@ -1005,6 +1008,7 @@ public class Token {
     "moveto",            new Token(moveto),
     "navigate",          new Token(navigate),
     "navigation",        null,
+    "out",               new Token(out),
     "pause",             new Token(pause),
     "wait",              null,
     "pmesh",             new Token(pmesh),

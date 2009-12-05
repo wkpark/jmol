@@ -38,7 +38,7 @@ import org.jmol.viewer.binding.Binding;
 
 public class ActionManagerMT extends ActionManager implements JmolSparshClient {
 
-  ///////////// sparsh client interaction ////////////////
+  ///////////// sparsh multi-touch client interaction ////////////////
 
   JmolSparshAdapter adapter;
   JmolTouchSimulatorInterface simulator;
@@ -155,7 +155,7 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
     //list.add(new Integer(SPIN_GESTURE));
     //list.add(new Integer(DBLCLK_GESTURE));
     list.add(TWO_POINT_GESTURE);
-    //list.add(new Integer(TOUCH_GESTURE));
+    list.add(new Integer(TOUCH_GESTURE));
     //list.add(new Integer(ZOOM_GESTURE));
     //list.add(new Integer(FLICK_GESTURE));
     //list.add(new Integer(RELATIVE_DRAG_GESTURE));    

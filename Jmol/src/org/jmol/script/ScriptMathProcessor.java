@@ -1869,6 +1869,7 @@ class ScriptMathProcessor {
     Token op = oStack[oPt--];
     Point3f pt;
     Point4f pt4;
+    Matrix3f m;
     String s;
 
     if (logMessages) {
@@ -1903,7 +1904,7 @@ class ScriptMathProcessor {
       case Token.point4f: // quaternion
         return addX((new Quaternion((Point4f) x2.value)).inv().toPoint4f());
       case Token.matrix3f:
-        Matrix3f m = new Matrix3f((Matrix3f) x2.value);
+        m = new Matrix3f((Matrix3f) x2.value);
         m.invert();
         return addX(m);
       case Token.matrix4f:
@@ -2048,17 +2049,21 @@ class ScriptMathProcessor {
     case Token.plus:
       if (x1.tok == Token.list || x2.tok == Token.list)
         return addX(ScriptVariable.concatList(x1, x2));
-      if (x1.tok == Token.integer) {
-        if (x2.tok == Token.string) {
-          if ((s = (ScriptVariable.sValue(x2)).trim()).indexOf(".") < 0
-              && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
-            return addX(x1.intValue + ScriptVariable.iValue(x2));
-        } else if (x2.tok != Token.decimal)
-          return addX(x1.intValue + ScriptVariable.iValue(x2));
-      }
       switch (x1.tok) {
       default:
         return addX(ScriptVariable.fValue(x1) + ScriptVariable.fValue(x2));
+      case Token.integer:
+        switch (x2.tok) {
+        case Token.string:
+            if ((s = (ScriptVariable.sValue(x2)).trim()).indexOf(".") < 0
+                && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
+              return addX(x1.intValue + ScriptVariable.iValue(x2));
+            break;
+        case Token.decimal:
+          return addX(x1.intValue + ScriptVariable.fValue(x2));
+        default:
+          return addX(x1.intValue + ScriptVariable.iValue(x2));    
+        }
       case Token.string:
         return addX(new ScriptVariable(Token.string, ScriptVariable.sValue(x1)
             + ScriptVariable.sValue(x2)));
@@ -2085,6 +2090,33 @@ class ScriptMathProcessor {
           float f = ScriptVariable.fValue(x2);
           return addX(new Point3f(pt.x + f, pt.y + f, pt.z + f));
         }
+      case Token.matrix3f: 
+        switch (x2.tok) {
+        default:
+          return addX(ScriptVariable.fValue(x1) + ScriptVariable.fValue(x2));
+        case Token.matrix3f:
+          m = new Matrix3f((Matrix3f)x1.value);
+          m.add((Matrix3f)x2.value);
+          return addX(m);
+        case Token.point3f:
+          Matrix4f m4 = new Matrix4f();
+          m = (Matrix3f)x1.value;
+          pt = (Point3f)x2.value;
+          m4.m00 = m.m00;
+          m4.m01 = m.m01;
+          m4.m02 = m.m02;
+          m4.m03 = pt.x;
+          m4.m10 = m.m10;
+          m4.m11 = m.m11;
+          m4.m12 = m.m12;
+          m4.m13 = pt.y;
+          m4.m20 = m.m20;
+          m4.m21 = m.m21;
+          m4.m22 = m.m22;
+          m4.m23 = pt.z;
+          m4.m33 = 1;
+          return addX(m4);
+        }
       }
     case Token.minus:
       if (x1.tok == Token.integer) {
@@ -2103,6 +2135,24 @@ class ScriptMathProcessor {
       switch (x1.tok) {
       default:
         return addX(ScriptVariable.fValue(x1) - ScriptVariable.fValue(x2));
+      case Token.matrix3f: 
+        switch (x2.tok) {
+        default:
+          return addX(ScriptVariable.fValue(x1) - ScriptVariable.fValue(x2));
+        case Token.matrix3f:
+          m = new Matrix3f((Matrix3f)x1.value);
+          m.sub((Matrix3f)x2.value);
+          return addX(m);
+        }
+      case Token.matrix4f: 
+        switch (x2.tok) {
+        default:
+          return addX(ScriptVariable.fValue(x1) - ScriptVariable.fValue(x2));
+        case Token.matrix4f:
+          Matrix4f m4 = new Matrix4f((Matrix4f)x1.value);
+          m4.sub((Matrix4f)x2.value);
+          return addX(m4);
+        }
       case Token.point3f:
         pt = new Point3f((Point3f) x1.value);
         switch (x2.tok) {
@@ -2143,7 +2193,7 @@ class ScriptMathProcessor {
         pt4.scale(-1f);
         return addX(pt4);
       case Token.matrix3f:
-        Matrix3f m = new Matrix3f((Matrix3f) x2.value);
+        m = new Matrix3f((Matrix3f) x2.value);
         m.transpose();
         return addX(m);
       case Token.matrix4f:
@@ -2211,7 +2261,7 @@ class ScriptMathProcessor {
         }
         switch (x2.tok) {
         case Token.matrix3f:
-          Matrix3f m = new Matrix3f((Matrix3f) x2.value);
+          m = new Matrix3f((Matrix3f) x2.value);
           m.mul(m3, m);
           return addX(m);
         case Token.point4f:

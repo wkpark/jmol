@@ -847,7 +847,7 @@ public class ScriptVariable extends Token {
   public static Object unescapePointOrBitsetAsVariable(String s) {
     if (s == null || s.length() == 0)
       return s;
-    Object v = Escape.unescapePointOrBitsetOrMatrix(s);
+    Object v = Escape.unescapePointOrBitsetOrMatrixOrArray(s);
     if (v instanceof Point3f)
       return (new ScriptVariable(point3f, v));
     if (v instanceof Point4f)

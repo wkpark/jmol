@@ -672,7 +672,7 @@ public class Draw extends MeshCollection {
           bsAllModels = new BitSet();
         for (int j = 0; j < modelBasedPoints.length; j++)
           if (iModel < 0 || j == iModel) {
-            Object point = Escape.unescapePointOrBitsetOrMatrix(modelBasedPoints[j]);
+            Object point = Escape.unescapePointOrBitsetOrMatrixOrArray(modelBasedPoints[j]);
             bsAllModels.set(j);
             if (point instanceof Point3f) {
               addPoint((Point3f) point, j);

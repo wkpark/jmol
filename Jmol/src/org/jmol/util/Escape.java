@@ -246,16 +246,16 @@ public class Escape {
     return "\\u" + s.substring(s.length() - 4);
   }
 
-  public static Object unescapePointOrBitsetOrMatrix(String s) {
-    Object v = s;
+  public static Object unescapePointOrBitsetOrMatrixOrArray(String s) {
     if (s.charAt(0) == '{')
-      v = unescapePoint(s);
-    else if (s.indexOf("({") == 0 && s.indexOf("({") == s.lastIndexOf("({")
-        || s.indexOf("[{") == 0 && s.indexOf("[{") == s.lastIndexOf("[{"))
-      v = unescapeBitset(s);
-    else if (s.indexOf("[[") == 0)
-      v = unescapeMatrix(s);
-    return v;
+      return unescapePoint(s);
+    if ((s.startsWith("({") && s.indexOf("({") == s.lastIndexOf("({")
+        || s.startsWith("[{") && s.indexOf("[{") == s.lastIndexOf("[{"))
+        && s.indexOf(',') < 0 && s.indexOf('.') < 0 && s.indexOf('-') < 0)
+      return unescapeBitset(s);
+    if (s.startsWith("[["))
+      return unescapeMatrix(s);
+    return s;
   }
 
   public static Object unescapePoint(String strPoint) {
@@ -348,7 +348,20 @@ public class Escape {
       return new Matrix4f(points);
     return strMatrix;
   }
-
+/*
+  public static Object unescapeArray(String strArray) {
+    if (strArray == null || strArray.length() == 0)
+      return strArray;
+    String str = strArray.replace('\n', ' ').replace(',', ' ').trim();
+    if (str.lastIndexOf("[") != 0 || str.indexOf("]") != str.length() - 1)
+      return strArray;
+    float[] points = Parser.parseFloatArray(str);
+    for (int i = 0; i < points.length; i++)
+      if (Float.isNaN(points[i]))
+        return strArray;
+    return points;
+  }
+*/
   public static String escape(BitSet bs, boolean isAtoms) {
     char chOpen = (isAtoms ? '(' : '[');
     char chClose = (isAtoms ? ')' : ']');

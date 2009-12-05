@@ -7920,6 +7920,10 @@ public class ScriptEvaluator {
       // zoom on|off
       int tok = (statementLength > 1 ? getToken(1).tok : Token.on);
       switch (tok) {
+      case Token.in:
+      case Token.out:
+        isZoomTo = true;
+        break;
       case Token.on:
       case Token.off:
         if (statementLength > 2)
@@ -8026,6 +8030,11 @@ public class ScriptEvaluator {
       // moveTo/zoom/zoomTo {center} 0 [optional -factor|+factor|*factor|/factor]
       int tok = tokAt(i);
       switch (tok) {
+      case Token.out:
+      case Token.in:
+        zoom = currentZoom * (tok == Token.out ? 0.5f : 2f);
+        i++;
+        break;
       case Token.divide:
       case Token.times:
       case Token.plus:

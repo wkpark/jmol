@@ -4,7 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.io.DataInputStream;
+//import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -44,7 +44,7 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	
 	private Component _display;
 	
-  private DataInputStream _in;
+  //private DataInputStream _in;
 	private DataOutputStream _out;
 
 	public JmolTouchSimulator() {
@@ -52,7 +52,7 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 
 	public void dispose() {
     try {
-      _in.close();
+      //_in.close();
     } catch (Exception e) {
       
     }
@@ -77,7 +77,7 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	    _timer = new Timer();
 	    try {
 	      Socket socket = new Socket(address, NetworkConfiguration.PORT);
-        _in = new DataInputStream(socket.getInputStream());
+        //_in = new DataInputStream(socket.getInputStream());
 	      _out = new DataOutputStream(socket.getOutputStream());
 	      _out.writeByte(ConnectionType.INPUT_DEVICE);
 	      return true;
@@ -195,9 +195,9 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
       _out.writeFloat(((float) e.x / (float) dim.width));
       _out.writeFloat(((float) e.y / (float) dim.height));
       _out.writeByte((byte) e.type);
-      boolean doConsume = (_in.readByte() == 1);
-      if (Logger.debugging)
-        System.out.println("[JmolTouchSimulator] doConsume=" + doConsume);
+      //boolean doConsume = (_in.readByte() == 1);
+      //if (Logger.debugging)
+       // System.out.println("[JmolTouchSimulator] doConsume=" + doConsume);
     } catch (IOException e1) {
       System.err.println("Failed to send event to server.");
     }

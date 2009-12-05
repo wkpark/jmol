@@ -1,7 +1,7 @@
 package com.sparshui.server;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
+//import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
@@ -32,7 +32,7 @@ public class InputDeviceConnection implements Runnable {
 	 * 
 	 */
 	private DataInputStream _in;
-  private DataOutputStream _out;
+  //private DataOutputStream _out;
   
 	
 	/**
@@ -56,7 +56,7 @@ public class InputDeviceConnection implements Runnable {
 		_gestureServer = gestureServer;
 		_socket = socket;
     _in = new DataInputStream(socket.getInputStream());
-    _out = new DataOutputStream(socket.getOutputStream());
+    //_out = new DataOutputStream(socket.getOutputStream());
 		_touchPoints = new HashMap();
 		_flaggedids = new Vector();
 		startListening();
@@ -87,8 +87,8 @@ public class InputDeviceConnection implements Runnable {
 	private void receiveData() {
 		try {
 			while(!_socket.isInputShutdown()) {
-				boolean doConsume = readTouchPoints(_in.readInt());
-				_out.write((byte) (doConsume ? 1 : 0)); 
+				/*boolean doConsume = */ readTouchPoints(_in.readInt());
+				//_out.write((byte) (doConsume ? 1 : 0)); 
 			}
 		} catch (IOException e) {
 			//System.err.println("Error reading touch point from input device.");

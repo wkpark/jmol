@@ -7922,7 +7922,6 @@ public class ScriptEvaluator {
       switch (tok) {
       case Token.in:
       case Token.out:
-        isZoomTo = true;
         break;
       case Token.on:
       case Token.off:

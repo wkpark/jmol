@@ -784,18 +784,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
               float rotationRadius, Point3f navCenter, float xNav, float yNav,
               float navDepth) {
     // from Eval
+    setTainted(true);
     transformManager.moveTo(floatSecondsTotal, center, rotAxis, degrees, zoom,
         xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
     moveUpdate(floatSecondsTotal);
+    finalizeTransformParameters();
   }
 
   void moveTo(float floatSecondsTotal, Point3f center, Matrix3f rotationMatrix, 
               float zoom, float xTrans, float yTrans, float rotationRadius,
               Point3f navCenter, float xNav, float yNav, float navDepth) {
     // from StateManager -- -1 for time --> no repaint
+    setTainted(true);
     transformManager.moveTo(floatSecondsTotal, center, rotationMatrix, zoom,
         xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
     moveUpdate(floatSecondsTotal);
+    finalizeTransformParameters();
   }
 
   private void moveUpdate(float floatSecondsTotal) {

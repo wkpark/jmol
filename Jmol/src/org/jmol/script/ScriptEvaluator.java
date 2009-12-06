@@ -4970,7 +4970,7 @@ public class ScriptEvaluator {
     // (navCenter) xNav yNav navDepth
     // moveto [time] { x y z deg} (rotCenter) [zoom factor] (navCenter) xNav
     // yNav navDepth
-    // where zoom factor is z [[+|-|*|/] n] including 0
+    // where [zoom factor] is [0|n|+n|-n|*n|/n|IN|OUT]
     // moveto [time] front|back|left|right|top|bottom
     if (statementLength == 2 && isFloatParameter(1)) {
       float f = floatParameter(1);
@@ -7957,6 +7957,7 @@ public class ScriptEvaluator {
     // disabled sameAtom stuff -- just too weird
     boolean isSameAtom = false && (center != null && currentCenter
         .distance(center) < 0.1);
+    // zoom/zoomTo [0|n|+n|-n|*n|/n|IN|OUT]
     // zoom/zoomTo percent|-factor|+factor|*factor|/factor | 0
     float zoom = viewer.getZoomSetting();
     float newZoom = getZoom(i, bsCenter, zoom);
@@ -8009,8 +8010,7 @@ public class ScriptEvaluator {
 
   private float getZoom(int i, BitSet bs, float currentZoom)
       throws ScriptException {
-    // moveTo/zoom/zoomTo [optional {center}] percent|-factor|+factor|*factor|/factor
-    // moveTo/zoom/zoomTo {center} 0 [optional -factor|+factor|*factor|/factor]
+    // where [zoom factor] is [0|n|+n|-n|*n|/n|IN|OUT]
 
     float zoom = (isFloatParameter(i) ? floatParameter(i++) : Float.NaN);
     if (zoom == 0 || currentZoom == 0) {
@@ -8212,13 +8212,11 @@ public class ScriptEvaluator {
         i++;
       setShapeId(JmolConstants.SHAPE_ELLIPSOIDS, i, false);
       i = iToken;
-      for (++i; i < statementLength; i++) {
+      while (++i < statementLength) {
         String key = parameterAsString(i);
         Object value = null;
-        if (key.equalsIgnoreCase("modelIndex")) {
-          value = new Integer(intParameter(++i));
-          key = "modelindex";
-        } else if (key.equalsIgnoreCase("axes")) {
+        switch (tokAt(i)) {
+        case Token.axes:
           Vector3f[] axes = new Vector3f[3];
           for (int j = 0; j < 3; j++) {
             axes[j] = new Vector3f();
@@ -8226,20 +8224,12 @@ public class ScriptEvaluator {
             i = iToken;
           }
           value = axes;
-        } else if (key.equalsIgnoreCase("on")) {
-          value = Boolean.TRUE;
-        } else if (key.equalsIgnoreCase("off")) {
-          key = "on";
-          value = Boolean.FALSE;
-        } else if (key.equalsIgnoreCase("delete")) {
-          value = Boolean.TRUE;
-          checkLength(3);
-        } else if (key.equalsIgnoreCase("center")) {
+          break;
+        case Token.center:
           value = centerParameter(++i);
           i = iToken;
-        } else if (key.equalsIgnoreCase("scale")) {
-          value = new Float(floatParameter(++i));
-        } else if (key.equalsIgnoreCase("color")) {
+          break;
+        case Token.color:
           float translucentLevel = Float.NaN;
           i++;
           if ((theTok = tokAt(i)) == Token.translucent) {
@@ -8263,6 +8253,24 @@ public class ScriptEvaluator {
             setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS,
                 "translucentLevel", new Float(translucentLevel));
           key = "translucency";
+          break;
+        case Token.delete:
+          value = Boolean.TRUE;
+          checkLength(3);
+          break;
+        case Token.modelindex:
+          value = new Integer(intParameter(++i));
+          break;
+        case Token.on:
+          value = Boolean.TRUE;
+          break;
+        case Token.off:
+          key = "on";
+          value = Boolean.FALSE;
+          break;
+        case Token.scale:
+          value = new Float(floatParameter(++i));
+          break;
         }
         if (value == null)
           error(ERROR_invalidArgument);
@@ -11505,12 +11513,12 @@ public class ScriptEvaluator {
         }
         if (isSavedState)
           error(ERROR_invalidArgument);
-        isSavedState = !isSavedState;
+        isSavedState = true;
         break;
       case Token.rightsquare:
         if (!isSavedState)
           error(ERROR_invalidArgument);
-        isSavedState = !isSavedState;
+        isSavedState = false;
         break;
       case Token.reverse:
         propertyName = "reverse";
@@ -11530,6 +11538,10 @@ public class ScriptEvaluator {
         // $drawObject
         propertyValue = new Float(floatParameter(i));
         propertyName = "length";
+        break;
+      case Token.modelindex:
+        propertyName = "modelIndex";
+        propertyValue = new Integer(intParameter(++i));
         break;
       case Token.integer:
         if (isSavedState) {

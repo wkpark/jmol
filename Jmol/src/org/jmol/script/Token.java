@@ -1279,7 +1279,7 @@ public class Token {
     "modifyorcreate",   new Token(modifyorcreate),
     "molecule",         new Token(molecule),
     "molecules",        null, 
-    "modelindex",        new Token(modelindex),
+    "modelIndex",        new Token(modelindex),
     "monomer",          new Token(monomer),
     "mul",              new Token(mul),
     "next",             new Token(next),

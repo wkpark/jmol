@@ -197,4 +197,13 @@ final public class BitSetUtil {
         return false;
     return true;
   }
+
+  public static boolean haveCommon(BitSet a, BitSet b) {
+    if (a == null || b == null)
+      return false;
+    for (int i = Math.min(a.size(), b.size()); --i >= 0; )
+      if (a.get(i) && b.get(i))
+        return true;
+    return false;
+  }
 }

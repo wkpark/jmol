@@ -516,10 +516,12 @@ public class Draw extends MeshCollection {
         setPoints(-1, 0);
         thisMesh.drawType = JmolConstants.DRAW_MULTIPLE;
         thisMesh.drawVertexCount = -1;
+        thisMesh.modelFlags.set(indicatedModelIndex);
         indicatedModelIndex = -1;
       } else {
+        BitSet bsModels = viewer.getVisibleFramesBitSet();
         for (int iModel = 0; iModel < modelCount; iModel++) {
-          if (setPoints(iModel, -1)) {
+          if (bsModels.get(iModel) && setPoints(iModel, -1)) {
             setPoints(iModel, nPoints);
             setPolygon(iModel); 
             thisMesh.setCenter(iModel);
@@ -527,6 +529,7 @@ public class Draw extends MeshCollection {
             thisMesh.drawVertexCounts[iModel] = thisMesh.drawVertexCount;
             thisMesh.drawType = JmolConstants.DRAW_MULTIPLE;
             thisMesh.drawVertexCount = -1;
+            thisMesh.modelFlags.set(iModel);
           } else {
             thisMesh.drawTypes[iModel] = JmolConstants.DRAW_NONE;
             thisMesh.polygonIndexes[iModel] = new int[0];
@@ -989,14 +992,11 @@ public class Draw extends MeshCollection {
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
       m.visibilityFlags = (m.isValid && m.visible ? myVisibilityFlag : 0);
-      if (m.modelIndex >= 0 && !bs.get(m.modelIndex)) {
+      if (m.modelIndex >= 0 && !bs.get(m.modelIndex)
+        || m.modelFlags != null && !BitSetUtil.haveCommon(bs, m.modelFlags)) {
         m.visibilityFlags = 0;
         continue;
       }
-      if (m.modelFlags == null)
-        continue;
-      for (int iModel = modelCount; --iModel >= 0;)
-        m.modelFlags.set(iModel, bs.get(iModel));
     }
   }
   

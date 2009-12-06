@@ -402,6 +402,8 @@ public class ActionManager {
   void keyPressed(KeyEvent ke) {
     if (keyProcessing)
       return;
+    if (Logger.debugging)
+      Logger.debug("ActionmManager keyPressed: " + ke.getKeyCode());
     keyProcessing = true;
     int i = ke.getKeyCode();
     switch(i) {
@@ -950,9 +952,8 @@ public class ActionManager {
     if (measurementPending == null)
       return;
     int measurementCount = measurementPending.getCount();
-    if (measurementCount >= 2 && measurementCount <= 4) {
+    if (measurementCount >= 2 && measurementCount <= 4)
       viewer.script("!measure " + measurementPending.getMeasurementScript(" ", true));
-    }
     exitMeasurementMode();
   }
 

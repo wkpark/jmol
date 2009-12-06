@@ -636,6 +636,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       // check for end of all brace work
       tokenCommand = Token.tokenAll;
       tokCommand = 1;
+      theTok = Token.nada;
       switch (checkFlowEndBrace()) {
       case ERROR:
         return ERROR;
@@ -1448,6 +1449,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     // time to execute end
     vBraces.remove(--iBrace);
     Token token = (Token) vBraces.remove(--iBrace);
+    if (theTok == Token.leftbrace) {
+      braceCount--;
+      parenCount--;
+    }
     return forceFlowEnd(token);
   }
 

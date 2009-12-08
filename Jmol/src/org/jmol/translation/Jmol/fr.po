@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-12-01 19:41+0100\n"
+"POT-Creation-Date: 2009-12-08 19:19+0100\n"
 "PO-Revision-Date: 2009-11-06 22:15+0000\n"
 "Last-Translator: Jerome Pansanel <j.pansanel@pansanel.net>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -127,7 +127,10 @@ msgid "For example:"
 msgstr "Par exemple:"
 
 #: org/openscience/jmol/app/JmolApp.java:236
-msgid "The -D options are as follows (defaults in parenthesis):"
+#, fuzzy
+msgid ""
+"The -D options are as follows (defaults in parenthesis) and must be called "
+"preceding '-jar Jmol.jar':"
 msgstr ""
 "Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
 

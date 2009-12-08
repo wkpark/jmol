@@ -233,12 +233,12 @@ public class JmolApp {
           .println("Jmol -ions myscript.spt -w JPEG:myfile.jpg > output.txt");
       System.out.println();
       System.out.println(GT
-          ._("The -D options are as follows (defaults in parenthesis):"));
+          ._("The -D options are as follows (defaults in parenthesis) and must be called preceding '-jar Jmol.jar':"));:"));
       System.out.println();
       System.out.println("  cdk.debugging=[true|false] (false)");
       System.out.println("  cdk.debug.stdout=[true|false] (false)");
       System.out.println("  display.speed=[fps|ms] (ms)");
-      System.out.println("  JmolConsole=[true|false] (true)");
+      //System.out.println("  JmolConsole=[true|false] (true)");
       System.out.println("  logger.debug=[true|false] (false)");
       System.out.println("  logger.error=[true|false] (true)");
       System.out.println("  logger.fatal=[true|false] (true)");
@@ -246,7 +246,7 @@ public class JmolApp {
       System.out.println("  logger.logLevel=[true|false] (false)");
       System.out.println("  logger.warn=[true|false] (true)");
       System.out.println("  plugin.dir (unset)");
-      System.out.println("  user.language=[CA|CS|DE|EN|ES|FR|NL|PT|TR] (EN)");
+      System.out.println("  user.language=[ca|cs|de|en_GB|en_US|es|fr|hu|it|ko|nl|pt_BR|tr|zh_TW] (en_US)");
 
       System.exit(0);
     }

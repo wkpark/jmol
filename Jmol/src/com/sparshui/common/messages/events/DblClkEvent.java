@@ -2,6 +2,7 @@ package com.sparshui.common.messages.events;
 
 import com.sparshui.common.Event;
 import com.sparshui.common.utils.Converter;
+import com.sparshui.server.TouchPoint;
 
 /*
  * 
@@ -45,6 +46,14 @@ public class DblClkEvent implements Event {
     _time = System.currentTimeMillis();
   }
   	
+  public DblClkEvent(TouchPoint tp) {
+    _id = tp.getID();
+    _x = tp.getLocation().getX();
+    _y = tp.getLocation().getY();
+    _state = tp.getState();
+    _time = tp.getTime();
+  }
+
 	public int getTouchID() {
 		return _id;
 	}

@@ -115,7 +115,11 @@ public class TouchPoint {
 		return _state;
 	}
 	
-	/**
+  public void setState(int state) {
+    _state = state;
+  }
+
+  /**
 	 * Set the group for this touch point.
 	 * 
 	 * @param group
@@ -164,5 +168,11 @@ public class TouchPoint {
 	public Object clone() {
 		return new TouchPoint(this);
 	}
+  public boolean isNear(TouchPoint tp) {
+    // figure 1000 x 800 screen, so 1/1000 is about 1 pixel. 
+    // let's allow for +/- 5 pixels here, or about 0.005 screen widths.
+    return (Math.abs(_location.getX() - tp._location.getX()) < 0.005 
+        && Math.abs(_location.getY() - tp._location.getY()) < 0.005);
+  }
 
 }

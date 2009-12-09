@@ -56,7 +56,18 @@ public class SingleTouchGesture implements Gesture {
     case TouchState.MOVE:
       if (_nCurrent > 1)
         return retEvents;
-      nMoves++;
+      switch (++nMoves) {
+      case 2:
+        if (changedTouchPoint.getTime() - birth.getTime() > 500) {
+          // long (1/2 sec) pause and drag == double-click-drag ==> _translate
+          TouchPoint tp = new TouchPoint(birth);
+          tp.setState(TouchState.DEATH);
+          retEvents.add(new TouchEvent(tp));
+          tp.setState(TouchState.BIRTH);
+          retEvents.add(new TouchEvent(tp));
+        }
+        break;
+      }   
       break;
     case TouchState.DEATH:
       if (--_nCurrent > 0)

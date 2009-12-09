@@ -9,10 +9,12 @@ import org.jmol.viewer.ActionManagerMT;
 
 import com.sparshui.common.Event;
 import com.sparshui.common.Location;
+import com.sparshui.common.TouchState;
 import com.sparshui.common.messages.events.DragEvent;
 import com.sparshui.common.messages.events.RotateEvent;
 import com.sparshui.common.messages.events.ZoomEvent;
-import com.sparshui.gestures.StandardDynamicGesture;
+import com.sparshui.gestures.Gesture;
+import com.sparshui.server.TouchPoint;
 
 /**
  * TWO_POINT_GESTURE
@@ -47,7 +49,7 @@ import com.sparshui.gestures.StandardDynamicGesture;
  * 
  * 
  */
-public class TwoPointGesture extends StandardDynamicGesture {
+public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture*/ {
 
   /**
 	 * 
@@ -78,10 +80,30 @@ public class TwoPointGesture extends StandardDynamicGesture {
     return _myType;
   }
 
+  //@override
+  public Vector processChange(Vector touchPoints,
+      TouchPoint changedPoint) {
+    Vector events = null;
+    
+    switch(changedPoint.getState()) {
+      case TouchState.BIRTH:
+        events = processBirth(changedPoint);
+        break;
+      case TouchState.MOVE:
+        events = processMove(changedPoint);
+        break;
+      case TouchState.DEATH:
+        events = processDeath();
+        break;
+    }
+    
+    return (events != null) ? events : new Vector();
+  }
+  
   // @override
-  protected Vector processBirth(TouchData touchData) {
+  protected Vector processBirth(TouchPoint touchPoint) {
     _nCurrent++;
-    Location location = touchData.getLocation();
+    Location location = touchPoint.getLocation();
     System.out.println("TwoPointGesture birth ntraces:" + _nTraces + " ncurrent:" + _nCurrent);
     switch (_nTraces) {
     case 0:
@@ -100,12 +122,12 @@ public class TwoPointGesture extends StandardDynamicGesture {
   }
 
   // @override
-  protected Vector processMove(TouchData touchData) {
+  protected Vector processMove(TouchPoint touchPoint) {
     System.out.println("TwoPointGesture move ntraces:" + _nTraces + " ncurrent:" + _nCurrent);
     Vector events = new Vector();
     if (_nTraces != 2)
       return events;
-    Location location = Location.pixelLocation(touchData.getLocation());
+    Location location = Location.pixelLocation(touchPoint.getLocation());
     updateLocations(location);
     if (_nCurrent < 2)
       return events;
@@ -133,7 +155,7 @@ public class TwoPointGesture extends StandardDynamicGesture {
   }
 
   // @override
-  protected Vector processDeath(TouchData touchData) {
+  protected Vector processDeath() {
     _nCurrent--;
     System.out.println("TwoPointGesture death ntraces:" + _nTraces + " ncurrent:" + _nCurrent);
     if (_nCurrent <= 0) {

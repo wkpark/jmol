@@ -37,7 +37,7 @@ import org.jmol.viewer.binding.Binding;
 
 public class ActionManagerMT extends ActionManager implements JmolMultiTouchClient {
 
-  ///////////// sparsh multi-touch client interaction ////////////////
+  ///////////// sparshUI multi-touch client interaction ////////////////
 
   private JmolMultiTouchAdapter adapter;
   private JmolTouchSimulatorInterface simulator;
@@ -90,6 +90,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
 
   protected void setBinding(Binding newBinding) {
     super.setBinding(newBinding);
+    binding.unbindMouseAction(Binding.RIGHT);
     if (simulator != null && binding != null) {
       binding.unbind(Binding.CTRL + Binding.LEFT + Binding.SINGLE_CLICK, null);
       binding.bind(Binding.CTRL + Binding.LEFT + Binding.SINGLE_CLICK, ACTION_multiTouchSimulation);
@@ -182,7 +183,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
 
   public int getGroupID(int x, int y) {
-    int gid = (x < 0 || y < 0 || x >= viewer.getScreenWidth()
+    int gid = (!viewer.isApplet() && !viewer.getDisplay().hasFocus() 
+        || x < 0 || y < 0 || x >= viewer.getScreenWidth()
         || y >= viewer.getScreenHeight() ? 0 : groupID);
     if (resetNeeded) {
       gid |= 0x10000000;
@@ -208,6 +210,10 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       break;
     case SERVICE_LOST:
       startSparshUIService(simulator != null);  
+      break;
+    case DBLCLK_EVENT:
+      // always comes after a mouse press/release sequence
+      mouseClicked(time, (int) pt.x, (int) pt.y, Binding.LEFT, 2);
       break;
     case TOUCH_EVENT:
       haveMultiTouchInput = true;
@@ -269,15 +275,15 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     super.mouseExited(time, x, y);    
   }
   
-  void mouseClicked(long time, int x, int y, int modifiers) {
-    super.mouseClicked(time, x, y, modifiers);
+  void mouseClicked(long time, int x, int y, int mods, int count) {
+    super.mouseClicked(time, x, y, mods, count);
   }
 
-  void mouseMoved(long time, int x, int y, int modifiers) {
+  void mouseMoved(long time, int x, int y, int mods) {
     if (haveMultiTouchInput)
       return;
     adapter.mouseMoved(x, y);
-    super.mouseMoved(time, x, y, modifiers);
+    super.mouseMoved(time, x, y, mods);
   }
 
   void mouseWheel(long time, int rotation, int mods) {

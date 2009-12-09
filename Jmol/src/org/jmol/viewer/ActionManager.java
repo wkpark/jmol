@@ -517,16 +517,6 @@ public class ActionManager {
     exitMeasurementMode();
   }
   
-  void mouseClicked(long time, int x, int y, int modifiers) {
-    setMouseMode();
-    setCurrent(time, x, y, modifiers);
-    clickedCount = (clicked.check(x, y, modifiers, time, MAX_DOUBLE_CLICK_MILLIS)
-        ? clickedCount + 1 : 1);
-    clicked.setCurrent();
-    setFocus();
-    checkPointOrAtomClicked(x, y, modifiers, clickedCount);
-  }
-
   void mouseMoved(long time, int x, int y, int modifiers) {
     setCurrent(time, x, y, modifiers);
     moved.setCurrent();
@@ -652,6 +642,16 @@ public class ActionManager {
         }
       }
     }
+  }
+
+  void mouseClicked(long time, int x, int y, int modifiers, int count) {
+    setMouseMode();
+    setCurrent(time, x, y, modifiers);
+    clickedCount = (count > 1 ? count : clicked.check(x, y, modifiers, time,
+        MAX_DOUBLE_CLICK_MILLIS) ? clickedCount + 1 : 1);
+    clicked.setCurrent();
+    setFocus();
+    checkPointOrAtomClicked(x, y, modifiers, clickedCount);
   }
 
   private boolean isRubberBandSelect(int action) {

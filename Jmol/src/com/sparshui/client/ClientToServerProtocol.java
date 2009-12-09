@@ -127,9 +127,9 @@ public class ClientToServerProtocol extends ClientProtocol {
 		case EventType.ZOOM_EVENT:
 			event = new ZoomEvent(newData);
 			break;
-		case EventType.DBLCLK_EVENT:
-			event = new DblClkEvent(newData);
-			break;
+//		case EventType.DBLCLK_EVENT:
+//			event = new ClickEvent(newData);
+//			break;
 		case EventType.FLICK_EVENT:
 			event = new FlickEvent(newData);
 			break;

@@ -144,10 +144,11 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   public final static int DBLCLK_EVENT = 5;
   public final static int FLICK_EVENT = 6;
   public final static int RELATIVE_DRAG_EVENT = 7;
+  public static final int CLICK_EVENT = 8;
 
   private final static String[] eventNames = new String[] {
     "drag", "rotate", "spin", "touch", "zoom",
-    "double-click", "flick", "relative-drag",
+    "double-click", "flick", "relative-drag", "click"
   };
 
   // these must be the same as in com.sparshui.common.TouchState
@@ -155,6 +156,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   public final static int BIRTH = 0;
   public final static int DEATH = 1;
   public final static int MOVE = 2;
+  public final static int CLICK = 3;
 
   
   private static String getEventName(int i) {
@@ -211,10 +213,6 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     case SERVICE_LOST:
       startSparshUIService(simulator != null);  
       break;
-    case DBLCLK_EVENT:
-      // always comes after a mouse press/release sequence
-      mouseClicked(time, (int) pt.x, (int) pt.y, Binding.LEFT, 2);
-      break;
     case TOUCH_EVENT:
       haveMultiTouchInput = true;
       switch(iData) {
@@ -232,6 +230,9 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
         mouseDown = false;
         super.mouseReleased(time, (int) pt.x, (int) pt.y, Binding.LEFT);
         break;
+      case CLICK:
+        // always follows DEATH when found
+        mouseClicked(time, (int) pt.x, (int) pt.y, Binding.LEFT, 1);
       }
       break;
     case ZOOM_EVENT:

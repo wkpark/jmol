@@ -3,7 +3,6 @@ package org.jmol.multitouch.sparshui;
 import java.util.Vector;
 
 import com.sparshui.common.TouchState;
-import com.sparshui.common.messages.events.DblClkEvent;
 import com.sparshui.common.messages.events.TouchEvent;
 import com.sparshui.gestures.Gesture;
 import com.sparshui.gestures.GestureType;
@@ -18,6 +17,7 @@ import com.sparshui.server.TouchPoint;
  */
 public class SingleTouchGesture implements Gesture {
 
+  private static final long MAXIMUM_CLICK_TIME = 200;
   private int _nCurrent = 0;
   private TouchPoint birth;
   private int nMoves;
@@ -46,7 +46,6 @@ public class SingleTouchGesture implements Gesture {
     System.out.println("SingleTouchGesture processChange1 " + _nCurrent
         + "  state=" + changedTouchPoint.getState());
     Vector retEvents = new Vector();
-    boolean isDoubleClick = false;
     switch (changedTouchPoint.getState()) {
     case TouchState.BIRTH:
       if (++_nCurrent > 1)
@@ -59,14 +58,8 @@ public class SingleTouchGesture implements Gesture {
         return retEvents;
       switch (++nMoves) {
       case 2:
-        if (changedTouchPoint.getTime() - birth.getTime() > 500) {
-          // long (1/2 sec) pause and drag == double-click-drag ==> _translate
-          TouchPoint tp = new TouchPoint(birth);
-          tp.setState(TouchState.DEATH);
-          retEvents.add(new TouchEvent(tp));
-          tp.setState(TouchState.BIRTH);
-          retEvents.add(new TouchEvent(tp));
-        }
+        if (checkClick(changedTouchPoint, retEvents, false))
+          return retEvents;
         break;
       }
       break;
@@ -74,15 +67,38 @@ public class SingleTouchGesture implements Gesture {
       if (--_nCurrent > 0)
         return retEvents;
       _nCurrent = 0;
-      // single fingers only here
-      // look for a long click --> dbl-click (not right-click)
-      isDoubleClick = (nMoves <= 2 && birth.isNear(changedTouchPoint) 
-          && changedTouchPoint.getTime() - birth.getTime() > 500 /* ms */);
+      if (nMoves < 2 && checkClick(changedTouchPoint, retEvents, true))
+        return retEvents;
       break;
     }
     retEvents.add(new TouchEvent(changedTouchPoint));
-    if (isDoubleClick)
-      retEvents.add(new DblClkEvent(changedTouchPoint));
     return retEvents;
+  }
+
+  private boolean checkClick(TouchPoint tpNew, Vector retEvents,
+                                   boolean isDeath) {
+    TouchPoint tp;
+    long dt = tpNew.getTime() - birth.getTime();
+    boolean isSingleClick = (isDeath && dt < MAXIMUM_CLICK_TIME);
+    if (dt < 500 && !isSingleClick)
+      return false;
+    nMoves += 2;
+    // long (1/2 sec) pause and drag == double-click-drag ==> _translate
+    tp = new TouchPoint(birth);
+    tp.setState(TouchState.DEATH);
+    retEvents.add(new TouchEvent(tp));
+    tp.setState(TouchState.CLICK);
+    retEvents.add(new TouchEvent(tp));
+    if (isSingleClick)
+      return true;
+    tp.setState(TouchState.BIRTH);
+    retEvents.add(new TouchEvent(tp));
+    if (!isDeath)
+      return true;
+    tp.setState(TouchState.DEATH);
+    retEvents.add(new TouchEvent(tp));
+    tp.setState(TouchState.CLICK);
+    retEvents.add(new TouchEvent(tp));
+    return true;
   }
 }

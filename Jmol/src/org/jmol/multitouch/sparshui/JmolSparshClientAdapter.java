@@ -48,7 +48,6 @@ import com.sparshui.client.ClientServerConnection;
 import com.sparshui.common.Event;
 import com.sparshui.common.Location;
 import com.sparshui.common.NetworkConfiguration;
-import com.sparshui.common.messages.events.DblClkEvent;
 import com.sparshui.common.messages.events.DragEvent;
 import com.sparshui.common.messages.events.FlickEvent;
 import com.sparshui.common.messages.events.RelativeDragEvent;
@@ -239,12 +238,6 @@ ActionManagerMT.processEvent groupID=16777100 eventType=6 iData=0 pt=(-1.0, -1.0
     case ActionManagerMT.ZOOM_EVENT:
       fixXY(((ZoomEvent) event).getCenter().getX(), ((ZoomEvent) event).getCenter().getY());
       ptTemp.z = ((ZoomEvent) event).getScale();
-      break;
-    case ActionManagerMT.DBLCLK_EVENT:
-      id = ((DblClkEvent) event).getTouchID();
-      fixXY(((DblClkEvent) event).getX(), ((DblClkEvent) event).getY());
-      iData = ((DblClkEvent) event).getState();
-      time = ((DblClkEvent) event).getTime();
       break;
     case ActionManagerMT.FLICK_EVENT:
       fixXY(((FlickEvent) event).getXdirection(), ((FlickEvent) event).getYdirection());

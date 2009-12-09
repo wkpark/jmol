@@ -21,4 +21,6 @@ public class TouchState {
 	 * 
 	 */
   public final static int MOVE = 2;
+
+  public final static int CLICK = 3;
 }

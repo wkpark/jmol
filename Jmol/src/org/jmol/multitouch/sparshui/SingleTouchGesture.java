@@ -76,9 +76,8 @@ public class SingleTouchGesture implements Gesture {
       _nCurrent = 0;
       // single fingers only here
       // look for a long click --> dbl-click (not right-click)
-      isDoubleClick = (nMoves <= 2 && birth.isNear(changedTouchPoint) && changedTouchPoint
-          .getTime()
-          - birth.getTime() > 500 /* ms */);
+      isDoubleClick = (nMoves <= 2 && birth.isNear(changedTouchPoint) 
+          && changedTouchPoint.getTime() - birth.getTime() > 500 /* ms */);
       break;
     }
     retEvents.add(new TouchEvent(changedTouchPoint));

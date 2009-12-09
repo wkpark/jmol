@@ -26,6 +26,7 @@ package org.jmol.viewer;
 import java.awt.Event;
 
 import org.jmol.util.Escape;
+import org.jmol.util.Logger;
 import org.jmol.viewer.binding.Binding;
 
 import java.awt.event.*;
@@ -103,6 +104,9 @@ public abstract class MouseManager implements KeyListener {
   }
 
   public void keyTyped(KeyEvent ke) {
+    if (Logger.debugging)
+      Logger.debug("ActionmManager keyTyped: " + ke.getKeyCode());
+    ke.consume();
     if (viewer.getDisablePopupMenu())
       return;
     char ch = ke.getKeyChar();
@@ -141,10 +145,6 @@ public abstract class MouseManager implements KeyListener {
 
   public void keyReleased(KeyEvent ke) {
     actionManager.keyReleased(ke);
-  }
-
-  protected void processKeyEvent(KeyEvent ke) {
-    // System.out.println("processKeyEvent"+ke);
   }
 
   void mouseEntered(long time, int x, int y) {

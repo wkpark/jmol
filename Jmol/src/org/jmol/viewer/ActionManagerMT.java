@@ -23,40 +23,51 @@
  */
 package org.jmol.viewer;
 
-import java.awt.Component;
 import java.util.List;
 import java.util.Vector;
 
 import javax.vecmath.Point3f;
 
 import org.jmol.api.Interface;
-import org.jmol.api.JmolSparshAdapter;
-import org.jmol.api.JmolSparshClient;
+import org.jmol.api.JmolMultiTouchAdapter;
+import org.jmol.api.JmolMultiTouchClient;
 import org.jmol.api.JmolTouchSimulatorInterface;
 import org.jmol.util.Logger;
 import org.jmol.viewer.binding.Binding;
 
-public class ActionManagerMT extends ActionManager implements JmolSparshClient {
+public class ActionManagerMT extends ActionManager implements JmolMultiTouchClient {
 
   ///////////// sparsh multi-touch client interaction ////////////////
 
-  JmolSparshAdapter adapter;
-  JmolTouchSimulatorInterface simulator;
-  int groupID;
-  int simulationPhase;
-  boolean resetNeeded = true;
+  private JmolMultiTouchAdapter adapter;
+  private JmolTouchSimulatorInterface simulator;
+  private int groupID;
+  private int simulationPhase;
+  private boolean resetNeeded = true;
+  private boolean haveMultiTouchInput = false;
   
-  ActionManagerMT(Viewer viewer, boolean isSimulated) {
+  ActionManagerMT(Viewer viewer, String commandOptions) {
     super(viewer);
-    adapter = (JmolSparshAdapter) Interface
-    .getOptionInterface("multitouch.sparshui.JmolSparshClientAdapter");
     groupID = ((int) (Math.random() * 0xFFFFFF)) << 4;
+    
+    boolean isSparsh = commandOptions.contains("-multitouch-sparshui");
+    boolean isSimulated = commandOptions.contains("-multitouch-sparshui-simulated");
+    boolean isJNI = commandOptions.contains("-multitouch-jni");
+    String className = (isSparsh ? "multitouch.sparshui.JmolSparshClientAdapter" : "multitouch.jni.JmolJniClientAdapter");
+      adapter = (JmolMultiTouchAdapter) Interface
+    .getOptionInterface(className);
     Logger.info("ActionManagerMT SparshUI groupID=" + groupID);
-    startSparshUIService(isSimulated);
+    if (isSparsh) {
+      startSparshUIService(isSimulated);
+    } else if (isJNI) {
+      adapter.setMultiTouchClient(viewer, this, false);
+    }
     setBinding(binding);
+    xyRange = 10; // allow for more slop in double-clicks and press/releases
   }
 
   private void startSparshUIService(boolean isSimulated) {
+    haveMultiTouchInput = false;
     if (adapter == null)
       return;
     if (simulator != null) { // a restart
@@ -66,14 +77,13 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
     if (isSimulated)
       Logger.error("ActionManagerMT -- for now just using touch simulation.\nPress CTRL-LEFT and then draw two traces on the window.");    
 
-    Component display = viewer.getDisplay();
-    adapter.setSparshClient(display, this);
+    adapter.setMultiTouchClient(viewer, this, isSimulated);
     if (isSimulated) {
       simulator = (JmolTouchSimulatorInterface) Interface
       .getInterface("com.sparshui.inputdevice.JmolTouchSimulator");
       if (simulator != null) {
         Logger.info("ActionManagerMT simulating SparshUI");
-        simulator.startSimulator(display);
+        simulator.startSimulator(viewer.getDisplay());
       }
     }
   }
@@ -118,10 +128,12 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
   // adaptation to allow user-defined gesture types
   
   public final static String TWO_POINT_GESTURE = "org.jmol.multitouch.sparshui.TwoPointGesture";
+  public final static String SINGLE_TOUCH_GESTURE = "org.jmol.multitouch.sparshui.SingleTouchGesture";
 
   //these must match those in com.sparshui.common.messages.events.EventType
   // reproduced here so there are no references to that code in applet module
   
+  public static final int DRIVER_NONE = -2;
   public static final int SERVICE_LOST = -1;
   public static final int DRAG_EVENT = 0;
   public static final int ROTATE_EVENT = 1;
@@ -136,6 +148,12 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
     "drag", "rotate", "spin", "touch", "zoom",
     "double-click", "flick", "relative-drag",
   };
+
+  // these must be the same as in com.sparshui.common.TouchState
+  
+  public final static int BIRTH = 0;
+  public final static int DEATH = 1;
+  public final static int MOVE = 2;
 
   
   private static String getEventName(int i) {
@@ -155,7 +173,8 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
     //list.add(new Integer(SPIN_GESTURE));
     //list.add(new Integer(DBLCLK_GESTURE));
     list.add(TWO_POINT_GESTURE);
-    list.add(new Integer(TOUCH_GESTURE));
+    if (simulator == null)
+      list.add(SINGLE_TOUCH_GESTURE);
     //list.add(new Integer(ZOOM_GESTURE));
     //list.add(new Integer(FLICK_GESTURE));
     //list.add(new Integer(RELATIVE_DRAG_GESTURE));    
@@ -174,6 +193,7 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
   }
 
   Point3f lastPoint;
+  boolean mouseDown;
   
   public void processEvent(int groupID, int eventType, int touchID, int iData,
                            Point3f pt, long time) {
@@ -182,8 +202,31 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
           + Integer.toHexString(groupID) + " eventType=" + eventType + "("
           + getEventName(eventType) + ") iData=" + iData + " pt=" + pt);
     switch (eventType) {
+    case DRIVER_NONE:
+      haveMultiTouchInput = false;
+      Logger.error("SparshUI reports no driver present");
+      break;
     case SERVICE_LOST:
       startSparshUIService(simulator != null);  
+      break;
+    case TOUCH_EVENT:
+      haveMultiTouchInput = true;
+      switch(iData) {
+      case BIRTH:
+        mouseDown = true;
+        super.mousePressed(time, (int) pt.x, (int) pt.y, Binding.LEFT);
+        break;
+      case MOVE:
+        if (mouseDown)
+          super.mouseDragged(time, (int) pt.x, (int) pt.y, Binding.LEFT);
+        else
+          super.mouseMoved(time, (int) pt.x, (int) pt.y, Binding.LEFT);
+        break;
+      case DEATH:
+        mouseDown = false;
+        super.mouseReleased(time, (int) pt.x, (int) pt.y, Binding.LEFT);
+        break;
+      }
       break;
     case ZOOM_EVENT:
       float scale = pt.z;
@@ -215,18 +258,7 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
         }
       }
       break;
-    case SPIN_EVENT:
-      break;
-    case TOUCH_EVENT:
-      break;
-    case DBLCLK_EVENT:
-      break;
-    case FLICK_EVENT:
-      break;
-    case RELATIVE_DRAG_EVENT:
-      break;
     }
-
   }
 
   void mouseEntered(long time, int x, int y) {
@@ -242,11 +274,15 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
   }
 
   void mouseMoved(long time, int x, int y, int modifiers) {
+    if (haveMultiTouchInput)
+      return;
     adapter.mouseMoved(x, y);
     super.mouseMoved(time, x, y, modifiers);
   }
 
   void mouseWheel(long time, int rotation, int mods) {
+    if (haveMultiTouchInput)
+      return;
     super.mouseWheel(time, rotation, mods);
   }
 
@@ -263,6 +299,8 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
       }
       simulationPhase = 0;
     }
+    if (haveMultiTouchInput)
+      return;
     super.mousePressed(time, x, y, mods);
   }
 
@@ -272,6 +310,8 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
       simulator.mouseDragged(time, x, y);
       return;
     }
+    if (haveMultiTouchInput)
+      return;
     super.mouseDragged(time, x, y, mods);
   }
 
@@ -288,6 +328,8 @@ public class ActionManagerMT extends ActionManager implements JmolSparshClient {
       }
       return;
     }
+    if (haveMultiTouchInput)
+      return;
     super.mouseReleased(time, x, y, mods);
   }
 

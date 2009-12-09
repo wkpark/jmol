@@ -62,14 +62,15 @@ public class TouchPoint {
 	/**
 	 * 
 	 * @param location
+	 * @param time 
 	 */
-	public TouchPoint(Location location) {
+	public TouchPoint(Location location, long time) {
 		synchronized(idLock) {
 			_id = nextID++;
 		}
 		_location = location;
+		_time = time;
 		_state = TouchState.BIRTH;
-		_time = System.currentTimeMillis();
 	}
 	
 	/**
@@ -130,13 +131,15 @@ public class TouchPoint {
 	 * 
 	 * @param location
 	 * 		The new location.
+	 * @param time 
 	 * @param state
 	 * 		The new state.
 	 */
-	public void update(Location location, int state) {
+	public void update(Location location, long time, int state) {
 		_location = location;
 		_state = state;
 		_changed = true;
+		_time = time;
 		if(_group != null) _group.update(this);
 	}
 	

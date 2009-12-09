@@ -76,7 +76,7 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	   String address = "localhost";
 	    _timer = new Timer();
 	    try {
-	      Socket socket = new Socket(address, NetworkConfiguration.PORT);
+	      Socket socket = new Socket(address, NetworkConfiguration.DEVICE_PORT);
         //_in = new DataInputStream(socket.getInputStream());
 	      _out = new DataOutputStream(socket.getOutputStream());
 	      _out.writeByte(ConnectionType.INPUT_DEVICE);
@@ -195,6 +195,7 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
       _out.writeFloat(((float) e.x / (float) dim.width));
       _out.writeFloat(((float) e.y / (float) dim.height));
       _out.writeByte((byte) e.type);
+      _out.writeLong(e.when);
       //boolean doConsume = (_in.readByte() == 1);
       //if (Logger.debugging)
        // System.out.println("[JmolTouchSimulator] doConsume=" + doConsume);

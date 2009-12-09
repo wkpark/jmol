@@ -14,9 +14,9 @@ import com.sparshui.common.NetworkConfiguration;
  * @author Jay Roltgen
  *
  */
-public class ServerConnection extends Thread {
+public class ClientServerConnection extends Thread {
 	
-	private Client _client;
+	private SparshClient _client;
 	private Socket _socket;
 	private ClientToServerProtocol _protocol;
 	
@@ -33,9 +33,9 @@ public class ServerConnection extends Thread {
 	 * @throws IOException
 	 * 		If a communication error ocurrs.
 	 */
-	public ServerConnection(String address, Client client) throws UnknownHostException, IOException {
+	public ClientServerConnection(String address, SparshClient client) throws UnknownHostException, IOException {
 		_client = client;
-		_socket = new Socket(address, NetworkConfiguration.PORT);
+		_socket = new Socket(address, NetworkConfiguration.CLIENT_PORT);
 		DataOutputStream out = new DataOutputStream(_socket.getOutputStream());
 		out.writeByte(ConnectionType.CLIENT);
 		_protocol = new ClientToServerProtocol(_socket);

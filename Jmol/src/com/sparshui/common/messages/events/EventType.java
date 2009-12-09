@@ -9,6 +9,8 @@ package com.sparshui.common.messages.events;
  *
  */
 public class EventType {
+  public static final int DRIVER_NONE = -2;
+  public static final int SERVICE_LOST = -1;
 	public final static int DRAG_EVENT = 0;
 	public final static int ROTATE_EVENT = 1;
 	public final static int SPIN_EVENT = 2;

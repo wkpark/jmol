@@ -236,7 +236,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean jvm11orGreater = false;
   private boolean jvm12orGreater = false;
   private boolean jvm14orGreater = false;
-  private boolean multiTouchSparsh = false;
 
   private Viewer(Component display, JmolAdapter modelAdapter, String commandOptions) {
     // use allocateViewer
@@ -254,8 +253,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         && strJavaVersion.compareTo("1.1.5") <= 0 && "Mac OS".equals(strOSName)));
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
-    multiTouchSparsh = (commandOptions != null && commandOptions.contains("-multitouch-sparshui"));
-    boolean isSimulatedMultiTouch = (multiTouchSparsh && commandOptions.contains("-multitouch-sparshui-simulated"));
+    boolean multiTouch = (commandOptions != null && commandOptions.contains("-multitouch"));
     stateManager = new StateManager(this);
     g3d = new Graphics3D(display);
     colorManager = new ColorManager(this, g3d);
@@ -264,8 +262,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager = new TransformManager11(this);
     selectionManager = new SelectionManager(this);
     if (display != null) {
-      if (multiTouchSparsh)
-        actionManager = new ActionManagerMT(this, isSimulatedMultiTouch);
+      if (multiTouch)
+        actionManager = new ActionManagerMT(this, commandOptions);
       else
         actionManager = new ActionManager(this);
       if (jvm14orGreater)

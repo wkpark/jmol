@@ -292,6 +292,8 @@ public class ActionManager {
 
   protected Thread hoverWatcherThread;
 
+  protected int xyRange = 0;
+  
   protected class Mouse {
     protected int x = -1000;
     protected int y = -1000;
@@ -313,7 +315,9 @@ public class ActionManager {
     }
 
     public boolean check(int x, int y, int modifiers, long time, long delayMax) {
-      return (this.x == x && this.y == y && this.modifiers == modifiers
+      return (Math.abs(this.x - x) <= xyRange 
+          && Math.abs(this.y - y) <= xyRange 
+          && this.modifiers == modifiers
         && (time - this.time) < delayMax);
     }
   }
@@ -400,6 +404,7 @@ public class ActionManager {
    * @param ke
    */
   void keyPressed(KeyEvent ke) {
+    ke.consume();
     if (keyProcessing)
       return;
     if (Logger.debugging)
@@ -442,6 +447,9 @@ public class ActionManager {
   }
 
   public void keyReleased(KeyEvent ke) {
+    if (Logger.debugging)
+      Logger.debug("ActionmManager keyReleased: " + ke.getKeyCode());
+    ke.consume();
     int i = ke.getKeyCode();
     switch(i) {
     case KeyEvent.VK_ALT:
@@ -634,6 +642,7 @@ public class ActionManager {
     
     if (viewer.getBooleanProperty("allowGestures")) {
       if (isBound(action, ACTION_swipe)) {
+        System.out.println("ActionManager allowGestures=true and swipe");
         if (dragGesture.getTimeDifference(2) <= MININUM_GESTURE_DELAY_MILLISECONDS
             && dragGesture.getPointCount(10, 5) == 10) {
           float speed = dragGesture.getSpeedPixelsPerMillisecond(10, 5);

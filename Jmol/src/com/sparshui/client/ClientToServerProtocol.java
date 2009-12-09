@@ -42,7 +42,7 @@ public class ClientToServerProtocol extends ClientProtocol {
 	 *            The Client object that the server wants to communicate with.
 	 * @return true for success, false for failure
 	 */
-	public boolean processRequest(Client client) {
+	public boolean processRequest(SparshClient client) {
 		try {
 			// Read the message type
 		  // SparshUI client waits here for server message:
@@ -50,13 +50,11 @@ public class ClientToServerProtocol extends ClientProtocol {
 		  // int LENGTH
 		  // byte[] DATA
 		  
-			int type = recvType();
-			// Read the length of the message
+	    int type = _in.readByte();
 			int length = _in.readInt();
-			// Create a byte array to hold message data
 			byte[] data = new byte[length];
-			// Read message data
-			_in.readFully(data);
+			if (length > 0)
+  			_in.readFully(data);
 
 			// Dispatch to appropriate handler method
 			switch (type) {
@@ -87,10 +85,10 @@ public class ClientToServerProtocol extends ClientProtocol {
 	 * @param data
 	 *            The data associated with this event.
 	 */
-	private void handleEvents(Client client, byte[] data) {
+	private void handleEvents(SparshClient client, byte[] data) {
 	  
 	  if (data == null) {	    // connection lost
-      client.processEvent(Integer.MAX_VALUE, null);
+      client.processEvent(EventType.SERVICE_LOST, null);
       return;
 	  }
 		// If there are no events, return immediately.
@@ -99,7 +97,6 @@ public class ClientToServerProtocol extends ClientProtocol {
 		}
 		// Get the group ID - the first four bytes
 		int groupID = Converter.byteArrayToInt(data);
-
 		// Get the first integer of the new array - this is the event type.
 		int eventType = Converter.byteArrayToInt(data, 4);
 		
@@ -111,6 +108,9 @@ public class ClientToServerProtocol extends ClientProtocol {
 		Event event = null;
 
 		switch (eventType) {
+		case EventType.DRIVER_NONE:
+      client.processEvent(EventType.DRIVER_NONE, null);
+		  return;
 		case EventType.DRAG_EVENT:
 			event = new DragEvent(newData);
 			break;
@@ -153,7 +153,7 @@ public class ClientToServerProtocol extends ClientProtocol {
 	 * @throws IOException
 	 *             If there is a connection error.
 	 */
-	private void handleGetGroupID(Client client, byte[] data)
+	private void handleGetGroupID(SparshClient client, byte[] data)
 			throws IOException {
     _out.writeInt(client.getGroupID(new Location(Converter.byteArrayToFloat(data, 0),
         Converter.byteArrayToFloat(data, 4))));
@@ -177,7 +177,7 @@ public class ClientToServerProtocol extends ClientProtocol {
    * @throws IOException
    *           If there is a connection error.
    */
-  private void handleGetAllowedGestures(Client client, byte[] data)
+  private void handleGetAllowedGestures(SparshClient client, byte[] data)
       throws IOException {
     List gestureIDs = client.getAllowedGestures(Converter.byteArrayToInt(data));
     int length = (gestureIDs == null ? 0 : gestureIDs.size());
@@ -203,18 +203,4 @@ public class ClientToServerProtocol extends ClientProtocol {
       }
     }
   }
-
-	/**
-	 * Receive the type of the message.
-	 * 
-	 * @return The message type.
-	 * @throws IOException
-	 *             If there is a connection error.
-	 */
-	private int recvType() throws IOException {
-		int data = (int) _in.readByte();
-		// System.out.println("recvType: "+data);
-		return data;
-	}
-
 }

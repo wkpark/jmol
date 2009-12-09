@@ -45,7 +45,7 @@ public class TouchEvent implements Event {
 	    _x = tp.getLocation().getX();
 	    _y = tp.getLocation().getY();
 	    _state = tp.getState();
-	    _time = System.currentTimeMillis();
+	    _time = tp.getTime();
 	  }
 
 	 public int getTouchID() {
@@ -96,10 +96,12 @@ public class TouchEvent implements Event {
     if (data.length < 24) {
       System.err.println("An error occurred while deserializing a TouchEvent.");
     } else {
+      System.out.println("TouchEvent decode1 " + data.length);
       _id = Converter.byteArrayToInt(data, 0);
       _x = Converter.byteArrayToFloat(data, 4);
       _y = Converter.byteArrayToFloat(data, 8);
       _state = Converter.byteArrayToInt(data, 12);
+      System.out.println("TouchEvent decode2 " + data.length);
       _time = Converter.byteArrayToLong(data, 16);
     }
   }

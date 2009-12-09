@@ -27,6 +27,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -36,13 +37,14 @@ import javax.vecmath.Point3f;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolGestureServerInterface;
-import org.jmol.api.JmolSparshAdapter;
-import org.jmol.api.JmolSparshClient;
+import org.jmol.api.JmolMultiTouchAdapter;
+import org.jmol.api.JmolMultiTouchClient;
 import org.jmol.util.Logger;
 import org.jmol.viewer.ActionManagerMT;
+import org.jmol.viewer.Viewer;
 
-import com.sparshui.client.Client;
-import com.sparshui.client.ServerConnection;
+import com.sparshui.client.SparshClient;
+import com.sparshui.client.ClientServerConnection;
 import com.sparshui.common.Event;
 import com.sparshui.common.Location;
 import com.sparshui.common.NetworkConfiguration;
@@ -55,7 +57,7 @@ import com.sparshui.common.messages.events.SpinEvent;
 import com.sparshui.common.messages.events.TouchEvent;
 import com.sparshui.common.messages.events.ZoomEvent;
 
-public class JmolSparshClientAdapter implements Client, JmolSparshAdapter {
+public class JmolSparshClientAdapter implements SparshClient, JmolMultiTouchAdapter {
 
   ///
   //
@@ -78,8 +80,8 @@ public class JmolSparshClientAdapter implements Client, JmolSparshAdapter {
   
   ///////////// sparsh client interaction ////////////////
 
-  private JmolSparshClient client;
-  private ServerConnection serverConnection;
+  private JmolMultiTouchClient actionManager;
+  private ClientServerConnection serverConnection;
   private Component display;
   
   public JmolSparshClientAdapter() {
@@ -106,39 +108,56 @@ public class JmolSparshClientAdapter implements Client, JmolSparshAdapter {
   }
   
   private JmolGestureServerInterface gestureServer;
-  public void setSparshClient(Component display, JmolSparshClient client) {
+  public void setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
+                              boolean isSimulation) {
     String err;
-    this.display = display;
+    this.display = viewer.getDisplay();
     gestureServer = (JmolGestureServerInterface) Interface
-    .getInterface("com.sparshui.server.GestureServer");
-    gestureServer.startGestureServer();    
-    int port = NetworkConfiguration.PORT;
+        .getInterface("com.sparshui.server.GestureServer");
+    gestureServer.startGestureServer();
+    if (!isSimulation)
+      try {
+        String driver = (new File("JmolMultiTouchDriver.exe")).getAbsolutePath();
+        Logger.info("JmolSparshClientAdapter starting " + driver);
+        Process p = Runtime.getRuntime().exec(driver);
+        Logger.info("JmolSparshClientAdapter process " + p);
+        //BufferedReader input = new BufferedReader(new InputStreamReader(p
+          //  .getInputStream()));
+        Thread.sleep(2000);
+        //String line = input.readLine();
+        //System.out.println(line);
+        //input.close();
+        Logger.info("JmolSparshClientAdapter successful starting driver process");
+      } catch (Exception e) {
+        System.out.println(e.getMessage());
+      }
+    int port = NetworkConfiguration.CLIENT_PORT;
     try {
-      this.client = client; //ActionManagerMT
-      serverConnection = new ServerConnection("127.0.0.1", this);
+      actionManager = client; // ActionManagerMT
+      serverConnection = new ClientServerConnection("127.0.0.1", this);
       Logger.info("SparshUI connection established at 127.0.0.1 port " + port);
       return;
     } catch (UnknownHostException e) {
       err = e.getMessage();
     } catch (IOException e) {
       err = e.getMessage();
-    }  
-    this.client = null;
-    Logger.error("Cannot create SparshUI connection at 127.0.0.1 port " 
-        + port + ": " + err);
+    }
+    actionManager = null;
+    Logger.error("Cannot create SparshUI connection at 127.0.0.1 port " + port
+        + ": " + err);
   }
   
   // methods the Sparsh server needs -- from com.sparshui.client.ClientToServerProtocol
   
   public List getAllowedGestures(int groupID) {
-    return (client == null ? null : client.getAllowedGestures(groupID));
+    return (actionManager == null ? null : actionManager.getAllowedGestures(groupID));
   }
 
   public int getGroupID(Location location) {
-    if (client == null)
+    if (actionManager == null)
       return 0;
     fixXY(location.getX(), location.getY());
-    return (client == null ? 0 : client.getGroupID(xyTemp.x, xyTemp.y));
+    return (actionManager == null ? 0 : actionManager.getGroupID(xyTemp.x, xyTemp.y));
   }
 
   int x0, y0;
@@ -172,11 +191,19 @@ ActionManagerMT.processEvent groupID=16777100 eventType=6 iData=0 pt=(-1.0, -1.0
    * 
    */
   public void processEvent(int groupID, Event event) {
-    if (client == null)
+    if (actionManager == null)
       return;
     if (event == null) {
-      dispose();
-      client.processEvent(Integer.MAX_VALUE, -1, -1, -1, null, -1);
+      //use groupID as eventType
+      int errorType = groupID;
+      switch (errorType) {
+      case ActionManagerMT.SERVICE_LOST:
+        dispose();
+        break;
+      case ActionManagerMT.DRIVER_NONE:
+        break;
+      }
+      actionManager.processEvent(-1, errorType, -1, -1, null, -1);
       return;
     }
     int id = 0;
@@ -207,6 +234,7 @@ ActionManagerMT.processEvent groupID=16777100 eventType=6 iData=0 pt=(-1.0, -1.0
       fixXY(((TouchEvent) event).getX(), ((TouchEvent) event).getY());
       iData = ((TouchEvent) event).getState();
       time = ((TouchEvent) event).getTime();
+      System.out.println("JmolSparshClientAdapter received time: " + time);
       break;
     case ActionManagerMT.ZOOM_EVENT:
       fixXY(((ZoomEvent) event).getCenter().getX(), ((ZoomEvent) event).getCenter().getY());
@@ -223,7 +251,7 @@ ActionManagerMT.processEvent groupID=16777100 eventType=6 iData=0 pt=(-1.0, -1.0
       ptTemp.z = ((FlickEvent) event).getSpeedLevel();
       break;
     }
-    client.processEvent(groupID, type, id, iData, ptTemp, time);
+    actionManager.processEvent(groupID, type, id, iData, ptTemp, time);
   }
 
   public void mouseMoved(int x, int y) {

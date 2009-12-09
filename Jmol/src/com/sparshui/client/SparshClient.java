@@ -13,7 +13,7 @@ import com.sparshui.common.Location;
  * @author Jay Roltgen
  *
  */
-public interface Client {
+public interface SparshClient {
 	
 	/**
 	 * This method must return an ID for a group of points that should

@@ -47,7 +47,7 @@ class ClientConnection {
    */
   boolean processBirth(TouchPoint touchPoint) throws IOException {
 
-    int groupID = getGroupID(touchPoint);
+    int groupID = (touchPoint == null ? 0x10000000 : getGroupID(touchPoint));
     int jmolFlags = (groupID & 0xF0000000);
     if (jmolFlags != 0) {
       switch (jmolFlags) {
@@ -119,5 +119,13 @@ class ClientConnection {
 		// System.out.println("[ClientConnection] Returning Group");
 		return group;
 	}
+
+  public void processError(int errCode) {
+    try {
+      _protocol.processError(errCode);
+    } catch (IOException e) {
+      //ignore
+    }
+  }
 
 }

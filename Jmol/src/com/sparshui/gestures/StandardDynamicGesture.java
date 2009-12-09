@@ -136,7 +136,6 @@ public abstract class StandardDynamicGesture implements Gesture {
 		moveCentroid(-touchData.getOldLocation().getX(), -touchData.getOldLocation().getY());
 		return processDeath(touchData);
 	}
-	
 	/**
 	 * 
 	 * @param dx

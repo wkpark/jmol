@@ -12,42 +12,79 @@ import org.jmol.util.Logger;
 import com.sparshui.common.ConnectionType;
 import com.sparshui.common.Location;
 import com.sparshui.common.NetworkConfiguration;
+import com.sparshui.common.messages.events.EventType;
 
 /**
- * The main gesture server class.
- * In the Jmol version, this server is created by 
- * org.jmol.multitouch.sparshui.JmolSparshClientAdapter
- * so there is no main method.
+ * The main gesture server class. In the Jmol version, this server is created by
+ * org.jmol.multitouch.sparshui.JmolSparshClientAdapter so there is no main
+ * method.
  * 
  * adapted by Bob Hanson for Jmol 11/29/2009
- *
+ * 
  * @author Tony Ross
  * 
  */
 
 public class GestureServer implements Runnable, JmolGestureServerInterface {
-  private ServerSocket _serverSocket;
+  GestureServer clientServer, deviceServer, main;
+  Thread clientThread, deviceThread;
+  ServerSocket _clientSocket;
+  ServerSocket _deviceSocket;
+  ServerSocket _mySocket;
   private Vector _clients = new Vector();
-  private Thread gsThread;
+  private int port;
+
+  InputDeviceConnection ic = null;
+
+  public GestureServer() {
+    // for reflection
+  }
+  
+  public GestureServer(int port, GestureServer main) {
+    this.port = port;
+    this.main = main;
+  }
+  
   public void startGestureServer() {
-    gsThread = new Thread(new GestureServer());
-    gsThread.setName("Jmol SparshUI GestureServer on port " + NetworkConfiguration.PORT);
-    gsThread.start();
+    clientServer = new GestureServer(NetworkConfiguration.CLIENT_PORT, this);
+    clientThread = new Thread(clientServer);
+    clientThread.setName("Jmol SparshUI Client GestureServer on port "
+        + NetworkConfiguration.CLIENT_PORT);
+    clientThread.start();
+    deviceServer = new GestureServer(NetworkConfiguration.DEVICE_PORT, this);
+    deviceThread = new Thread(deviceServer);
+    deviceThread.setName("Jmol SparshUI Device GestureServer on port "
+        + NetworkConfiguration.DEVICE_PORT);
+    deviceThread.start();
   }
 
   public void dispose() {
     try {
-      _serverSocket.close();
+      _clientSocket.close();
     } catch (Exception e) {
       // ignore
     }
     try {
-      gsThread.interrupt();
+      _deviceSocket.close();
     } catch (Exception e) {
-      // ignore      
+      // ignore
     }
-    _serverSocket = null;
-    gsThread = null;
+    try {
+      clientThread.interrupt();
+    } catch (Exception e) {
+      // ignore
+    }
+    try {
+      deviceThread.interrupt();
+    } catch (Exception e) {
+      // ignore
+    }
+    _clientSocket = null;
+    clientThread = null;
+    _deviceSocket = null;
+    deviceThread = null;
+    clientServer = null;
+    deviceServer = null;
   }
 
   /**
@@ -67,8 +104,11 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
 	 */
   private void openSocket() {
     try {
-      _serverSocket = new ServerSocket(NetworkConfiguration.PORT);
-      Logger.info("[GestureServer] Socket Open");
+      if (port == NetworkConfiguration.CLIENT_PORT)
+        _mySocket = main._clientSocket = new ServerSocket(port);
+      else
+        _mySocket = main._deviceSocket = new ServerSocket(port);
+      Logger.info("[GestureServer] Socket Open: " + port);
     } catch (IOException e) {
       Logger.error("[GestureServer] Failed to open a server socket.");
       e.printStackTrace();
@@ -80,15 +120,17 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
 	 */
   private void acceptConnections() {
     Logger.info("[GestureServer] Accepting Connections");
-    while (!_serverSocket.isClosed()) {
+    while (!_mySocket.isClosed()) {
       try {
-        acceptConnection(_serverSocket.accept());
+        acceptConnection(_mySocket.accept());
+        if (port == NetworkConfiguration.DEVICE_PORT)
+          return; // only one of these
       } catch (IOException e) {
-        Logger.error("[GestureServer] Failed to establish client connection");
+        Logger.error("[GestureServer] Failed to establish connection on port " + port);
         e.printStackTrace();
       }
     }
-    Logger.info("[GestureServer] Socket Closed");
+    Logger.info("[GestureServer] Socket Closed on port " + port);
   }
 
   /**
@@ -117,7 +159,10 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   private void acceptClientConnection(Socket socket) throws IOException {
     Logger.info("[GestureServer] ClientConnection claimed");
     ClientConnection cc = new ClientConnection(socket);
-    _clients.add(cc);
+    main._clients.add(cc);
+    if (main.ic == null) {
+      cc.processError(EventType.DRIVER_NONE);
+    }
   }
 
   /**
@@ -126,8 +171,20 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
    * @throws IOException
    */
   private void acceptInputDeviceConnection(Socket socket) throws IOException {
-    Logger.info("[GestureServer] InputDeviceConnection claimed");
-    new InputDeviceConnection(this, socket);
+    Logger.info("[GestureServer] InputDeviceConnection accepted");
+    main.ic = new InputDeviceConnection(this, socket);
+  }
+
+  /**
+   * 
+   * notify clients that we lost contact with the input device
+   * 
+   */
+  void notifyInputLost() {
+    Logger
+        .error("[GestureServer] sending clients message that input device was lost.");
+    main.ic = null;
+    processBirth(null);
   }
 
   /**
@@ -138,29 +195,35 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
    *          container for this input device's touchPoints
    * @param id
    * @param location
+   * @param time
    * @param state
    * @return whether a client has claimed this touchPoint;
    */
   boolean processTouchPoint(HashMap inputDeviceTouchPoints, int id,
-                            Location location, int state) {
+                            Location location, long time, int state) {
+    if (Logger.debugging) {
+      Logger.info("[GestureServer] processTouchPoint " + id + " " + location
+          + " " + time + " " + state);
+    }
     Integer iid = new Integer(id);
     if (inputDeviceTouchPoints.containsKey(iid)) {
       TouchPoint touchPoint = (TouchPoint) inputDeviceTouchPoints.get(iid);
       if (!touchPoint.isClaimed())
         return false;
+      Logger.debug("[GestureServer] OK");
       synchronized (touchPoint) {
-        touchPoint.update(location, state);
+        touchPoint.update(location, time, state);
       }
       return true;
     }
-    TouchPoint touchPoint = new TouchPoint(location);
+    TouchPoint touchPoint = new TouchPoint(location, time);
     inputDeviceTouchPoints.put(iid, touchPoint);
     return processBirth(touchPoint);
   }
 
   /**
    * Process a touch point birth by getting the groupID and gestures for the
-   * touch point.
+   * touch point. NULL touchpoint means we have a driver failure
    * 
    * @param touchPoint
    *          The new touch point.
@@ -170,11 +233,14 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   private boolean processBirth(TouchPoint touchPoint) {
     Vector clients_to_remove = null;
     boolean isClaimed = false;
-    for (int i = 0; i < _clients.size(); i++) {
-      ClientConnection client = (ClientConnection) _clients.get(i);
+    for (int i = 0; i < main._clients.size(); i++) {
+      ClientConnection client = (ClientConnection) main._clients.get(i);
       // Return if the client claims the touch point
       try {
-        isClaimed = client.processBirth(touchPoint);
+        if (touchPoint == null)
+          client.processError(EventType.DRIVER_NONE);
+        else
+          isClaimed = client.processBirth(touchPoint);
         if (isClaimed)
           break;
       } catch (IOException e) {
@@ -188,11 +254,10 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
     }
     if (clients_to_remove != null)
       for (int i = 0; i < clients_to_remove.size(); i++) {
-        _clients.remove(clients_to_remove.elementAt(i));
+        main._clients.remove(clients_to_remove.elementAt(i));
         Logger.info("[GestureServer] Client Disconnected");
       }
     return isClaimed;
   }
-
 
 }

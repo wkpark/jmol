@@ -24,15 +24,22 @@
 
 package org.jmol.api;
 
-import java.awt.Component;
+import java.util.List;
 
-public interface JmolSparshAdapter {
+import javax.vecmath.Point3f;
+
+public interface JmolMultiTouchClient {
   
   /*
-   * An interface that allows ActionManagerMT to create a Sparsh client adapter
+   * An interface that involves only Java 1.4-compliant classes.
+   * 
+   * ActionManagerMT implements this interface.
+   * It is connected to the SparshUI code (com.sparshui.client) 
+   * within org.jmol.multitouch.sparshui.SparshClient
    * 
    */
-  public void dispose();
-  public void setSparshClient(Component display, JmolSparshClient client);
-  public void mouseMoved(int x, int y);
+  public int getGroupID(int x, int y);
+  public List getAllowedGestures(int groupID);
+  public void processEvent(int groupID, int eventType, int touchID, 
+                           int iData, Point3f pt, long time);
 }

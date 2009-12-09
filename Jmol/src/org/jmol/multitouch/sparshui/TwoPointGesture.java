@@ -82,6 +82,7 @@ public class TwoPointGesture extends StandardDynamicGesture {
   protected Vector processBirth(TouchData touchData) {
     _nCurrent++;
     Location location = touchData.getLocation();
+    System.out.println("TwoPointGesture birth ntraces:" + _nTraces + " ncurrent:" + _nCurrent);
     switch (_nTraces) {
     case 0:
       _traces1 = new Vector();
@@ -100,6 +101,7 @@ public class TwoPointGesture extends StandardDynamicGesture {
 
   // @override
   protected Vector processMove(TouchData touchData) {
+    System.out.println("TwoPointGesture move ntraces:" + _nTraces + " ncurrent:" + _nCurrent);
     Vector events = new Vector();
     if (_nTraces != 2)
       return events;
@@ -109,13 +111,12 @@ public class TwoPointGesture extends StandardDynamicGesture {
       return events;
     if (_myType == ActionManagerMT.INVALID_GESTURE)
       checkType();
-    if (_myType != ActionManagerMT.INVALID_GESTURE && updateCentroid())
-      location = Location.screenLocation(_offsetCentroid);
+    if (_myType == ActionManagerMT.INVALID_GESTURE 
+        || !updateCentroid())
+      return events;
+    location = Location.screenLocation(_offsetCentroid);
     Event event = null;
     switch (_myType) {
-    case ActionManagerMT.INVALID_GESTURE:
-    default:
-      break;
     case ActionManagerMT.ZOOM_GESTURE:
       event = new ZoomEvent(_scale, location);
       break;
@@ -134,6 +135,7 @@ public class TwoPointGesture extends StandardDynamicGesture {
   // @override
   protected Vector processDeath(TouchData touchData) {
     _nCurrent--;
+    System.out.println("TwoPointGesture death ntraces:" + _nTraces + " ncurrent:" + _nCurrent);
     if (_nCurrent <= 0) {
       _nTraces = _nCurrent = 0;
       _traces1 = null;
@@ -167,6 +169,8 @@ public class TwoPointGesture extends StandardDynamicGesture {
   }
 
   private void checkType() {
+    System.out.println("TwoPointGesture type=" + _myType + " _v00=" + _v00
+        + "\n traces sizes: " + _traces1.size() + "  " + _traces2.size());
     if (_traces1.size() < 10 || _traces2.size() < 10)
       return;
     Location loc10 = (Location) _traces1.firstElement();
@@ -198,8 +202,14 @@ public class TwoPointGesture extends StandardDynamicGesture {
         _myType = ActionManagerMT.ZOOM_GESTURE;
       }
     }
-    if (Logger.debugging)
-      Logger.debug("TwoPointGesture type=" + _myType + " cos:" + cos01 + "/" + cos02 + "/" + cos12);
+    //if (Logger.debugging)
+      Logger.info("TwoPointGesture type=" + _myType + " _v00=" + _v00
+          + "\n cos01=" + cos01 + " cos02=" + cos02 + " cos12=" + cos12
+          + "\n v1=" + v1 + " v2=" + v2 + " d1=" + d1 + " d2=" + d2    
+          + "\n loc10=" + loc10 + " loc11=" + loc11
+          + "\n loc20=" + loc20 + " loc21=" + loc21
+          
+      );
   }
 
   private boolean updateCentroid() {
@@ -228,12 +238,14 @@ public class TwoPointGesture extends StandardDynamicGesture {
       _rotation = (v1.z < 0 ? 1 : -1);
       return true;
     case ActionManagerMT.ZOOM_GESTURE:
+      d1 = loc21.distance(loc11);
+      if (Math.abs(d1 - _distance0) < 2)
+        return false;
+      _scale = (d1 < _distance0 ? -1 : 1);
       float w1 = d2 / (d1 + d2);
       float w2 = 1 - w1;
       _offsetCentroid = new Location(loc10.getX() * w1 + loc20.getX() * w2,
           loc10.getY() * w1 + loc20.getY() * w2);
-      d1 = loc21.distance(loc11);
-      _scale = (d1 < _distance0 ? -1 : 1);
       return true;
     case ActionManagerMT.MULTI_POINT_DRAG_GESTURE:
       _offsetCentroid = new Location((loc11.getX() + loc21.getX()) / 2, (loc11

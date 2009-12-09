@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import com.sparshui.common.Location;
+import com.sparshui.common.NetworkConfiguration;
 import com.sparshui.common.TouchState;
 
 /**
@@ -91,29 +92,31 @@ public class InputDeviceConnection implements Runnable {
 				//_out.write((byte) (doConsume ? 1 : 0)); 
 			}
 		} catch (IOException e) {
-			//System.err.println("Error reading touch point from input device.");
-			//e.printStackTrace();
-			System.out.println("[GestureServer] InputDevice Disconnected");
-			//TODO figure out some way to destroy the object
+			System.out.println("[InputDeviceConnection] InputDevice Disconnected");
+			_gestureServer.notifyInputLost();
 		}
 	}
 	
 	/**
-	 * 
-	 * @return doConsume
-	 * @throws IOException
-	 */
-	private boolean readTouchPoint() throws IOException {
-		int id = _in.readInt();
-		float x = _in.readFloat();
-		float y = _in.readFloat();
-		Location location = new Location(x, y);
-		int state = (int)_in.readByte();
-		boolean doConsume = _gestureServer.processTouchPoint(_touchPoints, id, location, state);
-		if (state == TouchState.DEATH)
-			flagTouchPointForRemoval(id);
-		return doConsume;
-	}
+   * Modified for Jmol to also transmit the time as a long
+   * 
+   * @return doConsume
+   * @throws IOException
+   */
+  private boolean readTouchPoint() throws IOException {
+    int id = _in.readInt();
+    float x = _in.readFloat();
+    float y = _in.readFloat();
+    Location location = new Location(x, y);
+    int state = (int) _in.readByte();
+    long time = _in.readLong();
+    System.out.println("InputdeviceConnection time " + time);
+    boolean doConsume = _gestureServer.processTouchPoint(_touchPoints, id,
+        location, time, state);
+    if (state == TouchState.DEATH)
+      flagTouchPointForRemoval(id);
+    return doConsume;
+  }
 	
 	/**
 	 * 
@@ -140,7 +143,7 @@ public class InputDeviceConnection implements Runnable {
 	 */
 	private void startListening() {
 		Thread thread = new Thread(this);
-		thread.setName("SparshUI Server->InputDeviceConnection");
+		thread.setName("SparshUI Server->InputDeviceConnection on port " + NetworkConfiguration.DEVICE_PORT);
 		thread.start();
 	}
 

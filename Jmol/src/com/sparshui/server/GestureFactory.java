@@ -2,17 +2,18 @@ package com.sparshui.server;
 
 import org.jmol.util.Logger;
 
-import com.sparshui.gestures.Flick;
 import com.sparshui.gestures.Gesture;
-import com.sparshui.gestures.GestureType;
-import com.sparshui.gestures.MultiPointDragGesture;
-import com.sparshui.gestures.RelativeDragGesture;
-import com.sparshui.gestures.RotateGesture;
-import com.sparshui.gestures.SinglePointDragGesture;
-import com.sparshui.gestures.SpinGesture;
-import com.sparshui.gestures.TouchGesture;
-import com.sparshui.gestures.ZoomGesture;
-import com.sparshui.gestures.DblClkGesture;
+
+//import com.sparshui.gestures.Flick;
+//import com.sparshui.gestures.GestureType;
+//import com.sparshui.gestures.MultiPointDragGesture;
+//import com.sparshui.gestures.RelativeDragGesture;
+//import com.sparshui.gestures.RotateGesture;
+//import com.sparshui.gestures.SinglePointDragGesture;
+//import com.sparshui.gestures.SpinGesture;
+//import com.sparshui.gestures.TouchGesture;
+//import com.sparshui.gestures.ZoomGesture;
+//import com.sparshui.gestures.DblClkGesture;
 
 class GestureFactory {
 
@@ -38,6 +39,7 @@ class GestureFactory {
      }
    }
    int gestureID = ((Integer) gid).intValue();
+   /* unused in Jmol
 	  switch (gestureID) {
 	  case GestureType.DRAG_GESTURE:
 			return new SinglePointDragGesture();
@@ -58,6 +60,7 @@ class GestureFactory {
 		case GestureType.RELATIVE_DRAG_GESTURE:
 			return new RelativeDragGesture();
 	  }
+	  */
 	  Logger.error("[GestureFactory] Gesture not recognized: " + gestureID);
 		return null;
 	}

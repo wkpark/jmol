@@ -45,6 +45,9 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
     this.main = main;
   }
   
+  /**
+   * two independent threads -- one accepting multiple clients, one not.
+   */
   public void startGestureServer() {
     clientServer = new GestureServer(NetworkConfiguration.CLIENT_PORT, this);
     clientThread = new Thread(clientServer);
@@ -157,7 +160,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
    * @throws IOException
    */
   private void acceptClientConnection(Socket socket) throws IOException {
-    Logger.info("[GestureServer] ClientConnection claimed");
+    Logger.info("[GestureServer] Client connection accepted");
     ClientConnection cc = new ClientConnection(socket);
     main._clients.add(cc);
     if (main.ic == null) {
@@ -171,7 +174,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
    * @throws IOException
    */
   private void acceptInputDeviceConnection(Socket socket) throws IOException {
-    Logger.info("[GestureServer] InputDeviceConnection accepted");
+    Logger.info("[GestureServer] Input device connection accepted");
     main.ic = new InputDeviceConnection(this, socket);
   }
 

@@ -727,7 +727,6 @@ support for assertions (which were introduced in 1.4).
         <include name="org/jmol/multitouch/**" />
         <include name="com/sparshui/**" />
       </fileset>
-      <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
   	<signjar jar="${jmol.applet.build.dir}/JmolApplet_MultiTouch.jar.temp"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_MultiTouch.jar"

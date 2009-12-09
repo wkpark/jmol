@@ -34,16 +34,17 @@ public class SingleTouchGesture implements Gesture {
 
   /**
    * 
-   * incorporates double-click gesture 
+   * incorporates double-click gesture
    * 
-   * @param touchPoints 
-   * @param changedTouchPoint 
+   * @param touchPoints
+   * @param changedTouchPoint
    * @return Vector of Events
    * 
    */
   // @override
   public Vector processChange(Vector touchPoints, TouchPoint changedTouchPoint) {
-    System.out.println("SingleTouchGesture processChange1 " + _nCurrent + "  state=" + changedTouchPoint.getState());
+    System.out.println("SingleTouchGesture processChange1 " + _nCurrent
+        + "  state=" + changedTouchPoint.getState());
     Vector retEvents = new Vector();
     boolean isDoubleClick = false;
     switch (changedTouchPoint.getState()) {
@@ -67,16 +68,17 @@ public class SingleTouchGesture implements Gesture {
           retEvents.add(new TouchEvent(tp));
         }
         break;
-      }   
+      }
       break;
     case TouchState.DEATH:
       if (--_nCurrent > 0)
         return retEvents;
       _nCurrent = 0;
       // single fingers only here
-      // look for a long click --> dbl-click (not right-click) 
-      isDoubleClick = (nMoves <= 2 && birth.isNear(changedTouchPoint) 
-          && changedTouchPoint.getTime() - birth.getTime() > 500 /*ms*/);
+      // look for a long click --> dbl-click (not right-click)
+      isDoubleClick = (nMoves <= 2 && birth.isNear(changedTouchPoint) && changedTouchPoint
+          .getTime()
+          - birth.getTime() > 500 /* ms */);
       break;
     }
     retEvents.add(new TouchEvent(changedTouchPoint));

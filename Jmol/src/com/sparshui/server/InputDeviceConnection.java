@@ -110,7 +110,6 @@ public class InputDeviceConnection implements Runnable {
     Location location = new Location(x, y);
     int state = (int) _in.readByte();
     long time = _in.readLong();
-    System.out.println("InputdeviceConnection time " + time);
     boolean doConsume = _gestureServer.processTouchPoint(_touchPoints, id,
         location, time, state);
     if (state == TouchState.DEATH)

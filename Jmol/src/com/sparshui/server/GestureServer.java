@@ -122,12 +122,16 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
 	 * 
 	 */
   private void acceptConnections() {
-    Logger.info("[GestureServer] Accepting Connections");
     while (!_mySocket.isClosed()) {
       try {
-        acceptConnection(_mySocket.accept());
-        if (port == NetworkConfiguration.DEVICE_PORT)
+        if (port == NetworkConfiguration.DEVICE_PORT) {
+          Logger.info("[GestureServer] Accepting device connections");
+          acceptConnection(_mySocket.accept());
+        } else {
+          Logger.info("[GestureServer] Accepting client connections");
+          acceptConnection(_mySocket.accept());
           return; // only one of these
+        }
       } catch (IOException e) {
         Logger.error("[GestureServer] Failed to establish connection on port " + port);
         e.printStackTrace();

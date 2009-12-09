@@ -228,25 +228,28 @@ public class JmolTable {
 
 
 class JmolPanel extends JPanel {
-    JmolViewer viewer;
-    JmolAdapter adapter;
-    JmolPanel() {
-        adapter = new SmarterJmolAdapter();
-        viewer = JmolViewer.allocateViewer(this, adapter);
-        viewer.scriptWait("frank off;set defaultDirectory 'http://chemapps.stolaf.edu/jmol/docs/examples-11/data/'");
-    }
+  JmolViewer viewer;
+  JmolAdapter adapter;
 
-    public JmolViewer getViewer() {
-        return viewer;
-    }
-    final Dimension currentSize = new Dimension();
-    public void paint(Graphics g) {
-      System.out.println("JmolTable paint " + viewer + "\n" + g);
-        viewer.setScreenDimension(getSize(currentSize));
-        Rectangle rectClip = new Rectangle();
-        g.getClipBounds(rectClip);
-        viewer.renderScreenImage(g, currentSize, rectClip);
-    }
+  JmolPanel() {
+    adapter = new SmarterJmolAdapter();
+    viewer = JmolViewer.allocateViewer(this, adapter);
+    viewer
+        .scriptWait("frank off;set defaultDirectory 'http://chemapps.stolaf.edu/jmol/docs/examples-11/data/'");
+  }
+
+  public JmolViewer getViewer() {
+    return viewer;
+  }
+
+  final Dimension currentSize = new Dimension();
+
+  public void paint(Graphics g) {
+    viewer.setScreenDimension(getSize(currentSize));
+    Rectangle rectClip = new Rectangle();
+    g.getClipBounds(rectClip);
+    viewer.renderScreenImage(g, currentSize, rectClip);
+  }
 
 }
 

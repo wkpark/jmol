@@ -34,6 +34,8 @@
 #include "math.h"
 #include "NWMultiTouch.h"
 #include "time.h"
+#include <string>
+
 
 // The desired time to wait for more touch move events before sending the touch death.
 #define TOUCH_WAIT_TIME_MS (75)
@@ -441,9 +443,7 @@ int main(int argc, char **argv) {
         DWORD deviceID = 0;
         inittouchPoints();
         bool isOK = false;
-
-
-        cout << getTimeNow();
+        bool testing = (argc > 1 && ((string) argv[1]) == "-test");
 
         // If we have at least one connected device then try to connect to it.
         if(numDevices > 0) {
@@ -480,7 +480,12 @@ int main(int argc, char **argv) {
         DWORD displayMode = RM_MULTITOUCH; // same as RM_SLOPESMODE ?
         SetReportMode(deviceID, displayMode);
 
-        haveSocket = initSocket();
+        haveSocket = (testing ? false : initSocket());
+
+        if (!haveSocket && !testing) {
+            cout << "No socket and no -test flag -- quitting" << endl;
+            return 0;
+        }
 
         cout << "Press ESC to Quit or I to re-initialize socket" << endl;
 

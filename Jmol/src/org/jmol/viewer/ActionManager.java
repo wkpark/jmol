@@ -727,7 +727,9 @@ public class ActionManager {
     }
     
     if (isBound(action, ACTION_rotate)) {
-      viewer.rotateXYBy(deltaX, deltaY);
+      float degX = ((float) deltaX) / viewer.getScreenWidth() * 180;
+      float degY = ((float) deltaY) / viewer.getScreenHeight() * 180;
+      viewer.rotateXYBy(degX, degY);
       return;      
     }
 
@@ -738,8 +740,10 @@ public class ActionManager {
     }
 
     if (viewer.allowRotateSelected() && isBound(action, ACTION_rotateSelected)) {
+      float degX = ((float) deltaX) / viewer.getScreenWidth() * 180;
+      float degY = ((float) deltaY) / viewer.getScreenHeight() * 180;
       checkMotion(Viewer.CURSOR_MOVE);
-      viewer.rotateMolecule(deltaX, deltaY);
+      viewer.rotateMolecule(degX, degY);
       return;
     }
     if (drawMode && (
@@ -1388,8 +1392,8 @@ public class ActionManager {
         return 0;
       MotionPoint mp1 = getNode(ptNext - 1 - nPointsPrevious);
       MotionPoint mp0 = getNode(ptNext - nPoints - nPointsPrevious);
-      float dx = mp1.x - mp0.x;
-      float dy = mp1.y - mp0.y;
+      float dx = ((float) (mp1.x - mp0.x)) / viewer.getScreenWidth() * 180;
+      float dy = ((float) (mp1.y - mp0.y)) / viewer.getScreenHeight() * 180;
       float speed = (float) Math.sqrt(dx * dx + dy * dy) / (mp1.time - mp0.time);
       return speed;
     }

@@ -13,12 +13,12 @@ public class TouchPoint {
 	/**
 	 * Used to assign a globally unique id to a new touch point.
 	 */
-	private static int nextID = 0;
+	//private static int nextID = 0;
 	
 	/**
 	 * 
 	 */
-	private static Object idLock = new Object();
+	//private static Object idLock = new Object();
 	
 	/**
 	 * 
@@ -61,13 +61,15 @@ public class TouchPoint {
 	}
 	/**
 	 * 
+	 * @param id 
 	 * @param location
 	 * @param time 
 	 */
-	public TouchPoint(Location location, long time) {
-		synchronized(idLock) {
-			_id = nextID++;
-		}
+	public TouchPoint(int id, Location location, long time) {
+		//synchronized(idLock) {
+		//	_id = nextID++;
+		//}
+	  _id = id; // for debugging, I need the exact match with device points
 		_location = location;
 		_time = time;
 		_state = TouchState.BIRTH;

@@ -60,7 +60,10 @@ public class Location implements Serializable {
 	}
 	
 	public String toString() {
-		return "x = " + _x + ", y = " + _y + "(" + pixelLocation(this).getX() + " " + pixelLocation(this).getY() + ")";
+		return "x = " + _x + ", y = " + _y 
+		        + (_x < 1 && _x > 0 ? "(" 
+		        + pixelLocation(this).getX() + " " + pixelLocation(this).getY() + ")"
+		    : "");
 	}
 	
 

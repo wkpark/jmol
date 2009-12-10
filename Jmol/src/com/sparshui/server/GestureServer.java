@@ -127,11 +127,10 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
         if (port == NetworkConfiguration.DEVICE_PORT) {
           Logger.info("[GestureServer] Accepting device connections");
           acceptConnection(_mySocket.accept());
-        } else {
-          Logger.info("[GestureServer] Accepting client connections");
-          acceptConnection(_mySocket.accept());
           return; // only one of these
         }
+        Logger.info("[GestureServer] Accepting client connections");
+        acceptConnection(_mySocket.accept());
       } catch (IOException e) {
         Logger.error("[GestureServer] Failed to establish connection on port " + port);
         e.printStackTrace();
@@ -209,8 +208,8 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   boolean processTouchPoint(HashMap inputDeviceTouchPoints, int id,
                             Location location, long time, int state) {
     if (Logger.debugging) {
-      Logger.info("[GestureServer] processTouchPoint " + id + " " + location
-          + " " + time + " " + state);
+      Logger.info("[GestureServer] processTouchPoint id=" + id + " state=" + state + " " + location
+          + " " + time);
     }
     Integer iid = new Integer(id);
     if (inputDeviceTouchPoints.containsKey(iid)) {
@@ -223,7 +222,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
       }
       return true;
     }
-    TouchPoint touchPoint = new TouchPoint(location, time);
+    TouchPoint touchPoint = new TouchPoint(id, location, time);
     inputDeviceTouchPoints.put(iid, touchPoint);
     return processBirth(touchPoint);
   }

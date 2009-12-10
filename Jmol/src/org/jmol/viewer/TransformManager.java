@@ -334,7 +334,7 @@ abstract class TransformManager {
     rotateAboutPointsInternal(pt2, pt1, 10 * speed, Float.NaN, false, true, null, true);
   }
 
-  void rotateXYBy(int xDelta, int yDelta, BitSet bsAtoms) {
+  void rotateXYBy(float xDelta, float yDelta, BitSet bsAtoms) {
     // from mouse action
     rotateXRadians(yDelta * JmolConstants.radiansPerDegree, bsAtoms);
     rotateYRadians(xDelta * JmolConstants.radiansPerDegree, bsAtoms);

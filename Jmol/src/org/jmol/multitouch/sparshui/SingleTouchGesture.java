@@ -2,6 +2,8 @@ package org.jmol.multitouch.sparshui;
 
 import java.util.Vector;
 
+import org.jmol.util.Logger;
+
 import com.sparshui.common.TouchState;
 import com.sparshui.common.messages.events.TouchEvent;
 import com.sparshui.gestures.Gesture;
@@ -43,8 +45,8 @@ public class SingleTouchGesture implements Gesture {
    */
   // @override
   public Vector processChange(Vector touchPoints, TouchPoint changedTouchPoint) {
-    System.out.println("SingleTouchGesture processChange1 " + _nCurrent
-        + "  state=" + changedTouchPoint.getState());
+    if (Logger.debugging)
+      Logger.info("\nSingle id=" + changedTouchPoint.getID() + " state=" + changedTouchPoint.getState() + " ncurrent=" + _nCurrent + " nMoves=" + nMoves);
     Vector retEvents = new Vector();
     switch (changedTouchPoint.getState()) {
     case TouchState.BIRTH:
@@ -71,6 +73,8 @@ public class SingleTouchGesture implements Gesture {
         return retEvents;
       break;
     }
+    if (Logger.debugging)
+      Logger.info("Single creating new touch event");
     retEvents.add(new TouchEvent(changedTouchPoint));
     return retEvents;
   }

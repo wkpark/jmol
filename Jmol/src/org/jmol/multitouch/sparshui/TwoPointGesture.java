@@ -62,8 +62,9 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
   protected Location _offsetCentroid = null;
   private Vector _traces1 = new Vector();
   private Vector _traces2 = new Vector();
+  private int _id1 = -1;
+  private int _id2 = -1;
   private int _nTraces = 0;
-  private int _nCurrent = 0;
   private float _scale;
   private float _rotation;
   private float _distance0;
@@ -83,8 +84,11 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
   //@override
   public Vector processChange(Vector touchPoints,
       TouchPoint changedPoint) {
+    return processChangeSync(touchPoints, changedPoint);
+  }
+  private synchronized Vector processChangeSync(Vector touchPoints,
+                                        TouchPoint changedPoint) {
     Vector events = null;
-    
     switch(changedPoint.getState()) {
       case TouchState.BIRTH:
         events = processBirth(changedPoint);
@@ -93,50 +97,53 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
         events = processMove(changedPoint);
         break;
       case TouchState.DEATH:
-        events = processDeath();
+        events = processDeath(changedPoint);
         break;
     }
-    
     return (events != null) ? events : new Vector();
   }
   
   // @override
   protected Vector processBirth(TouchPoint touchPoint) {
-    _nCurrent++;
     Location location = touchPoint.getLocation();
-    System.out.println("TwoPointGesture birth ntraces:" + _nTraces + " ncurrent:" + _nCurrent);
+    int id = touchPoint.getID();
+    System.out.println("TwoPointGesture birth ntraces:" + _nTraces + " ids:" + _id1+","+_id2+ " id:" + id);
     switch (_nTraces) {
     case 0:
-      _traces1 = new Vector();
+      _traces1.clear();
       _traces1.add(Location.pixelLocation(location));
+      _id1 = id;
+      _nTraces = 1;
       break;
     case 1:
-      _traces2 = new Vector();
+      _traces2.clear();
       _traces2.add(Location.pixelLocation(location));
+      _id2 = id;
+      Object o = _traces1.lastElement();
+      _traces1.clear();
+      _traces1.add(o);
+      _nTraces = 2;
       break;
-    default:
-      _myType = ActionManagerMT.INVALID_GESTURE;
     }
-    _nTraces++;
     return null;
   }
 
   // @override
   protected Vector processMove(TouchPoint touchPoint) {
-    System.out.println("TwoPointGesture move ntraces:" + _nTraces + " ncurrent:" + _nCurrent);
+    int id = touchPoint.getID();
+    if (id != _id1 && id != _id2) {
+      
+    }
+    System.out.println("TwoPointGesture move ntraces:" + _nTraces + " ids:" + _id1+","+_id2+ " id:" + touchPoint.getID());
     Vector events = new Vector();
-    if (_nTraces != 2)
-      return events;
-    Location location = Location.pixelLocation(touchPoint.getLocation());
-    updateLocations(location);
-    if (_nCurrent < 2)
+    if (!updateLocations(touchPoint))
       return events;
     if (_myType == ActionManagerMT.INVALID_GESTURE)
       checkType();
     if (_myType == ActionManagerMT.INVALID_GESTURE 
         || !updateCentroid())
       return events;
-    location = Location.screenLocation(_offsetCentroid);
+    Location location = Location.screenLocation(_offsetCentroid);
     Event event = null;
     switch (_myType) {
     case ActionManagerMT.ZOOM_GESTURE:
@@ -155,45 +162,70 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
   }
 
   // @override
-  protected Vector processDeath() {
-    _nCurrent--;
-    System.out.println("TwoPointGesture death ntraces:" + _nTraces + " ncurrent:" + _nCurrent);
-    if (_nCurrent <= 0) {
-      _nTraces = _nCurrent = 0;
-      _traces1 = null;
-      _traces2 = null;
-      _v00 = null;
-      _myType = ActionManagerMT.INVALID_GESTURE;
+  protected Vector processDeath(TouchPoint touchPoint) {
+   System.out.println("TwoPointGesture death ntraces:" + _nTraces + " ids:"
+        + _id1 + "," + _id2 + " id:" + touchPoint.getID());
+    if (--_nTraces == 1) {
+      int id = touchPoint.getID();
+      if (id == _id1) {
+        _id1 = _id2;
+        Vector v = _traces1;
+        _traces1 = _traces2;
+        _traces2 = v;
+        _traces2.clear();
+        _id2 = -1;
+      } else if (id == _id2) {
+        _traces2.clear();
+        _id2 = -1;
+      } else {
+        _nTraces = 0;
+      }
+    } 
+    if (_nTraces == 0) {
+      _traces1.clear();
+      _traces2.clear();
+      _id1 = _id2 = -1;
     }
+    _v00 = null;
+    _myType = ActionManagerMT.INVALID_GESTURE;
     return null;
   }
 
-  private void updateLocations(Location location) {
-    boolean id1 = (_nCurrent < 2
-        || location.distance2((Location) _traces1.lastElement()) <= location
-           .distance2((Location) _traces2.lastElement()));
-    if (id1) {
+  private boolean updateLocations(TouchPoint touchPoint) {
+    Location location = Location.pixelLocation(touchPoint.getLocation());
+    int id = touchPoint.getID();
+    if (id == _id1) {
+     //System.out.println("TwoPointGesture updateLocation 1: " + id + " "
+          //+ location);
       _traces1.add(location);
-    } else {
+    } else if (id == _id2) {
+     //System.out.println("TwoPointGesture updateLocation 2: " + id + " "
+         // + location);
       _traces2.add(location);
+    } else {
+     //System.out.println("TwoPointGesture updateLocation NOT: " + id);
+      return false;
     }
-    if (_nCurrent == 2) {
-      // weight centroid to the branch that is not moving
-      // this works for zoom or rotation
-      if (_v00 == null) {
-        Location l1 = (Location) _traces1.firstElement();
-        Location l2 = (Location) _traces2.firstElement();
-        _v00 = new Vector3f(l2.getX() - l1.getX(), l2.getY() - l1.getY(), 0);
-        _distance0 = _v00.length();
-        _v00.normalize();
-      }
-    }
+    if (_nTraces < 2)
+      return false;
+    // weight centroid to the branch that is not moving
+    // this works for zoom or rotation
+    if (_v00 != null)
+      return true;
+    Location l1 = (Location) _traces1.firstElement();
+    Location l2 = (Location) _traces2.firstElement();
+    _v00 = new Vector3f(l2.getX() - l1.getX(), l2.getY() - l1.getY(), 0);
+    _distance0 = _v00.length();
+    _v00.normalize();
+   //System.out.println("TwoPointGesture updateLocation _v00 and _distance0: "
+   //    + _v00 + " " + _distance0);
+    return true;
   }
 
   private void checkType() {
-    System.out.println("TwoPointGesture type=" + _myType + " _v00=" + _v00
-        + "\n traces sizes: " + _traces1.size() + "  " + _traces2.size());
-    if (_traces1.size() < 10 || _traces2.size() < 10)
+   //System.out.println("TwoPointGesture type=" + _myType + " _v00=" + _v00
+     //   + "\n traces sizes: " + _traces1.size() + "  " + _traces2.size());
+    if (_traces1.size() < 5 || _traces2.size() < 5)
       return;
     Location loc10 = (Location) _traces1.firstElement();
     Location loc20 = (Location) _traces2.firstElement();
@@ -205,24 +237,20 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
         - loc20.getY(), 0);
     float d1 = v1.length();
     float d2 = v2.length();
+    if (d1 <= 2 || d2 <= 2)
+      return;
     v1.normalize();
     v2.normalize();
     float cos01 = Math.abs(_v00.dot(v1));
     float cos02 = Math.abs(_v00.dot(v2));
     float cos12 = v1.dot(v2);
-    if (d1 < 2 || d2 < 2 || Math.abs(cos12) > 0.90) {
-      if (d1 >= 2 && d2 >= 2 && cos12 > 0.9) {
-        // two co-aligned motions
-        _myType = ActionManagerMT.MULTI_POINT_DRAG_GESTURE;
-      } else if (d1 < 2 && cos02 < 0.80 || d2 < 2 && cos01 < 0.80 || cos01 < 0.80
-          && cos02 < 0.80) {
-        // two oppositely directed but offset motions
-        _myType = ActionManagerMT.ROTATE_GESTURE;
-      } else if (d1 < 2 && cos02 > 0.9 || d2 < 2 && cos01 > 0.9 || cos01 > 0.9
-          && cos02 > 0.9) {
-        // to classic zoom motions
-        _myType = ActionManagerMT.ZOOM_GESTURE;
-      }
+    System.out.println("2pg cos12=" + cos12);
+    if (cos12 > 0.9) {
+      // two co-aligned motions
+      _myType = ActionManagerMT.MULTI_POINT_DRAG_GESTURE;
+    } else if (cos12 < -0.8) {
+      // to classic zoom motions
+      _myType = ActionManagerMT.ZOOM_GESTURE;
     }
     //if (Logger.debugging)
       Logger.info("TwoPointGesture type=" + _myType + " _v00=" + _v00
@@ -264,6 +292,7 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
       if (Math.abs(d1 - _distance0) < 2)
         return false;
       _scale = (d1 < _distance0 ? -1 : 1);
+      _distance0 = d1;
       float w1 = d2 / (d1 + d2);
       float w2 = 1 - w1;
       _offsetCentroid = new Location(loc10.getX() * w1 + loc20.getX() * w2,

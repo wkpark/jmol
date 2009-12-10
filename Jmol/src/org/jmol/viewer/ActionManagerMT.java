@@ -92,6 +92,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     super.setBinding(newBinding);
     binding.unbindMouseAction(Binding.RIGHT);
     if (simulator != null && binding != null) {
+      binding.unbindJmolAction(ACTION_center);
       binding.unbind(Binding.CTRL + Binding.LEFT + Binding.SINGLE_CLICK, null);
       binding.bind(Binding.CTRL + Binding.LEFT + Binding.SINGLE_CLICK, ACTION_multiTouchSimulation);
     }
@@ -232,19 +233,19 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
         break;
       case CLICK:
         // always follows DEATH when found
-        mouseClicked(time, (int) pt.x, (int) pt.y, Binding.LEFT, 1);
+        super.mouseClicked(time, (int) pt.x, (int) pt.y, Binding.LEFT, 1);
       }
       break;
     case ZOOM_EVENT:
       float scale = pt.z;
       if (scale == -1 || scale == 1) {
         pt.z = Float.NaN;
-        zoomByFactor((int)scale, (int) pt.x, (int) pt.y);
+        zoomByFactor((int)scale,  Integer.MAX_VALUE, Integer.MAX_VALUE);//(int) pt.x, (int) pt.y);
       }
       break;
     case ROTATE_EVENT:
       checkMotion(Viewer.CURSOR_MOVE);
-      viewer.rotateZBy((int) pt.z, (int) pt.x, (int) pt.y);
+      viewer.rotateZBy((int) pt.z, Integer.MAX_VALUE, Integer.MAX_VALUE);//(int) pt.x, (int) pt.y);
       break;
     case DRAG_EVENT:
       if (iData == 2) {
@@ -277,6 +278,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
   
   void mouseClicked(long time, int x, int y, int mods, int count) {
+    if (haveMultiTouchInput)
+      return;
     super.mouseClicked(time, x, y, mods, count);
   }
 

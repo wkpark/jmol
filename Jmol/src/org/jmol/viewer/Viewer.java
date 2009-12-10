@@ -68,9 +68,12 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Dimension;
 import java.awt.MediaTracker;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Component;
 import java.awt.Event;
+import java.awt.Toolkit;
+import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
@@ -236,7 +239,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean jvm11orGreater = false;
   private boolean jvm12orGreater = false;
   private boolean jvm14orGreater = false;
-
+  private boolean multiTouch = false;
+  
   private Viewer(Component display, JmolAdapter modelAdapter, String commandOptions) {
     // use allocateViewer
     if (Logger.debugging) {
@@ -253,7 +257,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         && strJavaVersion.compareTo("1.1.5") <= 0 && "Mac OS".equals(strOSName)));
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
-    boolean multiTouch = (commandOptions != null && commandOptions.contains("-multitouch"));
+    multiTouch = (commandOptions != null && commandOptions.contains("-multitouch"));
     stateManager = new StateManager(this);
     g3d = new Graphics3D(display);
     colorManager = new ColorManager(this, g3d);
@@ -262,10 +266,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager = new TransformManager11(this);
     selectionManager = new SelectionManager(this);
     if (display != null) {
-      if (multiTouch)
+      if (multiTouch) {
+        int[] pixels = new int[1];
+        Image image = Toolkit.getDefaultToolkit().createImage(
+                new MemoryImageSource(1, 1, pixels, 0, 1));
+        Cursor transparentCursor =
+                Toolkit.getDefaultToolkit().createCustomCursor
+                     (image, new Point(0, 0), "invisibleCursor");
+        display.setCursor(transparentCursor);
         actionManager = new ActionManagerMT(this, commandOptions);
-      else
+      } else {
         actionManager = new ActionManager(this);
+      }
       if (jvm14orGreater)
         mouseManager = new MouseManager14(display, this, actionManager);
       else if (jvm11orGreater)
@@ -881,7 +893,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + (x == Integer.MAX_VALUE ? "" : " " + x + " " + y));
   }
 
-  void rotateXYBy(int xDelta, int yDelta) {
+  void rotateXYBy(float xDelta, float yDelta) {
     // mouseSinglePressDrag
     if (mouseEnabled)
       transformManager.rotateXYBy(xDelta, yDelta, null);
@@ -906,7 +918,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + (x == Integer.MAX_VALUE ? "" :  " " + x + " " + y): "");
   }
 
-  void rotateMolecule(int deltaX, int deltaY) {
+  void rotateMolecule(float deltaX, float deltaY) {
     if (isJmolDataFrame())
       return;
     if (mouseEnabled) {
@@ -4167,7 +4179,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private int currentCursor = CURSOR_DEFAULT;
 
   public void setCursor(int cursor) {
-    if (currentCursor == cursor || display == null)
+    if (multiTouch || currentCursor == cursor || display == null)
       return;
     int c;
     switch (currentCursor = cursor) {
@@ -7607,11 +7619,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       break;
     case 4:
       if (key.equals("rotateXYBy"))
-        rotateXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]));
+        rotateXYBy(Parser.parseFloat(tokens[2]), Parser.parseFloat(tokens[3]));
       else if (key.equals("translateXYBy"))
         translateXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]));
       else if (key.equals("rotateMolecule"))
-        rotateMolecule(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]));
+        rotateMolecule(Parser.parseFloat(tokens[2]), Parser.parseFloat(tokens[3]));
       break;
     case 5:
       if (key.equals("spinXYBy"))

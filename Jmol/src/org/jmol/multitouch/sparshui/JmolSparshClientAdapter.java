@@ -114,7 +114,9 @@ public class JmolSparshClientAdapter implements SparshClient, JmolMultiTouchAdap
     gestureServer = (JmolGestureServerInterface) Interface
         .getInterface("com.sparshui.server.GestureServer");
     gestureServer.startGestureServer();
-    if (!isSimulation)
+    if (true || isSimulation) {
+      Logger.info("JmolSparshClientAdapter skipping driver startup");
+    } else {
       try {
         String driver = (new File("JmolMultiTouchDriver.exe")).getAbsolutePath();
         Logger.info("JmolSparshClientAdapter starting " + driver);
@@ -130,6 +132,7 @@ public class JmolSparshClientAdapter implements SparshClient, JmolMultiTouchAdap
       } catch (Exception e) {
         System.out.println(e.getMessage());
       }
+    }
     int port = NetworkConfiguration.CLIENT_PORT;
     try {
       actionManager = client; // ActionManagerMT
@@ -233,7 +236,6 @@ ActionManagerMT.processEvent groupID=16777100 eventType=6 iData=0 pt=(-1.0, -1.0
       fixXY(((TouchEvent) event).getX(), ((TouchEvent) event).getY());
       iData = ((TouchEvent) event).getState();
       time = ((TouchEvent) event).getTime();
-      System.out.println("JmolSparshClientAdapter received time: " + time);
       break;
     case ActionManagerMT.ZOOM_EVENT:
       fixXY(((ZoomEvent) event).getCenter().getX(), ((ZoomEvent) event).getCenter().getY());

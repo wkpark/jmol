@@ -18,6 +18,8 @@
  *  -- consolidates touchInfos, lastTimes, and touchAlive as "TouchPoint" structure
  *  -- uses SystemTimeToFileTime to generate a "true" event time
  *  -- delivers event time as a 64-bit unsigned integer (ULONGLONG)
+ *     adjusted for faked DEATH as that of the last sent move if within 150 ms of
+ *     that event or as the current time, if not.
  *  -- ignores the NextWindow repetitions at a given location with slop (+/-1 pixel)
  *  -- delivers true moves as fast as they can come (about every 20 ms)
  *  -- times out only for "full death" events (all fingers lifted) after 75 ms
@@ -34,8 +36,6 @@
 #include "math.h"
 #include "NWMultiTouch.h"
 #include "time.h"
-#include <string>
-
 
 // The desired time to wait for more touch move events before sending the touch death.
 #define TOUCH_WAIT_TIME_MS (75)
@@ -425,7 +425,7 @@ DWORD WINAPI TouchKiller(LPVOID lpParam) {
                         if (dt > TOUCH_WAIT_TIME_MS) {
                              // Declare dead after about 50 ms.
                              if (time_now - tpp->_timeSent > (TOUCH_WAIT_TIME_MS<<1)) {
-                                 // and update time if not just within 50 ms.
+                                 // and update time only if not within 150 ms.
                                  tpp->_time = swapLongEndian(tpp->_timeReceived);
                              }
                              cout << "killing point " << tch << " after " << dt << " ms" << endl;
@@ -443,7 +443,9 @@ int main(int argc, char **argv) {
         DWORD deviceID = 0;
         inittouchPoints();
         bool isOK = false;
-        bool testing = (argc > 1 && ((string) argv[1]) == "-test");
+
+
+        cout << getTimeNow();
 
         // If we have at least one connected device then try to connect to it.
         if(numDevices > 0) {
@@ -480,12 +482,7 @@ int main(int argc, char **argv) {
         DWORD displayMode = RM_MULTITOUCH; // same as RM_SLOPESMODE ?
         SetReportMode(deviceID, displayMode);
 
-        haveSocket = (testing ? false : initSocket());
-
-        if (!haveSocket && !testing) {
-            cout << "No socket and no -test flag -- quitting" << endl;
-            return 0;
-        }
+        haveSocket = initSocket();
 
         cout << "Press ESC to Quit or I to re-initialize socket" << endl;
 

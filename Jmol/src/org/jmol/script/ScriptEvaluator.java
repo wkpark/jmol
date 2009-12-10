@@ -6629,7 +6629,8 @@ public class ScriptEvaluator {
         return;
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
-        || theTok == Token.manifest || theTok == Token.packed
+        || theTok == Token.filter || theTok == Token.manifest 
+        || theTok == Token.packed
         || theTok == Token.identifier && tokAt(i + 3) != Token.coord) {
       if ((filename = parameterAsString(i++)).length() == 0)
         filename = viewer.getFullPathName();

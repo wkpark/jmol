@@ -25,8 +25,12 @@ public class Test extends JPanel {
     newFrame.setVisible(true);
   }
 
-  private final static String strXyzHOH = "3\nwater\nO  0.0 0.0 0.0\n"
-      + "H  0.76923955 -0.59357141 0.0\n" + "H -0.76923955 -0.59357141 0.0\n";
+  private final static String strXyzHOH = 
+      "3\n" +
+      "water\n" +
+  		"O  0.0 0.0 0.0\n" +
+  		"H  0.76923955 -0.59357141 0.0\n" +
+  		"H -0.76923955 -0.59357141 0.0\n";
 
   private JmolViewer viewer;
   private JmolAdapter adapter;

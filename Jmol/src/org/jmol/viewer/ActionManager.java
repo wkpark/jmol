@@ -632,7 +632,6 @@ public class ActionManager {
     
     if (viewer.getBooleanProperty("allowGestures")) {
       if (isBound(action, ACTION_swipe)) {
-        System.out.println("ActionManager allowGestures=true and swipe");
         if (dragGesture.getTimeDifference(2) <= MININUM_GESTURE_DELAY_MILLISECONDS
             && dragGesture.getPointCount(10, 5) == 10) {
           float speed = dragGesture.getSpeedPixelsPerMillisecond(10, 5);
@@ -1392,8 +1391,8 @@ public class ActionManager {
         return 0;
       MotionPoint mp1 = getNode(ptNext - 1 - nPointsPrevious);
       MotionPoint mp0 = getNode(ptNext - nPoints - nPointsPrevious);
-      float dx = ((float) (mp1.x - mp0.x)) / viewer.getScreenWidth() * 180;
-      float dy = ((float) (mp1.y - mp0.y)) / viewer.getScreenHeight() * 180;
+      float dx = ((float) (mp1.x - mp0.x)) / viewer.getScreenWidth() * 360;
+      float dy = ((float) (mp1.y - mp0.y)) / viewer.getScreenHeight() * 360;
       float speed = (float) Math.sqrt(dx * dx + dy * dy) / (mp1.time - mp0.time);
       return speed;
     }

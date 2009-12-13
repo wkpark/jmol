@@ -88,7 +88,7 @@ public class InputDeviceConnection implements Runnable {
 	private void receiveData() {
 		try {
 			while(!_socket.isInputShutdown()) {
-				/*boolean doConsume = */ readTouchPoints(_in.readInt());
+				/*boolean doConsume = */ readTouchPoints();
 				//_out.write((byte) (doConsume ? 1 : 0)); 
 			}
 		} catch (IOException e) {
@@ -98,45 +98,61 @@ public class InputDeviceConnection implements Runnable {
 	}
 	
 	/**
-   * Modified for Jmol to also transmit the time as a long
+   * -n where n is the number of points to be transmitted. 0 here closes the
+   * socket
    * 
    * @return doConsume
    * @throws IOException
    */
-  private boolean readTouchPoint() throws IOException {
+  private boolean readTouchPoints() throws IOException {
+    // With Count
+    int count = _in.readInt();
+    if (count == 0) {
+      _in.close();
+      return false;
+    }
+    int touchPointDataLength;
+
+    if (count < 0) {
+      count = -count;
+      touchPointDataLength = _in.readInt();
+    } else {
+      // original SparshUI style
+      touchPointDataLength = 13;
+    }
+    boolean doConsume = false;
+    // System.out.println("Reading '"+count+"' Input Events.");
+    for (int i = 0; i < count; i++)
+      doConsume |= readTouchPoint(touchPointDataLength);
+    removeDeadTouchPoints();
+    return doConsume;
+  }
+	
+  /**
+   * Modified for Jmol to also transmit the time as a long
+   * so here we have 21 bytes. If more bytes are sent, 
+   * then we ignore those.
+   * 
+   * @param len 
+   * @return doConsume
+   * @throws IOException
+   */
+  private boolean readTouchPoint(int len) throws IOException {
     int id = _in.readInt();
     float x = _in.readFloat();
     float y = _in.readFloat();
-    Location location = new Location(x, y);
     int state = (int) _in.readByte();
-    long time = _in.readLong();
+    long time = (len >= 21 ? _in.readLong() : System.currentTimeMillis());
+    if (len > 21) 
+      _in.read(new byte[len - 21]);
+    Location location = new Location(x, y);
     boolean doConsume = _gestureServer.processTouchPoint(_touchPoints, id,
         location, time, state);
     if (state == TouchState.DEATH)
       flagTouchPointForRemoval(id);
     return doConsume;
   }
-	
-	/**
-	 * 
-	 * @param count 
-	 * @return doConsume
-	 * @throws IOException
-	 */
-	private boolean readTouchPoints(int count) throws IOException {
-		// With Count
-		if(count < 0) {
-			_in.close();
-			return false;
-		}
-    boolean doConsume = false;
-		//System.out.println("Reading '"+count+"' Input Events.");
-		for(int i = 0; i < count; i++)
-			doConsume |= readTouchPoint();
-		removeDeadTouchPoints();
-    return doConsume;
-	}
-	
+  
 	/**
 	 * 
 	 */

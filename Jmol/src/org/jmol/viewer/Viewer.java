@@ -267,13 +267,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     selectionManager = new SelectionManager(this);
     if (display != null) {
       if (multiTouch) {
-        int[] pixels = new int[1];
-        Image image = Toolkit.getDefaultToolkit().createImage(
-                new MemoryImageSource(1, 1, pixels, 0, 1));
-        Cursor transparentCursor =
-                Toolkit.getDefaultToolkit().createCustomCursor
-                     (image, new Point(0, 0), "invisibleCursor");
-        display.setCursor(transparentCursor);
+        if (!commandOptions.contains("-multitouch-sparshui-simulated")) {
+          int[] pixels = new int[1];
+          Image image = Toolkit.getDefaultToolkit().createImage(
+              new MemoryImageSource(1, 1, pixels, 0, 1));
+          Cursor transparentCursor =
+              Toolkit.getDefaultToolkit().createCustomCursor
+                  (image, new Point(0, 0), "invisibleCursor");
+          display.setCursor(transparentCursor);
+        }
         actionManager = new ActionManagerMT(this, commandOptions);
       } else {
         actionManager = new ActionManager(this);

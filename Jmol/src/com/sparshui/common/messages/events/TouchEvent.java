@@ -19,7 +19,7 @@ public class TouchEvent implements Event {
   private long _time;
 
 	public TouchEvent() {
-		_id = 0;
+		_id = Integer.MAX_VALUE; // invalid ID
 		_x = 0;
 		_y = 0;
 		_state = TouchState.BIRTH;

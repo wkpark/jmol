@@ -9,15 +9,17 @@ public class ZoomEvent implements Event {
 	
 	private float _scale;
 	private Location _center;
-
+  private long _time;
+  
 	public ZoomEvent() {
 		_scale = 1;
 		_center = new Location();
 	}
 	
-	public ZoomEvent(float scale, Location center) {
+	public ZoomEvent(float scale, Location center, long time) {
 		_scale = scale;
 		_center = center;
+		_time = time;
 		//System.out.println("ZoomEvent Constructed, Scale = " + _scale);
 	}
 	
@@ -25,7 +27,11 @@ public class ZoomEvent implements Event {
 		return _scale;
 	}
 	
-	public Location getCenter() {
+  public long getTime() {
+    return _time;
+  }
+
+  public Location getCenter() {
 		return _center;
 	}
 	
@@ -33,6 +39,14 @@ public class ZoomEvent implements Event {
 		_center = center;
 	}
 	
+  public float getX() {
+    return _center.getX();
+  }
+  
+  public float getY() {
+    return _center.getY();
+  }
+  
 	/**
 	 * Constructs a ZoomEvent from a serialized version of ZoomEvent.
 	 *  - 4 bytes : scale 

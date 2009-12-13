@@ -3085,8 +3085,15 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       return Integer.MAX_VALUE;
     int i = 0;
     int j = 0;
-    if (pt > 0 && (i = Integer.parseInt(strDecimal.substring(0, pt))) < 0)
-      i = -i;
+    if (pt > 0) {
+      try {
+        i = Integer.parseInt(strDecimal.substring(0, pt));
+        if (i < 0)
+          i = -i;
+      } catch(NumberFormatException e) {
+        i = -1;
+      }
+    }
     if (pt < strDecimal.length() - 1)
       try {
          j = Integer.parseInt(strDecimal.substring(pt + 1));

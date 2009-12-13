@@ -190,7 +190,8 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
     if (Logger.debugging)
       Logger.debug("[JmolTouchSimulator] dispatchTouchEvent("+e.id+", "+e.x+", "+e.y+", "+e.type+")");
     try {
-      _out.writeInt(1);
+      _out.writeInt(-1);
+      _out.writeInt(21);
       _out.writeInt(e.id);
       _out.writeFloat(((float) e.x / (float) dim.width));
       _out.writeFloat(((float) e.y / (float) dim.height));

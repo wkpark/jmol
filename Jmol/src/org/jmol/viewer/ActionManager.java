@@ -343,7 +343,7 @@ public class ActionManager {
   protected int pressedCount;
   private int pressedAtomIndex;
   
-  private int clickedCount;
+  protected int clickedCount;
 
   private boolean drawMode = false;
   private boolean labelMode = false;
@@ -517,6 +517,13 @@ public class ActionManager {
     exitMeasurementMode();
   }
   
+  protected void clearMouseInfo() {
+    // when a second touch is made, this clears all record of first touch
+    pressedCount = clickedCount = 0;
+    dragGesture.setAction(0, 0);
+    exitMeasurementMode();
+  }
+
   void mouseMoved(long time, int x, int y, int modifiers) {
     setCurrent(time, x, y, modifiers);
     moved.setCurrent();
@@ -545,6 +552,7 @@ public class ActionManager {
     dragged.setCurrent();
     setFocus();
     int action = Binding.getMouseAction(pressedCount, mods);
+    Logger.error("ActionManager mousePressed count " + pressedCount + " action " + action);
     dragGesture.setAction(action, time);
     if (Binding.getModifiers(action) != 0) {
       action = viewer.notifyMouseClicked(x, y, action);
@@ -585,6 +593,7 @@ public class ActionManager {
     dragged.setCurrent();
     exitMeasurementMode();
     int action = Binding.getMouseAction(pressedCount, mods);
+    Logger.error("ActionManager mouseDragged count " + pressedCount + " action " + action);
     dragGesture.add(action, x, y, time);
     checkAction(action, x, y, deltaX, deltaY, time, 1);
   }
@@ -596,6 +605,7 @@ public class ActionManager {
     viewer.setInMotion(false);
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
     int action = Binding.getMouseAction(pressedCount, mods);
+    Logger.error("ActionManager mouseReleased count " + pressedCount + " action " + action);
     dragGesture.add(action, x, y, time);
     boolean isRbAction = isRubberBandSelect(action);
     if (isRbAction) {
@@ -633,9 +643,9 @@ public class ActionManager {
     if (viewer.getBooleanProperty("allowGestures")) {
       if (isBound(action, ACTION_swipe)) {
         if (dragGesture.getTimeDifference(2) <= MININUM_GESTURE_DELAY_MILLISECONDS
-            && dragGesture.getPointCount(10, 5) == 10) {
-          float speed = dragGesture.getSpeedPixelsPerMillisecond(10, 5);
-          viewer.spinXYBy(dragGesture.getDX(10, 5), dragGesture.getDY(10, 5),
+            && dragGesture.getPointCount(4, 2) == 4) {
+          float speed = dragGesture.getSpeedPixelsPerMillisecond(4, 2);
+          viewer.spinXYBy(dragGesture.getDX(10, 5), dragGesture.getDY(4, 2),
               speed * 30);
           return;
         }
@@ -860,6 +870,7 @@ public class ActionManager {
     // points are always picked up first, then atoms
     // so that atom picking can be superceded by draw picking
     int action = Binding.getMouseAction(clickedCount, mods);
+    Logger.error("ActionManager mouseClicked count " + clickedCount + " action " + action);
     if (action != 0) {
       action = viewer.notifyMouseClicked(x, y, action);
       if (action == 0)
@@ -1393,8 +1404,7 @@ public class ActionManager {
       MotionPoint mp0 = getNode(ptNext - nPoints - nPointsPrevious);
       float dx = ((float) (mp1.x - mp0.x)) / viewer.getScreenWidth() * 360;
       float dy = ((float) (mp1.y - mp0.y)) / viewer.getScreenHeight() * 360;
-      float speed = (float) Math.sqrt(dx * dx + dy * dy) / (mp1.time - mp0.time);
-      return speed;
+      return (float) Math.sqrt(dx * dx + dy * dy) / (mp1.time - mp0.time);
     }
 
     int getDX(int nPoints, int nPointsPrevious) {

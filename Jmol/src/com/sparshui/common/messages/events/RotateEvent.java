@@ -12,15 +12,17 @@ public class RotateEvent implements Event {
 	 */
 	private float _rotation;
 	private Location _center;
-	
+  private long _time;
+  
 	public RotateEvent() {
 		_rotation = 0;
 		_center = new Location();
 	}
 	
-	public RotateEvent(float rotation, Location center) {
+	public RotateEvent(float rotation, Location center, long time) {
 		_rotation = rotation;
 		_center = center;
+		_time = time;
 	}
 	
 	/**
@@ -80,12 +82,25 @@ public class RotateEvent implements Event {
 		return _rotation;
 	}
 	
-	public Location getCenter() {
+  public long getTime() {
+    return _time;
+  }
+
+  public Location getCenter() {
 		return _center;
 	}
 	
 	public void setCenter(Location center) {
 		_center = center;
 	}
+
+  public float getX() {
+    return _center.getX();
+  }
+  
+  public float getY() {
+    return _center.getY();
+  }
+  
 
 }

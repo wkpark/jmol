@@ -64,37 +64,38 @@ public class Group {
    */
   public synchronized void update(TouchPoint changedPoint) {
     Vector events = new Vector();
+    
+    int state = changedPoint.getState();
 
-    if (changedPoint.getState() == TouchState.BIRTH) {
+    if (state == TouchState.BIRTH)
       _touchPoints.add(changedPoint);
-    }
 
-    // until this is implemented somewhere, why go to the trouble? -- BH
+    System.out.print("Group _touchPoints ");
+    for (int i = 0; i < _touchPoints.size(); i++) {
+      System.out.print(" / " + i + ": " + (TouchPoint) _touchPoints.get(i));
+    }
+    System.out.println();
     
-    boolean passTouchPoints = false;
     Vector clonedPoints = null;
-    
-    if (passTouchPoints) {
-      clonedPoints = new Vector();
-      for (int i = 0; i < _touchPoints.size(); i++) {
-        TouchPoint touchPoint = (TouchPoint) _touchPoints.get(i);
-        synchronized (touchPoint) {
-          TouchPoint clonedPoint = (TouchPoint) touchPoint.clone();
-          clonedPoints.add(clonedPoint);
-        }
-      }
-    }
-    if (changedPoint.getState() == TouchState.DEATH) {
-      _touchPoints.remove(changedPoint);
-    }
-
+    /*
+     * // until this is implemented somewhere, why go to the trouble? -- BH
+     * 
+     * clonedPoints = new Vector(); for (int i = 0; i < nPoints; i++) {
+     * TouchPoint touchPoint = (TouchPoint) _touchPoints.get(i); synchronized
+     * (touchPoint) { TouchPoint clonedPoint = (TouchPoint) touchPoint.clone();
+     * clonedPoints.add(clonedPoint); } }
+     */
     for (int i = 0; i < _gestures.size(); i++) {
       Gesture gesture = (Gesture) _gestures.get(i);
       // System.out.println(_gestures.size());
       // System.out.println("Gesture allowed: " + gesture.getName());
-      events.addAll(gesture.processChange(clonedPoints, changedPoint));
+      events.addAll(gesture.processChange(clonedPoints == null ? _touchPoints
+          : clonedPoints, changedPoint));
       // System.out.println("Got some events - size: " + events.size());
     }
+
+    if (state == TouchState.DEATH)
+      _touchPoints.remove(changedPoint);
 
     try {
       _clientProtocol.processEvents(_id, events);

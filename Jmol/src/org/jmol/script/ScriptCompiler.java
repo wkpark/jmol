@@ -415,8 +415,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
   
   private int nCharNewLine(int ichT) {
-    char ch = script.charAt(ichT); 
-    return (ch != '\r' ? (ch == '\n' ? 1 : 0) 
+    char ch;
+    return (ichT >= cchScript ? 0 
+        : (ch = script.charAt(ichT)) != '\r' ? (ch == '\n' ? 1 : 0) 
         : ++ichT < cchScript && script.charAt(ichT) == '\n' ? 2 : 1);
   }
 
@@ -939,9 +940,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         return ERROR(ERROR_invalidExpressionToken, "" + ch);
       }
     }
-    if (lookingAtInteger()) {
+    int val = lookingAtInteger();
+    if (val != Integer.MAX_VALUE) {
       String intString = script.substring(ichToken, ichToken + cchToken);
-      int val = Integer.parseInt(intString);
       if (tokCommand == Token.breakcmd || tokCommand == Token.continuecmd) {
         if (nTokens != 1)
           return ERROR(ERROR_badArgumentCount);
@@ -1936,9 +1937,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return true;
   }
 
-  private boolean lookingAtInteger() {
+  private int lookingAtInteger() {
     if (ichToken == cchScript)
-      return false;
+      return Integer.MAX_VALUE;
     int ichT = ichToken;
     if (script.charAt(ichToken) == '-')
       ++ichT;
@@ -1946,9 +1947,15 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     while (ichT < cchScript && Character.isDigit(script.charAt(ichT)))
       ++ichT;
     if (ichBeginDigits == ichT)
-      return false;
+      return Integer.MAX_VALUE;
     cchToken = ichT - ichToken;
-    return true;
+    try {
+      int val = Integer.parseInt(script.substring(ichToken, ichT));
+      return val;
+    } catch (NumberFormatException e) {
+      // ignore
+    }
+    return Integer.MAX_VALUE;
   }
 
   BitSet lookingAtBitset() {
@@ -1988,7 +1995,12 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         ipt++;
       if (ipt == ich) // possibly :m instead of n:m
         return null;
-      int val = Integer.parseInt(script.substring(ich, ipt));
+      int val;
+      try {
+        val = Integer.parseInt(script.substring(ich, ipt));
+      } catch(NumberFormatException e) {
+        return null;
+      }
       if (ch == ':') {
         iprev = val;
         ipt++;

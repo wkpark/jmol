@@ -67,29 +67,42 @@ public class Location implements Serializable {
 	}
 	
 
-  public float distance(Location location) {
-    return (float) Math.sqrt(distance2(location));
-  }
-
-  public float distance2(Location location) {
+  public float getDistance(Location location) {
     float dx, dy;
-    return (dx = _x - location._x) * dx + (dy = _y - location._y) * dy;
+    return (float) Math.sqrt((dx = _x - location._x) * dx + (dy = _y - location._y) * dy);
   }
 
-  public Vector3f directionTo(Location location) {
+  public Vector3f getVector(Location location) {
     return new Vector3f(location._x - _x, location._y - _y, 0);  
   }
   
+  public static Location getCenter(Location a, Location b) {
+    return getCentroid(a, b, 0.5f);
+  }
+
+  /**
+   * get weighted average location. w = 0 --> all a; w = 1 --> all b
+   * 
+   * @param a
+   * @param b
+   * @param w
+   * @return Location
+   */
+  public static Location getCentroid(Location a, Location b, float w) {
+    float w1 = 1 - w;
+    return new Location(a._x * w1 + b._x * w, a._y * w1 + b._y * w);
+  }
+
   static final Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
 
   public static Location pixelLocation(Location location) {
-    return new Location(location.getX() * screenDim.width, location.getY()
-        * screenDim.height);
+    return location == null ? null : new Location(location.getX()
+        * screenDim.width, location.getY() * screenDim.height);
   }
 
   public static Location screenLocation(Location location) {
-    return new Location(location.getX() / screenDim.width, location.getY()
-        / screenDim.height);
+    return (location == null ? null : new Location(location.getX()
+        / screenDim.width, location.getY() / screenDim.height));
   }
 
 }

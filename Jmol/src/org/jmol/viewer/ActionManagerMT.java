@@ -191,13 +191,11 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
         || y >= viewer.getScreenHeight() ? 0 : groupID);
     if (resetNeeded) {
       gid |= 0x10000000;
-      lastPoint = null;
       resetNeeded = false;
     }
     return gid;
   }
 
-  Point3f lastPoint;
   boolean mouseDown;
   
   public void processEvent(int groupID, int eventType, int touchID, int iData,
@@ -216,6 +214,11 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       break;
     case TOUCH_EVENT:
       haveMultiTouchInput = true;
+      if (touchID == Integer.MAX_VALUE) {
+        mouseDown = false;
+        clearMouseInfo();
+        break;
+      }
       switch(iData) {
       case BIRTH:
         mouseDown = true;
@@ -250,20 +253,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     case DRAG_EVENT:
       if (iData == 2) {
         // This is a 2-finger drag
-        if (lastPoint == null) {
-          lastPoint = new Point3f(pt);
-          break;
-        }
-        if (Math.abs(pt.x - lastPoint.x) > Math.abs(pt.y - lastPoint.y) * 5) {
-          // horizontal 2-finger drag
-          if (pt.x > lastPoint.x + 20) {
-            lastPoint.set(pt);
-            viewer.evalStringQuiet("frame next");
-          } else if (pt.x < lastPoint.x - 20) {
-            lastPoint.set(pt);
-            viewer.evalStringQuiet("frame previous");
-          }
-        }
+        checkMotion(Viewer.CURSOR_MOVE);
+        viewer.translateXYBy((int) pt.x, (int) pt.y);
       }
       break;
     }

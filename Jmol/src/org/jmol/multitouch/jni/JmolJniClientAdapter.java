@@ -41,6 +41,7 @@ public class JmolJniClientAdapter extends JmolMultiTouchClientAdapter implements
   native void nativeMethod(); // should report "In C\nIn Java\n"
   
   public void dispose() {
+    //TODO
   }
 
   public void setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
@@ -48,6 +49,7 @@ public class JmolJniClientAdapter extends JmolMultiTouchClientAdapter implements
     try {
       // in principle, we could set up our own device driver here
       // and probably talk to it using ports. SparshUI is easier.
+      //TODO
       nativeMethod();
     } catch (Exception e) {
       System.out.println("JmolJniClientAdapter error -- nativeMethod");
@@ -55,7 +57,8 @@ public class JmolJniClientAdapter extends JmolMultiTouchClientAdapter implements
   }
   
   public void callback() {
-    // from nativeMethod 
+    // from nativeMethod -- test of callback to Java from C++
+    //TODO
     System.out.println("In Java");
   }
 

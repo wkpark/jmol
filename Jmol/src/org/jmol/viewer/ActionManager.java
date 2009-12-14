@@ -552,7 +552,7 @@ public class ActionManager {
     dragged.setCurrent();
     setFocus();
     int action = Binding.getMouseAction(pressedCount, mods);
-    Logger.error("ActionManager mousePressed count " + pressedCount + " action " + action);
+    //Logger.error("ActionManager mousePressed count " + pressedCount + " action " + action);
     dragGesture.setAction(action, time);
     if (Binding.getModifiers(action) != 0) {
       action = viewer.notifyMouseClicked(x, y, action);
@@ -593,7 +593,7 @@ public class ActionManager {
     dragged.setCurrent();
     exitMeasurementMode();
     int action = Binding.getMouseAction(pressedCount, mods);
-    Logger.error("ActionManager mouseDragged count " + pressedCount + " action " + action);
+    //Logger.error("ActionManager mouseDragged count " + pressedCount + " action " + action);
     dragGesture.add(action, x, y, time);
     checkAction(action, x, y, deltaX, deltaY, time, 1);
   }
@@ -605,7 +605,7 @@ public class ActionManager {
     viewer.setInMotion(false);
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
     int action = Binding.getMouseAction(pressedCount, mods);
-    Logger.error("ActionManager mouseReleased count " + pressedCount + " action " + action);
+    //Logger.error("ActionManager mouseReleased count " + pressedCount + " action " + action);
     dragGesture.add(action, x, y, time);
     boolean isRbAction = isRubberBandSelect(action);
     if (isRbAction) {
@@ -870,7 +870,7 @@ public class ActionManager {
     // points are always picked up first, then atoms
     // so that atom picking can be superceded by draw picking
     int action = Binding.getMouseAction(clickedCount, mods);
-    Logger.error("ActionManager mouseClicked count " + clickedCount + " action " + action);
+    //Logger.error("ActionManager mouseClicked count " + clickedCount + " action " + action);
     if (action != 0) {
       action = viewer.notifyMouseClicked(x, y, action);
       if (action == 0)

@@ -70,11 +70,13 @@ public class Group {
     if (state == TouchState.BIRTH)
       _touchPoints.add(changedPoint);
 
+    /*
     System.out.print("Group _touchPoints ");
     for (int i = 0; i < _touchPoints.size(); i++) {
       System.out.print(" / " + i + ": " + (TouchPoint) _touchPoints.get(i));
     }
     System.out.println();
+    */
     
     Vector clonedPoints = null;
     /*
@@ -94,6 +96,7 @@ public class Group {
       // System.out.println("Got some events - size: " + events.size());
     }
 
+    // moved to after processing. 
     if (state == TouchState.DEATH)
       _touchPoints.remove(changedPoint);
 

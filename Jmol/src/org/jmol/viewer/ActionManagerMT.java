@@ -129,8 +129,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   
   // adaptation to allow user-defined gesture types
   
-  public final static String TWO_POINT_GESTURE = "org.jmol.multitouch.sparshui.TwoPointGesture";
-  public final static String SINGLE_TOUCH_GESTURE = "org.jmol.multitouch.sparshui.SingleTouchGesture";
+  private final static String TWO_POINT_GESTURE = "org.jmol.multitouch.sparshui.TwoPointGesture";
+  private final static String SINGLE_POINT_GESTURE = "org.jmol.multitouch.sparshui.SinglePointGesture";
 
   //these must match those in com.sparshui.common.messages.events.EventType
   // reproduced here so there are no references to that code in applet module
@@ -178,7 +178,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     //list.add(new Integer(DBLCLK_GESTURE));
     list.add(TWO_POINT_GESTURE);
     if (simulator == null)
-      list.add(SINGLE_TOUCH_GESTURE);
+      list.add(SINGLE_POINT_GESTURE);
     //list.add(new Integer(ZOOM_GESTURE));
     //list.add(new Integer(FLICK_GESTURE));
     //list.add(new Integer(RELATIVE_DRAG_GESTURE));    
@@ -237,13 +237,14 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       case CLICK:
         // always follows DEATH when found
         super.mouseClicked(time, (int) pt.x, (int) pt.y, Binding.LEFT, 1);
+        break;
       }
       break;
     case ZOOM_EVENT:
       float scale = pt.z;
       if (scale == -1 || scale == 1) {
         pt.z = Float.NaN;
-        zoomByFactor((int)scale,  Integer.MAX_VALUE, Integer.MAX_VALUE);//(int) pt.x, (int) pt.y);
+        zoomByFactor((int)scale, Integer.MAX_VALUE, Integer.MAX_VALUE);//(int) pt.x, (int) pt.y);
       }
       break;
     case ROTATE_EVENT:

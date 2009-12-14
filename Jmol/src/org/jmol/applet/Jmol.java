@@ -237,7 +237,7 @@ public class Jmol implements WrappedApplet {
       options += "-threaded";
     if (isSigned && getBooleanValue("multiTouchSparshUI-simulated", false))
       options += "-multitouch-sparshui-simulated";
-    else if (isSigned && getBooleanValue("multiTouchSparshUI", false))
+    else if (isSigned && getBooleanValue("multiTouchSparshUI", false)) // true for testing JmolAppletSignedMT.jar
       options += "-multitouch-sparshui";
     String s = getValue("MaximumSize", null);
     if (s != null)

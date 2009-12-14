@@ -38,6 +38,11 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
 
   public GestureServer() {
     // for reflection
+    Logger.info(this + " constructed");
+  }
+
+  public void finalize() {
+    Logger.debug(this + " finalized");
   }
   
   public GestureServer(int port, GestureServer main) {

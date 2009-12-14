@@ -11,13 +11,14 @@ import com.sparshui.gestures.GestureType;
 import com.sparshui.server.TouchPoint;
 
 /**
- * SINGLE_TOUCH_GESTURE
+ * SINGLE_POINT_GESTURE
  * 
  * only passes single-touch gestures.
+ * allows detection of click and double-click
  * 
  * 
  */
-public class SingleTouchGesture implements Gesture {
+public class SinglePointGesture implements Gesture {
 
   private static final long MAXIMUM_CLICK_TIME = 200;
   private int _nCurrent, _nMoves, _myId;
@@ -25,7 +26,7 @@ public class SingleTouchGesture implements Gesture {
 
   // @override
   public String getName() {
-    return "SingleTouchGesture";
+    return "SinglePointGesture";
   }
 
   // @override
@@ -47,11 +48,11 @@ public class SingleTouchGesture implements Gesture {
     Vector retEvents = new Vector();
     int nPoints = touchPoints.size();
     if (Logger.debugging) {
-      Logger.info("\nSingle " + _myId + " nPoints: " + nPoints);
+      Logger.info("\nSinglePointGesture " + _myId + " nPoints: " + nPoints);
     }
     // idea here is to prevent single-touch action during/after a multi-touch action.
     // most multi-touch operations, though, start with a single-touch action. So
-    // what we do is to clear that initial action. 
+    // what we do is to clear that initial action if two fingers are down. 
     if (nPoints > 1) {
       if (_myId != Integer.MAX_VALUE) {
         _myId = Integer.MAX_VALUE;
@@ -64,7 +65,7 @@ public class SingleTouchGesture implements Gesture {
     }
     int id = changedTouchPoint.getID();
     if (Logger.debugging)
-      Logger.info("\nSingle id=" + id + " state="
+      Logger.info("\nSinglePointGesture id=" + id + " state="
           + changedTouchPoint.getState() + " ncurrent=" + _nCurrent
           + " nMoves=" + _nMoves);
     switch (changedTouchPoint.getState()) {

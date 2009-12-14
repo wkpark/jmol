@@ -26,26 +26,26 @@ import com.sparshui.server.TouchPoint;
  * about the ID of the incoming points from the input device but instead
  * operating from position on the screen.
  * 
+ * v00 from pt(1,0) to pt(2,0)
+ * 
  * ZOOM IN:    <---- x ----->  (at any angle)
  * ZOOM OUT:   ----> x <-----  (at any angle)  
  * 
  * ROTATE CW:    ^        |
- *               |   x    |    (at any angle)
+ *               |   x    |    (at any angle, not implemented)
  *               |        V
  *    
  * ROTATE CCW:   |        ^
- *               |   x    |    (at any angle)
+ *               |   x    |    (at any angle, not implemented)
  *               V        |
  *    
  * 2-point drag:
  * 
  *      --------->  
- *     x             (Jmol will recognize horizontal as "next frame")
+ *     x             (any direction)
  *      --------->    
  *    
- * It should work with any simple two-point touchpad.
- * 
- * Bob Hanson 11/29/2009
+ * Bob Hanson 12/13/2009
  * 
  * 
  */

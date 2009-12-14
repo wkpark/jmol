@@ -124,6 +124,8 @@ import netscape.javascript.JSObject;
  * 
  * see JmolConstants for callback types.
  * 
+ * The use of jmolButtons is fully deprecated and NOT recommended.
+ * 
  * 
  * 
  * new for Jmol 11.9.11:
@@ -132,10 +134,9 @@ import netscape.javascript.JSObject;
  * [param name="multiTouchSparshUI-simulated" value="true"]
  * 
  * (signed applet only) loads the SparshUI client adapter
- *  requires the SparshUI gesture server to be running already
- *  at 127.0.0.1 port 5945. (see http://code.google.com/p/sparsh-ui/)
- * 
- * The use of jmolButtons is fully deprecated and NOT recommended.
+ *  requires JmolMultiTouchDriver.exe (HP TouchSmart computer only)
+ *  Uses 127.0.0.1 port 5946 (client) and 5947 (device). 
+ *  (see http://code.google.com/p/sparsh-ui/)
  * 
  */
 

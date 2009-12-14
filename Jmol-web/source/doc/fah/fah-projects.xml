@@ -5204,9 +5204,9 @@
   <fah_proj number="2681" name="p2681_Translocon_GLX2" public="y" file="xyz"
     server="171.67.108.22" preferred="4" deadline="6"
     credit="25403" frames="100" code="GC" contact="kasson"/>
-  <fah_proj number="2682" name="p2682_" public="y"
+  <fah_proj number="2682" name="p2682_Translocon_GLX2" public="y" file="xyz"
     server="171.67.108.22" preferred="4" deadline="6"
-    credit="25403" frames="100" code="GC" contact="kasson"/>
+    credit="25403" frames="100" code="GC" contact="kasson" contrib="Jim Erickson"/>
   <fah_proj number="2683" name="p2683_Translocon_GLX2" public="y" file="xyz"
     server="171.67.108.22" preferred="4" deadline="6"
     credit="25403" frames="100" code="GC" contact="kasson"/>
@@ -8082,10 +8082,10 @@
     credit="40" frames="100" code="A3" contact="kasson"/>
   <fah_proj number="6012" name="p6012_hafp3" public="y"
     server="130.237.232.140" atoms="77445" preferred="3" deadline="6"
-    credit="1420" frames="100" code="A3" contact="kasson"/>
+    credit="470" frames="100" code="A3" contact="kasson"/>
   <fah_proj number="6013" name="p6013_IBX in water" public="y"
     server="130.237.232.140" atoms="146808" preferred="3" deadline="3"
-    credit="1920" frames="100" code="A3" contact="kasson"/>
+    credit="380" frames="100" code="A3" contact="kasson"/>
 
   <!-- Projects 6300 to 6399 -->
   <fah_proj number="6300" name="p6300_Peptide dimer in TIP3P water" public="y" file="xyz"

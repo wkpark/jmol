@@ -814,12 +814,13 @@ final public class Graphics3D implements JmolRendererInterface {
         int pR = p & 0xFF;
         int pG = (p & 0xFF00) >> 8;
         int pB = (p & 0xFF0000) >> 16;
+        int pA = (p & 0xFF000000);
         float f = zDepth - z;
         f /= (zDepth - zSlab);
         pR = zShadeR + (int) (f * (pR - zShadeR));
         pG = zShadeG + (int) (f * (pG - zShadeG));
         pB = zShadeB + (int) (f * (pB - zShadeB));        
-        p = (pB << 16) + (pG << 8) + pR;
+        p = (pB << 16) | (pG << 8) | pR | pA;
       }
       super.addPixel(offset, z, p);
     }

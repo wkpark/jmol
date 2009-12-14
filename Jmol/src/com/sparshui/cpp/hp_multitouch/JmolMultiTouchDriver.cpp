@@ -36,7 +36,42 @@
  *
  *  -- can only deliver ID "0" or "1"
  *  -- use of bitsets to deliver deaths, then births, then moves
+ *     and proper accounting for errors either due to premature deaths or,
+ *     in certain circumstances, the NextWindow driver sending a move
+ *     with no previous "down" message. This amounts to:
+ *        -- canceling all currently active points
+ *        -- creating a BIRTH for each of these points in addition to this "moved" point
+ *        -- canceling the "move" operation
+ *
  *  -- comments in Jmol script format for replaying at any speed within Jmol
+ *  -- requires a script file data.spt that would, for example, include:
+ *
+      function setWidthAndHeight(w, h) {
+         screenWidth = w
+         screenHeight = h
+      }
+      function pt(id, index, state, time, x, y) {
+          var c = (id == 0 ? "blue", "red")
+          y = screenHeight - y
+          draw ID @{"p" + id} [@x, @y] color @c
+          delay 0.01
+      }
+ *
+ *     thus allowing for playback of the transcript of a session.
+ *     
+ *
+ *  -- uses port 5947 due to nonstandard SparshUI: 
+ *
+ *   4  (int) -1  (1 point; negative to indicate that per-point message length follows)
+ *   4  (int) 21  (21 bytes per point event will be sent)
+ *
+ *   4  (int) ID  (0 or 1)
+ *   4  (float) x (0.0-1.0)
+ *   4  (float) y (0.0-1.0)
+ *   1  (char) state: 0 (down/BIRTH), 1(up/DEATH), 2(move)
+ *   8  (long) time (ms since this driver started)
+ *
+ *   all ints, floats, and longs in network-endian order
  *
  */
 
@@ -215,6 +250,7 @@ bool sendPoint(TouchPoint *tpp) {
     char* bufferptr = buffer;
 
     // Negative of number of touch points in this packet
+    // indicates that we will be sending length of single-touch data as well.
     int temp = htonl(-1);
     memcpy(bufferptr, &temp, 4);
     bufferptr += 4;
@@ -359,9 +395,9 @@ void processDeath(TouchPoint *tpp) {
 
 void clearPoints(int bs) {
     bs &= bsAlive;
-    for(int i = 0; i < MAX_TOUCHES; i++)
-        if (bs & (1<<i))
-            processDeath(touchPoints + i);
+    for(int tch = 0; tch < MAX_TOUCHES; tch++)
+        if (bs & (1<<tch))
+            processDeath(touchPoints + tch);
 }
 
 NWTouchPoint nwtps[MAX_TOUCHES];
@@ -387,14 +423,14 @@ void __stdcall ReceiveMultiTouchData(DWORD deviceID, DWORD deviceStatus,
                 for(int tch = 0; touches && tch < MAX_TOUCHES; tch++) {
                         // "touches" contains a bitmask for present touch ids.
                         // If the bit is set, then a touch with this ID exists.
-                        int i = 1 << tch;
-                        if(touches & i){
-                                touches &= ~i;
+                        int bit = 1 << tch;
+                        if(touches & bit){
+                                touches &= ~bit;
                                 tchMax = tch;
                                 if (tchMin == -1)
                                     tchMin = tch;
                                 //Get the touch information.
-                                DWORD retCode = GetTouch(deviceID, packetID, nwtps + tch, i, 0);                                
+                                DWORD retCode = GetTouch(deviceID, packetID, nwtps + tch, bit, 0);                                
                                 if(retCode == SUCCESS){
                                         TouchPoint *tpp = touchPoints + tch;
                                         tpp->_timeReceived = timeThis;
@@ -403,24 +439,25 @@ void __stdcall ReceiveMultiTouchData(DWORD deviceID, DWORD deviceStatus,
                                                 cout << "received: " << timeThis << " id=" << tch << " " << state << endl;
                                         switch(state){
                                         case TE_TOUCH_DOWN:
-                                                bsBirths |= i;
+                                                bsBirths |= bit;
                                                 nBirths++;
                                                 break;
                                         case TE_TOUCHING:
                                                 if (isAlive(tch)) {
-                                                    bsMoves |= i;
+                                                    bsMoves |= bit;
                                                 } else {
                                                     // we improperly canceled this one
                                                     // "reboot"
                                                     bsDeaths = -1;
-                                                    bsBirths |= bsAlive | bsMoves | i;
+                                                    bsBirths = bsAlive | bsBirths | bsMoves | bit;
                                                 }
                                                 break;
                                         case TE_TOUCH_UP:
                                                 // When there is a full release, we have a problem, because 
                                                 // these come only upon the next touch down or move.
+                                                // This could be SECONDS or MINUTES later.
                                                 // This, I would argue, is a bug in NWMultiTouch.dll.
-                                                bsDeaths |= i;
+                                                bsDeaths |= bit;
                                                 break;
                                         }
                                 }
@@ -465,8 +502,10 @@ void __stdcall ReceiveMultiTouchData(DWORD deviceID, DWORD deviceStatus,
 
 /**
  * Thread responsible for killing touch points promptly after no moves are
- * received for that touch point.  This is really quite bad, but we have
- * no choice.  Modified here to only trigger on both fingers away.
+ * received for that touch point.
+ *
+ * Modified for Jmol to only trigger on both fingers away.
+ * and onl
  */
 DWORD WINAPI TouchKiller(LPVOID lpParam) { 
         Sleep(TOUCH_WAIT_TIME_MS);
@@ -484,9 +523,9 @@ DWORD WINAPI TouchKiller(LPVOID lpParam) {
                         if (timeLast != timeThis) {
                             break;
                         } else if (dt > TOUCH_WAIT_TIME_MS) {
-                             // Declare dead after about 50 ms.
+                             // Declare dead after about 75 ms.
                              if (timeNow - tpp->_timeSent > (TOUCH_WAIT_TIME_MS<<1)) {
-                                 // and update time if not just within 50 ms.
+                                 // and update time if not just within 150 ms.
                                  tpp->_time = tpp->_timeReceived;
                              }
                              if (testing)
@@ -513,9 +552,7 @@ int main(int argc, char **argv) {
              << "script data.spt" << endl;
                 
         //Get the number of connected devices.
-        cout << "// testing";
         DWORD numDevices = GetConnectedDeviceCount();
-        cout << "testing2" << endl;
         DWORD serialNum = 0;
         DWORD deviceID = 0;
         initData();

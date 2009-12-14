@@ -26,7 +26,6 @@ package org.jmol.shape;
 
 import org.jmol.g3d.*;
 import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 
 import java.util.BitSet;
 import java.util.Hashtable;

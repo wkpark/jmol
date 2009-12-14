@@ -56,8 +56,12 @@ public class AxesRenderer extends FontLineShapeRenderer {
       return;
     int axesMode = viewer.getAxesMode();
     imageFontScaling = viewer.getImageFontScaling();
-    if (viewer.areAxesTainted())
+    if (viewer.areAxesTainted()) {
+      Font3D f = axes.font3d;
       axes.initShape();
+      if (f != null)
+        axes.font3d = f;
+    }
     int nPoints = 6;
     int labelPtr = 0;
     SymmetryInterface[] cellInfos = modelSet.getCellInfos();

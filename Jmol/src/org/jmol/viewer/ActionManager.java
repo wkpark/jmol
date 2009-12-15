@@ -860,7 +860,8 @@ public class ActionManager {
   }
 
   private boolean isZoomArea(int x) {
-    return x > viewer.getScreenWidth()* SLIDE_ZOOM_X_PERCENT / 100f;
+    return x > viewer.getScreenWidth() * (viewer.isStereoDouble() ? 2 : 1)
+        * SLIDE_ZOOM_X_PERCENT / 100f;
   }
 
   private void checkPointOrAtomClicked(int x, int y, int mods,

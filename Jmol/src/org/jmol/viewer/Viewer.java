@@ -6789,6 +6789,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       transformManager.setStereoMode(stereoMode);
   }
 
+  boolean isStereoDouble() {
+    return transformManager.stereoMode == JmolConstants.STEREO_DOUBLE;
+  }
   // //////////////////////////////////////////////////////////////
   //
   // //////////////////////////////////////////////////////////////

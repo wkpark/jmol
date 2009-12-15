@@ -436,6 +436,7 @@ public class ProjectInformation {
             info._psCore = null;
             info._psDeadline = null;
             info._psFrames = null;
+            info._psKfactor = null;
             info._psName = null;
             info._psPreferred = null;
             info._psServer = null;
@@ -844,6 +845,7 @@ public class ProjectInformation {
       info._staticServer = XMLValue.getString(att, "server", null); //$NON-NLS-1$
       info._staticFile = XMLValue.getString(att, "file", null); //$NON-NLS-1$
       info._staticPublic = XMLValue.getYesNo(att, "public"); //$NON-NLS-1$
+      info._staticKfactor = XMLValue.getDouble(att, "kfactor"); //$NON_NLS-1$
     }
   }
 
@@ -870,6 +872,7 @@ public class ProjectInformation {
       this._psCore = null;
       this._psDeadline = null;
       this._psFrames = null;
+      this._psKfactor = null;
       this._psName = null;
       this._psPreferred = null;
       this._psServer = null;
@@ -880,6 +883,7 @@ public class ProjectInformation {
       this._staticCore = null;
       this._staticDeadline = null;
       this._staticFrames = null;
+      this._staticKfactor = null;
       this._staticName = null;
       this._staticPreferred = null;
       this._staticServer = null;
@@ -910,6 +914,7 @@ public class ProjectInformation {
     CoreType _psCore;
     Integer  _psDeadline;
     Integer  _psFrames;
+    Double   _psKfactor;
     String   _psName;
     Integer  _psPreferred;
     String   _psServer;
@@ -925,6 +930,7 @@ public class ProjectInformation {
     CoreType _staticCore;
     Integer  _staticDeadline;
     Integer  _staticFrames;
+    Double   _staticKfactor;
     String   _staticName;
     Integer  _staticPreferred;
     String   _staticServer;
@@ -1054,6 +1060,14 @@ public class ProjectInformation {
         case 11: //Contact
           this._contact = new String(data);
           break;
+          
+        case 12: //Kfactor
+          this._kfactor = null;
+          try {
+            this._kfactor = Double.valueOf(new String(data));
+          } catch (NumberFormatException e) {
+            //
+          }
         }
       }
       super.handleText(data, pos);
@@ -1095,6 +1109,7 @@ public class ProjectInformation {
             info._psCore = this._core;
             info._psDeadline = this._deadline;
             info._psFrames = this._frames;
+            info._psKfactor = this._kfactor;
             info._psName = this._name;
             info._psPreferred = this._preferred;
             info._psServer = this._server;
@@ -1106,6 +1121,7 @@ public class ProjectInformation {
         this._core = null;
         this._deadline = null;
         this._frames = null;
+        this._kfactor = null;
         this._name = null;
         this._preferred = null;
         this._project = -1;
@@ -1126,6 +1142,7 @@ public class ProjectInformation {
     private CoreType _core      = null;
     private Integer  _deadline  = null;
     private Integer  _frames    = null;
+    private Double   _kfactor   = null;
     private String   _name      = null;
     private Integer  _preferred = null;
     private int      _project   = -1;
@@ -1515,6 +1532,11 @@ public class ProjectInformation {
     }
     if (Boolean.TRUE.equals(info._psPublic) && !Boolean.TRUE.equals(info._staticPublic)) {
       different = true;
+    }
+    if ((info._psKfactor != null) && (!info._psKfactor.equals(info._staticKfactor))) {
+      if ((info._psKfactor.doubleValue() != 0.0) || (info._staticKfactor != null)) {
+        different = true;
+      }
     }
 
     //Check for differences with QD
@@ -1923,6 +1945,27 @@ public class ProjectInformation {
       outputNewLine();
     }
     
+    //Print kfactor difference
+    boolean kfactorDifferent = false;
+    if (info._psKfactor != null) {
+      if ((!info._psKfactor.equals(info._staticKfactor)) &&
+          ((info._psKfactor.doubleValue() != 0.0) || (info._staticKfactor != null))) {
+        kfactorDifferent = true;
+      }
+    }
+    if (kfactorDifferent) {
+      outputText("  Kfactor: "); // $NON-NLS-1$
+      boolean separator = false;
+      if (info._staticKfactor != null) {
+        outputInfoS(info._staticKfactor, separator);
+        separator = true;
+      }
+      if (info._psKfactor != null) {
+        outputInfoPS(info._psKfactor, separator);
+        separator = true;
+      }
+      outputNewLine();
+    }
     //Print public difference
     if (Boolean.TRUE.equals(info._psPublic) && !Boolean.TRUE.equals(info._staticPublic)) {
         outputText("  Public");

@@ -95,6 +95,7 @@ ULONGLONG timeThis;  // time to match with timeLast for killing purposes.
 bool running = true;
 bool testing = false; // command line -test flag
 bool exitOnDisconnect = true;
+bool raw = false; // just report raw output
 
 // bitsets to indicate active points
 
@@ -435,8 +436,11 @@ void __stdcall ReceiveMultiTouchData(DWORD deviceID, DWORD deviceStatus,
                                         TouchPoint *tpp = touchPoints + tch;
                                         tpp->_timeReceived = timeThis;
                                         int state = (nwtps + tch)->touchEventType;
-                                        if (testing)
-                                                cout << "received: " << timeThis << " id=" << tch << " " << state << endl;
+                                        if (raw) {
+                                                cout << "received: " << timeThis << " id=" << tch << " " << state
+                                                  << " " << (nwtps + tch)->touchPos.x << " " << (nwtps + tch)->touchPos.y << endl;
+                                                continue;
+                                        }
                                         switch(state){
                                         case TE_TOUCH_DOWN:
                                                 bsBirths |= bit;
@@ -561,6 +565,7 @@ int main(int argc, char **argv) {
         haveSocket = false;
         useSocket = true;
         exitOnDisconnect = false;
+        raw = false;
         for (int i = 1; i < argc; i++) {
             if ((string) argv[i] == "-test") {
                 testing = true;
@@ -568,6 +573,8 @@ int main(int argc, char **argv) {
                 useSocket = false;
             } else if ((string) argv[i] == "-exitondisconnect") { 
                 exitOnDisconnect = true;
+            } else if ((string) argv[i] == "-raw") { 
+                raw = true;
             }
         }
         cout << "// testing=" << testing << " useSocket=" << useSocket << " exitOnDisconnect=" << exitOnDisconnect << endl;

@@ -284,9 +284,9 @@ public class MoldenReader extends MopacDataReader {
     for (int nFreq = 0; nFreq < nFreqs; nFreq++) {
       if (readLine().indexOf("Vibration") < 0)
         throw new Exception("error reading normal modes: expected vibration data");
-      atomSetCollection.cloneLastAtomSet();
       boolean ignore = !doGetVibration(nFreq + 1);
       if (!ignore) {
+        atomSetCollection.cloneLastAtomSet();
         atomSetCollection.setAtomSetName(frequencies.get(nFreq) + " cm-1");
         i0 = atomSetCollection.getLastAtomSetAtomIndex();
       }

@@ -916,10 +916,13 @@ public class Resolver {
   private final static String[] gaussianWfnRecords =
   { "GaussianWfn", "MO ORBITALS" };
   */
+
+  private final static String[] ampacContainsRecords =
+  { "Ampac", "AMPAC Version" };
   
   private final static String[] mopacContainsRecords =
   { "Mopac", "MOPAC 93 (c) Fujitsu", "MOPAC2002 (c) Fujitsu",
-    "MOPAC FOR LINUX (PUBLIC DOMAIN VERSION)"};
+    "MOPAC FOR LINUX (PUBLIC DOMAIN VERSION)" };
 
   private final static String[] qchemContainsRecords = 
   { "Qchem", "Welcome to Q-Chem", "A Quantum Leap Into The Future Of Chemistry" };
@@ -949,7 +952,8 @@ public class Resolver {
   { "Cif", "Crystallographic Information File"};
   
   private final static String[][] containsRecords =
-  { xmlContainsRecords, gaussianContainsRecords, mopacContainsRecords, qchemContainsRecords, 
+  { xmlContainsRecords, gaussianContainsRecords, 
+    ampacContainsRecords, mopacContainsRecords, qchemContainsRecords, 
     gamessUKContainsRecords, gamessUSContainsRecords,
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
     nwchemContainsRecords, uicrcifContainsRecords

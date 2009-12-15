@@ -721,7 +721,11 @@ public abstract class AtomSetCollectionReader {
       String[] valuesZ = (isWide ? null : data[++i]);
       int dataPt = values.length - (isWide ? nFreq * 3 : nFreq) - 1;
       for (int j = 0; j < nFreq; j++) {
-        float vx = parseFloat(values[++dataPt]);
+        ++dataPt;
+        String x = values[dataPt]; 
+        if (x.charAt(0) == ')') // AMPAC reader!
+          x = x.substring(1);
+        float vx = parseFloat(x);
         float vy = parseFloat(isWide ? values[++dataPt] : valuesY[dataPt]);
         float vz = parseFloat(isWide ? values[++dataPt] : valuesZ[dataPt]);
         if (ignore[j])

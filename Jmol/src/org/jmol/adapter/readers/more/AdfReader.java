@@ -181,9 +181,9 @@ OR
       boolean[] ignore = new boolean[frequencyCount];
       for (int i = 0; i < frequencyCount; ++i) {
         ignore[i] = !doGetVibration(++vibrationNumber);
-        atomSetCollection.cloneLastAtomSet();
         if (ignore[i])
           continue;
+        atomSetCollection.cloneLastAtomSet();
         atomSetCollection.setAtomSetName(frequencies[i] + " cm^-1");
         atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
             + " cm^-1");

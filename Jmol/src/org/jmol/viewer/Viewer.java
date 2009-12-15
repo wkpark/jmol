@@ -583,6 +583,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setBooleanProperty("_applet", isApplet);
     setBooleanProperty("_signedApplet", isSignedApplet);
     setBooleanProperty("_useCommandThread", useCommandThread);
+    global.setParameterValue("_width", dimScreen.width);
+    global.setParameterValue("_height", dimScreen.height);
+    
     colorManager.resetElementColors();
     setObjectColor("background", "black");
     setObjectColor("axis1", "red");

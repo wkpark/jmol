@@ -69,6 +69,10 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh 5/2009  -- Support for XHTML using jmolSetXHTML(id)
 // ah & bh 6/2009 -- New jmolResizeApplet() more flexible, similar to jmolApplet() size syntax
 // bh 11/2009 -- care in accessing top.document
+// bh 12/2009 -- added jmolSetParameter(name, value)
+// bh 12/2009 -- added PARAMS=name:value;name:value;name:value... for command line
+// bh 12/2009 -- overhaul of target checking
+
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
 
@@ -165,12 +169,12 @@ function jmolApplet(size, script, nameSuffix) {
 // Basic controls
 ////////////////////////////////////////////////////////////////
 
+// undefined means it wasn't there; null means it was explicitly listed as null (so as to skip it)
+
 function jmolButton(script, label, id, title) {
   _jmolInitCheck();
-  if (id == undefined || id == null)
-    id = "jmolButton" + _jmol.buttonCount;
-  if (label == undefined || label == null)
-    label = script.substring(0, 32);
+  id != undefined && id != null || (id = "jmolButton" + _jmol.buttonCount);
+  label != undefined && label != null || (label = script.substring(0, 32));
   ++_jmol.buttonCount;
   var scriptIndex = _jmolAddScript(script);
   var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input type='button' name='" + id + "' id='" + id +
@@ -187,8 +191,7 @@ function jmolButton(script, label, id, title) {
 function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
                       labelHtml, isChecked, id, title) {
   _jmolInitCheck();
-  if (id == undefined || id == null)
-    id = "jmolCheckbox" + _jmol.checkboxCount;
+  id != undefined && id != null || (id = "jmolCheckbox" + _jmol.checkboxCount);
   ++_jmol.checkboxCount;
   if (scriptWhenChecked == undefined || scriptWhenChecked == null ||
       scriptWhenUnchecked == undefined || scriptWhenUnchecked == null) {
@@ -237,12 +240,10 @@ function jmolRadioGroup(arrayOfRadioButtons, separatorHtml, groupName, id, title
     alert("invalid arrayOfRadioButtons");
     return;
   }
-  if (separatorHtml == undefined || separatorHtml == null)
-    separatorHtml = "&nbsp; ";
+  separatorHtml != undefined && separatorHtml != null || (separatorHtml = "&nbsp; ");
   var len = arrayOfRadioButtons.length;
   jmolStartNewRadioGroup();
-  if (!groupName)
-    groupName = "jmolRadioGroup" + (_jmol.radioGroupCount - 1);
+  groupName || (groupName = "jmolRadioGroup" + (_jmol.radioGroupCount - 1));
   var t = "<span id='"+(id ? id : groupName)+"'>";
   for (var i = 0; i < len; ++i) {
     if (i == len - 1)
@@ -274,10 +275,8 @@ function jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, t
 
 function jmolLink(script, label, id, title) {
   _jmolInitCheck();
-  if (id == undefined || id == null)
-    id = "jmolLink" + _jmol.linkCount;
-  if (label == undefined || label == null)
-    label = script.substring(0, 32);
+  id != undefined && id != null || (id = "jmolLink" + _jmol.linkCount);
+  label != undefined && label != null || (label = script.substring(0, 32));
   ++_jmol.linkCount;
   var scriptIndex = _jmolAddScript(script);
   var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><a name='" + id + "' id='" + id + 
@@ -291,12 +290,9 @@ function jmolLink(script, label, id, title) {
 
 function jmolCommandInput(label, size, id, title) {
   _jmolInitCheck();
-  if (id == undefined || id == null)
-    id = "jmolCmd" + _jmol.cmdCount;
-  if (label == undefined || label == null)
-    label = "Execute";
-  if (size == undefined || isNaN(size))
-    size = 60;
+  id != undefined && id != null || (id = "jmolCmd" + _jmol.cmdCount);
+  label != undefined && label != null || (label = "Execute");
+  size != undefined && !isNaN(size) || (size = 60);
   ++_jmol.cmdCount;
   var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input name='" + id + "' id='" + id + 
           "' size='"+size+"' onkeypress='_jmolCommandKeyPress(event,\""+id+"\"" + _jmol.targetText + ")'><input type=button value = '"+label+"' onclick='jmolScript(document.getElementById(\""+id+"\").value" + _jmol.targetText + ")' /></span>";
@@ -316,8 +312,7 @@ function _jmolCommandKeyPress(e, id, target) {
 
 function jmolMenu(arrayOfMenuItems, size, id, title) {
   _jmolInitCheck();
-  if (id == undefined || id == null)
-    id = "jmolMenu" + _jmol.menuCount;
+  id != undefined && id != null || (id = "jmolMenu" + _jmol.menuCount);
   ++_jmol.menuCount;
   var type = typeof arrayOfMenuItems;
   if (type != null && type == "object" && arrayOfMenuItems.length) {
@@ -342,9 +337,8 @@ function jmolMenu(arrayOfMenuItems, size, id, title) {
       } else {
         script = text = menuItem;
       }
-      if (text == undefined || text == null)
-        text = script;		
-	  if (script=="#optgroup") {
+      text != undefined && text != null || (text = script);		
+      if (script=="#optgroup") {
         t += "<optgroup label='" + text + "'>";	  
 	  } else if (script=="#optgroupEnd") {
         t += "</optgroup>";	  
@@ -352,7 +346,7 @@ function jmolMenu(arrayOfMenuItems, size, id, title) {
         var scriptIndex = _jmolAddScript(script);
         var selectedText = isSelected ? "' selected='true'>" : "'>";
         t += "<option value='" + scriptIndex + selectedText + text + "</option>";
-	  }
+      }
     }
     t += "</select></span>";
     if (_jmol.debugAlert)
@@ -426,7 +420,7 @@ function jmolLoadInlineScript(model, script, targetSuffix) {
 
 function jmolLoadInlineArray(ModelArray, script, targetSuffix) {
   if (!model)return "ERROR: NO MODEL"
-  if (!script)script=""
+  script || (script="")
   var applet=_jmolGetApplet(targetSuffix);
   if (!applet)return "ERROR: NO APPLET"
   try {
@@ -439,7 +433,7 @@ function jmolLoadInlineArray(ModelArray, script, targetSuffix) {
 
 function jmolAppendInlineArray(ModelArray, script, targetSuffix) {
   if (!model)return "ERROR: NO MODEL"
-  if (!script)script=""
+  script || (script="")
   var applet=_jmolGetApplet(targetSuffix);
   if (!applet)return "ERROR: NO APPLET"
   try {
@@ -460,8 +454,7 @@ function jmolAppendInlineScript(model, script, targetSuffix) {
 function jmolCheckBrowser(action, urlOrMessage, nowOrLater) {
   if (typeof action == "string") {
     action = action.toLowerCase();
-    if (action != "alert" && action != "redirect" && action != "popup")
-      action = null;
+    action == "alert" || action == "redirect" || action == "popup" || (action = null);
   }
   if (typeof action != "string")
     alert("jmolCheckBrowser(action, urlOrMessage, nowOrLater)\n\n" +
@@ -702,9 +695,26 @@ with (_jmol) {
  }
 }
 
+function jmolSetParameter(name,value) {
+  _jmol.params[name] = value
+}
+
 function jmolSetCallback(callbackName,funcName) {
   _jmol.params[callbackName] = funcName
 }
+
+ try {
+// note this is done FIRST, so it cannot override a setting done by the developer
+  if (top.location.search.indexOf("PARAMS=")>=0) {
+    var pars = unescape(top.location.search.split("PARAMS=")[1].split("&")[0]).split(";");
+    for (var i = 0; i < pars.length; i++) {
+      var p = pars[i].split(":");
+      jmolSetParameter(p[0],p[1]);
+    }
+  }
+ } catch(e) {
+  // can't access top.location
+ }
 
 function jmolSetSyncId(n) {
   return _jmol.params["syncId"] = n
@@ -737,17 +747,14 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
 		put "px" where needed, avoid where not.		
 	*/
   with (_jmol) {
-    if (! nameSuffix)
-      nameSuffix = appletCount;
+    nameSuffix == undefined && (nameSuffix = appletCount);
     appletSuffixes.push(nameSuffix);
     ++appletCount;
-    if (! script)
-      script = "select *";
+    script || (script = "select *");
     var sz = _jmolGetAppletSize(size);
     var widthAndHeight = " width='" + sz[0] + "' height='" + sz[1] + "' ";
     var tHeader, tFooter;
-    if (!codebase)
-	jmolInitialize(".");
+    codebase || jmolInitialize(".");
     if (useIEObject || useHtml4Object) {
       params.name = 'jmolApplet' + nameSuffix;
       params.archive = archivePath;
@@ -903,8 +910,8 @@ function _jmolGetDomElement(data, Ptr, closetag, lvel) {
 
 //unnecessary?
 
-	if (!closetag)closetag = ""
-	if (!lvel) lvel = 0
+	closetag || (closetag = "")
+	lvel || (lvel = 0)
 	var pt0 = Ptr[0]
 	var pt = pt0
 	while (pt < data.length && data.charAt(pt) != "<") pt++
@@ -986,14 +993,11 @@ function _jmolSterilizeInline(model) {
 
 function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, title) {
   ++_jmol.radioCount;
-  if (groupName == undefined || groupName == null)
-    groupName = "jmolRadioGroup" + (_jmol.radioGroupCount - 1);
+  groupName != undefined && groupName != null || (groupName = "jmolRadioGroup" + (_jmol.radioGroupCount - 1));
   if (!script)
     return "";
-  if (labelHtml == undefined || labelHtml == null)
-    labelHtml = script.substring(0, 32);
-  if (! separatorHtml)
-    separatorHtml = "";
+  labelHtml != undefined && labelHtml != null || (labelHtml = script.substring(0, 32));
+  separatorHtml || (separatorHtml = "")
   var scriptIndex = _jmolAddScript(script);
   var eospan = "</span>"
   var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input name='" 
@@ -1026,7 +1030,7 @@ function _jmolGetApplet(targetSuffix){
  var target = "jmolApplet" + (targetSuffix ? targetSuffix : "0");
  var applet = _jmolFindApplet(target);
  if (applet) return applet
- if(!_jmol.alerted)alert("could not find applet " + target);
+ _jmol.alerted || alert("could not find applet " + target);
  _jmol.alerted = true;
  return null
 }
@@ -1061,7 +1065,7 @@ function _jmolFindAppletInWindow(win, target) {
 }
 
 function _jmolAddScript(script) {
-  if (! script)
+  if (!script)
     return 0;
   var index = _jmol.scripts.length;
   _jmol.scripts[index] = script;
@@ -1288,7 +1292,7 @@ function _jmolLoadModel(targetSuffix,remoteURL,array,isError,errorMessage){
  //called by server, but in client
  //overload this function to customize return
  _jmol.remoteURL=remoteURL
- if(isError)alert(errorMessage)
+ isError && alert(errorMessage)
  jmolLoadInlineScript(array.join("\n"),_jmol.optionalscript,targetSuffix)
 }
 
@@ -1304,12 +1308,12 @@ function jmolGetPropertyAsArray(sKey,sValue,targetSuffix) {
 
 function jmolGetPropertyAsString(sKey,sValue,targetSuffix) {
  var applet = _jmolGetApplet(targetSuffix);
- if(!sValue)sValue=""
+ sValue == undefined && (sValue="");
  return (applet ? applet.getPropertyAsString(sKey,sValue) + "" : "")
 }
 
 function jmolGetPropertyAsJSON(sKey,sValue,targetSuffix) {
- if(!sValue)sValue = ""
+ sValue == undefined && (sValue = "")
  var applet = _jmolGetApplet(targetSuffix);
  try {
   return (applet ? applet.getPropertyAsJSON(sKey,sValue) + "" : "")
@@ -1319,7 +1323,7 @@ function jmolGetPropertyAsJSON(sKey,sValue,targetSuffix) {
 }
 
 function jmolGetPropertyAsJavaObject(sKey,sValue,targetSuffix) {
- if(!sValue)sValue = ""
+ sValue == undefined && (sValue = "")
  var applet = _jmolGetApplet(targetSuffix);
  return (applet ? applet.getProperty(sKey,sValue) : null)
 }
@@ -1333,7 +1337,7 @@ function jmolDecodeJSON(s) {
 ///////// synchronous scripting ////////
 
 function jmolScriptWait(script, targetSuffix) {
-  if(!targetSuffix)targetSuffix="0"
+  targetSuffix == undefined && (targetSuffix="0")
   var Ret=jmolScriptWaitAsArray(script, targetSuffix)
   var s = ""
   for(var i=Ret.length;--i>=0;)
@@ -1343,7 +1347,7 @@ function jmolScriptWait(script, targetSuffix) {
 }
 
 function jmolScriptWaitOutput(script, targetSuffix) {
-  if(!targetSuffix)targetSuffix="0"
+  targetSuffix == undefined && (targetSuffix="0")
   var ret = ""
   try{
    if (script) {
@@ -1360,7 +1364,7 @@ function jmolEvaluate(molecularMath, targetSuffix) {
 
   //carries out molecular math on a model
 
-  if(!targetSuffix)targetSuffix="0"
+  targetSuffix == undefined && (targetSuffix="0")
   var result = "" + jmolGetPropertyAsJavaObject("evaluate", molecularMath, targetSuffix);
   var s = result.replace(/\-*\d+/,"")
   if (s == "" && !isNaN(parseInt(result)))return parseInt(result);
@@ -1371,7 +1375,7 @@ function jmolEvaluate(molecularMath, targetSuffix) {
 
 function jmolScriptEcho(script, targetSuffix) {
   // returns a newline-separated list of all echos from a script
-  if(!targetSuffix)targetSuffix="0"
+  targetSuffix == undefined && (targetSuffix="0")
   var Ret=jmolScriptWaitAsArray(script, targetSuffix)
   var s = ""
   for(var i=Ret.length;--i>=0;)
@@ -1383,7 +1387,7 @@ function jmolScriptEcho(script, targetSuffix) {
 
 function jmolScriptMessage(script, targetSuffix) {
   // returns a newline-separated list of all messages from a script, ending with "script completed\n"
-  if(!targetSuffix)targetSuffix="0"
+  targetSuffix == undefined && (targetSuffix="0")
   var Ret=jmolScriptWaitAsArray(script, targetSuffix)
   var s = ""
   for(var i=Ret.length;--i>=0;)
@@ -1415,12 +1419,12 @@ function jmolScriptWaitAsArray(script, targetSuffix) {
 ////////////   save/restore orientation   /////////////
 
 function jmolSaveOrientation(id, targetSuffix) {  
- if(!targetSuffix)targetSuffix="0"
-  return _jmol["savedOrientation"+id] = jmolGetPropertyAsArray("orientationInfo","info",targetSuffix).moveTo
+ targetSuffix == undefined && (targetSuffix="0")
+ return _jmol["savedOrientation"+id] = jmolGetPropertyAsArray("orientationInfo","info",targetSuffix).moveTo
 }
 
 function jmolRestoreOrientation(id, targetSuffix) {
- if(!targetSuffix)targetSuffix="0"
+ targetSuffix == undefined && (targetSuffix="0")
  var s=_jmol["savedOrientation"+id]
  if (!s || s == "")return
  s=s.replace(/1\.0/,"0")
@@ -1428,8 +1432,8 @@ function jmolRestoreOrientation(id, targetSuffix) {
 }
 
 function jmolRestoreOrientationDelayed(id, delay, targetSuffix) {
- if(arguments.length < 2)delay=1;
- if(!targetSuffix)targetSuffix="0"
+ arguments.length < 2 && (delay=1)
+ targetSuffix == undefined && (targetSuffix="0")
  var s=_jmol["savedOrientation"+id]
  if (!s || s == "")return
  s=s.replace(/1\.0/,delay)
@@ -1449,25 +1453,24 @@ function jmolRestoreOrientationDelayed(id, delay, targetSuffix) {
  */
 
 function jmolAppletAddParam(appletCode,name,value){
-  if(value == "")return appletCode
-  return appletCode.replace(/\<param/,"\n<param name='"+name+"' value='"+value+"' />\n<param")
+  return (value == "" ? appletCode : appletCode.replace(/\<param/,"\n<param name='"+name+"' value='"+value+"' />\n<param"))
 }
 
 ///////////////auto load Research Consortium for Structural Biology (RCSB) data ///////////
 
 function jmolLoadAjax_STOLAF_RCSB(fileformat,pdbid,optionalscript,targetSuffix){
 
- if(!_jmol.thismodel)_jmol.thismodel = "1crn"
- if(!_jmol.serverURL)_jmol.serverURL="http://fusion.stolaf.edu/chemistry/jmol/getajaxjs.cfm"
- if(!_jmol.RCSBserver)_jmol.RCSBserver="http://www.rcsb.org"
- if(!_jmol.defaultURL_RCSB)_jmol.defaultURL_RCSB=_jmol.RCSBserver+"/pdb/files/1CRN.CIF"
- if(!fileformat)fileformat="PDB"
- if(!pdbid)pdbid=prompt("Enter a 4-digit PDB ID:",_jmol.thismodel)
+ _jmol.thismodel || (_jmol.thismodel = "1crn")
+ _jmol.serverURL || (_jmol.serverURL="http://fusion.stolaf.edu/chemistry/jmol/getajaxjs.cfm")
+ _jmol.RCSBserver || (_jmol.RCSBserver="http://www.rcsb.org")
+ _jmol.defaultURL_RCSB || (_jmol.defaultURL_RCSB=_jmol.RCSBserver+"/pdb/files/1CRN.CIF")
+ fileformat || (fileformat="PDB")
+ pdbid || (pdbid=prompt("Enter a 4-digit PDB ID:",_jmol.thismodel))
  if(!pdbid || pdbid.length != 4)return ""
- if(!targetSuffix)targetSuffix="0"
- if(!optionalscript)optionalscript=""
+ targetSuffix || (targetSuffix="0")
+ optionalscript || (optionalscript="")
  var url=_jmol.defaultURL_RCSB.replace(/1CRN/g,pdbid.toUpperCase())
- if(fileformat!="CIF")url=url.replace(/CIF/,fileformat)
+ fileformat=="CIF" || (url=url.replace(/CIF/,fileformat))
  _jmol.optionalscript=optionalscript
  _jmol.thismodel=pdbid
  _jmol.thistargetsuffix=targetSuffix
@@ -1482,11 +1485,11 @@ function jmolLoadAjax_STOLAF_RCSB(fileformat,pdbid,optionalscript,targetSuffix){
 
 function jmolLoadAjax_STOLAF_ANY(url, userid, optionalscript,targetSuffix){
  _jmol.serverURL="http://fusion.stolaf.edu/chemistry/jmol/getajaxjs.cfm"
- if(!_jmol.thisurlANY)_jmol.thisurlANY = "http://www.stolaf.edu/depts/chemistry/mo/struc/data/ycp3-1.mol"
- if(!url)url=prompt("Enter any (uncompressed file) URL:", _jmol.thisurlANY)
- if(!userid)userid="0"
- if(!targetSuffix)targetSuffix="0"
- if(!optionalscript)optionalscript=""
+ _jmol.thisurlANY || (_jmol.thisurlANY = "http://www.stolaf.edu/depts/chemistry/mo/struc/data/ycp3-1.mol")
+ url || (url=prompt("Enter any (uncompressed file) URL:", _jmol.thisurlANY))
+ userid || (userid="0")
+ targetSuffix || (targetSuffix="0")
+ optionalscript || (optionalscript="")
  _jmol.optionalscript=optionalscript
  _jmol.thistargetsuffix=targetSuffix
  _jmol.modelArray = []
@@ -1500,16 +1503,16 @@ function jmolLoadAjax_STOLAF_ANY(url, userid, optionalscript,targetSuffix){
 
 function jmolLoadAjax_MSA(key,value,optionalscript,targetSuffix){
 
- if(!_jmol.thiskeyMSA)_jmol.thiskeyMSA = "mineral"
- if(!_jmol.thismodelMSA)_jmol.thismodelMSA = "quartz"
- if(!_jmol.ajaxURL_MSA)_jmol.ajaxURL_MSA="http://rruff.geo.arizona.edu/AMS/result.php?mineral=quartz&viewing=ajaxjs"
- if(!key)key=prompt("Enter a field:", _jmol.thiskeyMSA)
+ _jmol.thiskeyMSA || (_jmol.thiskeyMSA = "mineral")
+ _jmol.thismodelMSA || (_jmol.thismodelMSA = "quartz")
+ _jmol.ajaxURL_MSA || (_jmol.ajaxURL_MSA="http://rruff.geo.arizona.edu/AMS/result.php?mineral=quartz&viewing=ajaxjs")
+ key || (key=prompt("Enter a field:", _jmol.thiskeyMSA))
  if(!key)return ""
- if(!value)value=prompt("Enter a "+key+":", _jmol.thismodelMSA)
+ value || (value=prompt("Enter a "+key+":", _jmol.thismodelMSA))
  if(!value)return ""
- if(!targetSuffix)targetSuffix="0"
- if(!optionalscript)optionalscript=""
- if(optionalscript == 1)optionalscript='load "" {1 1 1}'
+ targetSuffix || (targetSuffix="0")
+ optionalscript || (optionalscript="")
+ optionalscript == 1 && (optionalscript='load "" {1 1 1}')
  var url=_jmol.ajaxURL_MSA.replace(/mineral/g,key).replace(/quartz/g,value)
  _jmol.optionalscript=optionalscript
  _jmol.thiskeyMSA=key
@@ -1525,9 +1528,9 @@ function jmolLoadAjax_MSA(key,value,optionalscript,targetSuffix){
 
 
 function jmolLoadAjaxJS(url, userid, optionalscript,targetSuffix){
- if(!userid)userid="0"
- if(!targetSuffix)targetSuffix="0"
- if(!optionalscript)optionalscript=""
+ userid || (userid="0")
+ targetSuffix || (targetSuffix="0")
+ optionalscript || (optionalscript="")
  _jmol.optionalscript=optionalscript
  _jmol.thismodel=userid
  _jmol.thistargetsuffix=targetSuffix

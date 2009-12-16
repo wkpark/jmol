@@ -792,9 +792,8 @@ public class FileManager {
       try {
         if (name.indexOf(":\\") == 1 || name.indexOf(":/") == 1)
           name = "file:/" + name;
-        else if (name.indexOf("/") == 0
-            && viewer.getBooleanProperty("_signedApplet"))
-          name = "file:" + name;
+//        else if (name.indexOf("/") == 0 && viewer.isSignedApplet())
+  //        name = "file:" + name;
         url = new URL(appletDocumentBase, name);
       } catch (MalformedURLException e) {
         return new String[] { isFullLoad ? e.getMessage() : null };

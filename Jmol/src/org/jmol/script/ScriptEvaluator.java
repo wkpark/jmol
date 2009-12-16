@@ -11673,7 +11673,7 @@ public class ScriptEvaluator {
         idSeen = true;
         continue;
       default:
-        if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, 0, theTok)) {
+        if (!setMeshDisplayProperty(null, JmolConstants.SHAPE_DRAW, 0, theTok)) {
           if (theTok == Token.times || Token.tokAttr(theTok, Token.identifier)) {
             thisId = setShapeId(JmolConstants.SHAPE_DRAW, i, idSeen);
             i = iToken;
@@ -11710,8 +11710,8 @@ public class ScriptEvaluator {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", new Integer(intScale));
     }
     if (iptDisplayProperty > 0) {
-      if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, iptDisplayProperty,
-          getToken(iptDisplayProperty).tok))
+      if (!setMeshDisplayProperty(null, JmolConstants.SHAPE_DRAW,
+          iptDisplayProperty, getToken(iptDisplayProperty).tok))
         error(ERROR_invalidArgument);
     }
   }
@@ -11971,7 +11971,7 @@ public class ScriptEvaluator {
         continue;
       case Token.translucent:
       case Token.opaque:
-        setMeshDisplayProperty(JmolConstants.SHAPE_LCAOCARTOON, i, theTok);
+        setMeshDisplayProperty(null, JmolConstants.SHAPE_LCAOCARTOON, i, theTok);
         i = iToken;
         idSeen = true;
         continue;
@@ -12126,7 +12126,7 @@ public class ScriptEvaluator {
       case Token.identifier:
         error(ERROR_invalidArgument);
       default:
-        if (!setMeshDisplayProperty(JmolConstants.SHAPE_MO, 1, theTok))
+        if (!setMeshDisplayProperty(null, JmolConstants.SHAPE_MO, 1, theTok))
           error(ERROR_invalidArgument);
         return true;
       }
@@ -12156,11 +12156,11 @@ public class ScriptEvaluator {
             : Float.MAX_VALUE);
         setShapeTranslucency(iShape, null, "translucent", value, null);
       } else {
-        setMeshDisplayProperty(iShape, index, theTok);
+        setMeshDisplayProperty(null, iShape, index, theTok);
       }
     } else if (theTok == Token.opaque) {
       if (nAllowed >= 0)
-        setMeshDisplayProperty(iShape, index, theTok);
+        setMeshDisplayProperty(null, iShape, index, theTok);
     } else {
       iToken--;
     }
@@ -12272,7 +12272,7 @@ public class ScriptEvaluator {
       return null;
     }
     iToken = 1;
-    if (!setMeshDisplayProperty(iShape, 0, tokAt(1))) {
+    if (!setMeshDisplayProperty(null, iShape, 0, tokAt(1))) {
       setShapeProperty(iShape, "thisID", JmolConstants.PREVIOUS_MESH_ID);
       if (iShape != JmolConstants.SHAPE_DRAW)
         setShapeProperty(iShape, "title", new String[] { thisCommand });
@@ -13039,7 +13039,7 @@ public class ScriptEvaluator {
           addShapeProperty(propertyList, "nomap", new Float(0));
           surfaceObjectSeen = true;
         }
-        if (!setMeshDisplayProperty(iShape, i, theTok)) {
+        if (!setMeshDisplayProperty(propertyList, iShape, i, theTok)) {
           if (Token.tokAttr(theTok, Token.identifier) && !idSeen) {
             setShapeId(iShape, i, idSeen);
             i = iToken;
@@ -13080,7 +13080,10 @@ public class ScriptEvaluator {
       addShapeProperty(propertyList, "colorDiscrete", discreteColixes);
     else if (colorScheme != null)
       addShapeProperty(propertyList, "setColorScheme", colorScheme);
+    
+    // OK, now send them all
     setShapeProperty(iShape, "setProperties", propertyList);
+     
     Object area = null;
     Object volume = null;
     if (doCalcArea) {
@@ -13136,7 +13139,7 @@ public class ScriptEvaluator {
       propertyList.add(new Object[] {key, value});
   }
 
-  private boolean setMeshDisplayProperty(int shape, int i, int tok)
+  private boolean setMeshDisplayProperty(Vector propertyList, int shape, int i, int tok)
       throws ScriptException {
     String propertyName = null;
     Object propertyValue = null;
@@ -13157,7 +13160,7 @@ public class ScriptEvaluator {
     case Token.hidden:
     case Token.display:
     case Token.displayed:
-      if (iToken == 1)        
+      if (iToken == 1)
         setShapeProperty(shape, "thisID", null);
       if (tok == Token.nada)
         return (iToken == 1);
@@ -13195,9 +13198,12 @@ public class ScriptEvaluator {
       return false;
     if (checkOnly)
       return true;
-    setShapeProperty(shape, propertyName, propertyValue);
+    if (propertyList != null)
+      addShapeProperty(propertyList, propertyName, propertyValue);
+    else
+      setShapeProperty(shape, propertyName, propertyValue);
     if ((tok = tokAt(iToken + 1)) != Token.nada) {
-      if (!setMeshDisplayProperty(shape, ++iToken, tok))
+      if (!setMeshDisplayProperty(propertyList, shape, ++iToken, tok))
         --iToken;
     }
     return true;

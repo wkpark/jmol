@@ -470,7 +470,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (property == "volume")
       return (thisMesh == null ? new Float(Float.NaN) : thisMesh.calculateVolume());
     if (thisMesh == null)
-      return "no current isosurface";
+      return null;//"no current isosurface";
     if (property == "cutoff")
       return new Float(jvxlData.cutoff);
     if (property == "plane")

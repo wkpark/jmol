@@ -1404,6 +1404,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           && !Token.tokAttr(theTok, Token.expression))
         return ERROR(ERROR_invalidExpressionToken, ident);
       break;
+    case Token.plot3d:
     case Token.pmesh:
     case Token.isosurface:
       // isosurface ... name.xxx

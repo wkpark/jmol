@@ -24,8 +24,6 @@
 package org.jmol.script;
 
 import java.awt.Image;
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -4705,6 +4703,9 @@ public class ScriptEvaluator {
         break;
       case Token.console:
         console();
+        break;
+      case Token.plot3d:
+        isosurface(JmolConstants.SHAPE_PLOT3D);
         break;
       case Token.pmesh:
         isosurface(JmolConstants.SHAPE_PMESH);
@@ -12306,6 +12307,8 @@ public class ScriptEvaluator {
     int signPt = 0;
     boolean isIsosurface = (iShape == JmolConstants.SHAPE_ISOSURFACE);
     boolean isPmesh = (iShape == JmolConstants.SHAPE_PMESH);
+    boolean isPlot3d = (iShape == JmolConstants.SHAPE_PLOT3D);
+
     boolean surfaceObjectSeen = false;
     boolean planeSeen = false;
     boolean doCalcArea = false;
@@ -12328,14 +12331,16 @@ public class ScriptEvaluator {
     String translucency = null;
     String colorScheme = null;
     short[] discreteColixes = null;
-    if (isPmesh)
-      setShapeProperty(iShape, "fileType", "Pmesh");
+    Vector propertyList = new Vector();
+    if (isPmesh || isPlot3d)
+      addShapeProperty(propertyList, "fileType", "Pmesh");
     for (int i = iToken; i < statementLength; ++i) {
       if (isColorParam(i)) {
         if (i != signPt)
           error(ERROR_invalidParameterOrder);
-        setShapeProperty(iShape, (isColorMesh ? "colorMesh" : "colorRGB"), 
-            new Integer(getArgbParam(i)));
+        addShapeProperty(propertyList,
+            (isColorMesh ? "colorMesh" : "colorRGB"), new Integer(
+                getArgbParam(i)));
         i = iToken;
         signPt = i + 1;
         idSeen = true;
@@ -12349,17 +12354,17 @@ public class ScriptEvaluator {
         theTok = Token.string;
       switch (theTok) {
       case Token.pmesh:
-        setShapeProperty(iShape, "fileType", "Pmesh");
+        addShapeProperty(propertyList, "fileType", "Pmesh");
         continue;
       case Token.within:
         float distance = floatParameter(++i);
         propertyValue = centerParameter(++i);
         i = iToken;
         propertyName = "withinPoint";
-        setShapeProperty(iShape, "withinDistance", new Float(distance));
+        addShapeProperty(propertyList, "withinDistance", new Float(distance));
         break;
       case Token.property:
-        setShapeProperty(iShape, "propertySmoothing", viewer
+        addShapeProperty(propertyList, "propertySmoothing", viewer
             .getIsosurfacePropertySmoothing() ? Boolean.TRUE : Boolean.FALSE);
         str = parameterAsString(i);
         propertyName = "property";
@@ -12401,7 +12406,7 @@ public class ScriptEvaluator {
         }
         propertyName = "modelIndex";
         propertyValue = new Integer(modelIndex);
-         break;
+        break;
       case Token.select:
         propertyName = "select";
         propertyValue = expression(++i);
@@ -12526,7 +12531,7 @@ public class ScriptEvaluator {
         i = iToken;
         propertyName = "ellipsoid";
         if (!isSyntaxCheck)
-          setShapeProperty(iShape, "center", viewer.getAtomPoint3f(iAtom));
+          addShapeProperty(propertyList, "center", viewer.getAtomPoint3f(iAtom));
         break;
       case Token.hkl:
         // miller indices hkl
@@ -12538,7 +12543,7 @@ public class ScriptEvaluator {
       case Token.lcaocartoon:
         surfaceObjectSeen = true;
         String lcaoType = parameterAsString(++i);
-        setShapeProperty(iShape, "lcaoType", lcaoType);
+        addShapeProperty(propertyList, "lcaoType", lcaoType);
         switch (getToken(++i).tok) {
         case Token.bitset:
         case Token.expressionBegin:
@@ -12556,7 +12561,7 @@ public class ScriptEvaluator {
             modelIndex = viewer.getAtomModelIndex(atomIndex);
             pt = viewer.getAtomPoint3f(atomIndex);
           }
-          setShapeProperty(iShape, "modelIndex", new Integer(modelIndex));
+          addShapeProperty(propertyList, "modelIndex", new Integer(modelIndex));
           Vector3f[] axes = { new Vector3f(), new Vector3f(), new Vector3f(pt),
               new Vector3f() };
           if (!isSyntaxCheck)
@@ -12604,7 +12609,8 @@ public class ScriptEvaluator {
       case Token.sasurface:
       case Token.solvent:
         surfaceObjectSeen = true;
-        setShapeProperty(iShape, "bsSolvent", lookupIdentifierValue("solvent"));
+        addShapeProperty(propertyList, "bsSolvent",
+            lookupIdentifierValue("solvent"));
         propertyName = (theTok == Token.sasurface ? "sasurface" : "solvent");
         float radius = (isFloatParameter(i + 1) ? floatParameter(++i) : viewer
             .getSolventProbeRadius());
@@ -12647,8 +12653,6 @@ public class ScriptEvaluator {
         propertyValue = nlmZ;
         break;
       case Token.binary:
-        // if (!isPmesh)
-        // error(ERROR_invalidArgument);
         // for PMESH, specifically
         // ignore for now
         continue;
@@ -12673,8 +12677,9 @@ public class ScriptEvaluator {
             : 10f);
         if (envelopeRadius > 10f)
           integerOutOfRange(0, 10);
-        setShapeProperty(iShape, "envelopeRadius", new Float(envelopeRadius));
-        setShapeProperty(iShape, "cavityRadius", new Float(cavityRadius));
+        addShapeProperty(propertyList, "envelopeRadius", new Float(
+            envelopeRadius));
+        addShapeProperty(propertyList, "cavityRadius", new Float(cavityRadius));
         propertyName = "cavity";
         break;
       case Token.contour:
@@ -12830,15 +12835,14 @@ public class ScriptEvaluator {
           if (xyzdata == null) {
             iToken = ptX;
             error(ERROR_what, "xyzdata is null.");
-          } 
-          if (xyzdata.length != nX || xyzdata[0].length != nY 
+          }
+          if (xyzdata.length != nX || xyzdata[0].length != nY
               || xyzdata[0][0].length != nZ) {
             iToken = ptX;
-            error(ERROR_what, "xyzdata[" + xyzdata.length 
-                + "][" + xyzdata[0].length 
-                + "][" + xyzdata[0][0].length + "] is not of size [" 
-                + nX + "][" + nY + "][" + nZ + "]");
-          } 
+            error(ERROR_what, "xyzdata[" + xyzdata.length + "]["
+                + xyzdata[0].length + "][" + xyzdata[0][0].length
+                + "] is not of size [" + nX + "][" + nY + "][" + nZ + "]");
+          }
           v.addElement(xyzdata); // (5) = float[][][] data
         }
         i = iToken;
@@ -12907,7 +12911,7 @@ public class ScriptEvaluator {
         break;
       case Token.object:
       case Token.obj:
-        setShapeProperty(iShape, "fileType", "Obj");
+        addShapeProperty(propertyList, "fileType", "Obj");
         continue;
       case Token.phase:
         if (surfaceObjectSeen)
@@ -12989,35 +12993,34 @@ public class ScriptEvaluator {
         }
         surfaceObjectSeen = true;
         if (tokAt(i + 1) == Token.integer)
-          setShapeProperty(iShape, "fileIndex", new Integer(intParameter(++i)));
-        String[] fullPathNameReturn = new String[1];
-        Object t;
+          addShapeProperty(propertyList, "fileIndex", new Integer(
+              intParameter(++i)));
         if (filename.equalsIgnoreCase("INLINE")) {
           // inline PMESH data
           if (tokAt(i + 1) != Token.string)
             error(ERROR_stringExpected);
-          setShapeProperty(iShape, "fileType", "Pmesh");
+          addShapeProperty(propertyList, "fileType", "Pmesh");
           String sdata = parameterAsString(++i);
           sdata = TextFormat.replaceAllCharacters(sdata, "{,}|", ' ');
           if (logMessages)
             Logger.debug("pmesh inline data:\n" + sdata);
-          t = (isSyntaxCheck ? null : new BufferedReader(new StringReader(sdata)));
-        } else {
+          propertyValue = (isSyntaxCheck ? null : sdata);
+          addShapeProperty(propertyList, "fileName", "");
+        } else if (!isSyntaxCheck) {
           if (thisCommand.indexOf("# FILE" + nFiles + "=") >= 0)
             filename = extractCommandOption("# FILE" + nFiles);
-          t = (isSyntaxCheck ? null : viewer
-              .getBufferedReaderOrErrorMessageFromName(filename,
-                  fullPathNameReturn, false));
-          if (t instanceof String)
-            error(ERROR_fileNotFoundException, filename + ":" + t);
-          if (!isSyntaxCheck)
-            Logger
-                .info("reading isosurface data from " + fullPathNameReturn[0]);
-          setShapeProperty(iShape, "commandOption", "FILE" + (nFiles++) + "="
-              + Escape.escape(fullPathNameReturn[0]));
-          setShapeProperty(iShape, "fileName", fullPathNameReturn[0]);
+          // just checking here, and getting the full path name
+          String[] fullPathNameOrError = viewer.getFullPathNameOrError(filename);
+          filename = fullPathNameOrError[0];
+          if (fullPathNameOrError[1] != null)
+            error(ERROR_fileNotFoundException, filename + ":" + fullPathNameOrError[1]);
+          Logger.info("reading isosurface data from " + filename);
+          addShapeProperty(propertyList, "commandOption", "FILE" + (nFiles++)
+              + "=" + Escape.escape(filename));
+          addShapeProperty(propertyList, "fileName", filename);
+          // null value indicates that we need a reader based on the fileName
+          propertyValue = null;
         }
-        propertyValue = t;
         break;
       case Token.identifier:
         if (str.equalsIgnoreCase("LINK")) { // for state of lcaoCartoon
@@ -13033,7 +13036,7 @@ public class ScriptEvaluator {
         // fall through
       default:
         if (planeSeen && !surfaceObjectSeen) {
-          setShapeProperty(iShape, "nomap", new Float(0));
+          addShapeProperty(propertyList, "nomap", new Float(0));
           surfaceObjectSeen = true;
         }
         if (!setMeshDisplayProperty(iShape, i, theTok)) {
@@ -13049,31 +13052,35 @@ public class ScriptEvaluator {
       idSeen = (theTok != Token.delete);
       if (propertyName == "property" && !surfaceObjectSeen) {
         surfaceObjectSeen = true;
-        setShapeProperty(iShape, "bsSolvent", lookupIdentifierValue("solvent"));
+        addShapeProperty(propertyList, "bsSolvent",
+            lookupIdentifierValue("solvent"));
         propertyName = "sasurface";
         propertyValue = new Float(0);
       }
       if (isWild && surfaceObjectSeen)
         error(ERROR_invalidArgument);
       if (propertyName != null)
-        setShapeProperty(iShape, propertyName, propertyValue);
+        addShapeProperty(propertyList, propertyName, propertyValue);
     }
     if (isCavity && !surfaceObjectSeen) {
       surfaceObjectSeen = true;
-      setShapeProperty(iShape, "bsSolvent", lookupIdentifierValue("solvent"));
-      setShapeProperty(iShape, "sasurface", new Float(0));
+      addShapeProperty(propertyList, "bsSolvent",
+          lookupIdentifierValue("solvent"));
+      addShapeProperty(propertyList, "sasurface", new Float(0));
     }
 
     if (planeSeen && !surfaceObjectSeen) {
-      setShapeProperty(iShape, "nomap", new Float(0));
+      addShapeProperty(propertyList, "nomap", new Float(0));
       surfaceObjectSeen = true;
     }
     if (thisSetNumber > 0)
-      setShapeProperty(iShape, "getSurfaceSets", new Integer(thisSetNumber - 1));
-    if (discreteColixes != null) {
-      setShapeProperty(iShape, "colorDiscrete", discreteColixes);
-    } else if (colorScheme != null)
-      setShapeProperty(iShape, "setColorScheme", colorScheme);
+      addShapeProperty(propertyList, "getSurfaceSets", new Integer(
+          thisSetNumber - 1));
+    if (discreteColixes != null)
+      addShapeProperty(propertyList, "colorDiscrete", discreteColixes);
+    else if (colorScheme != null)
+      addShapeProperty(propertyList, "setColorScheme", colorScheme);
+    setShapeProperty(iShape, "setProperties", propertyList);
     Object area = null;
     Object volume = null;
     if (doCalcArea) {
@@ -13121,6 +13128,12 @@ public class ScriptEvaluator {
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);
     setShapeProperty(iShape, "clear", null);
+  }
+
+  private void addShapeProperty(Vector propertyList, String key,
+                                Object value) {
+    if (!isSyntaxCheck)
+      propertyList.add(new Object[] {key, value});
   }
 
   private boolean setMeshDisplayProperty(int shape, int i, int tok)

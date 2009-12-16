@@ -113,6 +113,7 @@
 package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -180,6 +181,10 @@ public class SurfaceGenerator {
 
   public int getDataType() {
     return params.dataType;
+  }
+  
+  public String getFileName() {
+    return params.fileName;
   }
   
   MeshDataServer getMeshDataServer() {
@@ -322,7 +327,7 @@ public class SurfaceGenerator {
     if ("debug" == propertyName) {
       boolean TF = ((Boolean) value).booleanValue();
       params.logMessages = TF;
-      //logCompression = TF;
+      // logCompression = TF;
       params.logCube = TF;
       return true;
     }
@@ -338,7 +343,7 @@ public class SurfaceGenerator {
           params.script = TextFormat.simpleReplace(params.script, ";#", "; #");
         }
       }
-      return false; //more to do
+      return false; // more to do
     }
 
     if ("finalize" == propertyName) {
@@ -348,10 +353,11 @@ public class SurfaceGenerator {
 
     if ("commandOption" == propertyName) {
       String s = " # " + (String) value;
-      //System.out.println("sg commandOption0  " + params.script + " and " + propertyName);
+      // System.out.println("sg commandOption0  " + params.script + " and " +
+      // propertyName);
       if (params.script.indexOf(s) < 0)
         params.script += s;
-      //System.out.println("sg commandOption1  " + params.script);
+      // System.out.println("sg commandOption1  " + params.script);
 
       return true;
     }
@@ -479,7 +485,7 @@ public class SurfaceGenerator {
       return true;
     }
 
-    /// color options 
+    // / color options
 
     if ("remappable" == propertyName) {
       params.remappable = true;
@@ -531,14 +537,17 @@ public class SurfaceGenerator {
     if ("setColorScheme" == propertyName) {
       String colorScheme = (String) value;
       if (colorScheme.equals("sets")) {
-        propertyName = "mapColor";
-      } else {
-        colorEncoder.setColorScheme(colorScheme);
-        if (surfaceReader != null
-            && params.state == Parameters.STATE_DATA_COLORED)
-          surfaceReader.applyColorScale();
+        getSurfaceSets();
+        params.colorBySets = true;
+        mapSurface();
         return true;
       }
+      colorEncoder.setColorScheme(colorScheme);
+      if (surfaceReader != null
+          && params.state == Parameters.STATE_DATA_COLORED)
+        surfaceReader.applyColorScale();
+      return true;
+
     }
 
     if ("center" == propertyName) {
@@ -583,20 +592,15 @@ public class SurfaceGenerator {
     }
 
     /*
-     * Based on the form of the parameters, returns and encoded radius
-     * as follows:
+     * Based on the form of the parameters, returns and encoded radius as
+     * follows:
      * 
-     * script   meaning   range       encoded     
+     * script meaning range encoded
      * 
-     * +1.2     offset    [0 - 10]        x        
-     * -1.2     offset       0)           x         
-     *  1.2     absolute  (0 - 10]      x + 10    
-     * -30%     70%      (-100 - 0)     x + 200
-     * +30%     130%        (0          x + 200
-     *  80%     percent     (0          x + 100
+     * +1.2 offset [0 - 10] x -1.2 offset 0) x 1.2 absolute (0 - 10] x + 10 -30%
+     * 70% (-100 - 0) x + 200 +30% 130% (0 x + 200 80% percent (0 x + 100
      * 
-     *  in each case, numbers can be integer or float
-     * 
+     * in each case, numbers can be integer or float
      */
 
     boolean useIonic;
@@ -656,11 +660,11 @@ public class SurfaceGenerator {
         if (step <= 0)
           step = 1;
         n = 0;
-        for (float p = from; p <= to + step/10; p += step, n++) {
+        for (float p = from; p <= to + step / 10; p += step, n++) {
         }
         params.contoursDiscrete = new float[n];
         float p = from;
-        for (int i = 0; i < n; i++, p+= step) {
+        for (int i = 0; i < n; i++, p += step) {
           params.contoursDiscrete[i] = p;
         }
         params.nContours = n;
@@ -677,10 +681,10 @@ public class SurfaceGenerator {
     }
 
     if ("colorDiscrete" == propertyName) {
-      params.contourColixes = (short[])value;
+      params.contourColixes = (short[]) value;
       return true;
     }
-    
+
     if ("fullPlane" == propertyName) {
       // fullPlane == true --> params.contourFromZero is false
       // fullPlane == false --> params.contourFromZero is true
@@ -690,20 +694,20 @@ public class SurfaceGenerator {
       // the setting is ignored when discrete contours
       // are specified, because in that case we just
       // define the triangle color by their centers
-      
+
       params.contourFromZero = !((Boolean) value).booleanValue();
       return true;
     }
-    /// final actions ///
+    // / final actions ///
 
     if ("property" == propertyName) {
       params.dataType = Parameters.SURFACE_PROPERTY;
       params.theProperty = (float[]) value;
-      mapSurface(null);
+      mapSurface();
       return true;
     }
 
-    //these next four set the reader themselves.
+    // these next four set the reader themselves.
     if ("sphere" == propertyName) {
       params.setSphere(((Float) value).floatValue());
       surfaceReader = new IsoShapeReader(this, params.distance);
@@ -763,7 +767,9 @@ public class SurfaceGenerator {
     if ("functionXY" == propertyName) {
       params.setFunctionXY((Vector) value);
       if (params.isContoured)
-        volumeData.setPlaneParameters(new Point4f(0, 0, 1, 0)); //xy plane through origin
+        volumeData.setPlaneParameters(new Point4f(0, 0, 1, 0)); // xy plane
+                                                                // through
+                                                                // origin
       if (((String) params.functionXYinfo.get(0)).indexOf("_xyz") >= 0)
         getFunctionZfromXY();
       processState();
@@ -846,18 +852,13 @@ public class SurfaceGenerator {
       getSurfaceSets();
       return true;
     }
-    
+
     if ("mapColor" == propertyName) {
-      if (value instanceof String && ((String) value).equalsIgnoreCase("sets")) {
-        getSurfaceSets();
-        params.colorBySets = true;
-      } else {
-        if ((surfaceReader = setFileData(value)) == null) {
-          Logger.error("Could not set the mapping data");
-          return true;
-        }
+      if ((surfaceReader = setFileData(value)) == null) {
+        Logger.error("Could not set the mapping data");
+        return true;
       }
-      mapSurface(value);
+      mapSurface();
       return true;
     }
 
@@ -879,7 +880,7 @@ public class SurfaceGenerator {
     if (params.state == Parameters.STATE_INITIALIZED && params.thePlane != null)
       params.state++;
     if (params.state >= Parameters.STATE_DATA_READ) {
-      mapSurface(null);
+      mapSurface();
     } else {
       generateSurface();
     }
@@ -959,7 +960,7 @@ public class SurfaceGenerator {
     surfaceReader = null; // resets voxel reader for mapping
   }
 
-  private void mapSurface(Object value) {
+  private void mapSurface() {
     if (params.state == Parameters.STATE_INITIALIZED && params.thePlane != null)
       params.state++;
     if (++params.state != Parameters.STATE_DATA_COLORED)
@@ -1017,6 +1018,9 @@ public class SurfaceGenerator {
     if (value instanceof Hashtable) {
       volumeData = (VolumeData)((Hashtable) value).get("volumeData");
       return new VolumeDataReader(this);
+    }
+    if (value instanceof String) {
+      value = new BufferedReader(new StringReader((String) value));
     }
     BufferedReader br = (BufferedReader) value;
     if (fileType == null)

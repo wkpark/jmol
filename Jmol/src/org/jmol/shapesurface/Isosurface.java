@@ -343,6 +343,20 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       newSg();
     }
     
+    if ("mapColor" == propertyName || "readFile" == propertyName) {
+      if (value == null) {
+        // ScriptEvaluator has passed the filename to us as the value of the
+        // "fileName" property. We retrieve that from the surfaceGenerator 
+        // and open a BufferedReader for it. Or not.  But that would be 
+        // unlikely since we have just checked it in ScriptEvaluator
+        value = viewer.getBufferedReaderOrErrorMessageFromName(sg.getFileName(),
+          null, false);
+        if (value instanceof String) {
+          Logger.error("Isosurface: could not open file " + sg.getFileName() + " -- " + sg.getFileName());
+          return;
+        }          
+      }
+    }
     //surface generator only (return TRUE) or shared (return FALSE)
 
     if (sg != null && sg.setParameter(propertyName, value, bs))

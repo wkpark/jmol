@@ -296,14 +296,15 @@ public class Token {
   public final static int lcaocartoon  = scriptCommand | 30;
 //final static int load         see mathfunc
   final static int loop         = scriptCommand | 31 | defaultON;
-  final static int minimize     = scriptCommand | 33;
-  public final static int mo           = scriptCommand | 34 | expression;
+  final static int minimize     = scriptCommand | 32;
+  public final static int mo           = scriptCommand | 33 | expression;
 //final static int model        see mathfunc
-  public final static int monitor      = scriptCommand | 35 | setparam | expression | defaultON;
-  final static int move         = scriptCommand | 36;
-  public final static int moveto       = scriptCommand | 37;
-  final static int navigate     = scriptCommand | 38;
-  public final static int pmesh        = scriptCommand | 39;
+  public final static int monitor      = scriptCommand | 34 | setparam | expression | defaultON;
+  final static int move         = scriptCommand | 35;
+  public final static int moveto       = scriptCommand | 36;
+  final static int navigate     = scriptCommand | 37;
+  public final static int pmesh        = scriptCommand | 38;
+  public final static int plot3d       = scriptCommand | 39;
   public final static int polyhedra    = scriptCommand | 40;
 //final static int quaternion   see mathfunc
   final static int quit         = scriptCommand | 41 | noArgs;
@@ -1011,6 +1012,7 @@ public class Token {
     "out",               new Token(out),
     "pause",             new Token(pause),
     "wait",              null,
+    "plot3d",            new Token(plot3d),
     "pmesh",             new Token(pmesh),
     "polyhedra",         new Token(polyhedra),
     "print",             new Token(print),

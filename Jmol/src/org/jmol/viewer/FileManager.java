@@ -196,7 +196,7 @@ public class FileManager {
   private String getZipDirectoryAsString(String fileName) {
     return ZipUtil
         .getZipDirectoryAsStringAndClose((InputStream) getInputStreamOrErrorMessageFromName(
-            fileName, false));
+            fileName, false, false));
   }
 
   /////////////// createAtomSetCollectionFromXXX methods /////////////////
@@ -385,7 +385,8 @@ public class FileManager {
         : null);
   }
 
-  Object getInputStreamOrErrorMessageFromName(String name, boolean showMsg) {
+  Object getInputStreamOrErrorMessageFromName(String name, boolean showMsg,
+                                              boolean checkOnly) {
     String errorMessage = null;
     int iurlPrefix;
     for (iurlPrefix = urlPrefixes.length; --iurlPrefix >= 0;)
@@ -394,7 +395,7 @@ public class FileManager {
     boolean isURL = (iurlPrefix >= 0);
     boolean isApplet = (appletDocumentBase != null);
     InputStream in = null;
-    //int length;
+    // int length;
     try {
       if (isApplet || isURL) {
         if (isApplet && isURL && appletProxy != null)
@@ -404,14 +405,18 @@ public class FileManager {
         if (showMsg)
           Logger.info("FileManager opening " + url.toString());
         URLConnection conn = url.openConnection();
-        //length = conn.getContentLength();
+        // length = conn.getContentLength();
         in = conn.getInputStream();
       } else {
         if (showMsg)
           Logger.info("FileManager opening " + name);
         File file = new File(name);
-        //length = (int) file.length();
+        // length = (int) file.length();
         in = new FileInputStream(file);
+      }
+      if (checkOnly) {
+        in.close();
+        in = null;
       }
       return in;
     } catch (Exception e) {
@@ -423,6 +428,25 @@ public class FileManager {
       errorMessage = "" + e;
     }
     return errorMessage;
+  }
+
+  /**
+   * just check for a file as being readable. Do not go into a zip file
+   * 
+   * @param filename
+   * @return String[2] where [0] is fullpathname and [1] is error message or null
+   */
+  String[] getFullPathNameOrError(String filename) {
+    String[] names = classifyName(filename, true);
+    if (names == null || names[0] == null || names.length < 2)
+      return new String[] { null, "cannot read file name: " + filename };
+    String name = names[0];
+    String fullPath = names[0].replace('\\', '/');
+    if (name.indexOf("|") >= 0)
+      name = TextFormat.split(name, "|")[0];
+    Object errMsg = getInputStreamOrErrorMessageFromName(name, false, true);
+    return new String[] { fullPath,
+        (errMsg instanceof String ? (String) errMsg : null) };
   }
 
   Object getBufferedReaderOrErrorMessageFromName(String name,
@@ -486,7 +510,7 @@ public class FileManager {
     }
     if (name.indexOf("|") >= 0)
       name = (subFileList = TextFormat.split(name, "|"))[0];
-    Object t = getInputStreamOrErrorMessageFromName(name, true);
+    Object t = getInputStreamOrErrorMessageFromName(name, true, false);
     if (t instanceof String)
       return t;
     try {
@@ -522,7 +546,7 @@ public class FileManager {
 
   String[] getZipDirectory(String fileName, boolean addManifest) {
     return ZipUtil.getZipDirectoryAndClose(
-        (InputStream) getInputStreamOrErrorMessageFromName(fileName, false),
+        (InputStream) getInputStreamOrErrorMessageFromName(fileName, false, false),
         addManifest);
   }
 
@@ -558,7 +582,7 @@ public class FileManager {
     }
     BufferedInputStream bis = null;
     try {
-      Object t = getInputStreamOrErrorMessageFromName(name, false);
+      Object t = getInputStreamOrErrorMessageFromName(name, false, false);
       if (t instanceof String) {
         fileData.put(name0, (String) t + "\n");
         return name0;
@@ -625,7 +649,7 @@ public class FileManager {
     String[] subFileList = null;
     if (name.indexOf("|") >= 0)
       name = (subFileList = TextFormat.split(name, "|"))[0];
-    Object t = getInputStreamOrErrorMessageFromName(name, false);
+    Object t = getInputStreamOrErrorMessageFromName(name, false, false);
     if (t instanceof String)
       return "Error:" + t;
     try {
@@ -1216,7 +1240,7 @@ public class FileManager {
           htParams.put("subFileList", subFileList);
         String[] zipDirectory = getZipDirectory(name, true);
         InputStream is = new BufferedInputStream(
-            (InputStream) getInputStreamOrErrorMessageFromName(name, false),
+            (InputStream) getInputStreamOrErrorMessageFromName(name, false, false),
             8192);
         t = viewer.getModelAdapter()
             .getAtomSetCollectionOrBufferedReaderFromZip(is, name,

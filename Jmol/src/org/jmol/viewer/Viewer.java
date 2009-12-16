@@ -2129,6 +2129,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return fileManager.getFileName();
   }
 
+  /**
+   * 
+   * @param filename
+   * @return String[2] where [0] is fullpathname and [1] is error message or null
+   */
+  public String[] getFullPathNameOrError(String filename) {
+    return fileManager.getFullPathNameOrError(filename);
+  }
+
   public String getFileAsString(String name) {
     return getFileAsString(name, Integer.MAX_VALUE, false);
   }

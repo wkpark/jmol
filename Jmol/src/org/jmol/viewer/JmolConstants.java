@@ -2781,21 +2781,22 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     public final static int SHAPE_LCAOCARTOON = 23;
     public final static int SHAPE_MO          = 24;  //but no ID for MO
     public final static int SHAPE_PMESH       = 25;
+    public final static int SHAPE_PLOT3D      = 26;
 
-  public final static int SHAPE_MAX_SURFACE         = 26; //////////
-  public final static int SHAPE_MAX_MESH_COLLECTION = 26; //////////
+  public final static int SHAPE_MAX_SURFACE         = 27; //////////
+  public final static int SHAPE_MAX_MESH_COLLECTION = 27; //////////
   
-    public final static int SHAPE_ECHO       = 26;
+    public final static int SHAPE_ECHO       = 27;
   
-  public final static int SHAPE_MAX_HAS_ID = 27;
+  public final static int SHAPE_MAX_HAS_ID = 28;
   
-  public final static int SHAPE_AXES       = 27;
-  public final static int SHAPE_BBCAGE     = 28;
-  public final static int SHAPE_UCCAGE     = 29;
-  public final static int SHAPE_HOVER      = 30;
+  public final static int SHAPE_AXES       = 28;
+  public final static int SHAPE_BBCAGE     = 29;
+  public final static int SHAPE_UCCAGE     = 30;
+  public final static int SHAPE_HOVER      = 31;
   
   // last should be frank:
-  public final static int SHAPE_FRANK      = 31;
+  public final static int SHAPE_FRANK      = 32;
   public final static int SHAPE_MAX        = SHAPE_FRANK + 1;
 
   public final static boolean isShapeSecondary(int i ) {
@@ -2810,7 +2811,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Labels", "Measures", "Dots", "Stars", "Halos",
     "Backbone", "Trace", "Cartoon", "Strands", "MeshRibbon", "Ribbons", "Rockets", 
     "Dipoles", "Vectors", "GeoSurface", "Ellipsoids", "Polyhedra", 
-    "Draw", "Isosurface", "LcaoCartoon", "MolecularOrbital", "Pmesh", 
+    "Draw", "Isosurface", "LcaoCartoon", "MolecularOrbital", "Pmesh", "Plot3D", 
     "Echo", "Axes", "Bbcage", "Uccage", "Hover", 
     "Frank"
      };
@@ -2881,6 +2882,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       return SHAPE_MO;
     case Token.pmesh:
       return SHAPE_PMESH;
+    case Token.plot3d:
+      return SHAPE_PLOT3D;
     case Token.echo:
       return SHAPE_ECHO;
     case Token.axes:

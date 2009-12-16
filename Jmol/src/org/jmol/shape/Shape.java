@@ -134,6 +134,14 @@ public abstract class Shape {
   }
 
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+    if (propertyName == "setProperties") {
+      Vector propertyList = (Vector) value;
+      while (propertyList.size() > 0) {
+        Object[] data = (Object[]) propertyList.remove(0);
+        setProperty(((String) data[0]).intern(), data[1], bsSelected);
+      }
+      return;
+    }
     if (propertyName == "translucentLevel") {
       translucentLevel = ((Float) value).floatValue();
       return;

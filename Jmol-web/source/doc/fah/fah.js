@@ -312,6 +312,8 @@ function showProjectInfo(value) {
     document.fahForm.infoCode.value = "Gromacs ST";
   } else if (code == "ND") {
     document.fahForm.infoCode.value = "NVIDIA-DEV";
+  } else if (code == "PM") {
+    document.fahForm.infoCode.value = "ProtoMol";
   } else if (code == "Q") {
     document.fahForm.infoCode.value = "QMD";
   } else if (code == "SP") {

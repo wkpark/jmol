@@ -94,7 +94,10 @@ public class CoreType {
       }
       if (code.equalsIgnoreCase(NVIDIA_DEV._code)) {
         return NVIDIA_DEV;
-       }
+      }
+      if (code.equalsIgnoreCase(PROTO_MOL._code)) {
+        return PROTO_MOL;
+      }
       if (code.equalsIgnoreCase(QMD._code)) {
         return QMD;
       }
@@ -173,6 +176,9 @@ public class CoreType {
       if (name.equalsIgnoreCase(NVIDIA_DEV._name)) {
         return NVIDIA_DEV;
       }
+      if (name.equalsIgnoreCase(PROTO_MOL._name)) {
+        return PROTO_MOL;
+      }
       if (name.equalsIgnoreCase(QMD._name)) {
         return QMD;
       }
@@ -228,6 +234,7 @@ public class CoreType {
   static public final CoreType GROMACS_SMP  = new CoreType("Gro-SMP", "GS", true);  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROMACS_ST   = new CoreType("GroST", "GT", true);  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType NVIDIA_DEV   = new CoreType("NVIDIA-DEV", "ND", false); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType PROTO_MOL    = new CoreType("ProtoMol", "PM", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType QMD          = new CoreType("QMD", "Q", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType SHARPEN      = new CoreType("Sharpen", "SP", true);   //$NON-NLS-1$//$NON-NLS-2$
   static public final CoreType TINKER       = new CoreType("Tinker", "T", true);   //$NON-NLS-1$//$NON-NLS-2$

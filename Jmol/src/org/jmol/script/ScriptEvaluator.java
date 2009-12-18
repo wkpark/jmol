@@ -10010,8 +10010,14 @@ public class ScriptEvaluator {
       if (isFloatParameter(iToken + 2)) {
         float f = floatParameter(iToken + 2);
         tickInfo.scale = new Point3f(f, f, f);
+      } else if (tokAt(iToken + 2) == Token.hkl) {
+        tickInfo.scale = new Point3f(
+            1/viewer.getUnitCellInfo(JmolConstants.INFO_A),
+            1/viewer.getUnitCellInfo(JmolConstants.INFO_B),
+            1/viewer.getUnitCellInfo(JmolConstants.INFO_C));
+        iToken += 2;
       } else {
-        tickInfo.scale = getPoint3f(iToken + 2, false);
+        tickInfo.scale = getPoint3f(iToken + 2, true);
       }
     }
     if (tokAt(iToken + 1) == Token.first)
@@ -10022,21 +10028,30 @@ public class ScriptEvaluator {
   }
 
   private void unitcell(int index) throws ScriptException {
-    if (statementLength == index + 1) {
-      if (getToken(index).tok == Token.integer && intParameter(index) >= 111) {
-        if (!isSyntaxCheck)
-          viewer.setCurrentUnitCellOffset(intParameter(index));
-      } else {
-        int mad = getSetAxesTypeMad(index);
-        if (!isSyntaxCheck)
-          viewer.setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitCell", mad);
-      }
-      return;
+    int icell = Integer.MAX_VALUE;
+    int mad = Integer.MAX_VALUE;
+    Point3f pt = null;
+    TickInfo tickInfo = checkTicks(index);
+    index = iToken;
+    if (statementLength == index + 2) {
+      if (getToken(index + 1).tok == Token.integer 
+          && intParameter(index + 1) >= 111)
+        icell = intParameter(++index);
+    } else if (statementLength > index + 1) {
+      pt = (Point3f) getPointOrPlane(++index, false, true, false, true, 3, 3);
+      index = iToken;
     }
-    // .xyz here?
-    Point3f pt = (Point3f) getPointOrPlane(2, false, true, false, true, 3, 3);
-    if (!isSyntaxCheck)
+    mad = getSetAxesTypeMad(++index);
+    checkLength(iToken + 1);
+    if (isSyntaxCheck)
+      return;
+    if (icell != Integer.MAX_VALUE)
+      viewer.setCurrentUnitCellOffset(icell);
+    viewer.setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitCell", mad);
+    if (pt != null)
       viewer.setCurrentUnitCellOffset(pt);
+    if (tickInfo != null)
+      setShapeProperty(JmolConstants.SHAPE_UCCAGE, "tickInfo", tickInfo);
   }
 
   private void frank(int index) throws ScriptException {

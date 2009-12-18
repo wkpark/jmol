@@ -2341,6 +2341,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getUnitCellInfoText();
   }
 
+  public float getUnitCellInfo(int infoType) {
+    SymmetryInterface symmetry = getCurrentUnitCell();
+    if (symmetry == null)
+      return Float.NaN;
+    return symmetry.getUnitCellInfo(infoType);
+  }
   public Hashtable getSpaceGroupInfo(String spaceGroup) {
     return modelSet.getSpaceGroupInfo(spaceGroup);
   }

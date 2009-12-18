@@ -52,6 +52,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
 
   protected void initRenderer() {
     endcap = Graphics3D.ENDCAPS_FLAT; 
+    draw000 = false;
   }
 
   protected void render() {
@@ -60,6 +61,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     if (mad == 0 || !g3d.checkTranslucent(false))
       return;
     int axesMode = viewer.getAxesMode();
+
     imageFontScaling = viewer.getImageFontScaling();
     if (viewer.areAxesTainted()) {
       Font3D f = axes.font3d;
@@ -68,6 +70,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
         axes.font3d = f;
     }
     font3d = g3d.getFont3DScaled(axes.font3d, imageFontScaling);
+
     SymmetryInterface[] cellInfos = modelSet.getCellInfos();
     boolean isXY = (axes.axisXY.z != 0);
     int modelIndex = viewer.getCurrentModelIndex();

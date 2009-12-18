@@ -59,6 +59,8 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
 
   protected TickInfo tickInfo;
 
+  protected boolean draw000 = true;
+
   protected byte endcap = Graphics3D.ENDCAPS_SPHERICAL;
 
   protected void clearBox() {
@@ -162,6 +164,7 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
     boolean centerX = horizontal;
     boolean centerY = !horizontal;
     boolean rightJustify = !centerX && (vectorT2.x < 0);
+    boolean drawLabel = (formats != null && formats.length > 0);
     int x, y;
     Object[] val = new Object[1];
     int i = 0;
@@ -172,7 +175,7 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
         drawLine((int) pointT2.x, (int) pointT2.y, (int) z,
             (x = (int) (pointT2.x + vectorT2.x)),
             (y = (int) (pointT2.y + vectorT2.y)), (int) z, width);
-        if (formats != null && formats.length > 0) {
+        if (drawLabel && (draw000 || p != 0)) {
           val[0] = new Float((p == 0 ? 0 : p * signFactor));
           String s = TextFormat.sprintf(formats[i % formats.length], val);
           drawString(x, y, (int) z, 4, rightJustify, centerX, centerY,

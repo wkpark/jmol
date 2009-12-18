@@ -40,10 +40,10 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   protected void render() {
     if (!g3d.checkTranslucent(false))
       return;
-    imageFontScaling = viewer.getImageFontScaling();
     Measures measures = (Measures) shape;
     doJustify = viewer.getJustifyMeasurements();
     mad = measures.mad;
+    imageFontScaling = viewer.getImageFontScaling();
     font3d = g3d.getFont3DScaled(measures.font3d, imageFontScaling);
     renderPendingMeasurement(measures.measurementPending);
     if (!viewer.getShowMeasurements())

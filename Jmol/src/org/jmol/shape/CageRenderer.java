@@ -51,7 +51,9 @@ abstract class CageRenderer extends FontLineShapeRenderer {
     clearBox();
     g3d.setColix(colix);
     FontLineShape fls = (FontLineShape) shape;
-    font3d = fls.font3d;
+    imageFontScaling = viewer.getImageFontScaling();
+    font3d = g3d.getFont3DScaled(fls.font3d, imageFontScaling);
+
     float zSum = 0;
     for (int i = 8; --i >= 0;) {
       viewer.transformPointNoClip(vertices[i], screens[i]);
@@ -67,7 +69,7 @@ abstract class CageRenderer extends FontLineShapeRenderer {
       int edge1 = BoxInfo.edges[i + 1];
       if (axisPoints != null && edge0 == 0)
         viewer.transformPointNoClip(axisPoints[axisPt--], screens[0]);
-      boolean drawTicks = (fls.tickInfos != null && (edge = tickEdges[i>>1]) != 0);
+      boolean drawTicks = (fls.tickInfos != null && (edge = tickEdges[i >> 1]) != 0);
       if (drawTicks) {
         if (atomA == null) {
           atomA = new Point3fi();
@@ -76,17 +78,18 @@ abstract class CageRenderer extends FontLineShapeRenderer {
         atomA.set(vertices[edge0]);
         atomB.set(vertices[edge1]);
         float start = 0;
-        switch (edge) {
-        case 'x':
-          start = atomA.x;
-          break;
-        case 'y':
-          start = atomA.y;
-          break;
-        case 'z':
-          start = atomA.z;
-          break;
-        }
+        if (shape instanceof Bbcage)
+          switch (edge) {
+          case 'x':
+            start = atomA.x;
+            break;
+          case 'y':
+            start = atomA.y;
+            break;
+          case 'z':
+            start = atomA.z;
+            break;
+          }
         tickInfo = fls.tickInfos["xyz".indexOf(edge) + 1];
         if (tickInfo == null)
           tickInfo = fls.tickInfos[0];

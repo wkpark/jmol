@@ -36,6 +36,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.modelset.BoxInfo;
 import org.jmol.util.Quadric;
 import org.jmol.viewer.JmolConstants;
 
@@ -45,11 +46,6 @@ import org.jmol.viewer.JmolConstants;
 class UnitCell {
   
   final static float toRadians = (float) Math.PI * 2 / 360;
-  final static Point3f[] unitCubePoints = { new Point3f(0, 0, 0),
-      new Point3f(0, 0, 1), new Point3f(0, 1, 0), new Point3f(0, 1, 1),
-      new Point3f(1, 0, 0), new Point3f(1, 0, 1), new Point3f(1, 1, 0),
-      new Point3f(1, 1, 1), };
-
   float a, b, c, alpha, beta, gamma;
   boolean isPrimitive;
   float[] notionalUnitcell; //6 parameters + 16 matrix items
@@ -401,7 +397,7 @@ and the betaij should be entered as Type 0.
     vertices = new Point3f[8];
     for (int i = 8; --i >= 0;) {
       vertices[i] = new Point3f();
-      matrixFractionalToCartesian.transform(unitCubePoints[i], vertices[i]);
+      matrixFractionalToCartesian.transform(BoxInfo.unitCubePoints[i], vertices[i]);
     }
   }  
 }

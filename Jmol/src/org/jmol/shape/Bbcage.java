@@ -25,22 +25,17 @@ package org.jmol.shape;
 
 import java.util.BitSet;
 
+import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 
 public class Bbcage extends FontLineShape {
 
-  // by XORing each of the three bits of my index
-  final static byte edges[] = {
-      0,1, 0,2, 0,4, 1,3, 
-      1,5, 2,3, 2,6, 3,7, 
-      4,5, 4,6, 5,7, 6,7
-      };
-
   public void initShape() {
     super.initShape();
+    font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
     myType = "boundBox";
   }
-  
+
   boolean isVisible;
   int mad;
   

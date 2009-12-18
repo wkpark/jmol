@@ -48,6 +48,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
@@ -269,7 +270,7 @@ abstract public class ModelCollection extends BondCollection {
     return boxInfo.getBoundBoxCornerVector();
   }
 
-  public Point3f[] getBboxVertices() {
+  public Point3fi[] getBboxVertices() {
     return boxInfo.getBboxVertices();
   }
 

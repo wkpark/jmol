@@ -3071,20 +3071,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormats", strFormat);
   }
 
-  public void defineMeasurement(Vector monitorExpressions, float[] rangeMinMax,
-                         boolean isDelete, boolean isAll,
-                         boolean isAllConnected, boolean isOn, boolean isOff,
-                         String strFormat) {
-    // Eval.monitor()
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "setConnected",
-        isAllConnected ? Boolean.TRUE : Boolean.FALSE);
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "setRange", rangeMinMax);
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormat", strFormat);
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, (isDelete ? "deleteVector"
-        : isOn ? "showVector" : isOff ? "hideVector" : "defineVector")
-        + (isAll ? "_All" : ""), monitorExpressions);
-  }
-
   public void deleteMeasurement(int i) {
     // Eval
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete", new Integer(i));
@@ -3140,6 +3126,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.prev:
       animationManager.setAnimationPrevious();
       return;
+    case Token.first:
     case Token.rewind:
       animationManager.rewindAnimation();
       return;

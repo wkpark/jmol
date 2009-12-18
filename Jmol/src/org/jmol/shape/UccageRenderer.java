@@ -27,21 +27,24 @@ import javax.vecmath.Point3f;
 import java.text.NumberFormat;
 
 import org.jmol.api.SymmetryInterface;
+import org.jmol.modelset.BoxInfo;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 
-public class UccageRenderer extends FontLineShapeRenderer {
+public class UccageRenderer extends CageRenderer {
 
   NumberFormat nf;
   byte fid;
   boolean doLocalize;
   
-  final Point3f[] screens = new Point3f[8];
+  protected void setEdges() {
+    tickEdges = BoxInfo.uccageTickEdges;    
+  }
+
   final Point3f[] verticesT = new Point3f[8];  
   {
     for (int i = 8; --i >= 0; ) {
-      screens[i] = new Point3f();
       verticesT[i] = new Point3f();
     }
   }
@@ -70,7 +73,8 @@ public class UccageRenderer extends FontLineShapeRenderer {
     Point3f[] axisPoints = viewer.getAxisPoints();
     boolean drawAllLines = (viewer.getObjectMad(StateManager.OBJ_AXIS1) == 0 
         || viewer.getAxesScale() < 2 || axisPoints == null);
-    render(mad, verticesT, screens, axisPoints, drawAllLines ? 0 : 3);
+    
+    render(mad, verticesT, axisPoints, drawAllLines ? 0 : 3);
     if (viewer.getDisplayCellParameters() && !viewer.isPreviewOnly() && !symmetry.isPeriodic())
       renderInfo(symmetry);
   }
@@ -127,5 +131,6 @@ public class UccageRenderer extends FontLineShapeRenderer {
         + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_GAMMA)) + "\u00B0", null,
         x, y, 0);
   }
+
 }
 

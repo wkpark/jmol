@@ -24,34 +24,35 @@
 
 package org.jmol.shape;
 
-import org.jmol.g3d.Font3D;
-
 import java.util.BitSet;
 
-public abstract class FontLineShape extends Shape {
+import org.jmol.modelset.TickInfo;
 
-  // Axes, Bbcage, Frank, Uccage
+public abstract class FontLineShape extends FontShape {
 
-  Font3D font3d;
-  String myType;
-
-  public void initShape() {
-    super.initShape();
-    translucentAllowed = false;
-  }
+  // Axes, Bbcage, Uccage
+  
+  TickInfo[] tickInfos = new TickInfo[4];
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
-    if ("font" == propertyName) {
-      font3d = (Font3D) value;
+
+    if ("ticksDelete" == propertyName) {
+      String s = (String)value;
+      if (s.equals(" "))
+        tickInfos[0] = tickInfos[1] = tickInfos[2] = tickInfos[3] = null;
+      else
+        tickInfos["xyz".indexOf(s) + 1] = null;
       return;
     }
+    if ("tickInfo" == propertyName) {
+      TickInfo t = (TickInfo) value;
+      tickInfos["xyz".indexOf(t.type) + 1] = t;
+      return;
+    }
+
+    super.setProperty(propertyName, value, bs);
   }
 
-  public String getShapeState() {
-    String s = viewer.getObjectState(myType);
-    String fcmd = Shape.getFontCommand(myType, font3d);
-      if (fcmd.length() > 0)
-        fcmd = "  " + fcmd + ";\n"; 
-    return (s.length() < 3 ? "" : s + fcmd);
-  }
+
+
 }

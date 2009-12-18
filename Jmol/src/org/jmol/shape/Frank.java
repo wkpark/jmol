@@ -30,7 +30,7 @@ import org.jmol.i18n.GT;
 import java.awt.FontMetrics;
 import java.util.BitSet;
 
-public class Frank extends FontLineShape {
+public class Frank extends FontShape {
 
   // Axes, Bbcage, Frank, Uccage
 

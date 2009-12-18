@@ -227,7 +227,7 @@ public class Token {
   final static int comparator           = mathop | (1 << 8);
   
   public final static int center       = 1 | atomExpressionCommand;
-  final static int define       = 2 | atomExpressionCommand | expression | setparam;
+  public final static int define       = 2 | atomExpressionCommand | expression | setparam;
   public final static int delete       = 3 | atomExpressionCommand;
   final static int display      = 4 | atomExpressionCommand | setparam;
   final static int hide         = 5 | atomExpressionCommand;
@@ -415,7 +415,7 @@ public class Token {
 
   final static int opOr         = 0 | mathop | 5 << 4;
   final static int opXor        = 1 | mathop | 5 << 4;
-  final static int opToggle     = 2 | mathop | 5 << 4;
+  public final static int opToggle = 2 | mathop | 5 << 4;
 
   final static int opAnd        = 0 | mathop | 6 << 4;
  
@@ -741,8 +741,9 @@ public class Token {
   final static int ed             = misc | 59 | expression;// new
   final static int edges          = misc | 60;// new
   final static int facecenteroffset = misc | 62;// new
-  public final static int fill    = misc | 64;
-  final static int filter         = misc | 65;// new
+  public final static int fill    = misc | 63;
+  final static int filter         = misc | 64;// new
+  public final static int first   = misc | 65;// new
   final static int fixed          = misc | 66;// new
   final static int fixedtemp      = misc | 67;
   final static int flat           = misc | 68;// new
@@ -855,9 +856,10 @@ public class Token {
   final static int state          = misc | 182;
   final static int steps          = misc | 183;// new
   final static int stop           = misc | 184;// new
-  final static int title          = misc | 185;// new
-  final static int titleformat    = misc | 186;// new
-  final static int to             = misc | 187 | expression;// new
+  final static int ticks          = misc | 185; // new
+  final static int title          = misc | 186;// new
+  final static int titleformat    = misc | 187;// new
+  final static int to             = misc | 188 | expression;// new
   final static int top            = misc | 189 | expression;
   final static int torsion        = misc | 190;
   final static int transform      = misc | 193;
@@ -1356,6 +1358,7 @@ public class Token {
     "temperature",      new Token(temperature),
     "relativetemperature", null,
     "thisModel",        new Token(thismodel),
+    "ticks",            new Token(ticks),
     "top",              new Token(top),    
     "torsion",          new Token(torsion),
     "translucent",      new Token(translucent),
@@ -1422,6 +1425,7 @@ public class Token {
     "exitjmol", new Token(exitjmol),
     "facecenteroffset", new Token(facecenteroffset),
     "filter", new Token(filter),
+    "first", new Token(first),
     "fix", new Token(fix),
     "fixed", new Token(fixed),
     "flat", new Token(flat),

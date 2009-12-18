@@ -30,21 +30,49 @@ import java.util.Hashtable;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.util.Point3fi;
+
 public class BoxInfo {
 
+ 
   private final Point3f bbCorner0 = new Point3f(-10, -10, -10);
   private final Point3f bbCorner1 = new Point3f(10, 10, 10);
   private final Point3f bbCenter = new Point3f();
-  private final Vector3f bbVector = new Vector3f();
-  private final Point3f[] bbVertices = new Point3f[8];
+  private final Vector3f bbVector = new Vector3f(-1, -1, -1);
+  private final Point3fi[] bbVertices = new Point3fi[8];
   {
     for (int i = 8; --i >= 0;)
-      bbVertices[i] = new Point3f();
+      bbVertices[i] = new Point3fi();
   }
-  private final static Point3f[] unitBboxPoints = { new Point3f(1, 1, 1),
-      new Point3f(1, 1, -1), new Point3f(1, -1, 1), new Point3f(1, -1, -1),
-      new Point3f(-1, 1, 1), new Point3f(-1, 1, -1), new Point3f(-1, -1, 1),
-      new Point3f(-1, -1, -1), };
+
+  public static char[] bbcageTickEdges = {
+    'z', 0, 0, 'y', 
+    'x', 0, 0, 0, 
+      0, 0, 0, 0};
+  
+  public static char[] uccageTickEdges = {
+    'z', 'y', 'x', 0, 
+     0, 0, 0, 0, 
+     0, 0, 0, 0};
+  
+  public final static byte edges[] = {
+      0,1, 0,2, 0,4, 1,3, 
+      1,5, 2,3, 2,6, 3,7, 
+      4,5, 4,6, 5,7, 6,7
+      };
+
+  public final static Point3f[] unitCubePoints = { new Point3f(0, 0, 0),
+    new Point3f(0, 0, 1), new Point3f(0, 1, 0), new Point3f(0, 1, 1),
+    new Point3f(1, 0, 0), new Point3f(1, 0, 1), new Point3f(1, 1, 0),
+    new Point3f(1, 1, 1), };
+
+  private final static Point3f[] unitBboxPoints = new Point3f[8];
+  { 
+    for (int i = 0; i < 8; i++) {
+      unitBboxPoints[i] = new Point3f(-1, -1, -1);
+      unitBboxPoints[i].scaleAdd(2, unitCubePoints[i], unitBboxPoints[i]); 
+    }
+  }
 
   public Point3f getBoundBoxCenter() {
     return bbCenter;
@@ -58,7 +86,7 @@ public class BoxInfo {
     return new Point3f[] {bbCenter, new Point3f(bbVector), bbCorner0, bbCorner1};
   }
 
-  Point3f[] getBboxVertices() {
+  Point3fi[] getBboxVertices() {
     return bbVertices;
   }
 

@@ -26,6 +26,7 @@ package org.jmol.modelset;
 import org.jmol.util.Escape;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Measure;
+import org.jmol.modelset.TickInfo;
 
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
@@ -154,35 +155,49 @@ public class Measurement {
   }
   
   private Point3f pointArc;
-  
+
   public Point3f getPointArc() {
     return pointArc;
   }
   
-  public Measurement(ModelSet modelSet, int[] indices,
-      Point3fi[] points, float value, short colix, String strFormat, int index) {
+  private TickInfo tickInfo;
+
+  public TickInfo getTickInfo() {
+    return tickInfo;
+  }
+  
+  public Measurement(ModelSet modelSet, Measurement m,
+                     float value, short colix, 
+                     String strFormat, int index) {
     //value Float.isNaN ==> pending
     this.index = index;
     this.modelSet = modelSet;
     this.viewer = modelSet.viewer;
     this.colix = colix;
     this.strFormat = strFormat;
+    if (m != null) {
+      this.tickInfo = m.tickInfo;
+    }
+    if (points == null)
+      points = new Point3fi[4];
+    int[] indices = (m == null ? null : m.countPlusIndices);
     count = (indices == null ? 0 : indices[0]);
     if (count > 0) {
       System.arraycopy(indices, 0, countPlusIndices, 0, count + 1);
       isTrajectory = modelSet.isTrajectory(countPlusIndices);
     }
     this.value = (Float.isNaN(value) || isTrajectory ? getMeasurement() : value);
-    this.points = (points == null ? new Point3fi[4] : points);
     formatMeasurement();
   }   
 
-  public Measurement(ModelSet modelSet, int[] indices, Point3fi[] points) {
+  public Measurement(ModelSet modelSet, int[] indices, Point3fi[] points,
+      TickInfo tickInfo) {
     // temporary holding structure only; -- no viewer
     countPlusIndices = indices;
     count = indices[0];
     this.points = (points == null ? new Point3fi[4] : points);
     this.modelSet = modelSet;
+    this.tickInfo = tickInfo;
   }
 
   public void refresh() {

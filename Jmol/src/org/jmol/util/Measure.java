@@ -23,16 +23,46 @@
  */
 package org.jmol.util;
 
+import java.util.Vector;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.viewer.JmolConstants;
+import org.jmol.modelset.TickInfo;
 import org.jmol.script.Token;
 
 final public class Measure {
 
+  public TickInfo tickInfo;
+  public int tokAction;
+  public Vector points;
+  public float[] rangeMinMax;
+  public String strFormat;
+  public boolean isAllConnected;
+  public boolean isAll;
+
+  public Measure(int tokAction, Vector points,
+                 float[] rangeMinMax, String strFormat,
+                 Point3f scale, Point3f ticks, float start,
+                 String[] tickLabelFormats, boolean isAllConnected,
+                 boolean isAll) {
+    this.tokAction = tokAction;
+    this.points = points;
+    this.rangeMinMax = rangeMinMax;
+    this.strFormat = strFormat;
+    if (ticks != null) {
+      tickInfo = new TickInfo(ticks);
+      tickInfo.scale = scale;
+      tickInfo.first = start;
+      tickInfo.tickLabelFormats = tickLabelFormats;
+    }
+    this.isAllConnected = isAllConnected;
+    this.isAll = isAll;
+  }
+  
   public final static float radiansPerDegree = (float) (2 * Math.PI / 360);
 
   

@@ -24,13 +24,13 @@
 package org.jmol.shape;
 import org.jmol.g3d.Graphics3D;
 
-public class FrankRenderer extends FontLineShapeRenderer {
+public class FrankRenderer extends ShapeRenderer {
 
   //we render Frank last just for the touch that if there are translucent
   //objects, then it becomes translucent. Just for fun.
   
   // no FrankGenerator
-  
+    
   protected void render() {
     Frank frank = (Frank) shape;
     boolean allowKeys = viewer.getBooleanProperty("allowKeyStrokes");
@@ -39,7 +39,7 @@ public class FrankRenderer extends FontLineShapeRenderer {
         || !g3d.setColix(Graphics3D.getColixTranslucent(colix,
             g3d.haveTranslucentObjects(), 0.5f)))
       return;
-    imageFontScaling = viewer.getImageFontScaling();
+    float imageFontScaling = viewer.getImageFontScaling();
     frank.getFont(imageFontScaling);
     int dx = (int) (frank.frankWidth + Frank.frankMargin * imageFontScaling);
     int dy = frank.frankDescent;

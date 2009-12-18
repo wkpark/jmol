@@ -61,6 +61,7 @@ import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
+import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JmolConstants;
@@ -3696,6 +3697,40 @@ public class ScriptEvaluator {
     return (String) theToken.value;
   }
 
+  private String[] stringParameterSet(int i)
+      throws ScriptException {
+    switch (tokAt(i)) {
+    case Token.string:
+      return  new String[] {stringParameter(i)};
+    case Token.leftsquare:
+      ++i;
+      break;
+    default:
+      error(ERROR_invalidArgument);
+    }
+    int tok;
+    Vector v = new Vector();
+    while ((tok = tokAt(i)) != Token.rightsquare) {
+        switch (tok) {
+        case Token.comma:
+          break;
+        case Token.string:
+          v.add(stringParameter(i));
+          break;
+        default:
+        case Token.nada:
+          error(ERROR_invalidArgument);
+        }
+        i++;
+      }
+    iToken = i;
+    int n = v.size();    
+    String[] sParams = new String[n];
+      for (int j = 0; j < n; j++)
+        sParams[j] = (String) v.get(j);
+    return sParams;
+  }
+  
   private String objectNameParameter(int index) throws ScriptException {
     if (!checkToken(index))
       error(ERROR_objectNameExpected);
@@ -7035,57 +7070,39 @@ public class ScriptEvaluator {
     float[] rangeMinMax = new float[] { Float.MAX_VALUE, Float.MAX_VALUE };
     boolean isAll = false;
     boolean isAllConnected = false;
-    boolean isDelete = false;
     boolean isRange = true;
-    boolean isON = false;
-    boolean isOFF = false;
+    int tokAction = Token.opToggle;
+    Point3f ticks = null;
+    Point3f scale = null;
+    String[] tickLabelFormats = null;
+    float start = Float.NaN;
     String strFormat = null;
     Vector monitorExpressions = new Vector();
     BitSet bs = new BitSet();
     Object value = null;
     for (int i = 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
+      case Token.identifier:
+        error(ERROR_keywordExpected, "ALL, ALLCONNECTED, DELETE"); 
       default:
         error(ERROR_expressionOrIntegerExpected);
-      case Token.on:
-        if (isON || isOFF || isDelete)
-          error(ERROR_invalidArgument);
-        isON = true;
-        continue;
-      case Token.off:
-        if (isON || isOFF || isDelete)
-          error(ERROR_invalidArgument);
-        isOFF = true;
-        continue;
-      case Token.delete:
-        if (isON || isOFF || isDelete)
-          error(ERROR_invalidArgument);
-        isDelete = true;
-        continue;
-      case Token.range:
-        isAll = true;
-        isRange = true; // unnecessary
-        atomIndex = -1;
-        continue;
-      case Token.modelindex:
-        modelIndex = intParameter(++i);
-        continue;
       case Token.allconnected:
       case Token.all:
         isAllConnected = (theTok == Token.allconnected);
         atomIndex = -1;
         isAll = true;
-        continue;
-      case Token.string:
-        // measures "%a1 %a2 %v %u"
-        strFormat = stringParameter(i);
-        continue;
+        break;
       case Token.decimal:
         isAll = true;
         isRange = true;
         ptFloat = (ptFloat + 1) % 2;
         rangeMinMax[ptFloat] = floatParameter(i);
-        continue;
+        break;
+      case Token.delete:
+        if (tokAction != Token.opToggle)
+          error(ERROR_invalidArgument);
+        tokAction = Token.delete;
+        break;
       case Token.integer:
         int iParam = intParameter(i);
         if (isAll) {
@@ -7102,7 +7119,40 @@ public class ScriptEvaluator {
             error(ERROR_badArgumentCount);
           countPlusIndexes[nAtoms] = atomIndex;
         }
-        continue;
+        break;
+      case Token.modelindex:
+        modelIndex = intParameter(++i);
+        break;
+      case Token.off:
+        if (tokAction != Token.opToggle)
+          error(ERROR_invalidArgument);
+        tokAction = Token.off;
+        break;
+      case Token.on:
+        if (tokAction != Token.opToggle)
+          error(ERROR_invalidArgument);
+        tokAction = Token.on;
+        break;
+      case Token.range:
+        isAll = true;
+        isRange = true; // unnecessary
+        atomIndex = -1;
+        break;
+      case Token.string:
+        // measures "%a1 %a2 %v %u"
+        strFormat = stringParameter(i);
+        break;
+      case Token.ticks:
+        tokAction = Token.define;
+        ticks = getPoint3f(++i, false);
+        if (tokAt(iToken + 1) == Token.format)
+          tickLabelFormats = stringParameterSet(iToken + 2);
+        if (tokAt(iToken + 1) == Token.scale)
+          scale = getPoint3f(iToken + 2, false);
+        if (tokAt(iToken + 1) == Token.first)
+          start = floatParameter(iToken + 2);
+        i = iToken;
+        break;
       case Token.bitset:
       case Token.expressionBegin:
       case Token.leftbrace:
@@ -7127,9 +7177,7 @@ public class ScriptEvaluator {
           error(ERROR_badArgumentCount);
         monitorExpressions.addElement(value);
         i = iToken;
-        continue;
-      case Token.identifier:
-        error(ERROR_keywordExpected, "ALL, ALLCONNECTED, DELETE"); 
+        break;
       }
     }
     if (nAtoms < 2)
@@ -7144,18 +7192,32 @@ public class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
     if (value != null) {
-      viewer.defineMeasurement(monitorExpressions, rangeMinMax, isDelete,
-          isAll, isAllConnected, isON, isOFF, strFormat);
-      return;
+      setShapeProperty(JmolConstants.SHAPE_MEASURES, "measure", new Measure(
+                   tokAction, 
+                   monitorExpressions,
+                   rangeMinMax, 
+                   strFormat, 
+                   scale,
+                   ticks,
+                   start,
+                   tickLabelFormats,
+                   isAllConnected,
+                   isAll)); 
+       return;
     }
-    if (isDelete)
+    switch (tokAction) {
+    case Token.delete:
       viewer.deleteMeasurement(countPlusIndexes);
-    else if (isON)
+      break;
+    case Token.on:
       viewer.showMeasurement(countPlusIndexes, true);
-    else if (isOFF)
+      break;
+    case Token.off:
       viewer.showMeasurement(countPlusIndexes, false);
-    else
+      break;
+    default:
       viewer.toggleMeasurement(countPlusIndexes, strFormat);
+    }
   }
 
   private void refresh() {
@@ -9190,6 +9252,7 @@ public class ScriptEvaluator {
     case Token.next:
     case Token.prev:
     case Token.rewind:
+    case Token.first:
     case Token.last:
       if (!isSyntaxCheck)
         viewer.setAnimation(theTok);
@@ -9842,7 +9905,11 @@ public class ScriptEvaluator {
   }
 
   private void axes(int index) throws ScriptException {
-    // axes or set axes
+    // axes (index==1) or set axes (index==2)
+    index = checkTicks(index, JmolConstants.SHAPE_AXES);
+    if (index == statementLength)
+      return;
+    int tok = tokAt(index);
     String type = optParameterAsString(index).toLowerCase();
     if (statementLength == index + 1
         && Parser.isOneOf(type, "window;unitcell;molecular")) {
@@ -9850,8 +9917,25 @@ public class ScriptEvaluator {
       return;
     }
     // axes scale x.xxx
-    if (statementLength == index + 2 && type.equals("scale")) {
+    switch (tok) {
+    case Token.scale:
+      checkLength(index + 2);
       setFloatProperty("axesScale", floatParameter(++index));
+      return;
+    case Token.label:
+      switch (tok = tokAt(index + 1)) {
+      case Token.off:
+      case Token.on:
+        checkLength(index + 2);
+        setShapeProperty(JmolConstants.SHAPE_AXES, "labels"
+            + (tok == Token.on ? "On" : "Off"), null);
+        return;
+      }
+      checkLength(index + 4);
+      // axes labels "X" "Y" "Z"
+      setShapeProperty(JmolConstants.SHAPE_AXES, "labels", new String[] {
+          parameterAsString(++index), parameterAsString(++index),
+          parameterAsString(++index) });
       return;
     }
     // axes position [x y %]
@@ -9874,6 +9958,9 @@ public class ScriptEvaluator {
   }
 
   private void boundbox(int index) throws ScriptException {
+    index = checkTicks(index, JmolConstants.SHAPE_BBCAGE);
+    if (index == statementLength)
+      return;
     boolean byCorner = (tokAt(index) == Token.corners);
     if (byCorner)
       index++;
@@ -9902,6 +9989,32 @@ public class ScriptEvaluator {
     int mad = getSetAxesTypeMad(index);
     if (!isSyntaxCheck)
       viewer.setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", mad);
+  }
+
+  private int checkTicks(int index, int iShape) throws ScriptException {
+    if (getToken(index).tok == Token.ticks) {
+      String str = " ";
+      if (tokAt(index + 1) == Token.identifier) {
+        str = parameterAsString(++index).toLowerCase();
+        if (!str.equals("x") && !str.equals("y") && !str.equals("z"))
+          error(ERROR_invalidArgument);
+      }
+      if (tokAt(iToken = ++index) == Token.none) {
+        setShapeProperty(iShape, "ticksDelete", str);
+        return index + 1;
+      }
+      TickInfo tickInfo = new TickInfo(getPoint3f(index, false));
+      tickInfo.type = str;
+      if (tokAt(iToken + 1) == Token.format)
+        tickInfo.tickLabelFormats = stringParameterSet(iToken + 2);
+      if (tokAt(iToken + 1) == Token.scale)
+        tickInfo.scale = getPoint3f(iToken + 2, false);
+      if (tokAt(iToken + 1) == Token.first)
+        tickInfo.first = floatParameter(iToken + 2);
+      index = iToken + 1;
+      setShapeProperty(iShape, "tickInfo", tickInfo);
+    }
+    return index;
   }
 
   private void unitcell(int index) throws ScriptException {

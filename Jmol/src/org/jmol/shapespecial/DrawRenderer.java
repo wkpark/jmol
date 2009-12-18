@@ -249,7 +249,12 @@ public class DrawRenderer extends MeshRenderer {
     vpt1.scaleAdd(dmesh.scale * scaleFactor, vpt1, vpt0);
     if (diameter == 0)
       diameter = 1;
-    renderLine(vpt0, vpt1, diameter, Graphics3D.ENDCAPS_FLAT, pt1i, pt2i);
+    pt1i.set((int) vpt0.x, (int) vpt0.y, (int) vpt0.z );
+    pt2i.set((int) vpt1.x, (int) vpt1.y, (int) vpt1.z );
+    if (diameter < 0)
+      g3d.drawDottedLine(pt1i, pt2i);
+    else
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, pt1i, pt2i);
     renderArrowHead(vpt0, vpt1, 0, true, false);
   }
 

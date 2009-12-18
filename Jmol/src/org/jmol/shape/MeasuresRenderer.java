@@ -24,7 +24,6 @@
 
 package org.jmol.shape;
 
-import org.jmol.g3d.*;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.util.Point3fi;
@@ -36,8 +35,6 @@ import javax.vecmath.AxisAngle4f;
 
 public class MeasuresRenderer extends FontLineShapeRenderer {
 
-  private short measurementMad;
-  private Font3D font3d;
   private Measurement measurement;
   private boolean doJustify;
   protected void render() {
@@ -46,11 +43,12 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     imageFontScaling = viewer.getImageFontScaling();
     Measures measures = (Measures) shape;
     doJustify = viewer.getJustifyMeasurements();
-    measurementMad = measures.mad;
+    mad = measures.mad;
     font3d = g3d.getFont3DScaled(measures.font3d, imageFontScaling);
     renderPendingMeasurement(measures.measurementPending);
     if (!viewer.getShowMeasurements())
       return;
+    clearBox();
     boolean showMeasurementLabels = viewer.getShowMeasurementLabels();
     boolean dynamicMeasurements = viewer.getDynamicMeasurements();
     measures.setVisibilityInfo();
@@ -70,15 +68,13 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     }
   }
 
-  Point3fi atomA, atomB, atomC, atomD;
-  
   private Point3fi getAtom(int i) {
     Point3fi a = measurement.getAtom(i);
     if (a.screenDiameter < 0) {
-      viewer.transformPoint(a, ptA);
-      a.screenX = ptA.x;
-      a.screenY = ptA.y;
-      a.screenZ = ptA.z;
+      viewer.transformPoint(a, pt0);
+      a.screenX = pt0.x;
+      a.screenY = pt0.y;
+      a.screenZ = pt0.z;
     }
     return a;
   }
@@ -108,29 +104,19 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     atomA = atomB = atomC = atomD = null;
   }
 
-  private Point3i ptA = new Point3i();
-  private Point3i ptB = new Point3i();
-
-  private int drawSegment(int x1, int y1, int z1, int x2, int y2, int z2) {
-    ptA.set(x1, y1, z1);
-    ptB.set(x2, y2, z2);
-    if (measurementMad < 0) {
-      g3d.drawDashedLine(4, 2, ptA, ptB);
-      return 1;
-    }
-    int widthPixels = measurementMad;
-    if (measurementMad >= 20)
-      widthPixels = viewer.scaleToScreen((z1 + z2) / 2, measurementMad);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, widthPixels, ptA, ptB);
-
-    return (widthPixels + 1) / 2;
-  }
-
   void renderDistance(boolean renderLabel) {
+    tickInfo = measurement.getTickInfo();
+    if (tickInfo != null) {
+      drawLine(atomA.screenX, atomA.screenY, atomA.screenZ, 
+          atomB.screenX, atomB.screenY, atomB.screenZ, mad);
+      if (tickInfo != null)
+        drawTicks(atomA, atomB, mad);
+      return;
+    }
     int zA = atomA.screenZ - atomA.screenDiameter - 10;
     int zB = atomB.screenZ - atomB.screenDiameter - 10;
-    int radius = drawSegment(atomA.screenX, atomA.screenY, zA, atomB
-        .screenX, atomB.screenY, zB);
+    int radius = drawLine(atomA.screenX, atomA.screenY, zA, atomB.screenX,
+        atomB.screenY, zB, mad);
     if (!renderLabel)
       return;
     int z = (zA + zB) / 2;
@@ -138,23 +124,24 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       z = 1;
     int x = (atomA.screenX + atomB.screenX) / 2;
     int y = (atomA.screenY + atomB.screenY) / 2;
-    paintMeasurementString(x, y, z, radius, (x - atomA.screenX)*(y-atomA.screenY) > 0, 0);
+    drawString(x, y, z, radius, doJustify
+        && (x - atomA.screenX) * (y - atomA.screenY) > 0, false, false,
+        (doJustify ? 0 : Integer.MAX_VALUE), measurement.getString());
   }
                            
 
   private AxisAngle4f aaT = new AxisAngle4f();
   private Matrix3f matrixT = new Matrix3f();
-  private Point3f pointT = new Point3f();
 
   private void renderAngle(boolean renderLabel) {
     int zOffset = atomB.screenDiameter + 10;
     int zA = atomA.screenZ - atomA.screenDiameter - 10;
     int zB = atomB.screenZ - zOffset;
     int zC = atomC.screenZ - atomC.screenDiameter - 10;
-    int radius = drawSegment(atomA.screenX, atomA.screenY, zA,
-                             atomB.screenX, atomB.screenY, zB);
-    radius += drawSegment(atomB.screenX, atomB.screenY, zB,
-                          atomC.screenX, atomC.screenY, zC);    
+    int radius = drawLine(atomA.screenX, atomA.screenY, zA,
+                             atomB.screenX, atomB.screenY, zB, mad);
+    radius += drawLine(atomB.screenX, atomB.screenY, zB,
+                          atomC.screenX, atomC.screenY, zC, mad);    
     if (!renderLabel)
       return;
     radius = (radius + 1) / 2;
@@ -162,8 +149,10 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     AxisAngle4f aa = measurement.getAxisAngle();
     if (aa == null) { // 180 degrees
       int offset = (int) (5 * imageFontScaling);
-      paintMeasurementString(atomB.screenX + offset, atomB.screenY - offset,
-                             zB, radius, false, 0);
+      drawString(atomB.screenX + offset, atomB.screenY - offset,
+                             zB, radius, false, false, false, 
+                             (doJustify ? 0 : Integer.MAX_VALUE), 
+                             measurement.getString());
       return;
     }
     int dotCount = (int)((aa.angle / (2 * Math.PI)) * 64);
@@ -191,9 +180,11 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
         pointT.add(atomB);
         viewer.transformPoint(pointT);
         int zLabel = point3iScreenTemp.z - zOffset;
-        paintMeasurementString(point3iScreenTemp.x, 
+        drawString(point3iScreenTemp.x, 
             point3iScreenTemp.y, zLabel, radius, 
-            point3iScreenTemp.x < atomB.screenX, atomB.screenY);
+            point3iScreenTemp.x < atomB.screenX, false,
+            false, 
+            (doJustify ? atomB.screenY : Integer.MAX_VALUE), measurement.getString());
       }
     }
   }
@@ -203,38 +194,18 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     int zB = atomB.screenZ - atomB.screenDiameter - 10;
     int zC = atomC.screenZ - atomC.screenDiameter - 10;
     int zD = atomD.screenZ - atomD.screenDiameter - 10;
-    int radius = drawSegment(atomA.screenX, atomA.screenY, zA, atomB.screenX, atomB.screenY, zB);
-    radius += drawSegment(atomB.screenX, atomB.screenY, zB, atomC.screenX, atomC.screenY, zC);
-    radius += drawSegment(atomC.screenX, atomC.screenY, zC, atomD.screenX, atomD.screenY, zD);
+    int radius = drawLine(atomA.screenX, atomA.screenY, zA, atomB.screenX, atomB.screenY, zB, mad);
+    radius += drawLine(atomB.screenX, atomB.screenY, zB, atomC.screenX, atomC.screenY, zC, mad);
+    radius += drawLine(atomC.screenX, atomC.screenY, zC, atomD.screenX, atomD.screenY, zD, mad);
     if (!renderLabel)
       return;
     radius /= 3;
-    paintMeasurementString((atomA.screenX + atomB.screenX + atomC.screenX + atomD.screenX) / 4,
+    drawString((atomA.screenX + atomB.screenX + atomC.screenX + atomD.screenX) / 4,
                            (atomA.screenY + atomB.screenY + atomC.screenY + atomD.screenY) / 4,
-                           (zA + zB + zC + zD) / 4, radius, false, 0);
-  }
-
-  private void paintMeasurementString(int x, int y, int z, int radius,
-                              boolean rightJustify, int yRef) {
-    if (!doJustify) {
-      rightJustify = false;
-      yRef = y;
-    }
-    String strMeasurement = measurement.getString();
-    if (strMeasurement == null)
-      return;
-    int width = font3d.fontMetrics.stringWidth(strMeasurement);
-    int height = font3d.fontMetrics.getAscent();
-    int xT = x;
-    if (rightJustify)
-      xT -= radius / 2 + 2 + width;
-    else
-      xT += radius / 2 + 2;
-    int yT = y + (yRef == 0 || yRef < y ? height : -radius / 2);
-    int zT = z - radius - 2;
-    if (zT < 1)
-      zT = 1;
-    g3d.drawString(strMeasurement, font3d, xT, yT, zT, zT);
+                           (zA + zB + zC + zD) / 4, radius, false, false,
+                           false, 
+                           (doJustify ? 0 : Integer.MAX_VALUE), 
+                           measurement.getString());
   }
 
   private void renderPendingMeasurement(MeasurementPending measurementPending) {
@@ -263,6 +234,6 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       x <<= 1;
       y <<= 1;
     }
-    drawSegment(atomLast.screenX, atomLast.screenY, lastZ, x, y, 0);
+    drawLine(atomLast.screenX, atomLast.screenY, lastZ, x, y, 0, mad);
   }  
 }

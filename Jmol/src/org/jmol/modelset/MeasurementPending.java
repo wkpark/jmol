@@ -44,7 +44,7 @@ public class MeasurementPending extends Measurement {
   }
 
   public MeasurementPending(ModelSet modelSet) {
-    super(modelSet, null, null, Float.NaN, (short) 0, null, 0);
+    super(modelSet, null, Float.NaN, (short) 0, null, 0);
   }
 
   private boolean checkPoint(Point3fi ptClicked) {

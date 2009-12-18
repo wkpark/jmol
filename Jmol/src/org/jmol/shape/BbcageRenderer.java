@@ -23,17 +23,15 @@
  */
 package org.jmol.shape;
 
+import org.jmol.modelset.BoxInfo;
 import org.jmol.viewer.StateManager;
-import javax.vecmath.Point3f;
 
-public class BbcageRenderer extends FontLineShapeRenderer {
+public class BbcageRenderer extends CageRenderer {
 
-  final Point3f[] screens = new Point3f[8];
-  {
-    for (int i = 8; --i >= 0; )
-      screens[i] = new Point3f();
+  protected void setEdges() {
+    tickEdges = BoxInfo.bbcageTickEdges; 
   }
-
+  
   protected void render() {
     Bbcage bbox = (Bbcage) shape;
     if (!bbox.isVisible 
@@ -41,7 +39,7 @@ public class BbcageRenderer extends FontLineShapeRenderer {
         || viewer.isJmolDataFrame())
       return;
     colix = viewer.getObjectColix(StateManager.OBJ_BOUNDBOX);
-    render(bbox.mad, modelSet.getBboxVertices(), screens, null, 0);
+    render(bbox.mad, modelSet.getBboxVertices(), null, 0);
   }
-  
+
 }

@@ -745,6 +745,8 @@ public class ProjectInformation {
           info._fciCore = CoreType.GROMACS_SIMT;
         } else if ("NVIDIA-DEV".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.NVIDIA_DEV;
+        } else if ("ProtoMol".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.PROTO_MOL;
         } else if ("QMD".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.QMD;
         } else if ("SHARPEN".equalsIgnoreCase(core)) {
@@ -1513,7 +1515,8 @@ public class ProjectInformation {
     }
     if ((info._psName != null) &&
         (!info._psName.equals(info._staticName))) {
-      if ((info._psName.indexOf('_') == info._psName.length() - 1) &&
+      int sepPosition = info._psName.indexOf('_');
+      if (((sepPosition == info._psName.length() - 1) || (sepPosition == -1)) &&
           (info._staticName != null) &&
           (info._staticName.startsWith(info._psName))) {
         //

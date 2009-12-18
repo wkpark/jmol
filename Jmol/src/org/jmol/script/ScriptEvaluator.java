@@ -3701,7 +3701,13 @@ public class ScriptEvaluator {
       throws ScriptException {
     switch (tokAt(i)) {
     case Token.string:
-      return  new String[] {stringParameter(i)};
+      String s = stringParameter(i);
+      if (s.startsWith("[\"")) {
+        Object o = viewer.evaluateExpression(s);
+        if (o instanceof String)
+          return TextFormat.split((String) o, '\n');
+      }
+      return  new String[] { s };            
     case Token.leftsquare:
       ++i;
       break;

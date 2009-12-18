@@ -32,8 +32,8 @@ public class TickInfo {
     this.ticks = ticks;
   }
 
-  public String id;
-  public String type;
+  public String id = "";
+  public String type = " ";
   public Point3f ticks;
   public String[] tickLabelFormats;
   public Point3f scale;

@@ -177,6 +177,7 @@ public class Measurement {
     this.strFormat = strFormat;
     if (m != null) {
       this.tickInfo = m.tickInfo;
+      this.points = m.points;
     }
     if (points == null)
       points = new Point3fi[4];

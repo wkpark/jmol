@@ -34,6 +34,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.JmolConstants;
 
 abstract class FontLineShapeRenderer extends ShapeRenderer {
 
@@ -43,13 +44,16 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
   protected Point3fi atomA, atomB, atomC, atomD;
   protected Font3D font3d;
 
-  protected Point3i pt0 = new Point3i();
-  protected Point3i pt1 = new Point3i();
+  final protected Point3i pt0 = new Point3i();
+  final protected Point3i pt1 = new Point3i();
+  final protected Point3i pt2 = new Point3i();
 
-  protected Point3f pointT = new Point3f();
-  protected Point3f pointT2 = new Point3f();
-  protected Vector3f vectorT = new Vector3f();
-  protected Vector3f vectorT2 = new Vector3f();
+  final protected Point3f pointT = new Point3f();
+  final protected Point3f pointT2 = new Point3f();
+  final protected Point3f pointT3 = new Point3f();
+  final protected Vector3f vectorT = new Vector3f();
+  final protected Vector3f vectorT2 = new Vector3f();
+  final protected Vector3f vectorT3 = new Vector3f();
 
   final Rectangle box = new Rectangle();
 
@@ -91,8 +95,8 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
     drawTicks(pt1, pt2, tickInfo.ticks.z, 2, width, null);
   }
 
-  private void drawTicks(Point3fi pt1, Point3fi pt2, 
-                         float dx, int length, int width, String[] formats) {
+  private void drawTicks(Point3fi ptA, Point3fi ptB, float dx, int length,
+                         int width, String[] formats) {
 
     if (dx == 0)
       return;
@@ -101,42 +105,56 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
       isOut = false;
       dx = -dx;
     }
-    
+
     if (g3d.isAntialiased())
       length *= 2;
     // perpendicular to line on screen:
-    vectorT2.set(pt2.screenX, pt2.screenY, 0);
-    vectorT.set(pt1.screenX, pt1.screenY, 0);
+    vectorT2.set(ptB.screenX, ptB.screenY, 0);
+    vectorT.set(ptA.screenX, ptA.screenY, 0);
     vectorT2.sub(vectorT);
     if (vectorT2.length() < 50)
       return;
 
     float signFactor = tickInfo.signFactor;
-    vectorT.set(pt2);
-    vectorT.sub(pt1);
+    vectorT.set(ptB);
+    vectorT.sub(ptA);
     float d0 = vectorT.length();
     if (tickInfo.scale != null)
-      vectorT.set(vectorT.x * tickInfo.scale.x, 
-          vectorT.y * tickInfo.scale.y, vectorT.z
-          * tickInfo.scale.z);
+      vectorT.set(vectorT.x * tickInfo.scale.x, vectorT.y * tickInfo.scale.y,
+          vectorT.z * tickInfo.scale.z);
+    // d is in scaled units
     float d = vectorT.length() + 0.0001f * dx;
     if (d < dx)
       return;
     float f = dx / d * d0 / d;
     vectorT.scale(f);
-    float dz = (pt2.screenZ - pt1.screenZ) / f;
+    float dz = (ptB.screenZ - ptA.screenZ) / (d / dx);
     // vectorT is now the length of the spacing between ticks
     // but we may have an offset.
     d += tickInfo.first;
     float p = ((int) (tickInfo.first / dx)) * dx - tickInfo.first;
-    pointT.scaleAdd(p / dx, vectorT, pt1);
+    pointT.scaleAdd(p / dx, vectorT, ptA);
     p += tickInfo.first;
-    float z = pt1.screenZ;
+    float z = ptA.screenZ;
     if (width < 0)
       width = 1;
     vectorT2.set(-vectorT2.y, vectorT2.x, 0);
     vectorT2.scale(length / vectorT2.length());
-    if (vectorT2.x * (pt1.screenX + pt2.screenX) + vectorT2.y * (pt1.screenY + pt2.screenY) < 0)
+    Point3f ptRef = tickInfo.reference;
+    if (ptRef == null) {
+      pointT3.set(viewer.getBoundBoxCenter());
+      if (viewer.getAxesMode() == JmolConstants.AXES_MODE_BOUNDBOX) {
+        pointT3.x += 1.0;
+        pointT3.y += 1.0;
+        pointT3.z += 1.0;
+      }
+    } else {
+      pointT3.set(ptRef);
+    }
+    viewer.transformPoint(pointT3, pt2);
+    float tx = vectorT2.x * ((ptA.screenX + ptB.screenX) / 2 - pt2.x);
+    float ty = vectorT2.y * ((ptA.screenY + ptB.screenY) / 2 - pt2.y);
+    if (tx + ty < -0.1)
       vectorT2.scale(-1);
     if (!isOut)
       vectorT2.scale(-1);

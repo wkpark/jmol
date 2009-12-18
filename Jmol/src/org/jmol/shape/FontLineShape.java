@@ -36,16 +36,16 @@ public abstract class FontLineShape extends FontShape {
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    if ("ticksDelete" == propertyName) {
-      String s = (String)value;
-      if (s.equals(" "))
-        tickInfos[0] = tickInfos[1] = tickInfos[2] = tickInfos[3] = null;
-      else
-        tickInfos["xyz".indexOf(s) + 1] = null;
-      return;
-    }
     if ("tickInfo" == propertyName) {
       TickInfo t = (TickInfo) value;
+      if (t.ticks == null) {
+        // null ticks is an indication to delete the tick info
+        if (t.type.equals(" "))
+          tickInfos[0] = tickInfos[1] = tickInfos[2] = tickInfos[3] = null;
+        else
+          tickInfos["xyz".indexOf(t.type) + 1] = null;
+        return;
+      }
       tickInfos["xyz".indexOf(t.type) + 1] = t;
       return;
     }

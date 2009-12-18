@@ -46,19 +46,13 @@ final public class Measure {
 
   public Measure(int tokAction, Vector points,
                  float[] rangeMinMax, String strFormat,
-                 Point3f scale, Point3f ticks, float start,
-                 String[] tickLabelFormats, boolean isAllConnected,
-                 boolean isAll) {
+                 TickInfo tickInfo,
+                 boolean isAllConnected, boolean isAll) {
     this.tokAction = tokAction;
     this.points = points;
     this.rangeMinMax = rangeMinMax;
     this.strFormat = strFormat;
-    if (ticks != null) {
-      tickInfo = new TickInfo(ticks);
-      tickInfo.scale = scale;
-      tickInfo.first = start;
-      tickInfo.tickLabelFormats = tickLabelFormats;
-    }
+    this.tickInfo = tickInfo;
     this.isAllConnected = isAllConnected;
     this.isAll = isAll;
   }

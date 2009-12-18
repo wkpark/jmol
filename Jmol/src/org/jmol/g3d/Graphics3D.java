@@ -2377,8 +2377,10 @@ final public class Graphics3D implements JmolRendererInterface {
 
   public Font3D getFont3DScaled(Font3D font, float scale) {
     float newScale = font.fontSizeNominal * scale;
-    return (newScale == font.fontSize ? font : Font3D.getFont3D(font.idFontFace,
-        font.idFontStyle, newScale, font.fontSizeNominal, platform));
+    return (newScale == font.fontSize ? font : Font3D.getFont3D(
+        font.idFontFace,
+        (isAntialiased() ? font.idFontStyle | 1 : font.idFontStyle), 
+        newScale, font.fontSizeNominal, platform));
   }
 
   public byte getFontFid(float fontSize) {

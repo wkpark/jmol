@@ -65,6 +65,7 @@ public class Measures extends Shape {
   Font3D font3d;
 
   TickInfo tickInfo;
+  TickInfo defaultTickInfo;
   
   protected void initModelSet() {
     for (int i = 0; i < measurements.length; i++)
@@ -153,10 +154,14 @@ public class Measures extends Shape {
     
     if ("measure" == propertyName) {
       Measure m = (Measure) value;
+      tickInfo = m.tickInfo;
+      if (tickInfo != null && tickInfo.id.equals("default")) {
+        defaultTickInfo = tickInfo;
+        return;
+      }
       setRange(m.rangeMinMax);
       setConnected(m.isAllConnected);
       strFormat = m.strFormat;
-      tickInfo = m.tickInfo;
       if (m.isAll) {
         if (tickInfo != null)
           define(m.points, Token.delete);
@@ -359,7 +364,7 @@ public class Measures extends Shape {
     rangeMinMax[0] = Float.MAX_VALUE;
     //toggling one that is hidden should be interpreted as DEFINE
     bsSelected = new BitSet();
-    define(new Measurement(modelSet, indices, null, null), false, true, true);
+    define(new Measurement(modelSet, indices, null, defaultTickInfo), false, true, true);
     setIndices();
     reformatDistances();
   }
@@ -421,7 +426,7 @@ public class Measures extends Shape {
   }
 
   private Measurement newMeasurement(int[] indices, Point3fi[] points) {
-    return new Measurement(modelSet, indices, points, tickInfo); 
+    return new Measurement(modelSet, indices, points, tickInfo == null ? defaultTickInfo : tickInfo); 
   }
 
   private void setIndices() {
@@ -689,6 +694,11 @@ public class Measures extends Shape {
         for (int i = 0; i < measurementCount; i++)
           if (measurements[i].isHidden())
             setStateInfo(temp, i, "measure off");
+    if (defaultTickInfo != null) {
+      commands.append(" measure ");
+      addTickInfo(commands, defaultTickInfo);
+      commands.append(";\n");
+    }
     String s = getShapeCommands(temp, null, -1, "select measures");
     if (s != null) {
       commands.append(s);
@@ -702,18 +712,21 @@ public class Measures extends Shape {
     int count = m.getCount();
     StringBuffer sb = new StringBuffer("measure");
     TickInfo tickInfo = m.getTickInfo();
-    if (tickInfo != null) {
-      sb.append(" ticks ").append(Escape.escape(tickInfo.ticks));
-      if (tickInfo.tickLabelFormats != null)
-        sb.append(" format ").append(Escape.escape(tickInfo.tickLabelFormats));
-      if (tickInfo.scale != null)
-        sb.append(" scale ").append(Escape.escape(tickInfo.scale));
-      if (!Float.isNaN(tickInfo.first))
-        sb.append(" first ").append(tickInfo.first);
-    }
+    if (tickInfo != null)
+      addTickInfo(sb, tickInfo);
     for (int i = 1; i <= count; i++)
       sb.append(" ").append(m.getLabel(i, true, true));
     sb.append("; # " + getInfoAsString(index));
     return sb.toString();
+  }
+  
+  private static void addTickInfo(StringBuffer sb, TickInfo tickInfo) {
+    sb.append(" ticks ").append(Escape.escape(tickInfo.ticks));
+    if (tickInfo.tickLabelFormats != null)
+      sb.append(" format ").append(Escape.escape(tickInfo.tickLabelFormats));
+    if (tickInfo.scale != null)
+      sb.append(" scale ").append(Escape.escape(tickInfo.scale));
+    if (!Float.isNaN(tickInfo.first) && tickInfo.first != 0)
+      sb.append(" first ").append(tickInfo.first);
   }
 }

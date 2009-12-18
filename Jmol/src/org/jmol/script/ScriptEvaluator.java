@@ -7072,14 +7072,11 @@ public class ScriptEvaluator {
     boolean isAllConnected = false;
     boolean isRange = true;
     int tokAction = Token.opToggle;
-    Point3f ticks = null;
-    Point3f scale = null;
-    String[] tickLabelFormats = null;
-    float start = Float.NaN;
     String strFormat = null;
     Vector monitorExpressions = new Vector();
     BitSet bs = new BitSet();
     Object value = null;
+    TickInfo tickInfo = null;
     for (int i = 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
       case Token.identifier:
@@ -7143,15 +7140,9 @@ public class ScriptEvaluator {
         strFormat = stringParameter(i);
         break;
       case Token.ticks:
-        tokAction = Token.define;
-        ticks = getPoint3f(++i, false);
-        if (tokAt(iToken + 1) == Token.format)
-          tickLabelFormats = stringParameterSet(iToken + 2);
-        if (tokAt(iToken + 1) == Token.scale)
-          scale = getPoint3f(iToken + 2, false);
-        if (tokAt(iToken + 1) == Token.first)
-          start = floatParameter(iToken + 2);
+        tickInfo = checkTicks(i);
         i = iToken;
+        tokAction = Token.define;
         break;
       case Token.bitset:
       case Token.expressionBegin:
@@ -7180,7 +7171,7 @@ public class ScriptEvaluator {
         break;
       }
     }
-    if (nAtoms < 2)
+    if (nAtoms < 2 && (tickInfo == null || nAtoms == 1))
       error(ERROR_badArgumentCount);
     if (strFormat != null && strFormat.indexOf(nAtoms + ":") != 0)
       strFormat = nAtoms + ":" + strFormat;
@@ -7191,16 +7182,15 @@ public class ScriptEvaluator {
     }
     if (isSyntaxCheck)
       return;
-    if (value != null) {
+    if (value != null || tickInfo != null) {
+      if (value == null)
+        tickInfo.id = "default";
       setShapeProperty(JmolConstants.SHAPE_MEASURES, "measure", new Measure(
                    tokAction, 
                    monitorExpressions,
                    rangeMinMax, 
-                   strFormat, 
-                   scale,
-                   ticks,
-                   start,
-                   tickLabelFormats,
+                   strFormat,
+                   tickInfo,
                    isAllConnected,
                    isAll)); 
        return;
@@ -9906,9 +9896,8 @@ public class ScriptEvaluator {
 
   private void axes(int index) throws ScriptException {
     // axes (index==1) or set axes (index==2)
-    index = checkTicks(index, JmolConstants.SHAPE_AXES);
-    if (index == statementLength)
-      return;
+    TickInfo tickInfo = checkTicks(index);
+    index = iToken + 1;
     int tok = tokAt(index);
     String type = optParameterAsString(index).toLowerCase();
     if (statementLength == index + 1
@@ -9953,14 +9942,16 @@ public class ScriptEvaluator {
       return;
     }
     int mad = getSetAxesTypeMad(index);
-    if (!isSyntaxCheck)
-      viewer.setObjectMad(JmolConstants.SHAPE_AXES, "axes", mad);
+    if (isSyntaxCheck)
+      return;
+    viewer.setObjectMad(JmolConstants.SHAPE_AXES, "axes", mad);
+    if (tickInfo != null)
+      setShapeProperty(JmolConstants.SHAPE_AXES, "tickInfo", tickInfo);
   }
 
   private void boundbox(int index) throws ScriptException {
-    index = checkTicks(index, JmolConstants.SHAPE_BBCAGE);
-    if (index == statementLength)
-      return;
+    TickInfo tickInfo = checkTicks(index);
+    index = iToken + 1;
     boolean byCorner = (tokAt(index) == Token.corners);
     if (byCorner)
       index++;
@@ -9987,34 +9978,47 @@ public class ScriptEvaluator {
         return;
     }
     int mad = getSetAxesTypeMad(index);
-    if (!isSyntaxCheck)
-      viewer.setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", mad);
+    if (isSyntaxCheck)
+      return;
+    if (tickInfo != null)
+      setShapeProperty(JmolConstants.SHAPE_BBCAGE, "tickInfo", tickInfo);
+    viewer.setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", mad);
   }
 
-  private int checkTicks(int index, int iShape) throws ScriptException {
-    if (getToken(index).tok == Token.ticks) {
-      String str = " ";
-      if (tokAt(index + 1) == Token.identifier) {
-        str = parameterAsString(++index).toLowerCase();
-        if (!str.equals("x") && !str.equals("y") && !str.equals("z"))
-          error(ERROR_invalidArgument);
-      }
-      if (tokAt(iToken = ++index) == Token.none) {
-        setShapeProperty(iShape, "ticksDelete", str);
-        return index + 1;
-      }
-      TickInfo tickInfo = new TickInfo(getPoint3f(index, false));
-      tickInfo.type = str;
-      if (tokAt(iToken + 1) == Token.format)
-        tickInfo.tickLabelFormats = stringParameterSet(iToken + 2);
-      if (tokAt(iToken + 1) == Token.scale)
-        tickInfo.scale = getPoint3f(iToken + 2, false);
-      if (tokAt(iToken + 1) == Token.first)
-        tickInfo.first = floatParameter(iToken + 2);
-      index = iToken + 1;
-      setShapeProperty(iShape, "tickInfo", tickInfo);
+  private TickInfo checkTicks(int index) throws ScriptException {
+    iToken = index - 1;
+    if (tokAt(index) != Token.ticks)
+      return null;
+    TickInfo tickInfo;
+    String str = " ";
+    if (tokAt(index + 1) == Token.identifier) {
+      str = parameterAsString(++index).toLowerCase();
+      if (!str.equals("x") && !str.equals("y") && !str.equals("z"))
+        error(ERROR_invalidArgument);
     }
-    return index;
+    if (tokAt(++index) == Token.none) {
+      tickInfo = new TickInfo(null);
+      tickInfo.type = str;
+      iToken = index;
+      return tickInfo;
+    }
+    tickInfo = new TickInfo(getPoint3f(index, false));
+    tickInfo.type = str;
+    if (tokAt(iToken + 1) == Token.format)
+      tickInfo.tickLabelFormats = stringParameterSet(iToken + 2);
+    if (tokAt(iToken + 1) == Token.scale) {
+      if (isFloatParameter(iToken + 2)) {
+        float f = floatParameter(iToken + 2);
+        tickInfo.scale = new Point3f(f, f, f);
+      } else {
+        tickInfo.scale = getPoint3f(iToken + 2, false);
+      }
+    }
+    if (tokAt(iToken + 1) == Token.first)
+      tickInfo.first = floatParameter(iToken + 2);
+    if (tokAt(iToken + 1) == Token.point)
+      tickInfo.reference = centerParameter(iToken + 2);
+    return tickInfo;
   }
 
   private void unitcell(int index) throws ScriptException {

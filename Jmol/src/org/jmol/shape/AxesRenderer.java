@@ -67,7 +67,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
       if (f != null)
         axes.font3d = f;
     }
-    font3d = axes.font3d;
+    font3d = g3d.getFont3DScaled(axes.font3d, imageFontScaling);
     SymmetryInterface[] cellInfos = modelSet.getCellInfos();
     boolean isXY = (axes.axisXY.z != 0);
     int modelIndex = viewer.getCurrentModelIndex();
@@ -134,14 +134,13 @@ public class AxesRenderer extends FontLineShapeRenderer {
     colixes[0] = viewer.getObjectColix(StateManager.OBJ_AXIS1);
     colixes[1] = viewer.getObjectColix(StateManager.OBJ_AXIS2);
     colixes[2] = viewer.getObjectColix(StateManager.OBJ_AXIS3);
-    Font3D font = g3d.getFont3DScaled(axes.font3d, imageFontScaling);
     for (int i = nPoints; --i >= 0;) {
       colix = colixes[i % 3];
       g3d.setColix(colix);
       String label = (axes.labels == null ? axisLabels[i + labelPtr]
           : i < 3 ? axes.labels[i] : null);
       if (label != null && label.length() > 0)
-        renderLabel(label, font, screens[i].x, screens[i].y,
+        renderLabel(label, screens[i].x, screens[i].y,
             screens[i].z, xCenter, yCenter);
       if (drawTicks) {
         tickInfo = axes.tickInfos[(i % 3) + 1];
@@ -158,14 +157,14 @@ public class AxesRenderer extends FontLineShapeRenderer {
     if (nPoints == 3 && !isXY) { // a b c
       colix = viewer.getColixBackgroundContrast();
       g3d.setColix(colix);
-      renderLabel("0", font, originScreen.x, originScreen.y, originScreen.z,
+      renderLabel("0", originScreen.x, originScreen.y, originScreen.z,
           xCenter, yCenter);
     }
     if (isXY)
       g3d.setSlab(slab);
   }
   
-  private void renderLabel(String str, Font3D font3d, float x, float y, float z, float xCenter, float yCenter) {
+  private void renderLabel(String str, float x, float y, float z, float xCenter, float yCenter) {
     FontMetrics fontMetrics = font3d.fontMetrics;
     int strAscent = fontMetrics.getAscent();
     int strWidth = fontMetrics.stringWidth(str);

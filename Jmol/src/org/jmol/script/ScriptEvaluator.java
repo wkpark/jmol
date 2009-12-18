@@ -10016,7 +10016,7 @@ public class ScriptEvaluator {
       if (isFloatParameter(iToken + 2)) {
         float f = floatParameter(iToken + 2);
         tickInfo.scale = new Point3f(f, f, f);
-      } else if (tokAt(iToken + 2) == Token.hkl) {
+      } else if (tokAt(iToken + 2) == Token.unitcell) {
         tickInfo.scale = new Point3f(
             1/viewer.getUnitCellInfo(JmolConstants.INFO_A),
             1/viewer.getUnitCellInfo(JmolConstants.INFO_B),

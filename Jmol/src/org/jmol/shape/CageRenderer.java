@@ -43,8 +43,6 @@ abstract class CageRenderer extends FontLineShapeRenderer {
   abstract protected void setEdges();
   
   protected void initRenderer() {
-    atomA = new Point3fi();
-    atomB = new Point3fi();
     setEdges();
   }
   
@@ -71,6 +69,10 @@ abstract class CageRenderer extends FontLineShapeRenderer {
         viewer.transformPointNoClip(axisPoints[axisPt--], screens[0]);
       boolean drawTicks = (fls.tickInfos != null && (edge = tickEdges[i>>1]) != 0);
       if (drawTicks) {
+        if (atomA == null) {
+          atomA = new Point3fi();
+          atomB = new Point3fi();
+        }
         atomA.set(vertices[edge0]);
         atomB.set(vertices[edge1]);
         float start = 0;

@@ -51,8 +51,6 @@ public class AxesRenderer extends FontLineShapeRenderer {
   private short[] colixes = new short[3];
 
   protected void initRenderer() {
-    atomA = new Point3fi();
-    atomB = new Point3fi();
     endcap = Graphics3D.ENDCAPS_FLAT; 
   }
 
@@ -115,8 +113,13 @@ public class AxesRenderer extends FontLineShapeRenderer {
       }
     } else {
       drawTicks = (axes.tickInfos != null);
-      if (drawTicks)
+      if (drawTicks) {
+        if (atomA == null) {
+          atomA = new Point3fi();
+          atomB = new Point3fi();
+        }
         atomA.set(axes.getOriginPoint(isDataFrame));
+      }
       viewer.transformPointNoClip(axes.getOriginPoint(isDataFrame),
           originScreen);
       if (widthPixels == Integer.MIN_VALUE)

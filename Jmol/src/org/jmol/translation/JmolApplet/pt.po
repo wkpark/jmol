@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-12-03 21:07+0100\n"
-"PO-Revision-Date: 2009-12-16 22:37+0000\n"
+"PO-Revision-Date: 2009-12-19 18:54+0000\n"
 "Last-Translator: Frederico Tavares <Unknown>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-12-17 06:28+0000\n"
+"X-Launchpad-Export-Date: 2009-12-19 20:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Portugal\n"
 "X-Poedit-Language: Portuguese\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:97 org/jmol/console/JmolConsole.java:75
 msgid "Jmol Script Console"
-msgstr ""
+msgstr "Consola de Script Jmol"
 
 #: org/jmol/applet/AppletConsole.java:99
 msgid "Editor"
@@ -121,7 +121,7 @@ msgstr "  {0} segundos"
 
 #: org/jmol/console/ScriptEditor.java:98
 msgid "Jmol Script Editor"
-msgstr ""
+msgstr "Editor de Script Jmol"
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/PopupResourceBundle.java:876
@@ -137,7 +137,7 @@ msgstr "Abrir"
 
 #: org/jmol/console/ScriptEditor.java:133
 msgid "Script"
-msgstr ""
+msgstr "Script"
 
 #: org/jmol/console/ScriptEditor.java:134
 msgid "Check"
@@ -160,7 +160,7 @@ msgstr "Pausa"
 #: org/jmol/console/ScriptEditor.java:140
 #: org/jmol/popup/PopupResourceBundle.java:835
 msgid "Resume"
-msgstr ""
+msgstr "Resumir"
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
@@ -336,7 +336,7 @@ msgstr "Actualizar lista de ficheiros"
 
 #: org/jmol/export/dialog/Dialog.java:466
 msgid "Up"
-msgstr ""
+msgstr "Para cima"
 
 #: org/jmol/export/dialog/Dialog.java:467
 msgid "Up One Level"
@@ -356,7 +356,7 @@ msgstr "Anexar modelos"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
-msgstr ""
+msgstr "Árabe"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
@@ -364,11 +364,11 @@ msgstr "Catalão"
 
 #: org/jmol/i18n/GT.java:120
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "Chinês Simplificado"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "Chinês Tradicional"
 
 #: org/jmol/i18n/GT.java:122
 msgid "Czech"
@@ -384,11 +384,11 @@ msgstr "Holandês"
 
 #: org/jmol/i18n/GT.java:125
 msgid "British English"
-msgstr ""
+msgstr "Inglês de Inglaterra"
 
 #: org/jmol/i18n/GT.java:126
 msgid "American English"
-msgstr ""
+msgstr "Inglês Americano"
 
 #: org/jmol/i18n/GT.java:127
 msgid "Estonian"
@@ -400,11 +400,11 @@ msgstr "Francês"
 
 #: org/jmol/i18n/GT.java:129
 msgid "German"
-msgstr ""
+msgstr "Alemão"
 
 #: org/jmol/i18n/GT.java:130
 msgid "Greek"
-msgstr ""
+msgstr "Grego"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Hungarian"
@@ -428,7 +428,7 @@ msgstr "Polaco"
 
 #: org/jmol/i18n/GT.java:136
 msgid "Brazilian Portuguese"
-msgstr ""
+msgstr "Português do Brasil"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Portuguese"
@@ -440,7 +440,7 @@ msgstr "Russo"
 
 #: org/jmol/i18n/GT.java:139
 msgid "Slovenian"
-msgstr ""
+msgstr "Esloveno"
 
 #: org/jmol/i18n/GT.java:140
 msgid "Spanish"
@@ -456,7 +456,7 @@ msgstr "Turco"
 
 #: org/jmol/i18n/GT.java:143
 msgid "Ukrainian"
-msgstr ""
+msgstr "Ucraniano"
 
 #: org/jmol/minimize/Minimizer.java:187
 #, java-format
@@ -503,11 +503,11 @@ msgstr ""
 #: org/jmol/popup/JmolPopup.java:690
 #: org/jmol/popup/PopupResourceBundle.java:970
 msgid "Translations"
-msgstr ""
+msgstr "Traduções"
 
 #: org/jmol/popup/JmolPopup.java:692
 msgid "System"
-msgstr ""
+msgstr "Sistema"
 
 #: org/jmol/popup/JmolPopup.java:698
 msgid "1 processor"
@@ -528,7 +528,7 @@ msgstr "Versão Java:"
 
 #: org/jmol/popup/JmolPopup.java:707
 msgid "Java memory usage:"
-msgstr ""
+msgstr "Utilização de memória Java:"
 
 #: org/jmol/popup/JmolPopup.java:713
 #, java-format
@@ -551,7 +551,7 @@ msgstr "máximo desconhecido"
 
 #: org/jmol/popup/PopupResourceBundle.java:567
 msgid "Configurations"
-msgstr ""
+msgstr "Configurações"
 
 #: org/jmol/popup/PopupResourceBundle.java:568
 msgid "Element"
@@ -587,7 +587,7 @@ msgstr "Simetria"
 
 #: org/jmol/popup/PopupResourceBundle.java:578
 msgid "Hide Symmetry"
-msgstr ""
+msgstr "Esconder Simetria"
 
 #: org/jmol/popup/PopupResourceBundle.java:579
 msgid "Model information"
@@ -631,7 +631,7 @@ msgstr "grupos: {0}"
 #: org/jmol/popup/PopupResourceBundle.java:587
 #, java-format
 msgid "chains: {0}"
-msgstr ""
+msgstr "cadeias: {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:588
 #, java-format
@@ -650,7 +650,7 @@ msgstr "Ver {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:591
 msgid "Main Menu"
-msgstr ""
+msgstr "Menu Principal"
 
 #: org/jmol/popup/PopupResourceBundle.java:592
 msgid "Biomolecules"
@@ -682,31 +682,31 @@ msgstr "Inverter Selecção"
 
 #: org/jmol/popup/PopupResourceBundle.java:603
 msgid "View"
-msgstr ""
+msgstr "Visualizar"
 
 #: org/jmol/popup/PopupResourceBundle.java:604
 msgid "Front"
-msgstr ""
+msgstr "Frente"
 
 #: org/jmol/popup/PopupResourceBundle.java:605
 msgid "Left"
-msgstr ""
+msgstr "Esquerda"
 
 #: org/jmol/popup/PopupResourceBundle.java:606
 msgid "Right"
-msgstr ""
+msgstr "Direita"
 
 #: org/jmol/popup/PopupResourceBundle.java:607
 msgid "Top"
-msgstr ""
+msgstr "Topo"
 
 #: org/jmol/popup/PopupResourceBundle.java:608
 msgid "Bottom"
-msgstr ""
+msgstr "Fundo"
 
 #: org/jmol/popup/PopupResourceBundle.java:609
 msgid "Back"
-msgstr ""
+msgstr "Retroceder"
 
 #: org/jmol/popup/PopupResourceBundle.java:611
 msgid "Protein"
@@ -773,7 +773,7 @@ msgstr "ParesAU"
 
 #: org/jmol/popup/PopupResourceBundle.java:629
 msgid "Hetero"
-msgstr ""
+msgstr "Hetero"
 
 #: org/jmol/popup/PopupResourceBundle.java:630
 msgid "All PDB \"HETATM\""
@@ -781,11 +781,11 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:631
 msgid "All Solvent"
-msgstr ""
+msgstr "Apenas Solvente"
 
 #: org/jmol/popup/PopupResourceBundle.java:632
 msgid "All Water"
-msgstr ""
+msgstr "Apenas Água"
 
 #: org/jmol/popup/PopupResourceBundle.java:634
 msgid "Nonaqueous Solvent"
@@ -805,11 +805,11 @@ msgstr "Carbohidrato"
 
 #: org/jmol/popup/PopupResourceBundle.java:640
 msgid "None of the above"
-msgstr ""
+msgstr "Nenhum dos acima seleccionados"
 
 #: org/jmol/popup/PopupResourceBundle.java:642
 msgid "Style"
-msgstr ""
+msgstr "Estilo"
 
 #: org/jmol/popup/PopupResourceBundle.java:643
 msgid "Scheme"
@@ -958,7 +958,7 @@ msgstr "Tiras"
 #: org/jmol/popup/PopupResourceBundle.java:698
 #: org/jmol/popup/PopupResourceBundle.java:790
 msgid "Rockets"
-msgstr ""
+msgstr "Foguetes"
 
 #: org/jmol/popup/PopupResourceBundle.java:699
 #: org/jmol/popup/PopupResourceBundle.java:791
@@ -967,7 +967,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:702
 msgid "Vibration"
-msgstr ""
+msgstr "Vibração"
 
 #: org/jmol/popup/PopupResourceBundle.java:705
 #: org/jmol/popup/PopupResourceBundle.java:795
@@ -990,7 +990,7 @@ msgstr "Escala {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:717
 msgid "Stereographic"
-msgstr ""
+msgstr "Estereográfico"
 
 #: org/jmol/popup/PopupResourceBundle.java:719
 msgid "Red+Cyan glasses"
@@ -1103,7 +1103,7 @@ msgstr "Cadeia"
 
 #: org/jmol/popup/PopupResourceBundle.java:754
 msgid "Group"
-msgstr ""
+msgstr "Grupo"
 
 #: org/jmol/popup/PopupResourceBundle.java:755
 msgid "Monomer"
@@ -1193,7 +1193,7 @@ msgstr "Tornar Opaco"
 #: org/jmol/popup/PopupResourceBundle.java:780
 #: org/jmol/popup/PopupResourceBundle.java:925
 msgid "Make Translucent"
-msgstr ""
+msgstr "Tornar Translúcido"
 
 #: org/jmol/popup/PopupResourceBundle.java:793
 msgid "Background"
@@ -1202,7 +1202,7 @@ msgstr "Fundo"
 #: org/jmol/popup/PopupResourceBundle.java:794
 #: org/jmol/popup/PopupResourceBundle.java:916
 msgid "Surfaces"
-msgstr ""
+msgstr "Superfícies"
 
 #: org/jmol/popup/PopupResourceBundle.java:796
 #: org/jmol/popup/PopupResourceBundle.java:935
@@ -1221,7 +1221,7 @@ msgstr "Caixa de ligação"
 #: org/jmol/popup/PopupResourceBundle.java:937
 #: org/jmol/popup/PopupResourceBundle.java:962
 msgid "Unit cell"
-msgstr ""
+msgstr "Célula Unitária"
 
 #: org/jmol/popup/PopupResourceBundle.java:800
 msgid "Zoom"
@@ -1259,7 +1259,7 @@ msgstr "Definir FPS"
 
 #: org/jmol/popup/PopupResourceBundle.java:827
 msgid "Animation"
-msgstr ""
+msgstr "Animação"
 
 #: org/jmol/popup/PopupResourceBundle.java:828
 msgid "Animation Mode"
@@ -1299,16 +1299,16 @@ msgstr "Rebobinar"
 
 #: org/jmol/popup/PopupResourceBundle.java:840
 msgid "Reverse"
-msgstr ""
+msgstr "Inverter"
 
 #: org/jmol/popup/PopupResourceBundle.java:841
 msgid "Restart"
-msgstr ""
+msgstr "Reiniciar"
 
 #: org/jmol/popup/PopupResourceBundle.java:850
 #: org/jmol/popup/PopupResourceBundle.java:881
 msgid "Measurements"
-msgstr ""
+msgstr "Medidas"
 
 #: org/jmol/popup/PopupResourceBundle.java:851
 msgid "Double-Click begins and ends all measurements"

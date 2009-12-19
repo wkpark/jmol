@@ -548,8 +548,6 @@ public class JvxlXmlReader extends VolumeFileReader {
    * @param data
    *          tag and contents
    * @param colorData
-   * @param asArray
-   *          or just addTriangleCheck
    * @return int[][] if desired
    * @throws Exception
    */

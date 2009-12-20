@@ -8287,9 +8287,9 @@
     credit="100" frames="100" code="G3" contact="luttmann"/>
 
   <!-- Projects 10000 to 10099 -->
-  <fah_proj number="10000" name="p10000_ProFormol" public="n"
+  <fah_proj number="10000" name="p10000_ProFormol" public="n" file="xyz"
     server="129.74.85.48" atoms="544" preferred="3.07" deadline="23.04"
-    credit="84.48" frames="100" code="PM" contact="jcoffland"/>
+    credit="84.48" frames="100" code="PM" contact="jcoffland" contrib="Hyperlife"/>
   <fah_proj number="10001" name="p10001_ProFormol" public="n" file="xyz"
     server="129.74.85.48" atoms="544" preferred="1.84" deadline="13.79"
     credit="50.56" frames="100" code="PM" contact="jcoffland" contrib="John Deas"/>

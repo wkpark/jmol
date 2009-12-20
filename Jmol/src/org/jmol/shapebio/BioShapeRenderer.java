@@ -96,8 +96,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
     aspectRatio = val;
 
     val = viewer.getHermiteLevel();
-    if (val == 0 && !g3d.canDoTriangles())
-      val = 5; // forces hermite for exporters
+    if (val == 0 && g3d.isCartesianExport())
+      val = 5; // forces hermite for 3D exporters
     val = (val <= 0 ? -val : viewer.getInMotion() ? 0 : val);
     if (val != hermiteLevel && val != 0)
       invalidateMesh = true;

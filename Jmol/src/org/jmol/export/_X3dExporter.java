@@ -29,38 +29,26 @@
  
 package org.jmol.export;
 
-import java.awt.Image;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelset.Atom;
-import org.jmol.shape.Text;
 import org.jmol.util.Escape;
 import org.jmol.util.Quaternion;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
-public class _X3dExporter extends _Exporter {
+public class _X3dExporter extends __CartesianExporter {
 
   private AxisAngle4f viewpoint = new AxisAngle4f();
   
-  public _X3dExporter() {
-    use2dBondOrderCalculation = true;
-    canDoTriangles = false;
-    isCartesianExport = true;
-  }
-
   private void output(String data) {
     output.append(data);
   }
@@ -90,9 +78,7 @@ public class _X3dExporter extends _Exporter {
     return id;
   }
   
-  final private Point3f ptAtom = new Point3f();
-  
-  public void getHeader() {
+  protected void getHeader() {
     output("<X3D profile='Immersive' version='3.1' "
       + "xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' "
       + "xsd:noNamespaceSchemaLocation=' http://www.web3d.org/specifications/x3d-3.1.xsd '>"
@@ -141,7 +127,25 @@ public class _X3dExporter extends _Exporter {
     output("'>\n");
   }
 
-  public void getFooter() {
+  private int iShapeBuffer;
+  
+  protected void startShapeBuffer(int iShape) {
+    iShapeBuffer = 1;
+    switch(iShapeBuffer = iShape) {
+    default:
+    
+    }
+  }
+
+  protected void endShapeBuffer() {
+    switch(iShapeBuffer) {
+    default:
+      output("}}\n");
+    }
+    iShapeBuffer = 0;
+  }
+
+  protected void getFooter() {
     htDefs = null;
     output("</Transform>\n");
     output("</Scene>\n");
@@ -165,30 +169,79 @@ public class _X3dExporter extends _Exporter {
     output("</Appearance>");
   }
   
-  public void renderAtom(Atom atom, short colix) {
-    float r = atom.getMadAtom() / 2000f;
-    outputSphere(atom, r, colix);
-  }
+  protected void outputCircle(Point3f pt1, Point3f pt2, float radius, short colix,
+                              boolean doFill) {
+    if (doFill) {
 
-  public void drawPixel(short colix, int x, int y, int z) {
-    pt.set(x, y, z);
-    viewer.unTransformPoint(pt, ptAtom);
-    outputSphere(ptAtom, 0.01f, colix);
-  }
+      // draw filled circle
+      
+      output("<Transform translation='");
+      tempV1.set(pt);
+      tempV1.add(pt1);
+      tempV1.scale(0.5f);
+      output(tempV1);
+      output("'><Billboard axisOfRotation='0 0 0'><Transform rotation='1 0 0 1.5708'>");
+      outputCylinderChild(pt1, pt, colix, Graphics3D.ENDCAPS_FLAT, radius);
+      output("</Transform></Billboard>");
+      output("</Transform>\n");
+      
+      return;
+    }
     
-  public void fillSphereCentered(short colix, int diameter, Point3f pt) {
-    viewer.unTransformPoint(pt, ptAtom);
-    outputSphere(ptAtom, viewer.unscaleToScreen((int)pt.z, diameter) / 2, colix);
+    // draw a thin torus
+
+    String child = getDef("C" + colix + "_" + radius);
+    output("<Transform");
+    outputTransRot(pt, pt1, 0, 0, 1);
+    pt.set(1, 1, 1);
+    pt.scale(radius);
+    output(" scale='");
+    output(pt);
+    output("'>\n<Billboard ");
+    if (child.charAt(0) == '_') {
+      output("DEF='" + child + "'");
+      output(" axisOfRotation='0 0 0'><Transform>");
+      output("<Shape><Extrusion beginCap='FALSE' convex='FALSE' endCap='FALSE' creaseAngle='1.57'");
+      output(" crossSection='");
+      float rpd = 3.1415926f / 180;
+      float scale = 0.02f / radius;
+      for (int i = 0; i <= 360; i += 10) {
+        output(round(Math.cos(i * rpd) * scale) + " ");
+        output(round(Math.sin(i * rpd) * scale) + " ");
+      }
+      output("' spine='");
+      for (int i = 0; i <= 360; i += 10) {
+        output(round(Math.cos(i * rpd)) + " ");
+        output(round(Math.sin(i * rpd)) + " 0 ");
+      }
+      output("'/>");
+      outputAppearance(colix, false);
+      output("</Shape></Transform>");
+    } else {
+      output(child + ">");
+    }
+    output("</Billboard>\n");
+    output("</Transform>\n");
   }
 
-  private void outputSphere(Point3f center, float radius, short colix) {
-    output("<Transform translation='");
-    output(center);
-    output("'>\n<Shape ");
-    String child = getDef("S" + colix + "_" + (int) (radius * 100));
+  protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
+                            short colix) {
+    float height = ptBase.distance(ptTip);
+    output("<Transform");
+    outputTransRot(ptBase, ptTip, 0, 1, 0);
+    output(">\n<Shape ");
+    String cone = "o" + (int) (height * 100) + "_" + (int) (radius * 100);
+    String child = getDef("c" + cone + "_" + colix);
     if (child.charAt(0) == '_') {
-      output("DEF='" + child + "'>");
-      output("<Sphere radius='" + radius + "'/>");
+      output("DEF='" + child +  "'>");
+      cone = getDef(cone);
+      output("<Cone ");
+      if (cone.charAt(0) == '_') {
+        output("DEF='"+ cone + "' height='" + round(height) 
+          + "' bottomRadius='" + round(radius) + "'/>");
+      } else {
+        output(cone + "/>");
+      }
       outputAppearance(colix, false);
     } else {
       output(child + ">");
@@ -197,66 +250,39 @@ public class _X3dExporter extends _Exporter {
     output("</Transform>\n");
   }
 
-  private final Point3f pt2 = new Point3f();
-  public void fillCylinder(Point3f ptA, Point3f ptB, short colix1,
-                           short colix2, byte endcaps, int diameter,
-                           int bondOrder) {
-    if (bondOrder == -1) {
-      // really first order -- but actual coord
-      ptAtom.set(ptA);
-      pt2.set(ptB);
-    } else {
-      viewer.unTransformPoint(ptA, ptAtom);
-      viewer.unTransformPoint(ptB, pt2);
-    }
-    int madBond = diameter;
-    if (madBond < 20)
-      madBond = 20;
-    if (colix1 == colix2) {
-      outputCylinder(ptAtom, pt2, colix1, endcaps, madBond);
-    } else {
-      tempV2.set(pt2);
-      tempV2.add(ptAtom);
-      tempV2.scale(0.5f);
-      pt.set(tempV2);
-      outputCylinder(ptAtom, pt, colix1, Graphics3D.ENDCAPS_FLAT, madBond);
-      outputCylinder(pt, pt2, colix2, Graphics3D.ENDCAPS_FLAT, madBond);
-      if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-        outputSphere(ptAtom, madBond / 2000f*1.01f, colix1);
-        outputSphere(pt2, madBond / 2000f*1.01f, colix2);
-      }
-    }
-  }
-
-  
-  private void outputCylinder(Point3f pt1, Point3f pt2, short colix,
-                             byte endcaps, int madBond) {
+  protected void outputCylinder(Point3f pt1, Point3f pt2, short colix,
+                                byte endcaps, float radius) {
     output("<Transform");
     outputTransRot(pt1, pt2, 0, 1, 0);
     output(">\n");
-    outputCylinderChild(pt1, pt2, colix, endcaps, madBond);
+    outputCylinderChild(pt1, pt2, colix, endcaps, radius);
     output("\n</Transform>\n");
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-      outputSphere(pt1, madBond / 2000f*1.01f, colix);
-      outputSphere(pt2, madBond / 2000f*1.01f, colix);
+      outputSphere(pt1, radius * 1.01f, colix);
+      outputSphere(pt2, radius * 1.01f, colix);
     }
   }
 
   private void outputCylinderChild(Point3f pt1, Point3f pt2, short colix,
-                                   byte endcaps, int madBond) {
+                                   byte endcaps, float radius) {
     float length = round(pt1.distance(pt2));
-    String child = getDef("C" + colix + "_" + (int) (length * 100) + "_" + madBond
-        + "_" + endcaps);
+    String child = getDef("C" + colix + "_" + (int) (length * 100) + "_"
+        + radius + "_" + endcaps);
     output("<Shape ");
     if (child.charAt(0) == '_') {
-      float r = madBond / 2000f;
       output("DEF='" + child + "'>");
       output("<Cylinder ");
-      String cyl = getDef("c" + length + "_" + endcaps + "_" + madBond);
+      String cyl = getDef("c" + length + "_" + endcaps + "_" + radius);
       if (cyl.charAt(0) == '_') {
-        output("DEF='" + cyl + "' height='" 
-            + round(length) + "' radius='" + r + "'" 
-            + (endcaps == Graphics3D.ENDCAPS_FLAT ? "" : " top='FALSE' bottom='FALSE'") + "/>");
+        output("DEF='"
+            + cyl
+            + "' height='"
+            + round(length)
+            + "' radius='"
+            + radius
+            + "'"
+            + (endcaps == Graphics3D.ENDCAPS_FLAT ? ""
+                : " top='FALSE' bottom='FALSE'") + "/>");
       } else {
         output(cyl + "/>");
       }
@@ -267,11 +293,32 @@ public class _X3dExporter extends _Exporter {
     output("</Shape>");
   }
   
-  public void renderIsosurface(Point3f[] vertices, short colix,
-                               short[] colixes, Vector3f[] normals,
-                               int[][] indices, BitSet bsFaces, int nVertices,
-                               int faceVertexMax, short[] polygonColixes,
-                               int nPolygons) {
+  protected void outputEllipsoid(Point3f center, Point3f[] points, short colix) {
+    output("<Transform translation='");
+    output(center);
+    output("'");
+    
+    //Hey, hey -- quaternions to the rescue!
+    // Just send three points to Quaternion to define a plane and return
+    // the AxisAngle required to rotate to that position. That's all there is to it.
+    
+    AxisAngle4f a = Quaternion.getQuaternionFrame(center, points[1], points[3]).toAxisAngle4f();
+    if (!Float.isNaN(a.x)) 
+      output(" rotation='" + a.x + " " + a.y + " " + a.z + " " + a.angle + "'");
+    pt.set(0, 0, 0);
+    float sx = points[1].distance(center);
+    float sy = points[3].distance(center);
+    float sz = points[5].distance(center);
+    output(" scale='" + sx + " " + sy + " " + sz + "'>");
+    outputSphere(pt, 1.0f, colix);
+    output("</Transform>\n");
+  }
+
+  protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
+                                  short[] colixes, int[][] indices,
+                                  short[] polygonColixes,
+                                  int nVertices, int nPolygons, BitSet bsFaces,
+                                  int faceVertexMax, short colix) {
     if (nVertices == 0)
       return;
     int nFaces = 0;
@@ -422,6 +469,22 @@ public class _X3dExporter extends _Exporter {
     
   }
 
+  protected void outputSphere(Point3f center, float radius, short colix) {
+    output("<Transform translation='");
+    output(center);
+    output("'>\n<Shape ");
+    String child = getDef("S" + colix + "_" + (int) (radius * 100));
+    if (child.charAt(0) == '_') {
+      output("DEF='" + child + "'>");
+      output("<Sphere radius='" + radius + "'/>");
+      outputAppearance(colix, false);
+    } else {
+      output(child + ">");
+    }
+    output("</Shape>\n");
+    output("</Transform>\n");
+  }
+
   private void outputTransRot(Point3f pt1, Point3f pt2, int x, int y, int z) {    
     output(" translation='");
     tempV1.set(pt2);
@@ -434,30 +497,37 @@ public class _X3dExporter extends _Exporter {
       + round(tempA.z) + " " + round(tempA.angle) + "'" );
   }
   
-  public void fillCone(short colix, byte endcap, int diameter,
-                       Point3f screenBase, Point3f screenTip) {
-    viewer.unTransformPoint(screenBase, tempP1);
-    viewer.unTransformPoint(screenTip, tempP2);
-    float d = viewer.unscaleToScreen((int)screenBase.z, diameter);
-    if (d < 0.1f)
-      d = 0.1f;
-    float height = tempP1.distance(tempP2);
-    output("<Transform");
-    outputTransRot(tempP1, tempP2, 0, 1, 0);
-    output(">\n<Shape ");
-    String cone = "o" + (int) (height * 100) + "_" + (int) (d * 100);
-    String child = getDef("c" + cone + "_" + colix);
+  protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3, short colix) {
+    // nucleic base
+    // cartoons
+    output("<Shape>\n");
+    output("<IndexedFaceSet solid='FALSE' ");
+    output("coordIndex='0 1 2 -1'>");
+    output("<Coordinate point='");
+    output(pt1);
+    output(" ");
+    output(pt2);
+    output(" ");
+    output(pt3);
+    output("'/>");
+    output("</IndexedFaceSet>\n");
+    outputAppearance(colix, false);
+    output("\n</Shape>\n");
+  }
+
+  protected void outputTextPixel(Point3f pt, int argb) {
+    // text only
+    String color = rgbFractionalFromArgb(argb, ' ');
+    output("<Transform translation='");
+    output(pt);
+    output("'>\n<Shape ");
+    String child = getDef("p" + argb);
     if (child.charAt(0) == '_') {
-      output("DEF='" + child +  "'>");
-      cone = getDef(cone);
-      output("<Cone ");
-      if (cone.charAt(0) == '_') {
-        output("DEF='"+ cone + "' height='" + round(height) 
-          + "' bottomRadius='" + round(d/2) + "'/>");
-      } else {
-        output(cone + "/>");
-      }
-      outputAppearance(colix, false);
+      output("DEF='" + child + "'>");
+      output("<Sphere radius='0.01'/>");
+      output("<Appearance><Material diffuseColor='0 0 0' specularColor='0 0 0'"
+        + " ambientIntensity='0.0' shininess='0.0' emissiveColor='" 
+        + color + "'/></Appearance>'");
     } else {
       output(child + ">");
     }
@@ -465,43 +535,7 @@ public class _X3dExporter extends _Exporter {
     output("</Transform>\n");
   }
 
-  public void fillCylinder(short colix, byte endcaps, int diameter,
-                           Point3f screenA, Point3f screenB) {
-    Point3f ptA = new Point3f();
-    Point3f ptB = new Point3f();
-    viewer.unTransformPoint(screenA, ptA);
-    viewer.unTransformPoint(screenB, ptB);
-    int madBond = (int) (viewer.unscaleToScreen(
-        (int)((screenA.z + screenB.z) / 2), diameter) * 1000);      
-    if (madBond < 20)
-      madBond = 20;
-    outputCylinder(ptA, ptB, colix, endcaps, madBond);
-
-    // nucleic base
-  }
-
-  public void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
-    // nucleic base
-    // cartoons
-    output("<Shape>\n");
-    output("<IndexedFaceSet solid='FALSE' ");
-    output("coordIndex='0 1 2 -1'>");
-    output("<Coordinate point='");
-    viewer.unTransformPoint(ptA, pt);
-    output(pt);
-    output(" ");
-    viewer.unTransformPoint(ptB, pt);
-    output(pt);
-    output(" ");
-    viewer.unTransformPoint(ptC, pt);
-    output(pt);
-    output("'/>");
-    output("</IndexedFaceSet>\n");
-    outputAppearance(colix, false);
-    output("\n</Shape>\n");
-  }
-
-  public void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
+  void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
     if (z < 3) {
       viewer.transformPoint(center, pt);
       z = (int)pt.z;
@@ -553,147 +587,5 @@ public class _X3dExporter extends _Exporter {
      */
   }
 
-  int iShapeBuffer;
-  
-  public void startShapeBuffer(int iShape) {
-    iShapeBuffer = 1;
-    switch(iShapeBuffer = iShape) {
-    default:
-    
-    }
-  }
-
-  public void endShapeBuffer() {
-    switch(iShapeBuffer) {
-    default:
-      output("}}\n");
-    }
-    iShapeBuffer = 0;
-  }
-
-  public void renderText(Text t) {
-  }
-
-  public void drawString(short colix, String str, Font3D font3d, int xBaseline,
-                         int yBaseline, int z, int zSlab) {
-  }
-
-  public void drawCircleCentered(short colix, int diameter, int x, int y,
-                                 int z, boolean doFill) {
-    pt.set(x, y, z);
-    viewer.unTransformPoint(pt, ptAtom);
-    float d = viewer.unscaleToScreen(z, diameter);
-    pt.set(x, y, z + 1);
-    viewer.unTransformPoint(pt, pt);
-
-    if (doFill) {
-
-      // draw filled circle
-      
-      output("<Transform translation='");
-      tempV1.set(pt);
-      tempV1.add(ptAtom);
-      tempV1.scale(0.5f);
-      output(tempV1);
-      output("'><Billboard axisOfRotation='0 0 0'><Transform rotation='1 0 0 1.5708'>");
-      outputCylinderChild(ptAtom, pt, colix, Graphics3D.ENDCAPS_FLAT, (int) (d * 1000));
-      output("</Transform></Billboard>");
-      output("</Transform>\n");
-      
-      return;
-    }
-    
-    // draw a thin torus
-
-    String child = getDef("C" + colix + "_" + d);
-    output("<Transform");
-    outputTransRot(pt, ptAtom, 0, 0, 1);
-    pt.set(1, 1, 1);
-    pt.scale(d/2);
-    output(" scale='");
-    output(pt);
-    output("'>\n<Billboard ");
-    if (child.charAt(0) == '_') {
-      output("DEF='" + child + "'");
-      output(" axisOfRotation='0 0 0'><Transform>");
-      output("<Shape><Extrusion beginCap='FALSE' convex='FALSE' endCap='FALSE' creaseAngle='1.57'");
-      output(" crossSection='");
-      float rpd = 3.1415926f / 180;
-      float scale = 0.02f * 2 / d;
-      for (int i = 0; i <= 360; i += 10) {
-        output(round(Math.cos(i * rpd) * scale) + " ");
-        output(round(Math.sin(i * rpd) * scale) + " ");
-      }
-      output("' spine='");
-      for (int i = 0; i <= 360; i += 10) {
-        output(round(Math.cos(i * rpd)) + " ");
-        output(round(Math.sin(i * rpd)) + " 0 ");
-      }
-      output("'/>");
-      outputAppearance(colix, false);
-      output("</Shape></Transform>");
-    } else {
-      output(child + ">");
-    }
-    output("</Billboard>\n");
-    output("</Transform>\n");
-  }
-
-  public void fillScreenedCircleCentered(short colix, int diameter, int x,
-                                         int y, int z) {
-    drawCircleCentered(colix, diameter, x, y, z, false);
-    drawCircleCentered(Graphics3D.getColixTranslucent(colix, true, 0.5f), 
-        diameter, x, y, z, true);
-  }
-
-  public void drawTextPixel(int argb, int x, int y, int z) {
-    // text only
-    pt.set(x, y, z);
-    viewer.unTransformPoint(pt, ptAtom);
-    String color = rgbFractionalFromArgb(argb, ' ');
-    output("<Transform translation='");
-    output(ptAtom);
-    output("'>\n<Shape ");
-    String child = getDef("p" + argb);
-    if (child.charAt(0) == '_') {
-      output("DEF='" + child + "'>");
-      output("<Sphere radius='0.01'/>");
-      output("<Appearance><Material diffuseColor='0 0 0' specularColor='0 0 0'"
-        + " ambientIntensity='0.0' shininess='0.0' emissiveColor='" 
-        + color + "'/></Appearance>'");
-    } else {
-      output(child + ">");
-    }
-    output("</Shape>\n");
-    output("</Transform>\n");
-  }
-
-  public void plotImage(int x, int y, int z, Image image, short bgcolix,
-                        int width, int height) {
-    // background, for example
-  }
-
-  void renderEllipsoid(Point3f center, Point3f[] points, short colix, int x,
-                       int y, int z, int diameter, Matrix3f toEllipsoidal,
-                       double[] coef, Matrix4f deriv, Point3i[] octantPoints) {
-    output("<Transform translation='");
-    output(center);
-    output("'");
-    
-    //Hey, hey -- quaternions to the rescue!
-    // Just send three points to Quaternion to define a plane and return
-    // the AxisAngle required to rotate to that position. That's all there is to it.
-    
-    AxisAngle4f a = Quaternion.getQuaternionFrame(center, points[1], points[3]).toAxisAngle4f();
-    if (!Float.isNaN(a.x)) 
-      output(" rotation='" + a.x + " " + a.y + " " + a.z + " " + a.angle + "'");
-    pt.set(0, 0, 0);
-    float sx = points[1].distance(center);
-    float sy = points[3].distance(center);
-    float sz = points[5].distance(center);
-    output(" scale='" + sx + " " + sy + " " + sz + "'>");
-    outputSphere(pt, 1.0f, colix);
-    output("</Transform>\n");
-  }
 
 }

@@ -28,17 +28,14 @@ package org.jmol.export;
 import org.jmol.shape.*;
 
 public class SticksGenerator extends SticksRenderer {
-  protected void renderBond(int dottedMask) {
-    _Exporter exporter = (_Exporter) ((Export3D)g3d).getExporter();
-    if (!exporter.use2dBondOrderCalculation 
-        || (exporter.isCartesianExport && bondOrder == 1))
-      // Maya does not render bond orders
-      // Vrml prefers XYZ coord when just single bonds
+  protected void drawBond(int dottedMask) {
+    __Exporter exporter = (__Exporter) ((Export3D)g3d).getExporter();
+    if (exporter.isCartesianExport && bondOrder == 1)
         exporter.fillCylinder(atomA, atomB, colixA, colixB, endcaps, mad, -1);
     else
       // POVRAY always uses screen coordinates
-      // Vrml will use screen coordinates if double bonds
-      super.renderBond(dottedMask); //POV-Ray: use fillCylinder
+      // Other renderers must use screen coordinates for double bonds
+      super.drawBond(dottedMask);
   }
   
   protected void fillCylinder(short colixA, short colixB, byte endcaps,

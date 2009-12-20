@@ -134,7 +134,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected void renderPoints() {
     for (int i = vertexCount; --i >= 0;)
       if (!frontOnly || transformedVectors[normixes[i]].z >= 0)
-        g3d.fillSphereCentered(4, screens[i]);
+        g3d.fillSphere(4, screens[i]);
   }
 
   protected BitSet bsFaces = new BitSet();
@@ -204,7 +204,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       }
     }
     if (generateSet)
-      renderExport();
+      drawIsosurface();
   }
 
   protected void drawLine(int iA, int iB, boolean fill, 
@@ -217,7 +217,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 7 : 3);
     if (width == 0) {
       if (iA == iB)
-        g3d.fillSphereCentered(diameter, sA);
+        g3d.fillSphere(diameter, sA);
       else
         g3d.fillCylinder(endCap, diameter, sA, sB);
     } else {
@@ -235,7 +235,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     }    
   }
 
-  protected void renderExport() {
+  protected void drawIsosurface() {
       g3d.renderIsosurface(mesh.vertices, mesh.colix, null,
           mesh.getVertexNormals(), mesh.polygonIndexes, bsFaces, 
           mesh.vertexCount, 4, null, mesh.polygonCount);

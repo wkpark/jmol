@@ -10021,6 +10021,8 @@ public class ScriptEvaluator {
             1/viewer.getUnitCellInfo(JmolConstants.INFO_A),
             1/viewer.getUnitCellInfo(JmolConstants.INFO_B),
             1/viewer.getUnitCellInfo(JmolConstants.INFO_C));
+        if (Float.isNaN(tickInfo.scale.x))
+          tickInfo.scale = null;
         iToken += 2;
       } else {
         tickInfo.scale = getPoint3f(iToken + 2, true);
@@ -10981,7 +10983,7 @@ public class ScriptEvaluator {
       boolean isPovRay = type.equals("Povray");
       data = viewer.generateOutput(data, isPovRay ? fileName : null, width,
           height);
-      if (data == null)
+      if (data == null || data.length() == 0)
         return "";
       if (isPovRay) {
         if (!isCommand)

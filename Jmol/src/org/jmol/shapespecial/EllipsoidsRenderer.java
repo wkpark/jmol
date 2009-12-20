@@ -389,7 +389,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     // get equation and differential
     Quadric.getEquationForQuadricWithCenter(s0.x, s0.y, s0.z,
         matScreenToEllipsoid, v1, mTemp, coef, mDeriv);
-    g3d.renderEllipsoid(center, points, s0.x, s0.y, s0.z, dx + dx, matScreenToEllipsoid,
+    g3d.fillEllipsoid(center, points, s0.x, s0.y, s0.z, dx + dx, matScreenToEllipsoid,
         coef, mDeriv, selectedOctant, selectedOctant >= 0 ? selectedPoints : null);
   }
 

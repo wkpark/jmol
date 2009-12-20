@@ -837,7 +837,7 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param z center z
    * @param doFill fill or not
    */
-  public void drawCircleCentered(short colix, int diameter, int x, int y, int z, boolean doFill) {
+  public void drawCircle(short colix, int diameter, int x, int y, int z, boolean doFill) {
     // draw circle
     if (isClippedZ(z))
       return;
@@ -855,7 +855,7 @@ final public class Graphics3D implements JmolRendererInterface {
       circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);    
   }
 
-  public void fillScreenedCircleCentered(short colixFill, int diameter, int x, int y, int z) {
+  public void fillScreenedCircle(short colixFill, int diameter, int x, int y, int z) {
     // halo only -- simple Z/window clip
     if (isClippedZ(z))
       return;
@@ -883,7 +883,7 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param y center y
    * @param z center z
    */
-  public void fillSphereCentered(int diameter, int x, int y, int z) {
+  public void fillSphere(int diameter, int x, int y, int z) {
     switch (diameter) {
     case 1:
       plotPixelClipped(argbCurrent, x, y, z);
@@ -904,8 +904,8 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param center javax.vecmath.Point3i defining the center
    */
 
-  public void fillSphereCentered(int diameter, Point3i center) {
-    fillSphereCentered(diameter, center.x, center.y, center.z);
+  public void fillSphere(int diameter, Point3i center) {
+    fillSphere(diameter, center.x, center.y, center.z);
   }
 
   /**
@@ -914,11 +914,11 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param diameter pixel count
    * @param center a javax.vecmath.Point3f ... floats are casted to ints
    */
-  public void fillSphereCentered(int diameter, Point3f center) {
-    fillSphereCentered(diameter, (int)center.x, (int)center.y, (int)center.z);
+  public void fillSphere(int diameter, Point3f center) {
+    fillSphere(diameter, (int)center.x, (int)center.y, (int)center.z);
   }
 
-  public void renderEllipsoid(Point3f center, Point3f[] points, int x, int y,
+  public void fillEllipsoid(Point3f center, Point3f[] points, int x, int y,
                               int z, int diameter, Matrix3f mToEllipsoidal,
                               double[] coef, Matrix4f mDeriv,
                               int selectedOctant, Point3i[] octantPoints) {

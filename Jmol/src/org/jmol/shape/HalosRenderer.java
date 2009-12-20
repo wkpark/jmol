@@ -104,7 +104,7 @@ public class HalosRenderer extends ShapeRenderer {
     int haloWidth = (int) haloDiameter;
     if (haloWidth <= 0)
       return;
-    g3d.fillScreenedCircleCentered(colix, haloWidth, atom.screenX,
+    g3d.fillScreenedCircle(colix, haloWidth, atom.screenX,
         atom.screenY, atom.screenZ);
   }  
 }

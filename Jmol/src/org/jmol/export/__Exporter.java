@@ -48,7 +48,6 @@ import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
-import org.jmol.shape.Text;
 import org.jmol.viewer.Viewer;
 
 /*
@@ -133,7 +132,7 @@ import org.jmol.viewer.Viewer;
  * 
  */
 
-public abstract class _Exporter {
+public abstract class __Exporter {
 
   // The following fields and methods are required for instantiation or provide
   // generally useful functionality:
@@ -154,8 +153,17 @@ public abstract class _Exporter {
   protected int slabZ;
   protected int depthZ;
 
-  boolean use2dBondOrderCalculation;
-  boolean canDoTriangles;
+  // Most exporters (Maya, X3D, VRML, IDTF) 
+  // can manipulate actual 3D data.
+  // isCartesianExport indicates that and is used:
+  // a) to prevent export of the background image
+  // b) to prevent export of the backgrounds of labels
+  // c) to prevent clipping based on the window size
+  // d) for single bonds, just use the XYZ coordinates
+  
+  // POV-RAY is different -- it's taken to be a single view image
+  // with a limited, clipped window.
+  
   boolean isCartesianExport;
 
   protected Point3f center = new Point3f();
@@ -167,14 +175,14 @@ public abstract class _Exporter {
   protected Vector3f tempV3 = new Vector3f();
   protected AxisAngle4f tempA = new AxisAngle4f();
   
-  public _Exporter() {
+  public __Exporter() {
   }
 
-  public void setRenderer(JmolRendererInterface jmolRenderer) {
+  void setRenderer(JmolRendererInterface jmolRenderer) {
     this.jmolRenderer = jmolRenderer;
   }
   
-  public boolean initializeOutput(Viewer viewer, Graphics3D g3d, Object output) {
+  boolean initializeOutput(Viewer viewer, Graphics3D g3d, Object output) {
     this.viewer = viewer;
     this.g3d = g3d;
     center.set(viewer.getRotationCenter());
@@ -206,7 +214,21 @@ public abstract class _Exporter {
     return true;
   }
 
-  public String finalizeOutput() {
+  abstract protected void getHeader();
+  
+  protected void startShapeBuffer(int iShape) {
+    // implementation-specific
+  }
+  
+  protected void endShapeBuffer() {
+    // implementation-specific
+  }
+  
+  protected void getFooter() {
+    // implementation-specific
+  }
+
+  String finalizeOutput() {
     getFooter();
     if (!isToFile)
       return output.toString();
@@ -336,34 +358,39 @@ public abstract class _Exporter {
   }
 
 
-  // absbract methods that MUST be implemented
-  
-  abstract void getHeader();
-
-  abstract void getFooter();
-
-
-  // The following two methods are provided as a general necessity of many drivers.
-
   // These methods are used by specific shape generators, which themselves are 
   // extensions of classes in org.jmol.shape, org.jmol.shapebio, and org.jmol.shapespecial. 
   // More will be added as additional objects are added to be exportable classes.
 
-  abstract void renderAtom(Atom atom, short colix);
+  // The following methods are called by a variety of shape generators and 
+  // Export3D, replacing methods in org.jmol.g3d. More will be added as needed. 
 
-  // The following methods are used by a variety of shape generators and 
-  // replace methods in org.jmol.g3d. More will be added as needed. 
+  abstract void drawAtom(Atom atom, short colix);
 
-  abstract void renderIsosurface(Point3f[] vertices, short colix,
-                                 short[] colixes, Vector3f[] normals,
-                                 int[][] indices, BitSet bsFaces,
-                                 int nVertices, int faceVertexMax, 
-                                 short[] polygonColixes, int nPolygons);
+  abstract void drawCircle(int x, int y, int z,
+                                   int diameter, short colix, boolean doFill);  //draw circle 
 
-  abstract void renderText(Text t);
+  void drawIsosurface(Point3f[] vertices, short colix, short[] colixes,
+                      Vector3f[] normals, int[][] indices, BitSet bsFaces,
+                      int nVertices, int faceVertexMax,
+                      short[] polygonColixes, int nPolygons) {
+  outputIsosurface(vertices, normals, colixes, indices, polygonColixes, 
+      nVertices, nPolygons, bsFaces, faceVertexMax, colix);
+}
+
+  abstract protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
+                                short[] colixes, int[][] indices,
+                                short[] polygonColixes,
+                                int nVertices, int nPolygons, BitSet bsFaces,
+                                int faceVertexMax, short colix);
+
+  abstract void drawPixel(short colix, int x, int y, int z); //measures
   
-  abstract void drawString(short colix, String str, Font3D font3d, int xBaseline,
-                            int yBaseline, int z, int zSlab);
+  abstract void drawTextPixel(int argb, int x, int y, int z);
+
+  //rockets and dipoles
+  abstract void fillCone(short colix, byte endcap, int diameter, 
+                         Point3f screenBase, Point3f screenTip);
   
   abstract void fillCylinder(Point3f atom1, Point3f atom2, short colix1, short colix2,
                              byte endcaps, int madBond, int bondOrder);
@@ -371,37 +398,23 @@ public abstract class _Exporter {
   abstract void fillCylinder(short colix, byte endcaps, int diameter, 
                              Point3f screenA, Point3f screenB);
 
-  abstract void drawCircleCentered(short colix, int diameter, int x,
-                                           int y, int z, boolean doFill);  //draw circle 
+  abstract void fillEllipsoid(Point3f center, Point3f[] points, short colix, 
+                              int x, int y, int z, int diameter,
+                              Matrix3f toEllipsoidal, double[] coef,
+                              Matrix4f deriv, Point3i[] octantPoints);
 
-  abstract void fillScreenedCircleCentered(short colix, int diameter, int x,
-                                                    int y, int z);  //halos 
+  abstract void fillScreenedCircle(short colix, int diameter, int x, int y,
+                                   int z); // halos
 
-  abstract void drawPixel(short colix, int x, int y, int z); //measures
- 
-  abstract void drawTextPixel(int argb, int x, int y, int z);
-
-  //rockets and dipoles
-  abstract void fillCone(short colix, byte endcap, int diameter, 
-                         Point3f screenBase, Point3f screenTip);
+  //rockets:
+  abstract void fillSphere(short colix, int diameter, Point3f pt);
   
   //cartoons, rockets:
   abstract void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC);
   
-  //rockets:
-  abstract void fillSphereCentered(short colix, int diameter, Point3f pt);
-  
-  abstract void plotText(int x, int y, int z, short colix, String text, Font3D font3d);
-
   abstract void plotImage(int x, int y, int z, Image image, short bgcolix, 
                           int width, int height);
 
-  abstract void startShapeBuffer(int iShape);
+  abstract void plotText(int x, int y, int z, short colix, String text, Font3D font3d);
 
-  abstract void endShapeBuffer();
-
-  abstract void renderEllipsoid(Point3f center, Point3f[] points, short colix, 
-                                int x, int y, int z, int diameter,
-                                Matrix3f toEllipsoidal, double[] coef,
-                                Matrix4f deriv, Point3i[] octantPoints);
 }

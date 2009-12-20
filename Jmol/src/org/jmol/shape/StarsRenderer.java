@@ -54,8 +54,7 @@ public class StarsRenderer extends ShapeRenderer {
     int r = d / 2;
     g3d.drawLine(x - r, y, z, x - r + d, y, z);
     g3d.drawLine(x, y - r, z, x, y - r + d, z);
-    if (g3d.isCartesianExport())
-      g3d.drawLine(x, y, z - r, x, y, z - r + d);
+    g3d.drawLine(x, y, z - r, x, y, z - r + d);
   }
 
 }

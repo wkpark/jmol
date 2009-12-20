@@ -111,10 +111,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
       pt1f.add(v2);
       pt2f.sub(v2);
       screens[0].set((int)pt1f.x,(int)pt1f.y,(int)pt1f.z);
-      g3d.fillSphereCentered(r, screens[0]);
+      g3d.fillSphere(r, screens[0]);
     }
     screens[1].set((int)pt2f.x,(int)pt2f.y,(int)pt2f.z);
-    g3d.fillSphereCentered(r, screens[1]);
+    g3d.fillSphere(r, screens[1]);
   }
   
   private void renderContourLines() {
@@ -172,7 +172,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
             screens[i].x, screens[i].y, screens[i].z);
       }
       diam = (i == 1066 ? 8 : 4);
-      g3d.fillSphereCentered(diam, screens[i]);
+      g3d.fillSphere(diam, screens[i]);
     }
     if (incr != 3)
       return;
@@ -184,11 +184,11 @@ public class IsosurfaceRenderer extends MeshRenderer {
     g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
         Graphics3D.YELLOW, true, 0.5f) : Graphics3D.YELLOW);
     for (int i = 1; i < vertexCount; i += 3)
-      g3d.fillSphereCentered(4, screens[i]);
+      g3d.fillSphere(4, screens[i]);
     g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
         Graphics3D.BLUE, true, 0.5f) : Graphics3D.BLUE);
     for (int i = 2; i < vertexCount; i += 3) {
-      g3d.fillSphereCentered(4, screens[i]);
+      g3d.fillSphere(4, screens[i]);
     }
   }
 
@@ -289,7 +289,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       }
     }
     if (generateSet)
-      renderExport();
+      drawIsosurface();
   }
 
   private void renderNormals() {

@@ -141,6 +141,7 @@ class RepaintManager {
           continue;
         //System.out.println("rendering " + JmolConstants.getShapeClassName(i));
         getRenderer(i, g3d).render(g3d, modelSet, shape);
+        //Logger.checkTimer("render time " + i);
       }
       Rectangle band = viewer.getRubberBandSelection();
       if (band != null && g3d.setColix(viewer.getColixRubberband()))
@@ -189,7 +190,6 @@ class RepaintManager {
                         String fileName) {
 
     viewer.finalizeTransformParameters();
-
     JmolRendererInterface g3dExport = null;
     Object output = null;
     boolean isOK = false;

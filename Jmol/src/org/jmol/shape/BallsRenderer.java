@@ -96,7 +96,7 @@ public class BallsRenderer extends ShapeRenderer {
           if (atom.screenY > maxY)
             maxY = atom.screenY;
         }
-        renderBall(atom);
+        drawAtom(atom);
       }
     }
 
@@ -129,8 +129,8 @@ public class BallsRenderer extends ShapeRenderer {
     }
   }
 
-  protected void renderBall(Atom atom) {
-    g3d.fillSphereCentered(atom.screenDiameter,
+  protected void drawAtom(Atom atom) {
+    g3d.fillSphere(atom.screenDiameter,
                            atom.screenX, atom.screenY, atom.screenZ);
   }
 }

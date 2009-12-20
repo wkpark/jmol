@@ -47,7 +47,7 @@ import org.jmol.viewer.Viewer;
 
 final public class Export3D implements JmolRendererInterface {
 
-  private _Exporter exporter;
+  private __Exporter exporter;
   
   private Graphics3D g3d;
   private short colix;
@@ -56,7 +56,7 @@ final public class Export3D implements JmolRendererInterface {
   private int height;
   private int slab;
   
-  public _Exporter getExporter() {
+  public __Exporter getExporter() {
     return exporter;
   }
 
@@ -69,7 +69,7 @@ final public class Export3D implements JmolRendererInterface {
     try {
       Class exporterClass = Class.forName("org.jmol.export._" + type
           + "Exporter");
-      exporter = (_Exporter) exporterClass.newInstance();
+      exporter = (__Exporter) exporterClass.newInstance();
     } catch (Exception e) {
       return false;
     }
@@ -86,10 +86,6 @@ final public class Export3D implements JmolRendererInterface {
     return exporter.finalizeOutput();
   }
 
-  public boolean canDoTriangles() {
-    return exporter.canDoTriangles;
-  }
-
   public boolean isCartesianExport() {
     return exporter.isCartesianExport;
   }
@@ -100,7 +96,7 @@ final public class Export3D implements JmolRendererInterface {
   }
   
   public void renderBackground() {
-    if (!exporter.isCartesianExport)
+    if (!isCartesianExport())
       g3d.renderBackground(this);
   }
   
@@ -114,12 +110,12 @@ final public class Export3D implements JmolRendererInterface {
    * @param z center z
    */
   
-  public void fillScreenedCircleCentered(short colixFill, int diameter, int x,
+  public void fillScreenedCircle(short colixFill, int diameter, int x,
                                            int y, int z) {
     //halos, draw
     if (isClippedZ(z))
       return;
-    exporter.fillScreenedCircleCentered(colixFill, diameter, x, y, z);
+    exporter.fillScreenedCircle(colixFill, diameter, x, y, z);
   }
 
   /**
@@ -133,12 +129,12 @@ final public class Export3D implements JmolRendererInterface {
    * @param doFill (not implemented in exporters)
    */
   
-  public void drawCircleCentered(short colix, int diameter, int x,
+  public void drawCircle(short colix, int diameter, int x,
                                            int y, int z, boolean doFill) {
     //halos, draw
     if (isClippedZ(z))
       return;
-    exporter.drawCircleCentered(colix, diameter, x, y, z, doFill);
+    exporter.drawCircle(x, y, z, diameter, colix, doFill);
   }
 
   private Point3f ptA = new Point3f();
@@ -162,9 +158,9 @@ final public class Export3D implements JmolRendererInterface {
    * @param y center y
    * @param z center z
    */
-  public void fillSphereCentered(int diameter, int x, int y, int z) {
+  public void fillSphere(int diameter, int x, int y, int z) {
     ptA.set(x, y, z);
-    fillSphereCentered(diameter, ptA);
+    fillSphere(diameter, ptA);
   }
 
   /**
@@ -174,9 +170,9 @@ final public class Export3D implements JmolRendererInterface {
    * @param center javax.vecmath.Point3i defining the center
    */
 
-  public void fillSphereCentered(int diameter, Point3i center) {
+  public void fillSphere(int diameter, Point3i center) {
     ptA.set(center.x, center.y, center.z);
-    fillSphereCentered(diameter, ptA);
+    fillSphere(diameter, ptA);
   }
 
   /**
@@ -185,10 +181,10 @@ final public class Export3D implements JmolRendererInterface {
    * @param diameter pixel count
    * @param center a javax.vecmath.Point3f ... floats are casted to ints
    */
-  public void fillSphereCentered(int diameter, Point3f center) {
+  public void fillSphere(int diameter, Point3f center) {
     if (diameter == 0)
       return;
-    exporter.fillSphereCentered(colix, diameter, center);
+    exporter.fillSphere(colix, diameter, center);
   }
 
   /**
@@ -410,6 +406,8 @@ final public class Export3D implements JmolRendererInterface {
                               int mad, int xA, int yA, int zA, int xB, int yB, int zB) {
     /*
      * Use the screen points Jmol determines
+     * 
+     * from drawLine, Sticks, fillCylinder, backbone
      *  
      */
     ptA.set(xA, yA, zA);
@@ -661,13 +659,13 @@ final public class Export3D implements JmolRendererInterface {
                                         short[] colixes, Vector3f[] normals,
                                         int[][] indices, BitSet bsFaces, int nVertices,
                                         int faceVertexMax, short[] polygonColixes, int nPolygons) {
-    exporter.renderIsosurface(vertices, colix, colixes, normals,
+    exporter.drawIsosurface(vertices, colix, colixes, normals,
                               indices, bsFaces, nVertices, faceVertexMax, null, nPolygons);
   }
 
   public short[] getBgColixes(short[] bgcolixes) {
-    // Vrml and Maya cannot to background labels
-    return exporter.isCartesianExport ? null : bgcolixes;
+    // 3D exporters cannot do background labels
+    return isCartesianExport() ? null : bgcolixes;
   }
 
   public void startShapeBuffer(int iShape) {
@@ -678,12 +676,12 @@ final public class Export3D implements JmolRendererInterface {
     exporter.endShapeBuffer();
   }
 
-  public void renderEllipsoid(Point3f center, Point3f[] points, 
+  public void fillEllipsoid(Point3f center, Point3f[] points, 
                               int x, int y, int z, int diameter,
                               Matrix3f mToEllipsoidal, double[] coef,
                               Matrix4f mDeriv, int selectedOctant,
                               Point3i[] octantPoints) {
-    exporter.renderEllipsoid(center, points, colix, x, y, z, 
+    exporter.fillEllipsoid(center, points, colix, x, y, z, 
         diameter, mToEllipsoidal, coef, mDeriv, octantPoints);
   }
 

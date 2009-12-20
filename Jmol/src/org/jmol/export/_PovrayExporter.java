@@ -25,23 +25,15 @@
 
 package org.jmol.export;
 
-import java.awt.Image;
-import java.io.IOException;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelset.Atom;
-import org.jmol.shape.Text;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
@@ -53,25 +45,7 @@ import org.jmol.viewer.Viewer;
  * 
  */
 
-public class _PovrayExporter extends _Exporter {
-
-  private int nBytes;
-  private boolean isSlabEnabled;
-
-  public _PovrayExporter() {
-    use2dBondOrderCalculation = true;
-    canDoTriangles = true;
-    isCartesianExport = false;
-  }
-
-  private void output(String data) {
-    nBytes += data.length();
-    try {
-      bw.write(data);
-    } catch (IOException e) {
-      // ignore for now
-    }
-  }
+public class _PovrayExporter extends __RayTracerExporter {
 
   public String finalizeOutput() {
     super.finalizeOutput();
@@ -79,12 +53,7 @@ public class _PovrayExporter extends _Exporter {
   }
 
   public void getHeader() {
-    nBytes = 0;
-    isSlabEnabled = viewer.getSlabEnabled();
-    float zoom = viewer.getRotationRadius() * 2;
-    zoom *= 1.1f; // for some reason I need a little more margin
-    zoom /= viewer.getZoomPercentFloat() / 100f;
-    int minScreenDimension = Math.min(screenWidth, screenHeight);
+    super.getHeader();
     output("// ******************************************************\n");
     output("// Created by Jmol " + Viewer.getJmolVersion() + "\n");
     output("//\n");
@@ -142,10 +111,6 @@ public class _PovrayExporter extends _Exporter {
     output("\n");
 
     writeMacros();
-  }
-
-  public void getFooter() {
-    // no footer
   }
 
   private void writeMacros() {
@@ -352,64 +317,61 @@ public class _PovrayExporter extends _Exporter {
 
   }
 
-  public void renderAtom(Atom atom, short colix) {
-    fillSphereCentered(atom.screenDiameter, atom.screenX, atom.screenY,
-        atom.screenZ, colix);
+  protected void outputCircle(int x, int y, int z, float radius, short colix,
+                              boolean doFill) {
+    output((doFill ? "b(" : "c(") + x + "," + y + "," + z + "," + radius + ","
+        + x + "," + y + "," + (z + 1) + "," + (radius + 2) + ","
+        + color4(colix) + ")\n");
   }
 
-  public void fillCylinder(Point3f atom1, Point3f atom2, short colix1,
-                           short colix2, byte endcaps, int madBond,
-                           int bondOrder) {
+  protected void outputCircleScreened(int x, int y, int z, float radius, short colix) {
+    //halos
+    output("b(" + x + "," + y + "," + z + "," + radius + "," 
+        + x + "," + y + "," + (z + 1) + "," + radius + "," 
+        + rgbFractionalFromColix(colix, ',') + ",0.8)\n");
+  }
 
-    if (colix1 == colix2) {
-      renderJoint(atom1, colix1, endcaps, madBond);
-      renderCylinder(atom1, atom2, colix1, endcaps, madBond);
-      renderJoint(atom2, colix2, endcaps, madBond);
+  protected void outputComment(String comment) {
+    output("// " + comment);
+  }
+
+  protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,
+                            short colix) {
+    output("b(" + triad(screenBase) + "," + radius + ","
+        + triad(screenTip) + ",0" + "," + color4(colix) + ")\n");
+  }
+
+  protected void outputCylinderCapped(Point3f screenA, Point3f screenB, float radius,
+                              short colix, byte endcaps) {
+    String color = color4(colix);
+    output((endcaps == Graphics3D.ENDCAPS_FLAT ? "b(" : "c(") 
+        + triad(screenA) + "," + radius + "," + triad(screenB) + ","
+        + radius + "," + color + ")\n");
+    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL)
       return;
-    }
-
-    tempV2.set(atom2);
-    tempV2.add(atom1);
-    tempV2.scale(0.5f);
-    tempP1.set(tempV2);
-    renderJoint(atom1, colix1, endcaps, madBond);
-    renderCylinder(atom1, tempP1, colix1, endcaps, madBond);
-    renderCylinder(tempP1, atom2, colix2, endcaps, madBond);
-    renderJoint(atom2, colix2, endcaps, madBond);
+    output("a(" + triad(screenA) + "," + radius + "," + color + ")\n");
+    output("a(" + triad(screenB) + "," + radius + "," + color + ")\n");
+  }
+  
+  protected void outputCylinderConical(Point3f screenA, Point3f screenB,
+                                       float radius1, float radius2, short colix) {
+    output("b(" + triad(screenA) + "," + radius1 + "," + triad(screenB) + ","
+        + radius2 + "," + color4(colix) + ")\n");
   }
 
-  public void renderCylinder(Point3f pt1, Point3f pt2, short colix,
-                             byte endcaps, int madBond) {
-    short d = viewer.scaleToScreen((int) pt1.z, madBond);
-    if (pt1.distance(pt2) == 0) {
-      fillSphereCentered(colix, d, pt1);
-      return;
-    }
-    //transformPoint is not needed when bonds are rendered via super.fillCylinders
-    //viewer.transformPoint(pt1, tempP1);
-    //viewer.transformPoint(pt2, tempP2);
-    float radius1 = d / 2f;
-    float radius2 = viewer.scaleToScreen((int) pt2.z, madBond / 2);
-
-    // (float)viewer.getBondRadius(i);
-
-    output("b(" + triad(pt1) + "," + radius1 + ","
-        + triad(pt2) + "," + radius2 + "," + color4(colix) + ")\n");
+  protected void outputEllipsoid(double[] coef, short colix) {
+    // no quadrant cut-out here
+    String s = coef[0] + "," + coef[1] + "," + coef[2] + "," + coef[3] + ","
+        + coef[4] + "," + coef[5] + "," + coef[6] + "," + coef[7] + ","
+        + coef[8] + "," + coef[9] + "," + color4(colix);
+    output("q(" + s + ")\n");
   }
 
-  private void renderJoint(Point3f pt, short colix, byte endcaps, int madBond) {
-    // povray by default creates flat endcaps, therefore
-    //   joints are only needed in the other cases.
-    if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-      float radius = viewer.scaleToScreen((int) pt.z, madBond / 2);
-      output("a(" + triad(pt) + "," + radius + "," + color4(colix) + ")\n");
-    }
-  }
-
-  public void renderIsosurface(Point3f[] vertices, short colix,
-                               short[] colixes, Vector3f[] normals,
-                               int[][] indices, BitSet bsFaces, int nVertices,
-                               int faceVertexMax, short[] polygonColixes, int nPolygons) {
+  protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
+                                  short[] colixes, int[][] indices, 
+                                  short[] polygonColixes,
+                                  int nVertices, int nPolygons, BitSet bsFaces,
+                                  int faceVertexMax, short colix) {
     if (nVertices == 0)
       return;
     int nFaces = 0;
@@ -459,7 +421,7 @@ public class _PovrayExporter extends _Exporter {
       for (int i = 0; i < nVertices; i++) {
         //        if (i % 10 == 0)
         //          output("\n");
-        output(", <" + triad(getNormal(vertices[i], normals[i])) + ">");
+        output(", <" + triad(getScreenNormal(vertices[i], normals[i])) + ">");
         output(" //" + i + "\n");
       }
       output("\n}\n");
@@ -543,132 +505,27 @@ public class _PovrayExporter extends _Exporter {
 
   }
 
-  private Point3f getNormal(Point3f pt, Vector3f normal) {
-    if (Float.isNaN(normal.x)) {
-      tempP3.set(0, 0, 0);
-      return tempP3;
-    }
-    tempP1.set(pt);
-    tempP1.add(normal);
-    viewer.transformPoint(pt, tempP2);
-    viewer.transformPoint(tempP1, tempP3);
-    tempP3.sub(tempP2);
-    return tempP3;
+  protected void outputSphere(Point3f pt, float radius, short colix) {
+    //cartoons, rockets, trace:    
+    output("a(" + triad(pt) + "," + radius + "," + color4(colix)
+        + ")\n");
   }
 
-  public void fillCylinder(short colix, byte endcaps, int diameter,
-                           Point3f screenA, Point3f screenB) {
-    if (screenA.distance(screenB) == 0) {
-      fillSphereCentered(diameter, screenA.x, screenA.y, screenA.z, colix);
-      return;
-    }
-    float radius1 = diameter / 2f;
-    float radius2 = radius1;
-    String color = color4(colix);
-    output((endcaps == Graphics3D.ENDCAPS_FLAT ? "b(" : "c(") 
-        + triad(screenA) + "," + radius1 + "," + triad(screenB) + ","
-        + radius2 + "," + color + ")\n");
-    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL)
-      return;
-    output("a(" + triad(screenA) + "," + radius1 + "," + color + ")\n");
-    output("a(" + triad(screenB) + "," + radius2 + "," + color + ")\n");
-  }
-
-  public void drawCircleCentered(short colix, int diameter, int x,
-                                         int y, int z, boolean doFill) {
-    //draw circle
-    float r = diameter / 2.0f;
-    output((doFill ? "b(" : "c(") + x + "," + y + "," + z + "," + r + "," 
-        + x + "," + y + "," + (z + 1) + "," + (r + 2) + "," 
+  protected void outputSphere(float x, float y, float z, float radius,
+                                  short colix) {
+   output("a(" + x + "," + y + "," + z + "," + radius + ","
         + color4(colix) + ")\n");
   }
-
-  public void fillScreenedCircleCentered(short colix, int diameter, int x,
-                                         int y, int z) {
-    //halos
-    float r = diameter / 2.0f;
-    output("b(" + x + "," + y + "," + z + "," + r + "," 
-        + x + "," + y + "," + (z + 1) + "," + r + "," 
-        + rgbFractionalFromColix(colix, ',') + ",0.8)\n");
-  }
-
-  public void drawPixel(short colix, int x, int y, int z) {
-    //measures, meshRibbon
-    fillSphereCentered(1.5f, x, y, z, colix);
-  }
-
-  public void drawTextPixel(int argb, int x, int y, int z) {
+  
+  public void outputTextPixel(int x, int y, int z, int argb) {
     //text only
     output("p(" + x + "," + y + "," + z + "," + 
         rgbFractionalFromArgb(argb, ',') + ")\n");
   }
   
-  public void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
+  protected void outputTriangle(Point3f ptA, Point3f ptB, Point3f ptC, short colix) {
     //cartoons, mesh, isosurface
     output("r(" + triad(ptA) + "," + triad(ptB) + "," + triad(ptC) + ","
         + color4(colix) + ")\n");
-  }
-
-  public void fillCone(short colix, byte endcap, int diameter,
-                       Point3f screenBase, Point3f screenTip) {
-    output("b(" + triad(screenBase) + "," + (diameter / 2f) + ","
-        + triad(screenTip) + ",0" + "," + color4(colix) + ")\n");
-  }
-
-  public void fillSphereCentered(short colix, int diameter, Point3f pt) {
-    //cartoons, rockets, trace:    
-    output("a(" + triad(pt) + "," + (diameter / 2.0f) + "," + color4(colix)
-        + ")\n");
-  }
-
-  private void fillSphereCentered(float diameter, float x, float y, float z,
-                                  short colix) {
-   output("a(" + x + "," + y + "," + z + "," + (diameter / 2.0f) + ","
-        + color4(colix) + ")\n");
-  }
-
-  int nText;
-  int nImage;
-  public void plotText(int x, int y, int z, short colix,
-                       String text, Font3D font3d) {
-    // trick here is that we use Jmol's standard g3d package to construct
-    // the bitmap, but then output to jmolRenderer, which returns control
-    // here via drawPixel.
-    output("// start text " + (++nText) + ": " + text + "\n");
-    g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d, jmolRenderer);
-    output("// end text " + nText + ": " + text + "\n");
-  }
-
-  public void plotImage(int x, int y, int z, Image image, short bgcolix, 
-                        int width, int height) {
-    output("// start image " + (++nImage) + "\n");
-    g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
-    output("// end image " + nImage + "\n");
-  }
-  
-  public void renderEllipsoid(Point3f center, Point3f[] points, short colix, 
-                              int x, int y, int z, int diameter,
-                              Matrix3f toEllipsoidal, double[] coef,
-                              Matrix4f deriv, Point3i[] octantPoints) {
-    // no quadrant cut-out here
-    String s = coef[0] + "," + coef[1] + "," + coef[2] + "," + coef[3] + ","
-        + coef[4] + "," + coef[5] + "," + coef[6] + "," + coef[7] + ","
-        + coef[8] + "," + coef[9] + "," + color4(colix);
-    output("q(" + s + ")\n");
-  }
-
-  // not needed:
-  
-  public void renderText(Text t) {
-  }
-
-  public void drawString(short colix, String str, Font3D font3d, int xBaseline,
-                         int yBaseline, int z, int zSlab) {
-  }
-  
-  public void endShapeBuffer() {
-  }
-
-  public void startShapeBuffer(int iShape) {
   }
 }

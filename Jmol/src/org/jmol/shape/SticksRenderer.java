@@ -77,8 +77,6 @@ public class SticksRenderer extends ShapeRenderer {
     mad = bond.getMad();
     atomA = bond.getAtom1();
     atomB = bond.getAtom2();
-    if (isGenerator)
-      System.out.println("Sticksrenderer");
     if (!atomA.isInFrame() || !atomB.isInFrame()
         || !g3d.isInDisplayRange(atomA.screenX, atomA.screenY)
         || !g3d.isInDisplayRange(atomB.screenX, atomB.screenY)
@@ -136,17 +134,17 @@ public class SticksRenderer extends ShapeRenderer {
     case 2:
     case 3:
     case 4:
-      renderBond(0);
+      drawBond(0);
       break;
     case JmolConstants.BOND_ORDER_UNSPECIFIED:
     case JmolConstants.BOND_AROMATIC_SINGLE:
       bondOrder = 1;
-      renderBond(order == JmolConstants.BOND_AROMATIC_SINGLE ? 0 : 1);
+      drawBond(order == JmolConstants.BOND_AROMATIC_SINGLE ? 0 : 1);
       break;
     case JmolConstants.BOND_AROMATIC:
     case JmolConstants.BOND_AROMATIC_DOUBLE:
       bondOrder = 2;
-      renderBond(order == JmolConstants.BOND_AROMATIC ? getAromaticDottedBondMask()
+      drawBond(order == JmolConstants.BOND_AROMATIC ? getAromaticDottedBondMask()
           : 0);
       break;
     case JmolConstants.BOND_STEREO_NEAR:
@@ -156,11 +154,11 @@ public class SticksRenderer extends ShapeRenderer {
     default:
       if ((bondOrder & JmolConstants.BOND_PARTIAL_MASK) != 0) {
         bondOrder = JmolConstants.getPartialBondOrder(order);
-        renderBond(JmolConstants.getPartialBondDotted(order));
+        drawBond(JmolConstants.getPartialBondDotted(order));
       } else if ((bondOrder & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
         if (hbondsSolid) {
           bondOrder = 1;
-          renderBond(0);
+          drawBond(0);
         } else {
           renderHbondDashed();
         }
@@ -188,7 +186,7 @@ public class SticksRenderer extends ShapeRenderer {
   }
 
   protected boolean lineBond;
-  protected void renderBond(int dottedMask) {
+  protected void drawBond(int dottedMask) {
     lineBond = (width <= 1);
     if (lineBond && (isAntialiased || isGenerator)) {
       width = 3;

@@ -29,7 +29,6 @@
  
 package org.jmol.export;
 
-import java.awt.Image;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -39,18 +38,14 @@ import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.Geodesic;
-import org.jmol.modelset.Atom;
-import org.jmol.shape.Text;
 import org.jmol.util.Quaternion;
 
-public class _IdtfExporter extends _Exporter {
+public class _IdtfExporter extends __CartesianExporter {
 
   /*
    * by Bob Hanson 8/6/2009 -- preliminary only -- needs testing
@@ -168,12 +163,6 @@ public class _IdtfExporter extends _Exporter {
   private boolean haveCone;
   private boolean haveCircle;
   
-  public _IdtfExporter() {
-    use2dBondOrderCalculation = true;
-    canDoTriangles = false;
-    isCartesianExport = true;
-  }
-
   private void output(Tuple3f pt, StringBuffer sb,boolean checkpt) {
     if (checkpt)
       checkPoint(pt);
@@ -201,14 +190,13 @@ public class _IdtfExporter extends _Exporter {
   private int iObj;
   private Hashtable htDefs = new Hashtable();
   
-  final private Point3f ptAtom = new Point3f();
   final private Matrix4f m = new Matrix4f();
 
   final private StringBuffer models = new StringBuffer();
   final private StringBuffer resources = new StringBuffer();
   final private StringBuffer modifiers = new StringBuffer();
 
-  public void getHeader() {
+  protected void getHeader() {
     // next is an approximation only 
     output.append("FILE_FORMAT \"IDTF\"\nFORMAT_VERSION 100\n");
 
@@ -301,7 +289,7 @@ public class _IdtfExporter extends _Exporter {
     modifiers.append("}}}}}\n");
   }
 
-  public void getFooter() {
+  protected void getFooter() {
     htDefs = null;
     outputNodes();
     output.append(models);
@@ -432,29 +420,21 @@ public class _IdtfExporter extends _Exporter {
     }
   }
 
-  public void renderAtom(Atom atom, short colix) {
-    float r = atom.getMadAtom() / 2000f;
-    outputSphere(atom, r, colix);
-  }
-
-  public void drawPixel(short colix, int x, int y, int z) {
-    // dots
-    pt.set(x, y, z);
-    viewer.unTransformPoint(pt, ptAtom);
-    outputSphere(ptAtom, 0.02f, colix);
-  }
+  protected void outputEllipsoid(Point3f center, Point3f[] points, short colix) {
+    //Hey, hey -- quaternions to the rescue!
+    // Just send three points to Quaternion to define a plane and return
+    // the AxisAngle required to rotate to that position. That's all there is to it.
     
-  public void fillSphereCentered(short colix, int diameter, Point3f pt) {
-    viewer.unTransformPoint(pt, ptAtom);
-    outputSphere(ptAtom, viewer.unscaleToScreen((int)pt.z, diameter) / 2, colix);
+    AxisAngle4f a = Quaternion.getQuaternionFrame(center, points[1], points[3]).toAxisAngle4f();
+    float sx = points[1].distance(center);
+    float sy = points[3].distance(center);
+    float sz = points[5].distance(center);
+    outputEllipsoid(center, sx, sy, sz, a, colix);
   }
 
   private Matrix4f sphereMatrix = new Matrix4f();
   private Matrix4f cylinderMatrix = new Matrix4f();
 
-  private void outputSphere(Point3f center, float radius, short colix) {
-    outputEllipsoid(center, radius, radius, radius, null, colix);
-  }
   private void outputEllipsoid(Point3f center, float rx, float ry, float rz, AxisAngle4f a, short colix) {
     if (!haveSphere) {
       models.append(getSphereResource());
@@ -562,45 +542,14 @@ public class _IdtfExporter extends _Exporter {
            .append("SHADER_ID 0\n}}\n");
   }
 
-  private final Point3f pt2 = new Point3f();
-  public void fillCylinder(Point3f ptA, Point3f ptB, short colix1,
-                           short colix2, byte endcaps, int diameter,
-                           int bondOrder) {
-    if (bondOrder == -1) {
-      // really first order -- but actual coord
-      ptAtom.set(ptA);
-      pt2.set(ptB);
-    } else {
-      viewer.unTransformPoint(ptA, ptAtom);
-      viewer.unTransformPoint(ptB, pt2);
-    }
-    int madBond = diameter;
-    if (madBond < 20)
-      madBond = 20;
-    if (colix1 == colix2) {
-      outputCylinder(ptAtom, pt2, colix1, endcaps, madBond);
-    } else {
-      tempV2.set(pt2);
-      tempV2.add(ptAtom);
-      tempV2.scale(0.5f);
-      pt.set(tempV2);
-      outputCylinder(ptAtom, pt, colix1, Graphics3D.ENDCAPS_FLAT, madBond);
-      outputCylinder(pt, pt2, colix2, Graphics3D.ENDCAPS_FLAT, madBond);
-      if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-        outputSphere(ptAtom, madBond / 2000f*1.01f, colix1);
-        outputSphere(pt2, madBond / 2000f*1.01f, colix2);
-      }
-    }
-  }
-
-  private void outputCylinder(Point3f pt1, Point3f pt2, short colix,
-                             byte endcaps, int madBond) {
+  protected void outputCylinder(Point3f pt1, Point3f pt2, short colix,
+                             byte endcaps, float radius) {
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-      outputSphere(pt1, madBond / 2000f*1.01f, colix);
-      outputSphere(pt2, madBond / 2000f*1.01f, colix);
+      outputSphere(pt1, radius*1.01f, colix);
+      outputSphere(pt2, radius*1.01f, colix);
     } else if (endcaps == Graphics3D.ENDCAPS_FLAT) {
-      outputCircle(pt1, pt2, colix, madBond);      
-      outputCircle(pt2, pt1, colix, madBond);      
+      outputCircle(pt1, pt2, colix, radius);      
+      outputCircle(pt2, pt1, colix, radius);      
     }
     if (!haveCylinder) {
       models.append(getCylinderResource());
@@ -617,7 +566,6 @@ public class _IdtfExporter extends _Exporter {
       htNodes.put(key, v);
       addShader(key, colix);
     }
-    float radius = madBond / 2000f;
     cylinderMatrix.set(getRotationMatrix(pt1, pt2, radius));
     cylinderMatrix.m03 = pt1.x;
     cylinderMatrix.m13 = pt1.y;
@@ -626,7 +574,29 @@ public class _IdtfExporter extends _Exporter {
     v.add(getParentItem("Jmol", cylinderMatrix));
   }
 
-  private void outputCircle(Point3f ptCenter, Point3f ptPerp, short colix, int madBond) {
+  protected void outputCircle(Point3f pt1, Point3f pt2, float radius,
+                              short colix, boolean doFill) {
+    if (doFill) {
+      outputCircle(pt1, pt2, colix, radius);
+      return;
+    }
+    if (true)
+      return;
+    // the halo edges really slow rendering and aren't that important.
+    float rpd = 3.1415926f / 180;
+    Point3f[] pts = new Point3f[73];
+    for (int i = 0, p = 0; i <= 360; i += 5, p++) {
+      pts[p] = new Point3f((float) (Math.cos(i * rpd) * radius), (float) (Math
+          .sin(i * rpd) * radius), 0);
+      pts[p].add(pt1);
+    }
+    radius = (int) (0.02f * radius);
+    for (int i = 0; i < 72; i++) {
+      outputCylinder(pts[i], pts[i + 1], colix, Graphics3D.ENDCAPS_FLAT, radius);
+    }
+  }
+
+  private void outputCircle(Point3f ptCenter, Point3f ptPerp, short colix, float radius) {
     if (!haveCircle) {
       models.append(getCircleResource());
       haveCircle = true;
@@ -641,7 +611,6 @@ public class _IdtfExporter extends _Exporter {
       addShader(key, colix);
     }
     checkPoint(ptCenter);
-    float radius = madBond / 2000f;
     cylinderMatrix.set(getRotationMatrix(ptCenter, ptPerp, radius));
     cylinderMatrix.m03 = ptCenter.x;
     cylinderMatrix.m13 = ptCenter.y;
@@ -704,11 +673,11 @@ public class _IdtfExporter extends _Exporter {
     return getMeshData("Cylinder", faces, vertexes, normals);
   }
 
-  public void renderIsosurface(Point3f[] vertices, short colix,
-                               short[] colixes, Vector3f[] normals,
-                               int[][] indices, BitSet bsFaces, int nVertices,
-                               int faceVertexMax, short[] polygonColixes,
-                               int nPolygons) {
+  protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
+                                  short[] colixes, int[][] indices,
+                                  short[] polygonColixes,
+                                  int nVertices, int nPolygons, BitSet bsFaces,
+                                  int faceVertexMax, short colix) {
     if (nVertices == 0)
       return;
     int nFaces = 0;
@@ -885,19 +854,14 @@ public class _IdtfExporter extends _Exporter {
     models.append("}}}\n");
   }
 
-  public void fillCone(short colix, byte endcap, int diameter,
-                       Point3f screenBase, Point3f screenTip) {
-    viewer.unTransformPoint(screenBase, tempP1);
-    viewer.unTransformPoint(screenTip, tempP2);
-    float radius = viewer.unscaleToScreen((int)screenBase.z, diameter) / 2f;
-    if (radius < 0.05f)
-      radius = 0.05f;
+  protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
+                            short colix) {
     if (!haveCone) {
       models.append(getConeResource());
       haveCone = true;
     }
-    checkPoint(tempP1);
-    checkPoint(tempP2);
+    checkPoint(ptBase);
+    checkPoint(ptTip);
     addColix(colix, false);
     String key = "Cone_" + colix;
     Vector v = (Vector) htNodes.get(key);
@@ -906,10 +870,10 @@ public class _IdtfExporter extends _Exporter {
       htNodes.put(key, v);
       addShader(key, colix);
     }
-    cylinderMatrix.set(getRotationMatrix(tempP1, tempP2, radius));
-    cylinderMatrix.m03 = tempP1.x;
-    cylinderMatrix.m13 = tempP1.y;
-    cylinderMatrix.m23 = tempP1.z;
+    cylinderMatrix.set(getRotationMatrix(ptBase, ptTip, radius));
+    cylinderMatrix.m03 = ptBase.x;
+    cylinderMatrix.m13 = ptBase.y;
+    cylinderMatrix.m23 = ptBase.z;
     cylinderMatrix.m33 = 1;
     v.add(getParentItem("Jmol", cylinderMatrix));
   }
@@ -959,29 +923,19 @@ public class _IdtfExporter extends _Exporter {
     return getMeshData("Circle", faces, vertexes, normals);
   }
   
-  public void fillCylinder(short colix, byte endcaps, int diameter,
-                           Point3f screenA, Point3f screenB) {
-    Point3f ptA = new Point3f();
-    Point3f ptB = new Point3f();
-    viewer.unTransformPoint(screenA, ptA);
-    viewer.unTransformPoint(screenB, ptB);
-    int madBond = (int) (viewer.unscaleToScreen(
-        (int)((screenA.z + screenB.z) / 2), diameter) * 1000);      
-    if (madBond < 20)
-      madBond = 20;
-    outputCylinder(ptA, ptB, colix, endcaps, madBond);
-    // nucleic base
+  protected void outputSphere(Point3f center, float radius, short colix) {
+    outputEllipsoid(center, radius, radius, radius, null, colix);
   }
 
-  public void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
-    // nucleic base
-    // just preliminary here 
-    viewer.unTransformPoint(ptA, tempP1);
-    viewer.unTransformPoint(ptB, tempP2);
-    viewer.unTransformPoint(ptC, tempP3);
+  protected void outputTextPixel(Point3f pt, int argb) {    
+    short colix = Graphics3D.getColix(argb); 
+    outputSphere(pt, 0.02f, colix);
+  }
+
+  protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3, short colix) {
     addColix(colix, false);
     String key = "T" + (++iObj);
-    models.append(getTriangleResource(key, tempP1, tempP2, tempP3));
+    models.append(getTriangleResource(key, pt1, pt2, pt3));
     Vector v = new Vector();
     htNodes.put(key, v);
     addShader(key, colix);
@@ -1003,94 +957,6 @@ public class _IdtfExporter extends _Exporter {
     tempV2.normalize();
     Vector3f[] normals = new Vector3f[] { tempV2, tempV2, tempV2 };
     return getMeshData(key, faces, vertexes, normals);
-  }
-
-  public void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
-    // trick here is that we use Jmol's standard g3d package to construct
-    // the bitmap, but then output to jmolRenderer, which returns control
-    // here via drawPixel.
-    if (z < 3) {
-      viewer.transformPoint(center, pt);
-      z = (int)pt.z;
-    }
-    g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d, jmolRenderer);
-  }
-
-  public void startShapeBuffer(int iShape) {
-  }
-
-  public void endShapeBuffer() {
-  }
-
-  public void renderText(Text t) {
-  }
-
-  public void drawString(short colix, String str, Font3D font3d, int xBaseline,
-                         int yBaseline, int z, int zSlab) {
-  }
-
-  public void drawCircleCentered(short colix, int diameter, int x, int y,
-                                 int z, boolean doFill) {
-
-    pt.set(x, y, z);
-    viewer.unTransformPoint(pt, ptAtom);
-    float d = viewer.unscaleToScreen(z, diameter);
-    int mad = (int) (d * 1000);
-    pt.set(x, y, z + 1);
-    viewer.unTransformPoint(pt, pt);
-    if (doFill) {
-      outputCircle(ptAtom, pt, colix, mad);
-      return;
-    }
-    if (true)
-      return;
-    // the halo edges really slow rendering and aren't that important.
-    float rpd = 3.1415926f / 180;
-    Point3f[] pts = new Point3f[73];
-    for (int i = 0, p = 0; i <= 360; i += 5, p++) {
-      pts[p] = new Point3f((float) (Math.cos(i * rpd) * d / 2), (float) (Math
-          .sin(i * rpd)
-          * d / 2), 0);
-      pts[p].add(ptAtom);
-    }
-    mad = (int) (0.02f * 2 / d * 1000);
-    for (int i = 0; i < 72; i++) {
-      outputCylinder(pts[i], pts[i+1], colix, Graphics3D.ENDCAPS_FLAT, mad);
-    }
-  }
-
-  public void fillScreenedCircleCentered(short colix, int diameter, int x,
-                                         int y, int z) {
-    drawCircleCentered(colix, diameter, x, y, z, false);
-    drawCircleCentered(Graphics3D.getColixTranslucent(colix, true, 0.5f), 
-        diameter, x, y, z, true);
-  }
-
-  public void drawTextPixel(int argb, int x, int y, int z) {
-    // text only
-    pt.set(x, y, z);
-    viewer.unTransformPoint(pt, ptAtom);
-    short colix = Graphics3D.getColix(argb); 
-    outputSphere(ptAtom, 0.02f, colix);
-  }
-
-  public void plotImage(int x, int y, int z, Image image, short bgcolix,
-                        int width, int height) {
-    // background, for example
-  }
-
-  void renderEllipsoid(Point3f center, Point3f[] points, short colix, int x,
-                       int y, int z, int diameter, Matrix3f toEllipsoidal,
-                       double[] coef, Matrix4f deriv, Point3i[] octantPoints) {
-    //Hey, hey -- quaternions to the rescue!
-    // Just send three points to Quaternion to define a plane and return
-    // the AxisAngle required to rotate to that position. That's all there is to it.
-    
-    AxisAngle4f a = Quaternion.getQuaternionFrame(center, points[1], points[3]).toAxisAngle4f();
-    float sx = points[1].distance(center);
-    float sy = points[3].distance(center);
-    float sz = points[5].distance(center);
-    outputEllipsoid(center, sx, sy, sz, a, colix);
   }
 
 }

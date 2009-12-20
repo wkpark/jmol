@@ -75,7 +75,7 @@ public interface JmolRendererInterface {
    * @param z center z
    * @param doFill fill or not
    */
-  public abstract void drawCircleCentered(short colix, int diameter, int x, int y, int z,
+  public abstract void drawCircle(short colix, int diameter, int x, int y, int z,
                                           boolean doFill);
 
 
@@ -88,7 +88,7 @@ public interface JmolRendererInterface {
    * @param y center y
    * @param z center z
    */
-  public abstract void fillScreenedCircleCentered(short colixFill,
+  public abstract void fillScreenedCircle(short colixFill,
                                                   int diameter, int x, int y,
                                                   int z);
 
@@ -100,7 +100,7 @@ public interface JmolRendererInterface {
    * @param y center y
    * @param z center z
    */
-  public abstract void fillSphereCentered(int diameter, int x, int y, int z);
+  public abstract void fillSphere(int diameter, int x, int y, int z);
 
   /**
    * fills a solid sphere
@@ -109,7 +109,7 @@ public interface JmolRendererInterface {
    * @param center javax.vecmath.Point3i defining the center
    */
 
-  public abstract void fillSphereCentered(int diameter, Point3i center);
+  public abstract void fillSphere(int diameter, Point3i center);
 
   /**
    * fills a solid sphere
@@ -117,7 +117,7 @@ public interface JmolRendererInterface {
    * @param diameter pixel count
    * @param center a javax.vecmath.Point3f ... floats are casted to ints
    */
-  public abstract void fillSphereCentered(int diameter, Point3f center);
+  public abstract void fillSphere(int diameter, Point3f center);
 
   /**
    * draws a rectangle
@@ -317,7 +317,7 @@ public interface JmolRendererInterface {
 
   public abstract byte getFontFid(float fontSize);
 
-  public abstract void renderEllipsoid(Point3f center, Point3f[] points, int x, int y, int z, 
+  public abstract void fillEllipsoid(Point3f center, Point3f[] points, int x, int y, int z, 
       int diameter, Matrix3f mToEllipsoidal, double[] coef, Matrix4f mDeriv, int selectedOctant, Point3i[] octantPoints);
 
   public abstract void drawImage(Image image, int x, int y, int z, int zslab, short bgcolix, int width, int height);
@@ -325,8 +325,6 @@ public interface JmolRendererInterface {
   public abstract void startShapeBuffer(int iShape);
 
   public abstract void endShapeBuffer();
-
-  public abstract boolean canDoTriangles();
 
   public abstract boolean isCartesianExport();
   

@@ -128,7 +128,7 @@ public class DrawRenderer extends MeshRenderer {
       if (width > 0)
         diameter = viewer.scaleToScreen(pt1i.z, (int) (width * 1000));
       if (diameter > 0 && (mesh.drawTriangles || mesh.fillTriangles))
-        g3d.drawCircleCentered(colix, diameter, pt1i.x, pt1i.y, pt1i.z,
+        g3d.drawCircle(colix, diameter, pt1i.x, pt1i.y, pt1i.z,
             mesh.fillTriangles);
       break;
     case JmolConstants.DRAW_CURVE:
@@ -331,7 +331,7 @@ public class DrawRenderer extends MeshRenderer {
           continue;
         for (int j = vertexIndexes.length; --j >= 0;) {
           int k = vertexIndexes[j];
-          g3d.fillScreenedCircleCentered(Graphics3D.GOLD, diameter, screens[k].x,
+          g3d.fillScreenedCircle(Graphics3D.GOLD, diameter, screens[k].x,
               screens[k].y, screens[k].z);
         }
         break;

@@ -237,7 +237,10 @@ public class JmolPanel extends JPanel implements SplashInterface {
     Image iconImage = jmolIcon.getImage();
     frame.setIconImage(iconImage);
 
-    // Repositionning windows
+    // Repositioning windows
+
+    historyFile.repositionWindow("Jmol", getFrame(), 300, 300);
+
     Component c = (Component) viewer.getProperty("DATA_API","getAppConsole", null);
     if (c != null)
       historyFile.repositionWindow(SCRIPT_WINDOW_NAME, c, 200, 100);
@@ -433,20 +436,20 @@ public class JmolPanel extends JPanel implements SplashInterface {
   }
 
   void doClose() {
+    dispose(this.frame);
+  }
+
+  private void dispose(JFrame f) {
     // Save window positions and status in the history
     if (historyFile != null) {
       if (display != null) {
         jmolApp.border.x = this.getFrame().getWidth() - display.dimSize.width;
         jmolApp.border.y = this.getFrame().getHeight() - display.dimSize.height;
-        historyFile.addWindowInfo("Jmol", this.frame, jmolApp.border);
+        historyFile.addWindowInfo("Jmol", this.getFrame(), jmolApp.border);
       }
       //System.out.println("doClose border: " + border);
       //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
     }
-    dispose(this.frame);
-  }
-
-  private void dispose(JFrame f) {
     Component c = (Component) viewer.getProperty("DATA_API","getAppConsole", null);
     if (c != null)
       historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, c, null);

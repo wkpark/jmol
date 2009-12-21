@@ -66,6 +66,8 @@ public interface JmolRendererInterface {
 
   public abstract void renderBackground();
   
+  public abstract void drawAtom(Atom atom);
+
   /**
    * draws a screened circle ... every other dot is turned on
    *
@@ -200,6 +202,9 @@ public interface JmolRendererInterface {
   public abstract void drawLine(short colixA, short colixB, int x1, int y1,
                                 int z1, int x2, int y2, int z2);
 
+  public abstract void fillCylinder(Atom atomA, Atom atomB, short colixA,
+                                    short colixB, byte endcaps, short mad, int bondOrder);
+
   public abstract void fillCylinder(short colixA, short colixB, byte endcaps,
                                     int diameter, int xA, int yA, int zA,
                                     int xB, int yB, int zB);
@@ -328,10 +333,5 @@ public interface JmolRendererInterface {
   public abstract String finalizeOutput();
 
   public abstract short[] getBgColixes(short[] bgcolixes);
-
-  public abstract void drawAtom(Atom atom);
-
-  public abstract void fillCylinder(Atom atomA, Atom atomB, short colixA,
-                                    short colixB, byte endcaps, short mad, int bondOrder);
 
 }

@@ -217,7 +217,7 @@ class RepaintManager {
       Shape shape = modelSet.getShape(i);
       if (shape == null)
         continue;
-      ShapeRenderer generator = getGenerator(i, g3d);
+      ShapeRenderer generator = getRenderer(i, g3d);
       generator.setGenerator(true);
       generator.render(g3dExport, modelSet, shape);
       generator.setGenerator(false);
@@ -225,6 +225,9 @@ class RepaintManager {
     return g3dExport.finalizeOutput();
   }
 
+  /*
+   * no longer necessary
+   * 
   private ShapeRenderer getGenerator(int shapeID, Graphics3D g3d) {
     String className = "org.jmol.export."
         + JmolConstants.getShapeClassName(~shapeID) + "Generator";
@@ -238,4 +241,5 @@ class RepaintManager {
       return getRenderer(shapeID, g3d);
     }
   }
+  */
 }

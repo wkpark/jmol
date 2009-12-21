@@ -54,9 +54,6 @@ public class IsosurfaceMesh extends Mesh {
   Object calculatedVolume;
   public boolean isSolvent;
   
-  public float[] vertexValues;  
-  public short[] vertexColixes;
-  
   IsosurfaceMesh(String thisID, Graphics3D g3d, short colix, int index) {
     super(thisID, g3d, colix, index);
     haveCheckByte = true;
@@ -149,7 +146,6 @@ public class IsosurfaceMesh extends Mesh {
           Graphics3D.getColixTranslucent(vertexColixes[i], isTranslucent, iLevel);
   }
 
-  public short[] polygonColixes;
   private int lastColor;
   private short lastColix;
   

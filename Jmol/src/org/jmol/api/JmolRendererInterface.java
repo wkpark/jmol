@@ -11,6 +11,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.modelset.Atom;
 import org.jmol.viewer.Viewer;
 
 public interface JmolRendererInterface {
@@ -327,5 +328,10 @@ public interface JmolRendererInterface {
   public abstract String finalizeOutput();
 
   public abstract short[] getBgColixes(short[] bgcolixes);
+
+  public abstract void drawAtom(Atom atom);
+
+  public abstract void fillCylinder(Atom atomA, Atom atomB, short colixA,
+                                    short colixB, byte endcaps, short mad, int bondOrder);
 
 }

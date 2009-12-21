@@ -36,6 +36,7 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.modelset.Atom;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -2840,6 +2841,11 @@ final public class Graphics3D implements JmolRendererInterface {
           jmolRenderer, (short) 0, 0, 0);
   }
 
+  public void drawAtom(Atom atom) {
+    fillSphere(atom.screenDiameter,
+        atom.screenX, atom.screenY, atom.screenZ);
+  }
+
   // implemented only for Export3D:
   
   public boolean canDoTriangles() {
@@ -2862,4 +2868,9 @@ final public class Graphics3D implements JmolRendererInterface {
   public short[] getBgColixes(short[] bgcolixes) {
     return bgcolixes;
   }
+
+  public void fillCylinder(Atom atomA, Atom atomB, short colixA, short colixB,
+                           byte endcaps, short mad, int bondOrder) {
+  }
+
 }

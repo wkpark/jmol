@@ -45,6 +45,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected int diameter;
   protected float width;
   protected boolean isTranslucent;
+  protected int faceVertexMax = 4;
 
   protected final Point3f pt1f = new Point3f();
   protected final Point3f pt2f = new Point3f();
@@ -236,9 +237,12 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   protected void drawIsosurface() {
-      g3d.renderIsosurface(mesh.vertices, mesh.colix, null,
-          mesh.getVertexNormals(), mesh.polygonIndexes, bsFaces, 
-          mesh.vertexCount, 4, null, mesh.polygonCount);
+    g3d.renderIsosurface(mesh.vertices, mesh.colix, 
+        mesh.isColorSolid ? null : mesh.vertexColixes, 
+        mesh.getVertexNormals(), mesh.polygonIndexes,
+        bsFaces, mesh.vertexCount, faceVertexMax,
+        mesh.isColorSolid ? mesh.polygonColixes : null, 
+        mesh.polygonCount);
   }
-   
+  
 }

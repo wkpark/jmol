@@ -96,7 +96,7 @@ public class BallsRenderer extends ShapeRenderer {
           if (atom.screenY > maxY)
             maxY = atom.screenY;
         }
-        drawAtom(atom);
+        g3d.drawAtom(atom);
       }
     }
 
@@ -127,10 +127,5 @@ public class BallsRenderer extends ShapeRenderer {
         g3d.setColix(minY > navOffset.y ? Graphics3D.YELLOW : Graphics3D.GREEN);
         g3d.drawRect(x, y + h, z, 0, w, h);
     }
-  }
-
-  protected void drawAtom(Atom atom) {
-    g3d.fillSphere(atom.screenDiameter,
-                           atom.screenX, atom.screenY, atom.screenZ);
   }
 }

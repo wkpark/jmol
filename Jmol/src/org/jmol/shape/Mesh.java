@@ -48,6 +48,10 @@ public class Mesh {
   public int[][] polygonIndexes = null;
   public BitSet[] bitsets; // [0]bsSelected [1]bsIgnore [2]bsTrajectory
   public Vector lineData;
+  public float[] vertexValues;  
+  public short[] vertexColixes;
+  public short[] polygonColixes;
+  
 
   public String thisID;
   public boolean isValid = true;

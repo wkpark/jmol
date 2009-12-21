@@ -45,6 +45,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected float[] vertexValues;
   protected IsosurfaceMesh imesh;
 
+  protected void initRenderer() {
+    super.initRenderer();
+    faceVertexMax = 3;
+  }
   protected void render() {
     iShowNormals = viewer.getTestFlag2();
     Isosurface isosurface = (Isosurface) shape;

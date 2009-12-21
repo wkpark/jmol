@@ -53,7 +53,7 @@ class TransformManager10 extends TransformManager {
 
     // distance from the front plane of the model at zoom=100, where p=0 
     cameraDistance = cameraDepth * screenPixelCount; //(s)
-
+    
     // factor to apply as part of the transform
     // 1/f = (cameraDepth + 0.5)/cameraDepth
     // -- note -- in this model 0.02 was added empirically

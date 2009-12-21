@@ -36,6 +36,7 @@ import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Hermite3D;
+import org.jmol.modelset.Atom;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -47,7 +48,7 @@ import org.jmol.viewer.Viewer;
 
 final public class Export3D implements JmolRendererInterface {
 
-  private __Exporter exporter;
+  private ___Exporter exporter;
   
   private Graphics3D g3d;
   private short colix;
@@ -56,10 +57,6 @@ final public class Export3D implements JmolRendererInterface {
   private int height;
   private int slab;
   
-  public __Exporter getExporter() {
-    return exporter;
-  }
-
   public Export3D() {
     this.hermite3d = new Hermite3D(this);
   }
@@ -71,7 +68,7 @@ final public class Export3D implements JmolRendererInterface {
           + "Exporter";
       Class exporterClass = Class.forName(name);
       //Class exporterClass = Class.forName("org.jmol.export.NewPovrayExporter");
-      exporter = (__Exporter) exporterClass.newInstance();
+      exporter = (___Exporter) exporterClass.newInstance();
     } catch (Exception e) {
       return false;
     }
@@ -439,7 +436,6 @@ final public class Export3D implements JmolRendererInterface {
       return;
     exporter.fillCylinder(colix, endcaps, diameter, pointA, pointB);
   }
-
 
   public void fillCone(byte endcap, int diameter,
                           Point3i pointBase, Point3i screenTip) {
@@ -834,4 +830,29 @@ final public class Export3D implements JmolRendererInterface {
   public byte getFontFid(float fontSize) {
     return g3d.getFontFid(fontSize);
   }
+
+  // from generators:
+  
+  void drawAtom(Atom atom) {
+    // from BallsGenerator
+    exporter.drawAtom(atom);
+  }
+
+  void drawIsosurface(Point3f[] vertices, short colix, short[] colixes,
+                      Vector3f[] normals, int[][] indices, BitSet bsFaces,
+                      int nVertices, int faceVertexMax, short[] polygonColixes,
+                      int nPolygons) {
+    // from IsosurfaceGenerator, LcaoCartoonGenerator, 
+    //      MolecularOrbitalGenerator, PmeshGenerator
+    exporter.drawIsosurface(vertices, colix, colixes, normals, indices,
+        bsFaces, nVertices, faceVertexMax, polygonColixes, nPolygons);
+  }
+
+  void fillCylinder(Point3f atomA, Point3f atomB, short colixA, short colixB,
+                    byte endcaps, short mad, int i) {
+    // from SticksGenerator to allow for a direct
+    // writing of single bonds -- just for efficiency here.
+    exporter.fillCylinder(atomA, atomB, colixA, colixB, endcaps, mad, -1);
+  }
+
 }

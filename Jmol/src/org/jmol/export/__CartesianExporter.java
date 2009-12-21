@@ -36,7 +36,11 @@ import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 
-abstract public class __CartesianExporter extends __Exporter {
+/*
+ * for programs that use the standard 3D coordinates.
+ * 
+ */
+abstract public class __CartesianExporter extends ___Exporter {
 
   public __CartesianExporter() {
     isCartesianExport = true;
@@ -80,11 +84,10 @@ abstract public class __CartesianExporter extends __Exporter {
   abstract protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3,
                                          short colix);
 
-  // these are called by Export3D or a generator:
+  // these are called by Export3D:
 
-  void drawAtom(Atom atom, short colix) {
-    float radius = atom.getMadAtom() / 2000f;
-    outputSphere(atom, radius, colix);
+  void drawAtom(Atom atom) {
+    outputSphere(atom, atom.getMadAtom() / 2000f, atom.getColix());
   }
 
   void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) {
@@ -169,18 +172,14 @@ abstract public class __CartesianExporter extends __Exporter {
 
   void plotImage(int x, int y, int z, Image image, short bgcolix, int width,
                  int height) {
-    // note applicable to Cartesian Exporter
+    g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
   }
 
   void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
-    // over-written in VRML and X3D
+    // over-ridden in VRML and X3D
     // trick here is that we use Jmol's standard g3d package to construct
     // the bitmap, but then output to jmolRenderer, which returns control
     // here via drawPixel.
-    if (z < 3) {
-      viewer.transformPoint(center, tempP3);
-      z = (int) tempP3.z;
-    }
     g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d,
         jmolRenderer);
   }

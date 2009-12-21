@@ -25,16 +25,12 @@
 
 package org.jmol.export;
 
-import java.awt.Image;
-import java.io.IOException;
-
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 
@@ -44,12 +40,9 @@ import org.jmol.modelset.Atom;
  * 
  */
 
-abstract class __RayTracerExporter extends __Exporter {
+abstract class __RayTracerExporter extends ___Exporter {
 
-  protected int nBytes;
   protected boolean isSlabEnabled;
-  protected int nText;
-  protected int nImage;
   protected float zoom;
   protected int minScreenDimension;
   
@@ -58,22 +51,8 @@ abstract class __RayTracerExporter extends __Exporter {
     isCartesianExport = false;
   }
 
-  protected void output(String data) {
-    nBytes += data.length();
-    try {
-      if (bw == null)
-        output.append(data);
-      else
-        bw.write(data);
-    } catch (IOException e) {
-      // ignore for now
-    }
-  }
-
   abstract protected void outputCircle(int x, int y, int z, float radius, short colix,
                                        boolean doFill);
-
-  abstract protected void outputComment(String comment);
 
   abstract protected void outputCylinder(Point3f screenA, Point3f screenB, float radius,
                                          short colix, boolean withCaps);
@@ -119,9 +98,11 @@ abstract class __RayTracerExporter extends __Exporter {
     // more specific next in PovRay and Tachyon
   }
 
-  void drawAtom(Atom atom, short colix) {
+  // called by Export3D:
+  
+  void drawAtom(Atom atom) {
     outputSphere(atom.screenX, atom.screenY, atom.screenZ,
-        atom.screenDiameter / 2f, colix);
+        atom.screenDiameter / 2f, atom.getColix());
   }
 
   void drawCircle(int x, int y, int z,
@@ -205,22 +186,6 @@ abstract class __RayTracerExporter extends __Exporter {
 
   void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
     outputTriangle(ptA, ptB, ptC, colix);
-  }
-
-  void plotImage(int x, int y, int z, Image image, short bgcolix, int width,
-                 int height) {
-    outputComment("start image " + (++nImage));
-    g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
-    outputComment("end image " + nImage);
-  }
-
-  void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
-    // trick here is that we use Jmol's standard g3d package to construct
-    // the bitmap, but then output to jmolRenderer, which returns control
-    // here via drawPixel.
-    outputComment("start text " + (++nText) + ": " + text);
-    g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d, jmolRenderer);
-    outputComment("end text " + nText + ": " + text);
   }
 
   void fillEllipsoid(Point3f center, Point3f[] points, short colix, int x,

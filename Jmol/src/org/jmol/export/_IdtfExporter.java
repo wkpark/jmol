@@ -196,9 +196,13 @@ public class _IdtfExporter extends __CartesianExporter {
   final private StringBuffer resources = new StringBuffer();
   final private StringBuffer modifiers = new StringBuffer();
 
+  protected void outputComment(String comment) {
+    // no capability
+  }
+
   protected void getHeader() {
     // next is an approximation only 
-    output.append("FILE_FORMAT \"IDTF\"\nFORMAT_VERSION 100\n");
+    output("FILE_FORMAT \"IDTF\"\nFORMAT_VERSION 100\n");
 
     /*
     float angle = getFieldOfView();
@@ -228,12 +232,12 @@ public class _IdtfExporter extends __CartesianExporter {
 
     
 
-    output.append("NODE \"GROUP\" {\n");
-    output.append("NODE_NAME \"Jmol\"\n");
-    output.append("PARENT_LIST {\nPARENT_COUNT 1\n"); 
-    output.append("PARENT 0 {\n");
-    output.append(getParentItem("", m));
-    output.append("}}}\n");
+    output("NODE \"GROUP\" {\n");
+    output("NODE_NAME \"Jmol\"\n");
+    output("PARENT_LIST {\nPARENT_COUNT 1\n"); 
+    output("PARENT 0 {\n");
+    output(getParentItem("", m));
+    output("}}}\n");
     
   }
 
@@ -292,21 +296,21 @@ public class _IdtfExporter extends __CartesianExporter {
   protected void getFooter() {
     htDefs = null;
     outputNodes();
-    output.append(models);
-    output.append(resources);    
+    output(models.toString());
+    output(resources.toString());    
     
-    output.append("RESOURCE_LIST \"VIEW\" {\n");
-    output.append("\tRESOURCE_COUNT 1\n");
-    output.append("\tRESOURCE 0 {\n");
-    output.append("\t\tRESOURCE_NAME \"View0\"\n");
-    output.append("\t\tVIEW_PASS_COUNT 1\n");
-    output.append("\t\tVIEW_ROOT_NODE_LIST {\n");
-    output.append("\t\t\tROOT_NODE 0 {\n");
-    output.append("\t\t\t\tROOT_NODE_NAME \"\"\n");
-    output.append("\t\t\t}\n");
-    output.append("\t\t}\n");
-    output.append("\t}\n");
-    output.append("}\n\n");
+    output("RESOURCE_LIST \"VIEW\" {\n");
+    output("\tRESOURCE_COUNT 1\n");
+    output("\tRESOURCE 0 {\n");
+    output("\t\tRESOURCE_NAME \"View0\"\n");
+    output("\t\tVIEW_PASS_COUNT 1\n");
+    output("\t\tVIEW_ROOT_NODE_LIST {\n");
+    output("\t\t\tROOT_NODE 0 {\n");
+    output("\t\t\t\tROOT_NODE_NAME \"\"\n");
+    output("\t\t\t}\n");
+    output("\t\t}\n");
+    output("\t}\n");
+    output("}\n\n");
 
     
     // unfortunately, this next bit does not work. 
@@ -344,56 +348,56 @@ public class _IdtfExporter extends __CartesianExporter {
 
     // the apparent default rotation in DeepView and 3D-PDF
 
-    output.append("\nRESOURCE_LIST \"MOTION\" {");
-    output.append("\n  RESOURCE_COUNT 1");
-    output.append("\n  RESOURCE 0 {");
-    output.append("\n    RESOURCE_NAME \"Motion0\"");
-    output.append("\n    MOTION_TRACK_COUNT 1");
-    output.append("\n    MOTION_TRACK_LIST {");
-    output.append("\n      MOTION_TRACK 0 {");
-    output.append("\n        MOTION_TRACK_NAME \"M00\"");
-    output.append("\n        MOTION_TRACK_SAMPLE_COUNT 2");
-    output.append("\n        KEY_FRAME_LIST {");
-    output.append("\n          KEY_FRAME 0 {");
-    output.append("\n            KEY_FRAME_TIME 0");
-    output.append("\n            KEY_FRAME_DISPLACEMENT 0 0 0");
-    output.append("\n            KEY_FRAME_ROTATION " + q.toString0123());
-    output.append("\n            KEY_FRAME_SCALE 1 1 1");
-    output.append("\n          }");
-    output.append("\n          KEY_FRAME 1 {");
-    output.append("\n            KEY_FRAME_TIME 1");
-    output.append("\n            KEY_FRAME_DISPLACEMENT " + dxyz);
-    output.append("\n            KEY_FRAME_ROTATION " + q.toString0123());
-    output.append("\n            KEY_FRAME_SCALE" + scale);
-    output.append("\n          }");
-    output.append("\n         }");
-    output.append("\n      }");
-    output.append("\n    }");
-    output.append("\n  }");
-    output.append("\n}\n");
-    output.append("\nMODIFIER \"ANIMATION\" {");
-    output.append("\n  MODIFIER_NAME \"Jmol\"");
-    output.append("\n  PARAMETERS {");
-    output.append("\n    ATTRIBUTE_ANIMATION_PLAYING \"TRUE\"");
-    output.append("\n    ATTRIBUTE_ROOT_BONE_LOCKED \"TRUE\"");
-    output.append("\n    ATTRIBUTE_SINGLE_TRACK \"TRUE\"");
-    output.append("\n    ATTRIBUTE_AUTO_BLEND \"FALSE\"");
-    output.append("\n    TIME_SCALE 1.0");
-    output.append("\n    BLEND_TIME 0.0");
-    output.append("\n    MOTION_COUNT 1");
-    output.append("\n    MOTION_INFO_LIST {");
-    output.append("\n      MOTION_INFO 0 {");
-    output.append("\n        MOTION_NAME \"Motion0\"");
-    output.append("\n        ATTRIBUTE_LOOP \"FALSE\"");
-    output.append("\n        ATTRIBUTE_SYNC \"FALSE\"");
-    output.append("\n        TIME_OFFSET 0.0");
-    output.append("\n        TIME_SCALE 1.0");
-    output.append("\n      }");
-    output.append("\n    }");
-    output.append("\n  }");
-    output.append("\n}\n");
+    output("\nRESOURCE_LIST \"MOTION\" {");
+    output("\n  RESOURCE_COUNT 1");
+    output("\n  RESOURCE 0 {");
+    output("\n    RESOURCE_NAME \"Motion0\"");
+    output("\n    MOTION_TRACK_COUNT 1");
+    output("\n    MOTION_TRACK_LIST {");
+    output("\n      MOTION_TRACK 0 {");
+    output("\n        MOTION_TRACK_NAME \"M00\"");
+    output("\n        MOTION_TRACK_SAMPLE_COUNT 2");
+    output("\n        KEY_FRAME_LIST {");
+    output("\n          KEY_FRAME 0 {");
+    output("\n            KEY_FRAME_TIME 0");
+    output("\n            KEY_FRAME_DISPLACEMENT 0 0 0");
+    output("\n            KEY_FRAME_ROTATION " + q.toString0123());
+    output("\n            KEY_FRAME_SCALE 1 1 1");
+    output("\n          }");
+    output("\n          KEY_FRAME 1 {");
+    output("\n            KEY_FRAME_TIME 1");
+    output("\n            KEY_FRAME_DISPLACEMENT " + dxyz);
+    output("\n            KEY_FRAME_ROTATION " + q.toString0123());
+    output("\n            KEY_FRAME_SCALE" + scale);
+    output("\n          }");
+    output("\n         }");
+    output("\n      }");
+    output("\n    }");
+    output("\n  }");
+    output("\n}\n");
+    output("\nMODIFIER \"ANIMATION\" {");
+    output("\n  MODIFIER_NAME \"Jmol\"");
+    output("\n  PARAMETERS {");
+    output("\n    ATTRIBUTE_ANIMATION_PLAYING \"TRUE\"");
+    output("\n    ATTRIBUTE_ROOT_BONE_LOCKED \"TRUE\"");
+    output("\n    ATTRIBUTE_SINGLE_TRACK \"TRUE\"");
+    output("\n    ATTRIBUTE_AUTO_BLEND \"FALSE\"");
+    output("\n    TIME_SCALE 1.0");
+    output("\n    BLEND_TIME 0.0");
+    output("\n    MOTION_COUNT 1");
+    output("\n    MOTION_INFO_LIST {");
+    output("\n      MOTION_INFO 0 {");
+    output("\n        MOTION_NAME \"Motion0\"");
+    output("\n        ATTRIBUTE_LOOP \"FALSE\"");
+    output("\n        ATTRIBUTE_SYNC \"FALSE\"");
+    output("\n        TIME_OFFSET 0.0");
+    output("\n        TIME_SCALE 1.0");
+    output("\n      }");
+    output("\n    }");
+    output("\n  }");
+    output("\n}\n");
 
-    output.append(modifiers);    
+    output(modifiers.toString());    
   }
 
   private Hashtable htNodes = new Hashtable();
@@ -403,20 +407,20 @@ public class _IdtfExporter extends __CartesianExporter {
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
       Vector v = (Vector) htNodes.get(key);
-      output.append("NODE \"MODEL\" {\n");
-      output.append("NODE_NAME \"" + key + "\"\n");
+      output("NODE \"MODEL\" {\n");
+      output("NODE_NAME \"" + key + "\"\n");
       int n = v.size();
-      output.append("PARENT_LIST {\nPARENT_COUNT " + n + "\n"); 
+      output("PARENT_LIST {\nPARENT_COUNT " + n + "\n"); 
       for (int i = 0; i < n; i++) {
-        output.append("PARENT " + i + " {\n");
-        output.append((String)v.get(i));
-        output.append("}\n");
+        output("PARENT " + i + " {\n");
+        output((String)v.get(i));
+        output("}\n");
       }
-      output.append("}\n");
+      output("}\n");
       int i = key.indexOf("_");
       if (i > 0)
         key = key.substring(0,i);
-      output.append("RESOURCE_NAME \"" + key + "_Mesh\"\n}\n");
+      output("RESOURCE_NAME \"" + key + "_Mesh\"\n}\n");
     }
   }
 

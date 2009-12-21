@@ -30,7 +30,7 @@ import org.jmol.shapesurface.MolecularOrbitalRenderer;
 public class MolecularOrbitalGenerator extends MolecularOrbitalRenderer {
 
   protected void drawIsosurface() {
-    ((Export3D)g3d).getExporter().drawIsosurface(imesh.vertices, imesh.colix, 
+    ((Export3D)g3d).drawIsosurface(imesh.vertices, imesh.colix, 
         imesh.isColorSolid ? null : imesh.vertexColixes,
         imesh.getVertexNormals(), imesh.polygonIndexes, bsFaces, 
         imesh.vertexCount, 3, null, imesh.polygonCount);

@@ -137,7 +137,7 @@ public class Text3D {
       return;
     }
     int[] buffer = (int[]) pixelGrabber.getPixels();
-    int bgcolor = (isBackground ? 0 : argbBackground == 0 ? buffer[0] : argbBackground);
+    int bgcolor = (isBackground ? g3d.bgcolor : argbBackground == 0 ? buffer[0] : argbBackground);
     if (jmolRenderer != null
         || (x < 0 || x + width > g3d.width || y < 0 || y + height > g3d.height))
       plotImageClipped(x, y, z, g3d, jmolRenderer, width, height, buffer, bgcolor);

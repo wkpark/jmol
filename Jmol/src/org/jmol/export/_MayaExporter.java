@@ -52,46 +52,50 @@ public class _MayaExporter extends __CartesianExporter {
   private String name;
   private String id;
 
+  protected void outputComment(String comment) {
+    output("// " + comment + "/n");
+  }
+
   protected void getHeader() {
-    output.append("//  Maya ASCII 8.5 scene\n");
-    output.append("//  Name: ball_stripped.ma\n");
-    //    output.append("//  CreatedBy: Jmol");
-    output.append("//  Last modified: Thu, Jul 5, 2007 10:25:55 PM\n");
-    output.append("//  Codeset: UTF-8\n");
-    output.append("requires maya \"8.5\";\n");
-    output.append("currentUnit -l centimeter -a degree -t film;\n");
-    output.append("fileInfo \"application\" \"maya\";\n");
-    output.append("fileInfo \"product\" \"Maya Unlimited 8.5\";\n");
-    output.append("fileInfo \"version\" \"8.5\";\n");
-    output.append("fileInfo \"cutIdentifier\" \"200612170012-692032\";\n");
-    output.append("fileInfo \"osv\" \"Mac OS X 10.4.9\";  \n");
+    output("//  Maya ASCII 8.5 scene\n");
+    output("//  Name: ball_stripped.ma\n");
+    //    output("//  CreatedBy: Jmol");
+    output("//  Last modified: Thu, Jul 5, 2007 10:25:55 PM\n");
+    output("//  Codeset: UTF-8\n");
+    output("requires maya \"8.5\";\n");
+    output("currentUnit -l centimeter -a degree -t film;\n");
+    output("fileInfo \"application\" \"maya\";\n");
+    output("fileInfo \"product\" \"Maya Unlimited 8.5\";\n");
+    output("fileInfo \"version\" \"8.5\";\n");
+    output("fileInfo \"cutIdentifier\" \"200612170012-692032\";\n");
+    output("fileInfo \"osv\" \"Mac OS X 10.4.9\";  \n");
   }
 
   private void addAttr() {
-    output.append(" setAttr -k off \".v\";\n");
-    output.append(" setAttr \".vir\" yes;\n");
-    output.append(" setAttr \".vif\" yes;\n");
-    output.append(" setAttr \".tw\" yes;\n");
-    output.append(" setAttr \".covm[0]\"  0 1 1;\n");
-    output.append(" setAttr \".cdvm[0]\"  0 1 1;\n");
+    output(" setAttr -k off \".v\";\n");
+    output(" setAttr \".vir\" yes;\n");
+    output(" setAttr \".vif\" yes;\n");
+    output(" setAttr \".tw\" yes;\n");
+    output(" setAttr \".covm[0]\"  0 1 1;\n");
+    output(" setAttr \".cdvm[0]\"  0 1 1;\n");
   }
 
   private void addConnect() {
-    output.append(" connectAttr \"make" + name + ".os\" \"" + id + ".cr\";\n");
-    output.append("connectAttr \"" + id
+    output(" connectAttr \"make" + name + ".os\" \"" + id + ".cr\";\n");
+    output("connectAttr \"" + id
         + ".iog\" \":initialShadingGroup.dsm\" -na;\n");
   }
 
   private void setAttr(String attr, float val) {
-    output.append(" setAttr \"." + attr + "\" " + val + ";\n");
+    output(" setAttr \"." + attr + "\" " + val + ";\n");
   }
 
   private void setAttr(String attr, int val) {
-    output.append(" setAttr \"." + attr + "\" " + val + ";\n");
+    output(" setAttr \"." + attr + "\" " + val + ";\n");
   }
 
   private void setAttr(String attr, Tuple3f pt) {
-    output.append(" setAttr \"." + attr + "\" -type \"double3\" " + pt.x + " "
+    output(" setAttr \"." + attr + "\" -type \"double3\" " + pt.x + " "
         + pt.y + " " + pt.z + ";\n");
   }
 
@@ -100,7 +104,7 @@ public class _MayaExporter extends __CartesianExporter {
     nCyl++;
     name = "nurbsCylinder" + nCyl;
     id = "nurbsCylinderShape" + nCyl;
-    output.append(" createNode transform -n \"" + name + "\";\n");
+    output(" createNode transform -n \"" + name + "\";\n");
     float length = pt1.distance(pt2);
     tempV1.set(pt2);
     tempV1.add(pt1);
@@ -108,11 +112,11 @@ public class _MayaExporter extends __CartesianExporter {
     setAttr("t", tempV1);
     tempV1.sub(pt1);
     setAttr("r", getRotation(tempV1));
-    output.append(" createNode nurbsSurface -n \"" + id + "\" -p \"" + name
+    output(" createNode nurbsSurface -n \"" + id + "\" -p \"" + name
         + "\";\n");
     addAttr();
-    output.append("createNode makeNurbCylinder -n \"make" + name + "\";\n");
-    output.append(" setAttr \".ax\" -type \"double3\" 0 1 0;\n");
+    output("createNode makeNurbCylinder -n \"make" + name + "\";\n");
+    output(" setAttr \".ax\" -type \"double3\" 0 1 0;\n");
     setAttr("r", radius);
     setAttr("s", 4);
     setAttr("hr", length / radius);
@@ -125,13 +129,13 @@ public class _MayaExporter extends __CartesianExporter {
     name = "nurbsSphere" + nBalls;
     id = "nurbsSphereShape" + nBalls;
 
-    output.append("createNode transform -n \"" + name + "\";\n");
+    output("createNode transform -n \"" + name + "\";\n");
     setAttr("t", pt);
-    output.append("createNode nurbsSurface -n \"" + id + "\" -p \"" + name
+    output("createNode nurbsSurface -n \"" + id + "\" -p \"" + name
         + "\";\n");
     addAttr();
-    output.append("createNode makeNurbSphere -n \"make" + name + "\";\n");
-    output.append(" setAttr \".ax\" -type \"double3\" 0 1 0;\n");
+    output("createNode makeNurbSphere -n \"make" + name + "\";\n");
+    output(" setAttr \".ax\" -type \"double3\" 0 1 0;\n");
     setAttr("r", radius);
     setAttr("s", 4);
     setAttr("nsp", 3);
@@ -141,6 +145,7 @@ public class _MayaExporter extends __CartesianExporter {
   // not implemented: 
   
   void drawTextPixel(int argb, int x, int y, int z) {
+    // override __CartesianExporter
   }
 
   protected void outputTextPixel(Point3f pt, int argb) {
@@ -175,6 +180,5 @@ public class _MayaExporter extends __CartesianExporter {
     // TODO
     
   }
-
 
 }

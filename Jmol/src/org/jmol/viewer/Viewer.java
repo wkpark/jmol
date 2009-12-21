@@ -7953,4 +7953,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return actionManager.showTimeout(name);
   }
 
+  public int getFrontPlane() {
+    return transformManager.getFrontPlane();
+  }
+
 }

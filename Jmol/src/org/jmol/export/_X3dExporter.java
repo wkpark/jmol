@@ -49,12 +49,12 @@ public class _X3dExporter extends __CartesianExporter {
 
   private AxisAngle4f viewpoint = new AxisAngle4f();
   
-  private void output(String data) {
-    output.append(data);
+  protected void outputComment(String comment) {
+    // ignore
   }
 
   private void output(Tuple3f pt) {
-    output.append(round(pt.x)).append(" ").append(round(pt.y)).append(" ").append(round(pt.z));
+    output(round(pt.x) + " " + round(pt.y) + " " + round(pt.z));
   }
 
   private int iObj;
@@ -521,10 +521,8 @@ public class _X3dExporter extends __CartesianExporter {
   }
 
   void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
-    if (z < 3) {
-      viewer.transformPoint(center, tempP3);
-      z = (int)tempP3.z;
-    }
+    if (z < 3)
+      z = viewer.getFrontPlane();
     String useFontStyle = font3d.fontStyle.toUpperCase();
     String preFontFace = font3d.fontFace.toUpperCase();
     String useFontFace = (preFontFace.equals("MONOSPACED") ? "TYPEWRITER"

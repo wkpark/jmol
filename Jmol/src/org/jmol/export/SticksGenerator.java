@@ -29,9 +29,9 @@ import org.jmol.shape.*;
 
 public class SticksGenerator extends SticksRenderer {
   protected void drawBond(int dottedMask) {
-    __Exporter exporter = (__Exporter) ((Export3D)g3d).getExporter();
-    if (exporter.isCartesianExport && bondOrder == 1)
-        exporter.fillCylinder(atomA, atomB, colixA, colixB, endcaps, mad, -1);
+    if (((Export3D)g3d).isCartesianExport() && bondOrder == 1)
+      // bypass screen rendering and just use the atoms themselves
+      ((Export3D)g3d).fillCylinder(atomA, atomB, colixA, colixB, endcaps, mad, -1);
     else
       // POVRAY always uses screen coordinates
       // Other renderers must use screen coordinates for double bonds

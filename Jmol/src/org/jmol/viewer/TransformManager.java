@@ -53,7 +53,7 @@ abstract class TransformManager {
   protected float modelCenterOffset;
   protected float modelRadius;
   protected float modelRadiusPixels;
-
+  
   protected final Point3f navigationCenter = new Point3f();
   protected final Point3f navigationOffset = new Point3f();
   protected final Point3f navigationShiftXY = new Point3f();
@@ -1082,6 +1082,10 @@ abstract class TransformManager {
   protected float cameraDepthSetting = 3f;
   protected float visualRange; // set in stateManager to 5f;
   protected float cameraDistance = 1000f; // prevent divide by zero on startup
+
+  int getFrontPlane() {
+    return (int) cameraDistance;
+  }
 
   void setPerspectiveDepth(boolean perspectiveDepth) {
     if (this.perspectiveDepth == perspectiveDepth)

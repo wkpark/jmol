@@ -132,7 +132,7 @@ import org.jmol.viewer.Viewer;
  * 
  */
 
-public abstract class __Exporter {
+public abstract class ___Exporter {
 
   // The following fields and methods are required for instantiation or provide
   // generally useful functionality:
@@ -177,7 +177,7 @@ public abstract class __Exporter {
   final protected Vector3f tempV3 = new Vector3f();
   final protected AxisAngle4f tempA = new AxisAngle4f();
   
-  public __Exporter() {
+  public ___Exporter() {
   }
 
   void setRenderer(JmolRendererInterface jmolRenderer) {
@@ -222,6 +222,19 @@ public abstract class __Exporter {
     // implementation-specific
   }
   
+  protected int nBytes;
+  protected void output(String data) {
+    nBytes += data.length();
+    try {
+      if (bw == null)
+        output.append(data);
+      else
+        bw.write(data);
+    } catch (IOException e) {
+      // ignore for now
+    }
+  }
+
   protected void endShapeBuffer() {
     // implementation-specific
   }
@@ -363,7 +376,7 @@ public abstract class __Exporter {
   // The following methods are called by a variety of shape generators and 
   // Export3D, replacing methods in org.jmol.g3d. More will be added as needed. 
 
-  abstract void drawAtom(Atom atom, short colix);
+  abstract void drawAtom(Atom atom);
 
   abstract void drawCircle(int x, int y, int z,
                                    int diameter, short colix, boolean doFill);  //draw circle 
@@ -425,9 +438,31 @@ public abstract class __Exporter {
   //cartoons, rockets:
   abstract void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC);
   
-  abstract void plotImage(int x, int y, int z, Image image, short bgcolix, 
-                          int width, int height);
+  
+  private int nText;
+  private int nImage;
 
-  abstract void plotText(int x, int y, int z, short colix, String text, Font3D font3d);
+  void plotImage(int x, int y, int z, Image image, short bgcolix, int width,
+                 int height) {
+    if (z < 3)
+      z = viewer.getFrontPlane();
+    outputComment("start image " + (++nImage));
+    g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
+    outputComment("end image " + nImage);
+  }
+
+  void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
+    // trick here is that we use Jmol's standard g3d package to construct
+    // the bitmap, but then output to jmolRenderer, which returns control
+    // here via drawPixel.
+    if (z < 3)
+      z = viewer.getFrontPlane();
+    outputComment("start text " + (++nText) + ": " + text);
+    g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d, jmolRenderer);
+    outputComment("end text " + nText + ": " + text);
+  }
+
+  abstract protected void outputComment(String comment);
+
 
 }

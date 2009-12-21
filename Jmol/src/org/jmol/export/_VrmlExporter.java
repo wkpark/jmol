@@ -100,18 +100,9 @@ public class _VrmlExporter extends __CartesianExporter {
     output("Viewpoint{fieldOfView " + angle 
         + " position " + tempP1.x + " " + tempP1.y + " " + tempP1.z 
         + " orientation " + viewpoint.x + " " + viewpoint.y + " " + (viewpoint.angle == 0 ? 1 : viewpoint.z) + " " + -viewpoint.angle);
-    output("\n jump TRUE description \"v1\"\n}\n");
-    output("\n#Jmol perspective:\n");
-    output("#scalePixelsPerAngstrom: " + viewer.getScalePixelsPerAngstrom(false) + "\n");
-    output("#cameraDepth: " + viewer.getCameraDepth() + "\n");
-    output("#center: " + center + "\n");
-    output("#rotationRadius: " + viewer.getRotationRadius() + "\n");
-    output("#boundboxCenter: " + viewer.getBoundBoxCenter() + "\n");
-    output("#translationOffset: " + viewer.getTranslationScript() + "\n");
-    output("#zoom: " + viewer.getZoomPercentFloat() + "\n");
-    output("#moveto command: " + viewer.getOrientationText(Token.moveto) + "\n");
-    output("#screen width height dim: " + screenWidth + " " + screenHeight + " " + viewer.getScreenDim() + "\n\n");
-    output("Transform{children Transform{translation ");
+    output("\n jump TRUE description \"v1\"\n}\n\n");
+    outputJmolPerspective();
+    output("\nTransform{children Transform{translation ");
     tempP1.set(center);
     tempP1.scale(-1);
     output(tempP1);

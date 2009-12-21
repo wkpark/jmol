@@ -48,6 +48,7 @@ import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
+import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
 /*
@@ -223,6 +224,21 @@ public abstract class ___Exporter {
     } catch (IOException e) {
       // ignore for now
     }
+  }
+
+  abstract protected void outputComment(String comment);
+
+  protected void outputJmolPerspective() {
+    outputComment("Jmol perspective:");
+    outputComment("scalePixelsPerAngstrom: " + viewer.getScalePixelsPerAngstrom(false));
+    outputComment("cameraDepth: " + viewer.getCameraDepth());
+    outputComment("center: " + center);
+    outputComment("rotationRadius: " + viewer.getRotationRadius());
+    outputComment("boundboxCenter: " + viewer.getBoundBoxCenter());
+    outputComment("translationOffset: " + viewer.getTranslationScript());
+    outputComment("zoom: " + viewer.getZoomPercentFloat());
+    outputComment("moveto command: " + viewer.getOrientationText(Token.moveto));
+    outputComment("screen width height dim: " + screenWidth + " " + screenHeight + " " + viewer.getScreenDim());
   }
 
   protected void outputFooter() {
@@ -443,8 +459,6 @@ public abstract class ___Exporter {
     g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d, jmolRenderer);
     outputComment("end text " + nText + ": " + text);
   }
-
-  abstract protected void outputComment(String comment);
 
 
 }

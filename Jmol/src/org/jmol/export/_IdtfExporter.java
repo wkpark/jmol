@@ -200,7 +200,7 @@ public class _IdtfExporter extends __CartesianExporter {
     // no capability
   }
 
-  protected void getHeader() {
+  protected void outputHeader() {
     // next is an approximation only 
     output("FILE_FORMAT \"IDTF\"\nFORMAT_VERSION 100\n");
 
@@ -293,7 +293,7 @@ public class _IdtfExporter extends __CartesianExporter {
     modifiers.append("}}}}}\n");
   }
 
-  protected void getFooter() {
+  protected void outputFooter() {
     htDefs = null;
     outputNodes();
     output(models.toString());

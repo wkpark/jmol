@@ -52,8 +52,8 @@ public class _PovrayExporter extends __RayTracerExporter {
     return getAuxiliaryFileData();
   }
 
-  protected void getHeader() {
-    super.getHeader();
+  protected void outputHeader() {
+    super.outputHeader();
     output("// ******************************************************\n");
     output("// Created by Jmol " + Viewer.getJmolVersion() + "\n");
     output("//\n");

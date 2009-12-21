@@ -56,7 +56,7 @@ public class _MayaExporter extends __CartesianExporter {
     output("// " + comment + "/n");
   }
 
-  protected void getHeader() {
+  protected void outputHeader() {
     output("//  Maya ASCII 8.5 scene\n");
     output("//  Name: ball_stripped.ma\n");
     //    output("//  CreatedBy: Jmol");

@@ -88,7 +88,7 @@ abstract class __RayTracerExporter extends ___Exporter {
     return tempP3;
   }
 
-  protected void getHeader() {
+  protected void outputHeader() {
     nBytes = 0;
     isSlabEnabled = viewer.getSlabEnabled();
     zoom = viewer.getRotationRadius() * 2;

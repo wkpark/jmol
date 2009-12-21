@@ -72,7 +72,7 @@ import org.jmol.viewer.Viewer;
  *    
  *  Or, programmatically:
  *  
- *  String data = org.jmol.viewer.viewer.generateOutput([Driver])
+ *  String data = org.jmol.viewer.Viewer.generateOutput([Driver])
  *  
  *  where in this case [Driver] is a string such as "Maya" or "Vrml".
  *  
@@ -85,23 +85,24 @@ import org.jmol.viewer.Viewer;
  *  
  *  Jmol will find it using Class.forName().
  *   
- *  This export driver is then responsible for implementing all abstractmethods
- *  of the _Exporter.java class. 
- * 
+ *  This export driver should subclass either __CartesianExporter or __RayTracerExporter.
+ *  The difference is that __CartesianExporters use the untransformed XYZ coordinates of the model,
+ *  while __RayTracerExporter uses screen coordinates (which may include perspective distortion).
+ *  In addition, a __RayTracerExporter will clip based on the window size, like the standard graphics.
+ *  
+ *  The export driver is then responsible for implementing all outstanding abstract methods
+ *  of the ___Exporter class. Most of these are of the form outputXXXXX. 
+ *  
  *  Accompanying the export drivers in this package is a set of ShapeRenderers.
- *  Each of these "Generators"  provides generalized off-screen rendering to
+ *  Each of these "Generators"  provides specialized off-screen rendering to
  *  the drivers. If a generator is not present, it means that all operations
  *  are carried out by the underlying shape renderer.
  *  
- *  The two roles --- Generator and _Exporter --- are independent and, in general,
+ *  The two roles --- Generator and ___Exporter --- are independent and, in general,
  *  can be developed (almost) independently. Thus, if a CartoonGenerator is 
  *  developed, the various export drivers may need to be updated. This is done by
  *  adding a new class here that is functionally equivalent to one of the Graphics3D
- *  methods. 
- *  
- *  If time permits, one might implement cartoon export in some or all of 
- *  the drivers. If a driver is skipped, then it needs to at least be given an instance
- *  of the added Graphics3D-like method. 
+ *  methods or a new class that is specifically called by the generator. 
  *  
  *  Or, in some cases, it may be that no additional driver methods are needed.
  *  
@@ -109,7 +110,7 @@ import org.jmol.viewer.Viewer;
  *  developers. The process should be:
  *  
  *   1) Add the Driver name to org.jmol.viewer.JmolConstants.EXPORT_DRIVER_LIST.
- *   2) Copy one of the exporters to create org.jmol.export.[Driver]_Exporter.java
+ *   2) Copy one of the exporters to create org.jmol.export._[DriverName]Exporter.java
  *   3) Fill out the template with proper calls. 
  *  
  *  Alternatively, Java-savvy users can create their own drivers entirely independently
@@ -126,9 +127,9 @@ import org.jmol.viewer.Viewer;
  *  
  *    exportDrivers = "Maya;Vrml;Mydriver"
  *    
- *  Enables the default Maya and Vrml drivers as well as a user-custom driver, MydriverExporter.java
+ *  Enables the default Maya and Vrml drivers as well as a user-custom driver, _MydriverExporter.java
  *    
- * Bob Hanson, 7/2007
+ * Bob Hanson, 7/2007, updated 12/2009
  * 
  */
 
@@ -212,11 +213,11 @@ public abstract class ___Exporter {
     } else {
       this.output = (StringBuffer) output;
     }
-    getHeader();
+    outputHeader();
     return true;
   }
 
-  abstract protected void getHeader();
+  abstract protected void outputHeader();
   
   protected void startShapeBuffer(int iShape) {
     // implementation-specific
@@ -239,12 +240,12 @@ public abstract class ___Exporter {
     // implementation-specific
   }
   
-  protected void getFooter() {
+  protected void outputFooter() {
     // implementation-specific
   }
 
   String finalizeOutput() {
-    getFooter();
+    outputFooter();
     if (!isToFile)
       return output.toString();
     try {

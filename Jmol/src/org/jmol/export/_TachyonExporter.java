@@ -43,8 +43,8 @@ import org.jmol.viewer.Viewer;
 
 public class _TachyonExporter extends __RayTracerExporter {
 
-  protected void getHeader() {
-    super.getHeader();
+  protected void outputHeader() {
+    super.outputHeader();
 
     output("# ******************************************************\n");
     output("# Created by Jmol " + Viewer.getJmolVersion() + "\n");
@@ -81,7 +81,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     output("\n");
   }
 
-  protected void getFooter() {
+  protected void outputFooter() {
     output("End_Scene\n");
   }
 

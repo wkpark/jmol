@@ -78,7 +78,7 @@ public class _X3dExporter extends __CartesianExporter {
     return id;
   }
   
-  protected void getHeader() {
+  protected void outputHeader() {
     output("<X3D profile='Immersive' version='3.1' "
       + "xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' "
       + "xsd:noNamespaceSchemaLocation=' http://www.web3d.org/specifications/x3d-3.1.xsd '>"
@@ -145,7 +145,7 @@ public class _X3dExporter extends __CartesianExporter {
     iShapeBuffer = 0;
   }
 
-  protected void getFooter() {
+  protected void outputFooter() {
     htDefs = null;
     output("</Transform>\n");
     output("</Scene>\n");

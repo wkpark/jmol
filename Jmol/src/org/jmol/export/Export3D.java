@@ -825,8 +825,7 @@ final public class Export3D implements JmolRendererInterface {
 
   // from generators:
   
-  void drawAtom(Atom atom) {
-    // from BallsGenerator
+  public void drawAtom(Atom atom) {
     exporter.drawAtom(atom);
   }
 
@@ -840,11 +839,10 @@ final public class Export3D implements JmolRendererInterface {
         bsFaces, nVertices, faceVertexMax, polygonColixes, nPolygons);
   }
 
-  void fillCylinder(Point3f atomA, Point3f atomB, short colixA, short colixB,
-                    byte endcaps, short mad, int i) {
+  public void fillCylinder(Atom atomA, Atom atomB, short colixA, short colixB,
+                           byte endcaps, short mad, int bondOrder) {
     // from SticksGenerator to allow for a direct
     // writing of single bonds -- just for efficiency here.
-    exporter.fillCylinder(atomA, atomB, colixA, colixB, endcaps, mad, -1);
+    exporter.fillCylinder(atomA, atomB, colixA, colixB, endcaps, mad, bondOrder);
   }
-
 }

@@ -97,19 +97,8 @@ import org.jmol.viewer.Viewer;
  *  The export driver is then responsible for implementing all outstanding abstract methods
  *  of the ___Exporter class. Most of these are of the form outputXXXXX(...). 
  *  
- *  Accompanying the export drivers in this package is a set of ShapeRenderers.
- *  Each of these "Generators"  provides specialized off-screen rendering to
- *  the drivers. If a generator is not present, it means that all operations
- *  are carried out by the underlying shape renderer. Currently the only special
- *  renderers are for Balls, Sticks, and a variety of Isosurfaces.
- *  
- *  The two roles --- Generator and ___Exporter --- are independent and, in general,
- *  can be developed (almost) independently. Thus, if a CartoonGenerator is 
- *  developed, the various export drivers may need to be updated. This is done by
- *  adding a new class here that is functionally equivalent to one of the Graphics3D
- *  methods or a new class that is specifically called by the generator. 
- *  
- *  Or, in some cases, it may be that no additional driver methods are needed.
+ *  In the renderers, there are occasions when we need to know that this is a generator. 
+ *  In those cases their isGenerator flag will be set and can be tested. 
  *  
  *  Basically, this system is designed to be updated easily by multiple 
  *  developers. The process should be:

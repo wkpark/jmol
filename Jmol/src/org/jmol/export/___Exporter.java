@@ -100,7 +100,8 @@ import org.jmol.viewer.Viewer;
  *  Accompanying the export drivers in this package is a set of ShapeRenderers.
  *  Each of these "Generators"  provides specialized off-screen rendering to
  *  the drivers. If a generator is not present, it means that all operations
- *  are carried out by the underlying shape renderer.
+ *  are carried out by the underlying shape renderer. Currently the only special
+ *  renderers are for Balls, Sticks, and a variety of Isosurfaces.
  *  
  *  The two roles --- Generator and ___Exporter --- are independent and, in general,
  *  can be developed (almost) independently. Thus, if a CartoonGenerator is 

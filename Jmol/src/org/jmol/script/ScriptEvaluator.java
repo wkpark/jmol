@@ -5084,7 +5084,7 @@ public class ScriptEvaluator {
         Point4f pt4 = getPoint4f(i);
         i = iToken + 1;
         axis.set(pt4.x, pt4.y, pt4.z);
-        degrees = pt4.w;
+        degrees = (pt4.x == 0 && pt4.y == 0 && pt4.z == 0 ? Float.NaN : pt4.w);
       }
       break;
     case Token.front:

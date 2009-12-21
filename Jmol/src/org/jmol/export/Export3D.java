@@ -58,7 +58,12 @@ final public class Export3D implements JmolRendererInterface {
   private int slab;
 
   public Export3D() {
-    this.hermite3d = new Hermite3D(this);
+    hermite3d = new Hermite3D(this);
+    
+  }
+  
+  public boolean isExport3D() {
+    return true;
   }
 
   public boolean initializeExporter(String type, Viewer viewer, Graphics3D g3d,

@@ -215,12 +215,8 @@ class RepaintManager {
     g3dExport.renderBackground();
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = modelSet.getShape(i);
-      if (shape == null)
-        continue;
-      ShapeRenderer generator = getRenderer(i, g3d);
-      generator.setGenerator(true);
-      generator.render(g3dExport, modelSet, shape);
-      generator.setGenerator(false);
+      if (shape != null)
+        getRenderer(i, g3d).render(g3dExport, modelSet, shape);
     }
     return g3dExport.finalizeOutput();
   }

@@ -52,10 +52,6 @@ public abstract class ShapeRenderer {
   protected boolean isGenerator;
   protected boolean slabbing;
 
-  public void setGenerator(boolean isGenerator) {
-    this.isGenerator = isGenerator;
-  }
-
   public final void setViewerG3dShapeID(Viewer viewer, JmolRendererInterface g3d, int shapeID) {
     this.viewer = viewer;
     this.g3d = g3d;
@@ -71,7 +67,9 @@ public abstract class ShapeRenderer {
     this.g3d = g3d;
     this.modelSet = modelSet;
     this.shape = shape;
+    isGenerator = g3d.isExport3D();
     render();
+    isGenerator = false;
   }
 
   abstract protected void render();

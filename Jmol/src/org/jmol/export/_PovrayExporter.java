@@ -367,8 +367,8 @@ public class _PovrayExporter extends __RayTracerExporter {
 
   protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices, 
-                                  short[] polygonColixes, int nFaces,
-                                  int nVertices, int nPolygons, BitSet bsFaces,
+                                  short[] polygonColixes,
+                                  int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
                                   int faceVertexMax, short colix, Vector colorList, Hashtable htColixes) {
     if (polygonColixes != null) {
       for (int i = nPolygons; --i >= 0;) {

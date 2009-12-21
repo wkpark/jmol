@@ -138,6 +138,17 @@ public class _TachyonExporter extends __RayTracerExporter {
      outputColorTexture(colix);
    }
 
+  protected void outputComment(String comment) {
+    output("# ");
+    output(comment);
+    output("\n");
+  }
+
+  protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,
+                            short colix) {
+    //TODO
+  }
+
   protected void outputCylinder(Point3f screenA, Point3f screenB,
                                       float radius, short colix, boolean withCaps) {
     output("FCylinder Base ");
@@ -165,17 +176,6 @@ public class _TachyonExporter extends __RayTracerExporter {
   protected void outputCylinderConical(Point3f screenA, Point3f screenB,
                                        float radius1, float radius2, short colix) {
     //not applicable
-  }
-
-  protected void outputComment(String comment) {
-    output("# ");
-    output(comment);
-    output("\n");
-  }
-
-  protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,
-                            short colix) {
-    //TODO
   }
 
   protected void outputEllipsoid(double[] coef, short colix) {

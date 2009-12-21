@@ -53,16 +53,23 @@ import org.jmol.viewer.Viewer;
 /*
  * Jmol Export Drivers
  * 
- * org.jmol.export._Exporter
- * org.jmol.export.[Driver]_Exporter
+ * ___Exporter
+ *     __CartesianExporter
+ *         _IdtfExporter
+ *         _MayaExporter
+ *         _VrmlExporter
+ *         _X3dExporter                      
+ *     __RayTracerExporter
+ *         _PovrayExporter
+ *         _TachyonExporter
+ *
  * org.jmol.export.[Shape]Generator
  * 
  *  org.jmol.export is a package that contains export drivers --
  *  custom interfaces for capturing the information that would normally
- *  go to the screen. Currently org.jmol.export is not a package of the applet, 
- *  but that is not necessary.
+ *  go to the screen. 
  *  
- *  The command is:
+ *  The Jmol script command is:
  *  
  *    write [driverName] [filename] 
  *  
@@ -76,12 +83,9 @@ import org.jmol.viewer.Viewer;
  *  
  *  where in this case [Driver] is a string such as "Maya" or "Vrml".
  *  
- *  Possible implementations include a VRML driver, a Maya ascii driver, 
- *  a Maya Obj driver, an Excel driver, etc.
- *  
  *  Once a driver is registered in org.jmol.viewer.JmolConstants.EXPORT_DRIVER_LIST,
  *  all that is necessary is to add the appropriate Java class file to 
- *  the org.jmol.export directory with the name FooExporter.java. 
+ *  the org.jmol.export directory with the name _[DriverName]Exporter.java. 
  *  
  *  Jmol will find it using Class.forName().
  *   
@@ -91,7 +95,7 @@ import org.jmol.viewer.Viewer;
  *  In addition, a __RayTracerExporter will clip based on the window size, like the standard graphics.
  *  
  *  The export driver is then responsible for implementing all outstanding abstract methods
- *  of the ___Exporter class. Most of these are of the form outputXXXXX. 
+ *  of the ___Exporter class. Most of these are of the form outputXXXXX(...). 
  *  
  *  Accompanying the export drivers in this package is a set of ShapeRenderers.
  *  Each of these "Generators"  provides specialized off-screen rendering to
@@ -219,10 +223,6 @@ public abstract class ___Exporter {
 
   abstract protected void outputHeader();
   
-  protected void startShapeBuffer(int iShape) {
-    // implementation-specific
-  }
-  
   protected int nBytes;
   protected void output(String data) {
     nBytes += data.length();
@@ -236,10 +236,6 @@ public abstract class ___Exporter {
     }
   }
 
-  protected void endShapeBuffer() {
-    // implementation-specific
-  }
-  
   protected void outputFooter() {
     // implementation-specific
   }

@@ -322,10 +322,6 @@ public interface JmolRendererInterface {
 
   public abstract void drawImage(Image image, int x, int y, int z, int zslab, short bgcolix, int width, int height);
 
-  public abstract void startShapeBuffer(int iShape);
-
-  public abstract void endShapeBuffer();
-
   public abstract boolean isCartesianExport();
   
   public abstract String finalizeOutput();

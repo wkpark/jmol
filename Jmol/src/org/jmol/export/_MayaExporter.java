@@ -52,10 +52,6 @@ public class _MayaExporter extends __CartesianExporter {
   private String name;
   private String id;
 
-  protected void outputComment(String comment) {
-    output("// " + comment + "/n");
-  }
-
   protected void outputHeader() {
     output("//  Maya ASCII 8.5 scene\n");
     output("//  Name: ball_stripped.ma\n");
@@ -168,6 +164,10 @@ public class _MayaExporter extends __CartesianExporter {
                               short colix, boolean doFill) {
     // TODO
     
+  }
+
+  protected void outputComment(String comment) {
+    output("// " + comment + "/n");
   }
 
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,

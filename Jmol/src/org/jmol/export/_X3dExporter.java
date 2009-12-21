@@ -49,10 +49,6 @@ public class _X3dExporter extends __CartesianExporter {
 
   private AxisAngle4f viewpoint = new AxisAngle4f();
   
-  protected void outputComment(String comment) {
-    // ignore
-  }
-
   private void output(Tuple3f pt) {
     output(round(pt.x) + " " + round(pt.y) + " " + round(pt.z));
   }
@@ -125,24 +121,6 @@ public class _X3dExporter extends __CartesianExporter {
     tempP1.scale(-1);
     output(tempP1);
     output("'>\n");
-  }
-
-  private int iShapeBuffer;
-  
-  protected void startShapeBuffer(int iShape) {
-    iShapeBuffer = 1;
-    switch(iShapeBuffer = iShape) {
-    default:
-    
-    }
-  }
-
-  protected void endShapeBuffer() {
-    switch(iShapeBuffer) {
-    default:
-      output("}}\n");
-    }
-    iShapeBuffer = 0;
   }
 
   protected void outputFooter() {
@@ -222,6 +200,10 @@ public class _X3dExporter extends __CartesianExporter {
     }
     output("</Billboard>\n");
     output("</Transform>\n");
+  }
+
+  protected void outputComment(String comment) {
+    // ignore
   }
 
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,

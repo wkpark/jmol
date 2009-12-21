@@ -57,10 +57,6 @@ public class _VrmlExporter extends __CartesianExporter {
     output(round(pt.x) + " " + round(pt.y) + " " + round(pt.z));
   }
 
-  protected void outputComment(String comment) {
-    output("# " + comment + "/n");
-  }
-  
   private int iObj;
   private Hashtable htDefs = new Hashtable();
   
@@ -195,6 +191,10 @@ public class _VrmlExporter extends __CartesianExporter {
     output("}\n");
   }
 
+  protected void outputComment(String comment) {
+    output("# " + comment + "/n");
+  }
+  
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
                             short colix) {
     float height = tempP1.distance(tempP2);

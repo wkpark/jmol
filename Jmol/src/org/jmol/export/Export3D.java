@@ -666,14 +666,6 @@ final public class Export3D implements JmolRendererInterface {
     return isCartesianExport() ? null : bgcolixes;
   }
 
-  public void startShapeBuffer(int iShape) {
-    exporter.startShapeBuffer(iShape);
-  }
-
-  public void endShapeBuffer() {
-    exporter.endShapeBuffer();
-  }
-
   public void fillEllipsoid(Point3f center, Point3f[] points, 
                               int x, int y, int z, int diameter,
                               Matrix3f mToEllipsoidal, double[] coef,

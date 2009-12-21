@@ -2842,12 +2842,6 @@ final public class Graphics3D implements JmolRendererInterface {
 
   // implemented only for Export3D:
   
-  public void endShapeBuffer() {
-  }
-
-  public void startShapeBuffer(int iShape) {
-  }
-
   public boolean canDoTriangles() {
     return true;
   }

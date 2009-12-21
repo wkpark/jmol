@@ -196,10 +196,6 @@ public class _IdtfExporter extends __CartesianExporter {
   final private StringBuffer resources = new StringBuffer();
   final private StringBuffer modifiers = new StringBuffer();
 
-  protected void outputComment(String comment) {
-    // no capability
-  }
-
   protected void outputHeader() {
     // next is an approximation only 
     output("FILE_FORMAT \"IDTF\"\nFORMAT_VERSION 100\n");
@@ -841,6 +837,10 @@ public class _IdtfExporter extends __CartesianExporter {
             .append(sbColors)
             .append(" }\n");
     models.append("}}}\n");
+  }
+
+  protected void outputComment(String comment) {
+    // no capability
   }
 
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,

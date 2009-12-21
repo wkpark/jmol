@@ -67,7 +67,7 @@ public abstract class ShapeRenderer {
     this.g3d = g3d;
     this.modelSet = modelSet;
     this.shape = shape;
-    isGenerator = g3d.isExport3D();
+    isGenerator = g3d.isGenerator();
     render();
     isGenerator = false;
   }

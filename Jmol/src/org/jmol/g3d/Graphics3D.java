@@ -2848,7 +2848,7 @@ final public class Graphics3D implements JmolRendererInterface {
 
   // implemented only for Export3D:
   
-  public boolean isExport3D() {
+  public boolean isGenerator() {
     return false;
   }
 

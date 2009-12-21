@@ -45,7 +45,7 @@ import org.jmol.viewer.Viewer;
  * 
  */
 
-public class _NewPovrayExporter extends __RayTracerExporter {
+public class _PovrayExporter extends __RayTracerExporter {
 
   String finalizeOutput() {
     super.finalizeOutput();

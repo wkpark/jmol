@@ -67,7 +67,7 @@ final public class Export3D implements JmolRendererInterface {
   public boolean initializeExporter(String type, Viewer viewer,
                                     Graphics3D g3d, Object output) {
     try {
-      String name = "org.jmol.export._" + (type.equals("Povray") ? "NewPovray" : type)
+      String name = "org.jmol.export._" + (false && type.equals("Povray") ? "NewPovray" : type)
           + "Exporter";
       Class exporterClass = Class.forName(name);
       //Class exporterClass = Class.forName("org.jmol.export.NewPovrayExporter");

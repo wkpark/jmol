@@ -35,7 +35,7 @@ public class BbcageRenderer extends CageRenderer {
   protected void render() {
     Bbcage bbox = (Bbcage) shape;
     if (!bbox.isVisible 
-        || !isGenerator && !g3d.checkTranslucent(false)
+        || !isExport && !g3d.checkTranslucent(false)
         || viewer.isJmolDataFrame())
       return;
     colix = viewer.getObjectColix(StateManager.OBJ_BOUNDBOX);

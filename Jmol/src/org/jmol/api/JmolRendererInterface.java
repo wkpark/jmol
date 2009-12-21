@@ -18,7 +18,7 @@ public interface JmolRendererInterface {
 
   // these methods are implmented in Export3D and Graphics3D
   
-  public abstract boolean isGenerator();
+  public abstract boolean isExport();
   
   public abstract boolean initializeExporter(String type, Viewer viewer,
                                              Graphics3D g3d, Object output);

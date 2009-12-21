@@ -48,7 +48,7 @@ public class LabelsRenderer extends ShapeRenderer {
     String[] labelStrings = labels.strings;
     short[] colixes = labels.colixes;
     short[] bgcolixes = labels.bgcolixes;
-    if (isGenerator)
+    if (isExport)
       bgcolixes = g3d.getBgColixes(bgcolixes);
     byte[] fids = labels.fids;
     int[] offsets = labels.offsets;

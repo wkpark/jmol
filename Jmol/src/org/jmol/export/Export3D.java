@@ -62,7 +62,7 @@ final public class Export3D implements JmolRendererInterface {
     
   }
   
-  public boolean isGenerator() {
+  public boolean isExport() {
     return true;
   }
 

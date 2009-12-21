@@ -71,7 +71,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       return mesh.title != null;
 
     transform();
-    render2(isGenerator);
+    render2(isExport);
     if (screens != null)
       viewer.freeTempScreens(screens);
     return true;

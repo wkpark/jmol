@@ -209,7 +209,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   }
 
   private void renderPendingMeasurement(MeasurementPending measurementPending) {
-    if (isGenerator || measurementPending == null)
+    if (isExport || measurementPending == null)
       return;
     int count = measurementPending.getCount();
     if (count == 0)

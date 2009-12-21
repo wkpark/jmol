@@ -44,7 +44,7 @@ public class BallsRenderer extends ShapeRenderer {
     slabbing = viewer.getSlabEnabled();
     // isNav = viewer.getNavigationMode();
     boolean renderCrosshairs = modelSet.getAtomCount() > 0
-        && viewer.getShowNavigationPoint() && !isGenerator
+        && viewer.getShowNavigationPoint() && !isExport
         && g3d.setColix(Graphics3D.BLACK);
 
     Point3f navOffset = (renderCrosshairs ? new Point3f(viewer

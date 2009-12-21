@@ -90,7 +90,7 @@ public class UccageRenderer extends CageRenderer {
   }
 
   private void renderInfo(SymmetryInterface symmetry) {
-    if (isGenerator || !g3d.setColix(viewer.getColixBackgroundContrast()))
+    if (isExport || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
     if (nf == null) {
       nf = NumberFormat.getInstance();

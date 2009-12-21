@@ -91,7 +91,7 @@ public class VectorsRenderer extends ShapeRenderer {
     headWidthPixels = (int)(diameter * 2.0f);
     if (headWidthPixels < diameter + 2)
       headWidthPixels = diameter + 2;
-    if (isGenerator)
+    if (isExport)
       diameter = (mad < 1 ? 1 : mad); //may need tweaking
     return true;
   }

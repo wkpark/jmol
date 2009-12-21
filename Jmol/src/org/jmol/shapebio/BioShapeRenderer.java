@@ -84,7 +84,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       return;
     
     invalidateMesh = false;
-    boolean TF = isGenerator || viewer.getHighResolution();
+    boolean TF = isExport || viewer.getHighResolution();
     if (TF != isHighRes)
       invalidateMesh = true;
     isHighRes = TF;
@@ -408,7 +408,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         controlPointScreens[iNext], controlPointScreens[iNext2], aspectRatio);
     if (ribbonBorder && aspectRatio == 0) {
       g3d.fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 
-          (isGenerator ? 50 : 3), //may not be right 0.05 
+          (isExport ? 50 : 3), //may not be right 0.05 
           screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
           screenArrowBot.x, screenArrowBot.y, screenArrowBot.z);
     }

@@ -2014,7 +2014,7 @@ public class ScriptEvaluator {
         } else if (v instanceof Matrix4f) {
           fixed[j] = new Token(Token.matrix4f, v);
         } else if (v instanceof String[]) {
-          fixed[j] = new Token(Token.string, Escape.escape((String[])v));
+          fixed[j] = new Token(Token.string, Escape.escape((String[])v, true));
         } else {
           Point3f center = getObjectCenter(var, Integer.MIN_VALUE);
           if (center == null) 

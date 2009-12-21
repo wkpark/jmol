@@ -27,6 +27,7 @@ package org.jmol.shape;
 import java.util.BitSet;
 
 import org.jmol.modelset.TickInfo;
+import org.jmol.util.Escape;
 
 public abstract class FontLineShape extends FontShape {
 
@@ -53,6 +54,37 @@ public abstract class FontLineShape extends FontShape {
     super.setProperty(propertyName, value, bs);
   }
 
+  public String getShapeState() {
+    String s = super.getShapeState();
+    if (tickInfos == null)
+      return s;
+    StringBuffer sb = new StringBuffer(s);
+    if (tickInfos[0] != null)
+      appendTickInfo(sb, "", 0);
+    if (tickInfos[1] != null)
+      appendTickInfo(sb, " x", 1);
+    if (tickInfos[2] != null)
+      appendTickInfo(sb, " y", 2);
+    if (tickInfos[3] != null)
+      appendTickInfo(sb, " z", 3);
+    return sb.toString();
+  }
+  
+  private void appendTickInfo(StringBuffer sb, String type, int i) {
+    sb.append("  ");
+    sb.append(myType);
+    sb.append(type);
+    addTickInfo(sb, tickInfos[i], false);
+    sb.append(";\n");
+  }
 
-
+  public static void addTickInfo(StringBuffer sb, TickInfo tickInfo, boolean addFirst) {
+    sb.append(" ticks ").append(Escape.escape(tickInfo.ticks));
+    if (tickInfo.tickLabelFormats != null)
+      sb.append(" format ").append(Escape.escape(tickInfo.tickLabelFormats, false));
+    if (tickInfo.scale != null)
+      sb.append(" scale ").append(Escape.escape(tickInfo.scale));
+    if (addFirst && !Float.isNaN(tickInfo.first) && tickInfo.first != 0)
+      sb.append(" first ").append(tickInfo.first);
+  }
 }

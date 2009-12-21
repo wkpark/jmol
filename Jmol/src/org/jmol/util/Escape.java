@@ -43,7 +43,7 @@ public class Escape {
     if (x instanceof String)
       return escape("" + x);
     if (x instanceof String[])
-      return escape((String[]) x);
+      return escape((String[]) x, true);
     if (x instanceof int[]) 
       return toJSON(null, x);
     return x.toString();
@@ -185,16 +185,13 @@ public class Escape {
   static int nEscape = ESCAPE_SET.length();
 
   /**
-   * Serialize a simple string-based array as a single string followed by a
-   * .split(x) where x is some character not in the string. A bit kludgy, but it
-   * works.
-   * 
    * 
    * @param list
    *          list of strings to serialize
+   * @param nicely TODO
    * @return serialized array
    */
-  public static String escape(String[] list) {
+  public static String escape(String[] list, boolean nicely) {
     if (list == null)
       return escape("");
     StringBuffer s = new StringBuffer();
@@ -202,7 +199,7 @@ public class Escape {
     for (int i = 0; i < list.length; i++) {
       if (i > 0)
         s.append(", ");
-      s.append(escapeNice(list[i]));
+      s.append(nicely ? escapeNice(list[i]) : escape(list[i]));
     }
     s.append("]");
     return s.toString();

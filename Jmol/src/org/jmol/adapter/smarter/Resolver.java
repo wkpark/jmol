@@ -161,7 +161,7 @@ public class Resolver {
       return null;
     StringBuffer data = new StringBuffer();
     data.append("Zip File Directory: ").append("\n").append(
-        Escape.escape(zipDirectory)).append("\n");
+        Escape.escape(zipDirectory, true)).append("\n");
     Hashtable fileData = new Hashtable();
     ZipUtil.getAllData(is, new String[] {}, "",
         "Molecule", fileData);

@@ -830,7 +830,7 @@ public class ScriptVariable extends Token {
     case bitset:
       return Escape.escape((BitSet)value);
     case list:
-      return Escape.escape((String[])value);
+      return Escape.escape((String[])value, true);
     case point3f:
       return Escape.escape((Point3f)value);
     case point4f:

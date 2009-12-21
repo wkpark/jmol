@@ -696,7 +696,7 @@ public class Measures extends Shape {
             setStateInfo(temp, i, "measure off");
     if (defaultTickInfo != null) {
       commands.append(" measure ");
-      addTickInfo(commands, defaultTickInfo);
+      FontLineShape.addTickInfo(commands, defaultTickInfo, true);
       commands.append(";\n");
     }
     String s = getShapeCommands(temp, null, -1, "select measures");
@@ -713,20 +713,10 @@ public class Measures extends Shape {
     StringBuffer sb = new StringBuffer("measure");
     TickInfo tickInfo = m.getTickInfo();
     if (tickInfo != null)
-      addTickInfo(sb, tickInfo);
+      FontLineShape.addTickInfo(sb, tickInfo, true);
     for (int i = 1; i <= count; i++)
       sb.append(" ").append(m.getLabel(i, true, true));
     sb.append("; # " + getInfoAsString(index));
     return sb.toString();
-  }
-  
-  private static void addTickInfo(StringBuffer sb, TickInfo tickInfo) {
-    sb.append(" ticks ").append(Escape.escape(tickInfo.ticks));
-    if (tickInfo.tickLabelFormats != null)
-      sb.append(" format ").append(Escape.escape(tickInfo.tickLabelFormats));
-    if (tickInfo.scale != null)
-      sb.append(" scale ").append(Escape.escape(tickInfo.scale));
-    if (!Float.isNaN(tickInfo.first) && tickInfo.first != 0)
-      sb.append(" first ").append(tickInfo.first);
-  }
+  }  
 }

@@ -357,7 +357,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         }          
       }
     }
-    //surface generator only (return TRUE) or shared (return FALSE)
+    //surface Export3D only (return TRUE) or shared (return FALSE)
 
     if (sg != null && sg.setParameter(propertyName, value, bs))
       return;

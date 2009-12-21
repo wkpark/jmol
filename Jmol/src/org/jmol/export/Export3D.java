@@ -455,7 +455,7 @@ final public class Export3D implements JmolRendererInterface {
 
   public void fillCylinder(Atom atomA, Atom atomB, short colixA, short colixB,
                            byte endcaps, short mad, int bondOrder) {
-    // from SticksGenerator to allow for a direct
+    // from SticksRenderer to allow for a direct
     // writing of single bonds -- just for efficiency here.
     exporter
         .fillCylinder(atomA, atomB, colixA, colixB, endcaps, mad, bondOrder);

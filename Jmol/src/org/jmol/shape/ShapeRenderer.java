@@ -43,7 +43,7 @@ public abstract class ShapeRenderer {
   protected int myVisibilityFlag;
   protected int shapeID;
   
-  //working values, for export generators
+  //working values
   protected short colix;
   protected short mad;
   protected short madBeg;

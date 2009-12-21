@@ -77,7 +77,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
   }
   
-  protected void render2(boolean isGenerator) {
+  protected void render2(boolean isExport) {
     switch (imesh.dataType) {
     case Parameters.SURFACE_LONEPAIR:
       renderLonePair(false);
@@ -87,7 +87,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       return;
     }
     isBicolorMap = imesh.jvxlData.isBicolorMap;
-    super.render2(isGenerator);
+    super.render2(isExport);
     if (!g3d.setColix(Graphics3D.BLACK)) // must be 1st pass
       return;
     if (imesh.showContourLines)
@@ -197,12 +197,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
   }
 
   protected void renderTriangles(boolean fill, boolean iShowTriangles,
-                                 boolean isGenerator) {
+                                 boolean isExport) {
     int[][] polygonIndexes = imesh.polygonIndexes;
     colix = (!fill && imesh.meshColix != 0 ? imesh.meshColix : imesh.colix);
     short[] vertexColixes = imesh.vertexColixes;
     g3d.setColix(colix);
-    boolean generateSet = isGenerator;
+    boolean generateSet = isExport;
     if (generateSet) {
       frontOnly = false;
       bsFaces.clear();

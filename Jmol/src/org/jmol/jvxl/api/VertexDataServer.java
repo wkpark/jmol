@@ -9,7 +9,7 @@ public interface VertexDataServer {
   /*
    * An interface for interacting with 
    * the MarchingCubes and MarchingSquares classes 
-   * as well as the SurfaceGenerator/SurfaceReader classes
+   * as well as the SurfaceReader classes
    * during and after surface generation
    * 
    * SurfaceReader and Isosurface are examples.

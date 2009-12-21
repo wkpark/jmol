@@ -63,7 +63,6 @@ import org.jmol.viewer.Viewer;
  *         _PovrayExporter
  *         _TachyonExporter
  *
- * org.jmol.export.[Shape]Generator
  * 
  *  org.jmol.export is a package that contains export drivers --
  *  custom interfaces for capturing the information that would normally
@@ -97,8 +96,8 @@ import org.jmol.viewer.Viewer;
  *  The export driver is then responsible for implementing all outstanding abstract methods
  *  of the ___Exporter class. Most of these are of the form outputXXXXX(...). 
  *  
- *  In the renderers, there are occasions when we need to know that this is a generator. 
- *  In those cases their isGenerator flag will be set and can be tested. 
+ *  In the renderers, there are occasions when we need to know that we are exporting. 
+ *  In those cases their isExport flag will be set and can be tested. 
  *  
  *  Basically, this system is designed to be updated easily by multiple 
  *  developers. The process should be:
@@ -356,11 +355,7 @@ public abstract class ___Exporter {
   }
 
 
-  // These methods are used by specific shape generators, which themselves are 
-  // extensions of classes in org.jmol.shape, org.jmol.shapebio, and org.jmol.shapespecial. 
-  // More will be added as additional objects are added to be exportable classes.
-
-  // The following methods are called by a variety of shape generators and 
+  // The following methods are called by a variety of shape renderers and 
   // Export3D, replacing methods in org.jmol.g3d. More will be added as needed. 
 
   abstract void drawAtom(Atom atom);

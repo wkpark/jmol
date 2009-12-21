@@ -67,7 +67,7 @@ public class DrawRenderer extends MeshRenderer {
           && (dmesh.modelFlags == null || dmesh.modelFlags.get(i)); 
   }
   
-  protected void render2(boolean isGenerator) {
+  protected void render2(boolean isExport) {
     drawType = dmesh.drawType;
     diameter = dmesh.diameter;
     width = dmesh.width;
@@ -219,7 +219,7 @@ public class DrawRenderer extends MeshRenderer {
         drawLine(i, i + 1, true, vertices[i], vertices[i + 1], screens[i], screens[i + 1]);
     }
     
-    if (isDrawPickMode && !isGenerator) {
+    if (isDrawPickMode && !isExport) {
       renderHandles();
     }
   }

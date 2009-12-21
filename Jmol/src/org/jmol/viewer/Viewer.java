@@ -3439,7 +3439,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void resizeImage(int width, int height, boolean isImageWrite,
-                           boolean isGenerator, boolean isReset) {
+                           boolean isExport, boolean isReset) {
     if (!isImageWrite && creatingImage)
       return;
     if (width > 0) {
@@ -3454,7 +3454,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isReset) {
       imageFontScaling = 1;
       antialiasDisplay = global.antialiasDisplay;
-    } else if (isImageWrite && !isGenerator) {
+    } else if (isImageWrite && !isExport) {
       antialiasDisplay = global.antialiasImages;
     }
     if (antialiasDisplay)

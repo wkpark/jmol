@@ -1506,7 +1506,7 @@ final public class Graphics3D implements JmolRendererInterface {
                                short[] colixes, Vector3f[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
                                int faceVertexMax, short[] polygonColixes, int nPolygons) {
-    // generator only
+    // Export3D only
   }
   
   /* ***************************************************************

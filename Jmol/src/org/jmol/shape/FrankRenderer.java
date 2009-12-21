@@ -29,7 +29,7 @@ public class FrankRenderer extends ShapeRenderer {
   //we render Frank last just for the touch that if there are translucent
   //objects, then it becomes translucent. Just for fun.
   
-  // no FrankGenerator
+  // no Frank export
     
   protected void render() {
     Frank frank = (Frank) shape;

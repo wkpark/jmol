@@ -98,12 +98,12 @@ public class _X3dExporter extends __CartesianExporter {
     output("<Background skyColor='" 
       + rgbFractionalFromColix(viewer.getObjectColix(0), ' ') + "'/>\n");
     // next is an approximation only 
-    getViewpointPosition(ptAtom);
-    adjustViewpointPosition(ptAtom);
+    getViewpointPosition(tempP1);
+    adjustViewpointPosition(tempP1);
     float angle = getFieldOfView();
     viewer.getAxisAngle(viewpoint);
     output("<Viewpoint fieldOfView='" + angle
-      + "' position='" + ptAtom.x + " " + ptAtom.y + " " + ptAtom.z 
+      + "' position='" + tempP1.x + " " + tempP1.y + " " + tempP1.z 
       + "' orientation='" + viewpoint.x + " " + viewpoint.y + " " 
       + (viewpoint.angle == 0 ? 1 : viewpoint.z) + " " + -viewpoint.angle
       + "'\n jump='TRUE' description='v1'/>\n");
@@ -121,9 +121,9 @@ public class _X3dExporter extends __CartesianExporter {
       + "\n  -->\n\n");
 
     output("<Transform translation='");
-    ptAtom.set(center);
-    ptAtom.scale(-1);
-    output(ptAtom);
+    tempP1.set(center);
+    tempP1.scale(-1);
+    output(tempP1);
     output("'>\n");
   }
 
@@ -176,12 +176,12 @@ public class _X3dExporter extends __CartesianExporter {
       // draw filled circle
       
       output("<Transform translation='");
-      tempV1.set(pt);
+      tempV1.set(tempP3);
       tempV1.add(pt1);
       tempV1.scale(0.5f);
       output(tempV1);
       output("'><Billboard axisOfRotation='0 0 0'><Transform rotation='1 0 0 1.5708'>");
-      outputCylinderChild(pt1, pt, colix, Graphics3D.ENDCAPS_FLAT, radius);
+      outputCylinderChild(pt1, tempP3, colix, Graphics3D.ENDCAPS_FLAT, radius);
       output("</Transform></Billboard>");
       output("</Transform>\n");
       
@@ -192,11 +192,11 @@ public class _X3dExporter extends __CartesianExporter {
 
     String child = getDef("C" + colix + "_" + radius);
     output("<Transform");
-    outputTransRot(pt, pt1, 0, 0, 1);
-    pt.set(1, 1, 1);
-    pt.scale(radius);
+    outputTransRot(tempP3, pt1, 0, 0, 1);
+    tempP3.set(1, 1, 1);
+    tempP3.scale(radius);
     output(" scale='");
-    output(pt);
+    output(tempP3);
     output("'>\n<Billboard ");
     if (child.charAt(0) == '_') {
       output("DEF='" + child + "'");
@@ -305,35 +305,20 @@ public class _X3dExporter extends __CartesianExporter {
     AxisAngle4f a = Quaternion.getQuaternionFrame(center, points[1], points[3]).toAxisAngle4f();
     if (!Float.isNaN(a.x)) 
       output(" rotation='" + a.x + " " + a.y + " " + a.z + " " + a.angle + "'");
-    pt.set(0, 0, 0);
+    tempP3.set(0, 0, 0);
     float sx = points[1].distance(center);
     float sy = points[3].distance(center);
     float sz = points[5].distance(center);
     output(" scale='" + sx + " " + sy + " " + sz + "'>");
-    outputSphere(pt, 1.0f, colix);
+    outputSphere(tempP3, 1.0f, colix);
     output("</Transform>\n");
   }
 
   protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
-                                  int nVertices, int nPolygons, BitSet bsFaces,
-                                  int faceVertexMax, short colix) {
-    if (nVertices == 0)
-      return;
-    int nFaces = 0;
-    for (int i = nPolygons; --i >= 0;)
-      if (bsFaces.get(i))
-        nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
-    if (nFaces == 0)
-      return;
-
-    Vector colorList = null;
-    Hashtable htColixes = new Hashtable();
-    if (polygonColixes != null)
-      colorList = getColorList(0, polygonColixes, nPolygons, bsFaces, htColixes);
-    else if (colixes != null)
-      colorList = getColorList(0, colixes, nVertices, null, htColixes);
+                                  int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
+                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes) {
     output("<Shape>\n");
     outputAppearance(colix, false);
     output("<IndexedFaceSet \n");
@@ -537,17 +522,17 @@ public class _X3dExporter extends __CartesianExporter {
 
   void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
     if (z < 3) {
-      viewer.transformPoint(center, pt);
-      z = (int)pt.z;
+      viewer.transformPoint(center, tempP3);
+      z = (int)tempP3.z;
     }
     String useFontStyle = font3d.fontStyle.toUpperCase();
     String preFontFace = font3d.fontFace.toUpperCase();
     String useFontFace = (preFontFace.equals("MONOSPACED") ? "TYPEWRITER"
         : preFontFace.equals("SERIF") ? "SERIF" : "SANS");
     output("<Transform translation='");
-    pt.set(x, y, z);
-    viewer.unTransformPoint(pt, ptAtom);
-    output(ptAtom);
+    tempP3.set(x, y, z);
+    viewer.unTransformPoint(tempP3, tempP1);
+    output(tempP1);
     output("'>");
     // These x y z are 3D coordinates of echo or the atom the label is attached
     // to.

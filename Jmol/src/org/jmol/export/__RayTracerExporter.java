@@ -75,8 +75,8 @@ abstract class __RayTracerExporter extends __Exporter {
 
   abstract protected void outputComment(String comment);
 
-  abstract protected void outputCylinderCapped(Point3f screenA, Point3f screenB, float radius,
-                                         short colix, byte endcaps);
+  abstract protected void outputCylinder(Point3f screenA, Point3f screenB, float radius,
+                                         short colix, boolean withCaps);
              
   abstract protected void outputCylinderConical(Point3f screenA,
                                                 Point3f screenB, float radius1,
@@ -84,8 +84,6 @@ abstract class __RayTracerExporter extends __Exporter {
 
   abstract protected void outputEllipsoid(double[] coef, short colix);
   
-  abstract protected void outputSphere(Point3f pt, float radius, short colix);
-
   abstract protected void outputSphere(float x, float y, float z, float radius,
                                     short colix);
   
@@ -165,17 +163,17 @@ abstract class __RayTracerExporter extends __Exporter {
       return;
     
     float radius = viewer.scaleToScreen((int) screenA.z, madBond / 2);
-    outputSphere(screenA, radius, colix1);
+    outputSphere(screenA.x, screenA.y, screenA.z, radius, colix1);
     radius = viewer.scaleToScreen((int) screenB.z, madBond / 2);
-    outputSphere(screenB, radius, colix2);
+    outputSphere(screenB.x, screenB.y, screenB.z, radius, colix2);
 
   }
 
-  private void fillConicalCylinder(Point3f screenA, Point3f screenB,
+  protected void fillConicalCylinder(Point3f screenA, Point3f screenB,
                                     int madBond, short colix, byte endcaps) {
     float radius1 = viewer.scaleToScreen((int) screenA.z, madBond) / 2f;
     if (screenA.distance(screenB) == 0) {
-      outputSphere(pt, radius1, colix);
+      outputSphere(screenA.x, screenA.y, screenA.z, radius1, colix);
       return;
     }
     float radius2 = viewer.scaleToScreen((int) screenB.z, madBond) / 2f;
@@ -189,11 +187,16 @@ abstract class __RayTracerExporter extends __Exporter {
       outputSphere(screenA.x, screenA.y, screenA.z, radius, colix);
       return;
     }
-    outputCylinderCapped(screenA, screenB, radius, colix, endcaps);
+    outputCylinder(screenA, screenB, radius, colix, endcaps == Graphics3D.ENDCAPS_FLAT);
+    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL)
+      return;
+    outputSphere(screenA.x, screenA.y, screenA.z, radius, colix);
+    outputSphere(screenB.x, screenB.y, screenB.z, radius, colix);
+
   }
 
   void fillSphere(short colix, int diameter, Point3f pt) {
-    outputSphere(pt, diameter / 2f, colix);
+    outputSphere(pt.x, pt.y, pt.z, diameter / 2f, colix);
   }
   
   void fillScreenedCircle(short colix, int diameter, int x, int y, int z) {
@@ -206,18 +209,18 @@ abstract class __RayTracerExporter extends __Exporter {
 
   void plotImage(int x, int y, int z, Image image, short bgcolix, int width,
                  int height) {
-    outputComment("start image " + (++nImage) + "\n");
+    outputComment("start image " + (++nImage));
     g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
-    outputComment("end image " + nImage + "\n");
+    outputComment("end image " + nImage);
   }
 
   void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
     // trick here is that we use Jmol's standard g3d package to construct
     // the bitmap, but then output to jmolRenderer, which returns control
     // here via drawPixel.
-    outputComment("start text " + (++nText) + ": " + text + "\n");
+    outputComment("start text " + (++nText) + ": " + text);
     g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d, jmolRenderer);
-    outputComment("end text " + nText + ": " + text + "\n");
+    outputComment("end text " + nText + ": " + text);
   }
 
   void fillEllipsoid(Point3f center, Point3f[] points, short colix, int x,

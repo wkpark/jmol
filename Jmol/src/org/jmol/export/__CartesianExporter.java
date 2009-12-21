@@ -38,9 +38,6 @@ import org.jmol.modelset.Atom;
 
 abstract public class __CartesianExporter extends __Exporter {
 
-  final protected Point3f ptAtom = new Point3f();
-  final private Point3f pt2 = new Point3f();
-
   public __CartesianExporter() {
     isCartesianExport = true;
   }
@@ -49,11 +46,11 @@ abstract public class __CartesianExporter extends __Exporter {
                                 boolean isCartesian) {
     if (isCartesian) {
       // really first order -- but actual coord
-      ptAtom.set(ptA);
-      pt2.set(ptB);
+      tempP1.set(ptA);
+      tempP2.set(ptB);
     } else {
-      viewer.unTransformPoint(ptA, ptAtom);
-      viewer.unTransformPoint(ptB, pt2);
+      viewer.unTransformPoint(ptA, tempP1);
+      viewer.unTransformPoint(ptB, tempP2);
     }
     if (madBond < 20)
       madBond = 20;
@@ -92,25 +89,25 @@ abstract public class __CartesianExporter extends __Exporter {
 
   void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) {
     // draw circle
-    pt.set(x, y, z);
-    viewer.unTransformPoint(pt, ptAtom);
+    tempP3.set(x, y, z);
+    viewer.unTransformPoint(tempP3, tempP1);
     float radius = viewer.unscaleToScreen(z, diameter) / 2;
-    pt.set(x, y, z + 1);
-    viewer.unTransformPoint(pt, pt);
-    outputCircle(ptAtom, pt, radius, colix, doFill);
+    tempP3.set(x, y, z + 1);
+    viewer.unTransformPoint(tempP3, tempP3);
+    outputCircle(tempP1, tempP3, radius, colix, doFill);
   }
 
   void drawPixel(short colix, int x, int y, int z) {
-    pt.set(x, y, z);
-    viewer.unTransformPoint(pt, ptAtom);
-    outputSphere(ptAtom, 0.02f, colix);
+    tempP3.set(x, y, z);
+    viewer.unTransformPoint(tempP3, tempP1);
+    outputSphere(tempP1, 0.02f, colix);
   }
 
   void drawTextPixel(int argb, int x, int y, int z) {
     // text only
-    pt.set(x, y, z);
-    viewer.unTransformPoint(pt, ptAtom);
-    outputTextPixel(ptAtom, argb);
+    tempP3.set(x, y, z);
+    viewer.unTransformPoint(tempP3, tempP1);
+    outputTextPixel(tempP1, argb);
   }
 
   void fillCone(short colix, byte endcap, int diameter, Point3f screenBase,
@@ -127,17 +124,17 @@ abstract public class __CartesianExporter extends __Exporter {
                     byte endcaps, int diameter, int bondOrder) {
     float radius = untransformData(ptA, ptB, diameter, bondOrder == -1);
     if (colix1 == colix2) {
-      outputCylinder(ptAtom, pt2, colix1, endcaps, radius);
+      outputCylinder(tempP1, tempP2, colix1, endcaps, radius);
     } else {
-      tempV2.set(pt2);
-      tempV2.add(ptAtom);
+      tempV2.set(tempP2);
+      tempV2.add(tempP1);
       tempV2.scale(0.5f);
-      pt.set(tempV2);
-      outputCylinder(ptAtom, pt, colix1, Graphics3D.ENDCAPS_FLAT, radius);
-      outputCylinder(pt, pt2, colix2, Graphics3D.ENDCAPS_FLAT, radius);
+      tempP3.set(tempV2);
+      outputCylinder(tempP1, tempP3, colix1, Graphics3D.ENDCAPS_FLAT, radius);
+      outputCylinder(tempP3, tempP2, colix2, Graphics3D.ENDCAPS_FLAT, radius);
       if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-        outputSphere(ptAtom, radius * 1.01f, colix1);
-        outputSphere(pt2, radius * 1.01f, colix2);
+        outputSphere(tempP1, radius * 1.01f, colix1);
+        outputSphere(tempP2, radius * 1.01f, colix2);
       }
     }
   }
@@ -145,7 +142,7 @@ abstract public class __CartesianExporter extends __Exporter {
   void fillCylinder(short colix, byte endcaps, int diameter, Point3f screenA,
                     Point3f screenB) {
     float radius = untransformData(screenA, screenB, diameter, false);
-    outputCylinder(ptAtom, pt2, colix, endcaps, radius);
+    outputCylinder(tempP1, tempP2, colix, endcaps, radius);
   }
 
   void fillEllipsoid(Point3f center, Point3f[] points, short colix, int x,
@@ -161,8 +158,8 @@ abstract public class __CartesianExporter extends __Exporter {
   }
 
   void fillSphere(short colix, int diameter, Point3f pt) {
-    viewer.unTransformPoint(pt, ptAtom);
-    outputSphere(ptAtom, viewer.unscaleToScreen((int) pt.z, diameter) / 2,
+    viewer.unTransformPoint(pt, tempP1);
+    outputSphere(tempP1, viewer.unscaleToScreen((int) pt.z, diameter) / 2,
         colix);
   }
 
@@ -181,8 +178,8 @@ abstract public class __CartesianExporter extends __Exporter {
     // the bitmap, but then output to jmolRenderer, which returns control
     // here via drawPixel.
     if (z < 3) {
-      viewer.transformPoint(center, pt);
-      z = (int) pt.z;
+      viewer.transformPoint(center, tempP3);
+      z = (int) tempP3.z;
     }
     g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d,
         jmolRenderer);

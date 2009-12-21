@@ -26,6 +26,8 @@
 package org.jmol.export;
 
 import java.util.BitSet;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
@@ -147,8 +149,8 @@ public class _MayaExporter extends __CartesianExporter {
   protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
-                                  int nVertices, int nPolygons, BitSet bsFaces,
-                                  int faceVertexMax, short colix) {
+                                  int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
+                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes) {
   }
 
   protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3,

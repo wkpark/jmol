@@ -166,14 +166,16 @@ public abstract class __Exporter {
   
   boolean isCartesianExport;
 
-  protected Point3f center = new Point3f();
-  protected Point3f tempP1 = new Point3f();
-  protected Point3f tempP2 = new Point3f();
-  protected Point3f tempP3 = new Point3f();
-  protected Vector3f tempV1 = new Vector3f();
-  protected Vector3f tempV2 = new Vector3f();
-  protected Vector3f tempV3 = new Vector3f();
-  protected AxisAngle4f tempA = new AxisAngle4f();
+  final protected static float degreesPerRadian = (float) (180 / Math.PI);
+
+  final protected Point3f tempP1 = new Point3f();
+  final protected Point3f tempP2 = new Point3f();
+  final protected Point3f tempP3 = new Point3f();
+  final protected Point3f center = new Point3f();
+  final protected Vector3f tempV1 = new Vector3f();
+  final protected Vector3f tempV2 = new Vector3f();
+  final protected Vector3f tempV3 = new Vector3f();
+  final protected AxisAngle4f tempA = new AxisAngle4f();
   
   public __Exporter() {
   }
@@ -246,18 +248,14 @@ public abstract class __Exporter {
     return new SimpleDateFormat("yyyy-MM-dd', 'HH:mm").format(new Date());
   }
 
-  final protected static float degreesPerRadian = (float) (360 / (2 * Math.PI));
-
   protected float getFieldOfView() {
     float zoffset = (viewer.getCameraDepth()+ 0.5f);
     return (float) (2 * Math.atan(0.5 / zoffset));
   }
 
-  final protected Point3f pt = new Point3f();
-
   protected void getViewpointPosition(Point3f ptAtom) {
-    pt.set(screenWidth / 2, screenHeight / 2, 0);
-    viewer.unTransformPoint(pt, ptAtom);
+    tempP3.set(screenWidth / 2, screenHeight / 2, 0);
+    viewer.unTransformPoint(tempP3, ptAtom);
     ptAtom.sub(center);
   }
 
@@ -270,10 +268,10 @@ public abstract class __Exporter {
     float z0 = zoffset * 2 * rotationRadius * scalePixelsPerAngstrom / scale;
     //float offsetx = 0.5f + viewer.getTranslationXPercent() / 100f;
     //float offsety = 0.5f + viewer.getTranslationYPercent() / 100f;
-    pt.set(screenWidth / 2, screenHeight / 2, z0);
-    viewer.unTransformPoint(pt, pt);
-    pt.sub(center);
-    ptAtom.add(pt);
+    tempP3.set(screenWidth / 2, screenHeight / 2, z0);
+    viewer.unTransformPoint(tempP3, tempP3);
+    tempP3.sub(center);
+    ptAtom.add(tempP3);
   }
 
   protected Vector3f getRotation(Vector3f v) {
@@ -316,15 +314,15 @@ public abstract class __Exporter {
   protected String translucencyFractionalFromColix(short colix) {
     int translevel = Graphics3D.getColixTranslucencyLevel(colix);
     if (Graphics3D.isColixTranslucent(colix))
-      return new StringBuffer().append(translevel / 255f).toString();
-    return new StringBuffer().append(0f).toString();
+      return "" + (translevel / 255f);
+    return "0";
   }
 
   protected String opacityFractionalFromColix(short colix) {
     int translevel = Graphics3D.getColixTranslucencyLevel(colix);
     if (Graphics3D.isColixTranslucent(colix))
-      return new StringBuffer().append(1 - translevel / 255f).toString();
-    return new StringBuffer().append(1f).toString();
+      return "" + (1 - translevel / 255f);
+    return "1";
   }
 
   protected static float round(double number) { //AH
@@ -372,17 +370,32 @@ public abstract class __Exporter {
 
   void drawIsosurface(Point3f[] vertices, short colix, short[] colixes,
                       Vector3f[] normals, int[][] indices, BitSet bsFaces,
-                      int nVertices, int faceVertexMax,
-                      short[] polygonColixes, int nPolygons) {
-  outputIsosurface(vertices, normals, colixes, indices, polygonColixes, 
-      nVertices, nPolygons, bsFaces, faceVertexMax, colix);
-}
+                      int nVertices, int faceVertexMax, short[] polygonColixes,
+                      int nPolygons) {
+    if (nVertices == 0)
+      return;
+    int nFaces = 0;
+    for (int i = nPolygons; --i >= 0;)
+      if (bsFaces.get(i))
+        nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
+    if (nFaces == 0)
+      return;
+    Hashtable htColixes = new Hashtable();
+    Vector colorList = null;
+    if (polygonColixes != null)
+      colorList = getColorList(0, polygonColixes, nPolygons, bsFaces, htColixes);
+    else if (colixes != null)
+      colorList = getColorList(0, colixes, nVertices, null, htColixes);
+    outputIsosurface(vertices, normals, colixes, indices, polygonColixes,
+        nVertices, nPolygons, nFaces, bsFaces, faceVertexMax, colix, colorList,
+        htColixes);
+  }
 
   abstract protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
                                 short[] colixes, int[][] indices,
                                 short[] polygonColixes,
-                                int nVertices, int nPolygons, BitSet bsFaces,
-                                int faceVertexMax, short colix);
+                                int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
+                                int faceVertexMax, short colix, Vector colorList, Hashtable htColixes);
 
   abstract void drawPixel(short colix, int x, int y, int z); //measures
   

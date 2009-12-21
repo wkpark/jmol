@@ -45,14 +45,14 @@ import org.jmol.viewer.Viewer;
  * 
  */
 
-public class _PovrayExporter extends __RayTracerExporter {
+public class _NewPovrayExporter extends __RayTracerExporter {
 
-  public String finalizeOutput() {
+  String finalizeOutput() {
     super.finalizeOutput();
     return getAuxiliaryFileData();
   }
 
-  public void getHeader() {
+  protected void getHeader() {
     super.getHeader();
     output("// ******************************************************\n");
     output("// Created by Jmol " + Viewer.getJmolVersion() + "\n");
@@ -332,7 +332,9 @@ public class _PovrayExporter extends __RayTracerExporter {
   }
 
   protected void outputComment(String comment) {
-    output("// " + comment);
+    output("// ");
+    output(comment);
+    output("\n");
   }
 
   protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,
@@ -341,16 +343,12 @@ public class _PovrayExporter extends __RayTracerExporter {
         + triad(screenTip) + ",0" + "," + color4(colix) + ")\n");
   }
 
-  protected void outputCylinderCapped(Point3f screenA, Point3f screenB, float radius,
-                              short colix, byte endcaps) {
+  protected void outputCylinder(Point3f screenA, Point3f screenB, float radius,
+                              short colix, boolean withCaps) {
     String color = color4(colix);
-    output((endcaps == Graphics3D.ENDCAPS_FLAT ? "b(" : "c(") 
+    output((withCaps ? "b(" : "c(") 
         + triad(screenA) + "," + radius + "," + triad(screenB) + ","
         + radius + "," + color + ")\n");
-    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL)
-      return;
-    output("a(" + triad(screenA) + "," + radius + "," + color + ")\n");
-    output("a(" + triad(screenB) + "," + radius + "," + color + ")\n");
   }
   
   protected void outputCylinderConical(Point3f screenA, Point3f screenB,
@@ -369,18 +367,9 @@ public class _PovrayExporter extends __RayTracerExporter {
 
   protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices, 
-                                  short[] polygonColixes,
+                                  short[] polygonColixes, int nFaces,
                                   int nVertices, int nPolygons, BitSet bsFaces,
-                                  int faceVertexMax, short colix) {
-    if (nVertices == 0)
-      return;
-    int nFaces = 0;
-    for (int i = nPolygons; --i >= 0;)
-      if (bsFaces.get(i))
-        nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
-    if (nFaces == 0)
-      return;
-    
+                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes) {
     if (polygonColixes != null) {
       for (int i = nPolygons; --i >= 0;) {
         if (!bsFaces.get(i))
@@ -427,16 +416,14 @@ public class _PovrayExporter extends __RayTracerExporter {
       output("\n}\n");
     }
 
-    Hashtable htColixes = new Hashtable();
     if (colixes != null) {
-      Vector list = getColorList(0, colixes, nVertices, null, htColixes);
-      int nColix = list.size();
+      int nColix = colorList.size();
       output("texture_list { " + nColix);
       // just using the transparency of the first colix there... 
       String finish = ">}" + " translucentFinish("
         + translucencyFractionalFromColix(colixes[0]) + ")}";
       for (int i = 0; i < nColix; i++)
-        output("\n, texture{pigment{rgbt<" + color4(((Short)list.get(i)).shortValue()) + finish);
+        output("\n, texture{pigment{rgbt<" + color4(((Short)colorList.get(i)).shortValue()) + finish);
       output("\n}\n");
     }
     output("face_indices { " + nFaces);
@@ -505,19 +492,13 @@ public class _PovrayExporter extends __RayTracerExporter {
 
   }
 
-  protected void outputSphere(Point3f pt, float radius, short colix) {
-    //cartoons, rockets, trace:    
-    output("a(" + triad(pt) + "," + radius + "," + color4(colix)
-        + ")\n");
-  }
-
   protected void outputSphere(float x, float y, float z, float radius,
                                   short colix) {
    output("a(" + x + "," + y + "," + z + "," + radius + ","
         + color4(colix) + ")\n");
   }
   
-  public void outputTextPixel(int x, int y, int z, int argb) {
+  protected void outputTextPixel(int x, int y, int z, int argb) {
     //text only
     output("p(" + x + "," + y + "," + z + "," + 
         rgbFractionalFromArgb(argb, ',') + ")\n");

@@ -26,47 +26,151 @@
 package org.jmol.export;
 
 import java.util.BitSet;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.g3d.Graphics3D;
+import org.jmol.viewer.Viewer;
+
 /*
- * copied from _PovrayExporter for now -- needs full revision -- 12/2009
+ * see http://jedi.ks.uiuc.edu/~johns/raytracer/papers/tachyon.pdf
  * 
  */
 
 public class _TachyonExporter extends __RayTracerExporter {
 
-  public void getHeader() {
+  protected void getHeader() {
     super.getHeader();
-    //TODO
+
+    output("# ******************************************************\n");
+    output("# Created by Jmol " + Viewer.getJmolVersion() + "\n");
+    output("#\n");
+    output("# This script was generated on " + getExportDate() + "\n");
+    output("#\n");
+    output("# Requires Tachyon version 0.98.7 or newer\n");
+    output("#\n");
+    output("# Default tachyon rendering command for this scene:\n");
+    output("#   tachyon  -aasamples 12 %s -format TARGA -o %s.tga\n");
+    output("#\n");
+    output("# ******************************************************\n");
+    output("\n");
+    output("Begin_Scene\n");
+    output("Resolution " + screenWidth + " " + screenHeight + "\n");
+    output("Shader_Mode Medium\n");
+    output("  Trans_VMD\n");
+    output("  Fog_VMD\n");
+    output("End_Shader_Mode\n");
+    output("Camera\n");
+    output("  Zoom 0.666667\n");
+    output("  Aspectratio 1\n");
+    output("  Antialiasing 12\n");
+    output("  Raydepth 8\n");
+    output("  Center  0 0 0\n");
+    output("  Viewdir 0 0 1\n");
+    output("  Updir   0 1 0\n");
+    output("End_Camera\n");
+    output("Directional_Light Direction 0.1 -0.1 1 Color 1 1 1\n");
+    output("Directional_Light Direction -1 -2 0.5 Color 1 1 1\n");
+    output("\n");
+    output("Background " + rgbFractionalFromColix(viewer.getObjectColix(0), ' ')
+        + "\n");
+    output("\n");
   }
 
-  public void getFooter() {
-    //TODO
+  protected void getFooter() {
+    output("End_Scene\n");
+  }
+
+  private String triad(float x, float y, float z) {
+    return (int) x + " " + (int) y + " " + (int) z;
+  }
+
+  private String triad(Tuple3f pt) {
+    if (Float.isNaN(pt.x))
+      return "0 0 0";
+    return triad(pt.x, pt.y, pt.z);
+  }
+
+  protected String opacityFractionalFromArgb(int argb) {
+    int translevel = (argb >> 24) & 0xFF;
+    return "" + (translevel == 0 ? 1f : 1 - translevel / 255f);
+  }
+
+  private void outputColorTexture(short colix) {
+    output(" Texture");
+    output(" Ambient 0 Diffuse 0.65 Specular 0 Opacity " + opacityFractionalFromColix(colix));
+    output(" Phong Plastic 0.5 Phong_size 40");
+    output(" Color " + rgbFractionalFromColix(colix, ' '));
+    output(" TexFunc 0\n");
+  }
+
+  private void outputColorTexture(int argb) {
+    output(" Texture");
+    output(" Ambient 0 Diffuse 0.65 Specular 0 Opacity " + opacityFractionalFromArgb(argb)); 
+    output(" Phong Plastic 0.5 Phong_size 40");
+    output(" Color " + rgbFractionalFromArgb(argb, ' '));
+    output(" TexFunc 0\n");
   }
 
   protected void outputCircle(int x, int y, int z, float radius, short colix,
                               boolean doFill) {
-    //TODO
+    tempV1.set(0,0,-1);
+    outputRing(x, y, z, tempV1, radius, colix, doFill);
   }
 
   protected void outputCircleScreened(int x, int y, int z, float radius, short colix) {
-    //TODO
+    colix = Graphics3D.getColixTranslucent(colix, true, 0.8f);
+    tempV1.set(0,0,-1);
+    outputRing(x, y, z, tempV1, radius, colix, true);
   }
 
-  protected void outputCylinderCapped(Point3f screenA, Point3f screenB,
-                                      float radius, short colix, byte endcaps) {
-    // TODO
-  }
+  private void outputRing(int x, int y, int z, Vector3f tempV1, float radius,
+                          short colix, boolean doFill) {
+     output("Ring Center ");
+     output(triad(x, y, z));
+     output(" Normal " + triad(tempV1));
+     output(" Inner " + (doFill ? 0 : radius * 0.95));
+     output(" Outer " + radius);
+     outputColorTexture(colix);
+   }
+
+  protected void outputCylinder(Point3f screenA, Point3f screenB,
+                                      float radius, short colix, boolean withCaps) {
+    output("FCylinder Base ");
+    output(triad(screenA));
+    output(" Apex ");
+    output(triad(screenB));
+    output(" Rad " + radius);
+    outputColorTexture(colix);
+    if (withCaps) {
+      tempV1.sub(screenA, screenB);
+      outputRing((int) screenA.x, (int) screenA.y, (int) screenA.z, tempV1, radius, colix, true);
+      tempV1.scale(-1);
+      outputRing((int) screenB.x, (int) screenB.y, (int) screenB.z, tempV1, radius, colix, true);
+    }
+  }  
+  
+  protected void fillConicalCylinder(Point3f screenA, Point3f screenB,
+                                     int madBond, short colix, byte endcaps) {
+    // conic sections not implemented in Tachyon
+    int diameter = viewer.scaleToScreen((int) ((screenA.z + screenB.z)/2f), madBond);
+    fillCylinder(colix, endcaps, diameter, screenA, screenB);
+   }
+
 
   protected void outputCylinderConical(Point3f screenA, Point3f screenB,
                                        float radius1, float radius2, short colix) {
-    //TODO
+    //not applicable
   }
 
   protected void outputComment(String comment) {
-    //TODO
+    output("# ");
+    output(comment);
+    output("\n");
   }
 
   protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,
@@ -81,27 +185,74 @@ public class _TachyonExporter extends __RayTracerExporter {
   protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes, int nVertices,
-                                  int nPolygons, BitSet bsFaces,
-                                  int faceVertexMax, short colix) {
-    // TODO
-    
-  }
-
-  protected void outputSphere(Point3f pt, float radius, short colix) {
-    //TODO
+                                  int nPolygons, int nFaces, BitSet bsFaces,
+                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes) {
+    if (polygonColixes != null) {
+      for (int i = nPolygons; --i >= 0;) {
+        if (!bsFaces.get(i))
+          continue;
+        viewer.transformPoint(vertices[indices[i][0]], tempP1);
+        viewer.transformPoint(vertices[indices[i][1]], tempP2);
+        viewer.transformPoint(vertices[indices[i][2]], tempP3);
+        outputTriangle(tempP1, tempP2, tempP3, colix);
+      }
+      return;
+    }
+    output("VertexArray  Numverts " + nVertices + "\nCoords\n");
+    for (int i = 0; i < nVertices; i++) {
+      viewer.transformPoint(vertices[i], tempP1);
+      output(triad(vertices[i]) + "\n");
+    }
+    output("\nNormals\n");
+    for (int i = 0; i < nVertices; i++) {
+      output(triad(getScreenNormal(vertices[i], normals[i])) + "\n");
+    }
+    output("\nColors\n");
+    String rgb = (colixes == null ? rgbFromColix(colix, ' ') : null);
+    for (int i = 0; i < nVertices; i++) {
+      output(colixes == null ? rgb : rgbFromColix(colixes[i], ' ') + "\n");
+    }
+    outputColorTexture(Graphics3D.BLUE);
+    output("\nTriMesh " + nFaces + "\n");
+    for (int i = 0; i < nVertices; i++) {
+      output(colixes == null ? rgb : rgbFromColix(colixes[i], ' ') + "\n");
+    }
+    for (int i = nPolygons; --i >= 0;) {
+      if (!bsFaces.get(i))
+        continue;
+      output(indices[i][0] + " " + indices[i][1] + " " + indices[i][2] + "\n");
+      if (faceVertexMax == 4 && indices[i].length == 4) {
+        output(indices[i][0] + " " + indices[i][2] + " " + indices[i][3] + "\n");
+      }
+    }
+    output("\nEnd_VertexArray\n");
   }
 
   protected void outputSphere(float x, float y, float z, float radius,
                                   short colix) {
-    //TODO
+
+    // should be a reference to a names texture
+    
+    output("Sphere Center ");
+    output(triad(x, y, z));
+    output(" Rad " + radius);
+    outputColorTexture(colix);
   }
 
   protected void outputTextPixel(int x, int y, int z, int argb) {
-    //TODO
+    output("BOX MIN ");
+    output(triad(x, y, z));
+    output(" MAX ");
+    output(triad(x + 1, y + 1, z + 1));
+    outputColorTexture(argb);
   }
   
   protected void outputTriangle(Point3f ptA, Point3f ptB, Point3f ptC, short colix) {
-    //TODO
+    output("TRI");
+    output(" V0 " + triad(ptA));
+    output(" V1 " + triad(ptB));
+    output(" V2 " + triad(ptC));
+    outputColorTexture(colix);
   }
 
 }

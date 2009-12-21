@@ -330,15 +330,15 @@ public class _IdtfExporter extends __CartesianExporter {
     
     // the next is just an approximation of the true center of the drawing,
     // which DeepView or 3D-PDF will use as the default center of rotation
-    pt.set(ptMax);
-    pt.add(ptMin);
-    pt.scale(0.5f);
+    tempP3.set(ptMax);
+    tempP3.add(ptMin);
+    tempP3.scale(0.5f);
     // transform difference to true center -- we will be close unless there are other objects
-    pt.sub(center);
-    ptAtom.set(q.transform(pt));
+    tempP3.sub(center);
+    tempP1.set(q.transform(tempP3));
     float zoom = viewer.getZoomPercentFloat() / 100f;
-    ptAtom.scale(zoom);
-    String dxyz = ptAtom.x + " " + ptAtom.y + " " + ptAtom.z;
+    tempP1.scale(zoom);
+    String dxyz = tempP1.x + " " + tempP1.y + " " + tempP1.z;
     String scale = " " + zoom;
     scale = scale + scale + scale;
 
@@ -676,23 +676,8 @@ public class _IdtfExporter extends __CartesianExporter {
   protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
-                                  int nVertices, int nPolygons, BitSet bsFaces,
-                                  int faceVertexMax, short colix) {
-    if (nVertices == 0)
-      return;
-    int nFaces = 0;
-    for (int i = nPolygons; --i >= 0;)
-      if (bsFaces.get(i))
-        nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
-    if (nFaces == 0)
-      return;
-
-    Vector colorList = null;
-    Hashtable htColixes = new Hashtable();
-    if (polygonColixes != null)
-      colorList = getColorList(0, polygonColixes, nPolygons, bsFaces, htColixes);
-    else if (colixes != null)
-      colorList = getColorList(0, colixes, nVertices, null, htColixes);
+                                  int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
+                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes) {
     addColix(colix, polygonColixes != null || colixes != null);
     if (polygonColixes != null) {
       //     output(" colorPerVertex='FALSE'\n");

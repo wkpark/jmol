@@ -38,7 +38,6 @@ import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Escape;
 import org.jmol.util.Quaternion;
-import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
 public class _VrmlExporter extends __CartesianExporter {

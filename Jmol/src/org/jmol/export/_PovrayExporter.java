@@ -91,7 +91,7 @@ public class _PovrayExporter extends __RayTracerExporter {
     output("\n");
 
     output("background { color rgb <" + 
-        rgbFractionalFromColix(viewer.getObjectColix(0), ',')
+        rgbFractionalFromColix(backgroundColix, ',')
         + "> }\n");
     output("\n");
 

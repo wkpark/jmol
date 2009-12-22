@@ -105,7 +105,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     output("End_Camera\n");
     output("Directional_Light Direction " + round(Graphics3D.getLightSource()) + " Color 1 1 1\n");
     output("\n");
-    output("Background " + rgbFractionalFromColix(viewer.getObjectColix(0), ' ')
+    output("Background " + rgbFractionalFromColix(backgroundColix, ' ')
         + "\n");
     output("\n");
   }
@@ -122,11 +122,6 @@ public class _TachyonExporter extends __RayTracerExporter {
     if (Float.isNaN(pt.x))
       return "0 0 0";
     return triad(pt.x, pt.y, pt.z);
-  }
-
-  protected float opacityFractionalFromArgb(int argb) {
-    int translevel = (argb >> 24) & 0xFF;
-    return (translevel == 0 ? 1f : 1 - translevel / 255f);
   }
 
   private String getTexture(short colix) {

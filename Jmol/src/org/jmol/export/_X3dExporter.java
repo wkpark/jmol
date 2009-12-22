@@ -72,7 +72,7 @@ public class _X3dExporter extends __CartesianExporter {
     output("<NavigationInfo type='EXAMINE'/>\n");
     // puts the viewer into model-rotation mode
     output("<Background skyColor='" 
-      + rgbFractionalFromColix(viewer.getObjectColix(0), ' ') + "'/>\n");
+      + rgbFractionalFromColix(backgroundColix, ' ') + "'/>\n");
     // next is an approximation only 
     getViewpointPosition(tempP1);
     adjustViewpointPosition(tempP1);

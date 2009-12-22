@@ -50,6 +50,7 @@ import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.script.Token;
+import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 
 /*
@@ -144,6 +145,7 @@ public abstract class ___Exporter {
   protected boolean isToFile;
   protected Graphics3D g3d;
 
+  protected short backgroundColix;
   protected int screenWidth;
   protected int screenHeight;
   protected int slabZ;
@@ -183,6 +185,7 @@ public abstract class ___Exporter {
   boolean initializeOutput(Viewer viewer, Graphics3D g3d, Object output) {
     this.viewer = viewer;
     this.g3d = g3d;
+    backgroundColix = viewer.getObjectColix(StateManager.OBJ_BACKGROUND);
     center.set(viewer.getRotationCenter());
     if ((screenWidth <= 0) || (screenHeight <= 0)) {
       screenWidth = viewer.getScreenWidth();
@@ -334,6 +337,11 @@ public abstract class ___Exporter {
   protected float opacityFractionalFromColix(short colix) {
     return (Graphics3D.isColixTranslucent(colix) ? 1 - 
         Graphics3D.getColixTranslucencyLevel(colix) / 255f : 1);
+  }
+
+  protected float opacityFractionalFromArgb(int argb) {
+    int translevel = (argb >> 24) & 0xFF;
+    return (translevel == 0 ? 1f : 1 - translevel / 255f);
   }
 
   protected static String round(double number) { // AH

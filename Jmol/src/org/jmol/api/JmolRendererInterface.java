@@ -336,4 +336,6 @@ public interface JmolRendererInterface {
 
   public abstract short[] getBgColixes(short[] bgcolixes);
 
+  public abstract void setTranslucentCoverOnly(boolean TF);
+
 }

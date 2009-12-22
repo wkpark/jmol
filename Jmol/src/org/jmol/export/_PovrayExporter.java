@@ -410,7 +410,7 @@ public class _PovrayExporter extends __RayTracerExporter {
       for (int i = 0; i < nVertices; i++) {
         //        if (i % 10 == 0)
         //          output("\n");
-        output(", <" + triad(getScreenNormal(vertices[i], normals[i])) + ">");
+        output(", <" + triad(getScreenNormal(vertices[i], normals[i], 1)) + ">");
         output(" //" + i + "\n");
       }
       output("\n}\n");

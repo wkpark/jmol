@@ -205,16 +205,16 @@ public class _VrmlExporter extends __CartesianExporter {
   private void outputCylinderChild(Point3f pt1, Point3f pt2, short colix,
                                    byte endcaps, float radius) {
     output(" children ");    
-    float length = round(pt1.distance(pt2));
+    float length = pt1.distance(pt2);
     String child = useTable.getDef("C" + colix + "_" + (int) (length * 100) + "_" + radius
         + "_" + endcaps);
     if (child.charAt(0) == '_') {
       output("DEF " + child);
       output(" Shape{geometry ");
-      String cyl = useTable.getDef("c" + length + "_" + endcaps + "_" + radius);
+      String cyl = useTable.getDef("c" + round(length) + "_" + endcaps + "_" + radius);
       if (cyl.charAt(0) == '_') {
         output("DEF " + cyl + " Cylinder{height " 
-            + length + " radius " + radius 
+            + round(length) + " radius " + radius 
             + (endcaps == Graphics3D.ENDCAPS_FLAT ? "" : " top FALSE bottom FALSE") + "}");
       } else {
         output(cyl);

@@ -863,4 +863,8 @@ final public class Export3D implements JmolRendererInterface {
     return g3d.getFontFid(fontSize);
   }
 
+  public void setTranslucentCoverOnly(boolean TF) {
+    // ignore
+  }
+
 }

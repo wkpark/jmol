@@ -227,14 +227,14 @@ public class _X3dExporter extends __CartesianExporter {
 
   private void outputCylinderChild(Point3f pt1, Point3f pt2, short colix,
                                    byte endcaps, float radius) {
-    float length = round(pt1.distance(pt2));
+    float length = pt1.distance(pt2);
     String child = useTable.getDef("C" + colix + "_" + (int) (length * 100) + "_"
         + radius + "_" + endcaps);
     output("<Shape ");
     if (child.charAt(0) == '_') {
       output("DEF='" + child + "'>");
       output("<Cylinder ");
-      String cyl = useTable.getDef("c" + length + "_" + endcaps + "_" + radius);
+      String cyl = useTable.getDef("c" + round(length) + "_" + endcaps + "_" + radius);
       if (cyl.charAt(0) == '_') {
         output("DEF='"
             + cyl

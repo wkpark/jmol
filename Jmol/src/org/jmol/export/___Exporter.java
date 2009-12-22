@@ -314,12 +314,6 @@ public abstract class ___Exporter {
     return tempA;
   }
 
-  protected String rgbFromColix(short colix, char sep) {
-    int argb = g3d.getColorArgbOrGray(colix);
-    return new StringBuffer().append((argb >> 16) & 0xFF).append(sep).append(
-        (argb >> 8) & 0xFF).append(sep).append((argb) & 0xFF).toString();
-  }
-
   protected String rgbFractionalFromColix(short colix, char sep) {
     return rgbFractionalFromArgb(g3d.getColorArgbOrGray(colix), sep);
   }
@@ -337,15 +331,16 @@ public abstract class ___Exporter {
     return "0";
   }
 
-  protected String opacityFractionalFromColix(short colix) {
-    int translevel = Graphics3D.getColixTranslucencyLevel(colix);
-    if (Graphics3D.isColixTranslucent(colix))
-      return "" + (1 - translevel / 255f);
-    return "1";
+  protected float opacityFractionalFromColix(short colix) {
+    return (Graphics3D.isColixTranslucent(colix) ? 1 - 
+        Graphics3D.getColixTranslucencyLevel(colix) / 255f : 1);
   }
 
-  protected static float round(double number) { //AH
-    return (float) Math.round(number*1000)/1000;  // leave just 3 decimals
+  protected static String round(double number) { // AH
+    String s;
+    return (number == 0 ? "0" : number == 1 ? "1" : (s = ""
+        + (Math.round(number * 1000d) / 1000d)).startsWith("0.") ? s
+        .substring(1) : s.startsWith("-0.") ? "-" + s.substring(2) : s);
   }
 
   protected static String round(Tuple3f pt) {

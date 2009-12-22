@@ -55,6 +55,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     int slabValue = (viewer.getNavigationMode() ? g3d.getSlab() : Integer.MAX_VALUE);
     for (int i = isosurface.meshCount; --i >= 0;) {
       imesh = (IsosurfaceMesh) isosurface.meshes[i];
+      g3d.setTranslucentCoverOnly(imesh.frontOnly);
       if (slabValue != Integer.MAX_VALUE && imesh.isSolvent) {
         g3d.setSlab((int) viewer.getNavigationOffset().z);
         render1(imesh);
@@ -62,6 +63,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       } else {
         render1(imesh);
       }
+      g3d.setTranslucentCoverOnly(false);
     }
   }
 

@@ -187,6 +187,10 @@ final public class Graphics3D implements JmolRendererInterface {
   boolean isPass2;
   boolean addAllPixels;
   boolean haveTranslucentObjects;
+  boolean translucentCoverOnly = false;
+  public void setTranslucentCoverOnly(boolean TF) {
+    translucentCoverOnly = TF;
+  }
   
   int windowWidth, windowHeight;
   int width, height;
@@ -794,14 +798,13 @@ final public class Graphics3D implements JmolRendererInterface {
         // new in front -- merge old translucent with opaque
         // if (zT != Integer.MAX_VALUE)
         int argb = pbufT[offset];
-        if (argb != 0 && zT - z > zMargin)
+        if (!translucentCoverOnly && argb != 0 && zT - z > zMargin)
           mergeBufferPixel(pbuf, argb, offset, bgcolor);
         zbufT[offset] = z;
         pbufT[offset] = p & translucencyMask;
       } else if (z == zT) {
-      } else {
-        // oops-out of order
-        if (z - zT > zMargin)
+      } else if (!translucentCoverOnly && z - zT > zMargin) {
+          // oops-out of order
           mergeBufferPixel(pbuf, p & translucencyMask, offset, bgcolor);
       }
     }

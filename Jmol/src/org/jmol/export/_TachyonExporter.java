@@ -115,7 +115,7 @@ public class _TachyonExporter extends __RayTracerExporter {
   }
 
   private String triad(float x, float y, float z) {
-    return (int) x + " " + (int) y + " " + (int) z;
+    return (int) x + " " + (int) (-y) + " " + (int) z;
   }
 
   private String triad(Tuple3f pt) {
@@ -124,9 +124,9 @@ public class _TachyonExporter extends __RayTracerExporter {
     return triad(pt.x, pt.y, pt.z);
   }
 
-  protected String opacityFractionalFromArgb(int argb) {
+  protected float opacityFractionalFromArgb(int argb) {
     int translevel = (argb >> 24) & 0xFF;
-    return "" + (translevel == 0 ? 1f : 1 - translevel / 255f);
+    return (translevel == 0 ? 1f : 1 - translevel / 255f);
   }
 
   private String getTexture(short colix) {
@@ -134,7 +134,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     if (!code.startsWith(" ")) {
       output("TexDef " + code);
       output(lighting);
-      output(" Opacity " + opacityFractionalFromColix(colix));
+      output(" Opacity " + round(opacityFractionalFromColix(colix)));
       output(" Phong Plastic 0.5 Phong_size 40");
       output(" Color " + rgbFractionalFromColix(colix, ' '));
       output(" TexFunc 0\n");
@@ -148,8 +148,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     if (!code.startsWith(" ")) {
       output("TexDef " + code);
       output(lighting);
-      output(" Ambient 0 Diffuse 0.65 Specular 0 Opacity "
-          + opacityFractionalFromArgb(argb));
+      output(" Opacity " + round(opacityFractionalFromArgb(argb)));
       output(" Phong Plastic 0.5 Phong_size 40");
       output(" Color " + rgbFractionalFromArgb(argb, ' '));
       output(" TexFunc 0\n");
@@ -241,26 +240,23 @@ public class _TachyonExporter extends __RayTracerExporter {
       }
       return;
     }
-    String code = getTexture(Graphics3D.BLUE);
+    String code = getTexture(colixes == null ? colix : colixes[0]);
     output("VertexArray  Numverts " + nVertices + "\nCoords\n");
     for (int i = 0; i < nVertices; i++) {
       viewer.transformPoint(vertices[i], tempP1);
-      output(triad(vertices[i]) + "\n");
+      output(triad(tempP1) + "\n");
     }
     output("\nNormals\n");
     for (int i = 0; i < nVertices; i++) {
-      output(triad(getScreenNormal(vertices[i], normals[i])) + "\n");
+      output(triad(getScreenNormal(vertices[i], normals[i], 10)) + "\n");
     }
+    String rgb = (colixes == null ? rgbFractionalFromColix(colix, ' ') : null);
     output("\nColors\n");
-    String rgb = (colixes == null ? rgbFromColix(colix, ' ') : null);
     for (int i = 0; i < nVertices; i++) {
-      output(colixes == null ? rgb : rgbFromColix(colixes[i], ' ') + "\n");
+      output((colixes == null ? rgb : rgbFractionalFromColix(colixes[i], ' ')) + "\n");
     }
     output(code);
     output("\nTriMesh " + nFaces + "\n");
-    for (int i = 0; i < nVertices; i++) {
-      output(colixes == null ? rgb : rgbFromColix(colixes[i], ' ') + "\n");
-    }
     for (int i = nPolygons; --i >= 0;) {
       if (!bsFaces.get(i))
         continue;
@@ -286,11 +282,17 @@ public class _TachyonExporter extends __RayTracerExporter {
 
   protected void outputTextPixel(int x, int y, int z, int argb) {
     String code = getTexture(argb);
+    output("Sphere Center ");
+    output(triad(x, y, z));
+    output(" Rad 0.75");
+    output(code);
+/*  String code = getTexture(argb);
     output("BOX MIN ");
     output(triad(x, y, z));
     output(" MAX ");
     output(triad(x + 1, y + 1, z + 1));
     output(code);
+    */
   }
   
   protected void outputTriangle(Point3f ptA, Point3f ptB, Point3f ptC, short colix) {

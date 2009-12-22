@@ -75,7 +75,7 @@ abstract class __RayTracerExporter extends ___Exporter {
 
   abstract protected void outputCircleScreened(int x, int y, int z, float radius, short colix);
   
-  protected Point3f getScreenNormal(Point3f pt, Vector3f normal) {
+  protected Point3f getScreenNormal(Point3f pt, Vector3f normal, float factor) {
     if (Float.isNaN(normal.x)) {
       tempP3.set(0, 0, 0);
       return tempP3;
@@ -85,6 +85,7 @@ abstract class __RayTracerExporter extends ___Exporter {
     viewer.transformPoint(pt, tempP2);
     viewer.transformPoint(tempP1, tempP3);
     tempP3.sub(tempP2);
+    tempP3.scale(factor);
     return tempP3;
   }
 

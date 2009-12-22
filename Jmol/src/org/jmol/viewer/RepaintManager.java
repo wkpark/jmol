@@ -189,6 +189,8 @@ class RepaintManager {
   String generateOutput(String type, Graphics3D g3d, ModelSet modelSet,
                         String fileName) {
 
+    viewer.finalizeTransformParameters();
+
     JmolRendererInterface g3dExport = null;
     Object output = null;
     boolean isOK = false;

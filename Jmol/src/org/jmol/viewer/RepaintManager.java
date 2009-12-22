@@ -189,7 +189,6 @@ class RepaintManager {
   String generateOutput(String type, Graphics3D g3d, ModelSet modelSet,
                         String fileName) {
 
-    viewer.finalizeTransformParameters();
     JmolRendererInterface g3dExport = null;
     Object output = null;
     boolean isOK = false;
@@ -212,6 +211,7 @@ class RepaintManager {
       Logger.error("Cannot export " + type);
       return null;
     }
+    viewer.finalizeTransformParameters();
     g3dExport.renderBackground();
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = modelSet.getShape(i);

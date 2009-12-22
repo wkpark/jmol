@@ -42,6 +42,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolRendererInterface;
@@ -230,15 +231,18 @@ public abstract class ___Exporter {
 
   protected void outputJmolPerspective() {
     outputComment("Jmol perspective:");
+    outputComment("screen width height dim: " + screenWidth + " " + screenHeight + " " + viewer.getScreenDim());
     outputComment("scalePixelsPerAngstrom: " + viewer.getScalePixelsPerAngstrom(false));
+    outputComment("perspectiveDepth: " + viewer.getPerspectiveDepth());
     outputComment("cameraDepth: " + viewer.getCameraDepth());
+    outputComment("light source: " + Graphics3D.getLightSource());
+    outputComment("lighting: " + viewer.getSpecularState().replace('\n', ' '));
     outputComment("center: " + center);
     outputComment("rotationRadius: " + viewer.getRotationRadius());
     outputComment("boundboxCenter: " + viewer.getBoundBoxCenter());
     outputComment("translationOffset: " + viewer.getTranslationScript());
     outputComment("zoom: " + viewer.getZoomPercentFloat());
     outputComment("moveto command: " + viewer.getOrientationText(Token.moveto));
-    outputComment("screen width height dim: " + screenWidth + " " + screenHeight + " " + viewer.getScreenDim());
   }
 
   protected void outputFooter() {
@@ -344,6 +348,10 @@ public abstract class ___Exporter {
     return (float) Math.round(number*1000)/1000;  // leave just 3 decimals
   }
 
+  protected static String round(Tuple3f pt) {
+    return round(pt.x) + " " + round(pt.y) + " " + round(pt.z);
+  }
+  
   /**
    * input an array of colixes; returns a Vector for the color list and a HashTable
    * for correlating the colix with a specific color index
@@ -459,6 +467,35 @@ public abstract class ___Exporter {
     g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d, jmolRenderer);
     outputComment("end text " + nText + ": " + text);
   }
-
-
 }
+
+class UseTable extends Hashtable {
+  private int iObj;
+  private String keyword;
+
+  UseTable(String keyword) {
+    this.keyword = keyword;
+  }
+  
+  /**
+   * Hashtable htDefs contains references to _n where n is a number. 
+   * we look up a key for anything and see if an object has been assigned.
+   * If it is there, we just return the phrase "USE _n".
+   * It it is not there, we return the DEF name that needs to be assigned.
+   * The calling method must then make that definition.
+   * 
+   * @param key
+   * @return "_n" or "[keyword]_n"
+   */
+
+  String getDef(String key) {
+    if (containsKey(key))
+      return keyword + get(key);
+    String id = "_" + (iObj++);
+    put(key, id);
+    return id;
+  }
+    
+}
+
+

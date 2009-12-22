@@ -7368,7 +7368,6 @@ public class ScriptEvaluator {
     int direction = 1;
     int tok;
     boolean axesOrientationRasmol = viewer.getAxesOrientationRasmol();
-
     for (int i = 1; i < statementLength; ++i) {
       switch (tok = getToken(i).tok) {
       case Token.spin:

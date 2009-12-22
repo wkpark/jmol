@@ -43,6 +43,32 @@ import org.jmol.viewer.Viewer;
 
 public class _TachyonExporter extends __RayTracerExporter {
 
+  boolean wasPerspectiveDepth;
+  String lighting;
+  
+  UseTable textures = new UseTable(" ");
+ 
+  boolean initializeOutput(Viewer viewer, Graphics3D g3d, Object output) {
+    //wasPerspectiveDepth = viewer.getPerspectiveDepth();
+    //viewer.setPerspectiveDepth(false);
+    getLightingInfo();
+    return super.initializeOutput(viewer, g3d, output);    
+  }
+  
+  private void getLightingInfo() {
+    lighting = " AMBIENT " + round(Graphics3D.getAmbientPercent() / 100f)
+        + " DIFFUSE " + round(Graphics3D.getDiffusePercent()/100f) 
+        + " SPECULAR " + round(Graphics3D.getSpecularPercent() / 100f);  
+  }  
+  
+  /* 
+  public String finalizeOutput() {
+    if (wasPerspectiveDepth)
+      viewer.setPerspectiveDepth(true);
+    return super.finalizeOutput();
+  }
+  */
+
   protected void outputHeader() {
     super.outputHeader();
     viewer.transformPoint(center, tempP1);
@@ -63,21 +89,21 @@ public class _TachyonExporter extends __RayTracerExporter {
     output("\n");
     output("Begin_Scene\n");
     output("Resolution " + screenWidth + " " + screenHeight + "\n");
-    output("Shader_Mode Medium\n");
+    output("Shader_Mode Medium\n"); // not documented.
     output("  Trans_VMD\n");
     output("  Fog_VMD\n");
     output("End_Shader_Mode\n");
     output("Camera\n");
-    output("  Zoom 0.666667\n");
+    output("  PerspectiveMode ORTHOGRAPHIC\n");
+    output("  Zoom 3.0\n");
     output("  Aspectratio 1\n");
     output("  Antialiasing 12\n");
     output("  Raydepth 8\n");
     output("  Center " + triad(tempP1) + "\n");
     output("  Viewdir 0 0 1\n");
-    output("  Updir   0 1 0\n");
+    output("  Updir   0 -1 0\n");
     output("End_Camera\n");
-    output("Directional_Light Direction 0.1 -0.1 1 Color 1 1 1\n");
-    output("Directional_Light Direction -1 -2 0.5 Color 1 1 1\n");
+    output("Directional_Light Direction " + round(Graphics3D.getLightSource()) + " Color 1 1 1\n");
     output("\n");
     output("Background " + rgbFractionalFromColix(viewer.getObjectColix(0), ' ')
         + "\n");
@@ -103,20 +129,32 @@ public class _TachyonExporter extends __RayTracerExporter {
     return "" + (translevel == 0 ? 1f : 1 - translevel / 255f);
   }
 
-  private void outputColorTexture(short colix) {
-    output(" Texture");
-    output(" Ambient 0 Diffuse 0.65 Specular 0 Opacity " + opacityFractionalFromColix(colix));
-    output(" Phong Plastic 0.5 Phong_size 40");
-    output(" Color " + rgbFractionalFromColix(colix, ' '));
-    output(" TexFunc 0\n");
+  private String getTexture(short colix) {
+    String code = textures.getDef("tc" + colix);
+    if (!code.startsWith(" ")) {
+      output("TexDef " + code);
+      output(lighting);
+      output(" Opacity " + opacityFractionalFromColix(colix));
+      output(" Phong Plastic 0.5 Phong_size 40");
+      output(" Color " + rgbFractionalFromColix(colix, ' '));
+      output(" TexFunc 0\n");
+      code = " " + code;
+    }
+    return code + "\n";
   }
 
-  private void outputColorTexture(int argb) {
-    output(" Texture");
-    output(" Ambient 0 Diffuse 0.65 Specular 0 Opacity " + opacityFractionalFromArgb(argb)); 
-    output(" Phong Plastic 0.5 Phong_size 40");
-    output(" Color " + rgbFractionalFromArgb(argb, ' '));
-    output(" TexFunc 0\n");
+  private String getTexture(int argb) {
+    String code = textures.getDef("ta" + argb);
+    if (!code.startsWith(" ")) {
+      output("TexDef " + code);
+      output(lighting);
+      output(" Ambient 0 Diffuse 0.65 Specular 0 Opacity "
+          + opacityFractionalFromArgb(argb));
+      output(" Phong Plastic 0.5 Phong_size 40");
+      output(" Color " + rgbFractionalFromArgb(argb, ' '));
+      output(" TexFunc 0\n");
+    }
+    return " " + code + "\n";
   }
 
   protected void outputCircle(int x, int y, int z, float radius, short colix,
@@ -133,13 +171,14 @@ public class _TachyonExporter extends __RayTracerExporter {
 
   private void outputRing(int x, int y, int z, Vector3f tempV1, float radius,
                           short colix, boolean doFill) {
-     output("Ring Center ");
-     output(triad(x, y, z));
-     output(" Normal " + triad(tempV1));
-     output(" Inner " + (doFill ? 0 : radius * 0.95));
-     output(" Outer " + radius);
-     outputColorTexture(colix);
-   }
+    String code = getTexture(colix);
+    output("Ring Center ");
+    output(triad(x, y, z));
+    output(" Normal " + triad(tempV1));
+    output(" Inner " + (doFill ? 0 : radius * 0.95));
+    output(" Outer " + radius);
+    output(code);
+  }
 
   protected void outputComment(String comment) {
     output("# ");
@@ -154,12 +193,13 @@ public class _TachyonExporter extends __RayTracerExporter {
 
   protected void outputCylinder(Point3f screenA, Point3f screenB,
                                       float radius, short colix, boolean withCaps) {
+    String code = getTexture(colix);
     output("FCylinder Base ");
     output(triad(screenA));
     output(" Apex ");
     output(triad(screenB));
     output(" Rad " + radius);
-    outputColorTexture(colix);
+    output(code);
     if (withCaps) {
       tempV1.sub(screenA, screenB);
       outputRing((int) screenA.x, (int) screenA.y, (int) screenA.z, tempV1, radius, colix, true);
@@ -201,6 +241,7 @@ public class _TachyonExporter extends __RayTracerExporter {
       }
       return;
     }
+    String code = getTexture(Graphics3D.BLUE);
     output("VertexArray  Numverts " + nVertices + "\nCoords\n");
     for (int i = 0; i < nVertices; i++) {
       viewer.transformPoint(vertices[i], tempP1);
@@ -215,7 +256,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     for (int i = 0; i < nVertices; i++) {
       output(colixes == null ? rgb : rgbFromColix(colixes[i], ' ') + "\n");
     }
-    outputColorTexture(Graphics3D.BLUE);
+    output(code);
     output("\nTriMesh " + nFaces + "\n");
     for (int i = 0; i < nVertices; i++) {
       output(colixes == null ? rgb : rgbFromColix(colixes[i], ' ') + "\n");
@@ -236,26 +277,29 @@ public class _TachyonExporter extends __RayTracerExporter {
 
     // should be a reference to a names texture
     
+    String code = getTexture(colix);
     output("Sphere Center ");
     output(triad(x, y, z));
     output(" Rad " + radius);
-    outputColorTexture(colix);
+    output(code);
   }
 
   protected void outputTextPixel(int x, int y, int z, int argb) {
+    String code = getTexture(argb);
     output("BOX MIN ");
     output(triad(x, y, z));
     output(" MAX ");
     output(triad(x + 1, y + 1, z + 1));
-    outputColorTexture(argb);
+    output(code);
   }
   
   protected void outputTriangle(Point3f ptA, Point3f ptB, Point3f ptC, short colix) {
+    String code = getTexture(colix);
     output("TRI");
     output(" V0 " + triad(ptA));
     output(" V1 " + triad(ptB));
     output(" V2 " + triad(ptC));
-    outputColorTexture(colix);
+    output(code);
   }
 
 }

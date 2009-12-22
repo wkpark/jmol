@@ -50,29 +50,9 @@ public class _X3dExporter extends __CartesianExporter {
   private AxisAngle4f viewpoint = new AxisAngle4f();
   
   private void output(Tuple3f pt) {
-    output(round(pt.x) + " " + round(pt.y) + " " + round(pt.z));
+    output(round(pt));
   }
-
-  private int iObj;
-  private Hashtable htDefs = new Hashtable();
-  
-  /**
-   * Hashtable htDefs contains references to _n where n is a number. 
-   * we look up a key for anything and see if an object has been assigned.
-   * If it is there, we just return the phrase "USE _n".
-   * It it is not there, we return the DEF name that needs to be assigned.
-   * The calling method must then make that definition.
-   * 
-   * @param key
-   * @return "_n" or "DEF _n"
-   */
-  private String getDef(String key) {
-    if (htDefs.containsKey(key))
-      return "USE='" + htDefs.get(key) +"'";
-    String id = "_" + (iObj++);
-    htDefs.put(key, id);
-    return id;
-  }
+  UseTable useTable = new UseTable("USE ");
   
   protected void outputHeader() {
     output("<X3D profile='Immersive' version='3.1' "
@@ -124,14 +104,14 @@ public class _X3dExporter extends __CartesianExporter {
   }
 
   protected void outputFooter() {
-    htDefs = null;
+    useTable = null;
     output("</Transform>\n");
     output("</Scene>\n");
     output("</X3D>\n");
   }
 
   private void outputAppearance(short colix, boolean isText) {  
-    String def = getDef((isText ? "T" : "") + colix);
+    String def = useTable.getDef((isText ? "T" : "") + colix);
     output("<Appearance ");
     if (def.charAt(0) == '_') {
       String color = rgbFractionalFromColix(colix, ' ');
@@ -168,7 +148,7 @@ public class _X3dExporter extends __CartesianExporter {
     
     // draw a thin torus
 
-    String child = getDef("C" + colix + "_" + radius);
+    String child = useTable.getDef("C" + colix + "_" + radius);
     output("<Transform");
     outputTransRot(tempP3, pt1, 0, 0, 1);
     tempP3.set(1, 1, 1);
@@ -213,10 +193,10 @@ public class _X3dExporter extends __CartesianExporter {
     outputTransRot(ptBase, ptTip, 0, 1, 0);
     output(">\n<Shape ");
     String cone = "o" + (int) (height * 100) + "_" + (int) (radius * 100);
-    String child = getDef("c" + cone + "_" + colix);
+    String child = useTable.getDef("c" + cone + "_" + colix);
     if (child.charAt(0) == '_') {
       output("DEF='" + child +  "'>");
-      cone = getDef(cone);
+      cone = useTable.getDef(cone);
       output("<Cone ");
       if (cone.charAt(0) == '_') {
         output("DEF='"+ cone + "' height='" + round(height) 
@@ -248,13 +228,13 @@ public class _X3dExporter extends __CartesianExporter {
   private void outputCylinderChild(Point3f pt1, Point3f pt2, short colix,
                                    byte endcaps, float radius) {
     float length = round(pt1.distance(pt2));
-    String child = getDef("C" + colix + "_" + (int) (length * 100) + "_"
+    String child = useTable.getDef("C" + colix + "_" + (int) (length * 100) + "_"
         + radius + "_" + endcaps);
     output("<Shape ");
     if (child.charAt(0) == '_') {
       output("DEF='" + child + "'>");
       output("<Cylinder ");
-      String cyl = getDef("c" + length + "_" + endcaps + "_" + radius);
+      String cyl = useTable.getDef("c" + length + "_" + endcaps + "_" + radius);
       if (cyl.charAt(0) == '_') {
         output("DEF='"
             + cyl
@@ -440,7 +420,7 @@ public class _X3dExporter extends __CartesianExporter {
     output("<Transform translation='");
     output(center);
     output("'>\n<Shape ");
-    String child = getDef("S" + colix + "_" + (int) (radius * 100));
+    String child = useTable.getDef("S" + colix + "_" + (int) (radius * 100));
     if (child.charAt(0) == '_') {
       output("DEF='" + child + "'>");
       output("<Sphere radius='" + radius + "'/>");
@@ -488,7 +468,7 @@ public class _X3dExporter extends __CartesianExporter {
     output("<Transform translation='");
     output(pt);
     output("'>\n<Shape ");
-    String child = getDef("p" + argb);
+    String child = useTable.getDef("p" + argb);
     if (child.charAt(0) == '_') {
       output("DEF='" + child + "'>");
       output("<Sphere radius='0.01'/>");
@@ -517,7 +497,7 @@ public class _X3dExporter extends __CartesianExporter {
     // These x y z are 3D coordinates of echo or the atom the label is attached
     // to.
     output("<Billboard ");
-    String child = getDef("T" + colix + useFontFace + useFontStyle + "_" + text);
+    String child = useTable.getDef("T" + colix + useFontFace + useFontStyle + "_" + text);
     if (child.charAt(0) == '_') {
       output("DEF='" + child + "' axisOfRotation='0 0 0'>"
         + "<Transform translation='0.0 0.0 0.0'>"
@@ -525,7 +505,7 @@ public class _X3dExporter extends __CartesianExporter {
       outputAppearance(colix, true);
       output("<Text string=" + Escape.escape(text) + ">");
       output("<FontStyle ");
-      String fontstyle = getDef("F" + useFontFace + useFontStyle);
+      String fontstyle = useTable.getDef("F" + useFontFace + useFontStyle);
       if (fontstyle.charAt(0) == '_') {
         output("DEF='" + fontstyle + "' size='0.4' family='" + useFontFace
             + "' style='" + useFontStyle + "'/>");      

@@ -116,17 +116,22 @@ public abstract class JmolConsole extends JDialog implements ActionListener, Win
 
   private String nextFileName(String stub, int nTab) {
     String sname = FileManager.getLocalPathForWritingFile(viewer, stub);
+    String root = sname.substring(0, sname.lastIndexOf("/") + 1);
     if (sname.startsWith("file:/"))
       sname = sname.substring(6);
     if (sname.indexOf("/") >= 0) {
-      File dir = new File(sname);
-      sname = dir.getParent();
-      stub = dir.getName();
+      if (root.equals(sname)) {
+        stub = "";
+      } else {
+        File dir = new File(sname);
+        sname = dir.getParent();
+        stub = dir.getName();
+      }
     }
-    FileChecker fileChecker = new FileChecker(stub);    
+    FileChecker fileChecker = new FileChecker(stub);
     try {
       (new File(sname)).list(fileChecker);
-      return fileChecker.getFile(nTab);
+      return root + fileChecker.getFile(nTab);
     } catch (Exception e) {
       //
     }

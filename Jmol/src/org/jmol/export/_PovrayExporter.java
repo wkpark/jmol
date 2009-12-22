@@ -97,11 +97,9 @@ public class _PovrayExporter extends __RayTracerExporter {
 
     // light source
 
-    tempP1.set(Graphics3D.getLightSource());
-    output("// " + tempP1 + " \n");
     float distance = Math.max(screenWidth, screenHeight);
-    output("light_source { <" + tempP1.x * distance + "," + tempP1.y * distance
-        + ", " + (-1 * tempP1.z * distance) + "> " + " rgb <0.6,0.6,0.6> }\n");
+    output("light_source { <" + lightSource.x * distance + "," + lightSource.y * distance
+        + ", " + (-1 * lightSource.z * distance) + "> " + " rgb <0.6,0.6,0.6> }\n");
     output("\n");
     output("\n");
 

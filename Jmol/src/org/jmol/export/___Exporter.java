@@ -150,6 +150,7 @@ public abstract class ___Exporter {
   protected int screenHeight;
   protected int slabZ;
   protected int depthZ;
+  protected Point3f lightSource = Graphics3D.getLightSource();
 
   // Most exporters (Maya, X3D, VRML, IDTF) 
   // can manipulate actual 3D data.
@@ -238,7 +239,7 @@ public abstract class ___Exporter {
     outputComment("scalePixelsPerAngstrom: " + viewer.getScalePixelsPerAngstrom(false));
     outputComment("perspectiveDepth: " + viewer.getPerspectiveDepth());
     outputComment("cameraDepth: " + viewer.getCameraDepth());
-    outputComment("light source: " + Graphics3D.getLightSource());
+    outputComment("light source: " + lightSource);
     outputComment("lighting: " + viewer.getSpecularState().replace('\n', ' '));
     outputComment("center: " + center);
     outputComment("rotationRadius: " + viewer.getRotationRadius());

@@ -71,8 +71,6 @@ public class _TachyonExporter extends __RayTracerExporter {
 
   protected void outputHeader() {
     super.outputHeader();
-    viewer.transformPoint(center, tempP1);
-    tempP1.z = 0;
     output("# ******************************************************\n");
     output("# Created by Jmol " + Viewer.getJmolVersion() + "\n");
     output("#\n");
@@ -99,11 +97,11 @@ public class _TachyonExporter extends __RayTracerExporter {
     output("  Aspectratio 1\n");
     output("  Antialiasing 12\n");
     output("  Raydepth 8\n");
-    output("  Center " + triad(tempP1) + "\n");
+    output("  Center " + triad(screenWidth / 2, screenHeight / 2, 0) + "\n");
     output("  Viewdir 0 0 1\n");
     output("  Updir   0 -1 0\n");
     output("End_Camera\n");
-    output("Directional_Light Direction " + round(Graphics3D.getLightSource()) + " Color 1 1 1\n");
+    output("Directional_Light Direction " + round(lightSource) + " Color 1 1 1\n");
     output("\n");
     output("Background " + rgbFractionalFromColix(backgroundColix, ' ')
         + "\n");

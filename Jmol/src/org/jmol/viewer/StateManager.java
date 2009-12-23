@@ -851,7 +851,8 @@ public class StateManager {
       str.append("# height " + viewer.getScreenHeight() + ";\n# width "
           + viewer.getScreenWidth() + ";\n");
       appendCmd(str, "stateVersion = " + getParameter("_version"));
-      for (int i = 0; i < OBJ_MAX; i++)
+      appendCmd(str, "background " + Escape.escapeColor(objColors[0]));
+      for (int i = 1; i < OBJ_MAX; i++)
         if (objColors[i] != 0)
           appendCmd(str, getObjectNameFromId(i) + "Color = \""
               + Escape.escapeColor(objColors[i]) + '"');

@@ -2169,6 +2169,8 @@ final public class Graphics3D implements JmolRendererInterface {
   public final static int getColixTranslucencyLevel(short colix) {
     int logAlpha = (colix >> TRANSLUCENT_SHIFT) & 15;
     switch (logAlpha) {
+    case 0:
+      return 0;
     case 1:
     case 2:
     case 3:
@@ -2185,7 +2187,7 @@ final public class Graphics3D implements JmolRendererInterface {
   }
   
   public static float translucencyFractionalFromColix(short colix) {
-    int translevel = Graphics3D.getColixTranslucencyLevel(colix);
+    int translevel = getColixTranslucencyLevel(colix);
     return (
           translevel == -1 ? 0.5f 
         : translevel == 0 ? 0 

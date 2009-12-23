@@ -26,9 +26,6 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
-
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;

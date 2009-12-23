@@ -117,6 +117,8 @@ class EfvetReader extends PolygonFileReader {
       skipTo(null, "property");
       for(int j = 0; j < dataIndex; j++)
         value = parseFloat();
+      if (isAnisotropic)
+        setVertexAnisotropy(pt);
       addVertexCopy(pt, value, i);
     }
   }

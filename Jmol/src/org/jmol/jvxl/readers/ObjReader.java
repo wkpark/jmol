@@ -117,6 +117,8 @@ class ObjReader extends PolygonFileReader {
         break;
       next[0] = 2;
       pt.set(Parser.parseFloat(line, next), Parser.parseFloat(line, next), Parser.parseFloat(line, next));
+      if (isAnisotropic)
+        setVertexAnisotropy(pt);
       addVertexCopy(pt, 0, ++nVertices);
     }
     pmeshError = null;

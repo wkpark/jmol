@@ -26,6 +26,9 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
+
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
@@ -101,7 +104,6 @@ class PltFormattedReader extends VolumeFileReader {
     float zmin = parseFloat(line.substring(48,60));
     float zmax = parseFloat(line.substring(60,72));
     volumetricOrigin.set(xmin, ymin, zmin);
-
     voxelCounts[0] = nPointsX;
     voxelCounts[1] = nPointsY;
     voxelCounts[2] = nPointsZ;
@@ -112,6 +114,9 @@ class PltFormattedReader extends VolumeFileReader {
     volumetricVectors[1].set(0, (ymax - ymin)/nPointsY, 0);
     volumetricVectors[2].set((zmax - zmin)/nPointsZ, 0, 0);
     
+    if (isAnisotropic)
+      setVolumetricAnisotropy();
+
     Logger.info("boundbox corners {" 
         + zmin + " " + ymin + " " + xmin 
         + "} {" 
@@ -121,6 +126,7 @@ class PltFormattedReader extends VolumeFileReader {
   private String getLine() throws IOException {
     return line = br.readLine();
   }  
+
 }
 
 

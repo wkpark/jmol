@@ -48,9 +48,12 @@ class ApbsReader extends VolumeFileReader {
     String[] tokens = Parser.getTokens(atomLine, 0);
     negativeAtomCount = false;
     atomCount = 0;
-    if (tokens.length >= 4)
+    if (tokens.length >= 4) {
       volumetricOrigin.set(parseFloat(tokens[1]), parseFloat(tokens[2]),
           parseFloat(tokens[3]));
+      if (isAnisotropic)
+        volumetricOrigin.set(center);
+    }
     VolumeFileReader.checkAtomLine(isXLowToHigh, isAngstroms, tokens[0],
         atomLine, jvxlFileHeaderBuffer);
   }

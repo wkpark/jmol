@@ -24,7 +24,6 @@
 package org.jmol.jvxl.readers;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Matrix3f;
 
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
@@ -52,14 +51,7 @@ class VolumeDataReader extends SurfaceReader {
   protected int dataType;
   protected boolean precalculateVoxelData;
   protected boolean allowMapData;
-  protected Point3f center, point;
-  protected float[] anisotropy;
-  protected boolean isAnisotropic;
-  protected Matrix3f eccentricityMatrix;
-  protected Matrix3f eccentricityMatrixInverse;
-  protected boolean isEccentric;
-  protected float eccentricityScale;
-  protected float eccentricityRatio;
+  protected Point3f point;
 
 
   VolumeDataReader(SurfaceGenerator sg) {
@@ -67,17 +59,6 @@ class VolumeDataReader extends SurfaceReader {
     dataType = params.dataType;
     precalculateVoxelData = true;
     allowMapData = true;    
-    center = params.center;
-    anisotropy = params.anisotropy;
-    isAnisotropic = params.isAnisotropic;
-    //if (dataType != 0)
-      //Viewer.testData2 = volumeData; //TESTING ONLY!!!  REMOVE IMPORT!!!
-    
-    eccentricityMatrix = params.eccentricityMatrix;
-    eccentricityMatrixInverse = params.eccentricityMatrixInverse;
-    isEccentric = params.isEccentric;
-    eccentricityScale = params.eccentricityScale;
-    eccentricityRatio = params.eccentricityRatio;
   }
   
   void setup() {

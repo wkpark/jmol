@@ -55,7 +55,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected final Point3i pt3i = new Point3i();
 
   protected void render() {
-    antialias = g3d.isAntialiased();
+    antialias = g3d.isAntialiased();  
     MeshCollection mc = (MeshCollection) shape;
     for (int i = mc.meshCount; --i >= 0;)
       render1(mc.meshes[i]);

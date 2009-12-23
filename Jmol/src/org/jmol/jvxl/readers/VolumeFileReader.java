@@ -103,6 +103,8 @@ abstract class VolumeFileReader extends SurfaceFileReader {
         if (!isAngstroms)
           volumetricVectors[i].scale(ANGSTROMS_PER_BOHR);
       }
+      if (isAnisotropic)
+        setVolumetricAnisotropy();
       volumeData.setVolumetricXml();
       for (int i = 0; i < atomCount; ++i)
         jvxlFileHeaderBuffer.append(br.readLine() + "\n");
@@ -135,6 +137,8 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     if ((voxelCounts[voxelVectorIndex] = parseInt(line)) == Integer.MIN_VALUE) //unreadable
       next[0] = line.indexOf(" ");
     voxelVector.set(parseFloat(), parseFloat(), parseFloat());
+    if (isAnisotropic)
+      setVectorAnisotropy(voxelVector);
   }
 
   protected int readExtraLine() throws Exception {

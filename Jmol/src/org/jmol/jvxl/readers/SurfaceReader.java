@@ -25,6 +25,7 @@ package org.jmol.jvxl.readers;
 
 import java.util.BitSet;
 
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
@@ -62,6 +63,7 @@ public abstract class SurfaceReader implements VertexDataServer {
    *          |_______VolumeDataReader (uses provided predefined data)
    *          |          |
    *          |          |_____IsoFxyReader (creates data as needed)
+   *          |          |_____IsoFxyzReader (creates data as needed)
    *          |          |_____IsoMepReader (creates predefined data)
    *          |          |_____IsoMOReader (creates predefined data)
    *          |          |_____IsoShapeReader (creates data as needed)
@@ -193,6 +195,15 @@ public abstract class SurfaceReader implements VertexDataServer {
   boolean vertexDataOnly;
   boolean hasColorData;
 
+  protected Point3f center;
+  protected float[] anisotropy;
+  protected boolean isAnisotropic;
+  protected Matrix3f eccentricityMatrix;
+  protected Matrix3f eccentricityMatrixInverse;
+  protected boolean isEccentric;
+  protected float eccentricityScale;
+  protected float eccentricityRatio;
+
   SurfaceReader(SurfaceGenerator sg) {
     this.sg = sg;
     colorEncoder = sg.getColorEncoder();
@@ -200,6 +211,14 @@ public abstract class SurfaceReader implements VertexDataServer {
     marchingSquares = sg.getMarchingSquares();
     assocCutoff = params.assocCutoff;
     isXLowToHigh = params.isXLowToHigh;
+    center = params.center;
+    anisotropy = params.anisotropy;
+    isAnisotropic = params.isAnisotropic;
+    eccentricityMatrix = params.eccentricityMatrix;
+    eccentricityMatrixInverse = params.eccentricityMatrixInverse;
+    isEccentric = params.isEccentric;
+    eccentricityScale = params.eccentricityScale;
+    eccentricityRatio = params.eccentricityRatio;
     meshData = sg.getMeshData();
     jvxlData = sg.getJvxlData();
     setVolumeData(sg.getVolumeData());
@@ -835,4 +854,30 @@ public abstract class SurfaceReader implements VertexDataServer {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
   }
   
+  protected void setVertexAnisotropy(Point3f pt) {
+    pt.x /= anisotropy[0];
+    pt.y /= anisotropy[1];
+    pt.z /= anisotropy[2];
+    pt.add(center);
+  }
+
+  protected void setVectorAnisotropy(Vector3f v) {
+    haveSetAnisotropy = true;
+    v.x /= anisotropy[0];
+    v.y /= anisotropy[1];
+    v.z /= anisotropy[2];
+  }
+
+  private boolean haveSetAnisotropy = false;
+  protected void setVolumetricAnisotropy() {
+    if (haveSetAnisotropy)
+      return;
+    volumetricOrigin.set(center);
+    setVectorAnisotropy(volumetricVectors[0]);
+    setVectorAnisotropy(volumetricVectors[1]);
+    setVectorAnisotropy(volumetricVectors[2]);
+    
+  }
+
+
 }

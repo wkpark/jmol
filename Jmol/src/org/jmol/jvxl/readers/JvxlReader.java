@@ -80,6 +80,9 @@ public class JvxlReader extends JvxlXmlReader {
       isAngstroms = VolumeFileReader.checkAtomLine(isXLowToHigh, isAngstroms, null, atomLine, jvxlFileHeaderBuffer);
       if (!isAngstroms)
         volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
+      if (isAnisotropic)
+        volumetricOrigin.set(center);
+      
   }
 
   protected void readVoxelVector(int voxelVectorIndex) throws Exception {

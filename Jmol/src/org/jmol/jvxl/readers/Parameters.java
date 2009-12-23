@@ -146,7 +146,6 @@ public class Parameters {
   final static int IS_SILENT = 1 << 6;
   final public static int IS_SOLVENTTYPE = 1 << 7;
   final static int HAS_MAXGRID = 1 << 8;
-  final static int CAN_CONTOUR = 1 << 9;
   
   public int dataType;
   int surfaceType;
@@ -161,7 +160,7 @@ public class Parameters {
   final static int SURFACE_LCAOCARTOON = 5 | IS_SILENT;
   final static public int SURFACE_LONEPAIR = 6 | IS_SILENT;
   final static public int SURFACE_RADICAL = 7 | IS_SILENT;
-  final static int SURFACE_FUNCTIONXY = 8 | CAN_CONTOUR;
+  final static int SURFACE_FUNCTIONXY = 8;
   final static int SURFACE_FUNCTIONXYZ = 9;
 
   // getSurface or mapColor:
@@ -170,8 +169,6 @@ public class Parameters {
   final static int SURFACE_MOLECULARORBITAL = 13 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_ATOMICORBITAL = 14;
   final static int SURFACE_MEP = 16 | NO_ANISOTROPY | HAS_MAXGRID;
-  final static int SURFACE_FILE = 17 | CAN_CONTOUR;
-  final static int SURFACE_INFO = 18 | CAN_CONTOUR;
   final static int SURFACE_MOLECULAR = 19 | IS_SOLVENTTYPE | NO_ANISOTROPY;
 
   // mapColor only:
@@ -320,6 +317,8 @@ public class Parameters {
       anisotropy[1] = pt.y;
       anisotropy[2] = pt.z;
       isAnisotropic = true;
+      if (center.x == Float.MAX_VALUE)
+        center.set(0, 0, 0);
   }
   
   Matrix3f eccentricityMatrix;

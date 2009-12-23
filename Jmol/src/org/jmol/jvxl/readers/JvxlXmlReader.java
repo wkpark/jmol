@@ -110,7 +110,9 @@ public class JvxlXmlReader extends VolumeFileReader {
     skipTo("<jvxlVolumeData");
     String data = tempDataXml = getXmlData("jvxlVolumeData", null, true);
     volumetricOrigin.set(getXmlPoint(data, "origin"));
-    isAngstroms = true;
+    if (isAnisotropic)
+      volumetricOrigin.set(center);
+   isAngstroms = true;
   }
 
   protected void readVoxelVector(int voxelVectorIndex) throws Exception {
@@ -119,6 +121,8 @@ public class JvxlXmlReader extends VolumeFileReader {
     int n = parseInt(getXmlAttrib(data, "count"));
     voxelCounts[voxelVectorIndex] = (n < 0 ? 0 : n);
     volumetricVectors[voxelVectorIndex].set(getXmlPoint(data, "vector"));
+    if (isAnisotropic)
+      setVectorAnisotropy(volumetricVectors[voxelVectorIndex]);
   }
 
   protected void readVolumeFileVoxelVector(int voxelVectorIndex) throws Exception {

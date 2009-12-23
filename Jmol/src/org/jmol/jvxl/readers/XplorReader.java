@@ -83,8 +83,10 @@ That is:
         readTitleLines();
         Logger.info(jvxlFileHeaderBuffer.toString());
         readAtomCountAndOrigin();
-        Logger.info("voxel grid origin:" + volumetricOrigin);
         readVoxelVectors();
+        if (isAnisotropic)
+          setVolumetricAnisotropy();
+        Logger.info("voxel grid origin:" + volumetricOrigin);
         for (int i = 0; i < 3; ++i)
           Logger.info("voxel grid vector:" + volumetricVectors[i]);
         JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
@@ -146,6 +148,8 @@ That is:
     pt = new Point3f(1f/nA, 0, 0);
     symmetry.toCartesian(pt);
     volumetricVectors[2].set(pt);
+    if (isAnisotropic)
+      setVolumetricAnisotropy();
  
     //ZYX
     

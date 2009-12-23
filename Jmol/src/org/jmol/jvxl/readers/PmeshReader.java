@@ -170,6 +170,8 @@ class PmeshReader extends PolygonFileReader {
     Point3f pt = new Point3f();
     for (int i = 0; i < nVertices; i++) {
       pt.set(getFloat(), getFloat(), getFloat());
+      if (isAnisotropic)
+        setVertexAnisotropy(pt);
       if (Logger.debugging)
         Logger.debug(i + ": " + pt);
       addVertexCopy(pt, 0, i);

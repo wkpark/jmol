@@ -163,25 +163,30 @@ class MrcBinaryReader extends VolumeFileReader {
         "0 " + (-mrcHeader.originX) + " " + (-mrcHeader.originY) + " " +  (-mrcHeader.originZ), 
         jvxlFileHeaderBuffer);
     volumetricOrigin.set(-mrcHeader.originX, -mrcHeader.originY, -mrcHeader.originZ);
+    if (isAnisotropic)
+      volumetricOrigin.set(center);
   }
 
   protected void readVoxelVector(int voxelVectorIndex) {
     //assuming standard orthogonality here
     // needs fixing...
+    int i = mrcHeader.maps - 1;
     switch (voxelVectorIndex) {
     case 0:
-      voxelCounts[mrcHeader.maps - 1] = mrcHeader.nx;
-      volumetricVectors[mrcHeader.maps - 1].set(mrcHeader.a / mrcHeader.mx, 0, 0);
+      voxelCounts[i] = mrcHeader.nx;
+      volumetricVectors[i].set(mrcHeader.a / mrcHeader.mx, 0, 0);
       break;
     case 1:
-      voxelCounts[mrcHeader.mapr - 1] = mrcHeader.ny;
-      volumetricVectors[mrcHeader.mapr - 1].set(0, mrcHeader.b / mrcHeader.my, 0);
+      voxelCounts[i] = mrcHeader.ny;
+      volumetricVectors[i].set(0, mrcHeader.b / mrcHeader.my, 0);
       break;
     case 2:
-      voxelCounts[mrcHeader.mapc - 1] = mrcHeader.nz;
-      volumetricVectors[mrcHeader.mapc - 1].set(0, 0, mrcHeader.c / mrcHeader.mz);
+      voxelCounts[i] = mrcHeader.nz;
+      volumetricVectors[i].set(0, 0, mrcHeader.c / mrcHeader.mz);
       break;
     }
+    if (isAnisotropic)
+      setVectorAnisotropy(volumetricVectors[i]);
   }  
   
   protected float nextVoxel() throws Exception {

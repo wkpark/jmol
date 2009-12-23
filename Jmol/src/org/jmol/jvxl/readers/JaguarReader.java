@@ -136,6 +136,9 @@ class JaguarReader extends VolumeFileReader {
     volumetricVectors[2].set(0, 0, d * factor);
     jvxlFileHeaderBuffer.append(voxelCounts[2] + " 0.0 0.0 " + d + "\n");
 
+    if (isAnisotropic)
+      setVolumetricAnisotropy();
+
     // Note -- the "-1" is necessary, above, even though this
     // creates a nonuniform grid. Someone made a mistake somewhere, 
     // I think, because if you don't use -1 here, then the grid

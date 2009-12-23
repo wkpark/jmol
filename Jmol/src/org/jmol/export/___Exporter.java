@@ -322,7 +322,7 @@ public abstract class ___Exporter {
     return rgbFractionalFromArgb(g3d.getColorArgbOrGray(colix), sep);
   }
 
-  protected String rgbFractionalFromArgb(int argb, char sep) {
+  protected static String rgbFractionalFromArgb(int argb, char sep) {
     int red = (argb >> 16) & 0xFF;
     int green = (argb >> 8) & 0xFF;
     int blue = argb & 0xFF;
@@ -331,15 +331,15 @@ public abstract class ___Exporter {
         + round(blue == 0 ? 0 : (blue + 1) / 256f);
   }
 
-  protected String translucencyFractionalFromColix(short colix) {
+  protected static String translucencyFractionalFromColix(short colix) {
     return round(Graphics3D.translucencyFractionalFromColix(colix));
   }
 
-  protected String opacityFractionalFromColix(short colix) {
+  protected static String opacityFractionalFromColix(short colix) {
     return round(1 - Graphics3D.translucencyFractionalFromColix(colix));
   }
 
-  protected String opacityFractionalFromArgb(int argb) {
+  protected static String opacityFractionalFromArgb(int argb) {
     int opacity = (argb >> 24) & 0xFF;
     return round(opacity == 0 ? 0 : (opacity + 1) / 256f);
   }

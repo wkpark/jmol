@@ -98,6 +98,8 @@ public class Text extends Object2d {
   }
 
   void setText(String text) {
+    if (image != null)
+      getFontMetrics();
     image = null;
     text = fixText(text);
     if (this.text != null && this.text.equals(text))

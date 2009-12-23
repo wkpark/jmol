@@ -24,9 +24,11 @@
 
 package org.jmol.g3d;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.FontMetrics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.PixelGrabber;
 import java.util.Hashtable;
@@ -110,12 +112,34 @@ public class Text3D {
     return text3d.width;
   }
 
-  public static void plotImage(int x, int y, int z, Image image, Graphics3D g3d,
-                               JmolRendererInterface jmolRenderer, boolean antialias,
-                               int argbBackground, int width, int height) {
-    boolean isBackground = (x == Integer.MIN_VALUE); 
+  public static void plotImage(int x, int y, int z, Image image,
+                               Graphics3D g3d,
+                               JmolRendererInterface jmolRenderer,
+                               boolean antialias, int argbBackground,
+                               int width, int height) {
+    boolean isBackground = (x == Integer.MIN_VALUE);
     int width0 = image.getWidth(null);
     int height0 = image.getHeight(null);
+    int bgcolor = (isBackground ? g3d.bgcolor : argbBackground);
+    /*
+    boolean haveTranslucent = false;
+    PixelGrabber pg1 = new PixelGrabber(image, 0, 0, width0, height0, true);
+    if (pg1.getColorModel().hasAlpha())
+      try {
+        pg1.grabPixels();
+        int[] buffer = (int[]) pg1.getPixels();
+        for (int i = 0; i < buffer.length; i++)
+          if ((buffer[i] & 0xFF00000) != 0xFF000000) {
+            haveTranslucent = true;
+            break;
+          }
+        System.out.println(buffer.length + " " + haveTranslucent + " "
+            + pg1.getColorModel().hasAlpha());
+      } catch (InterruptedException e) {
+        // impossible?
+        return;
+      }
+      */
     if (isBackground) {
       x = 0;
       z = Integer.MAX_VALUE - 1;
@@ -123,13 +147,21 @@ public class Text3D {
       height = g3d.height;
     }
     if (x + width <= 0 || x >= g3d.width || y + height <= 0 || y >= g3d.height)
-      return;    
+      return;
     g3d.platform.checkOffscreenSize(width, height);
     Graphics g = g3d.platform.gOffscreen;
-    g.clearRect(0,0,width,height);
-    g.drawImage(image, 0, 0, width, height, 0, 0, width0, height0, null);
-    PixelGrabber pixelGrabber = new PixelGrabber(g3d.platform.imageOffscreen, 0, 0,
-        width, height, true);
+    if (g instanceof Graphics2D) {
+      ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, 1.0f));
+      g.setColor(isBackground ? new Color(bgcolor) : new Color(0, 0, 0, 0));
+      g.fillRect(0, 0, width, height);
+      ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+      g.drawImage(image, 0, 0, width, height, 0, 0, width0, height0, null);
+    } else {
+      g.clearRect(0, 0, width, height);
+      g.drawImage(image, 0, 0, width, height, 0, 0, width0, height0, null);
+    }
+    PixelGrabber pixelGrabber = new PixelGrabber(g3d.platform.imageOffscreen,
+        0, 0, width, height, true);
     try {
       pixelGrabber.grabPixels();
     } catch (InterruptedException e) {
@@ -137,10 +169,20 @@ public class Text3D {
       return;
     }
     int[] buffer = (int[]) pixelGrabber.getPixels();
-    int bgcolor = (isBackground ? g3d.bgcolor : argbBackground == 0 ? buffer[0] : argbBackground);
+/*    
+    int n = 0;
+    for (int i = 0; i < buffer.length; i++) {
+      if ((buffer[i] & 0xFF000000) != 0xFF000000) {
+        // System.out.println("testing " + i + " " + buffer[i]);
+        n++;
+      }
+    }
+    System.out.println(n + " transparent argbBackground=" + argbBackground);
+*/
     if (jmolRenderer != null
         || (x < 0 || x + width > g3d.width || y < 0 || y + height > g3d.height))
-      plotImageClipped(x, y, z, g3d, jmolRenderer, width, height, buffer, bgcolor);
+      plotImageClipped(x, y, z, g3d, jmolRenderer, width, height, buffer,
+          bgcolor);
     else
       plotImageUnClipped(x, y, z, g3d, width, height, buffer, bgcolor);
     return;
@@ -157,11 +199,13 @@ public class Text3D {
         int argb = buffer[offset++];
         if (argb != bgcolor && (argb & 0xFF000000) == 0xFF000000)
           jmolRenderer.plotPixelClippedNoSlab(argb, x + j, y + i, z);
+        else if (argb == 0 && bgcolor != 0)
+          jmolRenderer.plotPixelClippedNoSlab(bgcolor, x + j, y + i, z);
       }
     }
   }
 
-       private static void plotImageUnClipped(int x, int y, int z, Graphics3D g3d,
+  private static void plotImageUnClipped(int x, int y, int z, Graphics3D g3d,
                                          int textWidth, int textHeight,
                                          int[] buffer, int bgcolor) {
     int[] zbuf = g3d.zbuf;
@@ -176,6 +220,8 @@ public class Text3D {
           int argb = buffer[offset];
           if (argb != bgcolor && (argb & 0xFF000000) == 0xFF000000)
             g3d.addPixel(pbufOffset, z, argb);
+          else if (argb == 0 && bgcolor != 0)
+            g3d.addPixel(pbufOffset, z, bgcolor);
         }
         ++offset;
         ++j;

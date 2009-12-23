@@ -47,23 +47,22 @@ class Normix3D {
 
   private final static int normixCount = Geodesic.getVertexCount(NORMIX_GEODESIC_LEVEL);
   private final static Vector3f[] vertexVectors = Geodesic.getVertexVectors(); 
-  private final static short[][] faceVertexesArrays = Geodesic.getFaceVertexesArrays();
   private final static short[][] neighborVertexesArrays = Geodesic.getNeighborVertexesArrays();
 
   private final Vector3f[] transformedVectors;
   private final byte[] intensities;
   private final byte[] intensities2Sided;
 
-  private static short[][] faceNormixesArrays;
-    // not "final" = new short[NORMIX_GEODESIC_LEVEL + 1][];
-
+  
   private final static boolean TIMINGS = false;
-  private final static boolean DEBUG_WITH_SEQUENTIAL_SEARCH = false;
+  
+  //private final static boolean DEBUG_WITH_SEQUENTIAL_SEARCH = false;
 
   private final Matrix3f rotationMatrix = new Matrix3f();
 
   Normix3D() {
-    // 12, 42, 162, 642
+    //level      0   1    2    3
+    //vertices  12, 42, 162, 642
     intensities = new byte[normixCount];
     intensities2Sided = new byte[normixCount];
     transformedVectors = new Vector3f[normixCount];
@@ -123,7 +122,7 @@ class Normix3D {
         vSum.add(vFoo, vBar);
         short sum = getNormix(vSum);
         if (sum != foo && sum != bar) {
-          if (Logger.debugging) {
+/*          if (Logger.debugging) {
             Logger.debug(
                 "foo:" + foo + " -> " +
                 vertexVectors[foo] + "\n" +
@@ -136,6 +135,7 @@ class Normix3D {
                 "sum.dist="+dist2(vSum, vertexVectors[sum])+"\n"+
                 "\nvSum:" + vSum + "\n");
           }
+*/
           throw new NullPointerException();
         }
         short sum2 = getNormix(vSum);
@@ -149,7 +149,14 @@ class Normix3D {
     }
   }
 
-  final BitSet bsConsidered = new BitSet();
+  Vector3f[] getTransformedVectors() {
+    return transformedVectors;
+  }
+
+  boolean isDirectedTowardsCamera(short normix) {
+    // normix < 0 means a double sided normix, so always visible
+    return (normix < 0) || (transformedVectors[normix].z > 0);
+  }
 
   short getNormix(Vector3f v) {
     return getNormix(v.x, v.y, v.z, NORMIX_GEODESIC_LEVEL);
@@ -159,6 +166,9 @@ class Normix3D {
     return vertexVectors[normix];
   }
   
+
+  private final BitSet bsConsidered = new BitSet();
+
   short getNormix(double x, double y, double z, int geodesicLevel) {
     short champion;
     double t;
@@ -203,6 +213,7 @@ class Normix3D {
       }
     }
 
+/*    
     if (DEBUG_WITH_SEQUENTIAL_SEARCH) {
       int champSeq = 0;
       double champSeqD2 = dist2(vertexVectors[champSeq], x, y, z);
@@ -227,6 +238,7 @@ class Normix3D {
         }
       }
     }
+*/
     return champion;
   }
 
@@ -245,6 +257,7 @@ class Normix3D {
   }
 
   private static byte nullIntensity = 50;
+  
   byte getIntensity(short normix) {
     return (normix == ~Graphics3D.NORMIX_NULL || normix == Graphics3D.NORMIX_NULL 
         ? nullIntensity : normix < 0 ? intensities2Sided[~normix] :intensities[normix]);
@@ -279,18 +292,8 @@ class Normix3D {
     }
   }
 
-  Vector3f[] getTransformedVectors() {
-    return transformedVectors;
-  }
-
-  short[] getFaceNormixes(int level) {
-    if (faceNormixesArrays == null)
-      faceNormixesArrays = new short[NORMIX_GEODESIC_LEVEL + 1][];
-    short[] faceNormixes = faceNormixesArrays[level];
-    if (faceNormixes != null)
-      return faceNormixes;
-    return calcFaceNormixes(level);
-  }
+  /*
+   * unused in Jmol
 
   private static double dist2(Vector3f v1, Vector3f v2) {
     double dx = v1.x - v2.x;
@@ -306,6 +309,18 @@ class Normix3D {
     return dx*dx + dy*dy + dz*dz;
   }
     
+
+  short[] getFaceNormixes(int level) {
+    if (faceNormixesArrays == null)
+      faceNormixesArrays = new short[NORMIX_GEODESIC_LEVEL + 1][];
+    short[] faceNormixes = faceNormixesArrays[level];
+    if (faceNormixes != null)
+      return faceNormixes;
+    return calcFaceNormixes(level);
+  }
+
+  private final static short[][] faceVertexesArrays = Geodesic.getFaceVertexesArrays();
+  private static short[][] faceNormixesArrays;
   private final static boolean DEBUG_FACE_VECTORS = false;
 
   private synchronized short[] calcFaceNormixes(int level) {
@@ -346,7 +361,7 @@ class Normix3D {
         }
       }
  
-      /*
+      / *
       double champD = dist2(vertexVectors[normix], t);
       int champ = normix;
       for (int k = normixCount; --k >= 0; ) {
@@ -364,20 +379,12 @@ class Normix3D {
                            dist2(vertexVectors[champ], t) +
                            "\n");
       }
-      */
+      * /
     }
     faceNormixesArrays[level] = faceNormixes;
     return faceNormixes;
   }
-
-  boolean isDirectedTowardsCamera(short normix) {
-    // normix < 0 means a double sided normix, so always visible
-    return (normix < 0) || (transformedVectors[normix].z > 0);
-  }
-
-  /* only reference was Graphics3D.getClosestVisibleGeodesicVertexIndex
-   * removed - Bob Hanson 7/17/06
-   * 
+  
   short getVisibleNormix(double x, double y, double z,
                          int[] visibilityBitmap, int level) {
     int minMapped = Bmp.getMinMappedBit(visibilityBitmap);

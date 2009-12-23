@@ -104,7 +104,7 @@ final class Swing3D extends Platform3D {
   }
 
   Image allocateOffscreenImage(int width, int height) {
-    return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    return new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
   }
 
   Graphics getGraphics(Image image) {

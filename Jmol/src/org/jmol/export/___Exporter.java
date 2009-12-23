@@ -341,8 +341,8 @@ public abstract class ___Exporter {
   }
 
   protected float opacityFractionalFromArgb(int argb) {
-    int translevel = (argb >> 24) & 0xFF;
-    return (translevel == 0 ? 1f : 1 - translevel / 255f);
+    int opacity = (argb >> 24) & 0xFF;
+    return (opacity == 255 ? 1f : opacity / 255f);
   }
 
   protected static String round(double number) { // AH

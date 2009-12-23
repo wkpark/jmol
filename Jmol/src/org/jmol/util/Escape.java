@@ -134,6 +134,11 @@ public class Escape {
   }
 
   private final static String escapable = "\\\\\tt\rr\nn\"\""; 
+
+  public static String escapeChopped(String str) {
+    return chop(escape(str)); 
+  }
+  
   public static String escape(String str) {
     if (str == null)
       return "\"\"";
@@ -162,7 +167,7 @@ public class Escape {
       if (str.charAt(i) > 0x7F)
         str = str.substring(0, i) + unicode(str.charAt(i))
             + str.substring(i + 1);
-    return chop("\"" + str + "\"");
+    return "\"" + str + "\"";
   }
 
   private static String chop(String s) {

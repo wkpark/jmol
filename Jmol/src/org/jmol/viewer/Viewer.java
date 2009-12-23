@@ -5446,6 +5446,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean doRepaint = true;
     while (true) {
 
+      // 11.9.15
+      
+      if (key.equalsIgnoreCase("saveProteinStructureState")) {
+        global.saveProteinStructureState = value;
+        break;
+      }
+            
+      if (key.equalsIgnoreCase("allowGestures")) {
+        global.allowGestures = value;
+        break;
+      }
+
       // 11.8.RC6
       
       if (key.equalsIgnoreCase("imageState")) {
@@ -5476,11 +5488,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       
-      if (key.equalsIgnoreCase("allowGestures")) {
-        global.allowGestures = value;
-        break;
-      }
-
       if (key.equalsIgnoreCase("showKeyStrokes")) {
         global.showKeyStrokes = value;
         break;
@@ -6624,14 +6631,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     tempManager.freeTempScreens(tempScreens);
   }
 
-  /*
-   * public boolean[] allocTempBooleans(int size) { return
-   * tempManager.allocTempBooleans(size); }
-   * 
-   * public void freeTempBooleans(boolean[] tempBooleans) {
-   * tempManager.freeTempBooleans(tempBooleans); }
-   */
-
   public byte[] allocTempBytes(int size) {
     // mps renderer
     return tempManager.allocTempBytes(size);
@@ -6655,7 +6654,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     // old style %{ now @{
 
-    String text = TextFormat.simpleReplace(text0, "%{", "@{");
+    String text = text0;
+    boolean isEscaped = (text.indexOf("\\") >= 0);
+    if (isEscaped) {
+      text = TextFormat.simpleReplace(text, "\\%", "\1");
+      text = TextFormat.simpleReplace(text, "\\@", "\2");
+      isEscaped = !text.equals(text0);
+    }
+    text = TextFormat.simpleReplace(text, "%{", "@{");
     String name;
     while ((i = text.indexOf("@{")) >= 0) {
       i++;
@@ -6671,6 +6677,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (v instanceof Point3f)
         v = Escape.escape((Point3f) v);
       text = text.substring(0, i0 - 2) + v.toString() + text.substring(i + 1);
+    }
+    if (isEscaped) {
+      text = TextFormat.simpleReplace(text, "\2", "@");
+      text = TextFormat.simpleReplace(text, "\1", "%");
     }
     return text;
   }

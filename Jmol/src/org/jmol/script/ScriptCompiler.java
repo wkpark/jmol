@@ -1759,11 +1759,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   /**
-   * An "implied string" is a parameter that is not quoted
-   * but because of its position in a command is implied to
-   * be a string. First we must exclude @xxxx. Then we consume
-   * the entire math syntax @{......} or any set of characters
-   * not involving white space.
+   * An "implied string" is a parameter that is not quoted but because of its
+   * position in a command is implied to be a string. First we must exclude
+   * @xxxx. Then we consume the entire math syntax @{......} or any set of
+   * characters not involving white space.
    * 
    * @return true or false
    */
@@ -1774,15 +1773,17 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     while (ichT < cchScript && !eol(ch = script.charAt(ichT)) && ch != '}')
       ++ichT;
     boolean isMath = false;
-    // if we have @{ then this is not an implied string look ahead to \n, \r, terminal ;, or }
-    if (ichT > ichToken && script.charAt(ichToken) == '@'
+    // if we have @{ then this is not an implied string look ahead to \n, \r,
+    // terminal ;, or }
+    if (ichT > ichToken
+        && (script.charAt(ichToken) == '@' || script.charAt(ichToken) == '%')
         && (ichT <= ichToken + 1 || !(isMath = script.charAt(ichToken + 1) == '{')))
       return false;
     if (isMath) {
       ichT = ichMathTerminator(script, ichToken + 1, cchScript);
       if (ichT == cchScript)
         return false;
-      return ((cchToken = ichT  + 1 - ichToken) > 0);
+      return ((cchToken = ichT + 1 - ichToken) > 0);
     }
     while (--ichT > ichToken && Character.isWhitespace(script.charAt(ichT))) {
     }

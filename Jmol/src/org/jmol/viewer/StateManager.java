@@ -803,6 +803,7 @@ public class StateManager {
     float pointGroupLinearTolerance = 8.0f;
     String propertyColorScheme = "roygb";
     String quaternionFrame = "p"; // was c prior to Jmol 11.7.47
+    boolean saveProteinStructureState = true;
     float solventProbeRadius = 1.2f;
     int scriptDelay = 0;
     boolean selectAllModels = true;
@@ -1087,7 +1088,7 @@ public class StateManager {
                 .indexOf(_prefix) == 0)) {
           Object value = htParameterValues.get(key);
           if (value instanceof String)
-            value = Escape.escape((String) value);
+            value = Escape.escapeChopped((String) value);
           list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
               + value;
         }
@@ -1340,6 +1341,7 @@ public class StateManager {
       setParameterValue("ribbonAspectRatio", ribbonAspectRatio);
       setParameterValue("ribbonBorder", ribbonBorder);
       setParameterValue("rocketBarrels", rocketBarrels);
+      setParameterValue("saveProteinStructureState", saveProteinStructureState);
       setParameterValue("scaleAngstromsPerInch", 0);
       setParameterValue("scriptReportingLevel", 0);
       setParameterValue("selectAllModels", selectAllModels);

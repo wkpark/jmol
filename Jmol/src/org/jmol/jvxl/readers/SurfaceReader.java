@@ -855,17 +855,17 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
   
   protected void setVertexAnisotropy(Point3f pt) {
-    pt.x /= anisotropy[0];
-    pt.y /= anisotropy[1];
-    pt.z /= anisotropy[2];
+    pt.x *= anisotropy[0];
+    pt.y *= anisotropy[1];
+    pt.z *= anisotropy[2];
     pt.add(center);
   }
 
   protected void setVectorAnisotropy(Vector3f v) {
     haveSetAnisotropy = true;
-    v.x /= anisotropy[0];
-    v.y /= anisotropy[1];
-    v.z /= anisotropy[2];
+    v.x *= anisotropy[0];
+    v.y *= anisotropy[1];
+    v.z *= anisotropy[2];
   }
 
   private boolean haveSetAnisotropy = false;

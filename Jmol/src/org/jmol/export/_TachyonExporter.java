@@ -92,14 +92,14 @@ public class _TachyonExporter extends __RayTracerExporter {
     output("  Fog_VMD\n");
     output("End_Shader_Mode\n");
     output("Camera\n");
-    output("  projection ORTHOGRAPHIC\n");
+//    output("  projection ORTHOGRAPHIC\n");
     output("  Zoom 3.0\n");
     output("  Aspectratio 1\n");
     output("  Antialiasing 12\n");
     output("  Raydepth 8\n");
     output("  Center " + triad(screenWidth / 2, screenHeight / 2, 0) + "\n");
     output("  Viewdir 0 0 1\n");
-    output("  Updir   0 -1 0\n");
+    output("  Updir   0 1 0\n");
     output("End_Camera\n");
     output("Directional_Light Direction " + round(lightSource) + " Color 1 1 1\n");
     output("\n");
@@ -124,57 +124,39 @@ public class _TachyonExporter extends __RayTracerExporter {
 
   private String textureCode;
   
-  private void outputTextureCode1() {
+  private void outputTextureCode() {
     output(textureCode);
-  }
-  private String getTexture(short colix) {
-    if (true) {
-      StringBuffer sb = new StringBuffer();
-      sb.append(" Texture ");
-      sb.append(lighting);
-      sb.append(" Opacity " + opacityFractionalFromColix(colix));
-      sb.append(" Phong Plastic 0.5 Phong_size 40");
-      sb.append(" Color " + rgbFractionalFromColix(colix, ' '));
-      sb.append(" TexFunc 0\n");
-      textureCode = sb.toString();
-     return null; 
-    }
-    textureCode = textures.getDef("tc" + colix);
-    if (!textureCode.startsWith(" ")) {
-      output("TexDef " + textureCode);
-      output(lighting);
-      output(" Opacity " + opacityFractionalFromColix(colix));
-      output(" Phong Plastic 0.5 Phong_size 40");
-      output(" Color " + rgbFractionalFromColix(colix, ' '));
-      output(" TexFunc 0\n");
-      textureCode = " " + textureCode;
-    }
-    return textureCode + "\n";
+    output("\n");
   }
 
-  private String getTexture(int argb) {
-    if (true) {
-      StringBuffer sb = new StringBuffer();
-      sb.append(" Texture ");
-      sb.append(lighting);
-      sb.append(" Opacity " + opacityFractionalFromArgb(argb));
-      sb.append(" Phong Plastic 0.5 Phong_size 40");
-      sb.append(" Color " + rgbFractionalFromArgb(argb, ' '));
-      sb.append(" TexFunc 0\n");
-      textureCode = sb.toString();
-      return null;    
-    }      
-    textureCode = textures.getDef("ta" + argb);
-    if (!textureCode.startsWith(" ")) {
-      output("TexDef " + textureCode);
-      output(lighting);
-      output(" Opacity " + opacityFractionalFromArgb(argb));
-      output(" Phong Plastic 0.5 Phong_size 40");
-      output(" Color " + rgbFractionalFromArgb(argb, ' '));
-      output(" TexFunc 0\n");
-      textureCode = " " + textureCode;
+  private void outputTexture(short colix, boolean useTexDef) {
+    outputTexture2(rgbFractionalFromColix(colix, ' '), 
+        opacityFractionalFromColix(colix), useTexDef);
+  }
+
+  private void outputTexture(int argb, boolean useTexDef) {
+    outputTexture2(rgbFractionalFromArgb(argb, ' '), 
+        opacityFractionalFromArgb(argb), useTexDef);
+  }
+  
+  private void outputTexture2(String rgb, String opacity, boolean useTexDef) {
+    textureCode = (useTexDef ? textures.getDef("t" + rgb + opacity) : null);
+    if (useTexDef && textureCode.startsWith(" "))
+      return;
+    StringBuffer sb = new StringBuffer();
+    sb.append(lighting);
+    sb.append(" Opacity " + opacity);
+    sb.append(" Phong Plastic 0.5 Phong_size 40");
+    sb.append(" Color " + rgb);
+    sb.append(" TexFunc 0\n");
+    if (!useTexDef) {
+      output(" Texture ");
+      output(sb.toString());
+      return;
     }
-    return textureCode + "\n";
+    output("TexDef " + textureCode);
+    output(sb.toString());
+    textureCode = " " + textureCode;
   }
 
   protected void outputCircle(int x, int y, int z, float radius, short colix,
@@ -191,13 +173,13 @@ public class _TachyonExporter extends __RayTracerExporter {
 
   private void outputRing(int x, int y, int z, Vector3f tempV1, float radius,
                           short colix, boolean doFill) {
-    getTexture(colix);
+    outputTexture(colix, true);
     output("Ring Center ");
     output(triad(x, y, z));
     output(" Normal " + triad(tempV1));
-    output(" Inner " + (doFill ? 0 : radius * 0.95));
-    output(" Outer " + radius);
-    outputTextureCode1();
+    output(" Inner " + round((doFill ? 0 : radius * 0.95)));
+    output(" Outer " + round(radius));
+    outputTextureCode();
   }
 
   protected void outputComment(String comment) {
@@ -213,14 +195,14 @@ public class _TachyonExporter extends __RayTracerExporter {
 
   protected void outputCylinder(Point3f screenA, Point3f screenB,
                                       float radius, short colix, boolean withCaps) {
-    getTexture(colix);
+    outputTexture(colix, true);
     output("FCylinder Base ");
     output(triad(screenA));
     output(" Apex ");
     output(triad(screenB));
-    output(" Rad " + radius);
-    outputTextureCode1();
-    if (withCaps) {
+    output(" Rad " + round(radius));
+    outputTextureCode();
+    if (withCaps && radius > 1) {
       tempV1.sub(screenA, screenB);
       outputRing((int) screenA.x, (int) screenA.y, (int) screenA.z, tempV1, radius, colix, true);
       tempV1.scale(-1);
@@ -261,7 +243,6 @@ public class _TachyonExporter extends __RayTracerExporter {
       }
       return;
     }
-    getTexture(colixes == null ? colix : colixes[0]);
     output("VertexArray  Numverts " + nVertices + "\nCoords\n");
     for (int i = 0; i < nVertices; i++) {
       viewer.transformPoint(vertices[i], tempP1);
@@ -276,7 +257,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     for (int i = 0; i < nVertices; i++) {
       output((colixes == null ? rgb : rgbFractionalFromColix(colixes[i], ' ')) + "\n");
     }
-    outputTextureCode1();
+    outputTexture(colixes == null ? colix : colixes[0], false);
     output("\nTriMesh " + nFaces + "\n");
     for (int i = nPolygons; --i >= 0;) {
       if (!bsFaces.get(i))
@@ -294,33 +275,34 @@ public class _TachyonExporter extends __RayTracerExporter {
 
     // should be a reference to a names texture
     
-    getTexture(colix);
+    outputTexture(colix, true);
     output("Sphere Center ");
     output(triad(x, y, z));
-    output(" Rad " + radius);
-    outputTextureCode1();
+    output(" Rad " + round(radius));
+    outputTextureCode();
   }
 
   protected void outputTextPixel(int x, int y, int z, int argb) {
-    getTexture(argb);
-    /*output("Sphere Center ");
+    outputTexture(argb, true);
+    output("Sphere Center ");
     output(triad(x, y, z));
-    output(" Rad 0.75");
-    */
+    output(" Rad 1");
+/*
     output("BOX MIN ");
     output(triad(x, y, z));
     output(" MAX ");
     output(triad(x + 1, y - 1, z + 1));
-    outputTextureCode1();
+*/    
+    outputTextureCode();
   }
   
   protected void outputTriangle(Point3f ptA, Point3f ptB, Point3f ptC, short colix) {
-    getTexture(colix);
+    outputTexture(colix, true);
     output("TRI");
     output(" V0 " + triad(ptA));
     output(" V1 " + triad(ptB));
     output(" V2 " + triad(ptC));
-    outputTextureCode1();
+    outputTextureCode();
   }
 
 }

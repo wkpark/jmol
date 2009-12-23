@@ -348,7 +348,8 @@ public abstract class ___Exporter {
     String s;
     return (number == 0 ? "0" : number == 1 ? "1" : (s = ""
         + (Math.round(number * 1000d) / 1000d)).startsWith("0.") ? s
-        .substring(1) : s.startsWith("-0.") ? "-" + s.substring(2) : s);
+        .substring(1) : s.startsWith("-0.") ? "-" + s.substring(2) : 
+          s.endsWith(".0") ? s.substring(0, s.length() - 2) : s);
   }
 
   protected static String round(Tuple3f pt) {

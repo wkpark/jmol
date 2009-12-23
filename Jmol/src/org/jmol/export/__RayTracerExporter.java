@@ -144,9 +144,13 @@ abstract class __RayTracerExporter extends ___Exporter {
     if (endcaps != Graphics3D.ENDCAPS_SPHERICAL)
       return;
     
-    float radius = viewer.scaleToScreen((int) screenA.z, madBond / 2);
+    float radius = viewer.scaleToScreen((int) screenA.z, madBond) / 2f;
+    if (radius <= 1)
+      return;
     outputSphere(screenA.x, screenA.y, screenA.z, radius, colix1);
-    radius = viewer.scaleToScreen((int) screenB.z, madBond / 2);
+    radius = viewer.scaleToScreen((int) screenB.z, madBond) / 2f;
+    if (radius <= 1)
+      return;
     outputSphere(screenB.x, screenB.y, screenB.z, radius, colix2);
 
   }
@@ -154,23 +158,35 @@ abstract class __RayTracerExporter extends ___Exporter {
   protected void fillConicalCylinder(Point3f screenA, Point3f screenB,
                                     int madBond, short colix, byte endcaps) {
     float radius1 = viewer.scaleToScreen((int) screenA.z, madBond) / 2f;
+    if (radius1 == 0)
+      return;
+    if (radius1 < 1)
+      radius1 = 1;
     if (screenA.distance(screenB) == 0) {
       outputSphere(screenA.x, screenA.y, screenA.z, radius1, colix);
       return;
     }
     float radius2 = viewer.scaleToScreen((int) screenB.z, madBond) / 2f;
+    if (radius2 == 0)
+      return;
+    if (radius2 < 1)
+      radius2 = 1;
     outputCylinderConical(screenA, screenB, radius1, radius2, colix);
   }
 
   void fillCylinder(short colix, byte endcaps, int diameter,
                            Point3f screenA, Point3f screenB) {
     float radius = diameter / 2f;
+    if (radius == 0)
+      return;
+    if (radius < 1)
+      radius = 1;
     if (screenA.distance(screenB) == 0) {
       outputSphere(screenA.x, screenA.y, screenA.z, radius, colix);
       return;
     }
     outputCylinder(screenA, screenB, radius, colix, endcaps == Graphics3D.ENDCAPS_FLAT);
-    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL)
+    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL || radius <= 1)
       return;
     outputSphere(screenA.x, screenA.y, screenA.z, radius, colix);
     outputSphere(screenB.x, screenB.y, screenB.z, radius, colix);

@@ -273,8 +273,6 @@ public class _TachyonExporter extends __RayTracerExporter {
   protected void outputSphere(float x, float y, float z, float radius,
                                   short colix) {
 
-    // should be a reference to a names texture
-    
     outputTexture(colix, true);
     output("Sphere Center ");
     output(triad(x, y, z));

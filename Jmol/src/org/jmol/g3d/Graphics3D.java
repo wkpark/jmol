@@ -519,7 +519,6 @@ final public class Graphics3D implements JmolRendererInterface {
     bgcolor = argb;
     // background of Jmol transparent in front of certain applications (VLC Player)
     // when background [0,0,1]. 
-    backgroundImage = null;
   }
 
   public void setBackgroundImage(Image image) {

@@ -1357,7 +1357,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case StateManager.OBJ_BACKGROUND:
       g3d.setBackgroundArgb(argb);
       colorManager.setColixBackgroundContrast(argb);
-      global.backgroundImageFileName = null;
       break;
     }
     global.setParameterValue(name + "Color", Escape.escapeColor(argb));

@@ -5820,8 +5820,10 @@ public class ScriptEvaluator {
     }
     if (isColorParam(i) || theTok == Token.none) {
       argb = getArgbParamLast(i, true);
-      if (!isSyntaxCheck)
-        viewer.setObjectArgb("background", argb);
+      if (isSyntaxCheck)
+        return;
+      viewer.setObjectArgb("background", argb);
+      viewer.setBackgroundImage(null, null);
       return;
     }
     int iShape = getShapeType(theTok);

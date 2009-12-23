@@ -4094,14 +4094,16 @@ public class ScriptEvaluator {
   }
 
   private int getColorTriad(int i) throws ScriptException {
-    int[] colors = new int[3];
+    float[] colors = new float[3];
     int n = 0;
     String hex = "";
     getToken(i);
     Point3f pt = null;
+    float val = 0;
     out: switch (theTok) {
     case Token.integer:
     case Token.spec_seqcode:
+    case Token.decimal:
       for (; i < statementLength; i++) {
         getToken(i);
         switch (theTok) {
@@ -4112,22 +4114,31 @@ public class ScriptEvaluator {
             error(ERROR_badRGBColor);
           hex = "0" + parameterAsString(i);
           break out;
+        case Token.decimal:
+          if (n > 2)
+            error(ERROR_badRGBColor);
+          val = floatParameter(i);
+          break;
         case Token.integer:
           if (n > 2)
             error(ERROR_badRGBColor);
-          colors[n++] = theToken.intValue;
-          continue;
+          val = theToken.intValue;
+          break;
         case Token.spec_seqcode:
           if (n > 2)
             error(ERROR_badRGBColor);
-          colors[n++] = ((Integer) theToken.value).intValue() % 256;
-          continue;
+          val = ((Integer) theToken.value).intValue() % 256;
+          break;
         case Token.rightsquare:
-          if (n == 3)
-            return Graphics3D.colorPtToInt(new Point3f(colors[0], colors[1], colors[2]));
+          if (n != 3)
+            error(ERROR_badRGBColor);
+          --i;
+          pt = new Point3f(colors[0], colors[1], colors[2]);
+          break out;
         default:
           error(ERROR_badRGBColor);
         }
+        colors[n++] = val;
       }
       error(ERROR_badRGBColor);
       break;

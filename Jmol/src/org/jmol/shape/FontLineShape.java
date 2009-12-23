@@ -67,6 +67,8 @@ public abstract class FontLineShape extends FontShape {
       appendTickInfo(sb, " y", 2);
     if (tickInfos[3] != null)
       appendTickInfo(sb, " z", 3);
+    if (s.indexOf(" off") >= 0)
+      sb.append("  " + myType + " off;\n");
     return sb.toString();
   }
   

@@ -2053,10 +2053,22 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   public static int colorPtToInt(Point3f pt) {
+    return colorTriadToInt(pt.x, pt.y, pt.z);
+  }
+  
+  public static int colorTriadToInt(float x, float y, float z) {
+    if (x <= 1 && y <= 1 && z <= 1) {
+      if (x > 0)
+        x = x * 256 - 1;
+      if (y > 0)
+        y = y * 256 - 1;
+      if (z > 0)
+        z = z * 256 - 1;
+    }
     return 0xFF000000 
-        | (((int) pt.x) & 0xFF) << 16
-        | (((int) pt.y) & 0xFF) << 8 
-        | (((int) pt.z) & 0xFF);
+        | (((int) x) & 0xFF) << 16
+        | (((int) y) & 0xFF) << 8 
+        | (((int) z) & 0xFF);
   }
 
   public final static Point3f colorPointFromInt2(int color) {
@@ -2078,6 +2090,59 @@ final public class Graphics3D implements JmolRendererInterface {
     return USE_PALETTE;
   }
 
+  /**
+   * accepts [xRRGGBB] or [0xRRGGBB] or [0xFFRRGGBB] or #RRGGBB or
+   * [red,green,blue] or a valid JavaScript color
+   * 
+   * @param strColor
+   * @return 0 if invalid or integer color
+   */
+  public static int getArgbFromString(String strColor) {
+    int len = 0;
+    if (strColor == null || (len = strColor.length()) == 0)
+      return 0;
+    float red, grn, blu;
+    if (strColor.charAt(0) == '[' && strColor.charAt(len - 1) == ']') {
+      String check;
+      if (strColor.indexOf(",") >= 0) {
+        String[] tokens = TextFormat.split(strColor.substring(1, strColor
+            .length() - 1), ",");
+        if (tokens.length != 3)
+          return 0;
+        red = Parser.parseFloat(tokens[0]);
+        grn = Parser.parseFloat(tokens[1]);
+        blu = Parser.parseFloat(tokens[2]);
+        return colorTriadToInt(red, grn, blu);
+      }
+      switch (len) {
+      case 9:
+        check = "x";
+        break;
+      case 10:
+        check = "0x";
+        break;
+      default:
+        return 0;
+      }
+      if (strColor.indexOf(check) != 1)
+        return 0;
+      strColor = "#" + strColor.substring(len - 7, len - 1);
+      len = 7;
+    }
+    if (len == 7 && strColor.charAt(0) == '#') {
+      try {
+        red = Integer.parseInt(strColor.substring(1, 3), 16);
+        grn = Integer.parseInt(strColor.substring(3, 5), 16);
+        blu = Integer.parseInt(strColor.substring(5, 7), 16);
+        return colorTriadToInt(red, grn, blu);
+      } catch (NumberFormatException e) {
+        return 0;
+      }
+    }
+    Integer boxedArgb = (Integer) mapJavaScriptColors.get(strColor
+        .toLowerCase());
+    return (boxedArgb == null ? 0 : boxedArgb.intValue());
+  }
   
   private final static short applyColorTranslucencyLevel(short colix,
                                                          float translucentLevel) {
@@ -2119,6 +2184,16 @@ final public class Graphics3D implements JmolRendererInterface {
     }
   }
   
+  public static float translucencyFractionalFromColix(short colix) {
+    int translevel = Graphics3D.getColixTranslucencyLevel(colix);
+    return (
+          translevel == -1 ? 0.5f 
+        : translevel == 0 ? 0 
+        : translevel == 255 ? 1 
+        : translevel / 256f
+        );
+  }
+
   public static short getColix(Object obj) {
     if (obj == null)
       return INHERIT_ALL;
@@ -2193,28 +2268,6 @@ final public class Graphics3D implements JmolRendererInterface {
       return (colix & OPAQUE_MASK) == INHERIT_COLOR; 
     }
   }
-  
-  //no references:
-
-  /*
-  
-  public final static short getColixInherited(short myColix, short parentColix,
-                                              short grandParentColix) {
-    if ((myColix & OPAQUE_MASK) >= SPECIAL_COLIX_MAX)
-      return myColix;
-    return getColixInherited(myColix, getColixInherited(parentColix,
-        grandParentColix));
-  }
-
-  public final short getColixMix(short colixA, short colixB) {
-    return Colix.getColixMix(colixA >= 0 ? colixA :
-                             changeableColixMap[colixA &
-                                               UNMASK_CHANGEABLE_TRANSLUCENT],
-                             colixB >= 0 ? colixB :
-                             changeableColixMap[colixB &
-                                               UNMASK_CHANGEABLE_TRANSLUCENT]);
-  }
- */
   
   public static int getArgb(short colix) {
     return Colix3D.getArgb(colix);  
@@ -2740,62 +2793,6 @@ final public class Graphics3D implements JmolRendererInterface {
   static {
     for (int i = colorNames.length; --i >= 0; )
       mapJavaScriptColors.put(colorNames[i], new Integer(colorArgbs[i]));
-  }
-
-  /**
-   * accepts [xRRGGBB] or [0xRRGGBB] or [0xFFRRGGBB] or #RRGGBB or
-   * [red,green,blue] or a valid JavaScript color
-   * 
-   * @param strColor
-   * @return 0 if invalid or integer color
-   */
-  public static int getArgbFromString(String strColor) {
-    int len = 0;
-    if (strColor == null || (len = strColor.length()) == 0)
-      return 0;
-    int red, grn, blu;
-    if (strColor.charAt(0) == '[' && strColor.charAt(len - 1) == ']') {
-      String check;
-      if (strColor.indexOf(",") >= 0) {
-        String[] tokens = TextFormat.split(strColor.substring(1, strColor
-            .length() - 1), ",");
-        if (tokens.length != 3)
-          return 0;
-        red = Parser.parseInt(tokens[0]);
-        grn = Parser.parseInt(tokens[1]);
-        blu = Parser.parseInt(tokens[2]);
-        return (red < 0 || grn < 0 || blu < 0 || red > 255 || grn > 255
-            || blu > 255 ? 0 : 0xFF000000 | (red & 0xFF) << 16
-            | (grn & 0xFF) << 8 | (blu & 0xFF));
-      }
-      switch (len) {
-      case 9:
-        check = "x";
-        break;
-      case 10:
-        check = "0x";
-        break;
-      default:
-        return 0;
-      }
-      if (strColor.indexOf(check) != 1)
-        return 0;
-      strColor = "#" + strColor.substring(len - 7, len - 1);
-      len = 7;
-    }
-    if (len == 7 && strColor.charAt(0) == '#') {
-      try {
-        red = Integer.parseInt(strColor.substring(1, 3), 16);
-        grn = Integer.parseInt(strColor.substring(3, 5), 16);
-        blu = Integer.parseInt(strColor.substring(5, 7), 16);
-        return (0xFF000000 | (red & 0xFF) << 16 | (grn & 0xFF) << 8 | (blu & 0xFF));
-      } catch (NumberFormatException e) {
-        return 0;
-      }
-    }
-    Integer boxedArgb = (Integer) mapJavaScriptColors.get(strColor
-        .toLowerCase());
-    return (boxedArgb == null ? 0 : boxedArgb.intValue());
   }
 
   /* ***************************************************************

@@ -132,7 +132,7 @@ public class _TachyonExporter extends __RayTracerExporter {
       StringBuffer sb = new StringBuffer();
       sb.append(" Texture ");
       sb.append(lighting);
-      sb.append(" Opacity " + round(opacityFractionalFromColix(colix)));
+      sb.append(" Opacity " + opacityFractionalFromColix(colix));
       sb.append(" Phong Plastic 0.5 Phong_size 40");
       sb.append(" Color " + rgbFractionalFromColix(colix, ' '));
       sb.append(" TexFunc 0\n");
@@ -143,7 +143,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     if (!textureCode.startsWith(" ")) {
       output("TexDef " + textureCode);
       output(lighting);
-      output(" Opacity " + round(opacityFractionalFromColix(colix)));
+      output(" Opacity " + opacityFractionalFromColix(colix));
       output(" Phong Plastic 0.5 Phong_size 40");
       output(" Color " + rgbFractionalFromColix(colix, ' '));
       output(" TexFunc 0\n");
@@ -157,7 +157,7 @@ public class _TachyonExporter extends __RayTracerExporter {
       StringBuffer sb = new StringBuffer();
       sb.append(" Texture ");
       sb.append(lighting);
-      sb.append(" Opacity " + round(opacityFractionalFromArgb(argb)));
+      sb.append(" Opacity " + opacityFractionalFromArgb(argb));
       sb.append(" Phong Plastic 0.5 Phong_size 40");
       sb.append(" Color " + rgbFractionalFromArgb(argb, ' '));
       sb.append(" TexFunc 0\n");
@@ -168,7 +168,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     if (!textureCode.startsWith(" ")) {
       output("TexDef " + textureCode);
       output(lighting);
-      output(" Opacity " + round(opacityFractionalFromArgb(argb)));
+      output(" Opacity " + opacityFractionalFromArgb(argb));
       output(" Phong Plastic 0.5 Phong_size 40");
       output(" Color " + rgbFractionalFromArgb(argb, ' '));
       output(" TexFunc 0\n");

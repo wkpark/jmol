@@ -323,26 +323,25 @@ public abstract class ___Exporter {
   }
 
   protected String rgbFractionalFromArgb(int argb, char sep) {
-    return "" + round(((argb >> 16) & 0xFF) / 255f) + sep 
-        + round(((argb >> 8) & 0xFF) / 255f) + sep
-        + round(((argb) & 0xFF) / 255f);
+    int red = (argb >> 16) & 0xFF;
+    int green = (argb >> 8) & 0xFF;
+    int blue = argb & 0xFF;
+    return "" + round(red == 0 ? 0 : (red + 1)/ 256f) + sep 
+        + round(green == 0 ? 0 : (green + 1) / 256f) + sep
+        + round(blue == 0 ? 0 : (blue + 1) / 256f);
   }
 
   protected String translucencyFractionalFromColix(short colix) {
-    int translevel = Graphics3D.getColixTranslucencyLevel(colix);
-    if (Graphics3D.isColixTranslucent(colix))
-      return "" + (translevel / 255f);
-    return "0";
+    return round(Graphics3D.translucencyFractionalFromColix(colix));
   }
 
-  protected float opacityFractionalFromColix(short colix) {
-    return (Graphics3D.isColixTranslucent(colix) ? 1 - 
-        Graphics3D.getColixTranslucencyLevel(colix) / 255f : 1);
+  protected String opacityFractionalFromColix(short colix) {
+    return round(1 - Graphics3D.translucencyFractionalFromColix(colix));
   }
 
-  protected float opacityFractionalFromArgb(int argb) {
+  protected String opacityFractionalFromArgb(int argb) {
     int opacity = (argb >> 24) & 0xFF;
-    return (opacity == 255 ? 1f : opacity / 255f);
+    return round(opacity == 0 ? 0 : (opacity + 1) / 256f);
   }
 
   protected static String round(double number) { // AH

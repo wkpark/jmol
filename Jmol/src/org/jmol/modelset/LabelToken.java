@@ -207,7 +207,7 @@ public class LabelToken {
   }
 
   public static LabelToken[] compile(Viewer viewer, String strFormat, char chAtom, Hashtable htValues) {
-    if (strFormat.indexOf("%") < 0)
+    if (strFormat.indexOf("%") < 0 || strFormat.length() < 2)
       return new LabelToken[] { new LabelToken(strFormat) };
     int n = 0;
     int ich = -1;

@@ -608,15 +608,13 @@ final public class Atom extends Point3fi {
    String getSymmetryOperatorList() {
     String str = "";
     ModelSet f = group.chain.modelSet;
-    if (atomSymmetry == null || f.unitCells == null
-        || f.unitCells[modelIndex] == null)
+    int nOps = f.getModelSymmetryCount(modelIndex);
+    if (nOps == 0 || atomSymmetry == null)
       return "";
     int[] cellRange = f.getModelCellRange(modelIndex);
-    if (cellRange == null)
-      return "";
-    int nOps = f.getModelSymmetryCount(modelIndex);
     int pt = nOps;
-    for (int i = 0; i < cellRange.length; i++)
+    int n = (cellRange == null ? 1 : cellRange.length);
+    for (int i = 0; i < n; i++)
       for (int j = 0; j < nOps; j++)
         if (atomSymmetry.get(pt++))
           str += "," + (j + 1) + "" + cellRange[i];

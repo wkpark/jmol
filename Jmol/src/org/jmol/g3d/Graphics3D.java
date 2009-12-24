@@ -2007,8 +2007,7 @@ final public class Graphics3D implements JmolRendererInterface {
     int grey = ((2989 * ((rgb >> 16) & 0xFF)) +
                 (5870 * ((rgb >> 8) & 0xFF)) +
                 (1140 * (rgb & 0xFF)) + 5000) / 10000;
-    int greyRgb = (grey << 16) | (grey << 8) | grey | 0xFF000000;
-    return greyRgb;
+    return Shade3D.rgb(grey, grey, grey);
   }
 
   public static short getColix(int argb) {
@@ -2062,10 +2061,7 @@ final public class Graphics3D implements JmolRendererInterface {
       if (z > 0)
         z = z * 256 - 1;
     }
-    return 0xFF000000 
-        | (((int) x) & 0xFF) << 16
-        | (((int) y) & 0xFF) << 8 
-        | (((int) z) & 0xFF);
+    return Shade3D.rgb((int) x, (int) y, (int) z);
   }
 
   public final static Point3f colorPointFromInt2(int color) {
@@ -2327,7 +2323,7 @@ final public class Graphics3D implements JmolRendererInterface {
   
   public synchronized static void setSpecularPercent(int specularPercent) {
     lighting[Shade3D.SPECULAR_PERCENT]= specularPercent;
-    lighting[Shade3D.INTENSITY_SPECULAR] = specularPercent / 100f;
+    lighting[Shade3D.SPECULAR_FRACTION] = specularPercent / 100f;
   }
 
   public static int getSpecularPercent() {
@@ -2336,15 +2332,28 @@ final public class Graphics3D implements JmolRendererInterface {
 
   public synchronized static void setSpecularExponent(int specularExponent) {
     lighting[Shade3D.SPECULAR_EXPONENT] = specularExponent;
+    lighting[Shade3D.PHONG_EXPONENT] = (int) Math.pow(2, specularExponent);
+    lighting[Shade3D.USE_PHONG] = 0;
   }
   
   public static int getSpecularExponent() {
     return (int) lighting[Shade3D.SPECULAR_EXPONENT];
   }
   
+  public static void setPhongExponent(int phongExponent) {
+    lighting[Shade3D.PHONG_EXPONENT] = phongExponent;
+    float x = (float) (Math.log(phongExponent) / Math.log(2));
+    boolean usePhong = (x != (int) x);
+    lighting[Shade3D.USE_PHONG] = (usePhong ? 1 : 0);
+  }
+
+  public static int getPhongExponent() {
+    return (int) lighting[Shade3D.PHONG_EXPONENT];
+  }
+
   public synchronized static void setDiffusePercent(int diffusePercent) {
     lighting[Shade3D.DIFFUSE_PERCENT]= diffusePercent;
-    lighting[Shade3D.INTENSITY_DIFFUSE]= diffusePercent / 100f;
+    lighting[Shade3D.DIFFUSE_FRACTION]= diffusePercent / 100f;
   }
 
   public static int getDiffusePercent() {

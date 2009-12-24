@@ -9473,7 +9473,7 @@ public class ScriptEvaluator {
       if (val >= 0) {
         key = "specularPower";
         break;
-      }
+      } 
       if (val < -10 || val > -1)
         integerOutOfRange(-10, -1);
       val = -val;
@@ -9882,7 +9882,9 @@ public class ScriptEvaluator {
         "specularpercent;ambientpercent;diffusepercent;specularPower"))
       return setIntProperty(key, intSetting(2, intVal, 0, 100));
     if (key.equalsIgnoreCase("specularExponent"))
-      return setIntProperty(key, intSetting(2, intVal, 1, 10));
+      return setIntProperty(key, intSetting(2, intVal, 0, 100));
+    if (key.equalsIgnoreCase("phongExponent"))
+      return setIntProperty(key, intSetting(2, intVal, 0, 1000));
     boolean isJmolParameter = viewer.isJmolVariable(key);
     if (isJmolSet && !isJmolParameter) {
       iToken = 1;

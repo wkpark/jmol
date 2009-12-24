@@ -364,6 +364,13 @@ class ColorManager {
     return Graphics3D.getSpecularPercent();
   }
 
+  static void setSpecularExponent(int specularExponent) {
+    if (Graphics3D.getSpecularExponent() == specularExponent)
+      return;
+    Graphics3D.setSpecularExponent(specularExponent);
+    flushCaches();
+  }
+  
   static void setSpecularPower(int specularPower) {
     if (specularPower < 0) {
       if (Graphics3D.getSpecularExponent() == -specularPower)
@@ -397,6 +404,17 @@ class ColorManager {
 
   static int getAmbientPercent() {
     return Graphics3D.getAmbientPercent();
+  }
+
+  static void setPhongExponent(int phongExponent) {
+    if (Graphics3D.getPhongExponent() == phongExponent)
+      return;
+    Graphics3D.setPhongExponent(phongExponent);
+    flushCaches();
+  }
+
+  static int getPhongExponent() {
+    return Graphics3D.getPhongExponent();
   }
 
   /*

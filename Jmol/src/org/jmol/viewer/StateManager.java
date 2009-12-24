@@ -552,7 +552,7 @@ public class StateManager {
         + ";debug;debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
         + ";fontscaling;language;loglevel;measureStyleChime"
         + ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode;"
-        + ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius"
+        + ";perspectivedepth;phongexponent;visualrange;perspectivemodel;refreshing;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;zshade;specular;specularexponent;specularpercent;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate"
@@ -612,7 +612,8 @@ public class StateManager {
     int ambientPercent = 45;
     int diffusePercent = 84;
     boolean specular = true;
-    int specularExponent = 6;
+    int specularExponent = 6;  // log2 of PHONG_EXPONENT -- 64 here
+    int phongExponent = 64;
     int specularPercent = 22;
     int specularPower = 40;
 
@@ -868,12 +869,17 @@ public class StateManager {
 
     String getSpecularState() {
       StringBuffer str = new StringBuffer("");
-      appendCmd(str, "ambientPercent = " + Graphics3D.getAmbientPercent());
-      appendCmd(str, "diffusePercent = " + Graphics3D.getDiffusePercent());
-      appendCmd(str, "specular = " + Graphics3D.getSpecular());
-      appendCmd(str, "specularPercent = " + Graphics3D.getSpecularPercent());
-      appendCmd(str, "specularPower = " + Graphics3D.getSpecularPower());
-      appendCmd(str, "specularExponent = " + Graphics3D.getSpecularExponent());
+      appendCmd(str, "set ambientPercent " + Graphics3D.getAmbientPercent());
+      appendCmd(str, "set diffusePercent " + Graphics3D.getDiffusePercent());
+      appendCmd(str, "set specular " + Graphics3D.getSpecular());
+      appendCmd(str, "set specularPercent " + Graphics3D.getSpecularPercent());
+      appendCmd(str, "set specularPower " + Graphics3D.getSpecularPower());
+      int se = Graphics3D.getSpecularExponent();
+      int pe = Graphics3D.getPhongExponent();
+      if (Math.pow(2, se) == pe)
+        appendCmd(str, "set specularExponent " + se);
+      else
+        appendCmd(str, "set phongExponent " + pe);        
       return str.toString();
     }
 
@@ -1324,6 +1330,7 @@ public class StateManager {
       setParameterValue("perspectiveModel", 11);
       setParameterValue("perspectiveDepth", perspectiveDepth);
       setParameterValue("percentVdwAtom", percentVdwAtom);
+      setParameterValue("phongExponent", phongExponent);
       setParameterValue("picking", "ident");
       setParameterValue("pickingSpinRate", pickingSpinRate);
       setParameterValue("pickingStyle", "toggle");

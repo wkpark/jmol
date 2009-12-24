@@ -24,7 +24,6 @@
 
 package org.jmol.g3d;
 
-//import org.jmol.util.Logger;
 
 /**
  *<p>
@@ -79,46 +78,51 @@ final class Shade3D {
   */
 
   //ones user sets:
-  static int SPECULAR_ON = 0; // set specular on|off
-  static int SPECULAR_PERCENT = 1;
-  static int SPECULAR_EXPONENT = 2;
-  static int SPECULAR_POWER = 3;
-  static int DIFFUSE_PERCENT = 4;
-  static int AMBIENT_PERCENT = 5;
+  static final int SPECULAR_ON = 0; // set specular on|off
+  static final int SPECULAR_PERCENT = 1;  // divide by 100 to get INTENSITY_SPECULAR
+  static final int SPECULAR_POWER = 2;    // divide by 100 to get INTESITY_FRACTION
+  static final int DIFFUSE_PERCENT = 3;  
+  static final int AMBIENT_PERCENT = 4;
   //ones we actually use here:
-  static int INTENSITY_SPECULAR = 6;
-  static int INTENSE_FRACTION = 7;
-  static int INTENSITY_DIFFUSE = 8;
-  static int AMBIENT_FRACTION = 9;
+  static final int SPECULAR_EXPONENT = 5; // log_2(PHONG_EXPONENT)
+  static final int PHONG_EXPONENT = 6;
+  static final int SPECULAR_FRACTION = 7; // <-- specularPercent
+  static final int INTENSE_FRACTION = 8;  // <-- specularPower
+  static final int DIFFUSE_FRACTION = 9; 
+  static final int AMBIENT_FRACTION = 10;
+  static final int USE_PHONG = 11;
 
   final static float[] lighting = new float[] {
       //user set:
       1f,       // specularON
       22f,      // specularPercent
-      6f,       // specularExponent
       40f,      // specularPower
       84f,      // diffusePercent
       45f,      // ambientPercent
+      //
+      6f,       // specularExponent
+      64f,      // phongExponent
       //derived:
       0.22f,    // intensitySpecular
       0.4f,     // intense fraction
       0.84f,    // intensity diffuse
-      0.45f,    // ambient fraction  
+      0.45f,    // ambient fraction
+      0,        // use phong
       }; 
   
   static int[] getShades(int rgb, boolean greyScale) {
     int[] shades = new int[shadeMax];
     if (rgb == 0)
       return shades;
-    
+    shades[shadeNormal] = rgb;    
     int red = (rgb >> 16) & 0xFF;
     int grn = (rgb >>  8) & 0xFF;
     int blu = rgb         & 0xFF;
+    
     float ambientFraction = lighting[AMBIENT_FRACTION];
     float ambientRange = 1 - ambientFraction;
     float intenseFraction = lighting[INTENSE_FRACTION];
     
-    shades[shadeNormal] = rgb(red, grn, blu);
     for (int i = 0; i < shadeNormal; ++i) {
       float fraction = ambientFraction + ambientRange*i/shadeNormal;
       shades[i] = rgb((int)(red*fraction + 0.5f),
@@ -142,7 +146,7 @@ final class Shade3D {
     return shades;
   }
 
-  private final static int rgb(int red, int grn, int blu) {
+  final static int rgb(int red, int grn, int blu) {
     return 0xFF000000 | (red << 16) | (grn << 8) | blu;
   }
 
@@ -183,30 +187,52 @@ final class Shade3D {
   }
 
   /*
-   static float calcFloatIntensity(float x, float y, float z) {
-   //not utilized
-   double magnitude = Math.sqrt(x*x + y*y + z*z);
-   return calcFloatIntensityNormalized((float)(x/magnitude),
-   (float)(y/magnitude),
-   (float)(z/magnitude));
-   }
+   * static float calcFloatIntensity(float x, float y, float z) { //not utilized
+   * double magnitude = Math.sqrt(x*x + y*y + z*z); return
+   * calcFloatIntensityNormalized((float)(x/magnitude), (float)(y/magnitude),
+   * (float)(z/magnitude)); }
    */
 
   private static float calcFloatIntensityNormalized(float x, float y, float z) {
-    float cosTheta = x * xLight + y * yLight + z * zLight;
-    if (cosTheta <= 0)
-      return 0;// ambient component
-    float intensity = cosTheta * lighting[INTENSITY_DIFFUSE]; // diffuse component
+    float NdotL = x * xLight + y * yLight + z * zLight;
+    if (NdotL <= 0)
+      return 0;
+    // I = k_diffuse * f_diffuse + k_specular * f_specular
+    // where
+    // k_diffuse = (N dot L)
+    // k_specular = {[(2(N dot L)N - L] dot V}^p
+    //
+    // and in our case V = {0 0 1} so the z component of that is:
+    // 
+    // k_specular = ( 2 * NdotL * z - zLight )^p
+    // 
+    // HOWEVER -- Jmol's "specularExponent is 2^phongExponent
+    //
+    // "specularExponent" phong_exponent
+    // 0 1
+    // 1 2
+    // 2 4
+    // 3 8
+    // 4 16
+    // 5 32
+    // 5.322 40
+    // 6 64
+    // 7 128
+    // 8 256
+    // 9 512
+    // 10 1024
+    float intensity = NdotL * lighting[DIFFUSE_FRACTION];
     if (lighting[SPECULAR_ON] != 0) {
-      // this is the dot product of the reflection and the viewer
-      // but the viewer only has a z component
-      float dotProduct = z * 2 * cosTheta - zLight;
-      if (dotProduct > 0) {
-        for (int n = (int) lighting[SPECULAR_EXPONENT]; --n >= 0
-            && dotProduct > .0001f;)
-          dotProduct *= dotProduct;
-        // specular component
-        intensity += dotProduct * lighting[INTENSITY_SPECULAR];
+      float k_specular = 2 * NdotL * z - zLight;
+      if (k_specular > 0) {
+        if (lighting[USE_PHONG] != 0) {
+          k_specular = (float) Math.pow(k_specular, lighting[PHONG_EXPONENT]);
+        } else {
+          for (int n = (int) lighting[SPECULAR_EXPONENT]; --n >= 0
+              && k_specular > .0001f;)
+            k_specular *= k_specular;
+        }
+        intensity += k_specular * lighting[SPECULAR_FRACTION];
       }
     }
     if (intensity > 1)

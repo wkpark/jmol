@@ -595,12 +595,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     // transfer default global settings to managers and g3d
 
-    setAmbientPercent(global.ambientPercent);
-    setDiffusePercent(global.diffusePercent);
-    setSpecular(global.specular);
-    setSpecularPercent(global.specularPercent);
-    setSpecularExponent(global.specularExponent);
-    setSpecularPower(global.specularPower);
+    ColorManager.setAmbientPercent(global.ambientPercent);
+    ColorManager.setDiffusePercent(global.diffusePercent);
+    ColorManager.setSpecular(global.specular);
+    ColorManager.setSpecularPercent(global.specularPercent);
+    ColorManager.setSpecularPower(-global.specularExponent);
+    ColorManager.setPhongExponent(global.phongExponent);
+    ColorManager.setSpecularPower(global.specularPower);
 
     if (modelSet != null)
       animationManager.setAnimationOn(false);
@@ -1439,52 +1440,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getSpecularState() {
     return global.getSpecularState();
-  }
-
-  private static void setSpecular(boolean specular) {
-    // Eval
-    ColorManager.setSpecular(specular);
-  }
-
-  boolean getSpecular() {
-    return ColorManager.getSpecular();
-  }
-
-  private static void setSpecularPower(int specularPower) {
-    // Eval
-    ColorManager.setSpecularPower(Math.abs(specularPower));
-  }
-
-  private static void setSpecularExponent(int specularExponent) {
-    // Eval
-    ColorManager.setSpecularPower(-Math.abs(specularExponent));
-  }
-
-  private static void setAmbientPercent(int ambientPercent) {
-    // Eval
-    ColorManager.setAmbientPercent(ambientPercent);
-  }
-
-  static int getAmbientPercent() {
-    return ColorManager.getAmbientPercent();
-  }
-
-  private static void setDiffusePercent(int diffusePercent) {
-    // Eval
-    ColorManager.setDiffusePercent(diffusePercent);
-  }
-
-  static int getDiffusePercent() {
-    return ColorManager.getDiffusePercent();
-  }
-
-  private static void setSpecularPercent(int specularPercent) {
-    // Eval
-    ColorManager.setSpecularPercent(specularPercent);
-  }
-
-  static int getSpecularPercent() {
-    return ColorManager.getSpecularPercent();
   }
 
   public short getColixAtomPalette(Atom atom, byte pid) {
@@ -5261,6 +5216,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     while (true) {
 
+      // 11.9.13
+      if (key.equalsIgnoreCase("phongExponent")) {
+        ColorManager.setPhongExponent(value);
+        break;
+      }
+
       // 11.8.RC3//
       if (key.equalsIgnoreCase("helixStep")) {
         global.helixStep = value;
@@ -5345,11 +5306,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (key.equalsIgnoreCase("specularPower")) {
-        setSpecularPower(value);
+        ColorManager.setSpecularPower(value);
         break;
       }
       if (key.equalsIgnoreCase("specularExponent")) {
-        setSpecularExponent(value);
+        ColorManager.setSpecularPower(-value);
         break;
       }
       if (key.equalsIgnoreCase("specular")) {
@@ -5365,15 +5326,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         return;
       }
       if (key.equalsIgnoreCase("specularPercent")) {
-        setSpecularPercent(value);
+        ColorManager.setSpecularPercent(value);
         break;
       }
       if (key.equalsIgnoreCase("diffusePercent")) {
-        setDiffusePercent(value);
+        ColorManager.setDiffusePercent(value);
         break;
       }
       if (key.equalsIgnoreCase("ambientPercent")) {
-        setAmbientPercent(value);
+        ColorManager.setAmbientPercent(value);
         break;
       }
 
@@ -5710,7 +5671,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (key.equalsIgnoreCase("specular")) {
-        setSpecular(value);
+        ColorManager.setSpecular(value);
         break;
       }
       if (key.equalsIgnoreCase("slabEnabled")) {

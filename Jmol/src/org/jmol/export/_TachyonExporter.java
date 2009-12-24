@@ -46,6 +46,7 @@ public class _TachyonExporter extends __RayTracerExporter {
 
   boolean wasPerspectiveDepth;
   String lighting;
+  String phong;
   
   UseTable textures = new UseTable(" ");
  
@@ -59,7 +60,8 @@ public class _TachyonExporter extends __RayTracerExporter {
   private void getLightingInfo() {
     lighting = " AMBIENT " + round(Graphics3D.getAmbientPercent() / 100f)
         + " DIFFUSE " + round(Graphics3D.getDiffusePercent()/100f) 
-        + " SPECULAR " + round(Graphics3D.getSpecularPercent() / 100f);  
+        + " SPECULAR " + round(Graphics3D.getSpecularPercent() / 100f);
+    phong = " Phong Plastic 0.5 Phong_size " + Graphics3D.getSpecularExponent();
   }  
   
   /* 
@@ -147,7 +149,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     StringBuffer sb = new StringBuffer();
     sb.append(lighting);
     sb.append(" Opacity " + opacity);
-    sb.append(" Phong Plastic 0.5 Phong_size 40");
+    sb.append(phong);
     sb.append(" Color " + rgb);
     sb.append(" TexFunc 0\n");
     if (!useTexDef) {

@@ -5181,8 +5181,8 @@
     server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
   <fah_proj number="2669" name="p2669_IBX in water" public="y" file="xyz"
-    server="171.67.108.24" atoms="1000" preferred="3" deadline="3"
-    credit="1920" frames="100" code="GS" contact="kasson" contrib="Smoking2000"/>
+    server="171.64.65.56" atoms="1000" preferred="3" deadline="3"
+    credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
   <fah_proj number="2670" name="p2670_IBX in water" public="y" file="xyz"
     server="171.67.108.24" atoms="1000" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Ivoshiee,Smoking2000"/>
@@ -6755,7 +6755,7 @@
     credit="188" frames="100" code="GST" contact="gbowman" contrib="Ursomor"/>
   <fah_proj number="4114" name="p4114_villinwt_folded_Amber03_Native" public="y" file="xyz"
     server="171.64.65.111" atoms="15838" preferred="20" deadline="30"
-    credit="107" frames="100" code="GST" contrib="Ivoshiee"/>
+    credit="107" frames="100" code="GST" contact="NA" contrib="Ivoshiee"/>
   <fah_proj number="4115" name="p4115_villinwt_folded_Amber03_Native" public="y" file="xyz"
     server="171.64.65.111" atoms="15838" preferred="32" deadline="48"
     credit="176" frames="100" code="GST" contact="gbowman" contrib="efishy"/>
@@ -8287,10 +8287,10 @@
     credit="100" frames="100" code="G3" contact="luttmann"/>
 
   <!-- Projects 10000 to 10099 -->
-  <fah_proj number="10000" name="p10000_ProFormol" public="n" file="xyz"
+  <fah_proj number="10000" name="p10000_ProFormol" public="y" file="xyz"
     server="129.74.85.48" atoms="544" preferred="3.07" deadline="23.04"
     credit="84.48" frames="100" code="PM" contact="jcoffland" contrib="Hyperlife"/>
-  <fah_proj number="10001" name="p10001_ProFormol" public="n" file="xyz"
+  <fah_proj number="10001" name="p10001_ProFormol" public="y" file="xyz"
     server="129.74.85.48" atoms="544" preferred="1.84" deadline="13.79"
     credit="50.56" frames="100" code="PM" contact="jcoffland" contrib="John Deas"/>
 

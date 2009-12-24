@@ -25,7 +25,6 @@ package org.jmol.g3d;
 
 import java.awt.Component;
 import java.awt.Image;
-import java.util.BitSet;
 import java.util.Hashtable;
 
 import javax.vecmath.Matrix4f;
@@ -39,6 +38,7 @@ import org.jmol.api.JmolRendererInterface;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Viewer;
@@ -1504,10 +1504,7 @@ final public class Graphics3D implements JmolRendererInterface {
                  screenD, colixD, normixD);
   }
 
-  public void renderIsosurface(Point3f[] vertices, short colix,
-                               short[] colixes, Vector3f[] normals,
-                               int[][] indices, BitSet bsFaces, int nVertices,
-                               int faceVertexMax, short[] polygonColixes, int nPolygons) {
+  public void drawSurface(MeshSurface meshSurface) {
     // Export3D only
   }
   

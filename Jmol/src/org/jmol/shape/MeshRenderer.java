@@ -45,7 +45,6 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected int diameter;
   protected float width;
   protected boolean isTranslucent;
-  protected int faceVertexMax = 4;
 
   protected final Point3f pt1f = new Point3f();
   protected final Point3f pt2f = new Point3f();
@@ -205,7 +204,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       }
     }
     if (generateSet)
-      drawIsosurface();
+      exportSurface();
   }
 
   protected void drawLine(int iA, int iB, boolean fill, 
@@ -236,13 +235,12 @@ public abstract class MeshRenderer extends ShapeRenderer {
     }    
   }
 
-  protected void drawIsosurface() {
-    g3d.renderIsosurface(mesh.vertices, mesh.colix, 
-        mesh.isColorSolid ? null : mesh.vertexColixes, 
-        mesh.getVertexNormals(), mesh.polygonIndexes,
-        bsFaces, mesh.vertexCount, faceVertexMax,
-        mesh.isColorSolid ? mesh.polygonColixes : null, 
-        mesh.polygonCount);
+  protected void exportSurface() {
+    mesh.vertexNormals = mesh.getVertexNormals();
+    mesh.bsFaces = bsFaces;
+    g3d.drawSurface(mesh);
+    mesh.vertexNormals = null;
+    mesh.bsFaces = null;
   }
   
 }

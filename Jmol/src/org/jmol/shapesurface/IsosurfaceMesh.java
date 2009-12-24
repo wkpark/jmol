@@ -34,7 +34,6 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.viewer.Viewer;
@@ -129,71 +128,12 @@ public class IsosurfaceMesh extends Mesh {
     return vPt;
   }
 
-  int addVertexCopy(Point3f vertex, float value) {
-    if (vertexCount == 0)
-      vertexValues = new float[SEED_COUNT];
-    else if (vertexCount >= vertexValues.length)
-      vertexValues = (float[]) ArrayUtil.doubleLength(vertexValues);
-    vertexValues[vertexCount] = value;
-    return addVertexCopy(vertex);
-  }
-
   public void setTranslucent(boolean isTranslucent, float iLevel) {
     super.setTranslucent(isTranslucent, iLevel);
     if (vertexColixes != null)
       for (int i = vertexCount; --i >= 0; )
         vertexColixes[i] =
           Graphics3D.getColixTranslucent(vertexColixes[i], isTranslucent, iLevel);
-  }
-
-  private int lastColor;
-  private short lastColix;
-  
-  int addTriangleCheck(int vertexA, int vertexB, int vertexC, int check, int check2,
-                        int color) {
-    if (vertices == null
-        || vertexValues != null
-        && (Float.isNaN(vertexValues[vertexA])
-            || Float.isNaN(vertexValues[vertexB]) || Float
-            .isNaN(vertexValues[vertexC]))
-        || Float.isNaN(vertices[vertexA].x) 
-        || Float.isNaN(vertices[vertexB].x)
-        || Float.isNaN(vertices[vertexC].x))
-      return -1;
-    int n = polygonCount;
-    if (n == 0)
-      polygonIndexes = new int[SEED_COUNT][];
-    else if (n == polygonIndexes.length)
-      polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
-    if (color != 0) {
-      if (polygonColixes == null) {
-        polygonColixes = new short[SEED_COUNT];
-        lastColor = 0;
-      } else if (n == polygonColixes.length) {
-        polygonColixes = (short[]) ArrayUtil.doubleLength(polygonColixes);
-      }
-      polygonColixes[n] = (color == lastColor ? lastColix
-          : (lastColix = Graphics3D.getColix(lastColor = color)));
-    }
-    polygonIndexes[polygonCount++] = new int[] { vertexA, vertexB, vertexC,
-        check, check2 };
-    return n;
-  }
-  
-  void invalidateTriangles() {
-    for (int i = polygonCount; --i >= 0;)
-      if (!setABC(i))
-        polygonIndexes[i] = null;
-  }
-  
-  private int iA, iB, iC;
-  
-  private boolean setABC(int i) {
-    int[] vertexIndexes = polygonIndexes[i];
-    return vertexIndexes != null
-          && !(Float.isNaN(vertexValues[iA = vertexIndexes[0]])
-            || Float.isNaN(vertexValues[iB = vertexIndexes[1]]) 
-            || Float.isNaN(vertexValues[iC = vertexIndexes[2]]));
   }
   
   Object calculateArea() {
@@ -245,12 +185,9 @@ public class IsosurfaceMesh extends Mesh {
     return calculatedVolume = v;
   }
 
-  BitSet[] surfaceSet;
-  int[] vertexSets;
-  int nSets;
   int thisSet = -1;
   
-  public void sumVertexNormals(Vector3f[] vectorSums) {
+  protected void sumVertexNormals(Vector3f[] vectorSums) {
     super.sumVertexNormals(vectorSums);
     /* 
      * OK, so if there is an associated grid point (because the 

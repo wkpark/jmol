@@ -276,7 +276,7 @@ public class _X3dExporter extends __CartesianExporter {
     output("</Transform>\n");
   }
 
-  protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
+  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
@@ -300,7 +300,7 @@ public class _X3dExporter extends __CartesianExporter {
       
     output("coordIndex='\n");
     for (int i = nPolygons; --i >= 0;) {
-      if (!bsFaces.get(i))
+      if (bsFaces != null && !bsFaces.get(i))
         continue;
       output(" " + coordMap[indices[i][0]] + " " + coordMap[indices[i][1]] + " "
           + coordMap[indices[i][2]] + " -1\n");
@@ -335,7 +335,7 @@ public class _X3dExporter extends __CartesianExporter {
       
      output("  normalIndex='\n");
       for (int i = nPolygons; --i >= 0;) {
-        if (!bsFaces.get(i))
+        if (bsFaces != null && !bsFaces.get(i))
           continue;
         output(normalMap[indices[i][0]] + " " + normalMap[indices[i][1]] + " "
             + normalMap[indices[i][2]] + " -1\n");
@@ -352,7 +352,7 @@ public class _X3dExporter extends __CartesianExporter {
     if (colorList != null) {
       output("  colorIndex='\n");
       for (int i = nPolygons; --i >= 0;) {
-        if (!bsFaces.get(i))
+        if (bsFaces != null && !bsFaces.get(i))
           continue;
         if (polygonColixes == null) {
           output(htColixes.get("" + colixes[indices[i][0]]) + " "

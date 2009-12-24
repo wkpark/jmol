@@ -117,32 +117,15 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.util.ArrayUtil;
+import org.jmol.util.MeshSurface;
 
-
-
-public class MeshData {
-  private final static int SEED_COUNT = 25;
+public class MeshData extends MeshSurface {
   
   public final static int MODE_GET_VERTICES = 1;
   public final static int MODE_GET_COLOR_INDEXES = 2;
   public final static int MODE_PUT_SETS = 3;
   public final static int MODE_PUT_VERTICES = 4;
 
-  public int polygonCount;
-  public Point3f[] vertices;
-  public short[] vertexColixes;
-  public int vertexCount;
-  public float[] vertexValues;
-  public int[][] polygonIndexes;
-  public short[] polygonColixes;
-
-  public BitSet[] surfaceSet;
-  public int[] vertexSets;
-  public int nSets = 0;
-  
-  public Point3f[] dots;
-  
   private boolean setsSuccessful;
   public int vertexIncrement = 1;
 
@@ -151,43 +134,9 @@ public class MeshData {
   public int addVertexCopy(Point3f vertex, float value, int assocVertex) {
     if (assocVertex < 0)
       vertexIncrement = -assocVertex;  //3 in some cases
-    if (vertexCount == 0)
-      vertexValues = new float[SEED_COUNT];
-    else if (vertexCount >= vertexValues.length)
-      vertexValues = (float[]) ArrayUtil.doubleLength(vertexValues);
-    vertexValues[vertexCount] = value;
-    return addVertexCopy(vertex);
+    return addVertexCopy(vertex, value);
   }
 
-  private int addVertexCopy(Point3f vertex) {
-    if (vertexCount == 0)
-      vertices = new Point3f[SEED_COUNT];
-    else if (vertexCount == vertices.length)
-      vertices = (Point3f[]) ArrayUtil.doubleLength(vertices);
-    vertices[vertexCount] = new Point3f(vertex);
-    //Logger.debug("mesh.addVertexCopy " + vertexCount + vertex +vertices[vertexCount]);
-    return vertexCount++;
-  }
-
-  public int addTriangleCheck(int vertexA, int vertexB, int vertexC, int check,
-                              int check2) {
-    if (vertexValues != null
-        && (Float.isNaN(vertexValues[vertexA])
-            || Float.isNaN(vertexValues[vertexB]) || Float
-            .isNaN(vertexValues[vertexC])))
-      return -1;
-    if (Float.isNaN(vertices[vertexA].x) || Float.isNaN(vertices[vertexB].x)
-        || Float.isNaN(vertices[vertexC].x))
-      return -1;
-    if (polygonCount == 0)
-      polygonIndexes = new int[SEED_COUNT][];
-    else if (polygonCount == polygonIndexes.length)
-      polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
-    polygonIndexes[polygonCount++] = new int[] { vertexA, vertexB, vertexC,
-        check, check2 };
-    return polygonCount;
-  }
-  
   public BitSet[] getSurfaceSet() {
     return (surfaceSet == null ? getSurfaceSet(0) : surfaceSet);
   }
@@ -303,28 +252,5 @@ public class MeshData {
         || val1 <= 0 && val2 <= 0 && val3 <= 0);
   }
   
-  private boolean setABC(int i) {
-    int[] vertexIndexes = polygonIndexes[i];
-    return vertexIndexes != null
-          && !(Float.isNaN(vertexValues[vertexIndexes[0]])
-            || Float.isNaN(vertexValues[vertexIndexes[1]]) 
-            || Float.isNaN(vertexValues[vertexIndexes[2]]));
-  }
-  
-  public void invalidateTriangles() {
-    for (int i = polygonCount; --i >= 0;)
-      if (!setABC(i))
-        polygonIndexes[i] = null;
-  }
-
-  public void addPolygonColix(int index, short colix) {
-    if (polygonColixes == null) {
-      polygonColixes = new short[SEED_COUNT];
-    }
-    else if (index == polygonColixes.length) {
-      polygonColixes = (short[]) ArrayUtil.doubleLength(polygonColixes);
-    }
-    polygonColixes[index] = colix;
-  }
 }
 

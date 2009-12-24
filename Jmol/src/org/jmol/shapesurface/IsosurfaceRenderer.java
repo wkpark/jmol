@@ -47,7 +47,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   protected void initRenderer() {
     super.initRenderer();
-    faceVertexMax = 3;
   }
   protected void render() {
     iShowNormals = viewer.getTestFlag2();
@@ -295,7 +294,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       }
     }
     if (generateSet)
-      drawIsosurface();
+      exportSurface();
   }
 
   private void renderNormals() {

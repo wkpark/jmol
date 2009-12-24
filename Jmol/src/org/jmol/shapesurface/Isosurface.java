@@ -768,7 +768,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   /////////////// meshDataServer interface /////////////////
 
   public void invalidateTriangles() {
-    thisMesh.invalidateTriangles();
+    thisMesh.invalidatePolygons();
   }
 
   public void fillMeshData(MeshData meshData, int mode, IsosurfaceMesh mesh) {

@@ -1,7 +1,6 @@
 package org.jmol.api;
 
 import java.awt.Image;
-import java.util.BitSet;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
@@ -12,6 +11,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
+import org.jmol.util.MeshSurface;
 import org.jmol.viewer.Viewer;
 
 public interface JmolRendererInterface {
@@ -293,10 +293,7 @@ public interface JmolRendererInterface {
                                          short normixC, Point3i screenD,
                                          short colixD, short normixD);
 
-  public abstract void renderIsosurface(Point3f[] vertices, short colix,
-                                        short[] colixes, Vector3f[] normals,
-                                        int[][] indices, BitSet bsFaces, int nVertices,
-                                        int faceVertexMax, short[] polygonColixes, int nPolygons);
+  public abstract void drawSurface(MeshSurface meshSurface);
 
   public abstract boolean isInDisplayRange(int x, int y);
 

@@ -1159,7 +1159,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.scaleToScreen(z, milliAngstroms);
   }
 
-  public float unscaleToScreen(int z, int screenDistance) {
+  public float unscaleToScreen(float z, float screenDistance) {
     // all shapes
     return transformManager.unscaleToScreen(z, screenDistance);
   }

@@ -147,7 +147,7 @@ public class _MayaExporter extends __CartesianExporter {
   protected void outputTextPixel(Point3f pt, int argb) {
   }
   
-  protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
+  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BitSet bsFaces,

@@ -29,6 +29,7 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
@@ -150,8 +151,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     sb.append(" Color " + rgb);
     sb.append(" TexFunc 0\n");
     if (!useTexDef) {
-      output(" Texture ");
-      output(sb.toString());
+      textureCode = "Texture " + sb;
       return;
     }
     output("TexDef " + textureCode);
@@ -190,7 +190,14 @@ public class _TachyonExporter extends __RayTracerExporter {
 
   protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,
                             short colix) {
-    //TODO
+    
+    // as mesh, which uses Cartesian coordinates
+    
+    viewer.unTransformPoint(screenBase, tempP1);
+    viewer.unTransformPoint(screenTip, tempP2);
+    radius = viewer.unscaleToScreen(screenBase.z, radius);
+    Matrix3f matRotateScale = getRotationMatrix(tempP1, tempP2, radius);
+    jmolRenderer.drawSurface(getConeMesh(tempP1, matRotateScale, colix));
   }
 
   protected void outputCylinder(Point3f screenA, Point3f screenB,
@@ -223,18 +230,20 @@ public class _TachyonExporter extends __RayTracerExporter {
     //not applicable
   }
 
-  protected void outputEllipsoid(double[] coef, short colix) {
-    //TODO
+  protected void outputEllipsoid(Point3f center, float radius, double[] coef, short colix) {
+    viewer.transformPoint(center, tempP1);
+    // no support for ellipsoids -- just draw ball
+    outputSphere(tempP1.x, tempP1.y, tempP1.z, radius, colix);
   }
 
-  protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
+  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes, int nVertices,
                                   int nPolygons, int nFaces, BitSet bsFaces,
                                   int faceVertexMax, short colix, Vector colorList, Hashtable htColixes) {
     if (polygonColixes != null) {
       for (int i = nPolygons; --i >= 0;) {
-        if (!bsFaces.get(i))
+        if (bsFaces != null && !bsFaces.get(i))
           continue;
         viewer.transformPoint(vertices[indices[i][0]], tempP1);
         viewer.transformPoint(vertices[indices[i][1]], tempP2);
@@ -243,6 +252,7 @@ public class _TachyonExporter extends __RayTracerExporter {
       }
       return;
     }
+    outputTexture(colixes == null ? colix : colixes[0], false);
     output("VertexArray  Numverts " + nVertices + "\nCoords\n");
     for (int i = 0; i < nVertices; i++) {
       viewer.transformPoint(vertices[i], tempP1);
@@ -257,10 +267,10 @@ public class _TachyonExporter extends __RayTracerExporter {
     for (int i = 0; i < nVertices; i++) {
       output((colixes == null ? rgb : rgbFractionalFromColix(colixes[i], ' ')) + "\n");
     }
-    outputTexture(colixes == null ? colix : colixes[0], false);
+    outputTextureCode();
     output("\nTriMesh " + nFaces + "\n");
     for (int i = nPolygons; --i >= 0;) {
-      if (!bsFaces.get(i))
+      if (bsFaces != null && !bsFaces.get(i))
         continue;
       output(indices[i][0] + " " + indices[i][1] + " " + indices[i][2] + "\n");
       if (faceVertexMax == 4 && indices[i].length == 4) {

@@ -43,6 +43,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.Geodesic;
+import org.jmol.util.MeshSurface;
 import org.jmol.util.Quaternion;
 
 public class _IdtfExporter extends __CartesianExporter {
@@ -482,28 +483,34 @@ public class _IdtfExporter extends __CartesianExporter {
     .append("MESH {\n");
     int vertexCount = Geodesic.getVertexCount(2);
     short[] f = Geodesic.getFaceVertexes(2);
-    int[] faces = new int[f.length];
-    for (int i = 0; i < f.length; i++)
-      faces[i] = f[i];
+    int nFaces = f.length / 3;
+    int[][] faces = new int[nFaces][];
+    int fpt = -1;
+    for (int i = 0; i < nFaces; i++)
+      faces[i] = new int[] { f[++fpt], f[++fpt], f[++fpt] };
     Vector3f[] vertexes = new Vector3f[vertexCount];
     for (int i = 0; i < vertexCount;i++)
       vertexes[i] = Geodesic.getVertexVector(i);
     return getMeshData("Sphere", faces, vertexes, vertexes);
   }
 
-  private String getMeshData(String type, int[] faces, Tuple3f[] vertexes, Tuple3f[] normals) {
-    int nFaces = faces.length / 3;
+  private String getMeshData(String type, int[][] indices, Tuple3f[] vertexes, Tuple3f[] normals) {
+    int nFaces = indices.length;
     int vertexCount = vertexes.length;
     int normalCount = normals.length;
     StringBuffer sb = new StringBuffer();
     getMeshHeader(type, nFaces, vertexCount, normalCount, 0, sb);
+    StringBuffer sb1 = new StringBuffer();
+    for (int i = 0; i < indices.length; i++) {
+      sb1.append(indices[i][0]).append(" ");
+      sb1.append(indices[i][1]).append(" ");
+      sb1.append(indices[i][2]).append(" ");
+    }
     sb.append("MESH_FACE_POSITION_LIST { ");
-    for (int i = 0; i < faces.length; i++)
-      sb.append(faces[i]).append(" ");
+    sb.append(sb1);
     sb.append("}\n");
     sb.append("MESH_FACE_NORMAL_LIST { ");
-    for (int i = 0; i < faces.length; i++)
-      sb.append(faces[i]).append(" ");
+    sb.append(sb1);
     sb.append("}\n");
     sb.append("MESH_FACE_SHADING_LIST { ");
     for (int i = 0; i < nFaces; i++)
@@ -619,43 +626,15 @@ public class _IdtfExporter extends __CartesianExporter {
     v.add(getParentItem("Jmol", cylinderMatrix));
   }
 
-  private Matrix3f getRotationMatrix(Point3f pt1, Point3f pt2, float radius) {    
-    Matrix3f m = new Matrix3f();
-    Matrix3f m1;
-    if (pt2.x == pt1.x && pt2.y == pt1.y) {
-      m1 = new Matrix3f();
-      m1.setIdentity();
-      if (pt1.z > pt2.z)
-        m1.mul(-1);
-    } else {
-      tempV1.set(pt2);
-      tempV1.sub(pt1);
-      tempV2.set(0, 0, 1);
-      tempV2.cross(tempV2, tempV1);
-      tempV1.cross(tempV1, tempV2);
-      Quaternion q = Quaternion.getQuaternionFrame(tempV2, tempV1, null);
-      m1 = q.getMatrix();
-    }
-    m.m00 = radius;
-    m.m11 = radius;
-    m.m22 = pt2.distance(pt1);
-    m1.mul(m);
-    return m1;
-  }
-
-  private Object getCylinderResource() {
+  private String getCylinderResource() {
     int ndeg = 10;
     int vertexCount = 360 / ndeg * 2;
     int n = vertexCount / 2;
-    int[] faces = new int[vertexCount * 3];
+    int[][] faces = new int[vertexCount][];
     int fpt = -1;
     for (int i = 0; i < n; i++) {
-      faces[++fpt] = i;
-      faces[++fpt] = (i + 1) % n;
-      faces[++fpt] = (i + n);
-      faces[++fpt] = (i + 1) % n;
-      faces[++fpt] = (i + 1) % n + n;
-      faces[++fpt] = (i + n);
+      faces[++fpt] = new int[] { i, (i + 1) % n, i + n };
+      faces[++fpt] = new int[] { (i + 1) % n, (i + 1) % n + n, i + n };
     }
     Point3f[] vertexes = new Point3f[vertexCount];
     Point3f[] normals = new Point3f[vertexCount];
@@ -673,7 +652,7 @@ public class _IdtfExporter extends __CartesianExporter {
     return getMeshData("Cylinder", faces, vertexes, normals);
   }
 
-  protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
+  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
@@ -696,7 +675,7 @@ public class _IdtfExporter extends __CartesianExporter {
 
     StringBuffer sbFaceCoordIndices = new StringBuffer();
     for (int i = nPolygons; --i >= 0;) {
-      if (!bsFaces.get(i))
+      if (bsFaces != null && !bsFaces.get(i))
         continue;
       sbFaceCoordIndices.append(" " + coordMap[indices[i][0]] + " " + coordMap[indices[i][1]] + " "
           + coordMap[indices[i][2]]);
@@ -730,7 +709,7 @@ public class _IdtfExporter extends __CartesianExporter {
       }
       htNormals = null;
       for (int i = nPolygons; --i >= 0;) {
-        if (!bsFaces.get(i))
+        if (bsFaces != null && !bsFaces.get(i))
           continue;
         sbFaceNormalIndices.append(" " + normalMap[indices[i][0]] + " " + normalMap[indices[i][1]] + " "
             + normalMap[indices[i][2]]);
@@ -745,7 +724,7 @@ public class _IdtfExporter extends __CartesianExporter {
     StringBuffer sbColorIndexes = new StringBuffer();
     if (colorList != null) {
       for (int i = nPolygons; --i >= 0;) {
-        if (!bsFaces.get(i))
+        if (bsFaces != null && !bsFaces.get(i))
           continue;
         if (polygonColixes == null) {
           sbColorIndexes.append(" " + htColixes.get("" + colixes[indices[i][0]]) + " "
@@ -867,38 +846,18 @@ public class _IdtfExporter extends __CartesianExporter {
     v.add(getParentItem("Jmol", cylinderMatrix));
   }
 
-  private Object getConeResource() {
-    int ndeg = 10;
-    int n = 360 / ndeg;
-    int vertexCount = n + 1;
-    int[] faces = new int[n * 3];
-    int fpt = -1;
-    for (int i = 0; i < n; i++) {
-      faces[++fpt] = i;
-      faces[++fpt] = (i + 1) % n;
-      faces[++fpt] = n;
-    }
-    Point3f[] vertexes = new Point3f[vertexCount];
-    for (int i = 0; i < n; i++) {
-      float x = (float) (Math.cos(i * ndeg / 180. * Math.PI));
-      float y = (float) (Math.sin(i * ndeg / 180. * Math.PI));
-      vertexes[i] = new Point3f(x, y, 0);
-    }
-    vertexes[n] = new Point3f(0, 0, 1);
-    return getMeshData("Cone", faces, vertexes, vertexes);
+  private String getConeResource() {
+    MeshSurface m = getConeMesh(null, null, (short) 0);
+    return getMeshData("Cone", m.polygonIndexes, m.vertices, m.vertices);
   }
   
-  private Object getCircleResource() {
+  private String getCircleResource() {
     int ndeg = 10;
     int n = 360 / ndeg;
     int vertexCount = n + 1;
-    int[] faces = new int[n * 3];
-    int fpt = -1;
-    for (int i = 0; i < n; i++) {
-      faces[++fpt] = i;
-      faces[++fpt] = (i + 1) % n;
-      faces[++fpt] = n;
-    }
+    int[][] faces = new int[n][];
+    for (int i = 0; i < n; i++)
+      faces[i] = new int[] { i, (i + 1) % n, n };
     Point3f[] vertexes = new Point3f[vertexCount];
     Point3f[] normals = new Point3f[vertexCount];
     for (int i = 0; i < n; i++) {
@@ -934,9 +893,13 @@ public class _IdtfExporter extends __CartesianExporter {
     v.add(getParentItem("Jmol", cylinderMatrix));
   }
 
-  private Object getTriangleResource(String key, Point3f pt1,
+  private int[][] triangleFace = new int[1][];
+  {
+    triangleFace[0] = new int[] { 0, 1, 2 };
+  }
+  
+  private String getTriangleResource(String key, Point3f pt1,
                                      Point3f pt2, Point3f pt3) {
-    int[] faces = new int[] { 0, 1, 2 };
     Point3f[] vertexes = new Point3f[] { pt1, pt2, pt3 };
     tempV1.set(pt3);
     tempV1.sub(pt1);
@@ -945,7 +908,7 @@ public class _IdtfExporter extends __CartesianExporter {
     tempV2.cross(tempV2, tempV1);
     tempV2.normalize();
     Vector3f[] normals = new Vector3f[] { tempV2, tempV2, tempV2 };
-    return getMeshData(key, faces, vertexes, normals);
+    return getMeshData(key, triangleFace, vertexes, normals);
   }
 
 }

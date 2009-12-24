@@ -50,6 +50,8 @@ import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.script.Token;
+import org.jmol.util.MeshSurface;
+import org.jmol.util.Quaternion;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 
@@ -382,6 +384,58 @@ public abstract class ___Exporter {
    return list;
   }
 
+  protected static MeshSurface getConeMesh(Point3f centerBase, Matrix3f matRotateScale, short colix) {
+    MeshSurface ms = new MeshSurface();
+    int ndeg = 10;
+    int n = 360 / ndeg;
+    ms.colix = colix;
+    ms.vertices = new Point3f[ms.vertexCount = n + 1];
+    ms.polygonIndexes = new int[ms.polygonCount = n][];
+    for (int i = 0; i < n; i++)
+      ms.polygonIndexes[i] = new int[] {i, (i + 1) % n, n };
+    double d = ndeg / 180. * Math.PI; 
+    for (int i = 0; i < n; i++) {
+      float x = (float) (Math.cos(i * d));
+      float y = (float) (Math.sin(i * d));
+      ms.vertices[i] = new Point3f(x, y, 0);
+    }
+    ms.vertices[n] = new Point3f(0, 0, 1);
+    if (matRotateScale != null) {
+      ms.vertexNormals = new Vector3f[ms.vertexCount];
+      for (int i = 0; i < ms.vertexCount; i++) {
+        matRotateScale.transform(ms.vertices[i]);
+        ms.vertexNormals[i] = new Vector3f();
+        ms.vertexNormals[i].set(ms.vertices[i]);
+        ms.vertexNormals[i].normalize();
+        ms.vertices[i].add(centerBase);
+      }
+    }
+    return ms;
+  }
+
+  protected Matrix3f getRotationMatrix(Point3f pt1, Point3f pt2, float radius) {    
+    Matrix3f m = new Matrix3f();
+    Matrix3f m1;
+    if (pt2.x == pt1.x && pt2.y == pt1.y) {
+      m1 = new Matrix3f();
+      m1.setIdentity();
+      if (pt1.z > pt2.z)
+        m1.mul(-1);
+    } else {
+      tempV1.set(pt2);
+      tempV1.sub(pt1);
+      tempV2.set(0, 0, 1);
+      tempV2.cross(tempV2, tempV1);
+      tempV1.cross(tempV1, tempV2);
+      Quaternion q = Quaternion.getQuaternionFrame(tempV2, tempV1, null);
+      m1 = q.getMatrix();
+    }
+    m.m00 = radius;
+    m.m11 = radius;
+    m.m22 = pt2.distance(pt1);
+    m1.mul(m);
+    return m1;
+  }
 
   // The following methods are called by a variety of shape renderers and 
   // Export3D, replacing methods in org.jmol.g3d. More will be added as needed. 
@@ -391,15 +445,15 @@ public abstract class ___Exporter {
   abstract void drawCircle(int x, int y, int z,
                                    int diameter, short colix, boolean doFill);  //draw circle 
 
-  void drawIsosurface(Point3f[] vertices, short colix, short[] colixes,
-                      Vector3f[] normals, int[][] indices, BitSet bsFaces,
-                      int nVertices, int faceVertexMax, short[] polygonColixes,
-                      int nPolygons) {
+  void drawSurface(int nVertices, int nPolygons, int faceVertexMax,
+                      Point3f[] vertices, Vector3f[] normals, short[] colixes,
+                      int[][] indices, short[] polygonColixes, BitSet bsFaces,
+                      short colix) {
     if (nVertices == 0)
       return;
     int nFaces = 0;
     for (int i = nPolygons; --i >= 0;)
-      if (bsFaces.get(i))
+      if (bsFaces == null || bsFaces.get(i))
         nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
     if (nFaces == 0)
       return;
@@ -409,12 +463,12 @@ public abstract class ___Exporter {
       colorList = getColorList(0, polygonColixes, nPolygons, bsFaces, htColixes);
     else if (colixes != null)
       colorList = getColorList(0, colixes, nVertices, null, htColixes);
-    outputIsosurface(vertices, normals, colixes, indices, polygonColixes,
+    outputSurface(vertices, normals, colixes, indices, polygonColixes,
         nVertices, nPolygons, nFaces, bsFaces, faceVertexMax, colix, colorList,
         htColixes);
   }
 
-  abstract protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
+  abstract protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                 short[] colixes, int[][] indices,
                                 short[] polygonColixes,
                                 int nVertices, int nPolygons, int nFaces, BitSet bsFaces,

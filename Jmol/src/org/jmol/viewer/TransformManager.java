@@ -1220,7 +1220,7 @@ abstract class TransformManager {
     return (short) (pixelSize > 0 ? pixelSize : 1);
   }
 
-  float unscaleToScreen(int z, int screenDistance) {
+  float unscaleToScreen(float z, float screenDistance) {
     float d = screenDistance / scalePixelsPerAngstrom;
     return (perspectiveDepth ? d / getPerspectiveFactor(z) : d);
   }

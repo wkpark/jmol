@@ -61,7 +61,7 @@ abstract class __RayTracerExporter extends ___Exporter {
                                                 Point3f screenB, float radius1,
                                                 float radius2, short colix);
 
-  abstract protected void outputEllipsoid(double[] coef, short colix);
+  abstract protected void outputEllipsoid(Point3f center, float radius, double[] coef, short colix);
   
   abstract protected void outputSphere(float x, float y, float z, float radius,
                                     short colix);
@@ -208,7 +208,12 @@ abstract class __RayTracerExporter extends ___Exporter {
   void fillEllipsoid(Point3f center, Point3f[] points, short colix, int x,
                        int y, int z, int diameter, Matrix3f toEllipsoidal,
                        double[] coef, Matrix4f deriv, Point3i[] octantPoints) {
-    outputEllipsoid(coef, colix);    
+    float radius = diameter / 2f;
+    if (radius == 0)
+      return;
+    if (radius < 1)
+      radius = 1;
+    outputEllipsoid(center, radius, coef, colix); 
   }
 
 }

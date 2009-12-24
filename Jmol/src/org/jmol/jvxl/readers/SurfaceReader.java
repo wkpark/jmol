@@ -530,31 +530,14 @@ public abstract class SurfaceReader implements VertexDataServer {
     return meshDataServer.addVertexCopy(vertexXYZ, value, assocVertex);
   }
 
-  private int lastColor;
-  private short lastColix;
-
   public int addTriangleCheck(int iA, int iB, int iC, int check, int check2,
                               boolean isAbsolute, int color) {
-    //System.out.println("add triangle check " + iA + " " + iB + " " + iC);
-    if (meshDataServer == null) {
-      if (isAbsolute
-          && !MeshData.checkCutoff(iA, iB, iC, meshData.vertexValues))
-        return -1;
-      int i = meshData.addTriangleCheck(iA, iB, iC, check, check2);
-      if (i >= 0 && color != 0) {
-        if (i == 0)
-          lastColor = 0;
-        short colix = (color == lastColor ? lastColix : (lastColix = Graphics3D
-            .getColix(lastColor = color)));
-        meshData.addPolygonColix(i, colix);
-      }
-      return i;
-    }
-    return meshDataServer.addTriangleCheck(iA, iB, iC, check, check2,
-        isAbsolute, color);
+    // System.out.println("add triangle check " + iA + " " + iB + " " + iC);
+    return (meshDataServer != null ? meshDataServer.addTriangleCheck(iA, iB,
+        iC, check, check2, isAbsolute, color) : isAbsolute
+        && !MeshData.checkCutoff(iA, iB, iC, meshData.vertexValues) ? -1
+        : meshData.addTriangleCheck(iA, iB, iC, check, check2, color));
   }
-
-  ////////////////////////////////////////////////////////////////////
 
   ////////////////////////////////////////////////////////////////
   // color mapping methods
@@ -798,7 +781,7 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   void updateTriangles() {
     if (meshDataServer == null) {
-      meshData.invalidateTriangles();
+      meshData.invalidatePolygons();
     } else {
       meshDataServer.invalidateTriangles();
     }

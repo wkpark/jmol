@@ -24,7 +24,6 @@
 package org.jmol.export;
 
 import java.awt.Image;
-import java.util.BitSet;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
@@ -37,6 +36,7 @@ import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Hermite3D;
 import org.jmol.modelset.Atom;
+import org.jmol.util.MeshSurface;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -690,13 +690,19 @@ final public class Export3D implements JmolRendererInterface {
         colixD, normixD);
   }
 
-  public void renderIsosurface(Point3f[] vertices, short colix,
-                               short[] colixes, Vector3f[] normals,
-                               int[][] indices, BitSet bsFaces, int nVertices,
-                               int faceVertexMax, short[] polygonColixes,
-                               int nPolygons) {
-    exporter.drawIsosurface(vertices, colix, colixes, normals, indices,
-        bsFaces, nVertices, faceVertexMax, null, nPolygons);
+  public void drawSurface(MeshSurface meshSurface) {
+    /*
+     * g3d.renderIsosurface(mesh.vertices, mesh.colix, mesh.isColorSolid ? null
+     * : mesh.vertexColixes, mesh.getVertexNormals(), mesh.polygonIndexes,
+     * bsFaces, mesh.vertexCount, faceVertexMax, mesh.isColorSolid ?
+     * mesh.polygonColixes : null, mesh.polygonCount);
+     */
+    exporter.drawSurface(meshSurface.vertexCount, meshSurface.polygonCount,
+        meshSurface.haveQuads ? 4 : 3, meshSurface.vertices,
+        meshSurface.vertexNormals, meshSurface.isColorSolid ? null
+            : meshSurface.vertexColixes, meshSurface.polygonIndexes,
+        meshSurface.isColorSolid ? null : meshSurface.polygonColixes,
+        meshSurface.bsFaces, meshSurface.colix);
   }
 
   public short[] getBgColixes(short[] bgcolixes) {

@@ -355,7 +355,7 @@ public class _PovrayExporter extends __RayTracerExporter {
         + radius2 + "," + color4(colix) + ")\n");
   }
 
-  protected void outputEllipsoid(double[] coef, short colix) {
+  protected void outputEllipsoid(Point3f center, float radius, double[] coef, short colix) {
     // no quadrant cut-out here
     String s = coef[0] + "," + coef[1] + "," + coef[2] + "," + coef[3] + ","
         + coef[4] + "," + coef[5] + "," + coef[6] + "," + coef[7] + ","
@@ -363,14 +363,14 @@ public class _PovrayExporter extends __RayTracerExporter {
     output("q(" + s + ")\n");
   }
 
-  protected void outputIsosurface(Point3f[] vertices, Vector3f[] normals,
+  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices, 
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
                                   int faceVertexMax, short colix, Vector colorList, Hashtable htColixes) {
     if (polygonColixes != null) {
       for (int i = nPolygons; --i >= 0;) {
-        if (!bsFaces.get(i))
+        if (bsFaces != null && !bsFaces.get(i))
           continue;
         //if ((p++) % 10 == 0)
         //  output("\n");
@@ -427,7 +427,7 @@ public class _PovrayExporter extends __RayTracerExporter {
     output("face_indices { " + nFaces);
     //int p = 0;
     for (int i = nPolygons; --i >= 0;) {
-      if (!bsFaces.get(i))
+      if (bsFaces != null && !bsFaces.get(i))
         continue;
       //if ((p++) % 10 == 0)
       //  output("\n");

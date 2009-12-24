@@ -117,7 +117,7 @@ abstract public class __CartesianExporter extends ___Exporter {
                 Point3f screenTip) {
     viewer.unTransformPoint(screenBase, tempP1);
     viewer.unTransformPoint(screenTip, tempP2);
-    float radius = viewer.unscaleToScreen((int) screenBase.z, diameter) / 2;
+    float radius = viewer.unscaleToScreen(screenBase.z, diameter) / 2;
     if (radius < 0.05f)
       radius = 0.05f;
     outputCone(tempP1, tempP2, radius, colix);
@@ -162,7 +162,7 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   void fillSphere(short colix, int diameter, Point3f pt) {
     viewer.unTransformPoint(pt, tempP1);
-    outputSphere(tempP1, viewer.unscaleToScreen((int) pt.z, diameter) / 2,
+    outputSphere(tempP1, viewer.unscaleToScreen(pt.z, diameter) / 2,
         colix);
   }
 

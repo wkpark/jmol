@@ -2357,7 +2357,7 @@ final public class Graphics3D implements JmolRendererInterface {
     return (int) lighting[Shade3D.SPECULAR_EXPONENT];
   }
   
-  public static void setPhongExponent(int val) {
+  public synchronized static void setPhongExponent(int val) {
     if (lighting[Shade3D.PHONG_EXPONENT] == val 
         && lighting[Shade3D.USE_PHONG] != 0)
       return;

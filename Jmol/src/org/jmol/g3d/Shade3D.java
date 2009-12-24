@@ -360,15 +360,4 @@ final class Shade3D {
     return t >> 23;
   }
 
-  /*
-  static void setLightsourceZ(float z) {
-    zLightsource = z;
-    magnitudeLight =
-      (float)Math.sqrt(xLightsource * xLightsource +
-                       yLightsource * yLightsource +
-                       zLightsource * zLightsource);
-    //dump();
-  }
-*/
-  
 }

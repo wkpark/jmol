@@ -553,7 +553,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * final Hashtable imageCache = new Hashtable();
    * 
    * void flushCachedImages() { imageCache.clear();
-   * colorManager.flushCachedColors(); }
+   * Graphics3D.flushCachedColors(); }
    */
 
   Hashtable getAppletInfo() {
@@ -595,13 +595,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     // transfer default global settings to managers and g3d
 
-    ColorManager.setAmbientPercent(global.ambientPercent);
-    ColorManager.setDiffusePercent(global.diffusePercent);
-    ColorManager.setSpecular(global.specular);
-    ColorManager.setSpecularPercent(global.specularPercent);
-    ColorManager.setSpecularPower(-global.specularExponent);
-    ColorManager.setPhongExponent(global.phongExponent);
-    ColorManager.setSpecularPower(global.specularPower);
+    Graphics3D.setAmbientPercent(global.ambientPercent);
+    Graphics3D.setDiffusePercent(global.diffusePercent);
+    Graphics3D.setSpecular(global.specular);
+    Graphics3D.setSpecularPercent(global.specularPercent);
+    Graphics3D.setSpecularPower(-global.specularExponent);
+    Graphics3D.setPhongExponent(global.phongExponent);
+    Graphics3D.setSpecularPower(global.specularPower);
 
     if (modelSet != null)
       animationManager.setAnimationOn(false);
@@ -5218,7 +5218,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
       // 11.9.13
       if (key.equalsIgnoreCase("phongExponent")) {
-        ColorManager.setPhongExponent(value);
+        Graphics3D.setPhongExponent(value);
         break;
       }
 
@@ -5306,11 +5306,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (key.equalsIgnoreCase("specularPower")) {
-        ColorManager.setSpecularPower(value);
+        Graphics3D.setSpecularPower(value);
         break;
       }
       if (key.equalsIgnoreCase("specularExponent")) {
-        ColorManager.setSpecularPower(-value);
+        Graphics3D.setSpecularPower(-value);
         break;
       }
       if (key.equalsIgnoreCase("specular")) {
@@ -5326,15 +5326,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         return;
       }
       if (key.equalsIgnoreCase("specularPercent")) {
-        ColorManager.setSpecularPercent(value);
+        Graphics3D.setSpecularPercent(value);
         break;
       }
       if (key.equalsIgnoreCase("diffusePercent")) {
-        ColorManager.setDiffusePercent(value);
+        Graphics3D.setDiffusePercent(value);
         break;
       }
       if (key.equalsIgnoreCase("ambientPercent")) {
-        ColorManager.setAmbientPercent(value);
+        Graphics3D.setAmbientPercent(value);
         break;
       }
 
@@ -5671,7 +5671,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (key.equalsIgnoreCase("specular")) {
-        ColorManager.setSpecular(value);
+        Graphics3D.setSpecular(value);
         break;
       }
       if (key.equalsIgnoreCase("slabEnabled")) {

@@ -2297,7 +2297,7 @@ final public class Graphics3D implements JmolRendererInterface {
    * shading and lighting
    * ***************************************************************/
 
-  public static void flushShadesAndSphereCaches() { 
+  private static void flushCaches() {
     Colix3D.flushShades();
     Sphere3D.flushSphereCache();
   }
@@ -2305,64 +2305,91 @@ final public class Graphics3D implements JmolRendererInterface {
   final static float[] lighting = Shade3D.lighting;
   
   public synchronized static void setSpecular(boolean specular) {
-    lighting[Shade3D.SPECULAR_ON] = (specular ? 1f : 0f);
+    float val = (specular ? 1f : 0f);
+    if (lighting[Shade3D.SPECULAR_ON] == val)
+      return;
+    lighting[Shade3D.SPECULAR_ON] = val;
+    flushCaches();
   }
 
   public static boolean getSpecular() {
     return (lighting[Shade3D.SPECULAR_ON] != 0);
   }
 
-  public synchronized static void setSpecularPower(int specularPower) {
-    lighting[Shade3D.SPECULAR_POWER] = specularPower;
-    lighting[Shade3D.INTENSE_FRACTION] = specularPower / 100f;
+  public synchronized static void setSpecularPower(int val) {
+    if (val < 0) {
+      setSpecularExponent(-val);
+      return;
+    }
+    if (lighting[Shade3D.SPECULAR_POWER] == val)
+      return;
+    lighting[Shade3D.SPECULAR_POWER] = val;
+    lighting[Shade3D.INTENSE_FRACTION] = val / 100f;
+    flushCaches();
   }
   
   public static int getSpecularPower() {
     return (int) lighting[Shade3D.SPECULAR_POWER];
   }
   
-  public synchronized static void setSpecularPercent(int specularPercent) {
-    lighting[Shade3D.SPECULAR_PERCENT]= specularPercent;
-    lighting[Shade3D.SPECULAR_FRACTION] = specularPercent / 100f;
+  public synchronized static void setSpecularPercent(int val) {
+    if (lighting[Shade3D.SPECULAR_PERCENT] == val)
+      return;
+    lighting[Shade3D.SPECULAR_PERCENT]= val;
+    lighting[Shade3D.SPECULAR_FRACTION] = val / 100f;
+    flushCaches();
   }
 
   public static int getSpecularPercent() {
     return (int) lighting[Shade3D.SPECULAR_PERCENT];
   }
 
-  public synchronized static void setSpecularExponent(int specularExponent) {
-    lighting[Shade3D.SPECULAR_EXPONENT] = specularExponent;
-    lighting[Shade3D.PHONG_EXPONENT] = (int) Math.pow(2, specularExponent);
+  public synchronized static void setSpecularExponent(int val) {
+    if (lighting[Shade3D.SPECULAR_EXPONENT] == val)
+      return;
+    lighting[Shade3D.SPECULAR_EXPONENT] = val;
+    lighting[Shade3D.PHONG_EXPONENT] = (int) Math.pow(2, val);
     lighting[Shade3D.USE_PHONG] = 0;
+    flushCaches();
   }
   
   public static int getSpecularExponent() {
     return (int) lighting[Shade3D.SPECULAR_EXPONENT];
   }
   
-  public static void setPhongExponent(int phongExponent) {
-    lighting[Shade3D.PHONG_EXPONENT] = phongExponent;
-    float x = (float) (Math.log(phongExponent) / Math.log(2));
+  public static void setPhongExponent(int val) {
+    if (lighting[Shade3D.PHONG_EXPONENT] == val 
+        && lighting[Shade3D.USE_PHONG] != 0)
+      return;
+    lighting[Shade3D.PHONG_EXPONENT] = val;
+    float x = (float) (Math.log(val) / Math.log(2));
     boolean usePhong = (x != (int) x);
     lighting[Shade3D.USE_PHONG] = (usePhong ? 1 : 0);
+    flushCaches();
   }
 
   public static int getPhongExponent() {
     return (int) lighting[Shade3D.PHONG_EXPONENT];
   }
 
-  public synchronized static void setDiffusePercent(int diffusePercent) {
-    lighting[Shade3D.DIFFUSE_PERCENT]= diffusePercent;
-    lighting[Shade3D.DIFFUSE_FRACTION]= diffusePercent / 100f;
+  public synchronized static void setDiffusePercent(int val) {
+    if (lighting[Shade3D.DIFFUSE_PERCENT] == val)
+      return;
+    lighting[Shade3D.DIFFUSE_PERCENT]= val;
+    lighting[Shade3D.DIFFUSE_FRACTION]= val / 100f;
+    flushCaches();
   }
 
   public static int getDiffusePercent() {
     return (int) lighting[Shade3D.DIFFUSE_PERCENT];
   }
   
-  public synchronized static void setAmbientPercent(int ambientPercent) {
-    lighting[Shade3D.AMBIENT_PERCENT] = ambientPercent;
-    lighting[Shade3D.AMBIENT_FRACTION] = ambientPercent / 100f;
+  public synchronized static void setAmbientPercent(int val) {
+    if (lighting[Shade3D.AMBIENT_PERCENT] == val)
+      return;
+    lighting[Shade3D.AMBIENT_PERCENT] = val;
+    lighting[Shade3D.AMBIENT_FRACTION] = val / 100f;
+    flushCaches();
   }
 
   public static int getAmbientPercent() {
@@ -2372,12 +2399,6 @@ final public class Graphics3D implements JmolRendererInterface {
   public static Point3f getLightSource() {
     return new Point3f(Shade3D.xLight, Shade3D.yLight, Shade3D.zLight);
   }
-  
-  /*
-  public void setLightsourceZ(float dist) {
-    Shade3D.setLightsourceZ(dist);
-  }
-  */
   
   private final Vector3f vectorAB = new Vector3f();
   private final Vector3f vectorAC = new Vector3f();

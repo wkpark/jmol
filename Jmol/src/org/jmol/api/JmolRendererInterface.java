@@ -269,10 +269,6 @@ public interface JmolRendererInterface {
   public abstract void fillTriangle(Point3i screenA, Point3i screenB,
                                     Point3i screenC);
 
-  public void fillTriangle(Point3i screenA, int intensityA,
-                           Point3i screenB, int intensityB,
-                           Point3i screenC, int intensityC);
-  
   public abstract void fillTriangle(Point3i screenA, short colixA,
                                     short normixA, Point3i screenB,
                                     short colixB, short normixB,
@@ -303,7 +299,7 @@ public interface JmolRendererInterface {
 
   public abstract int getColorArgbOrGray(short colix);
 
-  public abstract int calcSurfaceShade(Point3i screenA, Point3i screenB,
+  public abstract void setNoisySurfaceShade(Point3i screenA, Point3i screenB,
                                         Point3i screenC);
 
   public abstract byte getFontFid(String fontFace, float fontSize);

@@ -263,7 +263,7 @@ final class Line3D {
   }
 
   void plotLineDelta(int[] shades1, boolean tScreened1, int[] shades2,
-                     boolean tScreened2, int intensity, int xA, int yA, int zA,
+                     boolean tScreened2, int shadeIndex, int xA, int yA, int zA,
                      int dxBA, int dyBA, int dzBA, boolean clipped) {
     // from cylinder -- standard bond with two colors and translucencies
     x1t = xA;
@@ -279,12 +279,12 @@ final class Line3D {
     case VISIBILITY_UNCLIPPED:
       clipped = false;
     }
-    plotLineClipped(shades1, tScreened1, shades2, tScreened2, intensity, xA,
+    plotLineClipped(shades1, tScreened1, shades2, tScreened2, shadeIndex, xA,
         yA, zA, dxBA, dyBA, dzBA, clipped, 0, 0);
   }
 
   void plotLineDeltaBits(int[] shades1, boolean tScreened1, int[] shades2,
-                     boolean tScreened2, int intensity, int xA, int yA, int zA,
+                     boolean tScreened2, int shadeIndex, int xA, int yA, int zA,
                      int dxBA, int dyBA, int dzBA, boolean clipped) {
     // from cylinder -- cartoonRockets
     x1t = xA;
@@ -295,7 +295,7 @@ final class Line3D {
     z2t = zA + dzBA;
     if (clipped && getTrimmedLine() == VISIBILITY_OFFSCREEN)
       return;
-    plotLineClippedBits(shades1, tScreened1, shades2, tScreened2, intensity, xA,
+    plotLineClippedBits(shades1, tScreened1, shades2, tScreened2, shadeIndex, xA,
         yA, zA, dxBA, dyBA, dzBA, 0, 0);
   }
 
@@ -436,7 +436,7 @@ final class Line3D {
 
   private void plotLineClipped(int[] shades1, boolean tScreened1,
                                int[] shades2, boolean tScreened2,
-                               int intensity, int x, int y, int z, int dx,
+                               int shadeIndex, int x, int y, int z, int dx,
                                int dy, int dz, boolean clipped, int run,
                                int rise) {
     // special shading for bonds
@@ -449,15 +449,15 @@ final class Line3D {
     }
     int offset = y * width + x;
     int offsetMax = g3d.bufferSize;
-    int intensityUp = (intensity < Shade3D.shadeLast ? intensity + 1
-        : intensity);
-    int intensityDn = (intensity > 0 ? intensity - 1 : intensity);
-    int argb1 = shades1[intensity];
-    int argb1Up = shades1[intensityUp];
-    int argb1Dn = shades1[intensityDn];
-    int argb2 = shades2[intensity];
-    int argb2Up = shades2[intensityUp];
-    int argb2Dn = shades2[intensityDn];
+    int shadeIndexUp = (shadeIndex < Shade3D.shadeIndexLast ? shadeIndex + 1
+        : shadeIndex);
+    int shadeIndexDn = (shadeIndex > 0 ? shadeIndex - 1 : shadeIndex);
+    int argb1 = shades1[shadeIndex];
+    int argb1Up = shades1[shadeIndexUp];
+    int argb1Dn = shades1[shadeIndexDn];
+    int argb2 = shades2[shadeIndex];
+    int argb2Up = shades2[shadeIndexUp];
+    int argb2Dn = shades2[shadeIndexDn];
     int argb = argb1;
     boolean tScreened = tScreened1;
     boolean flipflop = (((x ^ y) & 1) != 0);
@@ -582,7 +582,7 @@ final class Line3D {
   
   private void plotLineClippedBits(int[] shades1, boolean tScreened1,
                                    int[] shades2, boolean tScreened2,
-                                   int intensity, int x, int y, int z, int dx,
+                                   int shadeIndex, int x, int y, int z, int dx,
                                    int dy, int dz, int run, int rise) {
     // special shading for rockets; somewhat slower than above;
     // System.out.println("line3d plotLineClippedBits "+x+" "+y+" "+z+" "+dx+" "+dy+" "+dz+" "+shades1);
@@ -593,15 +593,15 @@ final class Line3D {
       rise = Integer.MAX_VALUE;
       run = 1;
     }
-    int intensityUp = (intensity < Shade3D.shadeLast ? intensity + 1
-        : intensity);
-    int intensityDn = (intensity > 0 ? intensity - 1 : intensity);
-    int argb1 = shades1[intensity];
-    int argb1Up = shades1[intensityUp];
-    int argb1Dn = shades1[intensityDn];
-    int argb2 = shades2[intensity];
-    int argb2Up = shades2[intensityUp];
-    int argb2Dn = shades2[intensityDn];
+    int shadeIndexUp = (shadeIndex < Shade3D.shadeIndexLast ? shadeIndex + 1
+        : shadeIndex);
+    int shadeIndexDn = (shadeIndex > 0 ? shadeIndex - 1 : shadeIndex);
+    int argb1 = shades1[shadeIndex];
+    int argb1Up = shades1[shadeIndexUp];
+    int argb1Dn = shades1[shadeIndexDn];
+    int argb2 = shades2[shadeIndex];
+    int argb2Up = shades2[shadeIndexUp];
+    int argb2Dn = shades2[shadeIndexDn];
     boolean tScreened = tScreened1;
     boolean flipflop = (((x ^ y) & 1) != 0);
     int offset = y * width + x;

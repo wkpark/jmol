@@ -226,13 +226,7 @@ final public class Graphics3D implements JmolRendererInterface {
   public final static byte ENDCAPS_FLAT = 2;
   public final static byte ENDCAPS_SPHERICAL = 3;
   public final static byte ENDCAPS_OPENEND = 4;
-
   
-  public final static byte shadeMax = Shade3D.shadeMax;
-  public final static byte shadeLast = Shade3D.shadeMax - 1;
-  public final static byte shadeNormal = Shade3D.shadeNormal;
-  public final static byte intensitySpecularSurfaceLimit = Shade3D.intensitySpecularSurfaceLimit;
-
   public final static short INHERIT_ALL = 0;
   public final static short USE_PALETTE = 2;
   public final static short BLACK = 4;
@@ -732,14 +726,14 @@ final public class Graphics3D implements JmolRendererInterface {
     return platform.hasContent();
   }
 
-  private int currentIntensity;
+  private int currentShadeIndex;
   
-  private void setColixAndIntensity(short colix, int intensity) {
-    if (colix == colixCurrent && currentIntensity == intensity)
+  private void setColixAndShadeIndex(short colix, int shadeIndex) {
+    if (colix == colixCurrent && currentShadeIndex == shadeIndex)
       return;
-    currentIntensity = -1;
+    currentShadeIndex = -1;
     setColix(colix);
-    setColorNoisy(intensity);
+    setColorNoisy(shadeIndex);
   }
 
   
@@ -749,7 +743,7 @@ final public class Graphics3D implements JmolRendererInterface {
    * @return true or false if this is the right pass
    */
   public boolean setColix(short colix) {
-    if (colix == colixCurrent && currentIntensity == -1)
+    if (colix == colixCurrent && currentShadeIndex == -1)
       return true;
     int mask = colix & TRANSLUCENT_MASK;
     if (mask == TRANSPARENT)
@@ -763,18 +757,11 @@ final public class Graphics3D implements JmolRendererInterface {
       translucencyMask = (mask << ALPHA_SHIFT) | 0xFFFFFF;
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
-    currentIntensity = -1; 
+    currentShadeIndex = -1; 
     argbCurrent = argbNoisyUp = argbNoisyDn = getColorArgbOrGray(colix);
     return true;
   }
 
-  void setColorNoisy(int intensity) {
-    currentIntensity = intensity;
-    argbCurrent = shadesCurrent[intensity];
-    argbNoisyUp = shadesCurrent[intensity < shadeLast ? intensity + 1 : shadeLast];
-    argbNoisyDn = shadesCurrent[intensity > 0 ? intensity - 1 : 0];
-  }
-  
   int zMargin;
   
   void setZMargin(int dz) {
@@ -1291,21 +1278,21 @@ final public class Graphics3D implements JmolRendererInterface {
 
   public void drawHermite(int tension,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
-    hermite3d.render(false, tension, 0, 0, 0, s0, s1, s2, s3);
+    hermite3d.renderHermiteRope(false, tension, 0, 0, 0, s0, s1, s2, s3);
   }
 
   public void drawHermite(boolean fill, boolean border,
                           int tension, Point3i s0, Point3i s1, Point3i s2,
                           Point3i s3, Point3i s4, Point3i s5, Point3i s6,
                           Point3i s7, int aspectRatio) {
-    hermite3d.render2(fill, border, tension, s0, s1, s2, s3, s4, s5, s6,
+    hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4, s5, s6,
         s7, aspectRatio);
   }
 
   public void fillHermite(int tension, int diameterBeg,
                           int diameterMid, int diameterEnd,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
-    hermite3d.render(true, tension,
+    hermite3d.renderHermiteRope(true, tension,
                      diameterBeg, diameterMid, diameterEnd,
                      s0, s1, s2, s3);
   }
@@ -1385,13 +1372,6 @@ final public class Graphics3D implements JmolRendererInterface {
     triangle3d.fillTriangle(xA, yA, zA, xB, yB, zB, xC, yC, zC, false);
   }
   
-  public void fillTriangle(Point3i screenA, int intensityA,
-                           Point3i screenB, int intensityB,
-                           Point3i screenC, int intensityC) {
-    triangle3d.setGouraud(intensityA, intensityB, intensityC);
-    triangle3d.fillTriangle(screenA, screenB, screenC, true);
-  }
-  
   public void fillTriangle(Point3i screenA, short colixA, short normixA,
                            Point3i screenB, short colixB, short normixB,
                            Point3i screenC, short colixC, short normixC) {
@@ -1399,12 +1379,12 @@ final public class Graphics3D implements JmolRendererInterface {
     boolean useGouraud;
     if (normixA == normixB && normixA == normixC &&
         colixA == colixB && colixA == colixC) {
-      setColixAndIntensity(colixA, normix3d.getIntensity(normixA));
+      setColixAndShadeIndex(colixA, normix3d.getShadeIndex(normixA));
       useGouraud = false;
     } else {
-      triangle3d.setGouraud(getShades(colixA)[normix3d.getIntensity(normixA)],
-                            getShades(colixB)[normix3d.getIntensity(normixB)],
-                            getShades(colixC)[normix3d.getIntensity(normixC)]);
+      triangle3d.setGouraud(getShades(colixA)[normix3d.getShadeIndex(normixA)],
+                            getShades(colixB)[normix3d.getShadeIndex(normixB)],
+                            getShades(colixC)[normix3d.getShadeIndex(normixC)]);
       int translucentCount = 0;
       if (isColixTranslucent(colixA))
         ++translucentCount;
@@ -1423,7 +1403,7 @@ final public class Graphics3D implements JmolRendererInterface {
                            int xScreenB, int yScreenB, int zScreenB,
                            int xScreenC, int yScreenC, int zScreenC) {
     // polyhedra
-    setColorNoisy(normix3d.getIntensity(normix));
+    setColorNoisy(normix3d.getShadeIndex(normix));
     triangle3d.fillTriangle( xScreenA, yScreenA, zScreenA,
         xScreenB, yScreenB, zScreenB,
         xScreenC, yScreenC, zScreenC, false);
@@ -1431,7 +1411,7 @@ final public class Graphics3D implements JmolRendererInterface {
 
   public void fillTriangle(Point3f screenA, Point3f screenB, Point3f screenC) {
     // rockets
-    setColorNoisy(calcIntensityScreen(screenA, screenB, screenC));
+    setColorNoisy(getShadeIndex(screenA, screenB, screenC));
     triangle3d.fillTriangle(screenA, screenB, screenC, false);
   }
 
@@ -1449,12 +1429,12 @@ final public class Graphics3D implements JmolRendererInterface {
     boolean useGouraud;
     if (normixA == normixB && normixA == normixC && colixA == colixB
         && colixA == colixC) {
-      setColixAndIntensity(colixA, normix3d.getIntensity(normixA));
+      setColixAndShadeIndex(colixA, normix3d.getShadeIndex(normixA));
       useGouraud = false;
     } else {
-      triangle3d.setGouraud(getShades(colixA)[normix3d.getIntensity(normixA)],
-          getShades(colixB)[normix3d.getIntensity(normixB)],
-          getShades(colixC)[normix3d.getIntensity(normixC)]);
+      triangle3d.setGouraud(getShades(colixA)[normix3d.getShadeIndex(normixA)],
+          getShades(colixB)[normix3d.getShadeIndex(normixB)],
+          getShades(colixC)[normix3d.getShadeIndex(normixC)]);
       int translucentCount = 0;
       if (isColixTranslucent(colixA))
         ++translucentCount;
@@ -1486,7 +1466,7 @@ final public class Graphics3D implements JmolRendererInterface {
   public void fillQuadrilateral(Point3f screenA, Point3f screenB,
                                 Point3f screenC, Point3f screenD) {
     // hermite, rockets, cartoons
-    setColorNoisy(calcIntensityScreen(screenA, screenB, screenC));
+    setColorNoisy(getShadeIndex(screenA, screenB, screenC));
     triangle3d.fillTriangle(screenA, screenB, screenC, false);
     triangle3d.fillTriangle(screenA, screenC, screenD, false);
   }
@@ -2302,130 +2282,172 @@ final public class Graphics3D implements JmolRendererInterface {
     Sphere3D.flushSphereCache();
   }
 
-  final static float[] lighting = Shade3D.lighting;
-  
-  public synchronized static void setSpecular(boolean specular) {
-    float val = (specular ? 1f : 0f);
-    if (lighting[Shade3D.SPECULAR_ON] == val)
+  public static Point3f getLightSource() {
+    return new Point3f(Shade3D.xLight, Shade3D.yLight, Shade3D.zLight);
+  }
+
+  public synchronized static void setSpecular(boolean val) {
+    if (Shade3D.specularOn == val)
       return;
-    lighting[Shade3D.SPECULAR_ON] = val;
+    Shade3D.specularOn = val;
     flushCaches();
   }
 
   public static boolean getSpecular() {
-    return (lighting[Shade3D.SPECULAR_ON] != 0);
+    return Shade3D.specularOn;
   }
 
+  /**
+   *  fractional distance from black for ambient color
+   * 
+   * @param val
+   */
+  public synchronized static void setAmbientPercent(int val) {
+    if (Shade3D.ambientPercent == val)
+      return;
+    Shade3D.ambientPercent = val;
+    Shade3D.ambientFraction = val / 100f;
+    flushCaches();
+  }
+
+  public static int getAmbientPercent() {
+    return Shade3D.ambientPercent;
+  }
+  
+  /**
+   *  df in I = df * (N dot L) + sf * (R dot V)^p
+   * 
+   * @param val
+   */
+  public synchronized static void setDiffusePercent(int val) {
+    if (Shade3D.diffusePercent == val)
+      return;
+    Shade3D.diffusePercent = val;
+    Shade3D.diffuseFactor = val / 100f;
+    flushCaches();
+  }
+
+  public static int getDiffusePercent() {
+    return Shade3D.diffusePercent;
+  }
+  
+  /**
+   *  p in I = df * (N dot L) + sf * (R dot V)^p
+   * 
+   * @param val
+   */
+  public synchronized static void setPhongExponent(int val) {
+    if (Shade3D.phongExponent == val && Shade3D.usePhongExponent)
+      return;
+    Shade3D.phongExponent = val;
+    float x = (float) (Math.log(val) / Math.log(2));
+    Shade3D.usePhongExponent = (x != (int) x);
+    if (!Shade3D.usePhongExponent)
+      Shade3D.specularExponent = (int) x;
+    flushCaches();
+  }
+
+  public static int getPhongExponent() {
+    return Shade3D.phongExponent;
+  }
+
+  /**
+   *  log_2(p) in I = df * (N dot L) + sf * (R dot V)^p
+   *  for faster calculation of shades
+   *  
+   * @param val
+   */
+  public synchronized static void setSpecularExponent(int val) {
+    if (Shade3D.specularExponent == val)
+      return;
+    Shade3D.specularExponent = val;
+    Shade3D.phongExponent = (int) Math.pow(2, val);
+    Shade3D.usePhongExponent = false;
+    flushCaches();
+  }
+  
+  public static int getSpecularExponent() {
+    return Shade3D.specularExponent;
+  }
+  
+  /**
+   *  sf in I = df * (N dot L) + sf * (R dot V)^p
+   *  not a percent of anything, really
+   *
+   * @param val
+   */
+  public synchronized static void setSpecularPercent(int val) {
+    if (Shade3D.specularPercent == val)
+      return;
+    Shade3D.specularPercent = val;
+    Shade3D.specularFactor = val / 100f;
+    flushCaches();
+  }
+
+  public static int getSpecularPercent() {
+    return Shade3D.specularPercent;
+  }
+
+  /**
+   *  fractional distance to white for specular dot
+   * 
+   * @param val
+   */
   public synchronized static void setSpecularPower(int val) {
     if (val < 0) {
       setSpecularExponent(-val);
       return;
     }
-    if (lighting[Shade3D.SPECULAR_POWER] == val)
+    if (Shade3D.specularPower == val)
       return;
-    lighting[Shade3D.SPECULAR_POWER] = val;
-    lighting[Shade3D.INTENSE_FRACTION] = val / 100f;
+    Shade3D.specularPower = val;
+    Shade3D.intenseFraction = val / 100f;
     flushCaches();
   }
   
   public static int getSpecularPower() {
-    return (int) lighting[Shade3D.SPECULAR_POWER];
-  }
-  
-  public synchronized static void setSpecularPercent(int val) {
-    if (lighting[Shade3D.SPECULAR_PERCENT] == val)
-      return;
-    lighting[Shade3D.SPECULAR_PERCENT]= val;
-    lighting[Shade3D.SPECULAR_FRACTION] = val / 100f;
-    flushCaches();
-  }
-
-  public static int getSpecularPercent() {
-    return (int) lighting[Shade3D.SPECULAR_PERCENT];
-  }
-
-  public synchronized static void setSpecularExponent(int val) {
-    if (lighting[Shade3D.SPECULAR_EXPONENT] == val)
-      return;
-    lighting[Shade3D.SPECULAR_EXPONENT] = val;
-    lighting[Shade3D.PHONG_EXPONENT] = (int) Math.pow(2, val);
-    lighting[Shade3D.USE_PHONG] = 0;
-    flushCaches();
-  }
-  
-  public static int getSpecularExponent() {
-    return (int) lighting[Shade3D.SPECULAR_EXPONENT];
-  }
-  
-  public synchronized static void setPhongExponent(int val) {
-    if (lighting[Shade3D.PHONG_EXPONENT] == val 
-        && lighting[Shade3D.USE_PHONG] != 0)
-      return;
-    lighting[Shade3D.PHONG_EXPONENT] = val;
-    float x = (float) (Math.log(val) / Math.log(2));
-    boolean usePhong = (x != (int) x);
-    lighting[Shade3D.USE_PHONG] = (usePhong ? 1 : 0);
-    flushCaches();
-  }
-
-  public static int getPhongExponent() {
-    return (int) lighting[Shade3D.PHONG_EXPONENT];
-  }
-
-  public synchronized static void setDiffusePercent(int val) {
-    if (lighting[Shade3D.DIFFUSE_PERCENT] == val)
-      return;
-    lighting[Shade3D.DIFFUSE_PERCENT]= val;
-    lighting[Shade3D.DIFFUSE_FRACTION]= val / 100f;
-    flushCaches();
-  }
-
-  public static int getDiffusePercent() {
-    return (int) lighting[Shade3D.DIFFUSE_PERCENT];
-  }
-  
-  public synchronized static void setAmbientPercent(int val) {
-    if (lighting[Shade3D.AMBIENT_PERCENT] == val)
-      return;
-    lighting[Shade3D.AMBIENT_PERCENT] = val;
-    lighting[Shade3D.AMBIENT_FRACTION] = val / 100f;
-    flushCaches();
-  }
-
-  public static int getAmbientPercent() {
-    return (int) (lighting[Shade3D.AMBIENT_PERCENT]);
-  }
-  
-  public static Point3f getLightSource() {
-    return new Point3f(Shade3D.xLight, Shade3D.yLight, Shade3D.zLight);
+    return Shade3D.specularPower;
   }
   
   private final Vector3f vectorAB = new Vector3f();
   private final Vector3f vectorAC = new Vector3f();
   private final Vector3f vectorNormal = new Vector3f();
 
-  public int calcSurfaceShade(Point3i screenA, Point3i screenB, Point3i screenC) {
-    // or center and point, as for an ellipse
+  void setColorNoisy(int shadeIndex) {
+    currentShadeIndex = shadeIndex;
+    argbCurrent = shadesCurrent[shadeIndex];
+    argbNoisyUp = shadesCurrent[shadeIndex < Shade3D.shadeIndexLast ? shadeIndex + 1
+        : Shade3D.shadeIndexLast];
+    argbNoisyDn = shadesCurrent[shadeIndex > 0 ? shadeIndex - 1 : 0];
+  }
+
+  /**
+   *  used by CartoonRenderer (DNA surface) and GeoSurfaceRenderer (face) to
+   *  assign a noisy shade to the surface it will render
+   * @param screenA 
+   * @param screenB 
+   * @param screenC 
+   */
+  public void setNoisySurfaceShade(Point3i screenA, Point3i screenB, Point3i screenC) {
     vectorAB.set(screenB.x - screenA.x, screenB.y - screenA.y, screenB.z
         - screenA.z);
-    int intensity;
+    int shadeIndex;
     if (screenC == null) {
-      intensity = Shade3D.calcIntensity(-vectorAB.x, -vectorAB.y, vectorAB.z);
+      shadeIndex = Shade3D.getShadeIndex(-vectorAB.x, -vectorAB.y, vectorAB.z);
     } else {
       vectorAC.set(screenC.x - screenA.x, screenC.y - screenA.y, screenC.z
           - screenA.z);
       vectorAB.cross(vectorAB, vectorAC);
-      intensity = vectorAB.z >= 0 ? Shade3D.calcIntensity(-vectorAB.x,
-          -vectorAB.y, vectorAB.z) : Shade3D.calcIntensity(vectorAB.x,
+      shadeIndex = vectorAB.z >= 0 ? Shade3D.getShadeIndex(-vectorAB.x,
+          -vectorAB.y, vectorAB.z) : Shade3D.getShadeIndex(vectorAB.x,
           vectorAB.y, -vectorAB.z);
     }
-    if (intensity > intensitySpecularSurfaceLimit)
-      intensity = intensitySpecularSurfaceLimit;
-    setColorNoisy(intensity);
-    return argbCurrent;
+    if (shadeIndex > Shade3D.shadeIndexNoisyLimit)
+      shadeIndex = Shade3D.shadeIndexNoisyLimit;
+    setColorNoisy(shadeIndex);
   }
 
-  private int calcIntensityScreen(Point3f screenA,
+  private int getShadeIndex(Point3f screenA,
                                  Point3f screenB, Point3f screenC) {
     // for fillTriangle and fillQuad.
     vectorAB.sub(screenB, screenA);
@@ -2433,9 +2455,9 @@ final public class Graphics3D implements JmolRendererInterface {
     vectorNormal.cross(vectorAB, vectorAC);
     return
       (vectorNormal.z >= 0
-            ? Shade3D.calcIntensity(-vectorNormal.x, -vectorNormal.y,
+            ? Shade3D.getShadeIndex(-vectorNormal.x, -vectorNormal.y,
                                     vectorNormal.z)
-            : Shade3D.calcIntensity(vectorNormal.x, vectorNormal.y,
+            : Shade3D.getShadeIndex(vectorNormal.x, vectorNormal.y,
                                     -vectorNormal.z));
   }
 

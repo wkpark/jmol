@@ -27,6 +27,7 @@ package org.jmol.g3d;
 
 /**
  *<p>
+ * All static functions.
  * Implements the shading of RGB values to support shadow and lighting
  * highlights.
  *</p>
@@ -41,13 +42,18 @@ final class Shade3D {
 
   // there are 64 shades of a given color
   // 0 = ambient
-  // 63 = brightest ... white
-  static final int shadeMax = 64;
-  static final int shadeLast = shadeMax - 1;
+  // 52 = normal
+  // 56 = max for 
+  // 63 = specular
+  static final int shadeIndexMax = 64;
+  static final int shadeIndexLast = shadeIndexMax - 1;
+  static final byte shadeIndexNormal = 52;
+  final static byte shadeIndexNoisyLimit = 56;
 
-  static byte shadeNormal = 52;
 
-  // the light source vector
+  // the viewer vector is always {0 0 1}
+
+  // the light source vector -- up and to the left
   private static final float xLightsource = -1;
   private static final float yLightsource = -1;
   private static final float zLightsource = 2.5f;
@@ -61,75 +67,57 @@ final class Shade3D {
   static final float yLight = yLightsource / magnitudeLight;
   static final float zLight = zLightsource / magnitudeLight;
   
-  // the viewer vector is always 0,0,1
+  static boolean specularOn = true; 
+  static boolean usePhongExponent = false;
+  
+  //fractional distance from black for ambient color
+  static int ambientPercent = 45;
+  
+  // df in I = df * (N dot L) + sf * (R dot V)^p
+  static int diffusePercent = 84;
 
-  //ones user sets:
-  static final int SPECULAR_ON = 0; // set specular on|off
-  static final int SPECULAR_PERCENT = 1;  // divide by 100 to get INTENSITY_SPECULAR
-  static final int SPECULAR_POWER = 2;    // divide by 100 to get INTESITY_FRACTION
-  static final int DIFFUSE_PERCENT = 3;  
-  static final int AMBIENT_PERCENT = 4;
-  //ones we actually use here:
-  static final int SPECULAR_EXPONENT = 5; // log_2(PHONG_EXPONENT)
-  static final int PHONG_EXPONENT = 6;
-  static final int SPECULAR_FRACTION = 7; // <-- specularPercent
-  static final int INTENSE_FRACTION = 8;  // <-- specularPower
-  static final int DIFFUSE_FRACTION = 9; 
-  static final int AMBIENT_FRACTION = 10;
-  static final int USE_PHONG = 11;
+  // log_2(p) in I = df * (N dot L) + sf * (R dot V)^p
+  // for faster calculation of shades
+  static int specularExponent = 6;
 
-  final static float[] lighting = new float[] {
-      //user set:
-      1f,       // specularON
-      22f,      // specularPercent
-      40f,      // specularPower
-      84f,      // diffusePercent
-      45f,      // ambientPercent
-      //
-      6f,       // specularExponent
-      64f,      // phongExponent
-      //derived:
-      0.22f,    // specular fraction
-      0.4f,     // intense fraction
-      0.84f,    // diffuse fraction 
-      0.45f,    // ambient fraction
-      0,        // use phong
-      }; 
+  // sf in I = df * (N dot L) + sf * (R dot V)^p
+  // not a percent of anything, really
+  static int specularPercent = 22;
+  
+  // fractional distance to white for specular dot
+  static int specularPower = 40;
+
+  // p in I = df * (N dot L) + sf * (R dot V)^p
+  static int phongExponent = 64;
+  
+  static float ambientFraction = ambientPercent / 100f;
+  static float diffuseFactor = diffusePercent / 100f;
+  static float intenseFraction = specularPower / 100f;
+  static float specularFactor = specularPercent / 100f;
   
   /*
    * intensity calculation:
    * 
-   * af ambientFraction
-   * if intensityFraction
+   * af ambientFraction (from ambient percent)
+   * if intenseFraction (from specular power)
    * 
    * given a color rr gg bb, consider one of these components x:
    * 
    * int[0:63] shades   [0 .......... 52(normal) ........ 63]
    *                     af*x........ x ..............x+(255-x)*if
-   *                     ---ambient%--x---specular power----
-   * so 
-   * 
-   *  af (ambient percent) determins the dark side
-   *
-   * and
-   *  
-   *  if (specular power) determines the bright side
-   *  and the 
+   *              black  <---ambient%--x---specular power---->  white
    */
   
   static int[] getShades(int rgb, boolean greyScale) {
-    int[] shades = new int[shadeMax];
+    int[] shades = new int[shadeIndexMax];
     if (rgb == 0)
       return shades;
     
-    float ambientFraction = lighting[AMBIENT_FRACTION];
-    float intenseFraction = lighting[INTENSE_FRACTION];
-
     float red = ((rgb >> 16) & 0xFF);
     float grn = ((rgb >>  8) & 0xFF);
     float blu = (rgb         & 0xFF);
 
-    float f = (1 - ambientFraction) / shadeNormal;
+    float f = (1 - ambientFraction) / shadeIndexNormal;
 
     float redStep = red * f;
     float grnStep = grn * f;
@@ -140,7 +128,7 @@ final class Shade3D {
     blu = blu * ambientFraction + 0.5f;
         
     int i;
-    for (i = 0; i < shadeNormal; ++i) {
+    for (i = 0; i < shadeIndexNormal; ++i) {
       shades[i] = rgb((int) red, (int) grn, (int) blu);
       red += redStep;
       grn += grnStep;
@@ -149,12 +137,12 @@ final class Shade3D {
 
     shades[i++] = rgb;    
 
-    f = intenseFraction / (shadeMax - i);
+    f = intenseFraction / (shadeIndexMax - i);
     redStep = (255.5f - red) * f;
     grnStep = (255.5f - grn) * f;
     bluStep = (255.5f - blu) * f;
 
-    for (; i < shadeMax;) {
+    for (; i < shadeIndexMax;) {
       red += redStep;
       grn += grnStep;
       blu += bluStep;
@@ -171,35 +159,33 @@ final class Shade3D {
     return 0xFF000000 | (red << 16) | (grn << 8) | blu;
   }
 
-  final static byte intensitySpecularSurfaceLimit = (byte)(shadeNormal + 4);
-
-  static byte calcIntensity(float x, float y, float z) {
+  static int getShadeIndex(float x, float y, float z) {
     // from Cylinder3D.calcArgbEndcap and renderCone
-    // from Graphics3D.calcIntensity and calcIntensityScreen
+    // from Graphics3D.getShadeIndex and getShadeIndex
     double magnitude = Math.sqrt(x*x + y*y + z*z);
-    return (byte)(calcFloatIntensityNormalized((float)(x/magnitude),
+    return (int) (getFloatShadeIndexNormalized((float)(x/magnitude),
                                                (float)(y/magnitude),
                                                (float)(z/magnitude))
-                  * shadeLast + 0.5f);
+                  * shadeIndexLast + 0.5f);
   }
 
-  static byte calcIntensityNormalized(float x, float y, float z) {
+  static int getShadeIndexNormalized(float x, float y, float z) {
     //from Normix3D.setRotationMatrix
-    return (byte)(calcFloatIntensityNormalized(x, y, z)
-                  * shadeLast + 0.5f);
+    return (int)(getFloatShadeIndexNormalized(x, y, z)
+                  * shadeIndexLast + 0.5f);
   }
 
-  static int calcFp8Intensity(float x, float y, float z) {
-    //from calcDitheredNoisyIntensity (not utilized)
+  static int getFp8ShadeIndex(float x, float y, float z) {
+    //from calcDitheredNoisyShadeIndex (not utilized)
     //and Cylinder.calcRotatedPoint
     double magnitude = Math.sqrt(x*x + y*y + z*z);
-    return (int)(calcFloatIntensityNormalized((float)(x/magnitude),
+    return (int)(getFloatShadeIndexNormalized((float)(x/magnitude),
                                               (float)(y/magnitude),
                                               (float)(z/magnitude))
-                 * shadeLast * (1 << 8));
+                 * shadeIndexLast * (1 << 8));
   }
 
-  private static float calcFloatIntensityNormalized(float x, float y, float z) {
+  private static float getFloatShadeIndexNormalized(float x, float y, float z) {
     float NdotL = x * xLight + y * yLight + z * zLight;
     if (NdotL <= 0)
       return 0;
@@ -227,18 +213,18 @@ final class Shade3D {
     // 8 256
     // 9 512
     // 10 1024
-    float intensity = NdotL * lighting[DIFFUSE_FRACTION];
-    if (lighting[SPECULAR_ON] != 0) {
+    float intensity = NdotL * diffuseFactor;
+    if (specularOn) {
       float k_specular = 2 * NdotL * z - zLight;
       if (k_specular > 0) {
-        if (lighting[USE_PHONG] != 0) {
-          k_specular = (float) Math.pow(k_specular, lighting[PHONG_EXPONENT]);
+        if (usePhongExponent) {
+          k_specular = (float) Math.pow(k_specular, phongExponent);
         } else {
-          for (int n = (int) lighting[SPECULAR_EXPONENT]; --n >= 0
+          for (int n = specularExponent; --n >= 0
               && k_specular > .0001f;)
             k_specular *= k_specular;
         }
-        intensity += k_specular * lighting[SPECULAR_FRACTION];
+        intensity += k_specular * specularFactor;
       }
     }
     if (intensity > 1)
@@ -247,42 +233,42 @@ final class Shade3D {
   }
 
   /*
-   static byte calcDitheredNoisyIntensity(float x, float y, float z) {
+   static byte getDitheredShadeIndex(float x, float y, float z) {
    //not utilized
    // add some randomness to prevent banding
-   int fp8Intensity = calcFp8Intensity(x, y, z);
-   int intensity = fp8Intensity >> 8;
-   // this cannot overflow because the if the float intensity is 1.0
-   // then intensity will be == shadeLast
+   int fp8ShadeIndex = getFp8ShadeIndex(x, y, z);
+   int shadeIndex = fp8ShadeIndex >> 8;
+   // this cannot overflow because the if the float shadeIndex is 1.0
+   // then shadeIndex will be == shadeLast
    // but there will be no fractional component, so the next test will fail
-   if ((fp8Intensity & 0xFF) > nextRandom8Bit())
-   ++intensity;
+   if ((fp8ShadeIndex & 0xFF) > nextRandom8Bit())
+   ++shadeIndex;
    int random16bit = seed & 0xFFFF;
-   if (random16bit < 65536 / 3 && intensity > 0)
-   --intensity;
-   else if (random16bit > 65536 * 2 / 3 && intensity < shadeLast)
-   ++intensity;
-   return (byte)intensity;
+   if (random16bit < 65536 / 3 && shadeIndex > 0)
+   --shadeIndex;
+   else if (random16bit > 65536 * 2 / 3 && shadeIndex < shadeLast)
+   ++shadeIndex;
+   return (byte)shadeIndex;
    }
    */
 
-  static byte calcDitheredNoisyIntensity(float x, float y, float z, float r) {
+  static byte getDitheredNoisyShadeIndex(float x, float y, float z, float r) {
     // from Sphere3D only
     // add some randomness to prevent banding
-    int fp8Intensity = (int) (calcFloatIntensityNormalized(x / r, y / r, z / r)
-        * shadeLast * (1 << 8));
-    int intensity = fp8Intensity >> 8;
-    // this cannot overflow because the if the float intensity is 1.0
-    // then intensity will be == shadeLast
+    int fp8ShadeIndex = (int) (getFloatShadeIndexNormalized(x / r, y / r, z / r)
+        * shadeIndexLast * (1 << 8));
+    int shadeIndex = fp8ShadeIndex >> 8;
+    // this cannot overflow because the if the float shadeIndex is 1.0
+    // then shadeIndex will be == shadeLast
     // but there will be no fractional component, so the next test will fail
-    if ((fp8Intensity & 0xFF) > nextRandom8Bit())
-      ++intensity;
+    if ((fp8ShadeIndex & 0xFF) > nextRandom8Bit())
+      ++shadeIndex;
     int random16bit = seed & 0xFFFF;
-    if (random16bit < 65536 / 3 && intensity > 0)
-      --intensity;
-    else if (random16bit > 65536 * 2 / 3 && intensity < shadeLast)
-      ++intensity;
-    return (byte) intensity;
+    if (random16bit < 65536 / 3 && shadeIndex > 0)
+      --shadeIndex;
+    else if (random16bit > 65536 * 2 / 3 && shadeIndex < shadeIndexLast)
+      ++shadeIndex;
+    return (byte) shadeIndex;
   }
 
   /*
@@ -305,7 +291,7 @@ final class Shade3D {
   ////////////////////////////////////////////////////////////////
 
   static boolean sphereShadingCalculated = false;
-  final static byte[] sphereIntensities = new byte[256 * 256];
+  final static byte[] sphereShadeIndexes = new byte[256 * 256];
 
   synchronized static void calcSphereShading() {
     //if (!sphereShadingCalculated) { //unnecessary -- but be careful!
@@ -313,20 +299,20 @@ final class Shade3D {
     for (int i = 0; i < 256; ++xF, ++i) {
       float yF = -127.5f;
       for (int j = 0; j < 256; ++yF, ++j) {
-        byte intensity = 0;
+        byte shadeIndex = 0;
         float z2 = 130 * 130 - xF * xF - yF * yF;
         if (z2 > 0) {
           float z = (float) Math.sqrt(z2);
-          intensity = calcDitheredNoisyIntensity(xF, yF, z, 130);
+          shadeIndex = getDitheredNoisyShadeIndex(xF, yF, z, 130);
         }
-        sphereIntensities[(j << 8) + i] = intensity;
+        sphereShadeIndexes[(j << 8) + i] = shadeIndex;
       }
     }
     sphereShadingCalculated = true;
   }
   
   /*
-  static byte calcSphereIntensity(int x, int y, int r) {
+  static byte getSphereshadeIndex(int x, int y, int r) {
     int d = 2*r + 1;
     x += r;
     if (x < 0)
@@ -340,12 +326,10 @@ final class Shade3D {
     int y8 = (y << 8) / d;
     if (y8 > 0xFF)
       y8 = 0xFF;
-    return sphereIntensities[(y8 << 8) + x8];
+    return sphereShadeIndexes[(y8 << 8) + x8];
   }
   */
-  
- 
-  
+    
   // this doesn't really need to be synchronized
   // no serious harm done if two threads write seed at the same time
   private static int seed = 0x12345679; // turn lo bit on

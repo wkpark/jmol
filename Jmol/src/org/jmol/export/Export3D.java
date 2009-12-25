@@ -512,31 +512,22 @@ final public class Export3D implements JmolRendererInterface {
   public void drawHermite(int tension, Point3i s0, Point3i s1, Point3i s2,
                           Point3i s3) {
     // strands
-    hermite3d.render(false, tension, 0, 0, 0, s0, s1, s2, s3);
-    // int mad = 20; //could be off
-    // fillHermite(tension, mad, mad, mad, s0, s1, s2, s3);
+    hermite3d.renderHermiteRope(false, tension, 0, 0, 0, s0, s1, s2, s3);
+  }
+
+  public void fillHermite(int tension, int diameterBeg, int diameterMid,
+                          int diameterEnd, Point3i s0, Point3i s1, Point3i s2,
+                          Point3i s3) {
+    hermite3d.renderHermiteRope(true, tension, diameterBeg, diameterMid, diameterEnd, s0,
+        s1, s2, s3);
   }
 
   public void drawHermite(boolean fill, boolean border, int tension,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3,
                           Point3i s4, Point3i s5, Point3i s6, Point3i s7,
                           int aspectRatio) {
-    hermite3d.render2(fill, border, tension, s0, s1, s2, s3, s4, s5, s6, s7,
+    hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4, s5, s6, s7,
         aspectRatio);
-    /*
-     * ptA.set(s0.x, s0.y, s0.z); ptB.set(s1.x, s1.y, s1.z); ptC.set(s2.x, s2.y,
-     * s2.z); ptD.set(s3.x, s3.y, s3.z); ptE.set(s4.x, s4.y, s4.z);
-     * ptF.set(s5.x, s5.y, s5.z); ptG.set(s6.x, s6.y, s6.z); ptH.set(s7.x, s7.y,
-     * s7.z); exporter.drawHermite(colix, fill, border, tension, ptA, ptB, ptC,
-     * ptD, ptE, ptF, ptG, ptH, aspectRatio);
-     */
-  }
-
-  public void fillHermite(int tension, int diameterBeg, int diameterMid,
-                          int diameterEnd, Point3i s0, Point3i s1, Point3i s2,
-                          Point3i s3) {
-    hermite3d.render(true, tension, diameterBeg, diameterMid, diameterEnd, s0,
-        s1, s2, s3);
   }
 
   /*
@@ -600,14 +591,6 @@ final public class Export3D implements JmolRendererInterface {
     ptB.set(xB, yB, zB);
     ptC.set(xC, yC, zC);
     fillTriangle(ptA, ptB, ptC);
-  }
-
-  public void fillTriangle(Point3i pointA, int intensityA, Point3i pointB,
-                           int intensityB, Point3i pointC, int intensityC) {
-    ptA.set(pointA.x, pointA.y, pointA.z);
-    ptB.set(pointB.x, pointB.y, pointB.z);
-    ptC.set(pointC.x, pointC.y, pointC.z);
-    exporter.fillTriangle(colix, ptA, ptB, ptC);
   }
 
   public void fillTriangle(Point3i pointA, short colixA, short normixA,
@@ -832,8 +815,8 @@ final public class Export3D implements JmolRendererInterface {
     return g3d.getColorArgbOrGray(colix);
   }
 
-  public int calcSurfaceShade(Point3i pointA, Point3i pointB, Point3i pointC) {
-    return g3d.calcSurfaceShade(pointA, pointB, pointC);
+  public void setNoisySurfaceShade(Point3i pointA, Point3i pointB, Point3i pointC) {
+    g3d.setNoisySurfaceShade(pointA, pointB, pointC);
   }
 
   public byte getFontFid(String fontFace, float fontSize) {

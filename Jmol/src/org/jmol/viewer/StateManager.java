@@ -612,8 +612,8 @@ public class StateManager {
     int ambientPercent = 45;
     int diffusePercent = 84;
     boolean specular = true;
-    int specularExponent = 6;  // log2 of PHONG_EXPONENT -- 64 here
-    int phongExponent = 64;
+    int specularExponent = 6;  // log2 of phongExponent
+    int phongExponent = 64;    // 2^specularExponent
     int specularPercent = 22;
     int specularPower = 40;
 

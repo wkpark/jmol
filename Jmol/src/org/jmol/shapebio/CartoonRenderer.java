@@ -203,7 +203,7 @@ public class CartoonRenderer extends RocketsRenderer {
   }
 
   private void renderRing6() {
-    g3d.calcSurfaceShade(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
+    g3d.setNoisySurfaceShade(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
     g3d.fillTriangle(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
     g3d.fillTriangle(ring6Screens[0], ring6Screens[1], ring6Screens[2]);
     g3d.fillTriangle(ring6Screens[0], ring6Screens[4], ring6Screens[5]);

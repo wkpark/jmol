@@ -90,7 +90,7 @@ public class GeoSurfaceRenderer extends DotsRenderer {
       facePt2.set(coords[faceMap[p2]], coords[faceMap[p2] + 1], coords[faceMap[p2] + 2]);
       facePt3.set(coords[faceMap[p3]], coords[faceMap[p3] + 1], coords[faceMap[p3] + 2]);
       if (!isExport)
-        g3d.calcSurfaceShade(facePt1, facePt2, facePt3);
+        g3d.setNoisySurfaceShade(facePt1, facePt2, facePt3);
       g3d.fillTriangle(facePt1, colix, p1, facePt2, colix, p2, facePt3, colix, p3);
     }
   }  

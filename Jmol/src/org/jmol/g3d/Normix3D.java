@@ -50,8 +50,8 @@ class Normix3D {
   private final static short[][] neighborVertexesArrays = Geodesic.getNeighborVertexesArrays();
 
   private final Vector3f[] transformedVectors;
-  private final byte[] intensities;
-  private final byte[] intensities2Sided;
+  private final byte[] shadeIndexes;
+  private final byte[] shadeIndexes2Sided;
 
   
   private final static boolean TIMINGS = false;
@@ -63,8 +63,8 @@ class Normix3D {
   Normix3D() {
     //level      0   1    2    3
     //vertices  12, 42, 162, 642
-    intensities = new byte[normixCount];
-    intensities2Sided = new byte[normixCount];
+    shadeIndexes = new byte[normixCount];
+    shadeIndexes2Sided = new byte[normixCount];
     transformedVectors = new Vector3f[normixCount];
     for (int i = normixCount; --i >= 0; )
       transformedVectors[i] = new Vector3f();
@@ -256,11 +256,12 @@ class Normix3D {
     //    throw new NullPointerException();
   }
 
-  private static byte nullIntensity = 50;
+  private static byte nullShadeIndex = 50;
   
-  byte getIntensity(short normix) {
-    return (normix == ~Graphics3D.NORMIX_NULL || normix == Graphics3D.NORMIX_NULL 
-        ? nullIntensity : normix < 0 ? intensities2Sided[~normix] :intensities[normix]);
+  int getShadeIndex(short normix) {
+    return (normix == ~Graphics3D.NORMIX_NULL
+        || normix == Graphics3D.NORMIX_NULL ? nullShadeIndex
+        : normix < 0 ? shadeIndexes2Sided[~normix] : shadeIndexes[normix]);
   }
 
   void setRotationMatrix(Matrix3f rotationMatrix) {
@@ -283,12 +284,10 @@ class Normix3D {
         z = -z;
       }
       */
-      byte intensity = Shade3D.calcIntensityNormalized(x, y, z);
-      intensities[i] = intensity;
-      if (z >= 0)
-        intensities2Sided[i] = intensity;
-      else
-        intensities2Sided[i] = Shade3D.calcIntensityNormalized(-x, -y, -z);
+      int shadeIndex = Shade3D.getShadeIndexNormalized(x, y, z);
+      shadeIndexes[i] = (byte) shadeIndex;
+      shadeIndexes2Sided[i] = (byte) (z >= 0 ? shadeIndex 
+          : Shade3D.getShadeIndexNormalized(-x, -y, -z));
     }
   }
 

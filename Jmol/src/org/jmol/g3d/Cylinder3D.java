@@ -61,7 +61,7 @@ class Cylinder3D {
   private int xEndcap, yEndcap, zEndcap;
   private int argbEndcap;
   private short colixEndcap;
-  private int intensityEndcap;
+  private int endcapShadeIndex;
 
   private float radius, radius2, cosTheta, cosPhi, sinPhi;
 
@@ -184,7 +184,7 @@ class Cylinder3D {
   }
 
   private void plotRasterBits(int i) {
-    int fpz = fp8IntensityUp[i] >> (8);
+    int fpz = fp8ShadeIndexUp[i] >> (8);
     int fpzBack = fpz >> 1;
     int x = xRaster[i];
     int y = yRaster[i];
@@ -231,8 +231,8 @@ class Cylinder3D {
     colixA = colix;
     this.isScreenedA = isScreened;
     shadesA = g3d.getShades(colix);
-    int intensityTip = Shade3D.calcIntensity(dxB, dyB, -dzB);
-    g3d.plotPixelClipped(shadesA[intensityTip], isScreenedA, (int) xTip,
+    int shadeIndexTip = Shade3D.getShadeIndex(dxB, dyB, -dzB);
+    g3d.plotPixelClipped(shadesA[shadeIndexTip], isScreenedA, (int) xTip,
         (int) yTip, (int) zTip);
 
     this.diameter = diameter;
@@ -321,7 +321,7 @@ class Cylinder3D {
   int[] xRaster = new int[32];
   int[] yRaster = new int[32];
   int[] zRaster = new int[32];
-  int[] fp8IntensityUp = new int[32];
+  int[] fp8ShadeIndexUp = new int[32];
 
   private void calcRotatedPoint(float t, int i, boolean isPrecision) {
     tRaster[i] = t;
@@ -346,7 +346,7 @@ class Cylinder3D {
       yRaster[i] = (int) (yR);
       zRaster[i] = (int) (zR + 0.5);
     }
-    fp8IntensityUp[i] = Shade3D.calcFp8Intensity((float) xR, (float) yR,
+    fp8ShadeIndexUp[i] = Shade3D.getFp8ShadeIndex((float) xR, (float) yR,
         (float) zR);
   }
 
@@ -367,11 +367,11 @@ class Cylinder3D {
       calcRotatedPoint(tMid, iMid, false);
       if ((xRaster[iMid] == xRaster[iLower])
           && (yRaster[iMid] == yRaster[iLower])) {
-        fp8IntensityUp[iLower] = (fp8IntensityUp[iLower] + fp8IntensityUp[iMid]) >>> 1;
+        fp8ShadeIndexUp[iLower] = (fp8ShadeIndexUp[iLower] + fp8ShadeIndexUp[iMid]) >>> 1;
         tLower = tMid;
       } else if ((xRaster[iMid] == xRaster[iUpper])
           && (yRaster[iMid] == yRaster[iUpper])) {
-        fp8IntensityUp[iUpper] = (fp8IntensityUp[iUpper] + fp8IntensityUp[iMid]) >>> 1;
+        fp8ShadeIndexUp[iUpper] = (fp8ShadeIndexUp[iUpper] + fp8ShadeIndexUp[iMid]) >>> 1;
         tUpper = tMid;
       } else {
         interpolate(iLower, iMid);
@@ -404,13 +404,13 @@ class Cylinder3D {
           .floor(txRaster[iLower]))
           && ((int) Math.floor(tyRaster[iMid]) == (int) Math
               .floor(tyRaster[iLower]))) {
-        fp8IntensityUp[iLower] = (fp8IntensityUp[iLower] + fp8IntensityUp[iMid]) >>> 1;
+        fp8ShadeIndexUp[iLower] = (fp8ShadeIndexUp[iLower] + fp8ShadeIndexUp[iMid]) >>> 1;
         tLower = tMid;
       } else if (((int) Math.floor(txRaster[iMid]) == (int) Math
           .floor(txRaster[iUpper]))
           && ((int) Math.floor(tyRaster[iMid]) == (int) Math
               .floor(tyRaster[iUpper]))) {
-        fp8IntensityUp[iUpper] = (fp8IntensityUp[iUpper] + fp8IntensityUp[iMid]) >>> 1;
+        fp8ShadeIndexUp[iUpper] = (fp8ShadeIndexUp[iUpper] + fp8ShadeIndexUp[iMid]) >>> 1;
         tUpper = tMid;
       } else {
         interpolatePrecisely(iLower, iMid);
@@ -423,7 +423,7 @@ class Cylinder3D {
   }
 
   private void plotRaster(int i) {
-    int fpz = fp8IntensityUp[i] >> (8);
+    int fpz = fp8ShadeIndexUp[i] >> (8);
     int fpzBack = fpz >> 1;
     int x = xRaster[i];
     int y = yRaster[i];
@@ -470,8 +470,8 @@ class Cylinder3D {
       zRaster = realloc(zRaster);
       tRaster = realloc(tRaster);
     }
-    while (rasterCount >= fp8IntensityUp.length)
-      fp8IntensityUp = realloc(fp8IntensityUp);
+    while (rasterCount >= fp8ShadeIndexUp.length)
+      fp8ShadeIndexUp = realloc(fp8ShadeIndexUp);
     if (isPrecision)
       while (rasterCount >= txRaster.length) {
         txRaster = realloc(txRaster);
@@ -549,7 +549,7 @@ class Cylinder3D {
     for (int y = yMin; y <= yMax; ++y) {
       findMinMaxX(y);
       int count = xMax - xMin + 1;
-      g3d.setColorNoisy(intensityEndcap);
+      g3d.setColorNoisy(endcapShadeIndex);
       g3d.plotPixelsClipped(count, xT + xMin, yT + y, zT - zXMin - 1, zT
           - zXMax - 1, null, null);
     }
@@ -572,7 +572,7 @@ class Cylinder3D {
     for (int y = yMin; y <= yMax; ++y) {
       findMinMaxX(y);
       int count = xMax - xMin + 1;
-      g3d.setColorNoisy(intensityEndcap);
+      g3d.setColorNoisy(endcapShadeIndex);
       g3d.plotPixelsClipped(count, xT + xMin, yT + y, zT - zXMin - 1, zT
           - zXMax - 1, null, null);
     }
@@ -598,7 +598,7 @@ class Cylinder3D {
       g3d.plotPixelClipped(argbEndcap, isScreenedA, (int) xDn, (int) yDn,
           (int) zDn);
     }
-    int fpz = fp8IntensityUp[i] >> (8);
+    int fpz = fp8ShadeIndexUp[i] >> (8);
 
     if (argb != 0) {
       line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
@@ -634,12 +634,12 @@ class Cylinder3D {
     float dxf = (isFloat ? dxBf : (float) dxB);
     float dyf = (isFloat ? dyBf : (float) dyB);
     if (dzf >= 0 || !tCylinder) {
-      intensityEndcap = Shade3D.calcIntensity(-dxf, -dyf, dzf);
+      endcapShadeIndex = Shade3D.getShadeIndex(-dxf, -dyf, dzf);
       colixEndcap = colixA;
       shadesEndcap = shadesA;
       //Logger.debug("endcap is A");
     } else {
-      intensityEndcap = Shade3D.calcIntensity(dxf, dyf, -dzf);
+      endcapShadeIndex = Shade3D.getShadeIndex(dxf, dyf, -dzf);
       colixEndcap = colixB;
       shadesEndcap = shadesB;
       xEndcap += dxB;
@@ -648,9 +648,9 @@ class Cylinder3D {
       //Logger.debug("endcap is B");
     }
     // limit specular glare on endcap
-    if (intensityEndcap > Graphics3D.intensitySpecularSurfaceLimit)
-      intensityEndcap = Graphics3D.intensitySpecularSurfaceLimit;
-    argbEndcap = shadesEndcap[intensityEndcap];
+    if (endcapShadeIndex > Shade3D.shadeIndexNoisyLimit)
+      endcapShadeIndex = Shade3D.shadeIndexNoisyLimit;
+    argbEndcap = shadesEndcap[endcapShadeIndex];
     tEndcapOpen = (endcaps == Graphics3D.ENDCAPS_OPEN);
   }
 }

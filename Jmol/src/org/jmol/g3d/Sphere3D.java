@@ -127,15 +127,15 @@ public class Sphere3D {
         if (z2 >= 0) {
           float z = (float)Math.sqrt(z2);
           int height = (int)z;
-          int intensitySE = Shade3D.calcDitheredNoisyIntensity( x,  y, z, radiusF);
-          int intensitySW = Shade3D.calcDitheredNoisyIntensity(-x,  y, z, radiusF);
-          int intensityNE = Shade3D.calcDitheredNoisyIntensity( x, -y, z, radiusF);
-          int intensityNW = Shade3D.calcDitheredNoisyIntensity(-x, -y, z, radiusF);
+          int shadeIndexSE = Shade3D.getDitheredNoisyShadeIndex( x,  y, z, radiusF);
+          int shadeIndexSW = Shade3D.getDitheredNoisyShadeIndex(-x,  y, z, radiusF);
+          int shadeIndexNE = Shade3D.getDitheredNoisyShadeIndex( x, -y, z, radiusF);
+          int shadeIndexNW = Shade3D.getDitheredNoisyShadeIndex(-x, -y, z, radiusF);
           int packed = (height |
-                        (intensitySE << 7) |
-                        (intensitySW << 13) |
-                        (intensityNE << 19) |
-                        (intensityNW << 25));
+                        (shadeIndexSE << 7) |
+                        (shadeIndexSW << 13) |
+                        (shadeIndexNE << 19) |
+                        (shadeIndexNW << 25));
           sphereShape[offset++] = packed;
         }
       }
@@ -290,7 +290,7 @@ public class Sphere3D {
     } while (--nLines > 0);
   }
 
-  private final static int SHADE_SLAB_CLIPPED = Shade3D.shadeNormal - 5;
+  private final static int SHADE_SLAB_CLIPPED = Shade3D.shadeIndexNormal - 5;
 
   private void renderShapeClipped(int[] sphereShape) {
     int offsetSphere = 0;
@@ -448,7 +448,7 @@ public class Sphere3D {
           if (zbuf[offset] <= z0)
             continue;
           int x8 = ((j * xSign + radius) << 8) / dDivisor;
-          g3d.addPixel(offset,z0, shades[Shade3D.sphereIntensities[((y8 << 8) + x8)]]);
+          g3d.addPixel(offset,z0, shades[Shade3D.sphereShadeIndexes[((y8 << 8) + x8)]]);
         }
       }
     }
@@ -559,7 +559,7 @@ public class Sphere3D {
           break;
         default: //sphere
           int x8 = ((j * xSign + radius) << 8) / dDivisor;
-          iShade = Shade3D.sphereIntensities[(y8 << 8) + x8];
+          iShade = Shade3D.sphereShadeIndexes[(y8 << 8) + x8];
           break;
         }
         g3d.addPixel(offset, zPixel, shades[iShade]);
@@ -582,7 +582,7 @@ public class Sphere3D {
       float dx = dxyz[i][0] = octantPoints[i].x - x;
       float dy = dxyz[i][1] = octantPoints[i].y - y;
       float dz = dxyz[i][2] = octantPoints[i].z - z;
-      planeShades[i] = Shade3D.calcIntensity(dx, dy, -dz);
+      planeShades[i] = Shade3D.getShadeIndex(dx, dy, -dz);
       if (dx == 0 && dy == 0) {
         planeShade = planeShades[i];
         return;
@@ -626,7 +626,7 @@ public class Sphere3D {
     for (int ii = 0; ii < SDIM; ii++)
       for (int jj = 0; jj < SDIM; jj++)
         for (int kk = 0; kk < SDIM; kk++)
-          ellipsoidShades[ii][jj][kk] = Shade3D.calcIntensity(ii - SLIM, jj
+          ellipsoidShades[ii][jj][kk] = (byte) Shade3D.getShadeIndex(ii - SLIM, jj
               - SLIM, kk);
   }
 
@@ -658,7 +658,7 @@ public class Sphere3D {
     else
       nIn++;
 
-    return (outside ? Shade3D.calcIntensity(i, j, k)
+    return (outside ? Shade3D.getShadeIndex(i, j, k)
         : ellipsoidShades[i + SLIM][j + SLIM][k]);
   }
   

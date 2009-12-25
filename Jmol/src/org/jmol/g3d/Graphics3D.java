@@ -1416,7 +1416,7 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   public void fillTriangle(Point3i screenA, Point3i screenB, Point3i screenC) {
-    // cartoon, hermite
+    // cartoon DNA plates
     triangle3d.fillTriangle(screenA, screenB, screenC, false);
   }
 

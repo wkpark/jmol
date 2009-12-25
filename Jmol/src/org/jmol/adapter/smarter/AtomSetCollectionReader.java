@@ -459,9 +459,12 @@ public abstract class AtomSetCollectionReader {
     notionalUnitCell[JmolConstants.INFO_A] = a;
     notionalUnitCell[JmolConstants.INFO_B] = b;
     notionalUnitCell[JmolConstants.INFO_C] = c;
-    notionalUnitCell[JmolConstants.INFO_ALPHA] = alpha;
-    notionalUnitCell[JmolConstants.INFO_BETA] = beta;
-    notionalUnitCell[JmolConstants.INFO_GAMMA] = gamma;
+    if (alpha != 0)
+      notionalUnitCell[JmolConstants.INFO_ALPHA] = alpha;
+    if (beta != 0)
+      notionalUnitCell[JmolConstants.INFO_BETA] = beta;
+    if (gamma != 0)
+      notionalUnitCell[JmolConstants.INFO_GAMMA] = gamma;
     iHaveUnitCell = checkUnitCell(6);
   }
   

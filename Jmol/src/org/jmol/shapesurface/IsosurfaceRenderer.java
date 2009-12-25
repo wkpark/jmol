@@ -33,7 +33,6 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.readers.Parameters;
 import org.jmol.shape.MeshRenderer;
-import org.jmol.util.Logger;
 
 public class IsosurfaceRenderer extends MeshRenderer {
 
@@ -210,12 +209,18 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
     boolean colorSolid = (vertexColixes == null || imesh.isColorSolid);
     boolean noColor = (vertexColixes == null || !fill && imesh.meshColix != 0);
+    boolean isPlane = (imesh.jvxlData.jvxlPlane != null);
     short colix = this.colix;
-    if (!colorSolid && !fill && imesh.fillTriangles
-        && imesh.jvxlData.jvxlPlane != null) {
+    if (isPlane && !colorSolid && !fill && imesh.fillTriangles) {
       colorSolid = true;
       colix = Graphics3D.BLACK;
     }
+/*  only an idea -- causes flickering
+    if (isPlane && colorSolid) {
+      g3d.setNoisySurfaceShade(screens[polygonIndexes[0][0]], 
+          screens[polygonIndexes[imesh.polygonCount / 2][1]], screens[polygonIndexes[imesh.polygonCount - 1][2]]);
+    }
+*/
     boolean colorArrayed = (colorSolid && imesh.polygonColixes != null);
     short[] contourColixes = imesh.jvxlData.contourColixes;
     // two-sided means like a plane, with no front/back distinction
@@ -259,14 +264,14 @@ public class IsosurfaceRenderer extends MeshRenderer {
           g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
               screens[iC], colixC, nC, 0.1f);
         } else {
-          try {
+/*          
+          if (colorSolid && isPlane) {
+            g3d.fillTriangle(screens[iA], screens[iB], screens[iC]);
+          } else {
+*/
             g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
                 screens[iC], colixC, nC);
-          } catch (Exception e) {
-            if (nError++ < 1) {
-              Logger.warn("IsosurfaceRenderer -- competing thread bug?\n", e);
-            }
-          }
+//          }
         }
         if (iShowNormals)
           renderNormals();

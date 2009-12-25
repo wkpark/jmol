@@ -51,6 +51,7 @@ final class Shade3D {
   private static final float xLightsource = -1;
   private static final float yLightsource = -1;
   private static final float zLightsource = 2.5f;
+  
   private static final float magnitudeLight =
     (float)Math.sqrt(xLightsource * xLightsource +
                      yLightsource * yLightsource +
@@ -61,21 +62,6 @@ final class Shade3D {
   static final float zLight = zLightsource / magnitudeLight;
   
   // the viewer vector is always 0,0,1
-
-  /*  
-  static boolean specularOn = true;
-  // set specular 0-100
-  static float intensitySpecular = 0.22f;
-  // set specpower -6
-  static int specularExponent = 6;
-  // set specpower 0-100
-  static float intenseFraction = 0.4f;
-  // set diffuse 0-100
-  static float intensityDiffuse = 0.84f;
-  // set ambient 0-100
-  static float ambientFraction = 0.45f;
-  
-  */
 
   //ones user sets:
   static final int SPECULAR_ON = 0; // set specular on|off
@@ -103,45 +89,80 @@ final class Shade3D {
       6f,       // specularExponent
       64f,      // phongExponent
       //derived:
-      0.22f,    // intensitySpecular
+      0.22f,    // specular fraction
       0.4f,     // intense fraction
-      0.84f,    // intensity diffuse
+      0.84f,    // diffuse fraction 
       0.45f,    // ambient fraction
       0,        // use phong
       }; 
+  
+  /*
+   * intensity calculation:
+   * 
+   * af ambientFraction
+   * if intensityFraction
+   * 
+   * given a color rr gg bb, consider one of these components x:
+   * 
+   * int[0:63] shades   [0 .......... 52(normal) ........ 63]
+   *                     af*x........ x ..............x+(255-x)*if
+   *                     ---ambient%--x---specular power----
+   * so 
+   * 
+   *  af (ambient percent) determins the dark side
+   *
+   * and
+   *  
+   *  if (specular power) determines the bright side
+   *  and the 
+   */
   
   static int[] getShades(int rgb, boolean greyScale) {
     int[] shades = new int[shadeMax];
     if (rgb == 0)
       return shades;
-    shades[shadeNormal] = rgb;    
-    int red = (rgb >> 16) & 0xFF;
-    int grn = (rgb >>  8) & 0xFF;
-    int blu = rgb         & 0xFF;
     
     float ambientFraction = lighting[AMBIENT_FRACTION];
-    float ambientRange = 1 - ambientFraction;
     float intenseFraction = lighting[INTENSE_FRACTION];
+
+    float red = ((rgb >> 16) & 0xFF);
+    float grn = ((rgb >>  8) & 0xFF);
+    float blu = (rgb         & 0xFF);
+
+    float f = (1 - ambientFraction) / shadeNormal;
+
+    float redStep = red * f;
+    float grnStep = grn * f;
+    float bluStep = blu * f;
+
+    red = red * ambientFraction + 0.5f;
+    grn = grn * ambientFraction + 0.5f;
+    blu = blu * ambientFraction + 0.5f;
+        
+    int i;
+    for (i = 0; i < shadeNormal; ++i) {
+      shades[i] = rgb((int) red, (int) grn, (int) blu);
+      red += redStep;
+      grn += grnStep;
+      blu += bluStep;
+    }
+
+    shades[i++] = rgb;    
+
+    f = intenseFraction / (shadeMax - i);
+    redStep = (255.5f - red) * f;
+    grnStep = (255.5f - grn) * f;
+    bluStep = (255.5f - blu) * f;
+
+    for (; i < shadeMax;) {
+      red += redStep;
+      grn += grnStep;
+      blu += bluStep;
+      shades[i++] = rgb((int) red, (int) grn, (int) blu);
+    }
     
-    for (int i = 0; i < shadeNormal; ++i) {
-      float fraction = ambientFraction + ambientRange*i/shadeNormal;
-      shades[i] = rgb((int)(red*fraction + 0.5f),
-                      (int)(grn*fraction + 0.5f),
-                      (int)(blu*fraction + 0.5f));
-    }
-
-    int nSteps = shadeMax - shadeNormal - 1;
-    float redRange = (255 - red) * intenseFraction;
-    float grnRange = (255 - grn) * intenseFraction;
-    float bluRange = (255 - blu) * intenseFraction;
-
-    for (int i = 1; i <= nSteps; ++i) {
-      shades[shadeNormal + i] = rgb(red + (int)(redRange * i / nSteps + 0.5f),
-                                    grn + (int)(grnRange * i / nSteps + 0.5f),
-                                    blu + (int)(bluRange * i / nSteps + 0.5f));
-    }
     if (greyScale)
-      for (int i = shadeMax; --i >= 0; )
+      for (; --i >= 0;)
         shades[i] = Graphics3D.calcGreyscaleRgbFromRgb(shades[i]);
     return shades;
   }
@@ -149,14 +170,6 @@ final class Shade3D {
   final static int rgb(int red, int grn, int blu) {
     return 0xFF000000 | (red << 16) | (grn << 8) | blu;
   }
-
-  /*
-  static String StringFromRgb(int rgb) {
-    // [red,green,blue]
-    return "[" + ((rgb >> 16) & 0xFF) + "," + ((rgb >> 8) & 0xFF) + ","
-        + (rgb & 0xFF) + "]";
-  }
-  */
 
   final static byte intensitySpecularSurfaceLimit = (byte)(shadeNormal + 4);
 
@@ -185,13 +198,6 @@ final class Shade3D {
                                               (float)(z/magnitude))
                  * shadeLast * (1 << 8));
   }
-
-  /*
-   * static float calcFloatIntensity(float x, float y, float z) { //not utilized
-   * double magnitude = Math.sqrt(x*x + y*y + z*z); return
-   * calcFloatIntensityNormalized((float)(x/magnitude), (float)(y/magnitude),
-   * (float)(z/magnitude)); }
-   */
 
   private static float calcFloatIntensityNormalized(float x, float y, float z) {
     float NdotL = x * xLight + y * yLight + z * zLight;

@@ -5121,7 +5121,7 @@
     server="171.64.65.65" atoms="126006" preferred="20" deadline="40"
     credit="292" frames="100" code="G" contact="kasson" contrib="familyte"/>
   <fah_proj number="2613" name="p2613_TETHERED VESICLES" public="y" file="xyz"
-    server="171.64.65.65" atoms="1000" preferred="20" deadline="40"
+    server="171.64.65.65" atoms="308047" preferred="20" deadline="40"
     credit="755" frames="100" code="G" contact="kasson" contrib="familyte"/>
   <fah_proj number="2614" name="p2614_LIPID ONLY" public="y" file="xyz"
     server="171.64.65.65" atoms="149277" preferred="20" deadline="40"
@@ -5142,7 +5142,7 @@
     server="171.64.65.56" atoms="308047" preferred="4" deadline="4"
     credit="1620" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
   <fah_proj number="2620" name="p2620_p1475_tet1_03_1 t= 20000.00000" public="y" file="xyz"
-    server="171.64.65.65" atoms="1000" preferred="20" deadline="40"
+    server="171.64.65.65" atoms="126006" preferred="20" deadline="40"
     credit="292" frames="100" code="G" contact="kasson" contrib="familyte"/>
   <fah_proj number="2621" name="p2621_p1475_tet1_03_1 t= 20000.00000" public="y" file="xyz"
     server="171.64.65.65" atoms="1000" preferred="20" deadline="40"
@@ -5151,13 +5151,13 @@
     server="171.64.65.64" preferred="3" deadline="3"
     credit="1148" code="GS" contrib="7up1n3"/>
   <fah_proj number="2651" name="p2651_Protein in POPC" public="y" file="xyz"
-    server="171.64.65.64" atoms="1000" preferred="3" deadline="4"
+    server="171.64.65.64" atoms="77373" preferred="3" deadline="4"
     credit="1760" frames="100" code="GS" contact="kasson" contrib="P5_133XL"/>
   <fah_proj number="2652" name="p2652_P2650" public="y" file="xyz"
     server="171.64.65.64" atoms="33529" preferred="3" deadline="3"
     credit="1148" frames="100" code="GS" contact="kasson" contrib="P5-133XL"/>
   <fah_proj number="2653" name="p2653_Protein in POPC" public="y" file="xyz"
-    server="171.64.65.64" atoms="1000" preferred="3" deadline="4"
+    server="171.64.65.64" atoms="77583" preferred="3" deadline="4"
     credit="1760" frames="100" code="GS" contact="kasson" contrib="P5-133XL"/>
   <fah_proj number="2660" name="p2660_IBX in water" public="y"
     server="171.64.65.64" atoms="1000" preferred="0.04" deadline="0.04"
@@ -5166,13 +5166,13 @@
     server="171.64.65.64" atoms="1000" preferred="7" deadline="7"
     credit="1" frames="100" code="GC" contact="kasson"/>
   <fah_proj number="2662" name="p2662_IBX in water" public="y" file="xyz"
-    server="171.64.65.56" atoms="1000" preferred="3" deadline="3"
+    server="171.64.65.56" atoms="14170" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
   <fah_proj number="2663" name="p2663_IBX in water" public="y"
     server="171.64.65.64" atoms="1000" preferred="0.04" deadline="0.04"
     credit="1" frames="100" code="GC" contact="kasson"/>
   <fah_proj number="2665" name="p2665_IBX in water" public="y" file="xyz"
-    server="171.64.65.64" atoms="1000" preferred="6" deadline="6"
+    server="171.64.65.64" atoms="14170" preferred="6" deadline="6"
     credit="1920" frames="100" code="GS" contact="kasson" contrib="toTOW"/>
   <fah_proj number="2666" name="p2666_IBX in water" public="y"
     server="171.64.65.64" atoms="1000" preferred="6" deadline="6"
@@ -5181,43 +5181,43 @@
     server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
   <fah_proj number="2669" name="p2669_IBX in water" public="y" file="xyz"
-    server="171.64.65.56" atoms="1000" preferred="3" deadline="3"
+    server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
   <fah_proj number="2670" name="p2670_IBX in water" public="y" file="xyz"
-    server="171.67.108.24" atoms="1000" preferred="3" deadline="3"
+    server="171.67.108.24" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Ivoshiee,Smoking2000"/>
   <fah_proj number="2671" name="p2671_IBX in water" public="y" file="xyz"
-    server="171.67.108.24" atoms="1000" preferred="3" deadline="3"
+    server="171.67.108.24" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
   <fah_proj number="2672" name="p2672_IBX in water" public="y" file="xyz"
     server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
   <fah_proj number="2673" name="p2673_IBX in water" public="y" file="xyz"
-    server="171.67.108.24" atoms="1000" preferred="6" deadline="6"
+    server="171.67.108.24" atoms="146808" preferred="6" deadline="6"
     credit="3840" frames="100" code="GC" contact="kasson" contrib="Ivoshiee"/>
   <fah_proj number="2674" name="p2674_IBX in water" public="y" file="xyz"
-    server="171.67.108.24" atoms="1000" preferred="3" deadline="3"
+    server="171.67.108.24" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
   <fah_proj number="2675" name="p2675_IBX in water" public="y" file="xyz"
-    server="171.64.65.56" atoms="1000" preferred="3" deadline="3"
+    server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
   <fah_proj number="2676" name="p2676_IBX in water" public="y" file="xyz"
-    server="171.67.108.24" atoms="1000" preferred="3" deadline="3"
+    server="171.67.108.24" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Ivoshiee"/>
   <fah_proj number="2677" name="p2677_IBX in water" public="y" file="xyz"
-    server="171.64.65.56" atoms="1000" preferred="3" deadline="3"
+    server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson"/>
   <fah_proj number="2680" name="p2680" public="n"
     server="171.67.108.22" atoms="1000" preferred="4" deadline="6"
     credit="19" frames="100" code="GC" contact="kasson"/>
-  <fah_proj number="2681" name="p2681_Translocon_GLX2" public="y" file="xyz"
-    server="171.67.108.22" atoms="1000" preferred="4" deadline="6"
+  <fah_proj number="2681" name="p2681_Generated by trjconv : SINGLE VESICLE in water t= 25000.00195" public="y" file="xyz"
+    server="171.67.108.22" atoms="1098185" preferred="4" deadline="6"
     credit="25403" frames="100" code="GC" contact="kasson" kfactor="2.0"/>
-  <fah_proj number="2682" name="p2682_Translocon_GLX2" public="y" file="xyz"
-    server="171.67.108.22" atoms="1000" preferred="4" deadline="6"
+  <fah_proj number="2682" name="p2682_Generated by trjconv : SINGLE VESICLE in water t= 66000.00000" public="y" file="xyz"
+    server="171.67.108.22" atoms="1098185" preferred="4" deadline="6"
     credit="25403" frames="100" code="GC" contact="kasson" kfactor="2.0" contrib="Jim Erickson"/>
-  <fah_proj number="2683" name="p2683_Translocon_GLX2" public="y" file="xyz"
-    server="171.67.108.22" atoms="1000" preferred="4" deadline="6"
+  <fah_proj number="2683" name="p2683_SINGLE VESICLE in water" public="y" file="xyz"
+    server="171.67.108.22" atoms="1094681" preferred="4" deadline="6"
     credit="25403" frames="100" code="GC" contact="kasson" kfactor="2.0"/>
 
   <!-- Projects 2700 to 2799 -->
@@ -5651,19 +5651,19 @@
     server="171.64.65.63" atoms="9684" preferred="1.5" deadline="3"
     credit="1461" frames="100" code="GS" contact="densign" contrib="Macaholic"/>
   <fah_proj number="3044" name="p3044_Human Hpin1 mutant 4" public="y" file="xyz"
-    server="171.64.65.58" atoms="1000" preferred="42" deadline="61"
+    server="171.64.65.58" atoms="8810" preferred="42" deadline="61"
     credit="218" frames="100" code="G" contact="densign" contrib="Ivoshiee"/>
   <fah_proj number="3045" name="p3045_FORMIN BINDING PROTEIN" public="y" file="xyz"
-    server="171.64.65.58" atoms="1000" preferred="59" deadline="88"
+    server="171.64.65.58" atoms="8433" preferred="59" deadline="88"
     credit="314" frames="100" code="G" contact="densign" contrib="familyte"/>
   <fah_proj number="3046" name="p3046_human_hpin1_m1_99p" public="y" file="xyz"
     server="171.64.65.58" atoms="9590" preferred="45" deadline="66"
     credit="236" frames="100" code="G" contact="densign"/>
   <fah_proj number="3047" name="p3047_Human Hpin1 mutant 4 373K" public="y" file="xyz"
-    server="171.64.65.58" atoms="1000" preferred="42" deadline="61"
+    server="171.64.65.58" atoms="8810" preferred="42" deadline="61"
     credit="218" frames="100" code="G" contact="densign"/>
   <fah_proj number="3048" name="p3048_FORMIN BINDING PROTEIN_373K" public="y" file="xyz"
-    server="171.64.65.58" atoms="1000" preferred="59" deadline="88"
+    server="171.64.65.58" atoms="8433" preferred="59" deadline="88"
     credit="314" frames="100" code="G" contact="densign" contrib="Ivoshiee"/>
   <fah_proj number="3049" name="p3049_human_hpin1_m1_99p_373K" public="y" file="xyz"
     server="171.64.65.58" atoms="9590" preferred="45" deadline="66"
@@ -7568,10 +7568,10 @@
 
   <!-- Projects 5000 to 5099 -->
   <fah_proj number="5101" name="p5101_Calmodulin CMF" public="y" file="xyz"
-    server="171.64.65.64" atoms="1000" preferred="5" deadline="5"
+    server="171.64.65.64" atoms="26014" preferred="5" deadline="5"
     credit="2165" frames="100" code="GS" contact="kasson" contrib="Ivoshiee"/>
   <fah_proj number="5102" name="p5102_Calmodulin in water" public="y" file="xyz"
-    server="171.64.65.64" atoms="1000" preferred="8" deadline="8"
+    server="171.64.65.64" atoms="42727" preferred="8" deadline="8"
     credit="3340" frames="100" code="GS" contact="kasson" contrib="sYnAnjin"/>
   <fah_proj number="5104" name="p5104_Calmodulin CMG" public="y"
     server="171.64.65.56" atoms="1000" preferred="6" deadline="6"
@@ -8180,13 +8180,13 @@
     server="130.237.232.236" atoms="1132" preferred="2" deadline="3"
     credit="100" frames="100" code="A4" contact="kasson"/>
   <fah_proj number="6011" name="p6011_IBX in water" public="y"
-    server="130.237.232.140" atoms="1000" preferred="1" deadline="1"
+    server="130.237.232.140" atoms="146808" preferred="1" deadline="1"
     credit="40" frames="100" code="A3" contact="kasson"/>
   <fah_proj number="6012" name="p6012_hafp3" public="y"
     server="130.237.232.140" atoms="77445" preferred="3" deadline="6"
     credit="470" frames="100" code="A3" contact="kasson" kfactor="2.0"/>
   <fah_proj number="6013" name="p6013_IBX in water" public="y"
-    server="130.237.232.140" atoms="1000" preferred="3" deadline="3"
+    server="130.237.232.140" atoms="146808" preferred="3" deadline="3"
     credit="380" frames="100" code="A3" contact="kasson" kfactor="3.36"/>
 
   <!-- Projects 6300 to 6399 -->

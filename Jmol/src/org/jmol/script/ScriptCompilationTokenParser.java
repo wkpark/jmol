@@ -560,15 +560,7 @@ abstract class ScriptCompilationTokenParser {
        if (key == null) {
         if (tok == Token.identifier) {
           //distance was specified, but to what?
-          getToken();
-          key = ((String) theValue).toLowerCase();
-          if (key.equals("hkl")) {
-            isCoordOrPlane = true;
-            addTokenToPostfix(Token.string, key);
-          } else {
-            returnToken();
-          }
-        } else if (tok == Token.coord || tok == Token.plane) {
+        } else if (tok == Token.hkl || tok == Token.coord || tok == Token.plane) {
           isCoordOrPlane = true;
           addNextToken();
         } else if (tok == Token.leftbrace) {

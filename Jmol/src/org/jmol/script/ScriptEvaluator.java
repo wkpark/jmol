@@ -2915,6 +2915,11 @@ public class ScriptEvaluator {
       case Token.define:
         rpn.addX(getAtomBitSet(this, (String) value));
         break;
+      case Token.hkl:
+        rpn.addX(new ScriptVariable(instruction));
+        rpn.addX(new ScriptVariable(Token.point4f, hklParameter(pc + 2)));
+        pc = iToken;
+        break;
       case Token.plane:
         rpn.addX(new ScriptVariable(instruction));
         rpn.addX(new ScriptVariable(Token.point4f, planeParameter(pc + 2)));
@@ -3192,7 +3197,7 @@ public class ScriptEvaluator {
           rpn.addOp(instruction);
           break;
         } 
-        if (Token.tokAttr(instruction.tok, Token.identifier)) {
+        if (instruction.tok == Token.identifier) {
           val = getParameter((String) value, false);
           if (val instanceof String)
             val = getStringObjectAsVariable((String) val, null);

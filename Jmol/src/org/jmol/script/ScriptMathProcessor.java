@@ -118,7 +118,8 @@ class ScriptMathProcessor {
         if (x == null)
           x = xStack[0];
         if (x.tok == Token.bitset || x.tok == Token.list
-            || x.tok == Token.string || x.tok == Token.matrix3f || x.tok == Token.matrix4f)
+            || x.tok == Token.string || x.tok == Token.matrix3f
+            || x.tok == Token.matrix4f)
           x = ScriptVariable.selectItem(x);
         return x;
       }
@@ -184,7 +185,7 @@ class ScriptMathProcessor {
         break;
       case Token.decimal:
         float f = ((Float) x.value).floatValue();
-        if (f < 0 || f == 0 && 1/f == Float.NEGATIVE_INFINITY) {
+        if (f < 0 || f == 0 && 1 / f == Float.NEGATIVE_INFINITY) {
           addOp(Token.tokenMinus);
           x = new ScriptVariable(Token.decimal, new Float(-f));
         }
@@ -195,8 +196,7 @@ class ScriptMathProcessor {
   }
 
   private boolean addX(boolean x) {
-    putX(ScriptVariable.getVariable(x ? Boolean.TRUE
-        : Boolean.FALSE));
+    putX(ScriptVariable.getVariable(x ? Boolean.TRUE : Boolean.FALSE));
     return wasX = true;
   }
 
@@ -449,7 +449,7 @@ class ScriptMathProcessor {
       boolean isFirst = ScriptVariable.bValue(getX());
       if (tok0 == Token.colon)
         ifPt--;
-      else 
+      else
         putOp(Token.tokenColon);
       putIf(isFirst ? 'T' : 'F');
       skipping = !isFirst;
@@ -643,7 +643,7 @@ class ScriptMathProcessor {
       return evaluateHelix(args);
     case Token.label:
     case Token.format:
-        return evaluateLabel(op.intValue, args);
+      return evaluateLabel(op.intValue, args);
     case Token.data:
       return evaluateData(args);
     case Token.load:
@@ -679,10 +679,11 @@ class ScriptMathProcessor {
     if (x1.tok != Token.bitset)
       return false;
     String type = (args.length == 0 ? null : ScriptVariable.sValue(args[0]));
-    return addX(viewer.getVolume((BitSet)x1.value, type));
+    return addX(viewer.getVolume((BitSet) x1.value, type));
   }
 
-  private boolean evaluateSymop(ScriptVariable[] args, boolean haveBitSet) throws ScriptException {
+  private boolean evaluateSymop(ScriptVariable[] args, boolean haveBitSet)
+      throws ScriptException {
     if (args.length == 0)
       return false;
     ScriptVariable x1 = (haveBitSet ? getX() : null);
@@ -690,9 +691,9 @@ class ScriptMathProcessor {
       return addX(new Point3f());
     if (x1 != null && x1.tok != Token.bitset)
       return false;
-    BitSet bs = (x1 != null ? (BitSet) x1.value 
-        : args.length > 2 && args[1].tok == Token.bitset ? (BitSet) args[1].value 
-        : viewer.getModelAtomBitSet(-1, false));
+    BitSet bs = (x1 != null ? (BitSet) x1.value : args.length > 2
+        && args[1].tok == Token.bitset ? (BitSet) args[1].value : viewer
+        .getModelAtomBitSet(-1, false));
     String xyz;
     switch (args[0].tok) {
     case Token.string:
@@ -708,7 +709,8 @@ class ScriptMathProcessor {
     Point3f pt = (args.length > 1 ? ptValue(args[1], true) : null);
     if (args.length == 2 && !Float.isNaN(pt.x))
       return addX(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, Token.point));
-    String desc = (args.length == 1 ? "" : ScriptVariable.sValue(args[args.length - 1])).toLowerCase();
+    String desc = (args.length == 1 ? "" : ScriptVariable
+        .sValue(args[args.length - 1])).toLowerCase();
     int tok = Token.draw;
     if (args.length == 1 || desc.equalsIgnoreCase("matrix")) {
       tok = Token.matrix4f;
@@ -717,7 +719,7 @@ class ScriptMathProcessor {
     } else if (desc.equalsIgnoreCase("description")) {
       tok = Token.label;
     } else if (desc.equalsIgnoreCase("xyz")) {
-      tok = Token.info;      
+      tok = Token.info;
     } else if (desc.equalsIgnoreCase("translation")) {
       tok = Token.translation;
     } else if (desc.equalsIgnoreCase("axis")) {
@@ -730,7 +732,7 @@ class ScriptMathProcessor {
       tok = Token.point;
     } else if (desc.equalsIgnoreCase("center")) {
       tok = Token.center;
-    } 
+    }
     return addX(viewer.getSymmetryInfo(bs, xyz, iOp, pt, desc, tok));
   }
 
@@ -794,7 +796,8 @@ class ScriptMathProcessor {
       case Token.monitor:
         return addX(Measure.computeHelicalAxis(null, t.tok, pta, ptb, dq));
       case Token.array:
-        String[] data = (String[]) Measure.computeHelicalAxis(null, Token.list, pta, ptb, dq);
+        String[] data = (String[]) Measure.computeHelicalAxis(null, Token.list,
+            pta, ptb, dq);
         if (data == null)
           return false;
         return addX(data);
@@ -820,8 +823,8 @@ class ScriptMathProcessor {
             Token.angle)).floatValue());
       case Token.draw:
       case Token.monitor:
-        return addX(isSyntaxCheck ? "" : (String) viewer.getHelixData(bs,
-            t.tok));
+        return addX(isSyntaxCheck ? "" : (String) viewer
+            .getHelixData(bs, t.tok));
       case Token.array:
         String[] data = (String[]) viewer.getHelixData(bs, Token.list);
         if (data == null)
@@ -867,7 +870,8 @@ class ScriptMathProcessor {
     return addX(Measure.distanceToPlane(plane1, pt2));
   }
 
-  public Point3f ptValue(ScriptVariable x, boolean allowFloat) throws ScriptException {
+  public Point3f ptValue(ScriptVariable x, boolean allowFloat)
+      throws ScriptException {
     Object pt;
     if (isSyntaxCheck)
       return new Point3f();
@@ -1025,7 +1029,7 @@ class ScriptMathProcessor {
     String propertyName = (args.length > pt ? ScriptVariable.sValue(args[pt++])
         .toLowerCase() : "");
     if (propertyName.startsWith("$")) {
-//TODO      
+      // TODO
     }
     Object propertyValue;
     if (propertyName.equalsIgnoreCase("fileContents") && args.length > 2) {
@@ -1334,7 +1338,7 @@ class ScriptMathProcessor {
     return false;
 
   }
-  
+
   private boolean evaluateArray(ScriptVariable[] args) {
     if (isSyntaxCheck)
       return addX("");
@@ -1393,8 +1397,8 @@ class ScriptMathProcessor {
       case 4:
         break;
       case 2:
-        if ((pt0 = ptValue(args[0], false)) == null 
-            || tok != Token.quaternion && args[1].tok == Token.point3f)
+        if ((pt0 = ptValue(args[0], false)) == null || tok != Token.quaternion
+            && args[1].tok == Token.point3f)
           return false;
         break;
       case 3:
@@ -1531,9 +1535,10 @@ class ScriptMathProcessor {
     if (isSyntaxCheck)
       return addX("");
     String file = ScriptVariable.sValue(args[0]);
-    int nBytesMax = (args.length == 2 ? ScriptVariable.iValue(args[1]) : Integer.MAX_VALUE);
-    return addX(tok == Token.load ? viewer.getFileAsString(file, nBytesMax, false) : viewer
-        .getFullPath(file));
+    int nBytesMax = (args.length == 2 ? ScriptVariable.iValue(args[1])
+        : Integer.MAX_VALUE);
+    return addX(tok == Token.load ? viewer.getFileAsString(file, nBytesMax,
+        false) : viewer.getFullPath(file));
   }
 
   private boolean evaluateWrite(ScriptVariable[] args) throws ScriptException {
@@ -1649,13 +1654,13 @@ class ScriptMathProcessor {
     // {xxx}.yyy.format("...")
     // (value).format("...")
     // format("....",a,b,c...)
-    
+
     ScriptVariable x1 = (args.length < 2 ? getX() : null);
     if (isSyntaxCheck)
       return addX("");
     String format = (args.length == 0 ? "%U" : ScriptVariable.sValue(args[0]));
     boolean asArray = Token.tokAttr(intValue, Token.minmaxmask);
-    if (x1 == null) 
+    if (x1 == null)
       return addX(ScriptVariable.sprintf(args));
     if (x1.tok == Token.bitset)
       return addX(eval.getBitsetIdent(ScriptVariable.bsSelect(x1), format,
@@ -1702,9 +1707,10 @@ class ScriptMathProcessor {
     switch (i) {
     case 1:
       // within (boundbox)
-      boolean isHelix = withinStr.equalsIgnoreCase("helix"); 
+      boolean isHelix = withinStr.equalsIgnoreCase("helix");
       if (isHelix || withinStr.equalsIgnoreCase("sheet"))
-        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(isHelix ? Token.helix : Token.sheet, null));
+        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(
+            isHelix ? Token.helix : Token.sheet, null));
       return (!withinStr.equalsIgnoreCase("boundbox") ? false
           : addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.boundbox, null)));
     case 2:
@@ -1767,7 +1773,7 @@ class ScriptMathProcessor {
      * 
      * the first returns an atom bitset; the second returns a bond bitset.
      */
-    
+
     if (args.length > 5)
       return false;
     float min = Integer.MIN_VALUE, max = Integer.MAX_VALUE;
@@ -2055,14 +2061,14 @@ class ScriptMathProcessor {
       case Token.integer:
         switch (x2.tok) {
         case Token.string:
-            if ((s = (ScriptVariable.sValue(x2)).trim()).indexOf(".") < 0
-                && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
-              return addX(x1.intValue + ScriptVariable.iValue(x2));
-            break;
+          if ((s = (ScriptVariable.sValue(x2)).trim()).indexOf(".") < 0
+              && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
+            return addX(x1.intValue + ScriptVariable.iValue(x2));
+          break;
         case Token.decimal:
           return addX(x1.intValue + ScriptVariable.fValue(x2));
         default:
-          return addX(x1.intValue + ScriptVariable.iValue(x2));    
+          return addX(x1.intValue + ScriptVariable.iValue(x2));
         }
       case Token.string:
         return addX(new ScriptVariable(Token.string, ScriptVariable.sValue(x1)
@@ -2090,18 +2096,18 @@ class ScriptMathProcessor {
           float f = ScriptVariable.fValue(x2);
           return addX(new Point3f(pt.x + f, pt.y + f, pt.z + f));
         }
-      case Token.matrix3f: 
+      case Token.matrix3f:
         switch (x2.tok) {
         default:
           return addX(ScriptVariable.fValue(x1) + ScriptVariable.fValue(x2));
         case Token.matrix3f:
-          m = new Matrix3f((Matrix3f)x1.value);
-          m.add((Matrix3f)x2.value);
+          m = new Matrix3f((Matrix3f) x1.value);
+          m.add((Matrix3f) x2.value);
           return addX(m);
         case Token.point3f:
           Matrix4f m4 = new Matrix4f();
-          m = (Matrix3f)x1.value;
-          pt = (Point3f)x2.value;
+          m = (Matrix3f) x1.value;
+          pt = (Point3f) x2.value;
           m4.m00 = m.m00;
           m4.m01 = m.m01;
           m4.m02 = m.m02;
@@ -2135,22 +2141,22 @@ class ScriptMathProcessor {
       switch (x1.tok) {
       default:
         return addX(ScriptVariable.fValue(x1) - ScriptVariable.fValue(x2));
-      case Token.matrix3f: 
+      case Token.matrix3f:
         switch (x2.tok) {
         default:
           return addX(ScriptVariable.fValue(x1) - ScriptVariable.fValue(x2));
         case Token.matrix3f:
-          m = new Matrix3f((Matrix3f)x1.value);
-          m.sub((Matrix3f)x2.value);
+          m = new Matrix3f((Matrix3f) x1.value);
+          m.sub((Matrix3f) x2.value);
           return addX(m);
         }
-      case Token.matrix4f: 
+      case Token.matrix4f:
         switch (x2.tok) {
         default:
           return addX(ScriptVariable.fValue(x1) - ScriptVariable.fValue(x2));
         case Token.matrix4f:
-          Matrix4f m4 = new Matrix4f((Matrix4f)x1.value);
-          m4.sub((Matrix4f)x2.value);
+          Matrix4f m4 = new Matrix4f((Matrix4f) x1.value);
+          m4.sub((Matrix4f) x2.value);
           return addX(m4);
         }
       case Token.point3f:
@@ -2266,8 +2272,8 @@ class ScriptMathProcessor {
           return addX(m);
         case Token.point4f:
           // m * q
-          return addX((new Quaternion(m3)).mul(new Quaternion(
-              (Point4f) x2.value)).getMatrix());
+          return addX((new Quaternion(m3)).mul(
+              new Quaternion((Point4f) x2.value)).getMatrix());
         default:
           float f = ScriptVariable.fValue(x2);
           AxisAngle4f aa = new AxisAngle4f();
@@ -2568,8 +2574,8 @@ class ScriptMathProcessor {
   private static Object getMinMax(Object floatOrStringArray, int tok) {
     float[] data;
     if (floatOrStringArray instanceof String[]) {
-      data = new float[((String[])floatOrStringArray).length];
-      Parser.parseFloatArray((String[])floatOrStringArray, data);
+      data = new float[((String[]) floatOrStringArray).length];
+      Parser.parseFloatArray((String[]) floatOrStringArray, data);
     } else {
       data = (float[]) floatOrStringArray;
     }
@@ -2586,16 +2592,16 @@ class ScriptMathProcessor {
     }
     double sum2 = 0;
     int n = 0;
-    for (int i = data.length; --i >= 0; ) {
+    for (int i = data.length; --i >= 0;) {
       float v;
       if (Float.isNaN(v = data[i]))
         continue;
       n++;
-      switch(tok){
+      switch (tok) {
       case Token.sum2:
       case Token.stddev:
         sum2 += ((double) v) * v;
-        //fall through
+        // fall through
       case Token.sum:
       case Token.average:
         sum += v;

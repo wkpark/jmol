@@ -598,7 +598,7 @@ public class Token {
   
   public final static int angle = 7 | 0 << 9 | mathfunc;
   public final static int data  = 8 | 0 << 9 | mathfunc | scriptCommand;
-  public final static int plane        = 9 | 0 << 9 | mathfunc;
+  public final static int plane = 9 | 0 << 9 | mathfunc;
   public final static int point = 10 | 0 << 9 | mathfunc;
   final static int quaternion   = 11 | 0 << 9 | mathfunc | scriptCommand;
   final static int axisangle    = 12 | 0 << 9 | mathfunc;

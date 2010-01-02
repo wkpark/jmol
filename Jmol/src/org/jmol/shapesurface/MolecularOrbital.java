@@ -171,6 +171,7 @@ public class MolecularOrbital extends Isosurface {
 
     if ("delete" == propertyName) {
       htModels.remove(strID);
+      moNumber = 0;
       //pass through
     }
 
@@ -254,13 +255,13 @@ public class MolecularOrbital extends Isosurface {
       int nOrb = (mos == null ? 0 : mos.size());
       int thisMO = param;
       int currentMO = moNumber;
-      boolean returnIfNoCurrentMO = (thisMO == Integer.MIN_VALUE);
+      boolean isShowCurrent = (thisMO == Integer.MIN_VALUE);
       if (thisMO == Integer.MAX_VALUE) {
         thisMO = currentMO;
       }
-      if (nOrb == 0 || currentMO == 0 && returnIfNoCurrentMO)
+      if (nOrb == 0 || isShowCurrent && currentMO == 0)
         return "";
-      boolean doOneMo = (returnIfNoCurrentMO && thisMO != Integer.MAX_VALUE);
+      boolean doOneMo = (thisMO != 0);
       if (currentMO == 0)
         thisMO = 0;
       boolean haveHeader = false;
@@ -274,15 +275,13 @@ public class MolecularOrbital extends Isosurface {
             setOrbital(i);
           }
           if (!haveHeader) {
-            str.append(JvxlCoder.jvxlGetFile(jvxlData, null, title,
+            str.append(JvxlCoder.jvxlGetFile(jvxlData, null, null,
                 "HEADERONLY", true, nTotal, null, null));
-            // str.append(super.getProperty("jvxlFileHeader", nTotal));
             haveHeader = true;
           }
-          str.append(JvxlCoder.jvxlGetFile(jvxlData, null, title, "orbital #"
-              + i, false, 1, thisMesh.getState(myType),
+          str.append(JvxlCoder.jvxlGetFile(jvxlData, null, jvxlData.title,
+              null, false, 1, thisMesh.getState(myType),
               (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand)));
-          // str.append(super.getProperty("jvxlSurfaceData", i));
           if (!doOneMo)
             super.setProperty("delete", "mo_show", null);
           if (nTotal == 1)

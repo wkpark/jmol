@@ -64,6 +64,7 @@ package org.jmol.jvxl.data;
 import java.util.BitSet;
 import java.util.Vector;
 
+import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 
 
@@ -136,6 +137,7 @@ public class JvxlData {
 
   public String[] title;
   public String version;
+  public Point3f[] boundingBox;
   
   public void setSurfaceInfo(Point4f thePlane, int nSurfaceInts, String surfaceData) {
     jvxlSurfaceData = surfaceData;

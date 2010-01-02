@@ -947,8 +947,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       info.put("vertexCount", new Integer(mesh.vertexCount));
       if (mesh.ptCenter.x != Float.MAX_VALUE)
         info.put("center", mesh.ptCenter);
-      if (mesh.ptOffset != null)
-        info.put("offset", mesh.ptOffset);
+      info.put("offset", (mesh.ptOffset == null ? new Point3f() : mesh.ptOffset));
+      info.put("xyzMin", mesh.jvxlData.boundingBox[0]);
+      info.put("xyzMax", mesh.jvxlData.boundingBox[1]);
       String s = JvxlCoder.jvxlGetInfo(mesh.jvxlData, true);
       if (s != null)
         info.put("jvxlInfo", s.replace('\n', ' '));

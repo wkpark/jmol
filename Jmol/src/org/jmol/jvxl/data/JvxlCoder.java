@@ -311,6 +311,8 @@ public class JvxlCoder {
     if (jvxlData.isXLowToHigh)
       appendAttrib(info, "\n  ", "note", "progressive JVXL+ -- X values read from low(0) to high("
               + (jvxlData.nPointsX - 1) + ")");
+    appendAttrib(info, "\n  ", "xyzMin", Escape.escape(jvxlData.boundingBox[0]));
+    appendAttrib(info, "\n  ", "xyzMax", Escape.escape(jvxlData.boundingBox[1]));
     appendAttrib(info, "\n  ", "approximateCompressionRatio", "#RATIO#:1");
     appendAttrib(info, "\n  ", "jmolVersion", jvxlData.version);
     return "<jvxlSurfaceInfo" + info + ">\n</jvxlSurfaceInfo>";
@@ -686,26 +688,11 @@ public class JvxlCoder {
                                             String polygonColorData, 
                                             int polygonCount,
                                             boolean addColorData, boolean escapeXml) {
-    Point3f min = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-    Point3f max = new Point3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
     int colorFractionBase = jvxlData.colorFractionBase;
     int colorFractionRange = jvxlData.colorFractionRange;
     Point3f p;
-    for (int i = 0; i < vertexCount; i++) {
-      p = vertices[i];
-      if (p.x < min.x)
-        min.x = p.x;
-      if (p.y < min.y)
-        min.y = p.y;
-      if (p.z < min.z)
-        min.z = p.z;
-      if (p.x > max.x)
-        max.x = p.x;
-      if (p.y > max.y)
-        max.y = p.y;
-      if (p.z > max.z)
-        max.z = p.z;
-    }
+    Point3f min = jvxlData.boundingBox[0];
+    Point3f max = jvxlData.boundingBox[1];
     StringBuffer list1 = new StringBuffer();
     StringBuffer list2 = new StringBuffer();
     int[] vertexIdOld = new int[vertexCount];

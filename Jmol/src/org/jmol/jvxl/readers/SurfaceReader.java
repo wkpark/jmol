@@ -195,8 +195,9 @@ public abstract class SurfaceReader implements VertexDataServer {
   boolean vertexDataOnly;
   boolean hasColorData;
 
+  protected Point3f xyzMin, xyzMax;
+
   protected Point3f center;
-  protected Point3f offset;
   protected float[] anisotropy;
   protected boolean isAnisotropic;
   protected Matrix3f eccentricityMatrix;
@@ -319,6 +320,10 @@ public abstract class SurfaceReader implements VertexDataServer {
     int i = s.indexOf('\n', s.indexOf('\n',s.indexOf('\n') + 1) + 1) + 1;
     jvxlData.jvxlFileTitle = s.substring(0, i);
     jvxlData.jvxlFileHeader = s;
+    if (xyzMin == null)
+      setBoundingBox();
+    Logger.info("boundbox corners " + Escape.escape(xyzMin) + " " + Escape.escape(xyzMax));
+    jvxlData.boundingBox = new Point3f[] {xyzMin, xyzMax};
     jvxlData.cutoff = (isJvxl ? jvxlCutoff : params.cutoff);
     jvxlData.isCutoffAbsolute = params.isCutoffAbsolute;
     jvxlData.pointsPerAngstrom = 1f/volumeData.volumetricVectorLengths[0];
@@ -842,10 +847,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     pt.x *= anisotropy[0];
     pt.y *= anisotropy[1];
     pt.z *= anisotropy[2];
-    if (offset == null)      
-      pt.add(center);
-    else
-      pt.add(offset);
+    pt.add(center);
   }
 
   protected void setVectorAnisotropy(Vector3f v) {
@@ -867,11 +869,37 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
   
   protected void setVolumetricOriginAnisotropy() {
-    if (offset == null)      
-      volumetricOrigin.set(center);
-    else
-      volumetricOrigin.add(offset);
+    volumetricOrigin.set(center);
   }
 
+  protected void setBoundingBox(Point3f pt, float margin) {
+    if (xyzMin == null) {
+      xyzMin = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+      xyzMax = new Point3f(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+    }
+    if (pt.x - margin < xyzMin.x)
+      xyzMin.x = pt.x - margin;
+    if (pt.x + margin > xyzMax.x)
+      xyzMax.x = pt.x + margin;
+    if (pt.y - margin < xyzMin.y)
+      xyzMin.y = pt.y - margin;
+    if (pt.y + margin > xyzMax.y)
+      xyzMax.y = pt.y + margin;
+    if (pt.z - margin < xyzMin.z)
+      xyzMin.z = pt.z - margin;
+    if (pt.z + margin > xyzMax.z)
+      xyzMax.z = pt.z + margin;
+  }
+
+  private void setBoundingBox() {
+    if (meshDataServer != null)
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+    for (int i = 0; i < meshData.vertexCount; i++) {
+      Point3f p = meshData.vertices[i];
+      if (!Float.isNaN(p.x))
+        setBoundingBox(p, 0);
+    }
+  }
+  
 
 }

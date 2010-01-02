@@ -30,7 +30,6 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
@@ -66,8 +65,6 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected int firstNearbyAtom;
   protected BitSet bsMySelected, bsMyIgnored;
 
-  private Point3f xyzMin, xyzMax;
-
   protected boolean doAddHydrogens;
   protected boolean doUsePlane;
   protected boolean doUseIterator;
@@ -78,8 +75,6 @@ abstract class AtomDataReader extends VolumeDataReader {
     params.iUseBitSets = true;
     doAddHydrogens = (atomDataServer != null && params.addHydrogens); //Jvxl cannot do this on its own
     modelIndex = params.modelIndex;
-    xyzMin = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-    xyzMax = new Point3f(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
     bsMySelected = new BitSet();
     bsMyIgnored = (params.bsIgnore == null ? new BitSet() : params.bsIgnore);
     
@@ -185,24 +180,8 @@ abstract class AtomDataReader extends VolumeDataReader {
     firstNearbyAtom = myAtomCount;
     Logger.info(myAtomCount + " atoms will be used in the surface calculation");
 
-    for (int i = 0; i < myAtomCount; i++) {
-      Point3f pt = atomXyz[i];
-      float rA = atomRadius[i];
-      if (pt.x - rA < xyzMin.x)
-        xyzMin.x = pt.x - rA;
-      if (pt.x + rA > xyzMax.x)
-        xyzMax.x = pt.x + rA;
-      if (pt.y - rA < xyzMin.y)
-        xyzMin.y = pt.y - rA;
-      if (pt.y + rA > xyzMax.y)
-        xyzMax.y = pt.y + rA;
-      if (pt.z - rA < xyzMin.z)
-        xyzMin.z = pt.z - rA;
-      if (pt.z + rA > xyzMax.z)
-        xyzMax.z = pt.z + rA;
-    }
-    Logger.info("boundbox corners " + Escape.escape(xyzMin) + " " + Escape.escape(xyzMax));
-
+    for (int i = 0; i < myAtomCount; i++)
+      setBoundingBox(atomXyz[i], atomRadius[i]);
     if (!Float.isNaN(params.scale)) {
       Vector3f v = new Vector3f(xyzMax);
       v.sub(xyzMin);
@@ -273,15 +252,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     jvxlFileHeaderBuffer = new StringBuffer();
     if (atomData.programInfo != null)
       jvxlFileHeaderBuffer.append("#created by ").append(atomData.programInfo).append(" on ").append(new Date()).append("\n");
-    jvxlFileHeaderBuffer.append("boundbox corners ")
-        .append(Escape.escape(xyzMin))
-        .append(" ")
-        .append(Escape.escape(xyzMax))
-        .append(" #")
-        .append(calcType)
-        .append("\n")
-        .append(line2)
-        .append("\n");
+    jvxlFileHeaderBuffer.append(calcType).append("\n").append(line2).append("\n");
   }
 
   protected void setRangesAndAddAtoms(float ptsPerAngstrom, int maxGrid,

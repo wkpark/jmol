@@ -5879,7 +5879,9 @@ public class ScriptEvaluator {
           break;
         case Token.show:
           if (iShape == JmolConstants.SHAPE_ISOSURFACE && !isWild)
-            return getIsosurfaceJvxl(true);
+            return getIsosurfaceJvxl(true, JmolConstants.SHAPE_ISOSURFACE);
+          else if (iShape == JmolConstants.SHAPE_PMESH && !isWild)
+            return getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH);
           s += (String) viewer.getShapeProperty(iShape, "command") + "\n";
         case Token.color:
           colorShape(iShape, iTok + 1, false);
@@ -10822,6 +10824,10 @@ public class ScriptEvaluator {
       type = "MO";
       pt++;
       break;
+    case Token.pmesh:
+      type = "PMESH";
+      pt++;
+      break;
     case Token.isosurface:
       type = "ISO";
       pt++;
@@ -10981,7 +10987,7 @@ public class ScriptEvaluator {
     if (!isImage
         && !isExport
         && !Parser.isOneOf(type,
-            "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;VAR;FILE;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
+            "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;PMESH;VAR;FILE;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
       error(
           ERROR_writeWhat,
           "ALL|COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
@@ -11065,10 +11071,14 @@ public class ScriptEvaluator {
     } else if (data == "MO") {
       data = getMoJvxl(Integer.MAX_VALUE);
       type = "XJVXL";
+    } else if (data == "PMESH") {
+      if ((data = getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH)) == null)
+        error(ERROR_noData);
+      type = "XJVXL";
     } else if (data == "ISO" || data == "ISOX") {
       if (fileName.toUpperCase().indexOf("XJVXL") >= 0)
         data = "ISOX";
-      if ((data = getIsosurfaceJvxl(data == "ISOX")) == null)
+      if ((data = getIsosurfaceJvxl(data == "ISOX", JmolConstants.SHAPE_ISOSURFACE)) == null)
         error(ERROR_noData);
       type = (data.indexOf("<?xml") >= 0 ? "XJVXL" : "JVXL");
       if (!isShow)
@@ -11492,10 +11502,10 @@ public class ScriptEvaluator {
     }
   }
 
-  private String getIsosurfaceJvxl(boolean asXML) {
+  private String getIsosurfaceJvxl(boolean asXML, int iShape) {
     if (isSyntaxCheck)
       return "";
-    return (String) viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
+    return (String) viewer.getShapeProperty(iShape,
         (asXML ? "jvxlFileDataXml" : "jvxlFileData"));
   }
 
@@ -11509,8 +11519,13 @@ public class ScriptEvaluator {
         "moData");
     if (moData == null)
       error(ERROR_moModelError);
-    setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(modelIndex));
-    setShapeProperty(JmolConstants.SHAPE_MO, "moData", moData);
+    Integer n = (Integer) viewer.getShapeProperty(JmolConstants.SHAPE_MO, "moNumber");
+    System.out.println(n);
+    if (n == null || ((Integer)n).intValue() == 0) {
+      setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(modelIndex));
+      setShapeProperty(JmolConstants.SHAPE_MO, "moData", moData);
+    } else if (ptMO == Integer.MAX_VALUE) {
+    }
     return (String) viewer.getShapeProperty(JmolConstants.SHAPE_MO, "showMO",
         ptMO);
   }

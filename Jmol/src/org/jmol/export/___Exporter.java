@@ -235,6 +235,28 @@ public abstract class ___Exporter {
 
   abstract protected void outputComment(String comment);
 
+  protected static void setTempVertex(Point3f pt, Point3f offset, Point3f ptTemp) {
+    ptTemp.set(pt);
+    if (offset != null)
+      ptTemp.add(offset);
+  }
+
+  protected void outputVertices(Point3f[] vertices, int nVertices, Point3f offset) {
+    for (int i = 0; i < nVertices; i++) {
+      if (Float.isNaN(vertices[i].x))
+        continue;
+      outputVertex(vertices[i], offset);
+      output("\n");
+    }
+  }
+
+  protected void outputVertex(Point3f pt, Point3f offset) {
+    setTempVertex(pt, offset, tempP1);
+    output(tempP1);
+  }
+
+  abstract protected void output(Tuple3f pt);
+
   protected void outputJmolPerspective() {
     outputComment("Jmol perspective:");
     outputComment("screen width height dim: " + screenWidth + " " + screenHeight + " " + viewer.getScreenDim());
@@ -297,27 +319,6 @@ public abstract class ___Exporter {
     viewer.unTransformPoint(tempP3, tempP3);
     tempP3.sub(center);
     ptAtom.add(tempP3);
-  }
-
-  protected Vector3f getRotation(Vector3f v) {
-    tempV3.set(v);
-    tempV3.normalize();
-    float r = (float) Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-    float rX = (float) Math.acos(v.y / r) * degreesPerRadian;
-    if (v.x < 0)
-      rX += 180;
-    float rY = (float) Math.atan2(v.x, v.z) * degreesPerRadian;
-    tempV3.set(rX, rY, 0);
-    return tempV3;
-  }
-
-  protected AxisAngle4f getAxisAngle(Vector3f v, int x, int y, int z) {
-    tempV3.set(x, y, z);
-    tempV2.set(v);
-    tempV2.normalize();
-    tempV3.add(tempV2);
-    tempA.set(tempV3.x, tempV3.y, tempV3.z, 3.14159f);
-    return tempA;
   }
 
   protected String rgbFractionalFromColix(short colix, char sep) {
@@ -448,7 +449,7 @@ public abstract class ___Exporter {
   void drawSurface(int nVertices, int nPolygons, int faceVertexMax,
                       Point3f[] vertices, Vector3f[] normals, short[] colixes,
                       int[][] indices, short[] polygonColixes, BitSet bsFaces,
-                      short colix) {
+                      short colix, Point3f offset) {
     if (nVertices == 0)
       return;
     int nFaces = 0;
@@ -465,14 +466,14 @@ public abstract class ___Exporter {
       colorList = getColorList(0, colixes, nVertices, null, htColixes);
     outputSurface(vertices, normals, colixes, indices, polygonColixes,
         nVertices, nPolygons, nFaces, bsFaces, faceVertexMax, colix, colorList,
-        htColixes);
+        htColixes, offset);
   }
 
   abstract protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                 short[] colixes, int[][] indices,
                                 short[] polygonColixes,
                                 int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                int faceVertexMax, short colix, Vector colorList, Hashtable htColixes);
+                                int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset);
 
   abstract void drawPixel(short colix, int x, int y, int z); //measures
   

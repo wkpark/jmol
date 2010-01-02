@@ -24,9 +24,11 @@
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
+//import org.jmol.util.Escape;
 
 
 import java.io.BufferedReader;
+import java.util.BitSet;
 import java.util.Hashtable;
 
 import java.util.Vector;
@@ -56,21 +58,43 @@ abstract class MopacDataReader extends AtomSetCollectionReader {
     1,  1, 0, //dxy
   };
 
-  protected final void addSlater(int i0, int i1, int i2, int i3, int i4, 
+  protected final void addSlater(int iatom, int a, int b, int c, int d, 
                         float zeta, float coef) {
-    //System.out.println (i0 + " " + i1 + " " + i2 +  " " + i3 + " " + i4 + " " + zeta + " " + coef);
-    intinfo.addElement(new int[] {i0, i1, i2, i3, i4});
+    /*
+     * We build two data structures for each slater: 
+     * 
+     * int[] slaterInfo[] = {iatom, a, b, c, d}
+     * float[] slaterData[] = {zeta, coef}
+     * 
+     * where
+     * 
+     *  psi = (coef)(x^a)(y^b)(z^c)(r^d)exp(-zeta*r)
+     * 
+     * except: a == -2 ==> z^2 ==> (coef)(2z^2-x^2-y^2)(r^d)exp(-zeta*r)
+     *    and: b == -2 ==> (coef)(x^2-y^2)(r^d)exp(-zeta*r)
+     */
+    //System.out.println ("MopacDataReader slater " + intinfo.size() + ": " + iatom + " " + a + " " + b +  " " + c + " " + d + " " + zeta + " " + coef);
+    intinfo.addElement(new int[] {iatom, a, b, c, d});
     floatinfo.addElement(new float[] {zeta, coef});
   }
   
+  protected BitSet bsBases;
+  protected int nBases;
+  
   protected final void setSlaters() {
     int ndata = intinfo.size();
-    int[][] iarray = new int[ndata][];
-    for (int i = 0; i < ndata; i++)
-      iarray[i] = (int[]) intinfo.get(i);
-    float[][] farray = new float[ndata][];
-    for (int i = 0; i < ndata; i++)
-      farray[i] = (float[]) floatinfo.get(i);
+    if (bsBases == null)
+      nBases = ndata;
+    int[][] iarray = new int[nBases][];
+    for (int i = 0, pt = 0; i < ndata; i++)
+      if (bsBases == null || bsBases.get(i)) {
+        //System.out.println("MopacDataReader mapping basis " + i + " to basis " + pt + Escape.escape(intinfo.get(i)));
+        iarray[pt++] = (int[]) intinfo.get(i);
+      }
+    float[][] farray = new float[nBases][];
+    for (int i = 0, pt = 0; i < ndata; i++)
+      if (bsBases == null || bsBases.get(i))
+        farray[pt++] = (float[]) floatinfo.get(i);
     moData.put("slaterInfo", iarray);
     moData.put("slaterData", farray);
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);

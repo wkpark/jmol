@@ -131,7 +131,7 @@ import org.jmol.jvxl.readers.SurfaceGenerator;
 public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private IsosurfaceMesh[] isomeshes = new IsosurfaceMesh[4];
-  private IsosurfaceMesh thisMesh;
+  protected IsosurfaceMesh thisMesh;
 
   public void allocMesh(String thisID) {
     int index = meshCount++;
@@ -165,11 +165,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private short defaultColix;
   private short meshColix;
   private Point3f center;
+  private Point3f offset;
   private boolean isPhaseColored;
   private boolean isColorExplicit;
 
   protected SurfaceGenerator sg;
-  private JvxlData jvxlData;
+  protected JvxlData jvxlData;
 
   private ColorEncoder colorEncoder = new ColorEncoder();
 
@@ -275,6 +276,15 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("colorMesh" == propertyName) {
       int rgb = ((Integer) value).intValue();
       meshColix = Graphics3D.getColix(rgb);
+      return;
+    }
+
+    if ("offset" == propertyName) {
+      offset = new Point3f((Point3f) value);
+      if (offset.equals(JmolConstants.center))
+        offset = null;
+      if (thisMesh != null)
+        thisMesh.ptOffset = offset;
       return;
     }
 
@@ -483,15 +493,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
         meshData.polygonColorData = getPolygonColorData(meshData.polygonCount, meshData.polygonColixes);
       }
-      return JvxlCoder.jvxlGetFile(jvxlData, meshData, title, "", true, index, thisMesh
+      return JvxlCoder.jvxlGetFile(jvxlData, meshData, title, "", true, 1, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     }
-    if (property == "jvxlFileHeader")
-      return JvxlCoder.jvxlGetFile(jvxlData, null, title, "HEADERONLY", true, index, thisMesh
-              .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
-    if (property == "jvxlSurfaceData") // MO only
-      return JvxlCoder.jvxlGetFile(jvxlData, null, title, "orbital #" + index, false, 1, thisMesh
-              .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     if (property == "jvxlFileInfo")
       return JvxlCoder.jvxlGetInfo(jvxlData, true);
     return null;
@@ -580,6 +584,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     isPhaseColored = isColorExplicit = false;
     allowContourLines = true; //but not for f(x,y) or plane, which use mesh
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    offset = null;
     linkedMesh = null;
     initState();
   }
@@ -897,6 +902,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private void setModelIndex() {
     setModelIndex(atomIndex, modelIndex);
     thisMesh.ptCenter.set(center);
+    thisMesh.ptOffset = offset;
   }
 
   protected void setScriptInfo() {
@@ -941,6 +947,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       info.put("vertexCount", new Integer(mesh.vertexCount));
       if (mesh.ptCenter.x != Float.MAX_VALUE)
         info.put("center", mesh.ptCenter);
+      if (mesh.ptOffset != null)
+        info.put("offset", mesh.ptOffset);
       String s = JvxlCoder.jvxlGetInfo(mesh.jvxlData, true);
       if (s != null)
         info.put("jvxlInfo", s.replace('\n', ' '));

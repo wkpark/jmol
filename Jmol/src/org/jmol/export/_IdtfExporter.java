@@ -164,7 +164,11 @@ public class _IdtfExporter extends __CartesianExporter {
   private boolean haveCone;
   private boolean haveCircle;
   
-  private void output(Tuple3f pt, StringBuffer sb,boolean checkpt) {
+  protected void output(Tuple3f pt) {
+    output(pt, sbTemp, true);
+  }
+
+  private void output(Tuple3f pt, StringBuffer sb, boolean checkpt) {
     if (checkpt)
       checkPoint(pt);
     sb.append(round(pt.x)).append(" ").append(round(pt.y)).append(" ").append(round(pt.z)).append(" ");
@@ -652,11 +656,23 @@ public class _IdtfExporter extends __CartesianExporter {
     return getMeshData("Cylinder", faces, vertexes, normals);
   }
 
+
+  private StringBuffer sbTemp;
+  
+  protected void outputFace(int[] face, int[] map, int faceVertexMax) {
+    sbTemp.append(" " + map[face[0]] + " " + map[face[1]] + " "
+        + map[face[2]]);
+    if (faceVertexMax == 4 && face.length == 4) {
+      sbTemp.append(" " + map[face[0]] + " " + map[face[2]] + " "
+          + map[face[3]]);
+    }
+  }
+
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes) {
+                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset) {
     addColix(colix, polygonColixes != null || colixes != null);
     if (polygonColixes != null) {
       //     output(" colorPerVertex='FALSE'\n");
@@ -665,60 +681,23 @@ public class _IdtfExporter extends __CartesianExporter {
 
     // coordinates, part 1
 
-    int[] coordMap = new int[nVertices];
-    int nCoord = 0;
-    for (int i = 0; i < nVertices; i++) {
-      if (Float.isNaN(vertices[i].x))
-        continue;
-      coordMap[i] = nCoord++;
-    }
-
-    StringBuffer sbFaceCoordIndices = new StringBuffer();
-    for (int i = nPolygons; --i >= 0;) {
-      if (bsFaces != null && !bsFaces.get(i))
-        continue;
-      sbFaceCoordIndices.append(" " + coordMap[indices[i][0]] + " " + coordMap[indices[i][1]] + " "
-          + coordMap[indices[i][2]]);
-      if (faceVertexMax == 4 && indices[i].length == 4) {
-        sbFaceCoordIndices.append(" " + coordMap[indices[i][0]] + " " + coordMap[indices[i][2]]
-            + " " + coordMap[indices[i][3]]);
-      }
-    }
+    StringBuffer sbFaceCoordIndices = sbTemp = new StringBuffer();
+    int[] map = new int[nVertices];
+    int nCoord = getCoordinateMap(vertices, map);
+    outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);
 
     // normals, part 1  
     
-    StringBuffer sbFaceNormalIndices = new StringBuffer();
+    StringBuffer sbFaceNormalIndices = sbTemp = new StringBuffer();
     Vector vNormals = null;
     if (normals != null) {
-      Hashtable htNormals = new Hashtable();
       vNormals = new Vector();
-      int[] normalMap = new int[nVertices];
-      //output("  solid='FALSE'\n  normalPerVertex='TRUE'\n  ");
-      for (int i = 0; i < nVertices; i++) {
-        String s;
-        if (Float.isNaN(normals[i].x))
-          continue;
-        s = (" " + round(normals[i].x) + " " + round(normals[i].y) + " " + round(normals[i].z));
-        if (htNormals.containsKey(s)) {
-          normalMap[i] = ((Integer) htNormals.get(s)).intValue();
-        } else {
-          normalMap[i] = vNormals.size();
-          vNormals.add(s);
-          htNormals.put(s, new Integer(normalMap[i]));
-        }
-      }
-      htNormals = null;
-      for (int i = nPolygons; --i >= 0;) {
-        if (bsFaces != null && !bsFaces.get(i))
-          continue;
-        sbFaceNormalIndices.append(" " + normalMap[indices[i][0]] + " " + normalMap[indices[i][1]] + " "
-            + normalMap[indices[i][2]]);
-        if (faceVertexMax == 4 && indices[i].length == 4)
-          sbFaceNormalIndices.append(" " + normalMap[indices[i][0]] + " "
-              + normalMap[indices[i][2]] + " " + normalMap[indices[i][3]]);
-      }
+      map = getNormalMap(normals, nVertices, vNormals);
+      outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);
     }      
     
+    map = null;
+
     // colors, part 1
 
     StringBuffer sbColorIndexes = new StringBuffer();
@@ -745,13 +724,8 @@ public class _IdtfExporter extends __CartesianExporter {
     
     // coordinates, part 2
     
-    StringBuffer sbCoords = new StringBuffer();
-    for (int i = 0; i < nVertices; i++) {
-      if (Float.isNaN(vertices[i].x))
-        continue;
-      output(vertices[i], sbCoords, true);
-    }
-    coordMap = null;
+    StringBuffer sbCoords = sbTemp = new StringBuffer();
+    outputVertices(vertices, nVertices, offset);
 
     // normals, part 2
 
@@ -910,5 +884,4 @@ public class _IdtfExporter extends __CartesianExporter {
     Vector3f[] normals = new Vector3f[] { tempV2, tempV2, tempV2 };
     return getMeshData(key, triangleFace, vertexes, normals);
   }
-
 }

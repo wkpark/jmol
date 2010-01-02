@@ -67,12 +67,19 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   protected void transform() {
     vertexValues = imesh.vertexValues;
+    Point3f offset = imesh.ptOffset;
     for (int i = vertexCount; --i >= 0;) {
       if (Float.isNaN(vertices[i].x))
         continue;
       if (vertexValues == null || !Float.isNaN(vertexValues[i])
           || imesh.hasGridPoints) {
-        viewer.transformPoint(vertices[i], screens[i]);
+        if (offset == null) {
+          viewer.transformPoint(vertices[i], screens[i]);
+        } else {
+          pt1f.set(vertices[i]);
+          pt1f.add(offset);
+          viewer.transformPoint(pt1f, screens[i]);        
+        }
       }
     }
   }

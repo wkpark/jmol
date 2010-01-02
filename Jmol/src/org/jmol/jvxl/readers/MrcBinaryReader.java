@@ -164,7 +164,7 @@ class MrcBinaryReader extends VolumeFileReader {
         jvxlFileHeaderBuffer);
     volumetricOrigin.set(-mrcHeader.originX, -mrcHeader.originY, -mrcHeader.originZ);
     if (isAnisotropic)
-      volumetricOrigin.set(center);
+      setVolumetricOriginAnisotropy();
   }
 
   protected void readVoxelVector(int voxelVectorIndex) {

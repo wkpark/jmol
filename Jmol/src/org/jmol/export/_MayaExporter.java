@@ -107,7 +107,15 @@ public class _MayaExporter extends __CartesianExporter {
     tempV1.scale(0.5f);
     setAttr("t", tempV1);
     tempV1.sub(pt1);
-    setAttr("r", getRotation(tempV1));
+    tempV2.set(tempV1);
+    tempV2.normalize();
+    float r = tempV1.length();
+    float rX = (float) Math.acos(tempV1.y / r) * degreesPerRadian;
+    if (tempV1.x < 0)
+      rX += 180;
+    float rY = (float) Math.atan2(tempV1.x, tempV1.z) * degreesPerRadian;
+    tempV2.set(rX, rY, 0);
+    setAttr("r", tempV2);
     output(" createNode nurbsSurface -n \"" + id + "\" -p \"" + name
         + "\";\n");
     addAttr();
@@ -117,6 +125,9 @@ public class _MayaExporter extends __CartesianExporter {
     setAttr("s", 4);
     setAttr("hr", length / radius);
     addConnect();
+  }
+
+  static protected void getRotation(Vector3f v, Vector3f rot) {
   }
 
   protected void outputSphere(Point3f pt, float radius, short colix) {
@@ -151,7 +162,7 @@ public class _MayaExporter extends __CartesianExporter {
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes) {
+                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset) {
   }
 
   protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3,
@@ -177,6 +188,16 @@ public class _MayaExporter extends __CartesianExporter {
   }
 
   protected void outputEllipsoid(Point3f center, Point3f[] points, short colix) {
+    // TODO
+    
+  }
+
+  protected void outputFace(int[] is, int[] coordMap, int faceVertexMax) {
+    // TODO
+    
+  }
+
+  protected void output(Tuple3f pt) {
     // TODO
     
   }

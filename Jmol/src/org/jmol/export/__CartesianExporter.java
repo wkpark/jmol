@@ -26,11 +26,15 @@
 package org.jmol.export;
 
 import java.awt.Image;
+import java.util.BitSet;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
@@ -62,7 +66,45 @@ abstract public class __CartesianExporter extends ___Exporter {
     return radius;
   }
 
+  protected int getCoordinateMap(Point3f[] vertices, int[] coordMap) {
+    int n = 0;
+    for (int i = 0; i < coordMap.length; i++) {
+      if (Float.isNaN(vertices[i].x))
+        continue;
+      coordMap[i] = n++;
+    }      
+    return n;
+  }
+
+  protected int[] getNormalMap(Vector3f[] normals, int nNormals, Vector vNormals) {
+    Hashtable htNormals = new Hashtable();
+    int[] normalMap = new int[nNormals];
+    for (int i = 0; i < nNormals; i++) {
+      String s;
+      if (Float.isNaN(normals[i].x))
+        continue;
+      s = (round(normals[i].x) + " " + round(normals[i].y) + " " + round(normals[i].z) + "\n");
+      if (htNormals.containsKey(s)) {
+        normalMap[i] = ((Integer) htNormals.get(s)).intValue();
+      } else {
+        normalMap[i] = vNormals.size();
+        vNormals.add(s);
+        htNormals.put(s, new Integer(normalMap[i]));
+      }
+    }
+    return normalMap;
+  }
+
+  protected void outputIndices(int[][] indices, int[] map, int nPolygons,
+                                       BitSet bsFaces, int faceVertexMax) {
+    for (int i = nPolygons; --i >= 0;)
+      if (bsFaces == null || bsFaces.get(i))
+        outputFace(indices[i], map, faceVertexMax);
+  }
+
   // these are elaborated in IDTF, MAYA, VRML, or X3D:
+
+  protected abstract void outputFace(int[] is, int[] coordMap, int faceVertexMax);
 
   abstract protected void outputCircle(Point3f pt1, Point3f pt2, float radius,
                                        short colix, boolean doFill);

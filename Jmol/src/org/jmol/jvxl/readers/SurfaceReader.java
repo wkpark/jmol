@@ -196,6 +196,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   boolean hasColorData;
 
   protected Point3f center;
+  protected Point3f offset;
   protected float[] anisotropy;
   protected boolean isAnisotropic;
   protected Matrix3f eccentricityMatrix;
@@ -841,7 +842,10 @@ public abstract class SurfaceReader implements VertexDataServer {
     pt.x *= anisotropy[0];
     pt.y *= anisotropy[1];
     pt.z *= anisotropy[2];
-    pt.add(center);
+    if (offset == null)      
+      pt.add(center);
+    else
+      pt.add(offset);
   }
 
   protected void setVectorAnisotropy(Vector3f v) {
@@ -855,11 +859,18 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected void setVolumetricAnisotropy() {
     if (haveSetAnisotropy)
       return;
-    volumetricOrigin.set(center);
+    setVolumetricOriginAnisotropy();
     setVectorAnisotropy(volumetricVectors[0]);
     setVectorAnisotropy(volumetricVectors[1]);
     setVectorAnisotropy(volumetricVectors[2]);
     
+  }
+  
+  protected void setVolumetricOriginAnisotropy() {
+    if (offset == null)      
+      volumetricOrigin.set(center);
+    else
+      volumetricOrigin.add(offset);
   }
 
 

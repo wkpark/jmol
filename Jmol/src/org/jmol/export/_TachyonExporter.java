@@ -115,6 +115,10 @@ public class _TachyonExporter extends __RayTracerExporter {
     output("End_Scene\n");
   }
 
+  protected void output(Tuple3f pt) {
+    output(triad(pt));
+  }
+
   private String triad(float x, float y, float z) {
     return (int) x + " " + (int) (-y) + " " + (int) z;
   }
@@ -242,27 +246,29 @@ public class _TachyonExporter extends __RayTracerExporter {
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes, int nVertices,
                                   int nPolygons, int nFaces, BitSet bsFaces,
-                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes) {
+                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset) {
     if (polygonColixes != null) {
       for (int i = nPolygons; --i >= 0;) {
         if (bsFaces != null && !bsFaces.get(i))
           continue;
-        viewer.transformPoint(vertices[indices[i][0]], tempP1);
-        viewer.transformPoint(vertices[indices[i][1]], tempP2);
-        viewer.transformPoint(vertices[indices[i][2]], tempP3);
+        setTempVertex(vertices[indices[i][0]], offset, tempP1);
+        setTempVertex(vertices[indices[i][1]], offset, tempP2);
+        setTempVertex(vertices[indices[i][2]], offset, tempP3);
+        viewer.transformPoint(tempP1, tempP1);
+        viewer.transformPoint(tempP2, tempP2);
+        viewer.transformPoint(tempP3, tempP3);
         outputTriangle(tempP1, tempP2, tempP3, colix);
       }
       return;
     }
     outputTexture(colixes == null ? colix : colixes[0], false);
     output("VertexArray  Numverts " + nVertices + "\nCoords\n");
-    for (int i = 0; i < nVertices; i++) {
-      viewer.transformPoint(vertices[i], tempP1);
-      output(triad(tempP1) + "\n");
-    }
+    for (int i = 0; i < nVertices; i++)
+      outputVertex(vertices[i], offset);
     output("\nNormals\n");
     for (int i = 0; i < nVertices; i++) {
-      output(triad(getScreenNormal(vertices[i], normals[i], 10)) + "\n");
+      setTempVertex(vertices[i], offset, tempP1);
+      output(triad(getScreenNormal(tempP1, normals[i], 10)) + "\n");
     }
     String rgb = (colixes == null ? rgbFractionalFromColix(colix, ' ') : null);
     output("\nColors\n");

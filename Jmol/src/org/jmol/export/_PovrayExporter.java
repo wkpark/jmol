@@ -315,6 +315,10 @@ public class _PovrayExporter extends __RayTracerExporter {
 
   }
 
+  protected void output(Tuple3f pt) {
+    output(", <" + triad(pt) + ">");    
+  }
+  
   protected void outputCircle(int x, int y, int z, float radius, short colix,
                               boolean doFill) {
     output((doFill ? "b(" : "c(") + x + "," + y + "," + z + "," + radius + ","
@@ -367,7 +371,7 @@ public class _PovrayExporter extends __RayTracerExporter {
                                   short[] colixes, int[][] indices, 
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes) {
+                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset) {
     if (polygonColixes != null) {
       for (int i = nPolygons; --i >= 0;) {
         if (bsFaces != null && !bsFaces.get(i))
@@ -375,10 +379,8 @@ public class _PovrayExporter extends __RayTracerExporter {
         //if ((p++) % 10 == 0)
         //  output("\n");
         output("polygon { 4\n"); 
-        for (int j = 0; j <= 3; j++) {
-          viewer.transformPoint(vertices[indices[i][j % 3]], tempP1);
-          output(", <" + triad(tempP1) + ">");
-        }
+        for (int j = 0; j <= 3; j++)
+          outputVertex(vertices[indices[i][j % 3]], offset);
         output("\n");
         output("pigment{rgbt<" + color4(colix = polygonColixes[i]) + ">}\n");
         output("  translucentFinish(" + translucencyFractionalFromColix(colix)
@@ -392,24 +394,17 @@ public class _PovrayExporter extends __RayTracerExporter {
 
     output("mesh2 {\n");
     output("vertex_vectors { " + nVertices);
-    for (int i = 0; i < nVertices; i++) {
-      //if (i % 10 == 0)
-      //output("\n");
-      viewer.transformPoint(vertices[i], tempP1);
-      output(", <" + triad(tempP1) + ">");
-      output(" //" + i + "\n");
-
-    }
+    for (int i = 0; i < nVertices; i++)
+      outputVertex(vertices[i], offset);
     output("\n}\n");
 
     boolean haveNormals = (normals != null);
     if (haveNormals) {
       output("normal_vectors { " + nVertices);
       for (int i = 0; i < nVertices; i++) {
-        //        if (i % 10 == 0)
-        //          output("\n");
-        output(", <" + triad(getScreenNormal(vertices[i], normals[i], 1)) + ">");
-        output(" //" + i + "\n");
+        setTempVertex(vertices[i], offset, tempP1);
+        output(getScreenNormal(tempP1, normals[i], 1));
+        output("\n");
       }
       output("\n}\n");
     }
@@ -425,12 +420,9 @@ public class _PovrayExporter extends __RayTracerExporter {
       output("\n}\n");
     }
     output("face_indices { " + nFaces);
-    //int p = 0;
     for (int i = nPolygons; --i >= 0;) {
       if (bsFaces != null && !bsFaces.get(i))
         continue;
-      //if ((p++) % 10 == 0)
-      //  output("\n");
       output(", <" + triad(indices[i]) + ">");
       if (colixes != null) {
         output("," + htColixes.get("" + colixes[indices[i][0]]));

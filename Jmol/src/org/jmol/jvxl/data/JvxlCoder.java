@@ -77,7 +77,7 @@ public class JvxlCoder {
                                    boolean includeHeader, int nSurfaces,
                                    String state, String comment) {
     
-    if (jvxlData.asXml || meshData != null || jvxlData.vContours != null || jvxlData.contourValues != null)
+    if (meshData != null || jvxlData == null || jvxlData.asXml || jvxlData.vContours != null || jvxlData.contourValues != null)
       return jvxlGetFileXml(jvxlData, meshData, title, msg, includeHeader, nSurfaces, state, comment);
     return jvxlGetFileVersion1(jvxlData, meshData, title, msg, includeHeader, nSurfaces, state, comment);
   }
@@ -87,21 +87,31 @@ public class JvxlCoder {
                                        boolean includeHeader, int nSurfaces,
                                        String state, String comment) {
     StringBuffer data = new StringBuffer();
-    data.append("<?xml version=\"1.0\"?>\n").append("<jvxl version=\"").append(
-        JVXL_VERSION_XML).append("\" jmolVersion=\"").append(jvxlData.version)
-        .append("\">\n");
-    if (jvxlData.jvxlFileTitle != null)
-      appendTag(data, "jvxlFileTitle", null, null, jvxlData.jvxlFileTitle, "<![CDATA[\n");
-    if (jvxlData.jvxlVolumeDataXml == null)
+    if ("TRAILERONLY".equals(msg)) {
+      data.append("</jvxlSurfaceSet>\n");
+      data.append("</jvxl>");
+      return data.toString();
+    }
+    boolean isHeaderOnly = ("HEADERONLY".equals(msg));
+    if (includeHeader) {
+      data.append("<?xml version=\"1.0\"?>\n").append("<jvxl version=\"")
+          .append(JVXL_VERSION_XML).append("\" jmolVersion=\"").append(
+              jvxlData.version).append("\">\n");
+      if (jvxlData.jvxlFileTitle != null)
+        appendTag(data, "jvxlFileTitle", null, null, jvxlData.jvxlFileTitle,
+            "<![CDATA[\n");
+      if (jvxlData.jvxlVolumeDataXml == null)
         jvxlData.jvxlVolumeDataXml = (new VolumeData()).setVolumetricXml();
-    data.append(jvxlData.jvxlVolumeDataXml);
-    data.append("<jvxlSurfaceSet count=\"1\">\n");
+      data.append(jvxlData.jvxlVolumeDataXml);
+      data.append("<jvxlSurfaceSet count=\"" + (nSurfaces > 0 ? nSurfaces : 1)
+          + "\">\n");
+      if (isHeaderOnly)
+        return data.toString();
+    }
     StringBuffer sb;
-    String type = (
-        jvxlData.vertexDataOnly ? "pmesh" 
-      : jvxlData.jvxlPlane == null ? "isosurface"
-      : "plane");
-    //TODO: contours mentioned here? when discrete?
+    String type = (jvxlData.vertexDataOnly ? "pmesh"
+        : jvxlData.jvxlPlane == null ? "isosurface" : "plane");
+    // TODO: contours mentioned here? when discrete?
     if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length() > 0)
       type = "mapped " + type;
     data.append("<jvxlSurface type=\"").append(type).append("\">\n");
@@ -115,24 +125,25 @@ public class JvxlCoder {
       if (title != null)
         for (int i = 0; i < title.length; i++)
           sb.append(title[i]).append('\n');
-      appendTag(data, "jvxlSurfaceTitle", null, null, sb.toString(), "<![CDATA[\n");
+      appendTag(data, "jvxlSurfaceTitle", null, null, sb.toString(),
+          "<![CDATA[\n");
     }
     String attr = "";
     if (jvxlData.jvxlPlane != null)
-      attr += " plane=\"" + Escape.escape(jvxlData.jvxlPlane)+ "\"";
+      attr += " plane=\"" + Escape.escape(jvxlData.jvxlPlane) + "\"";
     sb = new StringBuffer();
     sb.append("<jvxlSurfaceData").append(attr).append(">\n");
     if (jvxlData.vertexDataOnly) {
       jvxlAppendMeshXml(sb, jvxlData, meshData, true);
     } else if (jvxlData.jvxlPlane == null) {
       appendXmlEdgeData(sb, jvxlData);
-      appendXmlColorData(sb, "jvxlColorData", jvxlData.jvxlColorData, 
-          jvxlData.isJvxlPrecisionColor, 
-          jvxlData.valueMappedToRed, jvxlData.valueMappedToBlue);
+      appendXmlColorData(sb, "jvxlColorData", jvxlData.jvxlColorData,
+          jvxlData.isJvxlPrecisionColor, jvxlData.valueMappedToRed,
+          jvxlData.valueMappedToBlue);
     } else {
-      appendXmlColorData(sb, "jvxlColorData", jvxlData.jvxlColorData, 
-          jvxlData.isJvxlPrecisionColor, 
-          jvxlData.valueMappedToRed, jvxlData.valueMappedToBlue);
+      appendXmlColorData(sb, "jvxlColorData", jvxlData.jvxlColorData,
+          jvxlData.isJvxlPrecisionColor, jvxlData.valueMappedToRed,
+          jvxlData.valueMappedToBlue);
     }
     sb.append("</jvxlSurfaceData>\n");
     int len = sb.length();
@@ -141,8 +152,10 @@ public class JvxlCoder {
       jvxlEncodeContourData(jvxlData.vContours, data);
     }
     data.append("</jvxlSurface>\n");
-    data.append("</jvxlSurfaceSet>\n");
-    data.append("</jvxl>");
+    if (includeHeader) {
+      data.append("</jvxlSurfaceSet>\n");
+      data.append("</jvxl>");
+    }
     return jvxlSetCompressionRatio(data, jvxlData, len);
   }
 
@@ -254,7 +267,7 @@ public class JvxlCoder {
         appendAttrib(info, "\n  ", "contoured", "true"); 
         appendAttrib(info, "\n  ", "colorMapped", "true");
       } else if (jvxlData.isBicolorMap) {
-        appendAttrib(info, "\n  ", "biolorMap", "true");
+        appendAttrib(info, "\n  ", "bicolorMap", "true");
       } else if (nColorData > 0) {
         appendAttrib(info, "\n  ", "colorMapped", "true");
       }
@@ -265,7 +278,7 @@ public class JvxlCoder {
         appendAttrib(info, "\n  ", "colorMapped", "true");
       appendAttrib(info, "\n  ", "plane", Escape.escape(jvxlData.jvxlPlane));
     }
-    // should not be becessary:
+    //next is for information only -- will be superceded by "encoding" attribute of jvxlColorData
     if (jvxlData.isJvxlPrecisionColor)
       appendAttrib(info, "\n  ", "precisionColor", "true");
     if (jvxlData.isContoured) {
@@ -1026,6 +1039,8 @@ public class JvxlCoder {
                                             int nSurfaces, String state,
                                             String comment) {
     // pre-XML
+    if ("TRAILERONLY".equals(msg))
+      return "";
     StringBuffer data = new StringBuffer();
     if (includeHeader) {
       String s = jvxlData.jvxlFileHeader

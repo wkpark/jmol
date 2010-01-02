@@ -35,6 +35,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.script.Token;
+import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.readers.Parameters;
 
 public class MolecularOrbital extends Isosurface {
@@ -243,7 +244,7 @@ public class MolecularOrbital extends Isosurface {
       String s = (String) super.getProperty("list", param);
       if (s.length() > 1)
         s += "cutoff = " + super.getProperty("cutoff", 0) + "\n";
-      return viewer.getMoInfo(-1) + "\n" + s; 
+      return viewer.getMoInfo(-1) + "\n" + s;
     }
     if (propertyName == "moNumber")
       return new Integer(moNumber);
@@ -254,31 +255,41 @@ public class MolecularOrbital extends Isosurface {
       int thisMO = param;
       int currentMO = moNumber;
       boolean returnIfNoCurrentMO = (thisMO == Integer.MIN_VALUE);
+      if (thisMO == Integer.MAX_VALUE) {
+        thisMO = currentMO;
+      }
       if (nOrb == 0 || currentMO == 0 && returnIfNoCurrentMO)
         return "";
-      boolean doThisMo = (!returnIfNoCurrentMO && thisMO != Integer.MAX_VALUE);
+      boolean doOneMo = (returnIfNoCurrentMO && thisMO != Integer.MAX_VALUE);
       if (currentMO == 0)
         thisMO = 0;
       boolean haveHeader = false;
       int nTotal = (thisMO > 0 ? 1 : nOrb);
       int i0 = (nTotal == 1 && currentMO > 0 ? currentMO : 1);
       for (int i = i0; i <= nOrb; i++)
-        if (thisMO == 0 || thisMO == i || !doThisMo && i == currentMO) {
-          if (!doThisMo) {
+        if (thisMO == 0 || thisMO == i || !doOneMo && i == currentMO) {
+          if (!doOneMo) {
             Parameters params = sg.getParams();
             super.setProperty("init", params, null);
             setOrbital(i);
           }
           if (!haveHeader) {
-            str.append(super.getProperty("jvxlFileHeader", nTotal));
+            str.append(JvxlCoder.jvxlGetFile(jvxlData, null, title,
+                "HEADERONLY", true, nTotal, null, null));
+            // str.append(super.getProperty("jvxlFileHeader", nTotal));
             haveHeader = true;
           }
-          str.append(super.getProperty("jvxlSurfaceData", i));
-          if (!doThisMo)
+          str.append(JvxlCoder.jvxlGetFile(jvxlData, null, title, "orbital #"
+              + i, false, 1, thisMesh.getState(myType),
+              (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand)));
+          // str.append(super.getProperty("jvxlSurfaceData", i));
+          if (!doOneMo)
             super.setProperty("delete", "mo_show", null);
           if (nTotal == 1)
             break;
         }
+      str.append(JvxlCoder.jvxlGetFile(jvxlData, null, null, "TRAILERONLY", true,
+          0, null, null));
       return str.toString();
     }
     return super.getProperty(propertyName, param);
@@ -393,7 +404,7 @@ public class MolecularOrbital extends Isosurface {
     appendCmd(s, "mo " + moNumber);
     if (moTranslucency != null)
       appendCmd(s, "mo translucent " + moTranslucentLevel);
-    appendCmd(s, ((IsosurfaceMesh) thisModel.get("mesh")).getState("mo"));
+    appendCmd(s, ((IsosurfaceMesh) thisModel.get("mesh")).getState(myType));
     return s.toString();
   }
 }

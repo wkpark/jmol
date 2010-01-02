@@ -1002,7 +1002,7 @@ public class SurfaceGenerator {
   public Object getProperty(String property, int index) {
     if (property == "jvxlFileData")
       return JvxlCoder.jvxlGetFile(jvxlData, null, params.title, "", true,
-          index, null, null);
+          index, null, null); // for Jvxl.java
     if (property == "jvxlFileInfo")
       return JvxlCoder.jvxlGetInfo(jvxlData, true); // for Jvxl.java
     return null;

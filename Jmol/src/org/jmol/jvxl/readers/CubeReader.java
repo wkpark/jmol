@@ -51,7 +51,7 @@ class CubeReader extends VolumeFileReader {
     volumetricOrigin.set(parseFloat(tokens[1]), parseFloat(tokens[2]),
         parseFloat(tokens[3]));
     if (isAnisotropic)
-      volumetricOrigin.set(center);
+      setVolumetricOriginAnisotropy();
     VolumeFileReader.checkAtomLine(isXLowToHigh, isAngstroms, tokens[0],
         atomLine, jvxlFileHeaderBuffer);
     if (!isAngstroms)

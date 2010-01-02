@@ -111,7 +111,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     String data = tempDataXml = getXmlData("jvxlVolumeData", null, true);
     volumetricOrigin.set(getXmlPoint(data, "origin"));
     if (isAnisotropic)
-      volumetricOrigin.set(center);
+      setVolumetricOriginAnisotropy();
    isAngstroms = true;
   }
 
@@ -159,6 +159,7 @@ public class JvxlXmlReader extends VolumeFileReader {
 
   protected void jvxlSkipData(int nPoints, boolean doSkipColorData)
       throws Exception {
+    line = br.readLine();
     skipTo("</jvxlSurface>");
   }
 
@@ -196,7 +197,8 @@ public class JvxlXmlReader extends VolumeFileReader {
     params.isBicolorMap = getXmlAttrib(data, "bicolorMap").equals("true");
     if (params.isBicolorMap || params.colorBySign)
       jvxlCutoff = 0;
-    jvxlDataIsColorMapped = getXmlAttrib(data, "colorMapped").equals("true");
+    jvxlDataIsColorMapped = params.isBicolorMap || getXmlAttrib(data, "colorMapped").equals("true");
+    //next is for information only -- will be superceded by "encoding" attribute of jvxlColorData
     jvxlData.isJvxlPrecisionColor = getXmlAttrib(data, "precisionColor").equals("true");
     s = getXmlAttrib(data, "plane");
     if (s.indexOf("{") >= 0) {
@@ -232,6 +234,10 @@ public class JvxlXmlReader extends VolumeFileReader {
       dataMax = parseFloat(getXmlAttrib(data, "dataMaximum"));
       red = parseFloat(getXmlAttrib(data, "valueMappedToRed"));
       blue = parseFloat(getXmlAttrib(data, "valueMappedToBlue"));
+      if (Float.isNaN(dataMin)) {
+        dataMin = red = -1f;
+        dataMax = blue = 1f;
+      }
     }
     jvxlSetColorRanges(dataMin, dataMax, red, blue, insideOut);
   }
@@ -316,7 +322,9 @@ public class JvxlXmlReader extends VolumeFileReader {
       if (type.equals("edge")) {
         str = getXmlAttrib(tempDataXml, "data");
       } else {
-        str = getXmlAttrib(getXmlData("jvxlColorData", null, true), "data"); 
+        String data = getXmlData("jvxlColorData", null, true);
+        jvxlData.isJvxlPrecisionColor = getXmlAttrib(data, "encoding").endsWith("2");
+        str = getXmlAttrib(data, "data");
       }
     } catch (Exception e) {
       Logger.error("Error reading " + type + " data " + e);
@@ -492,7 +500,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     jvxlDecodeTriangleData(tData, polygonColorData);
     Logger.info("Checking for vertex values");
     data = getXmlData("jvxlColorData", data, true);
-    jvxlData.isJvxlPrecisionColor = getXmlAttrib(data, "precision").equals("true");
+    jvxlData.isJvxlPrecisionColor = getXmlAttrib(data, "encoding").endsWith("2");
     jvxlColorDataRead = getXmlAttrib(data, "data");
     if (jvxlColorDataRead.length() == 0)
       jvxlColorDataRead = getXmlData("jvxlColorData", data, false);

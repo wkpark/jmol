@@ -105,6 +105,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   // same method in a subclass.
   
   protected void transform() {
+    
     for (int i = vertexCount; --i >= 0;) {
       viewer.transformPoint(vertices[i], screens[i]);
 /*

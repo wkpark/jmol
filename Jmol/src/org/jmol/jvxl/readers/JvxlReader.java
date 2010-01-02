@@ -81,7 +81,7 @@ public class JvxlReader extends JvxlXmlReader {
       if (!isAngstroms)
         volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
       if (isAnisotropic)
-        volumetricOrigin.set(center);
+        setVolumetricOriginAnisotropy();
       
   }
 

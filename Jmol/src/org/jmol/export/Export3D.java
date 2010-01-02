@@ -685,7 +685,7 @@ final public class Export3D implements JmolRendererInterface {
         meshSurface.vertexNormals, meshSurface.isColorSolid ? null
             : meshSurface.vertexColixes, meshSurface.polygonIndexes,
         meshSurface.isColorSolid ? null : meshSurface.polygonColixes,
-        meshSurface.bsFaces, meshSurface.colix);
+        meshSurface.bsFaces, meshSurface.colix, meshSurface.ptOffset);
   }
 
   public short[] getBgColixes(short[] bgcolixes) {

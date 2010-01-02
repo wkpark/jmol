@@ -35,7 +35,6 @@ import java.util.Vector;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
@@ -45,15 +44,8 @@ import org.jmol.util.Quaternion;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
-public class _X3dExporter extends __CartesianExporter {
+public class _X3dExporter extends _VrmlExporter {
 
-  private AxisAngle4f viewpoint = new AxisAngle4f();
-  
-  private void output(Tuple3f pt) {
-    output(round(pt));
-  }
-  UseTable useTable = new UseTable("USE ");
-  
   protected void outputHeader() {
     output("<X3D profile='Immersive' version='3.1' "
       + "xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' "
@@ -110,7 +102,7 @@ public class _X3dExporter extends __CartesianExporter {
     output("</X3D>\n");
   }
 
-  private void outputAppearance(short colix, boolean isText) {  
+  protected void outputAppearance(short colix, boolean isText) {  
     String def = useTable.getDef((isText ? "T" : "") + colix);
     output("<Appearance ");
     if (def.charAt(0) == '_') {
@@ -280,7 +272,7 @@ public class _X3dExporter extends __CartesianExporter {
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes) {
+                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset) {
     output("<Shape>\n");
     outputAppearance(colix, false);
     output("<IndexedFaceSet \n");
@@ -290,108 +282,46 @@ public class _X3dExporter extends __CartesianExporter {
 
     // coordinates, part 1
 
-    int[] coordMap = new int[nVertices];
-    int n = 0;
-    for (int i = 0; i < nVertices; i++) {
-      if (Float.isNaN(vertices[i].x))
-        continue;
-      coordMap[i] = n++;
-    }
-      
     output("coordIndex='\n");
-    for (int i = nPolygons; --i >= 0;) {
-      if (bsFaces != null && !bsFaces.get(i))
-        continue;
-      output(" " + coordMap[indices[i][0]] + " " + coordMap[indices[i][1]] + " "
-          + coordMap[indices[i][2]] + " -1\n");
-      if (faceVertexMax == 4 && indices[i].length == 4)
-        output(" " + coordMap[indices[i][0]] + " " + coordMap[indices[i][2]]
-            + " " + coordMap[indices[i][3]] + " -1\n");
-    }
+    int[] map = new int[nVertices];
+    getCoordinateMap(vertices, map);
+    outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);
     output("'\n");
 
     // normals, part 1  
     
     Vector vNormals = null;
     if (normals != null) {
-      Hashtable htNormals = new Hashtable();
       vNormals = new Vector();
-      int[] normalMap = new int[nVertices];
-      output("  solid='FALSE'\n  normalPerVertex='TRUE'\n  ");
-      for (int i = 0; i < nVertices; i++) {
-        String s;
-        if (Float.isNaN(normals[i].x))
-          continue;
-        s = (round(normals[i].x) + " " + round(normals[i].y) + " " + round(normals[i].z) + "\n");
-        if (htNormals.containsKey(s)) {
-          normalMap[i] = ((Integer) htNormals.get(s)).intValue();
-        } else {
-          normalMap[i] = vNormals.size();
-          vNormals.add(s);
-          htNormals.put(s, new Integer(normalMap[i]));
-        }
-      }
-     htNormals = null;
-      
-     output("  normalIndex='\n");
-      for (int i = nPolygons; --i >= 0;) {
-        if (bsFaces != null && !bsFaces.get(i))
-          continue;
-        output(normalMap[indices[i][0]] + " " + normalMap[indices[i][1]] + " "
-            + normalMap[indices[i][2]] + " -1\n");
-        if (faceVertexMax == 4 && indices[i].length == 4)
-          output(normalMap[indices[i][0]] + " "
-              + normalMap[indices[i][2]] + " " + normalMap[indices[i][3]]
-              + " -1\n");
-      }
+      map = getNormalMap(normals, nVertices, vNormals);
+      output("  solid='FALSE'\n  normalPerVertex='TRUE'\n  normalIndex='\n");
+      outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);
       output("'\n");
     }      
+    
+    map = null;
     
     // colors, part 1
         
     if (colorList != null) {
       output("  colorIndex='\n");
-      for (int i = nPolygons; --i >= 0;) {
-        if (bsFaces != null && !bsFaces.get(i))
-          continue;
-        if (polygonColixes == null) {
-          output(htColixes.get("" + colixes[indices[i][0]]) + " "
-              + htColixes.get("" + colixes[indices[i][1]]) + " "
-              + htColixes.get("" + colixes[indices[i][2]]) + " -1\n");
-          if (faceVertexMax == 4 && indices[i].length == 4)
-            output(htColixes.get("" + colixes[indices[i][0]]) + " "
-                + htColixes.get("" + colixes[indices[i][2]]) + " "
-                + htColixes.get("" + colixes[indices[i][3]]) + " -1\n");
-        } else {
-          output(htColixes.get("" + polygonColixes[i]) + "\n");
-        }
-      }
+      outputColorIndices(indices, nPolygons, bsFaces, faceVertexMax, htColixes, colixes, polygonColixes);
       output("'\n");
     }    
-
 
     output(">\n");  // closes IndexedFaceSet opening tag
     
     // coordinates, part 2
     
     output("<Coordinate point='\n");
-    for (int i = 0; i < nVertices; i++) {
-      if (Float.isNaN(vertices[i].x))
-        continue;
-      output(vertices[i]);
-      output("\n");
-    }
+    outputVertices(vertices, nVertices, offset);
     output("'/>\n");
-
-    coordMap = null;
 
     // normals, part 2
 
     if (normals != null) {
       output("<Normal vector='\n");
-      n = vNormals.size();
-      for (int i = 0; i < n; i++)
-        output((String) vNormals.get(i));
+      outputNormals(vNormals);
       vNormals = null;
       output("'/>\n");
     }
@@ -400,14 +330,7 @@ public class _X3dExporter extends __CartesianExporter {
 
     if (colorList != null) {
       output("<Color color='\n");
-      int nColors = colorList.size();
-      for (int i = 0; i < nColors; i++) {
-        String color = rgbFractionalFromColix(((Short) colorList.get(i)).shortValue(),
-            ' ');
-        output(" ");
-        output(color);
-        output("\n");
-      }
+      outputColors(colorList);
       output("'/>\n");
     }
    
@@ -433,15 +356,8 @@ public class _X3dExporter extends __CartesianExporter {
   }
 
   private void outputTransRot(Point3f pt1, Point3f pt2, int x, int y, int z) {    
-    output(" translation='");
-    tempV1.set(pt2);
-    tempV1.add(pt1);
-    tempV1.scale(0.5f);
-    output(tempV1);
-    tempV1.sub(pt1);
-    getAxisAngle(tempV1, x, y, z);
-    output("' rotation='" + round(tempA.x) + " " + round(tempA.y) + " " 
-      + round(tempA.z) + " " + round(tempA.angle) + "'" );
+    output(" ");
+    outputTransRot(pt1, pt2, x, y, z, "='", "'");
   }
   
   protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3, short colix) {

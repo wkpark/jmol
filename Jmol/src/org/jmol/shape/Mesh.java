@@ -209,7 +209,7 @@ public class Mesh extends MeshSurface {
 
   public String getState(String type) {
     StringBuffer s = new StringBuffer(type);
-    if (!type.equals("mo"))
+    if (!type.equals("molecularOrbital"))
       s.append(" ID ").append(Escape.escape(thisID));
     s.append(fillTriangles ? " fill" : " noFill");
     s.append(drawTriangles ? " mesh" : " noMesh");

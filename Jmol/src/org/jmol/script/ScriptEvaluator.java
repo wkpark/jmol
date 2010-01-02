@@ -11064,13 +11064,13 @@ public class ScriptEvaluator {
       type = "SPT";
     } else if (data == "MO") {
       data = getMoJvxl(Integer.MAX_VALUE);
-      type = "JVXL";
+      type = "XJVXL";
     } else if (data == "ISO" || data == "ISOX") {
       if (fileName.toUpperCase().indexOf("XJVXL") >= 0)
         data = "ISOX";
-      type = (data == "ISOX" ? "XJVXL" : "JVXL");
       if ((data = getIsosurfaceJvxl(data == "ISOX")) == null)
         error(ERROR_noData);
+      type = (data.indexOf("<?xml") >= 0 ? "XJVXL" : "JVXL");
       if (!isShow)
         showString((String) viewer.getShapeProperty(
             JmolConstants.SHAPE_ISOSURFACE, "jvxlFileInfo"));
@@ -12568,6 +12568,11 @@ public class ScriptEvaluator {
         break;
       case Token.set:
         thisSetNumber = intParameter(++i);
+        break;
+      case Token.offset:
+        propertyName = "offset";
+        propertyValue = centerParameter(++i);
+        i = iToken;
         break;
       case Token.center:
         propertyName = "center";

@@ -179,7 +179,8 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     // each STO shell is the combination of one or more gaussians
     int nSlaters = slaterInfo.length;
     for (int i = 0; i < nSlaters; i++) {
-      processSlater(i);
+      if (!processSlater(i))
+        break;
     }
   }
 
@@ -852,7 +853,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     }
   }
 
-  private void processSlater(int slaterIndex) {
+  private boolean processSlater(int slaterIndex) {
     /*
      * We have two data structures for each slater, using the WebMO format: 
      * 
@@ -875,21 +876,24 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     if ((thisAtom = qmAtoms[atomIndex]) == null) {
       if (minuszeta <= 0)
         moCoeff++;
-      return;
+      return true;
     }
+    if (minuszeta > 0) { //this is contracted; use previous moCoeff
+      minuszeta = -minuszeta;
+      moCoeff--;
+    }
+    if (moCoeff >= moCoefficients.length)
+      return false;
+    float coef = slaterData[slaterIndex][1] * moCoefficients[moCoeff++];
+    if (coef == 0)
+      return true;
     if (atomIndex != lastAtom)
       thisAtom.setXYZ(true);
     int a = slaterInfo[slaterIndex][1];
     int b = slaterInfo[slaterIndex][2];
     int c = slaterInfo[slaterIndex][3];
     int d = slaterInfo[slaterIndex][4];
-    if (minuszeta > 0) { //this is contracted; use previous moCoeff
-      minuszeta = -minuszeta;
-      moCoeff--;
-    }
-    float coef = slaterData[slaterIndex][1] * moCoefficients[moCoeff++];
-    if (coef == 0)
-      return;
+    //System.out.println("MOCALC " + a + " "+ b + " " + c + " " + d + " " + minuszeta + " " + coef);
     if (a == -2 || b == -2) /* if dz2 *//* if dx2-dy2 */
       for (int ix = xMax; --ix >= xMin;) {
         float dx2 = X2[ix];
@@ -910,16 +914,20 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
       /* everything else */
       for (int ix = xMax; --ix >= xMin;) {
         float dx = X[ix];
+        float dx2 = dx * dx;
+        float vdx = 1;
+        for (int i = a; --i >= 0;)
+          vdx *= dx;
         for (int iy = yMax; --iy >= yMin;) {
           float dy = Y[iy];
+          float dxy2 = dx2 + dy * dy;
+          float vdy = vdx;
+          for (int i = b; --i >= 0;)
+            vdy *= dy;
           for (int iz = zMax; --iz >= zMin;) {
             float dz = Z[iz];
-            float r = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
-            float value = coef * (float) Math.exp(minuszeta * r);
-            for (int i = a; --i >= 0;)
-              value *= dx;
-            for (int i = b; --i >= 0;)
-              value *= dy;
+            float r = (float) Math.sqrt(dxy2 + dz * dz);
+            float value = vdy * coef * (float) Math.exp(minuszeta * r);
             for (int i = c; --i >= 0;)
               value *= dz;
             for (int i = d; --i >= 0;)
@@ -930,6 +938,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
       }
     if (isElectronDensity)
       setTemp();
+    return true;
   }
 
   private void dumpInfo(int nGaussians, String info) {

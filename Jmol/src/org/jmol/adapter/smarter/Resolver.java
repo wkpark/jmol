@@ -942,6 +942,9 @@ public class Resolver {
   private final static String[] adfContainsRecords =
   { "Adf", "Amsterdam Density Functional" };
   
+  private final static String[] dgridContainsRecords =
+  { "Dgrid", "BASISFILE   created by DGrid" };
+  
   private final static String[] psiContainsRecords =
   { "Psi", "    PSI  3"};
  
@@ -956,7 +959,7 @@ public class Resolver {
     ampacContainsRecords, mopacContainsRecords, qchemContainsRecords, 
     gamessUKContainsRecords, gamessUSContainsRecords,
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
-    nwchemContainsRecords, uicrcifContainsRecords
+    nwchemContainsRecords, uicrcifContainsRecords, dgridContainsRecords,
   };
 }
 

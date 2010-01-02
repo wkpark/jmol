@@ -51,6 +51,12 @@ abstract class __RayTracerExporter extends ___Exporter {
     isCartesianExport = false;
   }
 
+  protected void outputVertex(Point3f pt, Point3f offset) {
+    setTempVertex(pt, offset, tempP1);
+    viewer.transformPoint(tempP1, tempP1);
+    output(tempP1);
+  }
+
   abstract protected void outputCircle(int x, int y, int z, float radius, short colix,
                                        boolean doFill);
 

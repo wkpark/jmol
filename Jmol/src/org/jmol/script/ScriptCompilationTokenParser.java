@@ -488,13 +488,14 @@ abstract class ScriptCompilationTokenParser {
     return true;
   }
   
-  // within ( plane, ....)
-  // within ( distance, plane, planeExpression)
-  // within ( hkl, ....
-  // within ( distance, orClause)
-  // within ( group, ....)
-
   private boolean clauseWithin() {
+
+    // within ( distance, plane, planeExpression)
+    // within ( distance, hkl, hklExpression)
+    // within ( distance, coord, point)
+    // within ( distance, orClause)
+    // within ( group|branch|etc, ....)
+
     addNextToken();
     if (!addNextTokenIf(Token.leftparen))
       return false;
@@ -517,7 +518,7 @@ abstract class ScriptCompilationTokenParser {
       break;
     case Token.branch:
       allowComma = false;
-      //fall through
+      // fall through
     case Token.atomType:
     case Token.atomName:
     case Token.boundbox:
@@ -526,10 +527,8 @@ abstract class ScriptCompilationTokenParser {
     case Token.element:
     case Token.group:
     case Token.helix:
-    case Token.hkl:
     case Token.model:
     case Token.molecule:
-    case Token.plane:
     case Token.site:
     case Token.structure:
     case Token.string:
@@ -539,13 +538,12 @@ abstract class ScriptCompilationTokenParser {
       key = ((String) theValue).toLowerCase();
       break;
     default:
-      return error(ERROR_unrecognizedParameter,"WITHIN", ": " + theToken.value);
+      return error(ERROR_unrecognizedParameter, "WITHIN", ": " + theToken.value);
     }
     if (key == null)
       addTokenToPostfix(Token.decimal, new Float(distance));
     else
       addTokenToPostfix(Token.string, key);
-
     while (true) {
       if (!addNextTokenIf(Token.comma))
         break;
@@ -557,13 +555,15 @@ abstract class ScriptCompilationTokenParser {
         tok = tokPeek();
       }
       boolean isCoordOrPlane = false;
-       if (key == null) {
-        if (tok == Token.identifier) {
-          //distance was specified, but to what?
-        } else if (tok == Token.hkl || tok == Token.coord || tok == Token.plane) {
+      if (key == null) {
+        switch (tok) {
+        case Token.hkl:
+        case Token.coord:
+        case Token.plane:
           isCoordOrPlane = true;
           addNextToken();
-        } else if (tok == Token.leftbrace) {
+          break;
+        case Token.leftbrace:
           returnToken();
           isCoordOrPlane = true;
           addTokenToPostfix(Token
@@ -581,7 +581,7 @@ abstract class ScriptCompilationTokenParser {
             addTokenToPostfix(Token.tokenExpressionBegin);
             addNextToken();
             if (!clauseOr(false))
-              return error(ERROR_unrecognizedParameter,"WITHIN", ": ?");
+              return error(ERROR_unrecognizedParameter, "WITHIN", ": ?");
             if (!addNextTokenIf(Token.rightparen))
               return error(ERROR_tokenExpected, ", / )");
             addTokenToPostfix(Token.tokenExpressionEnd);

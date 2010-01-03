@@ -941,15 +941,15 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     for (int i = 0; i < meshCount; i++) {
       Hashtable info = new Hashtable();
       IsosurfaceMesh mesh = isomeshes[i];
-      if (mesh == null)// || mesh.vertices == null)
+      if (mesh == null || mesh.vertices == null)
         continue;
       info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
       info.put("vertexCount", new Integer(mesh.vertexCount));
       if (mesh.ptCenter.x != Float.MAX_VALUE)
         info.put("center", mesh.ptCenter);
       info.put("offset", (mesh.ptOffset == null ? new Point3f() : mesh.ptOffset));
-      //info.put("xyzMin", mesh.jvxlData.boundingBox[0]);
-      //info.put("xyzMax", mesh.jvxlData.boundingBox[1]);
+      info.put("xyzMin", mesh.jvxlData.boundingBox[0]);
+      info.put("xyzMax", mesh.jvxlData.boundingBox[1]);
       String s = JvxlCoder.jvxlGetInfo(mesh.jvxlData, true);
       if (s != null)
         info.put("jvxlInfo", s.replace('\n', ' '));

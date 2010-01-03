@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-12-08 19:19+0100\n"
-"PO-Revision-Date: 2008-09-30 16:01+0000\n"
-"Last-Translator: Andrew Schofield <andrew_s@fahmon.net>\n"
+"PO-Revision-Date: 2010-01-03 04:31+0000\n"
+"Last-Translator: Philipp Kleinhenz <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-01 15:56+0000\n"
+"X-Launchpad-Export-Date: 2010-01-03 19:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -35,18 +35,16 @@ msgid "no display (and also exit when done)"
 msgstr "no display (and also exit when done)"
 
 #: org/openscience/jmol/app/JmolApp.java:144
-#, fuzzy
 msgid "check script syntax only - no file loading"
-msgstr "check script syntax only"
+msgstr "check script syntax only - no file loading"
 
 #: org/openscience/jmol/app/JmolApp.java:146
-#, fuzzy
 msgid "check script syntax only - with file loading"
-msgstr "check script syntax only"
+msgstr "check script syntax only - with file loading"
 
 #: org/openscience/jmol/app/JmolApp.java:147
 msgid "debug"
-msgstr ""
+msgstr "debug"
 
 #: org/openscience/jmol/app/JmolApp.java:148
 msgid "silent startup operation"
@@ -58,7 +56,7 @@ msgstr "list commands during script execution"
 
 #: org/openscience/jmol/app/JmolApp.java:152
 msgid "start with no splash screen"
-msgstr ""
+msgstr "start with no splash screen"
 
 #: org/openscience/jmol/app/JmolApp.java:154
 msgid "no console -- all output to sysout"
@@ -66,7 +64,7 @@ msgstr "no console -- all output to sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr ""
+msgstr "send only output from print messages to console (implies -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent commmand thread"
@@ -78,19 +76,19 @@ msgstr "exit after script (implicit with -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:164
 msgid "script file to execute or '-' for System.in"
-msgstr ""
+msgstr "script file to execute or '-' for System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr ""
+msgstr "use multitouch interface (requires \"sparshui\" parameter"
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
-msgstr ""
+msgstr "Jmol script to execute BEFORE -s option"
 
 #: org/openscience/jmol/app/JmolApp.java:183
 msgid "Jmol script to execute AFTER -s option"
-msgstr ""
+msgstr "Jmol script to execute AFTER -s option"
 
 #: org/openscience/jmol/app/JmolApp.java:192
 msgid "property=value"
@@ -123,26 +121,24 @@ msgid "For example:"
 msgstr "For example:"
 
 #: org/openscience/jmol/app/JmolApp.java:236
-#, fuzzy
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
-msgstr "The -D options are as follows (defaults in parenthesis):"
+msgstr ""
+"The -D options are as follows (defaults in parenthesis) and must be called "
+"preceding '-jar Jmol.jar':"
 
 #: org/openscience/jmol/app/JmolApp.java:466
-#, fuzzy
 msgid "Executing script 1..."
-msgstr "Executing script..."
+msgstr "Executing script 1..."
 
 #: org/openscience/jmol/app/JmolApp.java:476
-#, fuzzy
 msgid "Executing script file..."
-msgstr "Executing script..."
+msgstr "Executing script file..."
 
 #: org/openscience/jmol/app/JmolApp.java:497
-#, fuzzy
 msgid "Executing script 2..."
-msgstr "Executing script..."
+msgstr "Executing script 2..."
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
@@ -168,27 +164,24 @@ msgid "Jmol Script Console"
 msgstr "Jmol Script Console"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
-#, fuzzy
 msgid "Editor"
-msgstr "&Edit"
+msgstr "Editor"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:114
 msgid "Check"
-msgstr ""
+msgstr "Check"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:115
-#, fuzzy
 msgid "Top"
-msgstr "&Top"
+msgstr "Top"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:116
-#, fuzzy
 msgid "Step"
-msgstr "State"
+msgstr "Step"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:123
 msgid "Variables"
-msgstr ""
+msgstr "Variables"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:306
@@ -335,75 +328,71 @@ msgstr "Delete atoms"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
-msgstr ""
+msgstr "Export Gaussian Input File"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:194
 msgid "Basic"
-msgstr ""
+msgstr "Basic"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:196
 msgid "Advanced"
-msgstr ""
+msgstr "Advanced"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:224
-#, fuzzy
 msgid "Checkpoint File: "
-msgstr "Recent Files"
+msgstr "Checkpoint File: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
-msgstr ""
+msgstr "Amount of Memory:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:235
 msgid "Number of Processors:"
-msgstr ""
+msgstr "Number of Processors:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:248
 msgid "Route"
-msgstr ""
+msgstr "Route"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:254
 msgid "Method: "
-msgstr ""
+msgstr "Method: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:261
 msgid "Basis Set: "
-msgstr ""
+msgstr "Basis Set: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr ""
+msgstr "Density Fitting Basis Set (DFT Only): "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr ""
+msgstr "Job Options: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:288
-#, fuzzy
 msgid "Molecular Properties"
-msgstr "Properties"
+msgstr "Molecular Properties"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:294
 msgid "Total Charge: "
-msgstr ""
+msgstr "Total Charge: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:301
 msgid "Multiplicity: "
-msgstr ""
+msgstr "Multiplicity: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:308
-#, fuzzy
 msgid "Selection: "
-msgstr "Select"
+msgstr "Selection: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
-msgstr ""
+msgstr "Gaussian Input File Name"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:349
-#, fuzzy
 msgid "File..."
-msgstr "&File"
+msgstr "File..."
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:360
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:759
@@ -450,9 +439,8 @@ msgid "Output Conso&le..."
 msgstr "Output Conso&le..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
-#, fuzzy
 msgid "Jmol Java &Console"
-msgstr "Jmol Java Console"
+msgstr "Jmol Java &Console"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:58
 msgid "AtomSet&Chooser..."
@@ -818,36 +806,32 @@ msgid "&Rewind to first frame"
 msgstr "&Rewind to first frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
-#, fuzzy
 msgid "Rewind to first frame"
-msgstr "&Rewind to first frame"
+msgstr "Rewind to first frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
 msgid "Go to &next frame"
 msgstr "Go to &next frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
-#, fuzzy
 msgid "Go to next frame"
-msgstr "Go to &next frame"
+msgstr "Go to next frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "Go to &previous frame"
 msgstr "Go to &previous frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
-#, fuzzy
 msgid "Go to previous frame"
-msgstr "Go to &previous frame"
+msgstr "Go to previous frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "Go to &last frame"
 msgstr "Go to &last frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
-#, fuzzy
 msgid "Go to last frame"
-msgstr "Go to &last frame"
+msgstr "Go to last frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "Start &vibration"
@@ -924,9 +908,8 @@ msgid "Rotate molecule."
 msgstr "Rotate molecule."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
-#, fuzzy
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr "Select a set of atoms using SHIFT-LEFT-  DRAG."
+msgstr "Select a set of atoms using SHIFT-LEFT-DRAG."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
 msgid "Click atoms to measure distances"
@@ -977,9 +960,8 @@ msgid "Launching main frame..."
 msgstr "Launching main frame..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:298
-#, fuzzy
 msgid "Jmol Console"
-msgstr "Jmol Java Console"
+msgstr "Jmol Console"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:320
 msgid "Could not create ConsoleTextArea: "
@@ -1508,20 +1490,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:522
 msgid "compressing large data file to"
 msgstr "compressing large data file to"
-
-#, fuzzy
-#~ msgid "Initializing Script Editor..."
-#~ msgstr "Initialising Script Window..."
-
-#~ msgid "Initializing Measurements..."
-#~ msgstr "Initialising Measurements..."
-
-#~ msgid "&Java Output Console"
-#~ msgstr "&Java Output Console"
-
-#~ msgid "Run"
-#~ msgstr "Run"
-
-#, fuzzy
-#~ msgid "quoted argument is Jmol script to execute"
-#~ msgstr "Jmol Script Console"

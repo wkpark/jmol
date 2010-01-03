@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-12-08 19:19+0100\n"
-"PO-Revision-Date: 2009-01-01 17:41+0000\n"
+"PO-Revision-Date: 2009-12-30 15:18+0000\n"
 "Last-Translator: nanker <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-03-22 18:36+0000\n"
+"X-Launchpad-Export-Date: 2010-01-03 19:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -24,7 +24,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:139
 msgid "transparent background"
-msgstr ""
+msgstr "gennemsigtig baggrund"
 
 #: org/openscience/jmol/app/JmolApp.java:140
 msgid "give this help page"
@@ -96,7 +96,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:195
 msgid "supported options are given below"
-msgstr ""
+msgstr "understøttede muligheder er angivet nedenfor"
 
 #: org/openscience/jmol/app/JmolApp.java:201
 #, java-format
@@ -160,25 +160,24 @@ msgid "Jmol Script Console"
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
-#, fuzzy
 msgid "Editor"
-msgstr "&Redigér"
+msgstr "Editor"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:114
 msgid "Check"
-msgstr ""
+msgstr "Tjek"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:115
 msgid "Top"
-msgstr ""
+msgstr "Top"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:116
 msgid "Step"
-msgstr ""
+msgstr "Trin"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:123
 msgid "Variables"
-msgstr ""
+msgstr "Variabler"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:306
@@ -465,7 +464,7 @@ msgstr "Eksport til &Webside..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "Export one or more views to a web page."
-msgstr ""
+msgstr "Eksportér en eller flere visninger til en webside."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Render in POV-&Ray..."
@@ -494,7 +493,7 @@ msgstr "Udskriv visningen."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
 msgid "&Close"
-msgstr ""
+msgstr "&Luk"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:72
 msgid "E&xit"
@@ -511,7 +510,7 @@ msgstr "&Redigér"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:76
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:82
 msgid "Select &All"
-msgstr ""
+msgstr "Vælg &alle"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:77
 msgid "Deselect All"
@@ -519,7 +518,7 @@ msgstr "Fravælg alt"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:78
 msgid "Copy &Image"
-msgstr ""
+msgstr "Kopiér &billed"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:79
 msgid "Copy Script"
@@ -527,7 +526,7 @@ msgstr "Kopiér script"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:80
 msgid "Pr&eferences..."
-msgstr ""
+msgstr "Præf&erencer..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
 msgid "&Paste"
@@ -535,11 +534,11 @@ msgstr "&Sæt ind"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:83
 msgid "&Select"
-msgstr ""
+msgstr "&Vælg"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:84
 msgid "&All"
-msgstr ""
+msgstr "&Alle"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:85
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:98
@@ -547,7 +546,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:110
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:117
 msgid "&None"
-msgstr ""
+msgstr "&Ingen"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:86
 msgid "Hydrogen"
@@ -571,7 +570,7 @@ msgstr "Fosfor"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:91
 msgid "Sulfur"
-msgstr ""
+msgstr "Svovl"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
 msgid "Amino"
@@ -620,7 +619,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:121
 #, java-format
 msgid "{0} Å"
-msgstr ""
+msgstr "{0} Å"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:109
 msgid "&Label"
@@ -628,15 +627,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:111
 msgid "&Symbol"
-msgstr ""
+msgstr "&Symbol"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:112
 msgid "&Name"
-msgstr ""
+msgstr "&Navn"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:113
 msgid "&Number"
-msgstr ""
+msgstr "&Nummer"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:114
 msgid "&Centered"
@@ -666,11 +665,11 @@ msgstr "{0} pixels"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:126
 #, java-format
 msgid "Scale {0}"
-msgstr ""
+msgstr "Skala {0}"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:127
 msgid "&Zoom"
-msgstr ""
+msgstr "&Zoom"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:128
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:129
@@ -704,7 +703,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
 msgid "&Measurements"
-msgstr ""
+msgstr "&Målinger"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
 msgid "&View"
@@ -716,19 +715,19 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
 msgid "&Top"
-msgstr ""
+msgstr "&Top"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:142
 msgid "&Bottom"
-msgstr ""
+msgstr "&Bund"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
 msgid "&Right"
-msgstr ""
+msgstr "&Højre"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
 msgid "&Left"
-msgstr ""
+msgstr "&Venstre"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:145
 msgid "Tr&ansform..."
@@ -772,7 +771,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
 msgid "&Graph..."
-msgstr ""
+msgstr "&Graf..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
 msgid "Calculate chemical &shifts..."
@@ -788,7 +787,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
 msgid "&Loop"
-msgstr ""
+msgstr "&Løkke"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:161
 msgid "P&alindrome"
@@ -804,31 +803,31 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
 msgid "Rewind to first frame"
-msgstr ""
+msgstr "Gå tilbage til første ramme"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
 msgid "Go to &next frame"
-msgstr ""
+msgstr "Gå til &næste ramme"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
 msgid "Go to next frame"
-msgstr ""
+msgstr "Gå til næste ramme"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "Go to &previous frame"
-msgstr ""
+msgstr "Gå til &foregående ramme"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
 msgid "Go to previous frame"
-msgstr ""
+msgstr "Gå til foregående ramme"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "Go to &last frame"
-msgstr ""
+msgstr "Gå til &sidste ramme"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 msgid "Go to last frame"
-msgstr ""
+msgstr "Gå til næste ramme"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "Start &vibration"
@@ -898,7 +897,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
 msgid "Use Atom Color"
-msgstr ""
+msgstr "Brug Atom farve"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:193
 msgid "Rotate molecule."
@@ -990,7 +989,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1254
 msgid "IO Exception:"
-msgstr ""
+msgstr "IO undtagelse:"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1146,7 +1145,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:503
 msgid "Cancel this dialog without saving"
-msgstr ""
+msgstr "Forlad denne dialog uden at gemme"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:137
 msgid "Preferences"
@@ -1460,7 +1459,7 @@ msgstr ""
 msgid ""
 "Could not find or open:\n"
 "{0}"
-msgstr ""
+msgstr "Kunne ikke finde eller åbne:{0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:516
 #, java-format
@@ -1469,118 +1468,10 @@ msgid ""
 "{0}\n"
 "         to"
 msgstr ""
+"kopierer\n"
+"{0}\n"
+"         til"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:522
 msgid "compressing large data file to"
 msgstr ""
-
-#~ msgid "Run"
-#~ msgstr "Kør"
-
-#~ msgid "Preview"
-#~ msgstr "Eksempel"
-
-#~ msgid "Append models"
-#~ msgstr "Anvend model"
-
-#~ msgid "Make crystal..."
-#~ msgstr "Lav krystal..."
-
-#~ msgid "Name"
-#~ msgstr "Navn"
-
-#~ msgid "Measurements..."
-#~ msgstr "Mål..."
-
-#~ msgid "View measurement table."
-#~ msgstr "Vis måltabel."
-
-#~ msgid "Image Type"
-#~ msgstr "Billedtype"
-
-#~ msgid "JPEG Quality"
-#~ msgstr "JPEG kvalitet"
-
-#~ msgid "All Files"
-#~ msgstr "Alle filer"
-
-#~ msgid "Abort file chooser dialog"
-#~ msgstr "Om filvælger dialogen"
-
-#~ msgid "Details"
-#~ msgstr "Detaljer"
-
-#~ msgid "Directory"
-#~ msgstr "Katalog"
-
-#~ msgid "Open selected directory"
-#~ msgstr "Åben det valgte katalog"
-
-#~ msgid "Attributes"
-#~ msgstr "Egenskaber"
-
-#~ msgid "Modified"
-#~ msgstr "Ændret"
-
-#~ msgid "Size"
-#~ msgstr "Størrelse"
-
-#~ msgid "Files of Type:"
-#~ msgstr "Filer efter type:"
-
-#~ msgid "Type"
-#~ msgstr "Type"
-
-#~ msgid "FileChooser help"
-#~ msgstr "Filvælger hjælp"
-
-#~ msgid "Home"
-#~ msgstr "Hjem"
-
-#~ msgid "List"
-#~ msgstr "Liste"
-
-#~ msgid "Look In:"
-#~ msgstr "Se i:"
-
-#~ msgid "Error creating new folder"
-#~ msgstr "Fejl ved oprettelse af ny mappe"
-
-#~ msgid "New Folder"
-#~ msgstr "Ny mappe"
-
-#~ msgid "Create New Folder"
-#~ msgstr "Opret ny mappe"
-
-#~ msgid "Open selected file"
-#~ msgstr "Åbn den valgte fil"
-
-#~ msgid "Save selected file"
-#~ msgstr "Gem den valgte fil"
-
-#~ msgid "Save In:"
-#~ msgstr "Gem i:"
-
-#~ msgid "Update"
-#~ msgstr "Opdatér"
-
-#~ msgid "Up"
-#~ msgstr "Op"
-
-#~ msgid "Up One Level"
-#~ msgstr "Et niveau op"
-
-#~ msgid "No"
-#~ msgstr "Nej"
-
-#~ msgid "Yes"
-#~ msgstr "Ja"
-
-#~ msgid "Filename"
-#~ msgstr "Filnavn"
-
-#~ msgid "Height : "
-#~ msgstr "Højde: "
-
-#~ msgid "Export &PDF..."
-#~ msgstr "Eksport %PDF..."

@@ -117,7 +117,7 @@ public class GT {
     languageList = new Language[] {
       new Language("ar",    GT._("Arabic"),                   false),
       new Language("ca",    GT._("Catalan"),                  true),
-      new Language("zh_CN", GT._("Simplified Chinese"),       false),
+      new Language("zh_CN", GT._("Simplified Chinese"),       true),
       new Language("zh_TW", GT._("Traditional Chinese"),      true),
       new Language("cs",    GT._("Czech"),                    true),
       new Language("da",    GT._("Danish"),                   false),

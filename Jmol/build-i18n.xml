@@ -255,6 +255,9 @@
             </antcall>
           </sequential>
         </for>
+        <delete>
+          <fileset dir="${Jmol.po.dir}" includes="*.po~" defaultexcludes="no"/>
+        </delete>
       </then>
       <else>
         <echo message="Skipping generation of .po gettext files for Jmol" />
@@ -297,6 +300,9 @@
             </antcall>
           </sequential>
         </for>
+        <delete>
+          <fileset dir="${JmolApplet.po.dir}" includes="*.po~" defaultexcludes="no"/>
+        </delete>
       </then>
       <else>
         <echo message="Skipping generation of .po gettext files for JmolApplet" />

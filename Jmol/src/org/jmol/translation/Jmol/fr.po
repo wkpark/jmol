@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-12-08 19:19+0100\n"
-"PO-Revision-Date: 2009-11-06 22:15+0000\n"
+"PO-Revision-Date: 2009-12-01 20:12+0000\n"
 "Last-Translator: Jerome Pansanel <j.pansanel@pansanel.net>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-11-07 11:44+0000\n"
+"X-Launchpad-Export-Date: 2010-01-04 06:12+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -74,7 +74,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent commmand thread"
-msgstr ""
+msgstr "indépendante fil commmand"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"
@@ -127,12 +127,10 @@ msgid "For example:"
 msgstr "Par exemple:"
 
 #: org/openscience/jmol/app/JmolApp.java:236
-#, fuzzy
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr ""
-"Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
 
 #: org/openscience/jmol/app/JmolApp.java:466
 msgid "Executing script 1..."
@@ -346,7 +344,7 @@ msgstr "Avancé"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:224
 msgid "Checkpoint File: "
-msgstr ""
+msgstr "Checkpoint File "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
@@ -370,7 +368,7 @@ msgstr "Ensemble de base "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr ""
+msgstr "Densité Fitting Basis Set (DFT seulement) "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:275
 msgid "Job Options: "
@@ -394,7 +392,7 @@ msgstr "Sélection : "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
-msgstr ""
+msgstr "Gaussian Input File Name"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:349
 msgid "File..."
@@ -845,11 +843,11 @@ msgstr "Début de &vibration"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
 msgid "&Stop vibration"
-msgstr ""
+msgstr "&Stop aux vibrations"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
 msgid "&First frequency"
-msgstr ""
+msgstr "Première &fréquence"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:174
 msgid "&Next frequency"
@@ -1058,7 +1056,8 @@ msgstr "Afficher pendant le calcul"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:244
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr "Est-ce que POV-Ray doit essayer d'afficher le rendu durant le calcul ?"
+msgstr ""
+"Est-ce que POV-Ray doit essayer d'afficher le rendu durant le calcul ?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:267
 msgid "width:"
@@ -1153,7 +1152,7 @@ msgstr "Aller!"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:492
 msgid "Save file and possibly launch POV-Ray"
-msgstr ""
+msgstr "Enregistrer le fichier et peut-être lancer POV-Ray"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:503
 msgid "Cancel this dialog without saving"
@@ -1247,19 +1246,19 @@ msgstr "Les nouveautés de Jmol"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:64
 msgid "Attempt to make scratch directory failed."
-msgstr ""
+msgstr "tentative de rendre le répertoire scratch échoué."
 
 #: org/openscience/jmol/app/webexport/LogPanel.java:52
 msgid "Log and Error Messages:"
-msgstr ""
+msgstr "Log and Error Messages:"
 
 #: org/openscience/jmol/app/webexport/LogPanel.java:60
 msgid "Messages (see Log tab for full history):"
-msgstr ""
+msgstr "Messages (voir l'onglet Connexion pour l'histoire complète):"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:39
 msgid "These names will be used as filenames for the applets"
-msgstr ""
+msgstr "Ces noms seront utilisés comme noms de fichiers pour les applets"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:59
 msgid "Applet width:"
@@ -1268,16 +1267,16 @@ msgstr "Largeur de l'applet :"
 #: org/openscience/jmol/app/webexport/PopInJmol.java:79
 #, java-format
 msgid "insert a caption for {0} here."
-msgstr ""
+msgstr "insérer une légende pour {0} ici."
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:82
 #, java-format
 msgid "insert a note for {0} here."
-msgstr ""
+msgstr "insérer une note de {0} ici."
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:39
 msgid "These names will be used for button labels"
-msgstr ""
+msgstr "Ces noms seront utilisés pour les étiquettes de touches"
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:51
 msgid "% of window for applet width:"
@@ -1299,11 +1298,11 @@ msgstr "Introduction"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:129
 msgid "Pop-In Jmol"
-msgstr ""
+msgstr "Pop-In Jmol"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:130
 msgid "ScriptButton Jmol"
-msgstr ""
+msgstr "ScriptButton Jmol"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:147
 msgid "Log"
@@ -1315,6 +1314,8 @@ msgid ""
 "Page skeleton and JavaScript generated by export to web function using {0} "
 "on {1}."
 msgstr ""
+"Page skeleton and JavaScript generated by export to web function using {0} "
+"on {1}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:306
 #, java-format
@@ -1322,19 +1323,22 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
+"Pour obtenir un modèle 3-D vous pouvez manipuler, cliquez sur {0} ici {1}. "
+"Temps Download mai être importante la première fois que l'applet est chargé. "
+"Française actuelle:"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:308
 msgid "Insert the page TITLE here."
-msgstr ""
+msgstr "Insérer le titre de page ici."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:309
 msgid "Insert the page INTRODUCTION here."
-msgstr ""
+msgstr "Insérez la page INTRODUCTION ici."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:311
 #, java-format
 msgid "Insert a caption for {0} here."
-msgstr ""
+msgstr "Insérer une légende pour {0} ici."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:312
 #, java-format
@@ -1342,10 +1346,12 @@ msgid ""
 "Insert additonal explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
+"Insérer un texte explicatif pertinente ici. Long texte sera coupé entourent "
+"le modèle de Jmol {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:314
 msgid "Insert your TITLE and INTRODUCTION here."
-msgstr ""
+msgstr "Insérez votre titre et INTRODUCTION ici."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:316
 #, java-format
@@ -1353,56 +1359,58 @@ msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
 "here and below."
 msgstr ""
+"Le bouton Copier le texte {0} apparaîtra dans la case ci-dessous. Insérer "
+"des informations pour {0} ici et ci-dessous."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:317
 #, java-format
 msgid "Insert more information for {0} here."
-msgstr ""
+msgstr "Insérez davantage d informations pour {0} ici."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:110
 msgid "A web page containing Jmol applets"
-msgstr ""
+msgstr "Une page Web contenant des applets Jmol"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:134
 msgid "double-click and drag to reorder"
-msgstr ""
+msgstr "double-cliquer et faire glisser pour réorganiser"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:138
 msgid "Add Present Jmol State as Instance..."
-msgstr ""
+msgstr "Ajouter Présents Jmol État comme instance ..."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:143
 msgid "Show Selected"
-msgstr ""
+msgstr "Afficher les options sélectionnées"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:145
 msgid "Delete Selected"
-msgstr ""
+msgstr "Effacer sélection"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:176
 msgid "Jmol Instances:"
-msgstr ""
+msgstr "Jmol Instances:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:196
 msgid "Help/Instructions"
-msgstr ""
+msgstr "Aide / Instructions"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:203
 #: org/openscience/jmol/app/webexport/WebPanel.java:211
 msgid "Cartoon of Page"
-msgstr ""
+msgstr "Caricature de la page"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:216
 msgid "Save HTML as..."
-msgstr ""
+msgstr "Enregistrer HTML sous ..."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:226
 msgid "Relative server path to jar files:"
-msgstr ""
+msgstr "Chemin relatif au serveur de fichiers jar:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:232
 msgid "Relative local path to jar files:"
-msgstr ""
+msgstr "Chemin relatif au serveur de fichiers jar:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:238
 msgid "Author (your name):"
@@ -1410,61 +1418,63 @@ msgstr "Auteur (votre nom) :"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:245
 msgid "Browser window title for this web page:"
-msgstr ""
+msgstr "Titre de la fenêtre du navigateur pour cette page web:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:299
 msgid "Give the occurrence of Jmol a name:"
-msgstr ""
+msgstr "Copier le texte Donnez la survenance de Jmol un nom:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:319
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
+"Erreur lors de la création de nouveaux scripts instancewith et l'image."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:329
 #, java-format
 msgid "added Instance {0}"
-msgstr ""
+msgstr "ajouté instance {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:332
 #, java-format
 msgid "updated Instance {0}"
-msgstr ""
+msgstr "Mise à jour instance {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:369
 msgid "Select a directory to create or an HTML file to save"
-msgstr ""
+msgstr "Sélectionnez un répertoire à créer ou à un fichier HTML pour sauver"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:387
 msgid "Call to FileWriter unsuccessful."
-msgstr ""
+msgstr "Appelez pour FileWriter infructueuses."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:425
 #, java-format
 msgid "Using directory {0}"
-msgstr ""
+msgstr "Utilisation répertoire {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:426
 msgid "adding JmolPopIn.js"
-msgstr ""
+msgstr "ajoutant JmolPopIn.js"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:435
 #, java-format
 msgid "adding {0}.png"
-msgstr ""
+msgstr "ajoutant {0}. png"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:456
 #, java-format
 msgid "adding {0}.spt"
-msgstr ""
+msgstr "ajoutant {0}. spt"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:487
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr ""
+"Sur la base de modèle pour A. Herr&#x00E1;ez telle que modifiée par J. Gutow"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:490
 #, java-format
 msgid "creating {0}"
-msgstr ""
+msgstr "créer {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:514
 #, java-format
@@ -1472,6 +1482,8 @@ msgid ""
 "Could not find or open:\n"
 "{0}"
 msgstr ""
+"Impossible de trouver ou ouvert: \n"
+"{0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:516
 #, java-format
@@ -1480,7 +1492,10 @@ msgid ""
 "{0}\n"
 "         to"
 msgstr ""
+"copiant \n"
+"{0}\n"
+"         a"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:522
 msgid "compressing large data file to"
-msgstr ""
+msgstr "compression de données volumineux dossier à"

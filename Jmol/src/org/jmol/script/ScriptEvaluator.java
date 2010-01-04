@@ -12223,6 +12223,7 @@ public class ScriptEvaluator {
     int offset = Integer.MAX_VALUE;
     BitSet bsModels = viewer.getVisibleFramesBitSet();
     int modelCount = viewer.getModelCount();
+    Vector propertyList = new Vector();
     for (int modelIndex = 0; modelIndex < modelCount; modelIndex++) {
       if (!bsModels.get(modelIndex))
         continue;
@@ -12300,19 +12301,21 @@ public class ScriptEvaluator {
       case Token.identifier:
         error(ERROR_invalidArgument);
       default:
-        if (!setMeshDisplayProperty(null, JmolConstants.SHAPE_MO, 1, theTok))
+        if (!setMeshDisplayProperty(propertyList, JmolConstants.SHAPE_MO, 1, theTok))
           error(ERROR_invalidArgument);
-        return true;
+      setShapeProperty(JmolConstants.SHAPE_MO, "setProperties", propertyList);
+      return true;
       }
       if (propertyName != null)
-        setShapeProperty(JmolConstants.SHAPE_MO, propertyName, propertyValue);
+        addShapeProperty(propertyList, propertyName, propertyValue);
       if (moNumber != Integer.MAX_VALUE) {
         if (tokAt(2) == Token.string)
           title = parameterAsString(2);
         if (!isSyntaxCheck)
           viewer.setCursor(Viewer.CURSOR_WAIT);
-        setMoData(JmolConstants.SHAPE_MO, moNumber, offset, modelIndex, title);
-        setShapeProperty(JmolConstants.SHAPE_MO, "finalize", null);
+        setMoData(propertyList, moNumber, offset, modelIndex, title);
+        addShapeProperty(propertyList, "finalize", null);
+        setShapeProperty(JmolConstants.SHAPE_MO, "setProperties", propertyList);
       }
 
     }
@@ -12353,7 +12356,7 @@ public class ScriptEvaluator {
   }
 
   private int moOffset(int index) throws ScriptException {
-    boolean isHomo = (tokAt(index) == Token.homo);
+    boolean isHomo = (getToken(index).tok == Token.homo);
     int offset = Integer.MAX_VALUE;
     offset = (isHomo ? 0 : 1);
     int tok = tokAt(++index); 
@@ -12366,7 +12369,7 @@ public class ScriptEvaluator {
     return offset;
   }
 
-  private void setMoData(int shape, int moNumber, int offset, int modelIndex,
+  private void setMoData(Vector propertyList, int moNumber, int offset, int modelIndex,
                          String title) throws ScriptException {
     if (isSyntaxCheck)
       return;
@@ -12419,14 +12422,14 @@ public class ScriptEvaluator {
         error(ERROR_moIndex, "" + nOrb);
     }
     moData.put("lastMoNumber", new Integer(moNumber));
-    setShapeProperty(shape, "moData", moData);
+    addShapeProperty(propertyList, "moData", moData);
     if (title != null)
-      setShapeProperty(shape, "title", title);
+      addShapeProperty(propertyList, "title", title);
     if (firstMoNumber < 0)
-      setShapeProperty(shape, "charges", viewer.getAtomicCharges());
-    setShapeProperty(shape, "molecularOrbital", new Integer(
+      addShapeProperty(propertyList, "charges", viewer.getAtomicCharges());
+    addShapeProperty(propertyList, "molecularOrbital", new Integer(
         firstMoNumber < 0 ? -moNumber : moNumber));
-    setShapeProperty(shape, "clear", null);
+    addShapeProperty(propertyList, "clear", null);
   }
 
   private String initIsosurface(int iShape) throws ScriptException {
@@ -12770,7 +12773,7 @@ public class ScriptEvaluator {
           moNumber = intParameter(i);
           break;
         }
-        setMoData(iShape, moNumber, offset, modelIndex, null);
+        setMoData(propertyList, moNumber, offset, modelIndex, null);
         surfaceObjectSeen = true;
         continue;
       case Token.mep:
@@ -12900,7 +12903,7 @@ public class ScriptEvaluator {
         i = iToken;
         break;
       case Token.ed:
-        setMoData(iShape, -1, 0, modelIndex, null);
+        setMoData(propertyList, -1, 0, modelIndex, null);
         surfaceObjectSeen = true;
         continue;
       case Token.debug:

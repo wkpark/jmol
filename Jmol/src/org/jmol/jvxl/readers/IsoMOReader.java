@@ -93,6 +93,7 @@ class IsoMOReader extends AtomDataReader {
         getData(q, moData, coef, params.theProperty);
       }
     } else {
+      Logger.info("generating isosurface data for MO using cutoff " + params.cutoff);
       getData(q, moData, coef, null);
     }
   }

@@ -25,12 +25,14 @@
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import java.io.BufferedReader;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  * A reader for Dgrid BASISFILE data.
@@ -223,6 +225,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
      */
     htFuncMap = new Hashtable();
     discardLines(3);
+    boolean sorting = true;
     while (line != null && line.indexOf(":") != 0) {
       discardLinesUntilContains("sym: ");
       String symmetry = line.substring(4, 10).trim();
@@ -248,7 +251,9 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
           htFuncMap.put(key, new Integer(n));
           //System.out.println(code + " " + key);
           SlaterData sd = new SlaterData(atoms[iAtom].elementSymbol, code);
-          addSlater(iAtom, sd.x, sd.y, sd.z, sd.r, sd.alpha, 1);
+          // temporarily we put the slater pointer into coef; 
+          // we will change this to 1.0 later
+          addSlater(iAtom, sd.x, sd.y, sd.z, sd.r, sd.alpha, (sorting ? n : 1));
         }
       }
       discardLinesUntilContains(":-");
@@ -271,6 +276,8 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
         for (int i = 0; i < tokens.length; i++) {
           int pt = ptSlater[i];
           list[pt] = parseFloat(tokens[i]);
+          if (symmetry.equals("B2") && iOrb == 6)
+            System.out.println(pt + ": coef=" + list[pt] + " for slater " + Escape.escape((int[])intinfo.get(pt)).replace('\n',' '));
         }
         Hashtable mo = new Hashtable();
         orbitals.add(mo);
@@ -280,6 +287,10 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
         //System.out.println(orbitals.size() + " " + symmetry + "_" + iOrb);
       }
     }
+
+    if (sorting)
+      sortSlaters();
+
     /*
 :                        +------------+
                          | OCCUPATION |
@@ -301,26 +312,53 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
       float occupancy = parseFloat(line.substring(31, 45)) + parseFloat(line.substring(47, 61));
       ((Hashtable) orbitals.get(i)).put("occupancy", new Float(occupancy));
     }
-    Object[] array = orbitals.toArray();
-    Arrays.sort(array, new ArraySorter());
-    orbitals.clear();
-    for (int i = 0; i < array.length; i++)
-      orbitals.add(array[i]);
-    
+    sortOrbitals();
     // System.out.println(Escape.escape(list, false));
     setSlaters();
     setMOs("eV");
   }
-  
-  class ArraySorter implements Comparator {
 
-    public int compare(Object a, Object b) {
-      Hashtable mo1 = (Hashtable) a;
-      Hashtable mo2 = (Hashtable) b;
-      float e1 = ((Float) mo1.get("energy")).floatValue();
-      float e2 = ((Float) mo2.get("energy")).floatValue();
-      return ( e1 < e2 ? -1 : e2 < e1 ? 1 : 0);
+  private void sortSlaters() {
+    int atomCount = atomSetCollection.getAtomCount();
+    int nSlaters = intinfo.size();
+    int[] intdata;
+    float[] floatdata;
+    Vector[] slaters = new Vector[atomCount];
+    for (int i = atomCount; --i >= 0;)
+      slaters[i] = new Vector();
+    for (int i = nSlaters; --i >= 0;) {
+      intdata = (int[]) intinfo.get(i);
+      floatdata = (float[]) floatinfo.get(i);
+      slaters[intdata[0]].add(floatdata);
     }
-    
+    Vector oldinfo = (Vector) intinfo.clone();
+    intinfo.clear();
+    floatinfo.clear();
+    // sort the slaters in order by atom, because it
+    // takes considerable time to switch between atoms
+    // and we want all the references to a given atom in the same block
+    int[] pointers = new int[nSlaters];
+    for (int i = 0, pt = 0; i < atomCount; i++) {
+      Vector v = slaters[i];
+      for (int j = v.size(); --j >= 0;) {
+        floatdata = (float[]) v.get(j);
+        int k = pointers[pt++] = (int) floatdata[1];
+        floatdata[1] = 1.0f;
+        intinfo.add(oldinfo.get(k));
+        floatinfo.add(floatdata);
+      }
+    }
+    // now sort the coefficients as well
+    for (int i = orbitals.size(); --i >= 0; ) {
+      Hashtable mo = (Hashtable) orbitals.get(i);
+      float[] coefs = (float[]) mo.get("coefficients");
+      float[] sorted = new float[nSlaters];
+      for (int j = 0; j < nSlaters; j++) {
+        int k = pointers[j];
+        if (k < coefs.length)
+          sorted[j] = coefs[k];
+      }
+      mo.put("coefficients", sorted);
+    }
   }
 }

@@ -24,11 +24,13 @@
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
-//import org.jmol.util.Escape;
+import org.jmol.util.Escape;
 
 
 import java.io.BufferedReader;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Comparator;
 import java.util.Hashtable;
 
 import java.util.Vector;
@@ -73,7 +75,7 @@ abstract class MopacDataReader extends AtomSetCollectionReader {
      * except: a == -2 ==> z^2 ==> (coef)(2z^2-x^2-y^2)(r^d)exp(-zeta*r)
      *    and: b == -2 ==> (coef)(x^2-y^2)(r^d)exp(-zeta*r)
      */
-    //System.out.println ("MopacDataReader slater " + intinfo.size() + ": " + iatom + " " + a + " " + b +  " " + c + " " + d + " " + zeta + " " + coef);
+    System.out.println ("MopacDataReader slater " + intinfo.size() + ": " + iatom + " " + a + " " + b +  " " + c + " " + d + " " + zeta + " " + coef);
     intinfo.addElement(new int[] {iatom, a, b, c, d});
     floatinfo.addElement(new float[] {zeta, coef});
   }
@@ -105,4 +107,24 @@ abstract class MopacDataReader extends AtomSetCollectionReader {
     moData.put("energyUnits", units);
     setMOData(moData);
   }
+  
+  protected void sortOrbitals() {
+    Object[] array = orbitals.toArray();
+    Arrays.sort(array, new OrbitalSorter());
+    orbitals.clear();
+    for (int i = 0; i < array.length; i++)
+      orbitals.add(array[i]);    
+  }
+  
+  class OrbitalSorter implements Comparator {
+
+    public int compare(Object a, Object b) {
+      Hashtable mo1 = (Hashtable) a;
+      Hashtable mo2 = (Hashtable) b;
+      float e1 = ((Float) mo1.get("energy")).floatValue();
+      float e2 = ((Float) mo2.get("energy")).floatValue();
+      return ( e1 < e2 ? -1 : e2 < e1 ? 1 : 0);
+    }    
+  }
+
 }

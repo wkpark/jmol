@@ -872,6 +872,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
 
     int lastAtom = atomIndex;
     atomIndex = slaterInfo[slaterIndex][0];
+    //System.out.println("MOCALC SLATER " + slaterIndex + " " + lastAtom + " " + atomIndex);
     float minuszeta = -slaterData[slaterIndex][0];
     if ((thisAtom = qmAtoms[atomIndex]) == null) {
       if (minuszeta <= 0)
@@ -885,27 +886,67 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     if (moCoeff >= moCoefficients.length)
       return false;
     float coef = slaterData[slaterIndex][1] * moCoefficients[moCoeff++];
-    if (coef == 0)
+    if (coef == 0) {
+      atomIndex = -1;
       return true;
+    }
     if (atomIndex != lastAtom)
       thisAtom.setXYZ(true);
     int a = slaterInfo[slaterIndex][1];
     int b = slaterInfo[slaterIndex][2];
     int c = slaterInfo[slaterIndex][3];
     int d = slaterInfo[slaterIndex][4];
-    //System.out.println("MOCALC " + a + " "+ b + " " + c + " " + d + " " + minuszeta + " " + coef);
-    if (a == -2 || b == -2) /* if dz2 *//* if dx2-dy2 */
+    if (Logger.debugging)
+      System.out.println("MOCALC " + slaterIndex + " atomNo=" + (atomIndex+1) + "\tx^" + a + " y^"+ b + " z^" + c + " r^" + d + "\tzeta=" + (-minuszeta) + "\tcoef=" + coef);
+          //+ " minmax " + xMin + " " + xMax + " " + yMin + " " + yMax + " " + zMin + " " + zMax
+    if (a == -2) /* if dz2 */
       for (int ix = xMax; --ix >= xMin;) {
         float dx2 = X2[ix];
         for (int iy = yMax; --iy >= yMin;) {
           float dy2 = Y2[iy];
           for (int iz = zMax; --iz >= zMin;) {
             float dz2 = Z2[iz];
-            float r = (float) Math.sqrt(dx2 + dy2 + dz2);
+            float dx2y2 = dx2 + dy2;
+            float r = (float) Math.sqrt(dx2y2 + dz2);
             float value = coef * (float) Math.exp(minuszeta * r)
-                * ((a == -2 ? 2 * dz2 - dx2 : dx2) - dy2);
-            for (int i = d; --i >= 0;)
+                * (2 * dz2 - dx2y2);
+            switch(d) {
+            case 3:
               value *= r;
+              //fall through
+            case 2:
+              value *= r * r;
+              break;
+            case 1:
+              value *= r;
+              break;
+            }
+            voxelDataTemp[ix][iy][iz] += value;
+          }
+        }
+      }
+    else if (b == -2) /* if dx2-dy2 */
+      for (int ix = xMax; --ix >= xMin;) {
+        float dx2 = X2[ix];
+        for (int iy = yMax; --iy >= yMin;) {
+          float dy2 = Y2[iy];
+          float dx2y2 = dx2 + dy2;
+          float dx2my2 = coef * (dx2 - dy2);
+          for (int iz = zMax; --iz >= zMin;) {
+            float dz2 = Z2[iz];
+            float r = (float) Math.sqrt(dx2y2 + dz2);
+            float value = (float) (dx2my2 * Math.exp(minuszeta * r));
+            switch(d) {
+            case 3:
+              value *= r;
+              //fall through
+            case 2:
+              value *= r * r;
+              break;
+            case 1:
+              value *= r;
+              break;
+            }
             voxelDataTemp[ix][iy][iz] += value;
           }
         }
@@ -913,30 +954,82 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     else
       /* everything else */
       for (int ix = xMax; --ix >= xMin;) {
-        float dx = X[ix];
-        float dx2 = dx * dx;
-        float vdx = 1;
-        for (int i = a; --i >= 0;)
-          vdx *= dx;
+        float dx2 = X2[ix];
+        float vdx = coef;
+        switch(a) {
+        case 3:
+          vdx *= X[ix];
+          //fall through
+        case 2:
+          vdx *= dx2;
+          break;
+        case 1:
+          vdx *= X[ix];
+          break;
+        }
         for (int iy = yMax; --iy >= yMin;) {
-          float dy = Y[iy];
-          float dxy2 = dx2 + dy * dy;
+          float dy2 = Y2[iy];
+          float dx2y2 = dx2 + dy2;
           float vdy = vdx;
-          for (int i = b; --i >= 0;)
-            vdy *= dy;
+          switch(b) {
+          case 3:
+            vdy *= Y[iy];
+            //fall through
+          case 2:
+            vdy *= dy2;
+            break;
+          case 1:
+            vdy *= Y[iy];
+            break;
+          }
           for (int iz = zMax; --iz >= zMin;) {
-            float dz = Z[iz];
-            float r = (float) Math.sqrt(dxy2 + dz * dz);
-            float value = vdy * coef * (float) Math.exp(minuszeta * r);
-            for (int i = c; --i >= 0;)
-              value *= dz;
-            for (int i = d; --i >= 0;)
+            float dz2 = Z2[iz];
+            float r = (float) Math.sqrt(dx2y2 + dz2);
+            float value = vdy * (float) Math.exp(minuszeta * r);
+            switch(c) {
+            case 3:
+              value *= Z[iz];
+              //fall through
+            case 2:
+              value *= dz2;
+              break;
+            case 1:
+              value *= Z[iz];
+              break;
+            }
+            switch(d) {
+            case 3:
               value *= r;
+              //fall through
+            case 2:
+              value *= r * r;
+              break;
+            case 1:
+              value *= r;
+              break;
+            }
             voxelDataTemp[ix][iy][iz] += value;
+            //if (ix == 27 && iy == 27)
+              //System.out.println(iz + "\t"  
+                //  + xBohr[ix] + " " + yBohr[iy] + " " 
+                //  +  zBohr[iz] + "\t" 
+                //  + X[ix] + " " + Y[iy] + " " + Z[iz] 
+                //  + "--  r=" + r + " v=" + value + "\t" + voxelDataTemp[ix][iy][iz]);
+             
+            
+
           }
         }
       }
-    if (isElectronDensity)
+    
+/*    for (int iz = 0; iz < 55; iz++) {
+      System.out.println(iz + "\t"  
+          //  + xBohr[ix] + " " + yBohr[iy] + " " 
+            +  zBohr[iz] + "\t" 
+          //  + X[ix] + " " + Y[iy] + " " + Z[iz] 
+            + "\t"  + voxelDataTemp[27][27][iz]);
+    }
+*/    if (isElectronDensity)
       setTemp();
     return true;
   }

@@ -402,6 +402,8 @@ but:
 
    */
   void readGaussianMolecularOrbitals() throws Exception {
+    if (shells == null)
+      return;
     Hashtable[] mos = new Hashtable[5];
     Vector[] data = new Vector[5];
     int nThisLine = 0;

@@ -6618,22 +6618,31 @@ public class ScriptEvaluator {
     String[] filenames = null;
     String[] tempFileInfo = null;
     int tokType = 0;
+    int tok;
     boolean doLoadFiles = (!isSyntaxCheck || isCmdLine_C_Option);
     String errMsg = null;
     String sOptions = "";
     if (statementLength == 1) {
       i = 0;
     } else {
-      modelName = parameterAsString(1);
-      if (tokAt(1) == Token.identifier || modelName.equals("fileset")) {
-        // 
+      modelName = parameterAsString(i);
+      tok = tokAt(i);
+      if (modelName.equalsIgnoreCase("data")) {
+        modelName = stringParameter(++i);
+        if (!isSyntaxCheck)
+          htParams.put("parameterData", viewer.getFileAsString(modelName));
+        loadScript.append(" data /*file*/").append(modelName).append(Escape.escape(modelName));
+        tok = tokAt(++i);
+        modelName = parameterAsString(i);
+      } 
+      if (tok == Token.identifier || modelName.equalsIgnoreCase("fileset")) {
         if (modelName.equals("menu")) {
           checkLength(3);
           if (!isSyntaxCheck)
             viewer.setMenu(parameterAsString(2), true);
           return;
         }
-        i = 2;
+        i++;
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
         tokType = (Parser.isOneOf(modelName.toLowerCase(),
@@ -6647,7 +6656,7 @@ public class ScriptEvaluator {
           tempFileInfo = viewer.getFileInfo();
         }
         if (isAppend
-            && ((filename = optParameterAsString(2))
+            && ((filename = optParameterAsString(i))
                 .equalsIgnoreCase("trajectory") || filename
                 .equalsIgnoreCase("models"))) {
           modelName = filename;
@@ -6702,7 +6711,6 @@ public class ScriptEvaluator {
       }
       if (filename.indexOf("[]") >= 0)
         return;
-      int tok;
       if ((tok = tokAt(i)) == Token.manifest) {
         String manifest = stringParameter(++i);
         htParams.put("manifest", manifest);
@@ -7457,7 +7465,7 @@ public class ScriptEvaluator {
         Point3f pt1 = centerParameter(i);
         if (!isSyntaxCheck && tok == Token.dollarsign
             && tokAt(i + 2) != Token.leftsquare)
-          rotAxis = getDrawObjectAxis(objectNameParameter(++i));
+          rotAxis = getDrawObjectAxis(objectNameParameter(++i), Integer.MIN_VALUE);
         points[nPoints++] = pt1;
         break;
       case Token.comma:
@@ -7525,8 +7533,8 @@ public class ScriptEvaluator {
             data) ? (Point3f) data[2] : null);
   }
 
-  private Vector3f getDrawObjectAxis(String axisID) {
-    Object[] data = new Object[] { axisID, null };
+  private Vector3f getDrawObjectAxis(String axisID, int index) {
+    Object[] data = new Object[] { axisID, new Integer(index), null };
     return (viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
         "getSpinAxis", data) ? (Vector3f) data[2] : null);
   }

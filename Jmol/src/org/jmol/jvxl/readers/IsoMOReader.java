@@ -86,6 +86,8 @@ class IsoMOReader extends AtomDataReader {
     if (coef == null) {
       // electron density calc
       Vector mos = (Vector) (moData.get("mos"));
+      if (mos == null)
+        return;
       for (int i = params.qm_moNumber; --i >= 0; ) {
         Logger.info(" generating isosurface data for MO " + (i + 1));
         Hashtable mo = (Hashtable) mos.get(i);

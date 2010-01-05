@@ -75,7 +75,7 @@ abstract class MopacDataReader extends AtomSetCollectionReader {
      * except: a == -2 ==> z^2 ==> (coef)(2z^2-x^2-y^2)(r^d)exp(-zeta*r)
      *    and: b == -2 ==> (coef)(x^2-y^2)(r^d)exp(-zeta*r)
      */
-    System.out.println ("MopacDataReader slater " + intinfo.size() + ": " + iatom + " " + a + " " + b +  " " + c + " " + d + " " + zeta + " " + coef);
+    //System.out.println ("MopacDataReader slater " + intinfo.size() + ": " + iatom + " " + a + " " + b +  " " + c + " " + d + " " + zeta + " " + coef);
     intinfo.addElement(new int[] {iatom, a, b, c, d});
     floatinfo.addElement(new float[] {zeta, coef});
   }
@@ -125,6 +125,21 @@ abstract class MopacDataReader extends AtomSetCollectionReader {
       float e2 = ((Float) mo2.get("energy")).floatValue();
       return ( e1 < e2 ? -1 : e2 < e1 ? 1 : 0);
     }    
+  }
+
+  protected void sortOrbitalCoefficients(int[] pointers) {
+    // now sort the coefficients as well
+    for (int i = orbitals.size(); --i >= 0; ) {
+      Hashtable mo = (Hashtable) orbitals.get(i);
+      float[] coefs = (float[]) mo.get("coefficients");
+      float[] sorted = new float[pointers.length];
+      for (int j = 0; j < pointers.length; j++) {
+        int k = pointers[j];
+        if (k < coefs.length)
+          sorted[j] = coefs[k];
+      }
+      mo.put("coefficients", sorted);
+    }
   }
 
 }

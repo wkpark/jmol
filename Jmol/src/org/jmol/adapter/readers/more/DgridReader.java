@@ -348,17 +348,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
         floatinfo.add(floatdata);
       }
     }
-    // now sort the coefficients as well
-    for (int i = orbitals.size(); --i >= 0; ) {
-      Hashtable mo = (Hashtable) orbitals.get(i);
-      float[] coefs = (float[]) mo.get("coefficients");
-      float[] sorted = new float[nSlaters];
-      for (int j = 0; j < nSlaters; j++) {
-        int k = pointers[j];
-        if (k < coefs.length)
-          sorted[j] = coefs[k];
-      }
-      mo.put("coefficients", sorted);
-    }
+    sortOrbitalCoefficients(pointers);
   }
+
 }

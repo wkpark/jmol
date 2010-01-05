@@ -27,10 +27,13 @@ package org.jmol.adapter.readers.more;
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 //import org.jmol.util.Escape;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import java.io.BufferedReader;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -64,8 +67,11 @@ public class AdfReader extends MopacDataReader {
 
   
 
-  String energy = null;
-  int nXX = 0;
+  private Hashtable htSymmetries;
+  private SlaterData[] slaters;
+  private Vector vSymmetries;
+  private String energy = null;
+  private int nXX = 0;
 
   /**
    * Read the ADF output.
@@ -77,13 +83,18 @@ public class AdfReader extends MopacDataReader {
     this.reader = reader;
     boolean iHaveAtoms = false;
     modelNumber = 0;
+    String symLine = null;
     try {
       while (readLine() != null) {
-        if (line.indexOf(" (power of)") >= 0) {
+        if (line.indexOf("Irreducible Representations, including subspecies") >= 0) {
+          readSymmetries();
+          continue;
+        }
+        if (line.indexOf("S F O s  ***  (Symmetrized Fragment Orbitals)  ***") >= 0) {
           readSlaterBasis(); // Cartesians
           continue;
         }
-        if (line.indexOf("Coordinates (Cartesian)") >= 0
+        if (line.indexOf(" Coordinates (Cartesian, in Input Orientation)") >= 0
             || line.indexOf("G E O M E T R Y  ***  3D  Molecule  ***") >= 0) {
           if (!doGetModel(++modelNumber)) {
             if (isLastModel(modelNumber) && iHaveAtoms)
@@ -98,7 +109,7 @@ public class AdfReader extends MopacDataReader {
         if (!iHaveAtoms)
           continue;
         if (line.indexOf("Energy:") >= 0) {
-          String[] tokens = getTokens();
+          String[] tokens = getTokens(line.substring(line.indexOf("Energy:")));
           energy = tokens[1];
           continue;
         }
@@ -106,19 +117,14 @@ public class AdfReader extends MopacDataReader {
           readFrequencies();
           continue;
         }
-        if (line.indexOf(" Populations of individual BAS functions") >= 0) {
-          readSlaterCoefficients();
-        }
-        if (line.indexOf("Scaled ZORA Orbital Energies") >= 0) {
-          getOrbitalEnergies();
+        if (line.indexOf(" === ") >= 0) {
+          symLine = line;
           continue;
         }
-        if (line.indexOf("S F O   P O P U L A T I O N S ,   M O   A N A L Y S I S") >= 0) {
-          if (false)
-            readMolecularOrbitals(); // spherical!
+        if (line.indexOf(" ======  Eigenvectors (rows) in BAS representation") >= 0) {
+          readMolecularOrbitals(getTokens(symLine)[1]);
           continue;
-        }
-              
+        }              
       }
     } catch (Exception e) {
       setError(e);
@@ -230,180 +236,227 @@ OR
     }
   }
   
-  private Hashtable htSlatersByType;
+  private void readSymmetries() throws Exception {
+    /*
+ Irreducible Representations, including subspecies
+ -------------------------------------------------
+ A1
+ A2
+ B1
+ B2
+     */
+    vSymmetries = new Vector();
+    htSymmetries = new Hashtable();
+    readLine();
+    int index = 0;
+    while (readLine() != null && line.length() > 1) {
+      String sym = line.trim();
+      SymmetryData sd = new SymmetryData(index++, sym);
+      htSymmetries.put(sym, sd);
+      vSymmetries.add(sd);
+    }
+  }
+
+  class SymmetryData {
+    int index;
+    String sym;
+    int nSFO;
+    int nBF;
+    float[][] coefs;
+    Hashtable[] mos;
+    int[] basisFunctions;
+    public SymmetryData(int index, String sym) {
+      this.index = index;
+      this.sym = sym;
+    }
+    
+  }
+  
   private void readSlaterBasis() throws Exception {
-     /*
+    if (vSymmetries == null)
+      return;
+    int nBF = 0;
+    for (int i = 0; i < vSymmetries.size(); i++) {
+      SymmetryData sd = (SymmetryData) vSymmetries.get(i);
+      discardLinesUntilContains("=== " + sd.sym + " ===");
+      if (line == null)
+        return;
+    /*
+                                      === A1 ===
+ Nr. of SFOs :   20
+ Cartesian basis functions that participate in this irrep (total number =    32) :
+      1     2     3     4     5     8    11    14    20    15
+     18    30    23    28    31    43    32    44    33    45
+     36    48    34    46    42    54    39    51    37    40
+     49    52
+     */
+      sd.nSFO = parseInt(readLine().substring(15)); 
+      sd.nBF = parseInt(readLine().substring(75));
+      String funcList = "";
+      while (readLine() != null && line.length() > 1)
+        funcList += line;
+      String[] tokens = getTokens(funcList);
+      if (tokens.length != sd.nBF)
+        return;
+      sd.basisFunctions = new int[tokens.length];
+      for (int j = tokens.length; --j >= 0; ) {
+        int n = parseInt(tokens[j]);
+        if (n > nBF)
+          nBF = n;
+        sd.basisFunctions[j] = n - 1;
+      }
+    }
+    slaters = new SlaterData[nBF];
+        /*
      (power of) X  Y  Z  R     Alpha  on Atom
                 ==========     =====     ==========
 
-     N                                    1
-                                      ---------------------------------------------------------------------------
-        Core    0  0  0  0     6.380      1
-                0  0  0  1     1.500      2
-                0  0  0  1     2.500      3
-                0  0  0  1     5.150      4
-                1  0  0  0     1.000      5
+ N                                    1
+                                  ---------------------------------------------------------------------------
+    Core    0  0  0  0     6.380      1
+            0  0  0  1     1.500      2
+            0  0  0  1     2.500      3
+            0  0  0  1     5.150      4
+            1  0  0  0     1.000      5
+
+ H                                    2    3
+                                  ---------------------------------------------------------------------------
+            0  0  0  0     0.690     31   43
+            0  0  0  0     0.920     32   44
+            0  0  0  0     1.580     33   45
+            1  0  0  0     1.250     34   46
+
        */
-    discardLines(3);
-    if (htSlatersByType == null)
-      htSlatersByType = new Hashtable();
-    String atomType = line.substring(1, 3).trim();
-    if (htSlatersByType.get(atomType) != null)
-      return;
-    readLine();
-    Vector v = new Vector();
-    while (readLine() != null && line.length() >= 10) {
+    discardLinesUntilContains("(power of)");
+    discardLines(2);
+    while (readLine() != null && line.indexOf("Total") < 0) {
       String[] tokens = getTokens();
-      boolean isCore = tokens[0].equals("Core");
-      int pt = (isCore ? 1 : 0);
-      v.add(new SlaterData(isCore, parseInt(tokens[pt++]),
-          parseInt(tokens[pt++]),parseInt(tokens[pt++]),parseInt(tokens[pt++]),
-          parseFloat(tokens[pt])));
+      int nAtoms = tokens.length - 1;
+      int[] atomList = new int[nAtoms];
+      for (int i = 1; i <= nAtoms; i++)
+        atomList[i - 1] = parseInt(tokens[i]) - 1;
+      readLine();
+      while (readLine() != null && line.length() >= 10) {
+        tokens = getTokens();
+        boolean isCore = tokens[0].equals("Core");
+        int pt = (isCore ? 1 : 0);
+        int x = parseInt(tokens[pt++]);
+        int y = parseInt(tokens[pt++]);
+        int z = parseInt(tokens[pt++]);
+        int r = parseInt(tokens[pt++]);
+        float zeta = parseFloat(tokens[pt++]);
+        for (int i = 0; i < nAtoms; i++) {
+          int ptBF = parseInt(tokens[pt++]) - 1;
+          slaters[ptBF] = new SlaterData(atomList[i], x, y, z, r, zeta, isCore);
+        }
+      }
     }
-    htSlatersByType.put(atomType, v);
   }
 
   private class SlaterData {
     boolean isCore;
+    int iAtom;
     int x;
     int y;
     int z;
     int r;
     float alpha;
-    String code;
-    public SlaterData(boolean isCore, int x, int y, int z, int r, float alpha) {
-      this.isCore = isCore;
+    public int pt;
+    public SlaterData(int iAtom, int x, int y, int z, int r, float alpha, boolean isCore) {
+      this.iAtom = iAtom;
       this.x = x;
       this.y = y;
       this.z = z;
       this.r = r;
       this.alpha = alpha;
-      
+      this.isCore = isCore;      
     }
-      
-    
   }
   
-  private void readSlaterCoefficients() throws Exception {
+  private void readMolecularOrbitals(String sym) throws Exception {
     /*
- Populations of individual BAS functions
- ----------------------------------------
- 1 N            0.0005  0.3151  0.9502 -0.0507  0.1598  0.1571 -0.1218  0.8890  0.8947  0.8388
-                0.1667  0.1686  0.1840 -0.0217  0.0000  0.0640 -0.0219  0.0612  0.0646 -0.0084
-               -0.0027 -0.0104 -0.0028  0.0000  0.0147 -0.0087 -0.0103  0.0150  0.0245
- 2 O            0.0005  0.9353  0.9852 -0.0173  0.4464  0.4351  0.1963  0.9416  0.9297  0.7311
-                0.2980  0.2931  0.2053 -0.0068  0.0000  0.0208 -0.0065  0.0214  0.0433 -0.0091
-               -0.0031 -0.0101 -0.0030  0.0000  0.0149 -0.0088 -0.0100  0.0149  0.0234
+ ======  Eigenvectors (rows) in BAS representation
 
+  column           1                   2                   3                   4
+  row   
+    1    2.97448635016195E-01  7.07156589388012E-01  6.86546190383583E-03 -1.61065890134540E-03
+    2   -1.38294969376236E-01 -1.62913073678337E-02 -1.31464541737858E-01  5.35848303329039E-01
+    3    3.86427624200707E-02  2.84046375688973E-02  3.66872765902448E-02 -2.21326610798233E-01
      */
-    if (htSlatersByType == null)
+    SymmetryData sd = (SymmetryData) htSymmetries.get(sym);
+    if (sd == null)
       return;
-    discardLines(2);
-    while (line != null && line.length() >= 10) {
-      String[] tokens = getTokens(line.substring(0, 10));
-      int iAtom = parseInt(tokens[0]) - 1;
-      Vector v = (Vector) htSlatersByType.get(tokens[1]);
-      if (v == null) {
-        Logger.error("ADF reader: no slaters of type " + tokens[1]);
-        return;
-      }
-      StringBuffer data = new StringBuffer();
-      data.append(line.substring(10));
-      while (readLine() != null && line.length() > 0 && line.charAt(1) == ' ')
-        data.append(line);
-      tokens = getTokens(data.toString());
-      if (tokens.length == v.size()) {
-        for (int i = 0; i < tokens.length; i++) {
-          SlaterData sd = (SlaterData) v.get(i);
-          if (!sd.isCore)
-            addSlater(iAtom, sd.x, sd.y, sd.z, sd.r, sd.alpha, parseFloat(tokens[i]));
-        }
-      } else {
-        Logger.error("ADF reader: slaters wrong length for type " + tokens[1]);
-        return;
+    int ptSym = sd.index;
+    boolean isLast = (ptSym == vSymmetries.size() - 1);
+    int n = 0;
+    int nBF = slaters.length;
+    sd.coefs = new float[sd.nSFO][nBF];
+    while (n < sd.nBF) {
+      readLine();
+      int nLine = getTokens(readLine()).length;
+      readLine();
+      sd.mos = new Hashtable[sd.nSFO];
+      String[][] data = new String[sd.nSFO][];
+      fillDataBlock(data);
+      for (int j = 1; j < nLine; j++) {
+        int pt = sd.basisFunctions[n++];
+        for (int i = 0; i < sd.nSFO; i++)
+          sd.coefs[i][pt] = parseFloat(data[i][j]);
       }
     }
-  }
-
-
-  private int nCore = 0;
-  private Vector energies;
-  
-  private void getOrbitalEnergies() throws Exception {
-    // ignoring symmetry here
-    boolean isCore = (line.indexOf("Core") >= 0);
-    discardLinesUntilContains("---------------");
-    if (isCore) {
-      while (readLine() != null && line.length() >= 10)
-        nCore++;
-      return;
+    for (int i = 0; i < sd.nSFO; i++) {
+      Hashtable mo = new Hashtable();
+      mo.put("coefficients", sd.coefs[i]);
+      //System.out.println(i + " " + Escape.escapeArray(sd.coefs[i]));
+      mo.put("id", sym + " " + (i + 1));
+      sd.mos[i] = mo;
     }
+    if (!isLast)
+      return;
    /*
- Scaled ZORA Orbital Energies, per Irrep and Spin:
- =================================================
-                        Occup              E (au)              E (eV)       Diff (eV) with prev. cycle
-                        -----      --------------------        ------       --------------------------
- A
-              19        2.000     -0.36836056274196E+00       -10.024               6.74E-07
+ Orbital Energies, all Irreps
+ ========================================
 
+ Irrep        no.  (spin)   Occup              E (au)                E (eV)
+ ---------------------------------------------------------------------------
+ A1            1             2.00       -0.18782651837132E+02      -511.1020
+ A1            2             2.00       -0.93500325051330E+00       -25.4427
     */
-    readLine();
-    energies = new Vector();
-    while (readLine() != null && line.length() >= 10)
-      energies.add(new Float(parseFloat(getTokens(line)[3])));
-  }
-
-  private void readMolecularOrbitals() throws Exception {
-    /*
- Orb.:       19     20     21     22     23     24     25     26     27     28     29     30     31     32
- occup:     2.00   2.00   2.00   2.00   2.00   2.00   2.00   2.00   2.00   2.00   0.00   0.00   0.00   0.00
- CF+SFO     ----   ----   ----   ----   ----   ----   ----   ----   ----   ----   ----   ----   ----   ----
- ------
-     13:    0.00  -0.01   0.00   0.00  -0.04   0.00   0.00   0.00   0.00   0.00   0.00   0.00  -1.07   0.00
-     15:    0.10   0.00  -0.01   0.00   0.00   0.19   0.00   0.00   6.43   0.00   0.00   0.00   0.00  32.38
-     */
-    bsBases = new BitSet();    
-    discardLinesUntilContains(" === ");
-    String symmetry = getTokens()[1];
-    
-    discardLinesUntilContains(" Orb.:");
-    String[] ids = getTokens(line.substring(10));
-    String[] occupancies = getTokens(readLine().substring(10));
-    int nOrbitals = occupancies.length;    
-    discardLines(2);
-    
-    float[][] list = new float[nOrbitals][];
-    Vector data = new Vector();
-    nBases = 0;
-    while (readLine() != null && line.length() >= 10) {
-      data.add(getTokens(line.substring(10)));
-      int i = parseInt(line.substring(0, 7)) - nCore - 1;
-      bsBases.set(i);
-      //System.out.println("nBases " + nBases + " basis " + i + " required " + line);
-      nBases++;
+    discardLinesUntilContains("Orbital Energies, all Irreps");
+    discardLines(4);
+    while (readLine() != null && line.length() > 10) {
+      String[] tokens = getTokens();
+      sd = (SymmetryData) htSymmetries.get(tokens[0]);
+      int moPt = parseInt(tokens[1]) - 1;
+      Hashtable mo = sd.mos[moPt];
+      mo.put("occupancy", new Float(parseFloat(tokens[2])));
+      mo.put("energy", new Float(parseFloat(tokens[4]))); //eV
+      mo.put("symmetry", sd.sym + "_" + (sd.index + 1));
+      orbitals.add(mo);
     }
-    int nFragments = data.size();
-    //System.out.println("nFragments: " + nFragments);
-    Hashtable mo;
-    for (int i = 0; i < nOrbitals; i++) {
-      orbitals.add(mo = new Hashtable());
-      list[i] = new float[nFragments];
-      for (int j = 0; j < nFragments; j++) {
-        float val = parseFloat(((String[])data.get(j))[i]);
-        //if (val < 10)
-          //val = 0;
-        //else
-          //System.out.println("orb " + i + "  fragment " + j + ": " + val);
-        list[i][j] = val;
-      }
-      mo.put("energy", energies.get(i));
-      mo.put("occupancy", new Float(parseFloat(occupancies[i])));
-      mo.put("coefficients", list[i]);
-      mo.put("id", symmetry + ids[i]);
-      //System.out.println("mo " + symmetry + ids[i] + " occup " + occupancies[i] + " energy " + energies.get(i));
+    int[] pointers = new int[nBF];
+    for (int i = 0; i < nBF; i++)
+      slaters[i].pt = i;
+    Arrays.sort(slaters, new SlaterSorter());
+    int iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
+    for (int i = 0; i < nBF; i++) {
+      SlaterData sld = slaters[i];
+      addSlater(iAtom0 + sld.iAtom, sld.x, sld.y, sld.z, sld.r, sld.alpha, 1);
+      pointers[i] = slaters[i].pt;
     }
-    //System.out.println(Escape.escape(list, false));
     setSlaters();
+    sortOrbitalCoefficients(pointers);
+    sortOrbitals();
     setMOs("eV");
+  }
+  
+  class SlaterSorter implements Comparator {
+
+    public int compare(Object arg0, Object arg1) {
+      SlaterData s0 = (SlaterData) arg0;
+      SlaterData s1 = (SlaterData) arg1;
+      return (s0.iAtom < s1.iAtom ? -1 : s0.iAtom > s1.iAtom ? 1 : 0);
+    }
+    
   }
 }

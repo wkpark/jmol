@@ -652,7 +652,8 @@ class TransformManager11 extends TransformManager {
     o.restore(0, true);
     o1.restore(floatSecondsTotal, true);
     */
-    
+    if (!viewer.haveDisplay)
+      floatSecondsTotal = 0;
     ptMoveToCenter = (center == null ? navigationCenter : center);
     int fps = 30;
     int totalSteps = (int) (floatSecondsTotal * fps);
@@ -743,6 +744,8 @@ class TransformManager11 extends TransformManager {
                 float[] theta, int indexStart, int indexEnd) {
     if (seconds <= 0) // PER station
       seconds = 2;
+    if (!viewer.haveDisplay)
+      seconds = 0;
     boolean isPathGuide = (pathGuide != null);
     int nSegments = Math.min(
         (isPathGuide ? pathGuide.length : path.length) - 1, indexEnd);

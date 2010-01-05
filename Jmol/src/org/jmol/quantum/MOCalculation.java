@@ -92,7 +92,9 @@ import java.util.BitSet;
 public class MOCalculation extends QuantumCalculation implements
     MOCalculationInterface {
 
-  private static int MAX_GRID = Parameters.MO_MAX_GRID;
+  private final static float CUT = -50f;
+  
+  private final static int MAX_GRID = Parameters.MO_MAX_GRID;
   // slater coefficients in Bohr
   final float[] CX = new float[MAX_GRID];
   final float[] CY = new float[MAX_GRID];
@@ -120,6 +122,7 @@ public class MOCalculation extends QuantumCalculation implements
   private int firstAtomOffset;
   private boolean isElectronDensity;
   private float occupancy = 2f; //for now -- RHF only
+  //private float coefMax = Integer.MAX_VALUE;
   
 //  private float[] nuclearCharges;
 
@@ -886,7 +889,8 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     if (moCoeff >= moCoefficients.length)
       return false;
     float coef = slaterData[slaterIndex][1] * moCoefficients[moCoeff++];
-    if (coef == 0) {
+    //coefMax = 0.2f;
+    if (coef == 0) { //|| coefMax != Integer.MAX_VALUE && Math.abs(coef) > coefMax) {
       atomIndex = -1;
       return true;
     }
@@ -908,7 +912,10 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
             float dz2 = Z2[iz];
             float dx2y2 = dx2 + dy2;
             float r = (float) Math.sqrt(dx2y2 + dz2);
-            float value = coef * (float) Math.exp(minuszeta * r)
+            float exponent = minuszeta * r;
+            if (exponent < CUT)
+              continue;
+            float value = coef * (float) Math.exp(exponent)
                 * (2 * dz2 - dx2y2);
             switch(d) {
             case 3:
@@ -935,7 +942,10 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
           for (int iz = zMax; --iz >= zMin;) {
             float dz2 = Z2[iz];
             float r = (float) Math.sqrt(dx2y2 + dz2);
-            float value = (float) (dx2my2 * Math.exp(minuszeta * r));
+            float exponent = minuszeta * r;
+            if (exponent < CUT)
+              continue;
+            float value = (float) (dx2my2 * Math.exp(exponent));
             switch(d) {
             case 3:
               value *= r;
@@ -985,7 +995,10 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
           for (int iz = zMax; --iz >= zMin;) {
             float dz2 = Z2[iz];
             float r = (float) Math.sqrt(dx2y2 + dz2);
-            float value = vdy * (float) Math.exp(minuszeta * r);
+            float exponent = minuszeta * r;
+            if (exponent < CUT)
+              continue;
+            float value = vdy * (float) Math.exp(exponent);
             switch(c) {
             case 3:
               value *= Z[iz];

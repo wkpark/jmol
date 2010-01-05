@@ -349,8 +349,9 @@ abstract public class JmolPopup {
       }
       Hashtable mo = (Hashtable) mos.get(i);
       String entryName = "#" + (i + 1) + " " 
-          + (mo.containsKey("energy") ? mo.get("energy") : "") + " " 
-          + (mo.containsKey("type") ? (String)mo.get("type") : "");
+          + (mo.containsKey("type") ? (String)mo.get("type") + " " : "")
+          + (mo.containsKey("symmetry") ? (String)mo.get("symmetry") + " ": "")
+          + (mo.containsKey("energy") ? mo.get("energy") : "") ;
       String script = "mo " + (i + 1);
       addMenuItem(subMenu, entryName, script, null);
     }

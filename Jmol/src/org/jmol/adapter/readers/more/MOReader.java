@@ -493,12 +493,14 @@ abstract class MOReader extends AtomSetCollectionReader {
   }
 
   protected void setMOData(boolean clearOrbitals) {
-    moData.put("calculationType", calculationType);
-    moData.put("energyUnits", energyUnits);
-    moData.put("shells", shells);
-    moData.put("gaussians", gaussians);
-    moData.put("mos", orbitals);
-    setMOData(moData);
+    if (shells != null && gaussians != null) {
+      moData.put("calculationType", calculationType);
+      moData.put("energyUnits", energyUnits);
+      moData.put("shells", shells);
+      moData.put("gaussians", gaussians);
+      moData.put("mos", orbitals);
+      setMOData(moData);
+    }
     if (clearOrbitals) {
       orbitals = new Vector();
       moData = new Hashtable();

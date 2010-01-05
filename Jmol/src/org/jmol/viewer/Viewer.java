@@ -801,6 +801,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
               float rotationRadius, Point3f navCenter, float xNav, float yNav,
               float navDepth) {
     // from Eval
+    if (!haveDisplay)
+      floatSecondsTotal = 0;
     setTainted(true);
     transformManager.moveTo(floatSecondsTotal, center, rotAxis, degrees, zoom,
         xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
@@ -812,6 +814,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
               float zoom, float xTrans, float yTrans, float rotationRadius,
               Point3f navCenter, float xNav, float yNav, float navDepth) {
     // from StateManager -- -1 for time --> no repaint
+    if (!haveDisplay)
+      floatSecondsTotal = 0;
     setTainted(true);
     transformManager.moveTo(floatSecondsTotal, center, rotationMatrix, zoom,
         xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
@@ -4710,6 +4714,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   
   public void showConsole(boolean showConsole) {
+    if (!haveDisplay)
+      return;
     // Eval
       if (appConsole == null)
         getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
@@ -5391,7 +5397,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getDelayMaximum() {
-    return global.delayMaximumMs;
+    return (haveDisplay ? global.delayMaximumMs : 1);
   }
 
   public void setBooleanProperty(String key, boolean value) {
@@ -6236,7 +6242,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   
   void cancelRendering() {
-    repaintManager.cancelRendering();
+    if (haveDisplay)
+      repaintManager.cancelRendering();
   }
 
   private void setNavigationMode(boolean TF) {

@@ -124,7 +124,7 @@ public class SpartanReader extends AtomSetCollectionReader {
           float x = parseFloat(line, ichCoords, ichCoords + 7);
           float y = parseFloat(line, ichCoords + 7, ichCoords + 14);
           float z = parseFloat(line, ichCoords + 14, ichCoords + 21);
-          if (!ignore[lineFreqCount])
+          if (!ignore[j])
             atomSetCollection.addVibrationVector(i + (lineBaseFreqCount + j)
                 * atomCount, x, y, z);
         }

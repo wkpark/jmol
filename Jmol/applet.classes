@@ -1,8 +1,8 @@
 JmolApplet.java
-org/jmol/adapter/readers/*.java
 org/jmol/adapter/readers/cifpdb/*.java
 org/jmol/adapter/readers/molxyz/*.java
 org/jmol/adapter/readers/more/*.java
+org/jmol/adapter/readers/orbital/*.java
 org/jmol/adapter/readers/xml/*.java
 org/jmol/adapter/smarter/*.java
 org/jmol/api/*.java
@@ -19,10 +19,10 @@ org/jmol/g3d/*.java
 org/jmol/geodesic/*.java
 org/jmol/i18n/*.java
 
-org/jmol/jvxl/data/*.java
+org/jmol/jvxl/api/*.java
 org/jmol/jvxl/calc/*.java
+org/jmol/jvxl/data/*.java
 org/jmol/jvxl/readers/*.java
-org/jmol/jvxl/*.java
 
 org/jmol/minimize/*.java
 org/jmol/minimize/forcefield/*.java

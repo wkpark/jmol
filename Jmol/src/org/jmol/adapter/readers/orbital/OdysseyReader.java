@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.adapter.readers.more;
+package org.jmol.adapter.readers.orbital;
 
 import org.jmol.adapter.smarter.*;
 
@@ -30,6 +30,9 @@ import java.io.BufferedReader;
 
 /*
  * Wavefunction Odyssey reader -- old style -- just the INPUT section
+ * 
+ * - not an orbital reader, but extends SpartanInputReader, which is 
+ *   the basis for other Spartan orbital readers, so we put it here. 
  * 
  */
 

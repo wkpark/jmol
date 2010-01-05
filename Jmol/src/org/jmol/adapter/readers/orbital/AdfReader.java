@@ -22,17 +22,14 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.adapter.readers.more;
+package org.jmol.adapter.readers.orbital;
 
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 //import org.jmol.util.Escape;
-import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 
 import java.io.BufferedReader;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Vector;

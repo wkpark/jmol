@@ -24,15 +24,20 @@
 
 package org.jmol.adapter.readers.more;
 
-import org.jmol.adapter.smarter.*;
-
 import java.io.BufferedReader;
-
+import javax.vecmath.Vector3f;
+import org.jmol.adapter.smarter.*;
 import org.jmol.util.Logger;
 
 /**
  * 
  * Vasp OUTCAR reader
+ * 
+ * uses parameterData from a second file -- preliminary only
+ * 
+ * load DATA "datafileame" FILE "outcar.dat"
+ * 
+ * @author hansonr
  * 
  */
 
@@ -50,15 +55,16 @@ public class VaspReader extends AtomSetCollectionReader {
           readTitle();
           continue;
         }
-        if (line
-            .indexOf(" position of ions in fractional coordinates (direct lattice) ") == 0) {
-          modelAtomCount = readAtomCount();
+        if (line.startsWith("  Lattice vectors:")) {
+          setUnitCell();
           continue;
         }
-        if (line
-            .indexOf(" position of ions in cartesian coordinates  (Angst):") == 0
-            || line
-                .indexOf(" POSITION                                       TOTAL-FORCE (eV/Angst)") == 0) {
+          if (line.contains("fractional coordinates (direct lattice)")) {
+            modelAtomCount = readAtomCount();
+            continue;
+          }
+        if (line.contains("cartesian coordinates  (Angst):")
+            || line.contains("TOTAL-FORCE (eV/Angst)")) {
           if (doGetModel(++modelNumber)) {
             readAtoms(modelAtomCount);
             applySymmetryAndSetTrajectory();
@@ -70,6 +76,11 @@ public class VaspReader extends AtomSetCollectionReader {
     } catch (Exception e) {
       setError(e);
     }
+  }
+
+  private void readTitle() {
+    // TODO
+    
   }
 
   private void setAtomNames(String data) {
@@ -116,9 +127,33 @@ public class VaspReader extends AtomSetCollectionReader {
     }
   }
 
-  private void readTitle() {
-    // TODO
+  private void setUnitCell() throws Exception {
+    /*
+  Lattice vectors:
+  
+ A1 = (  10.7367820000,   0.0000000000,   0.0000000000)
+ A2 = (   0.0000000000,  11.3880770000,   0.0000000000)
+ A3 = (   0.0000000000,   0.0000000000,  25.0000000000)
+     */
     
+    readLine();
+    String s = readLine().substring(7) + readLine().substring(7) + readLine().substring(7);
+    float[] ijk = new float[9];
+    getTokensFloat(s.replace(',', ' ').replace(')', ' '), ijk, 9);
+    Vector3f va = new Vector3f(ijk[0], ijk[1], ijk[2]);
+    Vector3f vb = new Vector3f(ijk[3], ijk[4], ijk[5]);
+    Vector3f vc = new Vector3f(ijk[6], ijk[7], ijk[8]);
+    float a = va.length();
+    float b = vb.length();
+    float c = vc.length();
+    va.normalize();
+    vb.normalize();
+    vc.normalize();
+    float alpha = (float) (Math.acos(vb.dot(vc)) * 180 / Math.PI);
+    float beta = (float) (Math.acos(va.dot(vc)) * 180 / Math.PI);
+    float gamma = (float) (Math.acos(va.dot(vb)) * 180 / Math.PI);
+    setUnitCell(a, b, c, alpha, beta, gamma);
   }
+
 
 }

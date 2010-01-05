@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.adapter.readers.more;
+package org.jmol.adapter.readers.orbital;
 
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
@@ -34,7 +34,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
 
-public class SpartanArchive {
+class SpartanArchive {
 
   private int atomCount = 0;
   private String bondData; // not in archive; may or may not have

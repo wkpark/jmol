@@ -280,19 +280,21 @@ public class Resolver {
   
   private final static String classBase = "org.jmol.adapter.readers.";
   private final static String[] readerSets = new String[] {
-    "cifpdb.", "Cif;Pdb;",
-    "molxyz.", "Mol;Xyz;",
-    "xml.", "Xml;"
+    "cifpdb.", ";Cif;Pdb;",
+    "molxyz.", ";Mol;Xyz;",
+    "orbital.", ";Adf;Csf;Cube;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
+    		         "Molden;MopacGraphf;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;"
   };
   
   public final static String getReaderClassBase(String type) {
-    String base = (type.startsWith("Xml") ? "xml." : "more.");
+    String name = type + "Reader";
+    if (type.startsWith("Xml"))
+      return classBase + "xml." + name;
+    String key = ";" + type + ";";
     for (int i = 1; i < readerSets.length; i += 2)
-      if (readerSets[i].indexOf(type + ";") >= 0) {
-        base = readerSets[i - 1];
-        break;
-      }
-    return classBase + base + type + "Reader";
+      if (readerSets[i].indexOf(key) >= 0)
+        return classBase + readerSets[i - 1] + name;
+    return classBase + "more." + name;
   }
   
   /**

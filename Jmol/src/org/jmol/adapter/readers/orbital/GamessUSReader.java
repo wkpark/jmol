@@ -28,7 +28,7 @@
  * 
  */
 
-package org.jmol.adapter.readers.more;
+package org.jmol.adapter.readers.orbital;
 
 import java.io.BufferedReader;
 import java.util.Vector;

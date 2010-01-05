@@ -36,8 +36,7 @@ import java.io.BufferedReader;
  */
 public class MopacReader extends AtomSetCollectionReader {
     
-  //String frameInfo;
-  int baseAtomIndex;
+  private int baseAtomIndex;
   
   private boolean chargesFound = false;
 

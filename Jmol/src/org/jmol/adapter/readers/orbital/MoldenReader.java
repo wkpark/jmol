@@ -1,4 +1,4 @@
-package org.jmol.adapter.readers.more;
+package org.jmol.adapter.readers.orbital;
 
 import org.jmol.adapter.smarter.*;
 

@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.adapter.readers.more;
+package org.jmol.adapter.readers.orbital;
 
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
@@ -34,14 +34,13 @@ import org.jmol.util.Logger;
  * 
  */
 
-abstract class SpartanInputReader extends AtomSetCollectionReader {
+public abstract class SpartanInputReader extends AtomSetCollectionReader {
 
   protected String modelName;
+  protected int modelAtomCount;
   protected int atomCount;
-  protected int bondCount;
   protected String bondData = "";
-  //Hashtable moData = new Hashtable();
-
+  
   protected void readInputRecords() {
     int atomCount0 = atomCount;
     try {
@@ -95,12 +94,8 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
     modelName = modelName.substring(0, modelName.indexOf(";")).trim();
   }
   
-  int modelAtomCount;
-  int atomCount0;
-  
   private void readInputAtoms() throws Exception {
     modelAtomCount = 0;
-    atomCount0 = atomCount;
     while (readLine() != null
         && !line.startsWith("ENDCART")) {
       String[] tokens = getTokens();
@@ -152,8 +147,7 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
         nAtoms -= tokens.length;
       }
     }
-    bondCount = atomSetCollection.getBondCount();
     if (Logger.debugging)
-      Logger.debug(bondCount + " bonds read");
+      Logger.debug(atomSetCollection.getBondCount() + " bonds read");
   }
 }

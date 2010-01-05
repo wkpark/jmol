@@ -7363,7 +7363,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     JmolImageCreatorInterface c;
     try {
       c = (JmolImageCreatorInterface) Interface
-          .getOptionInterface("util.ImageCreator");
+          .getOptionInterface("export.image.ImageCreator");
       c.setViewer(this, privateKey);
       return c.clipImage(text);
     } catch (Error er) {

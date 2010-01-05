@@ -1,3 +1,4 @@
+set debugscript
 defaultdirectory="http://chemapps.stolaf.edu/jmol/docs/examples-11/data"
 load cyclohexane_movie.xyz;pts = {C5}.split();print pts;draw @{pts.xyz.sub({1 0 0})} "X"
 #defaultdirectory="c:/jmol-dev/workspace/jmol-documentation/script_documentation/examples-11/data"
@@ -647,9 +648,9 @@ isosurface delete phase mo 3 translucent
 isosurface delete phase mo 4 translucent
 isosurface delete phase mo 5 translucent
 isosurface delete phase mo 6 translucent
-load gamess-RHF-3-21G.log; isosurface phase mo 8
-load gamess-UHF-3-21G.log; isosurface phase mo 8 ;refresh;#alpha
-load gamess-UHF-3-21G.log; isosurface phase mo 30 ;refresh;#beta
+load gamess-RHF-3-21G.log; frame 2; isosurface phase mo 8
+load gamess-UHF-3-21G.log; frame 2; isosurface phase mo 8 ;refresh;#alpha
+load gamess-UHF-3-21G.log; frame 2; isosurface phase mo 30 ;refresh;#beta
 load XeF4.smo; moveto 1.0 922 52 385 55.3;
 isosurface delete cutoff 0.008 resolution 5 phase mo 68 translucent
 load water19.mo; moveto 1.0 922 52 385 55.3;
@@ -932,7 +933,7 @@ mo translucent
 mo 1
 mo next
 mo prev
-load gamess-UHF-3-21G.log;moveto 1.0 931 -365 24 35.5;
+load gamess-UHF-3-21G.log; frame 2; moveto 1.0 931 -365 24 35.5;
 mo color red
 mo 8
 mo next

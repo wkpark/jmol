@@ -14,3 +14,4 @@ PDB files can be converted to PQR by the PDB2PQR software[3], which adds missing
 1.- http://apbs.sourceforge.net/
 2.- http://apbs.sourceforge.net/doc/user-guide/index.html#pqr-format
 3.- http://pdb2pqr.sourceforge.net/
+4.- http://cardon.wustl.edu/MediaWiki/index.php/PQR_format

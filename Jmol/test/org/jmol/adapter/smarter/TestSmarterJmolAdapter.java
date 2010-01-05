@@ -60,13 +60,13 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "adf", "adf", "Adf");
     result.addDirectory(false, "aminoacids", "mol");
     result.addDirectory(false, "aminoacids", "pdb");
-    result.addDirectory(false, "animations", "cml", "cml(xml)");
+    result.addDirectory(false, "animations", "cml", "XmlCml");
     result.addDirectory(false, "animations", "pdb");
     result.addDirectory(true,  "animations", "pdb.gz");
     result.addDirectory(false, "animations", "xyz");
     result.addDirectory(false, "cif", "cif");
-    result.addDirectory(false, "c3xml", "c3xml", "chem3d(xml)");
-    result.addDirectory(false, "cml", "cml", "cml(xml)");
+    result.addDirectory(false, "c3xml", "c3xml", "XmlChem3d");
+    result.addDirectory(false, "cml", "cml", "XmlCml");
     result.addDirectory(false, "crystals", "mol");
     result.addDirectory(false, "crystals", "pdb");
     result.addDirectory(false, "csf", "csf", "Csf");
@@ -89,7 +89,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "mol", "mol");
     result.addDirectory(false, "mol", "sdf");
     result.addDirectory(false, "mol2", "mol2");
-    result.addDirectory(false, "molpro", "xml", "molpro(xml)");
+    result.addDirectory(false, "molpro", "xml", "XmlMolpro");
     result.addDirectory(false, "mopac", "out");
     result.addDirectory(false, "nwchem", "nwo", "NWChem");
     result.addDirectory(false, "pdb", "pdb");

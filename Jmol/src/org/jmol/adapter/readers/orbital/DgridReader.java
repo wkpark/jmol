@@ -29,8 +29,6 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import java.io.BufferedReader;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -314,7 +312,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
     }
     sortOrbitals();
     // System.out.println(Escape.escape(list, false));
-    setSlaters();
+    setSlaters(true, false);
     setMOs("eV");
   }
 
@@ -343,7 +341,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
       for (int j = v.size(); --j >= 0;) {
         floatdata = (float[]) v.get(j);
         int k = pointers[pt++] = (int) floatdata[1];
-        floatdata[1] = 1.0f;
+        floatdata[1] = 1;
         intinfo.add(oldinfo.get(k));
         floatinfo.add(floatdata);
       }

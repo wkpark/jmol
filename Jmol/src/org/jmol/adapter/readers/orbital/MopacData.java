@@ -23,27 +23,88 @@
  */
 package org.jmol.adapter.readers.orbital;
 
-/*
- * Sincere thanks to Jimmy Stewart, MrMopac@att.net for these constants
- * 
- */
+public class MopacData extends SlaterData {
 
-public class MopacData {
+  final static void scaleSlaterSpherical(int atomicNumber, int[] idata, float[] fdata) {
+    int x = idata[1]; // may be -2 for spherical Dz2
+    int y = idata[2]; // may be -2 for spherical Dx2-y2
+    int z = idata[3];
+    int el = x + y + z;
+    float zeta = Math.abs(fdata[0]);
+    switch (el) {
+    case 0: //S
+      fdata[1] *= getSlaterConstS(getNPQs(atomicNumber), zeta);
+      break;
+    case 1: //P
+      fdata[1] *= getSlaterConstP(getNPQp(atomicNumber), zeta);
+      break;
+    case 2: //D
+      fdata[1] *= getSlaterConstDSpherical(getNPQd(atomicNumber), zeta, x, y, z);
+      break;
+    case 3: //F
+      fdata[1] = 0; // not set up for spherical f
+      break;
+    }
+  }
+
+  /*
+   * Sincere thanks to Jimmy Stewart, MrMopac@att.net for these constants
+   * 
+   */
 
   ///////////// MOPAC CALCULATION SLATER CONSTANTS //////////////
 
-  private final static boolean isNoble(int atomicNumber) {
+  // see http://openmopac.net/Downloads/Mopac_7.1source.zip|src_modules/parameters_C.f90
+
+  //H                                                             He
+  //Li Be                                          B  C  N  O  F  Ne
+  //Na Mg                                          Al Si P  S  Cl Ar
+  //K  Ca Sc          Ti V  Cr Mn Fe Co Ni Cu Zn   Ga Ge As Se Br Kr
+  //Rb Sr Y           Zr Nb Mo Tc Ru Rh Pd Ag Cd   In Sn Sb Te I  Xe
+  //Cs Ba La Ce-Lu    Hf Ta W  Re Os Ir Pt Au Hg   Tl Pb Bi Po At Rn
+  //Fr Ra Ac Th-Lr    ?? ?? ?? ??
+
+  private final static int[] principalQuantumNumber = new int[] { 0, 
+      1, 1, //  2
+      2, 2, 2, 2, 2, 2, 2, 2, // 10
+      3, 3, 3, 3, 3, 3, 3, 3, // 18
+      4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, // 36
+      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, // 54
+      6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+      6, 6, 6, 6, 6, 6, 6, 6, // 86
+  };
+
+  private final static int getNPQ(int atomicNumber) {
+    return (atomicNumber < principalQuantumNumber.length ? 
+        principalQuantumNumber[atomicNumber] : 0);
+  }
+
+  final static int getNPQs(int atomicNumber) {
+    int n = getNPQ(atomicNumber);
     switch (atomicNumber) {
-    case 2:
     case 10:
     case 18:
     case 36:
     case 54:
     case 86:
-      return true;
+      return n + 1;
     default:
-      return false;
+      return n;        
     }
+  }
+
+  final static int getNPQp(int atomicNumber) {
+    int n = getNPQ(atomicNumber);
+    switch (atomicNumber) {
+    case 2:
+      return n + 1;
+    default:
+      return n;        
+    }
+  }
+
+  final static int getNPQd(int atomicNumber) {
+    return (atomicNumber < npqd.length ? npqd[atomicNumber] : 0);
   }
 
   //H                                                             He
@@ -54,32 +115,9 @@ public class MopacData {
   //Cs Ba La Ce-Lu    Hf Ta W  Re Os Ir Pt Au Hg   Tl Pb Bi Po At Rn
   //Fr Ra Ac Th-Lr    ?? ?? ?? ??
 
-  private final static int[] principalQuantumNumber = new int[] { 0, 1, 1, //  2
-      2, 2, 2, 2, 2, 2, 2, 2, // 10
-      3, 3, 3, 3, 3, 3, 3, 3, // 18
-      4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, // 36
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, // 54
-      6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-      6, 6, 6, 6, 6, 6, 6, 6, // 86
-  };
-
-  private final static int getNPQ(int atomicNumber) {
-    return (atomicNumber < principalQuantumNumber.length ? principalQuantumNumber[atomicNumber]
-        : 0);
-  }
-
-  public final static int getNPQs(int atomicNumber) {
-    return getNPQ(atomicNumber)
-        + (atomicNumber > 2 && isNoble(atomicNumber) ? 1 : 0);
-  }
-
-  public final static int getNPQp(int atomicNumber) {
-    return getNPQ(atomicNumber) + (atomicNumber == 2 ? 1 : 0);
-  }
-
-  private final static int[] pnqD = new int[] { 0, //1-10
-      0, 0, //  2
-      0, 0, 0, 0, 0, 0, 0, 0, // 10
+  private final static int[] npqd = new int[] { 0,
+      0, 3, // 2
+      0, 0, 0, 0, 0, 0, 0, 3, // 10
       3, 3, 3, 3, 3, 3, 3, 4, // 18
       3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, // 36
       4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, // 54
@@ -87,43 +125,14 @@ public class MopacData {
       5, 6, 6, 6, 6, 6, 6, 7, // 86
   };
 
-  public final static int getNPQd(int atomicNumber) {
-    return (atomicNumber < pnqD.length ? pnqD[atomicNumber] : 0);
+  private final static double[] factorDSpherical = new double[] { 
+    0.5,      1,     0.5 / Math.sqrt(3)};
+  //x2-y2     xz     2r2 - x2 - y2  
+
+  private final static float getSlaterConstDSpherical(int n, float zeta, 
+                                                      int x, int y, int z) {
+    int dPt = (y < 0 ? 0 : x < 0 ? 2 : 1);
+    return (float) (fact(15, zeta, n) * factorDSpherical[dPt]);
   }
 
-  private final static float[] fact = new float[20];
-  static {
-    fact[0] = 1;
-    for (int n = 1; n < fact.length; n++)
-      fact[n] = fact[n - 1] * n;
-  }
-
-  private final static float fourPi = (float) (4 * Math.PI);
-
-  public final static float getMopacConstS(int atomicNumber, float zeta) {
-    int n = getNPQs(atomicNumber);
-    return (float) (Math.pow(2 * zeta, n + 0.5) * Math.sqrt(1 / fourPi
-        / fact[2 * n]));
-  }
-
-  public final static float getMopacConstP(int atomicNumber, float zeta) {
-    int n = getNPQp(atomicNumber);
-    return (float) (Math.pow(2 * zeta, n + 0.5) * Math.sqrt(3 / fourPi
-        / fact[2 * n]));
-  }
-
-  private final static float[] factorDs = new float[] { 0.5f, 1f,
-      (float) (0.5 / Math.sqrt(3)), 1f, 1f };
-
-  //  x2-y2 xz        2r2 - x2 - y2        yz  xy 
-
-  public static float getFactorD(int n) {
-    return factorDs[n];
-  }
-
-  public final static float getMopacConstD(int atomicNumber, float zeta) {
-    int n = getNPQd(atomicNumber);
-    return (float) (Math.pow(2 * zeta, n + 0.5) * Math.sqrt(15 / fourPi
-        / fact[2 * n]));
-  }
 }

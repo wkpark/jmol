@@ -92,7 +92,7 @@ public class AdfReader extends MopacDataReader {
           continue;
         }
         if (line.indexOf(" Coordinates (Cartesian, in Input Orientation)") >= 0
-            || line.indexOf("G E O M E T R Y  ***  3D  Molecule  ***") >= 0) {
+            || line.indexOf("G E O M E T R Y  ***") >= 0) {
           if (!doGetModel(++modelNumber)) {
             if (isLastModel(modelNumber) && iHaveAtoms)
               break;
@@ -158,12 +158,15 @@ OR
 
      * 
      */
+    boolean isGeometry = (line.indexOf("G E O M E T R Y") >= 0);
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetName("" + energy); // start with an empty name
     discardLinesUntilContains("----");
+    int pt0 = (isGeometry ? 2 : 5);
     nXX = 0;
+    String[] tokens;
     while (readLine() != null && !line.startsWith(" -----")) {
-      String[] tokens = getTokens();
+      tokens = getTokens();
       if (tokens.length < 5)
         break;
       String symbol = tokens[1];
@@ -173,9 +176,8 @@ OR
       }
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = symbol;
-      atom.set(parseFloat(tokens[2]), parseFloat(tokens[3]), parseFloat(tokens[4]));
-      if (tokens.length > 8)
-        atom.scale(ANGSTROMS_PER_BOHR);
+      atom.set(parseFloat(tokens[pt0]), parseFloat(tokens[pt0 + 1]),
+          parseFloat(tokens[pt0 + 2]));
     }
   }
 
@@ -441,7 +443,7 @@ OR
       addSlater(iAtom0 + sld.iAtom, sld.x, sld.y, sld.z, sld.r, sld.alpha, 1);
       pointers[i] = slaters[i].pt;
     }
-    setSlaters();
+    setSlaters(true, false);
     sortOrbitalCoefficients(pointers);
     sortOrbitals();
     setMOs("eV");

@@ -254,7 +254,7 @@ public class WebMOReader extends MopacDataReader {
             parseInt(tokens[2]), parseInt(tokens[3]), parseInt(tokens[4]),
             parseFloat(tokens[5]), parseFloat(tokens[6]));
     }
-    setSlaters();
+    setSlaters(false, false);
   }
 
   void readMolecularOrbital() throws Exception {

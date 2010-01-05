@@ -24,12 +24,9 @@
 package org.jmol.adapter.readers.orbital;
 
 import org.jmol.adapter.smarter.*;
-import org.jmol.util.Escape;
-
 
 import java.io.BufferedReader;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Comparator;
 import java.util.Hashtable;
 
@@ -48,18 +45,10 @@ abstract class MopacDataReader extends AtomSetCollectionReader {
   protected final Vector intinfo = new Vector();
   protected final Vector floatinfo = new Vector();
   protected final Vector orbitals = new Vector();
+  protected int[] atomicNumbers;
   
   public abstract void readAtomSetCollection(BufferedReader reader);
   
-  protected final static int [] dValues = new int[] { 
-    // MOPAC2007 graphf output data order
-    0, -2, 0, //dx2-y2
-    1,  0, 1, //dxz
-   -2,  0, 0, //dz2
-    0,  1, 1, //dyz
-    1,  1, 0, //dxy
-  };
-
   protected final void addSlater(int iatom, int a, int b, int c, int d, 
                         float zeta, float coef) {
     /*
@@ -80,23 +69,61 @@ abstract class MopacDataReader extends AtomSetCollectionReader {
     floatinfo.addElement(new float[] {zeta, coef});
   }
   
-  protected BitSet bsBases;
-  protected int nBases;
-  
-  protected final void setSlaters() {
+  final private static int [] sphericalDValues = new int[] { 
+    // MOPAC2007 graphf output data order
+    0, -2, 0, //dx2-y2
+    1,  0, 1, //dxz
+   -2,  0, 0, //dz2
+    0,  1, 1, //dyz
+    1,  1, 0, //dxy
+  };
+
+  protected void createSphericalSlaterByType(int iAtom, int atomicNumber,
+                                             String type, float zeta, float coef) {
+    int pt = "S Px Py Pz Dx2-y2 Dxz Dz2 Dyz Dxy".indexOf(type);
+    // 0 2 5 8 11 18 22 26 30
+    switch (pt) {
+    case 0: // s
+      addSlater(iAtom, 0, 0, 0, MopacData.getNPQs(atomicNumber) - 1, zeta, coef);
+      return;
+    case 2: // Px
+    case 5: // Py
+    case 8: // Pz
+      addSlater(iAtom, pt == 2 ? 1 : 0, pt == 5 ? 1 : 0, pt == 8 ? 1 : 0,
+          MopacData.getNPQp(atomicNumber) - 2, zeta, coef);
+      return;
+    case 11: // Dx2-y2
+    case 18: // Dxz
+    case 22: // Dz2
+    case 26: // Dyz
+    case 30: // Dxy
+      int dPt = (pt == 11 ? 0 : pt == 18 ? 1 : pt == 22 ? 2 : pt == 26 ? 3 : 4);
+      int dPt3 = dPt * 3;
+      addSlater(iAtom, sphericalDValues[dPt3++], sphericalDValues[dPt3++],
+          sphericalDValues[dPt3++], MopacData.getNPQd(atomicNumber) - 3, zeta, coef);
+      return;
+    }
+  }  
+
+  protected final void setSlaters(boolean doScale, boolean isMopac) {
     int ndata = intinfo.size();
-    if (bsBases == null)
-      nBases = ndata;
-    int[][] iarray = new int[nBases][];
-    for (int i = 0, pt = 0; i < ndata; i++)
-      if (bsBases == null || bsBases.get(i)) {
-        //System.out.println("MopacDataReader mapping basis " + i + " to basis " + pt + Escape.escape(intinfo.get(i)));
-        iarray[pt++] = (int[]) intinfo.get(i);
+    int[][] iarray = new int[ndata][];
+    float[][] farray = new float[ndata][];
+    for (int i = 0; i < ndata; i++) {
+      // System.out.println("MopacDataReader mapping basis " + i + " to basis "
+      // + pt + Escape.escape(intinfo.get(i)));
+      iarray[i] = (int[]) intinfo.get(i);
+    }
+    for (int i = 0; i < ndata; i++) {
+      farray[i] = (float[]) floatinfo.get(i);
+      if (doScale) {
+        if (isMopac)
+          MopacData.scaleSlaterSpherical(atomicNumbers[iarray[i][0]
+              % atomicNumbers.length], iarray[i], farray[i]);
+        else
+          SlaterData.scaleSlater(iarray[i], farray[i]);
       }
-    float[][] farray = new float[nBases][];
-    for (int i = 0, pt = 0; i < ndata; i++)
-      if (bsBases == null || bsBases.get(i))
-        farray[pt++] = (float[]) floatinfo.get(i);
+    }
     moData.put("slaterInfo", iarray);
     moData.put("slaterData", farray);
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
@@ -141,5 +168,4 @@ abstract class MopacDataReader extends AtomSetCollectionReader {
       mo.put("coefficients", sorted);
     }
   }
-
 }

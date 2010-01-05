@@ -38,7 +38,6 @@ import java.util.Hashtable;
  */
 public class MopacGraphfReader extends MopacDataReader {
     
-  int[] atomicNumbers;
   int atomCount;
   
  public void readAtomSetCollection(BufferedReader reader) {
@@ -123,28 +122,23 @@ public class MopacGraphfReader extends MopacDataReader {
       int atomicNumber = atomicNumbers[iAtom];
       float zeta;
       if ((zeta = values[0]) != 0) {
-        //s
-        addSlater(iAtom, 0, 0, 0, MopacData.getNPQs(atomicNumber) - 1, zeta,
-            MopacData.getMopacConstS(atomicNumber, zeta));
+        createSphericalSlaterByType(iAtom, atomicNumber, "S", zeta, 1);
       }
       if ((zeta = values[1]) != 0) {
-        int d = MopacData.getNPQp(atomicNumber) - 2;
-        float coef = MopacData.getMopacConstP(atomicNumber, zeta);
-        addSlater(iAtom, 1, 0, 0, d, zeta, coef);
-        addSlater(iAtom, 0, 1, 0, d, zeta, coef);
-        addSlater(iAtom, 0, 0, 1, d, zeta, coef);
+        createSphericalSlaterByType(iAtom, atomicNumber, "Px", zeta, 1);
+        createSphericalSlaterByType(iAtom, atomicNumber, "Py", zeta, 1);
+        createSphericalSlaterByType(iAtom, atomicNumber, "Pz", zeta, 1);
       }
       if ((zeta = values[2]) != 0) {
-        int d = MopacData.getNPQd(atomicNumber) - 3;
-        float coef = MopacData.getMopacConstD(atomicNumber, zeta);
-        int dpt = 0;
-        for (int i = 0; i < 5; i++)
-          addSlater(iAtom, dValues[dpt++], dValues[dpt++], dValues[dpt++], d,
-              zeta, coef * MopacData.getFactorD(i));
+        createSphericalSlaterByType(iAtom, atomicNumber, "Dx2-y2", zeta, 1);
+        createSphericalSlaterByType(iAtom, atomicNumber, "Dxz", zeta, 1);
+        createSphericalSlaterByType(iAtom, atomicNumber, "Dz2", zeta, 1);
+        createSphericalSlaterByType(iAtom, atomicNumber, "Dyz", zeta, 1);
+        createSphericalSlaterByType(iAtom, atomicNumber, "Dxy", zeta, 1);
       }
     }
     nOrbitals = intinfo.size();
-    setSlaters();
+    setSlaters(true, true);
   }
 
   float[][] invMatrix;

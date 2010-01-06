@@ -38,20 +38,13 @@ public class SlaterData {
     int ez = idata[3];
     int er = idata[4];
     int el = ex + ey + ez;
-    int n = el + er + 1;
-    float zeta = fdata[0];
     switch (el) {
     case 0: //S
-      fdata[1] *= getSlaterConstS(n, zeta);
-      break;
     case 1: //P
-      fdata[1] *= getSlaterConstP(n, zeta);
-      break;
-    case 2: //D
-    case 3: //F
-      fdata[1] *= getSlaterConstCartesian(n, zeta, el, ex, ey, ez);
+      ex = -1;
       break;
     }
+    fdata[1] *= getSlaterConstCartesian(el + er + 1, fdata[0], el, ex, ey, ez);
   }
 
   private final static double _1_4pi = 0.25 / Math.PI;
@@ -69,17 +62,8 @@ public class SlaterData {
   }
 
   // generally valid
-  private final static float getSlaterConstCartesian(int n, float zeta, int el, int x, int y, int z) {
-    return (float) fact(fact2[el + 1] / fact2[x] / fact2[y] / fact2[z], zeta, n);
+  protected final static float getSlaterConstCartesian(int n, float zeta, int el, int x, int y, int z) {
+    double f = (z < 0 ? fact2[el + 1] : fact2[el + 1] / fact2[x] / fact2[y] / fact2[z]);
+    return (float) fact(f, zeta, n);
   }
-
-  // shortcuts
-  protected final static float getSlaterConstS(int n, float zeta) {
-    return (float) fact(1, zeta, n);
-  }
-
-  protected final static float getSlaterConstP(int n, float zeta) {
-    return (float) fact(3, zeta, n);
-  }
-  
 }

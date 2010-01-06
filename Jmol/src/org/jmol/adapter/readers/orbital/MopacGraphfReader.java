@@ -193,9 +193,11 @@ public class MopacGraphfReader extends MopacDataReader {
     float[] values = new float[2];
     for (int iMo = 0; iMo < nOrbitals; iMo++) {
       Hashtable mo = new Hashtable();
-      getTokensFloat(readLine(), values, 2);
-      mo.put("energy", new Float(values[0]));
-      mo.put("occupancy", new Float(values[1]));
+      if (readLine() != null) {
+        getTokensFloat(line, values, 2);
+        mo.put("energy", new Float(values[0]));
+        mo.put("occupancy", new Float(values[1]));
+      }
       mo.put("coefficients", list2[iMo]);
       if (isBeta)
         mo.put("type", "beta");

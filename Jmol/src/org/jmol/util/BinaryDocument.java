@@ -82,8 +82,10 @@ public class BinaryDocument {
     return stream.readByte();
   }
 
-  public void readByteArray(byte[] b) throws Exception {
-    nBytes += stream.read(b);
+  public int readByteArray(byte[] b) throws IOException {
+    int n = stream.read(b);
+    nBytes += n;
+    return n;
   }
 
   public void readByteArray(byte[] b, int off, int len) throws Exception {
@@ -155,9 +157,16 @@ public class BinaryDocument {
   public void seek(long offset) {
     // slower, but all that is available using the applet
     try {
-      stream.reset();
+      if (offset == nBytes)
+        return;
+      if (offset < nBytes) {
+        stream.reset();
+        nBytes = 0;
+      } else {
+        offset -= nBytes;
+      }
       stream.skipBytes((int)offset);
-      nBytes = offset;
+      nBytes += offset;
     } catch (Exception e) {
       Logger.error(null, e);
     }

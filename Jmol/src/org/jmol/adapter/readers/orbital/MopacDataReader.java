@@ -80,8 +80,8 @@ abstract class MopacDataReader extends AtomSetCollectionReader {
 
   protected void createSphericalSlaterByType(int iAtom, int atomicNumber,
                                              String type, float zeta, float coef) {
-    int pt = "S Px Py Pz Dx2-y2 Dxz Dz2 Dyz Dxy".indexOf(type);
-    // 0 2 5 8 11 18 22 26 30
+    int pt = "S Px Py Pz  Dx2-y2Dxz Dz2 Dyz Dxy".indexOf(type);
+           // 0 2  5  8   12    18  22  26  30
     switch (pt) {
     case 0: // s
       addSlater(iAtom, 0, 0, 0, MopacData.getNPQs(atomicNumber) - 1, zeta, coef);
@@ -92,17 +92,11 @@ abstract class MopacDataReader extends AtomSetCollectionReader {
       addSlater(iAtom, pt == 2 ? 1 : 0, pt == 5 ? 1 : 0, pt == 8 ? 1 : 0,
           MopacData.getNPQp(atomicNumber) - 2, zeta, coef);
       return;
-    case 11: // Dx2-y2
-    case 18: // Dxz
-    case 22: // Dz2
-    case 26: // Dyz
-    case 30: // Dxy
-      int dPt = (pt == 11 ? 0 : pt == 18 ? 1 : pt == 22 ? 2 : pt == 26 ? 3 : 4);
-      int dPt3 = dPt * 3;
-      addSlater(iAtom, sphericalDValues[dPt3++], sphericalDValues[dPt3++],
-          sphericalDValues[dPt3++], MopacData.getNPQd(atomicNumber) - 3, zeta, coef);
-      return;
     }
+    pt = (pt >> 2) * 3 - 9;   // 12->0, 18->3, 22->6, 26->9, 30->12
+    addSlater(iAtom, sphericalDValues[pt++], sphericalDValues[pt++],
+        sphericalDValues[pt++], MopacData.getNPQd(atomicNumber) - 3, zeta,
+        coef);
   }  
 
   protected final void setSlaters(boolean doScale, boolean isMopac) {

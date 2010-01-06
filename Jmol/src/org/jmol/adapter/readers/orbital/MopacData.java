@@ -26,25 +26,33 @@ package org.jmol.adapter.readers.orbital;
 public class MopacData extends SlaterData {
 
   final static void scaleSlaterSpherical(int atomicNumber, int[] idata, float[] fdata) {
-    int x = idata[1]; // may be -2 for spherical Dz2
-    int y = idata[2]; // may be -2 for spherical Dx2-y2
-    int z = idata[3];
-    int el = x + y + z;
+    int ex = idata[1]; // may be -2 for spherical Dz2
+    int ey = idata[2]; // may be -2 for spherical Dx2-y2
+    int ez = idata[3];
+    int el = Math.abs(ex + ey + ez);
+    int n;
     float zeta = Math.abs(fdata[0]);
     switch (el) {
     case 0: //S
-      fdata[1] *= getSlaterConstS(getNPQs(atomicNumber), zeta);
+      n = getNPQs(atomicNumber);
+      ez = -1;
       break;
     case 1: //P
-      fdata[1] *= getSlaterConstP(getNPQp(atomicNumber), zeta);
+      n = getNPQp(atomicNumber);
+      ez = -1;
       break;
     case 2: //D
-      fdata[1] *= getSlaterConstDSpherical(getNPQd(atomicNumber), zeta, x, y, z);
+      n = getNPQd(atomicNumber);
       break;
+    default:
     case 3: //F
       fdata[1] = 0; // not set up for spherical f
-      break;
+      return;
     }
+    if (ez < 0)
+      fdata[1] *= getSlaterConstCartesian(n, zeta, el, ex, ey, ez);
+    else
+      fdata[1] *= getSlaterConstDSpherical(n, zeta, ex, ey, ez);
   }
 
   /*
@@ -73,6 +81,16 @@ public class MopacData extends SlaterData {
       6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
       6, 6, 6, 6, 6, 6, 6, 6, // 86
   };
+
+  private final static int[] npqd = new int[] { 0,
+    0, 3, // 2
+    0, 0, 0, 0, 0, 0, 0, 3, // 10
+    3, 3, 3, 3, 3, 3, 3, 4, // 18
+    3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, // 36
+    4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, // 54
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 6, 6, 6, 6, 6, 6, 7, // 86
+};
 
   private final static int getNPQ(int atomicNumber) {
     return (atomicNumber < principalQuantumNumber.length ? 
@@ -107,27 +125,9 @@ public class MopacData extends SlaterData {
     return (atomicNumber < npqd.length ? npqd[atomicNumber] : 0);
   }
 
-  //H                                                             He
-  //Li Be                                          B  C  N  O  F  Ne
-  //Na Mg                                          Al Si P  S  Cl Ar
-  //K  Ca Sc          Ti V  Cr Mn Fe Co Ni Cu Zn   Ga Ge As Se Br Kr
-  //Rb Sr Y           Zr Nb Mo Tc Ru Rh Pd Ag Cd   In Sn Sb Te I  Xe
-  //Cs Ba La Ce-Lu    Hf Ta W  Re Os Ir Pt Au Hg   Tl Pb Bi Po At Rn
-  //Fr Ra Ac Th-Lr    ?? ?? ?? ??
-
-  private final static int[] npqd = new int[] { 0,
-      0, 3, // 2
-      0, 0, 0, 0, 0, 0, 0, 3, // 10
-      3, 3, 3, 3, 3, 3, 3, 4, // 18
-      3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, // 36
-      4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, // 54
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-      5, 6, 6, 6, 6, 6, 6, 7, // 86
-  };
-
   private final static double[] factorDSpherical = new double[] { 
-    0.5,      1,     0.5 / Math.sqrt(3)};
-  //x2-y2     xz     2r2 - x2 - y2  
+    0.5,      1,         0.5 / Math.sqrt(3)};
+  //x2-y2     xz,yz,xy     2r2 - x2 - y2  
 
   private final static float getSlaterConstDSpherical(int n, float zeta, 
                                                       int x, int y, int z) {

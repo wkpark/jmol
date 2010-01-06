@@ -623,7 +623,7 @@ public class Parameters {
     iUseBitSets = true;
     qm_moNumber = Math.abs(iMo);
     qmOrbitalType = (moData.containsKey("gaussians") ? QM_TYPE_GAUSSIAN
-        : moData.containsKey("slaterInfo") ? QM_TYPE_SLATER : QM_TYPE_UNKNOWN);
+        : moData.containsKey("slaters") ? QM_TYPE_SLATER : QM_TYPE_UNKNOWN);
     boolean isElectronDensity = (iMo <= 0);
     if (qmOrbitalType == QM_TYPE_UNKNOWN) {
       //TODO     value = moData; // must be generic surface info

@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.adapter.readers.orbital;
+package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 
@@ -44,7 +44,7 @@ import org.jmol.util.Logger;
  * right now WebMO files don't allow for multiple MOS, but we will assume here that that may change.
  *<p>
  */
-public class WebMOReader extends MopacDataReader {
+public class WebMOReader extends MopacReader {
 
  public void readAtomSetCollection(BufferedReader reader)  {
     this.reader = reader;

@@ -22,15 +22,14 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.adapter.readers.orbital;
+package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
+import org.jmol.quantum.SlaterData;
 //import org.jmol.util.Escape;
 
 import java.io.BufferedReader;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -60,12 +59,10 @@ import java.util.Vector;
  * @author Bradley A. Smith (yeldar@home.com)
  * @version 1.0
  */
-public class AdfReader extends MopacDataReader {
+public class AdfReader extends SlaterReader {
 
   
-
   private Hashtable htSymmetries;
-  private SlaterData[] slaters;
   private Vector vSymmetries;
   private String energy = null;
   private int nXX = 0;
@@ -305,7 +302,7 @@ OR
         sd.basisFunctions[j] = n - 1;
       }
     }
-    slaters = new SlaterData[nBF];
+    slaterArray = new SlaterData[nBF];
         /*
      (power of) X  Y  Z  R     Alpha  on Atom
                 ==========     =====     ==========
@@ -346,32 +343,13 @@ OR
         float zeta = parseFloat(tokens[pt++]);
         for (int i = 0; i < nAtoms; i++) {
           int ptBF = parseInt(tokens[pt++]) - 1;
-          slaters[ptBF] = new SlaterData(atomList[i], x, y, z, r, zeta, isCore);
+          slaterArray[ptBF] = new SlaterData(atomList[i], x, y, z, r, zeta, 1);
+          slaterArray[ptBF].index = ptBF;
         }
       }
     }
   }
 
-  private class SlaterData {
-    boolean isCore;
-    int iAtom;
-    int x;
-    int y;
-    int z;
-    int r;
-    float alpha;
-    public int pt;
-    public SlaterData(int iAtom, int x, int y, int z, int r, float alpha, boolean isCore) {
-      this.iAtom = iAtom;
-      this.x = x;
-      this.y = y;
-      this.z = z;
-      this.r = r;
-      this.alpha = alpha;
-      this.isCore = isCore;      
-    }
-  }
-  
   private void readMolecularOrbitals(String sym) throws Exception {
     /*
  ======  Eigenvectors (rows) in BAS representation
@@ -388,7 +366,7 @@ OR
     int ptSym = sd.index;
     boolean isLast = (ptSym == vSymmetries.size() - 1);
     int n = 0;
-    int nBF = slaters.length;
+    int nBF = slaterArray.length;
     sd.coefs = new float[sd.nSFO][nBF];
     while (n < sd.nBF) {
       readLine();
@@ -433,29 +411,11 @@ OR
       mo.put("symmetry", sd.sym + "_" + (sd.index + 1));
       orbitals.add(mo);
     }
-    int[] pointers = new int[nBF];
-    for (int i = 0; i < nBF; i++)
-      slaters[i].pt = i;
-    Arrays.sort(slaters, new SlaterSorter());
     int iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
-    for (int i = 0; i < nBF; i++) {
-      SlaterData sld = slaters[i];
-      addSlater(iAtom0 + sld.iAtom, sld.x, sld.y, sld.z, sld.r, sld.alpha, 1);
-      pointers[i] = slaters[i].pt;
-    }
-    setSlaters(true, false);
-    sortOrbitalCoefficients(pointers);
+    for (int i = 0; i < nBF; i++)
+      slaterArray[i].iAtom += iAtom0;
+    setSlaters(true, true);
     sortOrbitals();
     setMOs("eV");
-  }
-  
-  class SlaterSorter implements Comparator {
-
-    public int compare(Object arg0, Object arg1) {
-      SlaterData s0 = (SlaterData) arg0;
-      SlaterData s1 = (SlaterData) arg1;
-      return (s0.iAtom < s1.iAtom ? -1 : s0.iAtom > s1.iAtom ? 1 : 0);
-    }
-    
-  }
+  }  
 }

@@ -92,7 +92,7 @@ import java.util.BitSet;
 public class MOCalculation extends QuantumCalculation implements
     MOCalculationInterface {
 
-  private final static float CUT = -50f;
+  private final static double CUT = -50;
   
   private final static int MAX_GRID = Parameters.MO_MAX_GRID;
   // slater coefficients in Bohr
@@ -114,8 +114,7 @@ public class MOCalculation extends QuantumCalculation implements
   private Vector shells;
   private float[][] gaussians;
   //Hashtable aoOrdersDF;
-  private int[][] slaterInfo;
-  private float[][] slaterData;
+  private SlaterData[] slaters;
   private float[] moCoefficients;
   private int moCoeff;
   private int gaussianPtr;
@@ -135,15 +134,14 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
                         String calculationType, Point3f[] atomCoordAngstroms,
                         int firstAtomOffset, Vector shells,
                         float[][] gaussians, Hashtable aoOrdersDF,
-                        int[][] slaterInfo, float[][] slaterData,
+                        Object slaters,
                         float[] moCoefficients, float[] nuclearCharges) {
     this.calculationType = calculationType;
     this.firstAtomOffset = firstAtomOffset;
     this.shells = shells;
     this.gaussians = gaussians;
     //this.aoOrdersDF = aoOrdersDF;
-    this.slaterInfo = slaterInfo;
-    this.slaterData = slaterData;
+    this.slaters = (SlaterData[]) slaters;
     this.moCoefficients = moCoefficients;
     //this.nuclearCharges = nuclearCharges;
     this.isElectronDensity = (nuclearCharges != null);
@@ -156,10 +154,10 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
         bsSelected, atomCoordAngstroms);
     atomIndex = firstAtomOffset - 1;
     doDebug = (Logger.debugging);
-    if (slaterInfo != null)
-      createSlaterCube();
-    else
+    if (slaters == null)
       createGaussianCube();
+    else
+      createSlaterCube();
   }  
 
   public void calculateElectronDensity(float[] nuclearCharges) {
@@ -179,9 +177,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
 
   private void createSlaterCube() {
     moCoeff = 0;
-    // each STO shell is the combination of one or more gaussians
-    int nSlaters = slaterInfo.length;
-    for (int i = 0; i < nSlaters; i++) {
+    for (int i = 0; i < slaters.length; i++) {
       if (!processSlater(i))
         break;
     }
@@ -874,9 +870,10 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
      */
 
     int lastAtom = atomIndex;
-    atomIndex = slaterInfo[slaterIndex][0];
+    SlaterData slater = slaters[slaterIndex];
+    atomIndex = slater.iAtom;
     //System.out.println("MOCALC SLATER " + slaterIndex + " " + lastAtom + " " + atomIndex);
-    float minuszeta = -slaterData[slaterIndex][0];
+    double minuszeta = -slater.zeta;
     if ((thisAtom = qmAtoms[atomIndex]) == null) {
       if (minuszeta <= 0)
         moCoeff++;
@@ -888,7 +885,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     }
     if (moCoeff >= moCoefficients.length)
       return false;
-    float coef = slaterData[slaterIndex][1] * moCoefficients[moCoeff++];
+    double coef = slater.coef * moCoefficients[moCoeff++];
     //coefMax = 0.2f;
     if (coef == 0) { //|| coefMax != Integer.MAX_VALUE && Math.abs(coef) > coefMax) {
       atomIndex = -1;
@@ -896,27 +893,27 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     }
     if (atomIndex != lastAtom)
       thisAtom.setXYZ(true);
-    int a = slaterInfo[slaterIndex][1];
-    int b = slaterInfo[slaterIndex][2];
-    int c = slaterInfo[slaterIndex][3];
-    int d = slaterInfo[slaterIndex][4];
+    int a = slater.x;
+    int b = slater.y;
+    int c = slater.z;
+    int d = slater.r;
     if (Logger.debugging)
       System.out.println("MOCALC " + slaterIndex + " atomNo=" + (atomIndex+1) + "\tx^" + a + " y^"+ b + " z^" + c + " r^" + d + "\tzeta=" + (-minuszeta) + "\tcoef=" + coef);
           //+ " minmax " + xMin + " " + xMax + " " + yMin + " " + yMax + " " + zMin + " " + zMax
     if (a == -2) /* if dz2 */
       for (int ix = xMax; --ix >= xMin;) {
-        float dx2 = X2[ix];
+        double dx2 = X2[ix];
         for (int iy = yMax; --iy >= yMin;) {
-          float dy2 = Y2[iy];
+          double dy2 = Y2[iy];
           for (int iz = zMax; --iz >= zMin;) {
-            float dz2 = Z2[iz];
-            float dx2y2 = dx2 + dy2;
-            float r = (float) Math.sqrt(dx2y2 + dz2);
-            float exponent = minuszeta * r;
+            double dz2 = Z2[iz];
+            double dx2y2 = dx2 + dy2;
+            double r = Math.sqrt(dx2y2 + dz2);
+            double exponent = minuszeta * r;
             if (exponent < CUT)
               continue;
-            float value = coef * (float) Math.exp(exponent)
-                * (2 * dz2 - dx2y2);
+            double value = (coef * Math.exp(exponent)
+                * (2 * dz2 - dx2y2));
             switch(d) {
             case 3:
               value *= r;
@@ -934,18 +931,18 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
       }
     else if (b == -2) /* if dx2-dy2 */
       for (int ix = xMax; --ix >= xMin;) {
-        float dx2 = X2[ix];
+        double dx2 = X2[ix];
         for (int iy = yMax; --iy >= yMin;) {
-          float dy2 = Y2[iy];
-          float dx2y2 = dx2 + dy2;
-          float dx2my2 = coef * (dx2 - dy2);
+          double dy2 = Y2[iy];
+          double dx2y2 = dx2 + dy2;
+          double dx2my2 = coef * (dx2 - dy2);
           for (int iz = zMax; --iz >= zMin;) {
-            float dz2 = Z2[iz];
-            float r = (float) Math.sqrt(dx2y2 + dz2);
-            float exponent = minuszeta * r;
+            double dz2 = Z2[iz];
+            double r = Math.sqrt(dx2y2 + dz2);
+            double exponent = minuszeta * r;
             if (exponent < CUT)
               continue;
-            float value = (float) (dx2my2 * Math.exp(exponent));
+            double value = dx2my2 * Math.exp(exponent);
             switch(d) {
             case 3:
               value *= r;
@@ -964,8 +961,8 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     else
       /* everything else */
       for (int ix = xMax; --ix >= xMin;) {
-        float dx2 = X2[ix];
-        float vdx = coef;
+        double dx2 = X2[ix];
+        double vdx = coef;
         switch(a) {
         case 3:
           vdx *= X[ix];
@@ -978,9 +975,9 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
           break;
         }
         for (int iy = yMax; --iy >= yMin;) {
-          float dy2 = Y2[iy];
-          float dx2y2 = dx2 + dy2;
-          float vdy = vdx;
+          double dy2 = Y2[iy];
+          double dx2y2 = dx2 + dy2;
+          double vdy = vdx;
           switch(b) {
           case 3:
             vdy *= Y[iy];
@@ -993,12 +990,12 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
             break;
           }
           for (int iz = zMax; --iz >= zMin;) {
-            float dz2 = Z2[iz];
-            float r = (float) Math.sqrt(dx2y2 + dz2);
-            float exponent = minuszeta * r;
+            double dz2 = Z2[iz];
+            double r = Math.sqrt(dx2y2 + dz2);
+            double exponent = minuszeta * r;
             if (exponent < CUT)
               continue;
-            float value = vdy * (float) Math.exp(exponent);
+            double value = vdy * Math.exp(exponent);
             switch(c) {
             case 3:
               value *= Z[iz];

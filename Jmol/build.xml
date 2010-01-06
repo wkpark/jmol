@@ -449,7 +449,6 @@ support for assertions (which were introduced in 1.4).
         <include name="org/jmol/g3d/**" />
         <include name="org/jmol/api/**" />
         <include name="org/jmol/atomdata/**" />
-        <include name="org/jmol/quantum/**" />
         <include name="org/jmol/viewer/JmolConstants.class" />
       </fileset>
       <fileset dir="${appjars.dir}" includes="**/*"/>
@@ -585,12 +584,6 @@ support for assertions (which were introduced in 1.4).
       </fileset>
     </jar>
 
-  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_Quantum.jar" manifest="manifest/applet.txt">
-      <fileset dir="${applet.classes.dir}">
-        <include name="org/jmol/quantum/**" />
-      </fileset>
-    </jar>
-
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersMolXyz.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/molxyz/**" />
@@ -603,9 +596,10 @@ support for assertions (which were introduced in 1.4).
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersOrbital.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersQuantum.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
-        <include name="org/jmol/adapter/readers/orbital/**" />
+        <include name="org/jmol/adapter/readers/quantum/**" />
+        <include name="org/jmol/quantum/**" />
       </fileset>
     </jar>
 
@@ -685,11 +679,10 @@ support for assertions (which were introduced in 1.4).
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Console.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Popup.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Quantum.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersCifPdb.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMolXyz.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMore.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersOrbital.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersQuantum.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXml.jar" /> 
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeSpecial.jar" />
@@ -746,11 +739,6 @@ support for assertions (which were introduced in 1.4).
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
   	
-    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Quantum.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Quantum.jar"
-             keystore="selfSignedCertificate/selfSignedCertificate.store"
-             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
-
     <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ReadersCifPdb.jar"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersCifPdb.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
@@ -766,8 +754,8 @@ support for assertions (which were introduced in 1.4).
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
-    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ReadersOrbital.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersOrbital.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ReadersQuantum.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersQuantum.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
   	
@@ -846,11 +834,10 @@ support for assertions (which were introduced in 1.4).
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_MultiTouch.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Quantum.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersCifPdb.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMolXyz.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMore.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersOrbital.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersQuantum.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXml.jar" /> 
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeBio.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSpecial.jar" />

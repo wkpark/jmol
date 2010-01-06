@@ -14,7 +14,7 @@ public interface MOCalculationInterface {
                                  Point3f[] atomCoordAngstroms,
                                  int firstAtomOffset, Vector shells,
                                  float[][] gaussians, Hashtable aoOrdersDF,
-                                 int[][] slaterInfo, float[][] slaterData,
+                                 Object slaters,
                                  float[] moCoefficients, float[] nuclearCharges);
   
   public abstract void calculateElectronDensity(float[] nuclearCharges);

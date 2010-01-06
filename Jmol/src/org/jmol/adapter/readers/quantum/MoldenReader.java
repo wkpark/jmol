@@ -1,4 +1,4 @@
-package org.jmol.adapter.readers.orbital;
+package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 
@@ -18,7 +18,7 @@ import org.jmol.util.Logger;
  * @author Matthew Zwier <mczwier@gmail.com>
  */
 
-public class MoldenReader extends MopacDataReader {
+public class MoldenReader extends MopacReader {
   protected float[] frequencies = null;
   protected AtomSetCollection freqAtomSet = null;
   

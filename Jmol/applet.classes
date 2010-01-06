@@ -2,7 +2,7 @@ JmolApplet.java
 org/jmol/adapter/readers/cifpdb/*.java
 org/jmol/adapter/readers/molxyz/*.java
 org/jmol/adapter/readers/more/*.java
-org/jmol/adapter/readers/orbital/*.java
+org/jmol/adapter/readers/quantum/*.java
 org/jmol/adapter/readers/xml/*.java
 org/jmol/adapter/smarter/*.java
 org/jmol/api/*.java

@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.adapter.readers.orbital; 
+package org.jmol.adapter.readers.quantum; 
 
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
@@ -46,7 +46,7 @@ import org.jmol.util.Logger;
  * 
  * @author hansonr <hansonr@stolaf.edu>
  */
-public class CsfReader extends MopacDataReader {
+public class CsfReader extends MopacReader {
 
   private int nAtoms = 0;
   private String strAtomicNumbers = "";
@@ -677,7 +677,7 @@ public class CsfReader extends MopacDataReader {
               : contractionCoefs[ipt][i]);
         }
       }
-      setSlaters(true, true); 
+      setSlaters(true, false); 
     }
   }  
 }

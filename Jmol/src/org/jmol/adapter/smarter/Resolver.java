@@ -282,7 +282,7 @@ public class Resolver {
   private final static String[] readerSets = new String[] {
     "cifpdb.", ";Cif;Pdb;",
     "molxyz.", ";Mol;Xyz;",
-    "orbital.", ";Adf;Csf;Cube;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
+    "quantum.", ";Adf;Csf;Cube;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
     		         "Molden;MopacGraphf;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;"
   };
   

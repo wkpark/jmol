@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.adapter.readers.orbital;
+package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 
@@ -36,7 +36,7 @@ import java.util.Hashtable;
  * @author Bob Hanson <hansonr@stolaf.edu>
  * 
  */
-public class MopacGraphfReader extends MopacDataReader {
+public class MopacGraphfReader extends MopacReader {
     
   int atomCount;
   
@@ -137,8 +137,8 @@ public class MopacGraphfReader extends MopacDataReader {
         createSphericalSlaterByType(iAtom, atomicNumber, "Dxy", zeta, 1);
       }
     }
-    nOrbitals = intinfo.size();
-    setSlaters(true, true);
+    nOrbitals = slaters.size();
+    setSlaters(true, false);
   }
 
   float[][] invMatrix;

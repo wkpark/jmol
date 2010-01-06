@@ -22,21 +22,21 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.adapter.readers.orbital;
+package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
 
 import java.io.BufferedReader;
 import java.util.Hashtable;
-import java.util.Vector;
 
 /**
  * A reader for Dgrid BASISFILE data.
  *
  *
  */
-public class DgridReader extends MopacDataReader {
+public class DgridReader extends SlaterReader {
 
   private String title;
 
@@ -144,74 +144,6 @@ public class DgridReader extends MopacDataReader {
     }
   }
 
-  private class SlaterData {
-    boolean isCore;
-    int iAtom;
-    int x;
-    int y;
-    int z;
-    int r;
-    float alpha;
-    String code;
-        
-    SlaterData(String atomSymbol, String xyz) {
-      setCode(atomSymbol, xyz);
-    }
-
-    void setCode(String atomSymbol, String xyz) {
-      char ch;
-      char abc = ' ';
-      char type = ' ';
-      int exp = 1;
-      int el = 0;
-      for (int i = xyz.length(); --i >= 0;) {
-        switch (ch = xyz.charAt(i)) {
-        case '_':
-          type = abc;
-          break;
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-          exp = ch - '0';
-          break;
-        case 'x':
-          x = exp;
-          el += exp;
-          exp = 1;
-          break;
-        case 'y':
-          y = exp;
-          el += exp;
-          exp = 1;
-          break;
-        case 'z':
-          z = exp;
-          el += exp;
-          exp = 1;
-          break;
-        case 's':
-        case 'p':
-        case 'd':
-        case 'f':
-        default:
-          abc = ch;
-        }
-      }
-      r = (exp - el - 1);
-      code = atomSymbol + xyz.substring(0, 2);
-      if (type != ' ')
-        code += "_" + type;
-      Float f = (Float) htExponents.get(code);
-      if (f == null)
-        Logger.error("Exponent for " + code + " not found");
-      else
-        alpha = f.floatValue();
-      //System.out.println("DgridReader [" + iAtom + " " 
-          //+ x + " " + y + " " + z + " " + r + "]" + " " + alpha);
-    }
-  }
- 
   private Hashtable htFuncMap;
   private void readMolecularOrbitals() throws Exception {
     /*
@@ -222,7 +154,6 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
      */
     htFuncMap = new Hashtable();
     discardLines(3);
-    boolean sorting = true;
     while (line != null && line.indexOf(":") != 0) {
       discardLinesUntilContains("sym: ");
       String symmetry = line.substring(4, 10).trim();
@@ -243,14 +174,11 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
         if (htFuncMap.containsKey(key)) {
           ptSlater[pt++] = ((Integer) htFuncMap.get(key)).intValue();
         } else {
-          int n = intinfo.size();
+          int n = slaters.size();
           ptSlater[pt++] = n;
           htFuncMap.put(key, new Integer(n));
           //System.out.println(code + " " + key);
-          SlaterData sd = new SlaterData(atoms[iAtom].elementSymbol, code);
-          // temporarily we put the slater pointer into coef; 
-          // we will change this to 1.0 later
-          addSlater(iAtom, sd.x, sd.y, sd.z, sd.r, sd.alpha, (sorting ? n : 1));
+          addSlater(createSlaterData(iAtom, atoms[iAtom].elementSymbol, code), n);
         }
       }
       discardLinesUntilContains(":-");
@@ -265,7 +193,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
             break;
           cData.append(line);
         }
-        float[] list = new float[intinfo.size()];
+        float[] list = new float[slaters.size()];
         tokens = getTokens(cData.toString());
         if (tokens.length != nFuncs)
           Logger
@@ -282,9 +210,6 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
         //System.out.println(orbitals.size() + " " + symmetry + "_" + iOrb);
       }
     }
-
-    if (sorting)
-      sortSlaters();
 
     /*
 :                        +------------+
@@ -309,41 +234,65 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
     }
     sortOrbitals();
     // System.out.println(Escape.escape(list, false));
-    setSlaters(true, false);
+    setSlaters(true, true);
     setMOs("eV");
   }
 
-  private void sortSlaters() {
-    int atomCount = atomSetCollection.getAtomCount();
-    int nSlaters = intinfo.size();
-    int[] intdata;
-    float[] floatdata;
-    Vector[] slaters = new Vector[atomCount];
-    for (int i = atomCount; --i >= 0;)
-      slaters[i] = new Vector();
-    for (int i = nSlaters; --i >= 0;) {
-      intdata = (int[]) intinfo.get(i);
-      floatdata = (float[]) floatinfo.get(i);
-      slaters[intdata[0]].add(floatdata);
-    }
-    Vector oldinfo = (Vector) intinfo.clone();
-    intinfo.clear();
-    floatinfo.clear();
-    // sort the slaters in order by atom, because it
-    // takes considerable time to switch between atoms
-    // and we want all the references to a given atom in the same block
-    int[] pointers = new int[nSlaters];
-    for (int i = 0, pt = 0; i < atomCount; i++) {
-      Vector v = slaters[i];
-      for (int j = v.size(); --j >= 0;) {
-        floatdata = (float[]) v.get(j);
-        int k = pointers[pt++] = (int) floatdata[1];
-        floatdata[1] = 1;
-        intinfo.add(oldinfo.get(k));
-        floatinfo.add(floatdata);
+  private SlaterData createSlaterData(int iAtom, String atomSymbol, String xyz) {
+    char ch;
+    char abc = ' ';
+    char type = ' ';
+    int exp = 1;
+    int el = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    for (int i = xyz.length(); --i >= 0;) {
+      switch (ch = xyz.charAt(i)) {
+      case '_':
+        type = abc;
+        break;
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+        exp = ch - '0';
+        break;
+      case 'x':
+        x = exp;
+        el += exp;
+        exp = 1;
+        break;
+      case 'y':
+        y = exp;
+        el += exp;
+        exp = 1;
+        break;
+      case 'z':
+        z = exp;
+        el += exp;
+        exp = 1;
+        break;
+      case 's':
+      case 'p':
+      case 'd':
+      case 'f':
+      default:
+        abc = ch;
       }
     }
-    sortOrbitalCoefficients(pointers);
+    int r = (exp - el - 1);
+    String code = atomSymbol + xyz.substring(0, 2);
+    if (type != ' ')
+      code += "_" + type;
+    Float f = (Float) htExponents.get(code);
+    float zeta = 0;
+    if (f == null)
+      Logger.error("Exponent for " + code + " not found");
+    else
+      zeta = f.floatValue();
+    //System.out.println("DgridReader [" + iAtom + " " 
+        //+ x + " " + y + " " + z + " " + r + "]" + " " + alpha);
+    return new SlaterData(iAtom, x, y, z, r, zeta, 1);
   }
-
 }

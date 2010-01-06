@@ -289,7 +289,7 @@ public interface JmolRendererInterface {
                                          short normixC, Point3i screenD,
                                          short colixD, short normixD);
 
-  public abstract void drawSurface(MeshSurface meshSurface);
+  public abstract void drawSurface(MeshSurface meshSurface, Point3f[] vertices);
 
   public abstract boolean isInDisplayRange(int x, int y);
 

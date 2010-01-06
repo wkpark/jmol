@@ -280,7 +280,7 @@ public class MolecularOrbital extends Isosurface {
             haveHeader = true;
           }
           str.append(JvxlCoder.jvxlGetFile(jvxlData, null, jvxlData.title,
-              null, false, 1, thisMesh.getState(myType),
+              null, false, 1, thisMesh.getState("mo"),
               (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand)));
           if (!doOneMo)
             super.setProperty("delete", "mo_show", null);
@@ -403,7 +403,7 @@ public class MolecularOrbital extends Isosurface {
     appendCmd(s, "mo " + moNumber);
     if (moTranslucency != null)
       appendCmd(s, "mo translucent " + moTranslucentLevel);
-    appendCmd(s, ((IsosurfaceMesh) thisModel.get("mesh")).getState(myType));
+    appendCmd(s, ((IsosurfaceMesh) thisModel.get("mesh")).getState("mo"));
     return s.toString();
   }
 }

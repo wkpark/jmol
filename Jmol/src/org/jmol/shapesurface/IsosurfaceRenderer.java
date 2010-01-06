@@ -27,7 +27,6 @@ import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
-import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
@@ -55,6 +54,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     for (int i = isosurface.meshCount; --i >= 0;) {
       imesh = (IsosurfaceMesh) isosurface.meshes[i];
       g3d.setTranslucentCoverOnly(imesh.frontOnly);
+      thePlane = imesh.jvxlData.jvxlPlane;
       if (slabValue != Integer.MAX_VALUE && imesh.isSolvent) {
         g3d.setSlab((int) viewer.getNavigationOffset().z);
         render1(imesh);
@@ -68,35 +68,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   protected void transform() {
     vertexValues = imesh.vertexValues;
-    Point3f offset = imesh.ptOffset;
-    Vector3f normal = null;
-    float scale = Float.NaN;
-    if (offset != null && offset.x > 999 && vertexValues != null && offset.z != 0) {
-      Point4f thePlane = imesh.jvxlData.jvxlPlane;
-      if (thePlane != null) {
-        scale = offset.z;
-        normal = new Vector3f(thePlane.x, thePlane.y, thePlane.z);
-        normal.normalize();
-        normal.scale(scale);
-      }
-    }
     for (int i = vertexCount; --i >= 0;) {
       if (Float.isNaN(vertices[i].x))
         continue;
-      float val =  0;
-      if (vertexValues == null || !Float.isNaN(val = vertexValues[i])
+      if (vertexValues == null || !Float.isNaN(vertexValues[i])
           || imesh.hasGridPoints) {
-        if (offset == null || scale == 0) {
           viewer.transformPoint(vertices[i], screens[i]);
-        } else {
-          pt1f.set(vertices[i]);
-          if (Float.isNaN(scale)) {
-            pt1f.add(offset);
-          } else {
-            pt1f.scaleAdd(val, normal, pt1f);
-          }
-          viewer.transformPoint(pt1f, screens[i]);        
-        }
       }
     }
   }

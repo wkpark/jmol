@@ -283,8 +283,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       offset = new Point3f((Point3f) value);
       if (offset.equals(JmolConstants.center))
         offset = null;
-      if (thisMesh != null)
+      if (thisMesh != null) {
         thisMesh.ptOffset = offset;
+        thisMesh.offsetVertices = null;
+      }
       return;
     }
 
@@ -831,7 +833,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.calculatedArea = null;
     thisMesh.calculatedVolume = null;
     thisMesh.initialize(sg.getPlane() != null ? JmolConstants.FULLYLIT
-        : lighting);
+        : lighting, null);
     if (thisMesh.jvxlData.jvxlPlane != null)
       allowContourLines = false;
     thisMesh.isSolvent = ((sg.getDataType() & Parameters.IS_SOLVENTTYPE) != 0);

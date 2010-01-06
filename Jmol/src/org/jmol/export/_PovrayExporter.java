@@ -402,8 +402,8 @@ public class _PovrayExporter extends __RayTracerExporter {
     if (haveNormals) {
       output("normal_vectors { " + nVertices);
       for (int i = 0; i < nVertices; i++) {
-        setTempVertex(vertices[i], offset, tempP1);
-        output(getScreenNormal(tempP1, normals[i], 1));
+        setTempVertex(vertices[i], offset, tempP2);
+        output(getScreenNormal(tempP2, normals[i], 1));
         output("\n");
       }
       output("\n}\n");

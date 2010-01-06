@@ -35,6 +35,7 @@ import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.*;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 public class Mesh extends MeshSurface {
@@ -113,6 +114,7 @@ public class Mesh extends MeshSurface {
     normixes = null;
     bitsets = null;    
     vertices = null;
+    offsetVertices = null;
     polygonIndexes = null;
     data1 = null;
     data2 = null;
@@ -120,17 +122,19 @@ public class Mesh extends MeshSurface {
     this.meshType = meshType;
   }
 
-  public void initialize(int lighting) {//used by mps
-    Vector3f[] normals = getVertexNormals();
+  public void initialize(int lighting, Point3f[] vertices) {
+    if (vertices == null)
+      vertices = this.vertices;
+    Vector3f[] normals = getVertexNormals(vertices);
     normixes = new short[vertexCount];
     initializeNormixes(lighting, normals);
   }
 
-  public Vector3f[] getVertexNormals() {
+  public Vector3f[] getVertexNormals(Point3f[] vertices) {
     Vector3f[] normals = new Vector3f[vertexCount];
     for (int i = vertexCount; --i >= 0;)
       normals[i] = new Vector3f();
-    sumVertexNormals(normals);
+    sumVertexNormals(vertices, normals);
     for (int i = vertexCount; --i >= 0;)
       normals[i].normalize();
     return normals;
@@ -183,7 +187,7 @@ public class Mesh extends MeshSurface {
   public Vector data1;
   public Vector data2;
   
-  protected void sumVertexNormals(Vector3f[] normals) {
+  protected void sumVertexNormals(Point3f[] vertices, Vector3f[] normals) {
     // subclassed in IsosurfaceMesh
     int adjustment = (haveCheckByte ? 2 : 0);
     for (int i = polygonCount; --i >= 0;) {
@@ -209,7 +213,7 @@ public class Mesh extends MeshSurface {
 
   public String getState(String type) {
     StringBuffer s = new StringBuffer(type);
-    if (!type.equals("molecularOrbital"))
+    if (!type.equals("mo"))
       s.append(" ID ").append(Escape.escape(thisID));
     s.append(fillTriangles ? " fill" : " noFill");
     s.append(drawTriangles ? " mesh" : " noMesh");
@@ -224,5 +228,34 @@ public class Mesh extends MeshSurface {
     if (!visible)
       s.append(" hidden");
     return s.toString();
+  }
+
+  public Point3f[] getOffsetVertices(Point4f thePlane) {
+    if (offsetVertices != null)
+      return offsetVertices;
+    offsetVertices = new Point3f[vertexCount];
+    for (int i = 0; i < vertexCount; i++)
+      offsetVertices[i] = new Point3f(vertices[i]);
+    Vector3f normal = null;
+    float val = 0;
+    float scale = Float.NaN;
+    if (ptOffset.x > 999 && vertexValues != null && ptOffset.z != 0) {
+      if (thePlane != null) {
+        scale = ptOffset.z;
+        normal = new Vector3f(thePlane.x, thePlane.y, thePlane.z);
+        normal.normalize();
+        normal.scale(scale);
+      }
+    }
+    for (int i = 0; i < vertexCount; i++)
+      if (vertexValues == null || !Float.isNaN(val = vertexValues[i])) {
+        Point3f pt = offsetVertices[i];
+        if (Float.isNaN(scale))
+          pt.add(ptOffset);
+        else
+          pt.scaleAdd(val, normal, pt);
+      }
+    initialize(lighting, offsetVertices);
+    return offsetVertices;
   }
 }

@@ -41,6 +41,26 @@ import org.jmol.util.ZipUtil;
 
 public class Resolver {
 
+  private final static String classBase = "org.jmol.adapter.readers.";
+  private final static String[] readerSets = new String[] {
+    "cifpdb.", ";Cif;Pdb;",
+    "molxyz.", ";Mol;Xyz;",
+    "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
+                 "Molden;MopacGraphf;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
+                 "WebMO;"
+  };
+  
+  public final static String getReaderClassBase(String type) {
+    String name = type + "Reader";
+    if (type.startsWith("Xml"))
+      return classBase + "xml." + name;
+    String key = ";" + type + ";";
+    for (int i = 1; i < readerSets.length; i += 2)
+      if (readerSets[i].indexOf(key) >= 0)
+        return classBase + readerSets[i - 1] + name;
+    return classBase + "more." + name;
+  }
+  
   /**
    * From SmarterJmolAdapter.getFileTypeName(Object atomSetCollectionOrReader)
    * just return the file type with no exception issues
@@ -276,27 +296,6 @@ public class Resolver {
     }
   }
 
-  ////// PRIVATE METHODS ///////
-  
-  private final static String classBase = "org.jmol.adapter.readers.";
-  private final static String[] readerSets = new String[] {
-    "cifpdb.", ";Cif;Pdb;",
-    "molxyz.", ";Mol;Xyz;",
-    "quantum.", ";Adf;Csf;Cube;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
-    		         "Molden;MopacGraphf;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;"
-  };
-  
-  public final static String getReaderClassBase(String type) {
-    String name = type + "Reader";
-    if (type.startsWith("Xml"))
-      return classBase + "xml." + name;
-    String key = ";" + type + ";";
-    for (int i = 1; i < readerSets.length; i += 2)
-      if (readerSets[i].indexOf(key) >= 0)
-        return classBase + readerSets[i - 1] + name;
-    return classBase + "more." + name;
-  }
-  
   /**
    * returns the list of files to read for every Spartan spardir. Simple numbers
    * are assumed to be Profiles; others are models.

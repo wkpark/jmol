@@ -26,6 +26,7 @@ package org.jmol.shape;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 import org.jmol.g3d.Graphics3D;
@@ -45,6 +46,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected int diameter;
   protected float width;
   protected boolean isTranslucent;
+  protected Point4f thePlane;
 
   protected final Point3f pt1f = new Point3f();
   protected final Point3f pt2f = new Point3f();
@@ -75,11 +77,13 @@ public abstract class MeshRenderer extends ShapeRenderer {
       viewer.freeTempScreens(screens);
     return true;
   }
-  
+
   private boolean setVariables() {
+    Point3f offset = mesh.ptOffset;
     slabbing = viewer.getSlabEnabled();
-    vertices = mesh.vertices; // because DRAW might have a text associated with
-                              // it
+    vertices = (offset == null ? mesh.vertices 
+        : mesh.getOffsetVertices(thePlane)); 
+    
     colix = mesh.colix;
     if (mesh.visibilityFlags == 0)
       return false;
@@ -237,9 +241,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   protected void exportSurface() {
-    mesh.vertexNormals = mesh.getVertexNormals();
+    mesh.vertexNormals = mesh.getVertexNormals(vertices);
     mesh.bsFaces = bsFaces;
-    g3d.drawSurface(mesh);
+    g3d.drawSurface(mesh, mesh.offsetVertices);
     mesh.vertexNormals = null;
     mesh.bsFaces = null;
   }

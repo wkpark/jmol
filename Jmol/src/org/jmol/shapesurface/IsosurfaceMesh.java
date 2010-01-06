@@ -187,12 +187,12 @@ public class IsosurfaceMesh extends Mesh {
 
   int thisSet = -1;
   
-  protected void sumVertexNormals(Vector3f[] vectorSums) {
-    super.sumVertexNormals(vectorSums);
+  protected void sumVertexNormals(Point3f[] vertices, Vector3f[] vectorSums) {
+    super.sumVertexNormals(vertices, vectorSums);
     /* 
      * OK, so if there is an associated grid point (because the 
      * point is so close to one), we now declare that associated
-     * point to be used for the vectorSum instead of a new, 
+     * point to be used for the vecetorSum instead of a new, 
      * independent one for the point itself.
      *  
      *  Bob Hanson, 05/2006

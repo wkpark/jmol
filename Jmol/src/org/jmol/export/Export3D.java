@@ -673,19 +673,15 @@ final public class Export3D implements JmolRendererInterface {
         colixD, normixD);
   }
 
-  public void drawSurface(MeshSurface meshSurface) {
-    /*
-     * g3d.renderIsosurface(mesh.vertices, mesh.colix, mesh.isColorSolid ? null
-     * : mesh.vertexColixes, mesh.getVertexNormals(), mesh.polygonIndexes,
-     * bsFaces, mesh.vertexCount, faceVertexMax, mesh.isColorSolid ?
-     * mesh.polygonColixes : null, mesh.polygonCount);
-     */
+  public void drawSurface(MeshSurface meshSurface, Point3f[] vertices) {
     exporter.drawSurface(meshSurface.vertexCount, meshSurface.polygonCount,
-        meshSurface.haveQuads ? 4 : 3, meshSurface.vertices,
-        meshSurface.vertexNormals, meshSurface.isColorSolid ? null
-            : meshSurface.vertexColixes, meshSurface.polygonIndexes,
-        meshSurface.isColorSolid ? null : meshSurface.polygonColixes,
-        meshSurface.bsFaces, meshSurface.colix, meshSurface.ptOffset);
+        meshSurface.haveQuads ? 4 : 3, 
+        vertices == null ? meshSurface.vertices : vertices,
+        meshSurface.vertexNormals, 
+        meshSurface.isColorSolid ? null : meshSurface.vertexColixes, 
+        meshSurface.polygonIndexes,
+        meshSurface.isColorSolid ? meshSurface.polygonColixes : null,
+        meshSurface.bsFaces, meshSurface.colix, null);
   }
 
   public short[] getBgColixes(short[] bgcolixes) {

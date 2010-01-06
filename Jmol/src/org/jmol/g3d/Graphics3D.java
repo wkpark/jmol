@@ -1484,7 +1484,7 @@ final public class Graphics3D implements JmolRendererInterface {
                  screenD, colixD, normixD);
   }
 
-  public void drawSurface(MeshSurface meshSurface) {
+  public void drawSurface(MeshSurface meshSurface, Point3f[] vertices) {
     // Export3D only
   }
   

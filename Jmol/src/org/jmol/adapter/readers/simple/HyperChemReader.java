@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.adapter.readers.more;
+package org.jmol.adapter.readers.simple;
 
 import org.jmol.adapter.smarter.*;
 
@@ -44,11 +44,11 @@ import java.io.BufferedReader;
  * interesting fields are partialCharge, x, y, z, bondCount<br />
  * bonds are atom number and s/d/t/a for single/double/triple/aromatic
  */
-public class HinReader extends AtomSetCollectionReader {
+public class HyperChemReader extends AtomSetCollectionReader {
   
  public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("hin", this);
+    atomSetCollection = new AtomSetCollection("HyperChem", this);
     try {
       readAtoms();
     } catch (Exception e) {

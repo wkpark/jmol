@@ -17,7 +17,6 @@ import java.util.zip.GZIPInputStream;
 
 import org.jmol.util.JUnitLogger;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -60,21 +59,21 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "adf", "adf", "Adf");
     result.addDirectory(false, "adf", "out", "Adf");
     result.addDirectory(false, "aims", "in", "Aims");
-    result.addDirectory(false, "aminoacids", "mol");
-    result.addDirectory(false, "aminoacids", "pdb");
+    result.addDirectory(false, "aminoacids", "mol", "Mol");
+    result.addDirectory(false, "aminoacids", "pdb", "Pdb");
     result.addDirectory(false, "animations", "cml", "XmlCml");
-    result.addDirectory(false, "animations", "pdb");
-    result.addDirectory(true,  "animations", "pdb.gz");
-    result.addDirectory(false, "animations", "xyz");
+    result.addDirectory(false, "animations", "pdb", "Pdb");
+    result.addDirectory(true,  "animations", "pdb.gz", "Pdb");
+    result.addDirectory(false, "animations", "xyz", "Xyz");
     result.addDirectory(false, "castep", "cell", "Castep");
-    result.addDirectory(false, "cif", "cif");
+    result.addDirectory(false, "cif", "cif", "Cif");
     result.addDirectory(false, "c3xml", "c3xml", "XmlChem3d");
     result.addDirectory(false, "cml", "cml", "XmlCml");
-    result.addDirectory(false, "crystals", "mol");
-    result.addDirectory(false, "crystals", "pdb");
+    result.addDirectory(false, "crystals", "mol", "Mol");
+    result.addDirectory(false, "crystals", "pdb", "Pdb");
     result.addDirectory(false, "csf", "csf", "Csf");
-    result.addDirectory(true,  "cube", "cub.gz");
-    result.addDirectory(true,  "cube", "cube.gz");
+    result.addDirectory(true,  "cube", "cub.gz", "Cube");
+    result.addDirectory(true,  "cube", "cube.gz", "Cube");
     result.addDirectory(false,  "dgrid", "adf", "Dgrid");
     result.addDirectory(false, "folding", "xyz", "FoldingXyz");
     result.addDirectory(true,  "folding", "xyz.gz", "FoldingXyz");
@@ -82,58 +81,40 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(true,  "../Jmol-FAH/projects", "xyz.gz", "FoldingXyz");
     result.addDirectory(false, "gamess", "log", ";Gamess;GamessUS;GamessUK;");
     result.addDirectory(false, "gamess", "out", ";Gamess;GamessUS;GamessUK;");
-    result.addDirectory(false, "gaussian", "log");
-    result.addDirectory(false, "gaussian", "out");
+    result.addDirectory(false, "gaussian", "log", "Gaussian");
+    result.addDirectory(false, "gaussian", "out", "Gaussian");
     result.addDirectory(false, "ghemical", "gpr", "GhemicalMM");
     result.addDirectory(false, "gpt2", "gpt2","MopacGraphf");
-    result.addDirectory(false, "hin", "hin");
-    result.addDirectory(false, "jaguar", "out");
-    result.addDirectory(false, "modifiedGroups", "cif");
-    result.addDirectory(false, "modifiedGroups", "pdb");
-    result.addDirectory(false, "mol", "mol");
-    result.addDirectory(false, "mol", "sdf");
-    result.addDirectory(false, "mol2", "mol2");
+    result.addDirectory(false, "hyperchem", "hin", "HyperChem");
+    result.addDirectory(false, "jaguar", "out", "Jaguar");
+    result.addDirectory(false, "modifiedGroups", "cif", "Cif");
+    result.addDirectory(false, "modifiedGroups", "pdb", "Pdb");
+    result.addDirectory(false, "mol", "mol", "Mol");
+    result.addDirectory(false, "mol", "sdf", "Mol");
+    result.addDirectory(false, "mol2", "mol2", "Mol2");
     result.addDirectory(false, "molpro", "xml", "XmlMolpro");
-    result.addDirectory(false, "mopac", "out");
+    result.addDirectory(false, "mopac", "out", "Mopac");
     result.addDirectory(false, "odyssey", "odydata", "Odyssey");
     result.addDirectory(false, "odyssey", "xodydata", "XmlOdyssey");
     result.addDirectory(false, "nwchem", "nwo", "NWChem");
-    result.addDirectory(false, "pdb", "pdb");
-    result.addDirectory(true,  "pdb", "pdb.gz");
+    result.addDirectory(false, "pdb", "pdb", "Pdb");
+    result.addDirectory(true,  "pdb", "pdb.gz", "Pdb");
     // result.pmesh files are not molecular data files
     result.addDirectory(false, "psi3", "out", "Psi");
-    result.addDirectory(false, "qchem", "out");
-    result.addDirectory(false, "shelx", "res");
+    result.addDirectory(false, "qchem", "out", "Qchem");
+    result.addDirectory(false, "shelx", "res", "Shelx");
     result.addDirectory(false, "spartan", "smol", "SpartanSmol");
     result.addDirectory(false, "spartan", "txt", "Spartan");
     result.addDirectory(false, "spartan", "sp4", "Spartan");
     result.addDirectory(false, "sparchive", "sparchive", "Spartan");
     result.addDirectory(false, "sparchive", "spartan", "Spartan");
-    result.addDirectory(false, "v3000", "sdf");
-    result.addDirectory(false, "wien2k", "struct");
+    result.addDirectory(false, "v3000", "mol", "V3000");
+    result.addDirectory(false, "v3000", "sdf", "V3000");
+    result.addDirectory(false, "wien2k", "struct", "Wien2k");
     result.addDirectory(false, "webmo", "mo", "WebMO");
-    result.addDirectory(false, "xyz", "xyz");
+    result.addDirectory(false, "xyz", "xyz", "Xyz");
     result.addDirectory(false, "vasp", "dat", "Vasp");
     return result;
-  }
-
-  /**
-   * Add tests for each file in a directory.
-   * 
-   * @param gzipped Compressed file ?
-   * @param directory Directory where the files are (relative to Jmol-datafiles)
-   * @param ext Extension
-   */
-  private void addDirectory(boolean gzipped, String directory, String ext) {
-    if (testOne != null && !directory.equals(testOne))
-      return;
-    String type = ext;
-    if (type.indexOf(".") >=0 )
-      type = type.substring(0, type.indexOf("."));
-    if (!Parser.isOneOf(type, "cif;pdb;xyz;mol;"))
-      type = directory;
-    type = type.substring(0,1).toUpperCase() + type.substring(1);
-    addDirectory(gzipped, directory, ext, type);
   }
 
   /**

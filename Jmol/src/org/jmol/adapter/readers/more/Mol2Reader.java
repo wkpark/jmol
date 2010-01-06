@@ -52,7 +52,7 @@ import org.jmol.api.JmolAdapter;
  *<p>
  */
 
-public class Mol2Reader extends FFReader {
+public class Mol2Reader extends ForceFieldReader {
 
   private int nAtoms = 0;
   private int atomCount = 0;

@@ -43,11 +43,14 @@ public class Resolver {
 
   private final static String classBase = "org.jmol.adapter.readers.";
   private final static String[] readerSets = new String[] {
-    "cifpdb.", ";Cif;Pdb;",
+    "cifpdb.", ";Cif;Pdb;Pqr;",
     "molxyz.", ";Mol;Xyz;",
+    "more.", ";Gromacs;MdCrd;MdTop;Mol2;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
                  "Molden;MopacGraphf;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
-                 "WebMO;"
+                 "WebMO;",
+    "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;V3000;", 
+    "xtal.", ";Aims;Castep;Shelx;Vasp;Wien2k;"
   };
   
   public final static String getReaderClassBase(String type) {
@@ -58,7 +61,7 @@ public class Resolver {
     for (int i = 1; i < readerSets.length; i += 2)
       if (readerSets[i].indexOf(key) >= 0)
         return classBase + readerSets[i - 1] + name;
-    return classBase + "more." + name;
+    return classBase + "???." + name;
   }
   
   /**
@@ -855,11 +858,11 @@ public class Resolver {
   private final static String[] vaspOutcarStartRecords =
   {"Vasp", " vasp."};
 
-  private final static String[] hinFileStartRecords = 
-  { "Hin", "mol 1" };
+  private final static String[] hyperChemFileStartRecords = 
+  { "HyperChem", "mol 1" };
 
   private final static String[][] fileStartsWithRecords =
-  { cubeFileStartRecords, mol2Records, webmoFileStartRecords, moldenFileStartRecords, vaspOutcarStartRecords, hinFileStartRecords};
+  { cubeFileStartRecords, mol2Records, webmoFileStartRecords, moldenFileStartRecords, vaspOutcarStartRecords, hyperChemFileStartRecords};
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings

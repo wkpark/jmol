@@ -49,7 +49,7 @@ import org.jmol.adapter.smarter.*;
  * xn... Xn... or Xxn... where n is not a letter will likewise be handled without the list 
  */
 
-abstract class FFReader extends AtomSetCollectionReader {
+public abstract class ForceFieldReader extends AtomSetCollectionReader {
   //private final static String sybylTypes = " Any C.1 C.2 C.3 C.ar C.cat Co.oh Cr.oh Cr.th Cu Du Du.C Fe H.spc H.t3p Hal Het Hev LP N.1 N.2 N.3 N.4 N.am N.ar N.pl3 O.2 O.3 O.co2 O.spc O.t3p P.3 S.2 S.3 S.O S.O2 ";
   // some duplication below...
   private final static String ffTypes = 

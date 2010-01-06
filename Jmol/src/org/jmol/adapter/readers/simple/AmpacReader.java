@@ -22,7 +22,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.adapter.readers.more;
+package org.jmol.adapter.readers.simple;
 
 import org.jmol.adapter.smarter.*;
 

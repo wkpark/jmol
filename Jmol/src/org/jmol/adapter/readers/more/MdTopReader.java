@@ -53,7 +53,7 @@ import org.jmol.util.Logger;
  *<p>
  */
 
-public class MdTopReader extends FFReader {
+public class MdTopReader extends ForceFieldReader {
 
   private int nAtoms = 0;
   private int atomCount = 0;

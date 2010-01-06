@@ -609,6 +609,18 @@ support for assertions (which were introduced in 1.4).
       </fileset>
     </jar>
 
+    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersSimple.jar" manifest="manifest/applet.txt">
+      <fileset dir="${applet.classes.dir}">
+        <include name="org/jmol/adapter/readers/simple/**" />
+      </fileset>
+    </jar>
+
+    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersXtal.jar" manifest="manifest/applet.txt">
+      <fileset dir="${applet.classes.dir}">
+        <include name="org/jmol/adapter/readers/xtal/**" />
+      </fileset>
+    </jar>
+
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersXml.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/xml/**" />
@@ -683,6 +695,8 @@ support for assertions (which were introduced in 1.4).
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMolXyz.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMore.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersQuantum.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersSimple.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXtal.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXml.jar" /> 
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeSpecial.jar" />
@@ -759,12 +773,21 @@ support for assertions (which were introduced in 1.4).
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
   	
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ReadersSimple.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersSimple.jar"
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+  	
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ReadersXtal.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXtal.jar"
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+
     <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ReadersXml.jar"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXml.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
-    	
     <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeBio.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"

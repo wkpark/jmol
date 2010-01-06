@@ -86,11 +86,11 @@ public class IsosurfaceRenderer extends MeshRenderer {
       float val =  0;
       if (vertexValues == null || !Float.isNaN(val = vertexValues[i])
           || imesh.hasGridPoints) {
-        if (offset == null || Float.isNaN(scale) || scale == 0) {
+        if (offset == null || scale == 0) {
           viewer.transformPoint(vertices[i], screens[i]);
         } else {
           pt1f.set(vertices[i]);
-          if (scale == 0) {
+          if (scale == 0 || Float.isNaN(scale)) {
             pt1f.add(offset);
           } else {
             pt1f.scaleAdd(val, normal, pt1f);

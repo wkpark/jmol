@@ -417,7 +417,12 @@ but:
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable();
           data[i] = new Vector();
-          mos[i].put("symmetry", tokens[i]);
+          String sym = tokens[i];
+          mos[i].put("symmetry", sym);
+          if (sym.indexOf("--O") >= 0)
+            mos[i].put("occupancy", new Float(2));
+          else if (sym.indexOf("--V") >= 0)
+            mos[i].put("occupancy", new Float(0));
         }
         line = readLine().substring(21);
         tokens = getTokens();

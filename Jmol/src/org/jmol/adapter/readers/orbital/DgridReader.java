@@ -25,7 +25,6 @@
 package org.jmol.adapter.readers.orbital;
 
 import org.jmol.adapter.smarter.*;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import java.io.BufferedReader;

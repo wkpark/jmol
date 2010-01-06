@@ -58,12 +58,15 @@ public class TestSmarterJmolAdapter extends TestSuite {
     //testOne = "csf";
     
     result.addDirectory(false, "adf", "adf", "Adf");
+    result.addDirectory(false, "adf", "out", "Adf");
+    result.addDirectory(false, "aims", "in", "Aims");
     result.addDirectory(false, "aminoacids", "mol");
     result.addDirectory(false, "aminoacids", "pdb");
     result.addDirectory(false, "animations", "cml", "XmlCml");
     result.addDirectory(false, "animations", "pdb");
     result.addDirectory(true,  "animations", "pdb.gz");
     result.addDirectory(false, "animations", "xyz");
+    result.addDirectory(false, "castep", "cell", "Castep");
     result.addDirectory(false, "cif", "cif");
     result.addDirectory(false, "c3xml", "c3xml", "XmlChem3d");
     result.addDirectory(false, "cml", "cml", "XmlCml");
@@ -72,6 +75,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "csf", "csf", "Csf");
     result.addDirectory(true,  "cube", "cub.gz");
     result.addDirectory(true,  "cube", "cube.gz");
+    result.addDirectory(false,  "dgrid", "adf", "Dgrid");
     result.addDirectory(false, "folding", "xyz", "FoldingXyz");
     result.addDirectory(true,  "folding", "xyz.gz", "FoldingXyz");
     result.addDirectory(false, "../Jmol-FAH/projects", "xyz", "FoldingXyz");
@@ -91,6 +95,8 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "mol2", "mol2");
     result.addDirectory(false, "molpro", "xml", "XmlMolpro");
     result.addDirectory(false, "mopac", "out");
+    result.addDirectory(false, "odyssey", "odydata", "Odyssey");
+    result.addDirectory(false, "odyssey", "xodydata", "XmlOdyssey");
     result.addDirectory(false, "nwchem", "nwo", "NWChem");
     result.addDirectory(false, "pdb", "pdb");
     result.addDirectory(true,  "pdb", "pdb.gz");
@@ -100,11 +106,14 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "shelx", "res");
     result.addDirectory(false, "spartan", "smol", "SpartanSmol");
     result.addDirectory(false, "spartan", "txt", "Spartan");
+    result.addDirectory(false, "spartan", "sp4", "Spartan");
     result.addDirectory(false, "sparchive", "sparchive", "Spartan");
-    result.addDirectory(false, "spinput", "spinput", "Odyssey");
+    result.addDirectory(false, "sparchive", "spartan", "Spartan");
     result.addDirectory(false, "v3000", "sdf");
     result.addDirectory(false, "wien2k", "struct");
+    result.addDirectory(false, "webmo", "mo", "WebMO");
     result.addDirectory(false, "xyz", "xyz");
+    result.addDirectory(false, "vasp", "dat", "Vasp");
     return result;
   }
 

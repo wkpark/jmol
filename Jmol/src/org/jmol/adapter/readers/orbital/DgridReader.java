@@ -274,8 +274,6 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
         for (int i = 0; i < tokens.length; i++) {
           int pt = ptSlater[i];
           list[pt] = parseFloat(tokens[i]);
-          if (symmetry.equals("B2") && iOrb == 6)
-            System.out.println(pt + ": coef=" + list[pt] + " for slater " + Escape.escape((int[])intinfo.get(pt)).replace('\n',' '));
         }
         Hashtable mo = new Hashtable();
         orbitals.add(mo);

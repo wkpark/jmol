@@ -79,10 +79,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   private boolean setVariables() {
-    Point3f offset = mesh.ptOffset;
     slabbing = viewer.getSlabEnabled();
-    vertices = (offset == null ? mesh.vertices 
-        : mesh.getOffsetVertices(thePlane)); 
+    vertices = (mesh.ptOffset == null && mesh.scale3d == 0 
+        ? mesh.vertices : mesh.getOffsetVertices(thePlane)); 
     
     colix = mesh.colix;
     if (mesh.visibilityFlags == 0)

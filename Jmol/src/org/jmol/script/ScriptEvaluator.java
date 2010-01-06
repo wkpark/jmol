@@ -12683,6 +12683,10 @@ public class ScriptEvaluator {
         propertyValue = planeParameter(++i);
         i = iToken;
         break;
+      case Token.scale3d:
+        propertyName = "scale3d";
+        propertyValue = new Float(floatParameter(++i));
+        break;
       case Token.scale:
         propertyName = "scale";
         propertyValue = new Float(floatParameter(++i));

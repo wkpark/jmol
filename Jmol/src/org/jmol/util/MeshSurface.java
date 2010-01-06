@@ -23,6 +23,7 @@ public class MeshSurface {
   public Vector3f[] vertexNormals;
   public BitSet bsFaces;
   public Point3f ptOffset;
+  public float scale3d;
 
   public MeshSurface() {
   }

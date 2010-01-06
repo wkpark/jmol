@@ -561,6 +561,10 @@ public abstract class MeshCollection extends Shape {
     if (mesh.modelIndex >= 0 && modelCount > 1)
       appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
     appendCmd(sb, cmd);
+    if (mesh.ptOffset != null)
+      appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " offset " + Escape.escape(mesh.ptOffset));
+    if (mesh.scale3d != 0)
+      appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " scale3d " + mesh.scale3d);
     if (cmd.charAt(0) != '#') {
       if (allowMesh)
         appendCmd(sb, mesh.getState(myType));

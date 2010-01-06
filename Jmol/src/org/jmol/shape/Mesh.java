@@ -238,23 +238,20 @@ public class Mesh extends MeshSurface {
       offsetVertices[i] = new Point3f(vertices[i]);
     Vector3f normal = null;
     float val = 0;
-    float scale = Float.NaN;
-    if (ptOffset.x > 999 && vertexValues != null && ptOffset.z != 0) {
-      if (thePlane != null) {
-        scale = ptOffset.z;
+    if (scale3d != 0 && vertexValues != null && thePlane != null) {
         normal = new Vector3f(thePlane.x, thePlane.y, thePlane.z);
         normal.normalize();
-        normal.scale(scale);
-      }
+        normal.scale(scale3d);
     }
-    for (int i = 0; i < vertexCount; i++)
-      if (vertexValues == null || !Float.isNaN(val = vertexValues[i])) {
-        Point3f pt = offsetVertices[i];
-        if (Float.isNaN(scale))
-          pt.add(ptOffset);
-        else
-          pt.scaleAdd(val, normal, pt);
-      }
+    for (int i = 0; i < vertexCount; i++) {
+      if (vertexValues != null && Float.isNaN(val = vertexValues[i]))
+        continue;
+      Point3f pt = offsetVertices[i];
+      if (ptOffset != null)
+        pt.add(ptOffset);
+      if (normal != null && val != 0)
+        pt.scaleAdd(val, normal, pt);
+    }
     initialize(lighting, offsetVertices);
     return offsetVertices;
   }

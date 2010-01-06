@@ -166,6 +166,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private short meshColix;
   private Point3f center;
   private Point3f offset;
+  private float scale3d;
+
   private boolean isPhaseColored;
   private boolean isColorExplicit;
 
@@ -285,6 +287,15 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         offset = null;
       if (thisMesh != null) {
         thisMesh.ptOffset = offset;
+        thisMesh.offsetVertices = null;
+      }
+      return;
+    }
+
+    if ("scale3d" == propertyName) {
+      scale3d = ((Float)value).floatValue();
+      if (thisMesh != null) {
+        thisMesh.scale3d = scale3d;
         thisMesh.offsetVertices = null;
       }
       return;
@@ -587,6 +598,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     allowContourLines = true; //but not for f(x,y) or plane, which use mesh
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     offset = null;
+    scale3d = 0;
     linkedMesh = null;
     initState();
   }
@@ -905,6 +917,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     setModelIndex(atomIndex, modelIndex);
     thisMesh.ptCenter.set(center);
     thisMesh.ptOffset = offset;
+    thisMesh.scale3d = (thisMesh.jvxlData.jvxlPlane == null ? 0 : scale3d);
   }
 
   protected void setScriptInfo() {
@@ -950,6 +963,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (mesh.ptCenter.x != Float.MAX_VALUE)
         info.put("center", mesh.ptCenter);
       info.put("offset", (mesh.ptOffset == null ? new Point3f() : mesh.ptOffset));
+      if (mesh.scale3d != 0)
+        info.put("scale3d", new Float(mesh.scale3d));
       info.put("xyzMin", mesh.jvxlData.boundingBox[0]);
       info.put("xyzMax", mesh.jvxlData.boundingBox[1]);
       String s = JvxlCoder.jvxlGetInfo(mesh.jvxlData, true);

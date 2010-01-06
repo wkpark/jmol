@@ -90,7 +90,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
           viewer.transformPoint(vertices[i], screens[i]);
         } else {
           pt1f.set(vertices[i]);
-          if (scale == 0 || Float.isNaN(scale)) {
+          if (Float.isNaN(scale)) {
             pt1f.add(offset);
           } else {
             pt1f.scaleAdd(val, normal, pt1f);

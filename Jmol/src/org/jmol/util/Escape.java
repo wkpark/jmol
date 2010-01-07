@@ -232,6 +232,13 @@ public class Escape {
           s.append(", ");
         s.append(flist[i]);
       }
+    } else if (x instanceof int[]) {
+      int[] ilist = (int[]) x;
+      for (int i = 0; i < ilist.length; i++) {
+        if (i > 0)
+          s.append(", ");
+        s.append(ilist[i]);
+      }
     }
     s.append("]");
     return s.toString();

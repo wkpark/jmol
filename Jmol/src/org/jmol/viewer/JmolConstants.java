@@ -179,6 +179,7 @@ final public class JmolConstants {
   public static final int DRAW_CIRCULARPLANE = 18;
   public final static int DRAW_ARC = 19;
   public final static int DRAW_LINE_SEGMENT = 20;
+  public final static int DRAW_POLYGON = 21;
   
   public static String getDrawTypeName(int drawType) {
     switch (drawType) {

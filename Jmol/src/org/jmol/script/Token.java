@@ -827,14 +827,15 @@ public class Token {
   final static int pocket         = misc | 149;// new
   final static int pointgroup     = misc | 150;
   final static int pointsperangstrom = misc | 151;// new
-  final static int polymer        = misc | 152;
-  public final static int prev    = misc | 153;
-  final static int qw             = misc | 154 | expression;
-  final static int rad            = misc | 155;// new
-  final static int radical        = misc | 156;// new
-  final static int range          = misc | 157;
-  public final static int rasmol  = misc | 158;
-  final static int reference      = misc | 159;// new
+  final static int polygon        = misc | 152;// new
+  final static int polymer        = misc | 153;
+  public final static int prev    = misc | 154;
+  final static int qw             = misc | 155 | expression;
+  final static int rad            = misc | 156;// new
+  final static int radical        = misc | 157;// new
+  final static int range          = misc | 158;
+  public final static int rasmol  = misc | 159;
+  final static int reference      = misc | 160;// new
   public final static int residue = misc | 161;
   final static int resolution     = misc | 162;// new
   final static int reversecolor   = misc | 163;// new
@@ -1016,6 +1017,7 @@ public class Token {
     "wait",              null,
     "plot3d",            new Token(plot3d),
     "pmesh",             new Token(pmesh),
+    "polygon",         new Token(polygon),
     "polyhedra",         new Token(polyhedra),
     "print",             new Token(print),
     "quaternion",        new Token(quaternion),

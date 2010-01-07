@@ -2439,6 +2439,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getSymmetryInfoAsString();
   }
 
+  public String getSymmetryOperation(int symop) {
+    return modelSet.getSymmetryOperation(animationManager.currentModelIndex,
+        symop);
+  }
+
   public Properties getModelSetProperties() {
     return modelSet.getModelSetProperties();
   }
@@ -7932,6 +7937,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public int getFrontPlane() {
     return transformManager.getFrontPlane();
+  }
+
+  public Vector getUnitCellIntersection(Point4f plane, float scale, int flags) {
+    return modelSet.getUnitCellIntersection(plane, scale, flags, 
+        animationManager.currentModelIndex);
   }
 
 }

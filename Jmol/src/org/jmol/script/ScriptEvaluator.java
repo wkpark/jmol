@@ -11462,6 +11462,12 @@ public class ScriptEvaluator {
     case Token.pointgroup:
       pointGroup();
       return;
+    case Token.symop:
+      int iop = intParameter(2);
+      if (!isSyntaxCheck)
+        msg = viewer.getSymmetryOperation(iop);
+      len = 3;
+      break;
     case Token.symmetry:
       if (!isSyntaxCheck)
         msg = viewer.getSymmetryInfoAsString();
@@ -11588,10 +11594,37 @@ public class ScriptEvaluator {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
+      case Token.polygon:
+        int nVertices = intParameter(++i);
+        Point3f[] points = new Point3f[nVertices];
+        for (int j = 0; j < nVertices; j++, i = iToken)
+          points[j] = getPoint3f(++iToken, true);
+        int nTriangles = intParameter(++i);
+        Vector v = new Vector();
+        v.add(points);
+        int[][]polygons = new int[nTriangles][];
+        for (int j = 0; j < nTriangles; j++, i = iToken) {
+          float[] f = floatParameterSet(++i, 3, 4);
+          polygons[j] = new int[] {
+              (int) f[0], (int) f[1], (int) f[2],
+              (f.length == 3 ? 7 : (int) f[3]) };
+        }
+        v.add(polygons);
+        propertyName = "polygon";
+        propertyValue = v;
+        havePoints = true;
+        break;
       case Token.symop:
         String xyz = null;
         int iSym = 0;
+        Point4f plane = null;
         switch (tokAt(++i)) {
+        case Token.plane:
+          plane = planeParameter(++i);
+          break;
+        case Token.hkl:
+          plane = hklParameter(++i);
+          break;
         case Token.string:
           xyz = stringParameter(i);
           break;
@@ -11600,6 +11633,18 @@ public class ScriptEvaluator {
           break;
         default:
           iSym = intParameter(i);
+        }
+        if (plane != null) {
+          i = iToken;
+          if (isSyntaxCheck)
+            continue;
+          Vector vp = viewer.getUnitCellIntersection(plane, 1f, 0);
+          if (vp == null)
+            continue;
+          propertyName = "polygon";
+          propertyValue = vp;
+          havePoints = true;
+          break;
         }
         center = (i + 1 == statementLength ? null : centerParameter(++i));
         // draw ID xxx symop [n or "x,-y,-z"] [optional {center}]

@@ -1,5 +1,6 @@
 package org.jmol.jvxl.calc;
 
+import java.util.BitSet;
 import java.util.Vector;
 
 import javax.vecmath.Point3f;
@@ -7,6 +8,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Point4f;
 
 import org.jmol.api.TriangleServer;
+import org.jmol.util.BitSetUtil;
 
 public class TriangleData implements TriangleServer {
 
@@ -289,13 +291,17 @@ public class TriangleData implements TriangleServer {
    * unit cell
    * 
    * @param plane
+   * @param v 
    * @param vertices
    * @param flags
-   *          1 -- edges only 2 -- triangles only 3 -- both
+   *          0 -- polygon int[]  1 -- edges only 2 -- triangles only 3 -- both
    * @return Vector of Point3f[3] triangles and Point3f[2] edge lines
    */
 
-  public Vector intersectPlane(Point4f plane, Point3f[] vertices, int flags) {
+  public Vector intersectPlane(Point4f plane, Vector v, int flags) {
+    Point3f[] vertices = (Point3f[]) v.get(0);
+    if (flags != 0)
+      v.clear();
     float[] values = new float[8];
     Point3f[] edgePoints = new Point3f[12];
     int insideMask = 0;
@@ -308,6 +314,7 @@ public class TriangleData implements TriangleServer {
     byte[] triangles = triangleTable2[insideMask];
     if (triangles == null)
       return null;
+    BitSet bsPoints = new BitSet();
     for (int i = 0; i < 24; i+=2) {
       int v1 = edgeVertexes[i];
       int v2 = edgeVertexes[i + 1];
@@ -320,15 +327,45 @@ public class TriangleData implements TriangleServer {
       result.add(vertices[v1]);
       edgePoints[i >> 1] = result;
     }
-    Vector v = new Vector();
-    for (int i = 0; i < triangles.length; i += 4) {
-      Point3f pt1 = edgePoints[triangles[i]];
-      Point3f pt2 = edgePoints[triangles[i + 1]];
-      Point3f pt3 = edgePoints[triangles[i + 2]];
+    if (flags == 0) {
+      v.clear();
+      for (int i = 0; i < triangles.length; i++) {
+        bsPoints.set(triangles[i]);
+        //System.out.print(triangles[i]+" " );
+        if (i % 4 == 2)
+          i++;
+      }
+      //System.out.println();
+      int nPoints = BitSetUtil.cardinalityOf(bsPoints);
+      Point3f[] pts = new Point3f[nPoints];
+      v.add(pts);
+      int[]list = new int[12];
+      int ptList = 0;
+      int[][]polygons = new int[triangles.length >> 2][];
+      v.add(polygons);
+      for (int i = 0; i < triangles.length; i++) {
+        int pt = triangles[i];
+        if (bsPoints.get(pt)) {
+          bsPoints.clear(pt);
+          pts[ptList] = edgePoints[pt];
+          list[pt] = (byte) ptList++;
+        }          
+        if (i % 4 == 2)
+          i++;
+      }
+      for (int i = 0; i < triangles.length; i++)
+          polygons[i >> 2] = new int[] { list[triangles[i++]], 
+              list[triangles[i++]], list[triangles[i++]], triangles[i] };
+      return v;
+    }
+    for (int i = 0; i < triangles.length; i++) {
+      Point3f pt1 = edgePoints[triangles[i++]];
+      Point3f pt2 = edgePoints[triangles[i++]];
+      Point3f pt3 = edgePoints[triangles[i++]];
       if ((flags & 1) == 1)
         v.add(new Point3f[] { pt1, pt2, pt3 });
       if ((flags & 2) == 2) {
-        byte b = triangles[i + 3];
+        byte b = triangles[i];
         if ((b & 1) == 1)
           v.add(new Point3f[] { pt1, pt2 });
         if ((b & 2) == 2)

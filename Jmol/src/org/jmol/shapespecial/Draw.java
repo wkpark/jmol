@@ -105,6 +105,7 @@ public class Draw extends MeshCollection {
   private int nbitsets;
   private Point4f plane;
   private BitSet bsAllModels;
+  private Vector polygon;
   
   private Vector vData;
   private String intersectID;
@@ -133,6 +134,7 @@ public class Draw extends MeshCollection {
       indicatedModelIndex = -1;
       offset = null;
       plane = null;
+      polygon = null;
       nidentifiers = nbitsets = 0;
       vData = new Vector();
       modelCount = viewer.getModelCount();
@@ -313,6 +315,11 @@ public class Draw extends MeshCollection {
       return;
     }
 
+    if ("polygon" == propertyName) {
+      polygon = (Vector) value;
+      return;
+    }
+
     if ("coord" == propertyName) {
       vData.add(new Object[] { new Integer(PT_COORD), value });
       if (indicatedModelIndex >= 0)
@@ -478,9 +485,9 @@ public class Draw extends MeshCollection {
     thisMesh.width = width;
     if (intersectID != null)
       setIntersectData();
-    if (lineData == null ? vData.size() == 0 : lineData.size() == 0)
+    if (polygon == null && (lineData != null ? lineData.size() == 0 : vData.size() == 0))
       return false;
-    if (lineData != null || indicatedModelIndex < 0
+    if (polygon != null || lineData != null || indicatedModelIndex < 0
         && (isFixed || isArrow || isCurve || isCircle || isCylinder || modelCount == 1)) {
       // make just ONE copy 
       // arrows and curves simply can't be handled as
@@ -494,14 +501,20 @@ public class Draw extends MeshCollection {
       thisMesh.ptCenters = null;
       thisMesh.modelFlags = null;
       thisMesh.drawTypes = null;
-      thisMesh.drawVertexCounts = null;      
-      if (lineData == null) {
+      thisMesh.drawVertexCounts = null;
+      if (polygon != null) {
+        thisMesh.vertices = (Point3f[]) polygon.get(0);
+        thisMesh.drawVertexCount = thisMesh.vertexCount = thisMesh.vertices.length;
+        thisMesh.polygonIndexes = (int[][]) polygon.get(1);
+        thisMesh.polygonCount = thisMesh.polygonIndexes.length;
+        thisMesh.drawType = JmolConstants.DRAW_POLYGON;
+      } else if (lineData != null) {
+        thisMesh.lineData = lineData;
+      } else {
         thisMesh.setPolygonCount(1);      
         if (setPoints(-1, -1))
           setPoints(-1, nPoints);
         setPolygon(0); 
-      } else {
-        thisMesh.lineData = lineData;
       }
     } else {
       // multiple copies, one for each model involved
@@ -1191,7 +1204,8 @@ public class Draw extends MeshCollection {
   }
 
   private String getDrawCommand(DrawMesh mesh, int iModel) {
-    if (mesh.drawType == JmolConstants.DRAW_NONE || mesh.lineData == null
+    if (mesh.drawType == JmolConstants.DRAW_NONE  
+        && mesh.lineData == null
         && mesh.drawVertexCount == 0 && mesh.drawVertexCounts == null)
       return "";
     StringBuffer str = new StringBuffer();
@@ -1230,6 +1244,9 @@ public class Draw extends MeshCollection {
       int nVertices = mesh.drawVertexCount > 0 ? mesh.drawVertexCount
           : mesh.drawVertexCounts[iModel >= 0 ? iModel : 0];
       switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
+      case JmolConstants.DRAW_POLYGON:
+        str.append(" POLYGON ").append(nVertices);
+        break;
       case JmolConstants.DRAW_LINE_SEGMENT:
         str.append(" LINE");
         break;
@@ -1265,6 +1282,12 @@ public class Draw extends MeshCollection {
             str.append(getVertexList(mesh, i, nVertices));
             str.append(" ] ");
           }
+      } else if (mesh.drawType == JmolConstants.DRAW_POLYGON) {
+        for (int i = 0; i < mesh.vertexCount; i++)
+          str.append(" ").append(Escape.escape(mesh.vertices[i]));
+        str.append(" ").append(mesh.polygonCount);
+        for (int i = 0; i < mesh.polygonCount; i++)
+          str.append(" ").append(Escape.escapeArray(mesh.polygonIndexes[i]));
       } else {
         str.append(getVertexList(mesh, iModel, nVertices));
       }

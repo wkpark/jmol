@@ -2,9 +2,11 @@ package org.jmol.api;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
@@ -121,5 +123,7 @@ public interface SymmetryInterface {
   public abstract Object[] getSymmetryOperationDescription(int iSym,
                                                          SymmetryInterface cellInfo, 
                                                          Point3f pt00, String id);
+  
+  public abstract Vector intersectPlane(Point4f plane, float scale, int flags);
 
 }

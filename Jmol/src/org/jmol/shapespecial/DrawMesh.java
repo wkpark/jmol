@@ -64,7 +64,8 @@ public class DrawMesh extends Mesh {
       if (iModel >=0 && i != iModel || polygonIndexes[i] == null)
         continue;
       iptlast = -1;
-      for (int iV = polygonIndexes[i].length; --iV >= 0;) {
+      for (int iV = drawType == JmolConstants.DRAW_POLYGON ? 3 
+          : polygonIndexes[i].length; --iV >= 0;) {
         ipt = polygonIndexes[i][iV];
         if (ipt == iptlast)
           continue;

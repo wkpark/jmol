@@ -47,6 +47,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected float width;
   protected boolean isTranslucent;
   protected Point4f thePlane;
+  protected boolean isPolygon;
 
   protected final Point3f pt1f = new Point3f();
   protected final Point3f pt2f = new Point3f();
@@ -164,7 +165,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
             screens[iA], screens[iB]);
         continue;
       }
-      switch (vertexIndexes.length) {
+      switch (isPolygon ? 3 : vertexIndexes.length) {
       case 3:
         if (frontOnly && transformedVectors[normixes[iA]].z < 0
             && transformedVectors[normixes[iB]].z < 0
@@ -184,7 +185,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
               colix, normixes[iB], screens[iC], colix, normixes[iC]);
           continue;
         }
-        g3d.drawTriangle(screens[iA], screens[iB], screens[iC], 7);
+        g3d.drawTriangle(screens[iA], screens[iB], screens[iC], 
+            isPolygon ? vertexIndexes[3]: 7);
         continue;
       case 4:
         int iD = vertexIndexes[3];

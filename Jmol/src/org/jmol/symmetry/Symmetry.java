@@ -27,12 +27,17 @@ package org.jmol.symmetry;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
+import org.jmol.api.TriangleServer;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
 
@@ -187,6 +192,36 @@ public class Symmetry implements SymmetryInterface {
   }
 
   // UnitCell methods
+  
+  /**
+   * returns a set of points defining the geometric object within the given
+   * plane that spans the unit cell within the given margins
+   * @param plane 
+   * @param scale 
+   * @param flags     1 -- edges only   2 -- triangles only   3 -- both
+   * @return    a set of points
+   * 
+   */
+  public Vector intersectPlane(Point4f plane, float scale, int flags) {
+    if (scale == 0)
+      scale = 1;
+    float margin = scale - 1.0f;
+    Point3f[] vertices = new Point3f[8];
+    TriangleServer ts = (TriangleServer) Interface
+        .getOptionInterface("jvxl.calc.TriangleData");
+    Point3i[] offsets = ts.getCubeVertexOffsets();
+    Point3f ptemp = new Point3f();
+    for (int i = 0; i < 8; i++) {
+      ptemp.set(offsets[i].x == 0 ? -margin : 1 + margin,
+          offsets[i].y == 0 ? -margin : 1 + margin, offsets[i].z == 0 ? -margin
+              : 1 + margin);
+      unitCell.toCartesian(ptemp);
+      vertices[i] = new Point3f(ptemp);
+    }
+    Vector v = new Vector();
+    v.add(vertices);
+    return ts.intersectPlane(plane, v, flags);
+  }
 
   public boolean haveUnitCell() {
     return (unitCell != null);

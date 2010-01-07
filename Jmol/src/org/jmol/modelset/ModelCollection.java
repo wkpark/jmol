@@ -138,6 +138,19 @@ abstract public class ModelCollection extends BondCollection {
         ? unitCells[modelIndex] : null);
   }
 
+  /**
+   * 
+   * @param plane
+   * @param scale
+   * @param modelIndex
+   * @param flags     1 -- edges only   2 -- triangles only   3 -- both
+   * @return Vector 
+   */
+  public Vector getUnitCellIntersection(Point4f plane, float scale, int flags, int modelIndex) {
+    SymmetryInterface uc = getUnitCell(modelIndex);
+    return (uc == null ? null : uc.intersectPlane(plane, scale, flags));
+  }
+
   protected int[] modelNumbers = new int[1];  // from adapter -- possibly PDB MODEL record; possibly modelFileNumber
   protected int[] modelFileNumbers = new int[1];  // file * 1000000 + modelInFile (1-based)
   protected String[] modelNumbersForAtomLabel = new String[1];
@@ -1270,6 +1283,13 @@ abstract public class ModelCollection extends BondCollection {
         (operations = unitCells[modelIndex].getSymmetryOperations()) == null)
       return models[modelIndex].biosymmetryCount;
     return operations.length;
+  }
+  
+  public String getSymmetryOperation(int modelIndex, int symOp) {
+    String[] operations;
+    return (unitCells == null || unitCells[modelIndex] == null ||
+        (operations = unitCells[modelIndex].getSymmetryOperations()) == null
+        || symOp < 1 || symOp > operations.length ? "" : operations[symOp - 1]);    
   }
 
   public int[] getModelCellRange(int modelIndex) {

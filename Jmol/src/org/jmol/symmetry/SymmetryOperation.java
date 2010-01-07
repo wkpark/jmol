@@ -27,15 +27,12 @@ package org.jmol.symmetry;
 import java.util.Vector;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 import javax.vecmath.Point4f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.api.TriangleServer;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -941,24 +938,16 @@ class SymmetryOperation extends Matrix4f {
         // We expand the unit cell by 5% in all directions just so we are
         // guaranteed to get cutoffs.
 
-        Point3f[] vertices = new Point3f[8];
-        TriangleServer ts = (TriangleServer) Interface
-            .getOptionInterface("jvxl.calc.TriangleData");
-        Point3i[] offsets = ts.getCubeVertexOffsets();
-        for (int i = 0; i < 8; i++) {
-          ptemp.set(offsets[i].x == 0 ? -0.05f : 1.05f,
-              offsets[i].y == 0 ? -0.05f : 1.05f, offsets[i].z == 0 ? -0.05f
-                  : 1.05f);
-          uc.toCartesian(ptemp);
-          vertices[i] = new Point3f(ptemp);
-        }
         vtemp.set(ax1);
         vtemp.normalize();
         // ax + by + cz + d = 0
         // so if a point is in the plane, then N dot X = -d
         float w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
         Point4f plane = new Point4f(vtemp.x, vtemp.y, vtemp.z, w);
-        Vector v = ts.intersectPlane(plane, vertices, 3);
+
+        Vector v = uc.intersectPlane(plane, 1.05f, 3);
+
+        
         // returns triangles and lines
         if (v != null)
           for (int i = v.size(); --i >= 0;) {

@@ -1285,11 +1285,31 @@ abstract public class ModelCollection extends BondCollection {
     return operations.length;
   }
   
-  public String getSymmetryOperation(int modelIndex, int symOp) {
-    String[] operations;
-    return (unitCells == null || unitCells[modelIndex] == null ||
-        (operations = unitCells[modelIndex].getSymmetryOperations()) == null
-        || symOp < 1 || symOp > operations.length ? "" : operations[symOp - 1]);    
+  public String getSymmetryOperation(int modelIndex, String spaceGroup, 
+                                     int symOp, Point3f pt1, Point3f pt2, 
+                                     String drawID) {
+    Hashtable sginfo = getSpaceGroupInfo(modelIndex, spaceGroup, symOp, pt1, pt2, drawID); 
+    if (sginfo == null)
+      return "";
+    Object[][] infolist = (Object[][]) sginfo.get("operations");
+    if (infolist == null)
+      return "";
+    StringBuffer sb = new StringBuffer();
+    symOp--;
+    for (int i = 0; i < infolist.length; i++) {
+      if (infolist[i] == null || symOp >= 0 && symOp != i)
+        continue;
+      if (drawID != null)
+        return (String) infolist[i][3];
+      if (sb.length() > 0)
+        sb.append('\n');
+      if (symOp < 0)
+        sb.append(i + 1).append("\t");
+      sb.append(infolist[i][0]).append("\t").append(infolist[i][2]);
+    }
+    if (sb.length() == 0 && drawID != null)
+      sb.append ("draw " + drawID + "* delete");
+    return sb.toString();
   }
 
   public int[] getModelCellRange(int modelIndex) {
@@ -2846,13 +2866,15 @@ abstract public class ModelCollection extends BondCollection {
 
   private SymmetryInterface symTemp;
 
-  public Hashtable getSpaceGroupInfo(String spaceGroup) {
+  public Hashtable getSpaceGroupInfo(int modelIndex, String spaceGroup, 
+                                     int symOp, Point3f pt1, Point3f pt2, String drawID) {
     String strOperations = null;
-    Hashtable info;
+    Hashtable info = null;
     SymmetryInterface cellInfo = null;
     Object[][] infolist = null;
     if (spaceGroup == null) {
-      int modelIndex = viewer.getCurrentModelIndex();
+      if (modelIndex <= 0)
+        modelIndex = viewer.getCurrentModelIndex();
       if (modelIndex < 0)
         strOperations = "no single current model";
       else if (unitCells == null || unitCells[modelIndex] == null)
@@ -2863,11 +2885,13 @@ abstract public class ModelCollection extends BondCollection {
         info.put("symmetryInfo", "");
         return info;
       }
-      info = (Hashtable) getModelAuxiliaryInfo(modelIndex, "spaceGroupInfo");
+      if (pt1 == null && drawID == null)
+        info = (Hashtable) getModelAuxiliaryInfo(modelIndex, "spaceGroupInfo");
       if (info != null)
         return info;
       info = new Hashtable();
-      setModelAuxiliaryInfo(modelIndex, "spaceGroupInfo", info);
+      if (pt1 == null && drawID == null)
+        setModelAuxiliaryInfo(modelIndex, "spaceGroupInfo", info);
       cellInfo = unitCells[modelIndex];
       spaceGroup = cellInfo.getSpaceGroupName();
       String[] list = unitCells[modelIndex].getSymmetryOperations();
@@ -2879,13 +2903,14 @@ abstract public class ModelCollection extends BondCollection {
         strOperations = "\n" + list.length + " symmetry operations employed:";
         infolist = new Object[list.length][];
         for (int i = 0; i < list.length; i++) {
-          int iSym = symTemp.addSpaceGroupOperation("=" + list[i]);
+          int iSym = symTemp.addSpaceGroupOperation("=" + list[i], i + 1);
           if (iSym < 0)
             continue;
-          infolist[i] = symTemp.getSymmetryOperationDescription(iSym, cellInfo,
-              null, null);
-          strOperations += "\n" + (i + 1) + "\t" + infolist[i][0] + "\t"
-              + infolist[i][2];
+          infolist[i] = (symOp > 0 && symOp - 1 != iSym ? null 
+              : symTemp.getSymmetryOperationDescription(iSym, cellInfo, pt1, pt2, drawID));
+          if (infolist[i] != null)
+            strOperations += "\n" + (i + 1) + "\t" + infolist[i][0] + "\t"
+                + infolist[i][2];
         }
       }
     } else {
@@ -2906,7 +2931,8 @@ abstract public class ModelCollection extends BondCollection {
     return info;
   }
   
-  public Object getSymmetryInfo(BitSet bsAtoms, String xyz, int op, Point3f pt, String id, int type) {
+  public Object getSymmetryInfo(BitSet bsAtoms, String xyz, int op, Point3f pt, 
+                                Point3f pt2, String id, int type) {
     int iModel = -1;
     if (bsAtoms == null) {
       iModel = viewer.getCurrentModelIndex();
@@ -2921,6 +2947,8 @@ abstract public class ModelCollection extends BondCollection {
     SymmetryInterface uc = getUnitCell(iModel);
     if (uc == null)
       return "";
+    if (pt2 != null)
+      return getSymmetryOperation(iModel, null, op, pt, pt2, (id == null ? "sym" : id));
     if (xyz == null) {
       String[] ops = uc.getSymmetryOperations();
       if (ops == null || op == 0 || Math.abs(op) > ops.length)
@@ -2935,7 +2963,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     getSymTemp(false); 
     symTemp.setSpaceGroup(false);
-    int iSym = symTemp.addSpaceGroupOperation((op < 0 ? "!" : "=") + xyz);
+    int iSym = symTemp.addSpaceGroupOperation((op < 0 ? "!" : "=") + xyz, Math.abs(op));
     if (iSym < 0)
       return "";
     symTemp.setUnitCell(uc.getNotionalUnitCell());
@@ -2951,7 +2979,7 @@ abstract public class ModelCollection extends BondCollection {
       return sympt;
     }
     // null id means "array info only" but here we want the draw commands
-    info = symTemp.getSymmetryOperationDescription(iSym, uc, pt, 
+    info = symTemp.getSymmetryOperationDescription(iSym, uc, pt, pt2,
         (id == null ? "sym" : id));
     int ang = ((Integer)info[9]).intValue();
     /*

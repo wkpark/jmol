@@ -95,7 +95,7 @@ class SpaceGroup {
 
   SpaceGroup(boolean doNormalize) {
     this.doNormalize = doNormalize;
-    addSymmetry("x,y,z");
+    addSymmetry("x,y,z", 0);
   }
   
   private SpaceGroup(String cifLine) {
@@ -133,12 +133,12 @@ class SpaceGroup {
     return (i >=0 ? spaceGroupDefinitions[i] : null);
   }
 
-  int addSymmetry(String xyz) {
+  int addSymmetry(String xyz, int opId) {
     xyz = xyz.toLowerCase();
     if (xyz.indexOf("[[") < 0 && 
         (xyz.indexOf("x") < 0 || xyz.indexOf("y") < 0 || xyz.indexOf("z") < 0))
       return -1;
-    return addOperation(xyz);
+    return addOperation(xyz, opId);
   }
    
   SymmetryOperation[] finalOperations;
@@ -588,7 +588,7 @@ class SpaceGroup {
   }
 
   Hashtable xyzList = new Hashtable();
-  private int addOperation(String xyz0) {
+  private int addOperation(String xyz0, int opId) {
     if (xyz0 == null || xyz0.length() < 3) {
       xyzList = new Hashtable();
       return -1;
@@ -598,7 +598,7 @@ class SpaceGroup {
     if (xyzList.containsKey(xyz0))
       return ((Integer)xyzList.get(xyz0)).intValue();
 
-    SymmetryOperation symmetryOperation = new SymmetryOperation(doNormalize);
+    SymmetryOperation symmetryOperation = new SymmetryOperation(doNormalize, opId);
     if (!symmetryOperation.setMatrixFromXYZ(xyz0)) {
       Logger.error("couldn't interpret symmetry operation: " + xyz0);      
       return -1;
@@ -627,11 +627,11 @@ class SpaceGroup {
   }
 
   private void generateOperatorsFromXyzInfo(String xyzInfo) {
-    addOperation(null);
-    addSymmetry("x,y,z");
+    addOperation(null, 0);
+    addSymmetry("x,y,z", 0);
     term = xyzInfo.toLowerCase();
     while (term.length() > 0)
-      addSymmetry(extractTerm(';'));
+      addSymmetry(extractTerm(';'), 0);
   }
   
   /// operation based on Hall name and unit cell parameters only
@@ -646,8 +646,8 @@ class SpaceGroup {
       if (hallInfo == null || hallInfo.nRotations == 0)
         h = hallInfo = new HallInfo(hallSymbol);
       setLattice(hallInfo.latticeCode, hallInfo.isCentrosymmetric);
-      addOperation(null);
-      addSymmetry("x,y,z");
+      addOperation(null, 0);
+      addSymmetry("x,y,z", 0);
     }
     Matrix4f mat1 = new Matrix4f();
     Matrix4f operation = new Matrix4f();
@@ -677,7 +677,7 @@ class SpaceGroup {
   }
 
   private void addSymmetry(String xyz, Matrix4f operation) {
-    int iop = addOperation(xyz);
+    int iop = addOperation(xyz, 0);
     if (iop < 0)
       return;
     SymmetryOperation symmetryOperation = operations[iop];

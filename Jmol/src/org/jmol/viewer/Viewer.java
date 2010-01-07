@@ -186,8 +186,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Object getSymmetryInfo(BitSet bsAtoms, String xyz, int op, Point3f pt,
-                                String id, int type) {
-    return modelSet.getSymmetryInfo(bsAtoms, xyz, op, pt, id, type);
+                                Point3f pt2, String id, int type) {
+    return modelSet.getSymmetryInfo(bsAtoms, xyz, op, pt, pt2, id, type);
   }
   
   private void clearModelDependentObjects() {
@@ -2306,7 +2306,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return symmetry.getUnitCellInfo(infoType);
   }
   public Hashtable getSpaceGroupInfo(String spaceGroup) {
-    return modelSet.getSpaceGroupInfo(spaceGroup);
+    return modelSet.getSpaceGroupInfo(-1, spaceGroup, 0, null, null, null);
   }
 
   public void getPolymerPointsAndVectors(BitSet bs, Vector vList) {
@@ -2439,9 +2439,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getSymmetryInfoAsString();
   }
 
-  public String getSymmetryOperation(int symop) {
-    return modelSet.getSymmetryOperation(animationManager.currentModelIndex,
-        symop);
+  public String getSymmetryOperation(String spaceGroup, int symop, Point3f pt1, Point3f pt2) {
+    return modelSet.getSymmetryOperation(animationManager.currentModelIndex, 
+        spaceGroup, symop, pt1, pt2, null);
   }
 
   public Properties getModelSetProperties() {
@@ -7479,8 +7479,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         if (useDialog)
           fileName = fileName.substring(1);
         useDialog |= isApplet;
-        if (fileName.startsWith("."))
-          fileName = "jmol" + fileName;
         fileName = FileManager.getLocalPathForWritingFile(this, fileName);
 
         if (useDialog)

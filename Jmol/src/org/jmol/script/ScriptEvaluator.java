@@ -3481,36 +3481,41 @@ public class ScriptEvaluator {
    * ==============================================================
    */
 
-  private void checkLength(int length) throws ScriptException {
-    if (length >= 0) {
-      checkLength(length, 0);
-      return;
-    }
+  private int checkLast(int i) throws ScriptException {
+    return checkLength(i + 1) - 1;  
+  }
+  
+  private int checkLength(int length) throws ScriptException {
+    if (length >= 0)
+      return checkLength(length, 0);
     // max
-    if (statementLength <= -length)
-      return;
-    iToken = -length;
-    error(ERROR_badArgumentCount);
+    if (statementLength > -length) {
+      iToken = -length;
+      error(ERROR_badArgumentCount);
+    }
+    return statementLength;
   }
 
-  private void checkLength(int length, int errorPt) throws ScriptException {
-    if (statementLength == length)
-      return;
-    iToken = errorPt > 0 ? errorPt : statementLength;
-    error(errorPt > 0 ? ERROR_invalidArgument : ERROR_badArgumentCount);
+  private int checkLength(int length, int errorPt) throws ScriptException {
+    if (statementLength != length) {
+      iToken = errorPt > 0 ? errorPt : statementLength;
+      error(errorPt > 0 ? ERROR_invalidArgument : ERROR_badArgumentCount);
+    }
+    return statementLength;
   }
 
   private int checkLength23() throws ScriptException {
     iToken = statementLength;
-    if (statementLength < 2 || statementLength > 3)
+    if (statementLength != 2 && statementLength != 3)
       error(ERROR_badArgumentCount);
     return statementLength;
   }
 
-  private void checkLength34() throws ScriptException {
+  private int checkLength34() throws ScriptException {
     iToken = statementLength;
-    if (statementLength < 3 || statementLength > 4)
+    if (statementLength != 3 && statementLength != 4)
       error(ERROR_badArgumentCount);
+    return statementLength;
   }
 
   private int theTok;
@@ -3810,8 +3815,7 @@ public class ScriptEvaluator {
   private boolean booleanParameter(int i) throws ScriptException {
     if (statementLength == i)
       return true;
-    checkLength(i + 1);
-    switch (getToken(i).tok) {
+    switch (getToken(checkLast(i)).tok) {
     case Token.on:
       return true;
     case Token.off:
@@ -4038,8 +4042,7 @@ public class ScriptEvaluator {
   private int getSetAxesTypeMad(int index) throws ScriptException {
     if (index == statementLength)
       return 1;
-    checkLength(index + 1);
-    switch (getToken(index).tok) {
+    switch (getToken(checkLast(index)).tok) {
     case Token.on:
       return 1;
     case Token.off:
@@ -4071,7 +4074,7 @@ public class ScriptEvaluator {
   private int getArgbParamLast(int index, boolean allowNone)
       throws ScriptException {
     int icolor = getArgbParam(index, allowNone);
-    checkLength(iToken + 1);
+    checkLast(iToken);
     return icolor;
   }
 
@@ -4893,8 +4896,7 @@ public class ScriptEvaluator {
       checkLength(1);
       break;
     case Token.end: // function, if, for, while
-      checkLength(2);
-      if (getToken(1).tok == Token.function) {
+      if (getToken(checkLast(1)).tok == Token.function) {
         viewer.addFunction((ScriptFunction) theToken.value);
         return isForCheck;
       }
@@ -4909,19 +4911,15 @@ public class ScriptEvaluator {
     case Token.breakcmd:
       if (!isSyntaxCheck)
         pc = aatoken[pt][0].intValue;
-      if (statementLength > 1) {
-        checkLength(2);
-        intParameter(1);
-      }
+      if (statementLength > 1)
+        intParameter(checkLast(1));
       break;
     case Token.continuecmd:
       isForCheck = true;
       if (!isSyntaxCheck)
         pc = pt - 1;
-      if (statementLength > 1) {
-        checkLength(2);
-        intParameter(1);
-      }
+      if (statementLength > 1)
+        intParameter(checkLast(1));
       break;
     case Token.forcmd:
       // for (i = 1; i < 3; i = i + 1);
@@ -5110,31 +5108,28 @@ public class ScriptEvaluator {
     case Token.front:
       axis.set(1, 0, 0);
       degrees = 0f;
-      i++;
+      checkLength(++i);
       break;
     case Token.back:
       axis.set(0, 1, 0);
       degrees = 180f;
-      i++;
+      checkLength(++i);
       break;
     case Token.left:
       axis.set(0, 1, 0);
-      i++;
+      checkLength(++i);
       break;
     case Token.right:
       axis.set(0, -1, 0);
-      i++;
-      checkLength(i);
+      checkLength(++i);
       break;
     case Token.top:
       axis.set(1, 0, 0);
-      i++;
-      checkLength(i);
+      checkLength(++i);
       break;
     case Token.bottom:
       axis.set(-1, 0, 0);
-      i++;
-      checkLength(i);
+      checkLength(++i);
       break;
     default:
       // X Y Z deg
@@ -5480,7 +5475,7 @@ public class ScriptEvaluator {
       pt.z = floatParameter(4);
     } else if (isCenterParameter(2)) {
       pt = centerParameter(2);
-      checkLength(iToken + 1);
+      checkLast(iToken);
     } else {
       checkLength(2);
     }
@@ -5515,12 +5510,11 @@ public class ScriptEvaluator {
       }
       switch (getToken(i).tok) {
       case Token.on:
-        checkLength(2);
+        checkLast(iToken = 1);
         iToken = 1;
         break;
       case Token.off:
-        checkLength(2);
-        iToken = 1;
+        checkLast(iToken = 1);
         stereoMode = JmolConstants.STEREO_NONE;
         break;
       case Token.integer:
@@ -5638,10 +5632,7 @@ public class ScriptEvaluator {
         break;
       case Token.pdb:
         boolean isAuto = (tokAt(2) == Token.auto);
-        if (isAuto)
-          checkLength(3);
-        else
-          checkLength(2);
+        checkLength(isAuto ? 3 : 2);
         if (!isSyntaxCheck)
           viewer.setPdbConectBonding(isAuto);
         return;
@@ -5824,11 +5815,10 @@ public class ScriptEvaluator {
     int argb;
     if (theTok == Token.image) {
       // background IMAGE "xxxx.jpg"
-      checkLength(3);
+      String file = parameterAsString(checkLast(++i));
       if (isSyntaxCheck)
         return;
       Hashtable htParams = new Hashtable();
-      String file = parameterAsString(++i);
       Object image = null;
       if (!file.equalsIgnoreCase("none") && file.length() > 0)
         image = viewer.getFileAsImage(file, htParams);
@@ -5956,9 +5946,8 @@ public class ScriptEvaluator {
       return;
     case Token.range:
     case Token.absolute:
-      checkLength(4);
       float min = floatParameter(2);
-      float max = floatParameter(3);
+      float max = floatParameter(checkLast(3));
       if (!isSyntaxCheck)
         viewer.setCurrentColorRange(min, max);
       return;
@@ -6009,7 +5998,7 @@ public class ScriptEvaluator {
       }
       if (argb == 0)
         error(ERROR_colorOrPaletteRequired);
-      checkLength(iToken + 1);
+      checkLast(iToken);
       if (str.equalsIgnoreCase("axes")) {
         setStringProperty("axesColor", Escape.escapeColor(argb));
         return;
@@ -6527,8 +6516,7 @@ public class ScriptEvaluator {
   }
 
   private void message() throws ScriptException {
-    checkLength(2);
-    String text = parameterAsString(1);
+    String text = parameterAsString(checkLast(1));
     if (isSyntaxCheck)
       return;
     String s = viewer.formatText(text);
@@ -6641,9 +6629,9 @@ public class ScriptEvaluator {
       } 
       if (tok == Token.identifier || modelName.equalsIgnoreCase("fileset")) {
         if (modelName.equals("menu")) {
-          checkLength(3);
+          String m = parameterAsString(checkLast(2));
           if (!isSyntaxCheck)
-            viewer.setMenu(parameterAsString(2), true);
+            viewer.setMenu(m, true);
           return;
         }
         i++;
@@ -7570,7 +7558,7 @@ public class ScriptEvaluator {
       // script APPLET x "....."
       String appID = parameterAsString(2);
       theScript = parameterExpression(3, 0, "_script", false).toString();
-      checkLength(iToken + 1);
+      checkLast(iToken);
       if (isSyntaxCheck)
         return;
       if (appID.length() == 0 || appID.equals("all"))
@@ -7729,16 +7717,14 @@ public class ScriptEvaluator {
     }
     if (pt == 2) {
       // set history n; n' = -2 - n; if n=0, then set history OFF
-      checkLength(3);
-      int n = intParameter(2);
+      int n = intParameter(checkLast(2));
       if (n < 0)
         error(ERROR_invalidArgument);
       if (!isSyntaxCheck)
         viewer.getSetHistory(n == 0 ? 0 : -2 - n);
       return;
     }
-    checkLength(2);
-    switch (getToken(1).tok) {
+    switch (getToken(checkLast(1)).tok) {
     // pt = 1 history ON/OFF/CLEAR
     case Token.on:
     case Token.clear:
@@ -7814,8 +7800,7 @@ public class ScriptEvaluator {
             i = iToken + 1;
           }
           aList[0] = n;
-          targetValue = floatParameter(i++);
-          checkLength(i);
+          targetValue = floatParameter(checkLast(i));
         }
         if (!isSyntaxCheck)
           viewer.getMinimizer(true).setProperty("constraint",
@@ -7904,7 +7889,7 @@ public class ScriptEvaluator {
       Object v = tokenSetting(0).value;
       if (!(v instanceof BitSet))
         error(ERROR_invalidArgument);
-      checkLength(++iToken);
+      checkLast(iToken);
       bs = (BitSet) v;
     } else {
       bs = expression(i);
@@ -8152,9 +8137,7 @@ public class ScriptEvaluator {
   }
 
   private void gotocmd() throws ScriptException {
-    checkLength(2);
-    String strTo = null;
-    strTo = parameterAsString(1);
+    String strTo = parameterAsString(checkLast(1));
     int pcTo = -1;
     for (int i = 0; i < aatoken.length; i++) {
       Token[] tokens = aatoken[i];
@@ -8222,8 +8205,7 @@ public class ScriptEvaluator {
     else
       switch (getToken(1).tok) {
       case Token.integer:
-        checkLength(2);
-        int percent = intParameter(1);
+        int percent = intParameter(checkLast(1));
         if (!isSyntaxCheck)
           if (isDepth)
             viewer.depthToPercent(percent);
@@ -8492,7 +8474,7 @@ public class ScriptEvaluator {
     case Token.bitset:
     case Token.expressionBegin:
       bs = expression(2);
-      checkLength(iToken + 1);
+      checkLast(iToken);
       break;
     default:
       checkLength(2);
@@ -8550,10 +8532,9 @@ public class ScriptEvaluator {
       viewer.addStateScript("select", null, viewer.getSelectionSet(), null,
           "configuration", true, false);
     } else {
-      checkLength(2);
+      int n = intParameter(checkLast(1));
       if (isSyntaxCheck)
         return;
-      int n = intParameter(1);
       bsConfigurations = viewer.setConformation(n - 1);
       viewer.addStateScript("configuration " + n + ";", true, false);
     }
@@ -9047,8 +9028,7 @@ public class ScriptEvaluator {
       animationDirection();
       break;
     case Token.fps:
-      checkLength(3);
-      setIntProperty("animationFps", intParameter(2));
+      setIntProperty("animationFps", intParameter(checkLast(2)));
       break;
     default:
       frameControl(1, true);
@@ -9056,8 +9036,7 @@ public class ScriptEvaluator {
   }
 
   private void file() throws ScriptException {
-    checkLength(2);
-    int file = intParameter(1);
+    int file = intParameter(checkLast(1));
     if (isSyntaxCheck)
       return;
     int modelIndex = viewer.getModelNumberIndex(file * 1000000 + 1, false,
@@ -9105,8 +9084,7 @@ public class ScriptEvaluator {
     }
     if (getToken(offset).tok == Token.minus) {
       ++offset;
-      checkLength(offset + 1);
-      if (getToken(offset).tok != Token.integer || intParameter(offset) != 1)
+      if (getToken(checkLast(offset)).tok != Token.integer || intParameter(offset) != 1)
         error(ERROR_invalidArgument);
       if (!isSyntaxCheck)
         viewer.setAnimation(Token.prev);
@@ -9164,8 +9142,7 @@ public class ScriptEvaluator {
         isRange = true;
         break;
       default:
-        checkLength(offset + 1);
-        frameControl(i, false);
+        frameControl(offset, false);
         return;
       }
     }
@@ -9270,8 +9247,7 @@ public class ScriptEvaluator {
   }
 
   private void frameControl(int i, boolean isSubCmd) throws ScriptException {
-    checkLength(i + 1);
-    switch (getToken(i).tok) {
+    switch (getToken(checkLast(i)).tok) {
     case Token.playrev:
     case Token.play:
     case Token.resume:
@@ -9424,8 +9400,7 @@ public class ScriptEvaluator {
       setEcho();
       return;
     case Token.fontsize:
-      checkLength23();
-      font(JmolConstants.SHAPE_LABELS, statementLength == 2 ? 0
+      font(JmolConstants.SHAPE_LABELS, checkLength23() == 2 ? 0
           : floatParameter(2));
       return;
     case Token.hbond:
@@ -9451,12 +9426,10 @@ public class ScriptEvaluator {
 
       // deprecated to other parameters
     case Token.spin:
-      checkLength(4);
-      setSpin(parameterAsString(2), (int) floatParameter(3));
+      setSpin(parameterAsString(2), (int) floatParameter(checkLast(3)));
       return;
     case Token.navigate:
-      checkLength(4);
-      setNav(parameterAsString(2), (int) floatParameter(3));
+      setNav(parameterAsString(2), (int) floatParameter(checkLast(3)));
       return;
     case Token.ssbond: // ssBondsBackbone
       setSsbond();
@@ -9707,10 +9680,9 @@ public class ScriptEvaluator {
       name = parameterAsString(2);
       break;
     default:
-      checkLength(5);
+      script = parameterAsString(checkLast(4));
       name = parameterAsString(2);
       mSec = intParameter(3);
-      script = parameterAsString(4);
     }
     if (!isSyntaxCheck)
       viewer.setTimeout(name, mSec, script);
@@ -9883,8 +9855,7 @@ public class ScriptEvaluator {
     if (Parser.isOneOf(lcKey, "defaults;defaultcolorscheme")) {
       String val;
       if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol) {
-        val = parameterAsString(2).toLowerCase();
-        checkLength(3);
+        val = parameterAsString(checkLast(2)).toLowerCase();
       } else {
         val = stringSetting(2, false).toLowerCase();
       }
@@ -9947,8 +9918,7 @@ public class ScriptEvaluator {
     // axes scale x.xxx
     switch (tok) {
     case Token.scale:
-      checkLength(index + 2);
-      setFloatProperty("axesScale", floatParameter(++index));
+      setFloatProperty("axesScale", floatParameter(checkLast(++index)));
       return;
     case Token.label:
       switch (tok = tokAt(index + 1)) {
@@ -10083,7 +10053,7 @@ public class ScriptEvaluator {
       index = iToken;
     }
     mad = getSetAxesTypeMad(++index);
-    checkLength(iToken + 1);
+    checkLast(iToken);
     if (isSyntaxCheck)
       return;
     if (icell != Integer.MAX_VALUE)
@@ -10116,9 +10086,8 @@ public class ScriptEvaluator {
   }
 
   private void setBondmode() throws ScriptException {
-    checkLength(3);
     boolean bondmodeOr = false;
-    switch (getToken(2).tok) {
+    switch (getToken(checkLast(2)).tok) {
     case Token.opAnd:
       break;
     case Token.opOr:
@@ -10385,7 +10354,7 @@ public class ScriptEvaluator {
       if (str.equals("toggle")) {
         iToken = 1;
         BitSet bs = (statementLength == 2 ? null : expression(2));
-        checkLength(iToken + 1);
+        checkLast(iToken);
         if (!isSyntaxCheck)
           viewer.togglePickingLabel(bs);
         return true;
@@ -10410,7 +10379,7 @@ public class ScriptEvaluator {
       return false;
     }
     BitSet bs = (iToken + 1 < statementLength ? expression(++iToken) : null);
-    checkLength(iToken + 1);
+    checkLast(iToken);
     if (isSyntaxCheck)
       return true;
     if (bs == null)
@@ -10424,8 +10393,7 @@ public class ScriptEvaluator {
   private void setMonitor() throws ScriptException {
     // on off here incompatible with "monitor on/off" so this is just a SET
     // option.
-    checkLength(3);
-    int tok = tokAt(2);
+    int tok = tokAt(checkLast(2));
     switch (tok) {
     case Token.on:
     case Token.off:
@@ -10453,11 +10421,10 @@ public class ScriptEvaluator {
     // what possible good is this?
     // set property foo bar is identical to
     // set foo bar
-    checkLength(4);
     if (getToken(2).tok != Token.identifier)
       error(ERROR_propertyNameExpected);
     String propertyName = parameterAsString(2);
-    switch (getToken(3).tok) {
+    switch (getToken(checkLast(3)).tok) {
     case Token.on:
       setBooleanProperty(propertyName, true);
       break;
@@ -10500,10 +10467,9 @@ public class ScriptEvaluator {
   }
 
   private void setSsbond() throws ScriptException {
-    checkLength(3);
     boolean ssbondsBackbone = false;
     // viewer.loadShape(JmolConstants.SHAPE_SSSTICKS);
-    switch (tokAt(2)) {
+    switch (tokAt(checkLast(2))) {
     case Token.backbone:
       ssbondsBackbone = true;
       break;
@@ -10516,9 +10482,8 @@ public class ScriptEvaluator {
   }
 
   private void setHbond() throws ScriptException {
-    checkLength(3);
     boolean bool = false;
-    switch (tokAt(2)) {
+    switch (tokAt(checkLast(2))) {
     case Token.backbone:
       bool = true;
       // fall into
@@ -10556,8 +10521,7 @@ public class ScriptEvaluator {
     case Token.select:
     case Token.monitor:
     case Token.spin:
-      checkLength34();
-      if (statementLength == 4) {
+      if (checkLength34() == 4) {
         type = parameterAsString(2).toUpperCase();
         if (type.equals("SPIN"))
           setIntProperty("pickingSpinRate", intParameter(3));
@@ -10616,8 +10580,7 @@ public class ScriptEvaluator {
       type = "MEASURE";
       // fall through
     case Token.select:
-      checkLength34();
-      if (statementLength == 4)
+      if (checkLength34() == 4)
         i = 3;
       break;
     default:
@@ -11146,8 +11109,17 @@ public class ScriptEvaluator {
     String value = null;
     String str = parameterAsString(1);
     String msg = null;
-    checkLength(-3);
     int len = 2;
+    if (tokAt(1) == Token.symop && statementLength > 3) {
+      Point3f pt1 = centerParameter(2);
+      Point3f pt2 = centerParameter(++iToken);
+      if (isSyntaxCheck)
+        return;
+      len = ++iToken;
+      msg = viewer.getSymmetryOperation(null, 0, pt1, pt2);
+    } else {
+      checkLength(-3);
+    }
     if (statementLength == 2 && str.indexOf("?") >= 0) {
       showString(viewer.getAllSettings(str.substring(0, str.indexOf("?"))));
       return;
@@ -11156,6 +11128,14 @@ public class ScriptEvaluator {
     switch (tok = (getToken(1) instanceof ScriptVariable ? Token.nada : getToken(1).tok)) {
     case Token.nada:
       msg = Escape.escape(((ScriptVariable)theToken).value);
+      break;
+    case Token.symop:
+      if (msg == null) {
+        int iop = (checkLength23() == 2 ? 0 : intParameter(2));
+        if (!isSyntaxCheck)
+          msg = viewer.getSymmetryOperation(null, iop, null, null);
+        len = -3;
+      }
       break;
     case Token.vanderwaals:
       if (statementLength == 2) {
@@ -11466,12 +11446,6 @@ public class ScriptEvaluator {
     case Token.pointgroup:
       pointGroup();
       return;
-    case Token.symop:
-      int iop = intParameter(2);
-      if (!isSyntaxCheck)
-        msg = viewer.getSymmetryOperation(iop);
-      len = 3;
-      break;
     case Token.symmetry:
       if (!isSyntaxCheck)
         msg = viewer.getSymmetryInfoAsString();
@@ -11622,6 +11596,7 @@ public class ScriptEvaluator {
         String xyz = null;
         int iSym = 0;
         Point4f plane = null;
+        Point3f target = null;
         switch (tokAt(++i)) {
         case Token.plane:
           plane = planeParameter(++i);
@@ -11635,8 +11610,17 @@ public class ScriptEvaluator {
         case Token.matrix4f:
           xyz = ScriptVariable.sValue(getToken(i));
           break;
+        case Token.integer:
         default:
-          iSym = intParameter(i);
+          if (!isCenterParameter(i))
+            iSym = intParameter(i++);
+          if (isCenterParameter(i))
+            center = centerParameter(i);
+          if (isCenterParameter(iToken + 1))
+            target = centerParameter(++iToken);
+          if (isSyntaxCheck)
+            return;
+          i = iToken;
         }
         if (plane != null) {
           i = iToken;
@@ -11650,15 +11634,19 @@ public class ScriptEvaluator {
           havePoints = true;
           break;
         }
-        center = (i + 1 == statementLength ? null : centerParameter(++i));
-        // draw ID xxx symop [n or "x,-y,-z"] [optional {center}]
-        BitSet bsAtoms = (tokAt(i) == Token.bitset
-            || tokAt(i) == Token.expressionBegin ? expression(i) : null);
-        i = iToken + 1;
-        checkLength(iToken + 1);
+        BitSet bsAtoms = null;
+        if (center == null && i + 1 < statementLength) {
+          center = centerParameter(++i);
+          // draw ID xxx symop [n or "x,-y,-z"] [optional {center}]
+          // so we also check here for the atom set to get the right model
+          bsAtoms = (tokAt(i) == Token.bitset
+              || tokAt(i) == Token.expressionBegin ? expression(i) : null);
+          i = iToken + 1;
+        }
+        checkLast(iToken);
         if (!isSyntaxCheck)
           runScript((String) viewer.getSymmetryInfo(bsAtoms, xyz, iSym, center,
-              thisId, Token.draw));
+              target, thisId, Token.draw));
         return;
       case Token.frame:
         isFrame = true;
@@ -11671,7 +11659,7 @@ public class ScriptEvaluator {
         if (theTok == Token.point4f || !isPoint3f(i)) {
           propertyValue = getPoint4f(i);
           if (isFrame) {
-            checkLength(iToken + 1);
+            checkLast(iToken);
             if (!isSyntaxCheck)
               runScript((new Quaternion((Point4f) propertyValue)).draw(
                   (thisId == null ? "frame" : thisId), " " + swidth,
@@ -13465,7 +13453,7 @@ public class ScriptEvaluator {
     if (tokAt(3) == Token.range) {
       range1 = xypParameter(4);
       range2 = xypParameter(++iToken);
-      checkLength(++iToken);
+      checkLast(iToken);
     } else {
       checkLength(3);
     }

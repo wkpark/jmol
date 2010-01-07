@@ -199,6 +199,7 @@ public abstract class AtomSetCollectionReader {
   public abstract void readAtomSetCollection(BufferedReader reader);
 
   public void readAtomSetCollectionFromDOM(Object DOMNode) {
+    // XML readers only
   }
 
   private Object finalize(Hashtable htParams, String filename) {

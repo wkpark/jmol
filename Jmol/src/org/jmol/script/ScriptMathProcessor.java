@@ -709,7 +709,7 @@ class ScriptMathProcessor {
     int iOp = (xyz == null ? ScriptVariable.iValue(args[0]) : 0);
     Point3f pt = (args.length > 1 ? ptValue(args[1], true) : null);
     if (args.length == 2 && !Float.isNaN(pt.x))
-      return addX(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, Token.point));
+      return addX(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, null, Token.point));
     String desc = (args.length == 1 ? "" : ScriptVariable
         .sValue(args[args.length - 1])).toLowerCase();
     int tok = Token.draw;
@@ -734,7 +734,7 @@ class ScriptMathProcessor {
     } else if (desc.equalsIgnoreCase("center")) {
       tok = Token.center;
     }
-    return addX(viewer.getSymmetryInfo(bs, xyz, iOp, pt, desc, tok));
+    return addX(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, desc, tok));
   }
 
   private boolean evaluateBin(ScriptVariable[] args) throws ScriptException {

@@ -111,8 +111,8 @@ public class Symmetry implements SymmetryInterface {
       spaceGroup = new SpaceGroup(doNormalize);
   }
 
-  public int addSpaceGroupOperation(String xyz) {
-    return spaceGroup.addSymmetry(xyz);
+  public int addSpaceGroupOperation(String xyz, int opId) {
+    return spaceGroup.addSymmetry(xyz, opId);
   }
 
   public void setLattice(int latt) {
@@ -339,7 +339,7 @@ public class Symmetry implements SymmetryInterface {
 
   public Object[] getSymmetryOperationDescription(int isym,
                                                 SymmetryInterface cellInfo, 
-                                                Point3f pt00, String id) {
-    return spaceGroup.operations[isym].getDescription(cellInfo, pt00, id);
+                                                Point3f pt1, Point3f pt2, String id) {
+    return spaceGroup.operations[isym].getDescription(isym, cellInfo, pt1, pt2, id);
   }
 }  

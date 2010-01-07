@@ -60,12 +60,14 @@ class SymmetryOperation extends Matrix4f {
   String xyz;
   boolean doNormalize = true;
   boolean isFinalized;
+  int opId;
 
   SymmetryOperation() {
   }
 
-  SymmetryOperation(boolean doNormalize) {
+  SymmetryOperation(boolean doNormalize, int opId) {
     this.doNormalize = doNormalize;
+    this.opId = opId;
   }
 
   SymmetryOperation(SymmetryOperation op, Point3f[] atoms,
@@ -77,6 +79,7 @@ class SymmetryOperation extends Matrix4f {
     this.doNormalize = doNormalize;
     xyzOriginal = op.xyzOriginal;
     xyz = op.xyz;
+    this.opId = op.opId;
     set(op); // sets the underlying Matrix4f
     doFinalize();
     if (doNormalize)
@@ -420,8 +423,10 @@ class SymmetryOperation extends Matrix4f {
   
   /**
    * 
+   * @param isym 
    * @param uc
    * @param pt00
+   * @param ptTarget 
    * @param id
    * @return Object[] containing: 
    *                    xyz (Jones-Faithful calculated from matrix)
@@ -436,26 +441,49 @@ class SymmetryOperation extends Matrix4f {
    *                    angle of rotation
    *                    matrix representation
    */
-  public Object[] getDescription(SymmetryInterface uc, Point3f pt00, String id) {
+  public Object[] getDescription(int isym, SymmetryInterface uc, Point3f pt00, Point3f ptTarget, String id) {
     if (!isFinalized)
       doFinalize();
-    return getDescription(this, xyzOriginal, uc, pt00, id);
+    return getDescription(isym, this, xyzOriginal, uc, pt00, ptTarget, id);
   }
   
-  private static Object[] getDescription(Matrix4f m, String xyzOriginal,
+  private static Object[] getDescription(int isym, SymmetryOperation m, String xyzOriginal,
                                          SymmetryInterface uc, Point3f pt00,
-                                         String id) {
+                                         Point3f ptTarget, String id) {
     Vector3f vtemp = new Vector3f();
     Point3f ptemp = new Point3f();
+    Point3f pt01 = new Point3f();
+    Point3f pt02 = new Point3f();
+    Point3f pt03 = new Point3f();
     Vector3f ftrans = new Vector3f();
     String xyz = getXYZFromMatrix(m, false, false, false);
     boolean typeOnly = (id == null);
     if (pt00 == null || Float.isNaN(pt00.x))
       pt00 = new Point3f();
-
-    Point3f pt01 = new Point3f(1, 0, 0);
-    Point3f pt02 = new Point3f(0, 1, 0);
-    Point3f pt03 = new Point3f(0, 0, 1);
+    if (ptTarget != null) {
+      // Check to see if the two points only differ by
+      // a translation after transformation.
+      // If so, add that difference to the matrix transformation 
+      pt01.set(pt00);
+      pt02.set(ptTarget);
+      uc.toUnitCell(pt01, ptemp);
+      uc.toUnitCell(pt02, ptemp);
+      uc.toFractional(pt01);
+      m.transform(pt01);
+      uc.toCartesian(pt01);
+      uc.toUnitCell(pt01, ptemp);
+      if (pt01.distance(pt02) > 0.1f)
+        return null;
+      pt01.set(pt00);
+      pt02.set(ptTarget);
+      uc.toFractional(pt01);
+      uc.toFractional(pt02);
+      m.transform(pt01);
+      vtemp.sub(pt02, pt01);
+      pt01.set(0, 0, 0);
+      pt02.set(0, 0, 0);
+    }
+    pt01.x = pt02.y = pt03.z = 1;
     pt01.add(pt00);
     pt02.add(pt00);
     pt03.add(pt00);
@@ -473,6 +501,10 @@ class SymmetryOperation extends Matrix4f {
     m.transform(p1, p1);
     m.transform(p2, p2);
     m.transform(p3, p3);
+    p0.add(vtemp);
+    p1.add(vtemp);
+    p2.add(vtemp);
+    p3.add(vtemp);
     uc.toCartesian(p0);
     uc.toCartesian(p1);
     uc.toCartesian(p2);
@@ -782,9 +814,9 @@ class SymmetryOperation extends Matrix4f {
       info1 += "|inversion center at " + fcoord(ptemp);
     }
 
-    Logger.info(xyz + ": " + info1);
     String cmds = null;
     if (!typeOnly) {
+      Logger.info(m.opId + "\t" + xyz + "\t" + info1);
       drawid = "\ndraw ID " + id + "_";
 
       // delete previous elements of this user-settable ID

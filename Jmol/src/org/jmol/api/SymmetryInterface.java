@@ -28,7 +28,7 @@ public interface SymmetryInterface {
 
   public abstract void setSpaceGroup(boolean doNormalize);
 
-  public abstract int addSpaceGroupOperation(String xyz);
+  public abstract int addSpaceGroupOperation(String xyz, int opId);
 
   /**
    * set symmetry lattice type using Hall rotations
@@ -122,7 +122,7 @@ public interface SymmetryInterface {
 
   public abstract Object[] getSymmetryOperationDescription(int iSym,
                                                          SymmetryInterface cellInfo, 
-                                                         Point3f pt00, String id);
+                                                         Point3f pt1, Point3f pt2, String id);
   
   public abstract Vector intersectPlane(Point4f plane, float scale, int flags);
 

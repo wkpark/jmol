@@ -662,6 +662,7 @@ public class Token {
   // xxx(a,b,c)
   
   final static int select       = 1 | 3 << 9 | mathfunc | atomExpressionCommand;
+  final static int hkl          = 2 | 3 << 9 | mathfunc;
 
   // ___.xxx(a,b,c)
   
@@ -758,7 +759,6 @@ public class Token {
   final static int functionxy     = misc | 77;// new
   final static int functionxyz    = misc | 78;// new
   final static int gridpoints     = misc | 79;// new
-  final static int hkl            = misc | 81 | expression;
   final static int homo           = misc | 82;// new
   final static int id             = misc | 83 | expression;
   final static int ignore         = misc | 84;// new

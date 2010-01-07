@@ -765,7 +765,6 @@ public class ScriptEvaluator {
       case Token.coord:
       case Token.element:
       case Token.group:
-      case Token.hkl:
       case Token.model:
       case Token.molecule:
       case Token.site:
@@ -3969,16 +3968,24 @@ public class ScriptEvaluator {
   private Point4f hklParameter(int i) throws ScriptException {
     if (!isSyntaxCheck && viewer.getCurrentUnitCell() == null)
       error(ERROR_noUnitCell);
+    Point3f pt = (Point3f) getPointOrPlane(i, false, true, false, true, 3, 3);
+    Point4f p = getHklPlane(pt);
+    if (p == null)
+      error(ERROR_badMillerIndices);
+    if (!isSyntaxCheck && Logger.debugging)
+      Logger.info("defined plane: " + p);
+    return p;
+  }
+
+  protected Point4f getHklPlane(Point3f pt) {
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
-    Point3f pt = (Point3f) getPointOrPlane(i, false, true, false, true, 3, 3);
     Point3f pt1 = new Point3f(pt.x == 0 ? 1 : 1 / pt.x, 0, 0);
     Point3f pt2 = new Point3f(0, pt.y == 0 ? 1 : 1 / pt.y, 0);
     Point3f pt3 = new Point3f(0, 0, pt.z == 0 ? 1 : 1 / pt.z);
     // trick for 001 010 100 is to define the other points on other edges
-
     if (pt.x == 0 && pt.y == 0 && pt.z == 0) {
-      error(ERROR_badMillerIndices);
+      return null;
     } else if (pt.x == 0 && pt.y == 0) {
       pt1.set(1, 0, pt3.z);
       pt2.set(0, 1, pt3.z);
@@ -4000,10 +4007,7 @@ public class ScriptEvaluator {
     viewer.toCartesian(pt3);
     Vector3f plane = new Vector3f();
     float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
-    Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
-    if (!isSyntaxCheck && Logger.debugging)
-      Logger.info("defined plane: " + p);
-    return p;
+    return new Point4f(plane.x, plane.y, plane.z, w);
   }
 
   private int getMadParameter() throws ScriptException {

@@ -661,7 +661,8 @@ class ScriptMathProcessor {
     case Token.point:
       return evaluatePoint(args);
     case Token.plane:
-      return evaluatePlane(args);
+    case Token.hkl:
+      return evaluatePlane(args, tok);
     case Token.connected:
       return evaluateConnected(args);
     case Token.substructure:
@@ -1077,8 +1078,8 @@ class ScriptMathProcessor {
     return false;
   }
 
-  private boolean evaluatePlane(ScriptVariable[] args) throws ScriptException {
-    if (args.length != 1 && args.length != 3 && args.length != 4)
+  private boolean evaluatePlane(ScriptVariable[] args, int tok) throws ScriptException {
+    if (args.length != 3 && tok == Token.hkl || tok != Token.hkl && args.length != 1 && args.length != 3 && args.length != 4)
       return false;
     if (isSyntaxCheck)
       return addX(new Point4f(0, 0, 1, 0));
@@ -1090,6 +1091,9 @@ class ScriptMathProcessor {
         return addX((Point4f) pt);
       return addX("" + pt);
     case 3:
+      if (tok == Token.hkl) {
+        return addX(eval.getHklPlane(new Point3f (ScriptVariable.fValue(args[0]), ScriptVariable.fValue(args[1]), ScriptVariable.fValue(args[2]))));
+      }
     case 4:
       switch (args[0].tok) {
       case Token.bitset:
@@ -1745,6 +1749,8 @@ class ScriptMathProcessor {
       return false;
     if (isSyntaxCheck)
       return addX(bs);
+    if (ScriptVariable.sValue(args[1]).equalsIgnoreCase("hkl") && pt != null)
+      plane = eval.getHklPlane(pt);
     if (plane != null)
       return addX(viewer.getAtomsWithin(distance, plane));
     if (pt != null)

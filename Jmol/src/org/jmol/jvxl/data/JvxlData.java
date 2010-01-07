@@ -131,6 +131,7 @@ public class JvxlData {
   public String contourColors;
   public float[] contourValues;
   public float[] contourValuesUsed;
+  public float scale3d;
 
   public short minColorIndex = -1;
   public short maxColorIndex = 0;

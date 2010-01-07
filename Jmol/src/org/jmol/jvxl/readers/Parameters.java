@@ -222,6 +222,7 @@ public class Parameters {
     rangeDefined = false;
     resolution = Float.MAX_VALUE;
     scale = Float.NaN;
+    scale3d = 0;
     solventAtomRadiusAbsolute = 0;
     solventAtomRadiusFactor = 1;
     solventAtomRadiusOffset = 0;
@@ -308,6 +309,7 @@ public class Parameters {
   
   boolean isAngstroms;
   float scale;
+  public float scale3d;
   
   float[] anisotropy = new float[3];
   boolean isAnisotropic;

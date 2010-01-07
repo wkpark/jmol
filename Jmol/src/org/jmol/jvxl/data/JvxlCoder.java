@@ -274,6 +274,8 @@ public class JvxlCoder {
       if (jvxlData.vContours != null && jvxlData.vContours.length > 0)
         appendAttrib(info, "\n  ", "nContourData", "" + jvxlData.vContours.length);
     } else {
+      if (jvxlData.scale3d != 0)
+        appendAttrib(info, "\n  ", "scale3d", "" + jvxlData.scale3d);
       if (nColorData > 0)
         appendAttrib(info, "\n  ", "colorMapped", "true");
       appendAttrib(info, "\n  ", "plane", Escape.escape(jvxlData.jvxlPlane));

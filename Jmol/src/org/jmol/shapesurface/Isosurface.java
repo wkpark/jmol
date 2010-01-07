@@ -292,17 +292,16 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
+    // Isosurface / SurfaceGenerator both interested
+    
     if ("scale3d" == propertyName) {
       scale3d = ((Float)value).floatValue();
       if (thisMesh != null) {
-        thisMesh.scale3d = scale3d;
+        thisMesh.scale3d = thisMesh.jvxlData.scale3d = scale3d;
         thisMesh.offsetVertices = null;
       }
-      return;
     }
 
-    // Isosurface / SurfaceGenerator both interested
-    
     if ("getSurfaceSets" == propertyName) {
       if (thisMesh != null)
         thisMesh.thisSet = ((Integer)value).intValue();
@@ -924,6 +923,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.title = sg.getTitle();
     String script = sg.getScript();
     thisMesh.dataType = sg.getParams().dataType;
+    thisMesh.scale3d = sg.getParams().scale3d;
     thisMesh.bitsets = null;
     if (script != null) {
       if (script.charAt(0) == ' ') { // lobe only

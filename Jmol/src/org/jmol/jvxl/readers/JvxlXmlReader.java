@@ -205,6 +205,10 @@ public class JvxlXmlReader extends VolumeFileReader {
       try {
         params.thePlane = (Point4f) Escape.unescapePoint(s);
         Logger.info("JVXL read: plane " + params.thePlane);
+        if (params.scale3d == 0)
+          params.scale3d = parseFloat(getXmlAttrib(data, "scale3d"));
+        if (Float.isNaN(params.scale3d))
+          params.scale3d = 0;
       } catch (Exception e) {
         Logger
             .error("Error reading 4 floats for PLANE definition -- setting to 0 0 1 0  (z=0)");
@@ -307,6 +311,7 @@ public class JvxlXmlReader extends VolumeFileReader {
       setVolumeData(volumeData);
       params.cutoff = 0f;
       jvxlData.setSurfaceInfo(params.thePlane, 0, "");
+      jvxlData.scale3d = params.scale3d;
       return true;
     }
     return false;

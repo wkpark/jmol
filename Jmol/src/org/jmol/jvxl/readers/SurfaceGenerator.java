@@ -437,6 +437,11 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("scale3d" == propertyName) {
+      params.scale3d = ((Float) value).floatValue();
+      return true;
+    }
+
     if ("angstroms" == propertyName) {
       params.isAngstroms = true;
       return true;

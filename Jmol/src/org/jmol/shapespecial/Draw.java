@@ -509,6 +509,7 @@ public class Draw extends MeshCollection {
       thisMesh.drawTypes = null;
       thisMesh.drawVertexCounts = null;
       if (polygon != null) {
+        thisMesh.isPolygonSet = true;
         thisMesh.vertices = (Point3f[]) polygon.get(0);
         thisMesh.drawVertexCount = thisMesh.vertexCount = thisMesh.vertices.length;
         thisMesh.polygonIndexes = (int[][]) polygon.get(1);

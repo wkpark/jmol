@@ -111,10 +111,6 @@ public class DrawRenderer extends MeshRenderer {
     }    
     int tension = 5;
     switch (drawType) {
-    case JmolConstants.DRAW_POLYGON:
-      isPolygon = true;
-      super.render2(false);
-      break;
     default:
       super.render2(false);
       break;

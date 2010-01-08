@@ -46,6 +46,7 @@ public class Mesh extends MeshSurface {
   public String[] title;
   
   public short[] normixes;
+  private int normixCount;
   public BitSet[] bitsets; // [0]bsSelected [1]bsIgnore [2]bsTrajectory
   public Vector lineData;
   public String thisID;
@@ -59,6 +60,7 @@ public class Mesh extends MeshSurface {
 
   public float scale = 1;
   public boolean haveXyPoints;
+  public boolean isPolygonSet; // just a set of flat polygons
   public int diameter;
   public float width;
   public Point3f ptCenter = new Point3f(0,0,0);
@@ -110,6 +112,7 @@ public class Mesh extends MeshSurface {
     drawTriangles = false;
     fillTriangles = true;
     showTriangles = false; //as distinct entitities
+    isPolygonSet = false;
     frontOnly = false;
     title = null;
     normixes = null;
@@ -126,34 +129,31 @@ public class Mesh extends MeshSurface {
   public void initialize(int lighting, Point3f[] vertices) {
     if (vertices == null)
       vertices = this.vertices;
-    Vector3f[] normals = getVertexNormals(vertices);
-    normixes = new short[vertexCount];
-    initializeNormixes(lighting, normals);
-  }
-
-  public Vector3f[] getVertexNormals(Point3f[] vertices) {
-    Vector3f[] normals = new Vector3f[vertexCount];
-    for (int i = vertexCount; --i >= 0;)
-      normals[i] = new Vector3f();
-    sumVertexNormals(vertices, normals);
-    for (int i = vertexCount; --i >= 0;)
-      normals[i].normalize();
-    return normals;
-  }
-  
-  public void initializeNormixes(int lighting, Vector3f[] normals) {
+    Vector3f[] normals = getNormals(vertices);
+    normixes = new short[normixCount];
     isTwoSided = (lighting == JmolConstants.FULLYLIT);
-    normixes = new short[vertexCount];
     if (haveXyPoints)
-      for (int i = vertexCount; --i >= 0;)
+      for (int i = normixCount; --i >= 0;)
         normixes[i] = Graphics3D.NORMIX_NULL;
     else
-      for (int i = vertexCount; --i >= 0;)
+      for (int i = normixCount; --i >= 0;)
         normixes[i] = g3d.getNormix(normals[i]);
     this.lighting = JmolConstants.FRONTLIT;
     if (insideOut)
       invertNormixes();
     setLighting(lighting);
+  }
+
+  public Vector3f[] getNormals(Point3f[] vertices) {
+    normixCount = (isPolygonSet ? polygonCount : vertexCount);
+    Vector3f[] normals = new Vector3f[normixCount];
+    for (int i = normixCount; --i >= 0;)
+      normals[i] = new Vector3f();
+    sumVertexNormals(vertices, normals);
+    if (!isPolygonSet)
+      for (int i = normixCount; --i >= 0;)
+        normals[i].normalize();
+    return normals;
   }
   
   public void setLighting(int lighting) {
@@ -165,14 +165,14 @@ public class Mesh extends MeshSurface {
   
   private void flipLighting(int lighting) {
     if (lighting == JmolConstants.FULLYLIT)
-      for (int i = vertexCount; --i >= 0;)
+      for (int i = normixCount; --i >= 0;)
         normixes[i] = (short)~normixes[i];
     else if ((lighting == JmolConstants.FRONTLIT) == insideOut)
       invertNormixes();
   }
 
   private void invertNormixes() {
-    for (int i = vertexCount; --i >= 0;)
+    for (int i = normixCount; --i >= 0;)
       normixes[i] = g3d.getInverseNormix(normixes[i]);
   }
 
@@ -196,9 +196,10 @@ public class Mesh extends MeshSurface {
         if (pi != null) {
           Measure.calcNormalizedNormal(vertices[pi[0]], vertices[pi[1]],
               vertices[pi[2]], vTemp, vAB, vAC);
-          // general 10.? error here was not watching out for 
-          // occurrances of intersection AT a corner, leading to
-          // two points of triangle being identical
+          if (isPolygonSet) {
+            normals[i].set(vTemp);
+            continue;
+          }
           float l = vTemp.length();
           if (l > 0.9 && l < 1.1) //test for not infinity or -infinity or isNaN
             for (int j = pi.length - adjustment; --j >= 0;) {

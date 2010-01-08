@@ -37,6 +37,15 @@ public class TriangleData {
    *   
    */
 
+  private final static int[][] fullCubePolygon = new int[][] {
+    { 0, 4, 5, 3 }, { 5, 1, 0, 3 }, // back
+    { 1, 5, 6, 2 }, { 6, 2, 1, 3 }, 
+    { 2, 6, 7, 2 }, { 7, 3, 2, 3 }, // front
+    { 3, 7, 4, 2 }, { 4, 0, 3, 2 },
+    { 6, 5, 4, 0 }, { 4, 7, 6, 0 }, // top
+    { 0, 1, 2, 0 }, { 2, 3, 0, 0 }, // bottom
+  };
+  
   protected final static Point3i[] cubeVertexOffsets = { 
     new Point3i(0, 0, 0), //0 pt
     new Point3i(1, 0, 0), //1 pt + yz
@@ -295,6 +304,10 @@ public class TriangleData {
 
 
   public static Vector intersectPlane(Point4f plane, Vector v, int flags) {
+    if (plane == null) {
+      v.add(fullCubePolygon);
+      return v;
+    }
     Point3f[] vertices = (Point3f[]) v.get(0);
     if (flags != 0)
       v.clear();
@@ -310,7 +323,6 @@ public class TriangleData {
     byte[] triangles = triangleTable2[insideMask];
     if (triangles == null)
       return null;
-    BitSet bsPoints = new BitSet();
     for (int i = 0; i < 24; i+=2) {
       int v1 = edgeVertexes[i];
       int v2 = edgeVertexes[i + 1];
@@ -324,6 +336,7 @@ public class TriangleData {
       edgePoints[i >> 1] = result;
     }
     if (flags == 0) {
+      BitSet bsPoints = new BitSet();
       v.clear();
       for (int i = 0; i < triangles.length; i++) {
         bsPoints.set(triangles[i]);
@@ -337,8 +350,6 @@ public class TriangleData {
       v.add(pts);
       int[]list = new int[12];
       int ptList = 0;
-      int[][]polygons = new int[triangles.length >> 2][];
-      v.add(polygons);
       for (int i = 0; i < triangles.length; i++) {
         int pt = triangles[i];
         if (bsPoints.get(pt)) {
@@ -349,6 +360,9 @@ public class TriangleData {
         if (i % 4 == 2)
           i++;
       }
+      
+      int[][]polygons = new int[triangles.length >> 2][];
+      v.add(polygons);
       for (int i = 0; i < triangles.length; i++)
           polygons[i >> 2] = new int[] { list[triangles[i++]], 
               list[triangles[i++]], list[triangles[i++]], triangles[i] };
@@ -372,5 +386,4 @@ public class TriangleData {
     }
     return v;
   }
-
 }

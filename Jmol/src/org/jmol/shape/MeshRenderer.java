@@ -47,7 +47,6 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected float width;
   protected boolean isTranslucent;
   protected Point4f thePlane;
-  protected boolean isPolygon;
 
   protected final Point3f pt1f = new Point3f();
   protected final Point3f pt2f = new Point3f();
@@ -137,16 +136,36 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
   
   protected void renderPoints() {
-    for (int i = vertexCount; --i >= 0;)
-      if (!frontOnly || transformedVectors[normixes[i]].z >= 0)
-        g3d.fillSphere(4, screens[i]);
+    if (mesh.isPolygonSet) {
+      int[][] polygonIndexes = mesh.polygonIndexes;
+      BitSet bsPoints = new BitSet();
+      for (int i = mesh.polygonCount; --i >= 0;) {
+        int[] p = polygonIndexes[i];
+        if (frontOnly && transformedVectors[normixes[i]].z < 0)
+          continue;
+        for (int j = p.length - 1; --j >= 0;) {
+          int pt = p[j];
+          if (bsPoints.get(pt))
+            continue;
+          bsPoints.set(pt);
+          g3d.fillSphere(4, screens[pt]);
+        }
+      }
+      return;
+    }
+    for (int i = vertexCount; --i >= 0;) {
+      if (frontOnly && transformedVectors[normixes[i]].z < 0)
+        continue;
+      g3d.fillSphere(4, screens[i]);
+    }
   }
 
   protected BitSet bsFaces = new BitSet();
-  protected void renderTriangles(boolean fill, boolean iShowTriangles, boolean generateSet) {
+  protected void renderTriangles(boolean fill, boolean iShowTriangles,
+                                 boolean generateSet) {
     int[][] polygonIndexes = mesh.polygonIndexes;
     colix = mesh.colix;
-    //vertexColixes are only isosurface properties of IsosurfaceMesh, not Mesh
+    // vertexColixes are only isosurface properties of IsosurfaceMesh, not Mesh
     g3d.setColix(colix);
     if (generateSet) {
       frontOnly = false;
@@ -160,17 +179,31 @@ public abstract class MeshRenderer extends ShapeRenderer {
       int iB = vertexIndexes[1];
       int iC = vertexIndexes[2];
       if (iB == iC) {
-        //line or point
-        drawLine(iA, iB, fill, vertices[iA], vertices[iB], 
-            screens[iA], screens[iB]);
+        // line or point
+        drawLine(iA, iB, fill, vertices[iA], vertices[iB], screens[iA],
+            screens[iB]);
         continue;
       }
-      switch (isPolygon ? 3 : vertexIndexes.length) {
-      case 3:
-        if (frontOnly && transformedVectors[normixes[iA]].z < 0
-            && transformedVectors[normixes[iB]].z < 0
-            && transformedVectors[normixes[iC]].z < 0)
+      if (mesh.isPolygonSet) {
+        short normix = normixes[i];
+        if (normix >= 0 && transformedVectors[normix].z < 0)
+        //if (frontOnly && transformedVectors[normix].z < 0)
           continue;
+        if (fill) {
+          g3d.fillTriangle(screens[iA], colix, normix, screens[iB], colix,
+              normix, screens[iC], colix, normix);
+          continue;
+        }
+        g3d.drawTriangle(screens[iA], screens[iB], screens[iC],
+            mesh.isPolygonSet ? vertexIndexes[3] : 7);
+        continue;
+      }
+      if (frontOnly && transformedVectors[normixes[iA]].z < 0
+          && transformedVectors[normixes[iB]].z < 0
+          && transformedVectors[normixes[iC]].z < 0)
+        continue;
+      switch (vertexIndexes.length) {
+      case 3:
         if (fill) {
           if (generateSet) {
             bsFaces.set(i);
@@ -181,21 +214,17 @@ public abstract class MeshRenderer extends ShapeRenderer {
                 colix, normixes[iB], screens[iC], colix, normixes[iC], 0.1f);
             continue;
           }
-          //System.out.println(normixes[iA]+ " " + normixes[iB] + " " + normixes[iC]);
+          // System.out.println(normixes[iA]+ " " + normixes[iB] + " " +
+          // normixes[iC]);
           g3d.fillTriangle(screens[iA], colix, normixes[iA], screens[iB],
               colix, normixes[iB], screens[iC], colix, normixes[iC]);
           continue;
         }
-        g3d.drawTriangle(screens[iA], screens[iB], screens[iC], 
-            isPolygon ? vertexIndexes[3]: 7);
+        g3d.drawTriangle(screens[iA], screens[iB], screens[iC],
+            mesh.isPolygonSet ? vertexIndexes[3] : 7);
         continue;
       case 4:
         int iD = vertexIndexes[3];
-        if (frontOnly && transformedVectors[normixes[iA]].z < 0
-            && transformedVectors[normixes[iB]].z < 0
-            && transformedVectors[normixes[iC]].z < 0
-            && transformedVectors[normixes[iD]].z < 0)
-          continue;
         if (fill) {
           if (generateSet) {
             bsFaces.set(i);
@@ -243,7 +272,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   protected void exportSurface() {
-    mesh.vertexNormals = mesh.getVertexNormals(vertices);
+    mesh.vertexNormals = mesh.getNormals(vertices);
     mesh.bsFaces = bsFaces;
     g3d.drawSurface(mesh, mesh.offsetVertices);
     mesh.vertexNormals = null;

@@ -11574,9 +11574,17 @@ public class ScriptEvaluator {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
+      case Token.unitcell:
       case Token.boundbox:
-        propertyValue = viewer.getBoundBoxVertices();
-        propertyName = "boundbox";
+        if (isSyntaxCheck)
+          break;
+        Vector vp = viewer.getPlaneIntersection(theTok, null, intScale / 100f, 0);
+        intScale = 0;
+        if (vp == null)
+          continue;
+        propertyName = "polygon";
+        propertyValue = vp;
+        havePoints = true;
         break;
       case Token.intersection:
         switch(getToken(++i).tok) {
@@ -11688,15 +11696,14 @@ public class ScriptEvaluator {
         if (tokIntersect != 0) {
             if (isSyntaxCheck)
               break;
-            Vector vp = viewer.getPlaneIntersection(tokIntersect, plane, intScale / 100f, 0);
+            Vector vpc = viewer.getPlaneIntersection(tokIntersect, plane, intScale / 100f, 0);
             intScale = 0;
-            if (vp == null)
+            if (vpc == null)
               continue;
             propertyName = "polygon";
-            propertyValue = vp;
+            propertyValue = vpc;
             havePoints = true;
-            break;
-         
+            break;         
         } else if (havePoints || isIntersect) {
           propertyValue = plane;
           propertyName = "planedef";
@@ -11871,23 +11878,23 @@ public class ScriptEvaluator {
         havePoints = true;
         break;
       case Token.color:
-        i++;
-        // fall through
       case Token.translucent:
       case Token.opaque:
+        if (theTok == Token.color)
+          i++;
         boolean isColor = false;
-        isTranslucent = true;
-        if (tokAt(i) == Token.translucent) {
+        if (theTok == Token.translucent) {
           if (isFloatParameter(++i))
             translucentLevel = getTranslucentLevel(i++);
           isColor = true;
-        } else if (tokAt(i) == Token.opaque) {
-          ++i;
+          isTranslucent = true;
+        } else if (theTok == Token.opaque) {
           isColor = true;
           translucentLevel = 0;
+          isTranslucent = true;
         }
-        if (isColorParam(i)) {
-          colorArgb = getArgbParam(i);
+        if (isColorParam(i + 1)) {
+          colorArgb = getArgbParam(++i);
           i = iToken;
           isColor = true;
         }
@@ -11986,22 +11993,24 @@ public class ScriptEvaluator {
         continue;
 
       case Token.color:
-        i++;
-        // fall through
       case Token.translucent:
       case Token.opaque:
         isTranslucent = false;
         boolean isColor = false;
+        if (theTok == Token.color)
+          i++;
         if (tokAt(i) == Token.translucent) {
           isTranslucent = true;
+          translucentLevel = 1;
           if (isFloatParameter(++i))
             translucentLevel = getTranslucentLevel(i++);
           isColor = true;
         } else if (tokAt(i) == Token.opaque) {
-          ++i;
           isColor = true;
+          translucentLevel = 0;
+          isTranslucent = true;
         }
-        if (isColorParam(i)) {
+        if (isColorParam(i + 1)) {
           color = getArgbParam(i);
           i = iToken;
           isColor = true;

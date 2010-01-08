@@ -147,10 +147,10 @@ public class SticksRenderer extends ShapeRenderer {
       drawBond(order == JmolConstants.BOND_AROMATIC ? getAromaticDottedBondMask()
           : 0);
       break;
-    case JmolConstants.BOND_STEREO_NEAR:
-    case JmolConstants.BOND_STEREO_FAR:
-      renderTriangle(bond);
-      break;
+    //case JmolConstants.BOND_STEREO_NEAR:
+    //case JmolConstants.BOND_STEREO_FAR:
+      //renderTriangle(bond);
+      //break;
     default:
       if ((bondOrder & JmolConstants.BOND_PARTIAL_MASK) != 0) {
         bondOrder = JmolConstants.getPartialBondOrder(order);
@@ -307,6 +307,7 @@ public class SticksRenderer extends ShapeRenderer {
     g3d.drawDashedLine(colixA, colixB, 8, 4, xA, yA, zA, xB, yB, zB);
   }*/
 
+  /*  no longer implemented 
   private static int wideWidthMilliAngstroms = 400;
 
   private void renderTriangle(Bond bond) {
@@ -346,7 +347,7 @@ public class SticksRenderer extends ShapeRenderer {
                            xWideUp, yWideUp, zB, xWideDn, yWideDn, zB);
     }
   }
-
+  */
   
   private int getAromaticDottedBondMask() {
     Atom atomC = atomB.findAromaticNeighbor(atomA.getAtomIndex());

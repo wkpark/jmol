@@ -186,16 +186,28 @@ public abstract class MeshRenderer extends ShapeRenderer {
       }
       if (mesh.isPolygonSet) {
         short normix = normixes[i];
-        if (normix >= 0 && transformedVectors[normix].z < 0)
-        //if (frontOnly && transformedVectors[normix].z < 0)
+        if (!g3d.isDirectedTowardsCamera(normix))
           continue;
         if (fill) {
-          g3d.fillTriangle(screens[iA], colix, normix, screens[iB], colix,
-              normix, screens[iC], colix, normix);
+          if (isExport) {
+            g3d.fillTriangle(screens[iC], colix, normix, screens[iB], colix,
+                normix, screens[iA], colix, normix);
+          } else {
+            g3d.fillTriangle(screens[iA], colix, normix, screens[iB], colix,
+                normix, screens[iC], colix, normix);
+          }
           continue;
         }
-        g3d.drawTriangle(screens[iA], screens[iB], screens[iC],
-            mesh.isPolygonSet ? vertexIndexes[3] : 7);
+        int check = vertexIndexes[3];
+        if ((check & 1) == 1)
+          drawLine(iA, iB, true, vertices[iA], vertices[iB], screens[iA],
+              screens[iB]);
+        if ((check & 2) == 2)
+        drawLine(iB, iC, true, vertices[iB], vertices[iC], screens[iB],
+            screens[iC]);
+        if ((check & 4) == 4)
+        drawLine(iA, iC, true, vertices[iA], vertices[iC], screens[iA],
+            screens[iC]);
         continue;
       }
       if (frontOnly && transformedVectors[normixes[iA]].z < 0

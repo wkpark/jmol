@@ -11880,26 +11880,24 @@ public class ScriptEvaluator {
       case Token.color:
       case Token.translucent:
       case Token.opaque:
-        if (theTok == Token.color)
+        if (theTok != Token.color)
+          --i;
+        if (tokAt(i + 1) == Token.translucent) {
           i++;
-        boolean isColor = false;
-        if (theTok == Token.translucent) {
-          if (isFloatParameter(++i))
-            translucentLevel = getTranslucentLevel(i++);
-          isColor = true;
           isTranslucent = true;
-        } else if (theTok == Token.opaque) {
-          isColor = true;
+          if (isFloatParameter(i + 1))
+            translucentLevel = getTranslucentLevel(++i);
+        } else if (tokAt(i + 1) == Token.opaque) {
+          i++;
+          isTranslucent = true;
           translucentLevel = 0;
-          isTranslucent = true;
         }
         if (isColorParam(i + 1)) {
           colorArgb = getArgbParam(++i);
           i = iToken;
-          isColor = true;
-        }
-        if (!isColor)
+        } else if (!isTranslucent) {
           error(ERROR_invalidArgument);
+        }
         idSeen = true;
         continue;
       default:
@@ -11988,35 +11986,30 @@ public class ScriptEvaluator {
         needsGenerating = true;
         propertyName = "bonds";
         break;
-      case Token.radius:
-        decimalPropertyName = "radius";
-        continue;
-
       case Token.color:
       case Token.translucent:
       case Token.opaque:
         isTranslucent = false;
-        boolean isColor = false;
-        if (theTok == Token.color)
+        if (theTok != Token.color)
+          --i;
+        if (tokAt(i + 1) == Token.translucent) {
           i++;
-        if (tokAt(i) == Token.translucent) {
           isTranslucent = true;
-          translucentLevel = 1;
           if (isFloatParameter(++i))
-            translucentLevel = getTranslucentLevel(i++);
-          isColor = true;
-        } else if (tokAt(i) == Token.opaque) {
-          isColor = true;
-          translucentLevel = 0;
+            translucentLevel = getTranslucentLevel(i);
+        } else if (tokAt(i + 1) == Token.opaque) {
+          i++;
           isTranslucent = true;
+          translucentLevel = 0;
         }
         if (isColorParam(i + 1)) {
           color = getArgbParam(i);
           i = iToken;
-          isColor = true;
-        }
-        if (!isColor)
+        } else if (!isTranslucent)
           error(ERROR_invalidArgument);
+        continue;
+      case Token.radius:
+        decimalPropertyName = "radius";
         continue;
       case Token.collapsed:
       case Token.flat:

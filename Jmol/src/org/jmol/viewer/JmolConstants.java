@@ -349,7 +349,7 @@ final public class JmolConstants {
 
   // | new connection              1 << 15
   //  ||| | Hydrogen bond 0x3800   F << 11
-  //       |Stereo 0x400           1 << 10
+  //       |Stereo 0x400           1 << 10  NOT IMPLEMENTED
   //        |Aromatic 0x200        1 << 9
   //         |Sulfur-Sulfur 0x100  1 << 8
   //           ||| Partial n       7 << 5
@@ -396,8 +396,8 @@ final public class JmolConstants {
   }
 
   public final static short BOND_STEREO_MASK   = 0x400; // 1 << 10
-  public final static short BOND_STEREO_NEAR   = 0x401;
-  public final static short BOND_STEREO_FAR    = 0x402;
+  //public final static short BOND_STEREO_NEAR   = 0x401;
+  //public final static short BOND_STEREO_FAR    = 0x402;
 
   public final static short BOND_AROMATIC_MASK   = 0x200; // 1 << 9
   public final static short BOND_AROMATIC_SINGLE = 0x201; // same as single

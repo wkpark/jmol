@@ -30,6 +30,8 @@ import org.jmol.shape.ShapeRenderer;
 public class PolyhedraRenderer extends ShapeRenderer {
 
   private int drawEdges;
+  private boolean isAll;
+  private boolean frontOnly;
 
   protected void render() {
     Polyhedra polyhedra = (Polyhedra) shape;
@@ -55,8 +57,8 @@ public class PolyhedraRenderer extends ShapeRenderer {
         vertices[i].transform(viewer);
     }
 
-    boolean isAll = (drawEdges == Polyhedra.EDGES_ALL);
-    boolean isFrontOnly = (drawEdges == Polyhedra.EDGES_FRONT);
+    isAll = (drawEdges == Polyhedra.EDGES_ALL);
+    frontOnly = (drawEdges == Polyhedra.EDGES_FRONT);
 
     // no edges to new points when not collapsed
     if (g3d.setColix(colix))
@@ -67,15 +69,22 @@ public class PolyhedraRenderer extends ShapeRenderer {
       return;
     for (int i = 0, j = 0; j < planes.length;)
       drawFace(p.normixes[i++], vertices[planes[j++]],
-          vertices[planes[j++]], vertices[planes[j++]], isAll, isFrontOnly);
+          vertices[planes[j++]], vertices[planes[j++]]);
   }
 
-  private void drawFace(short normix, Atom atomA, Atom atomB, Atom atomC,
-                boolean isAll, boolean isFrontOnly) {
-    if (isAll || isFrontOnly && g3d.isDirectedTowardsCamera(normix))
-      g3d.drawCylinderTriangle(atomA.screenX, atomA.screenY, atomA.screenZ,
+  private void drawFace(short normix, Atom atomA, Atom atomB, Atom atomC) {
+    if (isAll || frontOnly && g3d.isDirectedTowardsCamera(normix)) {
+      drawCylinderTriangle(atomA.screenX, atomA.screenY, atomA.screenZ,
           atomB.screenX, atomB.screenY, atomB.screenZ, atomC.screenX,
-          atomC.screenY, atomC.screenZ, 3);
+          atomC.screenY, atomC.screenZ);
+    }
+  }
+
+  private void drawCylinderTriangle(int xA, int yA, int zA, int xB, int yB,
+                                   int zB, int xC, int yC, int zC) {
+    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3, xA, yA, zA, xB, yB, zB);
+    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3, xB, yB, zB, xC, yC, zC);
+    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3, xA, yA, zA, xC, yC, zC);
   }
 
   private void fillFace(short normix,

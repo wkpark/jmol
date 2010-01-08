@@ -239,25 +239,27 @@ public interface JmolRendererInterface {
                                    Point3i s0, Point3i s1, Point3i s2,
                                    Point3i s3);
 
+  // isosurface "mesh" option -- color mapped vertices
   public abstract void drawTriangle(Point3i screenA, short colixA,
                                     Point3i screenB, short colixB,
                                     Point3i screenC, short colixC, int check);
 
+  // isosurface and other meshes -- preset colix
   public abstract void drawTriangle(Point3i screenA, Point3i screenB,
                                     Point3i screenC, int check);
 
-  public abstract void drawCylinderTriangle(int xA, int yA, int zA, int xB,
-                                            int yB, int zB, int xC, int yC,
-                                            int zC, int diameter);
-
+  /* was for stereo -- not implemented
   public abstract void drawfillTriangle(int xA, int yA, int zA, int xB, int yB,
                                         int zB, int xC, int yC, int zC);
-
+  */
+  
+  // isosurface colored triangles
   public abstract void fillTriangle(Point3i screenA, short colixA,
                                     short normixA, Point3i screenB,
                                     short colixB, short normixB,
                                     Point3i screenC, short colixC, short normixC);
 
+  // polyhedra
   public abstract void fillTriangle(short normix, int xScreenA, int yScreenA,
                                     int zScreenA, int xScreenB, int yScreenB,
                                     int zScreenB, int xScreenC, int yScreenC,

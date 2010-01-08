@@ -99,11 +99,10 @@ public class JmeReader extends AtomSetCollectionReader {
       int atomIndex1 = parseInt(tokenizer.nextToken());
       int atomIndex2 = parseInt(tokenizer.nextToken());
       int order = parseInt(tokenizer.nextToken());
-      //Logger.debug("bond "+atomIndex1+"->"+atomIndex2+" "+order);
       if (order < 1) {
-        //Logger.debug("Stereo found:" + order);
+        // not supported in Jmol -- these will be converted to single bond order
         order = ((order == -1)
-                 ? JmolAdapter.ORDER_STEREO_NEAR
+                 ? JmolAdapter.ORDER_STEREO_NEAR  
                  : JmolAdapter.ORDER_STEREO_FAR);
       }
       atomSetCollection.addBond(new Bond(atomIndex1-1, atomIndex2-1, order));

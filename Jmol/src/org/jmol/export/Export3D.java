@@ -535,64 +535,27 @@ final public class Export3D implements JmolRendererInterface {
    * **************************************************************
    */
 
-  public void drawTriangle(Point3i pointA, short colixA, Point3i pointB,
-                           short colixB, Point3i pointC, short colixC, int check) {
-    // primary method for mapped Mesh
-    int xA = pointA.x;
-    int yA = pointA.y;
-    int zA = pointA.z;
-    int xB = pointB.x;
-    int yB = pointB.y;
-    int zB = pointB.z;
-    int xC = pointC.x;
-    int yC = pointC.y;
-    int zC = pointC.z;
-    if ((check & 1) == 1)
-      drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
-    if ((check & 2) == 2)
-      drawLine(colixB, colixC, xB, yB, zB, xC, yC, zC);
-    if ((check & 4) == 4)
-      drawLine(colixA, colixC, xA, yA, zA, xC, yC, zC);
+  public void drawTriangle(Point3i screenA, short colixA, Point3i screenB,
+                           short colixB, Point3i screenC, short colixC, int check) {
+    g3d.drawTriangle(screenA, colixA, screenB, colixB, screenC, colixC, check);
   }
 
   public void drawTriangle(Point3i pointA, Point3i pointB, Point3i pointC,
                            int check) {
-    /*
-     * // primary method for unmapped monochromatic Mesh int xA = pointA.x; int
-     * yA = pointA.y; int zA = pointA.z; int xB = pointB.x; int yB = pointB.y;
-     * int zB = pointB.z; int xC = pointC.x; int yC = pointC.y; int zC =
-     * pointC.z; if ((check & 1) == 1) line3d.plotLine(argbCurrent,
-     * !addAllPixels, argbCurrent, !addAllPixels, xA, yA, zA, xB, yB, zB,
-     * false); if ((check & 2) == 2) line3d.plotLine(argbCurrent, !addAllPixels,
-     * argbCurrent, !addAllPixels, xB, yB, zB, xC, yC, zC, false); if ((check &
-     * 4) == 4) line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent,
-     * !addAllPixels, xA, yA, zA, xC, yC, zC, false);
-     */}
-
-  public void drawCylinderTriangle(int xA, int yA, int zA, int xB, int yB,
-                                   int zB, int xC, int yC, int zC, int diameter) {
-    // polyhedra
-    fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diameter, xA, yA, zA, xB, yB, zB);
-    fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diameter, xA, yA, zA, xC, yC, zC);
-    fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diameter, xB, yB, zB, xC, yC, zC);
+    // bypassed by exportSurface in exporters
   }
 
+
+  /*
   public void drawfillTriangle(int xA, int yA, int zA, int xB, int yB, int zB,
                                int xC, int yC, int zC) {
-    /*
-     * // sticks -- sterochemical wedge notation -- not implemented?
-     * line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
-     * xA, yA, zA, xB, yB, zB, false); line3d.plotLine(argbCurrent,
-     * !addAllPixels, argbCurrent, !addAllPixels, xA, yA, zA, xC, yC, zC,
-     * false); line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent,
-     * !addAllPixels, xB, yB, zB, xC, yC, zC, false);
-     */
     ptA.set(xA, yA, zA);
     ptB.set(xB, yB, zB);
     ptC.set(xC, yC, zC);
     fillTriangle(ptA, ptB, ptC);
   }
-
+ */
+ 
   public void fillTriangle(Point3i pointA, short colixA, short normixA,
                            Point3i pointB, short colixB, short normixB,
                            Point3i pointC, short colixC, short normixC) {

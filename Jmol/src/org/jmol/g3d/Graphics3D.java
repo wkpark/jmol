@@ -1239,7 +1239,7 @@ final public class Graphics3D implements JmolRendererInterface {
   public void fillCylinder(byte endcaps,
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
-    //measures, vectors
+    //measures, vectors, polyhedra
     cylinder3d.render(colixCurrent, colixCurrent, !addAllPixels, !addAllPixels, endcaps, diameter,
                       xA, yA, zA, xB, yB, zB);
   }
@@ -1301,65 +1301,44 @@ final public class Graphics3D implements JmolRendererInterface {
     Hermite3D.getHermiteList(tension, s0, s1, s2, s3, s4, list, index0, n);
   }
 
-  /* ***************************************************************
-   * triangles
-   * ***************************************************************/
+  /*
+   * *************************************************************** triangles
+   * **************************************************************
+   */
 
   public void drawTriangle(Point3i screenA, short colixA, Point3i screenB,
-                           short colixB, Point3i screenC, short colixC, int check) {
+                           short colixB, Point3i screenC, short colixC,
+                           int check) {
     // primary method for mapped Mesh
-    int xA = screenA.x;
-    int yA = screenA.y;
-    int zA = screenA.z;
-    int xB = screenB.x;
-    int yB = screenB.y;
-    int zB = screenB.z;
-    int xC = screenC.x;
-    int yC = screenC.y;
-    int zC = screenC.z;
     if ((check & 1) == 1)
-      drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
+      drawLine(colixA, colixB, screenA.x, screenA.y, screenA.z, screenB.x,
+          screenB.y, screenB.z);
     if ((check & 2) == 2)
-      drawLine(colixB, colixC, xB, yB, zB, xC, yC, zC);
+      drawLine(colixB, colixC, screenB.x, screenB.y, screenB.z, screenC.x,
+          screenC.y, screenC.z);
     if ((check & 4) == 4)
-      drawLine(colixA, colixC, xA, yA, zA, xC, yC, zC);
+      drawLine(colixA, colixC, screenA.x, screenA.y, screenA.z, screenC.x,
+          screenC.y, screenC.z);
   }
 
-  public void drawTriangle(Point3i screenA, Point3i screenB,
-                           Point3i screenC, int check) {
+  public void drawTriangle(Point3i screenA, Point3i screenB, Point3i screenC,
+                           int check) {
     // primary method for unmapped monochromatic Mesh
-    int xA = screenA.x;
-    int yA = screenA.y;
-    int zA = screenA.z;
-    int xB = screenB.x;
-    int yB = screenB.y;
-    int zB = screenB.z;
-    int xC = screenC.x;
-    int yC = screenC.y;
-    int zC = screenC.z;
     if ((check & 1) == 1)
       line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
-          xA, yA, zA, xB, yB, zB, true);
+          screenA.x, screenA.y, screenA.z, screenB.x, screenB.y, screenB.z,
+          true);
     if ((check & 2) == 2)
       line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
-          xB, yB, zB, xC, yC, zC, true);
+          screenB.x, screenB.y, screenB.z, screenC.x, screenC.y, screenC.z,
+          true);
     if ((check & 4) == 4)
       line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
-          xA, yA, zA, xC, yC, zC, true);
+          screenA.x, screenA.y, screenA.z, screenC.x, screenC.y, screenC.z,
+          true);
   }
 
-  public void drawCylinderTriangle(int xA, int yA, int zA, int xB,
-                                   int yB, int zB, int xC, int yC, int zC,
-                                   int diameter) {
-    // polyhedra
-    fillCylinder(ENDCAPS_SPHERICAL, diameter, xA, yA,
-        zA, xB, yB, zB);
-    fillCylinder(ENDCAPS_SPHERICAL, diameter, xA, yA,
-        zA, xC, yC, zC);
-    fillCylinder(ENDCAPS_SPHERICAL, diameter, xB, yB,
-        zB, xC, yC, zC);
-  }
-
+  /*
   public void drawfillTriangle(int xA, int yA, int zA, int xB,
                                int yB, int zB, int xC, int yC, int zC) {
     // sticks -- sterochemical wedge notation -- not implemented?
@@ -1371,7 +1350,7 @@ final public class Graphics3D implements JmolRendererInterface {
         yB, zB, xC, yC, zC, true);
     triangle3d.fillTriangle(xA, yA, zA, xB, yB, zB, xC, yC, zC, false);
   }
-  
+  */
   public void fillTriangle(Point3i screenA, short colixA, short normixA,
                            Point3i screenB, short colixB, short normixB,
                            Point3i screenC, short colixC, short normixC) {

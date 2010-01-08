@@ -257,6 +257,8 @@ abstract class AtomDataReader extends VolumeDataReader {
 
   protected void setRangesAndAddAtoms(float ptsPerAngstrom, int maxGrid,
                                       int nWritten) {
+    if (xyzMin == null)
+      return;
     setVoxelRange(0, xyzMin.x, xyzMax.x, ptsPerAngstrom, maxGrid);
     setVoxelRange(1, xyzMin.y, xyzMax.y, ptsPerAngstrom, maxGrid);
     setVoxelRange(2, xyzMin.z, xyzMax.z, ptsPerAngstrom, maxGrid);

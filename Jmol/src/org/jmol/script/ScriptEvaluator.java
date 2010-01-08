@@ -3770,7 +3770,7 @@ public class ScriptEvaluator {
    */
   private float radiusParameter(int index, float defaultValue)
       throws ScriptException {
-    if (!checkToken(index)) {
+    if (tokAt(index) == Token.nada) {
       if (Float.isNaN(defaultValue))
         error(ERROR_numberExpected);
       return defaultValue;
@@ -3797,8 +3797,8 @@ public class ScriptEvaluator {
     iToken = index + (isPercent ? 1 : 0);
     if (Float.isNaN(v))
       error(ERROR_numberExpected);
-    if (v == 0)
-      return 0;
+    if (v == 0 || v == Float.MAX_VALUE)
+      return v;
     if (isPercent) {
       if (v <= -100)
         error(ERROR_invalidArgument);
@@ -11901,7 +11901,7 @@ public class ScriptEvaluator {
         idSeen = true;
         continue;
       default:
-        if (!setMeshDisplayProperty(null, JmolConstants.SHAPE_DRAW, 0, theTok)) {
+        if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, 0, theTok)) {
           if (theTok == Token.times || Token.tokAttr(theTok, Token.identifier)) {
             thisId = setShapeId(JmolConstants.SHAPE_DRAW, i, idSeen);
             i = iToken;
@@ -11911,6 +11911,7 @@ public class ScriptEvaluator {
         }
         if (iptDisplayProperty == 0)
           iptDisplayProperty = i;
+        i = iToken;
         continue;
       }
       idSeen = (theTok != Token.delete);
@@ -11938,7 +11939,7 @@ public class ScriptEvaluator {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", new Integer(intScale));
     }
     if (iptDisplayProperty > 0) {
-      if (!setMeshDisplayProperty(null, JmolConstants.SHAPE_DRAW,
+      if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW,
           iptDisplayProperty, getToken(iptDisplayProperty).tok))
         error(ERROR_invalidArgument);
     }
@@ -12196,7 +12197,7 @@ public class ScriptEvaluator {
         continue;
       case Token.translucent:
       case Token.opaque:
-        setMeshDisplayProperty(null, JmolConstants.SHAPE_LCAOCARTOON, i, theTok);
+        setMeshDisplayProperty(JmolConstants.SHAPE_LCAOCARTOON, i, theTok);
         i = iToken;
         idSeen = true;
         continue;
@@ -12352,9 +12353,11 @@ public class ScriptEvaluator {
       case Token.identifier:
         error(ERROR_invalidArgument);
       default:
-        if (!setMeshDisplayProperty(propertyList, JmolConstants.SHAPE_MO, 1, theTok))
+        int ipt = iToken;
+        if (!setMeshDisplayProperty(JmolConstants.SHAPE_MO, 0, theTok))
           error(ERROR_invalidArgument);
-      setShapeProperty(JmolConstants.SHAPE_MO, "setProperties", propertyList);
+        setShapeProperty(JmolConstants.SHAPE_MO, "setProperties", propertyList);
+        setMeshDisplayProperty(JmolConstants.SHAPE_MO, ipt, tokAt(ipt));
       return true;
       }
       if (propertyName != null)
@@ -12384,11 +12387,11 @@ public class ScriptEvaluator {
             : Float.MAX_VALUE);
         setShapeTranslucency(iShape, null, "translucent", value, null);
       } else {
-        setMeshDisplayProperty(null, iShape, index, theTok);
+        setMeshDisplayProperty(iShape, index, theTok);
       }
     } else if (theTok == Token.opaque) {
       if (nAllowed >= 0)
-        setMeshDisplayProperty(null, iShape, index, theTok);
+        setMeshDisplayProperty(iShape, index, theTok);
     } else {
       iToken--;
     }
@@ -12500,7 +12503,7 @@ public class ScriptEvaluator {
       return null;
     }
     iToken = 1;
-    if (!setMeshDisplayProperty(null, iShape, 0, tokAt(1))) {
+    if (!setMeshDisplayProperty(iShape, 0, tokAt(1))) {
       setShapeProperty(iShape, "thisID", JmolConstants.PREVIOUS_MESH_ID);
       if (iShape != JmolConstants.SHAPE_DRAW)
         setShapeProperty(iShape, "title", new String[] { thisCommand });
@@ -12533,6 +12536,7 @@ public class ScriptEvaluator {
       return;
     int colorRangeStage = 0;
     int signPt = 0;
+    int iptDisplayProperty = 0;
     boolean isIsosurface = (iShape == JmolConstants.SHAPE_ISOSURFACE);
     boolean isPmesh = (iShape == JmolConstants.SHAPE_PMESH);
     boolean isPlot3d = (iShape == JmolConstants.SHAPE_PLOT3D);
@@ -12542,8 +12546,10 @@ public class ScriptEvaluator {
     boolean doCalcArea = false;
     boolean doCalcVolume = false;
     boolean isCavity = false;
+    boolean haveRadius = false;
     boolean isFxy = false;
     boolean isColorMesh = false;
+    float vdw = Float.MAX_VALUE;
     float[] nlmZ = new float[5];
     float[] data = null;
     int thisSetNumber = 0;
@@ -12710,13 +12716,10 @@ public class ScriptEvaluator {
           ++colorRangeStage;
         break;
       case Token.ionic:
-        propertyName = "ionicRadius";
-        propertyValue = new Float(radiusParameter(++i, 0));
-        i = iToken;
-        break;
       case Token.vanderwaals:
-        propertyName = "vdwRadius";
-        propertyValue = new Float(radiusParameter(++i, 0));
+        propertyValue = new Float(radiusParameter(i + 1, 0));
+        propertyName = (theTok == Token.ionic ? "ionicRadius" : "vdwRadius");
+        haveRadius = true;
         i = iToken;
         break;
       case Token.plane:
@@ -13119,6 +13122,12 @@ public class ScriptEvaluator {
         i = iToken;
         break;
       case Token.map:
+        if (haveRadius && !surfaceObjectSeen) {
+          surfaceObjectSeen = true;
+          addShapeProperty(propertyList, "bsSolvent",
+              lookupIdentifierValue("solvent"));
+          addShapeProperty(propertyList, "sasurface", new Float(0));
+        }
         surfaceObjectSeen = !isCavity;
         propertyName = "map";
         break;
@@ -13276,7 +13285,7 @@ public class ScriptEvaluator {
           addShapeProperty(propertyList, "nomap", new Float(0));
           surfaceObjectSeen = true;
         }
-        if (!setMeshDisplayProperty(propertyList, iShape, i, theTok)) {
+        if (!setMeshDisplayProperty(iShape, 0, theTok)) {
           if (Token.tokAttr(theTok, Token.identifier) && !idSeen) {
             setShapeId(iShape, i, idSeen);
             i = iToken;
@@ -13284,7 +13293,10 @@ public class ScriptEvaluator {
           }
           error(ERROR_invalidArgument);
         }
-        i = iToken;
+        if (iptDisplayProperty == 0)
+          iptDisplayProperty = i;
+        i = statementLength - 1;
+        break;
       }
       idSeen = (theTok != Token.delete);
       if (propertyName == "property" && !surfaceObjectSeen) {
@@ -13299,7 +13311,7 @@ public class ScriptEvaluator {
       if (propertyName != null)
         addShapeProperty(propertyList, propertyName, propertyValue);
     }
-    if (isCavity && !surfaceObjectSeen) {
+    if ((isCavity || haveRadius) && !surfaceObjectSeen) {
       surfaceObjectSeen = true;
       addShapeProperty(propertyList, "bsSolvent",
           lookupIdentifierValue("solvent"));
@@ -13320,7 +13332,13 @@ public class ScriptEvaluator {
     
     // OK, now send them all
     setShapeProperty(iShape, "setProperties", propertyList);
-     
+
+    if (iptDisplayProperty > 0) {
+      if (!setMeshDisplayProperty(iShape,
+          iptDisplayProperty, getToken(iptDisplayProperty).tok))
+        error(ERROR_invalidArgument);
+    }
+
     Object area = null;
     Object volume = null;
     if (doCalcArea) {
@@ -13376,19 +13394,26 @@ public class ScriptEvaluator {
       propertyList.add(new Object[] {key, value});
   }
 
-  private boolean setMeshDisplayProperty(Vector propertyList, int shape, int i, int tok)
+  /**
+   * @param shape
+   * @param i
+   * @param tok
+   * @throws ScriptException
+   */
+  private boolean setMeshDisplayProperty(int shape, int i, int tok)
       throws ScriptException {
     String propertyName = null;
     Object propertyValue = null;
     boolean checkOnly = (i == 0);
     // these properties are all processed in MeshCollection.java
+    if (!checkOnly)
+      iToken = i;
     switch (tok) {
     case Token.opaque:
     case Token.translucent:
-      if (checkOnly)
+      if (!checkOnly)
+        colorShape(shape, iToken, false);
         return true;
-      colorShape(shape, iToken, false);
-      return true;
     case Token.nada:
     case Token.delete:
     case Token.on:
@@ -13435,12 +13460,9 @@ public class ScriptEvaluator {
       return false;
     if (checkOnly)
       return true;
-    if (propertyList != null)
-      addShapeProperty(propertyList, propertyName, propertyValue);
-    else
-      setShapeProperty(shape, propertyName, propertyValue);
+    setShapeProperty(shape, propertyName, propertyValue);
     if ((tok = tokAt(iToken + 1)) != Token.nada) {
-      if (!setMeshDisplayProperty(propertyList, shape, ++iToken, tok))
+      if (!setMeshDisplayProperty(shape, ++iToken, tok))
         --iToken;
     }
     return true;

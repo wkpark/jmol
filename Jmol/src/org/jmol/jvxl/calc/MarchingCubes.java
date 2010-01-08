@@ -211,6 +211,8 @@ public class MarchingCubes extends TriangleData  {
       // we are starting at the top corner, in the next to last
       // cell on the next to last row of the next to last plane(!)
     }
+    if (cubeCountX < 0 || cubeCountY < 0 || cubeCountZ < 0)
+      return "";
     int cellIndex0 = cubeCountY * cubeCountZ - 1;
     int cellIndex = cellIndex0;
     resetIndexPlane(isoPointIndexPlanes[1]);

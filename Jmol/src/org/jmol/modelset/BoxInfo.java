@@ -26,11 +26,15 @@
 package org.jmol.modelset;
 
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Point3fi;
+import org.jmol.util.TriangleData;
 
 public class BoxInfo {
 
@@ -61,10 +65,72 @@ public class BoxInfo {
       4,5, 4,6, 5,7, 6,7
       };
 
-  public final static Point3f[] unitCubePoints = { new Point3f(0, 0, 0),
-    new Point3f(0, 0, 1), new Point3f(0, 1, 0), new Point3f(0, 1, 1),
-    new Point3f(1, 0, 0), new Point3f(1, 0, 1), new Point3f(1, 1, 0),
+  /**
+   * returns a set of points defining the geometric object within the given
+   * plane that spans the unit cell within the given margins
+   * @param plane 
+   * @param scale 
+   * @param flags
+   *          0 -- polygon int[]  1 -- edges only 2 -- triangles only 3 -- both
+   * @return    a set of points
+   * 
+   */
+  public Vector intersectPlane(Point4f plane, float scale, int flags) {
+    Vector v = new Vector();
+    v.add(getCanonicalCopy(scale));
+    return TriangleData.intersectPlane(plane, v, flags);
+  }
+
+
+  public Point3f[] getCanonicalCopy(float scale) {
+    return getCanonicalCopy(bbVertices, scale);
+  }
+
+  public final static Point3f[] getCanonicalCopy(Point3f[] bbUcPoints, float scale) {
+    Point3f[] pts = new Point3f[8];
+    for (int i = 0; i < 8; i++)
+      pts[toCanonical[i]] = new Point3f(bbUcPoints[i]);
+    scaleBox(pts, scale);
+    return pts;
+  }
+  
+  public static void scaleBox(Point3f[] pts, float scale) {
+    if (scale == 0 || scale == 1)
+      return;
+    Point3f center = new Point3f();
+    Vector3f v = new Vector3f();
+    for (int i = 0; i < 8; i++)
+      center.add(pts[i]);
+    center.scale(1/8f);
+    for (int i = 0; i < 8; i++) {
+      v.sub(pts[i], center);
+      v.scale(scale);
+      pts[i].add(center, v);
+    }
+  }
+  
+  public final static Point3f[] unitCubePoints = { 
+    new Point3f(0, 0, 0),
+    new Point3f(0, 0, 1), 
+    new Point3f(0, 1, 0), 
+    new Point3f(0, 1, 1),
+    new Point3f(1, 0, 0), 
+    new Point3f(1, 0, 1), 
+    new Point3f(1, 1, 0),
     new Point3f(1, 1, 1), };
+
+  public final static int[] toCanonical = new int[] {0, 3, 4, 7, 1, 2, 5, 6};
+
+  protected final static Point3i[] cubeVertexOffsets = { 
+    new Point3i(0, 0, 0), //0 pt
+    new Point3i(1, 0, 0), //1 pt + yz
+    new Point3i(1, 0, 1), //2 pt + yz + 1
+    new Point3i(0, 0, 1), //3 pt + 1
+    new Point3i(0, 1, 0), //4 pt + z
+    new Point3i(1, 1, 0), //5 pt + yz + z
+    new Point3i(1, 1, 1), //6 pt + yz + z + 1
+    new Point3i(0, 1, 1)  //7 pt + z + 1 
+  };
 
   private final static Point3f[] unitBboxPoints = new Point3f[8];
   { 

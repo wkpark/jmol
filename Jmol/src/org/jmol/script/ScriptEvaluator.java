@@ -11558,6 +11558,8 @@ public class ScriptEvaluator {
     boolean isTranslucent = false;
     boolean isIntersect = false;
     boolean isFrame = false;
+    Point4f plane;
+    int tokIntersect = 0;
     float translucentLevel = Float.MAX_VALUE;
     int colorArgb = Integer.MIN_VALUE;
     int intScale = 0;
@@ -11572,6 +11574,28 @@ public class ScriptEvaluator {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
+      case Token.boundbox:
+        propertyValue = viewer.getBoundBoxVertices();
+        propertyName = "boundbox";
+        break;
+      case Token.intersection:
+        switch(getToken(++i).tok) {
+        case Token.unitcell:
+        case Token.boundbox:
+          tokIntersect = theTok;
+          isIntersect = true;
+          continue;
+        case Token.dollarsign:
+          propertyName = "intersect";
+          propertyValue = objectNameParameter(++i);
+          i = iToken;
+          isIntersect = true;
+          havePoints = true;
+          break;
+        default:
+          error(ERROR_invalidArgument);
+        }
+        break;
       case Token.polygon:
         int nVertices = intParameter(++i);
         Point3f[] points = new Point3f[nVertices];
@@ -11595,15 +11619,9 @@ public class ScriptEvaluator {
       case Token.symop:
         String xyz = null;
         int iSym = 0;
-        Point4f plane = null;
+        plane = null;
         Point3f target = null;
         switch (tokAt(++i)) {
-        case Token.plane:
-          plane = planeParameter(++i);
-          break;
-        case Token.hkl:
-          plane = hklParameter(++i);
-          break;
         case Token.string:
           xyz = stringParameter(i);
           break;
@@ -11621,18 +11639,6 @@ public class ScriptEvaluator {
           if (isSyntaxCheck)
             return;
           i = iToken;
-        }
-        if (plane != null) {
-          i = iToken;
-          if (isSyntaxCheck)
-            continue;
-          Vector vp = viewer.getUnitCellIntersection(plane, 1f, 0);
-          if (vp == null)
-            continue;
-          propertyName = "polygon";
-          propertyValue = vp;
-          havePoints = true;
-          break;
         }
         BitSet bsAtoms = null;
         if (center == null && i + 1 < statementLength) {
@@ -11674,37 +11680,35 @@ public class ScriptEvaluator {
         i = iToken;
         havePoints = true;
         break;
+      case Token.hkl:
       case Token.plane:
-        if (havePoints || isIntersect) {
-          propertyValue = planeParameter(++i);
-          i = iToken;
+        plane = (theTok == Token.plane ? planeParameter(++i)
+            : hklParameter(++i));
+        i = iToken;
+        if (tokIntersect != 0) {
+            if (isSyntaxCheck)
+              break;
+            Vector vp = viewer.getPlaneIntersection(tokIntersect, plane, intScale / 100f, 0);
+            intScale = 0;
+            if (vp == null)
+              continue;
+            propertyName = "polygon";
+            propertyValue = vp;
+            havePoints = true;
+            break;
+         
+        } else if (havePoints || isIntersect) {
+          propertyValue = plane;
           propertyName = "planedef";
+          havePoints = true;
         } else {
           propertyName = "plane";
-        }
-        break;
-      case Token.hkl:
-        // miller indices hkl for use with INTERSECTION
-        if (havePoints || isIntersect) {
-          propertyName = "planedef";
-          propertyValue = hklParameter(++i);
-          i = iToken;
-          havePoints = true;
         }
         break;
       case Token.linedata:
         propertyName = "lineData";
         propertyValue = floatParameterSet(++i, 0, Integer.MAX_VALUE);
         i = iToken;
-        havePoints = true;
-        break;
-      case Token.intersection:
-        propertyName = "intersect";
-        if (tokAt(++i) != Token.dollarsign)
-          error(ERROR_invalidArgument);
-        propertyValue = objectNameParameter(++i);
-        i = iToken;
-        isIntersect = true;
         havePoints = true;
         break;
       case Token.bitset:
@@ -11871,16 +11875,16 @@ public class ScriptEvaluator {
         // fall through
       case Token.translucent:
       case Token.opaque:
-        isTranslucent = false;
         boolean isColor = false;
+        isTranslucent = true;
         if (tokAt(i) == Token.translucent) {
-          isTranslucent = true;
           if (isFloatParameter(++i))
             translucentLevel = getTranslucentLevel(i++);
           isColor = true;
         } else if (tokAt(i) == Token.opaque) {
           ++i;
           isColor = true;
+          translucentLevel = 0;
         }
         if (isColorParam(i)) {
           colorArgb = getArgbParam(i);

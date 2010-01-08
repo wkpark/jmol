@@ -109,6 +109,8 @@ public class Draw extends MeshCollection {
   
   private Vector vData;
   private String intersectID;
+  private Point3f[] boundBox;
+  
   private Vector lineData;
   private final static int PT_COORD = 1;
   private final static int PT_IDENTIFIER = 2;
@@ -140,6 +142,7 @@ public class Draw extends MeshCollection {
       modelCount = viewer.getModelCount();
       bsAllModels = null;
       intersectID = null;
+      boundBox = null;
       setPropertySuper("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
       setPropertySuper("init", value, bs);
       return;
@@ -156,7 +159,10 @@ public class Draw extends MeshCollection {
     }
 
     if ("intersect" == propertyName) {
-      intersectID = (String) value;
+      if (value instanceof Point3f[])
+        boundBox = (Point3f[]) value;
+      else
+        intersectID = (String) value;
       return;
     }
     
@@ -186,7 +192,7 @@ public class Draw extends MeshCollection {
 
     if ("planedef" == propertyName) {
       plane = (Point4f) value;
-      if (intersectID != null)
+      if (intersectID != null || boundBox != null)
         return;
      if (isCircle || isArc)
         isPlane = true;
@@ -483,7 +489,7 @@ public class Draw extends MeshCollection {
     thisMesh.clear("draw");
     thisMesh.diameter = diameter;
     thisMesh.width = width;
-    if (intersectID != null)
+    if (intersectID != null || boundBox != null)
       setIntersectData();
     if (polygon == null && (lineData != null ? lineData.size() == 0 : vData.size() == 0))
       return false;
@@ -508,6 +514,7 @@ public class Draw extends MeshCollection {
         thisMesh.polygonIndexes = (int[][]) polygon.get(1);
         thisMesh.polygonCount = thisMesh.polygonIndexes.length;
         thisMesh.drawType = JmolConstants.DRAW_POLYGON;
+        thisMesh.checkByteCount = 1;
       } else if (lineData != null) {
         thisMesh.lineData = lineData;
       } else {
@@ -565,7 +572,12 @@ public class Draw extends MeshCollection {
   }
 
   private void setIntersectData() {
-    if (plane != null) {
+    if (boundBox != null) {
+      // TODO
+      if (plane == null) {
+        
+      }
+    } else if (plane != null && intersectID != null) {
       Vector vData = new Vector();
       Object[] data = new Object[] { intersectID, plane, vData, null };
       viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "intersectPlane",

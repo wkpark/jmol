@@ -2,11 +2,9 @@ package org.jmol.api;
 
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
@@ -86,6 +84,8 @@ public interface SymmetryInterface {
 
   public abstract Point3f[] getUnitCellVertices();
 
+  public abstract Point3f[] getCanonicalCopy(float scale);
+
   public abstract Point3f getCartesianOffset();
 
   public abstract float[] getNotionalUnitCell();
@@ -124,6 +124,4 @@ public interface SymmetryInterface {
                                                          SymmetryInterface cellInfo, 
                                                          Point3f pt1, Point3f pt2, String id);
   
-  public abstract Vector intersectPlane(Point4f plane, float scale, int flags);
-
 }

@@ -905,21 +905,22 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
         double dx2 = X2[ix];
         for (int iy = yMax; --iy >= yMin;) {
           double dy2 = Y2[iy];
+          double dx2y2 = dx2 + dy2;
           for (int iz = zMax; --iz >= zMin;) {
             double dz2 = Z2[iz];
-            double dx2y2 = dx2 + dy2;
-            double r = Math.sqrt(dx2y2 + dz2);
+            double r2 = dx2y2 + dz2;
+            double r = Math.sqrt(r2);
             double exponent = minuszeta * r;
             if (exponent < CUT)
               continue;
             double value = (coef * Math.exp(exponent)
-                * (2 * dz2 - dx2y2));
+                * (3 * dz2 - r2));
             switch(d) {
             case 3:
               value *= r;
               //fall through
             case 2:
-              value *= r * r;
+              value *= r2;
               break;
             case 1:
               value *= r;
@@ -938,7 +939,8 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
           double dx2my2 = coef * (dx2 - dy2);
           for (int iz = zMax; --iz >= zMin;) {
             double dz2 = Z2[iz];
-            double r = Math.sqrt(dx2y2 + dz2);
+            double r2 = dx2y2 + dz2;
+            double r = Math.sqrt(r2);
             double exponent = minuszeta * r;
             if (exponent < CUT)
               continue;
@@ -948,7 +950,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
               value *= r;
               //fall through
             case 2:
-              value *= r * r;
+              value *= r2;
               break;
             case 1:
               value *= r;
@@ -991,7 +993,8 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
           }
           for (int iz = zMax; --iz >= zMin;) {
             double dz2 = Z2[iz];
-            double r = Math.sqrt(dx2y2 + dz2);
+            double r2 = dx2y2 + dz2;
+            double r = Math.sqrt(r2);
             double exponent = minuszeta * r;
             if (exponent < CUT)
               continue;
@@ -1012,7 +1015,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
               value *= r;
               //fall through
             case 2:
-              value *= r * r;
+              value *= r2;
               break;
             case 1:
               value *= r;

@@ -70,7 +70,8 @@ public class Mesh extends MeshSurface {
   public int modelIndex = -1;  // for Isosurface and Draw
   public int visibilityFlags;
   public boolean insideOut;
- 
+  public int checkByteCount;
+
   public void setVisibilityFlags(int n) {
     visibilityFlags = n;//set to 1 in mps
   }
@@ -183,13 +184,12 @@ public class Mesh extends MeshSurface {
   public final Vector3f vAC = new Vector3f();
   public final Vector3f vTemp = new Vector3f();
 
-  protected boolean haveCheckByte;
   public Vector data1;
   public Vector data2;
   
   protected void sumVertexNormals(Point3f[] vertices, Vector3f[] normals) {
     // subclassed in IsosurfaceMesh
-    int adjustment = (haveCheckByte ? 2 : 0);
+    int adjustment = checkByteCount;
     for (int i = polygonCount; --i >= 0;) {
       int[] pi = polygonIndexes[i];
       try {

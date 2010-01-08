@@ -181,6 +181,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
                 colix, normixes[iB], screens[iC], colix, normixes[iC], 0.1f);
             continue;
           }
+          //System.out.println(normixes[iA]+ " " + normixes[iB] + " " + normixes[iC]);
           g3d.fillTriangle(screens[iA], colix, normixes[iA], screens[iB],
               colix, normixes[iB], screens[iC], colix, normixes[iC]);
           continue;

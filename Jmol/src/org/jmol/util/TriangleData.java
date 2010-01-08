@@ -1,4 +1,4 @@
-package org.jmol.jvxl.calc;
+package org.jmol.util;
 
 import java.util.BitSet;
 import java.util.Vector;
@@ -7,10 +7,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point4f;
 
-import org.jmol.api.TriangleServer;
-import org.jmol.util.BitSetUtil;
-
-public class TriangleData implements TriangleServer {
+public class TriangleData {
 
   protected static final int[] Pwr2 = new int[] { 1, 2, 4, 8, 16, 32, 64, 128,
     256, 512, 1024, 2048 };
@@ -51,15 +48,13 @@ public class TriangleData implements TriangleServer {
     new Point3i(0, 1, 1)  //7 pt + z + 1 
   };
 
-  public Point3i[] getCubeVertexOffsets() {
-    return cubeVertexOffsets;
-  }  
-
   protected final static byte edgeVertexes[] = { 
     0, 1, 1, 2, 2, 3, 3, 0, 4, 5,
   /*0     1     2     3     4  */
     5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 };
   /*5     6     7     8     9     10    11 */
+  
+  
   
   /* the new triangle table. Fourth number in each ABC set is b3b2b1, where
    * b1 = 1 for AB, b2 = 1 for BC, b3 = 1 for CA lines to be drawn for mesh
@@ -298,7 +293,8 @@ public class TriangleData implements TriangleServer {
    * @return Vector of Point3f[3] triangles and Point3f[2] edge lines
    */
 
-  public Vector intersectPlane(Point4f plane, Vector v, int flags) {
+
+  public static Vector intersectPlane(Point4f plane, Vector v, int flags) {
     Point3f[] vertices = (Point3f[]) v.get(0);
     if (flags != 0)
       v.clear();

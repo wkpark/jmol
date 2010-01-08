@@ -75,7 +75,7 @@ abstract class SlaterReader extends AtomSetCollectionReader {
    */
   protected final void addSlater(int iAtom, int a, int b, int c, int d, 
                         double zeta, float coef) {
-    //System.out.println ("SlaterReader " + intinfo.size() + ": " + iatom + " " + a + " " + b +  " " + c + " " + d + " " + zeta + " " + coef);
+    //System.out.println ("SlaterReader " + slaters.size() + ": " + iAtom + " " + a + " " + b +  " " + c + " " + d + " " + zeta + " " + coef);
     slaters.addElement(new SlaterData(iAtom, a, b, c, d, zeta, coef));
   }
 
@@ -101,6 +101,9 @@ abstract class SlaterReader extends AtomSetCollectionReader {
       for (int i = 0; i < slaterArray.length; i++) {
         SlaterData sd = slaterArray[i];
         sd.coef *= scaleSlater(sd.x, sd.y, sd.z, sd.r, sd.zeta);
+        
+        System.out.println ("SlaterReader " + i + ": " + sd.iAtom + " " + sd.x + " " + sd.y +  " " + sd.z + " " + sd.r + " " + sd.zeta + " " + sd.coef);
+
       }
     if (doSort) {
       Arrays.sort(slaterArray, new SlaterSorter());
@@ -233,13 +236,27 @@ abstract class SlaterReader extends AtomSetCollectionReader {
  
   //                                               x   0  1  2  3   4
   // (2x - 1)!!   double factorial                        s  p  d   f
-  private final static double[] fact2 = new double[] { 1, 1, 3, 15, 105 };
+  private final static double[] dfact2 = new double[] { 1, 1, 3, 15, 105 };
 
   /**
    *  scales slater using double factorials involving 
    *  quantum number n, l, and xyz exponents. fact2[x] is (2x - 1)!!
    *  Since x!! = 1 for x = 1, 0 or -1, we can just ignore this
    *  part for s and p orbitals, where x, y, and z are all 0 or 1.
+   *  
+   *  7!! = 105
+   *  5!! = 15
+   *  3!! = 3
+   *  
+   *  Numerators/4pi:
+   *  
+   *  all d orbitals:     fact2[3] = (2*2 + 1)!! = 5!! = 15/4pi 
+   *  all f orbitals:     fact2[4] = (2*3 + 1)!! = 7!! = 105/4pi
+   *  
+   *  Denominators:
+   *  
+   *  dxy, dyz, dxz all are 1 giving 15/4pi
+   *  dx2, dy2, and dz2 all have one "2", giving 15/3!!/4pi or 5/4pi
    *   
    * @param n
    * @param zeta
@@ -252,21 +269,26 @@ abstract class SlaterReader extends AtomSetCollectionReader {
   protected final static double getSlaterConstCartesian(int n, double zeta,
                                                        int el, int ex, int ey,
                                                        int ez) {
-    return fact(ez < 0 ? fact2[el + 1] 
-        : fact2[el + 1] / fact2[ex] / fact2[ey] / fact2[ez], zeta, n);
+    return fact(ez < 0 ? dfact2[el + 1] 
+        : dfact2[el + 1] / dfact2[ex] / dfact2[ey] / dfact2[ez], zeta, n);
   }
 
   /**
    * spherical scaling factors specifically for x2-y2 and z2 orbitals
    * 
-   */
-  private final static double[] factorDSpherical = new double[] { 
-    0.5 / Math.sqrt(3), // z2
-    0.5,                // x2-y2           
-    1                   // xy,xz,yz
-    };
-
-  /**
+   * see http://openmopac.net/Manual/real_spherical_harmonics.html
+   * 
+   * dz2     sqrt((1/2p)(5/8))(2cos2(q) -sin2(q))     sqrt(5/16p)(3z2-r2)/r2
+   * dxz     sqrt((1/2p)(15/4))(cos(q)sin(q))cos(f)   sqrt(15/4p)(xz)/r2
+   * dyz     sqrt((1/2p)(15/4))(cos(q)sin(q))sin(f)   sqrt(15/4p)(yz)/r2
+   * dx2-y2  sqrt((1/2p)(15/16))sin2(q)cos2(f)        sqrt(15/16p)(x2-y2)/r2
+   * dxy     sqrt((1/2p)(15/16))sin2(q)sin2(f)        sqrt(15/4p)(xy)/r2
+   *
+   * The fact() method returns sqrt(15/4p) for both z2 and x2-y2. 
+   * So now we ned to correct that with sqrt(1/12) for z2 and sqrt(1/4) for x2-y2. 
+   * 
+   * http://openmopac.net/Manual/real_spherical_harmonics.html
+   *
    * Apply the appropriate scaling factor for spherical D orbitals.
    * 
    * ex will be -2 for z2; ey will be -2 for x2-y2
@@ -280,8 +302,7 @@ abstract class SlaterReader extends AtomSetCollectionReader {
    */
   protected final static double getSlaterConstDSpherical(int n, double zeta, 
                                                       int ex, int ey) {
-    int dPt = (ex < 0 ? 0 : ey < 0 ? 1 : 2);
-    return fact(15, zeta, n) * factorDSpherical[dPt];
+    return fact(15 / (ex < 0 ? 12 : ey < 0 ? 4 : 1), zeta, n);
   }
   
 }

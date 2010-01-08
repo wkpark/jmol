@@ -50,6 +50,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
+import org.jmol.util.TriangleData;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
@@ -140,15 +141,31 @@ abstract public class ModelCollection extends BondCollection {
 
   /**
    * 
+   * @param type
    * @param plane
    * @param scale
    * @param modelIndex
-   * @param flags     1 -- edges only   2 -- triangles only   3 -- both
-   * @return Vector 
+   * @param flags
+   *          1 -- edges only 2 -- triangles only 3 -- both
+   * @return Vector
    */
-  public Vector getUnitCellIntersection(Point4f plane, float scale, int flags, int modelIndex) {
-    SymmetryInterface uc = getUnitCell(modelIndex);
-    return (uc == null ? null : uc.intersectPlane(plane, scale, flags));
+  public Vector getPlaneIntersection(int type, Point4f plane, float scale,
+                                     int flags, int modelIndex) {
+    Point3f[] pts = null;
+    switch (type) {
+    case Token.unitcell:
+      SymmetryInterface uc = getUnitCell(modelIndex);
+      if (uc == null)
+        return null;
+      pts = uc.getCanonicalCopy(scale);
+      break;
+    case Token.boundbox:
+      pts = boxInfo.getCanonicalCopy(scale);
+      break;
+    }
+    Vector v = new Vector();
+    v.add(pts);
+    return TriangleData.intersectPlane(plane, v, flags);
   }
 
   protected int[] modelNumbers = new int[1];  // from adapter -- possibly PDB MODEL record; possibly modelFileNumber

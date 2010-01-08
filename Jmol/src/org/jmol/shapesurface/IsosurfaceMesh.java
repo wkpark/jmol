@@ -55,7 +55,7 @@ public class IsosurfaceMesh extends Mesh {
   
   IsosurfaceMesh(String thisID, Graphics3D g3d, short colix, int index) {
     super(thisID, g3d, colix, index);
-    haveCheckByte = true;
+    checkByteCount = 2;
     jvxlData.version = Viewer.getJmolVersion();
   }
 

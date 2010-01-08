@@ -400,4 +400,15 @@ and the betaij should be entered as Type 0.
       matrixFractionalToCartesian.transform(BoxInfo.unitCubePoints[i], vertices[i]);
     }
   }  
+  
+  public Point3f[] getCanonicalCopy(float scale) {
+    Point3f[] pts = new Point3f[8];
+    for (int i = 0; i < 8; i++) {
+      pts[i] = new Point3f(BoxInfo.unitCubePoints[i]);
+      matrixFractionalToCartesian.transform(pts[i]);
+      pts[i].add(cartesianOffset);
+    }
+    return BoxInfo.getCanonicalCopy(pts, scale);
+  }
+ 
 }

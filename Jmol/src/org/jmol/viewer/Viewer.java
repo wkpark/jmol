@@ -2410,6 +2410,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBoundBoxCornerVector();
   }
 
+  public Point3f[] getBoundBoxVertices() {
+    return modelSet.getBboxVertices();
+  }
+
   Hashtable getBoundBoxInfo() {
     return modelSet.getBoundBoxInfo();
   }
@@ -2951,7 +2955,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public SymmetryInterface getCurrentUnitCell() {
-    return modelSet.getUnitCell(getCurrentModelIndex());
+    return modelSet.getUnitCell(animationManager.currentModelIndex);
   }
 
   public void setCurrentUnitCellOffset(int offset) {
@@ -3231,7 +3235,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public int getDisplayModelIndex() {
     // abandoned
-    return getCurrentModelIndex();
+    return animationManager.currentModelIndex;
   }
 
   public boolean haveFileSet() {
@@ -7017,11 +7021,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Vector3f getModelDipole() {
-    return modelSet.getModelDipole(getCurrentModelIndex());
+    return modelSet.getModelDipole(animationManager.currentModelIndex);
   }
 
   public Vector3f calculateMolecularDipole() {
-    return modelSet.calculateMolecularDipole(getCurrentModelIndex());
+    return modelSet.calculateMolecularDipole(animationManager.currentModelIndex);
   }
 
   public float getDipoleScale() {
@@ -7937,8 +7941,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getFrontPlane();
   }
 
-  public Vector getUnitCellIntersection(Point4f plane, float scale, int flags) {
-    return modelSet.getUnitCellIntersection(plane, scale, flags, 
+  public Vector getPlaneIntersection(int type, Point4f plane, float scale, int flags) {
+    return modelSet.getPlaneIntersection(type, plane, scale, flags, 
         animationManager.currentModelIndex);
   }
 

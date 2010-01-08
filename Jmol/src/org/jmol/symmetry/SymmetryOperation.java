@@ -38,6 +38,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
+import org.jmol.util.TriangleData;
 import org.jmol.script.Token;
 
 /*
@@ -976,10 +977,10 @@ class SymmetryOperation extends Matrix4f {
         // so if a point is in the plane, then N dot X = -d
         float w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
         Point4f plane = new Point4f(vtemp.x, vtemp.y, vtemp.z, w);
+        Vector v = new Vector();
+        v.add(uc.getCanonicalCopy(1.05f));
+        TriangleData.intersectPlane(plane, v, 3);
 
-        Vector v = uc.intersectPlane(plane, 1.05f, 3);
-
-        
         // returns triangles and lines
         if (v != null)
           for (int i = v.size(); --i >= 0;) {

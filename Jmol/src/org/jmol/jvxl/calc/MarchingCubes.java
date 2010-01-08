@@ -33,6 +33,7 @@ import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.VolumeData;
 //import org.jmol.util.Logger;
+import org.jmol.util.TriangleData;
 
 public class MarchingCubes extends TriangleData  {
 

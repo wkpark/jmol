@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-12-08 19:19+0100\n"
-"PO-Revision-Date: 2010-01-04 20:14+0100\n"
-"Last-Translator: Nicolas Vervelle <nvervelle@gmail.com>\n"
+"PO-Revision-Date: 2010-01-09 02:12+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-12-17 13:00+0000\n"
+"X-Launchpad-Export-Date: 2010-01-09 02:32+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -35,11 +35,11 @@ msgstr "无显示（并在完成后退出）"
 
 #: org/openscience/jmol/app/JmolApp.java:144
 msgid "check script syntax only - no file loading"
-msgstr "仅检查脚本语法-不读取文件"
+msgstr "仅检查脚本语法 - 不载入文件"
 
 #: org/openscience/jmol/app/JmolApp.java:146
 msgid "check script syntax only - with file loading"
-msgstr "仅检查脚本语法-读取文件"
+msgstr "仅检查脚本语法 - 载入文件"
 
 #: org/openscience/jmol/app/JmolApp.java:147
 msgid "debug"
@@ -47,7 +47,7 @@ msgstr "调试"
 
 #: org/openscience/jmol/app/JmolApp.java:148
 msgid "silent startup operation"
-msgstr "沉默启动操作"
+msgstr "安静启动"
 
 #: org/openscience/jmol/app/JmolApp.java:150
 msgid "list commands during script execution"
@@ -63,7 +63,7 @@ msgstr "无控制台-全部输出到系统输出"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr "仅从打印信息中输出到控制台（暗指-i）"
+msgstr "只把打印信息输出发送到控制台（隐含 -i 参数）"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent commmand thread"
@@ -71,23 +71,23 @@ msgstr "独立命令线程"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"
-msgstr "脚本"
+msgstr "执行脚本后退出（隐含 -n 参数）"
 
 #: org/openscience/jmol/app/JmolApp.java:164
 msgid "script file to execute or '-' for System.in"
-msgstr "执行脚本文件或设System.in为“-”"
+msgstr "需执行的脚本文件，或“-”表示使用system.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr "使用 multitouch 界面（需要\"sparshui\" 参数"
+msgstr "使用多点触控(multitouch)界面（需要“sparshui”参数）"
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
-msgstr "在-s选项前执行Jmol脚本"
+msgstr "在 -s 选项之前运行的Jmol脚本"
 
 #: org/openscience/jmol/app/JmolApp.java:183
 msgid "Jmol script to execute AFTER -s option"
-msgstr "在-s选项后执行Jmol脚本"
+msgstr "在 -s 选项之后运行的Jmol脚本"
 
 #: org/openscience/jmol/app/JmolApp.java:192
 msgid "property=value"
@@ -100,7 +100,7 @@ msgstr "所支持的选项列出如下"
 #: org/openscience/jmol/app/JmolApp.java:201
 #, java-format
 msgid "window width x height, e.g. {0}"
-msgstr "窗口宽度 x 高度"
+msgstr "窗口宽度×高度，例如 {0}"
 
 #: org/openscience/jmol/app/JmolApp.java:211
 msgid ""
@@ -115,13 +115,13 @@ msgstr "{0} 或 {1}:文件名"
 
 #: org/openscience/jmol/app/JmolApp.java:230
 msgid "For example:"
-msgstr "例如: "
+msgstr "例如:"
 
 #: org/openscience/jmol/app/JmolApp.java:236
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
-msgstr " -D 选项如下(默认在圆括号中)且必须在'-jar Jmol.jar'之前调用:"
+msgstr "-D 选项如下(默认在圆括号中)且必须在'-jar Jmol.jar'之前调用:"
 
 #: org/openscience/jmol/app/JmolApp.java:466
 msgid "Executing script 1..."
@@ -138,14 +138,14 @@ msgstr "执行脚本2..."
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
 msgid "About Jmol"
-msgstr "关于Jmol"
+msgstr "关于 Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:67
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:74
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:68
 #, java-format
 msgid "Unable to find url \"{0}\"."
-msgstr "无法找到url \"{0}\"。"
+msgstr "无法找到网址 \"{0}\"。"
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:95
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:102
@@ -213,11 +213,11 @@ msgstr "重做"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:164
 msgid "AtomSetChooser"
-msgstr ""
+msgstr "原子集选择器"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:168
 msgid "No AtomSets"
-msgstr ""
+msgstr "无原子集"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:197
 msgid "Properties"
@@ -225,11 +225,11 @@ msgstr "属性"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:205
 msgid "Atom Set Collection"
-msgstr "原子集合收藏"
+msgstr "原子集集合"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:226
 msgid "Collection"
-msgstr "收藏"
+msgstr "集合"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:231
 msgid "Info"
@@ -241,7 +241,7 @@ msgstr "信息"
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:608
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:629
 msgid "Select"
-msgstr "选择"
+msgstr "选取"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:253
 msgid "Repeat"
@@ -249,11 +249,11 @@ msgstr "重复"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:265
 msgid "FPS"
-msgstr "帧每秒"
+msgstr "每秒帧数"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:281
 msgid "Vector"
-msgstr "向量"
+msgstr "矢量"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:288
 msgid "Radius"
@@ -277,26 +277,26 @@ msgstr "控制器"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:361
 msgid "atom set"
-msgstr "原子集合"
+msgstr "原子集"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 msgid "vector"
-msgstr "向量"
+msgstr "矢量"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
 #, java-format
 msgid "Go to first {0} in the collection"
-msgstr "转到收藏中的第一个{0}"
+msgstr "跳转到集合中的第一个 {0}"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
 #, java-format
 msgid "Go to previous {0} in the collection"
-msgstr "转到收藏中前一个{0}"
+msgstr "跳转到集合中的前一个{0}"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
 #, java-format
 msgid "Play the whole collection of {0}'s"
-msgstr "播放{0}的整个收藏夹"
+msgstr "播放 {0} 的整个集合"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:369
 msgid "Pause playing"
@@ -305,12 +305,12 @@ msgstr "暂停播放"
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:370
 #, java-format
 msgid "Go to next {0} in the collection"
-msgstr "转到收藏中下一个{0}"
+msgstr "跳转到集合中的下一个 {0}"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:371
 #, java-format
 msgid "Jump to last {0} in the collection"
-msgstr "跳转到收藏中最后一个{0}"
+msgstr "跳转到集合中的最后一个 {0}"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -359,7 +359,7 @@ msgstr "基本设置: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr "密度拟合基本设置(只对DFT)"
+msgstr "密度拟合基本设置(只对DFT) "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:275
 msgid "Job Options: "
@@ -367,7 +367,7 @@ msgstr "工作选项: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:288
 msgid "Molecular Properties"
-msgstr "分子性质"
+msgstr "分子属性"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:294
 msgid "Total Charge: "
@@ -403,7 +403,7 @@ msgstr "取消"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:49
 msgid "&Macros"
-msgstr "宏命令（&M）"
+msgstr "宏命令(&M)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:50
 msgid "&File"
@@ -467,12 +467,12 @@ msgstr "导出或转到网页"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Render in POV-&Ray..."
-msgstr "用POV-&Ray打开..."
+msgstr "在 POV-&Ray 中渲染..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:114
 msgid "Render in POV-Ray"
-msgstr "用POV-Ray打开"
+msgstr "在 POV-&Ray 中渲染"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "Write &State..."
@@ -480,7 +480,7 @@ msgstr "记下状态(&S)..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
 msgid "Save current view as a Jmol state script."
-msgstr "保存当前画面为Jmol状态脚本."
+msgstr "保存当前视图为 Jmol 状态脚本"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
 msgid "&Print..."
@@ -488,7 +488,7 @@ msgstr "打印(&P)..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:70
 msgid "Print view."
-msgstr "打印当前画面"
+msgstr "打印当前视图"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
 msgid "&Close"
@@ -616,9 +616,9 @@ msgstr "线框(&W)"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:108
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:120
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:121
-#, fuzzy, java-format
+#, java-format
 msgid "{0} Å"
-msgstr "{0} ?"
+msgstr "{0} Å"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:109
 msgid "&Label"
@@ -646,11 +646,11 @@ msgstr "右上角(&U)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:116
 msgid "&Vector"
-msgstr "向量(&V)"
+msgstr "矢量(&V)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:118
 msgid "&On"
-msgstr "在(&O)"
+msgstr "开(&O)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:119
 #, java-format
@@ -664,7 +664,7 @@ msgstr "{0} 像素"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:126
 #, java-format
 msgid "Scale {0}"
-msgstr "刻度 {0}"
+msgstr "缩放 {0}"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:127
 msgid "&Zoom"
@@ -697,12 +697,12 @@ msgstr "氢原子(&H)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
 msgid "V&ectors"
-msgstr "向量(&E)"
+msgstr "矢量(&E)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
 msgid "&Measurements"
-msgstr "量度(&M)"
+msgstr "测量(&M)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
 msgid "&View"
@@ -710,7 +710,7 @@ msgstr "视图(&V)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
 msgid "&Front"
-msgstr "字体(&F)"
+msgstr "前面(&F)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
 msgid "&Top"
@@ -1018,6 +1018,7 @@ msgstr "文件名:"
 msgid ""
 "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr ""
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:168
 msgid "Working Directory"
@@ -1114,7 +1115,7 @@ msgstr "按多个步骤渲染图像"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:410
 msgid "Start size : "
-msgstr "初始尺寸："
+msgstr "初始尺寸： "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:412
 msgid "Initial size of the tiles"
@@ -1122,7 +1123,7 @@ msgstr "平板的初始尺寸"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:428
 msgid "End size : "
-msgstr "最终尺寸："
+msgstr "最终尺寸： "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:430
 msgid "Final size of the tiles"
@@ -1242,7 +1243,7 @@ msgstr "日志和出错信息"
 
 #: org/openscience/jmol/app/webexport/LogPanel.java:60
 msgid "Messages (see Log tab for full history):"
-msgstr ""
+msgstr "信息（完整历史见Log标签）"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:39
 msgid "These names will be used as filenames for the applets"
@@ -1308,9 +1309,7 @@ msgstr "通过使用在 {1} 上使用 {0} 导出到网页函数，已生成页�
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
-msgstr ""
-"若需得到三维模型，你可以操作，点击 {0} 这里的 {1}.Java 小程序首次载入时可能下"
-"载时间较长"
+msgstr "若需得到三维模型，你可以操作，点击 {0} 这里的 {1}.Java 小程序首次载入时可能下载时间较长"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:308
 msgid "Insert the page TITLE here."

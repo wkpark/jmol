@@ -8395,6 +8395,7 @@ public class ScriptEvaluator {
     }
     
     switch (tok) {
+    case Token.auto:
     case Token.rasmol:
     case Token.babel:
     case Token.babel21:

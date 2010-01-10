@@ -32,9 +32,11 @@ import javax.vecmath.Vector3f;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.JmolConstants;
 
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.jvxl.data.JvxlCoder;
 
 abstract class AtomDataReader extends VolumeDataReader {
@@ -86,7 +88,11 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected void getAtoms(float marginAtoms, boolean doGetAllAtoms,
                           boolean addNearbyAtoms) {
 
-    atomData.useIonic = params.useIonic;
+    if (params.atomRadiusData == null)
+      params.atomRadiusData = new RadiusData(1, RadiusData.TYPE_FACTOR, JmolConstants.VDW_AUTO);
+    atomData.radiusData = params.atomRadiusData;
+    if (doAddHydrogens)
+      atomData.radiusData.vdwType = JmolConstants.VDW_NOJMOL;
     atomData.modelIndex = modelIndex; //-1 here means fill ALL atoms; any other means "this model only"
     atomData.bsSelected = (doUseIterator ? null : params.bsSelected);
     atomData.bsIgnored = bsMyIgnored;
@@ -236,13 +242,21 @@ abstract class AtomDataReader extends VolumeDataReader {
   }
 
   private float getWorkingRadius(int i, float marginAtoms) {
+    float r = (i < 0 ? atomData.hAtomRadius : atomData.atomRadius[i]);
     if (!Float.isNaN(marginAtoms))
-      return (i < 0 ? atomData.hAtomRadius : atomData.atomRadius[i]) + marginAtoms;
-
-    float r = (params.solventAtomRadiusAbsolute > 0 ? params.solventAtomRadiusAbsolute
-        : i < 0 ? atomData.hAtomRadius : atomData.atomRadius[i]);
-    r *= params.solventAtomRadiusFactor;
-    r += params.solventExtendedAtomRadius + params.solventAtomRadiusOffset;
+      return r + marginAtoms;
+    switch (params.atomRadiusData.type) {
+    case RadiusData.TYPE_ABSOLUTE:
+      r = params.atomRadiusData.value;
+      break;
+    case RadiusData.TYPE_OFFSET:
+      r += params.atomRadiusData.value;
+      break;
+    case RadiusData.TYPE_FACTOR:
+      r *= params.atomRadiusData.value;
+      break;
+    }
+    r += params.solventExtendedAtomRadius;
     if (r < 0.1)
       r = 0.1f;
     return r;

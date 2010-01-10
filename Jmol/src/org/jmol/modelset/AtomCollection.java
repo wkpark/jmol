@@ -35,6 +35,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.atomdata.AtomData;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.EnvelopeCalculation;
@@ -171,7 +172,7 @@ abstract public class AtomCollection {
   //////////// atoms //////////////
   
   public String getAtomInfo(int i, String format) {
-    return (format == null ? atoms[i].getInfo() : LabelToken.formatLabel(atoms[i],format));
+    return (format == null ? atoms[i].getInfo() : LabelToken.formatLabel(viewer, atoms[i],format));
   }
 
   public String getAtomInfoXYZ(int i, boolean useChimeFormat) {
@@ -219,8 +220,8 @@ abstract public class AtomCollection {
     return atoms[i].getRadius();
   }
 
-  public float getAtomVdwRadius(int i) {
-    return atoms[i].getVanderwaalsRadiusFloat();
+  public float getAtomVdwRadius(int i, int iType) {
+    return atoms[i].getVanderwaalsRadiusFloat(viewer, iType);
   }
 
   public short getAtomColix(int i) {
@@ -310,7 +311,7 @@ abstract public class AtomCollection {
       float bondingRadius = atom.getBondingRadiusFloat();
       if (bondingRadius > maxBondingRadius)
         maxBondingRadius = bondingRadius;
-      float vdwRadius = atom.getVanderwaalsRadiusFloat();
+      float vdwRadius = atom.getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO);
       if (vdwRadius > maxVanderwaalsRadius)
         maxVanderwaalsRadius = vdwRadius;
     }
@@ -367,10 +368,9 @@ abstract public class AtomCollection {
     return surfaceDistanceMax;
   }
 
-  public float calculateVolume(BitSet bs, String type) {
-    // ColorManager, Eval
+  public float calculateVolume(BitSet bs, int iType) {
+    // Eval
     float volume = 0;
-    int iType = (type == null ? -1 : JmolConstants.getVdwType(type));
     for (int i = 0; i < atomCount; i++)
       if (bs.get(i))
         volume += atoms[i].getVolume(iType);
@@ -398,9 +398,10 @@ abstract public class AtomCollection {
     if (envelopeRadius < 0)
       envelopeRadius = EnvelopeCalculation.SURFACE_DISTANCE_FOR_CALCULATION;
     EnvelopeCalculation ec = new EnvelopeCalculation(viewer, atomCount, null);
-    ec.calculate(Float.MAX_VALUE, envelopeRadius, 1, Float.MAX_VALUE, 
+    ec.calculate(new RadiusData(envelopeRadius, RadiusData.TYPE_ABSOLUTE, 0), 
+        Float.MAX_VALUE, 
         bsSelected, BitSetUtil.copyInvert(bsSelected, atomCount), 
-        true, false, false, false, true);
+        false, false, false, true);
     Point3f[] points = ec.getPoints();
     surfaceDistanceMax = 0;
     bsSurface = ec.getBsSurfaceClone();
@@ -578,7 +579,7 @@ abstract public class AtomCollection {
           fValue = 0;
         else if (fValue > Atom.RADIUS_MAX)
           fValue = Atom.RADIUS_MAX;
-        atom.setMadAtom(viewer, 0, fValue);
+        atom.madAtom = ((short)(fValue * 2000));
         break;
       case Token.temperature:
         if (setBFactor(i, fValue))
@@ -889,11 +890,11 @@ abstract public class AtomCollection {
     for (byte i = 0; i < TAINT_MAX; i++)
       if (taintWhat < 0 || i == taintWhat)
       if((bs = (bsSelected != null ? bsSelected : getTaintedAtoms(i))) != null)
-        getAtomicPropertyState(commands, atoms, atomCount, i, bs, null, null);
+        getAtomicPropertyState(viewer, commands, atoms, atomCount, i, bs, null, null);
     return commands.toString();
   }
   
-  public static void getAtomicPropertyState(StringBuffer commands,
+  public static void getAtomicPropertyState(Viewer viewer, StringBuffer commands,
                                             Atom[] atoms, int atomCount,
                                             byte type, BitSet bs, String label,
                                             float[] fData) {
@@ -945,7 +946,7 @@ abstract public class AtomCollection {
           s.append(atoms[i].getValence());
           break;
         case TAINT_VANDERWAALS:
-          s.append(atoms[i].getVanderwaalsRadiusFloat());
+          s.append(atoms[i].getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO));
           break;
         }
         s.append(" ;\n");
@@ -1030,20 +1031,48 @@ abstract public class AtomCollection {
     if (includeRadii)
       atomData.atomRadius = new float[atomCount];
     for (int i = 0; i < atomCount; i++) {
+      Atom atom = atoms[i];
       if (atomData.modelIndex >= 0
-          && atoms[i].modelIndex != atomData.firstModelIndex) {
+          && atom.modelIndex != atomData.firstModelIndex) {
         if (atomData.bsIgnored == null)
           atomData.bsIgnored = new BitSet();
         atomData.bsIgnored.set(i);
         continue;
       }
-      atomData.atomicNumber[i] = atoms[i].getElementNumber();
-      atomData.lastModelIndex = atoms[i].modelIndex;
-      if (includeRadii)
-        atomData.atomRadius[i] = (atomData.adpMode == 1 ? atoms[i]
-            .getADPMinMax(true) : atomData.adpMode == -1 ? atoms[i]
-            .getADPMinMax(false) : atomData.useIonic ? atoms[i]
-            .getBondingRadiusFloat() : atoms[i].getVanderwaalsRadiusFloat());
+      atomData.atomicNumber[i] = atom.getElementNumber();
+      atomData.lastModelIndex = atom.modelIndex;
+      if (includeRadii) {
+        float r = 0;
+        RadiusData rd = atomData.radiusData;
+        if (rd == null)
+          System.out.println("AtomCollection");
+        switch (rd.type) {
+        case RadiusData.TYPE_ABSOLUTE:
+          r = rd.value;
+          break;
+        case RadiusData.TYPE_FACTOR:
+        case RadiusData.TYPE_OFFSET:
+          switch (rd.vdwType) {
+          case Token.ionic:
+            r = atom.getBondingRadiusFloat();
+            break;
+          case Token.adpmax:
+            r = atom.getADPMinMax(true);
+            break;
+          case Token.adpmin:
+            r = atom.getADPMinMax(false);
+            break;
+          default:
+            r = atom.getVanderwaalsRadiusFloat(viewer,
+                atomData.radiusData.vdwType);
+          }
+          if (rd.type == RadiusData.TYPE_FACTOR)
+            r *= rd.value;
+          else
+            r += rd.value;
+        }
+        atomData.atomRadius[i] = r + rd.valueExtended;
+      }
     }
   }
   

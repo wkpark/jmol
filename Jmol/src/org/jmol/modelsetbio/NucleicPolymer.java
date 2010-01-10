@@ -28,6 +28,7 @@ import java.util.BitSet;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Polymer;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
 
 public class NucleicPolymer extends BioPolymer {
 
@@ -85,11 +86,11 @@ public class NucleicPolymer extends BioPolymer {
     }
   }
 
-  public void getPdbData(char ctype, char qtype, int mStep, int derivType,
+  public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType,
                          boolean isDraw, BitSet bsAtoms, 
                          StringBuffer pdbATOM, StringBuffer pdbCONECT, 
                          BitSet bsSelected, boolean addHeader, BitSet bsWritten) {
-    getPdbData(this, ctype, qtype, mStep, derivType, isDraw, bsAtoms, pdbATOM, 
+    getPdbData(viewer, this, ctype, qtype, mStep, derivType, isDraw, bsAtoms, pdbATOM, 
         pdbCONECT, bsSelected, addHeader, bsWritten);
   }   
 }

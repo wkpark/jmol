@@ -124,6 +124,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.util.*;
 import org.jmol.atomdata.AtomDataServer;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.VolumeData;
@@ -608,10 +609,8 @@ public class SurfaceGenerator {
      * in each case, numbers can be integer or float
      */
 
-    boolean useIonic;
-    if ((useIonic = ("ionicRadius" == propertyName))
-        || "vdwRadius" == propertyName) {
-      params.setRadius(useIonic, ((Float) value).floatValue());
+    if ("radius" == propertyName) {
+      params.setRadius((RadiusData) value);
       return true;
     }
 

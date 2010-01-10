@@ -265,7 +265,7 @@ public class Labels extends AtomShape {
               bsSizeSet = new BitSet();
             String strLabel = viewer.getStandardLabelFormat();
             strings = ArrayUtil.ensureLength(strings, atomIndex + 1);
-            strings[atomIndex] = LabelToken.formatLabel(atom, strLabel);
+            strings[atomIndex] = LabelToken.formatLabel(viewer, atom, strLabel);
             formats[atomIndex] = strLabel;
             bsSizeSet.set(atomIndex);
             if ((bsBgColixSet == null || !bsBgColixSet.get(atomIndex))
@@ -336,7 +336,7 @@ public class Labels extends AtomShape {
   
   private void setLabel(String strLabel, int i, boolean isScaled, float scalePixelsPerMicron) {
       Atom atom = atoms[i];
-      String label = LabelToken.formatLabel(atom, strLabel);
+      String label = LabelToken.formatLabel(viewer, atom, strLabel);
       atom.setShapeVisibility(myVisibilityFlag, label != null);
       if (strings == null || i >= strings.length)
         strings = ArrayUtil.ensureLength(strings, i + 1);

@@ -122,6 +122,7 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Vector;
 
+import org.jmol.atomdata.RadiusData;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
@@ -223,9 +224,6 @@ public class Parameters {
     resolution = Float.MAX_VALUE;
     scale = Float.NaN;
     scale3d = 0;
-    solventAtomRadiusAbsolute = 0;
-    solventAtomRadiusFactor = 1;
-    solventAtomRadiusOffset = 0;
     solventExtendedAtomRadius = 0;
     state = STATE_INITIALIZED;
     thePlane = null;
@@ -233,21 +231,18 @@ public class Parameters {
     thisContour = -1;
     contourFromZero = true;
     title = null;
-    useIonic = false;
+    atomRadiusData = null;
     rangeAll = false;
   }
   
   String calculationType = "";
 
   //solvent/molecular-related:
+  RadiusData atomRadiusData;
   boolean addHydrogens;
   float solventRadius;
   float solventExtendedAtomRadius;
-  float solventAtomRadiusFactor;
-  float solventAtomRadiusAbsolute;
-  float solventAtomRadiusOffset;
   boolean propertySmoothing;
-  boolean useIonic;
   float envelopeRadius;
   float cavityRadius;
   boolean isCavity;
@@ -466,14 +461,8 @@ public class Parameters {
     isSilent = !logMessages;
   }
     
-  void setRadius(boolean useIonic, float radius) {
-    this.useIonic = useIonic;
-    if (radius >= 100)
-      solventAtomRadiusFactor = (radius - 100) / 100;
-    else if (radius > 10)
-      solventAtomRadiusAbsolute = radius - 10;
-    else
-      solventAtomRadiusOffset = radius;
+  void setRadius(RadiusData rd) {
+    atomRadiusData = rd;
   }
 
   void setSolvent(String propertyName, float radius) {

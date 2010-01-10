@@ -974,24 +974,57 @@ final public class JmolConstants {
    */
   public final static int altElementMax = altElementNumbers.length;
 
+  /*
+   * about Van der Waals constants (Bob Hanson, 1/7/2010)
+   * 
+   *  The problem is that the "Jmol" set is appropriate only for PDB structures with
+   *  no H atoms. The VDW radius for atoms such as C, N, and O are inflated so as to 
+   *  make up for this deficit. The origin is early RasMol, but then these numbers have
+   *  been augmented and tweaked to become a set of special values specific to Jmol.
+   * 
+   *  As a serious viewer and analysis tool, this is an issue.
+   * 
+   *  Starting with Jmol 11.9.17 I propose better method to determine VDW radii:
+   *  
+   *  1) set the defaultVDW parameter to "auto"
+   *  2) allow users to override that by specifying their own setting
+   *  3) allow methods to override that by NOJMOL (H atoms will be added later) 
+   * 
+   * 
+   * 
+   */
   
+  public final static int VDW_UNKNOWN = -1;
   public final static int VDW_JMOL = 0;
-  public final static int VDW_BABEL = 1; // OpenBabel-2.1.1 
+  public final static int VDW_BABEL = 1; // OpenBabel-2.2 
   public final static int VDW_RASMOL = 2; // OpenRasmol-2.7.2.1.1
-  public final static int VDW_USER = 3;
+  public final static int VDW_BABEL21 = 3; // OpenBabel-2.1
+  public final static int VDW_AUTO_JMOL = 4;  // 4   if undecided, use JMOL
+  public final static int VDW_AUTO_BABEL = 5; // 4+1 if undecided, use BABEL
+  public final static int VDW_AUTO_RASMOL = 6;// 4+2 if undecided, use RASMOL
+  public final static int VDW_NOJMOL = 7;     // surface will be adding H atoms
+  public final static int VDW_AUTO = 8;
+  public final static int VDW_USER = 9;
+  
   final static String[] vdwLabels = {
-    "Jmol", "Babel", "RasMol", "User"
+    "Jmol", "Babel", "RasMol", "Babel21", // 0 1 2 3
+    null, null, null, null,               // 4 5 6 7 
+    "Auto", "User"                        // 8 9 
    };
   
   public static int getVdwType(String label) {
-    for (int i = 0; i < vdwLabels.length; i++)
-      if (vdwLabels[i].equalsIgnoreCase(label))
-        return i;
-    return -1;
+    // used by Viewer.getVolume, setDefaultVdw
+    // Eval.setAtomShapeSize for "spacefill VDW babel"
+    // Eval.setParameter, show
+    if (label != null)
+      for (int i = 0; i < vdwLabels.length; i++)
+        if (label.equalsIgnoreCase(vdwLabels[i]))
+          return i;
+    return VDW_UNKNOWN;
   }
   
-  public static int getVanderwaalsMar(int i, int scale) {
-    return vanderwaalsMars[(i << 2) + scale];
+  public static int getVanderwaalsMar(int i, int iType) {
+    return vanderwaalsMars[(i << 2) + (iType % 4)];
   }
   
   /**
@@ -1001,119 +1034,129 @@ final public class JmolConstants {
    * Values taken from OpenBabel.
    * @see <a href="http://openbabel.sourceforge.net">openbabel.sourceforge.net</a>
    * @see <a href="http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/_documents/vdw_comparison.xls">vdw_comparison.xls</a>
+   * 
+   * Note that AUTO_JMOL, AUTO_BABEL, and AUTO_RASMOL are 4, 5, and 6, respectively,
+   * so their mod will be JMOL, BABEL, and RASMOL. AUTO is 8, so will default to Jmol
    */
   public final static short[] vanderwaalsMars = {
-  //Jmol,openBabel,openRasmol,reserved
-    1000,1000,1000,0, // XX 0
-    1200,1200,1100,0, // H 1
-    1400,1400,2200,0, // He 2
-    1820,2200,1220,0, // Li 3
-    1700,1900,628,0, // Be 4
-    2080,1800,1548,0, // B 5
-    1950,1700,1548,0, // C 6
-    1850,1600,1400,0, // N 7
-    1700,1550,1348,0, // O 8
-    1730,1500,1300,0, // F 9
-    1540,1540,2020,0, // Ne 10
-    2270,2400,2200,0, // Na 11
-    1730,2200,1500,0, // Mg 12
-    2050,2100,1500,0, // Al 13
-    2100,2100,2200,0, // Si 14
-    2080,1950,1880,0, // P 15
-    2000,1800,1808,0, // S 16
-    1970,1800,1748,0, // Cl 17
-    1880,1880,2768,0, // Ar 18
-    2750,2800,2388,0, // K 19
-    1973,2400,1948,0, // Ca 20
-    1700,2300,1320,0, // Sc 21
-    1700,2150,1948,0, // Ti 22
-    1700,2050,1060,0, // V 23
-    1700,2050,1128,0, // Cr 24
-    1700,2050,1188,0, // Mn 25
-    1700,2050,1948,0, // Fe 26
-    1700,2000,1128,0, // Co 27
-    1630,2000,1240,0, // Ni 28
-    1400,2000,1148,0, // Cu 29
-    1390,2100,1148,0, // Zn 30
-    1870,2100,1548,0, // Ga 31
-    1700,2100,3996,0, // Ge 32
-    1850,2050,828,0, // As 33
-    1900,1900,900,0, // Se 34
-    2100,1900,1748,0, // Br 35
-    2020,2020,1900,0, // Kr 36
-    1700,2900,2648,0, // Rb 37
-    1700,2550,2020,0, // Sr 38
-    1700,2400,1608,0, // Y 39
-    1700,2300,1420,0, // Zr 40
-    1700,2150,1328,0, // Nb 41
-    1700,2100,1748,0, // Mo 42
-    1700,2050,1800,0, // Tc 43
-    1700,2050,1200,0, // Ru 44
-    1700,2000,1220,0, // Rh 45
-    1630,2050,1440,0, // Pd 46
-    1720,2100,1548,0, // Ag 47
-    1580,2200,1748,0, // Cd 48
-    1930,2200,1448,0, // In 49
-    2170,2250,1668,0, // Sn 50
-    2200,2200,1120,0, // Sb 51
-    2060,2100,1260,0, // Te 52
-    2150,2100,1748,0, // I 53
-    2160,2160,2100,0, // Xe 54
-    1700,3000,3008,0, // Cs 55
-    1700,2700,2408,0, // Ba 56
-    1700,2500,1828,0, // La 57
-    1700,2480,1860,0, // Ce 58
-    1700,2470,1620,0, // Pr 59
-    1700,2450,1788,0, // Nd 60
-    1700,2430,1760,0, // Pm 61
-    1700,2420,1740,0, // Sm 62
-    1700,2400,1960,0, // Eu 63
-    1700,2380,1688,0, // Gd 64
-    1700,2370,1660,0, // Tb 65
-    1700,2350,1628,0, // Dy 66
-    1700,2330,1608,0, // Ho 67
-    1700,2320,1588,0, // Er 68
-    1700,2300,1568,0, // Tm 69
-    1700,2280,1540,0, // Yb 70
-    1700,2270,1528,0, // Lu 71
-    1700,2250,1400,0, // Hf 72
-    1700,2200,1220,0, // Ta 73
-    1700,2100,1260,0, // W 74
-    1700,2050,1300,0, // Re 75
-    1700,2000,1580,0, // Os 76
-    1700,2000,1220,0, // Ir 77
-    1720,2050,1548,0, // Pt 78
-    1660,2100,1448,0, // Au 79
-    1550,2050,1980,0, // Hg 80
-    1960,2200,1708,0, // Tl 81
-    2020,2300,2160,0, // Pb 82
-    1700,2300,1728,0, // Bi 83
-    1700,2000,1208,0, // Po 84
-    1700,2000,1120,0, // At 85
-    1700,2000,2300,0, // Rn 86
-    1700,2000,3240,0, // Fr 87
-    1700,2000,2568,0, // Ra 88
-    1700,2000,2120,0, // Ac 89
-    1700,2400,1840,0, // Th 90
-    1700,2000,1600,0, // Pa 91
-    1860,2300,1748,0, // U 92
-    1700,2000,1708,0, // Np 93
-    1700,2000,1668,0, // Pu 94
-    1700,2000,1660,0, // Am 95
-    1700,2000,1648,0, // Cm 96
-    1700,2000,1640,0, // Bk 97
-    1700,2000,1628,0, // Cf 98
-    1700,2000,1620,0, // Es 99
-    1700,2000,1608,0, // Fm 100
-    1700,2000,1600,0, // Md 101
-    1700,2000,1588,0, // No 102
-    1700,2000,1580,0, // Lr 103
-    1700,2000,1600,0, // Rf 104
-    1700,2000,1600,0, // Db 105
-    1700,2000,1600,0, // Sg 106
-    1700,2000,1600,0, // Bh 107
-    1700,2000,1600,0, // Hs 108
-    1700,2000,1600,0, // Mt 109
+    // Jmol -- accounts for missing H atoms on PDB files -- source unknown
+         // openBabel -- standard values http://openbabel.svn.sourceforge.net/viewvc/openbabel/openbabel/trunk/data/element.txt?revision=3469&view=markup
+              // openRasmol -- VERY tight values http://www.openrasmol.org/software/RasMol_2.7.3/src/abstree.h 
+                   // filler/reserved
+    //Jmol-11.2,
+         //OpenBabel-2.2.1,
+              //OpenRasmol-2.7.2.1.1,
+                   //OpenBabel-2.1.1
+    1000,1000,1000,1000, // XX 0
+    1200,1100,1100,1200, // H 1
+    1400,1400,2200,1400, // He 2
+    1820,1810,1220,2200, // Li 3
+    1700,1530,628,1900, // Be 4
+    2080,1920,1548,1800, // B 5
+    1950,1700,1548,1700, // C 6
+    1850,1550,1400,1600, // N 7
+    1700,1520,1348,1550, // O 8
+    1730,1470,1300,1500, // F 9
+    1540,1540,2020,1540, // Ne 10
+    2270,2270,2200,2400, // Na 11
+    1730,1730,1500,2200, // Mg 12
+    2050,1840,1500,2100, // Al 13
+    2100,2100,2200,2100, // Si 14
+    2080,1800,1880,1950, // P 15
+    2000,1800,1808,1800, // S 16
+    1970,1750,1748,1800, // Cl 17
+    1880,1880,2768,1880, // Ar 18
+    2750,2750,2388,2800, // K 19
+    1973,2310,1948,2400, // Ca 20
+    1700,2300,1320,2300, // Sc 21
+    1700,2150,1948,2150, // Ti 22
+    1700,2050,1060,2050, // V 23
+    1700,2050,1128,2050, // Cr 24
+    1700,2050,1188,2050, // Mn 25
+    1700,2050,1948,2050, // Fe 26
+    1700,2000,1128,2000, // Co 27
+    1630,2000,1240,2000, // Ni 28
+    1400,2000,1148,2000, // Cu 29
+    1390,2100,1148,2100, // Zn 30
+    1870,1870,1548,2100, // Ga 31
+    1700,2110,3996,2100, // Ge 32
+    1850,1850,828,2050, // As 33
+    1900,1900,900,1900, // Se 34
+    2100,1830,1748,1900, // Br 35
+    2020,2020,1900,2020, // Kr 36
+    1700,3030,2648,2900, // Rb 37
+    1700,2490,2020,2550, // Sr 38
+    1700,2400,1608,2400, // Y 39
+    1700,2300,1420,2300, // Zr 40
+    1700,2150,1328,2150, // Nb 41
+    1700,2100,1748,2100, // Mo 42
+    1700,2050,1800,2050, // Tc 43
+    1700,2050,1200,2050, // Ru 44
+    1700,2000,1220,2000, // Rh 45
+    1630,2050,1440,2050, // Pd 46
+    1720,2100,1548,2100, // Ag 47
+    1580,2200,1748,2200, // Cd 48
+    1930,2200,1448,2200, // In 49
+    2170,1930,1668,2250, // Sn 50
+    2200,2170,1120,2200, // Sb 51
+    2060,2060,1260,2100, // Te 52
+    2150,1980,1748,2100, // I 53
+    2160,2160,2100,2160, // Xe 54
+    1700,3430,3008,3000, // Cs 55
+    1700,2680,2408,2700, // Ba 56
+    1700,2500,1828,2500, // La 57
+    1700,2480,1860,2480, // Ce 58
+    1700,2470,1620,2470, // Pr 59
+    1700,2450,1788,2450, // Nd 60
+    1700,2430,1760,2430, // Pm 61
+    1700,2420,1740,2420, // Sm 62
+    1700,2400,1960,2400, // Eu 63
+    1700,2380,1688,2380, // Gd 64
+    1700,2370,1660,2370, // Tb 65
+    1700,2350,1628,2350, // Dy 66
+    1700,2330,1608,2330, // Ho 67
+    1700,2320,1588,2320, // Er 68
+    1700,2300,1568,2300, // Tm 69
+    1700,2280,1540,2280, // Yb 70
+    1700,2270,1528,2270, // Lu 71
+    1700,2250,1400,2250, // Hf 72
+    1700,2200,1220,2200, // Ta 73
+    1700,2100,1260,2100, // W 74
+    1700,2050,1300,2050, // Re 75
+    1700,2000,1580,2000, // Os 76
+    1700,2000,1220,2000, // Ir 77
+    1720,2050,1548,2050, // Pt 78
+    1660,2100,1448,2100, // Au 79
+    1550,2050,1980,2050, // Hg 80
+    1960,1960,1708,2200, // Tl 81
+    2020,2020,2160,2300, // Pb 82
+    1700,2070,1728,2300, // Bi 83
+    1700,1970,1208,2000, // Po 84
+    1700,2020,1120,2000, // At 85
+    1700,2200,2300,2000, // Rn 86
+    1700,3480,3240,2000, // Fr 87
+    1700,2830,2568,2000, // Ra 88
+    1700,2000,2120,2000, // Ac 89
+    1700,2400,1840,2400, // Th 90
+    1700,2000,1600,2000, // Pa 91
+    1860,2300,1748,2300, // U 92
+    1700,2000,1708,2000, // Np 93
+    1700,2000,1668,2000, // Pu 94
+    1700,2000,1660,2000, // Am 95
+    1700,2000,1648,2000, // Cm 96
+    1700,2000,1640,2000, // Bk 97
+    1700,2000,1628,2000, // Cf 98
+    1700,2000,1620,2000, // Es 99
+    1700,2000,1608,2000, // Fm 100
+    1700,2000,1600,2000, // Md 101
+    1700,2000,1588,2000, // No 102
+    1700,2000,1580,2000, // Lr 103
+    1700,2000,1600,2000, // Rf 104
+    1700,2000,1600,2000, // Db 105
+    1700,2000,1600,2000, // Sg 106
+    1700,2000,1600,2000, // Bh 107
+    1700,2000,1600,2000, // Hs 108
+    1700,2000,1600,2000, // Mt 109
   };
 
   /**
@@ -1475,15 +1518,15 @@ final public class JmolConstants {
       bsCations.set(cationLookupTable[i]>>4);
   }
 
-  public static short getBondingMar(int atomicNumber, int charge) {
+  public static float getBondingRadiusFloat(int atomicNumber, int charge) {
     if (charge > 0 && bsCations.get(atomicNumber))
-      return getBondingMar(atomicNumber, charge, cationLookupTable);
+      return getBondingRadiusFloat(atomicNumber, charge, cationLookupTable);
     if (charge < 0 && bsAnions.get(atomicNumber))
-      return getBondingMar(atomicNumber, charge, anionLookupTable);
-    return (short) covalentMars[atomicNumber];
+      return getBondingRadiusFloat(atomicNumber, charge, anionLookupTable);
+    return covalentMars[atomicNumber] / 1000f;
   }
   
-  public static short getBondingMar(int atomicNumber, int charge, short[] table) {
+  private static float getBondingRadiusFloat(int atomicNumber, int charge, short[] table) {
     // when found, return the corresponding value in ionicMars
     // if atom is not found, just return covalent radius
     // if atom is found, but charge is not found, return next lower charge
@@ -1497,7 +1540,7 @@ final public class JmolConstants {
       else if (iVal < ionic)
         iMin = iMid + 1;
       else
-        return table[(iMid << 1) + 1];
+        return table[(iMid << 1) + 1] / 1000f;
     }
     // find closest with same element and charge <= this charge
     if (iVal > ionic) 
@@ -1505,7 +1548,7 @@ final public class JmolConstants {
     iVal = table[iMid << 1];
     if (atomicNumber != (iVal >> 4)) 
       iMid++; // must be same element and not a negative charge;
-    return table[(iMid << 1) + 1];
+    return table[(iMid << 1) + 1] / 1000f;
   }
 
   // maximum number of bonds that an atom can have when

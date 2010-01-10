@@ -46,6 +46,7 @@ import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.*;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.*;
 import org.jmol.util.Base64;
 import org.jmol.util.BitSetUtil;
@@ -290,7 +291,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     modelManager = new ModelManager(this);
     tempManager = new TempArray();
-    dataManager = new DataManager();
+    dataManager = new DataManager(this);
     animationManager = new AnimationManager(this);
     repaintManager = new RepaintManager(this);
     initialize();
@@ -1422,7 +1423,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (mad == 0)
       return;
     global.objMad[objId] = mad;
-    setShapeSize(iShape, mad, Float.NaN); // just loads it
+    setShapeSize(iShape, mad, null); // just loads it
   }
 
   public int getObjectMad(int objId) {
@@ -1484,13 +1485,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void select(BitSet bs, boolean isQuiet) {
     // Eval
     selectionManager.select(bs, isQuiet);
-    modelSet.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE,
-        Float.NaN, null);
+    modelSet.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, null, null);
   }
 
   public void selectBonds(BitSet bs) {
-    modelSet.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE,
-        Float.NaN, bs);
+    modelSet.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, null, bs);
   }
 
   public void hide(BitSet bs, boolean isQuiet) {
@@ -2145,9 +2144,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
  
   public float getVolume(BitSet bs, String type) {
+    // Eval.calculate(), math function volume({atomExpression},"type")
     if (bs == null)
       bs = selectionManager.bsSelection;
-    return modelSet.calculateVolume(bs, type);
+    int iType = JmolConstants.getVdwType(type);
+    if (iType == JmolConstants.VDW_UNKNOWN)
+      iType = JmolConstants.VDW_AUTO;
+    return modelSet.calculateVolume(bs, iType);
   }
   int getSurfaceDistanceMax() {
     return modelSet.getSurfaceDistanceMax();
@@ -2884,7 +2887,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setData(String type, Object[] data, int atomCount,
                       int matchField, int matchFieldColumnCount, int field,
                       int fieldColumnCount) {
-    dataManager.setData(this, type, data, atomCount, matchField,
+    dataManager.setData(type, data, atomCount, matchField,
         matchFieldColumnCount, field, fieldColumnCount);
   }
 
@@ -3967,7 +3970,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setMarBond(short marBond) {
     global.bondRadiusMilliAngstroms = marBond;
     global.setParameterValue("bondRadiusMilliAngstroms", marBond);
-    setShapeSize(JmolConstants.SHAPE_STICKS, marBond * 2, Float.NaN, BitSetUtil
+    setShapeSize(JmolConstants.SHAPE_STICKS, marBond * 2, BitSetUtil
         .setAll(getAtomCount()));
   }
 
@@ -4054,25 +4057,34 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.loadShape(shapeID);
   }
 
-  public void setShapeSize(int shapeID, int size, float fsize) {
+  public void setShapeSize(int shapeID, int size) {
+    setShapeSize(shapeID, size, selectionManager.bsSelection);
+  }
+
+  public void setShapeSize(int shapeID, RadiusData rd) {
     // Eval - many
     // stateManager.setCrystallographicDefaults
     // Viewer - many
-    setShapeSize(shapeID, size, fsize, selectionManager.bsSelection);
+    setShapeSize(shapeID, rd, selectionManager.bsSelection);
   }
 
-  public void setShapeSize(int shapeID, int size, BitSet bsAtoms) {
-    // deprecated
-    setShapeSize(shapeID, size, Float.NaN, bsAtoms);
+  public void setShapeSize(int shapeID, int mad, BitSet bsAtoms) {
+    modelSet.setShapeSize(shapeID, mad, null, bsAtoms);
   }
-  
-  public void setShapeSize(int shapeID, int size, float fsize, BitSet bsAtoms) {
+
+  public void setShapeSize(int shapeID, RadiusData rd, BitSet bsAtoms) {
     // BondCollection.autoHbond()
     // ModelCollection.makeConnections()
     // Eval.configuration()
     // Eval.connect()
     // several points in Viewer
-    modelSet.setShapeSize(shapeID, size, fsize, bsAtoms);
+    if (rd.value != 0 && rd.vdwType == Token.temperature)
+      modelSet.getBfactor100Lo();
+    modelSet.setShapeSize(shapeID, 0, rd, bsAtoms);
+  }
+
+  public int getBfactor100Hi() {
+    return modelSet.getBfactor100Hi();
   }
 
   public void setShapeProperty(int shapeID, String propertyName, Object value) {
@@ -6402,19 +6414,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to stateManager
   // ///////////////////////////////////////////////////////////////
 
-  public void setPercentVdwAtom(int percentVdwAtom) {
-    global.setParameterValue("percentVdwAtom", percentVdwAtom);
-    global.percentVdwAtom = percentVdwAtom;
-    setShapeSize(JmolConstants.SHAPE_BALLS, -percentVdwAtom, Float.NaN);
+  private RadiusData rd = new RadiusData();
+  
+  public void setPercentVdwAtom(int value) {
+    global.setParameterValue("percentVdwAtom", value);
+    global.percentVdwAtom = value;
+    rd.value = value / 100f;
+    rd.type = RadiusData.TYPE_FACTOR;
+    rd.vdwType = JmolConstants.VDW_AUTO;
+    setShapeSize(JmolConstants.SHAPE_BALLS, rd);
   }
 
   public int getPercentVdwAtom() {
     return global.percentVdwAtom;
   }
 
-  public short getDefaultMadAtom() {
-    return (short) (global.percentVdwAtom == 0 ? 0 : -2000
-        - global.percentVdwAtom);
+  public RadiusData getDefaultRadiusData() {
+    return rd;
   }
 
   public short getMadBond() {
@@ -6563,8 +6579,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     }
     stateManager.setJmolDefaults();
-    setShapeSize(JmolConstants.SHAPE_BALLS, getDefaultMadAtom(),
-        Float.NaN, getModelAtomBitSet(-1, true));
+    setShapeSize(JmolConstants.SHAPE_BALLS, rd,
+        getModelAtomBitSet(-1, true));
   }
 
   public boolean getZeroBasedXyzRasmol() {
@@ -6705,10 +6721,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public float getAtomRadius(int i) {
     return modelSet.getAtomRadius(i);
-  }
-
-  public float getAtomVdwRadius(int i) {
-    return modelSet.getAtomVdwRadius(i);
   }
 
   public int getAtomArgb(int i) {
@@ -7675,20 +7687,38 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         : JmolConstants.getVanderwaalsMar(i, dataManager.defaultVdw));
   }
 
-  public int getVanderwaalsMar(int i, int iMode) {
-    if (iMode < 0 || iMode == JmolConstants.VDW_USER && dataManager.bsUserVdws == null)
-      iMode = dataManager.defaultVdw;
-    return (iMode == JmolConstants.VDW_USER ? dataManager.userVdwMars[i]
-        : JmolConstants.getVanderwaalsMar(i, iMode));
+  public int getVanderwaalsMar(int i, int iType) {
+    switch (iType) {
+    case JmolConstants.VDW_USER:
+      if (dataManager.bsUserVdws == null)
+        iType = dataManager.defaultVdw;
+      else
+        return dataManager.userVdwMars[i];
+      break;
+    case JmolConstants.VDW_UNKNOWN:
+      iType = dataManager.defaultVdw;
+      break;
+    case JmolConstants.VDW_AUTO:
+    case JmolConstants.VDW_AUTO_JMOL:
+    case JmolConstants.VDW_AUTO_BABEL:
+    case JmolConstants.VDW_AUTO_RASMOL:
+      if (dataManager.defaultVdw != JmolConstants.VDW_AUTO)
+        iType = dataManager.defaultVdw;
+     break;      
+    }
+    return (JmolConstants.getVanderwaalsMar(i, iType));
   }
 
-  void setDefaultVdw(String mode) {
-    dataManager.setDefaultVdw(mode);
-    global.setParameterValue("defaultVDW", getDefaultVdw(Integer.MIN_VALUE));
+  void setDefaultVdw(String type) {
+    int iType = JmolConstants.getVdwType(type);
+    if (iType == JmolConstants.VDW_UNKNOWN)
+      iType = JmolConstants.VDW_AUTO;
+    dataManager.setDefaultVdw(iType);
+    global.setParameterValue("defaultVDW", getDefaultVdwTypeNameOrData(Integer.MIN_VALUE));
   }
 
-  public String getDefaultVdw(int iMode) {
-    return dataManager.getDefaultVdw(iMode, null);
+  public String getDefaultVdwTypeNameOrData(int iMode) {
+    return dataManager.getDefaultVdwNameOrData(iMode, null);
   }
 
   public int deleteAtoms(BitSet bs, boolean fullModels) {

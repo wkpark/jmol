@@ -45,14 +45,16 @@ class DataManager {
 
   private Hashtable dataValues = new Hashtable();
 
-  DataManager() {
+  Viewer viewer;
+  DataManager(Viewer viewer) {
+    this.viewer = viewer;
   }
 
   void clear() {
     dataValues.clear();
   }
   
-  void setData(Viewer viewer, String type, Object[] data, int atomCount,
+  void setData(String type, Object[] data, int atomCount,
                int matchField, int matchFieldColumnCount, int field,
                int fieldColumnCount) {
     //Eval
@@ -242,7 +244,7 @@ class DataManager {
         Object[] obj = (Object[]) dataValues.get(name);
         Object data = obj[1];
         if (data instanceof float[]) {
-          AtomCollection.getAtomicPropertyState(sb, atoms, atomCount,
+          AtomCollection.getAtomicPropertyState(viewer, sb, atoms, atomCount,
               AtomCollection.TAINT_MAX, 
               (BitSet) obj[2], 
               name, (float[]) data);
@@ -260,7 +262,7 @@ class DataManager {
     }
     
     if (userVdws != null) {
-      String info = getDefaultVdw(JmolConstants.VDW_USER, bsUserVdws);
+      String info = getDefaultVdwNameOrData(JmolConstants.VDW_USER, bsUserVdws);
       if (info.length() > 0) {
         n++;
         sb.append(info);
@@ -295,40 +297,53 @@ class DataManager {
     }
   }
 
-  public void setDefaultVdw(String mode) {
-    int iMode = JmolConstants.getVdwType(mode);
-    if (iMode < 0)
-      iMode = JmolConstants.VDW_JMOL;
-    if (iMode != defaultVdw && iMode == JmolConstants.VDW_USER  
+  public void setDefaultVdw(int iType) {
+    // only allowed types here are VDW_JMOL, VDW_BABEL, VDW_RASMOL, VDW_USER, VDW_AUTO
+    switch (iType) {
+    case JmolConstants.VDW_JMOL:
+    case JmolConstants.VDW_BABEL:
+    case JmolConstants.VDW_RASMOL:
+    case JmolConstants.VDW_AUTO:
+      break;
+    default:
+      iType = JmolConstants.VDW_JMOL;
+    }
+    if (iType != defaultVdw && iType == JmolConstants.VDW_USER  
         && bsUserVdws == null)
       setUserVdw(defaultVdw);
-    defaultVdw = iMode;    
+    defaultVdw = iType;    
   }
 
-  public String getDefaultVdw(int iMode, BitSet bs) {
-    // iMode Integer.MIN_VALUE -- just the name
-    if (iMode == Integer.MIN_VALUE)
+  String getDefaultVdwNameOrData(int iType, BitSet bs) {
+    // called by getDataState and via Viewer: Eval.calculate, 
+    // Eval.show, StateManager.getLoadState, Viewer.setDefaultVdw
+    switch (iType) {
+    case Integer.MIN_VALUE:
+      // iMode Integer.MIN_VALUE -- just the name
       return JmolConstants.vdwLabels[defaultVdw];
-    // iMode < 0 -- use default view
-    if (iMode < 0)
-      iMode = defaultVdw;
-    // iMode = Integer.MAX_VALUE -- user, only selected
-    if (iMode == Integer.MAX_VALUE) {
+    case Integer.MAX_VALUE:
+      // iMode = Integer.MAX_VALUE -- user, only selected
       if ((bs = bsUserVdws) == null)
         return "";
-      iMode = JmolConstants.VDW_USER;
+      iType = JmolConstants.VDW_USER;
+      break;
+    case JmolConstants.VDW_AUTO:
+    case JmolConstants.VDW_UNKNOWN:
+      iType = defaultVdw;
+      break;      
     }
-    if (iMode == JmolConstants.VDW_USER  && bsUserVdws == null)
+    if (iType == JmolConstants.VDW_USER && bsUserVdws == null) {
       setUserVdw(defaultVdw);
-    StringBuffer sb = new StringBuffer(JmolConstants.vdwLabels[iMode] + "\n");
+    }
+    StringBuffer sb = new StringBuffer(JmolConstants.vdwLabels[iType] + "\n");
     for (int i = 1; i < JmolConstants.elementNumberMax; i++)
       if (bs == null || bs.get(i))
-        sb.append(i).append('\t').append(iMode == JmolConstants.VDW_USER ?
-            userVdws[i] : JmolConstants.getVanderwaalsMar(i, iMode)/1000f)
-            .append('\t').append(JmolConstants.elementSymbolFromNumber(i))
-            .append('\n');
-    return (bs == null ? sb.toString() :
-      "\n  DATA \"element_vdw\"\n" + sb.append("  end \"element_vdw\";\n\n").toString());
+        sb.append(i).append('\t').append(
+            iType == JmolConstants.VDW_USER ? userVdws[i] : JmolConstants
+                .getVanderwaalsMar(i, iType) / 1000f).append('\t').append(
+            JmolConstants.elementSymbolFromNumber(i)).append('\n');
+    return (bs == null ? sb.toString() : "\n  DATA \"element_vdw\"\n"
+        + sb.append("  end \"element_vdw\";\n\n").toString());
   }
 
 }

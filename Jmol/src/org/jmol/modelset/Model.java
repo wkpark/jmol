@@ -93,6 +93,7 @@ public final class Model {
   int modelIndex;   // our 0-based reference
   int fileIndex;   // 0-based file reference
 
+  int hydrogenCount;
   boolean isPDB;
   boolean isTrajectory;
   int trajectoryBaseIndex;

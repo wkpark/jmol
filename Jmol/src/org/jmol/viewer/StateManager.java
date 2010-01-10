@@ -155,7 +155,7 @@ public class StateManager {
         JmolConstants.DEFAULT_PERCENT_VDW_ATOM);
     viewer.setIntProperty("bondRadiusMilliAngstroms",
         JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS);
-    viewer.setDefaultVdw("Jmol");
+    viewer.setDefaultVdw("auto");
   }
 
   void setRasMolDefaults() {
@@ -671,10 +671,10 @@ public class StateManager {
       appendCmd(str, "set defaultLoadScript \"\"");
       if (defaultLoadScript.length() > 0)
         setParameterValue("defaultLoadScript", defaultLoadScript);
-      String sMode = viewer.getDefaultVdw(Integer.MIN_VALUE);
+      String sMode = viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE);
       appendCmd(str, "set defaultVDW " + sMode);
       if (sMode.equals("User"))
-        appendCmd(str, viewer.getDefaultVdw(Integer.MAX_VALUE));
+        appendCmd(str, viewer.getDefaultVdwTypeNameOrData(Integer.MAX_VALUE));
       appendCmd(str, "set forceAutoBond " + forceAutoBond);
       appendCmd(str, "set loadFormat " + Escape.escape(loadFormat));
       if (autoLoadOrientation)

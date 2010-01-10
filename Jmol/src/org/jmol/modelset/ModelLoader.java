@@ -38,6 +38,7 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
 import org.jmol.api.SymmetryInterface;
+import org.jmol.atomdata.RadiusData;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -247,6 +248,11 @@ public final class ModelLoader extends ModelSet {
     }
 
     finalizeGroupBuild(); // set group offsets and build monomers
+
+    RadiusData rd = viewer.getDefaultRadiusData();
+    for (int i = baseAtomIndex; i < atomCount; i++)
+      atoms[i].setMadAtom(viewer, rd);
+
     calculatePolymers(null);
     //only now can we access all of the atom's properties
 
@@ -530,7 +536,6 @@ public final class ModelLoader extends ModelSet {
     // atom is created, but not all methods are safe, because it
     // has no group -- this is only an issue for debugging
 
-    int size = viewer.getDefaultMadAtom();
     for (JmolAdapter.AtomIterator iterAtom = adapter
         .getAtomIterator(atomSetCollection); iterAtom.hasNext();) {
       short elementNumber = (short) iterAtom.getElementNumber();
@@ -539,7 +544,7 @@ public final class ModelLoader extends ModelSet {
             .getElementSymbol());
       char alternateLocation = iterAtom.getAlternateLocationID();
       addAtom(iterAtom.getAtomSetIndex() + baseModelIndex, iterAtom.getAtomSymmetry(), iterAtom.getAtomSite(),
-          iterAtom.getUniqueID(), elementNumber, iterAtom.getAtomName(), size,
+          iterAtom.getUniqueID(), elementNumber, iterAtom.getAtomName(),
           iterAtom.getFormalCharge(), iterAtom.getPartialCharge(),
           iterAtom.getEllipsoid(), 
           iterAtom.getOccupancy(), iterAtom.getBfactor(), iterAtom.getX(),
@@ -561,7 +566,7 @@ public final class ModelLoader extends ModelSet {
 
   private void addAtom(int modelIndex, BitSet atomSymmetry, int atomSite,
                        Object atomUid, short atomicAndIsotopeNumber,
-                       String atomName, int size, int formalCharge,
+                       String atomName, int formalCharge,
                        float partialCharge, Object[] ellipsoid,
                        int occupancy, float bfactor,
                        float x, float y, float z, boolean isHetero,
@@ -574,9 +579,11 @@ public final class ModelLoader extends ModelSet {
         groupInsertionCode);
     if (atomCount == atoms.length)
       growAtomArrays(ATOM_GROWTH_INCREMENT);
-    Atom atom = new Atom(viewer, currentModelIndex, atomCount, atomSymmetry,
-        atomSite, atomicAndIsotopeNumber, size, formalCharge, x, y, z, isHetero,
-        chainID, alternateLocationID, radius);
+    Atom atom = new Atom(currentModelIndex, atomCount, x, y, z, radius, 
+        atomSymmetry, atomSite, atomicAndIsotopeNumber, formalCharge,
+        isHetero, chainID, alternateLocationID);
+    if (atomicAndIsotopeNumber % 128 == 1)
+      models[currentModelIndex].hydrogenCount++;
     atoms[atomCount] = atom;
     setBFactor(atomCount, bfactor);
     setOccupancy(atomCount, occupancy);

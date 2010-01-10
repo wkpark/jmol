@@ -29,6 +29,7 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.api.SymmetryInterface;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
@@ -47,7 +48,7 @@ final public class Atom extends Point3fi {
   private final static byte FLAG_MASK = 3;
   
   public static final int RADIUS_MAX = 16;
-  private static final int MAD_MAX = RADIUS_MAX * 2000; // must be < 32000
+  //private static final int MAD_MAX = RADIUS_MAX * 2000; // must be < 32000
 
   Group group;
   int atomIndex;
@@ -93,14 +94,11 @@ final public class Atom extends Point3fi {
     //must be transformed later -- Polyhedra;
   }
   
-  Atom(Viewer viewer, int modelIndex, int atomIndex,
-       BitSet atomSymmetry, int atomSite,
-       short atomicAndIsotopeNumber,
-       int size, int formalCharge, 
-       float x, float y, float z,
-       boolean isHetero, char chainID,
-       char alternateLocationID,
-       float radius) {
+  Atom(int modelIndex, int atomIndex,
+        float x, float y, float z, float radius,
+        BitSet atomSymmetry, int atomSite,
+        short atomicAndIsotopeNumber, int formalCharge, 
+        boolean isHetero, char chainID, char alternateLocationID) {
     this.modelIndex = (short)modelIndex;
     this.atomSymmetry = atomSymmetry;
     this.atomSite = atomSite;
@@ -111,7 +109,6 @@ final public class Atom extends Point3fi {
     setFormalCharge(formalCharge);
     this.alternateLocationID = alternateLocationID;
     userDefinedVanDerWaalRadius = radius;
-    setMadAtom(viewer, size, Float.NaN);
     set(x, y, z);
   }
 
@@ -204,77 +201,52 @@ final public class Atom extends Point3fi {
    *  a rudimentary form of enumerations/user-defined primitive types)
    */
 
-  public void setMadAtom(Viewer viewer, int size, float fsize) {
-    madAtom = convertEncodedMad(viewer, size, fsize);
+  public void setMadAtom(Viewer viewer, RadiusData rd) {
+    madAtom = calculateMad(viewer, rd);
   }
-
-  public short convertEncodedMad(Viewer viewer, int size, float fsize) {
-    short mad;
-    if (Float.isNaN(fsize)) {
-      switch (size) {
-      case 0:
-        return 0;
-      case -1000: // temperature
-        int diameter = getBfactor100() * 10 * 2;
-        if (diameter > 4000)
-          diameter = 4000;
-        size = diameter;
+  /* what about these?    
+  if (Float.isNaN(fsize)) {
+    case -1000: // temperature
+      break;
+*/
+  
+  public short calculateMad(Viewer viewer, RadiusData rd) {
+    if (rd == null)
+      return 0;
+    float f = rd.value;
+    if (f == 0)
+      return 0;
+    switch (rd.type) {
+    case RadiusData.TYPE_SCREEN:
+       return (short) f;
+    case RadiusData.TYPE_FACTOR:
+    case RadiusData.TYPE_OFFSET:
+      float r = 0;
+      switch (rd.vdwType) {
+      case Token.temperature:
+        float tmax = viewer.getBfactor100Hi();
+        r = (tmax > 0 ? getBfactor100() / tmax : 0);
         break;
-      case -1001: // ionic
-        size = (getBondingMar() * 2);
+      case Token.ionic:
+        r = getBondingRadiusFloat();
         break;
-      case -100: // simple van der waals
-        size = getVanderwaalsMad(viewer);
+      case Token.adpmin:
+      case Token.adpmax:
+        r = getADPMinMax(rd.vdwType == Token.adpmax);
         break;
       default:
-        if (size <= Short.MIN_VALUE) { // ADPMIN
-          float d = 2000 * getADPMinMax(false);
-          if (size < Short.MIN_VALUE)
-            size = (int) (d * (Short.MIN_VALUE - size) / 100f);
-          else
-            size = (int) d;
-          break;
-        } else if (size < -2000) {
-          // percent of custom size, to diameter
-          // -2000 = Jmol, -3000 = Babel, -4000 = RasMol, -5000 = User
-          int iMode = (-size / 1000) - 2;
-          size = (-size) % 1000;
-          size = (int) (size / 50f * viewer.getVanderwaalsMar(
-              atomicAndIsotopeNumber % 128, iMode));
-        } else if (size < 0) {
-          // percent
-          // we are going from a radius to a diameter
-          size = -size;
-          if (size > 200)
-            size = 200;
-          size = (int) (size / 100f * getVanderwaalsMad(viewer));
-        } else if (size >= Short.MAX_VALUE) { // ADPMAX
-          float d = 2000 * getADPMinMax(true);
-          if (size > Short.MAX_VALUE)
-            size = (int) (d * (size - Short.MAX_VALUE) / 100f);
-          else
-            size = (int) d;
-          break;
-        } else if (size >= 10000) {
-          // radiusAngstroms = vdw + x, where size = (x*2)*1000 + 10000
-          // max is SHORT.MAX_VALUE - 1 = 32766
-          // so max x is about 11 -- should be plenty!
-          // and vdwMar = vdw * 1000
-          // we want mad = diameterAngstroms * 1000 = (radiusAngstroms *2)*1000
-          // = (vdw * 2 * 1000) + x * 2 * 1000
-          // = vdwMar * 2 + (size - 10000)
-          size = size - 10000 + getVanderwaalsMad(viewer);
-        }
+        r = getVanderwaalsRadiusFloat(viewer, rd.vdwType);
       }
-    } else {
-      // "size" is a flag == 1 for "VDW + fsize"
-      // max is SHORT.MAX_VALUE - 1 = 32766
-      // so max storable radius is 16.383. Just call that 16
-        size = (int) (fsize * 2000) + (size == 1 ? getVanderwaalsMad(viewer) : 0);
-        if (size > MAD_MAX)
-          size = MAD_MAX;
+      if (rd.type == RadiusData.TYPE_FACTOR)
+        f *= r;
+      else
+        r += r;
+      break;
+    default:
+    case RadiusData.TYPE_ABSOLUTE:
+      break;
     }
-    mad = (short) size;
+    short mad = (short) (f * 2000);
     if (mad < 0)
       mad = 0;
     return mad; 
@@ -425,29 +397,71 @@ final public class Atom extends Point3fi {
     return (dimension == 0 ? x : (dimension == 1 ? y : z));
   }
 
-  private int getVanderwaalsMad(Viewer viewer) {
+  public float getVanderwaalsRadiusFloat(Viewer viewer, int iType) {
+    // called by atomPropertyFloat as VDW_AUTO,
+    // AtomCollection.filAtomData with VDW_AUTO or VDW_NOJMOL
+    // AtomCollection.findMaxRadii with VDW_AUTO
+    // AtomCollection.getAtomPropertyState with VDW_AUTO
+    // AtomCollection.getVdwRadius with passed on type
     return (Float.isNaN(userDefinedVanDerWaalRadius) 
-        ? viewer.getVanderwaalsMar(atomicAndIsotopeNumber % 128) * 2
-        : (int)(userDefinedVanDerWaalRadius * 2000f));
-  }
-
-  short getBondingMar() {
-    return JmolConstants.getBondingMar(atomicAndIsotopeNumber % 128,
-        getFormalCharge());
-  }
-
-  public float getVanderwaalsRadiusFloat() {
-    return (Float.isNaN(userDefinedVanDerWaalRadius) 
-        ? group.chain.modelSet.getVanderwaalsMar(atomicAndIsotopeNumber % 128) / 1000f
+        ? viewer.getVanderwaalsMar(atomicAndIsotopeNumber % 128, getVdwType(iType)) / 1000f
         : userDefinedVanDerWaalRadius);
   }
 
+  /**
+   * 
+   * @param iType
+   * @return if VDW_AUTO, will return VDW_AUTO_JMOL, VDW_AUTO_RASMOL, or VDW_AUTO_BABEL
+   *         based on the model type
+   */
+  private int getVdwType(int iType) {
+    switch (iType) {
+    case JmolConstants.VDW_AUTO:
+      iType = group.chain.modelSet.getDefaultVdwType(modelIndex);
+      break;
+    case JmolConstants.VDW_NOJMOL:
+      iType = group.chain.modelSet.getDefaultVdwType(modelIndex);
+      if (iType == JmolConstants.VDW_AUTO_JMOL)
+        iType = JmolConstants.VDW_AUTO_BABEL;
+      break;
+    }
+    return iType;
+  }
+
   public float getCovalentRadiusFloat() {
-    return JmolConstants.getBondingMar(atomicAndIsotopeNumber % 128, 0) / 1000f;
+    return JmolConstants.getBondingRadiusFloat(atomicAndIsotopeNumber % 128, 0);
   }
 
   public float getBondingRadiusFloat() {
-    return getBondingMar() / 1000f;
+    return JmolConstants.getBondingRadiusFloat(atomicAndIsotopeNumber % 128,
+        getFormalCharge());
+  }
+
+  float getVolume(int iType) {
+    float r1 = (iType < 0 ? userDefinedVanDerWaalRadius : Float.NaN);
+    if (Float.isNaN(r1))
+      r1 = group.chain.modelSet.viewer.getVanderwaalsMar(getElementNumber(), getVdwType(iType)) / 1000f;
+    double volume = 0;
+    for (int j = 0; j < bonds.length; j++) {
+      if (!bonds[j].isCovalent())
+        continue;
+      Atom atom2 = bonds[j].getOtherAtom(this);
+      float r2 = (iType < 0 ? atom2.userDefinedVanDerWaalRadius : Float.NaN);
+      if (Float.isNaN(r2))
+          r2= group.chain.modelSet.viewer.getVanderwaalsMar(atom2.getElementNumber(), atom2.getVdwType(iType)) / 1000f;
+      float d = distance(atom2);
+      if (d > r1 + r2)
+        continue;
+      if (d + r1 <= r2)
+        return 0;
+
+      // calculate hidden spherical cap height and volume
+      // A.Bondi, J. Phys. Chem. 68, 1964, 441-451.
+      
+      double h = r1 - (r1*r1 + d*d - r2*r2) / (2.0 * d);
+      volume -= Math.PI / 3 * h * h * (3 * r1 - h);
+    }
+    return (float) (volume + 4 * Math.PI / 3 * r1 * r1 * r1);
   }
 
   int getCurrentBondCount() {
@@ -1112,19 +1126,20 @@ final public class Atom extends Point3fi {
   /**
    * called by isosurface and int comparator via atomProperty()
    * and also by getBitsetProperty() 
+   * @param viewer 
    * 
    * @param atom
    * @param tokWhat
    * @return       float value or value*100 (asInt=true) or throw an error if not found
    * 
    */  
-  public static float atomPropertyFloat(Atom atom, int tokWhat) {
+  public static float atomPropertyFloat(Viewer viewer, Atom atom, int tokWhat) {
 
     switch (tokWhat) {
     case Token.radius:
       return atom.getRadius();
     case Token.volume:
-      return atom.getVolume(-1);
+      return atom.getVolume(JmolConstants.VDW_AUTO);
     case Token.surfacedistance:
       atom.group.chain.modelSet.getSurfaceDistanceMax();
       return atom.getSurfaceDistance100() / 100f;
@@ -1186,7 +1201,7 @@ final public class Atom extends Point3fi {
     case Token.unitZ:
       return atom.getFractionalUnitCoord('Z');
     case Token.vanderwaals:
-      return atom.getVanderwaalsRadiusFloat();
+      return atom.getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO);
     case Token.vibX:
       return atom.getVibrationCoord('X');
     case Token.vibY:
@@ -1195,33 +1210,6 @@ final public class Atom extends Point3fi {
       return atom.getVibrationCoord('Z');
     }
     return atomPropertyInt(atom, tokWhat);
-  }
-
-  float getVolume(int iType) {
-    float r1 = (iType == -1 ? userDefinedVanDerWaalRadius : Float.NaN);
-    if (Float.isNaN(r1))
-        r1 = group.chain.modelSet.viewer.getVanderwaalsMar(getElementNumber(), iType) / 1000f;
-    double volume = 0;
-    for (int j = 0; j < bonds.length; j++) {
-      if (!bonds[j].isCovalent())
-        continue;
-      Atom atom2 = bonds[j].getOtherAtom(this);
-      float r2 = (iType == -1 ? atom2.userDefinedVanDerWaalRadius : Float.NaN);
-      if (Float.isNaN(r2))
-          r2= group.chain.modelSet.viewer.getVanderwaalsMar(atom2.getElementNumber(), iType) / 1000f;
-      float d = distance(atom2);
-      if (d > r1 + r2)
-        continue;
-      if (d + r1 <= r2)
-        return 0;
-
-      // calculate hidden spherical cap height and volume
-      // A.Bondi, J. Phys. Chem. 68, 1964, 441-451.
-      
-      double h = r1 - (r1*r1 + d*d - r2*r2) / (2.0 * d);
-      volume -= Math.PI / 3 * h * h * (3 * r1 - h);
-    }
-    return (float) (volume + 4 * Math.PI / 3 * r1 * r1 * r1);
   }
 
   public static String atomPropertyString(Atom atom, int tokWhat) {

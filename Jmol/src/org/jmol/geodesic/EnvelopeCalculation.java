@@ -29,6 +29,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
+import org.jmol.atomdata.RadiusData;
 
 import java.util.BitSet;
 import javax.vecmath.Point3f;
@@ -148,9 +149,6 @@ public final class EnvelopeCalculation {
   public final static int MAX_LEVEL = Geodesic.standardLevel;
   
   private float maxRadius = 0;
-  private float scale = 1f;
-  private float setRadius = Float.MAX_VALUE;
-  private float addRadius = Float.MAX_VALUE;
   private boolean modelZeroBased;
 
   private int[][] dotsConvexMaps;
@@ -206,10 +204,6 @@ public final class EnvelopeCalculation {
     dotsConvexMax = Math.max(dotsConvexMax, index);
   }
   
-  public float getRadius() {
-    return setRadius;
-  }
-  
   private float radiusP, diameterP;
 
   public void newSet() {
@@ -219,29 +213,32 @@ public final class EnvelopeCalculation {
     mads = null;
   }
   
-  public void calculate(float addRadius, float setRadius, float scale,
-                 float maxRadius, BitSet bsSelected, BitSet bsIgnore,
-                 boolean useVanderwaalsRadius,
+  public void calculate(RadiusData rd, float maxRadius, 
+                        BitSet bsSelected, BitSet bsIgnore,
                  boolean disregardNeighbors, boolean onlySelectedDots,
                  boolean isSurface, boolean multiModel) {
-    this.addRadius = (addRadius == Float.MAX_VALUE ? 0 : addRadius);
-    this.setRadius = (setRadius == Float.MAX_VALUE && !useVanderwaalsRadius ? SURFACE_DISTANCE_FOR_CALCULATION
-        : setRadius);
-    this.scale = scale;
-    atomData.useIonic = !useVanderwaalsRadius;
-    atomData.adpMode = (setRadius == Short.MAX_VALUE ? 1 : setRadius == Short.MIN_VALUE ? -1 : 0);
+    // was:     this.setRadius = (setRadius == Float.MAX_VALUE && !useVanderwaalsRadius ? SURFACE_DISTANCE_FOR_CALCULATION    : setRadius);
+
+    atomData.radiusData = rd;
+    if (rd.value == Float.MAX_VALUE)
+      rd.value = SURFACE_DISTANCE_FOR_CALCULATION;
     atomData.modelIndex = (multiModel ? -1 : 0);
     modelZeroBased = !multiModel;
     
-    viewer.fillAtomData(atomData, AtomData.MODE_FILL_COORDS_AND_RADII);
+    viewer.fillAtomData(atomData, mads == null 
+        ? AtomData.MODE_FILL_COORDS_AND_RADII
+        : AtomData.MODE_FILL_COORDS);
     atomCount = atomData.atomCount;
-    setRadii(useVanderwaalsRadius);    
+    if (mads != null)
+      for (int i = 0; i < atomCount; i++)
+        atomData.atomRadius[i] = mads[i] / 1000f;
+
     bsMySelected = (onlySelectedDots && bsSelected != null ? BitSetUtil.copy(bsSelected)
         : bsIgnore != null ? BitSetUtil.setAll(atomCount) : null);
     BitSetUtil.andNot(bsMySelected, bsIgnore);
     this.disregardNeighbors = disregardNeighbors;
     bsSurface = new BitSet();
-    this.maxRadius = (maxRadius == Float.MAX_VALUE ? setRadius : maxRadius);
+    this.maxRadius = maxRadius;
     // now, calculate surface for selected atoms
     for (int i = atomCount; --i >= 0;)
       if ((bsSelected == null || bsSelected.get(i))
@@ -257,24 +254,13 @@ public final class EnvelopeCalculation {
   public float getRadius(int atomIndex) {
     return atomData.atomRadius[atomIndex];
   }
-  
-  private void setRadii(boolean useVanderwaalsRadius) {
-    for (int i = 0; i < atomCount; i++) {
-      atomData.atomRadius[i] = (mads != null ? mads[i] / 1000f
-          : addRadius
-          + (setRadius != Float.MAX_VALUE 
-              && setRadius != Short.MAX_VALUE && setRadius != Short.MIN_VALUE
-              ? setRadius : atomData.atomRadius[i]
-              * scale));
-    }
-  }
-  
+    
   private Point3f[] currentPoints;
   
   public Point3f[] getPoints() {
     if (dotsConvexMaps == null) {
-      calculate(Float.MAX_VALUE, SURFACE_DISTANCE_FOR_CALCULATION, 1f,
-          Float.MAX_VALUE, bsMySelected, null, false, false, false, false, false);
+      calculate(new RadiusData(SURFACE_DISTANCE_FOR_CALCULATION, RadiusData.TYPE_ABSOLUTE, 0),
+          Float.MAX_VALUE, bsMySelected, null, false, false, false, false);
     }
     if (currentPoints != null)
       return currentPoints;

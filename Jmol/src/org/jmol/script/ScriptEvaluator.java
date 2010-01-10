@@ -38,6 +38,7 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.MinimizerInterface;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
@@ -965,14 +966,14 @@ public class ScriptEvaluator {
           if (asIdentity)
             str = modelSet.getAtomAt(j).getInfo();
           else
-            str = LabelToken.formatLabel(modelSet.getAtomAt(j), null, tokens,
+            str = LabelToken.formatLabel(viewer, modelSet.getAtomAt(j), null, tokens,
                 '\0', indices);
         } else {
           Bond bond = modelSet.getBondAt(j);
           if (asIdentity)
             str = bond.getIdentity();
           else
-            str = LabelToken.formatLabel(bond, tokens, htValues, indices);
+            str = LabelToken.formatLabel(viewer, bond, tokens, htValues, indices);
         }
         str = TextFormat.formatString(str, "#", (n + 1));
         sout[n++] = str;
@@ -1189,7 +1190,7 @@ public class ScriptEvaluator {
               fv = atom.distance(ptRef);
             break;
           default:
-            fv = Atom.atomPropertyFloat(atom, tok);
+            fv = Atom.atomPropertyFloat(viewer, atom, tok);
           }
           if (fv == Float.MAX_VALUE || Float.isNaN(fv)
               && minmaxtype != Token.all) {
@@ -2781,10 +2782,15 @@ public class ScriptEvaluator {
       viewer.setShapeProperty(shapeType, propertyName, propertyValue);
   }
 
-  private void setShapeSize(int shapeType, int size, float fsize) {
+  private void setShapeSize(int shapeType, int size) {
     // stars, halos, balls only
     if (!isSyntaxCheck)
-      viewer.setShapeSize(shapeType, size, fsize);
+      viewer.setShapeSize(shapeType, size);
+  }
+
+  private void setShapeSize(int shapeType, RadiusData rd) {
+    if (!isSyntaxCheck)
+      viewer.setShapeSize(shapeType, rd);
   }
 
   private void setBooleanProperty(String key, boolean value) {
@@ -3254,7 +3260,7 @@ public class ScriptEvaluator {
       Atom atom = atoms[i];
       switch (tokWhat) {
       default:
-        propertyFloat = Atom.atomPropertyFloat(atom, tokWhat);
+        propertyFloat = Atom.atomPropertyFloat(viewer, atom, tokWhat);
         break;
       case Token.property:
         if (data == null || data.length <= i)
@@ -3750,66 +3756,6 @@ public class ScriptEvaluator {
     if (!checkToken(index))
       error(ERROR_objectNameExpected);
     return parameterAsString(index);
-  }
-
-  /**
-   * Based on the form of the parameters, returns and encoded radius as follows:
-   * 
-   * script meaning range encoded
-   * 
-   * +1.2 offset [0 - 10] x -1.2 offset 0) x 1.2 absolute (0 - 10] x + 10 -30%
-   * 70% (-100 - 0) x + 200 +30% 130% (0 x + 200 80% percent (0 x + 100
-   * 
-   * in each case, numbers can be integer or float
-   * 
-   * @param index
-   * @param defaultValue
-   *          a default value or Float.NaN
-   * @return one of the above possibilities
-   * @throws ScriptException
-   */
-  private float radiusParameter(int index, float defaultValue)
-      throws ScriptException {
-    if (tokAt(index) == Token.nada) {
-      if (Float.isNaN(defaultValue))
-        error(ERROR_numberExpected);
-      return defaultValue;
-    }
-    getToken(index);
-    float v = Float.NaN;
-    boolean isOffset = (theTok == Token.plus);
-    if (isOffset)
-      index++;
-    boolean isPercent = (tokAt(index + 1) == Token.percent);
-    switch (tokAt(index)) {
-    case Token.integer:
-      v = intParameter(index);
-    case Token.decimal:
-      if (Float.isNaN(v))
-        v = floatParameter(index);
-      if (v < 0)
-        isOffset = true;
-      break;
-    default:
-      v = defaultValue;
-      index--;
-    }
-    iToken = index + (isPercent ? 1 : 0);
-    if (Float.isNaN(v))
-      error(ERROR_numberExpected);
-    if (v == 0 || v == Float.MAX_VALUE)
-      return v;
-    if (isPercent) {
-      if (v <= -100)
-        error(ERROR_invalidArgument);
-      v += (isOffset ? 200 : 100);
-    } else if (isOffset) {
-    } else {
-      if (v < 0 || v > 10)
-        numberOutOfRange(0f, 10f);
-      v += 10;
-    }
-    return v;
   }
 
   private boolean booleanParameter(int i) throws ScriptException {
@@ -4684,13 +4630,13 @@ public class ScriptEvaluator {
         ellipsoid();
         break;
       case Token.star:
-        setAtomShapeSize(JmolConstants.SHAPE_STARS, -100);
+        setAtomShapeSize(JmolConstants.SHAPE_STARS, 1f);
         break;
       case Token.halo:
-        setAtomShapeSize(JmolConstants.SHAPE_HALOS, -20);
+        setAtomShapeSize(JmolConstants.SHAPE_HALOS, 0.2f);
         break;
       case Token.spacefill: // aka cpk
-        setAtomShapeSize(JmolConstants.SHAPE_BALLS, -100);
+        setAtomShapeSize(JmolConstants.SHAPE_BALLS, 1f);
         break;
       case Token.structure:
         structure();
@@ -5752,8 +5698,7 @@ public class ScriptEvaluator {
     if (isColorOrRadius) {
       viewer.selectBonds(bsBonds);
       if (!Float.isNaN(radius))
-        viewer.setShapeSize(JmolConstants.SHAPE_STICKS, (int) (radius * 2000),
-            Float.NaN, bsBonds);
+        viewer.setShapeSize(JmolConstants.SHAPE_STICKS, (int) (radius * 2000), bsBonds);
       if (color != Integer.MIN_VALUE)
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "color",
             new Integer(color), bsBonds);
@@ -7294,12 +7239,12 @@ public class ScriptEvaluator {
     
     if (!isBond)
       setBooleanProperty("bondModeOr", true);
-    setShapeSize(JmolConstants.SHAPE_STICKS, 0, Float.NaN);
+    setShapeSize(JmolConstants.SHAPE_STICKS, 0);
 
     // also need to turn off backbones, ribbons, strands, cartoons
     for (int shapeType = JmolConstants.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --shapeType >= 0;)
       if (shapeType != JmolConstants.SHAPE_MEASURES)
-        setShapeSize(shapeType, 0, Float.NaN);
+        setShapeSize(shapeType, 0);
     setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "delete", null);
     viewer.setLabel(null);
 
@@ -8355,7 +8300,7 @@ public class ScriptEvaluator {
     default:
       error(ERROR_invalidArgument);
     }
-    setShapeSize(JmolConstants.SHAPE_ELLIPSOIDS, mad, Float.NaN);
+    setShapeSize(JmolConstants.SHAPE_ELLIPSOIDS, mad);
   }
 
   private String getShapeNameParameter(int i) throws ScriptException {
@@ -8392,68 +8337,109 @@ public class ScriptEvaluator {
     return name;
   }
 
-  private void setAtomShapeSize(int shape, int defOn) throws ScriptException {
+  private void setAtomShapeSize(int shape, float scale) throws ScriptException {
     // halo star spacefill
-    int code = 0;
-    float fsize = Float.NaN;
+    RadiusData rd = null;
     int tok = tokAt(1);
     switch (tok) {
     case Token.only:
       restrictSelected(false, false);
-      code = defOn;
       break;
     case Token.on:
-      code = defOn;
-      break;
-    case Token.vanderwaals:
-      code = -100;
       break;
     case Token.off:
+      scale = 0;
+      break;
+    default:
+      rd = encodeRadiusParameter(1); 
+      if (Float.isNaN(rd.value))
+        error(ERROR_invalidArgument);
+    }
+    if (rd == null)
+      rd = new RadiusData(scale, RadiusData.TYPE_FACTOR, JmolConstants.VDW_AUTO);
+    setShapeSize(shape, rd);
+  }
+
+  /*
+   * Based on the form of the parameters, returns and encoded radius as follows:
+   * 
+   * script           meaning          range            encoded
+   * 
+   * +1.2             offset           [0 - 10]         
+   * -1.2             offset           0)                
+   * 1.2              absolute         (0 - 10]          
+   * -30%             70%              (-100 - 0)        
+   * +30%             130%             (0                
+   * 80%              percent          (0               
+   * 
+   */
+
+  private RadiusData encodeRadiusParameter(int index) throws ScriptException {
+
+    float value = Float.NaN;
+    int type = RadiusData.TYPE_ABSOLUTE;
+    int vdwType = 0;
+
+    int tok = tokAt(index);
+    switch (tok) {
+    case Token.adpmax:
+    case Token.adpmin:
+    case Token.ionic:
+    case Token.temperature:
+    case Token.vanderwaals:
+      value = 1;
+      type = RadiusData.TYPE_FACTOR;
+      vdwType = (tok == Token.vanderwaals ? 0 : tok);
+      tok = tokAt(++index);
+      break;
+    }
+    
+    switch (tok) {
+    case Token.rasmol:
+    case Token.babel:
+    case Token.babel21:
+    case Token.jmol:
+      value = 1;
+      type = RadiusData.TYPE_FACTOR;
+      --index;
       break;
     case Token.plus:
     case Token.decimal:
-      int i = (tok == Token.plus ? 2 : 1);
-      code = (i == 2 ? 1 : -1);
-      fsize = floatParameter(i, 0, Atom.RADIUS_MAX);
+      if (tok == Token.plus) {
+        index++;
+        type = RadiusData.TYPE_OFFSET;
+      } else {
+        type = RadiusData.TYPE_ABSOLUTE;
+        vdwType = Integer.MAX_VALUE;
+      }
+      value = floatParameter(index, 0, Atom.RADIUS_MAX);
       break;
     case Token.integer:
-      int intVal = intParameter(1);
-      if (tokAt(2) == Token.percent) {
-        if (intVal < 0 || intVal > 200)
+      value = intParameter(index);
+      if (tokAt(index + 1) == Token.percent) {
+        index++;
+        type = RadiusData.TYPE_FACTOR;
+        if (value < 0 || value > 200)
           integerOutOfRange(0, 200);
-        int iMode = JmolConstants.getVdwType(optParameterAsString(3));
-        if (iMode >= 0)
-          code = (-(iMode + 1) * 2000 - intVal);
-        else
-          code = (-intVal);
+        value /= 100;
         break;
       }
       // rasmol 250-scale if positive or percent (again), if negative
       // (deprecated)
-      if (intVal > 749 || intVal < -200)
+      if (value > 749 || value < -200)
         integerOutOfRange(-200, 749);
-      code = (intVal <= 0 ? intVal : intVal * 8);
+      if (value > 0) {
+        value /= 25000;
+        type = RadiusData.TYPE_ABSOLUTE;
+      } else {
+        value /= 100;
+        type = RadiusData.TYPE_FACTOR;        
+      }
       break;
-    case Token.temperature:
-      code = -1000;
-      break;
-    case Token.ionic:
-      code = -1001;
-      break;
-    case Token.adpmax:
-      code = Short.MAX_VALUE;
-      if (tokAt(2) == Token.integer)
-        code += intParameter(2);
-      break;
-    case Token.adpmin:
-      code = Short.MIN_VALUE;
-      if (tokAt(2) == Token.integer)
-        code -= intParameter(2);
-      break;
-    default:
-      error(ERROR_invalidArgument);
     }
-    setShapeSize(shape, code, fsize);
+    if (vdwType == 0)
+      vdwType = JmolConstants.getVdwType(optParameterAsString(++index));
+    return new RadiusData(value, type, vdwType);
   }
 
   private void structure() throws ScriptException {
@@ -8462,7 +8448,7 @@ public class ScriptEvaluator {
     BitSet bs = null;
     if (type.equals("helix"))
       iType = JmolConstants.PROTEIN_STRUCTURE_HELIX;
-    else if (type.equals("sheet"))
+    else if (type.equals("s.3heet"))
       iType = JmolConstants.PROTEIN_STRUCTURE_SHEET;
     else if (type.equals("turn"))
       iType = JmolConstants.PROTEIN_STRUCTURE_TURN;
@@ -8491,13 +8477,13 @@ public class ScriptEvaluator {
       return;
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_COVALENT_MASK));
-    setShapeSize(JmolConstants.SHAPE_STICKS, mad, Float.NaN);
+    setShapeSize(JmolConstants.SHAPE_STICKS, mad);
   }
 
   private void ssbond() throws ScriptException {
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_SULFUR_MASK));
-    setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter(), Float.NaN);
+    setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_COVALENT_MASK));
   }
@@ -8518,7 +8504,7 @@ public class ScriptEvaluator {
     }
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_HYDROGEN_MASK));
-    setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter(), Float.NaN);
+    setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_COVALENT_MASK));
   }
@@ -8543,7 +8529,7 @@ public class ScriptEvaluator {
     boolean addHbonds = viewer.hasCalculatedHBonds(bsConfigurations);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_HYDROGEN_MASK));
-    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0, Float.NaN,
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0,
         bsConfigurations);
     if (addHbonds)
       viewer.autoHbond(bsConfigurations, bsConfigurations, null, 0, 0);
@@ -8551,8 +8537,8 @@ public class ScriptEvaluator {
   }
 
   private void vector() throws ScriptException {
-    int code = 1;
-    float fsize = Float.NaN;
+    int type = RadiusData.TYPE_SCREEN;
+    float value = 1;
     checkLength(-3);
     switch (iToken = statementLength) {
     case 1:
@@ -8562,16 +8548,17 @@ public class ScriptEvaluator {
       case Token.on:
         break;
       case Token.off:
-        code = 0;
+        value = 0;
         break;
       case Token.integer:
         // diameter Pixels
-        code = intParameter(1, 0, 19);
+        type = RadiusData.TYPE_SCREEN;
+        value = intParameter(1, 0, 19);
         break;
       case Token.decimal:
         // radius angstroms
-        code = -1;
-        fsize = floatParameter(1, 0, 3);
+        type = RadiusData.TYPE_ABSOLUTE;
+        value = floatParameter(1, 0, 3);
         break;
       default:
         error(ERROR_booleanOrNumberExpected);
@@ -8583,7 +8570,7 @@ public class ScriptEvaluator {
         return;
       }
     }
-    setShapeSize(JmolConstants.SHAPE_VECTORS, code, fsize);
+    setShapeSize(JmolConstants.SHAPE_VECTORS, new RadiusData(value, type, 0));
   }
 
   private void dipole() throws ScriptException {
@@ -8840,7 +8827,7 @@ public class ScriptEvaluator {
         if (!isSyntaxCheck) {
           float val = viewer.getVolume(null, null);
           showString("" + Math.round(val * 10)/10f + " A^3; " + Math.round(val * 6.02)/10f 
-              + " cm^3/mole (VDW " + viewer.getDefaultVdw(Integer.MIN_VALUE) + ")" );
+              + " cm^3/mole (VDW " + viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE) + ")" );
           return;
         }
         break;
@@ -8912,61 +8899,43 @@ public class ScriptEvaluator {
     if (!isSyntaxCheck)
       viewer.loadShape(iShape);
     setShapeProperty(iShape, "init", null);
-    int code = 0;
-    float fsize = Float.NaN;
+    float value = Float.NaN;
+    int type = 0;
     int ipt = 1;
     switch (getToken(1).tok) {
     case Token.only:
       restrictSelected(false, false);
-      code = 1;
+      value = 1;
+      type = RadiusData.TYPE_FACTOR;
       break;
     case Token.on:
-    case Token.vanderwaals:
-      code = 1;
-      break;
-    case Token.ionic:
-      code = -1;
+      value = 1;
+      type = RadiusData.TYPE_FACTOR;
       break;
     case Token.off:
-      break;
-    case Token.plus:
-      fsize = floatParameter(++ipt, 0, Atom.RADIUS_MAX); // ambiguity here
-      code = 1;
-      break;
-    case Token.decimal:
-      fsize = floatParameter(ipt, 0, Atom.RADIUS_MAX);
-      code = -1;
+      value = 0;
       break;
     case Token.integer:
       int dotsParam = intParameter(ipt++);
-      if (statementLength > ipt && statement[ipt].tok == Token.radius) {
+      if (tokAt(ipt) == Token.radius) {
         setShapeProperty(iShape, "atom", new Integer(dotsParam));
         setShapeProperty(iShape, "radius", new Float(floatParameter(++ipt)));
-        if (statementLength > ipt + 1 && statement[++ipt].tok == Token.color)
+        if (tokAt(++ipt) == Token.color) {
           setShapeProperty(iShape, "colorRGB", new Integer(getArgbParam(++ipt)));
+          ipt++;
+        }
         if (getToken(ipt).tok != Token.bitset)
           error(ERROR_invalidArgument);
         setShapeProperty(iShape, "dots", statement[ipt].value);
         return;
       }
-      if (dotsParam < 0 || dotsParam > 1000)
-        integerOutOfRange(0, 1000);
-      code = (dotsParam == 0 ? 0 : dotsParam + 1);
       break;
-    case Token.adpmax:
-      code = Short.MAX_VALUE;
-      if (tokAt(2) == Token.integer)
-        code += intParameter(2);
-      break;
-    case Token.adpmin:
-      code = Short.MIN_VALUE;
-      if (tokAt(2) == Token.integer)
-        code -= intParameter(2);
-      break;
-    default:
-      error(ERROR_booleanOrNumberExpected);
     }
-    setShapeSize(iShape, code, fsize);
+    RadiusData rd = (Float.isNaN(value) ? encodeRadiusParameter(1)
+        : new RadiusData(value, type, 0));
+    if (Float.isNaN(rd.value))
+      error(ERROR_invalidArgument);
+    setShapeSize(iShape, rd);
   }
 
   private void proteinShape(int shapeType) throws ScriptException {
@@ -9005,7 +8974,7 @@ public class ScriptEvaluator {
     default:
       error(ERROR_booleanOrNumberExpected);
     }
-    setShapeSize(shapeType, mad, Float.NaN);
+    setShapeSize(shapeType, mad);
   }
 
   private void animation() throws ScriptException {
@@ -9845,8 +9814,8 @@ public class ScriptEvaluator {
       return setMeasurementUnits(stringSetting(2, isJmolSet));
     if (key.equalsIgnoreCase("defaultVDW")) {
       String val = (statementLength == 3
-          && JmolConstants.getVdwType(parameterAsString(2)) >= 0 ? parameterAsString(2)
-          : stringSetting(2, false));
+          && JmolConstants.getVdwType(parameterAsString(2)) == JmolConstants.VDW_UNKNOWN 
+          ? stringSetting(2, false) : parameterAsString(2));
       if (JmolConstants.getVdwType(val) < 0)
         error(ERROR_invalidArgument);
       setStringProperty(key, val);
@@ -10403,7 +10372,7 @@ public class ScriptEvaluator {
     case Token.dotted:
     case Token.integer:
     case Token.decimal:
-      setShapeSize(JmolConstants.SHAPE_MEASURES, getSetAxesTypeMad(2), Float.NaN);
+      setShapeSize(JmolConstants.SHAPE_MEASURES, getSetAxesTypeMad(2));
       return;
     }
     setMeasurementUnits(parameterAsString(2));
@@ -11140,14 +11109,14 @@ public class ScriptEvaluator {
     case Token.vanderwaals:
       if (statementLength == 2) {
         if (!isSyntaxCheck)
-          showString(viewer.getDefaultVdw(-1));
+          showString(viewer.getDefaultVdwTypeNameOrData(-1));
         return;
       }
-      int iMode = JmolConstants.getVdwType(parameterAsString(2));
-      if (iMode < 0)
+      int vdwType = JmolConstants.getVdwType(parameterAsString(2));
+      if (vdwType == JmolConstants.VDW_UNKNOWN)
         error(ERROR_invalidArgument);
       if (!isSyntaxCheck)
-        showString(viewer.getDefaultVdw(iMode));
+        showString(viewer.getDefaultVdwTypeNameOrData(vdwType));
       return;
     case Token.function:
       checkLength23();
@@ -11578,7 +11547,8 @@ public class ScriptEvaluator {
       case Token.boundbox:
         if (isSyntaxCheck)
           break;
-        Vector vp = viewer.getPlaneIntersection(theTok, null, intScale / 100f, 0);
+        Vector vp = viewer.getPlaneIntersection(theTok, null, intScale / 100f,
+            0);
         intScale = 0;
         if (vp == null)
           continue;
@@ -11587,7 +11557,7 @@ public class ScriptEvaluator {
         havePoints = true;
         break;
       case Token.intersection:
-        switch(getToken(++i).tok) {
+        switch (getToken(++i).tok) {
         case Token.unitcell:
         case Token.boundbox:
           tokIntersect = theTok;
@@ -11612,11 +11582,10 @@ public class ScriptEvaluator {
         int nTriangles = intParameter(++i);
         Vector v = new Vector();
         v.add(points);
-        int[][]polygons = new int[nTriangles][];
+        int[][] polygons = new int[nTriangles][];
         for (int j = 0; j < nTriangles; j++, i = iToken) {
           float[] f = floatParameterSet(++i, 3, 4);
-          polygons[j] = new int[] {
-              (int) f[0], (int) f[1], (int) f[2],
+          polygons[j] = new int[] { (int) f[0], (int) f[1], (int) f[2],
               (f.length == 3 ? 7 : (int) f[3]) };
         }
         v.add(polygons);
@@ -11690,27 +11659,32 @@ public class ScriptEvaluator {
         break;
       case Token.hkl:
       case Token.plane:
-        plane = (theTok == Token.plane ? planeParameter(++i)
-            : hklParameter(++i));
+        if (!havePoints && !isIntersect && tokIntersect == 0
+            && theTok != Token.hkl) {
+          propertyName = "plane";
+          break;
+        }
+        if (theTok == Token.plane) {
+          plane = planeParameter(++i);
+        } else {
+          plane = hklParameter(++i);
+        }
         i = iToken;
         if (tokIntersect != 0) {
-            if (isSyntaxCheck)
-              break;
-            Vector vpc = viewer.getPlaneIntersection(tokIntersect, plane, intScale / 100f, 0);
-            intScale = 0;
-            if (vpc == null)
-              continue;
-            propertyName = "polygon";
-            propertyValue = vpc;
-            havePoints = true;
-            break;         
-        } else if (havePoints || isIntersect) {
+          if (isSyntaxCheck)
+            break;
+          Vector vpc = viewer.getPlaneIntersection(tokIntersect, plane,
+              intScale / 100f, 0);
+          intScale = 0;
+          if (vpc == null)
+            continue;
+          propertyName = "polygon";
+          propertyValue = vpc;
+        } else {
           propertyValue = plane;
           propertyName = "planedef";
-          havePoints = true;
-        } else {
-          propertyName = "plane";
         }
+        havePoints = true;
         break;
       case Token.linedata:
         propertyName = "lineData";
@@ -11852,7 +11826,6 @@ public class ScriptEvaluator {
         propertyName = "rotate45";
         break;
       case Token.perpendicular:
-      case Token.perp:
         propertyName = "perp";
         break;
       case Token.diameter:
@@ -11939,8 +11912,8 @@ public class ScriptEvaluator {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", new Integer(intScale));
     }
     if (iptDisplayProperty > 0) {
-      if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW,
-          iptDisplayProperty, getToken(iptDisplayProperty).tok))
+      if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, iptDisplayProperty,
+          getToken(iptDisplayProperty).tok))
         error(ERROR_invalidArgument);
     }
   }
@@ -12549,7 +12522,6 @@ public class ScriptEvaluator {
     boolean haveRadius = false;
     boolean isFxy = false;
     boolean isColorMesh = false;
-    float vdw = Float.MAX_VALUE;
     float[] nlmZ = new float[5];
     float[] data = null;
     int thisSetNumber = 0;
@@ -12622,7 +12594,7 @@ public class ScriptEvaluator {
           Atom[] atoms = viewer.getModelSet().atoms;
           viewer.autoCalculate(tokProperty);
           for (int iAtom = atomCount; --iAtom >= 0;) {
-            data[iAtom] = Atom.atomPropertyFloat(atoms[iAtom], tokProperty);
+            data[iAtom] = Atom.atomPropertyFloat(viewer, atoms[iAtom], tokProperty);
           }
         }
         if (tokProperty == Token.color)
@@ -12717,8 +12689,11 @@ public class ScriptEvaluator {
         break;
       case Token.ionic:
       case Token.vanderwaals:
-        propertyValue = new Float(radiusParameter(i + 1, 0));
-        propertyName = (theTok == Token.ionic ? "ionicRadius" : "vdwRadius");
+        RadiusData rd = encodeRadiusParameter(i);
+        if (Float.isNaN(rd.value))
+          rd.value = 100;
+        propertyValue = rd;
+        propertyName = "radius";
         haveRadius = true;
         i = iToken;
         break;
@@ -13398,6 +13373,7 @@ public class ScriptEvaluator {
    * @param shape
    * @param i
    * @param tok
+   * @return    true if successful
    * @throws ScriptException
    */
   private boolean setMeshDisplayProperty(int shape, int i, int tok)

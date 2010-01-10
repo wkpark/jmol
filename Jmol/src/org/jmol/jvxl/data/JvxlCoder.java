@@ -1058,6 +1058,8 @@ public class JvxlCoder {
       sb.append("</jvxlSurfaceData>\n");
     } else */ 
     if (jvxlData.jvxlPlane == null) {
+      if (jvxlData.jvxlEdgeData == null)
+        return "";
       //no real point in compressing this unless it's a sign-based coloring
       sb.append(jvxlData.jvxlSurfaceData);
       sb.append(jvxlCompressString(jvxlData.jvxlEdgeData, false)).append('\n').append(

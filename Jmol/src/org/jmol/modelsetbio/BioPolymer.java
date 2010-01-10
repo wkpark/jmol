@@ -33,6 +33,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.Viewer;
 import org.jmol.script.Token;
 
 import javax.vecmath.Point3f;
@@ -468,7 +469,7 @@ public abstract class BioPolymer extends Polymer {
 
   final private static String[] qColor = { "yellow", "orange", "purple" };
 
-  final public static void getPdbData(BioPolymer p, char ctype, char qtype,
+  final public static void getPdbData(Viewer viewer, BioPolymer p, char ctype, char qtype,
                                       int mStep, int derivType, boolean isDraw,
                                       BitSet bsAtoms, StringBuffer pdbATOM,
                                       StringBuffer pdbCONECT,
@@ -554,7 +555,7 @@ public abstract class BioPolymer extends Polymer {
     }
     int iMax = (mStep < 1 ? 1 : mStep);
     for (int i = 0; i < iMax; i++)
-      getData(i, mStep, p, ctype, qtype, derivType, 
+      getData(viewer, i, mStep, p, ctype, qtype, derivType, 
           bsAtoms, bsSelected, bsWritten, 
           isDraw, isRamachandran,
           calcRamachandranStraightness,
@@ -564,8 +565,8 @@ public abstract class BioPolymer extends Polymer {
           isAmino, isRelativeAlias,
           pdbATOM, pdbCONECT);
   }
-
-  private static void getData(int m0, int mStep, BioPolymer p, char ctype,
+  
+  private static void getData(Viewer viewer, int m0, int mStep, BioPolymer p, char ctype,
                               char qtype, int derivType,
                               BitSet bsAtoms, BitSet bsSelected, BitSet bsWritten,
                               boolean isDraw, boolean isRamachandran,
@@ -850,7 +851,7 @@ public abstract class BioPolymer extends Polymer {
         }
         if (pdbATOM == null)
           continue;
-        pdbATOM.append(LabelToken.formatLabel(a, "ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
+        pdbATOM.append(LabelToken.formatLabel(viewer, a, "ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
         pdbATOM.append(TextFormat.sprintf(
             "%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n", new Object[] {
                 a.getElementSymbol(false).toUpperCase(), strExtra, new float[] {

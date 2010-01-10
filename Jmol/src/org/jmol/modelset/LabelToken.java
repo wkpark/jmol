@@ -326,16 +326,16 @@ public class LabelToken {
 
   //////////// label formatting for atoms, bonds, and measurements ///////////
 
-  public static String formatLabel(Atom atom, String strFormat) {
-    return formatLabel(atom, strFormat, null, '\0', null);
+  public static String formatLabel(Viewer viewer, Atom atom, String strFormat) {
+    return formatLabel(viewer, atom, strFormat, null, '\0', null);
   }
 
-  public static String formatLabel(Atom atom, String strFormat, LabelToken[] tokens, char chAtom, int[]indices) {
+  public static String formatLabel(Viewer viewer, Atom atom, String strFormat, LabelToken[] tokens, char chAtom, int[]indices) {
     if (atom == null || tokens == null && (strFormat == null || strFormat.length() == 0))
         return null;
     StringBuffer strLabel = (chAtom > '0' ? null : new StringBuffer());
     if (tokens == null)
-      tokens = compile(atom.group.chain.modelSet.viewer, strFormat, chAtom, null);
+      tokens = compile(viewer, strFormat, chAtom, null);
     for (int i = 0; i < tokens.length; i++) {
       LabelToken t = tokens[i];
       if (t == null)
@@ -349,13 +349,13 @@ public class LabelToken {
             strLabel.append(t.ch1);
         }
       } else {
-        appendAtomTokenValue(atom, t, strLabel, indices);
+        appendAtomTokenValue(viewer, atom, t, strLabel, indices);
       }
     }
     return (strLabel == null ? null : strLabel.toString().intern());
   }
   
-  private static void appendAtomTokenValue(Atom atom, LabelToken t,
+  private static void appendAtomTokenValue(Viewer viewer, Atom atom, LabelToken t,
                                            StringBuffer strLabel, int[] indices) {
     String strT = null;
     float floatT = Float.NaN;
@@ -399,7 +399,7 @@ public class LabelToken {
         floatT = atom.getOccupancy100() / 100f;
         break;
       case Token.radius:
-        floatT = Atom.atomPropertyFloat(atom, t.tok);
+        floatT = Atom.atomPropertyFloat(viewer, atom, t.tok);
         break;
       case 'r':
         strT = atom.getSeqcodeString();
@@ -434,7 +434,7 @@ public class LabelToken {
             strT = "" + Atom.atomPropertyInt(atom, t.tok);
           break;
         case Token.floatproperty:
-          floatT = Atom.atomPropertyFloat(atom, t.tok);
+          floatT = Atom.atomPropertyFloat(viewer, atom, t.tok);
           break;
         case Token.strproperty:
           strT = Atom.atomPropertyString(atom, t.tok);
@@ -467,29 +467,33 @@ public class LabelToken {
     return htValues;
   }
 
-  public static String formatLabel(Bond bond, LabelToken[] tokens, Hashtable values, int[] indices) {
+  public static String formatLabel(Viewer viewer, Bond bond,
+                                   LabelToken[] tokens, Hashtable values,
+                                   int[] indices) {
     values.put("#", "" + (bond.index + 1));
     values.put("ORDER", "" + bond.getOrderNumberAsString());
     values.put("TYPE", bond.getOrderName());
     values.put("LENGTH", new Float(bond.atom1.distance(bond.atom2)));
     setValues(tokens, values);
-    formatLabel(bond.atom1, null, tokens, '1', indices);
-    formatLabel(bond.atom2, null, tokens, '2', indices);
+    formatLabel(viewer, bond.atom1, null, tokens, '1', indices);
+    formatLabel(viewer, bond.atom2, null, tokens, '2', indices);
     return getLabel(tokens);
   }
 
-  public static String labelFormat(Measurement measurement, String label, float value, String units) {
+  public static String labelFormat(Viewer viewer, Measurement measurement,
+                                   String label, float value, String units) {
     Hashtable htValues = new Hashtable();
     htValues.put("#", "" + (measurement.getIndex() + 1));
     htValues.put("VALUE", new Float(value));
     htValues.put("UNITS", units);
-    LabelToken[] tokens = compile(measurement.viewer, label, '\1', htValues);
+    LabelToken[] tokens = compile(viewer, label, '\1', htValues);
     setValues(tokens, htValues);
     Atom[] atoms = measurement.modelSet.atoms;
     int[] indices = measurement.getCountPlusIndices();
-    for (int i = indices[0]; i >= 1;--i)
+    for (int i = indices[0]; i >= 1; --i)
       if (indices[i] >= 0)
-        formatLabel(atoms[indices[i]], null, tokens, (char)('0' + i), null);
+        formatLabel(viewer, atoms[indices[i]], null, tokens, (char) ('0' + i),
+            null);
     label = getLabel(tokens);
     return (label == null ? "" : label);
   }

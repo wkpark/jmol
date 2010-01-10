@@ -37,8 +37,8 @@ public class HoverRenderer extends ShapeRenderer {
       String label = (hover.specialLabel != null ? hover.specialLabel 
           : hover.atomFormats != null
           && hover.atomFormats[hover.atomIndex] != null ? 
-              LabelToken.formatLabel(atom, hover.atomFormats[hover.atomIndex])
-          : hover.labelFormat != null ? LabelToken.formatLabel(atom, fixLabel(atom, hover.labelFormat))
+              LabelToken.formatLabel(viewer, atom, hover.atomFormats[hover.atomIndex])
+          : hover.labelFormat != null ? LabelToken.formatLabel(viewer, atom, fixLabel(atom, hover.labelFormat))
               : null);
       if (label == null)
         return;

@@ -30,6 +30,7 @@ import org.jmol.util.Point3fi;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -127,10 +128,11 @@ public abstract class Shape {
   }
 
   public void setSize(int size, BitSet bsSelected) {
+    // not for atoms except to turn off -- size = 0
   }
 
-  public void setSize(int flags, float size, BitSet bsSelected) {
-    // balls/atoms only?
+  public void setSize(RadiusData rd, BitSet bsSelected) {
+    // balls, dots, other atomshapes
   }
 
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {

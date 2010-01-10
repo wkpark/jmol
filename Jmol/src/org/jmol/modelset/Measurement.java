@@ -300,7 +300,7 @@ public class Measurement {
         .getDefaultMeasurementLabel(countPlusIndices[0]));
     if (label.indexOf(s)==0)
       label = label.substring(2);
-    return LabelToken.labelFormat(this, label, value, units);
+    return LabelToken.labelFormat(viewer, this, label, value, units);
   }
 
   public boolean sameAs(int[] indices, Point3fi[] points) {

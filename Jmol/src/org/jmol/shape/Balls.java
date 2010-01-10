@@ -27,6 +27,7 @@ package org.jmol.shape;
 
 import java.util.BitSet;
 
+import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.viewer.JmolConstants;
@@ -35,7 +36,7 @@ import java.util.Hashtable;
 
 public class Balls extends AtomShape {
   
-  public void setSize(int size, float fsize, BitSet bsSelected) {
+  public void setSize(RadiusData rd, BitSet bsSelected) {
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
@@ -43,7 +44,7 @@ public class Balls extends AtomShape {
     for (int i = bsLength; --i >= 0; ) {
       if (bsSelected.get(i)) {
         Atom atom = atoms[i];
-        atom.setMadAtom(viewer, size, fsize);
+        atom.setMadAtom(viewer, rd);
         bsSizeSet.set(i);
       }
     }

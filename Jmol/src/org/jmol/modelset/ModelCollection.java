@@ -336,6 +336,12 @@ abstract public class ModelCollection extends BondCollection {
     return s;
   }
 
+  public int getDefaultVdwType(int modelIndex) {
+    return (!models[modelIndex].isPDB ? JmolConstants.VDW_AUTO_BABEL
+        : models[modelIndex].hydrogenCount == 0 ? JmolConstants.VDW_AUTO_JMOL
+        : JmolConstants.VDW_AUTO_JMOL); // RASMOL is too small
+  }
+
   public boolean setRotationRadius(int modelIndex, float angstroms) {
     if (!isJmolDataFrame(modelIndex))
       return false;
@@ -966,7 +972,7 @@ abstract public class ModelCollection extends BondCollection {
       Model model = models[i];
       int nPoly = model.getBioPolymerCount();
       for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData(ctype, qtype, mStep, 2, false, null, null, null, null, false, new BitSet());
+        model.bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, 2, false, null, null, null, null, false, new BitSet());
     }
     setHaveStraightness(true);
   }
@@ -1046,11 +1052,11 @@ abstract public class ModelCollection extends BondCollection {
         sb.append("MODEL     " + (iModelLast + 1) + "\n");
       }
       if (!models[a.modelIndex].isPDB)
-        sb.append(LabelToken.formatLabel(a, "HETATM%5i %-4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"));
+        sb.append(LabelToken.formatLabel(viewer, a, "HETATM%5i %-4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"));
       else if (a.isHetero())
-        sb.append(LabelToken.formatLabel(a, "HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"));
+        sb.append(LabelToken.formatLabel(viewer, a, "HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"));
       else
-        sb.append(LabelToken.formatLabel(a, "ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"));
+        sb.append(LabelToken.formatLabel(viewer, a, "ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"));
     }
     if (showModels)
         sb.append("ENDMDL\n");
@@ -1087,7 +1093,7 @@ abstract public class ModelCollection extends BondCollection {
     StringBuffer pdbCONECT = new StringBuffer();
     BitSet bsWritten = new BitSet();
     for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData(ctype, qtype,mStep, derivType, isDraw,
+        model.bioPolymers[p].getPdbData(viewer, ctype, qtype,mStep, derivType, isDraw,
             bsAtoms, pdbATOM, pdbCONECT, bsSelected, p == 0, bsWritten);
     pdbATOM.append(pdbCONECT);
     String s = pdbATOM.toString();
@@ -2134,7 +2140,7 @@ abstract public class ModelCollection extends BondCollection {
     if (autoAromatize)
       assignAromaticBonds(true, bsBonds);
     if (!identifyOnly)
-      ((ModelSet)this).setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, Float.NaN, bsBonds);
+      ((ModelSet)this).setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsBonds);
     return new int[] { nNew, nModified };
   }
 
@@ -2300,7 +2306,7 @@ abstract public class ModelCollection extends BondCollection {
       }
       iter.release();
     }
-    ((ModelSet)this).setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, Float.NaN, 
+    ((ModelSet)this).setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, 
         bsPseudoHBonds);
     if (showRebondTimes && Logger.debugging)
       Logger.checkTimer("Time to hbond");

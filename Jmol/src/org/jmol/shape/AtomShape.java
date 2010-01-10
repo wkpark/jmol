@@ -28,6 +28,7 @@ package org.jmol.shape;
 import java.util.BitSet;
 import java.util.Hashtable;
 
+import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.util.ArrayUtil;
@@ -59,26 +60,29 @@ public abstract class AtomShape extends Shape {
       paletteIDs = ArrayUtil.setLength(paletteIDs, atomCount);
   }
 
-  public void setSize(int size, BitSet bsSelected) {
-    setSize(size, Float.NaN, bsSelected);
-  }
-
   public int getSize(int atomIndex) {
     return (mads == null ? 0 : mads[atomIndex]);
   }
   
-  public void setSize(int size, float fsize, BitSet bsSelected) {
+  public void setSize(int size, BitSet bsSelected) {
+    if (size == 0)
+      setSize(null, bsSelected);
+    // should not come through this route
+    setSize(new RadiusData(size, RadiusData.TYPE_SCREEN, 0), bsSelected);
+  }
+
+  public void setSize(RadiusData rd, BitSet bsSelected) {
     // Halos Stars Vectors only
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
-    boolean isVisible = (size != 0);
+    boolean isVisible = (rd != null && rd.value != 0);
     for (int i = atomCount; --i >= 0;)
       if (bsSelected == null || bsSelected.get(i)) {
         if (mads == null)
           mads = new short[atomCount];
         Atom atom = atoms[i];
-        mads[i] = atom.convertEncodedMad(viewer, size, fsize);
+        mads[i] = atom.calculateMad(viewer, rd);
         bsSizeSet.set(i, isVisible);
         atom.setShapeVisibility(myVisibilityFlag, isVisible);
       }

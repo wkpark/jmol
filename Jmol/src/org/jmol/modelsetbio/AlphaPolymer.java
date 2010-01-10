@@ -28,6 +28,7 @@ import java.util.BitSet;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
 
 
 public class AlphaPolymer extends BioPolymer {
@@ -235,12 +236,11 @@ public class AlphaPolymer extends BioPolymer {
     }
   }
   
-
-  public void getPdbData(char ctype, char qtype, int mStep, int derivType,
+  public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType,
                          boolean isDraw, BitSet bsAtoms, 
                          StringBuffer pdbATOM, StringBuffer pdbCONECT, 
                          BitSet bsSelected, boolean addHeader, BitSet bsWritten) {
-    getPdbData(this, ctype, qtype, mStep, derivType, isDraw, bsAtoms, pdbATOM, 
+    getPdbData(viewer, this, ctype, qtype, mStep, derivType, isDraw, bsAtoms, pdbATOM, 
         pdbCONECT, bsSelected, addHeader, bsWritten);
   }
 

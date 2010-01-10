@@ -24,9 +24,11 @@
 
 package org.jmol.shape;
 
+import org.jmol.script.Token;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.modelset.Atom;
@@ -50,8 +52,7 @@ public class Dots extends AtomShape {
   float thisRadius;
   int thisArgb;
 
-  int lastSize = 0;
-  float lastSolventRadius = 0;
+  RadiusData rdLast = new RadiusData();
 
   public void initShape() {
     super.initShape();
@@ -156,7 +157,7 @@ public class Dots extends AtomShape {
       ec = new EnvelopeCalculation(viewer, atomCount, mads);
   }
 
-  public void setSize(int size, float fsize, BitSet bsSelected) {
+  public void setSize(RadiusData rd, BitSet bsSelected) {
     if (this.bsSelected != null)
       bsSelected = this.bsSelected;
 
@@ -170,63 +171,47 @@ public class Dots extends AtomShape {
     // Short.MAX_VALUE -- ADP max
 
     if (Logger.debugging) {
-      Logger.debug("Dots.setSize " + size);
+      Logger.debug("Dots.setSize " + rd.value);
     }
-    boolean isVisible = true;
-    float addRadius = Float.MAX_VALUE;
-    float setRadius = Float.MAX_VALUE;
-    boolean useVanderwaalsRadius = true;
-    float scale = 1;
 
+    boolean isVisible = true;
+    float setRadius = Float.MAX_VALUE;
     isActive = true;
-    if (Float.isNaN(fsize)) {
-      switch (size) {
-      case 0:
+
+    switch (rd.type) {
+    case RadiusData.TYPE_ABSOLUTE:
+      if (rd.value == 0)
         isVisible = false;
-        break;
-      case 1:
-        break;
-      default:
-        if (size <= Short.MIN_VALUE) {
-          setRadius = Short.MIN_VALUE;
-          if (size < Short.MIN_VALUE)
-            scale = (Short.MIN_VALUE - size) / 100f;
-        } else if (size < 0) { // ionic
-          useVanderwaalsRadius = false;
-        } else if (size <= 1001) {
-          scale = (size - 1) / 100f;
-        } else if (size <= 11002) {
-          useVanderwaalsRadius = false;
-          setRadius = (size - 1002) / 1000f;
-        } else if (size <= 13002) {
-          addRadius = (size - 11002) / 1000f;
-          scale = 1;
-        } else if (size >= Short.MAX_VALUE) {
-          setRadius = Short.MAX_VALUE;
-          if (size > Short.MAX_VALUE)
-            scale = (size - Short.MAX_VALUE) / 100f;
-        }
-      }
-    } else {
-      if (size == 1) {
-        addRadius = fsize;
-      } else {
-        useVanderwaalsRadius = false;
-        setRadius = fsize;
-      }
+      setRadius = rd.value;
+      break;
+    case RadiusData.TYPE_OFFSET:
+      break;
     }
-    float maxRadius = (!useVanderwaalsRadius ? setRadius : modelSet
-        .getMaxVanderwaalsRadius());
-    float solventRadius = viewer.getCurrentSolventProbeRadius();
-    if (addRadius == Float.MAX_VALUE)
-      addRadius = (solventRadius != 0 ? solventRadius : 0);
+
+    if (rd.type != RadiusData.TYPE_OFFSET)
+      rd.valueExtended = viewer.getCurrentSolventProbeRadius();
+
+    float maxRadius;
+    switch (rd.vdwType) {
+    case Token.adpmin:
+    case Token.adpmax:
+    case Token.temperature:
+      maxRadius = setRadius;
+      break;
+    case Token.ionic:
+      maxRadius = modelSet.getMaxVanderwaalsRadius() * 2; // TODO?
+      break;
+    default:
+      maxRadius = modelSet.getMaxVanderwaalsRadius();
+    }
 
     if (Logger.debugging)
       Logger.startTimer();
 
     // combine current and selected set
-    boolean newSet = (lastSolventRadius != addRadius || size != 0
-        && size != lastSize || ec.getDotsConvexMax() == 0);
+    boolean newSet = (rdLast.value != rd.value
+        || rdLast.valueExtended != rd.valueExtended || rdLast.type != rd.type
+        || rdLast.vdwType != rd.vdwType || ec.getDotsConvexMax() == 0);
 
     // for an solvent-accessible surface there is no torus/cavity issue.
     // we just increment the atom radius and set the probe radius = 0;
@@ -249,7 +234,6 @@ public class Dots extends AtomShape {
     if (newSet) {
       mads = null;
       ec.newSet();
-      lastSolventRadius = addRadius;
     }
     // always delete old surfaces for selected atoms
     int[][] dotsConvexMaps = ec.getDotsConvexMaps();
@@ -261,17 +245,16 @@ public class Dots extends AtomShape {
     }
     // now, calculate surface for selected atoms
     if (isVisible) {
-      lastSize = size;
       if (dotsConvexMaps == null) {
         colixes = new short[atomCount];
         paletteIDs = new byte[atomCount];
       }
-      boolean disregardNeighbors = (viewer.getDotSurfaceFlag() == false);
-      boolean onlySelectedDots = (viewer.getDotsSelectedOnlyFlag() == true);
-      ec.calculate(addRadius, setRadius, scale, maxRadius, bsOn, bsIgnore,
-          useVanderwaalsRadius, disregardNeighbors, onlySelectedDots,
-          isSurface, true);
+      ec.calculate(rd, maxRadius, bsOn, bsIgnore, !viewer.getDotSurfaceFlag(),
+          viewer.getDotsSelectedOnlyFlag(), isSurface, true);
     }
+    
+    rdLast = rd;
+    
     if (Logger.debugging)
       Logger.checkTimer("dots generation time");
   }

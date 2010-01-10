@@ -34,6 +34,7 @@ import org.jmol.script.Token;
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.shape.Shape;
 
 import java.util.BitSet;
@@ -284,17 +285,17 @@ abstract public class ModelSet extends ModelCollection {
     return closestIndex;
   }
 
-  public void setShapeSize(int shapeID, int size, float fsize, BitSet bsSelected) {
+  public void setShapeSize(int shapeID, int size, RadiusData rd, BitSet bsSelected) {
     if (shapes == null)
       return;
     viewer.setShapeErrorState(shapeID, "set size");
-    if (size != 0)
+    if (rd != null && rd.value != 0 || rd == null && size != 0)
       loadShape(shapeID);
     if (shapes[shapeID] != null) {
-      if (Float.isNaN(fsize))
+      if (rd == null)
         shapes[shapeID].setSize(size, bsSelected);
       else
-        shapes[shapeID].setSize(size, fsize, bsSelected);
+        shapes[shapeID].setSize(rd, bsSelected);
     }
     viewer.setShapeErrorState(-1, null);
   }
@@ -603,7 +604,7 @@ abstract public class ModelSet extends ModelCollection {
     // appear in the state as bondOrder commands.
     
     if (isUserCalculation)
-      setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, Float.NaN, bsAromatic);
+      setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsAromatic);
   }
 
   public int[] makeConnections(float minDistance, float maxDistance, short order,
@@ -776,10 +777,6 @@ abstract public class ModelSet extends ModelCollection {
     return commands.toString();
   }
 
-  public int getVanderwaalsMar(int i) {
-    return viewer.getVanderwaalsMar(i);
-  }
-
   private void includeAllRelatedFrames(BitSet bsModels) {
     int j;
     for (int i = 0; i < modelCount; i++) {
@@ -890,7 +887,7 @@ abstract public class ModelSet extends ModelCollection {
   public void setLabel(String strLabel, BitSet bsSelection) {
     if (strLabel != null) { // force the class to load and display
       loadShape(JmolConstants.SHAPE_LABELS);
-      setShapeSize(JmolConstants.SHAPE_LABELS, 0, Float.NaN, bsSelection);
+      setShapeSize(JmolConstants.SHAPE_LABELS, 0, null, bsSelection);
     }
     setShapeProperty(JmolConstants.SHAPE_LABELS, "label", strLabel, bsSelection);
   }
@@ -915,7 +912,7 @@ abstract public class ModelSet extends ModelCollection {
         fValue = Atom.RADIUS_MAX;
       if (fValue < 0)
         fValue = 0;
-      setShapeSize(JmolConstants.shapeTokenIndex(tok), (int) (fValue * 2000), Float.NaN, bs);
+      setShapeSize(JmolConstants.shapeTokenIndex(tok), (int) (fValue * 2000), null, bs);
       return;
     }
     super.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);

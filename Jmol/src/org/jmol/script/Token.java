@@ -702,8 +702,9 @@ public class Token {
   final static int arrow         = misc | 12;// new
   final static int atomicorbital = misc | 13;// new
   public final static int auto   = misc | 14;// new
-  public final static int axis   = misc | 16;
-  final static int babel         = misc | 17;
+  public final static int axis   = misc | 15;
+  final static int babel         = misc | 16;
+  final static int babel21       = misc | 17; // new
   final static int back          = misc | 18;
   public final static int backlit = misc | 19;
   final static int binary        = misc | 20;// new
@@ -819,7 +820,6 @@ public class Token {
   final static int pdb            = misc | 141 | expression;// new
   final static int pdbheader      = misc | 142;
   final static int period         = misc | 143;// new
-  final static int perp           = misc | 144;// new
   final static int perpendicular  = misc | 145;// new
   final static int phase          = misc | 146;// new
   public final static int play    = misc | 147;
@@ -1202,6 +1202,7 @@ public class Token {
     "atomz",            new Token(atomZ),
     "average",          new Token(average),
     "babel",            new Token(babel),
+    "babel21",          new Token(babel21), 
     "back",             new Token(back),    
     "backlit",          new Token(backlit),
     "bin",              new Token(bin),
@@ -1476,7 +1477,7 @@ public class Token {
     "pdb", new Token(pdb),
     "period", new Token(period),
     "perpendicular", new Token(perpendicular),
-    "perp", new Token(perp),
+    "perp", null,
     "phase", new Token(phase),
     "pocket", new Token(pocket),
     "pointsperangstrom", new Token(pointsperangstrom),

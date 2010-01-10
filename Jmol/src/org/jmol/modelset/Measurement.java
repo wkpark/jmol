@@ -215,9 +215,12 @@ public class Measurement {
    */
   public String getMeasurementScript(String sep, boolean withModelIndex) {
     String str = "";
+    // extra () are needed because of the possible context  symop({1}) ({2})
     boolean asScript = (sep.equals(" "));
-    for (int i = 1; i <= count; i++)
-      str += (i > 1 ? sep : " ") + getLabel(i, asScript, withModelIndex); 
+    for (int i = 1; i <= count; i++) {
+      String s = getLabel(i, asScript, withModelIndex);
+      str += (asScript ? " (" + s + ")" : (i > 1 ? sep : " ") + s); 
+    }
     return str;  
   }
   

@@ -1208,7 +1208,7 @@ public class ActionManager {
         viewer.script("select none");
         return;
       }
-      if (pickingMode != JmolConstants.PICKING_SPIN)
+      if (pickingMode != JmolConstants.PICKING_SPIN && pickingMode != JmolConstants.PICKING_SYMMETRY)
         return;
     }
     int n = 2;
@@ -1244,34 +1244,8 @@ public class ActionManager {
         viewer.script("zoomTo " + Escape.escape(ptClicked));
       return;
     case JmolConstants.PICKING_SPIN:
-      if (!isBound(action, ACTION_pickAtom))
-        return;
-      if (viewer.getSpinOn() || viewer.getNavOn() || viewer.getPendingMeasurement() != null) {
-        resetMeasurement();
-        viewer.script("spin off");
-        return;
-      }
-      if (measurementQueued.getCount() >= 2)
-        resetMeasurement();
-      int queuedAtomCount = measurementQueued.getCount(); 
-      if (queuedAtomCount == 1) {
-        if (ptClicked == null) {
-          if (measurementQueued.getAtomIndex(1) == atomIndex)
-            return;
-        } else {
-          if (measurementQueued.getAtom(1).distance(ptClicked) == 0)
-            return;
-        }
-      }
-      if (atomIndex >= 0 || ptClicked != null)
-        queuedAtomCount = queueAtom(atomIndex, ptClicked);
-      if (queuedAtomCount < 2) {
-        viewer.scriptStatus(queuedAtomCount == 1 ?
-            GT._("pick one more atom in order to spin the model around an axis") :
-            GT._("pick two atoms in order to spin the model around an axis"));
-        return;
-      }
-      viewer.script("spin" + measurementQueued.getMeasurementScript(" ", false) + " " + viewer.getPickingSpinRate());
+    case JmolConstants.PICKING_SYMMETRY:
+      checkTwoAtomAction(action, ptClicked, atomIndex);
     }
     if (ptClicked != null)
       return;
@@ -1316,6 +1290,47 @@ public class ActionManager {
       break;
     }
     viewer.clearClickCount();
+  }
+
+  private void checkTwoAtomAction(int action, Point3fi ptClicked, int atomIndex) {
+    if (!isBound(action, ACTION_pickAtom))
+      return;
+    boolean isSpin = (pickingMode == JmolConstants.PICKING_SPIN);
+    if (viewer.getSpinOn() || viewer.getNavOn() || viewer.getPendingMeasurement() != null) {
+      resetMeasurement();
+      viewer.script("spin off");
+      return;
+    }
+    if (measurementQueued.getCount() >= 2)
+      resetMeasurement();
+    int queuedAtomCount = measurementQueued.getCount(); 
+    if (queuedAtomCount == 1) {
+      if (ptClicked == null) {
+        if (measurementQueued.getAtomIndex(1) == atomIndex)
+          return;
+      } else {
+        if (measurementQueued.getAtom(1).distance(ptClicked) == 0)
+          return;
+      }
+    }
+    if (atomIndex >= 0 || ptClicked != null)
+      queuedAtomCount = queueAtom(atomIndex, ptClicked);
+    if (queuedAtomCount < 2) {
+      if (isSpin)
+      viewer.scriptStatus(queuedAtomCount == 1 ?
+          GT._("pick one more atom in order to spin the model around an axis") :
+          GT._("pick two atoms in order to spin the model around an axis"));
+      else
+        viewer.scriptStatus(queuedAtomCount == 1 ?
+            GT._("pick one more atom in order to display the symmetry relationship") :
+            GT._("pick two atoms in order to display the symmetry relationship between them"));
+      return;
+    }
+    String s = measurementQueued.getMeasurementScript(" ", false);
+    if (isSpin)
+      viewer.script("spin" + s + " " + viewer.getPickingSpinRate());
+    else  
+      viewer.script("draw symop" + s + ";show symop" + s);
   }
 
   private int queueAtom(int atomIndex, Point3fi ptClicked) {

@@ -474,6 +474,7 @@ class PopupResourceBundle {
       { "pickMolecule", "set picking molecule" },
       { "SYMMETRYpickSite", "set picking site" },
       { "pickSpin", "set picking spin" },
+      { "SYMMETRYpickSymmetry", "set picking symmetry" },
 
       { "JVM12showConsole", "console" },
       { "showFile", "console on;show file" },
@@ -870,6 +871,7 @@ class PopupResourceBundle {
         "PDBpickGroup", GT._("Select group"),
         "pickMolecule", GT._("Select molecule"),
         "SYMMETRYpickSite", GT._("Select site"),
+        "SYMMETRYpickSymmetry", GT._("Show symmetry operation"),
         "pickSpin", GT._("Spin"),
 
         "JVM12showMenu", GT._("Show"),

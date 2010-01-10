@@ -281,6 +281,7 @@ final public class JmolConstants {
   public final static int PICKING_CENTER = 3;
   public final static int PICKING_DRAW   = 4;
   public final static int PICKING_SPIN   = 5;
+  public final static int PICKING_SYMMETRY = 6;
   //public final static int PICKING_COORD  = 6;
   //public final static int PICKING_BOND   = 7;
   public final static int PICKING_SELECT_ATOM      =  8;
@@ -298,7 +299,7 @@ final public class JmolConstants {
 
   private final static String[] pickingModeNames = {
     "off", "identify", "label", "center", "draw", "spin",
-    "coord NOT IMPLEMENTED", "bond NOT IMPLEMENTED", 
+    "symmetry", "bond NOT IMPLEMENTED", 
     "atom", "group", "chain", "molecule", "site", "model", "element", 
     "measure", "distance", "angle", "torsion", "navigate"
   };

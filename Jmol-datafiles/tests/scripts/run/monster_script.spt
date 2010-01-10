@@ -806,7 +806,7 @@ load contour.jvxl;moveto 0 -853 -521 13 167.5 194;set axesMolecular; isosurface 
 load contour.jvxl;isosurface delete myiso plane {0 0 1 1.5} color absolute  0.1 1 map "ch3cl-esp.cub.gz";moveto 0 -853 -521 13 167.5 194;show isosurface;
 load contour.jvxl;moveto 0 -853 -521 13 167.5 194;set axesMolecular; isosurface delete myiso "" 2
 load contour.jvxl;isosurface delete myiso plane {0 0 1 1.5} dots nofill color absolute  0.1 1 map "ch3cl-esp.cub.gz";moveto 0 -853 -521 13 167.5 194;show isosurface;
-load contour.jvxl;moveto 0 -853 -521 13 167.5 194;set axesMolecular; isosurface delete myiso dots nofill "" 2
+load contour.jvxl;moveto 0 -853 -521 13 167.5 194;set axesMolecular; isosurface delete myiso "" 2 dots nofill
 isosurface dots nofill
 isosurface nodots fill
 show isosurface ;refresh;# goes to the message queue

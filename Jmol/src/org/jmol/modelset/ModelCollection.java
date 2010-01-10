@@ -339,7 +339,7 @@ abstract public class ModelCollection extends BondCollection {
   public int getDefaultVdwType(int modelIndex) {
     return (!models[modelIndex].isPDB ? JmolConstants.VDW_AUTO_BABEL
         : models[modelIndex].hydrogenCount == 0 ? JmolConstants.VDW_AUTO_JMOL
-        : JmolConstants.VDW_AUTO_JMOL); // RASMOL is too small
+        : JmolConstants.VDW_AUTO_BABEL); // RASMOL is too small
   }
 
   public boolean setRotationRadius(int modelIndex, float angstroms) {

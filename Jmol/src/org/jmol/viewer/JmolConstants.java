@@ -995,14 +995,14 @@ final public class JmolConstants {
    */
   
   public final static int VDW_UNKNOWN = -1;
-  public final static int VDW_JMOL = 0;
-  public final static int VDW_BABEL = 1; // OpenBabel-2.2 
-  public final static int VDW_RASMOL = 2; // OpenRasmol-2.7.2.1.1
-  public final static int VDW_BABEL21 = 3; // OpenBabel-2.1
-  public final static int VDW_AUTO_JMOL = 4;  // 4   if undecided, use JMOL
-  public final static int VDW_AUTO_BABEL = 5; // 4+1 if undecided, use BABEL
-  public final static int VDW_AUTO_RASMOL = 6;// 4+2 if undecided, use RASMOL
-  public final static int VDW_NOJMOL = 7;     // surface will be adding H atoms
+  public final static int VDW_JMOL = 0;        // OpenBabel-1.0
+  public final static int VDW_BABEL = 1;       // OpenBabel-2.2 
+  public final static int VDW_RASMOL = 2;      // OpenRasmol-2.7.2.1.1
+  public final static int VDW_BABEL21 = 3;     // OpenBabel-2.1
+  public final static int VDW_AUTO_JMOL = 4;   // 4   if undecided, use JMOL
+  public final static int VDW_AUTO_BABEL = 5;  // 4+1 if undecided, use BABEL
+  public final static int VDW_AUTO_RASMOL = 6; // 4+2 if undecided, use RASMOL
+  public final static int VDW_NOJMOL = 7;      // surface will be adding H atoms
   public final static int VDW_AUTO = 8;
   public final static int VDW_USER = 9;
   

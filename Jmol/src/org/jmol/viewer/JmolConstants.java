@@ -220,7 +220,7 @@ final public class JmolConstants {
     axisX, axisY, axisZ, axisNX, axisNY, axisNZ };
 
   public final static int XY_ZTOP = 100; // Z value for [x y] positioned echos and axis origin
-  public final static int DEFAULT_PERCENT_VDW_ATOM = 20;
+  public final static int DEFAULT_PERCENT_VDW_ATOM = 23; // matches C sizes of AUTO with 20 for Jmol set
   public final static float DEFAULT_BOND_RADIUS = 0.15f;
   public final static short DEFAULT_BOND_MILLIANGSTROM_RADIUS = (short) (DEFAULT_BOND_RADIUS * 1000);
   //angstroms of slop ... from OpenBabel ... mth 2003 05 26

@@ -57,20 +57,21 @@ import java.util.Vector;
  */
 
 public class PdbReader extends AtomSetCollectionReader {
-  int lineLength;
+  private int lineLength;
   // index into atoms array + 1
   // so that 0 can be used for the null value
-  boolean isNMRdata;
-  final Hashtable htFormul = new Hashtable();
-  Hashtable htHetero = null;
-  Hashtable htSites = null;
+  private final Hashtable htFormul = new Hashtable();
+  private Hashtable htHetero = null;
+  private Hashtable htSites = null;
   protected String fileType = "pdb";  
-  String currentGroup3;
-  String compnd;
-  Hashtable htElementsInCurrentGroup;
-  int maxSerial = 0;
-  int[] chainAtomCounts;
-
+  private String currentGroup3;
+  private String compnd;
+  private Hashtable htElementsInCurrentGroup;
+  private int maxSerial;
+  private int[] chainAtomCounts;
+  private int nUNK;
+  private int nRes;
+  
  final private static String lineOptions = 
    "ATOM    " + //0
    "HETATM  " + //1
@@ -101,7 +102,6 @@ public class PdbReader extends AtomSetCollectionReader {
     setFractionalCoordinates(false);
     htFormul.clear();
     currentGroup3 = null;
-    isNMRdata = false;
     boolean iHaveModel = false;
     boolean iHaveModelStatement = false;
     boolean iHaveLine = false;
@@ -224,6 +224,7 @@ public class PdbReader extends AtomSetCollectionReader {
           continue;
         }
       }
+      checkNotPDB();
       atomSetCollection.connectAll(maxSerial);
       if (biomolecules != null && biomolecules.size() > 0) {
         atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", biomolecules);
@@ -478,6 +479,9 @@ REMARK 290 REMARK: NULL
     } else if (!group3.equals(currentGroup3)) {
       currentGroup3 = group3;
       htElementsInCurrentGroup = (Hashtable) htFormul.get(group3);
+      nRes++;
+      if (group3.equals("UNK"))
+        nUNK++;
     }
 
     ////////////////////////////////////////////////////////////////
@@ -735,10 +739,17 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
      * but I received a file with the serial
      * number right after the word MODEL :-(
      ****************************************************************/
-      haveMappedSerials = false;
-      atomSetCollection.newAtomSet();
-      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
-      atomSetCollection.setAtomSetNumber(modelNumber);
+    checkNotPDB();
+    haveMappedSerials = false;
+    atomSetCollection.newAtomSet();
+    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+    atomSetCollection.setAtomSetNumber(modelNumber);
+  }
+
+  private void checkNotPDB() {
+    if (atomSetCollection.getAtomCount() > 0 && nUNK == nRes)
+      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.FALSE);
+    nUNK = nRes = 0;
   }
 
   private void cryst1() throws Exception {
@@ -760,9 +771,8 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
   }
 
   private void expdta() {
-    String technique = parseTrimmed(line, 10).toLowerCase();
-    if (technique.regionMatches(true, 0, "nmr", 0, 3))
-      isNMRdata = true;
+    if (line.toUpperCase().indexOf("NMR") >= 0)
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isNMRdata", "true");
   }
 
   private void formul() {

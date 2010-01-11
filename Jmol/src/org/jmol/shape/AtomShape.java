@@ -120,9 +120,10 @@ public abstract class AtomShape extends Shape {
     }
     if (propertyName == "deleteModelAtoms") {
       atoms = (Atom[]) ((Object[]) value)[1];
+      int[] info = (int[]) ((Object[]) value)[2];
       atomCount = modelSet.getAtomCount();
-      int firstAtomDeleted = ((int[]) ((Object[]) value)[2])[1];
-      int nAtomsDeleted = ((int[]) ((Object[]) value)[2])[2];
+      int firstAtomDeleted = info[1];
+      int nAtomsDeleted = info[2];
       mads = (short[]) ArrayUtil.deleteElements(mads, firstAtomDeleted,
           nAtomsDeleted);
       colixes = (short[]) ArrayUtil.deleteElements(colixes, firstAtomDeleted,
@@ -136,7 +137,7 @@ public abstract class AtomShape extends Shape {
     super.setProperty(propertyName, value, bs);
   }
 
-  void setColixAndPalette(short colix, byte paletteID, int atomIndex) {
+  protected void setColixAndPalette(short colix, byte paletteID, int atomIndex) {
     if (colixes == null || atomIndex >= colixes.length) {
       if (colix == Graphics3D.INHERIT_ALL)
         return;

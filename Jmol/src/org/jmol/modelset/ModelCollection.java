@@ -633,19 +633,20 @@ abstract public class ModelCollection extends BondCollection {
     BitSet bs = new BitSet();
     for (int i = modelCount; --i >= 0;)
       if (i == modelIndex || modelIndex < 0) {
+        int nAltLocs = getAltLocCountInModel(i);
+        if (nAltLocs == 0 || conformationIndex >= nAltLocs)
+          continue;
         String altLocs = getAltLocListInModel(i);
-        if (altLocs.length() > 0) {
-          BitSet bsConformation = getModelAtomBitSet(i, true);
-          if (conformationIndex >= 0)
-            for (int c = models[i].nAltLocs; --c >= 0;)
-              if (c != conformationIndex)
-                BitSetUtil.andNot(bsConformation, getAtomBits(
-                    Token.spec_alternate, altLocs.substring(c, c + 1)));
-          if (BitSetUtil.length(bsConformation) > 0) {
-            bs.or(bsConformation);
-            if (doSet)
-              models[i].setConformation(bsConformation);
-          }
+        BitSet bsConformation = getModelAtomBitSet(i, true);
+        if (conformationIndex >= 0)
+          for (int c = nAltLocs; --c >= 0;)
+            if (c != conformationIndex)
+              BitSetUtil.andNot(bsConformation, getAtomBits(
+                  Token.spec_alternate, altLocs.substring(c, c + 1)));
+        if (BitSetUtil.length(bsConformation) > 0) {
+          bs.or(bsConformation);
+          if (doSet)
+            models[i].setConformation(bsConformation);
         }
       }
     return bs;

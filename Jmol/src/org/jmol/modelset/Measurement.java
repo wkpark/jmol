@@ -219,7 +219,7 @@ public class Measurement {
     boolean asScript = (sep.equals(" "));
     for (int i = 1; i <= count; i++) {
       String s = getLabel(i, asScript, withModelIndex);
-      str += (asScript ? " (" + s + ")" : (i > 1 ? sep : " ") + s); 
+      str += (asScript ? " " + s : (i > 1 ? sep : " ") + s); 
     }
     return str;  
   }
@@ -390,7 +390,7 @@ public class Measurement {
     return (atomIndex < 0 
         ? (withModelIndex ? "modelIndex " + getAtom(i).modelIndex + " " : "")
             + Escape.escape(getAtom(i))
-        : asBitSet ? "({" + atomIndex + "})"
+        : asBitSet ? "(({" + atomIndex + "}))"
         : viewer.getAtomInfo(atomIndex));
   }
 

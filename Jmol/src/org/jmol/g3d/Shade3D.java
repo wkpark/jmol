@@ -198,7 +198,7 @@ final class Shade3D {
     // 
     // k_specular = ( 2 * NdotL * z - zLight )^p
     // 
-    // HOWEVER -- Jmol's "specularExponent is 2^phongExponent
+    // HOWEVER -- Jmol's "specularExponent is log_2(phongExponent)
     //
     // "specularExponent" phong_exponent
     // 0 1

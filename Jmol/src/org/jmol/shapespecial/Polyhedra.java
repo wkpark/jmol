@@ -24,6 +24,7 @@
 
 package org.jmol.shapespecial;
 
+import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomIndexIterator;
 import org.jmol.modelset.Bond;
@@ -39,6 +40,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Measure;
+import org.jmol.viewer.JmolConstants;
 
 public class Polyhedra extends AtomShape {
 
@@ -212,9 +214,13 @@ public class Polyhedra extends AtomShape {
 
   private void deletePolyhedra() {
     int newCount = 0;
+    byte pid = JmolConstants.pidOf(null);
     for (int i = 0; i < polyhedronCount; ++i) {
       Polyhedron p = polyhedrons[i];
-      if (!centers.get(p.centralAtom.getAtomIndex()))
+      int iAtom = p.centralAtom.getAtomIndex();
+      if (centers.get(iAtom))
+        setColixAndPalette(Graphics3D.INHERIT_ALL, pid, iAtom);
+      else
         polyhedrons[newCount++] = p;
     }
     for (int i = newCount; i < polyhedronCount; ++i)
@@ -333,7 +339,7 @@ public class Polyhedra extends AtomShape {
     // here we are assuring that at least ONE face is drawn to 
     // all matching vertices
 
-    while (!isOK) {
+    while (!isOK && factor < 10.0f) {
       distMax = dAverage * factor;
       for (int i = 0; i < ptCenter; i++)
         bs.set(i);
@@ -558,9 +564,9 @@ public class Polyhedra extends AtomShape {
       BitSet bs = new BitSet();
       for (int i = 0; i < ptCenter; i++)
         bs.set(vertices[i].getAtomIndex());
-      String s = "  select ({"
+      String s = "  polyhedra ({"
           + centralAtom.getAtomIndex()
-          + "});polyhedra "
+          + "}) "
           + ptCenter
           + (myDistanceFactor == DEFAULT_DISTANCE_FACTOR ? ""
               : " distanceFactor " + myDistanceFactor)

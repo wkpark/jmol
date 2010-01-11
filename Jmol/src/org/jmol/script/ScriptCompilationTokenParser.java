@@ -79,7 +79,7 @@ abstract class ScriptCompilationTokenParser {
   protected int itokenInfix;
 
   protected boolean isSetBrace;
-  protected boolean isImplicitExpression;
+  protected boolean isMathExpressionCommand;
   protected boolean isSetOrDefine;
 
   private Vector ltokenPostfix;
@@ -154,12 +154,12 @@ abstract class ScriptCompilationTokenParser {
           return false;
         continue;
       }
-      if (!isImplicitExpression)
+      if (!isMathExpressionCommand)
         addTokenToPostfix(tokenBegin = new Token(Token.expressionBegin, "implicitExpressionBegin"));
-      if (!clauseOr(isCommaAsOrAllowed || !isImplicitExpression
+      if (!clauseOr(isCommaAsOrAllowed || !isMathExpressionCommand
           && tokPeek(Token.leftparen)))
         return false;
-      if (!isImplicitExpression
+      if (!isMathExpressionCommand
           && !(isEmbeddedExpression && lastToken == Token.tokenCoordinateEnd)) {
         addTokenToPostfix(Token.tokenExpressionEnd);
       }
@@ -172,7 +172,7 @@ abstract class ScriptCompilationTokenParser {
           tokenBegin.intValue = 0;
           tokCommand = Token.nada;
           isEmbeddedExpression = true;
-          isImplicitExpression = true;
+          isMathExpressionCommand = true;
           isCommaAsOrAllowed = false;
         }
       }
@@ -183,7 +183,7 @@ abstract class ScriptCompilationTokenParser {
   }
 
   private boolean isExpressionNext() {
-    return tokPeek(Token.leftbrace) || !isImplicitExpression && tokPeek(Token.leftparen);
+    return tokPeek(Token.leftbrace) || !isMathExpressionCommand && tokPeek(Token.leftparen);
   }
 
   protected static boolean tokenAttr(Token token, int tok) {
@@ -395,7 +395,7 @@ abstract class ScriptCompilationTokenParser {
         return error(ERROR_tokenExpected, ")");
       return checkForItemSelector();
     case Token.leftbrace:
-      return checkForCoordinate(isImplicitExpression);
+      return checkForCoordinate(isMathExpressionCommand);
     default:
       // may be a residue specification
       if (clauseResidueSpec())

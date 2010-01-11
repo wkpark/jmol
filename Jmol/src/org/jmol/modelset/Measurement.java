@@ -217,10 +217,8 @@ public class Measurement {
     String str = "";
     // extra () are needed because of the possible context  symop({1}) ({2})
     boolean asScript = (sep.equals(" "));
-    for (int i = 1; i <= count; i++) {
-      String s = getLabel(i, asScript, withModelIndex);
-      str += (asScript ? " " + s : (i > 1 ? sep : " ") + s); 
-    }
+    for (int i = 1; i <= count; i++)
+      str += (i > 1 ? sep : " ") + getLabel(i, asScript, withModelIndex); 
     return str;  
   }
   
@@ -387,6 +385,8 @@ public class Measurement {
 
   public String getLabel(int i, boolean asBitSet, boolean withModelIndex) {
     int atomIndex = countPlusIndices[i];
+    // double parens here because of situations like
+    //  draw symop({3}), which the compiler will interpret as symop()
     return (atomIndex < 0 
         ? (withModelIndex ? "modelIndex " + getAtom(i).modelIndex + " " : "")
             + Escape.escape(getAtom(i))

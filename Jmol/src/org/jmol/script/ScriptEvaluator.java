@@ -11952,6 +11952,15 @@ public class ScriptEvaluator {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
+      case Token.delete:
+      case Token.on:
+      case Token.off:
+        if (i + 1 != statementLength || needsGenerating || nAtomSets > 1
+            || nAtomSets == 0 && setPropertyName == "to")
+          error(ERROR_incompatibleArguments);
+        propertyName = parameterAsString(i);
+        onOffDelete = true;
+        break;
       case Token.opEQ:
       case Token.comma:
         continue;
@@ -11961,6 +11970,66 @@ public class ScriptEvaluator {
         needsGenerating = true;
         propertyName = "bonds";
         break;
+      case Token.radius:
+        decimalPropertyName = "radius";
+        continue;
+      case Token.integer:
+      case Token.decimal:
+        if (nAtomSets > 0 && !isDesignParameter)
+          error(ERROR_invalidParameterOrder);
+        if (theTok == Token.integer) {
+          if (decimalPropertyName == "radius_") {
+            propertyName = "nVertices";
+            propertyValue = new Integer(intParameter(i));
+            needsGenerating = true;
+            break;
+          }
+        }
+        propertyName = (decimalPropertyName == "radius_" ? "radius"
+            : decimalPropertyName);
+        propertyValue = new Float(floatParameter(i));
+        decimalPropertyName = "radius_";
+        isDesignParameter = false;
+        needsGenerating = true;
+        break;
+      case Token.bitset:
+      case Token.expressionBegin:
+        if (typeSeen)
+          error(ERROR_invalidParameterOrder);
+        if (++nAtomSets > 2)
+          error(ERROR_badArgumentCount);
+        if (setPropertyName == "to")
+          needsGenerating = true;
+        propertyName = setPropertyName;
+        setPropertyName = "to";
+        propertyValue = expression(i);
+        i = iToken;
+        break;
+      case Token.to:
+        if (nAtomSets > 1)
+          error(ERROR_invalidParameterOrder);
+        if (getToken(i + 1).tok == Token.bitset) {
+          propertyName = "toBitSet";
+          propertyValue = getToken(++i).value;
+          needsGenerating = true;
+          break;
+        } else if (!needsGenerating) {
+            error(ERROR_insufficientArguments);
+        }
+        setPropertyName = "to";
+        continue;
+      case Token.facecenteroffset:
+        if (!needsGenerating)
+          error(ERROR_insufficientArguments);
+        decimalPropertyName = "faceCenterOffset";
+        isDesignParameter = true;
+        continue;
+      case Token.distancefactor:
+        if (!needsGenerating)
+          error(ERROR_insufficientArguments);
+        decimalPropertyName = "distanceFactor";
+        isDesignParameter = true;
+        continue;
       case Token.color:
       case Token.translucent:
       case Token.opaque:
@@ -11983,13 +12052,11 @@ public class ScriptEvaluator {
         } else if (!isTranslucent)
           error(ERROR_invalidArgument);
         continue;
-      case Token.radius:
-        decimalPropertyName = "radius";
-        continue;
       case Token.collapsed:
       case Token.flat:
         propertyName = "collapsed";
-        propertyValue = (theTok == Token.collapsed ? Boolean.TRUE : Boolean.FALSE);
+        propertyValue = (theTok == Token.collapsed ? Boolean.TRUE
+            : Boolean.FALSE);
         if (typeSeen)
           error(ERROR_incompatibleArguments);
         typeSeen = true;
@@ -12001,74 +12068,6 @@ public class ScriptEvaluator {
           error(ERROR_incompatibleArguments);
         propertyName = parameterAsString(i);
         edgeParameterSeen = true;
-        break;
-      case Token.to:
-        if (!needsGenerating)
-          error(ERROR_insufficientArguments);
-        if (nAtomSets > 1)
-          error(ERROR_invalidParameterOrder);
-        if (getToken(i + 1).tok == Token.bitset) {
-          propertyName = "toBitSet";
-          propertyValue = getToken(++i).value;
-          needsGenerating = true;
-          break;
-        }
-        setPropertyName = "to";
-        continue;
-      case Token.facecenteroffset:
-        if (!needsGenerating)
-          error(ERROR_insufficientArguments);
-        decimalPropertyName = "faceCenterOffset";
-        isDesignParameter = true;
-        continue;
-      case Token.distancefactor:
-        if (!needsGenerating)
-          error(ERROR_insufficientArguments);
-        decimalPropertyName = "distanceFactor";
-        isDesignParameter = true;
-        continue;
-      case Token.integer:
-        if (nAtomSets > 0 && !isDesignParameter)
-          error(ERROR_invalidParameterOrder);
-        // no reason not to allow integers when explicit
-        if (decimalPropertyName == "radius_") {
-          propertyName = "nVertices";
-          propertyValue = new Integer(intParameter(i));
-          needsGenerating = true;
-          break;
-        }
-        // fall through
-      case Token.decimal:
-        if (nAtomSets > 0 && !isDesignParameter)
-          error(ERROR_invalidParameterOrder);
-        propertyName = (decimalPropertyName == "radius_" ? "radius"
-            : decimalPropertyName);
-        propertyValue = new Float(floatParameter(i));
-        decimalPropertyName = "radius_";
-        isDesignParameter = false;
-        needsGenerating = true;
-        break;
-      case Token.delete:
-      case Token.on:
-      case Token.off:
-        if (i + 1 != statementLength || needsGenerating || nAtomSets > 1
-            || nAtomSets == 0 && setPropertyName == "to")
-          error(ERROR_incompatibleArguments);
-        propertyName = parameterAsString(i);
-        onOffDelete = true;
-        break;
-      case Token.bitset:
-      case Token.expressionBegin:
-        if (typeSeen)
-          error(ERROR_invalidParameterOrder);
-        if (++nAtomSets > 2)
-          error(ERROR_badArgumentCount);
-        if (setPropertyName == "to")
-          needsGenerating = true;
-        propertyName = setPropertyName;
-        setPropertyName = "to";
-        propertyValue = expression(i);
-        i = iToken;
         break;
       default:
         error(ERROR_invalidArgument);

@@ -179,6 +179,8 @@ public class Polyhedra extends AtomShape {
       // but from Color we need to identify the centers.
       if ("colorThis" == propertyName && iHaveCenterBitSet)
         bs = centers;
+      else
+        andBitSet(bs);
       propertyName = "color";
       //allow super
     }
@@ -188,6 +190,8 @@ public class Polyhedra extends AtomShape {
       // but from Color we need to identify the centers.
       if ("translucencyThis" == propertyName && iHaveCenterBitSet)
         bs = centers;
+      else
+        andBitSet(bs);
       //allow super
     }
 
@@ -210,6 +214,13 @@ public class Polyhedra extends AtomShape {
     }
 
     super.setProperty(propertyName, value, bs);
+  }
+
+  private void andBitSet(BitSet bs) {
+    BitSet bsCenters = new BitSet();
+    for (int i = polyhedronCount; --i >= 0;)
+      bsCenters.set(polyhedrons[i].centralAtom.getAtomIndex());
+    bs.and(bsCenters);
   }
 
   private void deletePolyhedra() {
@@ -560,21 +571,17 @@ public class Polyhedra extends AtomShape {
         this.planes[i] = planes[i];
     }
 
-    String getState(Hashtable temp) {
+    protected String getState(Hashtable temp) {
       BitSet bs = new BitSet();
       for (int i = 0; i < ptCenter; i++)
         bs.set(vertices[i].getAtomIndex());
-      String s = "  polyhedra ({"
-          + centralAtom.getAtomIndex()
-          + "}) "
-          + ptCenter
+      return "  polyhedra ({" + centralAtom.getAtomIndex() + "}) "
           + (myDistanceFactor == DEFAULT_DISTANCE_FACTOR ? ""
               : " distanceFactor " + myDistanceFactor)
           + (myFaceCenterOffset == DEFAULT_FACECENTEROFFSET ? ""
               : " faceCenterOffset " + myFaceCenterOffset) + " to "
           + Escape.escape(bs) + (collapsed ? " collapsed" : "") + ";"
           + (visible ? "" : "polyhedra off;") + "\n";
-      return s;
     }
   }
 

@@ -37,7 +37,6 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.Escape;
 import org.jmol.util.Quadric;
-import org.jmol.viewer.JmolConstants;
 
 public class Ellipsoids extends AtomShape {
   // most differences are in renderer
@@ -230,7 +229,7 @@ public class Ellipsoids extends AtomShape {
         v1.scale(ellipsoid.lengths[i]);
         sb.append(" ").append(Escape.escape(v1));
       }
-      sb.append(" " + getColorCommand("", JmolConstants.PALETTE_UNKNOWN, ellipsoid.colix));
+      sb.append(" " + getColorCommand("", ellipsoid.colix));
       if (!ellipsoid.isOn)
         sb.append(" off");
       sb.append(";\n");

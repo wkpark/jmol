@@ -296,7 +296,6 @@ public class TriangleData {
    * 
    * @param plane
    * @param v 
-   * @param vertices
    * @param flags
    *          0 -- polygon int[]  1 -- edges only 2 -- triangles only 3 -- both
    * @return Vector of Point3f[3] triangles and Point3f[2] edge lines

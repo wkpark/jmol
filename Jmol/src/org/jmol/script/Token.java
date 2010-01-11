@@ -272,7 +272,7 @@ public class Token {
   final static int cd           = scriptCommand | 7 | implicitStringCommand | expression;
   final static int centerAt     = scriptCommand | 8;
 //final static int color        see intproperty
-  final static int configuration = scriptCommand | 9;
+//final static int configuration see intproperty
   public final static int connect = scriptCommand | 10;
   final static int console      = scriptCommand | 11 | defaultON;
 //final static int data         see mathfunc
@@ -514,18 +514,19 @@ public class Token {
   public final static int atomIndex     = intproperty | 3;
   public final static int bondcount     = intproperty | 4;
   public final static int cell          = intproperty | 5;
-  public final static int color         = intproperty | 6 | scriptCommand | setparam | settable;
-  public final static int elemno        = intproperty | 7 | settable;
+  public final static int configuration = intproperty | 6 | scriptCommand;
+  public final static int color         = intproperty | 7 | scriptCommand | setparam | settable;
+  public final static int elemno        = intproperty | 8 | settable;
   //file: see xxx(a)
-  public final static int formalCharge  = intproperty | 8 | setparam | settable;
-  public final static int groupID       = intproperty | 9;
-  public final static int groupindex    = intproperty | 10;
-  public final static int model         = intproperty | 11 | scriptCommand;
-  public final static int modelindex    = intproperty | 12;
-  public final static int molecule      = intproperty | 13;
-  public final static int polymerLength = intproperty | 14;
-  public final static int resno         = intproperty | 15;
-  public final static int site          = intproperty | 16;
+  public final static int formalCharge  = intproperty | 9 | setparam | settable;
+  public final static int groupID       = intproperty | 10;
+  public final static int groupindex    = intproperty | 11;
+  public final static int model         = intproperty | 12 | scriptCommand;
+  public final static int modelindex    = intproperty | 13;
+  public final static int molecule      = intproperty | 14;
+  public final static int polymerLength = intproperty | 15;
+  public final static int resno         = intproperty | 16;
+  public final static int site          = intproperty | 17;
   public final static int strucno       = intproperty | 18;
   public final static int valence       = intproperty | 20 | settable;
 

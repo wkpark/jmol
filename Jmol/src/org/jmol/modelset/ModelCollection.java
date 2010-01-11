@@ -620,28 +620,34 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
   
-  public BitSet setConformation(int modelIndex, BitSet bsConformation) {
+  public BitSet setConformation(BitSet bsAtoms) {
+    BitSet bsModels = getModelBitSet(bsAtoms, false);
     for (int i = modelCount; --i >= 0;)
-      if (i == modelIndex || modelIndex < 0)
-        models[i].setConformation(bsConformation);
-    return bsConformation;
+      if (bsModels.get(i))
+        models[i].setConformation(bsAtoms);
+    return bsAtoms;
   }
 
-  public BitSet setConformation(int modelIndex, int conformationIndex) {
+  public BitSet getConformation(int modelIndex, int conformationIndex,
+                                boolean doSet) {
     BitSet bs = new BitSet();
-    String altLocs = getAltLocListInModel(modelIndex);
-    if (altLocs.length() > 0) {
-      BitSet bsConformation = getModelAtomBitSet(modelIndex, true);
-      if (conformationIndex >= 0)
-        for (int c = models[modelIndex].nAltLocs; --c >= 0;)
-          if (c != conformationIndex)
-            BitSetUtil.andNot(bsConformation, getAtomBits(Token.spec_alternate,
-                altLocs.substring(c, c + 1)));
-      if (BitSetUtil.length(bsConformation) > 0) {
-        setConformation(modelIndex, bsConformation);
-        bs.or(bsConformation);
+    for (int i = modelCount; --i >= 0;)
+      if (i == modelIndex || modelIndex < 0) {
+        String altLocs = getAltLocListInModel(i);
+        if (altLocs.length() > 0) {
+          BitSet bsConformation = getModelAtomBitSet(i, true);
+          if (conformationIndex >= 0)
+            for (int c = models[i].nAltLocs; --c >= 0;)
+              if (c != conformationIndex)
+                BitSetUtil.andNot(bsConformation, getAtomBits(
+                    Token.spec_alternate, altLocs.substring(c, c + 1)));
+          if (BitSetUtil.length(bsConformation) > 0) {
+            bs.or(bsConformation);
+            if (doSet)
+              models[i].setConformation(bsConformation);
+          }
+        }
       }
-    }
     return bs;
   }
 

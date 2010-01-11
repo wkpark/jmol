@@ -1261,6 +1261,7 @@ public class ScriptEvaluator {
             }
             n += p - 1;
             break;
+          case Token.configuration:
           case Token.cell:
             error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));
           default:
@@ -3081,6 +3082,8 @@ public class ScriptEvaluator {
         String property = (tokWhat == Token.property ? (String) val : null);
         if (property != null)
           val = code[++pc].value;
+        if (tokWhat == Token.configuration && tokOperator != Token.opEQ)
+          error(ERROR_invalidArgument);
         if (isSyntaxCheck) {
           rpn.addX(new BitSet());
           break;
@@ -3315,6 +3318,9 @@ public class ScriptEvaluator {
       default:
         propertyValue = Atom.atomPropertyInt(atom, tokWhat);
         break;
+      case Token.configuration:
+        // these are all-inclusive; no need to do a by-atom comparison
+        return viewer.getConformation(-1, comparisonValue - 1, false);
       case Token.symop:
         propertyBitSet = atom.getAtomSymmetry();
         if (atom.getModelIndex() != iModel) {
@@ -8513,28 +8519,28 @@ public class ScriptEvaluator {
   private void configuration() throws ScriptException {
     //if (!isSyntaxCheck && viewer.getDisplayModelIndex() <= -2)
     //  error(ERROR_backgroundModelError, "\"CONFIGURATION\"");
-    BitSet bsConfigurations;
+    BitSet bsAtoms;
     if (statementLength == 1) {
-      bsConfigurations = viewer.setConformation();
+      bsAtoms = viewer.setConformation();
       viewer.addStateScript("select", null, viewer.getSelectionSet(), null,
           "configuration", true, false);
     } else {
       int n = intParameter(checkLast(1));
       if (isSyntaxCheck)
         return;
-      bsConfigurations = viewer.setConformation(n - 1);
+      bsAtoms = viewer.getConformation(viewer.getCurrentModelIndex(), n - 1, true);
       viewer.addStateScript("configuration " + n + ";", true, false);
     }
     if (isSyntaxCheck)
       return;
-    boolean addHbonds = viewer.hasCalculatedHBonds(bsConfigurations);
+    boolean addHbonds = viewer.hasCalculatedHBonds(bsAtoms);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_HYDROGEN_MASK));
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0,
-        bsConfigurations);
+        bsAtoms);
     if (addHbonds)
-      viewer.autoHbond(bsConfigurations, bsConfigurations, null, 0, 0);
-    viewer.select(bsConfigurations, tQuiet);
+      viewer.autoHbond(bsAtoms, bsAtoms, null, 0, 0);
+    viewer.select(bsAtoms, tQuiet);
   }
 
   private void vector() throws ScriptException {

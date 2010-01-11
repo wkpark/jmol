@@ -2922,13 +2922,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // user has selected some atoms, now this sets that as a conformation
     // with the effect of rewriting the cartoons to match
 
-    return modelSet.setConformation(-1, selectionManager.bsSelection);
+    return modelSet.setConformation(selectionManager.bsSelection);
   }
 
   // AKA "configuration"
-  public BitSet setConformation(int conformationIndex) {
-    return modelSet.setConformation(animationManager.currentModelIndex,
-        conformationIndex);
+  public BitSet getConformation(int iModel, int conformationIndex, boolean doSet) {
+    return modelSet.getConformation(iModel, conformationIndex, doSet);
   }
 
   public int autoHbond(BitSet bsBonds) {

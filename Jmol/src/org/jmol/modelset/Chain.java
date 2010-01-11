@@ -181,8 +181,8 @@ public final class Chain {
           iNew -= nScan + 1;
         int offsetNew = iNew - firstAtomIndex;
         if (offsetNew < 0 || offsetNew > 255 || iNew == iThis
-            || atomNames[iNew] != atomNames[iThis]
-            || !bsSelected.get(iNew))
+            || !bsSelected.get(iNew)
+            || atomNames[iNew] != atomNames[iThis])
           continue;
         offsets[offsetIndex] = (byte) offsetNew;
         /*

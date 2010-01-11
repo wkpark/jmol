@@ -8229,6 +8229,9 @@
   <fah_proj number="6317" name="p6317_sh3_with_ALA_frags" public="n" file="xyz"
     server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz" contrib="John Deas"/>
+  <fah_proj number="6318" name="p6318" public="n"
+    server="171.64.65.60" atoms="0" preferred="36" deadline="52"
+    credit="336" frames="100" code="G"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

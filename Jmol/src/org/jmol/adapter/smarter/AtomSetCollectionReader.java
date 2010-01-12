@@ -151,7 +151,7 @@ public abstract class AtomSetCollectionReader {
   protected boolean needToApplySymmetry;
   protected boolean getHeader;
   protected int templateAtomCount;
-  protected int modelNumber;
+  public int modelNumber;
   protected int vibrationNumber;
   public int desiredVibrationNumber = Integer.MIN_VALUE;
   protected BitSet bsModels;
@@ -360,7 +360,7 @@ public abstract class AtomSetCollectionReader {
   }
 
   private boolean haveModel = false;
-  protected boolean doGetModel(int modelNumber) {
+  public boolean doGetModel(int modelNumber) {
     // modelNumber is 1-based, but firstLastStep is 0-based
   boolean isOK = (bsModels == null ? desiredModelNumber < 1 || modelNumber == desiredModelNumber
         : modelNumber > lastModelNumber ? false 
@@ -371,7 +371,7 @@ public abstract class AtomSetCollectionReader {
   return isOK;
   }
   
-  protected boolean isLastModel(int modelNumber) {
+  public boolean isLastModel(int modelNumber) {
     return (desiredModelNumber > 0 || modelNumber >= lastModelNumber);
   }
 
@@ -455,7 +455,7 @@ public abstract class AtomSetCollectionReader {
       checkUnitCell(22);
   }
 
-  protected void setUnitCell(float a, float b, float c, float alpha, float beta,
+  public void setUnitCell(float a, float b, float c, float alpha, float beta,
                    float gamma) {
     if (ignoreFileUnitCell)
       return;

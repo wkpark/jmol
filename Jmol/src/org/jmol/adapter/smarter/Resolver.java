@@ -50,7 +50,7 @@ public class Resolver {
                  "Molden;MopacGraphf;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;V3000;", 
-    "xtal.", ";Aims;Castep;Shelx;Vasp;Wien2k;"
+    "xtal.", ";Aims;Castep;Shelx;Wien2k;"
   };
   
   public final static String getReaderClassBase(String type) {
@@ -515,6 +515,10 @@ public class Resolver {
     if (header.indexOf("XSD") >= 0) {
       return specialTags[SPECIAL_XSD_XML][0];
     }
+    if (header.indexOf(">vasp<") >= 0) {
+      return specialTags[SPECIAL_VASP_XML][0];
+    }
+    
     return "unidentified " + specialTags[SPECIAL_CML_XML][0];
   }
 
@@ -539,41 +543,48 @@ public class Resolver {
   public final static int SPECIAL_MOLPRO_XML  = 15;
   public final static int SPECIAL_ODYSSEY_XML = 16;
   public final static int SPECIAL_XSD_XML     = 17;
-  public final static int SPECIAL_ARGUS_DOM   = 18;
-  public final static int SPECIAL_CML_DOM     = 19;
-  public final static int SPECIAL_CHEM3D_DOM  = 20;
-  public final static int SPECIAL_MOLPRO_DOM  = 21;
-  public final static int SPECIAL_ODYSSEY_DOM = 22;
-  public final static int SPECIAL_XSD_DOM     = 23; // not implemented
-
+  public final static int SPECIAL_VASP_XML    = 18; 
+  
+  public final static int SPECIAL_ARGUS_DOM   = 19;
+  public final static int SPECIAL_CML_DOM     = 20;
+  public final static int SPECIAL_CHEM3D_DOM  = 21;
+  public final static int SPECIAL_MOLPRO_DOM  = 22;
+  public final static int SPECIAL_ODYSSEY_DOM = 23;
+  public final static int SPECIAL_XSD_DOM     = 24; // not implemented
+  public final static int SPECIAL_VASP_DOM    = 25; 
+  
   public final static String[][] specialTags = {
     { "Jme" },
     { "MopacGraphf" },
     { "V3000" },
     { "Odyssey" },
     { "Mol" },
+    
     { "Xyz" },
     { "FoldingXyz" },
     { "Cube" },
     { "Alchemy" },
     { "Wien2k" },
-    { "Castep" },
-    { "Aims" },
     
-    { "XmlArgus" }, 
+    { "Castep" },
+    { "Aims" },  
+    
+    { "XmlArgus" },  //12
     { "XmlCml" },
     { "XmlChem3d" },
     { "XmlMolpro" },
     { "XmlOdyssey" },
     { "XmlXsd" },
+    { "XmlVasp" },
 
-    { "XmlArgus(DOM)" }, 
+    { "XmlArgus(DOM)" }, //19
     { "XmlCml(DOM)" },
     { "XmlChem3d(DOM)" },
     { "XmlMolpro(DOM)" },
     { "XmlOdyssey(DOM)" },
     { "XmlXsd(DOM)" },
-    
+    { "XmlVasp(DOM)" },
+
     { "MdCrd" }
 
   };
@@ -855,14 +866,11 @@ public class Resolver {
   private final static String[] moldenFileStartRecords =
   {"Molden", "[Molden"};
 
-  private final static String[] vaspOutcarStartRecords =
-  {"Vasp", " vasp."};
-
   private final static String[] hyperChemFileStartRecords = 
   { "HyperChem", "mol 1" };
 
   private final static String[][] fileStartsWithRecords =
-  { cubeFileStartRecords, mol2Records, webmoFileStartRecords, moldenFileStartRecords, vaspOutcarStartRecords, hyperChemFileStartRecords};
+  { cubeFileStartRecords, mol2Records, webmoFileStartRecords, moldenFileStartRecords, hyperChemFileStartRecords};
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings

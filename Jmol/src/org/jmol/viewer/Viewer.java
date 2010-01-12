@@ -5375,7 +5375,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (key.equalsIgnoreCase("zshadePower")) {
-        Graphics3D.setZShadePower(Math.min(value, 1));
+        Graphics3D.setZShadePower(Math.max(value, 1));
         break;
       }
 

@@ -554,7 +554,7 @@ public class StateManager {
         + ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode;"
         + ";perspectivedepth;phongexponent;visualrange;perspectivemodel;refreshing;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
-        + ";slabenabled;zshade;specular;specularexponent;specularpercent;specularpower;stateversion"
+        + ";slabenabled;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate"
         + ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomenabled"
         +
@@ -616,6 +616,9 @@ public class StateManager {
     int phongExponent = 64;    // 2^specularExponent
     int specularPercent = 22;
     int specularPower = 40;
+    int zShadePower = 1;
+    
+    boolean slabByMolecule = false;
 
     //file loading
 
@@ -880,6 +883,7 @@ public class StateManager {
         appendCmd(str, "set specularExponent " + se);
       else
         appendCmd(str, "set phongExponent " + pe);        
+      appendCmd(str, "set zShadePower " + Graphics3D.getZShadePower());
       return str.toString();
     }
 
@@ -1367,6 +1371,7 @@ public class StateManager {
       setParameterValue("showNavigationPointAlways", showNavigationPointAlways);
       setParameterValue("showScript", scriptDelay);
       setParameterValue("showUnitcell", false);
+      setParameterValue("slabByMolecule", slabByMolecule);
       setParameterValue("slabEnabled", false);
       setParameterValue("smartAromatic", smartAromatic);
       setParameterValue("solventProbe", solventOn);
@@ -1409,6 +1414,7 @@ public class StateManager {
       setParameterValue("zoomEnabled", true);
       setParameterValue("zoomLarge", zoomLarge);
       setParameterValue("zShade", false);
+      setParameterValue("zShade", zShadePower);
       setParameterValue("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
     }
 

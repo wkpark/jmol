@@ -434,6 +434,8 @@ class TransformManager11 extends TransformManager {
 
   synchronized void navigate(int keyCode, int modifiers) {
     // 0 0 here means "key released"
+    String key = null;
+    float value = 0;
     if (mode != MODE_NAVIGATION)
       return;
     if (keyCode == 0) {
@@ -467,8 +469,12 @@ class TransformManager11 extends TransformManager {
       if (navOn) {
         if (isAltKey) {
           navY += multiplier;
+          value = navY;
+          key = "navY";
         } else {
           navZ += multiplier;
+          value = navZ;
+          key = "navZ";
         }
         break;
       }
@@ -493,8 +499,12 @@ class TransformManager11 extends TransformManager {
       if (navOn) {
         if (isAltKey) {
           navY -= multiplier;
+          value = navY;
+          key = "navY";
         } else {
           navZ -= multiplier;
+          value = navZ;
+          key = "navZ";
         }
         break;
       }
@@ -518,6 +528,8 @@ class TransformManager11 extends TransformManager {
     case KeyEvent.VK_LEFT:
       if (navOn) {
         navX -= multiplier;
+        value = navX;
+        key = "navX";
         break;
       }
       if (navigateSurface) {
@@ -534,6 +546,8 @@ class TransformManager11 extends TransformManager {
     case KeyEvent.VK_RIGHT:
       if (navOn) {
         navX += multiplier;
+        value = navX;
+        key = "navX";
         break;
       }
       if (navigateSurface) {
@@ -552,6 +566,8 @@ class TransformManager11 extends TransformManager {
       navMode = NAV_MODE_NONE;
       return;
     }
+    if (key != null)
+      viewer.getGlobalSettings().setParameterValue(key, value);
     navigating = true;
     finalizeTransformParameters();
   }

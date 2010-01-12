@@ -1586,8 +1586,10 @@ abstract public class ModelCollection extends BondCollection {
     int n = 0;
     if (moleculeCount == 0)
       getMolecules();
+    if (modelIndex < 0)
+      return moleculeCount;
     for (int i = 0; i < modelCount; i++) {
-      if (modelIndex == i || modelIndex < 0)
+      if (modelIndex == i)
         n += models[i].moleculeCount;
     }
     return n;
@@ -1611,9 +1613,9 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-  private void getMolecules() {
+  public Molecule[] getMolecules() {
     if (moleculeCount > 0)
-      return;
+      return molecules;
     if (molecules == null)
       molecules = new Molecule[4];
     moleculeCount = 0;
@@ -1623,12 +1625,14 @@ abstract public class ModelCollection extends BondCollection {
     int modelIndex = -1;
     int indexInModel = -1;
     int moleculeCount0 = -1;
+    Model m = null;
     for (int i = 0; i < atomCount; i++)
       if (!atomlist.get(i) && !bs.get(i)) {
         modelIndex = atoms[i].modelIndex;
         if (modelIndex != thisModelIndex) {
           indexInModel = -1;
-          models[modelIndex].firstMolecule = moleculeCount;
+          m = models[modelIndex];
+          m.firstMolecule = moleculeCount;
           moleculeCount0 = moleculeCount - 1;
           thisModelIndex = modelIndex;
         }
@@ -1639,10 +1643,10 @@ abstract public class ModelCollection extends BondCollection {
           molecules = (Molecule[]) ArrayUtil.setLength(molecules,
               moleculeCount * 2);
         molecules[moleculeCount] = new Molecule((ModelSet) this, moleculeCount,
-            bs, thisModelIndex, indexInModel);
-        getModel(thisModelIndex).moleculeCount = moleculeCount - moleculeCount0;
-        moleculeCount++;
+            i, bs, thisModelIndex, indexInModel);
+        m.moleculeCount = moleculeCount++ - moleculeCount0;
       }
+    return molecules;
   }
 
   public BitSet getBranchBitSet(int atomIndex, int atomIndexNot) {
@@ -2537,7 +2541,7 @@ abstract public class ModelCollection extends BondCollection {
         }
       }
     }
-    boolean nonbonded = (min == 0 && max == 0);
+    boolean nonbonded = (min == 0);
     for (i = atomCount; --i >= 0;) {
       int n = nBonded[i];
       if (n < min || n > max)

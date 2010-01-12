@@ -1889,7 +1889,7 @@ class ScriptMathProcessor {
           return false;
 
         if (min == Integer.MIN_VALUE) {
-          min = Math.max(n, 1);
+          min = Math.max(n, 0);
           fmin = f;
         } else {
           max = n;

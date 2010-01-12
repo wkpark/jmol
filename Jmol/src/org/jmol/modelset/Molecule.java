@@ -30,24 +30,26 @@ import org.jmol.viewer.JmolConstants;
 import java.util.BitSet;
 import java.util.Hashtable;
 
-class Molecule {
+public class Molecule {
   
   ModelSet modelSet;
   int moleculeIndex;
   int modelIndex;
   int indexInModel;
-  int nAtoms;
+  public int firstAtomIndex;
+  public int nAtoms;
   int nElements;
   int[] elementCounts = new int[JmolConstants.elementNumberMax];
   int[] altElementCounts = new int[JmolConstants.altElementMax];
   int elementNumberMax;
   int altElementMax;
   String mf;
-  BitSet atomList;
+  public BitSet atomList;
 
-  Molecule(ModelSet modelSet, int moleculeIndex, BitSet atomList, int modelIndex,
+  Molecule(ModelSet modelSet, int moleculeIndex, int firstAtomIndex, BitSet atomList, int modelIndex,
       int indexInModel) {
     this.modelSet = modelSet;
+    this.firstAtomIndex = firstAtomIndex;
     this.atomList = atomList;
     this.moleculeIndex = moleculeIndex;
     this.modelIndex = modelIndex;

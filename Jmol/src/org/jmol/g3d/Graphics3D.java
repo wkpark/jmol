@@ -805,8 +805,11 @@ final public class Graphics3D implements JmolRendererInterface {
         int pG = (p & 0xFF00) >> 8;
         int pB = (p & 0xFF0000) >> 16;
         int pA = (p & 0xFF000000);
-        float f = zDepth - z;
-        f /= (zDepth - zSlab);
+        float f = (float)(zDepth - z) / (zDepth - zSlab);
+        if (Shade3D.zPower > 1) {
+          for (int i = 0; i < Shade3D.zPower; i++)
+            f *= f;
+        }
         pR = zShadeR + (int) (f * (pR - zShadeR));
         pG = zShadeG + (int) (f * (pG - zShadeG));
         pB = zShadeB + (int) (f * (pB - zShadeB));        
@@ -2276,6 +2279,19 @@ final public class Graphics3D implements JmolRendererInterface {
     return Shade3D.specularOn;
   }
 
+  /**
+   *  fractional distance from black for ambient color
+   * 
+   * @param val
+   */
+  public synchronized static void setZShadePower(int val) {
+    Shade3D.zPower = val;
+  }
+
+  public static int getZShadePower() {
+    return Shade3D.zPower;
+  }
+  
   /**
    *  fractional distance from black for ambient color
    * 

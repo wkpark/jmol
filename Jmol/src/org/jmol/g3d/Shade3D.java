@@ -50,6 +50,7 @@ final class Shade3D {
   static final byte shadeIndexNormal = 52;
   final static byte shadeIndexNoisyLimit = 56;
 
+  public static int zPower = 1; // the power for the zShading -- higher number --> more depth of fog
 
   // the viewer vector is always {0 0 1}
 

@@ -603,7 +603,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Graphics3D.setSpecularPower(-global.specularExponent);
     Graphics3D.setPhongExponent(global.phongExponent);
     Graphics3D.setSpecularPower(global.specularPower);
-
+    Graphics3D.setZShadePower(global.zShadePower);
     if (modelSet != null)
       animationManager.setAnimationOn(false);
     animationManager.setAnimationFps(global.animationFps);
@@ -1063,6 +1063,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean getSlabEnabled() {
     return transformManager.slabEnabled;
+  }
+
+  public boolean getSlabByMolecule() {
+    return global.slabByMolecule;
   }
 
   void slabByPixels(int pixels) {
@@ -5370,6 +5374,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         Graphics3D.setAmbientPercent(value);
         break;
       }
+      if (key.equalsIgnoreCase("zshadePower")) {
+        Graphics3D.setZShadePower(Math.min(value, 1));
+        break;
+      }
 
       if (key.equalsIgnoreCase("ribbonAspectRatio")) {
         global.ribbonAspectRatio = value;
@@ -5440,6 +5448,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean doRepaint = true;
     while (true) {
 
+      // 11.9.18
+      if (key.equalsIgnoreCase("slabByMolecule")) {
+        global.slabByMolecule = value;
+        break;
+      }
+      
       // 11.9.15
       
       if (key.equalsIgnoreCase("saveProteinStructureState")) {

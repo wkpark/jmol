@@ -2780,6 +2780,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getAllPolymerInfo(getAtomBitSet(atomExpression));
   }
 
+  public String getWrappedState(boolean isImage) {
+    if (isImage && !global.imageState)
+      return "";
+    // we remove local file references in the embedded states for images
+    return JmolConstants.embedScript(FileManager.setScriptFileReferences(
+        getStateInfo(null), ".", null, null));
+  }
+  
   public String getStateInfo() {
     return getStateInfo(null);
   }
@@ -3461,7 +3469,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isDataOnly)
       return "";
     mustRender = true;
-    saveState("_Export");
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
     resizeImage(width, height, true, true, false);
@@ -4233,11 +4240,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return haveDisplay && actionManager.getDrawHover();
   }
 
-  public String getAtomInfo(int atomIndex) {
+  public String getAtomInfo(int atomOrPointIndex) {
     // only for MeasurementTable and actionManager
-    return (atomIndex >= 0 ? modelSet.getAtomInfo(atomIndex, null)
+    return (atomOrPointIndex >= 0 ? modelSet.getAtomInfo(atomOrPointIndex, null)
         : (String) modelSet.getShapeProperty(JmolConstants.SHAPE_MEASURES,
-            "pointInfo", -atomIndex));
+            "pointInfo", -atomOrPointIndex));
   }
 
   public String getAtomInfoXYZ(int atomIndex, boolean useChimeFormat) {
@@ -6852,10 +6859,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
               +"getAppConsole......." //80
               +"getScriptEditor....." //100
               +"setMenu............." //120
-              +"wrappedState........" //140
-              +"spaceGroupInfo......" //160
-              +"disablePopupMenu...." //180
-              +"defaultDirectory...." //200
+              +"spaceGroupInfo......" //140
+              +"disablePopupMenu...." //160
+              +"defaultDirectory...." //180
               ).indexOf(infoType)) {
 
       case 0:
@@ -6890,15 +6896,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       case 120:
         return menuStructure = (String) paramInfo;
       case 140:
-        if (!global.imageState)
-          return "";
-        return JmolConstants.embedScript(getStateInfo());
-      case 160:
         return getSpaceGroupInfo(null);
-      case 180:
+      case 160:
         global.disablePopupMenu = true; // no false here, because it's a one-time setting
         return null;
-      case 200:
+      case 180:
         return global.defaultDirectory;
       default:
         System.out.println("ERROR in getProperty DATA_API: " + infoType);

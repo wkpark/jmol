@@ -47,6 +47,7 @@ import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.LabelToken;
+import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.Bond.BondSet;
@@ -213,7 +214,7 @@ public class ScriptEvaluator {
   public boolean compileScriptFile(String filename, boolean tQuiet) {
     clearState(tQuiet);
     contextPath = filename;
-    return compileScriptFileInternal(filename, null, null);
+    return compileScriptFileInternal(filename, null, null, null);
   }
 
   public void evaluateCompiledScript(boolean isCmdLine_c_or_C_Option,
@@ -1633,7 +1634,8 @@ public class ScriptEvaluator {
       runScript(script, outputBuffer);
   }
 
-  private boolean compileScriptFileInternal(String filename, String localPath, String remotePath) {
+  private boolean compileScriptFileInternal(String filename, String localPath, 
+                                            String remotePath, String scriptPath) {
     // from "script" command, with push/pop surrounding or viewer
     if (filename.toLowerCase().indexOf("javascript:") == 0)
       return compileScript(filename, viewer.jsEval(filename.substring(11)),
@@ -1646,10 +1648,11 @@ public class ScriptEvaluator {
     }
     this.filename = filename;
     String script = fixScriptPath(data[1], data[0]);
-    if (localPath != null)
-      script = FileManager.setScriptFileReferences(script, localPath, true);
-    if (remotePath != null)
-      script = FileManager.setScriptFileReferences(script, remotePath, false);
+    if (scriptPath == null) {
+      scriptPath = viewer.getFullPath(filename);
+      scriptPath = scriptPath.substring(0, scriptPath.lastIndexOf("/"));
+    }
+    script = FileManager.setScriptFileReferences(script, localPath, remotePath, scriptPath);
     return compileScript(filename, script, debugScript);
   }
 
@@ -4536,8 +4539,8 @@ public class ScriptEvaluator {
       case Token.load:
         load();
         break;
-      case Token.monitor:
-        monitor();
+      case Token.measure:
+        measure();
         break;
       case Token.refresh:
         refresh();
@@ -6995,9 +6998,7 @@ public class ScriptEvaluator {
         + " created: " + type);
   }
 
-  // measure() see monitor()
-
-  private void monitor() throws ScriptException {
+  private void measure() throws ScriptException {
     if (statementLength == 1) {
       viewer.hideMeasurements(false);
       return;
@@ -7050,7 +7051,7 @@ public class ScriptEvaluator {
     boolean isRange = true;
     int tokAction = Token.opToggle;
     String strFormat = null;
-    Vector monitorExpressions = new Vector();
+    Vector points = new Vector();
     BitSet bs = new BitSet();
     Object value = null;
     TickInfo tickInfo = null;
@@ -7143,7 +7144,7 @@ public class ScriptEvaluator {
         }
         if ((nAtoms = ++expressionCount) > 4)
           error(ERROR_badArgumentCount);
-        monitorExpressions.addElement(value);
+        points.addElement(value);
         i = iToken;
         break;
       }
@@ -7162,11 +7163,11 @@ public class ScriptEvaluator {
     if (value != null || tickInfo != null) {
       if (value == null)
         tickInfo.id = "default";
-      setShapeProperty(JmolConstants.SHAPE_MEASURES, "measure", new Measure(
-                   tokAction, 
-                   monitorExpressions,
+      setShapeProperty(JmolConstants.SHAPE_MEASURES, "measure", new MeasurementData(
+                   points, 
+                   tokAction,
                    rangeMinMax, 
-                   strFormat,
+                   strFormat, null,
                    tickInfo,
                    isAllConnected,
                    isAll)); 
@@ -7495,6 +7496,7 @@ public class ScriptEvaluator {
     String filename = null;
     String localPath = null;
     String remotePath = null;
+    String scriptPath = null;
     if (tok == Token.javascript) {
       checkLength(2);
       if (!isSyntaxCheck)
@@ -7528,9 +7530,12 @@ public class ScriptEvaluator {
         i = iToken + 1;
       }
       while (filename.equalsIgnoreCase("localPath")
-          || filename.equalsIgnoreCase("remotePath")) {
+          || filename.equalsIgnoreCase("remotePath")
+          || filename.equalsIgnoreCase("scriptPath")) {
         if (filename.equalsIgnoreCase("localPath"))
           localPath = parameterAsString(i++);
+        else if (filename.equalsIgnoreCase("scriptPath"))
+          scriptPath = parameterAsString(i++);
         else
           remotePath = parameterAsString(i++);
         filename = parameterAsString(i++);
@@ -7579,7 +7584,7 @@ public class ScriptEvaluator {
       isSyntaxCheck = isCmdLine_c_or_C_Option = true;
     pushContext(null);
     contextPath += " >> " + filename;
-    if (theScript == null ? compileScriptFileInternal(filename, localPath, remotePath) 
+    if (theScript == null ? compileScriptFileInternal(filename, localPath, remotePath, scriptPath) 
         : compileScript(null, theScript, false)) {
       this.pcEnd = pcEnd;
       this.lineEnd = lineEnd;
@@ -7826,7 +7831,7 @@ public class ScriptEvaluator {
       }
       error(ERROR_invalidArgument);
     }
-    if (getToken(2).tok == Token.monitor) {
+    if (getToken(2).tok == Token.measure) {
       if (statementLength == 5 && getToken(3).tok == Token.bitset) {
         if (!isSyntaxCheck)
           setShapeProperty(JmolConstants.SHAPE_MEASURES, "select",
@@ -9382,7 +9387,7 @@ public class ScriptEvaluator {
     case Token.hbond:
       setHbond();
       return;
-    case Token.monitor:
+    case Token.measure:
       setMonitor();
       return;
     case Token.property: // considered reserved
@@ -10495,7 +10500,7 @@ public class ScriptEvaluator {
     String type = "SELECT";
     switch (getToken(2).tok) {
     case Token.select:
-    case Token.monitor:
+    case Token.measure:
     case Token.spin:
       if (checkLength34() == 4) {
         type = parameterAsString(2).toUpperCase();
@@ -10551,7 +10556,7 @@ public class ScriptEvaluator {
     boolean isMeasure = false;
     String type = "SELECT";
     switch (getToken(2).tok) {
-    case Token.monitor:
+    case Token.measure:
       isMeasure = true;
       type = "MEASURE";
       // fall through
@@ -11013,10 +11018,8 @@ public class ScriptEvaluator {
         viewer.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
       } else {
         data = (String) viewer.getProperty("string", "stateInfo", null);
-        if (localPath != null)
-          data = FileManager.setScriptFileReferences(data, localPath, true);
-        if (remotePath != null)
-          data = FileManager.setScriptFileReferences(data, remotePath, false);
+        if (localPath != null || remotePath != null)
+          data = FileManager.setScriptFileReferences(data, localPath, remotePath, null);
       }
     } else if (data == "ZIP" || data == "ZIPALL") {
       data = (String) viewer.getProperty("string", "stateInfo", null);
@@ -11400,7 +11403,7 @@ public class ScriptEvaluator {
       if (!isSyntaxCheck)
         msg = viewer.getModelInfoAsString();
       break;
-    case Token.monitor:
+    case Token.measure:
       if (!isSyntaxCheck)
         msg = viewer.getMeasurementInfoAsString();
       break;

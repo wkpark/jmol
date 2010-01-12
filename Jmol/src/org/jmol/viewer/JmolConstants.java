@@ -2885,7 +2885,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       return SHAPE_SSSTICKS;
     case Token.label:
       return SHAPE_LABELS;
-    case Token.monitor:
+    case Token.measure:
       return SHAPE_MEASURES;
     case Token.dots:
       return SHAPE_DOTS;

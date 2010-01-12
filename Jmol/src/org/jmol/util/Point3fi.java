@@ -39,6 +39,10 @@ public class Point3fi extends Point3f {
   public Point3fi() {
     super();
   }
+  
+  public Point3fi(Point3f pt) {
+    super(pt);
+  }
 
   public Point3fi(float x, float y, float z) {
     super(x, y, z);

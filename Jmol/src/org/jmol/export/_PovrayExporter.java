@@ -34,8 +34,6 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 /*
@@ -59,9 +57,7 @@ public class _PovrayExporter extends __RayTracerExporter {
     output("//\n");
     output("// This script was generated on " + getExportDate() + "\n");
     output("// ******************************************************\n");
-    output("\n/* " + JmolConstants.EMBEDDED_SCRIPT_TAG + " \n");
-    output(TextFormat.simpleReplace(viewer.getSavedState("_Export"),"/*file*/", ""));
-    output("\n*/\n");
+    output(viewer.getWrappedState(true));
     output("\n");
     output("// ******************************************************\n");
     output("// Declare the resolution, camera, and light sources.\n");

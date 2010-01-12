@@ -23,40 +23,16 @@
  */
 package org.jmol.util;
 
-import java.util.Vector;
-
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.viewer.JmolConstants;
-import org.jmol.modelset.TickInfo;
 import org.jmol.script.Token;
 
 final public class Measure {
 
-  public TickInfo tickInfo;
-  public int tokAction;
-  public Vector points;
-  public float[] rangeMinMax;
-  public String strFormat;
-  public boolean isAllConnected;
-  public boolean isAll;
-
-  public Measure(int tokAction, Vector points,
-                 float[] rangeMinMax, String strFormat,
-                 TickInfo tickInfo,
-                 boolean isAllConnected, boolean isAll) {
-    this.tokAction = tokAction;
-    this.points = points;
-    this.rangeMinMax = rangeMinMax;
-    this.strFormat = strFormat;
-    this.tickInfo = tickInfo;
-    this.isAllConnected = isAllConnected;
-    this.isAll = isAll;
-  }
-  
   public final static float radiansPerDegree = (float) (2 * Math.PI / 360);
 
   
@@ -199,7 +175,7 @@ final public class Measure {
       return "draw ID " + id + " VECTOR " + Escape.escape(pt_a_prime)
           + " " + Escape.escape(n) + " color "
           + (theta < 0 ? "{255.0 200.0 0.0}" : "{255.0 0.0 128.0}");
-    if (tokType == Token.monitor)
+    if (tokType == Token.measure)
       return "measure " + Escape.escape(a) + Escape.escape(pt_a_prime) + Escape.escape(pt_b_prime) + Escape.escape(b);
     // for now... array:
     float residuesPerTurn = Math.abs(theta == 0 ? 0 : 360f / theta);

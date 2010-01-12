@@ -39,13 +39,17 @@ import java.util.Vector;
 
 public class Measurement {
 
-  Viewer viewer;
+  /*
+   * a class to contain a single measurement.
+   * 
+   */
+  private Viewer viewer;
 
   public ModelSet modelSet;
 
   protected int count;
   protected int[] countPlusIndices = new int[5];
-  protected Point3fi[] points;
+  protected Point3fi[] pts;
   
   public int getCount() {
     return count;
@@ -60,7 +64,7 @@ public class Measurement {
   }
   
   public Point3fi[] getPoints() {
-    return points;
+    return pts;
   }
 
   public int getAtomIndex(int n) {
@@ -69,7 +73,7 @@ public class Measurement {
   
   public Point3fi getAtom(int i) {
     int pt = countPlusIndices[i];
-    return (pt < -1 ? points[-2 - pt] : modelSet.getAtomAt(pt));
+    return (pt < -1 ? pts[-2 - pt] : modelSet.getAtomAt(pt));
   }
 
   public int getLastIndex() {
@@ -82,6 +86,13 @@ public class Measurement {
     return strMeasurement;
   }
   
+  public String getString(Viewer viewer, String strFormat, String units) {
+    this.viewer = viewer;
+    value = getMeasurement();
+    formatMeasurement(strFormat, units, true);
+    return strMeasurement;
+  }
+
   public String getStringDetail() {
     return (count == 2 ? "Distance" : count == 3 ? "Angle" : "Torsion")
         + getMeasurementScript(" - ", false) + " : " + value;  
@@ -160,7 +171,7 @@ public class Measurement {
     return pointArc;
   }
   
-  private TickInfo tickInfo;
+  public TickInfo tickInfo;
 
   public TickInfo getTickInfo() {
     return tickInfo;
@@ -177,10 +188,10 @@ public class Measurement {
     this.strFormat = strFormat;
     if (m != null) {
       this.tickInfo = m.tickInfo;
-      this.points = m.points;
+      this.pts = m.pts;
     }
-    if (points == null)
-      points = new Point3fi[4];
+    if (pts == null)
+      pts = new Point3fi[4];
     int[] indices = (m == null ? null : m.countPlusIndices);
     count = (indices == null ? 0 : indices[0]);
     if (count > 0) {
@@ -188,7 +199,7 @@ public class Measurement {
       isTrajectory = modelSet.isTrajectory(countPlusIndices);
     }
     this.value = (Float.isNaN(value) || isTrajectory ? getMeasurement() : value);
-    formatMeasurement();
+    formatMeasurement(null);
   }   
 
   public Measurement(ModelSet modelSet, int[] indices, Point3fi[] points,
@@ -196,7 +207,7 @@ public class Measurement {
     // temporary holding structure only; -- no viewer
     countPlusIndices = indices;
     count = indices[0];
-    this.points = (points == null ? new Point3fi[4] : points);
+    this.pts = (points == null ? new Point3fi[4] : points);
     this.modelSet = modelSet;
     this.tickInfo = tickInfo;
   }
@@ -204,7 +215,7 @@ public class Measurement {
   public void refresh() {
     value = getMeasurement();
     isTrajectory = modelSet.isTrajectory(countPlusIndices);
-    formatMeasurement();
+    formatMeasurement(null);
   }
   
   /**
@@ -222,22 +233,22 @@ public class Measurement {
     return str;  
   }
   
-  public void formatMeasurement(String strFormat, boolean useDefault) {
+  public void formatMeasurement(String strFormat, String units, boolean useDefault) {
     if (strFormat != null && strFormat.length() == 0)
       strFormat = null;
     if (!useDefault && strFormat != null && strFormat.indexOf(countPlusIndices[0]+":")!=0)
       return;
     this.strFormat = strFormat; 
-    formatMeasurement();
+    formatMeasurement(units);
   }
 
-  protected void formatMeasurement() {
+  protected void formatMeasurement(String units) {
     strMeasurement = null;
     if (Float.isNaN(value) || count == 0)
       return;
     switch (count) {
     case 2:
-      strMeasurement = formatDistance(value);
+      strMeasurement = formatDistance(value, units);
       return;
     case 3:
       if (value == 180) {
@@ -267,28 +278,39 @@ public class Measurement {
       return;
     if (viewer.isSelected(countPlusIndices[1]) &&
         viewer.isSelected(countPlusIndices[2]))
-      formatMeasurement();
+      formatMeasurement(null);
   }
 
-  private String formatDistance(float dist) {
-    int nDist = (int)(dist * 100 + 0.5f);
+  private String formatDistance(float dist, String units) {
+    if (units == null)
+      units = viewer.getMeasureDistanceUnits();
+    units = fixUnits(units);
+    float value = fixValue(dist, units);
+    return formatString(value, units);
+  }
+
+  private static String fixUnits(String units) {
+    if (units == "nanometers")
+      return "nm";
+    else if (units == "picometers")
+      return "pm";
+    return units;
+  }
+  
+  private static float fixValue(float dist, String units) {
     float value;
-    String units = viewer.getMeasureDistanceUnits();
-    if (units == "nanometers") {
-      units = "nm";
-      value = nDist / 1000f;
-    } else if (units == "picometers") {
-      units = "pm";
+    if (units == "nm") {
+      value = (int)(dist * 100 + 0.5f) / 1000f;
+    } else if (units == "pm") {
       value = (int)((dist * 1000 + 0.5)) / 10f;
     } else if (units == "au") {
       value = (int) (dist / JmolConstants.ANGSTROMS_PER_BOHR * 1000 + 0.5f) / 1000f;
     } else {
-      units = "\u00C5"; // angstroms
-      value = nDist / 100f;
+      value = (int)(dist * 100 + 0.5f) / 100f;
     }
-    return formatString(value, units);
+    return value;
   }
-
+  
   private String formatAngle(float angle) {
     angle = (int)(angle * 10 + (angle >= 0 ? 0.5f : -0.5f));
     angle /= 10;
@@ -313,7 +335,7 @@ public class Measurement {
     if (isSame)
       for (int i = 0; i < count && isSame; i++) {
         if (points[i] != null)
-          isSame = (this.points[i].distance(points[i]) < 0.01); 
+          isSame = (this.pts[i].distance(points[i]) < 0.01); 
       }
     if (isSame)
       return true;
@@ -341,11 +363,11 @@ public class Measurement {
     if (jpt < 0 && points[-2-jpt] == null)
       System.out.println("measurement -- ohoh");
     return (ipt >= 0 || jpt >= 0 ? ipt == jpt 
-        : this.points[-2 - ipt].distance(points[-2 - jpt]) < 0.01);
+        : this.pts[-2 - ipt].distance(points[-2 - jpt]) < 0.01);
   }
 
   public boolean sameAs(int i, int j) {
-    return sameAs(countPlusIndices, points, i, j);
+    return sameAs(countPlusIndices, pts, i, j);
   }
 
   public Vector toVector() {
@@ -395,13 +417,42 @@ public class Measurement {
   }
 
   public void setModelIndex(short modelIndex) {
-    if (points == null)
+    if (pts == null)
       return;
     for (int i = 0; i < count; i++) {
-      if (points[i] != null)
-        points[i].modelIndex = modelIndex;
+      if (pts[i] != null)
+        pts[i].modelIndex = modelIndex;
     }
   }
+
+  public boolean isValid() {
+    // valid: no A-A, A-B-A, A-B-C-B
+    return !(sameAs(1,2) || count > 2 && sameAs(1,3) || count == 4 && sameAs(2,4));
+  }
+
+  public static int find(Vector measurements, Measurement m) {
+    int[] indices = m.getCountPlusIndices();
+    Point3fi[] points = m.getPoints();
+    for (int i = measurements.size(); --i >= 0; )
+      if (((Measurement) measurements.get(i)).sameAs(indices, points))
+        return i;
+    return -1;
+  }
+  
+  boolean isConnected(Atom[] atoms, int count) {
+    int atomIndexLast = -1;
+    for (int i = 1; i <= count; i++) {
+      int atomIndex = getAtomIndex(i);
+      if (atomIndex < 0)
+        continue;
+      if (atomIndexLast >= 0
+          && !atoms[atomIndex].isBonded(atoms[atomIndexLast]))
+        return false;
+      atomIndexLast = atomIndex;
+    }
+    return true;
+  }
+
 
 }
 

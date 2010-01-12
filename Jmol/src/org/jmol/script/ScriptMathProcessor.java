@@ -38,6 +38,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.BoxInfo;
+import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.ScriptEvaluator.ScriptException;
 import org.jmol.util.ArrayUtil;
@@ -46,6 +47,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
@@ -599,8 +601,9 @@ class ScriptMathProcessor {
       if (op.tok == Token.propselector)
         return evaluateDot(args, tok);
       // fall through
+    case Token.measure:
     case Token.angle:
-      return evaluateMeasure(args, op.tok == Token.angle);
+      return evaluateMeasure(args, op.tok);
     case Token.volume:
       return evaluateVolume(args);
     case Token.function:
@@ -794,7 +797,7 @@ class ScriptMathProcessor {
       case Token.axis:
       case Token.radius:
       case Token.angle:
-      case Token.monitor:
+      case Token.measure:
         return addX(Measure.computeHelicalAxis(null, t.tok, pta, ptb, dq));
       case Token.array:
         String[] data = (String[]) Measure.computeHelicalAxis(null, Token.list,
@@ -823,7 +826,7 @@ class ScriptMathProcessor {
         return addX(isSyntaxCheck ? 0 : ((Float) viewer.getHelixData(bs,
             Token.angle)).floatValue());
       case Token.draw:
-      case Token.monitor:
+      case Token.measure:
         return addX(isSyntaxCheck ? "" : (String) viewer
             .getHelixData(bs, t.tok));
       case Token.array:
@@ -916,11 +919,74 @@ class ScriptMathProcessor {
     return null;
   }
 
-  private boolean evaluateMeasure(ScriptVariable[] args, boolean isAngle)
+  private boolean evaluateMeasure(ScriptVariable[] args, int tok)
       throws ScriptException {
-    int nPoints = args.length;
-    if (nPoints < (isAngle ? 3 : 2) || nPoints > (isAngle ? 4 : 2))
-      return false;
+    int nPoints = 0;
+    switch (tok) {
+    case Token.measure:
+      // note: min/max are always in Angstroms
+      // note: order is not important (other than min/max)
+      // measure({a},{b},{c},{d}, min, max, format, units)
+      // measure({a},{b},{c}, min, max, format, units)
+      // measure({a},{b}, min, max, format, units)
+      // measure({a},{b},{c},{d}, min, max, format, units)
+      Vector points = new Vector();
+      float[] rangeMinMax = new float[] {Float.MAX_VALUE, Float.MAX_VALUE} ;
+      String strFormat = null;
+      String units = null;
+      boolean isAllConnected = false;
+      int rPt = 0;
+      for (int i = 0; i < args.length; i++) {
+        switch (args[i].tok) {
+        case Token.bitset:
+          points.add(args[i].value);
+          nPoints++;
+          break;
+        case Token.point3f:
+          Point3fi v = new Point3fi((Point3f)args[i].value);
+          points.add(v);
+          nPoints++;
+          break;
+        case Token.integer:
+          rangeMinMax[rPt++ % 2] = args[i].intValue;
+          break;
+        case Token.decimal:
+          rangeMinMax[rPt++ % 2] = ScriptVariable.fValue(args[i]);
+          break;
+        case Token.string:
+          String s = ScriptVariable.sValue(args[i]);
+          if (s.equalsIgnoreCase("connected"))
+            isAllConnected = true;
+          else if (Parser.isOneOf(s.toLowerCase(), "nm;nanometers;pm;picometers;angstroms;ang;au"))
+            units = s.toLowerCase();
+          else
+            strFormat = nPoints + ":" + s;
+          break;
+        default:
+          return false;
+        }
+      }
+      if (nPoints < 2 || nPoints > 4 || rPt > 2)
+        return false;
+      if (isSyntaxCheck)
+        return addX("");
+      MeasurementData md = new MeasurementData(
+          points, 
+          0,
+          rangeMinMax, 
+          strFormat, units,
+          null,
+          isAllConnected,
+          true); 
+      return addX(md.getMeasurements(viewer));
+    case Token.angle:
+      if ((nPoints = args.length ) != 3 && nPoints != 4)
+        return false;
+      break;
+    default: // distance
+      if ((nPoints = args.length ) != 2)
+        return false;
+    }    
     if (isSyntaxCheck)
       return addX(1f);
 

@@ -24,14 +24,14 @@
 
 package org.jmol.shape;
 
+import org.jmol.api.JmolMeasurementClient;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Measurement;
+import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.MeasurementPending;
-import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.Measure;
 import org.jmol.util.Point3fi;
 import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JmolConstants;
@@ -42,9 +42,7 @@ import java.util.Vector;
 import java.util.Hashtable;
 
 
-public class Measures extends Shape {
-
-  private final static int measurementGrowthIncrement = 16;
+public class Measures extends Shape implements JmolMeasurementClient {
 
   private BitSet bsColixSet;
   private BitSet bsSelected;
@@ -53,10 +51,9 @@ public class Measures extends Shape {
   private float[] rangeMinMax = {Float.MAX_VALUE, Float.MAX_VALUE};
 
   private Atom[] atoms;
-  private int atomCount;
 
   int measurementCount = 0;
-  Measurement[] measurements = new Measurement[measurementGrowthIncrement];
+  final Vector measurements = new Vector();
   MeasurementPending measurementPending;
   
   short mad = (short)-1;
@@ -68,11 +65,12 @@ public class Measures extends Shape {
   TickInfo defaultTickInfo;
   
   protected void initModelSet() {
-    for (int i = 0; i < measurements.length; i++)
-      if (measurements[i] != null)
-        measurements[i].modelSet = modelSet;
+    for (int i = measurements.size(); --i >= 0; ) {
+      Measurement m = (Measurement) measurements.get(i);
+      if (m != null)
+        m.modelSet = modelSet;
+    }
     atoms = modelSet.atoms;
-    atomCount = modelSet.getAtomCount();
   }
   
   public void initShape() {
@@ -86,9 +84,11 @@ public class Measures extends Shape {
 
   public void setProperty(String propertyName, Object value, BitSet bsIgnored) {
     // the following can be used with "select measures ({bitset})"
+    
+    Measurement mt;
     if ("clearModelIndex" == propertyName) {
       for (int i = 0; i < measurementCount; i++)
-        measurements[i].setModelIndex((short) 0);
+        ((Measurement) measurements.get(i)).setModelIndex((short) 0);
       return;
     }
     
@@ -118,17 +118,13 @@ public class Measures extends Shape {
       return;
     }
     
-    if ("refresh" == propertyName) {
-      for (int i = 0; i < measurements.length; i++)
-        if (measurements[i] != null)
-          measurements[i].refresh();
-      return;
-    } 
-
-    if ("refreshTrajectories" == propertyName) {
-      for (int i = 0; i < measurements.length; i++)
-        if (measurements[i] != null && measurements[i].isTrajectory())
-          measurements[i].refresh();
+    boolean isRefresh;
+    if ((isRefresh = ("refresh" == propertyName)) 
+        || "refreshTrajectories" == propertyName) {
+      for (int i = measurements.size(); --i >= 0;)
+        if ((mt = (Measurement) measurements.get(i)) != null 
+            && (isRefresh || mt.isTrajectory()))
+          mt.refresh();
       return;
     } 
 
@@ -153,26 +149,27 @@ public class Measures extends Shape {
     bsSelected = null;
     
     if ("measure" == propertyName) {
-      Measure m = (Measure) value;
-      tickInfo = m.tickInfo;
-      if (tickInfo != null && tickInfo.id.equals("default")) {
-        defaultTickInfo = tickInfo;
+      MeasurementData md = (MeasurementData) value;
+      tickInfo = md.tickInfo;
+      if (md.tickInfo != null && md.tickInfo.id.equals("default")) {
+        defaultTickInfo = md.tickInfo;
         return;
       }
-      setRange(m.rangeMinMax);
-      setConnected(m.isAllConnected);
-      strFormat = m.strFormat;
-      if (m.isAll) {
+      rangeMinMax[0] = md.rangeMinMax[0];
+      rangeMinMax[1] = md.rangeMinMax[1];
+      isAllConnected = md.mustBeConnected;  
+      strFormat = md.strFormat;
+      if (md.isAll) {
         if (tickInfo != null)
-          define(m.points, Token.delete);
-        define(m.points, m.tokAction);
+          define(md, Token.delete);
+        define(md, md.tokAction);
         setIndices();
         return;
       }
-      Measurement pt = setSingleItem(m.points);
-      switch (m.tokAction) {
+      Measurement pt = setSingleItem(md.points);
+      switch (md.tokAction) {
       case Token.delete:
-        define(pt, true, false, false);
+        define(Integer.MIN_VALUE, pt, true, false, false);
         setIndices();
         break;
       case Token.on:
@@ -198,14 +195,13 @@ public class Measures extends Shape {
     
     if ("deleteModelAtoms" == propertyName) {
       atoms = (Atom[])((Object[])value)[1];
-      atomCount = modelSet.getAtomCount();
       int modelIndex = ((int[]) ((Object[]) value)[2])[0];
       int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
       int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
       int atomMax = firstAtomDeleted + nAtomsDeleted;
       for (int i = measurementCount; --i >= 0;) {
-        Measurement m = measurements[i];
-        int[] indices = m.getCountPlusIndices();
+        mt = (Measurement) measurements.get(i);
+        int[] indices = mt.getCountPlusIndices();
         for (int j = 1; j <= indices[0]; j++) {
           int iAtom = indices[j];
           if (iAtom >= firstAtomDeleted) {
@@ -215,7 +211,7 @@ public class Measures extends Shape {
             }
             indices[j] -= nAtomsDeleted;
           } else if (iAtom < 0) {
-            Point3fi pt = m.getAtom(j);
+            Point3fi pt = mt.getAtom(j);
             if (pt.modelIndex > modelIndex) {
               pt.modelIndex--;
             } else if (pt.modelIndex == modelIndex) {
@@ -271,7 +267,7 @@ public class Measures extends Shape {
         indices[i + 1] = -2 - i;
       }
     }
-    return newMeasurement(indices, points);
+    return new Measurement(modelSet, indices, points, tickInfo == null ? defaultTickInfo : tickInfo);
   }
 
   public Object getProperty(String property, int index) {
@@ -281,11 +277,11 @@ public class Measures extends Shape {
       return new Integer(measurementCount);
     if ("countPlusIndices".equals(property))
       return (index < measurementCount ? 
-          measurements[index].getCountPlusIndices() : null);
+          ((Measurement) measurements.get(index)).getCountPlusIndices() : null);
     if ("stringValue".equals(property))
-      return (index < measurementCount ? measurements[index].getString() : null);
+      return (index < measurementCount ? ((Measurement) measurements.get(index)).getString() : null);
     if ("pointInfo".equals(property))
-      return measurements[index / 10].getLabel(index % 10, false, false);
+      return ((Measurement) measurements.get(index / 10)).getLabel(index % 10, false, false);
     if ("info".equals(property))
       return getAllInfo();
     if ("infostring".equals(property))
@@ -296,10 +292,8 @@ public class Measures extends Shape {
   private void clear() {
     if (measurementCount == 0)
       return;
-    int countT = measurementCount;
     measurementCount = 0;
-    for (int i = countT; --i >= 0; )
-      measurements[i] = null;
+    measurements.clear();
     viewer.setStatusMeasuring("measureDeleted", -1, "all");
   }
 
@@ -308,11 +302,12 @@ public class Measures extends Shape {
       bsColixSet = new BitSet();
       if (bsSelected == null)
         this.colix = colix;
-    for (int i = 0; i < measurements.length; i++)
-      if (measurements[i] != null
+    Measurement mt;
+    for (int i = measurements.size(); --i >= 0; )
+      if ((mt = (Measurement) measurements.get(i)) != null
           && (bsSelected != null && bsSelected.get(i) || bsSelected == null
-              && (colix == Graphics3D.INHERIT_ALL || measurements[i].getColix() == Graphics3D.INHERIT_ALL))) {
-        measurements[i].setColix(colix);
+              && (colix == Graphics3D.INHERIT_ALL || mt.getColix() == Graphics3D.INHERIT_ALL))) {
+        mt.setColix(colix);
         bsColixSet.set(i);
       }
   }
@@ -320,43 +315,32 @@ public class Measures extends Shape {
   private void setFormats(String format) {
     if (format != null && format.length() == 0)
       format = null;
-    for (int i = measurementCount; --i >= 0;)
+    for (int i = measurements.size(); --i >= 0;)
       if (bsSelected == null || bsSelected.get(i))
-        measurements[i].formatMeasurement(format, false);
+        ((Measurement) measurements.get(i)).formatMeasurement(format, null, false);
   }
   
   private void showHide(boolean isHide) {
-    for (int i = measurementCount; --i >= 0; )
+    for (int i = measurements.size(); --i >= 0;)
       if (bsSelected == null || bsSelected.get(i))
-        measurements[i].setHidden(isHide);
-  }
-
-  private int findMeasurement(int[] indices, Point3fi[] points) {
-    for (int i = measurementCount; --i >= 0; )
-      if (measurements[i].sameAs(indices, points))
-        return i;
-    return -1;
-  }
-  
-  private int findMeasurement(Measurement m) {
-    return findMeasurement(m.getCountPlusIndices(), m.getPoints());
+        ((Measurement) measurements.get(i)).setHidden(isHide);
   }
 
   private void showHide(Measurement m, boolean isHide) {
-    int i = findMeasurement(m);
-    if (i < 0)
-      return;
-    measurements[i].setHidden(isHide);
+    int i = find(m);
+    if (i >= 0)
+      ((Measurement) measurements.get(i)).setHidden(isHide);
   }
   
   private void toggle(Measurement m) {
     rangeMinMax[0] = Float.MAX_VALUE;
     //toggling one that is hidden should be interpreted as DEFINE
-    int i = findMeasurement(m);
-    if (i >= 0 && !measurements[i].isHidden()) // delete it and all like it
-      define(measurements[i], true, false, false);
+    int i = find(m);
+    Measurement mt;
+    if (i >= 0 && !(mt = (Measurement) measurements.get(i)).isHidden()) // delete it and all like it
+      define(i, mt, true, false, false);
     else // define OR turn on if measureAllModels
-      define(m, false, true, false);
+      define(-1, m, false, true, false);
     setIndices();
   }
 
@@ -364,7 +348,7 @@ public class Measures extends Shape {
     rangeMinMax[0] = Float.MAX_VALUE;
     //toggling one that is hidden should be interpreted as DEFINE
     bsSelected = new BitSet();
-    define(new Measurement(modelSet, indices, null, defaultTickInfo), false, true, true);
+    define(Integer.MIN_VALUE, new Measurement(modelSet, indices, null, defaultTickInfo), false, true, true);
     setIndices();
     reformatDistances();
   }
@@ -372,202 +356,122 @@ public class Measures extends Shape {
   private void delete(Measurement m) {
     rangeMinMax[0] = Float.MAX_VALUE;
     //toggling one that is hidden should be interpreted as DEFINE
-    int i = findMeasurement(m);
+    int i = find(m);
     if (i >= 0)
-      define(measurements[i], true, false, false);
+      define(i, (Measurement) measurements.get(i), true, false, false);
     setIndices();
   }
 
   private void delete(Object value) {
     if (value instanceof int[]) {
-      define(new Measurement(modelSet, (int[])value, null, null), true, false, false);
+      define(Integer.MIN_VALUE, new Measurement(modelSet, (int[])value, null, null), true, false, false);
       return;
     }
     if ((value instanceof Integer))
       deleteMeasurement(((Integer)value).intValue());   
   }
 
-  private void define(Vector monitorExpressions, int tokAction) {
-    /*
-     * sets up measures based on an array of atom selection expressions -RMH 3/06
-     * 
-     *(1) run through first expression, choosing model
-     *(2) for each item of next bs, iterate over next bitset, etc.
-     *(3) for each last bitset, trigger toggle(int[])
-     *
-     *simple!
-     *
-     */
-    int nPoints = monitorExpressions.size();
-    if (nPoints < 2)
-      return;
-    int modelIndex = -1;
-    Point3fi[] points = new Point3fi[4];
-    int[] indices = new int[5];
-    Measurement m = newMeasurement(indices, points);
-    m.setCount(nPoints);
-    int ptLastAtom = -1;
-    BitSet bs;
-    for (int i = 0; i < nPoints; i++) {
-      Object obj = monitorExpressions.get(i);
-      if (obj instanceof BitSet) {
-        if (BitSetUtil.cardinalityOf((bs = (BitSet) obj)) > 1)
-          modelIndex = 0;
-        ptLastAtom = i;
-        indices[i + 1] = BitSetUtil.firstSetBit(bs);
-      } else {
-        if (points == null)
-          points = new Point3fi[4];
-        points[i] = (Point3fi)obj;
-        indices[i + 1] = -2 - i; 
+  private void define(int iPt, Measurement m, boolean isDelete, boolean isShow,
+                      boolean doSelect) {
+    if (!viewer.getMeasureAllModelsFlag()) {
+      if (isDelete) {
+        if (iPt == Integer.MIN_VALUE)
+          iPt = find(m);
+        if (iPt >= 0)
+          deleteMeasurement(iPt);
+        return;
       }
+      defineMeasurement(iPt, m, doSelect);
+      return;
     }
-    nextMeasure(0, ptLastAtom, monitorExpressions, m, modelIndex, tokAction);
+    if (isShow) { // make sure all like this are deleted, not just hidden
+      define(iPt, m, true, false, false); // self-reference
+      if (isDelete)
+        return;
+    }
+    // we create a set of atoms involving all atoms with the
+    // same atom number in each model
+    Vector points = new Vector();
+    int nPoints = m.getCount();
+    for (int i = 1; i <= nPoints; i++) {
+      int atomIndex = m.getAtomIndex(i);
+      points.addElement(atomIndex >= 0 ? (Object) viewer.getAtomBits(
+          Token.atomno, new Integer(atoms[atomIndex].getAtomNumber()))
+          : (Object) m.getAtom(i));
+    }
+    MeasurementData md = new MeasurementData(points, 
+                   tokAction,
+                   rangeMinMax, 
+                   strFormat, null,
+                   tickInfo,
+                   isAllConnected,
+                   true);
+    define(md, (isDelete ? Token.delete : 0));
   }
 
-  private Measurement newMeasurement(int[] indices, Point3fi[] points) {
-    return new Measurement(modelSet, indices, points, tickInfo == null ? defaultTickInfo : tickInfo); 
+  private int find(Measurement m) {
+    return Measurement.find(measurements, m);
   }
 
   private void setIndices() {
     for (int i = 0; i < measurementCount; i++)
-      measurements[i].setIndex(i);
+      ((Measurement) measurements.get(i)).setIndex(i);
   }
   
-  private void define(Measurement m, boolean isDelete, boolean isShow, boolean doSelect) {
-    if (viewer.getMeasureAllModelsFlag()) {
-      if (isShow) { // make sure all like this are deleted, not just hidden
-        define(m, true, false, false); // self-reference
-        if (isDelete)
-          return;
-      }
-      Vector measureList = new Vector();
-      int nPoints = m.getCount();
-      for (int i = 1; i <= nPoints; i++) {
-        int atomIndex = m.getAtomIndex(i);
-        measureList.addElement(
-            atomIndex >= 0 ? (Object) viewer.getAtomBits(Token.atomno, new Integer(atoms[atomIndex].getAtomNumber()))
-                : (Object) m.getAtom(i));
-      }
-      define(measureList, (isDelete ? Token.delete : 0));
-      return;
-    }    
-    define(m, isDelete, doSelect);
+  private int tokAction;
+  
+  private void define(MeasurementData md, int tokAction) {
+    this.tokAction = tokAction;
+    md.define(this, modelSet);
   }
 
-  private void define(Measurement m, boolean isDelete, boolean doSelect) {
-    int i = findMeasurement(m);
-    // nothing to delete and no A-A, A-B-A, A-B-C-B
-    int count = m.getCount();
-    if (i < 0 && isDelete || m.sameAs(1,2)
-        || count > 2 && m.sameAs(1,3)
-        || count == 4 && m.sameAs(2,4))
-      return;
-    float value = (isDelete ? rangeMinMax[0] : m.getMeasurement());
+  public void processNextMeasure(Measurement m) {
+    // a callback from Measurement.define
+    // all atom bitsets have been iterated
+    int iThis = find(m);
+    if (iThis >= 0) {
+      if (tokAction == Token.delete) {
+        deleteMeasurement(iThis);
+      } else if (strFormat != null) {
+        ((Measurement) measurements.get(iThis)).formatMeasurement(strFormat,
+            null, true);
+      } else {
+        ((Measurement) measurements.get(iThis))
+            .setHidden(tokAction == Token.off);
+      }
+    } else if (tokAction == Token.define || tokAction == Token.opToggle) {
+      m.tickInfo = (tickInfo == null ? defaultTickInfo : tickInfo);
+      defineMeasurement(-1, m, true);
+    }
+  }
+
+  private void defineMeasurement(int i, Measurement m, boolean doSelect) {
+    float value = m.getMeasurement();
     if (rangeMinMax[0] != Float.MAX_VALUE
         && (value < rangeMinMax[0] || value > rangeMinMax[1]))
       return;
+    if (i == Integer.MIN_VALUE)
+      i = find(m);
     if (i >= 0) {
-      if (isDelete) {
-        deleteMeasurement(i);
-      } else {
-        measurements[i].setHidden(false);
-        if (doSelect)
-          bsSelected.set(i);
-      }
+      ((Measurement) measurements.get(i)).setHidden(false);
+      if (doSelect)
+        bsSelected.set(i);
       return;
     }
-    Measurement measureNew = new Measurement(modelSet, m, value, colix, strFormat, measurementCount);
-    if (measurementCount == measurements.length) {
-      measurements = (Measurement[]) ArrayUtil.setLength(measurements,
-          measurementCount + measurementGrowthIncrement);
-    }
-    int n = measurementCount;
-    measurements[measurementCount++] = measureNew;
-    viewer.setStatusMeasuring("measureCompleted",
-        n, measureNew.toVector().toString());
+    Measurement measureNew = new Measurement(modelSet, m, value, colix,
+        strFormat, measurementCount);
+    measurements.add(measureNew);
+    viewer.setStatusMeasuring("measureCompleted", measurementCount++,
+        measureNew.toVector().toString());
   }
 
   private void deleteMeasurement(int i) {
-    String msg = measurements[i].toVector().toString();
-    System.arraycopy(measurements, i + 1, measurements, i, measurementCount
-        - i - 1);
-    measurements[--measurementCount] = null;
+    String msg = ((Measurement) measurements.get(i)).toVector().toString();
+    measurements.remove(i);
+    measurementCount--;
     viewer.setStatusMeasuring("measureDeleted", i, msg);
   }
 
-  private void nextMeasure(int thispt, int ptLastAtom,
-                           Vector monitorExpressions, Measurement m,
-                           int thisModel, int tokAction) {
-    if (thispt > ptLastAtom) {
-      // all atom bitsets have been iterated
-      if (isAllConnected && !isConnected(m, thispt))
-        return;
-      int iThis = findMeasurement(m);
-      if (iThis >= 0) {
-        if (tokAction == Token.delete)
-          define(m, true, false);
-        else if (strFormat != null)
-          measurements[iThis].formatMeasurement(strFormat, true);
-        else
-          measurements[iThis].setHidden(tokAction == Token.off);
-      } else if (tokAction == Token.define || tokAction == Token.opToggle) {
-        define(m, false, true);
-      }
-      return;
-    }
-    BitSet bs = (BitSet) monitorExpressions.get(thispt);
-    int[] indices = m.getCountPlusIndices();
-    int thisAtomIndex = indices[thispt];
-    if (thisAtomIndex < 0) {
-      nextMeasure(thispt + 1, ptLastAtom, monitorExpressions, m, thisModel,
-          tokAction);
-      return;
-    }
-    boolean haveNext = false;
-    for (int i = 0; i < atomCount; i++) {
-      if (!bs.get(i) || i == thisAtomIndex)
-        continue;
-      int modelIndex = atoms[i].getModelIndex();
-      if (thisModel >= 0) {
-        if (thispt == 0)
-          thisModel = modelIndex;
-        else if (thisModel != modelIndex)
-          continue;
-      }
-      indices[thispt + 1] = i;
-      haveNext = true;
-      nextMeasure(thispt + 1, ptLastAtom, monitorExpressions, m, thisModel,
-          tokAction);
-    }
-    if (!haveNext)
-      nextMeasure(thispt + 1, ptLastAtom, monitorExpressions, m, thisModel,
-          tokAction);
-  }
-    
-  private boolean isConnected(Measurement m, int ptLastAtom) {
-    int atomIndexLast = -1;
-    for (int i = 1; i <= ptLastAtom; i++) {
-      int atomIndex = m.getAtomIndex(i);
-      if (atomIndex < 0)
-        continue;
-      if (atomIndexLast >= 0
-          && !atoms[atomIndex].isBonded(atoms[atomIndexLast]))
-        return false;
-      atomIndexLast = atomIndex;
-    }
-    return true;
-  }
-  
-  private void setRange(float[] rangeMinMax) {
-    this.rangeMinMax[0] = rangeMinMax[0];
-    this.rangeMinMax[1] = rangeMinMax[1];
-  }
-  
-  private void setConnected(boolean isAllConnected) {
-    this.isAllConnected = isAllConnected;  
-  }
-  
   private void pending(MeasurementPending measurementPending) {
     this.measurementPending = measurementPending;
     if (measurementPending == null)
@@ -579,7 +483,7 @@ public class Measures extends Shape {
 
   private void reformatDistances() {
     for (int i = measurementCount; --i >= 0; )
-      measurements[i].reformatDistanceIfSelected();    
+      ((Measurement) measurements.get(i)).reformatDistanceIfSelected();    
   }
   
   private Vector getAllInfo() {
@@ -599,7 +503,7 @@ public class Measures extends Shape {
   }
   
   private Hashtable getInfo(int index) {
-    Measurement m = measurements[index];
+    Measurement m = (Measurement) measurements.get(index);
     int count = m.getCount();
     Hashtable info = new Hashtable();
     info.put("index", new Integer(index));
@@ -633,7 +537,7 @@ public class Measures extends Shape {
   }
 
   private String getInfoAsString(int index) {
-    Measurement m = measurements[index];
+    Measurement m = (Measurement) measurements.get(index);
     int count = m.getCount();
     StringBuffer sb = new StringBuffer();
     sb.append(count == 2 ? "distance" : count == 3 ? "angle" : "dihedral");
@@ -647,7 +551,7 @@ public class Measures extends Shape {
     BitSet bsModels = viewer.getVisibleFramesBitSet();
     out:
     for (int i = measurementCount; --i >= 0; ) {
-      Measurement m = measurements[i];
+      Measurement m = ((Measurement) measurements.get(i));
       m.setVisible(false);
       if(mad == 0 || m.isHidden())
         continue;
@@ -662,7 +566,7 @@ public class Measures extends Shape {
             continue out;
         }
       }
-      measurements[i].setVisible(true);
+      m.setVisible(true);
     }
   }
   
@@ -673,26 +577,27 @@ public class Measures extends Shape {
       appendCmd(commands, getState(i));
     appendCmd(commands, "select *; set measures " + viewer.getMeasureDistanceUnits());
     appendCmd(commands, getFontCommand("measures", font3d));
-    int n = 0;
+    int nHidden = 0;
     Hashtable temp = new Hashtable();
     BitSet bs = new BitSet(measurementCount);
     for (int i = 0; i < measurementCount; i++) {
-      if (measurements[i].isHidden()) {
-        n++;
+      Measurement m = ((Measurement) measurements.get(i));
+      if (m.isHidden()) {
+        nHidden++;
         bs.set(i);
       }
       if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp, i, getColorCommand("measure", measurements[i].getColix()));
-      if (measurements[i].getStrFormat() != null)
+        setStateInfo(temp, i, getColorCommand("measure", m.getColix()));
+      if (m.getStrFormat() != null)
         setStateInfo(temp, i, "measure "
-            + Escape.escape(measurements[i].getStrFormat()));
+            + Escape.escape(m.getStrFormat()));
     }
-    if (n > 0)
-      if (n == measurementCount)
+    if (nHidden > 0)
+      if (nHidden == measurementCount)
         appendCmd(commands, "measures off; # lines and numbers off");
       else
         for (int i = 0; i < measurementCount; i++)
-          if (measurements[i].isHidden())
+          if (bs.get(i))
             setStateInfo(temp, i, "measure off");
     if (defaultTickInfo != null) {
       commands.append(" measure ");
@@ -708,7 +613,7 @@ public class Measures extends Shape {
   }
   
   private String getState(int index) {
-    Measurement m = measurements[index];
+    Measurement m = ((Measurement) measurements.get(index));
     int count = m.getCount();
     StringBuffer sb = new StringBuffer("measure");
     TickInfo tickInfo = m.getTickInfo();
@@ -718,5 +623,5 @@ public class Measures extends Shape {
       sb.append(" ").append(m.getLabel(i, true, true));
     sb.append("; # " + getInfoAsString(index));
     return sb.toString();
-  }  
+  }
 }

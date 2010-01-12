@@ -609,5 +609,16 @@ public class TextFormat {
     return s;
   }
 
+  public static String replaceStrings(String s, Vector list,
+                                            Vector newList) {
+    int n = list.size();
+    for (int i = 0; i < n; i++) {
+      String name = (String) list.get(i);
+      String newName = (String) newList.get(i);
+      if (!newName.equals(name))
+        s = TextFormat.simpleReplace(s, name, newName);
+    }
+    return s;
+  }
 
 }

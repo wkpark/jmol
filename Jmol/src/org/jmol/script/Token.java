@@ -299,7 +299,7 @@ public class Token {
   final static int minimize     = scriptCommand | 32;
   public final static int mo           = scriptCommand | 33 | expression;
 //final static int model        see mathfunc
-  public final static int monitor      = scriptCommand | 34 | setparam | expression | defaultON;
+//final static int measure      see mathfunc
   final static int move         = scriptCommand | 35;
   public final static int moveto       = scriptCommand | 36;
   final static int navigate     = scriptCommand | 37;
@@ -594,6 +594,7 @@ public class Token {
   final static int function      = 4 | 0 << 9 | mathfunc | flowCommand | noeval;
   final static int getproperty   = 5 | 0 << 9 | mathfunc | scriptCommand;
   final static int write         = 6 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int measure = 7 | 0 << 9| mathfunc | scriptCommand | setparam | defaultON;
 
   // xxx(a,b,c,d)
   
@@ -995,7 +996,7 @@ public class Token {
     "lcaocartoons",      null,
     "load",              new Token(load),
     "loop",              new Token(loop),
-    "measure",           new Token(monitor),
+    "measure",           new Token(measure),
     "measurement",       null,
     "measurements",      null,
     "measures",          null,

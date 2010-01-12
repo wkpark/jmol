@@ -27,6 +27,11 @@ import org.jmol.util.Point3fi;
 
 public class MeasurementPending extends Measurement {
 
+  /*
+   * a class to maintain the pending measurement after
+   * the user initiates this with a mouse action
+   * 
+   */
   private boolean haveTarget = false;
   private boolean haveModified = false;
   
@@ -38,7 +43,8 @@ public class MeasurementPending extends Measurement {
     return haveModified;
   }
   
-  int numSet = 0;
+  private int numSet = 0;
+  
   public int getNumSet() {
     return numSet;
   }
@@ -50,7 +56,7 @@ public class MeasurementPending extends Measurement {
   private boolean checkPoint(Point3fi ptClicked) {
     for (int i = 1; i <= numSet; i++)
       if (countPlusIndices[i] == -1 - i
-          && points[i - 1].distance(ptClicked) < 0.01)
+          && pts[i - 1].distance(ptClicked) < 0.01)
         return false;
     return true;
   }
@@ -62,7 +68,8 @@ public class MeasurementPending extends Measurement {
     return 0;
   }
 
-  int lastIndex = -1;
+  private int lastIndex = -1;
+  
   public int addPoint(int atomIndex, Point3fi ptClicked, boolean doSet) {
     haveModified = (atomIndex != lastIndex);
     lastIndex = atomIndex;
@@ -86,16 +93,14 @@ public class MeasurementPending extends Measurement {
       int pt = numSet;
       haveModified = haveTarget = true;
       count = numSet + 1;
-      points[pt] = ptClicked;
+      pts[pt] = ptClicked;
       countPlusIndices[count] = -2 - pt;
     }
     countPlusIndices[0] = count;
     if (doSet)
       numSet = count;
     value = getMeasurement();
-    formatMeasurement();
+    formatMeasurement(null);
     return count;
   }
 }
-
-

@@ -873,7 +873,7 @@ public class FileManager {
     return protocol + path;
   }
 
-  String getFullPath(String name, boolean addUrlPrefix) {
+  public String getFullPath(String name, boolean addUrlPrefix) {
     String[] names = classifyName(name, false);
     return (names == null ? "" : addUrlPrefix ? names[2] : names[0].replace(
         '\\', '/'));
@@ -934,6 +934,23 @@ public class FileManager {
     return (dir == null ? file : fixPath(dir.toString() + "/" + file));
   }
 
+  public static String setScriptFileReferences(String script, String localPath, 
+                                               String remotePath, String scriptPath) {
+      if (localPath != null)
+        script = setScriptFileReferences(script, localPath, true);
+      if (remotePath != null)
+        script = setScriptFileReferences(script, remotePath, false);
+      script = TextFormat.simpleReplace(script, "\1\"", "\"");
+      if (scriptPath != null) {
+        while (scriptPath.endsWith("/"))
+          scriptPath = scriptPath.substring(0, scriptPath.length() - 1);
+        for (int ipt = 0; ipt < scriptFilePrefixes.length; ipt++) {
+          String tag = scriptFilePrefixes[ipt];
+          script = TextFormat.simpleReplace(script, tag + ".", tag + scriptPath);
+        }
+      }
+      return script;
+  }
   /**
    * Sets all local file references in a script file to point to files within
    * dataPath. If a file reference contains dataPath, then the file reference is
@@ -947,18 +964,18 @@ public class FileManager {
    * @param isLocal 
    * @return revised script
    */
-  public static String setScriptFileReferences(String script, String dataPath, boolean isLocal) {
+  private static String setScriptFileReferences(String script, String dataPath, boolean isLocal) {
     if (dataPath == null)
       return script;
-    if (dataPath.equals("."))
-      dataPath = "";
     boolean noPath = (dataPath.length() == 0);
     Vector fileNames = new Vector();
-    getFileReferences(script, fileNames);
+    getFileReferences(script, fileNames, "");
+    Vector oldFileNames = new Vector();
     Vector newFileNames = new Vector();
     int nFiles = fileNames.size();
     for (int iFile = 0; iFile < nFiles; iFile++) {
-      String name = (String) fileNames.get(iFile);
+      String name0 = (String) fileNames.get(iFile);
+      String name = name0;
       int itype = urlTypeIndex(name);
       if (isLocal == (itype < 0 || itype == URL_LOCAL)) {
         int pt = (noPath ? -1 : name.indexOf("/" + dataPath + "/"));
@@ -973,25 +990,27 @@ public class FileManager {
           name = dataPath + name.substring(pt);
         }
       }
-      newFileNames.add(name);
+      Logger.info("FileManager substituting " + name0 + " --> " + name);
+      oldFileNames.add("\"" + name0 + "\"");
+      newFileNames.add("\1\"" + name + "\"");
     }
-    return TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
+    return TextFormat.replaceStrings(script, oldFileNames, newFileNames);
   }
 
-  private static String[] scriptFilePrefixes = new String[] { "/*file*/", "FILE0=", "FILE1=" };
-  public static void getFileReferences(String script, Vector fileList) {
+  private static String[] scriptFilePrefixes = new String[] { "/*file*/\"", "FILE0=\"", "FILE1=\"" };
+  public static void getFileReferences(String script, Vector fileList, String flag) {
     for (int ipt = 0; ipt < scriptFilePrefixes.length; ipt++) {
       String tag = scriptFilePrefixes[ipt];
       int i = -1;
       while ((i = script.indexOf(tag, i + 1)) >= 0)
-        fileList.add(Parser.getNextQuotedString(script, i));
+        fileList.add(flag + Parser.getNextQuotedString(script, i));
     }
   }
 
   String createZipSet(String fileName, String script, boolean includeRemoteFiles) {
     Vector v = new Vector();
     Vector fileNames = new Vector();
-    getFileReferences(script, fileNames);
+    getFileReferences(script, fileNames, "");
     Vector newFileNames = new Vector();
     int nFiles = fileNames.size();
     fileName = fileName.replace('\\', '/');

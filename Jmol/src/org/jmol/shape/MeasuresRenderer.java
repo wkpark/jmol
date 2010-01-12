@@ -53,7 +53,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     boolean dynamicMeasurements = viewer.getDynamicMeasurements();
     measures.setVisibilityInfo();
     for (int i = measures.measurementCount; --i >= 0;) {
-      Measurement m = measures.measurements[i];
+      Measurement m = (Measurement) measures.measurements.get(i);
       if (dynamicMeasurements || m.isDynamic())
         m.refresh();
       if (!m.isVisible())

@@ -378,7 +378,7 @@ abstract class ScriptCompilationTokenParser {
         return error(ERROR_endOfCommandUnexpected);
       return clauseDefine();
     case Token.bonds:
-    case Token.monitor:
+    case Token.measure:
       addNextToken();
       if (tokPeek(Token.bitset))
         addNextToken();

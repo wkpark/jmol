@@ -360,8 +360,6 @@ public class Measurement {
   private boolean sameAs(int[] atoms, Point3fi[] points, int i, int j) {
     int ipt = countPlusIndices[i];
     int jpt = atoms[j];
-    if (jpt < 0 && points[-2-jpt] == null)
-      System.out.println("measurement -- ohoh");
     return (ipt >= 0 || jpt >= 0 ? ipt == jpt 
         : this.pts[-2 - ipt].distance(points[-2 - jpt]) < 0.01);
   }

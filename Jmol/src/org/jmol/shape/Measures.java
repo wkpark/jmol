@@ -47,7 +47,8 @@ public class Measures extends Shape implements JmolMeasurementClient {
   private BitSet bsColixSet;
   private BitSet bsSelected;
   private String strFormat;
-  private boolean isAllConnected = false;
+  private boolean mustBeConnected = false;
+  private boolean mustNotBeConnected = false;
   private float[] rangeMinMax = {Float.MAX_VALUE, Float.MAX_VALUE};
 
   private Atom[] atoms;
@@ -157,7 +158,8 @@ public class Measures extends Shape implements JmolMeasurementClient {
       }
       rangeMinMax[0] = md.rangeMinMax[0];
       rangeMinMax[1] = md.rangeMinMax[1];
-      isAllConnected = md.mustBeConnected;  
+      mustBeConnected = md.mustBeConnected;
+      mustNotBeConnected = md.mustNotBeConnected;
       strFormat = md.strFormat;
       if (md.isAll) {
         if (tickInfo != null)
@@ -404,7 +406,8 @@ public class Measures extends Shape implements JmolMeasurementClient {
                    rangeMinMax, 
                    strFormat, null,
                    tickInfo,
-                   isAllConnected,
+                   mustBeConnected,
+                   mustNotBeConnected,
                    true);
     define(md, (isDelete ? Token.delete : 0));
   }

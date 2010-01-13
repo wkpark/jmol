@@ -45,6 +45,7 @@ public class MeasurementData implements JmolMeasurementClient {
   private Atom[] atoms;
   private int atomCount;
   public boolean mustBeConnected;
+  public boolean mustNotBeConnected;
   public TickInfo tickInfo;
   public int tokAction;
   public Vector points;
@@ -61,7 +62,8 @@ public class MeasurementData implements JmolMeasurementClient {
   public MeasurementData(Vector points, int tokAction,
                  float[] rangeMinMax, String strFormat, String units,
                  TickInfo tickInfo,
-                 boolean mustBeConnected, boolean isAll) {
+                 boolean mustBeConnected, boolean mustNotBeConnected,
+                 boolean isAll) {
     this.tokAction = tokAction;
     this.points = points;
     this.rangeMinMax = rangeMinMax;
@@ -69,6 +71,7 @@ public class MeasurementData implements JmolMeasurementClient {
     this.units = units;
     this.tickInfo = tickInfo;
     this.mustBeConnected = mustBeConnected;
+    this.mustNotBeConnected = mustNotBeConnected;
     this.isAll = isAll;
   }
   
@@ -134,11 +137,14 @@ public class MeasurementData implements JmolMeasurementClient {
     Measurement m = new Measurement(modelSet, indices, pts, null);
     m.setCount(nPoints);
     int ptLastAtom = -1;
-    BitSet bs;
     for (int i = 0; i < nPoints; i++) {
       Object obj = points.get(i);
       if (obj instanceof BitSet) {
-        if (BitSetUtil.cardinalityOf((bs = (BitSet) obj)) > 1)
+        BitSet bs = (BitSet) obj;
+        int nAtoms = BitSetUtil.cardinalityOf(bs); 
+        if (nAtoms == 0)
+          return;
+        if (nAtoms > 1)
           modelIndex = 0;
         ptLastAtom = i;
         indices[i + 1] = BitSetUtil.firstSetBit(bs);
@@ -162,7 +168,9 @@ public class MeasurementData implements JmolMeasurementClient {
    */
   private void nextMeasure(int thispt, int ptLastAtom, Measurement m, int thisModel ) {
     if (thispt > ptLastAtom) {
-      if (m.isValid() && (!mustBeConnected || m.isConnected(atoms, thispt)))
+      if (m.isValid() 
+          && (!mustBeConnected || m.isConnected(atoms, thispt))
+          && (!mustNotBeConnected || !m.isConnected(atoms, thispt)))
         client.processNextMeasure(m);
       return;
     }

@@ -7048,6 +7048,7 @@ public class ScriptEvaluator {
     float[] rangeMinMax = new float[] { Float.MAX_VALUE, Float.MAX_VALUE };
     boolean isAll = false;
     boolean isAllConnected = false;
+    boolean isNotConnected = false;
     boolean isRange = true;
     int tokAction = Token.opToggle;
     String strFormat = null;
@@ -7058,14 +7059,23 @@ public class ScriptEvaluator {
     for (int i = 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
       case Token.identifier:
-        error(ERROR_keywordExpected, "ALL, ALLCONNECTED, DELETE"); 
+        error(ERROR_keywordExpected, "ALL, ALLCONNECTED, DELETE");
       default:
         error(ERROR_expressionOrIntegerExpected);
+      case Token.opNot:
+        if (tokAt(i + 1) != Token.connected)
+          error(ERROR_invalidArgument);
+        i++;
+        isNotConnected = true;
+        break;
+      case Token.connected:
       case Token.allconnected:
       case Token.all:
         isAllConnected = (theTok == Token.allconnected);
         atomIndex = -1;
         isAll = true;
+        if (isAllConnected && isNotConnected)
+          error(ERROR_invalidArgument);
         break;
       case Token.decimal:
         isAll = true;
@@ -7138,7 +7148,7 @@ public class ScriptEvaluator {
         }
         if (value instanceof Point3f) {
           Point3fi v = new Point3fi();
-          v.set((Point3f)value);
+          v.set((Point3f) value);
           v.modelIndex = (short) modelIndex;
           value = v;
         }
@@ -7163,15 +7173,10 @@ public class ScriptEvaluator {
     if (value != null || tickInfo != null) {
       if (value == null)
         tickInfo.id = "default";
-      setShapeProperty(JmolConstants.SHAPE_MEASURES, "measure", new MeasurementData(
-                   points, 
-                   tokAction,
-                   rangeMinMax, 
-                   strFormat, null,
-                   tickInfo,
-                   isAllConnected,
-                   isAll)); 
-       return;
+      setShapeProperty(JmolConstants.SHAPE_MEASURES, "measure",
+          new MeasurementData(points, tokAction, rangeMinMax, strFormat, null,
+              tickInfo, isAllConnected, isNotConnected, isAll));
+      return;
     }
     switch (tokAction) {
     case Token.delete:

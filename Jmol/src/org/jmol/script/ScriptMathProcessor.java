@@ -931,19 +931,24 @@ class ScriptMathProcessor {
       // measure({a},{b}, min, max, format, units)
       // measure({a},{b},{c},{d}, min, max, format, units)
       Vector points = new Vector();
-      float[] rangeMinMax = new float[] {Float.MAX_VALUE, Float.MAX_VALUE} ;
+      float[] rangeMinMax = new float[] { Float.MAX_VALUE, Float.MAX_VALUE };
       String strFormat = null;
       String units = null;
       boolean isAllConnected = false;
+      boolean isNotConnected = false;
       int rPt = 0;
+      boolean isNull = false;
       for (int i = 0; i < args.length; i++) {
         switch (args[i].tok) {
         case Token.bitset:
-          points.add(args[i].value);
+          BitSet bs = (BitSet) args[i].value;
+          if (!isSyntaxCheck && BitSetUtil.firstSetBit(bs) < 0)
+            isNull = true;
+          points.add(bs);
           nPoints++;
           break;
         case Token.point3f:
-          Point3fi v = new Point3fi((Point3f)args[i].value);
+          Point3fi v = new Point3fi((Point3f) args[i].value);
           points.add(v);
           nPoints++;
           break;
@@ -955,9 +960,12 @@ class ScriptMathProcessor {
           break;
         case Token.string:
           String s = ScriptVariable.sValue(args[i]);
-          if (s.equalsIgnoreCase("connected"))
+          if (s.equalsIgnoreCase("notConnected"))
+            isNotConnected = true;
+          else if (s.equalsIgnoreCase("connected"))
             isAllConnected = true;
-          else if (Parser.isOneOf(s.toLowerCase(), "nm;nanometers;pm;picometers;angstroms;ang;au"))
+          else if (Parser.isOneOf(s.toLowerCase(),
+              "nm;nanometers;pm;picometers;angstroms;ang;au"))
             units = s.toLowerCase();
           else
             strFormat = nPoints + ":" + s;
@@ -966,27 +974,22 @@ class ScriptMathProcessor {
           return false;
         }
       }
-      if (nPoints < 2 || nPoints > 4 || rPt > 2)
+      if (nPoints < 2 || nPoints > 4 || rPt > 2 || isNotConnected
+          && isAllConnected)
         return false;
-      if (isSyntaxCheck)
+      if (isSyntaxCheck || isNull)
         return addX("");
-      MeasurementData md = new MeasurementData(
-          points, 
-          0,
-          rangeMinMax, 
-          strFormat, units,
-          null,
-          isAllConnected,
-          true); 
+      MeasurementData md = new MeasurementData(points, 0, rangeMinMax,
+          strFormat, units, null, isAllConnected, isNotConnected, true);
       return addX(md.getMeasurements(viewer));
     case Token.angle:
-      if ((nPoints = args.length ) != 3 && nPoints != 4)
+      if ((nPoints = args.length) != 3 && nPoints != 4)
         return false;
       break;
     default: // distance
-      if ((nPoints = args.length ) != 2)
+      if ((nPoints = args.length) != 2)
         return false;
-    }    
+    }
     if (isSyntaxCheck)
       return addX(1f);
 

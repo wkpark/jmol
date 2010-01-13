@@ -540,14 +540,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
   }
 
   private String getInfoAsString(int index) {
-    Measurement m = (Measurement) measurements.get(index);
-    int count = m.getCount();
-    StringBuffer sb = new StringBuffer();
-    sb.append(count == 2 ? "distance" : count == 3 ? "angle" : "dihedral");
-    sb.append(" \t").append(m.getValue()).append(" \t").append(m.getString());
-    for (int i = 1; i <= count; i++)
-      sb.append(" \t").append(m.getLabel(i, false, false));
-    return sb.toString();
+    return ((Measurement) measurements.get(index)).getInfoAsString(null);
   }
   
   void setVisibilityInfo() {

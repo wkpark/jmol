@@ -90,6 +90,8 @@ public class Measurement {
     this.viewer = viewer;
     value = getMeasurement();
     formatMeasurement(strFormat, units, true);
+    if (strFormat == null)
+      return getInfoAsString(units);
     return strMeasurement;
   }
 
@@ -248,7 +250,7 @@ public class Measurement {
       return;
     switch (count) {
     case 2:
-      strMeasurement = formatDistance(value, units);
+      strMeasurement = formatDistance(units);
       return;
     case 3:
       if (value == 180) {
@@ -281,12 +283,12 @@ public class Measurement {
       formatMeasurement(null);
   }
 
-  private String formatDistance(float dist, String units) {
+  private String formatDistance(String units) {
     if (units == null)
       units = viewer.getMeasureDistanceUnits();
     units = fixUnits(units);
-    float value = fixValue(dist, units);
-    return formatString(value, units);
+    float f = fixValue(value, units);
+    return formatString(f, units);
   }
 
   private static String fixUnits(String units) {
@@ -298,17 +300,15 @@ public class Measurement {
   }
   
   private static float fixValue(float dist, String units) {
-    float value;
-    if (units == "nm") {
-      value = (int)(dist * 100 + 0.5f) / 1000f;
-    } else if (units == "pm") {
-      value = (int)((dist * 1000 + 0.5)) / 10f;
-    } else if (units == "au") {
-      value = (int) (dist / JmolConstants.ANGSTROMS_PER_BOHR * 1000 + 0.5f) / 1000f;
-    } else {
-      value = (int)(dist * 100 + 0.5f) / 100f;
+    if (units != null) {
+      if (units == "nm")
+        return (int) (dist * 100 + 0.5f) / 1000f;
+      if (units == "pm")
+        return (int) ((dist * 1000 + 0.5)) / 10f;
+      if (units == "au")
+        return (int) (dist / JmolConstants.ANGSTROMS_PER_BOHR * 1000 + 0.5f) / 1000f;
     }
-    return value;
+    return (int) (dist * 100 + 0.5f) / 100f;
   }
   
   private String formatAngle(float angle) {
@@ -449,6 +449,17 @@ public class Measurement {
       atomIndexLast = atomIndex;
     }
     return true;
+  }
+
+  public String getInfoAsString(String units) {
+    float f = (count == 2 ? fixValue(value, units) : value);
+    StringBuffer sb = new StringBuffer();
+    sb.append(count == 2 ? "distance" : count == 3 ? "angle" : "dihedral");
+    sb.append(" \t").append(f);
+    sb.append(" \t").append(getString());
+    for (int i = 1; i <= count; i++)
+      sb.append(" \t").append(getLabel(i, false, false));
+    return sb.toString();
   }
 
 

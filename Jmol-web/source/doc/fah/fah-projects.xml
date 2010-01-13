@@ -8053,21 +8053,24 @@
   <fah_proj number="5780" name="p5780_p5773_proL_F22A_450K" public="y"
     server="171.64.65.106" atoms="963" preferred="4" deadline="6"
     credit="768" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5781" name="p5781_GA88_ff96_OBC" public="n"
+  <fah_proj number="5781" name="p5781_GA88_ff96_OBC" public="y"
     server="171.67.108.21" atoms="922" preferred="15" deadline="25"
     credit="783" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5782" name="p5782_GB88_ff96_OBC" public="n"
-    server="171.67.108.21" atoms="923" preferred="15" deadline="25"
+  <fah_proj number="5782" name="p5782_GB88_ff96_OBC" public="y"
+    server="171.67.108.21" atoms="922" preferred="15" deadline="25"
     credit="783" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5783" name="p5783_GA95_T0498" public="n"
-    server="171.67.108.21" atoms="920" preferred="15" deadline="25"
+  <fah_proj number="5783" name="p5783_GA95_T0498" public="y"
+    server="171.67.108.21" atoms="922" preferred="15" deadline="25"
     credit="783" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5784" name="p5784_GA95_T0499" public="n"
-    server="171.67.108.21" atoms="914" preferred="15" deadline="25"
+  <fah_proj number="5784" name="p5784_GA95_T0499" public="y"
+    server="171.67.108.21" atoms="922" preferred="15" deadline="25"
     credit="783" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5785" name="p5785_GB95_T0498" public="n"
-    server="171.67.108.21" atoms="920" preferred="15" deadline="25"
+  <fah_proj number="5785" name="p5785_GB95_T0498" public="y"
+    server="171.67.108.21" atoms="922" preferred="15" deadline="25"
     credit="783" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5786" name="p5786" public="y"
+    server="171.67.108.21" atoms="922" preferred="15" deadline="25"
+    credit="783" frames="100" code="GG2"/>
   <fah_proj number="5787" name="p5787_drkN_300K" public="y"
     server="171.64.65.106" atoms="941" preferred="10" deadline="15"
     credit="787" frames="100" code="GG2" contact="vvoelz"/>
@@ -8229,9 +8232,9 @@
   <fah_proj number="6317" name="p6317_sh3_with_ALA_frags" public="n" file="xyz"
     server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz" contrib="John Deas"/>
-  <fah_proj number="6318" name="p6318" public="n"
+  <fah_proj number="6318" name="p6318" public="y" file="xyz"
     server="171.64.65.60" atoms="0" preferred="36" deadline="52"
-    credit="336" frames="100" code="G"/>
+    credit="336" frames="100" code="G" contrib="Igor Miranda"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

@@ -86,7 +86,7 @@ class RepaintManager {
   }
 
   synchronized void cancelRendering() {
-    if (!repaintPending || repaintInterrupted)
+    if (!repaintPending || repaintInterrupted || holdRepaint != 0)
       return;
     repaintInterrupted = true;
     try {

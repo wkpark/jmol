@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-01-11 19:09+0100\n"
-"PO-Revision-Date: 2009-12-25 08:00+0000\n"
-"Last-Translator: Konki <pavel.konkol@seznam.cz>\n"
+"PO-Revision-Date: 2010-01-13 18:31+0000\n"
+"Last-Translator: Martin Slavík <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-12-26 15:20+0000\n"
+"X-Launchpad-Export-Date: 2010-01-13 20:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
@@ -1358,7 +1358,7 @@ msgstr "Střed"
 
 #: org/jmol/popup/PopupResourceBundle.java:866
 msgid "Identity"
-msgstr "Indentita"
+msgstr "Identita"
 
 #: org/jmol/popup/PopupResourceBundle.java:867
 msgid "Label"
@@ -1390,7 +1390,7 @@ msgstr "Vybrat vazné místo"
 
 #: org/jmol/popup/PopupResourceBundle.java:874
 msgid "Show symmetry operation"
-msgstr ""
+msgstr "Zobraz operace symetrie"
 
 #: org/jmol/popup/PopupResourceBundle.java:877
 msgid "Show"
@@ -1939,12 +1939,13 @@ msgstr "Zvětšení"
 
 #: org/jmol/viewer/ActionManager.java:54
 msgid "rotate Z"
-msgstr ""
+msgstr "Z otáčení"
 
 #: org/jmol/viewer/ActionManager.java:55
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
 msgstr ""
+"Z otáčení (horizontální pohyb myši) nebo přiblížení (vertikální pohyb myši)"
 
 #: org/jmol/viewer/ActionManager.java:56
 msgid "translate"
@@ -1956,7 +1957,7 @@ msgstr "střed"
 
 #: org/jmol/viewer/ActionManager.java:59
 msgid "zoom (along right edge of window)"
-msgstr ""
+msgstr "přiblížení (podél pravého okraje okna)"
 
 #: org/jmol/viewer/ActionManager.java:60
 #, java-format
@@ -1981,50 +1982,54 @@ msgstr "přesunout specifický DRAW bod ( vyžaduje {0})"
 #: org/jmol/viewer/ActionManager.java:65
 #, java-format
 msgid "move whole DRAW object (requires {0})"
-msgstr ""
+msgstr "přesuň celý DRAW objekt (vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:66
 msgid "spin model (swipe and release button and stop motion simultaneously)"
-msgstr ""
+msgstr "otáčej model (klepni a pusť tlačítko a současně zastav pohyb)"
 
 #: org/jmol/viewer/ActionManager.java:67
 msgid ""
 "click on two points to spin around axis clockwise (requires SET PICKING SPIN)"
 msgstr ""
+"klepni na dva body pro otáčení kolem osy po směru hodinových ručiček "
+"(vyžaduje SET PICKING SPIN)"
 
 #: org/jmol/viewer/ActionManager.java:68
 msgid ""
 "click on two points to spin around axis counterclockwise (requires SET "
 "PICKING SPIN)"
 msgstr ""
+"klepni na dva body pro otáčení kolem osy proti směru hodinových ručiček "
+"(vyžaduje SET PICKING SPIN)"
 
 #: org/jmol/viewer/ActionManager.java:70
 #, java-format
 msgid "adjust slab (front plane; requires {0})"
-msgstr ""
+msgstr "nastav desku/slab (přední rovina; vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:71
 #, java-format
 msgid "adjust depth (back plane; requires {0})"
-msgstr ""
+msgstr "nastav tloušťku (zadní rovina; vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:72
 #, java-format
 msgid "move slab/depth window (both planes; requires {0})"
-msgstr ""
+msgstr "přesuň okno s deskou/tloušťkou (obě roviny; vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:73
 msgid "pop up the full context menu"
-msgstr ""
+msgstr "zobraz úplné vyskakovací kontextové menu"
 
 #: org/jmol/viewer/ActionManager.java:74
 msgid "pop up recent context menu (click on Jmol frank)"
-msgstr ""
+msgstr "zobraz poslední vyskakovací kontextové menu (klepni na Jmol frank)"
 
 #: org/jmol/viewer/ActionManager.java:76
 #, java-format
 msgid "translate navigation point (requires {0} and {1})"
-msgstr ""
+msgstr "přesuň navigační body (vyžaduje {0} a {1})"
 
 #: org/jmol/viewer/ActionManager.java:77
 msgid "pick an atom"
@@ -2037,7 +2042,7 @@ msgstr "vybrat DRAW bod (pro měření)"
 #: org/jmol/viewer/ActionManager.java:79
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr ""
+msgstr "vybrat popisek pro skrytí/zobrazení (vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:80
 #, java-format
@@ -2045,45 +2050,48 @@ msgid ""
 "pick an atom to include it in a measurement (after starting a measurement or "
 "after {0})"
 msgstr ""
+"vyber atom, který chceš zahrnout do měření (po zahájení měření nebo po {0})"
 
 #: org/jmol/viewer/ActionManager.java:82
 msgid "pick an atom to initiate or conclude a measurement"
-msgstr ""
+msgstr "vyber atom pro zahájení nebo ukončení měření"
 
 #: org/jmol/viewer/ActionManager.java:83
 msgid "pick an ISOSURFACE point"
-msgstr ""
+msgstr "vyber bod izopovrchu (ISOSURFACE)"
 
 #: org/jmol/viewer/ActionManager.java:84
 msgid ""
 "pick a point or atom to navigate to (requires SET NAVIGATIONMODE; "
 "undocumented)"
 msgstr ""
+"vyber bod nebo atom ke kterým chceš navigovat (vyžaduje SET NAVIGATIONMODE; "
+"bez dokumentace)"
 
 #: org/jmol/viewer/ActionManager.java:85
 #, java-format
 msgid "select an atom (requires {0})"
-msgstr ""
+msgstr "vybrat atom (vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:86
 #, java-format
 msgid "select NONE (requires {0})"
-msgstr ""
+msgstr "vybrat NONE (vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:88
 #, java-format
 msgid "toggle selection (requires {0} or {1})"
-msgstr ""
+msgstr "obrátit  výběr (vyžaduje {0} nebo {1})"
 
 #: org/jmol/viewer/ActionManager.java:90
 #, java-format
 msgid "unselect this group of atoms (requires {0})"
-msgstr ""
+msgstr "zrušit výběr skupiny atomů (vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:91
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr ""
+msgstr "přidej tuto skupinu atomů k již v ybraným atomům (vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:92
 #, java-format
@@ -2091,14 +2099,16 @@ msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
 "set of selected atoms (requires {0})"
 msgstr ""
+"jestliže jsou všechny vybrány, zruš výběr, nebo přidej tuto skupinu atomů k "
+"již v ybraným atomům (vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:94
 msgid "reset (when clicked off the model)"
-msgstr ""
+msgstr "obnovit (po klepnutí mimo model)"
 
 #: org/jmol/viewer/ActionManager.java:96
 msgid "simulate multi-touch using the mouse)"
-msgstr ""
+msgstr "simulovat multi-touch pomocí myši"
 
 #: org/jmol/viewer/ActionManager.java:1321
 msgid "pick one more atom in order to spin the model around an axis"
@@ -2109,15 +2119,13 @@ msgid "pick two atoms in order to spin the model around an axis"
 msgstr "vybrat dva atomy k rotaci okolo osy"
 
 #: org/jmol/viewer/ActionManager.java:1325
-#, fuzzy
 msgid "pick one more atom in order to display the symmetry relationship"
-msgstr "vybrat jeden či více atomů k rotaci okolo osy"
+msgstr "vyber jeden nebo více atomů pro zobrazení vzájemné symetrie"
 
 #: org/jmol/viewer/ActionManager.java:1326
-#, fuzzy
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr "vybrat dva atomy k rotaci okolo osy"
+msgstr "vyber dva atomy pro zobrazení jejich vzájemné symetrie"
 
 #: org/jmol/viewer/SelectionManager.java:78
 #: org/jmol/viewer/SelectionManager.java:95
@@ -2153,6 +2161,9 @@ msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "schránka není přístupná -- použijte podepsaný applet"
 
+#~ msgid "Java memory usage"
+#~ msgstr "Využití Java  paměti"
+
 #~ msgid "About Jmol"
 #~ msgstr "O programu Jmol"
 
@@ -2168,3 +2179,27 @@ msgstr "schránka není přístupná -- použijte podepsaný applet"
 
 #~ msgid "Minimize"
 #~ msgstr "Minimalizovat"
+
+#~ msgid "File or URL"
+#~ msgstr "Soubor nebo URL"
+
+#~ msgid "File {0}"
+#~ msgstr "Soubor {0}"
+
+#~ msgid "File from PDB"
+#~ msgstr "Soubor z PDB"
+
+#~ msgid "{0} 3D Model"
+#~ msgstr "{0} 3D Modelů"
+
+#~ msgid "JVXL Isosurface"
+#~ msgstr "JVXL izopovrch"
+
+#~ msgid "{0} Image"
+#~ msgstr "{0} obrázek"
+
+#~ msgid "Script with state"
+#~ msgstr "Skript se stavem"
+
+#~ msgid "Script with history"
+#~ msgstr "Skript s historií"

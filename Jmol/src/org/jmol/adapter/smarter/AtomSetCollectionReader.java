@@ -590,31 +590,31 @@ public abstract class AtomSetCollectionReader {
   }
 
   public void applySymmetryAndSetTrajectory() throws Exception {
-    if (isTrajectory)
-      atomSetCollection.setTrajectory();
-    if (!needToApplySymmetry || !iHaveUnitCell) {
-      initializeSymmetry();
-      return;
-    }
-    atomSetCollection.setCoordinatesAreFractional(iHaveFractionalCoordinates);
-    atomSetCollection.setNotionalUnitCell(notionalUnitCell);
-    atomSetCollection.setAtomSetSpaceGroupName(spaceGroup);
-    atomSetCollection.setSymmetryRange(symmetryRange);
-    if (doConvertToFractional || fileCoordinatesAreFractional) {
-      atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds, doPackUnitCell);
-      if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
-        SymmetryInterface symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
-        if (symmetry.createSpaceGroup(desiredSpaceGroupIndex, (spaceGroup
-            .indexOf("*") >= 0 ? "P1" : spaceGroup), notionalUnitCell,
-            atomSetCollection.doNormalize)) {
-          atomSetCollection
-              .setAtomSetSpaceGroupName(symmetry.getSpaceGroupName());
-          atomSetCollection.applySymmetry(symmetry);
+    if (needToApplySymmetry && iHaveUnitCell) {
+      atomSetCollection.setCoordinatesAreFractional(iHaveFractionalCoordinates);
+      atomSetCollection.setNotionalUnitCell(notionalUnitCell);
+      atomSetCollection.setAtomSetSpaceGroupName(spaceGroup);
+      atomSetCollection.setSymmetryRange(symmetryRange);
+      if (doConvertToFractional || fileCoordinatesAreFractional) {
+        atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
+            doPackUnitCell);
+        if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
+          SymmetryInterface symmetry = (SymmetryInterface) Interface
+              .getOptionInterface("symmetry.Symmetry");
+          if (symmetry.createSpaceGroup(desiredSpaceGroupIndex, (spaceGroup
+              .indexOf("*") >= 0 ? "P1" : spaceGroup), notionalUnitCell,
+              atomSetCollection.doNormalize)) {
+            atomSetCollection.setAtomSetSpaceGroupName(symmetry
+                .getSpaceGroupName());
+            atomSetCollection.applySymmetry(symmetry);
+          }
+        } else {
+          atomSetCollection.applySymmetry();
         }
-      } else {
-        atomSetCollection.applySymmetry();
       }
     }
+    if (isTrajectory)
+      atomSetCollection.setTrajectory();
     initializeSymmetry();
   }
 

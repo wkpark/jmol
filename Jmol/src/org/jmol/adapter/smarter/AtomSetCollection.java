@@ -139,13 +139,16 @@ public class AtomSetCollection {
 
   public String errorMessage;
 
-  //float wavelength = Float.NaN;
   boolean coordinatesAreFractional;
-  private boolean isTrajectory;  
+  private boolean isTrajectory;    
   private int trajectoryStepCount = 0;
   private Point3f[] trajectoryStep;
   private Vector trajectorySteps;
-  
+  boolean doFixPeriodic;
+  public void setDoFixPeriodic() {
+    doFixPeriodic = true;
+  }
+
   float[] notionalUnitCell = new float[6]; 
   // expands to 22 for cartesianToFractional matrix as array (PDB)
 
@@ -209,10 +212,11 @@ public class AtomSetCollection {
     fileTypeName = type;
   }
   
-  public boolean setTrajectory() {
+  public void setTrajectory() {
     if (!isTrajectory)
       trajectorySteps = new Vector();
-    return (isTrajectory = true);
+    isTrajectory = true;
+    addTrajectoryStep();
   }
   
   /**
@@ -591,10 +595,13 @@ public class AtomSetCollection {
     return symmetry;
   }
   
+  boolean haveUnitCell = false;
+  
   boolean setNotionalUnitCell(float[] info) {
     notionalUnitCell = new float[info.length];
     for (int i = 0; i < info.length; i++)
       notionalUnitCell[i] = info[i];
+    haveUnitCell = true;
     setAtomSetAuxiliaryInfo("notionalUnitcell", notionalUnitCell);
     setGlobalBoolean(GLOBAL_latticeCells);
     getSymmetry().setUnitCell(notionalUnitCell);
@@ -1115,15 +1122,34 @@ public class AtomSetCollection {
   ////////////////////////////////////////////////////////////////
   
   private void addTrajectoryStep() {
-    if (trajectoryStep.length == 0 || trajectoryStep.length < atomCount) {
-      trajectoryStep = new Point3f[atomCount];      
+    trajectoryStep = new Point3f[atomCount];
+    Point3f[] prevSteps = (trajectoryStepCount == 0 ? null 
+        : (Point3f[]) trajectorySteps.get(trajectoryStepCount - 1));
+    for (int i = 0; i < atomCount; i++) {
+      Point3f pt = new Point3f(atoms[i]);
+      if (doFixPeriodic && prevSteps != null)
+        pt = fixPeriodic(pt, prevSteps[i]);
+      trajectoryStep[i] = pt;
     }
-    for (int i = 0; i < atomCount; i++)
-      trajectoryStep[i] = new Point3f(atoms[i]);
     trajectorySteps.addElement(trajectoryStep);
     trajectoryStepCount++;
   }
   
+  private Point3f fixPeriodic(Point3f pt, Point3f pt0) {
+    pt.x = fixPoint(pt.x, pt0.x);   
+    pt.y = fixPoint(pt.y, pt0.y);   
+    pt.z = fixPoint(pt.z, pt0.z);   
+    return pt;
+  }
+
+  private float fixPoint(float x, float x0) {
+    while (x - x0 > 0.9)
+      x -= 1;
+    while (x - x0 < -0.9)
+      x += 1;
+    return x;
+  }
+
   void finalizeTrajectory(Vector trajectorySteps) {
     this.trajectorySteps = trajectorySteps;
     trajectoryStepCount = trajectorySteps.size();
@@ -1133,11 +1159,6 @@ public class AtomSetCollection {
   private void finalizeTrajectory(boolean addStep) {
     if (trajectoryStepCount == 0)
       return;
-    if (addStep) {
-      if (trajectoryStep == null || trajectoryStep.length == 0)
-        return;
-      addTrajectoryStep();
-    }
     //reset atom positions to original trajectory
     Point3f[] trajectory = (Point3f[])trajectorySteps.get(0);
     for (int i = 0; i < atomCount; i++)
@@ -1150,12 +1171,6 @@ public class AtomSetCollection {
       discardPreviousAtoms();
     bondIndex0 = bondCount;
     if (isTrajectory) {
-      if (trajectoryStep == null && atomCount > 0)
-        trajectoryStep = new Point3f[0];
-      if (trajectoryStep != null) { // not BEFORE first atom set
-        addTrajectoryStep();
-      }
-      trajectoryStep = new Point3f[atomCount];
       discardPreviousAtoms();
     }
     currentAtomSetIndex = atomSetCount++;

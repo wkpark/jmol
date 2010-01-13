@@ -1575,7 +1575,7 @@ public class ScriptEvaluator {
   private int pcEnd;
   private String scriptExtensions;
 
-  //////////////////////// supporting methods for compilation and loading //////////
+  //////////////////////// supporting methods for compilation  and  loading //////////
 
   private boolean compileScript(String filename, String strScript,
                                 boolean debugCompiler) {
@@ -6646,8 +6646,9 @@ public class ScriptEvaluator {
         return;
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
-        || theTok == Token.filter || theTok == Token.manifest 
+        || theTok == Token.manifest 
         || theTok == Token.packed
+        || theTok == Token.filter && tokAt(i + 3) != Token.coord
         || theTok == Token.identifier && tokAt(i + 3) != Token.coord) {
       if ((filename = parameterAsString(i++)).length() == 0)
         filename = viewer.getFullPathName();

@@ -97,12 +97,8 @@ public class XmlVaspReader extends XmlReader {
       readThisModel = parent.doGetModel(++modelNumber);
       if (readThisModel) {
         modelRead = true;
-        try {
-          parent.applySymmetryAndSetTrajectory();
-        } catch (Exception e) {
-          // ignore?
-        }
         parent.setFractionalCoordinates(true);
+        atomSetCollection.setDoFixPeriodic();
         atomSetCollection.newAtomSet();
       }
       return;
@@ -214,19 +210,25 @@ public class XmlVaspReader extends XmlReader {
           getTokensFloat(data.toString(), fdata, atomCount * 3);
           int fpt = 0;
           int i0 = atomSetCollection.getLastAtomSetAtomIndex();
+
+          //TODO question here as to whether these need transformation
+
           for (int i = 0; i < atomCount; i++)
             atomSetCollection.addVibrationVector(i0 + i, fdata[fpt++],
                 fdata[fpt++], fdata[fpt++]);
-        } else if ("modeling".equals(name)) {
-          try {
-            parent.applySymmetryAndSetTrajectory();
-          } catch (Exception e) {
-            // TODO
-          }
         }
         data = null;
         break;
       }
+      if ("structure".equals(localName)) {
+        try {
+          parent.applySymmetryAndSetTrajectory();
+        } catch (Exception e) {
+          // TODO
+        }
+        break;
+      }
+      
       return;
     }
     chars = null;

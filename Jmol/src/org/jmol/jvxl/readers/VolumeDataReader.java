@@ -53,7 +53,6 @@ class VolumeDataReader extends SurfaceReader {
   protected boolean allowMapData;
   protected Point3f point;
 
-
   VolumeDataReader(SurfaceGenerator sg) {
     super(sg);
     dataType = params.dataType;

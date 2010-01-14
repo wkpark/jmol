@@ -1202,7 +1202,7 @@ public class StateManager {
         messageStyleChime = g.messageStyleChime;
         defaultDirectory = g.defaultDirectory;
         // no, not persistent, because slab and depth are not
-        // zShade = g.zShade;
+        // zShade = g.zShade; zShadePower = g.zShadePower
         allowGestures = g.allowGestures;
         allowKeyStrokes = g.allowKeyStrokes;
       }

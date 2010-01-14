@@ -473,6 +473,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       data[3] = new Integer(mesh.modelIndex);
       return mesh.getIntersection((Point4f) data[1], (Vector) data[2]);
     }
+    if (property == "getBoundingBox") {
+      String id = (String) data[0];
+      IsosurfaceMesh m = (IsosurfaceMesh) getMesh(id);
+      if (m == null || m.vertices == null)
+        return false;
+      data[2] = m.jvxlData.boundingBox;
+      return true;
+    }
     if (property == "getCenter") {
       int index = ((Integer)data[1]).intValue();
       if (index < 0) {

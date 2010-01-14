@@ -31,10 +31,6 @@ import javax.vecmath.Vector3f;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
-
-//import org.jmol.viewer.Viewer;
-
-
 abstract class VolumeFileReader extends SurfaceFileReader {
 
   protected boolean endOfData;
@@ -44,13 +40,35 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected boolean isAngstroms;
   protected boolean canDownsample;
   private int[] downsampleRemainders;
+  protected float dmin, dmax, dmean;
  
   VolumeFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     canDownsample = isProgressive = isXLowToHigh = true;
     jvxlData.wasCubic = true;
+    dmin = Float.MAX_VALUE;
+    dmax = -Float.MAX_VALUE;
+    dmin = 0;
   }
 
+  protected float recordData(float value) {
+     if (value < dmin)
+       dmin = value;
+     if (value > dmax)
+       dmax = value;
+     dmean += value;
+     return value;
+  }
+  
+  protected void closeReader() {
+    super.closeReader();
+    int n = nPointsX * nPointsY * nPointsZ;
+    if (n == 0)
+      return;
+    dmean /= n;
+    Logger.info("VolumeFileReader closing file: data min/max/mean = " + dmin + ", " + dmax + ", " + dmean);
+  }
+  
   boolean readVolumeParameters() {
     endOfData = false;
     nSurfaces = readVolumetricHeader();
@@ -228,7 +246,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
           float[] strip = new float[nPointsZ];
           plane[y] = strip;
           for (int z = 0; z < nPointsZ; ++z) {
-            strip[z] = getNextVoxelValue();
+            strip[z] = recordData(getNextVoxelValue());
             if (nSkipX != 0)
               skipVoxels(nSkipX);
           }
@@ -264,7 +282,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     try {
       for (int y = 0, ptyz = 0; y < nPointsY; ++y) {
         for (int z = 0; z < nPointsZ; ++z) {
-          plane[ptyz++] = getNextVoxelValue();
+          plane[ptyz++] = recordData(getNextVoxelValue());
           if (nSkipX != 0)
             skipVoxels(nSkipX);
         }

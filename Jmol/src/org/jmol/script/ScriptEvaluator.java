@@ -1994,7 +1994,7 @@ public class ScriptEvaluator {
               // read incorrectly here as an identifier.
               
               // note that command keywords cannot be implemented as variables 
-              // because they are not Token.identifiers in the first place.
+              // because they are not Tfoken.identifiers in the first place.
               // but the identifier tok is important here because just below
               // there is a check for SET parameter name assignments.
               // even those may not work...
@@ -7483,6 +7483,12 @@ public class ScriptEvaluator {
             data) ? (Point3f) data[2] : null);
   }
 
+  private Point3f[] getObjectBoundingBox(String id) {
+    Object[] data = new Object[] { id, null, null };
+    return (viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getBoundingBox",
+            data) ? (Point3f[]) data[2] : null);
+  }
+
   private Vector3f getDrawObjectAxis(String axisID, int index) {
     Object[] data = new Object[] { axisID, new Integer(index), null };
     return (viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
@@ -9953,6 +9959,7 @@ public class ScriptEvaluator {
       index++;
     if (isCenterParameter(index)) {
       expressionResult = null;
+      int index0 = index;
       Point3f pt1 = centerParameter(index);
       index = iToken + 1;
       if (byCorner || isCenterParameter(index)) {
@@ -9967,6 +9974,14 @@ public class ScriptEvaluator {
         // boundbox {expression}
         if (!isSyntaxCheck)
           viewer.calcBoundBoxDimensions((BitSet) expressionResult);
+      } else if (expressionResult == null && tokAt(index0) == Token.dollarsign) {
+          if (isSyntaxCheck)
+            return;
+          Point3f[] bbox = getObjectBoundingBox(objectNameParameter(++index0));
+          if (bbox == null)
+            error(ERROR_invalidArgument);
+          viewer.setBoundBox(bbox[0], bbox[1], true);
+          index = iToken + 1;
       } else {
         error(ERROR_invalidArgument);
       }

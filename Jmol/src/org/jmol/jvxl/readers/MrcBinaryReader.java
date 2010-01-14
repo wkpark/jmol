@@ -81,7 +81,7 @@ class MrcBinaryReader extends VolumeFileReader {
     int nx, ny, nz, mode, nxStart, nyStart, nzStart, mx, my, mz;
     float a, b, c, alpha, beta, gamma;
     int mapc, mapr, maps;
-    float hdmin, hdmax, hdmean;
+    float dmin, dmax, dmean;
     int ispg;
     int nsymbt;
     byte[] extra = new byte[100];
@@ -134,11 +134,11 @@ class MrcBinaryReader extends VolumeFileReader {
 
         Logger.info("MRC header: mapc,mapr,maps: " + mapc + "," + mapr + "," + maps);
         
-        hdmin = binarydoc.readFloat();
-        hdmax = binarydoc.readFloat();
-        hdmean = binarydoc.readFloat();
+        dmin = binarydoc.readFloat();
+        dmax = binarydoc.readFloat();
+        dmean = binarydoc.readFloat();
         
-        Logger.info("MRC header: dmin,dmax,dmean: " + hdmin + "," + hdmax + "," + hdmean);
+        Logger.info("MRC header: dmin,dmax,dmean: " + dmin + "," + dmax + "," + dmean);
         
         ispg = binarydoc.readInt();
         nsymbt = binarydoc.readInt();
@@ -173,7 +173,7 @@ class MrcBinaryReader extends VolumeFileReader {
         Logger.info("MRC header: bytes read: " + binarydoc.getPosition());
         
         if (params.cutoffAutomatic) {
-          params.cutoff = rms * 2 + hdmean;
+          params.cutoff = rms * 2 + dmean;
           Logger.info("MRC header: cutoff set to (dmean + 2*rms) = " + params.cutoff);
         }
         

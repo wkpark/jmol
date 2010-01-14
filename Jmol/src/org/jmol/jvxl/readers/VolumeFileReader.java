@@ -40,23 +40,23 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected boolean isAngstroms;
   protected boolean canDownsample;
   private int[] downsampleRemainders;
-  protected float dmin, dmax, dmean;
+  protected float dataMin, dataMax, dataMean;
  
   VolumeFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     canDownsample = isProgressive = isXLowToHigh = true;
     jvxlData.wasCubic = true;
-    dmin = Float.MAX_VALUE;
-    dmax = -Float.MAX_VALUE;
-    dmin = 0;
+    dataMin = Float.MAX_VALUE;
+    dataMax = -Float.MAX_VALUE;
+    dataMin = 0;
   }
 
   protected float recordData(float value) {
-     if (value < dmin)
-       dmin = value;
-     if (value > dmax)
-       dmax = value;
-     dmean += value;
+     if (value < dataMin)
+       dataMin = value;
+     if (value > dataMax)
+       dataMax = value;
+     dataMean += value;
      return value;
   }
   
@@ -65,8 +65,8 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     int n = nPointsX * nPointsY * nPointsZ;
     if (n == 0)
       return;
-    dmean /= n;
-    Logger.info("VolumeFileReader closing file: data min/max/mean = " + dmin + ", " + dmax + ", " + dmean);
+    dataMean /= n;
+    Logger.info("VolumeFileReader closing file: data min/max/mean = " + dataMin + ", " + dataMax + ", " + dataMean);
   }
   
   boolean readVolumeParameters() {

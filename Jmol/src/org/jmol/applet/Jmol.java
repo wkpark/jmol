@@ -408,7 +408,9 @@ public class Jmol implements WrappedApplet {
 
       String loadParam;
       String scriptParam = getValue("script", "");
-      if ((loadParam = getValue("loadInline", null)) != null) {
+      String test = null;
+      //test = "\n  Marvin  10270415522D\n\n  9  9  0  0  0  0            999 V2000\n   -2.2457    0.8188    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.2457   -0.0063    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.5313   -0.4188    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.8168   -0.0063    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.8168    0.8188    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.1023    1.2313    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.5313    1.2313    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.5313    2.8813    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.5313    2.0563    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n  7  1  1  0  0  0  0\n  7  5  2  0  0  0  0\n  1  2  2  0  0  0  0\n  2  3  1  0  0  0  0\n  3  4  2  0  0  0  0\n  4  5  1  0  0  0  0\n  5  6  1  0  0  0  0\n  8  9  1  0  0  0  0\n  7  9  1  0  0  0  0\nM  APO  1   9   1\nM  STY  1   1 SUP\nM  SAL   1  2   8   9\nM  SBL   1  1   9\nM  SMT   1 Et\nM  END\n";
+      if ((loadParam = (test == null ? getValue("loadInline", null) : test)) != null) {
         loadInlineSeparated(loadParam, (scriptParam.length() > 0 ? scriptParam
             : null));
       } else {

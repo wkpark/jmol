@@ -31,8 +31,6 @@ class CubeReader extends VolumeFileReader {
   CubeReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     isAngstroms = false;
-    jvxlData.wasCubic = true;
-    canDownsample = true;
   }
 
   protected void readTitleLines() throws Exception {

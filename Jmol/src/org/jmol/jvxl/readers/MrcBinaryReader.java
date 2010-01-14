@@ -35,9 +35,9 @@ class MrcBinaryReader extends VolumeFileReader {
     super(sg, null);
     binarydoc = new BinaryDocument();
     binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), isBigEndian);
-    jvxlData.wasCubic = true; //sets colix to default setting
     mrcHeader = new MrcHeader();
-    canDownsample = true;
+    // data are HIGH on the inside and LOW on the outside
+    params.insideOut = !params.insideOut;
   }
   
   private class MrcHeader {
@@ -98,14 +98,24 @@ class MrcBinaryReader extends VolumeFileReader {
         nx = binarydoc.readInt();
         ny = binarydoc.readInt();
         nz = binarydoc.readInt();
+        
+        Logger.info("MRC header: nx,ny,nz: " + nx + "," + ny + "," + nz);
+
         mode = binarydoc.readInt();
+        Logger.info("MRC header: mode: " +mode);
+
         nxStart = binarydoc.readInt();
         nyStart = binarydoc.readInt();
         nzStart = binarydoc.readInt();
+        
+        Logger.info("MRC header: nxStart,nyStart,nzStart: " + nxStart + "," + nyStart + "," + nzStart);
+
         mx = binarydoc.readInt();
         my = binarydoc.readInt();
         mz = binarydoc.readInt();
-        
+
+        Logger.info("MRC header: mx,my,mz: " + mx + "," + my + "," + mz);
+
         a = binarydoc.readFloat();
         b = binarydoc.readFloat();
         c = binarydoc.readFloat();
@@ -113,28 +123,48 @@ class MrcBinaryReader extends VolumeFileReader {
         beta = binarydoc.readFloat();
         gamma = binarydoc.readFloat();
         
+        Logger.info("MRC header: a,b,c,alpha,beta,gamma: " + a + "," + b + "," + c + "," + alpha + "," + beta + "," + gamma);
+
         unitCell = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
         unitCell.setUnitCell(new float[] {a, b, c, alpha, beta, gamma} );
 
         mapc = binarydoc.readInt();
         mapr = binarydoc.readInt();
         maps = binarydoc.readInt();
+
+        Logger.info("MRC header: mapc,mapr,maps: " + mapc + "," + mapr + "," + maps);
         
         dmin = binarydoc.readFloat();
         dmax = binarydoc.readFloat();
         dmean = binarydoc.readFloat();
         
+        Logger.info("MRC header: dmin,dmax,dmean: " + dmin + "," + dmax + "," + dmean);
+        
         ispg = binarydoc.readInt();
         nsymbt = binarydoc.readInt();
+        
+        Logger.info("MRC header: ispg,nsymbt: " + ispg + "," +  nsymbt);
+
         binarydoc.readByteArray(extra);
 
         originX = binarydoc.readFloat();
         originY = binarydoc.readFloat();
         originZ = binarydoc.readFloat();
+        
+        Logger.info("MRC header: originX,Y,Z: " + originX + "," + originY + "," + originZ);
+
         binarydoc.readByteArray(map);
         binarydoc.readByteArray(machst);
         
         rms = binarydoc.readFloat();
+        
+        if (params.cutoffAutomatic) {
+          params.cutoff = rms * 2 + dmean;
+          Logger.info("MRC header: cutoff set to (dmean + 2*rms) = " + params.cutoff);
+        }
+        
+        Logger.info("MRC header: rms: " + rms);
+        
         nlabel = binarydoc.readInt();
         byte[] temp = new byte[80];
         for (int i = 0; i < 10; i++) {
@@ -144,6 +174,9 @@ class MrcBinaryReader extends VolumeFileReader {
             s.append((char)temp[j]);
           labels[i] = s.toString().trim();
         }
+        
+        Logger.info("MRC header: bytes read: " + binarydoc.getPosition());
+        
       } catch (Exception e) {
         Logger.error("Error reading " + sg.getParams().fileName + " " + e.getMessage());
       }
@@ -160,9 +193,9 @@ class MrcBinaryReader extends VolumeFileReader {
   
   protected void readAtomCountAndOrigin() {
     VolumeFileReader.checkAtomLine(isXLowToHigh, isAngstroms, "0",
-        "0 " + (-mrcHeader.originX) + " " + (-mrcHeader.originY) + " " +  (-mrcHeader.originZ), 
+        "0 " + (mrcHeader.originX) + " " + (mrcHeader.originY) + " " +  (mrcHeader.originZ), 
         jvxlFileHeaderBuffer);
-    volumetricOrigin.set(-mrcHeader.originX, -mrcHeader.originY, -mrcHeader.originZ);
+    volumetricOrigin.set(mrcHeader.originX, mrcHeader.originY, mrcHeader.originZ);
     if (isAnisotropic)
       setVolumetricOriginAnisotropy();
   }
@@ -170,17 +203,20 @@ class MrcBinaryReader extends VolumeFileReader {
   protected void readVoxelVector(int voxelVectorIndex) {
     //assuming standard orthogonality here
     // needs fixing...
-    int i = mrcHeader.maps - 1;
+    int i = 0;
     switch (voxelVectorIndex) {
     case 0:
+      i = mrcHeader.maps - 1;
       voxelCounts[i] = mrcHeader.nx;
       volumetricVectors[i].set(mrcHeader.a / mrcHeader.mx, 0, 0);
       break;
     case 1:
+      i = mrcHeader.mapr - 1;
       voxelCounts[i] = mrcHeader.ny;
       volumetricVectors[i].set(0, mrcHeader.b / mrcHeader.my, 0);
       break;
     case 2:
+      i = mrcHeader.mapc - 1;
       voxelCounts[i] = mrcHeader.nz;
       volumetricVectors[i].set(0, 0, mrcHeader.c / mrcHeader.mz);
       break;

@@ -31,7 +31,8 @@ class ApbsReader extends VolumeFileReader {
 
   ApbsReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
-    jvxlData.wasCubic = isApbsDx = true;
+    // data are HIGH on the inside and LOW on the outside
+    params.insideOut = !params.insideOut;
   }
   
   protected void readTitleLines() throws Exception {

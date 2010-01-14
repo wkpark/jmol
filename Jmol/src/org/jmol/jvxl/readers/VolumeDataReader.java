@@ -94,10 +94,11 @@ class VolumeDataReader extends SurfaceReader {
     for (int x = 0; x < nPointsX; ++x) {
       float[][] plane = new float[nPointsY][];
       voxelData[x] = plane;
+      int ptyz = 0;
       for (int y = 0; y < nPointsY; ++y) {
         float[] strip = plane[y] = new float[nPointsZ];
-        for (int z = 0; z < nPointsZ; ++z) {
-          strip[z] = getValue(x, y, z);
+        for (int z = 0; z < nPointsZ; ++z, ++ptyz) {
+          strip[z] = getValue(x, y, z, ptyz);
         }
       }
     }
@@ -165,5 +166,9 @@ class VolumeDataReader extends SurfaceReader {
       Logger.info("voxel grid vector:" + volumetricVectors[i]);
     Logger.info("Read " + nPointsX + " x " + nPointsY + " x " + nPointsZ
         + " data points");
+  }
+
+  protected void closeReader() {
+    // unnecessary -- no file opened
   }  
  }

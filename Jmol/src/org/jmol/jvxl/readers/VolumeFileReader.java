@@ -47,6 +47,8 @@ abstract class VolumeFileReader extends SurfaceFileReader {
  
   VolumeFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
+    canDownsample = isProgressive = isXLowToHigh = true;
+    jvxlData.wasCubic = true;
   }
 
   boolean readVolumeParameters() {
@@ -149,6 +151,9 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     return parseInt(line);
   }
 
+  private int downsampleFactor;
+  private int nSkipX, nSkipY, nSkipZ;
+  
   protected void readSurfaceData(boolean isMapData) throws Exception {
     /*
      * possibilities:
@@ -183,8 +188,20 @@ abstract class VolumeFileReader extends SurfaceFileReader {
      */
 
     next[0] = 0;
-    int downsampleFactor = params.downsampleFactor;
-    boolean isDownsampled = canDownsample && (downsampleFactor > 0);
+    downsampleFactor = params.downsampleFactor;
+    nSkipX = 0;
+    nSkipY = 0;
+    nSkipZ = 0;
+    if (canDownsample && downsampleFactor > 0) {
+      nSkipX = downsampleFactor - 1;
+      nSkipY = downsampleRemainders[2]
+          + (downsampleFactor - 1)
+          * (nSkipZ = (nPointsZ * downsampleFactor + downsampleRemainders[2]));
+      nSkipZ = downsampleRemainders[1] * nSkipZ + (downsampleFactor - 1)
+          * nSkipZ * (nPointsY * downsampleFactor + downsampleRemainders[1]);
+      //System.out.println(nSkipX + " " + nSkipY + " " + nSkipZ);
+    }
+
     if (params.thePlane != null) {
       params.cutoff = 0f;
     } else if (isJvxl) {
@@ -193,26 +210,16 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     nDataPoints = 0;
     line = "";
     jvxlNSurfaceInts = 0;
-    if (isJvxl) {
+    if (isProgressive && !isMapData || isJvxl) {
       nDataPoints = volumeData.setVoxelCounts(nPointsX, nPointsY, nPointsZ);
-      jvxlVoxelBitSet = getVoxelBitSet(nDataPoints);
       voxelData = null;
+      if (isJvxl)
+        jvxlVoxelBitSet = getVoxelBitSet(nDataPoints);
     } else {
       voxelData = new float[nPointsX][][];
-      int nSkipX = 0;
-      int nSkipY = 0;
-      int nSkipZ = 0;
-      if (isDownsampled) {
-        nSkipX = downsampleFactor - 1;
-        nSkipY = downsampleRemainders[2]
-            + (downsampleFactor - 1)
-            * (nSkipZ = (nPointsZ * downsampleFactor + downsampleRemainders[2]));
-        nSkipZ = downsampleRemainders[1] * nSkipZ + (downsampleFactor - 1)
-            * nSkipZ * (nPointsY * downsampleFactor + downsampleRemainders[1]);
-        //System.out.println(nSkipX + " " + nSkipY + " " + nSkipZ);
-      }
-
-      //Note downsampling not allowed for JVXL files
+      // Note downsampling not allowed for JVXL files
+      // This filling of voxelData should only be needed
+      // for mapped data.
 
       for (int x = 0; x < nPointsX; ++x) {
         float[][] plane = new float[nPointsY][];
@@ -222,13 +229,13 @@ abstract class VolumeFileReader extends SurfaceFileReader {
           plane[y] = strip;
           for (int z = 0; z < nPointsZ; ++z) {
             strip[z] = getNextVoxelValue();
-            if (isDownsampled)
+            if (nSkipX != 0)
               skipVoxels(nSkipX);
           }
-          if (isDownsampled)
+          if (nSkipY != 0)
             skipVoxels(nSkipY);
         }
-        if (isDownsampled)
+        if (nSkipZ != 0)
           skipVoxels(nSkipZ);
       }
       //Jvxl getNextVoxelValue records the data read on its own.
@@ -236,6 +243,46 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     volumeData.setVoxelData(voxelData);
   }
 
+  // For a progressive reader, we need to build two planes at a time
+  // and keep them indexed. reading x low to high, we will first encounter
+  // plane 0, then plane 1.
+  // Note that we cannot do this when the file is being opened for
+  // mapping. In that case we will need ALL the points. At least for now...
+  
+  private float[][] yzPlanes;
+  private int yzCount;
+  public void getPlane(int x) {
+    float[] plane;
+    if (yzCount == 0) {
+      Logger.info("VolumeFileReader reading data progressively");
+      yzPlanes = new float[2][];
+      yzCount = nPointsY * nPointsZ;
+      yzPlanes[0] = new float[yzCount];
+      yzPlanes[1] = new float[yzCount];
+    }
+    plane = yzPlanes[x % 2];
+    try {
+      for (int y = 0, ptyz = 0; y < nPointsY; ++y) {
+        for (int z = 0; z < nPointsZ; ++z) {
+          plane[ptyz++] = getNextVoxelValue();
+          if (nSkipX != 0)
+            skipVoxels(nSkipX);
+        }
+        if (nSkipY != 0)
+          skipVoxels(nSkipY);
+      }
+      if (nSkipZ != 0)
+        skipVoxels(nSkipZ);
+    } catch (Exception e) {
+      // ignore
+    }
+  }
+  public float getValue(int x, int y, int z, int ptyz) {
+    if (yzPlanes == null)
+      return super.getValue(x, y, z, ptyz);
+    return yzPlanes[x % 2][ptyz];
+  }
+  
   private void skipVoxels(int n) throws Exception {
     // not allowed for JVXL data
     for (int i = n; --i >= 0;)
@@ -247,7 +294,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     return null;  
   }
   
-  private float getNextVoxelValue() throws Exception {
+  protected float getNextVoxelValue() throws Exception {
     float voxelValue = 0;
     if (nSurfaces > 1 && !params.blockCubeData) {
       for (int i = 1; i < params.fileIndex; i++)

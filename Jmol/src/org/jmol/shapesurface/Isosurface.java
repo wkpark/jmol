@@ -473,6 +473,22 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       data[3] = new Integer(mesh.modelIndex);
       return mesh.getIntersection((Point4f) data[1], (Vector) data[2]);
     }
+    if (property == "getCenter") {
+      int index = ((Integer)data[1]).intValue();
+      if (index < 0) {
+        String id = (String) data[0];
+        IsosurfaceMesh m = (IsosurfaceMesh) getMesh(id);
+        if (m == null || m.vertices == null)
+          return false;
+        Point3f p = new Point3f(m.jvxlData.boundingBox[0]);
+        p.add(m.jvxlData.boundingBox[1]);
+        p.scale(0.5f);
+        data[2] = p;
+        return true;
+      }
+      // continue to super
+    }
+
     return super.getProperty(property, data);
   }
 
@@ -1031,7 +1047,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return "\"" + (colors.length() == 0 ? schemeName : colors) + "\"";
   }
   
-  public float getValue(int x, int y, int z) {
+  public void getPlane(int x) {
+    // only for surface readers
+  }
+  
+  public float getValue(int x, int y, int z, int ptyz) {
     return 0;
   }
   

@@ -33,6 +33,8 @@ import org.jmol.viewer.Viewer;
 class PltFormattedReader extends VolumeFileReader {
 
   /*
+   * Jaguar .plt file reader
+   * 
    * free format after the first three lines
           1         2         3         4         5         6         7
 012345678901234567890123456789012345678901234567890123456789012345678901234567890

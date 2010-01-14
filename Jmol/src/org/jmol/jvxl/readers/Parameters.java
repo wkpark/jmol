@@ -193,6 +193,7 @@ public class Parameters {
     colorPos = defaultColorPositive;
     colorPosLCAO = defaultColorPositiveLCAO;
     cutoff = Float.MAX_VALUE;
+    cutoffAutomatic = true;
     distance = Float.MAX_VALUE;
     doCapIsosurface = false;
     envelopeRadius = 10f;
@@ -684,6 +685,7 @@ public class Parameters {
   
   boolean insideOut;
   float cutoff = Float.MAX_VALUE;
+  boolean cutoffAutomatic = true;
   boolean isCutoffAbsolute;
   boolean isPositiveOnly;
   

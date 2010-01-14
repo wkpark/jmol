@@ -57,7 +57,7 @@ class IsoFxyReader extends VolumeDataReader {
     JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
 
-  public float getValue(int x, int y, int z) {
+  public float getValue(int x, int y, int z, int ptyz) {
     return (isPlanarMapping ? data[x][y] : data[x][y] - (volumeData.origin[2] + z * volumeData.volumetricVectors[2].z));
   }
 }

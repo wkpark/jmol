@@ -76,8 +76,11 @@ public abstract class SurfaceReader implements VertexDataServer {
    *                    |           |
    *                    |           |______ApbsReader
    *                    |           |______CubeReader
+   *                    |           |______JaguarReader
    *                    |           |______JvxlReader
-   *                    |                       |______JvxlPReader (progressive order -- X low to high)
+   *                    |           |           |______JvxlPReader (progressive order -- X low to high)
+   *                    |           |______MrcBinaryReader
+   *                    |           |______XplorReader (version 3.1)
    *                    |
    *                    |
    *                    |_______PolygonFileReader (abstract)
@@ -240,6 +243,8 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected int[] voxelCounts;
   protected float[][][] voxelData;
   
+  abstract protected void closeReader();
+  
 //  boolean mustCalcPoint = true; // for now
 
   void setVolumeData(VolumeData v) {
@@ -266,7 +271,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected int nDataPoints;
   protected int nPointsX, nPointsY, nPointsZ;
 
-  protected boolean isJvxl, isApbsDx;
+  protected boolean isJvxl;
 
   protected int edgeFractionBase;
   protected int edgeFractionRange;
@@ -427,10 +432,14 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected MarchingSquares marchingSquares;
   private MarchingCubes marchingCubes;
 
-  public float getValue(int x, int y, int z) {
+  public float getValue(int x, int y, int z, int ptyz) {
     return volumeData.voxelData[x][y][z];
   }
 
+  public void getPlane(int x) {
+    // implementation specific -- for progressive readers
+    // MrcBinaryReader does this
+  }
   private void generateSurfaceData() {
     edgeData = "";
     if (vertexDataOnly) {

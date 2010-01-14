@@ -37,11 +37,18 @@ import org.jmol.viewer.Viewer;
 class XplorReader extends VolumeFileReader {
 
   /*
+   * http://cci.lbl.gov/~rwgk/shortcuts/htdocs/current/python/iotbx.xplor.map.html
+   * http://www.csb.yale.edu/userguides/datamanip/xplor/xplorman/node312.html#SECTION001530000000000000000
    * 
-   * VERY preliminary Xplor electron density map reader
+   * VERY preliminary Xplor 3.1 electron density map reader
    * something like this -- untested
    * 
-   * http://cci.lbl.gov/~rwgk/shortcuts/htdocs/current/python/iotbx.xplor.map.html
+   * NOT for more recent Xplor files. See 
+   *   http://www.scripps.edu/rc/softwaredocs/msi/xplor981/formats.html
+   * 
+   * 
+   *    UNTESTED UNTESTED  UNTESTED UNTESTED  UNTESTED UNTESTED 
+   *    
    * 
    * Example format for Xplor Maps:
  
@@ -74,8 +81,6 @@ That is:
    */
   XplorReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
-    isAngstroms = false;
-    jvxlData.wasCubic = true;
   }
 
   protected int readVolumetricHeader() {
@@ -152,7 +157,6 @@ That is:
       setVolumetricAnisotropy();
  
     //ZYX
-    
     getLine();
     
   }

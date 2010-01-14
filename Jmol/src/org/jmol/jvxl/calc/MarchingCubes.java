@@ -216,12 +216,18 @@ public class MarchingCubes extends TriangleData  {
     int cellIndex0 = cubeCountY * cubeCountZ - 1;
     int cellIndex = cellIndex0;
     resetIndexPlane(isoPointIndexPlanes[1]);
+    if (mode == MODE_GETXYZ)
+        surfaceReader.getPlane(x0);
     for (int x = x0; x != x1; x += xStep, ptX += ptStep, pt = ptX, cellIndex = cellIndex0) {
       
       // we swap planes of grid data when 
       // obtaining the grid data point by point
       
       if (mode == MODE_GETXYZ) {
+        // for a progressive reader, we read the next two planes
+        // for x = 0, 2, 4, 6...
+        if (x + xStep != x1)
+          surfaceReader.getPlane(x + xStep);
         float[] plane = yzPlanes[0];
         yzPlanes[0] = yzPlanes[1];
         yzPlanes[1] = plane;
@@ -252,7 +258,7 @@ public class MarchingCubes extends TriangleData  {
             int pti = pt + linearOffsets[i];
             switch (mode) {
             case MODE_GETXYZ:
-              vertexValues[i] = getValue(i, x + offset.x, y + offset.y, z
+              vertexValues[i] = getValue(x + offset.x, y + offset.y, z
                   + offset.z, pti, yzPlanes[yzPlanePts[i]]);
               isInside = bsVoxels.get(pti);
               break;
@@ -324,14 +330,15 @@ public class MarchingCubes extends TriangleData  {
 
   private BitSet bsValues = new BitSet();
 
-  private float getValue(int i, int x, int y, int z, int pt, float[] tempValues) {
+  private float getValue(int x, int y, int z, int pt, float[] tempValues) {
+    int ptyz = pt % yzCount;
     if (bsValues.get(pt))
-      return tempValues[pt % yzCount];
+      return tempValues[ptyz];
     bsValues.set(pt);
-    float value = surfaceReader.getValue(x, y, z);
+    float value = surfaceReader.getValue(x, y, z, ptyz);
     if (isSquared)
       value *= value;
-    tempValues[pt % yzCount] = value;
+    tempValues[ptyz] = value;
     if (isInside(value, cutoff, isCutoffAbsolute))
       bsVoxels.set(pt);
     return value;

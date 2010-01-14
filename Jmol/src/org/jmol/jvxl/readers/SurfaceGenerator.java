@@ -113,6 +113,7 @@
 package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -408,6 +409,7 @@ public class SurfaceGenerator {
     if ("cutoff" == propertyName) {
       params.cutoff = ((Float) value).floatValue();
       params.isPositiveOnly = false;
+      params.cutoffAutomatic = false;
       return true;
     }
 
@@ -932,6 +934,7 @@ public class SurfaceGenerator {
     }
     if (!surfaceReader.createIsosurface(false)) {
       Logger.error("Could not create isosurface");
+      surfaceReader.closeReader();
       return;
     }
     
@@ -961,6 +964,8 @@ public class SurfaceGenerator {
     params.mappedDataMin = Float.MAX_VALUE;
     if (surfaceReader.hasColorData)
       colorIsosurface();
+    else
+      surfaceReader.closeReader();
     surfaceReader = null; // resets voxel reader for mapping
   }
 
@@ -992,6 +997,7 @@ public class SurfaceGenerator {
       surfaceReader.readVolumeData(true);
     }
     colorIsosurface();
+    surfaceReader.closeReader();
   }
 
   void colorIsosurface() {
@@ -1047,6 +1053,11 @@ public class SurfaceGenerator {
     if (fileType.equals("PltFormatted"))
       return new PltFormattedReader(this, br);
     if (fileType.startsWith("MRC")) {
+      try {
+        br.close();
+      } catch (IOException e) {
+        // ignore
+      }
       br = null;
       return new MrcBinaryReader(this, params.fileName, fileType.charAt(3) != '\0');
     }

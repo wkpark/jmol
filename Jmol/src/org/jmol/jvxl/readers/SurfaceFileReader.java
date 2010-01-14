@@ -24,6 +24,7 @@
 package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Parser;
@@ -38,6 +39,17 @@ abstract class SurfaceFileReader extends SurfaceReader {
     this.br = br; 
   }
 
+  protected void closeReader() {
+    if (br != null)
+      try {
+        br.close();
+      } catch (IOException e) {
+        // ignore
+      }
+    if (binarydoc != null)
+      binarydoc.close();
+  }
+  
   static String determineFileType(BufferedReader bufferedReader) {
     // JVXL should be on the FIRST line of the file, but it may be 
     // after comments or missing.

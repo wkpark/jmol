@@ -35,13 +35,16 @@ import org.jmol.util.Parser;
  *   
  * Demonstrates the generalization of a CUBE reader
  * 
+ * 
+ *     UNTESTED!
+ * 
  */
 class JaguarReader extends VolumeFileReader {
 
   JaguarReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     isAngstroms = false; //? 
-    jvxlData.wasCubic = true;
+    // ? params.insideOut = !params.insideOut;
   }
 
   /*

@@ -36,7 +36,6 @@ class MrcBinaryReader extends VolumeFileReader {
     binarydoc = new BinaryDocument();
     binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), isBigEndian);
     mrcHeader = new MrcHeader();
-    jvxlData.wasCubic = true; //sets colix to default setting
     // data are HIGH on the inside and LOW on the outside
     params.insideOut = !params.insideOut;
   }

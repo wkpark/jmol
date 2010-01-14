@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: Jmol 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-12-08 19:19+0100\n"
-"PO-Revision-Date: 2009-12-01 20:12+0000\n"
-"Last-Translator: Muszela Balázs <bazsi86@gmail.com>\n"
+"PO-Revision-Date: 2010-01-14 15:03+0000\n"
+"Last-Translator: Balázs Attila <battila9@freemail.hu>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-01-09 04:16+0000\n"
+"X-Launchpad-Export-Date: 2010-01-14 18:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: HUNGARY\n"
 "X-Poedit-Language: Hungarian\n"
@@ -331,7 +331,7 @@ msgstr "Atomok törlése"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
-msgstr "Gaussian Input File típusú exportálás"
+msgstr "Gaussian Input File exportálás"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:194
 msgid "Basic"
@@ -391,7 +391,7 @@ msgstr "Kiválasztás: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
-msgstr "Gaussian Input File típusú fájl neve"
+msgstr "Gaussian Input File fájl neve"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:349
 msgid "File..."
@@ -750,7 +750,7 @@ msgstr "&Eszközök"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
 msgid "&Gaussian..."
-msgstr "Gausszi"
+msgstr "&Gaussian"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 msgid "Distance &Units"

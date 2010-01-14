@@ -383,6 +383,11 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("boundingBox" == propertyName) {
+      params.boundingBox = (Point3f[]) value;
+      return true;
+    }
+
     if ("bsSolvent" == propertyName) {
       params.bsSolvent = (BitSet) value;
       return true;

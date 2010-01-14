@@ -535,7 +535,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void reset() {
     // Eval.reset()
     // initializeModel
-    modelSet.calcBoundBoxDimensions(null);
+    modelSet.calcBoundBoxDimensions(null, 1);
     axesAreTainted = true;
     transformManager.homePosition();
     if (modelSet.setCrystallographicDefaults())
@@ -2383,8 +2383,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBoundBoxCommand(withOptions);
   }
 
-  public void setBoundBox(Point3f pt1, Point3f pt2, boolean byCorner) {
-    modelSet.setBoundBox(pt1, pt2, byCorner);
+  public void setBoundBox(Point3f pt1, Point3f pt2, boolean byCorner, float scale) {
+    modelSet.setBoundBox(pt1, pt2, byCorner, scale);
   }
 
   public Point3f getBoundBoxCenter() {
@@ -2395,8 +2395,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getAverageAtomPoint();
   }
 
-  public void calcBoundBoxDimensions(BitSet bs) {
-    modelSet.calcBoundBoxDimensions(bs);
+  public void calcBoundBoxDimensions(BitSet bs, float scale) {
+    modelSet.calcBoundBoxDimensions(bs, scale);
     axesAreTainted = true;
   }
 

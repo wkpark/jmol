@@ -984,7 +984,7 @@ public class JvxlCoder {
   // case original jvxl needs to be written.
   
   public static void jvxlCreateHeaderWithoutTitleOrAtoms(VolumeData v, StringBuffer bs) {
-    jvxlCreateHeader(v, Integer.MAX_VALUE, null, null, bs);
+    jvxlCreateHeader(v, Integer.MAX_VALUE, null, null,  bs);
   }
 
   public static void jvxlCreateHeader(VolumeData v, int nAtoms, 

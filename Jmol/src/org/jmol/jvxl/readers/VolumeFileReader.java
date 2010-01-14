@@ -26,6 +26,7 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.util.BitSet;
 
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
@@ -49,6 +50,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     dataMin = Float.MAX_VALUE;
     dataMax = -Float.MAX_VALUE;
     dataMin = 0;
+    boundingBox = params.boundingBox;
   }
 
   protected float recordData(float value) {
@@ -66,7 +68,8 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     if (n == 0)
       return;
     dataMean /= n;
-    Logger.info("VolumeFileReader closing file: data min/max/mean = " + dataMin + ", " + dataMax + ", " + dataMean);
+    if (dataMax != -Float.MAX_VALUE)
+      Logger.info("VolumeFileReader closing file: data min/max/mean = " + dataMin + ", " + dataMax + ", " + dataMean);
   }
   
   boolean readVolumeParameters() {
@@ -295,7 +298,18 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       // ignore
     }
   }
+  
+  protected Point3f[] boundingBox;
+  
   public float getValue(int x, int y, int z, int ptyz) {
+    if (boundingBox != null) {
+      volumeData.voxelPtToXYZ(x, y, z, ptTemp);
+      if (ptTemp.x < boundingBox[0].x || ptTemp.x > boundingBox[7].x
+          || ptTemp.y < boundingBox[0].y || ptTemp.y > boundingBox[7].y
+          || ptTemp.z < boundingBox[0].z || ptTemp.z > boundingBox[7].z
+      )
+        return Float.NaN;
+    }
     if (yzPlanes == null)
       return super.getValue(x, y, z, ptyz);
     return yzPlanes[x % 2][ptyz];

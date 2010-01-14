@@ -257,7 +257,7 @@ public final class ModelLoader extends ModelSet {
     //only now can we access all of the atom's properties
 
     freeze();
-    calcBoundBoxDimensions(null);
+    calcBoundBoxDimensions(null, 1);
 
     finalizeShapes();
     if (mergeModelSet != null)

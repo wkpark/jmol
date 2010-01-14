@@ -165,19 +165,21 @@ public class BoxInfo {
     return info;
   }
 
-  void setBoundBox(Point3f pt1, Point3f pt2, boolean byCorner) {
-    if (pt1.distance(pt2) == 0)
-      return;
-    if (byCorner) {
-      bbCorner0.set(Math.min(pt1.x, pt2.x), Math.min(pt1.y, pt2.y), Math.min(
-          pt1.z, pt2.z));
-      bbCorner1.set(Math.max(pt1.x, pt2.x), Math.max(pt1.y, pt2.y), Math.max(
-          pt1.z, pt2.z));
-    } else { //center and vector
-      bbCorner0.set(pt1.x - pt2.x, pt1.y - pt2.y, pt1.z - pt2.z);
-      bbCorner1.set(pt1.x + pt2.x, pt1.y + pt2.y, pt1.z + pt2.z);
+  void setBoundBox(Point3f pt1, Point3f pt2, boolean byCorner, float scale) {
+    if (pt1 != null) {
+      if (pt1.distance(pt2) == 0 || scale == 0)
+        return;
+      if (byCorner) {
+        bbCorner0.set(Math.min(pt1.x, pt2.x), Math.min(pt1.y, pt2.y), Math.min(
+            pt1.z, pt2.z));
+        bbCorner1.set(Math.max(pt1.x, pt2.x), Math.max(pt1.y, pt2.y), Math.max(
+            pt1.z, pt2.z));
+      } else { // center and vector
+        bbCorner0.set(pt1.x - pt2.x, pt1.y - pt2.y, pt1.z - pt2.z);
+        bbCorner1.set(pt1.x + pt2.x, pt1.y + pt2.y, pt1.z + pt2.z);
+      }
     }
-    setBbcage();
+    setBbcage(scale);
   }
 
   void reset() {
@@ -203,10 +205,11 @@ public class BoxInfo {
       bbCorner1.z = t;
   }
 
-  void setBbcage() {
+  void setBbcage(float scale) {
     bbCenter.add(bbCorner0, bbCorner1);
     bbCenter.scale(0.5f);
     bbVector.sub(bbCorner1, bbCenter);
+    bbVector.scale(scale);
     for (int i = 8; --i >= 0;) {
       Point3f pt = bbVertices[i];
       pt.set(unitBboxPoints[i]);
@@ -215,6 +218,8 @@ public class BoxInfo {
       pt.z *= bbVector.z;
       pt.add(bbCenter);
     }
+    bbCorner0.set(bbVertices[0]);
+    bbCorner1.set(bbVertices[7]);
   }
   
   boolean isWithin(Point3f pt) {

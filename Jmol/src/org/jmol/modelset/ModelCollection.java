@@ -283,7 +283,7 @@ abstract public class ModelCollection extends BondCollection {
   private BitSet bboxAtoms;
   private final BoxInfo boxInfo = new BoxInfo();
   {
-    boxInfo.setBbcage();
+    boxInfo.setBbcage(1);
   }
   
   public Point3f getAverageAtomPoint() {
@@ -312,13 +312,13 @@ abstract public class ModelCollection extends BondCollection {
     return bboxModels;
   }
   
-  public void setBoundBox(Point3f pt1, Point3f pt2, boolean byCorner) {
-    if (pt1.distance(pt2) == 0)
+  public void setBoundBox(Point3f pt1, Point3f pt2, boolean byCorner, float scale) {
+    if (pt1 != null && pt1.distance(pt2) == 0)
       return;
     isBbcageDefault = false;
     bboxModels = null;
     bboxAtoms = null;
-    boxInfo.setBoundBox(pt1, pt2, byCorner);
+    boxInfo.setBoundBox(pt1, pt2, byCorner, scale);
   }
 
   public String getBoundBoxCommand(boolean withOptions) {
@@ -371,7 +371,7 @@ abstract public class ModelCollection extends BondCollection {
     return (maxRadius == 0 ? 10 : maxRadius);
   }
 
-  public void calcBoundBoxDimensions(BitSet bs) {
+  public void calcBoundBoxDimensions(BitSet bs, float scale) {
     if (BitSetUtil.firstSetBit(bs) < 0)
       bs = null;
     if (bs == null && isBbcageDefault || atomCount < 2)
@@ -384,7 +384,7 @@ abstract public class ModelCollection extends BondCollection {
       if (unitCells != null)
         calcUnitCellMinMax();
     }
-    boxInfo.setBbcage();
+    boxInfo.setBbcage(scale);
   }
 
   public BoxInfo getBoxInfo(BitSet bs) {
@@ -392,7 +392,7 @@ abstract public class ModelCollection extends BondCollection {
       return boxInfo;
     BoxInfo bi = new BoxInfo();
     calcAtomsMinMax(bs, bi);
-    bi.setBbcage();
+    bi.setBbcage(1);
     return bi;
   }
 
@@ -3089,7 +3089,7 @@ abstract public class ModelCollection extends BondCollection {
       withinModelIterator = null;
       withinAtomSetIterator = null;
       isBbcageDefault = false;
-      calcBoundBoxDimensions(null);
+      calcBoundBoxDimensions(null, 1);
       return;
     }
     

@@ -41,14 +41,11 @@ class XplorReader extends VolumeFileReader {
    * http://www.csb.yale.edu/userguides/datamanip/xplor/xplorman/node312.html#SECTION001530000000000000000
    * 
    * VERY preliminary Xplor 3.1 electron density map reader
-   * something like this -- untested
+   * requires "!NTITLE" on second line or "REMARKS" on a later line.
    * 
-   * NOT for more recent Xplor files. See 
+   * NOT for more recent Xplor files or binary Xplor files. See 
    *   http://www.scripps.edu/rc/softwaredocs/msi/xplor981/formats.html
    * 
-   * 
-   *    UNTESTED UNTESTED  UNTESTED UNTESTED  UNTESTED UNTESTED 
-   *    
    * 
    * Example format for Xplor Maps:
  
@@ -81,6 +78,7 @@ That is:
    */
   XplorReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
+    params.insideOut = !params.insideOut;
   }
 
   protected int readVolumetricHeader() {
@@ -94,7 +92,7 @@ That is:
         Logger.info("voxel grid origin:" + volumetricOrigin);
         for (int i = 0; i < 3; ++i)
           Logger.info("voxel grid vector:" + volumetricVectors[i]);
-        JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
+        JvxlCoder.jvxlCreateHeader(volumeData, Integer.MIN_VALUE, null, null, jvxlFileHeaderBuffer);
       return readExtraLine();
     } catch (Exception e) {
       Logger.error(e.toString());
@@ -108,6 +106,7 @@ That is:
     int nLines = parseInt(getLine());
     for (int i = nLines; --i >= 0; ) {
       line = br.readLine().trim();
+      Logger.info("XplorReader: " + line);
       jvxlFileHeaderBuffer.append("# ").append(line).append('\n');
     }
     jvxlFileHeaderBuffer.append("Xplor data\nJmol " + Viewer.getJmolVersion() + '\n');
@@ -139,6 +138,9 @@ That is:
     float alpha = parseFloat();
     float beta = parseFloat();
     float gamma = parseFloat();
+    
+    Logger.info(" XplorReader symmetry a,b,c,alpha,beta,gamma: " 
+        + a + "," + b + "," + c + "," + alpha + "," + beta + "," + gamma);
 
     SymmetryInterface symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
     symmetry.setUnitCell(new float[] {a, b, c, alpha, beta, gamma});
@@ -155,9 +157,15 @@ That is:
     volumetricVectors[2].set(pt);
     if (isAnisotropic)
       setVolumetricAnisotropy();
+    Logger.info("XplorReader points ZYX " + nA + " " + nB + " " + nC);
  
     //ZYX
     getLine();
+    
+    if (params.cutoffAutomatic) {
+      params.cutoff = (boundingBox == null ? 5.0f : 1.6f);
+      Logger.info("XplorReader: setting cutoff to default value of " + params.cutoff + (boundingBox == null ? " (no BOUNDBOX parameter)" : ""));
+    }
     
   }
 
@@ -174,7 +182,6 @@ That is:
     return line;
   }
   
-
   int linePt = Integer.MAX_VALUE;
   int nRead;
   protected float nextVoxel() throws Exception {
@@ -183,7 +190,9 @@ That is:
       //System.out.println(nRead + " " + line);
       linePt = 0;
       if ((nRead % nBlock) == 0) {
-        System.out.println("block " + line);
+        if (Logger.debugging)
+          Logger.debug("XplorReader: block " + line + " min/max " 
+            + dataMin + "/" + dataMax);
         line = br.readLine();
       }
     }

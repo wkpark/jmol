@@ -9954,6 +9954,18 @@ public class ScriptEvaluator {
   private void boundbox(int index) throws ScriptException {
     TickInfo tickInfo = checkTicks(index);
     index = iToken + 1;
+    float scale = 1;
+    if (tokAt(index) == Token.scale) {
+      scale = floatParameter(++index);
+      if (!isSyntaxCheck && scale <= 0)
+        error(ERROR_invalidArgument);
+      index++;
+      if (index == statementLength) {
+        if (!isSyntaxCheck)
+          viewer.setBoundBox(null, null, true, scale);
+        return;
+      }  
+    }
     boolean byCorner = (tokAt(index) == Token.corners);
     if (byCorner)
       index++;
@@ -9969,18 +9981,18 @@ public class ScriptEvaluator {
             true));
         index = iToken + 1;
         if (!isSyntaxCheck)
-          viewer.setBoundBox(pt1, pt2, byCorner);
+          viewer.setBoundBox(pt1, pt2, byCorner, scale);
       } else if (expressionResult != null && expressionResult instanceof BitSet) {
         // boundbox {expression}
         if (!isSyntaxCheck)
-          viewer.calcBoundBoxDimensions((BitSet) expressionResult);
+          viewer.calcBoundBoxDimensions((BitSet) expressionResult, scale);
       } else if (expressionResult == null && tokAt(index0) == Token.dollarsign) {
           if (isSyntaxCheck)
             return;
           Point3f[] bbox = getObjectBoundingBox(objectNameParameter(++index0));
           if (bbox == null)
             error(ERROR_invalidArgument);
-          viewer.setBoundBox(bbox[0], bbox[1], true);
+          viewer.setBoundBox(bbox[0], bbox[1], true, scale);
           index = iToken + 1;
       } else {
         error(ERROR_invalidArgument);
@@ -12589,6 +12601,9 @@ public class ScriptEvaluator {
           && (str = parameterAsString(i)).equalsIgnoreCase("inline"))
         theTok = Token.string;
       switch (theTok) {
+      case Token.boundbox:
+        addShapeProperty(propertyList, "boundingBox", viewer.getBoundBoxVertices());
+        continue;
       case Token.pmesh:
         addShapeProperty(propertyList, "fileType", "Pmesh");
         continue;

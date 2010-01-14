@@ -283,6 +283,23 @@
 		in the textarea the command that would have been sent to the applet if the
 		applet had been there.
 				</blockquote>
+			<p><i>Note</i>:<br/>
+			It takes some time to build the applet, so if you put some immediate action like <code>jmolScript()</code>
+			or <code>jmolLoadInline()</code> right after the <code>jmolApplet()</code> line, it will probably fail 
+			because it will be called before the applet has finished loading. There are two
+			alternatives that will work:
+			</p>
+			<ul>
+			  <li>Put the commands inside the call to <code>jmolApplet()</code> (its 2nd argument, 
+			    <code>script</code>).
+			  </li>
+			  <li>Have the browser wait until the applet reports to be finished. To do so,
+			  put this at the end of the script sent with applet creation:
+			  <code>javascript appletLoaded();</code>
+			  and define a JavaScript function called <code>appletLoaded()</code> (or any other name you like) 
+			  that will trigger any further commands.
+			  </li>
+			</ul>
 			</section>
 			<section title="jmolButton">
 				<code>jmolButton(script, <span class="optP">label</span>, <span class="optP">id</span>, <span class="optP">title</span>)</code>
@@ -953,6 +970,9 @@
 					<code>script</code> and <code>nameSuffix</code> work as in 
 		<a href="#jmolApplet"><code>jmolApplet</code></a>.
 	</p>
+	   <p>See also the <i>note</i> at the end of <a href="#jmolApplet"><code>jmolApplet</code></a> regarding
+	   the use of commands right after the applet call.
+	   </p>
 			</section>
 			<section title="jmolLoadInline">
 				<code>jmolLoadInline(model, <span class="optP">targetSuffix</span>)</code>

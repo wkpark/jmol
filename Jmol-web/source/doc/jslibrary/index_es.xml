@@ -295,6 +295,23 @@ Cada páginaCada página      </p>
 		se mostrarán en el área de texto las instrucciones que se habrían
 		enviado a la miniaplicación si ésta hubiese estado allí.
 				</blockquote>
+			<p><i>Nota</i>:<br/>
+			LLeva algo de tiempo construir la miniaplicación, por lo cual si pones alguna acción inmediata, como 
+			<code>jmolScript()</code> o <code>jmolLoadInline()</code> justo tras la línea <code>jmolApplet()</code>,
+			probablemente falle porque se ejecutará antes de que la miniaplicación haya terminado de 
+			cargarse. Hay dos alternativas que sí funcionarán:
+			</p>
+			<ul>
+			  <li>Pon las instrucciones dentro de la llamada a <code>jmolApplet()</code> (su segundo argumento, 
+			    <code>guión</code>).
+			  </li>
+			  <li>Haz que el navegador espere hasta que la miniaplicación informe de que está lista. Para ello,
+			  pon esto al final del guión enviado al crear la miniaplicación:
+			  <code>javascript JmolCargado();</code>
+			  y define una función JavaScript llamada <code>JmolCargado()</code> (o cualquier otro nombre que prefieras) 
+			  que ejecutará las instrucciones restantes.
+			  </li>
+			</ul>
 			</section>
 			<section title="jmolButton">
 				<code>jmolButton(guión, <span class="optP">rótulo</span>, <span class="optP">id</span>, <span class="optP">title</span>)</code>
@@ -982,6 +999,9 @@ Cada páginaCada página      </p>
 					<code>guión</code> y <code>sufijoNombre</code> funcionan como en 
 		<a href="#jmolApplet"><code>jmolApplet</code></a>.
 	</p>
+	   <p>Véase además la <i>nota</i> al final de <a href="#jmolApplet"><code>jmolApplet</code></a> relativa al
+	   uso de instrucciones justo tras la llamada a la miniaplicación.
+	   </p>
 			</section>
 			<section title="jmolLoadInline">
 				<code>jmolLoadInline(modelo, <span class="optP">sufijoDiana</span>)</code>

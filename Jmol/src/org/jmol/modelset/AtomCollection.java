@@ -1092,7 +1092,8 @@ abstract public class AtomCollection {
     Point3f pt;
     int nH = 0;
     String types = (justCarbon ? "C" : "C S Si N O");
-    String valences = "4 2 4  3 2";
+    String valences =                  "4 2 4  3 2";
+    //             these numbers are increased by 
     // just not doing aldehydes here -- all A-X-B bent == sp3 for now
     for (int i = 0; i < atomCount; i++) {
       if (!atomSet.get(i) || bsDeleted != null && bsDeleted.get(i))
@@ -1101,10 +1102,14 @@ abstract public class AtomCollection {
       if (ipt < 0)
         continue;
       int bondCount = 0 + valences.charAt(ipt) - '0';
+      
       Atom atom = atoms[i];
       if (atom.getCovalentHydrogenCount() > 0)
         continue;
       int nBonds = atom.getCovalentBondCount();
+      int charge = atom.getFormalCharge();
+      if (charge != 0)
+        bondCount += (bondCount == 4 ? -Math.abs(charge) : charge);
       int nVal = atom.getValence();
       if (nBonds == 0 || nVal >= bondCount)
         continue;
@@ -1114,7 +1119,6 @@ abstract public class AtomCollection {
         //  + nBonds + " nVal=" + nVal + " n=" + n);
       nH += n;
       int hPt = 0;
-      //TODO not considering formal charge
       switch (n) {
       case 3: // three bonds needed RC
         getHybridizationAndAxes(i, z, x, "sp3a", false);

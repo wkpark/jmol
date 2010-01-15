@@ -194,7 +194,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void clearModelDependentObjects() {
     setFrameOffsets(null);
     if (minimizer != null) {
-      minimizer.setProperty("clear", null);
+      minimizer.setProperty("stop", null);
       minimizer = null;
     }
     if (smilesMatcher != null) {
@@ -4018,6 +4018,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return points;
   }
 
+  public void addHydrogens(BitSet bsAtoms) {
+    Point3f[] pts = getAdditionalHydrogens(bsAtoms, false);
+    if (pts.length > 0) {
+      String s = "set appendNew false;data \"append 1\"\n" + pts.length + "\nadded hydrogens";
+      for (int i = 0; i < pts.length; i++)
+        s += "\nH "  + pts[i].x + " " + pts[i].y + " " + pts[i].z;
+      s += "\nend \"append 1\";connect 1.3 {*} {hydrogen} create";
+      evalStringQuiet(s);
+    }
+    scriptStatus(GT._("{0} hydrogens added", pts.length));
+  }
+
   public void setMarBond(short marBond) {
     global.bondRadiusMilliAngstroms = marBond;
     global.setParameterValue("bondRadiusMilliAngstroms", marBond);
@@ -7815,8 +7827,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public int deleteAtoms(BitSet bs, boolean fullModels) {
     clearModelDependentObjects();
-    if (!fullModels)
+    if (!fullModels) {
+      modelSet.deleteAtoms(bs);
       return selectionManager.deleteAtoms(bs);
+    }
     fileManager.addLoadScript("zap " + Escape.escape(bs));
     setCurrentModelIndex(0, false);
     animationManager.setAnimationOn(false);

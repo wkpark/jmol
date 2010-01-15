@@ -937,6 +937,5 @@ abstract public class ModelSet extends ModelCollection {
     setModelAuxiliaryInfo(modelIndex, "fileData", fileData);
     return fileData;
   }
-
 }
 

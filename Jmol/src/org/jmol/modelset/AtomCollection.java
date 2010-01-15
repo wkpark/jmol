@@ -454,6 +454,8 @@ abstract public class AtomCollection {
       }
       switch (tokType) {
       case Token.xyz:
+        if (i == 3)
+          System.out.println("atomcoll " + i + " " + xyz);
         setAtomCoord(i, xyz.x, xyz.y, xyz.z);
         break;
       case Token.fracXyz:
@@ -1044,8 +1046,6 @@ abstract public class AtomCollection {
       if (includeRadii) {
         float r = 0;
         RadiusData rd = atomData.radiusData;
-        if (rd == null)
-          System.out.println("AtomCollection");
         switch (rd.type) {
         case RadiusData.TYPE_ABSOLUTE:
           r = rd.value;
@@ -1076,18 +1076,26 @@ abstract public class AtomCollection {
     }
   }
   
+
+  public void deleteAtoms(BitSet bs) {
+    for (int i = 0; i < atomCount; i++)
+      if (bs.get(i))
+        atoms[i].delete();
+  }
+
   public Point3f[][] getAdditionalHydrogens(BitSet atomSet, int[] nTotal,
                                             boolean justCarbon) {
     Vector3f z = new Vector3f();
     Vector3f x = new Vector3f();
     Point3f[][] hAtoms = new Point3f[atomCount][];
+    BitSet bsDeleted = viewer.getDeletedAtoms();
     Point3f pt;
     int nH = 0;
     String types = (justCarbon ? "C" : "C S Si N O");
     String valences = "4 2 4  3 2";
     // just not doing aldehydes here -- all A-X-B bent == sp3 for now
     for (int i = 0; i < atomCount; i++) {
-      if (!atomSet.get(i))
+      if (!atomSet.get(i) || bsDeleted != null && bsDeleted.get(i))
         continue;
       int ipt = types.indexOf(atoms[i].getElementSymbol());
       if (ipt < 0)
@@ -1102,8 +1110,8 @@ abstract public class AtomCollection {
         continue;
       int n = bondCount - nVal;
       hAtoms[i] = new Point3f[n];
-      System.out.println(atom.getInfo() + " nTarget=" + bondCount + " nB="
-          + nBonds + " nVal=" + nVal + " n=" + n);
+      //System.out.println(atom.getInfo() + " nTarget=" + bondCount + " nB="
+        //  + nBonds + " nVal=" + nVal + " n=" + n);
       nH += n;
       int hPt = 0;
       //TODO not considering formal charge
@@ -1111,58 +1119,57 @@ abstract public class AtomCollection {
       case 3: // three bonds needed RC
         getHybridizationAndAxes(i, z, x, "sp3a", false);
         pt = new Point3f(z);
-        pt.scaleAdd(1.1f, atom);
+        pt.scaleAdd(1.1f, z, atom);
         hAtoms[i][hPt++] = pt;
         getHybridizationAndAxes(i, z, x, "sp3b", false);
         pt = new Point3f(z);
-        pt.scaleAdd(1.1f, atom);
+        pt.scaleAdd(1.1f, z, atom);
         hAtoms[i][hPt++] = pt;
         getHybridizationAndAxes(i, z, x, "sp3c", false);
         pt = new Point3f(z);
-        pt.scaleAdd(1.1f, atom);
+        pt.scaleAdd(1.1f, z, atom);
         hAtoms[i][hPt++] = pt;
         break;
       case 2:
         // 2 bonds needed R2C or R-N
         getHybridizationAndAxes(i, z, x, "lpa", false);
         pt = new Point3f(z);
-        pt.scaleAdd(1.1f, atom);
+        pt.scaleAdd(1.1f, z, atom);
         hAtoms[i][hPt++] = pt;
         getHybridizationAndAxes(i, z, x, "lpb", false);
         pt = new Point3f(z);
-        pt.scaleAdd(1.1f, atom);
+        pt.scaleAdd(1.1f, z, atom);
         hAtoms[i][hPt++] = pt;
         break;
       case 1:
-        // one bond needed R3C, R-N-R, R-O R-3-C R=C-R R=N
-        // nbonds           3     2     1     1    2    1
-        // nval             3     2     1     3    3    2
-        // bondcount        4     3     2     4    4    3
-        //                 sp3   sp3   sp3    sp   sp2 sp2
+        // one bond needed R3C, R-N-R, R-O R=C-R R=N R-3-C
+        // nbonds           3     2     1    2    1   1
+        // nval             3     2     1    3    2   3
+        // bondcount        4     3     2    4    3   4
+        //                 sp3   sp3   sp3  sp2  sp2  sp
         switch (bondCount - nBonds) {
         case 1:
           // sp3
-          getHybridizationAndAxes(i, z, x, "lpa", false);
+          getHybridizationAndAxes(i, z, x, bondCount == 2 ? "sp3b" : "lpa", false);
           pt = new Point3f(z);
-          pt.scaleAdd(1.1f, atom);
+          pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
           break;
         case 2:
           // sp2
           getHybridizationAndAxes(i, z, x, "sp2c", false);
           pt = new Point3f(z);
-          pt.scaleAdd(1.1f, atom);
+          pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
           break;
         case 3:
           // sp
           getHybridizationAndAxes(i, z, x, "sp", false);
           pt = new Point3f(z);
-          pt.scaleAdd(1.1f, atom);
+          pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
           break;
         }
-
       }
     }
     nTotal[0] = nH;

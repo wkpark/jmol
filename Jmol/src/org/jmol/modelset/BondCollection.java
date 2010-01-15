@@ -681,6 +681,8 @@ abstract public class BondCollection extends AtomCollection {
         if (n1 != 7 && n1 != 8)
           continue;
         int valence = atom1.getValence();
+        if (valence < 0)
+          continue; // deleted
         int bondorder = atom1.getCovalentBondCount();
         int charge = atom1.getFormalCharge();
         switch (n1) {

@@ -442,6 +442,9 @@ public abstract class AtomSetCollectionReader {
   public void setUnitCellItem(int i, float x) {
     if (ignoreFileUnitCell)
       return;
+    if (i == JmolConstants.INFO_A && x == 1 
+        || i == JmolConstants.INFO_ALPHA && x == 0)
+      return;
     if (!Float.isNaN(x) && i >= 6 && Float.isNaN(notionalUnitCell[6]))
       initializeCartesianToFractional();
     notionalUnitCell[i] = x;
@@ -459,7 +462,8 @@ public abstract class AtomSetCollectionReader {
                    float gamma) {
     if (ignoreFileUnitCell)
       return;
-    notionalUnitCell[JmolConstants.INFO_A] = a;
+    if (a != 1) // PDB uses 1 1 1 0 0 0 or 1 1 1 90 90 90 
+      notionalUnitCell[JmolConstants.INFO_A] = a;
     notionalUnitCell[JmolConstants.INFO_B] = b;
     notionalUnitCell[JmolConstants.INFO_C] = c;
     if (alpha != 0)

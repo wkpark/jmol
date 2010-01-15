@@ -155,6 +155,7 @@ final public class Atom extends Point3fi {
     for (int i = bonds.length; --i >= 0; )
       if (bonds[i] == bond) {
         deleteBond(i);
+        System.out.println(getInfo() + " deleting bond " + i);
         return;
       }
   }
@@ -267,8 +268,10 @@ final public class Atom extends Point3fi {
     if (bonds == null)
       return 0;
     int n = 0;
+    Bond b;
     for (int i = bonds.length; --i >= 0; )
-      if ((bonds[i].order & JmolConstants.BOND_COVALENT_MASK) != 0)
+      if (((b = bonds[i]).order & JmolConstants.BOND_COVALENT_MASK) != 0
+          && !b.getOtherAtom(this).isDeleted())
         ++n;
     return n;
   }
@@ -277,10 +280,13 @@ final public class Atom extends Point3fi {
     if (bonds == null)
       return 0;
     int n = 0;
-    for (int i = bonds.length; --i >= 0; )
-      if ((bonds[i].order & JmolConstants.BOND_COVALENT_MASK) != 0
-          && (bonds[i].getOtherAtom(this).getElementNumber()) == 1)
+    for (int i = bonds.length; --i >= 0; ) {
+      if ((bonds[i].order & JmolConstants.BOND_COVALENT_MASK) == 0)
+        continue;
+      Atom a = bonds[i].getOtherAtom(this);
+      if (a.valence >= 0 && a.getElementNumber() == 1)
         ++n;
+    }
     return n;
   }
 
@@ -381,11 +387,28 @@ final public class Atom extends Point3fi {
     return !Float.isNaN(userDefinedVanDerWaalRadius = (radius > 0 ? radius : Float.NaN));  
   }
   
+  public void delete() {
+    System.out.println("deleting " + getInfo());
+    valence = -1;
+    if (bonds != null)
+      for (int i = bonds.length; --i >= 0; )
+        bonds[i].getOtherAtom(this).deleteBond(bonds[i]);
+    bonds = null;
+  }
+
+  public boolean isDeleted() {
+    return (valence < 0);
+  }
+
   public void setValence(int nBonds) {
+    if (isDeleted()) // no resurrection
+      return;
     valence = (byte) (nBonds < 0 ? 0 : nBonds < 0xEF ? nBonds : 0xEF);
   }
 
   public int getValence() {
+    if (isDeleted())
+      return -1;
     int n = valence;
     if (n == 0 && bonds != null)
       for (int i = bonds.length; --i >= 0;)
@@ -1280,6 +1303,7 @@ final public class Atom extends Point3fi {
   boolean isWithinStructure(byte type) {
     return group.isWithinStructure(type);
   }
+
 
   /* DEVELOPER NOTE -- ATOM/MODEL DELETION --
    * 

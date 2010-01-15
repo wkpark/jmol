@@ -285,8 +285,10 @@ public class FileManager {
         + " inline\";";
     setLoadScript(script, isAppend);
     Logger.info("FileManager.getAtomSetCollectionFromString()");
-    fullPathName = fileName = "string";
-    inlineData = strModel;
+    if (!isAppend) {
+      fullPathName = fileName = "string";
+      inlineData = strModel;
+    }
     FileReader fileReader = new FileReader("string", "string", null,
         getBufferedReaderForString(strModel), htParams);
     fileReader.run();

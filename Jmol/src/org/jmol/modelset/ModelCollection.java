@@ -2189,6 +2189,8 @@ abstract public class ModelCollection extends BondCollection {
         //|| bsExclude != null && bsExclude.get(i))
         continue;
       Atom atom = atoms[i];
+      if (atom.isDeleted())
+        continue;
       int modelIndex = atom.modelIndex;
       //no connections allowed in a data frame
       if (modelIndex != lastModelIndex) {
@@ -2211,7 +2213,7 @@ abstract public class ModelCollection extends BondCollection {
       iter.initializeHemisphere(atom, searchRadius);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom) iter.nextElement();
-        if (atomNear == atom)
+        if (atomNear == atom || atomNear.isDeleted())
           continue;
         int atomIndexNear = atomNear.atomIndex;
         boolean isNearInSetA = (bsA == null || bsA.get(atomIndexNear));

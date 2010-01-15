@@ -30,6 +30,10 @@ import org.jmol.util.Logger;
 
 class MrcBinaryReader extends VolumeFileReader {
 
+  /*
+   * also referred to as CCP4 format
+   *
+   */
   MrcHeader mrcHeader;
   MrcBinaryReader(SurfaceGenerator sg, String fileName, boolean isBigEndian) {
     super(sg, null);

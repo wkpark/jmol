@@ -5610,6 +5610,7 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         break;
       case Token.identifier:
+      case Token.aromatic:
       case Token.hbond:
         if (ptColor == i)
           break;
@@ -7746,6 +7747,7 @@ public class ScriptEvaluator {
     BitSet bsSelected = null;
     int steps = Integer.MAX_VALUE;
     float crit = 0;
+    boolean addHydrogen = false;
     MinimizerInterface minimizer = viewer.getMinimizer(false);
     // may be null
     for (int i = 1; i < statementLength; i++)
@@ -7798,6 +7800,9 @@ public class ScriptEvaluator {
       case Token.energy:
         steps = 0;
         continue;
+      case Token.addhydrogens:
+        addHydrogen = true;
+        continue;
       case Token.step:
       case Token.steps:
         steps = intParameter(++i);
@@ -7820,7 +7825,7 @@ public class ScriptEvaluator {
       bsSelected = viewer.getModelAtomBitSet(i, false);
     }
     try {
-      viewer.getMinimizer(true).minimize(steps, crit, bsSelected);
+      viewer.getMinimizer(true).minimize(steps, crit, bsSelected, addHydrogen);
     } catch (Exception e) {
       evalError(e.getMessage(), null);
     }
@@ -8818,15 +8823,7 @@ public class ScriptEvaluator {
         checkLength(2);
         if (isSyntaxCheck)
           return;
-        Point3f[] pts = viewer.getAdditionalHydrogens(null, false);
-        String s = "set appendNew false;data \"append 1\"\n" + pts.length + "\nadded hydrogens";
-        for (int i = 0; i < pts.length; i++)
-          if (pts[i] == null)
-            System.out.println("OHOH");
-          else
-            s += "\nH "  + pts[i].x + " " + pts[i].y + " " + pts[i].z;
-        s += "\nend \"append 1\";connect 1.2 {*} {hydrogen} create";
-        viewer.evalStringQuiet(s);
+        viewer.addHydrogens(null);
         return;
       case Token.pointgroup:
         pointGroup();

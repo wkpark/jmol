@@ -8814,6 +8814,20 @@ public class ScriptEvaluator {
           viewer.addStateScript(thisCommand, false, true);
         }
         return;
+      case Token.hydrogen:
+        checkLength(2);
+        if (isSyntaxCheck)
+          return;
+        Point3f[] pts = viewer.getAdditionalHydrogens(null, false);
+        String s = "set appendNew false;data \"append 1\"\n" + pts.length + "\nadded hydrogens";
+        for (int i = 0; i < pts.length; i++)
+          if (pts[i] == null)
+            System.out.println("OHOH");
+          else
+            s += "\nH "  + pts[i].x + " " + pts[i].y + " " + pts[i].z;
+        s += "\nend \"append 1\";connect 1.2 {*} {hydrogen} create";
+        viewer.evalStringQuiet(s);
+        return;
       case Token.pointgroup:
         pointGroup();
         return;
@@ -11295,6 +11309,9 @@ public class ScriptEvaluator {
       break;
     case Token.hetero:
       msg = "set selectHetero " + viewer.getRasmolSetting(tok);
+      break;
+    case Token.addhydrogens:
+      msg = Escape.escapeArray(viewer.getAdditionalHydrogens(null, true));
       break;
     case Token.hydrogen:
       msg = "set selectHydrogens " + viewer.getRasmolSetting(tok);

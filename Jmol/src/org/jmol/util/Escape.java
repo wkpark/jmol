@@ -239,6 +239,15 @@ public class Escape {
           s.append(", ");
         s.append(ilist[i]);
       }
+    } else if (x instanceof Point3f[]) {
+      Point3f[] plist = (Point3f[]) x;
+      s = new StringBuffer("array(");
+      for (int i = 0; i < plist.length; i++) {
+        if (i > 0)
+          s.append(", ");
+        s.append(escape(plist[i]));
+      }
+      return s.append(")").toString();
     }
     s.append("]");
     return s.toString();

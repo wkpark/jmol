@@ -1076,65 +1076,88 @@ abstract public class AtomCollection {
     }
   }
   
-  protected Point3f[][] getAdditionalHydrogens(BitSet atomSet, int[] nTotal) {
+  public Point3f[][] getAdditionalHydrogens(BitSet atomSet, int[] nTotal,
+                                            boolean justCarbon) {
     Vector3f z = new Vector3f();
     Vector3f x = new Vector3f();
     Point3f[][] hAtoms = new Point3f[atomCount][];
     Point3f pt;
     int nH = 0;
+    String types = (justCarbon ? "C" : "C S Si N O");
+    String valences = "4 2 4  3 2";
     // just not doing aldehydes here -- all A-X-B bent == sp3 for now
     for (int i = 0; i < atomCount; i++) {
-      if (atomSet.get(i) && atoms[i].getElementNumber() == 6) {
-
-        int n = 0;
-        Atom atom = atoms[i];
-        int nBonds = (atom.getCovalentHydrogenCount() > 0 ? 0 : atom
-            .getCovalentBondCount());
-        if (nBonds == 3 || nBonds == 2) { //could be XA3 sp2 or XA2 sp
-          String hybridization = getHybridizationAndAxes(i, z, x, "sp3", true);
-          if (hybridization == null || hybridization.equals("sp"))
-            nBonds = 0;
-        }
-        if (nBonds > 0 && nBonds <= 4)
-          n += 4 - nBonds;
-        hAtoms[i] = new Point3f[n];
-        nH += n;
-        n = 0;
-        switch (nBonds) {
+      if (!atomSet.get(i))
+        continue;
+      int ipt = types.indexOf(atoms[i].getElementSymbol());
+      if (ipt < 0)
+        continue;
+      int bondCount = 0 + valences.charAt(ipt) - '0';
+      Atom atom = atoms[i];
+      if (atom.getCovalentHydrogenCount() > 0)
+        continue;
+      int nBonds = atom.getCovalentBondCount();
+      int nVal = atom.getValence();
+      if (nBonds == 0 || nVal >= bondCount)
+        continue;
+      int n = bondCount - nVal;
+      hAtoms[i] = new Point3f[n];
+      System.out.println(atom.getInfo() + " nTarget=" + bondCount + " nB="
+          + nBonds + " nVal=" + nVal + " n=" + n);
+      nH += n;
+      int hPt = 0;
+      //TODO not considering formal charge
+      switch (n) {
+      case 3: // three bonds needed RC
+        getHybridizationAndAxes(i, z, x, "sp3a", false);
+        pt = new Point3f(z);
+        pt.scaleAdd(1.1f, atom);
+        hAtoms[i][hPt++] = pt;
+        getHybridizationAndAxes(i, z, x, "sp3b", false);
+        pt = new Point3f(z);
+        pt.scaleAdd(1.1f, atom);
+        hAtoms[i][hPt++] = pt;
+        getHybridizationAndAxes(i, z, x, "sp3c", false);
+        pt = new Point3f(z);
+        pt.scaleAdd(1.1f, atom);
+        hAtoms[i][hPt++] = pt;
+        break;
+      case 2:
+        // 2 bonds needed R2C or R-N
+        getHybridizationAndAxes(i, z, x, "lpa", false);
+        pt = new Point3f(z);
+        pt.scaleAdd(1.1f, atom);
+        hAtoms[i][hPt++] = pt;
+        getHybridizationAndAxes(i, z, x, "lpb", false);
+        pt = new Point3f(z);
+        pt.scaleAdd(1.1f, atom);
+        hAtoms[i][hPt++] = pt;
+        break;
+      case 1:
+        // one bond needed R3C, R-N-R, R-O R-3-C R=C-R R=N
+        // nbonds           3     2     1     1    2    1
+        // nval             3     2     1     3    3    2
+        // bondcount        4     3     2     4    4    3
+        //                 sp3   sp3   sp3    sp   sp2 sp2
+        switch (bondCount - nBonds) {
         case 1:
-          getHybridizationAndAxes(i, z, x, "sp3a", false);
+          getHybridizationAndAxes(i, z, x, "sp3", false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, atom);
-          hAtoms[i][n++] = pt;
-          getHybridizationAndAxes(i, z, x, "sp3b", false);
-          pt = new Point3f(z);
-          pt.scaleAdd(1.1f, atom);
-          hAtoms[i][n++] = pt;
-          getHybridizationAndAxes(i, z, x, "sp3c", false);
-          pt = new Point3f(z);
-          pt.scaleAdd(1.1f, atom);
-          hAtoms[i][n++] = pt;
+          hAtoms[i][hPt++] = pt;
           break;
         case 2:
-          String hybridization = getHybridizationAndAxes(i, z, x, "sp3", true);
-          if (hybridization != null && !hybridization.equals("sp")) {
-            getHybridizationAndAxes(i, z, x, "lpa", false);
-            pt = new Point3f(z);
-            pt.scaleAdd(1.1f, atom);
-            hAtoms[i][n++] = pt;
-            getHybridizationAndAxes(i, z, x, "lpb", false);
-            pt = new Point3f(z);
-            pt.scaleAdd(1.1f, atom);
-            hAtoms[i][n++] = pt;
-          }
+          getHybridizationAndAxes(i, z, x, "sp2c", false);
+          pt = new Point3f(z);
+          pt.scaleAdd(1.1f, atom);
+          hAtoms[i][hPt++] = pt;
           break;
         case 3:
-          if (getHybridizationAndAxes(i, z, x, "sp3", true) != null) {
-            pt = new Point3f(z);
-            pt.scaleAdd(1.1f, atom);
-            hAtoms[i][n++] = pt;
-          }
-        default:
+          getHybridizationAndAxes(i, z, x, "sp", false);
+          pt = new Point3f(z);
+          pt.scaleAdd(1.1f, atom);
+          hAtoms[i][hPt++] = pt;
+          break;
         }
 
       }

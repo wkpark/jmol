@@ -3977,6 +3977,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.hbondsSolid;
   }
 
+  public Point3f[] getAdditionalHydrogens(BitSet atomSet, boolean justCarbon) {
+    if (atomSet == null)
+      atomSet = selectionManager.bsSelection;
+    int[] nTotal = new int[1];
+    Point3f[][] pts = modelSet.getAdditionalHydrogens(atomSet, nTotal, justCarbon);
+    Point3f[] points = new Point3f[nTotal[0]];
+    for (int i = 0, pt = 0; i < pts.length; i++)
+      if (pts[i] != null)
+        for (int j = 0; j < pts[i].length; j++)
+          points[pt++] = pts[i][j];
+    return points;
+  }
+
   public void setMarBond(short marBond) {
     global.bondRadiusMilliAngstroms = marBond;
     global.setParameterValue("bondRadiusMilliAngstroms", marBond);

@@ -611,6 +611,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       ptNewSetModifier = 1;
       ltoken.setSize(0);
       nTokens = nSemiSkip = 0;
+      tokenAndEquals = null;
       ptSemi = -10;
       forPoint3 = -1;
       setEqualPt = Integer.MAX_VALUE;

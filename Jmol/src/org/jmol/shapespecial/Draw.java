@@ -1017,6 +1017,10 @@ public class Draw extends MeshCollection {
      */
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
+      if (m == null) {
+        System.out.println("mesh is null");
+        continue;
+      }
       m.visibilityFlags = (m.isValid && m.visible ? myVisibilityFlag : 0);
       if (m.modelIndex >= 0 && !bs.get(m.modelIndex)
         || m.modelFlags != null && !BitSetUtil.haveCommon(bs, m.modelFlags)) {

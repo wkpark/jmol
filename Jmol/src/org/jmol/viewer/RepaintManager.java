@@ -30,7 +30,6 @@ import org.jmol.shape.Shape;
 import org.jmol.shape.ShapeRenderer;
 import org.jmol.util.Logger;
 
-import java.awt.Component;
 import java.awt.Rectangle;
 
 class RepaintManager {
@@ -47,55 +46,36 @@ class RepaintManager {
 
   private int holdRepaint = 0;
   boolean repaintPending;
-  private boolean repaintInterrupted = false;
 
   void pushHoldRepaint() {
     ++holdRepaint;
   }
 
   void popHoldRepaint() {
-    if (--holdRepaint <= 0)
-      repaintDisplay();
+    --holdRepaint;
+    if (holdRepaint <= 0) {
+      holdRepaint = 0;
+      repaintPending = true;
+      viewer.repaint();
+    }
   }
 
   boolean refresh() {
     if (repaintPending)
       return false;
-    if (holdRepaint == 0)
-      repaintDisplay();
+    repaintPending = true;
+    if (holdRepaint == 0) {
+      viewer.repaint();
+    }
     return true;
   }
 
-  
   synchronized void requestRepaintAndWait() {
-    repaintDisplay();
+    viewer.repaint();
     try {
       wait();
     } catch (InterruptedException e) {
     }
-  }
-
-  private void repaintDisplay() {
-    holdRepaint = 0;
-    repaintPending = true;
-    repaintInterrupted = false;
-    Component display = viewer.getDisplay();
-    if (display == null)
-      return;
-    display.repaint();
-  }
-
-  synchronized void cancelRendering() {
-    if (!repaintPending || repaintInterrupted || holdRepaint != 0)
-      return;
-    repaintInterrupted = true;
-    try {
-      //System.out.println("repaintManager waiting for rendering to complete");
-      wait();
-    } catch (InterruptedException e) {
-    }
-    repaintInterrupted = false;
-    //System.out.println("repaintManager continuing");
   }
 
   synchronized void repaintDone() {
@@ -106,19 +86,17 @@ class RepaintManager {
   void render(Graphics3D g3d, ModelSet modelSet) {// , Rectangle rectClip
     if (!viewer.getRefreshing())
       return;
-    try {
-      render1(g3d, modelSet); // , rectClip
-    } catch (Exception e) {
-      System.out.println("rendering Exception " + e.getMessage());
-    }
+    render1(g3d, modelSet); // , rectClip
+    Rectangle band = viewer.getRubberBandSelection();
+    if (band != null && g3d.setColix(viewer.getColixRubberband()))
+      g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
   }
 
   private boolean logTime;
 
   private void render1(Graphics3D g3d, ModelSet modelSet) { // , Rectangle rectClip
 
-    if (modelSet == null || !viewer.mustRenderFlag()
-        || repaintInterrupted)
+    if (modelSet == null || !viewer.mustRenderFlag())
       return;
 
     logTime = viewer.getTestFlag1();
@@ -132,20 +110,12 @@ class RepaintManager {
       g3d.renderBackground();
       if (renderers ==  null)
         renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
-      for (int i = 0; i < JmolConstants.SHAPE_MAX 
-      && g3d.currentlyRendering(); ++i) {
-        if (repaintInterrupted)
-          return;
+      for (int i = 0; i < JmolConstants.SHAPE_MAX && g3d.currentlyRendering(); ++i) {
         Shape shape = modelSet.getShape(i);
         if (shape == null)
           continue;
-        //System.out.println("rendering " + JmolConstants.getShapeClassName(i));
         getRenderer(i, g3d).render(g3d, modelSet, shape);
-        //Logger.checkTimer("render time " + i);
       }
-      Rectangle band = viewer.getRubberBandSelection();
-      if (band != null && g3d.setColix(viewer.getColixRubberband()))
-        g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
 
     } catch (Exception e) {
       Logger
@@ -222,22 +192,4 @@ class RepaintManager {
     }
     return g3dExport.finalizeOutput();
   }
-
-  /*
-   * no longer necessary
-   * 
-  private ShapeRenderer getGenerator(int shapeID, Graphics3D g3d) {
-    String className = "org.jmol.export."
-        + JmolConstants.getShapeClassName(~shapeID) + "Generator";
-    try {
-      Class shapeClass = Class.forName(className);
-      ShapeRenderer renderer = (ShapeRenderer) shapeClass.newInstance();
-      renderer.setViewerG3dShapeID(viewer, g3d, shapeID);
-      return renderer;
-    } catch (Exception e) {
-      // no generator -- just use renderer
-      return getRenderer(shapeID, g3d);
-    }
-  }
-  */
 }

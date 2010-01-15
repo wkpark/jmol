@@ -45,6 +45,7 @@ import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
+import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.MeasurementData;
@@ -530,7 +531,7 @@ public class ScriptEvaluator {
    * @param e
    * @param atomCount
    * @param atomExpression
-   * @return                vector list of selected atoms
+   * @return             vector list of selected atoms
    */
   public static Vector getAtomBitSetVector(ScriptEvaluator e, int atomCount,
                                     Object atomExpression) {
@@ -1028,7 +1029,7 @@ public class ScriptEvaluator {
   protected Object getBitsetProperty(BitSet bs, int tok, Point3f ptRef,
                                      Point4f planeRef, Object tokenValue,
                                      Object opValue, boolean useAtomMap,
-                                     int index) throws ScriptException {
+                                     int index, boolean asVector) throws ScriptException {
     
     // index is a special argument set in parameterExpression that 
     // indicates we are looking at only one atom within a for(...) loop
@@ -1368,6 +1369,8 @@ public class ScriptEvaluator {
       }
     }
     if (minmaxtype == Token.all) {
+      if (asVector)
+        return vout;
       int len = vout.size();
       if (isString && !isExplicitlyAll && len == 1)
         return vout.get(0);
@@ -6096,7 +6099,7 @@ public class ScriptEvaluator {
               data = getBitsetProperty(null, (isByElement ? Token.elemno
                   : Token.groupID)
                   | Token.minmaxmask, null, null, null, null, false,
-                  Integer.MAX_VALUE);
+                  Integer.MAX_VALUE, false);
             }
           } else {
             if (!isColorIndex && shapeType != JmolConstants.SHAPE_ISOSURFACE)
@@ -6108,7 +6111,7 @@ public class ScriptEvaluator {
               if (!isSyntaxCheck) {
                 data = getBitsetProperty(null, getToken(index++).tok
                     | Token.minmaxmask, null, null, null, null, false,
-                    Integer.MAX_VALUE);
+                    Integer.MAX_VALUE, false);
               }
             }
           }
@@ -9957,7 +9960,7 @@ public class ScriptEvaluator {
     float scale = 1;
     if (tokAt(index) == Token.scale) {
       scale = floatParameter(++index);
-      if (!isSyntaxCheck && scale <= 0)
+      if (!isSyntaxCheck && scale == 0)
         error(ERROR_invalidArgument);
       index++;
       if (index == statementLength) {
@@ -12570,6 +12573,8 @@ public class ScriptEvaluator {
     int nFiles = 0;
     int nX, nY, nZ, ptX, ptY;
     BitSet bs;
+    Vector v;
+    Point3f[] pts;
     String str = null;
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getCurrentModelIndex());
     if (!isSyntaxCheck)
@@ -12602,17 +12607,52 @@ public class ScriptEvaluator {
         theTok = Token.string;
       switch (theTok) {
       case Token.boundbox:
-        addShapeProperty(propertyList, "boundingBox", viewer.getBoundBoxVertices());
+        if (!isSyntaxCheck) {
+          if (thisCommand.indexOf("# BBOX=") >= 0) {
+            String[] bbox = TextFormat.split(extractCommandOption("# BBOX"), ',');
+            pts = new Point3f[] { (Point3f) Escape.unescapePoint(bbox[0]),
+                (Point3f) Escape.unescapePoint(bbox[1]) };
+          } else {
+            pts = viewer.getBoundBoxVertices();
+          }
+          addShapeProperty(propertyList, "commandOption", "BBOX=\"" + Escape.escape(pts[0]) + "," + Escape.escape(pts[1])
+              + "\"");
+          addShapeProperty(propertyList, "boundingBox", pts);
+        }
         continue;
       case Token.pmesh:
         addShapeProperty(propertyList, "fileType", "Pmesh");
         continue;
       case Token.within:
         float distance = floatParameter(++i);
-        propertyValue = centerParameter(++i);
+        propertyName = "withinPoints";
+        Point3f ptc = centerParameter(++i);
+        BoxInfo bbox = null;
         i = iToken;
-        propertyName = "withinPoint";
-        addShapeProperty(propertyList, "withinDistance", new Float(distance));
+        if (thisCommand.indexOf("# WITHIN=") >= 0)
+          bs = Escape.unescapeBitset(extractCommandOption("# WITHIN"));
+        else
+          bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult : null);          
+        if (bs != null) {
+          bbox = viewer.getBoxInfo(bs, -distance);
+          pts = new Point3f[] { bbox.getBboxVertices()[0], bbox.getBboxVertices()[7]};
+          v = (Vector) getBitsetProperty(bs, Token.xyz | Token.minmaxmask, null, null,
+              null, null, false, Integer.MAX_VALUE, true);
+          addShapeProperty(propertyList, "commandOption", "WITHIN=\"" + Escape.escape(bs)+ "\"");
+        } else {
+          Point3f pt1 = new Point3f(distance, distance, distance);
+          Point3f pt0 = new Point3f(ptc);
+          pt0.sub(pt1);
+          pt1.add(ptc);
+          pts = new Point3f[] { pt0, pt1 };
+          v = new Vector();
+          v.add(ptc);
+        }
+        propertyValue = new Object[] { new Float(distance), pts, v };
+        if (v.size() == 1) {
+          addShapeProperty(propertyList, "withinDistance", new Float(distance));          
+          addShapeProperty(propertyList, "withinPoint", (Point3f)v.get(0));
+        }
         break;
       case Token.property:
         addShapeProperty(propertyList, "propertySmoothing", viewer
@@ -12639,7 +12679,8 @@ public class ScriptEvaluator {
           Atom[] atoms = viewer.getModelSet().atoms;
           viewer.autoCalculate(tokProperty);
           for (int iAtom = atomCount; --iAtom >= 0;) {
-            data[iAtom] = Atom.atomPropertyFloat(viewer, atoms[iAtom], tokProperty);
+            data[iAtom] = Atom.atomPropertyFloat(viewer, atoms[iAtom],
+                tokProperty);
           }
         }
         if (tokProperty == Token.color)
@@ -13062,7 +13103,7 @@ public class ScriptEvaluator {
       case Token.functionxyz:
         // isosurface functionXYZ "functionName"
         // {origin} {ni ix iy iz} {nj jx jy jz} {nk kx ky kz}
-        Vector v = new Vector();
+        v = new Vector();
         if (getToken(++i).tok != Token.string)
           error(ERROR_what,
               "functionXYZ must be followed by a function name in quotes.");
@@ -13276,10 +13317,12 @@ public class ScriptEvaluator {
           if (thisCommand.indexOf("# FILE" + nFiles + "=") >= 0)
             filename = extractCommandOption("# FILE" + nFiles);
           // just checking here, and getting the full path name
-          String[] fullPathNameOrError = viewer.getFullPathNameOrError(filename);
+          String[] fullPathNameOrError = viewer
+              .getFullPathNameOrError(filename);
           filename = fullPathNameOrError[0];
           if (fullPathNameOrError[1] != null)
-            error(ERROR_fileNotFoundException, filename + ":" + fullPathNameOrError[1]);
+            error(ERROR_fileNotFoundException, filename + ":"
+                + fullPathNameOrError[1]);
           Logger.info("reading isosurface data from " + filename);
           addShapeProperty(propertyList, "commandOption", "FILE" + (nFiles++)
               + "=" + Escape.escape(filename));
@@ -13349,13 +13392,13 @@ public class ScriptEvaluator {
       addShapeProperty(propertyList, "colorDiscrete", discreteColixes);
     else if (colorScheme != null)
       addShapeProperty(propertyList, "setColorScheme", colorScheme);
-    
+
     // OK, now send them all
     setShapeProperty(iShape, "setProperties", propertyList);
 
     if (iptDisplayProperty > 0) {
-      if (!setMeshDisplayProperty(iShape,
-          iptDisplayProperty, getToken(iptDisplayProperty).tok))
+      if (!setMeshDisplayProperty(iShape, iptDisplayProperty,
+          getToken(iptDisplayProperty).tok))
         error(ERROR_invalidArgument);
     }
 

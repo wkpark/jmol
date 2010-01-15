@@ -152,7 +152,7 @@ public class BoxInfo {
     return new Point3f[] {bbCenter, new Point3f(bbVector), bbCorner0, bbCorner1};
   }
 
-  Point3fi[] getBboxVertices() {
+  public Point3fi[] getBboxVertices() {
     return bbVertices;
   }
 
@@ -209,7 +209,13 @@ public class BoxInfo {
     bbCenter.add(bbCorner0, bbCorner1);
     bbCenter.scale(0.5f);
     bbVector.sub(bbCorner1, bbCenter);
-    bbVector.scale(scale);
+    if (scale > 0) {
+      bbVector.scale(scale);
+    } else {
+      bbVector.x -= scale / 2;
+      bbVector.y -= scale / 2;
+      bbVector.z -= scale / 2;
+    }
     for (int i = 8; --i >= 0;) {
       Point3f pt = bbVertices[i];
       pt.set(unitBboxPoints[i]);

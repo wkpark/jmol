@@ -168,7 +168,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
     // vertexColixes are only isosurface properties of IsosurfaceMesh, not Mesh
     g3d.setColix(colix);
     if (generateSet) {
-      frontOnly = false;
+      if (frontOnly && fill)
+        frontOnly = false;
       bsFaces.clear();
     }
     for (int i = mesh.polygonCount; --i >= 0;) {
@@ -184,6 +185,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
             screens[iB]);
         continue;
       }
+      int check;
       if (mesh.isPolygonSet) {
         short normix = normixes[i];
         if (!g3d.isDirectedTowardsCamera(normix))
@@ -198,21 +200,28 @@ public abstract class MeshRenderer extends ShapeRenderer {
           }
           continue;
         }
-        int check = vertexIndexes[3];
+        check = vertexIndexes[3];
         if ((check & 1) == 1)
           drawLine(iA, iB, true, vertices[iA], vertices[iB], screens[iA],
               screens[iB]);
         if ((check & 2) == 2)
-        drawLine(iB, iC, true, vertices[iB], vertices[iC], screens[iB],
-            screens[iC]);
+          drawLine(iB, iC, true, vertices[iB], vertices[iC], screens[iB],
+              screens[iC]);
         if ((check & 4) == 4)
-        drawLine(iA, iC, true, vertices[iA], vertices[iC], screens[iA],
-            screens[iC]);
+          drawLine(iA, iC, true, vertices[iA], vertices[iC], screens[iA],
+              screens[iC]);
         continue;
       }
-      if (frontOnly && transformedVectors[normixes[iA]].z < 0
-          && transformedVectors[normixes[iB]].z < 0
-          && transformedVectors[normixes[iC]].z < 0)
+      check = 7;
+      if (frontOnly) {
+        if (transformedVectors[normixes[iA]].z < 0)
+          check ^= 1;
+        if (transformedVectors[normixes[iB]].z >= 0)
+          check ^= 2;
+        if (transformedVectors[normixes[iC]].z >= 0)
+          check ^= 4;
+      }
+      if (fill && check != 7)
         continue;
       switch (vertexIndexes.length) {
       case 3:
@@ -232,8 +241,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
               colix, normixes[iB], screens[iC], colix, normixes[iC]);
           continue;
         }
-        g3d.drawTriangle(screens[iA], screens[iB], screens[iC],
-            mesh.isPolygonSet ? vertexIndexes[3] : 7);
+        g3d.drawTriangle(screens[iA], screens[iB], screens[iC], check);
         continue;
       case 4:
         int iD = vertexIndexes[3];

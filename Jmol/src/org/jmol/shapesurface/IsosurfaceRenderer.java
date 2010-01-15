@@ -205,7 +205,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
     g3d.setColix(colix);
     boolean generateSet = isExport;
     if (generateSet) {
-      frontOnly = false;
+      if (frontOnly && fill)
+        frontOnly = false;
       bsFaces.clear();
     }
     boolean colorSolid = (vertexColixes == null || imesh.isColorSolid);
@@ -237,8 +238,16 @@ public class IsosurfaceRenderer extends MeshRenderer {
       short nA = normixes[iA];
       short nB = normixes[iB];
       short nC = normixes[iC];
-      if (frontOnly && transformedVectors[nA].z < 0
-          && transformedVectors[nB].z < 0 && transformedVectors[nC].z < 0)
+      int check = 7;
+      if (frontOnly) {
+        if (transformedVectors[nA].z < 0)
+          check ^= 1;
+        if (transformedVectors[nB].z < 0)
+          check ^= 2;
+        if (transformedVectors[nC].z < 0)
+          check ^= 4;
+      }
+      if (fill && check != 7)
         continue;
       short colixA, colixB, colixC;
       if (colorSolid) {
@@ -279,7 +288,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       } else {
         // mesh only
         // check: 1 (ab) | 2(bc) | 4(ac)
-        int check = vertexIndexes[3] & 7;
+        check &= vertexIndexes[3];
         if (check == 0)
           continue;
         pt1i.set(screens[iA]);

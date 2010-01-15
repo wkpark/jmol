@@ -2400,8 +2400,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     axesAreTainted = true;
   }
 
-  public BoxInfo getBoxInfo(BitSet bs) {
-    return modelSet.getBoxInfo(bs);
+  public BoxInfo getBoxInfo(BitSet bs, float scale) {
+    return modelSet.getBoxInfo(bs, scale);
   }
 
   float calcRotationRadius(Point3f center) {

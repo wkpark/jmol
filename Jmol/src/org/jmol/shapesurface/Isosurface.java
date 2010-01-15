@@ -175,6 +175,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   protected JvxlData jvxlData;
 
   private ColorEncoder colorEncoder = new ColorEncoder();
+  private float withinDistance;
+  private Vector withinPoints;
+  private BitSet bsWithinPoints;
+  private BitSet bsWithinPointsY;
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -294,6 +298,15 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     // Isosurface / SurfaceGenerator both interested
     
+    if ("withinPoints" == propertyName) {
+      Object[] o = (Object[]) value;
+      withinDistance = ((Float) o[0]).floatValue();
+      withinPoints = (Vector) o[2];
+      bsWithinPoints = new BitSet();
+      bsWithinPointsY = new BitSet();
+      
+    }
+
     if ("scale3d" == propertyName) {
       scale3d = ((Float)value).floatValue();
       if (thisMesh != null) {
@@ -622,6 +635,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     offset = null;
     scale3d = 0;
+    withinPoints = null;
+    bsWithinPointsY = null;
+    bsWithinPoints = null;
     linkedMesh = null;
     initState();
   }
@@ -930,11 +946,32 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public int addTriangleCheck(int iA, int iB, int iC, int check,
                                int check2, boolean isAbsolute, int color) {
     if (isAbsolute && !MeshData.checkCutoff(iA, iB, iC, thisMesh.vertexValues))
+      return -1;  
+    if (withinPoints != null && !checkWithinPoints(iA, iB, iC))
       return -1;
     return thisMesh.addTriangleCheck(iA, iB, iC, check, check2, color);
   }
 
   ////////////////////////////////////////////////////////////////////
+
+  private boolean checkWithinPoints(int ia, int ib, int ic) {
+    if (!bsWithinPoints.get(ia) && !checkWithin(ia) || !bsWithinPointsY.get(ia)
+      || !bsWithinPoints.get(ib) && !checkWithin(ib) || !bsWithinPointsY.get(ib)
+      || !bsWithinPoints.get(ic) && !checkWithin(ic) || !bsWithinPointsY.get(ic))
+      return false;
+    return true;
+  }
+
+  private boolean checkWithin(int index) {
+    Point3f pti = thisMesh.vertices[index];
+    bsWithinPoints.set(index);
+    for (int i = withinPoints.size(); --i >= 0; )
+      if (pti.distance((Point3f) withinPoints.get(i)) <= withinDistance) {
+        bsWithinPointsY.set(index);   
+        return true; 
+      }
+    return false;
+  }
 
   private void setModelIndex() {
     setModelIndex(atomIndex, modelIndex);

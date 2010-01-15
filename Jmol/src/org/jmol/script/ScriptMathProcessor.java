@@ -851,7 +851,7 @@ class ScriptMathProcessor {
     Point4f plane2 = planeValue(x2);
     if (x1.tok == Token.bitset && tok != Token.dot)
       return addX(eval.getBitsetProperty(ScriptVariable.bsSelect(x1),
-          Token.distance, pt2, plane2, x1.value, null, false, x1.index));
+          Token.distance, pt2, plane2, x1.value, null, false, x1.index, false));
     Point3f pt1 = ptValue(x1, true);
     Point4f plane1 = planeValue(x1);
     if (tok == Token.dot) {
@@ -884,7 +884,7 @@ class ScriptMathProcessor {
       return (Point3f) x.value;
     case Token.bitset:
       return (Point3f) eval.getBitsetProperty(ScriptVariable.bsSelect(x),
-          Token.xyz, null, null, x.value, null, false, Integer.MAX_VALUE);
+          Token.xyz, null, null, x.value, null, false, Integer.MAX_VALUE, false);
     case Token.string:
       pt = Escape.unescapePoint(ScriptVariable.sValue(x));
       if (pt instanceof Point3f)
@@ -1024,7 +1024,7 @@ class ScriptMathProcessor {
       params.addElement(args[i]);
     if (isSelector) {
       return addX(eval.getBitsetProperty(ScriptVariable.bsSelect(x1), tok,
-          null, null, x1.value, new Object[] { name, params }, false, x1.index));
+          null, null, x1.value, new Object[] { name, params }, false, x1.index, false));
     }
     ScriptVariable var = eval.getFunctionReturn(name, params, null);
     return (var == null ? false : addX(var));
@@ -2559,7 +2559,7 @@ class ScriptMathProcessor {
       return false;
     if (isSyntaxCheck)
       return addX("");
-    BoxInfo b = viewer.getBoxInfo(ScriptVariable.bsSelect(x2));
+    BoxInfo b = viewer.getBoxInfo(ScriptVariable.bsSelect(x2), 1);
     Point3f[] pts = b.getBoundBoxPoints();
     return addX(new String[] { Escape.escape(pts[0]), Escape.escape(pts[1]),
         Escape.escape(pts[2]), Escape.escape(pts[3]) });
@@ -2637,7 +2637,7 @@ class ScriptMathProcessor {
         return addX(x2);
       BitSet bs = ScriptVariable.bsSelect(x2);
       Object val = eval.getBitsetProperty(bs, op.intValue, null, null,
-          x2.value, op.value, false, x2.index);
+          x2.value, op.value, false, x2.index, false);
       if (op.intValue == Token.bonds)
         val = new ScriptVariable(Token.bitset, new BondSet((BitSet) val, viewer
             .getAtomIndices(bs)));

@@ -383,8 +383,15 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("withinPoints" == propertyName) {
+      Object[] o = (Object[]) value;
+      params.boundingBox = (Point3f[]) o[1];
+      return true;
+    }
+    
     if ("boundingBox" == propertyName) {
-      params.boundingBox = (Point3f[]) value;
+      Point3f[] pts = (Point3f[]) value;
+      params.boundingBox = new Point3f[] { new Point3f(pts[0]), new Point3f(pts[pts.length - 1]) };
       return true;
     }
 

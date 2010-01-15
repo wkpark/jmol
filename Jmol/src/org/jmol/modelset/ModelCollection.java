@@ -387,16 +387,16 @@ abstract public class ModelCollection extends BondCollection {
     boxInfo.setBbcage(scale);
   }
 
-  public BoxInfo getBoxInfo(BitSet bs) {
+  public BoxInfo getBoxInfo(BitSet bs, float scale) {
     if (bs == null)
       return boxInfo;
     BoxInfo bi = new BoxInfo();
     calcAtomsMinMax(bs, bi);
-    bi.setBbcage(1);
+    bi.setBbcage(scale);
     return bi;
   }
 
-  private int calcAtomsMinMax(BitSet bs, BoxInfo boxInfo) {
+  public int calcAtomsMinMax(BitSet bs, BoxInfo boxInfo) {
     boxInfo.reset();
     int nAtoms = 0;
     for (int i = atomCount; --i >= 0;)
@@ -1879,7 +1879,7 @@ abstract public class ModelCollection extends BondCollection {
     case Token.molecule:
       return getMoleculeBitSet((BitSet) specInfo);
     case Token.boundbox:
-      BoxInfo boxInfo = getBoxInfo((BitSet) specInfo);
+      BoxInfo boxInfo = getBoxInfo((BitSet) specInfo, 1);
       bs = getAtomsWithin(boxInfo.getBoundBoxCornerVector().length() + 0.0001f,
           boxInfo.getBoundBoxCenter(), null, -1);
       for (int i = 0; i < atomCount; i++)

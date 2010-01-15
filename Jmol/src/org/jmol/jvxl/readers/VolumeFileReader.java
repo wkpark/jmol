@@ -304,9 +304,9 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   public float getValue(int x, int y, int z, int ptyz) {
     if (boundingBox != null) {
       volumeData.voxelPtToXYZ(x, y, z, ptTemp);
-      if (ptTemp.x < boundingBox[0].x || ptTemp.x > boundingBox[7].x
-          || ptTemp.y < boundingBox[0].y || ptTemp.y > boundingBox[7].y
-          || ptTemp.z < boundingBox[0].z || ptTemp.z > boundingBox[7].z
+      if (ptTemp.x < boundingBox[0].x || ptTemp.x > boundingBox[1].x
+          || ptTemp.y < boundingBox[0].y || ptTemp.y > boundingBox[1].y
+          || ptTemp.z < boundingBox[0].z || ptTemp.z > boundingBox[1].z
       )
         return Float.NaN;
     }

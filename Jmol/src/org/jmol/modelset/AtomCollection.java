@@ -1141,18 +1141,21 @@ abstract public class AtomCollection {
         //                 sp3   sp3   sp3    sp   sp2 sp2
         switch (bondCount - nBonds) {
         case 1:
-          getHybridizationAndAxes(i, z, x, "sp3", false);
+          // sp3
+          getHybridizationAndAxes(i, z, x, "lpa", false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, atom);
           hAtoms[i][hPt++] = pt;
           break;
         case 2:
+          // sp2
           getHybridizationAndAxes(i, z, x, "sp2c", false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, atom);
           hAtoms[i][hPt++] = pt;
           break;
         case 3:
+          // sp
           getHybridizationAndAxes(i, z, x, "sp", false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, atom);

@@ -11639,9 +11639,9 @@ public class ScriptEvaluator {
         Point3f[] points = new Point3f[nVertices];
         for (int j = 0; j < nVertices; j++, i = iToken)
           points[j] = getPoint3f(++iToken, true);
-        int nTriangles = intParameter(++i);
         Vector v = new Vector();
         v.add(points);
+        int nTriangles = intParameter(++i);
         int[][] polygons = new int[nTriangles][];
         for (int j = 0; j < nTriangles; j++, i = iToken) {
           float[] f = floatParameterSet(++i, 3, 4);

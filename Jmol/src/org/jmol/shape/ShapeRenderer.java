@@ -50,7 +50,6 @@ public abstract class ShapeRenderer {
   protected short madMid;
   protected short madEnd;
   protected boolean isExport;
-  protected boolean slabbing;
 
   public final void setViewerG3dShapeID(Viewer viewer, JmolRendererInterface g3d, int shapeID) {
     this.viewer = viewer;

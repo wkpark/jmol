@@ -53,9 +53,13 @@ public class SticksRenderer extends ShapeRenderer {
   protected int bondOrder;
   private boolean renderWireframe;
   private boolean isAntialiased;
+  private boolean slabbing;
+  private boolean slabCleanly;
 
 
   protected void render() {
+    slabbing = viewer.getSlabEnabled();
+    slabCleanly = viewer.getSlabCleanly();          
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
     showMultipleBonds = viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
@@ -84,6 +88,13 @@ public class SticksRenderer extends ShapeRenderer {
         || modelSet.isAtomHidden(atomB.getAtomIndex()))
       return;
 
+    if (slabbing) {
+      if (g3d.isClippedZ(atomA.screenZ) && g3d.isClippedZ(atomB.screenZ))
+        return;
+      if(slabCleanly && 
+          (g3d.isClippedZ(atomA.screenZ) || g3d.isClippedZ(atomB.screenZ)))
+        return;          
+    }
     colixA = atomA.getColix();
     colixB = atomB.getColix();
     if (((colix = bond.getColix()) & Graphics3D.OPAQUE_MASK) == Graphics3D.USE_PALETTE) {

@@ -36,7 +36,7 @@ import javax.vecmath.*;
 public class BallsRenderer extends ShapeRenderer {
 
   private int minX, minY, minZ, maxX, maxY, maxZ;
-  
+
   protected void render() {
     // minX = rectClip.x;
     // maxX = minX + rectClip.width;
@@ -44,7 +44,7 @@ public class BallsRenderer extends ShapeRenderer {
     // maxY = minY + rectClip.height;
     boolean renderBalls = !viewer.getWireframeRotation()
         || !viewer.getInMotion();
-    slabbing = viewer.getSlabEnabled();
+    boolean slabbing = viewer.getSlabEnabled();
     // isNav = viewer.getNavigationMode();
     boolean renderCrosshairs = modelSet.getAtomCount() > 0
         && viewer.getShowNavigationPoint() && !isExport
@@ -75,6 +75,7 @@ public class BallsRenderer extends ShapeRenderer {
       atom.transform(viewer);
     }
     boolean slabByMolecule = viewer.getSlabByMolecule();
+    boolean slabCleanly = viewer.getSlabCleanly();
     if (slabByMolecule && slabbing) {
       Molecule[] molecules = modelSet.getMolecules();
       int moleculeCount = modelSet.getMoleculeCountInModel(-1);
@@ -101,13 +102,14 @@ public class BallsRenderer extends ShapeRenderer {
         Atom atom = atoms[i];
         if (slabbing) {
 
-          if (g3d.isClippedZ(atom.screenZ)) {
+          if (g3d.isClippedZ(atom.screenZ
+              - (slabCleanly? atoms[i].screenDiameter >> 1 : 0))) {
 
             atom.setClickable(0);
             // note that in the case of navigation,
             // maxZ is set to Integer.MAX_VALUE.
 
-            int r = atom.screenDiameter / 2;
+            int r = (slabCleanly ? -1 : 1) * atom.screenDiameter / 2;
             if (atom.screenZ + r < minZ || atom.screenZ - r > maxZ)
               continue;
             if (!g3d.isInDisplayRange(atom.screenX, atom.screenY))

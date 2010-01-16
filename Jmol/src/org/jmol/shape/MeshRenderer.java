@@ -79,7 +79,6 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   private boolean setVariables() {
-    slabbing = viewer.getSlabEnabled();
     vertices = (mesh.ptOffset == null && mesh.scale3d == 0 
         ? mesh.vertices : mesh.getOffsetVertices(thePlane)); 
     
@@ -95,7 +94,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       // this can happen when user switches windows
       // during a surface calculation
 
-      frontOnly = !slabbing && mesh.frontOnly && !mesh.isTwoSided;
+      frontOnly = !viewer.getSlabEnabled() && mesh.frontOnly && !mesh.isTwoSided;
       screens = viewer.allocTempScreens(vertexCount);
       transformedVectors = g3d.getTransformedVertexVectors();
     }

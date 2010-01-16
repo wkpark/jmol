@@ -619,6 +619,7 @@ public class StateManager {
     int zShadePower = 1;
     
     boolean slabByMolecule = false;
+    boolean slabCleanly = false;
 
     //file loading
 
@@ -1372,6 +1373,7 @@ public class StateManager {
       setParameterValue("showScript", scriptDelay);
       setParameterValue("showUnitcell", false);
       setParameterValue("slabByMolecule", slabByMolecule);
+      setParameterValue("slabCleanly", slabCleanly);
       setParameterValue("slabEnabled", false);
       setParameterValue("smartAromatic", smartAromatic);
       setParameterValue("solventProbe", solventOn);

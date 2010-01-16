@@ -217,6 +217,7 @@ public class Parameters {
     mappedDataMin = Float.MAX_VALUE;
     minSet = 0;
     boundingBox = null;
+    bsExcluded = new BitSet[2];
     nContours = 0;
     contourIncrements = null;
     contoursDiscrete = null;
@@ -713,6 +714,7 @@ public class Parameters {
   public short[] contourColixes;
   Point3f contourIncrements;
   public Point3f[] boundingBox;
+  public BitSet[] bsExcluded;
   
   void setMapRanges(SurfaceReader surfaceReader) {
     if (colorByPhase || colorBySign || (thePlane != null || isBicolorMap) && !isContoured) {

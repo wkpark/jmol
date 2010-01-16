@@ -64,6 +64,9 @@ public class MarchingCubes extends TriangleData  {
    *          Point4f triangle data via surfaceReader.addTriangleCheck()
    *          bsVoxels -- returned same (JVXL file data) or filled (otherwise)
    *          edgeData -- encoded fraction data as a string
+   *          
+   *          bsExcludedVertices -- an option to exclude vertices based on having NaN values
+   *          bsExcludedTriangles -- an option to exclude triangles based on position in space
    *  
    */
 
@@ -75,7 +78,7 @@ public class MarchingCubes extends TriangleData  {
   private boolean isCutoffAbsolute;
   private boolean isSquared;
   private boolean isXLowToHigh;
- 
+
   private int cubeCountX, cubeCountY, cubeCountZ;
   private int nY, nZ;
   private int yzCount;
@@ -83,6 +86,8 @@ public class MarchingCubes extends TriangleData  {
   private float fractionOutside;
   private boolean integrateSquared = true;
   private BitSet bsVoxels;
+  private BitSet bsExcludedVertices;
+  private BitSet bsExcludedTriangles;
 
   private StringBuffer edgeData = new StringBuffer();
   
@@ -96,11 +101,14 @@ public class MarchingCubes extends TriangleData  {
   
   public MarchingCubes(VertexDataServer surfaceReader, VolumeData volumeData,
       BitSet bsVoxels, boolean isContoured, int contourType, float cutoff,
-      boolean isCutoffAbsolute, boolean isSquared, boolean isXLowToHigh) {
+      boolean isCutoffAbsolute, boolean isSquared, boolean isXLowToHigh,
+      BitSet[] bsExcluded) {
 
     // If just creating a JVXL file, see org.openscience.jmol.jvxl.simplewriter.SimpleMarchingCubes.java
     //
 
+    bsExcludedVertices = (bsExcluded[0] == null ? bsExcluded[0] = new BitSet() : bsExcluded[0]);
+    bsExcludedTriangles = (bsExcluded[1] == null ? bsExcluded[1] = new BitSet() : bsExcluded[1]);
     this.surfaceReader = surfaceReader;
     this.volumeData = volumeData;
     this.isContoured = isContoured;
@@ -254,33 +262,37 @@ public class MarchingCubes extends TriangleData  {
             // to our base x,y,z cube position
 
             boolean isInside;
+            float v;
             Point3i offset = cubeVertexOffsets[i];
             int pti = pt + linearOffsets[i];
             switch (mode) {
             case MODE_GETXYZ:
-              vertexValues[i] = getValue(x + offset.x, y + offset.y, z
+              v = vertexValues[i] = getValue(x + offset.x, y + offset.y, z
                   + offset.z, pti, yzPlanes[yzPlanePts[i]]);
               isInside = bsVoxels.get(pti);
               break;
             case MODE_BITSET:
               isInside = bsVoxels.get(pti);
-              vertexValues[i] = (isInside ? 1 : 0);
+              v = vertexValues[i] = (bsExcludedVertices.get(pti) ? Float.NaN : isInside ? 1 : 0);
               break;
             default:
             case MODE_CUBE:
-              vertexValues[i] = volumeData.voxelData[x + offset.x][y + offset.y][z
+              v = vertexValues[i] = volumeData.voxelData[x + offset.x][y + offset.y][z
                   + offset.z];
               if (isSquared)
                 vertexValues[i] *= vertexValues[i];
               isInside = isInside(vertexValues[i], cutoff, isCutoffAbsolute);
-              //System.out.println("marchingcubes " + vertexValues[i] + " " + isInside);
+              if (isInside)
+                bsVoxels.set(pti);
             }
             if (isInside) {
-              bsVoxels.set(pti);
               insideMask |= Pwr2[i];
             } else {
               fractionOutside += (integrateSquared ? vertexValues[i] * vertexValues[i] : vertexValues[i]);
             }
+            
+            if (Float.isNaN(v))
+              bsExcludedVertices.set(pti);
           }
 
           if (insideMask == 0) {
@@ -293,14 +305,14 @@ public class MarchingCubes extends TriangleData  {
           }
           ++surfaceCount;
 
-          //System.out.println("insideCount " + insideCount + " x y z value mask: " + x + " " + y + " " + z + " " + vertexValues[0] + " " + Integer.toHexString(insideMask));
-          
           // This cube is straddling the cutoff. We must check all edges 
+          // Note that we do not process it if it has an NaN values
 
-          if (!processOneCubical(insideMask, x, y, z, pt)
-              || isContoured)
+          if (!processOneCubical(insideMask, x, y, z, pt) || isContoured) {
             continue;
-
+          }
+          //  System.out.println("insideCount " + insideCount + " x y z value mask: " + x + " " + y + " " + z + " " + vertexValues[0] + " " + Integer.toHexString(insideMask));
+          
           // the inside mask serves to define the triangles necessary 
           // if just creating JVXL files, this step is unnecessary
 
@@ -318,15 +330,16 @@ public class MarchingCubes extends TriangleData  {
     return edgeData.toString();
   }
 
-  Vector3f vTemp = new Vector3f();
-
+  private int nTriangles;
   private void addTriangle(int ia, int ib, int ic, int edgeType) {
-
-    surfaceReader.addTriangleCheck(edgePointIndexes[ia], 
+    if (!bsExcludedTriangles.get(nTriangles) &&
+        surfaceReader.addTriangleCheck(edgePointIndexes[ia], 
         edgePointIndexes[ib], edgePointIndexes[ic], 
-        edgeType, 0, isCutoffAbsolute, 0);
+        edgeType, 0, isCutoffAbsolute, 0) < 0) {
+      bsExcludedTriangles.set(nTriangles);
+    }
+    nTriangles++;
   }
-
 
   private BitSet bsValues = new BitSet();
 

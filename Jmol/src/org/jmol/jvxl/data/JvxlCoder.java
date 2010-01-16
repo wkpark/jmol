@@ -27,6 +27,7 @@ import javax.vecmath.Point3f;
 import java.util.BitSet;
 import java.util.Vector;
 
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.Escape;
@@ -37,7 +38,7 @@ public class JvxlCoder {
   //TODO -- need to escapeXml for text data
   
   final public static String JVXL_VERSION1 = "2.0";
-  final public static String JVXL_VERSION_XML = "2.1"; 
+  final public static String JVXL_VERSION_XML = "2.1";
   
   // 1.4 adds -nContours to indicate contourFromZero for MEP data mapped onto planes
   // 2.0 adds vertex/triangle compression when no grid is present 
@@ -76,10 +77,14 @@ public class JvxlCoder {
                                    String[] title, String msg,
                                    boolean includeHeader, int nSurfaces,
                                    String state, String comment) {
+
+    // version1 decomissioned because of jvxlExcluded[] performing so well
     
-    if (meshData != null || jvxlData == null || jvxlData.asXml || jvxlData.vContours != null || jvxlData.contourValues != null)
+    //    if (meshData != null || jvxlData == null || jvxlData.asXml 
+    //      || jvxlData.vContours != null || jvxlData.contourValues != null
+    //      || jvxlData.jvxlExcluded[0] != null || jvxlData.jvxlExcluded[1] != null )
       return jvxlGetFileXml(jvxlData, meshData, title, msg, includeHeader, nSurfaces, state, comment);
-    return jvxlGetFileVersion1(jvxlData, meshData, title, msg, includeHeader, nSurfaces, state, comment);
+    //return jvxlGetFileVersion1(jvxlData, meshData, title, msg, includeHeader, nSurfaces, state, comment);
   }
 
   private static String jvxlGetFileXml(JvxlData jvxlData, MeshData meshData,
@@ -144,6 +149,18 @@ public class JvxlCoder {
       appendXmlColorData(sb, "jvxlColorData", jvxlData.jvxlColorData,
           jvxlData.isJvxlPrecisionColor, jvxlData.valueMappedToRed,
           jvxlData.valueMappedToBlue);
+    }
+    if (jvxlData.excludedVertexCount > 0) {
+      StringBuffer sb1 = new StringBuffer("\n ");
+      jvxlEncodeBitSet(jvxlData.jvxlExcluded[0], -1, sb1);
+      appendTag(sb, "jvxlExcludedVertexData", " ", new String[] {
+          "count", "" + jvxlData.excludedVertexCount }, sb1.toString(), "");
+    }
+    if (jvxlData.excludedTriangleCount > 0) {
+      StringBuffer sb1 = new StringBuffer("\n ");
+      jvxlEncodeBitSet(jvxlData.jvxlExcluded[1], -1, sb1);
+      appendTag(sb, "jvxlExcludedTriangleData", " ", new String[] {
+          "count", "" + jvxlData.excludedTriangleCount }, sb1.toString(), "");
     }
     sb.append("</jvxlSurfaceData>\n");
     int len = sb.length();
@@ -232,6 +249,7 @@ public class JvxlCoder {
         "data", jvxlCompressString(data, true) }, null, null);
   }
 
+  
   public static String jvxlGetInfo(JvxlData jvxlData, boolean notVersion1) {
     if (jvxlData.jvxlSurfaceData == null)
       return "";
@@ -280,6 +298,12 @@ public class JvxlCoder {
         appendAttrib(info, "\n  ", "colorMapped", "true");
       appendAttrib(info, "\n  ", "plane", Escape.escape(jvxlData.jvxlPlane));
     }
+    jvxlData.excludedVertexCount = BitSetUtil.cardinalityOf(jvxlData.jvxlExcluded[0]);
+    jvxlData.excludedTriangleCount = BitSetUtil .cardinalityOf(jvxlData.jvxlExcluded[1]);
+    if (jvxlData.excludedVertexCount > 0)
+      appendAttrib(info, "\n  ", "nExcludedVertexes", "" + jvxlData.excludedVertexCount);
+    if (jvxlData.excludedTriangleCount > 0)
+      appendAttrib(info, "\n  ", "nExcludedTriangles", "" + jvxlData.excludedTriangleCount);
     //next is for information only -- will be superceded by "encoding" attribute of jvxlColorData
     if (jvxlData.isJvxlPrecisionColor)
       appendAttrib(info, "\n  ", "precisionColor", "true");
@@ -825,6 +849,8 @@ public class JvxlCoder {
   public static int jvxlEncodeBitSet(BitSet bs, int nPoints, StringBuffer sb) {
     // nunset nset nunset ...
     int dataCount = 0;
+    if (nPoints < 0)
+      nPoints = bs.length();
     int n = 0;
     boolean isset = false;
     for (int i = 0; i < nPoints; ++i) {
@@ -980,8 +1006,7 @@ public class JvxlCoder {
     return dataOut.toString();
   }
 
-  // VERSION 1 methods -- deprecated but still available in 
-  // case original jvxl needs to be written.
+  // VERSION 1 methods -- deprecated but still available through Jmol 11.9.18
   
   public static void jvxlCreateHeaderWithoutTitleOrAtoms(VolumeData v, StringBuffer bs) {
     jvxlCreateHeader(v, Integer.MAX_VALUE, null, null,  bs);
@@ -1022,6 +1047,7 @@ public class JvxlCoder {
         .append(pt.z).append(" //BOGUS He ATOM ADDED FOR JVXL FORMAT\n");
   }
 
+  /*
   private static String jvxlGetFileVersion1(JvxlData jvxlData,
                                             MeshData meshData, String[] title,
                                             String msg, boolean includeHeader,
@@ -1052,11 +1078,11 @@ public class JvxlCoder {
     data.append(definitionLine).append(state).append('\n');
     StringBuffer sb = new StringBuffer();
     String colorData = (jvxlData.jvxlColorData == null ? "" : jvxlData.jvxlColorData);
-    /* if (jvxlData.vertexDataOnly) {  // see XML version
-      sb.append("<jvxlSurfaceData>\n");
-      jvxlAppendMeshXml(sb, jvxlData, meshData, false);
-      sb.append("</jvxlSurfaceData>\n");
-    } else */ 
+    // if (jvxlData.vertexDataOnly) {  // see XML version
+    //  sb.append("<jvxlSurfaceData>\n");
+    //  jvxlAppendMeshXml(sb, jvxlData, meshData, false);
+    //  sb.append("</jvxlSurfaceData>\n");
+    //} else  
     if (jvxlData.jvxlPlane == null) {
       if (jvxlData.jvxlEdgeData == null)
         return "";
@@ -1081,8 +1107,9 @@ public class JvxlCoder {
   }
 
   private static String jvxlGetDefinitionLineVersion1(JvxlData jvxlData) {
-    String definitionLine = /*(jvxlData.vContours == null ? ""
-        : "#+contourlines\n")+ */jvxlData.cutoff + " ";
+    String definitionLine = 
+    //(jvxlData.vContours == null ? ""  : "#+contourlines\n")+
+       jvxlData.cutoff + " ";
 
     //  optional comment line for compatibility with earlier Jmol versions:
     //  #+contourlines (no longer used -- see XML version)
@@ -1097,7 +1124,7 @@ public class JvxlCoder {
     //   when        < -1*     &&    >  0 ==> contourable functionXY
     //   when        > 0       &&    <  0 ==> jvxlDataisBicolorMap
 
-    // * nInts saved as -1 - nInts
+    //  nInts saved as -1 - nInts
 
     if (jvxlData.jvxlSurfaceData == null)
       return "";
@@ -1142,5 +1169,6 @@ public class JvxlCoder {
     return definitionLine;
   }
 
+  */
 
 }

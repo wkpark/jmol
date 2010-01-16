@@ -93,7 +93,8 @@ public class MeshSurface {
             || Float.isNaN(vertexValues[vertexC])) 
         || Float.isNaN(vertices[vertexA].x)
         || Float.isNaN(vertices[vertexB].x) 
-        || Float.isNaN(vertices[vertexC].x) ? -1 
+        || Float.isNaN(vertices[vertexC].x) 
+        ? -1 
       : addPolygon(new int[] { vertexA, vertexB, vertexC, check, check2 },
         color));
   }

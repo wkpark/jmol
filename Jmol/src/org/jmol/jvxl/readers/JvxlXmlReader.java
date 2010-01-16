@@ -47,6 +47,8 @@ public class JvxlXmlReader extends VolumeFileReader {
   protected int surfaceDataCount;
   protected int edgeDataCount;
   protected int colorDataCount;
+  private int excludedTriangleCount;
+  private int excludedVertexCount;
   protected boolean haveContourData;
 
   protected boolean isXmlFile= true;
@@ -78,6 +80,15 @@ public class JvxlXmlReader extends VolumeFileReader {
       readSurfaceData(isMapData);
       if (edgeDataCount > 0)
         jvxlEdgeDataRead = jvxlReadData("edge", edgeDataCount);
+      params.bsExcluded = jvxlData.jvxlExcluded = new BitSet[2];
+      if (excludedVertexCount > 0)
+        jvxlData.jvxlExcluded[0]  
+            = JvxlCoder.jvxlDecodeBitSet(
+                getXmlData("jvxlExcludedVertexData", null, false));
+      if (excludedTriangleCount > 0)
+        jvxlData.jvxlExcluded[1]  
+            = JvxlCoder.jvxlDecodeBitSet(
+                getXmlData("jvxlExcludedTriangleData", null, false));
       if (colorDataCount > 0)
         jvxlColorDataRead = jvxlReadData("color", colorDataCount);
       if (haveContourData)
@@ -221,6 +232,8 @@ public class JvxlXmlReader extends VolumeFileReader {
       surfaceDataCount = parseInt(getXmlAttrib(data, "nSurfaceInts"));
       edgeDataCount = parseInt(getXmlAttrib(data, "nBytesUncompressedEdgeData"));
     }
+    excludedVertexCount = parseInt(getXmlAttrib(data, "nExcludedVertexes"));
+    excludedTriangleCount = parseInt(getXmlAttrib(data, "nExcludedTriangles"));
     colorDataCount = Math.max(0, parseInt(getXmlAttrib(data, "nBytesUncompressedColorData")));
     jvxlDataIs2dContour = (params.thePlane != null && jvxlDataIsColorMapped);
     if (jvxlDataIs2dContour)

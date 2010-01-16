@@ -466,12 +466,13 @@ public abstract class SurfaceReader implements VertexDataServer {
     }
     marchingCubes = new MarchingCubes(this, volumeData, jvxlVoxelBitSet,
         params.isContoured, contourType, params.cutoff,
-        params.isCutoffAbsolute, params.isSquared, isXLowToHigh);
+        params.isCutoffAbsolute, params.isSquared, isXLowToHigh, params.bsExcluded);
     String data = marchingCubes.getEdgeData();
     if (params.thePlane == null)
       edgeData = data;
     jvxlData.setSurfaceInfoFromBitSet(marchingCubes.getBsVoxels(),
         params.thePlane);
+    jvxlData.jvxlExcluded = params.bsExcluded;
     if (isJvxl)
       edgeData = jvxlEdgeDataRead;
   }

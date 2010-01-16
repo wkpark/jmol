@@ -89,6 +89,7 @@ public class JvxlData {
   public String jvxlEdgeData;
   public String jvxlColorData;
   public String jvxlVolumeDataXml;
+  public BitSet[] jvxlExcluded;
   
   public Point4f jvxlPlane;
 
@@ -139,6 +140,8 @@ public class JvxlData {
   public String[] title;
   public String version;
   public Point3f[] boundingBox;
+  public int excludedTriangleCount;
+  public int excludedVertexCount;
   
   public void setSurfaceInfo(Point4f thePlane, int nSurfaceInts, String surfaceData) {
     jvxlSurfaceData = surfaceData;

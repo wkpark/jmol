@@ -75,6 +75,8 @@ public class SimpleMarchingCubes {
   private final static int MODE_GETXYZ = 3;
 
   private VoxelDataCreator vdc;
+  private BitSet bsExcludedVertices;
+//  private BitSet bsExcludedTriangles; // not used in this application
   
   public SimpleMarchingCubes(VoxelDataCreator vdc, VolumeData volumeData,
       JvxlData jvxlData, Vector surfacePointsReturn, float[] areaVolumeReturn) {
@@ -88,6 +90,15 @@ public class SimpleMarchingCubes {
     // and/or calculate the area of the surface.
     //
 
+    /* these next two bitsets encode vertices excluded because they are NaN
+     * (which will exclude the entire cell)
+     * and triangles because, perhaps, they are out of range.
+     * 
+     */
+    jvxlData.jvxlExcluded = new BitSet[2];
+    jvxlData.jvxlExcluded[0] = bsExcludedVertices = new BitSet();
+   // jvxlData.jvxlExcluded[1] = bsExcludedTriangles = new BitSet();
+    
     this.vdc = vdc;
     this.volumeData = volumeData;
     cutoff = jvxlData.cutoff;
@@ -261,29 +272,33 @@ public class SimpleMarchingCubes {
             // to our base x,y,z cube position
             
             boolean isInside;
+            float v;
             Point3i offset = cubeVertexOffsets[i];
             int pti = pt + linearOffsets[i];
             switch (mode) {
             case MODE_GETXYZ:
-              vertexValues[i] = getValue(i, x + offset.x, y + offset.y, z
+              v = vertexValues[i] = getValue(i, x + offset.x, y + offset.y, z
                   + offset.z, pti, xyPlanes[xyPlanePts[i]]);
               isInside = bsVoxels.get(pti);
               break;
             case MODE_BITSET:
               isInside = bsVoxels.get(pti);
-              vertexValues[i] = (isInside ? 1 : 0);
+              v = vertexValues[i] = (bsExcludedVertices.get(pti) ? Float.NaN : isInside ? 1 : 0);
               break;
             default:
             case MODE_CUBE:
-              vertexValues[i] = volumeData.voxelData[x + offset.x][y + offset.y][z
+              v = vertexValues[i] = volumeData.voxelData[x + offset.x][y + offset.y][z
                   + offset.z];
               isInside = isInside(vertexValues[i], cutoff, isCutoffAbsolute);
               if (isInside)
                 bsVoxels.set(pti);
             }
             if (isInside) {
-              insideMask |= 1 << i;
+              insideMask |= Pwr2[i];
             }
+            
+            if (Float.isNaN(v))
+              bsExcludedVertices.set(pti);
           }
 
           if (insideMask == 0) {
@@ -325,6 +340,10 @@ public class SimpleMarchingCubes {
     // need to retrieve the saved coordinates from some other array
     // for each of the three points ia, ib, and ic,
     // and then process them.
+    
+    // or you could excluede a triangle and record that in bsExcludedTriangles
+    
+    // in this example we are just computing the area and volume
    
     Point3f pta = (Point3f) surfacePoints.get(edgePointIndexes[ia]);
     Point3f ptb = (Point3f) surfacePoints.get(edgePointIndexes[ib]);

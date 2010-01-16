@@ -106,7 +106,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "showBoundingBox",                "false",
     "axesOrientationRasmol",          "false",
 	"openFilePreview",                "true",
-    "percentVdwAtom",                 "20",
+    "percentVdwAtom",                 "23",
     "autoBond",                       "true",
     "marBond",                        "150",
     "minBondDistance",                "0.40",

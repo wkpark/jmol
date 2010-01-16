@@ -24,7 +24,6 @@
 
 package org.jmol.shape;
 
-import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.g3d.*;
 
@@ -53,11 +52,7 @@ public class Echo extends TextShape {
     setProperty("target", "top", null);
   }
 
-  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
-
-    if (Logger.debugging) {
-      Logger.debug("Echo.setProperty(" + propertyName + "," + value + ")");
-    }
+  public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if ("scalereference" == propertyName) {
       if (currentObject != null) {

@@ -29,7 +29,6 @@ import java.util.BitSet;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
 public class LcaoCartoon extends Isosurface {
@@ -60,10 +59,6 @@ public class LcaoCartoon extends Isosurface {
   boolean isRadical;
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
-
-    if (Logger.debugging) {
-      Logger.debug("\nLcaoCartoon.setProperty " + propertyName + " " + value);
-    }
 
     // in the case of molecular orbitals, we just cache the information and
     // then send it all at once. 

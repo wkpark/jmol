@@ -27,7 +27,6 @@ package org.jmol.shape;
 
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
 import org.jmol.viewer.JmolConstants;
 
@@ -87,10 +86,8 @@ public class Sticks extends Shape {
     }
   }
 
-  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
-    if (Logger.debugging) {
-      Logger.debug(propertyName + " " + value + " " + bsSelected);
-    }
+  public void setProperty(String propertyName, Object value, BitSet bs) {
+
     if ("type" == propertyName) {
       myMask = ((Integer) value).shortValue();
       return;
@@ -115,7 +112,7 @@ public class Sticks extends Shape {
         bsOrderSet = new BitSet();
       short order = ((Short) value).shortValue();
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-          : modelSet.getBondIterator(JmolConstants.BOND_ORDER_ANY, bsSelected));
+          : modelSet.getBondIterator(JmolConstants.BOND_ORDER_ANY, bs));
       while (iter.hasNext()) {
         bsOrderSet.set(iter.nextIndex());
         iter.next().setOrder(order);
@@ -131,7 +128,7 @@ public class Sticks extends Shape {
         //only for hydrogen bonds
         boolean isEnergy = (pid == JmolConstants.PALETTE_ENERGY);
         BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-            : modelSet.getBondIterator(myMask, bsSelected));
+            : modelSet.getBondIterator(myMask, bs));
         while (iter.hasNext()) {
           bsColixSet.set(iter.nextIndex());
           Bond bond = iter.next();
@@ -147,7 +144,7 @@ public class Sticks extends Shape {
       if (colix == Graphics3D.USE_PALETTE && pid != JmolConstants.PALETTE_CPK)
         return; //palettes not implemented for bonds
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-          : modelSet.getBondIterator(myMask, bsSelected));
+          : modelSet.getBondIterator(myMask, bs));
       while (iter.hasNext()) {
         int iBond = iter.nextIndex();
         Bond bond = iter.next();
@@ -162,7 +159,7 @@ public class Sticks extends Shape {
         bsColixSet = new BitSet();
       boolean isTranslucent = (((String) value).equals("translucent"));
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-          : modelSet.getBondIterator(myMask, bsSelected));
+          : modelSet.getBondIterator(myMask, bs));
       while (iter.hasNext()) {
         bsColixSet.set(iter.nextIndex());
         iter.next().setTranslucent(isTranslucent, translucentLevel);
@@ -174,7 +171,7 @@ public class Sticks extends Shape {
       return;
     }
     
-    super.setProperty(propertyName, value, bsSelected);
+    super.setProperty(propertyName, value, bs);
   }
 
   public Object getProperty(String property, int index) {

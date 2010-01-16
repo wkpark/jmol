@@ -182,11 +182,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    if (Logger.debugging) {
-      Logger.debug("Isosurface setProperty: "
-          + propertyName + " = " + value);
-    }
-
     ////isosurface-only (no calculation required; no calculation parameters to set)
 
     if ("navigate" == propertyName) {

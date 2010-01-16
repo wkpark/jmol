@@ -129,7 +129,7 @@ public class ScriptEvaluator {
    *   - display/hide commands
    *   - dipole, ellipsoid, geosurface, lcaoCartoon visualizations
    *   - quaternion and ramachandran commands
-   *   - much expanded isosurface / draw commands
+   *   - much expanded  isosurface / draw commands
    *   - configuration, disorder, and biomolecule support
    *   - broadly 2D- and 3D-positionable echos
    *   - translateSelected and rotateSelected commands
@@ -4479,35 +4479,59 @@ public class ScriptEvaluator {
       }
       if (token == null)
         continue;
-      
+
+      if (!processShape(token.tok))
       switch (token.tok) {
       case Token.nada:
         break;
-      case Token.elseif:
-      case Token.ifcmd:
-      case Token.whilecmd:
-      case Token.forcmd:
-      case Token.endifcmd:
-      case Token.elsecmd:
-      case Token.end:
       case Token.breakcmd:
       case Token.continuecmd:
+      case Token.elsecmd:
+      case Token.elseif:
+      case Token.end:
+      case Token.endifcmd:
+      case Token.forcmd:
+      case Token.gotocmd:
+      case Token.ifcmd:
+      case Token.loop:
+      case Token.whilecmd:
         isForCheck = flowControl(token.tok, isForCheck);
         break;
-      case Token.backbone:
-        proteinShape(JmolConstants.SHAPE_BACKBONE);
+      case Token.animation:
+        animation();
         break;
       case Token.background:
         background(1);
         break;
+      case Token.bind:
+        bind();
+        break;
+      case Token.bondorder:
+        bondorder();
+        break;
+      case Token.calculate:
+        calculate();
+        break;
+      case Token.cd:
+        cd();
+        break;
       case Token.center:
         center(1);
+        break;
+      case Token.centerAt:
+        centerAt();
         break;
       case Token.color:
         color();
         break;
-      case Token.cd:
-        cd();
+      case Token.configuration:
+        configuration();
+        break;
+      case Token.connect:
+        connect(1);
+        break;
+      case Token.console:
+        console();
         break;
       case Token.data:
         data();
@@ -4515,81 +4539,177 @@ public class ScriptEvaluator {
       case Token.define:
         define();
         break;
-      case Token.echo:
-        echo(1, false);
+      case Token.delay:
+        delay();
         break;
+      case Token.delete:
+        delete();
+        break;
+      case Token.depth:
+        slab(true);
+        break;
+      case Token.display:
+        display(true);
+        break;
+      case Token.exit: // flush the queue and...
+        if (!isSyntaxCheck && pc > 0)
+          viewer.clearScriptQueue();
       case Token.exitjmol:
         if (isSyntaxCheck || viewer.isApplet())
           return;
         viewer.exitJmol();
         break;
-      case Token.message:
-        message();
+      case Token.file:
+        file();
         break;
-      case Token.exit: // flush the queue and...
-        if (!isSyntaxCheck && pc > 0)
-          viewer.clearScriptQueue();
-      case Token.quit: // quit this only if it isn't the first command
-        if (!isSyntaxCheck)
-          interruptExecution = (pc > 0 || !viewer.usingScriptQueue());
+      case Token.font:
+        font(-1, 0);
         break;
-      case Token.label:
-        label(1);
-        break;
-      case Token.hover:
-        hover();
-        break;
-      case Token.load:
-        load();
-        break;
-      case Token.measure:
-        measure();
-        break;
-      case Token.refresh:
-        refresh();
-        break;
-      case Token.initialize:
-        viewer.initialize();
-        break;
-      case Token.reset:
-        reset();
-        break;
-      case Token.rotate:
-        rotate(false, false);
-        break;
-      case Token.javascript:
-      case Token.script:
-        script(token.tok);
+      case Token.frame:
+      case Token.model:
+        frame(1);
         break;
       case Token.function:
         function();
         break;
-      case Token.sync:
-        sync();
+      case Token.getproperty:
+        getProperty();
+        break;
+      case Token.help:
+        help();
+        break;
+      case Token.hide:
+        display(false);
+        break;
+      case Token.hbond:
+        hbond(true);
         break;
       case Token.history:
         history(1);
         break;
-      case Token.delete:
-        delete();
+      case Token.hover:
+        hover();
         break;
-      case Token.minimize:
-        minimize();
-        break;
-      case Token.select:
-        select(1);
-        break;
-      case Token.translate:
-        translate();
+      case Token.initialize:
+        viewer.initialize();
         break;
       case Token.invertSelected:
         invertSelected();
         break;
+      case Token.load:
+        load();
+        break;
+      case Token.message:
+        message();
+        break;
+      case Token.minimize:
+        minimize();
+        break;
+      case Token.move:
+        move();
+        break;
+      case Token.moveto:
+        moveto();
+        break;
+      case Token.navigate:
+        navigate();
+        break;
+      case Token.pause: // resume is done differently
+        pause();
+        break;
+      case Token.print:
+        print();
+        break;
+      case Token.quaternion:
+        dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
+        break;
+      case Token.ramachandran:
+        dataFrame(JmolConstants.JMOL_DATA_RAMACHANDRAN);
+        break;
+      case Token.quit: // quit this only if it isn't the first command
+        if (!isSyntaxCheck)
+          interruptExecution = (pc > 0 || !viewer.usingScriptQueue());
+        break;
+      case Token.refresh:
+        refresh();
+        break;
+      case Token.reset:
+        reset();
+        break;
+      case Token.restore:
+        restore();
+        break;
+      case Token.restrict:
+        restrict();
+        break;
+      case Token.resume:
+        if (!isSyntaxCheck)
+          resumePausedExecution();
+        break;
+      case Token.returncmd:
+        returnCmd();
+        break;
+      case Token.rotate:
+        rotate(false, false);
+        break;
       case Token.rotateSelected:
         rotate(false, true);
         break;
+      case Token.save:
+        save();
+        break;
+      case Token.set:
+        set();
+        break;
+      case Token.script:
+      case Token.javascript:
+        script(token.tok);
+        break;
+      case Token.select:
+        select(1);
+        break;
+      case Token.show:
+        show();
+        break;
+      case Token.slab:
+        slab(false);
+        break;
+      case Token.spin:
+        rotate(true, false);
+        break;
+      case Token.ssbond:
+        ssbond();
+        break;
+      case Token.step:
+        if (pause())
+          stepPausedExecution();
+        break;
+      case Token.stereo:
+        stereo();
+        break;
+      case Token.structure:
+        structure();
+        break;
+      case Token.subset:
+        subset();
+        break;
+      case Token.sync:
+        sync();
+        break;
+      case Token.translate:
+        translate();
+        break;
       case Token.translateSelected:
         translateSelected();
+        break;
+      case Token.unbind:
+        unbind();
+        break;
+      case Token.vibration:
+        vibration();
+        break;
+      case Token.write:
+        write(null);
         break;
       case Token.zap:
         zap(true);
@@ -4599,224 +4719,6 @@ public class ScriptEvaluator {
         break;
       case Token.zoomTo:
         zoom(true);
-        break;
-      case Token.delay:
-        delay();
-        break;
-      case Token.loop:
-        delay();
-        if (!isSyntaxCheck)
-          pc = -1;
-        break;
-      case Token.gotocmd:
-        gotocmd();
-        break;
-      case Token.move:
-        move();
-        break;
-      case Token.display:
-        display(true);
-        break;
-      case Token.hide:
-        display(false);
-        break;
-      case Token.restrict:
-        restrict();
-        break;
-      case Token.subset:
-        subset();
-        break;
-      case Token.selectionHalo:
-        selectionHalo(1);
-        break;
-      case Token.set:
-        set();
-        break;
-      case Token.slab:
-        slab(false);
-        break;
-      case Token.depth:
-        slab(true);
-        break;
-      case Token.ellipsoid:
-        ellipsoid();
-        break;
-      case Token.star:
-        setAtomShapeSize(JmolConstants.SHAPE_STARS, 1f);
-        break;
-      case Token.halo:
-        setAtomShapeSize(JmolConstants.SHAPE_HALOS, 0.2f);
-        break;
-      case Token.spacefill: // aka cpk
-        setAtomShapeSize(JmolConstants.SHAPE_BALLS, 1f);
-        break;
-      case Token.structure:
-        structure();
-        break;
-      case Token.wireframe:
-        wireframe();
-        break;
-      case Token.vector:
-        vector();
-        break;
-      case Token.dipole:
-        dipole();
-        break;
-      case Token.animation:
-        animation();
-        break;
-      case Token.vibration:
-        vibration();
-        break;
-      case Token.calculate:
-        calculate();
-        break;
-      case Token.dots:
-        dots(JmolConstants.SHAPE_DOTS);
-        break;
-      case Token.strands:
-        proteinShape(JmolConstants.SHAPE_STRANDS);
-        break;
-      case Token.meshRibbon:
-        proteinShape(JmolConstants.SHAPE_MESHRIBBON);
-        break;
-      case Token.ribbon:
-        proteinShape(JmolConstants.SHAPE_RIBBONS);
-        break;
-      case Token.trace:
-        proteinShape(JmolConstants.SHAPE_TRACE);
-        break;
-      case Token.cartoon:
-        proteinShape(JmolConstants.SHAPE_CARTOON);
-        break;
-      case Token.rocket:
-        proteinShape(JmolConstants.SHAPE_ROCKETS);
-        break;
-      case Token.spin:
-        rotate(true, false);
-        break;
-      case Token.ssbond:
-        ssbond();
-        break;
-      case Token.hbond:
-        hbond(true);
-        break;
-      case Token.show:
-        show();
-        break;
-      case Token.file:
-        file();
-        break;
-      case Token.frame:
-      case Token.model:
-        frame(1);
-        break;
-      case Token.font:
-        font(-1, 0);
-        break;
-      case Token.moveto:
-        moveto();
-        break;
-      case Token.navigate:
-        navigate();
-        break;
-      case Token.bondorder:
-        bondorder();
-        break;
-      case Token.console:
-        console();
-        break;
-      case Token.plot3d:
-        isosurface(JmolConstants.SHAPE_PLOT3D);
-        break;
-      case Token.pmesh:
-        isosurface(JmolConstants.SHAPE_PMESH);
-        break;
-      case Token.draw:
-        draw();
-        break;
-      case Token.polyhedra:
-        polyhedra();
-        break;
-      case Token.geosurface:
-        dots(JmolConstants.SHAPE_GEOSURFACE);
-        break;
-      case Token.centerAt:
-        centerAt();
-        break;
-      case Token.isosurface:
-        isosurface(JmolConstants.SHAPE_ISOSURFACE);
-        break;
-      case Token.lcaocartoon:
-        lcaoCartoon();
-        break;
-      case Token.mo:
-        mo(false);
-        break;
-      case Token.stereo:
-        stereo();
-        break;
-      case Token.connect:
-        connect(1);
-        break;
-      case Token.getproperty:
-        getProperty();
-        break;
-      case Token.configuration:
-        configuration();
-        break;
-      case Token.axes:
-        axes(1);
-        break;
-      case Token.boundbox:
-        boundbox(1);
-        break;
-      case Token.unitcell:
-        unitcell(1);
-        break;
-      case Token.frank:
-        frank(1);
-        break;
-      case Token.help:
-        help();
-        break;
-      case Token.save:
-        save();
-        break;
-      case Token.restore:
-        restore();
-        break;
-      case Token.ramachandran:
-        dataFrame(JmolConstants.JMOL_DATA_RAMACHANDRAN);
-        break;
-      case Token.quaternion:
-        dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
-        break;
-      case Token.write:
-        write(null);
-        break;
-      case Token.print:
-        print();
-        break;
-      case Token.returncmd:
-        returnCmd();
-        break;
-      case Token.pause: // resume is done differently
-        pause();
-        break;
-      case Token.step:
-        if (pause())
-          stepPausedExecution();
-        break;
-      case Token.resume:
-        if (!isSyntaxCheck)
-          resumePausedExecution();
-        break;
-      case Token.bind:
-        bind();
-        break;
-      case Token.unbind:
-        unbind();
         break;
       default:
         error(ERROR_unrecognizedCommand);
@@ -4830,7 +4732,147 @@ public class ScriptEvaluator {
     }
   }
 
+  private boolean processShape(int tok) throws ScriptException {
+    int iShape;
+    switch (tok) {
+    case Token.axes:
+      iShape = JmolConstants.SHAPE_AXES;
+      axes(1);
+      break;
+    case Token.backbone:
+      proteinShape(iShape = JmolConstants.SHAPE_BACKBONE);
+      break;
+    case Token.boundbox:
+      iShape = JmolConstants.SHAPE_BBCAGE;
+      boundbox(1);
+      break;
+    case Token.cartoon:
+      proteinShape(iShape = JmolConstants.SHAPE_CARTOON);
+      break;
+    case Token.dipole:
+      iShape = JmolConstants.SHAPE_DIPOLES;
+      dipole();
+      break;
+    case Token.dots:
+      dots(iShape = JmolConstants.SHAPE_DOTS);
+      break;
+    case Token.draw:
+      iShape = JmolConstants.SHAPE_DRAW;
+      draw();
+      break;
+    case Token.echo:
+      iShape = JmolConstants.SHAPE_ECHO;
+      echo(1, false);
+      break;
+    case Token.ellipsoid:
+      iShape = JmolConstants.SHAPE_ELLIPSOIDS;
+      ellipsoid();
+      break;
+    case Token.frank:
+      iShape = JmolConstants.SHAPE_FRANK;
+      frank(1);
+      break;
+    case Token.geosurface:
+      dots(iShape = JmolConstants.SHAPE_GEOSURFACE);
+      break;
+    case Token.halo:
+      setAtomShapeSize(iShape = JmolConstants.SHAPE_HALOS, 0.2f);
+      break;
+    case Token.isosurface:
+      isosurface(iShape = JmolConstants.SHAPE_ISOSURFACE);
+      break;
+    case Token.label:
+      iShape = JmolConstants.SHAPE_LABELS;
+      label(1);
+      break;
+    case Token.lcaocartoon:
+      iShape = JmolConstants.SHAPE_LCAOCARTOON;
+      lcaoCartoon();
+      break;
+    case Token.measure:
+      iShape = JmolConstants.SHAPE_MEASURES;
+      measure();
+      break;
+    case Token.meshRibbon:
+      proteinShape(iShape = JmolConstants.SHAPE_MESHRIBBON);
+      break;
+    case Token.mo:
+      iShape = JmolConstants.SHAPE_MO;
+      mo(false);
+      break;
+    case Token.plot3d:
+      isosurface(iShape = JmolConstants.SHAPE_PLOT3D);
+      break;
+    case Token.pmesh:
+      isosurface(iShape = JmolConstants.SHAPE_PMESH);
+      break;
+    case Token.polyhedra:
+      iShape = JmolConstants.SHAPE_POLYHEDRA;
+      polyhedra();
+      break;
+    case Token.ribbon:
+      proteinShape(iShape = JmolConstants.SHAPE_RIBBONS);
+      break;
+    case Token.rocket:
+      proteinShape(iShape = JmolConstants.SHAPE_ROCKETS);
+      break;
+    case Token.spacefill: // aka cpk
+      setAtomShapeSize(iShape = JmolConstants.SHAPE_BALLS, 1f);
+      break;
+    case Token.star:
+      setAtomShapeSize(iShape = JmolConstants.SHAPE_STARS, 1f);
+      break;
+    case Token.strands:
+      proteinShape(iShape = JmolConstants.SHAPE_STRANDS);
+      break;
+    case Token.trace:
+      proteinShape(iShape = JmolConstants.SHAPE_TRACE);
+      break;
+    case Token.vector:
+      iShape = JmolConstants.SHAPE_VECTORS;
+      vector();
+      break;
+    case Token.wireframe:
+      iShape = JmolConstants.SHAPE_STICKS;
+      wireframe();
+      break;
+    case Token.unitcell:
+      iShape = JmolConstants.SHAPE_UCCAGE;
+      unitcell(1);
+      break;
+    default:
+      return false;
+    }
+   if (Logger.debugging)
+     setShapeProperty(iShape, "showXml", null);
+   return true;
+  }
+
   private boolean flowControl(int tok, boolean isForCheck) throws ScriptException {
+    switch (tok) {
+    case Token.gotocmd:
+      String strTo = parameterAsString(checkLast(1));
+      int pcTo = -1;
+      for (int i = 0; i < aatoken.length; i++) {
+        Token[] tokens = aatoken[i];
+        if (tokens[0].tok == Token.message || tokens[0].tok == Token.nada)
+          if (tokens[tokens.length - 1].value.toString().equalsIgnoreCase(strTo)) {
+            pcTo = i;
+            break;
+          }
+      }
+      if (pcTo < 0)
+        error(ERROR_invalidArgument);
+      if (!isSyntaxCheck)
+        pc = pcTo - 1; // ... resetting the program counter
+      return isForCheck;
+    case Token.loop:
+      // back to the beginning of this script
+      delay();
+      if (!isSyntaxCheck)
+        pc = -1;
+      return isForCheck;
+    }
     int pt = statement[0].intValue;
     boolean isDone = (pt < 0 && !isSyntaxCheck);
     boolean isOK = true;
@@ -8110,23 +8152,6 @@ public class ScriptEvaluator {
     }
     iToken = i - 1;
     return zoom;
-  }
-
-  private void gotocmd() throws ScriptException {
-    String strTo = parameterAsString(checkLast(1));
-    int pcTo = -1;
-    for (int i = 0; i < aatoken.length; i++) {
-      Token[] tokens = aatoken[i];
-      if (tokens[0].tok == Token.message || tokens[0].tok == Token.nada)
-        if (tokens[tokens.length - 1].value.toString().equalsIgnoreCase(strTo)) {
-          pcTo = i;
-          break;
-        }
-    }
-    if (pcTo < 0)
-      error(ERROR_invalidArgument);
-    if (!isSyntaxCheck)
-      pc = pcTo - 1; // ... resetting the program counter
   }
 
   private void delay() throws ScriptException {
@@ -13462,7 +13487,7 @@ public class ScriptEvaluator {
     }
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);
-    setShapeProperty(iShape, "clear", null);
+    setShapeProperty(iShape, "clear", null);    
   }
 
   private void addShapeProperty(Vector propertyList, String key,

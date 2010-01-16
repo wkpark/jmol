@@ -71,11 +71,6 @@ public class MolecularOrbital extends Isosurface {
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    if (Logger.debugging) {
-      Logger
-          .debug("MolecularOrbital.setProperty " + propertyName + " " + value);
-    }
-
     // in the case of molecular orbitals, we just cache the information and
     // then send it all at once. 
 

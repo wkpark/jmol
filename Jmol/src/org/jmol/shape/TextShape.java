@@ -24,8 +24,6 @@
 
 package org.jmol.shape;
 
-import org.jmol.util.Logger;
-
 import org.jmol.g3d.*;
 
 import java.util.BitSet;
@@ -36,10 +34,6 @@ public abstract class TextShape extends Object2dShape {
   // echo, hover
   
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
-
-    if (Logger.debugging) {
-      Logger.debug("TextShape.setProperty(" + propertyName + "," + value + ")");
-    }
 
     if ("text" == propertyName) {
       String text = (String) value;

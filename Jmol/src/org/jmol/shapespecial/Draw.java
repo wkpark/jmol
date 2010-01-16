@@ -119,9 +119,6 @@ public class Draw extends MeshCollection {
   private final static int PT_MODEL_BASED_POINTS = 5;
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
-    if (Logger.debugging) {
-      Logger.debug("draw " + propertyName + " " + value);
-    }
 
     if ("init" == propertyName) {
       colix = Graphics3D.ORANGE;

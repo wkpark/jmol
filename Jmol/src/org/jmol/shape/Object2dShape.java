@@ -28,10 +28,6 @@ public class Object2dShape extends Shape {
 
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
 
-    if (Logger.debugging) {
-      Logger.debug("TextShape.setProperty(" + propertyName + "," + value + ")");
-    }
-
     if ("allOff" == propertyName) {
       currentObject = null;
       isAll = true;

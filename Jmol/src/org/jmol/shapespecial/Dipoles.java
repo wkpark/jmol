@@ -68,10 +68,6 @@ public class Dipoles extends Shape {
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    if (Logger.debugging) {
-      Logger.debug("dipoles setProperty " + propertyName + " " + value);
-    }
-
     if ("init" == propertyName) {
       tempDipole = new Dipole();
       tempDipole.dipoleValue = 1;

@@ -67,10 +67,6 @@ public class Dots extends AtomShape {
   
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    if (Logger.debugging) {
-      Logger.debug("Dots.setProperty: " + propertyName + " " + value);
-    }
-
     if ("init" == propertyName) {
       initialize();
       return;

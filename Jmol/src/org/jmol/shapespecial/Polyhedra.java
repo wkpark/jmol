@@ -74,10 +74,6 @@ public class Polyhedra extends AtomShape {
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    if (Logger.debugging) {
-      Logger.debug("polyhedra: " + propertyName + " " + value);
-    }
-
     if ("init" == propertyName) {
       faceCenterOffset = DEFAULT_FACECENTEROFFSET;
       distanceFactor = DEFAULT_DISTANCE_FACTOR;

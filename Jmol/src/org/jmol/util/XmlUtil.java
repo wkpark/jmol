@@ -25,6 +25,8 @@
 
 package org.jmol.util;
 
+import java.util.Vector;
+
 public class XmlUtil {
 
   // / simple Xml parser/generator ///
@@ -47,7 +49,7 @@ public class XmlUtil {
   }
 
   public static void appendTag(StringBuffer sb, String name,
-                               Object[] attributes, String data,
+                               Object[] attributes, Object data,
                                boolean isCdata, boolean doClose) {
     sb.append("<").append(name);
     if (attributes != null)
@@ -80,7 +82,7 @@ public class XmlUtil {
    * @param data
    */
   public static void appendTag(StringBuffer sb, String name,
-                               String[] attributes, String data) {
+                               Object[] attributes, Object data) {
     appendTag(sb, name, attributes, data, false, true);
   }
 
@@ -92,7 +94,7 @@ public class XmlUtil {
    * @param data
    */
 
-  public static void appendTag(StringBuffer sb, String name, String data) {
+  public static void appendTag(StringBuffer sb, String name, Object data) {
     appendTag(sb, name, null, data, false, true);
   }
 
@@ -123,6 +125,13 @@ public class XmlUtil {
     if (value == null)
       return;
     sb.append(" ").append(name).append("=\"").append(value).append("\"");
+  }
+
+  public static void toXml(StringBuffer sb, String name, Vector properties) {
+    for (int i = 0; i < properties.size(); i++) {
+      Object[] o = (Object[]) properties.get(i);
+      appendTag(sb, name, (Object[]) o[0], o[1]);
+    }
   }
 
 }

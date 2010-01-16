@@ -34,7 +34,6 @@ import java.util.Vector;
 
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.TextFormat;
 
@@ -103,13 +102,6 @@ public abstract class MeshCollection extends Shape {
   }
   
  public void setProperty(String propertyName, Object value, BitSet bs) {
-
-    if (Logger.debugging) {
-      Logger.debug("MeshCollection.setProperty(" 
-          + propertyName + "," + (value == null ? "null" : (propertyName == "token" ? 
-              Token.nameOf(((Integer)value).intValue()): value.toString()))
-          + ")");
-    }
 
     if ("init" == propertyName) {
       title = null;

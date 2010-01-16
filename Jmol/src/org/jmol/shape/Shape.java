@@ -25,8 +25,11 @@
 
 package org.jmol.shape;
 
+import org.jmol.script.Token;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
+import org.jmol.util.XmlUtil;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
@@ -112,6 +115,7 @@ public abstract class Shape {
     this.myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(shapeID);
     setModelSet(modelSet);
     initShape();
+    properties = new Vector();
     //System.out.println("Shape " + shapeID + " " + this + " initialized");
 
   }
@@ -127,6 +131,41 @@ public abstract class Shape {
   public void initShape() {
   }
 
+  protected Vector properties;
+  
+  protected boolean debugSetProperty(String propertyName, Object value, BitSet bs) {
+    String myType = JmolConstants.shapeClassBases[shapeID];
+    if (propertyName == "showXml") {
+      StringBuffer sb = new StringBuffer();
+      XmlUtil.openTag(sb, myType);
+      XmlUtil.toXml(sb, "property", properties);
+      XmlUtil.closeTag(sb, myType);
+      Logger.debug(sb.toString());
+      properties = new Vector();
+      return true;
+    } else if (propertyName == "setProperties") {
+    } else if (propertyName == "commandOption") {
+    } else {
+      Logger.debug(myType + " setProperty: "
+          + propertyName + " = " + value);
+      if (propertyName == "token")
+        value = Token.nameOf(((Integer) value).intValue());
+      properties.add(new Object[] {new Object[] { "name", propertyName, 
+          "select", bs  == null ? null : Escape.escape(bs) }, value });
+    }
+    return false;
+  }
+
+  public void setShapeSize(int size, RadiusData rd, BitSet bsSelected) {
+    if (Logger.debugging)
+      debugSetProperty("size", (rd == null ? new Integer(size) : (Object) rd),
+          bsSelected);
+    if (rd == null)
+      setSize(size, bsSelected);
+    else
+      setSize(rd, bsSelected);
+  }
+
   public void setSize(int size, BitSet bsSelected) {
     // not for atoms except to turn off -- size = 0
   }
@@ -135,6 +174,27 @@ public abstract class Shape {
     // balls, dots, other atomshapes
   }
 
+  /**
+   * specifically from setShapeProperty, mostly from ScriptEvaluation, but not always
+   * not from "super.setProperty", especially
+   * 
+   * @param propertyName
+   * @param value
+   * @param bsSelected
+   */
+  public void setShapeProperty(String propertyName, Object value, BitSet bsSelected) {
+    if (Logger.debugging && debugSetProperty(propertyName, value, bsSelected))
+     return;
+    setProperty(propertyName, value, bsSelected);
+  }
+
+  /**
+   * may come from any source
+   * 
+   * @param propertyName
+   * @param value
+   * @param bsSelected
+   */
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
     if (propertyName == "setProperties") {
       Vector propertyList = (Vector) value;

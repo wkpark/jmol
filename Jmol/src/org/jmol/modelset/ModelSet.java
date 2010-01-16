@@ -292,10 +292,7 @@ abstract public class ModelSet extends ModelCollection {
     if (rd != null && rd.value != 0 || rd == null && size != 0)
       loadShape(shapeID);
     if (shapes[shapeID] != null) {
-      if (rd == null)
-        shapes[shapeID].setSize(size, bsSelected);
-      else
-        shapes[shapeID].setSize(rd, bsSelected);
+      shapes[shapeID].setShapeSize(size, rd, bsSelected);
     }
     viewer.setShapeErrorState(-1, null);
   }
@@ -313,8 +310,7 @@ abstract public class ModelSet extends ModelCollection {
     if (shapes == null || shapes[shapeID] == null)
       return;
     viewer.setShapeErrorState(shapeID, "set " + propertyName);
-    shapes[shapeID].setProperty(
-        propertyName.intern(), value, bsSelected);
+    shapes[shapeID].setShapeProperty(propertyName.intern(), value, bsSelected);
     viewer.setShapeErrorState(-1, null);
   }
 

@@ -135,22 +135,16 @@
 alemán (de),
 catalán (ca),
 checo (cs),
+chino (tanto zh_CN como zh_TW)
 coreano (ko),
-danés (da),
 español (es),
-estonio (et),
 francés (fr),
 holandés (nl),
 húngaro (hu),
 italiano (it),
-noruego Bokmal (nb),
-polaco (pl),
-portugués (pt),
 portugués de Brasil (pt_BR),
-ruso (ru),
-sueco (sv),
 turco (tr)
-	 (además del inglés nativo, en-US).
+	 (además del inglés americano nativo, en-US y del inglés británico, en_GB).
 	  					</li>
 	  					<li>
 	  Adopta automáticamente el idioma del sistema operativo del usuario,
@@ -172,16 +166,8 @@ turco (tr)
 						</ul>
 					</li>
 					<li>
-	  Compatible con los principales navegadores
-	  <ul>
-							<li>Internet Explorer (Win32)</li>
-							<li>Mozilla o Firefox (Win32, OSX, *nix)</li>
-							<li>Safari (Mac OS X)</li>
-							<li>Opera 7.5.4 (sólo en Win32)</li>
-							<li>Konqueror (Linux)</li>
-							<li>IceWeasel  (Linux)</li>
-							<li>...</li>
-						</ul>
+	  Compatible con los principales navegadores: Internet Explorer, Mozilla o Firefox,
+	  Safari, Opera, Konqueror, IceWeasel, ...
 					</li>
 					<li>
 	  Representación gráfica tridimensional de alto rendimiento sin requisitos de hardware

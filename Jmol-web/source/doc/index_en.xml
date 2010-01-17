@@ -80,7 +80,7 @@
 	(<a href="./faqs/index.en.html#How%20do%20you%20write%20Jmol?">explanation</a>).
 	</p>
 			<p>If you prefer, a list of articles that describe Jmol can be found in the 
-	<a href="http://wiki.jmol.org/index.php/Literature">Jmol Literature</a> section of Jmol Wiki.
+	<a href="http://wiki.jmol.org/index.php/Literature">Jmol Literature</a> section of the Jmol Wiki.
 	</p>
 		</section>
 		<section title="What Jmol can do">
@@ -127,24 +127,18 @@
 	  					<li>
 	  Translated into multiple languages: 
 Catalan (ca),
+Chinese (both zh_CN and zh_TW)
 Czech (cs),
-Danish (da),
 Dutch (nl),
-Estonian (et),
 French (fr),
 German (de),
 Hungarian (hu),
 Italian (it),
 Korean (ko),
-Norwegian Bokmal (nb),
-Polish (pl),
-Portuguese (pt),
 Portuguese - Brazil (pt_BR),
-Russian (ru),
 Spanish (es),
-Swedish (sv),
-Turkish (tr)
-	 (in addition to the native English, en-US).
+Turkish (tr),
+	 (in addition to the native American English, en-US, and British English, en-GB).
 	  					</li>
 	  					<li>
 	  Automatically adopts the language of the user's
@@ -166,22 +160,81 @@ Turkish (tr)
 						</ul>
 					</li>
 					<li>
-	  Supports all major web browsers
-	  				<ul>
-							<li>Internet Explorer (Win32)</li>
-							<li>Mozilla and Firefox (Win32, OSX,  Linux, Unix)</li>
-							<li>Safari (Mac OS X)</li>
-							<li>Opera 7.5.4 (Win32 only)</li>
-							<li>Konqueror (Linux)</li>
-							<li>IceWeasel  (Linux)</li>
-							<li>...</li>
-						</ul>
+	  Supports all major web browsers: Internet Explorer, Mozilla and Firefox,
+    Safari, Opera, Konqueror, IceWeasel, ...
 					</li>
 					<li>
 	  High-performance 3D rendering with no hardware requirements
 	</li>
+	
+	
+
+	
+	
+	
+		
 					<li>
-	  File formats (see also <a href="http://wiki.jmol.org/index.php/File_formats">file formats</a> section within Jmol Wiki): 
+					File formats:
+<table>
+<tr><td>	MOL 	</td><td>	MDL / Elsevier / Symyx structure	</td></tr>
+<tr><td>	V3000	</td><td>	MDL / Elsevier / Symyx structure (new version)	</td></tr>
+<tr><td>	SDF 	</td><td>	MDL / Elsevier / Symyx structure (multiple models)	</td></tr>
+<tr><td>	CTFile 	</td><td>	MDL / Elsevier / Symyx chemical table (generic)	</td></tr>
+<tr><td>	CIF	</td><td>	Crystallographic Information File - standard from the International Union of Crystallography	</td></tr>
+<tr><td>	mmCIF 	</td><td>	Macromolecular Crystallographic Information File - standard from the International Union of Crystallography	</td></tr>
+<tr><td>	CML 	</td><td>	Chemical Markup Language	</td></tr>
+<tr><td>	PDB 	</td><td>	Protein Data Bank - Research Collaboratory for Structural Bioinformatics	</td></tr>
+<tr><td>	XYZ 	</td><td>	XYZ format, XMol file - Minnesota Supercomputer Institute	</td></tr>
+<tr><td>	XYZ+vib 	</td><td>	XYZ format with added vibrational vector information	</td></tr>
+<tr><td>	XYZ FAH	</td><td>	XYZ format for Folding@home	</td></tr>
+<tr><td>	MOL2	</td><td>	Sybyl, Tripos	</td></tr>
+<tr><td>	Alchemy	</td><td>	Tripos	</td></tr>
+<tr><td>	CSF 	</td><td>	Fujitsu CAChe chemical structure, now Fujitsu Sygress	</td></tr>
+<tr><td>	GAMESS 	</td><td>	General Atomic and Molecular Electronic Structure System output (both US and UK variants) - Gordon Research Group, Iowa State University	</td></tr>
+<tr><td>	Gaussian	</td><td>	Gaussian 94/98/03 output - Gaussian, Inc.	</td></tr>
+<tr><td>	CUBE	</td><td>	Gaussian, Inc.	</td></tr>
+<tr><td>	Ghemical	</td><td>		</td></tr>
+<tr><td>	MM1GP 	</td><td>	Ghemical molecular mechanics	</td></tr>
+<tr><td>	HIN  / HIV	</td><td>	HyperChem from Hypercube, Inc.	</td></tr>
+<tr><td>	Jaguar 	</td><td>	Schrodinger, LLC	</td></tr>
+<tr><td>	MOLPRO 	</td><td>	Molpro output	</td></tr>
+<tr><td>	MOPAC 	</td><td>	MOPAC 93/97/2002 output (public domain)	</td></tr>
+<tr><td>	MGF	</td><td>	MOPAC 2007 (v.7.101) graphf output (.mgf files) (public domain)	</td></tr>
+<tr><td>	NWCHEM 	</td><td>	NWChem output - Pacific Northwest National Laboratory	</td></tr>
+<tr><td>	odydata 	</td><td>	Odyssey data, WaveFunction, Inc.	</td></tr>
+<tr><td>	QOUT 	</td><td>	Q-Chem, Inc.	</td></tr>
+<tr><td>	SHELX 	</td><td>	Structural Chemistry Department, University of Göttingen (Germany)	</td></tr>
+<tr><td>	SMOL 	</td><td>	Spartan data - Wavefunction, Inc.	</td></tr>
+<tr><td>	spinput 	</td><td>	Spartan data - Wavefunction, Inc.	</td></tr>
+<tr><td>	xodydata 	</td><td>	Odyssey XML data - WaveFunction, Inc.	</td></tr>
+<tr><td>	GROMACS	</td><td>		</td></tr>
+<tr><td>	PQR	</td><td>	modified pdb including charge and radius	</td></tr>
+<tr><td>	Amber	</td><td>		</td></tr>
+<tr><td>	JME	</td><td>	Java Molecular Editor - Peter Ertl	</td></tr>
+<tr><td>	CASTEP	</td><td>		</td></tr>
+<tr><td>	FHI-aims	</td><td>	Fritz-Haber-Institut der Max-Planck-Gesellschaft	</td></tr>
+<tr><td>	VASP	</td><td>	VASP / VAMP / Vienna ab-initio simulation package 	</td></tr>
+<tr><td>	DGRID	</td><td>		</td></tr>
+<tr><td>	ADF	</td><td>	ADF output - Amsterdam Density Functional 	</td></tr>
+<tr><td>	XSD	</td><td>	Accelrys Materials Studio 	</td></tr>
+<tr><td>	AGL	</td><td>	ArgusLab	</td></tr>
+<tr><td>	DFT	</td><td>	Wien2k	</td></tr>
+<tr><td>	AMPAC	</td><td>	AMPAC output - Semichem, Inc. 	</td></tr>
+<tr><td>	WebMO	</td><td>		</td></tr>
+<tr><td>	Molden	</td><td>		</td></tr>
+<tr><td>	PSI3	</td><td>	PSI3 output files	</td></tr>
+</table>
+					
+					
+					
+					</li>
+	
+
+
+
+					<li>
+	  File formats (see also the <a href="http://wiki.jmol.org/index.php/File_formats">file formats</a> 
+	  section within Jmol Wiki): 
 	  <ul>
 							<li>
 								<a href="http://journals.iucr.org/c/services/cifguide.html">

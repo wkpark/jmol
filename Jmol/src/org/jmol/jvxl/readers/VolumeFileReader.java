@@ -302,6 +302,9 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected Point3f[] boundingBox;
   
   public float getValue(int x, int y, int z, int ptyz) {
+   // if (x == 0 && ptyz + 1 == yzCount) {
+      //first value -- ALWAYS send
+   // }
     if (boundingBox != null) {
       volumeData.voxelPtToXYZ(x, y, z, ptTemp);
       if (ptTemp.x < boundingBox[0].x || ptTemp.x > boundingBox[1].x

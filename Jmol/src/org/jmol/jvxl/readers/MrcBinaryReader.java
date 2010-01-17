@@ -23,6 +23,9 @@
  */
 package org.jmol.jvxl.readers;
 
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
+
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.BinaryDocument;
@@ -96,6 +99,8 @@ class MrcBinaryReader extends VolumeFileReader {
     int nlabel;
     String[] labels = new String[10];
     SymmetryInterface unitCell;
+    Point3f[] vectors = new Point3f[3];
+    Point3f origin= new Point3f();
     
     MrcHeader() {
       try {
@@ -135,7 +140,22 @@ class MrcBinaryReader extends VolumeFileReader {
         mapc = binarydoc.readInt();
         mapr = binarydoc.readInt();
         maps = binarydoc.readInt();
+        
+        float[] ms = new float[3];
+        
+        ms[mapc - 1] = mx;  //'2'
+        ms[mapr - 1] = my;  //'1'
+        ms[maps - 1] = mz;  //'3'
 
+
+        vectors[0] = new Point3f(1f/mx, 0, 0);
+        unitCell.toCartesian(vectors[0]);
+        vectors[1] = new Point3f(0, 1f/my, 0);
+        unitCell.toCartesian(vectors[1]);
+        vectors[2] = new Point3f(0, 0, 1f/mz);
+        unitCell.toCartesian(vectors[2]);
+
+        
         Logger.info("MRC header: mapc,mapr,maps: " + mapc + "," + mapr + "," + maps);
         
         dmin = binarydoc.readFloat();
@@ -155,8 +175,25 @@ class MrcBinaryReader extends VolumeFileReader {
         originY = binarydoc.readFloat();
         originZ = binarydoc.readFloat();
         
+        
         Logger.info("MRC header: originX,Y,Z: " + originX + "," + originY + "," + originZ);
 
+        Point3f pt = new Point3f();
+        origin = new Point3f();
+        pt.scaleAdd(nxStart, vectors[0], pt);
+        pt.scaleAdd(nyStart, vectors[1], pt);
+        pt.scaleAdd(nzStart, vectors[2], pt);
+
+        System.out.println(origin);
+        
+        float[] o = new float[3];
+        o[mapc - 1] = origin.x; // c = 2 --> z 
+        o[mapr - 1] = origin.y; // r = 1 --> y
+        o[maps - 1] = origin.z; // s = 3 --> x
+               
+        origin.set(new Point3f(originX + o[0], originY + o[1], originZ + o[2]));
+        
+        
         binarydoc.readByteArray(map);
         binarydoc.readByteArray(machst);
         
@@ -197,9 +234,9 @@ class MrcBinaryReader extends VolumeFileReader {
   
   protected void readAtomCountAndOrigin() {
     VolumeFileReader.checkAtomLine(isXLowToHigh, isAngstroms, "0",
-        "0 " + (mrcHeader.originX) + " " + (mrcHeader.originY) + " " +  (mrcHeader.originZ), 
+        "0 " + (mrcHeader.origin.x) + " " + (mrcHeader.origin.y) + " " +  (mrcHeader.origin.z), 
         jvxlFileHeaderBuffer);
-    volumetricOrigin.set(mrcHeader.originX, mrcHeader.originY, mrcHeader.originZ);
+    volumetricOrigin.set(mrcHeader.origin);
     if (isAnisotropic)
       setVolumetricOriginAnisotropy();
   }
@@ -211,18 +248,18 @@ class MrcBinaryReader extends VolumeFileReader {
     switch (voxelVectorIndex) {
     case 0:
       i = mrcHeader.maps - 1;
-      voxelCounts[i] = mrcHeader.nx;
-      volumetricVectors[i].set(mrcHeader.a / mrcHeader.mx, 0, 0);
+      voxelCounts[0] = mrcHeader.nz; // slowest
+      volumetricVectors[0].set(mrcHeader.vectors[i]); // 3
       break;
     case 1:
       i = mrcHeader.mapr - 1;
-      voxelCounts[i] = mrcHeader.ny;
-      volumetricVectors[i].set(0, mrcHeader.b / mrcHeader.my, 0);
+      voxelCounts[1] = mrcHeader.ny;
+      volumetricVectors[1].set(mrcHeader.vectors[i]); // 1
       break;
     case 2:
       i = mrcHeader.mapc - 1;
-      voxelCounts[i] = mrcHeader.nz;
-      volumetricVectors[i].set(0, 0, mrcHeader.c / mrcHeader.mz);
+      voxelCounts[2] = mrcHeader.nx; // fastest
+      volumetricVectors[2].set(mrcHeader.vectors[i]); // 2
       break;
     }
     if (isAnisotropic)

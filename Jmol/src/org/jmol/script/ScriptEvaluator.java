@@ -8513,7 +8513,7 @@ public class ScriptEvaluator {
     BitSet bs = null;
     if (type.equals("helix"))
       iType = JmolConstants.PROTEIN_STRUCTURE_HELIX;
-    else if (type.equals("s.3heet"))
+    else if (type.equals("sheet"))
       iType = JmolConstants.PROTEIN_STRUCTURE_SHEET;
     else if (type.equals("turn"))
       iType = JmolConstants.PROTEIN_STRUCTURE_TURN;

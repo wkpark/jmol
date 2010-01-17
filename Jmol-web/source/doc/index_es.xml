@@ -172,117 +172,64 @@ turco (tr)
 					<li>
 	  Representación gráfica tridimensional de alto rendimiento sin requisitos de hardware
 	</li>
+
 					<li>
 	  Formatos de archivo (véase también la sección <a href="http://wiki.jmol.org/index.php/File_formats">file formats</a> 
 	de la Wiki de Jmol): 
-	  <ul>
-							<li>
-								<a href="http://journals.iucr.org/c/services/cifguide.html">
-		CIF/mmCIF
-	      </a>
-	      - Crystallographic Information File and 
-	      Macromolecular Crystallographic Information File, 
-        formatos estándar de la <em>Unión Internacional de Cristalografía</em>
-							</li>
-							<li>
-								<a href="http://www.xml-cml.org">CML</a>
-	      - Chemical Markup Language
-		(lenguage químico de marcado)</li>
-							<li>
-	      CSF
-        - estructura química de Fujitsu CAChe, ahora Fujitsu Sygress </li>
-							<li>
-	      CTFile
-        - Tabla química de <em>Elsevier MDL</em>
-							</li>
-							<li>
-								<a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html">
-		GAMESS
-	      </a>
-	      - General Atomic and Molecular Electronic Structure System output,
-        <em>Gordon Research Group, Iowa State University</em>
-							</li>
-							<li>
-								<a href="http://www.gaussian.com/">Gaussian 94/98/03</a> formato de salida
-	      - <em>Gaussian, Inc.
-        </em></li>
-							<li>
-								<a href="http://www.bioinformatics.org/ghemical/">Ghemical</a>
-							</li>
-							<li>
-								<a href="http://www.hyper.com/">HIN</a>
-	      - HyperChem de <em>Hypercube, Inc.
-        </em>
-							</li>
-							<li>
-								<a href="http://www.schrodinger.com/ProductDescription.php&amp;mID=6&amp;sID=9&amp;cID=0">
-		Jaguar
-	      </a>
-        - <em>Schrodinger, LLC </em>
-							</li>
-							<li>
-								<a href="http://www.uku.fi/~thassine/ghemical/">MM1GP</a>
-        - Ghemical, mecánica molecular</li>
-							<li>
-								<a href="http://www.mdli.com/">MOL</a>
-        - estructura, de <em>Elsevier MDL</em>
-							</li>
-							<li>
-	      MOLPRO
-        - formato de salida de Molpro </li>
-							<li>
-								<a href="http://openmopac.net/">MOPAC</a>
-	      - formato de salida de MOPAC 93/97/2002 (dominio público)
-		<br/>
-	      - MOPAC 2007 (v.7.101) formato de salida graphf (archivos .mgf) (public domain) 
-	    </li>
-							<li>
-								<a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">NWCHEM</a>
-        - formato de salida de NWChem, <em>Pacific Northwest National Laboratory</em>
-							</li>
-							<li>
-								<a href="http://www.wavefun.com/products/odyssey/odyssey.html">odydata</a>
-	      - datos de Odyssey, <em>WaveFunction, Inc.
-        </em></li>
-							<li>
-								<a href="http://www.pdb.org/">PDB</a>
-	      - Protein Data Bank, <em>Research Collaboratory for Structural Bioinformatics
-        </em>
-							</li>
-							<li>
-								<a href="http://www.q-chem.com/">QOUT</a>
-        - <em>Q-Chem, Inc.</em>
-							</li>
-							<li>
-								<a href="http://www.mdli.com/">SDF</a>
-        - estructura de <em>Elsevier MDL</em>
-							</li>
-							<li>
-								<a href="http://shelx.uni-ac.gwdg.de/SHELX/">SHELX</a>
-        - <em>Structural Chemistry Department, University of Göttingen (Germany)</em>
-							</li>
-							<li>
-								<a href="http://www.wavefun.com">SMOL</a>
-        - datos de Spartan, <em>Wavefunction, Inc.</em>
-							</li>
-							<li>spinput - Spartan data, <em>Wavefunction, Inc.</em>
-							</li>
-							<li>
-								<a href="http://www.wavefun.com/products/odyssey/odyssey.html">xodydata</a>
-	      - datos XML de Odyssey, <em>WaveFunction, Inc.
-        </em></li>
-							<li>XYZ
-	    - archivo XMol de <em>Minnesota Supercomputer Institute</em>
-							</li>
-							<li>XYZ+vib
-	    -formato XYZ con información de vectores de vibración</li>
-							<li>XYZ-FAH
-	    - archivo XYZ de Folding@home</li>
-						</ul>
-						<i>
+    <table>
+    <tr><td><a href="http://www.symyx.com/solutions/white_papers/ctfile_formats.jsp">MOL</a></td><td>Estructura de MDL / Elsevier / Symyx (versión clásica V2000)</td></tr>
+    <tr><td><a href="http://www.symyx.com/solutions/white_papers/ctfile_formats.jsp">V3000</a></td><td>Estructura de MDL / Elsevier / Symyx (versión nueva V3000)</td></tr>
+    <tr><td><a href="http://www.symyx.com/solutions/white_papers/ctfile_formats.jsp">SDF</a></td><td>Estructura de MDL / Elsevier / Symyx (múltiples modelos)</td></tr>
+    <tr><td><a href="http://www.symyx.com/solutions/white_papers/ctfile_formats.jsp">CTFile</a></td><td>Tabla química de MDL / Elsevier / Symyx (genérico)</td></tr>
+    <tr><td><a href="http://journals.iucr.org/c/services/cifguide.html">CIF</a></td><td>Crystallographic Information File - formato estándar de la <i>Unión Internacional de Cristalografía</i></td></tr>
+    <tr><td><a href="http://journals.iucr.org/c/services/cifguide.html">mmCIF</a></td><td>Macromolecular Crystallographic Information File - formato estándar de la <i>Unión Internacional de Cristalografía</i></td></tr>
+    <tr><td><a href="http://www.xml-cml.org">CML</a></td><td>Chemical Markup Language (lenguage químico de marcado)</td></tr>
+    <tr><td><a href="http://www.wwpdb.org/docs.html">PDB</a></td><td>Protein Data Bank - Research Collaboratory for Structural Bioinformatics</td></tr>
+    <tr><td>XYZ</td><td>Formato XYZ, archivo de XMol - Minnesota Supercomputer Institute</td></tr>
+    <tr><td>XYZ+vib</td><td>Formato XYZ con información adicional de vectores de vibración</td></tr>
+    <tr><td>XYZ-FAH</td><td>Formato XYZ para Folding@home</td></tr>
+    <tr><td><a href="http://www.tripos.com/data/support/mol2.pdf">MOL2</a></td><td>Sybyl, Tripos</td></tr>
+    <tr><td>Alchemy</td><td>Tripos</td></tr>
+    <tr><td>CSF</td><td>Estructura química de Fujitsu CAChe, ahora Fujitsu Sygress</td></tr>
+    <tr><td><a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html">GAMESS</a></td><td>Formato de salida de General Atomic and Molecular Electronic Structure System (variantes US y UK) - Gordon Research Group, Iowa State University</td></tr>
+    <tr><td><a href="http://www.gaussian.com/">Gaussian</a></td><td>Formato de salida de Gaussian 94/98/03 - Gaussian, Inc.</td></tr>
+    <tr><td>Cube</td><td>Gaussian, Inc.</td></tr>
+    <tr><td><a href="http://www.bioinformatics.org/ghemical/">Ghemical</a></td><td>Paquete de química computacional Ghemical</td></tr>
+    <tr><td><a href="http://www.uku.fi/~thassine/ghemical/">MM1GP</a></td><td>Archivo de mecánica molecular de Ghemical</td></tr>
+    <tr><td><a href="http://www.hyper.com/">HIN</a></td><td>Archivos HIN o HIV de HyperChem - Hypercube, Inc.</td></tr>
+    <tr><td><a href="http://www.schrodinger.com/ProductDescription.php&amp;mID=6&amp;sID=9&amp;cID=0">Jaguar</a></td><td>Schrodinger, LLC</td></tr>
+    <tr><td><a href="http://www.molpro.net/">MOLPRO</a></td><td>Formato de salida de Molpro</td></tr>
+    <tr><td><a href="http://openmopac.net/">MOPAC</a></td><td>Formato de salida de MOPAC 93/97/2002 (dominio público)</td></tr>
+    <tr><td>MGF</td><td>Formato de salida graphf de MOPAC 2007 (v.7.101) (dominio público)</td></tr>
+    <tr><td><a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">NWCHEM</a></td><td>Formato de salida de NWChem - Pacific Northwest National Laboratory</td></tr>
+    <tr><td><a href="http://www.wavefun.com/products/odyssey/odyssey.html">odydata</a></td><td>Datos de Odyssey - WaveFunction, Inc.</td></tr>
+    <tr><td><a href="http://www.wavefun.com/products/odyssey/odyssey.html">xodydata</a></td><td>Datos XML de Odyssey - WaveFunction, Inc.</td></tr>
+    <tr><td><a href="http://www.q-chem.com/">QOUT</a></td><td>Q-Chem, Inc.</td></tr>
+    <tr><td><a href="http://shelx.uni-ac.gwdg.de/SHELX/">SHELX</a></td><td>Structural Chemistry Department, University of Göttingen (Germany)</td></tr>
+    <tr><td><a href="http://www.wavefun.com">SMOL</a></td><td>Datos de Spartan - Wavefunction, Inc.</td></tr>
+    <tr><td>spinput</td><td>Datos de Spartan - Wavefunction, Inc.</td></tr>
+    <tr><td><a href="http://manual.gromacs.org/current/online/gro.html">GRO</a></td><td>Formato Gromos87 de GROMACS</td></tr>
+    <tr><td><a href="http://www.poissonboltzmann.org/file-formats/biomolecular-structurw/pqr">PQR</a></td><td>Formato pdb modificado que incluye carga y radio</td></tr>
+    <tr><td><a href="http://ambermd.org/">Amber</a></td><td>Paquete de programas de simulación molecular Amber</td></tr>
+    <tr><td><a href="http://www.molinspiration.com/jme/">JME</a></td><td>Java Molecular Editor - Peter Ertl</td></tr>
+    <tr><td><a href="http://www.castep.org/">CASTEP</a></td><td>Paquete de programas CASTEP, utiliza teoría del funcional de la densidad</td></tr>
+    <tr><td><a href="http://www.fhi-berlin.mpg.de/aims/">FHI-aims</a></td><td>Teoría del potencial completo / estructura electrónica con todos los electrones con orbitales locales - Fritz-Haber-Institut der Max-Planck-Gesellschaft</td></tr>
+    <tr><td><a href="http://cms.mpi.univie.ac.at/vasp/">VASP</a></td><td>VASP / VAMP / Vienna ab-initio simulation package</td></tr>
+    <tr><td>DGrid</td><td>Miroslav Kohout, Max-Planck Institute</td></tr>
+    <tr><td><a href="http://www.scm.com/">ADF</a></td><td>Formato de salida de ADF - Amsterdam Density Functional</td></tr>
+    <tr><td><a href="http://accelrys.com/products/materials-studio/">XSD</a></td><td>Accelrys Materials Studio</td></tr>
+    <tr><td><a href="http://www.arguslab.com/">AGL</a></td><td>ArgusLab</td></tr>
+    <tr><td><a href="http://www.wien2k.at/">DFT</a></td><td>Wien2k</td></tr>
+    <tr><td><a href="http://www.semichem.com/ampac/">AMPAC</a></td><td>Formato de salida de AMPAC - Semichem, Inc.</td></tr>
+    <tr><td><a href="http://www.webmo.net/">WebMO</a></td><td>Interfaz WebMO para paquetes de química computacional</td></tr>
+    <tr><td><a href="http://www.cmbi.ru.nl/molden/molden_format.html">Molden</a></td><td>Densidad electrónica / orbitales moleculares</td></tr>
+    <tr><td><a href="http://www.psicode.org/">PSI3</a></td><td>Formato de salida del paquete de programas de química cuántica PSI3</td></tr>
+    </table>
+		<i>
 	    * Los archivos comprimidos con gzip se descomprimen automáticamente
 	  </i>
 					</li>
+
 					<li>
 	  Animaciones
 	</li>
@@ -290,7 +237,13 @@ turco (tr)
 	  Vibraciones
 	</li>
 					<li>
-	  Respaldo básico para la celdilla unidad y operaciones de simetría
+	  Superficies
+	</li>
+					<li>
+	  Orbitales
+	</li>
+					<li>
+	  Respaldo para la celdilla unidad y operaciones de simetría
 	</li>
 					<li>
 	  Formas esquemáticas para las estructuras secundarias de biomoléculas
@@ -307,10 +260,10 @@ turco (tr)
 	  Compatibilidad con el lenguaje de instrucciones de RasMol/Chime
 	</li>
 					<li>
-	  Biblioteca de apoyo en JavaScript
+	  Biblioteca de apoyo en JavaScript (<a href="./jslibrary/">Jmol.js</a>)
 	</li>
 					<li>
-	  Exporta a .jpg, .png, .ppm, .pdf y PovRay
+	  Exporta a jpg, png, gif, ppm, pdf, POV-Ray, Gaussian, Maya, vrml, x3d, idtf, página web.
 	</li>
 					<li>
 	  Para más detalles, consulta el <a href="./history/#Historial%20de%20cambios">historial</a> 
@@ -340,7 +293,7 @@ turco (tr)
 	Jmol v. $VERSION$ es la última versión oficial y estable.
 	<br/>
 	Puedes conseguir también versiones preliminares, que están en desarrollo
-	para ampliar la funcionalidad (versiones con número impar como 11.1, 11.3, 11.5, 11.7)
+	para ampliar la funcionalidad (versiones con número impar como 11.7, 11.9)
       </p>
 			<p>Puedes conseguir tanto la versión oficial como las preliminares en la <a href="./download/">página de descargas</a>.
       </p>

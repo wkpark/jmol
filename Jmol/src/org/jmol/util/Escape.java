@@ -708,4 +708,13 @@ public class Escape {
           : data) + "    END \"" + name + "\";\n";
   }
 
+  public static String escapeXml(Object value) {
+    if (value instanceof String)
+      return XmlUtil.wrapCdata(value.toString());
+    String s = "" + value;
+    if (s.length() == 0 || s.charAt(0) != '[')
+      return s;
+    return XmlUtil.wrapCdata(toReadable(null, value));
+  }
+
 }

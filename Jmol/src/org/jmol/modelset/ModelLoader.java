@@ -249,15 +249,16 @@ public final class ModelLoader extends ModelSet {
 
     finalizeGroupBuild(); // set group offsets and build monomers
 
+    calculatePolymers(null);
+    //only now can we access all of the atom's properties
+
     RadiusData rd = viewer.getDefaultRadiusData();
     for (int i = baseAtomIndex; i < atomCount; i++)
       atoms[i].setMadAtom(viewer, rd);
 
-    calculatePolymers(null);
-    //only now can we access all of the atom's properties
-
     freeze();
     calcBoundBoxDimensions(null, 1);
+
 
     finalizeShapes();
     if (mergeModelSet != null)
@@ -517,6 +518,8 @@ public final class ModelLoader extends ModelSet {
       modelFileNumbers[i] = filenumber * 1000000 + modelnumber;
       if (modelNames[i] == null || modelNames[i].length() == 0)
         modelNames[i] = sNum;
+      Logger.info("Default Van der Waal type for model " + (i + 1) 
+          + " set to " + JmolConstants.getVdwLabel(getDefaultVdwType(i)));
    }
     
     if (merging)

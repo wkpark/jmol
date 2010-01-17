@@ -256,14 +256,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
-    if ("title" == propertyName) {
-      if (value instanceof String && "-".equals((String) value))
-        value = null;
-      setPropertySuper(propertyName, value, bs);
-      sg.setParameter("title", title, bs);
-      return;
-    }
-
     if ("select" == propertyName) {
       if (iHaveBitSets)
         return;
@@ -293,13 +285,22 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     // Isosurface / SurfaceGenerator both interested
     
+    if ("title" == propertyName) {
+      if (value instanceof String && "-".equals((String) value))
+        value = null;
+      setPropertySuper(propertyName, value, bs);
+      value = title;
+    }
+
     if ("withinPoints" == propertyName) {
       Object[] o = (Object[]) value;
       withinDistance = ((Float) o[0]).floatValue();
-      withinPoints = (Vector) o[2];
+      bs = (BitSet) o[2];
+      withinPoints = (Vector) o[3];
+      if (withinPoints.size() == 0)
+        withinPoints = viewer.getAtomPointVector(bs);
       bsWithinPoints = new BitSet();
       bsWithinPointsY = new BitSet();
-      
     }
 
     if ("scale3d" == propertyName) {

@@ -125,7 +125,7 @@ public class Token {
    *                 x x             implicitStringCommand
    *                x  x             mathExpressionCommand
    *               xx  x             flowCommand
-   *              x                  noeval
+   *              x    x             shapeCommand
    *             x                   noArgs
    *            x                    defaultON
    *                    xxxxxxxxxxxx uniqueID (may include math flags)
@@ -198,14 +198,12 @@ public class Token {
   // -- breakcmd, continuecmd, elsecmd, elseif, end, endifcmd,
   //    forcmd, function, ifcmd, whilecmd
   final static int flowCommand        = (1 << 16) | mathExpressionCommand;
-  
+
+  // these commands will be handled specially
+  final static int shapeCommand   = (1 << 17) | scriptCommand;
+
   // Command argument compile flags
   
-  // the noeval keyword indicates that a command should be processed by the 
-  // compiler but should not be passed on to Eval. 
-  // "var" also takes this just to remind us that it will never appear in Eval
-  // -- function, end, var
-  final static int noeval         = (1 << 17);
   final static int noArgs         = (1 << 18);
   final static int defaultON      = (1 << 19);
   
@@ -239,9 +237,9 @@ public class Token {
   final static int print        = 1 | mathExpressionCommand;
   final static int returncmd    = 2 | mathExpressionCommand;
   final static int set          = 3 | mathExpressionCommand | expression;
-  final static int var          = 4 | mathExpressionCommand | noeval | setparam;
+  final static int var          = 4 | mathExpressionCommand | setparam;
 
-  public final static int echo  = 1 | implicitStringCommand | setparam;
+  public final static int echo  = 1 | implicitStringCommand | shapeCommand | setparam;
   final static int help         = 2 | implicitStringCommand;
   public final static int hover = 3 | implicitStringCommand | defaultON;
 //final static int javascript   see mathfunc
@@ -260,14 +258,12 @@ public class Token {
   final static int whilecmd     = 6 | flowCommand;
   final static int breakcmd     = 7 | flowCommand;
   final static int continuecmd  = 8 | flowCommand;
-  final static int end          = 9 | flowCommand | noeval | expression;
+  final static int end          = 9 | flowCommand | expression;
   
   final static int animation    = scriptCommand | 1;
-  public final static int axes         = scriptCommand | 2 | setparam | defaultON;
   final static int background   = scriptCommand | 3 | setparam;
   final static int bind         = scriptCommand | 4;
   final static int bondorder    = scriptCommand | 5;
-//final static int boundbox     see mathproperty
   final static int calculate    = scriptCommand | 6;
   final static int cd           = scriptCommand | 7 | implicitStringCommand | expression;
   final static int centerAt     = scriptCommand | 8;
@@ -278,34 +274,25 @@ public class Token {
 //final static int data         see mathfunc
   final static int delay        = scriptCommand | 12 | defaultON;
   final static int depth        = scriptCommand | 13 | defaultON;
-  public final static int dipole       = scriptCommand | 14;
-  public final static int draw         = scriptCommand | 16;
   final static int exit         = scriptCommand | 17 | noArgs;
   final static int exitjmol     = scriptCommand | 18 | noArgs;
 //final static int file         see intproperty
   final static int font         = scriptCommand | 19;
   final static int frame        = scriptCommand | 20;
-  public final static int frank        = scriptCommand | 21 | setparam | defaultON;
 //final static int getproperty  see mathfunc
   final static int gotocmd      = scriptCommand | 23 | implicitStringCommand;
   public final static int hbond        = scriptCommand | 25 | setparam | expression | defaultON;
   final static int history      = scriptCommand | 26 | setparam;
   final static int initialize   = scriptCommand | 27 | noArgs;
   final static int invertSelected = scriptCommand | 28;
-  public final static int isosurface   = scriptCommand | 29;
-  public final static int lcaocartoon  = scriptCommand | 30;
 //final static int load         see mathfunc
   final static int loop         = scriptCommand | 31 | defaultON;
   final static int minimize     = scriptCommand | 32;
-  public final static int mo           = scriptCommand | 33 | expression;
 //final static int model        see mathfunc
 //final static int measure      see mathfunc
   final static int move         = scriptCommand | 35;
   public final static int moveto       = scriptCommand | 36;
   final static int navigate     = scriptCommand | 37;
-  public final static int pmesh        = scriptCommand | 38;
-  public final static int plot3d       = scriptCommand | 39;
-  public final static int polyhedra    = scriptCommand | 40;
 //final static int quaternion   see mathfunc
   final static int quit         = scriptCommand | 41 | noArgs;
   final static int ramachandran = scriptCommand | 42 | expression;
@@ -320,7 +307,6 @@ public class Token {
   final static int selectionHalo = scriptCommand | 51 | setparam | defaultON;
   final static int show         = scriptCommand | 52;
   final static int slab         = scriptCommand | 53 | defaultON;
-  //public final static int spacefill see floatproperty
   final static int spin         = scriptCommand | 55 | setparam | defaultON;
   public final static int ssbond       = scriptCommand | 56 | setparam | defaultON;
   final static int step         = scriptCommand | 57 | noArgs;
@@ -330,13 +316,28 @@ public class Token {
   final static int translate    = scriptCommand | 61;
   final static int translateSelected = scriptCommand | 62;
   final static int unbind       = scriptCommand | 63;
-  public final static int unitcell = scriptCommand | 64 | setparam | expression | predefinedset | defaultON;
-  public final static int vector       = scriptCommand | 65;
   public final static int vibration    = scriptCommand | 66;
-  public final static int wireframe    = scriptCommand | 67 | defaultON;
   //final static int write   see mathfunc
   final static int zoom         = scriptCommand | 68;
   final static int zoomTo       = scriptCommand | 69;
+
+  // shapes:
+  
+  public final static int axes         = shapeCommand | 2 | setparam | defaultON;
+//final static int boundbox     see mathproperty
+  public final static int dipole       = shapeCommand | 14;
+  public final static int draw         = shapeCommand | 16;
+  public final static int frank        = shapeCommand | 21 | setparam | defaultON;
+  public final static int isosurface   = shapeCommand | 29;
+  public final static int lcaocartoon  = shapeCommand | 30;
+  public final static int mo           = shapeCommand | 33 | expression;
+  public final static int pmesh        = shapeCommand | 38;
+  public final static int plot3d       = shapeCommand | 39;
+  public final static int polyhedra    = shapeCommand | 40;
+  //public final static int spacefill see floatproperty
+  public final static int unitcell = shapeCommand | 64 | setparam | expression | predefinedset | defaultON;
+  public final static int vector       = shapeCommand | 65;
+  public final static int wireframe    = shapeCommand | 67 | defaultON;
 
 
   
@@ -480,7 +481,7 @@ public class Token {
   final static int size             = 6 | mathproperty;
   public final static int sort      = 7 | mathproperty;
   public final static int type      = 8 | mathproperty;
-  public final static int boundbox  = 9 | mathproperty | setparam | scriptCommand | defaultON;
+  public final static int boundbox  = 9 | mathproperty | setparam | shapeCommand | defaultON;
   public final static int xyz       =10 | mathproperty | atomproperty | settable;
   public final static int fracXyz   =11 | mathproperty | atomproperty | settable;
   public final static int unitXyz   =12 | mathproperty | atomproperty;
@@ -557,19 +558,19 @@ public class Token {
   public final static int vibY            = floatproperty | 23 | settable;
   public final static int vibZ            = floatproperty | 24 | settable;
   
-  public final static int backbone     = floatproperty | scriptCommand | 1 | predefinedset | defaultON | settable;
-  public final static int cartoon      = floatproperty | scriptCommand | 2 | defaultON | settable;
-  public final static int dots         = floatproperty | scriptCommand | 3 | defaultON;
-  public final static int ellipsoid    = floatproperty | scriptCommand | 4 | defaultON;
-  public final static int geosurface   = floatproperty | scriptCommand | 5 | defaultON;
-  public final static int halo         = floatproperty | scriptCommand | 6 | defaultON | settable;
-  public final static int meshRibbon   = floatproperty | scriptCommand | 7 | defaultON | settable;
-  public final static int ribbon       = floatproperty | scriptCommand | 9 | defaultON | settable;
-  public final static int rocket       = floatproperty | scriptCommand | 10 | defaultON | settable;
-  public final static int spacefill    = floatproperty | scriptCommand | 11 | defaultON | settable;
-  public final static int star         = floatproperty | scriptCommand | 12 | defaultON | settable;
-  public final static int strands      = floatproperty | scriptCommand | 13 | setparam | defaultON | settable;
-  public final static int trace        = floatproperty | scriptCommand | 14 | defaultON | settable;
+  public final static int backbone     = floatproperty | shapeCommand | 1 | predefinedset | defaultON | settable;
+  public final static int cartoon      = floatproperty | shapeCommand | 2 | defaultON | settable;
+  public final static int dots         = floatproperty | shapeCommand | 3 | defaultON;
+  public final static int ellipsoid    = floatproperty | shapeCommand | 4 | defaultON;
+  public final static int geosurface   = floatproperty | shapeCommand | 5 | defaultON;
+  public final static int halo         = floatproperty | shapeCommand | 6 | defaultON | settable;
+  public final static int meshRibbon   = floatproperty | shapeCommand | 7 | defaultON | settable;
+  public final static int ribbon       = floatproperty | shapeCommand | 9 | defaultON | settable;
+  public final static int rocket       = floatproperty | shapeCommand | 10 | defaultON | settable;
+  public final static int spacefill    = floatproperty | shapeCommand | 11 | defaultON | settable;
+  public final static int star         = floatproperty | shapeCommand | 12 | defaultON | settable;
+  public final static int strands      = floatproperty | shapeCommand | 13 | setparam | defaultON | settable;
+  public final static int trace        = floatproperty | shapeCommand | 14 | defaultON | settable;
 
   // mathfunc               means x = somefunc(a,b,c)
   // mathfunc|mathproperty  means x = y.somefunc(a,b,c)
@@ -590,11 +591,11 @@ public class Token {
   
   public final static int array  = 1 | 0 << 9 | mathfunc;
   public final static int format = 2 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
-  public final static int label  = 3 | 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | defaultON | setparam;
-  final static int function      = 4 | 0 << 9 | mathfunc | flowCommand | noeval;
+  public final static int label  = 3 | 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | shapeCommand | defaultON | setparam;
+  final static int function      = 4 | 0 << 9 | mathfunc | flowCommand;
   final static int getproperty   = 5 | 0 << 9 | mathfunc | scriptCommand;
   final static int write         = 6 | 0 << 9 | mathfunc | scriptCommand;
-  public final static int measure = 7 | 0 << 9| mathfunc | scriptCommand | setparam | defaultON;
+  public final static int measure = 7 | 0 << 9| mathfunc | shapeCommand | setparam | defaultON;
 
   // xxx(a,b,c,d)
   

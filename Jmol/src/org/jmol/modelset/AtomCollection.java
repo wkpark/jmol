@@ -27,6 +27,7 @@ package org.jmol.modelset;
 
 import java.awt.Rectangle;
 import java.util.BitSet;
+import java.util.Vector;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -111,6 +112,14 @@ abstract public class AtomCollection {
 
   public Atom getAtomAt(int atomIndex) {
     return atoms[atomIndex];
+  }
+
+  public Vector getAtomPointVector(BitSet bs) {
+    Vector v = new Vector();
+    for (int i = 0; i < atomCount; i++)
+      if (bs.get(i))
+        v.add(atoms[i]);
+    return v;
   }
 
   public int getAtomCount() {

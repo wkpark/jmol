@@ -78,6 +78,8 @@ public class XmlReader {
     if (data == null) {
       StringBuffer sb = new StringBuffer();
       try {
+        if (line == null)
+          line = br.readLine();
         while (line.indexOf(tag) < 0) {
           line = br.readLine();
         }
@@ -97,23 +99,23 @@ public class XmlReader {
       return "";
     if (withTag) {
       pt2 += closer.length();
-    } else {
-      boolean quoted = false;
-      for (; pt1 < pt2; pt1++) {
-        char ch;
-        if ((ch = data.charAt(pt1)) == '"')
-          quoted = !quoted;
-        else if (quoted && ch == '\\')
-          pt1++;
-        else if (!quoted && ch == '>')
-          break;
-      }
-      if (pt1 >= pt2)
-        return "";
-      while (Character.isWhitespace(data.charAt(++pt1))) {
-      }
+      return data.substring(pt1, pt2);
     }
-    return data.substring(pt1, pt2);
+    boolean quoted = false;
+    for (; pt1 < pt2; pt1++) {
+      char ch;
+      if ((ch = data.charAt(pt1)) == '"')
+        quoted = !quoted;
+      else if (quoted && ch == '\\')
+        pt1++;
+      else if (!quoted && ch == '>')
+        break;
+    }
+    if (pt1 >= pt2)
+      return "";
+    while (Character.isWhitespace(data.charAt(++pt1))) {
+    }
+    return XmlUtil.unwrapCdata(data.substring(pt1, pt2));
   }
 
   public static String getXmlAttrib(String data, String what) {

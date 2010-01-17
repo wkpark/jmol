@@ -2792,12 +2792,12 @@ public class ScriptEvaluator {
   private void setShapeSize(int shapeType, int size) {
     // stars, halos, balls only
     if (!isSyntaxCheck)
-      viewer.setShapeSize(shapeType, size);
+      viewer.setShapeSize(shapeType, size, null);
   }
 
   private void setShapeSize(int shapeType, RadiusData rd) {
     if (!isSyntaxCheck)
-      viewer.setShapeSize(shapeType, rd);
+      viewer.setShapeSize(shapeType, rd, null);
   }
 
   private void setBooleanProperty(String key, boolean value) {
@@ -4404,8 +4404,8 @@ public class ScriptEvaluator {
   }
 
   /**
-   * here we go -- everything else in this class is called by this method
-   * or one of its subsidiary methods.
+   * here we go -- everything else in this class is called by this method or one
+   * of its subsidiary methods.
    * 
    * 
    * @param doList
@@ -4413,7 +4413,7 @@ public class ScriptEvaluator {
    */
   private void instructionDispatchLoop(boolean doList) throws ScriptException {
     long timeBegin = 0;
-    boolean isForCheck = false;  // indicates the stage of the for command loop
+    boolean isForCheck = false; // indicates the stage of the for command loop
 
     debugScript = logMessages = false;
     if (!isSyntaxCheck)
@@ -4441,8 +4441,11 @@ public class ScriptEvaluator {
       if (!historyDisabled && !isSyntaxCheck
           && scriptLevel <= commandHistoryLevelMax && !tQuiet) {
         String cmdLine = getCommand(pc, true, true);
-        if (token != null && cmdLine.length() > 0 && !cmdLine.equals(lastCommand)
-            && (token.tok == Token.function || !Token.tokAttr(token.tok, Token.flowCommand)))
+        if (token != null
+            && cmdLine.length() > 0
+            && !cmdLine.equals(lastCommand)
+            && (token.tok == Token.function || !Token.tokAttr(token.tok,
+                Token.flowCommand)))
           viewer.addCommand(lastCommand = cmdLine);
       }
       if (!setStatement(pc)) {
@@ -4480,249 +4483,254 @@ public class ScriptEvaluator {
       if (token == null)
         continue;
 
-      if (!processShape(token.tok))
-      switch (token.tok) {
-      case Token.nada:
-        break;
-      case Token.breakcmd:
-      case Token.continuecmd:
-      case Token.elsecmd:
-      case Token.elseif:
-      case Token.end:
-      case Token.endifcmd:
-      case Token.forcmd:
-      case Token.gotocmd:
-      case Token.ifcmd:
-      case Token.loop:
-      case Token.whilecmd:
-        isForCheck = flowControl(token.tok, isForCheck);
-        break;
-      case Token.animation:
-        animation();
-        break;
-      case Token.background:
-        background(1);
-        break;
-      case Token.bind:
-        bind();
-        break;
-      case Token.bondorder:
-        bondorder();
-        break;
-      case Token.calculate:
-        calculate();
-        break;
-      case Token.cd:
-        cd();
-        break;
-      case Token.center:
-        center(1);
-        break;
-      case Token.centerAt:
-        centerAt();
-        break;
-      case Token.color:
-        color();
-        break;
-      case Token.configuration:
-        configuration();
-        break;
-      case Token.connect:
-        connect(1);
-        break;
-      case Token.console:
-        console();
-        break;
-      case Token.data:
-        data();
-        break;
-      case Token.define:
-        define();
-        break;
-      case Token.delay:
-        delay();
-        break;
-      case Token.delete:
-        delete();
-        break;
-      case Token.depth:
-        slab(true);
-        break;
-      case Token.display:
-        display(true);
-        break;
-      case Token.exit: // flush the queue and...
-        if (!isSyntaxCheck && pc > 0)
-          viewer.clearScriptQueue();
-      case Token.exitjmol:
-        if (isSyntaxCheck || viewer.isApplet())
-          return;
-        viewer.exitJmol();
-        break;
-      case Token.file:
-        file();
-        break;
-      case Token.font:
-        font(-1, 0);
-        break;
-      case Token.frame:
-      case Token.model:
-        frame(1);
-        break;
-      case Token.function:
-        function();
-        break;
-      case Token.getproperty:
-        getProperty();
-        break;
-      case Token.help:
-        help();
-        break;
-      case Token.hide:
-        display(false);
-        break;
-      case Token.hbond:
-        hbond(true);
-        break;
-      case Token.history:
-        history(1);
-        break;
-      case Token.hover:
-        hover();
-        break;
-      case Token.initialize:
-        viewer.initialize();
-        break;
-      case Token.invertSelected:
-        invertSelected();
-        break;
-      case Token.load:
-        load();
-        break;
-      case Token.message:
-        message();
-        break;
-      case Token.minimize:
-        minimize();
-        break;
-      case Token.move:
-        move();
-        break;
-      case Token.moveto:
-        moveto();
-        break;
-      case Token.navigate:
-        navigate();
-        break;
-      case Token.pause: // resume is done differently
-        pause();
-        break;
-      case Token.print:
-        print();
-        break;
-      case Token.quaternion:
-        dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
-        break;
-      case Token.ramachandran:
-        dataFrame(JmolConstants.JMOL_DATA_RAMACHANDRAN);
-        break;
-      case Token.quit: // quit this only if it isn't the first command
-        if (!isSyntaxCheck)
-          interruptExecution = (pc > 0 || !viewer.usingScriptQueue());
-        break;
-      case Token.refresh:
-        refresh();
-        break;
-      case Token.reset:
-        reset();
-        break;
-      case Token.restore:
-        restore();
-        break;
-      case Token.restrict:
-        restrict();
-        break;
-      case Token.resume:
-        if (!isSyntaxCheck)
-          resumePausedExecution();
-        break;
-      case Token.returncmd:
-        returnCmd();
-        break;
-      case Token.rotate:
-        rotate(false, false);
-        break;
-      case Token.rotateSelected:
-        rotate(false, true);
-        break;
-      case Token.save:
-        save();
-        break;
-      case Token.set:
-        set();
-        break;
-      case Token.script:
-      case Token.javascript:
-        script(token.tok);
-        break;
-      case Token.select:
-        select(1);
-        break;
-      case Token.show:
-        show();
-        break;
-      case Token.slab:
-        slab(false);
-        break;
-      case Token.spin:
-        rotate(true, false);
-        break;
-      case Token.ssbond:
-        ssbond();
-        break;
-      case Token.step:
-        if (pause())
-          stepPausedExecution();
-        break;
-      case Token.stereo:
-        stereo();
-        break;
-      case Token.structure:
-        structure();
-        break;
-      case Token.subset:
-        subset();
-        break;
-      case Token.sync:
-        sync();
-        break;
-      case Token.translate:
-        translate();
-        break;
-      case Token.translateSelected:
-        translateSelected();
-        break;
-      case Token.unbind:
-        unbind();
-        break;
-      case Token.vibration:
-        vibration();
-        break;
-      case Token.write:
-        write(null);
-        break;
-      case Token.zap:
-        zap(true);
-        break;
-      case Token.zoom:
-        zoom(false);
-        break;
-      case Token.zoomTo:
-        zoom(true);
-        break;
-      default:
-        error(ERROR_unrecognizedCommand);
-      }
+      if (Token.tokAttr(token.tok, Token.shapeCommand))
+        processShapeCommand(token.tok);
+      else
+        switch (token.tok) {
+        case Token.nada:
+          break;
+        case Token.breakcmd:
+        case Token.continuecmd:
+        case Token.elsecmd:
+        case Token.elseif:
+        case Token.end:
+        case Token.endifcmd:
+        case Token.forcmd:
+        case Token.gotocmd:
+        case Token.ifcmd:
+        case Token.loop:
+        case Token.whilecmd:
+          isForCheck = flowControl(token.tok, isForCheck);
+          break;
+        case Token.animation:
+          animation();
+          break;
+        case Token.background:
+          background(1);
+          break;
+        case Token.bind:
+          bind();
+          break;
+        case Token.bondorder:
+          bondorder();
+          break;
+        case Token.calculate:
+          calculate();
+          break;
+        case Token.cd:
+          cd();
+          break;
+        case Token.center:
+          center(1);
+          break;
+        case Token.centerAt:
+          centerAt();
+          break;
+        case Token.color:
+          color();
+          break;
+        case Token.configuration:
+          configuration();
+          break;
+        case Token.connect:
+          connect(1);
+          break;
+        case Token.console:
+          console();
+          break;
+        case Token.data:
+          data();
+          break;
+        case Token.define:
+          define();
+          break;
+        case Token.delay:
+          delay();
+          break;
+        case Token.delete:
+          delete();
+          break;
+        case Token.depth:
+          slab(true);
+          break;
+        case Token.display:
+          display(true);
+          break;
+        case Token.exit: // flush the queue and...
+          if (!isSyntaxCheck && pc > 0)
+            viewer.clearScriptQueue();
+        case Token.exitjmol:
+          if (isSyntaxCheck || viewer.isApplet())
+            return;
+          viewer.exitJmol();
+          break;
+        case Token.file:
+          file();
+          break;
+        case Token.font:
+          font(-1, 0);
+          break;
+        case Token.frame:
+        case Token.model:
+          frame(1);
+          break;
+        case Token.function:
+          function();
+          break;
+        case Token.getproperty:
+          getProperty();
+          break;
+        case Token.help:
+          help();
+          break;
+        case Token.hide:
+          display(false);
+          break;
+        case Token.hbond:
+          hbond(true);
+          break;
+        case Token.history:
+          history(1);
+          break;
+        case Token.hover:
+          hover();
+          break;
+        case Token.initialize:
+          viewer.initialize();
+          break;
+        case Token.invertSelected:
+          invertSelected();
+          break;
+        case Token.load:
+          load();
+          break;
+        case Token.message:
+          message();
+          break;
+        case Token.minimize:
+          minimize();
+          break;
+        case Token.move:
+          move();
+          break;
+        case Token.moveto:
+          moveto();
+          break;
+        case Token.navigate:
+          navigate();
+          break;
+        case Token.pause: // resume is done differently
+          pause();
+          break;
+        case Token.print:
+          print();
+          break;
+        case Token.quaternion:
+          dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
+          break;
+        case Token.ramachandran:
+          dataFrame(JmolConstants.JMOL_DATA_RAMACHANDRAN);
+          break;
+        case Token.quit: // quit this only if it isn't the first command
+          if (!isSyntaxCheck)
+            interruptExecution = (pc > 0 || !viewer.usingScriptQueue());
+          break;
+        case Token.refresh:
+          refresh();
+          break;
+        case Token.reset:
+          reset();
+          break;
+        case Token.restore:
+          restore();
+          break;
+        case Token.restrict:
+          restrict();
+          break;
+        case Token.resume:
+          if (!isSyntaxCheck)
+            resumePausedExecution();
+          break;
+        case Token.returncmd:
+          returnCmd();
+          break;
+        case Token.rotate:
+          rotate(false, false);
+          break;
+        case Token.rotateSelected:
+          rotate(false, true);
+          break;
+        case Token.save:
+          save();
+          break;
+        case Token.set:
+          set();
+          break;
+        case Token.script:
+        case Token.javascript:
+          script(token.tok);
+          break;
+        case Token.select:
+          select(1);
+          break;
+        case Token.selectionHalo:
+          selectionHalo(1);
+          break;
+       case Token.show:
+          show();
+          break;
+        case Token.slab:
+          slab(false);
+          break;
+        case Token.spin:
+          rotate(true, false);
+          break;
+        case Token.ssbond:
+          ssbond();
+          break;
+        case Token.step:
+          if (pause())
+            stepPausedExecution();
+          break;
+        case Token.stereo:
+          stereo();
+          break;
+        case Token.structure:
+          structure();
+          break;
+        case Token.subset:
+          subset();
+          break;
+        case Token.sync:
+          sync();
+          break;
+        case Token.translate:
+          translate();
+          break;
+        case Token.translateSelected:
+          translateSelected();
+          break;
+        case Token.unbind:
+          unbind();
+          break;
+        case Token.vibration:
+          vibration();
+          break;
+        case Token.write:
+          write(null);
+          break;
+        case Token.zap:
+          zap(true);
+          break;
+        case Token.zoom:
+          zoom(false);
+          break;
+        case Token.zoomTo:
+          zoom(true);
+          break;
+        default:
+          error(ERROR_unrecognizedCommand);
+        }
       if (!isSyntaxCheck && !tQuiet)
         viewer.setCursor(Viewer.CURSOR_DEFAULT);
       // at end because we could use continue to avoid it
@@ -4732,7 +4740,7 @@ public class ScriptEvaluator {
     }
   }
 
-  private boolean processShape(int tok) throws ScriptException {
+  private void processShapeCommand(int tok) throws ScriptException {
     int iShape;
     switch (tok) {
     case Token.axes:
@@ -4828,6 +4836,10 @@ public class ScriptEvaluator {
     case Token.trace:
       proteinShape(iShape = JmolConstants.SHAPE_TRACE);
       break;
+    case Token.unitcell:
+      iShape = JmolConstants.SHAPE_UCCAGE;
+      unitcell(1);
+      break;
     case Token.vector:
       iShape = JmolConstants.SHAPE_VECTORS;
       vector();
@@ -4836,16 +4848,12 @@ public class ScriptEvaluator {
       iShape = JmolConstants.SHAPE_STICKS;
       wireframe();
       break;
-    case Token.unitcell:
-      iShape = JmolConstants.SHAPE_UCCAGE;
-      unitcell(1);
-      break;
     default:
-      return false;
+      iShape = -1;
     }
-   if (Logger.debugging)
-     setShapeProperty(iShape, "showXml", null);
-   return true;
+    if (iShape < 0)
+      error(ERROR_unrecognizedCommand);
+    setShapeProperty(iShape, "setXml", null);
   }
 
   private boolean flowControl(int tok, boolean isForCheck) throws ScriptException {
@@ -12675,9 +12683,10 @@ public class ScriptEvaluator {
         if (bs != null) {
           bbox = viewer.getBoxInfo(bs, -distance);
           pts = new Point3f[] { bbox.getBboxVertices()[0], bbox.getBboxVertices()[7]};
-          v = (Vector) getBitsetProperty(bs, Token.xyz | Token.minmaxmask, null, null,
-              null, null, false, Integer.MAX_VALUE, true);
           addShapeProperty(propertyList, "commandOption", "WITHIN=\"" + Escape.escape(bs)+ "\"");
+          v = new Vector();
+          if (BitSetUtil.cardinalityOf(bs) == 1)
+            v.add(viewer.getAtomPoint3f(BitSetUtil.firstSetBit(bs)));
         } else {
           Point3f pt1 = new Point3f(distance, distance, distance);
           Point3f pt0 = new Point3f(ptc);
@@ -12687,7 +12696,7 @@ public class ScriptEvaluator {
           v = new Vector();
           v.add(ptc);
         }
-        propertyValue = new Object[] { new Float(distance), pts, v };
+        propertyValue = new Object[] { new Float(distance), pts, bs, v };
         if (v.size() == 1) {
           addShapeProperty(propertyList, "withinDistance", new Float(distance));          
           addShapeProperty(propertyList, "withinPoint", (Point3f)v.get(0));

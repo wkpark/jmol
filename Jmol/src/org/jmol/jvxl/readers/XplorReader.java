@@ -190,9 +190,9 @@ That is:
       //System.out.println(nRead + " " + line);
       linePt = 0;
       if ((nRead % nBlock) == 0) {
-        if (Logger.debugging)
-          Logger.debug("XplorReader: block " + line + " min/max " 
-            + dataMin + "/" + dataMax);
+        //if (Logger.debugging)
+          //Logger.debug("XplorReader: block " + line + " min/max " 
+            //+ dataMin + "/" + dataMax);
         line = br.readLine();
       }
     }

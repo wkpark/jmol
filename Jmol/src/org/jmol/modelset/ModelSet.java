@@ -498,7 +498,7 @@ abstract public class ModelSet extends ModelCollection {
       for (int i = 0; i < shapes.length; ++i)
         if (shapes[i] != null && shapes[i].isBioShape) {
           shapes[i].setSize(0, bsAllAtoms);
-          shapes[i].setProperty("color", new Byte(JmolConstants.PALETTE_CPK),
+          shapes[i].setShapeProperty("color", new Byte(JmolConstants.PALETTE_CPK),
               bsAllAtoms);
         }
     setStructureIds();

@@ -186,6 +186,8 @@ public class Mesh extends MeshSurface {
 
   public Vector data1;
   public Vector data2;
+  public Vector xmlProperties;
+  
   
   protected void sumVertexNormals(Point3f[] vertices, Vector3f[] normals) {
     // subclassed in IsosurfaceMesh

@@ -583,8 +583,17 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         if (logMessages) {
           Logger.debug("-------------------------------------");
         }
-        if (!Token.tokAttr(tokCommand, Token.noeval)
-            || atokenInfix.length > 0 && atokenInfix[0].intValue <= 0) {
+        boolean doEval;
+        switch (tokCommand) {
+        case Token.function:
+        case Token.end:
+        case Token.var:
+          doEval = (atokenInfix.length > 0 && atokenInfix[0].intValue <= 0);
+          break;
+        default:
+          doEval = true;
+        }
+        if (doEval) {
           if (iCommand == lnLength) {
             short[] lnT = new short[lnLength * 2];
             System.arraycopy(lineNumbers, 0, lnT, 0, lnLength);

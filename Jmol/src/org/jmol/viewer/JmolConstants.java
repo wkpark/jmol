@@ -1013,6 +1013,10 @@ final public class JmolConstants {
     "Auto", "User"                        // 8 9 
    };
   
+  public static String getVdwLabel(int i) {
+    return vdwLabels[i % 4];
+  }
+
   public static int getVdwType(String label) {
     // used by Viewer.getVolume, setDefaultVdw
     // Eval.setAtomShapeSize for "spacefill VDW babel"

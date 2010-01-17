@@ -25,7 +25,6 @@
 
 package org.jmol.shape;
 
-import org.jmol.script.Token;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
@@ -115,7 +114,7 @@ public abstract class Shape {
     this.myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(shapeID);
     setModelSet(modelSet);
     initShape();
-    properties = new Vector();
+    xmlProperties = new Vector();
     //System.out.println("Shape " + shapeID + " " + this + " initialized");
 
   }
@@ -131,35 +130,13 @@ public abstract class Shape {
   public void initShape() {
   }
 
-  protected Vector properties;
+  protected Vector xmlProperties;
   
-  protected boolean debugSetProperty(String propertyName, Object value, BitSet bs) {
-    String myType = JmolConstants.shapeClassBases[shapeID];
-    if (propertyName == "showXml") {
-      StringBuffer sb = new StringBuffer();
-      XmlUtil.openTag(sb, myType);
-      XmlUtil.toXml(sb, "property", properties);
-      XmlUtil.closeTag(sb, myType);
-      Logger.debug(sb.toString());
-      properties = new Vector();
-      return true;
-    } else if (propertyName == "setProperties") {
-    } else if (propertyName == "commandOption") {
-    } else {
-      Logger.debug(myType + " setProperty: "
-          + propertyName + " = " + value);
-      if (propertyName == "token")
-        value = Token.nameOf(((Integer) value).intValue());
-      properties.add(new Object[] {new Object[] { "name", propertyName, 
-          "select", bs  == null ? null : Escape.escape(bs) }, value });
-    }
-    return false;
-  }
-
   public void setShapeSize(int size, RadiusData rd, BitSet bsSelected) {
-    if (Logger.debugging)
-      debugSetProperty("size", (rd == null ? new Integer(size) : (Object) rd),
+    setXmlProperty("size", (rd == null ? new Integer(size) : (Object) rd),
           bsSelected);
+    if (bsSelected == null)
+      bsSelected = viewer.getSelectionSet();
     if (rd == null)
       setSize(size, bsSelected);
     else
@@ -175,32 +152,81 @@ public abstract class Shape {
   }
 
   /**
-   * specifically from setShapeProperty, mostly from ScriptEvaluation, but not always
-   * not from "super.setProperty", especially
+   * specifically from modelSet.setShapeProperty, mostly from ScriptEvaluation,
+   * but not always  -- definitely not from "super.setProperty"
    * 
    * @param propertyName
    * @param value
    * @param bsSelected
    */
-  public void setShapeProperty(String propertyName, Object value, BitSet bsSelected) {
-    if (Logger.debugging && debugSetProperty(propertyName, value, bsSelected))
-     return;
-    setProperty(propertyName, value, bsSelected);
+  public void setShapeProperty(String propertyName, Object value,
+                               BitSet bsSelected) {
+    if (!setXmlProperty(propertyName, value, bsSelected))
+      setProperty(propertyName, value, bsSelected == null ? 
+          viewer.getSelectionSet() : bsSelected);
   }
 
   /**
-   * may come from any source
+   * may NOT be over-ridden by shape; executed BEFORE shape's setProperty
+   * 
+   * @param propertyName
+   * @param value
+   * @param bs
+   * @return    true if we are done
+   */
+  private boolean setXmlProperty(String propertyName, Object value, BitSet bs) {
+    String myType = JmolConstants.shapeClassBases[shapeID];
+    if (propertyName == "initXml") {
+      xmlProperties = new Vector();
+      return true;
+    }
+    if (propertyName == "showXml") {
+      if (xmlProperties == null || xmlProperties.size() == 0)
+        return true;
+      StringBuffer sb = new StringBuffer();
+      XmlUtil.openTag(sb, "shape", new String[] { "type", myType });
+      XmlUtil.toXml(sb, "property", xmlProperties);
+      XmlUtil.closeTag(sb, "shape");
+      Logger.info(sb.toString());
+      return true;
+    }
+    if (propertyName == "setXml") {
+      //if (Logger.debugging)
+        setXmlProperty("showXml", null, null);
+      return false;      
+    }
+    
+    Logger.debug(myType + " setProperty: " + propertyName + " = " + value);
+
+    if (propertyName == "setProperties"
+      || propertyName == "thisID"
+      || propertyName == "commandOption")
+    return false;
+    Vector attributes = new Vector();
+    attributes.add(new Object[] {"select", bs == null ? null : Escape.escape(bs) });
+    xmlProperties.add(XmlUtil.escape(propertyName, attributes, value, false, ""));
+    return false;
+  }
+
+
+  /**
+   * may come from any source -- executed AFTER a shape's own setProperty method
    * 
    * @param propertyName
    * @param value
    * @param bsSelected
    */
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+    if (propertyName == "setXml") {
+      // some states may also check this in orde to presever their state
+      xmlProperties = new Vector();
+      return;
+    }
     if (propertyName == "setProperties") {
       Vector propertyList = (Vector) value;
       while (propertyList.size() > 0) {
         Object[] data = (Object[]) propertyList.remove(0);
-        setProperty(((String) data[0]).intern(), data[1], bsSelected);
+        setShapeProperty(((String) data[0]).intern(), data[1], null);
       }
       return;
     }
@@ -213,11 +239,6 @@ public abstract class Shape {
       return;
     }
 
-    if (propertyName == "deleteModelAtoms") {
-      //Object[] {newModels, atoms, new int[] {iModelDeleted, firstAtomIndex, nAtoms}
-      //return;
-    }
-    
     Logger.warn("unassigned " + JmolConstants.shapeClassBases[shapeID] + " + shape setProperty:" + propertyName + ":" + value);
   }
 

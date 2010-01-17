@@ -110,14 +110,8 @@ public class JvxlXmlReader extends VolumeFileReader {
   }
   
   protected void readTitleLines() throws Exception {
-    line = br.readLine();
-    while (line != null && line.indexOf("<jvxl") < 0)
-      line = br.readLine();
-    jvxlFileHeaderBuffer = new StringBuffer();
-    line = "Line 1";
-    jvxlFileHeaderBuffer.append(line).append('\n');
-    line = "Line 2";
-    jvxlFileHeaderBuffer.append(line).append('\n');
+    String s = xr.getXmlData("jvxlFileTitle", null, false);
+    jvxlFileHeaderBuffer = new StringBuffer(s);
   }
 
   String tempDataXml; 

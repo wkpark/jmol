@@ -4127,17 +4127,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.loadShape(shapeID);
   }
 
-  public void setShapeSize(int shapeID, int size) {
-    setShapeSize(shapeID, size, selectionManager.bsSelection);
-  }
-
-  public void setShapeSize(int shapeID, RadiusData rd) {
-    // Eval - many
-    // stateManager.setCrystallographicDefaults
-    // Viewer - many
-    setShapeSize(shapeID, rd, selectionManager.bsSelection);
-  }
-
   public void setShapeSize(int shapeID, int mad, BitSet bsAtoms) {
     modelSet.setShapeSize(shapeID, mad, null, bsAtoms);
   }
@@ -4161,8 +4150,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval, BondCollection, StateManager, local
     if (shapeID < 0)
       return; // not applicable
-    modelSet.setShapeProperty(shapeID, propertyName, value,
-        selectionManager.bsSelection);
+    modelSet.setShapeProperty(shapeID, propertyName, value, null);
   }
 
   public void setShapeProperty(int shapeID, String propertyName, Object value,
@@ -6525,7 +6513,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     rd.value = value / 100f;
     rd.type = RadiusData.TYPE_FACTOR;
     rd.vdwType = JmolConstants.VDW_AUTO;
-    setShapeSize(JmolConstants.SHAPE_BALLS, rd);
+    setShapeSize(JmolConstants.SHAPE_BALLS, rd, null);
   }
 
   public int getPercentVdwAtom() {
@@ -6817,6 +6805,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Point3f getAtomPoint3f(int i) {
     return modelSet.getAtomAt(i);
+  }
+
+  public Vector getAtomPointVector(BitSet bs) {
+    return modelSet.getAtomPointVector(bs);
   }
 
   public float getAtomRadius(int i) {

@@ -24,7 +24,6 @@
 package org.jmol.jvxl.readers;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;

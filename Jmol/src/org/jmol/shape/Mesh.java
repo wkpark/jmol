@@ -215,7 +215,11 @@ public class Mesh extends MeshSurface {
   }
 
   public String getState(String type) {
-    StringBuffer s = new StringBuffer(type);
+    String sxml = Shape.getXmlPropertyString(xmlProperties, type);
+    StringBuffer s = new StringBuffer();
+    if (sxml != null)
+      s.append("/** XML ** ").append(sxml).append(" ** XML **/\n");
+    s.append(type);
     if (!type.equals("mo"))
       s.append(" ID ").append(Escape.escape(thisID));
     s.append(fillTriangles ? " fill" : " noFill");

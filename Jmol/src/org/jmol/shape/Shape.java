@@ -181,13 +181,9 @@ public abstract class Shape {
       return true;
     }
     if (propertyName == "showXml") {
-      if (xmlProperties == null || xmlProperties.size() == 0)
-        return true;
-      StringBuffer sb = new StringBuffer();
-      XmlUtil.openTag(sb, "shape", new String[] { "type", myType });
-      XmlUtil.toXml(sb, "property", xmlProperties);
-      XmlUtil.closeTag(sb, "shape");
-      Logger.info(sb.toString());
+      String s = getXmlPropertyString(xmlProperties, myType);
+      if (s != null)
+        Logger.info(s);
       return true;
     }
     if (propertyName == "setXml") {
@@ -208,6 +204,16 @@ public abstract class Shape {
     return false;
   }
 
+
+  static public String getXmlPropertyString(Vector xmlProperties, String type) {
+    if (xmlProperties == null || xmlProperties.size() == 0)
+      return null;
+    StringBuffer sb = new StringBuffer();
+    XmlUtil.openTag(sb, "shape", new String[] { "type", type });
+    XmlUtil.toXml(sb, "property", xmlProperties);
+    XmlUtil.closeTag(sb, "shape");
+    return sb.toString();
+  }
 
   /**
    * may come from any source -- executed AFTER a shape's own setProperty method

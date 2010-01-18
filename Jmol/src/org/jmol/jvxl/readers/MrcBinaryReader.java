@@ -164,8 +164,8 @@ class MrcBinaryReader extends MapFileReader {
       }
     }
     
-    long position = binarydoc.getPosition();
     for (int i = 0; i < nsymbt; i++) {
+      long position = binarydoc.getPosition();
       String s = binarydoc.readString(80).trim();
       if (s.indexOf('\0') != s.lastIndexOf('\0')) {
         // must not really be symmetry info!

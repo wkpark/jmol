@@ -120,6 +120,7 @@ import javax.vecmath.Matrix3f;
 
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.util.Escape;
+import org.jmol.util.XmlUtil;
 
 public class VolumeData implements VolumeDataInterface {
 
@@ -339,18 +340,20 @@ public class VolumeData implements VolumeDataInterface {
   }
 
   public String setVolumetricXml() {
-    if (voxelCounts[0] == 0)
-      return "<jvxlVolumeData>\n</jvxlVolumeData>\n";
-    StringBuffer data = new StringBuffer();
-    data.append("<jvxlVolumeData origin=\"" + Escape.escape(volumetricOrigin)
-        + "\">\n");
-    for (int i = 0; i < 3; i++) {
-      data.append("<jvxlVolumeVector type=\"" + i + "\" count=\""
-          + voxelCounts[i] + "\" vector=\""
-          + Escape.escape(volumetricVectors[i]) + "\"></jvxlVolumeVector>\n");
+    StringBuffer sb = new StringBuffer();
+    if (voxelCounts[0] == 0) {
+      XmlUtil.appendTag(sb, "jvxlVolumeData", null);
+    } else {   
+      XmlUtil.openTag(sb, "jvxlVolumeData", new String[] {
+          "origin=", Escape.escape(volumetricOrigin) });
+      for (int i = 0; i < 3; i++) 
+        XmlUtil.appendTag(sb, "jvxlVolumeVector", new String[] {
+            "type", "" + i,
+            "count", "" + voxelCounts[i],
+            "vector", Escape.escape(volumetricVectors[i]) } );
+      XmlUtil.closeTag(sb, "jvxlVolumeData");
     }
-    data.append("</jvxlVolumeData>\n");
-    return xmlData = data.toString();
+    return xmlData = sb.toString();
   }
 
 }

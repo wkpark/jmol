@@ -4933,8 +4933,10 @@ public class ScriptEvaluator {
       // for (i = 1; i < 3; i = i + 1);
       // for (var i = 1; i < 3; i = i + 1);
       // for (;;;);
+      // for (var x in {...}) { xxxxx }
       int[] pts = new int[2];
       int j = 0;
+      BitSet bsIn = null;
       for (int i = 1, nSkip = 0; i < statementLength && j < 2; i++) {
         switch (tokAt(i)) {
         case Token.semicolon:
@@ -4942,6 +4944,11 @@ public class ScriptEvaluator {
             nSkip--;
           else
             pts[j++] = i;
+          break;
+        case Token.in:
+          nSkip -= 2;
+          bsIn = expression(++i);
+          i = iToken;
           break;
         case Token.select:
           nSkip += 2;
@@ -4959,9 +4966,14 @@ public class ScriptEvaluator {
       }
       String key = parameterAsString(j);
       if (Token.tokAttr(tokAt(j), Token.misc) || getContextVariableAsVariable(key) != null) {
-        if (getToken(++j).tok != Token.opEQ)
+        if (bsIn == null && getToken(++j).tok != Token.opEQ)
           error(ERROR_invalidArgument);
-        setVariable(++j, statementLength - 1, key, false, 0);
+        if (bsIn == null) {
+          setVariable(++j, statementLength - 1, key, false, 0);
+        } else {
+          setVariable(j + 2, statementLength - 1, key + "_set", false, 0);
+          setVariable(j + 2, statementLength - 1, key, false, 0);
+        }
       }
       isOK = ((Boolean) parameterExpression(pts[0] + 1, pts[1], null, false))
           .booleanValue();

@@ -4008,11 +4008,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.hbondsSolid;
   }
 
-  public Point3f[] getAdditionalHydrogens(BitSet atomSet, boolean justCarbon) {
-    if (atomSet == null)
-      atomSet = selectionManager.bsSelection;
+  public Point3f[] getAdditionalHydrogens(BitSet bsAtoms, boolean justCarbon) {
+    if (bsAtoms == null)
+      bsAtoms = selectionManager.bsSelection;
     int[] nTotal = new int[1];
-    Point3f[][] pts = modelSet.getAdditionalHydrogens(atomSet, nTotal,
+    Point3f[][] pts = modelSet.getAdditionalHydrogens(bsAtoms, nTotal,
         justCarbon);
     Point3f[] points = new Point3f[nTotal[0]];
     for (int i = 0, pt = 0; i < pts.length; i++)
@@ -4023,12 +4023,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void addHydrogens(BitSet bsAtoms) {
+    if (bsAtoms == null)
+      bsAtoms = selectionManager.bsSelection;
     Point3f[] pts = getAdditionalHydrogens(bsAtoms, false);
     if (pts.length > 0) {
+      int modelIndex = getAtomModelIndex(BitSetUtil.firstSetBit(bsAtoms));
+      String modelnumber = getModelNumberDotted(modelIndex);
+      int atomno = modelSet.getAtomCountInModel(modelIndex);
+      boolean wasAppendNew = getAppendNew();
       String s = "set appendNew false;data \"append 1\"\n" + pts.length + "\nadded hydrogens";
       for (int i = 0; i < pts.length; i++)
-        s += "\nH "  + pts[i].x + " " + pts[i].y + " " + pts[i].z;
-      s += "\nend \"append 1\";connect 1.3 {*} {hydrogen} create";
+        s += "\nH "  + pts[i].x + " " + pts[i].y + " " + pts[i].z + " - - - - " + (++atomno);
+      s += "\nend \"append 1\";connect 1.3 {not _H and */" + modelnumber 
+          + "} {hydrogen} create;set appendNew " + wasAppendNew;
       evalStringQuiet(s);
     }
     scriptStatus(GT._("{0} hydrogens added", pts.length));

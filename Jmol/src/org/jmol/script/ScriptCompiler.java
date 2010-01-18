@@ -1310,6 +1310,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         nSemiSkip += 2;
       } else if (nTokens == 3 && ((Token) ltoken.get(2)).tok == Token.var) {
         addContextVariable(ident);
+      } else if ((nTokens == 3 || nTokens == 4) && theTok == Token.in) {
+        nSemiSkip -= 2;
+        forPoint3 = 2;
+          // for ( var x IN
+          // for ( x IN 
       } else if (braceCount == 0 && parenCount == 0) {
         isEndOfCommand = true;
         ichEnd = ichToken + 1;

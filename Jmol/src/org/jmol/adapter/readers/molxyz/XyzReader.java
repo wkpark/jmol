@@ -136,6 +136,7 @@ public class XyzReader extends AtomSetCollectionReader {
         continue;
       case 5:
       case 8:
+      case 9:
         // accepts  sym x y z c
         // accepts  sym x y z c vx vy vz
         if ((str = tokens[4]).indexOf(".") >= 0) {
@@ -147,10 +148,12 @@ public class XyzReader extends AtomSetCollectionReader {
         }        
         if (tokens.length == 5)
           continue;
+        if (tokens.length == 9)
+          atom.atomSerial = parseInt(tokens[8]);
         vpt++;
         //fall through:
       default:
-         // accepts  sym x y z c vx vy vz
+         // accepts  sym x y z c vx vy vz atomno
          // or       sym x y z vx vy vz
         float vx = parseFloat(tokens[vpt++]);
         float vy = parseFloat(tokens[vpt++]);

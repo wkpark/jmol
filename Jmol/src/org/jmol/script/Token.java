@@ -510,7 +510,7 @@ public class Token {
   public final static int symbol        = strproperty |12 | settable;
   public final static int symmetry      = strproperty |13 | predefinedset;
 
-  public final static int atomno        = intproperty | 1;
+  public final static int atomno        = intproperty | 1 | settable;
   public final static int atomID        = intproperty | 2;
   public final static int atomIndex     = intproperty | 3;
   public final static int bondcount     = intproperty | 4;

@@ -77,11 +77,12 @@ public abstract class SurfaceReader implements VertexDataServer {
    *                    |           |______ApbsReader
    *                    |           |______CubeReader
    *                    |           |______JaguarReader
-   *                    |           |______JvxlReader
-   *                    |           |           |______JvxlPReader (progressive order -- X low to high)
-   *                    |           |______MrcBinaryReader
-   *                    |           |______XplorReader (version 3.1)
-   *                    |
+   *                    |           |______JvxlXmlReader
+   *                    |           |           |______JvxlReader
+   *                    |           |
+   *                    |           |______ElectronDensityFileReader (abstract)
+   *                    |                       |______MrcBinaryReader
+   *                    |                       |______XplorReader (version 3.1)
    *                    |
    *                    |_______PolygonFileReader (abstract)
    *                                |

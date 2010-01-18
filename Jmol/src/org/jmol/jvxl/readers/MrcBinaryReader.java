@@ -23,31 +23,31 @@
  */
 package org.jmol.jvxl.readers;
 
-import javax.vecmath.Point3f;
-
-import org.jmol.api.Interface;
-import org.jmol.api.SymmetryInterface;
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
 
-class MrcBinaryReader extends VolumeFileReader {
+class MrcBinaryReader extends ElectronDensityFileReader {
 
   /*
    * also referred to as CCP4 format
    *
    */
-  MrcHeader mrcHeader;
+
+  
   MrcBinaryReader(SurfaceGenerator sg, String fileName, boolean isBigEndian) {
     super(sg, null);
     binarydoc = new BinaryDocument();
     binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), isBigEndian);
-    mrcHeader = new MrcHeader();
     // data are HIGH on the inside and LOW on the outside
     params.insideOut = !params.insideOut;
+    nSurfaces = 1;    
   }
   
-  private class MrcHeader {
+
     /* see http://ami.scripps.edu/software/mrctools/mrc_specification.php
+     * 
+     * many thanks to Eric Martz for providing the test files that
+     * made this understandable.
      * 
     1 NX       number of columns (fastest changing in map)
     2 NY       number of rows   
@@ -84,186 +84,109 @@ class MrcBinaryReader extends VolumeFileReader {
     57-256  LABEL(20,10) 10 80-character text labels
     */
     
-    int nx, ny, nz, mode, nxStart, nyStart, nzStart, mx, my, mz;
-    float a, b, c, alpha, beta, gamma;
-    int mapc, mapr, maps;
+    protected String[] labels;
+
+    protected void readParameters() throws Exception {
+
     float dmin, dmax, dmean;
     int ispg;
     int nsymbt;
     byte[] extra = new byte[100];
-    float originX, originY, originZ;
     byte[] map = new byte[4];
     byte[] machst = new byte[4];
     float rms;
     int nlabel;
-    String[] labels = new String[10];
-    SymmetryInterface unitCell;
-    Point3f[] vectors = new Point3f[3];
-    Point3f origin= new Point3f();
-    
-    MrcHeader() {
-      try {
-        nx = binarydoc.readInt();
-        ny = binarydoc.readInt();
-        nz = binarydoc.readInt();
-        
-        Logger.info("MRC header: nx,ny,nz: " + nx + "," + ny + "," + nz);
 
-        mode = binarydoc.readInt();
-        Logger.info("MRC header: mode: " +mode);
+    nx = binarydoc.readInt();
+    ny = binarydoc.readInt();
+    nz = binarydoc.readInt();
 
-        nxStart = binarydoc.readInt();
-        nyStart = binarydoc.readInt();
-        nzStart = binarydoc.readInt();
-        
-        Logger.info("MRC header: nxStart,nyStart,nzStart: " + nxStart + "," + nyStart + "," + nzStart);
+    mode = binarydoc.readInt();
 
-        mx = binarydoc.readInt();
-        my = binarydoc.readInt();
-        mz = binarydoc.readInt();
+    Logger.info("MRC header: mode: " + mode);
 
-        Logger.info("MRC header: mx,my,mz: " + mx + "," + my + "," + mz);
+    nxStart = binarydoc.readInt();
+    nyStart = binarydoc.readInt();
+    nzStart = binarydoc.readInt();
 
-        a = binarydoc.readFloat();
-        b = binarydoc.readFloat();
-        c = binarydoc.readFloat();
-        alpha = binarydoc.readFloat();
-        beta = binarydoc.readFloat();
-        gamma = binarydoc.readFloat();
-        
-        Logger.info("MRC header: a,b,c,alpha,beta,gamma: " + a + "," + b + "," + c + "," + alpha + "," + beta + "," + gamma);
+    mx = binarydoc.readInt();
+    my = binarydoc.readInt();
+    mz = binarydoc.readInt();
 
-        unitCell = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
-        unitCell.setUnitCell(new float[] {a, b, c, alpha, beta, gamma} );
+    a = binarydoc.readFloat();
+    b = binarydoc.readFloat();
+    c = binarydoc.readFloat();
+    alpha = binarydoc.readFloat();
+    beta = binarydoc.readFloat();
+    gamma = binarydoc.readFloat();
 
-        mapc = binarydoc.readInt();
-        mapr = binarydoc.readInt();
-        maps = binarydoc.readInt();
-        
-        float[] ms = new float[3];
-        
-        ms[mapc - 1] = mx;  //'2'
-        ms[mapr - 1] = my;  //'1'
-        ms[maps - 1] = mz;  //'3'
+    mapc = binarydoc.readInt();
+    mapr = binarydoc.readInt();
+    maps = binarydoc.readInt();
 
+    dmin = binarydoc.readFloat();
+    dmax = binarydoc.readFloat();
+    dmean = binarydoc.readFloat();
 
-        vectors[0] = new Point3f(1f/mx, 0, 0);
-        unitCell.toCartesian(vectors[0]);
-        vectors[1] = new Point3f(0, 1f/my, 0);
-        unitCell.toCartesian(vectors[1]);
-        vectors[2] = new Point3f(0, 0, 1f/mz);
-        unitCell.toCartesian(vectors[2]);
+    Logger.info("MRC header: dmin,dmax,dmean: " + dmin + "," + dmax + ","
+        + dmean);
 
-        
-        Logger.info("MRC header: mapc,mapr,maps: " + mapc + "," + mapr + "," + maps);
-        
-        dmin = binarydoc.readFloat();
-        dmax = binarydoc.readFloat();
-        dmean = binarydoc.readFloat();
-        
-        Logger.info("MRC header: dmin,dmax,dmean: " + dmin + "," + dmax + "," + dmean);
-        
-        ispg = binarydoc.readInt();
-        nsymbt = binarydoc.readInt();
-        
-        Logger.info("MRC header: ispg,nsymbt: " + ispg + "," +  nsymbt);
+    ispg = binarydoc.readInt();
+    nsymbt = binarydoc.readInt();
 
-        binarydoc.readByteArray(extra);
+    Logger.info("MRC header: ispg,nsymbt: " + ispg + "," + nsymbt);
 
-        originX = binarydoc.readFloat();
-        originY = binarydoc.readFloat();
-        originZ = binarydoc.readFloat();
-        
-        
-        Logger.info("MRC header: originX,Y,Z: " + originX + "," + originY + "," + originZ);
+    binarydoc.readByteArray(extra);
 
-        Point3f pt = new Point3f();
-        origin = new Point3f();
-        pt.scaleAdd(nxStart, vectors[0], pt);
-        pt.scaleAdd(nyStart, vectors[1], pt);
-        pt.scaleAdd(nzStart, vectors[2], pt);
+    originX = binarydoc.readFloat();
+    originY = binarydoc.readFloat();
+    originZ = binarydoc.readFloat();
 
-        System.out.println(origin);
-        
-        float[] o = new float[3];
-        o[mapc - 1] = origin.x; // c = 2 --> z 
-        o[mapr - 1] = origin.y; // r = 1 --> y
-        o[maps - 1] = origin.z; // s = 3 --> x
-               
-        origin.set(new Point3f(originX + o[0], originY + o[1], originZ + o[2]));
-        
-        
-        binarydoc.readByteArray(map);
-        binarydoc.readByteArray(machst);
-        
-        rms = binarydoc.readFloat();
-        
-        Logger.info("MRC header: rms: " + rms);
-        
-        nlabel = binarydoc.readInt();
-        byte[] temp = new byte[80];
-        for (int i = 0; i < 10; i++) {
-          binarydoc.readByteArray(temp);
-          StringBuffer s = new StringBuffer();
-          for (int j = 0; j < 80; j++)
-            s.append((char)temp[j]);
-          labels[i] = s.toString().trim();
-        }
-        
-        Logger.info("MRC header: bytes read: " + binarydoc.getPosition());
-        
-        if (params.cutoffAutomatic) {
-          params.cutoff = rms * 2 + dmean;
-          Logger.info("MRC header: cutoff set to (dmean + 2*rms) = " + params.cutoff);
-        }
-        
-      } catch (Exception e) {
-        Logger.error("Error reading " + sg.getParams().fileName + " " + e.getMessage());
+    binarydoc.readByteArray(map);
+    binarydoc.readByteArray(machst);
+
+    rms = binarydoc.readFloat();
+
+    Logger.info("MRC header: rms: " + rms);
+
+    nlabel = binarydoc.readInt();
+
+    Logger.info("MRC header: labels: " + nlabel);
+
+    labels = new String[nlabel];
+    labels[0] = "Jmol MrcBinaryReader";
+
+    byte[] temp = new byte[80];
+    for (int i = 0; i < 10; i++) {
+      binarydoc.readByteArray(temp);
+      StringBuffer s = new StringBuffer();
+      for (int j = 0; j < 80; j++)
+        s.append((char) temp[j]);
+      if (i < nlabel) {
+        labels[i] = s.toString().replace('\0', ' ').trim();
+        Logger.info(labels[i]);
       }
     }
-    
-  }
-  
-  protected void readTitleLines() throws Exception {
-    jvxlFileHeaderBuffer = new StringBuffer();
-    jvxlFileHeaderBuffer.append("MRC DATA ").append(mrcHeader.labels[0]).append("\n");
-    jvxlFileHeaderBuffer.append("see http://ami.scripps.edu/software/mrctools/mrc_specification.php\n");
-    isAngstroms = true;
-  }
-  
-  protected void readAtomCountAndOrigin() {
-    VolumeFileReader.checkAtomLine(isXLowToHigh, isAngstroms, "0",
-        "0 " + (mrcHeader.origin.x) + " " + (mrcHeader.origin.y) + " " +  (mrcHeader.origin.z), 
-        jvxlFileHeaderBuffer);
-    volumetricOrigin.set(mrcHeader.origin);
-    if (isAnisotropic)
-      setVolumetricOriginAnisotropy();
-  }
 
-  protected void readVoxelVector(int voxelVectorIndex) {
-    //assuming standard orthogonality here
-    // needs fixing...
-    int i = 0;
-    switch (voxelVectorIndex) {
-    case 0:
-      i = mrcHeader.maps - 1;
-      voxelCounts[0] = mrcHeader.nz; // slowest
-      volumetricVectors[0].set(mrcHeader.vectors[i]); // 3
-      break;
-    case 1:
-      i = mrcHeader.mapr - 1;
-      voxelCounts[1] = mrcHeader.ny;
-      volumetricVectors[1].set(mrcHeader.vectors[i]); // 1
-      break;
-    case 2:
-      i = mrcHeader.mapc - 1;
-      voxelCounts[2] = mrcHeader.nx; // fastest
-      volumetricVectors[2].set(mrcHeader.vectors[i]); // 2
-      break;
+    Logger.info("MRC header: bytes read: " + binarydoc.getPosition()
+        + "\n\nMRC/Jmol interpretation: \n");
+
+    // setting the cutoff to mean + 2 x RMS seems to work
+    // reasonably well as a default.
+
+    if (params.cutoffAutomatic) {
+      params.cutoff = rms * 2 + dmean;
+      Logger.info("MRC/Jmol cutoff set to (dmean + 2*rms) = " + params.cutoff);
     }
-    if (isAnisotropic)
-      setVectorAnisotropy(volumetricVectors[i]);
-  }  
+
+    getVectorsAndOrigin();
+    
+    Logger.info("\n");
+    
+    jvxlFileHeaderBuffer = new StringBuffer();
+    jvxlFileHeaderBuffer.append("MRC DATA ").append(labels[0]).append("\n");
+    jvxlFileHeaderBuffer.append("see http://ami.scripps.edu/software/mrctools/mrc_specification.php\n");
+  }
   
   protected float nextVoxel() throws Exception {
     float voxelValue;
@@ -277,12 +200,16 @@ class MrcBinaryReader extends VolumeFileReader {
          6        image : unsigned 16-bit range 0 to 65535
 
      */
-    switch(mrcHeader.mode) {
+    switch(mode) {
     case 0:
       voxelValue = binarydoc.readByte();
       break;
     case 1:
       voxelValue = binarydoc.readShort();
+      break;
+    default:
+    case 2:
+      voxelValue = binarydoc.readFloat();
       break;
     case 3:
       //read first component only
@@ -297,31 +224,31 @@ class MrcBinaryReader extends VolumeFileReader {
     case 6:
       voxelValue = binarydoc.readUnsignedShort();
       break;
-    default:
-      voxelValue = binarydoc.readFloat();
     }
     nBytes = binarydoc.getPosition();
     return voxelValue;
   }
 
-  byte[] b2 = new byte[2];
-  byte[] b4 = new byte[4];
+  private static byte[] b8 = new byte[8];
+  
   protected void skipData(int nPoints) throws Exception {
     for (int i = 0; i < nPoints; i++)
-      switch(mrcHeader.mode) {
+      switch(mode) {
       case 0:
         binarydoc.readByte();
         break;
       case 1:
       case 6:
-        binarydoc.readByteArray(b2);
-        break;
-      case 4:
-        binarydoc.readByteArray(b4);
-        binarydoc.readByteArray(b4);
+        binarydoc.readByteArray(b8, 0, 2);
         break;
       default:
-        binarydoc.readByteArray(b4);
+      case 2:
+      case 3:
+        binarydoc.readByteArray(b8, 0, 4);
+        break;
+      case 4:
+        binarydoc.readByteArray(b8);
+        break;
       }
   }
 }

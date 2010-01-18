@@ -113,6 +113,7 @@ public class XmlUtil {
 
   /**
    * standard <name>data</name>"
+   * standard <name attr="..." attr="..."></name>"
    * 
    * @param sb
    * @param name
@@ -120,7 +121,10 @@ public class XmlUtil {
    */
 
   public static void appendTag(StringBuffer sb, String name, Object data) {
-    appendTag(sb, name, null, data, false, true);
+    if (data instanceof Object[])
+      appendTag(sb, name, (Object[]) data, null, false, true);
+    else
+      appendTag(sb, name, null, data, false, true);
   }
 
   /**

@@ -109,22 +109,27 @@ public class JvxlXmlReader extends VolumeFileReader {
     return true;
   }
   
-  protected void readTitleLines() throws Exception {
+  String tempDataXml; 
+  
+  protected void readParameters() throws Exception {
     String s = xr.getXmlData("jvxlFileTitle", null, false);
     jvxlFileHeaderBuffer = new StringBuffer(s);
-  }
-
-  String tempDataXml; 
-  protected void readAtomCountAndOrigin() throws Exception {
     xr.toTag("jvxlVolumeData");
     String data = tempDataXml = xr.getXmlData("jvxlVolumeData", null, true);
     volumetricOrigin.set(xr.getXmlPoint(data, "origin"));
-    if (isAnisotropic)
-      setVolumetricOriginAnisotropy();
    isAngstroms = true;
+   readVector(0);
+   readVector(1);
+   readVector(2);
+   line = xr.toTag("jvxlSurfaceSet");
+   nSurfaces = parseInt(XmlReader.getXmlAttrib(line, "count"));
+   Logger.info("jvxl file surfaces: " + nSurfaces);
+   Logger.info("using default edge fraction base and range");
+   Logger.info("using default color fraction base and range");
+   cJvxlEdgeNaN = (char) (edgeFractionBase + edgeFractionRange);
   }
 
-  protected void readVoxelVector(int voxelVectorIndex) throws Exception {
+  protected void readVector(int voxelVectorIndex) throws Exception {
     String data = xr.getXmlData("jvxlVolumeVector", tempDataXml, true);
     tempDataXml = tempDataXml.substring(tempDataXml.indexOf(data) + data.length());
     int n = parseInt(XmlReader.getXmlAttrib(data, "count"));
@@ -132,20 +137,6 @@ public class JvxlXmlReader extends VolumeFileReader {
     volumetricVectors[voxelVectorIndex].set(xr.getXmlPoint(data, "vector"));
     if (isAnisotropic)
       setVectorAnisotropy(volumetricVectors[voxelVectorIndex]);
-  }
-
-  protected void readVolumeFileVoxelVector(int voxelVectorIndex) throws Exception {
-    super.readVoxelVector(voxelVectorIndex);
-  }
-
-  protected int readExtraLine() throws Exception {
-    line = xr.toTag("jvxlSurfaceSet");
-    int nSurfaces = parseInt(XmlReader.getXmlAttrib(line, "count"));
-    Logger.info("jvxl file surfaces: " + nSurfaces);
-    Logger.info("using default edge fraction base and range");
-    Logger.info("using default color fraction base and range");
-    cJvxlEdgeNaN = (char) (edgeFractionBase + edgeFractionRange);
-    return nSurfaces;
   }
 
   protected void gotoData(int n, int nPoints) throws Exception {

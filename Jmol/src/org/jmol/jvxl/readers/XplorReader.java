@@ -26,15 +26,10 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import javax.vecmath.Point3f;
-
-import org.jmol.api.Interface;
-import org.jmol.api.SymmetryInterface;
-import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
-class XplorReader extends VolumeFileReader {
+class XplorReader extends ElectronDensityFileReader {
 
   /*
    * http://cci.lbl.gov/~rwgk/shortcuts/htdocs/current/python/iotbx.xplor.map.html
@@ -69,6 +64,29 @@ That is:
        sections per unit cell, in the given direction
        ordinal of first section in file
        ordinal of last section in file
+
+  MRC equiv:
+    mx     nxStart     _x      my    nyStart   _y      mz    nzStart   _z
+    144       -6       83      16     -11      26      56     -11      43
+
+
+    // ZYX here:
+     
+    nz = _x - nxStart + 1
+    ny = _y - nyStart + 1
+    nx = _z - nzStart + 1
+    
+    maps = 3
+    mapr = 2
+    mapc = 1
+    
+    
+  
+MRC header: nx,ny,nz: 38,90,55
+MRC header: nxStart,nyStart,nzStart: -11,-6,-11
+MRC header: mx,my,mz: 144,16,56
+MRC header: mapc,mapr,maps: 2,1,3
+
 ...unit cell dimensions
 ...slow, medium, fast section order, always ZYX
 ...for each slow section, the section number
@@ -76,32 +94,17 @@ That is:
 ...-9999
 ...map average and standard deviation
    */
+
   XplorReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     params.insideOut = !params.insideOut;
+    nSurfaces = 1;
   }
 
-  protected int readVolumetricHeader() {
-    try {
-        readTitleLines();
-        Logger.info(jvxlFileHeaderBuffer.toString());
-        readAtomCountAndOrigin();
-        readVoxelVectors();
-        if (isAnisotropic)
-          setVolumetricAnisotropy();
-        Logger.info("voxel grid origin:" + volumetricOrigin);
-        for (int i = 0; i < 3; ++i)
-          Logger.info("voxel grid vector:" + volumetricVectors[i]);
-        JvxlCoder.jvxlCreateHeader(volumeData, Integer.MIN_VALUE, null, null, jvxlFileHeaderBuffer);
-      return readExtraLine();
-    } catch (Exception e) {
-      Logger.error(e.toString());
-      throw new NullPointerException();
-    }
-  }
-  
- 
-  protected void readTitleLines() throws Exception {
+  private int nBlock;
+
+  protected void readParameters() throws Exception {
+
     jvxlFileHeaderBuffer = new StringBuffer();
     int nLines = parseInt(getLine());
     for (int i = nLines; --i >= 0; ) {
@@ -110,58 +113,35 @@ That is:
       jvxlFileHeaderBuffer.append("# ").append(line).append('\n');
     }
     jvxlFileHeaderBuffer.append("Xplor data\nJmol " + Viewer.getJmolVersion() + '\n');
-  }
 
-  int nBlock;
-  protected void readVoxelVectors() throws Exception {
+    mx = parseInt(getLine());
+    nxStart = parseInt();
+    nx = parseInt() - nxStart + 1;
     
-    //not yet treating min/max
-    int nA = parseInt(getLine());
-    int minA = parseInt();
-    int maxA = parseInt();
-    int nB = parseInt();
-    int minB = parseInt();
-    int maxB = parseInt();
-    int nC = parseInt();
-    int minC = parseInt();
-    int maxC = parseInt();
+    my = parseInt();
+    nyStart = parseInt();
+    ny = parseInt() - nyStart + 1;
     
-    voxelCounts[0] = maxC - minC + 1;
-    voxelCounts[1] = maxB - minB + 1;
-    voxelCounts[2] = maxA - minA + 1;
+    mz = parseInt();
+    nzStart = parseInt();
+    nz = parseInt() - nzStart + 1;
+    
+    a = parseFloat(getLine());
+    b = parseFloat();
+    c = parseFloat();
+    alpha = parseFloat();
+    beta = parseFloat();
+    gamma = parseFloat();
+
+    getLine();     //"ZYX"
+    
+    maps = 3;
+    mapr = 2;
+    mapc = 1;
+
+    getVectorsAndOrigin();      
 
     nBlock = voxelCounts[2] * voxelCounts[1];
-    
-    float a = parseFloat(getLine());
-    float b = parseFloat();
-    float c = parseFloat();
-    float alpha = parseFloat();
-    float beta = parseFloat();
-    float gamma = parseFloat();
-    
-    Logger.info(" XplorReader symmetry a,b,c,alpha,beta,gamma: " 
-        + a + "," + b + "," + c + "," + alpha + "," + beta + "," + gamma);
-
-    SymmetryInterface symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
-    symmetry.setUnitCell(new float[] {a, b, c, alpha, beta, gamma});
-    Point3f pt;
-    //these vectors need not be perpendicular
-    pt = new Point3f(0, 0, 1f/nC);
-    symmetry.toCartesian(pt);
-    volumetricVectors[0].set(pt);
-    pt = new Point3f(0, 1f/nB, 0);
-    symmetry.toCartesian(pt);
-    volumetricVectors[1].set(pt);
-    pt = new Point3f(1f/nA, 0, 0);
-    symmetry.toCartesian(pt);
-    volumetricVectors[2].set(pt);
-    if (isAnisotropic)
-      setVolumetricAnisotropy();
-    Logger.info("XplorReader points ZYX " + nA + " " + nB + " " + nC);
- 
-    //ZYX
-    getLine();
-    
     if (params.cutoffAutomatic) {
       params.cutoff = (boundingBox == null ? 5.0f : 1.6f);
       Logger.info("XplorReader: setting cutoff to default value of " + params.cutoff + (boundingBox == null ? " (no BOUNDBOX parameter)" : ""));
@@ -169,12 +149,7 @@ That is:
     
   }
 
-  protected void readAtomCountAndOrigin() throws Exception {
-    atomCount = 0;
-    negativeAtomCount = false;    
-    volumetricOrigin.set(0, 0, 0);
-  }
-  
+
   private String getLine() throws IOException {
     line = br.readLine();
     while (line != null && (line.length() == 0 || line.indexOf("REMARKS") >= 0 || line.indexOf("XPLOR:") >= 0))
@@ -182,8 +157,9 @@ That is:
     return line;
   }
   
-  int linePt = Integer.MAX_VALUE;
-  int nRead;
+  private int linePt = Integer.MAX_VALUE;
+  private int nRead;
+  
   protected float nextVoxel() throws Exception {
     if (linePt >= line.length()) {
       line = br.readLine();
@@ -191,8 +167,8 @@ That is:
       linePt = 0;
       if ((nRead % nBlock) == 0) {
         //if (Logger.debugging)
-          //Logger.debug("XplorReader: block " + line + " min/max " 
-            //+ dataMin + "/" + dataMax);
+          //Logger.info("XplorReader: block " + line + " min/max " 
+           //+ dataMin + "/" + dataMax);
         line = br.readLine();
       }
     }
@@ -204,10 +180,6 @@ That is:
     //System.out.println("val " + val);
     return val;
   }
-
-//  for(int i = 1; i < 1000; i=i+1)
-  //  System.out.println( (int)(((9999.0 + (i/100000000.)+(i/1000.)+0.000000001)-9999.0) * 100000000.));
-
 }
 
 

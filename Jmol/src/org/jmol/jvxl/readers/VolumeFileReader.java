@@ -37,7 +37,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected boolean endOfData;
   protected boolean negativeAtomCount;
   protected int atomCount;
-  private int nSurfaces;
+  protected int nSurfaces;
   protected boolean isAngstroms;
   protected boolean canDownsample;
   private int[] downsampleRemainders;
@@ -94,18 +94,18 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     return true;
   }
 
-  protected int readVolumetricHeader() {
+  private int readVolumetricHeader() {
     try {
-      readTitleLines();
-      Logger.info(jvxlFileHeaderBuffer.toString());
-      readAtomCountAndOrigin();
+      readParameters();
       if (atomCount == Integer.MIN_VALUE)
         return 0;
+
+      if (isAnisotropic)
+        setVolumetricOriginAnisotropy();
       Logger.info("voxel grid origin:" + volumetricOrigin);
+
       int downsampleFactor = params.downsampleFactor;
-      boolean downsampling = (canDownsample && downsampleFactor > 0);
-      for (int i = 0; i < 3; ++i)
-        readVoxelVector(i);
+      boolean downsampling = (canDownsample && downsampleFactor > 0);      
       if (downsampling) {
         downsampleRemainders = new int[3];
         Logger.info("downsample factor = " + downsampleFactor);
@@ -129,18 +129,16 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       if (isAnisotropic)
         setVolumetricAnisotropy();
       volumeData.setVolumetricXml();
-      for (int i = 0; i < atomCount; ++i)
-        jvxlFileHeaderBuffer.append(br.readLine() + "\n");
-      return readExtraLine();
+      return nSurfaces;
     } catch (Exception e) {
       Logger.error(e.toString());
       return 0;
     }
   }
   
-  protected void readTitleLines() throws Exception {
-    //implemented in CubeReader, ApbsReader, mrcBinaryReader, and JvxlReader  
-  }
+  abstract protected void readParameters() throws Exception;
+
+  // generally useful:
   
   protected String skipComments(boolean allowBlankLines) throws Exception {
     StringBuffer sb = new StringBuffer();
@@ -149,11 +147,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       sb.append(line).append('\n');
     return sb.toString();
   }
-  
-  protected void readAtomCountAndOrigin() throws Exception {
-    //reader-specific
-  }
-
+    
   protected void readVoxelVector(int voxelVectorIndex) throws Exception {    
     line = br.readLine();
     Vector3f voxelVector = volumetricVectors[voxelVectorIndex];
@@ -162,14 +156,6 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     voxelVector.set(parseFloat(), parseFloat(), parseFloat());
     if (isAnisotropic)
       setVectorAnisotropy(voxelVector);
-  }
-
-  protected int readExtraLine() throws Exception {
-    if (!negativeAtomCount)
-      return 1;
-    line = br.readLine();
-    Logger.info("Reading extra CUBE information line: " + line);
-    return parseInt(line);
   }
 
   private int downsampleFactor;

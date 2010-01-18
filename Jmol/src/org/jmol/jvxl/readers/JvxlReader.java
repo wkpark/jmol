@@ -45,11 +45,11 @@ public class JvxlReader extends JvxlXmlReader {
     JVXL_VERSION = "2.0";
   }
 
-  //// methods used for reading any file format, but creating a JVXL file
+  // // methods used for reading any file format, but creating a JVXL file
 
-  /////////////reading the format///////////
+  // ///////////reading the format///////////
 
-  protected void readTitleLines() throws Exception {
+  protected void readParameters() throws Exception {
     jvxlFileHeaderBuffer = new StringBuffer(skipComments(false));
     if (line == null || line.length() == 0)
       line = "Line 1";
@@ -57,44 +57,37 @@ public class JvxlReader extends JvxlXmlReader {
     if ((line = br.readLine()) == null || line.length() == 0)
       line = "Line 2";
     jvxlFileHeaderBuffer.append(line).append('\n');
-  }
-
-  
-  protected void readAtomCountAndOrigin() throws Exception {
-      jvxlFileHeaderBuffer.append(skipComments(false));
-      String atomLine = line;
-      String[] tokens = Parser.getTokens(atomLine, 0);
-      isXLowToHigh = false;
-      negativeAtomCount = true;
-      atomCount = 0;
-      if (tokens[0] == "-0") {
-      } else if (tokens[0].charAt(0) == '+'){
-        isXLowToHigh = true;
-        atomCount = parseInt(tokens[0].substring(1));
-      } else {
-        atomCount = -parseInt(tokens[0]);
-      }
-      if (atomCount == Integer.MIN_VALUE)
-        return;
-      volumetricOrigin.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
-      isAngstroms = VolumeFileReader.checkAtomLine(isXLowToHigh, isAngstroms, null, atomLine, jvxlFileHeaderBuffer);
-      if (!isAngstroms)
-        volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
-      if (isAnisotropic)
-        setVolumetricOriginAnisotropy();
-      
-  }
-
-  protected void readVoxelVector(int voxelVectorIndex) throws Exception {
-    readVolumeFileVoxelVector(voxelVectorIndex);
-  }
-
-  protected int readExtraLine() throws Exception {
+    jvxlFileHeaderBuffer.append(skipComments(false));
+    String atomLine = line;
+    String[] tokens = Parser.getTokens(atomLine, 0);
+    isXLowToHigh = false;
+    negativeAtomCount = true;
+    atomCount = 0;
+    if (tokens[0] == "-0") {
+    } else if (tokens[0].charAt(0) == '+') {
+      isXLowToHigh = true;
+      atomCount = parseInt(tokens[0].substring(1));
+    } else {
+      atomCount = -parseInt(tokens[0]);
+    }
+    if (atomCount == Integer.MIN_VALUE)
+      return;
+    volumetricOrigin.set(parseFloat(tokens[1]), parseFloat(tokens[2]),
+        parseFloat(tokens[3]));
+    isAngstroms = VolumeFileReader.checkAtomLine(isXLowToHigh, isAngstroms,
+        null, atomLine, jvxlFileHeaderBuffer);
+    if (!isAngstroms)
+      volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
+    readVoxelVector(0);
+    readVoxelVector(1);
+    readVoxelVector(2);
     skipComments(true);
+    for (int i = 0; i < atomCount; ++i)
+      jvxlFileHeaderBuffer.append(br.readLine() + "\n");    
     Logger.info("Reading extra JVXL information line: " + line);
-    int nSurfaces = parseInt(line);
+    nSurfaces = parseInt(line);
     if (!(isJvxl = (nSurfaces < 0)))
-      return nSurfaces;
+      return;
     nSurfaces = -nSurfaces;
     Logger.info("jvxl file surfaces: " + nSurfaces);
     int ich;
@@ -111,7 +104,7 @@ public class JvxlReader extends JvxlXmlReader {
       colorFractionRange = parseInt();
     }
     cJvxlEdgeNaN = (char)(edgeFractionBase + edgeFractionRange);
-    return nSurfaces;
+
   }
 
   protected String jvxlReadData(String type, int nPoints) {

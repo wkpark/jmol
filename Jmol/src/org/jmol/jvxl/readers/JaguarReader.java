@@ -25,7 +25,6 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
 /*
@@ -43,7 +42,7 @@ class JaguarReader extends VolumeFileReader {
 
   JaguarReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
-    isAngstroms = false; //? 
+    nSurfaces = 1;
     // ? params.insideOut = !params.insideOut;
   }
 
@@ -78,20 +77,10 @@ class JaguarReader extends VolumeFileReader {
    * 
    * @exception Exception -- generally a reader issue
    */
-  protected void readTitleLines() throws Exception {
+  protected void readParameters() throws Exception {
     jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer.append("Jaguar data\n");
     jvxlFileHeaderBuffer.append("\n");
-  }
-
-  /**
-   * skip initial stuff and read the origin= line
-   * 
-   * @exception Exception -- generally a reader issue
-   */
-  protected void readAtomCountAndOrigin() throws Exception {
-    atomCount = 0;
-    negativeAtomCount = false;
     String atomLine;
     while ((atomLine = br.readLine()) != null
         && atomLine.indexOf("origin=") < 0) {
@@ -106,22 +95,11 @@ class JaguarReader extends VolumeFileReader {
       if (!isAngstroms)
         volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
     }
-  }
-
-  private float[] extents = new float[3];
-  
-  /**
-   * read the extentx=, extenty=, extentz= lines and cache them
-   * then read the npts= line and construct the necessary data
-   * 
-   * @param voxelVectorIndex   0, 1, or 2
-   * @exception Exception -- generally a reader issue
-   */
-  protected void readVoxelVector(int voxelVectorIndex) throws Exception {
-    String[] tokens = Parser.getTokens(br.readLine());
-    extents[voxelVectorIndex] = parseFloat(tokens[voxelVectorIndex + 1]);
-    if (voxelVectorIndex < 2)
-      return;
+    
+    readExtents(0);
+    readExtents(1);
+    readExtents(2);
+    
     tokens = Parser.getTokens(br.readLine());
     voxelCounts[0] = parseInt(tokens[1]);
     voxelCounts[1] = parseInt(tokens[2]);
@@ -139,34 +117,26 @@ class JaguarReader extends VolumeFileReader {
     volumetricVectors[2].set(0, 0, d * factor);
     jvxlFileHeaderBuffer.append(voxelCounts[2] + " 0.0 0.0 " + d + "\n");
 
-    if (isAnisotropic)
-      setVolumetricAnisotropy();
-
     // Note -- the "-1" is necessary, above, even though this
     // creates a nonuniform grid. Someone made a mistake somewhere, 
     // I think, because if you don't use -1 here, then the grid
     // distances are the same, but the surface is in the wrong place!
     
     br.readLine();
-  }
-    
-  /**
-   * read one value per line
-   * 
-   * @return the next floating point value
-   * @exception Exception -- generally a reader issue
-   */
-  protected float nextVoxel() throws Exception {
-    float voxelValue;
-    if (endOfData || (line = br.readLine()) == null || Float.isNaN(voxelValue = parseFloat(line))) {
-      if (!endOfData)
-        Logger.warn("end of file reading cube voxel data? nBytes=" + nBytes
-            + " nDataPoints=" + nDataPoints + " (line):" + line);
-      endOfData = true;
-      return 0;
-    }
-    return voxelValue;
+
   }
 
- 
+  private float[] extents = new float[3];
+  
+  /**
+   * read the extentx=, extenty=, extentz= lines and cache them
+   * then read the npts= line and construct the necessary data
+   * 
+   * @param voxelVectorIndex   0, 1, or 2
+   * @exception Exception -- generally a reader issue
+   */
+  private void readExtents(int voxelVectorIndex) throws Exception {
+    String[] tokens = Parser.getTokens(br.readLine());
+    extents[voxelVectorIndex] = parseFloat(tokens[voxelVectorIndex + 1]);
+  }
 }

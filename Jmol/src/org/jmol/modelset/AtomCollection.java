@@ -534,6 +534,10 @@ abstract public class AtomCollection {
         taint(i, TAINT_ATOMNAME);
         setAtomName(i, sValue);
         break;
+      case Token.atomno:
+        taint(i, TAINT_ATOMNO);
+        setAtomNumber(i, iValue);
+        break;
       case Token.atomType:
         taint(i, TAINT_ATOMTYPE);
         setAtomType(i, sValue);
@@ -670,6 +674,14 @@ abstract public class AtomCollection {
       atomTypes[atomIndex] = type;
   }
   
+  protected boolean setAtomNumber(int atomIndex, int atomno) {
+    if (atomSerials == null) {
+      atomSerials = new int[atoms.length];
+    }
+    atomSerials[atomIndex] = atomno;
+    return true;
+  }
+  
   protected boolean setOccupancy(int atomIndex, int occupancy) {
     if (occupancies == null) {
       if (occupancy == 100)
@@ -749,6 +761,9 @@ abstract public class AtomCollection {
           fData[atomIndex] = x;
           bs.set(atomIndex);
           continue;
+        case TAINT_ATOMNO:
+          setAtomNumber(atomIndex, (int) x);
+          break;
         case TAINT_ATOMNAME:
           setAtomName(atomIndex, tokens[pt]);
           break;
@@ -831,7 +846,8 @@ abstract public class AtomCollection {
   final private static byte TAINT_VALENCE = 8;
   final private static byte TAINT_VANDERWAALS = 9;
   final private static byte TAINT_VIBRATION = 10;
-  final public static byte TAINT_MAX = 11; // 1 more than last number, above
+  final public static byte TAINT_ATOMNO = 11;
+  final public static byte TAINT_MAX = 12; // 1 more than last number, above
   
   final private static String[] userSettableValues = {
     "atomName",
@@ -844,7 +860,8 @@ abstract public class AtomCollection {
     "temperature",
     "valence",
     "vanderWaals",
-    "vibrationVector"
+    "vibrationVector",
+    "atomNo"
   };
   
   static {
@@ -922,6 +939,9 @@ abstract public class AtomCollection {
         case TAINT_MAX:
           if (i < fData.length) // when data are appended, the array may not extend that far
             s.append(fData[i]);
+          break;
+        case TAINT_ATOMNO:
+          s.append(atoms[i].getAtomNumber());
           break;
         case TAINT_ATOMNAME:
           s.append(atoms[i].getAtomName());

@@ -518,8 +518,6 @@ public final class ModelLoader extends ModelSet {
       modelFileNumbers[i] = filenumber * 1000000 + modelnumber;
       if (modelNames[i] == null || modelNames[i].length() == 0)
         modelNames[i] = sNum;
-      Logger.info("Default Van der Waal type for model " + (i + 1) 
-          + " set to " + JmolConstants.getVdwLabel(getDefaultVdwType(i)));
    }
     
     if (merging)
@@ -564,6 +562,8 @@ public final class ModelLoader extends ModelSet {
         iLast = atoms[i].modelIndex;
         models[iLast].firstAtomIndex = i;
         models[iLast].bsAtoms = null;
+        Logger.info("Default Van der Waal type for model " + getModelNumberDotted(i) 
+            + " set to " + JmolConstants.getVdwLabel(getDefaultVdwType(i)));
       }
   }
 

@@ -49,36 +49,19 @@ public class JvxlCoder {
   
   public static String jvxlGetFile(VolumeData volumeData, JvxlData jvxlData,
                                    String[] title) {
+    // for the simple writer
     int[] counts = volumeData.getVoxelCounts();
     jvxlData.nPointsX = counts[0];
     jvxlData.nPointsY = counts[1];
     jvxlData.nPointsZ = counts[2];
     jvxlData.jvxlVolumeDataXml = volumeData.setVolumetricXml();
-
-    String msg = null;
-    if (!jvxlData.asXml) {
-      StringBuffer bs = new StringBuffer();
-      if (title != null)
-        for (int i = 0; i < title.length; i++ ) {
-          String line = title[i].replace('\n',' ');
-          if (i < title.length - 2)
-            bs.append("#");
-          bs.append(line).append('\n');
-        }
-      jvxlCreateHeader(volumeData, (jvxlData.isXLowToHigh ? Integer.MIN_VALUE 
-          : Integer.MAX_VALUE), null, null, bs);
-      jvxlData.jvxlFileHeader = bs.toString();
-      if (jvxlData.isXLowToHigh)
-        msg = "note: X data read from low to high";
-    }
-    return jvxlGetFile(jvxlData, null, title, msg, true, 1, null, null);
+    return jvxlGetFile(jvxlData, null, title, null, true, 1, null, null);
   }
 
   public static String jvxlGetFile(JvxlData jvxlData, MeshData meshData,
                                    String[] title, String msg,
                                    boolean includeHeader, int nSurfaces,
                                    String state, String comment) {
-
     return jvxlGetFileXml(jvxlData, meshData, title, msg, includeHeader, nSurfaces, state, comment);
     
     // version1 decomissioned because of jvxlExcluded[] performing so well
@@ -150,17 +133,10 @@ public class JvxlCoder {
           jvxlData.valueMappedToBlue);
     }
     if (jvxlData.excludedVertexCount > 0) {
-      StringBuffer sb1 = new StringBuffer("\n ");
-      jvxlEncodeBitSet(jvxlData.jvxlExcluded[0], -1, sb1);
-      XmlUtil.appendTag(sb, "jvxlExcludedVertexData", new String[] {
-          "count", "" + jvxlData.excludedVertexCount }, sb1.toString());
+      appendEncodedBitSetTag(sb, "jvxlExcludedVertexData", jvxlData.jvxlExcluded[0], jvxlData.excludedVertexCount);
+      appendEncodedBitSetTag(sb, "jvxlExcludedPlaneData", jvxlData.jvxlExcluded[2], -1);
     }
-    if (jvxlData.excludedTriangleCount > 0) {
-      StringBuffer sb1 = new StringBuffer("\n ");
-      jvxlEncodeBitSet(jvxlData.jvxlExcluded[1], -1, sb1);
-      XmlUtil.appendTag(sb, "jvxlExcludedTriangleData", new String[] {
-          "count", "" + jvxlData.excludedTriangleCount }, sb1.toString());
-    }
+    appendEncodedBitSetTag(sb, "jvxlExcludedTriangleData", jvxlData.jvxlExcluded[3], jvxlData.excludedTriangleCount);
     XmlUtil.closeTag(sb, "jvxlSurfaceData");
     int len = sb.length();
     data.append(sb);
@@ -173,6 +149,18 @@ public class JvxlCoder {
       XmlUtil.closeTag(data, "jvxl");
     }
     return jvxlSetCompressionRatio(data, jvxlData, len);
+  }
+
+  private static void appendEncodedBitSetTag(StringBuffer sb, String name, BitSet bs, int count) {
+    if (count < 0)
+      count = BitSetUtil.cardinalityOf(bs);
+    if (count == 0)
+      return;
+    StringBuffer sb1 = new StringBuffer("\n ");
+    jvxlEncodeBitSet(bs, -1, sb1);
+    XmlUtil.appendTag(sb, name, new String[] {
+        "count", "" + count,
+        "len", "" + bs.length() }, sb1.toString());
   }
 
   private static String jvxlSetCompressionRatio(StringBuffer data,
@@ -197,8 +185,14 @@ public class JvxlCoder {
     if (cmd != null)
       XmlUtil.appendCdata(data, "jvxlIsosurfaceCommand",
           "\n" + (cmd.indexOf("#") < 0 ? cmd : cmd.substring(0, cmd.indexOf("#"))) + "\n");
-    if (state != null)
-      XmlUtil.appendCdata(data, "jvxlIsosurfaceState",  "\n" + state + "\n");
+    if (state != null) {
+      if (state.indexOf("** XML ** ") >=0) {
+        state = TextFormat.split(state, "** XML **")[1].trim(); 
+        XmlUtil.appendTag(data, "jvxlIsosurfaceState",  "\n" + state + "\n");
+      } else {
+        XmlUtil.appendCdata(data, "jvxlIsosurfaceState",  "\n" + state + "\n");
+      }
+    }
   }
 
   private static void appendXmlColorData(StringBuffer sb, String key, 
@@ -229,8 +223,6 @@ public class JvxlCoder {
     int bytesUncompressedEdgeData = (jvxlData.vertexDataOnly ? 0
         : jvxlData.jvxlEdgeData.length() - 1);
     int nColorData = (jvxlData.jvxlColorData == null ? -1 : (jvxlData.jvxlColorData.length() - 1));
-    // informational only:
-    addAttrib(attribs, "\n  axXML", "" + (jvxlData.asXml && notVersion1));
     if (!jvxlData.vertexDataOnly) {
       // informational only:
       addAttrib(attribs, "\n  cutoff", "" + jvxlData.cutoff);
@@ -270,7 +262,7 @@ public class JvxlCoder {
       addAttrib(attribs, "\n  plane", Escape.escape(jvxlData.jvxlPlane));
     }
     jvxlData.excludedVertexCount = BitSetUtil.cardinalityOf(jvxlData.jvxlExcluded[0]);
-    jvxlData.excludedTriangleCount = BitSetUtil .cardinalityOf(jvxlData.jvxlExcluded[1]);
+    jvxlData.excludedTriangleCount = BitSetUtil .cardinalityOf(jvxlData.jvxlExcluded[3]);
     if (jvxlData.excludedVertexCount > 0)
       addAttrib(attribs, "\n  nExcludedVertexes", "" + jvxlData.excludedVertexCount);
     if (jvxlData.excludedTriangleCount > 0)
@@ -278,6 +270,8 @@ public class JvxlCoder {
     //next is for information only -- will be superceded by "encoding" attribute of jvxlColorData
     if (jvxlData.isJvxlPrecisionColor)
       addAttrib(attribs, "\n  precisionColor", "true");
+    if (jvxlData.colorDensity)
+      addAttrib(attribs, "\n  colorDensity", "true");
     if (jvxlData.isContoured) {
       if (jvxlData.contourValues == null || jvxlData.contourColixes == null) {
         if (jvxlData.vContours == null)
@@ -822,21 +816,36 @@ public class JvxlCoder {
     return (max == min ? fraction : min + fraction * (max - min));
   }
 
-  ///// differential bitset encoding and decoding
-  
+  // /// differential bitset encoding and decoding (Bob Hanson hansonr@stolaf.edu for Jmol)
+
   public static int jvxlEncodeBitSet(BitSet bs, int nPoints, StringBuffer sb) {
     // nunset nset nunset ...
+    // for repeated numbers:
+    // 3 3 3 3 3 3 3 becomes 3 -6
     int dataCount = 0;
+    int prevCount = -1;
+    int nPrev = 0;
     if (nPoints < 0)
       nPoints = bs.length();
     int n = 0;
     boolean isset = false;
+    int lastPoint = nPoints - 1;
     for (int i = 0; i < nPoints; ++i) {
       if (isset == bs.get(i)) {
         dataCount++;
       } else {
-        sb.append(' ').append(dataCount);
-        n++;
+        if (dataCount == prevCount && i != lastPoint) {
+          nPrev++;
+        } else {
+          if (nPrev > 0) {
+            sb.append(' ').append(-nPrev);
+            nPrev = 0;
+            n++;
+          }
+          sb.append(' ').append(dataCount);
+          n++;
+          prevCount = dataCount;
+        }
         dataCount = 1;
         isset = !isset;
       }
@@ -849,13 +858,24 @@ public class JvxlCoder {
     // nunset nset nunset ...
     BitSet bs = new BitSet();
     int dataCount = 0;
+    int lastCount = 0;
+    int nPrev = 0;
     int ptr = 0;
     boolean isset = false;
     int[] next = new int[1];
-    while ((dataCount = Parser.parseInt(data, next)) != Integer.MIN_VALUE) {
+    while (true) {
+      dataCount = (nPrev++ < 0 ? dataCount : Parser.parseInt(data, next));
+      if (dataCount == Integer.MIN_VALUE) 
+        break;
+      if (dataCount < 0) {
+        nPrev = dataCount;
+        dataCount = lastCount;
+        continue;
+      }
       if (isset)
         bs.set(ptr, ptr + dataCount);
       ptr += dataCount;
+      lastCount = dataCount;
       isset = !isset;
     }
     return bs;

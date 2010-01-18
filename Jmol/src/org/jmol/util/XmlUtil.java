@@ -205,14 +205,39 @@ public class XmlUtil {
         atts.add(new Object[] { "count", new Integer(n) });
         value = sb.toString();
       } else if (type.startsWith("[")) {
-        Object[] o = (Object[]) value;
-        sb = new StringBuffer("\n");
-        if (atts == null)
-          atts = new Vector();
-        atts.add(new Object[] { "count", new Integer(o.length) });
-        for (int i = 0; i < o.length; i++)
-          sb.append(escape(null, null, o[i], true, indent + "  "));
-        value = sb.toString();
+        if (value instanceof float[]) {
+          float[] f = (float[]) value;
+          sb = new StringBuffer("\n");
+          if (atts == null)
+            atts = new Vector();
+          atts.add(new Object[] { "count", new Integer(f.length) });
+          for (int i = 0; i < f.length; i++)
+            sb.append(escape(null, null, new Float(f[i]), true, indent + "  "));
+          value = sb.toString();
+        } else if (value instanceof int[]) {
+          int[] iv = (int[]) value;
+          sb = new StringBuffer("\n");
+          if (atts == null)
+            atts = new Vector();
+          atts.add(new Object[] { "count", new Integer(iv.length) });
+          for (int i = 0; i < iv.length; i++)
+            sb.append(escape(null, null, new Integer(iv[i]), true, indent + "  "));
+          value = sb.toString();
+          
+        } else if (value instanceof Object[]) {
+          Object[] o = (Object[]) value;
+          sb = new StringBuffer("\n");
+          if (atts == null)
+            atts = new Vector();
+          atts.add(new Object[] { "count", new Integer(o.length) });
+          for (int i = 0; i < o.length; i++)
+            sb.append(escape(null, null, o[i], true, indent + "  "));
+          value = sb.toString();
+          
+        } else {
+          // out of luck for now
+        }
+          
       }
     }
     Vector attributes = new Vector();

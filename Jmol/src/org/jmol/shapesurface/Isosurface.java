@@ -167,7 +167,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private Point3f center;
   private Point3f offset;
   private float scale3d;
-
   private boolean isPhaseColored;
   private boolean isColorExplicit;
 
@@ -210,7 +209,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       setProperty("squareData", Boolean.FALSE, null);
       return;
     }
-
     if ("color" == propertyName) {
       if (thisMesh != null) {
         //thisMesh.vertexColixes = null;
@@ -532,7 +530,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return jvxlData.jvxlPlane;
     if (property == "jvxlFileData" || property == "jvxlFileDataXml") {
       MeshData meshData = null;
-      jvxlData.asXml = (property == "jvxlFileDataXml");
       if (jvxlData.vertexDataOnly) {
         meshData = new MeshData();
         fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
@@ -893,6 +890,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     viewer.setCurrentColorRange(jvxlData.valueMappedToRed,
         jvxlData.valueMappedToBlue);
     thisMesh.isColorSolid = false;
+    thisMesh.colorDensity = jvxlData.colorDensity;
     thisMesh.getContours();
     if (thisMesh.jvxlData.jvxlPlane != null)
       allowContourLines = false;

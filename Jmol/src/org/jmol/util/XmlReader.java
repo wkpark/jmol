@@ -166,4 +166,10 @@ public class XmlReader {
       line = br.readLine();
   }
 
+  public boolean isNext(String name) throws Exception {
+    if (line == null || line.indexOf("</") >= 0 && line.indexOf("</") == line.indexOf("<"))
+      line = br.readLine();
+    return (line.indexOf("<" + name) >= 0);
+  }
+
 }

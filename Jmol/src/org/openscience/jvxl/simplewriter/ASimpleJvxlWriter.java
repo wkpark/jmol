@@ -34,34 +34,22 @@ import java.util.Vector;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.VolumeData;
+import org.jmol.jvxl.readers.Parameters;
 
 public class ASimpleJvxlWriter {
 
   // example for how to create simple JVXL files from cube data
   // no color mapping, no planes, just simple surfaces.
-  // requires also:
-  
-  // org.jmol.jvxl.data.JvxlCoder
-  // org.jmol.jvxl.data.JvxlData
-  // org.jmol.jvxl.data.MeshData
-  // org.jmol.jvxl.data.VolumeData
-  
-  // org.jmol.util.ArrayUtil.java
-  // org.jmol.util.Escape.java
-  // org.jmol.util.Parser.java
-  // org.jmol.util.TextFormat.java
 
   public static void main(String[] args) {
 
     // parameters that need setting:
 
+    Parameters params = new Parameters();
     String outputFile = "c:/temp/simple.jvxl";
-    JvxlData jvxlData = new JvxlData();
-    jvxlData.cutoff = 0.01f;
-    jvxlData.isCutoffAbsolute = false;
-    jvxlData.asXml = true; // set false to see version 1.0 format
-    jvxlData.version = "ASimpleJvxlWriter -- version 2.1";
-
+    params.cutoff = 0.01f;
+    params.isCutoffAbsolute = false;
+    
     int nX = 31;
     int nY = 31;
     int nZ = 31;
@@ -88,8 +76,8 @@ public class ASimpleJvxlWriter {
     float[] areaVolumeReturn = new float[2]; // or null;
     Vector surfacePointsReturn = new Vector(); // or null;
 
-    jvxlData.isXLowToHigh = false;
-    writeFile(outputFile + "A", jvxlGetData(null, jvxlData, 
+    params.isXLowToHigh = false;
+    writeFile(outputFile + "A", jvxlGetData(null, params,
         volumeData, title, surfacePointsReturn, areaVolumeReturn));
 
     if (areaVolumeReturn != null)
@@ -99,20 +87,26 @@ public class ASimpleJvxlWriter {
                          + " surface points");
     // streaming option: null voxelData
     volumeData.setVoxelData(null);
-    jvxlData.isXLowToHigh = true;
-    writeFile(outputFile + "B", jvxlGetData(vdc, jvxlData, 
+    params.isXLowToHigh = true;
+    writeFile(outputFile + "B", jvxlGetData(vdc, params,
         volumeData, title, surfacePointsReturn, areaVolumeReturn));
 
     System.out.flush();
     System.exit(0);
   }
 
-  public static String jvxlGetData(VoxelDataCreator vdc, JvxlData jvxlData,
+  public static String jvxlGetData(VoxelDataCreator vdc, Parameters params,
                                    VolumeData volumeData, String[] title,
                                    Vector surfacePointsReturn,
                                    float[] areaVolumeReturn) {
-    new SimpleMarchingCubes(vdc, volumeData, jvxlData,
-        surfacePointsReturn, areaVolumeReturn);
+    
+    JvxlData jvxlData = new JvxlData();
+    new SimpleMarchingCubes(vdc, volumeData, params,
+        jvxlData, surfacePointsReturn, areaVolumeReturn);
+    jvxlData.isXLowToHigh = params.isXLowToHigh;
+    jvxlData.cutoff = params.cutoff;
+    jvxlData.isCutoffAbsolute = params.isCutoffAbsolute;
+    jvxlData.version = "ASimpleJvxlWriter -- version 2.2";
     return JvxlCoder.jvxlGetFile(volumeData, jvxlData, title);
   }
 

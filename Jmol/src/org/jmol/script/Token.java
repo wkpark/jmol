@@ -735,6 +735,7 @@ public class Token {
   final static int cutoff        = misc | 43;// new
   final static int cylinder      = misc | 44;// new
   final static int debug         = misc | 45 | setparam;// new
+  final static int density        = misc | 46 ;// new
   final static int diameter       = misc | 50;// new
   final static int direction      = misc | 52;
   final static int discrete       = misc | 53;// new
@@ -948,6 +949,7 @@ public class Token {
     "@",                 null,
     "delay",             new Token(delay),
     "delete",            new Token(delete),
+    "density",           new Token(density),
     "depth",             new Token(depth),
     "dipole",            new Token(dipole),
     "dipoles",           null,

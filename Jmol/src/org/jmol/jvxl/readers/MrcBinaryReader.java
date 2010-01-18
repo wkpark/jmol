@@ -26,7 +26,7 @@ package org.jmol.jvxl.readers;
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
 
-class MrcBinaryReader extends ElectronDensityFileReader {
+class MrcBinaryReader extends MapFileReader {
 
   /*
    * also referred to as CCP4 format
@@ -105,13 +105,13 @@ class MrcBinaryReader extends ElectronDensityFileReader {
 
     Logger.info("MRC header: mode: " + mode);
 
-    nxStart = binarydoc.readInt();
-    nyStart = binarydoc.readInt();
-    nzStart = binarydoc.readInt();
+    a0 = binarydoc.readInt();
+    b0 = binarydoc.readInt();
+    c0 = binarydoc.readInt();
 
-    mx = binarydoc.readInt();
-    my = binarydoc.readInt();
-    mz = binarydoc.readInt();
+    na = binarydoc.readInt();
+    nb = binarydoc.readInt();
+    nc = binarydoc.readInt();
 
     a = binarydoc.readFloat();
     b = binarydoc.readFloat();

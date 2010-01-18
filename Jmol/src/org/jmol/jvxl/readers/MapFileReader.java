@@ -31,71 +31,55 @@ import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Logger;
 
-abstract class ElectronDensityFileReader extends VolumeFileReader {
+abstract class MapFileReader extends VolumeFileReader {
 
-  ElectronDensityFileReader(SurfaceGenerator sg, BufferedReader br) {
+  MapFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     isAngstroms = true;
+    adjustment = sg.getParams().center;
+    if (adjustment.x == Float.MAX_VALUE)
+      adjustment = new Point3f();
   }
 
-    /* see http://ami.scripps.edu/software/mrctools/mrc_specification.php
+    /* 
+     * inputs:
      * 
-     * many thanks to Eric Martz for providing the test files that
-     * made this understandable.
-     * 
-    1 NX       number of columns (fastest changing in map)
-    2 NY       number of rows   
-    3 NZ       number of sections (slowest changing in map)
-    4 MODE     data type :
-         0        image : signed 8-bit bytes range -128 to 127
-         1        image : 16-bit halfwords
-         2        image : 32-bit reals
-         3        transform : complex 16-bit integers
-         4        transform : complex 32-bit reals
-         6        image : unsigned 16-bit range 0 to 65535
-    5 NXSTART number of first column in map (Default = 0)
-    6 NYSTART number of first row in map
-    7 NZSTART number of first section in map
-    8 MX       number of intervals along X
-    9 MY       number of intervals along Y
-    10  MZ       number of intervals along Z
-    11-13 CELLA    cell dimensions in angstroms
-    14-16 CELLB    cell angles in degrees
-    17  MAPC     axis corresp to cols (1,2,3 for X,Y,Z)
-    18  MAPR     axis corresp to rows (1,2,3 for X,Y,Z)
-    19  MAPS     axis corresp to sections (1,2,3 for X,Y,Z)
-    20  DMIN     minimum density value
-    21  DMAX     maximum density value
-    22  DMEAN    mean density value
-    23  ISPG     space group number 0 or 1 (default=0)
-    24  NSYMBT   number of bytes used for symmetry data (0 or 80)
-    25-49 EXTRA    extra space used for anything   - 0 by default
-    50-52 ORIGIN   origin in X,Y,Z used for transforms
-    53  MAP      character string 'MAP ' to identify file type
-    54  MACHST   machine stamp
-    55  RMS      rms deviation of map from mean density
-    56  NLABL    number of labels being used
-    57-256  LABEL(20,10) 10 80-character text labels
+     a b c    cell dimensions in angstroms
+     alpha beta gamma  cell angles in degrees
+     nx       number of columns (fastest changing in map)
+     ny       number of rows   
+     yz       number of sections (slowest changing in map)
+     a0       offset of uc origin along a axis
+     b0       offset of uc origin along b axis
+     c0       offset of uc origin along c axis
+     na       number of intervals along uc X -- a/na is unit vector
+     nb       number of intervals along uc Y -- b/nb is unit vector
+     nc       number of intervals along uc Z -- c/nc is unit vector
+     mapc     axis corresp to cols (1,2,3 for X,Y,Z)
+     mapr     axis corresp to rows (1,2,3 for X,Y,Z)
+     maps     axis corresp to sections (1,2,3 for X,Y,Z)
+     originX, originY, originZ   origin in X,Y,Z of unitCell (0,0,0)
     */
 
-    // inputs:
     protected int mapc, mapr, maps;
     protected int nx, ny, nz, mode;
-    protected int nxStart, nyStart, nzStart;
-    protected int mx, my, mz;
+    protected int a0, b0, c0;
+    protected int na, nb, nc;
     protected float a, b, c, alpha, beta, gamma;
     protected float originX, originY, originZ;
     
+    protected Point3f adjustment = new Point3f();
     // outputs:
+
     protected Point3f[] vectors = new Point3f[3];
     protected Point3f origin = new Point3f();
 
     protected void getVectorsAndOrigin() {
       
       Logger.info("grid parameters: nx,ny,nz: " + nx + "," + ny + "," + nz);
-      Logger.info("grid parameters: nxStart,nyStart,nzStart: " + nxStart + "," + nyStart + "," + nzStart);
+      Logger.info("grid parameters: nxStart,nyStart,nzStart: " + a0 + "," + b0 + "," + c0);
 
-      Logger.info("grid parameters: mx,my,mz: " + mx + "," + my + "," + mz);
+      Logger.info("grid parameters: mx,my,mz: " + na + "," + nb + "," + nc);
       Logger.info("grid parameters: a,b,c,alpha,beta,gamma: " + a + "," + b + "," + c + "," + alpha + "," + beta + "," + gamma);
       Logger.info("grid parameters: mapc,mapr,maps: " + mapc + "," + mapr + "," + maps);
       Logger.info("grid parameters: originX,Y,Z: " + originX + "," + originY + "," + originZ);
@@ -146,9 +130,9 @@ abstract class ElectronDensityFileReader extends VolumeFileReader {
          
          Now, we also have:
         
-           mx and nxStart, which refer to (a) unit cell direction
-           my and nyStart, which refer to (b) unit cell direction
-           mz and nzStart, which refer to (c) unit cell direction
+           na and a0, which refer to (a) unit cell direction
+           nb and b0, which refer to (b) unit cell direction
+           nc and c0, which refer to (c) unit cell direction
         
          mx=2 I THINK says "map fasted moving data to the second axis (b)"
          
@@ -167,9 +151,9 @@ abstract class ElectronDensityFileReader extends VolumeFileReader {
          This is because our x is the slowest running variable.
         */               
         
-      vectors[0] = new Point3f(1f / mx, 0, 0);
-      vectors[1] = new Point3f(0, 1f / my, 0);
-      vectors[2] = new Point3f(0, 0, 1f / mz);
+      vectors[0] = new Point3f(1f / na, 0, 0);
+      vectors[1] = new Point3f(0, 1f / nb, 0);
+      vectors[2] = new Point3f(0, 0, 1f / nc);
       unitCell.toCartesian(vectors[0]);
       unitCell.toCartesian(vectors[1]);
       unitCell.toCartesian(vectors[2]);
@@ -191,9 +175,9 @@ abstract class ElectronDensityFileReader extends VolumeFileReader {
         
         For the offset of the orgin, now, we must...
          
-        ...scale the "unit vector" vector[0] by nxStart
-        ...scale the "unit vector" vector[1] by nyStart
-        ...scale the "unit vector" vector[2] by nzStart
+        ...scale the "unit vector" vector[0] by a0
+        ...scale the "unit vector" vector[1] by b0
+        ...scale the "unit vector" vector[2] by c0
         ...add those up to give origin.xyz
         
         This is only a temporary assignment, in the
@@ -201,9 +185,9 @@ abstract class ElectronDensityFileReader extends VolumeFileReader {
         
         */
         
-      origin.scaleAdd(nxStart, vectors[0], origin);
-      origin.scaleAdd(nyStart, vectors[1], origin);
-      origin.scaleAdd(nzStart, vectors[2], origin);
+      origin.scaleAdd(a0 + adjustment.x, vectors[0], origin);
+      origin.scaleAdd(b0 + adjustment.y, vectors[1], origin);
+      origin.scaleAdd(c0 + adjustment.z, vectors[2], origin);
       
       Logger.info("Jmol origin in unit cell coordinates: " + origin);
 
@@ -215,31 +199,14 @@ abstract class ElectronDensityFileReader extends VolumeFileReader {
         slow (z). This origin remains in this system throughout 
         the calculation. We do not have to convert to "real" 
         coordinates until the end (in VolumeData.voxelPtToXYZ).
-        
-        Now, you might think we need:
-        
-         origin.x = OriginX + origin[maps-1]
-         origin.y = OriginY + origin[mapr-1]
-         origin.z = OriginZ + origin[mapc-1]
-        
-        but actually we need those reversed:
-        
-         origin.x = OriginZ + origin[mapc-1]
-         origin.y = OriginY + origin[mapr-1]
-         origin.z = OriginX + origin[maps-1]
-        
-        I think what is happening is that this .x, .y, .z
-        refer to our Jmol "x slowest/z fastest",
-        while the MRC definitions are for the reverse.
-        
-        At least this is what is needed to match the
-        PDB file with the CCP4 MAP file for 3hyd.
-
-        
+                
         -Bob Hanson, 1/16/2010
         
         */    
         
+      
+      // a few issues here with what all this means -- may not have it exactly right.
+      
       float[] o = new float[3];
       o[0] = origin.x; // x --> c = 2 --> y 
       o[1] = origin.y; // y --> r = 1 --> x
@@ -254,10 +221,10 @@ abstract class ElectronDensityFileReader extends VolumeFileReader {
         originY = -originY;
         originZ = -originZ;
       } else if (originX < 0) {
-        // assume the standard "put the grid origin at this coordinate"
+        // assume the standard "put the grid origin at this coordinate" -- an offset
         // not that they mean the "center the data at this point"
         Logger.info("Jmol negative center found -- uncertain here.");          
-      } else if (nxStart == 0 && nyStart == 0 && nzStart == 0) {
+      } else if (a0 == 0 && b0 == 0 && c0 == 0) {
         // emd_1004.map
         Logger.info("Jmol origin and xyz map starts are all zeros.");
       }
@@ -268,7 +235,7 @@ abstract class ElectronDensityFileReader extends VolumeFileReader {
  
       volumetricOrigin.set(origin);
       
-      Logger.info("Jmol origin in slow-to-fast system: " + origin);
+      Logger.info("Jmol origin in slow-to-fast system: " + origin + "\n");
         
       /* example:
           
@@ -293,12 +260,6 @@ voxel grid count/vector:38 -1.3215866E-8 0.30234376 0.0
 JVXL read: 55 x 90 x 38 data points
          
          */
-
-        // setting the cutoff to mean + 2 x RMS seems to work
-        // reasonably well as a default.
-        
-    Logger.info("\n");
-    
 
     }    
   

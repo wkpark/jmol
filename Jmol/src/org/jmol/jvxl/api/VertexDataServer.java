@@ -1,5 +1,6 @@
 package org.jmol.jvxl.api;
 
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;

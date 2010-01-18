@@ -703,6 +703,10 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("colorDensity" == propertyName) {
+      params.colorDensity = true;
+      return true;
+    }
     if ("fullPlane" == propertyName) {
       // fullPlane == true --> params.contourFromZero is false
       // fullPlane == false --> params.contourFromZero is true
@@ -974,7 +978,7 @@ public class SurfaceGenerator {
     setMarchingSquares(surfaceReader.marchingSquares);
     surfaceReader.discardTempData(false);
     params.mappedDataMin = Float.MAX_VALUE;
-    if (surfaceReader.hasColorData)
+    if (surfaceReader.hasColorData || params.colorDensity)
       colorIsosurface();
     else
       surfaceReader.closeReader();
@@ -1071,7 +1075,7 @@ public class SurfaceGenerator {
         // ignore
       }
       br = null;
-      return new MrcBinaryReader(this, params.fileName, fileType.charAt(3) != '\0');
+      return new MrcBinaryReader(this, params.fileName, fileType.charAt(3) == '+');
     }
     if (fileType.equals("Efvet"))
       return new EfvetReader(this,br);

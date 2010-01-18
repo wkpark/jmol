@@ -78,7 +78,6 @@ public class JvxlData {
   public JvxlData() {    
   }
  
-  public boolean asXml = true;
   public boolean wasJvxl;
   public boolean wasCubic;
   
@@ -142,6 +141,7 @@ public class JvxlData {
   public Point3f[] boundingBox;
   public int excludedTriangleCount;
   public int excludedVertexCount;
+  public boolean colorDensity;
   
   public void setSurfaceInfo(Point4f thePlane, int nSurfaceInts, String surfaceData) {
     jvxlSurfaceData = surfaceData;

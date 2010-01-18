@@ -188,6 +188,7 @@ public class Parameters {
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     cappingPlane= null;
     colorBySign = colorByPhase = colorBySets = false;
+    colorDensity = false;
     colorNeg = defaultColorNegative;
     colorNegLCAO = defaultColorNegativeLCAO;
     colorPos = defaultColorPositive;
@@ -217,7 +218,7 @@ public class Parameters {
     mappedDataMin = Float.MAX_VALUE;
     minSet = 0;
     boundingBox = null;
-    bsExcluded = new BitSet[2];
+    bsExcluded = new BitSet[4];
     nContours = 0;
     contourIncrements = null;
     contoursDiscrete = null;
@@ -295,6 +296,7 @@ public class Parameters {
   int colorPosLCAO;
   int colorNegLCAO;
   int colorPhase;
+  public boolean colorDensity;
 
    
   //special effects
@@ -683,12 +685,12 @@ public class Parameters {
   int fileIndex; //one-based
   String fileName;
   int modelIndex; // zero-based
-  boolean isXLowToHigh;
+  public boolean isXLowToHigh;
   
   boolean insideOut;
-  float cutoff = Float.MAX_VALUE;
+  public float cutoff = Float.MAX_VALUE;
   boolean cutoffAutomatic = true;
-  boolean isCutoffAbsolute;
+  public boolean isCutoffAbsolute;
   boolean isPositiveOnly;
   
   boolean rangeAll;
@@ -698,10 +700,10 @@ public class Parameters {
   float mappedDataMax;
   boolean isColorReversed;
   boolean isBicolorMap;
-  boolean isSquared;
+  public boolean isSquared;
 
   Point4f thePlane;
-  boolean isContoured;
+  public boolean isContoured;
   
   int nContours;
   int thisContour; 
@@ -715,9 +717,11 @@ public class Parameters {
   Point3f contourIncrements;
   public Point3f[] boundingBox;
   public BitSet[] bsExcluded;
+  public int contourType;
   
   void setMapRanges(SurfaceReader surfaceReader) {
-    if (colorByPhase || colorBySign || (thePlane != null || isBicolorMap) && !isContoured) {
+    if (!colorDensity)
+      if (colorByPhase || colorBySign || (thePlane != null || isBicolorMap) && !isContoured) {
       mappedDataMin = -1;
       mappedDataMax = 1;
     }

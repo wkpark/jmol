@@ -109,6 +109,7 @@ public class Mesh extends MeshSurface {
     haveXyPoints = false;
     showPoints = false;
     showContourLines = false;
+    colorDensity = false;
     drawTriangles = false;
     fillTriangles = true;
     showTriangles = false; //as distinct entitities
@@ -187,6 +188,7 @@ public class Mesh extends MeshSurface {
   public Vector data1;
   public Vector data2;
   public Vector xmlProperties;
+  public boolean colorDensity;
   
   
   protected void sumVertexNormals(Point3f[] vertices, Vector3f[] normals) {

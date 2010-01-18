@@ -29,7 +29,7 @@ import java.io.IOException;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
-class XplorReader extends ElectronDensityFileReader {
+class XplorReader extends MapFileReader {
 
   /*
    * http://cci.lbl.gov/~rwgk/shortcuts/htdocs/current/python/iotbx.xplor.map.html
@@ -114,17 +114,17 @@ MRC header: mapc,mapr,maps: 2,1,3
     }
     jvxlFileHeaderBuffer.append("Xplor data\nJmol " + Viewer.getJmolVersion() + '\n');
 
-    mx = parseInt(getLine());
-    nxStart = parseInt();
-    nx = parseInt() - nxStart + 1;
+    na = parseInt(getLine());
+    a0 = parseInt();
+    nx = parseInt() - a0 + 1;
     
-    my = parseInt();
-    nyStart = parseInt();
-    ny = parseInt() - nyStart + 1;
+    nb = parseInt();
+    b0 = parseInt();
+    ny = parseInt() - b0 + 1;
     
-    mz = parseInt();
-    nzStart = parseInt();
-    nz = parseInt() - nzStart + 1;
+    nc = parseInt();
+    c0 = parseInt();
+    nz = parseInt() - c0 + 1;
     
     a = parseFloat(getLine());
     b = parseFloat();

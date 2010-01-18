@@ -79,6 +79,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
   }
   
   protected void render2(boolean isExport) {
+    if (imesh.jvxlData.colorDensity) {
+      renderPoints();
+      return;
+    }
     switch (imesh.dataType) {
     case Parameters.SURFACE_LONEPAIR:
       renderLonePair(false);

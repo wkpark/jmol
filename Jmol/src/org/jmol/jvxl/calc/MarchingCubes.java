@@ -32,10 +32,10 @@ import javax.vecmath.Vector3f;
 import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.VolumeData;
-//import org.jmol.util.Logger;
+import org.jmol.jvxl.readers.Parameters;
 import org.jmol.util.TriangleData;
 
-public class MarchingCubes extends TriangleData  {
+public class MarchingCubes extends TriangleData {
 
   /*
    * An adaptation of Marching Cubes that includes data slicing. 
@@ -70,26 +70,28 @@ public class MarchingCubes extends TriangleData  {
    *  
    */
 
-  private VertexDataServer surfaceReader;
-  private VolumeData volumeData;
-  private int contourType;
-  private boolean isContoured;
-  private float cutoff;
-  private boolean isCutoffAbsolute;
-  private boolean isSquared;
-  private boolean isXLowToHigh;
+  protected VertexDataServer surfaceReader;
+  protected VolumeData volumeData;
+  protected int contourType;
+  protected boolean isContoured;
+  protected float cutoff;
+  protected boolean isCutoffAbsolute;
+  protected boolean isSquared;
+  protected boolean isXLowToHigh;
 
-  private int cubeCountX, cubeCountY, cubeCountZ;
-  private int nY, nZ;
-  private int yzCount;
+  protected int cubeCountX, cubeCountY, cubeCountZ;
+  protected int nY, nZ;
+  protected int yzCount;
   
-  private float fractionOutside;
-  private boolean integrateSquared = true;
-  private BitSet bsVoxels;
-  private BitSet bsExcludedVertices;
-  private BitSet bsExcludedTriangles;
+  protected boolean colorDensity;
+  protected float fractionOutside;
+  protected boolean integrateSquared = true;
+  protected BitSet bsVoxels;
+  protected BitSet bsExcludedVertices;
+  protected BitSet bsExcludedTriangles;
+  protected BitSet bsExcludedPlanes;
 
-  private StringBuffer edgeData = new StringBuffer();
+  protected StringBuffer edgeData = new StringBuffer();
   
   public BitSet getBsVoxels() {
     return bsVoxels;
@@ -100,37 +102,38 @@ public class MarchingCubes extends TriangleData  {
   }
   
   public MarchingCubes(VertexDataServer surfaceReader, VolumeData volumeData,
-      BitSet bsVoxels, boolean isContoured, int contourType, float cutoff,
-      boolean isCutoffAbsolute, boolean isSquared, boolean isXLowToHigh,
-      BitSet[] bsExcluded) {
+      Parameters params, BitSet bsVoxels) {
 
     // If just creating a JVXL file, see org.openscience.jmol.jvxl.simplewriter.SimpleMarchingCubes.java
     //
-
-    bsExcludedVertices = (bsExcluded[0] == null ? bsExcluded[0] = new BitSet() : bsExcluded[0]);
-    bsExcludedTriangles = (bsExcluded[1] == null ? bsExcluded[1] = new BitSet() : bsExcluded[1]);
+    
     this.surfaceReader = surfaceReader;
+    this.bsVoxels = bsVoxels;
+    BitSet[] bsExcluded = params.bsExcluded;
+    bsExcludedVertices =  (bsExcluded[0] == null ? bsExcluded[0] = new BitSet() : bsExcluded[0]);
+    bsExcludedPlanes =    (bsExcluded[2] == null ? bsExcluded[2] = new BitSet() : bsExcluded[2]);
+    bsExcludedTriangles = (bsExcluded[3] == null ? bsExcluded[3] = new BitSet() : bsExcluded[3]);
+    mode = (volumeData.voxelData != null ? MODE_CUBE 
+        : bsVoxels != null ? MODE_BITSET : MODE_GETXYZ);
+    setParameters(volumeData, params);
+  }
+
+  protected void setParameters(VolumeData volumeData, Parameters params) {
     this.volumeData = volumeData;
-    this.isContoured = isContoured;
-    this.cutoff = cutoff;
-    this.isCutoffAbsolute = isCutoffAbsolute;
-    this.contourType = contourType;
-    this.isSquared = isSquared;
-    this.isXLowToHigh = isXLowToHigh;    // generally ixXLowToHigh is FALSE
+    colorDensity = params.colorDensity;
+    isContoured = params.isContoured && !colorDensity;
+    cutoff = params.cutoff;
+    isCutoffAbsolute = params.isCutoffAbsolute;
+    contourType = params.contourType;
+    isSquared = params.isSquared;
+    isXLowToHigh = params.isXLowToHigh;
 
     cubeCountX = volumeData.voxelCounts[0] - 1;
     cubeCountY = (nY = volumeData.voxelCounts[1]) - 1;
     cubeCountZ = (nZ = volumeData.voxelCounts[2]) - 1;
-    if (volumeData.voxelData != null) {
-      mode = MODE_CUBE;
-    } else {
-      mode = (bsVoxels == null ? MODE_GETXYZ : MODE_BITSET);
-      this.bsVoxels = bsVoxels;
-    }
     yzCount = nY * nZ;
-    if (this.bsVoxels == null)
-      this.bsVoxels = new BitSet();
-
+    if (bsVoxels == null)
+      bsVoxels = new BitSet();
     edgeVertexPointers = (isXLowToHigh ? edgeVertexPointersLowToHigh : edgeVertexPointersHighToLow);
     edgeVertexPlanes =  (isXLowToHigh ? edgeVertexPlanesLowToHigh : edgeVertexPlanesHighToLow);
     isoPointIndexPlanes = new int[2][yzCount][3];
@@ -139,23 +142,23 @@ public class MarchingCubes extends TriangleData  {
     calcVoxelVertexVectors();
   }
 
-  private int mode;
-  private final static int MODE_CUBE = 1;
-  private final static int MODE_BITSET = 2;
-  private final static int MODE_GETXYZ = 3;
+  protected int mode;
+  protected final static int MODE_CUBE = 1;
+  protected final static int MODE_BITSET = 2;
+  protected final static int MODE_GETXYZ = 3;
 
-  private final float[] vertexValues = new float[8];
+  protected final float[] vertexValues = new float[8];
 
-  int edgeCount;
+  protected int edgeCount;
 
-  private final Vector3f[] voxelVertexVectors = new Vector3f[8];
-  private final Vector3f[] edgeVectors = new Vector3f[12];
+  protected final Vector3f[] voxelVertexVectors = new Vector3f[8];
+  protected final Vector3f[] edgeVectors = new Vector3f[12];
   {
     for (int i = 12; --i >= 0;)
       edgeVectors[i] = new Vector3f();
   }
 
-  private void calcVoxelVertexVectors() {
+  protected void calcVoxelVertexVectors() {
     volumeData.setMatrix();
     for (int i = 8; --i >= 0;)
       volumeData.transform(cubeVertexVectors[i],
@@ -171,15 +174,15 @@ public class MarchingCubes extends TriangleData  {
    * 
    */
 
-  private static int[] yzPlanePts = new int[] { 
+  protected static int[] yzPlanePts = new int[] { 
       0, 1, 1, 0, 
       0, 1, 1, 0 
   };
-  private final int[] edgePointIndexes = new int[12];
-  private int[][][] isoPointIndexPlanes;
-  private float[][] yzPlanes;
+  protected final int[] edgePointIndexes = new int[12];
+  protected int[][][] isoPointIndexPlanes;
+  protected float[][] yzPlanes;
 
-  private int[][] resetIndexPlane(int[][] plane) {
+  protected int[][] resetIndexPlane(int[][] plane) {
     for (int i = 0; i < yzCount; i++)
       for (int j = 0; j < 3; j++)
         plane[i][j] = -1;
@@ -188,16 +191,18 @@ public class MarchingCubes extends TriangleData  {
 
   public String getEdgeData() {
 
-    //Logger.startTimer();
-    
-    /* The (new, Jmol 11.7.26) Marching Cubes code creates 
-     * the isoPointIndexes[2][nY * nZ][3] array that holds two slices 
-     * of edge data. Each edge is assigned a specific vertex, 
-     * such that each vertex may have up to 3 associated edges. 
+
+    // Logger.startTimer();
+
+    /*
+     * The (new, Jmol 11.7.26) Marching Cubes code creates the
+     * isoPointIndexes[2][nY * nZ][3] array that holds two slices of edge data.
+     * Each edge is assigned a specific vertex, such that each vertex may have
+     * up to 3 associated edges.
      * 
-     *  Feb 10, 2009 -- Bob Hanson
+     * Feb 10, 2009 -- Bob Hanson
      */
-    
+
     int insideCount = 0, outsideCount = 0, surfaceCount = 0;
     edgeCount = 0;
 
@@ -225,12 +230,14 @@ public class MarchingCubes extends TriangleData  {
     int cellIndex = cellIndex0;
     resetIndexPlane(isoPointIndexPlanes[1]);
     if (mode == MODE_GETXYZ)
-        surfaceReader.getPlane(x0);
+      surfaceReader.getPlane(x0);
+    float v = 0;
+
     for (int x = x0; x != x1; x += xStep, ptX += ptStep, pt = ptX, cellIndex = cellIndex0) {
-      
-      // we swap planes of grid data when 
+
+      // we swap planes of grid data when
       // obtaining the grid data point by point
-      
+
       if (mode == MODE_GETXYZ) {
         // for a progressive reader, we read the next two planes
         // for x = 0, 2, 4, 6...
@@ -240,16 +247,20 @@ public class MarchingCubes extends TriangleData  {
         yzPlanes[0] = yzPlanes[1];
         yzPlanes[1] = plane;
       }
-      
+
       // we swap the edge vertex index planes
-      
+
       int[][] indexPlane = isoPointIndexPlanes[0];
       isoPointIndexPlanes[0] = isoPointIndexPlanes[1];
       isoPointIndexPlanes[1] = resetIndexPlane(indexPlane);
-      
+
       // now scan the plane of cubicals
       
-      for (int y = cubeCountY; --y >= 0; pt--) {
+      if (bsExcludedPlanes.get(x) && bsExcludedPlanes.get(x + xStep))
+        continue;
+      int xCount = 0;
+
+      for (int y = cubeCountY; --y >= 0; pt--) {        
         for (int z = cubeCountZ; --z >= 0; pt--, cellIndex--) {
 
           // create the bitset mask indicating which vertices are inside.
@@ -262,7 +273,6 @@ public class MarchingCubes extends TriangleData  {
             // to our base x,y,z cube position
 
             boolean isInside;
-            float v;
             Point3i offset = cubeVertexOffsets[i];
             int pti = pt + linearOffsets[i];
             switch (mode) {
@@ -273,12 +283,13 @@ public class MarchingCubes extends TriangleData  {
               break;
             case MODE_BITSET:
               isInside = bsVoxels.get(pti);
-              v = vertexValues[i] = (bsExcludedVertices.get(pti) ? Float.NaN : isInside ? 1 : 0);
+              v = vertexValues[i] = (bsExcludedVertices.get(pti) ? Float.NaN
+                  : isInside ? 1 : 0);
               break;
             default:
             case MODE_CUBE:
-              v = vertexValues[i] = volumeData.voxelData[x + offset.x][y + offset.y][z
-                  + offset.z];
+              v = vertexValues[i] = volumeData.voxelData[x + offset.x][y
+                  + offset.y][z + offset.z];
               if (isSquared)
                 vertexValues[i] *= vertexValues[i];
               isInside = isInside(vertexValues[i], cutoff, isCutoffAbsolute);
@@ -288,16 +299,23 @@ public class MarchingCubes extends TriangleData  {
             if (isInside) {
               insideMask |= Pwr2[i];
             } else {
-              fractionOutside += (integrateSquared ? vertexValues[i] * vertexValues[i] : vertexValues[i]);
+              fractionOutside += (integrateSquared ? vertexValues[i]
+                  * vertexValues[i] : vertexValues[i]);
             }
-            
+
             if (Float.isNaN(v))
               bsExcludedVertices.set(pti);
           }
-
+          if (!Float.isNaN(v)) {
+            xCount++;
+          }
           if (insideMask == 0) {
             ++outsideCount;
             continue;
+          }
+          if (colorDensity) {
+            if ((insideMask & 1) != 0)
+              addVertex(x, y, z, vertexValues[0]);
           }
           if (insideMask == 0xFF) {
             ++insideCount;
@@ -305,33 +323,47 @@ public class MarchingCubes extends TriangleData  {
           }
           ++surfaceCount;
 
-          // This cube is straddling the cutoff. We must check all edges 
+          // This cube is straddling the cutoff. We must check all edges
           // Note that we do not process it if it has an NaN values
 
-          if (!processOneCubical(insideMask, x, y, z, pt) || isContoured) {
-            continue;
-          }
-          //  System.out.println("insideCount " + insideCount + " x y z value mask: " + x + " " + y + " " + z + " " + vertexValues[0] + " " + Integer.toHexString(insideMask));
-          
-          // the inside mask serves to define the triangles necessary 
-          // if just creating JVXL files, this step is unnecessary
-
-          byte[] triangles = triangleTable2[insideMask];
-          for (int i = triangles.length; (i -= 4) >= 0;)
-            addTriangle(triangles[i], triangles[i + 1], 
-                triangles[i + 2], triangles[i + 3]);
+          if (processOneCubical(insideMask, x, y, z, pt) 
+              && !isContoured && !colorDensity)
+            processTriangles(insideMask);
         }
+      }
+      if (xCount == 0) {
+        bsExcludedPlanes.set(x);
       }
     }
 
-    //Logger.checkTimer("Jmol mc getEdgeData");
+    // System.out.println("MarchingCubes: fractionOutside = " +
+    // fractionOutside/8);
 
-    //System.out.println("MarchingCubes: fractionOutside = " + fractionOutside/8);
     return edgeData.toString();
   }
 
-  private int nTriangles;
-  private void addTriangle(int ia, int ib, int ic, int edgeType) {
+  protected void processTriangles(int insideMask) {
+    // System.out.println("insideCount " + insideCount +
+    // " x y z value mask: " + x + " " + y + " " + z + " " +
+    // vertexValues[0] + " " + Integer.toHexString(insideMask));
+
+    // the inside mask serves to define the triangles necessary
+    // if just creating JVXL files, this step is unnecessary
+
+    byte[] triangles = triangleTable2[insideMask];
+    for (int i = triangles.length; (i -= 4) >= 0;)
+      addTriangle(triangles[i], triangles[i + 1], triangles[i + 2],
+          triangles[i + 3]);   
+  }
+
+  protected void addVertex(int x, int y, int z, float value) {
+    volumeData.voxelPtToXYZ(x, y, z, pt0);
+    surfaceReader.addVertexCopy(pt0, value, -1);
+    addEdgeData(value);
+  }
+
+  protected int nTriangles;
+  protected void addTriangle(int ia, int ib, int ic, int edgeType) {
     if (!bsExcludedTriangles.get(nTriangles) &&
         surfaceReader.addTriangleCheck(edgePointIndexes[ia], 
         edgePointIndexes[ib], edgePointIndexes[ic], 
@@ -341,9 +373,9 @@ public class MarchingCubes extends TriangleData  {
     nTriangles++;
   }
 
-  private BitSet bsValues = new BitSet();
+  protected BitSet bsValues = new BitSet();
 
-  private float getValue(int x, int y, int z, int pt, float[] tempValues) {
+  protected float getValue(int x, int y, int z, int pt, float[] tempValues) {
     int ptyz = pt % yzCount;
     if (bsValues.get(pt))
       return tempValues[ptyz];
@@ -361,38 +393,38 @@ public class MarchingCubes extends TriangleData  {
     return ((max > 0 && (isAbsolute ? Math.abs(voxelValue) : voxelValue) >= max) || (max <= 0 && voxelValue <= max));
   }
 
-  private final Point3f pt0 = new Point3f();
-  private final Point3f pointA = new Point3f();
+  protected final Point3f pt0 = new Point3f();
+  protected final Point3f pointA = new Point3f();
 
-  private final static int[] edgeVertexPointersLowToHigh = new int[] {
+  protected final static int[] edgeVertexPointersLowToHigh = new int[] {
       1, 1, 2, 0, 
       5, 5, 6, 4,
       0, 1, 2, 3
   };
   
-  private final static int[] edgeVertexPointersHighToLow = new int[] {
+  protected final static int[] edgeVertexPointersHighToLow = new int[] {
       0, 1, 3, 0, 
       4, 5, 7, 4,
       0, 1, 2, 3
   };
 
-  private int[] edgeVertexPointers;
+  protected int[] edgeVertexPointers;
 
-  private final static int[] edgeVertexPlanesLowToHigh = new int[] {
+  protected final static int[] edgeVertexPlanesLowToHigh = new int[] {
       1, 1, 1, 0, 
       1, 1, 1, 0, 
       0, 1, 1, 0
   };  // from high to low, only edges 3, 7, 8, and 11 are from plane 0
 
-  private final static int[] edgeVertexPlanesHighToLow = new int[] {
+  protected final static int[] edgeVertexPlanesHighToLow = new int[] {
       1, 0, 1, 1,
       1, 0, 1, 1,
       1, 0, 0, 1
   }; //from high to low, only edges 1, 5, 9, and 10 are from plane 0
 
-  private int[] edgeVertexPlanes;
+  protected int[] edgeVertexPlanes;
   
-  private boolean processOneCubical(int insideMask, int x, int y, int z, int pt) {
+  protected boolean processOneCubical(int insideMask, int x, int y, int z, int pt) {
 
     /*
      * The key to the algorithm is that we have a catalog that
@@ -498,20 +530,24 @@ public class MarchingCubes extends TriangleData  {
               cubeVertexOffsets[vertexA], vertexA, vertexB, valueA, valueB,
               pointA, edgeVectors[iEdge], iType == contourType, fReturn);
 
-      edgeData.append(JvxlCoder.jvxlFractionAsCharacter(fReturn[0]));
+      addEdgeData(fReturn[0]);
     }
     //System.out.println("");
     return !isNaN;
   }
 
-  private float[] fReturn = new float[1];
+  protected void addEdgeData(float f) {
+    edgeData.append(JvxlCoder.jvxlFractionAsCharacter(f));
+  }
+
+  protected float[] fReturn = new float[1];
   
   public void calcVertexPoint(int x, int y, int z, int vertex, Point3f pt) {
     volumeData.voxelPtToXYZ(x, y, z, pt0);
     pt.add(pt0, voxelVertexVectors[vertex]);
   }
 
-  private final static Vector3f[] cubeVertexVectors = { 
+  protected final static Vector3f[] cubeVertexVectors = { 
     new Vector3f(0, 0, 0),
     new Vector3f(1, 0, 0), 
     new Vector3f(1, 0, 1), 
@@ -575,13 +611,13 @@ public class MarchingCubes extends TriangleData  {
    *   
    */
 
-  private final static int edgeTypeTable[] = { 
+  protected final static int edgeTypeTable[] = { 
     0, 2, 0, 2, 
     0, 2, 0, 2, 
     1, 1, 1, 1 };
   // 0=along X, 1=along Y, 2=along Z
 
-  private final int[] linearOffsets = new int[8];
+  protected final int[] linearOffsets = new int[8];
 
   /* 
    * set the linear offsets for generating a unique cell ID,
@@ -590,7 +626,7 @@ public class MarchingCubes extends TriangleData  {
    * 
    */
   
-  private void setLinearOffsets() {
+  protected void setLinearOffsets() {
     linearOffsets[0] = 0;
     linearOffsets[1] = yzCount;
     linearOffsets[2] = yzCount + 1;
@@ -605,7 +641,7 @@ public class MarchingCubes extends TriangleData  {
     return x * yzCount + y * nZ + z + linearOffsets[offset];
   }
 
-  private final static short insideMaskTable[] = { 0x0000, 0x0109, 0x0203,
+  protected final static short insideMaskTable[] = { 0x0000, 0x0109, 0x0203,
       0x030A, 0x0406, 0x050F, 0x0605, 0x070C, 0x080C, 0x0905, 0x0A0F, 0x0B06,
       0x0C0A, 0x0D03, 0x0E09, 0x0F00, 0x0190, 0x0099, 0x0393, 0x029A, 0x0596,
       0x049F, 0x0795, 0x069C, 0x099C, 0x0895, 0x0B9F, 0x0A96, 0x0D9A, 0x0C93,

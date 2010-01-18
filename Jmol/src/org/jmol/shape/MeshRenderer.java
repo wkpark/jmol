@@ -86,7 +86,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (mesh.visibilityFlags == 0)
       return false;
     if (mesh.lineData == null) {
-      if ((vertexCount = mesh.vertexCount) == 0 || mesh.polygonCount == 0)
+      if ((vertexCount = mesh.vertexCount) == 0 || 
+          !mesh.colorDensity && mesh.polygonCount == 0)
         return false;
       normixes = mesh.normixes;
       if (normixes == null || vertices == null)

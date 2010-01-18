@@ -83,6 +83,7 @@ public class IsosurfaceMesh extends Mesh {
     vertexSets = null;
     centers = null;
     jvxlData.vContours = null;
+    jvxlData.colorDensity = false;
     surfaceSet = null;
   }  
 

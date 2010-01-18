@@ -84,17 +84,22 @@ public class JvxlXmlReader extends VolumeFileReader {
       readSurfaceData(isMapData);
       if (edgeDataCount > 0)
         jvxlEdgeDataRead = jvxlReadData("edge", edgeDataCount);
-      params.bsExcluded = jvxlData.jvxlExcluded = new BitSet[2];
-      if (excludedVertexCount > 0)
+      params.bsExcluded = jvxlData.jvxlExcluded = new BitSet[4];
+      if (colorDataCount > 0)
+        jvxlColorDataRead = jvxlReadData("color", colorDataCount);
+      if (excludedVertexCount > 0) {
         jvxlData.jvxlExcluded[0]  
             = JvxlCoder.jvxlDecodeBitSet(
                 xr.getXmlData("jvxlExcludedVertexData", null, false));
+        if (xr.isNext("jvxlExcludedPlaneData"))
+          jvxlData.jvxlExcluded[2]  
+                                = JvxlCoder.jvxlDecodeBitSet(
+                                    xr.getXmlData("jvxlExcludedPlaneData", null, false));          
+      }
       if (excludedTriangleCount > 0)
-        jvxlData.jvxlExcluded[1]  
+        jvxlData.jvxlExcluded[3]  
             = JvxlCoder.jvxlDecodeBitSet(
                 xr.getXmlData("jvxlExcludedTriangleData", null, false));
-      if (colorDataCount > 0)
-        jvxlColorDataRead = jvxlReadData("color", colorDataCount);
       if (haveContourData)
         jvxlDecodeContourData(jvxlData, xr.getXmlData("jvxlContourData", null, false));
     } catch (Exception e) {
@@ -193,6 +198,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     jvxlDataIsColorMapped = params.isBicolorMap || XmlReader.getXmlAttrib(data, "colorMapped").equals("true");
     //next is for information only -- will be superceded by "encoding" attribute of jvxlColorData
     jvxlData.isJvxlPrecisionColor = XmlReader.getXmlAttrib(data, "precisionColor").equals("true");
+    jvxlData.colorDensity = params.colorDensity = XmlReader.getXmlAttrib(data, "colorDensity").equals("true");
     s = XmlReader.getXmlAttrib(data, "plane");
     if (s.indexOf("{") >= 0) {
       try {

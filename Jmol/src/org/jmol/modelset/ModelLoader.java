@@ -557,13 +557,17 @@ public final class ModelLoader extends ModelSet {
     }
     
     int iLast = -1;
+    int vdwtypeLast = -1;
     for (int i = 0; i < atomCount; i++)
       if (atoms[i].modelIndex != iLast) {
         iLast = atoms[i].modelIndex;
         models[iLast].firstAtomIndex = i;
         models[iLast].bsAtoms = null;
-        Logger.info("Default Van der Waal type for model " + getModelNumberDotted(i) 
-            + " set to " + JmolConstants.getVdwLabel(getDefaultVdwType(i)));
+        int vdwtype = getDefaultVdwType(iLast);
+        if (vdwtype != vdwtypeLast) {
+          Logger.info("Default Van der Waal type for model" + " set to " + JmolConstants.getVdwLabel(vdwtype));
+          vdwtypeLast = vdwtype;
+        }
       }
   }
 

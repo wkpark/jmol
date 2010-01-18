@@ -70,7 +70,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
     if (line.indexOf("!NTITLE") >= 0 || line.indexOf("REMARKS ") >= 0)
       return "Xplor";
     if (line.indexOf("MAP ") == 208)
-      return "MRC" + line.substring(67,68);
+      return "MRC" + (line.charAt(67) == '\0' ? "-" : "+");
     if (line.indexOf("<efvet ") >= 0)
       return "Efvet";
     if (line.indexOf(PmeshReader.PMESH_BINARY_MAGIC_NUMBER) == 0)

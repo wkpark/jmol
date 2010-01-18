@@ -338,6 +338,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.jvxlEdgeData = edgeData;
     jvxlData.isBicolorMap = params.isBicolorMap;
     jvxlData.isContoured = params.isContoured;
+    jvxlData.colorDensity = params.colorDensity;
     if (jvxlData.vContours != null)
       params.nContours = jvxlData.vContours.length;
     jvxlData.nContours = (params.contourFromZero 
@@ -465,9 +466,9 @@ public abstract class SurfaceReader implements VertexDataServer {
       marchingSquares.setMinMax(params.valueMappedToRed,
           params.valueMappedToBlue);
     }
-    marchingCubes = new MarchingCubes(this, volumeData, jvxlVoxelBitSet,
-        params.isContoured, contourType, params.cutoff,
-        params.isCutoffAbsolute, params.isSquared, isXLowToHigh, params.bsExcluded);
+    params.contourType = contourType;
+    params.isXLowToHigh = isXLowToHigh;
+    marchingCubes = new MarchingCubes(this, volumeData, params, jvxlVoxelBitSet);
     String data = marchingCubes.getEdgeData();
     if (params.thePlane == null)
       edgeData = data;
@@ -605,7 +606,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     params.setMapRanges(this);
     //colorBySign is true when colorByPhase is true, but not vice-versa
     //old: boolean saveColorData = !(params.colorByPhase && !params.isBicolorMap && !params.colorBySign); //sorry!
-    boolean saveColorData = (params.isBicolorMap || params.colorBySign || !params.colorByPhase);
+    boolean saveColorData = (params.colorDensity || params.isBicolorMap || params.colorBySign || !params.colorByPhase);
     // colors mappable always now
     jvxlData.isJvxlPrecisionColor = true;//(jvxlDataIsPrecisionColor || params.isContoured || params.remappable);
     jvxlData.valueMappedToRed = params.valueMappedToRed;
@@ -618,6 +619,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.maxColorIndex = 0;
     jvxlData.contourValues = params.contoursDiscrete;
     jvxlData.isColorReversed = params.isColorReversed;
+    if (!params.colorDensity)
     if (params.isBicolorMap && !params.isContoured || params.colorBySign) {
       jvxlData.minColorIndex = ColorEncoder
           .getColorIndex(params.isColorReversed ? params.colorPos
@@ -629,7 +631,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.isTruncated = (jvxlData.minColorIndex >= 0 && !params.isContoured);
     boolean useMeshDataValues =
     //      !jvxlDataIs2dContour && (params.isContoured && jvxlData.jvxlPlane != null || 
-    vertexDataOnly || params.isBicolorMap && !params.isContoured;
+    vertexDataOnly || params.colorDensity || params.isBicolorMap && !params.isContoured;
     float value;
     if (!useMeshDataValues)
       for (int i = meshData.vertexCount; --i >= 0;) {
@@ -742,9 +744,10 @@ public abstract class SurfaceReader implements VertexDataServer {
         : meshData.vertexCount);
     Point3f[] vertexes = meshData.vertices;
     float min = Float.MAX_VALUE;
+    boolean useVertexValue = (vertexDataOnly || params.colorDensity);
     for (int i = 0; i < vertexCount; i++) {
       float challenger;
-      if (vertexDataOnly)
+      if (useVertexValue)
         challenger = meshData.vertexValues[i];
       else if (jvxlDataIs2dContour)
         challenger = marchingSquares.getInterpolatedPixelValue(vertexes[i]);
@@ -763,10 +766,10 @@ public abstract class SurfaceReader implements VertexDataServer {
         : meshData.vertexCount);
     Point3f[] vertexes = meshData.vertices;
     float max = -Float.MAX_VALUE;
-    int incr = 1;
-    for (int i = 0; i < vertexCount; i += incr) {
+    boolean useVertexValue = (vertexDataOnly || params.colorDensity);
+    for (int i = 0; i < vertexCount; i++) {
       float challenger;
-      if (vertexDataOnly)
+      if (useVertexValue)
         challenger = meshData.vertexValues[i];
       else if (jvxlDataIs2dContour)
         challenger = marchingSquares.getInterpolatedPixelValue(vertexes[i]);

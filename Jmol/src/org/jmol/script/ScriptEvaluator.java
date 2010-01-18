@@ -12778,12 +12778,18 @@ public class ScriptEvaluator {
         i = iToken;
         break;
       case Token.color:
+        if (tokAt(i + 1) == Token.density) {
+          i++;
+          propertyName = "colorDensity";
+          break;
+        }
         /*
          * "color" now is just used as an equivalent to "sign" and as an
          * introduction to "absolute" any other use is superfluous; it has been
          * replaced with MAP for indicating "use the current surface" because
          * the term COLOR is too general.
          */
+ 
         colorRangeStage = 0;
         if (getToken(i + 1).tok == Token.string) {
           colorScheme = parameterAsString(++i);

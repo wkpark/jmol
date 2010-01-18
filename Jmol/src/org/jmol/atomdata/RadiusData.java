@@ -143,7 +143,7 @@ public class RadiusData {
     Vector v = new Vector();
     v.add(new String[] { "type", typeNames[type] } );
     v.add(new String[] { "value", "" + value });
-    if (type == TYPE_FACTOR && value != 0)
+    if (type == TYPE_FACTOR && value != 0 && vdwType >= 0)
       v.add(new String[] { "vdwType", vdwType + "|" + JmolConstants.getVdwLabel(vdwType) } );
     if (valueExtended != 0)
       v.add(new String[] { "plus", "" + valueExtended });

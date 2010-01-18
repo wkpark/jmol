@@ -87,7 +87,7 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
   }
 
   public AppConsole(JmolViewer viewer, JFrame frame) {
-    super(viewer, frame, GT._("Jmol Script Console"), false);
+    super(viewer, frame, GT._("Jmol Script Console") + " " + Viewer.getJmolVersion(), false);
     layoutWindow(getContentPane());
     setSize(645, 400);
     setLocationRelativeTo(frame);

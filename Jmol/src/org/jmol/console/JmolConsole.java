@@ -24,7 +24,6 @@
 package org.jmol.console;
 
 import org.jmol.api.*;
-import org.jmol.i18n.*;
 import org.jmol.script.ScriptCompiler;
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
@@ -71,8 +70,8 @@ public abstract class JmolConsole extends JDialog implements ActionListener, Win
   public JmolConsole() {
   }
   
-  public JmolConsole(JmolViewer viewer, JFrame frame, String _, boolean b) {
-    super(frame, GT._("Jmol Script Console"), false);
+  public JmolConsole(JmolViewer viewer, JFrame frame, String title, boolean b) {
+    super(frame, title, false);
     this.viewer = viewer;
     display = frame;
   }

@@ -92,6 +92,15 @@ public class BinaryDocument {
     nBytes += stream.read(b, off, len);
   }
 
+  public String readString(int nChar) throws Exception {
+    byte[] temp = new byte[nChar];
+    readByteArray(temp);
+    StringBuffer s = new StringBuffer();
+    for (int j = 0; j < nChar; j++)
+      s.append((char) temp[j]);
+    return s.toString();
+  }
+  
   public short readShort() throws Exception {
     nBytes += 2;
     return (isBigEndian ? stream.readShort()

@@ -87,9 +87,6 @@ abstract class MapFileReader extends VolumeFileReader {
 
       SymmetryInterface unitCell;
       
-      Logger.info("grid header: a,b,c,alpha,beta,gamma: " + a + "," + b + ","
-          + c + "," + alpha + "," + beta + "," + gamma);
-
       unitCell = (SymmetryInterface) Interface
           .getOptionInterface("symmetry.Symmetry");
       unitCell.setUnitCell(new float[] { a, b, c, alpha, beta, gamma });
@@ -189,7 +186,7 @@ abstract class MapFileReader extends VolumeFileReader {
       origin.scaleAdd(b0 + adjustment.y, vectors[1], origin);
       origin.scaleAdd(c0 + adjustment.z, vectors[2], origin);
       
-      Logger.info("Jmol origin in unit cell coordinates: " + origin);
+      Logger.info("Jmol grid origin in Cartesion coordinates: " + origin);
 
         /*
         

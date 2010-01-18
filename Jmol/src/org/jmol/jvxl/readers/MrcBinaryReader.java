@@ -156,16 +156,24 @@ class MrcBinaryReader extends MapFileReader {
     labels = new String[nlabel];
     labels[0] = "Jmol MrcBinaryReader";
 
-    byte[] temp = new byte[80];
     for (int i = 0; i < 10; i++) {
-      binarydoc.readByteArray(temp);
-      StringBuffer s = new StringBuffer();
-      for (int j = 0; j < 80; j++)
-        s.append((char) temp[j]);
+      String s = binarydoc.readString(80).trim();
       if (i < nlabel) {
-        labels[i] = s.toString().replace('\0', ' ').trim();
+        labels[i] = s;
         Logger.info(labels[i]);
       }
+    }
+    
+    long position = binarydoc.getPosition();
+    for (int i = 0; i < nsymbt; i++) {
+      String s = binarydoc.readString(80).trim();
+      if (s.indexOf('\0') != s.lastIndexOf('\0')) {
+        // must not really be symmetry info!
+        Logger.error("File indicates " + nsymbt + " symmetry lines, but "  + i + " found!");
+        binarydoc.seek(position);
+        break;
+      }
+      Logger.info("MRC file symmetry information: " + s);
     }
 
     Logger.info("MRC header: bytes read: " + binarydoc.getPosition()

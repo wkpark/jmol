@@ -113,6 +113,7 @@
 
 package org.jmol.atomdata;
 
+import org.jmol.util.XmlUtil;
 import org.jmol.viewer.JmolConstants;
 
 public class RadiusData {
@@ -120,7 +121,7 @@ public class RadiusData {
   public final static int TYPE_OFFSET = 1;
   public final static int TYPE_FACTOR = 2;
   public static final int TYPE_SCREEN = 3;
-  
+  private static final String[] typeNames = new String[] { "absolute", "offset", "factor", "screen" };
   public int type;
   public int vdwType = JmolConstants.VDW_AUTO;
   public float value = Float.NaN;
@@ -135,5 +136,14 @@ public class RadiusData {
     this.vdwType = vdwType;
   }
 
+  public String toString() {
+    StringBuffer sb = new StringBuffer("\n");
+    XmlUtil.appendTag(sb, "radiusData", new String[] {
+        "type", typeNames[type], 
+        "value", "" + value,
+        "vdwType", vdwType + "|" + JmolConstants.getVdwLabel(vdwType),
+        "valueExtended", "" + valueExtended });
+    return sb.toString();
+  }
 }
 

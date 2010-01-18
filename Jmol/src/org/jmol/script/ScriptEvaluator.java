@@ -9866,7 +9866,7 @@ public class ScriptEvaluator {
       str = Escape.escape((Point4f) v);
       setStringProperty(key, str);
     } else {
-      System.out.println("ERROR -- return from propertyExpression was " + v);
+      Logger.error("ERROR -- return from propertyExpression was " + v);
     }
   }
 
@@ -11591,7 +11591,6 @@ public class ScriptEvaluator {
     if (moData == null)
       error(ERROR_moModelError);
     Integer n = (Integer) viewer.getShapeProperty(JmolConstants.SHAPE_MO, "moNumber");
-    //System.out.println(n);
     if (n == null || ((Integer)n).intValue() == 0) {
       setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(modelIndex));
       setShapeProperty(JmolConstants.SHAPE_MO, "moData", moData);

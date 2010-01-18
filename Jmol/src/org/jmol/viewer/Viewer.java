@@ -4135,6 +4135,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setShapeSize(int shapeID, int mad, BitSet bsAtoms) {
+    if (bsAtoms == null)
+      bsAtoms = selectionManager.bsSelection;
     modelSet.setShapeSize(shapeID, mad, null, bsAtoms);
   }
 
@@ -4144,6 +4146,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval.configuration()
     // Eval.connect()
     // several points in Viewer
+    if (bsAtoms == null)
+      bsAtoms = selectionManager.bsSelection;
     if (rd.value != 0 && rd.vdwType == Token.temperature)
       modelSet.getBfactor100Lo();
     modelSet.setShapeSize(shapeID, 0, rd, bsAtoms);

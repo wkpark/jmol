@@ -135,8 +135,6 @@ public abstract class Shape {
   public void setShapeSize(int size, RadiusData rd, BitSet bsSelected) {
     setXmlProperty("size", (rd == null ? new Integer(size) : (Object) rd),
           bsSelected);
-    if (bsSelected == null)
-      bsSelected = viewer.getSelectionSet();
     if (rd == null)
       setSize(size, bsSelected);
     else

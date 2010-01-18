@@ -155,7 +155,6 @@ final public class Atom extends Point3fi {
     for (int i = bonds.length; --i >= 0; )
       if (bonds[i] == bond) {
         deleteBond(i);
-        System.out.println(getInfo() + " deleting bond " + i);
         return;
       }
   }
@@ -388,7 +387,6 @@ final public class Atom extends Point3fi {
   }
   
   public void delete() {
-    System.out.println("deleting " + getInfo());
     valence = -1;
     if (bonds != null)
       for (int i = bonds.length; --i >= 0; )

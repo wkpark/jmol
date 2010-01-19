@@ -115,16 +115,16 @@ MRC header: mapc,mapr,maps: 2,1,3
     jvxlFileHeaderBuffer.append("Xplor data\nJmol " + Viewer.getJmolVersion() + '\n');
 
     na = parseInt(getLine());
-    a0 = parseInt();
-    nx = parseInt() - a0 + 1;
+    nxyzStart[0] = parseInt();
+    nx = parseInt() - nxyzStart[0] + 1;
     
     nb = parseInt();
-    b0 = parseInt();
-    ny = parseInt() - b0 + 1;
+    nxyzStart[1] = parseInt();
+    ny = parseInt() - nxyzStart[1] + 1;
     
     nc = parseInt();
-    c0 = parseInt();
-    nz = parseInt() - c0 + 1;
+    nxyzStart[2] = parseInt();
+    nz = parseInt() - nxyzStart[2] + 1;
     
     a = parseFloat(getLine());
     b = parseFloat();
@@ -143,7 +143,7 @@ MRC header: mapc,mapr,maps: 2,1,3
 
     nBlock = voxelCounts[2] * voxelCounts[1];
     if (params.cutoffAutomatic) {
-      params.cutoff = (boundingBox == null ? 5.0f : 1.6f);
+      params.cutoff = (boundingBox == null ? 3.0f : 1.6f);
       Logger.info("XplorReader: setting cutoff to default value of " + params.cutoff + (boundingBox == null ? " (no BOUNDBOX parameter)" : ""));
     }
     

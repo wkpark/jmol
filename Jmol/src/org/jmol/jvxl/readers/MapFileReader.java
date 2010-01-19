@@ -63,31 +63,25 @@ abstract class MapFileReader extends VolumeFileReader {
 
     protected int mapc, mapr, maps;
     protected int nx, ny, nz, mode;
-    protected int a0, b0, c0;
+    protected int[] nxyzStart = new int[3];
     protected int na, nb, nc;
     protected float a, b, c, alpha, beta, gamma;
-    protected float originX, originY, originZ;
-    
+    protected Point3f origin = new Point3f();    
     protected Point3f adjustment = new Point3f();
-    // outputs:
-
     protected Point3f[] vectors = new Point3f[3];
-    protected Point3f origin = new Point3f();
 
     protected void getVectorsAndOrigin() {
       
       Logger.info("grid parameters: nx,ny,nz: " + nx + "," + ny + "," + nz);
-      Logger.info("grid parameters: nxStart,nyStart,nzStart: " + a0 + "," + b0 + "," + c0);
+      Logger.info("grid parameters: nxStart,nyStart,nzStart: " 
+          + nxyzStart[0] + "," + nxyzStart[1] + "," + nxyzStart[2]);
 
       Logger.info("grid parameters: mx,my,mz: " + na + "," + nb + "," + nc);
       Logger.info("grid parameters: a,b,c,alpha,beta,gamma: " + a + "," + b + "," + c + "," + alpha + "," + beta + "," + gamma);
       Logger.info("grid parameters: mapc,mapr,maps: " + mapc + "," + mapr + "," + maps);
-      Logger.info("grid parameters: originX,Y,Z: " + originX + "," + originY + "," + originZ);
+      Logger.info("grid parameters: originX,Y,Z: " + origin);
       
-
-      SymmetryInterface unitCell;
-      
-      unitCell = (SymmetryInterface) Interface
+      SymmetryInterface unitCell = (SymmetryInterface) Interface
           .getOptionInterface("symmetry.Symmetry");
       unitCell.setUnitCell(new float[] { a, b, c, alpha, beta, gamma });
 
@@ -109,12 +103,6 @@ abstract class MapFileReader extends VolumeFileReader {
                              s2r2c1...s2r2c9.....
          etc.
          
-         Now, nx (but NOT nxStart) refers to "column" data
-              ny (but NOT nyStart) refers to "row" data
-              nz (but NOT nzStart) refers to "sheet" data
-        
-         (These, in my opinion, should have been called "nc, nr, ns"!)
-         
          In Jmol, we always have x (our [0]) running slowest, so we 
          ultimately must make the following assignment:
          
@@ -124,14 +112,6 @@ abstract class MapFileReader extends VolumeFileReader {
         
          We really don't care if this is actually physical "x" "y" or "z".
          In fact, for a hexagonal cell these will be combinations of xyz.
-         
-         Now, we also have:
-        
-           na and a0, which refer to (a) unit cell direction
-           nb and b0, which refer to (b) unit cell direction
-           nc and c0, which refer to (c) unit cell direction
-        
-         mx=2 I THINK says "map fasted moving data to the second axis (b)"
          
          So it goes something like this:
          
@@ -160,102 +140,68 @@ abstract class MapFileReader extends VolumeFileReader {
       Logger.info("    b: " + vectors[1]);
       Logger.info("    c: " + vectors[2]);
 
-
       voxelCounts[0] = nz; // slowest
       voxelCounts[1] = ny;
       voxelCounts[2] = nx; // fastest
+      
       volumetricVectors[0].set(vectors[maps - 1]);
       volumetricVectors[1].set(vectors[mapr - 1]);
       volumetricVectors[2].set(vectors[mapc - 1]);
 
-      /*
-        
-        For the offset of the orgin, now, we must...
-         
-        ...scale the "unit vector" vector[0] by a0
-        ...scale the "unit vector" vector[1] by b0
-        ...scale the "unit vector" vector[2] by c0
-        ...add those up to give origin.xyz
-        
-        This is only a temporary assignment, in the
-        coordinate system of the unit cell.
-        
-        */
-        
-      origin.scaleAdd(a0 + adjustment.x, vectors[0], origin);
-      origin.scaleAdd(b0 + adjustment.y, vectors[1], origin);
-      origin.scaleAdd(c0 + adjustment.z, vectors[2], origin);
+      // only use nxyzStart if the origin is {0, 0, 0}
       
-      Logger.info("Jmol grid origin in Cartesion coordinates: " + origin);
+      if (origin.x == 0 && origin.y == 0 && origin.z == 0) {
+        
+        // older method -- wow! Beats me.....
+        
+        int[] xyz2crs = new int[3];
+        xyz2crs[mapc-1] = 0;        // mapc = 2 ==> [1] = 0
+        xyz2crs[mapr-1] = 1;        // mapr = 1 ==> [0] = 1
+        xyz2crs[maps-1] = 2;        // maps = 3 ==>  [2] = 2
+        int xIndex = xyz2crs[0];    // xIndex = 1
+        int yIndex = xyz2crs[1];    // yIndex = 0
+        int zIndex = xyz2crs[2];    // zIndex = 2
+        
+        origin.scaleAdd(nxyzStart[xIndex] + adjustment.x, vectors[0], origin);
+        origin.scaleAdd(nxyzStart[yIndex] + adjustment.y, vectors[1], origin);
+        origin.scaleAdd(nxyzStart[zIndex] + adjustment.z, vectors[2], origin);
 
-        /*
-        
-        The origin point is in reference to the Cartesian 
-        transform of the unit cell [a b c], but still needs
-        to be set in the coordinate system of MRC fast (x) to
-        slow (z). This origin remains in this system throughout 
-        the calculation. We do not have to convert to "real" 
-        coordinates until the end (in VolumeData.voxelPtToXYZ).
-                
-        -Bob Hanson, 1/16/2010
-        
-        */    
-        
-      
-      // a few issues here with what all this means -- may not have it exactly right.
-      
-      float[] o = new float[3];
-      o[0] = origin.x; // x --> c = 2 --> y 
-      o[1] = origin.y; // y --> r = 1 --> x
-      o[2] = origin.z; // z --> s = 3 --> z
-        
-      if (originX > 0) {
-        // emd_1003.map" from http://www.ebi.ac.uk/pdbe/emdb/
-        // assume they mean the "center the data at this point"
-        // not "put the grid origin at this coordinate"
-        Logger.info("Jmol assuming positive center means the origin of data is at {-x -y -z}");
-        originX = -originX;
-        originY = -originY;
-        originZ = -originZ;
-      } else if (originX < 0) {
-        // assume the standard "put the grid origin at this coordinate" -- an offset
-        // not that they mean the "center the data at this point"
-        Logger.info("Jmol negative center found -- uncertain here.");          
-      } else if (a0 == 0 && b0 == 0 && c0 == 0) {
-        // emd_1004.map
-        Logger.info("Jmol origin and xyz map starts are all zeros.");
       }
-      Logger.info("Jmol use   isosurface OFFSET {x y z}   if you want to shift it.");
-      origin.x = originZ + o[mapc - 1];
-      origin.y = originY + o[mapr - 1];
-      origin.z = originX + o[maps - 1];
- 
-      volumetricOrigin.set(origin);
       
-      Logger.info("Jmol origin in slow-to-fast system: " + origin + "\n");
+      volumetricOrigin.set(origin);
+
+      Logger.info("Jmol grid origin in Cartesian coordinates: " + origin);
+      Logger.info("Use  isosurface OFFSET {x y z}  if you want to shift it.");
         
       /* example:
           
-grid parameters: nx,ny,nz: 38,90,55
-grid parameters: nxStart,nyStart,nzStart: -11,-6,-11
-grid parameters: mx,my,mz: 144,16,56
-grid parameters: a,b,c,alpha,beta,gamma: 49.475,4.8375,19.4375,90.0,96.65,90.0
+isosurface within 5 {_Fe} "1blu.ccp4";
+reading isosurface data from C:/jmol-dev/workspace/Jmol/bobtest/1blu.ccp4
+FileManager opening C:\jmol-dev\workspace\Jmol\bobtest\1blu.ccp4
+data file type was determined to be MRC-
+FileManager opening C:\jmol-dev\workspace\Jmol\bobtest\1blu.ccp4
+MRC header: mode: 2
+MRC header: dmin,dmax,dmean: -2.0043933,4.9972544,-0.0151823275
+MRC header: ispg,nsymbt: 152,0
+MRC header: rms: 0.46335652
+MRC header: labels: 1
+Created by MAPMAN V. 080625/7.8.5 at Tue Jan 19 08:04:40 2010 for A. Nonymous
+MRC header: bytes read: 1024
+
+cutoff set to (dmean + 2*rms) = 0.91153073
+grid parameters: nx,ny,nz: 73,60,66
+grid parameters: nxStart,nyStart,nzStart: -12,23,-32
+grid parameters: mx,my,mz: 78,78,114
+grid parameters: a,b,c,alpha,beta,gamma: 52.0,52.0,77.1875,90.0,90.0,120.0
 grid parameters: mapc,mapr,maps: 2,1,3
 grid parameters: originX,Y,Z: 0.0,0.0,0.0
+Jmol unit cell vectors:
+    a: (0.6666667, 0.0, 0.0)
+    b: (-0.33333337, 0.57735026, 0.0)
+    c: (-2.9596254E-8, -5.1262216E-8, 0.6770833)
+Jmol grid origin in Cartesian coordinates: (19.333334, -6.9282017, -21.666666)
+Jmol origin in slow-to-fast system: (19.333334, -6.9282017, -21.666666)
 
-MRC unit cell vectors:
-    a: (0.34357637, 0.0, 0.0)
-    b: (0.0, 0.30234376, 0.0)
-    c: (-0.040195342, 0.0, 0.34476298)
-MRC origin in unit cell coordinates: (-3.3371913, -1.8140624, -3.7923927)
-MRC origin in slow-to-fast (Jmol) sytem: (-1.8140624, -3.3371913, -3.7923927)
-
-voxel grid origin:(-1.8140624, -3.3371913, -3.7923927)
-voxel grid count/vector:55 -0.040195342 -1.692914E-8 0.34476298
-voxel grid count/vector:90 0.34357637 0.0 0.0
-voxel grid count/vector:38 -1.3215866E-8 0.30234376 0.0
-JVXL read: 55 x 90 x 38 data points
-         
          */
 
     }    

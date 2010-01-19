@@ -97,7 +97,7 @@ class MrcBinaryReader extends MapFileReader {
     float rms;
     int nlabel;
 
-    nx = binarydoc.readInt();
+    nx = binarydoc.readInt(); // CCP4 "extent[0-2]"
     ny = binarydoc.readInt();
     nz = binarydoc.readInt();
 
@@ -105,14 +105,21 @@ class MrcBinaryReader extends MapFileReader {
 
     Logger.info("MRC header: mode: " + mode);
 
-    a0 = binarydoc.readInt();
-    b0 = binarydoc.readInt();
-    c0 = binarydoc.readInt();
+    nxyzStart[0] = binarydoc.readInt(); // CCP4 "nxyzstart[0-2]"
+    nxyzStart[1] = binarydoc.readInt();
+    nxyzStart[2] = binarydoc.readInt();
 
-    na = binarydoc.readInt();
+    na = binarydoc.readInt(); // CCP4 "grid[0-2]"
     nb = binarydoc.readInt();
     nc = binarydoc.readInt();
 
+    if (na == 0)
+      na = nx - 1;
+    if (nb == 0)
+      nb = ny - 1;
+    if (nc == 0)
+      nc = nz - 1;
+    
     a = binarydoc.readFloat();
     b = binarydoc.readFloat();
     c = binarydoc.readFloat();
@@ -120,11 +127,11 @@ class MrcBinaryReader extends MapFileReader {
     beta = binarydoc.readFloat();
     gamma = binarydoc.readFloat();
 
-    mapc = binarydoc.readInt();
+    mapc = binarydoc.readInt(); // CCP4 "crs2xyz[0-2]
     mapr = binarydoc.readInt();
     maps = binarydoc.readInt();
 
-    dmin = binarydoc.readFloat();
+    dmin = binarydoc.readFloat(); 
     dmax = binarydoc.readFloat();
     dmean = binarydoc.readFloat();
 
@@ -138,9 +145,9 @@ class MrcBinaryReader extends MapFileReader {
 
     binarydoc.readByteArray(extra);
 
-    originX = binarydoc.readFloat();
-    originY = binarydoc.readFloat();
-    originZ = binarydoc.readFloat();
+    origin.x = binarydoc.readFloat();  // CCP4 "origin2k"
+    origin.y = binarydoc.readFloat();
+    origin.z = binarydoc.readFloat();
 
     binarydoc.readByteArray(map);
     binarydoc.readByteArray(machst);
@@ -177,14 +184,14 @@ class MrcBinaryReader extends MapFileReader {
     }
 
     Logger.info("MRC header: bytes read: " + binarydoc.getPosition()
-        + "\n\nMRC/Jmol interpretation: \n");
+        + "\n");
 
     // setting the cutoff to mean + 2 x RMS seems to work
     // reasonably well as a default.
 
     if (params.cutoffAutomatic) {
       params.cutoff = rms * 2 + dmean;
-      Logger.info("MRC/Jmol cutoff set to (dmean + 2*rms) = " + params.cutoff);
+      Logger.info("Cutoff set to (dmean + 2*rms) = " + params.cutoff);
     }
 
     getVectorsAndOrigin();

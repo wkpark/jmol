@@ -49,8 +49,24 @@ import org.jmol.util.ArrayUtil;
   private final static String BYRESIDUE_SHAPELY = BYRESIDUE_PREFIX + "_shapely"; 
   private final static String BYRESIDUE_AMINO = BYRESIDUE_PREFIX + "_amino"; 
   
+  public final static int ROYGB = 0;
+  public final static int BGYOR = 1;
+  public final static int RWB   = 2;
+  public final static int BWR   = 3;
+  public final static int LOW   = 4;
+  public final static int HIGH  = 5;
+  public final static int BW  = 6;
+  public final static int WB  = 7;
+  public final static int JMOL = 8;
+  public final static int RASMOL = 9;
+  public final static int SHAPELY = 10;
+  public final static int AMINO = 11;
+  public final static int COLOR_RGB = 12;
+  public final static int USER = -13;
+  public final static int RESU = -14;
+
   private final static String[] colorSchemes = {
-    "roygb", "bgyor", "rwb", "bwr", "low", "high",   
+    "roygb", "bgyor", "rwb", "bwr", "low", "high", "bw", "wb",  
     BYELEMENT_JMOL, BYELEMENT_RASMOL, BYRESIDUE_SHAPELY, 
     BYRESIDUE_AMINO, "colorRGB", "user", "resu"};
 
@@ -62,21 +78,8 @@ import org.jmol.util.ArrayUtil;
   }
   
 
-  public final static int ROYGB = 0;
-  public final static int BGYOR = 1;
-  public final static int RWB   = 2;
-  public final static int BWR   = 3;
-  public final static int LOW   = 4;
-  public final static int HIGH  = 5;
-  public final static int JMOL = 6;
-  public final static int RASMOL = 7;
-  public final static int SHAPELY = 8;
-  public final static int AMINO = 9;
-  public final static int COLOR_RGB = 10;
-  public final static int USER = -11;
-  public final static int RESU = -12;
-
-  private int palette = ROYGB;
+  private int currentPalette = ROYGB;
+  private boolean currentTranslucent = false;
 
   private static int[] userScale = new int[] {0xFF808080};
   private static int[] thisScale = new int[] {0xFF808080};
@@ -90,6 +93,8 @@ import org.jmol.util.ArrayUtil;
   private static int[] argbsShapely = JmolConstants.argbsShapely;
   private static int[] argbsAmino = JmolConstants.argbsAmino;
   private static int ihalf = JmolConstants.argbsRoygbScale.length/3;
+  private static int[] palletBW;
+  private static int[] palletWB;
   
   public static synchronized int[] getRasmolScale(boolean forceNew) {
     if (rasmolScale[0] == 0 || forceNew) {
@@ -181,12 +186,13 @@ import org.jmol.util.ArrayUtil;
     return name;  
   }
   
-  public int setColorScheme(String colorScheme) {
-    return palette = getColorScheme(colorScheme, false);
+  public int setColorScheme(String colorScheme, boolean isTranslucent) {
+    currentTranslucent = isTranslucent;
+    return currentPalette = getColorScheme(colorScheme, false);
   }
 
   public String getColorSchemeName() {
-    return getColorSchemeName(palette);  
+    return getColorSchemeName(currentPalette);  
   }
   
   public final static String getColorSchemeName(int i) {
@@ -282,6 +288,7 @@ import org.jmol.util.ArrayUtil;
   }
 
   public final static int[] getColorSchemeArray(int palette) {
+    int[] b;
     switch (palette) {
     /*    case RGB:
      c = quantizeRgb(val, lo, hi, rgbRed, rgbGreen, rgbBlue);
@@ -297,10 +304,14 @@ import org.jmol.util.ArrayUtil;
       return ArrayUtil.arrayCopy(argbsRoygb, 0, ihalf, false);
     case HIGH:
       int[] a = ArrayUtil.arrayCopy(argbsRoygb, ihalf, -1, false);
-      int[] b = new int[ihalf];
+      b = new int[ihalf];
       for (int i = ihalf; --i >= 0;)
         b[i] = a[i + i];
       return b;
+    case BW:
+      return getPaletteBW();
+    case WB:
+      return getPaletteWB();
     case RWB:
       return ArrayUtil.arrayCopy(argbsRwb, 0, -1, false);
     case BWR:
@@ -325,10 +336,41 @@ import org.jmol.util.ArrayUtil;
 
   }
   
+  private static int[] getPaletteWB() {
+    if (palletWB != null) 
+      return palletWB;
+    int[] b = new int[JmolConstants.argbsRoygbScale.length];
+    for (int i = 0; i < b.length; i++) {
+      float xff = (1f / b.length * (b.length - i));        
+      b[i] = Graphics3D.colorTriadToInt(xff, xff, xff);
+    }
+    return palletWB = b;
+  }
+
+  private static int[] getPaletteBW() {
+    if (palletBW != null) 
+      return palletBW;
+    int[] b = new int[JmolConstants.argbsRoygbScale.length];
+    for (int i = 0; i < b.length; i++) {
+      float xff = (1f / b.length * i); 
+      b[i] = Graphics3D.colorTriadToInt(xff, xff, xff);
+    }
+    return palletBW = b;
+  }
+
   private final static int GRAY = 0xFF808080;
   
   public final int getArgbFromPalette(float val, float lo, float hi) {
-    return getArgbFromPalette(val, lo, hi, palette);
+    return getArgbFromPalette(val, lo, hi, currentPalette);
+  }
+  
+  public final static short getColorIndexFromPalette(float val, float lo,
+                                                     float hi, int palette,
+                                                     boolean isTranslucent) {
+    short colix = getColorIndex(getArgbFromPalette(val, lo, hi, palette));
+    if (isTranslucent)
+      colix = Graphics3D.getColixTranslucent(colix, true, (hi - val) / (hi - lo));
+    return colix;
   }
 
   public final static int getArgbFromPalette(float val, float lo, float hi, int palette) {
@@ -341,6 +383,10 @@ import org.jmol.util.ArrayUtil;
         hi = thisScale.length;
       }
       return thisScale[quantize(val, lo, hi, thisScale.length)];
+    case BW:
+      return getPaletteBW()[quantize(val, lo, hi, palletBW.length)];
+    case WB:
+      return getPaletteWB()[quantize(val, lo, hi, palletWB.length)];
     case ROYGB:
       return JmolConstants.argbsRoygbScale[quantize(val, lo, hi, JmolConstants.argbsRoygbScale.length)];
     case BGYOR:
@@ -370,10 +416,6 @@ import org.jmol.util.ArrayUtil;
     default:
       return GRAY;
     }
-  }
-
-  public final static short getColorIndexFromPalette(float val, float lo, float hi, int palette) {
-     return getColorIndex(getArgbFromPalette(val, lo, hi, palette));
   }
 
   public final static short getColorIndex(int c) {
@@ -439,7 +481,7 @@ import org.jmol.util.ArrayUtil;
   }
 
   public short getColorIndexFromPalette(float val, float lo, float hi) {
-    return getColorIndexFromPalette(val, lo, hi, palette);
+    return getColorIndexFromPalette(val, lo, hi, currentPalette, currentTranslucent);
   }
 
 /*  

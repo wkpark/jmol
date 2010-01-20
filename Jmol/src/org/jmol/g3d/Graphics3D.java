@@ -159,7 +159,6 @@ final public class Graphics3D implements JmolRendererInterface {
   public void destroy() {
     releaseBuffers();
     platform = null;
-    //System.out.println("g3d destroyed");
   }
 
   /**
@@ -295,11 +294,6 @@ final public class Graphics3D implements JmolRendererInterface {
       width <<= 1;
       height <<= 1;
     }
-/*    
-    System.out.println("Graphics3D setWidthHeight width=" + width + " height=" + height 
-    + " isAntialiased=" + isAntialiased
-    + " window width,height: " + windowWidth + "," + windowHeight);
-*/
     xLast = width - 1;
     yLast = height - 1;
     displayMinX = -(width >> 1);
@@ -316,8 +310,6 @@ final public class Graphics3D implements JmolRendererInterface {
   }
   
   public void beginRendering(Matrix3f rotationMatrix) {
-    //System.out.println("beginrendering" + windowWidth + " "+ newWindowWidth);
-
     if (currentlyRendering)
       endRendering();
     if (windowWidth != newWindowWidth || windowHeight != newWindowHeight
@@ -327,15 +319,12 @@ final public class Graphics3D implements JmolRendererInterface {
       isFullSceneAntialiasingEnabled = newAntialiasing;
       releaseBuffers();
     }
-    //System.out.println("windowwithheith" + windowWidth + " " + windowHeight);
     normix3d.setRotationMatrix(rotationMatrix);
     antialiasEnabled = antialiasThisFrame = newAntialiasing;
     currentlyRendering = true;
     twoPass = true; //only for testing -- set false to disallow second pass
     isPass2 = false;
-    //System.out.println("Graphics3D beginRendering width=" + width + " height=" + height 
-      //  + " window width,height: " + windowWidth + "," + windowHeight);
-    //System.out.println("pass1 antialiasEnabled=" + antialiasEnabled);
+    System.out.println("g3d pass1");
     colixCurrent = 0;
     haveTranslucentObjects = false;
     addAllPixels = true;
@@ -346,14 +335,9 @@ final public class Graphics3D implements JmolRendererInterface {
       zbuf = platform.zBuffer;
     }
     setWidthHeight(antialiasThisFrame);
-    //System.out.println("Graphics3D beginRendering width=" + width + " height=" + height 
-      //  + " window width,height: " + windowWidth + "," + windowHeight);
-    //System.out.println("pass1 antialiasEnabled=" + antialiasEnabled);
-    //setRectClip(clipX, clipY, clipWidth, clipHeight);
     platform.obtainScreenBuffer();
     if (backgroundImage != null)
       plotImage(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, backgroundImage, null, (short) 0, 0, 0);
-    
     random = Math.random();
   }
   public double random;
@@ -370,7 +354,7 @@ final public class Graphics3D implements JmolRendererInterface {
     if (!haveTranslucentObjects || !currentlyRendering)
       return false;
     isPass2 = true;
-    //System.out.println("pass2 " + pbuf.length);
+    System.out.println("g3d pass2");
     colixCurrent = 0;
     addAllPixels = true;
     if (pbufT == null || antialias2 != antialiasTranslucent) {
@@ -381,7 +365,6 @@ final public class Graphics3D implements JmolRendererInterface {
     antialias2 = antialiasTranslucent;
     if (antialiasThisFrame && !antialias2)
       downsampleFullSceneAntialiasing(true);
-    //System.out.println("Graphics3D setPass2 width=" + width + " height=" + height + " antialiasTranslucent=" + antialiasTranslucent);
     platform.clearTBuffer();
     return true;
   }
@@ -587,7 +570,6 @@ final public class Graphics3D implements JmolRendererInterface {
 //  }
   
   private void downsampleFullSceneAntialiasing(boolean downsampleZBuffer) {
-    //System.out.println("downsample " + antialiasThisFrame + " " + downsampleZBuffer + " " + pbuf.length + " " + width);
     int width4 = width;
     int offset1 = 0;
     int offset4 = 0;
@@ -609,7 +591,6 @@ final public class Graphics3D implements JmolRendererInterface {
       if (pbuf[i] == 0)
         pbuf[i] = bgcheck;
     bgcheck &= 0xFFFFFF;
-    //System.out.println("downsample " + downsampleZBuffer);
     for (int i = windowHeight; --i >= 0; offset4 += width4)
       for (int j = windowWidth; --j >= 0; ++offset1) {
         
@@ -753,8 +734,12 @@ final public class Graphics3D implements JmolRendererInterface {
     if (!checkTranslucent(isTranslucent && !isScreened))
       return false;
     addAllPixels = isPass2 || !isTranslucent;
-    if (isPass2)
+    if (isPass2) {
       translucencyMask = (mask << ALPHA_SHIFT) | 0xFFFFFF;
+    }
+//    if (isPass2) {
+  //    System.out.println("G3d mask " + Integer.toHexString(mask)+ " " +Integer.toHexString(TRANSPARENT)+ " " +Integer.toHexString(TRANSLUCENT_SCREENED));
+    //}
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
     currentShadeIndex = -1; 
@@ -1073,7 +1058,6 @@ final public class Graphics3D implements JmolRendererInterface {
       return;
     if (isClippedZ(zSlab))
       return;
-    //System.out.println("drawString " + str + " "+ xBaseline + " " + yBaseline);
     drawStringNoSlab(str, font3d, xBaseline, yBaseline, z); 
   }
 
@@ -1976,6 +1960,17 @@ final public class Graphics3D implements JmolRendererInterface {
     return Colix3D.getColix(argb); 
   }
 
+  public short[] getBgColixes(short[] bgcolixes) {
+    return bgcolixes;
+  }
+  public static short getColixTranslucent(int argb) {
+    int a = (argb >> 24) & 0xFF;
+    if (a == 0xFF)
+      return getColix(argb);
+    return getColixTranslucent(getColix(argb), true, a / 255f);
+  }
+
+
   public static String getHexCodes(short[] colixes) {
     if (colixes == null)
       return null;
@@ -2112,8 +2107,8 @@ final public class Graphics3D implements JmolRendererInterface {
       return (short) (colix & ~TRANSLUCENT_MASK);
     if (translucentLevel < 0) //screened
       return (short) (colix | TRANSLUCENT_MASK);
-    if (translucentLevel >= 255 || translucentLevel == 1.0)
-      return (short) (colix | TRANSPARENT);
+    if (Float.isNaN(translucentLevel) || translucentLevel >= 255 || translucentLevel == 1.0)
+      return (short) ((colix & ~TRANSLUCENT_MASK) | TRANSPARENT);
     int iLevel = (int) (translucentLevel < 1 ? translucentLevel * 256
             : translucentLevel <= 9 ? ((int) (translucentLevel-1)) << 5
                : translucentLevel < 15 ? 8 << 5 : translucentLevel);
@@ -2912,10 +2907,6 @@ final public class Graphics3D implements JmolRendererInterface {
 
   public String finalizeOutput() {
     return null;
-  }
-
-  public short[] getBgColixes(short[] bgcolixes) {
-    return bgcolixes;
   }
 
   public void fillCylinder(Atom atomA, Atom atomB, short colixA, short colixB,

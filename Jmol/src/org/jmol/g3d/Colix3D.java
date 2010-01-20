@@ -225,4 +225,5 @@ class Colix3D {
     for (int i = 0; i < predefinedArgbs.length; ++i)
       getColix(predefinedArgbs[i]);
   }
+
 }

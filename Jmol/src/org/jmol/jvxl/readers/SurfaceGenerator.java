@@ -555,14 +555,16 @@ public class SurfaceGenerator {
     }
 
     if ("setColorScheme" == propertyName) {
-      String colorScheme = (String) value;
+      Object[] o = (Object[]) value;
+      String colorScheme = (String) o[0];
+      boolean isTranslucent = ((Boolean)o[1]).booleanValue();
       if (colorScheme.equals("sets")) {
         getSurfaceSets();
         params.colorBySets = true;
         mapSurface();
         return true;
       }
-      colorEncoder.setColorScheme(colorScheme);
+      colorEncoder.setColorScheme(colorScheme, isTranslucent);
       if (surfaceReader != null
           && params.state == Parameters.STATE_DATA_COLORED)
         surfaceReader.applyColorScale();
@@ -997,6 +999,7 @@ public class SurfaceGenerator {
       //params.thePlane = new Point4f(0, 0, 1, 0);
     if (params.thePlane != null) {
       params.cutoff = 0;
+      surfaceReader.setMappingPlane(params.thePlane);
       surfaceReader.createIsosurface(true);//but don't read volume data yet
       if (meshDataServer != null)
         meshDataServer.notifySurfaceGenerationCompleted();
@@ -1006,11 +1009,11 @@ public class SurfaceGenerator {
         return;
       }
       params.mappedDataMin = Float.MAX_VALUE;
-      surfaceReader.readVolumeData(true);
+      surfaceReader.readTheVolumeData(true, params.thePlane);
     } else if (!params.colorBySets) {
-      surfaceReader.readVolumeParameters();
+      surfaceReader.readAndSetVolumeParameters();
       params.mappedDataMin = Float.MAX_VALUE;
-      surfaceReader.readVolumeData(true);
+      surfaceReader.readTheVolumeData(true, null);
     }
     colorIsosurface();
     surfaceReader.closeReader();

@@ -26,6 +26,8 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.util.Date;
 
+
+
 abstract class PolygonFileReader extends SurfaceFileReader {
 
   protected int nVertices;
@@ -47,12 +49,12 @@ abstract class PolygonFileReader extends SurfaceFileReader {
     super.discardTempData(discardAll);
   }
      
-  boolean readVolumeParameters() {
+  protected boolean readVolumeParameters() {
     // required by SurfaceReader
     return true;
   }
   
-  boolean readVolumeData(boolean isMapData) {
+  protected boolean readVolumeData(boolean isMapData) {
     // required by SurfaceReader
     return true;
   }

@@ -75,7 +75,7 @@ public class BallsRenderer extends ShapeRenderer {
       atom.transform(viewer);
     }
     boolean slabByMolecule = viewer.getSlabByMolecule();
-    boolean slabCleanly = viewer.getSlabCleanly();
+    boolean slabByAtom = viewer.getSlabByAtom();
     if (slabByMolecule && slabbing) {
       Molecule[] molecules = modelSet.getMolecules();
       int moleculeCount = modelSet.getMoleculeCountInModel(-1);
@@ -103,13 +103,13 @@ public class BallsRenderer extends ShapeRenderer {
         if (slabbing) {
 
           if (g3d.isClippedZ(atom.screenZ
-              - (slabCleanly? atoms[i].screenDiameter >> 1 : 0))) {
+              - (slabByAtom? atoms[i].screenDiameter >> 1 : 0))) {
 
             atom.setClickable(0);
             // note that in the case of navigation,
             // maxZ is set to Integer.MAX_VALUE.
 
-            int r = (slabCleanly ? -1 : 1) * atom.screenDiameter / 2;
+            int r = (slabByAtom ? -1 : 1) * atom.screenDiameter / 2;
             if (atom.screenZ + r < minZ || atom.screenZ - r > maxZ)
               continue;
             if (!g3d.isInDisplayRange(atom.screenX, atom.screenY))

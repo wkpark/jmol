@@ -12639,6 +12639,7 @@ public class ScriptEvaluator {
       viewer.setCursor(Viewer.CURSOR_WAIT);
     boolean idSeen = (initIsosurface(iShape) != null);
     boolean isWild = (idSeen && viewer.getShapeProperty(iShape, "ID") == null);
+    boolean isColorSchemeTranslucent = false;
     String translucency = null;
     String colorScheme = null;
     short[] discreteColixes = null;
@@ -12667,14 +12668,15 @@ public class ScriptEvaluator {
       case Token.boundbox:
         if (!isSyntaxCheck) {
           if (thisCommand.indexOf("# BBOX=") >= 0) {
-            String[] bbox = TextFormat.split(extractCommandOption("# BBOX"), ',');
+            String[] bbox = TextFormat.split(extractCommandOption("# BBOX"),
+                ',');
             pts = new Point3f[] { (Point3f) Escape.unescapePoint(bbox[0]),
                 (Point3f) Escape.unescapePoint(bbox[1]) };
           } else {
             pts = viewer.getBoundBoxVertices();
           }
-          addShapeProperty(propertyList, "commandOption", "BBOX=\"" + Escape.escape(pts[0]) + "," + Escape.escape(pts[1])
-              + "\"");
+          addShapeProperty(propertyList, "commandOption", "BBOX=\""
+              + Escape.escape(pts[0]) + "," + Escape.escape(pts[1]) + "\"");
           addShapeProperty(propertyList, "boundingBox", pts);
         }
         continue;
@@ -12690,11 +12692,14 @@ public class ScriptEvaluator {
         if (thisCommand.indexOf("# WITHIN=") >= 0)
           bs = Escape.unescapeBitset(extractCommandOption("# WITHIN"));
         else
-          bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult : null);          
+          bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult
+              : null);
         if (bs != null) {
           bbox = viewer.getBoxInfo(bs, -distance);
-          pts = new Point3f[] { bbox.getBboxVertices()[0], bbox.getBboxVertices()[7]};
-          addShapeProperty(propertyList, "commandOption", "WITHIN=\"" + Escape.escape(bs)+ "\"");
+          pts = new Point3f[] { bbox.getBboxVertices()[0],
+              bbox.getBboxVertices()[7] };
+          addShapeProperty(propertyList, "commandOption", "WITHIN=\""
+              + Escape.escape(bs) + "\"");
           v = new Vector();
           if (BitSetUtil.cardinalityOf(bs) == 1)
             v.add(viewer.getAtomPoint3f(BitSetUtil.firstSetBit(bs)));
@@ -12709,8 +12714,8 @@ public class ScriptEvaluator {
         }
         propertyValue = new Object[] { new Float(distance), pts, bs, v };
         if (v.size() == 1) {
-          addShapeProperty(propertyList, "withinDistance", new Float(distance));          
-          addShapeProperty(propertyList, "withinPoint", (Point3f)v.get(0));
+          addShapeProperty(propertyList, "withinDistance", new Float(distance));
+          addShapeProperty(propertyList, "withinPoint", (Point3f) v.get(0));
         }
         break;
       case Token.property:
@@ -12788,7 +12793,7 @@ public class ScriptEvaluator {
          * replaced with MAP for indicating "use the current surface" because
          * the term COLOR is too general.
          */
- 
+
         colorRangeStage = 0;
         if (getToken(i + 1).tok == Token.string) {
           colorScheme = parameterAsString(++i);
@@ -12991,6 +12996,10 @@ public class ScriptEvaluator {
         i = iToken;
         break;
       case Token.colorscheme:
+        if (tokAt(i + 1) == Token.translucent) {
+          isColorSchemeTranslucent = true;
+          i++;
+        }
         colorScheme = parameterAsString(++i);
         break;
       case Token.addhydrogens:
@@ -13456,7 +13465,9 @@ public class ScriptEvaluator {
     if (discreteColixes != null)
       addShapeProperty(propertyList, "colorDiscrete", discreteColixes);
     else if (colorScheme != null)
-      addShapeProperty(propertyList, "setColorScheme", colorScheme);
+      addShapeProperty(propertyList, "setColorScheme",
+          new Object[] { colorScheme,
+              isColorSchemeTranslucent ? Boolean.TRUE : Boolean.FALSE });
 
     // OK, now send them all
     setShapeProperty(iShape, "setProperties", propertyList);
@@ -13513,7 +13524,7 @@ public class ScriptEvaluator {
     }
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);
-    setShapeProperty(iShape, "clear", null);    
+    setShapeProperty(iShape, "clear", null);
   }
 
   private void addShapeProperty(Vector propertyList, String key,

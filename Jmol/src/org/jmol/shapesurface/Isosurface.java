@@ -209,6 +209,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       setProperty("squareData", Boolean.FALSE, null);
       return;
     }
+
     if ("color" == propertyName) {
       if (thisMesh != null) {
         //thisMesh.vertexColixes = null;
@@ -283,6 +284,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     // Isosurface / SurfaceGenerator both interested
     
+    if ("setColorScheme" == propertyName) {
+      Object[] o = (Object[]) value;
+      boolean isTranslucent = ((Boolean)o[1]).booleanValue();
+      if (thisMesh != null)
+        thisMesh.colix = Graphics3D.getColixTranslucent(thisMesh.colix, isTranslucent, isTranslucent ? 0.5f : 0);
+    }
     if ("title" == propertyName) {
       if (value instanceof String && "-".equals((String) value))
         value = null;
@@ -933,12 +940,16 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private boolean associateNormals;
 
   public int addVertexCopy(Point3f vertexXYZ, float value, int assocVertex) {
+    if (withinPoints != null && !checkWithin(vertexXYZ))
+      value = Float.NaN;
     return thisMesh.addVertexCopy(vertexXYZ, value, assocVertex,
         associateNormals);
   }
 
   public int addTriangleCheck(int iA, int iB, int iC, int check,
                                int check2, boolean isAbsolute, int color) {
+    if (iA < 0 || iB < 0 || iC < 0)
+      return -1;
     if (isAbsolute && !MeshData.checkCutoff(iA, iB, iC, thisMesh.vertexValues))
       return -1;  
     if (withinPoints != null && !checkWithinPoints(iA, iB, iC))
@@ -954,6 +965,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       || !bsWithinPoints.get(ic) && !checkWithin(ic) || !bsWithinPointsY.get(ic))
       return false;
     return true;
+  }
+
+  private boolean checkWithin(Point3f pti) {
+    for (int i = withinPoints.size(); --i >= 0; )
+      if (pti.distance((Point3f) withinPoints.get(i)) <= withinDistance) {
+        return true; 
+      }
+    return false;
   }
 
   private boolean checkWithin(int index) {

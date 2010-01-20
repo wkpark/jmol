@@ -159,7 +159,6 @@ public class MarchingCubes extends TriangleData {
   }
 
   protected void calcVoxelVertexVectors() {
-    volumeData.setMatrix();
     for (int i = 8; --i >= 0;)
       volumeData.transform(cubeVertexVectors[i],
           voxelVertexVectors[i] = new Vector3f());
@@ -259,6 +258,7 @@ public class MarchingCubes extends TriangleData {
       if (bsExcludedPlanes.get(x) && bsExcludedPlanes.get(x + xStep))
         continue;
       int xCount = 0;
+      boolean allInside = (cutoff == 0 && colorDensity);
 
       for (int y = cubeCountY; --y >= 0; pt--) {        
         for (int z = cubeCountZ; --z >= 0; pt--, cellIndex--) {
@@ -292,7 +292,7 @@ public class MarchingCubes extends TriangleData {
                   + offset.y][z + offset.z];
               if (isSquared)
                 vertexValues[i] *= vertexValues[i];
-              isInside = isInside(vertexValues[i], cutoff, isCutoffAbsolute);
+              isInside = (allInside ? true : isInside(vertexValues[i], cutoff, isCutoffAbsolute));
               if (isInside)
                 bsVoxels.set(pti);
             }
@@ -314,7 +314,7 @@ public class MarchingCubes extends TriangleData {
             continue;
           }
           if (colorDensity) {
-            if ((insideMask & 1) != 0)
+//            if ((insideMask & 1) != 0)
               addVertex(x, y, z, vertexValues[0]);
           }
           if (insideMask == 0xFF) {

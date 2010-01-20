@@ -1072,8 +1072,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.slabByMolecule;
   }
 
-  public boolean getSlabCleanly() {
-    return global.slabCleanly;
+  public boolean getSlabByAtom() {
+    return global.slabByAtom;
   }
 
   void slabByPixels(int pixels) {
@@ -5513,8 +5513,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     while (true) {
 
       // 11.9.19
-      if (key.equalsIgnoreCase("slabCleanly")) {
-        global.slabCleanly = value;
+      if (key.equalsIgnoreCase("slabByAtom")) {
+        global.slabByAtom = value;
         break;
       }
 

@@ -28,6 +28,7 @@ import java.util.BitSet;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.*;
@@ -195,7 +196,8 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected boolean isProgressive = false;
   protected boolean isXLowToHigh = false; //can be overridden in some readers by --progressive
   private float assocCutoff = 0.3f;
-
+  protected Point4f mappingPlane;
+  
   boolean vertexDataOnly;
   boolean hasColorData;
 
@@ -260,10 +262,15 @@ public abstract class SurfaceReader implements VertexDataServer {
       v.setDataSource(this);
 */  }
 
-  abstract boolean readVolumeParameters();
+  protected abstract boolean readVolumeParameters();
 
-  abstract boolean readVolumeData(boolean isMapData);
+  protected abstract boolean readVolumeData(boolean isMapData);
 
+  boolean readTheVolumeData(boolean isMapData, Point4f plane) {
+    mappingPlane = plane;
+    return readVolumeData(isMapData);  
+  }
+  
   ////////////////////////////////////////////////////////////////
   // CUBE/APBS/JVXL file reading stuff
   ////////////////////////////////////////////////////////////////
@@ -297,9 +304,13 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.jvxlUpdateInfo(params.title, nBytes);
   }
 
+  boolean readAndSetVolumeParameters() {
+    return (readVolumeParameters() && volumeData.setUnitVectors());
+  }
+
   boolean createIsosurface(boolean justForPlane) {
     resetIsosurface();
-    if (!readVolumeParameters())
+    if (!readAndSetVolumeParameters())
       return false;
     nPointsX = voxelCounts[0];
     nPointsY = voxelCounts[1];
@@ -318,7 +329,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       generateSurfaceData();
       volumeData.voxelData = voxelDataTemp;
     } else {
-      if (!readVolumeData(false))
+      if (!readTheVolumeData(false, null))
         return false;
       generateSurfaceData();
     }
@@ -397,7 +408,6 @@ public abstract class SurfaceReader implements VertexDataServer {
     nPointsX = voxelCounts[0];
     nPointsY = voxelCounts[1];
     nPointsZ = voxelCounts[2];
-    volumeData.setUnitVectors();
     setVolumeData(volumeData);
   }
 
@@ -538,7 +548,6 @@ public abstract class SurfaceReader implements VertexDataServer {
     }
     fReturn[0] = fraction;
     ptReturn.scaleAdd(fraction, edgeVector, pointA);
-    //System.out.println("SurfaceReader " + ptReturn + " " + (valueA + fraction * diff));
     return valueA + fraction * diff;
   }
 
@@ -550,7 +559,6 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   public int addTriangleCheck(int iA, int iB, int iC, int check, int check2,
                               boolean isAbsolute, int color) {
-    // System.out.println("add triangle check " + iA + " " + iB + " " + iC);
     return (meshDataServer != null ? meshDataServer.addTriangleCheck(iA, iB,
         iC, check, check2, isAbsolute, color) : isAbsolute
         && !MeshData.checkCutoff(iA, iB, iC, meshData.vertexValues) ? -1
@@ -683,6 +691,7 @@ public abstract class SurfaceReader implements VertexDataServer {
           value = valueRed;
         if (value >= valueBlue)
           value = valueBlue;
+          
         vertexColixes[i] = getColorIndexFromPalette(value);
       }
     }
@@ -694,8 +703,9 @@ public abstract class SurfaceReader implements VertexDataServer {
       // n + 1 because we want n lines between n + 1 slices
       for (int i = 0; i < n; i++) {
         float v = (jvxlData.contourValues == null ? valueRed + (i + 1) * dv : jvxlData.contourValues[i]);
-        colors[i] = Graphics3D.getColix(getArgbFromPalette(v));
+        colors[i] = Graphics3D.getColixTranslucent(getArgbFromPalette(v));
       }
+      //TODO -- this strips translucency
       jvxlData.contourColors = Graphics3D.getHexCodes(colors);
     }
   }
@@ -872,6 +882,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   private boolean haveSetAnisotropy = false;
+  
   protected void setVolumetricAnisotropy() {
     if (haveSetAnisotropy)
       return;
@@ -913,6 +924,10 @@ public abstract class SurfaceReader implements VertexDataServer {
       if (!Float.isNaN(p.x))
         setBoundingBox(p, 0);
     }
+  }
+
+  public void setMappingPlane(Point4f thePlane) {
+    mappingPlane = thePlane;
   }
   
 

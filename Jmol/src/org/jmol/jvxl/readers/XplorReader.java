@@ -142,7 +142,7 @@ MRC header: mapc,mapr,maps: 2,1,3
     getVectorsAndOrigin();      
 
     nBlock = voxelCounts[2] * voxelCounts[1];
-    if (params.cutoffAutomatic) {
+    if (params.cutoffAutomatic && params.thePlane == null) {
       params.cutoff = (boundingBox == null ? 3.0f : 1.6f);
       Logger.info("XplorReader: setting cutoff to default value of " + params.cutoff + (boundingBox == null ? " (no BOUNDBOX parameter)" : ""));
     }

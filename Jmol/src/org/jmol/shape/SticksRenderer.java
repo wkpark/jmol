@@ -54,12 +54,12 @@ public class SticksRenderer extends ShapeRenderer {
   private boolean renderWireframe;
   private boolean isAntialiased;
   private boolean slabbing;
-  private boolean slabCleanly;
+  private boolean slabByAtom;
 
 
   protected void render() {
     slabbing = viewer.getSlabEnabled();
-    slabCleanly = viewer.getSlabCleanly();          
+    slabByAtom = viewer.getSlabByAtom();          
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
     showMultipleBonds = viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
@@ -91,7 +91,7 @@ public class SticksRenderer extends ShapeRenderer {
     if (slabbing) {
       if (g3d.isClippedZ(atomA.screenZ) && g3d.isClippedZ(atomB.screenZ))
         return;
-      if(slabCleanly && 
+      if(slabByAtom && 
           (g3d.isClippedZ(atomA.screenZ) || g3d.isClippedZ(atomB.screenZ)))
         return;          
     }

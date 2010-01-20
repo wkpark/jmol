@@ -25,8 +25,10 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 import java.util.BitSet;
+import java.util.Hashtable;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
@@ -53,26 +55,31 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     boundingBox = params.boundingBox;
   }
 
+  protected float rms = 0;
+  
   protected float recordData(float value) {
      if (value < dataMin)
        dataMin = value;
      if (value > dataMax)
        dataMax = value;
      dataMean += value;
+     rms += value*value;
      return value;
   }
   
   protected void closeReader() {
     super.closeReader();
     int n = nPointsX * nPointsY * nPointsZ;
-    if (n == 0)
+    if (n == 0 || dataMax == -Float.MAX_VALUE)
       return;
     dataMean /= n;
-    if (dataMax != -Float.MAX_VALUE)
-      Logger.info("VolumeFileReader closing file: data min/max/mean = " + dataMin + ", " + dataMax + ", " + dataMean);
+    rms /= n;
+    float rmsd = (float) Math.sqrt(rms - dataMean*dataMean);
+    rms = (float) Math.sqrt(rms);
+    Logger.info("VolumeFileReader closing file: " + n + " points read; \ndata min/max/mean/rms/rmsd = " + dataMin + ", " + dataMax + ", " + dataMean + ", " + rms + ", " + rmsd);
   }
   
-  boolean readVolumeParameters() {
+  protected boolean readVolumeParameters() {
     endOfData = false;
     nSurfaces = readVolumetricHeader();
     if (nSurfaces == 0)
@@ -85,7 +92,8 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     return true;
   }
   
-  boolean readVolumeData(boolean isMapData) {
+  Point4f thePlane;
+  protected boolean readVolumeData(boolean isMapData) {
     if (!gotoAndReadVoxelData(isMapData))
       return false;
     if (!vertexDataOnly)
@@ -222,6 +230,24 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       voxelData = null;
       if (isJvxl)
         jvxlVoxelBitSet = getVoxelBitSet(nDataPoints);
+    } else if (isMapData && mappingPlane != null){
+      volumeData.setVoxelMap(new Hashtable());
+      float f = volumeData.getToPlaneParameter(mappingPlane);
+      for (int x = 0; x < nPointsX; ++x) {
+        for (int y = 0; y < nPointsY; ++y) {
+          for (int z = 0; z < nPointsZ; ++z) {
+            float v = recordData(getNextVoxelValue());
+            if (volumeData.isNearPlane(x, y, z, mappingPlane, f))
+              volumeData.setVoxelMapValue(x, y, z, v);          
+            if (nSkipX != 0)
+              skipVoxels(nSkipX);
+          }
+          if (nSkipY != 0)
+            skipVoxels(nSkipY);
+        }
+        if (nSkipZ != 0)
+          skipVoxels(nSkipZ);
+      }
     } else {
       voxelData = new float[nPointsX][][];
       // Note downsampling not allowed for JVXL files

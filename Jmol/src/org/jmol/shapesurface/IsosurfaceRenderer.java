@@ -168,8 +168,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
           && transformedVectors[normixes[i]].z < 0)
         continue;
-      if (imesh.vertexColixes != null)
-        g3d.setColix(imesh.vertexColixes[i]);
+      if (imesh.vertexColixes != null && !g3d.setColix(imesh.vertexColixes[i]))
+          continue;
       if (showNumbers && screens[i].z > 10
          && Math.abs(screens[i].x - cX) < 50
          && Math.abs(screens[i].y - cY) < 50

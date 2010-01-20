@@ -39,7 +39,8 @@ class MrcBinaryReader extends MapFileReader {
     binarydoc = new BinaryDocument();
     binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), isBigEndian);
     // data are HIGH on the inside and LOW on the outside
-    params.insideOut = !params.insideOut;
+    if (params.thePlane == null)
+      params.insideOut = !params.insideOut;
     nSurfaces = 1;    
   }
   
@@ -189,7 +190,7 @@ class MrcBinaryReader extends MapFileReader {
     // setting the cutoff to mean + 2 x RMS seems to work
     // reasonably well as a default.
 
-    if (params.cutoffAutomatic) {
+    if (params.cutoffAutomatic && params.thePlane == null) {
       params.cutoff = rms * 2 + dmean;
       Logger.info("Cutoff set to (dmean + 2*rms) = " + params.cutoff);
     }
@@ -225,6 +226,7 @@ class MrcBinaryReader extends MapFileReader {
     default:
     case 2:
       voxelValue = binarydoc.readFloat();
+ rms += voxelValue * voxelValue;
       break;
     case 3:
       //read first component only

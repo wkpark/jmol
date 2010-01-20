@@ -13,8 +13,6 @@ public interface VolumeDataInterface {
 
   public abstract void setVolumetricVector(int i, float x, float y, float z);
 
-  public abstract void setMatrix();
-
   public abstract void transform(Vector3f v1, Vector3f v2);
 
   public abstract void setPlaneParameters(Point4f plane);
@@ -24,8 +22,6 @@ public interface VolumeDataInterface {
   public abstract float distancePointToPlane(Point3f pt);
 
   public abstract void voxelPtToXYZ(int x, int y, int z, Point3f pt);
-
-  public abstract void setUnitVectors();
 
   public abstract void xyzToVoxelPt(float x, float y, float z, Point3i pt3i);
 

@@ -30,48 +30,30 @@ package org.jmol.symmetry;
  * 
  * NEVER ACCESS THESE METHODS DIRECTLY! ONLY THROUGH CLASS Symmetry
  * 
+ * use the superclass SimpleUnitCell if all you need is a simple unit cell.
  *
  */
-import javax.vecmath.Matrix4f;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.BoxInfo;
 import org.jmol.util.Quadric;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.SimpleUnitCell;
 
-
-//import org.jmol.util.Escape;
-
-class UnitCell {
+class UnitCell extends SimpleUnitCell {
   
-  final static float toRadians = (float) Math.PI * 2 / 360;
-  float a, b, c, alpha, beta, gamma;
-  boolean isPrimitive;
-  float[] notionalUnitcell; //6 parameters + 16 matrix items
-  private Matrix4f matrixCartesianToFractional;
-  private Matrix4f matrixFractionalToCartesian;
   private Point3f[] vertices; // eight corners
 
   private Point3f cartesianOffset = new Point3f();
   private Point3f fractionalOffset = new Point3f();
   
+
   UnitCell(float[] notionalUnitcell) {
-    setUnitCell(notionalUnitcell);
+    super(notionalUnitcell);
+    calcUnitcellVertices();
   }
 
-  final void toCartesian(Point3f pt) {
-    if (matrixFractionalToCartesian == null)
-      return;
-    matrixFractionalToCartesian.transform(pt);
-  }
-  
-  final void toFractional(Point3f pt) {
-    if (matrixCartesianToFractional == null)
-      return;
-    matrixCartesianToFractional.transform(pt);
-  }
-  
   private final void toFractionalUnitCell(Point3f pt) {
     if (matrixCartesianToFractional == null)
       return;
@@ -147,253 +129,142 @@ class UnitCell {
     return fractionalOffset;
   }
   
-  float[] getNotionalUnitCell() {
-    return notionalUnitcell;
-  }
-  
-  float getInfo(int infoType) {
-    switch (infoType) {
-    case JmolConstants.INFO_A:
-      return a;
-    case JmolConstants.INFO_B:
-      return b;
-    case JmolConstants.INFO_C:
-      return c;
-    case JmolConstants.INFO_ALPHA:
-      return alpha;
-    case JmolConstants.INFO_BETA:
-      return beta;
-    case JmolConstants.INFO_GAMMA:
-      return gamma;
-    }
-    return Float.NaN;
-  }
-  
   /// private methods
   
-  private void setUnitCell(float[] notionalUnitcell) {
-    if (notionalUnitcell == null || notionalUnitcell[0] == 0)
-      return;
-    this.notionalUnitcell = notionalUnitcell;
-
-    a = notionalUnitcell[JmolConstants.INFO_A];
-    b = notionalUnitcell[JmolConstants.INFO_B];
-    c = notionalUnitcell[JmolConstants.INFO_C];
-    alpha = notionalUnitcell[JmolConstants.INFO_ALPHA];
-    beta = notionalUnitcell[JmolConstants.INFO_BETA];
-    gamma = notionalUnitcell[JmolConstants.INFO_GAMMA];
-    constructFractionalMatrices();
-    calcUnitcellVertices();
-  }
-
-  private Data data;
-  
-  private class Data {
-    double cosAlpha, sinAlpha;
-    double cosBeta, sinBeta;
-    double cosGamma, sinGamma;
-    double volume;
-    double cA_, cB_, a_, b_, c_;
-    
-    Data() {
-      cosAlpha = Math.cos(toRadians * alpha);
-      sinAlpha = Math.sin(toRadians * alpha);
-      cosBeta = Math.cos(toRadians * beta);
-      sinBeta = Math.sin(toRadians * beta);
-      cosGamma = Math.cos(toRadians * gamma);
-      sinGamma = Math.sin(toRadians * gamma);
-      double unitVolume = Math.sqrt(sinAlpha * sinAlpha + sinBeta * sinBeta
-          + sinGamma * sinGamma + 2.0 * cosAlpha * cosBeta * cosGamma - 2);
-      volume = a * b * c * unitVolume;
-      // these next few are for the B' calculation
-      cA_ = (cosAlpha - cosBeta * cosGamma) / sinGamma;
-      cB_ = unitVolume / sinGamma;
-      a_ = b * c * sinAlpha / volume;
-      b_ = a * c * sinBeta / volume;
-      c_ = a * b * sinGamma / volume;
-    }
-
     final static double twoP2 = 2 * Math.PI * Math.PI;
     
     Object[] getEllipsoid(float[] parBorU) {
-      /*
-       * 
-       * returns {Vector3f[3] unitVectors, float[3] lengths}
-       * from J.W. Jeffery, Methods in X-Ray Crystallography, Appendix VI,
-       * Academic Press, 1971
-       * 
-       * comparing with Fischer and Tillmanns, Acta Cryst C44 775-776, 1988,
-       * these are really BETA values. Note that
-
-          T = exp(-2 pi^2 (a*b* U11h^2 + b*b* U22k^2 + c*c* U33l^2 
-              + 2 a*b* U12hk + 2 a*c* U13hl + 2 b*c* U23kl))
-
-       * (ORTEP type 8) is the same as
-
-          T = exp{-2 pi^2^ sum~i~[sum~j~(U~ij~ h~i~ h~j~ a*~i~ a*~j~)]}
-
-       * http://ndbserver.rutgers.edu/mmcif/dictionaries/html/cif_mm.dic/Items/_atom_site.aniso_u[1][2].html
-       * 
-       * Ortep: http://www.ornl.gov/sci/ortep/man_pdf.html
-       * 
-Anisotropic temperature factor Types 0, 1, 2, 3, and 10 use the following formula for the
-complete temperature factor.
-
-Base^(-D(b11h2 + b22k2 + b33l2 + cb12hk + cb13hl + cb23kl))
-
-The coefficients bij (i,j = 1,2,3) of the various types are defined with the following constant settings.
-
-Type 0: Base = e, c = 2, D = 1
-Type 1: Base = e, c = 1, D = l
-Type 2: Base = 2, c = 2, D = l
-Type 3: Base = 2, c = 1, D = l
-
-Anisotropic temperature factor Types 4, 5, 8, and 9 use the following formula for the
-complete temperature factor, in which a1* , a2*, a3* are reciprocal cell dimensions.
-
-exp[ -D(a1*a1*U11hh + a2*a2*U22kk + a3*a3*U33ll + C a1*a2*U12hk + C a1*a3 * U13hl + C a2*a3 * U23kl)]
-
-The coefficients Uij (i,j = 1,2,3) of the various types are defined with the following constant settings.
-
-Type 4: C = 2, D = 1/4
-Type 5: C = 1, D = 1/4
-Type 8: C = 2, D = 2pi2
-Type 9: C = 1, D = 2pi2
-
-
-For beta, we use definitions at http://www.iucr.org/iucr-top/comm/cnom/adp/finrepone/finrepone.html
-
-that betaij = 2pi^2ai*aj* Uij
-
-So if Type 8 is 
-
-exp[ -2pi^2(a1*a1*U11hh + a2*a2*U22kk + a3*a3*U33ll + 2a1*a2*U12hk + 2a1*a3 * U13hl + 2a2*a3 * U23kl)]
-
-then we have
-
-exp[ -pi^2(beta11hh + beta22kk + beta33ll + 2beta12hk + 2beta13hl + 2beta23kl)]
-
-and the betaij should be entered as Type 0. 
-
-       */
-      
-      float[] lengths = new float[6]; // last three are for factored lengths
-      if (parBorU[0] == 0) { // this is iso
-        lengths[1] = (float) Math.sqrt(parBorU[7]);
-        return new Object[] { null, lengths };
-      }
-
-      int ortepType = (int) parBorU[6];
-      boolean isFractional = (ortepType == 4 || ortepType == 5
-          || ortepType == 8 || ortepType == 9);
-      double cc = 2 - (ortepType % 2);
-      double dd = (ortepType == 8 || ortepType == 9 || ortepType == 10 ? twoP2
-          : ortepType == 4 || ortepType == 5 ? 0.25 
-          : ortepType == 2 || ortepType == 3 ? Math.log(2)
-          : 1 );
-      // types 6 and 7 not supported
-
-      //System.out.println("ortep type " + ortepType + " isFractional=" + isFractional + " D = " + dd + " C=" + cc);
-      double B11 = parBorU[0] * dd * (isFractional ? a_ * a_ : 1);
-      double B22 = parBorU[1] * dd * (isFractional ? b_ * b_ : 1);
-      double B33 = parBorU[2] * dd * (isFractional ? c_ * c_ : 1);
-      double B12 = parBorU[3] * dd * (isFractional ? a_ * b_ : 1) * cc;
-      double B13 = parBorU[4] * dd * (isFractional ? a_ * c_ : 1) * cc;
-      double B23 = parBorU[5] * dd * (isFractional ? b_ * c_ : 1) * cc;
-
-      // set bFactor = (U11*U22*U33)
-      parBorU[7] = (float) Math.pow(B11 / twoP2 / a_ / a_ * B22 / twoP2
-          / b_ / b_ * B33 / twoP2 / c_ / c_, 0.3333);
-
-      double[] Bcart = new double[6];
-
-      Bcart[0] = a * a * B11 + b * b * cosGamma * cosGamma * B22 + c * c
-          * cosBeta * cosBeta * B33 + a * b * cosGamma * B12 + b * c * cosGamma
-          * cosBeta * B23 + a * c * cosBeta * B13;
-      Bcart[1] = b * b * sinGamma * sinGamma * B22 + c * c * cA_ * cA_ * B33
-          + b * c * cA_ * sinGamma * B23;
-      Bcart[2] = c * c * cB_ * cB_ * B33;
-      Bcart[3] = 2 * b * b * cosGamma * sinGamma * B22 + 2 * c * c * cA_
-          * cosBeta * B33 + a * b * sinGamma * B12 + b * c
-          * (cA_ * cosGamma + sinGamma * cosBeta) * B23 + a * c * cA_ * B13;
-      Bcart[4] = 2 * c * c * cB_ * cosBeta * B33 + b * c * cosGamma * B23 + a
-          * c * cB_ * B13;
-      Bcart[5] = 2 * c * c * cA_ * cB_ * B33 + b * c * cB_ * sinGamma * B23;
-
-      //System.out.println("UnitCell Bcart="+Bcart[0] + " " + Bcart[1] + " " +  Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
-      Vector3f unitVectors[] = new Vector3f[3];
-      for (int i = 0; i < 3; i++)
-        unitVectors[i] = new Vector3f();
-        Quadric.getAxesForEllipsoid(Bcart, unitVectors, lengths);
-
-        // note -- this is the ellipsoid in INVERSE CARTESIAN SPACE!
-
-        double factor = Math.sqrt(0.5) / Math.PI;
-        for (int i = 0; i < 3; i++)
-          lengths[i] = (float) (factor / lengths[i]);
-        return new Object[] { unitVectors, lengths };
-    }
-    
-  }
-  
-  Object[] getEllipsoid(float[] parBorU){
-    //returns {Vector3f[3] unitVectors, float[3] lengths}
     if (parBorU == null)
       return null;
     if (data == null)
       data = new Data();
-    return data.getEllipsoid(parBorU);
-  }
 
-  private void constructFractionalMatrices() {
-    if (notionalUnitcell.length > 6 && !Float.isNaN(notionalUnitcell[21])) {
-      float[] scaleMatrix = new float[16];
-      for (int i = 0; i < 16; i++)
-        scaleMatrix[i] = notionalUnitcell[6 + i];
-      matrixCartesianToFractional = new Matrix4f(scaleMatrix);
-      matrixFractionalToCartesian = new Matrix4f();
-      matrixFractionalToCartesian.invert(matrixCartesianToFractional);
-    } else if (notionalUnitcell.length > 6 && !Float.isNaN(notionalUnitcell[14])) {
-      isPrimitive = true;
-      Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
-      float[] n = notionalUnitcell;
-      if (data == null)
-        data = new Data();
-      m.setColumn(0, n[6], n[7], n[8], 0);
-      m.setColumn(1, n[9], n[10], n[11], 0);
-      m.setColumn(2, n[12], n[13], n[14], 0);
-      m.setColumn(3, 0, 0, 0, 1);
-      matrixCartesianToFractional = new Matrix4f();
-      matrixCartesianToFractional.invert(matrixFractionalToCartesian);
-    } else {
-      Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
-      if (data == null)
-        data = new Data();
-      // 1. align the a axis with x axis
-      m.setColumn(0, a, 0, 0, 0);
-      // 2. place the b is in xy plane making a angle gamma with a
-      m.setColumn(1, (float) (b * data.cosGamma), 
-          (float) (b * data.sinGamma), 0, 0);
-      // 3. now the c axis,
-      // http://server.ccl.net/cca/documents/molecular-modeling/node4.html
-      m.setColumn(2, (float) (c * data.cosBeta), 
-          (float) (c * (data.cosAlpha - data.cosBeta * data.cosGamma) / data.sinGamma), 
-          (float) (data.volume / (a * b * data.sinGamma)), 0);
-      m.setColumn(3, 0, 0, 0, 1);
-      matrixCartesianToFractional = new Matrix4f();
-      matrixCartesianToFractional.invert(matrixFractionalToCartesian);
+    /*
+     * 
+     * returns {Vector3f[3] unitVectors, float[3] lengths} from J.W. Jeffery,
+     * Methods in X-Ray Crystallography, Appendix VI, Academic Press, 1971
+     * 
+     * comparing with Fischer and Tillmanns, Acta Cryst C44 775-776, 1988, these
+     * are really BETA values. Note that
+     * 
+     * T = exp(-2 pi^2 (a*b* U11h^2 + b*b* U22k^2 + c*c* U33l^2 + 2 a*b* U12hk +
+     * 2 a*c* U13hl + 2 b*c* U23kl))
+     * 
+     * (ORTEP type 8) is the same as
+     * 
+     * T = exp{-2 pi^2^ sum~i~[sum~j~(U~ij~ h~i~ h~j~ a*~i~ a*~j~)]}
+     * 
+     * http://ndbserver.rutgers.edu/mmcif/dictionaries/html/cif_mm.dic/Items/
+     * _atom_site.aniso_u[1][2].html
+     * 
+     * Ortep: http://www.ornl.gov/sci/ortep/man_pdf.html
+     * 
+     * Anisotropic temperature factor Types 0, 1, 2, 3, and 10 use the following
+     * formula for the complete temperature factor.
+     * 
+     * Base^(-D(b11h2 + b22k2 + b33l2 + cb12hk + cb13hl + cb23kl))
+     * 
+     * The coefficients bij (i,j = 1,2,3) of the various types are defined with
+     * the following constant settings.
+     * 
+     * Type 0: Base = e, c = 2, D = 1 Type 1: Base = e, c = 1, D = l Type 2:
+     * Base = 2, c = 2, D = l Type 3: Base = 2, c = 1, D = l
+     * 
+     * Anisotropic temperature factor Types 4, 5, 8, and 9 use the following
+     * formula for the complete temperature factor, in which a1* , a2*, a3* are
+     * reciprocal cell dimensions.
+     * 
+     * exp[ -D(a1*a1*U11hh + a2*a2*U22kk + a3*a3*U33ll + C a1*a2*U12hk + C a1*a3
+     * * U13hl + C a2*a3 * U23kl)]
+     * 
+     * The coefficients Uij (i,j = 1,2,3) of the various types are defined with
+     * the following constant settings.
+     * 
+     * Type 4: C = 2, D = 1/4 Type 5: C = 1, D = 1/4 Type 8: C = 2, D = 2pi2
+     * Type 9: C = 1, D = 2pi2
+     * 
+     * 
+     * For beta, we use definitions at
+     * http://www.iucr.org/iucr-top/comm/cnom/adp/finrepone/finrepone.html
+     * 
+     * that betaij = 2pi^2ai*aj* Uij
+     * 
+     * So if Type 8 is
+     * 
+     * exp[ -2pi^2(a1*a1*U11hh + a2*a2*U22kk + a3*a3*U33ll + 2a1*a2*U12hk +
+     * 2a1*a3 * U13hl + 2a2*a3 * U23kl)]
+     * 
+     * then we have
+     * 
+     * exp[ -pi^2(beta11hh + beta22kk + beta33ll + 2beta12hk + 2beta13hl +
+     * 2beta23kl)]
+     * 
+     * and the betaij should be entered as Type 0.
+     */
 
+    float[] lengths = new float[6]; // last three are for factored lengths
+    if (parBorU[0] == 0) { // this is iso
+      lengths[1] = (float) Math.sqrt(parBorU[7]);
+      return new Object[] { null, lengths };
     }
 
-    /* 
-     Point3f v = new Point3f(1,2,3);
-     toFractional(v);
-     System.out.println("fractionaltocart:" + matrixFractionalToCartesian);
-     System.out.println("testing mat.transform [1 2 3]" + matrixCartesianToFractional+v);
-     */
-  }
+    int ortepType = (int) parBorU[6];
+    boolean isFractional = (ortepType == 4 || ortepType == 5 || ortepType == 8 || ortepType == 9);
+    double cc = 2 - (ortepType % 2);
+    double dd = (ortepType == 8 || ortepType == 9 || ortepType == 10 ? twoP2
+        : ortepType == 4 || ortepType == 5 ? 0.25 : ortepType == 2
+            || ortepType == 3 ? Math.log(2) : 1);
+    // types 6 and 7 not supported
 
+    // System.out.println("ortep type " + ortepType + " isFractional=" +
+    // isFractional + " D = " + dd + " C=" + cc);
+    double B11 = parBorU[0] * dd * (isFractional ? data.a_ * data.a_ : 1);
+    double B22 = parBorU[1] * dd * (isFractional ? data.b_ * data.b_ : 1);
+    double B33 = parBorU[2] * dd * (isFractional ? data.c_ * data.c_ : 1);
+    double B12 = parBorU[3] * dd * (isFractional ? data.a_ * data.b_ : 1) * cc;
+    double B13 = parBorU[4] * dd * (isFractional ? data.a_ * data.c_ : 1) * cc;
+    double B23 = parBorU[5] * dd * (isFractional ? data.b_ * data.c_ : 1) * cc;
+
+    // set bFactor = (U11*U22*U33)
+    parBorU[7] = (float) Math.pow(B11 / twoP2 / data.a_ / data.a_ * B22 / twoP2
+        / data.b_ / data.b_ * B33 / twoP2 / data.c_ / data.c_, 0.3333);
+
+    double[] Bcart = new double[6];
+
+    Bcart[0] = a * a * B11 + b * b * data.cosGamma * data.cosGamma * B22 + c
+        * c * data.cosBeta * data.cosBeta * B33 + a * b * data.cosGamma * B12
+        + b * c * data.cosGamma * data.cosBeta * B23 + a * c * data.cosBeta
+        * B13;
+    Bcart[1] = b * b * data.sinGamma * data.sinGamma * B22 + c * c * data.cA_
+        * data.cA_ * B33 + b * c * data.cA_ * data.sinGamma * B23;
+    Bcart[2] = c * c * data.cB_ * data.cB_ * B33;
+    Bcart[3] = 2 * b * b * data.cosGamma * data.sinGamma * B22 + 2 * c * c
+        * data.cA_ * data.cosBeta * B33 + a * b * data.sinGamma * B12 + b * c
+        * (data.cA_ * data.cosGamma + data.sinGamma * data.cosBeta) * B23 + a
+        * c * data.cA_ * B13;
+    Bcart[4] = 2 * c * c * data.cB_ * data.cosBeta * B33 + b * c
+        * data.cosGamma * B23 + a * c * data.cB_ * B13;
+    Bcart[5] = 2 * c * c * data.cA_ * data.cB_ * B33 + b * c * data.cB_
+        * data.sinGamma * B23;
+
+    // System.out.println("UnitCell Bcart="+Bcart[0] + " " + Bcart[1] + " " +
+    // Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
+    Vector3f unitVectors[] = new Vector3f[3];
+    for (int i = 0; i < 3; i++)
+      unitVectors[i] = new Vector3f();
+    Quadric.getAxesForEllipsoid(Bcart, unitVectors, lengths);
+
+    // note -- this is the ellipsoid in INVERSE CARTESIAN SPACE!
+
+    double factor = Math.sqrt(0.5) / Math.PI;
+    for (int i = 0; i < 3; i++)
+      lengths[i] = (float) (factor / lengths[i]);
+    return new Object[] { unitVectors, lengths };
+  }
+    
   private void calcUnitcellVertices() {
+    if (notionalUnitcell == null || notionalUnitcell[0] == 0)
+      return;
     vertices = new Point3f[8];
     for (int i = 8; --i >= 0;) {
       vertices[i] = new Point3f();

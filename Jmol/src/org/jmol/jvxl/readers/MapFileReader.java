@@ -27,9 +27,8 @@ import java.io.BufferedReader;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.api.Interface;
-import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Logger;
+import org.jmol.util.SimpleUnitCell;
 
 abstract class MapFileReader extends VolumeFileReader {
 
@@ -81,9 +80,7 @@ abstract class MapFileReader extends VolumeFileReader {
       Logger.info("grid parameters: mapc,mapr,maps: " + mapc + "," + mapr + "," + maps);
       Logger.info("grid parameters: originX,Y,Z: " + origin);
       
-      SymmetryInterface unitCell = (SymmetryInterface) Interface
-          .getOptionInterface("symmetry.Symmetry");
-      unitCell.setUnitCell(new float[] { a, b, c, alpha, beta, gamma });
+      SimpleUnitCell unitCell = new SimpleUnitCell(a / na, b / nb, c / nc, alpha, beta, gamma);
 
         /*
          
@@ -128,9 +125,9 @@ abstract class MapFileReader extends VolumeFileReader {
          This is because our x is the slowest running variable.
         */               
         
-      vectors[0] = new Point3f(1f / na, 0, 0);
-      vectors[1] = new Point3f(0, 1f / nb, 0);
-      vectors[2] = new Point3f(0, 0, 1f / nc);
+      vectors[0] = new Point3f(1, 0, 0);
+      vectors[1] = new Point3f(0, 1, 0);
+      vectors[2] = new Point3f(0, 0, 1);
       unitCell.toCartesian(vectors[0]);
       unitCell.toCartesian(vectors[1]);
       unitCell.toCartesian(vectors[2]);

@@ -107,7 +107,7 @@ class ColorManager {
     switch (pid) {
     case JmolConstants.PALETTE_ENERGY:
       return ColorEncoder.getColorIndexFromPalette(((HBond)bond).getEnergy(), 
-          0.5f, 4.5f, ColorEncoder.BWR);
+          0.5f, 4.5f, ColorEncoder.BWR, false);
     }
     return (argb == 0 ? Graphics3D.RED : Graphics3D.getColix(argb));
   }
@@ -155,20 +155,20 @@ class ColorManager {
         hi = 100 * 100; // scaled by 100
       }
       return ColorEncoder.getColorIndexFromPalette(atom.getBfactor100(), 
-          lo, hi, ColorEncoder.BWR);
+          lo, hi, ColorEncoder.BWR, false);
     case JmolConstants.PALETTE_STRAIGHTNESS:
       return ColorEncoder.getColorIndexFromPalette(atom.getStraightness(), 
-          -1, 1, ColorEncoder.BWR);
+          -1, 1, ColorEncoder.BWR, false);
     case JmolConstants.PALETTE_SURFACE:
       hi = viewer.getSurfaceDistanceMax();
       return ColorEncoder.getColorIndexFromPalette(atom.getSurfaceDistance100(), 
-          0, hi, ColorEncoder.BWR);
+          0, hi, ColorEncoder.BWR, false);
     case JmolConstants.PALETTE_AMINO:
       return ColorEncoder.getColorIndexFromPalette(atom
-          .getGroupID(), 0, 0, ColorEncoder.AMINO);
+          .getGroupID(), 0, 0, ColorEncoder.AMINO, false);
     case JmolConstants.PALETTE_SHAPELY:
       return ColorEncoder.getColorIndexFromPalette(atom
-          .getGroupID(), 0, 0, ColorEncoder.SHAPELY);
+          .getGroupID(), 0, 0, ColorEncoder.SHAPELY, false);
     case JmolConstants.PALETTE_GROUP:
       // viewer.calcSelectedGroupsCount() must be called first ...
       // before we call getSelectedGroupCountWithinChain()
@@ -179,19 +179,19 @@ class ColorManager {
       return ColorEncoder.getColorIndexFromPalette(
           atom.getSelectedGroupIndexWithinChain(), 0,
           atom.getSelectedGroupCountWithinChain() - 1,
-          ColorEncoder.BGYOR);
+          ColorEncoder.BGYOR, false);
     case JmolConstants.PALETTE_MONOMER:
       // viewer.calcSelectedMonomersCount() must be called first ...
       return ColorEncoder.getColorIndexFromPalette(
           atom.getSelectedMonomerIndexWithinPolymer(), 
           0, atom.getSelectedMonomerCountWithinPolymer() - 1,
-          ColorEncoder.BGYOR);
+          ColorEncoder.BGYOR, false);
     case JmolConstants.PALETTE_MOLECULE:
       modelSet = viewer.getModelSet();
       return ColorEncoder.getColorIndexFromPalette(
           modelSet.getMoleculeIndex(atom.getAtomIndex()), 
           0, modelSet.getMoleculeCountInModel(atom.getModelIndex()) - 1, 
-          ColorEncoder.ROYGB);
+          ColorEncoder.ROYGB, false);
     case JmolConstants.PALETTE_ALTLOC:
       modelSet = viewer.getModelSet();
       //very inefficient!
@@ -200,7 +200,7 @@ class ColorManager {
           modelSet.getAltLocIndexInModel(modelIndex,
           atom.getAlternateLocationID()), 
           0, modelSet.getAltLocCountInModel(modelIndex),
-          ColorEncoder.ROYGB);
+          ColorEncoder.ROYGB, false);
     case JmolConstants.PALETTE_INSERTION:
       modelSet = viewer.getModelSet();
       //very inefficient!
@@ -209,7 +209,7 @@ class ColorManager {
           modelSet.getInsertionCodeIndexInModel(
           modelIndex, atom.getInsertionCode()), 
           0, modelSet.getInsertionCountInModel(modelIndex),
-          ColorEncoder.ROYGB);
+          ColorEncoder.ROYGB, false);
     case JmolConstants.PALETTE_JMOL:
       id = atom.getAtomicAndIsotopeNumber();
       argb = getJmolOrRasmolArgb(id, Token.jmol);
@@ -329,8 +329,8 @@ class ColorManager {
   
   short getColixForPropertyValue(float val) {
     return (colorLo < colorHi ? 
-        ColorEncoder.getColorIndexFromPalette(val, colorLo, colorHi, palette)
-        :ColorEncoder.getColorIndexFromPalette(-val, -colorLo, -colorHi, palette));    
+        ColorEncoder.getColorIndexFromPalette(val, colorLo, colorHi, palette, false)
+        :ColorEncoder.getColorIndexFromPalette(-val, -colorLo, -colorHi, palette, false));    
   }
 
 }

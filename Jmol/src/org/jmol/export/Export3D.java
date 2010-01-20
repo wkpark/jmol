@@ -540,9 +540,18 @@ final public class Export3D implements JmolRendererInterface {
     g3d.drawTriangle(screenA, colixA, screenB, colixB, screenC, colixC, check);
   }
 
-  public void drawTriangle(Point3i pointA, Point3i pointB, Point3i pointC,
+  public void drawTriangle(Point3i screenA, Point3i screenB, Point3i screenC,
                            int check) {
-    // bypassed by exportSurface in exporters
+    // primary method for mapped Mesh
+    if ((check & 1) == 1)
+      drawLine(colix, colix, screenA.x, screenA.y, screenA.z, screenB.x,
+          screenB.y, screenB.z);
+    if ((check & 2) == 2)
+      drawLine(colix, colix, screenB.x, screenB.y, screenB.z, screenC.x,
+          screenC.y, screenC.z);
+    if ((check & 4) == 4)
+      drawLine(colix, colix, screenA.x, screenA.y, screenA.z, screenC.x,
+          screenC.y, screenC.z);
   }
 
 

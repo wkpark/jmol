@@ -980,11 +980,13 @@ public class SurfaceGenerator {
     setMarchingSquares(surfaceReader.marchingSquares);
     surfaceReader.discardTempData(false);
     params.mappedDataMin = Float.MAX_VALUE;
-    if (surfaceReader.hasColorData || params.colorDensity)
+    surfaceReader.closeReader();
+    if (surfaceReader.hasColorData || params.colorDensity) {
+      params.state = Parameters.STATE_DATA_COLORED;
       colorIsosurface();
-    else
-      surfaceReader.closeReader();
-    surfaceReader = null; // resets voxel reader for mapping
+    } else {
+      surfaceReader = null; // resets voxel reader for mapping
+    }
   }
 
   private void mapSurface() {

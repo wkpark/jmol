@@ -324,7 +324,6 @@ final public class Graphics3D implements JmolRendererInterface {
     currentlyRendering = true;
     twoPass = true; //only for testing -- set false to disallow second pass
     isPass2 = false;
-    System.out.println("g3d pass1");
     colixCurrent = 0;
     haveTranslucentObjects = false;
     addAllPixels = true;
@@ -354,7 +353,6 @@ final public class Graphics3D implements JmolRendererInterface {
     if (!haveTranslucentObjects || !currentlyRendering)
       return false;
     isPass2 = true;
-    System.out.println("g3d pass2");
     colixCurrent = 0;
     addAllPixels = true;
     if (pbufT == null || antialias2 != antialiasTranslucent) {

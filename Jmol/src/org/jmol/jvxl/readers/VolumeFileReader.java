@@ -55,15 +55,12 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     boundingBox = params.boundingBox;
   }
 
-  protected float rms = 0;
-  
   protected float recordData(float value) {
      if (value < dataMin)
        dataMin = value;
      if (value > dataMax)
        dataMax = value;
      dataMean += value;
-     rms += value*value;
      return value;
   }
   
@@ -73,10 +70,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     if (n == 0 || dataMax == -Float.MAX_VALUE)
       return;
     dataMean /= n;
-    rms /= n;
-    float rmsd = (float) Math.sqrt(rms - dataMean*dataMean);
-    rms = (float) Math.sqrt(rms);
-    Logger.info("VolumeFileReader closing file: " + n + " points read; \ndata min/max/mean/rms/rmsd = " + dataMin + ", " + dataMax + ", " + dataMean + ", " + rms + ", " + rmsd);
+    Logger.info("VolumeFileReader closing file: " + n + " points read; \ndata min/max/mean = " + dataMin + ", " + dataMax + ", " + dataMean );
   }
   
   protected boolean readVolumeParameters() {

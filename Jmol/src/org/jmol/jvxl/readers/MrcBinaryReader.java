@@ -226,7 +226,6 @@ class MrcBinaryReader extends MapFileReader {
     default:
     case 2:
       voxelValue = binarydoc.readFloat();
- rms += voxelValue * voxelValue;
       break;
     case 3:
       //read first component only

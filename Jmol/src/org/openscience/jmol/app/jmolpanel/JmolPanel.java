@@ -1154,7 +1154,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
           return; // make no assumptions - require a type by extension
         sType = sType.substring(i + 1).toUpperCase();
       }
-      Logger.info(viewer.createImage(fileName, sType, null, sd.getQuality(sType), 0, 0));
+      Logger.info((String) viewer.createImage(fileName, sType, null, sd.getQuality(sType), 0, 0));
     }
 
   }
@@ -1232,7 +1232,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
       String fileName = (new Dialog()).getSaveFileNameFromDialog(viewer,
           null, "SPT");
       if (fileName != null)
-        Logger.info(viewer.createImage(fileName, "SPT", viewer.getStateInfo(),
+        Logger.info((String) viewer.createImage(fileName, "SPT", viewer.getStateInfo(),
             Integer.MIN_VALUE, 0, 0));
     }
   }

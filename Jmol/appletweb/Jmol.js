@@ -1,4 +1,4 @@
-/* Jmol 11.7 script library Jmol.js  12:17 AM 4/20/2009 Bob Hanson
+/* Jmol 11.9 script library Jmol.js  6:56 AM 1/20/2010 Bob Hanson
 
  checkbox heirarchy -- see http://chemapps.stolaf.edu/jmol/docs/examples-11/check.htm
 
@@ -72,6 +72,12 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh 12/2009 -- added jmolSetParameter(name, value)
 // bh 12/2009 -- added PARAMS=name:value;name:value;name:value... for command line
 // bh 12/2009 -- overhaul of target checking
+// bh 1/2010  -- all _xxxx() methods ALWAYS have complete argument list
+// bh 1/2010  -- adds option to run a JavaScript function from any Jmol control. 
+//               This is accomplished by passing an array rather than a script:
+//               jmolHref([myfunc,"my param 1", "my param 2"], "testing")
+//               function myfunc(jmolControlObject, [myfunc,"my param 1", "my param 2"], target){...}
+//               and allows much more flexibility with responding to controls
 
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
@@ -179,7 +185,7 @@ function jmolButton(script, label, id, title) {
   var scriptIndex = _jmolAddScript(script);
   var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input type='button' name='" + id + "' id='" + id +
           "' value='" + label +
-          "' onclick='_jmolClick(" + scriptIndex + _jmol.targetText +
+          "' onclick='_jmolClick(this," + scriptIndex + _jmol.targetText +
           ")' onmouseover='_jmolMouseOver(" + scriptIndex +
           ");return true' onmouseout='_jmolMouseOut()' " +
           _jmol.buttonCssText + " /></span>";
@@ -280,7 +286,7 @@ function jmolLink(script, label, id, title) {
   ++_jmol.linkCount;
   var scriptIndex = _jmolAddScript(script);
   var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><a name='" + id + "' id='" + id + 
-          "' href='javascript:_jmolClick(" + scriptIndex + _jmol.targetText + ");' onmouseover='_jmolMouseOver(" + scriptIndex +
+          "' href='javascript:_jmolClick(this," + scriptIndex + _jmol.targetText + ");' onmouseover='_jmolMouseOver(" + scriptIndex +
           ");return true;' onmouseout='_jmolMouseOut()' " +
           _jmol.linkCssText + ">" + label + "</a></span>";
   if (_jmol.debugAlert)
@@ -304,11 +310,17 @@ function jmolCommandInput(label, size, id, title) {
 function _jmolCommandKeyPress(e, id, target) {
 	var keycode = (window.event ? window.event.keyCode : e ? e.which : 0);
 	if (keycode == 13) {
-		jmolScript(document.getElementById(id).value, target)
+		var inputBox = document.getElementById(id)
+		_jmolScriptExecute(inputBox, inputBox.value, target)
 	}
 }
 
-
+function _jmolScriptExecute(element,script,target) {
+	if (typeof(script) == "object")
+		script[0](element, script, target)
+	else
+		jmolScript(script, target) 
+}
 
 function jmolMenu(arrayOfMenuItems, size, id, title) {
   _jmolInitCheck();
@@ -379,7 +391,7 @@ function jmolAppletInline(size, inlineModel, script, nameSuffix) {
 
 function jmolSetTarget(targetSuffix) {
   _jmol.targetSuffix = targetSuffix;
-  _jmol.targetText = targetSuffix ? ",\"" + targetSuffix + "\"" : "";
+  _jmol.targetText = targetSuffix ? ",\"" + targetSuffix + "\"" : ",0";
 }
 
 function jmolScript(script, targetSuffix) {
@@ -560,7 +572,7 @@ var _jmol = {
   menuCssText: "",
   
   targetSuffix: 0,
-  targetText: "",
+  targetText: ",0",
   scripts: [""],
   params: {
 	syncId: ("" + Math.random()).substring(3),
@@ -1001,7 +1013,7 @@ function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, 
   var scriptIndex = _jmolAddScript(script);
   var eospan = "</span>"
   var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input name='" 
-	+ groupName + "' id='"+id+"' type='radio' onclick='_jmolClick(" +
+	+ groupName + "' id='"+id+"' type='radio' onclick='_jmolClick(this," +
          scriptIndex + _jmol.targetText + ");return true;' onmouseover='_jmolMouseOver(" +
          scriptIndex + ");return true;' onmouseout='_jmolMouseOut()' " +
 	 (isChecked ? "checked='true' " : "") + _jmol.radioCssText + " />"
@@ -1072,22 +1084,22 @@ function _jmolAddScript(script) {
   return index;
 }
 
-function _jmolClick(scriptIndex, targetSuffix, elementClicked) {
+function _jmolClick(elementClicked, scriptIndex, targetSuffix) {
   _jmol.element = elementClicked;
-  jmolScript(_jmol.scripts[scriptIndex], targetSuffix);
+  _jmolScriptExecute(elementClicked, _jmol.scripts[scriptIndex], targetSuffix);
 }
 
 function _jmolMenuSelected(menuObject, targetSuffix) {
   var scriptIndex = menuObject.value;
   if (scriptIndex != undefined) {
-    jmolScript(_jmol.scripts[scriptIndex], targetSuffix);
+    _jmolScriptExecute(menuObject, _jmol.scripts[scriptIndex], targetSuffix);
     return;
   }
   var len = menuObject.length;
   if (typeof len == "number") {
     for (var i = 0; i < len; ++i) {
       if (menuObject[i].selected) {
-        _jmolClick(menuObject[i].value, targetSuffix);
+        _jmolClick(menuObject[i], menuObject[i].value, targetSuffix);
 	return;
       }
     }
@@ -1145,7 +1157,7 @@ function _jmolNotifyGroup(m, isOn){
 
 function _jmolCbClick(ckbox, whenChecked, whenUnchecked, targetSuffix) {
   _jmol.control = ckbox
-  _jmolClick(ckbox.checked ? whenChecked : whenUnchecked, targetSuffix);
+  _jmolClick(ckbox, ckbox.checked ? whenChecked : whenUnchecked, targetSuffix);
   if(_jmol.checkboxMasters[ckbox.id])
 	_jmolNotifyGroup(_jmol.checkboxMasters[ckbox.id], ckbox.checked)
   if(_jmol.checkboxItems[ckbox.id])

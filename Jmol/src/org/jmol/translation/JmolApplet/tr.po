@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-01-15 18:19+0100\n"
+"POT-Creation-Date: 2010-01-22 18:30+0100\n"
 "PO-Revision-Date: 2009-11-14 20:50+0000\n"
 "Last-Translator: Mustafa Yılmaz <apshalasha@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: Turkish\n"
 
-#: org/jmol/applet/AppletConsole.java:97 org/jmol/console/JmolConsole.java:75
+#: org/jmol/applet/AppletConsole.java:97
 msgid "Jmol Script Console"
 msgstr "Jmol Betik Uçbirimi"
 
@@ -1585,7 +1585,7 @@ msgid "About..."
 msgstr "Hakkında..."
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1095
-#: org/jmol/script/ScriptEvaluator.java:2354
+#: org/jmol/script/ScriptEvaluator.java:2356
 msgid "bad argument count"
 msgstr "Yanlış bağımsız değişken hesabı"
 
@@ -1595,7 +1595,7 @@ msgid "invalid context for {0}"
 msgstr "{0} için geçersiz içerik"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1101
-#: org/jmol/script/ScriptEvaluator.java:2378
+#: org/jmol/script/ScriptEvaluator.java:2380
 msgid "command expected"
 msgstr "komut bekleniyor"
 
@@ -1604,7 +1604,7 @@ msgid "{ number number number } expected"
 msgstr "{ number number number } gerekli"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1107
-#: org/jmol/script/ScriptEvaluator.java:2387
+#: org/jmol/script/ScriptEvaluator.java:2389
 msgid "unexpected end of script command"
 msgstr "beklenmeyen komut satırı sonu komutu"
 
@@ -1639,7 +1639,7 @@ msgid "missing END for {0}"
 msgstr "{0} için END bulunamıyor"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1131
-#: org/jmol/script/ScriptEvaluator.java:2451
+#: org/jmol/script/ScriptEvaluator.java:2453
 msgid "number expected"
 msgstr "sayı gerekli"
 
@@ -1667,7 +1667,7 @@ msgid "unrecognized expression token: {0}"
 msgstr "tanınmayan ifade belirtkesi: {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1149
-#: org/jmol/script/ScriptEvaluator.java:2500
+#: org/jmol/script/ScriptEvaluator.java:2502
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "tanınmayan {0} parametre"
@@ -1677,137 +1677,137 @@ msgstr "tanınmayan {0} parametre"
 msgid "unrecognized token: {0}"
 msgstr "tanınmayan belirtke: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2169
+#: org/jmol/script/ScriptCompiler.java:2184
 msgid "script compiler ERROR: "
 msgstr "betik derteyici HATASI: "
 
-#: org/jmol/script/ScriptEvaluator.java:2216
-#: org/jmol/script/ScriptEvaluator.java:7619
+#: org/jmol/script/ScriptEvaluator.java:2218
+#: org/jmol/script/ScriptEvaluator.java:7716
 msgid "script ERROR: "
 msgstr "betik HATASI: "
 
-#: org/jmol/script/ScriptEvaluator.java:2348
+#: org/jmol/script/ScriptEvaluator.java:2350
 msgid "x y z axis expected"
 msgstr "x y z eksenleri gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2351
+#: org/jmol/script/ScriptEvaluator.java:2353
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr "{0} arkaplan model gösterimiyle birlikte izin verilmez"
 
-#: org/jmol/script/ScriptEvaluator.java:2357
+#: org/jmol/script/ScriptEvaluator.java:2359
 msgid "Miller indices cannot all be zero."
 msgstr "Miller dizinlerinin hepsi sıfır olamaz."
 
-#: org/jmol/script/ScriptEvaluator.java:2360
+#: org/jmol/script/ScriptEvaluator.java:2362
 msgid "bad [R,G,B] color"
 msgstr "hatalı [R,G,B] rengi"
 
-#: org/jmol/script/ScriptEvaluator.java:2363
+#: org/jmol/script/ScriptEvaluator.java:2365
 msgid "boolean expected"
 msgstr "boole gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2366
+#: org/jmol/script/ScriptEvaluator.java:2368
 msgid "boolean or number expected"
 msgstr "boole veya sayı gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2369
+#: org/jmol/script/ScriptEvaluator.java:2371
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "boole, sayı, veya {0} gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2372
+#: org/jmol/script/ScriptEvaluator.java:2374
 msgid "color expected"
 msgstr "renk gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2375
+#: org/jmol/script/ScriptEvaluator.java:2377
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "bir renk ya da palet adı (Jmol,Rasmol) gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2381
+#: org/jmol/script/ScriptEvaluator.java:2383
 msgid "{x y z} or $name or (atom expression) required"
 msgstr "{x y z} veya $name veya (atom ifadesi) gerekiyor"
 
-#: org/jmol/script/ScriptEvaluator.java:2384
+#: org/jmol/script/ScriptEvaluator.java:2386
 msgid "draw object not defined"
 msgstr "çizim nesnesi tanımlanmamış"
 
-#: org/jmol/script/ScriptEvaluator.java:2390
+#: org/jmol/script/ScriptEvaluator.java:2392
 msgid "valid (atom expression) expected"
 msgstr "geçerli (atom ifadesi) gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2393
+#: org/jmol/script/ScriptEvaluator.java:2395
 msgid "(atom expression) or integer expected"
 msgstr "(atom ifadesi) veya tam sayı gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2396
+#: org/jmol/script/ScriptEvaluator.java:2398
 msgid "filename expected"
 msgstr "dosyaadı gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2399
+#: org/jmol/script/ScriptEvaluator.java:2401
 msgid "file not found"
 msgstr "dosya bulunamadı"
 
-#: org/jmol/script/ScriptEvaluator.java:2402
+#: org/jmol/script/ScriptEvaluator.java:2404
 msgid "incompatible arguments"
 msgstr "uyumsuz bağımsız değişkenler"
 
-#: org/jmol/script/ScriptEvaluator.java:2405
+#: org/jmol/script/ScriptEvaluator.java:2407
 msgid "insufficient arguments"
 msgstr "yetersiz bağımsız değişken"
 
-#: org/jmol/script/ScriptEvaluator.java:2408
+#: org/jmol/script/ScriptEvaluator.java:2410
 msgid "integer expected"
 msgstr "tamsayı gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2411
+#: org/jmol/script/ScriptEvaluator.java:2413
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "alan dışı tamsayı ({0} - {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2414
+#: org/jmol/script/ScriptEvaluator.java:2416
 msgid "invalid argument"
 msgstr "geçersiz bağımsız değişken"
 
-#: org/jmol/script/ScriptEvaluator.java:2417
+#: org/jmol/script/ScriptEvaluator.java:2419
 msgid "invalid parameter order"
 msgstr "geçersiz parametre dizisi"
 
-#: org/jmol/script/ScriptEvaluator.java:2420
+#: org/jmol/script/ScriptEvaluator.java:2422
 msgid "keyword expected"
 msgstr "anahtar sözcük gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2423
+#: org/jmol/script/ScriptEvaluator.java:2425
 msgid "no MO coefficient data available"
 msgstr "Kullanılabilir MO katsayı verisi yok"
 
-#: org/jmol/script/ScriptEvaluator.java:2426
+#: org/jmol/script/ScriptEvaluator.java:2428
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "1 den {0} 'a bir MO dizini gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2429
+#: org/jmol/script/ScriptEvaluator.java:2431
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "Bu çerçeve için kullanılabilir MO taban/katsayı verisi yok"
 
-#: org/jmol/script/ScriptEvaluator.java:2432
+#: org/jmol/script/ScriptEvaluator.java:2434
 msgid "no MO occupancy data available"
 msgstr "Kullanılabilir MO işgal verisi yok"
 
-#: org/jmol/script/ScriptEvaluator.java:2435
+#: org/jmol/script/ScriptEvaluator.java:2437
 msgid "Only one molecular orbital is available in this file"
 msgstr "Bu dosyada sadece bir kullanılabilir moleküler orbital var"
 
-#: org/jmol/script/ScriptEvaluator.java:2438
+#: org/jmol/script/ScriptEvaluator.java:2440
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "{0} sadece bir modelin gösterilmesine ihtiyaç duyuyor"
 
-#: org/jmol/script/ScriptEvaluator.java:2441
+#: org/jmol/script/ScriptEvaluator.java:2443
 msgid "No data available"
 msgstr "Kullanılabilir veri yok"
 
-#: org/jmol/script/ScriptEvaluator.java:2445
+#: org/jmol/script/ScriptEvaluator.java:2447
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
@@ -1815,25 +1815,25 @@ msgstr ""
 "Dosyadan hiç kısmi yük okunmadı; Jmol MEP verisini işlemek için bunlara "
 "ihtiyaç duyuyor."
 
-#: org/jmol/script/ScriptEvaluator.java:2448
+#: org/jmol/script/ScriptEvaluator.java:2450
 msgid "No unit cell"
 msgstr "Birim hücre yok"
 
-#: org/jmol/script/ScriptEvaluator.java:2454
+#: org/jmol/script/ScriptEvaluator.java:2456
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "sayı  ({0} veya {1}) olmalı"
 
-#: org/jmol/script/ScriptEvaluator.java:2457
+#: org/jmol/script/ScriptEvaluator.java:2459
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "alan dışı ondalık sayı ({0} - {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2460
+#: org/jmol/script/ScriptEvaluator.java:2462
 msgid "object name expected after '$'"
 msgstr "'$' 'dan sonra nesne adı gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2464
+#: org/jmol/script/ScriptEvaluator.java:2466
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
@@ -1842,84 +1842,89 @@ msgstr ""
 "düzlem bekleniyor -- ya üç nokta ya atom ifadeleri ya da {0} veya {1} veya "
 "{2}"
 
-#: org/jmol/script/ScriptEvaluator.java:2467
+#: org/jmol/script/ScriptEvaluator.java:2469
 msgid "property name expected"
 msgstr "özellik adı gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2470
+#: org/jmol/script/ScriptEvaluator.java:2472
 #, java-format
 msgid "space group {0} was not found."
 msgstr "Uzay grubu {0} bulunamadı."
 
-#: org/jmol/script/ScriptEvaluator.java:2473
+#: org/jmol/script/ScriptEvaluator.java:2475
 msgid "quoted string expected"
 msgstr "Tırnak içindeki karakter dizgisi gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2476
+#: org/jmol/script/ScriptEvaluator.java:2478
 msgid "quoted string or identifier expected"
 msgstr "tırnak içindeki karakter dizgisi veya tanımlayıcı gerekli"
 
-#: org/jmol/script/ScriptEvaluator.java:2479
+#: org/jmol/script/ScriptEvaluator.java:2481
 msgid "too many rotation points were specified"
 msgstr "çok fazla dönme noktası belirtilmiş"
 
-#: org/jmol/script/ScriptEvaluator.java:2482
+#: org/jmol/script/ScriptEvaluator.java:2484
 msgid "too many script levels"
 msgstr "çok fazla betik düzeyi"
 
-#: org/jmol/script/ScriptEvaluator.java:2485
+#: org/jmol/script/ScriptEvaluator.java:2487
 msgid "unrecognized atom property"
 msgstr "tanınmayan atom özelliği"
 
-#: org/jmol/script/ScriptEvaluator.java:2488
+#: org/jmol/script/ScriptEvaluator.java:2490
 msgid "unrecognized bond property"
 msgstr "tanınmayan bağ özelliği"
 
-#: org/jmol/script/ScriptEvaluator.java:2491
+#: org/jmol/script/ScriptEvaluator.java:2493
 msgid "unrecognized command"
 msgstr "tanınmayan komut"
 
-#: org/jmol/script/ScriptEvaluator.java:2494
+#: org/jmol/script/ScriptEvaluator.java:2496
 msgid "runtime unrecognized expression"
 msgstr "tanınmayan çalışma zamanı deyimi"
 
-#: org/jmol/script/ScriptEvaluator.java:2497
+#: org/jmol/script/ScriptEvaluator.java:2499
 msgid "unrecognized object"
 msgstr "tanınmayan nesne"
 
-#: org/jmol/script/ScriptEvaluator.java:2504
+#: org/jmol/script/ScriptEvaluator.java:2506
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr ""
 "Jmol durum betiğinde bilinmeyen {0} parametre (ne olursa olsun ayarlandı)"
 
-#: org/jmol/script/ScriptEvaluator.java:2507
+#: org/jmol/script/ScriptEvaluator.java:2509
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "tanınmayan GÖSTER parametresi --  {0} kullanın"
 
-#: org/jmol/script/ScriptEvaluator.java:2513
+#: org/jmol/script/ScriptEvaluator.java:2515
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "neyi yaz? {0} ya da {1} \"dosyaadı\""
 
-#: org/jmol/script/ScriptEvaluator.java:5708
+#: org/jmol/script/ScriptEvaluator.java:5772
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} bağlantı(lar) silindi"
 
-#: org/jmol/script/ScriptEvaluator.java:5728
+#: org/jmol/script/ScriptEvaluator.java:5792
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} yeni bağ; {1} düzenlenmiş"
 
-#: org/jmol/script/ScriptEvaluator.java:7743
-#: org/jmol/script/ScriptEvaluator.java:7965
+#: org/jmol/script/ScriptEvaluator.java:6919
+#, java-format
+msgid "file {0} created"
+msgstr ""
+
+#: org/jmol/script/ScriptEvaluator.java:7840
+#: org/jmol/script/ScriptEvaluator.java:8062
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atom silindi"
 
-#: org/jmol/script/ScriptEvaluator.java:8528
+#: org/jmol/script/ScriptEvaluator.java:8608
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} hidrojen bağ(lar)ı"
@@ -2136,31 +2141,31 @@ msgstr "{0} atomlar gizli"
 msgid "{0} atoms selected"
 msgstr "{0} atom(lar) seçildi"
 
-#: org/jmol/viewer/Viewer.java:4030
+#: org/jmol/viewer/Viewer.java:4041
 #, fuzzy, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} hidrojen bağ(lar)ı"
 
-#: org/jmol/viewer/Viewer.java:4057
+#: org/jmol/viewer/Viewer.java:4068
 msgid "Drag to move label"
 msgstr "Etiketi taşımak için sürükleyin"
 
-#: org/jmol/viewer/Viewer.java:5067
+#: org/jmol/viewer/Viewer.java:5080
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr "HATA: ikili işaret yazı değerine atanamadı: {0}"
 
-#: org/jmol/viewer/Viewer.java:5291 org/jmol/viewer/Viewer.java:5482
+#: org/jmol/viewer/Viewer.java:5318 org/jmol/viewer/Viewer.java:5509
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr "HATA: ikili işaret sayısal değere atanamadı: {0}"
 
-#: org/jmol/viewer/Viewer.java:6020
+#: org/jmol/viewer/Viewer.java:6053
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "HATA: Bu değişkenin değeri bir ikiliye atanamadı: {0}"
 
-#: org/jmol/viewer/Viewer.java:7489
+#: org/jmol/viewer/Viewer.java:7527
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "panoya erişilemiyor -- işaretli uygulamacığı kullanın"
 

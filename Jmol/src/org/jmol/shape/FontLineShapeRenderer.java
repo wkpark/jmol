@@ -67,15 +67,37 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
     box.setBounds(0, 0, 0, 0);
   }
   
-  protected void renderLine(Point3f p0, Point3f p1, int widthPixels,
+  protected int getDiameter(int z, int madOrPixels) {
+    int diameter;
+    boolean isMad = (madOrPixels > 20);
+    switch (exportType) {
+    case Graphics3D.EXPORT_CARTESIAN:
+      diameter = (isMad ? madOrPixels 
+          : (int) (viewer.unscaleToScreen(z, madOrPixels * 2) * 1000));
+      break;
+    default:
+      if (isMad) {
+        // mad
+        diameter = viewer.scaleToScreen(z, madOrPixels); 
+      } else {
+        // pixels, and that's what we want
+        if (g3d.isAntialiased())
+          madOrPixels += madOrPixels;
+        diameter = madOrPixels;
+      }
+    }
+    return diameter;
+  }  
+
+  protected void renderLine(Point3f p0, Point3f p1, int diameter,
                             Point3i pt0, Point3i pt1, boolean drawTicks) {
     // used by Bbcage, Uccage, and axes
     pt0.set((int) p0.x, (int) p0.y, (int) p0.z);
     pt1.set((int) p1.x, (int) p1.y, (int) p1.z);
-    if (widthPixels < 0)
+    if (diameter < 0)
       g3d.drawDottedLine(pt0, pt1);
     else
-      g3d.fillCylinder(endcap, widthPixels, pt0, pt1);
+      g3d.fillCylinder(endcap, diameter, pt0, pt1);
     if (!drawTicks || tickInfo == null)
       return;
     // AtomA and AtomB molecular coordinates must be set previously
@@ -85,20 +107,20 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
     atomB.screenX = pt1.x;
     atomB.screenY = pt1.y;
     atomB.screenZ = pt1.z;
-    drawTicks(atomA, atomB, widthPixels);
+    drawTicks(atomA, atomB, diameter);
   }
 
-  protected void drawTicks(Point3fi pt1, Point3fi pt2, int width) {
+  protected void drawTicks(Point3fi pt1, Point3fi pt2, int diameter) {
     if (Float.isNaN(tickInfo.first))
       tickInfo.first = 0;
-    drawTicks(pt1, pt2, tickInfo.ticks.x, 8, width, (tickInfo.tickLabelFormats == null ? 
+    drawTicks(pt1, pt2, tickInfo.ticks.x, 8, diameter, (tickInfo.tickLabelFormats == null ? 
             new String[] { "%0.2f" } : tickInfo.tickLabelFormats));
-    drawTicks(pt1, pt2, tickInfo.ticks.y, 4, width, null);
-    drawTicks(pt1, pt2, tickInfo.ticks.z, 2, width, null);
+    drawTicks(pt1, pt2, tickInfo.ticks.y, 4, diameter, null);
+    drawTicks(pt1, pt2, tickInfo.ticks.z, 2, diameter, null);
   }
 
   private void drawTicks(Point3fi ptA, Point3fi ptB, float dx, int length,
-                         int width, String[] formats) {
+                         int diameter, String[] formats) {
 
     if (dx == 0)
       return;
@@ -138,8 +160,8 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
     pointT.scaleAdd(p / dx, vectorT, ptA);
     p += tickInfo.first;
     float z = ptA.screenZ;
-    if (width < 0)
-      width = 1;
+    if (diameter < 0)
+      diameter = 1;
     vectorT2.set(-vectorT2.y, vectorT2.x, 0);
     vectorT2.scale(length / vectorT2.length());
     Point3f ptRef = tickInfo.reference;
@@ -174,7 +196,7 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
         viewer.transformPoint(pointT2, pointT2);
         drawLine((int) pointT2.x, (int) pointT2.y, (int) z,
             (x = (int) (pointT2.x + vectorT2.x)),
-            (y = (int) (pointT2.y + vectorT2.y)), (int) z, width);
+            (y = (int) (pointT2.y + vectorT2.y)), (int) z, diameter);
         if (drawLabel && (draw000 || p != 0)) {
           val[0] = new Float((p == 0 ? 0 : p * signFactor));
           String s = TextFormat.sprintf(formats[i % formats.length], val);
@@ -190,17 +212,15 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
   }
 
   protected int drawLine(int x1, int y1, int z1, int x2, int y2, int z2,
-                         int width) {
+                         int diameter) {
     pt0.set(x1, y1, z1);
     pt1.set(x2, y2, z2);
-    if (width < 0) {
+    if (diameter < 0) {
       g3d.drawDashedLine(4, 2, pt0, pt1);
       return 1;
-    }
-    if (width >= 20)
-      width = viewer.scaleToScreen((z1 + z2) / 2, width);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, width, pt0, pt1);
-    return (width + 1) / 2;
+    }    
+    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, pt0, pt1);
+    return (diameter + 1) / 2;
   }
 
   protected void drawString(int x, int y, int z, int radius,

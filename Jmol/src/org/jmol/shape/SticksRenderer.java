@@ -199,13 +199,13 @@ public class SticksRenderer extends ShapeRenderer {
   protected boolean lineBond;
   
   protected void drawBond(int dottedMask) {
-    if (g3d.isCartesianExport() && bondOrder == 1) {
+    if (exportType == Graphics3D.EXPORT_CARTESIAN && bondOrder == 1) {
       // bypass screen rendering and just use the atoms themselves
-      g3d.fillCylinder(atomA, atomB, colixA, colixB, endcaps, mad, -1);
+      g3d.drawBond(atomA, atomB, colixA, colixB, endcaps, mad);
       return;
     }
     lineBond = (width <= 1);
-    if (lineBond && (isAntialiased || isExport)) {
+    if (lineBond && (isAntialiased || exportType != Graphics3D.EXPORT_NOT)) {
       width = 3;
       lineBond = false;
     }
@@ -418,7 +418,7 @@ public class SticksRenderer extends ShapeRenderer {
     if (lineBond)
       g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
     else {
-      if (isExport && mad != 1)
+      if (exportType != Graphics3D.EXPORT_NOT && mad != 1)
         diameter = mad;
       g3d.fillCylinder(colixA, colixB, endcaps, diameter, xA, yA, zA, xB, yB,
           zB);

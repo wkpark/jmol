@@ -24,6 +24,8 @@
 package org.jmol.script;
 
 import java.awt.Image;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -6634,6 +6636,9 @@ public class ScriptEvaluator {
     boolean doLoadFiles = (!isSyntaxCheck || isCmdLine_C_Option);
     String errMsg = null;
     String sOptions = "";
+    
+    // check for special parameters
+    
     if (statementLength == 1) {
       i = 0;
     } else {
@@ -6701,8 +6706,19 @@ public class ScriptEvaluator {
         error(ERROR_filenameExpected);
     }
     // long timeBegin = System.currentTimeMillis();
+    
+    // file name is next
+    
+    int filePt = i;
+    String localName = null;
+    if (tokAt(filePt + 1) == Token.as) {
+      if (scriptLevel != 0)
+        error(ERROR_invalidArgument);
+      localName = stringParameter(i + 2);
+      i += 2;
+    }
     if (statementLength == i + 1) {
-      if (i == 0 || (filename = parameterAsString(i)).length() == 0)
+      if (i == 0 || (filename = parameterAsString(filePt)).length() == 0)
         filename = viewer.getFullPathName();
       if (filename == null) {
         zap(false);
@@ -6716,8 +6732,10 @@ public class ScriptEvaluator {
         || theTok == Token.packed
         || theTok == Token.filter && tokAt(i + 3) != Token.coord
         || theTok == Token.identifier && tokAt(i + 3) != Token.coord) {
-      if ((filename = parameterAsString(i++)).length() == 0)
+      if ((filename = parameterAsString(filePt)).length() == 0)
         filename = viewer.getFullPathName();
+      if (filePt == i)
+        i++;
       if (filename == null) {
         zap(false);
         return;
@@ -6886,9 +6904,23 @@ public class ScriptEvaluator {
     
     // OK, we are ready to load the data and create the model set
     
+    OutputStream os = null;
+    if (localName != null) {
+      os = viewer.getOutputStream(localName);
+      if (os == null)
+        Logger.error("Could not create output stream for " + localName);
+      else
+        htParams.put("OutputStream", os);
+    }
     errMsg = viewer.loadModelFromFile(filename, filenames, isAppend, htParams,
         tokType);
-    
+    if (os != null)
+      try {
+        Logger.info(GT._("file {0} created", localName));
+        os.close();
+      } catch (IOException e) {
+        Logger.error("error closing file " + e.getMessage());
+      }
     if (tokType > 0) {
       // we are just loading an atom property
       // reset the file info in FileManager, check for errors, and return
@@ -6902,8 +6934,11 @@ public class ScriptEvaluator {
       loadScript.append(" ");
       if (!filename.equals("string") && !filename.equals("string[]"))
         loadScript.append("/*file*/");
-      loadScript.append(Escape.escape(modelName = (String) htParams
-          .get("fullPathName")));
+      if (localName != null)
+        localName = viewer.getFullPath(localName);
+      loadScript.append(Escape.escape((localName != null 
+          ? localName : (modelName = (String) htParams
+          .get("fullPathName")))));
       loadScript.append(sOptions);
     }
     viewer.addLoadScript(loadScript.toString());
@@ -8924,7 +8959,7 @@ public class ScriptEvaluator {
         break;
       case Token.hbond:
         if (statementLength == 2) {
-          if (!isSyntaxCheck)
+          if (!isSyntaxCheck) 
             viewer.autoHbond(null);
           return;
         }
@@ -12681,6 +12716,7 @@ public class ScriptEvaluator {
         }
         continue;
       case Token.pmesh:
+        isPmesh = true;
         addShapeProperty(propertyList, "fileType", "Pmesh");
         continue;
       case Token.within:
@@ -13380,18 +13416,30 @@ public class ScriptEvaluator {
           // inline PMESH data
           if (tokAt(i + 1) != Token.string)
             error(ERROR_stringExpected);
-          addShapeProperty(propertyList, "fileType", "Pmesh");
+//          addShapeProperty(propertyList, "fileType", "Pmesh");
           String sdata = parameterAsString(++i);
-          sdata = TextFormat.replaceAllCharacters(sdata, "{,}|", ' ');
+          if (isPmesh)
+            sdata = TextFormat.replaceAllCharacters(sdata, "{,}|", ' ');
           if (logMessages)
             Logger.debug("pmesh inline data:\n" + sdata);
           propertyValue = (isSyntaxCheck ? null : sdata);
           addShapeProperty(propertyList, "fileName", "");
         } else if (!isSyntaxCheck) {
-          if (thisCommand.indexOf("# FILE" + nFiles + "=") >= 0)
+          String[] fullPathNameOrError;
+          String localName = null;
+          if (thisCommand.indexOf("# FILE" + nFiles + "=") >= 0) {
             filename = extractCommandOption("# FILE" + nFiles);
+            if (tokAt(i + 1) == Token.as)
+              i += 2; // skip that
+          } else if (tokAt(i + 1) == Token.as) {
+            localName = viewer.getFullPath(stringParameter(i = i + 2));
+            fullPathNameOrError = viewer
+            .getFullPathNameOrError(localName);
+            localName = fullPathNameOrError[0];
+            addShapeProperty(propertyList, "localName", localName);
+          }
           // just checking here, and getting the full path name
-          String[] fullPathNameOrError = viewer
+          fullPathNameOrError = viewer
               .getFullPathNameOrError(filename);
           filename = fullPathNameOrError[0];
           if (fullPathNameOrError[1] != null)
@@ -13399,7 +13447,7 @@ public class ScriptEvaluator {
                 + fullPathNameOrError[1]);
           Logger.info("reading isosurface data from " + filename);
           addShapeProperty(propertyList, "commandOption", "FILE" + (nFiles++)
-              + "=" + Escape.escape(filename));
+              + "=" + Escape.escape(localName == null ? filename : localName));
           addShapeProperty(propertyList, "fileName", filename);
           // null value indicates that we need a reader based on the fileName
           propertyValue = null;

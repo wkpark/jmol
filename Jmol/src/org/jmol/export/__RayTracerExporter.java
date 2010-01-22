@@ -46,9 +46,9 @@ abstract class __RayTracerExporter extends ___Exporter {
   protected float zoom;
   protected int minScreenDimension;
   
-
   public __RayTracerExporter() {
-    isCartesianExport = false;
+    exportType = Graphics3D.EXPORT_RAYTRACER;
+    lineWidth = 2;
   }
 
   protected void outputVertex(Point3f pt, Point3f offset) {
@@ -128,12 +128,12 @@ abstract class __RayTracerExporter extends ___Exporter {
     outputTextPixel(x, y, z, argb);
   }
     
-  void fillCone(short colix, byte endcap, int diameter, Point3f screenBase,
+  void fillConeScreen(short colix, byte endcap, int screenDiameter, Point3f screenBase,
                 Point3f screenTip) {
-    outputCone(screenBase, screenTip, diameter / 2f, colix);
+    outputCone(screenBase, screenTip, screenDiameter / 2f, colix);
   }
 
-  void fillCylinder(Point3f screenA, Point3f screenB, short colix1,
+  void drawCylinder(Point3f screenA, Point3f screenB, short colix1,
                            short colix2, byte endcaps, int madBond,
                            int bondOrder) {
     // from drawBond and fillCylinder here
@@ -180,8 +180,8 @@ abstract class __RayTracerExporter extends ___Exporter {
     outputCylinderConical(screenA, screenB, radius1, radius2, colix);
   }
 
-  void fillCylinder(short colix, byte endcaps, int diameter,
-                           Point3f screenA, Point3f screenB) {
+  void fillCylinder(short colix, byte endcaps, int diameter, 
+                               Point3f screenA, Point3f screenB) {
     float radius = diameter / 2f;
     if (radius == 0)
       return;
@@ -197,6 +197,12 @@ abstract class __RayTracerExporter extends ___Exporter {
     outputSphere(screenA.x, screenA.y, screenA.z, radius, colix);
     outputSphere(screenB.x, screenB.y, screenB.z, radius, colix);
 
+  }
+
+  void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, Point3f screenA, 
+                                 Point3f screenB) {
+          // vectors, polyhedra
+    fillCylinder(colix, endcaps, screenDiameter, screenA, screenB);
   }
 
   void fillSphere(short colix, int diameter, Point3f pt) {

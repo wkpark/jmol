@@ -379,6 +379,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       newSg();
     }
     
+    if ("localName" == propertyName) {
+      value = viewer.getOutputStream((String) value);
+      propertyName = "outputStream";
+    }
+    
     if ("mapColor" == propertyName || "readFile" == propertyName) {
       if (value == null) {
         // ScriptEvaluator has passed the filename to us as the value of the
@@ -1114,6 +1119,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
   
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
+    if (!viewer.getDrawHover())
+      return false;
     String s = findValue(x, y, false, bsVisible);
     if (s == null)
       return false;
@@ -1312,6 +1319,20 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         if (pickedContour != null)
           return pickedContour.get(JvxlCoder.CONTOUR_VALUE).toString();
       } else if (m.jvxlData.jvxlPlane != null && m.vertexValues != null) {
+        int pickedVertex = -1;
+        for (int k = m.vertexCount; --k >= m.firstRealVertex;) {
+          if (Float.isNaN(m.firstRealVertex))
+            continue;
+          Point3f v = m.vertices[k];
+          int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
+          if (d2 >= 0) {
+            dmin2 = d2;
+            pickedVertex = k;
+          }
+        }
+        if (pickedVertex != -1)
+          return "v" + pickedVertex + ": " + m.vertexValues[pickedVertex];
+      } else if (m.vertexValues != null) {
         int pickedVertex = -1;
         for (int k = m.vertexCount; --k >= m.firstRealVertex;) {
           Point3f v = m.vertices[k];

@@ -24,6 +24,7 @@
 
 package org.jmol.shape;
 
+import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.util.Point3fi;
@@ -43,6 +44,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     Measures measures = (Measures) shape;
     doJustify = viewer.getJustifyMeasurements();
     mad = measures.mad;
+    // note that this COULD be screen pixels if <= 20. 
     imageFontScaling = viewer.getImageFontScaling();
     font3d = g3d.getFont3DScaled(measures.font3d, imageFontScaling);
     renderPendingMeasurement(measures.measurementPending);
@@ -209,7 +211,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   }
 
   private void renderPendingMeasurement(MeasurementPending measurementPending) {
-    if (isExport || measurementPending == null)
+    if (exportType != Graphics3D.EXPORT_NOT || measurementPending == null)
       return;
     int count = measurementPending.getCount();
     if (count == 0)
@@ -236,4 +238,13 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     }
     drawLine(atomLast.screenX, atomLast.screenY, lastZ, x, y, 0, mad);
   }  
+ 
+  //TODO: I think the 20 here is the cutoff for pixels -- check this
+  protected int drawLine(int x1, int y1, int z1, int x2, int y2, int z2,
+                         int mad) {
+    // small numbers refer to pixels already? 
+    int diameter = (mad >= 20 && exportType != Graphics3D.EXPORT_CARTESIAN ?
+      viewer.scaleToScreen((z1 + z2) / 2, mad) : mad);
+    return super.drawLine(x1, y1, z1, x2, y2, z2, diameter);
+  }
 }

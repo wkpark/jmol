@@ -26,6 +26,7 @@ package org.jmol.shape;
 import java.util.Enumeration;
 import javax.vecmath.Point3i;
 
+import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 
 public class EchoRenderer extends ShapeRenderer {
@@ -59,7 +60,7 @@ public class EchoRenderer extends ShapeRenderer {
   }
   
   private void renderFrameTitle(String frameTitle) {
-    if (isExport || !g3d.setColix(viewer.getColixBackgroundContrast()))
+    if (exportType != Graphics3D.EXPORT_NOT || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
     byte fid = g3d.getFontFid("Monospaced", 14 * imageFontScaling);
     g3d.setFont(fid);

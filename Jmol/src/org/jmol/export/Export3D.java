@@ -59,11 +59,11 @@ final public class Export3D implements JmolRendererInterface {
 
   public Export3D() {
     hermite3d = new Hermite3D(this);
-    
+
   }
-  
-  public boolean isExport() {
-    return true;
+
+  public int getExportType() {
+    return exporter.exportType;
   }
 
   public boolean initializeExporter(String type, Viewer viewer, Graphics3D g3d,
@@ -91,17 +91,13 @@ final public class Export3D implements JmolRendererInterface {
     return exporter.finalizeOutput();
   }
 
-  public boolean isCartesianExport() {
-    return exporter.isCartesianExport;
-  }
-
   public void setSlab(int slabValue) {
     slab = slabValue;
     g3d.setSlab(slabValue);
   }
 
   public void renderBackground() {
-    if (!isCartesianExport())
+    if (exporter.exportType == Graphics3D.EXPORT_RAYTRACER)
       g3d.renderBackground(this);
   }
 
@@ -416,8 +412,8 @@ final public class Export3D implements JmolRendererInterface {
    */
 
   public void drawDashedLine(int run, int rise, Point3i pointA, Point3i pointB) {
-    // TODO
-    drawLine(pointA, pointB); // Temporary only
+    // axes and such -- ignored dashed for exporters
+    drawLine(pointA, pointB); 
     // ptA.set(pointA.x, pointA.y, pointA.z);
     // ptB.set(pointB.x, pointB.y, pointB.z);
     // exporter.drawDashedLine(colix, run, rise, ptA, ptB);
@@ -441,42 +437,51 @@ final public class Export3D implements JmolRendererInterface {
 
   public void drawLine(short colixA, short colixB, int xA, int yA, int zA,
                        int xB, int yB, int zB) {
-    // mads[i] < 0 // mesh
-    fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_FLAT, 2, xA, yA, zA, xB,
-        yB, zB);
+    fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_FLAT, exporter.lineWidth, xA, yA, zA,
+        xB, yB, zB);
   }
 
   public void drawLine(Point3i pointA, Point3i pointB) {
     // draw quadrilateral and hermite, stars
     ptA.set(pointA.x, pointA.y, pointA.z);
     ptB.set(pointB.x, pointB.y, pointB.z);
-    exporter.fillCylinder(colix, Graphics3D.ENDCAPS_FLAT, 1, ptA, ptB);
+    exporter.fillCylinder(colix, Graphics3D.ENDCAPS_FLAT, exporter.lineWidth, ptA, ptB);
   }
 
-  public void fillCylinder(Atom atomA, Atom atomB, short colixA, short colixB,
-                           byte endcaps, short mad, int bondOrder) {
+  public void drawBond(Atom atomA, Atom atomB, short colixA, short colixB,
+                       byte endcaps, short diameter) {
     // from SticksRenderer to allow for a direct
-    // writing of single bonds -- just for efficiency here.
-    exporter
-        .fillCylinder(atomA, atomB, colixA, colixB, endcaps, mad, bondOrder);
+    // writing of single bonds -- just for efficiency here - bondOrder == -1
+    exporter.drawCylinder(atomA, atomB, colixA, colixB, endcaps, diameter, -1);
   }
 
-  public void fillCylinder(short colixA, short colixB, byte endcaps, int mad,
-                           int xA, int yA, int zA, int xB, int yB, int zB) {
+  public void fillCylinder(short colixA, short colixB, byte endcaps,
+                                 int diameter, int xA, int yA, int zA, int xB,
+                                 int yB, int zB) {
     /*
-     * Use the screen points Jmol determines
-     * 
      * from drawLine, Sticks, fillCylinder, backbone
+     * 
      */
     ptA.set(xA, yA, zA);
     ptB.set(xB, yB, zB);
-    exporter.fillCylinder(ptA, ptB, colixA, colixB, endcaps, mad, 1);
+    exporter.drawCylinder(ptA, ptB, colixA, colixB, endcaps, diameter, 1);
   }
 
-  public void fillCylinder(byte endcaps, int mad, int xA, int yA, int zA,
+  public void fillCylinderScreen(byte endcaps, int screenDiameter, int xA, int yA, int zA,
                            int xB, int yB, int zB) {
-    // vectors
-    fillCylinder(colix, colix, endcaps, mad, xA, yA, zA, xB, yB, zB);
+    // vectors, polyhedra
+    ptA.set(xA, yA, zA);
+    ptB.set(xB, yB, zB);
+    exporter.fillCylinderScreen(colix, endcaps, screenDiameter, ptA, ptB);
+  }
+
+  public void fillCylinderScreen(byte endcaps, int diameter, Point3i pointA,
+                           Point3i pointB) {
+    if (diameter <= 0)
+      return;
+    ptA.set(pointA.x, pointA.y, pointA.z);
+    ptB.set(pointB.x, pointB.y, pointB.z);
+    exporter.fillCylinderScreen(colix, endcaps, diameter, ptA, ptB);
   }
 
   public void fillCylinder(byte endcaps, int diameter, Point3i pointA,
@@ -492,21 +497,22 @@ final public class Export3D implements JmolRendererInterface {
                                Point3f pointB) {
     if (diameter <= 0)
       return;
-    exporter.fillCylinder(colix, endcaps, diameter, pointA, pointB);
+    exporter.fillCylinder(colix, endcaps, diameter, pointA,
+        pointB);
   }
 
-  public void fillCone(byte endcap, int diameter, Point3i pointBase,
+  public void fillConeScreen(byte endcap, int screenDiameter, Point3i pointBase,
                        Point3i screenTip) {
-    // dipole, draw
+    // dipole, vector, draw arrow/vector
     ptA.set(pointBase.x, pointBase.y, pointBase.z);
     ptB.set(screenTip.x, screenTip.y, screenTip.z);
-    fillCone(endcap, diameter, ptA, ptB);
+    fillConeSceen(endcap, screenDiameter, ptA, ptB);
   }
 
-  public void fillCone(byte endcap, int diameter, Point3f pointBase,
+  public void fillConeSceen(byte endcap, int screenDiameter, Point3f pointBase,
                        Point3f screenTip) {
     // cartoons, rockets
-    exporter.fillCone(colix, endcap, diameter, pointBase, screenTip);
+    exporter.fillConeScreen(colix, endcap, screenDiameter, pointBase, screenTip);
   }
 
   public void drawHermite(int tension, Point3i s0, Point3i s1, Point3i s2,
@@ -518,16 +524,16 @@ final public class Export3D implements JmolRendererInterface {
   public void fillHermite(int tension, int diameterBeg, int diameterMid,
                           int diameterEnd, Point3i s0, Point3i s1, Point3i s2,
                           Point3i s3) {
-    hermite3d.renderHermiteRope(true, tension, diameterBeg, diameterMid, diameterEnd, s0,
-        s1, s2, s3);
+    hermite3d.renderHermiteRope(true, tension, diameterBeg, diameterMid,
+        diameterEnd, s0, s1, s2, s3);
   }
 
   public void drawHermite(boolean fill, boolean border, int tension,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3,
                           Point3i s4, Point3i s5, Point3i s6, Point3i s7,
                           int aspectRatio) {
-    hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4, s5, s6, s7,
-        aspectRatio);
+    hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
+        s5, s6, s7, aspectRatio);
   }
 
   /*
@@ -536,7 +542,8 @@ final public class Export3D implements JmolRendererInterface {
    */
 
   public void drawTriangle(Point3i screenA, short colixA, Point3i screenB,
-                           short colixB, Point3i screenC, short colixC, int check) {
+                           short colixB, Point3i screenC, short colixC,
+                           int check) {
     g3d.drawTriangle(screenA, colixA, screenB, colixB, screenC, colixC, check);
   }
 
@@ -554,17 +561,12 @@ final public class Export3D implements JmolRendererInterface {
           screenC.y, screenC.z);
   }
 
-
   /*
-  public void drawfillTriangle(int xA, int yA, int zA, int xB, int yB, int zB,
-                               int xC, int yC, int zC) {
-    ptA.set(xA, yA, zA);
-    ptB.set(xB, yB, zB);
-    ptC.set(xC, yC, zC);
-    fillTriangle(ptA, ptB, ptC);
-  }
- */
- 
+   * public void drawfillTriangle(int xA, int yA, int zA, int xB, int yB, int
+   * zB, int xC, int yC, int zC) { ptA.set(xA, yA, zA); ptB.set(xB, yB, zB);
+   * ptC.set(xC, yC, zC); fillTriangle(ptA, ptB, ptC); }
+   */
+
   public void fillTriangle(Point3i pointA, short colixA, short normixA,
                            Point3i pointB, short colixB, short normixB,
                            Point3i pointC, short colixC, short normixC) {
@@ -647,10 +649,9 @@ final public class Export3D implements JmolRendererInterface {
 
   public void drawSurface(MeshSurface meshSurface, Point3f[] vertices) {
     exporter.drawSurface(meshSurface.vertexCount, meshSurface.polygonCount,
-        meshSurface.haveQuads ? 4 : 3, 
-        vertices == null ? meshSurface.vertices : vertices,
-        meshSurface.vertexNormals, 
-        meshSurface.isColorSolid ? null : meshSurface.vertexColixes, 
+        meshSurface.haveQuads ? 4 : 3, vertices == null ? meshSurface.vertices
+            : vertices, meshSurface.vertexNormals,
+        meshSurface.isColorSolid ? null : meshSurface.vertexColixes,
         meshSurface.polygonIndexes,
         meshSurface.isColorSolid ? meshSurface.polygonColixes : null,
         meshSurface.bsFaces, meshSurface.colix, null);
@@ -658,7 +659,7 @@ final public class Export3D implements JmolRendererInterface {
 
   public short[] getBgColixes(short[] bgcolixes) {
     // 3D exporters cannot do background labels
-    return isCartesianExport() ? null : bgcolixes;
+    return exporter.exportType == Graphics3D.EXPORT_CARTESIAN ? null : bgcolixes;
   }
 
   public void fillEllipsoid(Point3f center, Point3f[] points, int x, int y,
@@ -750,7 +751,7 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   public boolean isInDisplayRange(int x, int y) {
-    if (isCartesianExport())
+    if (exporter.exportType == Graphics3D.EXPORT_CARTESIAN)
       return true;
     return g3d.isInDisplayRange(x, y);
   }
@@ -760,11 +761,11 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   public int clipCode(int x, int y, int z) {
-    return (isCartesianExport() ? g3d.clipCode(z) : g3d.clipCode(x, y, z));
+    return (exporter.exportType == Graphics3D.EXPORT_CARTESIAN ? g3d.clipCode(z) : g3d.clipCode(x, y, z));
   }
 
   public boolean isClippedXY(int diameter, int x, int y) {
-    if (isCartesianExport())
+    if (exporter.exportType == Graphics3D.EXPORT_CARTESIAN)
       return false;
     return g3d.isClippedXY(diameter, x, y);
   }
@@ -774,7 +775,7 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   protected boolean isClipped(int x, int y) {
-    if (isCartesianExport())
+    if (exporter.exportType == Graphics3D.EXPORT_CARTESIAN)
       return false;
     return g3d.isClipped(x, y);
   }
@@ -783,7 +784,8 @@ final public class Export3D implements JmolRendererInterface {
     return g3d.getColorArgbOrGray(colix);
   }
 
-  public void setNoisySurfaceShade(Point3i pointA, Point3i pointB, Point3i pointC) {
+  public void setNoisySurfaceShade(Point3i pointA, Point3i pointB,
+                                   Point3i pointC) {
     g3d.setNoisySurfaceShade(pointA, pointB, pointC);
   }
 

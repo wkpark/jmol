@@ -94,7 +94,7 @@ public class DrawRenderer extends MeshRenderer {
       if (diameter == 0)
         diameter = 1;
     }    
-    if (dmesh.isVector && dmesh.haveXyPoints) {
+    if ((dmesh.isVector) && dmesh.haveXyPoints) {
       int ptXY = 0;
       // [x y] or [x,y] refers to an xy point on the screen
       // just a Point3f with z = Float.MAX_VALUE
@@ -310,9 +310,9 @@ public class DrawRenderer extends MeshRenderer {
     if (diameter < 1)
       diameter = 1;
     if (headDiameter > 2)
-      g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headDiameter, pt1i, pt2i);
+      g3d.fillConeScreen(Graphics3D.ENDCAPS_FLAT, headDiameter, pt1i, pt2i);
     if (withShaft)
-      g3d.fillCylinder(Graphics3D.ENDCAPS_OPENEND, diameter, pt0i,
+      g3d.fillCylinderScreen(Graphics3D.ENDCAPS_OPENEND, diameter, pt0i,
            pt1i);
   }
   

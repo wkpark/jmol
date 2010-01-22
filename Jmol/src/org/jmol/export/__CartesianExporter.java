@@ -47,10 +47,11 @@ import org.jmol.modelset.Atom;
 abstract public class __CartesianExporter extends ___Exporter {
 
   public __CartesianExporter() {
-    isCartesianExport = true;
+    exportType = Graphics3D.EXPORT_CARTESIAN;
+    lineWidth = 50;
   }
 
-  private float untransformData(Point3f ptA, Point3f ptB, int madBond,
+  private void untransformData(Point3f ptA, Point3f ptB,
                                 boolean isCartesian) {
     if (isCartesian) {
       // really first order -- but actual coord
@@ -60,10 +61,6 @@ abstract public class __CartesianExporter extends ___Exporter {
       viewer.unTransformPoint(ptA, tempP1);
       viewer.unTransformPoint(ptB, tempP2);
     }
-    if (madBond < 20)
-      madBond = 20;
-    float radius = madBond / 2000f;
-    return radius;
   }
 
   protected int getCoordinateMap(Point3f[] vertices, int[] coordMap) {
@@ -155,19 +152,20 @@ abstract public class __CartesianExporter extends ___Exporter {
     outputTextPixel(tempP1, argb);
   }
 
-  void fillCone(short colix, byte endcap, int diameter, Point3f screenBase,
+  void fillConeScreen(short colix, byte endcap, int screenDiameter, Point3f screenBase,
                 Point3f screenTip) {
     viewer.unTransformPoint(screenBase, tempP1);
     viewer.unTransformPoint(screenTip, tempP2);
-    float radius = viewer.unscaleToScreen(screenBase.z, diameter) / 2;
+    float radius = viewer.unscaleToScreen(screenBase.z, screenDiameter) / 2;
     if (radius < 0.05f)
       radius = 0.05f;
     outputCone(tempP1, tempP2, radius, colix);
   }
 
-  void fillCylinder(Point3f ptA, Point3f ptB, short colix1, short colix2,
-                    byte endcaps, int diameter, int bondOrder) {
-    float radius = untransformData(ptA, ptB, diameter, bondOrder == -1);
+  void drawCylinder(Point3f ptA, Point3f ptB, short colix1, short colix2,
+                    byte endcaps, int mad, int bondOrder) {
+    untransformData(ptA, ptB, bondOrder == -1);
+    float radius = mad / 2000f;
     if (colix1 == colix2) {
       outputCylinder(tempP1, tempP2, colix1, endcaps, radius);
     } else {
@@ -184,10 +182,18 @@ abstract public class __CartesianExporter extends ___Exporter {
     }
   }
 
-  void fillCylinder(short colix, byte endcaps, int diameter, Point3f screenA,
-                    Point3f screenB) {
-    float radius = untransformData(screenA, screenB, diameter, false);
+  void fillCylinder(short colix, byte endcaps, int mad,
+                    Point3f screenA, Point3f screenB) {
+    float radius = mad / 2000f;
+    untransformData(screenA, screenB, false);
     outputCylinder(tempP1, tempP2, colix, endcaps, radius);
+  }
+
+  void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, Point3f screenA, 
+                          Point3f screenB) {
+   // vectors, polyhedra
+  int mad = (int) (viewer.unscaleToScreen((screenA.z + screenB.z) / 2, screenDiameter) * 1000);
+  fillCylinder(colix, endcaps, mad, screenA, screenB);
   }
 
   void fillEllipsoid(Point3f center, Point3f[] points, short colix, int x,

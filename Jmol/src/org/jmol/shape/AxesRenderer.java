@@ -97,18 +97,29 @@ public class AxesRenderer extends FontLineShapeRenderer {
     }
     boolean isDataFrame = viewer.isJmolDataFrame();
 
-    int aFactor = (g3d.isAntialiased() ? 2 : 1);
     int slab = g3d.getSlab();
-    int widthPixels = (mad < 20 ? mad * aFactor : Integer.MIN_VALUE);
+    int diameter = mad;
     boolean drawTicks = false;
     if (isXY) {
-      if (widthPixels < 0)
-        widthPixels = (int) (mad > 500 ? 5 : mad / 100f);
+      if (exportType == Graphics3D.EXPORT_CARTESIAN)
+        return;
+      if (mad >= 20) {
+        // width given in angstroms as mAng.
+        // max out at 500
+        diameter = (mad > 500 ? 5 : mad / 100);
+        if (diameter == 0)
+          diameter = 2;
+      } else {
+        if (g3d.isAntialiased())
+          diameter += diameter;
+      }
       g3d.setSlab(0);
       pt0.set(viewer.transformPoint(axes.axisXY));
       originScreen.set(pt0.x, pt0.y, pt0.z);
       float zoomDimension = viewer.getScreenDim();
       float scaleFactor = zoomDimension / 10f * axes.scale;
+      if (g3d.isAntialiased())
+        scaleFactor *= 2;
       for (int i = 0; i < 3; i++) {
         viewer.rotatePoint(axes.getAxisPoint(i, false), screens[i]);
         screens[i].z *= -1;
@@ -125,13 +136,11 @@ public class AxesRenderer extends FontLineShapeRenderer {
       }
       viewer.transformPointNoClip(axes.getOriginPoint(isDataFrame),
           originScreen);
-      if (widthPixels == Integer.MIN_VALUE)
-        widthPixels = viewer.scaleToScreen((int) originScreen.z, mad);
+      diameter = getDiameter((int) originScreen.z, mad);
       for (int i = nPoints; --i >= 0;)
         viewer.transformPointNoClip(axes.getAxisPoint(i, isDataFrame),
             screens[i]);
     }
-
     float xCenter = originScreen.x;
     float yCenter = originScreen.y;
     colixes[0] = viewer.getObjectColix(StateManager.OBJ_AXIS1);
@@ -155,7 +164,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
           tickInfo.signFactor = (i % 6 >= 3 ? -1 : 1);
         }
       }
-      renderLine(originScreen, screens[i], widthPixels, pt0, pt1, drawTicks && tickInfo != null);
+      renderLine(originScreen, screens[i], diameter, pt0, pt1, drawTicks && tickInfo != null);
     }
     if (nPoints == 3 && !isXY) { // a b c
       colix = viewer.getColixBackgroundContrast();

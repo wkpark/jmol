@@ -25,6 +25,8 @@ package org.jmol.shapesurface;
 
 import java.text.NumberFormat;
 
+import org.jmol.g3d.Graphics3D;
+
 
 
 public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
@@ -41,7 +43,8 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
   }
 
   private void renderInfo() {
-    if (mesh.title == null || isExport || !g3d.setColix(viewer.getColixBackgroundContrast()))
+    if (mesh.title == null || exportType != Graphics3D.EXPORT_NOT 
+        || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
     if (nf == null)
       nf = NumberFormat.getInstance();

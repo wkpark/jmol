@@ -18,7 +18,7 @@ public interface JmolRendererInterface {
 
   // these methods are implmented in Export3D and Graphics3D
   
-  public abstract boolean isExport();
+  public abstract int getExportType();
   
   public abstract boolean initializeExporter(String type, Viewer viewer,
                                              Graphics3D g3d, Object output);
@@ -204,15 +204,12 @@ public interface JmolRendererInterface {
   public abstract void drawLine(short colixA, short colixB, int x1, int y1,
                                 int z1, int x2, int y2, int z2);
 
-  public abstract void fillCylinder(Atom atomA, Atom atomB, short colixA,
-                                    short colixB, byte endcaps, short mad, int bondOrder);
+  public abstract void drawBond(Atom atomA, Atom atomB, short colixA,
+                                    short colixB, byte endcaps, short mad);
 
   public abstract void fillCylinder(short colixA, short colixB, byte endcaps,
                                     int diameter, int xA, int yA, int zA,
                                     int xB, int yB, int zB);
-
-  public abstract void fillCylinder(byte endcaps, int diameter, int xA, int yA,
-                                    int zA, int xB, int yB, int zB);
 
   public abstract void fillCylinder(byte endcaps, int diameter,
                                     Point3i screenA, Point3i screenB);
@@ -220,10 +217,17 @@ public interface JmolRendererInterface {
   public abstract void fillCylinderBits(byte endcaps, int diameter,
                                         Point3f screenA, Point3f screenB);
 
-  public abstract void fillCone(byte endcap, int diameter, Point3i screenBase,
+  public abstract void fillCylinderScreen(byte endcaps, int diameter, int xA, int yA,
+                                          int zA, int xB, int yB, int zB);
+
+
+  public abstract void fillCylinderScreen(byte endcapsOpenend, int diameter,
+                                                Point3i pt0i, Point3i pt1i);
+
+  public abstract void fillConeScreen(byte endcap, int screenDiameter, Point3i screenBase,
                                 Point3i screenTip);
 
-  public abstract void fillCone(byte endcap, int diameter, Point3f screenBase,
+  public abstract void fillConeSceen(byte endcap, int screenDiameter, Point3f screenBase,
                                 Point3f screenTip);
 
   public abstract void drawHermite(int tension, Point3i s0, Point3i s1,
@@ -325,12 +329,9 @@ public interface JmolRendererInterface {
 
   public abstract void drawImage(Image image, int x, int y, int z, int zslab, short bgcolix, int width, int height);
 
-  public abstract boolean isCartesianExport();
-  
   public abstract String finalizeOutput();
 
   public abstract short[] getBgColixes(short[] bgcolixes);
 
   public abstract void setTranslucentCoverOnly(boolean TF);
-
 }

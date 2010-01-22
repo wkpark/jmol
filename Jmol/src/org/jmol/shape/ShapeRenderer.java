@@ -25,6 +25,7 @@
 package org.jmol.shape;
 
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.ModelSet;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
@@ -49,7 +50,7 @@ public abstract class ShapeRenderer {
   protected short madBeg;
   protected short madMid;
   protected short madEnd;
-  protected boolean isExport;
+  protected int exportType;
 
   public final void setViewerG3dShapeID(Viewer viewer, JmolRendererInterface g3d, int shapeID) {
     this.viewer = viewer;
@@ -66,9 +67,9 @@ public abstract class ShapeRenderer {
     this.g3d = g3d;
     this.modelSet = modelSet;
     this.shape = shape;
-    isExport = g3d.isExport();
+    exportType = g3d.getExportType();
     render();
-    isExport = false;
+    exportType = Graphics3D.EXPORT_NOT;
   }
 
   abstract protected void render();

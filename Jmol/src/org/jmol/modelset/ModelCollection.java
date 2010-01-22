@@ -2293,11 +2293,16 @@ abstract public class ModelCollection extends BondCollection {
     if (showRebondTimes && Logger.debugging)
       Logger.startTimer();
     int modelLast = -1;
+    BitSet bsCO = new BitSet();
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].getSpecialAtomID() == JmolConstants.ATOMID_CARBONYL_OXYGEN)
+        bsCO.set(i);
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       int elementNumber = atom.getElementNumber();
       if (elementNumber != 7 && elementNumber != 8)
-        continue;
+        continue;      
+      boolean firstIsCO = bsCO.get(i);
       //float searchRadius = hbondMax;
       if (atom.modelIndex != modelLast)
           initializeBspt(modelLast = atom.modelIndex);
@@ -2308,7 +2313,8 @@ abstract public class ModelCollection extends BondCollection {
         int elementNumberNear = atomNear.getElementNumber();
         if (elementNumberNear != 7 && elementNumberNear != 8
             || atomNear == atom || iter.foundDistance2() < hbondMin2
-            || iter.foundDistance2() > hbondMax2 || atom.isBonded(atomNear))
+            || iter.foundDistance2() > hbondMax2 || atom.isBonded(atomNear)
+            || firstIsCO && bsCO.get(atomNear.atomIndex))
           continue;
         if (minAttachedAngle > 0
             && !checkMinAttachedAngle(atom, atomNear, minAttachedAngle, v1, v2))

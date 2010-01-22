@@ -116,7 +116,7 @@ public class Token {
    * 3         2         1         0
    * 0987654321098765432109876543210
    *  x                              setparam  "set THIS ...."
-   * x                               misc
+   * x                   xxxxxxxxxxx misc
    * 
    * 3         2         1         0
    * 0987654321098765432109876543210
@@ -703,6 +703,7 @@ public class Token {
   final static int area          = misc | 10;// new
   final static int aromatic      = misc | 11 | predefinedset;// new
   final static int arrow         = misc | 12;// new
+  final static int as            = misc | 301;// new
   final static int atomicorbital = misc | 13;// new
   public final static int auto   = misc | 14;// new
   public final static int axis   = misc | 15;
@@ -1195,6 +1196,7 @@ public class Token {
     "amino",            new Token(amino),
     "angle",            new Token(angle),
     "array",            new Token(array),
+    "as",               new Token(as),
     "atomID",           new Token(atomID),
     "_atomID",          null,
     "_a",               null, 

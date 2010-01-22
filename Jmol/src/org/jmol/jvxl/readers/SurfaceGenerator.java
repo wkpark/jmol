@@ -114,6 +114,7 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -145,6 +146,7 @@ public class SurfaceGenerator {
   private MarchingSquares marchingSquares;
   private String version;
   private String fileType;
+  private OutputStream os;
     
   public void setVersion(String version) {
     this.version = version;
@@ -863,11 +865,17 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("outputStream" == propertyName) {
+      os = (OutputStream) value;
+      return true;
+    }
+    
     if ("readFile" == propertyName) {
       if ((surfaceReader = setFileData(value)) == null) {
         Logger.error("Could not set the data");
         return true;
       }
+      surfaceReader.setOutputStream(os);
       generateSurface();
       return true;
     }
@@ -882,6 +890,7 @@ public class SurfaceGenerator {
         Logger.error("Could not set the mapping data");
         return true;
       }
+      surfaceReader.setOutputStream(os);
       mapSurface();
       return true;
     }
@@ -1050,7 +1059,9 @@ public class SurfaceGenerator {
       volumeData = (VolumeData)((Hashtable) value).get("volumeData");
       return new VolumeDataReader(this);
     }
+    String data = null;
     if (value instanceof String) {
+      data = (String) value;
       value = new BufferedReader(new StringReader((String) value));
     }
     BufferedReader br = (BufferedReader) value;
@@ -1080,7 +1091,7 @@ public class SurfaceGenerator {
         // ignore
       }
       br = null;
-      return new MrcBinaryReader(this, params.fileName, fileType.charAt(3) == '+');
+      return new MrcBinaryReader(this, params.fileName, data, fileType.charAt(3) == '+');
     }
     if (fileType.equals("Efvet"))
       return new EfvetReader(this,br);

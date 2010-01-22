@@ -84,9 +84,10 @@ public class PolyhedraRenderer extends ShapeRenderer {
 
   private void drawCylinderTriangle(int xA, int yA, int zA, int xB, int yB,
                                    int zB, int xC, int yC, int zC) {
-    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3, xA, yA, zA, xB, yB, zB);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3, xB, yB, zB, xC, yC, zC);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3, xA, yA, zA, xC, yC, zC);
+    
+    g3d.fillCylinderScreen(Graphics3D.ENDCAPS_SPHERICAL, 3, xA, yA, zA, xB, yB, zB);
+    g3d.fillCylinderScreen(Graphics3D.ENDCAPS_SPHERICAL, 3, xB, yB, zB, xC, yC, zC);
+    g3d.fillCylinderScreen(Graphics3D.ENDCAPS_SPHERICAL, 3, xA, yA, zA, xC, yC, zC);
   }
 
   private void fillFace(short normix,

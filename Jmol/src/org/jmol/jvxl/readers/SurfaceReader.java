@@ -23,6 +23,7 @@
  */
 package org.jmol.jvxl.readers;
 
+import java.io.OutputStream;
 import java.util.BitSet;
 
 import javax.vecmath.Matrix3f;
@@ -250,6 +251,10 @@ public abstract class SurfaceReader implements VertexDataServer {
   
 //  boolean mustCalcPoint = true; // for now
 
+  protected void setOutputStream(OutputStream os) {
+    // only for file readers
+  }
+ 
   void setVolumeData(VolumeData v) {
     nBytes = 0;
     volumetricOrigin = v.volumetricOrigin;

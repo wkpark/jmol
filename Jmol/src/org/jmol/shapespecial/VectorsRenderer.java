@@ -91,17 +91,15 @@ public class VectorsRenderer extends ShapeRenderer {
     headWidthPixels = (int)(diameter * 2.0f);
     if (headWidthPixels < diameter + 2)
       headWidthPixels = diameter + 2;
-    if (isExport)
-      diameter = (mad < 1 ? 1 : mad); //may need tweaking
     return true;
   }
   
   void renderVector(Atom atom) {
     if (doShaft)
-      g3d.fillCylinder(Graphics3D.ENDCAPS_OPEN, diameter, atom.screenX,
+      g3d.fillCylinderScreen(Graphics3D.ENDCAPS_OPEN, diameter, atom.screenX,
           atom.screenY, atom.screenZ, screenArrowHead.x, screenArrowHead.y,
           screenArrowHead.z);
-    g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headWidthPixels, screenArrowHead,
+    g3d.fillConeScreen(Graphics3D.ENDCAPS_FLAT, headWidthPixels, screenArrowHead,
         screenVectorEnd);
   }
 }

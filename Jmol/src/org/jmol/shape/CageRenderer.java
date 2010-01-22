@@ -59,9 +59,8 @@ abstract class CageRenderer extends FontLineShapeRenderer {
       viewer.transformPointNoClip(vertices[i], screens[i]);
       zSum += screens[i].z;
     }
-    int widthPixels = mad;
-    if (mad >= 20)
-      widthPixels = viewer.scaleToScreen((int) (zSum / 8), mad);
+    
+    int diameter = getDiameter((int) (zSum / 8), mad);
     int axisPt = 2;
     char edge = 0;
     for (int i = firstLine * 2; i < 24; i += 2) {
@@ -98,9 +97,9 @@ abstract class CageRenderer extends FontLineShapeRenderer {
         else
           tickInfo.first = start;
       }
-      renderLine(screens[edge0], screens[edge1], widthPixels, pt0, pt1,
+      renderLine(screens[edge0], screens[edge1], diameter, pt0, pt1,
           drawTicks);
     }
-  }  
+  }
 }
 

@@ -106,11 +106,13 @@ public class ImageCreator implements JmolImageCreatorInterface {
       text_or_bytes = ((Object[])text_or_bytes)[0];
     String text = (isBytes ? null : (String) text_or_bytes);
     boolean isText = (quality == Integer.MIN_VALUE);
-    if ((isText || isBytes) && text_or_bytes == null)
-      return "NO DATA";
     FileOutputStream os = null;
     long len = -1;
     try {
+      if ("OutputStream".equals(type))
+        return new FileOutputStream(fileName);
+      if ((isText || isBytes) && text_or_bytes == null)
+        return "NO DATA";
       if (isBytes) {
         len = ((byte[]) text_or_bytes).length;
         os = new FileOutputStream(fileName);

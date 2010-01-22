@@ -35,7 +35,7 @@ public class FrankRenderer extends ShapeRenderer {
     Frank frank = (Frank) shape;
     boolean allowKeys = viewer.getBooleanProperty("allowKeyStrokes");
     colix = (viewer.isSignedApplet() ? (allowKeys ? Graphics3D.ORANGE : Graphics3D.RED) : allowKeys ? Graphics3D.BLUE : Graphics3D.GRAY);
-    if (isExport || !viewer.getShowFrank()
+    if (exportType != Graphics3D.EXPORT_NOT || !viewer.getShowFrank()
         || !g3d.setColix(Graphics3D.getColixTranslucent(colix,
             g3d.haveTranslucentObjects(), 0.5f)))
       return;

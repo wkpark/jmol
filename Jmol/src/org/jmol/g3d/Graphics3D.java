@@ -1221,12 +1221,20 @@ final public class Graphics3D implements JmolRendererInterface {
                       xA, yA, zA, xB, yB, zB);
   }
 
-  public void fillCylinder(byte endcaps,
+  public void fillCylinderScreen(byte endcaps,
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
     //measures, vectors, polyhedra
     cylinder3d.render(colixCurrent, colixCurrent, !addAllPixels, !addAllPixels, endcaps, diameter,
                       xA, yA, zA, xB, yB, zB);
+  }
+
+  public void fillCylinderScreen(byte endcaps, int diameter,
+                           Point3i screenA, Point3i screenB) {
+    //draw
+    cylinder3d.render(colixCurrent, colixCurrent, !addAllPixels, !addAllPixels, endcaps, diameter,
+                      screenA.x, screenA.y, screenA.z,
+                      screenB.x, screenB.y, screenB.z);
   }
 
   public void fillCylinder(byte endcaps, int diameter,
@@ -1245,18 +1253,18 @@ final public class Graphics3D implements JmolRendererInterface {
        screenB.x, screenB.y, screenB.z);
  }
 
-  public void fillCone(byte endcap, int diameter,
+  public void fillConeScreen(byte endcap, int screenDiameter,
                        Point3i screenBase, Point3i screenTip) {
     // dipoles, mesh, vectors
-    cylinder3d.renderCone(colixCurrent, !addAllPixels, endcap, diameter,
+    cylinder3d.renderCone(colixCurrent, !addAllPixels, endcap, screenDiameter,
                           screenBase.x, screenBase.y, screenBase.z,
                           screenTip.x, screenTip.y, screenTip.z, false);
   }
 
-  public void fillCone(byte endcap, int diameter,
+  public void fillConeSceen(byte endcap, int screenDiameter,
                        Point3f screenBase, Point3f screenTip) {
     // cartoons, rockets
-    cylinder3d.renderCone(colixCurrent, !addAllPixels, endcap, diameter,
+    cylinder3d.renderCone(colixCurrent, !addAllPixels, endcap, screenDiameter,
                           screenBase.x, screenBase.y, screenBase.z,
                           screenTip.x, screenTip.y, screenTip.z, true);
   }
@@ -2885,9 +2893,13 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   // implemented only for Export3D:
+
+  public final static int EXPORT_NOT = 0;
+  public final static int EXPORT_CARTESIAN = 1;
+  public final static int EXPORT_RAYTRACER = 2;
   
-  public boolean isExport() {
-    return false;
+  public int getExportType() {
+    return EXPORT_NOT;
   }
 
   public boolean canDoTriangles() {
@@ -2907,8 +2919,8 @@ final public class Graphics3D implements JmolRendererInterface {
     return null;
   }
 
-  public void fillCylinder(Atom atomA, Atom atomB, short colixA, short colixB,
-                           byte endcaps, short mad, int bondOrder) {
+  public void drawBond(Atom atomA, Atom atomB, short colixA, short colixB,
+                           byte endcaps, short mad) {
   }
 
 }

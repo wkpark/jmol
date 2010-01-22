@@ -95,14 +95,15 @@ import org.jmol.viewer.Viewer;
  *   
  *  This export driver should subclass either __CartesianExporter or __RayTracerExporter.
  *  The difference is that __CartesianExporters use the untransformed XYZ coordinates of the model,
- *  while __RayTracerExporter uses screen coordinates (which may include perspective distortion).
+ *  with all distances in milliAngstroms, while __RayTracerExporter uses screen coordinates 
+ *  (which may include perspective distortion), with all distances in pixels
  *  In addition, a __RayTracerExporter will clip based on the window size, like the standard graphics.
  *  
  *  The export driver is then responsible for implementing all outstanding abstract methods
  *  of the ___Exporter class. Most of these are of the form outputXXXXX(...). 
  *  
  *  In the renderers, there are occasions when we need to know that we are exporting. 
- *  In those cases their isExport flag will be set and can be tested. 
+ *  In those cases ShapeRenderer.exportType will be set and can be tested. 
  *  
  *  Basically, this system is designed to be updated easily by multiple 
  *  developers. The process should be:
@@ -156,17 +157,18 @@ public abstract class ___Exporter {
 
   // Most exporters (Maya, X3D, VRML, IDTF) 
   // can manipulate actual 3D data.
-  // isCartesianExport indicates that and is used:
+  // exportType == Graphics3D.EXPORT_CARTESIAN indicates that and is used:
   // a) to prevent export of the background image
   // b) to prevent export of the backgrounds of labels
   // c) to prevent clipping based on the window size
   // d) for single bonds, just use the XYZ coordinates
   
-  // POV-RAY is different -- it's taken to be a single view image
+  // POV-RAY is different -- as EXPORT_RAYTRACER, 
+  // it's taken to be a single view image
   // with a limited, clipped window.
   
-  boolean isCartesianExport;
-
+  int exportType;
+  
   final protected static float degreesPerRadian = (float) (180 / Math.PI);
 
   final protected Point3f tempP1 = new Point3f();
@@ -480,13 +482,16 @@ public abstract class ___Exporter {
   abstract void drawTextPixel(int argb, int x, int y, int z);
 
   //rockets and dipoles
-  abstract void fillCone(short colix, byte endcap, int diameter, 
+  abstract void fillConeScreen(short colix, byte endcap, int screenDiameter, 
                          Point3f screenBase, Point3f screenTip);
   
-  abstract void fillCylinder(Point3f atom1, Point3f atom2, short colix1, short colix2,
+  abstract void drawCylinder(Point3f atom1, Point3f atom2, short colix1, short colix2,
                              byte endcaps, int madBond, int bondOrder);
 
   abstract void fillCylinder(short colix, byte endcaps, int diameter, 
+                                        Point3f screenA, Point3f screenB);
+
+  abstract void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, 
                              Point3f screenA, Point3f screenB);
 
   abstract void fillEllipsoid(Point3f center, Point3f[] points, short colix, 
@@ -506,6 +511,7 @@ public abstract class ___Exporter {
   
   private int nText;
   private int nImage;
+  public int lineWidth;
 
   void plotImage(int x, int y, int z, Image image, short bgcolix, int width,
                  int height) {

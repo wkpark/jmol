@@ -49,7 +49,8 @@ public class BackboneRenderer extends BioShapeRenderer {
       if (mad < 0) {
         g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
       } else {
-        int width = (isExport ? mad : viewer.scaleToScreen((zA + zB) / 2, mad));
+        int width = (exportType == Graphics3D.EXPORT_CARTESIAN ? mad 
+            : viewer.scaleToScreen((zA + zB) / 2, mad));
         g3d.fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_SPHERICAL, width,
             xA, yA, zA, xB, yB, zB);
       }

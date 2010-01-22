@@ -1776,7 +1776,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    */
   private boolean lookingAtImpliedString() {
     int ichT = ichToken;
-    char ch;
+    char ch = ' ';
     // look ahead to \n, \r, terminal ;, or }
     while (ichT < cchScript && !eol(ch = script.charAt(ichT)) && ch != '}')
       ++ichT;
@@ -1788,13 +1788,14 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       isMath = (ichT > ichToken + 1 && script.charAt(ichToken + 1) == '{');
       if (isVariable && !isMath)
         return false;      
+      if (isMath) {
+        ichT = ichMathTerminator(script, ichToken + 1, cchScript);
+        return (ichT != cchScript && (cchToken = ichT + 1 - ichToken) > 0);
+      }
     }
-    if (isMath) {
-      ichT = ichMathTerminator(script, ichToken + 1, cchScript);
-      if (ichT == cchScript)
-        return false;
-      return ((cchToken = ichT + 1 - ichToken) > 0);
-    }
+    if (ch == '}')
+      while (ichT < cchScript && !eol(ch = script.charAt(ichT)))
+        ++ichT;
     while (--ichT > ichToken && Character.isWhitespace(script.charAt(ichT))) {
     }
     return (cchToken = ++ichT - ichToken) > 0;

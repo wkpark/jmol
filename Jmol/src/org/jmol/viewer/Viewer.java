@@ -3630,7 +3630,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param comment
    * @return base64-encoded or binary version of the image
    */
-  public Object getImageAs(String type, int quality, int width, int height,
+  Object getImageAs(String type, int quality, int width, int height,
                            String fileName, OutputStream os, String comment) {
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
@@ -4897,6 +4897,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     while (true) {
 
+      // 11.9.21
+      if (key.equalsIgnoreCase("fileCacheDirectory")) {
+        // application only -- CANNOT BE SET BY STATE global.fileCacheDirectory = value;
+        break;
+      }
+      if (key.equalsIgnoreCase("fileCaching")) {
+        // application only -- CANNOT BE SET BY STATE global.atomTypes = value;
+        break;
+      }
+      
       // 11.7.7
       if (key.equalsIgnoreCase("atomTypes")) {
         global.atomTypes = value;
@@ -5077,6 +5087,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.setUserVariable(key, new ScriptVariable(Token.string, value));
   }
 
+/*  public void setFileCacheDirectory(String fileOrDir) {
+    if (fileOrDir == null)
+      fileOrDir = "";
+    global._fileCache = fileOrDir;
+  }
+  
+  String getFileCacheDirectory() {
+    if (!global._fileCaching)
+      return null;
+    return global._fileCache;
+  }
+  
+*/
+  
   private String language = GT.getLanguage();
 
   public String getLanguage() {
@@ -6950,7 +6974,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // for getting and returning script data from the console and editor
 
     if ("DATA_API".equals(returnType)) {
-      switch (("scriptCheck........." // 0
+      switch (
+           ("scriptCheck........." // 0
           + "scriptContext......." // 20
           + "scriptEditor........" // 40
           + "scriptEditorState..." // 60
@@ -7519,7 +7544,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String createImage(String fileName, String type, Object text_or_bytes,
                             int quality, int width, int height, BitSet bsFrames) {
     if (bsFrames == null)
-      return createImage(fileName, type, text_or_bytes, quality, width, height);
+      return (String) createImage(fileName, type, text_or_bytes, quality, width, height);
     int modelCount = getModelCount();
     String info = "";
     int n = 0;
@@ -7534,7 +7559,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setCurrentModelIndex(i);
         fileName = "0000" + (++n);
         fileName = froot + fileName.substring(fileName.length() - 4) + fext;
-        String msg = createImage(fileName, type, text_or_bytes, quality, width,
+        String msg = (String) createImage(fileName, type, text_or_bytes, quality, width,
             height);
         Logger.info(msg);
         info += msg + "\n";
@@ -7568,7 +7593,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *          image height
    * @return null (canceled) or a message starting with OK or an error message
    */
-  public String createImage(String fileName, String type, Object text_or_bytes,
+  public Object createImage(String fileName, String type, Object text_or_bytes,
                             int quality, int width, int height) {
 
     /*
@@ -7595,7 +7620,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setModelVisibility();
     }
     creatingImage = true;
-    String err = null;
+    Object err = null;
+   
     try {
       if (fileName == null) {
         err = clipImage((String) text_or_bytes);
@@ -7618,22 +7644,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         } else {
           // see if application wants to do it (returns non-null String)
           // both Jmol application and applet return null
-          err = statusManager.createImage(fileName, type, text_or_bytes,
-              quality);
+          if (!type.equals("OutputStream"))
+            err = statusManager.createImage(fileName, type, text_or_bytes,
+                quality);
           if (err == null) {
             // application can do it itself or allow Jmol to do it here
             JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
                 .getOptionInterface("export.image.ImageCreator");
             c.setViewer(this, privateKey);
-            err = (String) c
-                .createImage(fileName, type, text_or_bytes, quality);
+            err = c.createImage(fileName, type, text_or_bytes, quality);
+            if (err instanceof String)
             // report error status (text_or_bytes == null)
-            statusManager.createImage(err, type, null, quality);
+            statusManager.createImage((String) err, type, null, quality);
           }
         }
       }
     } catch (Throwable er) {
-      Logger.error(setErrorMessage(err = "ERROR creating image: " + er));
+      Logger.error(setErrorMessage((String) (err = "ERROR creating image: " + er)));
     }
     creatingImage = false;
     if (quality != Integer.MIN_VALUE) {
@@ -8103,6 +8130,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // System.out.println("applet test Viewer.java repaint()-->display.repaint() "
     // + Thread.currentThread().getName() + " " + Thread.currentThread());
     display.repaint();
+  }
+
+  public OutputStream getOutputStream(String localName) {
+    Object ret = createImage(localName, "OutputStream", null, Integer.MIN_VALUE, 0, 0);
+    if (ret instanceof String) {
+      Logger.error((String) ret);
+      return null;
+    }
+    return (OutputStream) ret;
   }
 
 }

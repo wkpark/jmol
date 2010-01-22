@@ -25,6 +25,7 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Parser;
@@ -33,16 +34,31 @@ abstract class SurfaceFileReader extends SurfaceReader {
 
   protected BufferedReader br;
   protected BinaryDocument binarydoc;
+  protected OutputStream os;
  
   SurfaceFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg);
     this.br = br; 
   }
-
+  
+  protected void setOutputStream(OutputStream os) {
+    if (binarydoc == null)
+      this.os = os; 
+    else
+      binarydoc.setOutputStream(os);
+  }
+  
   protected void closeReader() {
     if (br != null)
       try {
         br.close();
+      } catch (IOException e) {
+        // ignore
+      }
+    if (os != null)
+      try {
+        os.flush();
+        os.close();
       } catch (IOException e) {
         // ignore
       }
@@ -114,8 +130,16 @@ abstract class SurfaceFileReader extends SurfaceReader {
     try {
       if (br != null)
         br.close();
+    } catch (Exception e) {
+    }
+    try {
       if (binarydoc != null)
         binarydoc.close();
+    } catch (Exception e) {
+    }
+    try {
+      if (os != null)
+        os.close();
     } catch (Exception e) {
     }
     super.discardTempData(discardAll);
@@ -176,7 +200,12 @@ abstract class SurfaceFileReader extends SurfaceReader {
   }
 
   protected String readLine() throws Exception {
-    return line = br.readLine();
+    line = br.readLine();
+    if (os != null && line != null) {
+      os.write(line.getBytes());
+      os.write('\n');
+    }
+    return line;
   }  
 /*  
   int parseInt(String s, int iStart) {

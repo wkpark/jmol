@@ -42,7 +42,6 @@ import org.jmol.viewer.Viewer;
 
 public class _VrmlExporter extends __CartesianExporter {
 
-  // VERY preliminary -- in process -- 7/2007 Bob Hanson
   /*
    * 1/2009 Angel Herraez: # added support for translucency # Jmol info in
    * header # set navigation mode # added support for background color # added
@@ -163,7 +162,7 @@ public class _VrmlExporter extends __CartesianExporter {
   }
 
   protected void outputComment(String comment) {
-    output("# " + comment + "/n");
+    output("# " + comment + "\n");
   }
   
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
@@ -345,11 +344,16 @@ public class _VrmlExporter extends __CartesianExporter {
     }
   }
 
+  Hashtable htSpheresRendered = new Hashtable();
   protected void outputSphere(Point3f center, float radius, short colix) {
+    String child = useTable.getDef("S" + colix + "_" + (int) (radius * 100));
+    String check = child + " " + center;
+    if (htSpheresRendered.get(check) != null)
+      return;
+    htSpheresRendered.put(check, Boolean.TRUE);
     output("Transform{translation ");
     output(center);
     output(" children ");
-    String child = useTable.getDef("S" + colix + "_" + (int) (radius * 100));
     if (child.charAt(0) == '_') {
       output("DEF " + child);
       output(" Shape{geometry Sphere{radius " + radius + "}");

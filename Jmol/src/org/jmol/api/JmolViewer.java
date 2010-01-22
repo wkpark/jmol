@@ -180,7 +180,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * @param height 
    * @return          null (canceled) or a message starting with OK or an error message
    */
-  abstract public String createImage(String fileName, String type, Object text_or_bytes, int quality,
+  abstract public Object createImage(String fileName, String type, Object text_or_bytes, int quality,
                                    int width, int height);
 
   /**

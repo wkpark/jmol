@@ -34,6 +34,7 @@ import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 
 import java.io.BufferedReader;
+import java.io.OutputStream;
 
 import java.util.BitSet;
 import java.util.Enumeration;
@@ -175,6 +176,7 @@ public abstract class AtomSetCollectionReader {
   private int lastModelNumber = Integer.MAX_VALUE;
   private int desiredSpaceGroupIndex = -1;
   private SymmetryInterface symmetry;
+  protected OutputStream os;
 
 /*  
   public void finalize() {
@@ -356,6 +358,10 @@ public abstract class AtomSetCollectionReader {
       setUnitCell(fParams[0], fParams[1], fParams[2], fParams[3], fParams[4],
           fParams[5]);
       ignoreFileUnitCell = iHaveUnitCell;
+    }
+    
+    if (htParams.containsKey("OutputStream")) {
+      os = (OutputStream) htParams.get("OutputStream"); 
     }
   }
 
@@ -814,6 +820,10 @@ public abstract class AtomSetCollectionReader {
   public String readLine() throws Exception {
     prevline = line;
     line = reader.readLine();
+    if (os !=null && line != null) {
+      os.write(line.getBytes());
+      os.write('\n');
+    }
     ptLine++;
     if (Logger.debugging)
       Logger.debug(line);

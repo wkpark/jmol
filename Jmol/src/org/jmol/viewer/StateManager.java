@@ -550,7 +550,7 @@ public class StateManager {
         + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
         + ";debug;debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
-        + ";fontscaling;language;loglevel;measureStyleChime"
+        + ";_filecaching;_filecache;fontcaching;fontscaling;language;loglevel;measureStyleChime"
         + ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode;"
         + ";perspectivedepth;phongexponent;visualrange;perspectivemodel;refreshing;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
@@ -634,6 +634,8 @@ public class StateManager {
     float bondTolerance = JmolConstants.DEFAULT_BOND_TOLERANCE;
     String defaultLoadScript = "";
     String defaultDirectory = "";
+//    boolean _fileCaching = false;
+//    String _fileCache = "";
     boolean forceAutoBond = false;
     char inlineNewlineChar = '|'; //pseudo static
     String loadFormat = "http://www.rcsb.org/pdb/files/%FILE.pdb";
@@ -1293,6 +1295,8 @@ public class StateManager {
       setParameterValue("ellipsoidDots", ellipsoidDots);
       setParameterValue("ellipsoidFill", ellipsoidFill);
       setParameterValue("exportDrivers", JmolConstants.EXPORT_DRIVER_LIST);
+//      setParameterValue("_fileCaching", _fileCaching);
+//      setParameterValue("_fileCache", _fileCache);
       setParameterValue("fontScaling", fontScaling);
       setParameterValue("fontCaching", fontCaching);
       setParameterValue("forceAutoBond", forceAutoBond);

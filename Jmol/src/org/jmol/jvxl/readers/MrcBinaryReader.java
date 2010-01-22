@@ -23,6 +23,9 @@
  */
 package org.jmol.jvxl.readers;
 
+import java.io.DataInputStream;
+import java.io.StringBufferInputStream;
+
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
 
@@ -34,10 +37,13 @@ class MrcBinaryReader extends MapFileReader {
    */
 
   
-  MrcBinaryReader(SurfaceGenerator sg, String fileName, boolean isBigEndian) {
+  MrcBinaryReader(SurfaceGenerator sg, String fileName, String data, boolean isBigEndian) {
     super(sg, null);
     binarydoc = new BinaryDocument();
-    binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), isBigEndian);
+    if (data == null)
+      binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), isBigEndian);
+    else 
+      binarydoc.setStream(new DataInputStream(new StringBufferInputStream(data)));
     // data are HIGH on the inside and LOW on the outside
     if (params.thePlane == null)
       params.insideOut = !params.insideOut;

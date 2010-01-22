@@ -72,7 +72,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       return mesh.title != null;
 
     transform();
-    render2(isExport);
+    render2(exportType != Graphics3D.EXPORT_NOT);
     if (screens != null)
       viewer.freeTempScreens(screens);
     return true;
@@ -191,7 +191,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
         if (!g3d.isDirectedTowardsCamera(normix))
           continue;
         if (fill) {
-          if (isExport) {
+          if (exportType != Graphics3D.EXPORT_NOT) {
             g3d.fillTriangle(screens[iC], colix, normix, screens[iB], colix,
                 normix, screens[iA], colix, normix);
           } else {
@@ -269,26 +269,35 @@ public abstract class MeshRenderer extends ShapeRenderer {
     byte endCap = (iA != iB  && !fill ? Graphics3D.ENDCAPS_NONE 
         : width < 0 || iA != iB && isTranslucent ? Graphics3D.ENDCAPS_FLAT
         : Graphics3D.ENDCAPS_SPHERICAL);
-    if (diameter == 0)
-      diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 7 : 3);
     if (width == 0) {
-      if (iA == iB)
+      if (diameter == 0)
+        diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 7 : 3);
+      if (exportType == Graphics3D.EXPORT_CARTESIAN) {
+        pt1f.set(vA);
+        pt1f.add(vB);
+        pt1f.scale(1f / 2f);
+        viewer.transformPoint(pt1f, pt1i);
+        diameter = (int) (viewer.unscaleToScreen(pt1i.z, diameter) * 1000);
+      }
+      if (iA == iB) {
         g3d.fillSphere(diameter, sA);
-      else
+      } else {
         g3d.fillCylinder(endCap, diameter, sA, sB);
+      }
     } else {
       pt1f.set(vA);
       pt1f.add(vB);
       pt1f.scale(1f / 2f);
-      viewer.transformPoint(pt1f, pt1i);      
-      diameter = viewer.scaleToScreen(pt1i.z,
-          (int) (Math.abs(width) * 1000));
+      viewer.transformPoint(pt1f, pt1i);
+      int mad = (int) (Math.abs(width) * 1000); 
+      diameter = (exportType == Graphics3D.EXPORT_CARTESIAN ? mad 
+          : viewer.scaleToScreen(pt1i.z, mad));
       if (diameter == 0)
         diameter = 1;
       viewer.transformPoint(vA, pt1f);
       viewer.transformPoint(vB, pt2f);
       g3d.fillCylinderBits(endCap, diameter, pt1f, pt2f);
-    }    
+    }
   }
 
   protected void exportSurface() {

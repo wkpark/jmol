@@ -226,7 +226,7 @@ public class PdbReader extends AtomSetCollectionReader {
       }
       checkNotPDB();
       atomSetCollection.connectAll(maxSerial);
-      if (biomolecules != null && biomolecules.size() > 0) {
+      if (biomolecules != null && biomolecules.size() > 0 && atomSetCollection.getAtomCount() > 0) {
         atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", biomolecules);
         setBiomoleculeAtomCounts();
         if (biomts != null && filter != null

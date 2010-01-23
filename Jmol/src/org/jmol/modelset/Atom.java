@@ -51,10 +51,9 @@ final public class Atom extends Point3fi {
   //private static final int MAD_MAX = RADIUS_MAX * 2000; // must be < 32000
 
   Group group;
-  int atomIndex;
-  BitSet atomSymmetry;
+  private BitSet atomSymmetry;
   int atomSite;
-  float userDefinedVanDerWaalRadius;
+  private float userDefinedVanDerWaalRadius;
   
   public int getScreenRadius() {
     return screenDiameter / 2;
@@ -102,7 +101,7 @@ final public class Atom extends Point3fi {
     this.modelIndex = (short)modelIndex;
     this.atomSymmetry = atomSymmetry;
     this.atomSite = atomSite;
-    this.atomIndex = atomIndex;
+    this.index = atomIndex;
     this.atomicAndIsotopeNumber = atomicAndIsotopeNumber;
     if (isHetero)
       formalChargeAndFlags = IS_HETERO_FLAG;
@@ -179,7 +178,7 @@ final public class Atom extends Point3fi {
   }
 
   int getBondedAtomIndex(int bondIndex) {
-    return bonds[bondIndex].getOtherAtom(this).atomIndex;
+    return bonds[bondIndex].getOtherAtom(this).index;
   }
 
   /*
@@ -370,7 +369,7 @@ final public class Atom extends Point3fi {
   // a percentage value in the range 0-100
   public int getOccupancy100() {
     byte[] occupancies = group.chain.modelSet.occupancies;
-    return occupancies == null ? 100 : occupancies[atomIndex];
+    return occupancies == null ? 100 : occupancies[index];
   }
 
   // This is called bfactor100 because it is stored as an integer
@@ -379,7 +378,7 @@ final public class Atom extends Point3fi {
     short[] bfactor100s = group.chain.modelSet.bfactor100s;
     if (bfactor100s == null)
       return 0;
-    return bfactor100s[atomIndex];
+    return bfactor100s[index];
   }
 
   public boolean setRadius(float radius) {
@@ -501,8 +500,8 @@ final public class Atom extends Point3fi {
     return Math.abs(madAtom / (1000f * 2));
   }
 
-  public int getAtomIndex() {
-    return atomIndex;
+  public int getIndex() {
+    return index;
   }
 
   public int getAtomSite() {
@@ -528,7 +527,7 @@ final public class Atom extends Point3fi {
          (vibrationVectors = group.chain.modelSet.vibrationVectors) == null)
        screen = viewer.transformPoint(this);
      else 
-       screen = viewer.transformPoint(this, vibrationVectors[atomIndex]);
+       screen = viewer.transformPoint(this, vibrationVectors[index]);
      screenX = screen.x;
      screenY = screen.y;
      screenZ = screen.z;
@@ -539,18 +538,18 @@ final public class Atom extends Point3fi {
    // note: atomNames cannot be null
    
    public String getAtomName() {
-     return group.chain.modelSet.atomNames[atomIndex];
+     return group.chain.modelSet.atomNames[index];
    }
    
    public String getAtomType() {
     String[] atomTypes = group.chain.modelSet.atomTypes;
-    String type = (atomTypes == null ? null : atomTypes[atomIndex]);
-    return (type == null ? group.chain.modelSet.atomNames[atomIndex] : type);
+    String type = (atomTypes == null ? null : atomTypes[index]);
+    return (type == null ? group.chain.modelSet.atomNames[index] : type);
   }
    
    public int getAtomNumber() {
      int[] atomSerials = group.chain.modelSet.atomSerials;
-     return (atomSerials != null ? atomSerials[atomIndex] : atomIndex);
+     return (atomSerials != null ? atomSerials[index] : index);
 //        : group.chain.modelSet.isZeroBased ? atomIndex : atomIndex);
    }
 
@@ -568,7 +567,7 @@ final public class Atom extends Point3fi {
 
    public float getPartialCharge() {
      float[] partialCharges = group.chain.modelSet.partialCharges;
-     return partialCharges == null ? 0 : partialCharges[atomIndex];
+     return partialCharges == null ? 0 : partialCharges[index];
    }
 
    public float getStraightness() {
@@ -576,7 +575,7 @@ final public class Atom extends Point3fi {
    }
 
    public Object[] getEllipsoid() {
-     return group.chain.modelSet.getEllipsoid(atomIndex);
+     return group.chain.modelSet.getEllipsoid(index);
    }
 
    /**
@@ -661,21 +660,21 @@ final public class Atom extends Point3fi {
    }
    
    public int getMoleculeNumber() {
-     return (group.chain.modelSet.getMoleculeIndex(atomIndex) + 1);
+     return (group.chain.modelSet.getMoleculeIndex(index) + 1);
    }
    
    String getClientAtomStringProperty(String propertyName) {
      Object[] clientAtomReferences = group.chain.modelSet.clientAtomReferences;
      return
-       ((clientAtomReferences==null || clientAtomReferences.length<=atomIndex)
+       ((clientAtomReferences==null || clientAtomReferences.length<=index)
         ? null : (group.chain.modelSet.viewer.
-           getClientAtomStringProperty(clientAtomReferences[atomIndex],
+           getClientAtomStringProperty(clientAtomReferences[index],
                                        propertyName)));
    }
 
    public byte getSpecialAtomID() {
      byte[] specialAtomIDs = group.chain.modelSet.specialAtomIDs;
-     return specialAtomIDs == null ? 0 : specialAtomIDs[atomIndex];
+     return specialAtomIDs == null ? 0 : specialAtomIDs[index];
    }
    
   public float getFractionalCoord(char ch) {
@@ -928,7 +927,7 @@ final public class Atom extends Point3fi {
    */
   public boolean isVisible(int flags) {
     // Is the atom's model visible? Is the atom NOT hidden?
-    if (!isInFrame() || group.chain.modelSet.isAtomHidden(atomIndex))
+    if (!isInFrame() || group.chain.modelSet.isAtomHidden(index))
       return false;
     // Is any shape associated with this atom visible? 
     if (flags != 0)
@@ -958,15 +957,15 @@ final public class Atom extends Point3fi {
   }
 
   public int getSurfaceDistance100() {
-    return group.chain.modelSet.getSurfaceDistance100(atomIndex);
+    return group.chain.modelSet.getSurfaceDistance100(index);
   }
 
   public Vector3f getVibrationVector() {
-    return group.chain.modelSet.getVibrationVector(atomIndex, false);
+    return group.chain.modelSet.getVibrationVector(index, false);
   }
 
   public float getVibrationCoord(char ch) {
-    return group.chain.modelSet.getVibrationCoord(atomIndex, ch);
+    return group.chain.modelSet.getVibrationCoord(index, ch);
   }
 
 
@@ -978,10 +977,14 @@ final public class Atom extends Point3fi {
     return group.getQuaternion(qtype);
   }
   
-  int getPolymerIndex() {
-    return group.getBioPolymerIndex();
+  public int getPolymerIndexInModel() {
+    return group.getBioPolymerIndexInModel();
   }
 
+  public int getMonomerIndex() {
+    return group.getMonomerIndex();
+  }
+  
   public int getSelectedGroupCountWithinChain() {
     return group.chain.getSelectedGroupCount();
   }
@@ -1058,14 +1061,14 @@ final public class Atom extends Point3fi {
     //this overrides the Point3fi hashcode, which would
     //give a different hashcode for an atom depending upon
     //its screen location! Bug fix for 11.1.43 Bob Hanson
-    return atomIndex;
+    return index;
   }
   
   public Atom findAromaticNeighbor(BitSet notAtoms) {
     for (int i = bonds.length; --i >= 0; ) {
       Bond bondT = bonds[i];
       Atom a = bondT.getOtherAtom(this);
-      if (bondT.isAromatic() && (notAtoms == null || !notAtoms.get(a.atomIndex)))
+      if (bondT.isAromatic() && (notAtoms == null || !notAtoms.get(a.index)))
         return a;
     }
     return null;
@@ -1075,7 +1078,7 @@ final public class Atom extends Point3fi {
     for (int i = bonds.length; --i >= 0; ) {
       Bond bondT = bonds[i];
       Atom a = bondT.getOtherAtom(this);
-      if (bondT.isAromatic() && a.atomIndex != notAtomIndex)
+      if (bondT.isAromatic() && a.index != notAtomIndex)
         return a;
     }
     return null;
@@ -1096,7 +1099,7 @@ final public class Atom extends Point3fi {
     case Token.atomID:
       return atom.getSpecialAtomID();
     case Token.atomIndex:
-      return atom.getAtomIndex();
+      return atom.getIndex();
     case Token.bondcount:
       return atom.getCovalentBondCount();
     case Token.color:
@@ -1212,7 +1215,7 @@ final public class Atom extends Point3fi {
     case Token.star:
     case Token.strands:
     case Token.trace:
-      return atom.group.chain.modelSet.getAtomShapeValue(atom.atomIndex, tokWhat);
+      return atom.group.chain.modelSet.getAtomShapeValue(atom.index, tokWhat);
     case Token.straightness:
       return atom.getStraightness();
     case Token.unitX:
@@ -1261,7 +1264,7 @@ final public class Atom extends Point3fi {
       return (ch == '\0' ? "" : "" + ch);
     case Token.label:
     case Token.format:
-      String s = atom.group.chain.modelSet.getAtomLabel(atom.getAtomIndex());
+      String s = atom.group.chain.modelSet.getAtomLabel(atom.getIndex());
       if (s == null)
         s = "";
       return s;

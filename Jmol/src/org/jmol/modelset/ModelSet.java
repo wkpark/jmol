@@ -111,7 +111,8 @@ abstract public class ModelSet extends ModelCollection {
   
   
   private Shape allocateShape(int shapeID) {
-    if (shapeID == JmolConstants.SHAPE_HSTICKS || shapeID == JmolConstants.SHAPE_SSSTICKS)
+    if (shapeID == JmolConstants.SHAPE_HSTICKS || shapeID == JmolConstants.SHAPE_SSSTICKS
+        || shapeID == JmolConstants.SHAPE_STRUTS)
       return null;
     String className = JmolConstants.getShapeClassName(shapeID);
     try {
@@ -280,7 +281,7 @@ abstract public class ModelSet extends ModelCollection {
       for (int i = 0; i < shapes.length && closest[0] == null; ++i)
         if (shapes[i] != null)
           shapes[i].findNearestAtomIndex(x, y, closest);
-    int closestIndex = (closest[0] == null ? -1 : closest[0].atomIndex);
+    int closestIndex = (closest[0] == null ? -1 : closest[0].index);
     closest[0] = null;
     return closestIndex;
   }
@@ -432,27 +433,26 @@ abstract public class ModelSet extends ModelCollection {
     return false;
   }
 
-  public Point3fi checkObjectClicked(int x, int y, int modifiers,
+  public Token checkObjectClicked(int x, int y, int modifiers,
                                     BitSet bsVisible) {
     Shape shape;
     Point3fi pt = null;
-    
     if (viewer.getNavigationMode() && viewer.getNavigateSurface() 
         && (shape = shapes[JmolConstants.SHAPE_ISOSURFACE]) != null && 
         (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
-      return pt;
+      return new Token(Token.isosurface, pt);
 
     if (modifiers != 0 && viewer.getBondPicking()
         && (pt = shapes[JmolConstants.SHAPE_STICKS].checkObjectClicked(x, y,
             modifiers, bsVisible)) != null)
-      return pt;
+      return new Token(Token.bonds, pt);
 
     if ((shape = shapes[JmolConstants.SHAPE_ECHO])!= null && modifiers != 0
         && (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
-      return pt;
+      return new Token(Token.echo, pt);
     if ((shape = shapes[JmolConstants.SHAPE_DRAW]) != null && 
         (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
-      return pt;
+      return new Token(Token.draw, pt);
     return null;
   }
  
@@ -603,7 +603,7 @@ abstract public class ModelSet extends ModelCollection {
       setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsAromatic);
   }
 
-  public int[] makeConnections(float minDistance, float maxDistance, short order,
+  public int[] makeConnections(float minDistance, float maxDistance, int order,
                              int connectOperation, BitSet bsA, BitSet bsB,
                              BitSet bsBonds, boolean isBonds) {
     if (connectOperation == JmolConstants.CONNECT_DELETE_BONDS 
@@ -728,8 +728,8 @@ abstract public class ModelSet extends ModelCollection {
             || bonds[i].isHydrogen()) {
           Bond bond = bonds[i];
           commands.append("  connect ").append("({").append(
-              bond.atom1.atomIndex).append("}) ").append("({").append(
-              bond.atom2.atomIndex).append("}) ").append(
+              bond.atom1.index).append("}) ").append("({").append(
+              bond.atom2.index).append("}) ").append(
               JmolConstants.getBondOrderNameFromOrder(bond.order))
               .append(";\n");
         }
@@ -933,5 +933,20 @@ abstract public class ModelSet extends ModelCollection {
     setModelAuxiliaryInfo(modelIndex, "fileData", fileData);
     return fileData;
   }
+  
+  /** see comments in org.jmol.modelsetbio.AlphaPolymer.java
+   * 
+   * Struts are calculated for atoms in bs1 connecting to atoms in bs2.
+   * The two bitsets may overlap. 
+   * 
+   * @param bs1
+   * @param bs2
+   * @return     number of struts found
+   */
+  public int calculateStruts(BitSet bs1, BitSet bs2) {
+    setModelVisibility();
+    return super.calculateStruts(bs1, bs2);
+  }
+
 }
 

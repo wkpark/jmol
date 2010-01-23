@@ -1288,7 +1288,7 @@ abstract public class AtomCollection {
       hybridization = "sp";
       if (atom1.getCovalentBondCount() == 3) {
         //special case, for example R2C=O oxygen
-        getHybridizationAndAxes(atom1.atomIndex, z, x3, lcaoType, false);
+        getHybridizationAndAxes(atom1.index, z, x3, lcaoType, false);
         x3.set(x);
         if (lcaoType.indexOf("sp2") == 0) { // align z as sp2 orbital
           hybridization = "sp2";
@@ -1306,7 +1306,7 @@ abstract public class AtomCollection {
             atom1 = atom2;
           if (atom1.getCovalentBondCount() == 3) {
             //special case, for example R2C=C=CR2 central carbon
-            getHybridizationAndAxes(atom1.atomIndex, x, z, "pz", false);
+            getHybridizationAndAxes(atom1.index, x, z, "pz", false);
             if (lcaoType.equals("px"))
               x.scale(-1);
             z.set(x2);
@@ -1897,7 +1897,7 @@ abstract public class AtomCollection {
       float d = Measure.distanceToPlane(plane, atom);
       if (distance > 0 && d >= -0.1 && d <= distance || distance < 0
           && d <= 0.1 && d >= distance || distance == 0 && Math.abs(d) < 0.01)
-        bsResult.set(atom.atomIndex);
+        bsResult.set(atom.index);
     }
     return bsResult;
   }
@@ -1928,7 +1928,7 @@ abstract public class AtomCollection {
     atoms = (Atom[]) ArrayUtil.deleteElements(atoms, firstAtomIndex, nAtoms);
     atomCount = atoms.length;
     for (int j = firstAtomIndex; j < atomCount; j++) {
-      atoms[j].atomIndex = j;
+      atoms[j].index = j;
       atoms[j].modelIndex--;
     }
     //System.out.println("atomcollection deleteAtoms atomslen=" + atoms.length);

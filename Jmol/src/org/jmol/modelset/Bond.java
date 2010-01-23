@@ -54,7 +54,7 @@ public class Bond {
 
   Atom atom1;
   Atom atom2;
-  short order;
+  int order;
   short mad;
   public short getMad() {
     return mad;
@@ -68,6 +68,10 @@ public class Bond {
   }
   
   int index = -1;
+  public int getIndex() {
+    return index;
+  }
+  
   int shapeVisibilityFlags;
   
   public int getShapeVisibilityFlags() {
@@ -77,7 +81,7 @@ public class Bond {
   
   final static int myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_STICKS);
 
-  Bond(Atom atom1, Atom atom2, short order,
+  Bond(Atom atom1, Atom atom2, int order,
               short mad, short colix) {
     if (atom1 == null || atom2 == null)
       throw new NullPointerException();
@@ -163,8 +167,8 @@ public class Bond {
     //but may show up translucent anyway!
   }
 
-  public void setOrder(short order) {
-    this.order = (short) (order | (this.order & JmolConstants.BOND_NEW));
+  public void setOrder(int order) {
+    this.order = order | (this.order & JmolConstants.BOND_NEW);
   }
 
   public Atom getAtom1() {
@@ -176,18 +180,18 @@ public class Bond {
   }
 
   public int getAtomIndex1() {
-    return atom1.atomIndex;
+    return atom1.index;
   }
   
   public int getAtomIndex2() {
-    return atom2.atomIndex;
+    return atom2.index;
   }
   
   float getRadius() {
     return mad / 2000f;
   }
 
-  public short getOrder() {
+  public int getOrder() {
     return order;
   }
 

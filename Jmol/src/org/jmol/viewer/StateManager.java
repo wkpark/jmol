@@ -447,10 +447,10 @@ public class StateManager {
     int atomIndex2;
     short mad;
     short colix;
-    short order;
+    int order;
     int shapeVisibilityFlags;
 
-    Connection(int atom1, int atom2, short mad, short colix, short order,
+    Connection(int atom1, int atom2, short mad, short colix, int order,
         int shapeVisibilityFlags) {
       atomIndex1 = atom1;
       atomIndex2 = atom2;
@@ -922,6 +922,9 @@ public class StateManager {
     Hashtable htParameterValues;
     Hashtable htPropertyFlags;
     Hashtable htPropertyFlagsRemoved;
+    int strutSpacing = 6;
+    float strutLengthMaximum = 7.0f;
+    float strutDefaultRadius = JmolConstants.DEFAULT_STRUT_RADIUS;
 
     boolean isJmolVariable(String key) {
       return key.charAt(0) == '_'
@@ -1400,6 +1403,9 @@ public class StateManager {
       setParameterValue("strandCount", strandCountForStrands);
       setParameterValue("strandCountForStrands", strandCountForStrands);
       setParameterValue("strandCountForMeshRibbon", strandCountForMeshRibbon);
+      setParameterValue("strutDefaultRadius", strutDefaultRadius);
+      setParameterValue("strutLengthMaximum", strutLengthMaximum);
+      setParameterValue("strutSpacing", strutSpacing);
       setParameterValue("syncMouse", false);
       setParameterValue("syncScript", false);
       setParameterValue("syncStereo", false);

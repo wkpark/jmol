@@ -398,7 +398,7 @@ public class Dipoles extends Shape {
     return (dipoles[i].isBondType());
   }
 
-  private void setColixDipole(short colix, short bondTypeMask, BitSet bs) {
+  private void setColixDipole(short colix, int bondTypeMask, BitSet bs) {
     if (colix == Graphics3D.USE_PALETTE)
       return; // not implemented
     BondIterator iter = modelSet.getBondIterator(bondTypeMask, bs);
@@ -454,10 +454,10 @@ public class Dipoles extends Shape {
       if (dipoles[i] != null
           && dipoles[i].atoms[0] != null
           && dipoles[i].atoms[1] != null
-          && (dipoles[i].atoms[0].getAtomIndex() == atomIndex1
-              && dipoles[i].atoms[1].getAtomIndex() == atomIndex2 || dipoles[i].atoms[1]
-              .getAtomIndex() == atomIndex1
-              && dipoles[i].atoms[0].getAtomIndex() == atomIndex2))
+          && (dipoles[i].atoms[0].getIndex() == atomIndex1
+              && dipoles[i].atoms[1].getIndex() == atomIndex2 || dipoles[i].atoms[1]
+              .getIndex() == atomIndex1
+              && dipoles[i].atoms[0].getIndex() == atomIndex2))
         return i;
     }
     return -1;
@@ -487,7 +487,7 @@ public class Dipoles extends Shape {
   }
 
   private Dipole findDipole(Atom atom1, Atom atom2, boolean doAllocate) {
-    int dipoleIndex = getDipoleIndex(atom1.getAtomIndex(), atom2.getAtomIndex());
+    int dipoleIndex = getDipoleIndex(atom1.getIndex(), atom2.getIndex());
     if (dipoleIndex >= 0) {
       return dipoles[dipoleIndex];
     }
@@ -568,11 +568,11 @@ public class Dipoles extends Shape {
       info.put("origin", dipole.origin);
       if (dipole.atoms[0] != null) {
         atomInfo = new Hashtable();
-        viewer.getAtomIdentityInfo(dipole.atoms[0].getAtomIndex(), atomInfo);
+        viewer.getAtomIdentityInfo(dipole.atoms[0].getIndex(), atomInfo);
         Vector atoms = new Vector();
         atoms.addElement(atomInfo);
         atomInfo = new Hashtable();
-        viewer.getAtomIdentityInfo(dipole.atoms[1].getAtomIndex(), atomInfo);
+        viewer.getAtomIdentityInfo(dipole.atoms[1].getIndex(), atomInfo);
         atoms.addElement(atomInfo);
         info.put("atoms", atoms);
         info.put("magnitude", new Float(dipole.vector.length()));

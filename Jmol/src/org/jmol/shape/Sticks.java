@@ -110,7 +110,7 @@ public class Sticks extends Shape {
     if ("bondOrder" == propertyName) {
       if (bsOrderSet == null)
         bsOrderSet = new BitSet();
-      short order = ((Short) value).shortValue();
+      int order = ((Integer) value).shortValue();
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
           : modelSet.getBondIterator(JmolConstants.BOND_ORDER_ANY, bs));
       while (iter.hasNext()) {
@@ -231,6 +231,7 @@ public class Sticks extends Shape {
     Bond bond = findPickedBond(x, y, bsVisible, pt);
     if (bond == null)
       return null;
+    pt.index = bond.getIndex();
     viewer.setStatusAtomPicked(-3, "[\"bond\",\"" + bond.getIdentity() + "\"," + pt.x + "," + pt.y + "," + pt.z + "]");
     return pt;
   }
@@ -261,6 +262,9 @@ public class Sticks extends Shape {
       v.scale(0.5f);
       int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
       if (d2 >= 0) {
+        float f = 1f * (ptXY.x - atom1.screenX) / (atom2.screenX - atom1.screenX);
+        if (f < 0.4f || f > 0.6f)
+          continue;
         dmin2 = d2;
         pickedBond = bond;
         pt.set(v);

@@ -57,7 +57,6 @@ import org.jmol.util.JpegEncoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TempArray;
 import org.jmol.util.TextFormat;
@@ -5143,6 +5142,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval
     boolean notFound = false;
     while (true) {
+      
+      // 11.9.21
+      
+      if (key.equalsIgnoreCase("strutLengthMaximum")) {
+        global.strutLengthMaximum = value;
+        break;
+      }
+      
+      if (key.equalsIgnoreCase("strutDefaultRadius")) {
+        global.strutDefaultRadius = value;
+        break;
+      }
+      
       // 11.7.47
       if (key.equalsIgnoreCase("navX")) {
         setSpin("X", (int) value);
@@ -5341,6 +5353,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     while (true) {
 
+      // 11.9.21
+      
+      if (key.equalsIgnoreCase("strutSpacing")) {
+        global.strutSpacing = value;
+        break;
+      }
+      
       // 11.9.13
       if (key.equalsIgnoreCase("phongExponent")) {
         Graphics3D.setPhongExponent(value);
@@ -6489,7 +6508,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int[] makeConnections(float minDistance, float maxDistance,
-                               short order, int connectOperation, BitSet bsA,
+                               int order, int connectOperation, BitSet bsA,
                                BitSet bsB, BitSet bsBonds, boolean isBonds) {
     // eval
     clearModelDependentObjects();
@@ -6870,7 +6889,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBondRadius(i);
   }
 
-  public short getBondOrder(int i) {
+  public int getBondOrder(int i) {
     return modelSet.getBondOrder(i);
   }
 
@@ -7099,7 +7118,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         clickCount);
   }
 
-  Point3fi checkObjectClicked(int x, int y, int modifiers) {
+  Token checkObjectClicked(int x, int y, int modifiers) {
     return modelSet.checkObjectClicked(x, y, modifiers,
         getVisibleFramesBitSet());
   }
@@ -7888,12 +7907,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return BitSetUtil.cardinalityOf(bsDeleted);
   }
 
+  public void deleteBonds(BitSet bsDeleted) {
+    modelSet.deleteBonds(bsDeleted);
+  }
+
   public void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bsDeleted) {
     // called from ModelCollection.deleteModel
     dataManager.deleteModelAtoms(firstAtomIndex, nAtoms, bsDeleted);
   }
 
-  public BitSet getDeletedAtoms() {
+   public BitSet getDeletedAtoms() {
     return selectionManager.bsDeleted;
   }
 
@@ -8139,6 +8162,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return null;
     }
     return (OutputStream) ret;
+  }
+
+  public int calculateStruts(BitSet bs1, BitSet bs2) {
+    return modelSet.calculateStruts(bs1 == null ? selectionManager.bsSelection : bs1, 
+        bs2 == null ? selectionManager.bsSelection : bs2);
+  }
+
+  public int getStrutSpacingMinimum() {
+    return global.strutSpacing;
+  }
+
+  public float getStrutLengthMaximum() {
+    return global.strutLengthMaximum;
+  }
+
+  public float getStrutDefaultRadius() {
+    return global.strutDefaultRadius;
   }
 
 }

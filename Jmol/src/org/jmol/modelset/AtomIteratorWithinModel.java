@@ -57,7 +57,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   }
 
   public int next() {
-    return ((Atom) bsptIter.nextElement()).atomIndex;
+    return ((Atom) bsptIter.nextElement()).index;
   }
 
   public float foundDistance2() {

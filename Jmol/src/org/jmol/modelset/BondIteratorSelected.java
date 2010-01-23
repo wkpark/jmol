@@ -32,13 +32,13 @@ class BondIteratorSelected implements BondIterator {
 
   private Bond[] bonds;
   private int bondCount;
-  private short bondType;
+  private int bondType;
   private int iBond;
   private BitSet bsSelected;
   private boolean bondSelectionModeOr;
   private boolean isBondBitSet;
 
-  BondIteratorSelected(Bond[] bonds, int bondCount, short bondType,
+  BondIteratorSelected(Bond[] bonds, int bondCount, int bondType,
       BitSet bsSelected, boolean bondSelectionModeOr) {
     this.bonds = bonds;
     this.bondCount = bondCount;
@@ -68,8 +68,8 @@ class BondIteratorSelected implements BondIterator {
           && (bond.order & bondType) == 0) {
         continue;
       }
-      boolean isSelected1 = bsSelected.get(bond.atom1.atomIndex);
-      boolean isSelected2 = bsSelected.get(bond.atom2.atomIndex);
+      boolean isSelected1 = bsSelected.get(bond.atom1.index);
+      boolean isSelected2 = bsSelected.get(bond.atom2.index);
       if ((!bondSelectionModeOr && isSelected1 && isSelected2)
           || (bondSelectionModeOr && (isSelected1 || isSelected2)))
         return true;

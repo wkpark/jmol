@@ -1854,7 +1854,7 @@ class ScriptMathProcessor {
     float min = Integer.MIN_VALUE, max = Integer.MAX_VALUE;
     float fmin = 0, fmax = Float.MAX_VALUE;
 
-    short order = JmolConstants.BOND_ORDER_ANY;
+    int order = JmolConstants.BOND_ORDER_ANY;
     BitSet atoms1 = null;
     BitSet atoms2 = null;
     boolean haveDecimal = false;

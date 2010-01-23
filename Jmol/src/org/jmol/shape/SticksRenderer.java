@@ -84,8 +84,8 @@ public class SticksRenderer extends ShapeRenderer {
     if (!atomA.isInFrame() || !atomB.isInFrame()
         || !g3d.isInDisplayRange(atomA.screenX, atomA.screenY)
         || !g3d.isInDisplayRange(atomB.screenX, atomB.screenY)
-        || modelSet.isAtomHidden(atomA.getAtomIndex())
-        || modelSet.isAtomHidden(atomB.getAtomIndex()))
+        || modelSet.isAtomHidden(atomA.getIndex())
+        || modelSet.isAtomHidden(atomB.getIndex()))
       return;
 
     if (slabbing) {
@@ -174,6 +174,9 @@ public class SticksRenderer extends ShapeRenderer {
           renderHbondDashed();
         }
         break;
+      } else if (bondOrder == JmolConstants.BOND_STRUT_MASK) {
+        bondOrder = 1;
+        drawBond(0);
       }
     }
   }
@@ -185,8 +188,7 @@ public class SticksRenderer extends ShapeRenderer {
     if ((order & JmolConstants.BOND_SULFUR_MASK) != 0)
       order &= ~JmolConstants.BOND_SULFUR_MASK;
     if ((order & JmolConstants.BOND_COVALENT_MASK) != 0) {
-      if (order == 1 ||
-          !showMultipleBonds ||
+      if (!showMultipleBonds ||
           modeMultipleBond == JmolConstants.MULTIBOND_NEVER ||
           (modeMultipleBond == JmolConstants.MULTIBOND_NOTSMALL &&
            mad > JmolConstants.madMultipleBondSmallMaximum)) {
@@ -361,7 +363,7 @@ public class SticksRenderer extends ShapeRenderer {
   */
   
   private int getAromaticDottedBondMask() {
-    Atom atomC = atomB.findAromaticNeighbor(atomA.getAtomIndex());
+    Atom atomC = atomB.findAromaticNeighbor(atomA.getIndex());
     if (atomC == null)
       return 1;
     //System.out.println("SticksRenderer atomA " + atomA.getInfo() + " atomB " + atomB.getInfo() + " atomC " + atomC.getInfo());

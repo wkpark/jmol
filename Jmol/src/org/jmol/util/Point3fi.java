@@ -26,6 +26,7 @@ package org.jmol.util;
 import javax.vecmath.Point3f;
 
 public class Point3fi extends Point3f {
+  public int index;
   public int screenX;
   public int screenY;
   public int screenZ;

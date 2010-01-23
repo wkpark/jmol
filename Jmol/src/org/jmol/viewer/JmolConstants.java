@@ -223,6 +223,7 @@ final public class JmolConstants {
   public final static int DEFAULT_PERCENT_VDW_ATOM = 23; // matches C sizes of AUTO with 20 for Jmol set
   public final static float DEFAULT_BOND_RADIUS = 0.15f;
   public final static short DEFAULT_BOND_MILLIANGSTROM_RADIUS = (short) (DEFAULT_BOND_RADIUS * 1000);
+  public final static float DEFAULT_STRUT_RADIUS = 0.3f;
   //angstroms of slop ... from OpenBabel ... mth 2003 05 26
   public final static float DEFAULT_BOND_TOLERANCE = 0.45f;
   //minimum acceptable bonding distance ... from OpenBabel ... mth 2003 05 26
@@ -273,7 +274,7 @@ final public class JmolConstants {
 
   
   /**
-   * picking modes
+   * picking modes     select picking....
    */
   public final static int PICKING_OFF    = 0;
   public final static int PICKING_IDENT  = 1;
@@ -283,7 +284,7 @@ final public class JmolConstants {
   public final static int PICKING_SPIN   = 5;
   public final static int PICKING_SYMMETRY = 6;
   //public final static int PICKING_COORD  = 6;
-  //public final static int PICKING_BOND   = 7;
+  public final static int PICKING_DELETE_BOND      = 7;
   public final static int PICKING_SELECT_ATOM      =  8;
   public final static int PICKING_SELECT_GROUP     =  9;
   public final static int PICKING_SELECT_CHAIN     = 10;
@@ -296,12 +297,14 @@ final public class JmolConstants {
   public final static int PICKING_MEASURE_ANGLE    = 17;
   public final static int PICKING_MEASURE_TORSION  = 18;
   public final static int PICKING_NAVIGATE         = 19;
+  public final static int PICKING_CONNECT          = 20;
+  
 
   private final static String[] pickingModeNames = {
     "off", "identify", "label", "center", "draw", "spin",
-    "symmetry", "bond NOT IMPLEMENTED", 
+    "symmetry", "deletebond",
     "atom", "group", "chain", "molecule", "site", "model", "element", 
-    "measure", "distance", "angle", "torsion", "navigate"
+    "measure", "distance", "angle", "torsion", "navigate", "connect"
   };
  
   public final static String getPickingModeName(int pickingMode) {
@@ -360,22 +363,23 @@ final public class JmolConstants {
   // 0111 1111 1111 1111 NULL
   
   
-  public final static short BOND_ORDER_ANY     = 0x3FFF;
-  public final static short BOND_ORDER_NULL    = 0x7FFF;
+  public final static int BOND_ORDER_ANY     = 0xFFFF;
+  public final static int BOND_ORDER_NULL    = 0x1FFFF;
 
-  public final static short BOND_HBOND_SHIFT   = 11;
-  public final static short BOND_NEW  = (short) (1 << 15);
-  public final static short BOND_HYDROGEN_MASK = 0xF << 11;
-  public final static short BOND_H_REGULAR     = 1 << 11;
-  public final static short BOND_H_CALC_MASK   = 0xE << 11; // excludes regular
-  public final static short BOND_H_CALC        = 2 << 11;
-  public final static short BOND_H_PLUS_2      = 3 << 11;
-  public final static short BOND_H_PLUS_3      = 4 << 11;
-  public final static short BOND_H_PLUS_4      = 5 << 11;
-  public final static short BOND_H_PLUS_5      = 6 << 11;
-  public final static short BOND_H_MINUS_3     = 7 << 11;
-  public final static short BOND_H_MINUS_4     = 8 << 11;
-  public final static short BOND_H_NUCLEOTIDE  = 9 << 11;
+  public final static int BOND_NEW           = 0x20000;
+  public static final int BOND_STRUT_MASK    = 0x8000;
+  public final static int BOND_HBOND_SHIFT   = 11;
+  public final static int BOND_HYDROGEN_MASK = 0xF << 11;
+  public final static int BOND_H_REGULAR     = 1 << 11;
+  public final static int BOND_H_CALC_MASK   = 0xE << 11; // excludes regular
+  public final static int BOND_H_CALC        = 2 << 11;
+  public final static int BOND_H_PLUS_2      = 3 << 11;
+  public final static int BOND_H_PLUS_3      = 4 << 11;
+  public final static int BOND_H_PLUS_4      = 5 << 11;
+  public final static int BOND_H_PLUS_5      = 6 << 11;
+  public final static int BOND_H_MINUS_3     = 7 << 11;
+  public final static int BOND_H_MINUS_4     = 8 << 11;
+  public final static int BOND_H_NUCLEOTIDE  = 9 << 11;
   
   public final static int[] argbsHbondType =
   {
@@ -391,38 +395,38 @@ final public class JmolConstants {
     0xFFFF8080, // 9  nucleotide
   };
 
-  public static int getArgbHbondType(short order) {
+  public static int getArgbHbondType(int order) {
     int argbIndex = ((order & BOND_HYDROGEN_MASK) >> BOND_HBOND_SHIFT);
     return argbsHbondType[argbIndex];
   }
 
-  public final static short BOND_STEREO_MASK   = 0x400; // 1 << 10
-  //public final static short BOND_STEREO_NEAR   = 0x401;
-  //public final static short BOND_STEREO_FAR    = 0x402;
+  public final static int BOND_STEREO_MASK   = 0x400; // 1 << 10
+  //public final static int BOND_STEREO_NEAR   = 0x401;
+  //public final static int BOND_STEREO_FAR    = 0x402;
 
-  public final static short BOND_AROMATIC_MASK   = 0x200; // 1 << 9
-  public final static short BOND_AROMATIC_SINGLE = 0x201; // same as single
-  public final static short BOND_AROMATIC_DOUBLE = 0x202; // same as double
-  public final static short BOND_AROMATIC        = 0x203; // same as partial 2.1
+  public final static int BOND_AROMATIC_MASK   = 0x200; // 1 << 9
+  public final static int BOND_AROMATIC_SINGLE = 0x201; // same as single
+  public final static int BOND_AROMATIC_DOUBLE = 0x202; // same as double
+  public final static int BOND_AROMATIC        = 0x203; // same as partial 2.1
 
-  public final static short BOND_SULFUR_MASK   = 0x100; // 1 << 8; will be incremented
+  public final static int BOND_SULFUR_MASK   = 0x100; // 1 << 8; will be incremented
 
-  public final static short BOND_PARTIAL_MASK  = 0xE0;  // 7 << 5;
-  public final static short BOND_PARTIAL01     = 0x21;
-  public final static short BOND_PARTIAL12     = 0x42;
-  public final static short BOND_PARTIAL23     = 0x61;
-  public final static short BOND_PARTIAL32     = 0x64;
+  public final static int BOND_PARTIAL_MASK  = 0xE0;  // 7 << 5;
+  public final static int BOND_PARTIAL01     = 0x21;
+  public final static int BOND_PARTIAL12     = 0x42;
+  public final static int BOND_PARTIAL23     = 0x61;
+  public final static int BOND_PARTIAL32     = 0x64;
   
-  public final static short BOND_COVALENT_MASK = 0x3FF; // MUST be numerically correct
-  public final static short BOND_COVALENT_SINGLE = 1;   
-  public final static short BOND_COVALENT_DOUBLE = 2;   
-  public final static short BOND_COVALENT_TRIPLE = 3;   
-  public final static short BOND_COVALENT_QUADRUPLE = 4;
-  public final static short BOND_ORDER_UNSPECIFIED = 7;
+  public final static int BOND_COVALENT_MASK = 0x3FF; // MUST be numerically correct
+  public final static int BOND_COVALENT_SINGLE = 1;   
+  public final static int BOND_COVALENT_DOUBLE = 2;   
+  public final static int BOND_COVALENT_TRIPLE = 3;   
+  public final static int BOND_COVALENT_QUADRUPLE = 4;
+  public final static int BOND_ORDER_UNSPECIFIED = 7;
   
   private final static String[] bondOrderNames = {
     "single", "double", "triple", "quadruple", 
-    "aromatic", 
+    "aromatic", "strut",
     "hbond", "partial", "partialDouble",
     "partialTriple", "partialTriple2", 
     "aromaticSingle", "aromaticDouble",
@@ -431,23 +435,23 @@ final public class JmolConstants {
 
   private final static String[] bondOrderNumbers = {
     "1", "2", "3", "4", 
-    "1.5", 
+    "1.5", "1",
     "1", "0.5", "1.5", 
     "2.5", "2.5", 
     "1", "2", 
     "1"
   };
 
-  private final static short[] bondOrderValues = {
+  private final static int[] bondOrderValues = {
     BOND_COVALENT_SINGLE, BOND_COVALENT_DOUBLE, BOND_COVALENT_TRIPLE, BOND_COVALENT_QUADRUPLE,
-    BOND_AROMATIC, 
+    BOND_AROMATIC, BOND_STRUT_MASK,
     BOND_H_REGULAR, BOND_PARTIAL01, BOND_PARTIAL12, 
     BOND_PARTIAL23, BOND_PARTIAL32, 
     BOND_AROMATIC_SINGLE, BOND_AROMATIC_DOUBLE,
     BOND_ORDER_UNSPECIFIED
   };
 
-  public final static short getBondOrderFromString(String bondOrderString) {
+  public final static int getBondOrderFromString(String bondOrderString) {
     for (int i = 0; i < bondOrderNumbers.length; i++) {
       if (bondOrderNames[i].equalsIgnoreCase(bondOrderString))
         return bondOrderValues[i];
@@ -463,20 +467,20 @@ final public class JmolConstants {
    * @param bondOrderInteger
    * @return Bond order partial mask
    */
-  public final static short getPartialBondOrderFromInteger(int bondOrderInteger) {
-    return (short) ((((bondOrderInteger / 1000000) % 6) << 5)
+  public final static int getPartialBondOrderFromInteger(int bondOrderInteger) {
+    return ((((bondOrderInteger / 1000000) % 6) << 5)
     + ((bondOrderInteger % 1000000) & 0x1F));
   }
 
-  public final static short getPartialBondOrder(int order) {
-    return (short) ((order & ~BOND_NEW) >> 5);
+  public final static int getPartialBondOrder(int order) {
+    return ((order & ~BOND_NEW) >> 5);
   }
   
   public final static int getPartialBondDotted(int order) {
     return (order & 0x1F);
   }
   
-  public final static short getBondOrderFromFloat(float fOrder) {
+  public final static int getBondOrderFromFloat(float fOrder) {
     for (int i = 0; i < bondOrderNumbers.length; i++) {
       if (Float.valueOf(bondOrderNumbers[i]).floatValue() == Math.abs(fOrder)) {
         if (fOrder > 0)
@@ -487,7 +491,7 @@ final public class JmolConstants {
     return BOND_ORDER_NULL;
   }
   
-  public final static String getBondOrderNameFromOrder(short order) {
+  public final static String getBondOrderNameFromOrder(int order) {
     order &= ~BOND_NEW;
     switch (order) {
     case BOND_ORDER_ANY:
@@ -517,7 +521,7 @@ final public class JmolConstants {
    * @param order
    * @return a string representation to preserve float n.m
    */
-  public final static String getBondOrderNumberFromOrder(short order) {
+  public final static String getBondOrderNumberFromOrder(int order) {
     order &= ~BOND_NEW;
     if (order == BOND_ORDER_NULL || order == BOND_ORDER_ANY)
       return "0"; // I don't think this is possible
@@ -2440,6 +2444,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // GROUP_ID related stuff for special groupIDs
   ////////////////////////////////////////////////////////////////
   
+  public final static int GROUPID_CYSTINE          = 5;
   public final static int GROUPID_PROLINE          = 15;
   public final static int GROUPID_AMINO_MAX        = 24;
   
@@ -2790,62 +2795,63 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_STICKS     = 1;
   public final static int SHAPE_HSTICKS    = 2;  //placeholder only; handled by SHAPE_STICKS
   public final static int SHAPE_SSSTICKS   = 3;  //placeholder only; handled by SHAPE_STICKS
-  public final static int SHAPE_LABELS     = 4;
-  public final static int SHAPE_MEASURES   = 5;
-  public final static int SHAPE_DOTS       = 6;
-  public final static int SHAPE_STARS      = 7;
-  public final static int SHAPE_HALOS      = 8;
+  public final static int SHAPE_STRUTS     = 4;  //placeholder only; handled by SHAPE_STICKS
+  public final static int SHAPE_LABELS     = 5;
+  public final static int SHAPE_MEASURES   = 6;
+  public final static int SHAPE_DOTS       = 7;
+  public final static int SHAPE_STARS      = 8;
+  public final static int SHAPE_HALOS      = 9;
 
-  public final static int SHAPE_MIN_SECONDARY = 9; //////////
+  public final static int SHAPE_MIN_SECONDARY = 10; //////////
   
-    public final static int SHAPE_BACKBONE   = 9;
-    public final static int SHAPE_TRACE      = 10;
-    public final static int SHAPE_CARTOON    = 11;
-    public final static int SHAPE_STRANDS    = 12;
-    public final static int SHAPE_MESHRIBBON = 13;
-    public final static int SHAPE_RIBBONS    = 14;
-    public final static int SHAPE_ROCKETS    = 15;
+    public final static int SHAPE_BACKBONE   = 10;
+    public final static int SHAPE_TRACE      = 11;
+    public final static int SHAPE_CARTOON    = 12;
+    public final static int SHAPE_STRANDS    = 13;
+    public final static int SHAPE_MESHRIBBON = 14;
+    public final static int SHAPE_RIBBONS    = 15;
+    public final static int SHAPE_ROCKETS    = 16;
   
-  public final static int SHAPE_MAX_SECONDARY = 16; //////////
-  public final static int SHAPE_MIN_SPECIAL    = 16; //////////
+  public final static int SHAPE_MAX_SECONDARY = 17; //////////
+  public final static int SHAPE_MIN_SPECIAL    = 17; //////////
 
-    public final static int SHAPE_DIPOLES    = 16;
-    public final static int SHAPE_VECTORS    = 17;
-    public final static int SHAPE_GEOSURFACE = 18;
-    public final static int SHAPE_ELLIPSOIDS = 19;
+    public final static int SHAPE_DIPOLES    = 17;
+    public final static int SHAPE_VECTORS    = 18;
+    public final static int SHAPE_GEOSURFACE = 19;
+    public final static int SHAPE_ELLIPSOIDS = 20;
 
-  public final static int SHAPE_MAX_SIZE_ZERO_ON_RESTRICT = 20; //////////
+  public final static int SHAPE_MAX_SIZE_ZERO_ON_RESTRICT = 21; //////////
   
-    public final static int SHAPE_POLYHEDRA  = 20;  // for restrict, uses setProperty(), not setSize()
+    public final static int SHAPE_POLYHEDRA  = 21;  // for restrict, uses setProperty(), not setSize()
 
-  public final static int SHAPE_MIN_HAS_ID          = 21; //////////
-  public final static int SHAPE_MIN_MESH_COLLECTION = 21; //////////
+  public final static int SHAPE_MIN_HAS_ID          = 22; //////////
+  public final static int SHAPE_MIN_MESH_COLLECTION = 22; //////////
   
-    public final static int SHAPE_DRAW        = 21;
+    public final static int SHAPE_DRAW        = 22;
   
-  public final static int SHAPE_MAX_SPECIAL = 22; //////////
-  public final static int SHAPE_MIN_SURFACE = 22; //////////
+  public final static int SHAPE_MAX_SPECIAL = 23; //////////
+  public final static int SHAPE_MIN_SURFACE = 23; //////////
 
-    public final static int SHAPE_ISOSURFACE  = 22;
-    public final static int SHAPE_LCAOCARTOON = 23;
-    public final static int SHAPE_MO          = 24;  //but no ID for MO
-    public final static int SHAPE_PMESH       = 25;
-    public final static int SHAPE_PLOT3D      = 26;
+    public final static int SHAPE_ISOSURFACE  = 23;
+    public final static int SHAPE_LCAOCARTOON = 24;
+    public final static int SHAPE_MO          = 25;  //but no ID for MO
+    public final static int SHAPE_PMESH       = 26;
+    public final static int SHAPE_PLOT3D      = 27;
 
-  public final static int SHAPE_MAX_SURFACE         = 27; //////////
-  public final static int SHAPE_MAX_MESH_COLLECTION = 27; //////////
+  public final static int SHAPE_MAX_SURFACE         = 28; //////////
+  public final static int SHAPE_MAX_MESH_COLLECTION = 28; //////////
   
-    public final static int SHAPE_ECHO       = 27;
+    public final static int SHAPE_ECHO       = 28;
   
-  public final static int SHAPE_MAX_HAS_ID = 28;
+  public final static int SHAPE_MAX_HAS_ID = 29;
   
-  public final static int SHAPE_AXES       = 28;
-  public final static int SHAPE_BBCAGE     = 29;
-  public final static int SHAPE_UCCAGE     = 30;
-  public final static int SHAPE_HOVER      = 31;
+  public final static int SHAPE_AXES       = 29;
+  public final static int SHAPE_BBCAGE     = 30;
+  public final static int SHAPE_UCCAGE     = 31;
+  public final static int SHAPE_HOVER      = 32;
   
   // last should be frank:
-  public final static int SHAPE_FRANK      = 32;
+  public final static int SHAPE_FRANK      = 33;
   public final static int SHAPE_MAX        = SHAPE_FRANK + 1;
 
   public final static boolean isShapeSecondary(int i ) {
@@ -2856,7 +2862,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // given in SHAPE_* and they must be capitalized exactly as in their class name 
 
   public final static String[] shapeClassBases = {
-    "Balls", "Sticks", "Hsticks", "Sssticks",   //Hsticks and Sssticks classes do not exist, but this returns Token for them
+    "Balls", "Sticks", "Hsticks", "Sssticks", "Struts",
+      //Hsticks, Sssticks, and Struts classes do not exist, but this returns Token for them
     "Labels", "Measures", "Dots", "Stars", "Halos",
     "Backbone", "Trace", "Cartoon", "Strands", "MeshRibbon", "Ribbons", "Rockets", 
     "Dipoles", "Vectors", "GeoSurface", "Ellipsoids", "Polyhedra", 
@@ -2887,6 +2894,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       return SHAPE_HSTICKS;
     case Token.ssbond:
       return SHAPE_SSSTICKS;
+    case Token.strut:
+      return SHAPE_STRUTS;
     case Token.label:
       return SHAPE_LABELS;
     case Token.measure:

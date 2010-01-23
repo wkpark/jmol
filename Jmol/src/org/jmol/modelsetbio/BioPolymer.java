@@ -606,7 +606,7 @@ public abstract class BioPolymer extends Polymer {
           z -= 180; // center on 0
           if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)) {
             if (bsAtoms != null)
-              bsAtoms.clear(a.getAtomIndex());
+              bsAtoms.clear(a.getIndex());
             continue;
           }
           float angledeg = (writeRamachandranStraightness ? p.calculateRamachandranHelixAngle(m, qtype) : 0);
@@ -617,7 +617,7 @@ public abstract class BioPolymer extends Polymer {
             continue;
           }
           if (isDraw) {
-            if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
+            if (bsSelected != null && !bsSelected.get(a.getIndex()))
               continue;
             // draw arrow arc {3.N} {3.ca} {3.C} {131 -131 0.5} "phi -131"
             // draw arrow arc {3.CA} {3.C} {3.N} {0 133 0.5} "psi 133"
@@ -814,7 +814,7 @@ public abstract class BioPolymer extends Polymer {
           if (ptCenter == null)
             ptCenter = new Point3f();
           if (isDraw) {
-            if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
+            if (bsSelected != null && !bsSelected.get(a.getIndex()))
               continue;
             int deg = (int) (Math.acos(w) * 360 / Math.PI);
             if (derivType == 0) {

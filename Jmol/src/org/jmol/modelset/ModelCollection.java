@@ -242,6 +242,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     if (model.bioPolymerCount == model.bioPolymers.length)
       model.bioPolymers = (Polymer[])ArrayUtil.doubleLength(model.bioPolymers);
+    polymer.bioPolymerIndexInModel = model.bioPolymerCount;
     model.bioPolymers[model.bioPolymerCount++] = polymer;
   }
 
@@ -1662,7 +1663,7 @@ abstract public class ModelCollection extends BondCollection {
 
   private void getCovalentlyConnectedBitSet(Atom atom, BitSet bs,
                                             BitSet bsToTest) {
-    int atomIndex = atom.atomIndex;
+    int atomIndex = atom.index;
     if (!bsToTest.get(atomIndex))
       return;
     bsToTest.clear(atomIndex);
@@ -1696,7 +1697,7 @@ abstract public class ModelCollection extends BondCollection {
            && models[bond.atom1.modelIndex].trajectoryBaseIndex != baseIndex
           || (bond.order & JmolConstants.BOND_H_CALC_MASK) == 0)
         continue;
-      if (bsAtoms != null && !bsAtoms.get(bond.atom1.atomIndex)) {
+      if (bsAtoms != null && !bsAtoms.get(bond.atom1.index)) {
         models[baseIndex].hasCalculatedHBonds = true;
         continue;
       }
@@ -1829,6 +1830,49 @@ abstract public class ModelCollection extends BondCollection {
     if (getHaveStraightness())
       calculateStraightness();
     recalculateLeadMidpointsAndWingVectors(-1);
+  }
+
+  /** see comments in org.jmol.modelsetbio.AlphaPolymer.java
+   * 
+   * Struts are calculated for atoms in bs1 connecting to atoms in bs2.
+   * The two bitsets may overlap. 
+   * 
+   * @param bs1
+   * @param bs2
+   * @return     number of struts added
+   */
+  public int calculateStruts(BitSet bs1, BitSet bs2) {
+    // select only ONE model
+    int iAtom = BitSetUtil.firstSetBit(bs1);
+    if (iAtom < 0)
+      return 0;
+    Model model = models[atoms[iAtom].modelIndex];
+    if (!model.isPDB)
+      return 0;
+
+    // only check the atoms in THIS model
+    Vector vCA = new Vector();
+    Atom a1 = null;
+    int n = model.firstAtomIndex + getAtomCountInModel(atoms[iAtom].modelIndex);
+    for (int i = model.firstAtomIndex; i < n; i++) {
+      if ((bs1.get(i) || bs2.get(i)) && atoms[i].isVisible(0)
+          && atoms[i].getSpecialAtomID() == JmolConstants.ATOMID_ALPHA_CARBON
+          && atoms[i].getGroupID() != JmolConstants.GROUPID_CYSTINE)
+        vCA.add((a1 = atoms[i]));
+    }
+    if (vCA.size() == 0)
+      return 0;
+    
+    float thresh = viewer.getStrutLengthMaximum();
+    short mad = (short) (viewer.getStrutDefaultRadius() * 2000);
+    int delta = viewer.getStrutSpacingMinimum();
+    Vector struts = model.getBioPolymer(a1.getPolymerIndexInModel())
+        .calculateStruts((ModelSet) this, atoms, bs1, bs2, vCA, thresh, delta);
+    for (int i = 0; i < struts.size(); i++) {
+      Object[] o = (Object[]) struts.get(i);
+      bondAtoms((Atom) o[0], (Atom) o[1], JmolConstants.BOND_STRUT_MASK, mad, null);
+    }
+    return struts.size();
   }
 
   public int getAtomCountInModel(int modelIndex) {
@@ -2009,7 +2053,7 @@ abstract public class ModelCollection extends BondCollection {
           continue;
         if (!bsResult.get(i)
             && atom.getFractionalUnitDistance(coord, ptTemp1, ptTemp2) <= distance)
-          bsResult.set(atom.atomIndex);
+          bsResult.set(atom.index);
       }
       return bsResult;
     }
@@ -2054,7 +2098,7 @@ abstract public class ModelCollection extends BondCollection {
   
 
   protected int[] makeConnections(float minDistance, float maxDistance,
-                                  short order, int connectOperation,
+                                  int order, int connectOperation,
                                   BitSet bsA, BitSet bsB, BitSet bsBonds,
                                   boolean isBonds) {
     boolean matchAny = (order == JmolConstants.BOND_ORDER_ANY);
@@ -2215,7 +2259,7 @@ abstract public class ModelCollection extends BondCollection {
         Atom atomNear = (Atom) iter.nextElement();
         if (atomNear == atom || atomNear.isDeleted())
           continue;
-        int atomIndexNear = atomNear.atomIndex;
+        int atomIndexNear = atomNear.index;
         boolean isNearInSetA = (bsA == null || bsA.get(atomIndexNear));
         boolean isNearInSetB = (bsB == null || bsB.get(atomIndexNear));
         if (!isNearInSetA && !isNearInSetB 
@@ -2240,7 +2284,7 @@ abstract public class ModelCollection extends BondCollection {
     return nNew;
   }
 
-  private int[] autoBond(short order, BitSet bsA, BitSet bsB, BitSet bsBonds,
+  private int[] autoBond(int order, BitSet bsA, BitSet bsB, BitSet bsBonds,
                          boolean isBonds, boolean matchHbond) {
       if (isBonds) {
         BitSet bs = bsA;
@@ -2248,8 +2292,8 @@ abstract public class ModelCollection extends BondCollection {
         bsB = new BitSet();
         for (int i = bondCount; --i >= 0;)
           if (bs.get(i)) {
-            bsA.set(bonds[i].atom1.atomIndex);
-            bsB.set(bonds[i].atom2.atomIndex);
+            bsA.set(bonds[i].atom1.index);
+            bsB.set(bonds[i].atom2.index);
           }
       }
       if (matchHbond) {
@@ -2314,7 +2358,7 @@ abstract public class ModelCollection extends BondCollection {
         if (elementNumberNear != 7 && elementNumberNear != 8
             || atomNear == atom || iter.foundDistance2() < hbondMin2
             || iter.foundDistance2() > hbondMax2 || atom.isBonded(atomNear)
-            || firstIsCO && bsCO.get(atomNear.atomIndex))
+            || firstIsCO && bsCO.get(atomNear.index))
           continue;
         if (minAttachedAngle > 0
             && !checkMinAttachedAngle(atom, atomNear, minAttachedAngle, v1, v2))
@@ -2539,12 +2583,12 @@ abstract public class ModelCollection extends BondCollection {
     for (int ibond = 0; ibond < bondCount; ibond++) {
       Bond bond = bonds[ibond];
       if (isall || bond.is(intType) || ishbond && bond.isHydrogen()) {
-        if (bs.get(bond.atom1.atomIndex)) {
-          nBonded[i = bond.atom2.atomIndex]++;
+        if (bs.get(bond.atom1.index)) {
+          nBonded[i = bond.atom2.index]++;
           bsResult.set(i);
         }
-        if (bs.get(bond.atom2.atomIndex)) {
-          nBonded[i = bond.atom1.atomIndex]++;
+        if (bs.get(bond.atom2.index)) {
+          nBonded[i = bond.atom1.index]++;
           bsResult.set(i);
         }
       }
@@ -2575,8 +2619,8 @@ abstract public class ModelCollection extends BondCollection {
     }
     for (int i = 0; i < bondCount; i++) {
       Bond bond = bonds[i];
-      if (bs.get(bond.atom1.atomIndex) 
-          && bs.get(bond.atom2.atomIndex)) {
+      if (bs.get(bond.atom1.index) 
+          && bs.get(bond.atom2.index)) {
         if (!bond.isHydrogen()) {
           getBondRecordMOL(s, i,atomMap);
           nBonds++;
@@ -2608,8 +2652,8 @@ abstract public class ModelCollection extends BondCollection {
   private void getBondRecordMOL(StringBuffer s, int i,int[] atomMap){
   //  1  2  1
     Bond b = bonds[i];
-    TextFormat.rFill(s, "   ","" + atomMap[b.atom1.atomIndex]);
-    TextFormat.rFill(s, "   ","" + atomMap[b.atom2.atomIndex]);
+    TextFormat.rFill(s, "   ","" + atomMap[b.atom1.index]);
+    TextFormat.rFill(s, "   ","" + atomMap[b.atom2.index]);
     int order = b.getValence();
     if (order > 3)
       order = 1;
@@ -2793,8 +2837,8 @@ abstract public class ModelCollection extends BondCollection {
     Vector V = new Vector();
     int thisAtom = (BitSetUtil.cardinalityOf(bs) == 1 ? BitSetUtil.firstSetBit(bs) : -1);
     for (int i = 0; i < bondCount; i++)
-      if (thisAtom >= 0? (bonds[i].atom1.atomIndex == thisAtom || bonds[i].atom2.atomIndex == thisAtom) 
-          : bs.get(bonds[i].atom1.atomIndex) && bs.get(bonds[i].atom2.atomIndex)) 
+      if (thisAtom >= 0? (bonds[i].atom1.index == thisAtom || bonds[i].atom2.index == thisAtom) 
+          : bs.get(bonds[i].atom1.index) && bs.get(bonds[i].atom2.index)) 
         V.addElement(getBondInfo(i));
     return V;
   }
@@ -2806,9 +2850,9 @@ abstract public class ModelCollection extends BondCollection {
     Hashtable info = new Hashtable();
     info.put("_bpt", new Integer(i));
     Hashtable infoA = new Hashtable();
-    getAtomIdentityInfo(atom1.atomIndex, infoA);
+    getAtomIdentityInfo(atom1.index, infoA);
     Hashtable infoB = new Hashtable();
-    getAtomIdentityInfo(atom2.atomIndex, infoB);
+    getAtomIdentityInfo(atom2.index, infoB);
     info.put("atom1",infoA);
     info.put("atom2",infoB);
     info.put("order", new Float(JmolConstants.getBondOrderNumberFromOrder(bonds[i].order)));

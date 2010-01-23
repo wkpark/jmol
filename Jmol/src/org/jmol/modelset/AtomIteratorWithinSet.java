@@ -73,7 +73,7 @@ class AtomIteratorWithinSet implements AtomIndexIterator {
   public boolean hasNext() {
     while (bsptIter.hasMoreElements()) {
       Atom atom = (Atom) bsptIter.nextElement();
-      if ((iNext = atom.atomIndex) != atomIndex 
+      if ((iNext = atom.index) != atomIndex 
           && iNext > (isGreaterOnly ? atomIndex : -1)
           && (bsSelected == null || bsSelected.get(iNext)))
         return true;

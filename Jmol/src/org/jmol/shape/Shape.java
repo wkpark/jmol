@@ -185,7 +185,7 @@ public abstract class Shape {
       return true;
     }
     if (propertyName == "setXml") {
-      //if (Logger.debugging)
+      if (Logger.debugging)
         setXmlProperty("showXml", null, null);
       return false;      
     }

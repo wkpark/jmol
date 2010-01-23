@@ -4690,6 +4690,9 @@ public class ScriptEvaluator {
         case Token.ssbond:
           ssbond();
           break;
+        case Token.strut:
+          struts();
+          break;
         case Token.step:
           if (pause())
             stepPausedExecution();
@@ -5438,7 +5441,7 @@ public class ScriptEvaluator {
 
   private void bondorder() throws ScriptException {
     checkLength(-3);
-    short order = 0;
+    int order = 0;
     switch (getToken(1).tok) {
     case Token.integer:
     case Token.decimal:
@@ -5454,7 +5457,7 @@ public class ScriptEvaluator {
             .getPartialBondOrderFromInteger(statement[2].intValue);
       }
     }
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder", new Short(order));
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder", new Integer(order));
   }
 
   private void console() throws ScriptException {
@@ -5568,8 +5571,8 @@ public class ScriptEvaluator {
     float radius = Float.NaN;
     int color = Integer.MIN_VALUE;
     int distanceCount = 0;
-    short bondOrder = JmolConstants.BOND_ORDER_NULL;
-    short bo;
+    int bondOrder = JmolConstants.BOND_ORDER_NULL;
+    int bo;
     int operation = JmolConstants.CONNECT_MODIFY_OR_CREATE;
     boolean isDelete = false;
     boolean haveType = false;
@@ -5673,6 +5676,18 @@ public class ScriptEvaluator {
                 || bondOrder == JmolConstants.BOND_H_REGULAR || bondOrder == JmolConstants.BOND_AROMATIC))
           error(ERROR_invalidArgument);
         break;
+      case Token.strut:
+        if (!isColorOrRadius) {
+          color = 0xFFFFFF;
+          translucency = "translucent";
+          translucentLevel = 0.5f;
+          radius = viewer.getStrutDefaultRadius();
+          isColorOrRadius = true;
+        }
+        if (!haveOperation)
+          operation = JmolConstants.CONNECT_MODIFY_OR_CREATE;
+        haveOperation = true;
+        //fall through
       case Token.identifier:
       case Token.aromatic:
       case Token.hbond:
@@ -5713,9 +5728,10 @@ public class ScriptEvaluator {
         if (++i != statementLength)
           error(ERROR_invalidParameterOrder);
         operation = JmolConstants.CONNECT_DELETE_BONDS;
-        if (isColorOrRadius)
-          error(ERROR_invalidArgument);
+        //if (isColorOrRadius) / for struts automatic color
+          //error(ERROR_invalidArgument);
         isDelete = true;
+        isColorOrRadius = false;
         break;
       default:
         ptColor = i;
@@ -6244,7 +6260,8 @@ public class ScriptEvaluator {
     }
     if (isSyntaxCheck || shapeType < 0)
       return;
-    typeMask = (shapeType == JmolConstants.SHAPE_HSTICKS ? JmolConstants.BOND_HYDROGEN_MASK
+    typeMask = (shapeType == JmolConstants.SHAPE_STRUTS ? JmolConstants.BOND_STRUT_MASK
+        : shapeType == JmolConstants.SHAPE_HSTICKS ? JmolConstants.BOND_HYDROGEN_MASK
         : shapeType == JmolConstants.SHAPE_SSSTICKS ? JmolConstants.BOND_SULFUR_MASK
             : shapeType == JmolConstants.SHAPE_STICKS ? JmolConstants.BOND_COVALENT_MASK
                 : 0);
@@ -6297,6 +6314,20 @@ public class ScriptEvaluator {
           JmolConstants.BOND_COVALENT_MASK));
   }
 
+  private void colorShape(int shapeType, int typeMask,int argb, String translucency, float translucentLevel, BitSet bs) {
+
+    if (typeMask != 0) {
+      setShapeProperty(shapeType = JmolConstants.SHAPE_STICKS, "type", new Integer(typeMask));
+    }
+    viewer.setShapeProperty(shapeType, "color", new Integer(argb), bs);
+    if (translucency != null)
+      setShapeTranslucency(shapeType, "", translucency, translucentLevel,
+          bs);
+    if (typeMask != 0)
+      viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
+          JmolConstants.BOND_COVALENT_MASK));
+  }
+  
   private void setShapeTranslucency(int shapeType, String prefix,
                                     String translucency,
                                     float translucentLevel, BitSet bs) {
@@ -8600,6 +8631,18 @@ public class ScriptEvaluator {
         JmolConstants.BOND_COVALENT_MASK));
   }
 
+  private void struts() throws ScriptException {
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
+        JmolConstants.BOND_STRUT_MASK));
+    boolean defOn = (tokAt(1) == Token.on || statementLength == 1);
+    int mad = getMadParameter();
+    if (defOn)
+      mad = (int) (viewer.getStrutDefaultRadius() * 2000f);
+    setShapeSize(JmolConstants.SHAPE_STICKS, mad);
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
+        JmolConstants.BOND_COVALENT_MASK));
+  }
+
   private void hbond(boolean isCommand) throws ScriptException {
     if (statementLength == 2 && getToken(1).tok == Token.calculate) {
       if (isSyntaxCheck)
@@ -8890,6 +8933,7 @@ public class ScriptEvaluator {
   private void calculate() throws ScriptException {
     boolean isSurface = false;
     BitSet bs;
+    BitSet bs2;
     if ((iToken = statementLength) >= 2) {
       clearDefinedVariableAtomSets();
       switch (getToken(1).tok) {
@@ -8941,6 +8985,18 @@ public class ScriptEvaluator {
           return;
         viewer.calculateSurface(bs, (isFrom ? Float.MAX_VALUE : -1));
         return;
+      case Token.strut:
+        bs = (iToken + 1 < statementLength ? expression(++iToken) : null);
+        bs2 = (iToken + 1 < statementLength ? expression(++iToken) : null);
+        checkLength(++iToken);
+        if (isSyntaxCheck)
+          return;
+        int n = viewer.calculateStruts(bs, bs2);
+        if (n > 0)
+          colorShape(JmolConstants.SHAPE_STRUTS, JmolConstants.BOND_STRUT_MASK,
+            0x0FFFFFF, "translucent", 0.5f, null);
+        showString(GT._("{0} struts added", n));
+        return;
       case Token.volume:
         if (!isSyntaxCheck) {
           float val = viewer.getVolume(null, null);
@@ -8964,7 +9020,7 @@ public class ScriptEvaluator {
           return;
         }
         BitSet bs1 = expression(2);
-        BitSet bs2 = expression(iToken + 1);
+        bs2 = expression(iToken + 1);
         if (!isSyntaxCheck) {
           int nBonds = viewer.autoHbond(bs1, bs2, null, -1, -1);
           showString(nBonds + " hydrogen bonds created");
@@ -8984,7 +9040,7 @@ public class ScriptEvaluator {
     error(
         ERROR_what,
         "CALCULATE",
-        "aromatic? hbonds? polymers? straightness? structure? surfaceDistance FROM? surfaceDistance WITHIN? volume?");
+        "aromatic? hbonds? polymers? straightness? structure? strut? surfaceDistance FROM? surfaceDistance WITHIN? volume?");
   }
 
   private void pointGroup() throws ScriptException {
@@ -10636,6 +10692,7 @@ public class ScriptEvaluator {
         else
           i = 3;
       }
+    case Token.delete:
       break;
     default:
       checkLength(3);
@@ -10666,6 +10723,12 @@ public class ScriptEvaluator {
       break;
     case Token.bonds: // not implemented
       str = "bond";
+      break;
+    case Token.delete:
+      checkLength(4);
+      if (tokAt(3) != Token.bonds)
+        error(ERROR_invalidArgument);
+      str = "deleteBond";
       break;
     }
     int mode = JmolConstants.getPickingMode(str);

@@ -367,13 +367,13 @@ public class LabelToken {
       
       case Token.atomIndex:
         strT = ""
-            + (indices == null ? atom.atomIndex : indices[atom.atomIndex]);
+            + (indices == null ? atom.index : indices[atom.index]);
         break;
       case Token.color:
         ptT = Atom.atomPropertyTuple(atom, t.tok);
         break;
       case Token.data:
-        floatT = (t.data != null ? t.data[atom.atomIndex] : Float.NaN);
+        floatT = (t.data != null ? t.data[atom.index] : Float.NaN);
         if (Float.isNaN(floatT))
           strT = atom.getClientAtomStringProperty(t.text);
         break;

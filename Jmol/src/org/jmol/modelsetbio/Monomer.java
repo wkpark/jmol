@@ -49,7 +49,7 @@ public abstract class Monomer extends Group {
     offsets = interestingAtomOffsets;
   }
 
-  protected int monomerIndex;
+  int monomerIndex;
   
   void setBioPolymer(BioPolymer polymer, int index) {
     this.bioPolymer = polymer;
@@ -72,9 +72,14 @@ public abstract class Monomer extends Group {
     return bioPolymer == null ? 0 : bioPolymer.monomerCount;
   }
 
-  public int getBioPolymerIndex() {
+  public int getMonomerIndex() {
     return monomerIndex;
   }
+
+  public int getBioPolymerIndexInModel() {
+    return (bioPolymer == null ? -1 : bioPolymer.bioPolymerIndexInModel);
+  }
+  
 
   ////////////////////////////////////////////////////////////////
 

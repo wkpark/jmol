@@ -72,6 +72,8 @@ public class JmolBinding extends Binding {
     bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_pickMeasure);
     bind(DOUBLE_CLICK+LEFT, ActionManager.ACTION_setMeasure);
     bind(SINGLE_CLICK+ALT+LEFT, ActionManager.ACTION_pickIsosurface);      
+    bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_deleteBond);
+    bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_connectAtoms);
   }
   
 }

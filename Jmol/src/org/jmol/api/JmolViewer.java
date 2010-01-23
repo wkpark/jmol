@@ -340,7 +340,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public Point3f getBondPoint3f2(int bondIndex);
   abstract public int getBondArgb1(int bondIndex);
   abstract public int getBondArgb2(int bondIndex);
-  abstract public short getBondOrder(int bondIndex);
+  abstract public int getBondOrder(int bondIndex);
   abstract public int getBondModelIndex(int bondIndex);
 
   abstract public Point3f[] getPolymerLeadMidPoints(int modelIndex, int polymerIndex);

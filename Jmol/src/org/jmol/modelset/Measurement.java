@@ -437,7 +437,7 @@ public class Measurement {
     return -1;
   }
   
-  boolean isConnected(Atom[] atoms, int count) {
+  public boolean isConnected(Atom[] atoms, int count) {
     int atomIndexLast = -1;
     for (int i = 1; i <= count; i++) {
       int atomIndex = getAtomIndex(i);

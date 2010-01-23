@@ -54,6 +54,7 @@ abstract public class Polymer {
   protected int[] leadAtomIndices;
 
   protected int type;
+  public int bioPolymerIndexInModel;
   
   protected final static int TYPE_OTHER = 0; // could be phosphorus or alpha
   protected final static int TYPE_AMINO = 1;
@@ -125,6 +126,10 @@ abstract public class Polymer {
               StringBuffer pdbCONECT, BitSet bsSelected, boolean addHeader, 
               BitSet bsWritten) {
     return;
+  }
+
+  public Vector calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1, BitSet bs2, Vector vCA, float thresh, int delta) {
+    return null;
   }
 
 }

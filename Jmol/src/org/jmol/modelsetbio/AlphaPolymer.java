@@ -24,7 +24,10 @@
 package org.jmol.modelsetbio;
 
 import java.util.BitSet;
+import java.util.Vector;
 
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.ModelSet;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.viewer.JmolConstants;
@@ -244,4 +247,216 @@ public class AlphaPolymer extends BioPolymer {
         pdbCONECT, bsSelected, addHeader, bsWritten);
   }
 
+  /**
+   * 
+   * Algorithm of George Phillips   phillips@biochem.wisc.edu
+   * 
+   * originally a contribution to pyMol as struts.py; 
+   * adapted here by Bob Hanson for Jmol 1/2010
+   * 
+   * Return a vector of support posts for rapid prototyping models 
+   * along the lines of George Phillips for Pymol except on actual molecular
+   * segments (biopolymers), not PDB chains (which may or may not be
+   * continuous). 
+   * 
+   * Like George, we go from thresh-4 to thresh in units of 1 Angstrom, but we
+   * do not require this threshold to be an integer. In addition, we prevent
+   * double-creation of struts by tracking where struts are, and we do not
+   * look for any addtional end struts if there is a strut already to an atom
+   * at a particular biopolymer end. The three parameters are:
+   * 
+   * set strutDefaultRadius 0.3
+   * set strutSpacingMinimum 6
+   * set strutLengthMaximum 7.0
+   * 
+   * Struts will be introduced by: 
+   * 
+   * calculate struts {atom set A} {atom set B}
+   * 
+   * where the two atom sets are optional and default to the currently selected set.
+   * 
+   * They can be manipulated using the STRUTS command much like any "bond"
+   * 
+   * struts 0.3
+   * color struts opaque pink
+   * connect {atomno=3} {atomno=4} strut
+   * 
+   * structs only
+   * 
+   * command
+   * 
+   * @param modelSet
+   * @param atoms
+   * @param bs1
+   * @param bs2
+   * @param vCA
+   * @param thresh
+   * @param delta
+   * 
+   * @return vector of pairs of atoms
+   * 
+   */
+  public Vector calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1,
+                                BitSet bs2, Vector vCA, float thresh, int delta) {
+    Vector vStruts = new Vector(); // the output vector
+    float thresh2 = thresh * thresh; // use distance squared for speed
+
+    int n = vCA.size();
+    int nEndMin = 3;
+
+    // We set bitsets that indicate that there is no longer any need to
+    // check for a strut. We are tracking both individual atoms (bsStruts) and
+    // pairs of atoms (bsNotAvailable and bsNearbyResidues)
+    
+    BitSet bsStruts = new BitSet();         // [i]
+    BitSet bsNotAvailable = new BitSet();   // [ipt]
+    BitSet bsNearbyResidues = new BitSet(); // [ipt]
+    
+    // check for a strut. We are going to set struts within 3 residues
+    // of the ends of biopolymers, so we track those positions as well.
+    
+    Atom a1 = (Atom) vCA.get(0);
+    Atom a2;
+    int nBiopolymers = modelSet.getBioPolymerCountInModel(a1.modelIndex);
+    int[][] biopolymerStartsEnds = new int[nBiopolymers][nEndMin * 2];
+    for (int i = 0; i < n; i++) {
+      a1 = (Atom) vCA.get(i);
+      int polymerIndex = a1.getPolymerIndexInModel();
+      int monomerIndex = a1.getMonomerIndex();
+      int bpt = monomerIndex;
+      if (bpt < nEndMin)
+        biopolymerStartsEnds[polymerIndex][bpt] = i + 1;
+      bpt = ((Monomer) a1.getGroup()).getBioPolymerLength() - monomerIndex - 1;
+      if (bpt < nEndMin)
+        biopolymerStartsEnds[polymerIndex][nEndMin + bpt] = i + 1;
+    }
+
+    // Get all distances.
+    // For n CA positions, there will be n(n-1)/2 distances needed.
+    // There is no need for a full matrix X[i][j]. Instead, we just count
+    // carefully using the variable ipt:
+    //
+    // ipt = i * (2 * n - i - 1) / 2 + j - i - 1
+
+    float[] d2 = new float[n * (n - 1) / 2];
+    for (int i = 0; i < n; i++) {
+      a1 = (Atom) vCA.get(i);
+      for (int j = i + 1; j < n; j++) {
+        int ipt = strutPoint(i, j, n);
+        a2 = (Atom) vCA.get(j);
+        int resno1 = a1.getResno();
+        int polymerIndex1 = a1.getPolymerIndexInModel();
+        int resno2 = a2.getResno();
+        int polymerIndex2 = a2.getPolymerIndexInModel();
+        if (polymerIndex1 == polymerIndex2 && Math.abs(resno2 - resno1) < delta)
+          bsNearbyResidues.set(ipt);
+        float d = d2[ipt] = a1.distanceSquared((Atom) vCA.get(j));
+        if (d >= thresh2)
+          bsNotAvailable.set(ipt);
+      }
+    }
+
+    // Now go through 5 spheres leading up to the threshold
+    // in 1-Angstrom increments, picking up the shortest distances first
+
+    for (int t = 5; --t >= 0;) { // loop starts with 4
+      thresh2 = (thresh - t) * (thresh - t);
+      for (int i = 0; i < n; i++)
+        for (int j = i + 1; j < n; j++) {
+          int ipt = strutPoint(i, j, n);
+          if (!bsNotAvailable.get(ipt) && !bsNearbyResidues.get(ipt)
+              && d2[ipt] <= thresh2)
+            setStrut(i, j, n, vCA, vStruts, bsStruts, bsNotAvailable,
+                bsNearbyResidues, atoms, delta);
+        }
+    }
+
+    // Now find a strut within nEndMin (3) residues of the end in each
+    // biopolymer, but only if it is within one of the "not allowed"
+    // regions - this is to prevent dangling ends to be connected by a
+    // very long connection
+
+    for (int b = 0; b < nBiopolymers; b++) {
+      // if there are struts already in this area, skip this part
+      for (int k = 0; k < nEndMin * 2; k++) {
+        int i = biopolymerStartsEnds[b][k] - 1;
+        if (i >= 0 && bsStruts.get(i)) {
+          for (int j = 0; j < nEndMin; j++) {
+            int pt = (k / nEndMin) * nEndMin + j;
+            if ((i = biopolymerStartsEnds[b][pt] - 1) >= 0)
+              bsStruts.set(i);
+            biopolymerStartsEnds[b][pt] = -1;
+          }
+        }
+      }
+      if (biopolymerStartsEnds[b][0] == -1 && biopolymerStartsEnds[b][nEndMin] == -1)
+        continue;
+      boolean okN = false;
+      boolean okC = false;
+      int iN = 0;
+      int jN = 0;
+      int iC = 0;
+      int jC = 0;
+      float minN = Float.MAX_VALUE;
+      float minC = Float.MAX_VALUE;
+      for (int j = 0; j < n; j++)
+        for (int k = 0; k < nEndMin * 2; k++) {
+          int i = biopolymerStartsEnds[b][k] - 1;
+          if (i == -2) {
+            // skip all
+            k = (k / nEndMin + 1) * nEndMin - 1;
+            continue;
+          }
+          if (j == i || i == -1)
+            continue;
+          int ipt = strutPoint(i, j, n);
+          if (bsNearbyResidues.get(ipt)
+              || d2[ipt] > (k < nEndMin ? minN : minC))
+            continue;
+          if (k < nEndMin) {
+            if (bsNotAvailable.get(ipt))
+              okN = true;
+            jN = j;
+            iN = i;
+            minN = d2[ipt];
+          } else {
+            if (bsNotAvailable.get(ipt))
+              okC = true;
+            jC = j;
+            iC = i;
+            minC = d2[ipt];
+          }
+        }
+      if (okN)
+        setStrut(iN, jN, n, vCA, vStruts, bsStruts, bsNotAvailable,
+            bsNearbyResidues, atoms, delta);
+      if (okC)
+        setStrut(iC, jC, n, vCA, vStruts, bsStruts, bsNotAvailable,
+            bsNearbyResidues, atoms, delta);
+    }
+    return vStruts;
+  }
+
+  private int strutPoint(int i, int j, int n) {
+    return (j < i ? j * (2 * n - j - 1) / 2 + i - j - 1
+     : i * (2 * n - i - 1) / 2 + j - i - 1);
+  }
+
+  private void setStrut(int i, int j, int n, Vector vCA, Vector vStruts,
+                        BitSet bsStruts, BitSet bsNotAvailable,
+                        BitSet bsNearbyResidues, Atom[] atoms, int delta) {
+    Atom a1 = (Atom) vCA.get(i);
+    Atom a2 = (Atom) vCA.get(j);
+    vStruts.add(new Object[] { a1, a2 });
+    bsStruts.set(i);
+    bsStruts.set(j);
+    for (int k1 = Math.max(0, i - delta); k1 <= i + delta && k1 < n; k1++)
+      for (int k2 = Math.max(0, j - delta); k2 <= j + delta && k2 < n; k2++) {
+        if (k1 == k2)
+          continue;
+        int ipt = strutPoint(k1, k2, n);
+        if (!bsNearbyResidues.get(ipt))
+          bsNotAvailable.set(ipt);
+      }
+  }
 }

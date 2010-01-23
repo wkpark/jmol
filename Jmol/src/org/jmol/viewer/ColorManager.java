@@ -121,7 +121,7 @@ class ColorManager {
     float lo, hi;
     switch (pid) {
     case JmolConstants.PALETTE_PROPERTY:
-      return getPropertyColix(atom.getAtomIndex());
+      return getPropertyColix(atom.getIndex());
     case JmolConstants.PALETTE_NONE:
     case JmolConstants.PALETTE_CPK:
       // Note that CPK colors can be changed based upon user preference
@@ -189,7 +189,7 @@ class ColorManager {
     case JmolConstants.PALETTE_MOLECULE:
       modelSet = viewer.getModelSet();
       return ColorEncoder.getColorIndexFromPalette(
-          modelSet.getMoleculeIndex(atom.getAtomIndex()), 
+          modelSet.getMoleculeIndex(atom.getIndex()), 
           0, modelSet.getMoleculeCountInModel(atom.getModelIndex()) - 1, 
           ColorEncoder.ROYGB, false);
     case JmolConstants.PALETTE_ALTLOC:

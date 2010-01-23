@@ -36,7 +36,7 @@ import org.jmol.util.Logger;
 public class Token {
 
   public int tok;
-  Object value;
+  public Object value;
   public int intValue = Integer.MAX_VALUE;
 
   public Token() {
@@ -309,8 +309,9 @@ public class Token {
   final static int slab         = scriptCommand | 53 | defaultON;
   final static int spin         = scriptCommand | 55 | setparam | defaultON;
   public final static int ssbond       = scriptCommand | 56 | setparam | defaultON;
-  final static int step         = scriptCommand | 57 | noArgs;
-  final static int stereo       = scriptCommand | 58 | defaultON;
+  public final static int strut        = scriptCommand | 57 | defaultON;
+  final static int step         = scriptCommand | 58 | noArgs;
+  final static int stereo       = scriptCommand | 59 | defaultON;
 //final static int structure    see intproperty
   final static int sync         = scriptCommand | 60;
   final static int translate    = scriptCommand | 61;
@@ -689,6 +690,9 @@ public class Token {
   final static int scale3d        = setparam | 11;
   final static int diffuse        = setparam | 12;
   final static int pickingStyle   = setparam | 13;
+  final static int strutlengthmaximum = setparam | 14;// new
+  final static int strutspacing       = setparam | 15;// new
+  final static int strutdefaultradius = setparam | 16;// new
 
   // misc
 
@@ -862,18 +866,18 @@ public class Token {
   final static int state          = misc | 182;
   final static int steps          = misc | 183;// new
   final static int stop           = misc | 184;// new
-  final static int ticks          = misc | 185; // new
-  final static int title          = misc | 186;// new
-  final static int titleformat    = misc | 187;// new
-  final static int to             = misc | 188 | expression;// new
-  final static int top            = misc | 189 | expression;
-  final static int torsion        = misc | 190;
-  final static int transform      = misc | 193;
-  public final static int translation   = misc | 194;
-  public final static int translucent   = misc | 195;
-  public final static int triangles     = misc | 196;
-  final static int url             = misc | 197 | expression;
-  final static int user            = misc | 198;
+  final static int ticks          = misc | 188; // new
+  final static int title          = misc | 189;// new
+  final static int titleformat    = misc | 190;// new
+  final static int to             = misc | 191 | expression;// new
+  final static int top            = misc | 192 | expression;
+  final static int torsion        = misc | 193;
+  final static int transform      = misc | 194;
+  public final static int translation   = misc | 195;
+  public final static int translucent   = misc | 196;
+  public final static int triangles     = misc | 197;
+  final static int url             = misc | 198 | expression;
+  final static int user            = misc | 199;
   final static int val             = misc | 200;// new
   final static int variable        = misc | 201;// new
   final static int variables       = misc | 202;// new
@@ -1065,6 +1069,8 @@ public class Token {
     "structure",         new Token(structure),
     "_structure",        null,
     "strucNo",           new Token(strucno),
+    "strut",             new Token(strut),
+    "struts",            null,
     "subset",            new Token(subset),
     "synchronize",       new Token(sync),
     "sync",              null,
@@ -1357,7 +1363,10 @@ public class Token {
     "split",            new Token(split),
     "stddev",           new Token(stddev),
     "straightness",     new Token(straightness),
-    "structureId",       new Token(strucid),
+    "structureId",      new Token(strucid),
+    "strutDefaultRadius", new Token(strutdefaultradius),
+    "strutLengthMaximum", new Token(strutlengthmaximum),
+    "strutSpacing",       new Token(strutspacing),
     "sub",              new Token(sub),
     "substructure",     new Token(substructure),
     "sum",              new Token(sum), // sum

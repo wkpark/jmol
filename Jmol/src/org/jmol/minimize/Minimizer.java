@@ -271,7 +271,7 @@ public class Minimizer implements MinimizerInterface {
         Bond[] bonds = atoms[i].getBonds();
         if (bonds != null)
           for (int j = 0; j < bonds.length; j++) {
-            int i2 = bonds[j].getOtherAtom(atoms[i]).getAtomIndex();
+            int i2 = bonds[j].getOtherAtom(atoms[i]).getIndex();
             if (i2 > i && bsAtoms.get(i2)) {
               int bondOrder = bonds[j].getOrder();
               switch (bondOrder) {

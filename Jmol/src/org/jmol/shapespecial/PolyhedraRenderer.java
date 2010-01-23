@@ -39,7 +39,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
     drawEdges = polyhedra.drawEdges;
     short[] colixes = polyhedra.colixes;
     for (int i = polyhedra.polyhedronCount; --i >= 0;) {
-      int iAtom = polyhedrons[i].centralAtom.getAtomIndex();
+      int iAtom = polyhedrons[i].centralAtom.getIndex();
       short colix = (colixes == null || iAtom >= colixes.length ? 
           Graphics3D.INHERIT_ALL : polyhedra.colixes[iAtom]);
       render1(polyhedrons[i], colix);

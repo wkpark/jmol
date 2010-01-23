@@ -215,7 +215,7 @@ public class Polyhedra extends AtomShape {
   private void andBitSet(BitSet bs) {
     BitSet bsCenters = new BitSet();
     for (int i = polyhedronCount; --i >= 0;)
-      bsCenters.set(polyhedrons[i].centralAtom.getAtomIndex());
+      bsCenters.set(polyhedrons[i].centralAtom.getIndex());
     bs.and(bsCenters);
   }
 
@@ -224,7 +224,7 @@ public class Polyhedra extends AtomShape {
     byte pid = JmolConstants.pidOf(null);
     for (int i = 0; i < polyhedronCount; ++i) {
       Polyhedron p = polyhedrons[i];
-      int iAtom = p.centralAtom.getAtomIndex();
+      int iAtom = p.centralAtom.getIndex();
       if (centers.get(iAtom))
         setColixAndPalette(Graphics3D.INHERIT_ALL, pid, iAtom);
       else
@@ -240,7 +240,7 @@ public class Polyhedra extends AtomShape {
       Polyhedron p = polyhedrons[i];
       if (p == null)
         continue;
-      if (centers.get(p.centralAtom.getAtomIndex()))
+      if (centers.get(p.centralAtom.getIndex()))
         p.visible = visible;
     }
   }
@@ -272,7 +272,7 @@ public class Polyhedra extends AtomShape {
       Bond bond = bonds[i];
       Atom otherAtom = bond.getAtom1() == atom ? bond.getAtom2() : bond
           .getAtom1();
-      if (bsVertices != null && !bsVertices.get(otherAtom.getAtomIndex()))
+      if (bsVertices != null && !bsVertices.get(otherAtom.getIndex()))
         continue;
       if (radius > 0f && bond.getAtom1().distance(bond.getAtom2()) > radius)
         continue;
@@ -300,7 +300,7 @@ public class Polyhedra extends AtomShape {
     while (withinIterator.hasNext()) {
       Atom other = atoms[withinIterator.next()];
       if (other == atom 
-          || bsVertices != null && !bsVertices.get(other.getAtomIndex())
+          || bsVertices != null && !bsVertices.get(other.getIndex())
           || atom.distance(other) > radius)
         continue;
       if (other.getAlternateLocationID() != atom.getAlternateLocationID()
@@ -570,8 +570,8 @@ public class Polyhedra extends AtomShape {
     protected String getState(Hashtable temp) {
       BitSet bs = new BitSet();
       for (int i = 0; i < ptCenter; i++)
-        bs.set(vertices[i].getAtomIndex());
-      return "  polyhedra ({" + centralAtom.getAtomIndex() + "}) "
+        bs.set(vertices[i].getIndex());
+      return "  polyhedra ({" + centralAtom.getIndex() + "}) "
           + (myDistanceFactor == DEFAULT_DISTANCE_FACTOR ? ""
               : " distanceFactor " + myDistanceFactor)
           + (myFaceCenterOffset == DEFAULT_FACECENTEROFFSET ? ""
@@ -590,7 +590,7 @@ public class Polyhedra extends AtomShape {
     for (int i = polyhedronCount; --i >= 0;) {
       Polyhedron p = polyhedrons[i];
       p.visibilityFlags = (p.visible && bs.get(p.modelIndex)
-          && !modelSet.isAtomHidden(p.centralAtom.getAtomIndex()) ? myVisibilityFlag
+          && !modelSet.isAtomHidden(p.centralAtom.getIndex()) ? myVisibilityFlag
           : 0);
     }
   }

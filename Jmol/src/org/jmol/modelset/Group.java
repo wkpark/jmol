@@ -153,6 +153,10 @@ public class Group {
     return groupID;
   }
 
+  public final ModelSet getModelSet() {
+    return chain.getModelSet();
+  }
+
   public final char getChainID() {
     return chain.chainID;
   }
@@ -161,7 +165,7 @@ public class Group {
     return 0;
   }
 
-  public int getBioPolymerIndex() {
+  public int getMonomerIndex() {
     return -1;
   }
 
@@ -403,6 +407,10 @@ public class Group {
 
   public String getStructureId() {
     return "";
+  }
+
+  public int getBioPolymerIndexInModel() {
+    return -1;
   }
   
 }

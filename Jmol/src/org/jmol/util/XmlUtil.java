@@ -102,7 +102,6 @@ public class XmlUtil {
    * 
    * @param sb
    * @param name
-   * @param sep
    * @param attributes
    * @param data
    */
@@ -119,7 +118,6 @@ public class XmlUtil {
    * @param name
    * @param data
    */
-
   public static void appendTag(StringBuffer sb, String name, Object data) {
     if (data instanceof Object[])
       appendTag(sb, name, (Object[]) data, null, false, true);
@@ -136,7 +134,6 @@ public class XmlUtil {
    * @param name
    * @param data
    */
-
   public static void appendCdata(StringBuffer sb, String name, String data) {
     appendTag(sb, name, null, data, true, true);
   }
@@ -146,7 +143,6 @@ public class XmlUtil {
    * @param sb
    * @param name
    * @param value
-   * @param sep
    */
   public static void appendAttrib(StringBuffer sb, Object name, Object value) {
     if (value == null)

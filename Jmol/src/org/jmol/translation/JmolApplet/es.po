@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-01-22 18:30+0100\n"
+"POT-Creation-Date: 2010-01-23 23:57+0100\n"
 "PO-Revision-Date: 2010-01-13 19:51+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -1679,7 +1679,7 @@ msgid "script compiler ERROR: "
 msgstr "ERROR del compilador de guiones: "
 
 #: org/jmol/script/ScriptEvaluator.java:2218
-#: org/jmol/script/ScriptEvaluator.java:7716
+#: org/jmol/script/ScriptEvaluator.java:7747
 msgid "script ERROR: "
 msgstr "ERROR en guión: "
 
@@ -1901,107 +1901,122 @@ msgstr "no se reconoce el parámetro SHOW; utilice {0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "¿qué escribir? {0} o {1} \"nombre de archivo\""
 
-#: org/jmol/script/ScriptEvaluator.java:5772
+#: org/jmol/script/ScriptEvaluator.java:5788
 #, java-format
 msgid "{0} connections deleted"
 msgstr "se han borrado {0} conexiones"
 
-#: org/jmol/script/ScriptEvaluator.java:5792
+#: org/jmol/script/ScriptEvaluator.java:5808
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} enlaces nuevos; {1} modificados"
 
-#: org/jmol/script/ScriptEvaluator.java:6919
+#: org/jmol/script/ScriptEvaluator.java:6950
 #, java-format
 msgid "file {0} created"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:7840
-#: org/jmol/script/ScriptEvaluator.java:8062
+#: org/jmol/script/ScriptEvaluator.java:7871
+#: org/jmol/script/ScriptEvaluator.java:8093
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "se han borrado {0} átomos"
 
-#: org/jmol/script/ScriptEvaluator.java:8608
+#: org/jmol/script/ScriptEvaluator.java:8651
 #, java-format
 msgid "{0} hydrogen bonds"
+msgstr "{0} enlaces de hidrógeno"
+
+#: org/jmol/script/ScriptEvaluator.java:8998
+#, fuzzy, java-format
+msgid "{0} struts added"
 msgstr "{0} enlaces de hidrógeno"
 
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
 msgstr "Pulsa para un menú..."
 
-#: org/jmol/viewer/ActionManager.java:52
+#: org/jmol/viewer/ActionManager.java:53
 msgid "rotate"
 msgstr "rotar"
 
-#: org/jmol/viewer/ActionManager.java:53
+#: org/jmol/viewer/ActionManager.java:54
 msgid "zoom"
 msgstr "tamaño"
 
-#: org/jmol/viewer/ActionManager.java:54
+#: org/jmol/viewer/ActionManager.java:55
 msgid "rotate Z"
 msgstr "rotar en Z"
 
-#: org/jmol/viewer/ActionManager.java:55
+#: org/jmol/viewer/ActionManager.java:56
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
 msgstr ""
 "rotación alrededor de Z (desplazamiento horizontal del ratón) o tamaño "
 "(desplazamiento vertical del ratón)"
 
-#: org/jmol/viewer/ActionManager.java:56
+#: org/jmol/viewer/ActionManager.java:57
 msgid "translate"
 msgstr "trasladar"
 
-#: org/jmol/viewer/ActionManager.java:58
+#: org/jmol/viewer/ActionManager.java:59
 msgid "center"
 msgstr "centrar"
 
-#: org/jmol/viewer/ActionManager.java:59
+#: org/jmol/viewer/ActionManager.java:60
 msgid "zoom (along right edge of window)"
 msgstr "tamaño (a lo largo del borde derecho de la ventana)"
 
-#: org/jmol/viewer/ActionManager.java:60
+#: org/jmol/viewer/ActionManager.java:61
 #, java-format
 msgid "move selected atoms (requires {0})"
 msgstr "mover los átomos seleccionados (requiere {0})"
 
-#: org/jmol/viewer/ActionManager.java:61
+#: org/jmol/viewer/ActionManager.java:62
 #, java-format
 msgid "rotate selected atoms (requires {0})"
 msgstr "rotar los átomos seleccionados (requiere {0})"
 
-#: org/jmol/viewer/ActionManager.java:62
+#: org/jmol/viewer/ActionManager.java:63
+#, fuzzy, java-format
+msgid "delete bond (requires {0})"
+msgstr "cancelar la selección (requiere {0})"
+
+#: org/jmol/viewer/ActionManager.java:64
+#, fuzzy, java-format
+msgid "connect atoms (requires {0})"
+msgstr "seleccionar un átomo (requiere {0})"
+
+#: org/jmol/viewer/ActionManager.java:65
 #, java-format
 msgid "move label (requires {0})"
 msgstr "mover una etiqueta (requiere {0})"
 
-#: org/jmol/viewer/ActionManager.java:64
+#: org/jmol/viewer/ActionManager.java:67
 #, java-format
 msgid "move specific DRAW point (requires {0})"
 msgstr "mover un punto del objeto dibujado (requiere {0})"
 
-#: org/jmol/viewer/ActionManager.java:65
+#: org/jmol/viewer/ActionManager.java:68
 #, java-format
 msgid "move whole DRAW object (requires {0})"
 msgstr "mover el objeto dibujado (requiere {0})"
 
-#: org/jmol/viewer/ActionManager.java:66
+#: org/jmol/viewer/ActionManager.java:69
 #, fuzzy
 msgid "spin model (swipe and release button and stop motion simultaneously)"
 msgstr ""
 "girar el modelo (... y suelta el botón, deteniendo al mismo tiempo el "
 "movimiento)"
 
-#: org/jmol/viewer/ActionManager.java:67
+#: org/jmol/viewer/ActionManager.java:70
 msgid ""
 "click on two points to spin around axis clockwise (requires SET PICKING SPIN)"
 msgstr ""
 "pulsa en dos puntos para definir un eje de giro horario (requiere SET "
 "PICKING SPIN)"
 
-#: org/jmol/viewer/ActionManager.java:68
+#: org/jmol/viewer/ActionManager.java:71
 msgid ""
 "click on two points to spin around axis counterclockwise (requires SET "
 "PICKING SPIN)"
@@ -2009,48 +2024,48 @@ msgstr ""
 "pulsa en dos puntos para definir un eje de giro antihorario (requiere SET "
 "PICKING SPIN)"
 
-#: org/jmol/viewer/ActionManager.java:70
+#: org/jmol/viewer/ActionManager.java:73
 #, java-format
 msgid "adjust slab (front plane; requires {0})"
 msgstr "(requiere {0})"
 
-#: org/jmol/viewer/ActionManager.java:71
+#: org/jmol/viewer/ActionManager.java:74
 #, java-format
 msgid "adjust depth (back plane; requires {0})"
 msgstr "ajustar el plano trasero de sección (requiere {0})"
 
-#: org/jmol/viewer/ActionManager.java:72
+#: org/jmol/viewer/ActionManager.java:75
 #, java-format
 msgid "move slab/depth window (both planes; requires {0})"
 msgstr "desplazar los planos de sección (requiere {0})"
 
-#: org/jmol/viewer/ActionManager.java:73
+#: org/jmol/viewer/ActionManager.java:76
 msgid "pop up the full context menu"
 msgstr "abrir el menú contextual completo"
 
-#: org/jmol/viewer/ActionManager.java:74
+#: org/jmol/viewer/ActionManager.java:77
 msgid "pop up recent context menu (click on Jmol frank)"
 msgstr "abrir el menú contextual reciente (pulsar en el logotipo Jmol)"
 
-#: org/jmol/viewer/ActionManager.java:76
+#: org/jmol/viewer/ActionManager.java:79
 #, java-format
 msgid "translate navigation point (requires {0} and {1})"
 msgstr "trasladar el punto de navegación (requiere {0} o {1})"
 
-#: org/jmol/viewer/ActionManager.java:77
+#: org/jmol/viewer/ActionManager.java:80
 msgid "pick an atom"
 msgstr "elige un átomo"
 
-#: org/jmol/viewer/ActionManager.java:78
+#: org/jmol/viewer/ActionManager.java:81
 msgid "pick a DRAW point (for measurements)"
 msgstr "elegir un punto dibujado (para mediciones)"
 
-#: org/jmol/viewer/ActionManager.java:79
+#: org/jmol/viewer/ActionManager.java:82
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
 msgstr "elige una etiqueta para cambiar su visibilidad (requiere {0})"
 
-#: org/jmol/viewer/ActionManager.java:80
+#: org/jmol/viewer/ActionManager.java:83
 #, java-format
 msgid ""
 "pick an atom to include it in a measurement (after starting a measurement or "
@@ -2059,15 +2074,15 @@ msgstr ""
 "elige un átomo para incluirlo en una medición (tras haber comenzado una "
 "medición o tras {0})"
 
-#: org/jmol/viewer/ActionManager.java:82
+#: org/jmol/viewer/ActionManager.java:85
 msgid "pick an atom to initiate or conclude a measurement"
 msgstr "elegir un átomo para iniciar o concluir una medición"
 
-#: org/jmol/viewer/ActionManager.java:83
+#: org/jmol/viewer/ActionManager.java:86
 msgid "pick an ISOSURFACE point"
 msgstr "elige un punto de una isosuperficie"
 
-#: org/jmol/viewer/ActionManager.java:84
+#: org/jmol/viewer/ActionManager.java:87
 msgid ""
 "pick a point or atom to navigate to (requires SET NAVIGATIONMODE; "
 "undocumented)"
@@ -2075,32 +2090,32 @@ msgstr ""
 "elige un punto o un átomo hacia el que navegar  (requiere SET "
 "NAVIGATIONMODE; no documentado)"
 
-#: org/jmol/viewer/ActionManager.java:85
+#: org/jmol/viewer/ActionManager.java:88
 #, java-format
 msgid "select an atom (requires {0})"
 msgstr "seleccionar un átomo (requiere {0})"
 
-#: org/jmol/viewer/ActionManager.java:86
+#: org/jmol/viewer/ActionManager.java:89
 #, java-format
 msgid "select NONE (requires {0})"
 msgstr "cancelar la selección (requiere {0})"
 
-#: org/jmol/viewer/ActionManager.java:88
+#: org/jmol/viewer/ActionManager.java:91
 #, java-format
 msgid "toggle selection (requires {0} or {1})"
 msgstr "(des)activar la selección (requiere {0} o {1})"
 
-#: org/jmol/viewer/ActionManager.java:90
+#: org/jmol/viewer/ActionManager.java:93
 #, java-format
 msgid "unselect this group of atoms (requires {0})"
 msgstr "deseleccionar este grupo de átomos (requiere {0})"
 
-#: org/jmol/viewer/ActionManager.java:91
+#: org/jmol/viewer/ActionManager.java:94
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
 msgstr "añadir este grupo de átomos a la selección (requiere {0})"
 
-#: org/jmol/viewer/ActionManager.java:92
+#: org/jmol/viewer/ActionManager.java:95
 #, java-format
 msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
@@ -2109,27 +2124,27 @@ msgstr ""
 "si están todos seleccionados, eliminar la selección; si no, añadir este "
 "grupo de átomos a la selección (requiere {0})"
 
-#: org/jmol/viewer/ActionManager.java:94
+#: org/jmol/viewer/ActionManager.java:97
 msgid "reset (when clicked off the model)"
 msgstr "restaurar (cuando se pulse fuera del modelo)"
 
-#: org/jmol/viewer/ActionManager.java:96
+#: org/jmol/viewer/ActionManager.java:99
 msgid "simulate multi-touch using the mouse)"
 msgstr "simular multitáctil usando el ratón)"
 
-#: org/jmol/viewer/ActionManager.java:1321
+#: org/jmol/viewer/ActionManager.java:1359
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "elige un átomo más para que el modelo gire en torno a un eje"
 
-#: org/jmol/viewer/ActionManager.java:1322
+#: org/jmol/viewer/ActionManager.java:1360
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "elige en orden dos átomos para que el modelo gire en torno a un eje"
 
-#: org/jmol/viewer/ActionManager.java:1325
+#: org/jmol/viewer/ActionManager.java:1363
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "elige un átomo más para mostrar la relación de simetría"
 
-#: org/jmol/viewer/ActionManager.java:1326
+#: org/jmol/viewer/ActionManager.java:1364
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr ""
@@ -2146,35 +2161,35 @@ msgstr "{0} átomos ocultos"
 msgid "{0} atoms selected"
 msgstr "{0} átomos seleccionados"
 
-#: org/jmol/viewer/Viewer.java:4041
+#: org/jmol/viewer/Viewer.java:4040
 #, fuzzy, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} enlaces de hidrógeno"
 
-#: org/jmol/viewer/Viewer.java:4068
+#: org/jmol/viewer/Viewer.java:4067
 msgid "Drag to move label"
 msgstr "Arrastra para mover la etiqueta"
 
-#: org/jmol/viewer/Viewer.java:5080
+#: org/jmol/viewer/Viewer.java:5079
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 "ERROR: no es posible dar valor de texto a una variable lógica booleana: {0}"
 
-#: org/jmol/viewer/Viewer.java:5318 org/jmol/viewer/Viewer.java:5509
+#: org/jmol/viewer/Viewer.java:5330 org/jmol/viewer/Viewer.java:5528
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
 "ERROR: no es posible dar valor numérico a una variable lógica booleana: {0}"
 
-#: org/jmol/viewer/Viewer.java:6053
+#: org/jmol/viewer/Viewer.java:6072
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 "ERROR: no es posible ajustar el valor de esta variable a un valor lógico "
 "booleano: {0}"
 
-#: org/jmol/viewer/Viewer.java:7527
+#: org/jmol/viewer/Viewer.java:7546
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 "no es posible acceder al portapapeles; utilice la miniaplicación firmada"

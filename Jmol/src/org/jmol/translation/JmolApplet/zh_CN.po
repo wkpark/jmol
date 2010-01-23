@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-01-22 18:30+0100\n"
+"POT-Creation-Date: 2010-01-23 23:57+0100\n"
 "PO-Revision-Date: 2010-01-09 02:14+0000\n"
 "Last-Translator: kyuu <kyuu@163.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -1677,7 +1677,7 @@ msgid "script compiler ERROR: "
 msgstr "脚本编译器错误： "
 
 #: org/jmol/script/ScriptEvaluator.java:2218
-#: org/jmol/script/ScriptEvaluator.java:7716
+#: org/jmol/script/ScriptEvaluator.java:7747
 msgid "script ERROR: "
 msgstr "脚本错误： "
 
@@ -1893,221 +1893,236 @@ msgstr "无法辨识 SHOW 的参数 -- 使用{0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "写什么呢？{0} 或 {1} \"文件名\""
 
-#: org/jmol/script/ScriptEvaluator.java:5772
+#: org/jmol/script/ScriptEvaluator.java:5788
 #, java-format
 msgid "{0} connections deleted"
 msgstr "己删除 {0} 个连接"
 
-#: org/jmol/script/ScriptEvaluator.java:5792
+#: org/jmol/script/ScriptEvaluator.java:5808
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} 个新化学键; {1} 个己修改"
 
-#: org/jmol/script/ScriptEvaluator.java:6919
+#: org/jmol/script/ScriptEvaluator.java:6950
 #, java-format
 msgid "file {0} created"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:7840
-#: org/jmol/script/ScriptEvaluator.java:8062
+#: org/jmol/script/ScriptEvaluator.java:7871
+#: org/jmol/script/ScriptEvaluator.java:8093
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "己删除 {0} 个原子"
 
-#: org/jmol/script/ScriptEvaluator.java:8608
+#: org/jmol/script/ScriptEvaluator.java:8651
 #, java-format
 msgid "{0} hydrogen bonds"
+msgstr "{0} 个氢键"
+
+#: org/jmol/script/ScriptEvaluator.java:8998
+#, fuzzy, java-format
+msgid "{0} struts added"
 msgstr "{0} 个氢键"
 
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
 msgstr "点击出现菜单..."
 
-#: org/jmol/viewer/ActionManager.java:52
+#: org/jmol/viewer/ActionManager.java:53
 msgid "rotate"
 msgstr "旋转"
 
-#: org/jmol/viewer/ActionManager.java:53
+#: org/jmol/viewer/ActionManager.java:54
 msgid "zoom"
 msgstr "缩放"
 
-#: org/jmol/viewer/ActionManager.java:54
+#: org/jmol/viewer/ActionManager.java:55
 msgid "rotate Z"
 msgstr "绕 Z 轴旋转"
 
-#: org/jmol/viewer/ActionManager.java:55
+#: org/jmol/viewer/ActionManager.java:56
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
 msgstr "旋转 Z （鼠标水平移动）或放大（鼠标垂直移动）"
 
-#: org/jmol/viewer/ActionManager.java:56
+#: org/jmol/viewer/ActionManager.java:57
 msgid "translate"
 msgstr "翻译"
 
-#: org/jmol/viewer/ActionManager.java:58
+#: org/jmol/viewer/ActionManager.java:59
 msgid "center"
 msgstr "居中"
 
-#: org/jmol/viewer/ActionManager.java:59
+#: org/jmol/viewer/ActionManager.java:60
 msgid "zoom (along right edge of window)"
 msgstr "缩放 (沿着窗口右侧)"
 
-#: org/jmol/viewer/ActionManager.java:60
+#: org/jmol/viewer/ActionManager.java:61
 #, java-format
 msgid "move selected atoms (requires {0})"
 msgstr "移动所选原子 (需要 {0})"
 
-#: org/jmol/viewer/ActionManager.java:61
+#: org/jmol/viewer/ActionManager.java:62
 #, java-format
 msgid "rotate selected atoms (requires {0})"
 msgstr "旋转所选原子 (需要 {0})"
 
-#: org/jmol/viewer/ActionManager.java:62
+#: org/jmol/viewer/ActionManager.java:63
+#, fuzzy, java-format
+msgid "delete bond (requires {0})"
+msgstr "全都不选（需要{0})"
+
+#: org/jmol/viewer/ActionManager.java:64
+#, fuzzy, java-format
+msgid "connect atoms (requires {0})"
+msgstr "选择一个原子（需要{0}）"
+
+#: org/jmol/viewer/ActionManager.java:65
 #, java-format
 msgid "move label (requires {0})"
 msgstr "移动标记 (需要 {0})"
 
-#: org/jmol/viewer/ActionManager.java:64
+#: org/jmol/viewer/ActionManager.java:67
 #, java-format
 msgid "move specific DRAW point (requires {0})"
 msgstr "移动特定 DRAW 点 (需要 {0})"
 
-#: org/jmol/viewer/ActionManager.java:65
+#: org/jmol/viewer/ActionManager.java:68
 #, java-format
 msgid "move whole DRAW object (requires {0})"
 msgstr "移动整个 DRAW 对象 (需要 {0})"
 
-#: org/jmol/viewer/ActionManager.java:66
+#: org/jmol/viewer/ActionManager.java:69
 msgid "spin model (swipe and release button and stop motion simultaneously)"
 msgstr "自旋模型(挥动并松开鼠标键，同时停止运动)"
 
-#: org/jmol/viewer/ActionManager.java:67
+#: org/jmol/viewer/ActionManager.java:70
 msgid ""
 "click on two points to spin around axis clockwise (requires SET PICKING SPIN)"
 msgstr "在两点上点击，以绕轴顺时钟自旋（需要设定 选取自旋）"
 
-#: org/jmol/viewer/ActionManager.java:68
+#: org/jmol/viewer/ActionManager.java:71
 msgid ""
 "click on two points to spin around axis counterclockwise (requires SET "
 "PICKING SPIN)"
 msgstr "在两点上点击，以绕轴逆时钟自旋（需要设定 选取自旋）"
 
-#: org/jmol/viewer/ActionManager.java:70
+#: org/jmol/viewer/ActionManager.java:73
 #, java-format
 msgid "adjust slab (front plane; requires {0})"
 msgstr "调整平板（前面板；需要{0}）"
 
-#: org/jmol/viewer/ActionManager.java:71
+#: org/jmol/viewer/ActionManager.java:74
 #, java-format
 msgid "adjust depth (back plane; requires {0})"
 msgstr "调整深度（后面板；需要 {0}）"
 
-#: org/jmol/viewer/ActionManager.java:72
+#: org/jmol/viewer/ActionManager.java:75
 #, java-format
 msgid "move slab/depth window (both planes; requires {0})"
 msgstr "移动平板/深度窗口（两个平面；需要{0}）"
 
-#: org/jmol/viewer/ActionManager.java:73
+#: org/jmol/viewer/ActionManager.java:76
 msgid "pop up the full context menu"
 msgstr "弹出完整的上下文菜单"
 
-#: org/jmol/viewer/ActionManager.java:74
+#: org/jmol/viewer/ActionManager.java:77
 msgid "pop up recent context menu (click on Jmol frank)"
 msgstr "单出最近的上下文菜单（直接点击Jmol）"
 
-#: org/jmol/viewer/ActionManager.java:76
+#: org/jmol/viewer/ActionManager.java:79
 #, java-format
 msgid "translate navigation point (requires {0} and {1})"
 msgstr "翻译导航点（需要{0} 和{1}）"
 
-#: org/jmol/viewer/ActionManager.java:77
+#: org/jmol/viewer/ActionManager.java:80
 msgid "pick an atom"
 msgstr "请选取原子"
 
-#: org/jmol/viewer/ActionManager.java:78
+#: org/jmol/viewer/ActionManager.java:81
 msgid "pick a DRAW point (for measurements)"
 msgstr "请选取 DRAW 点 (以用测量)"
 
-#: org/jmol/viewer/ActionManager.java:79
+#: org/jmol/viewer/ActionManager.java:82
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
 msgstr "选取一个标签在切换其显示/隐藏(需要{0})"
 
-#: org/jmol/viewer/ActionManager.java:80
+#: org/jmol/viewer/ActionManager.java:83
 #, java-format
 msgid ""
 "pick an atom to include it in a measurement (after starting a measurement or "
 "after {0})"
 msgstr "选取一个原子以把它包括在测量中（在开始一次测量或 {0} 之后）"
 
-#: org/jmol/viewer/ActionManager.java:82
+#: org/jmol/viewer/ActionManager.java:85
 msgid "pick an atom to initiate or conclude a measurement"
 msgstr "选取一个初始原子或结束测量"
 
-#: org/jmol/viewer/ActionManager.java:83
+#: org/jmol/viewer/ActionManager.java:86
 msgid "pick an ISOSURFACE point"
 msgstr "选取一个等平面(Isosurface)点"
 
-#: org/jmol/viewer/ActionManager.java:84
+#: org/jmol/viewer/ActionManager.java:87
 msgid ""
 "pick a point or atom to navigate to (requires SET NAVIGATIONMODE; "
 "undocumented)"
 msgstr "选取要浏览的某点或原子（需要设置 导航方式；无帮助文档）"
 
-#: org/jmol/viewer/ActionManager.java:85
+#: org/jmol/viewer/ActionManager.java:88
 #, java-format
 msgid "select an atom (requires {0})"
 msgstr "选择一个原子（需要{0}）"
 
-#: org/jmol/viewer/ActionManager.java:86
+#: org/jmol/viewer/ActionManager.java:89
 #, java-format
 msgid "select NONE (requires {0})"
 msgstr "全都不选（需要{0})"
 
-#: org/jmol/viewer/ActionManager.java:88
+#: org/jmol/viewer/ActionManager.java:91
 #, java-format
 msgid "toggle selection (requires {0} or {1})"
 msgstr "切换选择（需要 {0} 或 {1} ）"
 
-#: org/jmol/viewer/ActionManager.java:90
+#: org/jmol/viewer/ActionManager.java:93
 #, java-format
 msgid "unselect this group of atoms (requires {0})"
 msgstr "取消选取这群原子（需要 {0} ）"
 
-#: org/jmol/viewer/ActionManager.java:91
+#: org/jmol/viewer/ActionManager.java:94
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
 msgstr "把这群原子增加到已选原子集中（需要 {0}）"
 
-#: org/jmol/viewer/ActionManager.java:92
+#: org/jmol/viewer/ActionManager.java:95
 #, java-format
 msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
 "set of selected atoms (requires {0})"
 msgstr "如果已全选，则取消全选，否则把这群原子增加到已选取原子集中（需要 {0})"
 
-#: org/jmol/viewer/ActionManager.java:94
+#: org/jmol/viewer/ActionManager.java:97
 msgid "reset (when clicked off the model)"
 msgstr "重设（单击关闭模型时）"
 
-#: org/jmol/viewer/ActionManager.java:96
+#: org/jmol/viewer/ActionManager.java:99
 msgid "simulate multi-touch using the mouse)"
 msgstr "用鼠标模拟多点触控(multi-touch)"
 
-#: org/jmol/viewer/ActionManager.java:1321
+#: org/jmol/viewer/ActionManager.java:1359
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "请再多选一个原子来使分子可以一个轴旋转"
 
-#: org/jmol/viewer/ActionManager.java:1322
+#: org/jmol/viewer/ActionManager.java:1360
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "选取两个原子，使分子可以绕轴自旋"
 
-#: org/jmol/viewer/ActionManager.java:1325
+#: org/jmol/viewer/ActionManager.java:1363
 #, fuzzy
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "请再多选一个原子来使分子可以一个轴旋转"
 
-#: org/jmol/viewer/ActionManager.java:1326
+#: org/jmol/viewer/ActionManager.java:1364
 #, fuzzy
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
@@ -2124,31 +2139,31 @@ msgstr "{0} 个原子己隐藏"
 msgid "{0} atoms selected"
 msgstr "{0} 个原子己选定"
 
-#: org/jmol/viewer/Viewer.java:4041
+#: org/jmol/viewer/Viewer.java:4040
 #, fuzzy, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} 个氢键"
 
-#: org/jmol/viewer/Viewer.java:4068
+#: org/jmol/viewer/Viewer.java:4067
 msgid "Drag to move label"
 msgstr "拖拽移动标签"
 
-#: org/jmol/viewer/Viewer.java:5080
+#: org/jmol/viewer/Viewer.java:5079
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr "错误：不能把布尔真假值设定为字符串值：{0}"
 
-#: org/jmol/viewer/Viewer.java:5318 org/jmol/viewer/Viewer.java:5509
+#: org/jmol/viewer/Viewer.java:5330 org/jmol/viewer/Viewer.java:5528
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr "错误：不能把布尔真假值标设定为数值：{0}"
 
-#: org/jmol/viewer/Viewer.java:6053
+#: org/jmol/viewer/Viewer.java:6072
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "错误：不能把这个变量值设为布尔真假值：{0}"
 
-#: org/jmol/viewer/Viewer.java:7527
+#: org/jmol/viewer/Viewer.java:7546
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "不能存取剪贴板——请用使用签署过的小程序 (applet)"
 

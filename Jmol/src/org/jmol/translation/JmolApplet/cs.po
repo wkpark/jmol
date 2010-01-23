@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-01-22 18:30+0100\n"
+"POT-Creation-Date: 2010-01-23 23:57+0100\n"
 "PO-Revision-Date: 2010-01-13 18:31+0000\n"
 "Last-Translator: Martin Slavík <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -1684,7 +1684,7 @@ msgid "script compiler ERROR: "
 msgstr "Chyba kompilátoru skriptu ERROR: "
 
 #: org/jmol/script/ScriptEvaluator.java:2218
-#: org/jmol/script/ScriptEvaluator.java:7716
+#: org/jmol/script/ScriptEvaluator.java:7747
 msgid "script ERROR: "
 msgstr "Chyba skriptu ERROR: "
 
@@ -1904,103 +1904,118 @@ msgstr "nerozpoznaný SHOW parametr --  použij {0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "Co zapsat? {0} nebo {1} \"název souboru\""
 
-#: org/jmol/script/ScriptEvaluator.java:5772
+#: org/jmol/script/ScriptEvaluator.java:5788
 #, java-format
 msgid "{0} connections deleted"
 msgstr "vymazaná spojení: {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:5792
+#: org/jmol/script/ScriptEvaluator.java:5808
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} nových vazeb; {1} změněných"
 
-#: org/jmol/script/ScriptEvaluator.java:6919
+#: org/jmol/script/ScriptEvaluator.java:6950
 #, java-format
 msgid "file {0} created"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:7840
-#: org/jmol/script/ScriptEvaluator.java:8062
+#: org/jmol/script/ScriptEvaluator.java:7871
+#: org/jmol/script/ScriptEvaluator.java:8093
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atomů smazáno"
 
-#: org/jmol/script/ScriptEvaluator.java:8608
+#: org/jmol/script/ScriptEvaluator.java:8651
 #, java-format
 msgid "{0} hydrogen bonds"
+msgstr "{0} vodíkových můstků"
+
+#: org/jmol/script/ScriptEvaluator.java:8998
+#, fuzzy, java-format
+msgid "{0} struts added"
 msgstr "{0} vodíkových můstků"
 
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
 msgstr "Klikněte pro menu..."
 
-#: org/jmol/viewer/ActionManager.java:52
+#: org/jmol/viewer/ActionManager.java:53
 msgid "rotate"
 msgstr "otočit"
 
-#: org/jmol/viewer/ActionManager.java:53
+#: org/jmol/viewer/ActionManager.java:54
 msgid "zoom"
 msgstr "Zvětšení"
 
-#: org/jmol/viewer/ActionManager.java:54
+#: org/jmol/viewer/ActionManager.java:55
 msgid "rotate Z"
 msgstr "Z otáčení"
 
-#: org/jmol/viewer/ActionManager.java:55
+#: org/jmol/viewer/ActionManager.java:56
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
 msgstr ""
 "Z otáčení (horizontální pohyb myši) nebo přiblížení (vertikální pohyb myši)"
 
-#: org/jmol/viewer/ActionManager.java:56
+#: org/jmol/viewer/ActionManager.java:57
 msgid "translate"
 msgstr "přeložit"
 
-#: org/jmol/viewer/ActionManager.java:58
+#: org/jmol/viewer/ActionManager.java:59
 msgid "center"
 msgstr "střed"
 
-#: org/jmol/viewer/ActionManager.java:59
+#: org/jmol/viewer/ActionManager.java:60
 msgid "zoom (along right edge of window)"
 msgstr "přiblížení (podél pravého okraje okna)"
 
-#: org/jmol/viewer/ActionManager.java:60
+#: org/jmol/viewer/ActionManager.java:61
 #, java-format
 msgid "move selected atoms (requires {0})"
 msgstr "přesunout vybrané atomy ( vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:61
+#: org/jmol/viewer/ActionManager.java:62
 #, java-format
 msgid "rotate selected atoms (requires {0})"
 msgstr "otočit vybrané atomy (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:62
+#: org/jmol/viewer/ActionManager.java:63
+#, fuzzy, java-format
+msgid "delete bond (requires {0})"
+msgstr "vybrat NONE (vyžaduje {0})"
+
+#: org/jmol/viewer/ActionManager.java:64
+#, fuzzy, java-format
+msgid "connect atoms (requires {0})"
+msgstr "vybrat atom (vyžaduje {0})"
+
+#: org/jmol/viewer/ActionManager.java:65
 #, java-format
 msgid "move label (requires {0})"
 msgstr "přesunout označení (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:64
+#: org/jmol/viewer/ActionManager.java:67
 #, java-format
 msgid "move specific DRAW point (requires {0})"
 msgstr "přesunout specifický DRAW bod ( vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:65
+#: org/jmol/viewer/ActionManager.java:68
 #, java-format
 msgid "move whole DRAW object (requires {0})"
 msgstr "přesuň celý DRAW objekt (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:66
+#: org/jmol/viewer/ActionManager.java:69
 msgid "spin model (swipe and release button and stop motion simultaneously)"
 msgstr "otáčej model (klepni a pusť tlačítko a současně zastav pohyb)"
 
-#: org/jmol/viewer/ActionManager.java:67
+#: org/jmol/viewer/ActionManager.java:70
 msgid ""
 "click on two points to spin around axis clockwise (requires SET PICKING SPIN)"
 msgstr ""
 "klepni na dva body pro otáčení kolem osy po směru hodinových ručiček "
 "(vyžaduje SET PICKING SPIN)"
 
-#: org/jmol/viewer/ActionManager.java:68
+#: org/jmol/viewer/ActionManager.java:71
 msgid ""
 "click on two points to spin around axis counterclockwise (requires SET "
 "PICKING SPIN)"
@@ -2008,48 +2023,48 @@ msgstr ""
 "klepni na dva body pro otáčení kolem osy proti směru hodinových ručiček "
 "(vyžaduje SET PICKING SPIN)"
 
-#: org/jmol/viewer/ActionManager.java:70
+#: org/jmol/viewer/ActionManager.java:73
 #, java-format
 msgid "adjust slab (front plane; requires {0})"
 msgstr "nastav desku/slab (přední rovina; vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:71
+#: org/jmol/viewer/ActionManager.java:74
 #, java-format
 msgid "adjust depth (back plane; requires {0})"
 msgstr "nastav tloušťku (zadní rovina; vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:72
+#: org/jmol/viewer/ActionManager.java:75
 #, java-format
 msgid "move slab/depth window (both planes; requires {0})"
 msgstr "přesuň okno s deskou/tloušťkou (obě roviny; vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:73
+#: org/jmol/viewer/ActionManager.java:76
 msgid "pop up the full context menu"
 msgstr "zobraz úplné vyskakovací kontextové menu"
 
-#: org/jmol/viewer/ActionManager.java:74
+#: org/jmol/viewer/ActionManager.java:77
 msgid "pop up recent context menu (click on Jmol frank)"
 msgstr "zobraz poslední vyskakovací kontextové menu (klepni na Jmol frank)"
 
-#: org/jmol/viewer/ActionManager.java:76
+#: org/jmol/viewer/ActionManager.java:79
 #, java-format
 msgid "translate navigation point (requires {0} and {1})"
 msgstr "přesuň navigační body (vyžaduje {0} a {1})"
 
-#: org/jmol/viewer/ActionManager.java:77
+#: org/jmol/viewer/ActionManager.java:80
 msgid "pick an atom"
 msgstr "vybrat atom"
 
-#: org/jmol/viewer/ActionManager.java:78
+#: org/jmol/viewer/ActionManager.java:81
 msgid "pick a DRAW point (for measurements)"
 msgstr "vybrat DRAW bod (pro měření)"
 
-#: org/jmol/viewer/ActionManager.java:79
+#: org/jmol/viewer/ActionManager.java:82
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
 msgstr "vybrat popisek pro skrytí/zobrazení (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:80
+#: org/jmol/viewer/ActionManager.java:83
 #, java-format
 msgid ""
 "pick an atom to include it in a measurement (after starting a measurement or "
@@ -2057,15 +2072,15 @@ msgid ""
 msgstr ""
 "vyber atom, který chceš zahrnout do měření (po zahájení měření nebo po {0})"
 
-#: org/jmol/viewer/ActionManager.java:82
+#: org/jmol/viewer/ActionManager.java:85
 msgid "pick an atom to initiate or conclude a measurement"
 msgstr "vyber atom pro zahájení nebo ukončení měření"
 
-#: org/jmol/viewer/ActionManager.java:83
+#: org/jmol/viewer/ActionManager.java:86
 msgid "pick an ISOSURFACE point"
 msgstr "vyber bod izopovrchu (ISOSURFACE)"
 
-#: org/jmol/viewer/ActionManager.java:84
+#: org/jmol/viewer/ActionManager.java:87
 msgid ""
 "pick a point or atom to navigate to (requires SET NAVIGATIONMODE; "
 "undocumented)"
@@ -2073,32 +2088,32 @@ msgstr ""
 "vyber bod nebo atom ke kterým chceš navigovat (vyžaduje SET NAVIGATIONMODE; "
 "bez dokumentace)"
 
-#: org/jmol/viewer/ActionManager.java:85
+#: org/jmol/viewer/ActionManager.java:88
 #, java-format
 msgid "select an atom (requires {0})"
 msgstr "vybrat atom (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:86
+#: org/jmol/viewer/ActionManager.java:89
 #, java-format
 msgid "select NONE (requires {0})"
 msgstr "vybrat NONE (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:88
+#: org/jmol/viewer/ActionManager.java:91
 #, java-format
 msgid "toggle selection (requires {0} or {1})"
 msgstr "obrátit  výběr (vyžaduje {0} nebo {1})"
 
-#: org/jmol/viewer/ActionManager.java:90
+#: org/jmol/viewer/ActionManager.java:93
 #, java-format
 msgid "unselect this group of atoms (requires {0})"
 msgstr "zrušit výběr skupiny atomů (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:91
+#: org/jmol/viewer/ActionManager.java:94
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
 msgstr "přidej tuto skupinu atomů k již v ybraným atomům (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:92
+#: org/jmol/viewer/ActionManager.java:95
 #, java-format
 msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
@@ -2107,27 +2122,27 @@ msgstr ""
 "jestliže jsou všechny vybrány, zruš výběr, nebo přidej tuto skupinu atomů k "
 "již v ybraným atomům (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:94
+#: org/jmol/viewer/ActionManager.java:97
 msgid "reset (when clicked off the model)"
 msgstr "obnovit (po klepnutí mimo model)"
 
-#: org/jmol/viewer/ActionManager.java:96
+#: org/jmol/viewer/ActionManager.java:99
 msgid "simulate multi-touch using the mouse)"
 msgstr "simulovat multi-touch pomocí myši"
 
-#: org/jmol/viewer/ActionManager.java:1321
+#: org/jmol/viewer/ActionManager.java:1359
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "vybrat jeden či více atomů k rotaci okolo osy"
 
-#: org/jmol/viewer/ActionManager.java:1322
+#: org/jmol/viewer/ActionManager.java:1360
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "vybrat dva atomy k rotaci okolo osy"
 
-#: org/jmol/viewer/ActionManager.java:1325
+#: org/jmol/viewer/ActionManager.java:1363
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "vyber jeden nebo více atomů pro zobrazení vzájemné symetrie"
 
-#: org/jmol/viewer/ActionManager.java:1326
+#: org/jmol/viewer/ActionManager.java:1364
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr "vyber dva atomy pro zobrazení jejich vzájemné symetrie"
@@ -2143,31 +2158,31 @@ msgstr "skryté atomy: {0}"
 msgid "{0} atoms selected"
 msgstr "{0} atomů vybráno"
 
-#: org/jmol/viewer/Viewer.java:4041
+#: org/jmol/viewer/Viewer.java:4040
 #, fuzzy, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} vodíkových můstků"
 
-#: org/jmol/viewer/Viewer.java:4068
+#: org/jmol/viewer/Viewer.java:4067
 msgid "Drag to move label"
 msgstr "Táhni myší pro přesun popisku"
 
-#: org/jmol/viewer/Viewer.java:5080
+#: org/jmol/viewer/Viewer.java:5079
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr "ERROR: cannot set boolean flag to string value: {0}"
 
-#: org/jmol/viewer/Viewer.java:5318 org/jmol/viewer/Viewer.java:5509
+#: org/jmol/viewer/Viewer.java:5330 org/jmol/viewer/Viewer.java:5528
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr "ERROR: cannot set boolean flag to numeric value: {0}"
 
-#: org/jmol/viewer/Viewer.java:6053
+#: org/jmol/viewer/Viewer.java:6072
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"
 
-#: org/jmol/viewer/Viewer.java:7527
+#: org/jmol/viewer/Viewer.java:7546
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "schránka není přístupná -- použijte podepsaný applet"
 

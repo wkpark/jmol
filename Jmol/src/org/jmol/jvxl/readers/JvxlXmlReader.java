@@ -104,11 +104,6 @@ public class JvxlXmlReader extends VolumeFileReader {
         jvxlDecodeContourData(jvxlData, xr.getXmlData("jvxlContourData", null, false));
     } catch (Exception e) {
       Logger.error(e.toString());
-      try {
-      br.close();
-      } catch (Exception e2) {
-        // ignore
-      }
       return false;
     }
     return true;
@@ -157,7 +152,7 @@ public class JvxlXmlReader extends VolumeFileReader {
 
   protected void jvxlSkipData(int nPoints, boolean doSkipColorData)
       throws Exception {
-    line = br.readLine();
+    readLine();
     xr.skipTag("jvxlSurface");
   }
 
@@ -352,7 +347,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     while (bsVoxelPtr < nPoints) {
       nThisValue = parseInt();
       if (nThisValue == Integer.MIN_VALUE) {
-        line = br.readLine();
+        readLine();
         // note -- does not allow for empty lines;
         // must be a continuous block of numbers.
         if (line == null || (nThisValue = parseInt(line)) == Integer.MIN_VALUE) {

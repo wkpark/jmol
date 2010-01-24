@@ -127,21 +127,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
   }
   
   void discardTempData(boolean discardAll) {
-    try {
-      if (br != null)
-        br.close();
-    } catch (Exception e) {
-    }
-    try {
-      if (binarydoc != null)
-        binarydoc.close();
-    } catch (Exception e) {
-    }
-    try {
-      if (os != null)
-        os.close();
-    } catch (Exception e) {
-    }
+    closeReader();
     super.discardTempData(discardAll);
   }
      
@@ -201,19 +187,13 @@ abstract class SurfaceFileReader extends SurfaceReader {
 
   protected String readLine() throws Exception {
     line = br.readLine();
+    nBytes += line.length();
     if (os != null && line != null) {
       os.write(line.getBytes());
       os.write('\n');
     }
     return line;
-  }  
-/*  
-  int parseInt(String s, int iStart) {
-    next[0] = iStart;
-    return Parser.parseInt(s, next);
-  }
-*/
-  
+  } 
 }
 
 class LimitedLineReader {

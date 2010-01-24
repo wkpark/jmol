@@ -54,7 +54,7 @@ public class JvxlReader extends JvxlXmlReader {
     if (line == null || line.length() == 0)
       line = "Line 1";
     jvxlFileHeaderBuffer.append(line).append('\n');
-    if ((line = br.readLine()) == null || line.length() == 0)
+    if (readLine() == null || line.length() == 0)
       line = "Line 2";
     jvxlFileHeaderBuffer.append(line).append('\n');
     jvxlFileHeaderBuffer.append(skipComments(false));
@@ -83,7 +83,7 @@ public class JvxlReader extends JvxlXmlReader {
     readVoxelVector(2);
     skipComments(true);
     for (int i = 0; i < atomCount; ++i)
-      jvxlFileHeaderBuffer.append(br.readLine() + "\n");    
+      jvxlFileHeaderBuffer.append(readLine() + "\n");    
     Logger.info("Reading extra JVXL information line: " + line);
     nSurfaces = parseInt(line);
     if (!(isJvxl = (nSurfaces < 0)))
@@ -111,7 +111,7 @@ public class JvxlReader extends JvxlXmlReader {
     String str = "";
     try {
       while (str.length() < nPoints) {
-        line = br.readLine();
+        readLine();
         str += JvxlCoder.jvxlUncompressString(line);
       }
     } catch (Exception e) {
@@ -276,7 +276,7 @@ public class JvxlReader extends JvxlXmlReader {
   private void jvxlSkipDataBlock(int nPoints, boolean isInt) throws Exception {
     int n = 0;
     while (n < nPoints) {
-      line = br.readLine();
+      readLine();
       n += (isInt ? countData(line) : JvxlCoder.jvxlUncompressString(line).length());
     }
   }

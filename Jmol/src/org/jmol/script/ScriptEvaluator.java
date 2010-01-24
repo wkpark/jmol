@@ -13483,7 +13483,10 @@ public class ScriptEvaluator {
         if (tokAt(i + 1) == Token.integer)
           addShapeProperty(propertyList, "fileIndex", new Integer(
               intParameter(++i)));
-        if (filename.equalsIgnoreCase("INLINE")) {
+        if (filename.equals("string")) {
+          propertyValue = (isSyntaxCheck ? null : viewer.getFileInfo()[3]);
+          addShapeProperty(propertyList, "fileName", "");
+        } else if (filename.equalsIgnoreCase("INLINE")) {
           // inline PMESH data
           if (tokAt(i + 1) != Token.string)
             error(ERROR_stringExpected);

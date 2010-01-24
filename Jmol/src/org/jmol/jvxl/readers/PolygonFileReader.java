@@ -40,15 +40,6 @@ abstract class PolygonFileReader extends SurfaceFileReader {
     vertexDataOnly = true;
   }
 
-  void discardTempData(boolean discardAll) {
-    try {
-      if (br != null)
-        br.close();
-    } catch (Exception e) {
-    }
-    super.discardTempData(discardAll);
-  }
-     
   protected boolean readVolumeParameters() {
     // required by SurfaceReader
     return true;
@@ -66,9 +57,4 @@ abstract class PolygonFileReader extends SurfaceFileReader {
 
   abstract void getSurfaceData() throws Exception;
   
-  protected String readLine() throws Exception {
-    line = br.readLine();
-    nBytes += line.length();
-    return line;
-  }  
 }

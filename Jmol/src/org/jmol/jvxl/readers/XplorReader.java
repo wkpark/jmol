@@ -24,7 +24,6 @@
 package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
@@ -150,10 +149,10 @@ MRC header: mapc,mapr,maps: 2,1,3
   }
 
 
-  private String getLine() throws IOException {
-    line = br.readLine();
+  private String getLine() throws Exception {
+    readLine();
     while (line != null && (line.length() == 0 || line.indexOf("REMARKS") >= 0 || line.indexOf("XPLOR:") >= 0))
-      line = br.readLine();
+      readLine();
     return line;
   }
   
@@ -162,14 +161,14 @@ MRC header: mapc,mapr,maps: 2,1,3
   
   protected float nextVoxel() throws Exception {
     if (linePt >= line.length()) {
-      line = br.readLine();
+      readLine();
       //System.out.println(nRead + " " + line);
       linePt = 0;
       if ((nRead % nBlock) == 0) {
         //if (Logger.debugging)
           //Logger.info("XplorReader: block " + line + " min/max " 
            //+ dataMin + "/" + dataMax);
-        line = br.readLine();
+        readLine();
       }
     }
     if (line == null)

@@ -29,6 +29,8 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
+import org.jmol.util.TextFormat;
+import org.jmol.util.XmlUtil;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.api.Interface;
@@ -946,6 +948,69 @@ abstract public class ModelSet extends ModelCollection {
   public int calculateStruts(BitSet bs1, BitSet bs2) {
     setModelVisibility();
     return super.calculateStruts(bs1, bs2);
+  }
+
+  /*
+   * <molecule title="acetic_acid.mol"
+   * xmlns="http://www.xml-cml.org/schema/cml2/core"
+   * xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   * xsi:schemaLocation="http://www.xml-cml.org/schema/cml2/core cmlAll.xsd">
+   * <atomArray> <atom id="a1" elementType="C" x3="0.1853" y3="0.0096"
+   * z3="0.4587"/> <atom id="a2" elementType="O" x3="0.6324" y3="1.0432"
+   * z3="0.8951"/> <atom id="a3" elementType="C" x3="-1.0665" y3="-0.1512"
+   * z3="-0.3758"/> <atom id="a4" elementType="O" x3="0.7893" y3="-1.1734"
+   * z3="0.6766" formalCharge="-1"/> <atom id="a5" elementType="H" x3="-1.7704"
+   * y3="-0.8676" z3="0.1055"/> <atom id="a6" elementType="H" x3="-0.8068"
+   * y3="-0.5215" z3="-1.3935"/> <atom id="a7" elementType="H" x3="-1.5889"
+   * y3="0.8259" z3="-0.4854"/> </atomArray> <bondArray> <bond atomRefs2="a1 a2"
+   * order="partial12"/> <bond atomRefs2="a1 a3" order="S"/> <bond
+   * atomRefs2="a1 a4" order="partial12"/> <bond atomRefs2="a3 a5" order="S"/>
+   * <bond atomRefs2="a3 a6" order="S"/> <bond atomRefs2="a3 a7" order="S"/>
+   * </bondArray> </molecule>
+   */
+  public String getModelCml(BitSet bs, int atomsMax, boolean addBonds) {
+    StringBuffer sb = new StringBuffer("");
+    int nAtoms = BitSetUtil.cardinalityOf(bs);
+    if (nAtoms == 0)
+      return "";
+    XmlUtil.openTag(sb, "molecule");
+    XmlUtil.openTag(sb, "atomArray");
+    BitSet bsAtoms = new BitSet();
+    for (int i = 0; i < atomCount; i++) {
+      if (!bs.get(i) || --atomsMax == 0)
+        continue;
+      String name = atoms[i].getAtomName();
+      TextFormat.simpleReplace(name, "\"", "''");
+      bsAtoms.set(atoms[i].index);
+      XmlUtil
+          .appendTag(sb, "atom", new String[] { 
+              "id", "" + (atoms[i].index + 1),
+              "label", atoms[i].getAtomName(),
+              "elementType", atoms[i].getElementSymbol(), 
+              "x3", "" + atoms[i].x, 
+              "y3", "" + atoms[i].y, 
+              "z3", "" + atoms[i].z });
+    }
+    XmlUtil.closeTag(sb, "atomArray");
+    if (addBonds) {
+      XmlUtil.openTag(sb, "bondArray");
+      for (int i = 0; i < bondCount; i++) {
+        Bond bond = bonds[i];
+        Atom a1 = bond.atom1;
+        Atom a2 = bond.atom2;
+        if (!bsAtoms.get(a1.index) || !bsAtoms.get(a2.index))
+          continue;
+        String order = JmolConstants.getCmlOrder(bond.order);
+        if (order == null)
+          continue;
+        XmlUtil.appendTag(sb, "bond", new String[] { 
+            "atomRefs2", (bond.atom1.index + 1) + " " + (bond.atom2.index + 1), 
+            "order", order, });
+      }
+      XmlUtil.closeTag(sb, "bondArray");
+    }
+    XmlUtil.closeTag(sb, "molecule");
+    return sb.toString();
   }
 
 }

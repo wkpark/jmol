@@ -518,6 +518,27 @@ final public class JmolConstants {
     return "?";
   }
 
+  public static String getCmlOrder(int order) {
+    String sname = getBondOrderNameFromOrder(order);
+    switch (sname.charAt(0)) {
+    case 's':
+    case 'd':
+    case 't':
+      return "" + sname.toUpperCase().charAt(0);
+    case 'a':
+      if (sname.indexOf("Double") >= 0)
+        return "D";
+      else if (sname.indexOf("Single") >= 0)
+        return "S";
+      return "aromatic";
+    case 'p':
+      if (sname.indexOf(" ") >= 0)
+        return sname.substring(sname.indexOf(" ") + 1);
+      return "partial12";
+    }
+    return null;
+  }
+
   /**
    * used for formatting labels and in the connect PARTIAL command
    *  

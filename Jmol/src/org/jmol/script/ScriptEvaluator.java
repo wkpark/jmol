@@ -11007,7 +11007,7 @@ public class ScriptEvaluator {
     case Token.identifier:
     case Token.string:
     case Token.frame:
-      type = ScriptVariable.sValue(tokenAt(pt, args)).toLowerCase();
+      type= ScriptVariable.sValue(tokenAt(pt, args)).toLowerCase();
       if (tok == Token.image) {
         pt++;
       } else if (tok == Token.frame) {
@@ -11054,7 +11054,7 @@ public class ScriptEvaluator {
     } else if (Parser.isOneOf(val.toLowerCase(), "png;jpg;jpeg;jpg64;jpeg64")
         && tokAt(pt + 1, args) == Token.integer) {
       quality = ScriptVariable.iValue(tokenAt(++pt, args));
-    } else if (Parser.isOneOf(val.toLowerCase(), "xyz;mol;pdb")) {
+    } else if (Parser.isOneOf(val.toLowerCase(), "xyz;mol;pdb;cml")) {
       type = val.toUpperCase();
       if (pt + 1 == argCount)
         pt++;
@@ -11146,12 +11146,12 @@ public class ScriptEvaluator {
     if (!isImage
         && !isExport
         && !Parser.isOneOf(type,
-            "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;PMESH;VAR;FILE;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
+            "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;PMESH;VAR;FILE;CML;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
       error(
           ERROR_writeWhat,
           "ALL|COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
               + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
-          "JPG|JPG64|PNG|GIF|PPM|SPT|JVXL|XJVXL|XYZ|MOL|PDB|"
+          "JPG|JPG64|PNG|GIF|PPM|SPT|JVXL|XJVXL|CML|XYZ|MOL|PDB|"
               + driverList.toUpperCase().replace(';', '|'));
     if (isSyntaxCheck)
       return "";
@@ -11185,7 +11185,7 @@ public class ScriptEvaluator {
       data = viewer.getPointGroupAsString(type2.equals("draw"), null, 0, 1.0f);
     } else if (data == "PDB") {
       data = viewer.getPdbData(null);
-    } else if (data == "XYZ" || data == "MOL") {
+    } else if (data == "XYZ" || data == "MOL" || data == "CML") {
       data = viewer.getData("selected", data);
     } else if (data == "QUAT" || data == "RAMA") {
       int modelIndex = viewer.getCurrentModelIndex();

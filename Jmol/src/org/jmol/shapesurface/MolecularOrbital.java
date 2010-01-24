@@ -269,6 +269,7 @@ public class MolecularOrbital extends Isosurface {
             super.setProperty("init", params, null);
             setOrbital(i);
           }
+          jvxlData.moleculeXml = viewer.getModelCml(viewer.getModelAtomBitSet(thisMesh.modelIndex, true), 100, true);
           if (!haveHeader) {
             str.append(JvxlCoder.jvxlGetFile(jvxlData, null, null,
                 "HEADERONLY", true, nTotal, null, null));

@@ -38,6 +38,7 @@ import org.jmol.api.JmolAdapter;
 import org.xml.sax.XMLReader;
 import org.jmol.adapter.readers.cifpdb.CifReader;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 /**
  * A CML2 Reader - 
@@ -182,6 +183,8 @@ public class XmlCmlReader extends XmlReader {
   private String scalarDictValue;
   private String scalarTitle;
   private String cellParameterType;
+  private boolean checkedSerial;
+  private boolean isSerial;
 
   // counter that is incremented each time a molecule element is started and 
   // decremented when finished.  Needed so that only 1 atomSet created for each
@@ -348,6 +351,7 @@ public class XmlCmlReader extends XmlReader {
           if (!coords3D)
             atom.z = 0;
           parent.setAtomCoord(atom);
+          addAtom(atom);
         }
       }
       if (name.equals("formula")) {
@@ -364,7 +368,7 @@ public class XmlCmlReader extends XmlReader {
         if (atts.containsKey("order"))
           order = parseBondToken((String) atts.get("order"));
         if (tokenCount == 2 && order > 0) {
-          atomSetCollection.addNewBond(tokens[0], tokens[1], order);
+          addNewBond(tokens[0], tokens[1], order);
         }
       }
       break;
@@ -373,10 +377,17 @@ public class XmlCmlReader extends XmlReader {
         state = MOLECULE_ATOM;
         atom = new Atom();
         parent.setFractionalCoordinates(false);
+        String id = (String) atts.get("id");
         if (atts.containsKey("label"))
           atom.atomName = (String) atts.get("label");
         else
-          atom.atomName = (String) atts.get("id");
+          atom.atomName = id;
+        if (!checkedSerial) {
+          isSerial = (id != null && Parser.parseInt(id) != Integer.MIN_VALUE);
+          checkedSerial = true;
+        } 
+        if (isSerial)
+          atom.atomSerial = Parser.parseInt(id);
         if (atts.containsKey("xFract")
             && (parent.iHaveUnitCell || !atts.containsKey("x3"))) {
           parent.setFractionalCoordinates(true);
@@ -431,6 +442,14 @@ public class XmlCmlReader extends XmlReader {
     case MOLECULE_BOND_BUILTIN:
       break;
     }
+  }
+
+  private void addNewBond(String a1, String a2, int order) {
+    if (isSerial)
+      atomSetCollection.addNewBondWithMappedSerialNumbers(Parser.parseInt(a1),
+         Parser.parseInt(a2), order);
+      else
+        atomSetCollection.addNewBond(a1, a2, order);
   }
 
   private void getDictRefValue(HashMap atts) {
@@ -558,12 +577,8 @@ public class XmlCmlReader extends XmlReader {
     case MOLECULE_ATOM_ARRAY:
       if (name.equals("atomArray")) {
         state = MOLECULE;
-        for (int i = 0; i < atomCount; ++i) {
-          Atom atom = atomArray[i];
-          if ((atom.elementSymbol != null || atom.elementNumber >= 0)
-              && !Float.isNaN(atom.z))
-            atomSetCollection.addAtomWithMappedName(atom);
-        }
+        for (int i = 0; i < atomCount; ++i)
+          addAtom(atomArray[i]);
       }
       break;
     case MOLECULE_BOND:
@@ -574,10 +589,7 @@ public class XmlCmlReader extends XmlReader {
     case MOLECULE_ATOM:
       if (name.equals("atom")) {
         state = MOLECULE_ATOM_ARRAY;
-        if ((atom.elementSymbol != null || atom.elementNumber >= 0)
-            && !Float.isNaN(atom.z)) {
-          atomSetCollection.addAtomWithMappedName(atom);
-        }
+        addAtom(atom);
         atom = null;
       }
       break;
@@ -619,7 +631,7 @@ public class XmlCmlReader extends XmlReader {
       } else if (scalarDictValue.equals("order")) {
         int order = parseBondToken(chars);
         if (order > 0 && tokenCount == 2)
-          atomSetCollection.addNewBond(tokens[0], tokens[1], order);
+          addNewBond(tokens[0], tokens[1], order);
       }
       setKeepChars(false);
       break;
@@ -627,6 +639,16 @@ public class XmlCmlReader extends XmlReader {
       state = MOLECULE;
       break;
     }
+  }
+
+  private void addAtom(Atom atom) {
+    if ((atom.elementSymbol == null && atom.elementNumber < 0)
+        || Float.isNaN(atom.z))
+        return;
+      if (isSerial)
+        atomSetCollection.addAtomWithMappedSerialNumber(atom);
+      else
+        atomSetCollection.addAtomWithMappedName(atom);
   }
 
   int parseBondToken(String str) {
@@ -658,7 +680,7 @@ public class XmlCmlReader extends XmlReader {
   }
 
   //this routine breaks out all the tokens in a string
-  // results are placed into the tokens array
+  // results ar e placed into the tokens array
   void breakOutTokens(String str) {
     StringTokenizer st = new StringTokenizer(str);
     tokenCount = st.countTokens();

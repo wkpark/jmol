@@ -91,6 +91,8 @@ public class JvxlCoder {
           "jmolVersion", jvxlData.version });
       if (jvxlData.jvxlFileTitle != null)
         XmlUtil.appendCdata(data, "jvxlFileTitle", "\n" + jvxlData.jvxlFileTitle);
+      if (jvxlData.moleculeXml != null)
+        data.append(jvxlData.moleculeXml);
       if (jvxlData.jvxlVolumeDataXml == null)
         jvxlData.jvxlVolumeDataXml = (new VolumeData()).setVolumetricXml();
       data.append(jvxlData.jvxlVolumeDataXml);

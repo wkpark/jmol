@@ -508,6 +508,9 @@ public class Resolver {
     if (header.indexOf("arguslab") >= 0) {
       return specialTags[SPECIAL_ARGUS_XML][0];
     }
+    if (header.indexOf("jvxl") >= 0) {
+      return specialTags[SPECIAL_CML_XML][0];
+    }
     if (header.indexOf(CML_NAMESPACE_URI) >= 0
         || header.indexOf("cml:") >= 0) {
       return specialTags[SPECIAL_CML_XML][0];

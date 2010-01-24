@@ -217,7 +217,7 @@ public class Mesh extends MeshSurface {
   }
 
   public String getState(String type) {
-    String sxml = Shape.getXmlPropertyString(xmlProperties, type);
+    String sxml = null; // problem here is that it can be WAY to large. Shape.getXmlPropertyString(xmlProperties, type);
     StringBuffer s = new StringBuffer();
     if (sxml != null)
       s.append("/** XML ** ").append(sxml).append(" ** XML **/\n");

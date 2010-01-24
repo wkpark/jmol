@@ -7222,6 +7222,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String exp = "";
     if (type.toLowerCase().indexOf("property_") == 0)
       exp = "{selected}.label(\"%{" + type + "}\")";
+    else if (type.equalsIgnoreCase("CML"))
+      return getModelCml(getAtomBitSet(atomExpression), 0, true);
     else if (type.equalsIgnoreCase("PDB"))
       // old crude
       exp = "{selected and not hetero}.label(\"ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \").lines"
@@ -7238,6 +7240,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!atomExpression.equals("selected"))
       exp = TextFormat.simpleReplace(exp, "selected", atomExpression);
     return (String) evaluateExpression(exp);
+  }
+
+  public String getModelCml(BitSet bs, int nAtomsMax, boolean addBonds) {
+    return modelSet.getModelCml(bs, nAtomsMax, addBonds);
   }
 
   // synchronized here trapped the eventQueue 

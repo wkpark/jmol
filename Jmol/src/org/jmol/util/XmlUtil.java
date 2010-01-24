@@ -84,7 +84,7 @@ public class XmlUtil {
    */
   public static String wrapCdata(Object data) {
     String s = "" + data;
-    return (s.indexOf("&") < 0 && s.indexOf("<") < 0 ? s 
+    return (s.indexOf("&") < 0 && s.indexOf("<") < 0 ? (s.startsWith("\n") ? "" : "\n") + s 
         : "<![CDATA[" + TextFormat.simpleReplace(s, "]]>", "]]]]><![CDATA[>") + "]]>");
   }
   

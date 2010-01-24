@@ -67,7 +67,13 @@ public class Mol2Reader extends ForceFieldReader {
       readLine();
       modelNumber = 0;
       while (line != null) {
-        if (line.equals("@<TRIPOS>MOLECULE")) {
+        if (line.length() != 0 && line.charAt(0) == '#') {
+          /* Comment lines (starting with '#' as per Tripos spec) 
+              may contain an inline Jmol script.
+          */
+          checkLineForScript();
+        }
+        else if (line.equals("@<TRIPOS>MOLECULE")) {
           if (doGetModel(++modelNumber)) {
             processMolecule();
             if (isLastModel(modelNumber))
@@ -116,7 +122,21 @@ public class Mol2Reader extends ForceFieldReader {
     if (readLine() != null && (line.length() == 0 || line.charAt(0) != '@')) {
       //optional comment -- but present if comment is present
       if (readLine() != null && line.length() != 0 && line.charAt(0) != '@') {
-        thisDataSetName += ": " + line.trim();
+        /* The MOLECULE's comment line may contain an inline Jmol script.
+            (But don't expect it to be applied just to this molecule/model/frame.)
+            Note: '#' is not needed here, but it is for general comments (out of the MOLECULE data structure), 
+            so for consistency we'll allow both 'jmolscript:' as such or preceded by # (spaces are ignored).
+            Any comments written before the 'jmolscript:' will be preserved (and added to the model's title).
+        */
+        if (line.indexOf("jmolscript:") >= 0) {
+          checkLineForScript();
+          if (line.equals("#")) {
+            line = "";
+          }
+        }
+        if (line.length() != 0) {
+          thisDataSetName += ": " + line.trim();
+        }
       }
     }
     newAtomSet(thisDataSetName);

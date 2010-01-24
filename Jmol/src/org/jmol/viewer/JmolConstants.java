@@ -2994,7 +2994,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   }
 
   public final static int CARTOON_VISIBILITY_FLAG = getShapeVisibilityFlag(SHAPE_CARTOON);
-  public final static int ALPHA_CARBON_VISIBILITY_FLAG = CARTOON_VISIBILITY_FLAG 
+  public static final int BACKBONE_VISIBILITY_FLAG = getShapeVisibilityFlag(SHAPE_BACKBONE);
+
+  public final static int ALPHA_CARBON_VISIBILITY_FLAG 
+      = CARTOON_VISIBILITY_FLAG | BACKBONE_VISIBILITY_FLAG
       | getShapeVisibilityFlag(SHAPE_TRACE)
       | getShapeVisibilityFlag(SHAPE_STRANDS)
       | getShapeVisibilityFlag(SHAPE_MESHRIBBON)
@@ -3098,7 +3101,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int ANIMATION_PALINDROME = 2;
   
   public final static float radiansPerDegree = (float) (Math.PI / 180);
-
   
   final public static int getQuantumShellTagID(String tag) {
     for (int i = quantumShellTags.length; --i >= 0;)

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-12-08 19:19+0100\n"
-"PO-Revision-Date: 2010-01-10 19:27+0100\n"
+"PO-Revision-Date: 2010-01-24 21:58+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -432,7 +432,7 @@ msgstr "E&ditor de guiones"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
 msgid "Output Conso&le..."
-msgstr "&Guión (script)..."
+msgstr "C&onsola..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
 msgid "Jmol Java &Console"

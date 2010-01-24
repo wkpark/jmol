@@ -937,7 +937,8 @@ final public class Atom extends Point3fi {
     //  An atom is considered visible if its PDB group is visible, even
     //  if it does not show up itself as part of the structure
     //  (this will be a difference in terms of *clickability*).
-    flags |= group.shapeVisibilityFlags;
+    // except BACKBONE
+    flags |= group.shapeVisibilityFlags & ~JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_BACKBONE);
     // We know that (flags & AIM), so now we must remove that flag
     // and check to see if any others are remaining.
     // Only then is the atom considered visible.

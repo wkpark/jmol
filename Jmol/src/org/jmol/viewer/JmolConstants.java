@@ -298,13 +298,16 @@ final public class JmolConstants {
   public final static int PICKING_MEASURE_TORSION  = 18;
   public final static int PICKING_NAVIGATE         = 19;
   public final static int PICKING_CONNECT          = 20;
+  public final static int PICKING_STRUTS           = 21;
   
 
   private final static String[] pickingModeNames = {
     "off", "identify", "label", "center", "draw", "spin",
     "symmetry", "deletebond",
-    "atom", "group", "chain", "molecule", "site", "model", "element", 
-    "measure", "distance", "angle", "torsion", "navigate", "connect"
+    "atom", "group", "chain", "molecule", "site", "model", 
+    "element", 
+    "measure", "distance", "angle", "torsion", "navigate", 
+    "connect", "struts"
   };
  
   public final static String getPickingModeName(int pickingMode) {
@@ -426,7 +429,7 @@ final public class JmolConstants {
   
   private final static String[] bondOrderNames = {
     "single", "double", "triple", "quadruple", 
-    "aromatic", "strut",
+    "aromatic", "struts",
     "hbond", "partial", "partialDouble",
     "partialTriple", "partialTriple2", 
     "aromaticSingle", "aromaticDouble",
@@ -2894,7 +2897,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       return SHAPE_HSTICKS;
     case Token.ssbond:
       return SHAPE_SSSTICKS;
-    case Token.strut:
+    case Token.struts:
       return SHAPE_STRUTS;
     case Token.label:
       return SHAPE_LABELS;

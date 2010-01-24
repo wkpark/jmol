@@ -1238,9 +1238,11 @@ public class ActionManager {
     switch (pickingMode) {
     case JmolConstants.PICKING_OFF:
       return;
+    case JmolConstants.PICKING_STRUTS:
     case JmolConstants.PICKING_CONNECT:
     case JmolConstants.PICKING_DELETE_BOND:
       boolean isDelete = (pickingMode == JmolConstants.PICKING_DELETE_BOND);
+      boolean isStruts = (pickingMode == JmolConstants.PICKING_STRUTS);
       if (!isBound(action, (isDelete ? ACTION_deleteBond : ACTION_connectAtoms)))
         return;
       if (measurementQueued == null || measurementQueued.getCount() >= 2)
@@ -1249,7 +1251,7 @@ public class ActionManager {
         return;
       viewer.script("connect "
           + measurementQueued.getMeasurementScript(" ", true)
-          + (isDelete || measurementQueued.isConnected(viewer.getModelSet().getAtoms(), 2)? " DELETE" : ""));
+          + (isDelete || measurementQueued.isConnected(viewer.getModelSet().getAtoms(), 2)? " DELETE" : isStruts ? "STRUTS" : ""));
       return;
     case JmolConstants.PICKING_MEASURE_TORSION:
       n++;

@@ -3975,7 +3975,7 @@ public class ScriptEvaluator {
   }
 
   private int getMadParameter() throws ScriptException {
-    // wireframe, ssbond, hbond
+    // wireframe, ssbond, hbond, struts
     int mad = 1;
     switch (getToken(1).tok) {
     case Token.only:
@@ -4690,7 +4690,7 @@ public class ScriptEvaluator {
         case Token.ssbond:
           ssbond();
           break;
-        case Token.strut:
+        case Token.struts:
           struts();
           break;
         case Token.step:
@@ -5676,7 +5676,7 @@ public class ScriptEvaluator {
                 || bondOrder == JmolConstants.BOND_H_REGULAR || bondOrder == JmolConstants.BOND_AROMATIC))
           error(ERROR_invalidArgument);
         break;
-      case Token.strut:
+      case Token.struts:
         if (!isColorOrRadius) {
           color = 0xFFFFFF;
           translucency = "translucent";
@@ -7385,7 +7385,13 @@ public class ScriptEvaluator {
     if (!isBond)
       setBooleanProperty("bondModeOr", true);
     setShapeSize(JmolConstants.SHAPE_STICKS, 0);
-
+    // wireframe will not operate on STRUTS even though they are 
+    // a form of bond order (see BondIteratoSelected)
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
+        JmolConstants.BOND_STRUT_MASK));
+    setShapeSize(JmolConstants.SHAPE_STICKS, 0);
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
+        JmolConstants.BOND_COVALENT_MASK));
     // also need to turn off backbones, ribbons, strands, cartoons
     for (int shapeType = JmolConstants.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --shapeType >= 0;)
       if (shapeType != JmolConstants.SHAPE_MEASURES)
@@ -8624,20 +8630,21 @@ public class ScriptEvaluator {
   }
 
   private void ssbond() throws ScriptException {
+    int mad = getMadParameter();
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_SULFUR_MASK));
-    setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
+    setShapeSize(JmolConstants.SHAPE_STICKS, mad);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_COVALENT_MASK));
   }
 
   private void struts() throws ScriptException {
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolConstants.BOND_STRUT_MASK));
-    boolean defOn = (tokAt(1) == Token.on || statementLength == 1);
+    boolean defOn = (tokAt(1) == Token.only || tokAt(1) == Token.on || statementLength == 1);
     int mad = getMadParameter();
     if (defOn)
       mad = (int) (viewer.getStrutDefaultRadius() * 2000f);
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
+        JmolConstants.BOND_STRUT_MASK));
     setShapeSize(JmolConstants.SHAPE_STICKS, mad);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_COVALENT_MASK));
@@ -8657,9 +8664,10 @@ public class ScriptEvaluator {
       connect(0);
       return;
     }
+    int mad = getMadParameter();
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_HYDROGEN_MASK));
-    setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
+    setShapeSize(JmolConstants.SHAPE_STICKS, mad);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_COVALENT_MASK));
   }
@@ -8985,7 +8993,7 @@ public class ScriptEvaluator {
           return;
         viewer.calculateSurface(bs, (isFrom ? Float.MAX_VALUE : -1));
         return;
-      case Token.strut:
+      case Token.struts:
         bs = (iToken + 1 < statementLength ? expression(++iToken) : null);
         bs2 = (iToken + 1 < statementLength ? expression(++iToken) : null);
         checkLength(++iToken);

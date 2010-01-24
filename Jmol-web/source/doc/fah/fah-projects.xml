@@ -8308,7 +8308,7 @@
   <fah_proj number="10002" name="p10002" public="n" file="xyz"
     server="129.74.85.48" atoms="544" preferred="3.07" deadline="23.04"
     credit="84.48" frames="100" code="PM" contact="jcoffland"/>
-  <fah_proj number="10003" name="p10003" public="n"
+  <fah_proj number="10003" name="p10003" public="n" file="xyz"
     server="129.74.85.48" atoms="544" preferred="1.84" deadline="13.79"
     credit="50.56" frames="100" code="PM" contact="jcoffland"/>
 

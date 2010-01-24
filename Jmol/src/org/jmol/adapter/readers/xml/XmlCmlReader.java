@@ -83,7 +83,7 @@ public class XmlCmlReader extends XmlReader {
    */
 
   private String[] cmlImplementedAttributes = { "id", //general
-      "title", //molecule
+      "title", //molecule, atom
       "x3", "y3", "z3", "x2", "y2", "isotope", //atom 
       "elementType", "formalCharge", //atom
       "atomId", //atomArray
@@ -378,16 +378,19 @@ public class XmlCmlReader extends XmlReader {
         atom = new Atom();
         parent.setFractionalCoordinates(false);
         String id = (String) atts.get("id");
-        if (atts.containsKey("label"))
-          atom.atomName = (String) atts.get("label");
+        if (atts.containsKey("title"))
+          atom.atomName = (String) atts.get("title");
         else
           atom.atomName = id;
         if (!checkedSerial) {
-          isSerial = (id != null && Parser.parseInt(id) != Integer.MIN_VALUE);
+          // this is important because the atomName may not be unique
+          // (as in PDB files)
+          isSerial = (id != null && id.length() > 1 && id.startsWith("a")
+              && Parser.parseInt(id.substring(1)) != Integer.MIN_VALUE);
           checkedSerial = true;
         } 
         if (isSerial)
-          atom.atomSerial = Parser.parseInt(id);
+          atom.atomSerial = Parser.parseInt(id.substring(1));
         if (atts.containsKey("xFract")
             && (parent.iHaveUnitCell || !atts.containsKey("x3"))) {
           parent.setFractionalCoordinates(true);
@@ -446,8 +449,8 @@ public class XmlCmlReader extends XmlReader {
 
   private void addNewBond(String a1, String a2, int order) {
     if (isSerial)
-      atomSetCollection.addNewBondWithMappedSerialNumbers(Parser.parseInt(a1),
-         Parser.parseInt(a2), order);
+      atomSetCollection.addNewBondWithMappedSerialNumbers(Parser.parseInt(a1.substring(1)),
+          Parser.parseInt(a2.substring(1)), order);
       else
         atomSetCollection.addNewBond(a1, a2, order);
   }

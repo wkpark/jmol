@@ -983,9 +983,9 @@ abstract public class ModelSet extends ModelCollection {
       TextFormat.simpleReplace(name, "\"", "''");
       bsAtoms.set(atoms[i].index);
       XmlUtil
-          .appendTag(sb, "atom", new String[] { 
-              "id", "" + (atoms[i].index + 1),
-              "label", atoms[i].getAtomName(),
+          .appendTag(sb, "atom/", new String[] { 
+              "id", "a" + (atoms[i].index + 1),
+              "title", atoms[i].getAtomName(),
               "elementType", atoms[i].getElementSymbol(), 
               "x3", "" + atoms[i].x, 
               "y3", "" + atoms[i].y, 
@@ -1003,8 +1003,8 @@ abstract public class ModelSet extends ModelCollection {
         String order = JmolConstants.getCmlOrder(bond.order);
         if (order == null)
           continue;
-        XmlUtil.appendTag(sb, "bond", new String[] { 
-            "atomRefs2", (bond.atom1.index + 1) + " " + (bond.atom2.index + 1), 
+        XmlUtil.appendTag(sb, "bond/", new String[] { 
+            "atomRefs2", "a" + (bond.atom1.index + 1) + " a" + (bond.atom2.index + 1), 
             "order", order, });
       }
       XmlUtil.closeTag(sb, "bondArray");

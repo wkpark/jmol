@@ -56,6 +56,14 @@ public class XmlUtil {
   public static void appendTag(StringBuffer sb, String name,
                                Object[] attributes, Object data,
                                boolean isCdata, boolean doClose) {
+    String closer = ">";
+    if (name.endsWith("/")){
+      name = name.substring(0, name.length() - 1);
+      if (data == null) {
+        closer = "/>\n";
+        doClose = false;
+      }
+    }
     sb.append("<").append(name);
     if (attributes != null)
       for (int i = 0; i < attributes.length; i++) {
@@ -65,7 +73,7 @@ public class XmlUtil {
         else
           appendAttrib(sb, o, attributes[++i]);
       }
-    sb.append(">");
+    sb.append(closer);
     if (data != null) {
       if (isCdata)
         data = wrapCdata(data);

@@ -1862,6 +1862,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (strModel == null)
       return null;
     int i;
+    if (strModel.indexOf("\\/n") >= 0) {
+      strModel = TextFormat.simpleReplace(strModel, "\n", "");
+      strModel = TextFormat.simpleReplace(strModel, "\\/n", "\n");
+      newLine = 0;
+    }
+    if (newLine != 0)
+      Logger.info("loading model inline, " + strModel.length() + " bytes, with newLine character " + (int) newLine + " isAppend=" + isAppend);
     Logger.debug(strModel);
     String rep = (strModel.indexOf('\n') >= 0 ? "" : "\n");
     if (newLine != 0 && newLine != '\n') {

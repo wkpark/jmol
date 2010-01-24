@@ -84,6 +84,7 @@ public class XmlCmlReader extends XmlReader {
 
   private String[] cmlImplementedAttributes = { "id", //general
       "title", //molecule, atom
+      "label", "name", //old atom
       "x3", "y3", "z3", "x2", "y2", "isotope", //atom 
       "elementType", "formalCharge", //atom
       "atomId", //atomArray
@@ -378,8 +379,12 @@ public class XmlCmlReader extends XmlReader {
         atom = new Atom();
         parent.setFractionalCoordinates(false);
         String id = (String) atts.get("id");
-        if (atts.containsKey("title"))
+        if (atts.containsKey("name"))
+          atom.atomName = (String) atts.get("name");
+        else if (atts.containsKey("title"))
           atom.atomName = (String) atts.get("title");
+        else if (atts.containsKey("label"))
+            atom.atomName = (String) atts.get("label");
         else
           atom.atomName = id;
         if (!checkedSerial) {

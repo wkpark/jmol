@@ -384,7 +384,7 @@ public class XmlCmlReader extends XmlReader {
         else if (atts.containsKey("title"))
           atom.atomName = (String) atts.get("title");
         else if (atts.containsKey("label"))
-            atom.atomName = (String) atts.get("label");
+          atom.atomName = (String) atts.get("label");
         else
           atom.atomName = id;
         if (!checkedSerial) {

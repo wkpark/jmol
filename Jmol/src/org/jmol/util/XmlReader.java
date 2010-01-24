@@ -87,14 +87,27 @@ public class XmlReader {
         return null;
       }
       sb.append(line);
-      while (line.indexOf(closer) < 0)
+      boolean allowSelfClose = false;
+      int pt = line.indexOf("/>");
+      int pt1 = line.indexOf(">");
+      if (pt1 < 0 || pt == pt1 - 1)
+        allowSelfClose = true;
+      while (line.indexOf(closer) < 0 && (!allowSelfClose  || line.indexOf("/>") < 0))
         sb.append(line = br.readLine());
       data = sb.toString();
     }
+    return extractTag(data, tag, closer, withTag);
+  }
+
+  private static String extractTag(String data, String tag, String closer, boolean withTag) {
     int pt1 = data.indexOf(tag);
     if (pt1 < 0)
       return "";
     int pt2 = data.indexOf(closer, pt1);
+    if (pt2 < 0) {
+      pt2 = data.indexOf("/>", pt1);
+      closer = "/>";
+    }
     if (pt2 < 0)
       return "";
     if (withTag) {
@@ -108,7 +121,7 @@ public class XmlReader {
         quoted = !quoted;
       else if (quoted && ch == '\\')
         pt1++;
-      else if (!quoted && ch == '>')
+      else if (!quoted && (ch == '>' || ch == '/'))
         break;
     }
     if (pt1 >= pt2)

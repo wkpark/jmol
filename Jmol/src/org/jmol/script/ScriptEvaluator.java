@@ -8586,8 +8586,14 @@ public class ScriptEvaluator {
       }
       break;
     }
-    if (vdwType == 0)
+    if (vdwType == 0) {
+      iToken = index;
       vdwType = JmolConstants.getVdwType(optParameterAsString(++index));
+      if (vdwType < 0) {
+        vdwType = JmolConstants.getVdwType("auto");
+        iToken--;
+      }
+    }
     return new RadiusData(value, type, vdwType);
   }
 

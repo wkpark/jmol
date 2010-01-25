@@ -8528,7 +8528,7 @@ public class ScriptEvaluator {
     int type = RadiusData.TYPE_ABSOLUTE;
     int vdwType = 0;
 
-    int tok = tokAt(index);
+    int tok = getToken(index).tok;
     switch (tok) {
     case Token.adpmax:
     case Token.adpmin:
@@ -8585,6 +8585,9 @@ public class ScriptEvaluator {
         type = RadiusData.TYPE_FACTOR;        
       }
       break;
+    default:
+      if (value == 1)
+        index--;
     }
     if (vdwType == 0) {
       iToken = index;

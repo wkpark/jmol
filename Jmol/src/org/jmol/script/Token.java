@@ -115,7 +115,11 @@ public class Token {
    * 
    * 3         2         1         0
    * 0987654321098765432109876543210
-   *  x                              setparam  "set THIS ...."
+   *  x                  xxxxxxxxxxx setparam  "set THIS ...."
+   *  x     x                        stringparam
+   *  x    x                         intparam
+   *  x   x                          floatparam
+   *  x  x                           booleanparam                 
    * x                   xxxxxxxxxxx misc
    * 
    * 3         2         1         0
@@ -215,9 +219,14 @@ public class Token {
   // or they are a point/vector, in which case they are just atomproperty
   public final static int strproperty   = (1 << 23) | atomproperty; // string property
   public final static int intproperty   = (1 << 24) | atomproperty; // int parameter
-  public final static int floatproperty = (1 << 25) | atomproperty; // int parameter
+  public final static int floatproperty = (1 << 25) | atomproperty; // float parameter
 
   public final static int PROPERTYFLAGS = strproperty | intproperty | floatproperty;
+
+  public final static int strparam   = (1 << 23) | setparam; // string parameter
+  public final static int intparam   = (1 << 24) | setparam; // int parameter
+  public final static int floatparam = (1 << 25) | setparam; // float parameter
+  public final static int booleanparam = (1 << 26) | setparam; // boolean parameter
   
   final static int mathproperty         = (1 << 26) | expression | misc; // {xxx}.nnnn
   final static int mathfunc             = (1 << 27) | expression;  
@@ -304,7 +313,7 @@ public class Token {
   final static int rotateSelected = scriptCommand | 49;
   final static int save         = scriptCommand | 50;
 //final static int script   see mathfunc
-  final static int selectionHalo = scriptCommand | 51 | setparam | defaultON;
+  public final static int selectionhalo = scriptCommand | 51 | setparam | defaultON;
   final static int show         = scriptCommand | 52;
   final static int slab         = scriptCommand | 53 | defaultON;
   final static int spin         = scriptCommand | 55 | setparam | defaultON;
@@ -376,15 +385,15 @@ public class Token {
 
   final static int amino                = predefinedset | 1;
   public final static int dna           = predefinedset | 2;
-  public final static int hetero        = predefinedset | 3 | setparam;
-  public final static int hydrogen      = predefinedset | 4 | setparam;
+  public final static int hetero        = predefinedset | 3 | booleanparam;
+  public final static int hydrogen      = predefinedset | 4 | booleanparam;
   public final static int nucleic       = predefinedset | 5;
   public final static int protein       = predefinedset | 6;
   public final static int purine        = predefinedset | 7;
   public final static int pyrimidine    = predefinedset | 8;
   public final static int rna           = predefinedset | 9;
   public final static int selected      = predefinedset | 10;
-  final static int solvent              = predefinedset | 11 | setparam;
+  public final static int solvent       = predefinedset | 11 |booleanparam;
   public final static int sidechain     = predefinedset | 12;
   final static int surface              = predefinedset | 13;
   final static int thismodel            = predefinedset | 14;
@@ -475,7 +484,7 @@ public class Token {
   // ___.xxx math properties and all atom properties 
     
   public final static int atoms     = 1 | mathproperty;
-  public final static int bonds     = 2 | mathproperty | setparam;
+  public final static int bonds     = 2 | mathproperty | booleanparam;
   final static int length           = 3 | mathproperty;
   final static int lines            = 4 | mathproperty;
   public final static int reverse   = 5 | mathproperty;
@@ -484,9 +493,9 @@ public class Token {
   public final static int type      = 8 | mathproperty;
   public final static int boundbox  = 9 | mathproperty | setparam | shapeCommand | defaultON;
   public final static int xyz       =10 | mathproperty | atomproperty | settable;
-  public final static int fracXyz   =11 | mathproperty | atomproperty | settable;
-  public final static int unitXyz   =12 | mathproperty | atomproperty;
-  public final static int vibXyz    =13 | mathproperty | atomproperty | settable;
+  public final static int fracxyz   =11 | mathproperty | atomproperty | settable;
+  public final static int unitxyz   =12 | mathproperty | atomproperty;
+  public final static int vibxyz    =13 | mathproperty | atomproperty | settable;
   
   // occupancy, radius, and structure are odd, because they takes different meanings when compared
   
@@ -497,8 +506,8 @@ public class Token {
   // any new int, float, or string property should be added also to LabelToken.labelTokenIds
   // and the appropriate Atom.atomPropertyXXXX() method
   
-  public final static int atomType      = strproperty | 1 | settable;
-  public final static int atomName      = strproperty | 2 | settable;
+  public final static int atomtype      = strproperty | 1 | settable;
+  public final static int atomname      = strproperty | 2 | settable;
   public final static int altloc        = strproperty | 3;
   public final static int chain         = strproperty | 4;
   public final static int element       = strproperty | 5 | settable;
@@ -512,21 +521,21 @@ public class Token {
   public final static int symmetry      = strproperty |13 | predefinedset;
 
   public final static int atomno        = intproperty | 1 | settable;
-  public final static int atomID        = intproperty | 2;
-  public final static int atomIndex     = intproperty | 3;
+  public final static int atomid        = intproperty | 2;
+  public final static int atomindex     = intproperty | 3;
   public final static int bondcount     = intproperty | 4;
   public final static int cell          = intproperty | 5;
   public final static int configuration = intproperty | 6 | scriptCommand;
   public final static int color         = intproperty | 7 | scriptCommand | setparam | settable;
   public final static int elemno        = intproperty | 8 | settable;
   //file: see xxx(a)
-  public final static int formalCharge  = intproperty | 9 | setparam | settable;
-  public final static int groupID       = intproperty | 10;
+  public final static int formalcharge  = intproperty | 9 | setparam | settable;
+  public final static int groupid       = intproperty | 10;
   public final static int groupindex    = intproperty | 11;
   public final static int model         = intproperty | 12 | scriptCommand;
   public final static int modelindex    = intproperty | 13;
   public final static int molecule      = intproperty | 14;
-  public final static int polymerLength = intproperty | 15;
+  public final static int polymerlength = intproperty | 15;
   public final static int resno         = intproperty | 16;
   public final static int site          = intproperty | 17;
   public final static int strucno       = intproperty | 18;
@@ -536,28 +545,28 @@ public class Token {
   
   public final static int adpmax          = floatproperty | 1;
   public final static int adpmin          = floatproperty | 2;
-  public final static int atomX           = floatproperty | 3 | settable;
-  public final static int atomY           = floatproperty | 4 | settable;
-  public final static int atomZ           = floatproperty | 5 | settable;
+  public final static int atomx           = floatproperty | 3 | settable;
+  public final static int atomy           = floatproperty | 4 | settable;
+  public final static int atomz           = floatproperty | 5 | settable;
   public final static int covalent        = floatproperty | 5;
-  public final static int fracX           = floatproperty | 6 | settable;
-  public final static int fracY           = floatproperty | 7 | settable;
-  public final static int fracZ           = floatproperty | 8 | settable;
+  public final static int fracx           = floatproperty | 6 | settable;
+  public final static int fracy           = floatproperty | 7 | settable;
+  public final static int fracz           = floatproperty | 8 | settable;
   public final static int ionic           = floatproperty | 9;
-  public final static int partialCharge   = floatproperty | 10 | settable;
+  public final static int partialcharge   = floatproperty | 10 | settable;
   public final static int phi             = floatproperty | 11;
   public final static int psi             = floatproperty | 12;
   public final static int property        = floatproperty | 13 | mathproperty | setparam | settable;
   public final static int straightness    = floatproperty | 15;
   public final static int surfacedistance = floatproperty | 16;
   public final static int temperature     = floatproperty | 17 | settable;
-  public final static int unitX           = floatproperty | 18;
-  public final static int unitY           = floatproperty | 19;
-  public final static int unitZ           = floatproperty | 20;
+  public final static int unitx           = floatproperty | 18;
+  public final static int unity           = floatproperty | 19;
+  public final static int unitz           = floatproperty | 20;
   public final static int vanderwaals     = floatproperty | 21 | settable;
-  public final static int vibX            = floatproperty | 22 | settable;
-  public final static int vibY            = floatproperty | 23 | settable;
-  public final static int vibZ            = floatproperty | 24 | settable;
+  public final static int vibx            = floatproperty | 22 | settable;
+  public final static int viby            = floatproperty | 23 | settable;
+  public final static int vibz            = floatproperty | 24 | settable;
   
   public final static int backbone     = floatproperty | shapeCommand | 1 | predefinedset | defaultON | settable;
   public final static int cartoon      = floatproperty | shapeCommand | 2 | defaultON | settable;
@@ -674,26 +683,228 @@ public class Token {
   public final static int symop = 2 | 3 << 9 | mathfunc | mathproperty | intproperty; 
 
   // anything beyond 3 are set "unlimited"
-  
-  // more SET parameters
-  
-  public final static int ambient = setparam |  1;
-  final static int bondmode       = setparam |  2;
-  final static int fontsize       = setparam |  3;
-  final static int picking        = setparam |  4;
-  final static int specular       = setparam |  5;
-  final static int specpercent    = setparam |  6;  
-  final static int specpower      = setparam |  7;
-  final static int specexponent   = setparam |  8;
-  final static int transparent    = setparam |  9;
-  final static int defaultColors  = setparam | 10;
-  final static int scale3d        = setparam | 11;
-  final static int diffuse        = setparam | 12;
-  final static int pickingStyle   = setparam | 13;
-  final static int strutlengthmaximum = setparam | 14;// new
-  final static int strutspacing       = setparam | 15;// new
-  final static int strutdefaultradius = setparam | 16;// new
 
+  // set parameters 
+  
+  // deprecated or handled specially in ScriptEvaluator
+  
+  final static int bondmode       = setparam | 1;  
+  final static int fontsize       = setparam | 2;
+  final static int debug          = setparam | 3;
+  final static int scale3d        = setparam | 4;
+
+  // full set of all Jmol "set" parameters
+
+  public final static int showscript                     = intparam | 1 | booleanparam;
+  public final static int specular                       = intparam | 2 | booleanparam;
+
+  public final static int appletproxy                    = strparam | 2;
+  public final static int atomtypes                      = strparam | 4;
+  public final static int axescolor                      = strparam | 6;
+  public final static int axis1color                     = strparam | 8;
+  public final static int axis2color                     = strparam | 10;
+  public final static int axis3color                     = strparam | 12;
+  public final static int backgroundcolor                = strparam | 14;
+  public final static int boundboxcolor                  = strparam | 16;
+  public final static int currentlocalpath               = strparam | 18;
+  public final static int dataseparator                  = strparam | 20;
+  public final static int defaultanglelabel              = strparam | 22;
+  public final static int defaultcolorscheme             = strparam | 24;
+  public final static int defaultdirectory               = strparam | 26;
+  public final static int defaultdistancelabel           = strparam | 28;
+  public final static int defaultloadscript              = strparam | 30;
+  public final static int defaults                       = strparam | 32;
+  public final static int defaulttorsionlabel            = strparam | 34;
+  public final static int defaultvdw                     = strparam | 36;
+  public final static int filecachedirectory             = strparam | 38;
+  public final static int helppath                       = strparam | 40;
+  public final static int hoverlabel                     = strparam | 42;
+  public final static int language                       = strparam | 44;
+  public final static int loadformat                     = strparam | 46;
+  public final static int picking                        = strparam | 48;
+  public final static int pickingstyle                   = strparam | 50;
+  public final static int picklabel                      = strparam | 52;
+  public final static int propertycolorscheme            = strparam | 54;
+  public final static int propertycolorschemeoverload    = strparam | 56;
+  public final static int quaternionframe                = strparam | 58;
+  public final static int unitcellcolor                  = strparam | 60;
+
+  public final static int axesscale                      = floatparam | 2;
+  public final static int bondtolerance                  = floatparam | 4;
+  public final static int cameradepth                    = floatparam | 6;
+  public final static int defaultdrawarrowscale          = floatparam | 8;
+  public final static int defaulttranslucent             = floatparam | 10;
+  public final static int dipolescale                    = floatparam | 12;
+  public final static int ellipsoidaxisdiameter          = floatparam | 14;
+  public final static int hbondsangleminimum             = floatparam | 16;
+  public final static int hbondsdistancemaximum          = floatparam | 18;
+  public final static int hoverdelay                     = floatparam | 20;
+  public final static int minbonddistance                = floatparam | 22;
+  public final static int navfps                         = floatparam | 24;
+  public final static int navigationdepth                = floatparam | 26;
+  public final static int navigationslab                 = floatparam | 28;
+  public final static int navigationspeed                = floatparam | 30;
+  public final static int navx                           = floatparam | 32;
+  public final static int navy                           = floatparam | 34;
+  public final static int navz                           = floatparam | 36;
+  public final static int pointgroupdistancetolerance    = floatparam | 38;
+  public final static int pointgrouplineartolerance      = floatparam | 40;
+  public final static int rotationradius                 = floatparam | 44;
+  public final static int scaleangstromsperinch          = floatparam | 46;
+  public final static int sheetsmoothing                 = floatparam | 48;
+  public final static int solventproberadius             = floatparam | 50;
+  public final static int spinfps                        = floatparam | 52;
+  public final static int spinx                          = floatparam | 54;
+  public final static int spiny                          = floatparam | 56;
+  public final static int spinz                          = floatparam | 58;
+  public final static int stereodegrees                  = floatparam | 60;
+  public final static int strutdefaultradius             = floatparam | 62;
+  public final static int strutlengthmaximum             = floatparam | 64;
+  public final static int vectorscale                    = floatparam | 66;
+  public final static int vibrationperiod                = floatparam | 68;
+  public final static int vibrationscale                 = floatparam | 70;
+  public final static int visualrange                    = floatparam | 72;
+
+  public final static int ambientpercent                 = intparam | 2;               
+  public final static int animationfps                   = intparam | 4;
+  public final static int axesmode                       = intparam | 6;
+  public final static int bondradiusmilliangstroms       = intparam | 8;
+  public final static int delaymaximumms                 = intparam | 10;
+  public final static int diffusepercent                 = intparam | 14;
+  public final static int dotdensity                     = intparam | 16;
+  public final static int ellipsoiddotcount              = intparam | 17;  
+  public final static int helixstep                      = intparam | 18;
+  public final static int hermitelevel                   = intparam | 20;
+  public final static int historylevel                   = intparam | 21;
+  public final static int loglevel                       = intparam | 22;
+  public final static int percentvdwatom                 = intparam | 24;
+  public final static int perspectivemodel               = intparam | 26;
+  public final static int phongexponent                  = intparam | 28;
+  public final static int pickingspinrate                = intparam | 30;
+  public final static int propertyatomnumberfield        = intparam | 31;
+  public final static int propertyatomnumbercolumncount  = intparam | 32;
+  public final static int propertydatacolumncount        = intparam | 34;
+  public final static int propertydatafield              = intparam | 36;
+  public final static int ribbonaspectratio              = intparam | 38;
+  public final static int specularexponent               = intparam | 44;
+  public final static int specularpercent                = intparam | 46;
+  public final static int specularpower                  = intparam | 48;
+  public final static int strandcount                    = intparam | 50;
+  public final static int strandcountformeshribbon       = intparam | 52;
+  public final static int strandcountforstrands          = intparam | 54;
+  public final static int strutspacing                   = intparam | 56;
+  public final static int zshadepower                    = intparam | 58;
+
+  public final static int allowembeddedscripts           = booleanparam | 2;
+  public final static int allowgestures                  = booleanparam | 4;
+  public final static int allowkeystrokes                = booleanparam | 6;
+  public final static int allowrotateselected            = booleanparam | 8;
+  public final static int antialiasdisplay               = booleanparam | 10;
+  public final static int antialiasimages                = booleanparam | 12;
+  public final static int antialiastranslucent           = booleanparam | 14;
+  public final static int appendnew                      = booleanparam | 16;
+  public final static int applysymmetrytobonds           = booleanparam | 18;
+  public final static int atompicking                    = booleanparam | 20;
+  public final static int autobond                       = booleanparam | 22;
+  public final static int autofps                        = booleanparam | 24;
+  public final static int autoloadorientation            = booleanparam | 26;
+  public final static int axesmolecular                  = booleanparam | 28;
+  public final static int axesorientationrasmol          = booleanparam | 30;
+  public final static int axesunitcell                   = booleanparam | 32;
+  public final static int axeswindow                     = booleanparam | 34;
+  public final static int bondmodeor                     = booleanparam | 36;
+  public final static int bondpicking                    = booleanparam | 38;
+// set mathproperty  public final static int bonds                          = booleanparam | 40;
+  public final static int cartoonrockets                 = booleanparam | 42;
+  public final static int chaincasesensitive             = booleanparam | 44;
+  public final static int colorrasmol                    = booleanparam | 46;
+  public final static int debugscript                    = booleanparam | 48;
+  public final static int disablepopupmenu               = booleanparam | 50;
+  public final static int displaycellparameters          = booleanparam | 52;
+  public final static int dotsselectedonly               = booleanparam | 54;
+  public final static int dotsurface                     = booleanparam | 56;
+  public final static int drawhover                      = booleanparam | 58;
+  public final static int drawpicking                    = booleanparam | 61;
+  public final static int dynamicmeasurements            = booleanparam | 62;
+  public final static int ellipsoidarcs                  = booleanparam | 63;  
+  public final static int ellipsoidaxes                  = booleanparam | 64;  
+  public final static int ellipsoidball                  = booleanparam | 65;  
+  public final static int ellipsoiddots                  = booleanparam | 66;  
+  public final static int filecaching                    = booleanparam | 67;
+  public final static int fontcaching                    = booleanparam | 68;
+  public final static int fontscaling                    = booleanparam | 69;
+  public final static int forceautobond                  = booleanparam | 70;
+// see shapecommand public final static int frank                          = booleanparam | 72;
+  public final static int greyscalerendering             = booleanparam | 74;
+  public final static int hbondsbackbone                 = booleanparam | 76;
+  public final static int hbondssolid                    = booleanparam | 78;
+// see predefinedset  public final static int hetero                         = booleanparam | 80;
+  public final static int hidenameinpopup                = booleanparam | 82;
+  public final static int hidenavigationpoint            = booleanparam | 84;
+  public final static int hidenotselected                = booleanparam | 86;
+  public final static int highresolution                 = booleanparam | 88;
+// see predefinedset  public final static int hydrogen                       = booleanparam | 90;
+  public final static int imagestate                     = booleanparam | 92;
+  public final static int isosurfacepropertysmoothing    = booleanparam | 94;
+  public final static int justifymeasurements            = booleanparam | 96;
+  public final static int languagetranslation            = booleanparam | 98;
+  public final static int measureallmodels               = booleanparam | 100;
+  public final static int measurementlabels              = booleanparam | 102;
+  public final static int messagestylechime              = booleanparam | 104;
+  public final static int navigatesurface                = booleanparam | 106;
+  public final static int navigationmode                 = booleanparam | 108;
+  public final static int navigationperiodic             = booleanparam | 110;
+  public final static int pdbgetheader                   = booleanparam | 112;
+  public final static int pdbsequential                  = booleanparam | 114;
+  public final static int perspectivedepth               = booleanparam | 116;
+  public final static int rangeselected                  = booleanparam | 118;
+  public final static int refreshing                     = booleanparam | 120;
+  public final static int ribbonborder                   = booleanparam | 122;
+  public final static int rocketbarrels                  = booleanparam | 124;
+  public final static int saveproteinstructurestate      = booleanparam | 126;
+  public final static int scriptqueue                    = booleanparam | 128;
+  public final static int selectallmodels                = booleanparam | 130;
+  public final static int selecthetero                   = booleanparam | 132;
+  public final static int selecthydrogen                 = booleanparam | 134;
+  // see commands public final static int selectionhalo                  = booleanparam | 136;
+  public final static int showaxes                       = booleanparam | 138;
+  public final static int showboundbox                   = booleanparam | 140;
+  public final static int showfrank                      = booleanparam | 142;
+  public final static int showhiddenselectionhalos       = booleanparam | 144;
+  public final static int showhydrogens                  = booleanparam | 146;
+  public final static int showkeystrokes                 = booleanparam | 148;
+  public final static int showmeasurements               = booleanparam | 150;
+  public final static int showmultiplebonds              = booleanparam | 152;
+  public final static int shownavigationpointalways      = booleanparam | 154;
+// see intparam  public final static int showscript                     = booleanparam | 156;
+  public final static int showselections                 = booleanparam | 158;
+  public final static int showunitcell                   = booleanparam | 160;
+  public final static int slabbyatom                     = booleanparam | 162;
+  public final static int slabbymolecule                 = booleanparam | 164;
+  public final static int slabenabled                    = booleanparam | 166;
+  public final static int smartaromatic                  = booleanparam | 168;
+// see predefinedset  public final static int solvent                        = booleanparam | 170;
+  public final static int solventprobe                   = booleanparam | 172;
+// see intparam  public final static int specular                       = booleanparam | 174;
+  public final static int ssbondsbackbone                = booleanparam | 176;
+  public final static int statusreporting                = booleanparam | 178;
+  public final static int syncmouse                      = booleanparam | 180;
+  public final static int syncscript                     = booleanparam | 182;
+  public final static int testflag1                      = booleanparam | 184;
+  public final static int testflag2                      = booleanparam | 186;
+  public final static int testflag3                      = booleanparam | 188;
+  public final static int testflag4                      = booleanparam | 190;
+  public final static int tracealpha                     = booleanparam | 192;
+  public final static int useminimizationthread          = booleanparam | 194;
+  public final static int usenumberlocalization          = booleanparam | 196;
+  public final static int windowcentered                 = booleanparam | 198;
+  public final static int wireframerotation              = booleanparam | 200;
+  public final static int zerobasedxyzrasmol             = booleanparam | 202;
+  public final static int zoomenabled                    = booleanparam | 204;
+  public final static int zoomlarge                      = booleanparam | 206;
+  public final static int zshade                         = booleanparam | 208;
+
+  
   // misc
 
   final static int absolute      = misc | 1;
@@ -739,7 +950,6 @@ public class Token {
   final static int curve         = misc | 42;// new
   final static int cutoff        = misc | 43;// new
   final static int cylinder      = misc | 44;// new
-  final static int debug         = misc | 45 | setparam;// new
   final static int density        = misc | 46 ;// new
   final static int diameter       = misc | 50;// new
   final static int direction      = misc | 52;
@@ -922,630 +1132,11 @@ public class Token {
   final static Token tokenSetVar          = new Token(set, '=', "var");
   final static Token tokenEquals          = new Token(opEQ, "=");
     
-  
-
-  final private static Object[] arrayPairs  = {
-    // commands
-    "animation",         new Token(animation),
-    "anim",              null,
-    "axes",              new Token(axes),
-    "backbone",          new Token(backbone),
-    "background",        new Token(background),
-    "bind",              new Token(bind),
-    "bondorder",         new Token(bondorder),
-    "boundbox",          new Token(boundbox),
-    "break",             new Token(breakcmd),
-    "calculate",         new Token(calculate),
-    "cartoon",           new Token(cartoon),
-    "cartoons",          null,
-    "center",            new Token(center),
-    "centre",            null,
-    "centerat",          new Token(centerAt),
-    "color",             new Token(color),
-    "colour",            null,
-    "configuration",     new Token(configuration),
-    "conformation",      null,
-    "config",            null,
-    "connect",           new Token(connect),
-    "console",           new Token(console),
-    "continue",          new Token(continuecmd),
-    "data",              new Token(data),
-    "define",            new Token(define),
-    "@",                 null,
-    "delay",             new Token(delay),
-    "delete",            new Token(delete),
-    "density",           new Token(density),
-    "depth",             new Token(depth),
-    "dipole",            new Token(dipole),
-    "dipoles",           null,
-    "cd",                new Token(cd),
-    "display",           new Token(display),
-    "dot",               new Token(dot),
-    "dots",              new Token(dots),
-    "draw",              new Token(draw),
-    "echo",              new Token(echo),
-    "ellipsoid",         new Token(ellipsoid),
-    "ellipsoids",        null,
-    "else",              new Token(elsecmd),
-    "elseif",            new Token(elseif),
-    "end",               new Token(end),
-    "endif",             new Token(endifcmd),
-    "exit",              new Token(exit),
-    "file",              new Token(file),
-    "font",              new Token(font),
-    "for",               new Token(forcmd),
-    "format",            new Token(format),
-    "frame",             new Token(frame),
-    "frames",            null,
-    "frank",             new Token(frank),
-    "function",          new Token(function),
-    "functions",         null,
-    "geosurface",        new Token(geosurface),
-    "getproperty",       new Token(getproperty),
-    "goto",              new Token(gotocmd),
-    "halo",              new Token(halo),
-    "halos",             null,
-    "helix",             new Token(helix),
-    "hbond",             new Token(hbond),
-    "hbonds",            null,
-    "help",              new Token(help),
-    "hide",              new Token(hide),
-    "history",           new Token(history),
-    "hover",             new Token(hover),
-    "if",                new Token(ifcmd),
-    "in",                new Token(in),
-    "initialize",        new Token(initialize),
-    "invertSelected",    new Token(invertSelected),
-    "isosurface",        new Token(isosurface),
-    "javascript",        new Token(javascript),
-    "label",             new Token(label),
-    "labels",            null,
-    "lcaocartoon",       new Token(lcaocartoon),
-    "lcaocartoons",      null,
-    "load",              new Token(load),
-    "loop",              new Token(loop),
-    "measure",           new Token(measure),
-    "measurement",       null,
-    "measurements",      null,
-    "measures",          null,
-    "monitor",           null,
-    "monitors",          null,
-    "meshribbon",        new Token(meshRibbon),
-    "meshribbons",       null,
-    "message",           new Token(message),
-    "minimize",          new Token(minimize),
-    "minimization",      null,
-    "mo",                new Token(mo),
-    "model",             new Token(model),
-    "models",            null,
-    "move",              new Token(move),
-    "moveto",            new Token(moveto),
-    "navigate",          new Token(navigate),
-    "navigation",        null,
-    "out",               new Token(out),
-    "pause",             new Token(pause),
-    "wait",              null,
-    "plot3d",            new Token(plot3d),
-    "pmesh",             new Token(pmesh),
-    "polygon",         new Token(polygon),
-    "polyhedra",         new Token(polyhedra),
-    "print",             new Token(print),
-    "quaternion",        new Token(quaternion),
-    "quaternions",       null,
-    "quit",              new Token(quit),
-    "ramachandran",      new Token(ramachandran),
-    "rama",              null,
-    "refresh",           new Token(refresh),
-    "reset",             new Token(reset),
-    "restore",           new Token(restore),
-    "restrict",          new Token(restrict),
-    "return",            new Token(returncmd),
-    "ribbon",            new Token(ribbon),
-    "ribbons",           null,
-    "rocket",            new Token(rocket),
-    "rockets",           null,
-    "rotate",            new Token(rotate),
-    "rotateSelected",    new Token(rotateSelected),
-    "save",              new Token(save),
-    "script",            new Token(script),
-    "source",            null,
-    "select",            new Token(select),
-    "selectionHalos",    new Token(selectionHalo),
-    "selectionHalo",     null,
-    "set",               new Token(set),
-    "show",              new Token(show),
-    "slab",              new Token(slab),
-    "spacefill",         new Token(spacefill),
-    "cpk",               null,
-    "spin",              new Token(spin),
-    "ssbond",            new Token(ssbond),
-    "ssbonds",           null,
-    "star",              new Token(star),
-    "stars",             null,
-    "step",              new Token(step),
-    "stereo",            new Token(stereo),
-    "strand",            new Token(strands),
-    "strands",           null,
-    "structure",         new Token(structure),
-    "_structure",        null,
-    "strucNo",           new Token(strucno),
-    "struts",            new Token(struts),
-    "strut",             null,
-    "subset",            new Token(subset),
-    "synchronize",       new Token(sync),
-    "sync",              null,
-    "trace",             new Token(trace),
-    "translate",         new Token(translate),
-    "translateSelected", new Token(translateSelected),
-    "unbind",            new Token(unbind),
-    "unitcell",          new Token(unitcell),
-    "var",               new Token(var),
-    "vector",            new Token(vector),
-    "vectors",           null,
-    "vibration",         new Token(vibration),
-    "while",             new Token(whilecmd),
-    "wireframe",         new Token(wireframe),
-    "write",             new Token(write),
-    "zap",               new Token(zap),
-    "zoom",              new Token(zoom),
-    "zoomTo",            new Token(zoomTo),
-                          
-    //                   setparams 
-    
-    "bondmode",          new Token(bondmode),
-    "bonds",             new Token(bonds),
-    "bond",              null, 
-    "fontsize",          new Token(fontsize),
-    "picking",           new Token(picking),
-    "pickingStyle",      new Token(pickingStyle),
-    "radius",            new Token(radius),
-    "scale",             new Token(scale),
-    "scale3D",           new Token(scale3d),
-                          
-    //                   lighting 
-                          
-    "ambientPercent",    new Token(ambient),
-    "ambient",           null, 
-    "diffusePercent",    new Token(diffuse),
-    "diffuse",           null, 
-    "specular",          new Token(specular),
-    "specularPercent",   new Token(specpercent),
-    "specularPower",     new Token(specpower),
-    "specpower",         null, 
-    "specularExponent",  new Token(specexponent),
-                                                
-    //                   show parameters
-
-    "atom",              new Token(atoms),
-    "atoms",             null,
-    "axis",              new Token(axis),
-    "axisangle",         new Token(axisangle),
-    "orientation",       new Token(orientation),
-    "pdbheader",         new Token(pdbheader),                          
-    "polymer",           new Token(polymer),
-    "polymers",          null,
-    "residue",           new Token(residue),
-    "residues",          null,
-    "rotation",          new Token(rotation),
-    "row",               new Token(row),
-    "sequence",          new Token(sequence),
-    "shape",             new Token(shape),
-    "state",             new Token(state),
-    "symbol",            new Token(symbol),
-    "symmetry",          new Token(symmetry),
-    "spaceGroup",        new Token(spacegroup),
-    "transform",         new Token(transform),
-    "translation",       new Token(translation),
-    "url",               new Token(url),
-
-    // atom expressions
-    "(",            tokenLeftParen,
-    ")",            tokenRightParen,
-    "and",          tokenAnd,
-    "&",            null,
-    "&&",           null,
-    "or",           tokenOr,
-    "|",            null,
-    "||",           null,
-    "?",            tokenOpIf,
-    ",",            tokenComma,
-    "+=",           new Token(andequals),
-    "-=",           null,
-    "*=",           null,
-    "/=",           null,
-    "\\=",          null,
-    "&=",           null,
-    "|=",           null,
-    "not",          new Token(opNot),
-    "!",            null,
-    "xor",          new Token(opXor),
-//no-- don't do this; it interferes with define
-//  "~",            null,
-    "tog",          new Token(opToggle),
-    "<",            new Token(opLT),
-    "<=",           new Token(opLE),
-    ">=",           new Token(opGE),
-    ">",            new Token(opGT),
-    "=",            tokenEquals,
-    "==",           null,
-    "!=",           new Token(opNE),
-    "<>",           null,
-    "within",       new Token(within),
-    ".",            new Token(per),
-    "[",            new Token(leftsquare),
-    "]",            new Token(rightsquare),
-    "{",            new Token(leftbrace),
-    "}",            new Token(rightbrace),
-    "$",            new Token(dollarsign),
-    "%",            new Token(percent),
-    ":",            tokenColon,
-    ";",            new Token(semicolon),
-    "++",           new Token(plusPlus),
-    "--",           new Token(minusMinus),
-    "+",            tokenPlus,
-    "-",            tokenMinus,
-    "*",            tokenTimes,
-    "/",            tokenDivide,
-    "\\",           new Token(leftdivide),
-
-    // misc
-
-    "abs",              new Token(abs),
-    "absolute",         new Token(absolute),
-    "acos",              new Token(acos),
-    "add",              new Token(add),
-    "adpmax",           new Token(adpmax),
-    "adpmin",           new Token(adpmin),
-    "all",              tokenAll,
-    "altloc",           new Token(altloc),
-    "altlocs",          null,
-    "amino",            new Token(amino),
-    "angle",            new Token(angle),
-    "array",            new Token(array),
-    "as",               new Token(as),
-    "atomID",           new Token(atomID),
-    "_atomID",          null,
-    "_a",               null, 
-    "atomIndex",        new Token(atomIndex),
-    "atomName",         new Token(atomName),
-    "atomno",           new Token(atomno),
-    "atomType",         new Token(atomType),
-    "atomx",            new Token(atomX),
-    "atomy",            new Token(atomY),
-    "atomz",            new Token(atomZ),
-    "average",          new Token(average),
-    "babel",            new Token(babel),
-    "babel21",          new Token(babel21), 
-    "back",             new Token(back),    
-    "backlit",          new Token(backlit),
-    "bin",              new Token(bin),
-    "bondCount",        new Token(bondcount),
-    "bottom",           new Token(bottom),
-    "branch",           new Token(branch),
-    "carbohydrate",     new Token(carbohydrate),
-    "cell",             new Token(cell),
-    "chain",            new Token(chain),
-    "chains",           null,
-    "clear",            new Token(clear),
-    "clickable",        new Token(clickable),
-    "clipboard",        new Token(clipboard),
-    "connected",        new Token(connected),
-    "constraint",       new Token(constraint),
-    "contourLines",     new Token(contourlines),
-    "coord",            new Token(coord),
-    "coordinates",      null,
-    "coords",           null,
-    "cos",              new Token(cos),
-    "cross",            new Token(cross),
-    "covalent",         new Token(covalent),
-    "defaultColors",    new Token(defaultColors),
-    "direction",        new Token(direction),
-    "displacement",     new Token(displacement),
-    "displayed",        new Token(displayed),
-    "distance",         new Token(distance),
-    "div",              new Token(div),
-    "DNA",              new Token(dna),
-    "dotted",           new Token(dotted),
-    "element",          new Token(element),
-    "elemno",           new Token(elemno),
-    "_e",               null,
-    "fill",             new Token(fill),
-    "find",             new Token(find),
-    "fixedTemperature", new Token(fixedtemp),
-    "formalCharge",     new Token(formalCharge),
-    "charge",           null, 
-    "front",            new Token(front),    
-    "frontlit",         new Token(frontlit),
-    "frontOnly",        new Token(frontonly),
-    "fullylit",         new Token(fullylit),
-    "fx",               new Token(fracX),
-    "fy",               new Token(fracY),
-    "fz",               new Token(fracZ),
-    "fxyz",             new Token(fracXyz),
-    "group",            new Token(group),
-    "groups",           null,
-    "group1",           new Token(group1),
-    "groupID",          new Token(groupID),
-    "_groupID",         null, 
-    "_g",               null, 
-    "groupIndex",            new Token(groupindex),
-    "hetero",           new Token(hetero),
-    "hidden",           new Token(hidden),
-    "hkl",              new Token(hkl),
-    "hydrogen",         new Token(hydrogen),
-    "hydrogens",        null,
-    "id",               new Token(id),
-    "identify",         new Token(identify),
-    "ident",            null,
-    "image",            new Token(image),
-    "info",             new Token(info),
-    "insertion",        new Token(insertion),
-    "insertions",       null, 
-    "ionic",            new Token(ionic),
-    "isaromatic",       new Token(isaromatic),
-    "Jmol",             new Token(jmol),
-    "join",             new Token(join),
-    "last",             new Token(last),
-    "left",             new Token(left),    
-    "length",           new Token(length),
-    "lines",            new Token(lines),
-    "list",             new Token(list),
-    "max",              new Token(max),
-    "mep",              new Token(mep),
-    "mesh",             new Token(mesh),
-    "min",              new Token(min),
-    "mode",             new Token(mode),
-    "modify",           new Token(modify),
-    "modifyorcreate",   new Token(modifyorcreate),
-    "molecule",         new Token(molecule),
-    "molecules",        null, 
-    "modelIndex",        new Token(modelindex),
-    "monomer",          new Token(monomer),
-    "mul",              new Token(mul),
-    "next",             new Token(next),
-    "noDots",           new Token(nodots),
-    "noFill",           new Token(nofill),
-    "noMesh",           new Token(nomesh),
-    "none",             new Token(none),
-    "null",             null,
-    "inherit",          null,
-    "normal",           new Token(normal),
-    "noContourLines",   new Token(nocontourlines),
-    "notFrontOnly",     new Token(notfrontonly),
-    "noTriangles",      new Token(notriangles),
-    "now",              new Token(now),
-    "nucleic",          new Token(nucleic),
-    "occupancy",        new Token(occupancy),
-    "off",              tokenOff, 
-    "false",            null, 
-    "on",               tokenOn,
-    "true",             null,                           
-    "only",             new Token(only),
-    "opaque",           new Token(opaque),
-    "partialCharge",    new Token(partialCharge),
-    "phi",              new Token(phi),
-    "plane",            new Token(plane),
-    "play",             new Token(play),
-    "playRev",          new Token(playrev),
-    "point",            new Token(point),
-    "pointGroup",       new Token(pointgroup),
-    "polymerLength",    new Token(polymerLength),
-    "previous",         new Token(prev),
-    "prev",             null,
-    "property",         new Token(property),
-    "protein",          new Token(protein),
-    "psi",              new Token(psi),
-    "purine",           new Token(purine),
-    "pyrimidine",       new Token(pyrimidine),
-    "random",           new Token(random),
-    "range",            new Token(range),
-    "rasmol",           new Token(rasmol),
-    "replace",          new Token(replace),
-    "resno",            new Token(resno),
-    "resume",           new Token(resume),
-    "rewind",           new Token(rewind),
-    "reverse",          new Token(reverse),
-    "right",            new Token(right),    
-    "RNA",              new Token(rna),
-    "rubberband",       new Token(rubberband),
-    "saSurface",        new Token(sasurface),
-    "selected",         new Token(selected),
-    "shapely",          new Token(shapely),
-    "sidechain",        new Token(sidechain),
-    "sin",              new Token(sin),
-    "site",             new Token(site),
-    "size",             new Token(size),
-    "solid",            new Token(solid),
-    "solvent",          new Token(solvent),
-    "sort",             new Token(sort),
-    "specialPosition",  new Token(specialposition),
-    "sqrt",             new Token(sqrt),
-    "split",            new Token(split),
-    "stddev",           new Token(stddev),
-    "straightness",     new Token(straightness),
-    "structureId",      new Token(strucid),
-    "strutDefaultRadius", new Token(strutdefaultradius),
-    "strutLengthMaximum", new Token(strutlengthmaximum),
-    "strutSpacing",       new Token(strutspacing),
-    "sub",              new Token(sub),
-    "substructure",     new Token(substructure),
-    "sum",              new Token(sum), // sum
-    "sum2",             new Token(sum2), // sum of squares
-    "surface",          new Token(surface),
-    "surfaceDistance",  new Token(surfacedistance),
-    "symop",            new Token(symop),
-    "temperature",      new Token(temperature),
-    "relativetemperature", null,
-    "thisModel",        new Token(thismodel),
-    "ticks",            new Token(ticks),
-    "top",              new Token(top),    
-    "torsion",          new Token(torsion),
-    "translucent",      new Token(translucent),
-    "triangles",        new Token(triangles),
-    "trim",             new Token(trim),
-    "type",             new Token(type),
-    "ux",               new Token(unitX),
-    "uy",               new Token(unitY),
-    "uz",               new Token(unitZ),
-    "uxyz",             new Token(unitXyz),
-    "user",             new Token(user),
-    "valence",          new Token(valence),
-    "vanderWaals",      new Token(vanderwaals),
-    "vdw",              null,
-    "visible",          new Token(visible),
-    "volume",            new Token(volume),
-    "vx",               new Token(vibX),
-    "vy",               new Token(vibY),
-    "vz",               new Token(vibZ),
-    "vxyz",             new Token(vibXyz),
-    "xyz",              new Token(xyz),
-    
-    // more misc parameters
-    "addhydrogens", new Token(addhydrogens),
-    "align", new Token(align),
-    "allconnected", new Token(allconnected),
-    "angstroms", new Token(angstroms),
-    "anisotropy", new Token(anisotropy),
-    "arc", new Token(arc),
-    "area", new Token(area),
-    "aromatic", new Token(aromatic),
-    "arrow", new Token(arrow),
-    "auto", new Token(auto),
-    "binary", new Token(binary),
-    "blockdata", new Token(blockdata),
-    "cancel", new Token(cancel),
-    "cap", new Token(cap),
-    "cavity", new Token(cavity),
-    "check", new Token(check),
-    "circle", new Token(circle),
-    "collapsed", new Token(collapsed),
-    "col", new Token(col),
-    "colorscheme", new Token(colorscheme),
-    "command", new Token(command),
-    "commands", new Token(commands),
-    "contour", new Token(contour),
-    "contours", new Token(contours),
-    "corners", new Token(corners),
-    "criterion", new Token(criterion),
-    "create", new Token(create),
-    "crossed", new Token(crossed),
-    "curve", new Token(curve),
-    "cutoff", new Token(cutoff),
-    "cylinder", new Token(cylinder),
-    "debug", new Token(debug),
-    "diameter", new Token(diameter),
-    "discrete", new Token(discrete),
-    "distancefactor", new Token(distancefactor),
-    "downsample", new Token(downsample),
-    "eccentricity", new Token(eccentricity),
-    "ed", new Token(ed),
-    "edges", new Token(edges),
-    "energy", new Token(energy),
-    "exitjmol", new Token(exitjmol),
-    "facecenteroffset", new Token(facecenteroffset),
-    "filter", new Token(filter),
-    "first", new Token(first),
-    "fix", new Token(fix),
-    "fixed", new Token(fixed),
-    "flat", new Token(flat),
-    "fps", new Token(fps),
-    "from", new Token(from),
-    "frontedges", new Token(frontedges),
-    "fullplane", new Token(fullplane),
-    "functionxy", new Token(functionxy),
-    "functionxyz", new Token(functionxyz),
-    "gridpoints", new Token(gridpoints),
-    "homo", new Token(homo),
-    "ignore", new Token(ignore),
-    "increment", new Token(increment),
-    "insideout", new Token(insideout),
-    "interior", new Token(interior),
-    "intersection", new Token(intersection),
-    "internal", new Token(internal),
-    "line", new Token(line),
-    "linedata", new Token(linedata),
-    "lobe", new Token(lobe),
-    "lonepair", new Token(lonepair),
-    "lp", new Token(lp),
-    "lumo", new Token(lumo),
-    "manifest", new Token(manifest),
-    "map", new Token(map),
-    "maxset", new Token(maxset),
-    "minset", new Token(minset),
-    "modelbased", new Token(modelbased),
-    "molecular", new Token(molecular),
-    "nocross", new Token(nocross),
-    "nodebug", new Token(nodebug),
-    "noedges", new Token(noedges),
-    "nohead", new Token(nohead),
-    "noload", new Token(noload),
-    "noplane", new Token(noplane),
-    "object", new Token(object),
-    "obj", new Token(obj),
-    "offset", new Token(offset),
-    "offsetside", new Token(offsetside),
-    "once", new Token(once),
-    "orbital", new Token(orbital),
-    "atomicorbital", new Token(atomicorbital),
-    "packed", new Token(packed),
-    "palindrome", new Token(palindrome),
-    "path", new Token(path),
-    "pdb", new Token(pdb),
-    "period", new Token(period),
-    "perpendicular", new Token(perpendicular),
-    "perp", null,
-    "phase", new Token(phase),
-    "pocket", new Token(pocket),
-    "pointsperangstrom", new Token(pointsperangstrom),
-    "radical", new Token(radical),
-    "rad", new Token(rad),
-    "reference", new Token(reference),
-    "resolution", new Token(resolution),
-    "reversecolor", new Token(reversecolor),
-    "rotate45", new Token(rotate45),
-    "selection", new Token(selection),
-    "sign", new Token(sign),
-    "sphere", new Token(sphere),
-    "squared", new Token(squared),
-    "steps", new Token(steps),
-    "stop", new Token(stop),
-    "title", new Token(title),
-    "titleformat", new Token(titleformat),
-    "to", new Token(to),
-    "value", new Token(val),
-    "variable", new Token(variable),
-    "variables", new Token(variables),
-    "vertices", new Token(vertices),
-    "width", new Token(width),
-
-  };
-  
   private static Hashtable tokenMap = new Hashtable();
-  
   public static void addToken(String ident, Token token) {
     tokenMap.put(ident, token);
   }
   
-  static {
-    Token tokenLast = null;
-    String stringThis;
-    Token tokenThis;
-    String lcase;
-    for (int i = 0; i + 1 < arrayPairs.length; i += 2) {
-      stringThis = (String) arrayPairs[i];
-      lcase = stringThis.toLowerCase();
-      tokenThis = (Token) arrayPairs[i + 1];
-      if (tokenThis == null)
-        tokenThis = tokenLast;
-      if (tokenThis.value == null)
-        tokenThis.value = stringThis;
-      if (tokenMap.get(lcase) != null)
-        Logger.error("duplicate token definition:" + lcase);
-      tokenMap.put(lcase, tokenThis);
-      tokenLast = tokenThis;
-    }
-  }
-
   public static Token getTokenFromName(String name) {
     return (Token) tokenMap.get(name);  
   }
@@ -1635,17 +1226,17 @@ public class Token {
       return (tokAttr((tok = token.tok), settable) 
           && !tokAttr(tok, mathproperty) ? token.tok : nada);
     if (s.equals("x"))
-      return atomX;
+      return atomx;
     else if (s.equals("y"))
-      return atomY;
+      return atomy;
     else if (s.equals("z"))
-      return atomZ;
+      return atomz;
     else if (s.equals("w"))
       return qw;
     return nada;
   }
 
-  public static String completeCommand(Hashtable map, 
+  public static String completeCommand(Hashtable map, boolean isSet, 
                                        boolean asCommand, 
                                        String str, int n) {
     if (map == null)
@@ -1661,25 +1252,821 @@ public class Token {
       if (!name.startsWith(str))
         continue;
       Token t = getTokenFromName(name);
-      if ((!asCommand || tokAttr(t.tok, scriptCommand))
-          /*&& name.equals((String) t.value)*/)
+      if (asCommand ? tokAttr(t.tok, scriptCommand) : isSet ? tokAttr(t.tok, setparam) : true)
         v.add(name);
     }
     return ArrayUtil.sortedItem(v, n);
   }
 
-/*
-  public static String getSetParameters() {
-    String cmds = "";
-    Enumeration e = map.keys();
-    while (e.hasMoreElements()) {
-      String name = (String) e.nextElement();
-      Token token = (Token) map.get(name);
-      if ((token.tok & setparam) != 0)
-        cmds +=name + "\n";
+  static {
+
+    Object[] arrayPairs  = {
+
+    // atom expressions
+
+      "(",            tokenLeftParen,
+      ")",            tokenRightParen,
+      "and",          tokenAnd,
+      "&",            null,
+      "&&",           null,
+      "or",           tokenOr,
+      "|",            null,
+      "||",           null,
+      "?",            tokenOpIf,
+      ",",            tokenComma,
+      "+=",           new Token(andequals),
+      "-=",           null,
+      "*=",           null,
+      "/=",           null,
+      "\\=",          null,
+      "&=",           null,
+      "|=",           null,
+      "not",          new Token(opNot),
+      "!",            null,
+      "xor",          new Token(opXor),
+    //no-- don't do this; it interferes with define
+    //  "~",            null,
+      "tog",          new Token(opToggle),
+      "<",            new Token(opLT),
+      "<=",           new Token(opLE),
+      ">=",           new Token(opGE),
+      ">",            new Token(opGT),
+      "=",            tokenEquals,
+      "==",           null,
+      "!=",           new Token(opNE),
+      "<>",           null,
+      "within",       new Token(within),
+      ".",            new Token(per),
+      "[",            new Token(leftsquare),
+      "]",            new Token(rightsquare),
+      "{",            new Token(leftbrace),
+      "}",            new Token(rightbrace),
+      "$",            new Token(dollarsign),
+      "%",            new Token(percent),
+      ":",            tokenColon,
+      ";",            new Token(semicolon),
+      "++",           new Token(plusPlus),
+      "--",           new Token(minusMinus),
+      "+",            tokenPlus,
+      "-",            tokenMinus,
+      "*",            tokenTimes,
+      "/",            tokenDivide,
+      "\\",           new Token(leftdivide),
+    
+    // commands
+        
+      "animation",         new Token(animation),
+      "anim",              null,
+      "axes",              new Token(axes),
+      "backbone",          new Token(backbone),
+      "background",        new Token(background),
+      "bind",              new Token(bind),
+      "bondorder",         new Token(bondorder),
+      "boundbox",          new Token(boundbox),
+      "break",             new Token(breakcmd),
+      "calculate",         new Token(calculate),
+      "cartoon",           new Token(cartoon),
+      "cartoons",          null,
+      "center",            new Token(center),
+      "centre",            null,
+      "centerat",          new Token(centerAt),
+      "color",             new Token(color),
+      "colour",            null,
+      "configuration",     new Token(configuration),
+      "conformation",      null,
+      "config",            null,
+      "connect",           new Token(connect),
+      "console",           new Token(console),
+      "continue",          new Token(continuecmd),
+      "data",              new Token(data),
+      "define",            new Token(define),
+      "@",                 null,
+      "delay",             new Token(delay),
+      "delete",            new Token(delete),
+      "density",           new Token(density),
+      "depth",             new Token(depth),
+      "dipole",            new Token(dipole),
+      "dipoles",           null,
+      "cd",                new Token(cd),
+      "display",           new Token(display),
+      "dot",               new Token(dot),
+      "dots",              new Token(dots),
+      "draw",              new Token(draw),
+      "echo",              new Token(echo),
+      "ellipsoid",         new Token(ellipsoid),
+      "ellipsoids",        null,
+      "else",              new Token(elsecmd),
+      "elseif",            new Token(elseif),
+      "end",               new Token(end),
+      "endif",             new Token(endifcmd),
+      "exit",              new Token(exit),
+      "file",              new Token(file),
+      "font",              new Token(font),
+      "for",               new Token(forcmd),
+      "format",            new Token(format),
+      "frame",             new Token(frame),
+      "frames",            null,
+      "frank",             new Token(frank),
+      "function",          new Token(function),
+      "functions",         null,
+      "geosurface",        new Token(geosurface),
+      "getproperty",       new Token(getproperty),
+      "goto",              new Token(gotocmd),
+      "halo",              new Token(halo),
+      "halos",             null,
+      "helix",             new Token(helix),
+      "hbond",             new Token(hbond),
+      "hbonds",            null,
+      "help",              new Token(help),
+      "hide",              new Token(hide),
+      "history",           new Token(history),
+      "hover",             new Token(hover),
+      "if",                new Token(ifcmd),
+      "in",                new Token(in),
+      "initialize",        new Token(initialize),
+      "invertSelected",    new Token(invertSelected),
+      "isosurface",        new Token(isosurface),
+      "javascript",        new Token(javascript),
+      "label",             new Token(label),
+      "labels",            null,
+      "lcaocartoon",       new Token(lcaocartoon),
+      "lcaocartoons",      null,
+      "load",              new Token(load),
+      "loop",              new Token(loop),
+      "measure",           new Token(measure),
+      "measurement",       null,
+      "measurements",      null,
+      "measures",          null,
+      "monitor",           null,
+      "monitors",          null,
+      "meshribbon",        new Token(meshRibbon),
+      "meshribbons",       null,
+      "message",           new Token(message),
+      "minimize",          new Token(minimize),
+      "minimization",      null,
+      "mo",                new Token(mo),
+      "model",             new Token(model),
+      "models",            null,
+      "move",              new Token(move),
+      "moveto",            new Token(moveto),
+      "navigate",          new Token(navigate),
+      "navigation",        null,
+      "out",               new Token(out),
+      "pause",             new Token(pause),
+      "wait",              null,
+      "plot3d",            new Token(plot3d),
+      "pmesh",             new Token(pmesh),
+      "polygon",         new Token(polygon),
+      "polyhedra",         new Token(polyhedra),
+      "print",             new Token(print),
+      "quaternion",        new Token(quaternion),
+      "quaternions",       null,
+      "quit",              new Token(quit),
+      "ramachandran",      new Token(ramachandran),
+      "rama",              null,
+      "refresh",           new Token(refresh),
+      "reset",             new Token(reset),
+      "restore",           new Token(restore),
+      "restrict",          new Token(restrict),
+      "return",            new Token(returncmd),
+      "ribbon",            new Token(ribbon),
+      "ribbons",           null,
+      "rocket",            new Token(rocket),
+      "rockets",           null,
+      "rotate",            new Token(rotate),
+      "rotateSelected",    new Token(rotateSelected),
+      "save",              new Token(save),
+      "script",            new Token(script),
+      "source",            null,
+      "select",            new Token(select),
+      "selectionHalos",    new Token(selectionhalo),
+      "selectionHalo",     null,
+      "set",               new Token(set),
+      "show",              new Token(show),
+      "slab",              new Token(slab),
+      "spacefill",         new Token(spacefill),
+      "cpk",               null,
+      "spin",              new Token(spin),
+      "ssbond",            new Token(ssbond),
+      "ssbonds",           null,
+      "star",              new Token(star),
+      "stars",             null,
+      "step",              new Token(step),
+      "stereo",            new Token(stereo),
+      "strand",            new Token(strands),
+      "strands",           null,
+      "structure",         new Token(structure),
+      "_structure",        null,
+      "strucNo",           new Token(strucno),
+      "struts",            new Token(struts),
+      "strut",             null,
+      "subset",            new Token(subset),
+      "synchronize",       new Token(sync),
+      "sync",              null,
+      "trace",             new Token(trace),
+      "translate",         new Token(translate),
+      "translateSelected", new Token(translateSelected),
+      "unbind",            new Token(unbind),
+      "unitcell",          new Token(unitcell),
+      "var",               new Token(var),
+      "vector",            new Token(vector),
+      "vectors",           null,
+      "vibration",         new Token(vibration),
+      "while",             new Token(whilecmd),
+      "wireframe",         new Token(wireframe),
+      "write",             new Token(write),
+      "zap",               new Token(zap),
+      "zoom",              new Token(zoom),
+      "zoomTo",            new Token(zoomTo),
+                            
+      //                   show parameters
+  
+      "atom",              new Token(atoms),
+      "atoms",             null,
+      "axis",              new Token(axis),
+      "axisangle",         new Token(axisangle),
+      "orientation",       new Token(orientation),
+      "pdbheader",         new Token(pdbheader),                          
+      "polymer",           new Token(polymer),
+      "polymers",          null,
+      "residue",           new Token(residue),
+      "residues",          null,
+      "rotation",          new Token(rotation),
+      "row",               new Token(row),
+      "sequence",          new Token(sequence),
+      "shape",             new Token(shape),
+      "state",             new Token(state),
+      "symbol",            new Token(symbol),
+      "symmetry",          new Token(symmetry),
+      "spaceGroup",        new Token(spacegroup),
+      "transform",         new Token(transform),
+      "translation",       new Token(translation),
+      "url",               new Token(url),
+  
+      // misc
+  
+      "abs",             new Token(abs),
+      "absolute",        new Token(absolute),
+      "acos",            new Token(acos),
+      "add",             new Token(add),
+      "adpmax",          new Token(adpmax),
+      "adpmin",          new Token(adpmin),
+      "all",             tokenAll,
+      "altloc",          new Token(altloc),
+      "altlocs",         null,
+      "amino",           new Token(amino),
+      "angle",           new Token(angle),
+      "array",           new Token(array),
+      "as",              new Token(as),
+      "atomID",          new Token(atomid),
+      "_atomID",         null,
+      "_a",              null, 
+      "atomIndex",       new Token(atomindex),
+      "atomName",        new Token(atomname),
+      "atomno",          new Token(atomno),
+      "atomType",        new Token(atomtype),
+      "atomx",           new Token(atomx),
+      "atomy",           new Token(atomy),
+      "atomz",           new Token(atomz),
+      "average",         new Token(average),
+      "babel",           new Token(babel),
+      "babel21",         new Token(babel21), 
+      "back",            new Token(back),
+      "backlit",         new Token(backlit),
+      "bin",             new Token(bin),
+      "bondCount",       new Token(bondcount),
+      "bottom",          new Token(bottom),
+      "branch",          new Token(branch),
+      "carbohydrate",    new Token(carbohydrate),
+      "cell",            new Token(cell),
+      "chain",           new Token(chain),
+      "chains",          null,
+      "clear",           new Token(clear),
+      "clickable",       new Token(clickable),
+      "clipboard",       new Token(clipboard),
+      "connected",       new Token(connected),
+      "constraint",      new Token(constraint),
+      "contourLines",    new Token(contourlines),
+      "coord",           new Token(coord),
+      "coordinates",     null,
+      "coords",          null,
+      "cos",             new Token(cos),
+      "cross",           new Token(cross),
+      "covalent",        new Token(covalent),
+      "direction",       new Token(direction),
+      "displacement",    new Token(displacement),
+      "displayed",       new Token(displayed),
+      "distance",        new Token(distance),
+      "div",             new Token(div),
+      "DNA",             new Token(dna),
+      "dotted",          new Token(dotted),
+      "element",         new Token(element),
+      "elemno",          new Token(elemno),
+      "_e",              null,
+      "fill",            new Token(fill),
+      "find",            new Token(find),
+      "fixedTemperature",new Token(fixedtemp),
+      "formalCharge",    new Token(formalcharge),
+      "charge",          null, 
+      "front",           new Token(front),
+      "frontlit",        new Token(frontlit),
+      "frontOnly",       new Token(frontonly),
+      "fullylit",        new Token(fullylit),
+      "fx",              new Token(fracx),
+      "fy",              new Token(fracy),
+      "fz",              new Token(fracz),
+      "fxyz",            new Token(fracxyz),
+      "group",           new Token(group),
+      "groups",          null,
+      "group1",          new Token(group1),
+      "groupID",         new Token(groupid),
+      "_groupID",        null, 
+      "_g",              null, 
+      "groupIndex",      new Token(groupindex),
+      "hidden",          new Token(hidden),
+      "hkl",             new Token(hkl),
+      "id",              new Token(id),
+      "identify",        new Token(identify),
+      "ident",           null,
+      "image",           new Token(image),
+      "info",            new Token(info),
+      "insertion",       new Token(insertion),
+      "insertions",      null, 
+      "ionic",           new Token(ionic),
+      "isaromatic",      new Token(isaromatic),
+      "Jmol",            new Token(jmol),
+      "join",            new Token(join),
+      "last",            new Token(last),
+      "left",            new Token(left),
+      "length",          new Token(length),
+      "lines",           new Token(lines),
+      "list",            new Token(list),
+      "max",             new Token(max),
+      "mep",             new Token(mep),
+      "mesh",            new Token(mesh),
+      "min",             new Token(min),
+      "mode",            new Token(mode),
+      "modify",          new Token(modify),
+      "modifyorcreate",  new Token(modifyorcreate),
+      "molecule",        new Token(molecule),
+      "molecules",       null, 
+      "modelIndex",      new Token(modelindex),
+      "monomer",         new Token(monomer),
+      "mul",             new Token(mul),
+      "next",            new Token(next),
+      "noDots",          new Token(nodots),
+      "noFill",          new Token(nofill),
+      "noMesh",          new Token(nomesh),
+      "none",            new Token(none),
+      "null",            null,
+      "inherit",         null,
+      "normal",          new Token(normal),
+      "noContourLines",  new Token(nocontourlines),
+      "notFrontOnly",    new Token(notfrontonly),
+      "noTriangles",     new Token(notriangles),
+      "now",             new Token(now),
+      "nucleic",         new Token(nucleic),
+      "occupancy",       new Token(occupancy),
+      "off",             tokenOff, 
+      "false",           null, 
+      "on",              tokenOn,
+      "true",            null, 
+      "only",            new Token(only),
+      "opaque",          new Token(opaque),
+      "partialCharge",   new Token(partialcharge),
+      "phi",             new Token(phi),
+      "plane",           new Token(plane),
+      "play",            new Token(play),
+      "playRev",         new Token(playrev),
+      "point",           new Token(point),
+      "pointGroup",      new Token(pointgroup),
+      "polymerLength",   new Token(polymerlength),
+      "previous",        new Token(prev),
+      "prev",            null,
+      "property",        new Token(property),
+      "protein",         new Token(protein),
+      "psi",             new Token(psi),
+      "purine",          new Token(purine),
+      "pyrimidine",      new Token(pyrimidine),
+      "random",          new Token(random),
+      "range",           new Token(range),
+      "rasmol",          new Token(rasmol),
+      "replace",         new Token(replace),
+      "resno",           new Token(resno),
+      "resume",          new Token(resume),
+      "rewind",          new Token(rewind),
+      "reverse",         new Token(reverse),
+      "right",           new Token(right),
+      "RNA",             new Token(rna),
+      "rubberband",      new Token(rubberband),
+      "saSurface",       new Token(sasurface),
+      "scale",           new Token(scale),
+      "selected",        new Token(selected),
+      "shapely",         new Token(shapely),
+      "sidechain",       new Token(sidechain),
+      "sin",             new Token(sin),
+      "site",            new Token(site),
+      "size",            new Token(size),
+      "solid",           new Token(solid),
+      "sort",            new Token(sort),
+      "specialPosition", new Token(specialposition),
+      "sqrt",            new Token(sqrt),
+      "split",           new Token(split),
+      "stddev",          new Token(stddev),
+      "straightness",    new Token(straightness),
+      "structureId",     new Token(strucid),
+      "sub",             new Token(sub),
+      "substructure",    new Token(substructure),
+      "sum",             new Token(sum), // sum
+      "sum2",            new Token(sum2), // sum of squares
+      "surface",         new Token(surface),
+      "surfaceDistance", new Token(surfacedistance),
+      "symop",           new Token(symop),
+      "temperature",     new Token(temperature),
+      "relativetemperature", null,
+      "thisModel",       new Token(thismodel),
+      "ticks",           new Token(ticks),
+      "top",             new Token(top),
+      "torsion",         new Token(torsion),
+      "translucent",     new Token(translucent),
+      "triangles",       new Token(triangles),
+      "trim",            new Token(trim),
+      "type",            new Token(type),
+      "ux",              new Token(unitx),
+      "uy",              new Token(unity),
+      "uz",              new Token(unitz),
+      "uxyz",            new Token(unitxyz),
+      "user",            new Token(user),
+      "valence",         new Token(valence),
+      "vanderWaals",     new Token(vanderwaals),
+      "vdw",             null,
+      "visible",         new Token(visible),
+      "volume",          new Token(volume),
+      "vx",              new Token(vibx),
+      "vy",              new Token(viby),
+      "vz",              new Token(vibz),
+      "vxyz",            new Token(vibxyz),
+      "xyz",             new Token(xyz),
+
+      // more misc parameters
+      "addhydrogens",    new Token(addhydrogens),
+      "align",           new Token(align),
+      "allconnected",    new Token(allconnected),
+      "angstroms",       new Token(angstroms),
+      "anisotropy",      new Token(anisotropy),
+      "arc",             new Token(arc),
+      "area",            new Token(area),
+      "aromatic",        new Token(aromatic),
+      "arrow",           new Token(arrow),
+      "auto",            new Token(auto),
+      "binary",          new Token(binary),
+      "blockdata",       new Token(blockdata),
+      "cancel",          new Token(cancel),
+      "cap",             new Token(cap),
+      "cavity",          new Token(cavity),
+      "check",           new Token(check),
+      "circle",          new Token(circle),
+      "collapsed",       new Token(collapsed),
+      "col",             new Token(col),
+      "colorscheme",     new Token(colorscheme),
+      "command",         new Token(command),
+      "commands",        new Token(commands),
+      "contour",         new Token(contour),
+      "contours",        new Token(contours),
+      "corners",         new Token(corners),
+      "criterion",       new Token(criterion),
+      "create",          new Token(create),
+      "crossed",         new Token(crossed),
+      "curve",           new Token(curve),
+      "cutoff",          new Token(cutoff),
+      "cylinder",        new Token(cylinder),
+      "debug",           new Token(debug),
+      "diameter",        new Token(diameter),
+      "discrete",        new Token(discrete),
+      "distancefactor",  new Token(distancefactor),
+      "downsample",      new Token(downsample),
+      "eccentricity",    new Token(eccentricity),
+      "ed",              new Token(ed),
+      "edges",           new Token(edges),
+      "energy",          new Token(energy),
+      "exitjmol",        new Token(exitjmol),
+      "facecenteroffset",new Token(facecenteroffset),
+      "filter",          new Token(filter),
+      "first",           new Token(first),
+      "fix",             new Token(fix),
+      "fixed",           new Token(fixed),
+      "flat",            new Token(flat),
+      "fps",             new Token(fps),
+      "from",            new Token(from),
+      "frontedges",      new Token(frontedges),
+      "fullplane",       new Token(fullplane),
+      "functionxy",      new Token(functionxy),
+      "functionxyz",     new Token(functionxyz),
+      "gridpoints",      new Token(gridpoints),
+      "homo",            new Token(homo),
+      "ignore",          new Token(ignore),
+      "increment",       new Token(increment),
+      "insideout",       new Token(insideout),
+      "interior",        new Token(interior),
+      "intersection",    new Token(intersection),
+      "internal",        new Token(internal),
+      "line",            new Token(line),
+      "linedata",        new Token(linedata),
+      "lobe",            new Token(lobe),
+      "lonepair",        new Token(lonepair),
+      "lp",              new Token(lp),
+      "lumo",            new Token(lumo),
+      "manifest",        new Token(manifest),
+      "map",             new Token(map),
+      "maxset",          new Token(maxset),
+      "minset",          new Token(minset),
+      "modelbased",      new Token(modelbased),
+      "molecular",       new Token(molecular),
+      "nocross",         new Token(nocross),
+      "nodebug",         new Token(nodebug),
+      "noedges",         new Token(noedges),
+      "nohead",          new Token(nohead),
+      "noload",          new Token(noload),
+      "noplane",         new Token(noplane),
+      "object",          new Token(object),
+      "obj",             new Token(obj),
+      "offset",          new Token(offset),
+      "offsetside",      new Token(offsetside),
+      "once",            new Token(once),
+      "orbital",         new Token(orbital),
+      "atomicorbital",   new Token(atomicorbital),
+      "packed",          new Token(packed),
+      "palindrome",      new Token(palindrome),
+      "path",            new Token(path),
+      "pdb",             new Token(pdb),
+      "period",          new Token(period),
+      "perpendicular",   new Token(perpendicular),
+      "perp",            null,
+      "phase",           new Token(phase),
+      "pocket",          new Token(pocket),
+      "pointsperangstrom", new Token(pointsperangstrom),
+      "radical",         new Token(radical),
+      "rad",             new Token(rad),
+      "reference",       new Token(reference),
+      "resolution",      new Token(resolution),
+      "reversecolor",    new Token(reversecolor),
+      "rotate45",        new Token(rotate45),
+      "selection",       new Token(selection),
+      "sign",            new Token(sign),
+      "sphere",          new Token(sphere),
+      "squared",         new Token(squared),
+      "steps",           new Token(steps),
+      "stop",            new Token(stop),
+      "title",           new Token(title),
+      "titleformat",     new Token(titleformat),
+      "to",              new Token(to),
+      "value",           new Token(val),
+      "variable",        new Token(variable),
+      "variables",       new Token(variables),
+      "vertices",        new Token(vertices),
+      "width",           new Token(width),
+
+      // set params
+      
+      "appletProxy",                              new Token(appletproxy),
+      "atomTypes",                                new Token(atomtypes),
+      "axesColor",                                new Token(axescolor),
+      "axis1Color",                               new Token(axis1color),
+      "axis2Color",                               new Token(axis2color),
+      "axis3Color",                               new Token(axis3color),
+      "backgroundColor",                          new Token(backgroundcolor),
+      "bondmode",                                 new Token(bondmode),
+      "boundBoxColor",                            new Token(boundboxcolor),
+      "currentLocalPath",                         new Token(currentlocalpath),
+      "dataSeparator",                            new Token(dataseparator),
+      "defaultAngleLabel",                        new Token(defaultanglelabel),
+      "defaultColorScheme",                       new Token(defaultcolorscheme),
+      "defaultColors",                            null,
+      "defaultDirectory",                         new Token(defaultdirectory),
+      "defaultDistanceLabel",                     new Token(defaultdistancelabel),
+      "defaultLoadScript",                        new Token(defaultloadscript),
+      "defaults",                                 new Token(defaults),
+      "defaultTorsionLabel",                      new Token(defaulttorsionlabel),
+      "defaultVDW",                               new Token(defaultvdw),
+      "fileCacheDirectory",                       new Token(filecachedirectory),
+      "fontsize",                                 new Token(fontsize),
+      "helpPath",                                 new Token(helppath),
+      "hoverLabel",                               new Token(hoverlabel),
+      "language",                                 new Token(language),
+      "loadFormat",                               new Token(loadformat),
+      "picking",                                  new Token(picking),
+      "pickingStyle",                             new Token(pickingstyle),
+      "pickLabel",                                new Token(picklabel),
+      "propertyColorScheme",                      new Token(propertycolorscheme),
+      "propertyColorSchemeOverload",              new Token(propertycolorschemeoverload),
+      "quaternionFrame",                          new Token(quaternionframe),
+      "unitCellColor",                            new Token(unitcellcolor),
+//      "",                                         new Token(),
+      "axesScale",                                new Token(axesscale),
+      "bondTolerance",                            new Token(bondtolerance),
+      "cameraDepth",                              new Token(cameradepth),
+      "defaultDrawArrowScale",                    new Token(defaultdrawarrowscale),
+      "defaultTranslucent",                       new Token(defaulttranslucent),
+      "dipoleScale",                              new Token(dipolescale),
+      "ellipsoidAxisDiameter",                    new Token(ellipsoidaxisdiameter),
+      "hbondsAngleMinimum",                       new Token(hbondsangleminimum),
+      "hbondsDistanceMaximum",                    new Token(hbondsdistancemaximum),
+      "hoverDelay",                               new Token(hoverdelay),
+      "minBondDistance",                          new Token(minbonddistance),
+      "navFPS",                                   new Token(navfps),
+      "navigationDepth",                          new Token(navigationdepth),
+      "navigationSlab",                           new Token(navigationslab),
+      "navigationSpeed",                          new Token(navigationspeed),
+      "navX",                                     new Token(navx),
+      "navY",                                     new Token(navy),
+      "navZ",                                     new Token(navz),
+      "pointGroupDistanceTolerance",              new Token(pointgroupdistancetolerance),
+      "pointGroupLinearTolerance",                new Token(pointgrouplineartolerance),
+//      "",                                         new Token(),
+      "radius",                                   new Token(radius),
+      "rotationRadius",                           new Token(rotationradius),
+      "scale3D",                                  new Token(scale3d),
+      "scaleAngstromsPerInch",                    new Token(scaleangstromsperinch),
+      "sheetSmoothing",                           new Token(sheetsmoothing),
+      "solventProbeRadius",                       new Token(solventproberadius),
+      "spinFPS",                                  new Token(spinfps),
+      "spinX",                                    new Token(spinx),
+      "spinY",                                    new Token(spiny),
+      "spinZ",                                    new Token(spinz),
+      "stereoDegrees",                            new Token(stereodegrees),
+      "strutDefaultRadius",                       new Token(strutdefaultradius),
+      "strutLengthMaximum",                       new Token(strutlengthmaximum),
+      "vectorScale",                              new Token(vectorscale),
+      "vibrationPeriod",                          new Token(vibrationperiod),
+      "vibrationScale",                           new Token(vibrationscale),
+      "visualRange",                              new Token(visualrange),
+//      "",                                         new Token(),
+      "ambientPercent",                           new Token(ambientpercent),
+      "ambient",                                  null, 
+      "animationFps",                             new Token(animationfps),
+      "axesMode",                                 new Token(axesmode),
+      "bondRadiusMilliAngstroms",                 new Token(bondradiusmilliangstroms),
+      "delayMaximumMs",                           new Token(delaymaximumms),
+      "diffusePercent",                           new Token(diffusepercent),
+      "diffuse",                                  null, 
+      "dotDensity",                               new Token(dotdensity),
+      "ellipsoidDotCount",                        new Token(ellipsoiddotcount),
+      "helixStep",                                new Token(helixstep),
+      "hermiteLevel",                             new Token(hermitelevel),
+      "historyLevel",                             new Token(historylevel),
+      "logLevel",                                 new Token(loglevel),
+      "percentVdwAtom",                           new Token(percentvdwatom),
+      "perspectiveModel",                         new Token(perspectivemodel),
+      "phongExponent",                            new Token(phongexponent),
+      "pickingSpinRate",                          new Token(pickingspinrate),
+      "propertyAtomNumberField",                  new Token(propertyatomnumberfield),
+      "propertyAtomNumberColumnCount",            new Token(propertyatomnumbercolumncount),
+      "propertyDataColumnCount",                  new Token(propertydatacolumncount),
+      "propertyDataField",                        new Token(propertydatafield),
+      "ribbonAspectRatio",                        new Token(ribbonaspectratio),
+      "showScript",                               new Token(showscript),
+      "specular",                                 new Token(specular),
+      "specularExponent",                         new Token(specularexponent),
+      "specularPercent",                          new Token(specularpercent),
+      "specularPower",                            new Token(specularpower),
+      "specpower",                                null, 
+      "strandCount",                              new Token(strandcount),
+      "strandCountForMeshRibbon",                 new Token(strandcountformeshribbon),
+      "strandCountForStrands",                    new Token(strandcountforstrands),
+      "strutSpacing",                             new Token(strutspacing),
+      "zshadePower",                              new Token(zshadepower),
+//      "",                                         new Token(),
+      "allowEmbeddedScripts",                     new Token(allowembeddedscripts),
+      "allowGestures",                            new Token(allowgestures),
+      "allowKeyStrokes",                          new Token(allowkeystrokes),
+      "allowRotateSelected",                      new Token(allowrotateselected),
+      "antialiasDisplay",                         new Token(antialiasdisplay),
+      "antialiasImages",                          new Token(antialiasimages),
+      "antialiasTranslucent",                     new Token(antialiastranslucent),
+      "appendNew",                                new Token(appendnew),
+      "applySymmetryToBonds",                     new Token(applysymmetrytobonds),
+      "atomPicking",                              new Token(atompicking),
+      "autobond",                                 new Token(autobond),
+      "autoFPS",                                  new Token(autofps),
+      "autoLoadOrientation",                      new Token(autoloadorientation),
+      "axesMolecular",                            new Token(axesmolecular),
+      "axesOrientationRasmol",                    new Token(axesorientationrasmol),
+      "axesUnitCell",                             new Token(axesunitcell),
+      "axesWindow",                               new Token(axeswindow),
+      "bondModeOr",                               new Token(bondmodeor),
+      "bondPicking",                              new Token(bondpicking),
+      "bonds",                                    new Token(bonds),
+      "bond",                                     null, 
+      "cartoonRockets",                           new Token(cartoonrockets),
+      "chainCaseSensitive",                       new Token(chaincasesensitive),
+      "colorRasmol",                              new Token(colorrasmol),
+      "debugScript",                              new Token(debugscript),
+      "disablePopupMenu",                         new Token(disablepopupmenu),
+      "displayCellParameters",                    new Token(displaycellparameters),
+      "dotsSelectedOnly",                         new Token(dotsselectedonly),
+      "dotSurface",                               new Token(dotsurface),
+      "drawHover",                                new Token(drawhover),
+      "drawPicking",                              new Token(drawpicking),
+      "dynamicMeasurements",                      new Token(dynamicmeasurements),
+      "ellipsoidArcs",                            new Token(ellipsoidarcs),
+      "ellipsoidAxes",                            new Token(ellipsoidaxes),
+      "ellipsoidBall",                            new Token(ellipsoidball),
+      "ellipsoidDots",                            new Token(ellipsoiddots),
+      "fileCaching",                              new Token(filecaching),
+      "fontCaching",                              new Token(fontcaching),
+      "fontScaling",                              new Token(fontscaling),
+      "forceAutoBond",                            new Token(forceautobond),
+// see commands     "frank",                                    new Token(frank),
+      "greyscaleRendering",                       new Token(greyscalerendering),
+      "hbondsBackbone",                           new Token(hbondsbackbone),
+      "hbondsSolid",                              new Token(hbondssolid),
+      "hetero",                                   new Token(hetero),
+      "hideNameInPopup",                          new Token(hidenameinpopup),
+      "hideNavigationPoint",                      new Token(hidenavigationpoint),
+      "hideNotSelected",                          new Token(hidenotselected),
+      "highResolution",                           new Token(highresolution),
+      "hydrogen",                                 new Token(hydrogen),
+      "hydrogens",                                null,
+      "imageState",                               new Token(imagestate),
+      "isosurfacePropertySmoothing",              new Token(isosurfacepropertysmoothing),
+      "justifyMeasurements",                      new Token(justifymeasurements),
+      "languageTranslation",                      new Token(languagetranslation),
+      "measureAllModels",                         new Token(measureallmodels),
+      "measurementLabels",                        new Token(measurementlabels),
+      "messageStyleChime",                        new Token(messagestylechime),
+      "navigateSurface",                          new Token(navigatesurface),
+      "navigationMode",                           new Token(navigationmode),
+      "navigationPeriodic",                       new Token(navigationperiodic),
+      "pdbGetHeader",                             new Token(pdbgetheader),
+      "pdbSequential",                            new Token(pdbsequential),
+      "perspectiveDepth",                         new Token(perspectivedepth),
+      "rangeSelected",                            new Token(rangeselected),
+      "refreshing",                               new Token(refreshing),
+      "ribbonBorder",                             new Token(ribbonborder),
+      "rocketBarrels",                            new Token(rocketbarrels),
+      "saveProteinStructureState",                new Token(saveproteinstructurestate),
+      "scriptQueue",                              new Token(scriptqueue),
+      "selectAllModels",                          new Token(selectallmodels),
+      "selectHetero",                             new Token(selecthetero),
+      "selectHydrogen",                           new Token(selecthydrogen),
+// see commands     "selectionHalos",                           new Token(selectionhalo),
+      "showAxes",                                 new Token(showaxes),
+      "showBoundBox",                             new Token(showboundbox),
+      "showFrank",                                new Token(showfrank),
+      "showHiddenSelectionHalos",                 new Token(showhiddenselectionhalos),
+      "showHydrogens",                            new Token(showhydrogens),
+      "showKeyStrokes",                           new Token(showkeystrokes),
+      "showMeasurements",                         new Token(showmeasurements),
+      "showMultipleBonds",                        new Token(showmultiplebonds),
+      "showNavigationPointAlways",                new Token(shownavigationpointalways),
+// see intparam      "showScript",                               new Token(showscript),
+      "showSelections",                           new Token(showselections),
+      "showUnitcell",                             new Token(showunitcell),
+      "slabByAtom",                               new Token(slabbyatom),
+      "slabByMolecule",                           new Token(slabbymolecule),
+      "slabEnabled",                              new Token(slabenabled),
+      "smartAromatic",                            new Token(smartaromatic),
+      "solvent",                                  new Token(solvent),
+      "solventProbe",                             new Token(solventprobe),
+// see intparam     "specular",                                 new Token(specular),
+      "ssBondsBackbone",                          new Token(ssbondsbackbone),
+      "statusReporting",                          new Token(statusreporting),
+      "syncMouse",                                new Token(syncmouse),
+      "syncScript",                               new Token(syncscript),
+      "testFlag1",                                new Token(testflag1),
+      "testFlag2",                                new Token(testflag2),
+      "testFlag3",                                new Token(testflag3),
+      "testFlag4",                                new Token(testflag4),
+      "traceAlpha",                               new Token(tracealpha),
+      "useMinimizationThread",                    new Token(useminimizationthread),
+      "useNumberLocalization",                    new Token(usenumberlocalization),
+      "windowCentered",                           new Token(windowcentered),
+      "wireframeRotation",                        new Token(wireframerotation),
+      "zeroBasedXyzRasmol",                       new Token(zerobasedxyzrasmol),
+      "zoomEnabled",                              new Token(zoomenabled),
+      "zoomLarge",                                new Token(zoomlarge),
+      "zShade",                                   new Token(zshade),
+
+    };
+
+    Token tokenLast = null;
+    String stringThis;
+    Token tokenThis;
+    String lcase;
+    for (int i = 0; i + 1 < arrayPairs.length; i += 2) {
+      stringThis = (String) arrayPairs[i];
+      lcase = stringThis.toLowerCase();
+      tokenThis = (Token) arrayPairs[i + 1];
+      if (tokenThis == null)
+        tokenThis = tokenLast;
+      if (tokenThis.value == null)
+        tokenThis.value = stringThis;
+      if (tokenMap.get(lcase) != null)
+        Logger.error("duplicate token definition:" + lcase);
+      tokenMap.put(lcase, tokenThis);
+      tokenLast = tokenThis;
     }
-    return cmds;
+    Logger.info(arrayPairs.length + " definitions");
   }
-  */
 
 }

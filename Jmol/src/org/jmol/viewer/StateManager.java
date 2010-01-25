@@ -919,8 +919,8 @@ public class StateManager {
       return measureDistanceUnits;
     }
 
-    Hashtable htParameterValues;
-    Hashtable htPropertyFlags;
+    Hashtable htNonbooleanParameterValues;
+    Hashtable htBooleanParameterFlags;
     Hashtable htPropertyFlagsRemoved;
     int strutSpacing = 6;
     float strutLengthMaximum = 7.0f;
@@ -928,8 +928,8 @@ public class StateManager {
 
     boolean isJmolVariable(String key) {
       return key.charAt(0) == '_'
-          || htParameterValues.containsKey(key = key.toLowerCase())
-          || htPropertyFlags.containsKey(key)
+          || htNonbooleanParameterValues.containsKey(key = key.toLowerCase())
+          || htBooleanParameterFlags.containsKey(key)
           || unreportedProperties.indexOf(";" + key + ";") >= 0;
     }
 
@@ -939,46 +939,46 @@ public class StateManager {
     
     void setParameterValue(String name, boolean value) {
       name = name.toLowerCase();
-      if (htParameterValues.containsKey(name))
+      if (htNonbooleanParameterValues.containsKey(name))
         return; // don't allow setting boolean of a numeric
-      htPropertyFlags.put(name, value ? Boolean.TRUE : Boolean.FALSE);
+      htBooleanParameterFlags.put(name, value ? Boolean.TRUE : Boolean.FALSE);
     }
 
     void setParameterValue(String name, int value) {
       name = name.toLowerCase();
-      if (htPropertyFlags.containsKey(name))
+      if (htBooleanParameterFlags.containsKey(name))
         return; // don't allow setting numeric of a boolean
-      htParameterValues.put(name, new Integer(value));
+      htNonbooleanParameterValues.put(name, new Integer(value));
     }
 
     void setParameterValue(String name, float value) {
       name = name.toLowerCase();
       if (Float.isNaN(value)) {
-        htParameterValues.remove(name);
-        htPropertyFlags.remove(name);
+        htNonbooleanParameterValues.remove(name);
+        htBooleanParameterFlags.remove(name);
         return;
       }
-      if (htPropertyFlags.containsKey(name))
+      if (htBooleanParameterFlags.containsKey(name))
         return; // don't allow setting numeric of a boolean
-      htParameterValues.put(name, new Float(value));
+      htNonbooleanParameterValues.put(name, new Float(value));
     }
 
     void setParameterValue(String name, String value) {
       name = name.toLowerCase();
-      if (value == null || htPropertyFlags.containsKey(name))
+      if (value == null || htBooleanParameterFlags.containsKey(name))
         return; // don't allow setting string of a boolean
-      htParameterValues.put(name, value);
+      htNonbooleanParameterValues.put(name, value);
     }
 
     void removeJmolParameter(String key) {
-      if (htPropertyFlags.containsKey(key)) {
-        htPropertyFlags.remove(key);
+      if (htBooleanParameterFlags.containsKey(key)) {
+        htBooleanParameterFlags.remove(key);
         if (!htPropertyFlagsRemoved.containsKey(key))
           htPropertyFlagsRemoved.put(key, Boolean.FALSE);
         return;
       }
-      if (htParameterValues.containsKey(key))
-        htParameterValues.remove(key);
+      if (htNonbooleanParameterValues.containsKey(key))
+        htNonbooleanParameterValues.remove(key);
     }
 
     ScriptVariable setUserVariable(String key, ScriptVariable var) {
@@ -1013,12 +1013,12 @@ public class StateManager {
 
     String getParameterEscaped(String name, int nMax) {
       name = name.toLowerCase();
-      if (htParameterValues.containsKey(name)) {
-        Object v = htParameterValues.get(name);
+      if (htNonbooleanParameterValues.containsKey(name)) {
+        Object v = htNonbooleanParameterValues.get(name);
         return varClip(name, Escape.escape(v), nMax);
       }
-      if (htPropertyFlags.containsKey(name))
-        return htPropertyFlags.get(name).toString();
+      if (htBooleanParameterFlags.containsKey(name))
+        return htBooleanParameterFlags.get(name).toString();
       if (htUserVariables.containsKey(name))
         return ((ScriptVariable) htUserVariables.get(name)).escape();
       if (htPropertyFlagsRemoved.containsKey(name))
@@ -1063,12 +1063,12 @@ public class StateManager {
         float bFree = runtime.freeMemory() / 1000000f;
         String value = TextFormat.formatDecimal(bTotal - bFree, 1) + "/"
             + TextFormat.formatDecimal(bTotal, 1);
-        htParameterValues.put("_memory", value);
+        htNonbooleanParameterValues.put("_memory", value);
       }
-      if (htParameterValues.containsKey(name))
-        return htParameterValues.get(name);
-      if (htPropertyFlags.containsKey(name))
-        return htPropertyFlags.get(name);
+      if (htNonbooleanParameterValues.containsKey(name))
+        return htNonbooleanParameterValues.get(name);
+      if (htBooleanParameterFlags.containsKey(name))
+        return htBooleanParameterFlags.get(name);
       if (htPropertyFlagsRemoved.containsKey(name))
         return Boolean.FALSE;
       if (htUserVariables.containsKey(name)) {
@@ -1082,27 +1082,27 @@ public class StateManager {
       StringBuffer commands = new StringBuffer("");
       Enumeration e;
       String key;
-      String[] list = new String[htPropertyFlags.size()
-          + htParameterValues.size()];
+      String[] list = new String[htBooleanParameterFlags.size()
+          + htNonbooleanParameterValues.size()];
       //booleans
       int n = 0;
       String _prefix = "_" + prefix;
-      e = htPropertyFlags.keys();
+      e = htBooleanParameterFlags.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         if (prefix == null || key.indexOf(prefix) == 0
             || key.indexOf(_prefix) == 0)
           list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
-              + htPropertyFlags.get(key);
+              + htBooleanParameterFlags.get(key);
       }
       //save as _xxxx if you don't want "set" to be there first
-      e = htParameterValues.keys();
+      e = htNonbooleanParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         if (key.charAt(0) != '@'
             && (prefix == null || key.indexOf(prefix) == 0 || key
                 .indexOf(_prefix) == 0)) {
-          Object value = htParameterValues.get(key);
+          Object value = htNonbooleanParameterValues.get(key);
           if (value instanceof String)
             value = Escape.escapeChopped((String) value);
           list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
@@ -1118,8 +1118,8 @@ public class StateManager {
     }
 
     String getState(StringBuffer sfunc) {
-      String[] list = new String[htPropertyFlags.size()
-          + htParameterValues.size()];
+      String[] list = new String[htBooleanParameterFlags.size()
+          + htNonbooleanParameterValues.size()];
       StringBuffer commands = new StringBuffer();
       if (sfunc != null) {
         sfunc.append("  _setVariableState;\n");
@@ -1129,17 +1129,17 @@ public class StateManager {
       Enumeration e;
       String key;
       //booleans
-      e = htPropertyFlags.keys();
+      e = htBooleanParameterFlags.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         if (doReportProperty(key))
-          list[n++] = "set " + key + " " + htPropertyFlags.get(key);
+          list[n++] = "set " + key + " " + htBooleanParameterFlags.get(key);
       }
-      e = htParameterValues.keys();
+      e = htNonbooleanParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         if (key.charAt(0) != '@' && doReportProperty(key)) {
-          Object value = htParameterValues.get(key);
+          Object value = htNonbooleanParameterValues.get(key);
           if (key.charAt(0) == '=') {
             //save as =xxxx if you don't want "set" to be there first
             // (=color [element], =frame ...; set unitcell) -- see Viewer.java
@@ -1166,11 +1166,11 @@ public class StateManager {
       }
 
       //nonboolean variables:
-      e = htParameterValues.keys();
+      e = htNonbooleanParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         if (key.charAt(0) == '@')
-          list[n++] = key + " " + htParameterValues.get(key);
+          list[n++] = key + " " + htNonbooleanParameterValues.get(key);
       }
       Arrays.sort(list, 0, n);
       for (int i = 0; i < n; i++)
@@ -1197,8 +1197,8 @@ public class StateManager {
     }
 
     void registerAllValues(GlobalSettings g) {
-      htParameterValues = new Hashtable();
-      htPropertyFlags = new Hashtable();
+      htNonbooleanParameterValues = new Hashtable();
+      htBooleanParameterFlags = new Hashtable();
       htPropertyFlagsRemoved = new Hashtable();
 
       if (g != null) {

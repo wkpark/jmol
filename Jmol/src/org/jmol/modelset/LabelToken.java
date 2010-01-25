@@ -92,12 +92,12 @@ public class LabelToken {
   final private static String labelTokenParams = "AaBbCcDEefGgIiLlMmNnoPpQqRrSsTtUuVvWXxYyZz%%%gqW";
   final private static int[] labelTokenIds = {
   /* 'A' */Token.altloc,
-  /* 'a' */Token.atomName,
-  /* 'B' */Token.atomType,
+  /* 'a' */Token.atomname,
+  /* 'B' */Token.atomtype,
   /* 'b' */Token.temperature,
-  /* 'C' */Token.formalCharge,
+  /* 'C' */Token.formalcharge,
   /* 'c' */Token.chain,
-  /* 'D' */Token.atomIndex,
+  /* 'D' */Token.atomindex,
   /* 'E' */Token.insertion,
   /* 'e' */Token.element,
   /* 'f' */Token.phi,
@@ -105,14 +105,14 @@ public class LabelToken {
   /* 'g' */'g', //getSelectedGroupIndexWithinChain()
   /* 'I' */Token.ionic,
   /* 'i' */Token.atomno,
-  /* 'L' */Token.polymerLength,
+  /* 'L' */Token.polymerlength,
   /* 'l' */Token.elemno,
   /* 'M' */Token.model,
   /* 'm' */Token.group1,
   /* 'N' */Token.molecule,
   /* 'n' */Token.group,
   /* 'o' */Token.symmetry,
-  /* 'P' */Token.partialCharge,
+  /* 'P' */Token.partialcharge,
   /* 'p' */Token.psi,
   /* 'Q' */'Q',  //occupancy 0.0 to 1.0
   /* 'q' */Token.occupancy,
@@ -125,14 +125,14 @@ public class LabelToken {
   /* 'U' */Token.identify,
   /* 'u' */Token.surfacedistance,
   /* 'V' */Token.vanderwaals,
-  /* 'v' */Token.vibXyz, 
+  /* 'v' */Token.vibxyz, 
   /* 'W' */'W',   // identifier and XYZ coord
-  /* 'X' */Token.fracX, 
-  /* 'x' */Token.atomX, 
-  /* 'Y' */Token.fracY, 
-  /* 'y' */Token.atomY, 
-  /* 'Z' */Token.fracZ,
-  /* 'z' */Token.atomZ, 
+  /* 'X' */Token.fracx, 
+  /* 'x' */Token.atomx, 
+  /* 'Y' */Token.fracy, 
+  /* 'y' */Token.atomy, 
+  /* 'Z' */Token.fracz,
+  /* 'z' */Token.atomz, 
 
   // not having letter equivalents:
   
@@ -152,10 +152,10 @@ public class LabelToken {
 
            Token.adpmax,
            Token.adpmin,
-           Token.atomID,
+           Token.atomid,
            Token.bondcount,
            Token.color,
-           Token.groupID,
+           Token.groupid,
            Token.covalent,
            Token.file,
            Token.format,
@@ -169,16 +169,16 @@ public class LabelToken {
            Token.strucno,
            Token.strucid,
            Token.symbol,
-           Token.unitX,
-           Token.unitY,
-           Token.unitZ,
+           Token.unitx,
+           Token.unity,
+           Token.unitz,
            Token.valence,
-           Token.vibX,
-           Token.vibY,
-           Token.vibZ,
+           Token.vibx,
+           Token.viby,
+           Token.vibz,
            Token.volume,
-           Token.unitXyz,
-           Token.fracXyz,
+           Token.unitxyz,
+           Token.fracxyz,
            Token.xyz,
            
   };
@@ -192,9 +192,9 @@ public class LabelToken {
 
   private final static String twoCharLabelTokenParams = "fuv";
 
-  private final static int[] twoCharLabelTokenIds = { Token.fracX, Token.fracY,
-      Token.fracZ, Token.unitX, Token.unitY, Token.unitZ, Token.vibX,
-      Token.vibY, Token.vibZ, };
+  private final static int[] twoCharLabelTokenIds = { Token.fracx, Token.fracy,
+      Token.fracz, Token.unitx, Token.unity, Token.unitz, Token.vibx,
+      Token.viby, Token.vibz, };
 
   public static final String STANDARD_LABEL = "%[identify]";
 
@@ -365,7 +365,7 @@ public class LabelToken {
       
       // special cases only for labels 
       
-      case Token.atomIndex:
+      case Token.atomindex:
         strT = ""
             + (indices == null ? atom.index : indices[atom.index]);
         break;
@@ -377,7 +377,7 @@ public class LabelToken {
         if (Float.isNaN(floatT))
           strT = atom.getClientAtomStringProperty(t.text);
         break;
-      case Token.formalCharge:
+      case Token.formalcharge:
         int formalCharge = atom.getFormalCharge();
         if (formalCharge > 0)
           strT = "" + formalCharge + "+";

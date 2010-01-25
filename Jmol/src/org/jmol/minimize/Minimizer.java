@@ -416,7 +416,7 @@ Token[keyword(0x880001) value=")"]
        new Token(Token.opEQ, Token.elemno), 
        Token.intToken(0), //2
        Token.tokenAnd, 
-       new Token(Token.opEQ, Token.formalCharge),
+       new Token(Token.opEQ, Token.formalcharge),
        Token.intToken(0), //5
        Token.tokenExpressionEnd},
          /*2*/  new Token[]{

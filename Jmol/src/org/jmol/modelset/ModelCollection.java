@@ -453,7 +453,7 @@ abstract public class ModelCollection extends BondCollection {
   public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue,
                               String sValue, float[] values, String[] list) {
     super.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);
-    if ((tok == Token.valence || tok == Token.formalCharge)
+    if ((tok == Token.valence || tok == Token.formalcharge)
         && viewer.getSmartAromatic())
       assignAromaticBonds();
   }
@@ -1816,10 +1816,10 @@ abstract public class ModelCollection extends BondCollection {
   public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
     super.setAtomCoord(bs, tokType, xyzValues);
     switch(tokType) {
-    case Token.vibX:
-    case Token.vibY:
-    case Token.vibZ:
-    case Token.vibXyz:
+    case Token.vibx:
+    case Token.viby:
+    case Token.vibz:
+    case Token.vibxyz:
       break;
     default:
       recalculatePositionDependentQuantities();

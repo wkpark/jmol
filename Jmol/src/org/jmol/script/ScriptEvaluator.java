@@ -762,8 +762,8 @@ public class ScriptEvaluator {
         }
         rpn.addX(new ScriptVariable(theToken));
         break;
-      case Token.atomName:
-      case Token.atomType:
+      case Token.atomname:
+      case Token.atomtype:
       case Token.branch:
       case Token.boundbox:
       case Token.chain:
@@ -1007,9 +1007,9 @@ public class ScriptEvaluator {
         return null;
       String name = parameterAsString(i);
       switch (tok = Token.getSettableTokFromString(name)) {
-      case Token.atomX:
-      case Token.atomY:
-      case Token.atomZ:
+      case Token.atomx:
+      case Token.atomy:
+      case Token.atomz:
       case Token.qw:
         break;
       default:
@@ -1056,9 +1056,9 @@ public class ScriptEvaluator {
     boolean isString = false;
     switch (tok) {
     case Token.xyz:
-    case Token.vibXyz:
-    case Token.fracXyz:
-    case Token.unitXyz:
+    case Token.vibxyz:
+    case Token.fracxyz:
+    case Token.unitxyz:
     case Token.color:
       isPt = true;
       break;
@@ -1459,8 +1459,8 @@ public class ScriptEvaluator {
     int nValues;
     switch (tok) {
     case Token.xyz:
-    case Token.fracXyz:
-    case Token.vibXyz:
+    case Token.fracxyz:
+    case Token.vibxyz:
       if (tokenValue.tok == Token.point3f) {
         viewer.setAtomCoord(bs, tok, tokenValue.value);
       } else if (tokenValue.tok == Token.list) {
@@ -4675,7 +4675,7 @@ public class ScriptEvaluator {
         case Token.select:
           select(1);
           break;
-        case Token.selectionHalo:
+        case Token.selectionhalo:
           selectionHalo(1);
           break;
        case Token.show:
@@ -5954,8 +5954,8 @@ public class ScriptEvaluator {
     case Token.structure:
     case Token.temperature:
     case Token.fixedtemp:
-    case Token.formalCharge:
-    case Token.partialCharge:
+    case Token.formalcharge:
+    case Token.partialcharge:
     case Token.straightness:
     case Token.surfacedistance:
     case Token.vanderwaals:
@@ -6003,7 +6003,7 @@ public class ScriptEvaluator {
       if (!isSyntaxCheck)
         viewer.setRubberbandArgb(argb);
       return;
-    case Token.selectionHalo:
+    case Token.selectionhalo:
       int i = 2;
       if (tokAt(2) == Token.opaque)
         i++;
@@ -6178,7 +6178,7 @@ public class ScriptEvaluator {
           if (isColorIndex) {
             if (!isSyntaxCheck) {
               data = getBitsetProperty(null, (isByElement ? Token.elemno
-                  : Token.groupID)
+                  : Token.groupid)
                   | Token.minmaxmask, null, null, null, null, false,
                   Integer.MAX_VALUE, false);
             }
@@ -6700,7 +6700,7 @@ public class ScriptEvaluator {
           htParams.put("atomDataOnly", Boolean.TRUE);
           htParams.put("modelNumber", new Integer(1));
           if (tokType == Token.vibration)
-            tokType = Token.vibXyz;
+            tokType = Token.vibxyz;
           tempFileInfo = viewer.getFileInfo();
         }
         if (isAppend
@@ -9537,7 +9537,7 @@ public class ScriptEvaluator {
       unitcell(2);
       return;
     case Token.display:// deprecated
-    case Token.selectionHalo:
+    case Token.selectionhalo:
       selectionHalo(2);
       return;
 
@@ -9571,7 +9571,7 @@ public class ScriptEvaluator {
     case Token.picking:
       setPicking();
       return;
-    case Token.pickingStyle:
+    case Token.pickingstyle:
       setPickingStyle();
       return;
 
@@ -9591,7 +9591,7 @@ public class ScriptEvaluator {
     case Token.scale3d:
       setFloatProperty("scaleAngstromsPerInch", floatSetting(2));
       return;
-    case Token.formalCharge:
+    case Token.formalcharge:
       n = intSetting(2);
       if (!isSyntaxCheck)
         viewer.setFormalCharges(n);
@@ -9602,16 +9602,16 @@ public class ScriptEvaluator {
         break;
       }
       // fall through
-    case Token.specpercent:
+    case Token.specularpercent:
       key = "specularPercent";
       break;
-    case Token.ambient:
+    case Token.ambientpercent:
       key = "ambientPercent";
       break;
-    case Token.diffuse:
+    case Token.diffusepercent:
       key = "diffusePercent";
       break;
-    case Token.specpower:
+    case Token.specularpower:
       val = intSetting(2);
       if (val >= 0) {
         key = "specularPower";
@@ -9622,7 +9622,7 @@ public class ScriptEvaluator {
       val = -val;
       key = "specularExponent";
       break;
-    case Token.specexponent:
+    case Token.specularexponent:
       key = "specularExponent";
       break;
     case Token.bonds:
@@ -9644,7 +9644,6 @@ public class ScriptEvaluator {
       key = "solventProbe";
       break;
     case Token.color:
-    case Token.defaultColors:
       key = "defaultColorScheme";
       break;
     case Token.debug:
@@ -9988,6 +9987,8 @@ public class ScriptEvaluator {
       }
       return true;
     }
+    if (key.equalsIgnoreCase("radius"))
+      return setFloatProperty("solventProbeRadius", floatSetting(2, 0, 10));
     if (key.equalsIgnoreCase("dipoleScale"))
       return setFloatProperty("dipoleScale", floatSetting(2, -10, 10));
     if (key.equalsIgnoreCase("axesScale"))
@@ -11348,7 +11349,6 @@ public class ScriptEvaluator {
         viewer.showUrl(fileName);
       return;
     case Token.color:
-    case Token.defaultColors:
       str = "defaultColorScheme";
       break;
     case Token.scale3d:
@@ -11451,7 +11451,7 @@ public class ScriptEvaluator {
       msg = "set ssbondsBackbone " + viewer.getSsbondsBackbone();
       break;
     case Token.display:// deprecated
-    case Token.selectionHalo:
+    case Token.selectionhalo:
       msg = "selectionHalos "
           + (viewer.getSelectionHaloEnabled() ? "ON" : "OFF");
       break;
@@ -11464,11 +11464,11 @@ public class ScriptEvaluator {
     case Token.hydrogen:
       msg = "set selectHydrogens " + viewer.getRasmolSetting(tok);
       break;
-    case Token.ambient:
-    case Token.diffuse:
+    case Token.ambientpercent:
+    case Token.diffusepercent:
     case Token.specular:
-    case Token.specpower:
-    case Token.specexponent:
+    case Token.specularpower:
+    case Token.specularexponent:
       if (!isSyntaxCheck)
         msg = viewer.getSpecularState();
       break;

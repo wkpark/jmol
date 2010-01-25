@@ -365,7 +365,9 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void notifyViewerRepaintDone();
 
   abstract public boolean getBooleanProperty(String propertyName);
-  abstract public boolean getBooleanProperty(String key, boolean doICare);
+  public boolean getBooleanProperty(String key, boolean doICare) {
+    return getBooleanProperty(key); // don't ask for what doesn't exist; you should care!
+  }
   abstract public Object getParameter(String name);
 
   abstract public String getSetHistory(int howFarBack);

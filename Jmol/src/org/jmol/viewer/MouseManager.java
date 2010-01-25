@@ -71,7 +71,7 @@ public abstract class MouseManager implements KeyListener {
     if (keyBuffer.length() == 0)
       return;
     keyBuffer = "";
-    if (viewer.getBooleanProperty("showKeyStrokes", true))
+    if (viewer.getBooleanProperty("showKeyStrokes"))
       viewer
           .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo \"\"");
   }
@@ -87,7 +87,7 @@ public abstract class MouseManager implements KeyListener {
     } else {
       keyBuffer += ch;
     }
-    if (viewer.getBooleanProperty("showKeyStrokes", true))
+    if (viewer.getBooleanProperty("showKeyStrokes"))
       viewer
           .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
               + Escape.escape("\0" + keyBuffer));
@@ -95,7 +95,7 @@ public abstract class MouseManager implements KeyListener {
 
   private void sendKeyBuffer() {
     String kb = keyBuffer;
-    if (viewer.getBooleanProperty("showKeyStrokes", true))
+    if (viewer.getBooleanProperty("showKeyStrokes"))
       viewer
           .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
               + Escape.escape(keyBuffer));

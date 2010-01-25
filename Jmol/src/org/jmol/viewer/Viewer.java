@@ -582,7 +582,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void initialize() {
     global = stateManager.getGlobalSettings(global);
-    setIntProperty("_version", getJmolVersionInt(), true);
+    setIntProperty("_version", getJmolVersionInt());
     setBooleanProperty("_applet", isApplet);
     setBooleanProperty("_signedApplet", isSignedApplet);
     setBooleanProperty("_useCommandThread", useCommandThread);
@@ -1863,6 +1863,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return null;
     int i;
     if (strModel.indexOf("\\/n") >= 0) {
+      // the problem is that when this string is passed to Jmol
+      // by the web page <embed> mechanism, browsers differ
+      // in how they handle CR and LF. Some will pass it,
+      // some will not.
       strModel = TextFormat.simpleReplace(strModel, "\n", "");
       strModel = TextFormat.simpleReplace(strModel, "\\/n", "\n");
       newLine = 0;
@@ -4851,24 +4855,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean getBooleanProperty(String key) {
-    return getBooleanProperty(key, true);
-  }
-
-  /*****************************************************************************
-   * @param key
-   * @param doICare
-   *          true if you want an error message if it doesn't exist
-   * @return the boolean property mth 2005 06 24 and/or these property names
-   *         should be interned strings so that we can just do == comparisions
-   *         between strings
-   ****************************************************************************/
-
-  public boolean getBooleanProperty(String key, boolean doICare) {
-    // JmolPopup
     key = key.toLowerCase();
-    if (global.htPropertyFlags.containsKey(key)) {
-      return ((Boolean) global.htPropertyFlags.get(key)).booleanValue();
-    }
+    if (global.htBooleanParameterFlags.containsKey(key))
+      return ((Boolean) global.htBooleanParameterFlags.get(key)).booleanValue();
     // special cases
     if (key.equalsIgnoreCase("executionPaused"))
       return eval.isExecutionPaused();
@@ -4889,8 +4878,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (t.tok == Token.off)
         return false;
     }
-    if (doICare)
-      Logger.error("viewer.getBooleanProperty(" + key + ") - unrecognized");
+    Logger.error("viewer.getBooleanProperty(" + key + ") - unrecognized");
     return false;
   }
 
@@ -4898,215 +4886,847 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (key.charAt(0) == '_') {
       global.setParameterValue(key, value);
       return;
-    }
-    // Eval
-    boolean notFound = false;
-    while (true) {
+    }  
+    Token t = Token.getTokenFromName(key.toLowerCase());
+    setStringProperty(key, t == null ? Token.nada : t.tok, value);
+  }
 
+  public void setStringProperty(String key, int tok, String value) {
+    boolean found = true;
+    switch (tok) {
+    case Token.filecachedirectory:
       // 11.9.21
-      if (key.equalsIgnoreCase("fileCacheDirectory")) {
-        // application only -- CANNOT BE SET BY STATE global.fileCacheDirectory = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("fileCaching")) {
-        // application only -- CANNOT BE SET BY STATE global.atomTypes = value;
-        break;
-      }
-      
+      // not implemented -- application only -- CANNOT BE SET BY STATE
+      // global.fileCacheDirectory = value;
+      break;
+    case Token.atomtypes:
       // 11.7.7
-      if (key.equalsIgnoreCase("atomTypes")) {
-        global.atomTypes = value;
-        break;
-      }
-
+      global.atomTypes = value;
+      break;
+    case Token.currentlocalpath:
       // /11.6.RC15
-      if (key.equalsIgnoreCase("currentLocalPath"))
-        break;
+      break;
+    case Token.picklabel:
       // /11.5.42
-      // pickLabel
-      if (key.equalsIgnoreCase("pickLabel")) {
-        global.pickLabel = value;
-        break;
-      }
-
+      global.pickLabel = value;
+      break;
+    case Token.quaternionframe:
       // /11.5.39//
-      if (key.equalsIgnoreCase("quaternionFrame")) {
-        if (value.length() == 2 && value.startsWith("R"))
-          // C, P -- straightness from Ramachandran angles
-          global.quaternionFrame = value.substring(0, 2);
-        else
-          global.quaternionFrame = "" + (value.toLowerCase() + "p").charAt(0);
-        if (!Parser.isOneOf(global.quaternionFrame, "a;n;c;p;q;RC;RP"))
-          global.quaternionFrame = "p";
-        modelSet.setHaveStraightness(false);
-        break;
-      }
-
+      if (value.length() == 2 && value.startsWith("R"))
+        // C, P -- straightness from Ramachandran angles
+        global.quaternionFrame = value.substring(0, 2);
+      else
+        global.quaternionFrame = "" + (value.toLowerCase() + "p").charAt(0);
+      if (!Parser.isOneOf(global.quaternionFrame, "a;n;c;p;q;RC;RP"))
+        global.quaternionFrame = "p";
+      modelSet.setHaveStraightness(false);
+      break;
+    case Token.defaultvdw:
       // /11.5.11//
-      if (key.equalsIgnoreCase("defaultVDW")) {
-        setDefaultVdw(value);
-        return;
-      }
-
+      setDefaultVdw(value);
+      return;
+    case Token.language:
       // /11.1.30//
-      if (key.equalsIgnoreCase("language")) {
-        // fr cs en none, etc.
-        setLanguage(value);
-        value = GT.getLanguage();
-        break;
-      }
-
+      // fr cs en none, etc.
+      setLanguage(value);
+      value = GT.getLanguage();
+      break;
+    case Token.loadformat:
       // /11.1.22//
-
-      if (key.equalsIgnoreCase("loadFormat")) {
-        global.loadFormat = value;
-        break;
-      }
-
+      global.loadFormat = value;
+      break;
+    case Token.backgroundcolor:
       // /11.1///
-
-      if (key.equalsIgnoreCase("backgroundColor")) {
-        setObjectColor("background", value);
-        return;
-      }
-
-      if (key.equalsIgnoreCase("axesColor")) {
-        setObjectColor("axis1", value);
-        setObjectColor("axis2", value);
-        setObjectColor("axis3", value);
-        return;
-      }
-
-      if (key.equalsIgnoreCase("axis1Color")) {
-        setObjectColor("axis1", value);
-        return;
-      }
-
-      if (key.equalsIgnoreCase("axis2Color")) {
-        setObjectColor("axis2", value);
-        return;
-      }
-
-      if (key.equalsIgnoreCase("axis3Color")) {
-        setObjectColor("axis3", value);
-        return;
-      }
-
-      if (key.equalsIgnoreCase("boundBoxColor")) {
-        setObjectColor("boundbox", value);
-        return;
-      }
-
-      if (key.equalsIgnoreCase("unitCellColor")) {
-        setObjectColor("unitcell", value);
-        return;
-      }
-
-      if (key.equalsIgnoreCase("propertyColorScheme")) {
-        setPropertyColorScheme(value, false);
-        return;
-      }
-
-      if (key.equalsIgnoreCase("propertyColorSchemeOverload")) {
-        setPropertyColorScheme(value, true);
-        return;
-      }
-
-      if (key.equalsIgnoreCase("hoverLabel")) {
-        setShapeProperty(JmolConstants.SHAPE_HOVER, "atomLabel", value);
-        break;
-      }
+      setObjectColor("background", value);
+      return;
+    case Token.axescolor:
+      setObjectColor("axis1", value);
+      setObjectColor("axis2", value);
+      setObjectColor("axis3", value);
+      return;
+    case Token.axis1color:
+      setObjectColor("axis1", value);
+      return;
+    case Token.axis2color:
+      setObjectColor("axis2", value);
+      return;
+    case Token.axis3color:
+      setObjectColor("axis3", value);
+      return;
+    case Token.boundboxcolor:
+      setObjectColor("boundbox", value);
+      return;
+    case Token.unitcellcolor:
+      setObjectColor("unitcell", value);
+      return;
+    case Token.propertycolorscheme:
+      setPropertyColorScheme(value, false);
+      return;
+    case Token.propertycolorschemeoverload:
+      setPropertyColorScheme(value, true);
+      return;
+    case Token.hoverlabel:
+      setShapeProperty(JmolConstants.SHAPE_HOVER, "atomLabel", value);
+      break;
+    case Token.defaultdistancelabel:
       // /11.0///
-      if (key.equalsIgnoreCase("defaultDistanceLabel")) {
-        global.defaultDistanceLabel = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("defaultAngleLabel")) {
-        global.defaultAngleLabel = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("defaultTorsionLabel")) {
-        global.defaultTorsionLabel = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("defaultLoadScript")) {
-        global.defaultLoadScript = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("appletProxy")) {
-        fileManager.setAppletProxy(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("defaultDirectory")) {
-        if (value == null)
-          value = "";
-        value = value.replace('\\', '/');
-        global.defaultDirectory = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("helpPath")) {
-        global.helpPath = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("defaults")) {
-        setDefaults(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("defaultColorScheme")) {
-        setDefaultColors(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("picking")) {
-        setPickingMode(value);
-        return;
-      }
-      if (key.equalsIgnoreCase("pickingStyle")) {
-        setPickingStyle(value);
-        return;
-      }
-      if (key.equalsIgnoreCase("dataSeparator")) {
-        // just saving this
-        break;
-      }
+      global.defaultDistanceLabel = value;
+      break;
+    case Token.defaultanglelabel:
+      global.defaultAngleLabel = value;
+      break;
+    case Token.defaulttorsionlabel:
+      global.defaultTorsionLabel = value;
+      break;
+    case Token.defaultloadscript:
+      global.defaultLoadScript = value;
+      break;
+    case Token.appletproxy:
+      fileManager.setAppletProxy(value);
+      break;
+    case Token.defaultdirectory:
+      if (value == null)
+        value = "";
+      value = value.replace('\\', '/');
+      global.defaultDirectory = value;
+      break;
+    case Token.helppath:
+      global.helpPath = value;
+      break;
+    case Token.defaults:
+      setDefaults(value);
+      break;
+    case Token.defaultcolorscheme:
+      setDefaultColors(value);
+      break;
+    case Token.picking:
+      setPickingMode(value);
+      return;
+    case Token.pickingstyle:
+      setPickingStyle(value);
+      return;
+    case Token.dataseparator:
+      // just saving this
+      break;
+    default:
       if (key.toLowerCase().indexOf("callback") >= 0) {
         statusManager.setCallbackFunction(key, (value.length() == 0
             || value.equalsIgnoreCase("none") ? null : value));
         break;
       }
-      notFound = true;
-      break;
+      found = false;
     }
     key = key.toLowerCase();
-    boolean isJmol = global.htParameterValues.containsKey(key);
-    if (!isJmol && notFound && key.charAt(0) != '@') {
-      // not found -- @ is a silent mode indicator
-      if (global.htPropertyFlags.containsKey(key)
-          || global.htPropertyFlagsRemoved.containsKey(key)) {
-        setPropertyError(GT._(
-            "ERROR: cannot set boolean flag to string value: {0}", key));
-        return;
-      }
-    }
-    if (isJmol)
+    if (global.htNonbooleanParameterValues.containsKey(key)) {
       global.setParameterValue(key, value);
-    else
+    } else if (!found && key.charAt(0) != '@'
+        // not found -- @ is a silent mode indicator
+        && (global.htBooleanParameterFlags.containsKey(key) || global.htPropertyFlagsRemoved
+            .containsKey(key))) {
+      setPropertyError(GT._(
+          "ERROR: cannot set boolean flag to string value: {0}", key));
+    } else {
       global.setUserVariable(key, new ScriptVariable(Token.string, value));
+    }
   }
 
-/*  public void setFileCacheDirectory(String fileOrDir) {
-    if (fileOrDir == null)
-      fileOrDir = "";
-    global._fileCache = fileOrDir;
+  public void setFloatProperty(String key, float value) {
+    if (key.charAt(0) == '_') {
+      global.setParameterValue(key, value);
+      return;
+    }
+    Token t = Token.getTokenFromName(key.toLowerCase());
+    setFloatProperty(key, (t == null ? Token.nada : t.tok), value, false);
+  }
+
+  public boolean setFloatProperty(String key, int tok, float value, boolean isInt) {
+    boolean found = true;
+    switch (tok) {
+    case Token.strutlengthmaximum:
+      // 11.9.21
+      global.strutLengthMaximum = value;
+      break;
+    case Token.strutdefaultradius:
+      global.strutDefaultRadius = value;
+      break;
+    case Token.navx:
+      // 11.7.47
+      setSpin("X", (int) value);
+      break;
+    case Token.navy:
+      setSpin("Y", (int) value);
+      break;
+    case Token.navz:
+      setSpin("Z", (int) value);
+      break;
+    case Token.navfps:
+      if (Float.isNaN(value))
+        return true;
+      setSpin("FPS", (int) value);
+      break;
+    case Token.hbondsangleminimum:
+      // 11.7.9
+      global.hbondsAngleMinimum = value;
+      break;
+    case Token.hbondsdistancemaximum:
+      // 11.7.9
+      global.hbondsDistanceMaximum = value;
+      break;
+    case Token.pointgroupdistancetolerance:
+      // 11.6.RC2//
+      global.pointGroupDistanceTolerance = value;
+      break;
+    case Token.pointgrouplineartolerance:
+      global.pointGroupLinearTolerance = value;
+      break;
+    case Token.ellipsoidaxisdiameter:
+      // 11.5.30//
+      if (isInt)
+        value = value / 1000;
+      break;
+    case Token.spinx:
+      // /11.3.52//
+      setSpin("x", (int) value);
+      break;
+    case Token.spiny:
+      setSpin("y", (int) value);
+      break;
+    case Token.spinz:
+      setSpin("z", (int) value);
+      break;
+    case Token.spinfps:
+      setSpin("fps", (int) value);
+      break;
+    case Token.defaultdrawarrowscale:
+      // /11.3.17//
+      setDefaultDrawArrowScale(value);
+      break;
+    case Token.defaulttranslucent:
+      // /11.1///
+      global.defaultTranslucent = value;
+      break;
+    case Token.axesscale:
+      setAxesScale(value);
+      break;
+    case Token.visualrange:
+      setVisualRange(value);
+      break;
+    case Token.navigationdepth:
+      setNavigationDepthPercent(0, value);
+      break;
+    case Token.navigationspeed:
+      global.navigationSpeed = value;
+      break;
+    case Token.navigationslab:
+      transformManager.setNavigationSlabOffsetPercent(value);
+      break;
+    case Token.cameradepth:
+      transformManager.setCameraDepthPercent(value);
+      refresh(1, "set cameraDepth");
+      break;
+    case Token.rotationradius:
+      setRotationRadius(value, true);
+      return true;
+    case Token.hoverdelay:
+      global.hoverDelayMs = (int) (value * 1000);
+      break;
+    case Token.sheetsmoothing:
+      // /11.0///
+      global.sheetSmoothing = value;
+      break;
+    case Token.dipolescale:
+      global.dipoleScale = value;
+      break;
+    case Token.stereodegrees:
+      transformManager.setStereoDegrees(value);
+      break;
+    case Token.vectorscale:
+      // public -- no need to set
+      setVectorScale(value);
+      return true;
+    case Token.vibrationperiod:
+      // public -- no need to set
+      setVibrationPeriod(value);
+      return true;
+    case Token.vibrationscale:
+      // public -- no need to set
+      setVibrationScale(value);
+      return true;
+    case Token.bondtolerance:
+      setBondTolerance(value);
+      return true;
+    case Token.minbonddistance:
+      setMinBondDistance(value);
+      return true;
+    case Token.scaleangstromsperinch:
+      transformManager.setScaleAngstromsPerInch(value);
+      break;
+    case Token.solventproberadius:
+      global.solventProbeRadius = value;
+      break;
+    default:
+      if (isInt)
+        return false;
+      found = false;
+    }
+    key = key.toLowerCase();
+    if (global.htNonbooleanParameterValues.containsKey(key))
+      global.setParameterValue(key, value);
+    else if (!found && global.htBooleanParameterFlags.containsKey(key)) {
+      setPropertyError(GT._(
+          "ERROR: cannot set boolean flag to numeric value: {0}", key));
+    } else {
+      global.setUserVariable(key, new ScriptVariable(Token.decimal, new Float(
+          value)));
+    }
+    return true;
+  }
+
+  public void setIntProperty(String key, int value) {
+    if (key.charAt(0) == '_') {
+      global.setParameterValue(key, value);
+      return;
+    }
+    Token t = Token.getTokenFromName(key.toLowerCase());
+    setIntProperty(key, (t == null ? Token.nada : t.tok), value);
+  }
+
+  public void setIntProperty(String key, int tok, int value) {
+    boolean found = true;
+    switch (tok) {
+    case Token.propertyatomnumbercolumncount:
+    case Token.propertyatomnumberfield:
+      // 11.6.RC16 
+      break;
+    case Token.ellipsoiddotcount:
+      // 11.5.30 
+      break;
+    case Token.propertydatafield:
+      // /11.1.31 
+      break;
+    case Token.strutspacing:
+      // 11.9.21
+      global.strutSpacing = value;
+      break;
+    case Token.phongexponent:
+      // 11.9.13
+      Graphics3D.setPhongExponent(value);
+      break;
+    case Token.helixstep:
+      // 11.8.RC3
+      global.helixStep = value;
+      modelSet.setHaveStraightness(false);
+      break;
+    case Token.dotdensity:
+      // 11.6.RC2//
+      global.dotDensity = value;
+      break;
+    case Token.delaymaximumms:
+      // 11.5.4//
+      global.delayMaximumMs = value;
+      break;
+    case Token.loglevel:
+      // /11.3.52//
+      Logger.setLogLevel(value);
+      Logger.info("logging level set to " + value);
+      global.setParameterValue("logLevel", value);
+      eval.setDebugging();
+      return;
+    case Token.axesmode:
+      switch (value) {
+      case JmolConstants.AXES_MODE_MOLECULAR:
+        setAxesModeMolecular(true);
+        return;
+      case JmolConstants.AXES_MODE_BOUNDBOX:
+        setAxesModeMolecular(false);
+        return;
+      case JmolConstants.AXES_MODE_UNITCELL:
+        setAxesModeUnitCell(true);
+        return;
+      }
+      return;
+    case Token.strandcount:
+      // /11.1///
+      setStrandCount(0, value);
+      return;
+    case Token.strandcountforstrands:
+      setStrandCount(JmolConstants.SHAPE_STRANDS, value);
+      return;
+    case Token.strandcountformeshribbon:
+      setStrandCount(JmolConstants.SHAPE_MESHRIBBON, value);
+      return;
+    case Token.perspectivemodel:
+      setPerspectiveModel(value);
+      break;
+    case Token.showscript:
+      global.scriptDelay = value;
+      break;
+    case Token.specularpower:
+      Graphics3D.setSpecularPower(value);
+      break;
+    case Token.specularexponent:
+      Graphics3D.setSpecularPower(-value);
+      break;
+    case Token.bondradiusmilliangstroms:
+      setMarBond((short) value);
+      // public method -- no need to set
+      return;
+    case Token.specular:
+    case Token.specularpercent:
+      Graphics3D.setSpecularPercent(value);
+      break;
+    case Token.diffusepercent:
+      Graphics3D.setDiffusePercent(value);
+      break;
+    case Token.ambientpercent:
+      Graphics3D.setAmbientPercent(value);
+      break;
+    case Token.zshadepower:
+      Graphics3D.setZShadePower(Math.max(value, 1));
+      break;
+    case Token.ribbonaspectratio:
+      global.ribbonAspectRatio = value;
+      break;
+    case Token.pickingspinrate:
+      global.pickingSpinRate = (value < 1 ? 1 : value);
+      break;
+    case Token.animationfps:
+      setAnimationFps(value);
+      break;
+    case Token.percentvdwatom:
+      setPercentVdwAtom(value);
+      break;
+    case Token.hermitelevel:
+      global.hermiteLevel = value;
+      break;
+    default:
+      if ((value != 0 && value != 1)
+          || !setBooleanProperty(key, tok, value == 1, false)) {
+        if (setFloatProperty(key, tok, value, true))
+          return;
+      }
+      found = false;
+    }
+    key = key.toLowerCase();
+    if (global.htNonbooleanParameterValues.containsKey(key)) {
+      global.setParameterValue(key, value);
+    } else if (!found && global.htBooleanParameterFlags.containsKey(key)) {
+      setPropertyError(GT._(
+          "ERROR: cannot set boolean flag to numeric value: {0}", key));
+    } else {
+      global.setUserVariable(key, ScriptVariable.intVariable(value));
+    }
   }
   
-  String getFileCacheDirectory() {
-    if (!global._fileCaching)
-      return null;
-    return global._fileCache;
+  public void setBooleanProperty(String key, boolean value) {
+    if (key.charAt(0) == '_') {
+      global.setParameterValue(key, value);
+      return;
+    }
+    Token t = Token.getTokenFromName(key.toLowerCase());
+    setBooleanProperty(key, (t == null ? Token.nada : t.tok), value, true);
   }
   
-*/
+  private boolean setBooleanProperty(String key, int tok, boolean value,
+                                     boolean defineNew) {
+    boolean found = true;
+    boolean doRepaint = true;
+    switch (tok) {
+    case Token.filecaching:
+      // 11.9.21
+      // not implemented -- application only -- CANNOT BE SET BY STATE global.atomTypes = value;
+      break;
+    case Token.slabbyatom:
+      // 11.9.19
+      global.slabByAtom = value;
+      break;
+    case Token.slabbymolecule:
+      // 11.9.18
+      global.slabByMolecule = value;
+      break;
+    case Token.saveproteinstructurestate:
+      // 11.9.15
+      global.saveProteinStructureState = value;
+      break;
+    case Token.allowgestures:
+      global.allowGestures = value;
+      break;
+    case Token.imagestate:
+      // 11.8.RC6
+      global.imageState = value;
+      break;
+    case Token.useminimizationthread:
+      // 11.7.40
+      global.useMinimizationThread = value;
+      break;
+    case Token.autoloadorientation:
+      // 11.7.30
+      global.autoLoadOrientation = value;
+      break;
+    case Token.allowkeystrokes:
+      // 11.7.24
+      if (global.disablePopupMenu)
+        value = false;
+      global.allowKeyStrokes = value;
+      break;
+    case Token.showkeystrokes:
+      global.showKeyStrokes = value;
+      break;
+    case Token.fontcaching:
+      // 11.7.10
+      global.fontCaching = value;
+      break;
+    case Token.atompicking:
+      // 11.6.RC13
+      global.atomPicking = value;
+      break;
+    case Token.bondpicking:
+      // 11.6.RC13
+      global.bondPicking = value;
+      break;
+    case Token.selectallmodels:
+      // 11.5.52
+      global.selectAllModels = value;
+      break;
+    case Token.messagestylechime:
+      // 11.5.39
+      global.messageStyleChime = value;
+      break;
+    case Token.pdbsequential:
+      global.pdbSequential = value;
+      break;
+    case Token.pdbgetheader:
+      global.pdbGetHeader = value;
+      break;
+    case Token.ellipsoidaxes:
+    case Token.ellipsoidarcs:
+    case Token.ellipsoidball:
+    case Token.ellipsoiddots:
+      // 11.5.30
+      // ellipsoidAxes just handled as getBooleanProperty()
+      // ellipsoidArcs just handled as getBooleanProperty()
+      // ellipsoidDots just handled as getBooleanProperty()
+      // ellipsoidBall just handled as getBooleanProperty()
+      break;
+    case Token.fontscaling:
+      // 11.5.4
+      global.fontScaling = value;
+      break;
+    case Token.syncmouse:
+      // 11.3.56
+      setSyncTarget(0, value);
+      break;
+    case Token.syncscript:
+      setSyncTarget(1, value);
+      break;
+    case Token.wireframerotation:
+      // 11.3.55
+      global.wireframeRotation = value;
+      break;
+    case Token.isosurfacepropertysmoothing:
+      // 11.3.46
+      global.isosurfacePropertySmoothing = value;
+      break;
+    case Token.drawpicking:
+      // 11.3.43
+      global.drawPicking = value;
+      break;
+    case Token.antialiasdisplay:
+      // 11.3.36
+      setAntialias(0, value);
+      break;
+    case Token.antialiastranslucent:
+      setAntialias(1, value);
+      break;
+    case Token.antialiasimages:
+      setAntialias(2, value);
+      break;
+    case Token.smartaromatic:
+      // 11.3.29
+      global.smartAromatic = value;
+      break;
+    case Token.applysymmetrytobonds:
+      // 11.1.29
+      setApplySymmetryToBonds(value);
+      break;
+    case Token.appendnew:
+      // 11.1.22
+      setAppendNew(value);
+      break;
+    case Token.autofps:
+      global.autoFps = value;
+      break;
+    case Token.usenumberlocalization:
+      // 11.1.21
+      TextFormat
+          .setUseNumberLocalization(global.useNumberLocalization = value);
+      break;
+    case Token.frank:
+    case Token.showfrank:
+      // 11.1.20
+      setFrankOn(value);
+      break;
+    case Token.solvent:
+    case Token.solventprobe:
+      global.solventOn = value;
+      break;
+    case Token.dynamicmeasurements:
+      setDynamicMeasurements(value);
+      break;
+    case Token.allowrotateselected:
+      // 11.1.14
+      setAllowRotateSelected(value);
+      break;
+    case Token.showscript:
+      // /11.1.13///
+      setIntProperty("showScript", tok, value ? 1 : 0);
+      return true;
+    case Token.allowembeddedscripts:
+      // /11.1///
+      global.allowEmbeddedScripts = value;
+      break;
+    case Token.navigationperiodic:
+      global.navigationPeriodic = value;
+      break;
+    case Token.zshade:
+      transformManager.setZShadeEnabled(value);
+      break;
+    case Token.drawhover:
+      if (haveDisplay)
+        actionManager.setDrawHover(value);
+      break;
+    case Token.navigationmode:
+      setNavigationMode(value);
+      break;
+    case Token.navigatesurface:
+      global.navigateSurface = value;
+      break;
+    case Token.hidenavigationpoint:
+      global.hideNavigationPoint = value;
+      break;
+    case Token.shownavigationpointalways:
+      global.showNavigationPointAlways = value;
+      break;
+    case Token.refreshing:
+      // /11.0///
+      setRefreshing(value);
+      break;
+    case Token.justifymeasurements:
+      global.justifyMeasurements = value;
+      break;
+    case Token.ssbondsbackbone:
+      global.ssbondsBackbone = value;
+      break;
+    case Token.hbondsbackbone:
+      global.hbondsBackbone = value;
+      break;
+    case Token.hbondssolid:
+      global.hbondsSolid = value;
+      break;
+    case Token.specular:
+      Graphics3D.setSpecular(value);
+      break;
+    case Token.slabenabled:
+      // Eval.slab
+      transformManager.setSlabEnabled(value); // refresh?
+      break;
+    case Token.zoomenabled:
+      transformManager.setZoomEnabled(value);
+      break;
+    case Token.highresolution:
+      global.highResolutionFlag = value;
+      break;
+    case Token.tracealpha:
+      global.traceAlpha = value;
+      break;
+    case Token.zoomlarge:
+      global.zoomLarge = value;
+      transformManager.scaleFitToScreen(false, value, false, true);
+      break;
+    case Token.languagetranslation:
+      GT.setDoTranslate(value);
+      break;
+    case Token.hidenotselected:
+      selectionManager.setHideNotSelected(value);
+      break;
+    case Token.colorrasmol:
+      setDefaultColors(value ? "rasmol" : "jmol");
+      break;
+    case Token.scriptqueue:
+      scriptManager.setQueue(value);
+      break;
+    case Token.dotsurface:
+      global.dotSurface = value;
+      break;
+    case Token.dotsselectedonly:
+      global.dotsSelectedOnly = value;
+      break;
+    case Token.showselections: // deprecated
+    case Token.selectionhalo:
+      setSelectionHalos(value); // volatile
+      break;
+    case Token.hydrogen: // deprecated
+    case Token.selecthydrogen:
+      global.rasmolHydrogenSetting = value;
+      break;
+    case Token.hetero: // deprecated
+    case Token.selecthetero:
+      global.rasmolHeteroSetting = value;
+      break;
+    case Token.bonds:
+    case Token.showmultiplebonds:
+      global.showMultipleBonds = value;
+      break;
+    case Token.showhiddenselectionhalos:
+      global.showHiddenSelectionHalos = value;
+      break;
+    case Token.windowcentered:
+      transformManager.setWindowCentered(value);
+      break;
+    case Token.displaycellparameters:
+      global.displayCellParameters = value;
+      break;
+    case Token.testflag1:
+      global.testFlag1 = value;
+      break;
+    case Token.testflag2:
+      global.testFlag2 = value;
+      break;
+    case Token.testflag3:
+      global.testFlag3 = value;
+      break;
+    case Token.testflag4:
+      jmolTest();
+      global.testFlag4 = value;
+      break;
+    case Token.ribbonborder:
+      global.ribbonBorder = value;
+      break;
+    case Token.cartoonrockets:
+      global.cartoonRockets = value;
+      break;
+    case Token.rocketbarrels:
+      global.rocketBarrels = value;
+      break;
+    case Token.greyscalerendering:
+      g3d.setGreyscaleMode(global.greyscaleRendering = value);
+      break;
+    case Token.measurementlabels:
+      global.measurementLabels = value;
+      break;
+    case Token.axeswindow:
+      // remove parameters, so don't set htParameter key here
+      setAxesModeMolecular(!value);
+      return true;
+    case Token.axesmolecular:
+      // remove parameters, so don't set htParameter key here
+      setAxesModeMolecular(value);
+      return true;
+    case Token.axesunitcell:
+      // remove parameters, so don't set htParameter key here
+      setAxesModeUnitCell(value);
+      return true;
+    case Token.axesorientationrasmol:
+      // public; no need to set here
+      setAxesOrientationRasmol(value);
+      return true;
+    case Token.debugscript:
+      setDebugScript(value);
+      return true;
+    case Token.perspectivedepth:
+      setPerspectiveDepth(value);
+      return true;
+    case Token.autobond:
+      // public - no need to set
+      setAutoBond(value);
+      return true;
+    case Token.showaxes:
+      setShowAxes(value);
+      return true;
+    case Token.showboundbox:
+      setShowBbcage(value);
+      return true;
+    case Token.showhydrogens:
+      setShowHydrogens(value);
+      return true;
+    case Token.showmeasurements:
+      setShowMeasurements(value);
+      return true;
+    case Token.showunitcell:
+      setShowUnitCell(value);
+      return true;
+    case Token.bondmodeor:
+      doRepaint = false;
+      global.bondModeOr = value;
+      break;
+    case Token.zerobasedxyzrasmol:
+      doRepaint = false;
+      global.zeroBasedXyzRasmol = value;
+      reset();
+      break;
+    case Token.rangeselected:
+      doRepaint = false;
+      global.rangeSelected = value;
+      break;
+    case Token.measureallmodels:
+      doRepaint = false;
+      global.measureAllModels = value;
+      break;
+    case Token.statusreporting:
+      doRepaint = false;
+      // not part of the state
+      statusManager.setAllowStatusReporting(value);
+      break;
+    case Token.chaincasesensitive:
+      doRepaint = false;
+      global.chainCaseSensitive = value;
+      break;
+    case Token.hidenameinpopup:
+      doRepaint = false;
+      global.hideNameInPopup = value;
+      break;
+    case Token.disablepopupmenu:
+      doRepaint = false;
+      global.disablePopupMenu = value;
+      break;
+    case Token.forceautobond:
+      doRepaint = false;
+      global.forceAutoBond = value;
+      break;
+    case Token.nada:
+    default:
+      doRepaint = false;  // ??
+      found = false;
+    }
+    if (!defineNew)
+      return found;
+    key = key.toLowerCase();
+    boolean isJmol = global.htBooleanParameterFlags.containsKey(key);
+    if (isJmol)
+      global.setParameterValue(key, value);
+    else if (!found && global.htNonbooleanParameterValues.containsKey(key)) {
+      setPropertyError(GT._(
+          "ERROR: Cannot set value of this variable to a boolean: {0}", key));
+      return true;
+    } else {
+      global.setUserVariable(key, ScriptVariable.getBoolean(value));
+    }
+    if (!found)
+      return false;
+    // not sure why we are doing this, and only for booleans...
+    if (doRepaint)
+      setTainted(true);
+    return true;
+  }
   
+  /*
+   * public void setFileCacheDirectory(String fileOrDir) { if (fileOrDir ==
+   * null) fileOrDir = ""; global._fileCache = fileOrDir; }
+   * 
+   * String getFileCacheDirectory() { if (!global._fileCaching) return null;
+   * return global._fileCache; }
+   */
+
   private String language = GT.getLanguage();
 
   public String getLanguage() {
@@ -5135,961 +5755,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean isJmolVariable(String key) {
     return global.isJmolVariable(key);
-  }
-
-  public void setFloatProperty(String key, float value) {
-    if (key.charAt(0) == '_') {
-      global.setParameterValue(key, value);
-      return;
-    }
-    setFloatProperty(key, value, false);
-  }
-
-  private boolean setFloatProperty(String key, float value, boolean isInt) {
-    // Eval
-    boolean notFound = false;
-    while (true) {
-      
-      // 11.9.21
-      
-      if (key.equalsIgnoreCase("strutLengthMaximum")) {
-        global.strutLengthMaximum = value;
-        break;
-      }
-      
-      if (key.equalsIgnoreCase("strutDefaultRadius")) {
-        global.strutDefaultRadius = value;
-        break;
-      }
-      
-      // 11.7.47
-      if (key.equalsIgnoreCase("navX")) {
-        setSpin("X", (int) value);
-        break;
-      }
-      if (key.equalsIgnoreCase("navY")) {
-        setSpin("Y", (int) value);
-        break;
-      }
-      if (key.equalsIgnoreCase("navZ")) {
-        setSpin("Z", (int) value);
-        break;
-      }
-      if (key.equalsIgnoreCase("navFPS")) {
-        if (Float.isNaN(value))
-          return true;
-        setSpin("FPS", (int) value);
-        break;
-      }
-
-      // 11.7.9
-      if (key.equalsIgnoreCase("hbondsAngleMinimum")) {
-        global.hbondsAngleMinimum = value;
-        break;
-      }
-
-      // 11.7.9
-      if (key.equalsIgnoreCase("hbondsDistanceMaximum")) {
-        global.hbondsDistanceMaximum = value;
-        break;
-      }
-
-      // 11.6.RC2//
-      if (key.equalsIgnoreCase("pointGroupDistanceTolerance")) {
-        global.pointGroupDistanceTolerance = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("pointGroupLinearTolerance")) {
-        global.pointGroupLinearTolerance = value;
-        break;
-      }
-
-      // 11.5.30//
-      if (key.equalsIgnoreCase("ellipsoidAxisDiameter")) {
-        if (isInt)
-          value = value / 1000;
-        break;
-      }
-
-      // /11.3.52//
-      if (key.equalsIgnoreCase("spinX")) {
-        setSpin("x", (int) value);
-        break;
-      }
-      if (key.equalsIgnoreCase("spinY")) {
-        setSpin("y", (int) value);
-        break;
-      }
-      if (key.equalsIgnoreCase("spinZ")) {
-        setSpin("z", (int) value);
-        break;
-      }
-      if (key.equalsIgnoreCase("spinFPS")) {
-        setSpin("fps", (int) value);
-        break;
-      }
-
-      // /11.3.17//
-
-      if (key.equalsIgnoreCase("defaultDrawArrowScale")) {
-        setDefaultDrawArrowScale(value);
-        break;
-      }
-
-      // /11.1///
-      if (key.equalsIgnoreCase("defaultTranslucent")) {
-        global.defaultTranslucent = value;
-        break;
-      }
-
-      if (key.equalsIgnoreCase("axesScale")) {
-        setAxesScale(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("visualRange")) {
-        setVisualRange(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("navigationDepth")) {
-        setNavigationDepthPercent(0, value);
-        break;
-      }
-      if (key.equalsIgnoreCase("navigationSpeed")) {
-        global.navigationSpeed = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("navigationSlab")) {
-        transformManager.setNavigationSlabOffsetPercent(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("cameraDepth")) {
-        transformManager.setCameraDepthPercent(value);
-        refresh(1, "set cameraDepth");
-        break;
-      }
-      if (key.equalsIgnoreCase("rotationRadius")) {
-        setRotationRadius(value, true);
-        return true;
-      }
-      if (key.equalsIgnoreCase("hoverDelay")) {
-        global.hoverDelayMs = (int) (value * 1000);
-        break;
-      }
-      // /11.0///
-      if (key.equalsIgnoreCase("sheetSmoothing")) {
-        global.sheetSmoothing = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("dipoleScale")) {
-        global.dipoleScale = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("stereoDegrees")) {
-        transformManager.setStereoDegrees(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("vectorScale")) {
-        // public -- no need to set
-        setVectorScale(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("vibrationPeriod")) {
-        // public -- no need to set
-        setVibrationPeriod(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("vibrationScale")) {
-        // public -- no need to set
-        setVibrationScale(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("bondTolerance")) {
-        setBondTolerance(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("minBondDistance")) {
-        setMinBondDistance(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("scaleAngstromsPerInch")) {
-        transformManager.setScaleAngstromsPerInch(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("solventProbeRadius")) {
-        global.solventProbeRadius = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("radius")) { // deprecated
-        setFloatProperty("solventProbeRadius", value);
-        return true;
-      }
-      // not found
-      if (isInt)
-        return false;
-      notFound = true;
-      break;
-    }
-    key = key.toLowerCase();
-    boolean isJmol = global.htParameterValues.containsKey(key);
-    if (!isJmol && notFound) {
-      if (global.htPropertyFlags.containsKey(key)) {
-        setPropertyError(GT._(
-            "ERROR: cannot set boolean flag to numeric value: {0}", key));
-        return true;
-      }
-    }
-    if (isJmol)
-      global.setParameterValue(key, value);
-    else
-      global.setUserVariable(key, new ScriptVariable(Token.decimal, new Float(
-          value)));
-    return true;
-  }
-
-  public void setIntProperty(String key, int value) {
-    if (key.charAt(0) == '_') {
-      global.setParameterValue(key, value);
-      return;
-    }
-
-    // Eval
-    setIntProperty(key, value, true);
-  }
-
-  private void setIntProperty(String key, int value, boolean defineNew) {
-    boolean notFound = false;
-    while (true) {
-
-      // 11.9.21
-      
-      if (key.equalsIgnoreCase("strutSpacing")) {
-        global.strutSpacing = value;
-        break;
-      }
-      
-      // 11.9.13
-      if (key.equalsIgnoreCase("phongExponent")) {
-        Graphics3D.setPhongExponent(value);
-        break;
-      }
-
-      // 11.8.RC3//
-      if (key.equalsIgnoreCase("helixStep")) {
-        global.helixStep = value;
-        modelSet.setHaveStraightness(false);
-        break;
-      }
-
-      // 11.6.RC16//
-      if (key.equalsIgnoreCase("propertyDataColumnCount")) {
-        break;
-      }
-
-      if (key.equalsIgnoreCase("propertyAtomNumberColumnCount")) {
-        break;
-      }
-
-      // 11.6.RC2//
-      if (key.equalsIgnoreCase("dotDensity")) {
-        global.dotDensity = value;
-        break;
-      }
-
-      // 11.5.30//
-      // ellipsoidDotCount" just handled as getParameter()
-
-      // 11.5.4//
-      if (key.equalsIgnoreCase("delayMaximumMs")) {
-        global.delayMaximumMs = value;
-        break;
-      }
-
-      // /11.3.52//
-
-      if (key.equalsIgnoreCase("logLevel")) {
-        Logger.setLogLevel(value);
-        Logger.info("logging level set to " + value);
-        global.setParameterValue("logLevel", value);
-        eval.setDebugging();
-        return;
-      }
-
-      if (key.equalsIgnoreCase("axesMode")) {
-        switch (value) {
-        case JmolConstants.AXES_MODE_MOLECULAR:
-          setAxesModeMolecular(true);
-          return;
-        case JmolConstants.AXES_MODE_BOUNDBOX:
-          setAxesModeMolecular(false);
-          return;
-        case JmolConstants.AXES_MODE_UNITCELL:
-          setAxesModeUnitCell(true);
-          return;
-        }
-        return;
-      }
-      // /11.1.31//
-
-      if (key.equalsIgnoreCase("propertyDataField")) {
-        break;
-      }
-
-      // /11.1///
-
-      if (key.equalsIgnoreCase("strandCount")) {
-        setStrandCount(0, value);
-        return;
-      }
-      if (key.equalsIgnoreCase("strandCountForStrands")) {
-        setStrandCount(JmolConstants.SHAPE_STRANDS, value);
-        return;
-      }
-      if (key.equalsIgnoreCase("strandCountForMeshRibbon")) {
-        setStrandCount(JmolConstants.SHAPE_MESHRIBBON, value);
-        return;
-      }
-      if (key.equalsIgnoreCase("perspectiveModel")) {
-        setPerspectiveModel(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("showScript")) {
-        global.scriptDelay = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("specularPower")) {
-        Graphics3D.setSpecularPower(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("specularExponent")) {
-        Graphics3D.setSpecularPower(-value);
-        break;
-      }
-      if (key.equalsIgnoreCase("specular")) {
-        setIntProperty("specularPercent", value);
-        return;
-      }
-      if (key.equalsIgnoreCase("diffuse")) {
-        setIntProperty("diffusePercent", value);
-        return;
-      }
-      if (key.equalsIgnoreCase("ambient")) {
-        setIntProperty("ambientPercent", value);
-        return;
-      }
-      if (key.equalsIgnoreCase("specularPercent")) {
-        Graphics3D.setSpecularPercent(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("diffusePercent")) {
-        Graphics3D.setDiffusePercent(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("ambientPercent")) {
-        Graphics3D.setAmbientPercent(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("zshadePower")) {
-        Graphics3D.setZShadePower(Math.max(value, 1));
-        break;
-      }
-
-      if (key.equalsIgnoreCase("ribbonAspectRatio")) {
-        global.ribbonAspectRatio = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("pickingSpinRate")) {
-        global.pickingSpinRate = (value < 1 ? 1 : value);
-        break;
-      }
-      if (key.equalsIgnoreCase("animationFps")) {
-        setAnimationFps(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("percentVdwAtom")) {
-        setPercentVdwAtom(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("bondRadiusMilliAngstroms")) {
-        setMarBond((short) value);
-        // public method -- no need to set
-        return;
-      }
-      if (key.equalsIgnoreCase("hermiteLevel")) {
-        global.hermiteLevel = value;
-        break;
-      }
-      // not found
-      if ((value != 0 && value != 1)
-          || !setBooleanProperty(key, value == 1, false)) {
-        if (setFloatProperty(key, value, true))
-          return;
-      }
-      notFound = true;
-      break;
-    }
-    key = key.toLowerCase();
-    boolean isJmol = global.htParameterValues.containsKey(key);
-    if (!isJmol && notFound) {
-      if (global.htPropertyFlags.containsKey(key)) {
-        setPropertyError(GT._(
-            "ERROR: cannot set boolean flag to numeric value: {0}", key));
-        return;
-      }
-    }
-    if (!defineNew)
-      return;
-    if (isJmol) {
-      global.setParameterValue(key, value);
-    } else {
-      global.setUserVariable(key, ScriptVariable.intVariable(value));
-    }
-  }
-
-  public int getDelayMaximum() {
-    return (haveDisplay ? global.delayMaximumMs : 1);
-  }
-
-  public void setBooleanProperty(String key, boolean value) {
-    if (key.charAt(0) == '_') {
-      global.setParameterValue(key, value);
-      return;
-    }
-    setBooleanProperty(key, value, true);
-  }
-
-  boolean setBooleanProperty(String key, boolean value, boolean defineNew) {
-    boolean notFound = false;
-    boolean doRepaint = true;
-    while (true) {
-
-      // 11.9.19
-      if (key.equalsIgnoreCase("slabByAtom")) {
-        global.slabByAtom = value;
-        break;
-      }
-
-      // 11.9.18
-      if (key.equalsIgnoreCase("slabByMolecule")) {
-        global.slabByMolecule = value;
-        break;
-      }
-
-      // 11.9.15
-
-      if (key.equalsIgnoreCase("saveProteinStructureState")) {
-        global.saveProteinStructureState = value;
-        break;
-      }
-
-      if (key.equalsIgnoreCase("allowGestures")) {
-        global.allowGestures = value;
-        break;
-      }
-
-      // 11.8.RC6
-
-      if (key.equalsIgnoreCase("imageState")) {
-        global.imageState = value;
-        break;
-      }
-
-      // 11.7.40
-
-      if (key.equalsIgnoreCase("useMinimizationThread")) {
-        global.useMinimizationThread = value;
-        break;
-      }
-
-      // 11.7.30
-
-      if (key.equalsIgnoreCase("autoLoadOrientation")) {
-        global.autoLoadOrientation = value;
-        break;
-      }
-
-      // 11.7.24
-
-      if (key.equalsIgnoreCase("allowKeyStrokes")) {
-        if (global.disablePopupMenu)
-          value = false;
-        global.allowKeyStrokes = value;
-        break;
-      }
-
-      if (key.equalsIgnoreCase("showKeyStrokes")) {
-        global.showKeyStrokes = value;
-        break;
-      }
-      // 11.7.10
-      if (key.equalsIgnoreCase("fontCaching")) {
-        global.fontCaching = value;
-        break;
-      }
-
-      // 11.6.RC13
-      if (key.equalsIgnoreCase("atomPicking")) {
-        global.atomPicking = value;
-        break;
-      }
-
-      // 11.6.RC13
-      if (key.equalsIgnoreCase("bondPicking")) {
-        global.bondPicking = value;
-        break;
-      }
-
-      // 11.5.52
-      if (key.equalsIgnoreCase("selectAllModels")) {
-        global.selectAllModels = value;
-        break;
-      }
-      // 11.5.39
-      if (key.equalsIgnoreCase("messageStyleChime")) {
-        global.messageStyleChime = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("pdbSequential")) {
-        global.pdbSequential = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("pdbGetHeader")) {
-        global.pdbGetHeader = value;
-        break;
-      }
-
-      // 11.5.30
-      // ellipsoidAxes just handled as getBooleanProperty()
-      // ellipsoidArcs just handled as getBooleanProperty()
-      // ellipsoidDots just handled as getBooleanProperty()
-      // ellipsoidBall just handled as getBooleanProperty()
-      // 11.5.4
-      if (key.equalsIgnoreCase("fontScaling")) {
-        global.fontScaling = value;
-        break;
-      }
-      // 11.3.56
-      if (key.equalsIgnoreCase("syncMouse")) {
-        setSyncTarget(0, value);
-        break;
-      }
-      if (key.equalsIgnoreCase("syncScript")) {
-        setSyncTarget(1, value);
-        break;
-      }
-
-      // 11.3.55
-
-      if (key.equalsIgnoreCase("wireframeRotation")) {
-        global.wireframeRotation = value;
-        break;
-      }
-
-      // 11.3.46
-
-      if (key.equalsIgnoreCase("isosurfacePropertySmoothing")) {
-        global.isosurfacePropertySmoothing = value;
-        break;
-      }
-
-      // 11.3.43
-
-      if (key.equalsIgnoreCase("drawPicking")) {
-        global.drawPicking = value;
-        break;
-      }
-
-      // 11.3.36
-
-      if (key.equalsIgnoreCase("antialiasDisplay")) {
-        setAntialias(0, value);
-        break;
-      }
-
-      if (key.equalsIgnoreCase("antialiasTranslucent")) {
-        setAntialias(1, value);
-        break;
-      }
-
-      if (key.equalsIgnoreCase("antialiasImages")) {
-        setAntialias(2, value);
-        break;
-      }
-
-      // 11.3.29
-
-      if (key.equalsIgnoreCase("smartAromatic")) {
-        global.smartAromatic = value;
-        break;
-      }
-
-      // 11.1.29
-
-      if (key.equalsIgnoreCase("applySymmetryToBonds")) {
-        setApplySymmetryToBonds(value);
-        break;
-      }
-
-      // 11.1.22
-
-      if (key.equalsIgnoreCase("appendNew")) {
-        setAppendNew(value);
-        break;
-      }
-
-      if (key.equalsIgnoreCase("autoFPS")) {
-        global.autoFps = value;
-        break;
-      }
-
-      // 11.1.21
-
-      if (key.equalsIgnoreCase("useNumberLocalization")) {
-        TextFormat
-            .setUseNumberLocalization(global.useNumberLocalization = value);
-        break;
-      }
-
-      // 11.1.20
-
-      if (key.equalsIgnoreCase("showFrank")) {
-        setFrankOn(value);
-        break;
-      }
-
-      // ///
-
-      if (key.equalsIgnoreCase("solventProbe")) {
-        global.solventOn = value;
-        break;
-      }
-
-      if (key.equalsIgnoreCase("dynamicMeasurements")) {
-        setDynamicMeasurements(value);
-        break;
-      }
-
-      // 11.1.14
-
-      if (key.equalsIgnoreCase("allowRotateSelected")) {
-        setAllowRotateSelected(value);
-        break;
-      }
-
-      // /11.1.13///
-
-      if (key.equalsIgnoreCase("showScript")) {
-        setIntProperty("showScript", value ? 1 : 0);
-        return true;
-      }
-      // /11.1///
-      if (key.equalsIgnoreCase("allowEmbeddedScripts")) {
-        global.allowEmbeddedScripts = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("navigationPeriodic")) {
-        global.navigationPeriodic = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("zShade")) {
-        transformManager.setZShadeEnabled(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("drawHover")) {
-        if (haveDisplay)
-          actionManager.setDrawHover(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("navigationMode")) {
-        setNavigationMode(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("navigateSurface")) {
-        global.navigateSurface = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("hideNavigationPoint")) {
-        global.hideNavigationPoint = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("showNavigationPointAlways")) {
-        global.showNavigationPointAlways = value;
-        break;
-      }
-
-      // /11.0///
-      if (key.equalsIgnoreCase("refreshing")) {
-        setRefreshing(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("justifyMeasurements")) {
-        global.justifyMeasurements = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("ssBondsBackbone")) {
-        global.ssbondsBackbone = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("hbondsBackbone")) {
-        global.hbondsBackbone = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("hbondsSolid")) {
-        global.hbondsSolid = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("specular")) {
-        Graphics3D.setSpecular(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("slabEnabled")) {
-        // Eval.slab
-        transformManager.setSlabEnabled(value); // refresh?
-        break;
-      }
-      if (key.equalsIgnoreCase("zoomEnabled")) {
-        transformManager.setZoomEnabled(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("highResolution")) {
-        global.highResolutionFlag = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("traceAlpha")) {
-        global.traceAlpha = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("zoomLarge")) {
-        global.zoomLarge = value;
-        transformManager.scaleFitToScreen(false, value, false, true);
-        break;
-      }
-      if (key.equalsIgnoreCase("languageTranslation")) {
-        GT.setDoTranslate(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("hideNotSelected")) {
-        selectionManager.setHideNotSelected(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("colorRasmol")) {
-        setDefaultColors(value ? "rasmol" : "jmol");
-        break;
-      }
-      if (key.equalsIgnoreCase("scriptQueue")) {
-        scriptManager.setQueue(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("dotSurface")) {
-        global.dotSurface = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("dotsSelectedOnly")) {
-        global.dotsSelectedOnly = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("selectionHalos")) {
-        setSelectionHalos(value); // volatile
-        break;
-      }
-      if (key.equalsIgnoreCase("selectHydrogen")) {
-        global.rasmolHydrogenSetting = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("selectHetero")) {
-        global.rasmolHeteroSetting = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("showMultipleBonds")) {
-        global.showMultipleBonds = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("showHiddenSelectionHalos")) {
-        global.showHiddenSelectionHalos = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("windowCentered")) {
-        transformManager.setWindowCentered(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("displayCellParameters")) {
-        global.displayCellParameters = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("testFlag1")) {
-        global.testFlag1 = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("testFlag2")) {
-        global.testFlag2 = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("testFlag3")) {
-        global.testFlag3 = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("testFlag4")) {
-        jmolTest();
-        global.testFlag4 = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("ribbonBorder")) {
-        global.ribbonBorder = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("cartoonRockets")) {
-        global.cartoonRockets = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("rocketBarrels")) {
-        global.rocketBarrels = value;
-        break;
-      }
-      if (key.equalsIgnoreCase("greyscaleRendering")) {
-        g3d.setGreyscaleMode(global.greyscaleRendering = value);
-        break;
-      }
-      if (key.equalsIgnoreCase("measurementLabels")) {
-        global.measurementLabels = value;
-        break;
-      }
-
-      // these next three remove parameters, so don't set htParameter key here
-
-      if (key.equalsIgnoreCase("axesWindow")) {
-        setAxesModeMolecular(!value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("axesMolecular")) {
-        setAxesModeMolecular(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("axesUnitCell")) {
-        setAxesModeUnitCell(value);
-        return true;
-      }
-      // public; no need to set here
-      if (key.equalsIgnoreCase("axesOrientationRasmol")) {
-        setAxesOrientationRasmol(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("debugScript")) {
-        setDebugScript(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("perspectiveDepth")) {
-        setPerspectiveDepth(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("showAxes")) {
-        setShowAxes(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("showBoundBox")) {
-        setShowBbcage(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("showHydrogens")) {
-        setShowHydrogens(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("showMeasurements")) {
-        setShowMeasurements(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("showUnitcell")) {
-        setShowUnitCell(value);
-        return true;
-      }
-      // these next are deprecated because they don't
-      // give much indication what they really do:
-      if (key.equalsIgnoreCase("frank"))
-        return setBooleanProperty("showFrank", value, true);
-      if (key.equalsIgnoreCase("solvent"))
-        return setBooleanProperty("solventProbe", value, true);
-      if (key.equalsIgnoreCase("bonds"))
-        return setBooleanProperty("showMultipleBonds", value, true);
-      if (key.equalsIgnoreCase("hydrogen")) // deprecated
-        return setBooleanProperty("selectHydrogen", value, true);
-      if (key.equalsIgnoreCase("hetero")) // deprecated
-        return setBooleanProperty("selectHetero", value, true);
-      if (key.equalsIgnoreCase("showSelections")) // deprecated -- see
-        // "selectionHalos"
-        return setBooleanProperty("selectionHalos", value, true);
-      // these next return, because there is no need to repaint
-      while (true) {
-        doRepaint = false;
-        if (key.equalsIgnoreCase("bondModeOr")) {
-          global.bondModeOr = value;
-          break;
-        }
-        if (key.equalsIgnoreCase("zeroBasedXyzRasmol")) {
-          global.zeroBasedXyzRasmol = value;
-          reset();
-          break;
-        }
-        if (key.equalsIgnoreCase("rangeSelected")) {
-          global.rangeSelected = value;
-          break;
-        }
-        if (key.equalsIgnoreCase("measureAllModels")) {
-          global.measureAllModels = value;
-          break;
-        }
-        if (key.equalsIgnoreCase("statusReporting")) {
-          // not part of the state
-          statusManager.setAllowStatusReporting(value);
-          break;
-        }
-        if (key.equalsIgnoreCase("chainCaseSensitive")) {
-          global.chainCaseSensitive = value;
-          break;
-        }
-        if (key.equalsIgnoreCase("hideNameInPopup")) {
-          global.hideNameInPopup = value;
-          break;
-        }
-        if (key.equalsIgnoreCase("disablePopupMenu")) {
-          global.disablePopupMenu = value;
-          break;
-        }
-        if (key.equalsIgnoreCase("forceAutoBond")) {
-          global.forceAutoBond = value;
-          break;
-        }
-        // public - no need to set
-        if (key.equalsIgnoreCase("autobond")) {
-          setAutoBond(value);
-          return true;
-        }
-        notFound = true;
-        break;
-      }
-      if (!defineNew)
-        return !notFound;
-      notFound = true;
-      break;
-    }
-    if (!defineNew)
-      return !notFound;
-    key = key.toLowerCase();
-    boolean isJmol = global.htPropertyFlags.containsKey(key);
-    if (!isJmol && notFound) {
-      if (global.htParameterValues.containsKey(key)) {
-        setPropertyError(GT._(
-            "ERROR: Cannot set value of this variable to a boolean: {0}", key));
-        return true;
-      }
-    }
-    if (isJmol)
-      global.setParameterValue(key, value);
-    else
-      global.setUserVariable(key, ScriptVariable.getBoolean(value));
-    if (notFound)
-      return false;
-    if (doRepaint) {
-      setTainted(true);
-    }
-    return true;
   }
 
   private void jmolTest() {
@@ -6159,6 +5824,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   // ////// flags and settings ////////
+
+  public int getDelayMaximum() {
+    return (haveDisplay ? global.delayMaximumMs : 1);
+  }
 
   public boolean getDotSurfaceFlag() {
     return global.dotSurface;
@@ -6725,7 +6394,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void setDefaults(String type) {
-    if (type.equalsIgnoreCase("RasMol")) {
+    if (type.equalsIgnoreCase("RasMol:")) {
       stateManager.setRasMolDefaults();
       return;
     }
@@ -7310,15 +6979,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                               String sValue, float[] values, String[] list) {
     modelSet.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);
     switch (tok) {
-    case Token.atomX:
-    case Token.atomY:
-    case Token.atomZ:
-    case Token.fracX:
-    case Token.fracY:
-    case Token.fracZ:
-    case Token.unitX:
-    case Token.unitY:
-    case Token.unitZ:
+    case Token.atomx:
+    case Token.atomy:
+    case Token.atomz:
+    case Token.fracx:
+    case Token.fracy:
+    case Token.fracz:
+    case Token.unitx:
+    case Token.unity:
+    case Token.unitz:
       refreshMeasures();
     }
   }

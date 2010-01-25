@@ -519,8 +519,8 @@ abstract class ScriptCompilationTokenParser {
     case Token.branch:
       allowComma = false;
       // fall through
-    case Token.atomType:
-    case Token.atomName:
+    case Token.atomtype:
+    case Token.atomname:
     case Token.boundbox:
     case Token.chain:
     case Token.coord:

@@ -1789,11 +1789,11 @@ class ScriptMathProcessor {
     case 2:
       // within (atomName, "XX,YY,ZZZ")
       if (withinStr.equalsIgnoreCase("atomName"))
-        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.atomName,
+        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.atomname,
             ScriptVariable.sValue(args[1])));
       // within (atomType, "XX,YY,ZZZ")
       if (withinStr.equalsIgnoreCase("atomType"))
-        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.atomType,
+        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.atomtype,
             ScriptVariable.sValue(args[1])));
       break;
     case 3:
@@ -2588,45 +2588,45 @@ class ScriptMathProcessor {
       return addX(list2);
     case Token.point3f:
       switch (op.intValue) {
-      case Token.atomX:
+      case Token.atomx:
         return addX(((Point3f) x2.value).x);
-      case Token.atomY:
+      case Token.atomy:
         return addX(((Point3f) x2.value).y);
-      case Token.atomZ:
+      case Token.atomz:
         return addX(((Point3f) x2.value).z);
       case Token.xyz:
         Point3f pt = new Point3f((Point3f) x2.value);
         // assumes a fractional coordinate
         viewer.toCartesian(pt);
         return addX(pt);
-      case Token.fracX:
-      case Token.fracY:
-      case Token.fracZ:
-      case Token.fracXyz:
+      case Token.fracx:
+      case Token.fracy:
+      case Token.fracz:
+      case Token.fracxyz:
         Point3f ptf = new Point3f((Point3f) x2.value);
         viewer.toFractional(ptf);
-        return (op.intValue == Token.fracXyz ? addX(ptf)
-            : addX(op.intValue == Token.fracX ? ptf.x
-                : op.intValue == Token.fracY ? ptf.y : ptf.z));
-      case Token.unitX:
-      case Token.unitY:
-      case Token.unitZ:
-      case Token.unitXyz:
+        return (op.intValue == Token.fracxyz ? addX(ptf)
+            : addX(op.intValue == Token.fracx ? ptf.x
+                : op.intValue == Token.fracy ? ptf.y : ptf.z));
+      case Token.unitx:
+      case Token.unity:
+      case Token.unitz:
+      case Token.unitxyz:
         Point3f ptu = new Point3f((Point3f) x2.value);
         viewer.toUnitCell(ptu, null);
         viewer.toFractional(ptu);
-        return (op.intValue == Token.unitXyz ? addX(ptu)
-            : addX(op.intValue == Token.fracX ? ptu.x
-                : op.intValue == Token.fracY ? ptu.y : ptu.z));
+        return (op.intValue == Token.unitxyz ? addX(ptu)
+            : addX(op.intValue == Token.fracx ? ptu.x
+                : op.intValue == Token.fracy ? ptu.y : ptu.z));
       }
       break;
     case Token.point4f:
       switch (op.intValue) {
-      case Token.atomX:
+      case Token.atomx:
         return addX(((Point4f) x2.value).x);
-      case Token.atomY:
+      case Token.atomy:
         return addX(((Point4f) x2.value).y);
-      case Token.atomZ:
+      case Token.atomz:
         return addX(((Point4f) x2.value).z);
       case Token.qw:
         return addX(((Point4f) x2.value).w);

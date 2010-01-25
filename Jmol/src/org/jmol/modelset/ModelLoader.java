@@ -1238,7 +1238,7 @@ public final class ModelLoader extends ModelSet {
         }
       }
       switch (tokType) {
-      case Token.vibXyz:
+      case Token.vibxyz:
         float vx = iterAtom.getVectorX();
         float vy = iterAtom.getVectorY();
         float vz = iterAtom.getVectorZ();
@@ -1247,13 +1247,13 @@ public final class ModelLoader extends ModelSet {
           v.set(vx, vy, vz);
           if (Logger.debugging)
             Logger.info("xyz: " + pt + " vib: " + v);
-          setAtomCoord(bs,Token.vibXyz, v);
+          setAtomCoord(bs,Token.vibxyz, v);
         break;
       case Token.occupancy:
         // [0 to 100], default 100
         setAtomProperty(bs, tokType, iterAtom.getOccupancy(), 0, null, null, null);
         break;
-      case Token.partialCharge:
+      case Token.partialcharge:
         // anything but NaN, default NaN
         setAtomProperty(bs, tokType, 0, iterAtom.getPartialCharge(), null, null, null);
         break;
@@ -1265,7 +1265,7 @@ public final class ModelLoader extends ModelSet {
     }
     //finally:
     switch (tokType) {
-    case Token.vibXyz:
+    case Token.vibxyz:
       String vibName = adapter.getAtomSetName(atomSetCollection, 0);
       Logger.info("_vibrationName = " + vibName);
       viewer.setStringProperty("_vibrationName", vibName);

@@ -467,11 +467,11 @@ abstract public class AtomCollection {
           System.out.println("atomcoll " + i + " " + xyz);
         setAtomCoord(i, xyz.x, xyz.y, xyz.z);
         break;
-      case Token.fracXyz:
+      case Token.fracxyz:
         atoms[i].setFractionalCoord(xyz);
         taint(i, TAINT_COORD);
         break;
-      case Token.vibXyz:
+      case Token.vibxyz:
         setAtomVibrationVector(i, xyz.x, xyz.y, xyz.z);
         break;
       }
@@ -530,7 +530,7 @@ abstract public class AtomCollection {
       }
       Atom atom = atoms[i];
       switch (tok) {
-      case Token.atomName:
+      case Token.atomname:
         taint(i, TAINT_ATOMNAME);
         setAtomName(i, sValue);
         break;
@@ -538,27 +538,27 @@ abstract public class AtomCollection {
         taint(i, TAINT_ATOMNO);
         setAtomNumber(i, iValue);
         break;
-      case Token.atomType:
+      case Token.atomtype:
         taint(i, TAINT_ATOMTYPE);
         setAtomType(i, sValue);
         break;
-      case Token.atomX:
+      case Token.atomx:
         setAtomCoord(i, fValue, atom.y, atom.z);
         break;
-      case Token.atomY:
+      case Token.atomy:
         setAtomCoord(i, atom.x, fValue, atom.z);
         break;
-      case Token.atomZ:
+      case Token.atomz:
         setAtomCoord(i, atom.x, atom.y, fValue);
         break;
-      case Token.vibX:
-      case Token.vibY:
-      case Token.vibZ:
+      case Token.vibx:
+      case Token.viby:
+      case Token.vibz:
         setVibrationVector(i, tok, fValue);
         break;
-      case Token.fracX:
-      case Token.fracY:
-      case Token.fracZ:
+      case Token.fracx:
+      case Token.fracy:
+      case Token.fracz:
         atom.setFractionalCoord(tok, fValue);
         taint(i, TAINT_COORD);
         break;
@@ -570,7 +570,7 @@ abstract public class AtomCollection {
         atom.setColixAtom(viewer.getColixAtomPalette(atom,
             JmolConstants.PALETTE_CPK));
         break;
-      case Token.formalCharge:
+      case Token.formalcharge:
         atom.setFormalCharge(iValue);
         taint(i, TAINT_FORMALCHARGE);
         break;
@@ -584,7 +584,7 @@ abstract public class AtomCollection {
         if (setOccupancy(i, iValue))
           taint(i, TAINT_OCCUPANCY);
         break;
-      case Token.partialCharge:
+      case Token.partialcharge:
         if (setPartialCharge(i, fValue))
           taint(i, TAINT_PARTIALCHARGE);
         break;
@@ -649,13 +649,13 @@ abstract public class AtomCollection {
     if (v == null)
       v = new Vector3f();
     switch(tok) {
-    case Token.vibX:
+    case Token.vibx:
       v.x = fValue;
       break;
-    case Token.vibY:
+    case Token.viby:
       v.y = fValue;
       break;
-    case Token.vibZ:
+    case Token.vibz:
       v.z = fValue;
       break;
     }
@@ -1502,7 +1502,7 @@ abstract public class AtomCollection {
         if (atoms[i].getAtomNumber() == iSpec)
           bs.set(i);
       return bs;
-    case Token.atomName:
+    case Token.atomname:
       String names = "," + specInfo + ",";
       for (int i = atomCount; --i >= 0;) {
         String name = atoms[i].getAtomName();
@@ -1511,7 +1511,7 @@ abstract public class AtomCollection {
             bs.set(i);
       }
       return bs;
-    case Token.atomType:
+    case Token.atomtype:
       String types = "," + specInfo + ",";
       for (int i = atomCount; --i >= 0;) {
         String type = atoms[i].getAtomType();

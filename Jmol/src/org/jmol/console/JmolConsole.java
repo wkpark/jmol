@@ -105,7 +105,9 @@ public abstract class JmolConsole extends JDialog implements ActionListener, Win
       if (cmd != null)
         cmd = splitCmd[0] + splitCmd[1] + q + (cmd == null ? notThis : cmd) + q;
     } else {
-      cmd = Token.completeCommand(null, asCommand, asCommand ? splitCmd[1]
+      if (!asCommand)
+        notThis = splitCmd[1];
+      cmd = Token.completeCommand(null, splitCmd[1].equalsIgnoreCase("set "), asCommand, asCommand ? splitCmd[1]
           : splitCmd[2], nTab);
       cmd = splitCmd[0]
           + (cmd == null ? notThis : asCommand ? cmd : splitCmd[1] + cmd);

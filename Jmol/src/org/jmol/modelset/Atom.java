@@ -722,13 +722,13 @@ final public class Atom extends Point3fi {
     if (c != null)
       c[modelIndex].toFractional(this);
     switch (tok) {
-    case Token.fracX:
+    case Token.fracx:
       x = fValue;
       break;
-    case Token.fracY:
+    case Token.fracy:
       y = fValue;
       break;
-    case Token.fracZ:
+    case Token.fracz:
       z = fValue;
       break;
     }
@@ -1100,9 +1100,9 @@ final public class Atom extends Point3fi {
     switch (tokWhat) {
     case Token.atomno:
       return atom.getAtomNumber();
-    case Token.atomID:
+    case Token.atomid:
       return atom.getSpecialAtomID();
-    case Token.atomIndex:
+    case Token.atomindex:
       return atom.getIndex();
     case Token.bondcount:
       return atom.getCovalentBondCount();
@@ -1113,9 +1113,9 @@ final public class Atom extends Point3fi {
       return atom.getElementNumber();
     case Token.file:
       return atom.getModelFileIndex() + 1;
-    case Token.formalCharge:
+    case Token.formalcharge:
       return atom.getFormalCharge();
-    case Token.groupID:
+    case Token.groupid:
       return atom.getGroupID(); //-1 if no group
     case Token.groupindex:
       return atom.getGroupIndex(); 
@@ -1132,7 +1132,7 @@ final public class Atom extends Point3fi {
       return atom.getMoleculeNumber();
     case Token.occupancy:
       return atom.getOccupancy100();
-    case Token.polymerLength:
+    case Token.polymerlength:
       return atom.getPolymerLength();
     case Token.radius:
       // the comparitor uses rasmol radius, unfortunately, for integers
@@ -1181,25 +1181,25 @@ final public class Atom extends Point3fi {
       return atom.getADPMinMax(true);
     case Token.adpmin:
       return atom.getADPMinMax(false);
-    case Token.atomX:
+    case Token.atomx:
       return atom.x;
-    case Token.atomY:
+    case Token.atomy:
       return atom.y;
-    case Token.atomZ:
+    case Token.atomz:
       return atom.z;
     case Token.covalent:
       return atom.getCovalentRadiusFloat();
-    case Token.fracX:
+    case Token.fracx:
       return atom.getFractionalCoord('X');
-    case Token.fracY:
+    case Token.fracy:
       return atom.getFractionalCoord('Y');
-    case Token.fracZ:
+    case Token.fracz:
       return atom.getFractionalCoord('Z');
     case Token.ionic:
       return atom.getBondingRadiusFloat();
     case Token.occupancy:
       return atom.getOccupancy100() / 100f;
-    case Token.partialCharge:
+    case Token.partialcharge:
       return atom.getPartialCharge();
     case Token.phi:
       return atom.getGroupPhi();
@@ -1222,19 +1222,19 @@ final public class Atom extends Point3fi {
       return atom.group.chain.modelSet.getAtomShapeValue(atom.index, tokWhat);
     case Token.straightness:
       return atom.getStraightness();
-    case Token.unitX:
+    case Token.unitx:
       return atom.getFractionalUnitCoord('X');
-    case Token.unitY:
+    case Token.unity:
       return atom.getFractionalUnitCoord('Y');
-    case Token.unitZ:
+    case Token.unitz:
       return atom.getFractionalUnitCoord('Z');
     case Token.vanderwaals:
       return atom.getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO);
-    case Token.vibX:
+    case Token.vibx:
       return atom.getVibrationCoord('X');
-    case Token.vibY:
+    case Token.viby:
       return atom.getVibrationCoord('Y');
-    case Token.vibZ:
+    case Token.vibz:
       return atom.getVibrationCoord('Z');
     }
     return atomPropertyInt(atom, tokWhat);
@@ -1246,9 +1246,9 @@ final public class Atom extends Point3fi {
     case Token.altloc:
       ch = atom.getAlternateLocationID();
       return (ch == '\0' ? "" : "" + ch);
-    case Token.atomName:
+    case Token.atomname:
       return atom.getAtomName();
-    case Token.atomType:
+    case Token.atomtype:
       return atom.getAtomType();
     case Token.chain:
       ch = atom.getChainID();
@@ -1286,11 +1286,11 @@ final public class Atom extends Point3fi {
 
   public static Tuple3f atomPropertyTuple(Atom atom, int tok) {
     switch (tok) {
-    case Token.fracXyz:
+    case Token.fracxyz:
       return atom.getFractionalCoord();
-    case Token.unitXyz:
+    case Token.unitxyz:
       return atom.getFractionalUnitCoord(false);
-    case Token.vibXyz:
+    case Token.vibxyz:
       Vector3f v = atom.getVibrationVector();
       if (v == null)
         v = new Vector3f();

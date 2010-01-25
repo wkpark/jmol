@@ -313,7 +313,7 @@ public class Token {
   final static int rotateSelected = scriptCommand | 49;
   final static int save         = scriptCommand | 50;
 //final static int script   see mathfunc
-  public final static int selectionhalo = scriptCommand | 51 | setparam | defaultON;
+  public final static int selectionhalos = scriptCommand | 51 | setparam | defaultON;
   final static int show         = scriptCommand | 52;
   final static int slab         = scriptCommand | 53 | defaultON;
   final static int spin         = scriptCommand | 55 | setparam | defaultON;
@@ -1439,7 +1439,7 @@ public class Token {
       "script",            new Token(script),
       "source",            null,
       "select",            new Token(select),
-      "selectionHalos",    new Token(selectionhalo),
+      "selectionHalos",    new Token(selectionhalos),
       "selectionHalo",     null,
       "set",               new Token(set),
       "show",              new Token(show),

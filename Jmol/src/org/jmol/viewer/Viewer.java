@@ -889,6 +889,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean mouseEnabled = true;
 
   public void setMouseEnabled(boolean TF) {
+    // never called in Jmol
     mouseEnabled = TF;
   }
 
@@ -1278,7 +1279,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setDefaultColors(String colorScheme) {
     colorManager.setDefaultColors(colorScheme);
-    global.setParameterValue("colorRasmol", (colorScheme.equals("rasmol")));
+    global.setParameterValue("colorRasmol", (colorScheme.equalsIgnoreCase("rasmol")));
   }
 
   public float getDefaultTranslucent() {
@@ -1319,11 +1320,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.defaultDrawArrowScale;
   }
 
-  public void setDefaultDrawArrowScale(float scale) {
-    global.setParameterValue("defaultDrawArrowScale", scale);
-    global.defaultDrawArrowScale = scale;
-  }
-
   float getVibrationScale() {
     return global.vibrationScale;
   }
@@ -1338,7 +1334,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setVibrationScale(float scale) {
     // Eval
-
+    // public legacy in JmolViewer
     transformManager.setVibrationScale(scale);
     global.vibrationScale = scale;
     // because this is public:
@@ -4928,7 +4924,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.language:
       // /11.1.30//
       // fr cs en none, etc.
-      setLanguage(value);
+      // also serves to change language for callbacks and menu
+      new GT(value);
+      language = GT.getLanguage();
+      if (jmolpopup != null)
+        jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
+      statusManager.setCallbackFunction("language", language);
       value = GT.getLanguage();
       break;
     case Token.loadformat:
@@ -5099,7 +5100,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       break;
     case Token.defaultdrawarrowscale:
       // /11.3.17//
-      setDefaultDrawArrowScale(value);
+      global.defaultDrawArrowScale = value;
       break;
     case Token.defaulttranslucent:
       // /11.1///
@@ -5109,7 +5110,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setAxesScale(value);
       break;
     case Token.visualrange:
-      setVisualRange(value);
+      transformManager.setVisualRange(value);
+      refresh(1, "set visualRange");
       break;
     case Token.navigationdepth:
       setNavigationDepthPercent(0, value);
@@ -5195,14 +5197,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     switch (tok) {
     case Token.propertyatomnumbercolumncount:
-    case Token.propertyatomnumberfield:
-      // 11.6.RC16 
-      break;
-    case Token.ellipsoiddotcount:
-      // 11.5.30 
-      break;
-    case Token.propertydatafield:
-      // /11.1.31 
+    case Token.propertyatomnumberfield:  // 11.6.RC16 
+    case Token.ellipsoiddotcount: // 11.5.30 
+    case Token.propertydatafield:   // 11.1.31 
+      // just save in the hashtable, not in global
       break;
     case Token.strutspacing:
       // 11.9.21
@@ -5272,6 +5270,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // public method -- no need to set
       return;
     case Token.specular:
+      key = "specularPercent";
+      Graphics3D.setSpecularPercent(value);
+      break;
     case Token.specularpercent:
       Graphics3D.setSpecularPercent(value);
       break;
@@ -5462,11 +5463,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           .setUseNumberLocalization(global.useNumberLocalization = value);
       break;
     case Token.frank:
+      key = "showFrank";
+      setFrankOn(value);
+      break;
     case Token.showfrank:
       // 11.1.20
       setFrankOn(value);
       break;
     case Token.solvent:
+      key = "solventProbe";
+      global.solventOn = value;
+      break;
     case Token.solventprobe:
       global.solventOn = value;
       break;
@@ -5549,9 +5556,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.hidenotselected:
       selectionManager.setHideNotSelected(value);
       break;
-    case Token.colorrasmol:
-      setDefaultColors(value ? "rasmol" : "jmol");
-      break;
     case Token.scriptqueue:
       scriptManager.setQueue(value);
       break;
@@ -5562,18 +5566,30 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.dotsSelectedOnly = value;
       break;
     case Token.showselections: // deprecated
-    case Token.selectionhalo:
-      setSelectionHalos(value); // volatile
+      key = "selectionHalos";
+      setSelectionHalos(value);
+      break;
+    case Token.selectionhalos:
+      setSelectionHalos(value);
       break;
     case Token.hydrogen: // deprecated
+      key = "selectHydrogens";
+      global.rasmolHydrogenSetting = value;
+      break;
     case Token.selecthydrogen:
       global.rasmolHydrogenSetting = value;
       break;
     case Token.hetero: // deprecated
+      key = "selectHetero";
+      global.rasmolHeteroSetting = value;
+      break;
     case Token.selecthetero:
       global.rasmolHeteroSetting = value;
       break;
-    case Token.bonds:
+    case Token.bonds: // deprecated
+      key = "showMultipleBonds";
+      global.showMultipleBonds = value;
+      break;
     case Token.showmultiplebonds:
       global.showMultipleBonds = value;
       break;
@@ -5629,6 +5645,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.axesorientationrasmol:
       // public; no need to set here
       setAxesOrientationRasmol(value);
+      return true;
+    case Token.colorrasmol:
+      setDefaultColors(value ? "rasmol" : "jmol");
       return true;
     case Token.debugscript:
       setDebugScript(value);
@@ -5731,15 +5750,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getLanguage() {
     return language;
-  }
-
-  private void setLanguage(String value) {
-    // also serves to change language for callbacks and menu
-    new GT(value);
-    language = GT.getLanguage();
-    if (jmolpopup != null)
-      jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
-    statusManager.setCallbackFunction("language", language);
   }
 
   private void setPropertyError(String msg) {
@@ -5872,11 +5882,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return false;
     return (isNavigating() && !global.hideNavigationPoint
         || global.showNavigationPointAlways || getInMotion());
-  }
-
-  public void setVisualRange(float angstroms) {
-    transformManager.setVisualRange(angstroms);
-    refresh(1, "set visualRange");
   }
 
   public float getSolventProbeRadius() {

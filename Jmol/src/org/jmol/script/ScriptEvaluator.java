@@ -4675,7 +4675,7 @@ public class ScriptEvaluator {
         case Token.select:
           select(1);
           break;
-        case Token.selectionhalo:
+        case Token.selectionhalos:
           selectionHalo(1);
           break;
        case Token.show:
@@ -6003,7 +6003,7 @@ public class ScriptEvaluator {
       if (!isSyntaxCheck)
         viewer.setRubberbandArgb(argb);
       return;
-    case Token.selectionhalo:
+    case Token.selectionhalos:
       int i = 2;
       if (tokAt(2) == Token.opaque)
         i++;
@@ -9537,7 +9537,7 @@ public class ScriptEvaluator {
       unitcell(2);
       return;
     case Token.display:// deprecated
-    case Token.selectionhalo:
+    case Token.selectionhalos:
       selectionHalo(2);
       return;
 
@@ -11451,7 +11451,7 @@ public class ScriptEvaluator {
       msg = "set ssbondsBackbone " + viewer.getSsbondsBackbone();
       break;
     case Token.display:// deprecated
-    case Token.selectionhalo:
+    case Token.selectionhalos:
       msg = "selectionHalos "
           + (viewer.getSelectionHaloEnabled() ? "ON" : "OFF");
       break;

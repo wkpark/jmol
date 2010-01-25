@@ -25,6 +25,7 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 import org.jmol.quantum.SlaterData;
+import org.jmol.util.Logger;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -101,9 +102,9 @@ abstract class SlaterReader extends AtomSetCollectionReader {
       for (int i = 0; i < slaterArray.length; i++) {
         SlaterData sd = slaterArray[i];
         sd.coef *= scaleSlater(sd.x, sd.y, sd.z, sd.r, sd.zeta);
-        
-        System.out.println ("SlaterReader " + i + ": " + sd.iAtom + " " + sd.x + " " + sd.y +  " " + sd.z + " " + sd.r + " " + sd.zeta + " " + sd.coef);
-
+        if (Logger.debugging) {
+          Logger.debug("SlaterReader " + i + ": " + sd.iAtom + " " + sd.x + " " + sd.y +  " " + sd.z + " " + sd.r + " " + sd.zeta + " " + sd.coef);
+        }
       }
     if (doSort) {
       Arrays.sort(slaterArray, new SlaterSorter());

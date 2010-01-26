@@ -32,7 +32,8 @@ import java.io.BufferedReader;
 import java.util.Hashtable;
 
 /**
- * A reader for Dgrid BASISFILE data.
+ * A reader for Dgrid BASISFILE data. http://www.scm.com/News/DGrid.html
+ * http://www.scm.com/Doc/Doc2009.01/ADF/ADFUsersGuide/page430.html
  *
  *
  */

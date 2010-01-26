@@ -310,7 +310,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   boolean readAndSetVolumeParameters() {
-    return (readVolumeParameters() && volumeData.setUnitVectors());
+    return (readVolumeParameters() && (vertexDataOnly || volumeData.setUnitVectors()));
   }
 
   boolean createIsosurface(boolean justForPlane) {

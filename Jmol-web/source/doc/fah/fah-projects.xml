@@ -8191,12 +8191,18 @@
   <fah_proj number="6013" name="p6013_IBX in water" public="y" file="xyz"
     server="130.237.232.140" atoms="146808" preferred="3" deadline="3"
     credit="380" frames="100" code="A3" contact="kasson" kfactor="3.36" contrib="SandStar"/>
-  <fah_proj number="6014" name="p6014_Protein in POPC" public="n" file="xyz"
+  <fah_proj number="6014" name="p6014_Protein in POPC" public="y" file="xyz"
     server="130.237.232.140" atoms="77484" preferred="3" deadline="6"
     credit="484" frames="100" code="A3" contact="kasson" kfactor="2.1" contrib="SandStar"/>
-  <fah_proj number="6015" name="p6015_Protein in POPC" public="n" file="xyz"
+  <fah_proj number="6015" name="p6015_Protein in POPC" public="y" file="xyz"
     server="130.237.232.140" atoms="77457" preferred="3" deadline="6"
     credit="484" frames="100" code="A3" contact="kasson" kfactor="2.1" contrib="SandStar"/>
+  <fah_proj number="6020" name="p6020_Protein in POPC" public="n"
+    server="171.64.65.54" atoms="76900" preferred="3" deadline="6"
+    credit="467" frames="100" code="A3" contact="kasson" kfactor="2.0"/>
+  <fah_proj number="6021" name="p6021_Protein in POPC" public="n"
+    server="171.64.65.54" atoms="77050" preferred="3" deadline="6"
+    credit="476" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
 
   <!-- Projects 6300 to 6399 -->
   <fah_proj number="6300" name="p6300_Peptide dimer in TIP3P water" public="y" file="xyz"

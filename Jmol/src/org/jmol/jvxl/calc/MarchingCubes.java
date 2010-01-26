@@ -184,7 +184,7 @@ public class MarchingCubes extends TriangleData {
   protected int[][] resetIndexPlane(int[][] plane) {
     for (int i = 0; i < yzCount; i++)
       for (int j = 0; j < 3; j++)
-        plane[i][j] = -1;
+        plane[i][j] = Integer.MIN_VALUE;
     return plane;
   }
 
@@ -230,7 +230,9 @@ public class MarchingCubes extends TriangleData {
     resetIndexPlane(isoPointIndexPlanes[1]);
     if (mode == MODE_GETXYZ)
       surfaceReader.getPlane(x0);
+
     float v = 0;
+    int pti = 0;
 
     for (int x = x0; x != x1; x += xStep, ptX += ptStep, pt = ptX, cellIndex = cellIndex0) {
 
@@ -274,7 +276,7 @@ public class MarchingCubes extends TriangleData {
 
             boolean isInside;
             Point3i offset = cubeVertexOffsets[i];
-            int pti = pt + linearOffsets[i];
+            pti = pt + linearOffsets[i];
             switch (mode) {
             case MODE_GETXYZ:
               v = vertexValues[i] = getValue(x + offset.x, y + offset.y, z
@@ -284,7 +286,9 @@ public class MarchingCubes extends TriangleData {
             case MODE_BITSET:
               isInside = bsVoxels.get(pti);
               v = vertexValues[i] = (bsExcludedVertices.get(pti) ? Float.NaN
-                  : isInside ? 1 : 0);
+                  : isInside 
+                  ? 1 
+                      : 0);
               break;
             default:
             case MODE_CUBE:
@@ -303,8 +307,8 @@ public class MarchingCubes extends TriangleData {
                   * vertexValues[i] : vertexValues[i]);
             }
 
-            if (colorDensity && Float.isNaN(v))
-              bsExcludedVertices.set(pti);
+            //if (Float.isNaN(v))
+              //bsExcludedVertices.set(pti);
           }
           if (!Float.isNaN(v)) {
             xCount++;
@@ -313,10 +317,8 @@ public class MarchingCubes extends TriangleData {
             ++outsideCount;
             continue;
           }
-          if (colorDensity) {
-//            if ((insideMask & 1) != 0)
-              addVertex(x, y, z, vertexValues[0]);
-          }
+          if (colorDensity)
+            addVertex(x, y, z, pti, v);
           if (insideMask == 0xFF) {
             ++insideCount;
             continue;
@@ -325,10 +327,10 @@ public class MarchingCubes extends TriangleData {
 
           // This cube is straddling the cutoff. We must check all edges
           // Note that we do not process it if it has an NaN values
-
           if (processOneCubical(insideMask, x, y, z, pt) 
-              && !isContoured && !colorDensity)
+              && !isContoured && !colorDensity) {
             processTriangles(insideMask);
+          }
         }
       }
       if (xCount == 0) {
@@ -336,16 +338,10 @@ public class MarchingCubes extends TriangleData {
       }
     }
 
-    // System.out.println("MarchingCubes: fractionOutside = " +
-    // fractionOutside/8);
-
     return edgeData.toString();
   }
 
   protected void processTriangles(int insideMask) {
-    // System.out.println("insideCount " + insideCount +
-    // " x y z value mask: " + x + " " + y + " " + z + " " +
-    // vertexValues[0] + " " + Integer.toHexString(insideMask));
 
     // the inside mask serves to define the triangles necessary
     // if just creating JVXL files, this step is unnecessary
@@ -356,10 +352,10 @@ public class MarchingCubes extends TriangleData {
           triangles[i + 3]);   
   }
 
-  protected void addVertex(int x, int y, int z, float value) {
+  protected void addVertex(int x, int y, int z, int pti, float value) {
     volumeData.voxelPtToXYZ(x, y, z, pt0);
-    surfaceReader.addVertexCopy(pt0, value, -1);
-    addEdgeData(value);
+    if (surfaceReader.addVertexCopy(pt0, value, -4) < 0)
+      bsExcludedVertices.set(pti);
   }
 
   protected int nTriangles;
@@ -377,8 +373,8 @@ public class MarchingCubes extends TriangleData {
 
   protected float getValue(int x, int y, int z, int pt, float[] tempValues) {
     int ptyz = pt % yzCount;
-    if (bsValues.get(pt))
-      return tempValues[ptyz];
+    //if (bsValues.get(pt))
+      //return tempValues[ptyz];
     bsValues.set(pt);
     float value = surfaceReader.getValue(x, y, z, ptyz);
     if (isSquared)
@@ -471,7 +467,6 @@ public class MarchingCubes extends TriangleData {
      */
 
     int edgeMask = insideMaskTable[insideMask];
-    //for (int i =0; i < 8; i++) System.out.print("\nvpi for cell  " + pt + ": vertex " + i + ": " + voxelPointIndexes[i] + " " + Integer.toBinaryString(edgeMask));
     boolean isNaN = false;
     for (int iEdge = 12; --iEdge >= 0;) {
 
@@ -489,10 +484,11 @@ public class MarchingCubes extends TriangleData {
       int iPt = (pt + linearOffsets[edgeVertexPointers[iEdge]]) % yzCount;
       int iType = edgeTypeTable[iEdge];
       int index = edgePointIndexes[iEdge] = isoPointIndexPlanes[iPlane][iPt][iType];
-      //System.out.println(x + " " + y + " " + z + " " + pt + " iEdge=" + iEdge + " p=" + iPlane + " t=" + iType + " e=" + ePt + " i=" + iPt + " index=" + edgePointIndexes[iEdge]);
-      if (index >= 0)
+      if (index != Integer.MIN_VALUE) {
+        if (index == -1)
+          isNaN = true;
         continue; // propagated from neighbor
-
+      }
       // here's an edge that has to be checked.
 
       // get the vertex numbers 0 - 7
@@ -508,8 +504,6 @@ public class MarchingCubes extends TriangleData {
 
       // we allow for NaN values -- missing triangles
 
-      if (Float.isNaN(valueA) || Float.isNaN(valueB))
-        isNaN = true;
 
       // the exact point position -- not important for just
       // creating the JVXL file. In that case, all you 
@@ -521,23 +515,31 @@ public class MarchingCubes extends TriangleData {
 
       calcVertexPoint(x, y, z, vertexA, pointA);
 
-      //System.out.print("edge" + iEdge);
-
       edgeCount++;
 
-      edgePointIndexes[iEdge] = isoPointIndexPlanes[iPlane][iPt][iType] = surfaceReader
+      int i = edgePointIndexes[iEdge] = isoPointIndexPlanes[iPlane][iPt][iType] = surfaceReader
           .getSurfacePointIndexAndFraction(cutoff, isCutoffAbsolute, x, y, z,
               cubeVertexOffsets[vertexA], vertexA, vertexB, valueA, valueB,
               pointA, edgeVectors[iEdge], iType == contourType, fReturn);
 
-      addEdgeData(fReturn[0]);
+      addEdgeData(i < 0 ? Float.NaN : fReturn[0]);
+
+      // If the fraction returns NaN, this is because one of the end points
+      // is NaN; if the point index returns -1, then the point has been 
+      // excluded by the meshDataServer (Isosurface) for some other reason,
+      // for example because it is outside the limits of the box.
+      
+      if (Float.isNaN(fReturn[0]) || i < 0)
+        isNaN = true;
     }
-    //System.out.println("");
     return !isNaN;
   }
 
   protected void addEdgeData(float f) {
-    edgeData.append(JvxlCoder.jvxlFractionAsCharacter(f));
+    char ch = JvxlCoder.jvxlFractionAsCharacter(f);
+    //if (edgeData.length() < 1000)
+    //System.out.print("" + ch + " " + f + " ");
+    edgeData.append(ch);
   }
 
   protected float[] fReturn = new float[1];

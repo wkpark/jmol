@@ -115,7 +115,7 @@ public class XmlUtil {
    */
   public static void appendTag(StringBuffer sb, String name,
                                Object[] attributes, Object data) {
-    appendTag(sb, name, attributes, data, true, true);
+    appendTag(sb, name, attributes, data, false, true);
   }
 
   /**
@@ -140,10 +140,12 @@ public class XmlUtil {
    * 
    * @param sb
    * @param name
+   * @param attributes 
    * @param data
    */
-  public static void appendCdata(StringBuffer sb, String name, String data) {
-    appendTag(sb, name, null, data, true, true);
+  public static void appendCdata(StringBuffer sb, String name, 
+                                 Object[] attributes, String data) {
+    appendTag(sb, name, attributes, data, true, true);
   }
 
   /**

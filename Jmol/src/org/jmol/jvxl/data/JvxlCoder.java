@@ -90,7 +90,7 @@ public class JvxlCoder {
           "version", JVXL_VERSION_XML,
           "jmolVersion", jvxlData.version });
       if (jvxlData.jvxlFileTitle != null)
-        XmlUtil.appendCdata(data, "jvxlFileTitle", "\n" + jvxlData.jvxlFileTitle);
+        XmlUtil.appendCdata(data, "jvxlFileTitle", null, "\n" + jvxlData.jvxlFileTitle);
       if (jvxlData.moleculeXml != null)
         data.append(jvxlData.moleculeXml);
       if (jvxlData.jvxlVolumeDataXml == null)
@@ -117,7 +117,7 @@ public class JvxlCoder {
       if (title != null)
         for (int i = 0; i < title.length; i++)
           sb.append(title[i]).append('\n');
-      XmlUtil.appendCdata(data, "jvxlSurfaceTitle", sb.toString());
+      XmlUtil.appendCdata(data, "jvxlSurfaceTitle", null, sb.toString());
     }
     sb = new StringBuffer();
     XmlUtil.openTag(sb, "jvxlSurfaceData", (jvxlData.jvxlPlane == null ? null :
@@ -163,7 +163,8 @@ public class JvxlCoder {
     XmlUtil.appendTag(sb, name, new String[] {
         "bsEncoding", "base90+35",
         "count", "" + count,
-        "len", "" + bs.length() }, sb1.toString());
+        "len", "" + bs.length() }, 
+        jvxlCompressString(sb1.toString(), true));
   }
 
   private static String jvxlSetCompressionRatio(StringBuffer data,
@@ -179,22 +180,23 @@ public class JvxlCoder {
     XmlUtil.appendTag(sb, "jvxlEdgeData", new String[] {
         "count", "" + (jvxlData.jvxlEdgeData.length() - 1),
         "encoding", "base90f1",
-        "bsEncoding", "base90+35",
+        "bsEncoding", "base90+35c",
         "isXLowToHigh", "" + jvxlData.isXLowToHigh,
-        "data", jvxlCompressString(jvxlData.jvxlEdgeData, true) }, "\n" + jvxlData.jvxlSurfaceData);
+        "data", jvxlCompressString(jvxlData.jvxlEdgeData, true) }, "\n" 
+        + jvxlCompressString(jvxlData.jvxlSurfaceData, true));
   }
 
   private static void jvxlAppendCommandState(StringBuffer data, String cmd,
                                              String state) {
     if (cmd != null)
-      XmlUtil.appendCdata(data, "jvxlIsosurfaceCommand",
+      XmlUtil.appendCdata(data, "jvxlIsosurfaceCommand", null,
           "\n" + (cmd.indexOf("#") < 0 ? cmd : cmd.substring(0, cmd.indexOf("#"))) + "\n");
     if (state != null) {
       if (state.indexOf("** XML ** ") >=0) {
         state = TextFormat.split(state, "** XML **")[1].trim(); 
         XmlUtil.appendTag(data, "jvxlIsosurfaceState",  "\n" + state + "\n");
       } else {
-        XmlUtil.appendCdata(data, "jvxlIsosurfaceState",  "\n" + state + "\n");
+        XmlUtil.appendCdata(data, "jvxlIsosurfaceState", null, "\n" + state + "\n");
       }
     }
   }
@@ -246,7 +248,11 @@ public class JvxlCoder {
       if (nColorData > 0)
         addAttrib(attribs, "\n  nBytesUncompressedColorData", "" + nColorData); // TODO: later?
     }
-    //TODO: which are required?
+    //next is for information only -- will be superceded by "encoding" attribute of jvxlColorData
+    if (jvxlData.isJvxlPrecisionColor)
+      addAttrib(attribs, "\n  precisionColor", "true");
+    if (jvxlData.colorDensity)
+      addAttrib(attribs, "\n  colorDensity", "true");
     if (jvxlData.jvxlPlane == null) {
       if (jvxlData.isContoured) {
         addAttrib(attribs, "\n  contoured", "true"); 
@@ -271,11 +277,6 @@ public class JvxlCoder {
       addAttrib(attribs, "\n  nExcludedVertexes", "" + jvxlData.excludedVertexCount);
     if (jvxlData.excludedTriangleCount > 0)
       addAttrib(attribs, "\n  nExcludedTriangles", "" + jvxlData.excludedTriangleCount);
-    //next is for information only -- will be superceded by "encoding" attribute of jvxlColorData
-    if (jvxlData.isJvxlPrecisionColor)
-      addAttrib(attribs, "\n  precisionColor", "true");
-    if (jvxlData.colorDensity)
-      addAttrib(attribs, "\n  colorDensity", "true");
     if (jvxlData.isContoured) {
       if (jvxlData.contourValues == null || jvxlData.contourColixes == null) {
         if (jvxlData.vContours == null)
@@ -377,8 +378,9 @@ public class JvxlCoder {
               .get(CONTOUR_COLOR))[0]),
           "count", "" + bs.length(),
           "encoding", "base90iff1",
-          "bsEncoding", "base90+35",
-          "data", jvxlCompressString(contours[i].get(CONTOUR_FDATA).toString(), true) }, sb1.toString());
+          "bsEncoding", "base90+35c",
+          "data", jvxlCompressString(contours[i].get(CONTOUR_FDATA).toString(), true) }, 
+          jvxlCompressString(sb1.toString(), true));
     }
     XmlUtil.closeTag(sb, "jvxlContourData");
   }
@@ -862,9 +864,15 @@ public class JvxlCoder {
   
     
   public static int jvxlEncodeBitSet(BitSet bs, int nPoints, StringBuffer sb) {
+    if (false)
+      return jvxlEncodeBitSet0(bs, nPoints, sb);
     int dataCount = 0;
     int n = 0;
     boolean isset = false;
+    if (nPoints < 0)
+      nPoints = bs.size();
+    if (nPoints == 0)
+      return 0;
     sb.append("-");
     for (int i = 0; i < nPoints; ++i) {
       if (isset == bs.get(i)) {
@@ -884,7 +892,7 @@ public class JvxlCoder {
   public static void jvxlAppendEncodedNumber(StringBuffer sb, int n, int base, int range) {
     boolean isInRange = (n < range);
     if (!isInRange)
-      sb.append('~');
+      sb.append((char)(base + range));
     while (n > 0) {
       int n1 = n / range;
       int x = base + n - n1 * range;
@@ -924,7 +932,7 @@ public class JvxlCoder {
     if (ich >= ichMax)
       return Integer.MIN_VALUE;
     int factor = 1;
-    boolean isLong = (str.charAt(ich) == '~');
+    boolean isLong = (str.charAt(ich) == (offset + base));
     if (isLong)
       ich++;
     while (ich < ichMax && !Character.isWhitespace(str.charAt(ich))) {
@@ -946,7 +954,7 @@ public class JvxlCoder {
 
   public static BitSet jvxlDecodeBitSet(String data) {
     if (data.startsWith("-"))
-      return jvxlDecodeBitSet(data.substring(1), defaultEdgeFractionBase, defaultEdgeFractionRange);
+      return jvxlDecodeBitSet(jvxlUncompressString(data.substring(1)), defaultEdgeFractionBase, defaultEdgeFractionRange);
     // nunset nset nunset ...
     BitSet bs = new BitSet();
     int dataCount = 0;

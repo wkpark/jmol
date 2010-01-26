@@ -176,8 +176,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private ColorEncoder colorEncoder = new ColorEncoder();
   private float withinDistance;
   private Vector withinPoints;
-  private BitSet bsWithinPoints;
-  private BitSet bsWithinPointsY;
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -304,8 +302,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       withinPoints = (Vector) o[3];
       if (withinPoints.size() == 0)
         withinPoints = viewer.getAtomPointVector(bs);
-      bsWithinPoints = new BitSet();
-      bsWithinPointsY = new BitSet();
     }
 
     if ("scale3d" == propertyName) {
@@ -641,8 +637,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     offset = null;
     scale3d = 0;
     withinPoints = null;
-    bsWithinPointsY = null;
-    bsWithinPoints = null;
     linkedMesh = null;
     initState();
   }
@@ -945,31 +939,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private boolean associateNormals;
 
   public int addVertexCopy(Point3f vertexXYZ, float value, int assocVertex) {
-    if (withinPoints != null && !checkWithin(vertexXYZ))
-      value = Float.NaN;
-    return thisMesh.addVertexCopy(vertexXYZ, value, assocVertex,
-        associateNormals);
-  }
-
-  public int addTriangleCheck(int iA, int iB, int iC, int check,
-                               int check2, boolean isAbsolute, int color) {
-    if (iA < 0 || iB < 0 || iC < 0)
-      return -1;
-    if (isAbsolute && !MeshData.checkCutoff(iA, iB, iC, thisMesh.vertexValues))
-      return -1;  
-    if (withinPoints != null && !checkWithinPoints(iA, iB, iC))
-      return -1;
-    return thisMesh.addTriangleCheck(iA, iB, iC, check, check2, color);
-  }
-
-  ////////////////////////////////////////////////////////////////////
-
-  private boolean checkWithinPoints(int ia, int ib, int ic) {
-    if (!bsWithinPoints.get(ia) && !checkWithin(ia) || !bsWithinPointsY.get(ia)
-      || !bsWithinPoints.get(ib) && !checkWithin(ib) || !bsWithinPointsY.get(ib)
-      || !bsWithinPoints.get(ic) && !checkWithin(ic) || !bsWithinPointsY.get(ic))
-      return false;
-    return true;
+    return (withinPoints != null && !checkWithin(vertexXYZ) ? -1
+        : thisMesh.addVertexCopy(vertexXYZ, value, assocVertex,
+        associateNormals));
   }
 
   private boolean checkWithin(Point3f pti) {
@@ -980,15 +952,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return false;
   }
 
-  private boolean checkWithin(int index) {
-    Point3f pti = thisMesh.vertices[index];
-    bsWithinPoints.set(index);
-    for (int i = withinPoints.size(); --i >= 0; )
-      if (pti.distance((Point3f) withinPoints.get(i)) <= withinDistance) {
-        bsWithinPointsY.set(index);   
-        return true; 
-      }
-    return false;
+  public int addTriangleCheck(int iA, int iB, int iC, int check,
+                              int check2, boolean isAbsolute, int color) {
+   return (iA < 0 || iB < 0 || iC < 0 
+       || isAbsolute && !MeshData.checkCutoff(iA, iB, iC, thisMesh.vertexValues)
+       ? -1 : thisMesh.addTriangleCheck(iA, iB, iC, check, check2, color));
   }
 
   private void setModelIndex() {

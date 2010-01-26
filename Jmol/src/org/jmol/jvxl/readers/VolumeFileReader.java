@@ -64,13 +64,17 @@ abstract class VolumeFileReader extends SurfaceFileReader {
      return value;
   }
   
+  boolean readerClosed;
   protected void closeReader() {
+    if (readerClosed)
+      return;
+    readerClosed = true;
     super.closeReader();
     int n = nPointsX * nPointsY * nPointsZ;
     if (n == 0 || dataMax == -Float.MAX_VALUE)
       return;
     dataMean /= n;
-    Logger.info("VolumeFileReader closing file: " + n + " points read; \ndata min/max/mean = " + dataMin + ", " + dataMax + ", " + dataMean );
+    Logger.info("VolumeFileReader closing file: " + n + " points read \ndata min/max/mean = " + dataMin + ", " + dataMax + ", " + dataMean );
   }
   
   protected boolean readVolumeParameters() {

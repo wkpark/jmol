@@ -67,7 +67,6 @@ public abstract class MeshRenderer extends ShapeRenderer {
     this.mesh = mesh;
     if (!setVariables())
       return false;
-    
     if (!g3d.setColix(colix) && !mesh.showContourLines)
       return mesh.title != null;
 

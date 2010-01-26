@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-01-23 23:57+0100\n"
+"POT-Creation-Date: 2010-01-26 20:19+0100\n"
 "PO-Revision-Date: 2010-01-23 13:47+0000\n"
 "Last-Translator: mucku <Unknown>\n"
 "Language-Team: none\n"
@@ -87,7 +87,7 @@ msgstr "Set &Parameter"
 msgid "&More"
 msgstr "&Mehr"
 
-#: org/jmol/applet/Jmol.java:676
+#: org/jmol/applet/Jmol.java:678
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -102,11 +102,11 @@ msgstr ""
 "\n"
 "Mehr Informationen unter http://www.jmol.org."
 
-#: org/jmol/applet/Jmol.java:922
+#: org/jmol/applet/Jmol.java:924
 msgid "File Error:"
 msgstr "Datei-Fehler:"
 
-#: org/jmol/applet/Jmol.java:1200
+#: org/jmol/applet/Jmol.java:1202
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
@@ -1686,12 +1686,12 @@ msgstr "unbekannter {0} Parameter"
 msgid "unrecognized token: {0}"
 msgstr "Unbekanntes Token: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2184
+#: org/jmol/script/ScriptCompiler.java:2196
 msgid "script compiler ERROR: "
 msgstr "Skript-Compiler FEHLER: "
 
 #: org/jmol/script/ScriptEvaluator.java:2218
-#: org/jmol/script/ScriptEvaluator.java:7747
+#: org/jmol/script/ScriptEvaluator.java:7757
 msgid "script ERROR: "
 msgstr "Skript FEHLER: "
 
@@ -1911,33 +1911,33 @@ msgstr "unbekannter SHOW parameter -- benutze {0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "Was schreiben? {0} oder {1} \"Dateiname\""
 
-#: org/jmol/script/ScriptEvaluator.java:5788
+#: org/jmol/script/ScriptEvaluator.java:5792
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} Bindungen gelöscht"
 
-#: org/jmol/script/ScriptEvaluator.java:5808
+#: org/jmol/script/ScriptEvaluator.java:5812
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} neue Bindungen; {1} verändert"
 
-#: org/jmol/script/ScriptEvaluator.java:6950
+#: org/jmol/script/ScriptEvaluator.java:6954
 #, java-format
 msgid "file {0} created"
 msgstr "Datei {0} erstellt"
 
-#: org/jmol/script/ScriptEvaluator.java:7871
-#: org/jmol/script/ScriptEvaluator.java:8093
+#: org/jmol/script/ScriptEvaluator.java:7881
+#: org/jmol/script/ScriptEvaluator.java:8103
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} Atome gelöscht"
 
-#: org/jmol/script/ScriptEvaluator.java:8651
+#: org/jmol/script/ScriptEvaluator.java:8671
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} Wasserstoff(brücken)bindungen"
 
-#: org/jmol/script/ScriptEvaluator.java:8998
+#: org/jmol/script/ScriptEvaluator.java:9019
 #, fuzzy, java-format
 msgid "{0} struts added"
 msgstr "{0} Atome versteckt"
@@ -2127,19 +2127,19 @@ msgstr ""
 msgid "simulate multi-touch using the mouse)"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1359
+#: org/jmol/viewer/ActionManager.java:1361
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "wähle ein weiteres Atom um das Modell um eine Achse zu drehen"
 
-#: org/jmol/viewer/ActionManager.java:1360
+#: org/jmol/viewer/ActionManager.java:1362
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "wähle zwei Atome um das Modell um eine Achse zu drehen"
 
-#: org/jmol/viewer/ActionManager.java:1363
+#: org/jmol/viewer/ActionManager.java:1365
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1364
+#: org/jmol/viewer/ActionManager.java:1366
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr ""
@@ -2155,36 +2155,30 @@ msgstr "{0} Atome versteckt"
 msgid "{0} atoms selected"
 msgstr "{0} Atome ausgewählt"
 
-#: org/jmol/viewer/Viewer.java:4040
+#: org/jmol/viewer/Viewer.java:4047
 #, java-format
 msgid "{0} hydrogens added"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4067
+#: org/jmol/viewer/Viewer.java:4074
 msgid "Drag to move label"
 msgstr "Ziehen um Beschriftung zu bewegen."
 
-#: org/jmol/viewer/Viewer.java:5079
-#, java-format
-msgid "ERROR: cannot set boolean flag to string value: {0}"
-msgstr ""
-"Fehler: kann kein boolsches Kennzeichen zu einem variablen Wert setzen:{0}"
-
-#: org/jmol/viewer/Viewer.java:5330 org/jmol/viewer/Viewer.java:5528
-#, java-format
-msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-msgstr "FEHLER: Kann boolschen Flag keinen numerischen Wert zuweisen: {0}"
-
-#: org/jmol/viewer/Viewer.java:6072
-#, java-format
-msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-msgstr "FEHLER: Kann der Variable keinen Boolschen Wert zuweisen: {0}"
-
-#: org/jmol/viewer/Viewer.java:7546
+#: org/jmol/viewer/Viewer.java:7234
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 "auf den Notizblock kann nicht zugegriffen werden -- verwenden Sie das "
 "signierte Miniprogramm"
+
+#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
+#~ msgstr ""
+#~ "Fehler: kann kein boolsches Kennzeichen zu einem variablen Wert setzen:{0}"
+
+#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
+#~ msgstr "FEHLER: Kann boolschen Flag keinen numerischen Wert zuweisen: {0}"
+
+#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
+#~ msgstr "FEHLER: Kann der Variable keinen Boolschen Wert zuweisen: {0}"
 
 #~ msgid "About Jmol"
 #~ msgstr "Über Jmol"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-01-23 23:57+0100\n"
+"POT-Creation-Date: 2010-01-26 20:19+0100\n"
 "PO-Revision-Date: 2010-01-09 02:14+0000\n"
 "Last-Translator: kyuu <kyuu@163.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -78,7 +78,7 @@ msgstr "设定参数 (&P)"
 msgid "&More"
 msgstr "更多(&M)"
 
-#: org/jmol/applet/Jmol.java:676
+#: org/jmol/applet/Jmol.java:678
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -93,11 +93,11 @@ msgstr ""
 "\n"
 "更多信息请参阅 http://www.jmol.org"
 
-#: org/jmol/applet/Jmol.java:922
+#: org/jmol/applet/Jmol.java:924
 msgid "File Error:"
 msgstr "文件错误："
 
-#: org/jmol/applet/Jmol.java:1200
+#: org/jmol/applet/Jmol.java:1202
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
@@ -1672,12 +1672,12 @@ msgstr "无法识别参数：{0}"
 msgid "unrecognized token: {0}"
 msgstr "无法识别标记：{0}"
 
-#: org/jmol/script/ScriptCompiler.java:2184
+#: org/jmol/script/ScriptCompiler.java:2196
 msgid "script compiler ERROR: "
 msgstr "脚本编译器错误： "
 
 #: org/jmol/script/ScriptEvaluator.java:2218
-#: org/jmol/script/ScriptEvaluator.java:7747
+#: org/jmol/script/ScriptEvaluator.java:7757
 msgid "script ERROR: "
 msgstr "脚本错误： "
 
@@ -1893,33 +1893,33 @@ msgstr "无法辨识 SHOW 的参数 -- 使用{0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "写什么呢？{0} 或 {1} \"文件名\""
 
-#: org/jmol/script/ScriptEvaluator.java:5788
+#: org/jmol/script/ScriptEvaluator.java:5792
 #, java-format
 msgid "{0} connections deleted"
 msgstr "己删除 {0} 个连接"
 
-#: org/jmol/script/ScriptEvaluator.java:5808
+#: org/jmol/script/ScriptEvaluator.java:5812
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} 个新化学键; {1} 个己修改"
 
-#: org/jmol/script/ScriptEvaluator.java:6950
+#: org/jmol/script/ScriptEvaluator.java:6954
 #, java-format
 msgid "file {0} created"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:7871
-#: org/jmol/script/ScriptEvaluator.java:8093
+#: org/jmol/script/ScriptEvaluator.java:7881
+#: org/jmol/script/ScriptEvaluator.java:8103
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "己删除 {0} 个原子"
 
-#: org/jmol/script/ScriptEvaluator.java:8651
+#: org/jmol/script/ScriptEvaluator.java:8671
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} 个氢键"
 
-#: org/jmol/script/ScriptEvaluator.java:8998
+#: org/jmol/script/ScriptEvaluator.java:9019
 #, fuzzy, java-format
 msgid "{0} struts added"
 msgstr "{0} 个氢键"
@@ -2109,20 +2109,20 @@ msgstr "重设（单击关闭模型时）"
 msgid "simulate multi-touch using the mouse)"
 msgstr "用鼠标模拟多点触控(multi-touch)"
 
-#: org/jmol/viewer/ActionManager.java:1359
+#: org/jmol/viewer/ActionManager.java:1361
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "请再多选一个原子来使分子可以一个轴旋转"
 
-#: org/jmol/viewer/ActionManager.java:1360
+#: org/jmol/viewer/ActionManager.java:1362
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "选取两个原子，使分子可以绕轴自旋"
 
-#: org/jmol/viewer/ActionManager.java:1363
+#: org/jmol/viewer/ActionManager.java:1365
 #, fuzzy
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "请再多选一个原子来使分子可以一个轴旋转"
 
-#: org/jmol/viewer/ActionManager.java:1364
+#: org/jmol/viewer/ActionManager.java:1366
 #, fuzzy
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
@@ -2139,33 +2139,27 @@ msgstr "{0} 个原子己隐藏"
 msgid "{0} atoms selected"
 msgstr "{0} 个原子己选定"
 
-#: org/jmol/viewer/Viewer.java:4040
+#: org/jmol/viewer/Viewer.java:4047
 #, fuzzy, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} 个氢键"
 
-#: org/jmol/viewer/Viewer.java:4067
+#: org/jmol/viewer/Viewer.java:4074
 msgid "Drag to move label"
 msgstr "拖拽移动标签"
 
-#: org/jmol/viewer/Viewer.java:5079
-#, java-format
-msgid "ERROR: cannot set boolean flag to string value: {0}"
-msgstr "错误：不能把布尔真假值设定为字符串值：{0}"
-
-#: org/jmol/viewer/Viewer.java:5330 org/jmol/viewer/Viewer.java:5528
-#, java-format
-msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-msgstr "错误：不能把布尔真假值标设定为数值：{0}"
-
-#: org/jmol/viewer/Viewer.java:6072
-#, java-format
-msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-msgstr "错误：不能把这个变量值设为布尔真假值：{0}"
-
-#: org/jmol/viewer/Viewer.java:7546
+#: org/jmol/viewer/Viewer.java:7234
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "不能存取剪贴板——请用使用签署过的小程序 (applet)"
+
+#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
+#~ msgstr "错误：不能把布尔真假值设定为字符串值：{0}"
+
+#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
+#~ msgstr "错误：不能把布尔真假值标设定为数值：{0}"
+
+#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
+#~ msgstr "错误：不能把这个变量值设为布尔真假值：{0}"
 
 #~ msgid ""
 #~ "File creation by this applet is not allowed. For Base64 JPEG format, use "

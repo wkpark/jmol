@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-01-23 23:57+0100\n"
+"POT-Creation-Date: 2010-01-26 20:19+0100\n"
 "PO-Revision-Date: 2009-11-14 20:50+0000\n"
 "Last-Translator: Mustafa Yılmaz <apshalasha@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -82,7 +82,7 @@ msgstr "&Parametreleri Ayarla"
 msgid "&More"
 msgstr "&Daha"
 
-#: org/jmol/applet/Jmol.java:676
+#: org/jmol/applet/Jmol.java:678
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -97,11 +97,11 @@ msgstr ""
 "\n"
 "Daha fazla bilgi için http://www.jmol.org 'u ziyaret ediniz"
 
-#: org/jmol/applet/Jmol.java:922
+#: org/jmol/applet/Jmol.java:924
 msgid "File Error:"
 msgstr "Dosya Hatası:"
 
-#: org/jmol/applet/Jmol.java:1200
+#: org/jmol/applet/Jmol.java:1202
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
@@ -1677,12 +1677,12 @@ msgstr "tanınmayan {0} parametre"
 msgid "unrecognized token: {0}"
 msgstr "tanınmayan belirtke: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2184
+#: org/jmol/script/ScriptCompiler.java:2196
 msgid "script compiler ERROR: "
 msgstr "betik derteyici HATASI: "
 
 #: org/jmol/script/ScriptEvaluator.java:2218
-#: org/jmol/script/ScriptEvaluator.java:7747
+#: org/jmol/script/ScriptEvaluator.java:7757
 msgid "script ERROR: "
 msgstr "betik HATASI: "
 
@@ -1903,33 +1903,33 @@ msgstr "tanınmayan GÖSTER parametresi --  {0} kullanın"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "neyi yaz? {0} ya da {1} \"dosyaadı\""
 
-#: org/jmol/script/ScriptEvaluator.java:5788
+#: org/jmol/script/ScriptEvaluator.java:5792
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} bağlantı(lar) silindi"
 
-#: org/jmol/script/ScriptEvaluator.java:5808
+#: org/jmol/script/ScriptEvaluator.java:5812
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} yeni bağ; {1} düzenlenmiş"
 
-#: org/jmol/script/ScriptEvaluator.java:6950
+#: org/jmol/script/ScriptEvaluator.java:6954
 #, java-format
 msgid "file {0} created"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:7871
-#: org/jmol/script/ScriptEvaluator.java:8093
+#: org/jmol/script/ScriptEvaluator.java:7881
+#: org/jmol/script/ScriptEvaluator.java:8103
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atom silindi"
 
-#: org/jmol/script/ScriptEvaluator.java:8651
+#: org/jmol/script/ScriptEvaluator.java:8671
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} hidrojen bağ(lar)ı"
 
-#: org/jmol/script/ScriptEvaluator.java:8998
+#: org/jmol/script/ScriptEvaluator.java:9019
 #, fuzzy, java-format
 msgid "{0} struts added"
 msgstr "{0} hidrojen bağ(lar)ı"
@@ -2126,20 +2126,20 @@ msgstr ""
 msgid "simulate multi-touch using the mouse)"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1359
+#: org/jmol/viewer/ActionManager.java:1361
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "modeli bir eksen etrafında döndürebilmek için bir tane daha atom seçin"
 
-#: org/jmol/viewer/ActionManager.java:1360
+#: org/jmol/viewer/ActionManager.java:1362
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "modeli bir eksen etrafında döndürebilmek için iki atom seçin"
 
-#: org/jmol/viewer/ActionManager.java:1363
+#: org/jmol/viewer/ActionManager.java:1365
 #, fuzzy
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "modeli bir eksen etrafında döndürebilmek için bir tane daha atom seçin"
 
-#: org/jmol/viewer/ActionManager.java:1364
+#: org/jmol/viewer/ActionManager.java:1366
 #, fuzzy
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
@@ -2156,33 +2156,27 @@ msgstr "{0} atomlar gizli"
 msgid "{0} atoms selected"
 msgstr "{0} atom(lar) seçildi"
 
-#: org/jmol/viewer/Viewer.java:4040
+#: org/jmol/viewer/Viewer.java:4047
 #, fuzzy, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} hidrojen bağ(lar)ı"
 
-#: org/jmol/viewer/Viewer.java:4067
+#: org/jmol/viewer/Viewer.java:4074
 msgid "Drag to move label"
 msgstr "Etiketi taşımak için sürükleyin"
 
-#: org/jmol/viewer/Viewer.java:5079
-#, java-format
-msgid "ERROR: cannot set boolean flag to string value: {0}"
-msgstr "HATA: ikili işaret yazı değerine atanamadı: {0}"
-
-#: org/jmol/viewer/Viewer.java:5330 org/jmol/viewer/Viewer.java:5528
-#, java-format
-msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-msgstr "HATA: ikili işaret sayısal değere atanamadı: {0}"
-
-#: org/jmol/viewer/Viewer.java:6072
-#, java-format
-msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-msgstr "HATA: Bu değişkenin değeri bir ikiliye atanamadı: {0}"
-
-#: org/jmol/viewer/Viewer.java:7546
+#: org/jmol/viewer/Viewer.java:7234
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "panoya erişilemiyor -- işaretli uygulamacığı kullanın"
+
+#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
+#~ msgstr "HATA: ikili işaret yazı değerine atanamadı: {0}"
+
+#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
+#~ msgstr "HATA: ikili işaret sayısal değere atanamadı: {0}"
+
+#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
+#~ msgstr "HATA: Bu değişkenin değeri bir ikiliye atanamadı: {0}"
 
 #~ msgid "About Jmol"
 #~ msgstr "Jmol Hakkında"

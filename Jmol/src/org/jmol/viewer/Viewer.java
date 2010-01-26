@@ -4879,6 +4879,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setStringProperty(String key, String value) {
+    if (value == null)
+      return;
     if (key.charAt(0) == '_') {
       global.setParameterValue(key, value);
       return;
@@ -5024,14 +5026,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         // not found -- @ is a silent mode indicator
         && (global.htBooleanParameterFlags.containsKey(key) || global.htPropertyFlagsRemoved
             .containsKey(key))) {
-      setPropertyError(GT._(
-          "ERROR: cannot set boolean flag to string value: {0}", key));
+     // setPropertyError(GT._(
+       //   "ERROR: cannot set boolean flag to string value: {0}", key));
     } else {
       global.setUserVariable(key, new ScriptVariable(Token.string, value));
     }
   }
 
   public void setFloatProperty(String key, float value) {
+    if (Float.isNaN(value))
+      return;
     if (key.charAt(0) == '_') {
       global.setParameterValue(key, value);
       return;
@@ -5175,8 +5179,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (global.htNonbooleanParameterValues.containsKey(key))
       global.setParameterValue(key, value);
     else if (!found && global.htBooleanParameterFlags.containsKey(key)) {
-      setPropertyError(GT._(
-          "ERROR: cannot set boolean flag to numeric value: {0}", key));
+     // setPropertyError(GT._(
+       //   "ERROR: cannot set boolean flag to numeric value: {0}", key));
     } else {
       global.setUserVariable(key, new ScriptVariable(Token.decimal, new Float(
           value)));
@@ -5185,6 +5189,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setIntProperty(String key, int value) {
+    if (value == Integer.MIN_VALUE)
+      return;
     if (key.charAt(0) == '_') {
       global.setParameterValue(key, value);
       return;
@@ -5312,8 +5318,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (global.htNonbooleanParameterValues.containsKey(key)) {
       global.setParameterValue(key, value);
     } else if (!found && global.htBooleanParameterFlags.containsKey(key)) {
-      setPropertyError(GT._(
-          "ERROR: cannot set boolean flag to numeric value: {0}", key));
+      //setPropertyError(GT._(
+        //  "ERROR: cannot set boolean flag to numeric value: {0}", key));
     } else {
       global.setUserVariable(key, ScriptVariable.intVariable(value));
     }
@@ -5724,8 +5730,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol)
       global.setParameterValue(key, value);
     else if (!found && global.htNonbooleanParameterValues.containsKey(key)) {
-      setPropertyError(GT._(
-          "ERROR: Cannot set value of this variable to a boolean: {0}", key));
+      //setPropertyError(GT._(
+        //  "ERROR: Cannot set value of this variable to a boolean: {0}", key));
       return true;
     } else {
       global.setUserVariable(key, ScriptVariable.getBoolean(value));
@@ -5750,11 +5756,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getLanguage() {
     return language;
-  }
-
-  private void setPropertyError(String msg) {
-    Logger.error(msg);
-    scriptEcho(msg);
   }
 
   public void removeUserVariable(String key) {

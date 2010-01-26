@@ -223,10 +223,15 @@ public class Token {
 
   public final static int PROPERTYFLAGS = strproperty | intproperty | floatproperty;
 
+  // parameters that can be set using the SET command
   public final static int strparam   = (1 << 23) | setparam; // string parameter
   public final static int intparam   = (1 << 24) | setparam; // int parameter
   public final static int floatparam = (1 << 25) | setparam; // float parameter
   public final static int booleanparam = (1 << 26) | setparam; // boolean parameter
+  
+  // note: the booleanparam and the mathproperty bits are the same, but there is no
+  //       conflict because mathproperty is only checked in ScriptEvaluator.getBitsetProperty
+  //       meaning it is coming after a "." as in {*}.min
   
   final static int mathproperty         = (1 << 26) | expression | misc; // {xxx}.nnnn
   final static int mathfunc             = (1 << 27) | expression;  
@@ -234,7 +239,7 @@ public class Token {
   final static int comparator           = mathop | (1 << 8);
   
   public final static int center       = 1 | atomExpressionCommand;
-  public final static int define       = 2 | atomExpressionCommand | expression | setparam;
+  public final static int define       = 2 | atomExpressionCommand | expression;
   public final static int delete       = 3 | atomExpressionCommand;
   final static int display      = 4 | atomExpressionCommand | setparam;
   final static int hide         = 5 | atomExpressionCommand;
@@ -246,7 +251,7 @@ public class Token {
   final static int print        = 1 | mathExpressionCommand;
   final static int returncmd    = 2 | mathExpressionCommand;
   final static int set          = 3 | mathExpressionCommand | expression;
-  final static int var          = 4 | mathExpressionCommand | setparam;
+  final static int var          = 4 | mathExpressionCommand;
 
   public final static int echo  = 1 | implicitStringCommand | shapeCommand | setparam;
   final static int help         = 2 | implicitStringCommand;
@@ -416,7 +421,7 @@ public class Token {
   final static int leftparen    = 0 | mathop | 1 << 4;
   final static int rightparen   = 1 | mathop | 1 << 4;
 
-  final static int opIf         = 1 | mathop | 2 << 4 | setparam;
+  final static int opIf         = 1 | mathop | 2 << 4 | setparam;   // set ?
   final static int colon        = 2 | mathop | 2 << 4;
 
   final static int comma        = 0 | mathop | 3 << 4;
@@ -1141,6 +1146,14 @@ public class Token {
     return (Token) tokenMap.get(name);  
   }
   
+  /**
+   * note: nameOf is a very inefficient mechanism for getting 
+   * the name of a token. But it is only used for error messages
+   * and listings of variables and such.
+   * 
+   * @param tok
+   * @return     the name of the token or 0xAAAAAA
+   */
   public static String nameOf(int tok) {
     Enumeration e = tokenMap.elements();
     while (e.hasMoreElements()) {

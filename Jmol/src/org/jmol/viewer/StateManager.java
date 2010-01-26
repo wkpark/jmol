@@ -952,12 +952,9 @@ public class StateManager {
     }
 
     void setParameterValue(String name, float value) {
-      name = name.toLowerCase();
-      if (Float.isNaN(value)) {
-        htNonbooleanParameterValues.remove(name);
-        htBooleanParameterFlags.remove(name);
+      if (Float.isNaN(value))
         return;
-      }
+      name = name.toLowerCase();
       if (htBooleanParameterFlags.containsKey(name))
         return; // don't allow setting numeric of a boolean
       htNonbooleanParameterValues.put(name, new Float(value));

@@ -2820,7 +2820,7 @@ public class ScriptEvaluator {
   }
 
   private void setStringProperty(String key, String value) {
-    if (!isSyntaxCheck) // ??? || key.equalsIgnoreCase("defaultdirectory"))
+    if (!isSyntaxCheck)
       viewer.setStringProperty(key, value);
   }
 
@@ -4290,6 +4290,8 @@ public class ScriptEvaluator {
   }
 
   private int intSetting(int pt) throws ScriptException {
+    if (pt == statementLength)
+      return Integer.MIN_VALUE;
     Vector v = (Vector) parameterExpression(pt, -1, "XXX", true);
     if (v == null || v.size() == 0)
       error(ERROR_invalidArgument);
@@ -4298,6 +4300,8 @@ public class ScriptEvaluator {
 
   private float floatSetting(int pt, float min, float max)
       throws ScriptException {
+    if (pt == statementLength)
+      return Float.NaN;
     float val = floatSetting(pt);
     if (val < min || val > max)
       numberOutOfRange(min, max);
@@ -9578,9 +9582,17 @@ public class ScriptEvaluator {
       }
       break;
     case Token.picking:
+      if (statementLength == 2) {
+        key = "picking";
+        break;
+      }
       setPicking();
       return;
     case Token.pickingstyle:
+      if (statementLength == 2) {
+        key = "pickingStyle";
+        break;
+      }
       setPickingStyle();
       return;
 
@@ -9602,6 +9614,8 @@ public class ScriptEvaluator {
       return;
     case Token.formalcharge:
       n = intSetting(2);
+      if (n == Integer.MIN_VALUE)
+        error(ERROR_invalidArgument);
       if (!isSyntaxCheck)
         viewer.setFormalCharges(n);
       return;
@@ -9622,7 +9636,7 @@ public class ScriptEvaluator {
       break;
     case Token.specularpower:
       val = intSetting(2);
-      if (val >= 0) {
+      if (val >= 0 || val == Integer.MIN_VALUE) {
         key = "specularPower";
         break;
       } 
@@ -9698,6 +9712,32 @@ public class ScriptEvaluator {
         return;
       }
 
+      if (key.equalsIgnoreCase("trajectory")
+          || key.equalsIgnoreCase("trajectories")) {
+        Token token = tokenSetting(2); // if an expression, we are done
+        if (isSyntaxCheck)
+          return;
+        if (token.tok == Token.decimal) // if a number, we just set its
+                                        // trajectory
+          viewer.getModelNumberIndex(token.intValue, false, true);
+        return;
+      }
+
+      // deprecated:
+
+      if (key.equalsIgnoreCase("showSelections")) {
+        key = "selectionHalos";
+        break;
+      }
+      if (key.equalsIgnoreCase("measurementNumbers")) {
+        key = "measurementLabels";
+        break;
+      }
+
+      // these next could be queries
+      
+      if (statementLength == 2)
+        break;
       if (key.equalsIgnoreCase("defaultLattice")) {
         Point3f pt;
       Vector v = (Vector) parameterExpression(2, 0, "XXX", true);
@@ -9760,26 +9800,6 @@ public class ScriptEvaluator {
         String lang = stringSetting(2, isJmolSet);
         setStringProperty(key, lang);
         return;
-      }
-      if (key.equalsIgnoreCase("trajectory")
-          || key.equalsIgnoreCase("trajectories")) {
-        Token token = tokenSetting(2); // if an expression, we are done
-        if (isSyntaxCheck)
-          return;
-        if (token.tok == Token.decimal) // if a number, we just set its
-                                        // trajectory
-          viewer.getModelNumberIndex(token.intValue, false, true);
-        return;
-      }
-      // deprecated:
-
-      if (key.equalsIgnoreCase("showSelections")) {
-        key = "selectionHalos";
-        break;
-      }
-      if (key.equalsIgnoreCase("measurementNumbers")) {
-        key = "measurementLabels";
-        break;
       }
     }
 
@@ -9983,7 +10003,8 @@ public class ScriptEvaluator {
     if (key.equalsIgnoreCase("scriptReportingLevel")) { // 11.1.13
       intVal = intSetting(2);
       if (!isSyntaxCheck) {
-        scriptReportingLevel = intVal;
+        if (intVal != Integer.MIN_VALUE)
+          scriptReportingLevel = intVal;
         setIntProperty(key, intVal);
       }
       return true;
@@ -9991,7 +10012,8 @@ public class ScriptEvaluator {
     if (key.equalsIgnoreCase("historyLevel")) {
       intVal = intSetting(2);
       if (!isSyntaxCheck) {
-        commandHistoryLevelMax = intVal;
+        if (intVal != Integer.MIN_VALUE)
+          commandHistoryLevelMax = intVal;
         setIntProperty(key, intVal);
       }
       return true;
@@ -10003,8 +10025,10 @@ public class ScriptEvaluator {
     if (key.equalsIgnoreCase("axesScale"))
       return setFloatProperty("axesScale", floatSetting(2, -100, 100));
     if (key.equalsIgnoreCase("measurementUnits"))
-      return setMeasurementUnits(stringSetting(2, isJmolSet));
+      return (statementLength == 2 ? true : setMeasurementUnits(stringSetting(2, isJmolSet)));
     if (key.equalsIgnoreCase("defaultVDW")) {
+      if (statementLength == 2)
+        return true;
       String val = (statementLength == 3
           && JmolConstants.getVdwType(parameterAsString(2)) == JmolConstants.VDW_UNKNOWN 
           ? stringSetting(2, false) : parameterAsString(2));
@@ -10014,6 +10038,8 @@ public class ScriptEvaluator {
       return true;
     }
     if (Parser.isOneOf(lcKey, "defaults;defaultcolorscheme")) {
+      if (statementLength == 2)
+        return true;
       String val;
       if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol) {
         val = parameterAsString(checkLast(2)).toLowerCase();
@@ -10045,6 +10071,7 @@ public class ScriptEvaluator {
     }
     switch (statementLength) {
     case 2:
+      // too bad we allow this...
       setBooleanProperty(key, true);
       return true;
     case 3:

@@ -1207,23 +1207,33 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         break;
 
       // not the standard command
-      // isSetBrace: {xxx}.yyy =  or {xxx}[xx].
-      // isNewSet:   xxx =
+      // isSetBrace: {xxx}.yyy = or {xxx}[xx].
+      // isNewSet: xxx =
       // but not xxx = where xxx is a known "set xxx" variant
       // such as "set hetero" or "set hydrogen" or "set solvent"
       isSetBrace = (theTok == Token.leftbrace);
-      if (isSetBrace && !lookingAtBraceSyntax()) {
-        isEndOfCommand = true;
-        if (flowContext != null)
-          flowContext.forceEndIf = false;
-      }
-      if (!isSetBrace && theTok != Token.plusPlus && theTok != Token.minusMinus
-          && theTok != Token.identifier
-          && !Token.tokAttr(theTok, Token.misc)
-          && !Token.tokAttr(theTok, Token.setparam)
-          && !isContextVariable(ident)) {
-         commandExpected();
-        return ERROR;
+      if (isSetBrace) {
+        if (!lookingAtBraceSyntax()) {
+          isEndOfCommand = true;
+          if (flowContext != null)
+            flowContext.forceEndIf = false;
+        }
+      } else {
+        switch (theTok) {
+        case Token.plusPlus:
+        case Token.minusMinus:
+        case Token.identifier:
+        case Token.var:
+        case Token.define:
+          break;
+        default:
+          if (!Token.tokAttr(theTok, Token.misc)
+              && !Token.tokAttr(theTok, Token.setparam)
+              && !isContextVariable(ident)) {
+            commandExpected();
+            return ERROR;
+          }
+        }
       }
       tokCommand = Token.set;
       isNewSet = !isSetBrace;
@@ -1313,8 +1323,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       } else if ((nTokens == 3 || nTokens == 4) && theTok == Token.in) {
         nSemiSkip -= 2;
         forPoint3 = 2;
-          // for ( var x IN
-          // for ( x IN 
+        // for ( var x IN
+        // for ( x IN
       } else if (braceCount == 0 && parenCount == 0) {
         isEndOfCommand = true;
         ichEnd = ichToken + 1;
@@ -1322,7 +1332,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       break;
     case Token.set:
-      if (theTok ==  Token.leftbrace)
+      if (theTok == Token.leftbrace)
         setBraceCount++;
       else if (theTok == Token.rightbrace) {
         setBraceCount--;
@@ -1335,7 +1345,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         if (theTok == Token.leftparen) {
           // mysub(xxx,xxx,xxx)
           Token token = (Token) ltoken.get(0);
-          ltoken.setElementAt(setCommand(new Token(Token.function, 0, token.value)), 0);
+          ltoken.setElementAt(setCommand(new Token(Token.function, 0,
+              token.value)), 0);
           break;
         }
         if (theTok != Token.identifier && theTok != Token.andequals
@@ -1348,10 +1359,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         }
         if (isSetArray) {
           addTokenToPrefix(theToken);
-          //token = Token.tokenArraySelector;
-          //theTok = Token.leftsquare;
-        } else if (nTokens == 1 
-              && (lastToken.tok == Token.plusPlus || lastToken.tok == Token.minusMinus)) {
+          // token = Token.tokenArraySelector;
+          // theTok = Token.leftsquare;
+        } else if (nTokens == 1
+            && (lastToken.tok == Token.plusPlus || lastToken.tok == Token.minusMinus)) {
           ltoken.removeElementAt(0);
           ltoken.insertElementAt(setCommand(Token.tokenSet), 0);
           addTokenToPrefix(lastToken);
@@ -1406,9 +1417,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         }
       }
       if (bracketCount == 0 && theTok != Token.identifier
-          && !Token.tokAttr(theTok, Token.expression) 
-          && !Token.tokAttr(theTok, Token.misc) 
-          && (theTok & Token.minmaxmask) != theTok) 
+          && !Token.tokAttr(theTok, Token.expression)
+          && !Token.tokAttr(theTok, Token.misc)
+          && (theTok & Token.minmaxmask) != theTok)
         return ERROR(ERROR_invalidExpressionToken, ident);
       break;
     case Token.center:
@@ -1420,7 +1431,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case Token.pmesh:
     case Token.isosurface:
       // isosurface ... name.xxx
-      if (parenCount == 0 && bracketCount == 0 && ".:/\\+-!?".indexOf(nextChar())>= 0)
+      if (parenCount == 0 && bracketCount == 0
+          && ".:/\\+-!?".indexOf(nextChar()) >= 0)
         checkUnquotedFileName();
     }
     return OK;

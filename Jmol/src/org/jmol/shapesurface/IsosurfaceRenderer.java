@@ -213,6 +213,9 @@ public class IsosurfaceRenderer extends MeshRenderer {
         frontOnly = false;
       bsFaces.clear();
     }
+    if (exportType == Graphics3D.EXPORT_CARTESIAN) {
+      frontOnly = false;
+    }
     boolean colorSolid = (vertexColixes == null || imesh.isColorSolid);
     boolean noColor = (vertexColixes == null || !fill && imesh.meshColix != 0);
     boolean isPlane = (imesh.jvxlData.jvxlPlane != null);

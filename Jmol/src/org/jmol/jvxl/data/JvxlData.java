@@ -88,7 +88,7 @@ public class JvxlData {
   public String jvxlEdgeData;
   public String jvxlColorData;
   public String jvxlVolumeDataXml;
-  public BitSet[] jvxlExcluded;
+  public BitSet[] jvxlExcluded = new BitSet[4];
   
   public Point4f jvxlPlane;
 

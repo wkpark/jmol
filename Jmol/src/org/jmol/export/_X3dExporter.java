@@ -46,6 +46,11 @@ import org.jmol.viewer.Viewer;
 
 public class _X3dExporter extends _VrmlExporter {
 
+  public _X3dExporter() {
+    useTable = new UseTable("USE='");
+  }
+  
+
   protected void outputHeader() {
     output("<X3D profile='Immersive' version='3.1' "
       + "xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' "

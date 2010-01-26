@@ -537,9 +537,11 @@ public abstract class ___Exporter {
 class UseTable extends Hashtable {
   private int iObj;
   private String keyword;
+  private char term;
 
   UseTable(String keyword) {
     this.keyword = keyword;
+    term = keyword.charAt(keyword.length() - 1);
   }
   
   /**
@@ -555,7 +557,7 @@ class UseTable extends Hashtable {
 
   String getDef(String key) {
     if (containsKey(key))
-      return keyword + get(key);
+      return keyword + get(key) + term;
     String id = "_" + (iObj++);
     put(key, id);
     return id;

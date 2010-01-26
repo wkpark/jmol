@@ -115,7 +115,7 @@ public class XmlUtil {
    */
   public static void appendTag(StringBuffer sb, String name,
                                Object[] attributes, Object data) {
-    appendTag(sb, name, attributes, data, false, true);
+    appendTag(sb, name, attributes, data, true, true);
   }
 
   /**

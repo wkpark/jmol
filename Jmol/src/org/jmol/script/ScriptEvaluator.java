@@ -11270,7 +11270,7 @@ public class ScriptEvaluator {
         error(ERROR_noData);
       type = "XJVXL";
     } else if (data == "ISO" || data == "ISOX") {
-      if (fileName.toUpperCase().indexOf("XJVXL") >= 0)
+      if (fileName == null || fileName.toUpperCase().indexOf("XJVXL") >= 0)
         data = "ISOX";
       if ((data = getIsosurfaceJvxl(data == "ISOX", JmolConstants.SHAPE_ISOSURFACE)) == null)
         error(ERROR_noData);

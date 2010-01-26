@@ -161,6 +161,7 @@ public class JvxlCoder {
     StringBuffer sb1 = new StringBuffer("\n ");
     jvxlEncodeBitSet(bs, -1, sb1);
     XmlUtil.appendTag(sb, name, new String[] {
+        "bsEncoding", "base90+35",
         "count", "" + count,
         "len", "" + bs.length() }, sb1.toString());
   }
@@ -178,6 +179,7 @@ public class JvxlCoder {
     XmlUtil.appendTag(sb, "jvxlEdgeData", new String[] {
         "count", "" + (jvxlData.jvxlEdgeData.length() - 1),
         "encoding", "base90f1",
+        "bsEncoding", "base90+35",
         "isXLowToHigh", "" + jvxlData.isXLowToHigh,
         "data", jvxlCompressString(jvxlData.jvxlEdgeData, true) }, "\n" + jvxlData.jvxlSurfaceData);
   }
@@ -375,6 +377,7 @@ public class JvxlCoder {
               .get(CONTOUR_COLOR))[0]),
           "count", "" + bs.length(),
           "encoding", "base90iff1",
+          "bsEncoding", "base90+35",
           "data", jvxlCompressString(contours[i].get(CONTOUR_FDATA).toString(), true) }, sb1.toString());
     }
     XmlUtil.closeTag(sb, "jvxlContourData");
@@ -820,7 +823,7 @@ public class JvxlCoder {
 
   // /// differential bitset encoding and decoding (Bob Hanson hansonr@stolaf.edu for Jmol)
 
-  public static int jvxlEncodeBitSet(BitSet bs, int nPoints, StringBuffer sb) {
+  public static int jvxlEncodeBitSet0(BitSet bs, int nPoints, StringBuffer sb) {
     // nunset nset nunset ...
     // for repeated numbers:
     // 3 3 3 3 3 3 3 becomes 3 -6
@@ -832,6 +835,7 @@ public class JvxlCoder {
     int n = 0;
     boolean isset = false;
     int lastPoint = nPoints - 1;
+    
     for (int i = 0; i < nPoints; ++i) {
       if (isset == bs.get(i)) {
         dataCount++;
@@ -855,8 +859,94 @@ public class JvxlCoder {
     sb.append(' ').append(dataCount).append('\n');
     return n;
   }
+  
+    
+  public static int jvxlEncodeBitSet(BitSet bs, int nPoints, StringBuffer sb) {
+    int dataCount = 0;
+    int n = 0;
+    boolean isset = false;
+    sb.append("-");
+    for (int i = 0; i < nPoints; ++i) {
+      if (isset == bs.get(i)) {
+        dataCount++;
+      } else {
+         jvxlAppendEncodedNumber(sb, dataCount, defaultEdgeFractionBase, defaultEdgeFractionRange);
+        n++;
+        dataCount = 1;
+        isset = !isset;
+      }
+    }
+    jvxlAppendEncodedNumber(sb, dataCount, defaultEdgeFractionBase, defaultEdgeFractionRange);
+    sb.append('\n');
+    return n;
+  }
+
+  public static void jvxlAppendEncodedNumber(StringBuffer sb, int n, int base, int range) {
+    boolean isInRange = (n < range);
+    if (!isInRange)
+      sb.append('~');
+    while (n > 0) {
+      int n1 = n / range;
+      int x = base + n - n1 * range;
+      if (x == 92)
+        x = 33;  // \ --> !
+      sb.append((char) x);
+      n = n1;
+    }
+    if (!isInRange)
+      sb.append(" ");
+  }
+
+  public static BitSet jvxlDecodeBitSet(String data, int base, int range) {
+    BitSet bs = new BitSet();
+    int dataCount = 0;
+    int ptr = 0;
+    boolean isset = false;
+    int[] next = new int[1];
+    while ((dataCount = jvxlParseEncodedInt(data, base, range, next)) != Integer.MIN_VALUE) {
+      if (isset)
+        bs.set(ptr, ptr + dataCount);
+      ptr += dataCount;
+      isset = !isset;
+    }
+    return bs;
+  }
+
+  public static int jvxlParseEncodedInt(String str, int offset, int base, int[] next) {
+    boolean digitSeen = false;
+    int value = 0;
+    int ich = next[0];
+    int ichMax = str.length();
+    if (ich < 0)
+      return Integer.MIN_VALUE;
+    while (ich < ichMax && Character.isWhitespace(str.charAt(ich)))
+      ++ich;
+    if (ich >= ichMax)
+      return Integer.MIN_VALUE;
+    int factor = 1;
+    boolean isLong = (str.charAt(ich) == '~');
+    if (isLong)
+      ich++;
+    while (ich < ichMax && !Character.isWhitespace(str.charAt(ich))) {
+      int i = str.charAt(ich);
+      if (i < offset)
+        i = 92;   // ! --> \ 
+      value += (i - offset) * factor;
+      digitSeen = true;
+      ++ich;
+      if (!isLong)
+        break;
+      factor *= base;
+    }
+    if (!digitSeen)
+      value = Integer.MIN_VALUE;
+    next[0] = ich;
+    return value;
+  }
 
   public static BitSet jvxlDecodeBitSet(String data) {
+    if (data.startsWith("-"))
+      return jvxlDecodeBitSet(data.substring(1), defaultEdgeFractionBase, defaultEdgeFractionRange);
     // nunset nset nunset ...
     BitSet bs = new BitSet();
     int dataCount = 0;

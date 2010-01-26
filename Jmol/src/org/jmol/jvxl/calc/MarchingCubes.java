@@ -303,7 +303,7 @@ public class MarchingCubes extends TriangleData {
                   * vertexValues[i] : vertexValues[i]);
             }
 
-            if (Float.isNaN(v))
+            if (colorDensity && Float.isNaN(v))
               bsExcludedVertices.set(pti);
           }
           if (!Float.isNaN(v)) {

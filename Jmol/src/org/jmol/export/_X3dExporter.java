@@ -88,7 +88,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("  boundboxCenter: " + viewer.getBoundBoxCenter() + "\n");
     output("  translationOffset: " + viewer.getTranslationScript() + "\n");
     output("  zoom: " + viewer.getZoomPercentFloat() + "\n");
-    output("  moveto command: " + viewer.getOrientationText(Token.moveto) + "\n");
+    output("  moveto command: " + viewer.getOrientationText(Token.moveto, null) + "\n");
     output("  screen width height dim: " + screenWidth + " " + screenHeight + " " 
       + viewer.getScreenDim() 
       + "\n  -->\n\n");

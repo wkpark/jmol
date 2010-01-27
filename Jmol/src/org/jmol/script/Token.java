@@ -363,7 +363,7 @@ public class Token {
   
   final static int expressionBegin     = expression | 1;
   final static int expressionEnd       = expression | 2;
-  final static int all                 = expression | 3;
+  public final static int all          = expression | 3;
   public final static int branch       = expression | 4;
   final static int coord               = expression | 6;
   final static int dollarsign          = expression | 7;

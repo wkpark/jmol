@@ -272,7 +272,7 @@ public abstract class ___Exporter {
     outputComment("boundboxCenter: " + viewer.getBoundBoxCenter());
     outputComment("translationOffset: " + viewer.getTranslationScript());
     outputComment("zoom: " + viewer.getZoomPercentFloat());
-    outputComment("moveto command: " + viewer.getOrientationText(Token.moveto));
+    outputComment("moveto command: " + viewer.getOrientationText(Token.moveto, null));
   }
 
   protected void outputFooter() {

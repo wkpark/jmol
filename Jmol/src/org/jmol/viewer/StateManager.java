@@ -295,6 +295,24 @@ public class StateManager {
     return new Orientation(false);
   }
 
+  String getSavedOrientationText(String saveName) {
+    Orientation o;
+    if (saveName != null) {
+      o = getOrientation(saveName);
+      return (o == null ? "" : o.getMoveToText(true));      
+    } 
+    StringBuffer sb = new StringBuffer();
+    Enumeration e = saved.keys();
+    while (e.hasMoreElements()) {
+       String name = (String) e.nextElement();
+       if (!name.startsWith("Orientation_"))
+         continue;
+       sb.append(((Orientation) saved.get(name)).getMoveToText(true));
+    }
+    return sb.toString(); 
+  }
+
+
   void saveOrientation(String saveName) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSaved("Orientation_");
@@ -304,16 +322,20 @@ public class StateManager {
     o.saveName = lastOrientation = "Orientation_" + saveName;
     saved.put(o.saveName, o);
   }
-
+  
   boolean restoreOrientation(String saveName, float timeSeconds, boolean isAll) {
-    String name = (saveName.length() > 0 ? "Orientation_" + saveName
-        : lastOrientation);
-    Orientation o = (Orientation) saved.get(name);
+    Orientation o = getOrientation(saveName);
     if (o == null)
       return false;
     o.restore(timeSeconds, isAll);
     //    Logger.info(listSavedStates());
     return true;
+  }
+
+  private Orientation getOrientation(String saveName) {
+    String name = (saveName.length() > 0 ? "Orientation_" + saveName
+        : lastOrientation);    
+    return (Orientation) saved.get(name);
   }
 
   public class Orientation {
@@ -362,8 +384,9 @@ public class StateManager {
       }
     }
 
-    public String getMoveToText() {
-      return moveToText;
+    public String getMoveToText(boolean asCommand) {
+      return (asCommand ? " " + moveToText + "\n save orientation \"" 
+          + saveName.substring(12) + "\"\n" : moveToText);
     }
     
     public void restore(float timeSeconds, boolean isAll) {

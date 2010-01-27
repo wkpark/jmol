@@ -11340,6 +11340,7 @@ public class ScriptEvaluator {
     String value = null;
     String str = parameterAsString(1);
     String msg = null;
+    String name = null;
     int len = 2;
     if (tokAt(1) == Token.symop && statementLength > 3) {
       Point3f pt1 = centerParameter(2);
@@ -11397,9 +11398,9 @@ public class ScriptEvaluator {
           viewer.showUrl(getFullPathName());
         return;
       }
-      String fileName = parameterAsString(2);
+      name = parameterAsString(2);
       if (!isSyntaxCheck)
-        viewer.showUrl(fileName);
+        viewer.showUrl(name);
       return;
     case Token.color:
       str = "defaultColorScheme";
@@ -11422,11 +11423,11 @@ public class ScriptEvaluator {
         msg = getContext(false);
       break;
     case Token.colorscheme:
-      String csname = optParameterAsString(2);
-      if (csname.length() > 0)
+      name = optParameterAsString(2);
+      if (name.length() > 0)
         len = 3;
       if (!isSyntaxCheck)
-        value = viewer.getColorSchemeList(csname, true);
+        value = viewer.getColorSchemeList(name, true);
       break;
     case Token.variables:
       if (!isSyntaxCheck)
@@ -11549,7 +11550,7 @@ public class ScriptEvaluator {
           msg = viewer.getStateInfo();
         break;
       }
-      String name = parameterAsString(2);
+      name = parameterAsString(2);
       if (!isSyntaxCheck)
         msg = viewer.getSavedState(name);
       break;
@@ -11665,12 +11666,25 @@ public class ScriptEvaluator {
     case Token.rotation:
     case Token.moveto:
       if (!isSyntaxCheck)
-        msg = viewer.getOrientationText(tok);
+        msg = viewer.getOrientationText(tok, null);
       break;
     case Token.orientation:
-      if (!isSyntaxCheck)
-        msg = viewer.getOrientationText(tokAt(2));
-      len = (statementLength == 3 ? 3 : 2);
+      len = 2;
+      if (statementLength > 3)
+        break;
+      switch (tok = tokAt(2)) {
+      case Token.translation:
+      case Token.rotation:
+      case Token.moveto:
+      case Token.nada:
+        if (!isSyntaxCheck)
+          msg = viewer.getOrientationText(tok, null);
+        break;
+      default:
+        name = optParameterAsString(2);
+        msg = viewer.getOrientationText(0, name);    
+      }
+      len = statementLength;
       break;
     case Token.pdbheader:
       if (!isSyntaxCheck)

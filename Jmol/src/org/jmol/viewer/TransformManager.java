@@ -174,6 +174,9 @@ abstract class TransformManager {
     StateManager.appendCmd(commands, viewer.getBoundBoxCommand(false));
     StateManager.appendCmd(commands, "center "
         + Escape.escape(fixedRotationCenter));
+    commands.append(viewer.getSavedOrienationText(null));
+    
+    
     StateManager.appendCmd(commands, getMoveToText(0, false));
     if (stereoMode != JmolConstants.STEREO_NONE)
       StateManager.appendCmd(commands, "stereo "

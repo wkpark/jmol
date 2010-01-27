@@ -643,6 +643,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return stateManager.getOrientation();
   }
 
+  public String getSavedOrienationText(String name) {
+    return stateManager.getSavedOrientationText(name);
+  }
+
   void restoreModelOrientation(int modelIndex) {
     StateManager.Orientation o = modelSet.getModelOrientation(modelIndex);
     if (o != null)
@@ -1249,8 +1253,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setNavXYZ((int) x, (int) y, (int) z);
   }
 
-  public String getOrientationText(int type) {
-    return transformManager.getOrientationText(type);
+  public String getOrientationText(int type, String name) {
+    return (name == null ?
+        transformManager.getOrientationText(type)
+      : stateManager.getSavedOrientationText(name));
   }
 
   Hashtable getOrientationInfo() {

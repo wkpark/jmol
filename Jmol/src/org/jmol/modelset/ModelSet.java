@@ -801,7 +801,7 @@ abstract public class ModelSet extends ModelCollection {
               + "; frame title " + Escape.escape(t) + ";\n");
         if (models[i].orientation != null)
           commands.append("  frame " + getModelNumberDotted(i) + "; "
-              + models[i].orientation.getMoveToText() + "\n");
+              + models[i].orientation.getMoveToText(false) + "\n");
       }
 
       commands.append("  set fontScaling " + viewer.getFontScaling() + ";\n");

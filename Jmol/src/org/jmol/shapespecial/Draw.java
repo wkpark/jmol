@@ -644,6 +644,7 @@ public class Draw extends MeshCollection {
             p[j] = n0 + nPoints - 1;
           }
           thisMesh.drawTypes[modelIndex] = thisMesh.drawVertexCounts[modelIndex] = nPoints;
+          thisMesh.modelFlags.set(modelIndex);
         }
         break;
       case PT_COORD:
@@ -1019,11 +1020,15 @@ public class Draw extends MeshCollection {
         continue;
       }
       m.visibilityFlags = (m.isValid && m.visible ? myVisibilityFlag : 0);
-      if (m.modelIndex >= 0 && !bs.get(m.modelIndex)
-        || m.modelFlags != null && !BitSetUtil.haveCommon(bs, m.modelFlags)) {
+      if (m.modelIndex >= 0 && !bs.get(m.modelIndex) || m.modelFlags != null
+          && !BitSetUtil.haveCommon(bs, m.modelFlags)) {
         m.visibilityFlags = 0;
-        continue;
+      } else if (m.modelFlags != null) {
+        m.bsMeshesVisible.clear();
+        m.bsMeshesVisible.or(m.modelFlags);
+        m.bsMeshesVisible.and(bs);
       }
+
     }
   }
   

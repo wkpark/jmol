@@ -63,8 +63,8 @@ public class DrawRenderer extends MeshRenderer {
   }
   
   protected boolean isPolygonDisplayable(int i) {
-      return Draw.isPolygonDisplayable(dmesh, i) 
-          && (dmesh.modelFlags == null || dmesh.modelFlags.get(i)); 
+    return Draw.isPolygonDisplayable(dmesh, i) 
+        && (dmesh.modelFlags == null || dmesh.bsMeshesVisible.get(i)); 
   }
   
   protected void render2(boolean isExport) {

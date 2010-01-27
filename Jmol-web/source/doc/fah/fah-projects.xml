@@ -8197,12 +8197,12 @@
   <fah_proj number="6015" name="p6015_Protein in POPC" public="y" file="xyz"
     server="130.237.232.140" atoms="77457" preferred="3" deadline="6"
     credit="484" frames="100" code="A3" contact="kasson" kfactor="2.1" contrib="SandStar"/>
-  <fah_proj number="6020" name="p6020_Protein in POPC" public="n"
+  <fah_proj number="6020" name="p6020_Protein in POPC" public="n" file="xyz"
     server="171.64.65.54" atoms="76900" preferred="3" deadline="6"
-    credit="467" frames="100" code="A3" contact="kasson" kfactor="2.0"/>
-  <fah_proj number="6021" name="p6021_Protein in POPC" public="n"
+    credit="467" frames="100" code="A3" contact="kasson" kfactor="2.0" contrib="SandStar"/>
+  <fah_proj number="6021" name="p6021_Protein in POPC" public="n" file="xyz"
     server="171.64.65.54" atoms="77050" preferred="3" deadline="6"
-    credit="476" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
+    credit="476" frames="100" code="A3" contact="kasson" kfactor="2.1" contrib="SandStar"/>
 
   <!-- Projects 6300 to 6399 -->
   <fah_proj number="6300" name="p6300_Peptide dimer in TIP3P water" public="y" file="xyz"
@@ -8247,6 +8247,9 @@
   <fah_proj number="6318" name="p6318" public="y" file="xyz"
     server="171.64.65.60" atoms="0" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contrib="Igor Miranda"/>
+  <fah_proj number="6319" name="p6319" public="y"
+    server="171.64.65.60" atoms="0" preferred="10" deadline="20"
+    credit="51" frames="100" code="G"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

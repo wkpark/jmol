@@ -385,7 +385,7 @@ public class StateManager {
     }
 
     public String getMoveToText(boolean asCommand) {
-      return (asCommand ? " " + moveToText + "\n save orientation \"" 
+      return (asCommand ? "  " + moveToText + "\n  save orientation \"" 
           + saveName.substring(12) + "\"\n" : moveToText);
     }
     

@@ -195,42 +195,42 @@ public class MeshSurface {
           break;
         case 1:
           // BC on side to keep
-          iD = addVertexCopy(pts[0]);  //AB
-          iE = addVertexCopy(pts[1]);  //AC
+          iD = addVertexCopy(pts[0], vertexValues[iA]);  //AB
+          iE = addVertexCopy(pts[1], vertexValues[iA]);  //AC
           addTriangleCheck(iD, iB, iC, 0, 0, 0);
           addTriangleCheck(iD, iC, iE, 0, 0, 0);
           break;
-        case 6:
-          // BC on side to toss
-          iD = addVertexCopy(pts[0]);
-          iE = addVertexCopy(pts[1]);
-          addTriangleCheck(iA, iD, iE, 0, 0, 0);
-          break;
         case 2:
           // AC on side to keep
-          iD = addVertexCopy(pts[0]);  //AB
-          iE = addVertexCopy(pts[1]);  //BC
+          iD = addVertexCopy(pts[0], vertexValues[iB]);  //AB
+          iE = addVertexCopy(pts[1], vertexValues[iB]);  //BC
           addTriangleCheck(iA, iD, iC, 0, 0, 0);
           addTriangleCheck(iD, iE, iC, 0, 0, 0);
           break;
-        case 5:
-          //AC on side to toss
-          iD = addVertexCopy(pts[0]);  //AB
-          iE = addVertexCopy(pts[1]);  //BC
-          addTriangleCheck(iD, iB, iE, 0, 0, 0);
-          break;
         case 3:
           //AB on side to toss
-          iD = addVertexCopy(pts[0]);  //AC
-          iE = addVertexCopy(pts[1]);  //BC
+          iD = addVertexCopy(pts[0], vertexValues[iA]);  //AC
+          iE = addVertexCopy(pts[1], vertexValues[iB]);  //BC
           addTriangleCheck(iE, iC, iD, 0, 0, 0);
           break;
         case 4:
           // AB on side to keep
-          iD = addVertexCopy(pts[0]);  //AC
-          iE = addVertexCopy(pts[1]);  //BC
+          iD = addVertexCopy(pts[0], vertexValues[iC]);  //AC
+          iE = addVertexCopy(pts[1], vertexValues[iC]);  //BC
           addTriangleCheck(iA, iB, iD, 0, 0, 0);
           addTriangleCheck(iD, iB, iE, 0, 0, 0);
+          break;
+        case 5:
+          //AC on side to toss
+          iD = addVertexCopy(pts[0], vertexValues[iA]);  //AB
+          iE = addVertexCopy(pts[1], vertexValues[iC]);  //BC
+          addTriangleCheck(iD, iB, iE, 0, 0, 0);
+          break;
+        case 6:
+          // BC on side to toss
+          iD = addVertexCopy(pts[0], vertexValues[iB]); //AB
+          iE = addVertexCopy(pts[1], vertexValues[iC]); //AC
+          addTriangleCheck(iA, iD, iE, 0, 0, 0);
           break;
         }
         polygonIndexes[i] = null;

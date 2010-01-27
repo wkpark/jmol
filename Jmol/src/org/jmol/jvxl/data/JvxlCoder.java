@@ -83,6 +83,8 @@ public class JvxlCoder {
       XmlUtil.closeTag(data, "jvxl");
       return data.toString();
     }
+    
+    boolean verticesOnly = (meshData != null);
     boolean isHeaderOnly = ("HEADERONLY".equals(msg));
     if (includeHeader) {
       XmlUtil.openDocument(data);
@@ -93,22 +95,23 @@ public class JvxlCoder {
         XmlUtil.appendCdata(data, "jvxlFileTitle", null, "\n" + jvxlData.jvxlFileTitle);
       if (jvxlData.moleculeXml != null)
         data.append(jvxlData.moleculeXml);
-      if (jvxlData.jvxlVolumeDataXml == null)
-        jvxlData.jvxlVolumeDataXml = (new VolumeData()).setVolumetricXml();
-      data.append(jvxlData.jvxlVolumeDataXml);
+      String volumeDataXml = (verticesOnly ? null : jvxlData.jvxlVolumeDataXml);
+      if (volumeDataXml == null)
+        volumeDataXml = (new VolumeData()).setVolumetricXml();
+      data.append(volumeDataXml);
       XmlUtil.openTag(data,"jvxlSurfaceSet", 
           new String[] { "count", "" + (nSurfaces > 0 ? nSurfaces : 1) });
       if (isHeaderOnly)
         return data.toString();
     }
     StringBuffer sb;
-    String type = (jvxlData.vertexDataOnly ? "pmesh"
+    String type = (verticesOnly ? "pmesh"
         : jvxlData.jvxlPlane == null ? "isosurface" : "plane");
     // TODO: contours mentioned here? when discrete?
     if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length() > 0)
       type = "mapped " + type;
     XmlUtil.openTag(data, "jvxlSurface", new String[] { "type", type });
-    data.append(jvxlGetInfo(jvxlData, true));
+    data.append(jvxlGetInfo(jvxlData, verticesOnly, true));
     jvxlAppendCommandState(data, comment, state);
     if (title != null || msg != null && msg.length() > 0) {
       sb = new StringBuffer();
@@ -122,7 +125,7 @@ public class JvxlCoder {
     sb = new StringBuffer();
     XmlUtil.openTag(sb, "jvxlSurfaceData", (jvxlData.jvxlPlane == null ? null :
       new String[] { "plane", Escape.escape(jvxlData.jvxlPlane) }));
-    if (jvxlData.vertexDataOnly) {
+    if (verticesOnly) {
       jvxlAppendMeshXml(sb, jvxlData, meshData, true);
     } else if (jvxlData.jvxlPlane == null) {
       appendXmlEdgeData(sb, jvxlData);
@@ -220,16 +223,20 @@ public class JvxlCoder {
   }
 
   
-  public static String jvxlGetInfo(JvxlData jvxlData, boolean notVersion1) {
+  public static String jvxlGetInfo(JvxlData jvxlData) {
+    return jvxlGetInfo(jvxlData, jvxlData.vertexDataOnly, true);
+  }
+
+  public static String jvxlGetInfo(JvxlData jvxlData, boolean verticesOnly, boolean notVersion1) {
     if (jvxlData.jvxlSurfaceData == null)
       return "";
     Vector attribs = new Vector();
      
     int nSurfaceInts = jvxlData.nSurfaceInts;// jvxlData.jvxlSurfaceData.length();
-    int bytesUncompressedEdgeData = (jvxlData.vertexDataOnly ? 0
+    int bytesUncompressedEdgeData = (verticesOnly ? 0
         : jvxlData.jvxlEdgeData.length() - 1);
     int nColorData = (jvxlData.jvxlColorData == null ? -1 : (jvxlData.jvxlColorData.length() - 1));
-    if (!jvxlData.vertexDataOnly) {
+    if (!verticesOnly) {
       // informational only:
       addAttrib(attribs, "\n  cutoff", "" + jvxlData.cutoff);
       addAttrib(attribs, "\n  isCutoffAbsolute", "" + jvxlData.isCutoffAbsolute);

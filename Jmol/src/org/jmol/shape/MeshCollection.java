@@ -51,6 +51,7 @@ public abstract class MeshCollection extends Shape {
   public short colix;
   public String myType;
   public boolean explicitID;
+  public String actualID;
   protected String previousMeshID;
   protected Mesh linkedMesh;
   protected boolean iHaveModelIndex;
@@ -254,6 +255,8 @@ public abstract class MeshCollection extends Shape {
   }
 
   protected void checkExplicit(String id) {
+    if (explicitID) // not twice
+      return;
     explicitID = (id != null && !id.equals(JmolConstants.PREVIOUS_MESH_ID));
     if (explicitID)
       previousMeshID = id;
@@ -534,7 +537,9 @@ public abstract class MeshCollection extends Shape {
     // not perfect -- user may have that in a title, I suppose...
     if (pt >= 0)
       cmd = cmd.substring(0, pt + 1);
-    cmd = TextFormat.trim(cmd, ";") + ";";
+    cmd = TextFormat.trim(cmd, ";");
+    if (cmd.indexOf("; #") < 0)
+      cmd += ";";
     if (mesh.bitsets != null) {
       cmd += "# "
           + (mesh.bitsets[0] == null ? "({null})" : Escape
@@ -545,7 +550,7 @@ public abstract class MeshCollection extends Shape {
           + (mesh.bitsets[2] == null ? "" : "/"
               + Escape.escape(mesh.bitsets[2]));
     }
-    if (cmd.toLowerCase().indexOf(" id ") < 0 && !myType.equals("mo"))
+    if (!myType.equals("mo"))
       cmd += "# ID=\"" + mesh.thisID + "\"";
     if (mesh.modelIndex >= 0)
       cmd += "# MODEL({" + mesh.modelIndex + "})";

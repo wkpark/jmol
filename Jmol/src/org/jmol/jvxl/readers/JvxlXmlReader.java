@@ -133,6 +133,8 @@ public class JvxlXmlReader extends VolumeFileReader {
     String data = xr.getXmlData("jvxlVolumeVector", tempDataXml, true);
     tempDataXml = tempDataXml.substring(tempDataXml.indexOf(data) + data.length());
     int n = parseInt(XmlReader.getXmlAttrib(data, "count"));
+    if (n == Integer.MIN_VALUE)
+      vertexDataOnly = true;
     voxelCounts[voxelVectorIndex] = (n < 0 ? 0 : n);
     volumetricVectors[voxelVectorIndex].set(xr.getXmlPoint(data, "vector"));
     if (isAnisotropic)

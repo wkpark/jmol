@@ -5932,7 +5932,7 @@ public class ScriptEvaluator {
           break;
         case Token.show:
           if (iShape == JmolConstants.SHAPE_ISOSURFACE && !isWild)
-            return getIsosurfaceJvxl(true, JmolConstants.SHAPE_ISOSURFACE);
+            return getIsosurfaceJvxl(false, JmolConstants.SHAPE_ISOSURFACE);
           else if (iShape == JmolConstants.SHAPE_PMESH && !isWild)
             return getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH);
           s += (String) viewer.getShapeProperty(iShape, "command") + "\n";
@@ -11037,6 +11037,10 @@ public class ScriptEvaluator {
       type = "PMESH";
       pt++;
       break;
+    case Token.mesh:
+      type = "MESH";
+      pt++;
+      break;
     case Token.isosurface:
       type = "ISO";
       pt++;
@@ -11177,9 +11181,11 @@ public class ScriptEvaluator {
         type = "Maya";
         isExport = true;
       } else if (type.equals("JVXL")) {
-        type = "ISO";
+        type = "ISOX";
       } else if (type.equals("XJVXL")) {
         type = "ISOX";
+      } else if (type.equals("MESH")) {
+        type = "MESH";
       } else if (type.equals("JMOL")) {
         type = "ZIPALL";
       }
@@ -11196,12 +11202,12 @@ public class ScriptEvaluator {
     if (!isImage
         && !isExport
         && !Parser.isOneOf(type,
-            "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;PMESH;VAR;FILE;CML;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
+            "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;CML;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
       error(
           ERROR_writeWhat,
           "ALL|COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
               + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
-          "JPG|JPG64|PNG|GIF|PPM|SPT|JVXL|XJVXL|CML|XYZ|MOL|PDB|"
+          "JPG|JPG64|PNG|GIF|PPM|SPT|JVXL|XJVXL|MESH|PMESH|CML|XYZ|MOL|PDB|"
               + driverList.toUpperCase().replace(';', '|'));
     if (isSyntaxCheck)
       return "";
@@ -11282,10 +11288,8 @@ public class ScriptEvaluator {
       if ((data = getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH)) == null)
         error(ERROR_noData);
       type = "XJVXL";
-    } else if (data == "ISO" || data == "ISOX") {
-      if (fileName == null || fileName.toUpperCase().indexOf("XJVXL") >= 0)
-        data = "ISOX";
-      if ((data = getIsosurfaceJvxl(data == "ISOX", JmolConstants.SHAPE_ISOSURFACE)) == null)
+    } else if (data == "ISO" || data == "ISOX" || data == "MESH") {
+      if ((data = getIsosurfaceJvxl(data == "MESH", JmolConstants.SHAPE_ISOSURFACE)) == null)
         error(ERROR_noData);
       type = (data.indexOf("<?xml") >= 0 ? "XJVXL" : "JVXL");
       if (!isShow)
@@ -11636,7 +11640,7 @@ public class ScriptEvaluator {
     case Token.isosurface:
       if (!isSyntaxCheck)
         msg = (String) viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
-            "jvxlFileData");
+            "jvxlDataXml");
       break;
     case Token.mo:
       if (optParameterAsString(2).equalsIgnoreCase("list")) {
@@ -11728,11 +11732,10 @@ public class ScriptEvaluator {
     }
   }
 
-  private String getIsosurfaceJvxl(boolean asXML, int iShape) {
+  private String getIsosurfaceJvxl(boolean asMesh, int iShape) {
     if (isSyntaxCheck)
       return "";
-    return (String) viewer.getShapeProperty(iShape,
-        (asXML ? "jvxlFileDataXml" : "jvxlFileData"));
+    return (String) viewer.getShapeProperty(iShape, asMesh ? "jvxlMeshXml" : "jvxlDataXml");
   }
 
   private String getMoJvxl(int ptMO) throws ScriptException {
@@ -12748,6 +12751,7 @@ public class ScriptEvaluator {
   }
 
   private String getNextComment() {
+    
     String nextCommand = getCommand(pc + 1, false, true);
     return (nextCommand.startsWith("#") ? nextCommand : "");
   }
@@ -12822,7 +12826,7 @@ public class ScriptEvaluator {
       switch (theTok) {
       case Token.boundbox:
         if (!isSyntaxCheck) {
-          if (thisCommand.indexOf("# BBOX=") >= 0) {
+          if (fullCommand.indexOf("# BBOX=") >= 0) {
             String[] bbox = TextFormat.split(extractCommandOption("# BBOX"),
                 ',');
             pts = new Point3f[] { (Point3f) Escape.unescapePoint(bbox[0]),
@@ -12845,7 +12849,7 @@ public class ScriptEvaluator {
         Point3f ptc = centerParameter(++i);
         BoxInfo bbox = null;
         i = iToken;
-        if (thisCommand.indexOf("# WITHIN=") >= 0)
+        if (fullCommand.indexOf("# WITHIN=") >= 0)
           bs = Escape.unescapeBitset(extractCommandOption("# WITHIN"));
         else
           bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult
@@ -13559,7 +13563,7 @@ public class ScriptEvaluator {
         } else if (!isSyntaxCheck) {
           String[] fullPathNameOrError;
           String localName = null;
-          if (thisCommand.indexOf("# FILE" + nFiles + "=") >= 0) {
+          if (fullCommand.indexOf("# FILE" + nFiles + "=") >= 0) {
             filename = extractCommandOption("# FILE" + nFiles);
             if (tokAt(i + 1) == Token.as)
               i += 2; // skip that

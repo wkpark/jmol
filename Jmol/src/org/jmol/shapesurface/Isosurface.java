@@ -199,6 +199,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
     if ("thisID" == propertyName) {
+      if (actualID != null)
+        value = actualID;
       setPropertySuper("thisID", value, null);
       return;
     }
@@ -402,13 +404,15 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     /////////////// isosurface LAST, shared
 
     if ("init" == propertyName) {
+      explicitID = false;
+      String script = (value instanceof String ? (String) value : null);
+      int pt = (script == null ? -1 : script.indexOf("# ID="));
+      actualID = (pt >= 0 ? Parser.getNextQuotedString(script, pt) : null);
       setPropertySuper("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
-      if (value instanceof String && !(iHaveBitSets = getScriptBitSets((String) value, null))) {
+      if (script != null && !(iHaveBitSets = getScriptBitSets(script, null)))
         sg.setParameter("select", bs);
-      }
       initializeIsosurface();
-      sg.setModelIndex(modelIndex);
-      //setModelIndex();
+     sg.setModelIndex(modelIndex);
       return;
     }
 
@@ -536,9 +540,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return new Float(jvxlData.cutoff);
     if (property == "plane")
       return jvxlData.jvxlPlane;
-    if (property == "jvxlFileData" || property == "jvxlFileDataXml") {
+    if (property == "jvxlDataXml" || property == "jvxlMeshXml") {
       MeshData meshData = null;
-      if (jvxlData.vertexDataOnly) {
+      if (property == "jvxlMeshXml" || jvxlData.vertexDataOnly) {
         meshData = new MeshData();
         fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
         meshData.polygonColorData = getPolygonColorData(meshData.polygonCount, meshData.polygonColixes);
@@ -547,7 +551,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     }
     if (property == "jvxlFileInfo")
-      return JvxlCoder.jvxlGetInfo(jvxlData, true);
+      return JvxlCoder.jvxlGetInfo(jvxlData);
     return null;
   }
 
@@ -1014,7 +1018,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         info.put("scale3d", new Float(mesh.scale3d));
       info.put("xyzMin", mesh.jvxlData.boundingBox[0]);
       info.put("xyzMax", mesh.jvxlData.boundingBox[1]);
-      String s = JvxlCoder.jvxlGetInfo(mesh.jvxlData, true);
+      String s = JvxlCoder.jvxlGetInfo(mesh.jvxlData);
       if (s != null)
         info.put("jvxlInfo", s.replace('\n', ' '));
       info.put("modelIndex", new Integer(mesh.modelIndex));

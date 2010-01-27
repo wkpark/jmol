@@ -364,6 +364,8 @@ public class VolumeData implements VolumeDataInterface {
   }
 
   public void capData(Point4f plane, float cutoff) {
+    if (voxelData == null)
+      return;
     int nx = voxelCounts[0];
     int ny = voxelCounts[1];
     int nz = voxelCounts[2];

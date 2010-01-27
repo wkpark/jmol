@@ -3847,10 +3847,15 @@ public class ScriptEvaluator {
   private Point4f planeParameter(int i) throws ScriptException {
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
+    Point4f plane = null;
+    boolean isNegated = (tokAt(i) == Token.minus);
+    if (isNegated)
+      i++;
     if (i < statementLength)
       switch (getToken(i).tok) {
       case Token.point4f:
-        return (Point4f) theToken.value;
+        plane = (Point4f) theToken.value;
+        break;
       case Token.dollarsign:
         String id = objectNameParameter(++i);
         if (isSyntaxCheck)
@@ -3864,14 +3869,14 @@ public class ScriptEvaluator {
           if (points == null || points.length < 3 
               || points[0] == null || points[1] == null || points[2] == null)
             break;
-          return Measure.getPlaneThroughPoints(points[0], points[1],
+          plane = Measure.getPlaneThroughPoints(points[0], points[1],
               points[2], new Vector3f(), vAB, vAC);
+          break;
         case JmolConstants.SHAPE_ISOSURFACE:
           setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID", id);
-          Point4f plane = (Point4f) viewer.getShapeProperty(
+          plane = (Point4f) viewer.getShapeProperty(
               JmolConstants.SHAPE_ISOSURFACE, "plane");
-          if (plane != null)
-            return plane;
+          break;
         }
         break;
       case Token.identifier:
@@ -3887,23 +3892,28 @@ public class ScriptEvaluator {
         if (str.equalsIgnoreCase("x")) {
           if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
             evalError("x=?", null);
-          return new Point4f(1, 0, 0, -floatParameter(i));
+          plane = new Point4f(1, 0, 0, -floatParameter(i));
+          break;
         }
 
         if (str.equalsIgnoreCase("y")) {
           if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
             evalError("y=?", null);
-          return new Point4f(0, 1, 0, -floatParameter(i));
+          plane = new Point4f(0, 1, 0, -floatParameter(i));
+          break;
         }
         if (str.equalsIgnoreCase("z")) {
           if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
             evalError("z=?", null);
-          return new Point4f(0, 0, 1, -floatParameter(i));
+          plane = new Point4f(0, 0, 1, -floatParameter(i));
+          break;
         }
         break;
       case Token.leftbrace:
-        if (!isPoint3f(i))
-          return getPoint4f(i);
+        if (!isPoint3f(i)) {
+          plane = getPoint4f(i);
+          break;
+        }
         // fall through
       case Token.bitset:
       case Token.expressionBegin:
@@ -3915,18 +3925,20 @@ public class ScriptEvaluator {
           ++iToken;
         Point3f pt3 = atomCenterOrCoordinateParameter(iToken);
         i = iToken;
-        Vector3f plane = new Vector3f();
-        float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB,
+        Vector3f norm = new Vector3f();
+        float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, norm, vAB,
             vAC);
-        Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
-        if (!isSyntaxCheck && Logger.debugging) {
-          Logger.debug("points: " + pt1 + pt2 + pt3 + " defined plane: " + p);
-        }
-        return p;
+        plane = new Point4f(plane.x, plane.y, plane.z, w);
+        if (!isSyntaxCheck && Logger.debugging)
+          Logger.debug("points: " + pt1 + pt2 + pt3 + " defined plane: " + plane);
+        break;
       }
-    planeExpected();
-    // impossible return
-    return null;
+    if (plane == null)
+      planeExpected();
+    if (isNegated) {
+      plane.scale(-1);
+    }
+    return plane;
   }
 
   private Point4f hklParameter(int i) throws ScriptException {
@@ -13184,6 +13196,15 @@ public class ScriptEvaluator {
         propertyValue = planeParameter(++i);
         i = iToken;
         break;
+      case Token.slab:
+        propertyName = "slabbingPlane";
+        Point4f plane = planeParameter(++i);
+        i = iToken;
+        float off = (isFloatParameter(i + 1) ? floatParameter(++i) : Float.NaN);
+        if (!Float.isNaN(off))
+          plane.w -= off;
+        propertyValue = plane;
+        break;
       case Token.cavity:
         if (!isIsosurface)
           error(ERROR_invalidArgument);
@@ -13527,7 +13548,7 @@ public class ScriptEvaluator {
           // inline PMESH data
           if (tokAt(i + 1) != Token.string)
             error(ERROR_stringExpected);
-//          addShapeProperty(propertyList, "fileType", "Pmesh");
+          // addShapeProperty(propertyList, "fileType", "Pmesh");
           String sdata = parameterAsString(++i);
           if (isPmesh)
             sdata = TextFormat.replaceAllCharacters(sdata, "{,}|", ' ');
@@ -13544,14 +13565,12 @@ public class ScriptEvaluator {
               i += 2; // skip that
           } else if (tokAt(i + 1) == Token.as) {
             localName = viewer.getFullPath(stringParameter(i = i + 2));
-            fullPathNameOrError = viewer
-            .getFullPathNameOrError(localName);
+            fullPathNameOrError = viewer.getFullPathNameOrError(localName);
             localName = fullPathNameOrError[0];
             addShapeProperty(propertyList, "localName", localName);
           }
           // just checking here, and getting the full path name
-          fullPathNameOrError = viewer
-              .getFullPathNameOrError(filename);
+          fullPathNameOrError = viewer.getFullPathNameOrError(filename);
           filename = fullPathNameOrError[0];
           if (fullPathNameOrError[1] != null)
             error(ERROR_fileNotFoundException, filename + ":"

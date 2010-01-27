@@ -196,7 +196,6 @@ public class Parameters {
     cutoff = Float.MAX_VALUE;
     cutoffAutomatic = true;
     distance = Float.MAX_VALUE;
-    doCapIsosurface = false;
     envelopeRadius = 10f;
     fileIndex = 1;
     readAllData = true;
@@ -253,7 +252,8 @@ public class Parameters {
   Boolean pocket; //three states: TRUE, FALSE, and NULL
   int minSet;
   Point4f cappingPlane;
-  boolean doCapIsosurface;
+  Point4f slabbingPlane;
+  float slabPlaneOffset = Float.NaN;
 
   float[] theProperty;
   ///// solvent-accessible, solvent-excluded surface //////

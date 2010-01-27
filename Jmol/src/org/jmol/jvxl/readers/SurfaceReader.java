@@ -874,6 +874,14 @@ public abstract class SurfaceReader implements VertexDataServer {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
   }
   
+  public void slabIsosurface(Point4f slabbingPlane) {
+    if (meshDataServer != null)
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+    meshData.slabPolygons(slabbingPlane);
+    if (meshDataServer != null)
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_VERTICES, null);
+  }
+ 
   protected void setVertexAnisotropy(Point3f pt) {
     pt.x *= anisotropy[0];
     pt.y *= anisotropy[1];
@@ -936,6 +944,5 @@ public abstract class SurfaceReader implements VertexDataServer {
   public void setMappingPlane(Point4f thePlane) {
     mappingPlane = thePlane;
   }
-  
 
 }

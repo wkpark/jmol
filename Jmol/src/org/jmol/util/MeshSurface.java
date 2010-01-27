@@ -1,8 +1,10 @@
 package org.jmol.util;
 
 import java.util.BitSet;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
@@ -138,4 +140,112 @@ public class MeshSurface {
             || Float.isNaN(vertexValues[iC = vertexIndexes[2]]));
   }
 
+  public void slabPolygons(Point4f plane) {
+    getIntersection(plane, null);
+  }
+
+  public boolean getIntersection(Point4f plane, Vector vData) {
+    boolean isSlab = (vData == null);
+    for (int i = polygonIndexes.length; --i >= 0;) {
+      if (!setABC(i))
+        continue;
+      Point3f vA, vB, vC;
+      float d1 = Measure.distanceToPlane(plane, vA = vertices[iA]);
+      float d2 = Measure.distanceToPlane(plane, vB = vertices[iB]);
+      float d3 = Measure.distanceToPlane(plane, vC = vertices[iC]);
+      int test1 = (d1 < 0 ? 1 : 0) + (d2 < 0 ? 2 : 0) + (d3 < 0 ? 4 : 0);
+      int test2 = (d1 > 0 ? 1 : 0) + (d2 > 0 ? 2 : 0) + (d3 > 0 ? 4 : 0);
+      Point3f[] pts = null;
+      switch (test1) {
+      case 0:
+      case 7:
+        // all on the same side
+        break;
+      case 1:
+      case 6:
+        // BC on same side
+        pts = new Point3f[] { interpolatePoint(vA, vB, -d1, d2),
+            interpolatePoint(vA, vC, -d1, d3)};
+        break;
+      case 2:
+      case 5:
+        //AC on same side
+        pts = new Point3f[] { interpolatePoint(vB, vA, -d2, d1),
+            interpolatePoint(vB, vC, -d2, d3)};
+        break;
+      case 3:
+      case 4:
+        //AB on same side need A-C, B-C
+        pts = new Point3f[] { interpolatePoint(vC, vA, -d3, d1),
+            interpolatePoint(vC, vB, -d3, d2)};
+        break;
+      }
+      if (isSlab) {
+        int iD = 0;
+        int iE = 0;
+        //             A
+        //            / \
+        //           B---C
+        switch (test2) {
+        case 0:
+          // all on the same side
+          continue;
+        case 7:
+          // all on the same side
+          break;
+        case 1:
+          // BC on side to keep
+          iD = addVertexCopy(pts[0]);  //AB
+          iE = addVertexCopy(pts[1]);  //AC
+          addTriangleCheck(iD, iB, iC, 0, 0, 0);
+          addTriangleCheck(iD, iC, iE, 0, 0, 0);
+          break;
+        case 6:
+          // BC on side to toss
+          iD = addVertexCopy(pts[0]);
+          iE = addVertexCopy(pts[1]);
+          addTriangleCheck(iA, iD, iE, 0, 0, 0);
+          break;
+        case 2:
+          // AC on side to keep
+          iD = addVertexCopy(pts[0]);  //AB
+          iE = addVertexCopy(pts[1]);  //BC
+          addTriangleCheck(iA, iD, iC, 0, 0, 0);
+          addTriangleCheck(iD, iE, iC, 0, 0, 0);
+          break;
+        case 5:
+          //AC on side to toss
+          iD = addVertexCopy(pts[0]);  //AB
+          iE = addVertexCopy(pts[1]);  //BC
+          addTriangleCheck(iD, iB, iE, 0, 0, 0);
+          break;
+        case 3:
+          //AB on side to toss
+          iD = addVertexCopy(pts[0]);  //AC
+          iE = addVertexCopy(pts[1]);  //BC
+          addTriangleCheck(iE, iC, iD, 0, 0, 0);
+          break;
+        case 4:
+          // AB on side to keep
+          iD = addVertexCopy(pts[0]);  //AC
+          iE = addVertexCopy(pts[1]);  //BC
+          addTriangleCheck(iA, iB, iD, 0, 0, 0);
+          addTriangleCheck(iD, iB, iE, 0, 0, 0);
+          break;
+        }
+        polygonIndexes[i] = null;
+      } else if (pts != null) {
+        vData.add(pts);
+      }
+    }
+    return false;
+  }
+
+  private Point3f interpolatePoint(Point3f v1, Point3f v2, float d1, float d2) {
+    float f = d1 / (d1 + d2);
+    return new Point3f(v1.x + (v2.x - v1.x) * f, 
+        v1.y + (v2.y - v1.y) * f, 
+        v1.z + (v2.z - v1.z) * f);    
+  }
+  
 }

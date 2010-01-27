@@ -243,6 +243,43 @@ abstract public class ModelSet extends ModelCollection {
       viewer.setCurrentModelIndex(modelIndex, false);
   }  
 
+  public Point3f[] getFrameOffsets(BitSet bsAtoms) {
+    if (bsAtoms == null)
+      return null;
+    Point3f[] offsets = new Point3f[modelCount];
+    for (int i = 0; i < modelCount; i++)
+      offsets[i] = new Point3f();
+    int lastModel = 0;
+    int n = 0;
+    Point3f offset = offsets[0];
+    boolean asTrajectory = (trajectorySteps != null && trajectorySteps.size() == modelCount);
+    int m1 = (asTrajectory ? modelCount : 1);
+    for (int m = 0; m < m1; m++) {
+      if (asTrajectory)
+        setTrajectory(m);
+      for (int i = 0; i <= atomCount; i++) {
+        if (i == atomCount || atoms[i].modelIndex != lastModel) {
+          if (n > 0) {
+            offset.scale(-1.0f / n);
+            if (lastModel != 0)
+              offset.sub(offsets[0]);
+            n = 0;
+          }
+          if (i == atomCount)
+            break;
+          lastModel = atoms[i].modelIndex;
+          offset = offsets[lastModel];
+        }
+        if (!bsAtoms.get(i))
+          continue;
+        offset.add(atoms[i]);
+        n++;
+      }
+    }
+    offsets[0].set(0, 0, 0);
+    return offsets;
+  }
+
   /**
    * general lookup for integer type -- from Eval
    * @param tokType   

@@ -3205,37 +3205,6 @@ abstract public class ModelCollection extends BondCollection {
     viewer.deleteModelAtoms(firstAtomIndex, nAtoms, bsAtoms);
   }
 
-  public Point3f[] getFrameOffsets(BitSet bsAtoms) {
-    if (bsAtoms == null)
-      return null;
-    Point3f[] offsets = new Point3f[modelCount];
-    for (int i = 0; i < modelCount; i++)
-      offsets[i] = new Point3f();
-    int lastModel = 0;
-    int n = 0;
-    Point3f offset = offsets[0];
-    for (int i = 0; i <= atomCount; i++) {
-      if (i == atomCount || atoms[i].modelIndex != lastModel) {
-        if (n > 0) {
-          offset.scale(-1.0f / n);
-          if (lastModel != 0)
-            offset.sub(offsets[0]);
-          n = 0;
-        }
-        if (i == atomCount)
-          break;
-        lastModel = atoms[i].modelIndex;
-        offset = offsets[lastModel];
-      }
-      if (!bsAtoms.get(i))
-        continue;
-      offset.add(atoms[i]);
-      n++;
-    }
-    offsets[0].set(0, 0, 0);
-    return offsets;
-  }
-
   public String getMoInfo(int modelIndex) {
     StringBuffer sb = new StringBuffer();
     for (int m = 0; m < modelCount; m++) {

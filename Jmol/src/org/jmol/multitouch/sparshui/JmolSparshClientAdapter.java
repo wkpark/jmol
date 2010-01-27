@@ -76,7 +76,12 @@ public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter impleme
 
   // methods Jmol needs -- from viewer.ActionManagerMT
 
+  boolean doneHere;
+  
   public void dispose() {
+    
+    System.out.println("JmolSparshClientAdapter -- dispose");
+    doneHere = true;
     try {
       if (serverConnection != null) {
         serverConnection.close();
@@ -177,6 +182,7 @@ ActionManagerMT.processEvent groupID=16777100 eventType=6 iData=0 pt=(-1.0, -1.0
       int errorType = groupID;
       switch (errorType) {
       case ActionManagerMT.SERVICE_LOST:
+        System.out.println("JmolSparshAdapter service lost event...disposing ");
         dispose();
         break;
       case ActionManagerMT.DRIVER_NONE:

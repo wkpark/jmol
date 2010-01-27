@@ -280,6 +280,7 @@ public abstract class AtomSetCollectionReader {
     // we look to see if it was loaded using LOAD ... "..." COORD ....
     int ptFile = (htParams.containsKey("ptFile") ? ((Integer) htParams
         .get("ptFile")).intValue() : -1);
+    isTrajectory = htParams.containsKey("isTrajectory");
     if (ptFile > 0 && htParams.containsKey("firstLastSteps")) {
       Object val = ((Vector) htParams.get("firstLastSteps"))
           .elementAt(ptFile - 1);
@@ -291,7 +292,6 @@ public abstract class AtomSetCollectionReader {
       templateAtomCount = ((Integer) htParams.get("templateAtomCount"))
           .intValue();
     } else if (htParams.containsKey("firstLastStep")) {
-      isTrajectory = htParams.containsKey("isTrajectory");
       firstLastStep = (int[]) htParams.get("firstLastStep");
     } else if (htParams.containsKey("bsModels")) {
       isTrajectory = htParams.containsKey("isTrajectory");

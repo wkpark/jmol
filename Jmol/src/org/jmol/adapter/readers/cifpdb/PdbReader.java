@@ -71,6 +71,7 @@ public class PdbReader extends AtomSetCollectionReader {
   private int[] chainAtomCounts;
   private int nUNK;
   private int nRes;
+  private boolean isMultiModel;  // MODEL ...
   
  final private static String lineOptions = 
    "ATOM    " + //0
@@ -103,8 +104,8 @@ public class PdbReader extends AtomSetCollectionReader {
     htFormul.clear();
     currentGroup3 = null;
     boolean iHaveModel = false;
-    boolean iHaveModelStatement = false;
     boolean iHaveLine = false;
+    int serial = 0;
     StringBuffer pdbHeader = (getHeader ? new StringBuffer() : null);
     try {
       while (iHaveLine || readLine() != null) {
@@ -113,17 +114,21 @@ public class PdbReader extends AtomSetCollectionReader {
             .indexOf(line.substring(0, 6))) >> 3;
         boolean isAtom = (ptOption == 0 || ptOption == 1);
         boolean isModel = (ptOption == 2);
+        if (isAtom)
+          serial = parseInt(line, 6, 11);
+        boolean isNewModel = (isTrajectory && !isMultiModel && isAtom && serial == 1);
         if (getHeader) {
           if (isAtom || isModel)
             getHeader = false;
           else
             pdbHeader.append(line).append('\n');
         }
-        if (isModel) {
+        if (isModel || isNewModel) {
+          isMultiModel = isModel;
           getHeader = false;
-          iHaveModelStatement = true;
           // PDB is different -- targets actual model number
-          int modelNo = getModelNumber();
+          int modelNo = (isNewModel ? modelNumber + 1: getModelNumber());
+          System.out.println(modelNo);
           modelNumber = (bsModels == null ? modelNo : modelNumber + 1);
           if (!doGetModel(modelNumber)) {
             if (isLastModel(modelNumber) && iHaveModel)
@@ -133,7 +138,8 @@ public class PdbReader extends AtomSetCollectionReader {
           }
           iHaveModel = true;
           atomSetCollection.connectAll(maxSerial);
-          applySymmetryAndSetTrajectory();
+          if (atomCount > 0)
+            applySymmetryAndSetTrajectory();
           //supposedly MODEL is only for NMR
           model(modelNo);
           continue;
@@ -146,11 +152,11 @@ public class PdbReader extends AtomSetCollectionReader {
          * supports this. So you can't concatinate PDB files the way
          * you can CIF files. --Bob Hanson 8/30/06
          */
-        if (iHaveModelStatement && !iHaveModel)
+        if (isMultiModel && !iHaveModel)
           continue;
         if (isAtom) {
           getHeader = false;
-          atom();
+          atom(serial);
           continue;
         }
         switch (ptOption) {
@@ -459,14 +465,12 @@ REMARK 290 REMARK: NULL
   private String lastAtomData;
   private int lastAtomIndex;
   
-  private void atom() {
-    boolean isHetero = line.startsWith("HETATM");
-    char charAlternateLocation = line.charAt(16);
-
+  private void atom(int serial) {
     // get the group so that we can check the formul
-    int serial = parseInt(line, 6, 11);
     if (serial > maxSerial)
       maxSerial = serial;
+    boolean isHetero = line.startsWith("HETATM");
+    char charAlternateLocation = line.charAt(16);
     char chainID = line.charAt(21);
     if (chainAtomCounts != null)
       chainAtomCounts[chainID]++;

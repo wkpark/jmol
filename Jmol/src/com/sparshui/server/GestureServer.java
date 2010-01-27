@@ -156,8 +156,10 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
       return;
     int type = socket.getInputStream().read();
     if (type == ConnectionType.CLIENT) {
+      Logger.info("[GestureServer] client connection established on port " + port);
       acceptClientConnection(socket);
     } else if (type == ConnectionType.INPUT_DEVICE) {
+      Logger.info("[GestureServer] device connection established on port " + port);
       acceptInputDeviceConnection(socket);
     }
   }

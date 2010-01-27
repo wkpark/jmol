@@ -11048,7 +11048,7 @@ public class ScriptEvaluator {
       if (tok == Token.image) {
         pt++;
       } else if (tok == Token.frame) {
-        if (args[++pt].tok == Token.expressionBegin
+        if (pt + 1 < argCount && args[++pt].tok == Token.expressionBegin
             || args[pt].tok == Token.bitset) {
           bsFrames = expression(args, pt, 0, true, false, true, true);
           pt = iToken + 1;

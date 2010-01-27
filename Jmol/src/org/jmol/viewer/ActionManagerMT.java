@@ -105,8 +105,12 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     super.clear();
   }
   
+  boolean doneHere;
+  
   void dispose() {
+    System.out.println("ActionManagerMT -- dispose");
     // per applet/application instance
+    doneHere = true;
     adapter.dispose();
     if (simulator != null)
       simulator.dispose();
@@ -186,7 +190,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
 
   public int getGroupID(int x, int y) {
-    int gid = (!viewer.isApplet() && !viewer.getDisplay().hasFocus() 
+    System.out.println("ActionManagerMT" + this + " hasfocus? " + viewer.getDisplay().hasFocus() );
+    int gid = (!viewer.getDisplay().hasFocus()  
         || x < 0 || y < 0 || x >= viewer.getScreenWidth()
         || y >= viewer.getScreenHeight() ? 0 : groupID);
     if (resetNeeded) {
@@ -210,7 +215,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       Logger.error("SparshUI reports no driver present");
       break;
     case SERVICE_LOST:
-      startSparshUIService(simulator != null);  
+      if (!doneHere)
+        startSparshUIService(simulator != null);  
       break;
     case TOUCH_EVENT:
       haveMultiTouchInput = true;

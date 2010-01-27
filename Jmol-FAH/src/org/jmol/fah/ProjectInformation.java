@@ -1456,7 +1456,8 @@ public class ProjectInformation {
     if ((info._psContact == null) &&
         (info._staticContact == null) &&
         (info._fciContact != null) &&
-        (!info._fciContact.equals("NA"))) { //$NON-NLS-1$
+        (!info._fciContact.equals("NA")) && //$NON-NLS-1$
+        (!info._fciContact.equals("n/a"))) { //$NON-NLS-1$
       different = true;
     }
     if ((info._psCore == null) &&
@@ -1926,7 +1927,8 @@ public class ProjectInformation {
       }
     } else if (info._staticContact == null) {
       if ((info._fciContact != null) &&
-          (!info._fciContact.equals("NA"))) { //$NON-NLS-1$
+          (!info._fciContact.equals("NA")) && //$NON-NLS-1$
+          (!info._fciContact.equals("n/a"))) { //$NON-NLS-1$
         contactDifferent = true;
       }
     }

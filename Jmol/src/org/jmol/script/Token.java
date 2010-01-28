@@ -864,6 +864,7 @@ public class Token {
   public final static int pdbgetheader                   = booleanparam | 112;
   public final static int pdbsequential                  = booleanparam | 114;
   public final static int perspectivedepth               = booleanparam | 116;
+  public final static int preservestate                  = booleanparam | 117;
   public final static int rangeselected                  = booleanparam | 118;
   public final static int refreshing                     = booleanparam | 120;
   public final static int ribbonborder                   = booleanparam | 122;
@@ -2025,6 +2026,7 @@ public class Token {
       "pdbGetHeader",                             new Token(pdbgetheader),
       "pdbSequential",                            new Token(pdbsequential),
       "perspectiveDepth",                         new Token(perspectivedepth),
+      "preserveState",                            new Token(preservestate),
       "rangeSelected",                            new Token(rangeselected),
       "refreshing",                               new Token(refreshing),
       "ribbonBorder",                             new Token(ribbonborder),

@@ -5345,6 +5345,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.preservestate:
+      // 11.9.23
+      global.preserveState = value;
+      modelSet.setPreserveState(value);
+      break;
     case Token.strutsmultiple:
       // 11.9.23
       global.strutsMultiple = value;
@@ -7191,9 +7196,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *          the command to add
    */
   public void addCommand(String command) {
-    if (!autoExit)
-      commandHistory.addCommand(TextFormat.replaceAllCharacters(command,
-          "\r\n\t", " "));
+    if (autoExit || !haveDisplay || !getPreserveState())
+      return;
+    commandHistory.addCommand(TextFormat.replaceAllCharacters(command,
+        "\r\n\t", " "));
   }
 
   /**
@@ -7881,6 +7887,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public float getStrutDefaultRadius() {
     return global.strutDefaultRadius;
+  }
+  
+  /**
+   * This flag if set FALSE:
+   * 
+   * 1) turns UNDO off for the application
+   * 2) turns history off
+   * 3) prevents saving of inlinedata for later LOAD "" commands
+   * 4) turns off the saving of changed atom properties
+   * 5) does not guarantee accurate state representation
+   * 
+   * It is useful in situations such as web sites where 
+   * memory is an issue and there is no need for such. 
+   * 
+   * 
+   * @return     TRUE or FALSE
+   */
+  public boolean getPreserveState() {
+    return global.preserveState;
   }
 
 }

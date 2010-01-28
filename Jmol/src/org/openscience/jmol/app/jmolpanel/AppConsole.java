@@ -276,7 +276,7 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
   void undoRedo(boolean isRedo) {
     // pointer is always left at the undo slot when a command is given
     // redo at CURRENT pointer position
-    if (!viewer.getBooleanProperty("undo"))
+    if (!viewer.getBooleanProperty("undo") || !viewer.getBooleanProperty("preserveState"))
       return;
     if (!undoSaved) 
       undoSave();

@@ -77,6 +77,7 @@ public final class ModelLoader extends ModelSet {
     if (shapes == null && !viewer.isDataOnly())
       shapes = new Shape[JmolConstants.SHAPE_MAX];    
     this.viewer = viewer;
+    preserveState = viewer.getPreserveState();
     initializeInfo(name, 1, null, null);
     createModelSet(null, null);
     modelSetName = "zapped";
@@ -95,6 +96,7 @@ public final class ModelLoader extends ModelSet {
     this.mergeModelSet = mergeModelSet;
     merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
     this.viewer = viewer;
+    preserveState = viewer.getPreserveState();
     initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase().intern(),
         adapter.getEstimatedAtomCount(atomSetCollection), adapter
             .getAtomSetCollectionProperties(atomSetCollection), adapter

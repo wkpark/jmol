@@ -287,7 +287,8 @@ public class FileManager {
     Logger.info("FileManager.getAtomSetCollectionFromString()");
     if (!isAppend) {
       fullPathName = fileName = "string";
-      inlineData = strModel;
+      if (viewer.getPreserveState())
+        inlineData = strModel;
     }
     FileReader fileReader = new FileReader("string", "string", null,
         getBufferedReaderForString(strModel), htParams);

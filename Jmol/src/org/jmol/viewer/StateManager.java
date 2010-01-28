@@ -575,11 +575,11 @@ public class StateManager {
         + ";debug;debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
         + ";_filecaching;_filecache;fontcaching;fontscaling;language;loglevel;measureStyleChime"
         + ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode;"
-        + ";perspectivedepth;phongexponent;visualrange;perspectivemodel;refreshing;rotationradius"
+        + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate"
-        + ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomenabled"
+        + ";unitcellcolor;visualrange;windowcentered;zerobasedxyzrasmol;zoomenabled"
         +
         //    saved in the hash table but not considered part of the state:
         ";scriptqueue;scriptreportinglevel;syncscript;syncmouse;syncstereo;" +
@@ -831,6 +831,7 @@ public class StateManager {
     String pickLabel = "";
     float pointGroupDistanceTolerance = 0.2f;
     float pointGroupLinearTolerance = 8.0f;
+    boolean preserveState = true;
     String propertyColorScheme = "roygb";
     String quaternionFrame = "p"; // was c prior to Jmol 11.7.47
     boolean saveProteinStructureState = true;
@@ -1370,6 +1371,7 @@ public class StateManager {
       setParameterValue("pickLabel", pickLabel);
       setParameterValue("pointGroupLinearTolerance", pointGroupLinearTolerance);
       setParameterValue("pointGroupDistanceTolerance", pointGroupDistanceTolerance);
+      setParameterValue("preserveState", preserveState);
       setParameterValue("propertyColorScheme", propertyColorScheme);
       setParameterValue("propertyAtomNumberColumnCount", 0);
       setParameterValue("propertyAtomNumberField", 0);

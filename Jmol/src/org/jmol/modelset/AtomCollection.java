@@ -832,6 +832,11 @@ abstract public class AtomCollection {
 
   // state tainting
   
+  protected boolean preserveState = true;
+  
+  public void setPreserveState(boolean TF) {
+    preserveState = TF;
+  }
   ////  atom coordinate and property changing  //////////
   
   // be sure to add the name to the list below as well!
@@ -885,6 +890,8 @@ abstract public class AtomCollection {
   }
   
   protected void taint(int atomIndex, byte type) {
+    if (!preserveState)
+      return;
     if (tainted == null)
       tainted = new BitSet[TAINT_MAX];
     if (tainted[type] == null)
@@ -893,12 +900,16 @@ abstract public class AtomCollection {
   }
 
   private void untaint(int i, byte type) {
+    if (!preserveState)
+      return;
     if (tainted == null || tainted[type] == null)
       return;
     tainted[type].clear(i);
   }
 
   public void setTaintedAtoms(BitSet bs, byte type) {
+    if (!preserveState)
+      return;
     if (bs == null) {
       if (tainted == null)
         return;
@@ -913,6 +924,8 @@ abstract public class AtomCollection {
   }
 
   public String getAtomicPropertyState(int taintWhat, BitSet bsSelected) {
+    if (!preserveState)
+      return "";
     BitSet bs;
     StringBuffer commands = new StringBuffer();
     for (byte i = 0; i < TAINT_MAX; i++)
@@ -926,6 +939,8 @@ abstract public class AtomCollection {
                                             Atom[] atoms, int atomCount,
                                             byte type, BitSet bs, String label,
                                             float[] fData) {
+    if (!viewer.getPreserveState())
+      return;
     //see setAtomData()
     StringBuffer s = new StringBuffer();
     String dataLabel = (label == null ? userSettableValues[type] : label)

@@ -948,7 +948,7 @@ public class StateManager {
     int strutSpacing = 6;
     float strutLengthMaximum = 7.0f;
     float strutDefaultRadius = JmolConstants.DEFAULT_STRUT_RADIUS;
-    boolean strutsMultiple = true;
+    boolean strutsMultiple = false; //on a single position
     
     boolean isJmolVariable(String key) {
       return key.charAt(0) == '_'

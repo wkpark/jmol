@@ -2092,7 +2092,7 @@ public class Token {
       tokenMap.put(lcase, tokenThis);
       tokenLast = tokenThis;
     }
-    Logger.info(arrayPairs.length + " definitions");
+    Logger.info(arrayPairs.length + " script command tokens");
   }
 
 }

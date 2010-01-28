@@ -4622,6 +4622,9 @@ public class ScriptEvaluator {
         case Token.load:
           load();
           break;
+        case Token.log:
+          log();
+          break;
         case Token.message:
           message();
           break;
@@ -6593,6 +6596,15 @@ public class ScriptEvaluator {
       viewer.showMessage(s);
     if (!s.startsWith("_"))
       scriptStatusOrBuffer(s);
+  }
+
+  private void log() throws ScriptException {
+    if (statementLength == 1)
+      error(ERROR_badArgumentCount);
+    String s = (String) parameterExpression(1, 0, "", false);
+    if (isSyntaxCheck)
+      return;
+    Logger.logToFile(s + "\n");
   }
 
   private void print() throws ScriptException {
@@ -9558,6 +9570,9 @@ public class ScriptEvaluator {
       return;
     case Token.label:
       label(2);
+      return;
+    case Token.logfile:
+      Logger.setLogFile(stringParameter(2));
       return;
     case Token.unitcell:
       unitcell(2);

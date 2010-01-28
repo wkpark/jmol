@@ -252,6 +252,7 @@ public class Token {
   final static int returncmd    = 2 | mathExpressionCommand;
   final static int set          = 3 | mathExpressionCommand | expression;
   final static int var          = 4 | mathExpressionCommand;
+  final static int log          = 5 | mathExpressionCommand;
 
   public final static int echo  = 1 | implicitStringCommand | shapeCommand | setparam;
   final static int help         = 2 | implicitStringCommand;
@@ -726,6 +727,7 @@ public class Token {
   public final static int hoverlabel                     = strparam | 42;
   public final static int language                       = strparam | 44;
   public final static int loadformat                     = strparam | 46;
+  public final static int logfile                        = strparam | 47;
   public final static int picking                        = strparam | 48;
   public final static int pickingstyle                   = strparam | 50;
   public final static int picklabel                      = strparam | 52;
@@ -1405,6 +1407,7 @@ public class Token {
       "lcaocartoon",       new Token(lcaocartoon),
       "lcaocartoons",      null,
       "load",              new Token(load),
+      "log",               new Token(log),
       "loop",              new Token(loop),
       "measure",           new Token(measure),
       "measurement",       null,
@@ -1841,6 +1844,8 @@ public class Token {
 
       // set params
       
+      // string
+      
       "appletProxy",                              new Token(appletproxy),
       "atomTypes",                                new Token(atomtypes),
       "axesColor",                                new Token(axescolor),
@@ -1862,6 +1867,7 @@ public class Token {
       "defaultTorsionLabel",                      new Token(defaulttorsionlabel),
       "defaultVDW",                               new Token(defaultvdw),
       "fileCacheDirectory",                       new Token(filecachedirectory),
+      "logFile",                                  new Token(logfile),
       "fontsize",                                 new Token(fontsize),
       "helpPath",                                 new Token(helppath),
       "hoverLabel",                               new Token(hoverlabel),
@@ -1874,7 +1880,9 @@ public class Token {
       "propertyColorSchemeOverload",              new Token(propertycolorschemeoverload),
       "quaternionFrame",                          new Token(quaternionframe),
       "unitCellColor",                            new Token(unitcellcolor),
-//      "",                                         new Token(),
+
+      // float
+      
       "axesScale",                                new Token(axesscale),
       "bondTolerance",                            new Token(bondtolerance),
       "cameraDepth",                              new Token(cameradepth),
@@ -1895,7 +1903,6 @@ public class Token {
       "navZ",                                     new Token(navz),
       "pointGroupDistanceTolerance",              new Token(pointgroupdistancetolerance),
       "pointGroupLinearTolerance",                new Token(pointgrouplineartolerance),
-//      "",                                         new Token(),
       "radius",                                   new Token(radius),
       "rotationRadius",                           new Token(rotationradius),
       "scale3D",                                  new Token(scale3d),
@@ -1913,7 +1920,9 @@ public class Token {
       "vibrationPeriod",                          new Token(vibrationperiod),
       "vibrationScale",                           new Token(vibrationscale),
       "visualRange",                              new Token(visualrange),
-//      "",                                         new Token(),
+
+      // int
+
       "ambientPercent",                           new Token(ambientpercent),
       "ambient",                                  null, 
       "animationFps",                             new Token(animationfps),
@@ -1948,7 +1957,9 @@ public class Token {
       "strandCountForStrands",                    new Token(strandcountforstrands),
       "strutSpacing",                             new Token(strutspacing),
       "zshadePower",                              new Token(zshadepower),
-//      "",                                         new Token(),
+
+      // boolean
+
       "allowEmbeddedScripts",                     new Token(allowembeddedscripts),
       "allowGestures",                            new Token(allowgestures),
       "allowKeyStrokes",                          new Token(allowkeystrokes),

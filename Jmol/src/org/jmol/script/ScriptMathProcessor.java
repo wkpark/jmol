@@ -25,6 +25,7 @@ package org.jmol.script;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Date;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1549,6 +1550,8 @@ class ScriptMathProcessor {
       return addX(q.toPoint4f());
     }
     if (tok == Token.now) {
+      if (args.length == 1 && args[0].tok == Token.string)
+        return addX((new Date()) + "\t" + ScriptVariable.sValue(args[0]));
       return addX(((int) System.currentTimeMillis() & 0x7FFFFFFF)
           - (args.length == 0 ? 0 : ScriptVariable.iValue(args[0])));
     }

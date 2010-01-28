@@ -729,7 +729,8 @@ public class JvxlCoder {
         "data", jvxlCompressString(list1.toString(), escapeXml) }, null);
     if (polygonColorData != null)
       XmlUtil.appendTag(sb, "jvxlPolygonColorData", new String[] {
-          "encoding", "jvxlnc" }, "\n" + polygonColorData);
+          "encoding", "jvxlnc",
+          "count", "" + polygonCount}, "\n" + polygonColorData);
     if (!addColorData)
       return;
 

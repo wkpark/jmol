@@ -25,6 +25,10 @@
 
 package org.jmol.util;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.util.Date;
+
 /**
  * Logger mechanism.
  */
@@ -39,6 +43,8 @@ public final class Logger {
   public final static int LEVEL_DEBUG = 5;
   public final static int LEVEL_DEBUGHIGH = 6;
   public final static int LEVEL_MAX = 7;
+  
+  private static String logFile = null;
 
   private final static boolean[] _activeLevels = new boolean[LEVEL_MAX];
   private       static boolean   _logLevel = false;
@@ -301,5 +307,24 @@ public final class Logger {
     }
     info("Memory: Total-Free="+ (bTotal - bFree)+"; Total=" +  bTotal + "; Free=" + bFree 
         + "; Max=" + bMax);
+  }
+  
+  public static void setLogFile(String name) {
+     logFile = "JmolLog_" + name;
+  }
+  
+  public static void logToFile(String data) {
+    try{
+      if (logFile == null || data == null)
+        return;
+      if (data.startsWith("NOW"))
+        data = (new Date()).toString() + "\t" + data.substring(3);
+      FileWriter fstream = new FileWriter(logFile,true);
+          BufferedWriter out = new BufferedWriter(fstream);
+      out.write(data);
+      out.close();
+      }catch (Exception e){
+        // ignore
+      } 
   }
 }

@@ -8245,11 +8245,35 @@
     server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz" contrib="John Deas"/>
   <fah_proj number="6318" name="p6318" public="y" file="xyz"
-    server="171.64.65.60" atoms="0" preferred="36" deadline="52"
+    server="171.64.65.60" atoms="15097" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contrib="Igor Miranda"/>
   <fah_proj number="6319" name="p6319" public="y"
-    server="171.64.65.60" atoms="0" preferred="10" deadline="20"
-    credit="51" frames="100" code="G"/>
+    server="171.64.65.60" atoms="6414" preferred="10" deadline="20"
+    credit="106" frames="100" code="G"/>
+  <fah_proj number="6320" name="p6320" public="y"
+    server="171.64.65.60" atoms="6384" preferred="10" deadline="20"
+    credit="104" frames="100" code="G"/>
+  <fah_proj number="6321" name="p6321" public="y"
+    server="171.64.65.60" atoms="6414" preferred="10" deadline="20"
+    credit="106" frames="100" code="G"/>
+  <fah_proj number="6322" name="p6322" public="y"
+    server="171.64.65.60" atoms="6384" preferred="10" deadline="20"
+    credit="104" frames="100" code="G"/>
+  <fah_proj number="6323" name="p6323" public="y"
+    server="171.64.65.60" atoms="6397" preferred="10" deadline="20"
+    credit="104" frames="100" code="G"/>
+  <fah_proj number="6324" name="p6324" public="y"
+    server="171.64.65.60" atoms="6397" preferred="10" deadline="20"
+    credit="104" frames="100" code="G"/>
+  <fah_proj number="6325" name="p6325" public="y"
+    server="171.64.65.60" atoms="6397" preferred="10" deadline="20"
+    credit="104" frames="100" code="G"/>
+  <fah_proj number="6326" name="p6326" public="y"
+    server="171.64.65.60" atoms="6397" preferred="10" deadline="20"
+    credit="104" frames="100" code="G"/>
+  <fah_proj number="6327" name="p6327" public="y"
+    server="171.64.65.60" atoms="15097" preferred="36" deadline="52"
+    credit="336" frames="100" code="G"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

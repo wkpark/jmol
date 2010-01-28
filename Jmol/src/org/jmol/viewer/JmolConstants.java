@@ -370,7 +370,7 @@ final public class JmolConstants {
   public final static int BOND_ORDER_NULL    = 0x1FFFF;
 
   public final static int BOND_NEW           = 0x20000;
-  public static final int BOND_STRUT    = 0x8000;
+  public static final int BOND_STRUT         = 0x8000;
   public final static int BOND_HBOND_SHIFT   = 11;
   public final static int BOND_HYDROGEN_MASK = 0xF << 11;
   public final static int BOND_H_REGULAR     = 1 << 11;
@@ -500,6 +500,8 @@ final public class JmolConstants {
     case BOND_ORDER_ANY:
     case BOND_ORDER_NULL:
       return "";
+    case BOND_STRUT:
+      return "strut";
     case BOND_COVALENT_SINGLE:
       return "single";
     case BOND_COVALENT_DOUBLE:

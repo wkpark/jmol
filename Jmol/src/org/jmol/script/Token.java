@@ -895,6 +895,7 @@ public class Token {
 // see intparam  public final static int specular                       = booleanparam | 174;
   public final static int ssbondsbackbone                = booleanparam | 176;
   public final static int statusreporting                = booleanparam | 178;
+  public final static int strutsmultiple                 = booleanparam | 179;
   public final static int syncmouse                      = booleanparam | 180;
   public final static int syncscript                     = booleanparam | 182;
   public final static int testflag1                      = booleanparam | 184;
@@ -2055,6 +2056,7 @@ public class Token {
 // see intparam     "specular",                                 new Token(specular),
       "ssBondsBackbone",                          new Token(ssbondsbackbone),
       "statusReporting",                          new Token(statusreporting),
+      "strutsMultiple",                           new Token(strutsmultiple),
       "syncMouse",                                new Token(syncmouse),
       "syncScript",                               new Token(syncscript),
       "testFlag1",                                new Token(testflag1),

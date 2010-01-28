@@ -1843,6 +1843,7 @@ abstract public class ModelCollection extends BondCollection {
    */
   public int calculateStruts(BitSet bs1, BitSet bs2) {
     // select only ONE model
+    makeConnections(0, Float.MAX_VALUE, JmolConstants.BOND_STRUT, JmolConstants.CONNECT_DELETE_BONDS, bs1, bs2, null, false);
     int iAtom = BitSetUtil.firstSetBit(bs1);
     if (iAtom < 0)
       return 0;
@@ -1866,11 +1867,12 @@ abstract public class ModelCollection extends BondCollection {
     float thresh = viewer.getStrutLengthMaximum();
     short mad = (short) (viewer.getStrutDefaultRadius() * 2000);
     int delta = viewer.getStrutSpacingMinimum();
+    boolean strutsMultiple = viewer.getStrutsMultiple();
     Vector struts = model.getBioPolymer(a1.getPolymerIndexInModel())
-        .calculateStruts((ModelSet) this, atoms, bs1, bs2, vCA, thresh, delta);
+        .calculateStruts((ModelSet) this, atoms, bs1, bs2, vCA, thresh, delta, strutsMultiple);
     for (int i = 0; i < struts.size(); i++) {
       Object[] o = (Object[]) struts.get(i);
-      bondAtoms((Atom) o[0], (Atom) o[1], JmolConstants.BOND_STRUT_MASK, mad, null);
+      bondAtoms((Atom) o[0], (Atom) o[1], JmolConstants.BOND_STRUT, mad, null);
     }
     return struts.size();
   }

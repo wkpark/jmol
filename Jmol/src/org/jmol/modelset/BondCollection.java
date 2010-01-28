@@ -319,7 +319,7 @@ abstract public class BondCollection extends AtomCollection {
    */
   protected short getDefaultMadFromOrder(int order) {
     return (short) ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0 ? 1
-        : (order & JmolConstants.BOND_STRUT_MASK) != 0 ? (int) (viewer
+        : (order & JmolConstants.BOND_STRUT) != 0 ? (int) (viewer
             .getStrutDefaultRadius() * 2000) : defaultCovalentMad);
   }
 

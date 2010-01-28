@@ -174,7 +174,7 @@ public class SticksRenderer extends ShapeRenderer {
           renderHbondDashed();
         }
         break;
-      } else if (bondOrder == JmolConstants.BOND_STRUT_MASK) {
+      } else if (bondOrder == JmolConstants.BOND_STRUT) {
         bondOrder = 1;
         drawBond(0);
       }

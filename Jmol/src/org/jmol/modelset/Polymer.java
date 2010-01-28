@@ -128,7 +128,7 @@ abstract public class Polymer {
     return;
   }
 
-  public Vector calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1, BitSet bs2, Vector vCA, float thresh, int delta) {
+  public Vector calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1, BitSet bs2, Vector vCA, float thresh, int delta, boolean allowMultiple) {
     return null;
   }
 

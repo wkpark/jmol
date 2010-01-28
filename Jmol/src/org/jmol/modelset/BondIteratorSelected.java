@@ -68,7 +68,7 @@ class BondIteratorSelected implements BondIterator {
           && (bond.order & bondType) == 0) {
         continue;
       } else if (bondType == JmolConstants.BOND_ORDER_ANY
-          && (bond.order & JmolConstants.BOND_STRUT_MASK) != 0)
+          && (bond.order & JmolConstants.BOND_STRUT) != 0)
           continue;
       boolean isSelected1 = bsSelected.get(bond.atom1.index);
       boolean isSelected2 = bsSelected.get(bond.atom2.index);

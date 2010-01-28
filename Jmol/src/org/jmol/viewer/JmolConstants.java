@@ -370,7 +370,7 @@ final public class JmolConstants {
   public final static int BOND_ORDER_NULL    = 0x1FFFF;
 
   public final static int BOND_NEW           = 0x20000;
-  public static final int BOND_STRUT_MASK    = 0x8000;
+  public static final int BOND_STRUT    = 0x8000;
   public final static int BOND_HBOND_SHIFT   = 11;
   public final static int BOND_HYDROGEN_MASK = 0xF << 11;
   public final static int BOND_H_REGULAR     = 1 << 11;
@@ -447,7 +447,7 @@ final public class JmolConstants {
 
   private final static int[] bondOrderValues = {
     BOND_COVALENT_SINGLE, BOND_COVALENT_DOUBLE, BOND_COVALENT_TRIPLE, BOND_COVALENT_QUADRUPLE,
-    BOND_AROMATIC, BOND_STRUT_MASK,
+    BOND_AROMATIC, BOND_STRUT,
     BOND_H_REGULAR, BOND_PARTIAL01, BOND_PARTIAL12, 
     BOND_PARTIAL23, BOND_PARTIAL32, 
     BOND_AROMATIC_SINGLE, BOND_AROMATIC_DOUBLE,

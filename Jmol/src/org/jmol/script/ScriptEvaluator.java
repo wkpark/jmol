@@ -6279,7 +6279,7 @@ public class ScriptEvaluator {
     }
     if (isSyntaxCheck || shapeType < 0)
       return;
-    typeMask = (shapeType == JmolConstants.SHAPE_STRUTS ? JmolConstants.BOND_STRUT_MASK
+    typeMask = (shapeType == JmolConstants.SHAPE_STRUTS ? JmolConstants.BOND_STRUT
         : shapeType == JmolConstants.SHAPE_HSTICKS ? JmolConstants.BOND_HYDROGEN_MASK
         : shapeType == JmolConstants.SHAPE_SSSTICKS ? JmolConstants.BOND_SULFUR_MASK
             : shapeType == JmolConstants.SHAPE_STICKS ? JmolConstants.BOND_COVALENT_MASK
@@ -7416,7 +7416,7 @@ public class ScriptEvaluator {
     // wireframe will not operate on STRUTS even though they are 
     // a form of bond order (see BondIteratoSelected)
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolConstants.BOND_STRUT_MASK));
+        JmolConstants.BOND_STRUT));
     setShapeSize(JmolConstants.SHAPE_STICKS, 0);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_COVALENT_MASK));
@@ -8682,7 +8682,7 @@ public class ScriptEvaluator {
     if (defOn)
       mad = (int) (viewer.getStrutDefaultRadius() * 2000f);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolConstants.BOND_STRUT_MASK));
+        JmolConstants.BOND_STRUT));
     setShapeSize(JmolConstants.SHAPE_STICKS, mad);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_COVALENT_MASK));
@@ -9039,7 +9039,7 @@ public class ScriptEvaluator {
           return;
         int n = viewer.calculateStruts(bs, bs2);
         if (n > 0)
-          colorShape(JmolConstants.SHAPE_STRUTS, JmolConstants.BOND_STRUT_MASK,
+          colorShape(JmolConstants.SHAPE_STRUTS, JmolConstants.BOND_STRUT,
             0x0FFFFFF, "translucent", 0.5f, null);
         showString(GT._("{0} struts added", n));
         return;

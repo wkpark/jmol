@@ -5345,6 +5345,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.strutsmultiple:
+      // 11.9.23
+      global.strutsMultiple = value;
+      break;
     case Token.filecaching:
       // 11.9.21
       // not implemented -- application only -- CANNOT BE SET BY STATE global.atomTypes = value;
@@ -7861,6 +7865,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public int calculateStruts(BitSet bs1, BitSet bs2) {
     return modelSet.calculateStruts(bs1 == null ? selectionManager.bsSelection : bs1, 
         bs2 == null ? selectionManager.bsSelection : bs2);
+  }
+
+  public boolean getStrutsMultiple() {
+    return global.strutsMultiple;
   }
 
   public int getStrutSpacingMinimum() {

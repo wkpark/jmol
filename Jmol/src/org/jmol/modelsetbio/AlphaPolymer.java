@@ -292,12 +292,12 @@ public class AlphaPolymer extends BioPolymer {
    * @param vCA
    * @param thresh
    * @param delta
-   * 
+   * @param allowMultiple 
    * @return vector of pairs of atoms
    * 
    */
   public Vector calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1,
-                                BitSet bs2, Vector vCA, float thresh, int delta) {
+                                BitSet bs2, Vector vCA, float thresh, int delta, boolean allowMultiple) {
     Vector vStruts = new Vector(); // the output vector
     float thresh2 = thresh * thresh; // use distance squared for speed
 
@@ -362,10 +362,11 @@ public class AlphaPolymer extends BioPolymer {
     for (int t = 5; --t >= 0;) { // loop starts with 4
       thresh2 = (thresh - t) * (thresh - t);
       for (int i = 0; i < n; i++)
+        if (allowMultiple || !bsStruts.get(i))
         for (int j = i + 1; j < n; j++) {
           int ipt = strutPoint(i, j, n);
           if (!bsNotAvailable.get(ipt) && !bsNearbyResidues.get(ipt)
-              && d2[ipt] <= thresh2)
+              && (allowMultiple || !bsStruts.get(j)) && d2[ipt] <= thresh2)
             setStrut(i, j, n, vCA, vStruts, bsStruts, bsNotAvailable,
                 bsNearbyResidues, atoms, delta);
         }

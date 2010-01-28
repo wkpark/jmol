@@ -948,7 +948,8 @@ public class StateManager {
     int strutSpacing = 6;
     float strutLengthMaximum = 7.0f;
     float strutDefaultRadius = JmolConstants.DEFAULT_STRUT_RADIUS;
-
+    boolean strutsMultiple = true;
+    
     boolean isJmolVariable(String key) {
       return key.charAt(0) == '_'
           || htNonbooleanParameterValues.containsKey(key = key.toLowerCase())
@@ -1426,6 +1427,7 @@ public class StateManager {
       setParameterValue("strutDefaultRadius", strutDefaultRadius);
       setParameterValue("strutLengthMaximum", strutLengthMaximum);
       setParameterValue("strutSpacing", strutSpacing);
+      setParameterValue("strutsMultiple", strutsMultiple);
       setParameterValue("syncMouse", false);
       setParameterValue("syncScript", false);
       setParameterValue("syncStereo", false);

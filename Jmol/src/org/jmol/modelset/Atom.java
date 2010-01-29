@@ -1132,6 +1132,8 @@ final public class Atom extends Point3fi {
       return atom.getMoleculeNumber();
     case Token.occupancy:
       return atom.getOccupancy100();
+    case Token.polymer:
+      return atom.getGroup().getBioPolymerIndexInModel() + 1;
     case Token.polymerlength:
       return atom.getPolymerLength();
     case Token.radius:

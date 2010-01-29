@@ -1768,7 +1768,7 @@ class ScriptMathProcessor {
       isSequence = !Parser
           .isOneOf(
               withinStr.toLowerCase(),
-              "helix;sheet;atomname;atomtype;element;site;group;chain;structure;molecule;model;boundbox");
+              "helix;sheet;atomname;atomtype;element;site;group;chain;structure;molecule;model;polymer;boundbox");
     } else if (isDistance) {
       distance = ScriptVariable.fValue(args[0]);
       if (i < 2)

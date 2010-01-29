@@ -1493,15 +1493,18 @@ abstract public class AtomCollection {
     return info.toString().substring(1);
   }
 
-  /* ******************************************************
+  /*
+   * ******************************************************
    * 
-   * These next methods are used by Eval to select for 
-   * specific atom sets. They all return a BitSet
+   * These next methods are used by Eval to select for specific atom sets. They
+   * all return a BitSet
    * 
-   ********************************************************/
+   * ******************************************************
+   */
 
   /**
    * general unqualified lookup of atom set type
+   * 
    * @param tokType
    * @param specInfo
    * @return BitSet; or null if we mess up the type
@@ -1565,10 +1568,10 @@ abstract public class AtomCollection {
         if (atoms[i].isCarbohydrate())
           bs.set(i);
       return bs;
-    case Token.helix: //WITHIN -- not ends
-    case Token.sheet: //WITHIN -- not ends
-      byte type = (tokType == Token.helix ? 
-          JmolConstants.PROTEIN_STRUCTURE_HELIX : JmolConstants.PROTEIN_STRUCTURE_SHEET);
+    case Token.helix: // WITHIN -- not ends
+    case Token.sheet: // WITHIN -- not ends
+      byte type = (tokType == Token.helix ? JmolConstants.PROTEIN_STRUCTURE_HELIX
+          : JmolConstants.PROTEIN_STRUCTURE_SHEET);
       for (int i = atomCount; --i >= 0;)
         if (atoms[i].isWithinStructure(type))
           bs.set(i);
@@ -1620,36 +1623,6 @@ abstract public class AtomCollection {
         }
       }
       return bs;
-    case Token.chain:
-      bsInfo = (BitSet) specInfo;
-      Chain chainLast = null;
-      for (int i = atomCount; --i >= 0;) {
-        if (!bsInfo.get(i))
-          continue;
-        Chain chain = atoms[i].getChain();
-        if (chain != chainLast) {
-          for (int j = atomCount; --j >= 0;)
-            if (atoms[j].getChain() == chain)
-              bs.set(j);
-          chainLast = chain;
-        }
-      }
-      return bs;
-    case Token.structure:
-      bsInfo = (BitSet) specInfo;
-      Object structureLast = null;
-      for (int i = atomCount; --i >= 0;) {
-        if (!bsInfo.get(i))
-          continue;
-        Object structure = atoms[i].getGroup().getStructure();
-        if (structure != null && structure != structureLast) {
-          for (int j = atomCount; --j >= 0;)
-            if (atoms[j].getGroup().getStructure() == structure)
-              bs.set(j);
-          structureLast = structure;
-        }
-      }
-      return bs;
     case Token.model:
       bsInfo = (BitSet) specInfo;
       bsTemp = new BitSet();
@@ -1685,8 +1658,8 @@ abstract public class AtomCollection {
     case Token.spec_atom:
       String atomSpec = ((String) specInfo).toUpperCase();
       if (atomSpec.indexOf("\\?") >= 0)
-        atomSpec = TextFormat.simpleReplace(atomSpec, "\\?","\1");
-      /// here xx*yy is NOT changed to "xx??????????yy"
+        atomSpec = TextFormat.simpleReplace(atomSpec, "\\?", "\1");
+      // / here xx*yy is NOT changed to "xx??????????yy"
       for (int i = atomCount; --i >= 0;)
         if (isAtomNameMatch(atoms[i], atomSpec, false))
           bs.set(i);
@@ -1699,6 +1672,70 @@ abstract public class AtomCollection {
       return bs;
     case Token.spec_name_pattern:
       return getSpecName((String) specInfo);
+    }
+
+    // these next require careful iteration
+
+    bsInfo = (BitSet) specInfo;
+    int iLast = BitSetUtil.firstSetBit(bsInfo);
+    int j;
+    if (iLast < 0)
+      return bs;
+    switch (tokType) {
+    case Token.chain:
+      for (int i = iLast; i < atomCount; i++) {
+        if (bs.get(i) || !bsInfo.get(i))
+          continue;
+        Chain chain = atoms[i].getChain();
+        bs.set(i);
+        for (j = i; --j >= 0;)
+          if (atoms[j].getChain() == chain)
+            bs.set(j);
+          else
+            break;
+        for (j = i; ++j < atomCount;)
+          if (atoms[j].getChain() == chain)
+            bs.set(j);
+          else
+            break;
+      }
+      return bs;
+    case Token.polymer:
+      for (int i = iLast; i < atomCount; i++) {
+        if (bs.get(i) || !bsInfo.get(i))
+          continue;
+        int iPolymer = atoms[i].getPolymerIndexInModel();
+        bs.set(i);
+        for (j = i; --j >= 0;)
+          if (atoms[j].getPolymerIndexInModel() == iPolymer)
+            bs.set(j);
+          else
+            break;
+        for (j = i; ++j < atomCount;)
+          if (atoms[j].getPolymerIndexInModel() == iPolymer)
+            bs.set(j);
+          else
+            break;
+      }
+      return bs;
+    case Token.structure:
+      for (int i = iLast; i < atomCount; i++) {
+        if (bs.get(i) || !bsInfo.get(i))
+          continue;
+        Object structure = atoms[i].getGroup().getStructure();
+        bs.set(i);
+        for (j = i; --j >= 0;)
+          if (atoms[j].getGroup().getStructure() == structure)
+            bs.set(j);
+          else
+            break;
+        for (j = i; ++j < atomCount;)
+          if (atoms[j].getGroup().getStructure() == structure)
+            bs.set(j);
+          else
+            break;
+      }
+      return bs;
     }
     Logger.error("MISSING getAtomBits entry for " + Token.nameOf(tokType));
     return null;

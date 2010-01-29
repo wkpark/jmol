@@ -7082,6 +7082,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
       transformManager.setRotateMolecule(false);
     }
+    refresh(3, "moveSelected");
     refreshMeasures();
   }
 

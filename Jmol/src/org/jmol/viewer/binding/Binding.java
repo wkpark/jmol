@@ -23,6 +23,7 @@ abstract public class Binding {
 
   public final static int DOUBLE_CLICK = 2 << 8;
   public final static int SINGLE_CLICK = 1 << 8;
+  public final static int DOWN = 4 << 8;
 
   private final static int BUTTON_MODIFIER_MASK = 
     CTRL_ALT | SHIFT | LEFT | MIDDLE | RIGHT | WHEEL;
@@ -118,7 +119,7 @@ abstract public class Binding {
   public static int getMouseAction(int clickCount, int modifiers) {
     if (clickCount > 2)
       clickCount = 2;
-    return (modifiers & BUTTON_MODIFIER_MASK) | (clickCount << 8);   
+    return (modifiers & BUTTON_MODIFIER_MASK) | (clickCount == Integer.MIN_VALUE ? DOWN : (clickCount << 8));   
   }
 
   /**
@@ -153,6 +154,8 @@ abstract public class Binding {
       action |= DOUBLE_CLICK;
     else if ((action & WHEEL) == 0 || desc.contains("SINGLE"))
       action |= SINGLE_CLICK;
+    else if (desc.contains("DOWN"))
+      action |= DOWN;
 
     return action;
   }
@@ -242,6 +245,9 @@ abstract public class Binding {
     if (includes(mouseAction, DOUBLE_CLICK)) {
       sb.append("+double-click");
       code[0] = '2';
+    } else if (includes(mouseAction, DOWN)) {
+      sb.append("+down");
+      code[0] = '4';
     }
     return (addSortCode ? new String(code) + ":" + sb.toString() : sb
         .toString());

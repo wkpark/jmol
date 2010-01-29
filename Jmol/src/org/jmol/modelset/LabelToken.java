@@ -161,6 +161,7 @@ public class LabelToken {
            Token.format,
            Token.label,
            Token.modelindex,
+           Token.polymer,
            Token.property,
            Token.radius,
            Token.sequence,

@@ -7,6 +7,11 @@ public class DragBinding extends JmolBinding {
   public DragBinding() {
     super("drag");
     setSelectBindings();
+    
+    bind(DOWN+RIGHT, ActionManager.ACTION_selectAndDrag);
+    bind(SINGLE_CLICK+RIGHT, ActionManager.ACTION_dragSelected);
+    bind(SINGLE_CLICK+RIGHT, ActionManager.ACTION_pickAtom);
+    bind(SINGLE_CLICK+RIGHT, ActionManager.ACTION_select);
   }
     
   private void setSelectBindings() {

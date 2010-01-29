@@ -541,10 +541,11 @@ public class Token {
   public final static int model         = intproperty | 12 | scriptCommand;
   public final static int modelindex    = intproperty | 13;
   public final static int molecule      = intproperty | 14;
-  public final static int polymerlength = intproperty | 15;
-  public final static int resno         = intproperty | 16;
-  public final static int site          = intproperty | 17;
-  public final static int strucno       = intproperty | 18;
+  public final static int polymer       = intproperty | 15;
+  public final static int polymerlength = intproperty | 16;
+  public final static int resno         = intproperty | 17;
+  public final static int site          = intproperty | 18;
+  public final static int strucno       = intproperty | 19;
   public final static int valence       = intproperty | 20 | settable;
 
   // float values must be multiplied by 100 prior to comparing to integer values
@@ -1056,7 +1057,6 @@ public class Token {
   final static int pointgroup     = misc | 150;
   final static int pointsperangstrom = misc | 151;// new
   final static int polygon        = misc | 152;// new
-  final static int polymer        = misc | 153;
   public final static int prev    = misc | 154;
   final static int qw             = misc | 155 | expression;
   final static int rad            = misc | 156;// new

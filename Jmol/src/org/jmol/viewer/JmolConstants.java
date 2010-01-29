@@ -289,23 +289,24 @@ final public class JmolConstants {
   public final static int PICKING_SELECT_GROUP     =  9;
   public final static int PICKING_SELECT_CHAIN     = 10;
   public final static int PICKING_SELECT_MOLECULE  = 11;
-  public final static int PICKING_SELECT_SITE      = 12;
-  public final static int PICKING_SELECT_MODEL     = 13;
-  public final static int PICKING_SELECT_ELEMENT   = 14;
-  public final static int PICKING_MEASURE          = 15;
-  public final static int PICKING_MEASURE_DISTANCE = 16;
-  public final static int PICKING_MEASURE_ANGLE    = 17;
-  public final static int PICKING_MEASURE_TORSION  = 18;
-  public final static int PICKING_NAVIGATE         = 19;
-  public final static int PICKING_CONNECT          = 20;
-  public final static int PICKING_STRUTS           = 21;
+  public final static int PICKING_SELECT_POLYMER   = 12;
+  public final static int PICKING_SELECT_SITE      = 13;
+  public final static int PICKING_SELECT_MODEL     = 14;
+  public final static int PICKING_SELECT_ELEMENT   = 15;
+  public final static int PICKING_MEASURE          = 16;
+  public final static int PICKING_MEASURE_DISTANCE = 17;
+  public final static int PICKING_MEASURE_ANGLE    = 18;
+  public final static int PICKING_MEASURE_TORSION  = 19;
+  public final static int PICKING_NAVIGATE         = 20;
+  public final static int PICKING_CONNECT          = 21;
+  public final static int PICKING_STRUTS           = 22;
   
 
   private final static String[] pickingModeNames = {
     "off", "identify", "label", "center", "draw", "spin",
     "symmetry", "deletebond",
-    "atom", "group", "chain", "molecule", "site", "model", 
-    "element", 
+    "atom", "group", "chain", "molecule", "polymer", 
+    "site", "model", "element", 
     "measure", "distance", "angle", "torsion", "navigate", 
     "connect", "struts"
   };

@@ -90,7 +90,7 @@ public abstract class MouseManager implements KeyListener {
     if (viewer.getBooleanProperty("showKeyStrokes"))
       viewer
           .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
-              + Escape.escape("\0" + keyBuffer));
+              + Escape.escape("\1" + keyBuffer));
   }
 
   private void sendKeyBuffer() {
@@ -107,7 +107,7 @@ public abstract class MouseManager implements KeyListener {
     if (Logger.debugging)
       Logger.debug("ActionmManager keyTyped: " + ke.getKeyCode());
     ke.consume();
-    if (viewer.getDisablePopupMenu())
+    if (!viewer.menuEnabled())
       return;
     char ch = ke.getKeyChar();
     int modifiers = ke.getModifiers() & Binding.CTRL_ALT;

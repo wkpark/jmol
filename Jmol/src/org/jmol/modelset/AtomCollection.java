@@ -1513,6 +1513,9 @@ abstract public class AtomCollection {
     BitSet bs = new BitSet();
     BitSet bsInfo, bsTemp;
     int iSpec;
+    
+    // this first set does not assume sequential order in the file
+    
     switch (tokType) {
     case Token.atomno:
       iSpec = ((Integer) specInfo).intValue();
@@ -1609,30 +1612,6 @@ abstract public class AtomCollection {
         if (isInLatticeCell(i, cell))
           bs.set(i);
       return bs;
-    case Token.group:
-      bsInfo = (BitSet) specInfo;
-      Group groupLast = null;
-      for (int i = atomCount; --i >= 0;) {
-        if (!bsInfo.get(i))
-          continue;
-        Atom atom = atoms[i];
-        Group group = atom.getGroup();
-        if (group != groupLast) {
-          group.selectAtoms(bs);
-          groupLast = group;
-        }
-      }
-      return bs;
-    case Token.model:
-      bsInfo = (BitSet) specInfo;
-      bsTemp = new BitSet();
-      for (int i = atomCount; --i >= 0;)
-        if (bsInfo.get(i))
-          bsTemp.set(atoms[i].modelIndex);
-      for (int i = atomCount; --i >= 0;)
-        if (bsTemp.get(atoms[i].modelIndex))
-          bs.set(i);
-      return bs;
     case Token.element:
       bsInfo = (BitSet) specInfo;
       bsTemp = new BitSet();
@@ -1674,64 +1653,87 @@ abstract public class AtomCollection {
       return getSpecName((String) specInfo);
     }
 
-    // these next require careful iteration
+    // these next assume sequential position in the file
+    // speeding delivery -- Jmol 11.9.24
 
     bsInfo = (BitSet) specInfo;
-    int iLast = BitSetUtil.firstSetBit(bsInfo);
-    int j;
-    if (iLast < 0)
+    int i0 = BitSetUtil.firstSetBit(bsInfo);
+    if (i0 < 0)
       return bs;
     switch (tokType) {
+    case Token.group:
+      for (int i = i0; i < atomCount; i++)
+        if (bsInfo.get(i))
+          i = atoms[i].getGroup().selectAtoms(bs);
+      return bs;
+    case Token.model:
+      for (int i = i0; i < atomCount; i++) {
+        if (bs.get(i) || !bsInfo.get(i))
+          continue;
+        int iModel = atoms[i].modelIndex;
+        bs.set(i);
+        for (int j = i; --j >= 0;)
+          if (atoms[j].modelIndex == iModel)
+            bs.set(j);
+          else
+            break;
+        for (; ++i < atomCount;)
+          if (atoms[i].modelIndex == iModel)
+            bs.set(i);
+          else
+            break;
+      }
+      return bs;
     case Token.chain:
-      for (int i = iLast; i < atomCount; i++) {
+      for (int i = i0; i < atomCount; i++) {
         if (bs.get(i) || !bsInfo.get(i))
           continue;
         Chain chain = atoms[i].getChain();
         bs.set(i);
-        for (j = i; --j >= 0;)
+        for (int j = i; --j >= 0;)
           if (atoms[j].getChain() == chain)
             bs.set(j);
           else
             break;
-        for (j = i; ++j < atomCount;)
-          if (atoms[j].getChain() == chain)
-            bs.set(j);
+        for (; ++i < atomCount;)
+          if (atoms[i].getChain() == chain)
+            bs.set(i);
           else
             break;
       }
       return bs;
     case Token.polymer:
-      for (int i = iLast; i < atomCount; i++) {
+      for (int i = i0; i < atomCount; i++) {
         if (bs.get(i) || !bsInfo.get(i))
           continue;
         int iPolymer = atoms[i].getPolymerIndexInModel();
         bs.set(i);
-        for (j = i; --j >= 0;)
+        for (int j = i; --j >= 0;)
           if (atoms[j].getPolymerIndexInModel() == iPolymer)
             bs.set(j);
           else
             break;
-        for (j = i; ++j < atomCount;)
-          if (atoms[j].getPolymerIndexInModel() == iPolymer)
-            bs.set(j);
+        for (; ++i < atomCount;)
+          if (atoms[i].getPolymerIndexInModel() == iPolymer)
+            bs.set(i);
           else
             break;
       }
       return bs;
     case Token.structure:
-      for (int i = iLast; i < atomCount; i++) {
+      for (int i = i0; i < atomCount; i++) {
         if (bs.get(i) || !bsInfo.get(i))
           continue;
         Object structure = atoms[i].getGroup().getStructure();
         bs.set(i);
-        for (j = i; --j >= 0;)
+        for (int j = i; --j >= 0;)
           if (atoms[j].getGroup().getStructure() == structure)
             bs.set(j);
           else
             break;
-        for (j = i; ++j < atomCount;)
-          if (atoms[j].getGroup().getStructure() == structure)
-            bs.set(j);
+        for (; ++i < atomCount;)
+          if (atoms[i].getGroup().getStructure() == structure)
+            bs.set(i);
           else
             break;
       }

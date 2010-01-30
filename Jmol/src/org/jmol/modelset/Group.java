@@ -307,9 +307,10 @@ public class Group {
     return (char)(seqcode & INSERTION_CODE_MASK);
   }
   
-  public final void selectAtoms(BitSet bs) {
+  public final int selectAtoms(BitSet bs) {
     for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
       bs.set(i);
+    return lastAtomIndex;
   }
 
   public boolean isSelected(BitSet bs) {

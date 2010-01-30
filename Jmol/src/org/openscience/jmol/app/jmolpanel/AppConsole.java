@@ -371,10 +371,10 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
       if (strErrorMessage.length() > 0) {
         console.outputError(strErrorMessage);
       } else {
-        viewer.script(strCommand + (strCommand.indexOf("\0##") >= 0 ? "" : JmolConstants.SCRIPT_EDITOR_IGNORE));
+        viewer.script(strCommand + (strCommand.indexOf("\1##") >= 0 ? "" : JmolConstants.SCRIPT_EDITOR_IGNORE));
       }
     }
-    if (strCommand.indexOf("\0##") < 0)
+    if (strCommand.indexOf("\1##") < 0)
       console.grabFocus();
   }
 

@@ -49,10 +49,12 @@ class RepaintManager {
 
   void pushHoldRepaint() {
     ++holdRepaint;
+    //System.out.println("repaintManager pushHoldRepaint holdRepaint=" + holdRepaint + " thread=" + Thread.currentThread().getName());
   }
 
   void popHoldRepaint() {
     --holdRepaint;
+    //System.out.println("repaintManager popHoldRepaint holdRepaint=" + holdRepaint + " thread=" + Thread.currentThread().getName());
     if (holdRepaint <= 0) {
       holdRepaint = 0;
       repaintPending = true;
@@ -65,6 +67,7 @@ class RepaintManager {
       return false;
     repaintPending = true;
     if (holdRepaint == 0) {
+      //System.out.println("repaintManager refresh holdRepaint=" + holdRepaint + " thread=" + Thread.currentThread().getName());
       viewer.repaint();
     }
     return true;
@@ -73,19 +76,24 @@ class RepaintManager {
   synchronized void requestRepaintAndWait() {
     viewer.repaint();
     try {
+      //System.out.println("repaintManager requestRepaintAndWait I am waiting for a repaint: thread=" + Thread.currentThread().getName());
       wait();
     } catch (InterruptedException e) {
+      //System.out.println("repaintManager requestRepaintAndWait interrupted thread=" + Thread.currentThread().getName());
     }
+    //System.out.println("repaintManager requestRepaintAndWait I am no longer waiting for a repaint: thread=" + Thread.currentThread().getName());
   }
 
   synchronized void repaintDone() {
     repaintPending = false;
+    //System.out.println("repaintManager repaintDone thread=" + Thread.currentThread().getName());
     notify(); // to cancel any wait in requestRepaintAndWait()
   }
 
   void render(Graphics3D g3d, ModelSet modelSet) {// , Rectangle rectClip
     if (!viewer.getRefreshing())
       return;
+    //System.out.println("repaintManager render thread=" + Thread.currentThread().getName());
     render1(g3d, modelSet); // , rectClip
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null && g3d.setColix(viewer.getColixRubberband()))

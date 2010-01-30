@@ -63,7 +63,7 @@ public class Frank extends FontShape {
   }
 
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
-    if (!wasClicked(x, y))
+    if (!wasClicked(x, y) || !viewer.menuEnabled())
       return false;
     if (g3d.isDisplayAntialiased()) {
       //because hover rendering is done in FIRST pass only

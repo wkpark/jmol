@@ -554,6 +554,8 @@ public class ActionManager {
     checkAction(Binding.getMouseAction(0, mods), current.x, current.y, 0, rotation, time, 3);
   }
 
+  private boolean haveSelection;
+  
   void mousePressed(long time, int x, int y, int mods) {
     setCurrent(time, x, y, mods);
     pressedCount = (pressed.check(x, y, mods, time, MAX_DOUBLE_CLICK_MILLIS)
@@ -580,10 +582,11 @@ public class ActionManager {
       return;
     }
     if (dragSelectedMode) {
+      haveSelection = true;
       if (isSelectAndDrag) {
-        checkPointOrAtomClicked(x, y, mods, clickedCount); 
+        haveSelection = checkPointOrAtomClicked(x, y, mods, pressedCount); 
       }
-      if (isBound(action, ACTION_dragSelected)) {
+      if (isBound(action, ACTION_dragSelected) && haveSelection) {
         viewer.moveSelected(Integer.MIN_VALUE, 0, 0, 0, false);
       }
       return;
@@ -647,7 +650,7 @@ public class ActionManager {
       viewer.checkObjectDragged(Integer.MAX_VALUE, 0, x, y, action);
       return;
     }
-    if (dragSelectedMode && isBound(action, ACTION_dragSelected))
+    if (dragSelectedMode && isBound(action, ACTION_dragSelected) && haveSelection)
       viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, false);
     
     if (dragRelease && checkUserAction(action, x, y, 0, 0, time, 2))
@@ -746,6 +749,12 @@ public class ActionManager {
       return;
     }
 
+    if (dragSelectedMode && isBound(action, ACTION_dragSelected) && haveSelection) {
+      checkMotion(Viewer.CURSOR_MOVE);
+      viewer.moveSelected(deltaX, deltaY, x, y, true);
+      return;
+    }
+
     if (checkMotionRotateZoom(action, x, deltaX, deltaY, true)) {
       viewer.zoomBy(deltaY);
       return;
@@ -756,12 +765,6 @@ public class ActionManager {
       float degY = ((float) deltaY) / viewer.getScreenHeight() * 180;
       viewer.rotateXYBy(degX, degY);
       return;      
-    }
-
-    if (dragSelectedMode && isBound(action, ACTION_dragSelected)) {
-      checkMotion(Viewer.CURSOR_MOVE);
-      viewer.moveSelected(deltaX, deltaY, x, y, true);
-      return;
     }
 
     if (viewer.allowRotateSelected() && isBound(action, ACTION_rotateSelected)) {
@@ -880,16 +883,16 @@ public class ActionManager {
         * SLIDE_ZOOM_X_PERCENT / 100f;
   }
 
-  private void checkPointOrAtomClicked(int x, int y, int mods, int clickedCount) {
+  private boolean checkPointOrAtomClicked(int x, int y, int mods, int clickedCount) {
     if (!viewer.haveModelSet())
-      return;
+      return false;
     // points are always picked up first, then atoms
     // so that atom picking can be superceded by draw picking
     int action = Binding.getMouseAction(clickedCount, mods);
     if (action != 0) {
       action = viewer.notifyMouseClicked(x, y, action);
       if (action == 0)
-        return;
+        return false;
     }
     Point3fi nearestPoint = null;
     int tokType = 0;
@@ -901,7 +904,7 @@ public class ActionManager {
       }
     }
     if (nearestPoint != null && Float.isNaN(nearestPoint.x))
-      return;
+      return false;
     int nearestAtomIndex = (drawMode || nearestPoint != null ? 
         -1 : viewer.findNearestAtomIndex(x, y));
     if (nearestAtomIndex >= 0
@@ -912,26 +915,26 @@ public class ActionManager {
     if (clickedCount == 0) {
       // mouse move
       if (measurementPending == null)
-        return;
+        return (nearestAtomIndex >= 0);
       if (nearestPoint != null
           || measurementPending.getIndexOf(nearestAtomIndex) == 0)
         measurementPending.addPoint(nearestAtomIndex, nearestPoint, false);
       if (measurementPending.haveModified())
         viewer.setPendingMeasurement(measurementPending);
       viewer.refresh(3, "measurementPending");
-      return;
+      return (nearestAtomIndex >= 0);
     }
     setMouseMode();
     if (isBound(action, ACTION_clickFrank) && viewer.frankClicked(x, y)) {
       viewer.popupMenu(-x, y);
-      return;
+      return false;
     }
     if (viewer.getNavigationMode()
         && pickingMode == JmolConstants.PICKING_NAVIGATE
         && isBound(action, ACTION_pickNavigate)) {
       viewer.navTranslatePercent(0f, x * 100f / viewer.getScreenWidth() - 50f,
           y * 100f / viewer.getScreenHeight() - 50f);
-      return;
+      return false;
     }
 
     if (measurementPending != null && isBound(action, ACTION_pickMeasure)) {
@@ -940,7 +943,7 @@ public class ActionManager {
         clickedCount = 0;
         toggleMeasurement();
       }
-      return;
+      return false;
     }
     if (isBound(action, ACTION_setMeasure)) {
       if (measurementPending != null) {
@@ -952,24 +955,25 @@ public class ActionManager {
         addToMeasurement(nearestAtomIndex, nearestPoint, true);
       }
       atomPicked(nearestAtomIndex, nearestPoint, action);
-      return;
+      return false;
     }
     if (isBound(action, ACTION_deleteBond) && tokType == Token.bonds) {
       BitSet bs = new BitSet();
       bs.set(nearestPoint.index);
       viewer.deleteBonds(bs);
-      return;
+      return false;
     }
     if (isBound(action, ACTION_pickAtom) || isBound(action, ACTION_pickPoint)) {
       // TODO: in drawMode the binding changes
       atomPicked(nearestAtomIndex, nearestPoint, action);
-      return;
+      return (nearestAtomIndex >= 0);
     }
     if (isBound(action, ACTION_reset)) {
       if (nearestAtomIndex < 0)
         viewer.script("!reset");
-      return;
+      return false;
     }
+    return (nearestAtomIndex >= 0);
   }
 
   protected void checkMotion(int cursor) {
@@ -1070,10 +1074,7 @@ public class ActionManager {
       this.name = name;
       this.ms = ms;
       this.script = script;
-      Thread.currentThread().setName("timeout " + name);
       targetTime = System.currentTimeMillis() + Math.abs(ms);
-      if (Logger.debugging) 
-        Logger.debug(toString());
     }
     
     void set(int ms, String script) {
@@ -1084,33 +1085,39 @@ public class ActionManager {
 
     public String toString() {
       return "timeout name=" + name + " executions=" + status + " mSec=" + ms 
-      + " secRemaining=" + (targetTime - System.currentTimeMillis())/1000f + " script=" + script;      
+      + " secRemaining=" + (targetTime - System.currentTimeMillis())/1000f + " script=" + script + " thread=" + Thread.currentThread().getName();      
     }
     
     public void run() {
       if (script == null || script.length() == 0 || ms == 0)
         return;
+      System.out.println("I am the timeout thread, and my name is " + Thread.currentThread().getName());
+      Thread.currentThread().setName("timeout " + name);
+      //if (true || Logger.debugging) 
+        //Logger.info(toString());
       Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
       try {
         while (true) {
-          Thread.sleep(10);
+          Thread.sleep(50);
           if (targetTime > System.currentTimeMillis())
             continue;
           status++;
           targetTime += Math.abs(ms);
           if (ms > 0)
             timeouts.remove(name);
-          if (Logger.debugging)
-            viewer.script(script);
-          else 
+          System.out.println("I'm going to execute " + script + " now");
+          //if (Logger.debugging)
+            //viewer.script(script);
+          //else 
             viewer.evalStringQuiet(script);
+          System.out.println("I'm done");
           if (ms > 0)
             break;
         }
       } catch (InterruptedException ie) {
-        Logger.debug("Timeout " + name + " interrupted");
+        Logger.info("Timeout " + name + " interrupted");
       } catch (Exception ie) {
-        Logger.debug("Timeout " + name + " Exception: " + ie);
+        Logger.info("Timeout " + name + " Exception: " + ie);
       }
       timeouts.remove(name);
     }
@@ -1135,6 +1142,8 @@ public class ActionManager {
       try {
         while (Thread.currentThread().equals(hoverWatcherThread) && (hoverDelay = viewer.getHoverDelay()) > 0) {
           Thread.sleep(hoverDelay);
+          if (!viewer.isHoverEnabled())
+            continue;
           if (current.x == moved.x && current.y == moved.y
               && current.time == moved.time) { // the last event was mouse
                                                   // move
@@ -1242,6 +1251,7 @@ public class ActionManager {
         return;
     }
     int n = 2;
+    System.out.println("ActionManager atomPicked mode=" + pickingMode);
     switch (pickingMode) {
     case JmolConstants.PICKING_OFF:
       return;
@@ -1317,23 +1327,27 @@ public class ActionManager {
     case JmolConstants.PICKING_SELECT_ATOM:
       applySelectStyle(spec, action);
       break;
-    case JmolConstants.PICKING_SELECT_POLYMER:
-      applySelectStyle("within(polymer, " + spec + ")", action);
+    case JmolConstants.PICKING_SELECT_GROUP:
+      applySelectStyle("within(group, " + spec + ")", action);
       break;
     case JmolConstants.PICKING_SELECT_CHAIN:
       applySelectStyle("within(chain, " + spec + ")", action);
       break;
-    case JmolConstants.PICKING_SELECT_ELEMENT:
-      applySelectStyle("visible and within(element, " + spec + ")", action);
+    case JmolConstants.PICKING_SELECT_POLYMER:
+      applySelectStyle("within(polymer, " + spec + ")", action);
       break;
-    case JmolConstants.PICKING_SELECT_GROUP:
-      applySelectStyle("within(group, " + spec + ")", action);
+    case JmolConstants.PICKING_SELECT_STRUCTURE:
+      applySelectStyle("within(structure, " + spec + ")", action);
+      break;
+    case JmolConstants.PICKING_SELECT_MOLECULE:
+      applySelectStyle("within(molecule, " + spec + ")", action);
       break;
     case JmolConstants.PICKING_SELECT_MODEL:
       applySelectStyle("within(model, " + spec + ")", action);
       break;
-    case JmolConstants.PICKING_SELECT_MOLECULE:
-      applySelectStyle("visible and within(molecule, " + spec + ")", action);
+      // only the next two use VISIBLE (as per the documentation)
+    case JmolConstants.PICKING_SELECT_ELEMENT:
+      applySelectStyle("visible and within(element, " + spec + ")", action);
       break;
     case JmolConstants.PICKING_SELECT_SITE:
       applySelectStyle("visible and within(site, " + spec + ")", action);
@@ -1403,7 +1417,9 @@ public class ActionManager {
          : isBound(action, ACTION_select) ? "" : null);
     if (s == null)
       return;
-    viewer.script("select " + s + "(" + item + ")");
+    String script = "select " + s + "(" + item + ")";
+    System.out.println("ActionManager applySelectStyle " + script);
+    viewer.script(script);
   }
 
   protected class MotionPoint {

@@ -168,7 +168,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * @return cleaned script
    */
   private String cleanScriptComments(String script) {
-    int pt = (script.indexOf("\0##"));
+    int pt = (script.indexOf("\1##"));
     if (pt >= 0) {
       // these are for jmolConsole and scriptEditor
       scriptExtensions = script.substring(pt + 1);

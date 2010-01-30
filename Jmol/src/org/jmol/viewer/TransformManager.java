@@ -2083,7 +2083,7 @@ abstract class TransformManager {
               while (!isInterrupted() && !viewer.getRefreshing()) {
                 Thread.sleep(10);
               }
-              viewer.refresh(1, "TransformationManager:SpinThread:run()");
+              viewer.refresh(1, "SpinThread:run()");
               if (!isNav && (nDegrees >= endDegrees - 0.00001))
                 setSpinOn(false);
             }
@@ -2203,7 +2203,7 @@ abstract class TransformManager {
           elapsed = (int) (currentTime - startTime);
           float t = (float) (elapsed % vibrationPeriodMs) / vibrationPeriodMs;
           setVibrationT(t);
-          viewer.refresh(3, "TransformationManager:VibrationThread:run()");
+          viewer.refresh(3, "VibrationThread:run()");
         } while (!isInterrupted());
       } catch (Exception e) { //may be arithmetic %0/0
       }

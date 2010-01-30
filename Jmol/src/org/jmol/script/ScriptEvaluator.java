@@ -6575,8 +6575,8 @@ public class ScriptEvaluator {
           setShapeProperty(JmolConstants.SHAPE_ECHO, "image", image);
           text = null;
         }
-      } else if (text.startsWith("\0")) {
-        // no reporting, just screen echo
+      } else if (text.startsWith("\1") ) {
+        // no reporting, just screen echo, from mouseManager key press
         text = text.substring(1);
         isImage = true;
       }
@@ -6670,8 +6670,7 @@ public class ScriptEvaluator {
       strLabel = "%U";
     else if (strLabel.equalsIgnoreCase("off"))
       strLabel = null;
-    viewer.loadShape(JmolConstants.SHAPE_HOVER);
-    setShapeProperty(JmolConstants.SHAPE_HOVER, "label", strLabel);
+    viewer.setHover(strLabel);
   }
 
   private void load() throws ScriptException {
@@ -8087,13 +8086,30 @@ public class ScriptEvaluator {
   }
 
   private void translateSelected() throws ScriptException {
+    // deprecated
     // translateSelected {x y z}
     Point3f pt = getPoint3f(1, true);
     if (!isSyntaxCheck)
-      viewer.setAtomCoordRelative(pt);
+      viewer.setAtomCoordRelative(pt, null);
   }
 
   private void translate() throws ScriptException {
+    // translate X|Y|Z x.x [NM|ANGSTROMS]
+    // translate X|Y x.x%
+    // translate {x y z}  # selected implied
+    // translate {x y z} {atomExpression}
+    if (isPoint3f(1)) {
+      Point3f pt = getPoint3f(1, true);
+      BitSet bs = (iToken + 1 < statementLength ? expression(++iToken) : null);
+      checkLast(iToken);
+      if (isSyntaxCheck)
+        return;
+      if (bs == null)
+        viewer.setAtomCoordRelative(pt, null);
+      else
+        viewer.setAtomCoordRelative(pt, bs);
+      return;
+    }
     char type = (optParameterAsString(3).toLowerCase() + '\0').charAt(0);
     checkLength(type == '\0' ? 3 : 4);
     float percent = floatParameter(2);
@@ -11282,7 +11298,7 @@ public class ScriptEvaluator {
     } else if (data == "SPT") {
       if (isCoord) {
         BitSet tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
-        viewer.setAtomCoordRelative(new Point3f(0, 0, 0));
+        viewer.setAtomCoordRelative(new Point3f(0, 0, 0), null);
         data = (String) viewer.getProperty("string", "stateInfo", null);
         viewer.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
       } else {

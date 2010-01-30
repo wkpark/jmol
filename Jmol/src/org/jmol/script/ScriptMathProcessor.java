@@ -2414,10 +2414,10 @@ class ScriptMathProcessor {
       // String % -n trim to width n; left justify
       // String % n trim to width n; right justify
       // Point3f % n ah... sets to multiple of unit cell!
-      // bitset % n
+      // bitset % n 
       // Point3f * Point3f does dot product
       // Point3f / Point3f divides by magnitude
-      // float * Point3f gets magnitude
+      // float * Point3f gets m agnitude
       // Point4f % n returns q0, q1, q2, q3, or theta
       // Point4f % Point4f
       s = null;

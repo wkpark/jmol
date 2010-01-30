@@ -327,11 +327,11 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     if (source == runButton) {
       notifyScriptStart();
       String s = editor.getText();
-      jmolConsole.execute(s + "\0##");
+      jmolConsole.execute(s + "\1##");
       return;
     }
     if (source == pauseButton) {
-      jmolConsole.execute("!pause\0##");
+      jmolConsole.execute("!pause\1##");
       return;
     }
     if (source == resumeButton) {
@@ -399,13 +399,13 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
   public void doStep() {
     boolean isPaused = viewer.getBooleanProperty("executionPaused");
-    jmolConsole.execute(isPaused ? "!step\0##" 
-        : editor.getText() + "\0##SCRIPT_STEP\n##SCRIPT_START=" +  editor.getCaretPosition());
+    jmolConsole.execute(isPaused ? "!step\1##" 
+        : editor.getText() + "\1##SCRIPT_STEP\n##SCRIPT_START=" +  editor.getCaretPosition());
   }
 
   protected void doResume() {
     editor.clearContent();
-    jmolConsole.execute("!resume\0##");
+    jmolConsole.execute("!resume\1##");
   }
   private void gotoPosition(int i, int j) {
     editor.scrollRectToVisible(new Rectangle(i, j));

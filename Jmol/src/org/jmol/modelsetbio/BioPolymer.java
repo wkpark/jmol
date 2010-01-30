@@ -117,8 +117,12 @@ public abstract class BioPolymer extends Polymer {
   public int[] getLeadAtomIndices() {
     if (leadAtomIndices == null) {
       leadAtomIndices = new int[monomerCount];
+      invalidLead = true;
+    }
+    if (invalidLead) {
       for (int i = monomerCount; --i >= 0;)
         leadAtomIndices[i] = monomers[i].getLeadAtomIndex();
+      invalidLead = false;
     }
     return leadAtomIndices;
   }
@@ -193,36 +197,35 @@ public abstract class BioPolymer extends Polymer {
     // calculateStructures();
   }
 
+  private boolean invalidLead = false;
+  private boolean invalidSheet = false;
   public void recalculateLeadMidpointsAndWingVectors() {
-    leadAtomIndices = null;
-    sheetPoints = null;
+    invalidLead = invalidSheet = true;
     getLeadAtomIndices();
-    ProteinStructure ps;
-    ProteinStructure psLast = null;
-    for (int i = 0; i < monomerCount; i++) {
-      if ((ps = getProteinStructure(i)) != null && ps != psLast)
-        (psLast = ps).resetAxes();
-      monomers[i].resetHydrogenPoint();
-    }
-    calcLeadMidpointsAndWingVectors(false);
+    resetHydrogenPoints();
+    calcLeadMidpointsAndWingVectors();
   }
 
+  protected void resetHydrogenPoints() {
+    // amino polymer only
+  }
+  
   public Point3f[] getLeadMidpoints() {
     if (leadMidpoints == null)
-      calcLeadMidpointsAndWingVectors(true);
+      calcLeadMidpointsAndWingVectors();
     return leadMidpoints;
   }
 
   Point3f[] getLeadPoints() {
     if (leadPoints == null)
-      calcLeadMidpointsAndWingVectors(true);
+      calcLeadMidpointsAndWingVectors();
     return leadPoints;
   }
 
   public Point3f[] getControlPoints(boolean isTraceAlpha, float sheetSmoothing,
                                     boolean invalidate) {
     if (invalidate)
-      sheetPoints = null;
+      invalidSheet = true;
     if (!isTraceAlpha)
       return leadMidpoints;
     else if (sheetSmoothing == 0)
@@ -233,39 +236,39 @@ public abstract class BioPolymer extends Polymer {
   private float sheetSmoothing;
 
   private Point3f[] getSheetPoints(float sheetSmoothing) {
-    if (sheetPoints != null && sheetSmoothing == this.sheetSmoothing)
+    if (!invalidSheet && sheetSmoothing == this.sheetSmoothing)
       return sheetPoints;
-    sheetPoints = new Point3f[monomerCount + 1];
     getLeadPoints();
-    for (int i = 0; i < monomerCount; i++)
-      sheetPoints[i] = new Point3f();
     Vector3f v = new Vector3f();
+    if (sheetPoints == null)
+      sheetPoints = new Point3f[monomerCount + 1];
     for (int i = 0; i < monomerCount; i++) {
       if (monomers[i].isSheet()) {
         v.sub(leadMidpoints[i], leadPoints[i]);
         v.scale(sheetSmoothing);
-        sheetPoints[i].add(leadPoints[i], v);
+        sheetPoints[i] = new Point3f(leadPoints[i]);
+        sheetPoints[i].add(v);
       } else {
         sheetPoints[i] = leadPoints[i];
       }
     }
     sheetPoints[monomerCount] = sheetPoints[monomerCount - 1];
     this.sheetSmoothing = sheetSmoothing;
+    invalidSheet = false;
     return sheetPoints;
   }
 
   public final Vector3f[] getWingVectors() {
     if (leadMidpoints == null) // this is correct ... test on leadMidpoints
-      calcLeadMidpointsAndWingVectors(true);
+      calcLeadMidpointsAndWingVectors();
     return wingVectors; // wingVectors might be null ... before autocalc
   }
 
-  private final void calcLeadMidpointsAndWingVectors(boolean getNewPoints) {
-    int count = monomerCount;
-    if (leadMidpoints == null || getNewPoints) {
-      leadMidpoints = new Point3f[count + 1];
-      leadPoints = new Point3f[count + 1];
-      wingVectors = new Vector3f[count + 1];
+  private final void calcLeadMidpointsAndWingVectors() {
+    if (leadMidpoints == null) {
+      leadMidpoints = new Point3f[monomerCount + 1];
+      leadPoints = new Point3f[monomerCount + 1];
+      wingVectors = new Vector3f[monomerCount + 1];
       sheetSmoothing = Float.MIN_VALUE;
     }
 
@@ -291,7 +294,7 @@ public abstract class BioPolymer extends Polymer {
     // CA--N
     // (lead)
     // mon# 2 1 0
-    for (int i = 1; i < count; ++i) {
+    for (int i = 1; i < monomerCount; ++i) {
       leadPointPrev = leadPoint;
       leadPoints[i] = leadPoint = getLeadPoint(i);
       Point3f midpoint = new Point3f(leadPoint);
@@ -310,14 +313,14 @@ public abstract class BioPolymer extends Polymer {
         previousVectorD = wingVectors[i] = new Vector3f(vectorD);
       }
     }
-    leadPoints[count] = leadMidpoints[count] = getTerminatorPoint();
+    leadPoints[monomerCount] = leadMidpoints[monomerCount] = getTerminatorPoint();
     if (!hasWingPoints) {
-      if (count < 3) {
+      if (monomerCount < 3) {
         wingVectors[1] = unitVectorX;
       } else {
         // auto-calculate wing vectors based upon lead atom positions only
         Vector3f previousVectorC = null;
-        for (int i = 1; i < count; ++i) {
+        for (int i = 1; i < monomerCount; ++i) {
           // perfect for traceAlpha on; reasonably OK for traceAlpha OFF
           vectorA.sub(leadMidpoints[i], leadPoints[i]);
           vectorB.sub(leadPoints[i], leadMidpoints[i + 1]);
@@ -331,27 +334,7 @@ public abstract class BioPolymer extends Polymer {
       }
     }
     wingVectors[0] = wingVectors[1];
-    wingVectors[count] = wingVectors[count - 1];
-    /*
-     * Point3f pt = leadPoints[11]; vectorC.set(wingVectors[11]);
-     * vectorC.add(pt); //order of points is mid11 lead11 mid12 lead12
-     * System.out.println("draw pt" + 11 + "b " +
-     * Escape.escape(leadMidpoints[11]) + " color yellow");
-     * System.out.println("draw pt" + 11 + " " + Escape.escape(leadPoints[11]) +
-     * " color red"); System.out.println("draw pt" + 12 + "b " +
-     * Escape.escape(leadMidpoints[12]) + " color blue");
-     * System.out.println("draw pt" + 12 + " " + Escape.escape(leadPoints[12]) +
-     * " color green"); System.out.println("draw v" + 11 + " arrow " +
-     * Escape.escape(pt) + " " + Escape.escape(vectorC));
-     * System.out.println("draw plane" + 11 + " " +
-     * Escape.escape(leadPoints[11]) + " " + Escape.escape(leadMidpoints[11]) +
-     * " "+ Escape.escape(leadMidpoints[12]));
-     * 
-     * pt = leadMidpoints[11]; vectorC.set(wingVectors[11]); vectorC.add(pt);
-     * System.out.println("draw v" + 11 + "b arrow " + Escape.escape(pt) + " " +
-     * Escape.escape(vectorC));
-     */
-
+    wingVectors[monomerCount] = wingVectors[monomerCount - 1];
   }
 
   private final Vector3f unitVectorX = new Vector3f(1, 0, 0);

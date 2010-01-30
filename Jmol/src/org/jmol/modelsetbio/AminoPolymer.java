@@ -351,6 +351,16 @@ public class AminoPolymer extends AlphaPolymer {
     }
   }
 
+  protected void resetHydrogenPoints() {
+    ProteinStructure ps;
+    ProteinStructure psLast = null;
+    for (int i = 0; i < monomerCount; i++) {
+      if ((ps = getProteinStructure(i)) != null && ps != psLast)
+        (psLast = ps).resetAxes();
+      ((AminoMonomer) monomers[i]).resetHydrogenPoint();
+    }
+  }
+
   private boolean checkWingAtoms() {
     for (int i = 0; i < monomerCount; ++i)
       if (!((AminoMonomer) monomers[i]).hasOAtom())

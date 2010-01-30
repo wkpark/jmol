@@ -345,9 +345,6 @@ public abstract class Monomer extends Group {
         tokType, (Point3f) a, (Point3f) b, q2.div(q1));
   }
 
-  public void resetHydrogenPoint() {
-  }
-
   public String getUniqueID() {
     char cid = getChainID();
     Atom a = getLeadAtom();

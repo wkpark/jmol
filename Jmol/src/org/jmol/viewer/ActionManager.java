@@ -34,6 +34,7 @@ import javax.vecmath.Point3f;
 
 import org.jmol.i18n.GT;
 import org.jmol.modelset.MeasurementPending;
+import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.Token;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -378,6 +379,7 @@ public class ActionManager {
     clearTimeouts();
     pickingMode = JmolConstants.PICKING_IDENT;
     drawHover = false;
+    eval = null;
   }
 
   synchronized void startHoverWatcher(boolean isStart) {
@@ -656,7 +658,7 @@ public class ActionManager {
     if (dragRelease && checkUserAction(action, x, y, 0, 0, time, 2))
       return;
     
-    if (viewer.getBooleanProperty("allowGestures")) {
+    if (viewer.getAllowGestures()) {
       if (isBound(action, ACTION_swipe)) {
         if (dragGesture.getTimeDifference(2) <= MININUM_GESTURE_DELAY_MILLISECONDS
             && dragGesture.getPointCount(4, 2) == 4) {
@@ -1405,9 +1407,12 @@ public class ActionManager {
     return n;
   }
 
+  boolean selectionWorking = false;
+  ScriptEvaluator eval;
   private void applySelectStyle(String item, int action) {
-    if (measurementPending != null)
+    if (measurementPending != null || selectionWorking)
       return;
+    selectionWorking = true;
     String s = (isBound(action, ACTION_selectAndNot) ? "selected and not " 
          : isBound(action, ACTION_selectOr) ? "selected or " 
          : isBound(action, ACTION_selectToggle) ? 
@@ -1415,11 +1420,12 @@ public class ActionManager {
          : isBound(action, ACTION_selectToggleExtended) ?
              "selected tog " 
          : isBound(action, ACTION_select) ? "" : null);
-    if (s == null)
-      return;
-    String script = "select " + s + "(" + item + ")";
-    System.out.println("ActionManager applySelectStyle " + script);
-    viewer.script(script);
+    if (s != null) {
+      if (eval == null)
+        eval = new ScriptEvaluator(viewer);
+      viewer.setSelectionSet(viewer.getAtomBitSet(eval, s + "(" + item + ")"));
+    }
+    selectionWorking = false;
   }
 
   protected class MotionPoint {

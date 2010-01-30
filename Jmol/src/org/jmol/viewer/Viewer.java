@@ -1501,6 +1501,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         null);
   }
 
+  public void setSelectionSet(BitSet set) {
+    // not used in this project; in jmolViewer interface, though
+    select(set, true);
+  }
+
   public void selectBonds(BitSet bs) {
     modelSet.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, null,
         bs);
@@ -1565,11 +1570,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParameterValue("hideNotSelected", false);
   }
 
-  public void setSelectionSet(BitSet set) {
-    // not used in this project; in jmolViewer interface, though
-    selectionManager.setSelectionSet(set);
-  }
-
   public void setSelectionSubset(BitSet subset) {
     selectionManager.setSelectionSubset(subset);
   }
@@ -1604,9 +1604,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     selectionManager.addListener(listener);
   }
 
-  public BitSet getAtomBitSet(Object atomExpression) {
-    // typically a string such as "(atomno < 3)"
+  BitSet getAtomBitSet(ScriptEvaluator eval, Object atomExpression) {
+    if (eval == null)
+      eval = new ScriptEvaluator(this);
     return ScriptEvaluator.getAtomBitSet(eval, atomExpression);
+  }
+
+  public BitSet getAtomBitSet(Object atomExpression) {
+    return getAtomBitSet(eval, atomExpression);
   }
 
   Vector getAtomBitSetVector(Object atomExpression) {
@@ -3343,7 +3348,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void pushHoldRepaint(String why) {
-    //System.out.println("viewer pushHoldRepaint " + why);
+    // System.out.println("viewer pushHoldRepaint " + why);
     repaintManager.pushHoldRepaint();
   }
 
@@ -3352,7 +3357,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void popHoldRepaint(String why) {
-    //System.out.println("viewer popHoldRepaint " + why);
+    // System.out.println("viewer popHoldRepaint " + why);
     repaintManager.popHoldRepaint();
   }
 
@@ -3394,12 +3399,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 
    */
   public void refresh(int mode, String strWhy) {
-    //System.out.println("viewer refresh-----------------------------------------------------------" + Thread.currentThread().getName() + " " + strWhy);
-    //System.out.flush();
+     //System.out.println("viewer refresh " + mode + "-----------------------------------------------------------"
+     //+ Thread.currentThread().getName() + " " + strWhy);
+    // System.out.flush();
     // refresh(2) indicates this is a mouse motion -- not going through Eval
     // so we bypass Eval and mainline on the other viewer!
     // refresh(-1) is used in stateManager to force no repaint
     // refresh(3) is used by operations to ONLY do a repaint -- no syncing
+    // refresh(6) is used to do no refresh if in motion
+    if (mode == 6 && getInMotion())
+      return;
     if (repaintManager == null || !refreshing)
       return;
     if (mode > 0)
@@ -3409,10 +3418,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void requestRepaintAndWait() {
-    // called by moveUpdate from move, moveTo, navigate, navigateSurface, navTranslate
+    // called by moveUpdate from move, moveTo, navigate, navigateSurface,
+    // navTranslate
     // called by ScriptEvaluator "refresh" command
     // called by AnimationThread run()
-    // called by TransformationManager move and moveTo 
+    // called by TransformationManager move and moveTo
     // called by TransformationManager11 navigate, navigateSurface, navigateTo
     if (!haveDisplay)
       return;
@@ -3569,23 +3579,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     notifyViewerRepaintDone();
   }
 
-  
-  
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
-    /* Jmol repaint/update system:
+    /*
+     * Jmol repaint/update system:
      * 
-     * threads invoke viewer.refresh()
-     *    --> repaintManager.refresh()
-     *        --> viewer.repaint()
-     *            --> display.repaint() --> OS event queue
-     *                                              |
-     *                              Jmol.paint() <--
-     *               viewer.renderScreenImage() <--
-     *        viewer.notifyViewerRepaintDone() <--
-     *            repaintManager.repaintDone()<--
-     *  which sets repaintPending false and does notify();
-     * 
-     * 
+     * threads invoke viewer.refresh() --> repaintManager.refresh() -->
+     * viewer.repaint() --> display.repaint() --> OS event queue | Jmol.paint()
+     * <-- viewer.renderScreenImage() <-- viewer.notifyViewerRepaintDone() <--
+     * repaintManager.repaintDone()<-- which sets repaintPending false and does
+     * notify();
      */
     renderScreenImage(g, null, size, clip);
   }
@@ -3782,7 +3784,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // initiated WITHIN this applet (not sent to it)
     // we append #NOSYNC; here so that the receiving applet does not attempt
     // to pass it back to us or any other applet.
-    //System.out.println("OK, I'm in evalStringQUiet");
+    // System.out.println("OK, I'm in evalStringQUiet");
     if (allowSyncScript && statusManager.syncingScripts
         && strScript.indexOf("#NOSYNC;") < 0)
       syncScript(strScript + " #NOSYNC;", null);
@@ -4100,7 +4102,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean isHoverEnabled() {
     return hoverEnabled;
   }
-  
+
   public void setHover(String strLabel) {
     loadShape(JmolConstants.SHAPE_HOVER);
     setShapeProperty(JmolConstants.SHAPE_HOVER, "label", strLabel);
@@ -7099,21 +7101,28 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refreshMeasures();
   }
 
-  synchronized void moveSelected(int deltaX, int deltaY, int x, int y,
+  boolean movingSelected;
+  void moveSelected(int deltaX, int deltaY, int x, int y,
                                  boolean isTranslation) {
+    // cannot synchronize this -- it's from the mouse and the event queue
     if (isJmolDataFrame())
       return;
     BitSet bsSelected = selectionManager.bsSelection;
     if (deltaX == Integer.MIN_VALUE) {
       setSelectionHalos(true);
-      refresh(3, "moveSelected");
+      refresh(6, "moveSelected");
       return;
     }
     if (deltaX == Integer.MAX_VALUE) {
       setSelectionHalos(false);
-      refresh(3, "moveSelected");
+      refresh(6, "moveSelected");
       return;
     }
+    
+    if (movingSelected)
+      return;
+    movingSelected = true;
+    // note this does not sync with applets
     if (isTranslation) {
       Point3f ptCenter = getAtomSetCenter(bsSelected);
       Point3i pti = transformPoint(ptCenter);
@@ -7126,8 +7135,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
       transformManager.setRotateMolecule(false);
     }
-    refresh(3, "moveSelected");
+    refresh(6, "moveSelected");
     refreshMeasures();
+    movingSelected = false;
   }
 
   void rotateAtoms(Matrix3f mNew, Matrix3f matrixRotate, boolean fullMolecule,
@@ -7902,7 +7912,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (display == null)
       return;
     //System.out.println("applet test Viewer.java repaint()-->display.repaint() "
-      //+ Thread.currentThread().getName());
+    // + Thread.currentThread().getName());
     display.repaint();
   }
 
@@ -7960,6 +7970,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public float getLoadAtomDataTolerance() {
     return global.loadAtomDataTolerance;
+  }
+
+  public boolean getAllowGestures() {
+    return global.allowGestures;    
   }
 
 }

@@ -110,9 +110,9 @@ class ScriptManager {
       try {
         Thread.sleep(100);
         if (((n++) % 10) == 0)
-          if (Logger.debugging) {
-            Logger.debug("...scriptManager waiting for queue: "
-                + scriptQueue.size());
+          if (true || Logger.debugging) {
+            Logger.info("...scriptManager waiting for queue: "
+                + scriptQueue.size() + " thread=" + Thread.currentThread().getName());
           }
       } catch (InterruptedException e) {
       }
@@ -139,6 +139,7 @@ class ScriptManager {
     scriptQueueRunning[pt] = true;
     queueThreads[pt] = new Thread(new ScriptQueueRunnable(
         startedByCommandWatcher, pt));
+    System.out.println("ScriptManager started " + queueThreads[pt].getName() + " as QueueThread" + pt);
     queueThreads[pt].setName("QueueThread" + pt);
     queueThreads[pt].start();
   }
@@ -161,7 +162,6 @@ class ScriptManager {
     public ScriptQueueRunnable(boolean startedByCommandThread, int pt) {
       this.startedByCommandThread = startedByCommandThread;
       this.pt = pt;
-      //System.out.println("scriptqueurunnable " + startedByCommandThread + " " + pt + " " + this);
     }
 
     public void run() {

@@ -3343,7 +3343,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void pushHoldRepaint(String why) {
-    Logger.info("viewer pushHoldRepaint " + why);
+    //System.out.println("viewer pushHoldRepaint " + why);
     repaintManager.pushHoldRepaint();
   }
 
@@ -5448,6 +5448,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         value = false;
       global.allowKeyStrokes = value;
       break;
+    case Token.dragselected:
+      // 11.7.24
+      global.dragSelected = value;
+      break;
     case Token.showkeystrokes:
       global.showKeyStrokes = value;
       break;
@@ -5478,14 +5482,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.pdbGetHeader = value;
       break;
     case Token.ellipsoidaxes:
+      global.ellipsoidAxes = value;
+      break;
     case Token.ellipsoidarcs:
+      global.ellipsoidArcs = value;
+      break;
     case Token.ellipsoidball:
+      global.ellipsoidBall = value;
+      break;
     case Token.ellipsoiddots:
-      // 11.5.30
-      // ellipsoidAxes just handled as getBooleanProperty()
-      // ellipsoidArcs just handled as getBooleanProperty()
-      // ellipsoidDots just handled as getBooleanProperty()
-      // ellipsoidBall just handled as getBooleanProperty()
+      global.ellipsoidDots = value;
+      break;
+    case Token.ellipsoidfill:
+      global.ellipsoidFill = value;
       break;
     case Token.fontscaling:
       // 11.5.4
@@ -5642,30 +5651,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.dotsselectedonly:
       global.dotsSelectedOnly = value;
       break;
-    case Token.showselections: // deprecated
-      key = "selectionHalos";
-      setSelectionHalos(value);
-      break;
     case Token.selectionhalos:
       setSelectionHalos(value);
-      break;
-    case Token.hydrogen: // deprecated
-      key = "selectHydrogens";
-      global.rasmolHydrogenSetting = value;
       break;
     case Token.selecthydrogen:
       global.rasmolHydrogenSetting = value;
       break;
-    case Token.hetero: // deprecated
-      key = "selectHetero";
-      global.rasmolHeteroSetting = value;
-      break;
     case Token.selecthetero:
       global.rasmolHeteroSetting = value;
-      break;
-    case Token.bonds: // deprecated
-      key = "showMultipleBonds";
-      global.showMultipleBonds = value;
       break;
     case Token.showmultiplebonds:
       global.showMultipleBonds = value;
@@ -7960,6 +7953,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public boolean getPreserveState() {
     return global.preserveState;
+  }
+
+  public boolean getDragSelected() {
+    return global.dragSelected;
   }
 
 }

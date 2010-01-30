@@ -92,7 +92,7 @@ class ScriptManager {
     //  Logger.info("ScriptManager queue size=" + scriptQueue.size() + " scripts; added: " 
       //    + strScript + " " + Thread.currentThread().getName());
     startScriptQueue(false);
-    System.out.println("ScriptManager queue 'pending'");
+    //System.out.println("ScriptManager queue 'pending'");
     return "pending";
   }
 

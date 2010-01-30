@@ -815,6 +815,7 @@ public class StateManager {
     int delayMaximumMs = 0;
     float dipoleScale = 1.0f;
     boolean disablePopupMenu = false;
+    boolean dragSelected = false;
     boolean drawPicking = false;
     boolean bondPicking = false;
     boolean atomPicking = true;
@@ -1308,7 +1309,7 @@ public class StateManager {
       setParameterValue("dotDensity", dotDensity);
       setParameterValue("dotsSelectedOnly", dotsSelectedOnly);
       setParameterValue("dotSurface", dotSurface);
-      setParameterValue("dragSelected", false);
+      setParameterValue("dragSelected", dragSelected);
       setParameterValue("drawHover", false);
       setParameterValue("drawPicking", drawPicking);
       setParameterValue("dynamicMeasurements", dynamicMeasurements);

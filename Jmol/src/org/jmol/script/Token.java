@@ -119,7 +119,8 @@ public class Token {
    *  x     x                        stringparam
    *  x    x                         intparam
    *  x   x                          floatparam
-   *  x  x                           booleanparam                 
+   *  x  x                           booleanparam
+   * xx                              deprecatedparam
    * x                   xxxxxxxxxxx misc
    * 
    * 3         2         1         0
@@ -180,7 +181,8 @@ public class Token {
   
   final static int setparam          = (1 << 29); // parameter to set command
   final static int misc              = (1 << 30); // misc parameter
-
+  final static int deprecatedparam   = setparam | misc;
+  
   public final static int identifier =  misc;
 
   public final static int scriptCommand            = (1 << 12);
@@ -241,7 +243,7 @@ public class Token {
   public final static int center       = 1 | atomExpressionCommand;
   public final static int define       = 2 | atomExpressionCommand | expression;
   public final static int delete       = 3 | atomExpressionCommand;
-  final static int display      = 4 | atomExpressionCommand | setparam;
+  final static int display      = 4 | atomExpressionCommand | deprecatedparam;
   final static int hide         = 5 | atomExpressionCommand;
   final static int restrict     = 6 | atomExpressionCommand;
 //final static int select       see mathfunc
@@ -276,7 +278,7 @@ public class Token {
   final static int end          = 9 | flowCommand | expression;
   
   final static int animation    = scriptCommand | 1;
-  final static int background   = scriptCommand | 3 | setparam;
+  final static int background   = scriptCommand | 3 | deprecatedparam;
   final static int bind         = scriptCommand | 4;
   final static int bondorder    = scriptCommand | 5;
   final static int calculate    = scriptCommand | 6;
@@ -296,8 +298,8 @@ public class Token {
   final static int frame        = scriptCommand | 20;
 //final static int getproperty  see mathfunc
   final static int gotocmd      = scriptCommand | 23 | implicitStringCommand;
-  public final static int hbond        = scriptCommand | 25 | setparam | expression | defaultON;
-  final static int history      = scriptCommand | 26 | setparam;
+  public final static int hbond        = scriptCommand | 25 | deprecatedparam | expression | defaultON;
+  final static int history      = scriptCommand | 26 | deprecatedparam;
   final static int initialize   = scriptCommand | 27 | noArgs;
   final static int invertSelected = scriptCommand | 28;
 //final static int load         see mathfunc
@@ -307,7 +309,7 @@ public class Token {
 //final static int measure      see mathfunc
   final static int move         = scriptCommand | 35;
   public final static int moveto       = scriptCommand | 36;
-  final static int navigate     = scriptCommand | 37;
+  final static int navigate     = scriptCommand | 37 | setparam;
 //final static int quaternion   see mathfunc
   final static int quit         = scriptCommand | 41 | noArgs;
   final static int ramachandran = scriptCommand | 42 | expression;
@@ -319,11 +321,11 @@ public class Token {
   final static int rotateSelected = scriptCommand | 49;
   final static int save         = scriptCommand | 50;
 //final static int script   see mathfunc
-  public final static int selectionhalos = scriptCommand | 51 | setparam | defaultON;
+  public final static int selectionhalos = scriptCommand | 51 | deprecatedparam | defaultON;
   final static int show         = scriptCommand | 52;
   final static int slab         = scriptCommand | 53 | defaultON;
-  final static int spin         = scriptCommand | 55 | setparam | defaultON;
-  public final static int ssbond       = scriptCommand | 56 | setparam | defaultON;
+  final static int spin         = scriptCommand | 55 | deprecatedparam | defaultON;
+  public final static int ssbond       = scriptCommand | 56 | deprecatedparam | defaultON;
   public final static int struts        = scriptCommand | 57 | defaultON | expression;
   final static int step         = scriptCommand | 58 | noArgs;
   final static int stereo       = scriptCommand | 59 | defaultON;
@@ -339,11 +341,11 @@ public class Token {
 
   // shapes:
   
-  public final static int axes         = shapeCommand | 2 | setparam | defaultON;
+  public final static int axes         = shapeCommand | 2 | deprecatedparam | defaultON;
 //final static int boundbox     see mathproperty
   public final static int dipole       = shapeCommand | 14;
   public final static int draw         = shapeCommand | 16;
-  public final static int frank        = shapeCommand | 21 | setparam | defaultON;
+  public final static int frank        = shapeCommand | 21 | deprecatedparam | defaultON;
   public final static int isosurface   = shapeCommand | 29;
   public final static int lcaocartoon  = shapeCommand | 30;
   public final static int mo           = shapeCommand | 33 | expression;
@@ -351,7 +353,7 @@ public class Token {
   public final static int plot3d       = shapeCommand | 39;
   public final static int polyhedra    = shapeCommand | 40;
   //public final static int spacefill see floatproperty
-  public final static int unitcell = shapeCommand | 64 | setparam | expression | predefinedset | defaultON;
+  public final static int unitcell = shapeCommand | 64 | deprecatedparam | expression | predefinedset | defaultON;
   public final static int vector       = shapeCommand | 65;
   public final static int wireframe    = shapeCommand | 67 | defaultON;
 
@@ -391,15 +393,15 @@ public class Token {
 
   final static int amino                = predefinedset | 1;
   public final static int dna           = predefinedset | 2;
-  public final static int hetero        = predefinedset | 3 | booleanparam;
-  public final static int hydrogen      = predefinedset | 4 | booleanparam;
+  public final static int hetero        = predefinedset | 3 | deprecatedparam;
+  public final static int hydrogen      = predefinedset | 4 | deprecatedparam;
   public final static int nucleic       = predefinedset | 5;
   public final static int protein       = predefinedset | 6;
   public final static int purine        = predefinedset | 7;
   public final static int pyrimidine    = predefinedset | 8;
   public final static int rna           = predefinedset | 9;
   public final static int selected      = predefinedset | 10;
-  public final static int solvent       = predefinedset | 11 |booleanparam;
+  public final static int solvent       = predefinedset | 11 | deprecatedparam;
   public final static int sidechain     = predefinedset | 12;
   final static int surface              = predefinedset | 13;
   final static int thismodel            = predefinedset | 14;
@@ -497,7 +499,7 @@ public class Token {
   final static int size             = 6 | mathproperty;
   public final static int sort      = 7 | mathproperty;
   public final static int type      = 8 | mathproperty;
-  public final static int boundbox  = 9 | mathproperty | setparam | shapeCommand | defaultON;
+  public final static int boundbox  = 9 | mathproperty | deprecatedparam | shapeCommand | defaultON;
   public final static int xyz       =10 | mathproperty | atomproperty | settable;
   public final static int fracxyz   =11 | mathproperty | atomproperty | settable;
   public final static int unitxyz   =12 | mathproperty | atomproperty;
@@ -506,7 +508,7 @@ public class Token {
   // occupancy, radius, and structure are odd, because they takes different meanings when compared
   
   public final static int occupancy     = intproperty | floatproperty | 2 | settable;
-  public final static int radius        = intproperty | floatproperty | 1 | setparam | settable;
+  public final static int radius        = intproperty | floatproperty | 1 | deprecatedparam | settable;
   public final static int structure     = intproperty | strproperty   | 3 | scriptCommand;
 
   // any new int, float, or string property should be added also to LabelToken.labelTokenIds
@@ -532,7 +534,7 @@ public class Token {
   public final static int bondcount     = intproperty | 4;
   public final static int cell          = intproperty | 5;
   public final static int configuration = intproperty | 6 | scriptCommand;
-  public final static int color         = intproperty | 7 | scriptCommand | setparam | settable;
+  public final static int color         = intproperty | 7 | scriptCommand | deprecatedparam | settable;
   public final static int elemno        = intproperty | 8 | settable;
   //file: see xxx(a)
   public final static int formalcharge  = intproperty | 9 | setparam | settable;
@@ -586,7 +588,7 @@ public class Token {
   public final static int rocket       = floatproperty | shapeCommand | 10 | defaultON | settable;
   public final static int spacefill    = floatproperty | shapeCommand | 11 | defaultON | settable;
   public final static int star         = floatproperty | shapeCommand | 12 | defaultON | settable;
-  public final static int strands      = floatproperty | shapeCommand | 13 | setparam | defaultON | settable;
+  public final static int strands      = floatproperty | shapeCommand | 13 | deprecatedparam | defaultON | settable;
   public final static int trace        = floatproperty | shapeCommand | 14 | defaultON | settable;
 
   // mathfunc               means x = somefunc(a,b,c)
@@ -608,11 +610,11 @@ public class Token {
   
   public final static int array  = 1 | 0 << 9 | mathfunc;
   public final static int format = 2 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
-  public final static int label  = 3 | 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | shapeCommand | defaultON | setparam;
+  public final static int label  = 3 | 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | shapeCommand | defaultON | deprecatedparam;
   final static int function      = 4 | 0 << 9 | mathfunc | flowCommand;
   final static int getproperty   = 5 | 0 << 9 | mathfunc | scriptCommand;
   final static int write         = 6 | 0 << 9 | mathfunc | scriptCommand;
-  public final static int measure = 7 | 0 << 9| mathfunc | shapeCommand | setparam | defaultON;
+  public final static int measure = 7 | 0 << 9| mathfunc | shapeCommand | deprecatedparam | defaultON;
 
   // xxx(a,b,c,d)
   
@@ -695,15 +697,23 @@ public class Token {
   
   // deprecated or handled specially in ScriptEvaluator
   
-  final static int bondmode       = setparam | 1;  
-  final static int fontsize       = setparam | 2;
-  final static int debug          = setparam | 3;
-  final static int scale3d        = setparam | 4;
+  final static int bondmode         = deprecatedparam | 1;  
+  final static int fontsize         = deprecatedparam | 2;
+  final static int scale3d          = deprecatedparam | 4;
+  final static int togglelabel      = deprecatedparam | 5;
+
+  // handled specially in ScriptEvaluator
+
+  public final static int backgroundmodel  = setparam | 2;
+  public final static int debug            = setparam | 4;
+  public final static int defaultlattice   = setparam | 6;
+  public final static int showscript       = setparam | 8;
+  public final static int specular         = setparam | 10;
+  public final static int timeout          = setparam | 12;
+  public final static int trajectory       = setparam | 14;
+  public final static int usercolorscheme  = setparam | 16;
 
   // full set of all Jmol "set" parameters
-
-  public final static int showscript                     = intparam | 1 | booleanparam;
-  public final static int specular                       = intparam | 2 | booleanparam;
 
   public final static int appletproxy                    = strparam | 2;
   public final static int atomtypes                      = strparam | 4;
@@ -729,7 +739,8 @@ public class Token {
   public final static int language                       = strparam | 44;
   public final static int loadformat                     = strparam | 46;
   public final static int logfile                        = strparam | 47;
-  public final static int picking                        = strparam | 48;
+  public final static int measurementunits               = strparam | 48;  
+  public final static int picking                        = strparam | 49;
   public final static int pickingstyle                   = strparam | 50;
   public final static int picklabel                      = strparam | 52;
   public final static int propertycolorscheme            = strparam | 54;
@@ -794,6 +805,7 @@ public class Token {
   public final static int propertydatacolumncount        = intparam | 34;
   public final static int propertydatafield              = intparam | 36;
   public final static int ribbonaspectratio              = intparam | 38;
+  public final static int scriptreportinglevel           = intparam | 40;
   public final static int specularexponent               = intparam | 44;
   public final static int specularpercent                = intparam | 46;
   public final static int specularpower                  = intparam | 48;
@@ -829,16 +841,18 @@ public class Token {
   public final static int debugscript                    = booleanparam | 48;
   public final static int disablepopupmenu               = booleanparam | 50;
   public final static int displaycellparameters          = booleanparam | 52;
-  public final static int dotsselectedonly               = booleanparam | 54;
-  public final static int dotsurface                     = booleanparam | 56;
-  public final static int drawhover                      = booleanparam | 58;
-  public final static int drawpicking                    = booleanparam | 61;
-  public final static int dynamicmeasurements            = booleanparam | 62;
-  public final static int ellipsoidarcs                  = booleanparam | 63;  
-  public final static int ellipsoidaxes                  = booleanparam | 64;  
-  public final static int ellipsoidball                  = booleanparam | 65;  
-  public final static int ellipsoiddots                  = booleanparam | 66;  
-  public final static int filecaching                    = booleanparam | 67;
+  public final static int dotsselectedonly               = booleanparam | 53;
+  public final static int dotsurface                     = booleanparam | 54;
+  public final static int dragselected                   = booleanparam | 55;
+  public final static int drawhover                      = booleanparam | 56;
+  public final static int drawpicking                    = booleanparam | 57;
+  public final static int dynamicmeasurements            = booleanparam | 58;
+  public final static int ellipsoidarcs                  = booleanparam | 59;  
+  public final static int ellipsoidaxes                  = booleanparam | 60;  
+  public final static int ellipsoidball                  = booleanparam | 61;  
+  public final static int ellipsoiddots                  = booleanparam | 62;  
+  public final static int ellipsoidfill                  = booleanparam | 64;  
+  public final static int filecaching                    = booleanparam | 66;
   public final static int fontcaching                    = booleanparam | 68;
   public final static int fontscaling                    = booleanparam | 69;
   public final static int forceautobond                  = booleanparam | 70;
@@ -886,7 +900,6 @@ public class Token {
   public final static int showmultiplebonds              = booleanparam | 152;
   public final static int shownavigationpointalways      = booleanparam | 154;
 // see intparam  public final static int showscript                     = booleanparam | 156;
-  public final static int showselections                 = booleanparam | 158;
   public final static int showunitcell                   = booleanparam | 160;
   public final static int slabbyatom                     = booleanparam | 162;
   public final static int slabbymolecule                 = booleanparam | 164;
@@ -1221,12 +1234,13 @@ public class Token {
     int attr = (type.equals("setparam") ? setparam 
         : type.equals("misc") ? misc 
         : type.equals("mathfunc") ? mathfunc : scriptCommand);
+    int notattr = (attr == setparam ? deprecatedparam : nada);
     Vector v = new Vector();
     Enumeration e = tokenMap.keys();
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
       Token token = (Token) tokenMap.get(name);
-      if (tokAttr(token.tok, attr))
+      if (tokAttr(token.tok, attr) && (notattr == nada || !tokAttr(token.tok, notattr)))
         v.add(name);
     }
     String[] a = new String[v.size()];
@@ -1269,7 +1283,9 @@ public class Token {
       if (!name.startsWith(str))
         continue;
       Token t = getTokenFromName(name);
-      if (asCommand ? tokAttr(t.tok, scriptCommand) : isSet ? tokAttr(t.tok, setparam) : true)
+      if (asCommand ? tokAttr(t.tok, scriptCommand) 
+          : isSet ? tokAttr(t.tok, setparam) && !tokAttr(t.tok, deprecatedparam) 
+          : true)
         v.add(name);
     }
     return ArrayUtil.sortedItem(v, n);
@@ -1459,6 +1475,7 @@ public class Token {
       "select",            new Token(select),
       "selectionHalos",    new Token(selectionhalos),
       "selectionHalo",     null,
+      "showSelections",    null,
       "set",               new Token(set),
       "show",              new Token(show),
       "slab",              new Token(slab),
@@ -1758,7 +1775,6 @@ public class Token {
       "curve",           new Token(curve),
       "cutoff",          new Token(cutoff),
       "cylinder",        new Token(cylinder),
-      "debug",           new Token(debug),
       "diameter",        new Token(diameter),
       "discrete",        new Token(discrete),
       "distancefactor",  new Token(distancefactor),
@@ -1845,6 +1861,17 @@ public class Token {
       "width",           new Token(width),
 
       // set params
+
+      "backgroundModel",                          new Token(backgroundmodel),
+      "debug",                                    new Token(debug),
+      "defaultLattice",                           new Token(defaultlattice),
+      "scale3D",                                  new Token(scale3d),
+      "toggleLabel",                              new Token(togglelabel),
+      "userColorScheme",                          new Token(usercolorscheme),
+      "timeout",                                  new Token(timeout),
+      "timeouts",                                 null,
+      "trajectory",                               new Token(trajectory),
+      "trajectories",                             null,
       
       // string
       
@@ -1869,12 +1896,13 @@ public class Token {
       "defaultTorsionLabel",                      new Token(defaulttorsionlabel),
       "defaultVDW",                               new Token(defaultvdw),
       "fileCacheDirectory",                       new Token(filecachedirectory),
-      "logFile",                                  new Token(logfile),
       "fontsize",                                 new Token(fontsize),
       "helpPath",                                 new Token(helppath),
       "hoverLabel",                               new Token(hoverlabel),
       "language",                                 new Token(language),
       "loadFormat",                               new Token(loadformat),
+      "logFile",                                  new Token(logfile),
+      "measurementUnits",                         new Token(measurementunits),
       "picking",                                  new Token(picking),
       "pickingStyle",                             new Token(pickingstyle),
       "pickLabel",                                new Token(picklabel),
@@ -1907,7 +1935,6 @@ public class Token {
       "pointGroupLinearTolerance",                new Token(pointgrouplineartolerance),
       "radius",                                   new Token(radius),
       "rotationRadius",                           new Token(rotationradius),
-      "scale3D",                                  new Token(scale3d),
       "scaleAngstromsPerInch",                    new Token(scaleangstromsperinch),
       "sheetSmoothing",                           new Token(sheetsmoothing),
       "solventProbeRadius",                       new Token(solventproberadius),
@@ -1948,6 +1975,7 @@ public class Token {
       "propertyDataColumnCount",                  new Token(propertydatacolumncount),
       "propertyDataField",                        new Token(propertydatafield),
       "ribbonAspectRatio",                        new Token(ribbonaspectratio),
+      "scriptReportingLevel",                     new Token(scriptreportinglevel),
       "showScript",                               new Token(showscript),
       "specular",                                 new Token(specular),
       "specularExponent",                         new Token(specularexponent),
@@ -1991,6 +2019,7 @@ public class Token {
       "displayCellParameters",                    new Token(displaycellparameters),
       "dotsSelectedOnly",                         new Token(dotsselectedonly),
       "dotSurface",                               new Token(dotsurface),
+      "dragSelected",                             new Token(dragselected),
       "drawHover",                                new Token(drawhover),
       "drawPicking",                              new Token(drawpicking),
       "dynamicMeasurements",                      new Token(dynamicmeasurements),
@@ -1998,6 +2027,7 @@ public class Token {
       "ellipsoidAxes",                            new Token(ellipsoidaxes),
       "ellipsoidBall",                            new Token(ellipsoidball),
       "ellipsoidDots",                            new Token(ellipsoiddots),
+      "ellipsoidFill",                            new Token(ellipsoidfill),
       "fileCaching",                              new Token(filecaching),
       "fontCaching",                              new Token(fontcaching),
       "fontScaling",                              new Token(fontscaling),
@@ -2019,6 +2049,7 @@ public class Token {
       "languageTranslation",                      new Token(languagetranslation),
       "measureAllModels",                         new Token(measureallmodels),
       "measurementLabels",                        new Token(measurementlabels),
+      "measurementNumbers",                       null,
       "messageStyleChime",                        new Token(messagestylechime),
       "navigateSurface",                          new Token(navigatesurface),
       "navigationMode",                           new Token(navigationmode),
@@ -2047,7 +2078,6 @@ public class Token {
       "showMultipleBonds",                        new Token(showmultiplebonds),
       "showNavigationPointAlways",                new Token(shownavigationpointalways),
 // see intparam      "showScript",                               new Token(showscript),
-      "showSelections",                           new Token(showselections),
       "showUnitcell",                             new Token(showunitcell),
       "slabByAtom",                               new Token(slabbyatom),
       "slabByMolecule",                           new Token(slabbymolecule),

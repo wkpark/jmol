@@ -3928,7 +3928,7 @@ public class ScriptEvaluator {
         Vector3f norm = new Vector3f();
         float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, norm, vAB,
             vAC);
-        plane = new Point4f(plane.x, plane.y, plane.z, w);
+        plane = new Point4f(norm.x, norm.y, norm.z, w);
         if (!isSyntaxCheck && Logger.debugging)
           Logger.debug("points: " + pt1 + pt2 + pt3 + " defined plane: " + plane);
         break;
@@ -4993,10 +4993,10 @@ public class ScriptEvaluator {
         if (bsIn == null && getToken(++j).tok != Token.opEQ)
           error(ERROR_invalidArgument);
         if (bsIn == null) {
-          setVariable(++j, statementLength - 1, key, false, 0);
+          setVariable(++j, statementLength - 1, key, 0);
         } else {
-          setVariable(j + 2, statementLength - 1, key + "_set", false, 0);
-          setVariable(j + 2, statementLength - 1, key, false, 0);
+          setVariable(j + 2, statementLength - 1, key + "_set", 0);
+          setVariable(j + 2, statementLength - 1, key, 0);
         }
       }
       isOK = ((Boolean) parameterExpression(pts[0] + 1, pts[1], null, false))
@@ -9549,26 +9549,29 @@ public class ScriptEvaluator {
    */
 
   private void set() throws ScriptException {
-    String key;
     if (statementLength == 1) {
       showString(viewer.getAllSettings(null));
       return;
     }
     boolean isJmolSet = (parameterAsString(0).equals("set"));
-    if (isJmolSet && statementLength == 2
-        && (key = parameterAsString(1)).indexOf("?") >= 0) {
+    String key = optParameterAsString(1);
+    if (isJmolSet && statementLength == 2 && key.indexOf("?") >= 0) {
       showString(viewer.getAllSettings(key.substring(0, key.indexOf("?"))));
       return;
     }
+    int tok = getToken(1).tok;
+    int newTok = 0;
+    String sval;
+    int ival = Integer.MAX_VALUE;
+
     boolean showing = (!isSyntaxCheck && !tQuiet
         && scriptLevel <= scriptReportingLevel && !((String) statement[0].value)
         .equals("var"));
-    int val = Integer.MAX_VALUE;
-    int n = 0;
-    switch (getToken(1).tok) {
 
-    // THESE ARE DEPRECATED AND HAVE THEIR OWN COMMAND
+    // THESE FIRST ARE DEPRECATED AND HAVE THEIR OWN COMMAND
+    // anything in this block MUST RETURN
 
+    switch (tok) {
     case Token.axes:
       axes(2);
       return;
@@ -9587,9 +9590,6 @@ public class ScriptEvaluator {
     case Token.label:
       label(2);
       return;
-    case Token.logfile:
-      Logger.setLogFile(stringParameter(2));
-      return;
     case Token.unitcell:
       unitcell(2);
       return;
@@ -9597,12 +9597,33 @@ public class ScriptEvaluator {
     case Token.selectionhalos:
       selectionHalo(2);
       return;
+    }
 
-      // THESE HAVE MULTIPLE CONTEXTS AND
-      // SO DO NOT ALLOW CALCULATIONS xxx = a + b...
+    // THESE HAVE MULTIPLE CONTEXTS AND
+    // SO DO NOT ALLOW CALCULATIONS xxx = a + b...
+    // and are thus "setparam" only
 
+    // anything in this block MUST RETURN
+
+    switch (tok) {
     case Token.bondmode:
       setBondmode();
+      return;
+    case Token.debug:
+      if (isSyntaxCheck)
+        return;
+      int iLevel = (tokAt(2) == Token.off || tokAt(2) == Token.integer
+          && intParameter(2) == 0 ? 4 : 5);
+      Logger.setLogLevel(iLevel);
+      setIntProperty("logLevel", iLevel);
+      if (iLevel == 4) {
+        viewer.setDebugScript(false);
+        if (showing)
+          viewer.showParameter("debugScript", true, 80);
+      }
+      setDebugging();
+      if (showing)
+        viewer.showParameter("logLevel", true, 80);
       return;
     case Token.echo:
       setEcho();
@@ -9611,217 +9632,60 @@ public class ScriptEvaluator {
       font(JmolConstants.SHAPE_LABELS, checkLength23() == 2 ? 0
           : floatParameter(2));
       return;
+    case Token.formalcharge:
+      ival = intSetting(2);
+      if (ival == Integer.MIN_VALUE)
+        error(ERROR_invalidArgument);
+      if (!isSyntaxCheck)
+        viewer.setFormalCharges(ival);
+      return;
     case Token.hbond:
       setHbond();
+      return;
+    case Token.logfile:
+      Logger.setLogFile(stringParameter(2));
       return;
     case Token.measure:
       setMonitor();
       return;
-    case Token.property: // considered reserved
-      key = parameterAsString(1).toLowerCase();
-      if (key.startsWith("property_")) {
-      } else {
-        setProperty();
-        return;
-      }
-      break;
-    case Token.picking:
-      if (statementLength == 2) {
-        key = "picking";
-        break;
-      }
-      setPicking();
-      return;
-    case Token.pickingstyle:
-      if (statementLength == 2) {
-        key = "pickingStyle";
-        break;
-      }
-      setPickingStyle();
-      return;
-
-      // deprecated to other parameters
-    case Token.spin:
-      setSpin(parameterAsString(2), (int) floatParameter(checkLast(3)));
-      return;
     case Token.navigate:
       setNav(parameterAsString(2), (int) floatParameter(checkLast(3)));
+      return;
+    case Token.spin:
+      setSpin(parameterAsString(2), (int) floatParameter(checkLast(3)));
       return;
     case Token.ssbond: // ssBondsBackbone
       setSsbond();
       return;
-
-      // THESE NEXT DO ALLOW CALCULATIONS xxx = a + b...
-
-    case Token.scale3d:
-      setFloatProperty("scaleAngstromsPerInch", floatSetting(2));
+    case Token.timeout:
+      setTimeout();
       return;
-    case Token.formalcharge:
-      n = intSetting(2);
-      if (n == Integer.MIN_VALUE)
-        error(ERROR_invalidArgument);
-      if (!isSyntaxCheck)
-        viewer.setFormalCharges(n);
+    case Token.togglelabel:
+      setLabel("toggle");
       return;
-    case Token.specular:
-      if (statementLength == 2 || statement[2].tok != Token.integer) {
-        key = "specular";
-        break;
-      }
-      // fall through
-    case Token.specularpercent:
-      key = "specularPercent";
-      break;
-    case Token.ambientpercent:
-      key = "ambientPercent";
-      break;
-    case Token.diffusepercent:
-      key = "diffusePercent";
-      break;
-    case Token.specularpower:
-      val = intSetting(2);
-      if (val >= 0 || val == Integer.MIN_VALUE) {
-        key = "specularPower";
-        break;
-      } 
-      if (val < -10 || val > -1)
-        integerOutOfRange(-10, -1);
-      val = -val;
-      key = "specularExponent";
-      break;
-    case Token.specularexponent:
-      key = "specularExponent";
-      break;
-    case Token.bonds:
-      key = "showMultipleBonds";
-      break;
-    case Token.strands:
-      key = "strandCount";
-      break;
-    case Token.hetero:
-      key = "selectHetero";
-      break;
-    case Token.hydrogen:
-      key = "selectHydrogen";
-      break;
-    case Token.radius:
-      key = "solventProbeRadius";
-      break;
-    case Token.solvent:
-      key = "solventProbe";
-      break;
-    case Token.color:
-      key = "defaultColorScheme";
-      break;
-    case Token.debug:
+    case Token.trajectory:
+      Token token = tokenSetting(2); // if an expression, we are done
       if (isSyntaxCheck)
         return;
-      int iLevel = (tokAt(2) == Token.off 
-          || tokAt(2) == Token.integer && intParameter(2) == 0 ? 4 : 5);
-      Logger.setLogLevel(iLevel);
-      setIntProperty("logLevel", iLevel);
-      if (iLevel == 4) {
-        viewer.setDebugScript(false);
-        if (showing) 
-          viewer.showParameter("debugScript", true, 80);
-      }
-      setDebugging();
-      if (showing) 
-        viewer.showParameter("logLevel", true, 80);
+      if (token.tok == Token.decimal) // if a number, we just set its
+        // trajectory
+        viewer.getModelNumberIndex(token.intValue, false, true);
       return;
-    default:
-      key = parameterAsString(1);
-      if (key.charAt(0) == '_') // these cannot be set by user
-        error(ERROR_invalidArgument);
-
-      // these next are not reported and do not allow calculation xxxx = a + b
-
-      if (key.equalsIgnoreCase("toggleLabel")) {
-        if (setLabel("toggle"))
-          return;
-      }
-      if (key.equalsIgnoreCase("timeout")) {
-        setTimeout();
-        return;
-      }
-      if (key.toLowerCase().indexOf("label") == 0
-          && Parser
-              .isOneOf(key.substring(5).toLowerCase(),
-                  "front;group;atom;offset;offsetexact;pointer;alignment;toggle;scalereference")) {
-        if (setLabel(key.substring(5)))
-          return;
-      }
-      if (key.equalsIgnoreCase("userColorScheme")) {
-        setUserColors();
-        return;
-      }
-
-      if (key.equalsIgnoreCase("trajectory")
-          || key.equalsIgnoreCase("trajectories")) {
-        Token token = tokenSetting(2); // if an expression, we are done
-        if (isSyntaxCheck)
-          return;
-        if (token.tok == Token.decimal) // if a number, we just set its
-                                        // trajectory
-          viewer.getModelNumberIndex(token.intValue, false, true);
-        return;
-      }
-
-      // deprecated:
-
-      if (key.equalsIgnoreCase("showSelections")) {
-        key = "selectionHalos";
-        break;
-      }
-      if (key.equalsIgnoreCase("measurementNumbers")) {
-        key = "measurementLabels";
-        break;
-      }
-
-      // these next could be queries
-      
-      if (statementLength == 2)
-        break;
-      if (key.equalsIgnoreCase("defaultLattice")) {
-        Point3f pt;
-      Vector v = (Vector) parameterExpression(2, 0, "XXX", true);
-      if (v == null || v.size() == 0)
-        error(ERROR_invalidArgument);
-      ScriptVariable var = (ScriptVariable) v.elementAt(0);
-      if (var.tok == Token.point3f)
-        pt = (Point3f) var.value;
-      else {
-        int ijk = ScriptVariable.iValue(var);
-        if (ijk < 555)
-          pt = new Point3f();
-        else
-          pt = viewer.getSymmetry().ijkToPoint3f(ijk + 111);
-      }
-      if (!isSyntaxCheck)
-        viewer.setDefaultLattice(pt);
+    case Token.usercolorscheme:
+      setUserColors();
       return;
-      }
+    }
 
-      // THESE CAN BE PART OF CALCULATIONS
+    // these next will report a value but require special checks
 
-      if (key.equalsIgnoreCase("defaultDrawArrowScale")) {
-        setFloatProperty(key, floatSetting(2));
-        return;
-      }
-      if (key.equalsIgnoreCase("logLevel")) {
-        // set logLevel n
-        // we have 5 levels 0 - 4 debug -- error
-        // n = 0 -- no messages -- turn all off
-        // n = 1 add level 4, error
-        // n = 2 add level 3, warn
-        // etc.
-        int ilevel = intSetting(2);
-        if (isSyntaxCheck)
-          return;
-        setIntProperty("logLevel", ilevel);
-        return;      
-      }
-      if (key.equalsIgnoreCase("backgroundModel")) {
+    boolean justShow = true;
+
+    switch (tok) {
+    case Token.axesscale:
+      setFloatProperty("axesScale", floatSetting(2, -100, 100));
+      break;
+    case Token.backgroundmodel:
+      if (statementLength > 2) {
         String modelDotted = stringSetting(2, false);
         int modelNumber;
         boolean useModelNumber = false;
@@ -9838,17 +9702,252 @@ public class ScriptEvaluator {
         viewer.setBackgroundModelIndex(modelIndex);
         return;
       }
-      if (key.equalsIgnoreCase("language")) {
-        // language can be used without quotes in a SET context
-        // set language en
-        String lang = stringSetting(2, isJmolSet);
-        setStringProperty(key, lang);
+      break;
+    case Token.defaultvdw:
+      if (statementLength > 2) {
+        sval = (statementLength == 3
+            && JmolConstants.getVdwType(parameterAsString(2)) == JmolConstants.VDW_UNKNOWN ? stringSetting(
+            2, false)
+            : parameterAsString(2));
+        if (JmolConstants.getVdwType(sval) < 0)
+          error(ERROR_invalidArgument);
+        setStringProperty(key, sval);
+      }
+      break;
+    case Token.defaultlattice:
+      if (statementLength > 2) {
+        Point3f pt;
+        Vector v = (Vector) parameterExpression(2, 0, "XXX", true);
+        if (v == null || v.size() == 0)
+          error(ERROR_invalidArgument);
+        ScriptVariable var = (ScriptVariable) v.elementAt(0);
+        if (var.tok == Token.point3f)
+          pt = (Point3f) var.value;
+        else {
+          int ijk = ScriptVariable.iValue(var);
+          if (ijk < 555)
+            pt = new Point3f();
+          else
+            pt = viewer.getSymmetry().ijkToPoint3f(ijk + 111);
+        }
+        if (!isSyntaxCheck)
+          viewer.setDefaultLattice(pt);
+      }
+      break;
+    case Token.defaults:
+    case Token.defaultcolorscheme:
+      if (statementLength > 2) {
+        if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol) {
+          sval = parameterAsString(checkLast(2)).toLowerCase();
+        } else {
+          sval = stringSetting(2, false).toLowerCase();
+        }
+        if (!sval.equals("jmol") && !sval.equals("rasmol"))
+          error(ERROR_invalidArgument);
+        setStringProperty(key, sval);
+      }
+      break;
+    case Token.dipolescale:
+      setFloatProperty("dipoleScale", floatSetting(2, -10, 10));
+      break;
+    case Token.historylevel:
+      // save value locally as well
+      ival = intSetting(2);
+      if (!isSyntaxCheck) {
+        if (ival != Integer.MIN_VALUE)
+          commandHistoryLevelMax = ival;
+        setIntProperty(key, ival);
+      }
+      break;
+    case Token.language:
+      // language can be used without quotes in a SET context
+      // set language en
+      if (statementLength > 2)
+        setStringProperty(key, stringSetting(2, isJmolSet));
+      break;
+    case Token.measurementunits:
+      if (statementLength > 2)
+        setMeasurementUnits(stringSetting(2, isJmolSet));
+      break;
+    case Token.picking:
+      if (statementLength > 2) {
+        setPicking();
         return;
+      }
+      break;
+    case Token.pickingstyle:
+      if (statementLength > 2) {
+        setPickingStyle();
+        return;
+      }
+      break;
+    case Token.property: // compiler may give different values to this token
+      key = key.toLowerCase();
+      if (!key.startsWith("property_")) {
+        setProperty();
+        return;
+      }
+      // set property_xxxx will be handled in setVariable
+      break;
+    case Token.scriptreportinglevel:
+      // save value locally as well
+      ival = intSetting(2);
+      if (!isSyntaxCheck) {
+        if (ival != Integer.MIN_VALUE)
+          scriptReportingLevel = ival;
+        setIntProperty(key, ival);
+      }
+      break;
+    case Token.solventproberadius:
+      setFloatProperty(key, floatSetting(2, 0, 10));
+      break;
+    case Token.specular:
+    case Token.specularpercent:
+    case Token.specularpower:
+    case Token.specularexponent:
+    case Token.ambientpercent:
+    case Token.diffusepercent:
+    case Token.phongexponent:
+      if (tok == Token.specular) {
+        if (tokAt(2) != Token.integer) {
+          justShow = false;
+          break;
+        }
+        tok = Token.specularpercent;
+        key = "specularPercent";
+      }
+      ival = intSetting(2);
+      if (ival == Integer.MIN_VALUE)
+        break;
+      if (tok == Token.phongexponent) {
+        setIntProperty(key, intSetting(2, ival, 0, 1000));
+        break;
+      }
+      if (tok == Token.specularpower) {
+        if (ival >= 0) {
+          justShow = false;
+          break;
+        }
+        if (ival < -10 || ival > -1)
+          integerOutOfRange(-10, -1);
+        ival = -ival;
+        tok = Token.specularexponent;
+        key = "specularExponent";
+      }
+      if (tok == Token.specularexponent) {
+        setIntProperty(key, intSetting(2, ival, 0, 10));
+      } else {
+        setIntProperty(key, intSetting(2, ival, 0, 100));
+      }
+      break;
+    case Token.strands:
+    case Token.strandcount:
+    case Token.strandcountformeshribbon:
+    case Token.strandcountforstrands:
+      if (tok == Token.strands) {
+        tok = Token.strandcount;
+        key = "strandCount";
+      }
+      setIntProperty(key, intSetting(2, Integer.MAX_VALUE, 0, 20));
+      break;
+    default:
+      justShow = false;
+    }
+
+    if (justShow && !showing)
+      return;
+
+    // var xxxx = xxx can supercede set xxxx
+
+    boolean isContextVariable = (!justShow && !isJmolSet && getContextVariableAsVariable(key) != null);
+
+    if (!justShow && !isContextVariable) {
+
+      // THESE NEXT are deprecated:
+
+      switch (tok) {
+      case Token.bonds:
+        newTok = Token.showmultiplebonds;
+        break;
+      case Token.hetero:
+        newTok = Token.selecthetero;
+        break;
+      case Token.hydrogen:
+        newTok = Token.selecthydrogen;
+        break;
+      case Token.radius:
+        tok = Token.solventproberadius;
+        key = "solventProbeRadius";
+        setFloatProperty(key, floatSetting(2, 0, 10));
+        break;
+      case Token.scale3d:
+        newTok = Token.scaleangstromsperinch;
+        break;
+      case Token.solvent:
+        newTok = Token.solventprobe;
+        break;
+      case Token.color:
+        newTok = Token.defaultcolorscheme;
+        break;
       }
     }
 
-    if (getContextVariableAsVariable(key) != null
-        || !setParameter(key, val, isJmolSet, showing)) {
+    if (newTok != 0) {
+      key = Token.nameOf(tok = newTok);
+    } else if (!justShow && !isContextVariable) {
+      // special cases must be checked
+      if (key.charAt(0) == '_') // these cannot be set by user
+        error(ERROR_invalidArgument);
+
+      // these next are not reported and do not allow calculation xxxx = a + b
+
+      String lckey = key.toLowerCase();
+      if (lckey.indexOf("label") == 0
+          && Parser
+              .isOneOf(key.substring(5).toLowerCase(),
+                  "front;group;atom;offset;offsetexact;pointer;alignment;toggle;scalereference")) {
+        if (setLabel(key.substring(5)))
+          return;
+      }
+      if (lckey.indexOf("callback") >= 0)
+        tok = Token.setparam;
+    }
+
+    if (isJmolSet && !Token.tokAttr(tok, Token.setparam)) {
+      iToken = 1;
+      if (!isStateScript)
+        error(ERROR_unrecognizedParameter, "SET", key);
+      warning(ERROR_unrecognizedParameterWarning, "SET", key);
+    }
+    
+    if (!justShow && isJmolSet) {
+      // simple cases
+      switch (statementLength) {
+      case 2:
+        // set XXXX;
+        // too bad we allow this...
+        setBooleanProperty(key, true);
+        justShow = true;
+        break;
+      case 3:
+        // set XXXX val;
+        // check for int and NONE just in case
+        if (ival != Integer.MAX_VALUE) {
+          // keep it simple
+          setIntProperty(key, ival);
+          justShow = true;
+        }
+        break;
+      }
+    }
+
+    if (!justShow && !isJmolSet && tokAt(2) == Token.none) {
+      if (!isSyntaxCheck)
+        viewer.removeUserVariable(key);
+      justShow = true;
+    }
+
+    if (!justShow) {
       int tok2 = (tokAt(1) == Token.expressionBegin ? 0 : tokAt(2));
       int setType = statement[0].intValue;
       // recasted by compiler:
@@ -9863,479 +9962,24 @@ public class ScriptEvaluator {
       // set x = ...
           : setType == '=' && !key.equals("return") && tok2 != Token.opEQ ? 0
           // {c}.xxx =
-              // {...}.xxx =
-              // {{...}[n]}.xxx =
+          // {...}.xxx =
+          // {{...}[n]}.xxx =
               : 2
-      // var a[...].xxx =
-      // a[...].xxx =
-      // var c = ...
-      // var c = [
-      // c = [
-      // c = ...
-      // set x ...
-      // a[...] =
+              // var a[...].xxx =
+              // a[...].xxx =
+              // var c = ...
+              // var c = [
+              // c = [
+              // c = ...
+              // set x ...
+              // a[...] =
       );
-      setVariable(pt, 0, key, showing, setType);
+      setVariable(pt, 0, key, setType);
       if (!isJmolSet)
         return;
     }
     if (showing)
       viewer.showParameter(key, true, 80);
-  }
-
-  private void setTimeout() throws ScriptException {
-    // set timeout "mytimeout" mSec "script"
-    // msec < 0 --> repeat indefinitely
-    // set timeout "mytimeout" 1000
-    // set timeout "mytimeout" OFF
-    // set timeout OFF
-    String name = null;
-    int mSec = 0;
-    String script = null;
-    switch (statementLength) {
-    case 3:
-      if (tokAt(iToken = 2) != Token.off) 
-        error(ERROR_invalidArgument);
-      break;
-    case 4:
-      if (tokAt(iToken = 3) != Token.off)
-        mSec = intParameter(3);
-      name = parameterAsString(2);
-      break;
-    default:
-      script = parameterAsString(checkLast(4));
-      name = parameterAsString(2);
-      mSec = intParameter(3);
-    }
-    if (!isSyntaxCheck)
-      viewer.setTimeout(name, mSec, script);
-  }
-
-  private void setVariable(int pt, int ptMax, String key, boolean showing,
-                           int setType) throws ScriptException {
-
-    // from SET, we are only here if a Jmol parameter has not been identified
-    // from FOR or WHILE, no such check is made
-
-    // if both pt and ptMax are 0, then it indicates that
-
-    BitSet bs = null;
-    String propertyName = "";
-    int tokProperty = Token.nada;
-    boolean isArrayItem = (statement[0].intValue == '[');
-    boolean settingProperty = false;
-    boolean isExpression = false;
-    boolean settingData = (key.startsWith("property_"));
-    ScriptVariable t = (settingData ? null : getContextVariableAsVariable(key));
-    boolean isUserVariable = (t != null);
-
-    if (pt > 0 && tokAt(pt - 1) == Token.expressionBegin) {
-      bs = expression(pt - 1);
-      pt = iToken + 1;
-      isExpression = true;
-    }
-    if (tokAt(pt) == Token.per) {
-      settingProperty = true;
-      ScriptVariable token = getBitsetPropertySelector(++pt, true);
-      if (token == null)
-        error(ERROR_invalidArgument);
-      if (tokAt(++pt) != Token.opEQ)
-        error(ERROR_invalidArgument);
-      pt++;
-      tokProperty = token.intValue;
-      propertyName = (String) token.value;
-    }
-    if (isExpression && !settingProperty)
-      error(ERROR_invalidArgument);
-
-    // get value
-
-    Object v = parameterExpression(pt, ptMax, key, true, -1, isArrayItem, null,
-        null);
-    if (v == null)
-      return;
-    int nv = ((Vector) v).size();
-    if (nv == 0 || !isArrayItem && nv > 1 || isArrayItem && nv != 3)
-      error(ERROR_invalidArgument);
-    if (isSyntaxCheck)
-      return;
-    ScriptVariable tv = (ScriptVariable) ((Vector) v).get(isArrayItem ? 2 : 0);
-
-    // create user variable if needed for list now, so we can do the copying
-
-    boolean needVariable = (!isUserVariable && !isExpression && !settingData 
-        && (isArrayItem || settingProperty || !(tv.value instanceof String
-        || tv.tok == Token.integer || tv.value instanceof Integer 
-        || tv.value instanceof Float || tv.value instanceof Boolean)));
-
-    if (needVariable) {
-      t = viewer.getOrSetNewVariable(key, true);
-      if (t == null) { // can't set a variable _xxxx
-        error(ERROR_invalidArgument);
-      }
-      isUserVariable = true;
-    }
-
-    if (isArrayItem) {
-
-      // stack is selector [ VALUE
-
-      int index = ScriptVariable.iValue((ScriptVariable) ((Vector) v).get(0));
-      t.setSelectedValue(index, tv);
-      return;
-    }
-    if (settingProperty) {
-      if (!isExpression) {
-        if (!(t.value instanceof BitSet))
-          error(ERROR_invalidArgument);
-        bs = (BitSet) t.value;
-      }
-      if (propertyName.startsWith("property_")) {
-        viewer.setData(propertyName, new Object[] { propertyName,
-            ScriptVariable.sValue(tv), BitSetUtil.copy(bs) }, viewer.getAtomCount(), 0, 0,
-            tv.tok == Token.list ? Integer.MAX_VALUE : Integer.MIN_VALUE, 0);
-        return;
-      }
-      setBitsetProperty(bs, tokProperty, ScriptVariable.iValue(tv),
-          ScriptVariable.fValue(tv), tv);
-      return;
-    }
-
-    if (isUserVariable) {
-      t.set(tv);
-      return;
-    }
-
-    v = ScriptVariable.oValue(tv);
-
-    if (key.startsWith("property_")) {
-      int n = viewer.getAtomCount();
-      if (v instanceof String[])
-        v = TextFormat.join((String[]) v, '\n', 0);
-      viewer.setData(key,
-          new Object[] { key, "" + v, BitSetUtil.copy(viewer.getSelectionSet()) }, n, 0, 0,
-          Integer.MIN_VALUE, 0);
-      return;
-    }
-    String str;
-    if (v instanceof Boolean) {
-      setBooleanProperty(key, ((Boolean) v).booleanValue());
-    } else if (v instanceof Integer) {
-      setIntProperty(key, ((Integer) v).intValue());
-    } else if (v instanceof Float) {
-      setFloatProperty(key, ((Float) v).floatValue());
-    } else if (v instanceof String) {
-      setStringProperty(key, (String) v);
-    } else if (v instanceof BondSet) {
-      setStringProperty(key, Escape.escape((BitSet) v, false));
-    } else if (v instanceof BitSet) {
-      setStringProperty(key, Escape.escape((BitSet) v));
-    } else if (v instanceof Point3f) {
-      str = Escape.escape((Point3f) v);
-      setStringProperty(key, str);
-    } else if (v instanceof Point4f) {
-      str = Escape.escape((Point4f) v);
-      setStringProperty(key, str);
-    } else {
-      Logger.error("ERROR -- return from propertyExpression was " + v);
-    }
-  }
-
-  private boolean setParameter(String key, int intVal, boolean isJmolSet,
-                               boolean showing) throws ScriptException {
-    String lcKey = key.toLowerCase();
-    if (key.equalsIgnoreCase("scriptReportingLevel")) { // 11.1.13
-      intVal = intSetting(2);
-      if (!isSyntaxCheck) {
-        if (intVal != Integer.MIN_VALUE)
-          scriptReportingLevel = intVal;
-        setIntProperty(key, intVal);
-      }
-      return true;
-    }
-    if (key.equalsIgnoreCase("historyLevel")) {
-      intVal = intSetting(2);
-      if (!isSyntaxCheck) {
-        if (intVal != Integer.MIN_VALUE)
-          commandHistoryLevelMax = intVal;
-        setIntProperty(key, intVal);
-      }
-      return true;
-    }
-    if (key.equalsIgnoreCase("radius"))
-      return setFloatProperty("solventProbeRadius", floatSetting(2, 0, 10));
-    if (key.equalsIgnoreCase("dipoleScale"))
-      return setFloatProperty("dipoleScale", floatSetting(2, -10, 10));
-    if (key.equalsIgnoreCase("axesScale"))
-      return setFloatProperty("axesScale", floatSetting(2, -100, 100));
-    if (key.equalsIgnoreCase("measurementUnits"))
-      return (statementLength == 2 ? true : setMeasurementUnits(stringSetting(2, isJmolSet)));
-    if (key.equalsIgnoreCase("defaultVDW")) {
-      if (statementLength == 2)
-        return true;
-      String val = (statementLength == 3
-          && JmolConstants.getVdwType(parameterAsString(2)) == JmolConstants.VDW_UNKNOWN 
-          ? stringSetting(2, false) : parameterAsString(2));
-      if (JmolConstants.getVdwType(val) < 0)
-        error(ERROR_invalidArgument);
-      setStringProperty(key, val);
-      return true;
-    }
-    if (Parser.isOneOf(lcKey, "defaults;defaultcolorscheme")) {
-      if (statementLength == 2)
-        return true;
-      String val;
-      if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol) {
-        val = parameterAsString(checkLast(2)).toLowerCase();
-      } else {
-        val = stringSetting(2, false).toLowerCase();
-      }
-      if (!val.equals("jmol") && !val.equals("rasmol"))
-        error(ERROR_invalidArgument);
-      setStringProperty((key.equalsIgnoreCase("defaults") ? key
-          : "defaultColorScheme"), val);
-      return true;
-    }
-    if (Parser.isOneOf(lcKey,
-        "strandcount;strandcountformeshribbon;strandcountforstrands"))
-      return setIntProperty(key, intSetting(2, Integer.MAX_VALUE, 0, 20));
-    if (Parser.isOneOf(lcKey,
-        "specularpercent;ambientpercent;diffusepercent;specularPower"))
-      return setIntProperty(key, intSetting(2, intVal, 0, 100));
-    if (key.equalsIgnoreCase("specularExponent"))
-      return setIntProperty(key, intSetting(2, intVal, 0, 100));
-    if (key.equalsIgnoreCase("phongExponent"))
-      return setIntProperty(key, intSetting(2, intVal, 0, 1000));
-    boolean isJmolParameter = viewer.isJmolVariable(key);
-    if (isJmolSet && !isJmolParameter) {
-      iToken = 1;
-      if (!isStateScript)
-        error(ERROR_unrecognizedParameter, "SET", key);
-      warning(ERROR_unrecognizedParameterWarning, "SET", key);
-    }
-    switch (statementLength) {
-    case 2:
-      // too bad we allow this...
-      setBooleanProperty(key, true);
-      return true;
-    case 3:
-      if (intVal != Integer.MAX_VALUE) {
-        setIntProperty(key, intVal);
-        return true;
-      }
-      getToken(2);
-      if (theTok == Token.none) {
-        if (!isSyntaxCheck)
-          viewer.removeUserVariable(key);
-      } else if (!isJmolSet || theTok != Token.identifier) {
-        // all settings are Token.identifier
-        return false;
-      }
-      return true;
-    }
-    return false;
-  }
-
-  private void axes(int index) throws ScriptException {
-    // axes (index==1) or set axes (index==2)
-    TickInfo tickInfo = checkTicks(index);
-    index = iToken + 1;
-    int tok = tokAt(index);
-    String type = optParameterAsString(index).toLowerCase();
-    if (statementLength == index + 1
-        && Parser.isOneOf(type, "window;unitcell;molecular")) {
-      setBooleanProperty("axes" + type, true);
-      return;
-    }
-    // axes scale x.xxx
-    switch (tok) {
-    case Token.scale:
-      setFloatProperty("axesScale", floatParameter(checkLast(++index)));
-      return;
-    case Token.label:
-      switch (tok = tokAt(index + 1)) {
-      case Token.off:
-      case Token.on:
-        checkLength(index + 2);
-        setShapeProperty(JmolConstants.SHAPE_AXES, "labels"
-            + (tok == Token.on ? "On" : "Off"), null);
-        return;
-      }
-      checkLength(index + 4);
-      // axes labels "X" "Y" "Z"
-      setShapeProperty(JmolConstants.SHAPE_AXES, "labels", new String[] {
-          parameterAsString(++index), parameterAsString(++index),
-          parameterAsString(++index) });
-      return;
-    }
-    // axes position [x y %]
-    if (type.equals("position")) {
-      Point3f xyp;
-      if (tokAt(++index) == Token.off) {
-        xyp = new Point3f();
-      } else {
-        xyp = xypParameter(index);
-        if (xyp == null)
-          error(ERROR_invalidArgument);
-        index = iToken;
-      }
-      setShapeProperty(JmolConstants.SHAPE_AXES, "position", xyp);
-      return;
-    }
-    int mad = getSetAxesTypeMad(index);
-    if (isSyntaxCheck)
-      return;
-    viewer.setObjectMad(JmolConstants.SHAPE_AXES, "axes", mad);
-    if (tickInfo != null)
-      setShapeProperty(JmolConstants.SHAPE_AXES, "tickInfo", tickInfo);
-  }
-
-  private void boundbox(int index) throws ScriptException {
-    TickInfo tickInfo = checkTicks(index);
-    index = iToken + 1;
-    float scale = 1;
-    if (tokAt(index) == Token.scale) {
-      scale = floatParameter(++index);
-      if (!isSyntaxCheck && scale == 0)
-        error(ERROR_invalidArgument);
-      index++;
-      if (index == statementLength) {
-        if (!isSyntaxCheck)
-          viewer.setBoundBox(null, null, true, scale);
-        return;
-      }  
-    }
-    boolean byCorner = (tokAt(index) == Token.corners);
-    if (byCorner)
-      index++;
-    if (isCenterParameter(index)) {
-      expressionResult = null;
-      int index0 = index;
-      Point3f pt1 = centerParameter(index);
-      index = iToken + 1;
-      if (byCorner || isCenterParameter(index)) {
-        // boundbox CORNERS {expressionOrPoint1} {expressionOrPoint2}
-        // boundbox {expressionOrPoint1} {vector}
-        Point3f pt2 = (byCorner ? centerParameter(index) : getPoint3f(index,
-            true));
-        index = iToken + 1;
-        if (!isSyntaxCheck)
-          viewer.setBoundBox(pt1, pt2, byCorner, scale);
-      } else if (expressionResult != null && expressionResult instanceof BitSet) {
-        // boundbox {expression}
-        if (!isSyntaxCheck)
-          viewer.calcBoundBoxDimensions((BitSet) expressionResult, scale);
-      } else if (expressionResult == null && tokAt(index0) == Token.dollarsign) {
-          if (isSyntaxCheck)
-            return;
-          Point3f[] bbox = getObjectBoundingBox(objectNameParameter(++index0));
-          if (bbox == null)
-            error(ERROR_invalidArgument);
-          viewer.setBoundBox(bbox[0], bbox[1], true, scale);
-          index = iToken + 1;
-      } else {
-        error(ERROR_invalidArgument);
-      }
-      if (index == statementLength)
-        return;
-    }
-    int mad = getSetAxesTypeMad(index);
-    if (isSyntaxCheck)
-      return;
-    if (tickInfo != null)
-      setShapeProperty(JmolConstants.SHAPE_BBCAGE, "tickInfo", tickInfo);
-    viewer.setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", mad);
-  }
-
-  private TickInfo checkTicks(int index) throws ScriptException {
-    iToken = index - 1;
-    if (tokAt(index) != Token.ticks)
-      return null;
-    TickInfo tickInfo;
-    String str = " ";
-    if (tokAt(index + 1) == Token.identifier) {
-      str = parameterAsString(++index).toLowerCase();
-      if (!str.equals("x") && !str.equals("y") && !str.equals("z"))
-        error(ERROR_invalidArgument);
-    }
-    if (tokAt(++index) == Token.none) {
-      tickInfo = new TickInfo(null);
-      tickInfo.type = str;
-      iToken = index;
-      return tickInfo;
-    }
-    tickInfo = new TickInfo(getPoint3f(index, false));
-    tickInfo.type = str;
-    if (tokAt(iToken + 1) == Token.format)
-      tickInfo.tickLabelFormats = stringParameterSet(iToken + 2);
-    if (tokAt(iToken + 1) == Token.scale) {
-      if (isFloatParameter(iToken + 2)) {
-        float f = floatParameter(iToken + 2);
-        tickInfo.scale = new Point3f(f, f, f);
-      } else if (tokAt(iToken + 2) == Token.unitcell) {
-        tickInfo.scale = new Point3f(
-            1/viewer.getUnitCellInfo(JmolConstants.INFO_A),
-            1/viewer.getUnitCellInfo(JmolConstants.INFO_B),
-            1/viewer.getUnitCellInfo(JmolConstants.INFO_C));
-        if (Float.isNaN(tickInfo.scale.x))
-          tickInfo.scale = null;
-        iToken += 2;
-      } else {
-        tickInfo.scale = getPoint3f(iToken + 2, true);
-      }
-    }
-    if (tokAt(iToken + 1) == Token.first)
-      tickInfo.first = floatParameter(iToken + 2);
-    if (tokAt(iToken + 1) == Token.point)
-      tickInfo.reference = centerParameter(iToken + 2);
-    return tickInfo;
-  }
-
-  private void unitcell(int index) throws ScriptException {
-    int icell = Integer.MAX_VALUE;
-    int mad = Integer.MAX_VALUE;
-    Point3f pt = null;
-    TickInfo tickInfo = checkTicks(index);
-    index = iToken;
-    if (statementLength == index + 2) {
-      if (getToken(index + 1).tok == Token.integer 
-          && intParameter(index + 1) >= 111)
-        icell = intParameter(++index);
-    } else if (statementLength > index + 1) {
-      pt = (Point3f) getPointOrPlane(++index, false, true, false, true, 3, 3);
-      index = iToken;
-    }
-    mad = getSetAxesTypeMad(++index);
-    checkLast(iToken);
-    if (isSyntaxCheck)
-      return;
-    if (icell != Integer.MAX_VALUE)
-      viewer.setCurrentUnitCellOffset(icell);
-    viewer.setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitCell", mad);
-    if (pt != null)
-      viewer.setCurrentUnitCellOffset(pt);
-    if (tickInfo != null)
-      setShapeProperty(JmolConstants.SHAPE_UCCAGE, "tickInfo", tickInfo);
-  }
-
-  private void frank(int index) throws ScriptException {
-    setBooleanProperty("frank", booleanParameter(index));
-  }
-
-  private void setUserColors() throws ScriptException {
-    Vector v = new Vector();
-    for (int i = 2; i < statementLength; i++) {
-      int argb = getArgbParam(i);
-      v.addElement(new Integer(argb));
-      i = iToken;
-    }
-    if (isSyntaxCheck)
-      return;
-    int n = v.size();
-    int[] scale = new int[n];
-    for (int i = n; --i >= 0;)
-      scale[i] = ((Integer) v.elementAt(i)).intValue();
-    Viewer.setUserScale(scale);
   }
 
   private void setBondmode() throws ScriptException {
@@ -10350,22 +9994,6 @@ public class ScriptEvaluator {
       error(ERROR_invalidArgument);
     }
     setBooleanProperty("bondModeOr", bondmodeOr);
-  }
-
-  private void selectionHalo(int pt) throws ScriptException {
-    boolean showHalo = false;
-    switch (pt == statementLength ? Token.on : getToken(pt).tok) {
-    case Token.on:
-    case Token.selected:
-      showHalo = true;
-    case Token.off:
-    case Token.none:
-    case Token.normal:
-      setBooleanProperty("selectionHalos", showHalo);
-      break;
-    default:
-      error(ERROR_invalidArgument);
-    }
   }
 
   private void setEcho() throws ScriptException {
@@ -10860,6 +10488,382 @@ public class ScriptEvaluator {
     if (JmolConstants.getPickingStyle(str) < 0)
       error(ERROR_unrecognizedParameter, "SET PICKINGSTYLE " + type, str);
     setStringProperty("pickingStyle", str);
+  }
+
+  private void setTimeout() throws ScriptException {
+    // set timeout "mytimeout" mSec "script"
+    // msec < 0 --> repeat indefinitely
+    // set timeout "mytimeout" 1000
+    // set timeout "mytimeout" OFF
+    // set timeout OFF
+    String name = null;
+    int mSec = 0;
+    String script = null;
+    switch (statementLength) {
+    case 3:
+      if (tokAt(iToken = 2) != Token.off) 
+        error(ERROR_invalidArgument);
+      break;
+    case 4:
+      if (tokAt(iToken = 3) != Token.off)
+        mSec = intParameter(3);
+      name = parameterAsString(2);
+      break;
+    default:
+      script = parameterAsString(checkLast(4));
+      name = parameterAsString(2);
+      mSec = intParameter(3);
+    }
+    if (!isSyntaxCheck)
+      viewer.setTimeout(name, mSec, script);
+  }
+
+  private void setUserColors() throws ScriptException {
+    Vector v = new Vector();
+    for (int i = 2; i < statementLength; i++) {
+      int argb = getArgbParam(i);
+      v.addElement(new Integer(argb));
+      i = iToken;
+    }
+    if (isSyntaxCheck)
+      return;
+    int n = v.size();
+    int[] scale = new int[n];
+    for (int i = n; --i >= 0;)
+      scale[i] = ((Integer) v.elementAt(i)).intValue();
+    Viewer.setUserScale(scale);
+  }
+
+  private void setVariable(int pt, int ptMax, String key,
+                           int setType) throws ScriptException {
+
+    // from SET, we are only here if a Jmol parameter has not been identified
+    // from FOR or WHILE, no such check is made
+
+    // if both pt and ptMax are 0, then it indicates that
+
+    BitSet bs = null;
+    String propertyName = "";
+    int tokProperty = Token.nada;
+    boolean isArrayItem = (statement[0].intValue == '[');
+    boolean settingProperty = false;
+    boolean isExpression = false;
+    boolean settingData = (key.startsWith("property_"));
+    ScriptVariable t = (settingData ? null : getContextVariableAsVariable(key));
+    boolean isUserVariable = (t != null);
+
+    if (pt > 0 && tokAt(pt - 1) == Token.expressionBegin) {
+      bs = expression(pt - 1);
+      pt = iToken + 1;
+      isExpression = true;
+    }
+    if (tokAt(pt) == Token.per) {
+      settingProperty = true;
+      ScriptVariable token = getBitsetPropertySelector(++pt, true);
+      if (token == null)
+        error(ERROR_invalidArgument);
+      if (tokAt(++pt) != Token.opEQ)
+        error(ERROR_invalidArgument);
+      pt++;
+      tokProperty = token.intValue;
+      propertyName = (String) token.value;
+    }
+    if (isExpression && !settingProperty)
+      error(ERROR_invalidArgument);
+
+    // get value
+
+    Object v = parameterExpression(pt, ptMax, key, true, -1, isArrayItem, null,
+        null);
+    if (v == null)
+      return;
+    int nv = ((Vector) v).size();
+    if (nv == 0 || !isArrayItem && nv > 1 || isArrayItem && nv != 3)
+      error(ERROR_invalidArgument);
+    if (isSyntaxCheck)
+      return;
+    ScriptVariable tv = (ScriptVariable) ((Vector) v).get(isArrayItem ? 2 : 0);
+
+    // create user variable if needed for list now, so we can do the copying
+
+    boolean needVariable = (!isUserVariable && !isExpression && !settingData 
+        && (isArrayItem || settingProperty || !(tv.value instanceof String
+        || tv.tok == Token.integer || tv.value instanceof Integer 
+        || tv.value instanceof Float || tv.value instanceof Boolean)));
+
+    if (needVariable) {
+      t = viewer.getOrSetNewVariable(key, true);
+      if (t == null) { // can't set a variable _xxxx
+        error(ERROR_invalidArgument);
+      }
+      isUserVariable = true;
+    }
+
+    if (isArrayItem) {
+
+      // stack is selector [ VALUE
+
+      int index = ScriptVariable.iValue((ScriptVariable) ((Vector) v).get(0));
+      t.setSelectedValue(index, tv);
+      return;
+    }
+    if (settingProperty) {
+      if (!isExpression) {
+        if (!(t.value instanceof BitSet))
+          error(ERROR_invalidArgument);
+        bs = (BitSet) t.value;
+      }
+      if (propertyName.startsWith("property_")) {
+        viewer.setData(propertyName, new Object[] { propertyName,
+            ScriptVariable.sValue(tv), BitSetUtil.copy(bs) }, viewer.getAtomCount(), 0, 0,
+            tv.tok == Token.list ? Integer.MAX_VALUE : Integer.MIN_VALUE, 0);
+        return;
+      }
+      setBitsetProperty(bs, tokProperty, ScriptVariable.iValue(tv),
+          ScriptVariable.fValue(tv), tv);
+      return;
+    }
+
+    if (isUserVariable) {
+      t.set(tv);
+      return;
+    }
+
+    v = ScriptVariable.oValue(tv);
+
+    if (key.startsWith("property_")) {
+      int n = viewer.getAtomCount();
+      if (v instanceof String[])
+        v = TextFormat.join((String[]) v, '\n', 0);
+      viewer.setData(key,
+          new Object[] { key, "" + v, BitSetUtil.copy(viewer.getSelectionSet()) }, n, 0, 0,
+          Integer.MIN_VALUE, 0);
+      return;
+    }
+    String str;
+    if (v instanceof Boolean) {
+      setBooleanProperty(key, ((Boolean) v).booleanValue());
+    } else if (v instanceof Integer) {
+      setIntProperty(key, ((Integer) v).intValue());
+    } else if (v instanceof Float) {
+      setFloatProperty(key, ((Float) v).floatValue());
+    } else if (v instanceof String) {
+      setStringProperty(key, (String) v);
+    } else if (v instanceof BondSet) {
+      setStringProperty(key, Escape.escape((BitSet) v, false));
+    } else if (v instanceof BitSet) {
+      setStringProperty(key, Escape.escape((BitSet) v));
+    } else if (v instanceof Point3f) {
+      str = Escape.escape((Point3f) v);
+      setStringProperty(key, str);
+    } else if (v instanceof Point4f) {
+      str = Escape.escape((Point4f) v);
+      setStringProperty(key, str);
+    } else {
+      Logger.error("ERROR -- return from propertyExpression was " + v);
+    }
+  }
+
+  private void axes(int index) throws ScriptException {
+    // axes (index==1) or set axes (index==2)
+    TickInfo tickInfo = checkTicks(index);
+    index = iToken + 1;
+    int tok = tokAt(index);
+    String type = optParameterAsString(index).toLowerCase();
+    if (statementLength == index + 1
+        && Parser.isOneOf(type, "window;unitcell;molecular")) {
+      setBooleanProperty("axes" + type, true);
+      return;
+    }
+    // axes scale x.xxx
+    switch (tok) {
+    case Token.scale:
+      setFloatProperty("axesScale", floatParameter(checkLast(++index)));
+      return;
+    case Token.label:
+      switch (tok = tokAt(index + 1)) {
+      case Token.off:
+      case Token.on:
+        checkLength(index + 2);
+        setShapeProperty(JmolConstants.SHAPE_AXES, "labels"
+            + (tok == Token.on ? "On" : "Off"), null);
+        return;
+      }
+      checkLength(index + 4);
+      // axes labels "X" "Y" "Z"
+      setShapeProperty(JmolConstants.SHAPE_AXES, "labels", new String[] {
+          parameterAsString(++index), parameterAsString(++index),
+          parameterAsString(++index) });
+      return;
+    }
+    // axes position [x y %]
+    if (type.equals("position")) {
+      Point3f xyp;
+      if (tokAt(++index) == Token.off) {
+        xyp = new Point3f();
+      } else {
+        xyp = xypParameter(index);
+        if (xyp == null)
+          error(ERROR_invalidArgument);
+        index = iToken;
+      }
+      setShapeProperty(JmolConstants.SHAPE_AXES, "position", xyp);
+      return;
+    }
+    int mad = getSetAxesTypeMad(index);
+    if (isSyntaxCheck)
+      return;
+    viewer.setObjectMad(JmolConstants.SHAPE_AXES, "axes", mad);
+    if (tickInfo != null)
+      setShapeProperty(JmolConstants.SHAPE_AXES, "tickInfo", tickInfo);
+  }
+
+  private void boundbox(int index) throws ScriptException {
+    TickInfo tickInfo = checkTicks(index);
+    index = iToken + 1;
+    float scale = 1;
+    if (tokAt(index) == Token.scale) {
+      scale = floatParameter(++index);
+      if (!isSyntaxCheck && scale == 0)
+        error(ERROR_invalidArgument);
+      index++;
+      if (index == statementLength) {
+        if (!isSyntaxCheck)
+          viewer.setBoundBox(null, null, true, scale);
+        return;
+      }  
+    }
+    boolean byCorner = (tokAt(index) == Token.corners);
+    if (byCorner)
+      index++;
+    if (isCenterParameter(index)) {
+      expressionResult = null;
+      int index0 = index;
+      Point3f pt1 = centerParameter(index);
+      index = iToken + 1;
+      if (byCorner || isCenterParameter(index)) {
+        // boundbox CORNERS {expressionOrPoint1} {expressionOrPoint2}
+        // boundbox {expressionOrPoint1} {vector}
+        Point3f pt2 = (byCorner ? centerParameter(index) : getPoint3f(index,
+            true));
+        index = iToken + 1;
+        if (!isSyntaxCheck)
+          viewer.setBoundBox(pt1, pt2, byCorner, scale);
+      } else if (expressionResult != null && expressionResult instanceof BitSet) {
+        // boundbox {expression}
+        if (!isSyntaxCheck)
+          viewer.calcBoundBoxDimensions((BitSet) expressionResult, scale);
+      } else if (expressionResult == null && tokAt(index0) == Token.dollarsign) {
+          if (isSyntaxCheck)
+            return;
+          Point3f[] bbox = getObjectBoundingBox(objectNameParameter(++index0));
+          if (bbox == null)
+            error(ERROR_invalidArgument);
+          viewer.setBoundBox(bbox[0], bbox[1], true, scale);
+          index = iToken + 1;
+      } else {
+        error(ERROR_invalidArgument);
+      }
+      if (index == statementLength)
+        return;
+    }
+    int mad = getSetAxesTypeMad(index);
+    if (isSyntaxCheck)
+      return;
+    if (tickInfo != null)
+      setShapeProperty(JmolConstants.SHAPE_BBCAGE, "tickInfo", tickInfo);
+    viewer.setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", mad);
+  }
+
+  private TickInfo checkTicks(int index) throws ScriptException {
+    iToken = index - 1;
+    if (tokAt(index) != Token.ticks)
+      return null;
+    TickInfo tickInfo;
+    String str = " ";
+    if (tokAt(index + 1) == Token.identifier) {
+      str = parameterAsString(++index).toLowerCase();
+      if (!str.equals("x") && !str.equals("y") && !str.equals("z"))
+        error(ERROR_invalidArgument);
+    }
+    if (tokAt(++index) == Token.none) {
+      tickInfo = new TickInfo(null);
+      tickInfo.type = str;
+      iToken = index;
+      return tickInfo;
+    }
+    tickInfo = new TickInfo(getPoint3f(index, false));
+    tickInfo.type = str;
+    if (tokAt(iToken + 1) == Token.format)
+      tickInfo.tickLabelFormats = stringParameterSet(iToken + 2);
+    if (tokAt(iToken + 1) == Token.scale) {
+      if (isFloatParameter(iToken + 2)) {
+        float f = floatParameter(iToken + 2);
+        tickInfo.scale = new Point3f(f, f, f);
+      } else if (tokAt(iToken + 2) == Token.unitcell) {
+        tickInfo.scale = new Point3f(
+            1/viewer.getUnitCellInfo(JmolConstants.INFO_A),
+            1/viewer.getUnitCellInfo(JmolConstants.INFO_B),
+            1/viewer.getUnitCellInfo(JmolConstants.INFO_C));
+        if (Float.isNaN(tickInfo.scale.x))
+          tickInfo.scale = null;
+        iToken += 2;
+      } else {
+        tickInfo.scale = getPoint3f(iToken + 2, true);
+      }
+    }
+    if (tokAt(iToken + 1) == Token.first)
+      tickInfo.first = floatParameter(iToken + 2);
+    if (tokAt(iToken + 1) == Token.point)
+      tickInfo.reference = centerParameter(iToken + 2);
+    return tickInfo;
+  }
+
+  private void unitcell(int index) throws ScriptException {
+    int icell = Integer.MAX_VALUE;
+    int mad = Integer.MAX_VALUE;
+    Point3f pt = null;
+    TickInfo tickInfo = checkTicks(index);
+    index = iToken;
+    if (statementLength == index + 2) {
+      if (getToken(index + 1).tok == Token.integer 
+          && intParameter(index + 1) >= 111)
+        icell = intParameter(++index);
+    } else if (statementLength > index + 1) {
+      pt = (Point3f) getPointOrPlane(++index, false, true, false, true, 3, 3);
+      index = iToken;
+    }
+    mad = getSetAxesTypeMad(++index);
+    checkLast(iToken);
+    if (isSyntaxCheck)
+      return;
+    if (icell != Integer.MAX_VALUE)
+      viewer.setCurrentUnitCellOffset(icell);
+    viewer.setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitCell", mad);
+    if (pt != null)
+      viewer.setCurrentUnitCellOffset(pt);
+    if (tickInfo != null)
+      setShapeProperty(JmolConstants.SHAPE_UCCAGE, "tickInfo", tickInfo);
+  }
+
+  private void frank(int index) throws ScriptException {
+    setBooleanProperty("frank", booleanParameter(index));
+  }
+
+  private void selectionHalo(int pt) throws ScriptException {
+    boolean showHalo = false;
+    switch (pt == statementLength ? Token.on : getToken(pt).tok) {
+    case Token.on:
+    case Token.selected:
+      showHalo = true;
+    case Token.off:
+    case Token.none:
+    case Token.normal:
+      setBooleanProperty("selectionHalos", showHalo);
+      break;
+    default:
+      error(ERROR_invalidArgument);
+    }
   }
 
   private void save() throws ScriptException {
@@ -11373,7 +11377,14 @@ public class ScriptEvaluator {
     String msg = null;
     String name = null;
     int len = 2;
-    if (tokAt(1) == Token.symop && statementLength > 3) {
+    Token token = getToken(1); 
+    int tok = (token instanceof ScriptVariable ? Token.nada : token.tok);
+    if (tok == Token.string) {
+      token = Token.getTokenFromName(str);
+      if (token != null)
+        tok = token.tok;
+    }
+    if (tok == Token.symop && statementLength > 3) {
       Point3f pt1 = centerParameter(2);
       Point3f pt2 = centerParameter(++iToken);
       if (isSyntaxCheck)
@@ -11387,8 +11398,7 @@ public class ScriptEvaluator {
       showString(viewer.getAllSettings(str.substring(0, str.indexOf("?"))));
       return;
     }
-    int tok;
-    switch (tok = (getToken(1) instanceof ScriptVariable ? Token.nada : getToken(1).tok)) {
+    switch (tok) {
     case Token.nada:
       msg = Escape.escape(((ScriptVariable)theToken).value);
       break;
@@ -11464,40 +11474,32 @@ public class ScriptEvaluator {
       if (!isSyntaxCheck)
         msg = viewer.getVariableList() + getContext(true);
       break;   
-    case Token.identifier:
-      if (str.equalsIgnoreCase("historyLevel")) {
-        value = "" + commandHistoryLevelMax;
-      } else if (str.equalsIgnoreCase("defaultLattice")) {
-        value = Escape.escape(viewer.getDefaultLattice());
-      } else if (str.equalsIgnoreCase("logLevel")) {
-        value = "" + Viewer.getLogLevel();
-      } else if (str.equalsIgnoreCase("fileHeader")) {
-        if (!isSyntaxCheck)
-          msg = viewer.getPDBHeader();
-      } else if (str.equalsIgnoreCase("debugScript")) {
-        value = "" + viewer.getDebugScript();
-      } else if (str.equalsIgnoreCase("menu")) {
-        if (!isSyntaxCheck)
-          value = viewer.getMenu("");
-      } else if (str.equalsIgnoreCase("strandCount")) {
-        msg = "set strandCountForStrands "
-            + viewer.getStrandCount(JmolConstants.SHAPE_STRANDS)
-            + "; set strandCountForMeshRibbon "
-            + viewer.getStrandCount(JmolConstants.SHAPE_MESHRIBBON);
-      } else if (str.equalsIgnoreCase("trajectory")
-          || str.equalsIgnoreCase("trajectories")) {
-        if (!isSyntaxCheck)
-          msg = viewer.getTrajectoryInfo();
-      } else if (str.equalsIgnoreCase("mouse")) {
-        String qualifiers = ((len = statementLength) == 2 
-            ? null : parameterAsString(2));
-        if (!isSyntaxCheck)
-          msg = viewer.getBindingInfo(qualifiers);
-      } else if (str.equalsIgnoreCase("timeouts")) {
-        msg = viewer.showTimeout((len = statementLength) == 2 
-            ? null : parameterAsString(2));
-      }
+    case Token.trajectory:
+      if (!isSyntaxCheck)
+        msg = viewer.getTrajectoryInfo();
       break;
+    case Token.historylevel:
+      value = "" + commandHistoryLevelMax;
+      break;
+    case Token.loglevel:
+      value = "" + Viewer.getLogLevel();
+      break;
+    case Token.debugscript:
+      value = "" + viewer.getDebugScript();
+      break;
+    case Token.strandcount:
+      msg = "set strandCountForStrands "
+        + viewer.getStrandCount(JmolConstants.SHAPE_STRANDS)
+        + "; set strandCountForMeshRibbon "
+        + viewer.getStrandCount(JmolConstants.SHAPE_MESHRIBBON);
+      break;
+    case Token.timeout:
+      msg = viewer.showTimeout((len = statementLength) == 2 
+          ? null : parameterAsString(2));
+      break;
+    case Token.defaultlattice:
+      value = Escape.escape(viewer.getDefaultLattice());
+      break;      
     case Token.minimize:
       if (!isSyntaxCheck)
         msg = viewer.getMinimizationInfo();
@@ -11760,6 +11762,20 @@ public class ScriptEvaluator {
     case Token.help:
     case Token.solvent:
       value = "?";
+      break;
+    case Token.identifier:
+      if (str.equalsIgnoreCase("fileHeader")) {
+        if (!isSyntaxCheck)
+          msg = viewer.getPDBHeader();
+      } else if (str.equalsIgnoreCase("menu")) {
+        if (!isSyntaxCheck)
+          value = viewer.getMenu("");
+      } else if (str.equalsIgnoreCase("mouse")) {
+        String qualifiers = ((len = statementLength) == 2 
+            ? null : parameterAsString(2));
+        if (!isSyntaxCheck)
+          msg = viewer.getBindingInfo(qualifiers);
+      }
       break;
     }
     checkLength(len);

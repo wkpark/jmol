@@ -501,7 +501,7 @@ public class ActionManager {
 
   void setMouseMode() {
     drawMode = labelMode = false;
-    dragSelectedMode = viewer.getBooleanProperty("dragSelected");
+    dragSelectedMode = viewer.getDragSelected();
     measuresEnabled = !dragSelectedMode;
     if (!dragSelectedMode)
       switch (pickingMode) {

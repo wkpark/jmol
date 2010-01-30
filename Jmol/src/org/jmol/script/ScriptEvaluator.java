@@ -4296,7 +4296,7 @@ public class ScriptEvaluator {
       throws ScriptException {
     if (val == Integer.MAX_VALUE)
       val = intSetting(pt);
-    if (val < min || val > max)
+    if (val != Integer.MIN_VALUE && val < min || val > max)
       integerOutOfRange(min, max);
     return val;
   }
@@ -5993,7 +5993,8 @@ public class ScriptEvaluator {
       return;
     case Token.string:
       String strColor = stringParameter(1);
-      setStringProperty("propertyColorSchemeOverLoad", strColor);
+      if (!isSyntaxCheck)
+        viewer.setPropertyColorScheme(strColor, true);
       if (tokAt(2) == Token.range || tokAt(2) == Token.absolute) {
         float min = floatParameter(3);
         float max = floatParameter(4);
@@ -9541,14 +9542,33 @@ public class ScriptEvaluator {
           scaleAngstromsPerPixel));
   }
 
-  /*
-   * ****************************************************************************
-   * ============================================================== SET
-   * implementations
-   * ==============================================================
-   */
-
   private void set() throws ScriptException {
+    /*
+     * The SET command now allows only the following:
+     * 
+     *   SET 
+     *   SET xxx?
+     *   SET [valid Jmol Token.setparam keyword]
+     *   SET labelxxxx
+     *   SET xxxxCallback
+     * 
+     * All other variables must be assigned using
+     * 
+     *   x = ....
+     * 
+     * The processing goes as follows:
+     * 
+     * check for SET
+     * check for SET xx?
+     * check for SET xxxx where xxxx is a command --- deprecated
+     * (all other settings may alternatively start with x = y)
+     * check for SET xxxx where xxxx requires special checking
+     * (all other settings may alternatively start with x = (math expression)
+     * check for context variables var x = ...
+     * check for deprecated SET words such as "radius"
+     * 
+     * 
+     */
     if (statementLength == 1) {
       showString(viewer.getAllSettings(null));
       return;
@@ -9632,13 +9652,6 @@ public class ScriptEvaluator {
       font(JmolConstants.SHAPE_LABELS, checkLength23() == 2 ? 0
           : floatParameter(2));
       return;
-    case Token.formalcharge:
-      ival = intSetting(2);
-      if (ival == Integer.MIN_VALUE)
-        error(ERROR_invalidArgument);
-      if (!isSyntaxCheck)
-        viewer.setFormalCharges(ival);
-      return;
     case Token.hbond:
       setHbond();
       return;
@@ -9646,13 +9659,8 @@ public class ScriptEvaluator {
       Logger.setLogFile(stringParameter(2));
       return;
     case Token.measure:
+    case Token.measurements:
       setMonitor();
-      return;
-    case Token.navigate:
-      setNav(parameterAsString(2), (int) floatParameter(checkLast(3)));
-      return;
-    case Token.spin:
-      setSpin(parameterAsString(2), (int) floatParameter(checkLast(3)));
       return;
     case Token.ssbond: // ssBondsBackbone
       setSsbond();
@@ -9663,20 +9671,14 @@ public class ScriptEvaluator {
     case Token.togglelabel:
       setLabel("toggle");
       return;
-    case Token.trajectory:
-      Token token = tokenSetting(2); // if an expression, we are done
-      if (isSyntaxCheck)
-        return;
-      if (token.tok == Token.decimal) // if a number, we just set its
-        // trajectory
-        viewer.getModelNumberIndex(token.intValue, false, true);
-      return;
     case Token.usercolorscheme:
       setUserColors();
       return;
     }
 
-    // these next will report a value but require special checks
+    // these next may report a value
+    // require special checks
+    // math expressions are allowed in most cases.
 
     boolean justShow = true;
 
@@ -9704,10 +9706,11 @@ public class ScriptEvaluator {
       }
       break;
     case Token.defaultvdw:
+      // allows unquoted string for known vdw type
       if (statementLength > 2) {
         sval = (statementLength == 3
-            && JmolConstants.getVdwType(parameterAsString(2)) == JmolConstants.VDW_UNKNOWN ? stringSetting(
-            2, false)
+            && JmolConstants.getVdwType(parameterAsString(2)) == JmolConstants.VDW_UNKNOWN 
+            ? stringSetting(2, false)
             : parameterAsString(2));
         if (JmolConstants.getVdwType(sval) < 0)
           error(ERROR_invalidArgument);
@@ -9736,6 +9739,7 @@ public class ScriptEvaluator {
       break;
     case Token.defaults:
     case Token.defaultcolorscheme:
+      // allows unquoted "jmol" or "rasmol"
       if (statementLength > 2) {
         if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol) {
           sval = parameterAsString(checkLast(2)).toLowerCase();
@@ -9750,6 +9754,13 @@ public class ScriptEvaluator {
     case Token.dipolescale:
       setFloatProperty("dipoleScale", floatSetting(2, -10, 10));
       break;
+    case Token.formalcharge:
+      ival = intSetting(2);
+      if (ival == Integer.MIN_VALUE)
+        error(ERROR_invalidArgument);
+      if (!isSyntaxCheck)
+        viewer.setFormalCharges(ival);
+      return;
     case Token.historylevel:
       // save value locally as well
       ival = intSetting(2);
@@ -9769,6 +9780,9 @@ public class ScriptEvaluator {
       if (statementLength > 2)
         setMeasurementUnits(stringSetting(2, isJmolSet));
       break;
+    case Token.phongexponent:
+      setIntProperty(key, intSetting(2, Integer.MAX_VALUE, 0, 1000));
+      break;
     case Token.picking:
       if (statementLength > 2) {
         setPicking();
@@ -9782,11 +9796,6 @@ public class ScriptEvaluator {
       }
       break;
     case Token.property: // compiler may give different values to this token
-      key = key.toLowerCase();
-      if (!key.startsWith("property_")) {
-        setProperty();
-        return;
-      }
       // set property_xxxx will be handled in setVariable
       break;
     case Token.scriptreportinglevel:
@@ -9803,42 +9812,34 @@ public class ScriptEvaluator {
       break;
     case Token.specular:
     case Token.specularpercent:
-    case Token.specularpower:
-    case Token.specularexponent:
     case Token.ambientpercent:
     case Token.diffusepercent:
-    case Token.phongexponent:
+      ival = intSetting(2);
       if (tok == Token.specular) {
-        if (tokAt(2) != Token.integer) {
+        if (ival == Integer.MIN_VALUE || ival == 0 || ival == 1) {
           justShow = false;
           break;
         }
         tok = Token.specularpercent;
         key = "specularPercent";
       }
+      setIntProperty(key, intSetting(2, ival, 0, 100));
+      break;
+    case Token.specularpower:
+    case Token.specularexponent:
       ival = intSetting(2);
-      if (ival == Integer.MIN_VALUE)
-        break;
-      if (tok == Token.phongexponent) {
-        setIntProperty(key, intSetting(2, ival, 0, 1000));
-        break;
-      }
       if (tok == Token.specularpower) {
         if (ival >= 0) {
           justShow = false;
           break;
         }
+        tok = Token.specularexponent;
+        key = "specularExponent";
         if (ival < -10 || ival > -1)
           integerOutOfRange(-10, -1);
         ival = -ival;
-        tok = Token.specularexponent;
-        key = "specularExponent";
       }
-      if (tok == Token.specularexponent) {
-        setIntProperty(key, intSetting(2, ival, 0, 10));
-      } else {
-        setIntProperty(key, intSetting(2, ival, 0, 100));
-      }
+      setIntProperty(key, intSetting(2, ival, 0, 10));
       break;
     case Token.strands:
     case Token.strandcount:
@@ -9875,10 +9876,13 @@ public class ScriptEvaluator {
       case Token.hydrogen:
         newTok = Token.selecthydrogen;
         break;
+      case Token.measurementnumbers:
+        newTok = Token.measurementlabels;
+        break;
       case Token.radius:
-        tok = Token.solventproberadius;
-        key = "solventProbeRadius";
-        setFloatProperty(key, floatSetting(2, 0, 10));
+        newTok = Token.solventproberadius;
+        setFloatProperty("solventProbeRadius", floatSetting(2, 0, 10));
+        justShow = true;
         break;
       case Token.scale3d:
         newTok = Token.scaleangstromsperinch;
@@ -9888,6 +9892,28 @@ public class ScriptEvaluator {
         break;
       case Token.color:
         newTok = Token.defaultcolorscheme;
+        break;
+      case Token.spin:
+        sval = parameterAsString(2).toLowerCase();
+        switch ("x;y;z;fps".indexOf(sval + ";")) {
+        case 0:
+          newTok = Token.spinx;
+          break;
+        case 2:
+          newTok = Token.spiny;
+          break;
+        case 4:
+          newTok = Token.spinz;
+          break;
+        case 6:
+          newTok = Token.spinfps;
+          break;
+        default:
+          error(ERROR_unrecognizedParameter, "set SPIN ", sval);
+        }
+        if (!isSyntaxCheck)
+           viewer.setSpin(sval, (int) floatParameter(checkLast(3)));
+        justShow = true;
         break;
       }
     }
@@ -10298,6 +10324,7 @@ public class ScriptEvaluator {
     return true;
   }
 
+  /*
   private void setProperty() throws ScriptException {
     // what possible good is this?
     // set property foo bar is identical to
@@ -10326,26 +10353,7 @@ public class ScriptEvaluator {
           parameterAsString(3));
     }
   }
-
-  private void setSpin(String key, int value) throws ScriptException {
-    key = key.toLowerCase();
-    if (Parser.isOneOf(key, "x;y;z;fps")) {
-      if (!isSyntaxCheck)
-        viewer.setSpin(key, value);
-      return;
-    }
-    error(ERROR_unrecognizedParameter, "set SPIN ", parameterAsString(2));
-  }
-
-  private void setNav(String key, int value) throws ScriptException {
-    key = key.toUpperCase();
-    if (Parser.isOneOf(key, "X;Y;Z;FPS")) {
-      if (!isSyntaxCheck)
-        viewer.setSpin(key, value);
-      return;
-    }
-    error(ERROR_unrecognizedParameter, "set NAV ", parameterAsString(2));
-  }
+  */
 
   private void setSsbond() throws ScriptException {
     boolean ssbondsBackbone = false;
@@ -11691,7 +11699,7 @@ public class ScriptEvaluator {
       if (!isSyntaxCheck)
         msg = viewer.getModelInfoAsString();
       break;
-    case Token.measure:
+    case Token.measurements:
       if (!isSyntaxCheck)
         msg = viewer.getMeasurementInfoAsString();
       break;

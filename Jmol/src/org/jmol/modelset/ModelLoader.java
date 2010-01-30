@@ -1201,7 +1201,7 @@ public final class ModelLoader extends ModelSet {
     JmolAdapter adapter = viewer.getModelAdapter();
     Point3f pt = new Point3f();
     Point3f v = new Point3f();
-    float tolerance = ((Float) viewer.getParameter("loadAtomDataTolerance")).floatValue();
+    float tolerance = viewer.getLoadAtomDataTolerance();
     int i = -1;
     int n = 0;
     int imax = (tokType == Token.xyz ? BitSetUtil.length(bsSelected) : 0);

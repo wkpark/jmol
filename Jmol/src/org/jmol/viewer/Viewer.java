@@ -5025,9 +5025,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.propertycolorscheme:
       setPropertyColorScheme(value, false);
       return;
-    case Token.propertycolorschemeoverload:
-      setPropertyColorScheme(value, true);
-      return;
     case Token.hoverlabel:
       setShapeProperty(JmolConstants.SHAPE_HOVER, "atomLabel", value);
       break;
@@ -5130,6 +5127,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (Float.isNaN(value))
         return true;
       setSpin("FPS", (int) value);
+      break;
+    case Token.loadatomdatatolerance:
+      global.loadAtomDataTolerance = value;
       break;
     case Token.hbondsangleminimum:
       // 11.7.9
@@ -5338,9 +5338,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // public method -- no need to set
       return;
     case Token.specular:
-      key = "specularPercent";
-      Graphics3D.setSpecularPercent(value);
-      break;
+      setBooleanProperty(key, tok, value == 1, true);
+      return;
     case Token.specularpercent:
       Graphics3D.setSpecularPercent(value);
       break;
@@ -7957,6 +7956,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean getDragSelected() {
     return global.dragSelected;
+  }
+
+  public float getLoadAtomDataTolerance() {
+    return global.loadAtomDataTolerance;
   }
 
 }

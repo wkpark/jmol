@@ -309,7 +309,7 @@ public class Token {
 //final static int measure      see mathfunc
   final static int move         = scriptCommand | 35;
   public final static int moveto       = scriptCommand | 36;
-  final static int navigate     = scriptCommand | 37 | setparam;
+  public final static int navigate     = scriptCommand | 37;
 //final static int quaternion   see mathfunc
   final static int quit         = scriptCommand | 41 | noArgs;
   final static int ramachandran = scriptCommand | 42 | expression;
@@ -492,7 +492,7 @@ public class Token {
   // ___.xxx math properties and all atom properties 
     
   public final static int atoms     = 1 | mathproperty;
-  public final static int bonds     = 2 | mathproperty | booleanparam;
+  public final static int bonds     = 2 | mathproperty | deprecatedparam;
   final static int length           = 3 | mathproperty;
   final static int lines            = 4 | mathproperty;
   public final static int reverse   = 5 | mathproperty;
@@ -697,20 +697,21 @@ public class Token {
   
   // deprecated or handled specially in ScriptEvaluator
   
-  final static int bondmode         = deprecatedparam | 1;  
-  final static int fontsize         = deprecatedparam | 2;
-  final static int scale3d          = deprecatedparam | 4;
-  final static int togglelabel      = deprecatedparam | 5;
+  final static int bondmode           = deprecatedparam | 1;  
+  final static int fontsize           = deprecatedparam | 2;
+  final static int measurementnumbers = deprecatedparam | 3;
+  final static int scale3d            = deprecatedparam | 4;
+  final static int togglelabel        = deprecatedparam | 5;
 
   // handled specially in ScriptEvaluator
 
   public final static int backgroundmodel  = setparam | 2;
   public final static int debug            = setparam | 4;
   public final static int defaultlattice   = setparam | 6;
+  public final static int measurements     = setparam | 7;
   public final static int showscript       = setparam | 8;
   public final static int specular         = setparam | 10;
   public final static int timeout          = setparam | 12;
-  public final static int trajectory       = setparam | 14;
   public final static int usercolorscheme  = setparam | 16;
 
   // full set of all Jmol "set" parameters
@@ -744,7 +745,6 @@ public class Token {
   public final static int pickingstyle                   = strparam | 50;
   public final static int picklabel                      = strparam | 52;
   public final static int propertycolorscheme            = strparam | 54;
-  public final static int propertycolorschemeoverload    = strparam | 56;
   public final static int quaternionframe                = strparam | 58;
   public final static int unitcellcolor                  = strparam | 60;
 
@@ -758,6 +758,7 @@ public class Token {
   public final static int hbondsangleminimum             = floatparam | 16;
   public final static int hbondsdistancemaximum          = floatparam | 18;
   public final static int hoverdelay                     = floatparam | 20;
+  public final static int loadatomdatatolerance          = floatparam | 21;  
   public final static int minbonddistance                = floatparam | 22;
   public final static int navfps                         = floatparam | 24;
   public final static int navigationdepth                = floatparam | 26;
@@ -1098,12 +1099,13 @@ public class Token {
   final static int state          = misc | 182;
   final static int steps          = misc | 183;// new
   final static int stop           = misc | 184;// new
-  final static int ticks          = misc | 188; // new
-  final static int title          = misc | 189;// new
-  final static int titleformat    = misc | 190;// new
-  final static int to             = misc | 191 | expression;// new
-  final static int top            = misc | 192 | expression;
-  final static int torsion        = misc | 193;
+  final static int ticks          = misc | 185; // new
+  final static int title          = misc | 186;// new
+  final static int titleformat    = misc | 187;// new
+  final static int to             = misc | 188 | expression;// new
+  final static int top            = misc | 189 | expression;
+  final static int torsion        = misc | 190;
+  final static int trajectory     = misc | 193;
   final static int transform      = misc | 194;
   public final static int translation   = misc | 195;
   public final static int translucent   = misc | 196;
@@ -1428,8 +1430,6 @@ public class Token {
       "log",               new Token(log),
       "loop",              new Token(loop),
       "measure",           new Token(measure),
-      "measurement",       null,
-      "measurements",      null,
       "measures",          null,
       "monitor",           null,
       "monitors",          null,
@@ -1723,6 +1723,8 @@ public class Token {
       "ticks",           new Token(ticks),
       "top",             new Token(top),
       "torsion",         new Token(torsion),
+      "trajectory",      new Token(trajectory),
+      "trajectories",    null,
       "translucent",     new Token(translucent),
       "triangles",       new Token(triangles),
       "trim",            new Token(trim),
@@ -1865,13 +1867,13 @@ public class Token {
       "backgroundModel",                          new Token(backgroundmodel),
       "debug",                                    new Token(debug),
       "defaultLattice",                           new Token(defaultlattice),
+      "measurements",                             new Token(measurements),
+      "measurement",                              null,
       "scale3D",                                  new Token(scale3d),
       "toggleLabel",                              new Token(togglelabel),
       "userColorScheme",                          new Token(usercolorscheme),
       "timeout",                                  new Token(timeout),
       "timeouts",                                 null,
-      "trajectory",                               new Token(trajectory),
-      "trajectories",                             null,
       
       // string
       
@@ -1907,7 +1909,6 @@ public class Token {
       "pickingStyle",                             new Token(pickingstyle),
       "pickLabel",                                new Token(picklabel),
       "propertyColorScheme",                      new Token(propertycolorscheme),
-      "propertyColorSchemeOverload",              new Token(propertycolorschemeoverload),
       "quaternionFrame",                          new Token(quaternionframe),
       "unitCellColor",                            new Token(unitcellcolor),
 
@@ -1923,6 +1924,7 @@ public class Token {
       "hbondsAngleMinimum",                       new Token(hbondsangleminimum),
       "hbondsDistanceMaximum",                    new Token(hbondsdistancemaximum),
       "hoverDelay",                               new Token(hoverdelay),
+      "loadAtomDataTolerance",                    new Token(loadatomdatatolerance),
       "minBondDistance",                          new Token(minbonddistance),
       "navFPS",                                   new Token(navfps),
       "navigationDepth",                          new Token(navigationdepth),
@@ -1970,7 +1972,7 @@ public class Token {
       "perspectiveModel",                         new Token(perspectivemodel),
       "phongExponent",                            new Token(phongexponent),
       "pickingSpinRate",                          new Token(pickingspinrate),
-      "propertyAtomNumberField",                  new Token(propertyatomnumberfield),
+      "propertyAtomNumberField",                   new Token(propertyatomnumberfield),
       "propertyAtomNumberColumnCount",            new Token(propertyatomnumbercolumncount),
       "propertyDataColumnCount",                  new Token(propertydatacolumncount),
       "propertyDataField",                        new Token(propertydatafield),
@@ -1980,6 +1982,7 @@ public class Token {
       "specular",                                 new Token(specular),
       "specularExponent",                         new Token(specularexponent),
       "specularPercent",                          new Token(specularpercent),
+      "specPercent",                              null,
       "specularPower",                            new Token(specularpower),
       "specpower",                                null, 
       "strandCount",                              new Token(strandcount),
@@ -2049,7 +2052,7 @@ public class Token {
       "languageTranslation",                      new Token(languagetranslation),
       "measureAllModels",                         new Token(measureallmodels),
       "measurementLabels",                        new Token(measurementlabels),
-      "measurementNumbers",                       null,
+      "measurementNumbers",                       new Token(measurementnumbers),
       "messageStyleChime",                        new Token(messagestylechime),
       "navigateSurface",                          new Token(navigatesurface),
       "navigationMode",                           new Token(navigationmode),

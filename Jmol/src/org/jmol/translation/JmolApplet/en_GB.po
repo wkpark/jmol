@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-01-30 08:31+0100\n"
-"PO-Revision-Date: 2008-09-30 15:16+0000\n"
-"Last-Translator: Andrew Schofield <andrew_s@fahmon.net>\n"
+"PO-Revision-Date: 2010-01-30 08:22+0000\n"
+"Last-Translator: Andrew Schofield <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-01 15:52+0000\n"
+"X-Launchpad-Export-Date: 2010-01-31 17:56+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:97
@@ -22,9 +22,8 @@ msgid "Jmol Script Console"
 msgstr "Jmol Script Console"
 
 #: org/jmol/applet/AppletConsole.java:99
-#, fuzzy
 msgid "Editor"
-msgstr "History"
+msgstr "المُحرّر"
 
 #: org/jmol/applet/AppletConsole.java:100
 msgid "State"
@@ -32,9 +31,8 @@ msgstr "State"
 
 #: org/jmol/applet/AppletConsole.java:101
 #: org/jmol/console/ScriptEditor.java:137
-#, fuzzy
 msgid "Run"
-msgstr "Russian"
+msgstr "تنفيذ"
 
 #: org/jmol/applet/AppletConsole.java:102
 msgid "Clear Output"
@@ -120,9 +118,8 @@ msgid "  {0} seconds"
 msgstr "  {0} seconds"
 
 #: org/jmol/console/ScriptEditor.java:98
-#, fuzzy
 msgid "Jmol Script Editor"
-msgstr "Jmol Script Console"
+msgstr "المحرر النصي لـ jmol"
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/PopupResourceBundle.java:878
@@ -141,18 +138,17 @@ msgid "Script"
 msgstr "Script"
 
 #: org/jmol/console/ScriptEditor.java:134
-#, fuzzy
 msgid "Check"
-msgstr "Czech"
+msgstr "تحقق"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
-#, fuzzy
 msgid "Step"
-msgstr "Stop"
+msgstr "خطوة"
 
 #: org/jmol/console/ScriptEditor.java:138
 #: org/jmol/popup/PopupResourceBundle.java:835
@@ -166,17 +162,15 @@ msgstr "Resume"
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
-msgstr ""
+msgstr "أوقف"
 
 #: org/jmol/console/ScriptEditor.java:144
-#, fuzzy
 msgid "Clear"
-msgstr "Clear Input"
+msgstr "امسح"
 
 #: org/jmol/console/ScriptEditor.java:145
-#, fuzzy
 msgid "Close"
-msgstr "Console"
+msgstr "إغلاق"
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
@@ -360,20 +354,19 @@ msgstr "Append models"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
-msgstr ""
+msgstr "العربية"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
 msgstr "Catalan"
 
 #: org/jmol/i18n/GT.java:120
-#, fuzzy
 msgid "Simplified Chinese"
-msgstr "Side Chains"
+msgstr "صينية مبسّطة"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "صينية تقليدية"
 
 #: org/jmol/i18n/GT.java:122
 msgid "Czech"
@@ -388,14 +381,12 @@ msgid "Dutch"
 msgstr "Dutch"
 
 #: org/jmol/i18n/GT.java:125
-#, fuzzy
 msgid "British English"
-msgstr "English"
+msgstr "إنجليزية بريطانية"
 
 #: org/jmol/i18n/GT.java:126
-#, fuzzy
 msgid "American English"
-msgstr "English"
+msgstr "إنجليزية أمريكية"
 
 #: org/jmol/i18n/GT.java:127
 msgid "Estonian"
@@ -410,9 +401,8 @@ msgid "German"
 msgstr "German"
 
 #: org/jmol/i18n/GT.java:130
-#, fuzzy
 msgid "Greek"
-msgstr "Green"
+msgstr "يونانية"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Hungarian"
@@ -435,9 +425,8 @@ msgid "Polish"
 msgstr "Polish"
 
 #: org/jmol/i18n/GT.java:136
-#, fuzzy
 msgid "Brazilian Portuguese"
-msgstr "Portuguese"
+msgstr "البرتغالية البرازيلية"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Portuguese"
@@ -465,7 +454,7 @@ msgstr "Turkish"
 
 #: org/jmol/i18n/GT.java:143
 msgid "Ukrainian"
-msgstr ""
+msgstr "أوكرانية"
 
 #: org/jmol/minimize/Minimizer.java:191
 #, java-format
@@ -493,9 +482,8 @@ msgstr "No atoms loaded"
 
 #: org/jmol/popup/JmolPopup.java:465
 #: org/jmol/popup/PopupResourceBundle.java:578
-#, fuzzy
 msgid "Space Group"
-msgstr "Space group"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:527 org/jmol/popup/JmolPopup.java:567
 #: org/jmol/popup/PopupResourceBundle.java:599
@@ -516,9 +504,8 @@ msgid "Translations"
 msgstr "Translations"
 
 #: org/jmol/popup/JmolPopup.java:693
-#, fuzzy
 msgid "System"
-msgstr "Stop"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:699
 msgid "1 processor"
@@ -538,9 +525,8 @@ msgid "Java version:"
 msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:708
-#, fuzzy
 msgid "Java memory usage:"
-msgstr "Java memory usage"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:714
 #, java-format
@@ -598,9 +584,8 @@ msgid "Symmetry"
 msgstr "Symmetry"
 
 #: org/jmol/popup/PopupResourceBundle.java:579
-#, fuzzy
 msgid "Hide Symmetry"
-msgstr "Symmetry"
+msgstr "إخفاء التماثل"
 
 #: org/jmol/popup/PopupResourceBundle.java:580
 msgid "Model information"
@@ -1440,24 +1425,20 @@ msgid "Current state"
 msgstr "Current state"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
-#, fuzzy
 msgid "File"
-msgstr "File {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:892
-#, fuzzy
 msgid "Reload"
-msgstr "Reload {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:893
-#, fuzzy
 msgid "Open from PDB"
-msgstr "File from PDB"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:894
-#, fuzzy
 msgid "Open file or URL"
-msgstr "File or URL"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:895
 msgid "Load full unit cell"
@@ -1473,40 +1454,36 @@ msgid "Save a copy of {0}"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:899
-#, fuzzy
 msgid "Save script with state"
-msgstr "Script with state"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:900
-#, fuzzy
 msgid "Save script with history"
-msgstr "Script with history"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:901
 #: org/jmol/popup/PopupResourceBundle.java:902
 #: org/jmol/popup/PopupResourceBundle.java:903
 #: org/jmol/popup/PopupResourceBundle.java:904
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} image"
-msgstr "{0} Image"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:905
-#, fuzzy
 msgid "Save JVXL isosurface"
-msgstr "JVXL Isosurface"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:906
 #: org/jmol/popup/PopupResourceBundle.java:907
 #: org/jmol/popup/PopupResourceBundle.java:908
 #: org/jmol/popup/PopupResourceBundle.java:909
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} 3D model"
-msgstr "{0} 3D Model"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:911
-#, fuzzy
 msgid "Computation"
-msgstr "Configurations"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:912
 msgid "Optimize structure"
@@ -1699,9 +1676,8 @@ msgid "unrecognized token: {0}"
 msgstr "unrecognised token: {0}"
 
 #: org/jmol/script/ScriptCompiler.java:2196
-#, fuzzy
 msgid "script compiler ERROR: "
-msgstr "script ERROR: "
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2218
 #: org/jmol/script/ScriptEvaluator.java:7780
@@ -1747,9 +1723,8 @@ msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "a colour or palette name (Jmol, Rasmol) is required"
 
 #: org/jmol/script/ScriptEvaluator.java:2383
-#, fuzzy
 msgid "{x y z} or $name or (atom expression) required"
-msgstr " {x y z} or $name or (atom expression) required"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2386
 msgid "draw object not defined"
@@ -1952,28 +1927,25 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} hydrogen bonds"
 
 #: org/jmol/script/ScriptEvaluator.java:9060
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts added"
-msgstr "{0} hydrogen bonds"
+msgstr ""
 
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:53
-#, fuzzy
 msgid "rotate"
-msgstr "State"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:54
-#, fuzzy
 msgid "zoom"
-msgstr "Zoom"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:55
-#, fuzzy
 msgid "rotate Z"
-msgstr "State"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:56
 msgid ""
@@ -1981,14 +1953,12 @@ msgid ""
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:57
-#, fuzzy
 msgid "translate"
-msgstr "Translations"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:59
-#, fuzzy
 msgid "center"
-msgstr "Center"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:60
 msgid "zoom (along right edge of window)"
@@ -2082,9 +2052,8 @@ msgid "pick an atom"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:82
-#, fuzzy
 msgid "pick a DRAW point (for measurements)"
-msgstr "Click for torsion (dihedral) measurement"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format
@@ -2099,9 +2068,8 @@ msgid ""
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:86
-#, fuzzy
 msgid "pick an atom to initiate or conclude a measurement"
-msgstr "Click for distance measurement"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:87
 msgid "pick an ISOSURFACE point"
@@ -2162,15 +2130,13 @@ msgid "pick two atoms in order to spin the model around an axis"
 msgstr "pick two atoms in order to spin the model around an axis"
 
 #: org/jmol/viewer/ActionManager.java:1389
-#, fuzzy
 msgid "pick one more atom in order to display the symmetry relationship"
-msgstr "pick one more atom in order to spin the model around an axis"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:1390
-#, fuzzy
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr "pick two atoms in order to spin the model around an axis"
+msgstr ""
 
 #: org/jmol/viewer/SelectionManager.java:78
 #: org/jmol/viewer/SelectionManager.java:95
@@ -2184,9 +2150,9 @@ msgid "{0} atoms selected"
 msgstr "{0} atoms selected"
 
 #: org/jmol/viewer/Viewer.java:4086
-#, fuzzy, java-format
+#, java-format
 msgid "{0} hydrogens added"
-msgstr "{0} hydrogen bonds"
+msgstr ""
 
 #: org/jmol/viewer/Viewer.java:4126
 msgid "Drag to move label"
@@ -2196,21 +2162,11 @@ msgstr ""
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 
-#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
-#~ msgstr "ERROR: cannot set boolean flag to string value: {0}"
-
-#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-#~ msgstr "ERROR: cannot set boolean flag to numeric value: {0}"
-
-#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-#~ msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"
-
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "File creation failed."
@@ -2218,8 +2174,14 @@ msgstr ""
 #~ msgid "About Jmol"
 #~ msgstr "About Jmol"
 
-#~ msgid "Execute"
-#~ msgstr "Execute"
+#, java-format
+#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
+#~ msgstr "ERROR: cannot set boolean flag to string value: {0}"
 
-#~ msgid "Portuguese - Brazil"
-#~ msgstr "Portuguese - Brazil"
+#, java-format
+#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
+#~ msgstr "ERROR: cannot set boolean flag to numeric value: {0}"
+
+#, java-format
+#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
+#~ msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"

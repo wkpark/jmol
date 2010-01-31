@@ -8206,6 +8206,9 @@
   <fah_proj number="6023" name="p6023_Protein in POPC" public="y"
     server="171.64.65.54" atoms="76957" preferred="3" deadline="6"
     credit="475" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
+  <fah_proj number="6024" name="p6024_Protein in POPC" public="y"
+    server="171.64.65.54" atoms="76828" preferred="3" deadline="6"
+    credit="474" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
 
   <!-- Projects 6300 to 6399 -->
   <fah_proj number="6300" name="p6300_Peptide dimer in TIP3P water" public="y" file="xyz"

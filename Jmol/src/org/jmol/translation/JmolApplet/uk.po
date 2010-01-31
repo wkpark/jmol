@@ -1,30 +1,30 @@
 # Ukrainian translation for jmol
 # Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
 # This file is distributed under the same license as the jmol package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
 #
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
+# Yuri Chornoivan <yurchor@gmail.com>, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-01-30 08:31+0100\n"
-"PO-Revision-Date: 2009-05-15 20:02+0000\n"
+"PO-Revision-Date: 2010-01-31 18:57+0000\n"
 "Last-Translator: svv <skrypnychuk@gmail.com>\n"
-"Language-Team: Ukrainian <uk@li.org>\n"
+"Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-05-16 11:52+0000\n"
+"X-Launchpad-Export-Date: 2010-01-31 19:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:97
 msgid "Jmol Script Console"
-msgstr ""
+msgstr "Скриптова консоль Jmol"
 
 #: org/jmol/applet/AppletConsole.java:99
-#, fuzzy
 msgid "Editor"
-msgstr "Історія"
+msgstr "Редактор"
 
 #: org/jmol/applet/AppletConsole.java:100
 msgid "State"
@@ -32,22 +32,21 @@ msgstr "Стан"
 
 #: org/jmol/applet/AppletConsole.java:101
 #: org/jmol/console/ScriptEditor.java:137
-#, fuzzy
 msgid "Run"
-msgstr "Російська"
+msgstr "Запустити"
 
 #: org/jmol/applet/AppletConsole.java:102
 msgid "Clear Output"
-msgstr ""
+msgstr "Спорожнити поле виводу"
 
 #: org/jmol/applet/AppletConsole.java:103
 msgid "Clear Input"
-msgstr ""
+msgstr "Спорожнити поле вводу"
 
 #: org/jmol/applet/AppletConsole.java:104
 #: org/jmol/popup/PopupResourceBundle.java:881
 msgid "History"
-msgstr "Історія"
+msgstr "Журнал"
 
 #: org/jmol/applet/AppletConsole.java:105
 msgid "Load"
@@ -56,6 +55,8 @@ msgstr "Завантажити"
 #: org/jmol/applet/AppletConsole.java:143
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
+"натисніть CTRL-ENTER, щоб почати введення нового рядка, або вставте дані "
+"моделі і натисніть кнопку «Завантажити»"
 
 #: org/jmol/applet/AppletConsole.java:383
 msgid "&Help"
@@ -63,7 +64,7 @@ msgstr "&Довідка"
 
 #: org/jmol/applet/AppletConsole.java:384
 msgid "&Search..."
-msgstr "По&шук..."
+msgstr "&Знайти…"
 
 #: org/jmol/applet/AppletConsole.java:385
 msgid "&Commands"
@@ -71,15 +72,15 @@ msgstr "&Команди"
 
 #: org/jmol/applet/AppletConsole.java:386
 msgid "Math &Functions"
-msgstr ""
+msgstr "Математичні &функції"
 
 #: org/jmol/applet/AppletConsole.java:387
 msgid "Set &Parameters"
-msgstr ""
+msgstr "Вк&азати параметри"
 
 #: org/jmol/applet/AppletConsole.java:388
 msgid "&More"
-msgstr ""
+msgstr "&Додатково"
 
 #: org/jmol/applet/Jmol.java:675
 #, java-format
@@ -90,7 +91,7 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
-"Додаток Jmol, версія {0} {1}.\n"
+"Аплет Jmol, версія {0} {1}.\n"
 "\n"
 "Проект OpenScience.\n"
 "\n"
@@ -98,7 +99,7 @@ msgstr ""
 
 #: org/jmol/applet/Jmol.java:921
 msgid "File Error:"
-msgstr "Помилка файла:"
+msgstr "Помилка у файлі:"
 
 #: org/jmol/applet/Jmol.java:1199
 msgid ""
@@ -106,10 +107,13 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
+"Тут буде наведено повідомлення. Команди слід вводити у поле, розташоване "
+"нижче. Щоб отримати довідку, скористайтеся пунктом «Довідка» меню консолі: "
+"довідку буде відкрито у новому вікні переглядача інтернету."
 
 #: org/jmol/appletwrapper/AppletWrapper.java:91
 msgid "Loading Jmol applet ..."
-msgstr "Завантаження додатку Jmol..."
+msgstr "Завантаження аплету Jmol…"
 
 #: org/jmol/appletwrapper/AppletWrapper.java:165
 #, java-format
@@ -118,12 +122,12 @@ msgstr "  {0} секунд"
 
 #: org/jmol/console/ScriptEditor.java:98
 msgid "Jmol Script Editor"
-msgstr ""
+msgstr "Редактор скриптів Jmol"
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/PopupResourceBundle.java:878
 msgid "Console"
-msgstr ""
+msgstr "Консоль"
 
 #: org/jmol/console/ScriptEditor.java:132
 #: org/jmol/export/dialog/Dialog.java:430
@@ -134,43 +138,41 @@ msgstr "Відкрити"
 
 #: org/jmol/console/ScriptEditor.java:133
 msgid "Script"
-msgstr ""
+msgstr "Скрипт"
 
 #: org/jmol/console/ScriptEditor.java:134
-#, fuzzy
 msgid "Check"
-msgstr "Чеська"
+msgstr "Перевірити"
 
 #: org/jmol/console/ScriptEditor.java:135
 msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
-#, fuzzy
 msgid "Step"
-msgstr "Стан"
+msgstr "Крок"
 
 #: org/jmol/console/ScriptEditor.java:138
 #: org/jmol/popup/PopupResourceBundle.java:835
 msgid "Pause"
-msgstr ""
+msgstr "Пауза"
 
 #: org/jmol/console/ScriptEditor.java:140
 #: org/jmol/popup/PopupResourceBundle.java:836
 msgid "Resume"
-msgstr ""
+msgstr "Поновити"
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
-msgstr ""
+msgstr "Перервати"
 
 #: org/jmol/console/ScriptEditor.java:144
 msgid "Clear"
-msgstr ""
+msgstr "Спорожнити"
 
 #: org/jmol/console/ScriptEditor.java:145
 msgid "Close"
-msgstr ""
+msgstr "Закрити"
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
@@ -226,7 +228,7 @@ msgstr "Скасувати"
 
 #: org/jmol/export/dialog/Dialog.java:425
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "Закрити діалогове вікно вибору файла"
 
 #: org/jmol/export/dialog/Dialog.java:427
 #: org/jmol/export/dialog/Dialog.java:428
@@ -235,11 +237,11 @@ msgstr "Подробиці"
 
 #: org/jmol/export/dialog/Dialog.java:429
 msgid "Directory"
-msgstr ""
+msgstr "Каталог"
 
 #: org/jmol/export/dialog/Dialog.java:432
 msgid "Open selected directory"
-msgstr ""
+msgstr "Відкрити позначений каталог"
 
 #: org/jmol/export/dialog/Dialog.java:433
 msgid "Attributes"
@@ -251,11 +253,11 @@ msgstr "Змінено"
 
 #: org/jmol/export/dialog/Dialog.java:435
 msgid "Generic File"
-msgstr ""
+msgstr "Звичайний файл"
 
 #: org/jmol/export/dialog/Dialog.java:436
 msgid "Name"
-msgstr ""
+msgstr "Назва"
 
 #: org/jmol/export/dialog/Dialog.java:437
 msgid "File Name:"
@@ -267,7 +269,7 @@ msgstr "Розмір"
 
 #: org/jmol/export/dialog/Dialog.java:439
 msgid "Files of Type:"
-msgstr ""
+msgstr "Файли типу:"
 
 #: org/jmol/export/dialog/Dialog.java:440
 msgid "Type"
@@ -279,12 +281,12 @@ msgstr "Довідка"
 
 #: org/jmol/export/dialog/Dialog.java:443
 msgid "FileChooser help"
-msgstr ""
+msgstr "Довідка щодо вибору файлів"
 
 #: org/jmol/export/dialog/Dialog.java:444
 #: org/jmol/export/dialog/Dialog.java:445
 msgid "Home"
-msgstr ""
+msgstr "Домівка"
 
 #: org/jmol/export/dialog/Dialog.java:446
 #: org/jmol/export/dialog/Dialog.java:447
@@ -293,11 +295,11 @@ msgstr "Список"
 
 #: org/jmol/export/dialog/Dialog.java:448
 msgid "Look In:"
-msgstr ""
+msgstr "Шукати у:"
 
 #: org/jmol/export/dialog/Dialog.java:450
 msgid "Error creating new folder"
-msgstr ""
+msgstr "Помилка під час створення теки"
 
 #: org/jmol/export/dialog/Dialog.java:451
 msgid "New Folder"
@@ -305,11 +307,11 @@ msgstr "Нова тека"
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "Create New Folder"
-msgstr "Створити нову теку"
+msgstr "Створити теку"
 
 #: org/jmol/export/dialog/Dialog.java:456
 msgid "Open selected file"
-msgstr "Відкрити обраний файл"
+msgstr "Відкрити вибраний файл"
 
 #: org/jmol/export/dialog/Dialog.java:458
 #: org/jmol/export/dialog/Dialog.java:461
@@ -318,7 +320,7 @@ msgstr "Зберегти"
 
 #: org/jmol/export/dialog/Dialog.java:460
 msgid "Save selected file"
-msgstr "Зберегти обраний файл"
+msgstr "Зберегти вибраний файл"
 
 #: org/jmol/export/dialog/Dialog.java:462
 msgid "Save In:"
@@ -326,11 +328,11 @@ msgstr "Зберегти у:"
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "Update"
-msgstr "Оновлення"
+msgstr "Оновити"
 
 #: org/jmol/export/dialog/Dialog.java:465
 msgid "Update directory listing"
-msgstr ""
+msgstr "Оновити список каталогів"
 
 #: org/jmol/export/dialog/Dialog.java:466
 msgid "Up"
@@ -350,19 +352,19 @@ msgstr "Перегляд"
 
 #: org/jmol/export/dialog/FilePreview.java:91
 msgid "Append models"
-msgstr ""
+msgstr "Долучити моделі"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
-msgstr ""
+msgstr "Арабська"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
-msgstr "Каталонська"
+msgstr "Каталанська"
 
 #: org/jmol/i18n/GT.java:120
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "Спрощена китайська"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Traditional Chinese"
@@ -454,36 +456,36 @@ msgstr "Турецька"
 
 #: org/jmol/i18n/GT.java:143
 msgid "Ukrainian"
-msgstr ""
+msgstr "Українська"
 
 #: org/jmol/minimize/Minimizer.java:191
 #, java-format
 msgid "Could not get class for force field {0}"
-msgstr ""
+msgstr "Не вдалося визначити клас для поля сили {0}"
 
 #: org/jmol/minimize/Minimizer.java:201
 msgid "No atoms selected -- nothing to do!"
-msgstr ""
+msgstr "Не позначено жодного атома — дії не виконуватимуться!"
 
 #: org/jmol/minimize/Minimizer.java:263
 #, java-format
 msgid "{0} atoms will be minimized."
-msgstr ""
+msgstr "{0} атомів буде мінімізовано."
 
 #: org/jmol/minimize/Minimizer.java:355
 #, java-format
 msgid "could not setup force field {0}"
-msgstr ""
+msgstr "не вдалося встановити поле сили {0}"
 
 #: org/jmol/popup/JmolPopup.java:208
 #: org/jmol/popup/PopupResourceBundle.java:566
 msgid "No atoms loaded"
-msgstr ""
+msgstr "Атомів не завантажено"
 
 #: org/jmol/popup/JmolPopup.java:465
 #: org/jmol/popup/PopupResourceBundle.java:578
 msgid "Space Group"
-msgstr ""
+msgstr "Просторова група"
 
 #: org/jmol/popup/JmolPopup.java:527 org/jmol/popup/JmolPopup.java:567
 #: org/jmol/popup/PopupResourceBundle.java:599
@@ -501,12 +503,11 @@ msgstr ""
 #: org/jmol/popup/JmolPopup.java:691
 #: org/jmol/popup/PopupResourceBundle.java:972
 msgid "Translations"
-msgstr ""
+msgstr "Переклади"
 
 #: org/jmol/popup/JmolPopup.java:693
-#, fuzzy
 msgid "System"
-msgstr "Стан"
+msgstr "Система"
 
 #: org/jmol/popup/JmolPopup.java:699
 msgid "1 processor"
@@ -519,39 +520,38 @@ msgstr "{0} процесорів"
 
 #: org/jmol/popup/JmolPopup.java:702
 msgid "unknown processor count"
-msgstr ""
+msgstr "невідома кількість процесорів"
 
 #: org/jmol/popup/JmolPopup.java:704
 msgid "Java version:"
-msgstr ""
+msgstr "Версія Java:"
 
 #: org/jmol/popup/JmolPopup.java:708
-#, fuzzy
 msgid "Java memory usage:"
-msgstr "Java використання пам'яті"
+msgstr "Використання пам’яті Java:"
 
 #: org/jmol/popup/JmolPopup.java:714
 #, java-format
 msgid "{0} MB total"
-msgstr "Всього {0} МБ"
+msgstr "Всього: {0} МБ"
 
 #: org/jmol/popup/JmolPopup.java:716
 #, java-format
 msgid "{0} MB free"
-msgstr "{0} MБ вільно"
+msgstr "Вільно: {0} MБ"
 
 #: org/jmol/popup/JmolPopup.java:719
 #, java-format
 msgid "{0} MB maximum"
-msgstr "{0} MБ максимум"
+msgstr "Максимум: {0} MБ"
 
 #: org/jmol/popup/JmolPopup.java:722
 msgid "unknown maximum"
-msgstr ""
+msgstr "максимум невідомий"
 
 #: org/jmol/popup/PopupResourceBundle.java:568
 msgid "Configurations"
-msgstr ""
+msgstr "Налаштування:"
 
 #: org/jmol/popup/PopupResourceBundle.java:569
 msgid "Element"
@@ -559,7 +559,7 @@ msgstr "Елемент"
 
 #: org/jmol/popup/PopupResourceBundle.java:570
 msgid "Model/Frame"
-msgstr ""
+msgstr "Модель/Структура"
 
 #: org/jmol/popup/PopupResourceBundle.java:571
 msgid "Language"
@@ -569,11 +569,11 @@ msgstr "Мова"
 #: org/jmol/popup/PopupResourceBundle.java:573
 #: org/jmol/popup/PopupResourceBundle.java:574
 msgid "By Residue Name"
-msgstr ""
+msgstr "За назвою радикала"
 
 #: org/jmol/popup/PopupResourceBundle.java:575
 msgid "By HETATM"
-msgstr ""
+msgstr "За HETATM"
 
 #: org/jmol/popup/PopupResourceBundle.java:576
 msgid "Molecular Orbitals"
@@ -586,68 +586,67 @@ msgid "Symmetry"
 msgstr "Симетрія"
 
 #: org/jmol/popup/PopupResourceBundle.java:579
-#, fuzzy
 msgid "Hide Symmetry"
-msgstr "Симетрія"
+msgstr "Приховати симетричні"
 
 #: org/jmol/popup/PopupResourceBundle.java:580
 msgid "Model information"
-msgstr ""
+msgstr "Відомості щодо моделі"
 
 #: org/jmol/popup/PopupResourceBundle.java:581
 #, java-format
 msgid "Select ({0})"
-msgstr ""
+msgstr "Вибір ({0})"
 
 #: org/jmol/popup/PopupResourceBundle.java:582
 #, java-format
 msgid "All {0} models"
-msgstr ""
+msgstr "Всі {0} моделі"
 
 #: org/jmol/popup/PopupResourceBundle.java:583
 #, java-format
 msgid "Configurations ({0})"
-msgstr ""
+msgstr "Налаштування ({0})"
 
 #: org/jmol/popup/PopupResourceBundle.java:584
 #, java-format
 msgid "Collection of {0} models"
-msgstr ""
+msgstr "Збірка {0} моделей"
 
 #: org/jmol/popup/PopupResourceBundle.java:585
 #, java-format
 msgid "atoms: {0}"
-msgstr ""
+msgstr "атоми: {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:586
 #, java-format
 msgid "bonds: {0}"
-msgstr ""
+msgstr "зв’язкиЖ {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:587
 #, java-format
 msgid "groups: {0}"
-msgstr ""
+msgstr "групи: {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:588
 #, java-format
 msgid "chains: {0}"
-msgstr ""
+msgstr "ланцюги: {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:589
 #, java-format
 msgid "polymers: {0}"
-msgstr ""
+msgstr "полімери: {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:590
 #, java-format
 msgid "model {0}"
-msgstr ""
+msgstr "модель {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:591
 #, java-format
 msgid "View {0}"
-msgstr ""
+msgstr "Перегляд {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:592
 msgid "Main Menu"
@@ -660,69 +659,69 @@ msgstr "Біомолекули"
 #: org/jmol/popup/PopupResourceBundle.java:594
 #, java-format
 msgid "biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "біомолекула {0} ({1} атомів)"
 
 #: org/jmol/popup/PopupResourceBundle.java:595
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "завантаження біомолекули {0} ({1} атомів)"
 
 #: org/jmol/popup/PopupResourceBundle.java:600
 #: org/jmol/popup/PopupResourceBundle.java:719
 #: org/jmol/popup/PopupResourceBundle.java:728
 msgid "None"
-msgstr ""
+msgstr "Немає"
 
 #: org/jmol/popup/PopupResourceBundle.java:601
 msgid "Display Selected Only"
-msgstr ""
+msgstr "Показати лише позначені"
 
 #: org/jmol/popup/PopupResourceBundle.java:602
 msgid "Invert Selection"
-msgstr ""
+msgstr "Інвертувати вибір"
 
 #: org/jmol/popup/PopupResourceBundle.java:604
 msgid "View"
-msgstr ""
+msgstr "Перегляд"
 
 #: org/jmol/popup/PopupResourceBundle.java:605
 msgid "Front"
-msgstr ""
+msgstr "Спереду"
 
 #: org/jmol/popup/PopupResourceBundle.java:606
 msgid "Left"
-msgstr ""
+msgstr "Зліва"
 
 #: org/jmol/popup/PopupResourceBundle.java:607
 msgid "Right"
-msgstr ""
+msgstr "Справа"
 
 #: org/jmol/popup/PopupResourceBundle.java:608
 msgid "Top"
-msgstr ""
+msgstr "Згори"
 
 #: org/jmol/popup/PopupResourceBundle.java:609
 msgid "Bottom"
-msgstr ""
+msgstr "Знизу"
 
 #: org/jmol/popup/PopupResourceBundle.java:610
 msgid "Back"
-msgstr ""
+msgstr "Ззаду"
 
 #: org/jmol/popup/PopupResourceBundle.java:612
 msgid "Protein"
-msgstr ""
+msgstr "Протеїн"
 
 #: org/jmol/popup/PopupResourceBundle.java:614
 #: org/jmol/popup/PopupResourceBundle.java:625
 #: org/jmol/popup/PopupResourceBundle.java:695
 #: org/jmol/popup/PopupResourceBundle.java:787
 msgid "Backbone"
-msgstr ""
+msgstr "Основа"
 
 #: org/jmol/popup/PopupResourceBundle.java:615
 msgid "Side Chains"
-msgstr ""
+msgstr "Бічні ланцюжки"
 
 #: org/jmol/popup/PopupResourceBundle.java:616
 msgid "Polar Residues"
@@ -750,11 +749,11 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:623
 msgid "DNA"
-msgstr ""
+msgstr "ДНК"
 
 #: org/jmol/popup/PopupResourceBundle.java:624
 msgid "RNA"
-msgstr ""
+msgstr "РНК"
 
 #: org/jmol/popup/PopupResourceBundle.java:626
 msgid "Bases"
@@ -810,11 +809,11 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:643
 msgid "Style"
-msgstr ""
+msgstr "Стиль"
 
 #: org/jmol/popup/PopupResourceBundle.java:644
 msgid "Scheme"
-msgstr ""
+msgstr "Схема"
 
 #: org/jmol/popup/PopupResourceBundle.java:645
 msgid "CPK Spacefill"
@@ -822,15 +821,15 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:646
 msgid "Ball and Stick"
-msgstr ""
+msgstr "Кульки і стрижні"
 
 #: org/jmol/popup/PopupResourceBundle.java:647
 msgid "Sticks"
-msgstr ""
+msgstr "Стрижні"
 
 #: org/jmol/popup/PopupResourceBundle.java:648
 msgid "Wireframe"
-msgstr ""
+msgstr "Каркас"
 
 #: org/jmol/popup/PopupResourceBundle.java:649
 #: org/jmol/popup/PopupResourceBundle.java:696
@@ -847,7 +846,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:652
 #: org/jmol/popup/PopupResourceBundle.java:741
 msgid "Atoms"
-msgstr ""
+msgstr "Атоми"
 
 #: org/jmol/popup/PopupResourceBundle.java:653
 #: org/jmol/popup/PopupResourceBundle.java:662
@@ -860,7 +859,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:863
 #: org/jmol/popup/PopupResourceBundle.java:928
 msgid "Off"
-msgstr ""
+msgstr "Вимкнено"
 
 #: org/jmol/popup/PopupResourceBundle.java:654
 #: org/jmol/popup/PopupResourceBundle.java:655
@@ -870,12 +869,12 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:659
 #, java-format
 msgid "{0}% van der Waals"
-msgstr ""
+msgstr "{0}% Ван-дер-Ваальс"
 
 #: org/jmol/popup/PopupResourceBundle.java:661
 #: org/jmol/popup/PopupResourceBundle.java:783
 msgid "Bonds"
-msgstr ""
+msgstr "Зв’язки"
 
 #: org/jmol/popup/PopupResourceBundle.java:663
 #: org/jmol/popup/PopupResourceBundle.java:673
@@ -884,7 +883,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:708
 #: org/jmol/popup/PopupResourceBundle.java:812
 msgid "On"
-msgstr ""
+msgstr "Увімкнено"
 
 #: org/jmol/popup/PopupResourceBundle.java:664
 #: org/jmol/popup/PopupResourceBundle.java:665
@@ -910,16 +909,16 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:955
 #, java-format
 msgid "{0} Å"
-msgstr ""
+msgstr "{0} Å"
 
 #: org/jmol/popup/PopupResourceBundle.java:670
 #: org/jmol/popup/PopupResourceBundle.java:784
 msgid "Hydrogen Bonds"
-msgstr ""
+msgstr "Водневі зв’язки"
 
 #: org/jmol/popup/PopupResourceBundle.java:672
 msgid "Calculate"
-msgstr ""
+msgstr "Обчислити"
 
 #: org/jmol/popup/PopupResourceBundle.java:674
 msgid "Set H-Bonds Side Chain"
@@ -945,7 +944,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:693
 #: org/jmol/popup/PopupResourceBundle.java:786
 msgid "Structures"
-msgstr ""
+msgstr "Структури"
 
 #: org/jmol/popup/PopupResourceBundle.java:697
 msgid "Cartoon Rockets"
@@ -973,12 +972,12 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:706
 #: org/jmol/popup/PopupResourceBundle.java:796
 msgid "Vectors"
-msgstr ""
+msgstr "Вектори"
 
 #: org/jmol/popup/PopupResourceBundle.java:709
 #, java-format
 msgid "{0} pixels"
-msgstr ""
+msgstr "{0} пікселів"
 
 #: org/jmol/popup/PopupResourceBundle.java:712
 #: org/jmol/popup/PopupResourceBundle.java:713
@@ -987,11 +986,11 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:716
 #, java-format
 msgid "Scale {0}"
-msgstr ""
+msgstr "Масштаб {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:718
 msgid "Stereographic"
-msgstr ""
+msgstr "Стереографічна"
 
 #: org/jmol/popup/PopupResourceBundle.java:720
 msgid "Red+Cyan glasses"
@@ -1016,7 +1015,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:726
 #: org/jmol/popup/PopupResourceBundle.java:793
 msgid "Labels"
-msgstr ""
+msgstr "Мітки"
 
 #: org/jmol/popup/PopupResourceBundle.java:729
 msgid "With Element Symbol"
@@ -1036,31 +1035,31 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:734
 msgid "Centered"
-msgstr ""
+msgstr "По центру"
 
 #: org/jmol/popup/PopupResourceBundle.java:735
 msgid "Upper Right"
-msgstr ""
+msgstr "Вгорі праворуч"
 
 #: org/jmol/popup/PopupResourceBundle.java:736
 msgid "Lower Right"
-msgstr ""
+msgstr "Внизу праворуч"
 
 #: org/jmol/popup/PopupResourceBundle.java:737
 msgid "Upper Left"
-msgstr ""
+msgstr "Вгорі ліворуч"
 
 #: org/jmol/popup/PopupResourceBundle.java:738
 msgid "Lower Left"
-msgstr ""
+msgstr "Внизу ліворуч"
 
 #: org/jmol/popup/PopupResourceBundle.java:740
 msgid "Color"
-msgstr ""
+msgstr "Колір"
 
 #: org/jmol/popup/PopupResourceBundle.java:743
 msgid "By Scheme"
-msgstr ""
+msgstr "За схемою"
 
 #: org/jmol/popup/PopupResourceBundle.java:744
 msgid "Element (CPK)"
@@ -1068,27 +1067,27 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:745
 msgid "Alternative Location"
-msgstr ""
+msgstr "Альтернативне розташування"
 
 #: org/jmol/popup/PopupResourceBundle.java:746
 msgid "Molecule"
-msgstr ""
+msgstr "Молекула"
 
 #: org/jmol/popup/PopupResourceBundle.java:747
 msgid "Formal Charge"
-msgstr ""
+msgstr "Формальний заряд"
 
 #: org/jmol/popup/PopupResourceBundle.java:748
 msgid "Partial Charge"
-msgstr ""
+msgstr "Частковий заряд"
 
 #: org/jmol/popup/PopupResourceBundle.java:749
 msgid "Temperature (Relative)"
-msgstr ""
+msgstr "Температура (відносна)"
 
 #: org/jmol/popup/PopupResourceBundle.java:750
 msgid "Temperature (Fixed)"
-msgstr ""
+msgstr "Температура (абсолютна)"
 
 #: org/jmol/popup/PopupResourceBundle.java:752
 msgid "Amino Acid"
@@ -1096,15 +1095,15 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:753
 msgid "Secondary Structure"
-msgstr ""
+msgstr "Вторинна структура"
 
 #: org/jmol/popup/PopupResourceBundle.java:754
 msgid "Chain"
-msgstr ""
+msgstr "Ланцюжок"
 
 #: org/jmol/popup/PopupResourceBundle.java:755
 msgid "Group"
-msgstr ""
+msgstr "Група"
 
 #: org/jmol/popup/PopupResourceBundle.java:756
 msgid "Monomer"
@@ -1120,96 +1119,96 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:760
 msgid "Black"
-msgstr ""
+msgstr "Чорний"
 
 #: org/jmol/popup/PopupResourceBundle.java:761
 msgid "White"
-msgstr ""
+msgstr "Білий"
 
 #: org/jmol/popup/PopupResourceBundle.java:762
 msgid "Cyan"
-msgstr ""
+msgstr "Блакитний"
 
 #: org/jmol/popup/PopupResourceBundle.java:764
 msgid "Red"
-msgstr ""
+msgstr "Червоний"
 
 #: org/jmol/popup/PopupResourceBundle.java:765
 msgid "Orange"
-msgstr ""
+msgstr "Жовтогарячий"
 
 #: org/jmol/popup/PopupResourceBundle.java:766
 msgid "Yellow"
-msgstr ""
+msgstr "Жовтий"
 
 #: org/jmol/popup/PopupResourceBundle.java:767
 msgid "Green"
-msgstr ""
+msgstr "Зелений"
 
 #: org/jmol/popup/PopupResourceBundle.java:768
 msgid "Blue"
-msgstr ""
+msgstr "Синій"
 
 #: org/jmol/popup/PopupResourceBundle.java:769
 msgid "Indigo"
-msgstr ""
+msgstr "Індиго"
 
 #: org/jmol/popup/PopupResourceBundle.java:770
 msgid "Violet"
-msgstr ""
+msgstr "Фіалковий"
 
 #: org/jmol/popup/PopupResourceBundle.java:772
 msgid "Salmon"
-msgstr ""
+msgstr "Оранжево-рожевий"
 
 #: org/jmol/popup/PopupResourceBundle.java:773
 msgid "Olive"
-msgstr ""
+msgstr "Оливковий"
 
 #: org/jmol/popup/PopupResourceBundle.java:774
 msgid "Maroon"
-msgstr ""
+msgstr "Каштановий"
 
 #: org/jmol/popup/PopupResourceBundle.java:775
 msgid "Gray"
-msgstr ""
+msgstr "Сірий"
 
 #: org/jmol/popup/PopupResourceBundle.java:776
 msgid "Slate Blue"
-msgstr ""
+msgstr "Сизий"
 
 #: org/jmol/popup/PopupResourceBundle.java:777
 msgid "Gold"
-msgstr ""
+msgstr "Золотий"
 
 #: org/jmol/popup/PopupResourceBundle.java:778
 msgid "Orchid"
-msgstr ""
+msgstr "Синяво-рожевий"
 
 #: org/jmol/popup/PopupResourceBundle.java:780
 #: org/jmol/popup/PopupResourceBundle.java:926
 msgid "Make Opaque"
-msgstr ""
+msgstr "Зробити непрозорим"
 
 #: org/jmol/popup/PopupResourceBundle.java:781
 #: org/jmol/popup/PopupResourceBundle.java:927
 msgid "Make Translucent"
-msgstr ""
+msgstr "Зробити прозорим"
 
 #: org/jmol/popup/PopupResourceBundle.java:794
 msgid "Background"
-msgstr ""
+msgstr "Тло"
 
 #: org/jmol/popup/PopupResourceBundle.java:795
 #: org/jmol/popup/PopupResourceBundle.java:918
 msgid "Surfaces"
-msgstr ""
+msgstr "Поверхні"
 
 #: org/jmol/popup/PopupResourceBundle.java:797
 #: org/jmol/popup/PopupResourceBundle.java:937
 #: org/jmol/popup/PopupResourceBundle.java:963
 msgid "Axes"
-msgstr ""
+msgstr "Осі"
 
 #: org/jmol/popup/PopupResourceBundle.java:798
 #: org/jmol/popup/PopupResourceBundle.java:938
@@ -1226,20 +1225,20 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:801
 msgid "Zoom"
-msgstr ""
+msgstr "Масштабування"
 
 #: org/jmol/popup/PopupResourceBundle.java:808
 msgid "Zoom In"
-msgstr ""
+msgstr "Збільшити"
 
 #: org/jmol/popup/PopupResourceBundle.java:809
 msgid "Zoom Out"
-msgstr ""
+msgstr "Зменшити"
 
 #: org/jmol/popup/PopupResourceBundle.java:811
 #: org/jmol/popup/PopupResourceBundle.java:875
 msgid "Spin"
-msgstr ""
+msgstr "Обертання навколо осі"
 
 #: org/jmol/popup/PopupResourceBundle.java:815
 msgid "Set X Rate"
@@ -1256,60 +1255,60 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:818
 #: org/jmol/popup/PopupResourceBundle.java:844
 msgid "Set FPS"
-msgstr ""
+msgstr "Встановити частоту кадрів"
 
 #: org/jmol/popup/PopupResourceBundle.java:828
 msgid "Animation"
-msgstr ""
+msgstr "Анімація"
 
 #: org/jmol/popup/PopupResourceBundle.java:829
 msgid "Animation Mode"
-msgstr ""
+msgstr "Режим анімації"
 
 #: org/jmol/popup/PopupResourceBundle.java:830
 msgid "Play Once"
-msgstr ""
+msgstr "Одноразове відтворення"
 
 #: org/jmol/popup/PopupResourceBundle.java:831
 msgid "Palindrome"
-msgstr ""
+msgstr "Паліндром"
 
 #: org/jmol/popup/PopupResourceBundle.java:832
 msgid "Loop"
-msgstr ""
+msgstr "Цикл"
 
 #: org/jmol/popup/PopupResourceBundle.java:834
 msgid "Play"
-msgstr ""
+msgstr "Пуск"
 
 #: org/jmol/popup/PopupResourceBundle.java:837
 msgid "Stop"
-msgstr ""
+msgstr "Зупинити"
 
 #: org/jmol/popup/PopupResourceBundle.java:838
 msgid "Next Frame"
-msgstr ""
+msgstr "Наступний кадр"
 
 #: org/jmol/popup/PopupResourceBundle.java:839
 msgid "Previous Frame"
-msgstr ""
+msgstr "Попередній кадр"
 
 #: org/jmol/popup/PopupResourceBundle.java:840
 msgid "Rewind"
-msgstr ""
+msgstr "Повний назад"
 
 #: org/jmol/popup/PopupResourceBundle.java:841
 msgid "Reverse"
-msgstr ""
+msgstr "Реверс"
 
 #: org/jmol/popup/PopupResourceBundle.java:842
 msgid "Restart"
-msgstr ""
+msgstr "Перезапустити"
 
 #: org/jmol/popup/PopupResourceBundle.java:851
 #: org/jmol/popup/PopupResourceBundle.java:883
 msgid "Measurements"
-msgstr ""
+msgstr "Вимірювання"
 
 #: org/jmol/popup/PopupResourceBundle.java:852
 msgid "Double-Click begins and ends all measurements"
@@ -1353,39 +1352,39 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:864
 msgid "Center"
-msgstr ""
+msgstr "По центру"
 
 #: org/jmol/popup/PopupResourceBundle.java:866
 msgid "Identity"
-msgstr ""
+msgstr "Профіль"
 
 #: org/jmol/popup/PopupResourceBundle.java:867
 msgid "Label"
-msgstr ""
+msgstr "Мітка"
 
 #: org/jmol/popup/PopupResourceBundle.java:868
 msgid "Select atom"
-msgstr ""
+msgstr "Вибрати атом"
 
 #: org/jmol/popup/PopupResourceBundle.java:869
 msgid "Select chain"
-msgstr ""
+msgstr "Вибрати ланцюжок"
 
 #: org/jmol/popup/PopupResourceBundle.java:870
 msgid "Select element"
-msgstr ""
+msgstr "Вибрати елемент"
 
 #: org/jmol/popup/PopupResourceBundle.java:871
 msgid "Select group"
-msgstr ""
+msgstr "Вибрати групу"
 
 #: org/jmol/popup/PopupResourceBundle.java:872
 msgid "Select molecule"
-msgstr ""
+msgstr "Вибрати молекулу"
 
 #: org/jmol/popup/PopupResourceBundle.java:873
 msgid "Select site"
-msgstr ""
+msgstr "Вибрати місце"
 
 #: org/jmol/popup/PopupResourceBundle.java:874
 msgid "Show symmetry operation"
@@ -1393,58 +1392,55 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:877
 msgid "Show"
-msgstr ""
+msgstr "Показати"
 
 #: org/jmol/popup/PopupResourceBundle.java:879
 msgid "File Contents"
-msgstr ""
+msgstr "Вміст файла"
 
 #: org/jmol/popup/PopupResourceBundle.java:880
 msgid "File Header"
-msgstr ""
+msgstr "Заголовок файла"
 
 #: org/jmol/popup/PopupResourceBundle.java:882
 msgid "Isosurface JVXL data"
-msgstr ""
+msgstr "Дані ізоповерхні JVXL"
 
 #: org/jmol/popup/PopupResourceBundle.java:884
 msgid "Molecular orbital JVXL data"
-msgstr ""
+msgstr "Дані молекулярних орбіталей JVXL"
 
 #: org/jmol/popup/PopupResourceBundle.java:885
 msgid "Model"
-msgstr ""
+msgstr "Модель"
 
 #: org/jmol/popup/PopupResourceBundle.java:886
 msgid "Orientation"
-msgstr ""
+msgstr "Орієнтація"
 
 #: org/jmol/popup/PopupResourceBundle.java:887
 msgid "Space group"
-msgstr ""
+msgstr "Просторова група"
 
 #: org/jmol/popup/PopupResourceBundle.java:889
 msgid "Current state"
-msgstr ""
+msgstr "Поточний стан"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
-#, fuzzy
 msgid "File"
-msgstr "Усі файли"
+msgstr "Файл"
 
 #: org/jmol/popup/PopupResourceBundle.java:892
-#, fuzzy
 msgid "Reload"
-msgstr "Завантажити"
+msgstr "Перезавантажити"
 
 #: org/jmol/popup/PopupResourceBundle.java:893
 msgid "Open from PDB"
-msgstr ""
+msgstr "Відкрити з PDB"
 
 #: org/jmol/popup/PopupResourceBundle.java:894
-#, fuzzy
 msgid "Open file or URL"
-msgstr "Файл або URL:"
+msgstr "Відкрити файл або адресу URL"
 
 #: org/jmol/popup/PopupResourceBundle.java:895
 msgid "Load full unit cell"
@@ -1452,20 +1448,20 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:896
 msgid "Open script"
-msgstr ""
+msgstr "Відкрити скрипт"
 
 #: org/jmol/popup/PopupResourceBundle.java:898
 #, java-format
 msgid "Save a copy of {0}"
-msgstr ""
+msgstr "Зберегти копію {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 msgid "Save script with state"
-msgstr ""
+msgstr "Зберегти скрипт зі станом"
 
 #: org/jmol/popup/PopupResourceBundle.java:900
 msgid "Save script with history"
-msgstr ""
+msgstr "Зберегти скрипт з журналом"
 
 #: org/jmol/popup/PopupResourceBundle.java:901
 #: org/jmol/popup/PopupResourceBundle.java:902
@@ -1473,11 +1469,11 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:904
 #, java-format
 msgid "Export {0} image"
-msgstr ""
+msgstr "Експортувати зображення {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:905
 msgid "Save JVXL isosurface"
-msgstr ""
+msgstr "Зберегти ізоповерхню JVXL"
 
 #: org/jmol/popup/PopupResourceBundle.java:906
 #: org/jmol/popup/PopupResourceBundle.java:907
@@ -1485,31 +1481,31 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:909
 #, java-format
 msgid "Export {0} 3D model"
-msgstr ""
+msgstr "Експортувати просторову модель {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:911
 msgid "Computation"
-msgstr ""
+msgstr "Обчислення"
 
 #: org/jmol/popup/PopupResourceBundle.java:912
 msgid "Optimize structure"
-msgstr ""
+msgstr "Оптимізувати структуру"
 
 #: org/jmol/popup/PopupResourceBundle.java:916
 msgid "Extract MOL data"
-msgstr ""
+msgstr "Видобути дані MOL"
 
 #: org/jmol/popup/PopupResourceBundle.java:919
 msgid "Dot Surface"
-msgstr ""
+msgstr "Точкова поверхня"
 
 #: org/jmol/popup/PopupResourceBundle.java:920
 msgid "van der Waals Surface"
-msgstr ""
+msgstr "Поверхня Ван-дер-Ваальса"
 
 #: org/jmol/popup/PopupResourceBundle.java:921
 msgid "Molecular Surface"
-msgstr ""
+msgstr "Молекулярна поверхня"
 
 #: org/jmol/popup/PopupResourceBundle.java:922
 #, java-format
@@ -1523,18 +1519,18 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:925
 msgid "Molecular Electrostatic Potential"
-msgstr ""
+msgstr "Молекулярний електростатичний потенціал"
 
 #: org/jmol/popup/PopupResourceBundle.java:931
 #: org/jmol/popup/PopupResourceBundle.java:932
 #, java-format
 msgid "Reload {0}"
-msgstr ""
+msgstr "Перезавантажити {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:933
 #, java-format
 msgid "Reload {0} + Display {1}"
-msgstr ""
+msgstr "Перезавантажити {0} + показати {1}"
 
 #: org/jmol/popup/PopupResourceBundle.java:934
 msgid "Reload + Polyhedra"
@@ -1542,15 +1538,15 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:941
 msgid "Hide"
-msgstr ""
+msgstr "Приховати"
 
 #: org/jmol/popup/PopupResourceBundle.java:942
 msgid "Dotted"
-msgstr ""
+msgstr "Пунктир"
 
 #: org/jmol/popup/PopupResourceBundle.java:944
 msgid "Pixel Width"
-msgstr ""
+msgstr "Ширина у пікселях"
 
 #: org/jmol/popup/PopupResourceBundle.java:945
 #: org/jmol/popup/PopupResourceBundle.java:946
@@ -1558,11 +1554,11 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:948
 #, java-format
 msgid "{0} px"
-msgstr ""
+msgstr "{0} пк"
 
 #: org/jmol/popup/PopupResourceBundle.java:950
 msgid "Angstrom Width"
-msgstr ""
+msgstr "Ширина у ангстремах"
 
 #: org/jmol/popup/PopupResourceBundle.java:958
 msgid "Selection Halos"
@@ -1570,15 +1566,15 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:959
 msgid "Show Hydrogens"
-msgstr ""
+msgstr "Показувати атоми водню"
 
 #: org/jmol/popup/PopupResourceBundle.java:960
 msgid "Show Measurements"
-msgstr ""
+msgstr "Показувати розміри"
 
 #: org/jmol/popup/PopupResourceBundle.java:961
 msgid "Perspective Depth"
-msgstr ""
+msgstr "Глибина перспективи"
 
 #: org/jmol/popup/PopupResourceBundle.java:965
 msgid "RasMol Colors"
@@ -1586,47 +1582,47 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:966
 msgid "About..."
-msgstr ""
+msgstr "Про програму…"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1095
 #: org/jmol/script/ScriptEvaluator.java:2356
 msgid "bad argument count"
-msgstr ""
+msgstr "помилкова кількість параметрів"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1098
 #, java-format
 msgid "invalid context for {0}"
-msgstr ""
+msgstr "некоректний контекст {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1101
 #: org/jmol/script/ScriptEvaluator.java:2380
 msgid "command expected"
-msgstr ""
+msgstr "слід було використати команду"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1104
 msgid "{ number number number } expected"
-msgstr ""
+msgstr "слід було використати набір { число число число }"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1107
 #: org/jmol/script/ScriptEvaluator.java:2389
 msgid "unexpected end of script command"
-msgstr ""
+msgstr "помилкове завершення команди скрипту"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1110
 msgid "end of expression expected"
-msgstr ""
+msgstr "слід було використати команду завершення виразу"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1113
 msgid "identifier or residue specification expected"
-msgstr ""
+msgstr "слід було використати ідентифікатор або опис радикала"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1116
 msgid "invalid atom specification"
-msgstr ""
+msgstr "некоректний опис атома"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1119
 msgid "invalid chain specification"
-msgstr ""
+msgstr "некоректний опис ланцюжка"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1122
 #, java-format
@@ -1635,21 +1631,21 @@ msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1125
 msgid "invalid model specification"
-msgstr ""
+msgstr "некоректний опис моделі"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1128
 #, java-format
 msgid "missing END for {0}"
-msgstr ""
+msgstr "у {0} не вистачає команди END"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1131
 #: org/jmol/script/ScriptEvaluator.java:2453
 msgid "number expected"
-msgstr ""
+msgstr "слід було використати число"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1134
 msgid "number or variable name expected"
-msgstr ""
+msgstr "слід було використати число або назву змінної"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1137
 msgid "residue specification (ALA, AL?, A*) expected"
@@ -1658,12 +1654,12 @@ msgstr ""
 #: org/jmol/script/ScriptCompilationTokenParser.java:1140
 #, java-format
 msgid "{0} expected"
-msgstr ""
+msgstr "слід було використати {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1143
 #, java-format
 msgid "{0} unexpected"
-msgstr ""
+msgstr "не слід використовувати {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1146
 #, java-format
@@ -1674,7 +1670,7 @@ msgstr ""
 #: org/jmol/script/ScriptEvaluator.java:2502
 #, java-format
 msgid "unrecognized {0} parameter"
-msgstr ""
+msgstr "невідомий параметр {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1152
 #, java-format
@@ -1683,7 +1679,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptCompiler.java:2196
 msgid "script compiler ERROR: "
-msgstr ""
+msgstr "ПОМИЛКА обробки скрипту: "
 
 #: org/jmol/script/ScriptEvaluator.java:2218
 #: org/jmol/script/ScriptEvaluator.java:7780
@@ -1750,36 +1746,36 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2401
 msgid "file not found"
-msgstr ""
+msgstr "файл не знайдено"
 
 #: org/jmol/script/ScriptEvaluator.java:2404
 msgid "incompatible arguments"
-msgstr ""
+msgstr "несумісні параметри"
 
 #: org/jmol/script/ScriptEvaluator.java:2407
 msgid "insufficient arguments"
-msgstr ""
+msgstr "недостатня кількість параметрів"
 
 #: org/jmol/script/ScriptEvaluator.java:2410
 msgid "integer expected"
-msgstr ""
+msgstr "слід було використовувати ціле число"
 
 #: org/jmol/script/ScriptEvaluator.java:2413
 #, java-format
 msgid "integer out of range ({0} - {1})"
-msgstr ""
+msgstr "ціле число поза межами діапазону ({0}-{1})"
 
 #: org/jmol/script/ScriptEvaluator.java:2416
 msgid "invalid argument"
-msgstr ""
+msgstr "некоректний параметр"
 
 #: org/jmol/script/ScriptEvaluator.java:2419
 msgid "invalid parameter order"
-msgstr ""
+msgstr "некоректний порядок параметрів"
 
 #: org/jmol/script/ScriptEvaluator.java:2422
 msgid "keyword expected"
-msgstr ""
+msgstr "слід було використовувати ключове слово"
 
 #: org/jmol/script/ScriptEvaluator.java:2425
 msgid "no MO coefficient data available"
@@ -1809,7 +1805,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2443
 msgid "No data available"
-msgstr ""
+msgstr "Не виявлено даних"
 
 #: org/jmol/script/ScriptEvaluator.java:2447
 msgid ""
@@ -1844,7 +1840,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2469
 msgid "property name expected"
-msgstr ""
+msgstr "слід було використовувати назву властивості"
 
 #: org/jmol/script/ScriptEvaluator.java:2472
 #, java-format
@@ -1861,7 +1857,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2481
 msgid "too many rotation points were specified"
-msgstr ""
+msgstr "було вказано забагато точок обертання"
 
 #: org/jmol/script/ScriptEvaluator.java:2484
 msgid "too many script levels"
@@ -1905,28 +1901,28 @@ msgstr ""
 #: org/jmol/script/ScriptEvaluator.java:5807
 #, java-format
 msgid "{0} connections deleted"
-msgstr ""
+msgstr "вилучено {0} з’єднань"
 
 #: org/jmol/script/ScriptEvaluator.java:5827
 #, java-format
 msgid "{0} new bonds; {1} modified"
-msgstr ""
+msgstr "{0} нові зв’язки; {1} змінено"
 
 #: org/jmol/script/ScriptEvaluator.java:6977
 #, java-format
 msgid "file {0} created"
-msgstr ""
+msgstr "створено файл {0}"
 
 #: org/jmol/script/ScriptEvaluator.java:7904
 #: org/jmol/script/ScriptEvaluator.java:8143
 #, java-format
 msgid "{0} atoms deleted"
-msgstr ""
+msgstr "вилучено {0} атомів"
 
 #: org/jmol/script/ScriptEvaluator.java:8712
 #, java-format
 msgid "{0} hydrogen bonds"
-msgstr ""
+msgstr "{0} водневих зв’язки"
 
 #: org/jmol/script/ScriptEvaluator.java:9060
 #, java-format
@@ -1935,21 +1931,19 @@ msgstr ""
 
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
-msgstr ""
+msgstr "Клацніть, щоб відкрити меню…"
 
 #: org/jmol/viewer/ActionManager.java:53
-#, fuzzy
 msgid "rotate"
-msgstr "Стан"
+msgstr "обертання"
 
 #: org/jmol/viewer/ActionManager.java:54
 msgid "zoom"
-msgstr ""
+msgstr "масштаб"
 
 #: org/jmol/viewer/ActionManager.java:55
-#, fuzzy
 msgid "rotate Z"
-msgstr "Стан"
+msgstr "обертання навколо Z"
 
 #: org/jmol/viewer/ActionManager.java:56
 msgid ""
@@ -1958,11 +1952,11 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:57
 msgid "translate"
-msgstr ""
+msgstr "паралельне пересування"
 
 #: org/jmol/viewer/ActionManager.java:59
 msgid "center"
-msgstr ""
+msgstr "центр"
 
 #: org/jmol/viewer/ActionManager.java:60
 msgid "zoom (along right edge of window)"
@@ -1971,32 +1965,32 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:61
 #, java-format
 msgid "move selected atoms (requires {0})"
-msgstr ""
+msgstr "пересунути позначені атоми (потрібен {0})"
 
 #: org/jmol/viewer/ActionManager.java:62
 #, java-format
 msgid "select and drag atoms (requires {0})"
-msgstr ""
+msgstr "позначення і перетягування атомів (потрібен {0})"
 
 #: org/jmol/viewer/ActionManager.java:63
 #, java-format
 msgid "rotate selected atoms (requires {0})"
-msgstr ""
+msgstr "обертати позначені атоми (потрібен {0})"
 
 #: org/jmol/viewer/ActionManager.java:64
 #, java-format
 msgid "delete bond (requires {0})"
-msgstr ""
+msgstr "вилучити зв’язок (потрібен {0})"
 
 #: org/jmol/viewer/ActionManager.java:65
 #, java-format
 msgid "connect atoms (requires {0})"
-msgstr ""
+msgstr "з’єднати атоми (потрібен {0})"
 
 #: org/jmol/viewer/ActionManager.java:66
 #, java-format
 msgid "move label (requires {0})"
-msgstr ""
+msgstr "пересування мітки (потрібен {0})"
 
 #: org/jmol/viewer/ActionManager.java:68
 #, java-format
@@ -2040,7 +2034,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:77
 msgid "pop up the full context menu"
-msgstr ""
+msgstr "відкрити повне контекстне меню"
 
 #: org/jmol/viewer/ActionManager.java:78
 msgid "pop up recent context menu (click on Jmol frank)"
@@ -2156,11 +2150,11 @@ msgstr ""
 #: org/jmol/viewer/Viewer.java:4086
 #, java-format
 msgid "{0} hydrogens added"
-msgstr ""
+msgstr "додано {0} атомів водню"
 
 #: org/jmol/viewer/Viewer.java:4126
 msgid "Drag to move label"
-msgstr ""
+msgstr "Перетягніть, щоб пересунути мітку"
 
 #: org/jmol/viewer/Viewer.java:7303
 msgid "clipboard is not accessible -- use signed applet"
@@ -2172,5 +2166,39 @@ msgstr ""
 #~ msgid "Minimize"
 #~ msgstr "Мінімізувати"
 
-#~ msgid "Execute"
-#~ msgstr "Виконати"
+#~ msgid ""
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
+#~ msgstr ""
+#~ "Створення файлів цим аплетом заборонено. Щоб отримати JPEG у форматі "
+#~ "Base64, скористайтеся {0}."
+
+#~ msgid "Java memory usage"
+#~ msgstr "Використання пам’яті Java"
+
+#~ msgid "File from PDB"
+#~ msgstr "Файл з PDB"
+
+#~ msgid "File or URL"
+#~ msgstr "Файл або адреса URL"
+
+#~ msgid "File {0}"
+#~ msgstr "Файл {0}"
+
+#~ msgid "Script with state"
+#~ msgstr "Скрипт зі станом"
+
+#~ msgid "Script with history"
+#~ msgstr "Скрипт з журналом"
+
+#~ msgid "{0} Image"
+#~ msgstr "Зображення {0}"
+
+#~ msgid "JVXL Isosurface"
+#~ msgstr "Ізоповерхня JVXL"
+
+#~ msgid "{0} 3D Model"
+#~ msgstr "Просторова модель {0}"
+
+#~ msgid "About Jmol"
+#~ msgstr "Про Jmol"

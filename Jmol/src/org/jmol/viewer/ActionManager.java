@@ -1092,7 +1092,7 @@ public class ActionManager {
     public void run() {
       if (script == null || script.length() == 0 || ms == 0)
         return;
-      System.out.println("I am the timeout thread, and my name is " + Thread.currentThread().getName());
+      //System.out.println("I am the timeout thread, and my name is " + Thread.currentThread().getName());
       Thread.currentThread().setName("timeout " + name);
       //if (true || Logger.debugging) 
         //Logger.info(toString());
@@ -1106,12 +1106,12 @@ public class ActionManager {
           targetTime += Math.abs(ms);
           if (ms > 0)
             timeouts.remove(name);
-          System.out.println("I'm going to execute " + script + " now");
+          //System.out.println("I'm going to execute " + script + " now");
           //if (Logger.debugging)
             //viewer.script(script);
           //else 
             viewer.evalStringQuiet(script);
-          System.out.println("I'm done");
+          //System.out.println("I'm done");
           if (ms > 0)
             break;
         }

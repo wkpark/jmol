@@ -3360,11 +3360,11 @@ public class ScriptEvaluator {
         return BitSetUtil.copy(viewer.getConformation(-1, comparisonValue - 1, false));
       case Token.symop:
         propertyBitSet = atom.getAtomSymmetry();
+        int len = propertyBitSet.length();
         if (atom.getModelIndex() != iModel) {
           iModel = atom.getModelIndex();
           cellRange = modelSet.getModelCellRange(iModel);
           nOps = modelSet.getModelSymmetryCount(iModel);
-          imax = nOps;
         }
         if (bitsetBaseValue >= 200) {
           if (cellRange == null)
@@ -3424,13 +3424,11 @@ public class ScriptEvaluator {
           imin = 0;
           break;
         case Token.opGE:
-          if (imax < 0)
-            imax = propertyBitSet.length();
+          imax = len;
           imin = comparisonValue - 1;
           break;
         case Token.opGT:
-          if (imax < 0)
-            imax = propertyBitSet.length();
+          imax = len;
           imin = comparisonValue;
           break;
         case Token.opEQ:
@@ -3443,10 +3441,13 @@ public class ScriptEvaluator {
         }
         if (imin < 0)
           imin = 0;
-        if (imax > propertyBitSet.length())
-          imax = propertyBitSet.length();
-        if (propertyBitSet.get(imin, imax).length() != 0)
-          match = true;
+        if (imax > len)
+          imax = len;
+        if (imin < imax) {
+          int pt = propertyBitSet.nextSetBit(imin);
+          if (pt >= imin && pt < imax)
+            match = true;
+        }
         // note that a symop property can be both LE and GT !
         if (!match || propertyValue == Integer.MAX_VALUE)
           tokOperator = Token.none;

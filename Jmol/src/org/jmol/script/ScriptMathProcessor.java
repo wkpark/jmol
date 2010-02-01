@@ -184,16 +184,16 @@ class ScriptMathProcessor {
     putX(v);
     return wasX = true;
   }
-/*
-  boolean addXbs(BitSet bs) {
+
+  boolean addX(Point3f pt) {
     // the standard entry point for bit sets 
-    ScriptVariable v = new ScriptVariable(Token.bitset, bs);
+    ScriptVariable v = new ScriptVariable(Token.point3f, pt);
     if (v == null)
       return false;
     putX(v);
     return wasX = true;
   }
-*/
+
   boolean addXNum(ScriptVariable x) throws ScriptException {
     // corrects for x -3 being x - 3
     // only when coming from expression() or parameterExpression()

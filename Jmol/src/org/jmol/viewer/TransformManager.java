@@ -1701,7 +1701,7 @@ abstract class TransformManager {
               Thread.sleep(sleepTime);
             } catch (InterruptedException ie) {
             }
-            System.out.println("moveto thread " + Thread.currentThread().getName() + " running " + System.currentTimeMillis());
+            //System.out.println("moveto thread " + Thread.currentThread().getName() + " running " + System.currentTimeMillis());
           }
         }
       }

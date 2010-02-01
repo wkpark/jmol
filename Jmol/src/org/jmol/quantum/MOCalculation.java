@@ -171,7 +171,6 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     float volume = stepBohr[0] * stepBohr[1] * stepBohr[2] / bohr_per_angstrom
         / bohr_per_angstrom / bohr_per_angstrom;
     t = t * volume;
-    System.out.println("MOCalculation " + t);
     //processMep(nuclearCharges);
   }
 
@@ -897,8 +896,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     int b = slater.y;
     int c = slater.z;
     int d = slater.r;
-    if (Logger.debugging)
-      System.out.println("MOCALC " + slaterIndex + " atomNo=" + (atomIndex+1) + "\tx^" + a + " y^"+ b + " z^" + c + " r^" + d + "\tzeta=" + (-minuszeta) + "\tcoef=" + coef);
+    //  System.out.println("MOCALC " + slaterIndex + " atomNo=" + (atomIndex+1) + "\tx^" + a + " y^"+ b + " z^" + c + " r^" + d + "\tzeta=" + (-minuszeta) + "\tcoef=" + coef);
           //+ " minmax " + xMin + " " + xMax + " " + yMin + " " + yMax + " " + zMin + " " + zMax
     if (a == -2) /* if dz2 */
       for (int ix = xMax; --ix >= xMin;) {

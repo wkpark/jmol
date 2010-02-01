@@ -32,7 +32,6 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.TextFormat;
@@ -623,7 +622,7 @@ public void setVisibilityFlags(BitSet bs) {
     if (j < 0)
       return;
     BitSet bs = Escape.unescapeBitset(script.substring(i + 3, j + 1));
-    modelIndex = (bs == null ? -1 : BitSetUtil.firstSetBit(bs));
+    modelIndex = (bs == null ? -1 : bs.nextSetBit(0));
     iHaveModelIndex = (modelIndex >= 0);
   }
 }

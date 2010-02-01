@@ -28,6 +28,7 @@ import java.util.Vector;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.ModelSet;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.viewer.JmolConstants;
@@ -301,6 +302,8 @@ public class AlphaPolymer extends BioPolymer {
     Vector vStruts = new Vector(); // the output vector
     float thresh2 = thresh * thresh; // use distance squared for speed
 
+    //TODO  CHECK IMPLEMENT BITSETS
+    
     int n = vCA.size();
     int nEndMin = 3;
 
@@ -367,7 +370,7 @@ public class AlphaPolymer extends BioPolymer {
           int ipt = strutPoint(i, j, n);
           if (!bsNotAvailable.get(ipt) && !bsNearbyResidues.get(ipt)
               && (allowMultiple || !bsStruts.get(j)) && d2[ipt] <= thresh2)
-            setStrut(i, j, n, vCA, vStruts, bsStruts, bsNotAvailable,
+            setStrut(i, j, n, vCA, bs1, bs2, vStruts, bsStruts, bsNotAvailable,
                 bsNearbyResidues, atoms, delta);
         }
     }
@@ -429,10 +432,10 @@ public class AlphaPolymer extends BioPolymer {
           }
         }
       if (okN)
-        setStrut(iN, jN, n, vCA, vStruts, bsStruts, bsNotAvailable,
+        setStrut(iN, jN, n, vCA, bs1, bs2, vStruts, bsStruts, bsNotAvailable,
             bsNearbyResidues, atoms, delta);
       if (okC)
-        setStrut(iC, jC, n, vCA, vStruts, bsStruts, bsNotAvailable,
+        setStrut(iC, jC, n, vCA, bs1, bs2, vStruts, bsStruts, bsNotAvailable,
             bsNearbyResidues, atoms, delta);
     }
     return vStruts;
@@ -443,11 +446,14 @@ public class AlphaPolymer extends BioPolymer {
      : i * (2 * n - i - 1) / 2 + j - i - 1);
   }
 
-  private void setStrut(int i, int j, int n, Vector vCA, Vector vStruts,
+  private void setStrut(int i, int j, int n, Vector vCA, BitSet bs1, BitSet bs2, 
+                        Vector vStruts,
                         BitSet bsStruts, BitSet bsNotAvailable,
                         BitSet bsNearbyResidues, Atom[] atoms, int delta) {
     Atom a1 = (Atom) vCA.get(i);
     Atom a2 = (Atom) vCA.get(j);
+    if (!bs1.get(a1.index) || !bs2.get(a2.index))
+      return;
     vStruts.add(new Object[] { a1, a2 });
     bsStruts.set(i);
     bsStruts.set(j);

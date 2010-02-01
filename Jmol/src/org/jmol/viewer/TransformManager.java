@@ -35,6 +35,7 @@ import javax.vecmath.AxisAngle4f;
 import org.jmol.g3d.Text3D;
 import org.jmol.script.Token;
 import org.jmol.util.Escape;
+
 import org.jmol.util.Quaternion;
 
 import java.util.BitSet;

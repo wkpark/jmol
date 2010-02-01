@@ -94,9 +94,10 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   protected void outputIndices(int[][] indices, int[] map, int nPolygons,
                                        BitSet bsFaces, int faceVertexMax) {
-    for (int i = nPolygons; --i >= 0;)
-      if (bsFaces == null || bsFaces.get(i))
-        outputFace(indices[i], map, faceVertexMax);
+    boolean isAll = (bsFaces == null);
+    int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) 
+      outputFace(indices[i], map, faceVertexMax);
   }
 
   // these are elaborated in IDTF, MAYA, VRML, or X3D:

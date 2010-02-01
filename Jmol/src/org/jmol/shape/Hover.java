@@ -91,11 +91,10 @@ public class Hover extends TextShape {
       if (text != null && text.length() == 0)
         text = null;
       int count = viewer.getAtomCount();
-      if (atomFormats == null)
+      if (atomFormats == null || atomFormats.length < count)
         atomFormats = new String[count];
-      for (int i = count; --i >= 0;)
-        if (bsSelected.get(i))
-          atomFormats[i] = text;
+      for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected.nextSetBit(i + 1))
+        atomFormats[i] = text;
       return;
     }
 

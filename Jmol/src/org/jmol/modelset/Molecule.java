@@ -25,8 +25,10 @@
 
 package org.jmol.modelset;
 
+
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
+
 import java.util.BitSet;
 import java.util.Hashtable;
 
@@ -63,23 +65,22 @@ public class Molecule {
   }
 
   void getElementAndAtomCount(BitSet atomList) {
-    for (int i = 0; i < modelSet.atomCount; i++)
-      if (atomList.get(i)) {
-        nAtoms++;
-        int n = modelSet.atoms[i].getAtomicAndIsotopeNumber();
-        if (n < JmolConstants.elementNumberMax) {
-          elementCounts[n]++;
-          if (elementCounts[n] == 1)
-            nElements++;
-          elementNumberMax = Math.max(elementNumberMax, n);
-        } else {
-          n = JmolConstants.altElementIndexFromNumber(n);
-          altElementCounts[n]++;
-          if (altElementCounts[n] == 1)
-            nElements++;
-          altElementMax = Math.max(altElementMax, n);
-        }
+    for (int i = atomList.nextSetBit(0); i >= 0; i = atomList.nextSetBit(i + 1)) {
+      nAtoms++;
+      int n = modelSet.atoms[i].getAtomicAndIsotopeNumber();
+      if (n < JmolConstants.elementNumberMax) {
+        elementCounts[n]++;
+        if (elementCounts[n] == 1)
+          nElements++;
+        elementNumberMax = Math.max(elementNumberMax, n);
+      } else {
+        n = JmolConstants.altElementIndexFromNumber(n);
+        altElementCounts[n]++;
+        if (altElementCounts[n] == 1)
+          nElements++;
+        altElementMax = Math.max(altElementMax, n);
       }
+    }
   }
 
   String getMolecularFormula() {

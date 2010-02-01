@@ -261,8 +261,8 @@ public class Token {
   public final static int hover = 3 | implicitStringCommand | defaultON;
 //final static int javascript   see mathfunc
 //final static int label        see mathfunc
-  final static int message      = 4 | implicitStringCommand;
-  public final static int pause = 5 | implicitStringCommand;
+  final static int message      = 5 | implicitStringCommand;
+  public final static int pause = 6 | implicitStringCommand;
 
   //these commands control flow
   //sorry about GOTO!
@@ -348,6 +348,7 @@ public class Token {
   public final static int frank        = shapeCommand | 21 | deprecatedparam | defaultON;
   public final static int isosurface   = shapeCommand | 29;
   public final static int lcaocartoon  = shapeCommand | 30;
+  public final static int measurements = shapeCommand | 31 | setparam;
   public final static int mo           = shapeCommand | 33 | expression;
   public final static int pmesh        = shapeCommand | 38;
   public final static int plot3d       = shapeCommand | 39;
@@ -708,7 +709,6 @@ public class Token {
   public final static int backgroundmodel  = setparam | 2;
   public final static int debug            = setparam | 4;
   public final static int defaultlattice   = setparam | 6;
-  public final static int measurements     = setparam | 7;
   public final static int showscript       = setparam | 8;
   public final static int specular         = setparam | 10;
   public final static int timeout          = setparam | 12;

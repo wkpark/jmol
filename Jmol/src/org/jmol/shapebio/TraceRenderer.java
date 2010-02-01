@@ -29,9 +29,8 @@ public class TraceRenderer extends BioShapeRenderer {
 
   protected void renderBioShape(BioShape bioShape) {
     calcScreenControlPoints();
-    for (int i = monomerCount; --i >= 0;)
-      if (bsVisible.get(i))
-        renderHermiteConic(i, false);
+    for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible.nextSetBit(i + 1))
+      renderHermiteConic(i, false);
   }
 
 }

@@ -407,15 +407,13 @@ public class JvxlCoder {
       return;
     StringBuffer fData = (StringBuffer) v.get(CONTOUR_FDATA);
     BitSet bs = (BitSet) v.get(CONTOUR_BITSET);
-    int nPolygons = ((Integer)v.get(CONTOUR_NPOLYGONS)).intValue();
+    //int nPolygons = ((Integer)v.get(CONTOUR_NPOLYGONS)).intValue();
     int pt = 0;
     int nBuf = fData.length();
     int type = 0;
     char c1 = ' ';
     char c2 = ' ';
-    for (int i = 0; i < nPolygons; i++) {
-      if (!bs.get(i))
-        continue;
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       int[] vertexIndexes = polygonIndexes[i];
       while (pt < nBuf && !Character.isDigit(c1 = fData.charAt(pt++))) {
         // skip non-digit data
@@ -878,7 +876,7 @@ public class JvxlCoder {
     int n = 0;
     boolean isset = false;
     if (nPoints < 0)
-      nPoints = bs.size();
+      nPoints = bs.length();
     if (nPoints == 0)
       return 0;
     sb.append("-");

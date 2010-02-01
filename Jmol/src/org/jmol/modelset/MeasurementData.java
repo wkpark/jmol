@@ -27,7 +27,6 @@ import java.util.BitSet;
 import java.util.Vector;
 
 import org.jmol.api.JmolMeasurementClient;
-import org.jmol.util.BitSetUtil;
 import org.jmol.util.Point3fi;
 import org.jmol.viewer.Viewer;
 
@@ -43,7 +42,6 @@ public class MeasurementData implements JmolMeasurementClient {
   private Vector measurementStrings;
 
   private Atom[] atoms;
-  private int atomCount;
   public boolean mustBeConnected;
   public boolean mustNotBeConnected;
   public TickInfo tickInfo;
@@ -117,7 +115,6 @@ public class MeasurementData implements JmolMeasurementClient {
   public void define(JmolMeasurementClient client, ModelSet modelSet) {
     this.client = (client == null ? this : client);
     atoms = modelSet.getAtoms();
-    atomCount = modelSet.getAtomCount();
     /*
      * sets up measures based on an array of atom selection expressions -RMH 3/06
      * 
@@ -141,13 +138,13 @@ public class MeasurementData implements JmolMeasurementClient {
       Object obj = points.get(i);
       if (obj instanceof BitSet) {
         BitSet bs = (BitSet) obj;
-        int nAtoms = BitSetUtil.cardinalityOf(bs); 
+        int nAtoms = bs.cardinality(); 
         if (nAtoms == 0)
           return;
         if (nAtoms > 1)
           modelIndex = 0;
         ptLastAtom = i;
-        indices[i + 1] = BitSetUtil.firstSetBit(bs);
+        indices[i + 1] = bs.nextSetBit(0);
       } else {
         if (pts == null)
           pts = new Point3fi[4];
@@ -182,8 +179,8 @@ public class MeasurementData implements JmolMeasurementClient {
       return;
     }
     boolean haveNext = false;
-    for (int i = 0; i < atomCount; i++) {
-      if (!bs.get(i) || i == thisAtomIndex)
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      if (i == thisAtomIndex)
         continue;
       int modelIndex = atoms[i].getModelIndex();
       if (thisModel >= 0) {

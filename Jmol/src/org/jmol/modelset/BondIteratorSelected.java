@@ -58,18 +58,18 @@ class BondIteratorSelected implements BondIterator {
   }
 
   public boolean hasNext() {
+    if (isBondBitSet) {
+      iBond = bsSelected.nextSetBit(iBond);
+      return (iBond >= 0);
+    }
     for (; iBond < bondCount; ++iBond) {
       Bond bond = bonds[iBond];
-      if (isBondBitSet) {
-        if (bsSelected.get(iBond))
-          return true;
-        continue;
-      } else if (bondType != JmolConstants.BOND_ORDER_ANY
+      if (bondType != JmolConstants.BOND_ORDER_ANY
           && (bond.order & bondType) == 0) {
         continue;
       } else if (bondType == JmolConstants.BOND_ORDER_ANY
           && (bond.order & JmolConstants.BOND_STRUT) != 0)
-          continue;
+        continue;
       boolean isSelected1 = bsSelected.get(bond.atom1.index);
       boolean isSelected2 = bsSelected.get(bond.atom2.index);
       if ((!bondSelectionModeOr && isSelected1 && isSelected2)

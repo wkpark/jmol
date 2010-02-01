@@ -840,15 +840,9 @@ public abstract class SurfaceReader implements VertexDataServer {
     meshData.getSurfaceSet();
     BitSet bs;
     for (int i = meshData.nSets; --i >= 0;)
-      if ((bs = meshData.surfaceSet[i]) != null) {
-        int n = 0;
-        for (int j = bs.size(); --j >= 0;)
-          // cardinality
-          if (bs.get(j))
-            n++;
-        if (n < params.minSet)
-          meshData.invalidateSurfaceSet(i);
-      }
+      if ((bs = meshData.surfaceSet[i]) != null 
+          && bs.cardinality() < params.minSet)
+        meshData.invalidateSurfaceSet(i);
     updateSurfaceData();
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
@@ -860,15 +854,9 @@ public abstract class SurfaceReader implements VertexDataServer {
     meshData.getSurfaceSet();
     BitSet bs;
     for (int i = meshData.nSets; --i >= 0;)
-      if ((bs = meshData.surfaceSet[i]) != null) {
-        int n = 0;
-        for (int j = bs.size(); --j >= 0;)
-          // cardinality
-          if (bs.get(j))
-            n++;
-        if (n > params.maxSet)
-          meshData.invalidateSurfaceSet(i);
-      }
+      if ((bs = meshData.surfaceSet[i]) != null 
+          && bs.cardinality() > params.maxSet)
+        meshData.invalidateSurfaceSet(i);
     updateSurfaceData();
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);

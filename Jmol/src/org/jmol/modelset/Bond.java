@@ -29,6 +29,7 @@ import org.jmol.g3d.Graphics3D;
 
 import java.util.BitSet;
 
+import org.jmol.util.BitSetUtil;
 import org.jmol.viewer.JmolConstants;
 
 public class Bond {
@@ -41,9 +42,7 @@ public class Bond {
     }
 
     public BondSet(BitSet bs) {
-      for (int i = bs.size(); --i >= 0;)
-        if (bs.get(i))
-          set(i);
+      BitSetUtil.copy(bs, this);
     }
 
     public BondSet(BitSet bs, int[] atoms) {

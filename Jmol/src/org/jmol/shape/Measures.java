@@ -260,7 +260,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     for (int i = vector.size(); --i >= 0; ) {
       Object value = vector.get(i);
       if (value instanceof BitSet) {
-        int atomIndex = BitSetUtil.firstSetBit((BitSet) value);
+        int atomIndex = ((BitSet) value).nextSetBit(0);
         if (atomIndex < 0)
           return null;
         indices[i + 1] = atomIndex;

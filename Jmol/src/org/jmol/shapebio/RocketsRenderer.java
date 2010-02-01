@@ -98,16 +98,16 @@ public class RocketsRenderer extends BioShapeRenderer {
 
   protected void render1() {
     tPending = false;
-    for (int i = 0; i < monomerCount; ++i)
-      if (bsVisible.get(i)) {
-        Monomer monomer = monomers[i];
-        if (isHelix(i) || isSheet(i)) {
-          renderSpecialSegment(monomer, getLeadColix(i), mads[i]);
-        } else {
-          renderPending();
-          renderHermiteConic(i, true);
-        }
+    for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
+        .nextSetBit(i + 1)) {
+      Monomer monomer = monomers[i];
+      if (isHelix(i) || isSheet(i)) {
+        renderSpecialSegment(monomer, getLeadColix(i), mads[i]);
+      } else {
+        renderPending();
+        renderHermiteConic(i, true);
       }
+    }
     renderPending();
   }
 

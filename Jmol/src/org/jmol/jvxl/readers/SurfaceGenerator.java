@@ -402,6 +402,16 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("select" == propertyName) {
+      params.bsSelected = (BitSet) value;
+      return true;
+    }
+
+    if ("ignore" == propertyName) {
+      params.bsIgnore = (BitSet) value;
+      return true;
+    }
+
     if ("propertySmoothing" == propertyName) {
       params.propertySmoothing = ((Boolean) value).booleanValue();
       return true;
@@ -440,16 +450,6 @@ public class SurfaceGenerator {
 
     if ("slabbingPlane" == propertyName) {
       params.slabbingPlane = (Point4f) value;
-      return true;
-    }
-
-    if ("select" == propertyName) {
-      params.bsSelected = (BitSet) value;
-      return true;
-    }
-
-    if ("ignore" == propertyName) {
-      params.bsIgnore = (BitSet) value;
       return true;
     }
 

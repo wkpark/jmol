@@ -27,6 +27,7 @@ package org.jmol.geodesic;
 import org.jmol.modelset.AtomIndexIterator;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
@@ -177,7 +178,7 @@ public final class EnvelopeCalculation {
   private BitSet bsSurface;
   
   public BitSet getBsSurfaceClone() {
-    return (bsSurface == null ? null : BitSetUtil.copy(bsSurface));
+    return BitSetUtil.copy(bsSurface);
   }
   
   private boolean disregardNeighbors = false;
@@ -213,36 +214,49 @@ public final class EnvelopeCalculation {
     mads = null;
   }
   
-  public void calculate(RadiusData rd, float maxRadius, 
-                        BitSet bsSelected, BitSet bsIgnore,
-                 boolean disregardNeighbors, boolean onlySelectedDots,
-                 boolean isSurface, boolean multiModel) {
-    // was:     this.setRadius = (setRadius == Float.MAX_VALUE && !useVanderwaalsRadius ? SURFACE_DISTANCE_FOR_CALCULATION    : setRadius);
+  /**
+   * @param rd
+   * @param maxRadius
+   * @param bsSelected
+   * @param bsIgnore
+   * @param disregardNeighbors
+   * @param onlySelectedDots
+   * @param isSurface
+   * @param multiModel
+   */
+  public void calculate(RadiusData rd, float maxRadius, BitSet bsSelected,
+                        BitSet bsIgnore, boolean disregardNeighbors,
+                        boolean onlySelectedDots, boolean isSurface,
+                        boolean multiModel) {
+    // was: this.setRadius = (setRadius == Float.MAX_VALUE &&
+    // !useVanderwaalsRadius ? SURFACE_DISTANCE_FOR_CALCULATION : setRadius);
 
     atomData.radiusData = rd;
     if (rd.value == Float.MAX_VALUE)
       rd.value = SURFACE_DISTANCE_FOR_CALCULATION;
     atomData.modelIndex = (multiModel ? -1 : 0);
     modelZeroBased = !multiModel;
-    
-    viewer.fillAtomData(atomData, mads == null 
-        ? AtomData.MODE_FILL_COORDS_AND_RADII
-        : AtomData.MODE_FILL_COORDS);
+
+    viewer.fillAtomData(atomData,
+        mads == null ? AtomData.MODE_FILL_COORDS_AND_RADII
+            : AtomData.MODE_FILL_COORDS);
     atomCount = atomData.atomCount;
     if (mads != null)
       for (int i = 0; i < atomCount; i++)
         atomData.atomRadius[i] = mads[i] / 1000f;
 
-    bsMySelected = (onlySelectedDots && bsSelected != null ? BitSetUtil.copy(bsSelected)
-        : bsIgnore != null ? BitSetUtil.setAll(atomCount) : null);
+    bsMySelected = (onlySelectedDots && bsSelected != null ? BitSetUtil
+        .copy(bsSelected) : bsIgnore != null ? BitSetUtil.setAll(atomCount)
+        : null);
     BitSetUtil.andNot(bsMySelected, bsIgnore);
     this.disregardNeighbors = disregardNeighbors;
     bsSurface = new BitSet();
     this.maxRadius = maxRadius;
     // now, calculate surface for selected atoms
-    for (int i = atomCount; --i >= 0;)
-      if ((bsSelected == null || bsSelected.get(i))
-          && (bsIgnore == null || !bsIgnore.get(i))) {
+    boolean isAll = (bsSelected == null);
+    int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1)))
+      if (bsIgnore == null || !bsIgnore.get(i)) {
         setAtomI(i);
         getNeighbors();
         calcConvexMap(isSurface);

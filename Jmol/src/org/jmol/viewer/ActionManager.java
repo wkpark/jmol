@@ -36,7 +36,6 @@ import org.jmol.i18n.GT;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.Token;
-import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
@@ -628,7 +627,7 @@ public class ActionManager {
     boolean isRbAction = isRubberBandSelect(action);
     if (isRbAction) {
       BitSet bs = viewer.findAtomsInRectangle(rectRubber);
-      if (BitSetUtil.firstSetBit(bs) >= 0) {
+      if (bs.length() > 0) {
         String s = Escape.escape(bs);
         if (isBound(action, ACTION_selectOr))
           viewer.script("select selected or " + s);

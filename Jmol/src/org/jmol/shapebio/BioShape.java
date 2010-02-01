@@ -287,7 +287,7 @@ class BioShape {
   }
 
   void setShapeState(Hashtable temp, Hashtable temp2) {
-    if (!isActive)
+    if (!isActive || bsSizeSet == null && bsColixSet == null)
       return;
     String type = JmolConstants.shapeClassBases[shape.shapeID];
     for (int i = 0; i < monomerCount; i++) {

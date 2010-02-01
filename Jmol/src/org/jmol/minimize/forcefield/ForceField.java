@@ -308,7 +308,7 @@ abstract public class ForceField {
     return calc.energyES(gradients);
   }
   
-  // linearSearch 
+  // linearSearch
   //
   // atom: coordinates of atom at iteration k (x_k)
   // direction: search direction ( d = -grad(x_0) )
@@ -316,19 +316,19 @@ abstract public class ForceField {
   // ALGORITHM:
   // 
   // step = 1
-  // for (i = 1 to 100) {                max steps = 100
-  //   e_k = energy(x_k)                 energy of current iteration
-  //   x_k = x_k + step * d              update coordinates
-  //   e_k+1 = energy(x_k+1)             energy of next iteration
+  // for (i = 1 to 100) { max steps = 100
+  // e_k = energy(x_k) energy of current iteration
+  // x_k = x_k + step * d update coordinates
+  // e_k+1 = energy(x_k+1) energy of next iteration
   //   
-  //   if (e_k+1 < e_k)
-  //     step = step * 1.2               increase step size
-  //   if (e_k+1 > e_k) {
-  //     x_k = x_k - step * d            reset coordinates to previous iteration
-  //     step = step * 0.5               reduce step size
-  //   }
-  //   if (e_k+1 == e_k)
-  //     end                             convergence criteria reached, stop
+  // if (e_k+1 < e_k)
+  // step = step * 1.2 increase step size
+  // if (e_k+1 > e_k) {
+  // x_k = x_k - step * d reset coordinates to previous iteration
+  // step = step * 0.5 reduce step size
+  // }
+  // if (e_k+1 == e_k)
+  // end convergence criteria reached, stop
   // }
 
   private void linearSearch() {
@@ -342,49 +342,48 @@ abstract public class ForceField {
 
     for (int iStep = 0; iStep < 10; iStep++) {
       saveCoordinates();
-      for (int i = 0; i < atomCount; ++i) 
+      for (int i = 0; i < atomCount; ++i)
         if (bsFixed == null || !bsFixed.get(i)) {
-        double[] force = atoms[i].force;
-        double[] coord = atoms[i].coord;
-        double f2 = (force[0] * force[0] + force[1] * force[1] + force[2] * force[2]);
-        if (f2 > trustRadius2 / step / step) {
-          f2 = trustRadius / Math.sqrt(f2) / step;
-          //if (i == 2)
-            //System.out.println("atom 3: force/coord " + force[0] + " " + force[1] + " " + force[2] + "/" + coord[0] + " " + coord[1] + " " + coord[2] + " " + f2);
-          force[0] *= f2;
-          force[1] *= f2;
-          force[2] *= f2;
-        }
-/*        if (i == 2)
-         f.println("#atom 3; draw " +
-                "{" + coord[0] + " " + coord[1] + " " + coord[2] + "} " +
-                  "{" 
-                + (coord[0] + force[0]) + " " 
-                + (coord[1] + force[1]) + " " 
-                + (coord[2] + force[2])
-                +"}"
-          );
-*/        for (int j = 0; j < 3; ++j) {
-          if (Util.isFinite(force[j])) {
-            double tempStep = force[j] * step;
-            if (tempStep > trustRadius)
-              coord[j] += trustRadius;
-            else if (tempStep < -trustRadius)
-              coord[j] -= trustRadius;
-            else
-              coord[j] += tempStep;
+          double[] force = atoms[i].force;
+          double[] coord = atoms[i].coord;
+          double f2 = (force[0] * force[0] + force[1] * force[1] + force[2]
+              * force[2]);
+          if (f2 > trustRadius2 / step / step) {
+            f2 = trustRadius / Math.sqrt(f2) / step;
+            // if (i == 2)
+            // System.out.println("atom 3: force/coord " + force[0] + " " +
+            // force[1] + " " + force[2] + "/" + coord[0] + " " + coord[1] + " "
+            // + coord[2] + " " + f2);
+            force[0] *= f2;
+            force[1] *= f2;
+            force[2] *= f2;
+          }
+          /*
+           * if (i == 2) f.println("#atom 3; draw " + "{" + coord[0] + " " +
+           * coord[1] + " " + coord[2] + "} " + "{" + (coord[0] + force[0]) +
+           * " " + (coord[1] + force[1]) + " " + (coord[2] + force[2]) +"}" );
+           */for (int j = 0; j < 3; ++j) {
+            if (Util.isFinite(force[j])) {
+              double tempStep = force[j] * step;
+              if (tempStep > trustRadius)
+                coord[j] += trustRadius;
+              else if (tempStep < -trustRadius)
+                coord[j] -= trustRadius;
+              else
+                coord[j] += tempStep;
+            }
           }
         }
-      }
 
       double e2 = energyFull(false, true);
 
-      //System.out.println("step is " + step + " " + (e2 <  e1) + " " + e1  + " " + e2);
+      // System.out.println("step is " + step + " " + (e2 < e1) + " " + e1 + " "
+      // + e2);
       if (Util.isNear(e2, e1, 1.0e-3))
         break;
       if (e2 > e1) {
         step *= 0.1;
-         restoreCoordinates();
+        restoreCoordinates();
       } else if (e2 < e1) {
         e1 = e2;
         alpha += step;
@@ -393,7 +392,7 @@ abstract public class ForceField {
           step = 1.0;
       }
     }
-    //System.out.println("alpha = " + alpha);
+    // System.out.println("alpha = " + alpha);
   }
 
   private void saveCoordinates() {

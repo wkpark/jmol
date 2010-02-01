@@ -28,8 +28,8 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.Polymer;
-import org.jmol.util.BitSetUtil; //import org.jmol.util.Escape;
 import org.jmol.util.Escape;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
@@ -363,7 +363,7 @@ public abstract class BioPolymer extends Polymer {
     selectedMonomerCount = 0;
     if (bsSelectedMonomers == null)
       bsSelectedMonomers = new BitSet();
-    BitSetUtil.clear(bsSelectedMonomers);
+    bsSelectedMonomers.clear();
     for (int i = 0; i < monomerCount; i++) {
       if (monomers[i].isSelected(bsSelected)) {
         ++selectedMonomerCount;

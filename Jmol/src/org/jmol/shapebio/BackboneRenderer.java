@@ -31,9 +31,7 @@ import org.jmol.modelset.Atom;
 public class BackboneRenderer extends BioShapeRenderer {
 
   protected void renderBioShape(BioShape bioShape) {
-    for (int i = monomerCount - 1; --i >= 0;) {
-      if (!bsVisible.get(i))
-        continue;
+    for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible.nextSetBit(i + 1)) {
       Atom atomA = modelSet.getAtomAt(leadAtomIndices[i]);
       Atom atomB = modelSet.getAtomAt(leadAtomIndices[i + 1]);
       if (atomA.getNBackbonesDisplayed() == 0 || atomB.getNBackbonesDisplayed() == 0

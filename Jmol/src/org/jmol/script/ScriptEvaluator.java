@@ -60,6 +60,7 @@ import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
@@ -539,9 +540,8 @@ public class ScriptEvaluator {
                                     Object atomExpression) {
     Vector V = new Vector();
     BitSet bs = getAtomBitSet(e, atomExpression);
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i))
-        V.addElement(new Integer(i));
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+      V.addElement(new Integer(i));
     return V;
   }
 
@@ -603,7 +603,8 @@ public class ScriptEvaluator {
     if (isOneExpressionOnly)
       pt = -pt;
     int nParen = 0;
-    ScriptMathProcessor rpn = new ScriptMathProcessor(this, isArrayItem, asVector);
+    ScriptMathProcessor rpn = new ScriptMathProcessor(this, isArrayItem,
+        asVector);
     if (pt == 0 && ptMax == 0) // set command with v[...] = ....
       pt = 2;
     if (ptMax < pt)
@@ -692,7 +693,6 @@ public class ScriptEvaluator {
         String[] sout = (isFor ? new String[BitSetUtil.cardinalityOf(bsAtoms)]
             : null);
         ScriptVariable t = null;
-        int atomCount = (isSyntaxCheck ? 0 : viewer.getAtomCount());
         if (localVars == null)
           localVars = new Hashtable();
         bsX.set(0);
@@ -713,27 +713,27 @@ public class ScriptEvaluator {
         }
         int p = 0;
         int jlast = 0;
-        if (BitSetUtil.firstSetBit(bsAtoms) < 0) {
+        int j = bsAtoms.nextSetBit(0);
+        if (j < 0) {
           iToken = pt2 - 1;
-        } else {
-          for (int j = 0; j < atomCount; j++)
-            if (bsAtoms.get(j)) {
-              if (jlast >= 0)
-                bsX.clear(jlast);
-              jlast = j;
-              bsX.set(j);
-              t.index = j;
-              res = parameterExpression(i, pt2, (isFor ? "XXX" : null), isFor, j,
-                  false, localVars, isFunctionOfX ? null : dummy);
-              if (isFor) {
-                if (res == null || ((Vector) res).size() == 0)
-                  error(ERROR_invalidArgument);
-                sout[p++] = ScriptVariable.sValue((ScriptVariable) ((Vector) res)
-                    .elementAt(0));
-              } else if (((Boolean) res).booleanValue()) {
-                bsSelect.set(j);
-              }
+        } else if (!isSyntaxCheck) {
+          for (; j >= 0; j = bsAtoms.nextSetBit(j + 1)) {
+            if (jlast >= 0)
+              bsX.clear(jlast);
+            jlast = j;
+            bsX.set(j);
+            t.index = j;
+            res = parameterExpression(i, pt2, (isFor ? "XXX" : null), isFor, j,
+                false, localVars, isFunctionOfX ? null : dummy);
+            if (isFor) {
+              if (res == null || ((Vector) res).size() == 0)
+                error(ERROR_invalidArgument);
+              sout[p++] = ScriptVariable.sValue((ScriptVariable) ((Vector) res)
+                  .elementAt(0));
+            } else if (((Boolean) res).booleanValue()) {
+              bsSelect.set(j);
             }
+          }
         }
         if (isFor) {
           v = sout;
@@ -753,7 +753,7 @@ public class ScriptEvaluator {
       case Token.integer:
         rpn.addXNum(ScriptVariable.intVariable(theToken.intValue));
         break;
-        // these next are for the within() command
+      // these next are for the within() command
       case Token.plane:
         if (tokAt(iToken + 1) == Token.leftparen) {
           if (!rpn.addOp(theToken, true))
@@ -830,7 +830,8 @@ public class ScriptEvaluator {
           switch (tok2) {
           case Token.all:
             tok2 = Token.minmaxmask;
-            if (tokAt(iToken + 3) == Token.per && tokAt(iToken + 4) == Token.bin)
+            if (tokAt(iToken + 3) == Token.per
+                && tokAt(iToken + 4) == Token.bin)
               tok2 = Token.allfloat;
             // fall through
           case Token.min:
@@ -839,8 +840,7 @@ public class ScriptEvaluator {
           case Token.sum:
           case Token.sum2:
           case Token.average:
-            allowMathFunc = (isUserFunction 
-                || tok2 == Token.minmaxmask || tok2 == Token.allfloat);
+            allowMathFunc = (isUserFunction || tok2 == Token.minmaxmask || tok2 == Token.allfloat);
             token.intValue |= tok2;
             getToken(iToken + 2);
           }
@@ -892,8 +892,12 @@ public class ScriptEvaluator {
           break;
         }
       }
-      if (v != null)
-        rpn.addX(v);
+      if (v != null) {
+        if (v instanceof BitSet)
+          rpn.addX((BitSet) v);
+        else
+          rpn.addX(v);
+      }
     }
     ScriptVariable result = rpn.getResult(false, key);
     if (result == null) {
@@ -948,9 +952,6 @@ public class ScriptEvaluator {
         label = "";
       return isExplicitlyAll ? new String[] { label } : (Object) label;
     }
-    int len = (haveIndex ? index + 1 : bs.size());
-    int nmax = (haveIndex ? 1 : BitSetUtil.cardinalityOf(bs));
-    String[] sout = new String[nmax];
     ModelSet modelSet = viewer.getModelSet();
     int n = 0;
     int[] indices = (isAtoms || !useAtomMap ? null : ((BondSet) tokenValue)
@@ -963,27 +964,28 @@ public class ScriptEvaluator {
     LabelToken[] tokens = (asIdentity ? null : isAtoms ? LabelToken.compile(
         viewer, label, '\0', null) : LabelToken.compile(viewer, label, '\1',
         htValues));
-    for (int j = (haveIndex ? index : 0); j < len; j++)
-      if (index == j || bs.get(j)) {
-        String str;
-        if (isAtoms) {
-          if (asIdentity)
-            str = modelSet.getAtomAt(j).getInfo();
-          else
-            str = LabelToken.formatLabel(viewer, modelSet.getAtomAt(j), null, tokens,
-                '\0', indices);
-        } else {
-          Bond bond = modelSet.getBondAt(j);
-          if (asIdentity)
-            str = bond.getIdentity();
-          else
-            str = LabelToken.formatLabel(viewer, bond, tokens, htValues, indices);
-        }
-        str = TextFormat.formatString(str, "#", (n + 1));
-        sout[n++] = str;
-        if (haveIndex)
-          break;
+    int nmax = (haveIndex ? 1 : BitSetUtil.cardinalityOf(bs));
+    String[] sout = new String[nmax];
+    for (int j = (haveIndex ? index : bs.nextSetBit(0)); j >= 0; j = bs.nextSetBit(j + 1)) {
+      String str;
+      if (isAtoms) {
+        if (asIdentity)
+          str = modelSet.getAtomAt(j).getInfo();
+        else
+          str = LabelToken.formatLabel(viewer, modelSet.getAtomAt(j), null,
+              tokens, '\0', indices);
+      } else {
+        Bond bond = modelSet.getBondAt(j);
+        if (asIdentity)
+          str = bond.getIdentity();
+        else
+          str = LabelToken.formatLabel(viewer, bond, tokens, htValues, indices);
       }
+      str = TextFormat.formatString(str, "#", (n + 1));
+      sout[n++] = str;
+      if (haveIndex)
+        break;
+    }
     return nmax == 1 && !isExplicitlyAll ? sout[0] : (Object) sout;
   }
 
@@ -1031,26 +1033,27 @@ public class ScriptEvaluator {
   protected Object getBitsetProperty(BitSet bs, int tok, Point3f ptRef,
                                      Point4f planeRef, Object tokenValue,
                                      Object opValue, boolean useAtomMap,
-                                     int index, boolean asVector) throws ScriptException {
-    
-    // index is a special argument set in parameterExpression that 
+                                     int index, boolean asVector)
+      throws ScriptException {
+
+    // index is a special argument set in parameterExpression that
     // indicates we are looking at only one atom within a for(...) loop
     // the bitset cannot be a BondSet in that case
-    
+
     boolean haveIndex = (index != Integer.MAX_VALUE);
-    
+
     boolean isAtoms = haveIndex || !(tokenValue instanceof BondSet);
     // check minmax flags:
-    
+
     int minmaxtype = tok & Token.minmaxmask;
     boolean allFloat = (minmaxtype == Token.allfloat);
     boolean isExplicitlyAll = (minmaxtype == Token.minmaxmask || allFloat);
     tok &= ~Token.minmaxmask;
     if (tok == Token.nada)
       tok = (isAtoms ? Token.atoms : Token.bonds);
-    
+
     // determine property type:
-    
+
     boolean isPt = false;
     boolean isInt = false;
     boolean isString = false;
@@ -1074,12 +1077,12 @@ public class ScriptEvaluator {
     }
 
     // preliminarty checks we only want to do once:
-    
+
     Point3f pt = (isPt || !isAtoms ? new Point3f() : null);
     if (isString || isExplicitlyAll)
       minmaxtype = Token.all;
-    Vector vout =  (minmaxtype == Token.all ? new Vector() : null);
-    
+    Vector vout = (minmaxtype == Token.all ? new Vector() : null);
+
     BitSet bsNew = null;
     String userFunction = null;
     Vector params = null;
@@ -1094,22 +1097,22 @@ public class ScriptEvaluator {
       if (isSyntaxCheck)
         return bs;
       bsNew = (tok == Token.atoms ? (isAtoms ? bs : viewer.getAtomBits(
-          Token.bonds, bs)) : (isAtoms ? new BondSet(viewer.getBondsForSelectedAtoms(bs))
-          : bs));
+          Token.bonds, bs)) : (isAtoms ? (BitSet) new BondSet(viewer
+          .getBondsForSelectedAtoms(bs)) : bs));
       int i;
       switch (minmaxtype) {
       case Token.min:
-        i = BitSetUtil.firstSetBit(bsNew);
+        i = bsNew.nextSetBit(0);
         break;
       case Token.max:
-        i = BitSetUtil.length(bsNew) - 1;
+        i = bsNew.length() - 1;
         break;
       case Token.stddev:
       case Token.sum:
       case Token.sum2:
         return new Float(Float.NaN);
       default:
-        return bsNew;        
+        return bsNew;
       }
       bsNew.clear();
       if (i >= 0)
@@ -1136,7 +1139,7 @@ public class ScriptEvaluator {
     case Token.distance:
       if (ptRef == null && planeRef == null)
         return new Point3f();
-     break;
+      break;
     case Token.color:
       ptT = new Point3f();
       break;
@@ -1162,16 +1165,25 @@ public class ScriptEvaluator {
       break;
     }
     ModelSet modelSet = viewer.getModelSet();
- 
-    int count = 0;
     int mode = (isPt ? 3 : isString ? 2 : isInt ? 1 : 0);
     if (isAtoms) {
+      boolean haveBitSet = (bs != null);
       int iModel = -1;
-      int nOps = 0;
-      count = (isSyntaxCheck ? 0 : viewer.getAtomCount());
-      for (int i = (haveIndex ? index : 0); i < count; i++) {
-        if (!haveIndex && bs != null && !bs.get(i))
-          continue;
+      int i0, i1;
+      if (haveIndex) {
+        i0 = index;
+        i1 = index + 1;
+      } else if (haveBitSet) {
+        i0 = bs.nextSetBit(0);
+        i1 = bs.length();
+      } else {
+        i0 = 0;
+        i1 = viewer.getAtomCount();
+      }
+      if (isSyntaxCheck)
+        i1 = 0;
+      for (int i = i0; i >= 0 && i < i1; i = (haveBitSet ? bs.nextSetBit(i + 1)
+          : i + 1)) {
         n++;
         Atom atom = modelSet.getAtomAt(i);
         switch (mode) {
@@ -1180,8 +1192,8 @@ public class ScriptEvaluator {
           switch (tok) {
           case Token.function:
             bsAtom.set(i);
-            fv = ScriptVariable.fValue(getFunctionReturn(userFunction,
-                params, tokenAtom));
+            fv = ScriptVariable.fValue(getFunctionReturn(userFunction, params,
+                tokenAtom));
             bsAtom.clear(i);
             break;
           case Token.property:
@@ -1230,12 +1242,9 @@ public class ScriptEvaluator {
             // First we determine how many operations we have in this model.
             // Then we get the symmetry bitset, which shows the assignments
             // of symmetry for this atom.
-            if (atom.getModelIndex() != iModel) {
+            if (atom.getModelIndex() != iModel)
               iModel = atom.getModelIndex();
-              nOps = modelSet.getModelSymmetryCount(iModel);
-            }
             BitSet bsSym = atom.getAtomSymmetry();
-            int len = nOps;
             int p = 0;
             switch (minmaxtype) {
             case Token.min:
@@ -1245,19 +1254,19 @@ public class ScriptEvaluator {
               ivvMinMax = Integer.MIN_VALUE;
               break;
             }
-            for (int k = 0; k < len; k++)
-              if (bsSym.get(k)) {
-                iv += k + 1;
-                switch (minmaxtype) {
-                case Token.min:
-                  ivvMinMax = Math.min(ivvMinMax, k + 1);
-                  break;
-                case Token.max:
-                  ivvMinMax = Math.max(ivvMinMax, k + 1);
-                  break;
-                }
-                p++;
+            for (int k = bsSym.nextSetBit(0); k >= 0; k = bsSym
+                .nextSetBit(k + 1)) {
+              iv += k + 1;
+              switch (minmaxtype) {
+              case Token.min:
+                ivvMinMax = Math.min(ivvMinMax, k + 1);
+                break;
+              case Token.max:
+                ivvMinMax = Math.max(ivvMinMax, k + 1);
+                break;
               }
+              p++;
+            }
             switch (minmaxtype) {
             case Token.min:
             case Token.max:
@@ -1310,10 +1319,10 @@ public class ScriptEvaluator {
           break;
       }
     } else { // bonds
-      count = viewer.getBondCount();
-      for (int i = 0; i < count; i++) {
-        if (bs != null && !bs.get(i))
-          continue;
+      boolean isAll = (bs == null);
+      int i0 = (isAll ? 0 : bs.nextSetBit(0));
+      int i1 = viewer.getBondCount();
+      for (int i = i0; i >= 0 && i < i1; i = (isAll ? i + 1 : bs.nextSetBit(i + 1))) {
         n++;
         Bond bond = modelSet.getBondAt(i);
         switch (tok) {
@@ -1355,8 +1364,8 @@ public class ScriptEvaluator {
           }
           break;
         case Token.color:
-          Graphics3D.colorPointFromInt(viewer.getColorArgbOrGray(bond.getColix()),
-              ptT);
+          Graphics3D.colorPointFromInt(viewer.getColorArgbOrGray(bond
+              .getColix()), ptT);
           switch (minmaxtype) {
           case Token.all:
             vout.add(new Point3f(ptT));
@@ -1388,14 +1397,14 @@ public class ScriptEvaluator {
         for (int i = len; --i >= 0;) {
           Object v = vout.get(i);
           switch (mode) {
-          case 0: 
+          case 0:
             fout[i] = (Float) v;
             break;
           case 1:
             fout[i] = new Float(((Integer) v).floatValue());
             break;
           case 2:
-            fout[i] = new Float(Parser.parseFloat((String)v));
+            fout[i] = new Float(Parser.parseFloat((String) v));
             break;
           case 3:
             fout[i] = new Float(((Point3f) v).distance(zero));
@@ -3247,7 +3256,7 @@ public class ScriptEvaluator {
     isBondSet = (expressionResult instanceof BondSet);
     BitSet bsDeleted = viewer.getDeletedAtoms();
     if (!isBondSet && bsDeleted != null)
-      BitSetUtil.andNot(bs, bsDeleted);
+      bs.andNot(bsDeleted);
     BitSet bsSubset = viewer.getSelectionSubset();
     if (!ignoreSubset && bsSubset != null && !isBondSet)
       bs.and(bsSubset);
@@ -3306,7 +3315,6 @@ public class ScriptEvaluator {
 
   protected BitSet compareInt(int tokWhat, float[] data, int tokOperator,
                             int comparisonValue) {
-    BitSet bs = new BitSet();
     int propertyValue = Integer.MAX_VALUE;
     BitSet propertyBitSet = null;
     int bitsetComparator = tokOperator;
@@ -3319,6 +3327,27 @@ public class ScriptEvaluator {
     int iModel = -1;
     int[] cellRange = null;
     int nOps = 0;
+    BitSet bs;
+    if (tokWhat == Token.atomindex) {
+      switch (tokOperator) {
+      case Token.opLT:
+        return BitSetUtil.newBitSet(0, comparisonValue);
+      case Token.opLE:
+        return BitSetUtil.newBitSet(0, comparisonValue + 1);
+      case Token.opGE:
+        return BitSetUtil.newBitSet(comparisonValue, atomCount);
+      case Token.opGT:
+        return BitSetUtil.newBitSet(comparisonValue + 1, atomCount);
+      case Token.opEQ:
+        return BitSetUtil.newBitSet(comparisonValue, comparisonValue + 1);
+      case Token.opNE:
+        bs = BitSetUtil.setAll(atomCount);
+        if (comparisonValue >= 0)
+          bs.clear(comparisonValue);
+        return bs;
+      }
+    }
+    bs = new BitSet();
     for (int i = 0; i < atomCount; ++i) {
       boolean match = false;
       Atom atom = atoms[i];
@@ -3328,7 +3357,7 @@ public class ScriptEvaluator {
         break;
       case Token.configuration:
         // these are all-inclusive; no need to do a by-atom comparison
-        return viewer.getConformation(-1, comparisonValue - 1, false);
+        return BitSetUtil.copy(viewer.getConformation(-1, comparisonValue - 1, false));
       case Token.symop:
         propertyBitSet = atom.getAtomSymmetry();
         if (atom.getModelIndex() != iModel) {
@@ -3396,12 +3425,12 @@ public class ScriptEvaluator {
           break;
         case Token.opGE:
           if (imax < 0)
-            imax = propertyBitSet.size();
+            imax = propertyBitSet.length();
           imin = comparisonValue - 1;
           break;
         case Token.opGT:
           if (imax < 0)
-            imax = propertyBitSet.size();
+            imax = propertyBitSet.length();
           imin = comparisonValue;
           break;
         case Token.opEQ:
@@ -3414,14 +3443,10 @@ public class ScriptEvaluator {
         }
         if (imin < 0)
           imin = 0;
-        if (imax > propertyBitSet.size())
-          imax = propertyBitSet.size();
-        for (int iBit = imin; iBit < imax; iBit++) {
-          if (propertyBitSet.get(iBit)) {
-            match = true;
-            break;
-          }
-        }
+        if (imax > propertyBitSet.length())
+          imax = propertyBitSet.length();
+        if (propertyBitSet.get(imin, imax).length() != 0)
+          match = true;
         // note that a symop property can be both LE and GT !
         if (!match || propertyValue == Integer.MAX_VALUE)
           tokOperator = Token.none;
@@ -4821,6 +4846,7 @@ public class ScriptEvaluator {
       iShape = JmolConstants.SHAPE_LCAOCARTOON;
       lcaoCartoon();
       break;
+    case Token.measurements:
     case Token.measure:
       iShape = JmolConstants.SHAPE_MEASURES;
       measure();
@@ -5108,7 +5134,7 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);  
         bsCenter = (BitSet) expressionResult;
         q = (isSyntaxCheck ? new Quaternion() 
-            : viewer.getAtomQuaternion(BitSetUtil.firstSetBit(bsCenter)));
+            : viewer.getAtomQuaternion(bsCenter.nextSetBit(0)));
       } else {
         q = new Quaternion(getPoint4f(i));
       }
@@ -5706,13 +5732,13 @@ public class ScriptEvaluator {
         if (!haveOperation)
           operation = JmolConstants.CONNECT_MODIFY_OR_CREATE;
         haveOperation = true;
-        //fall through
+        // fall through
       case Token.identifier:
       case Token.aromatic:
       case Token.hbond:
         if (ptColor == i)
           break;
-         // I know -- should have required the COLOR keyword
+        // I know -- should have required the COLOR keyword
         if (isColorParam(i)) {
           ptColor = -i;
           break;
@@ -5747,8 +5773,8 @@ public class ScriptEvaluator {
         if (++i != statementLength)
           error(ERROR_invalidParameterOrder);
         operation = JmolConstants.CONNECT_DELETE_BONDS;
-        //if (isColorOrRadius) / for struts automatic color
-          //error(ERROR_invalidArgument);
+        // if (isColorOrRadius) / for struts automatic color
+        // error(ERROR_invalidArgument);
         isDelete = true;
         isColorOrRadius = false;
         break;
@@ -5786,16 +5812,16 @@ public class ScriptEvaluator {
     if (expression2 > 0) {
       BitSet bs = new BitSet();
       definedAtomSets.put("_1", bs);
-      for (int atom1 = atomSets[0].size(); atom1 >= 0; atom1--)
-        if (atomSets[0].get(atom1)) {
-          bs.set(atom1);
-          result = viewer.makeConnections(distances[0], distances[1],
-              bondOrder, operation, bs, expression(expression2), bsBonds,
-              isBonds);
-          nNew += result[0];
-          nModified += result[1];
-          bs.clear(atom1);
-        }
+      BitSet bs0 = atomSets[0];
+      for (int atom1 = bs0.nextSetBit(0); atom1 >= 0; atom1 = bs0
+          .nextSetBit(atom1 + 1)) {
+        bs.set(atom1);
+        result = viewer.makeConnections(distances[0], distances[1], bondOrder,
+            operation, bs, expression(expression2), bsBonds, isBonds);
+        nNew += result[0];
+        nModified += result[1];
+        bs.clear(atom1);
+      }
     } else {
       result = viewer.makeConnections(distances[0], distances[1], bondOrder,
           operation, atomSets[0], atomSets[1], bsBonds, isBonds);
@@ -5810,7 +5836,8 @@ public class ScriptEvaluator {
     if (isColorOrRadius) {
       viewer.selectBonds(bsBonds);
       if (!Float.isNaN(radius))
-        viewer.setShapeSize(JmolConstants.SHAPE_STICKS, (int) (radius * 2000), bsBonds);
+        viewer.setShapeSize(JmolConstants.SHAPE_STICKS, (int) (radius * 2000),
+            bsBonds);
       if (color != Integer.MIN_VALUE)
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "color",
             new Integer(color), bsBonds);
@@ -6490,18 +6517,16 @@ public class ScriptEvaluator {
         propertyField = 0;
       int atomCount = viewer.getAtomCount();
       int[] atomMap = null;
-      BitSet bsAtoms = new BitSet(atomCount);
+      BitSet bsTemp = new BitSet(atomCount);
       if (atomNumberField > 0) {
         atomMap = new int[atomCount + 2];
         for (int j = 0; j <= atomCount; j++)
           atomMap[j] = -1;
-        for (int j = 0; j < atomCount; j++) {
-          if (!bs.get(j))
-            continue;
+        for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) {
           int atomNo = viewer.getAtomNumber(j);
-          if (atomNo > atomCount + 1 || atomNo < 0 || bsAtoms.get(atomNo))
+          if (atomNo > atomCount + 1 || atomNo < 0 || bsTemp.get(atomNo))
             continue;
-          bsAtoms.set(atomNo);
+          bsTemp.set(atomNo);
           atomMap[atomNo] = j;
         }
         data[2] = atomMap;
@@ -6725,6 +6750,8 @@ public class ScriptEvaluator {
             JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token
             .getTokenFromName(modelName.toLowerCase()).tok : 0);
         if (tokType > 0) {
+          // loading just some data here
+          // xyz vxyz vibration temperature occupancy partialcharge
           htParams.put("atomDataOnly", Boolean.TRUE);
           htParams.put("modelNumber", new Integer(1));
           if (tokType == Token.vibration)
@@ -7304,7 +7331,7 @@ public class ScriptEvaluator {
         value = centerParameter(i);
         if (expressionResult instanceof BitSet) {
           value = bs = (BitSet) expressionResult;
-          if (!isSyntaxCheck && BitSetUtil.firstSetBit(bs) < 0)
+          if (!isSyntaxCheck && bs.length() == 0)
             return;
         }
         if (value instanceof Point3f) {
@@ -7558,8 +7585,8 @@ public class ScriptEvaluator {
         }
         error(ERROR_invalidArgument);
       case Token.branch:
-        int iAtom1 = BitSetUtil.firstSetBit(expression(++i));
-        int iAtom2 = BitSetUtil.firstSetBit(expression(++iToken));
+        int iAtom1 = expression(++i).nextSetBit(0);
+        int iAtom2 = expression(++iToken).nextSetBit(0);
         if (iAtom1 < 0 || iAtom2 < 0)
           return;
         bsAtoms = viewer.getBranchBitSet(iAtom2, iAtom1);
@@ -7931,7 +7958,7 @@ public class ScriptEvaluator {
           checkLength(2);
         } else {
           while (n < 4 && !isFloatParameter(i)) {
-            aList[++n] = BitSetUtil.firstSetBit(expression(i));
+            aList[++n] = expression(i).nextSetBit(0);
             i = iToken + 1;
           }
           aList[0] = n;
@@ -7953,7 +7980,7 @@ public class ScriptEvaluator {
         if (i != 1)
           error(ERROR_invalidArgument);
         BitSet bsFixed = expression(++i);
-        if (BitSetUtil.firstSetBit(bsFixed) < 0)
+        if (bsFixed.nextSetBit(0) < 0)
           bsFixed = null;
         checkLength(iToken + 1, 1);
         if (!isSyntaxCheck)
@@ -7982,10 +8009,8 @@ public class ScriptEvaluator {
       }
     if (isSyntaxCheck)
       return;
-    if (bsSelected == null) {
-      int i = BitSetUtil.firstSetBit(viewer.getVisibleFramesBitSet());
-      bsSelected = viewer.getModelAtomBitSet(i, false);
-    }
+    if (bsSelected == null)
+      bsSelected = viewer.getModelAtomBitSet(viewer.getVisibleFramesBitSet().nextSetBit(0), false);
     try {
       viewer.getMinimizer(true).minimize(steps, crit, bsSelected, addHydrogen);
     } catch (Exception e) {
@@ -11108,15 +11133,16 @@ public class ScriptEvaluator {
       if (tok == Token.image) {
         pt++;
       } else if (tok == Token.frame) {
+        BitSet bsAtoms;
         if (pt + 1 < argCount && args[++pt].tok == Token.expressionBegin
             || args[pt].tok == Token.bitset) {
-          bsFrames = expression(args, pt, 0, true, false, true, true);
+          bsAtoms = expression(args, pt, 0, true, false, true, true);
           pt = iToken + 1;
         } else {
-          bsFrames = viewer.getModelAtomBitSet(-1, false);
+          bsAtoms = viewer.getModelAtomBitSet(-1, false);
         }
         if (!isSyntaxCheck)
-          bsFrames = viewer.getModelBitSet(bsFrames, true);
+          bsFrames = viewer.getModelBitSet(bsAtoms, true);
       } else if (Parser.isOneOf(type, driverList.toLowerCase())) {
         // povray, maya, vrml, idtf
         pt++;
@@ -12577,15 +12603,12 @@ public class ScriptEvaluator {
   private boolean mo(boolean isInitOnly) throws ScriptException {
     int offset = Integer.MAX_VALUE;
     BitSet bsModels = viewer.getVisibleFramesBitSet();
-    int modelCount = viewer.getModelCount();
     Vector propertyList = new Vector();
-    for (int modelIndex = 0; modelIndex < modelCount; modelIndex++) {
-      if (!bsModels.get(modelIndex))
-        continue;
+    for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
       viewer.loadShape(JmolConstants.SHAPE_MO);
       if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_MO))
         return true;
-      setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(modelIndex));
+      setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(i));
       String title = null;
       int moNumber = ((Integer) viewer.getShapeProperty(JmolConstants.SHAPE_MO,
           "moNumber")).intValue();
@@ -12670,7 +12693,7 @@ public class ScriptEvaluator {
           title = parameterAsString(2);
         if (!isSyntaxCheck)
           viewer.setCursor(Viewer.CURSOR_WAIT);
-        setMoData(propertyList, moNumber, offset, modelIndex, title);
+        setMoData(propertyList, moNumber, offset, i, title);
         addShapeProperty(propertyList, "finalize", null);
         setShapeProperty(JmolConstants.SHAPE_MO, "setProperties", propertyList);
       }
@@ -12930,8 +12953,8 @@ public class ScriptEvaluator {
           addShapeProperty(propertyList, "commandOption", "WITHIN=\""
               + Escape.escape(bs) + "\"");
           v = new Vector();
-          if (BitSetUtil.cardinalityOf(bs) == 1)
-            v.add(viewer.getAtomPoint3f(BitSetUtil.firstSetBit(bs)));
+          if (bs.cardinality() == 1)
+            v.add(viewer.getAtomPoint3f(bs.nextSetBit(0)));
         } else {
           Point3f pt1 = new Point3f(distance, distance, distance);
           Point3f pt0 = new Point3f(ptc);
@@ -13122,7 +13145,7 @@ public class ScriptEvaluator {
         } catch (ScriptException e) {
         }
         bs = expression(i);
-        int iAtom = BitSetUtil.firstSetBit(bs);
+        int iAtom = bs.nextSetBit(0);
         Atom[] atoms = viewer.getModelSet().atoms;
         if (iAtom >= 0)
           propertyValue = atoms[iAtom].getEllipsoid();
@@ -13150,7 +13173,7 @@ public class ScriptEvaluator {
           propertyName = "lcaoCartoon";
           bs = expression(i);
           i = iToken;
-          int atomIndex = BitSetUtil.firstSetBit(bs);
+          int atomIndex = bs.nextSetBit(0);
           modelIndex = 0;
           Point3f pt;
           if (atomIndex < 0) {

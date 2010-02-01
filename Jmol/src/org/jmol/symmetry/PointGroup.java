@@ -357,8 +357,7 @@ class PointGroup {
     if (atomCount == 0) 
       return true;
     nAtoms = 0;
-    for (int i = BitSetUtil.length(bsAtoms); --i >= 0;)
-      if (bsAtoms.get(i)) {
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
         atoms[nAtoms] = new Point3f(atomset[i]);
         int bondIndex = 1 + Math.max(3, atomset[i].getCovalentBondCount());
         elements[nAtoms] = atomset[i].getElementNumber() * bondIndex;

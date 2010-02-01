@@ -45,6 +45,7 @@ import org.jmol.script.ScriptEvaluator.ScriptException;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
@@ -175,6 +176,24 @@ class ScriptMathProcessor {
     return wasX = true;
   }
 
+  boolean addX(BitSet bs) {
+    // the standard entry point for bit sets 
+    ScriptVariable v = new ScriptVariable(Token.bitset, bs);
+    if (v == null)
+      return false;
+    putX(v);
+    return wasX = true;
+  }
+/*
+  boolean addXbs(BitSet bs) {
+    // the standard entry point for bit sets 
+    ScriptVariable v = new ScriptVariable(Token.bitset, bs);
+    if (v == null)
+      return false;
+    putX(v);
+    return wasX = true;
+  }
+*/
   boolean addXNum(ScriptVariable x) throws ScriptException {
     // corrects for x -3 being x - 3
     // only when coming from expression() or parameterExpression()
@@ -943,7 +962,7 @@ class ScriptMathProcessor {
         switch (args[i].tok) {
         case Token.bitset:
           BitSet bs = (BitSet) args[i].value;
-          if (!isSyntaxCheck && BitSetUtil.firstSetBit(bs) < 0)
+          if (!isSyntaxCheck && bs.length() == 0)
             isNull = true;
           points.add(bs);
           nPoints++;
@@ -1532,8 +1551,7 @@ class ScriptMathProcessor {
         } else if (args[0].tok == Token.point4f) {
           p4 = (Point4f) args[0].value;
         } else if (args[0].tok == Token.bitset && tok == Token.quaternion) {
-          q = viewer.getAtomQuaternion(BitSetUtil
-              .firstSetBit((BitSet) args[0].value));
+          q = viewer.getAtomQuaternion(((BitSet) args[0].value).nextSetBit(0));
           if (q == null)
             return addX((int) 0);
         } else {
@@ -1760,9 +1778,8 @@ class ScriptMathProcessor {
       if (i != 3 || !(args[1].value instanceof BitSet)
           || !(args[2].value instanceof BitSet))
         return false;
-      return addX(viewer.getBranchBitSet(BitSetUtil
-          .firstSetBit((BitSet) args[2].value), BitSetUtil
-          .firstSetBit((BitSet) args[1].value)));
+      return addX(viewer.getBranchBitSet(((BitSet) args[2].value).nextSetBit(0), 
+          ((BitSet) args[1].value).nextSetBit(0)));
     }
     if (withinSpec instanceof String) {
       isSequence = !Parser
@@ -2097,7 +2114,7 @@ class ScriptMathProcessor {
       if (x1.tok != Token.bitset || x2.tok != Token.bitset)
         return false;
       return addX(BitSetUtil.toggleInPlace(BitSetUtil.copy(ScriptVariable
-          .bsSelect(x1)), ScriptVariable.bsSelect(x2), viewer.getAtomCount()));
+          .bsSelect(x1)), ScriptVariable.bsSelect(x2)));
     case Token.opLE:
       return addX(ScriptVariable.fValue(x1) <= ScriptVariable.fValue(x2));
     case Token.opGE:

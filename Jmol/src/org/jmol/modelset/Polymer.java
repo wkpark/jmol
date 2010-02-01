@@ -30,6 +30,7 @@ import java.util.Hashtable;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+
 import org.jmol.viewer.Viewer;
 
 abstract public class Polymer {

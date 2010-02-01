@@ -36,6 +36,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Point3fi;
@@ -340,11 +341,11 @@ public class Draw extends MeshCollection {
     if ("atomSet" == propertyName) {
       if (BitSetUtil.cardinalityOf((BitSet) value) == 0)
         return;
-      bs = (BitSet) value;
-      vData.add(new Object[] { new Integer(PT_BITSET), bs });
+      BitSet bsAtoms = (BitSet) value;
+      vData.add(new Object[] { new Integer(PT_BITSET), bsAtoms });
       nbitsets++;
       if (isCircle && diameter == 0 && width == 0)
-        width = viewer.calcRotationRadius(bs) * 2.0f;
+        width = viewer.calcRotationRadius(bsAtoms) * 2.0f;
       return;
     }
 
@@ -386,7 +387,7 @@ public class Draw extends MeshCollection {
         boolean deleteMesh = (m.modelIndex == modelIndex);
         if (m.modelFlags != null) {
           m.deleteAtoms(modelIndex);
-          deleteMesh = (BitSetUtil.firstSetBit(m.modelFlags) < 0);
+          deleteMesh = (m.modelFlags.length() == 0);
           if (!deleteMesh)
             continue;
         } 
@@ -657,7 +658,7 @@ public class Draw extends MeshCollection {
         bs = BitSetUtil.copy((BitSet) info[1]);
         if (bsModel != null)
           bs.and(bsModel);
-        if (BitSetUtil.firstSetBit(bs) >= 0)
+        if (bs.length() > 0)
           addPoint(viewer.getAtomSetCenter(bs), (makePoints ? iModel : -1));
         break;
       case PT_IDENTIFIER:
@@ -707,7 +708,7 @@ public class Draw extends MeshCollection {
               bs = (BitSet) point;
               if (bsModel != null)
                 bs.and(bsModel);
-              if (BitSetUtil.firstSetBit(bs) >= 0)
+              if (bs.length() > 0)
                 addPoint(viewer.getAtomSetCenter(bs), j);
             }
           }
@@ -1007,7 +1008,9 @@ public class Draw extends MeshCollection {
     m.axis.scale(1f / n);
   }
 
- public void setVisibilityFlags(BitSet bs) {
+  private final BitSet bsTemp = new BitSet();
+ 
+  public void setVisibilityFlags(BitSet bs) {
     /*
      * set all fixed objects visible; others based on model being displayed note
      * that this is NOT done with atoms and bonds, because they have mads. When
@@ -1021,7 +1024,7 @@ public class Draw extends MeshCollection {
       }
       m.visibilityFlags = (m.isValid && m.visible ? myVisibilityFlag : 0);
       if (m.modelIndex >= 0 && !bs.get(m.modelIndex) || m.modelFlags != null
-          && !BitSetUtil.haveCommon(bs, m.modelFlags)) {
+          && !BitSetUtil.haveCommon(bs, m.modelFlags, bsTemp)) {
         m.visibilityFlags = 0;
       } else if (m.modelFlags != null) {
         m.bsMeshesVisible.clear();
@@ -1080,7 +1083,7 @@ public class Draw extends MeshCollection {
     pt.set(v);
     pt.modelIndex = (short) pickedMesh.modelIndex;
     if (pt.modelIndex < 0 && pickedMesh.modelFlags != null && BitSetUtil.cardinalityOf(pickedMesh.modelFlags) == 1)
-      pt.modelIndex = (short) BitSetUtil.firstSetBit(pickedMesh.modelFlags);
+      pt.modelIndex = (short) pickedMesh.modelFlags.nextSetBit(0);
     return pt; 
   }
 

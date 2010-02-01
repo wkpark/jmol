@@ -194,9 +194,9 @@ public class MeshData extends MeshSurface {
     if (level == 0) {
       vertexSets = new int[vertexCount];
       for (int i = 0; i < nSets; i++)
-        for (int j = 0; j < vertexCount; j++)
-          if (surfaceSet[i].get(j))
-            vertexSets[j] = i;
+        for (int j = surfaceSet[i].nextSetBit(0); j >= 0; j = surfaceSet[i]
+            .nextSetBit(j + 1))
+          vertexSets[j] = i;
     }
     return surfaceSet;
   }
@@ -231,9 +231,8 @@ public class MeshData extends MeshSurface {
   }
   
   public void invalidateSurfaceSet(int i) {
-    for (int j = surfaceSet[i].length(); --j >= 0;)
-      if (surfaceSet[i].get(j))
-        vertexValues[j] = Float.NaN;
+    for (int j = surfaceSet[i].nextSetBit(0); j >= 0; j = surfaceSet[i].nextSetBit(j + 1))
+      vertexValues[j] = Float.NaN;
     surfaceSet[i] = null;
   }
   

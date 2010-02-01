@@ -26,6 +26,7 @@ package org.jmol.shapespecial;
 
 import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
+
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.TextFormat;
@@ -218,13 +219,13 @@ public class Dipoles extends Shape {
       startCoord = viewer.getAtomSetCenter(atomset);
       tempDipole.set(startCoord, new Point3f(0, 0, 0), dipoleValue);
       if (BitSetUtil.cardinalityOf(atomset) == 1)
-        atomIndex1 = BitSetUtil.firstSetBit(atomset);
+        atomIndex1 = atomset.nextSetBit(0);
       return;
     }
 
     if ("atomBitset" == propertyName) {
       BitSet atomset = (BitSet) value;
-      atomIndex1 = BitSetUtil.firstSetBit(atomset);
+      atomIndex1 = atomset.nextSetBit(0);
       startCoord = modelSet.atoms[atomIndex1];
       atomset.clear(atomIndex1);
       propertyName = "endSet";
@@ -235,7 +236,7 @@ public class Dipoles extends Shape {
       iHaveTwoEnds = true;
       BitSet atomset = (BitSet) value;
       if (atomIndex1 >= 0 && BitSetUtil.cardinalityOf(atomset) == 1) {
-        atomIndex2 = BitSetUtil.firstSetBit(atomset);
+        atomIndex2 = atomset.nextSetBit(0);
         tempDipole.set(modelSet.atoms[atomIndex1], modelSet.atoms[atomIndex2],
             1);
         currentDipole = findDipole(tempDipole.thisID, tempDipole.dipoleInfo);

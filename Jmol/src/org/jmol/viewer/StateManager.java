@@ -36,8 +36,9 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.ScriptFunction;
 import org.jmol.script.ScriptVariable;
-import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;

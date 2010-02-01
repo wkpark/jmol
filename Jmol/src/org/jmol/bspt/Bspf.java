@@ -113,9 +113,8 @@ public final class Bspf {
   }
 
   public void initialize(int modelIndex, Point3f[] atoms, BitSet modelAtomBitSet) {
-    for (int i = atoms.length; --i >= 0;)
-      if (modelAtomBitSet.get(i))
-        addTuple(modelIndex, atoms[i]);
+    for (int i = modelAtomBitSet.nextSetBit(0); i >= 0; i = modelAtomBitSet.nextSetBit(i + 1))
+      addTuple(modelIndex, atoms[i]);
   }
 
 }

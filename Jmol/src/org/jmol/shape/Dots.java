@@ -27,6 +27,7 @@ package org.jmol.shape;
 import org.jmol.script.Token;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+
 import org.jmol.util.Logger;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
@@ -213,15 +214,17 @@ public class Dots extends AtomShape {
     // we just increment the atom radius and set the probe radius = 0;
 
     if (isVisible) {
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i) && !bsOn.get(i)) {
+      for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected.nextSetBit(i + 1))
+        if (!bsOn.get(i)) {
           bsOn.set(i);
           newSet = true;
         }
     } else {
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i))
-          bsOn.set(i, false);
+      boolean isAll = (bsSelected == null);
+      int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
+      for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected
+          .nextSetBit(i + 1)))
+        bsOn.set(i, false);
     }
 
     for (int i = atomCount; --i >= 0;) {
@@ -248,9 +251,9 @@ public class Dots extends AtomShape {
       ec.calculate(rd, maxRadius, bsOn, bsIgnore, !viewer.getDotSurfaceFlag(),
           viewer.getDotsSelectedOnlyFlag(), isSurface, true);
     }
-    
+
     rdLast = rd;
-    
+
     if (Logger.debugging)
       Logger.checkTimer("dots generation time");
   }

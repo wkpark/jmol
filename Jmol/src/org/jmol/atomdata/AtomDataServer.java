@@ -6,6 +6,7 @@ import java.util.BitSet;
 import org.jmol.modelset.AtomIndexIterator;
 
 
+
 public interface AtomDataServer {
   public AtomIndexIterator getWithinAtomSetIterator(int atomIndex,
                                                     float distance,

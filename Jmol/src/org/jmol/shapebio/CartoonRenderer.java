@@ -72,21 +72,21 @@ public class CartoonRenderer extends RocketsRenderer {
   Point3i ptConnect = new Point3i();
   void renderNucleic() {
     boolean isTraceAlpha = viewer.getTraceAlpha();
-      for (int i = monomerCount; --i >= 0;)
-        if (bsVisible.get(i)) {
-          if (isTraceAlpha) {
-            ptConnect.set((controlPointScreens[i].x + controlPointScreens[i + 1].x)/2,
-                (controlPointScreens[i].y + controlPointScreens[i + 1].y)/2,
-                (controlPointScreens[i].z + controlPointScreens[i + 1].z)/2);
-          } else {
-            ptConnect.set(controlPointScreens[i + 1]);
-          }
-          renderHermiteConic(i, false);
-          colix = getLeadColix(i);
-          if (g3d.setColix(colix))
-            renderNucleicBaseStep((NucleicMonomer) monomers[i], mads[i],
-                ptConnect);
-        }
+    for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
+        .nextSetBit(i + 1)) {
+      if (isTraceAlpha) {
+        ptConnect.set(
+            (controlPointScreens[i].x + controlPointScreens[i + 1].x) / 2,
+            (controlPointScreens[i].y + controlPointScreens[i + 1].y) / 2,
+            (controlPointScreens[i].z + controlPointScreens[i + 1].z) / 2);
+      } else {
+        ptConnect.set(controlPointScreens[i + 1]);
+      }
+      renderHermiteConic(i, false);
+      colix = getLeadColix(i);
+      if (g3d.setColix(colix))
+        renderNucleicBaseStep((NucleicMonomer) monomers[i], mads[i], ptConnect);
+    }
   }
 
   protected void render1() {
@@ -134,7 +134,7 @@ public class CartoonRenderer extends RocketsRenderer {
   }
 
   private void renderRockets() {
-    //doing the cylinders separately because we want to connect them if we can.
+    // doing the cylinders separately because we want to connect them if we can.
 
     // Key structures that must render properly
     // include 1crn and 7hvp
@@ -142,10 +142,10 @@ public class CartoonRenderer extends RocketsRenderer {
     // this loop goes 0 --> monomerCount, because
     // the special segments routine takes care of heads
     tPending = false;
-    for (int i = 0; i < monomerCount; ++i)
-      if (bsVisible.get(i) && isHelix(i)) {
+    for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
+        .nextSetBit(i + 1))
+      if (isHelix(i))
         renderSpecialSegment(monomers[i], getLeadColix(i), mads[i]);
-      }
     renderPending();
   }
   

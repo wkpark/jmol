@@ -39,9 +39,8 @@ public class MeshRibbonRenderer extends StrandsRenderer {
     calcScreenControlPoints();
     ribbonTopScreens = calcScreens(offsetTop);
     ribbonBottomScreens = calcScreens(-offsetBottom);
-    for (int i = monomerCount; --i >= 0;)
-      if (bsVisible.get(i))
-        renderHermiteRibbon(doFill, i, false);
+    for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible.nextSetBit(i + 1))
+      renderHermiteRibbon(doFill, i, false);
     viewer.freeTempScreens(ribbonTopScreens);
     viewer.freeTempScreens(ribbonBottomScreens);
   }

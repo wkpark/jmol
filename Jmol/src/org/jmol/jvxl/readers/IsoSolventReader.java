@@ -125,8 +125,8 @@ class IsoSolventReader extends AtomDataReader {
     BitSet ss;
     for (int i = 0; i < nSets; i++)
       if ((ss = meshData.surfaceSet[i]) != null)
-        for (int j = ss.length(); --j >= 0;)
-          if (ss.get(j) && Float.isNaN(meshData.vertexValues[j])) {
+        for (int j = ss.nextSetBit(0); j >= 0; j = ss.nextSetBit(j + 1))
+          if (Float.isNaN(meshData.vertexValues[j])) {
             pocketSet.set(i);
             //System.out.println("pocket " + i + " " + j + " " + surfaceSet[i]);
             break;
@@ -135,10 +135,8 @@ class IsoSolventReader extends AtomDataReader {
     //"POCKET"   --> pocket TRUE means "show just the pockets"
     //"INTERIOR" --> pocket FALSE means "show everything that is not a pocket"
     for (int i = 0; i < nSets; i++)
-      if (meshData.surfaceSet[i] != null) {
-        if (pocketSet.get(i) == doExclude)
-          meshData.invalidateSurfaceSet(i);
-      }
+      if (meshData.surfaceSet[i] != null && pocketSet.get(i) == doExclude)
+        meshData.invalidateSurfaceSet(i);
     updateSurfaceData();
     if (!doExclude)
       meshData.surfaceSet = null;

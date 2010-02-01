@@ -96,6 +96,7 @@ import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+
 import org.jmol.util.Logger;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ArrayUtil;
@@ -300,10 +301,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("withinPoints" == propertyName) {
       Object[] o = (Object[]) value;
       withinDistance = ((Float) o[0]).floatValue();
-      bs = (BitSet) o[2];
+      BitSet bsAtoms = (BitSet) o[2];
       withinPoints = (Vector) o[3];
       if (withinPoints.size() == 0)
-        withinPoints = viewer.getAtomPointVector(bs);
+        withinPoints = viewer.getAtomPointVector(bsAtoms);
     }
 
     if ("scale3d" == propertyName) {

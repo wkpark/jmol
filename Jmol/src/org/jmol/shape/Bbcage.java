@@ -46,8 +46,8 @@ public class Bbcage extends FontLineShape {
     BitSet bboxModels = viewer.getBoundBoxModels();
     if (bboxModels == null)
       return;
-    for (int i = viewer.getModelCount(); --i >= 0; )
-      if (bs.get(i) && bboxModels.get(i))
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+      if (bboxModels.get(i))
         return;
     isVisible = false;
   }

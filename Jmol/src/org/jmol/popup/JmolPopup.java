@@ -275,13 +275,12 @@ abstract public class JmolPopup {
     enableMenu(menu, false);
     if (elementsPresentBitSet == null)
       return;
-    for (int i = 0; i < JmolConstants.elementNumberMax; ++i) {
-      if (elementsPresentBitSet.get(i)) {
-        String elementName = JmolConstants.elementNameFromNumber(i);
-        String elementSymbol = JmolConstants.elementSymbolFromNumber(i);
-        String entryName = elementSymbol + " - " + elementName;
-          addMenuItem(menu, entryName, "SELECT " + elementName, null);
-      }
+    for (int i = elementsPresentBitSet.nextSetBit(0); i >= 0; i = elementsPresentBitSet
+        .nextSetBit(i + 1)) {
+      String elementName = JmolConstants.elementNameFromNumber(i);
+      String elementSymbol = JmolConstants.elementSymbolFromNumber(i);
+      String entryName = elementSymbol + " - " + elementName;
+      addMenuItem(menu, entryName, "SELECT " + elementName, null);
     }
     for (int i = JmolConstants.firstIsotope; i < JmolConstants.altElementMax; ++i) {
       int n = JmolConstants.elementNumberMax + i;

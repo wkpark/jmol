@@ -25,21 +25,17 @@ package org.jmol.modelset;
 
 import java.util.BitSet;
 
-import org.jmol.util.BitSetUtil;
-
 public final class Chain {
 
   ModelSet modelSet;
   Model model;
   char chainID;
   int groupCount;
-  int selectedGroupCount;
-  private boolean isDna, isRna;
-  BitSet bsSelectedGroups;
   Group[] groups = new Group[16];
 
-
-  //  private Group[] mainchain;
+  private int selectedGroupCount;
+  private boolean isDna, isRna;
+  private BitSet bsSelectedGroups;
 
   public Chain(ModelSet modelSet, Model model, char chainID) {
     this.modelSet = modelSet;
@@ -91,7 +87,7 @@ public final class Chain {
     selectedGroupCount = 0;
     if (bsSelectedGroups == null)
       bsSelectedGroups = new BitSet();
-    BitSetUtil.clear(bsSelectedGroups);
+    bsSelectedGroups.clear();
     for (int i = 0; i < groupCount; i++) {
       if (groups[i].isSelected(bsSelected)) {
         groups[i].selectedIndex = selectedGroupCount++;

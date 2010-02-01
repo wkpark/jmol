@@ -100,12 +100,10 @@ abstract class QuantumCalculation {
      */
 
     qmAtoms = new QMAtom[atomCoordAngstroms.length];
-    for (int i = atomCoordAngstroms.length; --i >= 0;) {
-      if (bsSelected != null && !bsSelected.get(i))
-        continue;
+    boolean isAll = (bsSelected == null);
+    int i0 = (isAll ? qmAtoms.length - 1 : bsSelected.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1)))
       qmAtoms[i] = new QMAtom(atomCoordAngstroms[i], X, Y, Z, X2, Y2, Z2);
-    }
-
     if (doDebug)
       Logger.debug("QuantumCalculation:\n origin(Bohr)= " + originBohr[0] + " "
           + originBohr[1] + " " + originBohr[2] + "\n steps(Bohr)= "

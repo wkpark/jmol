@@ -248,9 +248,9 @@ public class _TachyonExporter extends __RayTracerExporter {
                                   int nPolygons, int nFaces, BitSet bsFaces,
                                   int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset) {
     if (polygonColixes != null) {
-      for (int i = nPolygons; --i >= 0;) {
-        if (bsFaces != null && !bsFaces.get(i))
-          continue;
+      boolean isAll = (bsFaces == null);
+      int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
+      for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) {
         setTempVertex(vertices[indices[i][0]], offset, tempP1);
         setTempVertex(vertices[indices[i][1]], offset, tempP2);
         setTempVertex(vertices[indices[i][2]], offset, tempP3);
@@ -277,13 +277,12 @@ public class _TachyonExporter extends __RayTracerExporter {
     }
     outputTextureCode();
     output("\nTriMesh " + nFaces + "\n");
-    for (int i = nPolygons; --i >= 0;) {
-      if (bsFaces != null && !bsFaces.get(i))
-        continue;
+    boolean isAll = (bsFaces == null);
+    int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) {
       output(indices[i][0] + " " + indices[i][1] + " " + indices[i][2] + "\n");
-      if (faceVertexMax == 4 && indices[i].length == 4) {
+      if (faceVertexMax == 4 && indices[i].length == 4)
         output(indices[i][0] + " " + indices[i][2] + " " + indices[i][3] + "\n");
-      }
     }
     output("\nEnd_VertexArray\n");
   }

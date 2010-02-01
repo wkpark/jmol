@@ -27,6 +27,7 @@ package org.jmol.modelset;
 
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
@@ -437,7 +438,7 @@ abstract public class ModelSet extends ModelCollection {
       return;
     }
     if(atomData.modelIndex < 0)
-      atomData.firstAtomIndex = Math.max(0, BitSetUtil.firstSetBit(atomData.bsSelected));
+      atomData.firstAtomIndex = (atomData.bsSelected == null ? 0 : Math.max(0, atomData.bsSelected.nextSetBit(0)));
     else
       atomData.firstAtomIndex = models[atomData.modelIndex].firstAtomIndex;
     atomData.lastModelIndex = atomData.firstModelIndex = (atomCount == 0 ? 0 : atoms[atomData.firstAtomIndex].modelIndex);
@@ -526,7 +527,7 @@ abstract public class ModelSet extends ModelCollection {
 
   public void calculateStructures(BitSet bsAtoms) {
     BitSet bsAllAtoms = new BitSet();
-    BitSet bsDefined = BitSetUtil.invertInPlace(modelsOf(bsAtoms, bsAllAtoms),
+    BitSet bsDefined = BitSetUtil.copyInvert(modelsOf(bsAtoms, bsAllAtoms),
         modelCount);
     for (int i = 0; i < modelCount; i++)
       if (!bsDefined.get(i))
@@ -566,11 +567,11 @@ abstract public class ModelSet extends ModelCollection {
                                                   boolean asInfo, String type,
                                                   int index, float scale) {
     int modelIndex = viewer.getCurrentModelIndex();
-    int iAtom = BitSetUtil.firstSetBit(bsAtoms);
+    int iAtom = (bsAtoms == null ? -1 : bsAtoms.nextSetBit(0));
     if (modelIndex < 0 && iAtom >= 0)
       modelIndex = atoms[iAtom].getModelIndex();
     if (modelIndex < 0) {
-      modelIndex = BitSetUtil.firstSetBit(viewer.getVisibleFramesBitSet());
+      modelIndex = viewer.getVisibleFramesBitSet().nextSetBit(0);
       bsAtoms = null;
     }
     BitSet bs = getModelAtomBitSet(modelIndex, true);
@@ -579,10 +580,10 @@ abstract public class ModelSet extends ModelCollection {
         if (atoms[i].modelIndex == modelIndex)
           if (!bsAtoms.get(i))
             bs.clear(i);
-    iAtom = BitSetUtil.firstSetBit(bs);
+    iAtom = bs.nextSetBit(0);
     if (iAtom < 0) {
       bs = getModelAtomBitSet(modelIndex, true);
-      iAtom = BitSetUtil.firstSetBit(bs);
+      iAtom = bs.nextSetBit(0);
     }
     Object obj = getShapeProperty(JmolConstants.SHAPE_VECTORS, "mad", iAtom);
     boolean haveVibration = (obj != null && ((Integer) obj).intValue() != 0 || viewer
@@ -603,9 +604,11 @@ abstract public class ModelSet extends ModelCollection {
 
   private BitSet modelsOf(BitSet bsAtoms, BitSet bsAllAtoms) {
     BitSet bsModels = new BitSet(modelCount);
-    for (int i = 0; i < atomCount; i++) {
+    boolean isAll = (bsAtoms == null);
+    int i0 = (isAll ? atomCount - 1 : bsAtoms.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsAtoms.nextSetBit(i + 1))) {
       int modelIndex = models[atoms[i].modelIndex].trajectoryBaseIndex;
-      if (bsAtoms != null && !bsAtoms.get(i) || isJmolDataFrame(modelIndex))
+      if (isJmolDataFrame(modelIndex))
         continue;
       bsModels.set(modelIndex);
       bsAllAtoms.set(i);
@@ -846,9 +849,8 @@ abstract public class ModelSet extends ModelCollection {
 
     // clear references to this frame if it is a dataFrame
 
-    for (int i = 0; i < modelCount; i++)
-      if (bsModels.get(i))
-        clearDataFrameReference(i);
+    for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
+      clearDataFrameReference(i);
 
     BitSet bsDeleted;
     if (nModelsDeleted == modelCount) {
@@ -878,7 +880,7 @@ abstract public class ModelSet extends ModelCollection {
     int oldModelCount = modelCount;
     // delete bonds
     BitSet bsBonds = getBondsForSelectedAtoms(bsDeleted, true);
-    deleteBonds(bsBonds);
+    deleteBonds(bsBonds, true);
 
     // main deletion cycle
     for (int i = 0, mpt = 0; i < oldModelCount; i++) {
@@ -886,11 +888,11 @@ abstract public class ModelSet extends ModelCollection {
         mpt++;
         continue;
       }
-      int nAtoms = oldModels[i].atomCount;
+      int nAtoms = oldModels[i].getAtomCount();
       if (nAtoms == 0)
         continue;
       nAtomsDeleted += nAtoms;
-      BitSet bs = oldModels[i].bsAtoms;
+      BitSet bs = oldModels[i].getAtomBitSet();
       int firstAtomIndex = oldModels[i].firstAtomIndex;
 
       // delete from symmetry set
@@ -1013,20 +1015,21 @@ abstract public class ModelSet extends ModelCollection {
     XmlUtil.openTag(sb, "molecule");
     XmlUtil.openTag(sb, "atomArray");
     BitSet bsAtoms = new BitSet();
-    for (int i = 0; i < atomCount; i++) {
-      if (!bs.get(i) || --atomsMax == 0)
-        continue;
-      String name = atoms[i].getAtomName();
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      if (--atomsMax < 0)
+        break;
+      Atom atom = atoms[i];
+      String name = atom.getAtomName();
       TextFormat.simpleReplace(name, "\"", "''");
-      bsAtoms.set(atoms[i].index);
+      bsAtoms.set(atom.index);
       XmlUtil
           .appendTag(sb, "atom/", new String[] { 
-              "id", "a" + (atoms[i].index + 1),
-              "title", atoms[i].getAtomName(),
-              "elementType", atoms[i].getElementSymbol(), 
-              "x3", "" + atoms[i].x, 
-              "y3", "" + atoms[i].y, 
-              "z3", "" + atoms[i].z });
+              "id", "a" + (atom.index + 1),
+              "title", atom.getAtomName(),
+              "elementType", atom.getElementSymbol(), 
+              "x3", "" + atom.x, 
+              "y3", "" + atom.y, 
+              "z3", "" + atom.z });
     }
     XmlUtil.closeTag(sb, "atomArray");
     if (addBonds) {

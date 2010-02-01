@@ -331,9 +331,9 @@ public class _VrmlExporter extends __CartesianExporter {
   protected void outputColorIndices(int[][] indices, int nPolygons, BitSet bsFaces,
                                   int faceVertexMax, Hashtable htColixes,
                                   short[] colixes, short[] polygonColixes) {
-    for (int i = nPolygons; --i >= 0;) {
-      if (bsFaces != null && !bsFaces.get(i))
-        continue;
+    boolean isAll = (bsFaces == null);
+    int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) {
       if (polygonColixes == null) {
         output(htColixes.get("" + colixes[indices[i][0]]) + " "
             + htColixes.get("" + colixes[indices[i][1]]) + " "

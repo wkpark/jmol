@@ -37,6 +37,7 @@ import org.jmol.modelset.Bond;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.viewer.JmolConstants;
@@ -109,8 +110,8 @@ public class Minimizer implements MinimizerInterface {
     return null;
   }
   
-  Hashtable constraintMap;
-  
+  private Hashtable constraintMap;
+
   private void addConstraint(Object[] c) {
     if (c == null)
       return;
@@ -202,7 +203,7 @@ public class Minimizer implements MinimizerInterface {
       return false;
     }
 
-    if (!BitSetUtil.compareBits(bsSelected, this.bsSelected)
+    if (!BitSetUtil.areEqual(bsSelected, this.bsSelected)
         && !setupMinimization()) {
       clear();
       return false;
@@ -240,24 +241,22 @@ public class Minimizer implements MinimizerInterface {
   }
 
   private boolean setupMinimization() {
-    
+
     // add all atoms
 
     atomMap = new int[atomCountFull];
     minAtoms = new MinAtom[atomCount];
     int elemnoMax = 0;
     BitSet bsElements = new BitSet();
-    for (int i = 0, pt = 0; i < atomCountFull; i++) {
+    for (int i = bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = bsAtoms
+        .nextSetBit(i + 1), pt++) {
       Atom atom = atoms[i];
-      if (bsAtoms.get(i)) {
-        atomMap[i] = pt;
-        int atomicNo = atoms[i].getElementNumber();
-        elemnoMax = Math.max(elemnoMax, atomicNo);
-        bsElements.set(atomicNo);
-        minAtoms[pt] = new MinAtom(pt, atom, new double[] { atom.x, atom.y,
-            atom.z }, null);
-        pt++;
-      }
+      atomMap[i] = pt;
+      int atomicNo = atoms[i].getElementNumber();
+      elemnoMax = Math.max(elemnoMax, atomicNo);
+      bsElements.set(atomicNo);
+      minAtoms[pt] = new MinAtom(pt, atom, new double[] { atom.x, atom.y,
+          atom.z }, null);
     }
 
     Logger.info(GT._("{0} atoms will be minimized.", "" + atomCount));
@@ -266,31 +265,30 @@ public class Minimizer implements MinimizerInterface {
     // add all bonds
     Vector bondInfo = new Vector();
     bondCount = 0;
-    for (int i = 0; i < atomCountFull; i++)
-      if (bsAtoms.get(i)) {
-        Bond[] bonds = atoms[i].getBonds();
-        if (bonds != null)
-          for (int j = 0; j < bonds.length; j++) {
-            int i2 = bonds[j].getOtherAtom(atoms[i]).getIndex();
-            if (i2 > i && bsAtoms.get(i2)) {
-              int bondOrder = bonds[j].getOrder();
-              switch (bondOrder) {
-              case 1:
-              case 2:
-              case 3:
-                break;
-              case JmolConstants.BOND_AROMATIC:
-                bondOrder = 5;
-                break;
-              default:
-                bondOrder = 1;
-              }
-              bondCount++;
-              bondInfo.addElement(new int[] { atomMap[i], atomMap[i2],
-                  bondOrder });
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
+      Bond[] bonds = atoms[i].getBonds();
+      if (bonds != null)
+        for (int j = 0; j < bonds.length; j++) {
+          int i2 = bonds[j].getOtherAtom(atoms[i]).getIndex();
+          if (i2 > i && bsAtoms.get(i2)) {
+            int bondOrder = bonds[j].getOrder();
+            switch (bondOrder) {
+            case 1:
+            case 2:
+            case 3:
+              break;
+            case JmolConstants.BOND_AROMATIC:
+              bondOrder = 5;
+              break;
+            default:
+              bondOrder = 1;
             }
+            bondCount++;
+            bondInfo
+                .addElement(new int[] { atomMap[i], atomMap[i2], bondOrder });
           }
-      }
+        }
+    }
     int[] atomIndexes;
 
     minBonds = new MinBond[bondCount];
@@ -308,7 +306,7 @@ public class Minimizer implements MinimizerInterface {
     for (int i = 0; i < atomCount; i++)
       atomIndexes = minAtoms[i].getBondedAtomIndexes();
 
-    //set the atom types
+    // set the atom types
 
     Logger.info("minimize: setting atom types...");
 
@@ -324,9 +322,9 @@ public class Minimizer implements MinimizerInterface {
       if (smarts == null)
         continue;
       BitSet search = getSearch(smarts, elemnoMax, bsElements);
-      //if the 0 bit in bsElements gets set, then the element is not present,
-      //and there is no need to search for it;
-      //if search is null, then we are done -- max elemno exceeded
+      // if the 0 bit in bsElements gets set, then the element is not present,
+      // and there is no need to search for it;
+      // if search is null, then we are done -- max elemno exceeded
       if (bsElements.get(0))
         bsElements.clear(0);
       else if (search == null)
@@ -336,7 +334,7 @@ public class Minimizer implements MinimizerInterface {
           if (bsAtoms.get(j)) {
             if (search.get(j)) {
               minAtoms[pt].type = data[1];
-              //System.out.println("pt" +pt + data[1]);
+              // System.out.println("pt" +pt + data[1]);
             }
             pt++;
           }
@@ -358,8 +356,7 @@ public class Minimizer implements MinimizerInterface {
 
     if (steps > 0) {
       bsTaint = BitSetUtil.copy(bsAtoms);
-      if (bsFixed != null)
-        BitSetUtil.andNot(bsTaint, bsFixed);
+      BitSetUtil.andNot(bsTaint, bsFixed);
       viewer.setTaintedAtoms(bsTaint, AtomCollection.TAINT_COORD);
     }
     return true;
@@ -372,12 +369,10 @@ public class Minimizer implements MinimizerInterface {
     bsMinFixed = null;
     if (bsFixed != null) {
       bsMinFixed = new BitSet();
-      for (int i = 0, pt = 0; i < atomCountFull; i++)
-        if (bsAtoms.get(i)) {
-          if (bsFixed.get(i))
-            bsMinFixed.set(pt);
-          pt++;
-        }
+      for (int i = bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = bsAtoms
+          .nextSetBit(i + 1), pt++)
+        if (bsFixed.get(i))
+          bsMinFixed.set(pt);
     }
   }
   //////////////// atom type support //////////////////

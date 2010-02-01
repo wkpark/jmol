@@ -314,7 +314,7 @@ public abstract class AtomSetCollectionReader {
       }
     }
     if (bsModels != null && (firstLastStep == null || firstLastStep[1] != -1))
-      lastModelNumber = BitSetUtil.length(bsModels);
+      lastModelNumber = bsModels.length();
     symmetryRange = (htParams.containsKey("symmetryRange") ? ((Float) htParams
         .get("symmetryRange")).floatValue() : 0);
 

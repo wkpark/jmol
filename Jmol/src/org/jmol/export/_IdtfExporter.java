@@ -669,13 +669,15 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
-                                  short[] colixes, int[][] indices,
-                                  short[] polygonColixes,
-                                  int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset) {
+                               short[] colixes, int[][] indices,
+                               short[] polygonColixes, int nVertices,
+                               int nPolygons, int nFaces, BitSet bsFaces,
+                               int faceVertexMax, short colix,
+                               Vector colorList, Hashtable htColixes,
+                               Point3f offset) {
     addColix(colix, polygonColixes != null || colixes != null);
     if (polygonColixes != null) {
-      //     output(" colorPerVertex='FALSE'\n");
+      // output(" colorPerVertex='FALSE'\n");
       return; // for now TODO
     }
 
@@ -686,44 +688,44 @@ public class _IdtfExporter extends __CartesianExporter {
     int nCoord = getCoordinateMap(vertices, map);
     outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);
 
-    // normals, part 1  
-    
+    // normals, part 1
+
     StringBuffer sbFaceNormalIndices = sbTemp = new StringBuffer();
     Vector vNormals = null;
     if (normals != null) {
       vNormals = new Vector();
       map = getNormalMap(normals, nVertices, vNormals);
       outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);
-    }      
-    
+    }
+
     map = null;
 
     // colors, part 1
 
     StringBuffer sbColorIndexes = new StringBuffer();
     if (colorList != null) {
-      for (int i = nPolygons; --i >= 0;) {
-        if (bsFaces != null && !bsFaces.get(i))
-          continue;
+      boolean isAll = (bsFaces == null);
+      int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
+      for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) {
         if (polygonColixes == null) {
-          sbColorIndexes.append(" " + htColixes.get("" + colixes[indices[i][0]]) + " "
+          sbColorIndexes.append(" "
+              + htColixes.get("" + colixes[indices[i][0]]) + " "
               + htColixes.get("" + colixes[indices[i][1]]) + " "
               + htColixes.get("" + colixes[indices[i][2]]));
           if (faceVertexMax == 4 && indices[i].length == 4)
-            sbColorIndexes.append(" " + htColixes.get("" + colixes[indices[i][0]]) + " "
+            sbColorIndexes.append(" "
+                + htColixes.get("" + colixes[indices[i][0]]) + " "
                 + htColixes.get("" + colixes[indices[i][2]]) + " "
                 + htColixes.get("" + colixes[indices[i][3]]));
         } else {
-          //TODO polygon colixes
-          //output(htColixes.get("" + polygonColixes[i]) + "\n");
+          // TODO polygon colixes
+          // output(htColixes.get("" + polygonColixes[i]) + "\n");
         }
       }
-    }    
+    }
 
-
-    
     // coordinates, part 2
-    
+
     StringBuffer sbCoords = sbTemp = new StringBuffer();
     outputVertices(vertices, nVertices, offset);
 
@@ -746,15 +748,13 @@ public class _IdtfExporter extends __CartesianExporter {
       nColors = colorList.size();
       for (int i = 0; i < nColors; i++) {
         short c = ((Short) colorList.get(i)).shortValue();
-        sbColors.append(rgbFractionalFromColix(c, ' '))
-                 .append(" ")
-                 .append(translucencyFractionalFromColix(c))
-                 .append(" ");
+        sbColors.append(rgbFractionalFromColix(c, ' ')).append(" ").append(
+            translucencyFractionalFromColix(c)).append(" ");
       }
     }
     String key = "mesh" + (++iObj);
-    addMeshData(key, nFaces, nCoord, nNormals, nColors, sbFaceCoordIndices, sbFaceNormalIndices,
-        sbColorIndexes, sbCoords, sbNormals, sbColors);
+    addMeshData(key, nFaces, nCoord, nNormals, nColors, sbFaceCoordIndices,
+        sbFaceNormalIndices, sbColorIndexes, sbCoords, sbNormals, sbColors);
     Vector v = new Vector();
     htNodes.put(key, v);
     addShader(key, colix);

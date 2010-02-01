@@ -30,6 +30,8 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
+
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
@@ -101,8 +103,10 @@ abstract class AtomDataReader extends VolumeDataReader {
     modelIndex = atomData.firstModelIndex;
     int nSelected = 0;
     boolean needRadius = false;
-    for (int i = 0; i < atomCount; i++) {
-      if ((params.bsSelected == null || params.bsSelected.get(i)) && (!bsMyIgnored.get(i))) {
+    boolean isAll = (params.bsSelected == null); 
+    int i0 = (isAll ? atomCount - 1 : params.bsSelected.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : params.bsSelected.nextSetBit(i + 1))) {
+      if (!bsMyIgnored.get(i)) {
         if (doUsePlane
             && Math.abs(volumeData.distancePointToPlane(atomData.atomXyz[i])) > 2 * (atomData.atomRadius[i] = getWorkingRadius(
                 i, marginAtoms)))
@@ -115,20 +119,9 @@ abstract class AtomDataReader extends VolumeDataReader {
         atomData.atomRadius[i] = getWorkingRadius(i, marginAtoms);
       }
     }
-   
     float rH = (doAddHydrogens ? getWorkingRadius(-1, marginAtoms) : 0);
-    BitSet atomSet = new BitSet();
-    int firstSet = -1;
-    int lastSet = 0;
-    myAtomCount = 0;
-    for (int i = 0; i < atomCount; i++)
-      if (bsMySelected.get(i)) {
-        ++myAtomCount;
-        atomSet.set(i);
-        if (firstSet == -1)
-          firstSet = i;
-        lastSet = i;
-      }
+    myAtomCount = BitSetUtil.cardinalityOf(bsMySelected);
+    BitSet atomSet = BitSetUtil.copy(bsMySelected);
     int nH = 0;
     atomProp = null;
     if (myAtomCount > 0) {
@@ -168,9 +161,7 @@ abstract class AtomDataReader extends VolumeDataReader {
       }
       myAtomCount = nH;
       float[] props = params.theProperty;
-      for (int i = firstSet; i <= lastSet; i++) {
-        if (!atomSet.get(i))
-          continue;
+      for (int i = atomSet.nextSetBit(0); i >= 0; i = atomSet.nextSetBit(i+1)) {
         if (atomProp != null)
           atomProp[myAtomCount] = (props != null && i < props.length ? props[i]
               : Float.NaN);
@@ -206,12 +197,10 @@ abstract class AtomDataReader extends VolumeDataReader {
     Point3f pt = new Point3f();
 
     BitSet bsNearby = new BitSet();
-    firstSet = -1;
-    lastSet = 0;
-    for (int i = 0; i < atomCount; i++) {
-      if (atomSet.get(i) || bsMyIgnored.get(i))
-        continue;
-      float rA = atomData.atomRadius[i];
+    BitSet bs = new BitSet();
+    bs.or(atomSet);
+    BitSetUtil.andNot(bs, bsMyIgnored);
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {      float rA = atomData.atomRadius[i];
       if (params.thePlane != null
           && Math.abs(volumeData.distancePointToPlane(atomData.atomXyz[i])) > 2 * rA)
         continue;
@@ -219,22 +208,16 @@ abstract class AtomDataReader extends VolumeDataReader {
       if (pt.x + rA > xyzMin.x && pt.x - rA < xyzMax.x && pt.y + rA > xyzMin.y
           && pt.y - rA < xyzMax.y && pt.z + rA > xyzMin.z
           && pt.z - rA < xyzMax.z) {
-        if (firstSet == -1)
-          firstSet = i;
-        lastSet = i;
         bsNearby.set(i);
         nearbyAtomCount++;
       }
     }
-
     int nAtoms = myAtomCount;
     if (nearbyAtomCount != 0) {
       nAtoms += nearbyAtomCount;
       atomRadius = (float[]) ArrayUtil.setLength(atomRadius, nAtoms);
       atomXyz = (Point3f[]) ArrayUtil.setLength(atomXyz, nAtoms);
-      for (int i = firstSet; i <= lastSet; i++) {
-        if (!bsNearby.get(i))
-          continue;
+      for (int i = bsNearby.nextSetBit(0); i >= 0; i = bsNearby.nextSetBit(i+1)) {
         atomXyz[myAtomCount] = atomData.atomXyz[i];
         atomRadius[myAtomCount++] = atomData.atomRadius[i];
       }

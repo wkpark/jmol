@@ -29,6 +29,7 @@ import java.util.BitSet;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
@@ -257,10 +258,10 @@ abstract public class BondCollection extends AtomCollection {
                        BitSet bsB, float energy) {
     if (atom1 == null || atom2 == null)
       return;
-    boolean atom1InSetA = bsA == null || bsA.get(atom1.index);
-    boolean atom1InSetB = bsB == null || bsB.get(atom1.index);
-    boolean atom2InSetA = bsA == null || bsA.get(atom2.index);
-    boolean atom2InSetB = bsB == null || bsB.get(atom2.index);
+    boolean atom1InSetA = (bsA == null || bsA.get(atom1.index));
+    boolean atom1InSetB = (bsB == null || bsB.get(atom1.index));
+    boolean atom2InSetA = (bsA == null || bsA.get(atom2.index));
+    boolean atom2InSetB = (bsB == null || bsB.get(atom2.index));
     if (atom1InSetA && atom2InSetB || atom1InSetB && atom2InSetA)
       getOrAddHBond(atom1, atom2, order, (short) 1, bsPseudoHBonds, energy);
   }
@@ -354,18 +355,25 @@ abstract public class BondCollection extends AtomCollection {
       }
     }
     if (nDeleted > 0) 
-      deleteBonds(bsDelete);
+      deleteBonds(bsDelete, false);
     return new int[] {0, nDeleted};
   }
 
-  public void deleteBonds(BitSet bs) {
+  public void deleteBonds(BitSet bsBond, boolean isFullModel) {
     int iDst = 0;
+    Model mlast = null;
     for (int iSrc = 0; iSrc < bondCount; ++iSrc) {
       Bond bond = bonds[iSrc];
-      if (!bs.get(iSrc))
-        setBond(iDst++, bond);
-      else
+      if (bsBond.get(iSrc)) {
+        if (!isFullModel) {
+          Model m = bond.atom1.group.chain.model;
+          if (m != mlast)
+            (mlast = m).clearAtomCounts();
+        }
         bond.deleteAtomReferences();
+      } else {
+        setBond(iDst++, bond);
+      }
     }
     for (int i = bondCount; --i >= iDst;)
       bonds[i] = null;
@@ -373,9 +381,9 @@ abstract public class BondCollection extends AtomCollection {
     BitSet[] sets = (BitSet[]) viewer.getShapeProperty(
         JmolConstants.SHAPE_STICKS, "sets");
     for (int i = 0; i < sets.length; i++)
-      BitSetUtil.deleteBits(sets[i], bs);
-    BitSetUtil.deleteBits(bsPseudoHBonds, bs);
-    BitSetUtil.deleteBits(bsAromatic, bs);
+      BitSetUtil.deleteBits(sets[i], bsBond);
+    BitSetUtil.deleteBits(bsPseudoHBonds, bsBond);
+    BitSetUtil.deleteBits(bsAromatic, bsBond);
   }
 
 
@@ -482,8 +490,9 @@ abstract public class BondCollection extends AtomCollection {
 
     bsAromaticSingle = new BitSet();
     bsAromaticDouble = new BitSet();
-    for (int i = bondCount; --i >= 0;)
-      if (bsBonds == null || bsBonds.get(i)) {
+    boolean isAll = (bsBonds == null);
+    int i0 = (isAll ? bondCount - 1 : bsBonds.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsBonds.nextSetBit(i + 1))) {
         Bond bond = bonds[i];
         if (bsAromatic.get(i))
           bond.setOrder(JmolConstants.BOND_AROMATIC);
@@ -501,8 +510,9 @@ abstract public class BondCollection extends AtomCollection {
       }
     // main recursive loop
     Bond bond;
-    for (int i = bondCount; --i >= 0;)
-      if (bsBonds == null || bsBonds.get(i)) {
+    isAll = (bsBonds == null);
+    i0 = (isAll ? bondCount - 1 : bsBonds.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsBonds.nextSetBit(i + 1))) {
         bond = bonds[i];
         if (!bond.is(JmolConstants.BOND_AROMATIC)
             || bsAromaticDouble.get(i) || bsAromaticSingle.get(i))
@@ -511,8 +521,7 @@ abstract public class BondCollection extends AtomCollection {
           assignAromaticSingle(bond);
       }
     // all done: do the actual assignments and clear arrays.
-    for (int i = bondCount; --i >= 0;)
-      if (bsBonds == null || bsBonds.get(i)) {
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsBonds.nextSetBit(i + 1))) {
         bond = bonds[i];
         if (bsAromaticDouble.get(i)) {
           if (!bond.is(JmolConstants.BOND_AROMATIC_DOUBLE)) {
@@ -662,8 +671,9 @@ abstract public class BondCollection extends AtomCollection {
   
   private void assignAromaticNandO(BitSet bsSelected) {
     Bond bond;
-    for (int i = bondCount; --i >= 0;)
-      if (bsSelected == null || bsSelected.get(i)) {
+    boolean isAll = (bsSelected == null);
+    int i0 = (isAll ? bondCount - 1 : bsSelected.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
         bond = bonds[i];
         if (!bond.is(JmolConstants.BOND_AROMATIC_SINGLE))
           continue;
@@ -718,9 +728,7 @@ abstract public class BondCollection extends AtomCollection {
     case Token.bonds:
       bs = new BitSet();
       BitSet bsBonds = (BitSet) specInfo;
-      for (int i = bondCount; --i >= 0;) {
-        if (!bsBonds.get(i))
-          continue;
+      for (int i = bsBonds.nextSetBit(0); i >= 0; i = bsBonds.nextSetBit(i + 1)) {
         bs.set(bonds[i].atom1.index);
         bs.set(bonds[i].atom2.index);
       }

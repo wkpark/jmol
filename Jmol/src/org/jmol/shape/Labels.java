@@ -539,14 +539,13 @@ public class Labels extends AtomShape {
   }
 
   public String getShapeState() {
-    if (!isActive)
+    if (!isActive || bsSizeSet == null)
       return "";
     Hashtable temp = new Hashtable();
     Hashtable temp2 = new Hashtable();
     Hashtable temp3 = new Hashtable();
-    for (int i = atomCount; --i >= 0;) {
-      if (bsSizeSet == null || !bsSizeSet.get(i))
-        continue;
+    for (int i = bsSizeSet.nextSetBit(0); i >= 0; i = bsSizeSet
+        .nextSetBit(i + 1)) {
       setStateInfo(temp, i, "label " + Escape.escape(formats[i]));
       if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp2, i, getColorCommand("label", paletteIDs[i],
@@ -559,10 +558,14 @@ public class Labels extends AtomShape {
         setStateInfo(temp2, i, "set labelScaleReference " + (10000f / sppm));
       if (offsets != null && offsets.length > i) {
         int offsetFull = offsets[i];
-        setStateInfo(temp2, i, "set " + ((offsetFull & EXACT_OFFSET_FLAG) == EXACT_OFFSET_FLAG 
-            ? "labelOffsetExact " : "labelOffset ") 
-              + Object2d.getXOffset(offsetFull >> FLAG_OFFSET)
-              + " " + (-Object2d.getYOffset(offsetFull >> FLAG_OFFSET)));
+        setStateInfo(
+            temp2,
+            i,
+            "set "
+                + ((offsetFull & EXACT_OFFSET_FLAG) == EXACT_OFFSET_FLAG ? "labelOffsetExact "
+                    : "labelOffset ")
+                + Object2d.getXOffset(offsetFull >> FLAG_OFFSET) + " "
+                + (-Object2d.getYOffset(offsetFull >> FLAG_OFFSET)));
         String align = Object2d.getAlignment(offsetFull >> 2);
         String pointer = Object2d.getPointer(offsetFull);
         if (pointer.length() > 0)
@@ -571,14 +574,16 @@ public class Labels extends AtomShape {
           setStateInfo(temp2, i, "set labelFront");
         else if ((offsetFull & GROUP_FLAG) != 0)
           setStateInfo(temp2, i, "set labelGroup");
-        //labelAlignment must come last, so we put it in a separate hash table
+        // labelAlignment must come last, so we put it in a separate hash
+        // table
         if (align.length() > 0)
           setStateInfo(temp3, i, "set labelAlignment " + align);
       }
       if (mads[i] < 0)
         setStateInfo(temp2, i, "set toggleLabel");
       if (bsFontSet != null && bsFontSet.get(i))
-        setStateInfo(temp2, i, getFontCommand("label", Font3D.getFont3D(fids[i])));
+        setStateInfo(temp2, i, getFontCommand("label", Font3D
+            .getFont3D(fids[i])));
     }
     return getShapeCommands(temp, temp2, atomCount)
         + getShapeCommands(null, temp3, atomCount);

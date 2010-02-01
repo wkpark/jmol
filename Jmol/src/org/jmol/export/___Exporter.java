@@ -362,29 +362,30 @@ public abstract class ___Exporter {
   }
   
   /**
-   * input an array of colixes; returns a Vector for the color list and a HashTable
-   * for correlating the colix with a specific color index
-   * 
-   * @param i0
+   * input an array of colixes; returns a Vector for the color list and a
+   * HashTable for correlating the colix with a specific color index
+   * @param i00 
    * @param colixes
    * @param nVertices
    * @param bsSelected
    * @param htColixes
-   * @return             Vector and HashTable
+   * @return Vector and HashTable
    */
-  protected Vector getColorList(int i0, short[] colixes, int nVertices, BitSet bsSelected, Hashtable htColixes) {
+  protected Vector getColorList(int i00, short[] colixes, int nVertices,
+                                BitSet bsSelected, Hashtable htColixes) {
     String color;
     int nColix = 0;
     Vector list = new Vector();
-    for (int i = 0; i < nVertices; i++) 
-      if (bsSelected == null || bsSelected.get(i)) {
-        color = "" + colixes[i];
-        if (!htColixes.containsKey(color)) {
-          list.add(new Short(colixes[i]));
-          htColixes.put(color, "" + (i0 + nColix++));
-        }
+    boolean isAll = (bsSelected == null);
+    int i0 = (isAll ? nVertices - 1 : bsSelected.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
+      color = "" + colixes[i];
+      if (!htColixes.containsKey(color)) {
+        list.add(new Short(colixes[i]));
+        htColixes.put(color, "" + (i00 + nColix++));
       }
-   return list;
+    }
+    return list;
   }
 
   protected static MeshSurface getConeMesh(Point3f centerBase, Matrix3f matRotateScale, short colix) {
@@ -455,9 +456,10 @@ public abstract class ___Exporter {
     if (nVertices == 0)
       return;
     int nFaces = 0;
-    for (int i = nPolygons; --i >= 0;)
-      if (bsFaces == null || bsFaces.get(i))
-        nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
+    boolean isAll = (bsFaces == null);
+    int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) 
+      nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
     if (nFaces == 0)
       return;
     Hashtable htColixes = new Hashtable();

@@ -1,4 +1,4 @@
-/* Jmol 11.9 script library Jmol.js  4:12 PM 1/24/2010 Bob Hanson
+/* Jmol 11.9 script library Jmol.js  6:56 AM 1/20/2010 Bob Hanson
 
  checkbox heirarchy -- see http://chemapps.stolaf.edu/jmol/docs/examples-11/check.htm
 
@@ -78,7 +78,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 //               jmolHref([myfunc,"my param 1", "my param 2"], "testing")
 //               function myfunc(jmolControlObject, [myfunc,"my param 1", "my param 2"], target){...}
 //               and allows much more flexibility with responding to controls
-// bh 1/2010  -- loadAppletInline() trashing JVXL file isosurfaces -- requires Jmol 11.9.22; no adverse effect for previous versions
+
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
 
@@ -992,18 +992,17 @@ function _jmolReadyCallback(name) {
 }
 
 function _jmolSterilizeScript(script) {
-  var inlineScript = script.replace(/'/g, "&#39;");
+  script = script.replace(/'/g, "&#39;");
   if (_jmol.debugAlert)
-    alert("script:\n" + inlineScript);
-  return inlineScript;
+    alert("script:\n" + script);
+  return script;
 }
 
 function _jmolSterilizeInline(model) {
-  var inlineModel =
-    model.replace(/\r|\n|\r\n/g, (model.indexOf("|") >= 0 ? "\\/n" : "|")).replace(/'/g, "&#39;");
+  model = model.replace(/\r|\n|\r\n/g, (model.indexOf("|") >= 0 ? "\\/n" : "|")).replace(/'/g, "&#39;");
   if (_jmol.debugAlert)
-    alert("inline model:\n" + inlineModel);
-  return inlineModel;
+    alert("inline model:\n" + model);
+  return model;
 }
 
 function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, title) {

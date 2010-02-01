@@ -25,7 +25,6 @@
 package org.jmol.g3d;
 
 import org.jmol.geodesic.Geodesic;
-import org.jmol.util.BitSetUtil;
 
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
@@ -70,7 +69,7 @@ class Normix3D {
       transformedVectors[i] = new Vector3f();
 
     if (TIMINGS) {
-      Logger.debug("begin timings!");
+      Logger.info("begin timings!");
       for (int i = 0; i < normixCount; ++i) {
         short normix = getNormix(vertexVectors[i]);
         System.out.println("draw normix" + i + " {" + vertexVectors[i].x + " " + vertexVectors[i].y + " " + vertexVectors[i].z + "} {0 0 0} \""+i+"\"");
@@ -86,8 +85,7 @@ class Normix3D {
       
       int runCount = 100000;
       short[] neighborVertexes = neighborVertexesArrays[NORMIX_GEODESIC_LEVEL];
-      if (Logger.debugging)
-        Logger.startTimer();
+      Logger.startTimer();
       for (int i = 0; i < runCount; ++i) {
         short foo = (short)(rand.nextDouble() * normixCount);
         int offsetNeighbor;
@@ -103,10 +101,8 @@ class Normix3D {
         vSum.add(vFoo, vBar);
         vSum.normalize();
       }
-      if (Logger.debugging) {
-        Logger.checkTimer("base runtime for " + runCount);
-        Logger.startTimer();
-      }
+      Logger.checkTimer("base runtime for " + runCount);
+      Logger.startTimer();
       for (int i = 0; i < runCount; ++i) {
         short foo = (short)(rand.nextDouble() * normixCount);
         int offsetNeighbor;
@@ -144,8 +140,7 @@ class Normix3D {
           throw new NullPointerException();
         }
       }
-      if (Logger.debugging)
-        Logger.checkTimer("normix2 runtime for " + runCount);
+      Logger.checkTimer("normix2 runtime for " + runCount);
     }
   }
 
@@ -179,7 +174,7 @@ class Normix3D {
       champion = 11;
       t = z - (-1);
     }
-    BitSetUtil.clear(bsConsidered);
+    bsConsidered.clear();
     bsConsidered.set(champion);
     double championDist2 = x*x + y*y + t*t;
     for (int lvl = 0; lvl <= geodesicLevel; ++lvl) {

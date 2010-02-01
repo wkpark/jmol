@@ -85,9 +85,8 @@ public class Parser {
     int nTokens = tokens.length;
     int n = 0;
     int max = 0;
-    for (int i = 0; i < len && n < nTokens; i++) {
-      if (bs != null && !bs.get(i))
-        continue;
+    boolean haveBitSet = (bs != null);
+    for (int i = 0; i < len && n < nTokens; i = (haveBitSet ? bs.nextSetBit(i + 1) : i + 1)) {
       float f;
       while (Float.isNaN(f = Parser.parseFloat(tokens[n++])) && n < nTokens) {
       }
@@ -149,9 +148,10 @@ public class Parser {
    * @param data
    */
   public static void setSelectedFloats(float f, BitSet bs, float[] data) {
-    for (int i = 0; i < data.length; i++)
-      if (bs == null || bs.get(i))
-        data[i] = f;
+    boolean isAll = (bs == null);
+    int i0 = (isAll ? 0 : bs.nextSetBit(0));
+    for (int i = i0; i >= 0 && i < data.length; i = (isAll ? i + 1 : bs.nextSetBit(i + 1)))
+      data[i] = f;
   }
   
   public static float[] extractData(String data, int field, int nBytes,
@@ -195,7 +195,7 @@ public class Parser {
     int len = data.length;
     int minLen = (fieldColumnCount <= 0 ? Math.max(field, fieldMatch) : Math
         .max(field + fieldColumnCount, fieldMatch + fieldMatchColumnCount) - 1);
-
+    boolean haveBitSet = (bs != null);
     for (; iLine < nLines; iLine++) {
       String line = str.substring(pt, lines[iLine]).trim();
       pt = lines[iLine];
@@ -222,14 +222,16 @@ public class Parser {
             || (iData = matchData[iData]) < 0)
           continue;
         // and we set bs to indicate we are updating that value
-        if (bs != null)
+        if (haveBitSet)
           bs.set(iData);
       } else {
         // no match data
         // bs here indicates the specific data elements that need filling
-        while (++i < len && bs != null && !bs.get(i)) {
-        }
-        if (i >= len)
+        if (haveBitSet) 
+          i = bs.nextSetBit(i + 1);
+        else
+          i++;
+        if (i < 0 || i >= len)
           return data;
         iData = i;
       }

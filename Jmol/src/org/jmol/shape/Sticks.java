@@ -200,29 +200,41 @@ public class Sticks extends Shape {
     Hashtable temp2 = new Hashtable();
     boolean haveTainted = false;
     Bond[] bonds = modelSet.getBonds();
-    for (int i = modelSet.getBondCount(); --i >= 0;) {
-      Bond bond = bonds[i];
-      short r;
-      if (reportAll || bsSizeSet != null && bsSizeSet.get(i))
+    short r;
+    int bondCount = modelSet.getBondCount();
+
+    if (reportAll || bsSizeSet != null) {
+      int i0 = (reportAll ? bondCount - 1 : bsSizeSet.nextSetBit(0));
+      for (int i = i0; i >= 0; i = (reportAll ? i - 1 : bsSizeSet
+          .nextSetBit(i + 1)))
         setStateInfo(temp, i, "wireframe "
-            + ((r = bond.getMad()) == 1 ? "on" : "" + (r / 2000f)));
-      if (reportAll || bsOrderSet != null && bsOrderSet.get(i)
-          && (bond.getOrder() & JmolConstants.BOND_NEW) == 0)
-        setStateInfo(temp, i, "bondOrder "
-            + JmolConstants.getBondOrderNameFromOrder(bond.getOrder()));
-      if (bsColixSet != null && bsColixSet.get(i)) {
-        short colix = bond.getColix();
+            + ((r = bonds[i].getMad()) == 1 ? "on" : "" + (r / 2000f)));
+    }
+    if (reportAll || bsOrderSet != null) {
+      int i0 = (reportAll ? bondCount - 1 : bsSizeSet.nextSetBit(0));
+      for (int i = i0; i >= 0; i = (reportAll ? i - 1 : bsSizeSet
+          .nextSetBit(i + 1))) {
+        Bond bond = bonds[i];
+        if (reportAll || (bond.getOrder() & JmolConstants.BOND_NEW) == 0)
+          setStateInfo(temp, i, "bondOrder "
+              + JmolConstants.getBondOrderNameFromOrder(bond.getOrder()));
+      }
+    }
+    if (bsColixSet != null)
+      for (int i = bsColixSet.nextSetBit(0); i >= 0; i = bsColixSet
+          .nextSetBit(i + 1)) {
+        short colix = bonds[i].getColix();
         if ((colix & Graphics3D.OPAQUE_MASK) == Graphics3D.USE_PALETTE)
           setStateInfo(temp, i, getColorCommand("bonds",
               JmolConstants.PALETTE_CPK, colix));
         else
           setStateInfo(temp, i, getColorCommand("bonds", colix));
       }
-    }
 
-    return getShapeCommands(temp, null, -1, "select BONDS") + "\n"
-        + (haveTainted ? getShapeCommands(temp2, null, -1, "select BONDS") + "\n"
-             : "");
+    return getShapeCommands(temp, null, -1, "select BONDS")
+        + "\n"
+        + (haveTainted ? getShapeCommands(temp2, null, -1, "select BONDS")
+            + "\n" : "");
   }
   
   public Point3fi checkObjectClicked(int x, int y, int modifiers,

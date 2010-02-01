@@ -369,9 +369,9 @@ public class _PovrayExporter extends __RayTracerExporter {
                                   int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
                                   int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset) {
     if (polygonColixes != null) {
-      for (int i = nPolygons; --i >= 0;) {
-        if (bsFaces != null && !bsFaces.get(i))
-          continue;
+      boolean isAll = (bsFaces == null);
+      int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
+      for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) {
         //if ((p++) % 10 == 0)
         //  output("\n");
         output("polygon { 4\n"); 
@@ -416,9 +416,9 @@ public class _PovrayExporter extends __RayTracerExporter {
       output("\n}\n");
     }
     output("face_indices { " + nFaces);
-    for (int i = nPolygons; --i >= 0;) {
-      if (bsFaces != null && !bsFaces.get(i))
-        continue;
+    boolean isAll = (bsFaces == null);
+    int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) {
       output(", <" + triad(indices[i]) + ">");
       if (colixes != null) {
         output("," + htColixes.get("" + colixes[indices[i][0]]));

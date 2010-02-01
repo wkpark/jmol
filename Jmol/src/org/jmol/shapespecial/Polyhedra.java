@@ -238,28 +238,25 @@ public class Polyhedra extends AtomShape {
   private void setVisible(boolean visible) {
     for (int i = polyhedronCount; --i >= 0;) {
       Polyhedron p = polyhedrons[i];
-      if (p == null)
-        continue;
-      if (centers.get(p.centralAtom.getIndex()))
+      if (p != null && centers.get(p.centralAtom.getIndex()))
         p.visible = visible;
     }
   }
 
   private void buildPolyhedra() {
     boolean useBondAlgorithm = radius == 0 || bondedOnly;
-    for (int i = atomCount; --i >= 0;)
-      if (centers.get(i)) {
-        Polyhedron p = (haveBitSetVertices ? constructBitSetPolyhedron(i)
-            : useBondAlgorithm ? constructBondsPolyhedron(i)
-                : constructRadiusPolyhedron(i));
-        if (p != null) {
-          if (polyhedronCount == polyhedrons.length)
-            polyhedrons = (Polyhedron[]) ArrayUtil.doubleLength(polyhedrons);
-          polyhedrons[polyhedronCount++] = p;
-        }
-        if (haveBitSetVertices)
-          return;
+    for (int i = centers.nextSetBit(0); i >= 0; i = centers.nextSetBit(i + 1)) {
+      Polyhedron p = (haveBitSetVertices ? constructBitSetPolyhedron(i)
+          : useBondAlgorithm ? constructBondsPolyhedron(i)
+              : constructRadiusPolyhedron(i));
+      if (p != null) {
+        if (polyhedronCount == polyhedrons.length)
+          polyhedrons = (Polyhedron[]) ArrayUtil.doubleLength(polyhedrons);
+        polyhedrons[polyhedronCount++] = p;
       }
+      if (haveBitSetVertices)
+        return;
+    }
   }
 
   private Polyhedron constructBondsPolyhedron(int atomIndex) {
@@ -287,9 +284,9 @@ public class Polyhedra extends AtomShape {
 
   private Polyhedron constructBitSetPolyhedron(int atomIndex) {
     int otherAtomCount = 0;
-    for (int i = atomCount; --i >= 0;)
-      if (bsVertices.get(i))
-        otherAtoms[otherAtomCount++] = atoms[i];
+    for (int i = bsVertices.nextSetBit(0); i >= 0; i = bsVertices
+        .nextSetBit(i + 1))
+      otherAtoms[otherAtomCount++] = atoms[i];
     return validatePolyhedronNew(atoms[atomIndex], otherAtomCount, otherAtoms);
   }
 

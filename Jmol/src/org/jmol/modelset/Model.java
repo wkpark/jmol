@@ -28,6 +28,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 
 import org.jmol.util.BitSetUtil;
+
 import org.jmol.viewer.StateManager.Orientation;
 
 public final class Model {
@@ -104,13 +105,50 @@ public final class Model {
   int dataSourceFrame = -1;
   String jmolData; // from a PDB remark "Jmol PDB-encoded data"
   String jmolFrameType;
-
   int firstAtomIndex;
-  int atomCount = -1;
-  BitSet bsAtoms;
   
-  int bondCount = -1;
+  // these next three are calculated only if necessary:
+  
+  private BitSet bsAtoms;
+  private int atomCount = -1;
+  private int bondCount = -1;
 
+  void clearAtomCounts() {
+    bsAtoms = null;
+    atomCount = -1;
+    bondCount = -1;
+  }
+
+  BitSet getAtomBitSet() {
+    if (bsAtoms != null)
+      return bsAtoms;
+    bsAtoms = new BitSet();
+    Atom[] atoms = modelSet.getAtoms();
+    for (int i = modelSet.getAtomCount(); --i >= firstAtomIndex; )
+      if (atoms[i].modelIndex == modelIndex)
+        bsAtoms.set(i);
+    return bsAtoms;
+  }
+  
+  int getAtomCount() {
+    if (atomCount > 0)
+      return atomCount;
+    atomCount = modelSet.getModelAtomBitSet(modelIndex,
+        false).cardinality();
+    return atomCount;
+  }
+    
+  int getBondCount() {
+    if (bondCount >= 0)
+      return bondCount;
+    Bond[] bonds = modelSet.getBonds();
+    bondCount = 0;
+    for (int i = modelSet.getBondCount(); --i >= 0;)
+      if (bonds[i].atom1.modelIndex == modelIndex)
+        bondCount++;
+    return bondCount;
+  }
+  
   int firstMolecule;
   int moleculeCount;
   

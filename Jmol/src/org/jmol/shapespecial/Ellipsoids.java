@@ -78,9 +78,8 @@ public class Ellipsoids extends AtomShape {
       return;
     float factor = Ellipsoids.getRadius(size);
     Object[] ellipsoid;
-    for (int i = atomCount; --i >= 0;)
-      if ((bsSelected == null || bsSelected.get(i))
-          && (ellipsoid = atoms[i].getEllipsoid()) != null) {
+    for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected.nextSetBit(i + 1))
+      if ((ellipsoid = atoms[i].getEllipsoid()) != null) {
         float[] lengths = (float[]) ellipsoid[1];
         for (int j = 3; --j >= 0;)
           lengths[j + 3] = lengths[j] * factor;
@@ -237,13 +236,15 @@ public class Ellipsoids extends AtomShape {
     if (isActive) {
       Hashtable temp = new Hashtable();
       Hashtable temp2 = new Hashtable();
-      for (int i = atomCount; --i >= 0;) {
-        if (bsSizeSet != null && bsSizeSet.get(i))
+      if (bsSizeSet != null)
+        for (int i = bsSizeSet.nextSetBit(0); i >= 0; i = bsSizeSet
+            .nextSetBit(i + 1))
           setStateInfo(temp, i, "Ellipsoids " + mads[i]);
-        if (bsColixSet != null && bsColixSet.get(i))
+      if (bsColixSet != null)
+        for (int i = bsColixSet.nextSetBit(0); i >= 0; i = bsColixSet
+            .nextSetBit(i + 1))
           setStateInfo(temp2, i, getColorCommand("Ellipsoids", paletteIDs[i],
               colixes[i]));
-      }
       sb.append(getShapeCommands(temp, temp2, atomCount));
     }
     return sb.toString();

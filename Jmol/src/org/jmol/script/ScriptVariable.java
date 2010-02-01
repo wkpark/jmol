@@ -37,6 +37,7 @@ import org.jmol.modelset.Bond.BondSet;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
@@ -197,6 +198,8 @@ public class ScriptVariable extends Token {
       return new ScriptVariable(point3f, x);
     if (x instanceof Vector3f)
       return new ScriptVariable(point3f, new Point3f((Vector3f) x));
+    if (x instanceof BitSet)
+      return new ScriptVariable(bitset, x);
     if (x instanceof Point4f)
       return new ScriptVariable(point4f, x);
     // note: for quaternions, we save them {q1, q2, q3, q0} 
@@ -211,8 +214,6 @@ public class ScriptVariable extends Token {
       return new ScriptVariable(matrix3f, x);
     if (x instanceof Matrix4f)
       return new ScriptVariable(matrix4f, x);
-    if (x instanceof BitSet)
-      return new ScriptVariable(bitset, x);
     if (x instanceof String[])
       return new ScriptVariable(list, x);
     if (x instanceof Float[])
@@ -703,10 +704,9 @@ public class ScriptVariable extends Token {
           bs.clear();
         break;
       }
-      len = BitSetUtil.length(bs);
       int n = 0;
-      for (int j = 0; j < len; j++)
-        if (bs.get(j) && (++n < i1 || n > i2))
+      for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
+        if (++n < i1 || n > i2)
           bs.clear(j);
       break;
     case string:

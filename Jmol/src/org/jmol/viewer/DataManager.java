@@ -33,6 +33,7 @@ import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+
 import org.jmol.util.Parser;
 
 /*
@@ -140,9 +141,8 @@ class DataManager {
         if (tok != Token.nada) {
           int nValues = bs.cardinality();
           float[] fValues = new float[nValues];
-          for (int n = 0, i = 0; n < nValues; i++)
-            if (bs.get(i))
-              fValues[n++] = f[i];
+          for (int n = 0, i = bs.nextSetBit(0); n < nValues; i = bs.nextSetBit(i + 1))
+            fValues[n++] = f[i];
           viewer.setAtomProperty(bs, tok, 0, 0, null, fValues, null);
           return;
         }
@@ -315,7 +315,7 @@ class DataManager {
   }
 
   String getDefaultVdwNameOrData(int iType, BitSet bs) {
-    // called by getDataState and via Viewer: Eval.calculate, 
+    // called by getDataState and via Viewer: Eval.calculate,
     // Eval.show, StateManager.getLoadState, Viewer.setDefaultVdw
     switch (iType) {
     case Integer.MIN_VALUE:
@@ -330,18 +330,21 @@ class DataManager {
     case JmolConstants.VDW_AUTO:
     case JmolConstants.VDW_UNKNOWN:
       iType = defaultVdw;
-      break;      
+      break;
     }
     if (iType == JmolConstants.VDW_USER && bsUserVdws == null) {
       setUserVdw(defaultVdw);
     }
     StringBuffer sb = new StringBuffer(JmolConstants.vdwLabels[iType] + "\n");
-    for (int i = 1; i < JmolConstants.elementNumberMax; i++)
-      if (bs == null || bs.get(i))
-        sb.append(i).append('\t').append(
-            iType == JmolConstants.VDW_USER ? userVdws[i] : JmolConstants
-                .getVanderwaalsMar(i, iType) / 1000f).append('\t').append(
-            JmolConstants.elementSymbolFromNumber(i)).append('\n');
+    boolean isAll = (bs == null);
+    int i0 = (isAll ? 1 : bs.nextSetBit(0));
+    int i1 = (isAll ? JmolConstants.elementNumberMax : bs.length());
+    for (int i = i0; i < i1 && i >= 0; i = (isAll ? i + 1 : bs
+        .nextSetBit(i + 1)))
+      sb.append(i).append('\t').append(
+          iType == JmolConstants.VDW_USER ? userVdws[i] : JmolConstants
+              .getVanderwaalsMar(i, iType) / 1000f).append('\t').append(
+          JmolConstants.elementSymbolFromNumber(i)).append('\n');
     return (bs == null ? sb.toString() : "\n  DATA \"element_vdw\"\n"
         + sb.append("  end \"element_vdw\";\n\n").toString());
   }

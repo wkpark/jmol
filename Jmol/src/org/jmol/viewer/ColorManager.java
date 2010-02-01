@@ -292,14 +292,15 @@ class ColorManager {
     colorLo = Float.MAX_VALUE;
     if (data == null)
       return;
-    for (int i = data.length; --i >= 0;)
-      if (bs == null || bs.get(i)) {
-        float d = data[i];
-        if (Float.isNaN(d))
-          continue;
-        colorHi = Math.max(colorHi, d);
-        colorLo = Math.min(colorLo, d);
-      }
+    boolean isAll = (bs == null);
+    float d;
+    int i0 = (isAll ? data.length - 1 : bs.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bs.nextSetBit(i + 1))) {
+      if (Float.isNaN(d = data[i]))
+        continue;
+      colorHi = Math.max(colorHi, d);
+      colorLo = Math.min(colorLo, d);
+    }
     setCurrentColorRange(colorLo, colorHi);
   }  
 

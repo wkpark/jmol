@@ -2,6 +2,8 @@ package org.jmol.api;
 
 import java.util.BitSet;
 
+
+
 public interface MinimizerInterface {
 
   public abstract boolean minimize(int steps, double crit, BitSet bsSelected, boolean addHydrogen)

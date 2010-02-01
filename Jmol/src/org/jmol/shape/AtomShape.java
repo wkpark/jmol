@@ -73,19 +73,22 @@ public abstract class AtomShape extends Shape {
 
   public void setSize(RadiusData rd, BitSet bsSelected) {
     // Halos Stars Vectors only
+    if (atoms == null)  // vector values are ignored if there are none for a model 
+      return;
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
     boolean isVisible = (rd != null && rd.value != 0);
-    for (int i = atomCount; --i >= 0;)
-      if (bsSelected == null || bsSelected.get(i)) {
-        if (mads == null)
-          mads = new short[atomCount];
-        Atom atom = atoms[i];
-        mads[i] = atom.calculateMad(viewer, rd);
-        bsSizeSet.set(i, isVisible);
-        atom.setShapeVisibility(myVisibilityFlag, isVisible);
-      }
+    boolean isAll = (bsSelected == null);
+    int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
+      if (mads == null)
+        mads = new short[atomCount];
+      Atom atom = atoms[i];
+      mads[i] = atom.calculateMad(viewer, rd);
+      bsSizeSet.set(i, isVisible);
+      atom.setShapeVisibility(myVisibilityFlag, isVisible);
+    }
   }
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
@@ -95,9 +98,8 @@ public abstract class AtomShape extends Shape {
       byte pid = JmolConstants.pidOf(value);
       if (bsColixSet == null)
         bsColixSet = new BitSet();
-      for (int i = atomCount; --i >= 0;)
-        if (bs.get(i))
-          setColixAndPalette(colix, pid, i);
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+        setColixAndPalette(colix, pid, i);
       return;
     }
     if ("translucency" == propertyName) {
@@ -105,17 +107,16 @@ public abstract class AtomShape extends Shape {
       boolean isTranslucent = (value.equals("translucent"));
       if (bsColixSet == null)
         bsColixSet = new BitSet();
-      for (int i = atomCount; --i >= 0;)
-        if (bs.get(i)) {
-          if (colixes == null) {
-            colixes = new short[atomCount];
-            paletteIDs = new byte[atomCount];
-          }
-          colixes[i] = Graphics3D.getColixTranslucent(colixes[i],
-              isTranslucent, translucentLevel);
-          if (isTranslucent)
-            bsColixSet.set(i);
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        if (colixes == null) {
+          colixes = new short[atomCount];
+          paletteIDs = new byte[atomCount];
         }
+        colixes[i] = Graphics3D.getColixTranslucent(colixes[i], isTranslucent,
+            translucentLevel);
+        if (isTranslucent)
+          bsColixSet.set(i);
+      }
       return;
     }
     if (propertyName == "deleteModelAtoms") {
@@ -169,12 +170,12 @@ public abstract class AtomShape extends Shape {
     Hashtable temp = new Hashtable();
     Hashtable temp2 = new Hashtable();
     String type = JmolConstants.shapeClassBases[shapeID];
-    for (int i = atomCount; --i >= 0;) {
-      if (bsSizeSet != null && bsSizeSet.get(i))
-        setStateInfo(temp, i, type + " " + (mads[i] / 2000f));
-      if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp2, i, getColorCommand(type, paletteIDs[i], colixes[i]));
-    }
+    if (bsSizeSet != null)
+      for (int i = bsSizeSet.nextSetBit(0); i >= 0; i = bsSizeSet.nextSetBit(i + 1))
+          setStateInfo(temp, i, type + " " + (mads[i] / 2000f));
+    if (bsColixSet != null)
+      for (int i = bsColixSet.nextSetBit(0); i >= 0; i = bsColixSet.nextSetBit(i + 1))
+          setStateInfo(temp2, i, getColorCommand(type, paletteIDs[i], colixes[i]));
     return getShapeCommands(temp, temp2, atomCount);
   }
 

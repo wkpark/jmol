@@ -40,6 +40,8 @@ import java.util.Vector;
 //import java.io.Reader;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+
+
 import org.jmol.viewer.Viewer;
 
 /**

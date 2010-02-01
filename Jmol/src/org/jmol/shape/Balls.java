@@ -41,12 +41,11 @@ public class Balls extends AtomShape {
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
     int bsLength = Math.min(atoms.length, bsSelected.length());
-    for (int i = bsLength; --i >= 0; ) {
-      if (bsSelected.get(i)) {
-        Atom atom = atoms[i];
-        atom.setMadAtom(viewer, rd);
-        bsSizeSet.set(i);
-      }
+    for (int i = bsSelected.nextSetBit(0); i >= 0 && i < bsLength; i = bsSelected
+        .nextSetBit(i + 1)) {
+      Atom atom = atoms[i];
+      atom.setMadAtom(viewer, rd);
+      bsSizeSet.set(i);
     }
   }
 
@@ -58,14 +57,13 @@ public class Balls extends AtomShape {
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       byte pid = JmolConstants.pidOf(value);
-      for (int i = atomCount; --i >= 0;)
-        if (bs.get(i)) {
-          Atom atom = atoms[i];
-          atom.setColixAtom(setColix(colix, pid, atom));
-          bsColixSet.set(i, colix != Graphics3D.USE_PALETTE
-              || pid != JmolConstants.PALETTE_NONE);
-          atom.setPaletteID(pid);
-        }
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        Atom atom = atoms[i];
+        atom.setColixAtom(setColix(colix, pid, atom));
+        bsColixSet.set(i, colix != Graphics3D.USE_PALETTE
+            || pid != JmolConstants.PALETTE_NONE);
+        atom.setPaletteID(pid);
+      }
       return;
     }
     if ("colorValues" == propertyName) {
@@ -76,37 +74,35 @@ public class Balls extends AtomShape {
         bsColixSet = new BitSet();
       int n = 0;
       Integer color = null;
-      for (int i = 0; i < atomCount; i++)
-        if (bs.get(i)) {
-          if (n >= values.length)
-            return;
-          color = new Integer(values[n++]);
-          short colix = Graphics3D.getColix(color);
-          if (colix == Graphics3D.INHERIT_ALL)
-            colix = Graphics3D.USE_PALETTE;
-          byte pid = JmolConstants.pidOf(color);
-          Atom atom = atoms[i];
-          atom.setColixAtom(setColix(colix, pid, atom));
-          bsColixSet.set(i, colix != Graphics3D.USE_PALETTE
-              || pid != JmolConstants.PALETTE_NONE);
-          atom.setPaletteID(pid);
-        }
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        if (n >= values.length)
+          return;
+        color = new Integer(values[n++]);
+        short colix = Graphics3D.getColix(color);
+        if (colix == Graphics3D.INHERIT_ALL)
+          colix = Graphics3D.USE_PALETTE;
+        byte pid = JmolConstants.pidOf(color);
+        Atom atom = atoms[i];
+        atom.setColixAtom(setColix(colix, pid, atom));
+        bsColixSet.set(i, colix != Graphics3D.USE_PALETTE
+            || pid != JmolConstants.PALETTE_NONE);
+        atom.setPaletteID(pid);
+      }
       return;
     }
     if ("translucency" == propertyName) {
-      boolean isTranslucent = (((String)value).equals("translucent"));
+      boolean isTranslucent = (((String) value).equals("translucent"));
       if (bsColixSet == null)
         bsColixSet = new BitSet();
-      for (int i = atomCount; --i >= 0;)
-        if (bs.get(i)) {
-          atoms[i].setTranslucent(isTranslucent, translucentLevel);
-          if (isTranslucent)
-            bsColixSet.set(i);
-        }
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        atoms[i].setTranslucent(isTranslucent, translucentLevel);
+        if (isTranslucent)
+          bsColixSet.set(i);
+      }
       return;
     }
     super.setProperty(propertyName, value, bs);
- }
+  }
 
  public void setModelClickability() {
    BitSet bs = viewer.getDeletedAtoms();

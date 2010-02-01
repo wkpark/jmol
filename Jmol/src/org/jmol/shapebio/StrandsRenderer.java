@@ -67,8 +67,7 @@ public class StrandsRenderer extends BioShapeRenderer {
   }
 
   private void render1Strand(Point3i[] screens) {
-    for (int i = monomerCount; --i >= 0;)
-      if (bsVisible.get(i))
-        renderHermiteCylinder(screens, i);
+    for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible.nextSetBit(i + 1))
+      renderHermiteCylinder(screens, i);
   }
 }

@@ -240,11 +240,19 @@ in (parentheses) above. I *think* that what I was saying
 is that if you say 'source=1.4' then one also cannot
 generate code for a 1.1 jvm, because of the special
 support for assertions (which were introduced in 1.4). 
+
+bob 2010.02.01
+
+changed    source="1.3" target="1.1"
+     to    source="1.4" target="1.4"
+           
+in order to allow for faster BitSet methods
+
     -->
     <javac srcdir="src" destdir="${applet.classes.dir}"
            debug="${debug}" deprecation="${deprecation}"
            optimize="${optimization}"
-           source="1.3" target="1.1"
+           source="1.4" target="1.4"
            includesfile="applet.classes"
            classpathref="applet-project.class.path" />
 

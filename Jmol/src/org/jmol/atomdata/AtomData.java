@@ -117,6 +117,8 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 
+
+
 public class AtomData {
   public AtomData() {    
   }

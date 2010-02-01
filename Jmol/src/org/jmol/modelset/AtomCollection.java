@@ -43,6 +43,7 @@ import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
@@ -116,8 +117,8 @@ abstract public class AtomCollection {
 
   public Vector getAtomPointVector(BitSet bs) {
     Vector v = new Vector();
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i))
+    if (bs != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1))
         v.add(atoms[i]);
     return v;
   }
@@ -259,17 +260,10 @@ abstract public class AtomCollection {
   } 
 
   public Object getHelixData(BitSet bs, int tokType) {
-    int iatom = BitSetUtil.firstSetBit(bs);
-    return (iatom < 0 ? "null" : atoms[iatom].group.getHelixData(tokType, 
+    int iAtom = bs.nextSetBit(0);
+    return (iAtom < 0 ? "null"
+        : atoms[iAtom].group.getHelixData(tokType, 
         viewer.getQuaternionFrame(), viewer.getHelixStep()));
-  }
-  
-  protected int getAtomCountInModel(int modelIndex) {
-    int n = 0;
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].modelIndex == modelIndex)
-        n++;
-    return n;
   }
   
   public int getAtomIndexFromAtomNumber(int atomNumber, BitSet bsVisibleFrames) {
@@ -283,8 +277,8 @@ abstract public class AtomCollection {
   }
 
   public void setFormalCharges(BitSet bs, int formalCharge) {
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i)) {
+    if (bs != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         atoms[i].setFormalCharge(formalCharge);
         taint(i, TAINT_FORMALCHARGE);
       }
@@ -335,21 +329,28 @@ abstract public class AtomCollection {
   }
 
   private void calcBfactorRange(BitSet bs) {
-    if (!hasBfactorRange) {
-      bfactor100Lo = Integer.MAX_VALUE;
-      bfactor100Hi = Integer.MIN_VALUE;
-      for (int i = atomCount; --i > 0;)
-        if (bs == null || bs.get(i)) {
-          int bf = atoms[i].getBfactor100();
-          if (bf < bfactor100Lo)
-            bfactor100Lo = bf;
-          else if (bf > bfactor100Hi)
-            bfactor100Hi = bf;
-        }
-      hasBfactorRange = true;
+    if (hasBfactorRange)
+      return;
+    bfactor100Lo = Integer.MAX_VALUE;
+    bfactor100Hi = Integer.MIN_VALUE;
+    if (bs == null) {
+      for (int i = 0; i < atomCount; i++)
+        setBf(i);
+    } else {
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1))
+        setBf(i);
     }
+    hasBfactorRange = true;
   }
 
+  private void setBf(int i) {
+    int bf = atoms[i].getBfactor100();
+    if (bf < bfactor100Lo)
+      bfactor100Lo = bf;
+    else if (bf > bfactor100Hi)
+      bfactor100Hi = bf;    
+  }
+  
   public int getBfactor100Lo() {
     //ColorManager
     if (!hasBfactorRange) {
@@ -380,12 +381,11 @@ abstract public class AtomCollection {
   public float calculateVolume(BitSet bs, int iType) {
     // Eval
     float volume = 0;
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i))
+    if (bs != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         volume += atoms[i].getVolume(iType);
     return volume;
   }
-
   
   private BitSet bsSurface;
   private int nSurfaceAtoms;
@@ -453,29 +453,26 @@ abstract public class AtomCollection {
     if (xyz == null && (values == null || values.length == 0))
       return;
     int n = 0;
-    for (int i = 0; i < atomCount; i++) {
-      if (!bs.get(i))
-        continue;
-      if (values != null) { 
-        if (n >= values.length)
-          return;
-        xyz = values[n++];
+    if (bs != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) { 
+        if (values != null) {
+          if (n >= values.length)
+            return;
+          xyz = values[n++];
+        }
+        switch (tokType) {
+        case Token.xyz:
+          setAtomCoord(i, xyz.x, xyz.y, xyz.z);
+          break;
+        case Token.fracxyz:
+          atoms[i].setFractionalCoord(xyz);
+          taint(i, TAINT_COORD);
+          break;
+        case Token.vibxyz:
+          setAtomVibrationVector(i, xyz.x, xyz.y, xyz.z);
+          break;
+        }
       }
-      switch (tokType) {
-      case Token.xyz:
-        if (i == 3)
-          System.out.println("atomcoll " + i + " " + xyz);
-        setAtomCoord(i, xyz.x, xyz.y, xyz.z);
-        break;
-      case Token.fracxyz:
-        atoms[i].setFractionalCoord(xyz);
-        taint(i, TAINT_COORD);
-        break;
-      case Token.vibxyz:
-        setAtomVibrationVector(i, xyz.x, xyz.y, xyz.z);
-        break;
-      }
-    }
   }
 
   private void setAtomVibrationVector(int atomIndex, float x, float y, float z) {
@@ -503,118 +500,119 @@ abstract public class AtomCollection {
     taint(atomIndex, TAINT_COORD);
   }
 
-  protected void setAtomCoordRelative(BitSet atomSet, float x, float y, float z) {
+  protected void setAtomCoordRelative(BitSet bs, float x, float y,
+                                      float z) {
     bspf = null;
-    for (int i = atomCount; --i >= 0;)
-      if (atomSet.get(i))
+    if (bs != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1))
         setAtomCoordRelative(i, x, y, z);
   }
 
-  public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue,
-                              String sValue, float[] values, String[] list) {
+  public void setAtomProperty(BitSet bs, int tok, int iValue,
+                              float fValue, String sValue, float[] values,
+                              String[] list) {
     int n = 0;
     if (values != null && values.length == 0)
       return;
-    for (int i = 0; i < atomCount; i++) {
-      if (!bs.get(i))
-        continue;
-      if (values != null) {
-        if (n >= values.length)
-          return;
-        fValue = values[n++];
-        iValue = (int) fValue;
-      } else if (list != null) {
-        if (n >= list.length)
-          return;
-        sValue = list[n++];
+    if (bs != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        if (values != null) {
+          if (n >= values.length)
+            return;
+          fValue = values[n++];
+          iValue = (int) fValue;
+        } else if (list != null) {
+          if (n >= list.length)
+            return;
+          sValue = list[n++];
+        }
+        Atom atom = atoms[i];
+        switch (tok) {
+        case Token.atomname:
+          taint(i, TAINT_ATOMNAME);
+          setAtomName(i, sValue);
+          break;
+        case Token.atomno:
+          taint(i, TAINT_ATOMNO);
+          setAtomNumber(i, iValue);
+          break;
+        case Token.atomtype:
+          taint(i, TAINT_ATOMTYPE);
+          setAtomType(i, sValue);
+          break;
+        case Token.atomx:
+          setAtomCoord(i, fValue, atom.y, atom.z);
+          break;
+        case Token.atomy:
+          setAtomCoord(i, atom.x, fValue, atom.z);
+          break;
+        case Token.atomz:
+          setAtomCoord(i, atom.x, atom.y, fValue);
+          break;
+        case Token.vibx:
+        case Token.viby:
+        case Token.vibz:
+          setVibrationVector(i, tok, fValue);
+          break;
+        case Token.fracx:
+        case Token.fracy:
+        case Token.fracz:
+          atom.setFractionalCoord(tok, fValue);
+          taint(i, TAINT_COORD);
+          break;
+        case Token.elemno:
+        case Token.element:
+          taint(i, TAINT_ELEMENT);
+          atom.setAtomicAndIsotopeNumber(iValue);
+          atom.setPaletteID(JmolConstants.PALETTE_CPK);
+          atom.setColixAtom(viewer.getColixAtomPalette(atom,
+              JmolConstants.PALETTE_CPK));
+          break;
+        case Token.formalcharge:
+          atom.setFormalCharge(iValue);
+          taint(i, TAINT_FORMALCHARGE);
+          break;
+        case Token.label:
+        case Token.format:
+          ((ModelSet) this).setAtomLabel(sValue, i);
+          break;
+        case Token.occupancy:
+          if (iValue < 2)
+            iValue = (int) (100 * fValue);
+          if (setOccupancy(i, iValue))
+            taint(i, TAINT_OCCUPANCY);
+          break;
+        case Token.partialcharge:
+          if (setPartialCharge(i, fValue))
+            taint(i, TAINT_PARTIALCHARGE);
+          break;
+        case Token.radius:
+        case Token.spacefill:
+          if (fValue < 0)
+            fValue = 0;
+          else if (fValue > Atom.RADIUS_MAX)
+            fValue = Atom.RADIUS_MAX;
+          atom.madAtom = ((short) (fValue * 2000));
+          break;
+        case Token.temperature:
+          if (setBFactor(i, fValue))
+            taint(i, TAINT_TEMPERATURE);
+          break;
+        case Token.valence:
+          atom.setValence(iValue);
+          taint(i, TAINT_VALENCE);
+          break;
+        case Token.vanderwaals:
+          if (atom.setRadius(fValue))
+            taint(i, TAINT_VANDERWAALS);
+          else
+            untaint(i, TAINT_VANDERWAALS);
+          break;
+        default:
+          Logger.error("unsettable atom property: " + Token.nameOf(tok));
+          break;
+        }
       }
-      Atom atom = atoms[i];
-      switch (tok) {
-      case Token.atomname:
-        taint(i, TAINT_ATOMNAME);
-        setAtomName(i, sValue);
-        break;
-      case Token.atomno:
-        taint(i, TAINT_ATOMNO);
-        setAtomNumber(i, iValue);
-        break;
-      case Token.atomtype:
-        taint(i, TAINT_ATOMTYPE);
-        setAtomType(i, sValue);
-        break;
-      case Token.atomx:
-        setAtomCoord(i, fValue, atom.y, atom.z);
-        break;
-      case Token.atomy:
-        setAtomCoord(i, atom.x, fValue, atom.z);
-        break;
-      case Token.atomz:
-        setAtomCoord(i, atom.x, atom.y, fValue);
-        break;
-      case Token.vibx:
-      case Token.viby:
-      case Token.vibz:
-        setVibrationVector(i, tok, fValue);
-        break;
-      case Token.fracx:
-      case Token.fracy:
-      case Token.fracz:
-        atom.setFractionalCoord(tok, fValue);
-        taint(i, TAINT_COORD);
-        break;
-      case Token.elemno:
-      case Token.element:
-        taint(i, TAINT_ELEMENT);
-        atom.setAtomicAndIsotopeNumber(iValue);
-        atom.setPaletteID(JmolConstants.PALETTE_CPK);
-        atom.setColixAtom(viewer.getColixAtomPalette(atom,
-            JmolConstants.PALETTE_CPK));
-        break;
-      case Token.formalcharge:
-        atom.setFormalCharge(iValue);
-        taint(i, TAINT_FORMALCHARGE);
-        break;
-      case Token.label:
-      case Token.format:
-        ((ModelSet)this).setAtomLabel(sValue, i);
-        break;
-      case Token.occupancy:
-        if (iValue < 2)
-          iValue = (int)(100 * fValue);
-        if (setOccupancy(i, iValue))
-          taint(i, TAINT_OCCUPANCY);
-        break;
-      case Token.partialcharge:
-        if (setPartialCharge(i, fValue))
-          taint(i, TAINT_PARTIALCHARGE);
-        break;
-      case Token.radius:
-      case Token.spacefill:
-        if (fValue < 0)
-          fValue = 0;
-        else if (fValue > Atom.RADIUS_MAX)
-          fValue = Atom.RADIUS_MAX;
-        atom.madAtom = ((short)(fValue * 2000));
-        break;
-      case Token.temperature:
-        if (setBFactor(i, fValue))
-          taint(i, TAINT_TEMPERATURE);
-        break;
-      case Token.valence:
-        atom.setValence(iValue);
-        taint(i, TAINT_VALENCE);
-        break;
-      case Token.vanderwaals:
-        if (atom.setRadius(fValue))
-          taint(i, TAINT_VANDERWAALS);
-        else
-          untaint(i, TAINT_VANDERWAALS);
-        break;
-      default:
-        Logger.error("unsettable atom property: " + Token.nameOf(tok));
-        break;
-      }
-    }
   }
 
   public float getVibrationCoord(int atomIndex, char c) {
@@ -935,69 +933,73 @@ abstract public class AtomCollection {
     return commands.toString();
   }
   
-  public static void getAtomicPropertyState(Viewer viewer, StringBuffer commands,
+  public static void getAtomicPropertyState(Viewer viewer,
+                                            StringBuffer commands,
                                             Atom[] atoms, int atomCount,
-                                            byte type, BitSet bs, String label,
-                                            float[] fData) {
+                                            byte type, BitSet bs,
+                                            String label, float[] fData) {
     if (!viewer.getPreserveState())
       return;
-    //see setAtomData()
+    // see setAtomData()
     StringBuffer s = new StringBuffer();
     String dataLabel = (label == null ? userSettableValues[type] : label)
         + " set";
     int n = 0;
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i)) {
-        s.append(i + 1).append(" ").append(atoms[i].getElementSymbol()).append(
-            " ").append(atoms[i].getInfo().replace(' ', '_')).append(" ");
-        switch (type) {
-        case TAINT_MAX:
-          if (i < fData.length) // when data are appended, the array may not extend that far
-            s.append(fData[i]);
-          break;
-        case TAINT_ATOMNO:
-          s.append(atoms[i].getAtomNumber());
-          break;
-        case TAINT_ATOMNAME:
-          s.append(atoms[i].getAtomName());
-          break;
-        case TAINT_ATOMTYPE:
-          s.append(atoms[i].getAtomType());
-          break;
-        case TAINT_COORD:
-          s.append(atoms[i].x).append(" ").append(atoms[i].y).append(" ")
-              .append(atoms[i].z);
-          break;
-        case TAINT_VIBRATION:
-          Vector3f v = atoms[i].getVibrationVector();
-          if (v == null)
-            v = new Vector3f();
-          s.append(v.x).append(" ").append(v.y).append(" ").append(v.z);
-        case TAINT_ELEMENT:
-          s.append(atoms[i].getAtomicAndIsotopeNumber());
-          break;
-        case TAINT_FORMALCHARGE:
-          s.append(atoms[i].getFormalCharge());
-          break;
-        case TAINT_OCCUPANCY:
-          s.append(atoms[i].getOccupancy100());
-          break;
-        case TAINT_PARTIALCHARGE:
-          s.append(atoms[i].getPartialCharge());
-          break;
-        case TAINT_TEMPERATURE:
-          s.append(atoms[i].getBfactor100() / 100f);
-          break;
-        case TAINT_VALENCE:
-          s.append(atoms[i].getValence());
-          break;
-        case TAINT_VANDERWAALS:
-          s.append(atoms[i].getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO));
-          break;
+    if (bs != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
+          s.append(i + 1).append(" ").append(atoms[i].getElementSymbol())
+              .append(" ").append(atoms[i].getInfo().replace(' ', '_')).append(
+                  " ");
+          switch (type) {
+          case TAINT_MAX:
+            if (i < fData.length) // when data are appended, the array may not
+                                  // extend that far
+              s.append(fData[i]);
+            break;
+          case TAINT_ATOMNO:
+            s.append(atoms[i].getAtomNumber());
+            break;
+          case TAINT_ATOMNAME:
+            s.append(atoms[i].getAtomName());
+            break;
+          case TAINT_ATOMTYPE:
+            s.append(atoms[i].getAtomType());
+            break;
+          case TAINT_COORD:
+            s.append(atoms[i].x).append(" ").append(atoms[i].y).append(" ")
+                .append(atoms[i].z);
+            break;
+          case TAINT_VIBRATION:
+            Vector3f v = atoms[i].getVibrationVector();
+            if (v == null)
+              v = new Vector3f();
+            s.append(v.x).append(" ").append(v.y).append(" ").append(v.z);
+          case TAINT_ELEMENT:
+            s.append(atoms[i].getAtomicAndIsotopeNumber());
+            break;
+          case TAINT_FORMALCHARGE:
+            s.append(atoms[i].getFormalCharge());
+            break;
+          case TAINT_OCCUPANCY:
+            s.append(atoms[i].getOccupancy100());
+            break;
+          case TAINT_PARTIALCHARGE:
+            s.append(atoms[i].getPartialCharge());
+            break;
+          case TAINT_TEMPERATURE:
+            s.append(atoms[i].getBfactor100() / 100f);
+            break;
+          case TAINT_VALENCE:
+            s.append(atoms[i].getValence());
+            break;
+          case TAINT_VANDERWAALS:
+            s.append(atoms[i].getVanderwaalsRadiusFloat(viewer,
+                JmolConstants.VDW_AUTO));
+            break;
+          }
+          s.append(" ;\n");
+          ++n;
         }
-        s.append(" ;\n");
-        ++n;
-      }
     if (n == 0)
       return;
     commands.append("\n  DATA \"" + dataLabel + "\"\n").append(n).append(
@@ -1122,12 +1124,12 @@ abstract public class AtomCollection {
   
 
   public void deleteAtoms(BitSet bs) {
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i))
+    if (bs != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1))
         atoms[i].delete();
   }
 
-  public Point3f[][] getAdditionalHydrogens(BitSet atomSet, int[] nTotal,
+  public Point3f[][] getAdditionalHydrogens(BitSet bs, int[] nTotal,
                                             boolean justCarbon) {
     Vector3f z = new Vector3f();
     Vector3f x = new Vector3f();
@@ -1136,90 +1138,92 @@ abstract public class AtomCollection {
     Point3f pt;
     int nH = 0;
     String types = (justCarbon ? "C" : "C S Si N O");
-    String valences =                  "4 2 4  3 2";
-    //             these numbers are increased by 
+    String valences = "4 2 4  3 2";
+    // these numbers are increased by
     // just not doing aldehydes here -- all A-X-B bent == sp3 for now
-    for (int i = 0; i < atomCount; i++) {
-      if (!atomSet.get(i) || bsDeleted != null && bsDeleted.get(i))
-        continue;
-      int ipt = types.indexOf(atoms[i].getElementSymbol());
-      if (ipt < 0)
-        continue;
-      int bondCount = 0 + valences.charAt(ipt) - '0';
-      
-      Atom atom = atoms[i];
-      if (atom.getCovalentHydrogenCount() > 0)
-        continue;
-      int nBonds = atom.getCovalentBondCount();
-      int charge = atom.getFormalCharge();
-      if (charge != 0)
-        bondCount += (bondCount == 4 ? -Math.abs(charge) : charge);
-      int nVal = atom.getValence();
-      if (nBonds == 0 || nVal >= bondCount)
-        continue;
-      int n = bondCount - nVal;
-      hAtoms[i] = new Point3f[n];
-      //System.out.println(atom.getInfo() + " nTarget=" + bondCount + " nB="
-        //  + nBonds + " nVal=" + nVal + " n=" + n);
-      nH += n;
-      int hPt = 0;
-      switch (n) {
-      case 3: // three bonds needed RC
-        getHybridizationAndAxes(i, z, x, "sp3a", false);
-        pt = new Point3f(z);
-        pt.scaleAdd(1.1f, z, atom);
-        hAtoms[i][hPt++] = pt;
-        getHybridizationAndAxes(i, z, x, "sp3b", false);
-        pt = new Point3f(z);
-        pt.scaleAdd(1.1f, z, atom);
-        hAtoms[i][hPt++] = pt;
-        getHybridizationAndAxes(i, z, x, "sp3c", false);
-        pt = new Point3f(z);
-        pt.scaleAdd(1.1f, z, atom);
-        hAtoms[i][hPt++] = pt;
-        break;
-      case 2:
-        // 2 bonds needed R2C or R-N
-        getHybridizationAndAxes(i, z, x, "lpa", false);
-        pt = new Point3f(z);
-        pt.scaleAdd(1.1f, z, atom);
-        hAtoms[i][hPt++] = pt;
-        getHybridizationAndAxes(i, z, x, "lpb", false);
-        pt = new Point3f(z);
-        pt.scaleAdd(1.1f, z, atom);
-        hAtoms[i][hPt++] = pt;
-        break;
-      case 1:
-        // one bond needed R3C, R-N-R, R-O R=C-R R=N R-3-C
-        // nbonds           3     2     1    2    1   1
-        // nval             3     2     1    3    2   3
-        // bondcount        4     3     2    4    3   4
-        //                 sp3   sp3   sp3  sp2  sp2  sp
-        switch (bondCount - nBonds) {
-        case 1:
-          // sp3
-          getHybridizationAndAxes(i, z, x, bondCount == 2 ? "sp3b" : "lpa", false);
+    if (bs != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
+        if (bsDeleted != null && bsDeleted.get(i))
+          continue;
+        int ipt = types.indexOf(atoms[i].getElementSymbol());
+        if (ipt < 0)
+          continue;
+        int bondCount = 0 + valences.charAt(ipt) - '0';
+
+        Atom atom = atoms[i];
+        if (atom.getCovalentHydrogenCount() > 0)
+          continue;
+        int nBonds = atom.getCovalentBondCount();
+        int charge = atom.getFormalCharge();
+        if (charge != 0)
+          bondCount += (bondCount == 4 ? -Math.abs(charge) : charge);
+        int nVal = atom.getValence();
+        if (nBonds == 0 || nVal >= bondCount)
+          continue;
+        int n = bondCount - nVal;
+        hAtoms[i] = new Point3f[n];
+        // System.out.println(atom.getInfo() + " nTarget=" + bondCount + " nB="
+        // + nBonds + " nVal=" + nVal + " n=" + n);
+        nH += n;
+        int hPt = 0;
+        switch (n) {
+        case 3: // three bonds needed RC
+          getHybridizationAndAxes(i, z, x, "sp3a", false);
+          pt = new Point3f(z);
+          pt.scaleAdd(1.1f, z, atom);
+          hAtoms[i][hPt++] = pt;
+          getHybridizationAndAxes(i, z, x, "sp3b", false);
+          pt = new Point3f(z);
+          pt.scaleAdd(1.1f, z, atom);
+          hAtoms[i][hPt++] = pt;
+          getHybridizationAndAxes(i, z, x, "sp3c", false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
           break;
         case 2:
-          // sp2
-          getHybridizationAndAxes(i, z, x, "sp2c", false);
+          // 2 bonds needed R2C or R-N
+          getHybridizationAndAxes(i, z, x, "lpa", false);
+          pt = new Point3f(z);
+          pt.scaleAdd(1.1f, z, atom);
+          hAtoms[i][hPt++] = pt;
+          getHybridizationAndAxes(i, z, x, "lpb", false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
           break;
-        case 3:
-          // sp
-          getHybridizationAndAxes(i, z, x, "sp", false);
-          pt = new Point3f(z);
-          pt.scaleAdd(1.1f, z, atom);
-          hAtoms[i][hPt++] = pt;
-          break;
+        case 1:
+          // one bond needed R3C, R-N-R, R-O R=C-R R=N R-3-C
+          // nbonds 3 2 1 2 1 1
+          // nval 3 2 1 3 2 3
+          // bondcount 4 3 2 4 3 4
+          // sp3 sp3 sp3 sp2 sp2 sp
+          switch (bondCount - nBonds) {
+          case 1:
+            // sp3
+            getHybridizationAndAxes(i, z, x, bondCount == 2 ? "sp3b" : "lpa",
+                false);
+            pt = new Point3f(z);
+            pt.scaleAdd(1.1f, z, atom);
+            hAtoms[i][hPt++] = pt;
+            break;
+          case 2:
+            // sp2
+            getHybridizationAndAxes(i, z, x, "sp2c", false);
+            pt = new Point3f(z);
+            pt.scaleAdd(1.1f, z, atom);
+            hAtoms[i][hPt++] = pt;
+            break;
+          case 3:
+            // sp
+            getHybridizationAndAxes(i, z, x, "sp", false);
+            pt = new Point3f(z);
+            pt.scaleAdd(1.1f, z, atom);
+            hAtoms[i][hPt++] = pt;
+            break;
+          }
         }
       }
-    }
     nTotal[0] = nH;
     return hAtoms;
   }
@@ -1437,8 +1441,8 @@ abstract public class AtomCollection {
     Group glast = null;
     int modelLast = -1;
     int n = 0;
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i)) {
+    if (bs != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         id = atoms[i].getChainID();
         s = (id == '\0' ? " " : "" + id);
         switch (tok) {
@@ -1454,8 +1458,8 @@ abstract public class AtomCollection {
           s = atoms[i].getGroup3(false);
           break;
         case Token.residue:
-          s = "[" + atoms[i].getGroup3(false) + "]" + atoms[i].getSeqcodeString()
-              + ":" + s;
+          s = "[" + atoms[i].getGroup3(false) + "]"
+              + atoms[i].getSeqcodeString() + ":" + s;
           break;
         case Token.sequence:
           if (atoms[i].getModelIndex() != modelLast) {
@@ -1477,8 +1481,8 @@ abstract public class AtomCollection {
           if (g != glast) {
             if ((n++) % 5 == 0 && n > 1)
               info.append('\n');
-            TextFormat.lFill(info, "          ", "[" + atoms[i].getGroup3(false)
-                + "]" + atoms[i].getResno() + " ");
+            TextFormat.lFill(info, "          ", "["
+                + atoms[i].getGroup3(false) + "]" + atoms[i].getResno() + " ");
             glast = g;
           }
           continue;
@@ -1511,127 +1515,127 @@ abstract public class AtomCollection {
    */
   protected BitSet getAtomBits(int tokType, Object specInfo) {
     BitSet bs = new BitSet();
-    BitSet bsInfo, bsTemp;
+    BitSet bsInfo;
+    BitSet bsTemp;
     int iSpec;
     
     // this first set does not assume sequential order in the file
-    
+
+    int i = 0;
     switch (tokType) {
     case Token.atomno:
       iSpec = ((Integer) specInfo).intValue();
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (atoms[i].getAtomNumber() == iSpec)
           bs.set(i);
-      return bs;
+      break;
     case Token.atomname:
       String names = "," + specInfo + ",";
-      for (int i = atomCount; --i >= 0;) {
+      for (i = atomCount; --i >= 0;) {
         String name = atoms[i].getAtomName();
         if (names.indexOf(name) >= 0)
           if (names.indexOf("," + name + ",") >= 0)
             bs.set(i);
       }
-      return bs;
+      break;
     case Token.atomtype:
       String types = "," + specInfo + ",";
-      for (int i = atomCount; --i >= 0;) {
+      for (i = atomCount; --i >= 0;) {
         String type = atoms[i].getAtomType();
         if (types.indexOf(type) >= 0)
           if (types.indexOf("," + type + ",") >= 0)
             bs.set(i);
       }
-      return bs;
+      break;
     case Token.spec_resid:
       iSpec = ((Integer) specInfo).intValue();
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (atoms[i].getGroupID() == iSpec)
           bs.set(i);
-      return bs;
+      break;
     case Token.spec_chain:
-      return getChainBits((char) ((Integer) specInfo).intValue());
+      return BitSetUtil.copy(getChainBits((char) ((Integer) specInfo).intValue()));
     case Token.spec_seqcode:
-      return getSeqcodeBits(((Integer) specInfo).intValue(), true);
+      return BitSetUtil.copy(getSeqcodeBits(((Integer) specInfo).intValue(), true));
     case Token.hetero:
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (atoms[i].isHetero())
           bs.set(i);
-      return bs;
+      break;
     case Token.hydrogen:
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (atoms[i].getElementNumber() == 1)
           bs.set(i);
-      return bs;
+      break;
     case Token.protein:
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (atoms[i].isProtein())
           bs.set(i);
-      return bs;
+      break;
     case Token.carbohydrate:
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (atoms[i].isCarbohydrate())
           bs.set(i);
-      return bs;
+      break;
     case Token.helix: // WITHIN -- not ends
     case Token.sheet: // WITHIN -- not ends
       byte type = (tokType == Token.helix ? JmolConstants.PROTEIN_STRUCTURE_HELIX
           : JmolConstants.PROTEIN_STRUCTURE_SHEET);
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (atoms[i].isWithinStructure(type))
           bs.set(i);
-      return bs;
+      break;
     case Token.nucleic:
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (atoms[i].isNucleic())
           bs.set(i);
-      return bs;
+      break;
     case Token.dna:
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (atoms[i].isDna())
           bs.set(i);
-      return bs;
+      break;
     case Token.rna:
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (atoms[i].isRna())
           bs.set(i);
-      return bs;
+      break;
     case Token.purine:
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (atoms[i].isPurine())
           bs.set(i);
-      return bs;
+      break;
     case Token.pyrimidine:
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (atoms[i].isPyrimidine())
           bs.set(i);
-      return bs;
+      break;
     case Token.cell:
       int[] info = (int[]) specInfo;
       Point3f cell = new Point3f(info[0] / 1000f, info[1] / 1000f,
           info[2] / 1000f);
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (isInLatticeCell(i, cell))
           bs.set(i);
-      return bs;
+      break;
     case Token.element:
       bsInfo = (BitSet) specInfo;
       bsTemp = new BitSet();
-      for (int i = atomCount; --i >= 0;)
-        if (bsInfo.get(i))
-          bsTemp.set(getElementNumber(i));
-      for (int i = atomCount; --i >= 0;)
+      for (i = bsInfo.nextSetBit(0); i >= 0; i = bsInfo.nextSetBit(i + 1))
+        bsTemp.set(getElementNumber(i));
+      for (i = atomCount; --i >= 0;)
         if (bsTemp.get(getElementNumber(i)))
           bs.set(i);
-      return bs;
+      break;
     case Token.site:
       bsInfo = (BitSet) specInfo;
       bsTemp = new BitSet();
-      for (int i = atomCount; --i >= 0;)
-        if (bsInfo.get(i))
-          bsTemp.set(atoms[i].atomSite);
-      for (int i = atomCount; --i >= 0;)
+      for (i = bsInfo.nextSetBit(0); i >= 0; i = bsInfo.nextSetBit(i + 1))
+        bsTemp.set(atoms[i].atomSite);
+      for (i = atomCount; --i >= 0;)
         if (bsTemp.get(atoms[i].atomSite))
           bs.set(i);
-      return bs;
+      break;
     case Token.identifier:
       return getIdentifierOrNull((String) specInfo);
     case Token.spec_atom:
@@ -1639,38 +1643,41 @@ abstract public class AtomCollection {
       if (atomSpec.indexOf("\\?") >= 0)
         atomSpec = TextFormat.simpleReplace(atomSpec, "\\?", "\1");
       // / here xx*yy is NOT changed to "xx??????????yy"
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (isAtomNameMatch(atoms[i], atomSpec, false))
           bs.set(i);
-      return bs;
+      break;
     case Token.spec_alternate:
       String spec = (String) specInfo;
-      for (int i = atomCount; --i >= 0;)
+      for (i = atomCount; --i >= 0;)
         if (atoms[i].isAlternateLocationMatch(spec))
           bs.set(i);
-      return bs;
+      break;
     case Token.spec_name_pattern:
       return getSpecName((String) specInfo);
     }
+    if (i < 0)
+      return bs;
 
     // these next assume sequential position in the file
     // speeding delivery -- Jmol 11.9.24
 
     bsInfo = (BitSet) specInfo;
-    int i0 = BitSetUtil.firstSetBit(bsInfo);
+    int iModel, iPolymer;
+    int i0 = bsInfo.nextSetBit(0);
     if (i0 < 0)
       return bs;
+    i = 0;
     switch (tokType) {
     case Token.group:
-      for (int i = i0; i < atomCount; i++)
-        if (bsInfo.get(i))
-          i = atoms[i].getGroup().selectAtoms(bs);
-      return bs;
+      for (i = i0; i >= 0; i = bsInfo.nextSetBit(i+1))
+         i = atoms[i].getGroup().selectAtoms(bs);
+      break;
     case Token.model:
-      for (int i = i0; i < atomCount; i++) {
-        if (bs.get(i) || !bsInfo.get(i))
+      for (i = i0; i >= 0; i = bsInfo.nextSetBit(i+1)) {
+        if (bs.get(i))
           continue;
-        int iModel = atoms[i].modelIndex;
+        iModel = atoms[i].modelIndex;
         bs.set(i);
         for (int j = i; --j >= 0;)
           if (atoms[j].modelIndex == iModel)
@@ -1683,10 +1690,10 @@ abstract public class AtomCollection {
           else
             break;
       }
-      return bs;
+      break;
     case Token.chain:
-      for (int i = i0; i < atomCount; i++) {
-        if (bs.get(i) || !bsInfo.get(i))
+      for (i = i0; i >= 0; i = bsInfo.nextSetBit(i+1)) {
+        if (bs.get(i))
           continue;
         Chain chain = atoms[i].getChain();
         bs.set(i);
@@ -1701,12 +1708,12 @@ abstract public class AtomCollection {
           else
             break;
       }
-      return bs;
+      break;
     case Token.polymer:
-      for (int i = i0; i < atomCount; i++) {
-        if (bs.get(i) || !bsInfo.get(i))
+      for (i = i0; i >= 0; i = bsInfo.nextSetBit(i+1)) {
+        if (bs.get(i))
           continue;
-        int iPolymer = atoms[i].getPolymerIndexInModel();
+        iPolymer = atoms[i].getPolymerIndexInModel();
         bs.set(i);
         for (int j = i; --j >= 0;)
           if (atoms[j].getPolymerIndexInModel() == iPolymer)
@@ -1719,10 +1726,10 @@ abstract public class AtomCollection {
           else
             break;
       }
-      return bs;
+      break;
     case Token.structure:
-      for (int i = i0; i < atomCount; i++) {
-        if (bs.get(i) || !bsInfo.get(i))
+      for (i = i0; i >= 0; i = bsInfo.nextSetBit(i+1)) {
+        if (bs.get(i))
           continue;
         Object structure = atoms[i].getGroup().getStructure();
         bs.set(i);
@@ -1737,10 +1744,11 @@ abstract public class AtomCollection {
           else
             break;
       }
-      return bs;
+      break;
     }
-    Logger.error("MISSING getAtomBits entry for " + Token.nameOf(tokType));
-    return null;
+    if (i == 0)
+      Logger.error("MISSING getAtomBits entry for " + Token.nameOf(tokType));
+    return bs;
   }
 
   protected boolean isInLatticeCell(int i, Point3f cell) {
@@ -1935,12 +1943,10 @@ abstract public class AtomCollection {
   }
 
   public int[] getAtomIndices(BitSet bs) {
-    int len = bs.size();
     int n = 0;
     int[] indices = new int[atomCount];
-    for (int j = 0; j < len; j++)
-      if (bs.get(j))
-        indices[j] = ++n;
+    for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
+      indices[j] = ++n;
     return indices;
   }
 

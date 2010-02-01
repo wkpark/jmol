@@ -108,9 +108,7 @@ class RepaintManager {
       return;
 
     logTime = viewer.getTestFlag1();
-
     viewer.finalizeTransformParameters();
-
     if (logTime)
       Logger.startTimer();
 
@@ -124,7 +122,6 @@ class RepaintManager {
           continue;
         getRenderer(i, g3d).render(g3d, modelSet, shape);
       }
-
     } catch (Exception e) {
       Logger
           .error("rendering error -- perhaps use \"set refreshing FALSE/TRUE\" ? ");

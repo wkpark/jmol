@@ -26,6 +26,7 @@ package org.jmol.modelsetbio;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;

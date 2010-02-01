@@ -311,7 +311,7 @@ public class Escape {
     int iThis = -2;
     char ch;
     if (len < 3)
-      return bs;
+      return bs;    
     for (int i = 0; i < len; i++) {
       switch (ch = strBitset.charAt(i)) {
       case '}':
@@ -321,8 +321,7 @@ public class Escape {
           break;
         if (iPrev < 0)
           iPrev = iThis;
-        for (int j = iPrev; j <= iThis; j++)
-          bs.set(j);
+        bs.set(iPrev, iThis + 1);
         iPrev = -1;
         iThis = -2;
         break;
@@ -386,7 +385,7 @@ public class Escape {
     if (bs == null)
       return chOpen + "{}" + chClose;
     StringBuffer s = new StringBuffer(chOpen + "{");
-    int imax = bs.size();
+    int imax = bs.length();
     int iLast = -1;
     int iFirst = -2;
     int i = -1;

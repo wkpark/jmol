@@ -54,6 +54,7 @@ import org.jmol.util.CifDataReader;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Escape;
 import org.jmol.util.JpegEncoder;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
@@ -748,9 +749,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval
     // setCenterSelected
 
-    Point3f center = (bsCenter != null
-        && BitSetUtil.cardinalityOf(bsCenter) > 0 ? getAtomSetCenter(bsCenter)
-        : null);
+    Point3f center = (BitSetUtil.cardinalityOf(bsCenter) > 0 
+        ? getAtomSetCenter(bsCenter) : null);
     if (isJmolDataFrame())
       return;
     transformManager.setNewRotationCenter(center, doScale);
@@ -1584,7 +1584,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // only used from a script, so I do not think a refresh() is necessary
   }
 
-  public BitSet getSelectionSet() {
+  public  BitSet getSelectionSet() {
     return selectionManager.bsSelection;
   }
 
@@ -2223,7 +2223,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public AtomIndexIterator getWithinAtomSetIterator(int atomIndex,
                                                     float distance,
-                                                    BitSet bsSelected,
+                                                     BitSet bsSelected,
                                                     boolean isGreaterOnly,
                                                     boolean modelZeroBased) {
     return modelSet.getWithinAtomSetIterator(atomIndex, distance, bsSelected,
@@ -4072,7 +4072,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       bsAtoms = selectionManager.bsSelection;
     Point3f[] pts = getAdditionalHydrogens(bsAtoms, false);
     if (pts.length > 0) {
-      int modelIndex = getAtomModelIndex(BitSetUtil.firstSetBit(bsAtoms));
+      int modelIndex = getAtomModelIndex(bsAtoms.nextSetBit(0));
       String modelnumber = getModelNumberDotted(modelIndex);
       int atomno = modelSet.getAtomCountInModel(modelIndex);
       boolean wasAppendNew = getAppendNew();
@@ -4198,10 +4198,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.loadShape(shapeID);
   }
 
-  public void setShapeSize(int shapeID, int mad, BitSet bsAtoms) {
-    if (bsAtoms == null)
-      bsAtoms = selectionManager.bsSelection;
-    modelSet.setShapeSize(shapeID, mad, null, bsAtoms);
+  public void setShapeSize(int shapeID, int mad, BitSet bsSelected) {
+    // might be atoms or bonds
+    if (bsSelected == null)
+      bsSelected = selectionManager.bsSelection;
+    modelSet.setShapeSize(shapeID, mad, null, bsSelected);
   }
 
   public void setShapeSize(int shapeID, RadiusData rd, BitSet bsAtoms) {
@@ -6965,7 +6966,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (type.toLowerCase().indexOf("property_") == 0)
       exp = "{selected}.label(\"%{" + type + "}\")";
     else if (type.equalsIgnoreCase("CML"))
-      return getModelCml(getAtomBitSet(atomExpression), 0, true);
+      return getModelCml(getAtomBitSet(atomExpression), Integer.MAX_VALUE, true);
     else if (type.equalsIgnoreCase("PDB"))
       // old crude
       exp = "{selected and not hetero}.label(\"ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \").lines"
@@ -7324,7 +7325,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (bsFrames == null)
       return (String) createImage(fileName, type, text_or_bytes, quality,
           width, height);
-    int modelCount = getModelCount();
     String info = "";
     int n = 0;
     int ptDot = fileName.indexOf(".");
@@ -7333,8 +7333,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     String froot = fileName.substring(0, ptDot);
     String fext = fileName.substring(ptDot);
-    for (int i = 0; i < modelCount; i++)
-      if (bsFrames.get(i)) {
+    for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames.nextSetBit(i + 1)) {
         setCurrentModelIndex(i);
         fileName = "0000" + (++n);
         fileName = froot + fileName.substring(fileName.length() - 4) + fext;
@@ -7669,7 +7668,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void deleteBonds(BitSet bsDeleted) {
-    modelSet.deleteBonds(bsDeleted);
+    modelSet.deleteBonds(bsDeleted, false);
   }
 
   public void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bsDeleted) {
@@ -7975,5 +7974,4 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean getAllowGestures() {
     return global.allowGestures;    
   }
-
 }

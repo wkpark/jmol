@@ -27,6 +27,7 @@ package org.jmol.modelset;
 
 import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
+
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Quaternion;
@@ -564,7 +565,7 @@ public final class ModelLoader extends ModelSet {
       if (atoms[i].modelIndex != iLast) {
         iLast = atoms[i].modelIndex;
         models[iLast].firstAtomIndex = i;
-        models[iLast].bsAtoms = null;
+        models[iLast].clearAtomCounts();
         int vdwtype = getDefaultVdwType(iLast);
         if (vdwtype != vdwtypeLast) {
           Logger.info("Default Van der Waal type for model" + " set to " + JmolConstants.getVdwLabel(vdwtype));
@@ -830,6 +831,7 @@ public final class ModelLoader extends ModelSet {
       }
   }
   
+  private BitSet structuresDefinedInFile = new BitSet();
   protected void defineStructure(int modelIndex, String structureType,
                                  String structureID, int serialID, int strandCount, 
                                  char startChainID, int startSequenceNumber,
@@ -954,9 +956,7 @@ public final class ModelLoader extends ModelSet {
       if (merging || modelCount > 1) {
         if (bs == null)
           bs = new BitSet(atomCount);
-        //System.out.println(atomIndex + " " + modelAtomCount);
-        for (int j = atomIndex + modelAtomCount; --j >= atomIndex;)
-          bs.set(j);
+        bs.set(atomIndex, atomIndex + modelAtomCount);
       }
     }
     if (autoBonding) {
@@ -1204,7 +1204,7 @@ public final class ModelLoader extends ModelSet {
     float tolerance = viewer.getLoadAtomDataTolerance();
     int i = -1;
     int n = 0;
-    int imax = (tokType == Token.xyz ? BitSetUtil.length(bsSelected) : 0);
+    boolean loadAllData = (BitSetUtil.cardinalityOf(bsSelected) == viewer.getAtomCount());
     for (JmolAdapter.AtomIterator iterAtom = adapter
         .getAtomIterator(atomSetCollection); iterAtom.hasNext();) {
       float x = iterAtom.getX();
@@ -1212,12 +1212,11 @@ public final class ModelLoader extends ModelSet {
       float z = iterAtom.getZ();
       if (Float.isNaN(x + y + z))
         continue;
-      
+
       if (tokType == Token.xyz) {
-        while (++i < imax && !bsSelected.get(i)) {
-          // continue
-        }
-        if ( i == imax)
+        // we are loading selected coordinates only
+        i = bsSelected.nextSetBit(i + 1);
+        if (i < 0)
           break;
         n++;
         if (Logger.debugging)
@@ -1230,7 +1229,7 @@ public final class ModelLoader extends ModelSet {
       getAtomsWithin(-tolerance, pt, bs, -1);
       getAtomsWithin(tolerance, pt, bs, -1);
       bs.and(bsSelected);
-      if (BitSetUtil.cardinalityOf(bsSelected) == viewer.getAtomCount()) {
+      if (loadAllData) {
         n = BitSetUtil.cardinalityOf(bs);
         if (n == 0) {
           Logger.warn("createAtomDataSet: no atom found at position " + pt);

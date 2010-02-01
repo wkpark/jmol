@@ -139,7 +139,7 @@ class ScriptManager {
     scriptQueueRunning[pt] = true;
     queueThreads[pt] = new Thread(new ScriptQueueRunnable(
         startedByCommandWatcher, pt));
-    System.out.println("ScriptManager started " + queueThreads[pt].getName() + " as QueueThread" + pt);
+    //System.out.println("ScriptManager started " + queueThreads[pt].getName() + " as QueueThread" + pt);
     queueThreads[pt].setName("QueueThread" + pt);
     queueThreads[pt].start();
   }

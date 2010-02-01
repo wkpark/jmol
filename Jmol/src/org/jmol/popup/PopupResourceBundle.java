@@ -504,7 +504,7 @@ class PopupResourceBundle {
       { "writePovray", "write POVRAY \"?FILEROOT?.pov\"" },      
       { "writeVrml", "write VRML \"?FILEROOT?.wrl\"" },      
       { "writeX3d", "write X3D \"?FILEROOT?.x3d\"" },      
-      { "writeIdtf", "write IDTF \"?FILEROOT?.x3d\"" },      
+      { "writeIdtf", "write IDTF \"?FILEROOT?.idtf\"" },      
       { "writeMaya", "write MAYA \"?FILEROOT?.ma\"" },       
       { "SYMMETRYshowSymmetry", "console on;show symmetry" },
       { "UNITCELLshow", "console on;show unitcell" },

@@ -820,6 +820,7 @@ public class Token {
   public final static int allowembeddedscripts           = booleanparam | 2;
   public final static int allowgestures                  = booleanparam | 4;
   public final static int allowkeystrokes                = booleanparam | 6;
+  public static final int allowmultitouch                = booleanparam | 7; // Jmol 11.9.24
   public final static int allowrotateselected            = booleanparam | 8;
   public final static int antialiasdisplay               = booleanparam | 10;
   public final static int antialiasimages                = booleanparam | 12;
@@ -1996,6 +1997,7 @@ public class Token {
       "allowEmbeddedScripts",                     new Token(allowembeddedscripts),
       "allowGestures",                            new Token(allowgestures),
       "allowKeyStrokes",                          new Token(allowkeystrokes),
+      "allowMultiTouch",                          new Token(allowmultitouch),
       "allowRotateSelected",                      new Token(allowrotateselected),
       "antialiasDisplay",                         new Token(antialiasdisplay),
       "antialiasImages",                          new Token(antialiasimages),

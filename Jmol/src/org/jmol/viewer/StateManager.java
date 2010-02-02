@@ -802,6 +802,7 @@ public class StateManager {
     //misc
 
     boolean allowGestures = false;
+    boolean allowMultiTouch = true; // but you still need to set the parameter multiTouchSparshUI=true
     boolean allowKeyStrokes = false;
     int animationFps = 10;
     boolean autoFps = false;
@@ -1234,6 +1235,7 @@ public class StateManager {
         // no, not persistent, because slab and depth are not
         // zShade = g.zShade; zShadePower = g.zShadePower
         allowGestures = g.allowGestures;
+        allowMultiTouch = g.allowMultiTouch;
         allowKeyStrokes = g.allowKeyStrokes;
       }
 
@@ -1255,8 +1257,9 @@ public class StateManager {
       setParameterValue("stateversion", 0);
 
       setParameterValue("allowEmbeddedScripts", allowEmbeddedScripts);
-      setParameterValue("allowKeyStrokes", allowKeyStrokes);
       setParameterValue("allowGestures", allowGestures);
+      setParameterValue("allowKeyStrokes", allowKeyStrokes);
+      setParameterValue("allowMultiTouch", allowMultiTouch);
       setParameterValue("allowRotateSelected", allowRotateSelected);
       setParameterValue("ambientPercent", ambientPercent);
       setParameterValue("animationFps", animationFps);

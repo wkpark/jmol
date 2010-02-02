@@ -5403,6 +5403,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.allowmultitouch:
+      // 11.9.24
+      global.allowMultiTouch = value;
+      break;
     case Token.preservestate:
       // 11.9.23
       global.preserveState = value;
@@ -7973,5 +7977,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean getAllowGestures() {
     return global.allowGestures;    
+  }
+
+  public boolean allowMultiTouch() {
+    return global.allowMultiTouch;
   }
 }

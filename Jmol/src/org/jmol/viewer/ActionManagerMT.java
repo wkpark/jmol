@@ -173,7 +173,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
   
   public List getAllowedGestures(int groupID) {
-    if (groupID != this.groupID)
+    if (groupID != this.groupID || !viewer.allowMultiTouch())
       return null;
     Vector list = new Vector();
     //list.add(new Integer(DRAG_GESTURE));
@@ -190,7 +190,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
 
   public int getGroupID(int x, int y) {
-    System.out.println("ActionManagerMT" + this + " hasfocus? " + viewer.getDisplay().hasFocus() );
+//    System.out.println("ActionManagerMT" + this + " hasfocus? " + viewer.getDisplay().hasFocus() );
     int gid = (!viewer.getDisplay().hasFocus()  
         || x < 0 || y < 0 || x >= viewer.getScreenWidth()
         || y >= viewer.getScreenHeight() ? 0 : groupID);

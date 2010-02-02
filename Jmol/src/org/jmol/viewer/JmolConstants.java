@@ -2826,23 +2826,23 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_STRUTS     = 4;  //placeholder only; handled by SHAPE_STICKS
   public final static int SHAPE_LABELS     = 5;
   public final static int SHAPE_MEASURES   = 6;
-  public final static int SHAPE_DOTS       = 7;
-  public final static int SHAPE_STARS      = 8;
-  public final static int SHAPE_HALOS      = 9;
+  public final static int SHAPE_STARS      = 7;
+  public final static int SHAPE_HALOS      = 8;
 
-  public final static int SHAPE_MIN_SECONDARY = 10; //////////
+  public final static int SHAPE_MIN_SECONDARY = 9; //////////
   
-    public final static int SHAPE_BACKBONE   = 10;
-    public final static int SHAPE_TRACE      = 11;
-    public final static int SHAPE_CARTOON    = 12;
-    public final static int SHAPE_STRANDS    = 13;
-    public final static int SHAPE_MESHRIBBON = 14;
-    public final static int SHAPE_RIBBONS    = 15;
-    public final static int SHAPE_ROCKETS    = 16;
+    public final static int SHAPE_BACKBONE   = 9;
+    public final static int SHAPE_TRACE      = 10;
+    public final static int SHAPE_CARTOON    = 11;
+    public final static int SHAPE_STRANDS    = 12;
+    public final static int SHAPE_MESHRIBBON = 13;
+    public final static int SHAPE_RIBBONS    = 14;
+    public final static int SHAPE_ROCKETS    = 15;
   
-  public final static int SHAPE_MAX_SECONDARY = 17; //////////
-  public final static int SHAPE_MIN_SPECIAL    = 17; //////////
+  public final static int SHAPE_MAX_SECONDARY = 16; //////////
+  public final static int SHAPE_MIN_SPECIAL    = 16; //////////
 
+    public final static int SHAPE_DOTS       = 16;
     public final static int SHAPE_DIPOLES    = 17;
     public final static int SHAPE_VECTORS    = 18;
     public final static int SHAPE_GEOSURFACE = 19;
@@ -2892,9 +2892,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static String[] shapeClassBases = {
     "Balls", "Sticks", "Hsticks", "Sssticks", "Struts",
       //Hsticks, Sssticks, and Struts classes do not exist, but this returns Token for them
-    "Labels", "Measures", "Dots", "Stars", "Halos",
+    "Labels", "Measures", "Stars", "Halos",
     "Backbone", "Trace", "Cartoon", "Strands", "MeshRibbon", "Ribbons", "Rockets", 
-    "Dipoles", "Vectors", "GeoSurface", "Ellipsoids", "Polyhedra", 
+    "Dots", "Dipoles", "Vectors", "GeoSurface", "Ellipsoids", "Polyhedra", 
     "Draw", "Isosurface", "LcaoCartoon", "MolecularOrbital", "Pmesh", "Plot3D", 
     "Echo", "Axes", "Bbcage", "Uccage", "Hover", 
     "Frank"
@@ -2928,8 +2928,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       return SHAPE_LABELS;
     case Token.measure:
       return SHAPE_MEASURES;
-    case Token.dots:
-      return SHAPE_DOTS;
     case Token.star:
       return SHAPE_STARS;
     case Token.halo:
@@ -2948,6 +2946,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       return SHAPE_RIBBONS;
     case Token.rocket:
       return SHAPE_ROCKETS;
+    case Token.dots:
+      return SHAPE_DOTS;
     case Token.dipole:
       return SHAPE_DIPOLES;
     case Token.vector:

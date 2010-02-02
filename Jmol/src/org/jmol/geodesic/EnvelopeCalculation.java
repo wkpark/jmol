@@ -27,6 +27,8 @@ package org.jmol.geodesic;
 import org.jmol.modelset.AtomIndexIterator;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.FastBitSet;
+import org.jmol.util.SlowBitSet;
 
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
@@ -40,7 +42,7 @@ import javax.vecmath.Point3f;
  * 3/20/07 -- consolidation -- Bob Hanson
  * 
  * The two geodesic code segments in g3d.Geodesic and DotsRenderer were
- * cleaned up and all put it g3d.Geodesic (no new code required!)
+ * cleaned up and all put in g3d.Geodesic (no new code required!)
  * Then GeoSurface was split off from Dots.
  * Finally, all the dot calculations were split off as EnvelopeCalculation,
  * which can be used then independently of the Dots shape.
@@ -130,20 +132,31 @@ import javax.vecmath.Point3f;
 
 public final class EnvelopeCalculation {
 
+  
+  private FastBitSet geodesicMap;
+  private FastBitSet mapT;
+
   //Viewer viewer;
   private short[] mads;
   private AtomData atomData = new AtomData();
   private AtomDataServer viewer;
   private int atomCount;
   
-  public EnvelopeCalculation(AtomDataServer viewer, int atomCount, short[] mads) {
+  public EnvelopeCalculation(AtomDataServer viewer, int atomCount, short[] mads, boolean asJavaBitSet) {
     this.viewer = viewer;
     this.atomCount = atomCount; //preliminary, for setFromBits()
     this.mads = mads;
     geodesicCount = Geodesic.getVertexVectorsCount();
-    geodesicMap = allocateBitmap(geodesicCount);
-    mapT = allocateBitmap(geodesicCount);
-  }
+    
+    if (asJavaBitSet) {
+      geodesicMap = SlowBitSet.allocateBitmap(geodesicCount);
+      mapT = SlowBitSet.allocateBitmap(geodesicCount);      
+    } else {
+      geodesicMap = FastBitSet.allocateBitmap(geodesicCount);
+      mapT = FastBitSet.allocateBitmap(geodesicCount);
+    }
+
+}
    
   public final static float SURFACE_DISTANCE_FOR_CALCULATION = 3f;
 
@@ -152,8 +165,8 @@ public final class EnvelopeCalculation {
   private float maxRadius = 0;
   private boolean modelZeroBased;
 
-  private int[][] dotsConvexMaps;
-  public int[][] getDotsConvexMaps() {
+  private FastBitSet[] dotsConvexMaps;
+  public FastBitSet[] getDotsConvexMaps() {
     return dotsConvexMaps;
   }
   
@@ -167,14 +180,10 @@ public final class EnvelopeCalculation {
     if (dotsConvexMax >= max)
       return;
     dotsConvexMax = max;
-    dotsConvexMaps = new int[max][];
+    dotsConvexMaps = new FastBitSet[max];
   }
   
   private int geodesicCount;
-  private int[] geodesicMap;
-  private int[] mapT;
-  private final static int[] mapNull = new int[0];
-  
   private BitSet bsSurface;
   
   public BitSet getBsSurfaceClone() {
@@ -189,17 +198,16 @@ public final class EnvelopeCalculation {
   }
   
   public void setFromBits(int index, BitSet bs) {
-    setAllBits(geodesicMap, geodesicCount);
+    geodesicMap.setAllBits(geodesicCount);
     for (int iDot = geodesicCount; --iDot >= 0;)
       if (!bs.get(iDot))
-        clearBit(geodesicMap, iDot);
+        geodesicMap.clearBit(iDot);
     if (dotsConvexMaps == null)
-      dotsConvexMaps = new int[atomCount][];
-    int[] map = mapNull;
-    int count = getMapStorageCount(geodesicMap);
+      dotsConvexMaps = new FastBitSet[atomCount];
+    FastBitSet map = FastBitSet.getNullMap();
+    int count = geodesicMap.getMapStorageCount();
     if (count > 0) {
-      map = new int[count];
-      System.arraycopy(geodesicMap, 0, map, 0, count);
+      map = geodesicMap.copyFast(); 
     }
     dotsConvexMaps[index] = map;
     dotsConvexMax = Math.max(dotsConvexMax, index);
@@ -281,18 +289,18 @@ public final class EnvelopeCalculation {
     int nPoints = 0;
     int dotCount = 42;
     for (int i = dotsConvexMax; --i >= 0;)
-      nPoints += getPointCount(dotsConvexMaps[i], dotCount);
+      nPoints += dotsConvexMaps[i].getPointCount(dotCount);
     Point3f[] points = new Point3f[nPoints];
     if (nPoints == 0)
       return points;
     nPoints = 0;
     for (int i = dotsConvexMax; --i >= 0;)
       if (dotsConvexMaps[i] != null) {
-        int iDot = dotsConvexMaps[i].length << 5;
+        int iDot = dotsConvexMaps[i].getSize();
         if (iDot > dotCount)
           iDot = dotCount;
         while (--iDot >= 0)
-          if (getBit(dotsConvexMaps[i], iDot)) {
+          if (dotsConvexMaps[i].getBit(iDot)) {
             Point3f pt = new Point3f();
             pt.scaleAdd(atomData.atomRadius[i], Geodesic.getVertexVector(iDot), atomData.atomXyz[i]);
             points[nPoints++] = pt;
@@ -302,41 +310,8 @@ public final class EnvelopeCalculation {
     return points;
   }  
   
-  public final static boolean getBit(int[] bitmap, int i) {
-    return (bitmap[(i >> 5)] << (i & 31)) < 0;
-  }
-
   ///////////////// private methods ///////////////////
   
-  
-  /* 
-  String showMap(int[] map) {
-    String s = "showMap";
-    int n = 0;
-    int iDot = map.length << 5;
-    while (--iDot >= 0)
-      if (getBit(map, iDot)) {
-        n++;
-        s += " " + iDot;
-      }
-    s = n + " points:" + s;
-    return s;
-  }
-*/
-  private int getPointCount(int[] visibilityMap, int dotCount) {
-    if (visibilityMap == null)
-      return 0;
-    int iDot = visibilityMap.length << 5;
-    if (iDot > dotCount)
-      iDot = dotCount;
-    int n = 0;
-    n = 0;
-    while (--iDot >= 0)
-      if (getBit(visibilityMap, iDot))
-        n++;
-    return n;
-  }
-
   private void setDotsConvexMax() {
     if (dotsConvexMaps == null)
       dotsConvexMax = 0;
@@ -372,33 +347,23 @@ public final class EnvelopeCalculation {
   
   private void calcConvexMap(boolean isSurface) {
     if (dotsConvexMaps == null)
-      dotsConvexMaps = new int[atomCount][];
+      dotsConvexMaps = new FastBitSet[atomCount];
     calcConvexBits();
-    int[] map = mapNull;    
-    int count = getMapStorageCount(geodesicMap);
+    FastBitSet map = FastBitSet.getNullMap();    
+    int count = geodesicMap.getMapStorageCount();
     if (count > 0) {
       bsSurface.set(indexI);
       if (isSurface) {
         addIncompleteFaces(geodesicMap);
         addIncompleteFaces(geodesicMap);
       }
-      count = getMapStorageCount(geodesicMap);
-      map = new int[count];
-      System.arraycopy(geodesicMap, 0, map, 0, count);
+      map = geodesicMap.copyFast();
     }
     dotsConvexMaps[indexI] = map;
   }
   
-  private int getMapStorageCount(int[] map) {
-    int indexLast;
-    for (indexLast = map.length; --indexLast >= 0
-        && map[indexLast] == 0;) {
-    }
-    return indexLast + 1;
-  }
-
-  private void addIncompleteFaces(int[] points) {
-    clearBitmap(mapT);
+  private void addIncompleteFaces(FastBitSet points) {
+    mapT.clearBitmap();
     short[] faces = Geodesic.getFaceVertexes(MAX_LEVEL);
     int len = faces.length;
     int maxPt = -1;
@@ -406,32 +371,32 @@ public final class EnvelopeCalculation {
       short p1 = faces[f++];
       short p2 = faces[f++];
       short p3 = faces[f++];
-      boolean ok1 = getBit(points, p1); 
-      boolean ok2 = getBit(points, p2); 
-      boolean ok3 = getBit(points, p3);
+      boolean ok1 = points.getBit(p1); 
+      boolean ok2 = points.getBit(p2); 
+      boolean ok3 = points.getBit(p3);
       if (! (ok1 || ok2 || ok3) || ok1 && ok2 && ok3)
         continue;
       
       // trick: DO show faces if ANY ONE vertex is missing
       if (!ok1) {
-        setBit(mapT, p1);
+        mapT.setBit(p1);
         if (maxPt < p1)
           maxPt = p1;
       }
       if (!ok2) {
-        setBit(mapT, p2);
+        mapT.setBit(p2);
         if (maxPt < p2)
           maxPt = p2;
       }
       if (!ok3) {
-        setBit(mapT, p3);
+        mapT.setBit(p3);
         if (maxPt < p3)
           maxPt = p3;
       }
     }
     for (int i=0; i <= maxPt; i++) {
-      if (getBit(mapT, i))
-        setBit(points, i);
+      if (mapT.getBit(i))
+        points.setBit(i);
     }
   }
 
@@ -447,7 +412,7 @@ public final class EnvelopeCalculation {
   private static int[] power4 = {1, 4, 16, 64, 256};
   
   private void calcConvexBits() {
-    setAllBits(geodesicMap, geodesicCount);
+    geodesicMap.setAllBits(geodesicCount);
     float combinedRadii = radiusI + radiusP;
     if (neighborCount == 0)
       return;
@@ -457,7 +422,7 @@ public final class EnvelopeCalculation {
     
     int p4 = power4[MAX_LEVEL - 1];
     boolean ok1, ok2, ok3;
-    clearBitmap(mapT);
+    mapT.clearBitmap();
     for (int i = 0; i < 12; i++) {
       vertexTest[i].set(Geodesic.getVertexVector(i));
       vertexTest[i].scaleAdd(combinedRadii, centerI);      
@@ -474,11 +439,11 @@ public final class EnvelopeCalculation {
         ok2 = vertexTest[p2].distanceSquared(centerT) >= maxDist;
         ok3 = vertexTest[p3].distanceSquared(centerT) >= maxDist;
         if (!ok1)
-          clearBit(geodesicMap, p1);
+          geodesicMap.clearBit(p1);
         if (!ok2)
-          clearBit(geodesicMap, p2);
+          geodesicMap.clearBit(p2);
         if (!ok3)
-          clearBit(geodesicMap, p3);
+          geodesicMap.clearBit(p3);
         if (!ok1 && !ok2 && !ok3) {
           faceTest = -1;
           break;
@@ -488,12 +453,12 @@ public final class EnvelopeCalculation {
       int kLast = kFirst + 12 * p4;
       for (int k = kFirst; k < kLast; k++) {
         int vect = faces[k];
-        if (getBit(mapT, vect) || ! getBit(geodesicMap, vect))
+        if (mapT.getBit(vect) || !geodesicMap.getBit(vect))
             continue;
         switch (faceTest) {
         case -1:
           //face full occluded
-          clearBit(geodesicMap, vect);
+          geodesicMap.clearBit(vect);
           break;
         case 0:
           //face partially occluded
@@ -503,13 +468,13 @@ public final class EnvelopeCalculation {
             pointT.set(Geodesic.getVertexVector(vect));
             pointT.scaleAdd(combinedRadii, centerI);
             if (pointT.distanceSquared(centerT) < maxDist)
-              clearBit(geodesicMap, vect);
+              geodesicMap.clearBit(vect);
           }
           break;
         case 1:
           //face is fully surface
         }
-        setBit(mapT, vect);
+        mapT.setBit(vect);
       }
     }
   }
@@ -550,33 +515,8 @@ public final class EnvelopeCalculation {
     }
   }
   
-  private final static int[] allocateBitmap(int count) {
-    return new int[(count + 31) >> 5];
-  }
-
-  private final static void setBit(int[] bitmap, int i) {
-    bitmap[(i >> 5)] |= 1 << (~i & 31);
-  }
-
-  private final static void clearBit(int[] bitmap, int i) {
-    bitmap[(i >> 5)] &= ~(1 << (~i & 31));
-  }
-
-  private final static void setAllBits(int[] bitmap, int count) {
-    int i = count >> 5;
-    if ((count & 31) != 0)
-      bitmap[i] = 0x80000000 >> (count - 1);
-    while (--i >= 0)
-      bitmap[i] = -1;
-  }
-  
-  private final static void clearBitmap(int[] bitmap) {
-    for (int i = bitmap.length; --i >= 0; )
-      bitmap[i] = 0;
-  }
-
   public void deleteAtoms(int firstAtomDeleted, int nAtomsDeleted, BitSet bsAtoms) {
-    dotsConvexMaps = (int[][]) ArrayUtil.deleteElements(dotsConvexMaps, firstAtomDeleted, nAtomsDeleted);
+    dotsConvexMaps = (FastBitSet[]) ArrayUtil.deleteElements(dotsConvexMaps, firstAtomDeleted, nAtomsDeleted);
     dotsConvexMax = dotsConvexMaps.length;
     if (mads != null)
       mads = (short[]) ArrayUtil.deleteElements(mads, firstAtomDeleted, nAtomsDeleted);

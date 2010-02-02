@@ -298,7 +298,7 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
   }
   
   void undoSave() {
-    if (!viewer.getBooleanProperty("undo"))
+    if (!viewer.getBooleanProperty("undo") || !viewer.getBooleanProperty("preserveState"))
       return;
     //shift stack if full
     undoPointer++;

@@ -25,9 +25,8 @@
 package org.jmol.shapespecial;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.geodesic.Geodesic;
-import org.jmol.shape.DotsRenderer;
+import org.jmol.util.FastBitSet;
 
 import javax.vecmath.Point3i;
 
@@ -52,7 +51,7 @@ public class GeoSurfaceRenderer extends DotsRenderer {
     render1(gs);
   }
   
- protected void renderConvex(short colix, int[] visibilityMap, int nPoints) {
+ protected void renderConvex(short colix, FastBitSet visibilityMap, int nPoints) {
     this.colix = colix;
     if (iShowSolid) {
       if (g3d.setColix(colix))       
@@ -66,13 +65,13 @@ public class GeoSurfaceRenderer extends DotsRenderer {
   private Point3i facePt2 = new Point3i();
   private Point3i facePt3 = new Point3i();
   
-  private void renderSurface(int[] points) {
+  private void renderSurface(FastBitSet points) {
     if (faceMap == null)
       return;
     short[] faces = Geodesic.getFaceVertexes(screenLevel);
     int[] coords = screenCoordinates;
     short p1, p2, p3;
-    int mapMax = (points.length << 5);
+    int mapMax = points.getSize();
     //Logger.debug("geod frag "+mapMax+" "+dotCount);
     if (screenDotCount < mapMax)
       mapMax = screenDotCount;
@@ -83,8 +82,8 @@ public class GeoSurfaceRenderer extends DotsRenderer {
       if (p1 >= mapMax || p2 >= mapMax || p3 >= mapMax)
         continue;
       //Logger.debug("geod frag "+p1+" "+p2+" "+p3+" "+dotCount);
-      if (!EnvelopeCalculation.getBit(points, p1) || !EnvelopeCalculation.getBit(points, p2)
-          || !EnvelopeCalculation.getBit(points, p3))
+      if (!points.getBit(p1) || !points.getBit(p2)
+          || !points.getBit(p3))
         continue;
       facePt1.set(coords[faceMap[p1]], coords[faceMap[p1] + 1], coords[faceMap[p1] + 2]);
       facePt2.set(coords[faceMap[p2]], coords[faceMap[p2] + 1], coords[faceMap[p2] + 2]);

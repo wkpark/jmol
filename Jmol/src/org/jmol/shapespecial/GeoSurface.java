@@ -24,7 +24,7 @@
 
 package org.jmol.shapespecial;
 
-import org.jmol.shape.Dots;
+
 
 public class GeoSurface extends Dots {
   

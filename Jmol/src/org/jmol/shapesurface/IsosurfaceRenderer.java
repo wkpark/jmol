@@ -48,7 +48,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     super.initRenderer();
   }
   protected void render() {
-    iShowNormals = viewer.getTestFlag2();
+    iShowNormals = viewer.getTestFlag3();
     Isosurface isosurface = (Isosurface) shape;
     int slabValue = (viewer.getNavigationMode() ? g3d.getSlab() : Integer.MAX_VALUE);
     for (int i = isosurface.meshCount; --i >= 0;) {
@@ -157,7 +157,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected void renderPoints() {
     int incr = imesh.vertexIncrement;
     int diam = 4;
-    boolean showNumbers = viewer.getTestFlag2();
+    boolean showNumbers = viewer.getTestFlag3();
     int cX = (showNumbers ? viewer.getScreenWidth()/2 : 0);
     int cY = (showNumbers ? viewer.getScreenHeight()/2 : 0);
     

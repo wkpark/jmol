@@ -3864,6 +3864,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (str.startsWith("exit")) {
       haltScriptExecution();
       clearScriptQueue();
+      clearTimeout(null);
       if (isCmdLine_c_or_C_Option)
         Logger.info("exit -- stops script checking");
       isCmdLine_c_or_C_Option = false;
@@ -7888,6 +7889,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Object getMouseInfo() {
     return (haveDisplay ? actionManager.getMouseInfo() : null);
+  }
+
+  public void clearTimeout(String name) {
+    setTimeout(name, 0, null);
   }
 
   public void setTimeout(String name, int mSec, String script) {

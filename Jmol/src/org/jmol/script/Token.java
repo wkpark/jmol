@@ -331,13 +331,14 @@ public class Token {
   final static int stereo       = scriptCommand | 59 | defaultON;
 //final static int structure    see intproperty
   final static int sync         = scriptCommand | 60;
-  final static int translate    = scriptCommand | 61;
-  final static int translateSelected = scriptCommand | 62;
-  final static int unbind       = scriptCommand | 63;
-  public final static int vibration    = scriptCommand | 66;
+  final static int timeout      = scriptCommand | 62 | setparam;
+  final static int translate    = scriptCommand | 64;
+  final static int translateSelected = scriptCommand | 66;
+  final static int unbind       = scriptCommand | 68;
+  public final static int vibration    = scriptCommand | 70;
   //final static int write   see mathfunc
-  final static int zoom         = scriptCommand | 68;
-  final static int zoomTo       = scriptCommand | 69;
+  final static int zoom         = scriptCommand | 72;
+  final static int zoomTo       = scriptCommand | 74;
 
   // shapes:
   
@@ -711,7 +712,6 @@ public class Token {
   public final static int defaultlattice   = setparam | 6;
   public final static int showscript       = setparam | 8;
   public final static int specular         = setparam | 10;
-  public final static int timeout          = setparam | 12;
   public final static int trajectory       = setparam | 14;
   public final static int usercolorscheme  = setparam | 16;
 

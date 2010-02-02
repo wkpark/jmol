@@ -1951,7 +1951,7 @@ public class ScriptEvaluator {
     boolean isExpression = false;
     int j = 1;
     for (i = 1; i < statementLength; i++) {
-      switch (tok = statement[i].tok) {
+      switch (tok = getToken(i).tok) {
       case Token.define:
         Object v;
         // Object var_set;
@@ -4120,8 +4120,7 @@ public class ScriptEvaluator {
     case Token.spec_seqcode:
     case Token.decimal:
       for (; i < statementLength; i++) {
-        getToken(i);
-        switch (theTok) {
+        switch (getToken(i).tok) {
         case Token.comma:
           continue;
         case Token.identifier:
@@ -4650,6 +4649,9 @@ public class ScriptEvaluator {
         case Token.invertSelected:
           invertSelected();
           break;
+        case Token.javascript:
+          script(Token.javascript);
+          break;
         case Token.load:
           load();
           break;
@@ -4719,8 +4721,7 @@ public class ScriptEvaluator {
           set();
           break;
         case Token.script:
-        case Token.javascript:
-          script(token.tok);
+          script(Token.script);
           break;
         case Token.select:
           select(1);
@@ -4758,6 +4759,9 @@ public class ScriptEvaluator {
           break;
         case Token.sync:
           sync();
+          break;
+        case Token.timeout:
+          timeout(1);
           break;
         case Token.translate:
           translate();
@@ -7946,7 +7950,7 @@ public class ScriptEvaluator {
     MinimizerInterface minimizer = viewer.getMinimizer(false);
     // may be null
     for (int i = 1; i < statementLength; i++)
-      switch (tokAt(i)) {
+      switch (getToken(i).tok) {
       case Token.clear:
         checkLength(2);
         if (isSyntaxCheck || minimizer == null)
@@ -9648,6 +9652,9 @@ public class ScriptEvaluator {
     case Token.selectionhalos:
       selectionHalo(2);
       return;
+    case Token.timeout:
+      timeout(2);
+      return;
     }
 
     // THESE HAVE MULTIPLE CONTEXTS AND
@@ -9695,9 +9702,6 @@ public class ScriptEvaluator {
       return;
     case Token.ssbond: // ssBondsBackbone
       setSsbond();
-      return;
-    case Token.timeout:
-      setTimeout();
       return;
     case Token.togglelabel:
       setLabel("toggle");
@@ -10529,29 +10533,41 @@ public class ScriptEvaluator {
     setStringProperty("pickingStyle", str);
   }
 
-  private void setTimeout() throws ScriptException {
-    // set timeout "mytimeout" mSec "script"
+  private void timeout(int index) throws ScriptException {
+    // timeout ID "mytimeout" mSec "script"
     // msec < 0 --> repeat indefinitely
-    // set timeout "mytimeout" 1000
-    // set timeout "mytimeout" OFF
-    // set timeout OFF
+    // timeout ID "mytimeout" 1000 // milliseconds
+    // timeout ID "mytimeout" 0.1  // seconds
+    // timeout ID "mytimeout" OFF
+    // timeout OFF
     String name = null;
-    int mSec = 0;
     String script = null;
-    switch (statementLength) {
-    case 3:
-      if (tokAt(iToken = 2) != Token.off) 
-        error(ERROR_invalidArgument);
-      break;
-    case 4:
-      if (tokAt(iToken = 3) != Token.off)
-        mSec = intParameter(3);
-      name = parameterAsString(2);
-      break;
-    default:
-      script = parameterAsString(checkLast(4));
-      name = parameterAsString(2);
-      mSec = intParameter(3);
+    int mSec = 0;
+    if (statementLength == index) {
+      showString(viewer.showTimeout(null));
+      return;
+    }
+    for (int i = index; i < statementLength; i++)
+      switch (getToken(i).tok) {
+      case Token.id:
+        name = parameterAsString(++i);
+        break;
+      case Token.off:
+        break;
+      case Token.integer:
+        mSec = intParameter(i);
+        break;
+      case Token.decimal:
+        mSec = (int) (floatParameter(i) * 1000);
+        break;
+      default:
+        if (name == null)
+          name = parameterAsString(i);
+        else if (script == null)
+          script = parameterAsString(i);
+        else
+          error(ERROR_invalidArgument);
+        break;
     }
     if (!isSyntaxCheck)
       viewer.setTimeout(name, mSec, script);

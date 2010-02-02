@@ -1099,18 +1099,20 @@ public class ActionManager {
       Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
       try {
         while (true) {
-          Thread.sleep(50);
+          Thread.sleep(26);
           if (targetTime > System.currentTimeMillis())
             continue;
           status++;
           targetTime += Math.abs(ms);
+          if (timeouts.get(name) == null)
+            break;
           if (ms > 0)
             timeouts.remove(name);
           //System.out.println("I'm going to execute " + script + " now");
           //if (Logger.debugging)
             //viewer.script(script);
           //else 
-            viewer.evalStringQuiet(script);
+          viewer.evalStringQuiet(script);
           //System.out.println("I'm done");
           if (ms > 0)
             break;
@@ -1411,17 +1413,21 @@ public class ActionManager {
     if (measurementPending != null || selectionWorking)
       return;
     selectionWorking = true;
-    String s = (isBound(action, ACTION_selectAndNot) ? "selected and not " 
-         : isBound(action, ACTION_selectOr) ? "selected or " 
-         : isBound(action, ACTION_selectToggle) ? 
-             "selected and not (" + item + ") or (not selected) and "
-         : isBound(action, ACTION_selectToggleExtended) ?
-             "selected tog " 
-         : isBound(action, ACTION_select) ? "" : null);
+    String s = (isBound(action, ACTION_selectAndNot) ? "selected and not "
+        : isBound(action, ACTION_selectOr) ? "selected or " : isBound(action,
+            ACTION_selectToggle) ? "selected and not (" + item
+            + ") or (not selected) and " : isBound(action,
+            ACTION_selectToggleExtended) ? "selected tog " : isBound(action,
+            ACTION_select) ? "" : null);
     if (s != null) {
-      if (eval == null)
-        eval = new ScriptEvaluator(viewer);
-      viewer.setSelectionSet(viewer.getAtomBitSet(eval, s + "(" + item + ")"));
+      try {
+        if (eval == null)
+          eval = new ScriptEvaluator(viewer);
+        viewer
+            .setSelectionSet(viewer.getAtomBitSet(eval, s + "(" + item + ")"));
+      } catch (Exception e) {
+        // ignore
+      }
     }
     selectionWorking = false;
   }

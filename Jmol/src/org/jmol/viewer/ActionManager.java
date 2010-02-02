@@ -1252,7 +1252,6 @@ public class ActionManager {
         return;
     }
     int n = 2;
-    System.out.println("ActionManager atomPicked mode=" + pickingMode);
     switch (pickingMode) {
     case JmolConstants.PICKING_OFF:
       return;

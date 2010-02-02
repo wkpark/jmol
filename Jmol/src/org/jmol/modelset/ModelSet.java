@@ -888,11 +888,11 @@ abstract public class ModelSet extends ModelCollection {
         mpt++;
         continue;
       }
-      int nAtoms = oldModels[i].getAtomCount();
+      int nAtoms = oldModels[i].atomCount;
       if (nAtoms == 0)
         continue;
       nAtomsDeleted += nAtoms;
-      BitSet bs = oldModels[i].getAtomBitSet();
+      BitSet bs = oldModels[i].bsAtoms;
       int firstAtomIndex = oldModels[i].firstAtomIndex;
 
       // delete from symmetry set

@@ -258,10 +258,11 @@ public final class ModelLoader extends ModelSet {
     RadiusData rd = viewer.getDefaultRadiusData();
     for (int i = baseAtomIndex; i < atomCount; i++)
       atoms[i].setMadAtom(viewer, rd);
+    for (int i = models[baseModelIndex].firstAtomIndex; i < atomCount; i++) 
+      models[atoms[i].modelIndex].bsAtoms.set(i);
 
     freeze();
     calcBoundBoxDimensions(null, 1);
-
 
     finalizeShapes();
     if (mergeModelSet != null)
@@ -539,7 +540,7 @@ public final class ModelLoader extends ModelSet {
   private void iterateOverAllNewAtoms(JmolAdapter adapter, Object atomSetCollection) {
     // atom is created, but not all methods are safe, because it
     // has no group -- this is only an issue for debugging
-
+    int iLast = -1;
     for (JmolAdapter.AtomIterator iterAtom = adapter
         .getAtomIterator(atomSetCollection); iterAtom.hasNext();) {
       short elementNumber = (short) iterAtom.getElementNumber();
@@ -547,7 +548,12 @@ public final class ModelLoader extends ModelSet {
         elementNumber = JmolConstants.elementNumberFromSymbol(iterAtom
             .getElementSymbol());
       char alternateLocation = iterAtom.getAlternateLocationID();
-      addAtom(iterAtom.getAtomSetIndex() + baseModelIndex, iterAtom.getAtomSymmetry(), iterAtom.getAtomSite(),
+      int modelIndex = iterAtom.getAtomSetIndex() + baseModelIndex;
+      if (modelIndex != iLast) {
+        models[modelIndex].bsAtoms.clear();
+        iLast = modelIndex;
+      }
+      addAtom(modelIndex, iterAtom.getAtomSymmetry(), iterAtom.getAtomSite(),
           iterAtom.getUniqueID(), elementNumber, iterAtom.getAtomName(),
           iterAtom.getFormalCharge(), iterAtom.getPartialCharge(),
           iterAtom.getEllipsoid(), 
@@ -559,19 +565,20 @@ public final class ModelLoader extends ModelSet {
           alternateLocation, iterAtom.getClientAtomReference(), iterAtom.getRadius());
     }
     
-    int iLast = -1;
+    iLast = -1;
     int vdwtypeLast = -1;
-    for (int i = 0; i < atomCount; i++)
+    for (int i = 0; i < atomCount; i++) {
       if (atoms[i].modelIndex != iLast) {
         iLast = atoms[i].modelIndex;
         models[iLast].firstAtomIndex = i;
-        models[iLast].clearAtomCounts();
         int vdwtype = getDefaultVdwType(iLast);
         if (vdwtype != vdwtypeLast) {
           Logger.info("Default Van der Waal type for model" + " set to " + JmolConstants.getVdwLabel(vdwtype));
           vdwtypeLast = vdwtype;
         }
       }
+    }
+    
   }
 
   private void addAtom(int modelIndex, BitSet atomSymmetry, int atomSite,
@@ -587,6 +594,8 @@ public final class ModelLoader extends ModelSet {
                        float radius) {
     checkNewGroup(atomCount, modelIndex, chainID, group3, groupSequenceNumber,
         groupInsertionCode);
+    models[modelIndex].atomCount++;
+    models[modelIndex].bsAtoms.set(atomCount);
     if (atomCount == atoms.length)
       growAtomArrays(ATOM_GROWTH_INCREMENT);
     Atom atom = new Atom(currentModelIndex, atomCount, x, y, z, radius, 
@@ -928,9 +937,7 @@ public final class ModelLoader extends ModelSet {
     boolean autoBonding = false;
     for (int i = baseModelIndex; i < modelCount; 
         atomIndex += modelAtomCount, i++) {
-      modelAtomCount = getModelAuxiliaryInfoInt(i, "initialAtomCount");
-      if (modelAtomCount < 0)
-        modelAtomCount = atomCount; // old style -- one structure
+      modelAtomCount = models[i].bsAtoms.cardinality();
       if (getModelAuxiliaryInfoBoolean(i, "noautobond")) 
         continue;
       int modelBondCount = getModelAuxiliaryInfoInt(i, "initialBondCount");
@@ -956,7 +963,8 @@ public final class ModelLoader extends ModelSet {
       if (merging || modelCount > 1) {
         if (bs == null)
           bs = new BitSet(atomCount);
-        bs.set(atomIndex, atomIndex + modelAtomCount);
+        if (i == baseModelIndex || !isTrajectory)
+          bs.or(models[i].bsAtoms);
       }
     }
     if (autoBonding) {

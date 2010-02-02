@@ -712,6 +712,7 @@ public class Token {
   public final static int showscript       = setparam | 8;
   public final static int specular         = setparam | 10;
   public final static int timeout          = setparam | 12;
+  public final static int trajectory       = setparam | 14;
   public final static int usercolorscheme  = setparam | 16;
 
   // full set of all Jmol "set" parameters
@@ -1105,7 +1106,6 @@ public class Token {
   final static int to             = misc | 188 | expression;// new
   final static int top            = misc | 189 | expression;
   final static int torsion        = misc | 190;
-  final static int trajectory     = misc | 193;
   final static int transform      = misc | 194;
   public final static int translation   = misc | 195;
   public final static int translucent   = misc | 196;

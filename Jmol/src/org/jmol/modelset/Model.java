@@ -105,39 +105,20 @@ public final class Model {
   int dataSourceFrame = -1;
   String jmolData; // from a PDB remark "Jmol PDB-encoded data"
   String jmolFrameType;
-  int firstAtomIndex;
   
-  // these next three are calculated only if necessary:
+  // set in ModelLoader phase:
+  int firstAtomIndex;  
+  int atomCount = -1; // includes deleted atoms
+  final BitSet bsAtoms = new BitSet();
+
+  // this one is variable and calculated only if necessary:
   
-  private BitSet bsAtoms;
-  private int atomCount = -1;
   private int bondCount = -1;
 
-  void clearAtomCounts() {
-    bsAtoms = null;
-    atomCount = -1;
-    bondCount = -1;
+  public void resetBoundCount() {
+    bondCount = -1;    
   }
 
-  BitSet getAtomBitSet() {
-    if (bsAtoms != null)
-      return bsAtoms;
-    bsAtoms = new BitSet();
-    Atom[] atoms = modelSet.getAtoms();
-    for (int i = modelSet.getAtomCount(); --i >= firstAtomIndex; )
-      if (atoms[i].modelIndex == modelIndex)
-        bsAtoms.set(i);
-    return bsAtoms;
-  }
-  
-  int getAtomCount() {
-    if (atomCount > 0)
-      return atomCount;
-    atomCount = modelSet.getModelAtomBitSet(modelIndex,
-        false).cardinality();
-    return atomCount;
-  }
-    
   int getBondCount() {
     if (bondCount >= 0)
       return bondCount;
@@ -343,4 +324,5 @@ public final class Model {
       bioPolymers[i].recalculateLeadMidpointsAndWingVectors();
     BitSetUtil.deleteBits(bsAtoms, bsDeleted);
   }
+
 }

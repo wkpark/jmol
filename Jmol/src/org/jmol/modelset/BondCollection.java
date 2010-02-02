@@ -368,7 +368,7 @@ abstract public class BondCollection extends AtomCollection {
         if (!isFullModel) {
           Model m = bond.atom1.group.chain.model;
           if (m != mlast)
-            (mlast = m).clearAtomCounts();
+            (mlast = m).resetBoundCount();
         }
         bond.deleteAtomReferences();
       } else {

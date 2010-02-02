@@ -3314,7 +3314,7 @@ public class ScriptEvaluator {
   }
 
   protected BitSet compareInt(int tokWhat, float[] data, int tokOperator,
-                            int comparisonValue) {
+                              int comparisonValue) {
     int propertyValue = Integer.MAX_VALUE;
     BitSet propertyBitSet = null;
     int bitsetComparator = tokOperator;
@@ -3328,7 +3328,17 @@ public class ScriptEvaluator {
     int[] cellRange = null;
     int nOps = 0;
     BitSet bs;
-    if (tokWhat == Token.atomindex) {
+    // preliminary setup
+    switch (tokWhat) {
+    case Token.symop:
+      switch (bitsetComparator) {
+      case Token.opGE:
+      case Token.opGT:
+        imax = Integer.MAX_VALUE;
+        break;
+      }
+      break;
+    case Token.atomindex:
       switch (tokOperator) {
       case Token.opLT:
         return BitSetUtil.newBitSet(0, comparisonValue);
@@ -3341,6 +3351,7 @@ public class ScriptEvaluator {
       case Token.opEQ:
         return BitSetUtil.newBitSet(comparisonValue, comparisonValue + 1);
       case Token.opNE:
+      default:
         bs = BitSetUtil.setAll(atomCount);
         if (comparisonValue >= 0)
           bs.clear(comparisonValue);
@@ -3357,10 +3368,10 @@ public class ScriptEvaluator {
         break;
       case Token.configuration:
         // these are all-inclusive; no need to do a by-atom comparison
-        return BitSetUtil.copy(viewer.getConformation(-1, comparisonValue - 1, false));
+        return BitSetUtil.copy(viewer.getConformation(-1, comparisonValue - 1,
+            false));
       case Token.symop:
         propertyBitSet = atom.getAtomSymmetry();
-        int len = propertyBitSet.length();
         if (atom.getModelIndex() != iModel) {
           iModel = atom.getModelIndex();
           cellRange = modelSet.getModelCellRange(iModel);
@@ -3417,18 +3428,14 @@ public class ScriptEvaluator {
         switch (bitsetComparator) {
         case Token.opLT:
           imax = comparisonValue - 1;
-          imin = 0;
           break;
         case Token.opLE:
           imax = comparisonValue;
-          imin = 0;
           break;
         case Token.opGE:
-          imax = len;
           imin = comparisonValue - 1;
           break;
         case Token.opGT:
-          imax = len;
           imin = comparisonValue;
           break;
         case Token.opEQ:
@@ -3441,11 +3448,9 @@ public class ScriptEvaluator {
         }
         if (imin < 0)
           imin = 0;
-        if (imax > len)
-          imax = len;
         if (imin < imax) {
           int pt = propertyBitSet.nextSetBit(imin);
-          if (pt >= imin && pt < imax)
+          if (pt >= 0 && pt < imax)
             match = true;
         }
         // note that a symop property can be both LE and GT !

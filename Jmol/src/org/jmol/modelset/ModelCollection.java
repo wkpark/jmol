@@ -73,7 +73,6 @@ abstract public class ModelCollection extends BondCollection {
   protected void merge(ModelSet modelSet) {
     for (int i = 0; i < modelSet.modelCount; i++) {
       Model m = models[i] = modelSet.models[i];
-      m.clearAtomCounts();
       m.modelSet = (ModelSet) this;
       for (int j = 0; j < m.chainCount; j++)
         m.chains[j].setModelSet(m.modelSet);
@@ -750,11 +749,9 @@ abstract public class ModelCollection extends BondCollection {
         int iBase = models[modelIndex].trajectoryBaseIndex;
         for (int j = 0; j < modelCount; j++)
           if (models[j].trajectoryBaseIndex == iBase)
-            bs.set(modelIndex = j);
+            bs.set(j);
       }
-      if (++modelIndex == modelCount)
-        break;
-      i = models[modelIndex].firstAtomIndex - 1;
+      i += models[modelIndex].firstAtomIndex + models[modelIndex].atomCount;
     }
     return bs;
   }
@@ -1885,7 +1882,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public int getAtomCountInModel(int modelIndex) {
-    return (modelIndex < 0 ? atomCount : models[modelIndex].getAtomCount());
+    return (modelIndex < 0 ? atomCount : models[modelIndex].atomCount);
   }
   
   protected BitSet bsAll;
@@ -1897,7 +1894,7 @@ abstract public class ModelCollection extends BondCollection {
    * @return either the actual bitset or a copy
    */
   public BitSet getModelAtomBitSet(int modelIndex, boolean asCopy) {
-    BitSet bs = (modelIndex < 0 ? bsAll : models[modelIndex].getAtomBitSet());
+    BitSet bs = (modelIndex < 0 ? bsAll : models[modelIndex].bsAtoms);
     if (bs == null)
       bs = bsAll = BitSetUtil.setAll(atomCount);
     return (asCopy ? BitSetUtil.copy(bs) : bs);

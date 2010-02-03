@@ -140,7 +140,7 @@ public class GT {
       new Language("es",    GT._("Spanish"),                  true),
       new Language("sv",    GT._("Swedish"),                  false),
       new Language("tr",    GT._("Turkish"),                  true),
-      new Language("uk",    GT._("Ukrainian"),                false),
+      new Language("uk",    GT._("Ukrainian"),                true),
     };
     doTranslate = wasTranslating;
     return languageList;

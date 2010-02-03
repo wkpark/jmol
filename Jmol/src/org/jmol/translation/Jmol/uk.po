@@ -9,19 +9,21 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-12-08 19:19+0100\n"
-"PO-Revision-Date: 2010-01-31 18:59+0000\n"
-"Last-Translator: svv <skrypnychuk@gmail.com>\n"
+"PO-Revision-Date: 2010-02-01 18:48+0000\n"
+"Last-Translator: yurchor <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-01-31 19:24+0000\n"
+"X-Launchpad-Export-Date: 2010-02-03 22:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
+"Помилка під час спроби запуску Jmol: не вказано значення властивості "
+"«user.home»."
 
 #: org/openscience/jmol/app/JmolApp.java:139
 msgid "transparent background"
@@ -29,11 +31,11 @@ msgstr "прозоре тло"
 
 #: org/openscience/jmol/app/JmolApp.java:140
 msgid "give this help page"
-msgstr ""
+msgstr "відкрити цю сторінку довідки"
 
 #: org/openscience/jmol/app/JmolApp.java:142
 msgid "no display (and also exit when done)"
-msgstr ""
+msgstr "нічого не показувати (завершити роботу після виконання завдання)"
 
 #: org/openscience/jmol/app/JmolApp.java:144
 msgid "check script syntax only - no file loading"
@@ -65,7 +67,7 @@ msgstr "без консолі — спрямувати вивід до sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr ""
+msgstr "лише вивести повідомлення до консолі (вмикає -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent commmand thread"
@@ -77,11 +79,13 @@ msgstr "вийти після виконання скрипту (неявно, �
 
 #: org/openscience/jmol/app/JmolApp.java:164
 msgid "script file to execute or '-' for System.in"
-msgstr ""
+msgstr "файл скрипту, який слід виконати або «-» для виконання System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr ""
+"використовувати інтерфейс з декількома засобами сенсорного керування "
+"(потрібен параметр «sparshui»)"
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
@@ -109,6 +113,8 @@ msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
+"якість зображення JPG (1-100; типова — 75) або рівень стискання зображення "
+"PNG (0-9; типовий — 2, максимальне стискання — 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
@@ -124,6 +130,8 @@ msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr ""
+"Параметри -D (типові значення вказано в дужках), слід викликати до «-jar "
+"Jmol.jar»:"
 
 #: org/openscience/jmol/app/JmolApp.java:466
 msgid "Executing script 1..."
@@ -325,7 +333,7 @@ msgstr "Вилучити атоми"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
-msgstr ""
+msgstr "Експорт файла вхідних даних гаусіана"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:194
 msgid "Basic"
@@ -337,7 +345,7 @@ msgstr "Додатково"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:224
 msgid "Checkpoint File: "
-msgstr ""
+msgstr "Контрольний файл: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
@@ -361,7 +369,7 @@ msgstr "Базовий набір: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr ""
+msgstr "Базовий набір встановлення щільності (лише ТФЩ): "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:275
 msgid "Job Options: "
@@ -385,7 +393,7 @@ msgstr "Вибір: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
-msgstr ""
+msgstr "Назва файла вхідних даних гаусіана"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:349
 msgid "File..."
@@ -885,7 +893,7 @@ msgstr "Обмежувальна рамка"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:186
 msgid "RasMol/Chime compatible axes orientation/rotations"
-msgstr ""
+msgstr "Орієнтація/Обертання осей, сумісне з RasMol/Chime"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:188
 msgid "File Preview (requires restarting Jmol)"
@@ -893,7 +901,7 @@ msgstr "Перегляд файла (Jmol доведеться перезапу�
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
 msgid "Clear console button (requires restarting Jmol)"
-msgstr ""
+msgstr "Кнопка спорожнення консолі (потрібен перезапуску Jmol)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
@@ -907,6 +915,7 @@ msgstr "Обертати молекулу."
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
 msgstr ""
+"Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
 msgid "Click atoms to measure distances"
@@ -1040,7 +1049,7 @@ msgstr "Запустити POV-Ray безпосередньо"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:197
 msgid "Launch POV-Ray from within Jmol"
-msgstr ""
+msgstr "Запустити POV-Ray з Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:242
 msgid "Display While Rendering"
@@ -1048,7 +1057,7 @@ msgstr "Показувати під час обробки"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:244
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr ""
+msgstr "Чи має програма POV-Ray відтворювати дані під час обробки?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:267
 msgid "width:"
@@ -1214,6 +1223,8 @@ msgstr "(у ангстремах)"
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:425
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr ""
+"Припустиме відхилення зв’язку — сума двох ковалентних радіусів та цього "
+"значення"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:476
 msgid "Minimum Bonding Distance"
@@ -1237,7 +1248,7 @@ msgstr "Що нового у Jmol?"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:64
 msgid "Attempt to make scratch directory failed."
-msgstr ""
+msgstr "Спроба створити каталог завершилася невдало."
 
 #: org/openscience/jmol/app/webexport/LogPanel.java:52
 msgid "Log and Error Messages:"
@@ -1305,6 +1316,8 @@ msgid ""
 "Page skeleton and JavaScript generated by export to web function using {0} "
 "on {1}."
 msgstr ""
+"Каркас сторінки та JavaScript, створений функцією експорту у мережу за "
+"допомогою {0} на {1}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:306
 #, java-format
@@ -1312,6 +1325,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
+"Щоб отримати просторову модель, з якою можна буде працювати, натисніть "
+"{0}тут{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:308
 msgid "Insert the page TITLE here."
@@ -1332,10 +1347,12 @@ msgid ""
 "Insert additonal explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
+"Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде поділено "
+"на частини і розташовано навколо моделі Jmol {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:314
 msgid "Insert your TITLE and INTRODUCTION here."
-msgstr ""
+msgstr "Тут ви можете вказати ваш заголовок та вступний текст."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:316
 #, java-format
@@ -1343,6 +1360,8 @@ msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
 "here and below."
 msgstr ""
+"Кнопку {0} буде показано у розташованому нижче полі. Тут і нижче ви можете "
+"вставити відомості для {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:317
 #, java-format
@@ -1355,7 +1374,7 @@ msgstr "Веб-сторінка, що містить аплети Jmol"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:134
 msgid "double-click and drag to reorder"
-msgstr ""
+msgstr "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:138
 msgid "Add Present Jmol State as Instance..."
@@ -1404,11 +1423,13 @@ msgstr "Заголовок вікна переглядача для цієї в�
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:299
 msgid "Give the occurrence of Jmol a name:"
-msgstr ""
+msgstr "Надайте об’єкту Jmol назву:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:319
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
+"Помилка під час спроби створення нового екземпляра зі скриптами та "
+"зображенням."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:329
 #, java-format

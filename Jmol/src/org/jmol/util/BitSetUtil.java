@@ -116,7 +116,6 @@ final public class BitSetUtil {
    * 
    * @param a
    * @param b
-   * @param n
    * @return a handy pointer to the working set, a
    */
   public static BitSet toggleInPlace(BitSet a, BitSet b) {

@@ -310,21 +310,32 @@ public final class Logger {
   }
   
   public static void setLogFile(String name) {
-     logFile = "JmolLog_" + name;
+    if (name == null || name.length() == 0) {
+      if (logFile != null)
+        info("Logging to " + logFile + " stopped");
+      logFile = null;
+      return;
+    }
+    if (!name.startsWith("JmolLog_"))
+      name = "JmolLog_" + name;
+    if (!name.equals(logFile))
+      info("Logging to file " + name);
+    logFile = name;
   }
   
   public static void logToFile(String data) {
-    try{
+    try {
       if (logFile == null || data == null)
         return;
       if (data.startsWith("NOW"))
         data = (new Date()).toString() + "\t" + data.substring(3);
-      FileWriter fstream = new FileWriter(logFile,true);
-          BufferedWriter out = new BufferedWriter(fstream);
+      FileWriter fstream = new FileWriter(logFile, true);
+      BufferedWriter out = new BufferedWriter(fstream);
       out.write(data);
+      out.write('\n');
       out.close();
-      }catch (Exception e){
-        // ignore
-      } 
+    } catch (Exception e) {
+      // ignore
+    }
   }
 }

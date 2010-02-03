@@ -873,7 +873,9 @@ public class Token {
   public final static int isosurfacepropertysmoothing    = booleanparam | 94;
   public final static int justifymeasurements            = booleanparam | 96;
   public final static int languagetranslation            = booleanparam | 98;
-  public final static int measureallmodels               = booleanparam | 100;
+  public final static int logcommands                    = booleanparam | 99;
+  public final static int loggestures                    = booleanparam | 100;
+  public final static int measureallmodels               = booleanparam | 101;
   public final static int measurementlabels              = booleanparam | 102;
   public final static int messagestylechime              = booleanparam | 104;
   public final static int navigatesurface                = booleanparam | 106;
@@ -923,6 +925,7 @@ public class Token {
   public final static int tracealpha                     = booleanparam | 192;
   public final static int useminimizationthread          = booleanparam | 194;
   public final static int usenumberlocalization          = booleanparam | 196;
+  public final static int waitformoveto                  = booleanparam | 197;
   public final static int windowcentered                 = booleanparam | 198;
   public final static int wireframerotation              = booleanparam | 200;
   public final static int zerobasedxyzrasmol             = booleanparam | 202;
@@ -2052,6 +2055,8 @@ public class Token {
       "isosurfacePropertySmoothing",              new Token(isosurfacepropertysmoothing),
       "justifyMeasurements",                      new Token(justifymeasurements),
       "languageTranslation",                      new Token(languagetranslation),
+      "logCommands",                              new Token(logcommands),
+      "logGestures",                              new Token(loggestures),
       "measureAllModels",                         new Token(measureallmodels),
       "measurementLabels",                        new Token(measurementlabels),
       "measurementNumbers",                       new Token(measurementnumbers),
@@ -2103,6 +2108,7 @@ public class Token {
       "traceAlpha",                               new Token(tracealpha),
       "useMinimizationThread",                    new Token(useminimizationthread),
       "useNumberLocalization",                    new Token(usenumberlocalization),
+      "waitForMoveTo",                            new Token(waitformoveto),
       "windowCentered",                           new Token(windowcentered),
       "wireframeRotation",                        new Token(wireframerotation),
       "zeroBasedXyzRasmol",                       new Token(zerobasedxyzrasmol),

@@ -45,6 +45,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   private int simulationPhase;
   private boolean resetNeeded = true;
   private boolean haveMultiTouchInput = false;
+  private long lastLogTime = 0;
+  
   
   ActionManagerMT(Viewer viewer, String commandOptions) {
     super(viewer);
@@ -213,8 +215,10 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     case DRIVER_NONE:
       haveMultiTouchInput = false;
       Logger.error("SparshUI reports no driver present");
+      Logger.logToFile("SparshUI reports no driver present -- setting haveMultiTouchInput FALSE");
       break;
     case SERVICE_LOST:
+      Logger.logToFile("Jmol SparshUI client reports service lost -- " + (doneHere ? "not " : "") + " restarting");
       if (!doneHere)
         startSparshUIService(simulator != null);  
       break;
@@ -251,20 +255,33 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       if (scale == -1 || scale == 1) {
         pt.z = Float.NaN;
         zoomByFactor((int)scale, Integer.MAX_VALUE, Integer.MAX_VALUE);//(int) pt.x, (int) pt.y);
+        logEvent("Zoom");
       }
       break;
     case ROTATE_EVENT:
       checkMotion(Viewer.CURSOR_MOVE);
       viewer.rotateZBy((int) pt.z, Integer.MAX_VALUE, Integer.MAX_VALUE);//(int) pt.x, (int) pt.y);
+      logEvent("Rotate");
       break;
     case DRAG_EVENT:
       if (iData == 2) {
         // This is a 2-finger drag
         checkMotion(Viewer.CURSOR_MOVE);
         viewer.translateXYBy((int) pt.x, (int) pt.y);
+        logEvent("Drag");
       }
       break;
     }
+  }
+
+  private void logEvent(String type) {
+    if (!viewer.getLogGestures())
+      return;
+    long time = System.currentTimeMillis(); 
+    // at most every 10 seconds
+    if (time - lastLogTime > 10000)
+      Logger.logToFile("NOW multitouch " + type);
+    lastLogTime = System.currentTimeMillis();
   }
 
   void mouseEntered(long time, int x, int y) {

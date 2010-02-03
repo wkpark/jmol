@@ -40,6 +40,7 @@ public class JmolBinding extends Binding {
     bind(DOUBLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_translate); 
     bind(DOUBLE_CLICK+MIDDLE, ActionManager.ACTION_translate);
     bind(DOUBLE_CLICK+LEFT, ActionManager.ACTION_center);
+    bind(DOUBLE_CLICK+LEFT, ActionManager.ACTION_stopMotion); 
     
     bind(SINGLE_CLICK+ALT+SHIFT+LEFT, ActionManager.ACTION_dragSelected);
     bind(SINGLE_CLICK+ALT+LEFT, ActionManager.ACTION_rotateSelected);

@@ -391,14 +391,14 @@ public class StateManager {
     
     public void restore(float timeSeconds, boolean isAll) {
       if (!isAll) {
-        viewer.moveTo(timeSeconds, null, rotationMatrix, Float.NaN, Float.NaN,
+        viewer.moveTo(timeSeconds, null, null, Float.NaN, rotationMatrix, Float.NaN, Float.NaN,
             Float.NaN, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
         return;
       }
       viewer.setBooleanProperty("windowCentered", windowCenteredFlag);
       viewer.setBooleanProperty("navigationMode", navigationMode);
       viewer.setBooleanProperty("navigateSurface", navigateSurface);
-      viewer.moveTo(timeSeconds, center, rotationMatrix, zoom, xTrans, yTrans,
+      viewer.moveTo(timeSeconds, center, null, Float.NaN, rotationMatrix, zoom, xTrans, yTrans,
           rotationRadius, navCenter, xNav, yNav, navDepth);
     }
   }
@@ -685,8 +685,6 @@ public class StateManager {
         disablePopupMenu = g.disablePopupMenu;
         messageStyleChime = g.messageStyleChime;
         defaultDirectory = g.defaultDirectory;
-        // no, not persistent, because slab and depth are not
-        // zShade = g.zShade; zShadePower = g.zShadePower
         allowGestures = g.allowGestures;
         allowMultiTouch = g.allowMultiTouch;
         allowKeyStrokes = g.allowKeyStrokes;
@@ -853,6 +851,8 @@ public class StateManager {
       setParameterValue("justifyMeasurements", justifyMeasurements);
       setParameterValue("loadAtomDataTolerance", loadAtomDataTolerance);
       setParameterValue("loadFormat", loadFormat);
+      setParameterValue("logCommands", logCommands);
+      setParameterValue("logGestures", logGestures);
       setParameterValue("measureAllModels", measureAllModels);
       setParameterValue("measurementLabels", measurementLabels);
       setParameterValue("measurementUnits", measureDistanceUnits);
@@ -1127,6 +1127,8 @@ public class StateManager {
     boolean hideNameInPopup = false;
     int hoverDelayMs = 500;
     float loadAtomDataTolerance = 0.01f;
+    boolean logCommands = false;
+    boolean logGestures = false;
     boolean measurementLabels = true;
     boolean messageStyleChime = false;
     int pickingSpinRate = 10;
@@ -1150,6 +1152,7 @@ public class StateManager {
     boolean useMinimizationThread = true;
     boolean useNumberLocalization = true;
     boolean useScriptQueue = true;
+    boolean waitForMoveTo = true; // Jmol 11.9.24
     float vectorScale = 1f;
     float vibrationPeriod = 1f;
     float vibrationScale = 1f;

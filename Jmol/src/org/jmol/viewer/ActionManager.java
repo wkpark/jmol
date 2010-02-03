@@ -61,15 +61,15 @@ public class ActionManager {
     GT._("move selected atoms (requires {0})", "SET DRAGSELECTED"), 
     GT._("select and drag atoms (requires {0})", "SET DRAGSELECTED"), 
     GT._("rotate selected atoms (requires {0})", "SET DRAGSELECTED"),
-    GT._("delete bond (requires {0})", "SET PICKING DELETE BOND"),
-    GT._("connect atoms (requires {0})", "SET PICKING CONNECT"),
-    GT._("move label (requires {0})", "SET PICKING LABEL"),
+    GT._("delete bond (requires {0})", "SET picking DELETE BOND"),
+    GT._("connect atoms (requires {0})", "SET picking CONNECT"),
+    GT._("move label (requires {0})", "SET picking LABEL"),
     //10
-    GT._("move specific DRAW point (requires {0})", "SET PICKING DRAW"),
-    GT._("move whole DRAW object (requires {0})", "SET PICKING DRAW"),
+    GT._("move specific DRAW point (requires {0})", "SET picking DRAW"),
+    GT._("move whole DRAW object (requires {0})", "SET picking DRAW"),
     GT._("spin model (swipe and release button and stop motion simultaneously)"),
-    GT._("click on two points to spin around axis clockwise (requires SET PICKING SPIN)"),
-    GT._("click on two points to spin around axis counterclockwise (requires SET PICKING SPIN)"),
+    GT._("click on two points to spin around axis clockwise (requires SET picking SPIN)"),
+    GT._("click on two points to spin around axis counterclockwise (requires SET picking SPIN)"),
     //15
     GT._("adjust slab (front plane; requires {0})", "SLAB ON"),
     GT._("adjust depth (back plane; requires {0})", "SLAB ON"),
@@ -77,27 +77,27 @@ public class ActionManager {
     GT._("pop up the full context menu"),
     GT._("pop up recent context menu (click on Jmol frank)"),
     //20
-    GT._("translate navigation point (requires {0} and {1})", new String[] {"SET NAVIGATIONMODE", "SET PICKING NAVIGATE"}),
+    GT._("translate navigation point (requires {0} and {1})", new String[] {"SET NAVIGATIONMODE", "SET picking NAVIGATE"}),
     GT._("pick an atom"),
     GT._("pick a DRAW point (for measurements)"),
-    GT._("pick a label to toggle it hidden/displayed (requires {0})", "SET PICKING LABEL"),
-    GT._("pick an atom to include it in a measurement (after starting a measurement or after {0})", "SET PICKING DISTANCE/ANGLE/TORSION"),
+    GT._("pick a label to toggle it hidden/displayed (requires {0})", "SET picking LABEL"),
+    GT._("pick an atom to include it in a measurement (after starting a measurement or after {0})", "SET picking DISTANCE/ANGLE/TORSION"),
     //25
     GT._("pick an atom to initiate or conclude a measurement"),
     GT._("pick an ISOSURFACE point"),
     GT._("pick a point or atom to navigate to (requires SET NAVIGATIONMODE; undocumented)"),
-    GT._("select an atom (requires {0})", "SET PICKINGSTYLE EXTENDEDSELECT"),
-    GT._("select NONE (requires {0})", "SET PICKINGSTYLE EXTENDEDSELECT"),
+    GT._("select an atom (requires {0})", "SET pickingStyle EXTENDEDSELECT"),
+    GT._("select NONE (requires {0})", "SET pickingStyle EXTENDEDSELECT"),
     //30
     GT._("toggle selection (requires {0} or {1})", new String[] {
-        "SET PICKINGSTYLE DRAG/EXTENDEDSELECT/RASMOL"}),
-    GT._("unselect this group of atoms (requires {0})", "SET PICKINGSTYLE DRAG/EXTENDEDSELECT"),
-    GT._("add this group of atoms to the set of selected atoms (requires {0})", "SET PICKINGSTYLE DRAG/EXTENDEDSELECT"),
-    GT._("if all are selected, unselect all, otherwise add this group of atoms to the set of selected atoms (requires {0})", "SET PICKINGSTYLE DRAG"),    
+        "SET pickingStyle DRAG/EXTENDEDSELECT/RASMOL"}),
+    GT._("unselect this group of atoms (requires {0})", "SET pickingStyle DRAG/EXTENDEDSELECT"),
+    GT._("add this group of atoms to the set of selected atoms (requires {0})", "SET pickingStyle DRAG/EXTENDEDSELECT"),
+    GT._("if all are selected, unselect all, otherwise add this group of atoms to the set of selected atoms (requires {0})", "SET pickingStyle DRAG"),    
 
-    GT._("reset (when clicked off the model)"),
-    
+    GT._("reset (when clicked off the model)"),    
     GT._("simulate multi-touch using the mouse)"),
+    GT._("stop motion (requires {0})", "SET waitForMoveTo FALSE"),
   };
 
   public String getBindingInfo(String qualifiers) {
@@ -175,6 +175,7 @@ public class ActionManager {
     "_selectToggleOr",
     "_reset",
     "_multiTouchSimulation",
+    "_stopMotion",
   };
   public static String getActionName(int i) {
     return (i < actionNames.length ? actionNames[i] : null);
@@ -233,7 +234,8 @@ public class ActionManager {
   
   public final static int ACTION_reset = 37;
   public final static int ACTION_multiTouchSimulation = 38;
-  public final static int ACTION_count = 39;
+  public final static int ACTION_stopMotion = 39;
+  public final static int ACTION_count = 40;
   
   static {
     if (actionNames.length != ACTION_count)
@@ -667,6 +669,8 @@ public class ActionManager {
           float speed = dragGesture.getSpeedPixelsPerMillisecond(4, 2);
           viewer.spinXYBy(dragGesture.getDX(10, 5), dragGesture.getDY(4, 2),
               speed * 30);
+          if (viewer.getLogGestures())
+            Logger.logToFile("NOW swipe " + dragGesture);
           return;
         }
       }
@@ -929,6 +933,12 @@ public class ActionManager {
       return (nearestAtomIndex >= 0);
     }
     setMouseMode();
+    
+    if (isBound(action, ACTION_stopMotion)) {
+        viewer.stopMotion();
+      // continue checking --- no need to exit here
+    }
+
     if (isBound(action, ACTION_clickFrank) && viewer.frankClicked(x, y)) {
       viewer.popupMenu(-x, y);
       return false;
@@ -949,6 +959,7 @@ public class ActionManager {
       }
       return false;
     }
+   
     if (isBound(action, ACTION_setMeasure)) {
       if (measurementPending != null) {
         addToMeasurement(nearestAtomIndex, nearestPoint, true);
@@ -1116,7 +1127,6 @@ public class ActionManager {
             //viewer.script(script);
           //else 
           viewer.evalStringQuiet(script);
-          //System.out.println("I'm done");
           if (ms > 0)
             break;
         }
@@ -1125,6 +1135,7 @@ public class ActionManager {
       } catch (Exception ie) {
         Logger.info("Timeout " + name + " Exception: " + ie);
       }
+      //System.out.println("I'm done");
       timeouts.remove(name);
     }
   }
@@ -1442,6 +1453,10 @@ public class ActionManager {
       this.y = y;
       this.time = time;
     }
+    
+    public String toString() {
+      return "[x = " + x + " y = " + y + " time = " + time + " ]";
+    }
   }
   
   private Gesture dragGesture = new Gesture(20);
@@ -1527,6 +1542,11 @@ public class ActionManager {
 
     MotionPoint getNode(int i) {
       return nodes[(i + nodes.length + nodes.length) % nodes.length];
+    }
+    
+    public String toString() {
+      if (nodes.length == 0) return "" + this;
+      return Binding.getMouseActionName(action, false) + " nPoints = " + ptNext + " " + nodes[0];
     }
   }
 

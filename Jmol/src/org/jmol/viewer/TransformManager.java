@@ -149,6 +149,7 @@ abstract class TransformManager {
   void clear() {
     clearVibration();
     clearSpin();
+    stopMotion();
     fixedRotationCenter.set(0, 0, 0);
     navigating = false;
     slabPlane = null;
@@ -1172,7 +1173,7 @@ abstract class TransformManager {
       scaleFitToScreen(false, useZoomLarge, false, false);
   }
 
-  private float defaultScaleToScreen(float radius) {
+  float defaultScaleToScreen(float radius) {
     /* 
      * 
      * the presumption here is that the rotation center is at pixel
@@ -1554,16 +1555,7 @@ abstract class TransformManager {
   protected final Point3f ptTest2 = new Point3f();
   protected final Point3f ptTest3 = new Point3f();
   protected final AxisAngle4f aaTest1 = new AxisAngle4f();
-  protected final AxisAngle4f aaMoveTo = new AxisAngle4f();
-  protected final AxisAngle4f aaStep = new AxisAngle4f();
-  protected final AxisAngle4f aaTotal = new AxisAngle4f();
-  protected final Matrix3f matrixStart = new Matrix3f();
-  private final Matrix3f matrixStartInv = new Matrix3f();
-  protected final Matrix3f matrixStep = new Matrix3f();
   protected final Matrix3f matrixTest = new Matrix3f();
-  protected final Matrix3f matrixEnd = new Matrix3f();
-  protected final Vector3f aaStepCenter = new Vector3f();
-  protected final Vector3f aaStepNavCenter = new Vector3f();
 
   boolean isInPosition(Vector3f axis, float degrees) {
     if (Float.isNaN(degrees))
@@ -1577,90 +1569,183 @@ abstract class TransformManager {
     return (ptTest3.distance(ptTest2) < 0.1);
   }
 
+  // from Viewer
   void moveTo(float floatSecondsTotal, Point3f center, Tuple3f rotAxis,
-              float degrees, float zoom, float xTrans, float yTrans,
-              float newRotationRadius, Point3f navCenter, float xNav,
-              float yNav, float navDepth) {
-
-    Vector3f axis = new Vector3f(rotAxis);
-    if (Float.isNaN(degrees)) {
-      matrixEnd.m00 = Float.NaN;
-    } else if (degrees < 0.01f && degrees > -0.01f) {
-      //getRotation(matrixEnd);
-      matrixEnd.setIdentity();
-    } else {
-      if (axis.x == 0 && axis.y == 0 && axis.z == 0) {
-        // invalid ... no rotation
-        int sleepTime = (int) (floatSecondsTotal * 1000) - 30;
-        if (sleepTime > 0) {
-          try {
-            Thread.sleep(sleepTime);
-          } catch (InterruptedException ie) {
-          }
+              float degrees, Matrix3f matrixEnd, float zoom, float xTrans,
+              float yTrans, float newRotationRadius, Point3f navCenter,
+              float xNav, float yNav, float navDepth) {
+    if (matrixEnd == null) {
+      matrixEnd = new Matrix3f();
+      Vector3f axis = new Vector3f(rotAxis);
+      if (Float.isNaN(degrees)) {
+        matrixEnd.m00 = Float.NaN;
+      } else if (degrees < 0.01f && degrees > -0.01f) {
+        // getRotation(matrixEnd);
+        matrixEnd.setIdentity();
+      } else {
+        if (axis.x == 0 && axis.y == 0 && axis.z == 0) {
+          // invalid ... no rotation
+          /*
+           * why were we then sleeping? int sleepTime = (int) (floatSecondsTotal
+           * * 1000) - 30; if (sleepTime > 0) { try { Thread.sleep(sleepTime); }
+           * catch (InterruptedException ie) { } }
+           */
+          return;
         }
-        return;
+        AxisAngle4f aaMoveTo = new AxisAngle4f();
+        aaMoveTo.set(axis, degrees * (float) Math.PI / 180);
+        matrixEnd.set(aaMoveTo);
       }
-      aaMoveTo.set(axis, degrees * (float) Math.PI / 180);
-      matrixEnd.set(aaMoveTo);
     }
-    moveTo(floatSecondsTotal, center, null, zoom, xTrans, yTrans,
-        newRotationRadius, navCenter, xNav, yNav, navDepth);
+    try {
+      if (motion == null)
+        motion = new MotionThread();
+      int nSteps = motion.set(floatSecondsTotal, center, matrixEnd, zoom, xTrans,
+          yTrans, newRotationRadius, navCenter, xNav, yNav, navDepth);
+      if (nSteps == 0 || viewer.waitForMoveTo()) {
+        motion.startMotion(false);
+        motion = null;
+      } else {
+        motion.startMotion(true);
+      }
+    } catch (Exception e) {
+      // ignore
+    }
+  }
+  
+  MotionThread motion;
+  
+  public void stopMotion() {
+    motion = null;
+    setSpinOn(false);
   }
 
-  void moveTo(float floatSecondsTotal, Point3f center, Matrix3f end, 
-              float zoom, float xTrans, float yTrans, float newRotationRadius,
-              Point3f navCenter, float xNav, float yNav, float navDepth) {
+  class MotionThread extends Thread implements Runnable {
+    private final Vector3f aaStepCenter = new Vector3f();
+    private final Vector3f aaStepNavCenter = new Vector3f();
+    private final AxisAngle4f aaStep = new AxisAngle4f();
+    private final AxisAngle4f aaTotal = new AxisAngle4f();
+    private final Matrix3f matrixStart = new Matrix3f();
+    private final Matrix3f matrixStartInv = new Matrix3f();
+    private final Matrix3f matrixStep = new Matrix3f();
+    private final Matrix3f matrixEnd = new Matrix3f();
+
+    private Point3f center;
+    private float zoom; 
+    private float xTrans;
+    private float yTrans;
+    private Point3f navCenter;
+    private float xNav;
+    private float yNav;
+    private float navDepth;
+    private Point3f ptMoveToCenter;
+    private float startRotationRadius;
+    private float targetPixelScale;
+    private int totalSteps;
+    private float startPixelScale;
+    private float targetRotationRadius;
+    private int fps;
+    private float rotationRadiusDelta;
+    private float pixelScaleDelta;
+    private float zoomStart;
+    private float zoomDelta;
+    private float xTransStart;
+    private float xTransDelta;
+    private float yTransStart;
+    private float yTransDelta;
+    private float xNavTransStart;
+    private float xNavTransDelta;
+    private float yNavTransDelta;
+    private float yNavTransStart;
+    private float navDepthStart;
+    private float navDepthDelta;
+    private long targetTime;
+    private long frameTimeMillis;
+    private int iStep;
     
+    private boolean asThread;
     
-    if (end != null)
+    public void startMotion(boolean asThread) {
+      this.asThread = asThread;
+      if (asThread)
+        start();
+      else
+        run();
+    }
+
+    public void run() {
+      if (totalSteps > 0)
+        viewer.setInMotion(true);
+      try {
+        if (totalSteps == 0 || startMotion())
+          endMotion();
+      } catch (Exception e) {
+        // ignore
+      }
+      if (totalSteps > 0)
+        viewer.setInMotion(false);
+      motion = null;
+    }
+    
+    int set(float floatSecondsTotal, Point3f center, Matrix3f end, float zoom,
+            float xTrans, float yTrans, float newRotationRadius,
+            Point3f navCenter, float xNav, float yNav, float navDepth) {
+      this.center = center;
       matrixEnd.set(end);
-    Point3f ptMoveToCenter = (center == null ? fixedRotationCenter : center);
-    float startRotationRadius = modelRadius;
-    float targetRotationRadius = (center == null || Float.isNaN(newRotationRadius) 
-        ? modelRadius
-        : newRotationRadius <= 0 ? viewer.calcRotationRadius(center)
-            : newRotationRadius);
-    float startPixelScale = scaleDefaultPixelsPerAngstrom;
-    float targetPixelScale = (center == null ? startPixelScale
-        : defaultScaleToScreen(targetRotationRadius));
-    if (Float.isNaN(zoom))
-      zoom = zoomPercent;
-    getRotation(matrixStart);
-    matrixStartInv.invert(matrixStart);
-    matrixStep.mul(matrixEnd, matrixStartInv);
-    aaTotal.set(matrixStep);
-    int fps = 30;
-    int totalSteps = (int) (floatSecondsTotal * fps);
-    if (floatSecondsTotal > 0)
-      viewer.setInMotion(true);
-    if (totalSteps > 1) {
-      int frameTimeMillis = 1000 / fps;
-      long targetTime = System.currentTimeMillis();
-      float zoomStart = zoomPercent;
-      float zoomDelta = zoom - zoomStart;
-      float xTransStart = getTranslationXPercent();
-      float xTransDelta = xTrans - xTransStart;
-      float yTransStart = getTranslationYPercent();
-      float yTransDelta = yTrans - yTransStart;
+      this.zoom = zoom;
+      this.xTrans = xTrans;
+      this.yTrans = yTrans;
+      this.navCenter = navCenter;
+      this.xNav = xNav;
+      this.yNav = yNav;
+      this.navDepth = navDepth;
+      ptMoveToCenter = (center == null ? fixedRotationCenter : center);
+      startRotationRadius = modelRadius;
+      targetRotationRadius = (center == null || Float.isNaN(newRotationRadius) ? modelRadius
+          : newRotationRadius <= 0 ? viewer.calcRotationRadius(center)
+              : newRotationRadius);
+      startPixelScale = scaleDefaultPixelsPerAngstrom;
+      targetPixelScale = (center == null ? startPixelScale
+          : defaultScaleToScreen(targetRotationRadius));
+      if (Float.isNaN(zoom))
+        zoom = zoomPercent;
+      getRotation(matrixStart);
+      matrixStartInv.invert(matrixStart);
+      matrixStep.mul(matrixEnd, matrixStartInv);
+      aaTotal.set(matrixStep);
+      fps = 30;
+      totalSteps = (int) (floatSecondsTotal * fps);
+      if (totalSteps == 0)
+        return 0;
+      frameTimeMillis = 1000 / fps;
+      targetTime = System.currentTimeMillis();
+      zoomStart = zoomPercent;
+      zoomDelta = zoom - zoomStart;
+      xTransStart = getTranslationXPercent();
+      xTransDelta = xTrans - xTransStart;
+      yTransStart = getTranslationYPercent();
+      yTransDelta = yTrans - yTransStart;
       aaStepCenter.set(ptMoveToCenter);
       aaStepCenter.sub(fixedRotationCenter);
       aaStepCenter.scale(1f / totalSteps);
-      float pixelScaleDelta = (targetPixelScale - startPixelScale);
-      float rotationRadiusDelta = (targetRotationRadius - startRotationRadius);
+      pixelScaleDelta = (targetPixelScale - startPixelScale);
+      rotationRadiusDelta = (targetRotationRadius - startRotationRadius);
       if (navCenter != null && mode == MODE_NAVIGATION) {
         aaStepNavCenter.set(navCenter);
         aaStepNavCenter.sub(navigationCenter);
         aaStepNavCenter.scale(1f / totalSteps);
       }
       float xNavTransStart = getNavigationOffsetPercent('X');
-      float xNavTransDelta = xNav - xNavTransStart;
-      float yNavTransStart = getNavigationOffsetPercent('Y');
-      float yNavTransDelta = yNav - yNavTransStart;
+      xNavTransDelta = xNav - xNavTransStart;
+      yNavTransStart = getNavigationOffsetPercent('Y');
+      yNavTransDelta = yNav - yNavTransStart;
       float navDepthStart = getNavigationDepthPercent();
-      float navDepthDelta = navDepth - navDepthStart;
-
-      for (int iStep = 1; iStep < totalSteps; ++iStep) {
-
+      navDepthDelta = navDepth - navDepthStart;
+      return totalSteps;
+    }
+    
+    boolean startMotion() {
+      for (; iStep < totalSteps; ++iStep) {
         if (!Float.isNaN(matrixEnd.m00)) {
           getRotation(matrixStart);
           matrixStartInv.invert(matrixStart);
@@ -1699,45 +1784,44 @@ abstract class TransformManager {
         targetTime += frameTimeMillis;
         if (System.currentTimeMillis() < targetTime) {
           viewer.requestRepaintAndWait();
-          if (!viewer.isScriptExecuting())
-            break;
+          if (motion == null || !asThread && !viewer.isScriptExecuting()) {
+            return false;
+          }
           int sleepTime = (int) (targetTime - System.currentTimeMillis());
           if (sleepTime > 0) {
             try {
               Thread.sleep(sleepTime);
             } catch (InterruptedException ie) {
+              return false;
             }
-            //System.out.println("moveto thread " + Thread.currentThread().getName() + " running " + System.currentTimeMillis());
+            // System.out.println("moveto thread " +
+            // Thread.currentThread().getName() + " running " +
+            // System.currentTimeMillis());
           }
         }
       }
-    } else {
-      int sleepTime = (int) (floatSecondsTotal * 1000) - 30;
-      if (sleepTime > 0) {
-        try {
-          Thread.sleep(sleepTime);
-        } catch (InterruptedException ie) {
-        }
+      return true;
+    }
+
+    void endMotion() {
+      setRotationRadius(targetRotationRadius, true);
+      scaleDefaultPixelsPerAngstrom = targetPixelScale;
+      if (center != null)
+        moveRotationCenter(center, !windowCentered);
+      if (!Float.isNaN(xTrans)) {
+        zoomToPercent(zoom);
+        translateToXPercent(xTrans);
+        translateToYPercent(yTrans);
+      }
+      setRotation(matrixEnd);
+      if (navCenter != null && mode == MODE_NAVIGATION) {
+        navigationCenter.set(navCenter);
+        if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
+          navTranslatePercent(0, xNav, yNav);
+        if (!Float.isNaN(navDepth))
+          setNavigationDepthPercent(0, navDepth);
       }
     }
-    setRotationRadius(targetRotationRadius, true);
-    scaleDefaultPixelsPerAngstrom = targetPixelScale;
-    if (center != null)
-      moveRotationCenter(center, !windowCentered);
-    if (!Float.isNaN(xTrans)) {
-      zoomToPercent(zoom);
-      translateToXPercent(xTrans);
-      translateToYPercent(yTrans);
-    }
-    setRotation(matrixEnd);
-    if (navCenter != null && mode == MODE_NAVIGATION) {
-      navigationCenter.set(navCenter);
-      if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
-        navTranslatePercent(0, xNav, yNav);
-      if (!Float.isNaN(navDepth))
-        setNavigationDepthPercent(0, navDepth);
-    }
-    viewer.setInMotion(false);
   }
 
   Quaternion getRotationQuaternion() {
@@ -2329,7 +2413,7 @@ abstract class TransformManager {
 
   // from Viewer:
 
-  private void moveRotationCenter(Point3f center, boolean toXY) {
+  void moveRotationCenter(Point3f center, boolean toXY) {
     setRotationCenterAndRadiusXYZ(center, false);
     if (toXY)
       setRotationPointXY(fixedRotationCenter);

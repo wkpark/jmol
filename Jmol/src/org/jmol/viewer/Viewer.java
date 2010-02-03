@@ -763,29 +763,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     moveUpdate(floatSecondsTotal);
   }
 
-  public void moveTo(float floatSecondsTotal, Point3f center, Vector3f rotAxis,
-                     float degrees, float zoom, float xTrans, float yTrans,
-                     float rotationRadius, Point3f navCenter, float xNav,
-                     float yNav, float navDepth) {
-    // from Eval
-    if (!haveDisplay)
-      floatSecondsTotal = 0;
-    setTainted(true);
-    transformManager.moveTo(floatSecondsTotal, center, rotAxis, degrees, zoom,
-        xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
-    moveUpdate(floatSecondsTotal);
-    finalizeTransformParameters();
+  public boolean waitForMoveTo() {
+    return global.waitForMoveTo;
   }
 
-  void moveTo(float floatSecondsTotal, Point3f center, Matrix3f rotationMatrix,
-              float zoom, float xTrans, float yTrans, float rotationRadius,
-              Point3f navCenter, float xNav, float yNav, float navDepth) {
+  public void stopMotion() {
+    transformManager.stopMotion();
+  }
+
+  public void moveTo(float floatSecondsTotal, Point3f center, Vector3f rotAxis,
+                     float degrees, Matrix3f rotationMatrix, float zoom,
+                     float xTrans, float yTrans, float rotationRadius,
+                     Point3f navCenter, float xNav, float yNav, float navDepth) {
     // from StateManager -- -1 for time --> no repaint
     if (!haveDisplay)
       floatSecondsTotal = 0;
     setTainted(true);
-    transformManager.moveTo(floatSecondsTotal, center, rotationMatrix, zoom,
-        xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
+    transformManager.moveTo(floatSecondsTotal, center, rotAxis, degrees,
+        rotationMatrix, zoom, xTrans, yTrans, rotationRadius, navCenter, xNav,
+        yNav, navDepth);
     moveUpdate(floatSecondsTotal);
     finalizeTransformParameters();
   }
@@ -3829,8 +3825,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       haltScriptExecution();
       clearScriptQueue();
       clearTimeout(null);
+      transformManager.stopMotion();
       if (isCmdLine_c_or_C_Option)
         Logger.info("exit -- stops script checking");
+      else 
+        Logger.info("!exit received");
       isCmdLine_c_or_C_Option = false;
       return str.equals("exit");
     }
@@ -3838,6 +3837,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       haltScriptExecution();
       if (isCmdLine_c_or_C_Option)
         Logger.info("quit -- stops script checking");
+      else 
+        Logger.info("!quit received");
       isCmdLine_c_or_C_Option = false;
       return str.equals("quit");
     }
@@ -4922,6 +4923,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setStringProperty(String key, int tok, String value) {
     boolean found = true;
     switch (tok) {
+    case Token.logfile:
+      if (value.length() > 0 && !value.startsWith("JmolLog_"))
+        value = "JmolLog_" + value;
+      Logger.setLogFile(value);
+      break;
     case Token.filecachedirectory:
       // 11.9.21
       // not implemented -- application only -- CANNOT BE SET BY STATE
@@ -5371,6 +5377,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.waitformoveto:
+      global.waitForMoveTo = value;
+      break;
+    case Token.logcommands:
+      global.logCommands = true;
+      break;
+    case Token.loggestures:
+      global.logGestures = true;
+      break;
     case Token.allowmultitouch:
       // 11.9.24
       global.allowMultiTouch = value;
@@ -7951,8 +7966,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.allowGestures;    
   }
 
+  public boolean getLogGestures() {
+    return global.logGestures;
+  }
+
   public boolean allowMultiTouch() {
     return global.allowMultiTouch;
   }
+
+  public boolean logCommands() {
+    return global.logCommands;
+  }
+
 
 }

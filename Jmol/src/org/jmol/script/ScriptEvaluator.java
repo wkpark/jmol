@@ -4525,6 +4525,8 @@ public class ScriptEvaluator {
       } else {
         if (debugScript)
           logDebugScript(0);
+        if (scriptLevel == 0 && viewer.logCommands())
+          Logger.logToFile(thisCommand);
         if (logMessages && token != null)
           Logger.debug(token.toString());
       }
@@ -5112,13 +5114,19 @@ public class ScriptEvaluator {
     // yNav navDepth
     // where [zoom factor] is [0|n|+n|-n|*n|/n|IN|OUT]
     // moveto [time] front|back|left|right|top|bottom
+    if (statementLength == 2 && tokAt(1) == Token.stop) {
+      if (!isSyntaxCheck)
+        viewer.stopMotion();
+      return;
+    }
+      
     if (statementLength == 2 && isFloatParameter(1)) {
       float f = floatParameter(1);
       if (isSyntaxCheck)
         return;
       if (f > 0)
         refresh();
-      viewer.moveTo(f, null, JmolConstants.axisZ, 0, 100, 0, 0, 0, null,
+      viewer.moveTo(f, null, JmolConstants.axisZ, 0, null, 100, 0, 0, 0, null,
           Float.NaN, Float.NaN, Float.NaN);
       return;
     }
@@ -5298,7 +5306,7 @@ public class ScriptEvaluator {
       floatSecondsTotal = 0;
     if (floatSecondsTotal > 0)
       refresh();
-    viewer.moveTo(floatSecondsTotal, center, axis, degrees, zoom, xTrans, yTrans,
+    viewer.moveTo(floatSecondsTotal, center, axis, degrees, null, zoom, xTrans, yTrans,
         rotationRadius, navCenter, xNav, yNav, navDepth);
   }
 
@@ -6637,10 +6645,13 @@ public class ScriptEvaluator {
   private void log() throws ScriptException {
     if (statementLength == 1)
       error(ERROR_badArgumentCount);
-    String s = (String) parameterExpression(1, 0, "", false);
     if (isSyntaxCheck)
       return;
-    Logger.logToFile(s + "\n");
+    String s = (String) parameterExpression(1, 0, "", false);
+    if (tokAt(1) == Token.off)
+      setStringProperty("logFile", "");
+    else
+      Logger.logToFile(s);
   }
 
   private void print() throws ScriptException {
@@ -8270,7 +8281,7 @@ public class ScriptEvaluator {
       yTrans = 0;
     if (isSameAtom && Math.abs(zoom - newZoom) < 1)
       time = 0;
-    viewer.moveTo(time, center, JmolConstants.center, Float.NaN, newZoom,
+    viewer.moveTo(time, center, JmolConstants.center, Float.NaN, null, newZoom,
         xTrans, yTrans, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
   }
 
@@ -9692,9 +9703,6 @@ public class ScriptEvaluator {
       return;
     case Token.hbond:
       setHbond();
-      return;
-    case Token.logfile:
-      Logger.setLogFile(stringParameter(2));
       return;
     case Token.measure:
     case Token.measurements:

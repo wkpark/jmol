@@ -77,7 +77,9 @@ class RepaintManager {
     viewer.repaint();
     try {
       //System.out.println("repaintManager requestRepaintAndWait I am waiting for a repaint: thread=" + Thread.currentThread().getName());
-      wait();
+      wait(1000); // more than a second means we are locked up here
+      if (repaintPending)
+        repaintDone();
     } catch (InterruptedException e) {
       //System.out.println("repaintManager requestRepaintAndWait interrupted thread=" + Thread.currentThread().getName());
     }

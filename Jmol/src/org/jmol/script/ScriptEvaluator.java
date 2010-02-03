@@ -2284,7 +2284,7 @@ public class ScriptEvaluator {
       // String s = viewer.getSetHistory(1);
       // viewer.addCommand(s + CommandHistory.ERROR_FLAG);
       viewer.setCursor(Viewer.CURSOR_DEFAULT);
-      viewer.setRefreshing(true);
+      viewer.setBooleanProperty("refreshing", true);
     }
     throw new ScriptException(message, strUntranslated);
   }
@@ -6706,7 +6706,7 @@ public class ScriptEvaluator {
       strLabel = "%U";
     else if (strLabel.equalsIgnoreCase("off"))
       strLabel = null;
-    viewer.setHover(strLabel);
+    viewer.setHoverLabel(strLabel);
   }
 
   private void load() throws ScriptException {

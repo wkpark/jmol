@@ -34,7 +34,6 @@ class ScriptManager {
   Thread[] queueThreads = new Thread[2];
   boolean[] scriptQueueRunning = new boolean[2];
   Vector scriptQueue = new Vector();
-  boolean useQueue = true;
   Thread commandWatcherThread;
 
   ScriptManager(Viewer viewer) {
@@ -43,12 +42,6 @@ class ScriptManager {
 
   void clear() {
     startCommandWatcher(false);
-  }
-
-  public void setQueue(boolean TF) {
-    useQueue = TF;
-    if (!TF)
-      clearQueue();
   }
 
   public String addScript(String strScript) {
@@ -64,7 +57,7 @@ class ScriptManager {
                           String statusList, boolean isScriptFile,
                           boolean isQuiet) {
     //System.out.println("ScriptMan addScript " + strScript);
-    if (!useQueue) {
+    if (!viewer.usingScriptQueue()) {
       clearQueue();
       viewer.haltScriptExecution();
     }
@@ -100,7 +93,7 @@ class ScriptManager {
     return scriptQueue.size();
   }
 
-  public void clearQueue() {
+  void clearQueue() {
     scriptQueue.clear();
   }
 

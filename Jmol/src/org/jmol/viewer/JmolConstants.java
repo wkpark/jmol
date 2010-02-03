@@ -276,13 +276,13 @@ final public class JmolConstants {
   /**
    * picking modes     select picking....
    */
-  public final static int PICKING_OFF    = 0;
-  public final static int PICKING_IDENT  = 1;
-  public final static int PICKING_LABEL  = 2;
-  public final static int PICKING_CENTER = 3;
-  public final static int PICKING_DRAW   = 4;
-  public final static int PICKING_SPIN   = 5;
-  public final static int PICKING_SYMMETRY = 6;
+  public final static int PICKING_OFF       = 0;
+  public final static int PICKING_IDENTIFY  = 1;
+  public final static int PICKING_LABEL     = 2;
+  public final static int PICKING_CENTER    = 3;
+  public final static int PICKING_DRAW      = 4;
+  public final static int PICKING_SPIN      = 5;
+  public final static int PICKING_SYMMETRY  = 6;
   //public final static int PICKING_COORD  = 6;
   public final static int PICKING_DELETE_BOND      = 7;
   public final static int PICKING_SELECT_ATOM      =  8;

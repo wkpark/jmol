@@ -48,7 +48,9 @@ abstract class TransformManager {
   final static double twoPI = 2 * Math.PI;
   final static double degreesPerRadian = 180 / Math.PI;
 
-  protected int perspectiveModel = 11;
+  static final int DEFAULT_NAV_FPS = 10;
+
+  protected int perspectiveModel = DEFAULT_PERSPECTIVE_MODEL;
   protected float cameraScaleFactor;
   protected float referencePlaneOffset;
   protected float modelCenterOffset;
@@ -112,7 +114,7 @@ abstract class TransformManager {
     // reset, setNavigationMode, setPerspectiveModel
     setSpinOn(false);
     setNavOn(false);
-    navFps = 10;
+    navFps = DEFAULT_NAV_FPS;
     navX = navY = navZ = 0;
     rotationCenterDefault.set(viewer.getBoundBoxCenter());
     setFixedRotationCenter(rotationCenterDefault);
@@ -241,10 +243,12 @@ abstract class TransformManager {
 
   protected boolean haveNotifiedNaN = false;
 
-  float spinX, spinY = 30f, spinZ, spinFps = 30f;
+  final static int DEFAULT_SPIN_Y = 30;
+  final static int DEFAULT_SPIN_FPS = 30; 
+  float spinX, spinY = DEFAULT_SPIN_Y, spinZ, spinFps = DEFAULT_SPIN_FPS;
   protected float navX;
   protected float navY;
-  protected float navZ = 2;
+  protected float navZ;
   protected float navFps = Float.NaN;
 
   boolean isSpinInternal = false;
@@ -773,12 +777,6 @@ abstract class TransformManager {
     zoomPercentSetting += deltaPercent;
   }
 
-  void setZoomEnabled(boolean zoomEnabled) {
-    if (this.zoomEnabled != zoomEnabled) {
-      this.zoomEnabled = zoomEnabled;
-    }
-  }
-
   void setScaleAngstromsPerInch(float angstromsPerInch) {
     // not compatible with perspectiveDepth
     scale3D = (angstromsPerInch > 0);
@@ -825,6 +823,11 @@ abstract class TransformManager {
   void setZShadeEnabled(boolean zShadeEnabled) {
     this.zShadeEnabled = zShadeEnabled;
     viewer.getGlobalSettings().setParameterValue("zShade", zShadeEnabled);
+  }
+
+  void setZoomEnabled(boolean zoomEnabled) {
+    this.zoomEnabled = zoomEnabled;
+    viewer.getGlobalSettings().setParameterValue("zoomEnabled", zoomEnabled);
   }
 
   void slabReset() {
@@ -1258,6 +1261,9 @@ abstract class TransformManager {
   protected final static int MODE_STANDARD = 0;
   protected final static int MODE_NAVIGATION = 1;
   protected final static int MODE_PERSPECTIVE_CENTER = 2;
+
+  static final int DEFAULT_PERSPECTIVE_MODEL = 11;
+
   protected int mode = MODE_STANDARD;
   protected int defaultMode = MODE_STANDARD;
 

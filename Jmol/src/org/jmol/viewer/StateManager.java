@@ -120,15 +120,14 @@ public class StateManager {
   }
 
   GlobalSettings getGlobalSettings(GlobalSettings gsOld) {
-    GlobalSettings g = new GlobalSettings();
-    g.registerAllValues(gsOld);
-    return g;
+    return new GlobalSettings(gsOld);
   }
 
-  void clear() {
+  void clear(GlobalSettings global) {
     viewer.setShowAxes(false);
     viewer.setShowBbcage(false);
     viewer.setShowUnitCell(false);
+    global.clear();
   }
 
   void setCrystallographicDefaults() {
@@ -594,26 +593,66 @@ public class StateManager {
         + ";spinx;spiny;spinz;spinfps;navx;navy;navz;navfps;" + JmolConstants.getCallbackName(-1)
         + ";undo;";
 
+  protected static int getJmolVersionInt() {
+    // 11.9.999 --> 1109999
+    String s = JmolConstants.version;
+    int version = -1;
+
+    try {
+      // Major number
+      int i = s.indexOf(".");
+      if (i < 0) {
+        version = 100000 * Integer.parseInt(s);
+        return version;
+      }
+      version = 100000 * Integer.parseInt(s.substring(0, i));
+
+      // Minor number
+      s = s.substring(i + 1);
+      i = s.indexOf(".");
+      if (i < 0) {
+        version += 1000 * Integer.parseInt(s);
+        return version;
+      }
+      version += 1000 * Integer.parseInt(s.substring(0, i));
+
+      // Revision number
+      s = s.substring(i + 1);
+      i = s.indexOf("_");
+      if (i >= 0)
+        s = s.substring(0, i);
+      i = s.indexOf(" ");
+      if (i >= 0)
+        s = s.substring(0, i);
+      version += Integer.parseInt(s);
+    } catch (NumberFormatException e) {
+      // We simply keep the version currently found
+    }
+
+    return version;
+  }
 
   class GlobalSettings {
+
+    Hashtable htNonbooleanParameterValues;
+    Hashtable htBooleanParameterFlags;
+    Hashtable htPropertyFlagsRemoved;
+    Hashtable htUserVariables = new Hashtable();
 
     /*
      *  Mostly these are just saved and restored directly from Viewer.
      *  They are collected here for reference and to ensure that no 
      *  methods are written that bypass viewer's get/set methods.
      *  
-     *  Because these are not Frame variables, they should persist past
+     *  Because these are not Frame variables, they (mostly) should persist past
      *  a new file loading. There is some question in my mind whether all
      *  should be in this category.
      *  
      */
 
-    GlobalSettings() {
-      //
+    GlobalSettings(GlobalSettings gsOld) {
+      registerAllValues(gsOld);
     }
-
-    //same thing now.
-    Hashtable htUserVariables = new Hashtable();
 
     void clear() {
       Enumeration e = htUserVariables.keys();
@@ -623,12 +662,271 @@ public class StateManager {
           htUserVariables.remove(key);
       }
 
+      // PER-zap settings made
       setParameterValue("_atompicked", -1);
       setParameterValue("_atomhovered", -1);
       setParameterValue("_pickinfo", "");
       setParameterValue("selectionhalos", false);
-      setParameterValue("hidenotselected", false);
+      setParameterValue("hidenotselected", false); // to synchronize with selectionManager
       setParameterValue("measurementlabels", measurementLabels = true);
+      setParameterValue("drawHover", drawHover = false);
+      
+
+    }
+
+    void registerAllValues(GlobalSettings g) {
+      htNonbooleanParameterValues = new Hashtable();
+      htBooleanParameterFlags = new Hashtable();
+      htPropertyFlagsRemoved = new Hashtable();
+
+      if (g != null) {
+        //persistent values not reset with the "initialize" command
+        debugScript = g.debugScript;
+        disablePopupMenu = g.disablePopupMenu;
+        messageStyleChime = g.messageStyleChime;
+        defaultDirectory = g.defaultDirectory;
+        // no, not persistent, because slab and depth are not
+        // zShade = g.zShade; zShadePower = g.zShadePower
+        allowGestures = g.allowGestures;
+        allowMultiTouch = g.allowMultiTouch;
+        allowKeyStrokes = g.allowKeyStrokes;
+        useScriptQueue = g.useScriptQueue;
+      }
+
+      for (int i = 0;;i++) {        
+        String callbackName = JmolConstants.getCallbackName(i);
+        if (callbackName == null)
+          break;
+        resetParameterStringValue(callbackName, g);        
+      }
+
+      setParameterValue("historyLevel", 0); //deprecated ? doesn't do anything
+
+      // These next are just placeholders so that the math processor
+      // knows they are Jmol variables. They are held by other managers.
+      // This is NOT recommended, because it is easy to forget they are 
+      // here and then not reset them properly. Basically it means that
+      // the other manager must ensure that the value changed there is
+      // updated here, AND when an initialization occurs, they remain in
+      // sync. This is difficult to manage and should be changed.
+      // The good news is that this manager is initialized FIRST, so 
+      // we really just have to make sure that all these values are definitely
+      // also initialized within the managers. 
+
+      setParameterValue("hideNotSelected", false); //maintained by the selectionManager
+      setParameterValue("hoverLabel", ""); // maintained by the Hover shape
+      setParameterValue("navFps", TransformManager.DEFAULT_NAV_FPS); 
+      setParameterValue("navigationDepth", 0);   // maintained by TransformManager
+      setParameterValue("navigationSlab", 0);    // maintained by TransformManager
+      setParameterValue("navX", 0);              // maintained by TransformManager
+      setParameterValue("navY", 0);              // maintained by TransformManager
+      setParameterValue("navZ", 0);              // maintained by TransformManager
+      setParameterValue("perspectiveModel", TransformManager.DEFAULT_PERSPECTIVE_MODEL);
+      setParameterValue("picking", "identify");      // maintained by ActionManager
+      setParameterValue("pickingStyle", "toggle");   // maintained by ActionManager
+      setParameterValue("refreshing", true);         // maintained by Viewer
+      setParameterValue("rotationRadius", 0);        // maintained by TransformManager
+      setParameterValue("scaleAngstromsPerInch", 0); // maintained by TransformManager
+      setParameterValue("scriptReportingLevel", 0);  // maintained by ScriptEvaluator
+      setParameterValue("selectionHalos", false);    // maintained by ModelSet
+      setParameterValue("showaxes", false);          // maintained by Axes
+      setParameterValue("showboundbox", false);      // maintained by Bbcage
+      setParameterValue("showfrank", false);         // maintained by Viewer
+      setParameterValue("showUnitcell", false);      // maintained by Uccage
+      setParameterValue("slabEnabled", false);       // maintained by TransformManager     
+      setParameterValue("spinX", 0);                 // maintained by TransformManager
+      setParameterValue("spinY", TransformManager.DEFAULT_SPIN_Y);
+      setParameterValue("spinZ", 0);                 // maintained by TransformManager
+      setParameterValue("spinFps", TransformManager.DEFAULT_SPIN_FPS);
+      setParameterValue("stereoDegrees", JmolConstants.DEFAULT_STEREO_DEGREES); 
+      setParameterValue("stateversion", 0); // only set by a saved state being recalled
+      setParameterValue("windowCentered", true); // maintained by TransformManager
+      setParameterValue("zoomEnabled", true);    // maintained by TransformManager
+      setParameterValue("zShade", false);        // maintained by TransformManager
+      
+
+      // These next values have no other place than the global Hashtables.
+      // This just means that a call to viewer.getXxxxProperty() is necessary.
+      // Otherwise, it's the same as if they had a global variable. 
+      // It's just an issue of speed of access. Generally, these should only be
+      // accessed by the user. 
+      
+      setParameterValue("_version", getJmolVersionInt());
+
+      setParameterValue("axesWindow", true);
+      setParameterValue("axesMolecular", false);
+      setParameterValue("axesPosition", false);
+      setParameterValue("axesUnitcell", false);
+      setParameterValue("backgroundModel", 0);
+      setParameterValue("colorRasmol", false);
+      setParameterValue("currentLocalPath", "");
+      setParameterValue("defaultLattice", "{0 0 0}");
+      setParameterValue("defaultColorScheme", "Jmol");
+      setParameterValue("defaultDirectoryLocal", "");
+      setParameterValue("defaults", "Jmol");
+      setParameterValue("defaultVDW", "Jmol");
+      setParameterValue("exportDrivers", JmolConstants.EXPORT_DRIVER_LIST);
+      setParameterValue("propertyAtomNumberColumnCount", 0);
+      setParameterValue("propertyAtomNumberField", 0);
+      setParameterValue("propertyDataColumnCount", 0);
+      setParameterValue("propertyDataField", 0);
+      setParameterValue("undo", true);
+
+      // OK, all of the rest of these are maintained here as global values (below)
+
+      setParameterValue("allowEmbeddedScripts", allowEmbeddedScripts);
+      setParameterValue("allowGestures", allowGestures);
+      setParameterValue("allowKeyStrokes", allowKeyStrokes);
+      setParameterValue("allowMultiTouch", allowMultiTouch);
+      setParameterValue("allowRotateSelected", allowRotateSelected);
+      setParameterValue("ambientPercent", ambientPercent);
+      setParameterValue("animationFps", animationFps);
+      setParameterValue("antialiasImages", antialiasImages);
+      setParameterValue("antialiasDisplay", antialiasDisplay);
+      setParameterValue("antialiasTranslucent", antialiasTranslucent);
+      setParameterValue("appendNew", appendNew);
+      setParameterValue("appletProxy", appletProxy);
+      setParameterValue("applySymmetryToBonds", applySymmetryToBonds);
+      setParameterValue("atomPicking", atomPicking);
+      setParameterValue("atomTypes", atomTypes);
+      setParameterValue("autoBond", autoBond);
+      setParameterValue("autoFps", autoFps);
+      setParameterValue("autoLoadOrientation", autoLoadOrientation);
+      setParameterValue("axesMode", axesMode);
+      setParameterValue("axesScale", axesScale);
+      setParameterValue("axesOrientationRasmol", axesOrientationRasmol);
+      setParameterValue("bondModeOr", bondModeOr);
+      setParameterValue("bondPicking", bondPicking);
+      setParameterValue("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);
+      setParameterValue("bondTolerance", bondTolerance);
+      setParameterValue("cameraDepth", cameraDepth);
+      setParameterValue("cartoonRockets", cartoonRockets);
+      setParameterValue("chainCaseSensitive", chainCaseSensitive);
+      setParameterValue("dataSeparator", dataSeparator);
+      setParameterValue("debugScript", debugScript);
+      setParameterValue("defaultAngleLabel", defaultAngleLabel);
+      setParameterValue("defaultDrawArrowScale", defaultDrawArrowScale);
+      setParameterValue("defaultDirectory", defaultDirectory);
+      setParameterValue("defaultDistanceLabel", defaultDistanceLabel);
+      setParameterValue("defaultLoadScript", defaultLoadScript);
+      setParameterValue("defaultTorsionLabel", defaultTorsionLabel);
+      setParameterValue("defaultTranslucent", defaultTranslucent);
+      setParameterValue("delayMaximumMs", delayMaximumMs);
+      setParameterValue("diffusePercent", diffusePercent);
+      setParameterValue("dipoleScale", dipoleScale);
+      setParameterValue("disablePopupMenu", disablePopupMenu);
+      setParameterValue("displayCellParameters", displayCellParameters);
+      setParameterValue("dotDensity", dotDensity);
+      setParameterValue("dotsSelectedOnly", dotsSelectedOnly);
+      setParameterValue("dotSurface", dotSurface);
+      setParameterValue("dragSelected", dragSelected);
+      setParameterValue("drawHover", drawHover);
+      setParameterValue("drawPicking", drawPicking);
+      setParameterValue("dynamicMeasurements", dynamicMeasurements);
+      setParameterValue("ellipsoidArcs", ellipsoidArcs);
+      setParameterValue("ellipsoidAxes", ellipsoidAxes);
+      setParameterValue("ellipsoidAxisDiameter", ellipsoidAxisDiameter);
+      setParameterValue("ellipsoidBall", ellipsoidBall);
+      setParameterValue("ellipsoidDotCount", ellipsoidDotCount);
+      setParameterValue("ellipsoidDots", ellipsoidDots);
+      setParameterValue("ellipsoidFill", ellipsoidFill);
+//      setParameterValue("_fileCaching", _fileCaching);
+//      setParameterValue("_fileCache", _fileCache);
+      setParameterValue("fontScaling", fontScaling);
+      setParameterValue("fontCaching", fontCaching);
+      setParameterValue("forceAutoBond", forceAutoBond);
+      setParameterValue("greyscaleRendering", greyscaleRendering);
+      setParameterValue("hbondsAngleMinimum", hbondsAngleMinimum);
+      setParameterValue("hbondsDistanceMaximum", hbondsDistanceMaximum);
+      setParameterValue("hbondsBackbone", hbondsBackbone);
+      setParameterValue("hbondsSolid", hbondsSolid);
+      setParameterValue("helixStep", helixStep);
+      setParameterValue("helpPath", helpPath);
+      setParameterValue("hermiteLevel", hermiteLevel);
+      setParameterValue("hideNameInPopup", hideNameInPopup);
+      setParameterValue("hideNavigationPoint", hideNavigationPoint);
+      setParameterValue("highResolution", highResolutionFlag);
+      setParameterValue("hoverDelay", hoverDelayMs / 1000f);
+      setParameterValue("imageState", imageState);
+      setParameterValue("isosurfacePropertySmoothing",
+          isosurfacePropertySmoothing);
+      setParameterValue("justifyMeasurements", justifyMeasurements);
+      setParameterValue("loadAtomDataTolerance", loadAtomDataTolerance);
+      setParameterValue("loadFormat", loadFormat);
+      setParameterValue("measureAllModels", measureAllModels);
+      setParameterValue("measurementLabels", measurementLabels);
+      setParameterValue("measurementUnits", measureDistanceUnits);
+      setParameterValue("messageStyleChime", messageStyleChime);
+      setParameterValue("minBondDistance", minBondDistance);
+      setParameterValue("minimizationSteps", minimizationSteps);
+      setParameterValue("minimizationRefresh", minimizationRefresh);
+      setParameterValue("minimizationCriterion", minimizationCriterion);
+      setParameterValue("navigationMode", navigationMode);
+      setParameterValue("navigateSurface", navigateSurface);
+      setParameterValue("navigationPeriodic", navigationPeriodic);
+      setParameterValue("navigationSpeed", navigationSpeed);
+      setParameterValue("pdbGetHeader", pdbGetHeader); // new 11.5.39
+      setParameterValue("pdbSequential", pdbSequential); // new 11.5.39
+      setParameterValue("perspectiveDepth", perspectiveDepth);
+      setParameterValue("percentVdwAtom", percentVdwAtom);
+      setParameterValue("phongExponent", phongExponent);
+      setParameterValue("pickingSpinRate", pickingSpinRate);
+      setParameterValue("pickLabel", pickLabel);
+      setParameterValue("pointGroupLinearTolerance", pointGroupLinearTolerance);
+      setParameterValue("pointGroupDistanceTolerance", pointGroupDistanceTolerance);
+      setParameterValue("preserveState", preserveState);
+      setParameterValue("propertyColorScheme", propertyColorScheme);
+      setParameterValue("quaternionFrame", quaternionFrame);
+      setParameterValue("rangeSelected", rangeSelected);
+      setParameterValue("ribbonAspectRatio", ribbonAspectRatio);
+      setParameterValue("ribbonBorder", ribbonBorder);
+      setParameterValue("rocketBarrels", rocketBarrels);
+      setParameterValue("saveProteinStructureState", saveProteinStructureState);
+      setParameterValue("scriptqueue", useScriptQueue);
+      setParameterValue("selectAllModels", selectAllModels);
+      setParameterValue("selectHetero", rasmolHeteroSetting);
+      setParameterValue("selectHydrogen", rasmolHydrogenSetting);
+      setParameterValue("sheetSmoothing", sheetSmoothing);
+      setParameterValue("showHiddenSelectionHalos", showHiddenSelectionHalos);
+      setParameterValue("showHydrogens", showHydrogens);
+      setParameterValue("showKeyStrokes", showKeyStrokes);
+      setParameterValue("showMeasurements", showMeasurements);
+      setParameterValue("showMultipleBonds", showMultipleBonds);
+      setParameterValue("showNavigationPointAlways", showNavigationPointAlways);
+      setParameterValue("showScript", scriptDelay);
+      setParameterValue("slabByMolecule", slabByMolecule);
+      setParameterValue("slabByAtom", slabByAtom);
+      setParameterValue("smartAromatic", smartAromatic);
+      setParameterValue("solventProbe", solventOn);
+      setParameterValue("solventProbeRadius", solventProbeRadius);
+      setParameterValue("specular", specular);
+      setParameterValue("specularExponent", specularExponent);
+      setParameterValue("specularPercent", specularPercent);
+      setParameterValue("specularPower", specularPower);
+      setParameterValue("ssbondsBackbone", ssbondsBackbone);
+      setParameterValue("statusReporting", statusReporting);
+      setParameterValue("strandCount", strandCountForStrands);
+      setParameterValue("strandCountForStrands", strandCountForStrands);
+      setParameterValue("strandCountForMeshRibbon", strandCountForMeshRibbon);
+      setParameterValue("strutDefaultRadius", strutDefaultRadius);
+      setParameterValue("strutLengthMaximum", strutLengthMaximum);
+      setParameterValue("strutSpacing", strutSpacing);
+      setParameterValue("strutsMultiple", strutsMultiple);
+      setParameterValue("testFlag1", testFlag1);
+      setParameterValue("testFlag2", testFlag2);
+      setParameterValue("testFlag3", testFlag3);
+      setParameterValue("testFlag4", testFlag4);
+      setParameterValue("traceAlpha", traceAlpha);
+      setParameterValue("useMinimizationThread", useMinimizationThread);
+      setParameterValue("useNumberLocalization", useNumberLocalization);
+      setParameterValue("vectorScale", vectorScale);
+      setParameterValue("vibrationPeriod", vibrationPeriod);
+      setParameterValue("vibrationScale", vibrationScale);
+      setParameterValue("visualRange", visualRange);
+      setParameterValue("wireframeRotation", wireframeRotation);
+      setParameterValue("zoomLarge", zoomLarge);
+      setParameterValue("zShade", zShadePower);
+      setParameterValue("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
     }
 
     //lighting (see Graphics3D.Shade3D
@@ -818,6 +1116,7 @@ public class StateManager {
     float dipoleScale = 1.0f;
     boolean disablePopupMenu = false;
     boolean dragSelected = false;
+    boolean drawHover = false;
     boolean drawPicking = false;
     boolean bondPicking = false;
     boolean atomPicking = true;
@@ -844,8 +1143,13 @@ public class StateManager {
     boolean statusReporting = true;
     int strandCountForStrands = 5;
     int strandCountForMeshRibbon = 7;
+    int strutSpacing = 6;
+    float strutLengthMaximum = 7.0f;
+    float strutDefaultRadius = JmolConstants.DEFAULT_STRUT_RADIUS;
+    boolean strutsMultiple = false; //on a single position    
     boolean useMinimizationThread = true;
     boolean useNumberLocalization = true;
+    boolean useScriptQueue = true;
     float vectorScale = 1f;
     float vibrationPeriod = 1f;
     float vibrationScale = 1f;
@@ -946,14 +1250,6 @@ public class StateManager {
       return measureDistanceUnits;
     }
 
-    Hashtable htNonbooleanParameterValues;
-    Hashtable htBooleanParameterFlags;
-    Hashtable htPropertyFlagsRemoved;
-    int strutSpacing = 6;
-    float strutLengthMaximum = 7.0f;
-    float strutDefaultRadius = JmolConstants.DEFAULT_STRUT_RADIUS;
-    boolean strutsMultiple = false; //on a single position
-    
     boolean isJmolVariable(String key) {
       return key.charAt(0) == '_'
           || htNonbooleanParameterValues.containsKey(key = key.toLowerCase())
@@ -1219,244 +1515,6 @@ public class StateManager {
     private boolean doReportProperty(String name) {
       return (name.charAt(0) != '_' && unreportedProperties.indexOf(";" + name
           + ";") < 0);
-    }
-
-    void registerAllValues(GlobalSettings g) {
-      htNonbooleanParameterValues = new Hashtable();
-      htBooleanParameterFlags = new Hashtable();
-      htPropertyFlagsRemoved = new Hashtable();
-
-      if (g != null) {
-        //persistent values not reset with the "initialize" command
-        debugScript = g.debugScript;
-        disablePopupMenu = g.disablePopupMenu;
-        messageStyleChime = g.messageStyleChime;
-        defaultDirectory = g.defaultDirectory;
-        // no, not persistent, because slab and depth are not
-        // zShade = g.zShade; zShadePower = g.zShadePower
-        allowGestures = g.allowGestures;
-        allowMultiTouch = g.allowMultiTouch;
-        allowKeyStrokes = g.allowKeyStrokes;
-      }
-
-      for (int i = 0;;i++) {        
-        String callbackName = JmolConstants.getCallbackName(i);
-        if (callbackName == null)
-          break;
-        resetParameterStringValue(callbackName, g);        
-      }
-
-      // some of these are just placeholders so that the math processor
-      // knows they are Jmol variables. They are held by other managers
-
-      setParameterValue("hoverLabel", "");
-      setParameterValue("rotationRadius", 0);
-      setParameterValue("scriptqueue", true);
-
-      setParameterValue("_version", 0);
-      setParameterValue("stateversion", 0);
-
-      setParameterValue("allowEmbeddedScripts", allowEmbeddedScripts);
-      setParameterValue("allowGestures", allowGestures);
-      setParameterValue("allowKeyStrokes", allowKeyStrokes);
-      setParameterValue("allowMultiTouch", allowMultiTouch);
-      setParameterValue("allowRotateSelected", allowRotateSelected);
-      setParameterValue("ambientPercent", ambientPercent);
-      setParameterValue("animationFps", animationFps);
-      setParameterValue("antialiasImages", antialiasImages);
-      setParameterValue("antialiasDisplay", antialiasDisplay);
-      setParameterValue("antialiasTranslucent", antialiasTranslucent);
-      setParameterValue("appendNew", appendNew);
-      setParameterValue("appletProxy", appletProxy);
-      setParameterValue("applySymmetryToBonds", applySymmetryToBonds);
-      setParameterValue("atomPicking", atomPicking);
-      setParameterValue("atomTypes", atomTypes);
-      setParameterValue("autoBond", autoBond);
-      setParameterValue("autoFps", autoFps);
-      setParameterValue("autoLoadOrientation", autoLoadOrientation);
-      setParameterValue("axesMode", axesMode);
-      setParameterValue("axesScale", axesScale);
-      setParameterValue("axesWindow", true);
-      setParameterValue("axesMolecular", false);
-      setParameterValue("axesPosition", false);
-      setParameterValue("axesUnitcell", false);
-      setParameterValue("axesOrientationRasmol", axesOrientationRasmol);
-      setParameterValue("backgroundModel", 0);
-      setParameterValue("bondModeOr", bondModeOr);
-      setParameterValue("bondPicking", bondPicking);
-      setParameterValue("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);
-      setParameterValue("bondTolerance", bondTolerance);
-      setParameterValue("cameraDepth", cameraDepth);
-      setParameterValue("cartoonRockets", cartoonRockets);
-      setParameterValue("chainCaseSensitive", chainCaseSensitive);
-      setParameterValue("colorRasmol", false);
-      setParameterValue("currentLocalPath", "");
-      setParameterValue("dataSeparator", dataSeparator);
-      setParameterValue("debugScript", debugScript);
-      setParameterValue("defaultLattice", "{0 0 0}");
-      setParameterValue("defaultAngleLabel", defaultAngleLabel);
-      setParameterValue("defaultColorScheme", "Jmol");
-      setParameterValue("defaultDrawArrowScale", defaultDrawArrowScale);
-      setParameterValue("defaultDirectory", defaultDirectory);
-      setParameterValue("defaultDirectoryLocal", "");
-      setParameterValue("defaultDistanceLabel", defaultDistanceLabel);
-      setParameterValue("defaultLoadScript", defaultLoadScript);
-      setParameterValue("defaults", "Jmol");
-      setParameterValue("defaultVDW", "Jmol");
-      setParameterValue("defaultTorsionLabel", defaultTorsionLabel);
-      setParameterValue("defaultTranslucent", defaultTranslucent);
-      setParameterValue("delayMaximumMs", delayMaximumMs);
-      setParameterValue("diffusePercent", diffusePercent);
-      setParameterValue("dipoleScale", dipoleScale);
-      setParameterValue("disablePopupMenu", disablePopupMenu);
-      setParameterValue("displayCellParameters", displayCellParameters);
-      setParameterValue("dotDensity", dotDensity);
-      setParameterValue("dotsSelectedOnly", dotsSelectedOnly);
-      setParameterValue("dotSurface", dotSurface);
-      setParameterValue("dragSelected", dragSelected);
-      setParameterValue("drawHover", false);
-      setParameterValue("drawPicking", drawPicking);
-      setParameterValue("dynamicMeasurements", dynamicMeasurements);
-      setParameterValue("ellipsoidArcs", ellipsoidArcs);
-      setParameterValue("ellipsoidAxes", ellipsoidAxes);
-      setParameterValue("ellipsoidAxisDiameter", ellipsoidAxisDiameter);
-      setParameterValue("ellipsoidBall", ellipsoidBall);
-      setParameterValue("ellipsoidDotCount", ellipsoidDotCount);
-      setParameterValue("ellipsoidDots", ellipsoidDots);
-      setParameterValue("ellipsoidFill", ellipsoidFill);
-      setParameterValue("exportDrivers", JmolConstants.EXPORT_DRIVER_LIST);
-//      setParameterValue("_fileCaching", _fileCaching);
-//      setParameterValue("_fileCache", _fileCache);
-      setParameterValue("fontScaling", fontScaling);
-      setParameterValue("fontCaching", fontCaching);
-      setParameterValue("forceAutoBond", forceAutoBond);
-      setParameterValue("greyscaleRendering", greyscaleRendering);
-      setParameterValue("hbondsAngleMinimum", hbondsAngleMinimum);
-      setParameterValue("hbondsDistanceMaximum", hbondsDistanceMaximum);
-      setParameterValue("hbondsBackbone", hbondsBackbone);
-      setParameterValue("hbondsSolid", hbondsSolid);
-      setParameterValue("helixStep", helixStep);
-      setParameterValue("helpPath", helpPath);
-      setParameterValue("hermiteLevel", hermiteLevel);
-      setParameterValue("hideNameInPopup", hideNameInPopup);
-      setParameterValue("hideNavigationPoint", hideNavigationPoint);
-      setParameterValue("hideNotSelected", false); // saved in selectionManager
-      setParameterValue("highResolution", highResolutionFlag);
-      setParameterValue("historyLevel", 0);
-      setParameterValue("hoverDelay", hoverDelayMs / 1000f);
-      setParameterValue("imageState", imageState);
-      setParameterValue("isosurfacePropertySmoothing",
-          isosurfacePropertySmoothing);
-      setParameterValue("justifyMeasurements", justifyMeasurements);
-      setParameterValue("loadAtomDataTolerance", loadAtomDataTolerance);
-      setParameterValue("loadFormat", loadFormat);
-      setParameterValue("measureAllModels", measureAllModels);
-      setParameterValue("measurementLabels", measurementLabels = true);
-      setParameterValue("measurementUnits", measureDistanceUnits);
-      setParameterValue("messageStyleChime", messageStyleChime);
-      setParameterValue("minBondDistance", minBondDistance);
-      setParameterValue("minimizationSteps", minimizationSteps);
-      setParameterValue("minimizationRefresh", minimizationRefresh);
-      setParameterValue("minimizationCriterion", minimizationCriterion);
-      setParameterValue("navigationMode", navigationMode);
-      setParameterValue("navigateSurface", navigateSurface);
-      setParameterValue("navigationPeriodic", navigationPeriodic);
-      setParameterValue("navigationDepth", 0);
-      setParameterValue("navigationSlab", 0);
-      setParameterValue("navigationSpeed", navigationSpeed);
-      setParameterValue("pdbGetHeader", pdbGetHeader); // new 11.5.39
-      setParameterValue("pdbSequential", pdbSequential); // new 11.5.39
-      setParameterValue("perspectiveModel", 11);
-      setParameterValue("perspectiveDepth", perspectiveDepth);
-      setParameterValue("percentVdwAtom", percentVdwAtom);
-      setParameterValue("phongExponent", phongExponent);
-      setParameterValue("picking", "ident");
-      setParameterValue("pickingSpinRate", pickingSpinRate);
-      setParameterValue("pickingStyle", "toggle");
-      setParameterValue("pickLabel", pickLabel);
-      setParameterValue("pointGroupLinearTolerance", pointGroupLinearTolerance);
-      setParameterValue("pointGroupDistanceTolerance", pointGroupDistanceTolerance);
-      setParameterValue("preserveState", preserveState);
-      setParameterValue("propertyColorScheme", propertyColorScheme);
-      setParameterValue("propertyAtomNumberColumnCount", 0);
-      setParameterValue("propertyAtomNumberField", 0);
-      setParameterValue("propertyDataColumnCount", 0);
-      setParameterValue("propertyDataField", 0);
-      setParameterValue("quaternionFrame", quaternionFrame);
-      setParameterValue("rangeSelected", rangeSelected);
-      setParameterValue("refreshing", true);
-      setParameterValue("ribbonAspectRatio", ribbonAspectRatio);
-      setParameterValue("ribbonBorder", ribbonBorder);
-      setParameterValue("rocketBarrels", rocketBarrels);
-      setParameterValue("saveProteinStructureState", saveProteinStructureState);
-      setParameterValue("scaleAngstromsPerInch", 0);
-      setParameterValue("scriptReportingLevel", 0);
-      setParameterValue("selectAllModels", selectAllModels);
-      setParameterValue("selectionHalos", false);
-      setParameterValue("selectHetero", rasmolHeteroSetting);
-      setParameterValue("selectHydrogen", rasmolHydrogenSetting);
-      setParameterValue("sheetSmoothing", sheetSmoothing);
-      setParameterValue("showaxes", false);
-      setParameterValue("showboundbox", false);
-      setParameterValue("showfrank", false);
-      setParameterValue("showHiddenSelectionHalos", showHiddenSelectionHalos);
-      setParameterValue("showHydrogens", showHydrogens);
-      setParameterValue("showKeyStrokes", showKeyStrokes);
-      setParameterValue("showMeasurements", showMeasurements);
-      setParameterValue("showMultipleBonds", showMultipleBonds);
-      setParameterValue("showNavigationPointAlways", showNavigationPointAlways);
-      setParameterValue("showScript", scriptDelay);
-      setParameterValue("showUnitcell", false);
-      setParameterValue("slabByMolecule", slabByMolecule);
-      setParameterValue("slabByAtom", slabByAtom);
-      setParameterValue("slabEnabled", false);
-      setParameterValue("smartAromatic", smartAromatic);
-      setParameterValue("solventProbe", solventOn);
-      setParameterValue("solventProbeRadius", solventProbeRadius);
-      setParameterValue("specular", specular);
-      setParameterValue("specularExponent", specularExponent);
-      setParameterValue("specularPercent", specularPercent);
-      setParameterValue("specularPower", specularPower);
-      setParameterValue("spinX", 0);
-      setParameterValue("spinY", 30);
-      setParameterValue("spinZ", 0);
-      setParameterValue("navX", 0);
-      setParameterValue("navY", 0);
-      setParameterValue("navZ", 10);
-      setParameterValue("spinFps", 30);
-      setParameterValue("navFps", 10);
-      setParameterValue("ssbondsBackbone", ssbondsBackbone);
-      setParameterValue("stereoDegrees", JmolConstants.DEFAULT_STEREO_DEGREES);
-      setParameterValue("statusReporting", statusReporting);
-      setParameterValue("strandCount", strandCountForStrands);
-      setParameterValue("strandCountForStrands", strandCountForStrands);
-      setParameterValue("strandCountForMeshRibbon", strandCountForMeshRibbon);
-      setParameterValue("strutDefaultRadius", strutDefaultRadius);
-      setParameterValue("strutLengthMaximum", strutLengthMaximum);
-      setParameterValue("strutSpacing", strutSpacing);
-      setParameterValue("strutsMultiple", strutsMultiple);
-      setParameterValue("syncMouse", false);
-      setParameterValue("syncScript", false);
-      setParameterValue("syncStereo", false);
-      setParameterValue("testFlag1", testFlag1);
-      setParameterValue("testFlag2", testFlag2);
-      setParameterValue("testFlag3", testFlag3);
-      setParameterValue("testFlag4", testFlag4);
-      setParameterValue("traceAlpha", traceAlpha);
-      setParameterValue("undo", true);
-      setParameterValue("useMinimizationThread", useMinimizationThread);
-      setParameterValue("useNumberLocalization", useNumberLocalization);
-      setParameterValue("vectorScale", vectorScale);
-      setParameterValue("vibrationPeriod", vibrationPeriod);
-      setParameterValue("vibrationScale", vibrationScale);
-      setParameterValue("visualRange", visualRange);
-      setParameterValue("windowCentered", true);
-      setParameterValue("wireframeRotation", wireframeRotation);
-      setParameterValue("zoomEnabled", true);
-      setParameterValue("zoomLarge", zoomLarge);
-      setParameterValue("zShade", false);
-      setParameterValue("zShade", zShadePower);
-      setParameterValue("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
     }
 
     String getVariableList() {

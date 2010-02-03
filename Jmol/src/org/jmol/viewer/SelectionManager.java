@@ -145,7 +145,7 @@ class SelectionManager {
   }
 
   void clearSelection(boolean isQuiet) {
-    hideNotSelected = false;
+    setHideNotSelected(false);
     bsSelection.clear();
     empty = TRUE;
     selectionChanged(isQuiet);
@@ -256,8 +256,7 @@ class SelectionManager {
       StateManager.appendCmd(commands, "select none");
     else
       commands.append(cmd);
-    StateManager.appendCmd(commands, "set hideNotSelected "
-        + viewer.getBooleanProperty("hideNotSelected"));
+    StateManager.appendCmd(commands, "set hideNotSelected " + hideNotSelected);
     commands.append(viewer.getShapeProperty(JmolConstants.SHAPE_STICKS,
         "selectionState"));
     if (viewer.getSelectionHaloEnabled())

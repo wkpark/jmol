@@ -472,45 +472,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (String) global.getParameter("exportDrivers");
   }
 
-  private static int getJmolVersionInt() {
-    // 11.9.999 --> 1109999
-    String s = JmolConstants.version;
-    int version = -1;
-
-    try {
-      // Major number
-      int i = s.indexOf(".");
-      if (i < 0) {
-        version = 100000 * Integer.parseInt(s);
-        return version;
-      }
-      version = 100000 * Integer.parseInt(s.substring(0, i));
-
-      // Minor number
-      s = s.substring(i + 1);
-      i = s.indexOf(".");
-      if (i < 0) {
-        version += 1000 * Integer.parseInt(s);
-        return version;
-      }
-      version += 1000 * Integer.parseInt(s.substring(0, i));
-
-      // Revision number
-      s = s.substring(i + 1);
-      i = s.indexOf("_");
-      if (i >= 0)
-        s = s.substring(0, i);
-      i = s.indexOf(" ");
-      if (i >= 0)
-        s = s.substring(0, i);
-      version += Integer.parseInt(s);
-    } catch (NumberFormatException e) {
-      // We simply keep the version currently found
-    }
-
-    return version;
-  }
-
   String getHtmlName() {
     return htmlName;
   }
@@ -583,7 +544,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void initialize() {
     global = stateManager.getGlobalSettings(global);
-    setIntProperty("_version", getJmolVersionInt());
     setBooleanProperty("_applet", isApplet);
     setBooleanProperty("_signedApplet", isSignedApplet);
     setBooleanProperty("_useCommandThread", useCommandThread);
@@ -729,7 +689,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setRotationRadius(float angstroms, boolean doAll) {
     if (doAll)
       angstroms = transformManager.setRotationRadius(angstroms, false);
-    if (!modelSet.setRotationRadius(animationManager.currentModelIndex,
+    // only set the rotationRadius if this is NOT a dataframe
+    if (modelSet.setRotationRadius(animationManager.currentModelIndex,
         angstroms))
       global.setParameterValue("rotationRadius", angstroms);
   }
@@ -1566,7 +1527,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void clearSelection() {
     // not used in this project; in jmolViewer interface, though
-    selectionManager.clearSelection(false);
+    selectionManager.clearSelection(true);
     global.setParameterValue("hideNotSelected", false);
   }
 
@@ -1581,7 +1542,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void invertSelection() {
     // Eval
     selectionManager.invertSelection();
-    // only used from a script, so I do not think a refresh() is necessary
   }
 
   public  BitSet getSelectionSet() {
@@ -2275,8 +2235,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         mouseManager.clear();
         actionManager.clear();
       }
-      stateManager.clear();
-      global.clear();
+      stateManager.clear(global);
       tempManager.clear();
       colorManager.clear();
       definedAtomSets.clear();
@@ -3363,8 +3322,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private boolean refreshing = true;
 
-  public void setRefreshing(boolean TF) {
-    // also set by Eval error to TRUE
+  private void setRefreshing(boolean TF) {
     refreshing = TF;
   }
 
@@ -3823,13 +3781,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean usingScriptQueue() {
-    return scriptManager.useQueue;
+    return global.useScriptQueue;
   }
 
   public void clearScriptQueue() {
     // Eval
     // checkHalt **
     scriptManager.clearQueue();
+  }
+
+  private void setScriptQueue(boolean TF) {
+    global.useScriptQueue = TF;
+    if (!TF)
+      clearScriptQueue();
   }
 
   public boolean checkResume(String str) {
@@ -4104,7 +4068,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return hoverEnabled;
   }
 
-  public void setHover(String strLabel) {
+  public void setHoverLabel(String strLabel) {
     loadShape(JmolConstants.SHAPE_HOVER);
     setShapeProperty(JmolConstants.SHAPE_HOVER, "label", strLabel);
     hoverEnabled = (strLabel != null);
@@ -4328,12 +4292,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     display.setCursor(Cursor.getPredefinedCursor(c));
   }
 
-  private void setPickingMode(String mode) {
+  void setPickingMode(String mode, int pickingMode) {
     if (!haveDisplay)
       return;
-    int pickingMode = JmolConstants.getPickingMode(mode);
+    if (mode != null)
+      pickingMode = JmolConstants.getPickingMode(mode);
     if (pickingMode < 0)
-      pickingMode = JmolConstants.PICKING_IDENT;
+      pickingMode = JmolConstants.PICKING_IDENTIFY;
     actionManager.setPickingMode(pickingMode);
     global.setParameterValue("picking", JmolConstants
         .getPickingModeName(actionManager.getPickingMode()));
@@ -4355,10 +4320,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.atomPicking;
   }
 
-  private void setPickingStyle(String style) {
+  void setPickingStyle(String style, int pickingStyle) {
     if (!haveDisplay)
       return;
-    int pickingStyle = JmolConstants.getPickingStyle(style);
+    if (style != null)
+      pickingStyle = JmolConstants.getPickingStyle(style);
     if (pickingStyle < 0)
       pickingStyle = JmolConstants.PICKINGSTYLE_SELECT_JMOL;
     actionManager.setPickingStyle(pickingStyle);
@@ -4367,7 +4333,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean getDrawHover() {
-    return haveDisplay && actionManager.getDrawHover();
+    return haveDisplay && global.drawHover;
   }
 
   public String getAtomInfo(int atomOrPointIndex) {
@@ -5030,6 +4996,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setPropertyColorScheme(value, false);
       return;
     case Token.hoverlabel:
+      // a special label for selected atoms
       setShapeProperty(JmolConstants.SHAPE_HOVER, "atomLabel", value);
       break;
     case Token.defaultdistancelabel:
@@ -5064,10 +5031,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setDefaultColors(value);
       break;
     case Token.picking:
-      setPickingMode(value);
+      setPickingMode(value, 0);
       return;
     case Token.pickingstyle:
-      setPickingStyle(value);
+      setPickingStyle(value, 0);
       return;
     case Token.dataseparator:
       // just saving this
@@ -5590,10 +5557,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       break;
     case Token.zshade:
       transformManager.setZShadeEnabled(value);
-      break;
+      return true;
     case Token.drawhover:
       if (haveDisplay)
-        actionManager.setDrawHover(value);
+        global.drawHover = value;
       break;
     case Token.navigationmode:
       setNavigationMode(value);
@@ -5629,10 +5596,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.slabenabled:
       // Eval.slab
       transformManager.setSlabEnabled(value); // refresh?
-      break;
+      return true;
     case Token.zoomenabled:
       transformManager.setZoomEnabled(value);
-      break;
+      return true;
     case Token.highresolution:
       global.highResolutionFlag = value;
       break;
@@ -5650,7 +5617,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       selectionManager.setHideNotSelected(value);
       break;
     case Token.scriptqueue:
-      scriptManager.setQueue(value);
+      setScriptQueue(value);
       break;
     case Token.dotsurface:
       global.dotSurface = value;
@@ -7472,8 +7439,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (Float.isNaN(transformManager.stereoDegrees))
         setFloatProperty("stereoDegrees", JmolConstants.DEFAULT_STEREO_DEGREES);
       if (TF) {
-        setBooleanProperty("syncMouse", false);
-        setBooleanProperty("syncScript", false);
+        setBooleanProperty("_syncMouse", false);
+        setBooleanProperty("_syncScript", false);
       }
       return;
     }
@@ -7489,8 +7456,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (script.equalsIgnoreCase(SYNC_GRAPHICS_MESSAGE)) {
       statusManager.setSyncDriver(StatusManager.SYNC_STEREO);
       statusManager.syncSend(script, applet);
-      setBooleanProperty("syncMouse", false);
-      setBooleanProperty("syncScript", false);
+      setBooleanProperty("_syncMouse", false);
+      setBooleanProperty("_syncScript", false);
       return;
     }
     // * : all applets
@@ -7987,4 +7954,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean allowMultiTouch() {
     return global.allowMultiTouch;
   }
+
 }

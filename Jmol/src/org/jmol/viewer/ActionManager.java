@@ -255,6 +255,7 @@ public class ActionManager {
   Binding pfaatBinding;
   Binding dragBinding;
   Binding rasmolBinding;
+  Binding predragBinding;
 
   ActionManager aman;
   ActionManager(Viewer viewer) {
@@ -366,7 +367,7 @@ public class ActionManager {
   private boolean rubberbandSelectionMode = false;
   private final Rectangle rectRubber = new Rectangle();
 
-  boolean isAltKeyReleased = true;  
+  private boolean isAltKeyReleased = true;  
   private boolean keyProcessing;
 
   void dispose() {
@@ -376,8 +377,10 @@ public class ActionManager {
   void clear() {
     startHoverWatcher(false);
     clearTimeouts();
-    pickingMode = JmolConstants.PICKING_IDENT;
-    drawHover = false;
+    if (predragBinding != null)
+      binding = predragBinding;
+    viewer.setPickingMode(null, JmolConstants.PICKING_IDENTIFY);
+    viewer.setPickingStyle(null, rootPickingStyle);
     eval = null;
   }
 
@@ -1174,26 +1177,29 @@ public class ActionManager {
   
   //////////////// picking ///////////////////
   
-  private int pickingMode = JmolConstants.PICKING_IDENT;
+  private int pickingStyle;
+  private int pickingMode = JmolConstants.PICKING_IDENTIFY;
   private int pickingStyleSelect = JmolConstants.PICKINGSTYLE_SELECT_JMOL;
   private int pickingStyleMeasure = JmolConstants.PICKINGSTYLE_MEASURE_OFF;
-
-  private boolean drawHover;
-  private int pickingStyle;
-    
+  private int rootPickingStyle = JmolConstants.PICKINGSTYLE_SELECT_JMOL;
+  
   private MeasurementPending measurementQueued;
   
-  void setPickingMode(int pickingMode) {
-    this.pickingMode = pickingMode;
-    resetMeasurement();
+  private void resetMeasurement() {
+    measurementQueued = new MeasurementPending(viewer.getModelSet());    
   }
 
   int getPickingMode() {
     return pickingMode;
   }
     
-  private void resetMeasurement() {
-    measurementQueued = new MeasurementPending(viewer.getModelSet());    
+  void setPickingMode(int pickingMode) {
+    this.pickingMode = pickingMode;
+    resetMeasurement();
+  }
+
+  int getPickingStyle() {
+    return pickingStyle;
   }
 
   void setPickingStyle(int pickingStyle) {
@@ -1202,6 +1208,8 @@ public class ActionManager {
       pickingStyleMeasure = pickingStyle;
       resetMeasurement();
     } else {
+      if (pickingStyle < JmolConstants.PICKINGSTYLE_SELECT_DRAG)
+        rootPickingStyle = pickingStyle;
       pickingStyleSelect = pickingStyle;
     }
     rubberbandSelectionMode = false;
@@ -1223,24 +1231,14 @@ public class ActionManager {
       if (binding != jmolBinding)
         setBinding(jmolBinding);
     }
+    if (binding.getName() != "Drag")
+      predragBinding = binding;
   }
 
   protected void setBinding(Binding newBinding) {
     binding = newBinding;
   }
   
-  int getPickingStyle() {
-    return pickingStyle;
-  }
-
-  void setDrawHover(boolean TF) {
-    drawHover = TF;
-  }
-  
-  boolean getDrawHover() {
-    return drawHover;
-  }
-
   private void atomPicked(int atomIndex, Point3fi ptClicked, int action) {
     // atomIndex < 0 is off structure.
     if (atomIndex < 0) {
@@ -1309,7 +1307,7 @@ public class ActionManager {
     if (ptClicked != null)
       return;
     switch (pickingMode) {
-    case JmolConstants.PICKING_IDENT:
+    case JmolConstants.PICKING_IDENTIFY:
       if (isBound(action, ACTION_pickAtom))
         viewer.setStatusAtomPicked(atomIndex, null);
       return;
@@ -1325,7 +1323,7 @@ public class ActionManager {
       return;
     default:
       return;
-    case JmolConstants.PICKING_IDENT:
+    case JmolConstants.PICKING_IDENTIFY:
     case JmolConstants.PICKING_SELECT_ATOM:
       applySelectStyle(spec, action);
       break;

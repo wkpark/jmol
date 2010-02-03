@@ -343,9 +343,10 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public boolean setRotationRadius(int modelIndex, float angstroms) {
-    if (!isJmolDataFrame(modelIndex))
+    if (isJmolDataFrame(modelIndex)) {
+      models[modelIndex].defaultRotationRadius = angstroms;
       return false;
-    models[modelIndex].defaultRotationRadius = angstroms;
+    }
     return true;
   }
 

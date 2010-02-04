@@ -72,6 +72,7 @@ abstract public class AtomCollection {
     occupancies = null;
     bfactor100s = null;
     partialCharges = null;
+    ionicRadii = null;
     specialAtomIDs = null;
     ellipsoids = null;
 
@@ -86,6 +87,7 @@ abstract public class AtomCollection {
     vibrationVectors = mergeModelSet.vibrationVectors;
     occupancies = mergeModelSet.occupancies;
     bfactor100s = mergeModelSet.bfactor100s;
+    ionicRadii = mergeModelSet.ionicRadii;
     partialCharges = mergeModelSet.partialCharges;
     ellipsoids = mergeModelSet.ellipsoids;
     specialAtomIDs = mergeModelSet.specialAtomIDs;
@@ -143,6 +145,7 @@ abstract public class AtomCollection {
   byte[] occupancies;
   short[] bfactor100s;
   float[] partialCharges;
+  float[] ionicRadii;
   protected Object[][] ellipsoids;
   protected int[] surfaceDistance100s;
 
@@ -165,6 +168,10 @@ abstract public class AtomCollection {
     return partialCharges;
   }
 
+  public float[] getIonicRadii() {
+    return ionicRadii;
+  }
+  
   public short[] getBFactors() {
     return bfactor100s;
   }
@@ -586,6 +593,10 @@ abstract public class AtomCollection {
           if (setPartialCharge(i, fValue))
             taint(i, TAINT_PARTIALCHARGE);
           break;
+        case Token.ionic:
+          if (setIonicRadius(i, fValue))
+            taint(i, TAINT_IONICRADIUS);
+          break;
         case Token.radius:
         case Token.spacefill:
           if (fValue < 0)
@@ -702,6 +713,16 @@ abstract public class AtomCollection {
     return true;
   }
 
+  protected boolean setIonicRadius(int atomIndex, float radius) {
+    if (Float.isNaN(radius))
+      return false;
+    if (ionicRadii == null) {
+      ionicRadii = new float[atoms.length];
+    }
+    ionicRadii[atomIndex] = radius;
+    return true;
+  }
+
   protected boolean setBFactor(int atomIndex, float bfactor) {
     if (Float.isNaN(bfactor))
       return false;
@@ -779,6 +800,9 @@ abstract public class AtomCollection {
         case TAINT_PARTIALCHARGE:
           setPartialCharge(atomIndex, x);          
           break;
+        case TAINT_IONICRADIUS:
+          setIonicRadius(atomIndex, x);          
+          break;
         case TAINT_TEMPERATURE:
           setBFactor(atomIndex, x);
           break;
@@ -843,14 +867,15 @@ abstract public class AtomCollection {
   final public static byte TAINT_COORD = 2;
   final private static byte TAINT_ELEMENT = 3;
   final private static byte TAINT_FORMALCHARGE = 4;
-  final private static byte TAINT_OCCUPANCY = 5;
-  final private static byte TAINT_PARTIALCHARGE = 6;
-  final private static byte TAINT_TEMPERATURE = 7;
-  final private static byte TAINT_VALENCE = 8;
-  final private static byte TAINT_VANDERWAALS = 9;
-  final private static byte TAINT_VIBRATION = 10;
-  final public static byte TAINT_ATOMNO = 11;
-  final public static byte TAINT_MAX = 12; // 1 more than last number, above
+  final private static byte TAINT_IONICRADIUS = 5;
+  final private static byte TAINT_OCCUPANCY = 6;
+  final private static byte TAINT_PARTIALCHARGE = 7;
+  final private static byte TAINT_TEMPERATURE = 8;
+  final private static byte TAINT_VALENCE = 9;
+  final private static byte TAINT_VANDERWAALS = 10;
+  final private static byte TAINT_VIBRATION = 11;
+  final public static byte TAINT_ATOMNO = 12;
+  final public static byte TAINT_MAX = 13; // 1 more than last number, above
   
   final private static String[] userSettableValues = {
     "atomName",
@@ -858,6 +883,7 @@ abstract public class AtomCollection {
     "coord",
     "element",
     "formalCharge",
+    "ionic",
     "occupany",
     "partialCharge",
     "temperature",
@@ -979,6 +1005,9 @@ abstract public class AtomCollection {
             break;
           case TAINT_FORMALCHARGE:
             s.append(atoms[i].getFormalCharge());
+            break;
+          case TAINT_IONICRADIUS:
+            s.append(atoms[i].getBondingRadiusFloat());
             break;
           case TAINT_OCCUPANCY:
             s.append(atoms[i].getOccupancy100());

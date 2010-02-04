@@ -58,6 +58,36 @@ class TransformManager11 extends TransformManager {
     setNavFps(10);
   }
 
+  void zoomByFactor(float factor, int x, int y) {
+    if (!zoomEnabled || factor <= 0 || mode != MODE_NAVIGATION) {
+      super.zoomByFactor(factor, x, y);
+      return;
+    }
+    if (navZ > 0) {
+      navZ /= factor;
+      if (navZ < 5)
+        navZ = -5;
+      else if (navZ > 200)
+        navZ = 200;
+    } else if (navZ == 0) {
+      navZ = (factor < 1 ? 5 : -5);
+    } else {
+      navZ *= factor;
+      if (navZ > -5)
+        navZ = 5;
+      else if (navZ < -200)
+        navZ = -200;
+    }
+      
+    System.out.println(navZ);
+/*    float range = visualRange / factor;
+    
+    if (viewer.getNavigationPeriodic())
+      range = Math.min(range, 0.8f * modelRadius);      
+    visualRange = range;  
+*/    
+  }
+
   protected void calcCameraFactors() {
     // (m) model coordinates
     // (s) screen coordinates = (m) * screenPixelsPerAngstrom

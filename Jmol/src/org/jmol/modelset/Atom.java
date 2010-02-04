@@ -453,8 +453,10 @@ final public class Atom extends Point3fi {
   }
 
   public float getBondingRadiusFloat() {
-    return JmolConstants.getBondingRadiusFloat(atomicAndIsotopeNumber % 128,
-        getFormalCharge());
+    float[] ionicRadii = group.chain.modelSet.ionicRadii;
+    float r = (ionicRadii == null ? 0 : ionicRadii[index]);
+    return (r == 0 ? JmolConstants.getBondingRadiusFloat(atomicAndIsotopeNumber % 128,
+        getFormalCharge()) : r);
   }
 
   float getVolume(int iType) {

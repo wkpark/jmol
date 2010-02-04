@@ -563,7 +563,7 @@ public class Token {
   public final static int fracx           = floatproperty | 6 | settable;
   public final static int fracy           = floatproperty | 7 | settable;
   public final static int fracz           = floatproperty | 8 | settable;
-  public final static int ionic           = floatproperty | 9;
+  public final static int ionic           = floatproperty | 9 | settable;
   public final static int partialcharge   = floatproperty | 10 | settable;
   public final static int phi             = floatproperty | 11;
   public final static int psi             = floatproperty | 12;
@@ -1635,6 +1635,7 @@ public class Token {
       "insertion",       new Token(insertion),
       "insertions",      null, 
       "ionic",           new Token(ionic),
+      "ionicRadius",     null,
       "isaromatic",      new Token(isaromatic),
       "Jmol",            new Token(jmol),
       "join",            new Token(join),
@@ -1744,6 +1745,7 @@ public class Token {
       "valence",         new Token(valence),
       "vanderWaals",     new Token(vanderwaals),
       "vdw",             null,
+      "vdwRadius",       null,
       "visible",         new Token(visible),
       "volume",          new Token(volume),
       "vx",              new Token(vibx),

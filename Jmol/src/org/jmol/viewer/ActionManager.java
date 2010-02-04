@@ -847,10 +847,11 @@ public class ActionManager {
   }
 
   protected void zoomByFactor(int dz, int x, int y) {
-    checkMotion(Viewer.CURSOR_ZOOM);
     if (dz == 0)
       return;
+    checkMotion(Viewer.CURSOR_ZOOM);
     viewer.zoomByFactor((float) Math.pow(mouseWheelFactor, dz), x, y);
+    viewer.setInMotion(false);
   }
 
   private boolean checkUserAction(int action, int x, int y, 

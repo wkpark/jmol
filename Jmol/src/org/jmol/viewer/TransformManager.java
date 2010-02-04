@@ -747,7 +747,8 @@ abstract class TransformManager {
   }
   
   void zoomByFactor(float factor, int x, int y) {
-    if (factor <= 0)
+    // overloaded in TransformManager11
+    if (factor <= 0 || !zoomEnabled)
       return;
     zoomRatio = factor;
     zoomPercentSetting *= factor;
@@ -2141,6 +2142,7 @@ abstract class TransformManager {
         int targetTime = (int) (i * 1000 / myFps);
         int currentTime = (int) (System.currentTimeMillis() - timeBegin);
         int sleepTime = (targetTime - currentTime);
+        //System.out.println(targetTime + " " + currentTime + " " + sleepTime);
         if (sleepTime > 0) {
           boolean isInMotion = viewer.getInMotion();
           if (isInMotion) {

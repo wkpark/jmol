@@ -674,7 +674,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       ltoken.copyInto(atokenInfix);
       return true;
     }
-    if (isNewSet && setEqualPt == Integer.MAX_VALUE && ltoken.size() == 4) {
+    if (isNewSet && setEqualPt == Integer.MAX_VALUE && tokAt(1) == Token.per && ltoken.size() == 4) {
       // implicit script command
       isNewSet = false;
       String name = "" + tokenAt(1).value + "." + tokenAt(3).value;

@@ -758,9 +758,11 @@ public class Token {
   public final static int ellipsoidaxisdiameter          = floatparam | 14;
   public final static int hbondsangleminimum             = floatparam | 16;
   public final static int hbondsdistancemaximum          = floatparam | 18;
-  public final static int hoverdelay                     = floatparam | 20;
-  public final static int loadatomdatatolerance          = floatparam | 21;  
-  public final static int minbonddistance                = floatparam | 22;
+  public final static int hoverdelay                     = floatparam | 19;
+  public final static int loadatomdatatolerance          = floatparam | 20;  
+  public final static int minbonddistance                = floatparam | 21;
+  public final static int mousedragfactor                = floatparam | 22;
+  public final static int mousewheelfactor               = floatparam | 23;
   public final static int navfps                         = floatparam | 24;
   public final static int navigationdepth                = floatparam | 26;
   public final static int navigationslab                 = floatparam | 28;
@@ -1159,6 +1161,7 @@ public class Token {
   final static Token tokenSetProperty     = new Token(set, '.', "");
   final static Token tokenSetVar          = new Token(set, '=', "var");
   final static Token tokenEquals          = new Token(opEQ, "=");
+  final static Token tokenScript          = new Token(script, "script");
     
   private static Hashtable tokenMap = new Hashtable();
   public static void addToken(String ident, Token token) {
@@ -1474,7 +1477,7 @@ public class Token {
       "rotate",            new Token(rotate),
       "rotateSelected",    new Token(rotateSelected),
       "save",              new Token(save),
-      "script",            new Token(script),
+      "script",            tokenScript,
       "source",            null,
       "select",            new Token(select),
       "selectionHalos",    new Token(selectionhalos),
@@ -1930,6 +1933,8 @@ public class Token {
       "hoverDelay",                               new Token(hoverdelay),
       "loadAtomDataTolerance",                    new Token(loadatomdatatolerance),
       "minBondDistance",                          new Token(minbonddistance),
+      "mouseDragFactor",                          new Token(mousedragfactor),
+      "mouseWheelFactor",                         new Token(mousewheelfactor),
       "navFPS",                                   new Token(navfps),
       "navigationDepth",                          new Token(navigationdepth),
       "navigationSlab",                           new Token(navigationslab),

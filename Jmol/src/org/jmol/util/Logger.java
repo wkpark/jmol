@@ -316,10 +316,11 @@ public final class Logger {
       logFile = null;
       return;
     }
-    if (!name.startsWith("JmolLog_"))
+    if (!name.contains("JmolLog_"))
       name = "JmolLog_" + name;
-    if (!name.equals(logFile))
-      info("Logging to file " + name);
+    if (!name.equals(logFile)) {
+      debug("Logging to file " + name);
+    }
     logFile = name;
   }
   
@@ -335,7 +336,7 @@ public final class Logger {
       out.write('\n');
       out.close();
     } catch (Exception e) {
-      // ignore
+      debug("cannot log " + data);
     }
   }
 }

@@ -244,11 +244,11 @@ public class ActionManager {
       System.out.println("ERROR IN ActionManager: actionInfo length?");
   }
 
-  final static float ZOOM_FACTOR = 1.02f;
-  
   private final static long MAX_DOUBLE_CLICK_MILLIS = 700;
   private static final long MININUM_GESTURE_DELAY_MILLISECONDS = 5;
   private static final int SLIDE_ZOOM_X_PERCENT = 98;
+  public static final float DEFAULT_MOUSE_DRAG_FACTOR = 1f;
+  public static final float DEFAULT_MOUSE_WHEEL_FACTOR = 1.02f;
  
   protected Viewer viewer;
   
@@ -306,6 +306,17 @@ public class ActionManager {
   protected Thread hoverWatcherThread;
 
   protected int xyRange = 0;
+  
+  private float mouseDragFactor = DEFAULT_MOUSE_DRAG_FACTOR;
+  private float mouseWheelFactor = DEFAULT_MOUSE_WHEEL_FACTOR;
+  
+  void setMouseDragFactor(float factor) {
+    mouseDragFactor = factor;
+  }
+  
+  void setMouseWheelFactor(float factor) {
+    mouseWheelFactor = factor;
+  }
   
   protected class Mouse {
     protected int x = -1000;
@@ -670,7 +681,7 @@ public class ActionManager {
           viewer.spinXYBy(dragGesture.getDX(10, 5), dragGesture.getDY(4, 2),
               speed * 30);
           if (viewer.getLogGestures())
-            Logger.logToFile("NOW swipe " + dragGesture);
+            viewer.log("NOW swipe " + dragGesture);
           return;
         }
       }
@@ -725,13 +736,14 @@ public class ActionManager {
                            long time, int mode) {
     int mods = Binding.getModifiers(action);
     if (Binding.getModifiers(action) != 0) {
-      int newAction = viewer.notifyMouseClicked(x, y,  Binding.getMouseAction(-pressedCount, mods));
+      int newAction = viewer.notifyMouseClicked(x, y, Binding.getMouseAction(
+          -pressedCount, mods));
       if (newAction == 0)
         return;
       if (newAction > 0)
         action = newAction;
     }
-    
+
     if (isRubberBandSelect(action)) {
       calcRectRubberBand();
       viewer.refresh(3, "rubberBand selection");
@@ -740,16 +752,17 @@ public class ActionManager {
 
     if (checkUserAction(action, x, y, deltaX, deltaY, time, mode))
       return;
-    
+
     if (isBound(action, ACTION_translate)) {
       viewer.translateXYBy(deltaX, deltaY);
       return;
     }
 
-    if (isBound(action, ACTION_center)) { 
+    if (isBound(action, ACTION_center)) {
       if (pressedAtomIndex == Integer.MAX_VALUE)
         pressedAtomIndex = viewer.findNearestAtomIndex(pressed.x, pressed.y);
-      Point3f pt = (pressedAtomIndex < 0 ? null : viewer.getAtomPoint3f(pressedAtomIndex));
+      Point3f pt = (pressedAtomIndex < 0 ? null : viewer
+          .getAtomPoint3f(pressedAtomIndex));
       if (pt == null)
         viewer.translateXYBy(deltaX, deltaY);
       else
@@ -757,7 +770,8 @@ public class ActionManager {
       return;
     }
 
-    if (dragSelectedMode && isBound(action, ACTION_dragSelected) && haveSelection) {
+    if (dragSelectedMode && isBound(action, ACTION_dragSelected)
+        && haveSelection) {
       checkMotion(Viewer.CURSOR_MOVE);
       viewer.moveSelected(deltaX, deltaY, x, y, true);
       return;
@@ -767,42 +781,43 @@ public class ActionManager {
       viewer.zoomBy(deltaY);
       return;
     }
-    
-    if (isBound(action, ACTION_rotate)) {
-      float degX = ((float) deltaX) / viewer.getScreenWidth() * 180;
-      float degY = ((float) deltaY) / viewer.getScreenHeight() * 180;
-      viewer.rotateXYBy(degX, degY);
-      return;      
-    }
 
-    if (viewer.allowRotateSelected() && isBound(action, ACTION_rotateSelected)) {
-      float degX = ((float) deltaX) / viewer.getScreenWidth() * 180;
-      float degY = ((float) deltaY) / viewer.getScreenHeight() * 180;
-      checkMotion(Viewer.CURSOR_MOVE);
-      viewer.rotateMolecule(degX, degY);
+    boolean isRotate = isBound(action, ACTION_rotate);
+    if (isRotate || viewer.allowRotateSelected()
+        && isBound(action, ACTION_rotateSelected)) {
+      float degX = ((float) deltaX) / viewer.getScreenWidth() * 180
+          * mouseDragFactor;
+      float degY = ((float) deltaY) / viewer.getScreenHeight() * 180
+          * mouseDragFactor;
+      if (isRotate) {
+        viewer.rotateXYBy(degX, degY);
+      } else {
+        checkMotion(Viewer.CURSOR_MOVE);
+        viewer.rotateMolecule(degX, degY);
+      }
       return;
     }
-    if (drawMode && (
-          isBound(action, ACTION_dragDrawObject)
-          || isBound(action, ACTION_dragDrawPoint))
-          || labelMode && isBound(action, ACTION_dragLabel)) {
+
+    if (drawMode
+        && (isBound(action, ACTION_dragDrawObject) || isBound(action,
+            ACTION_dragDrawPoint)) || labelMode
+        && isBound(action, ACTION_dragLabel)) {
       checkMotion(Viewer.CURSOR_MOVE);
-      viewer.checkObjectDragged(dragged.x, dragged.y, x, y,
-          action);
+      viewer.checkObjectDragged(dragged.x, dragged.y, x, y, action);
       return;
     }
     if (dragSelectedMode && isBound(action, ACTION_dragSelected)) {
       checkMotion(Viewer.CURSOR_MOVE);
       viewer.moveSelected(deltaX, deltaY, x, y, true);
       return;
-    } 
+    }
     if (isBound(action, ACTION_rotateZorZoom)) {
       if (Math.abs(deltaY) > 5 * Math.abs(deltaX)) {
-        //      if (deltaY < 0 && deltaX > deltaY || deltaY > 0 && deltaX < deltaY)
+        // if (deltaY < 0 && deltaX > deltaY || deltaY > 0 && deltaX < deltaY)
         checkMotion(Viewer.CURSOR_ZOOM);
         viewer.zoomBy(deltaY);
       } else if (Math.abs(deltaX) > 5 * Math.abs(deltaY)) {
-        //      if (deltaX < 0 && deltaY > deltaX || deltaX > 0 && deltaY < deltaX)
+        // if (deltaX < 0 && deltaY > deltaX || deltaX > 0 && deltaY < deltaX)
         checkMotion(Viewer.CURSOR_MOVE);
         viewer.rotateZBy(-deltaX, Integer.MAX_VALUE, Integer.MAX_VALUE);
       }
@@ -835,7 +850,7 @@ public class ActionManager {
     checkMotion(Viewer.CURSOR_ZOOM);
     if (dz == 0)
       return;
-    viewer.zoomByFactor((float) Math.pow(ZOOM_FACTOR, dz), x, y);
+    viewer.zoomByFactor((float) Math.pow(mouseWheelFactor, dz), x, y);
   }
 
   private boolean checkUserAction(int action, int x, int y, 

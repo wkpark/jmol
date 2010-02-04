@@ -579,7 +579,7 @@ public class StateManager {
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate"
-        + ";unitcellcolor;visualrange;windowcentered;zerobasedxyzrasmol;zoomenabled"
+        + ";unitcellcolor;visualrange;windowcentered;zerobasedxyzrasmol;zoomenabled;mousedragfactor;mousewheelfactor"
         +
         //    saved in the hash table but not considered part of the state:
         ";scriptqueue;scriptreportinglevel;syncscript;syncmouse;syncstereo;" +
@@ -713,6 +713,8 @@ public class StateManager {
 
       setParameterValue("hideNotSelected", false); //maintained by the selectionManager
       setParameterValue("hoverLabel", ""); // maintained by the Hover shape
+      setParameterValue("mouseWheelFactor", ActionManager.DEFAULT_MOUSE_WHEEL_FACTOR);
+      setParameterValue("mouseDragFactor", ActionManager.DEFAULT_MOUSE_DRAG_FACTOR);
       setParameterValue("navFps", TransformManager.DEFAULT_NAV_FPS); 
       setParameterValue("navigationDepth", 0);   // maintained by TransformManager
       setParameterValue("navigationSlab", 0);    // maintained by TransformManager

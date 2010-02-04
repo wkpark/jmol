@@ -351,8 +351,16 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (nTokens == 0 || (isNewSet || isSetBrace)
           && nTokens == ptNewSetModifier) {
-        if (nTokens == 0 && lookingAtImpliedString())
-          ichEnd = ichToken + cchToken;
+        if (nTokens == 0) {
+          if (lookingAtString(true)) {
+            addTokenToPrefix(setCommand(Token.tokenScript));
+            cchToken = 0;
+            continue;
+          }
+          if (lookingAtImpliedString()) {
+            ichEnd = ichToken + cchToken;
+          } 
+        }
         return commandExpected();
       }
       return error(ERROR_unrecognizedToken, script.substring(ichToken,
@@ -666,25 +674,33 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       ltoken.copyInto(atokenInfix);
       return true;
     }
-    setCommand((Token) ltoken.firstElement());
+    if (isNewSet && setEqualPt == Integer.MAX_VALUE && ltoken.size() == 4) {
+      // implicit script command
+      isNewSet = false;
+      String name = "" + tokenAt(1).value + "." + tokenAt(3).value;
+      ltoken.clear();
+      addTokenToPrefix(Token.tokenScript);
+      addTokenToPrefix(new Token(Token.string, name));
+    }
+    setCommand(tokenAt(0));
     int size = ltoken.size();
     int tok;
     int pt = size - 1;
     if (size == 1 && Token.tokAttr(tokCommand, Token.defaultON)) {
       addTokenToPrefix(Token.tokenOn);
     } else if (tokCommand == Token.set && size > 2) {
-      if ((tok = ((Token) ltoken.get(pt)).tok) == Token.plusPlus 
+      if ((tok = tokAt(pt)) == Token.plusPlus 
           || tok == Token.minusMinus
-          || (tok = ((Token) ltoken.get(pt = 1)).tok) == Token.plusPlus 
+          || (tok = tokAt(pt = 1)) == Token.plusPlus 
           || tok == Token.minusMinus) {
         ltoken.removeElementAt(pt);
         addTokenToPrefix(Token.tokenEquals);
         for (int i = 1; i < size - 1; i++)
-          addTokenToPrefix((Token) ltoken.elementAt(i));
+          addTokenToPrefix(tokenAt(i));
         addTokenToPrefix(tok == Token.minusMinus ? Token.tokenMinus
             : Token.tokenPlus);
         addTokenToPrefix(Token.intToken(1));
-        if (((Token) ltoken.get(2)).tok == Token.leftsquare)
+        if (tokAt(2) == Token.leftsquare)
           ltoken.setElementAt(Token.tokenSetArray, 0);
       }
     }
@@ -692,7 +708,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       int j;
       int i = 0;
       for (i = 1; i < size; i++) {
-        if ((j = ((Token) ltoken.elementAt(i)).tok) == Token.andequals)
+        if ((j = tokAt(i)) == Token.andequals)
           break;
       }
       size = i;
@@ -701,7 +717,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         System.out.println("COMPILER ERROR! - andEquals ");
       } else {
         for (j = 1; j < size; j++, i++)
-          ltoken.insertElementAt((Token) ltoken.elementAt(j), i);
+          ltoken.insertElementAt(tokenAt(j), i);
         ltoken.setElementAt(Token.tokenEquals, size);
         ltoken.insertElementAt(tokenAndEquals, i);
         ltoken.insertElementAt(Token.tokenLeftParen, ++i);
@@ -711,6 +727,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
     atokenInfix = new Token[size = ltoken.size()];
     ltoken.copyInto(atokenInfix);
+    
     if (logMessages) {
       Logger.debug("token list:");
       for (int i = 0; i < atokenInfix.length; i++)
@@ -722,11 +739,18 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     
     // compile expressions  (ScriptCompilerTokenParser.java)
-
     return compileExpressions();
     
   }
 
+  private Token tokenAt(int i) {
+    return (Token) ltoken.get(i);
+  }
+
+  protected int tokAt(int i) {
+    return (i < ltoken.size() ? tokenAt(i).tok : Token.nada);
+  }
+  
   private Token setCommand(Token token) {
     tokenCommand = token;
     if (token == null) {
@@ -964,7 +988,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
             .getBreakableContext(val = Math.abs(val)));
         if (f == null)
           return ERROR(ERROR_badContext, (String) tokenCommand.value);
-        ((Token) ltoken.get(0)).intValue = f.getPt0(); // copy
+        tokenAt(0).intValue = f.getPt0(); // copy
       }
       if (val == 0 && intString.equals("-0"))
         addTokenToPrefix(Token.tokenMinus);
@@ -1009,6 +1033,13 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if (tokLastMath != 0)
       tokLastMath = theTok;
     switch (theTok) {
+    case Token.identifier:
+      if (nTokens == 0 && ident.charAt(0) == '\'') {
+        addTokenToPrefix(setCommand(Token.tokenScript));
+        cchToken = 0;
+        return CONTINUE;        
+      }
+      break;
     case Token.andequals:
       if (theTok == Token.andequals) {
         if (nSemiSkip == forPoint3 && nTokens == ptSemi + 2) {
@@ -1318,7 +1349,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           return ERROR(ERROR_unrecognizedToken, ident);
         forPoint3 = nSemiSkip = 0;
         nSemiSkip += 2;
-      } else if (nTokens == 3 && ((Token) ltoken.get(2)).tok == Token.var) {
+      } else if (nTokens == 3 && tokAt(2) == Token.var) {
         addContextVariable(ident);
       } else if ((nTokens == 3 || nTokens == 4) && theTok == Token.in) {
         nSemiSkip -= 2;
@@ -1344,7 +1375,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         boolean isSetArray = false;
         if (theTok == Token.leftparen) {
           // mysub(xxx,xxx,xxx)
-          Token token = (Token) ltoken.get(0);
+          Token token = tokenAt(0);
           ltoken.setElementAt(setCommand(new Token(Token.function, 0,
               token.value)), 0);
           break;

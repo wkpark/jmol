@@ -90,6 +90,7 @@ abstract class ScriptCompilationTokenParser {
   private Object theValue;
 
   protected boolean compileExpressions() {
+    
     isEmbeddedExpression = (tokCommand != Token.nada
         && (tokCommand != Token.function || tokenCommand.intValue != Integer.MAX_VALUE) 
         && tokCommand != Token.end && !Token.tokAttrOr(tokCommand, Token.atomExpressionCommand,
@@ -194,7 +195,7 @@ abstract class ScriptCompilationTokenParser {
     return (itokenInfix < atokenInfix.length);
   }
   
-  private int tokAt(int i) {
+  protected int tokAt(int i) {
     return (i < atokenInfix.length ? atokenInfix[i].tok : Token.nada);
   }
   

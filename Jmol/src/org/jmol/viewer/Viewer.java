@@ -90,6 +90,7 @@ import javax.vecmath.AxisAngle4f;
 import java.net.URL;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -237,6 +238,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private String syncId = "";
   private String appletDocumentBase = "";
   private String appletCodeBase = "";
+  private String logFilePath = "";
 
   private boolean jvm11orGreater = false;
   private boolean jvm12orGreater = false;
@@ -406,6 +408,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       fileManager.setAppletContext(documentBase, codeBase, appletProxy);
       isSignedApplet = (str.indexOf("-signed") >= 0);
+      if (isSignedApplet) {
+        logFilePath = TextFormat.simpleReplace(appletCodeBase, "file://", "");
+        logFilePath = TextFormat.simpleReplace(logFilePath, "file:/", "");
+        if (logFilePath.indexOf("//") >= 0)
+          logFilePath = null;
+      } else {
+        logFilePath = null;
+      }
+      
       if ((i = str.indexOf("-maximumSize ")) >= 0)
         setMaximumSize(Parser.parseInt(str.substring(i + 13)));
       useCommandThread = (str.indexOf("-threaded") >= 0);
@@ -4924,9 +4935,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     switch (tok) {
     case Token.logfile:
-      if (value.length() > 0 && !value.startsWith("JmolLog_"))
-        value = "JmolLog_" + value;
-      Logger.setLogFile(value);
+      value = setLogFile(value);
+      if (value == null)
+        return;
       break;
     case Token.filecachedirectory:
       // 11.9.21
@@ -5083,6 +5094,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                   boolean isInt) {
     boolean found = true;
     switch (tok) {
+    case Token.mousedragfactor:
+      actionManager.setMouseDragFactor(value);
+      break;
+    case Token.mousewheelfactor:
+      actionManager.setMouseWheelFactor(value);
+      break;
     case Token.strutlengthmaximum:
       // 11.9.21
       global.strutLengthMaximum = value;
@@ -7979,4 +7996,31 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
 
+  private String setLogFile(String value) {
+    String path = null;
+    if (logFilePath == null || value.indexOf("\\") >= 0
+        || value.indexOf("/") >= 0) {
+      value = null;
+    } else if (value.length() > 0) {
+      if (!value.startsWith("JmolLog_"))
+        value = "JmolLog_" + value;
+      try {
+        path = (isApplet ? logFilePath + value : (new File(logFilePath + value)
+            .getAbsolutePath()));
+      } catch (Exception e) {
+        value = null;
+      }
+    }
+    if (value == null) {
+      Logger.info(GT._("Cannot set log file path."));
+    } else if (path != null) {
+      Logger.info(GT._("Setting log file to {0}", path));
+      Logger.setLogFile(path);
+    }
+    return value;
+  }
+
+  void log(String s) {
+    Logger.logToFile(s);
+  }  
 }

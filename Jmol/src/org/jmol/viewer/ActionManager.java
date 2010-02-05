@@ -245,10 +245,11 @@ public class ActionManager {
   }
 
   private final static long MAX_DOUBLE_CLICK_MILLIS = 700;
-  private static final long MININUM_GESTURE_DELAY_MILLISECONDS = 5;
+  protected static final long MININUM_GESTURE_DELAY_MILLISECONDS = 5;
   private static final int SLIDE_ZOOM_X_PERCENT = 98;
   public static final float DEFAULT_MOUSE_DRAG_FACTOR = 1f;
   public static final float DEFAULT_MOUSE_WHEEL_FACTOR = 1.02f;
+  public static final float DEFAULT_GESTURE_SWIPE_FACTOR = 1f;
  
   protected Viewer viewer;
   
@@ -304,11 +305,17 @@ public class ActionManager {
   }
 
   protected Thread hoverWatcherThread;
+  protected boolean haveMultiTouchInput = false;
 
   protected int xyRange = 0;
   
+  private float gestureSwipeFactor = DEFAULT_GESTURE_SWIPE_FACTOR;
   private float mouseDragFactor = DEFAULT_MOUSE_DRAG_FACTOR;
   private float mouseWheelFactor = DEFAULT_MOUSE_WHEEL_FACTOR;
+  
+  void setGestureSwipeFactor(float factor) {
+    gestureSwipeFactor = factor;
+  }
   
   void setMouseDragFactor(float factor) {
     mouseDragFactor = factor;
@@ -659,7 +666,7 @@ public class ActionManager {
     rectRubber.x = Integer.MAX_VALUE;
     if (dragRelease)
       viewer.notifyMouseClicked(x, y, Binding.getMouseAction(pressedCount, 0));
-    
+
     if (drawMode
         && (isBound(action, ACTION_dragDrawObject) || isBound(action,
             ACTION_dragDrawPoint)) || labelMode
@@ -667,26 +674,33 @@ public class ActionManager {
       viewer.checkObjectDragged(Integer.MAX_VALUE, 0, x, y, action);
       return;
     }
-    if (dragSelectedMode && isBound(action, ACTION_dragSelected) && haveSelection)
+    if (dragSelectedMode && isBound(action, ACTION_dragSelected)
+        && haveSelection)
       viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, false);
-    
+
     if (dragRelease && checkUserAction(action, x, y, 0, 0, time, 2))
       return;
-    
+
     if (viewer.getAllowGestures()) {
       if (isBound(action, ACTION_swipe)) {
-        if (dragGesture.getTimeDifference(2) <= MININUM_GESTURE_DELAY_MILLISECONDS
-            && dragGesture.getPointCount(4, 2) == 4) {
-          float speed = dragGesture.getSpeedPixelsPerMillisecond(4, 2);
-          viewer.spinXYBy(dragGesture.getDX(10, 5), dragGesture.getDY(4, 2),
-              speed * 30);
-          if (viewer.getLogGestures())
-            viewer.log("NOW swipe " + dragGesture);
-          return;
-        }
+        float speed = getExitRate();
+        if (speed > 0)
+          viewer.spinXYBy(dragGesture.getDX(4, 2), dragGesture.getDY(4, 2),
+              speed * 30 * gestureSwipeFactor);
+        if (viewer.getLogGestures())
+          viewer.log("NOW swipe " + dragGesture + " " + speed);
+        return;
       }
+
     }
   }
+
+  protected float getExitRate() {
+    long dt = dragGesture.getTimeDifference(2);
+    return (dt > MININUM_GESTURE_DELAY_MILLISECONDS ? 0 : 
+        dragGesture.getSpeedPixelsPerMillisecond(4, 2));
+  }
+
 
   void mouseClicked(long time, int x, int y, int mods, int count) {
     setMouseMode();
@@ -797,7 +811,6 @@ public class ActionManager {
       }
       return;
     }
-
     if (drawMode
         && (isBound(action, ACTION_dragDrawObject) || isBound(action,
             ACTION_dragDrawPoint)) || labelMode
@@ -1475,7 +1488,7 @@ public class ActionManager {
     }
   }
   
-  private Gesture dragGesture = new Gesture(20);
+  protected Gesture dragGesture = new Gesture(20);
   
   protected class Gesture {
     private int action;
@@ -1500,7 +1513,7 @@ public class ActionManager {
     int getAction() {
       return action;
     }
-    
+  
     int add(int action, int x, int y, long time) {
       this.action = action;
       getNode(ptNext).set(ptNext, x, y, time - time0);

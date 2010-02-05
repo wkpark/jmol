@@ -756,6 +756,7 @@ public class Token {
   public final static int defaulttranslucent             = floatparam | 10;
   public final static int dipolescale                    = floatparam | 12;
   public final static int ellipsoidaxisdiameter          = floatparam | 14;
+  public final static int gestureswipefactor             = floatparam | 15;
   public final static int hbondsangleminimum             = floatparam | 16;
   public final static int hbondsdistancemaximum          = floatparam | 18;
   public final static int hoverdelay                     = floatparam | 19;
@@ -1930,6 +1931,7 @@ public class Token {
       "defaultTranslucent",                       new Token(defaulttranslucent),
       "dipoleScale",                              new Token(dipolescale),
       "ellipsoidAxisDiameter",                    new Token(ellipsoidaxisdiameter),
+      "gestureSwipeFactor",                       new Token(gestureswipefactor),
       "hbondsAngleMinimum",                       new Token(hbondsangleminimum),
       "hbondsDistanceMaximum",                    new Token(hbondsdistancemaximum),
       "hoverDelay",                               new Token(hoverdelay),

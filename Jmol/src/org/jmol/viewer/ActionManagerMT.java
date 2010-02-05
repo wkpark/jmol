@@ -44,7 +44,6 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   private int groupID;
   private int simulationPhase;
   private boolean resetNeeded = true;
-  private boolean haveMultiTouchInput = false;
   private long lastLogTime = 0;
   
   
@@ -253,14 +252,13 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     case ZOOM_EVENT:
       float scale = pt.z;
       if (scale == -1 || scale == 1) {
-        pt.z = Float.NaN;
-        zoomByFactor((int)scale, Integer.MAX_VALUE, Integer.MAX_VALUE);//(int) pt.x, (int) pt.y);
+        zoomByFactor((int)scale, Integer.MAX_VALUE, Integer.MAX_VALUE);
         logEvent("Zoom", pt);
       }
       break;
     case ROTATE_EVENT:
       checkMotion(Viewer.CURSOR_MOVE);
-      viewer.rotateZBy((int) pt.z, Integer.MAX_VALUE, Integer.MAX_VALUE);//(int) pt.x, (int) pt.y);
+      viewer.rotateZBy((int) pt.z, Integer.MAX_VALUE, Integer.MAX_VALUE);
       logEvent("Rotate", pt);
       break;
     case DRAG_EVENT:
@@ -357,6 +355,12 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     if (haveMultiTouchInput)
       return;
     super.mouseReleased(time, x, y, mods);
+  }
+
+  protected float getExitRate() {
+    long dt = dragGesture.getTimeDifference(2);
+    return (dt > (MININUM_GESTURE_DELAY_MILLISECONDS << 3) ? 0 :
+        dragGesture.getSpeedPixelsPerMillisecond(2, 1));
   }
 
 } 

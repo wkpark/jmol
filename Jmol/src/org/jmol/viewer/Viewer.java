@@ -5094,6 +5094,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                   boolean isInt) {
     boolean found = true;
     switch (tok) {
+    case Token.gestureswipefactor:
+      actionManager.setGestureSwipeFactor(value);
+      break;
     case Token.mousedragfactor:
       actionManager.setMouseDragFactor(value);
       break;

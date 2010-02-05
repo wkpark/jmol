@@ -714,6 +714,7 @@ public class StateManager {
       setParameterValue("gestureSwipeFactor", ActionManager.DEFAULT_GESTURE_SWIPE_FACTOR);
       setParameterValue("hideNotSelected", false); //maintained by the selectionManager
       setParameterValue("hoverLabel", ""); // maintained by the Hover shape
+      setParameterValue("logFile", viewer.getLogFile()); // maintained by Viewer
       setParameterValue("mouseWheelFactor", ActionManager.DEFAULT_MOUSE_WHEEL_FACTOR);
       setParameterValue("mouseDragFactor", ActionManager.DEFAULT_MOUSE_DRAG_FACTOR);
       setParameterValue("navFps", TransformManager.DEFAULT_NAV_FPS); 

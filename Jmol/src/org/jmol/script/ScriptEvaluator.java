@@ -4526,7 +4526,7 @@ public class ScriptEvaluator {
         if (debugScript)
           logDebugScript(0);
         if (scriptLevel == 0 && viewer.logCommands())
-          log(thisCommand);
+          viewer.log(thisCommand);
         if (logMessages && token != null)
           Logger.debug(token.toString());
       }
@@ -6651,12 +6651,8 @@ public class ScriptEvaluator {
     if (tokAt(1) == Token.off)
       setStringProperty("logFile", "");
     else
-      log(s);
+      viewer.log(s);
   }
-
-  private void log(String s) {
-    Logger.logToFile(s);
-  }  
 
   private void print() throws ScriptException {
     if (statementLength == 1)

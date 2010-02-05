@@ -75,6 +75,7 @@ import java.awt.Component;
 import java.awt.Event;
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
@@ -90,7 +91,9 @@ import javax.vecmath.AxisAngle4f;
 import java.net.URL;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -7998,6 +8001,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.logCommands;
   }
 
+  private String logFile = null;
+
+  public String getLogFile() {
+    return (logFile == null ? "" : logFile);
+  }
 
   private String setLogFile(String value) {
     String path = null;
@@ -8018,12 +8026,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       Logger.info(GT._("Cannot set log file path."));
     } else if (path != null) {
       Logger.info(GT._("Setting log file to {0}", path));
-      Logger.setLogFile(path);
+      logFile = path;
     }
     return value;
   }
 
-  void log(String s) {
-    Logger.logToFile(s);
-  }  
+  public void log(String data) {
+    try {
+      if (logFile == null || data == null)
+        return;
+      if (data.startsWith("NOW"))
+        data = (new Date()).toString() + "\t" + data.substring(3);
+      FileWriter fstream = new FileWriter(logFile, true);
+      BufferedWriter out = new BufferedWriter(fstream);
+      out.write(data);
+      out.write('\n');
+      out.close();
+    } catch (Exception e) {
+      Logger.debug("cannot log " + data);
+    }
+  }
+
 }

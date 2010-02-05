@@ -25,10 +25,6 @@
 
 package org.jmol.util;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.util.Date;
-
 /**
  * Logger mechanism.
  */
@@ -44,8 +40,6 @@ public final class Logger {
   public final static int LEVEL_DEBUGHIGH = 6;
   public final static int LEVEL_MAX = 7;
   
-  private static String logFile = null;
-
   private final static boolean[] _activeLevels = new boolean[LEVEL_MAX];
   private       static boolean   _logLevel = false;
   public static boolean debugging;
@@ -309,34 +303,4 @@ public final class Logger {
         + "; Max=" + bMax);
   }
   
-  public static void setLogFile(String name) {
-    if (name == null || name.length() == 0) {
-      if (logFile != null)
-        info("Logging to " + logFile + " stopped");
-      logFile = null;
-      return;
-    }
-    if (!name.contains("JmolLog_"))
-      name = "JmolLog_" + name;
-    if (!name.equals(logFile)) {
-      debug("Logging to file " + name);
-    }
-    logFile = name;
-  }
-  
-  public static void logToFile(String data) {
-    try {
-      if (logFile == null || data == null)
-        return;
-      if (data.startsWith("NOW"))
-        data = (new Date()).toString() + "\t" + data.substring(3);
-      FileWriter fstream = new FileWriter(logFile, true);
-      BufferedWriter out = new BufferedWriter(fstream);
-      out.write(data);
-      out.write('\n');
-      out.close();
-    } catch (Exception e) {
-      debug("cannot log " + data);
-    }
-  }
 }

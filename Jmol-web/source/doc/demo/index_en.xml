@@ -40,5 +40,10 @@
 			<a href="http://chemapps.stolaf.edu/jmol/">advanced and specialized capabilities</a> of Jmol.
 			</p>
 		</section>
+		<section title="Export to 3D scenes">
+			<p>Jmol can export to several 3D scene / 3D world / virtual reality formats, like VRML, X3D or U3D. 
+			Check out some <a href="./3dscenes/">sample files</a>.
+			</p>
+		</section>
 	</body>
 </document>

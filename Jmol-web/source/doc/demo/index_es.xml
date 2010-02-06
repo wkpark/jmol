@@ -45,5 +45,10 @@
 			<a href="http://chemapps.stolaf.edu/jmol/">prestaciones avanzadas y especializadas</a> de Jmol.
 			</p>
 		</section>
+		<section title="Exportación a escenas 3D">
+			<p>Jmol puede exportar a varios formatos de escenas 3D / mundos 3D / realidad virtual, como VRML, X3D o U3D. 
+			Puedes ver algunos <a href="./3dscenes/">archivos de ejemplo</a>.
+			</p>
+		</section>
 	</body>
 </document>

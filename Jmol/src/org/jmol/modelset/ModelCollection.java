@@ -752,7 +752,7 @@ abstract public class ModelCollection extends BondCollection {
           if (models[j].trajectoryBaseIndex == iBase)
             bs.set(j);
       }
-      i += models[modelIndex].firstAtomIndex + models[modelIndex].atomCount;
+      i = models[modelIndex].firstAtomIndex + models[modelIndex].atomCount - 1;
     }
     return bs;
   }

@@ -108,7 +108,7 @@ public final class Model {
   
   // set in ModelLoader phase:
   int firstAtomIndex;  
-  int atomCount = -1; // includes deleted atoms
+  int atomCount = 0; // includes deleted atoms
   final BitSet bsAtoms = new BitSet();
 
   // this one is variable and calculated only if necessary:

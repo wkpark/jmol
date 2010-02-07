@@ -181,7 +181,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     int pt1 = script.lastIndexOf("/*", pt);
     int pt2 = script.indexOf((script.charAt(pt1 + 2) == '*' ? "*" : "") + "*/", pt);
     return (pt1 < 0 || pt2 < pt ? script 
-        : script.substring(pt + JmolConstants.EMBEDDED_SCRIPT_TAG.length(), pt2));
+        : script.substring(pt + JmolConstants.EMBEDDED_SCRIPT_TAG.length(), pt2)) + "\n";
   }
   
   private ScriptFlowContext flowContext;

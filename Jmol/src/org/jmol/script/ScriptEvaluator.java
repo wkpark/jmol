@@ -414,9 +414,8 @@ public class ScriptEvaluator {
         }
       if (pt1 == script.length() - 1 && script.endsWith("}"))
         pt1++;
-      if (pt0 == script.length())
-        return "";
-      return script.substring(Math.max(pt0, 0), Math.min(script.length(), pt1));
+      return (pt0 == script.length() || pt1 < pt0 ? "" 
+          : script.substring(Math.max(pt0, 0), Math.min(script.length(), pt1)));
     }
     int ichBegin = lineIndices[pc][0];
     int ichEnd = lineIndices[pc][1];

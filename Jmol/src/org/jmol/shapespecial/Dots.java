@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author: hansonr $
- * $Date: 2010-02-01 13:46:52 -0600 (Mon, 01 Feb 2010) $
- * $Revision: 12287 $
+ * $Author$
+ * $Date$
+ * $Revision$
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -286,7 +286,7 @@ public class Dots extends AtomShape {
       if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp, i, getColorCommand(type, paletteIDs[i], colixes[i]));
       FastBitSet bs = dotsConvexMaps[i];
-      int n = bs.getSize();
+      int n = bs.size();
       if (n > 0) {
         float r = ec.getAppropriateRadius(i);
         appendCmd(s, type + i + " radius " + r + " "

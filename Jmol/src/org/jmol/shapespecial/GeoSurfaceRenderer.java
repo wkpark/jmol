@@ -71,7 +71,7 @@ public class GeoSurfaceRenderer extends DotsRenderer {
     short[] faces = Geodesic.getFaceVertexes(screenLevel);
     int[] coords = screenCoordinates;
     short p1, p2, p3;
-    int mapMax = points.getSize();
+    int mapMax = points.size();
     //Logger.debug("geod frag "+mapMax+" "+dotCount);
     if (screenDotCount < mapMax)
       mapMax = screenDotCount;
@@ -82,8 +82,8 @@ public class GeoSurfaceRenderer extends DotsRenderer {
       if (p1 >= mapMax || p2 >= mapMax || p3 >= mapMax)
         continue;
       //Logger.debug("geod frag "+p1+" "+p2+" "+p3+" "+dotCount);
-      if (!points.getBit(p1) || !points.getBit(p2)
-          || !points.getBit(p3))
+      if (!points.get(p1) || !points.get(p2)
+          || !points.get(p3))
         continue;
       facePt1.set(coords[faceMap[p1]], coords[faceMap[p1] + 1], coords[faceMap[p1] + 2]);
       facePt2.set(coords[faceMap[p2]], coords[faceMap[p2] + 1], coords[faceMap[p2] + 2]);

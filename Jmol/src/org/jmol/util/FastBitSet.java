@@ -1,7 +1,7 @@
-/* $RCSfile$
- * $Author: egonw $
- * $Date: 2005-11-10 09:52:44 -0600 (Thu, 10 Nov 2005) $
- * $Revision: 4255 $
+/*
+ * $Author$
+ * $Date$
+ * $Rev$
  *
  * Copyright (C) 2003-2010  The Jmol Development Team
  *
@@ -36,6 +36,7 @@ public class FastBitSet implements Cloneable {
   private int[] bitmap;
   
   private final static int[] emptyBitmap = new int[0];
+
   public FastBitSet() {
     bitmap = emptyBitmap;
   }
@@ -45,9 +46,18 @@ public class FastBitSet implements Cloneable {
   }
 
   public FastBitSet(FastBitSet bitsetToCopy) {
-    int wordCount = bitsetToCopy.bitmap.length;
-    bitmap = new int[wordCount];
-    System.arraycopy(bitsetToCopy.bitmap, 0, bitmap, 0, wordCount);
+    int wordCount = bitmapGetMinimumWordCount(bitsetToCopy.bitmap);
+    if (wordCount == 0)
+      bitmap = emptyBitmap;
+    else {
+      bitmap = new int[wordCount];
+      System.arraycopy(bitsetToCopy.bitmap, 0, bitmap, 0, wordCount);
+    }
+  }
+
+  public final static FastBitSet emptySet = new FastBitSet();
+  public final static FastBitSet getEmptySet() {
+    return emptySet;
   }
 
   public static FastBitSet allocateBitmap(int bitCount) {
@@ -215,11 +225,24 @@ public class FastBitSet implements Cloneable {
   ////////////////////////////////////////////////////////////////
 
 
+  /****************************************************************
+   * miguel 8 Feb 2010
+   *
+   * Below are implementations of bitmap functionality on top of arrays.
+   * Around 2002 I chose to go with int[] instead of long[] because
+   * I felt it would give better performance on contemporary hardware.
+   * I think that is probably still the case. At some point over the next
+   * few years this can be changed to long[].
+   *
+   * Since these methods are marked private final static the compiler
+   * can make easy/good decisions about which ones to open code inline.
+   ****************************************************************/
+
   private final static int F_ADDRESS_BITS_PER_WORD = 5;
   private final static int F_BITS_PER_WORD = 1 << F_ADDRESS_BITS_PER_WORD;
   private final static int F_BIT_INDEX_MASK = F_BITS_PER_WORD - 1;
 
-  private static final int[] bitmapAllocateBitCount(int bitCount) {
+  private final static int[] bitmapAllocateBitCount(int bitCount) {
     return new int[getWordCountFromBitCount(bitCount)];
   }
 
@@ -236,8 +259,8 @@ public class FastBitSet implements Cloneable {
     bitmap[(i >> F_ADDRESS_BITS_PER_WORD)] &= ~(1 << (i & F_BIT_INDEX_MASK));
   }
 
-  private static final int F_INT_SHIFT_MASK =   0x80000000;
-  private static final int F_INT_ALL_BITS_SET = 0xFFFFFFFF;
+  private final static int F_INT_SHIFT_MASK =   0x80000000;
+  private final static int F_INT_ALL_BITS_SET = 0xFFFFFFFF;
 
   private final static void bitmapSetAllBits(int[] bitmap, int bitCount) {
     int wholeWordCount = bitCount >> F_ADDRESS_BITS_PER_WORD;
@@ -303,28 +326,15 @@ public class FastBitSet implements Cloneable {
     return indexLast + 1;
   }
 
-  private static int getPointCount(int[] bitmap, int dotCount) {
-    if (bitmap == null)
-      return 0;
-    int iDot = bitmap.length << F_ADDRESS_BITS_PER_WORD;
-    if (iDot > dotCount)
-      iDot = dotCount;
-    int n = 0;
-    while (--iDot >= 0)
-      if (bitmapGetBit(bitmap, iDot))
-        n++;
-    return n;
-  }
-
-  private static int bitmapGetSizeInBits(int[] bitmap) {
+  private final static int bitmapGetSizeInBits(int[] bitmap) {
     return bitmap.length << F_ADDRESS_BITS_PER_WORD;
   }
 
-  private static int getWordCountFromBitCount(int bitCount) {
+  private final static int getWordCountFromBitCount(int bitCount) {
     return (bitCount + F_BITS_PER_WORD - 1) >> F_ADDRESS_BITS_PER_WORD;
   }
 
-  private static int[] bitmapResizeBitCount(int[] oldBitmap, int bitCount) {
+  private final static int[] bitmapResizeBitCount(int[] oldBitmap, int bitCount) {
     int newWordCount = getWordCountFromBitCount(bitCount);
     int[] newBitmap = new int[newWordCount];
     int oldWordCount = oldBitmap.length;
@@ -334,14 +344,14 @@ public class FastBitSet implements Cloneable {
     return newBitmap;
   }
 
-  private static void bitmapAnd(int[] bitmap, int[] bitmapAnd) {
+  private final static void bitmapAnd(int[] bitmap, int[] bitmapAnd) {
     int wordCount =
       bitmap.length < bitmapAnd.length ? bitmap.length : bitmapAnd.length;
     while (--wordCount >= 0)
       bitmap[wordCount] &= bitmapAnd[wordCount];
   }
 
-  private static void bitmapAndNot(int[] bitmap, int[] bitmapAndNot) {
+  private final static void bitmapAndNot(int[] bitmap, int[] bitmapAndNot) {
     int wordCount = (bitmap.length < bitmapAndNot.length)
       ? bitmap.length : bitmapAndNot.length;
     while (--wordCount >= 0)
@@ -351,19 +361,19 @@ public class FastBitSet implements Cloneable {
   // bitmap.length should be >= bitmapOr.length
   // to try to enforce this, I am just going to assume that it is the case
   // that way, an OOB exception will be raised
-  private static void bitmapOr(int[] bitmap, int[] bitmapOr) {
+  private final static void bitmapOr(int[] bitmap, int[] bitmapOr) {
     int wordCount = bitmapOr.length;
     while (--wordCount >= 0)
       bitmap[wordCount] |= bitmapOr[wordCount];
   }
 
-  private static void bitmapXor(int[] bitmap, int[] bitmapXor) {
+  private final static void bitmapXor(int[] bitmap, int[] bitmapXor) {
     int wordCount = bitmapXor.length;
     while (--wordCount >= 0)
       bitmap[wordCount] ^= bitmapXor[wordCount];
   }
 
-  private static int bitmapNextSetBit(int[] bitmap, int fromIndex) {
+  private final static int bitmapNextSetBit(int[] bitmap, int fromIndex) {
     int maxIndex = bitmap.length << F_ADDRESS_BITS_PER_WORD;
     if (fromIndex >= maxIndex)
       return -1;
@@ -391,8 +401,10 @@ public class FastBitSet implements Cloneable {
   // note that this may return the bitmap itself without allocating
   // a new bitmap
 
-  private static int[] bitmapMinimize(int[] bitmap) {
+  private final static int[] bitmapMinimize(int[] bitmap) {
     int minimumWordCount = bitmapGetMinimumWordCount(bitmap);
+    if (minimumWordCount == 0)
+      return emptyBitmap;
     if (minimumWordCount == bitmap.length)
       return bitmap;
     int[] newBitmap = new int[minimumWordCount];
@@ -400,16 +412,16 @@ public class FastBitSet implements Cloneable {
     return newBitmap;
   }
   
-  private static int bitmapGetCardinality(int[] bitmap) {
-    int dotCount = 0;
+  private final static int bitmapGetCardinality(int[] bitmap) {
+    int count = 0;
     for (int i = bitmap.length; --i >= 0; ) {
       if (bitmap[i] != 0)
-	dotCount += countBitsInWord(bitmap[i]);
+	count += countBitsInWord(bitmap[i]);
     }
-    return dotCount;
+    return count;
   }
 
-  private static int countBitsInWord(int word) {
+  private final static int countBitsInWord(int word) {
     word = (word & 0x55555555) + ((word >> 1) & 0x55555555);
     word = (word & 0x33333333) + ((word >> 2) & 0x33333333);
     word = (word & 0x0F0F0F0F) + ((word >> 4) & 0x0F0F0F0F);
@@ -418,7 +430,7 @@ public class FastBitSet implements Cloneable {
     return word;
   }
 
-  private static boolean bitmapIsEqual(int[] bitmap1, int[] bitmap2) {
+  private final static boolean bitmapIsEqual(int[] bitmap1, int[] bitmap2) {
     if (bitmap1 == bitmap2)
       return true;
     int count1 = bitmapGetMinimumWordCount(bitmap1);
@@ -431,69 +443,12 @@ public class FastBitSet implements Cloneable {
     return true;
   }
 
-  private static boolean bitmapIsEmpty(int[] bitmap) {
+  private final static boolean bitmapIsEmpty(int[] bitmap) {
     int i = bitmap.length;
     while (--i >= 0)
       if (bitmap[i] != 0)
 	return false;
     return true;
-  }
-
-
-  ////////////////////////////////////////////////////////////////
-    
-  // deprecated
-  public final static FastBitSet mapNull = new FastBitSet();
-  public static FastBitSet getNullMap() {
-    return mapNull;
-  }
-
-  // deprecated
-  public boolean getBit(int i) {
-    return get(i);
-  }
-
-  public int getPointCount(int dotCount) {
-    // not sure why dotCount is here
-    // probably a remnant of raw bitmap array operaions
-    // probably not even used
-    // should probably be deprecated in favor of cardinality
-    return getPointCount(bitmap, dotCount);
-  }
-
-  // deprecated
-  public int getCardinality() {
-    return cardinality();
-  }
-
-  // deprecated
-  public int getSize() {
-    return size();
-  }
-
-  // deprecated
-  public void setBit(int i) {
-    set(i);
-  }
-
-  // deprecated
-  public void clearBit(int i) {
-    clear(i);
-  }
-
-  // probably should be deprecated
-  public void setAllBits(int count) {
-    set(0, count);
-  }
-  
-  // deprecated
-  public void clearBitmap() {
-    clear();
-  }
-
-  // deprecated
-  public int getMapStorageCount() {
-    return bitmapGetMinimumWordCount(bitmap);
   }
 
 }

@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author: hansonr $
- * $Date: 2009-07-11 23:50:34 -0500 (Sat, 11 Jul 2009) $
- * $Revision: 11203 $
+ * $Author$
+ * $Date$
+ * $Revision$
  *
  * Copyright (C) 2003-2005  The Jmol Development Team
  *
@@ -103,9 +103,9 @@ public class DotsRenderer extends ShapeRenderer {
     int nPoints = 0;
     int i = 0;
     float scaledRadius = viewer.scaleToPerspective(z, radius);
-    int iDot = Math.min(visibilityMap.getSize(), screenDotCount); 
+    int iDot = Math.min(visibilityMap.size(), screenDotCount); 
     while (--iDot >= 0) {
-      if (!visibilityMap.getBit(iDot))
+      if (!visibilityMap.get(iDot))
         continue;
       Vector3f vertex = verticesTransformed[iDot];
       if (faceMap != null)

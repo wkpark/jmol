@@ -413,8 +413,7 @@ public class FastBitSet implements Cloneable {
     if (bitmap1 == bitmap2)
       return true;
     int count1 = bitmapGetMinimumWordCount(bitmap1);
-    int count2 = bitmapGetMinimumWordCount(bitmap2);
-    if (count1 != count2)
+    if (count1 != bitmapGetMinimumWordCount(bitmap2))
       return false;
     while (--count1 >= 0)
       if (bitmap1[count1] != bitmap2[count1])

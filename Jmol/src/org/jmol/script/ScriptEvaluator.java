@@ -8671,7 +8671,7 @@ public class ScriptEvaluator {
         value /= 250;
         type = RadiusData.TYPE_ABSOLUTE;
       } else {
-        value /= 100;
+        value /= -100;
         type = RadiusData.TYPE_FACTOR;        
       }
       break;

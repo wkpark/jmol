@@ -286,8 +286,7 @@ public class Dots extends AtomShape {
       if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp, i, getColorCommand(type, paletteIDs[i], colixes[i]));
       FastBitSet bs = dotsConvexMaps[i];
-      int n = bs.size();
-      if (n > 0) {
+      if (!bs.isEmpty()) {
         float r = ec.getAppropriateRadius(i);
         appendCmd(s, type + i + " radius " + r + " "
             + Escape.escape(bs.toBitSet()));

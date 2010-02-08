@@ -23,30 +23,42 @@
  */
 package org.jmol.util;
 
-import java.util.BitSet;
 /*
  * for comparison purposes -- the standard BitSet implementation (dots and geosurfaces only)
  * implemented by EnvelopeCalculation using set testflag2 TRUE
+ * 
+ * needs full implemention of public FastBitSet methods to work properly.
+ * 
  */
 
-public class SlowBitSet extends FastBitSet {
-
-  public final static SlowBitSet nullMap = new SlowBitSet();
-
+public class SlowBitSet {//extends FastBitSet {
+/*
   public static FastBitSet allocateBitmap(int count) {
     return new SlowBitSet(count, true);
   }
   
-  private BitSet bs;
+  private java.util.BitSet bs;
 
   public SlowBitSet() {
-    bs = new BitSet();
+    bs = new java.util.BitSet();
   }
 
   protected SlowBitSet(int count, boolean asBits) {
-    bs = new BitSet(asBits ? count : count * 64 ); 
+    bs = new java.util.BitSet(asBits ? count : count * 64 ); 
   }
   
+  protected SlowBitSet(FastBitSet bsToCopy) {
+    bs = (java.util.BitSet) ((SlowBitSet) bsToCopy).bs.clone();
+  }
+  
+  public void and(FastBitSet setAnd) {
+    bs.and(((SlowBitSet) setAnd).bs);
+  }
+
+  public void andNot(FastBitSet setAndNot) {
+    bs.andNot(((SlowBitSet) setAndNot).bs);
+  }
+
   public int cardinality() {
     return bs.cardinality();
   }
@@ -69,30 +81,46 @@ public class SlowBitSet extends FastBitSet {
   
   public Object clone() {
     SlowBitSet result = new SlowBitSet();
-    result.bs = (BitSet) bs.clone();
+    result.bs = (java.util.BitSet) bs.clone();
     return result;
   }
-  
+
   public FastBitSet copy() {
     return (SlowBitSet) clone();
+  }
+
+  public boolean equals(Object obj) {
+    return (obj instanceof SlowBitSet && ((SlowBitSet) obj).bs.equals(bs));
+  }
+
+  public void flip(int i) {
+    bs.flip(i);
   }
 
   public boolean get(int i) {
     return bs.get(i);
   }
 
-  /*
+  
   public void setAllBits(int count) {
     bs.set(0, count);
   }
-  */
   
-  public int getMapStorageCount() {
-    return bs.size() * 64;
+  
+  public boolean isEmpty() {
+    return bs.isEmpty();
   }
 
-  public int hashCode() {
-    return bs.hashCode();
+  public int length() {
+    return bs.length();
+  }
+
+  public int nextSetBit(int fromIndex) {
+    return bs.nextSetBit(fromIndex);
+  }
+
+  public void or(FastBitSet setOr) {
+    bs.or(((SlowBitSet) setOr).bs);
   }
 
   public void set(int i) {
@@ -107,11 +135,21 @@ public class SlowBitSet extends FastBitSet {
     return bs.size();
   }
 
-  public BitSet toBitSet() {
+  public void xor(FastBitSet setXor) {
+    bs.xor(((SlowBitSet) setXor).bs);
+  }
+
+  public java.util.BitSet toBitSet() {
     return BitSetUtil.copy(bs);
   }
       
   public String toString() {
     return Escape.escape(bs);
   }
+
+  public int hashCode() {
+    return bs.hashCode();
+  }
+
+*/
 }

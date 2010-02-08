@@ -149,15 +149,15 @@ public final class EnvelopeCalculation {
     this.mads = mads;
     geodesicCount = Geodesic.getVertexVectorsCount();
     
-    if (asJavaBitSet) {
-      geodesicMap = SlowBitSet.allocateBitmap(geodesicCount);
-      mapT = SlowBitSet.allocateBitmap(geodesicCount);
-      emptySet = SlowBitSet.nullMap;
-    } else {
+    //if (asJavaBitSet) {
+    //  geodesicMap = SlowBitSet.allocateBitmap(geodesicCount);
+    //  mapT = SlowBitSet.allocateBitmap(geodesicCount);
+    //  emptySet = new SlowBitSet();
+    //} else {
       geodesicMap = FastBitSet.allocateBitmap(geodesicCount);
       mapT = FastBitSet.allocateBitmap(geodesicCount);
       emptySet = FastBitSet.getEmptySet();
-    }
+    //}
 
 }
    

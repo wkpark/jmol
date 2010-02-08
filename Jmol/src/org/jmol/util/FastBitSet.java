@@ -159,11 +159,11 @@ public class FastBitSet implements Cloneable {
   }
 
   public void or(FastBitSet setOr) {
-    bitmapOr(ensureSufficientWords(bitmap, setOr.bitmap.length), setOr.bitmap);
+    bitmapOr(bitmap = ensureSufficientWords(bitmap, setOr.bitmap.length), setOr.bitmap);
   }
 
   public void set(int bitIndex) {
-    bitmapSetBit(ensureSufficientBits(bitmap, bitIndex + 1), bitIndex);
+    bitmapSetBit(bitmap = ensureSufficientBits(bitmap, bitIndex + 1), bitIndex);
   }
 
   public void set(int bitIndex, boolean value) {
@@ -174,7 +174,7 @@ public class FastBitSet implements Cloneable {
   }
 
   public void set(int fromIndex, int toIndex) {
-    bitmapSetRange(ensureSufficientBits(bitmap, toIndex), fromIndex, toIndex
+    bitmapSetRange(bitmap = ensureSufficientBits(bitmap, toIndex), fromIndex, toIndex
         - fromIndex);
   }
 
@@ -190,7 +190,7 @@ public class FastBitSet implements Cloneable {
   }
 
   public void xor(FastBitSet setXor) {
-    bitmapXor(ensureSufficientWords(bitmap, setXor.bitmap.length),
+    bitmapXor(bitmap = ensureSufficientWords(bitmap, setXor.bitmap.length),
         setXor.bitmap);
   }
 
@@ -492,20 +492,17 @@ public class FastBitSet implements Cloneable {
   // / testing:
 
   /*
-  FastBitSet(java.util.BitSet bs) {
-    bitmap = new int[getWordCountFromBitCount(bs.size())];
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
-      set(i);
-  }
-
-  static {
-
-    FastBitSet bs = new FastBitSet(Escape.unescapeBitset("{(33:45 75:80)}"));
-    System.out.println(bs.cardinality());
-    System.out.println(bs.cardinality(35));
-    // ...do whatever here... System.out.println(bs);
-
-  }
-
-  */
+   * FastBitSet(java.util.BitSet bs) { bitmap = new
+   * int[getWordCountFromBitCount(bs.size())]; for (int i = bs.nextSetBit(0); i
+   * >= 0; i = bs.nextSetBit(i + 1)) set(i); }
+   * 
+   * static {
+   * 
+   * FastBitSet bs = new FastBitSet(Escape.unescapeBitset("{(33:45 75:80)}"));
+   * System.out.println(bs.cardinality());
+   * System.out.println(bs.cardinality(35)); // ...do whatever here...
+   * System.out.println(bs);
+   * 
+   * }
+   */
 }

@@ -31,75 +31,87 @@ import java.util.BitSet;
 
 public class SlowBitSet extends FastBitSet {
 
-  public SlowBitSet() {
-    super();
-  }
-  
+  public final static SlowBitSet nullMap = new SlowBitSet();
+
   public static FastBitSet allocateBitmap(int count) {
     return new SlowBitSet(count, true);
   }
-
+  
   private BitSet bs;
+
+  public SlowBitSet() {
+    bs = new BitSet();
+  }
 
   protected SlowBitSet(int count, boolean asBits) {
     bs = new BitSet(asBits ? count : count * 64 ); 
   }
   
-  public FastBitSet copyFast() {
-    return (SlowBitSet) this.clone();
-  }
-
-  public boolean getBit(int i) {
-    return bs.get(i);
-  }
-
-  public int getPointCount(int dotCount) {
+  public int cardinality() {
     return bs.cardinality();
   }
 
-  public int getSize() {
-    return bs.size();
-  }
-  
-  public void setBit(int i) {
-   bs.set(i);
+  public int cartdinality(int dotCount) {
+    return bs.cardinality();
   }
 
-  public void clearBit(int i) {
-    bs.clear(i);
-  }
-
-  public void setAllBits(int count) {
-    bs.set(0, count);
-  }
-  
-  public void clearBitmap() {
+  public void clear() {
     bs.clear();
   }
 
-  public int getMapStorageCount() {
-    return bs.size() * 64;
+  public void clear(int i) {
+    bs.clear(i);
   }
 
-  public int getCardinality() {
-    return bs.cardinality();
+  public void clear(int i, int j) {
+    bs.clear(i, j);
   }
-
-  public BitSet toBitSet() {
-    return BitSetUtil.copy(bs);
-  }
-
+  
   public Object clone() {
     SlowBitSet result = new SlowBitSet();
     result.bs = (BitSet) bs.clone();
     return result;
   }
-
-  public String toString() {
-    return Escape.escape(bs);
+  
+  public FastBitSet copy() {
+    return (SlowBitSet) clone();
   }
-      
+
+  public boolean get(int i) {
+    return bs.get(i);
+  }
+
+  /*
+  public void setAllBits(int count) {
+    bs.set(0, count);
+  }
+  */
+  
+  public int getMapStorageCount() {
+    return bs.size() * 64;
+  }
+
   public int hashCode() {
     return bs.hashCode();
+  }
+
+  public void set(int i) {
+   bs.set(i);
+  }
+
+  public void set(int i, int j) {
+    bs.set(i, j);
+  }
+
+  public int size() {
+    return bs.size();
+  }
+
+  public BitSet toBitSet() {
+    return BitSetUtil.copy(bs);
+  }
+      
+  public String toString() {
+    return Escape.escape(bs);
   }
 }

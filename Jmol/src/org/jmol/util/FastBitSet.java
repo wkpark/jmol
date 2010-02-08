@@ -79,6 +79,19 @@ public class FastBitSet implements Cloneable {
     return bitmapGetCardinality(bitmap);
   }
 
+  /**
+   * 
+   * @param max
+   * @return n bits below max
+   */
+  public int cardinality(int max) {
+    int n = bitmapGetCardinality(bitmap);
+    for (int i = length(); --i >= max;)
+      if (get(i))
+        n--;
+    return n;
+  }
+
   public void clear() {
     bitmapClear(bitmap);
   }
@@ -479,16 +492,20 @@ public class FastBitSet implements Cloneable {
   // / testing:
 
   /*
-   * FastBitSet(BitSet bs) { bitmap = new
-   * int[getWordCountFromBitCount(bs.size())]; for (int i = bs.nextSetBit(0); i
-   * >= 0; i = bs.nextSetBit(i + 1)) set(i); }
-   * 
-   * 
-   * static {
-   * 
-   * FastBitSet bs = new FastBitSet(Escape.unescapeBitset("{(33:45 75:80)}"));
-   * // ...do whatever here... System.out.println(bs);
-   * 
-   * }
-   */
+  FastBitSet(java.util.BitSet bs) {
+    bitmap = new int[getWordCountFromBitCount(bs.size())];
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+      set(i);
+  }
+
+  static {
+
+    FastBitSet bs = new FastBitSet(Escape.unescapeBitset("{(33:45 75:80)}"));
+    System.out.println(bs.cardinality());
+    System.out.println(bs.cardinality(35));
+    // ...do whatever here... System.out.println(bs);
+
+  }
+
+  */
 }

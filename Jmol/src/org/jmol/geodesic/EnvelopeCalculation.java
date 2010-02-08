@@ -141,6 +141,7 @@ public final class EnvelopeCalculation {
   private AtomData atomData = new AtomData();
   private AtomDataServer viewer;
   private int atomCount;
+  private FastBitSet emptySet;
   
   public EnvelopeCalculation(AtomDataServer viewer, int atomCount, short[] mads, boolean asJavaBitSet) {
     this.viewer = viewer;
@@ -150,10 +151,12 @@ public final class EnvelopeCalculation {
     
     if (asJavaBitSet) {
       geodesicMap = SlowBitSet.allocateBitmap(geodesicCount);
-      mapT = SlowBitSet.allocateBitmap(geodesicCount);      
+      mapT = SlowBitSet.allocateBitmap(geodesicCount);
+      emptySet = SlowBitSet.nullMap;
     } else {
       geodesicMap = FastBitSet.allocateBitmap(geodesicCount);
       mapT = FastBitSet.allocateBitmap(geodesicCount);
+      emptySet = FastBitSet.getEmptySet();
     }
 
 }
@@ -206,7 +209,7 @@ public final class EnvelopeCalculation {
       dotsConvexMaps = new FastBitSet[atomCount];
     FastBitSet map;
     if (geodesicMap.isEmpty())
-      map = FastBitSet.getEmptySet();
+      map = emptySet;
     else
       map = new FastBitSet(geodesicMap);
     dotsConvexMaps[index] = map;
@@ -289,7 +292,7 @@ public final class EnvelopeCalculation {
     int nPoints = 0;
     int dotCount = 42;
     for (int i = dotsConvexMax; --i >= 0;)
-      nPoints += dotsConvexMaps[i].cardinality();
+      nPoints += dotsConvexMaps[i].cardinality(dotCount);
     Point3f[] points = new Point3f[nPoints];
     if (nPoints == 0)
       return points;
@@ -351,7 +354,7 @@ public final class EnvelopeCalculation {
     calcConvexBits();
     FastBitSet map;
     if (geodesicMap.isEmpty())
-      map = FastBitSet.getEmptySet();
+      map = emptySet;
     else {
       bsSurface.set(indexI);
       if (isSurface) {

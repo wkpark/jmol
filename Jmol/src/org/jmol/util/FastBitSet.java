@@ -26,11 +26,16 @@ package org.jmol.util;
 import java.util.BitSet;
 
 
+/*
+ * API is basically a copy of java.util.BitSet
+ * a few routines are not implemented, but can be added if needed
+ */
+  
 public class FastBitSet implements Cloneable {
 
   /*
-   * Miguel Howard's raw bitset implementation -- faster by a factor of two over standard BitSet class
-   * 
+   * Miguel Howard's raw bitset implementation
+   * -- faster by a factor of two over standard BitSet class
    */
   
   private int[] bitmap;
@@ -133,6 +138,13 @@ public class FastBitSet implements Cloneable {
     return bitmapIsEmpty(bitmap);
   }
 
+  public int length() {
+    int i = bitmapGetMinimumWordCount(bitmap) << F_ADDRESS_BITS_PER_WORD;
+    while (--i >= 0 && ! bitmapGetBit(bitmap, i))
+      ;
+    return i + 1;
+  }
+
   public int nextSetBit(int fromIndex) {
     return bitmapNextSetBit(bitmap, fromIndex);
   }
@@ -175,12 +187,12 @@ public class FastBitSet implements Cloneable {
     bitmapXor(bitmap, setXor.bitmap);
   }
 
-  public FastBitSet copyFast() {
-    int wordCount = bitmapGetMinimumWordCount(bitmap);
-    FastBitSet fbs = new FastBitSet(wordCount << F_ADDRESS_BITS_PER_WORD);
-    System.arraycopy(bitmap, 0, fbs.bitmap, 0, wordCount);
-    return fbs;
-  }
+  //  public FastBitSet copyFast() {
+  //    int wordCount = bitmapGetMinimumWordCount(bitmap);
+  //    FastBitSet fbs = new FastBitSet(wordCount << F_ADDRESS_BITS_PER_WORD);
+  //    System.arraycopy(bitmap, 0, fbs.bitmap, 0, wordCount);
+  //    return fbs;
+  //  }
 
   public BitSet toBitSet() {
     BitSet bs = new BitSet();

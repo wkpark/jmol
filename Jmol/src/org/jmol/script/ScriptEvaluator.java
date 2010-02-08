@@ -8668,7 +8668,7 @@ public class ScriptEvaluator {
       if (value > 749 || value < -200)
         integerOutOfRange(-200, 749);
       if (value > 0) {
-        value /= 2500;
+        value /= 250;
         type = RadiusData.TYPE_ABSOLUTE;
       } else {
         value /= 100;

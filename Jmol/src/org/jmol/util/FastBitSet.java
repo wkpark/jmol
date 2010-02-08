@@ -23,8 +23,6 @@
  */
 package org.jmol.util;
 
-import java.util.BitSet;
-
 /*
  * API is basically a copy of java.util.BitSet
  * a few routines are not implemented, but can be added if needed
@@ -190,8 +188,8 @@ public class FastBitSet implements Cloneable {
   // return fbs;
   // }
 
-  public BitSet toBitSet() {
-    BitSet bs = new BitSet();
+  public java.util.BitSet toBitSet() {
+    java.util.BitSet bs = new java.util.BitSet();
     int i = bitmapGetSizeInBits(bitmap);
     while (--i >= 0)
       if (get(i))

@@ -28,7 +28,7 @@ import org.jmol.modelset.AtomIndexIterator;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.FastBitSet;
-import org.jmol.util.SlowBitSet;
+//import org.jmol.util.SlowBitSet;
 
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;

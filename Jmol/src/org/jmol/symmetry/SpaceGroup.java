@@ -725,7 +725,7 @@ class SpaceGroup {
     , new SpaceGroup("2 ci^1 p_-1 -p_1")
     , new SpaceGroup("3:b c2^1 p_1_2_1 p_2y") //full name
     , new SpaceGroup("3:b c2^1 p_2 p_2y")
-    , new SpaceGroup("3:c c2^1 p_1_1_2 p_2")
+    , new SpaceGroup("3:c c2^1 p_1_1_2 p_2z")
     , new SpaceGroup("3:a c2^1 p_2_1_1 p_2x")
     , new SpaceGroup("4:b c2^2 p_1_21_1 p_2yb") //full name
     , new SpaceGroup("4:b c2^2 p_21 p_2yb")

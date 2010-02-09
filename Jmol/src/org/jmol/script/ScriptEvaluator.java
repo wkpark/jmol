@@ -6884,7 +6884,6 @@ public class ScriptEvaluator {
           htParams.put("packed", Boolean.TRUE);
           sOptions += " PACKED";
         }
-        int iGroup = -1;
         float distance = 0;
         /*
          * # Jmol 11.3.9 introduces the capability of visualizing the close
@@ -6909,28 +6908,18 @@ public class ScriptEvaluator {
           sOptions += " range " + distance;
         }
         htParams.put("symmetryRange", new Float(distance));
+        String spacegroup = null;
+        float[] fparams = null;
+        int iGroup = Integer.MIN_VALUE;
         if (tokAt(i) == Token.spacegroup) {
           ++i;
-          String spacegroup = TextFormat.simpleReplace(parameterAsString(i++),
+          spacegroup = TextFormat.simpleReplace(parameterAsString(i++),
               "''", "\"");
           sOptions += " spacegroup " + Escape.escape(spacegroup);
-          if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
-            iGroup = -999;
-          } else {
-            if (spacegroup.indexOf(",") >= 0) // Jones Faithful
-              if ((lattice.x < 9 && lattice.y < 9 && lattice.z == 0))
-                spacegroup += "#doNormalize=0";
-            iGroup = viewer.getSymmetry().determineSpaceGroupIndex(spacegroup);
-            if (iGroup == -1)
-              iGroup = -2;
-            htParams.put("spaceGroupName", spacegroup);
-          }
-          htParams.put("spaceGroupIndex", new Integer(iGroup));
         }
         if (tokAt(i) == Token.unitcell) {
           ++i;
-          htParams.put("spaceGroupIndex", new Integer(iGroup));
-          float[] fparams = floatParameterSet(i, 6, 6);
+          fparams = floatParameterSet(i, 6, 6);
           i = iToken;
           sOptions += " unitcell {";
           for (int j = 0; j < 6; j++)
@@ -6938,6 +6927,21 @@ public class ScriptEvaluator {
           sOptions += "}";
           htParams.put("unitcell", fparams);
         }
+        if (spacegroup != null) {
+          if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
+            iGroup = -999;
+          } else {
+            if (spacegroup.indexOf(",") >= 0) // Jones Faithful
+              if ((lattice.x < 9 && lattice.y < 9 && lattice.z == 0))
+                spacegroup += "#doNormalize=0";
+            iGroup = -2;
+            htParams.put("spaceGroupName", spacegroup);
+          }
+        }         
+        if (fparams != null && iGroup == Integer.MIN_VALUE)
+            iGroup = -1;
+        if (iGroup != Integer.MIN_VALUE)
+          htParams.put("spaceGroupIndex", new Integer(iGroup));
       }
       if (tokAt(i) == Token.filter) {
         String filter = stringParameter(++i);

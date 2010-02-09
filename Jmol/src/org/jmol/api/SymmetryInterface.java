@@ -49,8 +49,6 @@ public interface SymmetryInterface {
 
   public abstract boolean haveSpaceGroup();
 
-  public abstract int determineSpaceGroupIndex(String name);
-
   public abstract String getSpaceGroupInfo(String name, SymmetryInterface cellInfo);
 
   public abstract Object getLatticeDesignation();
@@ -123,5 +121,6 @@ public interface SymmetryInterface {
   public abstract Object[] getSymmetryOperationDescription(int iSym,
                                                          SymmetryInterface cellInfo, 
                                                          Point3f pt1, Point3f pt2, String id);
+
   
 }

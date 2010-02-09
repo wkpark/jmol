@@ -4606,8 +4606,13 @@ public class ScriptEvaluator {
           display(true);
           break;
         case Token.exit: // flush the queue and...
-          if (!isSyntaxCheck && pc > 0)
+        case Token.quit: // quit this only if it isn't the first command
+          if (isSyntaxCheck)
+            break;
+          if (pc > 0 && token.tok == Token.exit)
             viewer.clearScriptQueue();
+          interruptExecution = (pc > 0 || !viewer.usingScriptQueue());
+          break;
         case Token.exitjmol:
           if (isSyntaxCheck || viewer.isApplet())
             return;
@@ -4685,10 +4690,6 @@ public class ScriptEvaluator {
           break;
         case Token.ramachandran:
           dataFrame(JmolConstants.JMOL_DATA_RAMACHANDRAN);
-          break;
-        case Token.quit: // quit this only if it isn't the first command
-          if (!isSyntaxCheck)
-            interruptExecution = (pc > 0 || !viewer.usingScriptQueue());
           break;
         case Token.refresh:
           refresh();

@@ -140,11 +140,6 @@ public class Symmetry implements SymmetryInterface {
     return (spaceGroup != null);
   }
 
-  public int determineSpaceGroupIndex(String name,
-                                               float[] notionalUnitCell) {
-    return SpaceGroup.determineSpaceGroupIndex(name, notionalUnitCell);
-  }
-
   public String getSpaceGroupInfo(String name, SymmetryInterface cellInfo) {
     return SpaceGroup.getInfo(name, cellInfo);
   }

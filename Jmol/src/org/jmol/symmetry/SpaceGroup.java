@@ -121,22 +121,6 @@ class SpaceGroup {
     return sg;
   }
 
-  static int determineSpaceGroupIndex(String name, float[] cell) {
-    if (cell == null)
-      return determineSpaceGroupIndex(name, 0, 0, 0, 0, 0, 0, -1);
-    return determineSpaceGroupIndex(name, cell[0], cell[1], cell[2], cell[3],
-        cell[4], cell[5], -1);
-  }
-
-  static SpaceGroup determineSpaceGroup(String name, float a,
-                                                     float b, float c,
-                                                     float alpha, float beta,
-                                                     float gamma, int lastIndex) {
-    
-    int i = determineSpaceGroupIndex(name, a, b, c, alpha, beta,  gamma, lastIndex);
-    return (i >=0 ? spaceGroupDefinitions[i] : null);
-  }
-
   int addSymmetry(String xyz, int opId) {
     xyz = xyz.toLowerCase();
     if (xyz.indexOf("[[") < 0 && 
@@ -357,23 +341,6 @@ class SpaceGroup {
     return sg;
   }
   
-  private final static SpaceGroup determineSpaceGroup(String name) {
-    return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);
-  }
-
-  private final static SpaceGroup determineSpaceGroup(String name, SpaceGroup sg) {
-    return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, sg.index);
-  }
-
-  private final static SpaceGroup determineSpaceGroup(String name,
-                                                     float[] notionalUnitcell) {
-    if (notionalUnitcell == null)
-      return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);
-    return determineSpaceGroup(name, notionalUnitcell[0], notionalUnitcell[1],
-        notionalUnitcell[2], notionalUnitcell[3], notionalUnitcell[4],
-        notionalUnitcell[5], -1);
-  }
-
   Hashtable xyzList = new Hashtable();
   private int addOperation(String xyz0, int opId) {
     if (xyz0 == null || xyz0.length() < 3) {
@@ -469,6 +436,33 @@ class SpaceGroup {
       return;
     SymmetryOperation symmetryOperation = operations[iop];
     symmetryOperation.set(operation);
+  }
+
+  private final static SpaceGroup determineSpaceGroup(String name) {
+    return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);
+  }
+
+  private final static SpaceGroup determineSpaceGroup(String name, SpaceGroup sg) {
+    return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, sg.index);
+  }
+
+  private final static SpaceGroup determineSpaceGroup(String name,
+                                                     float[] notionalUnitcell) {
+    if (notionalUnitcell == null)
+      return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);
+    return determineSpaceGroup(name, notionalUnitcell[0], notionalUnitcell[1],
+        notionalUnitcell[2], notionalUnitcell[3], notionalUnitcell[4],
+        notionalUnitcell[5], -1);
+  }
+
+  private final static SpaceGroup determineSpaceGroup(String name, float a, float b,
+                                                float c, float alpha,
+                                                float beta, float gamma,
+                                                int lastIndex) {
+
+    int i = determineSpaceGroupIndex(name, a, b, c, alpha, beta, gamma,
+        lastIndex);
+    return (i >= 0 ? spaceGroupDefinitions[i] : null);
   }
 
   private final static int determineSpaceGroupIndex(String name, float a,

@@ -8286,9 +8286,9 @@
   <fah_proj number="6325" name="p6325" public="y"
     server="171.64.65.60" atoms="6397" preferred="10" deadline="20"
     credit="104" frames="100" code="G" contact="vvoelz"/>
-  <fah_proj number="6326" name="p6326" public="y"
+  <fah_proj number="6326" name="p6326" public="y" file="xyz"
     server="171.64.65.60" atoms="6397" preferred="10" deadline="20"
-    credit="104" frames="100" code="G" contact="vvoelz"/>
+    credit="104" frames="100" code="G" contact="vvoelz" contrib="Bas Couwenberg"/>
   <fah_proj number="6327" name="p6327" public="y" file="xyz"
     server="171.64.65.60" atoms="15097" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz"/>
@@ -8376,12 +8376,18 @@
   <fah_proj number="10103" name="p10103" public="y"
     server="171.64.65.71" atoms="1254" preferred="2" deadline="3"
     credit="548" frames="100" code="GG2" contact="gbowman"/>
+  <fah_proj number="10104" name="p10104" public="y"
+    server="171.64.65.71" atoms="1254" preferred="2" deadline="3"
+    credit="548" frames="100" code="GG2" contact="gbowman"/>
 
   <!-- Projects 10500 to 10599 -->
   <fah_proj number="10501" name="p10501" public="y"
     server="171.67.108.21" atoms="908" preferred="8" deadline="12"
     credit="587" frames="100" code="GG2" contact="vvoelz"/>
   <fah_proj number="10502" name="p10502" public="y"
+    server="171.67.108.21" atoms="908" preferred="8" deadline="12"
+    credit="587" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="10503" name="p10503" public="y"
     server="171.67.108.21" atoms="908" preferred="8" deadline="12"
     credit="587" frames="100" code="GG2" contact="vvoelz"/>
 

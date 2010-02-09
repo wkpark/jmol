@@ -683,9 +683,9 @@ class SpaceGroup {
       ambiguousNames += hmSymbol + ";";
     lastInfo = info;
 
-    System.out.println(intlTableNumber + (intlTableNumberExt.equals("") ? "" : ":" + intlTableNumberExt) + "\t"
-        + hmSymbol + "\t" + hmSymbolAbbr + "\t" + hmSymbolAbbrShort + "\t"
-        + hallSymbol);
+//    System.out.println(intlTableNumber + (intlTableNumberExt.equals("") ? "" : ":" + intlTableNumberExt) + "\t"
+  //      + hmSymbol + "\t" + hmSymbolAbbr + "\t" + hmSymbolAbbrShort + "\t"
+    //    + hallSymbol);
   }
 
   

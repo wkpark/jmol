@@ -145,6 +145,9 @@
   Miguel Howard$^2$
   \email{Miguel Howard - miguel@jmol.org}
 \and
+  Bradley A Smith$^2$
+  \email{Bradley A Smith - ??@jmol.org}
+\and
   Nicolas Vervelle$^2$
   \email{Nicolas Vervelle - egonw@jmol.org}
 \and
@@ -187,15 +190,24 @@
 
 
 \begin{abstract}
-        % Do not use inserted blank lines (ie \\) until main body of text.
-        \paragraph*{Background:} Text for this section of the abstract. 
+\paragraph*{Background:}
+
+Computer graphics for chemistry was established in the 50-ties, but not
+until the 90-ties they become common place on the desktop; many dedicated
+programs ... Closed-source, depending in specific hardware ...
+Web browser posed additional restrictions on the use of accelerated
+graphics; Java3D was not easily installed in browsers. Existing projects
+were abondoned, such as Chime.
       
-        \paragraph*{Results:} Text for this section of the abstract \ldots
+\paragraph*{Results:}
 
-        \paragraph*{Conclusions:} Text for this section of the abstract \ldots
+This paper describes the Open Source Jmol project and it's main product,
+the Jmol graphical library, and it's applications in molecular graphics.
+
+\paragraph*{Conclusions:}
+The Jmol project has delivered ...
+
 \end{abstract}
-
-
 
 \ifthenelse{\boolean{publ}}{\begin{multicols}{2}}{}
 
@@ -235,28 +247,22 @@
 %%
 \section*{Background}
 
+\subsection*{History}
+
+Describe the various milestones in Jmol development...
+
+In 1997 the Jmol project was initiated with the aim ... scripting was
+added in 199* and an applet version was written in 
 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Results and Discussion %%
 %%
 \section*{Results and Discussion}
-  \subsection*{Results sub-heading}
-    \subsubsection*{This is a sub-sub-heading}
-      Sub-sub-sub-headings are made with the \textsl{\\subsubsection} command. \pb
-      pb at end of lines ensures correct paragraph spacing.\pb
-	  Text for this sub-sub-section \ldots
-    \subsubsection*{Another sub-sub-sub-heading}
-      Text for this sub-sub-section \ldots
+  \subsection*{Fast non-accelerated graphics}
 
-  \subsection*{Another results sub-heading}
+  \subsection*{Extensive scripting functionality}
     Text for this sub-section \ldots
-
-  \subsection*{Yet another results sub-heading}
-    Text for this sub-section.  More results \ldots
-
-
-    
 
 %%%%%%%%%%%%%%%%%%%%%%
 \section*{Conclusions}
@@ -265,31 +271,32 @@
 
   
 %%%%%%%%%%%%%%%%%%
-\section*{Methods}
-  \subsection*{Methods sub-heading for this section}
-    Text for this sub-section \ldots
-
-  \subsection*{Another methods sub-heading for this section}
-    Text for this sub-section \ldots
-
-  \subsection*{Yet another sub-heading for this section}
-    Text for this sub-section \ldots
+%\section*{Methods}
+%  \subsection*{Methods sub-heading for this section}
+%    Text for this sub-section \ldots
+%
+%  \subsection*{Another methods sub-heading for this section}
+%    Text for this sub-section \ldots
+%
+%  \subsection*{Yet another sub-heading for this section}
+%    Text for this sub-section \ldots
 
 
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Authors contributions}
-    Text for this section \ldots
-
-    
+DG initiated the project and wrote the initial Jmol program.
+BAS, ELW, MH and RH have been subsequent project leaders.
+All authors significantly contributed to the Jmol project
+and have been involved in writing.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgements}
-  \ifthenelse{\boolean{publ}}{\small}{}
-  Text for this section \ldots
+\ifthenelse{\boolean{publ}}{\small}{}
+The authors acknowledge all Jmol users who have given valuable
+feedback, such as, bug reports, feature requests, or code
+contributions.
 
-
- 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                  The Bibliography                       %%
 %%                                                         %%              

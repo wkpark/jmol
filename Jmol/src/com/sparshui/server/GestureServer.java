@@ -117,9 +117,11 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
       else
         _mySocket = main._deviceSocket = new ServerSocket(port);
       Logger.info("[GestureServer] Socket Open: " + port);
+      myState = JmolGestureServerInterface.OK;  
     } catch (IOException e) {
       Logger.error("[GestureServer] Failed to open a server socket.");
       e.printStackTrace();
+      myState = 0;  
     }
   }
 
@@ -175,6 +177,8 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
     main._clients.add(cc);
     if (main.ic == null) {
       cc.processError(EventType.DRIVER_NONE);
+    } else {
+      myState |= JmolGestureServerInterface.HAS_CLIENT;  
     }
   }
 
@@ -186,6 +190,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   private void acceptInputDeviceConnection(Socket socket) throws IOException {
     Logger.info("[GestureServer] Input device connection accepted");
     main.ic = new InputDeviceConnection(this, socket);
+    myState |= JmolGestureServerInterface.HAS_DRIVER;
   }
 
   /**
@@ -197,6 +202,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
     Logger
         .error("[GestureServer] sending clients message that input device was lost.");
     main.ic = null;
+    myState &= ~JmolGestureServerInterface.HAS_DRIVER;
     processBirth(null);
   }
 
@@ -271,6 +277,11 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
         Logger.info("[GestureServer] Client Disconnected");
       }
     return isClaimed;
+  }
+
+  private int myState;
+  public int getState() {
+    return myState;
   }
 
 }

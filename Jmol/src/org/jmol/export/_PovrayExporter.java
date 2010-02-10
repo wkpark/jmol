@@ -57,7 +57,11 @@ public class _PovrayExporter extends __RayTracerExporter {
     output("//\n");
     output("// This script was generated on " + getExportDate() + "\n");
     output("// ******************************************************\n");
+    try {
     output(viewer.getWrappedState(true));
+    } catch (Exception e) {
+      // tough luck
+    }
     output("\n");
     output("// ******************************************************\n");
     output("// Declare the resolution, camera, and light sources.\n");

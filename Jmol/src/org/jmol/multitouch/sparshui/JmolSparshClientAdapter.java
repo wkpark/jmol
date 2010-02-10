@@ -23,7 +23,7 @@
  */
 package org.jmol.multitouch.sparshui;
 
-import java.io.File;
+//import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -100,13 +100,21 @@ public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter impleme
   }
   
   private JmolGestureServerInterface gestureServer;
-  public void setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
+  public boolean setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
                               boolean isSimulation) {
     super.setMultiTouchClient(viewer, client, isSimulation);
     String err;
     gestureServer = (JmolGestureServerInterface) Interface
         .getInterface("com.sparshui.server.GestureServer");
     gestureServer.startGestureServer();
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e1) {
+      // ignore
+    }
+    isServer = ((gestureServer.getState() & JmolGestureServerInterface.OK) != 0);
+
+    /*    
     if (true || isSimulation) {
       Logger.info("JmolSparshClientAdapter skipping driver startup");
     } else {
@@ -126,11 +134,12 @@ public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter impleme
         System.out.println(e.getMessage());
       }
     }
+*/
     int port = NetworkConfiguration.CLIENT_PORT;
     try {
       serverConnection = new ClientServerConnection("127.0.0.1", this);
       Logger.info("SparshUI connection established at 127.0.0.1 port " + port);
-      return;
+      return true;
     } catch (UnknownHostException e) {
       err = e.getMessage();
     } catch (IOException e) {
@@ -139,6 +148,7 @@ public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter impleme
     actionManager = null;
     Logger.error("Cannot create SparshUI connection at 127.0.0.1 port " + port
         + ": " + err);
+    return false;
   }
   
   // methods the Sparsh server needs -- from com.sparshui.client.ClientToServerProtocol

@@ -33,6 +33,7 @@ public class JmolJniClientAdapter extends JmolMultiTouchClientAdapter implements
 
   // not implemented. A stub only for a potential Java Native Interface.
   // not currently in applet.classes
+  // would need to set isServer flag
 
   static {
     System.loadLibrary("JmolMultiTouchJNI");
@@ -44,16 +45,18 @@ public class JmolJniClientAdapter extends JmolMultiTouchClientAdapter implements
     //TODO
   }
 
-  public void setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
+  public boolean setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
                                   boolean isSimulation) {
     try {
       // in principle, we could set up our own device driver here
       // and probably talk to it using ports. SparshUI is easier.
       //TODO
       nativeMethod();
+      return true;
     } catch (Exception e) {
       System.out.println("JmolJniClientAdapter error -- nativeMethod");
     }
+    return false;
   }
   
   public void callback() {

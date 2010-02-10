@@ -151,7 +151,7 @@ public class FastBitSet implements Cloneable {
 
   public int length() {
     int i = bitmapGetMinimumWordCount(bitmap);
-    return (i << F_ADDRESS_BITS_PER_WORD) - numberOfLeadingZeros(bitmap[i - 1]);
+    return (i == 0 ? 0 : (i << F_ADDRESS_BITS_PER_WORD) - numberOfLeadingZeros(bitmap[i - 1]));
   }
 
   public int nextSetBit(int fromIndex) {

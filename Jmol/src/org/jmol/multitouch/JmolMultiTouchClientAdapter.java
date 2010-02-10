@@ -40,15 +40,21 @@ public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapt
 
   protected JmolMultiTouchClient actionManager;
   protected Component display;
+  protected boolean isServer;
+  
+  public boolean isServer() {
+    return isServer;
+  }
   
   // methods Jmol needs -- from viewer.ActionManagerMT
 
   public abstract void dispose();
   
-  public void setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
+  public boolean setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
                               boolean isSimulation) {
     this.display = viewer.getDisplay();
     actionManager = client; // ActionManagerMT
+    return true;
   }
   
   private static int screenWidth, screenHeight;

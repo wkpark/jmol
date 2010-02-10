@@ -381,6 +381,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean listCommands = false;
   private boolean useCommandThread = false;
   private boolean isSignedApplet = false;
+  private boolean isSignedAppletLocal = false;
   private boolean isDataOnly = false;
 
   private String appletContext;
@@ -416,6 +417,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         logFilePath = TextFormat.simpleReplace(logFilePath, "file:/", "");
         if (logFilePath.indexOf("//") >= 0)
           logFilePath = null;
+        else
+          isSignedAppletLocal = true;
       } else {
         logFilePath = null;
       }
@@ -2802,7 +2805,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getWrappedState(boolean isImage) {
-    if (isImage && !global.imageState)
+    if (isImage && !global.imageState || !global.preserveState)
       return "";
     // we remove local file references in the embedded states for images
     return JmolConstants.embedScript(FileManager.setScriptFileReferences(
@@ -2816,6 +2819,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public final static String STATE_VERSION_STAMP = "# Jmol state version ";
 
   public String getStateInfo(String type) {
+    if (!global.preserveState)
+      return "";
     boolean isAll = (type == null || type.equalsIgnoreCase("all"));
     StringBuffer s = new StringBuffer("");
     StringBuffer sfunc = (isAll ? new StringBuffer("function _setState() {\n")
@@ -6410,7 +6415,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean getShowFrank() {
     if (isPreviewOnly || isApplet && creatingImage)
       return false;
-    return (isSignedApplet || frankOn);
+    return (isSignedApplet && !isSignedAppletLocal || frankOn);
   }
 
   public boolean isSignedApplet() {
@@ -7966,6 +7971,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 1) turns UNDO off for the application 2) turns history off 3) prevents
    * saving of inlinedata for later LOAD "" commands 4) turns off the saving of
    * changed atom properties 5) does not guarantee accurate state representation
+   * 6) disallows generation of the state
    * 
    * It is useful in situations such as web sites where memory is an issue and
    * there is no need for such.
@@ -8045,6 +8051,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } catch (Exception e) {
       Logger.debug("cannot log " + data);
     }
+  }
+
+  public void setMultiTouch(boolean isServer, boolean isClient) {
+    global.setParameterValue("_multiTouchServer", isServer);
+    global.setParameterValue("_multiTouchClient", isClient);
   }
 
 }

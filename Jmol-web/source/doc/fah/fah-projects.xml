@@ -8283,7 +8283,7 @@
   <fah_proj number="6324" name="p6324" public="y"
     server="171.64.65.60" atoms="6397" preferred="10" deadline="20"
     credit="104" frames="100" code="G" contact="vvoelz"/>
-  <fah_proj number="6325" name="p6325" public="y"
+  <fah_proj number="6325" name="p6325" public="y" file="xyz"
     server="171.64.65.60" atoms="6397" preferred="10" deadline="20"
     credit="104" frames="100" code="G" contact="vvoelz"/>
   <fah_proj number="6326" name="p6326" public="y" file="xyz"

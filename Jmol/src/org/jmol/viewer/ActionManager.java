@@ -390,6 +390,17 @@ public class ActionManager {
   private boolean isAltKeyReleased = true;  
   private boolean keyProcessing;
 
+  protected boolean isMultiTouchClient;
+  protected boolean isMultiTouchServer;
+
+  boolean isMTClient() {
+    return isMultiTouchClient;
+  }
+
+  boolean isMTServer() {
+    return isMultiTouchServer;
+  }
+
   void dispose() {
     clear();
   }

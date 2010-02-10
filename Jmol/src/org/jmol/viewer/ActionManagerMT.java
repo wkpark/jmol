@@ -78,9 +78,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     if (isSimulated)
       Logger.error("ActionManagerMT -- for now just using touch simulation.\nPress CTRL-LEFT and then draw two traces on the window.");    
 
-    boolean isClient = adapter.setMultiTouchClient(viewer, this, isSimulated);
-    boolean isServer = adapter.isServer();
-    viewer.setMultiTouch(isServer, isClient);
+    isMultiTouchClient = adapter.setMultiTouchClient(viewer, this, isSimulated);
+    isMultiTouchServer = adapter.isServer();
     if (isSimulated) {
       simulator = (JmolTouchSimulatorInterface) Interface
       .getInterface("com.sparshui.inputdevice.JmolTouchSimulator");

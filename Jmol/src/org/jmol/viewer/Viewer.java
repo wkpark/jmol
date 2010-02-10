@@ -561,12 +561,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void initialize() {
     global = stateManager.getGlobalSettings(global);
-    setBooleanProperty("_applet", isApplet);
-    setBooleanProperty("_signedApplet", isSignedApplet);
-    setBooleanProperty("_useCommandThread", useCommandThread);
+    global.setParameterValue("_applet", isApplet);
+    global.setParameterValue("_signedApplet", isSignedApplet);
+    global.setParameterValue("_useCommandThread", useCommandThread);
     global.setParameterValue("_width", dimScreen.width);
     global.setParameterValue("_height", dimScreen.height);
-
+    if (haveDisplay) {
+      global.setParameterValue("_multiTouchClient", actionManager.isMTClient());
+      global.setParameterValue("_multiTouchServer", actionManager.isMTServer());
+    }
     colorManager.resetElementColors();
     setObjectColor("background", "black");
     setObjectColor("axis1", "red");
@@ -1620,7 +1623,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   Rectangle getRubberBandSelection() {
-    return actionManager.getRubberBand();
+    return (haveDisplay ? actionManager.getRubberBand() : null);
   }
 
   public boolean isBound(int action, int gesture) {
@@ -4319,6 +4322,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       pickingMode = JmolConstants.getPickingMode(mode);
     if (pickingMode < 0)
       pickingMode = JmolConstants.PICKING_IDENTIFY;
+    if (haveDisplay)
     actionManager.setPickingMode(pickingMode);
     global.setParameterValue("picking", JmolConstants
         .getPickingModeName(actionManager.getPickingMode()));
@@ -5103,13 +5107,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     switch (tok) {
     case Token.gestureswipefactor:
-      actionManager.setGestureSwipeFactor(value);
+      if (haveDisplay)
+        actionManager.setGestureSwipeFactor(value);
       break;
     case Token.mousedragfactor:
-      actionManager.setMouseDragFactor(value);
+      if (haveDisplay)
+        actionManager.setMouseDragFactor(value);
       break;
     case Token.mousewheelfactor:
-      actionManager.setMouseWheelFactor(value);
+      if (haveDisplay)
+        actionManager.setMouseWheelFactor(value);
       break;
     case Token.strutlengthmaximum:
       // 11.9.21
@@ -7892,9 +7899,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void unBindAction(String desc, String name) {
-    if (!haveDisplay)
-      return;
-    actionManager.unbindAction(desc, name);
+    if (haveDisplay)
+      actionManager.unbindAction(desc, name);
   }
 
   public Object getMouseInfo() {
@@ -7906,13 +7912,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setTimeout(String name, int mSec, String script) {
-    if (!haveDisplay)
-      return;
-    actionManager.setTimeout(name, mSec, script);
+    if (haveDisplay)
+      actionManager.setTimeout(name, mSec, script);
   }
 
   public String showTimeout(String name) {
-    return actionManager.showTimeout(name);
+    return (haveDisplay ? actionManager.showTimeout(name) : "");
   }
 
   public int getFrontPlane() {
@@ -8051,11 +8056,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } catch (Exception e) {
       Logger.debug("cannot log " + data);
     }
-  }
-
-  public void setMultiTouch(boolean isServer, boolean isClient) {
-    global.setParameterValue("_multiTouchServer", isServer);
-    global.setParameterValue("_multiTouchClient", isClient);
   }
 
 }

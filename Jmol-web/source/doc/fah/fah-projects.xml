@@ -8268,9 +8268,9 @@
   <fah_proj number="6319" name="p6319" public="y" file="xyz"
     server="171.64.65.60" atoms="6414" preferred="10" deadline="20"
     credit="106" frames="100" code="G" contact="vvoelz"/>
-  <fah_proj number="6320" name="p6320" public="y"
+  <fah_proj number="6320" name="p6320" public="y" file="xyz"
     server="171.64.65.60" atoms="6384" preferred="10" deadline="20"
-    credit="104" frames="100" code="G" contact="vvoelz"/>
+    credit="104" frames="100" code="G" contact="vvoelz" contrib="Igor Miranda"/>
   <fah_proj number="6321" name="p6321" public="y" file="xyz"
     server="171.64.65.60" atoms="6414" preferred="10" deadline="20"
     credit="106" frames="100" code="G" contact="vvoelz"/>

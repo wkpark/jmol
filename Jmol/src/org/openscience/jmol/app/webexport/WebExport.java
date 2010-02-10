@@ -53,6 +53,7 @@ import org.jmol.api.JmolViewer;
 import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Parser;
 
 public class WebExport extends JPanel implements WindowListener {
 
@@ -79,7 +80,11 @@ public class WebExport extends JPanel implements WindowListener {
     localAppletPath = historyFile.getProperty("webMakerLocalAppletPath", "..");
     pageAuthorName = historyFile.getProperty("webMakerPageAuthorName",
         GT._("Jmol Web Page Maker"));
-
+    popInWidth=Parser.parseInt(historyFile.getProperty("webMakerPopInWidth", "300"));
+    popInHeight=Parser.parseInt(historyFile.getProperty("webMakerPopInHeight", "300"));
+    scriptButtonPercent = Parser.parseInt(historyFile.getProperty(
+        "webMakerScriptButtonPercent", "60"));
+    
     //Define the tabbed pane
     JTabbedPane mainTabs = new JTabbedPane();
 
@@ -264,6 +269,43 @@ public class WebExport extends JPanel implements WindowListener {
     historyFile.addProperties(prop);
   }
 
+  static int popInWidth;
+  static int popInHeight;
+ 
+  static void setPopInDim(int appletWidth, int appletHeight) {
+    if (appletWidth<25||appletWidth>3000)
+      appletWidth = 300;
+    if (appletHeight<25||appletHeight>3000)
+      appletHeight = 300;
+    popInWidth=appletWidth;
+    popInHeight=appletHeight;
+    prop.setProperty("webMakerPopInWidth", ""+appletWidth);
+    prop.setProperty("webMakerPopInHeight", ""+appletHeight);
+    historyFile.addProperties(prop);
+  }
+  
+  static int getPopInWidth(){
+    return popInWidth;
+  }
+  
+  static int getPopInHeight(){
+    return popInHeight;
+  }
+  
+  static int scriptButtonPercent;
+  
+  static void setScriptButtonPercent(int percent){
+    if (percent <10 || percent > 90)
+      percent = 60;
+    scriptButtonPercent = percent;
+    prop.setProperty("webMakerScriptButtonPercent", ""+percent);
+    historyFile.addProperties(prop);
+  }
+  
+  static int getScriptButtonPercent(){
+    return scriptButtonPercent;
+  }
+  
   static JFrame getFrame() {
     return webFrame;
   }

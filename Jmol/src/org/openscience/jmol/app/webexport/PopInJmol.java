@@ -25,36 +25,43 @@
 package org.openscience.jmol.app.webexport;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
 
-class PopInJmol extends WebPanel {
+class PopInJmol extends WebPanel implements ChangeListener {
 
   PopInJmol(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels,
       int panelIndex) {
     super(viewer, fc, webPanels, panelIndex);
     panelName = "pop_in";
     listLabel = GT._("These names will be used as filenames for the applets");
-    //description = "Create a web page with images that convert to live Jmol applets when a user clicks a link";
+    // description = "Create a web page with images that convert to live Jmol
+    // applets when a user clicks a link";
   }
 
   JPanel appletParamPanel() {
-    //Create the appletSize spinner so the user can decide how big
-    //the applet should be.
-    SpinnerNumberModel appletSizeModelW = new SpinnerNumberModel(300, //initial value
-        50, //min
-        1000, //max
-        25); //step size
-    SpinnerNumberModel appletSizeModelH = new SpinnerNumberModel(300, //initial value
-        50, //min
-        1000, //max
-        25); //step size
+    // Create the appletSize spinner so the user can decide how big
+    // the applet should be.
+    SpinnerNumberModel appletSizeModelW = new SpinnerNumberModel(WebExport
+        .getPopInWidth(), // initial value
+        50, // min
+        1000, // max
+        25); // step size
+    SpinnerNumberModel appletSizeModelH = new SpinnerNumberModel(WebExport
+        .getPopInHeight(), // initial value
+        50, // min
+        1000, // max
+        25); // step size
     appletSizeSpinnerW = new JSpinner(appletSizeModelW);
+    appletSizeSpinnerW.addChangeListener(this);
     appletSizeSpinnerH = new JSpinner(appletSizeModelH);
+    appletSizeSpinnerH.addChangeListener(this);
 
-    //panel to hold spinner and label
+    // panel to hold spinner and label
     JPanel appletSizeWHPanel = new JPanel();
     appletSizeWHPanel.add(new JLabel(GT._("Applet width:")));
     appletSizeWHPanel.add(appletSizeSpinnerW);
@@ -75,14 +82,14 @@ class PopInJmol extends WebPanel {
     int JmolSizeW = instance.width;
     int JmolSizeH = instance.height;
     if (useAppletJS) {
-      appletInfoDivs += "\n<div id=\"" + javaname + "_caption\">\n" 
+      appletInfoDivs += "\n<div id=\"" + javaname + "_caption\">\n"
           + GT.escapeHTML(GT._("insert a caption for {0} here.", name))
           + "\n</div>";
       appletInfoDivs += "\n<div id=\"" + javaname + "_note\">\n"
           + GT.escapeHTML(GT._("insert a note for {0} here.", name))
           + "\n</div>";
-      appletDefs.append("\naddJmolDiv(" + i + ",'" + divClass + "','" + javaname
-          + "'," + JmolSizeW + "," + JmolSizeH + ")");
+      appletDefs.append("\naddJmolDiv(" + i + ",'" + divClass + "','"
+          + javaname + "'," + JmolSizeW + "," + JmolSizeH + ")");
     } else {
       String s = htmlAppletTemplate;
       s = TextFormat.simpleReplace(s, "@CLASS@", "" + divClass);
@@ -94,5 +101,33 @@ class PopInJmol extends WebPanel {
       appletDefs.append(s);
     }
     return html;
+  }
+
+  public void stateChanged(ChangeEvent e) {
+    if (e.getSource() == appletSizeSpinnerW
+        || e.getSource() == appletSizeSpinnerH) {
+      int width = ((SpinnerNumberModel) (appletSizeSpinnerW.getModel()))
+          .getNumber().intValue();
+      int height = ((SpinnerNumberModel) (appletSizeSpinnerH.getModel()))
+          .getNumber().intValue();
+      WebExport.setPopInDim(width, height);
+      DefaultListModel listModel = (DefaultListModel) getInstanceList()
+          .getModel();
+      int[] list = getInstanceList().getSelectedIndices();
+      if (list.length != 1)//may want to make this work on multiple selections
+        return;
+      JmolInstance instance = (JmolInstance) listModel.get(list[0]);
+      instance.width = width;
+      instance.height = height;
+      viewer.createImage(instance.pictFile, "PNG", null, 2, width, height);
+      return;
+    }
+
+    if (e.getSource() == appletSizeSpinnerP) {
+      int percent = ((SpinnerNumberModel) (appletSizeSpinnerP.getModel()))
+          .getNumber().intValue();
+      WebExport.setScriptButtonPercent(percent);
+      return;
+    }
   }
 }

@@ -41,7 +41,7 @@ class ScriptButtons extends WebPanel {
   }
 
   JPanel appletParamPanel() {
-    SpinnerNumberModel appletSizeModel = new SpinnerNumberModel(60, //initial value
+    SpinnerNumberModel appletSizeModel = new SpinnerNumberModel(WebExport.getScriptButtonPercent(), //initial value
         20, //min
         100, //max
         5); //step size

@@ -37,6 +37,8 @@ import java.util.Vector;
 import java.util.zip.GZIPOutputStream;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
@@ -45,31 +47,33 @@ import org.jmol.viewer.FileManager;
 import org.openscience.jmol.app.jmolpanel.HelpDialog;
 
 /*
- * an abstract class used as the basis for the tabbed panels
- * in WebExport. (PopInJmol and ScriptButtons)
- *  
+ * an abstract class used as the basis for the tabbed panels in WebExport.
+ * (PopInJmol and ScriptButtons)
+ * 
  */
-abstract class WebPanel extends JPanel implements ActionListener {
+abstract class WebPanel extends JPanel implements ActionListener,
+    ListSelectionListener {
 
   abstract String getAppletDefs(int i, String html, StringBuffer appletDefs,
                                 JmolInstance instance);
 
   abstract String fixHtml(String html);
 
-  abstract JPanel appletParamPanel(); //should be defined in the code for the specific case e.g. ScriptButtons.java
+  abstract JPanel appletParamPanel(); // should be defined in the code for the
+                                      // specific case e.g. ScriptButtons.java
 
-  protected String panelName; //pop_in or script_button
+  protected String panelName; // pop_in or script_button
 
-//  infoFile = "pop_in_instructions";
-//  infoFileLocalized = "pop_in_instructions_" + lang + ".html";
-//  templateName = "pop_in_template.html";
-//  appletTemplateName = "pop_in_template2.html";
+  // infoFile = "pop_in_instructions";
+  // infoFileLocalized = "pop_in_instructions_" + lang + ".html";
+  // templateName = "pop_in_template.html";
+  // appletTemplateName = "pop_in_template2.html";
 
-  //protected String templateName;
-  //protected String infoFile;
-  //protected String appletTemplateName;
-  //protected String templateImage;
-  
+  // protected String templateName;
+  // protected String infoFile;
+  // protected String appletTemplateName;
+  // protected String templateImage;
+
   protected String htmlAppletTemplate;
   protected String listLabel;
   protected String appletInfoDivs;
@@ -82,10 +86,11 @@ abstract class WebPanel extends JPanel implements ActionListener {
   private JScrollPane editorScrollPane;
   private JButton saveButton, helpButton, addInstanceButton;
   private JButton deleteInstanceButton, showInstanceButton;
-  private JTextField remoteAppletPath, localAppletPath, pageAuthorName, webPageTitle;
+  private JTextField remoteAppletPath, localAppletPath, pageAuthorName,
+      webPageTitle;
   private JFileChooser fc;
   private JList instanceList;
-  private JmolViewer viewer;
+  protected JmolViewer viewer;
   private int panelIndex;
   private WebPanel[] webPanels;
 
@@ -95,14 +100,15 @@ abstract class WebPanel extends JPanel implements ActionListener {
     this.fc = fc;
     this.webPanels = webPanels;
     this.panelIndex = panelIndex;
-    //Create the text fields for the path to the Jmol applet, page author(s) name(s) and  web page title.
+    // Create the text fields for the path to the Jmol applet, page author(s)
+    // name(s) and web page title.
     remoteAppletPath = new JTextField(20);
     remoteAppletPath.addActionListener(this);
     remoteAppletPath.setText(WebExport.getAppletPath(true));
     localAppletPath = new JTextField(20);
     localAppletPath.addActionListener(this);
     localAppletPath.setText(WebExport.getAppletPath(false));
-    pageAuthorName= new JTextField(20);
+    pageAuthorName = new JTextField(20);
     pageAuthorName.addActionListener(this);
     pageAuthorName.setText(WebExport.getPageAuthorName());
     webPageTitle = new JTextField(20);
@@ -110,20 +116,21 @@ abstract class WebPanel extends JPanel implements ActionListener {
     webPageTitle.setText(GT._("A web page containing Jmol applets"));
   }
 
-  //Need the panel maker and the action listener.
+  // Need the panel maker and the action listener.
 
   JPanel getPanel(int infoWidth, int infoHeight) {
 
-    //For layout purposes, put things in separate panels
-   
-    //Create the list and list view to handle the list of 
-    //Jmol Instances.
+    // For layout purposes, put things in separate panels
+
+    // Create the list and list view to handle the list of
+    // Jmol Instances.
     instanceList = new JList(new DefaultListModel());
     instanceList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     instanceList.setTransferHandler(new ArrayListTransferHandler(this));
     instanceList.setCellRenderer(new InstanceCellRenderer());
     instanceList.setDragEnabled(true);
     instanceList.setPreferredSize(new Dimension(350, 200));
+    instanceList.addListSelectionListener(this);
 
     JScrollPane instanceListView = new JScrollPane(instanceList);
     instanceListView.setPreferredSize(new Dimension(350, 200));
@@ -134,8 +141,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
     instanceSet.add(new JLabel(GT._("double-click and drag to reorder")),
         BorderLayout.SOUTH);
 
-    //Create the Instance add button.
-    addInstanceButton = new JButton(GT._("Add Present Jmol State as Instance..."));
+    // Create the Instance add button.
+    addInstanceButton = new JButton(GT
+        ._("Add Present Jmol State as Instance..."));
     addInstanceButton.addActionListener(this);
 
     JPanel buttonPanel = new JPanel();
@@ -152,7 +160,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     JPanel paramPanel = appletParamPanel();
     paramPanel.setMaximumSize(new Dimension(350, 70));
 
-    //Instance selection
+    // Instance selection
     JPanel instanceButtonPanel = new JPanel();
     instanceButtonPanel.add(addInstanceButton);
     instanceButtonPanel.setSize(300, 70);
@@ -173,22 +181,26 @@ abstract class WebPanel extends JPanel implements ActionListener {
     rightPanel.setMaximumSize(new Dimension(350, 1000));
     rightPanel.add(paramPanel, BorderLayout.NORTH);
     rightPanel.add(instancePanel, BorderLayout.CENTER);
-    rightPanel.setBorder(BorderFactory.createTitledBorder(GT._("Jmol Instances:")));
+    rightPanel.setBorder(BorderFactory.createTitledBorder(GT
+        ._("Jmol Instances:")));
 
-    //Create the overall panel
+    // Create the overall panel
     JPanel panel = new JPanel();
     panel.setLayout(new BorderLayout());
 
     JPanel leftPanel = getLeftPanel(infoWidth, infoHeight);
     leftPanel.setMaximumSize(new Dimension(350, 1000));
 
-  
-    //Add everything to this panel.
+    // Add everything to this panel.
     panel.add(leftPanel, BorderLayout.CENTER);
     panel.add(rightPanel, BorderLayout.EAST);
 
     enableButtons(instanceList);
     return panel;
+  }
+
+  JList getInstanceList() {
+    return instanceList;
   }
 
   private JPanel getLeftPanel(int w, int h) {
@@ -208,17 +220,18 @@ abstract class WebPanel extends JPanel implements ActionListener {
     JPanel pageCartoonPanel = new JPanel();
     pageCartoonPanel.setLayout(new BorderLayout());
     pageCartoonPanel.setBorder(BorderFactory.createTitledBorder(GT
-        ._("Cartoon of Page")+":"));
+        ._("Cartoon of Page")
+        + ":"));
     pageCartoonPanel.add(pageCartoonLabel);
-    //   editorScrollPane = getInstructionPane(w, h);
+    // editorScrollPane = getInstructionPane(w, h);
 
-    //Create the save button. 
+    // Create the save button.
     saveButton = new JButton(GT._("Save HTML as..."));
     saveButton.addActionListener(this);
     JPanel savePanel = new JPanel();
     savePanel.add(saveButton);
 
-    //Path to applet panel
+    // Path to applet panel
 
     JPanel pathPanel = new JPanel();
     pathPanel.setLayout(new BorderLayout());
@@ -232,13 +245,13 @@ abstract class WebPanel extends JPanel implements ActionListener {
         ._("Relative local path to jar files:")));
     pathPanel2.add(localAppletPath, BorderLayout.NORTH);
 
-    //Page Author Panel
+    // Page Author Panel
     JPanel authorPanel = new JPanel();
     authorPanel.setBorder(BorderFactory.createTitledBorder(GT
         ._("Author (your name):")));
     authorPanel.add(pageAuthorName, BorderLayout.NORTH);
 
-    //Page Title Panel
+    // Page Title Panel
     JPanel titlePanel = new JPanel();
     titlePanel.setLayout(new BorderLayout());
     titlePanel.setBorder(BorderFactory.createTitledBorder(GT
@@ -256,10 +269,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
     settingsPanel.add(authorPanel, BorderLayout.CENTER);
     settingsPanel.add(titlePanel, BorderLayout.SOUTH);
 
-    //Combine previous three panels into one
+    // Combine previous three panels into one
     JPanel leftpanel = new JPanel();
     leftpanel.setLayout(new BorderLayout());
-    //   leftpanel.add(editorScrollPane, BorderLayout.CENTER);
+    // leftpanel.add(editorScrollPane, BorderLayout.CENTER);
     leftpanel.add(helpButton, BorderLayout.NORTH);
     leftpanel.add(pageCartoonPanel, BorderLayout.CENTER);
     leftpanel.add(settingsPanel, BorderLayout.SOUTH);
@@ -276,30 +289,34 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
   public void actionPerformed(ActionEvent e) {
 
-    if (e.getSource() == remoteAppletPath) {//apparently no events are fired to reach this, maybe "enter" does it
+    if (e.getSource() == remoteAppletPath) {// apparently no events are fired to
+                                            // reach this, maybe "enter" does it
       String path = remoteAppletPath.getText();
       WebExport.setAppletPath(path, true);
       return;
     }
 
-    if (e.getSource() == localAppletPath) {//apparently no events are fired to reach this, maybe "enter" does it
+    if (e.getSource() == localAppletPath) {// apparently no events are fired to
+                                            // reach this, maybe "enter" does it
       String path = localAppletPath.getText();
       WebExport.setAppletPath(path, false);
       return;
     }
 
-    //Handle open button action.
+    // Handle open button action.
     if (e.getSource() == addInstanceButton) {
-      //make dialog to get name for instance
-      //create an instance with this name.  Each instance is just a container for a string with the Jmol state
-      //which contains the full information on the file that is loaded and manipulations done.
+      // make dialog to get name for instance
+      // create an instance with this name. Each instance is just a container
+      // for a string with the Jmol state
+      // which contains the full information on the file that is loaded and
+      // manipulations done.
       String label = (instanceList.getSelectedIndices().length != 1 ? ""
           : getInstanceName(-1));
-      String name = JOptionPane.showInputDialog(
-          GT._("Give the occurrence of Jmol a name:"), label);
+      String name = JOptionPane.showInputDialog(GT
+          ._("Give the occurrence of Jmol a name:"), label);
       if (name == null)
         return;
-      //need to get the script...
+      // need to get the script...
       String script = viewer.getStateInfo();
       if (script == null) {
         LogPanel.log("Error trying to get Jmol State within pop_in_Jmol.");
@@ -313,10 +330,11 @@ abstract class WebPanel extends JPanel implements ActionListener {
         height = ((SpinnerNumberModel) (appletSizeSpinnerH.getModel()))
             .getNumber().intValue();
       }
-      JmolInstance instance = new JmolInstance(viewer, name, script, width, height);
+      JmolInstance instance = new JmolInstance(viewer, name, script, width,
+          height);
       if (instance == null) {
-        LogPanel
-            .log(GT._("Error creating new instance containing script(s) and image."));
+        LogPanel.log(GT
+            ._("Error creating new instance containing script(s) and image."));
       }
 
       int i;
@@ -338,35 +356,35 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
     if (e.getSource() == deleteInstanceButton) {
       DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
-      //find out which are selected and remove them.
+      // find out which are selected and remove them.
       int[] todelete = instanceList.getSelectedIndices();
-      int nDeleted = 0;
-      for (int i = 0; i < todelete.length; i++){
+      for (int i = 0; i < todelete.length; i++) {
         JmolInstance instance = (JmolInstance) listModel.get(todelete[i]);
         try {
           instance.delete();
         } catch (IOException err) {
           LogPanel.log(err.getMessage());
         }
-        listModel.remove(todelete[i] - nDeleted++);
       }
+      listModel.removeRange(todelete[0], todelete[todelete.length - 1]);
       syncLists();
       return;
     }
 
     if (e.getSource() == showInstanceButton) {
       DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
-      //find out which are selected and remove them.
       int[] list = instanceList.getSelectedIndices();
       if (list.length != 1)
         return;
       JmolInstance instance = (JmolInstance) listModel.get(list[0]);
-      viewer.evalStringQuiet(")" + instance.script); //leading paren disabled history
+      viewer.evalStringQuiet(")" + instance.script); // leading paren disabled
+                                                      // history
       return;
     }
 
     if (e.getSource() == saveButton) {
-      fc.setDialogTitle(GT._("Select a directory to create or an HTML file to save"));
+      fc.setDialogTitle(GT
+          ._("Select a directory to create or an HTML file to save"));
       int returnVal = fc.showSaveDialog(this);
       if (returnVal != JFileChooser.APPROVE_OPTION)
         return;
@@ -387,12 +405,39 @@ abstract class WebPanel extends JPanel implements ActionListener {
         LogPanel.log(GT._("Call to FileWriter unsuccessful."));
       }
     }
-    if (e.getSource() == helpButton){
-      HelpDialog webExportHelp = new HelpDialog(WebExport.getFrame(), 
-          WebExport.getHtmlResource(this, panelName + "_instructions"));
+    if (e.getSource() == helpButton) {
+      HelpDialog webExportHelp = new HelpDialog(WebExport.getFrame(), WebExport
+          .getHtmlResource(this, panelName + "_instructions"));
       webExportHelp.setVisible(true);
       webExportHelp.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
+  }
+
+  public void valueChanged(ListSelectionEvent e) {
+    if (e.getValueIsAdjusting())
+      return; // wait until done
+    JList whichList = (JList) e.getSource();
+    if (whichList.isSelectionEmpty())
+      return;// nothing selected
+    if (whichList.getMinSelectionIndex() != whichList.getMaxSelectionIndex())
+      return;// multiple selection
+    int index = whichList.getSelectedIndex();
+    JmolInstance instance = (JmolInstance) whichList.getModel().getElementAt(
+        index);
+    // dimensions must be stored before changing the spinners as that triggers
+    // a stateChanged event for the spinners and causes them to update the
+    // instance
+    // to the value from the previous selected instance.
+    int width = instance.width;
+    int height = instance.height;
+    if (appletSizeSpinnerW != null)
+      appletSizeSpinnerW.getModel().setValue(new Integer(width));
+    if (appletSizeSpinnerH != null)
+      appletSizeSpinnerH.getModel().setValue(new Integer(height));
+    // uncomment the following line to have the instance appear in the viewer
+    // when it is selected. Presently discussing UI issues 2-9-2010-JG
+    // viewer.evalStringQuiet(")" + instance.script); //leading paren disabled
+    // history
   }
 
   String getInstanceName(int i) {
@@ -403,9 +448,12 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return (instance == null ? "" : instance.name);
   }
 
-  boolean fileWriter(File file, JList InstanceList) throws IOException { //returns true if successful.
+  boolean fileWriter(File file, JList InstanceList) throws IOException { // returns
+                                                                          // true
+                                                                          // if
+                                                                          // successful.
     useAppletJS = JmolViewer.checkOption(viewer, "webMakerCreateJS");
-    //          JOptionPane.showMessageDialog(null, "Creating directory for data...");
+    // JOptionPane.showMessageDialog(null, "Creating directory for data...");
     String datadirPath = file.getPath();
     String datadirName = file.getName();
     String fileName = null;
@@ -424,9 +472,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
     if (made_datadir) {
       LogPanel.log(GT._("Using directory {0}", datadirPath));
       LogPanel.log("  " + GT._("adding JmolPopIn.js"));
- 
-      viewer.writeTextFile(datadirPath + "/JmolPopIn.js",
-          WebExport.getResourceString(this, "JmolPopIn.js"));
+
+      viewer.writeTextFile(datadirPath + "/JmolPopIn.js", WebExport
+          .getResourceString(this, "JmolPopIn.js"));
       for (int i = 0; i < listModel.getSize(); i++) {
         JmolInstance thisInstance = (JmolInstance) (listModel.getElementAt(i));
         String javaname = thisInstance.javaname;
@@ -440,8 +488,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         }
         Vector filesToCopy = new Vector();
         String localPath = localAppletPath.getText();
-        if (localPath.equals(".")
-            || remoteAppletPath.getText().equals(".")) {
+        if (localPath.equals(".") || remoteAppletPath.getText().equals(".")) {
           filesToCopy.add(localPath + "/Jmol.js");
           filesToCopy.add(localPath + "/JmolApplet.jar");
         }
@@ -449,10 +496,12 @@ abstract class WebPanel extends JPanel implements ActionListener {
         Vector copiedFileNames = new Vector();
         int nFiles = filesToCopy.size();
         for (int iFile = 0; iFile < nFiles; iFile++) {
-          String newName = copyBinaryFile((String) filesToCopy.get(iFile), datadirPath);
+          String newName = copyBinaryFile((String) filesToCopy.get(iFile),
+              datadirPath);
           copiedFileNames.add(newName.substring(newName.lastIndexOf('/') + 1));
         }
-        script = TextFormat.replaceQuotedStrings(script, filesToCopy, copiedFileNames);
+        script = TextFormat.replaceQuotedStrings(script, filesToCopy,
+            copiedFileNames);
         LogPanel.log("      ..." + GT._("adding {0}.spt", javaname));
         viewer.writeTextFile(datadirPath + "/" + javaname + ".spt", script);
       }
@@ -461,13 +510,15 @@ abstract class WebPanel extends JPanel implements ActionListener {
       appletInfoDivs = "";
       StringBuffer appletDefs = new StringBuffer();
       if (!useAppletJS)
-        htmlAppletTemplate = WebExport.getResourceString(this, panelName + "_template2");
+        htmlAppletTemplate = WebExport.getResourceString(this, panelName
+            + "_template2");
       for (int i = 0; i < listModel.getSize(); i++)
         html = getAppletDefs(i, html, appletDefs, (JmolInstance) listModel
             .getElementAt(i));
-      html = TextFormat.simpleReplace(html, "@AUTHOR@", GT.escapeHTML(pageAuthorName
-          .getText()));
-      html = TextFormat.simpleReplace(html, "@TITLE@", GT.escapeHTML(webPageTitle.getText()));
+      html = TextFormat.simpleReplace(html, "@AUTHOR@", GT
+          .escapeHTML(pageAuthorName.getText()));
+      html = TextFormat.simpleReplace(html, "@TITLE@", GT
+          .escapeHTML(webPageTitle.getText()));
       html = TextFormat.simpleReplace(html, "@REMOTEAPPLETPATH@",
           remoteAppletPath.getText());
       html = TextFormat.simpleReplace(html, "@LOCALAPPLETPATH@",
@@ -481,10 +532,15 @@ abstract class WebPanel extends JPanel implements ActionListener {
         str = "<script type='text/javascript'>\n" + str + "\n</script>";
       html = TextFormat.simpleReplace(html, "@APPLETINFO@", appletInfoDivs);
       html = TextFormat.simpleReplace(html, "@APPLETDEFS@", str);
-      html = TextFormat.simpleReplace(html, "@CREATIONDATA@", GT.escapeHTML(WebExport
-          .TimeStamp_WebLink()));
-      html = TextFormat.simpleReplace(html, "@AUTHORDATA@",
-          GT.escapeHTML(GT._("Based on template by A. Herr&#x00E1;ez as modified by J. Gutow")));
+      html = TextFormat.simpleReplace(html, "@CREATIONDATA@", GT
+          .escapeHTML(WebExport.TimeStamp_WebLink()));
+      html = TextFormat
+          .simpleReplace(
+              html,
+              "@AUTHORDATA@",
+              GT
+                  .escapeHTML(GT
+                      ._("Based on template by A. Herr&#x00E1;ez as modified by J. Gutow")));
       html = TextFormat.simpleReplace(html, "@LOGDATA@", "<pre>\n"
           + LogPanel.getText() + "\n</pre>\n");
       LogPanel.log("      ..." + GT._("creating {0}", fileName));
@@ -499,7 +555,8 @@ abstract class WebPanel extends JPanel implements ActionListener {
   }
 
   private String copyBinaryFile(String fullPathName, String dataPath) {
-    String name = fullPathName.substring(fullPathName.lastIndexOf('/') + 1).replace('|', '_'); // xxx.zip|filename
+    String name = fullPathName.substring(fullPathName.lastIndexOf('/') + 1)
+        .replace('|', '_'); // xxx.zip|filename
     name = dataPath + "/" + name;
     String gzname = name + ".gz";
     File outFile = new File(name);
@@ -512,14 +569,17 @@ abstract class WebPanel extends JPanel implements ActionListener {
       Object ret = viewer.getFileAsBytes(fullPathName);
       if (ret instanceof String)
         LogPanel.log(GT._("Could not find or open:\n{0}", fullPathName));
-      else { 
-        LogPanel.log("      ..." + GT._("copying\n{0}\n         to",fullPathName));
+      else {
+        LogPanel.log("      ..."
+            + GT._("copying\n{0}\n         to", fullPathName));
         byte[] data = (byte[]) ret;
         String[] retName = new String[] { name };
-        int maxUnzipped = (name.indexOf(".js") >= 0 ? Integer.MAX_VALUE : 100000);
+        int maxUnzipped = (name.indexOf(".js") >= 0 ? Integer.MAX_VALUE
+            : 100000);
         String err = writeFileZipped(retName, data, maxUnzipped);
         if (!retName[0].equals(name))
-          LogPanel.log("      ..." + GT._("compressing large data file to") + "\n" + (name = retName[0]));
+          LogPanel.log("      ..." + GT._("compressing large data file to")
+              + "\n" + (name = retName[0]));
         LogPanel.log(name);
         if (err != null)
           LogPanel.log(err);
@@ -529,9 +589,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
     }
     return name;
   }
-  
+
   private static String writeFileZipped(String[] retName, byte[] data,
-                                       int maxUnzipped) {
+                                        int maxUnzipped) {
     String err = null;
     try {
       boolean doCompress = false;
@@ -564,16 +624,20 @@ abstract class WebPanel extends JPanel implements ActionListener {
   }
 
   void syncLists() {
-    JList list = webPanels[1 - panelIndex].instanceList;
     DefaultListModel model1 = (DefaultListModel) instanceList.getModel();
-    DefaultListModel model2 = (DefaultListModel) list.getModel();
-    model2.clear();
-    int n = model1.getSize();
-    for (int i = 0; i < n; i++)
-      model2.addElement(model1.get(i));
-    list.setSelectedIndices(new int[] {});
+    for (int j = 0; j < webPanels.length; j++) {
+      if (j != panelIndex) {
+        JList list = webPanels[j].instanceList;
+        DefaultListModel model2 = (DefaultListModel) list.getModel();
+        model2.clear();
+        int n = model1.getSize();
+        for (int i = 0; i < n; i++)
+          model2.addElement(model1.get(i));
+        list.setSelectedIndices(new int[] {});
+        webPanels[j].enableButtons(list);
+      }
+    }
     enableButtons(instanceList);
-    webPanels[1 - panelIndex].enableButtons(list);
   }
 
   void enableButtons(JList list) {
@@ -614,8 +678,8 @@ class ArrayListTransferHandler extends TransferHandler {
       + ";class=java.util.ArrayList";
   JList source = null;
   int[] sourceIndices = null;
-  int addIndex = -1; //Location where items were added
-  int addCount = 0; //Number of items added
+  int addIndex = -1; // Location where items were added
+  int addCount = 0; // Number of items added
   WebPanel webPanel;
 
   ArrayListTransferHandler(WebPanel webPanel) {
@@ -652,26 +716,28 @@ class ArrayListTransferHandler extends TransferHandler {
       return false;
     }
 
-    //At this point we use the same code to retrieve the data
-    //locally or serially.
+    // At this point we use the same code to retrieve the data
+    // locally or serially.
 
-    //We'll drop at the current selected index.
+    // We'll drop at the current selected index.
     int targetIndex = target.getSelectedIndex();
 
-    //Prevent the user from dropping data back on itself.
-    //For example, if the user is moving items #4,#5,#6 and #7 and
-    //attempts to insert the items after item #5, this would
-    //be problematic when removing the original items.
-    //This is interpreted as dropping the same data on itself
-    //and has no effect.
+    // Prevent the user from dropping data back on itself.
+    // For example, if the user is moving items #4,#5,#6 and #7 and
+    // attempts to insert the items after item #5, this would
+    // be problematic when removing the original items.
+    // This is interpreted as dropping the same data on itself
+    // and has no effect.
     if (source.equals(target)) {
-      //System.out.print("checking indices index TO: " + targetIndex + " FROM:");
-      //for (int i = 0; i < sourceIndices.length;i++)
-      //System.out.print(" "+sourceIndices[i]);
-      //System.out.println("");
+      // System.out.print("checking indices index TO: " + targetIndex + "
+      // FROM:");
+      // for (int i = 0; i < sourceIndices.length;i++)
+      // System.out.print(" "+sourceIndices[i]);
+      // System.out.println("");
       if (targetIndex >= sourceIndices[0]
           && targetIndex <= sourceIndices[sourceIndices.length - 1]) {
-        //System.out.println("setting indices null : " + targetIndex + " " + sourceIndices[0] + " " + sourceIndices[sourceIndices.length - 1]);
+        // System.out.println("setting indices null : " + targetIndex + " " +
+        // sourceIndices[0] + " " + sourceIndices[sourceIndices.length - 1]);
         sourceIndices = null;
         return true;
       }
@@ -709,13 +775,14 @@ class ArrayListTransferHandler extends TransferHandler {
   }
 
   protected void exportDone(JComponent c, Transferable data, int action) {
-    //System.out.println("action="+action + " " + addCount + " " + sourceIndices);
+    // System.out.println("action="+action + " " + addCount + " " +
+    // sourceIndices);
     if ((action == MOVE) && (sourceIndices != null)) {
       DefaultListModel model = (DefaultListModel) source.getModel();
 
-      //If we are moving items around in the same list, we
-      //need to adjust the indices accordingly since those
-      //after the insertion point have moved.
+      // If we are moving items around in the same list, we
+      // need to adjust the indices accordingly since those
+      // after the insertion point have moved.
       if (addCount > 0) {
         for (int i = 0; i < sourceIndices.length; i++) {
           if (sourceIndices[i] > addIndex) {

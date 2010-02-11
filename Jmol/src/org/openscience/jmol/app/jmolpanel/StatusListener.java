@@ -244,7 +244,7 @@ class StatusListener implements JmolStatusListener {
       Object arguments[] = { new URI(url) };
       browse.invoke(deskTop, arguments);
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      Logger.error(e.getMessage());
       JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer
           .getProperty("DATA_API", "getAppConsole", null);
       if (appConsole != null) {
@@ -283,7 +283,7 @@ class StatusListener implements JmolStatusListener {
         // f[i][j] = (isSecond ? (float) ((i + j - nX) / (2f)) : (float) Math
         // .sqrt(Math.abs(i * i + j * j)) / 2f);
         // if (i < 10 && j < 10)
-        System.out.println(" functionXY " + i + " " + j + " " + f[i][j]);
+        //System.out.println(" functionXY " + i + " " + j + " " + f[i][j]);
       }
 
     return f; // for user-defined isosurface functions (testing only -- bob

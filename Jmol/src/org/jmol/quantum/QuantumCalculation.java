@@ -171,7 +171,7 @@ abstract class QuantumCalculation {
       }
       
       } catch (Exception e) {
-        System.out.println("Error in QuantumCalculation setting bounds");
+        Logger.error("Error in QuantumCalculation setting bounds");
       }
     }
   }

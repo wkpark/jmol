@@ -97,7 +97,7 @@ public class XmlXsdReader extends XmlReader {
   public void processStartElement(String namespaceURI, String localName, String qName,
                            HashMap atts) {
     String[] tokens;
-    System.out.println(namespaceURI + " " + localName + " " + atts);
+    //System.out.println(namespaceURI + " " + localName + " " + atts);
     //System.out.println("xmlchem3d: start " + localName);
     if ("Molecule".equals(localName)) {
       atomSetCollection.newAtomSet();

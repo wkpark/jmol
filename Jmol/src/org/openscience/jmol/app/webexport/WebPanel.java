@@ -42,6 +42,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
+import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
 import org.openscience.jmol.app.jmolpanel.HelpDialog;
@@ -709,10 +710,10 @@ class ArrayListTransferHandler extends TransferHandler {
         return false;
       }
     } catch (UnsupportedFlavorException ufe) {
-      System.out.println("importData: unsupported data flavor");
+      Logger.error("importData: unsupported data flavor");
       return false;
     } catch (IOException ioe) {
-      System.out.println("importData: I/O exception");
+      Logger.error("importData: I/O exception");
       return false;
     }
 

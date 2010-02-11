@@ -110,7 +110,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   boolean doneHere;
   
   void dispose() {
-    System.out.println("ActionManagerMT -- dispose");
+    Logger.debug("ActionManagerMT -- dispose");
     // per applet/application instance
     doneHere = true;
     adapter.dispose();
@@ -192,7 +192,6 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
 
   public int getGroupID(int x, int y) {
-//    System.out.println("ActionManagerMT" + this + " hasfocus? " + viewer.getDisplay().hasFocus() );
     int gid = (!viewer.getDisplay().hasFocus()  
         || x < 0 || y < 0 || x >= viewer.getScreenWidth()
         || y >= viewer.getScreenHeight() ? 0 : groupID);

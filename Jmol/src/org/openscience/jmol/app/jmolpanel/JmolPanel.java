@@ -292,7 +292,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
       jmolApp.startViewer(jmol.viewer, jmol.splash);
     
     } catch (Throwable t) {
-      System.out.println("uncaught exception: " + t);
+      Logger.error("uncaught exception: " + t);
       t.printStackTrace();
     }
 
@@ -471,7 +471,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
       try {
         f.dispose();
       } catch (Exception e) {
-        System.out.println("frame disposal exception");
+        Logger.error("frame disposal exception");
         // ignore
       }
     }

@@ -810,8 +810,10 @@ class PointGroup {
       for (int i = 0; i < nPlanes - 1; i++) {
         for (int j = i + 1; j < nPlanes; j++) {
           vTemp.add(planes[1].normalOrAxis, planes[2].normalOrAxis);
-          if (checkAxisOrder(c2, vTemp, center))
-            System.out.println("found a C2 axis by adding plane normals");
+          //if (
+          checkAxisOrder(c2, vTemp, center);
+          //)
+            //Logger.error("found a C2 axis by adding plane normals");
         }
       }
     }

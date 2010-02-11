@@ -61,7 +61,7 @@ public class JmolPopupSwing extends JmolPopup {
     try {
       swingPopup.show(display, x, y);
     } catch (Exception e) {
-      System.out.println("popup error: " + e.getMessage());
+      Logger.error("popup error: " + e.getMessage());
       // browser in Java 1.6.0_10 is blocking setting WindowAlwaysOnTop 
 
     }

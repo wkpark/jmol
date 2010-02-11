@@ -169,7 +169,7 @@ class ScriptManager {
             try {
               Thread.sleep(100); //cycle for the command watcher thread
             } catch (Exception e) {
-              System.out.println(this + " Exception " + e.getMessage());
+              Logger.error(this + " Exception " + e.getMessage());
               break; //-- interrupt? 
             }
         }

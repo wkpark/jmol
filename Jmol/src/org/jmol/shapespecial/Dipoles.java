@@ -349,7 +349,7 @@ public class Dipoles extends Shape {
       dipole.setTranslucent(iValue == 1, translucentLevel);
       return;
     }
-    System.out.println("Unkown dipole property! " + Token.nameOf(tok));
+    Logger.error("Unkown dipole property! " + Token.nameOf(tok));
   }
 
   public boolean getProperty(String property, Object[] data) {

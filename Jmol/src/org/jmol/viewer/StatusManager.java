@@ -718,7 +718,7 @@ class StatusManager {
         }
       });
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      Logger.error(e.getMessage());
     }
     return outputFileName;
   }

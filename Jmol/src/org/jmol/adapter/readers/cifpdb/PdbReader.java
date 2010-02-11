@@ -128,7 +128,7 @@ public class PdbReader extends AtomSetCollectionReader {
           getHeader = false;
           // PDB is different -- targets actual model number
           int modelNo = (isNewModel ? modelNumber + 1: getModelNumber());
-          System.out.println(modelNo);
+          //System.out.println(modelNo);
           modelNumber = (bsModels == null ? modelNo : modelNumber + 1);
           if (!doGetModel(modelNumber)) {
             if (isLastModel(modelNumber) && iHaveModel)
@@ -826,7 +826,7 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
     String groupName = parseToken(line, 11, 14);
     String hetName = parseTrimmed(line, 15, 70);
     if (groupName == null) {
-      System.out.println("ERROR: HETNAM record does not contain a group name: " + line);
+      Logger.error("ERROR: HETNAM record does not contain a group name: " + line);
       return;
     }
     String htName = (String) htHetero.get(groupName);
@@ -910,7 +910,7 @@ Details
       data[pt] = parseFloat(line, i, i + 7);
     for (int i = 0; i < 6; i++) {
       if (Float.isNaN(data[i])) {
-          System.out.println("Bad ANISOU record: " + line);
+          Logger.error("Bad ANISOU record: " + line);
           return;
       }
       data[i] /= 10000f;

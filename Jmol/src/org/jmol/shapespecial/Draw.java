@@ -1019,7 +1019,7 @@ public class Draw extends MeshCollection {
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
       if (m == null) {
-        System.out.println("mesh is null");
+        //System.out.println("mesh is null");
         continue;
       }
       m.visibilityFlags = (m.isValid && m.visible ? myVisibilityFlag : 0);

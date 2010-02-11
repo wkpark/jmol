@@ -630,10 +630,10 @@ Token[keyword(0x880001) value=")"]
         Logger.info( "minimize: using " + className);
         pFF = (ForceField) Class.forName(className).newInstance();
       } catch (Exception e) {
-        System.out.println(e.getMessage());
+        Logger.error(e.getMessage());
       }
     }
-    System.out.println("minimize: forcefield = " + pFF);
+    //Logger.info("minimize: forcefield = " + pFF);
     return pFF;
   }
   
@@ -689,7 +689,7 @@ Token[keyword(0x880001) value=")"]
       viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
       saveCoordinates();
     } catch (Exception e) {
-      System.out.println("minimization error viwer=" + viewer + " pFF = " + pFF);
+      Logger.error("minimization error viewer=" + viewer + " pFF = " + pFF);
       return false;
     }
     minimizationOn = true;
@@ -808,7 +808,7 @@ Token[keyword(0x880001) value=")"]
         } while (minimizationOn && !isInterrupted());
       } catch (Exception e) {
         if (minimizationOn)
-          System.out.println(" minimization thread interrupted");
+          Logger.debug(" minimization thread interrupted");
       }
     }
   }

@@ -72,7 +72,7 @@ class Normix3D {
       Logger.info("begin timings!");
       for (int i = 0; i < normixCount; ++i) {
         short normix = getNormix(vertexVectors[i]);
-        System.out.println("draw normix" + i + " {" + vertexVectors[i].x + " " + vertexVectors[i].y + " " + vertexVectors[i].z + "} {0 0 0} \""+i+"\"");
+        Logger.info("draw normix" + i + " {" + vertexVectors[i].x + " " + vertexVectors[i].y + " " + vertexVectors[i].z + "} {0 0 0} \""+i+"\"");
         if (normix != i)
           if (Logger.debugging) {
             Logger.debug("" + i + " -> " + normix);

@@ -6816,7 +6816,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       case 180:
         return global.defaultDirectory;
       default:
-        System.out.println("ERROR in getProperty DATA_API: " + infoType);
+        Logger.error("ERROR in getProperty DATA_API: " + infoType);
         return null;
       }
 

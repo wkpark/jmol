@@ -239,9 +239,9 @@ public class ActionManager {
   
   static {
     if (actionNames.length != ACTION_count)
-      System.out.println("ERROR IN ActionManager: actionNames length?");
+      Logger.error("ERROR IN ActionManager: actionNames length?");
     if (actionInfo.length != ACTION_count)
-      System.out.println("ERROR IN ActionManager: actionInfo length?");
+      Logger.error("ERROR IN ActionManager: actionInfo length?");
   }
 
   private final static long MAX_DOUBLE_CLICK_MILLIS = 700;

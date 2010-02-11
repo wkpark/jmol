@@ -714,7 +714,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       size = i;
       i++;
       if (ltoken.size() < i) {
-        System.out.println("COMPILER ERROR! - andEquals ");
+        Logger.error("COMPILER ERROR! - andEquals ");
       } else {
         for (j = 1; j < size; j++, i++)
           ltoken.insertElementAt(tokenAt(j), i);

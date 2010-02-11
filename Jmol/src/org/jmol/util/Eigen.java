@@ -343,8 +343,8 @@ public class Eigen {
     }
     return r;
   }
-
-  public void dump() {
+/*
+  private void dump() {
     System.out.println("-----Eigen input-----");
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++)
@@ -359,7 +359,8 @@ public class Eigen {
   private void dump(int i) {
     System.out.println("Eigen: lambda = " + d[i] + " for " + Vx[i][0] + " " + Vx[i][1] + " " + Vx[i][2]);
   }
-  
+  */
+
   public static float[][] toFloat3x3(double[][] d) {
     float[][] f = new float[3][3];
     for (int i = 3; --i >= 0; )

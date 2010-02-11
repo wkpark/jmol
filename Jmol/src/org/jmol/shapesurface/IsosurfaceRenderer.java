@@ -175,8 +175,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
          && Math.abs(screens[i].y - cY) < 50
         ) {
         String s = i + (imesh.isColorSolid ? "" : " " + imesh.vertexValues[i]);
-        System.out.println("IsoSurfaceRenderer i=" + s + " " 
-            + imesh.vertices[i] + " " + imesh.vertexValues[i]);
+        //System.out.println("IsoSurfaceRenderer i=" + s + " " 
+          //  + imesh.vertices[i] + " " + imesh.vertexValues[i]);
         g3d.drawStringNoSlab(s, null,
             screens[i].x, screens[i].y, screens[i].z);
       }

@@ -79,8 +79,8 @@ class TransformManager11 extends TransformManager {
         navZ = -200;
     }
       
-    System.out.println(navZ);
 /*    float range = visualRange / factor;
+    System.out.println(navZ);
     
     if (viewer.getNavigationPeriodic())
       range = Math.min(range, 0.8f * modelRadius);      

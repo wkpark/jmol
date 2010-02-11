@@ -34,6 +34,7 @@ import java.util.Vector;
 
 import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
 public abstract class MeshCollection extends Shape {
@@ -241,7 +242,7 @@ public abstract class MeshCollection extends Shape {
         tok = Token.frontonly;
         break;
       default:
-        System.out.println("PROBLEM IN MESHCOLLECTION: token? " + Token.nameOf(tok));
+        Logger.error("PROBLEM IN MESHCOLLECTION: token? " + Token.nameOf(tok));
       }
       setProperty(tok, test);
       if (tok2 != 0) {

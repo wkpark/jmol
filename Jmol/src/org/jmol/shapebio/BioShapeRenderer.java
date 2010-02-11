@@ -39,6 +39,7 @@ import org.jmol.modelsetbio.NucleicPolymer;
 import org.jmol.modelsetbio.ProteinStructure;
 import org.jmol.shape.MeshRenderer;
 import org.jmol.shape.Mesh;
+import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
 import java.util.BitSet;
@@ -325,7 +326,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         render1(meshes[i]);
         return;
       } catch (Exception e) {
-        System.out.println("render mesh error hermiteConic: " + e.toString());
+        Logger.error("render mesh error hermiteConic: " + e.toString());
         //e.printStackTrace();
       }
     }
@@ -352,7 +353,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
           render1(meshes[i]);
           return;
         } catch (Exception e) {
-          System.out.println("render mesh error hermiteRibbon: " + e.toString());
+          Logger.error("render mesh error hermiteRibbon: " + e.toString());
           //e.printStackTrace();
         }
       }
@@ -389,7 +390,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         render1(meshes[i]);
         return;
       } catch (Exception e) {
-        System.out.println("render mesh error hermiteArrowHead: " + e.toString());
+        Logger.error("render mesh error hermiteArrowHead: " + e.toString());
         //e.printStackTrace();
       }
     }
@@ -429,7 +430,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         render1(meshes[i]);
         return;
       } catch (Exception e) {
-        System.out.println("render mesh error: renderCone" + e.toString());
+        Logger.error("render mesh error: renderCone" + e.toString());
         //e.printStackTrace();
       }
     }

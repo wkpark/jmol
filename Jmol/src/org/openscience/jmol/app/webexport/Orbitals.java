@@ -482,7 +482,7 @@ public class Orbitals extends JPanel implements ActionListener {
             break;
           }
           default: {
-            System.out.println(j + ": executing default");
+            //System.out.println(j + ": executing default");
             break;
           }
           }

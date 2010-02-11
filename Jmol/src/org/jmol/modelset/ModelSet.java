@@ -228,16 +228,21 @@ abstract public class ModelSet extends ModelCollection {
     // note that models[baseModel] and models[modelIndex]
     // point to the same model. So there is only one copy of 
     // the shape business.
+    
+    
     recalculateLeadMidpointsAndWingVectors(baseModel);
     // Recalculate all measures that involve trajectories
+
     Integer Imodel = new Integer(baseModel);
     for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
       if (shapes[i] != null)
-      setShapeProperty(i, "refreshTrajectories", Imodel, bs);
+        setShapeProperty(i, "refreshTrajectories", Imodel, bs);
+    
     if (models[baseModel].hasCalculatedHBonds) {
       clearCalculatedHydrogenBonds(baseModel, null);
       models[baseModel].calcHydrogenBonds(bs, bs);
     }
+        
     int m = viewer.getCurrentModelIndex();
     if (m >= 0 && m != modelIndex 
         && models[m].fileIndex == models[modelIndex].fileIndex)

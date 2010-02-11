@@ -25,10 +25,10 @@
 
 package org.jmol.shape;
 
-import org.jmol.util.Escape;
+//import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
-import org.jmol.util.XmlUtil;
+//import org.jmol.util.XmlUtil;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
@@ -114,7 +114,6 @@ public abstract class Shape {
     this.myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(shapeID);
     setModelSet(modelSet);
     initShape();
-    xmlProperties = new Vector();
     //System.out.println("Shape " + shapeID + " " + this + " initialized");
 
   }
@@ -170,40 +169,57 @@ public abstract class Shape {
    * @param propertyName
    * @param value
    * @param bs
-   * @return    true if we are done
+   * @return true if we are done
    */
   private boolean setXmlProperty(String propertyName, Object value, BitSet bs) {
+    
+    // xmlProperties is not implemented. 
+    // I thought this might be a prelude to an XML-based state
+    // but it turns out that is problematic because some of
+    // these are HUGE (isosurface, for example, passes incredible 
+    // amounts of information via the setProperty mechanism.
+    // So "initXml" is never actuated, and xmlProperties is always null.
     String myType = JmolConstants.shapeClassBases[shapeID];
+    /*
     if (propertyName == "initXml") {
       xmlProperties = new Vector();
       return true;
     }
     if (propertyName == "showXml") {
-      String s = getXmlPropertyString(xmlProperties, myType);
-      if (s != null)
-        Logger.info(s);
+      if (xmlProperties != null) {
+        String s = getXmlPropertyString(xmlProperties, myType);
+        if (s != null)
+          Logger.info(s);
+      }
       return true;
     }
     if (propertyName == "setXml") {
-      if (Logger.debugging)
-        setXmlProperty("showXml", null, null);
-      return false;      
+      setXmlProperty("showXml", null, null);
+      return false;
     }
-    
-    Logger.debug(myType + " setProperty: " + propertyName + " = " + value);
+    */
+    if (Logger.debugging)
+      Logger.info(myType + " setProperty: " + propertyName + " = " + value);
 
-    if (propertyName == "setProperties"
-      || propertyName == "thisID"
-      || propertyName == "commandOption")
-    return false;
+    /*
+    if (xmlProperties == null)
+      return false;
+
+    if (propertyName == "setProperties" || propertyName == "thisID"
+        || propertyName == "commandOption")
+      return false;
     Vector attributes = new Vector();
-    attributes.add(new Object[] {"select", bs == null ? null : Escape.escape(bs) });
-    xmlProperties.add(XmlUtil.escape(propertyName, attributes, value, false, ""));
+    attributes.add(new Object[] { "select",
+        bs == null ? null : Escape.escape(bs) });
+    xmlProperties.add(XmlUtil
+        .escape(propertyName, attributes, value, false, ""));
+        
+    */
     return false;
   }
 
-
-  static public String getXmlPropertyString(Vector xmlProperties, String type) {
+/*
+  static private String getXmlPropertyString(Vector xmlProperties, String type) {
     if (xmlProperties == null || xmlProperties.size() == 0)
       return null;
     StringBuffer sb = new StringBuffer();
@@ -212,7 +228,7 @@ public abstract class Shape {
     XmlUtil.closeTag(sb, "shape");
     return sb.toString();
   }
-
+*/
   /**
    * may come from any source -- executed AFTER a shape's own setProperty method
    * 
@@ -221,11 +237,12 @@ public abstract class Shape {
    * @param bsSelected
    */
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
-    if (propertyName == "setXml") {
-      // some states may also check this in orde to presever their state
+/*    if (propertyName == "setXml") {
+      // some states mignt also check this in order to preseve their state
       xmlProperties = new Vector();
       return;
     }
+*/
     if (propertyName == "setProperties") {
       Vector propertyList = (Vector) value;
       while (propertyList.size() > 0) {

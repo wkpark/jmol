@@ -362,6 +362,11 @@ class AnimationManager {
   }
 
   boolean setAnimationRelative(int direction) {
+    
+//    if (true)
+  //    return true;
+    
+    
     int frameStep = this.frameStep * direction * currentDirection;
     int modelIndexNext = currentModelIndex + frameStep;
     boolean isDone = (modelIndexNext > firstModelIndex

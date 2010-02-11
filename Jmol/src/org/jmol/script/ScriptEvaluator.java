@@ -4806,116 +4806,177 @@ public class ScriptEvaluator {
     switch (tok) {
     case Token.axes:
       iShape = JmolConstants.SHAPE_AXES;
-      axes(1);
       break;
     case Token.backbone:
-      proteinShape(iShape = JmolConstants.SHAPE_BACKBONE);
+      iShape = JmolConstants.SHAPE_BACKBONE;
       break;
     case Token.boundbox:
       iShape = JmolConstants.SHAPE_BBCAGE;
-      boundbox(1);
       break;
     case Token.cartoon:
-      proteinShape(iShape = JmolConstants.SHAPE_CARTOON);
+      iShape = JmolConstants.SHAPE_CARTOON;
       break;
     case Token.dipole:
       iShape = JmolConstants.SHAPE_DIPOLES;
-      dipole();
       break;
     case Token.dots:
-      dots(iShape = JmolConstants.SHAPE_DOTS);
+      iShape = JmolConstants.SHAPE_DOTS;
       break;
     case Token.draw:
       iShape = JmolConstants.SHAPE_DRAW;
-      draw();
       break;
     case Token.echo:
       iShape = JmolConstants.SHAPE_ECHO;
-      echo(1, false);
       break;
     case Token.ellipsoid:
       iShape = JmolConstants.SHAPE_ELLIPSOIDS;
-      ellipsoid();
       break;
     case Token.frank:
       iShape = JmolConstants.SHAPE_FRANK;
-      frank(1);
       break;
     case Token.geosurface:
-      dots(iShape = JmolConstants.SHAPE_GEOSURFACE);
+      iShape = JmolConstants.SHAPE_GEOSURFACE;
       break;
     case Token.halo:
-      setAtomShapeSize(iShape = JmolConstants.SHAPE_HALOS, 0.2f);
+      iShape = JmolConstants.SHAPE_HALOS;
       break;
     case Token.isosurface:
-      isosurface(iShape = JmolConstants.SHAPE_ISOSURFACE);
+      iShape = JmolConstants.SHAPE_ISOSURFACE;
       break;
     case Token.label:
       iShape = JmolConstants.SHAPE_LABELS;
-      label(1);
       break;
     case Token.lcaocartoon:
       iShape = JmolConstants.SHAPE_LCAOCARTOON;
-      lcaoCartoon();
       break;
     case Token.measurements:
     case Token.measure:
       iShape = JmolConstants.SHAPE_MEASURES;
-      measure();
       break;
     case Token.meshRibbon:
-      proteinShape(iShape = JmolConstants.SHAPE_MESHRIBBON);
+      iShape = JmolConstants.SHAPE_MESHRIBBON;
       break;
     case Token.mo:
       iShape = JmolConstants.SHAPE_MO;
-      mo(false);
       break;
     case Token.plot3d:
-      isosurface(iShape = JmolConstants.SHAPE_PLOT3D);
+      iShape = JmolConstants.SHAPE_PLOT3D;
       break;
     case Token.pmesh:
-      isosurface(iShape = JmolConstants.SHAPE_PMESH);
+      iShape = JmolConstants.SHAPE_PMESH;
       break;
     case Token.polyhedra:
       iShape = JmolConstants.SHAPE_POLYHEDRA;
-      polyhedra();
       break;
     case Token.ribbon:
-      proteinShape(iShape = JmolConstants.SHAPE_RIBBONS);
+      iShape = JmolConstants.SHAPE_RIBBONS;
       break;
     case Token.rocket:
-      proteinShape(iShape = JmolConstants.SHAPE_ROCKETS);
+      iShape = JmolConstants.SHAPE_ROCKETS;
       break;
     case Token.spacefill: // aka cpk
-      setAtomShapeSize(iShape = JmolConstants.SHAPE_BALLS, 1f);
+      iShape = JmolConstants.SHAPE_BALLS;
       break;
     case Token.star:
-      setAtomShapeSize(iShape = JmolConstants.SHAPE_STARS, 1f);
+      iShape = JmolConstants.SHAPE_STARS;
       break;
     case Token.strands:
-      proteinShape(iShape = JmolConstants.SHAPE_STRANDS);
+      iShape = JmolConstants.SHAPE_STRANDS;
       break;
     case Token.trace:
-      proteinShape(iShape = JmolConstants.SHAPE_TRACE);
+      iShape = JmolConstants.SHAPE_TRACE;
       break;
     case Token.unitcell:
       iShape = JmolConstants.SHAPE_UCCAGE;
-      unitcell(1);
       break;
     case Token.vector:
       iShape = JmolConstants.SHAPE_VECTORS;
-      vector();
       break;
     case Token.wireframe:
       iShape = JmolConstants.SHAPE_STICKS;
-      wireframe();
       break;
     default:
       iShape = -1;
     }
     if (iShape < 0)
       error(ERROR_unrecognizedCommand);
-    setShapeProperty(iShape, "setXml", null);
+    
+    //if (Logger.debugging)
+      //setShapeProperty(iShape, "initXml", null);
+    
+    switch (tok) {
+    case Token.axes:
+      axes(1);
+      break;
+    case Token.backbone:
+    case Token.cartoon:
+    case Token.meshRibbon:
+    case Token.ribbon:
+    case Token.rocket:
+    case Token.strands:
+    case Token.trace:
+      proteinShape(iShape);
+      break;
+    case Token.boundbox:
+      boundbox(1);
+      break;
+    case Token.dipole:
+      dipole();
+      break;
+    case Token.dots:
+    case Token.geosurface:
+      dots(iShape);
+      break;
+    case Token.draw:
+      draw();
+      break;
+    case Token.echo:
+      echo(1, false);
+      break;
+    case Token.ellipsoid:
+      ellipsoid();
+      break;
+    case Token.frank:
+      frank(1);
+      break;
+    case Token.halo:
+    case Token.spacefill: // aka cpk
+    case Token.star:
+      setAtomShapeSize(iShape, (tok == Token.halo ? 0.2f : 1f));
+      break;
+    case Token.isosurface:
+    case Token.plot3d:
+    case Token.pmesh:
+      isosurface(iShape);
+      break;
+    case Token.label:
+      label(1);
+      break;
+    case Token.lcaocartoon:
+      lcaoCartoon();
+      break;
+    case Token.measurements:
+    case Token.measure:
+      measure();
+      break;
+    case Token.mo:
+      mo(false);
+      break;
+    case Token.polyhedra:
+      polyhedra();
+      break;
+    case Token.unitcell:
+      unitcell(1);
+      break;
+    case Token.vector:
+      vector();
+      break;
+    case Token.wireframe:
+      wireframe();
+      break;
+    }
+//    if (Logger.debugging)
+  //    setShapeProperty(iShape, "setXml", null);
   }
 
   private boolean flowControl(int tok, boolean isForCheck) throws ScriptException {

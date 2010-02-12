@@ -192,7 +192,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
 
   public int getGroupID(int x, int y) {
-    int gid = (!viewer.getDisplay().hasFocus()  
+    int gid = (viewer.hasFocus()  
         || x < 0 || y < 0 || x >= viewer.getScreenWidth()
         || y >= viewer.getScreenHeight() ? 0 : groupID);
     if (resetNeeded) {
@@ -315,7 +315,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       int action = Binding.getMouseAction(1, mods);
       if (binding.isBound(action, ACTION_multiTouchSimulation)) {
         setCurrent(0, x, y, mods);
-        setFocus();
+        viewer.setFocus();
         if (simulationPhase++ == 0)
           simulator.startRecording();
         simulator.mousePressed(time, x, y);

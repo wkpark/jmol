@@ -873,6 +873,7 @@ public class Token {
   public final static int highresolution                 = booleanparam | 88;
 // see predefinedset  public final static int hydrogen                       = booleanparam | 90;
   public final static int imagestate                     = booleanparam | 92;
+  public static final int iskiosk                        = booleanparam | 93;// new 11.9.29
   public final static int isosurfacepropertysmoothing    = booleanparam | 94;
   public final static int justifymeasurements            = booleanparam | 96;
   public final static int languagetranslation            = booleanparam | 98;
@@ -1017,10 +1018,10 @@ public class Token {
   final static int image          = misc | 85;
   final static int increment      = misc | 86;// new
   public final static int info    = misc | 87;
-  final static int insideout      = misc | 89;// new
-  final static int interior       = misc | 90;// new
-  final static int internal       = misc | 91;// new
-  final static int intersection   = misc | 92;// new
+  final static int insideout      = misc | 88;// new
+  final static int interior       = misc | 89;// new
+  final static int internal       = misc | 90;// new
+  final static int intersection   = misc | 91;// new
   public final static int jmol    = misc | 93;
   public final static int last    = misc | 94;
   final static int left           = misc | 95;
@@ -1637,7 +1638,7 @@ public class Token {
       "insertions",      null, 
       "ionic",           new Token(ionic),
       "ionicRadius",     null,
-      "isaromatic",      new Token(isaromatic),
+      "isAromatic",      new Token(isaromatic),
       "Jmol",            new Token(jmol),
       "join",            new Token(join),
       "last",            new Token(last),
@@ -2061,6 +2062,7 @@ public class Token {
       "hydrogen",                                 new Token(hydrogen),
       "hydrogens",                                null,
       "imageState",                               new Token(imagestate),
+      "isKiosk",                                  new Token(iskiosk),
       "isosurfacePropertySmoothing",              new Token(isosurfacepropertysmoothing),
       "justifyMeasurements",                      new Token(justifymeasurements),
       "languageTranslation",                      new Token(languagetranslation),

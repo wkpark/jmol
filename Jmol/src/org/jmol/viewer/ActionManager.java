@@ -581,7 +581,7 @@ public class ActionManager {
   }
 
   void mouseWheel(long time, int rotation, int mods) {
-    if (viewer.isApplet() && !viewer.getDisplay().hasFocus())
+    if (viewer.isApplet() && !viewer.hasFocus())
       return;
     // sun bug? noted by Charles Xie that wheeling on a Java page
     // effected inappropriate wheeling on this Java component
@@ -597,7 +597,7 @@ public class ActionManager {
         ? pressedCount + 1 : 1);
     pressed.setCurrent();
     dragged.setCurrent();
-    setFocus();
+    viewer.setFocus();
     boolean isSelectAndDrag = isBound(Binding.getMouseAction(Integer.MIN_VALUE, mods), ACTION_selectAndDrag);
     int action = Binding.getMouseAction(pressedCount, mods);
     dragGesture.setAction(action, time);
@@ -631,11 +631,6 @@ public class ActionManager {
       return;
     }
     checkMotionRotateZoom(action, x, 0, 0, true);
-  }
-
-  protected void setFocus() {
-    if (!viewer.getDisplay().hasFocus())
-      viewer.getDisplay().requestFocusInWindow();
   }
 
   void mouseDragged(long time, int x, int y, int mods) {
@@ -719,7 +714,7 @@ public class ActionManager {
     clickedCount = (count > 1 ? count : clicked.check(x, y, mods, time,
         MAX_DOUBLE_CLICK_MILLIS) ? clickedCount + 1 : 1);
     clicked.setCurrent();
-    setFocus();
+    viewer.setFocus();
     boolean isSelectAndDrag = isBound(Binding.getMouseAction(Integer.MIN_VALUE, mods), ACTION_selectAndDrag);
     if (isSelectAndDrag)
       return;

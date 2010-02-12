@@ -70,6 +70,7 @@ public class Minimizer implements MinimizerInterface {
   private BitSet bsTaint, bsSelected, bsAtoms;
   private BitSet bsFixed;
   public Vector constraints;
+  private boolean isCleared = true;
   
   public Minimizer() {
   }
@@ -81,8 +82,10 @@ public class Minimizer implements MinimizerInterface {
       return;
     }
     if (propertyName.equals("clear")) {
-      stopMinimization(false);
-      clear();
+      if (!isCleared) {
+        stopMinimization(false);
+        clear();
+      }
       return;
     }
     if (propertyName.equals("constraint")) {
@@ -146,7 +149,6 @@ public class Minimizer implements MinimizerInterface {
     atomCount = 0;
     bondCount = 0;
     atoms = null;
-    viewer = null;
     minAtoms = null;
     minBonds = null;
     angles = null;
@@ -162,6 +164,8 @@ public class Minimizer implements MinimizerInterface {
     constraints = null;
     constraintMap = null;
     pFF = null;
+    isCleared = true;
+    //  viewer = null;
   }
   
   public boolean minimize(int steps, double crit, BitSet bsSelected, boolean addHydrogen) {
@@ -364,6 +368,7 @@ public class Minimizer implements MinimizerInterface {
   }
   
   private void setAtomPositions() {
+    isCleared = false;
     for (int i = 0; i < atomCount; i++)
       minAtoms[i].set();
     bsMinFixed = null;
@@ -769,7 +774,7 @@ Token[keyword(0x880001) value=")"]
       atom.y = (float) minAtom.coord[1];
       atom.z = (float) minAtom.coord[2];
     }
-    viewer.refreshMeasures();
+    viewer.refreshMeasures(false);
   }
 
   private void minimizeWithoutThread() {

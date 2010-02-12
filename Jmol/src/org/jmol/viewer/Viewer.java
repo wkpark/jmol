@@ -678,6 +678,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return stateManager.getSavedCoordinates(saveName);
   }
 
+  private void clearMinimization() {
+    if (minimizer != null)
+      minimizer.setProperty("clear", null);
+  }
+
   public void saveSelection(String saveName) {
     // from Eval
     stateManager.saveSelection(saveName, selectionManager.bsSelection);
@@ -921,7 +926,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       transformManager.setRotateMolecule(true);
       transformManager.rotateXYBy(deltaX, deltaY, selectionManager.bsSelection);
       transformManager.setRotateMolecule(false);
-      refreshMeasures();
+      refreshMeasures(true);
     }
     refresh(2, statusManager.syncingMouse ? "Mouse: rotateMolecule " + deltaX
         + " " + deltaY : "");
@@ -2244,8 +2249,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       transformManager.clear();
       selectionManager.clear();
       clearAllMeasurements();
-      if (minimizer != null)
-        minimizer.setProperty("clear", null);
+      clearMinimization();
       modelSet = modelManager.zap();
       if (haveDisplay) {
         mouseManager.clear();
@@ -2640,6 +2644,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setAtomData(int type, String name, String coordinateData) {
     modelSet.setAtomData(type, name, coordinateData);
+    refreshMeasures(true);
   }
 
   public void setCenterSelected() {
@@ -5412,6 +5417,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.iskiosk:
+      // 11.9.29
+      isKiosk = value;
+      break;
+      // 11.9.28
     case Token.waitformoveto:
       global.waitForMoveTo = value;
       break;
@@ -6279,6 +6289,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // eval
     clearModelDependentObjects();
     clearAllMeasurements(); // necessary for serialization
+    clearMinimization();
     return modelSet.makeConnections(minDistance, maxDistance, order,
         connectOperation, bsA, bsB, bsBonds, isBonds);
   }
@@ -7077,7 +7088,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.unitx:
     case Token.unity:
     case Token.unitz:
-      refreshMeasures();
+    case Token.element:
+      refreshMeasures(true);
     }
   }
 
@@ -7089,7 +7101,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
     modelSet.setAtomCoord(bs, tokType, xyzValues);
-    refreshMeasures();
+    refreshMeasures(true);
   }
 
   public void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
@@ -7101,7 +7113,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval
     modelSet.setAtomCoordRelative(offset,
         bs == null ? selectionManager.bsSelection : bs);
-    refreshMeasures();
+    refreshMeasures(true);
   }
 
   void setAllowRotateSelected(boolean TF) {
@@ -7115,13 +7127,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void invertSelected(Point3f pt, BitSet bs) {
     // Eval
     modelSet.invertSelected(pt, null, bs);
-    refreshMeasures();
+    refreshMeasures(true);
   }
 
   public void invertSelected(Point3f pt, Point4f plane) {
     // Eval
     modelSet.invertSelected(pt, plane, selectionManager.bsSelection);
-    refreshMeasures();
+    refreshMeasures(true);
   }
 
   boolean movingSelected;
@@ -7159,7 +7171,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       transformManager.setRotateMolecule(false);
     }
     refresh(6, "moveSelected");
-    refreshMeasures();
+    refreshMeasures(true);
     movingSelected = false;
   }
 
@@ -7167,11 +7179,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                    Point3f center, boolean isInternal, BitSet bsAtoms) {
     modelSet.rotateAtoms(mNew, matrixRotate, bsAtoms, fullMolecule, center,
         isInternal);
-    refreshMeasures();
+    refreshMeasures(true);
   }
 
-  public void refreshMeasures() {
+  public void refreshMeasures(boolean andClearMinimization) {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "refresh", null);
+    if (andClearMinimization)
+      clearMinimization();
   }
 
   void setDynamicMeasurements(boolean TF) { // deprecated; unnecessary
@@ -7685,7 +7699,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setCurrentModelIndex(-1, true);
     hoverAtomIndex = -1;
     setFileLoadStatus(FILE_STATUS_MODELS_DELETED, null, null, null, null);
-    refreshMeasures();
+    refreshMeasures(true);
     return BitSetUtil.cardinalityOf(bsDeleted);
   }
 
@@ -8056,6 +8070,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } catch (Exception e) {
       Logger.debug("cannot log " + data);
     }
+  }
+
+  private boolean isKiosk;
+  
+  boolean isKiosk() {
+    return isKiosk;
+  }
+
+  boolean hasFocus() {
+    return (display != null && (isKiosk || display.hasFocus()));  
+  }
+  
+  void setFocus() {
+    if (display != null && !display.hasFocus())
+      display.requestFocusInWindow();
   }
 
 }

@@ -1151,15 +1151,18 @@ abstract public class AtomCollection {
     }
   }
   
-
-  public void deleteAtoms(BitSet bs) {
-    if (bs != null)
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1))
-        atoms[i].delete();
-  }
-
+  /**
+   * get a list of potential H atom positions based on 
+   * elemental valence and formal charge
+   * 
+   * @param bs
+   * @param nTotal
+   * @param doAll       -- whether we add to C that already have H or not.
+   * @param justCarbon
+   * @return     array of arrays of points added to specific atoms
+   */
   public Point3f[][] getAdditionalHydrogens(BitSet bs, int[] nTotal,
-                                            boolean justCarbon) {
+                                            boolean doAll, boolean justCarbon) {
     Vector3f z = new Vector3f();
     Vector3f x = new Vector3f();
     Point3f[][] hAtoms = new Point3f[atomCount][];
@@ -1180,7 +1183,7 @@ abstract public class AtomCollection {
         int bondCount = 0 + valences.charAt(ipt) - '0';
 
         Atom atom = atoms[i];
-        if (atom.getCovalentHydrogenCount() > 0)
+        if (!doAll && atom.getCovalentHydrogenCount() > 0)
           continue;
         int nBonds = atom.getCovalentBondCount();
         int charge = atom.getFormalCharge();

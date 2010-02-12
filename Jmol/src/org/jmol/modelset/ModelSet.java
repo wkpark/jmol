@@ -438,7 +438,7 @@ abstract public class ModelSet extends ModelCollection {
     if (mode == AtomData.MODE_GET_ATTACHED_HYDROGENS) {
       int[] nH = new int[1];
       atomData.hAtomRadius = viewer.getVanderwaalsMar(1) / 1000f;
-      atomData.hAtoms = getAdditionalHydrogens(atomData.bsSelected, nH, true);
+      atomData.hAtoms = getAdditionalHydrogens(atomData.bsSelected, nH, false, true);
       atomData.hydrogenAtomCount = nH[0];
       return;
     }

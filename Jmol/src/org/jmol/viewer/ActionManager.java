@@ -1369,6 +1369,10 @@ public class ActionManager {
       return;
     default:
       return;
+    case JmolConstants.PICKING_DELETE_ATOM:
+      BitSet bs = getSelectionSet("(" + spec + ")");
+      viewer.deleteAtoms(bs, false);
+      break;
     case JmolConstants.PICKING_IDENTIFY:
     case JmolConstants.PICKING_SELECT_ATOM:
       applySelectStyle(spec, action);
@@ -1464,16 +1468,22 @@ public class ActionManager {
             ACTION_selectToggleExtended) ? "selected tog " : isBound(action,
             ACTION_select) ? "" : null);
     if (s != null) {
-      try {
-        if (eval == null)
-          eval = new ScriptEvaluator(viewer);
-        viewer
-            .setSelectionSet(viewer.getAtomBitSet(eval, s + "(" + item + ")"));
-      } catch (Exception e) {
-        // ignore
-      }
+      BitSet bs = getSelectionSet(s + "(" + item + ")");
+      if (bs != null)
+        viewer.setSelectionSet(bs);
     }
     selectionWorking = false;
+  }
+
+  private BitSet getSelectionSet(String script) {
+    try {
+      if (eval == null)
+        eval = new ScriptEvaluator(viewer);
+      return viewer.getAtomBitSet(eval, script);
+    } catch (Exception e) {
+      // ignore
+    }
+    return null;
   }
 
   protected class MotionPoint {

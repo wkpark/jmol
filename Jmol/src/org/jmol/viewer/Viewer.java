@@ -4046,11 +4046,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.hbondsSolid;
   }
 
-  public Point3f[] getAdditionalHydrogens(BitSet bsAtoms, boolean justCarbon) {
+  public Point3f[] getAdditionalHydrogens(BitSet bsAtoms, boolean doAll, boolean justCarbon) {
     if (bsAtoms == null)
       bsAtoms = selectionManager.bsSelection;
     int[] nTotal = new int[1];
-    Point3f[][] pts = modelSet.getAdditionalHydrogens(bsAtoms, nTotal,
+    Point3f[][] pts = modelSet.getAdditionalHydrogens(bsAtoms, nTotal, doAll,
         justCarbon);
     Point3f[] points = new Point3f[nTotal[0]];
     for (int i = 0, pt = 0; i < pts.length; i++)
@@ -4058,12 +4058,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         for (int j = 0; j < pts[i].length; j++)
           points[pt++] = pts[i][j];
     return points;
-  }
+  } 
 
-  public void addHydrogens(BitSet bsAtoms) {
+  public BitSet addHydrogens(BitSet bsAtoms) {
+    boolean doAll = (bsAtoms != null);
     if (bsAtoms == null)
-      bsAtoms = selectionManager.bsSelection;
-    Point3f[] pts = getAdditionalHydrogens(bsAtoms, false);
+      bsAtoms = getModelAtomBitSet(getVisibleFramesBitSet().nextSetBit(0), false);
+    Point3f[] pts = getAdditionalHydrogens(bsAtoms, doAll, false);
     if (pts.length > 0) {
       int modelIndex = getAtomModelIndex(bsAtoms.nextSetBit(0));
       String modelnumber = getModelNumberDotted(modelIndex);
@@ -4079,6 +4080,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       evalStringQuiet(s);
     }
     scriptStatus(GT._("{0} hydrogens added", pts.length));
+    return bsAtoms;
   }
 
   public void setMarBond(short marBond) {
@@ -8085,6 +8087,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void setFocus() {
     if (display != null && !display.hasFocus())
       display.requestFocusInWindow();
+  }
+
+  public void minimize(int steps, float crit, BitSet bsSelected,
+                       boolean addHydrogen) {
+    if (addHydrogen)
+      bsSelected = addHydrogens(bsSelected);
+    try {
+      getMinimizer(true).minimize(steps, crit, bsSelected);
+    } catch (Exception e) {
+      Logger.error(e.getMessage());
+    }
   }
 
 }

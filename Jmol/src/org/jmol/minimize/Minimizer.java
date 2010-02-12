@@ -55,7 +55,6 @@ public class Minimizer implements MinimizerInterface {
   private int bondCount;
   private int atomCountFull;
   private int[] atomMap; 
-  private boolean addHydrogens;
  
   public int[][] angles;
   public int[][] torsions;
@@ -145,7 +144,6 @@ public class Minimizer implements MinimizerInterface {
     
   private void clear() {
     setMinimizationOn(false);
-    addHydrogens = false;
     atomCount = 0;
     bondCount = 0;
     atoms = null;
@@ -168,8 +166,7 @@ public class Minimizer implements MinimizerInterface {
     //  viewer = null;
   }
   
-  public boolean minimize(int steps, double crit, BitSet bsSelected, boolean addHydrogen) {
-    addHydrogens = addHydrogen;
+  public boolean minimize(int steps, double crit, BitSet bsSelected) {
     Object val;
     if (steps == Integer.MAX_VALUE) {
       val = viewer.getParameter("minimizationSteps");
@@ -235,7 +232,7 @@ public class Minimizer implements MinimizerInterface {
 
     // minimize and store values
 
-    if (steps > 0 && !addHydrogens && !viewer.useMinimizationThread())
+    if (steps > 0 && !viewer.useMinimizationThread())
       minimizeWithoutThread();
     else if (steps > 0)
       setMinimizationOn(true);
@@ -731,8 +728,6 @@ Token[keyword(0x880001) value=")"]
     viewer.notifyMinimizationStatus();
     viewer.refresh(3, "Minimizer:done" + (failed ? " EXPLODED" : "OK"));
     Logger.info("minimizer: endMinimization");
-    if (addHydrogens)
-      viewer.addHydrogens(bsSelected);
 }
 
   double[][] coordSaved;

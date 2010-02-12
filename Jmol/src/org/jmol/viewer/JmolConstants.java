@@ -284,28 +284,29 @@ final public class JmolConstants {
   public final static int PICKING_SPIN      = 5;
   public final static int PICKING_SYMMETRY  = 6;
   //public final static int PICKING_COORD  = 6;
-  public final static int PICKING_DELETE_BOND      = 7;
-  public final static int PICKING_SELECT_ATOM      =  8;
-  public final static int PICKING_SELECT_GROUP     =  9;
-  public final static int PICKING_SELECT_CHAIN     = 10;
-  public final static int PICKING_SELECT_MOLECULE  = 11;
-  public final static int PICKING_SELECT_POLYMER   = 12;
-  public final static int PICKING_SELECT_STRUCTURE = 13;
-  public final static int PICKING_SELECT_SITE      = 14;
-  public final static int PICKING_SELECT_MODEL     = 15;
-  public final static int PICKING_SELECT_ELEMENT   = 16;
-  public final static int PICKING_MEASURE          = 17;
-  public final static int PICKING_MEASURE_DISTANCE = 18;
-  public final static int PICKING_MEASURE_ANGLE    = 19;
-  public final static int PICKING_MEASURE_TORSION  = 20;
-  public final static int PICKING_NAVIGATE         = 21;
-  public final static int PICKING_CONNECT          = 22;
-  public final static int PICKING_STRUTS           = 23;
+  public final static int PICKING_DELETE_ATOM      =  7;
+  public final static int PICKING_DELETE_BOND      =  8;
+  public final static int PICKING_SELECT_ATOM      =  9;
+  public final static int PICKING_SELECT_GROUP     = 10;
+  public final static int PICKING_SELECT_CHAIN     = 11;
+  public final static int PICKING_SELECT_MOLECULE  = 12;
+  public final static int PICKING_SELECT_POLYMER   = 13;
+  public final static int PICKING_SELECT_STRUCTURE = 14;
+  public final static int PICKING_SELECT_SITE      = 15;
+  public final static int PICKING_SELECT_MODEL     = 16;
+  public final static int PICKING_SELECT_ELEMENT   = 17;
+  public final static int PICKING_MEASURE          = 18;
+  public final static int PICKING_MEASURE_DISTANCE = 19;
+  public final static int PICKING_MEASURE_ANGLE    = 20;
+  public final static int PICKING_MEASURE_TORSION  = 21;
+  public final static int PICKING_NAVIGATE         = 22;
+  public final static int PICKING_CONNECT          = 23;
+  public final static int PICKING_STRUTS           = 24;
   
 
   private final static String[] pickingModeNames = {
     "off", "identify", "label", "center", "draw", "spin",
-    "symmetry", "deletebond",
+    "symmetry", "deleteatom", "deletebond", 
     "atom", "group", "chain", "molecule", "polymer", "structure", 
     "site", "model", "element", 
     "measure", "distance", "angle", "torsion", "navigate", 

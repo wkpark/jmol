@@ -150,12 +150,13 @@ final public class Atom extends Point3fi {
   }
   
   void deleteBond(Bond bond) {
-    //this one is used -- from Bond.deleteAtomReferences
-    for (int i = bonds.length; --i >= 0; )
-      if (bonds[i] == bond) {
-        deleteBond(i);
-        return;
-      }
+    // this one is used -- from Bond.deleteAtomReferences
+    if (bonds != null)
+      for (int i = bonds.length; --i >= 0;)
+        if (bonds[i] == bond) {
+          deleteBond(i);
+          return;
+        }
   }
 
   private void deleteBond(int i) {
@@ -385,11 +386,14 @@ final public class Atom extends Point3fi {
     return !Float.isNaN(userDefinedVanDerWaalRadius = (radius > 0 ? radius : Float.NaN));  
   }
   
-  public void delete() {
+  public void delete(BitSet bsBonds) {
     valence = -1;
     if (bonds != null)
-      for (int i = bonds.length; --i >= 0; )
-        bonds[i].getOtherAtom(this).deleteBond(bonds[i]);
+      for (int i = bonds.length; --i >= 0; ) {
+        Bond bond = bonds[i];
+        bond.getOtherAtom(this).deleteBond(bond);
+        bsBonds.set(bond.index);
+      }
     bonds = null;
   }
 

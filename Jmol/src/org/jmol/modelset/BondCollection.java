@@ -309,6 +309,17 @@ abstract public class BondCollection extends AtomCollection {
     }
     bondCount = 0;
   }
+  
+  public void deleteAtoms(BitSet bs) {
+    if (bs == null)
+      return;
+    BitSet bsBonds = new BitSet();
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1))
+        atoms[i].delete(bsBonds);
+    deleteBonds(bsBonds, false);
+  }
+
+
 
   protected short defaultCovalentMad;
 

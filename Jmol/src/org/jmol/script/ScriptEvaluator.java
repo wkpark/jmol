@@ -8093,15 +8093,8 @@ public class ScriptEvaluator {
         error(ERROR_invalidArgument);
         break;
       }
-    if (isSyntaxCheck)
-      return;
-    if (bsSelected == null)
-      bsSelected = viewer.getModelAtomBitSet(viewer.getVisibleFramesBitSet().nextSetBit(0), false);
-    try {
-      viewer.getMinimizer(true).minimize(steps, crit, bsSelected, addHydrogen);
-    } catch (Exception e) {
-      evalError(e.getMessage(), null);
-    }
+    if (!isSyntaxCheck)
+      viewer.minimize(steps, crit, bsSelected, addHydrogen);
   }
 
   private void select(int i) throws ScriptException {
@@ -9118,10 +9111,11 @@ public class ScriptEvaluator {
         }
         return;
       case Token.hydrogen:
-        checkLength(2);
+        bs = (statementLength == 2 ? null : expression(2));
+        checkLast(iToken);
         if (isSyntaxCheck)
           return;
-        viewer.addHydrogens(null);
+        viewer.addHydrogens(bs);
         return;
       case Token.pointgroup:
         pointGroup();
@@ -11675,7 +11669,7 @@ public class ScriptEvaluator {
       msg = "set selectHetero " + viewer.getRasmolSetting(tok);
       break;
     case Token.addhydrogens:
-      msg = Escape.escapeArray(viewer.getAdditionalHydrogens(null, true));
+      msg = Escape.escapeArray(viewer.getAdditionalHydrogens(null, true, true));
       break;
     case Token.hydrogen:
       msg = "set selectHydrogens " + viewer.getRasmolSetting(tok);

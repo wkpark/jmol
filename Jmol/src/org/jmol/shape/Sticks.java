@@ -211,8 +211,8 @@ public class Sticks extends Shape {
             + ((r = bonds[i].getMad()) == 1 ? "on" : "" + (r / 2000f)));
     }
     if (reportAll || bsOrderSet != null) {
-      int i0 = (reportAll ? bondCount - 1 : bsSizeSet.nextSetBit(0));
-      for (int i = i0; i >= 0; i = (reportAll ? i - 1 : bsSizeSet
+      int i0 = (reportAll ? bondCount - 1 : bsOrderSet.nextSetBit(0));
+      for (int i = i0; i >= 0; i = (reportAll ? i - 1 : bsOrderSet
           .nextSetBit(i + 1))) {
         Bond bond = bonds[i];
         if (reportAll || (bond.getOrder() & JmolConstants.BOND_NEW) == 0)

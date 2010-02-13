@@ -787,6 +787,8 @@ abstract class ScriptCompilationTokenParser {
     boolean checkResNameSpec = false;
     switch (tok) {
     case Token.nada:
+    case Token.dna:
+    case Token.rna:
       return false;
     case Token.colon:
     case Token.integer:

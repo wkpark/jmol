@@ -50,7 +50,7 @@ public class Resolver {
                  "Molden;MopacGraphf;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;V3000;", 
-    "xtal.", ";Aims;Castep;Shelx;Wien2k;"
+    "xtal.", ";Aims;Castep;Crystal;Shelx;Wien2k;"
   };
   
   public final static String getReaderClassBase(String type) {
@@ -915,6 +915,7 @@ public class Resolver {
   private final static String[] mdTopLineStartRecords =
   { "MdTop", "%FLAG TITLE" };
   
+  
   private final static String[][] lineStartsWithRecords =
   { cifLineStartRecords, pqrLineStartRecords, pdbLineStartRecords, shelxLineStartRecords, 
     ghemicalMMLineStartRecords, jaguarLineStartRecords, 
@@ -974,12 +975,15 @@ public class Resolver {
   private final static String[] uicrcifContainsRecords =
   { "Cif", "Crystallographic Information File"};
   
+  private final static String[] crystalContainsRecords =
+  { "Crystal", " - DIMENSIONALITY OF THE SYSTEM" };
+  
   private final static String[][] containsRecords =
   { xmlContainsRecords, gaussianContainsRecords, 
     ampacContainsRecords, mopacContainsRecords, qchemContainsRecords, 
     gamessUKContainsRecords, gamessUSContainsRecords,
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
-    nwchemContainsRecords, uicrcifContainsRecords, dgridContainsRecords,
+    nwchemContainsRecords, uicrcifContainsRecords, dgridContainsRecords, crystalContainsRecords
   };
 }
 

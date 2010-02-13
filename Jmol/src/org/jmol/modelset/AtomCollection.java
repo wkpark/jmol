@@ -1214,12 +1214,13 @@ abstract public class AtomCollection {
           hAtoms[i][hPt++] = pt;
           break;
         case 2:
-          // 2 bonds needed R2C or R-N
-          getHybridizationAndAxes(i, z, x, "lpa", false);
+          // 2 bonds needed R2C or R-N or R2C=C
+          boolean isEne = (nBonds == 1 && bondCount == 4);
+          getHybridizationAndAxes(i, z, x, (isEne ? "sp2b" : "lpa"), false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
-          getHybridizationAndAxes(i, z, x, "lpb", false);
+          getHybridizationAndAxes(i, z, x, (isEne ? "sp2c" : "lpb"), false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;

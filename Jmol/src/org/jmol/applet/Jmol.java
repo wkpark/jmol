@@ -951,9 +951,6 @@ public class Jmol implements WrappedApplet {
         // general message has msWalltime = 0
         // special messages have msWalltime < 0
         // termination message has msWalltime > 0 (1 + msWalltime)
-        // "script started"/"pending"/"script terminated"/"script completed"
-        // do not get sent to console
-        boolean toConsole = (msWalltime == 0);
         if (msWalltime > 0) {
           // termination -- button legacy
           notifyScriptTermination();
@@ -963,7 +960,7 @@ public class Jmol implements WrappedApplet {
           // for compatibility reasons
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
         }
-        showStatusAndConsole(strInfo, toConsole);
+        showStatusAndConsole(strInfo, false);
         break;
       case JmolConstants.CALLBACK_SYNC:
         sendScript(strInfo, (String) data[2], true, doCallback);

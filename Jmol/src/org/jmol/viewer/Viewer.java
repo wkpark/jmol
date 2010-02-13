@@ -6842,8 +6842,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       file_text = new String[] { null, null };
     if (file_text[1] == null)
       file_text[1] = "<no data>";
-    String filename = file_text[1];
-    String msg = file_text[0];
+    String filename = file_text[0];
+    String msg = file_text[1];
     JmolScriptEditorInterface scriptEditor = (JmolScriptEditorInterface) getProperty(
         "DATA_API", "getScriptEditor", Boolean.TRUE);
     if (msg != null) {

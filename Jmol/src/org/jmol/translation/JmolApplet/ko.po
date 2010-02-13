@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-02-04 21:32+0100\n"
+"POT-Creation-Date: 2010-02-13 17:10+0100\n"
 "PO-Revision-Date: 2008-10-01 21:49+0000\n"
 "Last-Translator: Won Kyu Park <wkpark@gmail.com>\n"
 "Language-Team: Korean <Jmol-developers@lists.sf.net>\n"
@@ -422,65 +422,69 @@ msgid "Italian"
 msgstr "이탈리아어"
 
 #: org/jmol/i18n/GT.java:133
+msgid "Japanese"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:134
 msgid "Korean"
 msgstr "한국어"
 
-#: org/jmol/i18n/GT.java:134
+#: org/jmol/i18n/GT.java:135
 msgid "Norwegian Bokmal"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:135
+#: org/jmol/i18n/GT.java:136
 msgid "Polish"
 msgstr "폴란드어"
 
-#: org/jmol/i18n/GT.java:136
+#: org/jmol/i18n/GT.java:137
 #, fuzzy
 msgid "Brazilian Portuguese"
 msgstr "포루투갈어"
 
-#: org/jmol/i18n/GT.java:137
+#: org/jmol/i18n/GT.java:138
 msgid "Portuguese"
 msgstr "포루투갈어"
 
-#: org/jmol/i18n/GT.java:138
+#: org/jmol/i18n/GT.java:139
 msgid "Russian"
 msgstr "러시아어"
 
-#: org/jmol/i18n/GT.java:139
+#: org/jmol/i18n/GT.java:140
 msgid "Slovenian"
 msgstr "슬로베니아어"
 
-#: org/jmol/i18n/GT.java:140
+#: org/jmol/i18n/GT.java:141
 msgid "Spanish"
 msgstr "스페인어"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:142
 msgid "Swedish"
 msgstr "스웨덴어"
 
-#: org/jmol/i18n/GT.java:142
+#: org/jmol/i18n/GT.java:143
 msgid "Turkish"
 msgstr "터키어"
 
-#: org/jmol/i18n/GT.java:143
+#: org/jmol/i18n/GT.java:144
 msgid "Ukrainian"
 msgstr ""
 
-#: org/jmol/minimize/Minimizer.java:192
+#: org/jmol/minimize/Minimizer.java:193
 #, java-format
 msgid "Could not get class for force field {0}"
 msgstr "force field {0}에 대한 클래스를 찾을 수 없음"
 
-#: org/jmol/minimize/Minimizer.java:202
+#: org/jmol/minimize/Minimizer.java:203
 msgid "No atoms selected -- nothing to do!"
 msgstr "아무 원자도 선택안됨 -- 실행 안함!"
 
-#: org/jmol/minimize/Minimizer.java:262
+#: org/jmol/minimize/Minimizer.java:263
 #, java-format
 msgid "{0} atoms will be minimized."
 msgstr "{0} 원자를 최적화하려 함"
 
-#: org/jmol/minimize/Minimizer.java:353
+#: org/jmol/minimize/Minimizer.java:354
 #, java-format
 msgid "could not setup force field {0}"
 msgstr "포스필드 {0}(을)를 설정할 수 없음"
@@ -1601,7 +1605,7 @@ msgid "About..."
 msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1096
-#: org/jmol/script/ScriptEvaluator.java:2365
+#: org/jmol/script/ScriptEvaluator.java:2364
 msgid "bad argument count"
 msgstr "인자 개수 오류"
 
@@ -1611,7 +1615,7 @@ msgid "invalid context for {0}"
 msgstr "{0}에 대한 잘못된 컨텍스트"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1102
-#: org/jmol/script/ScriptEvaluator.java:2389
+#: org/jmol/script/ScriptEvaluator.java:2388
 msgid "command expected"
 msgstr "명령이 필요함"
 
@@ -1620,7 +1624,7 @@ msgid "{ number number number } expected"
 msgstr "{ 숫자 숫자 숫자 } 필요"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1108
-#: org/jmol/script/ScriptEvaluator.java:2398
+#: org/jmol/script/ScriptEvaluator.java:2397
 msgid "unexpected end of script command"
 msgstr "예상치않은 스크립트 명령"
 
@@ -1655,7 +1659,7 @@ msgid "missing END for {0}"
 msgstr "{0}에 END가 없습니다"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1132
-#: org/jmol/script/ScriptEvaluator.java:2462
+#: org/jmol/script/ScriptEvaluator.java:2461
 msgid "number expected"
 msgstr "숫자 필요"
 
@@ -1683,7 +1687,7 @@ msgid "unrecognized expression token: {0}"
 msgstr "이해할  수 없는 수식 토큰: {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1150
-#: org/jmol/script/ScriptEvaluator.java:2511
+#: org/jmol/script/ScriptEvaluator.java:2510
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "이해할 수 없는 {0} 파라메터"
@@ -1698,134 +1702,134 @@ msgstr "이해할 수 없는 토큰: {0}"
 msgid "script compiler ERROR: "
 msgstr "스크립트 오류: "
 
-#: org/jmol/script/ScriptEvaluator.java:2227
-#: org/jmol/script/ScriptEvaluator.java:7833
+#: org/jmol/script/ScriptEvaluator.java:2226
+#: org/jmol/script/ScriptEvaluator.java:7894
 msgid "script ERROR: "
 msgstr "스크립트 오류: "
 
-#: org/jmol/script/ScriptEvaluator.java:2359
+#: org/jmol/script/ScriptEvaluator.java:2358
 msgid "x y z axis expected"
 msgstr "x y z 축 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2362
+#: org/jmol/script/ScriptEvaluator.java:2361
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:2368
+#: org/jmol/script/ScriptEvaluator.java:2367
 msgid "Miller indices cannot all be zero."
 msgstr "밀러 지수는 모든 값이 0일 수 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2371
+#: org/jmol/script/ScriptEvaluator.java:2370
 msgid "bad [R,G,B] color"
 msgstr "잘못된 [R,G,B] 색상"
 
-#: org/jmol/script/ScriptEvaluator.java:2374
+#: org/jmol/script/ScriptEvaluator.java:2373
 msgid "boolean expected"
 msgstr "부울린값 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2377
+#: org/jmol/script/ScriptEvaluator.java:2376
 msgid "boolean or number expected"
 msgstr "부울린 혹은 숫자 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2380
+#: org/jmol/script/ScriptEvaluator.java:2379
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "부울린, 숫자 혹은 {0} 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2383
+#: org/jmol/script/ScriptEvaluator.java:2382
 msgid "color expected"
 msgstr "색상 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2386
+#: org/jmol/script/ScriptEvaluator.java:2385
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "색상 혹은 팔레트 이름 (Jmol, Rasmol)이 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2392
+#: org/jmol/script/ScriptEvaluator.java:2391
 #, fuzzy
 msgid "{x y z} or $name or (atom expression) required"
 msgstr " {x y z} 혹은 $name 혹은 (원자 표현식) 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2395
+#: org/jmol/script/ScriptEvaluator.java:2394
 msgid "draw object not defined"
 msgstr "그림 객체가 정의 안됨"
 
-#: org/jmol/script/ScriptEvaluator.java:2401
+#: org/jmol/script/ScriptEvaluator.java:2400
 msgid "valid (atom expression) expected"
 msgstr "유효한 (원자 표현식) 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2404
+#: org/jmol/script/ScriptEvaluator.java:2403
 msgid "(atom expression) or integer expected"
 msgstr "(원자 표현식) 혹은 정수 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2407
+#: org/jmol/script/ScriptEvaluator.java:2406
 msgid "filename expected"
 msgstr "파일 이름 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2410
+#: org/jmol/script/ScriptEvaluator.java:2409
 msgid "file not found"
 msgstr "파일 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2413
+#: org/jmol/script/ScriptEvaluator.java:2412
 msgid "incompatible arguments"
 msgstr "비호환 인자"
 
-#: org/jmol/script/ScriptEvaluator.java:2416
+#: org/jmol/script/ScriptEvaluator.java:2415
 msgid "insufficient arguments"
 msgstr "부족한 인자"
 
-#: org/jmol/script/ScriptEvaluator.java:2419
+#: org/jmol/script/ScriptEvaluator.java:2418
 msgid "integer expected"
 msgstr "정수가 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2422
+#: org/jmol/script/ScriptEvaluator.java:2421
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "정수가 범위에 벗어남 ({0} - {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2425
+#: org/jmol/script/ScriptEvaluator.java:2424
 msgid "invalid argument"
 msgstr "잘못된 인자"
 
-#: org/jmol/script/ScriptEvaluator.java:2428
+#: org/jmol/script/ScriptEvaluator.java:2427
 msgid "invalid parameter order"
 msgstr "잘못된 인자 순서"
 
-#: org/jmol/script/ScriptEvaluator.java:2431
+#: org/jmol/script/ScriptEvaluator.java:2430
 msgid "keyword expected"
 msgstr "키워드 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2434
+#: org/jmol/script/ScriptEvaluator.java:2433
 msgid "no MO coefficient data available"
 msgstr "MO 계수 정보 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2437
+#: org/jmol/script/ScriptEvaluator.java:2436
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "1에서 {0} 사이의 MO 지정값이 필요함"
 
-#: org/jmol/script/ScriptEvaluator.java:2440
+#: org/jmol/script/ScriptEvaluator.java:2439
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "현재 프레임에 대한 MO basis/계수 정보가 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2443
+#: org/jmol/script/ScriptEvaluator.java:2442
 msgid "no MO occupancy data available"
 msgstr "MO 점유값이 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2446
+#: org/jmol/script/ScriptEvaluator.java:2445
 msgid "Only one molecular orbital is available in this file"
 msgstr "단 하나의 분자궤도가 있습니다"
 
-#: org/jmol/script/ScriptEvaluator.java:2449
+#: org/jmol/script/ScriptEvaluator.java:2448
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "{0}(은)는 단 하나의 모델만 표시됨"
 
-#: org/jmol/script/ScriptEvaluator.java:2452
+#: org/jmol/script/ScriptEvaluator.java:2451
 msgid "No data available"
 msgstr "아무 정보가 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2456
+#: org/jmol/script/ScriptEvaluator.java:2455
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
@@ -1833,118 +1837,118 @@ msgstr ""
 "부분 전하 정보가 없습니다; Jmol은 MEP 정보를 보여주기 위해 이 정보가필요합니"
 "다."
 
-#: org/jmol/script/ScriptEvaluator.java:2459
+#: org/jmol/script/ScriptEvaluator.java:2458
 msgid "No unit cell"
 msgstr "단위 cell 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2465
+#: org/jmol/script/ScriptEvaluator.java:2464
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "유효한 숫자는 ({0} 혹은 {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2468
+#: org/jmol/script/ScriptEvaluator.java:2467
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "십진수가 범위에 벗어남 ({0} - {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2471
+#: org/jmol/script/ScriptEvaluator.java:2470
 msgid "object name expected after '$'"
 msgstr "'$' 뒤에 객체 이름이 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2475
+#: org/jmol/script/ScriptEvaluator.java:2474
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
 msgstr "평면이 필요함 -- 세개의 점 혹은 원자 표현식 혹은 {0} 혹은 {1} 혹은 {2}"
 
-#: org/jmol/script/ScriptEvaluator.java:2478
+#: org/jmol/script/ScriptEvaluator.java:2477
 msgid "property name expected"
 msgstr "속성 이름 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2481
+#: org/jmol/script/ScriptEvaluator.java:2480
 #, java-format
 msgid "space group {0} was not found."
 msgstr "공간 그룹 {0}(을)를 찾을 수 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2484
+#: org/jmol/script/ScriptEvaluator.java:2483
 msgid "quoted string expected"
 msgstr "따옴표로 감싼 문자열 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2487
+#: org/jmol/script/ScriptEvaluator.java:2486
 msgid "quoted string or identifier expected"
 msgstr "인용된 문자열 혹은 지정자 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2490
+#: org/jmol/script/ScriptEvaluator.java:2489
 msgid "too many rotation points were specified"
 msgstr "너무 많은 회전 포인트가 지정됨"
 
-#: org/jmol/script/ScriptEvaluator.java:2493
+#: org/jmol/script/ScriptEvaluator.java:2492
 msgid "too many script levels"
 msgstr "너무 많은 스크립트 단계"
 
-#: org/jmol/script/ScriptEvaluator.java:2496
+#: org/jmol/script/ScriptEvaluator.java:2495
 msgid "unrecognized atom property"
 msgstr "모르는 원자 속성"
 
-#: org/jmol/script/ScriptEvaluator.java:2499
+#: org/jmol/script/ScriptEvaluator.java:2498
 msgid "unrecognized bond property"
 msgstr "모르는 결합 속성"
 
-#: org/jmol/script/ScriptEvaluator.java:2502
+#: org/jmol/script/ScriptEvaluator.java:2501
 msgid "unrecognized command"
 msgstr "모르는 명령"
 
-#: org/jmol/script/ScriptEvaluator.java:2505
+#: org/jmol/script/ScriptEvaluator.java:2504
 msgid "runtime unrecognized expression"
 msgstr "런타임시 인식안되는 표현식"
 
-#: org/jmol/script/ScriptEvaluator.java:2508
+#: org/jmol/script/ScriptEvaluator.java:2507
 msgid "unrecognized object"
 msgstr "모르는 객체"
 
-#: org/jmol/script/ScriptEvaluator.java:2515
+#: org/jmol/script/ScriptEvaluator.java:2514
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:2518
+#: org/jmol/script/ScriptEvaluator.java:2517
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "SHOW 인자가 인식안됨 -- {0} 사용"
 
-#: org/jmol/script/ScriptEvaluator.java:2524
+#: org/jmol/script/ScriptEvaluator.java:2523
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "무엇을 쓰나요? {0} 혹은 {1} \"파일이름\""
 
-#: org/jmol/script/ScriptEvaluator.java:5851
+#: org/jmol/script/ScriptEvaluator.java:5912
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} 결함 제거"
 
-#: org/jmol/script/ScriptEvaluator.java:5872
+#: org/jmol/script/ScriptEvaluator.java:5933
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} 새 결합: {1} 변경됨"
 
-#: org/jmol/script/ScriptEvaluator.java:7030
+#: org/jmol/script/ScriptEvaluator.java:7091
 #, java-format
 msgid "file {0} created"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:7957
-#: org/jmol/script/ScriptEvaluator.java:8194
+#: org/jmol/script/ScriptEvaluator.java:8018
+#: org/jmol/script/ScriptEvaluator.java:8248
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} 원자 지움"
 
-#: org/jmol/script/ScriptEvaluator.java:8763
+#: org/jmol/script/ScriptEvaluator.java:8817
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} 수소 결합"
 
-#: org/jmol/script/ScriptEvaluator.java:9111
+#: org/jmol/script/ScriptEvaluator.java:9166
 #, fuzzy, java-format
 msgid "{0} struts added"
 msgstr "{0} 수소 결합"
@@ -2151,20 +2155,20 @@ msgstr ""
 msgid "stop motion (requires {0})"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1412
+#: org/jmol/viewer/ActionManager.java:1435
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "축상으로 돌리기위해 하나 혹은 더 많은 원자를 고르세요"
 
-#: org/jmol/viewer/ActionManager.java:1413
+#: org/jmol/viewer/ActionManager.java:1436
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "모델을 축상으로 회전하기 위해 두개의 원자를 고르세요"
 
-#: org/jmol/viewer/ActionManager.java:1416
+#: org/jmol/viewer/ActionManager.java:1439
 #, fuzzy
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "축상으로 돌리기위해 하나 혹은 더 많은 원자를 고르세요"
 
-#: org/jmol/viewer/ActionManager.java:1417
+#: org/jmol/viewer/ActionManager.java:1440
 #, fuzzy
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
@@ -2181,24 +2185,24 @@ msgstr "{0} 원자 숨김"
 msgid "{0} atoms selected"
 msgstr "{0} 원자 선택"
 
-#: org/jmol/viewer/Viewer.java:4065
+#: org/jmol/viewer/Viewer.java:4082
 #, fuzzy, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} 수소 결합"
 
-#: org/jmol/viewer/Viewer.java:4105
+#: org/jmol/viewer/Viewer.java:4123
 msgid "Drag to move label"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:7310
+#: org/jmol/viewer/Viewer.java:7344
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:8015
+#: org/jmol/viewer/Viewer.java:8053
 msgid "Cannot set log file path."
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:8017
+#: org/jmol/viewer/Viewer.java:8055
 #, java-format
 msgid "Setting log file to {0}"
 msgstr ""

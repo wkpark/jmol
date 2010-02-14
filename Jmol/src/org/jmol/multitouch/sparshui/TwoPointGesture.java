@@ -172,8 +172,7 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
 
   // @override
   protected Vector processMove(TouchPoint touchPoint) {
-    //int id = touchPoint.getID();
-    //System.out.println("TwoPointGesture move type:" + _myType + " ntraces:" + _nTraces + " ids:" + _id1+","+_id2+ " id:" + id  + " sizes: " + _traces1.size() + " " + _traces2.size());
+    //System.out.println("TwoPointGesture move type:" + _myType + " ntraces:" + _nTraces + " ids:" + _id1+","+_id2+ " id:" + touchPoint.getID()  + " sizes: " + _traces1.size() + " " + _traces2.size());
     Vector events = new Vector();
     if (!updateLocations(touchPoint))
       return events;

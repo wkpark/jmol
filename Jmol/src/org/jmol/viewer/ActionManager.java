@@ -452,8 +452,7 @@ public class ActionManager {
     ke.consume();
     if (keyProcessing)
       return;
-    if (Logger.debugging)
-      Logger.debug("ActionmManager keyPressed: " + ke.getKeyCode());
+    //System.out.println("ActionmManager keyPressed: " + ke.getKeyCode());
     keyProcessing = true;
     int i = ke.getKeyCode();
     switch(i) {
@@ -492,8 +491,7 @@ public class ActionManager {
   }
 
   public void keyReleased(KeyEvent ke) {
-    if (Logger.debugging)
-      Logger.debug("ActionmManager keyReleased: " + ke.getKeyCode());
+    //System.out.println("ActionmManager keyReleased: " + ke.getKeyCode());
     ke.consume();
     int i = ke.getKeyCode();
     switch(i) {

@@ -175,6 +175,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
   
   public List getAllowedGestures(int groupID) {
+    //System.out.println("ActionManagerMT getAllowedGestures " + groupID);
     if (groupID != this.groupID || !viewer.allowMultiTouch())
       return null;
     Vector list = new Vector();
@@ -183,8 +184,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     //list.add(new Integer(SPIN_GESTURE));
     //list.add(new Integer(DBLCLK_GESTURE));
     list.add(TWO_POINT_GESTURE);
-    if (simulator == null)
-      list.add(SINGLE_POINT_GESTURE);
+    //if (simulator == null)
+    list.add(SINGLE_POINT_GESTURE);
     //list.add(new Integer(ZOOM_GESTURE));
     //list.add(new Integer(FLICK_GESTURE));
     //list.add(new Integer(RELATIVE_DRAG_GESTURE));    
@@ -192,12 +193,17 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
 
   public int getGroupID(int x, int y) {
-    int gid = (viewer.hasFocus()  
-        || x < 0 || y < 0 || x >= viewer.getScreenWidth()
-        || y >= viewer.getScreenHeight() ? 0 : groupID);
-    if (resetNeeded) {
-      gid |= 0x10000000;
-      resetNeeded = false;
+    int gid = 0;
+    try {
+      if (viewer.hasFocus() && x >= 0 && y >= 0 && x < viewer.getScreenWidth()
+          && y < viewer.getScreenHeight())
+        gid = groupID;
+      if (resetNeeded) {
+        gid |= 0x10000000;
+        resetNeeded = false;
+      }
+    } catch (Exception e) {
+     // ignore
     }
     return gid;
   }
@@ -206,13 +212,14 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   
   public void processEvent(int groupID, int eventType, int touchID, int iData,
                            Point3f pt, long time) {
-    if (true || Logger.debugging)
+    if (Logger.debugging)
       Logger.info(this + " time=" + time + " groupID=" + groupID + " "
           + Integer.toHexString(groupID) + " eventType=" + eventType + "("
           + getEventName(eventType) + ") iData=" + iData + " pt=" + pt);
     switch (eventType) {
     case DRIVER_NONE:
-      haveMultiTouchInput = false;
+      if (simulator == null)
+        haveMultiTouchInput = false;
       Logger.error("SparshUI reports no driver present");
       viewer.log("SparshUI reports no driver present -- setting haveMultiTouchInput FALSE");
       break;

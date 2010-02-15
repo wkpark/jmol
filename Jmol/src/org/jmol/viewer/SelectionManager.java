@@ -47,10 +47,9 @@ class SelectionManager {
 
   private final BitSet bsHidden = new BitSet();
   private final BitSet bsSelection = new BitSet();
-  private final BitSet bsSelectionNotDeleted = new BitSet();
 
   BitSet bsSubset; // set in Eval and only pointed to here
-  BitSet bsDeleted;
+  private BitSet bsDeleted;
 
   // this is a tri-state. the value -1 means unknown
   private final static int TRUE = 1;
@@ -286,12 +285,11 @@ class SelectionManager {
   }
 
   BitSet getSelectionSet() {
-    if (bsDeleted == null)
-      return bsSelection;
-    bsSelectionNotDeleted.clear();
-    bsSelectionNotDeleted.or(bsSelection);
-    bsSelectionNotDeleted.andNot(bsDeleted);
-    return bsSelectionNotDeleted;
+    return bsSelection;
+  }
+
+  public BitSet getSelectionSubset() {
+    return bsSubset;
   }
 
   void excludeAtoms(BitSet bs, boolean ignoreSubset) {

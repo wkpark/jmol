@@ -1557,7 +1557,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public BitSet getSelectionSubset() {
-    return selectionManager.bsSubset;
+    return selectionManager.getSelectionSubset();
   }
 
   public void invertSelection() {
@@ -7722,7 +7722,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public BitSet getDeletedAtoms() {
-    return selectionManager.bsDeleted;
+    return selectionManager.getDeletedAtoms();
   }
 
   public char getQuaternionFrame() {

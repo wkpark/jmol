@@ -48,7 +48,7 @@ class SelectionManager {
   private final BitSet bsHidden = new BitSet();
   private final BitSet bsSelection = new BitSet();
   private final BitSet bsSelectionNotDeleted = new BitSet();
-  
+
   BitSet bsSubset; // set in Eval and only pointed to here
   BitSet bsDeleted;
 
@@ -188,6 +188,7 @@ class SelectionManager {
   }
 
   private final BitSet bsTemp = new BitSet();
+
   int getSelectionCount() {
     if (empty == TRUE)
       return 0;
@@ -268,13 +269,13 @@ class SelectionManager {
   }
 
   public int deleteAtoms(BitSet bs) {
-    if (bsDeleted == null) {
-      bsDeleted = BitSetUtil.copy(bs);
-      return bs.cardinality();
-    }
     BitSet bsNew = BitSetUtil.copy(bs);
-    bsNew.andNot(bsDeleted);
-    bsDeleted.or(bs);
+    if (bsDeleted == null) {
+      bsDeleted = bsNew;
+    } else {
+      bsNew.andNot(bsDeleted);
+      bsDeleted.or(bs);
+    }
     bsHidden.andNot(bsDeleted);
     bsSelection.andNot(bsDeleted);
     return bsNew.cardinality();
@@ -283,7 +284,7 @@ class SelectionManager {
   BitSet getDeletedAtoms() {
     return bsDeleted;
   }
-  
+
   BitSet getSelectionSet() {
     if (bsDeleted == null)
       return bsSelection;

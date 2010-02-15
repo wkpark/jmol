@@ -1180,7 +1180,7 @@ abstract public class AtomCollection {
         int ipt = types.indexOf(atoms[i].getElementSymbol());
         if (ipt < 0)
           continue;
-        int bondCount = 0 + valences.charAt(ipt) - '0';
+        int targetValence = 0 + valences.charAt(ipt) - '0';
 
         Atom atom = atoms[i];
         if (!doAll && atom.getCovalentHydrogenCount() > 0)
@@ -1188,11 +1188,11 @@ abstract public class AtomCollection {
         int nBonds = atom.getCovalentBondCount();
         int charge = atom.getFormalCharge();
         if (charge != 0)
-          bondCount += (bondCount == 4 ? -Math.abs(charge) : charge);
+          targetValence += (targetValence == 4 ? -Math.abs(charge) : charge);
         int nVal = atom.getValence();
-        if (nBonds == 0 || nVal >= bondCount)
+        if (nBonds == 0 || nVal >= targetValence)
           continue;
-        int n = bondCount - nVal;
+        int n = targetValence - nVal;
         hAtoms[i] = new Point3f[n];
         // System.out.println(atom.getInfo() + " nTarget=" + bondCount + " nB="
         // + nBonds + " nVal=" + nVal + " n=" + n);
@@ -1215,7 +1215,8 @@ abstract public class AtomCollection {
           break;
         case 2:
           // 2 bonds needed R2C or R-N or R2C=C
-          boolean isEne = (nBonds == 1 && bondCount == 4);
+          //                    or RC=C or C=C
+          boolean isEne = (nBonds == 1 && targetValence == 4);
           getHybridizationAndAxes(i, z, x, (isEne ? "sp2b" : "lpa"), false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
@@ -1229,12 +1230,12 @@ abstract public class AtomCollection {
           // one bond needed R3C, R-N-R, R-O R=C-R R=N R-3-C
           // nbonds 3 2 1 2 1 1
           // nval 3 2 1 3 2 3
-          // bondcount 4 3 2 4 3 4
+          // targetValence 4 3 2 4 3 4
           // sp3 sp3 sp3 sp2 sp2 sp
-          switch (bondCount - nBonds) {
+          switch (targetValence - nBonds) {
           case 1:
             // sp3
-            getHybridizationAndAxes(i, z, x, bondCount == 2 ? "sp3b" : "lpa",
+            getHybridizationAndAxes(i, z, x, targetValence == 2 ? "sp3b" : "lpa",
                 false);
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, z, atom);
@@ -1262,9 +1263,12 @@ abstract public class AtomCollection {
   }
 
   ////// special method for lcaoCartoons
-  
+
+  private static float sqrt3_2 = (float) (Math.sqrt(3) / 2);
+
   public String getHybridizationAndAxes(int atomIndex, Vector3f z, Vector3f x,
-                           String lcaoTypeRaw, boolean hybridizationCompatible) {
+                                        String lcaoTypeRaw,
+                                        boolean hybridizationCompatible) {
     String lcaoType = (lcaoTypeRaw.length() > 0 && lcaoTypeRaw.charAt(0) == '-' ? lcaoTypeRaw
         .substring(1)
         : lcaoTypeRaw);
@@ -1274,6 +1278,7 @@ abstract public class AtomCollection {
     x.set(0, 0, 0);
     Atom atom1 = atom;
     Atom atom2 = atom;
+    Atom atom3;
     int nBonds = 0;
     float _180 = (float) Math.PI * 0.95f;
     Vector3f n = new Vector3f();
@@ -1315,11 +1320,12 @@ abstract public class AtomCollection {
       x.set(1, 0, 0);
       break;
     case 1:
-      if (lcaoType.indexOf("sp3") == 0) { // align z as sp3 orbital
+      if (lcaoType.indexOf("sp3") == 0) {
+        // align z as sp3 orbital
         hybridization = "sp3";
         x.cross(x3, z);
-        y1.cross(z, x);
         x.normalize();
+        y1.cross(z, x);
         y1.normalize();
         y2.set(x);
         z.normalize();
@@ -1338,14 +1344,47 @@ abstract public class AtomCollection {
         break;
       }
       hybridization = "sp";
-      if (atom1.getCovalentBondCount() == 3) {
-        //special case, for example R2C=O oxygen
+      switch (atom1.getCovalentBondCount()) {
+      case 1:
+        if (atom1.getValence() == 3) // C-t-C
+          break;
+        // C=C, no other atoms
+        // fall through
+      case 2:
+        hybridization = "sp2";
+        if (lcaoType.indexOf("a") == 0 || atom1.getValence() == 4)
+          break; // C=C=C or just directing back to other atom
+        // R-C=C
+        // get third atom
+        Bond[] bonds = atom1.bonds;
+        atom3 = null;
+        for (int i = 0; i < bonds.length; i++) {
+          atom3 = bonds[i].getOtherAtom(atom1);
+          if (atom3 != atom)
+            break;
+        }
+        if (atom3 != null && atom3 != atom) {
+          x3.set(atom3);
+          x3.sub(atom1);
+          x3.cross(x3, x);
+        }
+        // C=C or RC=C
+        z.cross(x3, x); // perp
+        z.normalize();
+        if (lcaoType.indexOf("c") >= 0)
+          z.scale(-1);
+        z.set(z.x * sqrt3_2 + x.x / 2, z.y * sqrt3_2 + x.y / 2, z.z * sqrt3_2
+            + x.z / 2);
+        break;
+      case 3:
+        // special case, for example R2C=O oxygen
         getHybridizationAndAxes(atom1.index, z, x3, lcaoType, false);
         x3.set(x);
         if (lcaoType.indexOf("sp2") == 0) { // align z as sp2 orbital
           hybridization = "sp2";
           z.scale(-1);
         }
+        break;
       }
       x.cross(x3, z);
       break;
@@ -1357,7 +1396,7 @@ abstract public class AtomCollection {
           if (atom1.getCovalentBondCount() != 3)
             atom1 = atom2;
           if (atom1.getCovalentBondCount() == 3) {
-            //special case, for example R2C=C=CR2 central carbon
+            // special case, for example R2C=C=CR2 central carbon
             getHybridizationAndAxes(atom1.index, x, z, "pz", false);
             if (lcaoType.equals("px"))
               x.scale(-1);
@@ -1381,7 +1420,7 @@ abstract public class AtomCollection {
         break;
       }
       if (lcaoType.indexOf("lp") == 0) { // align z as lone pair
-        hybridization = "lp"; //any is OK
+        hybridization = "lp"; // any is OK
         x3.normalize();
         z.normalize();
         y1.scaleAdd(1.2f, x3, z);
@@ -1401,7 +1440,7 @@ abstract public class AtomCollection {
       }
       break;
     default:
-      //3 or 4 bonds
+      // 3 or 4 bonds
       if (x.angle(x2) < _180)
         y1.cross(x, x2);
       else
@@ -1415,15 +1454,17 @@ abstract public class AtomCollection {
       if (Math.abs(y2.dot(y1)) < 0.95f) {
         hybridization = "sp3";
         if (lcaoType.indexOf("sp") == 0) { // align z as sp3 orbital
-          z.set(lcaoType.equalsIgnoreCase("sp3")
+          z
+              .set(lcaoType.equalsIgnoreCase("sp3")
                   || lcaoType.indexOf("d") >= 0 ? x4
                   : lcaoType.indexOf("c") >= 0 ? x3
                       : lcaoType.indexOf("b") >= 0 ? x2 : x);
           z.scale(-1);
           x.set(y1);
-        } else { //needs testing here
-          if (lcaoType.indexOf("lp") == 0 && nBonds == 3) { // align z as lone pair            
-            hybridization = "lp"; //any is OK
+        } else { // needs testing here
+          if (lcaoType.indexOf("lp") == 0 && nBonds == 3) { // align z as lone
+                                                            // pair
+            hybridization = "lp"; // any is OK
           }
           x.cross(z, x);
         }
@@ -1431,7 +1472,8 @@ abstract public class AtomCollection {
       }
       hybridization = "sp2";
       if (lcaoType.indexOf("sp") == 0) { // align z as sp2 orbital
-        z.set(lcaoType.equalsIgnoreCase("sp3") || lcaoType.indexOf("d") >= 0 ? x4
+        z
+            .set(lcaoType.equalsIgnoreCase("sp3") || lcaoType.indexOf("d") >= 0 ? x4
                 : lcaoType.indexOf("c") >= 0 ? x3
                     : lcaoType.indexOf("b") >= 0 ? x2 : x);
         z.scale(-1);

@@ -46,8 +46,9 @@ class SelectionManager {
   }
 
   private final BitSet bsHidden = new BitSet();
-  final BitSet bsSelection = new BitSet();
-
+  private final BitSet bsSelection = new BitSet();
+  private final BitSet bsSelectionNotDeleted = new BitSet();
+  
   BitSet bsSubset; // set in Eval and only pointed to here
   BitSet bsDeleted;
 
@@ -281,6 +282,22 @@ class SelectionManager {
 
   BitSet getDeletedAtoms() {
     return bsDeleted;
+  }
+  
+  BitSet getSelectionSet() {
+    if (bsDeleted == null)
+      return bsSelection;
+    bsSelectionNotDeleted.clear();
+    bsSelectionNotDeleted.or(bsSelection);
+    bsSelectionNotDeleted.andNot(bsDeleted);
+    return bsSelectionNotDeleted;
+  }
+
+  void excludeAtoms(BitSet bs, boolean ignoreSubset) {
+    if (bsDeleted != null)
+      bs.andNot(bsDeleted);
+    if (!ignoreSubset && bsSubset != null)
+      bs.and(bsSubset);
   }
 
 }

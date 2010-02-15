@@ -69,7 +69,6 @@ public class Minimizer implements MinimizerInterface {
   private BitSet bsTaint, bsSelected, bsAtoms;
   private BitSet bsFixed;
   public Vector constraints;
-  private boolean isCleared = true;
   
   public Minimizer() {
   }
@@ -81,7 +80,7 @@ public class Minimizer implements MinimizerInterface {
       return;
     }
     if (propertyName.equals("clear")) {
-      if (!isCleared) {
+      if (minAtoms != null) {
         stopMinimization(false);
         clear();
       }
@@ -162,7 +161,6 @@ public class Minimizer implements MinimizerInterface {
     constraints = null;
     constraintMap = null;
     pFF = null;
-    isCleared = true;
     //  viewer = null;
   }
   
@@ -335,7 +333,7 @@ public class Minimizer implements MinimizerInterface {
           if (bsAtoms.get(j)) {
             if (search.get(j)) {
               minAtoms[pt].type = data[1];
-              // System.out.println("pt" +pt + data[1]);
+              //System.out.println("pt" +pt + data[1]);
             }
             pt++;
           }
@@ -365,7 +363,6 @@ public class Minimizer implements MinimizerInterface {
   }
   
   private void setAtomPositions() {
-    isCleared = false;
     for (int i = 0; i < atomCount; i++)
       minAtoms[i].set();
     bsMinFixed = null;

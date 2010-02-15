@@ -3253,12 +3253,9 @@ public class ScriptEvaluator {
     BitSet bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult
         : new BitSet());
     isBondSet = (expressionResult instanceof BondSet);
-    BitSet bsDeleted = viewer.getDeletedAtoms();
-    if (!isBondSet && bsDeleted != null)
-      bs.andNot(bsDeleted);
-    BitSet bsSubset = viewer.getSelectionSubset();
-    if (!ignoreSubset && bsSubset != null && !isBondSet)
-      bs.and(bsSubset);
+    if (!isBondSet) {
+      viewer.excludeAtoms(bs, ignoreSubset);
+    }
     if (tempStatement != null) {
       statement = tempStatement;
       tempStatement = null;

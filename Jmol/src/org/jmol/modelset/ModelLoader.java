@@ -96,6 +96,7 @@ public final class ModelLoader extends ModelSet {
     this.modelSetName = modelSetName;
     this.mergeModelSet = mergeModelSet;
     merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
+      
     this.viewer = viewer;
     preserveState = viewer.getPreserveState();
     initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase().intern(),

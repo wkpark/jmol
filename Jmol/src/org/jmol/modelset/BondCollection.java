@@ -42,11 +42,6 @@ abstract public class BondCollection extends AtomCollection {
     super.releaseModelSet();
   }
 
-  protected void merge(ModelSet modelSet) {
-    // nothing to do for bonds
-    super.merge(modelSet);
-  }
-
   protected Bond[] bonds;
   protected int bondCount;
   

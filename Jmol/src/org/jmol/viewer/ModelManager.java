@@ -57,9 +57,13 @@ class ModelManager {
                           Object atomSetCollection, boolean isAppend) {
     // 11.9.10 11/22/2009 bh adjusted to never allow a null return
     if (isAppend) {
-      if (atomSetCollection != null)
+      if (atomSetCollection != null) {
+        String name = modelLoader.getModelSetName();
+        if (name.indexOf(" (modified)") < 0)
+          name += " (modified)";
         modelLoader = new ModelLoader(viewer, atomSetCollection, modelLoader,
-            "merge");
+            name);
+      }
     } else if (atomSetCollection == null) {
       return zap();
     } else {

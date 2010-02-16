@@ -4080,12 +4080,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       BitSet bsA = getModelAtomBitSet(modelIndex, true);
       BitSet bsB = getAtomBits(Token.hydrogen, null); 
       bsA.andNot(bsB);
-      String s = "" + pts.length
-          + "\nadded hydrogens";
+      StringBuffer sb = new StringBuffer();
+      sb.append(pts.length).append("\nadded hydrogens\n");
       for (int i = 0; i < pts.length; i++)
-        s += "\nH " + pts[i].x + " " + pts[i].y + " " + pts[i].z + " - - - - "
-            + (++atomno);
-      loadInline(s, '\n', true);
+        sb.append("H ").append(pts[i].x)
+            .append(" ").append(pts[i].y)
+            .append(" ").append(pts[i].z)
+            .append(" - - - - ").append(++atomno).append('\n');
+      loadInline(sb.toString(), '\n', true);
       bsB = getModelAtomBitSet(-1, true);
       bsB.andNot(bsA);
       bsAtoms.or(bsB);

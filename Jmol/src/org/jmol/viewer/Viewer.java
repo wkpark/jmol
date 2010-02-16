@@ -4073,18 +4073,28 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       bsAtoms = getModelAtomBitSet(getVisibleFramesBitSet().nextSetBit(0), true);
     Point3f[] pts = getAdditionalHydrogens(bsAtoms, doAll, false);
     if (pts.length > 0) {
-      int modelIndex = getAtomModelIndex(bsAtoms.nextSetBit(0));
-      String modelnumber = getModelNumberDotted(modelIndex);
-      int atomno = modelSet.getAtomCountInModel(modelIndex);
       boolean wasAppendNew = getAppendNew();
-      String s = "set appendNew false;data \"append 1\"\n" + pts.length
+      setAppendNew(false);
+      int modelIndex = getAtomModelIndex(bsAtoms.nextSetBit(0));
+      int atomno = modelSet.getAtomCountInModel(modelIndex);
+      BitSet bsA = getModelAtomBitSet(modelIndex, true);
+      BitSet bsB = getAtomBits(Token.hydrogen, null); 
+      bsA.andNot(bsB);
+      String s = "" + pts.length
           + "\nadded hydrogens";
       for (int i = 0; i < pts.length; i++)
         s += "\nH " + pts[i].x + " " + pts[i].y + " " + pts[i].z + " - - - - "
             + (++atomno);
-      s += "\nend \"append 1\";connect 1.3 {not _H and */" + modelnumber
-          + "} {hydrogen} create;set appendNew " + wasAppendNew;
-      evalStringQuiet(s);
+      loadInline(s, '\n', true);
+      bsB = getModelAtomBitSet(-1, true);
+      bsB.andNot(bsA);
+      bsAtoms.or(bsB);
+      BitSet bsBonds = new BitSet();
+      makeConnections(0, 1.3f, JmolConstants.BOND_COVALENT_SINGLE, 
+          JmolConstants.CONNECT_CREATE_ONLY, 
+          bsA, bsB, bsBonds, false);
+      if (wasAppendNew)
+        setAppendNew(true);
     }
     scriptStatus(GT._("{0} hydrogens added", pts.length));
     return bsAtoms;

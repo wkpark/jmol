@@ -196,6 +196,7 @@ public class Minimizer implements MinimizerInterface {
       atoms = viewer.getModelSet().getAtoms();
     }
     bsAtoms = BitSetUtil.copy(bsSelected);
+    System.out.println("minimizer bsAtoms: " + bsAtoms);
     atomCount = BitSetUtil.cardinalityOf(bsAtoms);
     if (atomCount == 0) {
       Logger.error(GT._("No atoms selected -- nothing to do!"));

@@ -518,7 +518,7 @@ public class Resolver {
     if (header.indexOf("XSD") >= 0) {
       return specialTags[SPECIAL_XSD_XML][0];
     }
-    if (header.indexOf(">vasp<") >= 0) {
+    if (header.indexOf(">vasp") >= 0) {
       return specialTags[SPECIAL_VASP_XML][0];
     }
     

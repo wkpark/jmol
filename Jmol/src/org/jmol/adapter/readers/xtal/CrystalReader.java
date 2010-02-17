@@ -31,12 +31,11 @@ import org.jmol.adapter.smarter.*;
 import java.io.BufferedReader;
 
 /**
- * FHI-aims (http://www.fhi-berlin.mpg.de/aims) geometry.in file format
  * 
- * samples of relevant lines in geometry.in file are included as comments below
+ * http://www.cse.clrc.ac.uk/cmg/CRYSTAL/   
  * 
- * @author Joerg Meyer, FHI Berlin 2009 (meyer@fhi-berlin.mpg.de)
- * @version 1.2
+ * very preliminary -- untested
+ * 
  * 
  */
 
@@ -71,7 +70,7 @@ public class CrystalReader extends AtomSetCollectionReader {
 
   private void readCellParams() throws Exception {
 
-    discardLinesUntilContains("PRIMITIVE CELL");
+    discardLinesUntilContains(" LATTICE PARAMETERS  (ANGSTROMS AND DEGREES) - PRIMITIVE CELL");
     readLine();
     readLine();
     float a = parseFloat(line.substring(2, 17));

@@ -628,6 +628,8 @@ public class ActionManager {
       viewer.popupMenu(x, y);
       return;
     }
+    if (viewer.useArcBall())
+      viewer.rotateArcBall(x, y, true);
     checkMotionRotateZoom(action, x, 0, 0, true);
   }
 
@@ -809,7 +811,7 @@ public class ActionManager {
           * mouseDragFactor;
       if (isRotate) {
         if (viewer.useArcBall())
-          viewer.rotateArcBall(x - deltaX, y - deltaY, x, y);
+          viewer.rotateArcBall(x, y, false);
         else
           viewer.rotateXYBy(degX, degY);
       } else {

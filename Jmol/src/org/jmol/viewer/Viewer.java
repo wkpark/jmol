@@ -7620,11 +7620,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       else if (key.equals("rotateZBy"))
         rotateZBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
             Parser.parseInt(tokens[4]));
-      break;
-    case 6:
-      if (key.equals("rotateArcBall"))
+      else if (key.equals("rotateArcBall"))
         rotateArcBall(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
-            Parser.parseInt(tokens[4]),Parser.parseInt(tokens[5]));
+            Parser.parseInt(tokens[4]) == 1);
       break;
     case 7:
       if (key.equals("centerAt"))
@@ -8133,13 +8131,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.useArcBall;
   }
 
-  void rotateArcBall(int x0, int y0, int x1, int y1) {
-    transformManager.rotateArcBall(x0, y0, x1, y1);
+  void rotateArcBall(int x, int y, boolean isInit) {
+    transformManager.rotateArcBall(x, y, isInit);
     refresh(2, statusManager.syncingMouse ? "Mouse: rotateArcBall " 
-        + x0 + " "
-        + y0 + " " 
-        + x1 + " " 
-        + y1 + " " 
+        + x + " "
+        + y + " " 
+        + (isInit ? 1 : 0) 
         : "");
   }
 

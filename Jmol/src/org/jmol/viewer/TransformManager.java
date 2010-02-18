@@ -346,24 +346,27 @@ abstract class TransformManager {
   final Vector3f arcBall0 = new Vector3f();
   final Vector3f arcBall1 = new Vector3f();
   final Vector3f arcBallAxis = new Vector3f();
+  final Matrix3f arcBall0Rotation = new Matrix3f();
   
-  void rotateArcBall(float x0, float y0, float x1, float y1) {
+  void rotateArcBall(float x, float y, boolean isInit) {
     float radius2 = (screenPixelCount >> 2) * screenPixelCount;
-    float x, y, z;
-    x = x0 - fixedTranslation.x;
-    y = y0 - fixedTranslation.y;
-    if (Float.isNaN(z = (float) Math.sqrt(radius2 - x * x - y * y)))
+    x -= fixedTranslation.x;
+    y -= fixedTranslation.y;
+    float z = (float) Math.sqrt(radius2 - x * x - y * y);
+    if (isInit) {
+      arcBall0Rotation.set(matrixRotate);
+      arcBall0.set(x, -y, z);
+      if (!Float.isNaN(z))
+        arcBall0.normalize();
       return;
-    arcBall0.set(x, -y, z);
-    x = x1 - fixedTranslation.x;
-    y = y1 - fixedTranslation.y;
-    if (Float.isNaN(z = (float) Math.sqrt(radius2 - x * x - y * y)))
+    }
+    if (Float.isNaN(arcBall0.z) || Float.isNaN(z))
       return;
     arcBall1.set(x, -y, z);
-    arcBall0.normalize();
     arcBall1.normalize();
     arcBallAxis.cross(arcBall0, arcBall1);
-    axisangleT.set(arcBallAxis, (float) Math.acos(arcBall0.dot(arcBall1)));
+    axisangleT.set(arcBallAxis, 2 * (float) Math.acos(arcBall0.dot(arcBall1)));
+    matrixRotate.set(arcBall0Rotation);
     rotateAxisAngle(axisangleT, null);
   }
 

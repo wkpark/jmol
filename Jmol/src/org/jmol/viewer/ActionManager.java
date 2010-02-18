@@ -808,7 +808,10 @@ public class ActionManager {
       float degY = ((float) deltaY) / viewer.getScreenHeight() * 180
           * mouseDragFactor;
       if (isRotate) {
-        viewer.rotateXYBy(degX, degY);
+        if (viewer.useArcBall())
+          viewer.rotateArcBall(x - deltaX, y - deltaY, x, y);
+        else
+          viewer.rotateXYBy(degX, degY);
       } else {
         checkMotion(Viewer.CURSOR_MOVE);
         viewer.rotateMolecule(degX, degY);

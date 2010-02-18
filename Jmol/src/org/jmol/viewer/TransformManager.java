@@ -343,6 +343,30 @@ abstract class TransformManager {
     rotateAboutPointsInternal(pt2, pt1, 10 * speed, Float.NaN, false, true, null, true);
   }
 
+  final Vector3f arcBall0 = new Vector3f();
+  final Vector3f arcBall1 = new Vector3f();
+  final Vector3f arcBallAxis = new Vector3f();
+  
+  void rotateArcBall(float x0, float y0, float x1, float y1) {
+    float radius2 = (screenPixelCount >> 2) * screenPixelCount;
+    float x, y, z;
+    x = x0 - fixedTranslation.x;
+    y = y0 - fixedTranslation.y;
+    if (Float.isNaN(z = (float) Math.sqrt(radius2 - x * x - y * y)))
+      return;
+    arcBall0.set(x, -y, z);
+    x = x1 - fixedTranslation.x;
+    y = y1 - fixedTranslation.y;
+    if (Float.isNaN(z = (float) Math.sqrt(radius2 - x * x - y * y)))
+      return;
+    arcBall1.set(x, -y, z);
+    arcBall0.normalize();
+    arcBall1.normalize();
+    arcBallAxis.cross(arcBall0, arcBall1);
+    axisangleT.set(arcBallAxis, (float) Math.acos(arcBall0.dot(arcBall1)));
+    rotateAxisAngle(axisangleT, null);
+  }
+
   void rotateXYBy(float xDelta, float yDelta, BitSet bsAtoms) {
     // from mouse action
     rotateXRadians(yDelta * JmolConstants.radiansPerDegree, bsAtoms);
@@ -352,7 +376,7 @@ abstract class TransformManager {
   void rotateZBy(int zDelta, int x, int y) {
     if (x != Integer.MAX_VALUE && y != Integer.MAX_VALUE)
       resetXYCenter(x, y, null);
-    rotateZRadians((float) Math.PI * zDelta / 180);
+    rotateZRadians((float) (zDelta / degreesPerRadian));
   }
 
   void rotateFront() {
@@ -400,7 +424,7 @@ abstract class TransformManager {
   }
 
   synchronized void rotateAxisAngle(AxisAngle4f axisAngle, BitSet bsAtoms) {
-    matrixTemp3.setIdentity();
+    //matrixTemp3.setIdentity();
     matrixTemp3.set(axisAngle);
     applyRotation(matrixTemp3, false, bsAtoms);
   }
@@ -1509,7 +1533,7 @@ abstract class TransformManager {
     int totalSteps = (int) (fps * floatSecondsTotal);
     if (totalSteps <= 0)
       totalSteps = 1; // to catch a zero secondsTotal parameter
-    float radiansPerDegreePerStep = (float) Math.PI / 180 / totalSteps;
+    float radiansPerDegreePerStep = (float) (1 / degreesPerRadian / totalSteps);
     float radiansXStep = radiansPerDegreePerStep * dRot.x;
     float radiansYStep = radiansPerDegreePerStep * dRot.y;
     float radiansZStep = radiansPerDegreePerStep * dRot.z;
@@ -1561,7 +1585,7 @@ abstract class TransformManager {
   boolean isInPosition(Vector3f axis, float degrees) {
     if (Float.isNaN(degrees))
       return true;
-    aaTest1.set(axis, degrees * (float) Math.PI / 180);
+    aaTest1.set(axis, (float) (degrees / degreesPerRadian));
     ptTest1.set(4.321f, 1.23456f, 3.14159f);
     getRotation(matrixTest);
     matrixTest.transform(ptTest1, ptTest2);
@@ -1594,7 +1618,7 @@ abstract class TransformManager {
           return;
         }
         AxisAngle4f aaMoveTo = new AxisAngle4f();
-        aaMoveTo.set(axis, degrees * (float) Math.PI / 180);
+        aaMoveTo.set(axis, (float) (degrees / degreesPerRadian));
         matrixEnd.set(aaMoveTo);
       }
     }

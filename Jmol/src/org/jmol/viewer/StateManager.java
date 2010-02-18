@@ -922,6 +922,7 @@ public class StateManager {
       setParameterValue("testFlag3", testFlag3);
       setParameterValue("testFlag4", testFlag4);
       setParameterValue("traceAlpha", traceAlpha);
+      setParameterValue("useArcBall", useArcBall);
       setParameterValue("useMinimizationThread", useMinimizationThread);
       setParameterValue("useNumberLocalization", useNumberLocalization);
       setParameterValue("vectorScale", vectorScale);
@@ -1154,6 +1155,7 @@ public class StateManager {
     float strutLengthMaximum = 7.0f;
     float strutDefaultRadius = JmolConstants.DEFAULT_STRUT_RADIUS;
     boolean strutsMultiple = false; //on a single position    
+    boolean useArcBall = false;
     boolean useMinimizationThread = true;
     boolean useNumberLocalization = true;
     boolean useScriptQueue = true;

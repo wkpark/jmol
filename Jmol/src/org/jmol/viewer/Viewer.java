@@ -5438,6 +5438,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.usearcball:
+      global.useArcBall = value;
+      break;
     case Token.iskiosk:
       // 11.9.29
       isKiosk = value;
@@ -7618,6 +7621,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         rotateZBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
             Parser.parseInt(tokens[4]));
       break;
+    case 6:
+      if (key.equals("rotateArcBall"))
+        rotateArcBall(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
+            Parser.parseInt(tokens[4]),Parser.parseInt(tokens[5]));
+      break;
     case 7:
       if (key.equals("centerAt"))
         centerAt(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
@@ -8119,6 +8127,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } catch (Exception e) {
       Logger.error(e.getMessage());
     }
+  }
+
+  boolean useArcBall() {
+    return global.useArcBall;
+  }
+
+  void rotateArcBall(int x0, int y0, int x1, int y1) {
+    transformManager.rotateArcBall(x0, y0, x1, y1);
+    refresh(2, statusManager.syncingMouse ? "Mouse: rotateArcBall " 
+        + x0 + " "
+        + y0 + " " 
+        + x1 + " " 
+        + y1 + " " 
+        : "");
   }
 
 }

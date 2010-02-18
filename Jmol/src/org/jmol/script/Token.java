@@ -927,6 +927,7 @@ public class Token {
   public final static int testflag3                      = booleanparam | 188;
   public final static int testflag4                      = booleanparam | 190;
   public final static int tracealpha                     = booleanparam | 192;
+  public final static int usearcball                     = booleanparam | 191;
   public final static int useminimizationthread          = booleanparam | 194;
   public final static int usenumberlocalization          = booleanparam | 196;
   public final static int waitformoveto                  = booleanparam | 197;
@@ -2117,6 +2118,7 @@ public class Token {
       "testFlag3",                                new Token(testflag3),
       "testFlag4",                                new Token(testflag4),
       "traceAlpha",                               new Token(tracealpha),
+      "useArcBall",                               new Token(usearcball),
       "useMinimizationThread",                    new Token(useminimizationthread),
       "useNumberLocalization",                    new Token(usenumberlocalization),
       "waitForMoveTo",                            new Token(waitformoveto),

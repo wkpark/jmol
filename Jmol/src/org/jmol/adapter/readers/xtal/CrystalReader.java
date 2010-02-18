@@ -5,9 +5,9 @@
  *
  * Contact: jmol-developers@lists.sf.net
  *
- * Copyright (C) 2009  Joerg Meyer, FHI Berlin
+ * Copyright (C) 2009  Piero Canepa, University of Kent , UK
  *
- * Contact: meyer@fhi-berlin.mpg.de
+ * Contact: pc229@kent.ac.uk or pieremanuele.canepa@gmail.com
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -31,61 +31,83 @@ import org.jmol.adapter.smarter.*;
 import java.io.BufferedReader;
 
 /**
- * 
- * http://www.cse.clrc.ac.uk/cmg/CRYSTAL/   
- * 
- * very preliminary -- untested
- * 
- * 
+ *
+ * http://www.crystal.unito.it/
+ *
+ * @author Pieremanuele Canepa, Room 104, FM Group
+ * School of Physical Sciences, Ingram Building,
+ * University of Kent, Canterbury, Kent,
+ * CT2 7NH
+ * United Kingdom
+ *
+ * @version 1.0
+ *
+ * This version works and has been well tested on several structures!
+ *
  */
 
 public class CrystalReader extends AtomSetCollectionReader {
 
-  public void readAtomSetCollection(BufferedReader reader) {
+ public void readAtomSetCollection(BufferedReader reader) {
 
-    atomSetCollection = new AtomSetCollection("Crystal", this);
-    try {
-      this.reader = reader;
-      atomSetCollection.setCollectionName(readLine());
-      while (readLine() != null) {
-        if (line.startsWith(" MOLECULE")) {
-          readAtomCoords(false);
-          break;
-        }
-        if (line.startsWith(" CRYSTAL") || line.startsWith(" SLAB")
-            || line.startsWith(" POLYMER") || line.startsWith(" EXTERNAL")) {
-          atomSetCollection.setAtomSetAuxiliaryInfo("periodicity", line);
-          readCellParams();
-          readAtomCoords(true);
-          break;
-        }
-      }
-      
-      applySymmetryAndSetTrajectory();
-      
-    } catch (Exception e) {
-      setError(e);
-    }
-  }
+   boolean isthisPeriodic=false ;
 
-  private void readCellParams() throws Exception {
+   atomSetCollection = new AtomSetCollection("Crystal", this);
+   try {
+     this.reader = reader;
+     atomSetCollection.setCollectionName(readLine());
+     while (readLine() != null) {
+       if (line.startsWith("MOLECULE")) {
+         isthisPeriodic=false;
+         readAtomCoords(false,isthisPeriodic);
 
-    discardLinesUntilContains(" LATTICE PARAMETERS  (ANGSTROMS AND DEGREES) - PRIMITIVE CELL");
-    readLine();
-    readLine();
-    float a = parseFloat(line.substring(2, 17));
-    float b = parseFloat(line.substring(18, 33));
-    float c = parseFloat(line.substring(34, 42));
-    float alpha = parseFloat(line.substring(43, 60));
-    float beta = parseFloat(line.substring(61, 71));
-    float gamma = parseFloat(line.substring(72, 80));
-    // this method works fine so far
-    setUnitCell(a, b, c, alpha, beta, gamma);
-  }
+         break;
+       }
+       if (line.startsWith("CRYSTAL") || line.startsWith("SLAB")
+           || line.startsWith("POLYMER") || line.startsWith("EXTERNAL")) {
+         atomSetCollection.setAtomSetAuxiliaryInfo("periodicity", line);
+         isthisPeriodic=true;
+         readCellParams();
+         readAtomCoords(true, isthisPeriodic);
 
-  private void readAtomCoords(boolean isFractional) throws Exception {
+         break;
+       }
+     }
+
+     applySymmetryAndSetTrajectory();
+
+   } catch (Exception e) {
+     setError(e);
+   }
+ }
+
+ private void readCellParams() throws Exception {
+
+   discardLinesUntilStartsWith(" PRIMITIVE CELL");
+   readLine();
+   readLine();
+   float a = parseFloat(line.substring(2,17)) ;
+   float b = parseFloat(line.substring(16,33)) ;
+   float c = parseFloat(line.substring(33,42));
+
+   if (b == 500.00000){
+     b = 1;
+   }
+
+   if (c == 500.0000){
+     c = 1;
+   }
+   float alpha =  parseFloat(line.substring(48,58)) ;
+   float beta =  parseFloat(line.substring(59,69)) ;
+   float gamma =  parseFloat(line.substring(70,80)) ;
+
+   setUnitCell(a, b, c, alpha, beta, gamma);
+ }
+
+ private void readAtomCoords(boolean isFractional, boolean isthisPeriodic)
+      throws Exception {
     setFractionalCoordinates(isFractional);
-    discardLinesUntilContains("ATOMS IN THE ASYMMETRIC");
+    discardLinesUntilContains(" ATOMS IN THE ASYMMETRIC");
     int atomCount = parseInt(line.substring(61, 65));
     readLine();
     readLine();
@@ -96,6 +118,19 @@ public class CrystalReader extends AtomSetCollectionReader {
       float x = parseFloat(line.substring(15, 35));
       float y = parseFloat(line.substring(36, 55));
       float z = parseFloat(line.substring(56, 75));
+
+      if (x < 0 && isthisPeriodic) {
+        x = 1 + x;
+      }
+
+      if (y < 0 && isthisPeriodic) {
+        y = 1 + y;
+      }
+
+      if (z < 0 && isthisPeriodic) {
+        z = 1 + z;
+      }
+
       Atom atom = atomSetCollection.addNewAtom();
       setAtomCoord(atom, x, y, z);
       atom.elementSymbol = getElementSymbol(atomicnumber);

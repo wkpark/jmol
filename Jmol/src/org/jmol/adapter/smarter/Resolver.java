@@ -537,24 +537,25 @@ public class Resolver {
   private final static int SPECIAL_WIEN               = 9;
   private final static int SPECIAL_CASTEP             = 10;
   private final static int SPECIAL_AIMS               = 11;
+          final static int SPECIAL_CRYSTAL            = 12;
   
   // these next are needed by the XML reader
   
-  public final static int SPECIAL_ARGUS_XML   = 12;
-  public final static int SPECIAL_CML_XML     = 13;
-  public final static int SPECIAL_CHEM3D_XML  = 14;
-  public final static int SPECIAL_MOLPRO_XML  = 15;
-  public final static int SPECIAL_ODYSSEY_XML = 16;
-  public final static int SPECIAL_XSD_XML     = 17;
-  public final static int SPECIAL_VASP_XML    = 18; 
+  public final static int SPECIAL_ARGUS_XML   = 13;
+  public final static int SPECIAL_CML_XML     = 14;
+  public final static int SPECIAL_CHEM3D_XML  = 15;
+  public final static int SPECIAL_MOLPRO_XML  = 16;
+  public final static int SPECIAL_ODYSSEY_XML = 17;
+  public final static int SPECIAL_XSD_XML     = 18;
+  public final static int SPECIAL_VASP_XML    = 19; 
   
-  public final static int SPECIAL_ARGUS_DOM   = 19;
-  public final static int SPECIAL_CML_DOM     = 20;
-  public final static int SPECIAL_CHEM3D_DOM  = 21;
-  public final static int SPECIAL_MOLPRO_DOM  = 22;
-  public final static int SPECIAL_ODYSSEY_DOM = 23;
-  public final static int SPECIAL_XSD_DOM     = 24; // not implemented
-  public final static int SPECIAL_VASP_DOM    = 25; 
+  public final static int SPECIAL_ARGUS_DOM   = 20;
+  public final static int SPECIAL_CML_DOM     = 21;
+  public final static int SPECIAL_CHEM3D_DOM  = 22;
+  public final static int SPECIAL_MOLPRO_DOM  = 23;
+  public final static int SPECIAL_ODYSSEY_DOM = 24;
+  public final static int SPECIAL_XSD_DOM     = 25; // not implemented
+  public final static int SPECIAL_VASP_DOM    = 26; 
   
   public final static String[][] specialTags = {
     { "Jme" },
@@ -571,6 +572,7 @@ public class Resolver {
     
     { "Castep" },
     { "Aims" },  
+    { "Crystal" },  
     
     { "XmlArgus" },  //12
     { "XmlCml" },
@@ -975,15 +977,12 @@ public class Resolver {
   private final static String[] uicrcifContainsRecords =
   { "Cif", "Crystallographic Information File"};
   
-  private final static String[] crystalContainsRecords =
-  { "Crystal", " - DIMENSIONALITY OF THE SYSTEM" };
-  
   private final static String[][] containsRecords =
   { xmlContainsRecords, gaussianContainsRecords, 
     ampacContainsRecords, mopacContainsRecords, qchemContainsRecords, 
     gamessUKContainsRecords, gamessUSContainsRecords,
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
-    nwchemContainsRecords, uicrcifContainsRecords, dgridContainsRecords, crystalContainsRecords
+    nwchemContainsRecords, uicrcifContainsRecords, dgridContainsRecords
   };
 }
 

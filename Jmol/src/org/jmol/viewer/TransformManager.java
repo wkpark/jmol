@@ -365,7 +365,7 @@ abstract class TransformManager {
     arcBall1.set(x, -y, z);
     arcBall1.normalize();
     arcBallAxis.cross(arcBall0, arcBall1);
-    axisangleT.set(arcBallAxis, 2 * (float) Math.acos(arcBall0.dot(arcBall1)));
+    axisangleT.set(arcBallAxis, (float) Math.acos(arcBall0.dot(arcBall1)));
     matrixRotate.set(arcBall0Rotation);
     rotateAxisAngle(axisangleT, null);
   }

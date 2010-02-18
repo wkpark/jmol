@@ -689,6 +689,7 @@ public class StateManager {
         allowMultiTouch = g.allowMultiTouch;
         allowKeyStrokes = g.allowKeyStrokes;
         useScriptQueue = g.useScriptQueue;
+        useArcBall = g.useArcBall;
       }
 
       for (int i = 0;;i++) {        

@@ -172,6 +172,8 @@ public class FileManager {
     int pt = fileName.indexOf("::");
     if (pt >= 0)
       return fileName.substring(0, pt);
+    if (fileName.startsWith("="))
+      return "pdb";
     Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName, true,
         false, true, true);
     if (br instanceof BufferedReader)

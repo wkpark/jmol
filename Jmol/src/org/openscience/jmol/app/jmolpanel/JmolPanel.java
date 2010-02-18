@@ -1090,11 +1090,14 @@ public class JmolPanel extends JPanel implements SplashInterface {
       String url = JOptionPane.showInputDialog(frame, prompt, title,
           JOptionPane.PLAIN_MESSAGE);
       if (url != null) {
-        if (url.indexOf("://") == -1)
-          url = "http://" + url;
+        if (url.indexOf("://") < 0) {
+          if (url.length() == 4 && url.indexOf(".") < 0)
+            url = "=" + url;
+          if (!url.startsWith("="))
+            url = "http://" + url;
+        }
         viewer.openFileAsynchronously(url);
       }
-      return;
     }
   }
 

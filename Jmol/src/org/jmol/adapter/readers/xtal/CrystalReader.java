@@ -133,12 +133,13 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   /*
-ATOMS IN THE ASYMMETRIC UNIT   30 - ATOMS IN THE UNIT CELL:   30
-     ATOM              X/A                 Y/B             Z(ANGSTROM)
- *******************************************************************************
-   1 T  26 FE    3.331306436039E-01  1.663395164811E-01  6.035011342353E+00
-   2 T   8 O    -3.291645441100E-01  1.554613095970E-01  5.654299584852E+00
-    */
+   * ATOMS IN THE ASYMMETRIC UNIT 30 - ATOMS IN THE UNIT CELL: 30 ATOM X/A Y/B
+   * Z(ANGSTROM)
+   * *****************************************************************
+   * ************* 1 T 26 FE 3.331306436039E-01 1.663395164811E-01
+   * 6.035011342353E+00 2 T 8 O -3.291645441100E-01 1.554613095970E-01
+   * 5.654299584852E+00
+   */
   private void readFractionalCoords() throws Exception {
     readLine();
     readLine();
@@ -149,13 +150,11 @@ ATOMS IN THE ASYMMETRIC UNIT   30 - ATOMS IN THE UNIT CELL:   30
       float x = parseFloat(tokens[4]);
       float y = parseFloat(tokens[5]);
       float z = parseFloat(tokens[6]);
-      if (isPolymer || isSlab) {
-        // because with these we cannot use the "packed" keyword
-        if (x < 0)
-          x += 1;
-        if (y < 0)
-          y += 1;
-      }
+      // because with these we cannot use the "packed" keyword
+      if ((isPolymer || isSlab) && x < 0)
+        x += 1;
+      if (isSlab && y < 0)
+        y += 1;
       setAtomCoord(atom, x, y, z);
       atom.elementSymbol = getElementSymbol(atomicNumber);
     }

@@ -641,12 +641,15 @@ public class Resolver {
   }
 
   private static boolean checkCrystal(String[] lines) {
-    return (lines[1].equals("SLAB") 
-        || lines[1].equals("MOLECULE")
-        || lines[1].equals("POLYMER")
-        || lines[3].equals("SLAB")
-        || lines[3].equals("MOLECULE")
-        || lines[3].equals("POLYMER"));
+    if (lines[1].equals("SLAB") || lines[1].equals("MOLECULE")
+        || lines[1].equals("POLYMER") || lines[3].equals("SLAB")
+        || lines[3].equals("MOLECULE") || lines[3].equals("POLYMER"))
+      return true;
+    for (int i = 0; i < lines.length; i++) {
+      if (lines[i].equals("OPTGEOM"))
+        return true;
+    }
+    return false;
   }
 
   private static boolean checkWien2k(String[] lines) {

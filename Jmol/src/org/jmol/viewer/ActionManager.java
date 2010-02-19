@@ -629,7 +629,7 @@ public class ActionManager {
       return;
     }
     if (viewer.useArcBall())
-      viewer.rotateArcBall(x, y, true);
+      viewer.rotateArcBall(x, y, 0);
     checkMotionRotateZoom(action, x, 0, 0, true);
   }
 
@@ -811,7 +811,7 @@ public class ActionManager {
           * mouseDragFactor;
       if (isRotate) {
         if (viewer.useArcBall())
-          viewer.rotateArcBall(x, y, false);
+          viewer.rotateArcBall(x, y, mouseDragFactor);
         else
           viewer.rotateXYBy(degX, degY);
       } else {

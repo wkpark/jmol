@@ -348,14 +348,14 @@ abstract class TransformManager {
   final Vector3f arcBallAxis = new Vector3f();
   final Matrix3f arcBall0Rotation = new Matrix3f();
   
-  void rotateArcBall(float x, float y, boolean isInit) {
+  void rotateArcBall(float x, float y, float factor) {
     // radius is half the screen pixel count. 
     float radius2 = (screenPixelCount >> 2) * screenPixelCount;
     x -= fixedTranslation.x;
     y -= fixedTranslation.y;
     float z = radius2 - x * x - y * y;
     z = (z < 0 ? -1 : 1) * (float) Math.sqrt(Math.abs(z));
-    if (isInit) {
+    if (factor == 0) {
       // mouse down sets the initial rotation and point on the sphere
       arcBall0Rotation.set(matrixRotate);
       arcBall0.set(x, -y, z);
@@ -368,7 +368,7 @@ abstract class TransformManager {
     arcBall1.set(x, -y, z);
     arcBall1.normalize();
     arcBallAxis.cross(arcBall0, arcBall1);
-    axisangleT.set(arcBallAxis, (float) Math.acos(arcBall0.dot(arcBall1)));
+    axisangleT.set(arcBallAxis, factor * (float) Math.acos(arcBall0.dot(arcBall1)));
     matrixRotate.set(arcBall0Rotation);
     rotateAxisAngle(axisangleT, null);
   }

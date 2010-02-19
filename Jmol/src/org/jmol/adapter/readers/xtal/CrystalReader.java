@@ -43,98 +43,105 @@ import java.io.BufferedReader;
  * @version 1.0
  *
  * This version works and has been well tested on several structures!
+ * 
+ * TODO: Needs adaptation to be more modular and flexible
  *
  */
 
 public class CrystalReader extends AtomSetCollectionReader {
+ private String calculationType;
 
  public void readAtomSetCollection(BufferedReader reader) {
 
-   boolean isthisPeriodic=false ;
+    boolean isPeriodic = true;
+    boolean isFractional = true;
 
-   atomSetCollection = new AtomSetCollection("Crystal", this);
-   try {
-     this.reader = reader;
-     atomSetCollection.setCollectionName(readLine());
-     while (readLine() != null) {
-       if (line.startsWith("MOLECULE")) {
-         isthisPeriodic=false;
-         readAtomCoords(false,isthisPeriodic);
+    atomSetCollection = new AtomSetCollection("Crystal", this);
+    try {
+      this.reader = reader;
+      discardLinesUntilContains("*                                CRYSTAL");
+      discardLinesUntilContains("EEEEEEEEEE");
+      atomSetCollection.setCollectionName(readLine().trim());
+      readLine();
+      calculationType = readLine().trim();
+      atomSetCollection.setAtomSetAuxiliaryInfo("calculationType", calculationType);
+      if (calculationType.indexOf("MOLECULAR") >= 0) {
+        isFractional = false;
+        isPeriodic = false;
+      }
+      while (readLine() != null) {
+        if (line.startsWith(" SPACE GROUP ") || line.startsWith(" CORRESPONDING SPACE GROUP")) {
+          readSpaceGroup();
+          continue;
+        }
+        if (line.startsWith(" LATTICE PARAMETERS  (ANGSTROMS AND DEGREES) - CONVENTIONAL CELL")) {
+          isFractional = true;
+          readCellParams();
+          continue;
+        }
+        if (line.startsWith(" LATTICE PARAMETER (ANGSTROMS) - CONVENTIONAL CELL")) {
+          isFractional = true;
+          readPolymerCell();
+        }
+        if (line.startsWith(" INPUT COORDINATES")) {
+          readAtomCoords(isFractional, isPeriodic);
+          continue;
+        }
+      }
+      applySymmetryAndSetTrajectory();
 
-         break;
-       }
-       if (line.startsWith("CRYSTAL") || line.startsWith("SLAB")
-           || line.startsWith("POLYMER") || line.startsWith("EXTERNAL")) {
-         atomSetCollection.setAtomSetAuxiliaryInfo("periodicity", line);
-         isthisPeriodic=true;
-         readCellParams();
-         readAtomCoords(true, isthisPeriodic);
+    } catch (Exception e) {
+      setError(e);
+    }
+  }
 
-         break;
-       }
-     }
+  private void readSpaceGroup() {
+    // SPACE GROUP (CENTROSYMMETRIC) : F M 3 M
+    String name = line.substring(line.indexOf(":") + 1).trim();
+    setSpaceGroupName(name);
+  }
 
-     applySymmetryAndSetTrajectory();
+  private void readCellParams() throws Exception {
+    readLine();
+    String[] tokens = getTokens(readLine());
+    if (calculationType.equals("SLAB CALCULATION")) {
+      setUnitCell(parseFloat(tokens[0]), parseFloat(tokens[1]), 1, 90, 90,
+          parseFloat(tokens[2]));
+    } else {
+      setUnitCell(parseFloat(tokens[0]), parseFloat(tokens[1]),
+          parseFloat(tokens[2]), parseFloat(tokens[3]), parseFloat(tokens[4]),
+          parseFloat(tokens[5]));
+    }
+  }
 
-   } catch (Exception e) {
-     setError(e);
-   }
- }
+  private void readPolymerCell() {
+    float a = parseFloat(line.substring(line.indexOf("CELL") + 4));
+    setUnitCell(a, 1, 1, 90, 90, 90);
+    
+  }
 
- private void readCellParams() throws Exception {
 
-   discardLinesUntilStartsWith(" PRIMITIVE CELL");
-   readLine();
-   readLine();
-   float a = parseFloat(line.substring(2,17)) ;
-   float b = parseFloat(line.substring(16,33)) ;
-   float c = parseFloat(line.substring(33,42));
+ /*
+ INPUT COORDINATES
 
-   if (b == 500.00000){
-     b = 1;
-   }
-
-   if (c == 500.0000){
-     c = 1;
-   }
-   float alpha =  parseFloat(line.substring(48,58)) ;
-   float beta =  parseFloat(line.substring(59,69)) ;
-   float gamma =  parseFloat(line.substring(70,80)) ;
-
-   setUnitCell(a, b, c, alpha, beta, gamma);
- }
-
+ ATOM AT. N.              COORDINATES
+   1  12     0.000000000000E+00  0.000000000000E+00  0.000000000000E+00
+   2   8     5.000000000000E-01  5.000000000000E-01  5.000000000000E-01
+  */
  private void readAtomCoords(boolean isFractional, boolean isthisPeriodic)
       throws Exception {
     setFractionalCoordinates(isFractional);
-    discardLinesUntilContains(" ATOMS IN THE ASYMMETRIC");
-    int atomCount = parseInt(line.substring(61, 65));
     readLine();
     readLine();
-    for (int i = 0; i < atomCount; i++) {
-      readLine();
-      String atomName = line.substring(8, 11);
-      int atomicnumber = parseInt(atomName.substring(0, 2).trim());
-      float x = parseFloat(line.substring(15, 35));
-      float y = parseFloat(line.substring(36, 55));
-      float z = parseFloat(line.substring(56, 75));
-
-      if (x < 0 && isthisPeriodic) {
-        x = 1 + x;
-      }
-
-      if (y < 0 && isthisPeriodic) {
-        y = 1 + y;
-      }
-
-      if (z < 0 && isthisPeriodic) {
-        z = 1 + z;
-      }
-
+    while (readLine() != null && line.length() > 0) {
       Atom atom = atomSetCollection.addNewAtom();
+      String[] tokens = getTokens();
+      int atomicNumber = parseInt(tokens[1]);
+      float x = parseFloat(tokens[2]);
+      float y = parseFloat(tokens[3]);
+      float z = parseFloat(tokens[4]);
       setAtomCoord(atom, x, y, z);
-      atom.elementSymbol = getElementSymbol(atomicnumber);
-      atom.atomName = atomName + "_" + i;
+      atom.elementSymbol = getElementSymbol(atomicNumber);
     }
   }
 

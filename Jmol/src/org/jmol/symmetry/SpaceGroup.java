@@ -668,9 +668,10 @@ class SpaceGroup {
     hmSymbolExt = (parts.length == 1 ? "" : parts[1]);
     int pt = hmSymbol.indexOf(" -3");
     if (pt >= 1)
-      if ("admn".indexOf(hmSymbol.charAt(pt - 1)) >= 0)
-        hmSymbolAlternative = hmSymbol.substring(0, pt) + " 3"
-            + hmSymbol.substring(pt + 3);
+      if ("admn".indexOf(hmSymbol.charAt(pt - 1)) >= 0) {
+        hmSymbolAlternative = (hmSymbol.substring(0, pt) + " 3"
+            + hmSymbol.substring(pt + 3)).toLowerCase();
+      }
     hmSymbolAbbr = TextFormat.simpleReplace(hmSymbol, " ", "");
     hmSymbolAbbrShort = TextFormat.simpleReplace(hmSymbol, " 1", "");
     hmSymbolAbbrShort = TextFormat.simpleReplace(hmSymbolAbbrShort, " ", "");

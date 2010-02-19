@@ -46,7 +46,17 @@ public class SimpleUnitCell {
   protected float[] notionalUnitcell; //6 parameters + 16 matrix items
   protected Matrix4f matrixCartesianToFractional;
   protected Matrix4f matrixFractionalToCartesian;
-
+  protected boolean isPolymer;
+  protected boolean isSlab;
+  
+  public boolean isPolymer() {
+    return isPolymer;
+  }
+  
+  public boolean isSlab() {
+    return isSlab;
+  }
+  
   public SimpleUnitCell(float[] notionalUnitcell) {
     setUnitCell(notionalUnitcell);
   }
@@ -100,6 +110,13 @@ public class SimpleUnitCell {
     a = notionalUnitcell[JmolConstants.INFO_A];
     b = notionalUnitcell[JmolConstants.INFO_B];
     c = notionalUnitcell[JmolConstants.INFO_C];
+    if (b == -1) {
+      b = c = 1;
+      isPolymer = true;
+    } else if (c == -1) {
+      c = 1;
+      isSlab = true;
+    }
     alpha = notionalUnitcell[JmolConstants.INFO_ALPHA];
     beta = notionalUnitcell[JmolConstants.INFO_BETA];
     gamma = notionalUnitcell[JmolConstants.INFO_GAMMA];

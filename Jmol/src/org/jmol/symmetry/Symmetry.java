@@ -307,4 +307,14 @@ public class Symmetry implements SymmetryInterface {
                                                 Point3f pt1, Point3f pt2, String id) {
     return spaceGroup.operations[isym].getDescription(isym, cellInfo, pt1, pt2, id);
   }
+  
+  public boolean isSlab() {
+    return (unitCell == null ? false : unitCell.isSlab());
+  }
+
+  public boolean isPolymer() {
+    return (unitCell == null ? false : unitCell.isPolymer());
+  }
+
+
 }  

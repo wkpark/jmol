@@ -73,6 +73,8 @@ public class UccageRenderer extends CageRenderer {
     SymmetryInterface symmetry = viewer.getCurrentUnitCell();
     if (symmetry == null)
       return;
+    isPolymer = symmetry.isPolymer();
+    isSlab = symmetry.isSlab();
     Point3f[] vertices = symmetry.getUnitCellVertices();
     Point3f offset = symmetry.getCartesianOffset();
     for (int i = 8; --i >= 0;)

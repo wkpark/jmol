@@ -122,5 +122,9 @@ public interface SymmetryInterface {
                                                          SymmetryInterface cellInfo, 
                                                          Point3f pt1, Point3f pt2, String id);
 
+  public abstract boolean isPolymer();
+
+  public abstract boolean isSlab();
+
   
 }

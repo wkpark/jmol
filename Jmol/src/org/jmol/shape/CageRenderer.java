@@ -42,6 +42,9 @@ abstract class CageRenderer extends FontLineShapeRenderer {
   
   abstract protected void setEdges();
   
+  protected boolean isSlab;
+  protected boolean isPolymer;
+  
   protected void initRenderer() {
     setEdges();
   }
@@ -68,6 +71,16 @@ abstract class CageRenderer extends FontLineShapeRenderer {
       int edge1 = BoxInfo.edges[i + 1];
       if (axisPoints != null && edge0 == 0)
         viewer.transformPointNoClip(axisPoints[axisPt--], screens[0]);
+      if (isPolymer) {
+        if (edge0 != 0 || edge1 != 4)
+          continue;
+      } else if (isSlab) {
+        if (edge0 == 1 || edge1 == 1
+            || edge0 == 5 || edge1 == 5
+            || edge0 == 7 || edge1 == 7
+            || edge0 == 3 || edge1 == 3)
+          continue;
+      }
       boolean drawTicks = (fls.tickInfos != null && (edge = tickEdges[i >> 1]) != 0);
       if (drawTicks) {
         if (atomA == null) {

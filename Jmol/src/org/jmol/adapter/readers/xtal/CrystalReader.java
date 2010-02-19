@@ -115,16 +115,16 @@ public class CrystalReader extends AtomSetCollectionReader {
   private void readCellParams() throws Exception {
     if (isPolymer && !isPrimitive) {
       float a = parseFloat(line.substring(line.indexOf("CELL") + 4));
-      setUnitCell(a, 1, 1, 90, 90, 90);
+      setUnitCell(a, -1, -1, 90, 90, 90);
       return;
     }
     readLine();
     String[] tokens = getTokens(readLine());
     if (isSlab) {
-      setUnitCell(parseFloat(tokens[0]), parseFloat(tokens[1]), 1,
+      setUnitCell(parseFloat(tokens[0]), parseFloat(tokens[1]), -1,
           parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
     } else if (isPolymer) {
-      setUnitCell(parseFloat(tokens[0]), 1, 1,
+      setUnitCell(parseFloat(tokens[0]), -1, -1,
           parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
     } else {
       setUnitCell(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]),

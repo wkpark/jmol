@@ -63,7 +63,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       while (readLine() != null) {
         if (line.startsWith(" LATTICE PARAMETER") && 
             (isPrimitive && line.contains("- PRIMITIVE") || !isPrimitive && line.contains("- CONVENTIONAL"))) {
-              readCellParams();
+          readCellParams();
           continue;
         }
         if (isPrimitive) {

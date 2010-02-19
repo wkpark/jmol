@@ -977,12 +977,15 @@ public class Resolver {
   private final static String[] uicrcifContainsRecords =
   { "Cif", "Crystallographic Information File"};
   
+  private final static String[] crystalContainsRecords =
+  { "Crystal", "*                                CRYSTAL"};
+
   private final static String[][] containsRecords =
   { xmlContainsRecords, gaussianContainsRecords, 
     ampacContainsRecords, mopacContainsRecords, qchemContainsRecords, 
     gamessUKContainsRecords, gamessUSContainsRecords,
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
-    nwchemContainsRecords, uicrcifContainsRecords, dgridContainsRecords
+    nwchemContainsRecords, uicrcifContainsRecords, dgridContainsRecords, crystalContainsRecords
   };
 }
 

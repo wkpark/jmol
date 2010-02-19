@@ -68,7 +68,7 @@ public class CrystalReader extends AtomSetCollectionReader {
         }
         if (isPrimitive) {
           if (line
-              .startsWith(" COORDINATES OF THE EQUIVALENT ATOMS")) {
+              .startsWith(" ATOMS IN THE ASYMMETRIC UNIT")) {
             readFractionalCoords();
             continue;
           }
@@ -130,24 +130,22 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   /*
- COORDINATES OF THE EQUIVALENT ATOMS 
- (X AND Y IN FRACTIONARY UNITS, Z IN ANGSTROMS)
-
- N. ATOM EQUIV AT. N.          X                  Y                  Z
-
-   1   1   1   26 FE    3.33130643604E-01  1.66339516481E-01  6.03501134235E+00
-   */
+ATOMS IN THE ASYMMETRIC UNIT   30 - ATOMS IN THE UNIT CELL:   30
+     ATOM              X/A                 Y/B             Z(ANGSTROM)
+ *******************************************************************************
+   1 T  26 FE    3.331306436039E-01  1.663395164811E-01  6.035011342353E+00
+   2 T   8 O    -3.291645441100E-01  1.554613095970E-01  5.654299584852E+00
+    */
   private void readFractionalCoords() throws Exception {
-    discardLinesUntilContains("ATOM EQUIV");
-    while (readLine() != null && line.indexOf("NUMBER OF SYMM") < 0) {
-      if (line.length() == 0)
-        continue;
+    readLine();
+    readLine();
+    while (readLine() != null && line.length() > 0) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
-      int atomicNumber = parseInt(tokens[3]);
-      float x = parseFloat(tokens[5]);
-      float y = parseFloat(tokens[6]);
-      float z = parseFloat(tokens[7]);
+      int atomicNumber = parseInt(tokens[2]);
+      float x = parseFloat(tokens[4]);
+      float y = parseFloat(tokens[5]);
+      float z = parseFloat(tokens[6]);
       if (isPolymer || isSlab) {
         if (x < 0)
           x += 1;

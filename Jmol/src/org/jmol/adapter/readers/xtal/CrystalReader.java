@@ -40,9 +40,16 @@ import java.io.BufferedReader;
  * 
  * @version 1.0
  * 
- *          This version works and has been well tested on several structures!
  * 
- *          TODO: Needs adaptation to be more modular and flexible
+ * for final optimized geometry use
+ * 
+ * load "xxx.out" filter "optimized"
+ * 
+ * for conventional unit cell, use
+ * 
+ * load "xxx.out" filter "conventional"
+ * 
+ * TODO: vibrational frequencies
  * 
  */
 
@@ -56,13 +63,21 @@ public class CrystalReader extends AtomSetCollectionReader {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("Crystal", this);
 
-    isPrimitive = (filter == null || filter.indexOf("conv") >= 0);
+    isPrimitive = (filter == null || filter.indexOf("conv") < 0);
     atomSetCollection.setAtomSetAuxiliaryInfo("unitCellType", (isPrimitive ? "primitive" : "conventional"));
+    boolean isFinal = (filter != null && filter.indexOf("opt") >= 0);
     try {
       setFractionalCoordinates(readHeader());
+      if (isFinal) {
+        discardLinesUntilContains("FINAL OPTIMIZED GEOMETRY");
+        atomSetCollection.setCollectionName(name + " (optimized)");
+        isPrimitive = true;
+      }
       while (readLine() != null) {
         if (line.startsWith(" LATTICE PARAMETER") && 
-            (isPrimitive && line.contains("- PRIMITIVE") || !isPrimitive && line.contains("- CONVENTIONAL"))) {
+            (isFinal || isPrimitive && line.contains("- PRIMITIVE") || !isPrimitive && line.contains("- CONVENTIONAL"))) {
+          if (isFinal)
+            readLine();
           readCellParams();
           continue;
         }
@@ -86,10 +101,11 @@ public class CrystalReader extends AtomSetCollectionReader {
     }
   }
 
+  private String name;
   private boolean readHeader() throws Exception {
     discardLinesUntilContains("*                                CRYSTAL");
     discardLinesUntilContains("EEEEEEEEEE");
-    atomSetCollection.setCollectionName(readLine().trim());
+    atomSetCollection.setCollectionName(name = readLine().trim());
     readLine();
     calculationType = readLine().trim();
     isPolymer = (calculationType.equals("POLYMER CALCULATION"));

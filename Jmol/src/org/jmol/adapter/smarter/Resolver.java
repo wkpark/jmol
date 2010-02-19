@@ -599,6 +599,8 @@ public class Resolver {
     if (isEnd) {
       if (checkGromacs(lines))
         return "Gromacs";
+      if (checkCrystal(lines))
+        return "Crystal";
     }
     if (nLines == 1 && lines[0].length() > 0
         && Character.isDigit(lines[0].charAt(0)))
@@ -636,6 +638,15 @@ public class Resolver {
       if ((len = lines[i].length()) != 69 && len != 0)
         return false;
     return true;
+  }
+
+  private static boolean checkCrystal(String[] lines) {
+    return (lines[1].equals("SLAB") 
+        || lines[1].equals("MOLECULE")
+        || lines[1].equals("POLYMER")
+        || lines[3].equals("SLAB")
+        || lines[3].equals("MOLECULE")
+        || lines[3].equals("POLYMER"));
   }
 
   private static boolean checkWien2k(String[] lines) {

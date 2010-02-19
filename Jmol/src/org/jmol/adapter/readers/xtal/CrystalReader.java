@@ -147,6 +147,7 @@ ATOMS IN THE ASYMMETRIC UNIT   30 - ATOMS IN THE UNIT CELL:   30
       float y = parseFloat(tokens[5]);
       float z = parseFloat(tokens[6]);
       if (isPolymer || isSlab) {
+        // because with these we cannot use the "packed" keyword
         if (x < 0)
           x += 1;
         if (y < 0)

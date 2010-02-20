@@ -80,7 +80,7 @@ import java.util.Vector;
        /AONBO  / : Print the AO to NBO transformation
   * 
   */
-abstract class MOReader extends AtomSetCollectionReader {
+abstract public class MOReader extends AtomSetCollectionReader {
     
   protected int shellCount = 0;
   protected int gaussianCount = 0;
@@ -120,8 +120,8 @@ abstract class MOReader extends AtomSetCollectionReader {
   abstract protected boolean checkLine() throws Exception;
   
   public void readAtomSetCollection(BufferedReader reader, String type) {
-    initializeMoReader(reader, type);
     try {
+      initializeMoReader(reader, type);
       readLine();
       iHaveAtoms = false;
       while (line != null && continuing)
@@ -133,11 +133,11 @@ abstract class MOReader extends AtomSetCollectionReader {
     }
   }
   
-  protected void finalizeMoReader() {
+  protected void finalizeMoReader() throws Exception {
     // see subclasses
   }
 
-  private void initializeMoReader(BufferedReader reader, String type) {
+  protected void initializeMoReader(BufferedReader reader, String type) throws Exception {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection(type, this);
     line = "\nNBOs in the AO basis:";
@@ -146,7 +146,7 @@ abstract class MOReader extends AtomSetCollectionReader {
     getNBOCharges = (filter != null && filterMO());
     if (filter == null)
       return;
-    filter = TextFormat.simpleReplace(filter, "nbocharges","");
+    filter = TextFormat.simpleReplace(filter, "nbocharges", "");
     if (filter.length() < 3)
       filter = null;
   }

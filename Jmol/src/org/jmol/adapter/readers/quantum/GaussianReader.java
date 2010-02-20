@@ -191,7 +191,7 @@ public class GaussianReader extends MOReader {
     if (line.indexOf("Molecular Orbital Coefficients") >= 0) {
       if (!filterMO())
         return true;
-      readGaussianMolecularOrbitals();
+      readMolecularOrbitals();
       if (Logger.debugging) {
         Logger.debug(orbitals.size() + " molecular orbitals read");
       }
@@ -335,7 +335,7 @@ public class GaussianReader extends MOReader {
    There are     2 symmetry adapted basis functions of B2  symmetry.
    */
 
-  void readBasis() throws Exception {
+  private void readBasis() throws Exception {
     shells = new Vector();
     Vector gdata = new Vector();
     int atomCount = 0;
@@ -356,9 +356,9 @@ public class GaussianReader extends MOReader {
       slater[0] = atomCount - 1;
       String oType = tokens[4];
       if (doSphericalF && oType.indexOf("F") >= 0 || doSphericalD && oType.indexOf("D") >= 0)
-        slater[1] = JmolAdapter.getQuantumShellTagIDSpherical(tokens[4]);
+        slater[1] = JmolAdapter.getQuantumShellTagIDSpherical(oType);
       else
-        slater[1] = JmolAdapter.getQuantumShellTagID(tokens[4]);
+        slater[1] = JmolAdapter.getQuantumShellTagID(oType);
       
       int nGaussians = parseInt(tokens[5]);
       slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
@@ -401,7 +401,7 @@ but:
  105        4S        -47.27845  63.29565-100.44035   1.98362 -51.35328
 
    */
-  void readGaussianMolecularOrbitals() throws Exception {
+  private void readMolecularOrbitals() throws Exception {
     if (shells == null)
       return;
     Hashtable[] mos = new Hashtable[5];

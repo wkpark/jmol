@@ -2234,7 +2234,7 @@ abstract public class ModelCollection extends BondCollection {
     BitSet bsCheck;
     int i0;
     if (isAll) {
-      i0 = atomCount - 1;
+      i0 = 0;
       bsCheck = null;
     } else {
       if (bsA.equals(bsB)) {
@@ -2246,7 +2246,7 @@ abstract public class ModelCollection extends BondCollection {
       i0 = bsCheck.nextSetBit(0);
     }
     CubeIterator iter = null;
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsCheck.nextSetBit(i + 1))) {
+    for (int i = i0; i >= 0 && i < atomCount; i = (isAll ? i + 1 : bsCheck.nextSetBit(i + 1))) {
       boolean isAtomInSetA = (isAll || bsA.get(i));
       boolean isAtomInSetB = (isAll || bsB.get(i));
       Atom atom = atoms[i];
@@ -2257,10 +2257,7 @@ abstract public class ModelCollection extends BondCollection {
       if (modelIndex != lastModelIndex) {
         lastModelIndex = modelIndex;
         if (isJmolDataFrame(modelIndex)) {
-          for (; --i >= 0;)
-            if (atoms[i].modelIndex != modelIndex)
-              break;
-          i++;
+          i = models[modelIndex].firstAtomIndex + models[modelIndex].atomCount - 1;
           continue;
         }
         initializeBspt(modelIndex);

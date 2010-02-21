@@ -85,8 +85,9 @@ public class CrystalReader extends MOReader {
   
   protected boolean checkLine() throws Exception {
     if (line.startsWith(" LATTICE PARAMETER")
-        && (isFinal || isPrimitive && line.contains("- PRIMITIVE") || !isPrimitive
-            && line.contains("- CONVENTIONAL"))) {
+        && (isFinal 
+        || isPrimitive && (line.contains("- PRIMITIVE") || line.contains("- BOHR"))
+        || !isPrimitive && line.contains("- CONVENTIONAL"))) {
       if (isFinal)
         readLine();
       readCellParams();
@@ -157,20 +158,20 @@ public class CrystalReader extends MOReader {
     if (type.indexOf("MOLECULAR") >= 0)
       return false;
     if (!isPrimitive) {
-      readLine();
-      readLine();
+      discardLines(5);
       setSpaceGroupName(line.substring(line.indexOf(":") + 1).trim());
     }
     return true;
   }
 
   private void readCellParams() throws Exception {
+    newAtomSet();
     if (isPolymer && !isPrimitive) {
       float a = parseFloat(line.substring(line.indexOf("CELL") + 4));
       setUnitCell(a, -1, -1, 90, 90, 90);
       return;
     }
-    readLine();
+    discardLinesUntilContains("GAMMA");
     String[] tokens = getTokens(readLine());
     if (isSlab) {
       if (isPrimitive)
@@ -253,6 +254,13 @@ public class CrystalReader extends MOReader {
       setAtomCoord(atom, x, y, z);
       atom.elementSymbol = getElementSymbol(atomicNumber);
     }
+  }
+
+  private void newAtomSet() throws Exception {
+    if (atomSetCollection.getAtomCount() == 0)
+      return;
+    applySymmetryAndSetTrajectory();
+    atomSetCollection.newAtomSet();
   }
 
   private void setEnergy(float energy, boolean isGlobal) {

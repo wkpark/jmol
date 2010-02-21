@@ -6933,6 +6933,8 @@ public class ScriptEvaluator {
         if (lattice == null)
           lattice = new Point3f(555, 555, -1);
         isPacked = true;
+        iToken++;
+        i++;
       }
       if (lattice != null) {
         i = iToken + 1;

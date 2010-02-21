@@ -237,12 +237,19 @@ public class CrystalReader extends MOReader {
       float x = parseFloat(tokens[2]);
       float y = parseFloat(tokens[3]);
       float z = parseFloat(tokens[4]);
+      /* we do not do this, because we have other ways to do it
+       * namely, "packed" or "{555 555 1}"
+       * In this way, we can check those input coordinates exactly
+      
       if (x < 0)
         x += 1;
       if (y < 0)
         y += 1;
-      if (z < 0 )
+      if (z < 0)
         z += 1;
+        
+       */
+
       setAtomCoord(atom, x, y, z);
       atom.elementSymbol = getElementSymbol(atomicNumber);
     }

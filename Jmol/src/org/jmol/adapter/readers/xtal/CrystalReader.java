@@ -65,6 +65,7 @@ public class CrystalReader extends MOReader {
   private boolean isPolymer = false;
   private boolean isSlab = false;
   private boolean isFinal = false;
+  private boolean doReadAtoms = false;
 
   public void readAtomSetCollection(BufferedReader reader) {
     readAtomSetCollection(reader, "Crystal");
@@ -82,49 +83,62 @@ public class CrystalReader extends MOReader {
       isPrimitive = true;
     }
   }
-  
+
   protected boolean checkLine() throws Exception {
     if (line.startsWith(" LATTICE PARAMETER")
-        && (isFinal 
-        || isPrimitive && (line.contains("- PRIMITIVE") || line.contains("- BOHR"))
-        || !isPrimitive && line.contains("- CONVENTIONAL"))) {
+        && (isFinal || isPrimitive
+            && (line.contains("- PRIMITIVE") || line.contains("- BOHR")) || !isPrimitive
+            && line.contains("- CONVENTIONAL"))) {
       if (isFinal)
         readLine();
-      readCellParams();
-      return true;
-    }
-    if (isPrimitive) {
-      if (line.startsWith(" ATOMS IN THE ASYMMETRIC UNIT")) {
-        readFractionalCoords();
-        return true;
+      if (!isPrimitive || doGetModel(++modelNumber)) {
+        readCellParams();
+        doReadAtoms = true;
+      } else {
+        doReadAtoms = false;
       }
-    } else {
-      if (line.startsWith(" INPUT COORDINATES")) {
-        readInputCoords();
-        return true;
-      }
-    }
-    if (line.indexOf(" LOCAL ATOMIC FUNCTIONS BASIS SET") >= 0) {
-      //readBasisSet();
-      return true;
-    }
-    if (line.indexOf("A.O. POPULATION") >= 0) {
-      //readMolecularOrbitals();
       return true;
     }
     if (line.startsWith(" TYPE OF CALCULATION")) {
       calculationType = line.substring(line.indexOf(":") + 1).trim();
       return true;
     }
+    if (!doReadAtoms)
+      return true;
+    if (isPrimitive && line.startsWith(" ATOMS IN THE ASYMMETRIC UNIT")
+        || !isPrimitive && line.startsWith(" INPUT COORDINATES")) {
+      if (isPrimitive) {
+        readFractionalCoords();
+        if (isLastModel(modelNumber)) {
+          continuing = false;
+          return false;
+        }
+      } else {
+        readInputCoords();
+        continuing = false;
+        // because if we are reading the conventional cell,
+        // there won't be anything else we can do here.
+      }
+      return true;
+    }
+
+    if (line.indexOf(" LOCAL ATOMIC FUNCTIONS BASIS SET") >= 0) {
+      // readBasisSet();
+      return true;
+    }
+    if (line.indexOf("A.O. POPULATION") >= 0) {
+      // readMolecularOrbitals();
+      return true;
+    }
     if (line.startsWith(" * OPT END - CONVERGED")) {
       setEnergy(parseFloat(line.substring(line.indexOf(":") + 1)), true);
       return true;
     }
-    if (line.startsWith("== SCF ENDED")){
+    if (line.startsWith("== SCF ENDED")) {
       setEnergy(parseFloat(line.substring(line.indexOf(")") + 1)), true);
       return true;
     }
-    if (line.startsWith(" TOTAL ENERGY")){
+    if (line.startsWith(" TOTAL ENERGY")) {
       setEnergy(parseFloat(line.substring(line.lastIndexOf(")") + 1)), false);
       return true;
     }
@@ -155,8 +169,10 @@ public class CrystalReader extends MOReader {
     }
     atomSetCollection.setAtomSetAuxiliaryInfo("symmetryType", type);  
 
-    if (type.indexOf("MOLECULAR") >= 0)
+    if (type.indexOf("MOLECULAR") >= 0) {
+      doReadAtoms = true;
       return false;
+    }
     if (!isPrimitive) {
       discardLines(5);
       setSpaceGroupName(line.substring(line.indexOf(":") + 1).trim());

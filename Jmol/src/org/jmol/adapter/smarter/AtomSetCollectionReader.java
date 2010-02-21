@@ -373,6 +373,8 @@ public abstract class AtomSetCollectionReader {
         : modelNumber > 0 && bsModels.get(modelNumber - 1)
             || haveModel && firstLastStep != null && firstLastStep[1] < 0
             && (firstLastStep[2] < 2 || (modelNumber - 1 - firstLastStep[0]) % firstLastStep[2] == 0));
+  if (isOK && desiredModelNumber == 0)
+    atomSetCollection.discardPreviousAtoms();
   haveModel |= isOK;
   return isOK;
   }

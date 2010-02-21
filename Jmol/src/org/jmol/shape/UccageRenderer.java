@@ -113,6 +113,10 @@ public class UccageRenderer extends CageRenderer {
     int y = lineheight;
 
     String spaceGroup = symmetry.getSpaceGroupName();
+    if (isPolymer)
+      spaceGroup = "polymer";
+    else if (isSlab)
+      spaceGroup = "slab";
     if (spaceGroup != null & !spaceGroup.equals("-- [--]")) {
       y += lineheight;
       g3d.drawStringNoSlab(spaceGroup, null, x, y, 0);
@@ -121,28 +125,36 @@ public class UccageRenderer extends CageRenderer {
     g3d.drawStringNoSlab("a="
         + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_A)) + "\u00C5",
         null, x, y, 0);
-    y += lineheight;
-    g3d.drawStringNoSlab("b="
-        + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_B)) + "\u00C5",
-        null, x, y, 0);
-    y += lineheight;
-    g3d.drawStringNoSlab("c="
-        + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_C)) + "\u00C5",
-        null, x, y, 0);
+    if (!isPolymer) {
+      y += lineheight;
+      g3d.drawStringNoSlab(
+          "b=" + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_B))
+              + "\u00C5", null, x, y, 0);
+    }
+    if (!isPolymer && !isSlab) {
+      y += lineheight;
+      g3d.drawStringNoSlab(
+          "c=" + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_C))
+              + "\u00C5", null, x, y, 0);
+    }
     if (nf != null)
       nf.setMaximumFractionDigits(1);
-    y += lineheight;
-    g3d.drawStringNoSlab("\u03B1="
-        + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_ALPHA))
-        + "\u00B0", null, x, y, 0);
-    y += lineheight;
-    g3d.drawStringNoSlab("\u03B2="
-        + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_BETA))
-        + "\u00B0", null, x, y, 0);
-    y += lineheight;
-    g3d.drawStringNoSlab("\u03B3="
-        + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_GAMMA))
-        + "\u00B0", null, x, y, 0);
+    if (!isPolymer) {
+      if (!isSlab) {
+        y += lineheight;
+        g3d.drawStringNoSlab("\u03B1="
+            + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_ALPHA))
+            + "\u00B0", null, x, y, 0);
+        y += lineheight;
+        g3d.drawStringNoSlab("\u03B2="
+            + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_BETA))
+            + "\u00B0", null, x, y, 0);
+      }
+      y += lineheight;
+      g3d.drawStringNoSlab("\u03B3="
+          + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_GAMMA))
+          + "\u00B0", null, x, y, 0);
+    }
   }
 
 }

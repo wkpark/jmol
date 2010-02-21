@@ -42,7 +42,7 @@ import java.io.BufferedReader;
  *         Ingram Building, University of Kent, Canterbury, Kent, CT2 7NH United
  *         Kingdom
  * 
- * @version 1.0
+ * @version 1.2
  * 
  * 
  * for final optimized geometry use
@@ -54,6 +54,8 @@ import java.io.BufferedReader;
  * load "xxx.out" filter "conventional"
  * 
  * TODO: vibrational frequencies
+ * 
+ * TODO: molecular orbitals are in, but no MO coefficient data are in the output files.
  * 
  */
 
@@ -82,7 +84,6 @@ public class CrystalReader extends MOReader {
   }
   
   protected boolean checkLine() throws Exception {
-
     if (line.startsWith(" LATTICE PARAMETER")
         && (isFinal || isPrimitive && line.contains("- PRIMITIVE") || !isPrimitive
             && line.contains("- CONVENTIONAL"))) {
@@ -114,6 +115,18 @@ public class CrystalReader extends MOReader {
       calculationType = line.substring(line.indexOf(":") + 1).trim();
       return true;
     }
+    if (line.startsWith(" * OPT END - CONVERGED")) {
+      setEnergy(parseFloat(line.substring(line.indexOf(":") + 1)), true);
+      return true;
+    }
+    if (line.startsWith("== SCF ENDED")){
+      setEnergy(parseFloat(line.substring(line.indexOf(")") + 1)), true);
+      return true;
+    }
+    if (line.startsWith(" TOTAL ENERGY")){
+      setEnergy(parseFloat(line.substring(line.lastIndexOf(")") + 1)), false);
+      return true;
+    }
     return true;
   }
 
@@ -128,23 +141,27 @@ public class CrystalReader extends MOReader {
     atomSetCollection.setCollectionName(name = readLine().trim());
     readLine();
     String type = readLine().trim();
-    isPolymer = (type.equals("POLYMER CALCULATION"));
-    isSlab = (type.equals("SLAB CALCULATION"));
-    atomSetCollection.setAtomSetAuxiliaryInfo("symmetryType", type);
+    /* This is when the initial geometry is read from an external file
+     * GEOMETRY INPUT FROM EXTERNAL FILE (FORTRAN UNIT 34)
+     */
+    if(type.equals("GEOMETRY INPUT FROM EXTERNAL FILE (FORTRAN UNIT 34)")){
+      type = readLine().trim();
+      isPolymer = (type.equals("1D - POLYMER"));
+      isSlab = (type.equals("2D - SLAB"));
+    }else {
+      isPolymer = (type.equals("POLYMER CALCULATION"));
+      isSlab = (type.equals("SLAB CALCULATION"));
+    }
+    atomSetCollection.setAtomSetAuxiliaryInfo("symmetryType", type);  
+
     if (type.indexOf("MOLECULAR") >= 0)
       return false;
     if (!isPrimitive) {
       readLine();
       readLine();
-      readSpaceGroup();
+      setSpaceGroupName(line.substring(line.indexOf(":") + 1).trim());
     }
     return true;
-  }
-
-  private void readSpaceGroup() {
-    // SPACE GROUP (CENTROSYMMETRIC) : F M 3 M
-    String name = line.substring(line.indexOf(":") + 1).trim();
-    setSpaceGroupName(name);
   }
 
   private void readCellParams() throws Exception {
@@ -182,6 +199,7 @@ public class CrystalReader extends MOReader {
   private void readFractionalCoords() throws Exception {
     readLine();
     readLine();
+    boolean doNormalizePrimitive = !isPolymer && !isSlab && isPrimitive;
     while (readLine() != null && line.length() > 0) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
@@ -190,10 +208,12 @@ public class CrystalReader extends MOReader {
       float y = parseFloat(tokens[5]);
       float z = parseFloat(tokens[6]);
       // because with these we cannot use the "packed" keyword
-      if ((isPolymer || isSlab) && x < 0)
+      if (x < 0 && (isPolymer || isSlab || doNormalizePrimitive))
         x += 1;
-      if (isSlab && y < 0)
+      if (y < 0 && (isSlab || doNormalizePrimitive))
         y += 1;
+      if (z < 0 && doNormalizePrimitive)
+        z += 1;
       setAtomCoord(atom, x, y, z);
       atom.elementSymbol = getElementSymbol(atomicNumber);
     }
@@ -217,9 +237,22 @@ public class CrystalReader extends MOReader {
       float x = parseFloat(tokens[2]);
       float y = parseFloat(tokens[3]);
       float z = parseFloat(tokens[4]);
+      if (x < 0)
+        x += 1;
+      if (y < 0)
+        y += 1;
+      if (z < 0 )
+        z += 1;
       setAtomCoord(atom, x, y, z);
       atom.elementSymbol = getElementSymbol(atomicNumber);
     }
+  }
+
+  private void setEnergy(float energy, boolean isGlobal) {
+    if (isGlobal)
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", new Float(energy));
+    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", new Float(energy));
+    atomSetCollection.setAtomSetName("Energy = " + energy);
   }
 
   /*

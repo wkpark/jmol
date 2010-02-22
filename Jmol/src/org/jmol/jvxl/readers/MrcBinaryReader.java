@@ -101,7 +101,7 @@ class MrcBinaryReader extends MapFileReader {
     byte[] extra = new byte[100];
     byte[] map = new byte[4];
     byte[] machst = new byte[4];
-    float rms;
+    float rmsDeviation;
     int nlabel;
 
     nx = binarydoc.readInt(); // CCP4 "extent[0-2]"
@@ -159,9 +159,9 @@ class MrcBinaryReader extends MapFileReader {
     binarydoc.readByteArray(map);
     binarydoc.readByteArray(machst);
 
-    rms = binarydoc.readFloat();
+    rmsDeviation = binarydoc.readFloat();
 
-    Logger.info("MRC header: rms: " + rms);
+    Logger.info("MRC header: rms: " + rmsDeviation);
 
     nlabel = binarydoc.readInt();
 
@@ -198,11 +198,11 @@ class MrcBinaryReader extends MapFileReader {
 
     if (params.thePlane == null) {
       if (params.cutoffAutomatic) {
-        params.cutoff = rms * 2 + dmean;
-        Logger.info("Cutoff set to (dmean + 2*rms) = " + params.cutoff);
+        params.cutoff = rmsDeviation * 2 + dmean;
+        Logger.info("Cutoff set to (mean + 2*rmsDeviation) = " + params.cutoff);
       } else if (params.sigma != Float.MAX_VALUE) {
-        params.cutoff = rms * params.sigma;
-        Logger.info("Cutoff set to rms * " + params.sigma + " = " + params.cutoff);
+        params.cutoff = rmsDeviation * params.sigma + dmean;
+        Logger.info("Cutoff set to (mean + rmsDeviation*" + params.sigma + ") = " + params.cutoff);
       }
     }
 

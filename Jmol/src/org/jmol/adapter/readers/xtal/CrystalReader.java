@@ -64,7 +64,6 @@ public class CrystalReader extends MOReader {
   private boolean isPrimitive = true;
   private boolean isPolymer = false;
   private boolean isSlab = false;
-  private boolean isFinal = false;
   private boolean doReadAtoms = false;
 
   public void readAtomSetCollection(BufferedReader reader) {
@@ -75,22 +74,14 @@ public class CrystalReader extends MOReader {
     super.initializeMoReader(reader, type);
     isPrimitive = (filter == null || filter.indexOf("conv") < 0);
     atomSetCollection.setAtomSetAuxiliaryInfo("unitCellType", (isPrimitive ? "primitive" : "conventional"));
-    isFinal = (filter != null && filter.indexOf("opt") >= 0);
     setFractionalCoordinates(readHeader());
-    if (isFinal) {
-      discardLinesUntilContains("FINAL OPTIMIZED GEOMETRY");
-      atomSetCollection.setCollectionName(name + " (optimized)");
-      isPrimitive = true;
-    }
   }
 
   protected boolean checkLine() throws Exception {
     if (line.startsWith(" LATTICE PARAMETER")
-        && (isFinal || isPrimitive
-            && (line.contains("- PRIMITIVE") || line.contains("- BOHR")) || !isPrimitive
-            && line.contains("- CONVENTIONAL"))) {
-      if (isFinal)
-        readLine();
+        && (isPrimitive
+            && (line.contains("- PRIMITIVE") || line.contains("- BOHR")) 
+            || !isPrimitive && line.contains("- CONVENTIONAL"))) {
       if (!isPrimitive || doGetModel(++modelNumber)) {
         readCellParams();
         doReadAtoms = true;
@@ -149,11 +140,11 @@ public class CrystalReader extends MOReader {
     applySymmetryAndSetTrajectory();
   }
   
-  private String name;
   private boolean readHeader() throws Exception {
     discardLinesUntilContains("*                                CRYSTAL");
     discardLinesUntilContains("EEEEEEEEEE");
-    atomSetCollection.setCollectionName(name = readLine().trim());
+    atomSetCollection.setCollectionName(readLine().trim()
+        + (desiredModelNumber == 0 ? " (optimized)" : ""));
     readLine();
     String type = readLine().trim();
     /* This is when the initial geometry is read from an external file

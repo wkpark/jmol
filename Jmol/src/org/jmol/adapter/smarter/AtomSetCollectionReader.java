@@ -172,7 +172,7 @@ public abstract class AtomSetCollectionReader {
   private float symmetryRange;  
   private float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
   private int[] firstLastStep;
-  private int desiredModelNumber = Integer.MIN_VALUE;
+  protected int desiredModelNumber = Integer.MIN_VALUE;
   private int lastModelNumber = Integer.MAX_VALUE;
   private int desiredSpaceGroupIndex = -1;
   private SymmetryInterface symmetry;

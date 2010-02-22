@@ -161,8 +161,8 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
       if (symmetry.indexOf("_FC") >= 0)
         break;
       StringBuffer data = new StringBuffer();
-      data.append(line.substring(10));
-      while (readLine() != null && line.length() >= 10)
+      data.append(line.substring(15));
+      while (readLine() != null && line.length() >= 15)
         data.append(line);
       String[] tokens = getTokens(data.toString());
       int nFuncs = tokens.length / 2;
@@ -198,7 +198,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
         tokens = getTokens(cData.toString());
         if (tokens.length != nFuncs)
           Logger
-              .error("DgridReader: number of coefficients does not equal number of functions");
+              .error("DgridReader: number of coefficients (" + tokens.length + ") does not equal number of functions (" + nFuncs + ")");
         for (int i = 0; i < tokens.length; i++) {
           int pt = ptSlater[i];
           list[pt] = parseFloat(tokens[i]);

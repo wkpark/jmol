@@ -83,6 +83,9 @@ public class CrystalReader extends MOReader {
   }
 
   protected boolean checkLine() throws Exception {
+    // starting point for any calculation is the definition of the lattice
+    // parameters
+    // similar to the "data" statement of a CIF file
     if (line.startsWith(" LATTICE PARAMETER")
         && (isPrimitive
             && (line.contains("- PRIMITIVE") || line.contains("- BOHR")) || !isPrimitive
@@ -93,10 +96,6 @@ public class CrystalReader extends MOReader {
       } else {
         doReadAtoms = false;
       }
-      return true;
-    }
-    if (line.startsWith(" TYPE OF CALCULATION")) {
-      calculationType = line.substring(line.indexOf(":") + 1).trim();
       return true;
     }
     if (!doReadAtoms)
@@ -118,14 +117,23 @@ public class CrystalReader extends MOReader {
       return true;
     }
 
+    // Note that these following won't be read if we are opting to get a
+    // specific model.
+
+    if (line.startsWith(" TYPE OF CALCULATION")) {
+      calculationType = line.substring(line.indexOf(":") + 1).trim();
+      return true;
+    }
     if (line.indexOf(" LOCAL ATOMIC FUNCTIONS BASIS SET") >= 0) {
       // readBasisSet();
       return true;
     }
     if (line.indexOf("A.O. POPULATION") >= 0) {
+      // no, that's not right....
       // readMolecularOrbitals();
       return true;
     }
+
     if (line.startsWith(" * OPT END - CONVERGED")) {
       setEnergy(parseFloat(line.substring(line.indexOf(":") + 1)), true);
       return true;

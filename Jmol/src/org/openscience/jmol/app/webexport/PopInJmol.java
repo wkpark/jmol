@@ -111,12 +111,13 @@ class PopInJmol extends WebPanel implements ChangeListener {
       int height = ((SpinnerNumberModel) (appletSizeSpinnerH.getModel()))
           .getNumber().intValue();
       WebExport.setPopInDim(width, height);
-      DefaultListModel listModel = (DefaultListModel) getInstanceList()
-          .getModel();
-      int[] list = getInstanceList().getSelectedIndices();
-      if (list.length != 1)//may want to make this work on multiple selections
+      JList whichList = getInstanceList();
+      int[] list = whichList.getSelectedIndices();
+      if (list.length != 1)// may want to make this work on multiple selections
         return;
-      JmolInstance instance = (JmolInstance) listModel.get(list[0]);
+      int index = whichList.getSelectedIndex();
+      JmolInstance instance = (JmolInstance) whichList.getModel().getElementAt(
+          index);
       instance.width = width;
       instance.height = height;
       viewer.createImage(instance.pictFile, "PNG", null, 2, width, height);

@@ -149,11 +149,11 @@ abstract class WebPanel extends JPanel implements ActionListener,
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setMaximumSize(new Dimension(350, 50));
-    showInstanceButton = new JButton(GT._("Show Selected"));
-    showInstanceButton.addActionListener(this);
+//    showInstanceButton = new JButton(GT._("Show Selected"));
+//    showInstanceButton.addActionListener(this);
     deleteInstanceButton = new JButton(GT._("Delete Selected"));
     deleteInstanceButton.addActionListener(this);
-    buttonPanel.add(showInstanceButton);
+//    buttonPanel.add(showInstanceButton);
     buttonPanel.add(deleteInstanceButton);
 
     // width height or %width
@@ -435,10 +435,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       appletSizeSpinnerW.getModel().setValue(new Integer(width));
     if (appletSizeSpinnerH != null)
       appletSizeSpinnerH.getModel().setValue(new Integer(height));
-    // uncomment the following line to have the instance appear in the viewer
-    // when it is selected. Presently discussing UI issues 2-9-2010-JG
-    // viewer.evalStringQuiet(")" + instance.script); //leading paren disabled
-    // history
+    viewer.evalStringQuiet(")" + instance.script); //leading paren disabled history
   }
 
   String getInstanceName(int i) {
@@ -646,7 +643,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     int nListed = list.getModel().getSize();
     saveButton.setEnabled(nListed > 0);
     deleteInstanceButton.setEnabled(nSelected > 0);
-    showInstanceButton.setEnabled(nSelected == 1);
+//    showInstanceButton.setEnabled(nSelected == 1);
   }
 
   class InstanceCellRenderer extends JLabel implements ListCellRenderer {

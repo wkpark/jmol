@@ -103,10 +103,8 @@ abstract class AtomDataReader extends VolumeDataReader {
     modelIndex = atomData.firstModelIndex;
     int nSelected = 0;
     boolean needRadius = false;
-    boolean isAll = (params.bsSelected == null); 
-    int i0 = (isAll ? atomCount - 1 : params.bsSelected.nextSetBit(0));
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : params.bsSelected.nextSetBit(i + 1))) {
-      if (!bsMyIgnored.get(i)) {
+    for (int i = 0; i < atomCount; i++) {
+      if ((params.bsSelected == null || params.bsSelected.get(i)) && (!bsMyIgnored.get(i))) {
         if (doUsePlane
             && Math.abs(volumeData.distancePointToPlane(atomData.atomXyz[i])) > 2 * (atomData.atomRadius[i] = getWorkingRadius(
                 i, marginAtoms)))
@@ -119,6 +117,7 @@ abstract class AtomDataReader extends VolumeDataReader {
         atomData.atomRadius[i] = getWorkingRadius(i, marginAtoms);
       }
     }
+
     float rH = (doAddHydrogens ? getWorkingRadius(-1, marginAtoms) : 0);
     myAtomCount = BitSetUtil.cardinalityOf(bsMySelected);
     BitSet atomSet = BitSetUtil.copy(bsMySelected);
@@ -197,10 +196,10 @@ abstract class AtomDataReader extends VolumeDataReader {
     Point3f pt = new Point3f();
 
     BitSet bsNearby = new BitSet();
-    BitSet bs = new BitSet();
-    bs.or(atomSet);
-    BitSetUtil.andNot(bs, bsMyIgnored);
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {      float rA = atomData.atomRadius[i];
+    for (int i = 0; i < atomCount; i++) {
+      if (atomSet.get(i) || bsMyIgnored.get(i))
+        continue;
+    float rA = atomData.atomRadius[i];
       if (params.thePlane != null
           && Math.abs(volumeData.distancePointToPlane(atomData.atomXyz[i])) > 2 * rA)
         continue;

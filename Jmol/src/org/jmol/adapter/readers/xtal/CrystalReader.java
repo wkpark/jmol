@@ -85,8 +85,8 @@ public class CrystalReader extends MOReader {
   protected boolean checkLine() throws Exception {
     if (line.startsWith(" LATTICE PARAMETER")
         && (isPrimitive
-            && (line.contains("- PRIMITIVE") || line.contains("- BOHR")) 
-            || !isPrimitive && line.contains("- CONVENTIONAL"))) {
+            && (line.contains("- PRIMITIVE") || line.contains("- BOHR")) || !isPrimitive
+            && line.contains("- CONVENTIONAL"))) {
       if (!isPrimitive || doGetModel(++modelNumber)) {
         readCellParams();
         doReadAtoms = true;
@@ -101,20 +101,20 @@ public class CrystalReader extends MOReader {
     }
     if (!doReadAtoms)
       return true;
-    if (isPrimitive && line.startsWith(" ATOMS IN THE ASYMMETRIC UNIT")
-        || !isPrimitive && line.startsWith(" INPUT COORDINATES")) {
-      if (isPrimitive) {
-        readFractionalCoords();
-        if (isLastModel(modelNumber)) {
-          continuing = false;
-          return false;
-        }
-      } else {
+    if (!isPrimitive) {
+      if (line.startsWith(" INPUT COORDINATES")) {
         readInputCoords();
         continuing = false;
         // because if we are reading the conventional cell,
         // there won't be anything else we can do here.
       }
+      return true;
+    }
+    // from here on -- must be primitive
+    if (line.startsWith(" ATOMS IN THE ASYMMETRIC UNIT")) {
+      readFractionalCoords();
+      if (isLastModel(modelNumber))
+        continuing = false;
       return true;
     }
 

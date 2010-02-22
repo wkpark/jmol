@@ -44,10 +44,15 @@ import java.io.BufferedReader;
  * 
  * @version 1.2
  * 
+ * for a specific model in the set, use
+ * 
+ * load "xxx.out" n
+ * 
+ * where n is an integer > 0
  * 
  * for final optimized geometry use
  * 
- * load "xxx.out" filter "optimized"
+ * load "xxx.out" 0
  * 
  * for conventional unit cell, use
  * 

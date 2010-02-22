@@ -197,13 +197,13 @@ class MrcBinaryReader extends MapFileReader {
     // reasonably well as a default.
 
     if (params.thePlane == null) {
-      if (params.cutoffAutomatic) {
-        params.cutoff = rmsDeviation * 2 + dmean;
-        Logger.info("Cutoff set to (mean + 2*rmsDeviation) = " + params.cutoff);
-      } else if (params.sigma != Float.MAX_VALUE) {
+      if (params.sigma != Float.MAX_VALUE) {
         params.cutoff = rmsDeviation * params.sigma + dmean;
         Logger.info("Cutoff set to (mean + rmsDeviation*" + params.sigma + ") = " + params.cutoff);
-      }
+      } else if (params.cutoffAutomatic) {
+        params.cutoff = rmsDeviation + dmean;
+        Logger.info("Cutoff set to sigma 1.0 or (mean + rmsDeviation) = " + params.cutoff);
+      } 
     }
 
     getVectorsAndOrigin();

@@ -379,8 +379,24 @@ public abstract class AtomSetCollectionReader {
   return isOK;
   }
   
+  /**
+   * after reading a model, Q: Is this the last model?
+   * 
+   * @param modelNumber
+   * @return  Yes/No
+   */
   public boolean isLastModel(int modelNumber) {
     return (desiredModelNumber > 0 || modelNumber >= lastModelNumber);
+  }
+  
+  /**
+   * before reading a model: Q: Has the last model already been read?
+   * 
+   * @return Yes/No
+   */
+  public boolean doneReadingModels() {
+    return (desiredModelNumber > 0 && desiredModelNumber == modelNumber 
+        || modelNumber == lastModelNumber);
   }
 
   public boolean doGetVibration(int vibrationNumber) {

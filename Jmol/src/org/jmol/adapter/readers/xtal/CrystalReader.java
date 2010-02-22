@@ -48,11 +48,13 @@ import java.io.BufferedReader;
  * 
  * load "xxx.out" n
  * 
- * where n is an integer > 0
+ * as for all readers, where n is an integer > 0
  * 
  * for final optimized geometry use
  * 
  * load "xxx.out" 0
+ * 
+ * (that is, "read the last model") as for all readers
  * 
  * for conventional unit cell -- input coordinates only, use
  * 
@@ -90,6 +92,10 @@ public class CrystalReader extends MOReader {
         && (isPrimitive
             && (line.contains("- PRIMITIVE") || line.contains("- BOHR")) || !isPrimitive
             && line.contains("- CONVENTIONAL"))) {
+      if (doneReadingModels()) {
+        continuing = false;
+        return false;
+      }
       if (!isPrimitive || doGetModel(++modelNumber)) {
         readCellParams();
         doReadAtoms = true;
@@ -109,21 +115,26 @@ public class CrystalReader extends MOReader {
       }
       return true;
     }
+    
     // from here on -- must be primitive
+
     if (line.startsWith(" ATOMS IN THE ASYMMETRIC UNIT")) {
       readFractionalCoords();
-      if (isLastModel(modelNumber))
-        continuing = false;
       return true;
     }
-
-    // Note that these following won't be read if we are opting to get a
-    // specific model.
+    if (line.startsWith(" * OPT END - CONVERGED") 
+        || line.startsWith("== SCF ENDED") 
+        || line.startsWith(" TOTAL ENERGY")) {
+      readEnergy();
+      return true;
+    }
 
     if (line.startsWith(" TYPE OF CALCULATION")) {
       calculationType = line.substring(line.indexOf(":") + 1).trim();
       return true;
     }
+
+    /*
     if (line.indexOf(" LOCAL ATOMIC FUNCTIONS BASIS SET") >= 0) {
       // readBasisSet();
       return true;
@@ -133,19 +144,8 @@ public class CrystalReader extends MOReader {
       // readMolecularOrbitals();
       return true;
     }
-
-    if (line.startsWith(" * OPT END - CONVERGED")) {
-      setEnergy(parseFloat(line.substring(line.indexOf(":") + 1)), true);
-      return true;
-    }
-    if (line.startsWith("== SCF ENDED")) {
-      setEnergy(parseFloat(line.substring(line.indexOf(")") + 1)), true);
-      return true;
-    }
-    if (line.startsWith(" TOTAL ENERGY")) {
-      setEnergy(parseFloat(line.substring(line.lastIndexOf(")") + 1)), false);
-      return true;
-    }
+    */
+    
     return true;
   }
 
@@ -210,12 +210,11 @@ public class CrystalReader extends MOReader {
   }
 
   /*
-   * ATOMS IN THE ASYMMETRIC UNIT 30 - ATOMS IN THE UNIT CELL: 30 ATOM X/A Y/B
-   * Z(ANGSTROM)
-   * *****************************************************************
-   * ************* 1 T 26 FE 3.331306436039E-01 1.663395164811E-01
-   * 6.035011342353E+00 2 T 8 O -3.291645441100E-01 1.554613095970E-01
-   * 5.654299584852E+00
+ ATOMS IN THE ASYMMETRIC UNIT   30 - ATOMS IN THE UNIT CELL:   30
+     ATOM              X/A                 Y/B             Z(ANGSTROM)
+ *******************************************************************************
+   1 T  26 FE    3.332220233571E-01  1.664350001467E-01  5.975038441891E+00
+   2 T   8 O    -3.289334452690E-01  1.544678332212E-01  5.601153565811E+00
    */
   private void readFractionalCoords() throws Exception {
     readLine();
@@ -283,9 +282,13 @@ public class CrystalReader extends MOReader {
     atomSetCollection.newAtomSet();
   }
 
-  private void setEnergy(float energy, boolean isGlobal) {
+  private void readEnergy() {
+    boolean isGlobal = (line.startsWith(" * OPT END"));
+    float energy = parseFloat(line.substring(line.lastIndexOf(isGlobal ? ":"
+        : ")") + 1));
     if (isGlobal)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", new Float(energy));
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", new Float(
+          energy));
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", new Float(energy));
     atomSetCollection.setAtomSetName("Energy = " + energy);
   }

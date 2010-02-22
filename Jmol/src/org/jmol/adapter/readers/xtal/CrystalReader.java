@@ -54,7 +54,7 @@ import java.io.BufferedReader;
  * 
  * load "xxx.out" 0
  * 
- * for conventional unit cell, use
+ * for conventional unit cell -- input coordinates only, use
  * 
  * load "xxx.out" filter "conventional"
  * 

@@ -196,9 +196,14 @@ class MrcBinaryReader extends MapFileReader {
     // setting the cutoff to mean + 2 x RMS seems to work
     // reasonably well as a default.
 
-    if (params.cutoffAutomatic && params.thePlane == null) {
-      params.cutoff = rms * 2 + dmean;
-      Logger.info("Cutoff set to (dmean + 2*rms) = " + params.cutoff);
+    if (params.thePlane == null) {
+      if (params.cutoffAutomatic) {
+        params.cutoff = rms * 2 + dmean;
+        Logger.info("Cutoff set to (dmean + 2*rms) = " + params.cutoff);
+      } else if (params.sigma != Float.MAX_VALUE) {
+        params.cutoff = rms * params.sigma;
+        Logger.info("Cutoff set to rms * " + params.sigma + " = " + params.cutoff);
+      }
     }
 
     getVectorsAndOrigin();

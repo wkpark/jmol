@@ -430,6 +430,15 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("sigma" == propertyName) {
+      // not all readers will take this, so we assign
+      // cutoff to the value as well.
+      params.cutoff = params.sigma = ((Float) value).floatValue();
+      params.isPositiveOnly = false;
+      params.cutoffAutomatic = false;
+      return true;
+    }
+
     if ("cutoff" == propertyName) {
       params.cutoff = ((Float) value).floatValue();
       params.isPositiveOnly = false;

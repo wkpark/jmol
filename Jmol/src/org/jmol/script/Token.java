@@ -1101,6 +1101,7 @@ public class Token {
   final static int selection      = misc | 172;// new
   final static int shape          = misc | 173;
   final static int shapely        = misc | 174;
+  final static int sigma          = misc | 175;// new
   final static int sign           = misc | 177;// new
   final static int solid          = misc | 178;
   final static int spacegroup     = misc | 179;
@@ -1860,6 +1861,7 @@ public class Token {
       "reversecolor",    new Token(reversecolor),
       "rotate45",        new Token(rotate45),
       "selection",       new Token(selection),
+      "sigma",           new Token(sigma),
       "sign",            new Token(sign),
       "sphere",          new Token(sphere),
       "squared",         new Token(squared),

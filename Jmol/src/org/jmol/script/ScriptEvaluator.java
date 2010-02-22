@@ -13663,6 +13663,10 @@ public class ScriptEvaluator {
         propertyName = "reverseColor";
         propertyValue = Boolean.TRUE;
         break;
+      case Token.sigma:
+        propertyName = "sigma";
+        propertyValue = new Float(floatParameter(++i));
+        break;
       case Token.sign:
         signPt = i + 1;
         propertyName = "sign";

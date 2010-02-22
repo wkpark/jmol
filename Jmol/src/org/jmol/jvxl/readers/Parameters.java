@@ -228,6 +228,7 @@ public class Parameters {
     resolution = Float.MAX_VALUE;
     scale = Float.NaN;
     scale3d = 0;
+    sigma = Float.MAX_VALUE;
     solventExtendedAtomRadius = 0;
     state = STATE_INITIALIZED;
     thePlane = null;
@@ -690,6 +691,7 @@ public class Parameters {
   
   boolean insideOut;
   public float cutoff = Float.MAX_VALUE;
+  public float sigma = Float.MAX_VALUE; // for MrcReader
   boolean cutoffAutomatic = true;
   public boolean isCutoffAbsolute;
   boolean isPositiveOnly;

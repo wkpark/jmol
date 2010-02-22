@@ -141,6 +141,8 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     }
     boolean doAppend = (allowAppend && openPreview != null && openPreview.isAppendSelected());
     closePreview();
+    if (fileName.startsWith("/"))
+      fileName = "file://" + fileName; // for Macs
     return (doAppend ? "load append " + Escape.escape(fileName) : fileName);
   }
 

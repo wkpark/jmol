@@ -172,7 +172,7 @@ class StatusListener implements JmolStatusListener {
   // / end of JmolCallbackListener interface ///
 
   public String eval(String strEval) {
-   String msg = "# this funcationality is implemented only for the applet.";
+   String msg = "# this funcationality is implemented only for the applet.\n" + strEval;
    sendConsoleMessage(msg);
     return msg;
   }

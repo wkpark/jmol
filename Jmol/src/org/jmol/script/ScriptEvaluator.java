@@ -12969,6 +12969,7 @@ public class ScriptEvaluator {
     int thisSetNumber = 0;
     int nFiles = 0;
     int nX, nY, nZ, ptX, ptY;
+    int ptSigma = 0;
     BitSet bs;
     Vector v;
     Point3f[] pts;
@@ -13664,6 +13665,7 @@ public class ScriptEvaluator {
         propertyValue = Boolean.TRUE;
         break;
       case Token.sigma:
+        ptSigma = i;
         propertyName = "sigma";
         propertyValue = new Float(floatParameter(++i));
         break;
@@ -13870,17 +13872,22 @@ public class ScriptEvaluator {
           .getShapeProperty(iShape, "dataRange");
       String s = (String) viewer.getShapeProperty(iShape, "ID");
       if (s != null) {
-        s += " created with cutoff = "
-            + viewer.getShapeProperty(iShape, "cutoff")
-            + " ; number of isosurfaces = " + n;
-        if (dataRange != null && dataRange[0] != dataRange[1])
-          s += "\ncolor range " + dataRange[2] + " " + dataRange[3]
-              + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
-        if (doCalcArea)
-          s += "\nisosurfaceArea = " + Escape.escapeArray(area);
-        if (doCalcVolume)
-          s += "\nisosurfaceVolume = " + Escape.escapeArray(volume);
-        showString(s);
+        float cutoff = ((Float) viewer.getShapeProperty(iShape, "cutoff"))
+            .floatValue();
+        if (Float.isNaN(cutoff) && ptSigma >= 0) {
+          iToken = ptSigma;
+          error(ERROR_invalidArgument);
+        }
+          s += " created with cutoff = " + cutoff
+              + " ; number of isosurfaces = " + n;
+          if (dataRange != null && dataRange[0] != dataRange[1])
+            s += "\ncolor range " + dataRange[2] + " " + dataRange[3]
+                + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
+          if (doCalcArea)
+            s += "\nisosurfaceArea = " + Escape.escapeArray(area);
+          if (doCalcVolume)
+            s += "\nisosurfaceVolume = " + Escape.escapeArray(volume);
+          showString(s);
       }
     } else if (doCalcArea || doCalcVolume) {
       if (doCalcArea)

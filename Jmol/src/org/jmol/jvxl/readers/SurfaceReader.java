@@ -194,6 +194,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected VolumeData volumeData;
   private String edgeData;
 
+  protected boolean allowSigma = false;
   protected boolean isProgressive = false;
   protected boolean isXLowToHigh = false; //can be overridden in some readers by --progressive
   private float assocCutoff = 0.3f;
@@ -315,8 +316,13 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   boolean createIsosurface(boolean justForPlane) {
     resetIsosurface();
+    jvxlData.cutoff = Float.NaN;
     if (!readAndSetVolumeParameters())
       return false;
+    if (!justForPlane && params.sigma != Float.MAX_VALUE && !allowSigma) {
+      Logger.error("Reader does not support SIGMA option");
+      return false;
+    }
     nPointsX = voxelCounts[0];
     nPointsY = voxelCounts[1];
     nPointsZ = voxelCounts[2];

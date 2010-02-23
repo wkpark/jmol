@@ -974,6 +974,7 @@ public class SurfaceGenerator {
     }
     if (!surfaceReader.createIsosurface(false)) {
       Logger.error("Could not create isosurface");
+      params.cutoff = Float.NaN;
       surfaceReader.closeReader();
       return;
     }

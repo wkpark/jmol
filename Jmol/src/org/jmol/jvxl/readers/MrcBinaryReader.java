@@ -47,7 +47,8 @@ class MrcBinaryReader extends MapFileReader {
     // data are HIGH on the inside and LOW on the outside
     if (params.thePlane == null)
       params.insideOut = !params.insideOut;
-    nSurfaces = 1;    
+    nSurfaces = 1; 
+    allowSigma = true;
   }
   
 
@@ -91,9 +92,9 @@ class MrcBinaryReader extends MapFileReader {
     57-256  LABEL(20,10) 10 80-character text labels
     */
     
-    protected String[] labels;
+  protected String[] labels;
 
-    protected void readParameters() throws Exception {
+  protected void readParameters() throws Exception {
 
     float dmin, dmax, dmean;
     int ispg;

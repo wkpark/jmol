@@ -96,6 +96,8 @@ public class SimpleUnitCell {
       return beta;
     case JmolConstants.INFO_GAMMA:
       return gamma;
+    case JmolConstants.INFO_DIMENSIONS:
+      return (isPolymer ? 1 : isSlab ? 2 : 3);
     }
     return Float.NaN;
   }

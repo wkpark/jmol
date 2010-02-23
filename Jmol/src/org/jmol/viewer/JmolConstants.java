@@ -152,6 +152,7 @@ final public class JmolConstants {
   public final static int INFO_ALPHA = 3;
   public final static int INFO_BETA = 4;
   public final static int INFO_GAMMA = 5;
+  public final static int INFO_DIMENSIONS = 6;
 
   // Jmol data frame types
   

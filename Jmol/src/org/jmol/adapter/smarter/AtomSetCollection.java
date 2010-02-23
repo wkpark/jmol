@@ -39,6 +39,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
+import org.jmol.viewer.JmolConstants;
 
 public class AtomSetCollection {
 
@@ -708,6 +709,20 @@ public class AtomSetCollection {
       maxY++;
       minZ--;
       maxZ++;
+    }
+    switch ((int)getSymmetry().getUnitCellInfo(JmolConstants.INFO_DIMENSIONS)) {
+    case 1:
+      minY = minZ = 0;
+      maxY = maxZ = 1;
+      doPackUnitCell = false;
+      break;
+    case 2:
+      minZ = 0;
+      maxZ = 1;
+      doPackUnitCell = false;
+      break;
+    case 3:
+      break;
     }
     this.maxX = maxX;
     this.maxY = maxY;

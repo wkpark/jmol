@@ -75,7 +75,9 @@ abstract class SurfaceFileReader extends SurfaceReader {
     String line;
     LimitedLineReader br = new LimitedLineReader(bufferedReader, 16000);
     //sure bets, but not REQUIRED:
-    if ((line = br.info()).indexOf("<jvxl") >= 0 && line.indexOf("<?xml") >= 0)
+    if ((line = br.info()).length() == 0)
+      return "UNKNOWN";
+    if (line.indexOf("<jvxl") >= 0 && line.indexOf("<?xml") >= 0)
       return "JvxlXML";
     if (line.indexOf("#JVXL+") >= 0)
       return "Jvxl+";
@@ -83,20 +85,21 @@ abstract class SurfaceFileReader extends SurfaceReader {
       return "Jvxl";
     if (line.indexOf("&plot") == 0)
       return "Jaguar";
-    if (line.indexOf("!NTITLE") >= 0 || line.indexOf("REMARKS ") >= 0)
-      return "Xplor";
     if (line.indexOf("MAP ") == 208)
       return "MRC" + (line.charAt(67) == '\0' ? "-" : "+");
     if (line.indexOf("<efvet ") >= 0)
       return "Efvet";
     if (line.indexOf(PmeshReader.PMESH_BINARY_MAGIC_NUMBER) == 0)
       return "Pmesh";
+    if ("\n\r".indexOf(line.charAt(0)) >= 0 && line.indexOf("ZYX") >= 0)
+      return "Xplor";
+    
+    // Apbs, Jvxl, or Cube, maybe formatted Plt
+
     line = br.readNonCommentLine();
     if (line.indexOf("object 1 class gridpositions counts") == 0)
       return "Apbs";
 
-    // Jvxl, or Cube, maybe formatted Plt
-    
     String[] tokens = Parser.getTokens(line); 
     line = br.readNonCommentLine();// second line
     if (tokens.length == 2 

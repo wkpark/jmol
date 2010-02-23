@@ -122,8 +122,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       readFractionalCoords();
       return true;
     }
-    if (line.startsWith(" * OPT END - CONVERGED")
-        || line.startsWith("== SCF ENDED") || line.startsWith(" TOTAL ENERGY")) {
+    if (line.startsWith(" TOTAL ENERGY")) {
       readEnergy();
       return true;
     }
@@ -285,13 +284,10 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private void readEnergy() {
-    boolean isGlobal = (line.startsWith(" * OPT END"));
-    String[] tokens = getTokens(line.substring(line.lastIndexOf(isGlobal ? ":"
-        : ")") + 1));
+    String[] tokens = getTokens(line.substring(line.lastIndexOf(")") + 1));
     Double energy = new Double(Double.parseDouble(tokens[0]));
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
-    if (isGlobal)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", energy);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", energy);
     atomSetCollection.setAtomSetName("Energy = " + energy + " Hartree");
   }
 

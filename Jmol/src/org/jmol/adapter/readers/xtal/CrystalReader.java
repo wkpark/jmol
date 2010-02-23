@@ -70,6 +70,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private boolean isSlab = false;
   private boolean isMolecular = false;
   private boolean doReadAtoms = false;
+  private boolean haveCharges = false;
 
   public void readAtomSetCollection(BufferedReader reader) {
     readAtomSetCollection(reader, "Crystal");
@@ -131,6 +132,12 @@ public class CrystalReader extends AtomSetCollectionReader {
       calculationType = line.substring(line.indexOf(":") + 1).trim();
       return true;
     }
+    
+    if (line.startsWith(" MULLIKEN POPULATION ANALYSIS")) {
+      readPartialCharges();
+      return true;
+    }
+
     return true;
   }
 
@@ -288,4 +295,23 @@ public class CrystalReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetName("Energy = " + energy + " Hartree");
   }
 
+  /*
+   * MULLIKEN POPULATION ANALYSIS - NO. OF ELECTRONS 152.000000
+   * 
+   * ATOM Z CHARGE A.O. POPULATION
+   * 
+   * 1 FE 26 23.991 2.000 1.920 2.057 2.057 2.057 0.384 0.674 0.674
+   */
+  private void readPartialCharges() throws Exception {
+    if (haveCharges)
+      return;
+    haveCharges = true;
+    discardLines(3);
+    Atom[] atoms = atomSetCollection.getAtoms();
+    int i = atomSetCollection.getLastAtomSetAtomIndex();
+    while (readLine() != null && line.length() > 3)
+      if (line.charAt(3) != ' ')
+        atoms[i++].partialCharge = parseFloat(line.substring(9, 11))
+            - parseFloat(line.substring(12, 18));
+  }
 }

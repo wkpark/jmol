@@ -82,6 +82,7 @@ import java.util.Vector;
   */
 abstract public class MOReader extends AtomSetCollectionReader {
     
+  protected boolean iHaveAtoms = false;
   protected int shellCount = 0;
   protected int gaussianCount = 0;
   protected Hashtable moData = new Hashtable();
@@ -99,8 +100,6 @@ abstract public class MOReader extends AtomSetCollectionReader {
   private String[] filterTokens;
   private boolean filterIsNot; 
 
-  protected boolean iHaveAtoms = false;
-  protected boolean continuing = true;
   protected boolean ignoreMOs = false;
   protected String alphaBeta = "";
 
@@ -112,34 +111,9 @@ abstract public class MOReader extends AtomSetCollectionReader {
 
   abstract public void readAtomSetCollection(BufferedReader reader); 
 
-  /**
-   * @return true if need to read new line
-   * @throws Exception 
-   * 
-   */
-  abstract protected boolean checkLine() throws Exception;
-  
-  public void readAtomSetCollection(BufferedReader reader, String type) {
-    try {
-      initializeMoReader(reader, type);
-      readLine();
-      iHaveAtoms = false;
-      while (line != null && continuing)
-        if (checkLine())
-          readLine();
-      finalizeMoReader();
-    } catch (Exception e) {
-      setError(e);
-    }
-  }
-  
-  protected void finalizeMoReader() throws Exception {
-    // see subclasses
-  }
-
-  protected void initializeMoReader(BufferedReader reader, String type) throws Exception {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection(type, this);
+  protected void initializeReader(BufferedReader reader, String type) throws Exception {
+    super.initializeReader(reader, type);
+    iHaveAtoms = false;
     line = "\nNBOs in the AO basis:";
     getNBOs = filterMO();
     line = "\nNBOcharges";

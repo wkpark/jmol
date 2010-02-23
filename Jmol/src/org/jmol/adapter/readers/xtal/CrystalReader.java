@@ -27,11 +27,10 @@
 
 package org.jmol.adapter.readers.xtal;
 
-import org.jmol.adapter.readers.quantum.MOReader;
-import org.jmol.adapter.smarter.*;
-//import org.jmol.api.JmolAdapter;
+import org.jmol.adapter.smarter.*; //import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
+
 //import java.util.Vector;
 
 /**
@@ -42,52 +41,52 @@ import java.io.BufferedReader;
  *         Ingram Building, University of Kent, Canterbury, Kent, CT2 7NH United
  *         Kingdom
  * 
- * @version 1.2
+ * @version 1.3
  * 
- * for a specific model in the set, use
+ *          for a specific model in the set, use
  * 
- * load "xxx.out" n
+ *          load "xxx.out" n
  * 
- * as for all readers, where n is an integer > 0
+ *          as for all readers, where n is an integer > 0
  * 
- * for final optimized geometry use
+ *          for final optimized geometry use
  * 
- * load "xxx.out" 0
+ *          load "xxx.out" 0
  * 
- * (that is, "read the last model") as for all readers
+ *          (that is, "read the last model") as for all readers
  * 
- * for conventional unit cell -- input coordinates only, use
+ *          for conventional unit cell -- input coordinates only, use
  * 
- * load "xxx.out" filter "conventional"
+ *          load "xxx.out" filter "conventional"
  * 
- * TODO: vibrational frequencies
- * 
- * TODO: molecular orbitals are in, but no MO coefficient data are in the output files.
+ *          TODO: vibrational frequencies
  * 
  */
 
-public class CrystalReader extends MOReader {
+public class CrystalReader extends AtomSetCollectionReader {
 
   private boolean isPrimitive = true;
   private boolean isPolymer = false;
   private boolean isSlab = false;
+  private boolean isMolecular = false;
   private boolean doReadAtoms = false;
 
   public void readAtomSetCollection(BufferedReader reader) {
     readAtomSetCollection(reader, "Crystal");
   }
 
-  protected void initializeMoReader(BufferedReader reader, String type) throws Exception {
-    super.initializeMoReader(reader, type);
+  protected void initializeReader(BufferedReader reader, String type)
+      throws Exception {
+    super.initializeReader(reader, type);
     isPrimitive = (filter == null || filter.indexOf("conv") < 0);
-    atomSetCollection.setAtomSetAuxiliaryInfo("unitCellType", (isPrimitive ? "primitive" : "conventional"));
+    atomSetCollection.setAtomSetAuxiliaryInfo("unitCellType",
+        (isPrimitive ? "primitive" : "conventional"));
     setFractionalCoordinates(readHeader());
   }
 
   protected boolean checkLine() throws Exception {
     // starting point for any calculation is the definition of the lattice
-    // parameters
-    // similar to the "data" statement of a CIF file
+    // parameters similar to the "data" statement of a CIF file
     if (line.startsWith(" LATTICE PARAMETER")
         && (isPrimitive
             && (line.contains("- PRIMITIVE") || line.contains("- BOHR")) || !isPrimitive
@@ -115,16 +114,15 @@ public class CrystalReader extends MOReader {
       }
       return true;
     }
-    
+
     // from here on -- must be primitive
 
     if (line.startsWith(" ATOMS IN THE ASYMMETRIC UNIT")) {
       readFractionalCoords();
       return true;
     }
-    if (line.startsWith(" * OPT END - CONVERGED") 
-        || line.startsWith("== SCF ENDED") 
-        || line.startsWith(" TOTAL ENERGY")) {
+    if (line.startsWith(" * OPT END - CONVERGED")
+        || line.startsWith("== SCF ENDED") || line.startsWith(" TOTAL ENERGY")) {
       readEnergy();
       return true;
     }
@@ -133,26 +131,9 @@ public class CrystalReader extends MOReader {
       calculationType = line.substring(line.indexOf(":") + 1).trim();
       return true;
     }
-
-    /*
-    if (line.indexOf(" LOCAL ATOMIC FUNCTIONS BASIS SET") >= 0) {
-      // readBasisSet();
-      return true;
-    }
-    if (line.indexOf("A.O. POPULATION") >= 0) {
-      // no, that's not right....
-      // readMolecularOrbitals();
-      return true;
-    }
-    */
-    
     return true;
   }
 
-  protected void finalizeMoReader() throws Exception {
-    applySymmetryAndSetTrajectory();
-  }
-  
   private boolean readHeader() throws Exception {
     discardLinesUntilContains("*                                CRYSTAL");
     discardLinesUntilContains("EEEEEEEEEE");
@@ -160,21 +141,22 @@ public class CrystalReader extends MOReader {
         + (desiredModelNumber == 0 ? " (optimized)" : ""));
     readLine();
     String type = readLine().trim();
-    /* This is when the initial geometry is read from an external file
-     * GEOMETRY INPUT FROM EXTERNAL FILE (FORTRAN UNIT 34)
+    /*
+     * This is when the initial geometry is read from an external file GEOMETRY
+     * INPUT FROM EXTERNAL FILE (FORTRAN UNIT 34)
      */
-    if(type.equals("GEOMETRY INPUT FROM EXTERNAL FILE (FORTRAN UNIT 34)")){
+    if (type.equals("GEOMETRY INPUT FROM EXTERNAL FILE (FORTRAN UNIT 34)")) {
       type = readLine().trim();
       isPolymer = (type.equals("1D - POLYMER"));
       isSlab = (type.equals("2D - SLAB"));
-    }else {
+    } else {
       isPolymer = (type.equals("POLYMER CALCULATION"));
       isSlab = (type.equals("SLAB CALCULATION"));
     }
-    atomSetCollection.setAtomSetAuxiliaryInfo("symmetryType", type);  
+    atomSetCollection.setAtomSetAuxiliaryInfo("symmetryType", type);
 
     if (type.indexOf("MOLECULAR") >= 0) {
-      doReadAtoms = true;
+      isMolecular = doReadAtoms = true;
       return false;
     }
     if (!isPrimitive) {
@@ -198,32 +180,35 @@ public class CrystalReader extends MOReader {
         setUnitCell(parseFloat(tokens[0]), parseFloat(tokens[1]), -1,
             parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
       else
-        setUnitCell(parseFloat(tokens[0]), parseFloat(tokens[1]), -1,
-            90, 90, parseFloat(tokens[2]));
+        setUnitCell(parseFloat(tokens[0]), parseFloat(tokens[1]), -1, 90, 90,
+            parseFloat(tokens[2]));
     } else if (isPolymer) {
-      setUnitCell(parseFloat(tokens[0]), -1, -1,
-          parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
+      setUnitCell(parseFloat(tokens[0]), -1, -1, parseFloat(tokens[3]),
+          parseFloat(tokens[4]), parseFloat(tokens[5]));
     } else {
-      setUnitCell(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]),
-          parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
+      setUnitCell(parseFloat(tokens[0]), parseFloat(tokens[1]),
+          parseFloat(tokens[2]), parseFloat(tokens[3]), parseFloat(tokens[4]),
+          parseFloat(tokens[5]));
     }
   }
 
   /*
- ATOMS IN THE ASYMMETRIC UNIT   30 - ATOMS IN THE UNIT CELL:   30
-     ATOM              X/A                 Y/B             Z(ANGSTROM)
- *******************************************************************************
-   1 T  26 FE    3.332220233571E-01  1.664350001467E-01  5.975038441891E+00
-   2 T   8 O    -3.289334452690E-01  1.544678332212E-01  5.601153565811E+00
+   * ATOMS IN THE ASYMMETRIC UNIT 30 - ATOMS IN THE UNIT CELL: 30 
+   * ATOM X/A Y/B Z(ANGSTROM)
+   * *****************************************************************
+   * 1 T 26 FE 3.332220233571E-01 1.664350001467E-01 5.975038441891E+00 
+   * 2 T 8 O -3.289334452690E-01 1.544678332212E-01 5.601153565811E+00
    */
   private void readFractionalCoords() throws Exception {
+    if (isMolecular)
+      newAtomSet();
     readLine();
     readLine();
-    boolean doNormalizePrimitive = !isPolymer && !isSlab && isPrimitive;
+    boolean doNormalizePrimitive = isPrimitive && !isMolecular && !isPolymer && !isSlab;
     while (readLine() != null && line.length() > 0) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
-      int atomicNumber = parseInt(tokens[2]);
+      int atomicNumber = getAtomicNumber(tokens[2]);
       float x = parseFloat(tokens[4]);
       float y = parseFloat(tokens[5]);
       float z = parseFloat(tokens[6]);
@@ -240,34 +225,44 @@ public class CrystalReader extends MOReader {
   }
 
   /*
+   * Crystal adds 100 to the atomic number when the same atom will be
+   * described with different basis sets. It also adds 200 when ECP
+   * are used: 
+   * 
+   * 1 T 282 PB 0.000000000000E+00 0.000000000000E+00 0.000000000000E+00
+   * 2 T 16 S -5.000000000000E-01 -5.000000000000E-01 -5.000000000000E-01
+   */
+  private int getAtomicNumber(String token) {
+    int atomicNumber = parseInt(token);
+    while (atomicNumber >= 100)
+      atomicNumber -= 100;
+    return atomicNumber;
+  }
+
+  /*
    * INPUT COORDINATES
    * 
    * ATOM AT. N. COORDINATES 
    * 1 12 0.000000000000E+00 0.000000000000E+00 0.000000000000E+00 
    * 2 8 5.000000000000E-01 5.000000000000E-01 5.000000000000E-01
+   * 
    */
-  private void readInputCoords()
-      throws Exception {
+  private void readInputCoords() throws Exception {
     readLine();
     readLine();
     while (readLine() != null && line.length() > 0) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
-      int atomicNumber = parseInt(tokens[1]);
+      int atomicNumber = getAtomicNumber(tokens[1]);
       float x = parseFloat(tokens[2]);
       float y = parseFloat(tokens[3]);
       float z = parseFloat(tokens[4]);
-      /* we do not do this, because we have other ways to do it
-       * namely, "packed" or "{555 555 1}"
-       * In this way, we can check those input coordinates exactly
-      
-      if (x < 0)
-        x += 1;
-      if (y < 0)
-        y += 1;
-      if (z < 0)
-        z += 1;
-        
+      /*
+       * we do not do this, because we have other ways to do it namely, "packed"
+       * or "{555 555 1}" In this way, we can check those input coordinates
+       * exactly
+       * 
+       * if (x < 0) x += 1; if (y < 0) y += 1; if (z < 0) z += 1;
        */
 
       setAtomCoord(atom, x, y, z);
@@ -284,119 +279,13 @@ public class CrystalReader extends MOReader {
 
   private void readEnergy() {
     boolean isGlobal = (line.startsWith(" * OPT END"));
-    float energy = parseFloat(line.substring(line.lastIndexOf(isGlobal ? ":"
+    String[] tokens = getTokens(line.substring(line.lastIndexOf(isGlobal ? ":"
         : ")") + 1));
+    Double energy = new Double(Double.parseDouble(tokens[0]));
+    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
     if (isGlobal)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", new Float(
-          energy));
-    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", new Float(energy));
-    atomSetCollection.setAtomSetName("Energy = " + energy);
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", energy);
+    atomSetCollection.setAtomSetName("Energy = " + energy + " Hartree");
   }
-
-  /*
-  LOCAL ATOMIC FUNCTIONS BASIS SET
-  *******************************************************************************
-    ATOM  X(AU)  Y(AU)  Z(AU)    NO. TYPE  EXPONENT  S COEF   P COEF   D/F/G COEF
-  *******************************************************************************
-    1 FE  2.746 -4.757  0.614
-                                   1 S  
-                                          3.154E+05 2.275E-04 0.000E+00 0.000E+00
-                                          4.569E+04 1.900E-03 0.000E+00 0.000E+00
-                                          9.677E+03 1.110E-02 0.000E+00 0.000E+00
-                                          2.521E+03 5.010E-02 0.000E+00 0.000E+00
-                                          7.597E+02 1.705E-01 0.000E+00 0.000E+00
-                                          2.630E+02 3.692E-01 0.000E+00 0.000E+00
-                                          1.028E+02 4.033E-01 0.000E+00 0.000E+00
-                                          4.297E+01 1.434E-01 0.000E+00 0.000E+00
-                              2-   5 SP 
-                                          7.983E+02-5.200E-03 8.500E-03 0.000E+00
-                                          1.912E+02-6.800E-02 6.080E-02 0.000E+00
-                                          6.369E+01-1.314E-01 2.114E-01 0.000E+00
-                                          2.536E+01 2.517E-01 3.944E-01 0.000E+00
-                                          1.073E+01 6.433E-01 3.980E-01 0.000E+00
-                                          3.764E+00 2.825E-01 2.251E-01 0.000E+00
-                              6-   9 SP 
-
-    */
-  /*
-  private void readBasisSet() throws Exception {
-     discardLines(3);
-     shells = new Vector();
-     Vector gdata = new Vector();
-     gaussianCount = 0;
-     shellCount = 0;
-     String[] tokens;
-     int i0 = -1;
-     int i1 = 0;
-     int slaterPt = 0;
-     int[] slater = null;
-     String type = null;
-     int atomIndex = 0;
-     boolean dataAssigned = true;
-     shells = new Vector();
-     while (readLine() != null) {
-       if (line.charAt(3) != ' ') {
-       if (!dataAssigned)
-         slaterPt = copySlaterData(atomIndex, slaterPt);
-       atomIndex = parseInt(line.substring(0, 4));
-       if (atomIndex-- < 0)
-         break;
-       dataAssigned = false;
-       continue;
-     }
-     // basis block
-     if (line.charAt(34) != ' ') {
-       // shell;
-       shellCount++;
-       i0 = parseInt(line.substring(0, 30));
-       i1 = parseInt(line.substring(32, 35)) - 1;
-       if (i0-- < 0)
-         i0 = i1;
-       type = line.substring(36,38).trim();
-       System.out.println(atomIndex + " " + i0 + " " + i1 + " " + type);
-       dataAssigned = true;
-       slaterPt = shells.size();
-       slater = new int[4];
-       shells.addElement(slater);
-       slater[0] = atomIndex;
-       slater[1] = JmolAdapter.getQuantumShellTagID(type);
-       slater[2] = gaussianCount;
-       //slater[3] = 0; // will be count of gaussians
-         continue;
-       }
-       gdata.addElement(getTokens());
-       gaussianCount++;
-       slater[3]++;
-     }
-     gaussians = new float[gaussianCount][];
-     for (int i = 0; i < gaussianCount; i++) {
-       tokens = (String[]) gdata.get(i);
-       gaussians[i] = new float[tokens.length];
-       for (int j = 0; j < tokens.length; j++)
-         gaussians[i][j] = parseFloat(tokens[j]);
-     }    
-  }
-
-  private int copySlaterData(int atomIndex, int slaterPt) {
-    int n = shells.size();
-    int i;
-    for (i = slaterPt; i < n; i++) {
-      int[] slater = new int[4];
-      int[] s0 = (int[]) shells.get(i);
-      slater[0] = atomIndex;
-      slater[1] = s0[1];
-      slater[2] = s0[2];
-      slater[3] = s0[3];
-      shells.add(slater);
-    }
-    return i;
-  }
-  private void readMolecularOrbitals() throws Exception {
-    // would need orbital coefficients here
-    //addMOData(nThisLine, data, mos);
-    //setMOData(false);
-  }
-  */
-
 
 }

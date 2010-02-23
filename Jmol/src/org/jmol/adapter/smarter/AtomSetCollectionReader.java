@@ -204,6 +204,44 @@ public abstract class AtomSetCollectionReader {
     // XML readers only
   }
 
+  ////////////// These next are optional ways of reading the file. 
+  ////////////// Probably move toward this for future readers.
+  
+  protected boolean continuing = true;
+  public void readAtomSetCollection(BufferedReader reader, String type) {
+    try {
+      initializeReader(reader, type);
+      readLine();
+      while (line != null && continuing)
+        if (checkLine())
+          readLine();
+      finalizeReader();
+    } catch (Exception e) {
+      setError(e);
+    }
+  }
+  
+  protected void initializeReader(BufferedReader reader, String type) throws Exception {
+    this.reader = reader;
+    atomSetCollection = new AtomSetCollection(type, this);
+  }
+
+  /**
+   * @return true if need to read new line
+   * @throws Exception 
+   * 
+   */
+  protected boolean checkLine() throws Exception {
+    // reader-dependent
+    return true;
+  }
+  
+  protected void finalizeReader() throws Exception {
+    applySymmetryAndSetTrajectory();
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  
   private Object finalize(Hashtable htParams, String filename) {
     if (!htParams.containsKey("templateAtomCount"))
       htParams.put("templateAtomCount", new Integer(atomSetCollection

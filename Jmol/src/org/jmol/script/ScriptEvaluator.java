@@ -13880,7 +13880,8 @@ public class ScriptEvaluator {
         }
           s += " created with cutoff = " + cutoff
               + " ; number of isosurfaces = " + n;
-          if (dataRange != null && dataRange[0] != dataRange[1])
+          if (dataRange != null && dataRange[0] != Float.MAX_VALUE
+              && dataRange[0] != dataRange[1])
             s += "\ncolor range " + dataRange[2] + " " + dataRange[3]
                 + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
           if (doCalcArea)

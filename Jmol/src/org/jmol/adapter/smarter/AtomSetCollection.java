@@ -702,14 +702,6 @@ public class AtomSetCollection {
       maxZ = (maxY % 10) - 4;
       maxY = (maxY % 100) / 10 - 4;
     }
-    if (doPackUnitCell) {
-      minX--;
-      maxX++;
-      minY--;
-      maxY++;
-      minZ--;
-      maxZ++;
-    }
     switch ((int)getSymmetry().getUnitCellInfo(JmolConstants.INFO_DIMENSIONS)) {
     case 1:
       minY = minZ = 0;
@@ -723,6 +715,14 @@ public class AtomSetCollection {
       break;
     case 3:
       break;
+    }
+    if (doPackUnitCell) {
+      minX--;
+      maxX++;
+      minY--;
+      maxY++;
+      minZ--;
+      maxZ++;
     }
     this.maxX = maxX;
     this.maxY = maxY;

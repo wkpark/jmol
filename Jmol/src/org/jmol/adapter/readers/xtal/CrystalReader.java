@@ -28,6 +28,8 @@
 package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.*; 
+import org.jmol.util.TextFormat;
+
 import java.io.BufferedReader;
 
 /**
@@ -287,11 +289,19 @@ public class CrystalReader extends AtomSetCollectionReader {
       return;
     applySymmetryAndSetTrajectory();
     atomSetCollection.newAtomSet();
+    if (energy != null)
+      setEnergy();
   }
 
+  private Double energy;
   private void readEnergy() {
-    String[] tokens = getTokens(line.substring(line.lastIndexOf(")") + 1));
-    Double energy = new Double(Double.parseDouble(tokens[0]));
+    line = TextFormat.simpleReplace(line, "( ","(");
+    String[] tokens = getTokens();
+    energy  = new Double(Double.parseDouble(tokens[2]));
+    setEnergy();
+  }
+
+  private void setEnergy() {
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", energy);
     atomSetCollection.setAtomSetName("Energy = " + energy + " Hartree");

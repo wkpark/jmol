@@ -199,6 +199,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     }
   }
 
+  int atomIndexLast;
   /*
    * ATOMS IN THE ASYMMETRIC UNIT 30 - ATOMS IN THE UNIT CELL: 30 
    * ATOM X/A Y/B Z(ANGSTROM)
@@ -211,6 +212,8 @@ public class CrystalReader extends AtomSetCollectionReader {
       newAtomSet();
     readLine();
     readLine();
+    int i = atomIndexLast;
+    atomIndexLast = atomSetCollection.getAtomCount();
     boolean doNormalizePrimitive = isPrimitive && !isMolecular && !isPolymer && !isSlab;
     while (readLine() != null && line.length() > 0) {
       Atom atom = atomSetCollection.addNewAtom();
@@ -219,6 +222,8 @@ public class CrystalReader extends AtomSetCollectionReader {
       float x = parseFloat(tokens[4]);
       float y = parseFloat(tokens[5]);
       float z = parseFloat(tokens[6]);
+      if (haveCharges)
+        atom.partialCharge = atomSetCollection.getAtom(i++).partialCharge;
       // because with these we cannot use the "packed" keyword
       if (x < 0 && (isPolymer || isSlab || doNormalizePrimitive))
         x += 1;

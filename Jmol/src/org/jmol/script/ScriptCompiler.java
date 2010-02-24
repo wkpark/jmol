@@ -1951,7 +1951,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     // to determine if it is an alpha
     char ch1;
     if (ichT < cchScript && !eol(ch1 = script.charAt(ichT))) {
-      if (Character.isLetter(ch1) || ch1 == '?')
+      if (Character.isLetter(ch1) || ch1 == '?' || ch1 == '*')
         return false;
       //well, guess what? we also have to look for 86.1Na, so...
       //watch out for moveto..... 56.;refresh...

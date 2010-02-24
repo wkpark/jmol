@@ -952,7 +952,7 @@ abstract class ScriptCompilationTokenParser {
       chain = (char) ('0' + val);
       break;
     default:
-      String strChain = (String) getToken().value;
+      String strChain = "" + getToken().value;
       if (strChain.length() != 1)
         return error(ERROR_invalidChainSpecification);
       chain = strChain.charAt(0);

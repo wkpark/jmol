@@ -80,7 +80,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       throws Exception {
     super.initializeReader(reader, type);
     isPrimitive = (filter == null || filter.indexOf("conv") < 0);
-    atomSetCollection.setAtomSetAuxiliaryInfo("unitCellType",
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("unitCellType",
         (isPrimitive ? "primitive" : "conventional"));
     setFractionalCoordinates(readHeader());
   }
@@ -151,7 +151,7 @@ public class CrystalReader extends AtomSetCollectionReader {
      * This is when the initial geometry is read from an external file GEOMETRY
      * INPUT FROM EXTERNAL FILE (FORTRAN UNIT 34)
      */
-    if (type.equals("GEOMETRY INPUT FROM EXTERNAL FILE (FORTRAN UNIT 34)")) {
+    if (type.indexOf("EXTERNAL FILE") >= 0) {
       type = readLine().trim();
       isPolymer = (type.equals("1D - POLYMER"));
       isSlab = (type.equals("2D - SLAB"));
@@ -159,10 +159,14 @@ public class CrystalReader extends AtomSetCollectionReader {
       isPolymer = (type.equals("POLYMER CALCULATION"));
       isSlab = (type.equals("SLAB CALCULATION"));
     }
-    atomSetCollection.setAtomSetAuxiliaryInfo("symmetryType", type);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("symmetryType", type);
 
     if (type.indexOf("MOLECULAR") >= 0) {
       isMolecular = doReadAtoms = true;
+      readLine();
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
+          "molecularCalculationPointGroup", line.substring(
+              line.indexOf(" OR ") + 4).trim());
       return false;
     }
     if (!isPrimitive) {

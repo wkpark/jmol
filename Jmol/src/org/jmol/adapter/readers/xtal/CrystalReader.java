@@ -5,7 +5,7 @@
  *
  * Contact: jmol-developers@lists.sf.net
  *
- * Copyright (C) 2009  Piero Canepa, University of Kent , UK
+ * Copyright (C) 2009  Piero Canepa, University of Kent, UK
  *
  * Contact: pc229@kent.ac.uk or pieremanuele.canepa@gmail.com
  *
@@ -27,19 +27,16 @@
 
 package org.jmol.adapter.readers.xtal;
 
-import org.jmol.adapter.smarter.*; //import org.jmol.api.JmolAdapter;
-
+import org.jmol.adapter.smarter.*; 
 import java.io.BufferedReader;
 
-//import java.util.Vector;
-
 /**
- * 
+ *
  * http://www.crystal.unito.it/
- * 
+ *
  * @author Pieremanuele Canepa, Room 104, FM Group School of Physical Sciences,
  *         Ingram Building, University of Kent, Canterbury, Kent, CT2 7NH United
- *         Kingdom
+ *         Kingdom, pc229@kent.ac.uk
  * 
  * @version 1.3
  * 

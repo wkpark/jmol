@@ -55,8 +55,12 @@ public class EchoRenderer extends ShapeRenderer {
       t.render(g3d, scalePixelsPerMicron, imageFontScaling, false);
     }
     String frameTitle = viewer.getFrameTitle();
-    if (frameTitle != null && frameTitle.length() > 0)
+    if (frameTitle != null && frameTitle.length() > 0) {
+      if (frameTitle.indexOf("%{") >= 0 || frameTitle
+          .indexOf("@{") >= 0) 
+        frameTitle =  viewer.formatText(frameTitle);
       renderFrameTitle(frameTitle);
+    }
   }
   
   private void renderFrameTitle(String frameTitle) {

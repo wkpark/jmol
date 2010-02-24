@@ -139,6 +139,12 @@ public class CrystalReader extends AtomSetCollectionReader {
     return true;
   }
 
+  protected void finalizeReader() throws Exception {
+    if (energy != null)
+      setEnergy();
+    super.finalizeReader();
+  }
+  
   private boolean readHeader() throws Exception {
     discardLinesUntilContains("*                                CRYSTAL");
     discardLinesUntilContains("EEEEEEEEEE");
@@ -289,8 +295,6 @@ public class CrystalReader extends AtomSetCollectionReader {
       return;
     applySymmetryAndSetTrajectory();
     atomSetCollection.newAtomSet();
-    if (energy != null)
-      setEnergy();
   }
 
   private Double energy;

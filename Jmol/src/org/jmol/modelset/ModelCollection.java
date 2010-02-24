@@ -188,9 +188,9 @@ abstract public class ModelCollection extends BondCollection {
     return (String) getModelAuxiliaryInfo(modelIndex, "fileName");
   }
 
-  public void setFrameTitle(int modelIndex, String title) {
-    if (modelIndex >= 0 && modelIndex < modelCount)
-      frameTitles[modelIndex] = title;
+  public void setFrameTitle(BitSet bsFrames, String title) {
+    for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames.nextSetBit(i + 1)) 
+      frameTitles[i] = title;
   }
   
   public String getFrameTitle(int modelIndex) {

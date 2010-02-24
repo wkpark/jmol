@@ -6890,14 +6890,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setModelVisibility();
   }
 
-  public void setFrameTitle(int modelIndex, String title) {
-    modelSet.setFrameTitle(modelIndex, title);
-  }
-
-  String getFrameTitle(int modelIndex) {
-    return modelSet.getFrameTitle(modelIndex);
-  }
-
   boolean isTainted = true;
 
   public void setTainted(boolean TF) {
@@ -7082,9 +7074,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setJmolDataFrame(type, modelIndex, dataIndex);
   }
 
+  public void setFrameTitle(int modelIndex, String title) {
+    BitSet bs = new BitSet(modelIndex);
+    bs.set(modelIndex);
+    modelSet.setFrameTitle(bs, title);
+  }
+
   public void setFrameTitle(String title) {
     loadShape(JmolConstants.SHAPE_ECHO);
-    modelSet.setFrameTitle(animationManager.currentModelIndex, title);
+    modelSet.setFrameTitle(getVisibleFramesBitSet(), title);
   }
 
   public String getFrameTitle() {

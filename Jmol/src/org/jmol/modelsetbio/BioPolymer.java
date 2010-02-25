@@ -108,10 +108,14 @@ public abstract class BioPolymer extends Polymer {
   }
 
   void removeProteinStructure(int monomerIndex, int count) {
-    // System.out.println("biopolymer removeProteinStructure mIndex " +
-    // monomerIndex + " count " + count);
-    for (int i = 0, pt = monomerIndex; i < count && pt < monomerCount; i++, pt++)
+    //System.out.println("biopolymer removeProteinStructure mIndex " + monomerIndex + " count " + count);
+    Monomer m = monomers[monomerIndex];
+    byte iType = m.getProteinStructureType();
+    int mLast = -1;
+    for (int i = 0, pt = monomerIndex; i < count && pt < monomerCount; i++, pt++) {
       monomers[pt].setStructure(null);
+      mLast = monomers[pt].setProteinStructureType(iType, mLast);
+    }
   }
 
   public int[] getLeadAtomIndices() {

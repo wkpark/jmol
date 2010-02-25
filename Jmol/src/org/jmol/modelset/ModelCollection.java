@@ -594,13 +594,38 @@ abstract public class ModelCollection extends BondCollection {
   public void setProteinType(BitSet bs, byte iType) {
     int monomerIndexCurrent = -1;
     int iLast = -1;
+    BitSet bsModels = new BitSet();
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (iLast != i - 1)
         monomerIndexCurrent = -1;
-      iLast = i;
       monomerIndexCurrent = atoms[i].group.setProteinStructureType(iType,
           monomerIndexCurrent);
-      proteinStructureTainted = models[atoms[i].modelIndex].structureTainted = true;
+      int modelIndex = atoms[i].modelIndex;
+      bsModels.set(modelIndex);
+      proteinStructureTainted = models[modelIndex].structureTainted = true;
+      iLast = i = atoms[i].group.lastAtomIndex;
+    }
+    int[] lastStrucNo = new int[modelCount];
+    for (int i = 0; i < atomCount; ) {
+      int modelIndex = atoms[i].modelIndex; 
+      if (!bsModels.get(modelIndex)) {
+        i = models[modelIndex].firstAtomIndex + models[modelIndex].atomCount;
+        continue;
+      }
+      iLast = atoms[i].getStrucNo();
+      if (iLast < 1000 && iLast > lastStrucNo[modelIndex])
+        lastStrucNo[modelIndex] = iLast;
+      i = atoms[i].group.lastAtomIndex + 1;
+    }
+    for (int i = 0; i < atomCount; ) {
+      int modelIndex = atoms[i].modelIndex; 
+      if (!bsModels.get(modelIndex)) {
+        i = models[modelIndex].firstAtomIndex + models[modelIndex].atomCount;
+        continue;
+      }
+      if (atoms[i].getStrucNo() > 1000)
+        atoms[i].group.setProteinStructureId(++lastStrucNo[modelIndex]);
+      i = atoms[i].group.lastAtomIndex + 1;
     }
   }
   

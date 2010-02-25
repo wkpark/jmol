@@ -60,7 +60,7 @@ public abstract class ProteinStructure {
       Logger.debug(
           "Creating ProteinStructure " + uniqueID 
           + " " + JmolConstants.getProteinStructureName(type) 
-          + " from " + monomerIndexFirst + " through "+(monomerIndexLast)
+          + " from " + monomerIndexFirst + " through "+ monomerIndexLast
           + " in polymer " + apolymer);
   }
   

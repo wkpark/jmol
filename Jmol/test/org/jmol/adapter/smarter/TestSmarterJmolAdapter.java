@@ -69,6 +69,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "cif", "cif", "Cif");
     result.addDirectory(false, "c3xml", "c3xml", "XmlChem3d");
     result.addDirectory(false, "cml", "cml", "XmlCml");
+    result.addDirectory(false, "crystal", "out", "Crystal");
     result.addDirectory(false, "crystals", "mol", "Mol");
     result.addDirectory(false, "crystals", "pdb", "Pdb");
     result.addDirectory(false, "csf", "csf", "Csf");

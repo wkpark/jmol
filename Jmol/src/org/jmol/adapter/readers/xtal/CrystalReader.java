@@ -123,6 +123,11 @@ public class CrystalReader extends AtomSetCollectionReader {
     }
     if (line.startsWith(" TOTAL ENERGY")) {
       readEnergy();
+      readLine();
+      if (line.startsWith(" ********"))
+        discardLinesUntilContains("SYMMETRY ALLOWED");
+      if (line.startsWith(" TTTTTTTT"))
+        discardLinesUntilContains("PREDICTED ENERGY CHANGE");
       return true;
     }
 

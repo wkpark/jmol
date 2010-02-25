@@ -39,6 +39,7 @@ com/sparshui/common/*.java
 com/sparshui/common/messages/events/*.java
 com/sparshui/common/utils/*.java
 com/sparshui/gestures/*.java
+com/sparshui/inputdevice/*.java
 com/sparshui/server/*.java
 
 org/jmol/popup/*.java

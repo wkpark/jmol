@@ -232,6 +232,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
       int atomicNumber = getAtomicNumber(tokens[2]);
+      atom.atomName = getAtomName(tokens[3]);
       float x = parseFloat(tokens[4]);
       float y = parseFloat(tokens[5]);
       float z = parseFloat(tokens[6]);
@@ -248,6 +249,13 @@ public class CrystalReader extends AtomSetCollectionReader {
       atom.elementSymbol = getElementSymbol(atomicNumber);
     }
   }
+
+  private String getAtomName(String s) {
+    String atomName = s;
+    if (atomName.length() > 1 && Character.isLetter(atomName.charAt(1)))
+      atomName = atomName.substring(0, 1) + Character.toLowerCase(atomName.charAt(1)) + atomName.substring(2);
+    return atomName;
+ }
 
   /*
    * Crystal adds 100 to the atomic number when the same atom will be

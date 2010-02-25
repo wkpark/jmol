@@ -360,7 +360,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       int i0 = parseInt(line.substring(1, 5));
       int i1 = parseInt(line.substring(6, 10));
       String irrep = line.substring(49, 52).trim();
-      String intens = line.substring(59, 69);
+      String intens = line.substring(59, 69).replace(')', ' ').trim();
       String[] data = new String[] { irrep, intens };
       for (int i = i0; i <= i1; i++)
         vData.add(data);
@@ -387,7 +387,7 @@ public class CrystalReader extends AtomSetCollectionReader {
         if (ignore[i])
           continue;
         cloneLastAtomSet();
-        atomSetCollection.setAtomSetName(frequencies[i] + " cm-1");
+        atomSetCollection.setAtomSetName(data[0] + " " + frequencies[i] + " cm-1 (" + data[1] + " KM/Mole)");
         atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
             + " cm-1");
         atomSetCollection.setAtomSetProperty("IR Intensity", data[1]

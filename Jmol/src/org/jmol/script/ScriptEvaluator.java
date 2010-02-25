@@ -9379,12 +9379,11 @@ public class ScriptEvaluator {
     }
     switch (tokAt(1)) {
     case Token.title:
-      if (statementLength == 3) {
+      if (checkLength23() > 0)
         if (!isSyntaxCheck)
-          viewer.setFrameTitle(parameterAsString(2));
-        return;
-      }
-      break;
+          viewer.setFrameTitle(statementLength == 2 ? "@{_modelName}"
+              : parameterAsString(2));
+      return;
     case Token.align:
       BitSet bs = (statementLength == 2 || tokAt(2) == Token.none ? null
           : expression(2));
@@ -9394,7 +9393,8 @@ public class ScriptEvaluator {
     }
     if (getToken(offset).tok == Token.minus) {
       ++offset;
-      if (getToken(checkLast(offset)).tok != Token.integer || intParameter(offset) != 1)
+      if (getToken(checkLast(offset)).tok != Token.integer
+          || intParameter(offset) != 1)
         error(ERROR_invalidArgument);
       if (!isSyntaxCheck)
         viewer.setAnimation(Token.prev);
@@ -9498,9 +9498,9 @@ public class ScriptEvaluator {
           else if (!isHyphen && modelIndex2 != modelIndex)
             isHyphen = true;
           isRange = isRange || modelIndex == modelIndex2;// (isRange ||
-                                                         // !isHyphen &&
-                                                         // modelIndex2 !=
-                                                         // modelIndex);
+          // !isHyphen &&
+          // modelIndex2 !=
+          // modelIndex);
         }
       } else {
         // must have been a bad frame number. Just return.

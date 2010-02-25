@@ -32,6 +32,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
 import java.io.BufferedReader;
+import java.util.Vector;
 
 /**
  *
@@ -71,6 +72,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private boolean isMolecular = false;
   private boolean doReadAtoms = false;
   private boolean haveCharges = false;
+  private boolean addVibrations = false;
 
   public void readAtomSetCollection(BufferedReader reader) {
     readAtomSetCollection(reader, "Crystal");
@@ -80,6 +82,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       throws Exception {
     super.initializeReader(reader, type);
     isPrimitive = (filter == null || filter.indexOf("conv") < 0);
+    addVibrations = !doApplySymmetry;// && (filter != null && filter.indexOf("vib") >= 0);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("unitCellType",
         (isPrimitive ? "primitive" : "conventional"));
     setFractionalCoordinates(readHeader());
@@ -142,7 +145,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       return true;
     }
     
-    if (line.startsWith(" NORMAL MODES NORMALIZED TO CLASSICAL AMPLITUDES")) {
+    if (addVibrations && line.contains("MODES         EIGV")) {
       readFrequencies();
       return true;
     }
@@ -352,6 +355,17 @@ public class CrystalReader extends AtomSetCollectionReader {
   
   private void readFrequencies() throws Exception {
     readLine();
+    Vector vData = new Vector();
+    while (readLine() != null && line.length() > 0) {
+      int i0 = parseInt(line.substring(1, 5));
+      int i1 = parseInt(line.substring(6, 10));
+      String irrep = line.substring(49, 52).trim();
+      String intens = line.substring(59, 69);
+      String[] data = new String[] { irrep, intens };
+      for (int i = i0; i <= i1; i++)
+        vData.add(data);
+    }
+    discardLines(2);
     while (readLine() != null && line.startsWith(" FREQ(CM**-1)")) {
       int frequencyCount = 0;
       String[] tokens = getTokens(line.substring(15));
@@ -364,25 +378,27 @@ public class CrystalReader extends AtomSetCollectionReader {
           Logger.debug((vibrationNumber + 1) + " frequency=" + frequency);
         }
       }
+      int iAtom0 = atomSetCollection.getAtomCount();
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-      int iAtom0 = atomSetCollection.getAtomCount() - atomCount;
       boolean[] ignore = new boolean[frequencyCount];
       for (int i = 0; i < frequencyCount; i++) {
-        ignore[i] = !doGetVibration(++vibrationNumber);
-        // The last model should be cloned because we might
-        // have done an optimization with HSSEND=.TRUE.
+        String[] data = (String[]) vData.get(vibrationNumber);
+        ignore[i] = (!doGetVibration(++vibrationNumber) || data == null);
         if (ignore[i])
           continue;
         cloneLastAtomSet();
         atomSetCollection.setAtomSetName(frequencies[i] + " cm-1");
         atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
             + " cm-1");
+        atomSetCollection.setAtomSetProperty("IR Intensity", data[1]
+            + " KM/Mole");
+        atomSetCollection.setAtomSetProperty("vibrationalSymmetry", data[0]);
       }
-      discardLinesUntilBlank();
+      readLine();
       fillFrequencyData(iAtom0, atomCount, ignore, false, 14, 10);
       readLine();
     }
-    
+
   }
 
 

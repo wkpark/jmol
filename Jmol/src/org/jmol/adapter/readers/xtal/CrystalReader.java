@@ -28,6 +28,7 @@
 package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.*; 
+import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
 import java.io.BufferedReader;
@@ -140,7 +141,12 @@ public class CrystalReader extends AtomSetCollectionReader {
       readPartialCharges();
       return true;
     }
-
+    
+    if (line.startsWith(" NORMAL MODES NORMALIZED TO CLASSICAL AMPLITUDES")) {
+      readFrequencies();
+      return true;
+    }
+    
     return true;
   }
 
@@ -343,4 +349,41 @@ public class CrystalReader extends AtomSetCollectionReader {
         atoms[i++].partialCharge = parseFloat(line.substring(9, 11))
             - parseFloat(line.substring(12, 18));
   }
+  
+  private void readFrequencies() throws Exception {
+    readLine();
+    while (readLine() != null && line.startsWith(" FREQ(CM**-1)")) {
+      int frequencyCount = 0;
+      String[] tokens = getTokens(line.substring(15));
+      float[] frequencies = new float[tokens.length];
+      for (int i = 0; i < tokens.length; i++) {
+        float frequency = parseFloat(tokens[i]);
+        frequencies[frequencyCount] = frequency;
+        frequencyCount++;
+        if (Logger.debugging) {
+          Logger.debug((vibrationNumber + 1) + " frequency=" + frequency);
+        }
+      }
+      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+      int iAtom0 = atomSetCollection.getAtomCount() - atomCount;
+      boolean[] ignore = new boolean[frequencyCount];
+      for (int i = 0; i < frequencyCount; i++) {
+        ignore[i] = !doGetVibration(++vibrationNumber);
+        // The last model should be cloned because we might
+        // have done an optimization with HSSEND=.TRUE.
+        if (ignore[i])
+          continue;
+        cloneLastAtomSet();
+        atomSetCollection.setAtomSetName(frequencies[i] + " cm-1");
+        atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
+            + " cm-1");
+      }
+      discardLinesUntilBlank();
+      fillFrequencyData(iAtom0, atomCount, ignore, false, 14, 10);
+      readLine();
+    }
+    
+  }
+
+
 }

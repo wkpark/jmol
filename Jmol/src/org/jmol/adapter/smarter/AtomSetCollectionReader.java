@@ -442,7 +442,12 @@ public abstract class AtomSetCollectionReader {
   return (desiredVibrationNumber <= 0 || vibrationNumber == desiredVibrationNumber);
   }
 
+  private String previousSpaceGroup;
+  private float[] previousUnitCell;
+  
   private void initializeSymmetry() {
+    previousSpaceGroup = spaceGroup;
+    previousUnitCell = notionalUnitCell;
     iHaveUnitCell = ignoreFileUnitCell;
     if (!ignoreFileUnitCell) {
       notionalUnitCell = new float[22];
@@ -466,6 +471,17 @@ public abstract class AtomSetCollectionReader {
       atomSetCollection.setCollectionName(name);
     }
     Logger.debug(name);
+  }
+
+  
+  protected void cloneLastAtomSet() throws Exception {
+    applySymmetryAndSetTrajectory();
+    atomSetCollection.cloneLastAtomSet();
+    if (atomSetCollection.haveUnitCell) {
+      iHaveUnitCell = needToApplySymmetry = true;
+      spaceGroup = previousSpaceGroup;
+      notionalUnitCell = previousUnitCell;
+    }
   }
 
   public void setSpaceGroupName(String name) {

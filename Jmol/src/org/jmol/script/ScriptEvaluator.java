@@ -8887,7 +8887,7 @@ public class ScriptEvaluator {
       break;
     case 3:
       if (tokAt(1) == Token.scale) {
-        setFloatProperty("vectorScale", floatParameter(2, -10, 10));
+        setFloatProperty("vectorScale", floatParameter(2, -100 , 100));
         return;
       }
     }

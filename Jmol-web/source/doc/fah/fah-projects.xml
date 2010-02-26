@@ -8403,6 +8403,9 @@
   <fah_proj number="10105" name="p10105" public="y"
     server="171.64.65.71" atoms="1254" preferred="2" deadline="3"
     credit="548" frames="100" code="GG2" contact="gbowman"/>
+  <fah_proj number="10106" name="p10106" public="y"
+    server="171.64.65.71" atoms="1254" preferred="2" deadline="3"
+    credit="548" frames="100" code="GG2" contact="gbowman"/>
 
   <!-- Projects 10500 to 10599 -->
   <fah_proj number="10501" name="p10501" public="y"

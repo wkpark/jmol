@@ -36,7 +36,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.util.Properties;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Vector;
@@ -396,10 +395,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return ((AtomSetCollection)atomSetCollection).getCollectionName();
   }
   
-  public Properties getAtomSetCollectionProperties(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).getAtomSetCollectionProperties();
-  }
-
   public Hashtable getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getAtomSetCollectionAuxiliaryInfo();
   }
@@ -414,10 +409,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   public String getAtomSetName(Object atomSetCollection, int atomSetIndex) {
     return ((AtomSetCollection)atomSetCollection).getAtomSetName(atomSetIndex);
-  }
-  
-  public Properties getAtomSetProperties(Object atomSetCollection, int atomSetIndex) {
-    return ((AtomSetCollection)atomSetCollection).getAtomSetProperties(atomSetIndex);
   }
   
   public Hashtable getAtomSetAuxiliaryInfo(Object atomSetCollection, int atomSetIndex) {

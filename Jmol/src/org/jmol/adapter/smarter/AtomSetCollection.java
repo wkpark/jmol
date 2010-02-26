@@ -23,7 +23,6 @@
  */
 
 package org.jmol.adapter.smarter;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.Properties;
@@ -60,11 +59,6 @@ public class AtomSetCollection {
         return;
       this.collectionName = collectionName;
     }
-  }
-
-  private Properties atomSetCollectionProperties = new Properties();
-  public Properties getAtomSetCollectionProperties() {
-    return atomSetCollectionProperties;
   }
 
   private Hashtable atomSetCollectionAuxiliaryInfo = new Hashtable();
@@ -131,10 +125,8 @@ public class AtomSetCollection {
   }
 
   private int[] atomSetNumbers = new int[16];
-  private String[] atomSetNames = new String[16];
   private int[] atomSetAtomCounts = new int[16];
   private int[] atomSetBondCounts = new int[16];
-  private Properties[] atomSetProperties = new Properties[16];
   private Hashtable[] atomSetAuxiliaryInfo = new Hashtable[16];
   private int[] latticeCells;
 
@@ -160,10 +152,12 @@ public class AtomSetCollection {
     allowMultiple = (atomSetCollectionReader == null 
         || atomSetCollectionReader.desiredVibrationNumber < 0);
     // set the default PATH properties as defined in the SmarterJmolAdapter
+    Properties atomSetCollectionProperties = new Properties();
     atomSetCollectionProperties.put("PATH_KEY",
                                     SmarterJmolAdapter.PATH_KEY);
     atomSetCollectionProperties.put("PATH_SEPARATOR",
                                     SmarterJmolAdapter.PATH_SEPARATOR);
+    setAtomSetCollectionAuxiliaryInfo("properties", atomSetCollectionProperties);
   }
 
   
@@ -238,14 +232,6 @@ public class AtomSetCollection {
       atomSetAuxiliaryInfo[currentAtomSetIndex] = collection.atomSetAuxiliaryInfo[atomSetNum];
       setAtomSetAuxiliaryInfo("title", collection.collectionName);    
       setAtomSetName(collection.getAtomSetName(atomSetNum));
-      Properties properties = collection.getAtomSetProperties(atomSetNum);
-      if (properties != null) {
-        Enumeration props = properties.keys();
-        while ((props != null) && (props.hasMoreElements())) {
-          String key = (String) props.nextElement();
-          setAtomSetProperty(key, properties.getProperty(key));
-        }
-      }
       for (int atomNum = 0; atomNum < collection.atomSetAtomCounts[atomSetNum]; atomNum++) {
         try {
           newCloneAtom(collection.atoms[clonedAtoms]);
@@ -262,9 +248,7 @@ public class AtomSetCollection {
             || collection.structures[i].modelIndex == -1)
           addStructure(collection.structures[i]);
 
-      // names and numbers
-      atomSetNames[currentAtomSetIndex] = collection.atomSetNames[atomSetNum];
-      
+      // numbers
       atomSetNumbers[currentAtomSetIndex] = ((collectionIndex + 1) * 1000000)
           + collection.atomSetNumbers[atomSetNum];
 
@@ -302,12 +286,9 @@ public class AtomSetCollection {
     atoms = null;
     atomSetAtomCounts = new int[16];
     atomSetAuxiliaryInfo = new Hashtable[16];
-    atomSetCollectionProperties = new Properties();
     atomSetCollectionAuxiliaryInfo = new Hashtable();
     atomSetCount = 0;
     atomSetNumbers = new int[16];
-    atomSetNames = new String[16];
-    atomSetProperties = new Properties[16];
     atomSymbolicMap = new Hashtable();
     bonds = null;
     cartesians = null;
@@ -340,11 +321,9 @@ public class AtomSetCollection {
     clearSymbolicMap();
     atomSetCount = 0;
     currentAtomSetIndex = -1;
-    for (int i = atomSetNames.length; --i >= 0; ) {
+    for (int i = atomSetAuxiliaryInfo.length; --i >= 0; ) {
       atomSetAtomCounts[i] = 0;
-      atomSetNames[i] = null;
       atomSetBondCounts[i] = 0;
-      atomSetProperties[i] = null;
       atomSetAuxiliaryInfo[i] = null;
     }
   }
@@ -1091,19 +1070,6 @@ public class AtomSetCollection {
     return index;
   }
   
-  /**
-   * Sets a property for the AtomSetCollection
-   * @param key The poperty key.
-   * @param value The property value.
-   */
-  public void setAtomSetCollectionProperty(String key, String value) {
-    atomSetCollectionProperties.put(key, value);
-  }
-  
-  String getAtomSetCollectionProperty(String key) {
-    return (String) atomSetCollectionProperties.get(key);
-  }
-  
   public void setAtomSetCollectionAuxiliaryInfo(String key, Object value) {
     atomSetCollectionAuxiliaryInfo.put(key, value);
   }
@@ -1190,11 +1156,8 @@ public class AtomSetCollection {
     }
     currentAtomSetIndex = atomSetCount++;
     if (atomSetCount > atomSetNumbers.length) {
-      atomSetNames = ArrayUtil.doubleLength(atomSetNames);
       atomSetAtomCounts = ArrayUtil.doubleLength(atomSetAtomCounts);
       atomSetBondCounts = ArrayUtil.doubleLength(atomSetBondCounts);
-      atomSetProperties = (Properties[]) ArrayUtil
-          .doubleLength(atomSetProperties);
       atomSetAuxiliaryInfo = (Hashtable[]) ArrayUtil
           .doubleLength(atomSetAuxiliaryInfo);
     }
@@ -1228,7 +1191,7 @@ public class AtomSetCollection {
   * @param atomSetIndex The index of the AtomSet that needs the association
   */
   public void setAtomSetName(String atomSetName, int atomSetIndex) {
-    atomSetNames[atomSetIndex] = atomSetName;
+    setAtomSetAuxiliaryInfo("name", atomSetName, atomSetIndex);
   }
   
   /**
@@ -1305,13 +1268,14 @@ public class AtomSetCollection {
   */
   public void setAtomSetProperty(String key, String value, int atomSetIndex) {
     // lazy instantiation of the Properties object
-    if (atomSetProperties[atomSetIndex] == null)
-      atomSetProperties[atomSetIndex] = new Properties();
-    atomSetProperties[atomSetIndex].put(key, value);
+    Properties p = (Properties) getAtomSetAuxiliaryInfo(atomSetIndex, "modelProperties");
+    if (p == null)
+      setAtomSetAuxiliaryInfo("modelProperties", p = new Properties(), atomSetIndex);
+    p.put(key, value);
   }
 
   /**
-   * Sets auxiliary information for the an AtomSet
+   * Sets auxiliary information for an AtomSet
    *
    * @param key The key for the property
    * @param value The value for the property
@@ -1359,15 +1323,10 @@ public class AtomSetCollection {
    * @param index The index of the atom set whose properties are to be cloned.
    */
   void cloneAtomSetProperties(int index) {
-    atomSetProperties[currentAtomSetIndex] = 
-      (Properties) atomSetProperties[index].clone();
+    Properties p = (Properties) getAtomSetAuxiliaryInfo(index, "modelProperties");
+    if (p != null)
+      setAtomSetAuxiliaryInfo("modelProperties", p.clone(), currentAtomSetIndex);
   }
-/*
-  // currently not needed because we take the atomSetCount directly
-  int getAtomSetCount() {
-    return atomSetCount;
-  }
-*/
 
   int getAtomSetNumber(int atomSetIndex) {
     return atomSetNumbers[atomSetIndex >= atomSetCount ? 0 : atomSetIndex];
@@ -1376,15 +1335,9 @@ public class AtomSetCollection {
   String getAtomSetName(int atomSetIndex) {
     if (atomSetIndex >= atomSetCount)
       atomSetIndex = atomSetCount - 1;
-    return atomSetNames[atomSetIndex];
+    return (String) getAtomSetAuxiliaryInfo(atomSetIndex, "name");
   }
   
-  Properties getAtomSetProperties(int atomSetIndex) {
-    if (atomSetIndex >= atomSetCount)
-      atomSetIndex = atomSetCount - 1;
-    return atomSetProperties[atomSetIndex];
-  }
-
   Hashtable getAtomSetAuxiliaryInfo(int atomSetIndex) {
     if (atomSetIndex >= atomSetCount)
       atomSetIndex = atomSetCount - 1;

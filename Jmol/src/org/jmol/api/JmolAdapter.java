@@ -26,7 +26,6 @@ package org.jmol.api;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
-import java.util.Properties;
 import java.util.Hashtable;
 import java.util.BitSet;
 
@@ -224,15 +223,6 @@ abstract public Object getAtomSetCollectionFromReader(String name, String type,
   abstract public String getAtomSetCollectionName(Object atomSetCollection);
 
   /**
-   * Get the properties for this atomSetCollection.
-   *
-   * <p>Not yet implemented everywhere, it is in the smarterJmolAdapter
-   * @param atomSetCollection The client file
-   * @return The properties for this atomSetCollection or <code>null</code>
-   */
-  abstract public Properties getAtomSetCollectionProperties(Object atomSetCollection);
-
-  /**
    * Get the auxiliary information for this atomSetCollection.
    *
    * <p>Via the smarterJmolAdapter
@@ -276,15 +266,6 @@ abstract public Object getAtomSetCollectionFromReader(String name, String type,
    */
   abstract public String getAtomSetName(Object atomSetCollection, int atomSetIndex);
 
-  /**
-   * Get the properties for an atomSet.
-   * 
-   * @param atomSetCollection The client file
-   * @param atomSetIndex The atom set index
-   * @return The properties for an atom set or <code>null</code>
-   */
-  abstract public Properties getAtomSetProperties(Object atomSetCollection, int atomSetIndex);
-  
   /**
    * Get the auxiliary information for a particular atomSet.
    *

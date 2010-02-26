@@ -10672,7 +10672,6 @@ public class ScriptEvaluator {
     boolean settingData = (key.startsWith("property_"));
     ScriptVariable t = (settingData ? null : getContextVariableAsVariable(key));
     boolean isUserVariable = (t != null);
-
     if (pt > 0 && tokAt(pt - 1) == Token.expressionBegin) {
       bs = expression(pt - 1);
       pt = iToken + 1;

@@ -79,7 +79,7 @@ public final class ModelLoader extends ModelSet {
       shapes = new Shape[JmolConstants.SHAPE_MAX];    
     this.viewer = viewer;
     preserveState = viewer.getPreserveState();
-    initializeInfo(name, 1, null, null);
+    initializeInfo(name, 1, null);
     createModelSet(null, null);
     modelSetName = "zapped";
     viewer.setStringProperty("_fileType", "");
@@ -101,7 +101,6 @@ public final class ModelLoader extends ModelSet {
     preserveState = viewer.getPreserveState();
     initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase().intern(),
         adapter.getEstimatedAtomCount(atomSetCollection), adapter
-            .getAtomSetCollectionProperties(atomSetCollection), adapter
             .getAtomSetCollectionAuxiliaryInfo(atomSetCollection));
     createModelSet(adapter, atomSetCollection);
     // dumpAtomSetNameDiagnostics(adapter, atomSetCollection);
@@ -128,13 +127,12 @@ public final class ModelLoader extends ModelSet {
   private boolean isTrajectory;
   private String fileHeader;
 
-  private void initializeInfo(String name, int nAtoms, Properties properties,
-                       Hashtable info) {
+  private void initializeInfo(String name, int nAtoms, Hashtable info) {
     g3d = viewer.getGraphics3D();
     //long timeBegin = System.currentTimeMillis();
     modelSetTypeName = name;
     isXYZ = (modelSetTypeName == "xyz");
-    setModelSetProperties(properties);
+    setModelSetProperties((Properties) getModelSetAuxiliaryInfo("properties"));
     setModelSetAuxiliaryInfo(info);
     //isMultiFile = getModelSetAuxiliaryInfoBoolean("isMultiFile"); -- no longer necessary
     isPDB = getModelSetAuxiliaryInfoBoolean("isPDB");
@@ -370,9 +368,9 @@ public final class ModelLoader extends ModelSet {
       int modelNumber = (appendNew ? adapter.getAtomSetNumber(atomSetCollection, i)
           : Integer.MAX_VALUE);
       String modelName = adapter.getAtomSetName(atomSetCollection, i);
-      Properties modelProperties = adapter.getAtomSetProperties(atomSetCollection, i);
       Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
           atomSetCollection, i);
+      Properties modelProperties = (Properties) modelAuxiliaryInfo.get("modelProperties");
       viewer.setStringProperty("_fileType", (String) modelAuxiliaryInfo
           .get("fileType"));
       if (modelName == null)

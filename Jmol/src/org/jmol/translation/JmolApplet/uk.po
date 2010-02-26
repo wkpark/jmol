@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-02-13 17:10+0100\n"
+"POT-Creation-Date: 2010-02-26 22:48+0100\n"
 "PO-Revision-Date: 2010-02-06 19:02+0000\n"
 "Last-Translator: yurchor <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -100,7 +100,7 @@ msgstr ""
 msgid "File Error:"
 msgstr "Помилка у файлі:"
 
-#: org/jmol/applet/Jmol.java:1199
+#: org/jmol/applet/Jmol.java:1196
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
@@ -129,9 +129,9 @@ msgid "Console"
 msgstr "Консоль"
 
 #: org/jmol/console/ScriptEditor.java:132
-#: org/jmol/export/dialog/Dialog.java:430
-#: org/jmol/export/dialog/Dialog.java:454
-#: org/jmol/export/dialog/Dialog.java:457
+#: org/jmol/export/dialog/Dialog.java:432
+#: org/jmol/export/dialog/Dialog.java:456
+#: org/jmol/export/dialog/Dialog.java:459
 msgid "Open"
 msgstr "Відкрити"
 
@@ -177,171 +177,171 @@ msgstr "Закрити"
 msgid "File or URL:"
 msgstr "Файл або URL:"
 
-#: org/jmol/export/dialog/Dialog.java:258
+#: org/jmol/export/dialog/Dialog.java:260
 msgid "Image Type"
 msgstr "Тип зображення"
 
-#: org/jmol/export/dialog/Dialog.java:273
-#: org/jmol/export/dialog/Dialog.java:314
+#: org/jmol/export/dialog/Dialog.java:275
+#: org/jmol/export/dialog/Dialog.java:316
 #, java-format
 msgid "JPEG Quality ({0})"
 msgstr "Якість JPEG ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:287
+#: org/jmol/export/dialog/Dialog.java:289
 #, java-format
 msgid "PNG Compression  ({0})"
 msgstr "Стискання PNG ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:317
+#: org/jmol/export/dialog/Dialog.java:319
 #, java-format
 msgid "PNG Quality ({0})"
 msgstr "Якість PNG ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:363
-#: org/jmol/export/dialog/Dialog.java:473
+#: org/jmol/export/dialog/Dialog.java:365
+#: org/jmol/export/dialog/Dialog.java:475
 msgid "Yes"
 msgstr "Так"
 
-#: org/jmol/export/dialog/Dialog.java:363
-#: org/jmol/export/dialog/Dialog.java:471
+#: org/jmol/export/dialog/Dialog.java:365
+#: org/jmol/export/dialog/Dialog.java:473
 msgid "No"
 msgstr "Ні"
 
-#: org/jmol/export/dialog/Dialog.java:365
+#: org/jmol/export/dialog/Dialog.java:367
 #, java-format
 msgid "Do you want to overwrite file {0}?"
 msgstr "Ви бажаєте перезаписати файл {0}?"
 
-#: org/jmol/export/dialog/Dialog.java:366
+#: org/jmol/export/dialog/Dialog.java:368
 msgid "Warning"
 msgstr "Увага"
 
-#: org/jmol/export/dialog/Dialog.java:422
+#: org/jmol/export/dialog/Dialog.java:424
 msgid "All Files"
 msgstr "Усі файли"
 
-#: org/jmol/export/dialog/Dialog.java:423
-#: org/jmol/export/dialog/Dialog.java:470
+#: org/jmol/export/dialog/Dialog.java:425
+#: org/jmol/export/dialog/Dialog.java:472
 msgid "Cancel"
 msgstr "Скасувати"
 
-#: org/jmol/export/dialog/Dialog.java:425
+#: org/jmol/export/dialog/Dialog.java:427
 msgid "Abort file chooser dialog"
 msgstr "Закрити діалогове вікно вибору файла"
 
-#: org/jmol/export/dialog/Dialog.java:427
-#: org/jmol/export/dialog/Dialog.java:428
+#: org/jmol/export/dialog/Dialog.java:429
+#: org/jmol/export/dialog/Dialog.java:430
 msgid "Details"
 msgstr "Подробиці"
 
-#: org/jmol/export/dialog/Dialog.java:429
+#: org/jmol/export/dialog/Dialog.java:431
 msgid "Directory"
 msgstr "Каталог"
 
-#: org/jmol/export/dialog/Dialog.java:432
+#: org/jmol/export/dialog/Dialog.java:434
 msgid "Open selected directory"
 msgstr "Відкрити позначений каталог"
 
-#: org/jmol/export/dialog/Dialog.java:433
+#: org/jmol/export/dialog/Dialog.java:435
 msgid "Attributes"
 msgstr "Атрибути"
 
-#: org/jmol/export/dialog/Dialog.java:434
+#: org/jmol/export/dialog/Dialog.java:436
 msgid "Modified"
 msgstr "Змінено"
 
-#: org/jmol/export/dialog/Dialog.java:435
+#: org/jmol/export/dialog/Dialog.java:437
 msgid "Generic File"
 msgstr "Звичайний файл"
 
-#: org/jmol/export/dialog/Dialog.java:436
+#: org/jmol/export/dialog/Dialog.java:438
 msgid "Name"
 msgstr "Назва"
 
-#: org/jmol/export/dialog/Dialog.java:437
+#: org/jmol/export/dialog/Dialog.java:439
 msgid "File Name:"
 msgstr "Назва файла:"
 
-#: org/jmol/export/dialog/Dialog.java:438
+#: org/jmol/export/dialog/Dialog.java:440
 msgid "Size"
 msgstr "Розмір"
 
-#: org/jmol/export/dialog/Dialog.java:439
+#: org/jmol/export/dialog/Dialog.java:441
 msgid "Files of Type:"
 msgstr "Файли типу:"
 
-#: org/jmol/export/dialog/Dialog.java:440
+#: org/jmol/export/dialog/Dialog.java:442
 msgid "Type"
 msgstr "Тип"
 
-#: org/jmol/export/dialog/Dialog.java:441
+#: org/jmol/export/dialog/Dialog.java:443
 msgid "Help"
 msgstr "Довідка"
 
-#: org/jmol/export/dialog/Dialog.java:443
+#: org/jmol/export/dialog/Dialog.java:445
 msgid "FileChooser help"
 msgstr "Довідка щодо вибору файлів"
 
-#: org/jmol/export/dialog/Dialog.java:444
-#: org/jmol/export/dialog/Dialog.java:445
+#: org/jmol/export/dialog/Dialog.java:446
+#: org/jmol/export/dialog/Dialog.java:447
 msgid "Home"
 msgstr "Домівка"
 
-#: org/jmol/export/dialog/Dialog.java:446
-#: org/jmol/export/dialog/Dialog.java:447
+#: org/jmol/export/dialog/Dialog.java:448
+#: org/jmol/export/dialog/Dialog.java:449
 msgid "List"
 msgstr "Список"
 
-#: org/jmol/export/dialog/Dialog.java:448
+#: org/jmol/export/dialog/Dialog.java:450
 msgid "Look In:"
 msgstr "Шукати у:"
 
-#: org/jmol/export/dialog/Dialog.java:450
+#: org/jmol/export/dialog/Dialog.java:452
 msgid "Error creating new folder"
 msgstr "Помилка під час створення теки"
 
-#: org/jmol/export/dialog/Dialog.java:451
+#: org/jmol/export/dialog/Dialog.java:453
 msgid "New Folder"
 msgstr "Нова тека"
 
-#: org/jmol/export/dialog/Dialog.java:453
+#: org/jmol/export/dialog/Dialog.java:455
 msgid "Create New Folder"
 msgstr "Створити теку"
 
-#: org/jmol/export/dialog/Dialog.java:456
+#: org/jmol/export/dialog/Dialog.java:458
 msgid "Open selected file"
 msgstr "Відкрити вибраний файл"
 
-#: org/jmol/export/dialog/Dialog.java:458
-#: org/jmol/export/dialog/Dialog.java:461
+#: org/jmol/export/dialog/Dialog.java:460
+#: org/jmol/export/dialog/Dialog.java:463
 msgid "Save"
 msgstr "Зберегти"
 
-#: org/jmol/export/dialog/Dialog.java:460
+#: org/jmol/export/dialog/Dialog.java:462
 msgid "Save selected file"
 msgstr "Зберегти вибраний файл"
 
-#: org/jmol/export/dialog/Dialog.java:462
+#: org/jmol/export/dialog/Dialog.java:464
 msgid "Save In:"
 msgstr "Зберегти у:"
 
-#: org/jmol/export/dialog/Dialog.java:463
+#: org/jmol/export/dialog/Dialog.java:465
 msgid "Update"
 msgstr "Оновити"
 
-#: org/jmol/export/dialog/Dialog.java:465
+#: org/jmol/export/dialog/Dialog.java:467
 msgid "Update directory listing"
 msgstr "Оновити список каталогів"
 
-#: org/jmol/export/dialog/Dialog.java:466
+#: org/jmol/export/dialog/Dialog.java:468
 msgid "Up"
 msgstr "Вгору"
 
-#: org/jmol/export/dialog/Dialog.java:467
+#: org/jmol/export/dialog/Dialog.java:469
 msgid "Up One Level"
 msgstr "Рівнем вище"
 
-#: org/jmol/export/dialog/Dialog.java:472
+#: org/jmol/export/dialog/Dialog.java:474
 msgid "OK"
 msgstr "Гаразд"
 
@@ -410,72 +410,76 @@ msgid "Hungarian"
 msgstr "Угорська"
 
 #: org/jmol/i18n/GT.java:132
+msgid "Indonesian"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:133
 msgid "Italian"
 msgstr "Італійська"
 
-#: org/jmol/i18n/GT.java:133
+#: org/jmol/i18n/GT.java:134
 msgid "Japanese"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:134
+#: org/jmol/i18n/GT.java:135
 msgid "Korean"
 msgstr "Корейська"
 
-#: org/jmol/i18n/GT.java:135
+#: org/jmol/i18n/GT.java:136
 msgid "Norwegian Bokmal"
 msgstr "Норвезька (Бокмал)"
 
-#: org/jmol/i18n/GT.java:136
+#: org/jmol/i18n/GT.java:137
 msgid "Polish"
 msgstr "Польська"
 
-#: org/jmol/i18n/GT.java:137
+#: org/jmol/i18n/GT.java:138
 msgid "Brazilian Portuguese"
 msgstr "Бразильська португальська"
 
-#: org/jmol/i18n/GT.java:138
+#: org/jmol/i18n/GT.java:139
 msgid "Portuguese"
 msgstr "Португальська"
 
-#: org/jmol/i18n/GT.java:139
+#: org/jmol/i18n/GT.java:140
 msgid "Russian"
 msgstr "Російська"
 
-#: org/jmol/i18n/GT.java:140
+#: org/jmol/i18n/GT.java:141
 msgid "Slovenian"
 msgstr "Словенська"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:142
 msgid "Spanish"
 msgstr "Іспанська"
 
-#: org/jmol/i18n/GT.java:142
+#: org/jmol/i18n/GT.java:143
 msgid "Swedish"
 msgstr "Шведська"
 
-#: org/jmol/i18n/GT.java:143
+#: org/jmol/i18n/GT.java:144
 msgid "Turkish"
 msgstr "Турецька"
 
-#: org/jmol/i18n/GT.java:144
+#: org/jmol/i18n/GT.java:145
 msgid "Ukrainian"
 msgstr "Українська"
 
-#: org/jmol/minimize/Minimizer.java:193
+#: org/jmol/minimize/Minimizer.java:191
 #, java-format
 msgid "Could not get class for force field {0}"
 msgstr "Не вдалося визначити клас для поля сили {0}"
 
-#: org/jmol/minimize/Minimizer.java:203
+#: org/jmol/minimize/Minimizer.java:202
 msgid "No atoms selected -- nothing to do!"
 msgstr "Не позначено жодного атома — дії не виконуватимуться!"
 
-#: org/jmol/minimize/Minimizer.java:263
+#: org/jmol/minimize/Minimizer.java:262
 #, java-format
 msgid "{0} atoms will be minimized."
 msgstr "{0} атомів буде мінімізовано."
 
-#: org/jmol/minimize/Minimizer.java:354
+#: org/jmol/minimize/Minimizer.java:353
 #, java-format
 msgid "could not setup force field {0}"
 msgstr "не вдалося встановити поле сили {0}"
@@ -1587,95 +1591,95 @@ msgstr "Кольори RasMol"
 msgid "About..."
 msgstr "Про програму…"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1096
+#: org/jmol/script/ScriptCompilationTokenParser.java:1098
 #: org/jmol/script/ScriptEvaluator.java:2364
 msgid "bad argument count"
 msgstr "помилкова кількість параметрів"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1099
+#: org/jmol/script/ScriptCompilationTokenParser.java:1101
 #, java-format
 msgid "invalid context for {0}"
 msgstr "некоректний контекст {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1102
+#: org/jmol/script/ScriptCompilationTokenParser.java:1104
 #: org/jmol/script/ScriptEvaluator.java:2388
 msgid "command expected"
 msgstr "слід було використати команду"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1105
+#: org/jmol/script/ScriptCompilationTokenParser.java:1107
 msgid "{ number number number } expected"
 msgstr "слід було використати набір { число число число }"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1108
+#: org/jmol/script/ScriptCompilationTokenParser.java:1110
 #: org/jmol/script/ScriptEvaluator.java:2397
 msgid "unexpected end of script command"
 msgstr "помилкове завершення команди скрипту"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1111
+#: org/jmol/script/ScriptCompilationTokenParser.java:1113
 msgid "end of expression expected"
 msgstr "слід було використати команду завершення виразу"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1114
+#: org/jmol/script/ScriptCompilationTokenParser.java:1116
 msgid "identifier or residue specification expected"
 msgstr "слід було використати ідентифікатор або опис залишку"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1117
+#: org/jmol/script/ScriptCompilationTokenParser.java:1119
 msgid "invalid atom specification"
 msgstr "некоректний опис атома"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1120
+#: org/jmol/script/ScriptCompilationTokenParser.java:1122
 msgid "invalid chain specification"
 msgstr "некоректний опис ланцюжка"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1123
+#: org/jmol/script/ScriptCompilationTokenParser.java:1125
 #, java-format
 msgid "invalid expression token: {0}"
 msgstr "некоректний елементи виразу: {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1126
+#: org/jmol/script/ScriptCompilationTokenParser.java:1128
 msgid "invalid model specification"
 msgstr "некоректний опис моделі"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1129
+#: org/jmol/script/ScriptCompilationTokenParser.java:1131
 #, java-format
 msgid "missing END for {0}"
 msgstr "у {0} не вистачає команди END"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1132
+#: org/jmol/script/ScriptCompilationTokenParser.java:1134
 #: org/jmol/script/ScriptEvaluator.java:2461
 msgid "number expected"
 msgstr "слід було використати число"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1135
+#: org/jmol/script/ScriptCompilationTokenParser.java:1137
 msgid "number or variable name expected"
 msgstr "слід було використати число або назву змінної"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1138
+#: org/jmol/script/ScriptCompilationTokenParser.java:1140
 msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "слід було вказати опис залишку (ALA, AL?, A*)"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1141
+#: org/jmol/script/ScriptCompilationTokenParser.java:1143
 #, java-format
 msgid "{0} expected"
 msgstr "слід було використати {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1144
+#: org/jmol/script/ScriptCompilationTokenParser.java:1146
 #, java-format
 msgid "{0} unexpected"
 msgstr "не слід використовувати {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1147
+#: org/jmol/script/ScriptCompilationTokenParser.java:1149
 #, java-format
 msgid "unrecognized expression token: {0}"
 msgstr "невідомий елементи виразу: {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1150
+#: org/jmol/script/ScriptCompilationTokenParser.java:1152
 #: org/jmol/script/ScriptEvaluator.java:2510
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "невідомий параметр {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1153
+#: org/jmol/script/ScriptCompilationTokenParser.java:1155
 #, java-format
 msgid "unrecognized token: {0}"
 msgstr "невідомий елемент: {0}"
@@ -1685,7 +1689,7 @@ msgid "script compiler ERROR: "
 msgstr "ПОМИЛКА обробки скрипту: "
 
 #: org/jmol/script/ScriptEvaluator.java:2226
-#: org/jmol/script/ScriptEvaluator.java:7894
+#: org/jmol/script/ScriptEvaluator.java:7893
 msgid "script ERROR: "
 msgstr "ПОМИЛКА скрипту: "
 
@@ -1910,33 +1914,33 @@ msgstr "невідомий параметр SHOW — використано {0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "що записувати? {0} або «назву файла» {1}"
 
-#: org/jmol/script/ScriptEvaluator.java:5912
+#: org/jmol/script/ScriptEvaluator.java:5909
 #, java-format
 msgid "{0} connections deleted"
 msgstr "вилучено {0} з’єднань"
 
-#: org/jmol/script/ScriptEvaluator.java:5933
+#: org/jmol/script/ScriptEvaluator.java:5930
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} нові зв’язки; {1} змінено"
 
-#: org/jmol/script/ScriptEvaluator.java:7091
+#: org/jmol/script/ScriptEvaluator.java:7090
 #, java-format
 msgid "file {0} created"
 msgstr "створено файл {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:8018
-#: org/jmol/script/ScriptEvaluator.java:8248
+#: org/jmol/script/ScriptEvaluator.java:8017
+#: org/jmol/script/ScriptEvaluator.java:8247
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "вилучено {0} атомів"
 
-#: org/jmol/script/ScriptEvaluator.java:8817
+#: org/jmol/script/ScriptEvaluator.java:8816
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} водневих зв’язки"
 
-#: org/jmol/script/ScriptEvaluator.java:9166
+#: org/jmol/script/ScriptEvaluator.java:9165
 #, java-format
 msgid "{0} struts added"
 msgstr "додано {0} розпірки"
@@ -2150,19 +2154,19 @@ msgstr "імітувати сенсорне керування за допомо
 msgid "stop motion (requires {0})"
 msgstr "зупинити рух (потрібен {0})"
 
-#: org/jmol/viewer/ActionManager.java:1435
+#: org/jmol/viewer/ActionManager.java:1438
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "вибрати ще один атом для обертання моделі навколо вісі"
 
-#: org/jmol/viewer/ActionManager.java:1436
+#: org/jmol/viewer/ActionManager.java:1439
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "вибрати два атоми для обертання моделі навколо вісі"
 
-#: org/jmol/viewer/ActionManager.java:1439
+#: org/jmol/viewer/ActionManager.java:1442
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "вибрати ще один атом для показу взаємозв’язків симетрії"
 
-#: org/jmol/viewer/ActionManager.java:1440
+#: org/jmol/viewer/ActionManager.java:1443
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr "вибрати два атоми для показу взаємозв’язків симетрії між ними"
@@ -2178,24 +2182,24 @@ msgstr "приховано атоми {0}"
 msgid "{0} atoms selected"
 msgstr "позначено атоми {0}"
 
-#: org/jmol/viewer/Viewer.java:4082
+#: org/jmol/viewer/Viewer.java:4101
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "додано атоми водню {0}"
 
-#: org/jmol/viewer/Viewer.java:4123
+#: org/jmol/viewer/Viewer.java:4142
 msgid "Drag to move label"
 msgstr "Перетягніть, щоб пересунути мітку"
 
-#: org/jmol/viewer/Viewer.java:7344
+#: org/jmol/viewer/Viewer.java:7364
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "доступ до буфера даних заборонено — використовуйте підписаний аплет"
 
-#: org/jmol/viewer/Viewer.java:8053
+#: org/jmol/viewer/Viewer.java:8076
 msgid "Cannot set log file path."
 msgstr "Не вдалося встановити шлях до файла журналу."
 
-#: org/jmol/viewer/Viewer.java:8055
+#: org/jmol/viewer/Viewer.java:8078
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Встановлення файла журналу {0}"

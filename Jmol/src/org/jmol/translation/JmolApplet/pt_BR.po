@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-02-13 17:10+0100\n"
+"POT-Creation-Date: 2010-02-26 22:48+0100\n"
 "PO-Revision-Date: 2010-02-21 09:58-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <sergio.ceroni@ufrgs.br>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
@@ -55,7 +55,9 @@ msgstr "Carregar"
 
 #: org/jmol/applet/AppletConsole.java:143
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr "pressione CTRL-ENTER para uma nova linha ou cole os dados do modelo e pressione Carregar"
+msgstr ""
+"pressione CTRL-ENTER para uma nova linha ou cole os dados do modelo e "
+"pressione Carregar"
 
 #: org/jmol/applet/AppletConsole.java:383
 msgid "&Help"
@@ -100,9 +102,15 @@ msgstr ""
 msgid "File Error:"
 msgstr "Erro no arquivo:"
 
-#: org/jmol/applet/Jmol.java:1199
-msgid "Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window."
-msgstr "Mensagens aparecerão aqui. Entre com os comandos na caixa abaixo. Clique no menu de ajuda do console para ajuda via Internet, a qual será mostrada em nova janela do navegador."
+#: org/jmol/applet/Jmol.java:1196
+msgid ""
+"Messages will appear here. Enter commands in the box below. Click the "
+"console Help menu item for on-line help, which will appear in a new browser "
+"window."
+msgstr ""
+"Mensagens aparecerão aqui. Entre com os comandos na caixa abaixo. Clique no "
+"menu de ajuda do console para ajuda via Internet, a qual será mostrada em "
+"nova janela do navegador."
 
 #: org/jmol/appletwrapper/AppletWrapper.java:91
 msgid "Loading Jmol applet ..."
@@ -123,9 +131,9 @@ msgid "Console"
 msgstr "Console"
 
 #: org/jmol/console/ScriptEditor.java:132
-#: org/jmol/export/dialog/Dialog.java:430
-#: org/jmol/export/dialog/Dialog.java:454
-#: org/jmol/export/dialog/Dialog.java:457
+#: org/jmol/export/dialog/Dialog.java:432
+#: org/jmol/export/dialog/Dialog.java:456
+#: org/jmol/export/dialog/Dialog.java:459
 msgid "Open"
 msgstr "Abrir"
 
@@ -171,171 +179,171 @@ msgstr "Fechar"
 msgid "File or URL:"
 msgstr "Arquivo ou URL:"
 
-#: org/jmol/export/dialog/Dialog.java:258
+#: org/jmol/export/dialog/Dialog.java:260
 msgid "Image Type"
 msgstr "Tipo de imagem"
 
-#: org/jmol/export/dialog/Dialog.java:273
-#: org/jmol/export/dialog/Dialog.java:314
+#: org/jmol/export/dialog/Dialog.java:275
+#: org/jmol/export/dialog/Dialog.java:316
 #, java-format
 msgid "JPEG Quality ({0})"
 msgstr "Qualidade JPEG ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:287
+#: org/jmol/export/dialog/Dialog.java:289
 #, java-format
 msgid "PNG Compression  ({0})"
 msgstr "Compressão PNG ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:317
+#: org/jmol/export/dialog/Dialog.java:319
 #, java-format
 msgid "PNG Quality ({0})"
 msgstr "Qualidade PNG ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:363
-#: org/jmol/export/dialog/Dialog.java:473
+#: org/jmol/export/dialog/Dialog.java:365
+#: org/jmol/export/dialog/Dialog.java:475
 msgid "Yes"
 msgstr "Sim"
 
-#: org/jmol/export/dialog/Dialog.java:363
-#: org/jmol/export/dialog/Dialog.java:471
+#: org/jmol/export/dialog/Dialog.java:365
+#: org/jmol/export/dialog/Dialog.java:473
 msgid "No"
 msgstr "Não"
 
-#: org/jmol/export/dialog/Dialog.java:365
+#: org/jmol/export/dialog/Dialog.java:367
 #, java-format
 msgid "Do you want to overwrite file {0}?"
 msgstr "Deseja sobrescrever o arquivo {0}?"
 
-#: org/jmol/export/dialog/Dialog.java:366
+#: org/jmol/export/dialog/Dialog.java:368
 msgid "Warning"
 msgstr "Aviso"
 
-#: org/jmol/export/dialog/Dialog.java:422
+#: org/jmol/export/dialog/Dialog.java:424
 msgid "All Files"
 msgstr "Todos os arquivos"
 
-#: org/jmol/export/dialog/Dialog.java:423
-#: org/jmol/export/dialog/Dialog.java:470
+#: org/jmol/export/dialog/Dialog.java:425
+#: org/jmol/export/dialog/Dialog.java:472
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: org/jmol/export/dialog/Dialog.java:425
+#: org/jmol/export/dialog/Dialog.java:427
 msgid "Abort file chooser dialog"
 msgstr "Cancelar diálogo do selecionador de arquivo"
 
-#: org/jmol/export/dialog/Dialog.java:427
-#: org/jmol/export/dialog/Dialog.java:428
+#: org/jmol/export/dialog/Dialog.java:429
+#: org/jmol/export/dialog/Dialog.java:430
 msgid "Details"
 msgstr "Detalhes"
 
-#: org/jmol/export/dialog/Dialog.java:429
+#: org/jmol/export/dialog/Dialog.java:431
 msgid "Directory"
 msgstr "Diretório"
 
-#: org/jmol/export/dialog/Dialog.java:432
+#: org/jmol/export/dialog/Dialog.java:434
 msgid "Open selected directory"
 msgstr "Abrir o diretório selecionado"
 
-#: org/jmol/export/dialog/Dialog.java:433
+#: org/jmol/export/dialog/Dialog.java:435
 msgid "Attributes"
 msgstr "Atributos"
 
-#: org/jmol/export/dialog/Dialog.java:434
+#: org/jmol/export/dialog/Dialog.java:436
 msgid "Modified"
 msgstr "Modificado"
 
-#: org/jmol/export/dialog/Dialog.java:435
+#: org/jmol/export/dialog/Dialog.java:437
 msgid "Generic File"
 msgstr "Arquivo genérico"
 
-#: org/jmol/export/dialog/Dialog.java:436
+#: org/jmol/export/dialog/Dialog.java:438
 msgid "Name"
 msgstr "Nome"
 
-#: org/jmol/export/dialog/Dialog.java:437
+#: org/jmol/export/dialog/Dialog.java:439
 msgid "File Name:"
 msgstr "Nome do arquivo:"
 
-#: org/jmol/export/dialog/Dialog.java:438
+#: org/jmol/export/dialog/Dialog.java:440
 msgid "Size"
 msgstr "Tamanho"
 
-#: org/jmol/export/dialog/Dialog.java:439
+#: org/jmol/export/dialog/Dialog.java:441
 msgid "Files of Type:"
 msgstr "Arquivos do tipo:"
 
-#: org/jmol/export/dialog/Dialog.java:440
+#: org/jmol/export/dialog/Dialog.java:442
 msgid "Type"
 msgstr "Tipo"
 
-#: org/jmol/export/dialog/Dialog.java:441
+#: org/jmol/export/dialog/Dialog.java:443
 msgid "Help"
 msgstr "Ajuda"
 
-#: org/jmol/export/dialog/Dialog.java:443
+#: org/jmol/export/dialog/Dialog.java:445
 msgid "FileChooser help"
 msgstr "Ajuda do Selecionador de Arquivo"
 
-#: org/jmol/export/dialog/Dialog.java:444
-#: org/jmol/export/dialog/Dialog.java:445
+#: org/jmol/export/dialog/Dialog.java:446
+#: org/jmol/export/dialog/Dialog.java:447
 msgid "Home"
 msgstr "Início"
 
-#: org/jmol/export/dialog/Dialog.java:446
-#: org/jmol/export/dialog/Dialog.java:447
+#: org/jmol/export/dialog/Dialog.java:448
+#: org/jmol/export/dialog/Dialog.java:449
 msgid "List"
 msgstr "Listar"
 
-#: org/jmol/export/dialog/Dialog.java:448
+#: org/jmol/export/dialog/Dialog.java:450
 msgid "Look In:"
 msgstr "Procurar em:"
 
-#: org/jmol/export/dialog/Dialog.java:450
+#: org/jmol/export/dialog/Dialog.java:452
 msgid "Error creating new folder"
 msgstr "Erro ao criar pasta nova"
 
-#: org/jmol/export/dialog/Dialog.java:451
+#: org/jmol/export/dialog/Dialog.java:453
 msgid "New Folder"
 msgstr "Pasta nova"
 
-#: org/jmol/export/dialog/Dialog.java:453
+#: org/jmol/export/dialog/Dialog.java:455
 msgid "Create New Folder"
 msgstr "Criar pasta nova"
 
-#: org/jmol/export/dialog/Dialog.java:456
+#: org/jmol/export/dialog/Dialog.java:458
 msgid "Open selected file"
 msgstr "Abrir arquivo selecionado"
 
-#: org/jmol/export/dialog/Dialog.java:458
-#: org/jmol/export/dialog/Dialog.java:461
+#: org/jmol/export/dialog/Dialog.java:460
+#: org/jmol/export/dialog/Dialog.java:463
 msgid "Save"
 msgstr "Gravar"
 
-#: org/jmol/export/dialog/Dialog.java:460
+#: org/jmol/export/dialog/Dialog.java:462
 msgid "Save selected file"
 msgstr "Gravar arquivo selecionado"
 
-#: org/jmol/export/dialog/Dialog.java:462
+#: org/jmol/export/dialog/Dialog.java:464
 msgid "Save In:"
 msgstr "Gravar em:"
 
-#: org/jmol/export/dialog/Dialog.java:463
+#: org/jmol/export/dialog/Dialog.java:465
 msgid "Update"
 msgstr "Atualizar"
 
-#: org/jmol/export/dialog/Dialog.java:465
+#: org/jmol/export/dialog/Dialog.java:467
 msgid "Update directory listing"
 msgstr "Atualizar listagem de diretório"
 
-#: org/jmol/export/dialog/Dialog.java:466
+#: org/jmol/export/dialog/Dialog.java:468
 msgid "Up"
 msgstr "Acima"
 
-#: org/jmol/export/dialog/Dialog.java:467
+#: org/jmol/export/dialog/Dialog.java:469
 msgid "Up One Level"
 msgstr "Um nível acima"
 
-#: org/jmol/export/dialog/Dialog.java:472
+#: org/jmol/export/dialog/Dialog.java:474
 msgid "OK"
 msgstr "OK"
 
@@ -404,72 +412,77 @@ msgid "Hungarian"
 msgstr "Húngaro"
 
 #: org/jmol/i18n/GT.java:132
+#, fuzzy
+msgid "Indonesian"
+msgstr "Vermelho Indiano"
+
+#: org/jmol/i18n/GT.java:133
 msgid "Italian"
 msgstr "Italiano"
 
-#: org/jmol/i18n/GT.java:133
+#: org/jmol/i18n/GT.java:134
 msgid "Japanese"
 msgstr "Japonês"
 
-#: org/jmol/i18n/GT.java:134
+#: org/jmol/i18n/GT.java:135
 msgid "Korean"
 msgstr "Coreano"
 
-#: org/jmol/i18n/GT.java:135
+#: org/jmol/i18n/GT.java:136
 msgid "Norwegian Bokmal"
 msgstr "Bokmal Norueguês"
 
-#: org/jmol/i18n/GT.java:136
+#: org/jmol/i18n/GT.java:137
 msgid "Polish"
 msgstr "Polonês"
 
-#: org/jmol/i18n/GT.java:137
+#: org/jmol/i18n/GT.java:138
 msgid "Brazilian Portuguese"
 msgstr "Português brasileiro"
 
-#: org/jmol/i18n/GT.java:138
+#: org/jmol/i18n/GT.java:139
 msgid "Portuguese"
 msgstr "Português"
 
-#: org/jmol/i18n/GT.java:139
+#: org/jmol/i18n/GT.java:140
 msgid "Russian"
 msgstr "Russo"
 
-#: org/jmol/i18n/GT.java:140
+#: org/jmol/i18n/GT.java:141
 msgid "Slovenian"
 msgstr "Esloveno"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:142
 msgid "Spanish"
 msgstr "Espanhol"
 
-#: org/jmol/i18n/GT.java:142
+#: org/jmol/i18n/GT.java:143
 msgid "Swedish"
 msgstr "Sueco"
 
-#: org/jmol/i18n/GT.java:143
+#: org/jmol/i18n/GT.java:144
 msgid "Turkish"
 msgstr "Turco"
 
-#: org/jmol/i18n/GT.java:144
+#: org/jmol/i18n/GT.java:145
 msgid "Ukrainian"
 msgstr "Ucraniano"
 
-#: org/jmol/minimize/Minimizer.java:193
+#: org/jmol/minimize/Minimizer.java:191
 #, java-format
 msgid "Could not get class for force field {0}"
 msgstr "Não foi possível obter a classe para o campo de força {0}"
 
-#: org/jmol/minimize/Minimizer.java:203
+#: org/jmol/minimize/Minimizer.java:202
 msgid "No atoms selected -- nothing to do!"
 msgstr "Nenhum átomo selecionado -- nada a fazer!"
 
-#: org/jmol/minimize/Minimizer.java:263
+#: org/jmol/minimize/Minimizer.java:262
 #, java-format
 msgid "{0} atoms will be minimized."
 msgstr "{0} átomo(s) será(ão) minimizado(s)"
 
-#: org/jmol/minimize/Minimizer.java:354
+#: org/jmol/minimize/Minimizer.java:353
 #, java-format
 msgid "could not setup force field {0}"
 msgstr "Não foi possível configurar o campo de força {0}"
@@ -484,8 +497,7 @@ msgstr "Nenhum átomo foi carregado"
 msgid "Space Group"
 msgstr "Grupo Espacial"
 
-#: org/jmol/popup/JmolPopup.java:526
-#: org/jmol/popup/JmolPopup.java:566
+#: org/jmol/popup/JmolPopup.java:526 org/jmol/popup/JmolPopup.java:566
 #: org/jmol/popup/PopupResourceBundle.java:599
 #: org/jmol/popup/PopupResourceBundle.java:613
 #: org/jmol/popup/PopupResourceBundle.java:622
@@ -1582,95 +1594,95 @@ msgstr "Cores conforme RasMol"
 msgid "About..."
 msgstr "Sobre..."
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1096
+#: org/jmol/script/ScriptCompilationTokenParser.java:1098
 #: org/jmol/script/ScriptEvaluator.java:2364
 msgid "bad argument count"
 msgstr "número de argumentos errôneo"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1099
+#: org/jmol/script/ScriptCompilationTokenParser.java:1101
 #, java-format
 msgid "invalid context for {0}"
 msgstr "contexto inválido para {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1102
+#: org/jmol/script/ScriptCompilationTokenParser.java:1104
 #: org/jmol/script/ScriptEvaluator.java:2388
 msgid "command expected"
 msgstr "esperado um comando "
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1105
+#: org/jmol/script/ScriptCompilationTokenParser.java:1107
 msgid "{ number number number } expected"
 msgstr "esperado { número número número }"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1108
+#: org/jmol/script/ScriptCompilationTokenParser.java:1110
 #: org/jmol/script/ScriptEvaluator.java:2397
 msgid "unexpected end of script command"
 msgstr "comando de término de \"script\" não esperado"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1111
+#: org/jmol/script/ScriptCompilationTokenParser.java:1113
 msgid "end of expression expected"
 msgstr "esperado um término de expressão"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1114
+#: org/jmol/script/ScriptCompilationTokenParser.java:1116
 msgid "identifier or residue specification expected"
 msgstr "esperado um identificador ou especificação de resíduo"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1117
+#: org/jmol/script/ScriptCompilationTokenParser.java:1119
 msgid "invalid atom specification"
 msgstr "especificação de átomo inválida"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1120
+#: org/jmol/script/ScriptCompilationTokenParser.java:1122
 msgid "invalid chain specification"
 msgstr "especificação de cadeia inválida"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1123
+#: org/jmol/script/ScriptCompilationTokenParser.java:1125
 #, java-format
 msgid "invalid expression token: {0}"
 msgstr "símbolo de expressão inválido: {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1126
+#: org/jmol/script/ScriptCompilationTokenParser.java:1128
 msgid "invalid model specification"
 msgstr "especificação de modelo inválido"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1129
+#: org/jmol/script/ScriptCompilationTokenParser.java:1131
 #, java-format
 msgid "missing END for {0}"
 msgstr "END faltando para {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1132
+#: org/jmol/script/ScriptCompilationTokenParser.java:1134
 #: org/jmol/script/ScriptEvaluator.java:2461
 msgid "number expected"
 msgstr "esperado um número"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1135
+#: org/jmol/script/ScriptCompilationTokenParser.java:1137
 msgid "number or variable name expected"
 msgstr "esperado um número ou um nome de variável"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1138
+#: org/jmol/script/ScriptCompilationTokenParser.java:1140
 msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "esperada uma especificação de resíduo (ALA, AL?, A*)"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1141
+#: org/jmol/script/ScriptCompilationTokenParser.java:1143
 #, java-format
 msgid "{0} expected"
 msgstr "esperado(a) {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1144
+#: org/jmol/script/ScriptCompilationTokenParser.java:1146
 #, java-format
 msgid "{0} unexpected"
 msgstr "não esperado(a) {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1147
+#: org/jmol/script/ScriptCompilationTokenParser.java:1149
 #, java-format
 msgid "unrecognized expression token: {0}"
 msgstr "símbolo de expressão não identificável: {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1150
+#: org/jmol/script/ScriptCompilationTokenParser.java:1152
 #: org/jmol/script/ScriptEvaluator.java:2510
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "parâmetro {0} não identificável"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1153
+#: org/jmol/script/ScriptCompilationTokenParser.java:1155
 #, java-format
 msgid "unrecognized token: {0}"
 msgstr "símbolo não identificável: {0}"
@@ -1680,7 +1692,7 @@ msgid "script compiler ERROR: "
 msgstr "ERRO no compilador de \"script\": "
 
 #: org/jmol/script/ScriptEvaluator.java:2226
-#: org/jmol/script/ScriptEvaluator.java:7894
+#: org/jmol/script/ScriptEvaluator.java:7893
 msgid "script ERROR: "
 msgstr "ERRO no \"script\": "
 
@@ -1806,8 +1818,12 @@ msgid "No data available"
 msgstr "Nenhum dado disponível"
 
 #: org/jmol/script/ScriptEvaluator.java:2455
-msgid "No partial charges were read from the file; Jmol needs these to render the MEP data."
-msgstr "Nenhuma carga parcial foi lida do arquivo; Jmol necessita destas para renderizar os dados de MEP"
+msgid ""
+"No partial charges were read from the file; Jmol needs these to render the "
+"MEP data."
+msgstr ""
+"Nenhuma carga parcial foi lida do arquivo; Jmol necessita destas para "
+"renderizar os dados de MEP"
 
 #: org/jmol/script/ScriptEvaluator.java:2458
 msgid "No unit cell"
@@ -1829,8 +1845,12 @@ msgstr "esperado um nome de objeto depois de '$'"
 
 #: org/jmol/script/ScriptEvaluator.java:2474
 #, java-format
-msgid "plane expected -- either three points or atom expressions or {0} or {1} or {2}"
-msgstr "esperado um plano -- três pontos ou uma \"atom expression\" ou {0} ou {1} ou {2}"
+msgid ""
+"plane expected -- either three points or atom expressions or {0} or {1} or "
+"{2}"
+msgstr ""
+"esperado um plano -- três pontos ou uma \"atom expression\" ou {0} ou {1} ou "
+"{2}"
 
 #: org/jmol/script/ScriptEvaluator.java:2477
 msgid "property name expected"
@@ -1880,7 +1900,9 @@ msgstr "objeto não identificável"
 #: org/jmol/script/ScriptEvaluator.java:2514
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "parâmetro {0} não identificável no \"script\" de estado do Jmol (mesmo assim foi definido)"
+msgstr ""
+"parâmetro {0} não identificável no \"script\" de estado do Jmol (mesmo assim "
+"foi definido)"
 
 #: org/jmol/script/ScriptEvaluator.java:2517
 #, java-format
@@ -1892,33 +1914,33 @@ msgstr "parâmetro SHOW não identificável --  usar {0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "Escrever o quê? {0} ou {1} \"nome-de-arquivo\""
 
-#: org/jmol/script/ScriptEvaluator.java:5912
+#: org/jmol/script/ScriptEvaluator.java:5909
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} conexão(ões) removida(s)"
 
-#: org/jmol/script/ScriptEvaluator.java:5933
+#: org/jmol/script/ScriptEvaluator.java:5930
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} ligação(ões) nova(s); {1} modificada(s)"
 
-#: org/jmol/script/ScriptEvaluator.java:7091
+#: org/jmol/script/ScriptEvaluator.java:7090
 #, java-format
 msgid "file {0} created"
 msgstr "Criado o arquivo {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:8018
-#: org/jmol/script/ScriptEvaluator.java:8248
+#: org/jmol/script/ScriptEvaluator.java:8017
+#: org/jmol/script/ScriptEvaluator.java:8247
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} átomo(s) deletado(s)"
 
-#: org/jmol/script/ScriptEvaluator.java:8817
+#: org/jmol/script/ScriptEvaluator.java:8816
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} ponte(s) de Hidrogênio"
 
-#: org/jmol/script/ScriptEvaluator.java:9166
+#: org/jmol/script/ScriptEvaluator.java:9165
 #, java-format
 msgid "{0} struts added"
 msgstr "{0} estrutura(s) adicionada(s)"
@@ -1940,8 +1962,11 @@ msgid "rotate Z"
 msgstr "girar no eixo Z"
 
 #: org/jmol/viewer/ActionManager.java:56
-msgid "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
-msgstr "girar no eixo Z (movimento horizontal do \"mouse\") ou zoom (movimento vertical do \"mouse\")"
+msgid ""
+"rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
+msgstr ""
+"girar no eixo Z (movimento horizontal do \"mouse\") ou zoom (movimento "
+"vertical do \"mouse\")"
 
 #: org/jmol/viewer/ActionManager.java:57
 msgid "translate"
@@ -1997,15 +2022,24 @@ msgstr "mover todo o objeto \"DRAW\" (requer {0})"
 
 #: org/jmol/viewer/ActionManager.java:70
 msgid "spin model (swipe and release button and stop motion simultaneously)"
-msgstr "rodar o modelo (\"bater\" girando, liberar o botão e parar o movimento simultaneamente)"
+msgstr ""
+"rodar o modelo (\"bater\" girando, liberar o botão e parar o movimento "
+"simultaneamente)"
 
 #: org/jmol/viewer/ActionManager.java:71
-msgid "click on two points to spin around axis clockwise (requires SET picking SPIN)"
-msgstr "clicar em dois pontos para rodar no sentido horário em torno de um eixo (requer \"SET picking SPIN\")"
+msgid ""
+"click on two points to spin around axis clockwise (requires SET picking SPIN)"
+msgstr ""
+"clicar em dois pontos para rodar no sentido horário em torno de um eixo "
+"(requer \"SET picking SPIN\")"
 
 #: org/jmol/viewer/ActionManager.java:72
-msgid "click on two points to spin around axis counterclockwise (requires SET picking SPIN)"
-msgstr "clicar em dois pontos para rodar no sentido anti-horário em torno de um eixo (requer \"SET picking SPIN\")"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires SET "
+"picking SPIN)"
+msgstr ""
+"clicar em dois pontos para rodar no sentido anti-horário em torno de um eixo "
+"(requer \"SET picking SPIN\")"
 
 #: org/jmol/viewer/ActionManager.java:74
 #, java-format
@@ -2046,12 +2080,17 @@ msgstr "selecione um ponto \"DRAW\" (para medição)"
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr "selecionar um rótulo para alternar entre escondido/visível (requer {0})"
+msgstr ""
+"selecionar um rótulo para alternar entre escondido/visível (requer {0})"
 
 #: org/jmol/viewer/ActionManager.java:84
 #, java-format
-msgid "pick an atom to include it in a measurement (after starting a measurement or after {0})"
-msgstr "selecionar um átomo para incluí-lo em uma medição (após iniciar a medição ou após {0})"
+msgid ""
+"pick an atom to include it in a measurement (after starting a measurement or "
+"after {0})"
+msgstr ""
+"selecionar um átomo para incluí-lo em uma medição (após iniciar a medição ou "
+"após {0})"
 
 #: org/jmol/viewer/ActionManager.java:86
 msgid "pick an atom to initiate or conclude a measurement"
@@ -2062,8 +2101,12 @@ msgid "pick an ISOSURFACE point"
 msgstr "selecionar um ponto \"ISOSURFACE\""
 
 #: org/jmol/viewer/ActionManager.java:88
-msgid "pick a point or atom to navigate to (requires SET NAVIGATIONMODE; undocumented)"
-msgstr "selecionar um ponto ou átomo para ir (requer \"SET  NAVIGATIONMODE\"; não documentado)"
+msgid ""
+"pick a point or atom to navigate to (requires SET NAVIGATIONMODE; "
+"undocumented)"
+msgstr ""
+"selecionar um ponto ou átomo para ir (requer \"SET  NAVIGATIONMODE\"; não "
+"documentado)"
 
 #: org/jmol/viewer/ActionManager.java:89
 #, java-format
@@ -2088,12 +2131,18 @@ msgstr "cancelar a seleção deste grupo de átomos (requer {0})"
 #: org/jmol/viewer/ActionManager.java:95
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr "adicionar este grupo de átomos ao conjunto de átomos selecionados (requer {0})"
+msgstr ""
+"adicionar este grupo de átomos ao conjunto de átomos selecionados (requer "
+"{0})"
 
 #: org/jmol/viewer/ActionManager.java:96
 #, java-format
-msgid "if all are selected, unselect all, otherwise add this group of atoms to the set of selected atoms (requires {0})"
-msgstr "se todos estão selecionados, cancelar a seleção; senão, adicionar este grupo de átomos ao conjunto de átomos selecionados (requer {0})"
+msgid ""
+"if all are selected, unselect all, otherwise add this group of atoms to the "
+"set of selected atoms (requires {0})"
+msgstr ""
+"se todos estão selecionados, cancelar a seleção; senão, adicionar este grupo "
+"de átomos ao conjunto de átomos selecionados (requer {0})"
 
 #: org/jmol/viewer/ActionManager.java:98
 msgid "reset (when clicked off the model)"
@@ -2108,20 +2157,22 @@ msgstr "simular multitoque usando o \"mouse\")"
 msgid "stop motion (requires {0})"
 msgstr "parar movimento (requer {0})"
 
-#: org/jmol/viewer/ActionManager.java:1435
+#: org/jmol/viewer/ActionManager.java:1438
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr "selecione um átomo adicional para poder rodar o modelo em torno de um eixo"
+msgstr ""
+"selecione um átomo adicional para poder rodar o modelo em torno de um eixo"
 
-#: org/jmol/viewer/ActionManager.java:1436
+#: org/jmol/viewer/ActionManager.java:1439
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "selecione dois átomos para poder rodar o modelo em torno de um eixo"
 
-#: org/jmol/viewer/ActionManager.java:1439
+#: org/jmol/viewer/ActionManager.java:1442
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "selecione um átomo adicional para mostrar a relação de simetria"
 
-#: org/jmol/viewer/ActionManager.java:1440
-msgid "pick two atoms in order to display the symmetry relationship between them"
+#: org/jmol/viewer/ActionManager.java:1443
+msgid ""
+"pick two atoms in order to display the symmetry relationship between them"
 msgstr "selecione dois átomos para mostrar a relação de simetria entre eles"
 
 #: org/jmol/viewer/SelectionManager.java:77
@@ -2135,24 +2186,24 @@ msgstr "{0} átomo(s) oculto(s)"
 msgid "{0} atoms selected"
 msgstr "{0} átomo(s) selecionado(s)"
 
-#: org/jmol/viewer/Viewer.java:4082
+#: org/jmol/viewer/Viewer.java:4101
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} hidrogênio(s) adicionado"
 
-#: org/jmol/viewer/Viewer.java:4123
+#: org/jmol/viewer/Viewer.java:4142
 msgid "Drag to move label"
 msgstr "Arraste para mover rótulo"
 
-#: org/jmol/viewer/Viewer.java:7344
+#: org/jmol/viewer/Viewer.java:7364
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "área de transferência não está acessível -- use o \"applet\" assinado"
 
-#: org/jmol/viewer/Viewer.java:8053
+#: org/jmol/viewer/Viewer.java:8076
 msgid "Cannot set log file path."
 msgstr "Impossível definir caminho para arquivo de log"
 
-#: org/jmol/viewer/Viewer.java:8055
+#: org/jmol/viewer/Viewer.java:8078
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Arquivo de log definido para {0}"
@@ -2345,9 +2396,6 @@ msgstr "Arquivo de log definido para {0}"
 
 #~ msgid "Firebrick"
 #~ msgstr "Tijolo"
-
-#~ msgid "Indian Red"
-#~ msgstr "Vermelho Indiano"
 
 #~ msgid "Dark Magenta"
 #~ msgstr "Magenta Escuro"

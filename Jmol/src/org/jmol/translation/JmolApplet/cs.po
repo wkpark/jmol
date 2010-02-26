@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-02-13 17:10+0100\n"
-"PO-Revision-Date: 2010-01-13 18:31+0000\n"
+"POT-Creation-Date: 2010-02-26 22:48+0100\n"
+"PO-Revision-Date: 2010-02-26 20:16+0000\n"
 "Last-Translator: Martin Slavík <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-01-13 20:16+0000\n"
+"X-Launchpad-Export-Date: 2010-02-26 21:36+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
@@ -103,7 +103,7 @@ msgstr ""
 msgid "File Error:"
 msgstr "Chyba souboru:"
 
-#: org/jmol/applet/Jmol.java:1199
+#: org/jmol/applet/Jmol.java:1196
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
@@ -132,9 +132,9 @@ msgid "Console"
 msgstr "Konzole"
 
 #: org/jmol/console/ScriptEditor.java:132
-#: org/jmol/export/dialog/Dialog.java:430
-#: org/jmol/export/dialog/Dialog.java:454
-#: org/jmol/export/dialog/Dialog.java:457
+#: org/jmol/export/dialog/Dialog.java:432
+#: org/jmol/export/dialog/Dialog.java:456
+#: org/jmol/export/dialog/Dialog.java:459
 msgid "Open"
 msgstr "Otevřít"
 
@@ -180,171 +180,171 @@ msgstr "Zavřít"
 msgid "File or URL:"
 msgstr "Soubor nebo URL:"
 
-#: org/jmol/export/dialog/Dialog.java:258
+#: org/jmol/export/dialog/Dialog.java:260
 msgid "Image Type"
 msgstr "Typ obrázku"
 
-#: org/jmol/export/dialog/Dialog.java:273
-#: org/jmol/export/dialog/Dialog.java:314
+#: org/jmol/export/dialog/Dialog.java:275
+#: org/jmol/export/dialog/Dialog.java:316
 #, java-format
 msgid "JPEG Quality ({0})"
 msgstr "JPEG kvalita ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:287
+#: org/jmol/export/dialog/Dialog.java:289
 #, java-format
 msgid "PNG Compression  ({0})"
 msgstr "PNG komprese ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:317
+#: org/jmol/export/dialog/Dialog.java:319
 #, java-format
 msgid "PNG Quality ({0})"
 msgstr "PNG kvalita ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:363
-#: org/jmol/export/dialog/Dialog.java:473
+#: org/jmol/export/dialog/Dialog.java:365
+#: org/jmol/export/dialog/Dialog.java:475
 msgid "Yes"
 msgstr "Ano"
 
-#: org/jmol/export/dialog/Dialog.java:363
-#: org/jmol/export/dialog/Dialog.java:471
+#: org/jmol/export/dialog/Dialog.java:365
+#: org/jmol/export/dialog/Dialog.java:473
 msgid "No"
 msgstr "Ne"
 
-#: org/jmol/export/dialog/Dialog.java:365
+#: org/jmol/export/dialog/Dialog.java:367
 #, java-format
 msgid "Do you want to overwrite file {0}?"
 msgstr "Chcete přepsat soubor {0}?"
 
-#: org/jmol/export/dialog/Dialog.java:366
+#: org/jmol/export/dialog/Dialog.java:368
 msgid "Warning"
 msgstr "Varování"
 
-#: org/jmol/export/dialog/Dialog.java:422
+#: org/jmol/export/dialog/Dialog.java:424
 msgid "All Files"
 msgstr "Všechny soubory"
 
-#: org/jmol/export/dialog/Dialog.java:423
-#: org/jmol/export/dialog/Dialog.java:470
+#: org/jmol/export/dialog/Dialog.java:425
+#: org/jmol/export/dialog/Dialog.java:472
 msgid "Cancel"
 msgstr "Zrušit"
 
-#: org/jmol/export/dialog/Dialog.java:425
+#: org/jmol/export/dialog/Dialog.java:427
 msgid "Abort file chooser dialog"
 msgstr "Zruš výběr souboru"
 
-#: org/jmol/export/dialog/Dialog.java:427
-#: org/jmol/export/dialog/Dialog.java:428
+#: org/jmol/export/dialog/Dialog.java:429
+#: org/jmol/export/dialog/Dialog.java:430
 msgid "Details"
 msgstr "Podrobnosti"
 
-#: org/jmol/export/dialog/Dialog.java:429
+#: org/jmol/export/dialog/Dialog.java:431
 msgid "Directory"
 msgstr "Složka"
 
-#: org/jmol/export/dialog/Dialog.java:432
+#: org/jmol/export/dialog/Dialog.java:434
 msgid "Open selected directory"
 msgstr "Otevři vybranou složku"
 
-#: org/jmol/export/dialog/Dialog.java:433
+#: org/jmol/export/dialog/Dialog.java:435
 msgid "Attributes"
 msgstr "Vlastnosti"
 
-#: org/jmol/export/dialog/Dialog.java:434
+#: org/jmol/export/dialog/Dialog.java:436
 msgid "Modified"
 msgstr "Změněno"
 
-#: org/jmol/export/dialog/Dialog.java:435
+#: org/jmol/export/dialog/Dialog.java:437
 msgid "Generic File"
 msgstr "Obecný soubor"
 
-#: org/jmol/export/dialog/Dialog.java:436
+#: org/jmol/export/dialog/Dialog.java:438
 msgid "Name"
 msgstr "Název"
 
-#: org/jmol/export/dialog/Dialog.java:437
+#: org/jmol/export/dialog/Dialog.java:439
 msgid "File Name:"
 msgstr "Název souboru:"
 
-#: org/jmol/export/dialog/Dialog.java:438
+#: org/jmol/export/dialog/Dialog.java:440
 msgid "Size"
 msgstr "Velikost"
 
-#: org/jmol/export/dialog/Dialog.java:439
+#: org/jmol/export/dialog/Dialog.java:441
 msgid "Files of Type:"
 msgstr "Typy souborů"
 
-#: org/jmol/export/dialog/Dialog.java:440
+#: org/jmol/export/dialog/Dialog.java:442
 msgid "Type"
 msgstr "Typ"
 
-#: org/jmol/export/dialog/Dialog.java:441
+#: org/jmol/export/dialog/Dialog.java:443
 msgid "Help"
 msgstr "Nápověda"
 
-#: org/jmol/export/dialog/Dialog.java:443
+#: org/jmol/export/dialog/Dialog.java:445
 msgid "FileChooser help"
 msgstr "Nápověda k výběru souborů"
 
-#: org/jmol/export/dialog/Dialog.java:444
-#: org/jmol/export/dialog/Dialog.java:445
+#: org/jmol/export/dialog/Dialog.java:446
+#: org/jmol/export/dialog/Dialog.java:447
 msgid "Home"
 msgstr "Domů"
 
-#: org/jmol/export/dialog/Dialog.java:446
-#: org/jmol/export/dialog/Dialog.java:447
+#: org/jmol/export/dialog/Dialog.java:448
+#: org/jmol/export/dialog/Dialog.java:449
 msgid "List"
 msgstr "Seznam"
 
-#: org/jmol/export/dialog/Dialog.java:448
+#: org/jmol/export/dialog/Dialog.java:450
 msgid "Look In:"
 msgstr "Hledej v:"
 
-#: org/jmol/export/dialog/Dialog.java:450
+#: org/jmol/export/dialog/Dialog.java:452
 msgid "Error creating new folder"
 msgstr "Chyba při vytváření nové složky"
 
-#: org/jmol/export/dialog/Dialog.java:451
+#: org/jmol/export/dialog/Dialog.java:453
 msgid "New Folder"
 msgstr "Nová složka"
 
-#: org/jmol/export/dialog/Dialog.java:453
+#: org/jmol/export/dialog/Dialog.java:455
 msgid "Create New Folder"
 msgstr "Vytvořit novou složku"
 
-#: org/jmol/export/dialog/Dialog.java:456
+#: org/jmol/export/dialog/Dialog.java:458
 msgid "Open selected file"
 msgstr "Otevřít zvolený soubor"
 
-#: org/jmol/export/dialog/Dialog.java:458
-#: org/jmol/export/dialog/Dialog.java:461
+#: org/jmol/export/dialog/Dialog.java:460
+#: org/jmol/export/dialog/Dialog.java:463
 msgid "Save"
 msgstr "Uložit"
 
-#: org/jmol/export/dialog/Dialog.java:460
+#: org/jmol/export/dialog/Dialog.java:462
 msgid "Save selected file"
 msgstr "Uložit vybraný soubor"
 
-#: org/jmol/export/dialog/Dialog.java:462
+#: org/jmol/export/dialog/Dialog.java:464
 msgid "Save In:"
 msgstr "Ulož v:"
 
-#: org/jmol/export/dialog/Dialog.java:463
+#: org/jmol/export/dialog/Dialog.java:465
 msgid "Update"
 msgstr "Aktualizace"
 
-#: org/jmol/export/dialog/Dialog.java:465
+#: org/jmol/export/dialog/Dialog.java:467
 msgid "Update directory listing"
 msgstr "Aktualizuj výpis složky"
 
-#: org/jmol/export/dialog/Dialog.java:466
+#: org/jmol/export/dialog/Dialog.java:468
 msgid "Up"
 msgstr "Nahoru"
 
-#: org/jmol/export/dialog/Dialog.java:467
+#: org/jmol/export/dialog/Dialog.java:469
 msgid "Up One Level"
 msgstr "O úroveň výše"
 
-#: org/jmol/export/dialog/Dialog.java:472
+#: org/jmol/export/dialog/Dialog.java:474
 msgid "OK"
 msgstr "OK"
 
@@ -413,72 +413,76 @@ msgid "Hungarian"
 msgstr "Maďarština"
 
 #: org/jmol/i18n/GT.java:132
+msgid "Indonesian"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:133
 msgid "Italian"
 msgstr "Italština"
 
-#: org/jmol/i18n/GT.java:133
-msgid "Japanese"
-msgstr ""
-
 #: org/jmol/i18n/GT.java:134
+msgid "Japanese"
+msgstr "Japonština"
+
+#: org/jmol/i18n/GT.java:135
 msgid "Korean"
 msgstr "Korejština"
 
-#: org/jmol/i18n/GT.java:135
+#: org/jmol/i18n/GT.java:136
 msgid "Norwegian Bokmal"
 msgstr "Norština Bokmal"
 
-#: org/jmol/i18n/GT.java:136
+#: org/jmol/i18n/GT.java:137
 msgid "Polish"
 msgstr "Polština"
 
-#: org/jmol/i18n/GT.java:137
+#: org/jmol/i18n/GT.java:138
 msgid "Brazilian Portuguese"
 msgstr "Brazilská portugalština"
 
-#: org/jmol/i18n/GT.java:138
+#: org/jmol/i18n/GT.java:139
 msgid "Portuguese"
 msgstr "Portugalština"
 
-#: org/jmol/i18n/GT.java:139
+#: org/jmol/i18n/GT.java:140
 msgid "Russian"
 msgstr "Ruština"
 
-#: org/jmol/i18n/GT.java:140
+#: org/jmol/i18n/GT.java:141
 msgid "Slovenian"
 msgstr "Slovinština"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:142
 msgid "Spanish"
 msgstr "Španělština"
 
-#: org/jmol/i18n/GT.java:142
+#: org/jmol/i18n/GT.java:143
 msgid "Swedish"
 msgstr "Švédština"
 
-#: org/jmol/i18n/GT.java:143
+#: org/jmol/i18n/GT.java:144
 msgid "Turkish"
 msgstr "Turečtina"
 
-#: org/jmol/i18n/GT.java:144
+#: org/jmol/i18n/GT.java:145
 msgid "Ukrainian"
 msgstr "Ukrajinština"
 
-#: org/jmol/minimize/Minimizer.java:193
+#: org/jmol/minimize/Minimizer.java:191
 #, java-format
 msgid "Could not get class for force field {0}"
 msgstr "Nemohu získat třídu pro silové pole {0}"
 
-#: org/jmol/minimize/Minimizer.java:203
+#: org/jmol/minimize/Minimizer.java:202
 msgid "No atoms selected -- nothing to do!"
 msgstr "Nejsou vybrány žádné atomy -- nic na práci!"
 
-#: org/jmol/minimize/Minimizer.java:263
+#: org/jmol/minimize/Minimizer.java:262
 #, java-format
 msgid "{0} atoms will be minimized."
 msgstr "{0} atomy budou minimalizovány."
 
-#: org/jmol/minimize/Minimizer.java:354
+#: org/jmol/minimize/Minimizer.java:353
 #, java-format
 msgid "could not setup force field {0}"
 msgstr "nemohu nastavit silové pole {0}"
@@ -1590,95 +1594,95 @@ msgstr "RasMol barvy"
 msgid "About..."
 msgstr "O aplikaci..."
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1096
+#: org/jmol/script/ScriptCompilationTokenParser.java:1098
 #: org/jmol/script/ScriptEvaluator.java:2364
 msgid "bad argument count"
 msgstr "špatně spočítaný argument"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1099
+#: org/jmol/script/ScriptCompilationTokenParser.java:1101
 #, java-format
 msgid "invalid context for {0}"
 msgstr "chybný kontext pro {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1102
+#: org/jmol/script/ScriptCompilationTokenParser.java:1104
 #: org/jmol/script/ScriptEvaluator.java:2388
 msgid "command expected"
 msgstr "očekáván příkaz"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1105
+#: org/jmol/script/ScriptCompilationTokenParser.java:1107
 msgid "{ number number number } expected"
 msgstr "očekáváno { number number number }"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1108
+#: org/jmol/script/ScriptCompilationTokenParser.java:1110
 #: org/jmol/script/ScriptEvaluator.java:2397
 msgid "unexpected end of script command"
 msgstr "neočekávaný konec skriptovacího příkazu"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1111
+#: org/jmol/script/ScriptCompilationTokenParser.java:1113
 msgid "end of expression expected"
 msgstr "očekáván konec příkazu"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1114
+#: org/jmol/script/ScriptCompilationTokenParser.java:1116
 msgid "identifier or residue specification expected"
 msgstr "očekáván identifikátor nebo specifikace zbytku"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1117
+#: org/jmol/script/ScriptCompilationTokenParser.java:1119
 msgid "invalid atom specification"
 msgstr "chybná specifikace atomu"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1120
+#: org/jmol/script/ScriptCompilationTokenParser.java:1122
 msgid "invalid chain specification"
 msgstr "chybná specifikace řetězce"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1123
+#: org/jmol/script/ScriptCompilationTokenParser.java:1125
 #, java-format
 msgid "invalid expression token: {0}"
 msgstr "chybný token výrazu: {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1126
+#: org/jmol/script/ScriptCompilationTokenParser.java:1128
 msgid "invalid model specification"
 msgstr "chybná specifikace modelu"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1129
+#: org/jmol/script/ScriptCompilationTokenParser.java:1131
 #, java-format
 msgid "missing END for {0}"
 msgstr "chybí END pro {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1132
+#: org/jmol/script/ScriptCompilationTokenParser.java:1134
 #: org/jmol/script/ScriptEvaluator.java:2461
 msgid "number expected"
 msgstr "očekáváno číslo"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1135
+#: org/jmol/script/ScriptCompilationTokenParser.java:1137
 msgid "number or variable name expected"
 msgstr "očekáváno číslo nebo jméno proměnné"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1138
+#: org/jmol/script/ScriptCompilationTokenParser.java:1140
 msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "očekávána specifikace zbytku (ALA, AL?, A*)"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1141
+#: org/jmol/script/ScriptCompilationTokenParser.java:1143
 #, java-format
 msgid "{0} expected"
 msgstr "{0} očekávána"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1144
+#: org/jmol/script/ScriptCompilationTokenParser.java:1146
 #, java-format
 msgid "{0} unexpected"
 msgstr "{0} neočekávána"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1147
+#: org/jmol/script/ScriptCompilationTokenParser.java:1149
 #, java-format
 msgid "unrecognized expression token: {0}"
 msgstr "nerozpoznaný token výrazu: {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1150
+#: org/jmol/script/ScriptCompilationTokenParser.java:1152
 #: org/jmol/script/ScriptEvaluator.java:2510
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "neznámý parametr: {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1153
+#: org/jmol/script/ScriptCompilationTokenParser.java:1155
 #, java-format
 msgid "unrecognized token: {0}"
 msgstr "nerozpoznaný token: {0}"
@@ -1688,7 +1692,7 @@ msgid "script compiler ERROR: "
 msgstr "Chyba kompilátoru skriptu ERROR: "
 
 #: org/jmol/script/ScriptEvaluator.java:2226
-#: org/jmol/script/ScriptEvaluator.java:7894
+#: org/jmol/script/ScriptEvaluator.java:7893
 msgid "script ERROR: "
 msgstr "Chyba skriptu ERROR: "
 
@@ -1908,36 +1912,36 @@ msgstr "nerozpoznaný SHOW parametr --  použij {0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "Co zapsat? {0} nebo {1} \"název souboru\""
 
-#: org/jmol/script/ScriptEvaluator.java:5912
+#: org/jmol/script/ScriptEvaluator.java:5909
 #, java-format
 msgid "{0} connections deleted"
 msgstr "vymazaná spojení: {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:5933
+#: org/jmol/script/ScriptEvaluator.java:5930
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} nových vazeb; {1} změněných"
 
-#: org/jmol/script/ScriptEvaluator.java:7091
+#: org/jmol/script/ScriptEvaluator.java:7090
 #, java-format
 msgid "file {0} created"
-msgstr ""
+msgstr "soubor {0} vytvořen"
 
-#: org/jmol/script/ScriptEvaluator.java:8018
-#: org/jmol/script/ScriptEvaluator.java:8248
+#: org/jmol/script/ScriptEvaluator.java:8017
+#: org/jmol/script/ScriptEvaluator.java:8247
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atomů smazáno"
 
-#: org/jmol/script/ScriptEvaluator.java:8817
+#: org/jmol/script/ScriptEvaluator.java:8816
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} vodíkových můstků"
 
-#: org/jmol/script/ScriptEvaluator.java:9166
-#, fuzzy, java-format
+#: org/jmol/script/ScriptEvaluator.java:9165
+#, java-format
 msgid "{0} struts added"
-msgstr "{0} vodíkových můstků"
+msgstr "{0} podpěr (struts) přidáno"
 
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
@@ -1979,9 +1983,9 @@ msgid "move selected atoms (requires {0})"
 msgstr "přesunout vybrané atomy ( vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:62
-#, fuzzy, java-format
+#, java-format
 msgid "select and drag atoms (requires {0})"
-msgstr "vybrat atom (vyžaduje {0})"
+msgstr "vyber a táhni atomy (vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:63
 #, java-format
@@ -1989,14 +1993,14 @@ msgid "rotate selected atoms (requires {0})"
 msgstr "otočit vybrané atomy (vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:64
-#, fuzzy, java-format
+#, java-format
 msgid "delete bond (requires {0})"
-msgstr "vybrat NONE (vyžaduje {0})"
+msgstr "samž vazby (vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:65
-#, fuzzy, java-format
+#, java-format
 msgid "connect atoms (requires {0})"
-msgstr "vybrat atom (vyžaduje {0})"
+msgstr "spoj atomy (vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:66
 #, java-format
@@ -2018,21 +2022,19 @@ msgid "spin model (swipe and release button and stop motion simultaneously)"
 msgstr "otáčej model (klepni a pusť tlačítko a současně zastav pohyb)"
 
 #: org/jmol/viewer/ActionManager.java:71
-#, fuzzy
 msgid ""
 "click on two points to spin around axis clockwise (requires SET picking SPIN)"
 msgstr ""
-"klepni na dva body pro otáčení kolem osy po směru hodinových ručiček "
-"(vyžaduje SET PICKING SPIN)"
+"klepni na dva body pro rotaci kolem osy po směru hodinových ručiček "
+"(vyžaduje SET picking SPIN)"
 
 #: org/jmol/viewer/ActionManager.java:72
-#, fuzzy
 msgid ""
 "click on two points to spin around axis counterclockwise (requires SET "
 "picking SPIN)"
 msgstr ""
-"klepni na dva body pro otáčení kolem osy proti směru hodinových ručiček "
-"(vyžaduje SET PICKING SPIN)"
+"klepni na dva body pro rotaci kolem osy proti směru hodinových ručiček "
+"(vyžaduje SET picking SPIN)"
 
 #: org/jmol/viewer/ActionManager.java:74
 #, java-format
@@ -2142,23 +2144,23 @@ msgid "simulate multi-touch using the mouse)"
 msgstr "simulovat multi-touch pomocí myši"
 
 #: org/jmol/viewer/ActionManager.java:100
-#, fuzzy, java-format
+#, java-format
 msgid "stop motion (requires {0})"
-msgstr "vybrat NONE (vyžaduje {0})"
+msgstr "zastav pohyb (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:1435
+#: org/jmol/viewer/ActionManager.java:1438
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "vybrat jeden či více atomů k rotaci okolo osy"
 
-#: org/jmol/viewer/ActionManager.java:1436
+#: org/jmol/viewer/ActionManager.java:1439
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "vybrat dva atomy k rotaci okolo osy"
 
-#: org/jmol/viewer/ActionManager.java:1439
+#: org/jmol/viewer/ActionManager.java:1442
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "vyber jeden nebo více atomů pro zobrazení vzájemné symetrie"
 
-#: org/jmol/viewer/ActionManager.java:1440
+#: org/jmol/viewer/ActionManager.java:1443
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr "vyber dva atomy pro zobrazení jejich vzájemné symetrie"
@@ -2174,36 +2176,27 @@ msgstr "skryté atomy: {0}"
 msgid "{0} atoms selected"
 msgstr "{0} atomů vybráno"
 
-#: org/jmol/viewer/Viewer.java:4082
-#, fuzzy, java-format
+#: org/jmol/viewer/Viewer.java:4101
+#, java-format
 msgid "{0} hydrogens added"
-msgstr "{0} vodíkových můstků"
+msgstr "{0} vodíky přidány"
 
-#: org/jmol/viewer/Viewer.java:4123
+#: org/jmol/viewer/Viewer.java:4142
 msgid "Drag to move label"
 msgstr "Táhni myší pro přesun popisku"
 
-#: org/jmol/viewer/Viewer.java:7344
+#: org/jmol/viewer/Viewer.java:7364
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "schránka není přístupná -- použijte podepsaný applet"
 
-#: org/jmol/viewer/Viewer.java:8053
+#: org/jmol/viewer/Viewer.java:8076
 msgid "Cannot set log file path."
-msgstr ""
+msgstr "Nemohu nastavit cestu k log souboru."
 
-#: org/jmol/viewer/Viewer.java:8055
+#: org/jmol/viewer/Viewer.java:8078
 #, java-format
 msgid "Setting log file to {0}"
-msgstr ""
-
-#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
-#~ msgstr "ERROR: cannot set boolean flag to string value: {0}"
-
-#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-#~ msgstr "ERROR: cannot set boolean flag to numeric value: {0}"
-
-#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-#~ msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"
+msgstr "Nastavuji log soubor na {0}"
 
 #~ msgid "Java memory usage"
 #~ msgstr "Využití Java  paměti"
@@ -2247,3 +2240,12 @@ msgstr ""
 
 #~ msgid "Script with history"
 #~ msgstr "Skript s historií"
+
+#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
+#~ msgstr "ERROR: cannot set boolean flag to string value: {0}"
+
+#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
+#~ msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"
+
+#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
+#~ msgstr "ERROR: cannot set boolean flag to numeric value: {0}"

@@ -6859,7 +6859,9 @@ public class ScriptEvaluator {
                 (int) pt.z });
             loadScript.append(" " + Escape.escape(pt));
           } else if (tokAt(i) == Token.bitset) {
-            htParams.put("bsModels", (BitSet) getToken(i++).value);
+            BitSet bsModels = (BitSet) getToken(i++).value;
+            htParams.put("bsModels", bsModels);
+            loadScript.append(" " + Escape.escape(bsModels));
           } else {
             htParams.put("firstLastStep", new int[] { 0, -1, 1 });
           }

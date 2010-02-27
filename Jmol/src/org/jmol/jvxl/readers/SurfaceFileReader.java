@@ -86,7 +86,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
     if (line.indexOf("&plot") == 0)
       return "Jaguar";
     if (line.indexOf("MAP ") == 208)
-      return "MRC" + (line.charAt(67) == '\0' ? "-" : "+");
+      return "MRC" + (line.charAt(67) == '\0' ? "L" : "B");
     if (line.indexOf("<efvet ") >= 0)
       return "Efvet";
     if (line.indexOf(PmeshReader.PMESH_BINARY_MAGIC_NUMBER) == 0)
@@ -94,7 +94,9 @@ abstract class SurfaceFileReader extends SurfaceReader {
     if ("\n\r".indexOf(line.charAt(0)) >= 0 && line.indexOf("ZYX") >= 0)
       return "Xplor";
     if (line.length() > 37 && line.charAt(36) == 0 && line.charAt(37) == 100)
-      return "DNS6";
+      return "DSN6B";
+    if (line.length() > 37 && line.charAt(37) == 100 && line.charAt(36) == 0)
+      return "DSN6L";
     
     // Apbs, Jvxl, or Cube, maybe formatted Plt
 

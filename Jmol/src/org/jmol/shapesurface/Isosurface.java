@@ -539,6 +539,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return null;//"no current isosurface";
     if (property == "cutoff")
       return new Float(jvxlData.cutoff);
+    if (property == "minMaxInfo")
+      return new float[] { jvxlData.dataMin, jvxlData.dataMax };
     if (property == "plane")
       return jvxlData.jvxlPlane;
     if (property == "jvxlDataXml" || property == "jvxlMeshXml") {

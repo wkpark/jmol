@@ -43,15 +43,11 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected boolean isAngstroms;
   protected boolean canDownsample;
   private int[] downsampleRemainders;
-  protected float dataMin, dataMax, dataMean;
  
   VolumeFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     canDownsample = isProgressive = isXLowToHigh = true;
     jvxlData.wasCubic = true;
-    dataMin = Float.MAX_VALUE;
-    dataMax = -Float.MAX_VALUE;
-    dataMin = 0;
     boundingBox = params.boundingBox;
   }
 

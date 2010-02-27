@@ -1107,16 +1107,16 @@ public class SurfaceGenerator {
         // ignore
       }
       br = null;
-      return new MrcBinaryReader(this, params.fileName, data, fileType.charAt(3) == '+');
+      return new MrcBinaryReader(this, params.fileName, data, fileType.charAt(3) == 'B');
     }
-    if (fileType.equals("DNS6")) {
+    if (fileType.startsWith("DSN6")) {
       try {
         br.close();
       } catch (IOException e) {
         // ignore
       }
       br = null;
-      return new Dns6BinaryReader(this, params.fileName, data);
+      return new Dsn6BinaryReader(this, params.fileName, data, fileType.charAt(4) == 'B');
     }
     if (fileType.equals("Efvet"))
       return new EfvetReader(this,br);

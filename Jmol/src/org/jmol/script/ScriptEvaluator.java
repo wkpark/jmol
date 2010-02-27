@@ -13879,17 +13879,21 @@ public class ScriptEvaluator {
           iToken = ptSigma;
           error(ERROR_invalidArgument);
         }
-          s += " created with cutoff = " + cutoff
-              + " ; number of isosurfaces = " + n;
-          if (dataRange != null && dataRange[0] != Float.MAX_VALUE
-              && dataRange[0] != dataRange[1])
-            s += "\ncolor range " + dataRange[2] + " " + dataRange[3]
-                + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
-          if (doCalcArea)
-            s += "\nisosurfaceArea = " + Escape.escapeArray(area);
-          if (doCalcVolume)
-            s += "\nisosurfaceVolume = " + Escape.escapeArray(volume);
-          showString(s);
+        s += " created with cutoff=" + cutoff;
+        float[] minMax = (float[]) viewer
+            .getShapeProperty(iShape, "minMaxInfo");
+        if (minMax[0] != Float.MAX_VALUE)
+          s += " min=" + minMax[0] + " max=" + minMax[1]; 
+        s += "; number of isosurfaces = " + n;
+        if (dataRange != null && dataRange[0] != Float.MAX_VALUE
+            && dataRange[0] != dataRange[1])
+          s += "\ncolor range " + dataRange[2] + " " + dataRange[3]
+              + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
+        if (doCalcArea)
+          s += "\nisosurfaceArea = " + Escape.escapeArray(area);
+        if (doCalcVolume)
+          s += "\nisosurfaceVolume = " + Escape.escapeArray(volume);
+        showString(s);
       }
     } else if (doCalcArea || doCalcVolume) {
       if (doCalcArea)

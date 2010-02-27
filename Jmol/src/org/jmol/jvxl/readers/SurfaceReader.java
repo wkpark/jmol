@@ -203,6 +203,9 @@ public abstract class SurfaceReader implements VertexDataServer {
   boolean vertexDataOnly;
   boolean hasColorData;
 
+  protected float dataMin = Float.MAX_VALUE;
+  protected float dataMax = -Float.MAX_VALUE;
+  protected float dataMean;
   protected Point3f xyzMin, xyzMax;
 
   protected Point3f center;
@@ -353,6 +356,8 @@ public abstract class SurfaceReader implements VertexDataServer {
       setBoundingBox();
     Logger.info("boundbox corners " + Escape.escape(xyzMin) + " " + Escape.escape(xyzMax));
     jvxlData.boundingBox = new Point3f[] {xyzMin, xyzMax};
+    jvxlData.dataMin = dataMin;
+    jvxlData.dataMax = dataMax;
     jvxlData.cutoff = (isJvxl ? jvxlCutoff : params.cutoff);
     jvxlData.isCutoffAbsolute = params.isCutoffAbsolute;
     jvxlData.pointsPerAngstrom = 1f/volumeData.volumetricVectorLengths[0];

@@ -29,21 +29,23 @@ import java.io.StringBufferInputStream;
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
 
-class Dns6BinaryReader extends MapFileReader {
+class Dsn6BinaryReader extends MapFileReader {
 
   /*
-   * also referred to as "O" format
+   * DSN6 map file reader. 
+   * 
+   * Also referred to as "O" format
    * 
    * see http://www.ks.uiuc.edu/Research/vmd/plugins/doxygen/dsn6plugin_8C-source.html
    *
    */
 
   
-  Dns6BinaryReader(SurfaceGenerator sg, String fileName, String data) {
+  Dsn6BinaryReader(SurfaceGenerator sg, String fileName, String data, boolean isBigEndian) {
     super(sg, null);
     binarydoc = new BinaryDocument();
     if (data == null)
-      binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), true);
+      binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), isBigEndian);
     else 
       binarydoc.setStream(new DataInputStream(new StringBufferInputStream(data)));
     // data are HIGH on the inside and LOW on the outside
@@ -52,7 +54,7 @@ class Dns6BinaryReader extends MapFileReader {
     nSurfaces = 1; 
   }
 
-  float byteFactor, byteOffset;
+  private float byteFactor;
   private int xyCount;
   private int nBrickX, nBrickY;
   private int brickLayerVoxelCount;

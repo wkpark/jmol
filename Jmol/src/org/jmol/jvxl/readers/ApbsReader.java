@@ -29,6 +29,10 @@ import org.jmol.util.Parser;
 
 class ApbsReader extends VolumeFileReader {
 
+  /*
+   *  http://apbs.sourceforge.net
+   */
+  
   ApbsReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     // data are HIGH on the inside and LOW on the outside

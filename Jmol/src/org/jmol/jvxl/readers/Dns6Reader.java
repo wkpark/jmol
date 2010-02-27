@@ -34,6 +34,8 @@ class Dsn6BinaryReader extends MapFileReader {
   /*
    * DSN6 map file reader. 
    * 
+   * http://eds.bmc.uu.se/eds/
+   * 
    * Also referred to as "O" format
    * 
    * see http://www.ks.uiuc.edu/Research/vmd/plugins/doxygen/dsn6plugin_8C-source.html

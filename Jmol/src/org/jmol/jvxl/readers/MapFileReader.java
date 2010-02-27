@@ -168,7 +168,7 @@ abstract class MapFileReader extends VolumeFileReader {
       volumetricOrigin.set(origin);
 
       Logger.info("Jmol grid origin in Cartesian coordinates: " + origin);
-      Logger.info("Use  isosurface OFFSET {x y z}  if you want to shift it.");
+      Logger.info("Use  isosurface OFFSET {x y z}  if you want to shift it.\n");
         
       /* example:
           

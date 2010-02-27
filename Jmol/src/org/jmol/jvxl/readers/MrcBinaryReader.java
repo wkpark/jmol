@@ -33,6 +33,10 @@ class MrcBinaryReader extends MapFileReader {
 
   /*
    * also referred to as CCP4 format
+   * 
+   * examples include the emd_1xxx..map electron microscopy files
+   * and xxxx.ccp4 files
+   * 
    *
    */
 
@@ -45,9 +49,9 @@ class MrcBinaryReader extends MapFileReader {
     else 
       binarydoc.setStream(new DataInputStream(new StringBufferInputStream(data)));
     // data are HIGH on the inside and LOW on the outside
+    nSurfaces = 1; 
     if (params.thePlane == null)
       params.insideOut = !params.insideOut;
-    nSurfaces = 1; 
     allowSigma = true;
   }
   
@@ -139,6 +143,9 @@ class MrcBinaryReader extends MapFileReader {
     mapr = binarydoc.readInt();
     maps = binarydoc.readInt();
 
+    if (mapc != 1 && params.thePlane == null)
+      params.dataXYReversed = true;
+
     dmin = binarydoc.readFloat(); 
     dmax = binarydoc.readFloat();
     dmean = binarydoc.readFloat();
@@ -197,20 +204,14 @@ class MrcBinaryReader extends MapFileReader {
     // setting the cutoff to mean + 2 x RMS seems to work
     // reasonably well as a default.
 
-    if (params.thePlane == null) {
-      if (params.sigma != Float.MAX_VALUE) {
-        params.cutoff = rmsDeviation * params.sigma + dmean;
-        Logger.info("Cutoff set to (mean + rmsDeviation*" + params.sigma + ") = " + params.cutoff);
-      } else if (params.cutoffAutomatic) {
-        params.cutoff = rmsDeviation + dmean;
-        Logger.info("Cutoff set to sigma 1.0 or (mean + rmsDeviation) = " + params.cutoff);
-      } 
-    }
-
     getVectorsAndOrigin();
     
-    Logger.info("\n");
-    
+    if (params.thePlane == null && (params.cutoffAutomatic || params.sigma != Float.MAX_VALUE)) {
+      float sigma = (params.sigma == Float.MAX_VALUE ? 1 : params.sigma);
+      params.cutoff = rmsDeviation * sigma + dmean;
+      Logger.info("Cutoff set to (mean + rmsDeviation*" + params.sigma + ")\n");
+    }
+
     jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer.append("MRC DATA ").append(labels[0]).append("\n");
     jvxlFileHeaderBuffer.append("see http://ami.scripps.edu/software/mrctools/mrc_specification.php\n");

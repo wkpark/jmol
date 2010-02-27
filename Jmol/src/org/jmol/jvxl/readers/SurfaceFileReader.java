@@ -93,6 +93,8 @@ abstract class SurfaceFileReader extends SurfaceReader {
       return "Pmesh";
     if ("\n\r".indexOf(line.charAt(0)) >= 0 && line.indexOf("ZYX") >= 0)
       return "Xplor";
+    if (line.length() > 37 && line.charAt(36) == 0 && line.charAt(37) == 100)
+      return "DNS6";
     
     // Apbs, Jvxl, or Cube, maybe formatted Plt
 

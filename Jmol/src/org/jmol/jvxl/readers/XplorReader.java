@@ -96,7 +96,8 @@ MRC header: mapc,mapr,maps: 2,1,3
 
   XplorReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
-    params.insideOut = !params.insideOut;
+    if (params.thePlane == null)
+      params.insideOut = !params.insideOut;
     nSurfaces = 1;
   }
 
@@ -140,12 +141,12 @@ MRC header: mapc,mapr,maps: 2,1,3
 
     getVectorsAndOrigin();      
 
-    nBlock = voxelCounts[2] * voxelCounts[1];
-    if (params.cutoffAutomatic && params.thePlane == null) {
+    if (params.thePlane == null && params.cutoffAutomatic) {
       params.cutoff = (boundingBox == null ? 3.0f : 1.6f);
-      Logger.info("XplorReader: setting cutoff to default value of " + params.cutoff + (boundingBox == null ? " (no BOUNDBOX parameter)" : ""));
+      Logger.info("XplorReader: setting cutoff to default value of " + params.cutoff + (boundingBox == null ? " (no BOUNDBOX parameter)\n" : "\n"));
     }
     
+    nBlock = voxelCounts[2] * voxelCounts[1];
   }
 
 

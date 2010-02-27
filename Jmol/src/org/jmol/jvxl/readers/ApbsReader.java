@@ -32,7 +32,8 @@ class ApbsReader extends VolumeFileReader {
   ApbsReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     // data are HIGH on the inside and LOW on the outside
-    params.insideOut = !params.insideOut;
+    if (params.thePlane == null)
+      params.insideOut = !params.insideOut;
     isAngstroms = true;
     nSurfaces = 1;
   }

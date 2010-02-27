@@ -293,7 +293,7 @@ public class SurfaceGenerator {
   }
   
   public boolean isInsideOut() {
-    return params.insideOut;
+    return params.insideOut != params.dataXYReversed;
   }
 
   public float getCutoff() {
@@ -1108,6 +1108,15 @@ public class SurfaceGenerator {
       }
       br = null;
       return new MrcBinaryReader(this, params.fileName, data, fileType.charAt(3) == '+');
+    }
+    if (fileType.equals("DNS6")) {
+      try {
+        br.close();
+      } catch (IOException e) {
+        // ignore
+      }
+      br = null;
+      return new Dns6BinaryReader(this, params.fileName, data);
     }
     if (fileType.equals("Efvet"))
       return new EfvetReader(this,br);

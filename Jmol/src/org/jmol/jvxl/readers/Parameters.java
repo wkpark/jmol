@@ -196,6 +196,7 @@ public class Parameters {
     colorPosLCAO = defaultColorPositiveLCAO;
     cutoff = Float.MAX_VALUE;
     cutoffAutomatic = true;
+    dataXYReversed = false;
     distance = Float.MAX_VALUE;
     envelopeRadius = 10f;
     fileIndex = 1;
@@ -690,6 +691,7 @@ public class Parameters {
   public boolean isXLowToHigh;
   
   boolean insideOut;
+  boolean dataXYReversed;
   public float cutoff = Float.MAX_VALUE;
   public float sigma = Float.MAX_VALUE; // for MrcReader
   boolean cutoffAutomatic = true;

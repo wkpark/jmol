@@ -145,7 +145,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       return true;
     }
     
-    if (addVibrations && line.contains("MODES         EIGV")) {
+    if (addVibrations && line.contains("* CALCULATION OF PHONON FREQUENCIES")) {
       readFrequencies();
       return true;
     }
@@ -354,6 +354,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
   
   private void readFrequencies() throws Exception {
+    discardLinesUntilContains("MODES         EIGV");
     readLine();
     Vector vData = new Vector();
     while (readLine() != null && line.length() > 0) {
@@ -361,11 +362,23 @@ public class CrystalReader extends AtomSetCollectionReader {
       int i1 = parseInt(line.substring(6, 10));
       String irrep = line.substring(49, 52).trim();
       String intens = line.substring(59, 69).replace(')', ' ').trim();
-      String[] data = new String[] { irrep, intens };
+
+      // not all crystal calculations include intensities values
+      // this feature is activated when the keyword INTENS is on the input
+      if (intens == null)
+        intens = "not available";
+
+      String irActivity = line.substring(55, 58).trim();
+      String ramanActivity = line.substring(71, 73).trim();
+
+      String[] data = new String[] { irrep, intens, irActivity, ramanActivity };
       for (int i = i0; i <= i1; i++)
         vData.add(data);
     }
-    discardLines(2);
+    
+    discardLinesUntilContains("NORMAL MODES NORMALIZED TO CLASSICAL AMPLITUDES");
+    readLine();
+    
     while (readLine() != null && line.startsWith(" FREQ(CM**-1)")) {
       int frequencyCount = 0;
       String[] tokens = getTokens(line.substring(15));
@@ -387,19 +400,31 @@ public class CrystalReader extends AtomSetCollectionReader {
         if (ignore[i])
           continue;
         cloneLastAtomSet();
-        atomSetCollection.setAtomSetName(data[0] + " " + frequencies[i] + " cm-1 (" + data[1] + " KM/Mole)");
+
+        String activity = ", IR: " + data[2] + ", Raman: " + data[3];
+        atomSetCollection.setAtomSetName(data[0] + " " + frequencies[i]
+            + " cm-1 (" + data[1] + " km/Mole)" + activity);
         atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
             + " cm-1");
         atomSetCollection.setAtomSetProperty("IR Intensity", data[1]
-            + " KM/Mole");
+            + " km/Mole");
         atomSetCollection.setAtomSetProperty("vibrationalSymmetry", data[0]);
+
+        if (data[2] == "A")
+          data[2] = "active";
+        data[2] = "inactive";
+
+        if (data[3] == "A")
+          data[3] = "active";
+        data[3] = "inactive";
+
+        atomSetCollection.setAtomSetProperty("IR activity ", data[2]);
+        atomSetCollection.setAtomSetProperty("Raman activity ", data[3]);
       }
       readLine();
       fillFrequencyData(iAtom0, atomCount, ignore, false, 14, 10);
       readLine();
     }
-
   }
-
 
 }

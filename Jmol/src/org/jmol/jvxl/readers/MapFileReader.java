@@ -32,6 +32,9 @@ import org.jmol.util.SimpleUnitCell;
 
 abstract class MapFileReader extends VolumeFileReader {
 
+  protected float dmin = Float.MAX_VALUE;
+  protected float dmax, dmean, drange;
+
   MapFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     isAngstroms = true;
@@ -60,115 +63,118 @@ abstract class MapFileReader extends VolumeFileReader {
      originX, originY, originZ   origin in X,Y,Z of unitCell (0,0,0)
     */
 
-    protected int mapc, mapr, maps;
-    protected int nx, ny, nz, mode;
-    protected int[] nxyzStart = new int[3];
-    protected int na, nb, nc;
-    protected float a, b, c, alpha, beta, gamma;
-    protected Point3f origin = new Point3f();    
-    protected Point3f adjustment = new Point3f();
-    protected Point3f[] vectors = new Point3f[3];
+  protected int mapc, mapr, maps;
+  protected int nx, ny, nz, mode;
+  protected int[] nxyzStart = new int[3];
+  protected int na, nb, nc;
+  protected float a, b, c, alpha, beta, gamma;
+  protected Point3f origin = new Point3f();
+  protected Point3f adjustment = new Point3f();
+  protected Point3f[] vectors = new Point3f[3];
 
-    protected void getVectorsAndOrigin() {
+  protected void getVectorsAndOrigin() {
       
       Logger.info("grid parameters: nx,ny,nz: " + nx + "," + ny + "," + nz);
-      Logger.info("grid parameters: nxStart,nyStart,nzStart: " 
-          + nxyzStart[0] + "," + nxyzStart[1] + "," + nxyzStart[2]);
+    Logger.info("grid parameters: nxStart,nyStart,nzStart: " + nxyzStart[0]
+        + "," + nxyzStart[1] + "," + nxyzStart[2]);
 
-      Logger.info("grid parameters: mx,my,mz: " + na + "," + nb + "," + nc);
-      Logger.info("grid parameters: a,b,c,alpha,beta,gamma: " + a + "," + b + "," + c + "," + alpha + "," + beta + "," + gamma);
-      Logger.info("grid parameters: mapc,mapr,maps: " + mapc + "," + mapr + "," + maps);
-      Logger.info("grid parameters: originX,Y,Z: " + origin);
-      
-      SimpleUnitCell unitCell = new SimpleUnitCell(a / na, b / nb, c / nc, alpha, beta, gamma);
+    Logger.info("grid parameters: mx,my,mz: " + na + "," + nb + "," + nc);
+    Logger.info("grid parameters: a,b,c,alpha,beta,gamma: " + a + "," + b + ","
+        + c + "," + alpha + "," + beta + "," + gamma);
+    Logger.info("grid parameters: mapc,mapr,maps: " + mapc + "," + mapr + ","
+        + maps);
+    Logger.info("grid parameters: originX,Y,Z: " + origin);
 
-        /*
+    SimpleUnitCell unitCell = new SimpleUnitCell(a / na, b / nb, c / nc, alpha,
+        beta, gamma);
+
+    /*
+     
+     Many thanks to Eric Martz for helping get this right. 
+     Basically we have:
+    
+     Three principal crystallographic axes: a, b, and c...
+     ...also referred to as x, y, and z
+     ...also referred to as directions 1, 2, and 3
+     ...a mapping of "sheets" "rows" and "columns" of data
+        set in the file as 
          
-         Many thanks to Eric Martz for helping get this right. 
-         Basically we have:
-        
-         Three principal crystallographic axes: a, b, and c...
-         ...also referred to as x, y, and z
-         ...also referred to as directions 1, 2, and 3
-         ...a mapping of "sheets" "rows" and "columns" of data
-            set in the file as 
-             
-                             s1r1c1...s1r1c9.....
-                             s1r2c1...s1r2c9.....
-                            
-                             s2r1c1...s2r1c9.....
-                             s2r2c1...s2r2c9.....
-         etc.
-         
-         In Jmol, we always have x (our [0]) running slowest, so we 
-         ultimately must make the following assignment:
-         
-           MRC "maps" maps to .x or [0]
-           MRC "mapr" maps to .y or [1]
-           MRC "mapc" maps to .z or [2]
-        
-         We really don't care if this is actually physical "x" "y" or "z".
-         In fact, for a hexagonal cell these will be combinations of xyz.
-         
-         So it goes something like this:
-         
-         scale the (a) vector by 1/mx and call that vector[0]
-         scale the (b) vector by 1/my and call that vector[1]
-         scale the (c) vector by 1/mz and call that vector[2]
-         
-         Now map these vectors to Jmol volumetricVectors using
-        
-         our x: volVector[0] = vector[maps - 1]  (slow)
-         our y: volVector[1] = vector[mapr - 1] 
-         our z: volVector[2] = vector[mapc - 1]  (fast)
-        
-         This is because our x is the slowest running variable.
-        */               
+                         s1r1c1...s1r1c9.....
+                         s1r2c1...s1r2c9.....
+                        
+                         s2r1c1...s2r1c9.....
+                         s2r2c1...s2r2c9.....
+     etc.
+     
+     In Jmol, we always have x (our [0]) running slowest, so we 
+     ultimately must make the following assignment:
+     
+       MRC "maps" maps to .x or [0]
+       MRC "mapr" maps to .y or [1]
+       MRC "mapc" maps to .z or [2]
+    
+     We really don't care if this is actually physical "x" "y" or "z".
+     In fact, for a hexagonal cell these will be combinations of xyz.
+     
+     So it goes something like this:
+     
+     scale the (a) vector by 1/mx and call that vector[0]
+     scale the (b) vector by 1/my and call that vector[1]
+     scale the (c) vector by 1/mz and call that vector[2]
+     
+     Now map these vectors to Jmol volumetricVectors using
+    
+     our x: volVector[0] = vector[maps - 1]  (slow)
+     our y: volVector[1] = vector[mapr - 1] 
+     our z: volVector[2] = vector[mapc - 1]  (fast)
+    
+     This is because our x is the slowest running variable.
+    */               
         
       vectors[0] = new Point3f(1, 0, 0);
-      vectors[1] = new Point3f(0, 1, 0);
-      vectors[2] = new Point3f(0, 0, 1);
-      unitCell.toCartesian(vectors[0]);
-      unitCell.toCartesian(vectors[1]);
-      unitCell.toCartesian(vectors[2]);
+    vectors[1] = new Point3f(0, 1, 0);
+    vectors[2] = new Point3f(0, 0, 1);
+    unitCell.toCartesian(vectors[0]);
+    unitCell.toCartesian(vectors[1]);
+    unitCell.toCartesian(vectors[2]);
 
-      Logger.info("Jmol unit cell vectors:");
-      Logger.info("    a: " + vectors[0]);
-      Logger.info("    b: " + vectors[1]);
-      Logger.info("    c: " + vectors[2]);
+    Logger.info("Jmol unit cell vectors:");
+    Logger.info("    a: " + vectors[0]);
+    Logger.info("    b: " + vectors[1]);
+    Logger.info("    c: " + vectors[2]);
 
-      voxelCounts[0] = nz; // slowest
-      voxelCounts[1] = ny;
-      voxelCounts[2] = nx; // fastest
-      
-      volumetricVectors[0].set(vectors[maps - 1]);
-      volumetricVectors[1].set(vectors[mapr - 1]);
-      volumetricVectors[2].set(vectors[mapc - 1]);
+    voxelCounts[0] = nz; // slowest
+    voxelCounts[1] = ny;
+    voxelCounts[2] = nx; // fastest
 
-      // only use nxyzStart if the origin is {0, 0, 0}
-      
-      if (origin.x == 0 && origin.y == 0 && origin.z == 0) {
-        
-        // older method -- wow! Beats me.....
-        
-        int[] xyz2crs = new int[3];
-        xyz2crs[mapc-1] = 0;        // mapc = 2 ==> [1] = 0
-        xyz2crs[mapr-1] = 1;        // mapr = 1 ==> [0] = 1
-        xyz2crs[maps-1] = 2;        // maps = 3 ==>  [2] = 2
-        int xIndex = xyz2crs[0];    // xIndex = 1
-        int yIndex = xyz2crs[1];    // yIndex = 0
-        int zIndex = xyz2crs[2];    // zIndex = 2
-        
-        origin.scaleAdd(nxyzStart[xIndex] + adjustment.x, vectors[0], origin);
-        origin.scaleAdd(nxyzStart[yIndex] + adjustment.y, vectors[1], origin);
-        origin.scaleAdd(nxyzStart[zIndex] + adjustment.z, vectors[2], origin);
+    volumetricVectors[0].set(vectors[maps - 1]);
+    volumetricVectors[1].set(vectors[mapr - 1]);
+    volumetricVectors[2].set(vectors[mapc - 1]);
 
-      }
-      
-      volumetricOrigin.set(origin);
+    // only use nxyzStart if the origin is {0, 0, 0}
 
-      Logger.info("Jmol grid origin in Cartesian coordinates: " + origin);
-      Logger.info("Use  isosurface OFFSET {x y z}  if you want to shift it.\n");
+    if (origin.x == 0 && origin.y == 0 && origin.z == 0) {
+
+      // older method -- wow! Beats me.....
+
+      int[] xyz2crs = new int[3];
+      xyz2crs[mapc - 1] = 0; // mapc = 2 ==> [1] = 0
+      xyz2crs[mapr - 1] = 1; // mapr = 1 ==> [0] = 1
+      xyz2crs[maps - 1] = 2; // maps = 3 ==> [2] = 2
+      int xIndex = xyz2crs[0]; // xIndex = 1
+      int yIndex = xyz2crs[1]; // yIndex = 0
+      int zIndex = xyz2crs[2]; // zIndex = 2
+
+      origin.scaleAdd(nxyzStart[xIndex] + adjustment.x, vectors[0], origin);
+      origin.scaleAdd(nxyzStart[yIndex] + adjustment.y, vectors[1], origin);
+      origin.scaleAdd(nxyzStart[zIndex] + adjustment.z, vectors[2], origin);
+
+    }
+
+    volumetricOrigin.set(origin);
+
+    Logger.info("Jmol grid origin in Cartesian coordinates: " + origin);
+    Logger.info("Use  isosurface OFFSET {x y z}  if you want to shift it.\n");
         
       /* example:
           
@@ -199,8 +205,22 @@ Jmol unit cell vectors:
 Jmol grid origin in Cartesian coordinates: (19.333334, -6.9282017, -21.666666)
 Jmol origin in slow-to-fast system: (19.333334, -6.9282017, -21.666666)
 
-         */
+    */
 
-    }    
+  }    
   
+  protected void setCutoffAutomatic() {
+    if (params.thePlane == null && params.cutoffAutomatic) {
+      params.cutoff = (boundingBox == null ? 3.0f : 1.6f);
+      if (dmin != Float.MAX_VALUE) {
+        if (params.cutoff > dmax)
+          params.cutoff = dmax / 4; // just a guess
+      }
+      Logger.info("DNS6Reader: setting cutoff to default value of "
+          + params.cutoff
+          + (boundingBox == null ? " (no BOUNDBOX parameter)\n" : "\n"));
+    }
+  }
+
+
 }

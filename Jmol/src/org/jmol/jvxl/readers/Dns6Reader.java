@@ -61,7 +61,6 @@ class Dsn6BinaryReader extends MapFileReader {
   private int brickLayerByteCount;
   private int brickRowByteCount;
   private byte[] brickLayer;
-  private float dmin, dmax, drange;
 
   protected void readParameters() throws Exception {
     
@@ -125,6 +124,9 @@ class Dsn6BinaryReader extends MapFileReader {
     // If you ask me, this is rather odd, because you 
     // then have restricted the resolution to only 255 possible values. 
     // Is the raw data really that low resolution?
+    // Note that this format has a minimum range limitation of 0.389 = 25500 / 0x10000
+    // and also a severe limitation in m / (M - m), which very quickly loses precision
+    // when m is small or (M - m) is large.
     //
     // In any case, what we do here is simply to
     // calculate min and max from headers 16, 17, and 19,
@@ -145,7 +147,19 @@ class Dsn6BinaryReader extends MapFileReader {
     drange = dmax - dmin;
     byteFactor = drange / 255;
     
-    Logger.info("DNS6 dmin,dmax = " + dmin + "," + dmax);
+    // just to satisfy my curiosity:
+    
+    float dminError1 = (0 - header17 - 0.5f) * header19 / (header16 - 0.5f);
+    float dminError2 = (0 - header17 + 0.5f) * header19 / (header16 + 0.5f);
+    float dmaxError1 = (255 - header17 - 0.5f) * header19 / (header16 - 0.5f);
+    float dmaxError2 = (255 - header17 + 0.5f) * header19 / (header16 + 0.5f);
+
+    float dminError = (int)((dminError2 - dminError1) / 0.002f) * 0.001f;
+    float dmaxError = (int)((dmaxError2 - dmaxError1) / 0.002f) * 0.001f;
+    
+    Logger.info("DNS6 dmin,dmax = " + dmin + "+/-" + dminError + "," + dmax + "+/-" + dmaxError);
+
+    
     
     a /= scalingFactor;
     b /= scalingFactor;
@@ -157,11 +171,7 @@ class Dsn6BinaryReader extends MapFileReader {
     binarydoc.seek(0x200);
 
     getVectorsAndOrigin();
-
-    if (params.thePlane == null && params.cutoffAutomatic) {
-      params.cutoff = (boundingBox == null ? 3.0f : 1.6f);
-      Logger.info("DNS6Reader: setting cutoff to default value of " + params.cutoff + (boundingBox == null ? " (no BOUNDBOX parameter)\n" : "\n"));
-    }
+    setCutoffAutomatic();
 
     xyCount = nx * ny;
     brickLayerVoxelCount = xyCount * 8;

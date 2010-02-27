@@ -100,7 +100,6 @@ class MrcBinaryReader extends MapFileReader {
 
   protected void readParameters() throws Exception {
 
-    float dmin, dmax, dmean;
     int ispg;
     int nsymbt;
     byte[] extra = new byte[100];

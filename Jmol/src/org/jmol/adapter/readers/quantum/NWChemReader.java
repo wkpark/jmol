@@ -470,7 +470,7 @@ public class NWChemReader extends MOReader {
         String frequencyString = tokens[1] + " cm^-1";
         atomSetCollection.setAtomSetName(frequencyString, idx);
         atomSetCollection.setAtomSetProperty("Frequency", frequencyString, idx);
-        atomSetCollection.setAtomSetProperty("IR Intensity", tokens[5]
+        atomSetCollection.setAtomSetProperty("IRIntensity", tokens[5]
             + " KM/mol", idx);
         idx++;
       }

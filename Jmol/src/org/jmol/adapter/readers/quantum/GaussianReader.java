@@ -529,11 +529,11 @@ but:
         atomSetCollection.setAtomSetProperty(energyKey, energyString);
         atomSetCollection.setAtomSetProperty("Frequency",
             frequencies[i]+" cm^-1");
-        atomSetCollection.setAtomSetProperty("Reduced Mass",
+        atomSetCollection.setAtomSetProperty("ReducedMass",
             red_masses[i]+" AMU");
-        atomSetCollection.setAtomSetProperty("Force Constant",
+        atomSetCollection.setAtomSetProperty("ForceConstant",
             frc_consts[i]+" mDyne/A");
-        atomSetCollection.setAtomSetProperty("IR Intensity",
+        atomSetCollection.setAtomSetProperty("IRIntensity",
             intensities[i]+" KM/Mole");
         atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
             "Calculation " + calculationNumber+

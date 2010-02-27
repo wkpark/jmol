@@ -60,7 +60,10 @@ import java.util.Vector;
  * 
  *          load "xxx.out" filter "conventional"
  * 
- *          TODO: vibrational frequencies
+ *          to NOT load vibrations, use
+ *          
+ *          load "xxx.out" FILTER "novibrations"
+ *          
  * 
  */
 
@@ -73,6 +76,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private boolean doReadAtoms = false;
   private boolean haveCharges = false;
   private boolean addVibrations = false;
+  private int atomCount;
 
   public void readAtomSetCollection(BufferedReader reader) {
     readAtomSetCollection(reader, "Crystal");
@@ -82,7 +86,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       throws Exception {
     super.initializeReader(reader, type);
     isPrimitive = (filter == null || filter.indexOf("conv") < 0);
-    addVibrations = !doApplySymmetry;// && (filter != null && filter.indexOf("vib") >= 0);
+    addVibrations = (filter == null || filter.indexOf("novib") < 0);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("unitCellType",
         (isPrimitive ? "primitive" : "conventional"));
     setFractionalCoordinates(readHeader());
@@ -257,6 +261,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       setAtomCoord(atom, x, y, z);
       atom.elementSymbol = getElementSymbol(atomicNumber);
     }
+    atomCount = atomSetCollection.getAtomCount() - atomIndexLast;
   }
 
   private String getAtomName(String s) {
@@ -379,6 +384,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     discardLinesUntilContains("NORMAL MODES NORMALIZED TO CLASSICAL AMPLITUDES");
     readLine();
     
+    int lastAtomCount = -1;
     while (readLine() != null && line.startsWith(" FREQ(CM**-1)")) {
       int frequencyCount = 0;
       String[] tokens = getTokens(line.substring(15));
@@ -391,16 +397,16 @@ public class CrystalReader extends AtomSetCollectionReader {
           Logger.debug((vibrationNumber + 1) + " frequency=" + frequency);
         }
       }
-      int iAtom0 = atomSetCollection.getAtomCount();
-      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
       boolean[] ignore = new boolean[frequencyCount];
+      int iAtom0 = 0;
       for (int i = 0; i < frequencyCount; i++) {
         String[] data = (String[]) vData.get(vibrationNumber);
         ignore[i] = (!doGetVibration(++vibrationNumber) || data == null);
         if (ignore[i])
           continue;
-        cloneLastAtomSet();
-
+        lastAtomCount = cloneLastAtomSet(atomCount);
+        if (i == 0)
+          iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
         String activity = ", IR: " + data[2] + ", Raman: " + data[3];
         atomSetCollection.setAtomSetName(data[0] + " " + frequencies[i]
             + " cm-1 (" + data[1] + " km/Mole)" + activity);
@@ -422,7 +428,7 @@ public class CrystalReader extends AtomSetCollectionReader {
         atomSetCollection.setAtomSetProperty("Raman activity ", data[3]);
       }
       readLine();
-      fillFrequencyData(iAtom0, atomCount, ignore, false, 14, 10);
+      fillFrequencyData(iAtom0, atomCount, lastAtomCount, ignore, false, 14, 10);
       readLine();
     }
   }

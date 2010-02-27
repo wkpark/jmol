@@ -474,14 +474,16 @@ public abstract class AtomSetCollectionReader {
   }
 
   
-  protected void cloneLastAtomSet() throws Exception {
-    applySymmetryAndSetTrajectory();
-    atomSetCollection.cloneLastAtomSet();
+  protected int cloneLastAtomSet(int atomCount) throws Exception {
+    applySymmetryAndSetTrajectory(atomCount);
+    int lastAtomCount = atomSetCollection.getLastAtomSetAtomCount();
+    atomSetCollection.cloneLastAtomSet(atomCount);
     if (atomSetCollection.haveUnitCell) {
       iHaveUnitCell = needToApplySymmetry = true;
       spaceGroup = previousSpaceGroup;
       notionalUnitCell = previousUnitCell;
     }
+    return lastAtomCount;
   }
 
   public void setSpaceGroupName(String name) {
@@ -672,6 +674,10 @@ public abstract class AtomSetCollectionReader {
   }
 
   public void applySymmetryAndSetTrajectory() throws Exception {
+    applySymmetryAndSetTrajectory(-1);
+  }
+  
+  private void applySymmetryAndSetTrajectory(int atomCount) throws Exception {
     if (needToApplySymmetry && iHaveUnitCell) {
       atomSetCollection.setCoordinatesAreFractional(iHaveFractionalCoordinates);
       atomSetCollection.setNotionalUnitCell(notionalUnitCell);
@@ -688,10 +694,10 @@ public abstract class AtomSetCollectionReader {
               atomSetCollection.doNormalize)) {
             atomSetCollection.setAtomSetSpaceGroupName(symmetry
                 .getSpaceGroupName());
-            atomSetCollection.applySymmetry(symmetry);
+            atomSetCollection.applySymmetry(symmetry, atomCount);
           }
         } else {
-          atomSetCollection.applySymmetry();
+          atomSetCollection.applySymmetry(atomCount);
         }
       }
     }
@@ -795,10 +801,18 @@ public abstract class AtomSetCollectionReader {
       data[i] = getTokens(discardLinesUntilNonBlank());
   }
 
-  protected void fillFrequencyData(int iAtom0, int atomCount, 
+  protected void fillFrequencyData(int iAtom0, int atomCount,  
                                    boolean[] ignore, boolean isWide,
                                    int col0, int colWidth)
                                                      throws Exception {
+    fillFrequencyData(iAtom0, atomCount, atomCount, ignore, isWide, col0, colWidth);
+  }
+
+    protected void fillFrequencyData(int iAtom0, int atomCount, int lastAtomCount, 
+                                   boolean[] ignore, boolean isWide,
+                                   int col0, int colWidth)
+                                                     throws Exception {
+    boolean withSymmetry = (lastAtomCount != atomCount);
     int nLines = (isWide ? atomCount : atomCount * 3);
     int nFreq = ignore.length;
     String[][] data = new String[nLines][];
@@ -818,10 +832,10 @@ public abstract class AtomSetCollectionReader {
         float vz = parseFloat(isWide ? values[++dataPt] : valuesZ[dataPt]);
         if (ignore[j])
           continue;
-        int iAtom = iAtom0 + atomCount * j + atomPt;
+        int iAtom = iAtom0 + lastAtomCount * j + atomPt;
         if (Logger.debugging)
           Logger.debug("vib " + iAtom + "/" + j + ": " + vx + " " + vy + " " + vz);
-        atomSetCollection.addVibrationVector(iAtom, vx, vy, vz);
+        atomSetCollection.addVibrationVector(iAtom, vx, vy, vz, withSymmetry);
       }
     }
   }

@@ -366,9 +366,13 @@ public class AtomSetCollection {
   }
 
   public void cloneLastAtomSet() throws Exception {
+    cloneLastAtomSet(-1);
+  }
+  
+  public void cloneLastAtomSet(int atomCount) throws Exception {
     if (!allowMultiple)
       return;
-    int count = getLastAtomSetAtomCount();
+    int count = (atomCount > 0 ? atomCount : getLastAtomSetAtomCount());
     int atomIndex = getLastAtomSetAtomIndex();
     newAtomSet();
     for ( ; --count >= 0; ++atomIndex)
@@ -522,6 +526,20 @@ public class AtomSetCollection {
     }
   }
 
+  public void addVibrationVector(int iatom, float vx, float vy, float vz,
+                                 boolean withSymmetry) {
+    if (!withSymmetry) {
+      addVibrationVector(iatom, vx, vy, vz);
+      return;
+    }
+    int atomSite = atoms[iatom].atomSite;
+    int atomSetIndex = atoms[iatom].atomSetIndex;
+    for (int i = iatom; i < atomCount && atoms[i].atomSetIndex == atomSetIndex; i++) {
+      if (atoms[i].atomSite == atomSite)
+        addVibrationVector(i, vx, vy, vz);
+    }
+  }
+
   public void addVibrationVector(int iatom, float x, float y, float z) {
     if (!allowMultiple)
       iatom = iatom % atomCount;
@@ -602,62 +620,61 @@ public class AtomSetCollection {
     symmetry.setLattice(latt);
   }
   
-  void applySymmetry() throws Exception {
-     //parameters are counts of unit cells as [a b c]
-     applySymmetry(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
-   }
+  void applySymmetry(int atomCount) throws Exception {
+    //parameters are counts of unit cells as [a b c]
+    applySymmetry(atomCount, latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
+  }
 
-   void applySymmetry(SymmetryInterface symmetry) throws Exception {
-     getSymmetry().setSpaceGroup(symmetry);
-     //parameters are counts of unit cells as [a b c]
-     applySymmetry(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
-   }
+  void applySymmetry(SymmetryInterface symmetry, int atomCount) throws Exception {
+    getSymmetry().setSpaceGroup(symmetry);
+    //parameters are counts of unit cells as [a b c]
+    applySymmetry(atomCount, latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
+  }
 
-   boolean doNormalize = true;
-   boolean doPackUnitCell = false;
-   boolean isLatticeRange = false;
+  boolean doNormalize = true;
+  boolean doPackUnitCell = false;
+  boolean isLatticeRange = false;
    
-   void applySymmetry(int maxX, int maxY, int maxZ) throws Exception {
+  private void applySymmetry(int atomCount, int maxX, int maxY, int maxZ) throws Exception {
     if (coordinatesAreFractional && getSymmetry().haveSpaceGroup())
-      applyAllSymmetry(maxX, maxY, maxZ);
-   }
+      applyAllSymmetry(atomCount, maxX, maxY, maxZ);
+  }
 
-   private float rminx, rminy, rminz, rmaxx, rmaxy, rmaxz;
+  private float rminx, rminy, rminz, rmaxx, rmaxy, rmaxz;
    
-   private void setSymmetryMinMax(Point3f c) {
-     if (rminx > c.x)
-       rminx = c.x;
-     if (rminy > c.y)
-       rminy = c.y;
-     if (rminz > c.z)
-       rminz = c.z;
-     
-     if (rmaxx < c.x)
-       rmaxx = c.x;
-     if (rmaxy < c.y)
-       rmaxy = c.y;
-     if (rmaxz < c.z)
-       rmaxz = c.z;
-   }
+  private void setSymmetryMinMax(Point3f c) {
+    if (rminx > c.x)
+      rminx = c.x;
+    if (rminy > c.y)
+      rminy = c.y;
+    if (rminz > c.z)
+      rminz = c.z;
+    if (rmaxx < c.x)
+      rmaxx = c.x;
+    if (rmaxy < c.y)
+      rmaxy = c.y;
+    if (rmaxz < c.z)
+      rmaxz = c.z;
+  }
    
-   private boolean isInSymmetryRange(Point3f c) {
-     return (c.x >= rminx && c.y >= rminy && c.z >= rminz 
-         && c.x <= rmaxx && c.y <= rmaxy && c.z <= rmaxz);
-   }
+  private boolean isInSymmetryRange(Point3f c) {
+    return (c.x >= rminx && c.y >= rminy && c.z >= rminz 
+        && c.x <= rmaxx && c.y <= rmaxy && c.z <= rmaxz);
+  }
 
-   private final Point3f ptOffset = new Point3f();
+  private final Point3f ptOffset = new Point3f();
    
-   private int minX, maxX, minY, maxY, minZ, maxZ;
+  private int minX, maxX, minY, maxY, minZ, maxZ;
    
-   private static boolean isWithinCell(Point3f pt, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
-     float slop = 0.02f;
-     return (pt.x > minX - slop && pt.x < maxX + slop 
-         && pt.y > minY - slop && pt.y < maxY + slop 
-         && pt.z > minZ - slop && pt.z < maxZ + slop);
-   }
+  private static boolean isWithinCell(Point3f pt, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
+    float slop = 0.02f;
+    return (pt.x > minX - slop && pt.x < maxX + slop 
+        && pt.y > minY - slop && pt.y < maxY + slop 
+        && pt.z > minZ - slop && pt.z < maxZ + slop);
+  }
 
-   private void applyAllSymmetry(int maxX, int maxY, int maxZ) throws Exception {
-    int noSymmetryCount = getLastAtomSetAtomCount();
+  private void applyAllSymmetry(int atomCount, int maxX, int maxY, int maxZ) throws Exception {
+    int noSymmetryCount = (atomCount >= 0 ? atomCount : getLastAtomSetAtomCount());
     int iAtomFirst = getLastAtomSetAtomIndex();
     for (int i = iAtomFirst; i < atomCount; i++) {
       atoms[i].ellipsoid = symmetry.getEllipsoid(atoms[i].anisoBorU);

@@ -27,7 +27,7 @@
 
 package org.jmol.adapter.readers.xtal;
 
-import org.jmol.adapter.smarter.*; 
+import org.jmol.adapter.smarter.*;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
@@ -35,9 +35,9 @@ import java.io.BufferedReader;
 import java.util.Vector;
 
 /**
- *
+ * 
  * http://www.crystal.unito.it/
- *
+ * 
  * @author Pieremanuele Canepa, Room 104, FM Group School of Physical Sciences,
  *         Ingram Building, University of Kent, Canterbury, Kent, CT2 7NH United
  *         Kingdom, pc229@kent.ac.uk
@@ -61,9 +61,11 @@ import java.util.Vector;
  *          load "xxx.out" filter "conventional"
  * 
  *          to NOT load vibrations, use
- *          
+ * 
  *          load "xxx.out" FILTER "novibrations"
- *          
+ * 
+ *          TODO: fix frequency reader for fragment case
+ * 
  * 
  */
 
@@ -143,17 +145,17 @@ public class CrystalReader extends AtomSetCollectionReader {
       calculationType = line.substring(line.indexOf(":") + 1).trim();
       return true;
     }
-    
+
     if (line.startsWith(" MULLIKEN POPULATION ANALYSIS")) {
       readPartialCharges();
       return true;
     }
-    
+
     if (addVibrations && line.contains("* CALCULATION OF PHONON FREQUENCIES")) {
       readFrequencies();
       return true;
     }
-    
+
     return true;
   }
 
@@ -162,7 +164,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       setEnergy();
     super.finalizeReader();
   }
-  
+
   private boolean readHeader() throws Exception {
     discardLinesUntilContains("*                                CRYSTAL");
     discardLinesUntilContains("EEEEEEEEEE");
@@ -226,12 +228,13 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   int atomIndexLast;
+
   /*
-   * ATOMS IN THE ASYMMETRIC UNIT 30 - ATOMS IN THE UNIT CELL: 30 
-   * ATOM X/A Y/B Z(ANGSTROM)
-   * *****************************************************************
-   * 1 T 26 FE 3.332220233571E-01 1.664350001467E-01 5.975038441891E+00 
-   * 2 T 8 O -3.289334452690E-01 1.544678332212E-01 5.601153565811E+00
+   * ATOMS IN THE ASYMMETRIC UNIT 30 - ATOMS IN THE UNIT CELL: 30 ATOM X/A Y/B
+   * Z(ANGSTROM)
+   * ***************************************************************** 1 T 26 FE
+   * 3.332220233571E-01 1.664350001467E-01 5.975038441891E+00 2 T 8 O
+   * -3.289334452690E-01 1.544678332212E-01 5.601153565811E+00
    */
   private void readFractionalCoords() throws Exception {
     if (isMolecular)
@@ -240,7 +243,8 @@ public class CrystalReader extends AtomSetCollectionReader {
     readLine();
     int i = atomIndexLast;
     atomIndexLast = atomSetCollection.getAtomCount();
-    boolean doNormalizePrimitive = isPrimitive && !isMolecular && !isPolymer && !isSlab;
+    boolean doNormalizePrimitive = isPrimitive && !isMolecular && !isPolymer
+        && !isSlab;
     while (readLine() != null && line.length() > 0) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
@@ -267,17 +271,17 @@ public class CrystalReader extends AtomSetCollectionReader {
   private String getAtomName(String s) {
     String atomName = s;
     if (atomName.length() > 1 && Character.isLetter(atomName.charAt(1)))
-      atomName = atomName.substring(0, 1) + Character.toLowerCase(atomName.charAt(1)) + atomName.substring(2);
+      atomName = atomName.substring(0, 1)
+          + Character.toLowerCase(atomName.charAt(1)) + atomName.substring(2);
     return atomName;
- }
+  }
 
   /*
-   * Crystal adds 100 to the atomic number when the same atom will be
-   * described with different basis sets. It also adds 200 when ECP
-   * are used: 
+   * Crystal adds 100 to the atomic number when the same atom will be described
+   * with different basis sets. It also adds 200 when ECP are used:
    * 
-   * 1 T 282 PB 0.000000000000E+00 0.000000000000E+00 0.000000000000E+00
-   * 2 T 16 S -5.000000000000E-01 -5.000000000000E-01 -5.000000000000E-01
+   * 1 T 282 PB 0.000000000000E+00 0.000000000000E+00 0.000000000000E+00 2 T 16
+   * S -5.000000000000E-01 -5.000000000000E-01 -5.000000000000E-01
    */
   private int getAtomicNumber(String token) {
     int atomicNumber = parseInt(token);
@@ -289,10 +293,9 @@ public class CrystalReader extends AtomSetCollectionReader {
   /*
    * INPUT COORDINATES
    * 
-   * ATOM AT. N. COORDINATES 
-   * 1 12 0.000000000000E+00 0.000000000000E+00 0.000000000000E+00 
-   * 2 8 5.000000000000E-01 5.000000000000E-01 5.000000000000E-01
-   * 
+   * ATOM AT. N. COORDINATES 1 12 0.000000000000E+00 0.000000000000E+00
+   * 0.000000000000E+00 2 8 5.000000000000E-01 5.000000000000E-01
+   * 5.000000000000E-01
    */
   private void readInputCoords() throws Exception {
     readLine();
@@ -325,10 +328,11 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private Double energy;
+
   private void readEnergy() {
-    line = TextFormat.simpleReplace(line, "( ","(");
+    line = TextFormat.simpleReplace(line, "( ", "(");
     String[] tokens = getTokens();
-    energy  = new Double(Double.parseDouble(tokens[2]));
+    energy = new Double(Double.parseDouble(tokens[2]));
     setEnergy();
   }
 
@@ -357,7 +361,10 @@ public class CrystalReader extends AtomSetCollectionReader {
         atoms[i++].partialCharge = parseFloat(line.substring(9, 11))
             - parseFloat(line.substring(12, 18));
   }
-  
+
+  private float[] frequencies;
+  private String[] data;
+
   private void readFrequencies() throws Exception {
     discardLinesUntilContains("MODES         EIGV");
     readLine();
@@ -380,15 +387,15 @@ public class CrystalReader extends AtomSetCollectionReader {
       for (int i = i0; i <= i1; i++)
         vData.add(data);
     }
-    
+
     discardLinesUntilContains("NORMAL MODES NORMALIZED TO CLASSICAL AMPLITUDES");
     readLine();
-    
+
     int lastAtomCount = -1;
     while (readLine() != null && line.startsWith(" FREQ(CM**-1)")) {
       int frequencyCount = 0;
       String[] tokens = getTokens(line.substring(15));
-      float[] frequencies = new float[tokens.length];
+      frequencies = new float[tokens.length];
       for (int i = 0; i < tokens.length; i++) {
         float frequency = parseFloat(tokens[i]);
         frequencies[frequencyCount] = frequency;
@@ -400,32 +407,14 @@ public class CrystalReader extends AtomSetCollectionReader {
       boolean[] ignore = new boolean[frequencyCount];
       int iAtom0 = 0;
       for (int i = 0; i < frequencyCount; i++) {
-        String[] data = (String[]) vData.get(vibrationNumber);
+        data = (String[]) vData.get(vibrationNumber);
         ignore[i] = (!doGetVibration(++vibrationNumber) || data == null);
         if (ignore[i])
           continue;
         lastAtomCount = cloneLastAtomSet(atomCount);
         if (i == 0)
           iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
-        String activity = ", IR: " + data[2] + ", Raman: " + data[3];
-        atomSetCollection.setAtomSetName(data[0] + " " + frequencies[i]
-            + " cm-1 (" + data[1] + " km/Mole)" + activity);
-        atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
-            + " cm-1");
-        atomSetCollection.setAtomSetProperty("IR Intensity", data[1]
-            + " km/Mole");
-        atomSetCollection.setAtomSetProperty("vibrationalSymmetry", data[0]);
-
-        if (data[2] == "A")
-          data[2] = "active";
-        data[2] = "inactive";
-
-        if (data[3] == "A")
-          data[3] = "active";
-        data[3] = "inactive";
-
-        atomSetCollection.setAtomSetProperty("IR activity ", data[2]);
-        atomSetCollection.setAtomSetProperty("Raman activity ", data[3]);
+        setFreqValue(i);
       }
       readLine();
       fillFrequencyData(iAtom0, atomCount, lastAtomCount, ignore, false, 14, 10);
@@ -433,4 +422,17 @@ public class CrystalReader extends AtomSetCollectionReader {
     }
   }
 
+  private void setFreqValue(int i) {
+    String activity = ", IR: " + data[2] + ", Ram. " + data[3];
+    atomSetCollection.setAtomSetName(data[0] + " "
+        + TextFormat.formatDecimal(frequencies[i], 2) + " cm-1 ("
+        + TextFormat.formatDecimal(Float.parseFloat(data[1]), 0) + " km/Mole)"
+        + activity);
+    atomSetCollection.setAtomSetProperty("Frequency", frequencies[i] + " cm-1");
+    atomSetCollection.setAtomSetProperty("IR Intensity", data[1] + " km/Mole");
+    atomSetCollection.setAtomSetProperty("vibrationalSymmetry", data[0]);
+    atomSetCollection.setAtomSetProperty("IR activity ", data[2]);
+    atomSetCollection.setAtomSetProperty("Raman activity ", data[3]);
+  }
+  
 }

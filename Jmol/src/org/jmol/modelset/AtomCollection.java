@@ -1183,7 +1183,7 @@ abstract public class AtomCollection {
         int targetValence = 0 + valences.charAt(ipt) - '0';
 
         Atom atom = atoms[i];
-        if (!doAll && atom.getCovalentHydrogenCount() > 0)
+        if (doAll && atom.getCovalentHydrogenCount() > 0)
           continue;
         int nBonds = atom.getCovalentBondCount();
         int charge = atom.getFormalCharge();
@@ -1194,8 +1194,8 @@ abstract public class AtomCollection {
           continue;
         int n = targetValence - nVal;
         hAtoms[i] = new Point3f[n];
-        System.out.println(atom.getInfo() + " targetValence=" + targetValence + " nB="
-         + nBonds + " nVal=" + nVal + " n=" + n);
+        //System.out.println(atom.getInfo() + " targetValence=" + targetValence + " nB="
+         //+ nBonds + " nVal=" + nVal + " n=" + n);
         nH += n;
         int hPt = 0;
         switch (n) {

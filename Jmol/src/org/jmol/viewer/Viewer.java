@@ -4068,7 +4068,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   } 
 
   public BitSet addHydrogens(BitSet bsAtoms) {
-    boolean doAll = (bsAtoms != null);
+    boolean doAll = (bsAtoms == null);
     if (bsAtoms == null)
       bsAtoms = getModelAtomBitSet(getVisibleFramesBitSet().nextSetBit(0), true);
     Point3f[] pts = getAdditionalHydrogens(bsAtoms, doAll, false);

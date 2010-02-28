@@ -694,10 +694,10 @@ public abstract class AtomSetCollectionReader {
               atomSetCollection.doNormalize)) {
             atomSetCollection.setAtomSetSpaceGroupName(symmetry
                 .getSpaceGroupName());
-            atomSetCollection.applySymmetry(symmetry, atomCount);
+            atomSetCollection.applySymmetry(symmetry);
           }
         } else {
-          atomSetCollection.applySymmetry(atomCount);
+          atomSetCollection.applySymmetry();
         }
       }
     }

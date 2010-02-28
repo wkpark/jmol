@@ -618,24 +618,24 @@ public class AtomSetCollection {
     symmetry.setLattice(latt);
   }
   
-  void applySymmetry(int atomCount) throws Exception {
+  void applySymmetry() throws Exception {
     //parameters are counts of unit cells as [a b c]
-    applySymmetry(atomCount, latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
+    applySymmetry(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
   }
 
-  void applySymmetry(SymmetryInterface symmetry, int atomCount) throws Exception {
+  void applySymmetry(SymmetryInterface symmetry) throws Exception {
     getSymmetry().setSpaceGroup(symmetry);
     //parameters are counts of unit cells as [a b c]
-    applySymmetry(atomCount, latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
+    applySymmetry(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
   }
 
   boolean doNormalize = true;
   boolean doPackUnitCell = false;
   boolean isLatticeRange = false;
    
-  private void applySymmetry(int atomCount, int maxX, int maxY, int maxZ) throws Exception {
+  private void applySymmetry(int maxX, int maxY, int maxZ) throws Exception {
     if (coordinatesAreFractional && getSymmetry().haveSpaceGroup())
-      applyAllSymmetry(atomCount, maxX, maxY, maxZ);
+      applyAllSymmetry(maxX, maxY, maxZ);
   }
 
   private float rminx, rminy, rminz, rmaxx, rmaxy, rmaxz;
@@ -671,8 +671,8 @@ public class AtomSetCollection {
         && pt.z > minZ - slop && pt.z < maxZ + slop);
   }
 
-  private void applyAllSymmetry(int atomCount, int maxX, int maxY, int maxZ) throws Exception {
-    int noSymmetryCount = (atomCount >= 0 ? atomCount : getLastAtomSetAtomCount());
+  private void applyAllSymmetry(int maxX, int maxY, int maxZ) throws Exception {
+    int noSymmetryCount = getLastAtomSetAtomCount();
     int iAtomFirst = getLastAtomSetAtomIndex();
     for (int i = iAtomFirst; i < atomCount; i++) {
       atoms[i].ellipsoid = symmetry.getEllipsoid(atoms[i].anisoBorU);

@@ -147,17 +147,15 @@ public class AtomSetCollection {
 
   private boolean allowMultiple;
   
-  public AtomSetCollection(String fileTypeName, AtomSetCollectionReader atomSetCollectionReader) {
+  public AtomSetCollection(String fileTypeName,
+      AtomSetCollectionReader atomSetCollectionReader) {
     this.fileTypeName = fileTypeName;
-    allowMultiple = (atomSetCollectionReader == null 
-        || atomSetCollectionReader.desiredVibrationNumber < 0);
+    allowMultiple = (atomSetCollectionReader == null || atomSetCollectionReader.desiredVibrationNumber < 0);
     // set the default PATH properties as defined in the SmarterJmolAdapter
-    Properties atomSetCollectionProperties = new Properties();
-    atomSetCollectionProperties.put("PATH_KEY",
-                                    SmarterJmolAdapter.PATH_KEY);
-    atomSetCollectionProperties.put("PATH_SEPARATOR",
-                                    SmarterJmolAdapter.PATH_SEPARATOR);
-    setAtomSetCollectionAuxiliaryInfo("properties", atomSetCollectionProperties);
+    Properties p = new Properties();
+    p.put("PATH_KEY", SmarterJmolAdapter.PATH_KEY);
+    p.put("PATH_SEPARATOR", SmarterJmolAdapter.PATH_SEPARATOR);
+    setAtomSetCollectionAuxiliaryInfo("properties", p);
   }
 
   
@@ -1244,6 +1242,13 @@ public class AtomSetCollection {
   */
   public void setAtomSetProperty(String key, String value) {
     setAtomSetProperty(key, value, currentAtomSetIndex);
+  }
+
+  public void setAtomSetAuxiliaryProperty(String key, String data) {
+    Hashtable p = (Hashtable) getAtomSetAuxiliaryInfo(currentAtomSetIndex, "atomProperties");
+    if (p == null)
+      setAtomSetAuxiliaryInfo("atomProperties", p = new Hashtable());
+    p.put(key, data);
   }
 
   /**

@@ -156,7 +156,48 @@ public class CrystalReader extends AtomSetCollectionReader {
       return true;
     }
 
+    if (line.startsWith(" ATOMIC SPINS SET")) {
+      readSpins();
+      return true;
+    }
+    
+    if (line.startsWith(" TOTAL ATOMIC SPINS  :")) {
+      readMagneticMoments();
+      return true;
+    }
+    
     return true;
+  }
+
+  /*
+  SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+  ATOMIC SPINS SET TO (ATOM, AT. N., SPIN)
+    1  26-1   2   8 0   3   8 0   4   8 0   5  26 1   6  26 1   7   8 0   8   8 0
+    9   8 0  10  26-1  11  26-1  12   8 0  13   8 0  14   8 0  15  26 1  16  26 1
+   17   8 0  18   8 0  19   8 0  20  26-1  21  26-1  22   8 0  23   8 0  24   8 0
+   25  26 1  26  26 1  27   8 0  28   8 0  29   8 0  30  26-1
+  ALPHA-BETA ELECTRONS LOCKED TO   0 FOR  50 SCF CYCLES
+
+      */
+  private void readSpins() throws Exception {
+    String[] spins = new String[atomCount];
+    String data = "";
+    while (readLine() != null && line.indexOf("ALPHA") < 0)
+      data += line;
+    data = TextFormat.simpleReplace(data, "-", " -");
+    String[] tokens = getTokens(data);
+    for (int i = 0, pt = 2; i < atomCount; i++, pt += 3)
+      spins[i] = tokens[pt];
+    data = TextFormat.join(spins, '\n', 0);
+    atomSetCollection.setAtomSetAuxiliaryProperty("spin", data);
+  }
+
+  private void readMagneticMoments() throws Exception {
+    String data = "";
+    while (readLine() != null && line.indexOf("TTTTTT") < 0)
+      data += line;
+    data = TextFormat.join(getTokens(data), '\n', 0);
+    atomSetCollection.setAtomSetAuxiliaryProperty("magneticMoment", data);
   }
 
   protected void finalizeReader() throws Exception {

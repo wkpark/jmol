@@ -11729,8 +11729,8 @@ public class ScriptEvaluator {
             + "\"\n"
             + (data[1] instanceof float[] ? Escape.escape((float[]) data[1],
                 true) : data[1] instanceof float[][] ? Escape.escape(
-                (float[][]) data[1], false) : "" + data[1]))
-            + "\nend \"" + data[0] + "\";";
+                (float[][]) data[1], false) : "" + data[1])
+            + "\nend \"" + data[0] + "\";");
       }
       break;
     case Token.spacegroup:

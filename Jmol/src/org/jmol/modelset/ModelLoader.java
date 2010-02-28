@@ -44,6 +44,7 @@ import org.jmol.atomdata.RadiusData;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
@@ -247,6 +248,7 @@ public final class ModelLoader extends ModelSet {
         adapter.finish(atomSetCollection);
       initializeUnitCellAndSymmetry();
       initializeBonding();
+      setAtomProperties();
     }
 
     finalizeGroupBuild(); // set group offsets and build monomers
@@ -268,6 +270,29 @@ public final class ModelLoader extends ModelSet {
       mergeModelSet.releaseModelSet();    
     mergeModelSet = null;
   }
+
+  private void setAtomProperties() {
+    int atomIndex = baseAtomIndex;
+    int modelAtomCount = 0;
+    for (int i = baseModelIndex; i < modelCount; atomIndex += modelAtomCount, i++) {
+      modelAtomCount = models[i].bsAtoms.cardinality();
+      Hashtable atomProperties = (Hashtable) getModelAuxiliaryInfo(i,
+          "atomProperties");
+      if (atomProperties == null)
+        continue;
+      Enumeration e = atomProperties.keys();
+      while (e.hasMoreElements()) {
+        String key = (String) e.nextElement();
+        String value = (String) atomProperties.get(key);
+        BitSet bs = getModelAtomBitSet(i, false);
+        key = "property_" + key.toLowerCase();
+        Logger.info("creating " + key + " for model " + getModelName(i));
+        viewer.setData(key, new Object[] { key, value, bs }, modelAtomCount, 0,
+            0, Integer.MAX_VALUE, 0);
+      }
+    }
+  }
+
 
   protected void releaseModelSet() {
     group3Lists = null;

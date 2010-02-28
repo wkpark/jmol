@@ -2782,8 +2782,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     // solvent
     //
+    "@solvent water, (_g>="+GROUPID_WATER+" & _g<="+GROUPID_SULPHATE+")", // water, other solvent or ions
     "@ions _g="+(GROUPID_SULPHATE-1)+",_g="+GROUPID_SULPHATE,
-    "@solvent water, ions",
 
     //
     // structure related

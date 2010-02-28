@@ -475,7 +475,7 @@ public abstract class AtomSetCollectionReader {
 
   
   protected int cloneLastAtomSet(int atomCount) throws Exception {
-    applySymmetryAndSetTrajectory(atomCount);
+    applySymmetryAndSetTrajectory();
     int lastAtomCount = atomSetCollection.getLastAtomSetAtomCount();
     atomSetCollection.cloneLastAtomSet(atomCount);
     if (atomSetCollection.haveUnitCell) {
@@ -674,10 +674,6 @@ public abstract class AtomSetCollectionReader {
   }
 
   public void applySymmetryAndSetTrajectory() throws Exception {
-    applySymmetryAndSetTrajectory(-1);
-  }
-  
-  private void applySymmetryAndSetTrajectory(int atomCount) throws Exception {
     if (needToApplySymmetry && iHaveUnitCell) {
       atomSetCollection.setCoordinatesAreFractional(iHaveFractionalCoordinates);
       atomSetCollection.setNotionalUnitCell(notionalUnitCell);

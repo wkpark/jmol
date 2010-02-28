@@ -33,24 +33,6 @@ import org.jmol.viewer.JmolConstants;
 import java.io.BufferedReader;
 
 /**
- * PDB file reader.
- *
- *<p>
- * <a href='http://www.rcsb.org'>
- * http://www.rcsb.org
- * </a>
- *
- * @author Miguel, Egon, and Bob (hansonr@stolaf.edu)
- * 
- * symmetry added by Bob Hanson:
- * 
- *  setFractionalCoordinates()
- *  setSpaceGroupName()
- *  setUnitCell()
- *  initializeCartesianToFractional();
- *  setUnitCellItem()
- *  setAtomCoord()
- *  applySymmetryAndSetTrajectory()
  *  
  */
 
@@ -62,7 +44,7 @@ public class GromacsReader extends AtomSetCollectionReader {
     atomSetCollection = new AtomSetCollection("xyz", this);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
     try {
-      readAtomSetName();
+      readHeader();
       int modelAtomCount = readAtomCount();
       readAtoms(modelAtomCount);
       applySymmetryAndSetTrajectory();
@@ -81,12 +63,26 @@ public class GromacsReader extends AtomSetCollectionReader {
     return 0;
   }
 
-  private void readAtomSetName() throws Exception {
+  float cellOffset;
+  
+  private void readHeader() throws Exception {
+    //  216H2O,WATJP01,SPC216,SPC-MODEL,300K,BOX(M)=1.86206NM,WFVG,MAR. 1984
+
     readLineTrimmed();
     checkLineForScript();
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetName(line);
     atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+    int pt = line.indexOf("BOX(M)=");
+    if (pt < 0)
+      return;
+    float a = 10 * parseFloat(line.substring(pt + 7));
+    if (Float.isNaN(a))
+      return;
+    cellOffset = a / 2;
+    setUnitCell(a, a, a, 90, 90, 90);
+    setSpaceGroupName("P1");
+    setFractionalCoordinates(false);
   }
 
   /*
@@ -104,7 +100,8 @@ public class GromacsReader extends AtomSetCollectionReader {
   private void readAtoms(int modelAtomCount) throws Exception {
     for (int i = 0; i < modelAtomCount; ++i) {
       readLine();
-      if (line.length() < 68) {
+      int len = line.length();
+      if (len != 44 && len != 68) {
         Logger.warn("line cannot be read for GROMACS atom data: " + line);
         continue;
       }
@@ -113,9 +110,9 @@ public class GromacsReader extends AtomSetCollectionReader {
       atom.group3 = parseToken(line, 5, 9).trim();  //allowing for 4 characters
       atom.atomName = line.substring(11, 15).trim();
       atom.atomSerial = parseInt(line, 15, 20);
-      atom.x = parseFloat(line, 20, 28) * 10;
-      atom.y = parseFloat(line, 28, 36) * 10;
-      atom.z = parseFloat(line, 36, 44) * 10;
+      atom.x = parseFloat(line, 20, 28) * 10 - cellOffset;
+      atom.y = parseFloat(line, 28, 36) * 10 - cellOffset;
+      atom.z = parseFloat(line, 36, 44) * 10 - cellOffset;
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
         Logger.warn("line cannot be read for GROMACS atom data: " + line);
         atom.set(0, 0, 0);
@@ -127,6 +124,8 @@ public class GromacsReader extends AtomSetCollectionReader {
           continue;
       atom.isHetero = false;
       atomSetCollection.addAtom(atom);
+      if (len < 69) 
+        continue;
       float vx = parseFloat(line, 44, 52) * 10;
       float vy = parseFloat(line, 52, 60) * 10;
       float vz = parseFloat(line, 60, 68) * 10;

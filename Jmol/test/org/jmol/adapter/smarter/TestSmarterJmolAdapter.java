@@ -86,6 +86,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "gaussian", "out", "Gaussian");
     result.addDirectory(false, "ghemical", "gpr", "GhemicalMM");
     result.addDirectory(false, "gpt2", "gpt2","MopacGraphf");
+    result.addDirectory(false, "gromacs", "gro", "Gromacs");
     result.addDirectory(false, "hin", "hin", "HyperChem");
     result.addDirectory(false, "jaguar", "out", "Jaguar");
     result.addDirectory(false, "modifiedGroups", "cif", "Cif");

@@ -635,7 +635,7 @@ public class Resolver {
       return false;
     int len = -1;
     for (int i = 2; i < 16 && len != 0; i++)
-      if ((len = lines[i].length()) != 69 && len != 0)
+      if ((len = lines[i].length()) != 69 && len != 45 && len != 0)
         return false;
     return true;
   }

@@ -23,6 +23,7 @@
  */
 
 package org.jmol.adapter.smarter;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.Properties;
@@ -802,6 +803,8 @@ public class AtomSetCollection {
             pt = symmetryAddAtoms(iAtomFirst, noSymmetryCount, tx, ty, tz,
                 cell555Count, pt, iCell * operationCount);
         }
+    if (iCell * noSymmetryCount == atomCount - iAtomFirst) 
+      appendAtomProperties(iCell);
     if (operationCount > 0) {
       String[] symmetryList = new String[operationCount];
       for (int i = 0; i < operationCount; i++)
@@ -1248,8 +1251,26 @@ public class AtomSetCollection {
     Hashtable p = (Hashtable) getAtomSetAuxiliaryInfo(currentAtomSetIndex, "atomProperties");
     if (p == null)
       setAtomSetAuxiliaryInfo("atomProperties", p = new Hashtable());
+    if (!data.endsWith("\n"))
+      data += "\n";
     p.put(key, data);
   }
+
+  private void appendAtomProperties(int nTimes) {
+    Hashtable p = (Hashtable) getAtomSetAuxiliaryInfo(currentAtomSetIndex, "atomProperties");
+    if (p == null)
+      return;
+    Enumeration e = p.keys();
+    while (e.hasMoreElements()) {
+      String key = (String) e.nextElement();
+      String data = (String) p.get(key);
+      StringBuffer s = new StringBuffer();
+      for (int i = nTimes; --i >= 0; )
+        s.append(data);   
+      p.put(key, s.toString());
+    }
+  }
+
 
   /**
   * Sets auxiliary information for the AtomSet

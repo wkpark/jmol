@@ -52,28 +52,54 @@ import java.io.BufferedReader;
 public class MolReader extends AtomSetCollectionReader {
 
   String header = "";
- public void readAtomSetCollection(BufferedReader reader) {
-    atomSetCollection = new AtomSetCollection("mol", this);
-    this.reader = reader;
-    try {
-      while (readLine() != null) {
-        if (line.startsWith("$MDL")) {
-          processRgHeader();
-          discardLinesUntilStartsWith("$CTAB");
-          processCtab();
-        } else {
-          if (doGetModel(++modelNumber)) {
-            processMolSdHeader();
-            processCtab();
-            if (isLastModel(modelNumber))
-              break;
-          }
-        }
-        flushLines();
+  public void readAtomSetCollection(BufferedReader reader) {
+    super.readAtomSetCollection(reader, "mol");
+  }
+  
+  /*
+   * from ctfile.pdf:
+   * 
+   * $MDL REV 1 date/time
+   * $MOL
+   * $HDR
+   * [Molfile Header Block (see Chapter 4) = name, pgm info, comment]
+   * $END HDR
+   * $CTAB
+   * [Ctab Block (see Chapter 2) = count + atoms + bonds + lists + props]
+   * $END CTAB
+   * $RGP
+   * rrr [where rrr = Rgroup number]
+   * $CTAB
+   * [Ctab Block]
+   * $END CTAB
+   * $END RGP
+   * $END MOL
+   */
+
+  protected boolean checkLine() throws Exception {
+    // reader-dependent
+    boolean isMDL = (line.startsWith("$MDL"));
+    if (isMDL) {
+      discardLinesUntilStartsWith("$HDR");
+      readLine();
+      if (line == null) {
+        Logger.warn("$HDR not found in MDL RG file");
+        continuing = false;
+        return false;
       }
-    } catch (Exception e) {
-      setError(e);
     }
+    if (doGetModel(++modelNumber)) {
+      processMolSdHeader();
+      if (isMDL)
+        discardLinesUntilStartsWith("$CTAB");
+      processCtab();
+      if (isLastModel(modelNumber)) {
+        continuing = false;
+        return false;
+      }
+    }
+    discardLinesUntilStartsWith("$$$$");
+    return true;
   }
   
   void processMolSdHeader() throws Exception {
@@ -121,37 +147,6 @@ public class MolReader extends AtomSetCollectionReader {
     newAtomSet(thisDataSetName);
   }
 
-  void processRgHeader() throws Exception {
-    /*
-     * from ctfile.pdf:
-     * 
-     * $MDL REV 1 date/time
-     * $MOL
-     * $HDR
-     * [Molfile Header Block (see Chapter 4) = name, pgm info, comment]
-     * $END HDR
-     * $CTAB
-     * [Ctab Block (see Chapter 2) = count + atoms + bonds + lists + props]
-     * $END CTAB
-     * $RGP
-     * rrr [where rrr = Rgroup number]
-     * $CTAB
-     * [Ctab Block]
-     * $END CTAB
-     * $END RGP
-     * $END MOL
-     */
-
-    while (readLine() != null && !line.startsWith("$HDR")) {
-    }
-    if (line == null) {
-      Logger.warn("$HDR not found in MDL RG file");
-      return;
-    }
-    readLine();
-    processMolSdHeader();
-  }
-
   void processCtab() throws Exception {
     readLine();
     if (line == null)
@@ -162,12 +157,6 @@ public class MolReader extends AtomSetCollectionReader {
     readAtoms(atomCount);
     readBonds(atom0, bondCount);
     applySymmetryAndSetTrajectory();
-  }
-
-  void flushLines() throws Exception {
-    while (readLine() != null && !line.startsWith("$$$$")) {
-      //flush
-    }
   }
 
   private final static String isotopeMap0 = "H1 H2 ";

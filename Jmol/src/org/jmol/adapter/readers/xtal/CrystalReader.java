@@ -410,6 +410,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     discardLinesUntilContains("MODES         EIGV");
     readLine();
     Vector vData = new Vector();
+    int freqAtomCount = atomCount;
     while (readLine() != null && line.length() > 0) {
       int i0 = parseInt(line.substring(1, 5));
       int i1 = parseInt(line.substring(6, 10));
@@ -458,7 +459,7 @@ public class CrystalReader extends AtomSetCollectionReader {
         setFreqValue(i);
       }
       readLine();
-      fillFrequencyData(iAtom0, atomCount, lastAtomCount, ignore, false, 14, 10);
+      fillFrequencyData(iAtom0, freqAtomCount, lastAtomCount, ignore, false, 14, 10);
       readLine();
     }
   }

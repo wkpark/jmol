@@ -107,7 +107,7 @@ public class Mol2Reader extends ForceFieldReader {
      */
 
     isPDB = false;
-    String thisDataSetName = readLineTrimmed();
+    String thisDataSetName = readLine().trim();
     lastSequenceNumber = Integer.MAX_VALUE;
     chainID = 'A' - 1;
     readLine();

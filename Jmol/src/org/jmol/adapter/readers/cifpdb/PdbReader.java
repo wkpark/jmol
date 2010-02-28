@@ -95,163 +95,156 @@ public class PdbReader extends AtomSetCollectionReader {
    "HEADER  " + //18
    "COMPND  ";  //19
 
+ private boolean iHaveModel = false;
+ private int serial = 0;
+ private StringBuffer pdbHeader;
+ 
  public void readAtomSetCollection(BufferedReader reader) {
     //System.out.println(this + " initialized");
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection(fileType, this);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
-    setFractionalCoordinates(false);
-    htFormul.clear();
-    currentGroup3 = null;
-    boolean iHaveModel = false;
-    boolean iHaveLine = false;
-    int serial = 0;
-    StringBuffer pdbHeader = (getHeader ? new StringBuffer() : null);
-    try {
-      while (iHaveLine || readLine() != null) {
-        iHaveLine = false;
-        int ptOption = ((lineLength = line.length()) < 6 ? -1 : lineOptions
-            .indexOf(line.substring(0, 6))) >> 3;
-        boolean isAtom = (ptOption == 0 || ptOption == 1);
-        boolean isModel = (ptOption == 2);
-        if (isAtom)
-          serial = parseInt(line, 6, 11);
-        boolean isNewModel = (isTrajectory && !isMultiModel && isAtom && serial == 1);
-        if (getHeader) {
-          if (isAtom || isModel)
-            getHeader = false;
-          else
-            pdbHeader.append(line).append('\n');
-        }
-        if (isModel || isNewModel) {
-          isMultiModel = isModel;
-          getHeader = false;
-          // PDB is different -- targets actual model number
-          int modelNo = (isNewModel ? modelNumber + 1: getModelNumber());
-          //System.out.println(modelNo);
-          modelNumber = (bsModels == null ? modelNo : modelNumber + 1);
-          if (!doGetModel(modelNumber)) {
-            if (isLastModel(modelNumber) && iHaveModel)
-              break;
-            iHaveModel = false;
-            continue;
-          }
-          iHaveModel = true;
-          atomSetCollection.connectAll(maxSerial);
-          if (atomCount > 0)
-            applySymmetryAndSetTrajectory();
-          //supposedly MODEL is only for NMR
-          model(modelNo);
-          continue;
-        }
-        /*
-         * OK, the PDB file format is messed up here, because the 
-         * above commands are all OUTSIDE of the Model framework. 
-         * Of course, different models might have different 
-         * secondary structures, but it is not clear that PDB actually
-         * supports this. So you can't concatinate PDB files the way
-         * you can CIF files. --Bob Hanson 8/30/06
-         */
-        if (isMultiModel && !iHaveModel)
-          continue;
-        if (isAtom) {
-          getHeader = false;
-          atom(serial);
-          continue;
-        }
-        switch (ptOption) {
-        case 3:
-          //if (line.startsWith("CONECT")) {
-          conect();
-          continue;
-        case 4:
-        case 5:
-        case 6:
-          //if (line.startsWith("HELIX ") || line.startsWith("SHEET ")
-          //  || line.startsWith("TURN  ")) {
-          structure();
-          continue;
-        case 7:
-          //if (line.startsWith("HET   ")) {
-          het();
-          continue;
-        case 8:
-          //if (line.startsWith("HETNAM")) {
-          hetnam();
-          continue;
-        case 9:
-          //if (line.startsWith("ANISOU")) {
-          anisou();
-          continue;
-        case 10:
-          //if (line.startsWith("SITE  ")) {
-          site();
-          continue;
-        case 11:
-          //if (line.startsWith("CRYST1")) {
-          cryst1();
-          continue;
-        case 12:
-        case 13:
-        case 14:
-          //if (line.startsWith("SCALE1")) {
-          //if (line.startsWith("SCALE2")) {
-          //if (line.startsWith("SCALE3")) {
-          scale(ptOption - 11);
-          continue;
-        case 15:
-          //if (line.startsWith("EXPDTA")) {
-          expdta();
-          continue;
-        case 16:
-          //if (line.startsWith("FORMUL")) {
-          formul();
-          continue;
-        case 17:
-          //if (line.startsWith("REMARK")) {
-          if (line.startsWith("REMARK 350")) {
-            remark350();
-            iHaveLine = true;
-            continue;
-          }
-          if (line.startsWith("REMARK 290")) {
-            remark290();
-            iHaveLine = true;
-            continue;
-          }
-          checkLineForScript();
-          continue;
-        case 18:
-          header();
-          continue;
-        case 19:
-          //if (line.startsWith("COMPND")) {
-          compnd();
-          continue;
-        }
-      }
-      checkNotPDB();
-      atomSetCollection.connectAll(maxSerial);
-      if (biomolecules != null && biomolecules.size() > 0 && atomSetCollection.getAtomCount() > 0) {
-        atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", biomolecules);
-        setBiomoleculeAtomCounts();
-        if (biomts != null && filter != null
-            && filter.toUpperCase().indexOf("NOSYMMETRY") < 0) {
-          atomSetCollection.applySymmetry(biomts, applySymmetryToBonds, filter);
-        }
+   super.readAtomSetCollection(reader, fileType);
+ }
+ 
+ protected void initializeReader(BufferedReader reader, String type) throws Exception {
+   super.initializeReader(reader, type);
+   atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
+   setFractionalCoordinates(false);
+   htFormul.clear();
+   currentGroup3 = null;
+   pdbHeader = (getHeader ? new StringBuffer() : null);
+ }
 
-      }
-      applySymmetryAndSetTrajectory();
-      if (htSites != null)
-        addSites(htSites);
-      if (pdbHeader != null)
-        atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader",
-            pdbHeader.toString());
-    } catch (Exception e) {
-      setError(e);
+ protected boolean checkLine() throws Exception {
+    int ptOption = ((lineLength = line.length()) < 6 ? -1 : lineOptions
+        .indexOf(line.substring(0, 6))) >> 3;
+    boolean isAtom = (ptOption == 0 || ptOption == 1);
+    boolean isModel = (ptOption == 2);
+    if (isAtom)
+      serial = parseInt(line, 6, 11);
+    boolean isNewModel = (isTrajectory && !isMultiModel && isAtom && serial == 1);
+    if (getHeader) {
+      if (isAtom || isModel)
+        getHeader = false;
+      else
+        pdbHeader.append(line).append('\n');
     }
+    if (isModel || isNewModel) {
+      isMultiModel = isModel;
+      getHeader = false;
+      // PDB is different -- targets actual model number
+      int modelNo = (isNewModel ? modelNumber + 1 : getModelNumber());
+      // System.out.println(modelNo);
+      modelNumber = (bsModels == null ? modelNo : modelNumber + 1);
+      if (!doGetModel(modelNumber)) {
+        if (isLastModel(modelNumber) && iHaveModel) {
+          continuing = false;
+          return false;
+        }
+        iHaveModel = false;
+        return true;
+      }
+      iHaveModel = true;
+      atomSetCollection.connectAll(maxSerial);
+      if (atomCount > 0)
+        applySymmetryAndSetTrajectory();
+      // supposedly MODEL is only for NMR
+      model(modelNo);
+      return true;
+    }
+    /*
+     * OK, the PDB file format is messed up here, because the above commands are
+     * all OUTSIDE of the Model framework. Of course, different models might
+     * have different secondary structures, but it is not clear that PDB
+     * actually supports this. So you can't concatinate PDB files the way you
+     * can CIF files. --Bob Hanson 8/30/06
+     */
+    if (isMultiModel && !iHaveModel)
+      return true;
+    if (isAtom) {
+      getHeader = false;
+      atom(serial);
+      return true;
+    }
+    switch (ptOption) {
+    case 3:
+      conect();
+      return true;
+    case 4:
+    case 5:
+    case 6:
+      // if (line.startsWith("HELIX ") || line.startsWith("SHEET ")
+      // || line.startsWith("TURN  ")) {
+      structure();
+      return true;
+    case 7:
+      het();
+      return true;
+    case 8:
+      hetnam();
+      return true;
+    case 9:
+      anisou();
+      return true;
+    case 10:
+      site();
+      return true;
+    case 11:
+      cryst1();
+      return true;
+    case 12:
+    case 13:
+    case 14:
+      // if (line.startsWith("SCALE1")) {
+      // if (line.startsWith("SCALE2")) {
+      // if (line.startsWith("SCALE3")) {
+      scale(ptOption - 11);
+      return true;
+    case 15:
+      expdta();
+      return true;
+    case 16:
+      formul();
+      return true;
+    case 17:
+      if (line.startsWith("REMARK 350")) {
+        remark350();
+        return false;
+      }
+      if (line.startsWith("REMARK 290")) {
+        remark290();
+        return false;
+      }
+      checkLineForScript();
+      return true;
+    case 18:
+      header();
+      return true;
+    case 19:
+      compnd();
+      return true;
+    }
+    return true;
   }
 
+  protected void finalizeReader() throws Exception {
+    checkNotPDB();
+    atomSetCollection.connectAll(maxSerial);
+    if (biomolecules != null && biomolecules.size() > 0
+        && atomSetCollection.getAtomCount() > 0) {
+      atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", biomolecules);
+      setBiomoleculeAtomCounts();
+      if (biomts != null && filter != null
+          && filter.toUpperCase().indexOf("NOSYMMETRY") < 0) {
+        atomSetCollection.applySymmetry(biomts, applySymmetryToBonds, filter);
+      }
+    }
+    super.finalizeReader();
+    if (htSites != null)
+      addSites(htSites);
+    if (pdbHeader != null)
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader",
+          pdbHeader.toString());
+  }
+  
   public void applySymmetryAndSetTrajectory() throws Exception {
     // This speeds up calculation, because no crosschecking
     // No special-position atoms in mmCIF files, because there will

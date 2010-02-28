@@ -34,21 +34,17 @@ import java.io.BufferedReader;
 
 import javax.vecmath.Point3f;
 
-/**
- *  
- */
-
 public class GromacsReader extends AtomSetCollectionReader {
-  protected String fileType = "gromacs";  
-
   public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("xyz", this);
+    atomSetCollection = new AtomSetCollection("gromacs", this);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
+    atomSetCollection.newAtomSet();
     try {
-      readHeader();
-      int modelAtomCount = readAtomCount();
-      readAtoms(modelAtomCount);
+      readLine();
+      checkLineForScript();
+      atomSetCollection.setAtomSetName(line.trim());
+      readAtoms();
       readUnitCell();
       applySymmetryAndSetTrajectory();
     } catch (Exception e) {
@@ -56,43 +52,7 @@ public class GromacsReader extends AtomSetCollectionReader {
     }
   }
 
-  private void readUnitCell() throws Exception {
-    readLineTrimmed();
-    String[] tokens = getTokens(line);
-    if (tokens.length < 3 || !doApplySymmetry)
-      return;
-    float a = 10 * parseFloat(tokens[0]);
-    float b = 10 * parseFloat(tokens[1]);
-    float c = 10 * parseFloat(tokens[2]);
-    setUnitCell(a, b, c, 90, 90, 90);
-    setSpaceGroupName("P1");
-    Atom[] atoms = atomSetCollection.getAtoms();
-    Point3f pt = new Point3f(0.5f, 0.5f, 0.5f);
-    for (int i = atomSetCollection.getAtomCount(); --i >= 0;) {
-      setAtomCoord(atoms[i]);
-      atoms[i].add(pt);
-    }
-  }
-
-  private int readAtomCount() throws Exception {
-    readLine();
-    if (line != null) {
-      int atomCount = parseInt(line);
-      if (atomCount > 0)
-        return atomCount;
-    }
-    return 0;
-  }
-
-  private void readHeader() throws Exception {
-    readLineTrimmed();
-    checkLineForScript();
-    atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetName(line);
-    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
-  }
-
-  /*
+   /*
 
 "Check Your Input" (D. van der Spoel)
    59
@@ -104,7 +64,8 @@ public class GromacsReader extends AtomSetCollectionReader {
     1TYR     CB    6   1.541   1.791   2.133  0.0000  0.0000  0.0000
 
    */
-  private void readAtoms(int modelAtomCount) throws Exception {
+  private void readAtoms() throws Exception {
+    int modelAtomCount = parseInt(readLine());
     for (int i = 0; i < modelAtomCount; ++i) {
       readLine();
       int len = line.length();
@@ -157,6 +118,26 @@ public class GromacsReader extends AtomSetCollectionReader {
       return "" + ch1;
     return "Xx";
   }
+
+  private void readUnitCell() throws Exception {
+    if (readLine() == null)
+      return;
+    String[] tokens = getTokens(line);
+    if (tokens.length < 3 || !doApplySymmetry)
+      return;
+    float a = 10 * parseFloat(tokens[0]);
+    float b = 10 * parseFloat(tokens[1]);
+    float c = 10 * parseFloat(tokens[2]);
+    setUnitCell(a, b, c, 90, 90, 90);
+    setSpaceGroupName("P1");
+    Atom[] atoms = atomSetCollection.getAtoms();
+    Point3f pt = new Point3f(0.5f, 0.5f, 0.5f);
+    for (int i = atomSetCollection.getAtomCount(); --i >= 0;) {
+      setAtomCoord(atoms[i]);
+      atoms[i].add(pt);
+    }
+  }
+
 
 }
 

@@ -94,7 +94,7 @@ public class XyzReader extends AtomSetCollectionReader {
   }
 
   private void readAtomSetName() throws Exception {
-    readLineTrimmed();
+    readLine();
     checkLineForScript();
     //    newAtomSet(line); // makes that the titles of multi-xyz file gets messed up
     atomSetCollection.newAtomSet();

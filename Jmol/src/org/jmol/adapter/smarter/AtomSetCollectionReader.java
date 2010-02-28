@@ -913,13 +913,6 @@ public abstract class AtomSetCollectionReader {
     return line;
   }
 
-  protected String readLineTrimmed() throws Exception {
-    readLine();
-    if (line == null)
-      line = "";
-    return line = line.trim();
-  }
-  
   final static protected String[] getStrings(String sinfo, int nFields, int width) {
     String[] fields = new String[nFields];
     for (int i = 0, pt = 0; i < nFields; i++, pt += width)

@@ -91,7 +91,7 @@ public class CubeReader extends AtomSetCollectionReader {
     if (readLine().indexOf("#JVXL") == 0)
       while (readLine().indexOf("#") == 0) {
       }
-    atomSetCollection.setAtomSetName(line.trim() + " - " + readLineTrimmed());
+    atomSetCollection.setAtomSetName(line.trim() + " - " + readLine().trim());
   }
 
   void readAtomCountAndOrigin() throws Exception {

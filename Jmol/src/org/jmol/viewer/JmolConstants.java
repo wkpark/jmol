@@ -2479,6 +2479,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int GROUPID_AMINO_MAX        = 24;
   
   private final static int GROUPID_WATER           = 42;
+  private final static int GROUPID_SOLVENTS        = 45;
   private final static int GROUPID_SULPHATE        = 48;
   
   public final static String[] predefinedGroup3Names = {
@@ -2542,7 +2543,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "DOD", // 43
     "WAT", // 44
     "SOL", // 45 gromacs solvent
-    "UREA", // 46 urea
+    "UREA",// 46 urea
     "PO4", // 47 phosphate ions
     "SO4", // 48 sulphate ions
 
@@ -2717,10 +2718,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     // solvent
     //
-    "@water _g>=" + GROUPID_WATER + " & _g<" + (GROUPID_WATER + 3)
+    "@water _g>=" + GROUPID_WATER + " & _g<" + (GROUPID_SOLVENTS)
         + ", oxygen & connected(2) & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium or tritium) & connected(oxygen & connected(2) & connected(2, hydrogen or deuterium or tritium))",
     "@hoh water",
-    
+    "@solvent water, (_g>=" + GROUPID_SOLVENTS + " & _g<=" + GROUPID_SULPHATE + ")", // water, other solvent or ions
+
     // structure
     "@turn structure=1",
     "@sheet structure=2",
@@ -2780,9 +2782,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "@tu nucleic & within(group,_a="+ATOMID_S4+")",
 
     //
-    // solvent
+    // ions
     //
-    "@solvent water, (_g>="+GROUPID_WATER+" & _g<="+GROUPID_SULPHATE+")", // water, other solvent or ions
     "@ions _g="+(GROUPID_SULPHATE-1)+",_g="+GROUPID_SULPHATE,
 
     //

@@ -2782,10 +2782,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     // solvent
     //
-    // "@solvent _g>="+GROUPID_WATER+" & _g<="+GROUPID_SULPHATE, // water or ions
-    //     but this does not include 'calculated' water (i.e. non-groupID water)
-    "@ions _g="+(GROUPID_SULPHATE - 1)+",_g="+GROUPID_SULPHATE,
-    "@solvent water, ions", // I think this is better, all water should be solvent
+    "@ions _g="+(GROUPID_SULPHATE-1)+",_g="+GROUPID_SULPHATE,
+    "@solvent water, ions",
 
     //
     // structure related

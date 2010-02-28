@@ -2722,6 +2722,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
         + ", oxygen & connected(2) & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium or tritium) & connected(oxygen & connected(2) & connected(2, hydrogen or deuterium or tritium))",
     "@hoh water",
     "@solvent water, (_g>=" + GROUPID_SOLVENTS + " & _g<=" + GROUPID_SULPHATE + ")", // water, other solvent or ions
+    "@ligand hetero & !solvent",
 
     // structure
     "@turn structure=1",
@@ -2760,7 +2761,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //    "@hydrophobic ala,leu,val,ile,pro,phe,met,trp",
     // table says this
     "@hydrophobic ala,gly,ile,leu,met,phe,pro,trp,tyr,val",
-    "@ligand hetero & !solvent",
     "@mainchain backbone",
     "@small ala,gly,ser",
     "@medium asn,asp,cys,pro,thr,val",

@@ -253,6 +253,7 @@ OR
     Hashtable[] mos;
     int[] basisFunctions;
     public SymmetryData(int index, String sym) {
+      System.out.println("ADF reader creating SymmetryData " + sym + " " + index);
       this.index = index;
       this.sym = sym;
     }
@@ -397,10 +398,12 @@ OR
     discardLines(4);
     while (readLine() != null && line.length() > 10) {
       String[] tokens = getTokens();
+      int len = tokens.length;
       sym = tokens[0];
-      int moPt = parseInt(tokens[1]) - 1;
-      float occ = parseFloat(tokens[2]);
-      float energy = parseFloat(tokens[4]);
+      int moPt = parseInt(tokens[1]);
+      // could be spin here?
+      float occ = parseFloat(tokens[len - 3]);
+      float energy = parseFloat(tokens[len - 1]); // eV
       sd = (SymmetryData) htSymmetries.get(sym);
       if (sd == null) {
         Enumeration e = htSymmetries.keys();
@@ -422,10 +425,10 @@ OR
   }
 
   private void addMo(SymmetryData sd, int moPt, float occ, float energy) {
-    Hashtable mo = sd.mos[moPt];
+    Hashtable mo = sd.mos[moPt - 1];
     mo.put("occupancy", new Float(occ));
     mo.put("energy", new Float(energy)); //eV
-    mo.put("symmetry", sd.sym + "_" + (sd.index + 1));
+    mo.put("symmetry", sd.sym + "_" + moPt);
     orbitals.add(mo);
   }  
 }

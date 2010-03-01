@@ -30,8 +30,6 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
-import java.io.BufferedReader;
-
 /**
  * A reader for MDLI mol and sdf files.
  *<p>
@@ -51,11 +49,6 @@ import java.io.BufferedReader;
  */
 public class MolReader extends AtomSetCollectionReader {
 
-  String header = "";
-  public void readAtomSetCollection(BufferedReader reader) {
-    super.readAtomSetCollection(reader, "mol");
-  }
-  
   /*
    * from ctfile.pdf:
    * 
@@ -130,6 +123,7 @@ public class MolReader extends AtomSetCollectionReader {
      * must be present.
      */
 
+    String header = "";
     String thisDataSetName = line;
     header += line + "\n";
     atomSetCollection.setCollectionName(line);

@@ -47,8 +47,6 @@ import org.jmol.util.Logger;
 
 import javax.vecmath.Vector3f;
 
-import java.io.BufferedReader;
-
 /**
  * CASTEP (http://www.castep.org) .cell file format
  *
@@ -62,27 +60,15 @@ public class CastepReader extends AtomSetCollectionReader {
 
   private String[] tokens;
 
-  private float a = 0.0f;
-  private float b = 0.0f;
-  private float c = 0.0f;
-  private float alpha = 0.0f;
-  private float beta = 0.0f;
-  private float gamma = 0.0f;
+  private float a, b, c, alpha, beta, gamma;
   private Vector3f[] abc = new Vector3f[3];
+  private boolean iHaveFractionalCoordinates;
 
-  public void readAtomSetCollection(BufferedReader br) {
+  public void initializeReader() throws Exception {
+    
+    while (tokenizeCastepCell() > 0) {
 
-    reader = br;
-    atomSetCollection = new AtomSetCollection("castep", this);
-
-    boolean iHaveFractionalCoordinates = false;
-
-    try {
-
-      while (tokenizeCastepCell() > 0) {
-
-
-        if ((tokens.length >= 2) && (tokens[0].equalsIgnoreCase("%BLOCK"))) {
+      if ((tokens.length >= 2) && (tokens[0].equalsIgnoreCase("%BLOCK"))) {
 
           /*
            * unit cell can only be set later
@@ -97,9 +83,10 @@ ang
   90.0    90.0    90.0
 %ENDBLOCK LATTICE_ABC
           */
-          if (tokens[1].equalsIgnoreCase("LATTICE_ABC")) {
-            readLatticeAbc();
-          }
+        if (tokens[1].equalsIgnoreCase("LATTICE_ABC")) {
+          readLatticeAbc();
+          continue;
+        }
           /*
 %BLOCK LATTICE_CART
 ang
@@ -108,9 +95,10 @@ ang
   0.0   0.0   16.82438907
 %ENDBLOCK LATTICE_CART
           */
-          if (tokens[1].equalsIgnoreCase("LATTICE_CART")) {
-            readLatticeCart();
-          }
+        if (tokens[1].equalsIgnoreCase("LATTICE_CART")) {
+          readLatticeCart();
+          continue;
+        }
 
           /* coordinates are set immediately */
           /*
@@ -118,54 +106,56 @@ ang
    Pd         0.0 0.0 0.0
 %ENDBLOCK POSITIONS_FRAC
           */
-          if (tokens[1].equalsIgnoreCase("POSITIONS_FRAC")) {
-            readPositionsFrac();
-            iHaveFractionalCoordinates = true;
-          }
+        if (tokens[1].equalsIgnoreCase("POSITIONS_FRAC")) {
+          readPositionsFrac();
+          iHaveFractionalCoordinates = true;
+          continue;
+        }
           /*
 %BLOCK POSITIONS_ABS
 ang
    Pd         0.00000000         0.00000000       0.00000000 
 %ENDBLOCK POSITIONS_ABS
           */
-          if (tokens[1].equalsIgnoreCase("POSITIONS_ABS")) {
-            readPositionsAbs();
-            iHaveFractionalCoordinates = false;
-          }
+        if (tokens[1].equalsIgnoreCase("POSITIONS_ABS")) {
+          readPositionsAbs();
+          iHaveFractionalCoordinates = false;
+          continue;
         }
       }
-
-      doApplySymmetry = true;
-      setFractionalCoordinates(iHaveFractionalCoordinates);
-      // relay length of and angles between cell vectors to Jmol
-      setUnitCell(a, b, c, alpha, beta, gamma);
-      /*
-       * IMPORTANT: 
-       * also hand over (matrix of) unit cell vectors to trigger
-       * the calculation of the correct transformation matrices
-       * from cartesian to fractional coordinates (which are used
-       * internally by Jmol)
-       */
-      float[] lv = new float[3];
-      for (int n = 0; n < 3; n++) {
-        abc[n].get(lv);
-        addPrimitiveLatticeVector(n, lv);
-      }
-
-      int nAtoms = atomSetCollection.getAtomCount();
-      /*
-       * this needs to be run either way (i.e. even if coordinates are already
-       * fractional) - to satisfy the logic in AtomSetCollectionReader()
-       */
-      for (int n = 0; n < nAtoms; n++) {
-        Atom atom = atomSetCollection.getAtom(n);
-        setAtomCoord(atom);
-      }
-      applySymmetryAndSetTrajectory();
-
-    } catch (Exception e) {
-      setError(e);
     }
+    continuing = false;
+  }
+  
+  protected void finalizeReader() throws Exception {
+      
+    doApplySymmetry = true;
+    setFractionalCoordinates(iHaveFractionalCoordinates);
+    // relay length of and angles between cell vectors to Jmol
+    setUnitCell(a, b, c, alpha, beta, gamma);
+    /*
+     * IMPORTANT: 
+     * also hand over (matrix of) unit cell vectors to trigger
+     * the calculation of the correct transformation matrices
+     * from cartesian to fractional coordinates (which are used
+     * internally by Jmol)
+     */
+    float[] lv = new float[3];
+    for (int n = 0; n < 3; n++) {
+      abc[n].get(lv);
+      addPrimitiveLatticeVector(n, lv);
+    }
+
+    int nAtoms = atomSetCollection.getAtomCount();
+    /*
+     * this needs to be run either way (i.e. even if coordinates are already
+     * fractional) - to satisfy the logic in AtomSetCollectionReader()
+     */
+    for (int n = 0; n < nAtoms; n++) {
+      Atom atom = atomSetCollection.getAtom(n);
+      setAtomCoord(atom);
+    }
+    super.finalizeReader();
   }
 
   private void readLatticeAbc() throws Exception {
@@ -252,7 +242,6 @@ ang
   private final static int lengthUnits = lengthUnitIds.length;
 
   private float readLengthUnit() throws Exception {
-
     float factor = 1.0f;
     for (int i=0; i<lengthUnits; i++) {
       if (tokens[0].equalsIgnoreCase(lengthUnitIds[i])) {

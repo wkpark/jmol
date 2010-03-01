@@ -26,8 +26,6 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 
-
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -69,7 +67,9 @@ public class GaussianReader extends MOReader {
    * <p>Needed to associate identical properties to multiple atomsets
    */
   private int equivalentAtomSets = 0;
-  
+  private int stepNumber;
+
+
   /**
    * Reads a Collection of AtomSets from a BufferedReader.
    * 
@@ -92,19 +92,13 @@ public class GaussianReader extends MOReader {
    * orientation. If symmetry is used a <code>Standard</code> will be present
    * too.
    * 
-   * @param reader
-   *          BufferedReader associated with the Gaussian output text.
+   * @return TRUE to read a new line
+   * 
+   * @throws Exception 
+   * 
    **/
 
-  public void readAtomSetCollection(BufferedReader reader) {
-    readAtomSetCollection(reader, "gaussian");
-  }
-  
-  private int stepNumber = 0;
-
   protected boolean checkLine() throws Exception {
-    if (Logger.debugging)
-      Logger.debug(line);
     if (line.startsWith(" Step number")) {
       equivalentAtomSets = 0;
       stepNumber++;
@@ -128,23 +122,16 @@ public class GaussianReader extends MOReader {
     if (line.indexOf("Input orientation:") >= 0
         || line.indexOf("Z-Matrix orientation:") >= 0
         || line.indexOf("Standard orientation:") >= 0) {
-      if (doGetModel(++modelNumber)) {
-        equivalentAtomSets++;
-        if (Logger.debugging) {
-          Logger.debug(" model " + modelNumber + " step " + stepNumber
-              + " equivalentAtomSet " + equivalentAtomSets + " calculation "
-              + calculationNumber + " scan point " + scanPoint + line);
-        }
-        readAtoms();
-        iHaveAtoms = true;
-        return false;
-      }
-      if (isLastModel(modelNumber) && iHaveAtoms) {
-        continuing = false;
-        return false;
-      }
-      iHaveAtoms = false;
-      return true;
+      if (!doGetModel(++modelNumber))
+        return checkLastModel();
+      equivalentAtomSets++;
+      if (Logger.debugging)
+        Logger.debug(" model " + modelNumber + " step " + stepNumber
+            + " equivalentAtomSet " + equivalentAtomSets + " calculation "
+            + calculationNumber + " scan point " + scanPoint + line);
+      readAtoms();
+      iHaveAtoms = true;
+      return false;
     }
     if (!iHaveAtoms)
       return true;

@@ -24,10 +24,6 @@
 
 package org.jmol.adapter.readers.quantum;
 
-import org.jmol.adapter.smarter.*;
-
-import java.io.BufferedReader;
-
 /*
  * Wavefunction Odyssey reader -- old style -- just the INPUT section
  * 
@@ -38,11 +34,10 @@ import java.io.BufferedReader;
 
 public class OdysseyReader extends SpartanInputReader {
   
-  public void readAtomSetCollection(BufferedReader reader) {
+  public void initializeReader() throws Exception {
     modelName = "Odyssey file";
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("odyssey)", this);
     readInputRecords();
+    continuing = false;
   }
   
 }

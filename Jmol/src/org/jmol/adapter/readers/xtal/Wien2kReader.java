@@ -26,8 +26,6 @@ package org.jmol.adapter.readers.xtal;
 import org.jmol.adapter.smarter.*;
 import org.jmol.util.TextFormat;
 
-import java.io.BufferedReader;
-
 /**
  * A reader for Wein2k DFT files.  
  * 
@@ -43,22 +41,15 @@ public class Wien2kReader extends AtomSetCollectionReader {
   private char latticeCode;
   private boolean doSymmetry = true;
   
-  public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("wien2k", this);
+  public void initializeReader() throws Exception {
     doSymmetry = !spaceGroup.equals("none");
-    try {
-      setFractionalCoordinates(true);
-      atomSetCollection.setCollectionName(readLine());
-      readUnitCell();
-      readAtoms();
-      readSymmetry();
-      applySymmetryAndSetTrajectory();
-      readEmbeddedScript();
-    } catch (Exception e) {
-      setError(e);
-    }
-
+    setFractionalCoordinates(true);
+    atomSetCollection.setCollectionName(readLine());
+    readUnitCell();
+    readAtoms();
+    readSymmetry();
+    readEmbeddedScript();
+    continuing = false;
   }
 
   /* from HallInfo:

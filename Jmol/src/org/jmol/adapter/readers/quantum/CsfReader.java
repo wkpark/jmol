@@ -26,8 +26,6 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 
-
-import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -55,59 +53,44 @@ public class CsfReader extends MopacReader {
   private int nGaussians = 0;
   private int nSlaters = 0;
   
- public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("csf", this);
-    try {
-      readLine();
-      while (line != null) {
-        if (line.equals("local_transform")) {
-          processLocalTransform();
-        } else if (line.startsWith("object_class")) {
-          processObjectClass();
-          // there is already an unprocessed line in the firing chamber
-          continue; 
-        }
-        readLine();
+  protected boolean checkLine() throws Exception {
+    if (line.equals("local_transform")) {
+      processLocalTransform();
+      return true;
+    }
+    if (line.startsWith("object_class")) {
+      if (line.equals("object_class connector")) {
+        processConnectorObject();
+        return false;
       }
-    } catch (Exception e) {
-      setError(e);
+      if (line.equals("object_class atom")) {
+        processAtomObject();
+        return false;
+      }
+      if (line.equals("object_class bond")) {
+        processBondObject();
+        return false;
+      }
+      if (line.equals("object_class vibrational_level")) {
+        processVibrationObject();
+        return false;
+      }
+      if (line.equals("object_class mol_orbital")) {
+        processMolecularOrbitalObject();
+        return false;
+      }
+      if (line.equals("object_class sto_basis_fxn")) {
+        processBasisObject("sto");
+        return false;
+      }
+      if (line.equals("object_class gto_basis_fxn")) {
+        processBasisObject("gto");
+        return false;
+      }
     }
-
+    return true;
   }
-  private void processObjectClass() throws Exception {
-    if (line.equals("object_class connector")) {
-      processConnectorObject();
-      return;
-    }
-    if (line.equals("object_class atom")) {
-      processAtomObject();
-      return;
-    }
-    if (line.equals("object_class bond")) {
-      processBondObject();
-      return;
-    }
-    if (line.equals("object_class vibrational_level")) {
-      processVibrationObject();
-      return;
-    }
-    if (line.equals("object_class mol_orbital")) {
-      processMolecularOrbitalObject();
-      return;
-    }
-    if (line.equals("object_class sto_basis_fxn")) {
-      processBasisObject("sto");
-      return;
-    }
-    if (line.equals("object_class gto_basis_fxn")) {
-      processBasisObject("gto");
-      return;
-    }
-    
-    readLine();
-  }
-
+ 
   /*
    local_transform
    0.036857 -0.132149 0.003770 0.000000

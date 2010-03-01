@@ -27,8 +27,6 @@ package org.jmol.adapter.readers.molxyz;
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 
-import java.io.BufferedReader;
-
 import org.jmol.util.Logger;
 
 /**
@@ -54,51 +52,31 @@ import org.jmol.util.Logger;
 
 public class XyzReader extends AtomSetCollectionReader {
 
-  public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("xyz", this);
-    try {
-      int modelAtomCount;
-      while ((modelAtomCount = readAtomCount()) > 0) {
-        // models and vibrations are the same for XYZ files
-        vibrationNumber = ++modelNumber;
-        if (desiredVibrationNumber <= 0 ? doGetModel(modelNumber) : doGetVibration(vibrationNumber)) {
-          readAtomSetName();
-          readAtoms(modelAtomCount);
-          applySymmetryAndSetTrajectory();
-          if (isLastModel(modelNumber))
-            break;
-        } else {
-          skipAtomSet(modelAtomCount);
-        }
+  protected boolean checkLine() throws Exception {
+    int modelAtomCount = parseInt(line);
+    if (modelAtomCount == Integer.MIN_VALUE) {
+      continuing = false;
+      return false;
+    }
+      
+    // models and vibrations are the same for XYZ files
+    vibrationNumber = ++modelNumber;
+    if (desiredVibrationNumber <= 0 ? doGetModel(modelNumber)
+        : doGetVibration(vibrationNumber)) {
+      readLine();
+      checkLineForScript();
+      atomSetCollection.newAtomSet();
+      atomSetCollection.setAtomSetName(line);
+      readAtoms(modelAtomCount);
+      applySymmetryAndSetTrajectory();
+      if (isLastModel(modelNumber)) {
+        continuing = false;
+        return false;
       }
-    } catch (Exception e) {
-      setError(e);
+    } else {
+      discardLines(modelAtomCount + 1);
     }
-  }
-
-  private void skipAtomSet(int modelAtomCount) throws Exception {
-    readLine(); //comment
-    for (int i = modelAtomCount; --i >= 0;)
-      readLine(); //atoms
-  }
-
-  private int readAtomCount() throws Exception {
-    readLine();
-    if (line != null) {
-      int atomCount = parseInt(line);
-      if (atomCount > 0)
-        return atomCount;
-    }
-    return 0;
-  }
-
-  private void readAtomSetName() throws Exception {
-    readLine();
-    checkLineForScript();
-    //    newAtomSet(line); // makes that the titles of multi-xyz file gets messed up
-    atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetName(line);
+    return true;
   }
 
   private void readAtoms(int modelAtomCount) throws Exception {
@@ -119,7 +97,6 @@ public class XyzReader extends AtomSetCollectionReader {
         str = str.substring(("" + isotope).length());
         atom.elementNumber = (short) ((isotope << 7) + JmolAdapter
             .getElementNumber(str));
-        atomSetCollection.setFileTypeName("xyzi");
       }
       atom.x = parseFloat(tokens[1]);
       atom.y = parseFloat(tokens[2]);

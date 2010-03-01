@@ -26,9 +26,6 @@ package org.jmol.adapter.readers.simple;
 
 import org.jmol.adapter.smarter.*;
 
-
-import java.io.BufferedReader;
-
 /**
  * Gaussian cube file format
  * 
@@ -56,77 +53,36 @@ import java.io.BufferedReader;
 
 public class CubeReader extends AtomSetCollectionReader {
     
-  boolean negativeAtomCount;
-  int atomCount;
-  boolean isAngstroms = false;
+  private int atomCount;
+  private boolean isAngstroms = false;
   
-  final int[] voxelCounts = new int[3];
-  final float[] origin = new float[3];
-  final float[][] voxelVectors = new float[3][];
-  
- public void readAtomSetCollection(BufferedReader br) {
-    reader = br;
-    atomSetCollection = new AtomSetCollection("cube", this);
-    try {
-      atomSetCollection.newAtomSet();
-      readTitleLines();
-      readAtomCountAndOrigin();
-      readVoxelVectors();
-      readAtoms();
-      readExtraLine();
-      /*
-        volumetric data is no longer read here
-      readVoxelData();
-      atomSetCollection.volumetricOrigin = origin;
-      atomSetCollection.volumetricSurfaceVectors = voxelVectors;
-      atomSetCollection.volumetricSurfaceData = voxelData;
-      */
-    } catch (Exception e) {
-      setError(e);
-    }
-
+  public void initializeReader() throws Exception {
+    atomSetCollection.newAtomSet();
+    readTitleLines();
+    readAtomCountAndOrigin();
+    discardLines(3);
+    readAtoms();
+    applySymmetryAndSetTrajectory();
+    continuing = false;
   }
 
-  void readTitleLines() throws Exception {
+  private void readTitleLines() throws Exception {
     if (readLine().indexOf("#JVXL") == 0)
       while (readLine().indexOf("#") == 0) {
       }
     atomSetCollection.setAtomSetName(line.trim() + " - " + readLine().trim());
   }
 
-  void readAtomCountAndOrigin() throws Exception {
+  private void readAtomCountAndOrigin() throws Exception {
     readLine();
     isAngstroms = (line.indexOf("ANGSTROMS") >= 0); //JVXL flag for Angstroms
     String[] tokens = getTokens();
     if (tokens[0].charAt(0) == '+') //Jvxl progressive reader -- ignore and consider negative
-      tokens[0] = '-' + tokens[0].substring(1);
-    atomCount = parseInt(tokens[0]);
-    origin[0] = parseFloat(tokens[1]);
-    origin[1] = parseFloat(tokens[2]);
-    origin[2] = parseFloat(tokens[3]);
-    if (atomCount < 0) {
-      atomCount = -atomCount;
-      negativeAtomCount = true;
-    }
+      tokens[0] = tokens[0].substring(1);
+    atomCount = Math.abs(parseInt(tokens[0]));
   }
   
-  void readVoxelVectors() throws Exception {
-    readVoxelVector(0);
-    readVoxelVector(1);
-    readVoxelVector(2);
-  }
-
-  void readVoxelVector(int voxelVectorIndex) throws Exception {
-    readLine();
-    float[] voxelVector = new float[3];
-    voxelVectors[voxelVectorIndex] = voxelVector;
-    voxelCounts[voxelVectorIndex] = parseInt(line);
-    voxelVector[0] = parseFloat();
-    voxelVector[1] = parseFloat();
-    voxelVector[2] = parseFloat();
-  }
-
-  void readAtoms() throws Exception {
+  private void readAtoms() throws Exception {
     for (int i = 0; i < atomCount; ++i) {
       readLine();
       Atom atom = atomSetCollection.addNewAtom();
@@ -140,11 +96,4 @@ public class CubeReader extends AtomSetCollectionReader {
     }
   }
 
-  void readExtraLine() throws Exception {
-    if (negativeAtomCount)
-      readLine();
-    int nSurfaces = parseInt(line);
-    if (nSurfaces != Integer.MIN_VALUE && nSurfaces < 0)
-      atomSetCollection.setFileTypeName("jvxl");
-  }
 }

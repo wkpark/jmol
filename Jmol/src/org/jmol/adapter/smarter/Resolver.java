@@ -221,25 +221,25 @@ public class Resolver {
                         BufferedReader bufferedReader, Hashtable htParams,
                         int ptFile) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader = null;
-    String atomSetCollectionReaderName;
+    String readerName;
     fullName = fullName.replace('\\','/');
     String errMsg = null;
     if (type != null) {
-      atomSetCollectionReaderName = getReaderFromType(type);
-      if (atomSetCollectionReaderName == null)
+      readerName = getReaderFromType(type);
+      if (readerName == null)
         errMsg =  "unrecognized file format type " + type;
       else 
-        Logger.info("The Resolver assumes " + atomSetCollectionReaderName);
+        Logger.info("The Resolver assumes " + readerName);
     } else {
-      atomSetCollectionReaderName = determineAtomSetCollectionReader(
+      readerName = determineAtomSetCollectionReader(
           bufferedReader, true);
-      if (atomSetCollectionReaderName.indexOf("\n") >= 0)
+      if (readerName.indexOf("\n") >= 0)
         errMsg = "unrecognized file format for file " + fullName + "\n"
-            + atomSetCollectionReaderName;
-      else if (atomSetCollectionReaderName.equals("spt"))
+            + readerName;
+      else if (readerName.equals("spt"))
         errMsg = "NOTE: file recognized as a script file: " + fullName + "\n";
       else
-        Logger.info("The Resolver thinks " + atomSetCollectionReaderName);
+        Logger.info("The Resolver thinks " + readerName);
     }
     if (errMsg != null) {
       bufferedReader.close();
@@ -249,14 +249,14 @@ public class Resolver {
       htParams = new Hashtable();
     htParams.put("ptFile", new Integer(ptFile));
     if (ptFile <= 0)
-      htParams.put("readerName", atomSetCollectionReaderName);
-    if (atomSetCollectionReaderName.indexOf("Xml") == 0)
-      atomSetCollectionReaderName = "Xml";
+      htParams.put("readerName", readerName);
+    if (readerName.indexOf("Xml") == 0)
+      readerName = "Xml";
     String className = null;
     Class atomSetCollectionReaderClass;
     String err = null;
     try {
-      className = getReaderClassBase(atomSetCollectionReaderName);
+      className = getReaderClassBase(readerName);
       atomSetCollectionReaderClass = Class.forName(className);
       atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
           .newInstance();

@@ -30,26 +30,23 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
-import java.io.BufferedReader;
-
 import javax.vecmath.Point3f;
 
 public class GromacsReader extends AtomSetCollectionReader {
-  public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("gromacs", this);
+  
+  protected void initializeReader() {
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
     atomSetCollection.newAtomSet();
-    try {
-      readLine();
+    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+  }
+  
+  protected boolean checkLine() throws Exception {
       checkLineForScript();
       atomSetCollection.setAtomSetName(line.trim());
       readAtoms();
       readUnitCell();
-      applySymmetryAndSetTrajectory();
-    } catch (Exception e) {
-      setError(e);
-    }
+      continuing = false;
+      return false;
   }
 
    /*

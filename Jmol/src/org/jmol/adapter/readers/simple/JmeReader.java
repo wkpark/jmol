@@ -26,10 +26,8 @@ package org.jmol.adapter.readers.simple;
 
 import org.jmol.adapter.smarter.*;
 
-
 import org.jmol.api.JmolAdapter;
 
-import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
 public class JmeReader extends AtomSetCollectionReader {
@@ -57,27 +55,20 @@ public class JmeReader extends AtomSetCollectionReader {
  * 
  */
 
-  StringTokenizer tokenizer;
+  private StringTokenizer tokenizer;
   
- public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("jme", this);
-
-    try {
-      readLine();
-      tokenizer = new StringTokenizer(line, "\t ");
-      int atomCount = parseInt(tokenizer.nextToken());
-      int bondCount = parseInt(tokenizer.nextToken());
-      atomSetCollection.setCollectionName("JME");
-      readAtoms(atomCount);
-      readBonds(bondCount);
-    } catch (Exception e) {
-      setError(e);
-    }
-
+  public void InitializeReader() throws Exception {
+    atomSetCollection.setCollectionName("JME");
+    atomSetCollection.newAtomSet();
+    tokenizer = new StringTokenizer(line, "\t ");
+    int atomCount = parseInt(tokenizer.nextToken());
+    int bondCount = parseInt(tokenizer.nextToken());
+    readAtoms(atomCount);
+    readBonds(bondCount);
+    continuing = false;
   }
     
-  void readAtoms(int atomCount) throws Exception {
+  private void readAtoms(int atomCount) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
       String strAtom = tokenizer.nextToken();
       //Logger.debug("strAtom=" + strAtom);
@@ -94,7 +85,7 @@ public class JmeReader extends AtomSetCollectionReader {
     }
   }
 
-  void readBonds(int bondCount) throws Exception {
+  private void readBonds(int bondCount) throws Exception {
     for (int i = 0; i < bondCount; ++i) {
       int atomIndex1 = parseInt(tokenizer.nextToken());
       int atomIndex2 = parseInt(tokenizer.nextToken());

@@ -25,8 +25,6 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 
-
-import java.io.BufferedReader;
 import java.util.Hashtable;
 
 
@@ -38,28 +36,21 @@ import java.util.Hashtable;
  */
 public class MopacGraphfReader extends MopacReader {
     
-  int atomCount;
+  private int atomCount;
   
- public void readAtomSetCollection(BufferedReader reader) {
-
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("mopacGraphf", this);
-    //frameInfo = null;
-    try {
+  protected boolean checkLine() throws Exception {
       readAtoms();
       readSlaterBasis();
       readMOs(false);
       if (readKeywords())
         readMOs(true);
-    } catch (Exception e) {
-      setError(e);
-    }
-
+      continuing = false;
+      return false;
   }
     
-  void readAtoms() throws Exception {
+  private void readAtoms() throws Exception {
     atomSetCollection.newAtomSet();
-    atomCount = parseInt(readLine());
+    atomCount = parseInt(line);
     atomicNumbers = new int[atomCount];
     for (int i = 0; i < atomCount; i++) {
       readLine();
@@ -101,7 +92,7 @@ public class MopacGraphfReader extends MopacReader {
    1.2686410  0.0000000  0.0000000
    */
 
-  void readSlaterBasis() throws Exception {
+  private void readSlaterBasis() throws Exception {
     /*
      * We have two data structures for each slater, using the WebMO format: 
      * 
@@ -141,9 +132,9 @@ public class MopacGraphfReader extends MopacReader {
     setSlaters(true, false);
   }
 
-  float[][] invMatrix;
+  private float[][] invMatrix;
   
-  void readMOs(boolean isBeta) throws Exception {
+  private void readMOs(boolean isBeta) throws Exception {
 
     // read mo coefficients
 

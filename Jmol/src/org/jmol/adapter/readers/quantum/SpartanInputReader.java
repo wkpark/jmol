@@ -41,9 +41,8 @@ public abstract class SpartanInputReader extends AtomSetCollectionReader {
   protected int atomCount;
   protected String bondData = "";
   
-  protected void readInputRecords() {
+  protected void readInputRecords() throws Exception {
     int atomCount0 = atomCount;
-    try {
       readInputHeader();
       while (readLine() != null) {
         String[] tokens = getTokens();
@@ -66,9 +65,6 @@ public abstract class SpartanInputReader extends AtomSetCollectionReader {
         readTransform();
       if (atomSetCollection.getAtomCount() > 0)
         atomSetCollection.setAtomSetName(modelName);
-    } catch (Exception e) {
-      setError(e);
-    }
   }
   
   private void readTransform() throws Exception {

@@ -26,8 +26,6 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 
-
-import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -46,49 +44,53 @@ import org.jmol.util.Logger;
  */
 public class WebMOReader extends MopacReader {
 
- public void readAtomSetCollection(BufferedReader reader)  {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("webmo", this);
-    modelNumber = 0;
-    try {
-      readLine();
-      while (line != null) {
-        if (line.equals("[HEADER]")) {
-          readHeader();
-          continue;
-        } else if (line.equals("[ATOMS]")) {
-          readAtoms();
-          //        atomSetCollection.setAtomSetName(thisDataSetName);
-          continue;
-        } else if (line.equals("[BONDS]")) {
-          readBonds();
-          continue;
-        } else if (line.equals("[AO_ORDER]")) {
-          readAtomicOrbitalOrder();
-          continue;
-        } else if (line.equals("[GTO]")) {
-          readGaussianBasis();
-          continue;
-        } else if (line.equals("[STO]")) {
-          readSlaterBasis();
-          continue;
-        } else if (line.indexOf("[MO") == 0) {
-          if (doGetModel(++modelNumber)) {
-            readMolecularOrbital();
-            if (isLastModel(modelNumber))
-              break;
-          }
-          continue;
-        }
-        readLine();
-      }
-      if (Logger.debugging)
-        Logger.debug(orbitals.size() + " molecular orbitals read");
-    } catch (Exception e) {
-      setError(e);
+  protected boolean checkLine() throws Exception {
+    if (line.equals("[HEADER]")) {
+      readHeader();
+      return true;
     }
+
+    if (line.equals("[ATOMS]")) {
+      readAtoms();
+      return false;
+    }
+
+    if (line.equals("[BONDS]")) {
+      readBonds();
+      return false;
+    }
+
+    if (line.equals("[AO_ORDER]")) {
+      readAtomicOrbitalOrder();
+      return false;
+    }
+
+    if (line.equals("[GTO]")) {
+      readGaussianBasis();
+      return false;
+    }
+
+    if (line.equals("[STO]")) {
+      readSlaterBasis();
+      return false;
+    }
+
+    if (line.indexOf("[MO") == 0) {
+      if (!doGetModel(++modelNumber))
+        return checkLastModel();
+      readMolecularOrbital();
+      iHaveAtoms = true;
+      return false;
+    }
+    return true;
   }
 
+  protected void finalizeReader() throws Exception {
+    super.finalizeReader();
+    if (Logger.debugging)
+      Logger.debug(orbitals.size() + " molecular orbitals read");
+  }
+  
   void readHeader() throws Exception {
     while (readLine() != null && line.length() > 0) {
       moData.put("calculationType", "?");

@@ -27,8 +27,6 @@ package org.jmol.adapter.readers.simple;
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 
-import java.io.BufferedReader;
-
 /**
  * TRIPOS simple Alchemy reader. 
  * atomtypes based on OpenBabel data/types.txt
@@ -43,24 +41,18 @@ import java.io.BufferedReader;
 
 public class AlchemyReader extends AtomSetCollectionReader {
 
-  int atomCount;
-  int bondCount;
+  private int atomCount;
+  private int bondCount;
 
-  public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("Alchemy", this);
-    try {
-      atomSetCollection.newAtomSet();
-      String[] tokens = getTokens(readLine());
-      atomCount = parseInt(tokens[0]);
-      bondCount = parseInt(tokens[2]);
-      readAtoms();
-      readBonds();
-    } catch (Exception e) {
-      setError(e);
-    }
-
-  }
+  public void initializeReader() throws Exception {
+    atomSetCollection.newAtomSet();
+    String[] tokens = getTokens(readLine());
+    atomCount = parseInt(tokens[0]);
+    bondCount = parseInt(tokens[2]);
+    readAtoms();
+    readBonds();
+    continuing = false;
+ }
 
   /*
    * 

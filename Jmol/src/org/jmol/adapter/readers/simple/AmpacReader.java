@@ -26,8 +26,6 @@ package org.jmol.adapter.readers.simple;
 
 import org.jmol.adapter.smarter.*;
 
-import java.io.BufferedReader;
-
 import javax.vecmath.Point3f;
 
 /**
@@ -41,37 +39,24 @@ public class AmpacReader extends AtomSetCollectionReader {
   private int freqAtom0 = -1;
   private float[] partialCharges;
   private Point3f[] atomPositions;
-  
-  /**
-   *
-   * @param reader  input stream
-   */
-  public void readAtomSetCollection(BufferedReader reader) {
-    atomSetCollection = new AtomSetCollection("ampac", this);
-    this.reader = reader;
-    boolean iHaveAtoms = false;
-    modelNumber = 0;
-    try {
-      while (readLine() != null) {
-        if (line.indexOf("CARTESIAN COORDINATES") >= 0) {
-          if (!doGetModel(++modelNumber)) {
-            if (isLastModel(modelNumber) && iHaveAtoms)
-              break;
-            iHaveAtoms = false;
-            continue;
-          }
-          iHaveAtoms = true;
-          readCoordinates();          
-        } else if (iHaveAtoms && line.indexOf("NET ATOMIC CHARGES") >= 0) {
-          readPartialCharges();
-        } else if (iHaveAtoms && line.indexOf("VIBRATIONAL FREQUENCIES") >= 0) {
-          readFrequencies();
-        }
-      }
-    } catch (Exception e) {
-      setError(e);
+    
+  protected boolean checkLine() throws Exception {
+    if (line.indexOf("CARTESIAN COORDINATES") >= 0) {
+      if (!doGetModel(++modelNumber))
+        return checkLastModel();
+      iHaveAtoms = true;
+      readCoordinates();
+      return true;
     }
-
+    if (iHaveAtoms && line.indexOf("NET ATOMIC CHARGES") >= 0) {
+      readPartialCharges();
+      return true;
+    }
+    if (iHaveAtoms && line.indexOf("VIBRATIONAL FREQUENCIES") >= 0) {
+      readFrequencies();
+      return true;
+    }
+    return true;
   }
 
   /**

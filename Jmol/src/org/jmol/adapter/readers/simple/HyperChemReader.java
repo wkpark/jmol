@@ -26,9 +26,7 @@ package org.jmol.adapter.readers.simple;
 
 import org.jmol.adapter.smarter.*;
 
-
 import org.jmol.api.JmolAdapter;
-import java.io.BufferedReader;
 
 /**
  * Support for .hin, HyperChem's native file format.
@@ -46,35 +44,35 @@ import java.io.BufferedReader;
  */
 public class HyperChemReader extends AtomSetCollectionReader {
   
- public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("HyperChem", this);
-    try {
-      readAtoms();
-    } catch (Exception e) {
-      setError(e);
+  protected boolean checkLine() throws Exception {
+    if (line.length() == 0 || line.charAt(0) == ';') // comment
+      return true;
+    if (line.startsWith("mol ")) {
+      // we have reached the start of a molecule
+      if (!doGetModel(++modelNumber))
+        return checkLastModel();
+      iHaveAtoms = true;
+      processMol();
+      return true;
     }
-
+    if (!iHaveAtoms)
+      return true;
+    
+    if (line.startsWith("atom ")) {
+      processAtom();
+      return true;
+    }
+    if (line.startsWith("endmol ")) {
+      applySymmetryAndSetTrajectory();
+      return true;
+    }
+    return true;
   }
   
-  int atomIndex;
-  int baseAtomIndex;
+  private int atomIndex;
+  private int baseAtomIndex;
 
-  void readAtoms() throws Exception {
-
-    while (readLine() != null ) {
-      if (line.length() == 0 || line.charAt(0) == ';') // comment
-        continue;
-      if (line.startsWith("mol ")) // we have reached the start of a molecule
-        processMol();
-      else if (line.startsWith("atom "))
-        processAtom();
-      else if (line.startsWith("endmol "))
-        processEndmol();
-    }
-  }
-
-  void processMol() throws Exception {
+  private void processMol() throws Exception {
     atomSetCollection.newAtomSet();
     String molName = getMolName();
     atomSetCollection.setAtomSetName(molName);
@@ -82,13 +80,13 @@ public class HyperChemReader extends AtomSetCollectionReader {
     baseAtomIndex = atomSetCollection.getAtomCount();
   }
 
-  String getMolName() {
+  private String getMolName() {
     parseToken(line);
     parseToken();
     return parseToken();
   }
 
-  void processAtom() throws Exception {
+  private void processAtom() throws Exception {
 
     int fileAtomNumber = parseInt(line, 5);
     if (fileAtomNumber - 1 != atomIndex) {
@@ -137,6 +135,4 @@ public class HyperChemReader extends AtomSetCollectionReader {
     ++atomIndex;
   }
 
-  void processEndmol() {
-  }
 }

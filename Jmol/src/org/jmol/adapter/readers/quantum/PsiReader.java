@@ -26,7 +26,6 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 
-import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -45,15 +44,6 @@ import org.jmol.util.Logger;
  *  
  **/
 public class PsiReader extends MOReader {
-
-  /**
-   *
-   * @param reader BufferedReader associated with the Gaussian output text.
-   **/
-
-  public void readAtomSetCollection(BufferedReader reader) {
-    readAtomSetCollection(reader, "psi");
-  }
 
  /**
    * @return true if need to read new line

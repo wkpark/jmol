@@ -30,7 +30,6 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
-import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -63,7 +62,6 @@ public class PdbReader extends AtomSetCollectionReader {
   private final Hashtable htFormul = new Hashtable();
   private Hashtable htHetero = null;
   private Hashtable htSites = null;
-  protected String fileType = "pdb";  
   private String currentGroup3;
   private String compnd;
   private Hashtable htElementsInCurrentGroup;
@@ -95,21 +93,11 @@ public class PdbReader extends AtomSetCollectionReader {
    "HEADER  " + //18
    "COMPND  ";  //19
 
- private boolean iHaveModel = false;
  private int serial = 0;
  private StringBuffer pdbHeader;
  
- public void readAtomSetCollection(BufferedReader reader) {
-    //System.out.println(this + " initialized");
-   super.readAtomSetCollection(reader, fileType);
- }
- 
- protected void initializeReader(BufferedReader reader, String type) throws Exception {
-   super.initializeReader(reader, type);
+ protected void initializeReader() throws Exception {
    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
-   setFractionalCoordinates(false);
-   htFormul.clear();
-   currentGroup3 = null;
    pdbHeader = (getHeader ? new StringBuffer() : null);
  }
 
@@ -134,15 +122,9 @@ public class PdbReader extends AtomSetCollectionReader {
       int modelNo = (isNewModel ? modelNumber + 1 : getModelNumber());
       // System.out.println(modelNo);
       modelNumber = (bsModels == null ? modelNo : modelNumber + 1);
-      if (!doGetModel(modelNumber)) {
-        if (isLastModel(modelNumber) && iHaveModel) {
-          continuing = false;
-          return false;
-        }
-        iHaveModel = false;
-        return true;
-      }
-      iHaveModel = true;
+      if (!doGetModel(modelNumber))
+        return checkLastModel();
+      iHaveAtoms = true;
       atomSetCollection.connectAll(maxSerial);
       if (atomCount > 0)
         applySymmetryAndSetTrajectory();
@@ -157,7 +139,7 @@ public class PdbReader extends AtomSetCollectionReader {
      * actually supports this. So you can't concatinate PDB files the way you
      * can CIF files. --Bob Hanson 8/30/06
      */
-    if (isMultiModel && !iHaveModel)
+    if (isMultiModel && !iHaveAtoms)
       return true;
     if (isAtom) {
       getHeader = false;

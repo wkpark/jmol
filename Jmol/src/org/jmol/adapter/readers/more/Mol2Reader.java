@@ -26,8 +26,6 @@ package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
 
-import java.io.BufferedReader;
-
 import org.jmol.api.JmolAdapter;
 
 /**
@@ -58,35 +56,27 @@ public class Mol2Reader extends ForceFieldReader {
   private int atomCount = 0;
   private boolean isPDB = false;
 
-  public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("mol2", this);
-    try {
-      setUserAtomTypes();
-      setFractionalCoordinates(false);
-      readLine();
-      modelNumber = 0;
-      while (line != null) {
-        if (line.length() != 0 && line.charAt(0) == '#') {
-          /* Comment lines (starting with '#' as per Tripos spec) 
-              may contain an inline Jmol script.
-          */
-          checkLineForScript();
-        }
-        else if (line.equals("@<TRIPOS>MOLECULE")) {
-          if (doGetModel(++modelNumber)) {
-            processMolecule();
-            if (isLastModel(modelNumber))
-              break;
-            continue;
-          }
-        }
-        readLine();
-      }
-    } catch (Exception e) {
-      setError(e);
-    }
+  protected void initializeReader() throws Exception {
+    setUserAtomTypes();
+  }
 
+  public boolean checkLine() throws Exception {
+    if (line.equals("@<TRIPOS>MOLECULE")) {
+      if (doGetModel(++modelNumber)) {
+        processMolecule();
+        continuing = !isLastModel(modelNumber);
+        return false;
+      }
+      return true;
+    }
+    if (line.length() != 0 && line.charAt(0) == '#') {
+      /*
+       * Comment lines (starting with '#' as per Tripos spec) may contain an
+       * inline Jmol script.
+       */
+      checkLineForScript();
+    }
+    return true;
   }
 
   private void processMolecule() throws Exception {

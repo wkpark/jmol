@@ -30,7 +30,6 @@
 
 package org.jmol.adapter.readers.quantum;
 
-import java.io.BufferedReader;
 import java.util.Vector;
 
 import javax.vecmath.Vector3f;
@@ -39,10 +38,6 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Logger;
 
 public class GamessUSReader extends GamessReader {
-
-  public void readAtomSetCollection(BufferedReader reader) {
-    readAtomSetCollection(reader, "gamess");
-  }
 
   /*
   ------------------
@@ -101,20 +96,15 @@ public class GamessUSReader extends GamessReader {
     }
     if ((isBohr = line.indexOf("COORDINATES (BOHR)") >= 0)
         || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
-      if (doGetModel(++modelNumber)) {
-        atomNames = new Vector();
-        if (isBohr)
-          readAtomsInBohrCoordinates();
-        else
-          readAtomsInAngstromCoordinates();
-        iHaveAtoms = true;
-        return true;
-      }
-      if (isLastModel(modelNumber) && iHaveAtoms) {
-        continuing = false;
-        return false;
-      }
-      iHaveAtoms = false;
+      if (!doGetModel(++modelNumber))
+        return checkLastModel();
+      atomNames = new Vector();
+      if (isBohr)
+        readAtomsInBohrCoordinates();
+      else
+        readAtomsInAngstromCoordinates();
+      iHaveAtoms = true;
+      return true;
     }
     if (!iHaveAtoms)
       return true;

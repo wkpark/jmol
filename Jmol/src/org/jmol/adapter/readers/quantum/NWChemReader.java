@@ -27,8 +27,6 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.*;
 
 
-import java.io.BufferedReader;
-
 /**
  * A reader for NWChem 4.6
  * NWChem is a quantum chemistry program developed at
@@ -76,10 +74,6 @@ public class NWChemReader extends MOReader {
   private boolean haveAt;
   private boolean inInput;
  
- public void readAtomSetCollection(BufferedReader reader)  {
-   readAtomSetCollection(reader, "nwchem");
- }
-
  /**
    * @return true if need to read new line
    * @throws Exception

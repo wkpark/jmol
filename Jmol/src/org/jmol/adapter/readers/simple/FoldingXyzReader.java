@@ -26,8 +26,6 @@ package org.jmol.adapter.readers.simple;
 
 import org.jmol.adapter.smarter.*;
 
-
-import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
 import org.jmol.util.ArrayUtil;
@@ -46,24 +44,16 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
   // Enable / Disable features of the reader
   private final static boolean useAutoBond = false;
   
- public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("foldingXyz", this);
-
-    try {
-      StringTokenizer tokens = new StringTokenizer(readLine(), " \t");
+  protected boolean checkLine() throws Exception {
+      StringTokenizer tokens = new StringTokenizer(line, " \t");
       if (tokens.hasMoreTokens()) {
+        atomSetCollection.newAtomSet();
       	int modelAtomCount = Integer.parseInt(tokens.nextToken());
-      	atomSetCollection.newAtomSet();
-      	if (tokens.hasMoreTokens()) {
+      	if (tokens.hasMoreTokens())
       	  atomSetCollection.setAtomSetName("Protein " + tokens.nextToken());
-      	}
       	readAtoms(modelAtomCount);
       }
-    } catch (Exception e) {
-      setError(e);
-    }
-
+      return true;
   }
 	    
   /**

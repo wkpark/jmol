@@ -27,7 +27,6 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.*;
 import org.jmol.util.Logger;
 
-import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -37,12 +36,8 @@ import java.util.Vector;
  */
 public class JaguarReader extends MOReader {
 
-  int moCount = 0;
-  float lumoEnergy = Float.MAX_VALUE;
-
-  public void readAtomSetCollection(BufferedReader reader)  {
-    readAtomSetCollection(reader, "jaguar");
-  }
+  private int moCount = 0;
+  private float lumoEnergy = Float.MAX_VALUE;
 
   /**
    * @return true if need to read new line
@@ -165,7 +160,7 @@ public class JaguarReader extends MOReader {
 
    */
   //private final static float ROOT3 = 1.73205080756887729f;
-  void readBasis() throws Exception {
+  private void readBasis() throws Exception {
     String lastAtom = "";
     int iAtom = -1;
     int[][] sdata = new int[moCount][4];
@@ -250,7 +245,7 @@ public class JaguarReader extends MOReader {
    C1         11    X    3       1.881289     0.993754     1.000000     0.993754
 
    */
-  void readBasisNormalized() throws Exception {
+  private void readBasisNormalized() throws Exception {
     
     //TODO don't know what this is about yet -- Bob Hanson
 /*    

@@ -2,8 +2,6 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 
-
-import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.NoSuchElementException;
@@ -22,32 +20,24 @@ public class MoldenReader extends MopacReader {
   protected float[] frequencies = null;
   protected AtomSetCollection freqAtomSet = null;
   
-	public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("molden", this);
-    modelNumber = 0;
-    try {
-      readLine();
-      while (line != null) {
-        if (line.indexOf("[Atoms]") >= 0 || line.indexOf("[ATOMS]") >= 0) {
-          readAtoms();
-          continue;
-        } else if (line.indexOf("[GTO]") >= 0) {
-          readGaussianBasis();
-          continue;
-        } else if (line.indexOf("[MO]") >= 0) {
-          readMolecularOrbitals();
-          continue;
-        } else if (line.indexOf("[FREQ]") >= 0) {
-          readFreqsAndModes();
-          continue;
-        }
-        readLine();
-      }
-    } catch (Exception e) {
-      setError(e);
+	protected boolean checkLine() throws Exception {
+    if (line.indexOf("[Atoms]") >= 0 || line.indexOf("[ATOMS]") >= 0) {
+      readAtoms();
+      return false;
     }
-
+    if (line.indexOf("[GTO]") >= 0) {
+      readGaussianBasis();
+      return false;
+    }
+    if (line.indexOf("[MO]") >= 0) {
+      readMolecularOrbitals();
+      return false;
+    }
+    if (line.indexOf("[FREQ]") >= 0) {
+      readFreqsAndModes();
+      return false;
+    }
+    return true;
   }
   
   void readAtoms() throws Exception {

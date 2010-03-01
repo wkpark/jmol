@@ -25,7 +25,6 @@ package org.jmol.adapter.readers.simple;
 
 import org.jmol.adapter.smarter.*;
 import org.jmol.util.Parser;
-import java.io.BufferedReader;
 
 /**
  * Reads Mopac 93, 97 or 2002 output files, but was tested only
@@ -36,42 +35,42 @@ import java.io.BufferedReader;
  */
 public class MopacReader extends AtomSetCollectionReader {
     
-  private int baseAtomIndex;
-  
+  private int baseAtomIndex;  
   private boolean chargesFound = false;
-
- public void readAtomSetCollection(BufferedReader reader) {
-
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("mopac", this);
-    //frameInfo = null;
-    try {
-      while (readLine() != null && !line.startsWith(" ---")) {
-        if (line.indexOf("MOLECULAR POINT GROUP") >= 0) {
-          // hasSymmetry = true;
-        } else if (line.trim().equals("CARTESIAN COORDINATES")) {
-          processCoordinates();
-          atomSetCollection.setAtomSetName("Input Structure");
-        }
+  private boolean haveHeader;
+  
+  protected boolean checkLine() throws Exception {    
+    if (!haveHeader) {
+      if (line.trim().equals("CARTESIAN COORDINATES")) {
+        processCoordinates();
+        atomSetCollection.setAtomSetName("Input Structure");
+        return true;
       }
-
-      while (readLine() != null) {
-        if (line.indexOf("TOTAL ENERGY") >= 0)
-          processTotalEnergy();
-        else if (line.indexOf("ATOMIC CHARGES") >= 0)
-          processAtomicCharges();
-        else if (line.trim().equals("CARTESIAN COORDINATES"))
-          processCoordinates();
-        else if (line.indexOf("ORIENTATION OF MOLECULE IN FORCE") >= 0) {
-          processCoordinates();
-          atomSetCollection.setAtomSetName("Orientation in Force Field");
-        } else if (line.indexOf("NORMAL COORDINATE ANALYSIS") >= 0)
-          readFrequencies();
-      }
-    } catch (Exception e) {
-      setError(e);
+      haveHeader = line.startsWith(" ---");
+      return true;
     }
-
+    if (line.indexOf("TOTAL ENERGY") >= 0) {
+      processTotalEnergy();
+      return true;
+    }
+    if (line.indexOf("ATOMIC CHARGES") >= 0) {
+      processAtomicCharges();
+      return true;
+    }
+    if (line.trim().equals("CARTESIAN COORDINATES")) {
+      processCoordinates();
+      return true;
+    }
+    if (line.indexOf("ORIENTATION OF MOLECULE IN FORCE") >= 0) {
+      processCoordinates();
+      atomSetCollection.setAtomSetName("Orientation in Force Field");
+      return true;
+    }
+    if (line.indexOf("NORMAL COORDINATE ANALYSIS") >= 0) {
+      readFrequencies();
+      return true;
+    }
+    return true;
   }
     
   void processTotalEnergy() {

@@ -25,9 +25,6 @@ package org.jmol.adapter.readers.simple;
 
 import org.jmol.adapter.smarter.*;
 
-
-import java.io.BufferedReader;
-
 import org.jmol.api.JmolAdapter;
 
 /**
@@ -71,34 +68,32 @@ import org.jmol.api.JmolAdapter;
  */
 public class GhemicalMMReader extends AtomSetCollectionReader {
     
- public void readAtomSetCollection(BufferedReader reader) {
-
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("ghemicalMM", this);
-
-    try {
-      while (readLine() != null) {
-        if (line.startsWith("!Header"))
-          processHeader();
-        else if (line.startsWith("!Info"))
-          processInfo();
-        else if (line.startsWith("!Atoms"))
-          processAtoms();
-        else if (line.startsWith("!Bonds"))
-          processBonds();
-        else if (line.startsWith("!Coord"))
-          processCoord();
-        else if (line.startsWith("!Charges"))
-          processCharges();
-        else if (line.startsWith("!End")) {
-          return;
-        }
-      }
-    } catch (Exception e) {
-      setError(e);
-      return;
+  protected boolean checkLine() throws Exception {
+    if (line.startsWith("!Header")) {
+      processHeader();
+      return true;
     }
-    setError(new Exception("unexpected end of file"));
+    if (line.startsWith("!Info")) {
+      processInfo();
+      return true;
+    }
+    if (line.startsWith("!Atoms")) {
+      processAtoms();
+      return true;
+    }
+    if (line.startsWith("!Bonds")) {
+      processBonds();
+      return true;
+    }
+    if (line.startsWith("!Coord")) {
+      processCoord();
+      return true;
+    }
+    if (line.startsWith("!Charges")) {
+      processCharges();
+      return true;
+    }
+    return true;
   }
 
   void processHeader() {

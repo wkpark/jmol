@@ -26,15 +26,10 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 
-import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
 
 public class GamessUKReader extends GamessReader {
-
-  public void readAtomSetCollection(BufferedReader reader) {
-    readAtomSetCollection(reader, "gamessUK");
-  }
 
   /**
    * @return true if need to read new line
@@ -42,11 +37,11 @@ public class GamessUKReader extends GamessReader {
    * 
    */
   protected boolean checkLine() throws Exception {
-    if (line.contains("BASIS OPTIONS")){
+    if (line.contains("BASIS OPTIONS")) {
       readBasisInfo();
       return true;
-    }    
-    if (line.contains("$CONTRL OPTIONS")){
+    }
+    if (line.contains("$CONTRL OPTIONS")) {
       readControlInfo();
       return true;
     }
@@ -56,28 +51,23 @@ public class GamessUKReader extends GamessReader {
       return false;
     }
     if (line.indexOf("molecular geometry") >= 0) {
-      if (doGetModel(++modelNumber)) {
-        atomNames = new Vector();
-        readAtomsInBohrCoordinates();
-        iHaveAtoms = true;
-        return true;
-      }
-        if (isLastModel(modelNumber) && iHaveAtoms) {
-          continuing = false;
-          return false;
-        }
-        iHaveAtoms = false;
-    } 
+      if (!doGetModel(++modelNumber))
+        return checkLastModel();
+      atomNames = new Vector();
+      readAtomsInBohrCoordinates();
+      iHaveAtoms = true;
+      return true;
+    }
     if (!iHaveAtoms)
       return true;
     if (line.indexOf("FREQUENCY_INFO_WOULD_BE_HERE") >= 0) {
       // not implemented for readFrequencies();
       return true;
-    } 
+    }
     if (line.indexOf("SYMMETRY ASSIGNMENT") >= 0) {
       readOrbitalSymmetryAndOccupancy();
       return false;
-    } 
+    }
     if (line.indexOf("- ALPHA SET -") >= 0)
       alphaBeta = "alpha";
     else if (line.indexOf("- BETA SET -") >= 0)
@@ -86,7 +76,7 @@ public class GamessUKReader extends GamessReader {
       readMolecularOrbitals(HEADER_GAMESS_UK_MO);
       setOrbitalSymmetryAndOccupancy();
       return false;
-    } 
+    }
     return checkNboLine();
   }
 

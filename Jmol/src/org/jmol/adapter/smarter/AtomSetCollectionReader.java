@@ -58,12 +58,10 @@ import javax.vecmath.Vector3f;
  *  setUnitCell()
  *  setUnitCellItem()
  *  setAtomCoord()
- *  applySymmetryAndSetTrajectory()
  * 
  * At the very minimum, you need:
  * 
  *  setAtomCoord()
- *  applySymmetryAndSetTrajectory()
  * 
  * so that:
  *  (a) atom coordinates can be turned fractional by load parameters
@@ -143,6 +141,7 @@ public abstract class AtomSetCollectionReader {
 
   // protected/public state variables
   public int[] latticeCells;
+  protected boolean iHaveAtoms;
   public boolean iHaveUnitCell;
   public boolean iHaveSymmetryOperators;
   protected boolean doApplySymmetry;
@@ -198,8 +197,6 @@ public abstract class AtomSetCollectionReader {
     return finalize(htParams, filename);
   }
 
-  public abstract void readAtomSetCollection(BufferedReader reader);
-
   public void readAtomSetCollectionFromDOM(Object DOMNode) {
     // XML readers only
   }
@@ -208,10 +205,13 @@ public abstract class AtomSetCollectionReader {
   ////////////// Probably move toward this for future readers.
   
   protected boolean continuing = true;
-  public void readAtomSetCollection(BufferedReader reader, String type) {
+  public void readAtomSetCollection(BufferedReader reader) {
+    this.reader = reader;
+    atomSetCollection = new AtomSetCollection(readerName, this);
     try {
-      initializeReader(reader, type);
-      readLine();
+      initializeReader();
+      if (continuing)
+        readLine();
       while (line != null && continuing)
         if (checkLine())
           readLine();
@@ -221,9 +221,8 @@ public abstract class AtomSetCollectionReader {
     }
   }
   
-  protected void initializeReader(BufferedReader reader, String type) throws Exception {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection(type, this);
+  protected void initializeReader() throws Exception {
+    // reader-dependent
   }
 
   /**
@@ -270,7 +269,7 @@ public abstract class AtomSetCollectionReader {
     return atomSetCollection;
   }
 
-  protected void setError(Exception e) {
+  private void setError(Exception e) {
     e.printStackTrace();
     if (line == null)
       atomSetCollection.errorMessage = "Unexpected end of file after line "
@@ -417,6 +416,15 @@ public abstract class AtomSetCollectionReader {
   return isOK;
   }
   
+  protected boolean checkLastModel() {
+    if (isLastModel(modelNumber) && iHaveAtoms) {
+      continuing = false;
+      return false;
+    }
+    iHaveAtoms = false;
+    return true;
+  }
+
   /**
    * after reading a model, Q: Is this the last model?
    * 

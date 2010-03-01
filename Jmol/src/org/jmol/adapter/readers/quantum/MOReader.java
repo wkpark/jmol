@@ -29,8 +29,6 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
-
-import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -82,7 +80,6 @@ import java.util.Vector;
   */
 abstract public class MOReader extends AtomSetCollectionReader {
     
-  protected boolean iHaveAtoms = false;
   protected int shellCount = 0;
   protected int gaussianCount = 0;
   protected Hashtable moData = new Hashtable();
@@ -108,11 +105,7 @@ abstract public class MOReader extends AtomSetCollectionReader {
   final protected int HEADER_GAMESS_ORIGINAL = 1;
   final protected int HEADER_NONE = 0;
   
-
-  abstract public void readAtomSetCollection(BufferedReader reader); 
-
-  protected void initializeReader(BufferedReader reader, String type) throws Exception {
-    super.initializeReader(reader, type);
+  protected void initializeReader() throws Exception {
     iHaveAtoms = false;
     line = "\nNBOs in the AO basis:";
     getNBOs = filterMO();

@@ -27,9 +27,6 @@ package org.jmol.adapter.readers.simple;
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 
-
-import java.io.BufferedReader;
-
 /**
  * A reader for MDL V3000 files
  *<p>
@@ -40,29 +37,19 @@ import java.io.BufferedReader;
  */
 public class V3000Reader extends AtomSetCollectionReader {
     
-  int headerAtomCount;
-  int headerBondCount;
+  private int headerAtomCount;
+  private int headerBondCount;
 
- public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("v3000", this);
-    try {
-      while (readLine() != null) {
-        if (doGetModel(++modelNumber)) {
-          processCtab();
-          if (isLastModel(modelNumber))
-            break;
-        } else {
-          flushLines();
-        }
-      }
-    } catch (Exception e) {
-      setError(e);
+  protected boolean checkLine() throws Exception {
+    if (!doGetModel(++modelNumber)) {
+      discardLinesUntilContains("$$$$");
+      return checkLastModel();
     }
-
+    processCtab();
+    return true;
   }
 
-  void processCtab() throws Exception {
+  private void processCtab() throws Exception {
     while (readLine() != null &&
            ! line.startsWith("$$$$") &&
            ! line.startsWith("M  END")) {
@@ -82,10 +69,10 @@ public class V3000Reader extends AtomSetCollectionReader {
       }
     }
     if (line != null && !line.startsWith("$$$$"))
-      flushLines();
+      discardLinesUntilStartsWith("$$$$");
   }
 
-  String processAtomBlock() throws Exception {
+  private String processAtomBlock() throws Exception {
     for (int i = headerAtomCount; --i >= 0; ) {
       readLineWithContinuation();
       if (line == null || (! line.startsWith("M  V30 ")))
@@ -115,7 +102,7 @@ public class V3000Reader extends AtomSetCollectionReader {
     return line;
   }
 
-  void processBondBlock() throws Exception {
+  private void processBondBlock() throws Exception {
     for (int i = headerBondCount; --i >= 0; ) {
       readLineWithContinuation();
       if (line == null || (! line.startsWith("M  V30 ")))
@@ -133,7 +120,7 @@ public class V3000Reader extends AtomSetCollectionReader {
       throw new Exception("M  V30 END BOND not found");
   }
 
-  void readLineWithContinuation() throws Exception {
+  private void readLineWithContinuation() throws Exception {
     readLine();
     if (line != null && line.length() > 7) {
       while (line.charAt(line.length() - 1) == '-') {
@@ -145,9 +132,4 @@ public class V3000Reader extends AtomSetCollectionReader {
     }
   }
   
-  void flushLines() throws Exception {
-    while (readLine() != null && !line.startsWith("$$$$")) {
-      //flush
-    }
-  }
 }

@@ -28,7 +28,6 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -66,16 +65,12 @@ public class QchemReader extends MOReader {
 /** The number of the calculation being interpreted. */
   private int calculationNumber = 1;
 
-  MOInfo[] alphas = null;
-  MOInfo[] betas = null;
-  int nShell = 0;          // # of shells according to qchem
-  int nBasis = 0;          // # of basis according to qchem
+  private MOInfo[] alphas = null;
+  private MOInfo[] betas = null;
+  private int nShell = 0;          // # of shells according to qchem
+  private int nBasis = 0;          // # of basis according to qchem
 
   
-  public void readAtomSetCollection(BufferedReader reader) {
-    readAtomSetCollection(reader, "qchem");
-  }
-
   /**
    * @return true if need to read new line
    * @throws Exception
@@ -143,7 +138,7 @@ public class QchemReader extends MOReader {
     1      H       0.000000     0.000000     4.756791
 */
 
-  void readAtoms() throws Exception {
+  private void readAtoms() throws Exception {
     atomSetCollection.newAtomSet();
     
     discardLines(2);
@@ -212,7 +207,7 @@ public class QchemReader extends MOReader {
     }
   }
 
-  void readPartialCharges() throws Exception {
+  private void readPartialCharges() throws Exception {
     discardLines(3);
     Atom[] atoms = atomSetCollection.getAtoms();
     int atomCount = atomSetCollection.getLastAtomSetAtomCount();
@@ -449,7 +444,7 @@ $end
 
    * 
    */
-  protected void readESym(boolean haveSym) throws Exception {
+  private void readESym(boolean haveSym) throws Exception {
     String[] tokens, spin = {"A","B"};
     alphas = new MOInfo[nBasis];
     betas = new MOInfo[nBasis];

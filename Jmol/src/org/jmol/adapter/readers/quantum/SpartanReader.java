@@ -26,8 +26,6 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 
-
-import java.io.BufferedReader;
 import java.util.Hashtable;
 
 /*
@@ -43,35 +41,25 @@ import java.util.Hashtable;
 
 public class SpartanReader extends AtomSetCollectionReader {
 
-  String modelName = "Spartan file";
-  int atomCount;
-  Hashtable moData = new Hashtable();
-
- public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("spartan", this);
+  public void initializeReader() throws Exception {
     String cartesianHeader = "Cartesian Coordinates (Ang";
-    try {
-      if (isSpartanArchive(cartesianHeader)) {
-        SpartanArchive spartanArchive = new SpartanArchive(this,
-            atomSetCollection, moData);
-        atomCount = spartanArchive.readArchive(line, true, 0, true);
-        if (atomCount > 0)
-          atomSetCollection.setAtomSetName(modelName);
-      } else if (line.indexOf(cartesianHeader)>=0){
-          readAtoms();
-          discardLinesUntilContains("Vibrational Frequencies");
-        if (line != null)
-          readFrequencies();
-      }
-    } catch (Exception e) {
-      setError(e);
+    if (isSpartanArchive(cartesianHeader)) {
+      Hashtable moData = new Hashtable();
+      SpartanArchive spartanArchive = new SpartanArchive(this,
+          atomSetCollection, moData);
+      int atomCount = spartanArchive.readArchive(line, true, 0, true);
+      if (atomCount > 0)
+        atomSetCollection.setAtomSetName("Spartan file");
+    } else if (line.indexOf(cartesianHeader) >= 0) {
+      readAtoms();
+      discardLinesUntilContains("Vibrational Frequencies");
+      if (line != null)
+        readFrequencies();
     }
-
+    continuing = false;
   }
 
-  boolean isSpartanArchive(String strNotArchive)
-      throws Exception {
+  private boolean isSpartanArchive(String strNotArchive) throws Exception {
     String lastLine = "";
     while (readLine() != null) {
       if (line.equals("GEOMETRY")) {
@@ -85,20 +73,20 @@ public class SpartanReader extends AtomSetCollectionReader {
     return false;
   }
 
-  void readAtoms() throws Exception {
+  private void readAtoms() throws Exception {
     discardLinesUntilBlank();
-    while (readLine() != null
-        && (/*atomNum = */parseInt(line, 0, 3)) > 0) {
+    while (readLine() != null && (/* atomNum = */parseInt(line, 0, 3)) > 0) {
       String elementSymbol = parseToken(line, 4, 6);
       String atomName = parseToken(line, 7, 13);
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
-      atom.set(parseFloat(line, 17, 30), parseFloat(line, 31, 44), parseFloat(line, 45, 58));
+      atom.set(parseFloat(line, 17, 30), parseFloat(line, 31, 44), parseFloat(
+          line, 45, 58));
     }
   }
 
-  void readFrequencies() throws Exception {
+  private void readFrequencies() throws Exception {
     int atomCount = atomSetCollection.getFirstAtomSetAtomCount();
     while (true) {
       discardLinesUntilNonBlank();
@@ -109,7 +97,7 @@ public class SpartanReader extends AtomSetCollectionReader {
       for (lineFreqCount = 0; lineFreqCount < 3; ++lineFreqCount) {
         float frequency = parseFloat();
         if (Float.isNaN(frequency))
-          break; //////////////// loop exit is here
+          break; // ////////////// loop exit is here
         ignore[lineFreqCount] = !doGetVibration(++vibrationNumber);
         if (!ignore[lineFreqCount] && vibrationNumber > 1)
           atomSetCollection.cloneFirstAtomSet();

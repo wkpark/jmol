@@ -27,8 +27,6 @@ package org.jmol.adapter.readers.more;
 import org.jmol.adapter.smarter.*;
 import org.jmol.util.Logger;
 
-
-import java.io.BufferedReader;
 import java.util.Vector;
 
 import javax.vecmath.Point3f;
@@ -37,30 +35,29 @@ import javax.vecmath.Point3f;
  * Amber Coordinate File Reader
  * 
  * not a stand-alone reader -- must be after COORD keyword in LOAD command
- *  
+ * 
  */
 
 public class MdCrdReader extends AtomSetCollectionReader {
-    
- private Vector trajectorySteps;
- public void readAtomSetCollection(BufferedReader br) {
-    reader = br;
-    atomSetCollection = new AtomSetCollection("mdcrd", this);
+
+  private Vector trajectorySteps;
+
+  protected void initializeReader() {
     // add a dummy atom, just so not "no atoms found"
-    atomSetCollection.addAtom(new Atom()); 
+    atomSetCollection.addAtom(new Atom());
     trajectorySteps = (Vector) htParams.get("trajectorySteps");
     if (trajectorySteps == null)
       htParams.put("trajectorySteps", trajectorySteps = new Vector());
-    try {
-      readLine(); //title
-      readCoordinates();
-      Logger.info("Total number of trajectory steps=" + trajectorySteps.size());
-    } catch (Exception e) {
-      setError(e);
-    }
   }
 
-  void readCoordinates() throws Exception {
+  protected boolean checkLine() throws Exception {
+    readCoordinates();
+    Logger.info("Total number of trajectory steps=" + trajectorySteps.size());
+    continuing = false;
+    return false;
+  }
+
+  private void readCoordinates() throws Exception {
     line = null;
     int atomCount = (bsFilter == null ? templateAtomCount : ((Integer) htParams
         .get("filteredAtomCount")).intValue());
@@ -82,6 +79,7 @@ public class MdCrdReader extends AtomSetCollectionReader {
 
   private int ptFloat = 0;
   private int lenLine = 0;
+
   private float getFloat() throws Exception {
     while (line == null || ptFloat >= lenLine) {
       if (readLine() == null)
@@ -92,7 +90,7 @@ public class MdCrdReader extends AtomSetCollectionReader {
     ptFloat += 8;
     return parseFloat(line.substring(ptFloat - 8, ptFloat));
   }
-  
+
   private Point3f getPoint() throws Exception {
     float x = getFloat();
     float y = getFloat();
@@ -115,7 +113,7 @@ public class MdCrdReader extends AtomSetCollectionReader {
       }
     }
     if (isPeriodic)
-      getPoint(); //why? not in specs?
+      getPoint(); // why? not in specs?
     return (line != null);
   }
 

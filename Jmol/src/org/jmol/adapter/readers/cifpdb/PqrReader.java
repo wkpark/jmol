@@ -24,9 +24,6 @@
 
 package org.jmol.adapter.readers.cifpdb;
 
-import java.io.BufferedReader;
-
-
 /**
  * PQR file reader.
  *
@@ -67,12 +64,6 @@ PDB files can be converted to PQR by the PDB2PQR software[3], which adds missing
  */
 
 public class PqrReader extends PdbReader {
-
-  public void readAtomSetCollection(BufferedReader reader) {
-    fileType = "Pqr";
-    super.readAtomSetCollection(reader);
-  }
-  
 
   protected int readOccupancy() {
     return 100;

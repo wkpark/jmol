@@ -27,8 +27,6 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolLineReader;
 
-
-import java.io.BufferedReader;
 import java.util.Hashtable;
 
 import org.jmol.util.CifDataReader;
@@ -70,109 +68,99 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private boolean isPDB = false;
   private Hashtable htHetero;
 
-  public void readAtomSetCollection(BufferedReader reader) {
+  public void initializeReader() throws Exception {
     int nAtoms = 0;
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("cif", this);
-
     /*
-     * Modified for 10.9.64 9/23/06 by Bob Hanson to remove as much as possible of line dependence.
-     * a loop could now go:
+     * Modified for 10.9.64 9/23/06 by Bob Hanson to remove as much as possible
+     * of line dependence. a loop could now go:
      * 
-     * blah blah blah  loop_ _a _b _c 0 1 2 0 3 4 0 5 6 loop_...... 
+     * blah blah blah loop_ _a _b _c 0 1 2 0 3 4 0 5 6 loop_......
      * 
-     * we don't actually check that any skpped loop has the proper number of 
+     * we don't actually check that any skpped loop has the proper number of
      * data points --- some multiple of the number of data keys -- but other
      * than that, we are checking here for proper CIF syntax, and Jmol will
      * report if it finds data where a key is supposed to be.
-     * 
-     *
      */
     line = "";
     boolean skipping = false;
-    try {
-      while ((key = tokenizer.peekToken()) != null) {
-        if (key.startsWith("data_")) {
-          if (iHaveDesiredModel)
-            break;
-          skipping = !doGetModel(++modelNumber);
-          if (skipping) {
-            tokenizer.getTokenPeeked();
-          } else {
-            chemicalName = "";
-            thisStructuralFormula = "";
-            thisFormula = "";
-            if (nAtoms == atomSetCollection.getAtomCount())
-              // we found no atoms -- must revert
-              atomSetCollection.removeAtomSet();
-            else
-              applySymmetryAndSetTrajectory();
-            processDataParameter();
-            iHaveDesiredModel = (isLastModel(modelNumber));
-            nAtoms = atomSetCollection.getAtomCount();
-          }
-          continue;
-        }
-        if (key.startsWith("loop_")) {
-          if (skipping) {
-            tokenizer.getTokenPeeked();
-            skipLoop();
-          } else {
-            processLoopBlock();
-          }
-          continue;
-        }
-        // global_ and stop_ are reserved STAR keywords
-        // see http://www.iucr.org/iucr-top/lists/comcifs-l/msg00252.html
-        // http://www.iucr.org/iucr-top/cif/spec/version1.1/cifsyntax.html#syntax
-
-        // stop_ is not allowed, because nested loop_ is not allowed
-        // global_ is a reserved STAR word; not allowed in CIF
-        // ah, heck, let's just flag them as CIF ERRORS
-        /*      
-         if (key.startsWith("global_") || key.startsWith("stop_")) {
-         tokenizer.getTokenPeeked();
-         continue;
-         }
-         */
-        if (key.indexOf("_") != 0) {
-          Logger.warn("CIF ERROR ? should be an underscore: " + key);
+    while ((key = tokenizer.peekToken()) != null) {
+      if (key.startsWith("data_")) {
+        if (iHaveDesiredModel)
+          break;
+        skipping = !doGetModel(++modelNumber);
+        if (skipping) {
           tokenizer.getTokenPeeked();
-        } else if (!getData()) {
-          continue;
+        } else {
+          chemicalName = "";
+          thisStructuralFormula = "";
+          thisFormula = "";
+          if (nAtoms == atomSetCollection.getAtomCount())
+            // we found no atoms -- must revert
+            atomSetCollection.removeAtomSet();
+          else
+            applySymmetryAndSetTrajectory();
+          processDataParameter();
+          iHaveDesiredModel = (isLastModel(modelNumber));
+          nAtoms = atomSetCollection.getAtomCount();
         }
-        if (!skipping) {
-          key = key.replace('.', '_');
-          if (key.startsWith("_chemical_name")) {
-            processChemicalInfo("name");
-          } else if (key.startsWith("_chemical_formula_structural")) {
-            processChemicalInfo("structuralFormula");
-          } else if (key.startsWith("_chemical_formula_sum")) {
-            processChemicalInfo("formula");
-          } else if (key.startsWith("_cell_")) {
-            processCellParameter();
-          } else if (key.startsWith("_symmetry_space_group_name_H-M")
-              || key.startsWith("_symmetry_space_group_name_Hall")) {
-            processSymmetrySpaceGroupName();
-          } else if (key.startsWith("_atom_sites_fract_tran")) {
-            processUnitCellTransformMatrix();
-          } else if (key.startsWith("_pdbx_entity_nonpoly")) {
-            processNonpolyData();
-          }
+        continue;
+      }
+      if (key.startsWith("loop_")) {
+        if (skipping) {
+          tokenizer.getTokenPeeked();
+          skipLoop();
+        } else {
+          processLoopBlock();
+        }
+        continue;
+      }
+      // global_ and stop_ are reserved STAR keywords
+      // see http://www.iucr.org/iucr-top/lists/comcifs-l/msg00252.html
+      // http://www.iucr.org/iucr-top/cif/spec/version1.1/cifsyntax.html#syntax
+
+      // stop_ is not allowed, because nested loop_ is not allowed
+      // global_ is a reserved STAR word; not allowed in CIF
+      // ah, heck, let's just flag them as CIF ERRORS
+      /*
+       * if (key.startsWith("global_") || key.startsWith("stop_")) {
+       * tokenizer.getTokenPeeked(); continue; }
+       */
+      if (key.indexOf("_") != 0) {
+        Logger.warn("CIF ERROR ? should be an underscore: " + key);
+        tokenizer.getTokenPeeked();
+      } else if (!getData()) {
+        continue;
+      }
+      if (!skipping) {
+        key = key.replace('.', '_');
+        if (key.startsWith("_chemical_name")) {
+          processChemicalInfo("name");
+        } else if (key.startsWith("_chemical_formula_structural")) {
+          processChemicalInfo("structuralFormula");
+        } else if (key.startsWith("_chemical_formula_sum")) {
+          processChemicalInfo("formula");
+        } else if (key.startsWith("_cell_")) {
+          processCellParameter();
+        } else if (key.startsWith("_symmetry_space_group_name_H-M")
+            || key.startsWith("_symmetry_space_group_name_Hall")) {
+          processSymmetrySpaceGroupName();
+        } else if (key.startsWith("_atom_sites_fract_tran")) {
+          processUnitCellTransformMatrix();
+        } else if (key.startsWith("_pdbx_entity_nonpoly")) {
+          processNonpolyData();
         }
       }
-
-      if (atomSetCollection.getAtomCount() == nAtoms)
-        atomSetCollection.removeAtomSet();
-      else
-        applySymmetryAndSetTrajectory();
-      if (htSites != null)
-        addSites(htSites);
-      atomSetCollection.setCollectionName("<collection of "
-          + atomSetCollection.getAtomSetCount() + " models>");
-    } catch (Exception e) {
-      setError(e);
     }
+
+    if (atomSetCollection.getAtomCount() == nAtoms)
+      atomSetCollection.removeAtomSet();
+    else
+      applySymmetryAndSetTrajectory();
+    if (htSites != null)
+      addSites(htSites);
+    atomSetCollection.setCollectionName("<collection of "
+        + atomSetCollection.getAtomSetCount() + " models>");
+    continuing = false;
   }
 
   public void applySymmetryAndSetTrajectory() throws Exception {

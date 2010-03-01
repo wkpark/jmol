@@ -31,7 +31,6 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
-import java.io.BufferedReader;
 import java.util.Vector;
 
 /**
@@ -80,13 +79,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private boolean addVibrations = false;
   private int atomCount;
 
-  public void readAtomSetCollection(BufferedReader reader) {
-    readAtomSetCollection(reader, "Crystal");
-  }
-
-  protected void initializeReader(BufferedReader reader, String type)
-      throws Exception {
-    super.initializeReader(reader, type);
+  protected void initializeReader() throws Exception {
     isPrimitive = (filter == null || filter.indexOf("conv") < 0);
     addVibrations = (filter == null || filter.indexOf("novib") < 0);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("unitCellType",

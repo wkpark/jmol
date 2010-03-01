@@ -28,7 +28,6 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
 
-import java.io.BufferedReader;
 import java.util.Hashtable;
 
 /**
@@ -41,42 +40,24 @@ public class DgridReader extends SlaterReader {
 
   private String title;
 
-  /**
-   * Read the ADF output.
-   *
-   * @param reader  input stream
-   */
-  public void readAtomSetCollection(BufferedReader reader) {
-    atomSetCollection = new AtomSetCollection("dgrid", this);
-    this.reader = reader;
-    modelNumber = 0;
-    try {
-      while (readLine() != null) {
-        if (line.indexOf(":title") == 0) {
-          readTitle();
-          continue;
-        }
-        if (line.indexOf("basis:  CARTESIAN  STO") >= 0) {        
-          readSlaterBasis(); // Cartesians
-          continue;
-        }
-        if (line.indexOf(":atom") == 0) {
-          readCoordinates();
-          continue;
-        }
-        if (line.indexOf(" MO  DATA ") >= 0) {
-          readMolecularOrbitals();
-          continue;
-        }
-      }
-    } catch (Exception e) {
-      setError(e);
+  protected boolean checkLine() throws Exception {
+    if (line.indexOf(":title") == 0) {
+      title = readLine().substring(2);
+      return true;
     }
-
-  }
-
-  private void readTitle() throws Exception {
-    title = readLine().substring(2);
+    if (line.indexOf("basis:  CARTESIAN  STO") >= 0) {
+      readSlaterBasis(); // Cartesians
+      return true;
+    }
+    if (line.indexOf(":atom") == 0) {
+      readCoordinates();
+      return true;
+    }
+    if (line.indexOf(" MO  DATA ") >= 0) {
+      readMolecularOrbitals();
+      return true;
+    }
+    return true;
   }
 
   /**

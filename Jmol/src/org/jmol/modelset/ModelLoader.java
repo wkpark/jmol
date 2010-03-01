@@ -399,7 +399,7 @@ public final class ModelLoader extends ModelSet {
       viewer.setStringProperty("_fileType", (String) modelAuxiliaryInfo
           .get("fileType"));
       if (modelName == null)
-        modelName = (jmolData != null ? jmolData.substring(jmolData
+        modelName = (jmolData != null && jmolData.indexOf(";") > 2 ? jmolData.substring(jmolData
             .indexOf(":") + 2, jmolData.indexOf(";"))
             : modelNumber == Integer.MAX_VALUE ? "" : ""
                 + (modelNumber % 1000000));

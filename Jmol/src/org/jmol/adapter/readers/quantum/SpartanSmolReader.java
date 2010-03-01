@@ -24,10 +24,6 @@
 
 package org.jmol.adapter.readers.quantum;
 
-import org.jmol.adapter.smarter.*;
-
-
-import java.io.BufferedReader;
 import java.util.Hashtable;
 
 import org.jmol.util.Logger;
@@ -39,102 +35,86 @@ import org.jmol.util.Logger;
 
 public class SpartanSmolReader extends SpartanInputReader {
 
-  public void readAtomSetCollection(BufferedReader reader) {
+  private boolean iHaveModelStatement = false;
+
+  protected void initializeReader() throws Exception {
     modelName = "Spartan file";
-    this.reader = reader;
-    try {
-      readLine();
-      atomSetCollection = new AtomSetCollection("spartan smol", this);
-      boolean iHaveModelStatement = false;
-      boolean iHaveModel = false;
-      while (line != null) {
-        if (line.indexOf("JMOL_MODEL") >= 0 && !line.startsWith("END")) {
-
-          // bogus type added by Jmol as a marker only
-
-          if (modelNumber > 0)
-            applySymmetryAndSetTrajectory();
-          iHaveModelStatement = true;
-          int modelNo = getModelNumber();
-          modelNumber = (bsModels == null && modelNo != Integer.MIN_VALUE ? modelNo : modelNumber + 1);
-          bondData = "";
-          if (!doGetModel(modelNumber)) {
-            if (isLastModel(modelNumber) && iHaveModel)
-              break;
-            iHaveModel = false;
-            readLine();
-            continue;
-          }
-          iHaveModel = true;
-          atomSetCollection.newAtomSet();
-          moData = new Hashtable();
-          if (modelNo == Integer.MIN_VALUE) {
-            modelNo = modelNumber;
-            title = "Model " + line.substring(line.lastIndexOf(" ") + 1);
-          } else  {
-            title = (String) titles.get("Title" + modelNo);
-            title = "Profile " + modelNo + (title == null ? "" : ": " + title);
-          }
-          Logger.info(title);
-          atomSetCollection.setAtomSetAuxiliaryInfo("title", title);
-          atomSetCollection.setAtomSetName(title);
-          atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.FALSE);
-          atomSetCollection.setAtomSetNumber(modelNo);
-          readLine();
-          continue;
-        }
-        if (iHaveModelStatement && !iHaveModel) {
-          readLine();
-          continue;
-        }
-
-        if ((line.indexOf("BEGIN") == 0)) {
-          String lcline = line.toLowerCase();
-          if (lcline.endsWith("input")) {
-            bondData = "";
-            readInputRecords();
-            if (atomSetCollection.errorMessage != null)
-              return;
-            if (title != null)
-              atomSetCollection.setAtomSetName(title);
-          } else if (lcline.endsWith("_output")) {
-            readLine();
-            continue;
-          } else if (lcline.endsWith("output")) {
-            readOutput();
-            continue;
-          } else if (lcline.endsWith("molecule") || lcline.endsWith("molecule:asbinarystring")) {
-            readTransform();
-            continue;
-          } else if (lcline.endsWith("proparc")
-              || lcline.endsWith("propertyarchive")) {
-            readProperties();
-            continue;
-          } else if (lcline.endsWith("archive")) {
-            readArchive();
-            continue;
-          }
-        }
-
-        // TODO: 5D shell ... WHY HERE?
-
-        if (line != null && line.indexOf("5D shell") >= 0) {
-          moData.put("calculationType", calculationType = line);
-        }
-        readLine();
-      }
-      if (atomCount > 0)
-        applySymmetryAndSetTrajectory();
-
-      // info out of order -- still a chance, at least for first model
-      if (atomCount > 0 && spartanArchive != null && atomSetCollection.getBondCount() == 0
-          && bondData != null)
-        spartanArchive.addBonds(bondData, 0);
-    } catch (Exception e) {
-      setError(e);
-    }
   }
 
+  protected boolean checkLine() throws Exception {
+    if (line.indexOf("JMOL_MODEL") >= 0 && !line.startsWith("END")) {
+
+      // bogus type added by Jmol as a marker only
+
+      if (modelNumber > 0)
+        applySymmetryAndSetTrajectory();
+      iHaveModelStatement = true;
+      int modelNo = getModelNumber();
+      modelNumber = (bsModels == null && modelNo != Integer.MIN_VALUE ? modelNo : modelNumber + 1);
+      bondData = "";
+      if (!doGetModel(++modelNumber))
+        return checkLastModel();
+      iHaveAtoms = true;
+      atomSetCollection.newAtomSet();
+      moData = new Hashtable();
+      if (modelNo == Integer.MIN_VALUE) {
+        modelNo = modelNumber;
+        title = "Model " + line.substring(line.lastIndexOf(" ") + 1);
+      } else  {
+        title = (String) titles.get("Title" + modelNo);
+        title = "Profile " + modelNo + (title == null ? "" : ": " + title);
+      }
+      Logger.info(title);
+      atomSetCollection.setAtomSetAuxiliaryInfo("title", title);
+      atomSetCollection.setAtomSetName(title);
+      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.FALSE);
+      atomSetCollection.setAtomSetNumber(modelNo);
+      return true;
+    }
+    if (iHaveModelStatement && !iHaveAtoms)
+      return true;
+    if ((line.indexOf("BEGIN") == 0)) {
+      String lcline = line.toLowerCase();
+      if (lcline.endsWith("input")) {
+        bondData = "";
+        readInputRecords();
+        if (atomSetCollection.errorMessage != null) {
+          continuing = false;
+          return false;
+        }
+        if (title != null)
+          atomSetCollection.setAtomSetName(title);
+      } else if (lcline.endsWith("_output")) {
+        return true;
+      } else if (lcline.endsWith("output")) {
+        readOutput();
+        return false;
+      } else if (lcline.endsWith("molecule") || lcline.endsWith("molecule:asbinarystring")) {
+        readTransform();
+        return false;
+      } else if (lcline.endsWith("proparc")
+          || lcline.endsWith("propertyarchive")) {
+        readProperties();
+        return false;
+      } else if (lcline.endsWith("archive")) {
+        readArchive();
+        return false;
+      }
+      return true;
+    }
+    if (line.indexOf("5D shell") >= 0)
+      moData.put("calculationType", calculationType = line);    
+    return true;
+  }
+  
+  protected void finalizeReader() throws Exception {
+    super.finalizeReader();
+    // info out of order -- still a chance, at least for first model
+    if (atomCount > 0 && spartanArchive != null && atomSetCollection.getBondCount() == 0
+        && bondData != null)
+      spartanArchive.addBonds(bondData, 0);
+  }
+  
   private class MoleculeRecord {
     float[] mat;
     // last 16x4 bytes constitutes the 4x4 matrix, using doubles

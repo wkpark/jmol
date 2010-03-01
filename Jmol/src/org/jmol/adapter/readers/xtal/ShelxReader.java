@@ -25,9 +25,6 @@ package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.*;
 
-
-import java.io.BufferedReader;
-
 import org.jmol.util.ArrayUtil;
 
 /**
@@ -37,100 +34,82 @@ import org.jmol.util.ArrayUtil;
  *
  * <p>A reader for SHELX files. It currently supports SHELXL.
  *
- * <p>The SHELXL format is described on the net:
+ * <p>The SHELX format is described on the net:
  * <a href="http://www.msg.ucsf.edu/local/programs/shelxl/ch_07.html">
  * http://www.msg.ucsf.edu/local/programs/shelxl/ch_07.html</a>.
  *
  * modified by Bob Hanson 2006/04 to allow 
  * variant CrystalMaker .cmdf file reading.
  * 
- * symmetry added by Bob Hanson:
- * 
- *  setFractionalCoordinates()
- *  setSpaceGroupName()
- *  setSymmetryOperator()
- *  setUnitCellItem()
- *  setAtomCoord()
- *  applySymmetryAndSetTrajectory()
- *  
  *  
  */
 
 public class ShelxReader extends AtomSetCollectionReader {
 
-  String[] sfacElementSymbols;
-  boolean isCmdf = false;
-  boolean iHaveAtomSet = false;
+  private String[] sfacElementSymbols;
+  private boolean isCmdf = false;
 
- public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("shelx", this);
-    try {
+  public void initializeReader() {
       setFractionalCoordinates(true);
-      int lineLength;
-      boolean modelRead = false;
-      do {
-        if (modelRead && isLastModel(modelNumber))
-          break;
-        boolean readThisModel = doGetModel(++modelNumber);
-        if (readThisModel) {
-          modelRead = true;
-          sfacElementSymbols = null;
-          applySymmetryAndSetTrajectory();
-          setFractionalCoordinates(true);
-          isCmdf = false;
-          iHaveAtomSet = false;
-        }
-        readLine_loop: while (readLine() != null) {
-          lineLength = line.trim().length();
-          // '=' as last char of line means continue on next line
-          while (lineLength > 0 && line.charAt(lineLength - 1) == '=')
-            line = line.substring(0, lineLength - 1) + readLine();
-          if (lineLength >= 3) {
-            String command = (line + " ").substring(0, 4).toUpperCase().trim();
-            if (command.equals("END")) {
-              break;
-            } else if (line.equals("NOTE")) {
-              isCmdf = true;
-              atomSetCollection.setFileTypeName("cmdf");
-              continue;
-            }
-            if (readThisModel && isCmdf && line.equals("ATOM")) {
-              processCmdfAtoms();
-              break;
-            }
-            for (int i = unsupportedRecordTypes.length; --i >= 0;)
-              if (command.equals(unsupportedRecordTypes[i]))
-                continue readLine_loop;
-            for (int i = supportedRecordTypes.length; --i >= 0;)
-              if (command.equals(supportedRecordTypes[i])) {
-                if (readThisModel)
-                  processSupportedRecord(i);
-                continue readLine_loop;
-              }
-            if (readThisModel && !isCmdf && iHaveAtomSet)
-              assumeAtomRecord();
-          }
-        }
-      } while (readLine() != null);
+  }
+  
+  protected boolean checkLine() throws Exception {
+
+    int lineLength ;
+    // '=' as last char of line means continue on next line
+    while ((lineLength = (line = line.trim()).length()) > 0 
+        && line.charAt(lineLength - 1) == '=') 
+      line = line.substring(0, lineLength - 1) + readLine();
+    if (line.startsWith("TITL")) {
+      if (!doGetModel(++modelNumber))
+        return checkLastModel();
+      sfacElementSymbols = null;
       applySymmetryAndSetTrajectory();
-    } catch (Exception e) {
-      setError(e);
+      setFractionalCoordinates(true);
+      isCmdf = false;
+      atomSetCollection.newAtomSet();
+      atomSetCollection.setAtomSetName(parseTrimmed(line, 4));
+      iHaveAtoms = true;
+      return true;
     }
 
+    if (!iHaveAtoms || lineLength < 3)
+      return true;
+
+    String command = (line + " ").substring(0, 4).toUpperCase().trim();
+    if (unsupportedRecordTypes.indexOf(command + ";") >= 0)
+      return true;
+    for (int i = supportedRecordTypes.length; --i >= 0;)
+      if (command.equals(supportedRecordTypes[i])) {
+        processSupportedRecord(i);
+        return true;
+      }
+    if (!isCmdf)
+      assumeAtomRecord();
+    return true;
   }
 
-  final static String[] supportedRecordTypes = { "TITL", "CELL", "SPGR",
-      "SFAC", "LATT", "SYMM" };
+  private final static String unsupportedRecordTypes = 
+    "ZERR;DISP;UNIT;LAUE;REM;MORE;TIME;" +
+    "HKLF;OMIT;SHEL;BASF;TWIN;EXTI;SWAT;HOPE;MERG;" +
+    "SPEC;RESI;MOVE;ANIS;AFIX;HFIX;FRAG;FEND;EXYZ;" +
+    "EXTI;EADP;EQIV;" +
+    "CONN;PART;BIND;FREE;" +
+    "DFIX;DANG;BUMP;SAME;SADI;CHIV;FLAT;DELU;SIMU;" +
+    "DEFS;ISOR;NCSY;SUMP;" +
+    "L.S.;CGLS;BLOC;DAMP;STIR;WGHT;FVAR;" +
+    "BOND;CONF;MPLA;RTAB;HTAB;LIST;ACTA;SIZE;TEMP;" +
+    "WPDB;" +
+    "FMAP;GRID;PLAN;MOLE";
+  
+  final private static String[] supportedRecordTypes = { "TITL", "CELL", "SPGR",
+      "SFAC", "LATT", "SYMM", "NOTE", "ATOM", "END" };
 
-  void processSupportedRecord(int recordIndex) throws Exception {
+  private void processSupportedRecord(int recordIndex) throws Exception {
     //Logger.debug(recordIndex+" "+line);
-    if (!iHaveAtomSet)
-      atomSetCollection.newAtomSet();
-    iHaveAtomSet = true;
     switch (recordIndex) {
     case 0: // TITL
-      atomSetCollection.setAtomSetName(parseTrimmed(line, 4));
+    case 8: // END
       break;
     case 1: // CELL
       cell();
@@ -148,20 +127,27 @@ public class ShelxReader extends AtomSetCollectionReader {
     case 5: // SYMM
       parseSymmRecord();
       break;
+    case 6: // NOTE
+      isCmdf = true;
+      break;
+    case 7: // ATOM
+      if (isCmdf)
+        processCmdfAtoms();
+      break;
     }
   }
 
-  void parseLattRecord() throws Exception {
+  private void parseLattRecord() throws Exception {
     parseToken(line);
     int latt = parseInt();
     atomSetCollection.setLatticeParameter(latt);
   }
 
-  void parseSymmRecord() throws Exception {
+  private void parseSymmRecord() throws Exception {
     setSymmetryOperator(parseTrimmed(line, 4));
   }
 
-  void cell() throws Exception {
+  private void cell() throws Exception {
     /* example:
      * CELL   wavelngth    a        b         c       alpha   beta   gamma
      * CELL   1.54184   7.11174  21.71704  30.95857  90.000  90.000  90.000
@@ -185,7 +171,7 @@ public class ShelxReader extends AtomSetCollectionReader {
       setUnitCellItem(ipt, parseFloat(tokens[ipt + ioff + 1]));
   }
 
-  void parseSfacRecord() {
+  private void parseSfacRecord() {
     // an SFAC record is one of two cases
     // a simple SFAC record contains element names
     // a general SFAC record contains coefficients for a single element
@@ -201,7 +187,7 @@ public class ShelxReader extends AtomSetCollectionReader {
       parseSfacCoefficients(sfacTokens);
   }
 
-  void parseSfacElementSymbols(String[] sfacTokens) {
+  private void parseSfacElementSymbols(String[] sfacTokens) {
     if (sfacElementSymbols == null) {
       sfacElementSymbols = sfacTokens;
     } else {
@@ -213,7 +199,7 @@ public class ShelxReader extends AtomSetCollectionReader {
     }
   }
   
-  void parseSfacCoefficients(String[] sfacTokens) {
+  private void parseSfacCoefficients(String[] sfacTokens) {
     float a1 = parseFloat(sfacTokens[1]);
     float a2 = parseFloat(sfacTokens[3]);
     float a3 = parseFloat(sfacTokens[5]);
@@ -233,14 +219,14 @@ public class ShelxReader extends AtomSetCollectionReader {
     sfacElementSymbols[oldCount] = elementSymbol;
   }
 
-  void assumeAtomRecord() throws Exception {
+  private void assumeAtomRecord() throws Exception {
     // this line gives an atom, because any line not starting with
     // a SHELX command is an atom
     String atomName = parseToken(line);
     int scatterFactor = parseInt();
-    float a = parseFloat();
-    float b = parseFloat();
-    float c = parseFloat();
+    float x = parseFloat();
+    float y = parseFloat();
+    float z = parseFloat();
     // skip the rest
 
     Atom atom = atomSetCollection.addNewAtom();
@@ -250,32 +236,10 @@ public class ShelxReader extends AtomSetCollectionReader {
       if (elementIndex >= 0 && elementIndex < sfacElementSymbols.length)
         atom.elementSymbol = sfacElementSymbols[elementIndex];
     }
-    setAtomCoord(atom, a, b, c);
+    setAtomCoord(atom, x, y, z);
   }
 
-  final static String[] unsupportedRecordTypes = {
-  /* 7.1 Crystal data and general instructions */
-  "ZERR", "DISP", "UNIT", "LAUE", "REM", "MORE", "TIME",
-  /* 7.2 Reflection data input */
-  "HKLF", "OMIT", "SHEL", "BASF", "TWIN", "EXTI", "SWAT", "HOPE", "MERG",
-  /* 7.3 Atom list and least-squares constraints */
-  "SPEC", "RESI", "MOVE", "ANIS", "AFIX", "HFIX", "FRAG", "FEND", "EXYZ",
-      "EXTI", "EADP", "EQIV",
-      /* 7.4 The connectivity list */
-      "CONN", "PART", "BIND", "FREE",
-      /* 7.5 Least-squares restraints */
-      "DFIX", "DANG", "BUMP", "SAME", "SADI", "CHIV", "FLAT", "DELU", "SIMU",
-      "DEFS", "ISOR", "NCSY", "SUMP",
-      /* 7.6 Least-squares organization */
-      "L.S.", "CGLS", "BLOC", "DAMP", "STIR", "WGHT", "FVAR",
-      /* 7.7 Lists and tables */
-      "BOND", "CONF", "MPLA", "RTAB", "HTAB", "LIST", "ACTA", "SIZE", "TEMP",
-      "WPDB",
-      /* 7.8 Fouriers, peak search and lineprinter plots */
-      "FMAP", "GRID", "PLAN", "MOLE"
-      };
-
-  void processCmdfAtoms() throws Exception {
+  private void processCmdfAtoms() throws Exception {
     while (readLine() != null && line.length() > 10) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
@@ -285,7 +249,7 @@ public class ShelxReader extends AtomSetCollectionReader {
     }
   }
 
-  String getSymbol(String sym) {
+  private String getSymbol(String sym) {
     if (sym == null)
       return "Xx";
     int len = sym.length();

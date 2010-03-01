@@ -29,7 +29,6 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.quantum.SlaterData;
 //import org.jmol.util.Escape;
 
-import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -66,64 +65,46 @@ public class AdfReader extends SlaterReader {
   private Vector vSymmetries;
   private String energy = null;
   private int nXX = 0;
-
-  /**
-   * Read the ADF output.
-   *
-   * @param reader  input stream
-   */
-  public void readAtomSetCollection(BufferedReader reader) {
-    atomSetCollection = new AtomSetCollection("adf", this);
-    this.reader = reader;
-    boolean iHaveAtoms = false;
-    modelNumber = 0;
-    String symLine = null;
-    try {
-      while (readLine() != null) {
-        if (line.indexOf("Irreducible Representations, including subspecies") >= 0) {
-          readSymmetries();
-          continue;
-        }
-        if (line.indexOf("S F O s  ***  (Symmetrized Fragment Orbitals)  ***") >= 0) {
-          readSlaterBasis(); // Cartesians
-          continue;
-        }
-        if (line.indexOf(" Coordinates (Cartesian, in Input Orientation)") >= 0
-            || line.indexOf("G E O M E T R Y  ***") >= 0) {
-          if (!doGetModel(++modelNumber)) {
-            if (isLastModel(modelNumber) && iHaveAtoms)
-              break;
-            iHaveAtoms = false;
-            continue;
-          }
-          iHaveAtoms = true;
-          readCoordinates();
-          continue;
-        }
-        if (!iHaveAtoms)
-          continue;
-        if (line.indexOf("Energy:") >= 0) {
-          String[] tokens = getTokens(line.substring(line.indexOf("Energy:")));
-          energy = tokens[1];
-          continue;
-        }
-        if (line.indexOf("Vibrations") >= 0) {
-          readFrequencies();
-          continue;
-        }
-        if (line.indexOf(" === ") >= 0) {
-          symLine = line;
-          continue;
-        }
-        if (line.indexOf(" ======  Eigenvectors (rows) in BAS representation") >= 0) {
-          readMolecularOrbitals(getTokens(symLine)[1]);
-          continue;
-        }              
-      }
-    } catch (Exception e) {
-      setError(e);
+  private String symLine;
+  
+  protected boolean checkLine() throws Exception {
+    if (line.indexOf("Irreducible Representations, including subspecies") >= 0) {
+      readSymmetries();
+      return true;
     }
-
+    if (line.indexOf("S F O s  ***  (Symmetrized Fragment Orbitals)  ***") >= 0) {
+      readSlaterBasis(); // Cartesians
+      return true;
+    }
+    if (line.indexOf(" Coordinates (Cartesian, in Input Orientation)") >= 0
+        || line.indexOf("G E O M E T R Y  ***") >= 0) {
+      if (!doGetModel(++modelNumber))
+        return checkLastModel();
+      iHaveAtoms = true;
+      readCoordinates();
+      return true;
+    }
+    if (!iHaveAtoms)
+      return true;
+    
+    if (line.indexOf("Energy:") >= 0) {
+      String[] tokens = getTokens(line.substring(line.indexOf("Energy:")));
+      energy = tokens[1];
+      return true;
+    }
+    if (line.indexOf("Vibrations") >= 0) {
+      readFrequencies();
+      return true;
+    }
+    if (line.indexOf(" === ") >= 0) {
+      symLine = line;
+      return true;
+    }
+    if (line.indexOf(" ======  Eigenvectors (rows) in BAS representation") >= 0) {
+      readMolecularOrbitals(getTokens(symLine)[1]);
+      return true;
+    }
+    return true;
   }
 
   /**

@@ -27,8 +27,10 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.quantum.SlaterData;
+import org.jmol.util.Logger;
 //import org.jmol.util.Escape;
 
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -68,6 +70,7 @@ public class AdfReader extends SlaterReader {
   private String symLine;
   
   protected boolean checkLine() throws Exception {
+    
     if (line.indexOf("Irreducible Representations, including subspecies") >= 0) {
       readSymmetries();
       return true;
@@ -82,6 +85,10 @@ public class AdfReader extends SlaterReader {
         return checkLastModel();
       iHaveAtoms = true;
       readCoordinates();
+      return true;
+    }
+    if (line.indexOf(" ======  Eigenvectors (rows) in BAS representation") >= 0) {
+      readMolecularOrbitals(getTokens(symLine)[1]);
       return true;
     }
     if (!iHaveAtoms)
@@ -226,10 +233,13 @@ OR
     htSymmetries = new Hashtable();
     readLine();
     int index = 0;
-    while (readLine() != null && line.length() > 1) {
-      String sym = line.trim();
-      SymmetryData sd = new SymmetryData(index++, sym);
-      htSymmetries.put(sym, sd);
+    String syms = "";
+    while (readLine() != null && line.length() > 1)
+      syms += line;
+    String[] tokens = getTokens(syms);
+    for (int i = 0; i < tokens.length; i++) {
+      SymmetryData sd = new SymmetryData(index++, tokens[i]);
+      htSymmetries.put(tokens[i], sd);
       vSymmetries.add(sd);
     }
   }
@@ -255,9 +265,12 @@ OR
     int nBF = 0;
     for (int i = 0; i < vSymmetries.size(); i++) {
       SymmetryData sd = (SymmetryData) vSymmetries.get(i);
+      System.out.println(sd.sym);
       discardLinesUntilContains("=== " + sd.sym + " ===");
-      if (line == null)
+      if (line == null) {
+        Logger.error("Symmetry slater basis section not found: " + sd.sym);
         return;
+      }
     /*
                                       === A1 ===
  Nr. of SFOs :   20
@@ -384,13 +397,21 @@ OR
     discardLines(4);
     while (readLine() != null && line.length() > 10) {
       String[] tokens = getTokens();
-      sd = (SymmetryData) htSymmetries.get(tokens[0]);
+      sym = tokens[0];
       int moPt = parseInt(tokens[1]) - 1;
-      Hashtable mo = sd.mos[moPt];
-      mo.put("occupancy", new Float(parseFloat(tokens[2])));
-      mo.put("energy", new Float(parseFloat(tokens[4]))); //eV
-      mo.put("symmetry", sd.sym + "_" + (sd.index + 1));
-      orbitals.add(mo);
+      float occ = parseFloat(tokens[2]);
+      float energy = parseFloat(tokens[4]);
+      sd = (SymmetryData) htSymmetries.get(sym);
+      if (sd == null) {
+        Enumeration e = htSymmetries.keys();
+        while (e.hasMoreElements()) {
+          String symfull = (String) e.nextElement();
+          if (symfull.startsWith(sym + ":"))
+            addMo((SymmetryData) htSymmetries.get(symfull), moPt, (occ > 2 ? 2 : occ), energy);            
+        }
+      } else {
+        addMo(sd, moPt, occ, energy);
+      }
     }
     int iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
     for (int i = 0; i < nBF; i++)
@@ -398,5 +419,13 @@ OR
     setSlaters(true, true);
     sortOrbitals();
     setMOs("eV");
+  }
+
+  private void addMo(SymmetryData sd, int moPt, float occ, float energy) {
+    Hashtable mo = sd.mos[moPt];
+    mo.put("occupancy", new Float(occ));
+    mo.put("energy", new Float(energy)); //eV
+    mo.put("symmetry", sd.sym + "_" + (sd.index + 1));
+    orbitals.add(mo);
   }  
 }

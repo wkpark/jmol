@@ -3261,6 +3261,9 @@ abstract public class ModelCollection extends BondCollection {
         Float occ = (Float) mo.get("occupancy");
         if (occ != null)
           type = "occupancy " + occ.floatValue() + " " + type;
+        String sym = (String) mo.get("symmetry");
+        if (sym != null) 
+          type += sym;
         sb.append(TextFormat.sprintf(
             "model %-2s;  mo %-2i # energy %-8.3f %s %s\n", new Object[] {
                 getModelNumberDotted(m), new Integer(i + 1),

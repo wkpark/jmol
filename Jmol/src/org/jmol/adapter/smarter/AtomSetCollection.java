@@ -675,9 +675,8 @@ public class AtomSetCollection {
   private void applyAllSymmetry(int maxX, int maxY, int maxZ) throws Exception {
     int noSymmetryCount = getLastAtomSetAtomCount();
     int iAtomFirst = getLastAtomSetAtomIndex();
-    for (int i = iAtomFirst; i < atomCount; i++) {
+    for (int i = iAtomFirst; i < atomCount; i++)
       atoms[i].ellipsoid = symmetry.getEllipsoid(atoms[i].anisoBorU);
-    }
     bondCount0 = bondCount;
 
     symmetry.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);

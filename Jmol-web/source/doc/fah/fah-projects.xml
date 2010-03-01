@@ -3908,6 +3908,24 @@
   <fah_proj number="1751" name="p1751_ACHE_NAT_300_03-33" public="y" file="xyz"
     server="134.139.127.31" atoms="98996" preferred="14" deadline="28"
     credit="2137.6" frames="100" code="A0" contact="esorin" contrib="Hyperlife"/>
+  <fah_proj number="1761" name="p1761_BCHE_DAPP1_03_33_A1A" public="n"
+    server="134.139.127.31" atoms="98477" preferred="14" deadline="28"
+    credit="2137.6" frames="100" code="A0" contact="esorin"/>
+  <fah_proj number="1763" name="p1763_BCHE_DAPP3_03_33_A1A" public="n"
+    server="134.139.127.31" atoms="98495" preferred="14" deadline="28"
+    credit="2137.6" frames="100" code="A0" contact="esorin"/>
+  <fah_proj number="1765" name="p1765_BCHE_DAPP5_03_33_A1A" public="n"
+    server="134.139.127.31" atoms="98789" preferred="14" deadline="28"
+    credit="2137.6" frames="100" code="A0" contact="esorin"/>
+  <fah_proj number="1771" name="p1771_BCHE_DAPP1_03_33_A1B" public="n"
+    server="134.139.127.31" atoms="98477" preferred="14" deadline="28"
+    credit="2137.6" frames="100" code="A0" contact="esorin"/>
+  <fah_proj number="1773" name="p1773_BCHE_DAPP3_03_33_A1B" public="n"
+    server="134.139.127.31" atoms="98495" preferred="14" deadline="28"
+    credit="2137.6" frames="100" code="A0" contact="esorin"/>
+  <fah_proj number="1775" name="p1775_BCHE_DAPP5_03_33_A1B" public="n" file="xyz"
+    server="134.139.127.31" atoms="98789" preferred="14" deadline="28"
+    credit="2137.6" frames="100" code="A0" contact="esorin" contrib="Bruce"/>
 
   <!-- Projects 1800 to 1899 -->
   <fah_proj number="1800" name="p1800_Collagen_PPG10_restrained_unfolding" public="y" file="xyz"

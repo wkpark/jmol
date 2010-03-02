@@ -27,6 +27,7 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Point4f;
 
 import org.jmol.util.Logger;
 
@@ -193,10 +194,11 @@ class IsoSolventReader extends AtomDataReader {
       generateSolventCavity();
       generateSolventCube(false);
     }
-//    if (params.cappingObject != null) { // had a check for mapping here, turning this off
-  //    //Logger.info("capping isosurface using " + params.cappingPlane);
-    //  volumeData.capData((Point4f)params.cappingObject, params.cutoff);
-   // }
+    if (params.cappingObject instanceof Point4f) { // had a check for mapping here, turning this off
+      //Logger.info("capping isosurface using " + params.cappingPlane);
+      volumeData.capData((Point4f)params.cappingObject, params.cutoff);
+      params.cappingObject = null;
+    }
   }
 
  private void generateSolventCavity() {

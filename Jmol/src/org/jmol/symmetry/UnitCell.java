@@ -35,6 +35,7 @@ package org.jmol.symmetry;
  */
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.BoxInfo;
@@ -44,6 +45,14 @@ import org.jmol.util.SimpleUnitCell;
 class UnitCell extends SimpleUnitCell {
   
   private Point3f[] vertices; // eight corners
+  
+  private Point4f[] faces; // six faces
+  
+  Point4f[] getFaces() {
+    if (faces == null)
+      faces = BoxInfo.getFaces(vertices);
+    return faces;
+  }
 
   private Point3f cartesianOffset = new Point3f();
   private Point3f fractionalOffset = new Point3f();

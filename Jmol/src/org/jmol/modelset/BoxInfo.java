@@ -33,6 +33,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.util.Measure;
 import org.jmol.util.Point3fi;
 import org.jmol.util.TriangleData;
 
@@ -44,6 +45,7 @@ public class BoxInfo {
   private final Point3f bbCenter = new Point3f();
   private final Vector3f bbVector = new Vector3f(-1, -1, -1);
   private final Point3fi[] bbVertices = new Point3fi[8];
+  private Point4f[] bbFaces;
   {
     for (int i = 8; --i >= 0;)
       bbVertices[i] = new Point3fi();
@@ -108,16 +110,60 @@ public class BoxInfo {
       pts[i].add(center, v);
     }
   }
+
+  public static Point4f[] getFaces(Point3f[] vertices) {
+    Point4f[] faces = new Point4f[6];
+    Vector3f vNorm = new Vector3f();
+    Vector3f vAB = new Vector3f();
+    Vector3f vAC = new Vector3f();
+
+    for (int i = 0; i < 6; i++) {
+      faces[i] = Measure
+          .getPlaneThroughPoints(vertices[facePoints[i].x],
+              vertices[facePoints[i].y], vertices[facePoints[i].z], vNorm, vAB, vAC);
+    }
+    return faces;
+  }
+
+  /*                     Y 
+   *                      2 --------6--------- 6                            
+   *                     /|                   /|          
+   *                    / |                  / |           
+   *                   /  |                 /  |           
+   *                  5   1               11   |           
+   *                 /    |               /    9           
+   *                /     |              /     |         
+   *               3 --------7--------- 7      |         
+   *               |      |             |      |         
+   *               |      0 ---------2--|----- 4    X        
+   *               |     /              |     /          
+   *               3    /              10    /           
+   *               |   0                |   8            
+   *               |  /                 |  /             
+   *               | /                  | /               
+   *               1 ---------4-------- 5                 
+   *              Z                                       
+   */
   
   public final static Point3f[] unitCubePoints = { 
-    new Point3f(0, 0, 0),
-    new Point3f(0, 0, 1), 
-    new Point3f(0, 1, 0), 
-    new Point3f(0, 1, 1),
-    new Point3f(1, 0, 0), 
-    new Point3f(1, 0, 1), 
-    new Point3f(1, 1, 0),
-    new Point3f(1, 1, 1), };
+    new Point3f(0, 0, 0), // 0
+    new Point3f(0, 0, 1), // 1
+    new Point3f(0, 1, 0), // 2
+    new Point3f(0, 1, 1), // 3
+    new Point3f(1, 0, 0), // 4
+    new Point3f(1, 0, 1), // 5
+    new Point3f(1, 1, 0), // 6
+    new Point3f(1, 1, 1), // 7
+  };
+
+  private static Point3i[] facePoints = {
+    new Point3i(4, 0, 6),
+    new Point3i(4, 6, 5), 
+    new Point3i(5, 7, 1), 
+    new Point3i(1, 3, 0),
+    new Point3i(6, 2, 7), 
+    new Point3i(1, 0, 5), 
+  };
 
   public final static int[] toCanonical = new int[] {0, 3, 4, 7, 1, 2, 5, 6};
 
@@ -154,6 +200,12 @@ public class BoxInfo {
 
   public Point3fi[] getBboxVertices() {
     return bbVertices;
+  }
+  
+  public Point4f[] getBboxFaces() {
+    if (bbFaces == null)
+      bbFaces = getFaces(bbVertices);
+    return bbFaces;
   }
 
   Hashtable getBoundBoxInfo() {

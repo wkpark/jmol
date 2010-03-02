@@ -255,7 +255,7 @@ public class Parameters {
   Boolean pocket; //three states: TRUE, FALSE, and NULL
   int minSet;
   Point4f cappingPlane;
-  Point4f slabbingPlane;
+  Object slabbingObject;
   float slabPlaneOffset = Float.NaN;
 
   float[] theProperty;

@@ -2449,6 +2449,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBboxVertices();
   }
 
+  public Point4f[] getBoundBoxFaces() {
+    return modelSet.getBboxFaces();
+  }
+
   Hashtable getBoundBoxInfo() {
     return modelSet.getBoundBoxInfo();
   }
@@ -3007,6 +3011,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public SymmetryInterface getCurrentUnitCell() {
     return modelSet.getUnitCell(animationManager.currentModelIndex);
+  }
+
+  public Point4f[] getCurrentUnitCellFaces() {
+    return modelSet.getUnitCellFaces(animationManager.currentModelIndex);
   }
 
   public void setCurrentUnitCellOffset(int offset) {

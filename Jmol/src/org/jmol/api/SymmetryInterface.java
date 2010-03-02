@@ -5,6 +5,7 @@ import java.util.Hashtable;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
@@ -125,6 +126,8 @@ public interface SymmetryInterface {
   public abstract boolean isPolymer();
 
   public abstract boolean isSlab();
+
+  public abstract Point4f[] getFaces();
 
   
 }

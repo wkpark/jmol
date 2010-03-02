@@ -140,8 +140,17 @@ public class MeshSurface {
             || Float.isNaN(vertexValues[iC = vertexIndexes[2]]));
   }
 
-  public void slabPolygons(Point4f plane) {
-    getIntersection(plane, null);
+  public void slabPolygons(Object slabbingObject) {
+    if (slabbingObject instanceof Point4f) {
+      getIntersection((Point4f) slabbingObject, null);
+      return;
+    }
+    if (slabbingObject instanceof Point4f[]) {
+      Point4f[] faces = (Point4f[]) slabbingObject;
+      for (int i = 0; i < faces.length; i++)
+        getIntersection((Point4f) faces[i], null);
+      return; 
+    }
   }
 
   public boolean getIntersection(Point4f plane, Vector vData) {

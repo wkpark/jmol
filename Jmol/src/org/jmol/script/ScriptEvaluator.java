@@ -13383,7 +13383,17 @@ public class ScriptEvaluator {
         i = iToken;
         break;
       case Token.slab:
-        propertyName = "slabbingPlane";
+        propertyName = "slab";
+        if (tokAt(i + 1) == Token.boundbox) {
+          propertyValue = viewer.getBoundBoxFaces();
+          i++;
+          break;
+        } 
+        if (tokAt(i + 1) == Token.unitcell) {
+          propertyValue = viewer.getCurrentUnitCellFaces();
+          i++;
+          break;
+        }
         Point4f plane = planeParameter(++i);
         i = iToken;
         float off = (isFloatParameter(i + 1) ? floatParameter(++i) : Float.NaN);

@@ -457,8 +457,8 @@ public class SurfaceGenerator {
       return true;
     }
 
-    if ("slabbingPlane" == propertyName) {
-      params.slabbingPlane = (Point4f) value;
+    if ("slab" == propertyName) {
+      params.slabbingObject = value;
       return true;
     }
 
@@ -988,8 +988,8 @@ public class SurfaceGenerator {
     if (params.maxSet > 0)
       surfaceReader.excludeMaximumSet();
 
-    if (params.slabbingPlane != null)
-      surfaceReader.slabIsosurface(params.slabbingPlane);
+    if (params.slabbingObject != null)
+      surfaceReader.slabIsosurface(params.slabbingObject);
 
     if (haveMeshDataServer)
       meshDataServer.notifySurfaceGenerationCompleted();

@@ -802,6 +802,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       createLcaoLobe(z, sense, nElectrons);
       return;
     }
+    if (lcaoCartoon.equals("spacefill") || lcaoCartoon.equals("cpk")) {
+      createLcaoLobe(null, 2 * viewer.getAtomRadius(atomIndex), nElectrons);
+      return;      
+    }
 
     // assume s
     createLcaoLobe(null, 1, nElectrons);

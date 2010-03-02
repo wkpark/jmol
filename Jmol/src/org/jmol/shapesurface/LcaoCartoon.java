@@ -57,6 +57,8 @@ public class LcaoCartoon extends Isosurface {
   private Integer lcaoColorNeg;
   boolean isLonePair;
   boolean isRadical;
+  private Object cappingObject;
+  private Object slabbingObject;
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -182,6 +184,14 @@ public class LcaoCartoon extends Isosurface {
       return;
     }
 
+    if ("slab" == propertyName) {
+      slabbingObject = value;
+      return;
+    }
+    if ("cap" == propertyName) {
+      cappingObject = value;
+      return;
+    }
     super.setProperty(propertyName, value, bs);
     
     //from the state:
@@ -256,6 +266,10 @@ public class LcaoCartoon extends Isosurface {
       super.setProperty("colorRGB", lcaoColorNeg, null);
       super.setProperty("colorRGB", lcaoColorPos, null);
     }
+    if (slabbingObject != null)
+      super.setProperty("slab", slabbingObject, null);
+    if (cappingObject != null)
+      super.setProperty("cap", cappingObject, null);
     super.setProperty("lcaoType", thisType, null);
     super.setProperty("atomIndex", new Integer(iAtom), null);
     Vector3f[] axes = { new Vector3f(), new Vector3f(),
@@ -278,6 +292,7 @@ public class LcaoCartoon extends Isosurface {
     }
     if (isMolecular
         || thisType.equalsIgnoreCase("s")
+        || thisType.equalsIgnoreCase("cpk")
         || viewer.getHybridizationAndAxes(iAtom, axes[0], axes[1], thisType,
             true) != null) {
       super.setProperty((isRadical ? "radical" : isLonePair ? "lonePair" : "lcaoCartoon"), axes, null);

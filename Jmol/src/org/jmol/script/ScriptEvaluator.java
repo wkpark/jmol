@@ -12550,6 +12550,26 @@ public class ScriptEvaluator {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
+      case Token.cap:
+      case Token.slab:
+        propertyName = (String) theToken.value;
+        if (tokAt(i + 1) == Token.boundbox) {
+          propertyValue = viewer.getBoundBoxFaces();
+          i++;
+          break;
+        } 
+        if (tokAt(i + 1) == Token.unitcell) {
+          propertyValue = viewer.getCurrentUnitCellFaces();
+          i++;
+          break;
+        }
+        Point4f plane = planeParameter(++i);
+        i = iToken;
+        float off = (isFloatParameter(i + 1) ? floatParameter(++i) : Float.NaN);
+        if (!Float.isNaN(off))
+          plane.w -= off;
+        propertyValue = plane;
+        break;
       case Token.center:
         // serialized lcaoCartoon in isosurface format
         isosurface(JmolConstants.SHAPE_LCAOCARTOON);

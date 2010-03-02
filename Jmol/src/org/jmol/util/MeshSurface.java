@@ -155,6 +155,10 @@ public class MeshSurface {
 
   public boolean getIntersection(Point4f plane, Vector vData, boolean andCap) {
     boolean isSlab = (vData == null);
+    Point3f[] pts;
+    int iD, iE;
+
+    Vector iPts = (andCap ? new Vector() : null);
     for (int i = polygonIndexes.length; --i >= 0;) {
       if (!setABC(i))
         continue;
@@ -164,7 +168,7 @@ public class MeshSurface {
       float d3 = Measure.distanceToPlane(plane, vC = vertices[iC]);
       int test1 = (d1 < 0 ? 1 : 0) + (d2 < 0 ? 2 : 0) + (d3 < 0 ? 4 : 0);
       int test2 = (d1 >= 0 ? 1 : 0) + (d2 >= 0 ? 2 : 0) + (d3 >= 0 ? 4 : 0);
-      Point3f[] pts = null;
+      pts = null;
       switch (test1) {
       case 0:
       case 7:
@@ -190,8 +194,7 @@ public class MeshSurface {
         break;
       }
       if (isSlab) {
-        int iD = 0;
-        int iE = 0;
+        iD = iE = 0;
         //             A
         //            / \
         //           B---C
@@ -201,29 +204,15 @@ public class MeshSurface {
           continue;
         case 7:
           // all on the same side
-          if (andCap) {
-            Measure.moveToPlane(plane, vA);
-            Measure.moveToPlane(plane, vB);
-            Measure.moveToPlane(plane, vC);
-            continue;
-          }
           break;
         case 1:
-          if (andCap) {
-            Measure.moveToPlane(plane, vA);
-            continue;
-          }
           // BC on side to keep
-          iD = addVertexCopy(pts[0], vertexValues[iA]);  //AB
-          iE = addVertexCopy(pts[1], vertexValues[iA]);  //AC
-          addTriangleCheck(iD, iB, iC, 0, 0, 0);
-          addTriangleCheck(iD, iC, iE, 0, 0, 0);
+          iD = addVertexCopy(pts[1], vertexValues[iA]);  //AC
+          iE = addVertexCopy(pts[0], vertexValues[iA]);  //AB
+          addTriangleCheck(iE, iB, iC, 0, 0, 0);
+          addTriangleCheck(iE, iC, iD, 0, 0, 0);
           break;
         case 2:
-          if (andCap) {
-            Measure.moveToPlane(plane, vB);
-            continue;
-          }
           // AC on side to keep
           iD = addVertexCopy(pts[0], vertexValues[iB]);  //AB
           iE = addVertexCopy(pts[1], vertexValues[iB]);  //BC
@@ -231,11 +220,6 @@ public class MeshSurface {
           addTriangleCheck(iD, iE, iC, 0, 0, 0);
           break;
         case 3:
-          if (andCap) {
-            Measure.moveToPlane(plane, vA);
-            Measure.moveToPlane(plane, vB);
-            continue;
-          }
           //AB on side to toss
           iD = addVertexCopy(pts[0], vertexValues[iA]);  //AC
           iE = addVertexCopy(pts[1], vertexValues[iB]);  //BC
@@ -243,32 +227,18 @@ public class MeshSurface {
           break;
         case 4:
           // AB on side to keep
-          if (andCap) {
-            Measure.moveToPlane(plane, vC);
-            continue;
-          }
-          iD = addVertexCopy(pts[0], vertexValues[iC]);  //AC
-          iE = addVertexCopy(pts[1], vertexValues[iC]);  //BC
-          addTriangleCheck(iA, iB, iD, 0, 0, 0);
-          addTriangleCheck(iD, iB, iE, 0, 0, 0);
+          iD = addVertexCopy(pts[1], vertexValues[iC]);  //BC
+          iE = addVertexCopy(pts[0], vertexValues[iC]);  //AC
+          addTriangleCheck(iA, iB, iE, 0, 0, 0);
+          addTriangleCheck(iE, iB, iD, 0, 0, 0);
           break;
         case 5:
-          if (andCap) {
-            Measure.moveToPlane(plane, vA);
-            Measure.moveToPlane(plane, vC);
-            continue;
-          }
           //AC on side to toss
-          iD = addVertexCopy(pts[0], vertexValues[iA]);  //AB
-          iE = addVertexCopy(pts[1], vertexValues[iC]);  //BC
-          addTriangleCheck(iD, iB, iE, 0, 0, 0);
+          iD = addVertexCopy(pts[1], vertexValues[iC]);  //BC
+          iE = addVertexCopy(pts[0], vertexValues[iA]);  //AB
+          addTriangleCheck(iE, iB, iD, 0, 0, 0);
           break;
         case 6:
-          if (andCap) {
-            Measure.moveToPlane(plane, vB);
-            Measure.moveToPlane(plane, vC);
-            continue;
-          }
           // BC on side to toss
           iD = addVertexCopy(pts[0], vertexValues[iB]); //AB
           iE = addVertexCopy(pts[1], vertexValues[iC]); //AC
@@ -276,8 +246,26 @@ public class MeshSurface {
           break;
         }
         polygonIndexes[i] = null;
+        if (andCap && iD > 0)
+          iPts.add(new int[] {iD, iE});
       } else if (pts != null) {
         vData.add(pts);
+      }
+    }
+    if (andCap && iPts.size() > 0) {
+      Point3f center = new Point3f();
+      for (int i = iPts.size(); --i >= 0;) {
+        int[] ipts = (int[]) iPts.get(i);
+        center.add(vertices[ipts[0]]);
+        center.add(vertices[ipts[1]]);
+      }
+      center.scale(0.5f / iPts.size());
+      int v0 = addVertexCopy(center);
+      for (int i = iPts.size(); --i >= 0;) {
+        int[] ipts = (int[]) iPts.get(i);
+        iD = addVertexCopy(vertices[ipts[0]], vertexValues[ipts[0]]);
+        iE = addVertexCopy(vertices[ipts[1]], vertexValues[ipts[1]]);
+        addTriangleCheck(iD, v0, iE, 0, 0, 0);
       }
     }
     return false;

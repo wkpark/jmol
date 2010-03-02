@@ -50,7 +50,7 @@ class UnitCell extends SimpleUnitCell {
   
   Point4f[] getFaces() {
     if (faces == null)
-      faces = BoxInfo.getFaces(vertices);
+      faces = BoxInfo.getFaces(vertices, cartesianOffset);
     return faces;
   }
 
@@ -91,6 +91,7 @@ class UnitCell extends SimpleUnitCell {
   }
   
   void setOffset(Point3f pt) {
+    faces = null;
     // from "unitcell {i j k}" via uccage
     fractionalOffset.set(pt);
     matrixCartesianToFractional.m03 = -pt.x;

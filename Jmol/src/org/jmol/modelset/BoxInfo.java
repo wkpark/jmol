@@ -111,16 +111,27 @@ public class BoxInfo {
     }
   }
 
-  public static Point4f[] getFaces(Point3f[] vertices) {
+  public static Point4f[] getFaces(Point3f[] vertices, Point3f offset) {
     Point4f[] faces = new Point4f[6];
     Vector3f vNorm = new Vector3f();
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
+    Point3f va = new Point3f();
+    Point3f vb = new Point3f();
+    Point3f vc = new Point3f();
 
     for (int i = 0; i < 6; i++) {
+      va.set(vertices[facePoints[i].x]);
+      vb.set(vertices[facePoints[i].y]);
+      vc.set(vertices[facePoints[i].z]);
+      if (offset != null)
+        va.add(offset);
+      if (offset != null)
+        vb.add(offset);
+      if (offset != null)
+        vc.add(offset);
       faces[i] = Measure
-          .getPlaneThroughPoints(vertices[facePoints[i].x],
-              vertices[facePoints[i].y], vertices[facePoints[i].z], vNorm, vAB, vAC);
+          .getPlaneThroughPoints(va, vb, vc, vNorm, vAB, vAC);
     }
     return faces;
   }
@@ -204,7 +215,7 @@ public class BoxInfo {
   
   public Point4f[] getBboxFaces() {
     if (bbFaces == null)
-      bbFaces = getFaces(bbVertices);
+      bbFaces = getFaces(bbVertices, null);
     return bbFaces;
   }
 

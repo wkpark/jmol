@@ -810,12 +810,8 @@ public class Draw extends MeshCollection {
       Point3f center = new Point3f();
       Vector3f normal = new Vector3f();
       if (nVertices == 2 && plane != null) {
-        dist = Measure.distanceToPlane(plane, ptList[0]);
-        vAC.set(plane.x, plane.y, plane.z);
-        vAC.normalize();
-        vAC.scale(-dist);
-        vAC.add(ptList[0]);
-        ptList[1] = new Point3f(vAC);
+        ptList[1] = new Point3f(ptList[0]);
+        Measure.moveToPlane(plane, ptList[1]);
         nVertices = -2;
         if (isArrow)
           drawType = JmolConstants.DRAW_ARROW;

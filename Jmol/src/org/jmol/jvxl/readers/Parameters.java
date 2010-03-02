@@ -187,7 +187,7 @@ public class Parameters {
     bsSolvent = null;
     calculationType = "";
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-    cappingPlane= null;
+    cappingObject= null;
     colorBySign = colorByPhase = colorBySets = false;
     colorDensity = false;
     colorNeg = defaultColorNegative;
@@ -230,6 +230,7 @@ public class Parameters {
     scale = Float.NaN;
     scale3d = 0;
     sigma = Float.MAX_VALUE;
+    slabbingObject = null;
     solventExtendedAtomRadius = 0;
     state = STATE_INITIALIZED;
     thePlane = null;
@@ -254,7 +255,7 @@ public class Parameters {
   boolean isCavity;
   Boolean pocket; //three states: TRUE, FALSE, and NULL
   int minSet;
-  Point4f cappingPlane;
+  Object cappingObject;
   Object slabbingObject;
   float slabPlaneOffset = Float.NaN;
 

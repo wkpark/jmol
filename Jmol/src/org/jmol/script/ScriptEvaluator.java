@@ -13378,12 +13378,8 @@ public class ScriptEvaluator {
         propertyValue = Boolean.TRUE;
         break;
       case Token.cap:
-        propertyName = "cappingPlane";
-        propertyValue = planeParameter(++i);
-        i = iToken;
-        break;
       case Token.slab:
-        propertyName = "slab";
+        propertyName = (String) theToken.value;
         if (tokAt(i + 1) == Token.boundbox) {
           propertyValue = viewer.getBoundBoxFaces();
           i++;

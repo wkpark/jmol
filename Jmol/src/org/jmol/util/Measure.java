@@ -260,6 +260,14 @@ final public class Measure {
     return d;
   }
 
+  public static void moveToPlane(Point4f plane, Point3f a) {
+    float dist = Measure.distanceToPlane(plane, a);
+    Vector3f vAC = new Vector3f(plane.x, plane.y, plane.z);
+    vAC.normalize();
+    vAC.scale(-dist);
+    a.add(vAC);
+  }
+
   public static void getNormalFromCenter(Point3f ptCenter, Point3f ptA, Point3f ptB,
                             Point3f ptC, boolean isOutward, Vector3f normal) {
     // for Polyhedra

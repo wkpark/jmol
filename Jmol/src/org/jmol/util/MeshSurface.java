@@ -140,20 +140,20 @@ public class MeshSurface {
             || Float.isNaN(vertexValues[iC = vertexIndexes[2]]));
   }
 
-  public void slabPolygons(Object slabbingObject) {
+  public void slabPolygons(Object slabbingObject, boolean andCap) {
     if (slabbingObject instanceof Point4f) {
-      getIntersection((Point4f) slabbingObject, null);
+      getIntersection((Point4f) slabbingObject, null, andCap);
       return;
     }
     if (slabbingObject instanceof Point4f[]) {
       Point4f[] faces = (Point4f[]) slabbingObject;
       for (int i = 0; i < faces.length; i++)
-        getIntersection((Point4f) faces[i], null);
+        getIntersection((Point4f) faces[i], null, andCap);
       return; 
     }
   }
 
-  public boolean getIntersection(Point4f plane, Vector vData) {
+  public boolean getIntersection(Point4f plane, Vector vData, boolean andCap) {
     boolean isSlab = (vData == null);
     for (int i = polygonIndexes.length; --i >= 0;) {
       if (!setABC(i))
@@ -163,7 +163,7 @@ public class MeshSurface {
       float d2 = Measure.distanceToPlane(plane, vB = vertices[iB]);
       float d3 = Measure.distanceToPlane(plane, vC = vertices[iC]);
       int test1 = (d1 < 0 ? 1 : 0) + (d2 < 0 ? 2 : 0) + (d3 < 0 ? 4 : 0);
-      int test2 = (d1 > 0 ? 1 : 0) + (d2 > 0 ? 2 : 0) + (d3 > 0 ? 4 : 0);
+      int test2 = (d1 >= 0 ? 1 : 0) + (d2 >= 0 ? 2 : 0) + (d3 >= 0 ? 4 : 0);
       Point3f[] pts = null;
       switch (test1) {
       case 0:
@@ -201,8 +201,18 @@ public class MeshSurface {
           continue;
         case 7:
           // all on the same side
+          if (andCap) {
+            Measure.moveToPlane(plane, vA);
+            Measure.moveToPlane(plane, vB);
+            Measure.moveToPlane(plane, vC);
+            continue;
+          }
           break;
         case 1:
+          if (andCap) {
+            Measure.moveToPlane(plane, vA);
+            continue;
+          }
           // BC on side to keep
           iD = addVertexCopy(pts[0], vertexValues[iA]);  //AB
           iE = addVertexCopy(pts[1], vertexValues[iA]);  //AC
@@ -210,6 +220,10 @@ public class MeshSurface {
           addTriangleCheck(iD, iC, iE, 0, 0, 0);
           break;
         case 2:
+          if (andCap) {
+            Measure.moveToPlane(plane, vB);
+            continue;
+          }
           // AC on side to keep
           iD = addVertexCopy(pts[0], vertexValues[iB]);  //AB
           iE = addVertexCopy(pts[1], vertexValues[iB]);  //BC
@@ -217,6 +231,11 @@ public class MeshSurface {
           addTriangleCheck(iD, iE, iC, 0, 0, 0);
           break;
         case 3:
+          if (andCap) {
+            Measure.moveToPlane(plane, vA);
+            Measure.moveToPlane(plane, vB);
+            continue;
+          }
           //AB on side to toss
           iD = addVertexCopy(pts[0], vertexValues[iA]);  //AC
           iE = addVertexCopy(pts[1], vertexValues[iB]);  //BC
@@ -224,18 +243,32 @@ public class MeshSurface {
           break;
         case 4:
           // AB on side to keep
+          if (andCap) {
+            Measure.moveToPlane(plane, vC);
+            continue;
+          }
           iD = addVertexCopy(pts[0], vertexValues[iC]);  //AC
           iE = addVertexCopy(pts[1], vertexValues[iC]);  //BC
           addTriangleCheck(iA, iB, iD, 0, 0, 0);
           addTriangleCheck(iD, iB, iE, 0, 0, 0);
           break;
         case 5:
+          if (andCap) {
+            Measure.moveToPlane(plane, vA);
+            Measure.moveToPlane(plane, vC);
+            continue;
+          }
           //AC on side to toss
           iD = addVertexCopy(pts[0], vertexValues[iA]);  //AB
           iE = addVertexCopy(pts[1], vertexValues[iC]);  //BC
           addTriangleCheck(iD, iB, iE, 0, 0, 0);
           break;
         case 6:
+          if (andCap) {
+            Measure.moveToPlane(plane, vB);
+            Measure.moveToPlane(plane, vC);
+            continue;
+          }
           // BC on side to toss
           iD = addVertexCopy(pts[0], vertexValues[iB]); //AB
           iE = addVertexCopy(pts[1], vertexValues[iC]); //AC

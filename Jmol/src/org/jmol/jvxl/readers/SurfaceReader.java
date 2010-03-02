@@ -874,10 +874,10 @@ public abstract class SurfaceReader implements VertexDataServer {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
   }
   
-  public void slabIsosurface(Object slabbingObject) {
+  public void slabIsosurface(Object slabbingObject, boolean andCap) {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
-    meshData.slabPolygons(slabbingObject);
+    meshData.slabPolygons(slabbingObject, andCap);
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_VERTICES, null);
   }

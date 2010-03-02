@@ -452,8 +452,8 @@ public class SurfaceGenerator {
       return true;
     }
 
-    if ("cappingPlane" == propertyName) {
-      params.cappingPlane = (Point4f) value;
+    if ("cap" == propertyName) {
+      params.cappingObject = value;
       return true;
     }
 
@@ -989,7 +989,10 @@ public class SurfaceGenerator {
       surfaceReader.excludeMaximumSet();
 
     if (params.slabbingObject != null)
-      surfaceReader.slabIsosurface(params.slabbingObject);
+      surfaceReader.slabIsosurface(params.slabbingObject, false);
+
+    if (params.cappingObject != null)
+      surfaceReader.slabIsosurface(params.cappingObject, true);
 
     if (haveMeshDataServer)
       meshDataServer.notifySurfaceGenerationCompleted();

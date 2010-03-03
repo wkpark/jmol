@@ -5740,7 +5740,12 @@ public class ScriptEvaluator {
         }
         if (++nDistances > 2)
           error(ERROR_badArgumentCount);
-        distances[distanceCount++] = floatParameter(i);
+        float dist = floatParameter(i);
+        if (tokAt(i + 1) == Token.percent) {
+          dist = -dist / 100f;
+          i++;
+        }
+        distances[distanceCount++] = dist;
         break;
       case Token.bitset:
       case Token.expressionBegin:

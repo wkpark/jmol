@@ -330,10 +330,19 @@ abstract public class BondCollection extends AtomCollection {
             .getStrutDefaultRadius() * 2000) : defaultCovalentMad);
   }
 
-  protected int[] deleteConnections(float minDistance, float maxDistance, int order,
-                        BitSet bsA, BitSet bsB, boolean isBonds, 
-                        boolean matchNull, 
-                        float minDistanceSquared, float maxDistanceSquared) {
+  protected int[] deleteConnections(float minDistance, float maxDistance,
+                                    int order, BitSet bsA, BitSet bsB,
+                                    boolean isBonds, boolean matchNull,
+                                    float minDistanceSquared,
+                                    float maxDistanceSquared) {
+    boolean minDistanceIsFractionRadius = (minDistance < 0);
+    boolean maxDistanceIsFractionRadius = (maxDistance < 0);
+    float dAB = 0;
+    float dABcalc = 0;
+    if (minDistanceIsFractionRadius)
+      minDistance = -minDistance;
+    if (maxDistanceIsFractionRadius)
+      maxDistance = -maxDistance;
     BitSet bsDelete = new BitSet();
     int nDeleted = 0;
     int newOrder = order |= JmolConstants.BOND_NEW;
@@ -347,22 +356,30 @@ abstract public class BondCollection extends AtomCollection {
           && (bsA.get(atom1.index) && bsB.get(atom2.index) || bsA
               .get(atom2.index)
               && bsB.get(atom1.index)) || isBonds && bsA.get(i)) {
-        if (bond.atom1.isBonded(bond.atom2)) {
-          float distanceSquared = atom1.distanceSquared(atom2);
-          if (distanceSquared >= minDistanceSquared
-              && distanceSquared <= maxDistanceSquared
-              && (matchNull || newOrder == 
-                (bond.order & ~JmolConstants.BOND_SULFUR_MASK | JmolConstants.BOND_NEW)
-                || (order & bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)) {
-              bsDelete.set(i);
-              nDeleted++;
-            }
+        if (!atom1.isBonded(atom2))
+          continue;
+        float distanceSquared = atom1.distanceSquared(atom2);
+        if (minDistanceIsFractionRadius || maxDistanceIsFractionRadius) {
+          dAB = atom1.distance(atom2);
+          dABcalc = atom1.getBondingRadiusFloat()
+              + atom2.getBondingRadiusFloat();
+        }
+        if ((minDistanceIsFractionRadius ? dAB < dABcalc * minDistance
+            : distanceSquared < minDistanceSquared)
+            || (maxDistanceIsFractionRadius ? dAB > dABcalc * maxDistance
+                : distanceSquared > maxDistanceSquared))
+          continue;
+        if (matchNull
+            || newOrder == (bond.order & ~JmolConstants.BOND_SULFUR_MASK | JmolConstants.BOND_NEW)
+            || (order & bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
+          bsDelete.set(i);
+          nDeleted++;
         }
       }
     }
-    if (nDeleted > 0) 
+    if (nDeleted > 0)
       deleteBonds(bsDelete, false);
-    return new int[] {0, nDeleted};
+    return new int[] { 0, nDeleted };
   }
 
   public void deleteBonds(BitSet bsBond, boolean isFullModel) {

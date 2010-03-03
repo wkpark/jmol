@@ -2169,6 +2169,12 @@ abstract public class ModelCollection extends BondCollection {
     if (matchNull)
       order = JmolConstants.BOND_COVALENT_SINGLE; //default for setting
     defaultCovalentMad = viewer.getMadBond();
+    boolean minDistanceIsFractionRadius = (minDistance < 0);
+    boolean maxDistanceIsFractionRadius = (maxDistance < 0);
+    if (minDistanceIsFractionRadius)
+      minDistance = -minDistance;
+    if (maxDistanceIsFractionRadius)
+      maxDistance = -maxDistance;
     short mad = getDefaultMadFromOrder(order);
     int nNew = 0;
     int nModified = 0;
@@ -2176,6 +2182,8 @@ abstract public class ModelCollection extends BondCollection {
     int m = (isBonds ? 1 : atomCount);
     Atom atomA = null;
     Atom atomB = null;
+    float dAB = 0;
+    float dABcalc = 0;
     short newOrder = (short) (order | JmolConstants.BOND_NEW);
     for (int iA = bsA.nextSetBit(0); iA >= 0; iA = bsA.nextSetBit(iA + 1)) {
       if (isBonds) {
@@ -2204,9 +2212,15 @@ abstract public class ModelCollection extends BondCollection {
             && createOnly)
           continue;
         float distanceSquared = atomA.distanceSquared(atomB);
-        if (distanceSquared < minDistanceSquared
-            || distanceSquared > maxDistanceSquared)
-          continue;
+        if (minDistanceIsFractionRadius || maxDistanceIsFractionRadius) {
+          dAB = atomA.distance(atomB);
+          dABcalc = atomA.getBondingRadiusFloat() + atomB.getBondingRadiusFloat();
+        }
+        if ((minDistanceIsFractionRadius ? dAB < dABcalc * minDistance 
+                 : distanceSquared < minDistanceSquared)
+            || (maxDistanceIsFractionRadius ? dAB > dABcalc * maxDistance 
+                 : distanceSquared > maxDistanceSquared))
+          continue;       
         if (bondAB != null) {
           if (!identifyOnly && !matchAny) {
             bondAB.setOrder(order);

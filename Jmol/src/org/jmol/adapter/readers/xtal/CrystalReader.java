@@ -144,7 +144,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       return true;
     }
 
-    if (addVibrations && line.contains("* CALCULATION OF PHONON FREQUENCIES")) {
+    if (addVibrations && line.contains("FRQFRQFRQFRQFRQFRQFRQFRQ")) {
       readFrequencies();
       return true;
     }
@@ -396,14 +396,47 @@ public class CrystalReader extends AtomSetCollectionReader {
             - parseFloat(line.substring(12, 18));
   }
 
+  
   private float[] frequencies;
   private String[] data;
 
   private void readFrequencies() throws Exception {
+    discardLines(3);
+    readLine();
+    /*
+     * FREQUENCIES COMPUTED ON A FRAGMENT OF   36  ATOMS
+     *   2 (   8 O )     3 (   8 O )     4 (   8 O )    85 (   8 O )    86 (   8 O ) 
+     *  87(   8 O )    89(   6 C )    90(   8 O )    91(   8 O )    92(   1 H ) 
+     *  93(   1 H )    94(   6 C )    95(   1 H )    96(   8 O )    97(   1 H ) 
+     *  98(   8 O )    99(   6 C )   100(   8 O )   101(   8 O )   102(   1 H ) 
+     * 103(   1 H )   104(   6 C )   105(   1 H )   106(   8 O )   107(   8 O ) 
+     * 108(   1 H )   109(   6 C )   110(   1 H )   111(   8 O )   112(   8 O ) 
+     * 113(   1 H )   114(   6 C )   115(   1 H )   116(   8 O )   117(   8 O ) 
+     * 118(   1 H ) 
+     *INFORMATION **** INPFREQ ****  ANALYSIS OF THE VIBRATIONAL MODES
+     * 
+     */
+    int numAtomsFrag = 0;
+    boolean fragment = false;
+    if (line.contains("FRAGMENT")) {
+      fragment = true;
+      numAtomsFrag = parseInt(line.substring(39, 44));
+      int[] atomFrag = new int[numAtomsFrag];
+      String Sfrag = "";
+      while (readLine() != null && line.indexOf("INFORMATION **** INPFREQ") < 0)
+        Sfrag += line;
+      Sfrag = TextFormat.simpleReplace(Sfrag, "(", " (");
+      String[] tokens = getTokens(Sfrag);
+      for (int i = 0, pos = 0; i < numAtomsFrag; i++, pos += 5)
+        atomFrag[i] = parseInt(tokens[pos]);
+    }
+    
     discardLinesUntilContains("MODES         EIGV");
     readLine();
     Vector vData = new Vector();
     int freqAtomCount = atomCount;
+    if(fragment == true)
+      freqAtomCount = numAtomsFrag;
     while (readLine() != null && line.length() > 0) {
       int i0 = parseInt(line.substring(1, 5));
       int i1 = parseInt(line.substring(6, 10));
@@ -422,10 +455,9 @@ public class CrystalReader extends AtomSetCollectionReader {
       for (int i = i0; i <= i1; i++)
         vData.add(data);
     }
-
+    
     discardLinesUntilContains("NORMAL MODES NORMALIZED TO CLASSICAL AMPLITUDES");
     readLine();
-
     int lastAtomCount = -1;
     while (readLine() != null && line.startsWith(" FREQ(CM**-1)")) {
       int frequencyCount = 0;
@@ -456,6 +488,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       readLine();
     }
   }
+  
 
   private void setFreqValue(int i) {
     String activity = ", IR: " + data[2] + ", Ram. " + data[3];

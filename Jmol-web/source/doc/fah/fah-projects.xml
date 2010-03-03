@@ -8320,6 +8320,11 @@
     server="171.64.65.60" atoms="15097" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz"/>
 
+  <!-- Projects 6500 to 6599 -->
+  <fah_proj number="6500" name="p6500_UBIQUITIN MODEL250 in water" public="n"
+    server="169.230.26.30" atoms="19252" preferred="43" deadline="65"
+    credit="237" frames="100" code="A0" contact="lan"/>
+
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"
     server="171.64.122.137" atoms="576" preferred="2" deadline="3"
@@ -8398,9 +8403,9 @@
   <fah_proj number="10006" name="p10006" public="y" file="xyz"
     server="129.74.85.48" atoms="544" preferred="4.6" deadline="34.48"
     credit="126.41" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10007" name="p10007" public="y"
+  <fah_proj number="10007" name="p10007" public="y" file="xyz"
     server="129.74.85.48" atoms="544" preferred="4.6" deadline="34.48"
-    credit="126.41" frames="100" code="PM" contact="abdulwahidc"/>
+    credit="126.41" frames="100" code="PM" contact="abdulwahidc" contrib="Igor Miranda"/>
   <fah_proj number="10008" name="p10008" public="y" file="xyz"
     server="129.74.85.48" atoms="544" preferred="4.54" deadline="34.05"
     credit="124.85" frames="100" code="PM" contact="abdulwahidc"/>

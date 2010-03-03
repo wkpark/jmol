@@ -46,6 +46,8 @@ public class Escape {
       return escape((String[]) x, true);
     if (x instanceof int[]) 
       return toJSON(null, x);
+    if (x instanceof Point3f[])
+      return escapeArray(x);
     return x.toString();
   }
 

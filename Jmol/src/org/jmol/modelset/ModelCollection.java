@@ -139,11 +139,6 @@ abstract public class ModelCollection extends BondCollection {
         ? unitCells[modelIndex] : null);
   }
 
-  public Point4f[] getUnitCellFaces(int modelIndex) {
-    return (unitCells != null && modelIndex >= 0 && modelIndex < unitCells.length 
-        ? unitCells[modelIndex].getFaces() : null);
-  }
-
   /**
    * 
    * @param type
@@ -307,10 +302,6 @@ abstract public class ModelCollection extends BondCollection {
 
   public Point3fi[] getBboxVertices() {
     return boxInfo.getBboxVertices();
-  }
-
-  public Point4f[] getBboxFaces() {
-    return boxInfo.getBboxFaces();
   }
 
   public Hashtable getBoundBoxInfo() {

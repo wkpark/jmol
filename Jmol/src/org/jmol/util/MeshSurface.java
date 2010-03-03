@@ -8,6 +8,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.modelset.BoxInfo;
 
 public class MeshSurface {
 
@@ -145,8 +146,8 @@ public class MeshSurface {
       getIntersection((Point4f) slabbingObject, null, andCap);
       return;
     }
-    if (slabbingObject instanceof Point4f[]) {
-      Point4f[] faces = (Point4f[]) slabbingObject;
+    if (slabbingObject instanceof Point3f[]) {
+      Point4f[] faces = BoxInfo.getFacesFromCriticalPoints((Point3f[]) slabbingObject);
       for (int i = 0; i < faces.length; i++)
         getIntersection((Point4f) faces[i], null, andCap);
       return; 

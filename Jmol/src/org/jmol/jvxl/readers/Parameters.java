@@ -255,8 +255,8 @@ public class Parameters {
   boolean isCavity;
   Boolean pocket; //three states: TRUE, FALSE, and NULL
   int minSet;
-  Object cappingObject;
-  Object slabbingObject;
+  public Object cappingObject;
+  public Object slabbingObject;
   float slabPlaneOffset = Float.NaN;
 
   float[] theProperty;
@@ -385,8 +385,8 @@ public class Parameters {
     cutoff = Float.MIN_VALUE;
     isCutoffAbsolute = false;
     isSilent = !logMessages;
-    //script = " center " + Escape.escape(center) + " SPHERE "
-      //   + radius + ";";
+    script = " center " + Escape.escape(center) + (Float.isNaN(scale) ? "" : " scale " + scale) 
+        + " SPHERE " + radius + ";";
   }
   
   void setEllipsoid(Point4f v) {
@@ -428,7 +428,7 @@ public class Parameters {
         cutoff = cutoff * cutoff;
     }
     isSilent = !logMessages;
-    script = " center " + Escape.escape(center)
+    script = "scale " + scale + " center " + Escape.escape(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale) + " LOBE {" + v.x + " "
         + v.y + " " + v.z + " " + v.w + "};";
   }

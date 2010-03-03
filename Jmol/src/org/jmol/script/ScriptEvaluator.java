@@ -40,6 +40,7 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.MinimizerInterface;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
@@ -12539,7 +12540,7 @@ public class ScriptEvaluator {
     if (tokAt(1) == Token.list
         && listIsosurface(JmolConstants.SHAPE_LCAOCARTOON))
       return;
-    setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "init", null);
+    setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "init", fullCommand);  
     if (statementLength == 1) {
       setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "lcaoID", null);
       return;
@@ -12553,22 +12554,8 @@ public class ScriptEvaluator {
       case Token.cap:
       case Token.slab:
         propertyName = (String) theToken.value;
-        if (tokAt(i + 1) == Token.boundbox) {
-          propertyValue = viewer.getBoundBoxFaces();
-          i++;
-          break;
-        } 
-        if (tokAt(i + 1) == Token.unitcell) {
-          propertyValue = viewer.getCurrentUnitCellFaces();
-          i++;
-          break;
-        }
-        Point4f plane = planeParameter(++i);
+        propertyValue = getCapSlabObject(i);
         i = iToken;
-        float off = (isFloatParameter(i + 1) ? floatParameter(++i) : Float.NaN);
-        if (!Float.isNaN(off))
-          plane.w -= off;
-        propertyValue = plane;
         break;
       case Token.center:
         // serialized lcaoCartoon in isosurface format
@@ -12707,6 +12694,27 @@ public class ScriptEvaluator {
           propertyValue);
     }
     setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "clear", null);
+  }
+
+  private Object getCapSlabObject(int i) throws ScriptException {
+    Object propertyValue = null;
+    if (tokAt(i + 1) == Token.boundbox) {
+      propertyValue = BoxInfo.getCriticalPoints(viewer.getBoundBoxVertices(), null);
+      iToken = i + 1;
+    } else if (tokAt(i + 1) == Token.unitcell) {
+      SymmetryInterface unitCell = viewer.getCurrentUnitCell();
+      if (unitCell == null)
+        error(ERROR_invalidArgument);
+      propertyValue = BoxInfo.getCriticalPoints(unitCell.getUnitCellVertices(), unitCell.getCartesianOffset());
+      iToken = i + 1;
+    } else {
+      Point4f plane = planeParameter(++i);
+      float off = (isFloatParameter(iToken + 1) ? floatParameter(++iToken) : Float.NaN);
+      if (!Float.isNaN(off))
+        plane.w -= off;
+      propertyValue = plane;
+    }
+    return propertyValue;
   }
 
   private boolean mo(boolean isInitOnly) throws ScriptException {
@@ -13400,22 +13408,8 @@ public class ScriptEvaluator {
       case Token.cap:
       case Token.slab:
         propertyName = (String) theToken.value;
-        if (tokAt(i + 1) == Token.boundbox) {
-          propertyValue = viewer.getBoundBoxFaces();
-          i++;
-          break;
-        } 
-        if (tokAt(i + 1) == Token.unitcell) {
-          propertyValue = viewer.getCurrentUnitCellFaces();
-          i++;
-          break;
-        }
-        Point4f plane = planeParameter(++i);
+        propertyValue = getCapSlabObject(i);
         i = iToken;
-        float off = (isFloatParameter(i + 1) ? floatParameter(++i) : Float.NaN);
-        if (!Float.isNaN(off))
-          plane.w -= off;
-        propertyValue = plane;
         break;
       case Token.cavity:
         if (!isIsosurface)

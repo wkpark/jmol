@@ -59,6 +59,7 @@ public class LcaoCartoon extends Isosurface {
   boolean isRadical;
   private Object cappingObject;
   private Object slabbingObject;
+  private String fullCommand;
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -74,6 +75,7 @@ public class LcaoCartoon extends Isosurface {
       isMolecular = isLonePair = isRadical = false;
       thisType = null;
       rotationAxis = null;
+      fullCommand = (String) value;
       // overide bitset selection
       super.setProperty("init", null, null);
       return;
@@ -192,11 +194,18 @@ public class LcaoCartoon extends Isosurface {
       cappingObject = value;
       return;
     }
+    
+    //from the state:
+    if ("lobe" == propertyName || "sphere" == propertyName) {
+      getCapSlabInfo(fullCommand);
+    }
+
     super.setProperty(propertyName, value, bs);
     
     //from the state:
-    if (setInfo || "lobe" == propertyName || "sphere" == propertyName)
+    if (setInfo || "lobe" == propertyName || "sphere" == propertyName) {
       setScriptInfo();
+    }
   }
 
   private void setLcaoOn(boolean TF) {

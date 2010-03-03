@@ -30,7 +30,6 @@ import java.util.Hashtable;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.SymmetryInterface;
@@ -316,10 +315,5 @@ public class Symmetry implements SymmetryInterface {
   public boolean isPolymer() {
     return (unitCell == null ? false : unitCell.isPolymer());
   }
-
-  public Point4f[] getFaces() {
-    return (unitCell == null ? null : unitCell.getFaces());
-  }
-
 
 }  

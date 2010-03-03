@@ -554,6 +554,10 @@ public abstract class MeshCollection extends Shape {
       cmd += "# ID=\"" + mesh.thisID + "\"";
     if (mesh.modelIndex >= 0)
       cmd += "# MODEL({" + mesh.modelIndex + "})";
+    if (mesh.cappingObject != null)
+      cmd += "# CAP=\"" + Escape.escape(mesh.cappingObject) + "\"";
+    if (mesh.slabbingObject != null)
+      cmd += "# SLAB=\"" + Escape.escape(mesh.slabbingObject) + "\"";
     if (mesh.linkedMesh != null)
       cmd += " LINK";
     if (mesh.data1 != null)

@@ -45,7 +45,7 @@ public class BoxInfo {
   private final Point3f bbCenter = new Point3f();
   private final Vector3f bbVector = new Vector3f(-1, -1, -1);
   private final Point3fi[] bbVertices = new Point3fi[8];
-  private Point4f[] bbFaces;
+
   {
     for (int i = 8; --i >= 0;)
       bbVertices[i] = new Point3fi();
@@ -111,7 +111,7 @@ public class BoxInfo {
     }
   }
 
-  public static Point4f[] getFaces(Point3f[] vertices, Point3f offset) {
+  public static Point4f[] getFacesFromCriticalPoints(Point3f[] points) {
     Point4f[] faces = new Point4f[6];
     Vector3f vNorm = new Vector3f();
     Vector3f vAB = new Vector3f();
@@ -119,17 +119,22 @@ public class BoxInfo {
     Point3f va = new Point3f();
     Point3f vb = new Point3f();
     Point3f vc = new Point3f();
+    
+    Point3f[] vertices = new Point3f[8];
+    for (int i = 0; i < 8; i++) {
+      vertices[i] = new Point3f(points[0]);
+      if ((i & 1) == 1)
+        vertices[i].add(points[1]);
+      if ((i & 2) == 2)
+        vertices[i].add(points[2]);
+      if ((i & 4) == 4)
+        vertices[i].add(points[3]);
+    }
 
     for (int i = 0; i < 6; i++) {
       va.set(vertices[facePoints[i].x]);
       vb.set(vertices[facePoints[i].y]);
       vc.set(vertices[facePoints[i].z]);
-      if (offset != null)
-        va.add(offset);
-      if (offset != null)
-        vb.add(offset);
-      if (offset != null)
-        vc.add(offset);
       faces[i] = Measure
           .getPlaneThroughPoints(va, vb, vc, vNorm, vAB, vAC);
     }
@@ -189,6 +194,19 @@ public class BoxInfo {
     new Point3i(0, 1, 1)  //7 pt + z + 1 
   };
 
+  public final static Point3f[] getCriticalPoints(Point3f[] bbVertices, Point3f offset) {
+    Point3f center = new Point3f(bbVertices[0]);
+    Point3f a = new Point3f(bbVertices[1]);
+    Point3f b = new Point3f(bbVertices[2]);
+    Point3f c = new Point3f(bbVertices[4]);
+    a.sub(center);
+    b.sub(center);
+    c.sub(center);
+    if (offset != null)
+      center.add(offset);
+    return new Point3f[] { center, a, b, c };
+  }
+  
   private final static Point3f[] unitBboxPoints = new Point3f[8];
   { 
     for (int i = 0; i < 8; i++) {
@@ -213,12 +231,6 @@ public class BoxInfo {
     return bbVertices;
   }
   
-  public Point4f[] getBboxFaces() {
-    if (bbFaces == null)
-      bbFaces = getFaces(bbVertices, null);
-    return bbFaces;
-  }
-
   Hashtable getBoundBoxInfo() {
     Hashtable info = new Hashtable();
     info.put("center", new Point3f(bbCenter));
@@ -296,5 +308,7 @@ public class BoxInfo {
        && pt.y >= bbCorner0.y && pt.y <= bbCorner1.y
        && pt.z >= bbCorner0.z && pt.z <= bbCorner1.z); 
   }
+
+
 
 }

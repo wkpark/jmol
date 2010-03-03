@@ -123,6 +123,8 @@ public class Mesh extends MeshSurface {
     polygonIndexes = null;
     data1 = null;
     data2 = null;
+    slabbingObject = null;
+    cappingObject = null;
     
     this.meshType = meshType;
   }
@@ -189,6 +191,8 @@ public class Mesh extends MeshSurface {
   public Vector data2;
   public Vector xmlProperties;
   public boolean colorDensity;
+  public Object cappingObject;
+  public Object slabbingObject;
   
   
   protected void sumVertexNormals(Point3f[] vertices, Vector3f[] normals) {

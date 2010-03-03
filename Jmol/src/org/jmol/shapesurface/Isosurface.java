@@ -593,6 +593,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     getModelIndex(script);
     if (script == null)
       return false;
+    getCapSlabInfo(script);
     int i = script.indexOf("# ({");
     if (i < 0)
       return false;
@@ -624,6 +625,33 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         bsCmd[2] = bs;
     }
     return true;
+  }
+
+  protected void getCapSlabInfo(String script) {
+    int i = script.indexOf("# SLAB=");
+    if (i >= 0)
+      sg.setParameter("slab", getCapSlabObject(i, script));
+    i = script.indexOf("# CAP=");
+    if (i >= 0)
+      sg.setParameter("cap", getCapSlabObject(i, script));
+  }
+
+  private Object getCapSlabObject(int i, String script) {
+    try {
+    String s = Parser.getNextQuotedString(script, i);
+    if (s.indexOf("array") == 0) {
+      String[] pts = TextFormat.split(s.substring(6, s.length() -1), ",");
+      return new Point3f[] {
+          (Point3f) Escape.unescapePoint(pts[0]), 
+          (Point3f) Escape.unescapePoint(pts[1]), 
+          (Point3f) Escape.unescapePoint(pts[2]), 
+          (Point3f) Escape.unescapePoint(pts[3])};
+    }
+    return Escape.unescapePoint(s); // Point4f
+    }
+    catch (Exception e) {
+      return null;
+    }
   }
 
   private void initializeIsosurface() {
@@ -983,6 +1011,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.dataType = sg.getParams().dataType;
     thisMesh.scale3d = sg.getParams().scale3d;
     thisMesh.bitsets = null;
+    thisMesh.slabbingObject = sg.getParams().slabbingObject;
+    thisMesh.cappingObject = sg.getParams().cappingObject;
     if (script != null) {
       if (script.charAt(0) == ' ') { // lobe only
         script = myType + " ID " + Escape.escape(thisMesh.thisID) + script;

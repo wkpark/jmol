@@ -28,6 +28,7 @@ package org.jmol.shapesurface;
 import java.util.BitSet;
 import javax.vecmath.Vector3f;
 
+import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 
@@ -263,6 +264,7 @@ public class LcaoCartoon extends Isosurface {
 
   private void createLcaoCartoon(int iAtom) {
     String id = getID(lcaoID, iAtom);
+    boolean isCpk = (thisType.equals("cpk"));
     for (int i = meshCount; --i >= 0;)
       if (meshes[i].thisID.indexOf(id) == 0)
         deleteMesh(i);
@@ -271,7 +273,9 @@ public class LcaoCartoon extends Isosurface {
     //System.out.println("lcaocartoon: " + id);
     if (lcaoScale != null)
       super.setProperty("scale", lcaoScale, null);
-    if (lcaoColorNeg != null) {
+    if (isCpk) {
+      super.setProperty("colorRGB", new Integer(viewer.getAtomArgb(iAtom)), null);
+    } else if (lcaoColorNeg != null) {
       super.setProperty("colorRGB", lcaoColorNeg, null);
       super.setProperty("colorRGB", lcaoColorPos, null);
     }
@@ -299,14 +303,19 @@ public class LcaoCartoon extends Isosurface {
       if (thisType.indexOf("-") == 0)
         axes[0].scale(-1);
     }
-    if (isMolecular
+    if (isMolecular || isCpk
         || thisType.equalsIgnoreCase("s")
-        || thisType.equalsIgnoreCase("cpk")
         || viewer.getHybridizationAndAxes(iAtom, axes[0], axes[1], thisType,
             true) != null) {
       super.setProperty((isRadical ? "radical" : isLonePair ? "lonePair" : "lcaoCartoon"), axes, null);
     }
-    if (isTranslucent)
+    if (isCpk) {
+      short colix = viewer.getModelSet().getAtomColix(iAtom);
+      if (Graphics3D.isColixTranslucent(colix)) {
+        super.setProperty("translucentLevel", new Float(Graphics3D.translucencyFractionalFromColix(colix)), null);
+        super.setProperty("translucency", "translucent", null);
+      }
+    } else if (isTranslucent)
       for (int i = meshCount; --i >= 0;)
         if (meshes[i].thisID.indexOf(id) == 0)
           meshes[i].setTranslucent(true, translucentLevel);

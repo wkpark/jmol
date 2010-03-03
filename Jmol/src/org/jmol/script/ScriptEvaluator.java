@@ -12554,7 +12554,10 @@ public class ScriptEvaluator {
       case Token.cap:
       case Token.slab:
         propertyName = (String) theToken.value;
-        propertyValue = getCapSlabObject(i);
+        if (tokAt(i + 1) == Token.off)
+          iToken = i + 1;
+        else
+          propertyValue = getCapSlabObject(i);
         i = iToken;
         break;
       case Token.center:
@@ -12626,8 +12629,11 @@ public class ScriptEvaluator {
         i = iToken;
         idSeen = true;
         continue;
+      case Token.spacefill:
       case Token.string:
-        propertyValue = stringParameter(i);
+        propertyValue = parameterAsString(i).toLowerCase();
+        if (propertyValue.equals("spacefill"))
+          propertyValue = "cpk";
         propertyName = "create";
         if (optParameterAsString(i + 1).equalsIgnoreCase("molecular")) {
           i++;
@@ -12643,6 +12649,8 @@ public class ScriptEvaluator {
         } else {
           propertyName = "selectType";
           propertyValue = parameterAsString(++i);
+          if (propertyValue.equals("spacefill"))
+            propertyValue = "cpk";
         }
         break;
       case Token.scale:

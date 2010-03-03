@@ -77,7 +77,6 @@ public class CrystalReader extends AtomSetCollectionReader {
   private boolean haveCharges = false;
   private boolean addVibrations = false;
   private int atomCount;
-  private int numAtomsFrag = 0;
   private int[] atomFrag;
 
   protected void initializeReader() throws Exception {
@@ -146,7 +145,6 @@ public class CrystalReader extends AtomSetCollectionReader {
     }
 
     if (line.startsWith(" FREQUENCIES COMPUTED ON A FRAGMENT")) {
-      numAtomsFrag = parseInt(line.substring(39, 44));
       readFragments();
       return true;
     }
@@ -419,6 +417,9 @@ public class CrystalReader extends AtomSetCollectionReader {
      *INFORMATION **** INPFREQ ****  ANALYSIS OF THE VIBRATIONAL MODES
      * 
      */
+    int numAtomsFrag = parseInt(line.substring(39, 44));
+    if (numAtomsFrag < 0)
+      return;
     atomFrag = new int[numAtomsFrag];
     String Sfrag = "";
     while (readLine() != null && line.indexOf("INFORMATION **** INPFREQ") < 0)
@@ -426,7 +427,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     Sfrag = TextFormat.simpleReplace(Sfrag, "(", " (");
     String[] tokens = getTokens(Sfrag);
     for (int i = 0, pos = 0; i < numAtomsFrag; i++, pos += 5)
-      atomFrag[i] = parseInt(tokens[pos]);
+      atomFrag[i] = parseInt(tokens[pos]) - 1;
   }
 
   private float[] frequencies;
@@ -437,8 +438,6 @@ public class CrystalReader extends AtomSetCollectionReader {
     readLine();
     Vector vData = new Vector();
     int freqAtomCount = atomCount;
-    if (numAtomsFrag > 0)
-      freqAtomCount = numAtomsFrag;
     while (readLine() != null && line.length() > 0) {
       int i0 = parseInt(line.substring(1, 5));
       int i1 = parseInt(line.substring(6, 10));
@@ -475,8 +474,6 @@ public class CrystalReader extends AtomSetCollectionReader {
       }
       boolean[] ignore = new boolean[frequencyCount];
       int iAtom0 = 0;
-      if (numAtomsFrag > 0)
-        iAtom0 = atomFrag[0];
       for (int i = 0; i < frequencyCount; i++) {
         data = (String[]) vData.get(vibrationNumber);
         ignore[i] = (!doGetVibration(++vibrationNumber) || data == null);
@@ -489,7 +486,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       }
       readLine();
       fillFrequencyData(iAtom0, freqAtomCount, lastAtomCount, ignore, false,
-          14, 10);
+          14, 10, atomFrag);
       readLine();
     }
   }

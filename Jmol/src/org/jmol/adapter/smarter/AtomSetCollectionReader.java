@@ -809,14 +809,16 @@ public abstract class AtomSetCollectionReader {
                                    boolean[] ignore, boolean isWide,
                                    int col0, int colWidth)
                                                      throws Exception {
-    fillFrequencyData(iAtom0, atomCount, atomCount, ignore, isWide, col0, colWidth);
+    fillFrequencyData(iAtom0, atomCount, atomCount, ignore, isWide, col0, colWidth, null);
   }
 
     protected void fillFrequencyData(int iAtom0, int atomCount, int lastAtomCount, 
                                    boolean[] ignore, boolean isWide,
-                                   int col0, int colWidth)
+                                   int col0, int colWidth, int[] atomIndexes)
                                                      throws Exception {
     boolean withSymmetry = (lastAtomCount != atomCount);
+    if (atomIndexes != null)
+      atomCount = atomIndexes.length;
     int nLines = (isWide ? atomCount : atomCount * 3);
     int nFreq = ignore.length;
     String[][] data = new String[nLines][];
@@ -836,7 +838,7 @@ public abstract class AtomSetCollectionReader {
         float vz = parseFloat(isWide ? values[++dataPt] : valuesZ[dataPt]);
         if (ignore[j])
           continue;
-        int iAtom = iAtom0 + lastAtomCount * j + atomPt;
+        int iAtom = iAtom0 + lastAtomCount * j + (atomIndexes == null ? atomPt : atomIndexes[atomPt]);
         if (Logger.debugging)
           Logger.debug("vib " + iAtom + "/" + j + ": " + vx + " " + vy + " " + vz);
         atomSetCollection.addVibrationVector(iAtom, vx, vy, vz, withSymmetry);

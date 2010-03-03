@@ -41,7 +41,6 @@ public class MeshSurface {
     else if (vertexCount == vertices.length)
       vertices = (Point3f[]) ArrayUtil.doubleLength(vertices);
     vertices[vertexCount] = new Point3f(vertex);
-    //Logger.debug("mesh.addVertexCopy " + vertexCount + vertex +vertices[vertexCount]);
     return vertexCount++;
   }
 
@@ -227,7 +226,7 @@ public class MeshSurface {
           addTriangleCheck(iE, iC, iD, 0, 0, 0);
           break;
         case 4:
-          // AB on side to keep
+          //AB on side to keep
           iD = addVertexCopy(pts[1], vertexValues[iC]);  //BC
           iE = addVertexCopy(pts[0], vertexValues[iC]);  //AC
           addTriangleCheck(iA, iB, iE, 0, 0, 0);
@@ -272,8 +271,12 @@ public class MeshSurface {
     return false;
   }
 
-  private Point3f interpolatePoint(Point3f v1, Point3f v2, float d1, float d2) {
+  private static Point3f interpolatePoint(Point3f v1, Point3f v2, float d1, float d2) {
     float f = d1 / (d1 + d2);
+    if (f < 0.0001)
+      f = 0;
+    else if (f > 0.9999)
+      f = 1;
     return new Point3f(v1.x + (v2.x - v1.x) * f, 
         v1.y + (v2.y - v1.y) * f, 
         v1.z + (v2.z - v1.z) * f);    

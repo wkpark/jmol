@@ -87,6 +87,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     setFractionalCoordinates(readHeader());
   }
 
+  boolean iHaveDesiredModel;
   protected boolean checkLine() throws Exception {
     // starting point for any calculation is the definition of the lattice
     // parameters similar to the "data" statement of a CIF file
@@ -94,12 +95,13 @@ public class CrystalReader extends AtomSetCollectionReader {
         && (isPrimitive
             && (line.contains("- PRIMITIVE") || line.contains("- BOHR")) || !isPrimitive
             && line.contains("- CONVENTIONAL"))) {
-      if (doneReadingModels()) {
+      if (iHaveDesiredModel) {
         continuing = false;
         return false;
       }
       if (!isPrimitive || doGetModel(++modelNumber)) {
         readCellParams();
+        iHaveDesiredModel = checkLastModel();
         doReadAtoms = true;
       } else {
         doReadAtoms = false;

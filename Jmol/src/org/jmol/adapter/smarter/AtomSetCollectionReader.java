@@ -435,16 +435,6 @@ public abstract class AtomSetCollectionReader {
     return (desiredModelNumber > 0 || modelNumber >= lastModelNumber);
   }
   
-  /**
-   * before reading a model: Q: Has the last model already been read?
-   * 
-   * @return Yes/No
-   */
-  public boolean doneReadingModels() {
-    return (desiredModelNumber > 0 && desiredModelNumber == modelNumber 
-        || modelNumber == lastModelNumber);
-  }
-
   public boolean doGetVibration(int vibrationNumber) {
     // vibrationNumber is 1-based
   return (desiredVibrationNumber <= 0 || vibrationNumber == desiredVibrationNumber);
@@ -747,43 +737,15 @@ public abstract class AtomSetCollectionReader {
     return JmolAdapter.getElementSymbol(elementNumber);
   }
   
-  protected static String deducePdbElementSymbol(boolean isHetero, String XX,
-                                           String group3) {
-    // short of having an entire table,
-    int i = XX.indexOf('\0');
-    String atomType = null;
-    if (i >= 0) {
-      atomType = XX.substring(i + 1);
-      XX = XX.substring(0, i);
-      if (atomType != null && atomType.length() == 1)
-        return atomType;
-    }
-    if (XX.equalsIgnoreCase(group3))
-      return XX; // Cd Mg etc.
-    int len = XX.length();
-    char ch1 = ' ';
-    i = 0;
-    while (i < len && (ch1 = XX.charAt(i++)) <= '9') {
-      // find first nonnumeric letter
-    }
-
-    char ch2 = (i < len ? XX.charAt(i) : ' ');
-    String full = group3 + "." + ch1 + ch2;
-    // Cd Nd Ne are not in complex hetero; Ca is in these:
-    if (("OEC.CA ICA.CA OC1.CA OC2.CA OC4.CA").indexOf(full) >= 0)
-      return "Ca";
-    if (XX.indexOf("'") > 0 || XX.indexOf("*") >= 0 || "HCNO".indexOf(ch1) >= 0
-        && ch2 <= 'H' || XX.startsWith("CM"))
-      return "" + ch1;
-    if (isHetero && Atom.isValidElementSymbolNoCaseSecondChar(ch1, ch2))
-      return ("" + ch1 + ch2).trim();
-    if (Atom.isValidElementSymbol(ch1))
-      return "" + ch1;
-    if (Atom.isValidElementSymbol(ch2))
-      return "" + ch2;
-    return "Xx";
-  }
-
+  /**
+   * fills an array with a predefined number of lines of data that is 
+   * arranged in fixed FORTRAN-like column format
+   *   
+   * @param data
+   * @param col0
+   * @param colWidth
+   * @throws Exception
+   */
   protected void fillDataBlock(String[][] data, int col0, int colWidth) throws Exception {
     if (colWidth == 0) {
       fillDataBlock(data);
@@ -799,6 +761,13 @@ public abstract class AtomSetCollectionReader {
     }
   }
   
+  /**
+   * fills an array with a pre-defined number of lines of token data,
+   * skipping blank lines in the process
+   * 
+   * @param data
+   * @throws Exception
+   */
   protected void fillDataBlock(String[][] data) throws Exception {
     int nLines = data.length;
     for (int i = 0; i < nLines; i++)

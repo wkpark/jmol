@@ -180,8 +180,13 @@ public class CrystalReader extends AtomSetCollectionReader {
   private void readVolumePrimCell() {
     // line looks like:  PRIMITIVE CELL - CENTRING CODE 1/0 VOLUME=   113.054442 - DENSITY 2.642 g/cm^3
     String[] tokens = getTokens(line);
-    String volumePrim = tokens[8];
-    String densityPrim = tokens[11];
+    String volumePrim = tokens[7];
+    // this is to avoid misreading 
+    //PRIMITIVE CELL - CENTRING CODE 5/0 VOLUME=    30.176529 - DENSITY11.444 g/cm^3
+    if (tokens[9].length() > 7) {
+      line = TextFormat.simpleReplace(line, "DENSITY", "DENSITY ");
+    }
+    String densityPrim = tokens[10];
     atomSetCollection.setAtomSetAuxiliaryProperty("volumePrimitive", TextFormat
         .formatDecimal(parseFloat(volumePrim), 3));
     atomSetCollection.setAtomSetAuxiliaryProperty("densityPrimitive",

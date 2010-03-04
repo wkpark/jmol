@@ -805,18 +805,38 @@ public abstract class AtomSetCollectionReader {
       data[i] = getTokens(discardLinesUntilNonBlank());
   }
 
-  protected void fillFrequencyData(int iAtom0, int atomCount,  
-                                   boolean[] ignore, boolean isWide,
-                                   int col0, int colWidth)
-                                                     throws Exception {
-    fillFrequencyData(iAtom0, atomCount, atomCount, ignore, isWide, col0, colWidth, null);
-  }
-
-    protected void fillFrequencyData(int iAtom0, int atomCount, int lastAtomCount, 
+  /**
+   * Extracts a block of frequency data from a file. This block may be of two types --
+   * either X Y Z across a row or each of X Y Z on a separate line. Data is presumed
+   * to be in fixed FORTRAN-like column format, not space-separated columns. 
+   * 
+   * @param iAtom0
+   *            the first atom to be assigned a frequency
+   * @param atomCount
+   *            the number of atoms to be assigned
+   * @param modelAtomCount
+   *            the number of atoms in each model
+   * @param ignore
+   *            the frequencies to ignore because the user has selected
+   *            only certain vibrations to be read or for whatever reason; 
+   *            length serves to set the number of frequencies to be read
+   * @param isWide
+   *            when TRUE, this is a table that has X Y Z for each mode within the same row;
+   *            when FALSE, this is a table that has X Y Z for each mode on a separate line.
+   * @param col0
+   *            the column in which data starts 
+   * @param colWidth
+   *            the width of the data columns
+   * @param atomIndexes
+   *            an array either null or indicating exactly which atoms get the frequencies
+   *            (used by CrystalReader)
+   * @throws Exception
+   */
+  protected void fillFrequencyData(int iAtom0, int atomCount, int modelAtomCount, 
                                    boolean[] ignore, boolean isWide,
                                    int col0, int colWidth, int[] atomIndexes)
                                                      throws Exception {
-    boolean withSymmetry = (lastAtomCount != atomCount);
+    boolean withSymmetry = (modelAtomCount != atomCount);
     if (atomIndexes != null)
       atomCount = atomIndexes.length;
     int nLines = (isWide ? atomCount : atomCount * 3);
@@ -838,7 +858,7 @@ public abstract class AtomSetCollectionReader {
         float vz = parseFloat(isWide ? values[++dataPt] : valuesZ[dataPt]);
         if (ignore[j])
           continue;
-        int iAtom = iAtom0 + lastAtomCount * j + (atomIndexes == null ? atomPt : atomIndexes[atomPt]);
+        int iAtom = iAtom0 + modelAtomCount * j + (atomIndexes == null ? atomPt : atomIndexes[atomPt]);
         if (Logger.debugging)
           Logger.debug("vib " + iAtom + "/" + j + ": " + vx + " " + vy + " " + vz);
         atomSetCollection.addVibrationVector(iAtom, vx, vy, vz, withSymmetry);

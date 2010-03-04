@@ -202,7 +202,7 @@ public class QchemReader extends MOReader {
 
       // position to start reading the displacement vectors
       discardLinesUntilStartsWith("               X");
-      fillFrequencyData(iAtom0, atomCount, ignore, true, 0, 0);
+      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 0, 0, null);
       discardLinesUntilBlank();
     }
   }

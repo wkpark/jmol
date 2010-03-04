@@ -445,7 +445,7 @@ public class NWChemReader extends MOReader {
       }
       firstTime = false;
       discardLines(1);
-      fillFrequencyData(iAtom0, atomCount, ignore, false, 0, 0);
+      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null);
       discardLines(3);
     }
 

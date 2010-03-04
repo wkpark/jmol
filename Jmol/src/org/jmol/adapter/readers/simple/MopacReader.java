@@ -225,7 +225,7 @@ void processAtomicCharges() throws Exception {
           atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
               "Frequencies");
         }
-        fillFrequencyData(iAtom0, atomCount, ignore, false, 0, 0);
+        fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null);
       }
   }
 }

@@ -527,7 +527,7 @@ but:
             SmarterJmolAdapter.PATH_SEPARATOR+"Frequencies");
       }
       discardLinesUntilContains(" AN ");
-      fillFrequencyData(iAtom0, atomCount, ignore, true, 0, 0);
+      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 0, 0, null);
     }
   }
   

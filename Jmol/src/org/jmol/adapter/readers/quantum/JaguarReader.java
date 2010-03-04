@@ -383,7 +383,7 @@ public class JaguarReader extends MOReader {
           atomSetCollection.setAtomSetProperty("IRIntensity",
               intensities[i + 1] + " km/mol");
       }
-      fillFrequencyData(iAtom0, atomCount, ignore, false, 0, 0);
+      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null);
       readLine();
       readLine();
     }

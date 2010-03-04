@@ -47,7 +47,7 @@ import org.jmol.adapter.smarter.*;
  * these orbitals are interspersed -- all orbital values are
  * given together for each coordinate point.
  * 
- * also used for JVXL and JVXL+ file format
+ * also used for older JVXL and JVXL+ file format
  * 
  */
 

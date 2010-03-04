@@ -87,7 +87,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     setFractionalCoordinates(readHeader());
   }
 
-  boolean iHaveDesiredModel;
+ // boolean iHaveDesiredModel;
   protected boolean checkLine() throws Exception {
     // starting point for any calculation is the definition of the lattice
     // parameters similar to the "data" statement of a CIF file
@@ -95,13 +95,13 @@ public class CrystalReader extends AtomSetCollectionReader {
         && (isPrimitive
             && (line.contains("- PRIMITIVE") || line.contains("- BOHR")) || !isPrimitive
             && line.contains("- CONVENTIONAL"))) {
-      if (iHaveDesiredModel) {
-        continuing = false;
-        return false;
-      }
+      //if (iHaveDesiredModel) {
+       // continuing = false;
+       // return false;
+     // }
       if (!isPrimitive || doGetModel(++modelNumber)) {
         readCellParams();
-        iHaveDesiredModel = checkLastModel();
+       // iHaveDesiredModel = checkLastModel();
         doReadAtoms = true;
       } else {
         doReadAtoms = false;
@@ -141,6 +141,11 @@ public class CrystalReader extends AtomSetCollectionReader {
       return true;
     }
 
+    if (line.contains("VOLUME=") && line.contains("- DENSITY")) {
+      readVolumePrimCell();
+      return true;
+    }
+    
     if (line.startsWith(" MULLIKEN POPULATION ANALYSIS")) {
       readPartialCharges();
       return true;
@@ -167,8 +172,20 @@ public class CrystalReader extends AtomSetCollectionReader {
       readMagneticMoments();
       return true;
     }
+    
 
     return true;
+  }
+
+  private void readVolumePrimCell() {
+    // line looks like:  PRIMITIVE CELL - CENTRING CODE 1/0 VOLUME=   113.054442 - DENSITY 2.642 g/cm^3
+    String[] tokens = getTokens(line);
+    String volumePrim = tokens[8];
+    String densityPrim = tokens[11];
+    atomSetCollection.setAtomSetAuxiliaryProperty("volumePrimitive", TextFormat
+        .formatDecimal(parseFloat(volumePrim), 3));
+    atomSetCollection.setAtomSetAuxiliaryProperty("densityPrimitive",
+        TextFormat.formatDecimal(parseFloat(densityPrim), 3));
   }
 
   /*
@@ -500,10 +517,10 @@ public class CrystalReader extends AtomSetCollectionReader {
         + TextFormat.formatDecimal(Float.parseFloat(data[1]), 0) + " km/Mole)"
         + activity);
     atomSetCollection.setAtomSetProperty("Frequency", frequencies[i] + " cm-1");
-    atomSetCollection.setAtomSetProperty("IR Intensity", data[1] + " km/Mole");
+    atomSetCollection.setAtomSetProperty("IRintensity", data[1] + " km/Mole");
     atomSetCollection.setAtomSetProperty("vibrationalSymmetry", data[0]);
-    atomSetCollection.setAtomSetProperty("IR activity ", data[2]);
-    atomSetCollection.setAtomSetProperty("Raman activity ", data[3]);
+    atomSetCollection.setAtomSetProperty("IRactivity ", data[2]);
+    atomSetCollection.setAtomSetProperty("Ramanactivity ", data[3]);
   }
   
 }

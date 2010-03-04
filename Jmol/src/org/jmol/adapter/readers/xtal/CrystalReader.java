@@ -221,7 +221,6 @@ public class CrystalReader extends AtomSetCollectionReader {
     while (readLine() != null && line.indexOf("TTTTTT") < 0)
       data += line;
     data = TextFormat.join(getTokens(data), '\n', 0);
-    System.out.println("CrystalReader magnetic moment data: " + data);
     atomSetCollection.setAtomSetAuxiliaryProperty("magneticMoment", data);
   }
 

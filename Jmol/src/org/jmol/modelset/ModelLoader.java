@@ -287,7 +287,7 @@ public final class ModelLoader extends ModelSet {
         BitSet bs = getModelAtomBitSet(i, false);
         key = "property_" + key.toLowerCase();
         Logger.info("creating " + key + " for model " + getModelName(i));
-        viewer.setData(key, new Object[] { key, value, bs }, modelAtomCount, 0,
+        viewer.setData(key, new Object[] { key, value, bs }, atomCount, 0,
             0, Integer.MAX_VALUE, 0);
       }
     }

@@ -1170,7 +1170,7 @@ public class AtomSetCollection {
     bondIndex0 = bondCount;
     if (isTrajectory) {
       discardPreviousAtoms();
-    }
+    }    
     currentAtomSetIndex = atomSetCount++;
     if (atomSetCount > atomSetNumbers.length) {
       atomSetAtomCounts = ArrayUtil.doubleLength(atomSetAtomCounts);
@@ -1247,11 +1247,11 @@ public class AtomSetCollection {
   }
 
   public void setAtomSetAuxiliaryProperty(String key, String data) {
+    if (!data.endsWith("\n"))
+      data += "\n";
     Hashtable p = (Hashtable) getAtomSetAuxiliaryInfo(currentAtomSetIndex, "atomProperties");
     if (p == null)
       setAtomSetAuxiliaryInfo("atomProperties", p = new Hashtable());
-    if (!data.endsWith("\n"))
-      data += "\n";
     p.put(key, data);
   }
 

@@ -86,7 +86,7 @@ public class Parser {
     int n = 0;
     int max = 0;
     boolean haveBitSet = (bs != null);
-    for (int i = 0; i < len && n < nTokens; i = (haveBitSet ? bs.nextSetBit(i + 1) : i + 1)) {
+    for (int i = (haveBitSet ? bs.nextSetBit(0) : 0); i >= 0 && i < len && n < nTokens; i = (haveBitSet ? bs.nextSetBit(i + 1) : i + 1)) {
       float f;
       while (Float.isNaN(f = Parser.parseFloat(tokens[n++])) && n < nTokens) {
       }

@@ -8325,6 +8325,11 @@
     server="169.230.26.30" atoms="19252" preferred="43" deadline="65"
     credit="237" frames="100" code="A0" contact="lan"/>
 
+  <!-- Projects 6600 to 6699 -->
+  <fah_proj number="6600" name="p6600_CspTm_300K" public="n"
+    server="171.64.65.61" atoms="1047" preferred="6" deadline="9"
+    credit="450" frames="100" code="GG2" contact="vvoelz"/>
+
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"
     server="171.64.122.137" atoms="576" preferred="2" deadline="3"

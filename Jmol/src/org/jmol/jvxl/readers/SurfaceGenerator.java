@@ -583,7 +583,7 @@ public class SurfaceGenerator {
       if (surfaceReader != null
           && params.state == Parameters.STATE_DATA_COLORED)
         surfaceReader.applyColorScale();
-      return true;
+      return false; // still need to save this
 
     }
 

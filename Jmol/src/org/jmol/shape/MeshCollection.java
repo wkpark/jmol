@@ -533,13 +533,12 @@ public abstract class MeshCollection extends Shape {
     if (cmd == null)
       return;
     cmd = cmd.replace('\t', ' ');
-    int pt = cmd.indexOf(";#");
+    cmd = TextFormat.simpleReplace(cmd, ";#", "; #");
+    int pt = cmd.indexOf("; #");
     // not perfect -- user may have that in a title, I suppose...
     if (pt >= 0)
-      cmd = cmd.substring(0, pt + 1);
-    cmd = TextFormat.trim(cmd, ";");
-    if (cmd.indexOf("; #") < 0)
-      cmd += ";";
+      cmd = cmd.substring(0, pt);
+    cmd = TextFormat.trim(cmd, ";") + ";";
     if (mesh.bitsets != null) {
       cmd += "# "
           + (mesh.bitsets[0] == null ? "({null})" : Escape

@@ -288,8 +288,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("setColorScheme" == propertyName) {
       Object[] o = (Object[]) value;
       boolean isTranslucent = ((Boolean)o[1]).booleanValue();
-      if (thisMesh != null)
+      if (thisMesh != null) {
         thisMesh.colix = Graphics3D.getColixTranslucent(thisMesh.colix, isTranslucent, isTranslucent ? 0.5f : 0);
+      }
     }
     if ("title" == propertyName) {
       if (value instanceof String && "-".equals((String) value))
@@ -466,6 +467,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
     
+    if ("setColorScheme" == propertyName) {
+      String schemeName = ((String) ((Object[]) value)[0]);
+      setColorCommand(schemeName, true);
+    }
     // processed by meshCollection
 
     setPropertySuper(propertyName, value, bs);
@@ -945,11 +950,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       thisMesh.havePlanarContours = true;
     setPropertySuper("token", new Integer(explicitContours ? Token.nofill : Token.fill), null);
     setPropertySuper("token", new Integer(explicitContours ? Token.contourlines : Token.nocontourlines), null);
-    thisMesh.colorCommand = "color $" + thisMesh.thisID + " "
-        + getUserColorScheme(schemeName) + " range "
-        + (jvxlData.isColorReversed ? jvxlData.valueMappedToBlue + " "
-            + jvxlData.valueMappedToRed : jvxlData.valueMappedToRed + " "
-            + jvxlData.valueMappedToBlue);
+    // may not be the final color scheme, though.
+    setColorCommand(schemeName, true);
     /*
      viewer.setCurrentColorRange(jvxlData.mappedDataMin, jvxlData.mappedDataMax);
      thisMesh.isColorSolid = false;
@@ -958,6 +960,21 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
      jvxlData.mappedDataMin + " " + jvxlData.mappedDataMax);
 
      */
+  }
+
+  private void setColorCommand(String schemeName, boolean useJvxlData) {
+    if (thisMesh == null)
+      return;
+    thisMesh.colorCommand = "color $" + thisMesh.thisID + " "
+        + getUserColorScheme(schemeName) + " range ";
+    if (useJvxlData) {
+      thisMesh.colorCommand += (jvxlData.isColorReversed ? jvxlData.valueMappedToBlue
+          + " " + jvxlData.valueMappedToRed
+          : jvxlData.valueMappedToRed + " " + jvxlData.valueMappedToBlue);
+      return;
+    }
+    float[] range = viewer.getCurrentColorRange();
+    thisMesh.colorCommand += range[0] + " " + range[1];
   }
 
   public Point3f[] calculateGeodesicSurface(BitSet bsSelected,
@@ -1107,10 +1124,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     jvxlData.valueMappedToBlue = Math.max(range[0], range[1]);
     jvxlData.isJvxlPrecisionColor = true;
     JvxlCoder.jvxlCreateColorData(jvxlData, vertexValues);
-    String schemeName = viewer.getPropertyColorScheme();
-    thisMesh.colorCommand = "color $" + thisMesh.thisID + " "
-        + getUserColorScheme(schemeName) + " range " + range[0] + " "
-        + range[1];
+    setColorCommand(viewer.getPropertyColorScheme(), false);
     thisMesh.isColorSolid = false;
   }
 

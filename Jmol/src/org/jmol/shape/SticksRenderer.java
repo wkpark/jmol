@@ -139,6 +139,11 @@ public class SticksRenderer extends ShapeRenderer {
     width = viewer.scaleToScreen((zA + zB) / 2, mad);
     if (renderWireframe && width > 0)
       width = 1;
+    lineBond = (width <= 1);
+    if (lineBond && (isAntialiased || exportType != Graphics3D.EXPORT_NOT)) {
+      width = 3;
+      lineBond = false;
+    }
     bondOrder = getRenderBondOrder(order);
     switch (bondOrder) {
     case 1:
@@ -198,20 +203,12 @@ public class SticksRenderer extends ShapeRenderer {
     return order;
   }
 
-  protected boolean lineBond;
-  
   protected void drawBond(int dottedMask) {
     if (exportType == Graphics3D.EXPORT_CARTESIAN && bondOrder == 1) {
       // bypass screen rendering and just use the atoms themselves
       g3d.drawBond(atomA, atomB, colixA, colixB, endcaps, mad);
       return;
     }
-    lineBond = (width <= 1);
-    if (lineBond && (isAntialiased || exportType != Graphics3D.EXPORT_NOT)) {
-      width = 3;
-      lineBond = false;
-    }
-      
     if (dx == 0 && dy == 0) {
       // end-on view
       if (! lineBond) {
@@ -253,6 +250,8 @@ public class SticksRenderer extends ShapeRenderer {
       stepAxisCoordinates();
     }
   }
+
+  private boolean lineBond;
 
   int xAxis1, yAxis1, xAxis2, yAxis2, dxStep, dyStep;
 
@@ -392,7 +391,7 @@ public class SticksRenderer extends ShapeRenderer {
   }
 
   void renderHbondDashed() {
-   int dx = xB - xA;
+    int dx = xB - xA;
     int dy = yB - yA;
     int dz = zB - zA;
     int i = 1;

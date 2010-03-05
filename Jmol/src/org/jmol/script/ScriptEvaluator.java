@@ -13062,7 +13062,7 @@ public class ScriptEvaluator {
             pts = viewer.getBoundBoxVertices();
           }
           addShapeProperty(propertyList, "commandOption", "BBOX=\""
-              + Escape.escape(pts[0]) + "," + Escape.escape(pts[1]) + "\"");
+              + Escape.escape(pts[0]) + "," + Escape.escape(pts[pts.length - 1]) + "\"");
           addShapeProperty(propertyList, "boundingBox", pts);
         }
         continue;

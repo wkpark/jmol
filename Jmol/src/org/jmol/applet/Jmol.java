@@ -1059,6 +1059,7 @@ public class Jmol implements WrappedApplet {
         return "";
       }
       try {
+        System.out.println(jsoDocument.eval("!!_jmol.noEval"));
         if (!haveDocumentAccess
             || ((Boolean) jsoDocument.eval("!!_jmol.noEval")).booleanValue())
           return "NO EVAL ALLOWED";

@@ -580,13 +580,6 @@ abstract class TransformManager {
     yTranslationFraction = fixedTranslation.y / height;
   }
 
-  void translateXYBy(int xDelta, int yDelta) {
-    // mouse action or translate x|y|z x.x nm|angstroms|%
-    fixedTranslation.x += xDelta;
-    fixedTranslation.y += yDelta;
-    setTranslationFractions();
-  }
-
   public void centerAt(int x, int y, Point3f pt) {
     if (pt == null) {
       translateXYBy(x, y);
@@ -620,20 +613,29 @@ abstract class TransformManager {
     return (int) (scalePixelsPerAngstrom * distance);
   }
 
-  void translateToXPercent(float percent) {
-    xTranslationFraction = 0.5f + percent / 100;
-    fixedTranslation.x = width * xTranslationFraction;
+
+  void translateXYBy(int xDelta, int yDelta) {
+    // mouse action or translate x|y|z x.x nm|angstroms|%
+    fixedTranslation.x += xDelta;
+    fixedTranslation.y += yDelta;
+    setTranslationFractions();
   }
 
-  void translateToYPercent(float percent) {
-    yTranslationFraction = 0.5f + percent / 100;
-    fixedTranslation.y = height * yTranslationFraction;
-  }
-
-  void translateToZPercent(float percent) {
-    if (mode != MODE_NAVIGATION)
+  void translateToPercent(char type, float percent) {
+    switch (type) {
+    case 'x':
+      xTranslationFraction = 0.5f + percent / 100;
+      fixedTranslation.x = width * xTranslationFraction;
       return;
-    setNavigationDepthPercent(0, percent);
+    case 'y':
+      yTranslationFraction = 0.5f + percent / 100;
+      fixedTranslation.y = height * yTranslationFraction;
+      return;
+    case 'z':
+      if (mode == MODE_NAVIGATION)
+        setNavigationDepthPercent(0, percent);
+      return;
+    }
   }
 
   float getTranslationXPercent() {
@@ -1556,11 +1558,11 @@ abstract class TransformManager {
       if (dZoom != 0)
         zoomToPercent(zoomPercent0 + dZoom * i / totalSteps);
       if (dTrans.x != 0)
-        translateToXPercent(transX + dTrans.x * i / totalSteps);
+        translateToPercent('x', transX + dTrans.x * i / totalSteps);
       if (dTrans.y != 0)
-        translateToYPercent(transY + dTrans.y * i / totalSteps);
+        translateToPercent('y', transY + dTrans.y * i / totalSteps);
       if (dTrans.z != 0)
-        translateToZPercent(transZ + dTrans.z * i / totalSteps);
+        translateToPercent('z', transZ + dTrans.z * i / totalSteps);
       if (dSlab != 0)
         slabToPercent((int) (slab + dSlab * i / totalSteps));
       int timeSpent = (int) (System.currentTimeMillis() - timeBegin);
@@ -1796,8 +1798,8 @@ abstract class TransformManager {
             * fStep;
         if (!Float.isNaN(xTrans)) {
           zoomToPercent(zoomStart + zoomDelta * fStep);
-          translateToXPercent(xTransStart + xTransDelta * fStep);
-          translateToYPercent(yTransStart + yTransDelta * fStep);
+          translateToPercent('x', xTransStart + xTransDelta * fStep);
+          translateToPercent('y', yTransStart + yTransDelta * fStep);
         }
         setRotation(matrixStep);
         if (center != null)
@@ -1841,8 +1843,8 @@ abstract class TransformManager {
         moveRotationCenter(center, !windowCentered);
       if (!Float.isNaN(xTrans)) {
         zoomToPercent(zoom);
-        translateToXPercent(xTrans);
-        translateToYPercent(yTrans);
+        translateToPercent('x', xTrans);
+        translateToPercent('y', yTrans);
       }
       setRotation(matrixEnd);
       if (navCenter != null && mode == MODE_NAVIGATION) {
@@ -2433,8 +2435,8 @@ abstract class TransformManager {
     if (center == null)
       center = rotationCenterDefault;
     if (windowCentered) {
-      translateToXPercent(0);
-      translateToYPercent(0);///CenterTo(0, 0);
+      translateToPercent('x', 0);
+      translateToPercent('y', 0);///CenterTo(0, 0);
       setRotationCenterAndRadiusXYZ(center, true);
       if (doScale)
         scaleFitToScreen(true);

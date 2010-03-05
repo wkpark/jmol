@@ -31,6 +31,9 @@ import org.jmol.shape.ShapeRenderer;
 import org.jmol.util.Logger;
 
 import java.awt.Rectangle;
+import java.util.BitSet;
+
+import javax.vecmath.Point3f;
 
 class RepaintManager {
 
@@ -105,7 +108,7 @@ class RepaintManager {
   }
 
   private boolean logTime;
-
+  
   private void render1(Graphics3D g3d, ModelSet modelSet) { // , Rectangle rectClip
 
     if (modelSet == null || !viewer.mustRenderFlag())
@@ -117,6 +120,8 @@ class RepaintManager {
       Logger.startTimer();
 
     try {
+      if (bsAtoms != null)
+        translateSelected();
       g3d.renderBackground();
       if (renderers ==  null)
         renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
@@ -200,5 +205,38 @@ class RepaintManager {
         getRenderer(i, g3d).render(g3dExport, modelSet, shape);
     }
     return g3dExport.finalizeOutput();
+  }
+
+  // These next are to allow during-rendering operations.
+  
+  private BitSet bsAtoms;
+  private Point3f ptOffset = new Point3f();
+  
+  void setSelectedTranslation(BitSet bsAtoms, char xyz, int xy) {
+    this.bsAtoms = bsAtoms;
+    switch (xyz) {
+    case 'x':
+      ptOffset.x += xy;
+      break;
+    case 'y':
+      ptOffset.y += xy;
+      break;
+    case 'z':
+      ptOffset.z += xy;
+      break;
+    }
+    //System.out.println(xyz + " " + xy + " " + ptOffset);
+  }
+  
+  void translateSelected() {
+    Point3f ptCenter = viewer.getAtomSetCenter(bsAtoms);
+    Point3f pt = new Point3f();
+    viewer.transformPoint(ptCenter, pt);
+    pt.add(ptOffset);
+    viewer.unTransformPoint(pt, pt);
+    pt.sub(ptCenter);
+    viewer.setAtomCoordRelative(pt, bsAtoms); 
+    bsAtoms = null;
+    ptOffset.set(0, 0, 0);
   }
 }

@@ -4764,10 +4764,10 @@ public class ScriptEvaluator {
           timeout(1);
           break;
         case Token.translate:
-          translate();
+          translate(false);
           break;
         case Token.translateSelected:
-          translateSelected();
+          translate(true);
           break;
         case Token.unbind:
           unbind();
@@ -8197,34 +8197,38 @@ public class ScriptEvaluator {
     viewer.invertSelected(pt, plane);
   }
 
-  private void translateSelected() throws ScriptException {
-    // deprecated
-    // translateSelected {x y z}
-    Point3f pt = getPoint3f(1, true);
-    if (!isSyntaxCheck)
-      viewer.setAtomCoordRelative(pt, null);
-  }
-
-  private void translate() throws ScriptException {
-    // translate X|Y|Z x.x [NM|ANGSTROMS]
-    // translate X|Y x.x%
-    // translate {x y z}  # selected implied
-    // translate {x y z} {atomExpression}
+  private void translate(boolean isSelected) throws ScriptException {
+    // translate[selected] X|Y|Z x.x [NM|ANGSTROMS]
+    // translate[selected] X|Y x.x%
+    // translate[selected] X|Y|Z x.x [NM|ANGSTROMS]
+    // translate[selected] X|Y x.x%
+    // translate[selected] {x y z}  # selected implied
+    // translate[selected] {x y z} {atomExpression}
+    BitSet bs = null;
     if (isPoint3f(1)) {
       Point3f pt = getPoint3f(1, true);
-      BitSet bs = (iToken + 1 < statementLength ? expression(++iToken) : null);
+      bs = (!isSelected && iToken + 1 < statementLength ? expression(++iToken) : null);
       checkLast(iToken);
-      if (isSyntaxCheck)
-        return;
-      if (bs == null)
-        viewer.setAtomCoordRelative(pt, null);
-      else
+      if (!isSyntaxCheck)
         viewer.setAtomCoordRelative(pt, bs);
       return;
     }
-    char type = (optParameterAsString(3).toLowerCase() + '\0').charAt(0);
-    checkLength(type == '\0' ? 3 : 4);
-    float percent = floatParameter(2);
+    float amount = floatParameter(2);
+    if (amount == 0)
+      return;
+    char type;
+    switch (tokAt(3)) {
+    case Token.nada:
+    case Token.bitset:
+    case Token.expressionBegin:
+      type = '\0';
+      break;
+    default:
+      type = (optParameterAsString(3).toLowerCase() + '\0').charAt(0);
+    }
+    iToken = (type == '\0' ? 2 : 3);
+    bs = (isSelected ? viewer.getSelectionSet() : iToken + 1 < statementLength ? expression(++iToken) : null);
+    checkLast(iToken);      
     if (getToken(1).tok == Token.identifier) {
       char xyz = parameterAsString(1).toLowerCase().charAt(0);
       switch (xyz) {
@@ -8233,7 +8237,7 @@ public class ScriptEvaluator {
       case 'z':
         if (isSyntaxCheck)
           return;
-        viewer.translate(xyz, percent, type);
+        viewer.translate(xyz, amount, type, bs);
         return;
       }
     }

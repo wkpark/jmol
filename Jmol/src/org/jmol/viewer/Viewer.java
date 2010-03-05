@@ -981,29 +981,35 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     rotateY(angleDegrees * Measure.radiansPerDegree);
   }
 
-  public void translate(char xyz, float x, char type) {
-    int xy = (type == '\0' ? 0 : type == '%' ? transformManager
+  public void translate(char xyz, float x, char type, BitSet bsAtoms) {
+    int xy = (type == '\0' ? (int) x : type == '%' ? transformManager
         .percentToPixels(xyz, x) : transformManager.angstromsToPixels(x
         * (type == 'n' ? 10f : 1f)));
-    switch (xyz) {
-    case 'x':
-      if (type == '\0')
-        transformManager.translateToXPercent(x);
-      else
-        transformManager.translateXYBy(xy, 0);
-      break;
-    case 'y':
-      if (type == '\0')
-        transformManager.translateToYPercent(x);
-      else
-        transformManager.translateXYBy(0, xy);
-      break;
-    case 'z':
-      if (type == '\0')
-        transformManager.translateToZPercent(x);
-      else
-        transformManager.translateZBy(xy);
-      break;
+    if (bsAtoms != null) {
+      if (xy == 0)
+        return;
+      repaintManager.setSelectedTranslation(bsAtoms, xyz, xy);
+    } else {
+      switch (xyz) {
+      case 'x':
+        if (type == '\0')
+          transformManager.translateToPercent('x', x);
+        else
+          transformManager.translateXYBy(xy, 0);
+        break;
+      case 'y':
+        if (type == '\0')
+          transformManager.translateToPercent('y', x);
+        else
+          transformManager.translateXYBy(0, xy);
+        break;
+      case 'z':
+        if (type == '\0')
+          transformManager.translateToPercent('z', x);
+        else
+          transformManager.translateZBy(xy);
+        break;
+      }
     }
     refresh(1, "Viewer:translate()");
   }

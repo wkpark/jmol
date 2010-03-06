@@ -33,6 +33,8 @@ import org.jmol.util.TextFormat;
 
 import java.util.Vector;
 
+import javax.vecmath.Point3f;
+
 /**
  * 
  * http://www.crystal.unito.it/
@@ -91,6 +93,13 @@ public class CrystalReader extends AtomSetCollectionReader {
   protected boolean checkLine() throws Exception {
     // starting point for any calculation is the definition of the lattice
     // parameters similar to the "data" statement of a CIF file
+    
+    //SHIFT OF THE ORIGIN                  :    3/4    1/4      0
+    if (line.startsWith(" SHIFT OF THE ORIGIN")) {
+      readShift();
+      return true;
+    }
+    
     if (line.startsWith(" LATTICE PARAMETER")
         && (isPrimitive
             && (line.contains("- PRIMITIVE") || line.contains("- BOHR")) || !isPrimitive
@@ -175,6 +184,19 @@ public class CrystalReader extends AtomSetCollectionReader {
     
 
     return true;
+  }
+
+  private Point3f ptOriginShift = new Point3f();
+  private void readShift() {
+    //  SHIFT OF THE ORIGIN                  :    3/4    1/4      0
+    String[] tokens = getTokens();
+    int pt = tokens.length - 3;
+    ptOriginShift.set(fraction(tokens[pt++]), fraction(tokens[pt++]), fraction(tokens[pt]));
+  }
+
+  private float fraction(String f) {
+    String[] ab = TextFormat.split(f, '/');
+    return (ab.length == 2 ? parseFloat(ab[0]) / parseFloat(ab[1]) : 0);
   }
 
   private void readVolumePrimCell() {
@@ -369,9 +391,9 @@ public class CrystalReader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
       int atomicNumber = getAtomicNumber(tokens[1]);
-      float x = parseFloat(tokens[2]);
-      float y = parseFloat(tokens[3]);
-      float z = parseFloat(tokens[4]);
+      float x = parseFloat(tokens[2]) + ptOriginShift.x;
+      float y = parseFloat(tokens[3]) + ptOriginShift.y;
+      float z = parseFloat(tokens[4]) + ptOriginShift.z;
       /*
        * we do not do this, because we have other ways to do it namely, "packed"
        * or "{555 555 1}" In this way, we can check those input coordinates

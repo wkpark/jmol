@@ -35,6 +35,9 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 /**
+ * 
+ * TODO: adf-2007.out causes failure reading basis functions
+ * 
  * A reader for ADF output.
  * Amsterdam Density Functional (ADF) is a quantum chemistry program
  * by Scientific Computing & Modelling NV (SCM)
@@ -317,17 +320,26 @@ OR
             1  0  0  0     1.250     34   46
 
        */
+    
+    // note, however, that these may continue to the next line as in example adf-2007.out
+    
     discardLinesUntilContains("(power of)");
     discardLines(2);
-    while (readLine() != null && line.indexOf("Total") < 0) {
-      String[] tokens = getTokens();
+    while (readLine() != null && line.length() > 2 && line.charAt(2) == ' ') {
+      String data = line;
+      while (readLine().indexOf("---") < 0)
+        data += line;
+      String[] tokens = getTokens(data);
       int nAtoms = tokens.length - 1;
       int[] atomList = new int[nAtoms];
       for (int i = 1; i <= nAtoms; i++)
         atomList[i - 1] = parseInt(tokens[i]) - 1;
       readLine();
-      while (readLine() != null && line.length() >= 10) {
-        tokens = getTokens();
+      while (line.length() >= 10) {
+        data = line;
+        while (readLine().length() > 35 && line.substring(0, 35).trim().length() == 0)
+          data += line;
+        tokens = getTokens(data);
         boolean isCore = tokens[0].equals("Core");
         int pt = (isCore ? 1 : 0);
         int x = parseInt(tokens[pt++]);

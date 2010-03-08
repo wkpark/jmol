@@ -62,6 +62,7 @@ public class XmlVaspReader extends XmlReader {
                            AtomSetCollection atomSetCollection,
                            BufferedReader reader, XMLReader xmlReader) {
     this.parent = parent;
+    parent.doProcessLines = true;
     this.reader = reader;
     this.atomSetCollection = atomSetCollection;
     new VaspHandler(xmlReader);
@@ -72,8 +73,8 @@ public class XmlVaspReader extends XmlReader {
                             AtomSetCollection atomSetCollection,
                             BufferedReader reader, JSObject DOMNode) {
     this.parent = parent;
+    parent.doProcessLines = true;
     this.atomSetCollection = atomSetCollection;
-    this.modelNumber = parent.modelNumber;
     implementedAttributes = vaspImplementedAttributes;
     
     ((VaspHandler) (new VaspHandler())).walkDOMTree(DOMNode);
@@ -94,7 +95,7 @@ public class XmlVaspReader extends XmlReader {
     if (!parent.continuing)
       return;
     if ("structure".equals(localName)) {
-      if (!parent.doGetModel(++modelNumber)) {
+      if (!parent.doGetModel(++parent.modelNumber)) {
         parent.checkLastModel();
         return;
       }
@@ -148,6 +149,9 @@ public class XmlVaspReader extends XmlReader {
       Logger.debug("xmlvasp: end " + localName + " " + name);
 
     while (true) {
+
+      if (!parent.doProcessLines)
+        break;
 
       if ("v".equals(localName) && data != null) {
         data.append(chars);

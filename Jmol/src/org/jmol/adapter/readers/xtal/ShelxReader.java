@@ -79,11 +79,10 @@ public class ShelxReader extends AtomSetCollectionReader {
       setFractionalCoordinates(true);
       atomSetCollection.newAtomSet();
       atomSetCollection.setAtomSetName(line.substring(4).trim());
-      iHaveAtoms = true;
       return true;
     }
 
-    if (!iHaveAtoms || lineLength < 3)
+    if (!doProcessLines || lineLength < 3)
       return true;
 
     if (unsupportedRecordTypes.indexOf(";" + command + ";") >= 0)

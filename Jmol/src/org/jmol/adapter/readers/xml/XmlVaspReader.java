@@ -91,20 +91,19 @@ public class XmlVaspReader extends XmlReader {
     if (Logger.debugging) 
       Logger.debug("xmlvasp: start " + localName);
 
+    if (!parent.continuing)
+      return;
     if ("structure".equals(localName)) {
-      if (modelRead && parent.isLastModel(modelNumber))
+      if (!parent.doGetModel(++modelNumber)) {
+        parent.checkLastModel();
         return;
-      readThisModel = parent.doGetModel(++modelNumber);
-      if (readThisModel) {
-        modelRead = true;
-        parent.setFractionalCoordinates(true);
-        atomSetCollection.setDoFixPeriodic();
-        atomSetCollection.newAtomSet();
       }
+      parent.setFractionalCoordinates(true);
+      atomSetCollection.setDoFixPeriodic();
+      atomSetCollection.newAtomSet();
       return;
     }
-
-    if (!readThisModel)
+    if (!parent.doProcessLines)
       return;
     
     if ("v".equals(localName)) {

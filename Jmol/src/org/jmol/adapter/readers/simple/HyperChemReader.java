@@ -51,11 +51,10 @@ public class HyperChemReader extends AtomSetCollectionReader {
       // we have reached the start of a molecule
       if (!doGetModel(++modelNumber))
         return checkLastModel();
-      iHaveAtoms = true;
       processMol();
       return true;
     }
-    if (!iHaveAtoms)
+    if (!doProcessLines)
       return true;
     
     if (line.startsWith("atom ")) {

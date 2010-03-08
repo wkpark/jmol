@@ -109,20 +109,15 @@ public class XmlReader extends AtomSetCollectionReader {
 
   /////////////// file reader option //////////////
 
- public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
+  public void initializeReader() throws Exception {
     XMLReader xmlReader = getXMLReader();
     if (xmlReader == null) {
       atomSetCollection = new AtomSetCollection("xml", this);
       atomSetCollection.errorMessage = "No XML reader found";
       return;
     }
-    try {
-      processXml(xmlReader);
-    } catch (Exception e) {
-      e.printStackTrace();
-      atomSetCollection.errorMessage = "XML reader error: " + e.getMessage();
-    }
+    processXml(xmlReader);
+    continuing = false;
   }
 
   private XMLReader getXMLReader() {

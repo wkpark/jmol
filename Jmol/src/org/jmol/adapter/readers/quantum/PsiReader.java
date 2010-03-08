@@ -42,6 +42,8 @@ import org.jmol.util.Logger;
  *  -- no frequencies
  *  -- no orbitals (Can't handle irreducible representations here.)
  *  
+ *  -- not processing specified model option in LOAD command
+ *  
  **/
 public class PsiReader extends MOReader {
 
@@ -54,12 +56,16 @@ public class PsiReader extends MOReader {
     if (line
         .indexOf("-Geometry after Center-of-Mass shift and reorientation (a.u.):") >= 0) {
       readAtoms(true); // initial geometry
-      iHaveAtoms = true;
+      doProcessLines = true;
+      return true;
     }
     if (line
-        .indexOf("-Unique atoms in the canonical coordinate system (a.u.):") >= 0)
+        .indexOf("-Unique atoms in the canonical coordinate system (a.u.):") >= 0) {
       readUniqueAtoms();
-    if (!iHaveAtoms)
+      doProcessLines = true;
+      return true;
+    }
+    if (!doProcessLines)
       return true;
     if (line.indexOf("New Cartesian Geometry in a.u.") >= 0) {
       readAtoms(false); // replaced with final geometry

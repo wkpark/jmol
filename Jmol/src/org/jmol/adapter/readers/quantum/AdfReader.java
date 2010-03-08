@@ -83,7 +83,6 @@ public class AdfReader extends SlaterReader {
         || line.indexOf("G E O M E T R Y  ***") >= 0) {
       if (!doGetModel(++modelNumber))
         return checkLastModel();
-      iHaveAtoms = true;
       readCoordinates();
       return true;
     }
@@ -91,7 +90,7 @@ public class AdfReader extends SlaterReader {
       readMolecularOrbitals(getTokens(symLine)[1]);
       return true;
     }
-    if (!iHaveAtoms)
+    if (!doProcessLines)
       return true;
     
     if (line.indexOf("Energy:") >= 0) {

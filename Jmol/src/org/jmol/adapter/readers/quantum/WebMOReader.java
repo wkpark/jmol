@@ -79,7 +79,6 @@ public class WebMOReader extends MopacReader {
       if (!doGetModel(++modelNumber))
         return checkLastModel();
       readMolecularOrbital();
-      iHaveAtoms = true;
       return false;
     }
     return true;

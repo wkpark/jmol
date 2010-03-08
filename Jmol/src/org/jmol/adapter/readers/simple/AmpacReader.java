@@ -44,15 +44,16 @@ public class AmpacReader extends AtomSetCollectionReader {
     if (line.indexOf("CARTESIAN COORDINATES") >= 0) {
       if (!doGetModel(++modelNumber))
         return checkLastModel();
-      iHaveAtoms = true;
       readCoordinates();
       return true;
     }
-    if (iHaveAtoms && line.indexOf("NET ATOMIC CHARGES") >= 0) {
+    if (!doProcessLines)
+      return true;
+    if (line.indexOf("NET ATOMIC CHARGES") >= 0) {
       readPartialCharges();
       return true;
     }
-    if (iHaveAtoms && line.indexOf("VIBRATIONAL FREQUENCIES") >= 0) {
+    if (line.indexOf("VIBRATIONAL FREQUENCIES") >= 0) {
       readFrequencies();
       return true;
     }

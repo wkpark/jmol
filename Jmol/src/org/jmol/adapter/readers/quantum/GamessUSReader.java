@@ -103,10 +103,9 @@ public class GamessUSReader extends GamessReader {
         readAtomsInBohrCoordinates();
       else
         readAtomsInAngstromCoordinates();
-      iHaveAtoms = true;
       return true;
     }
-    if (!iHaveAtoms)
+    if (!doProcessLines)
       return true;
     if (line.indexOf("FREQUENCIES IN CM") >= 0) {
       readFrequencies();

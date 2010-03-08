@@ -55,10 +55,9 @@ public class GamessUKReader extends GamessReader {
         return checkLastModel();
       atomNames = new Vector();
       readAtomsInBohrCoordinates();
-      iHaveAtoms = true;
       return true;
     }
-    if (!iHaveAtoms)
+    if (!doProcessLines)
       return true;
     if (line.indexOf("FREQUENCY_INFO_WOULD_BE_HERE") >= 0) {
       // not implemented for readFrequencies();

@@ -510,7 +510,7 @@ class SpaceGroup {
 
      // Hall symbol
 
-     if (!haveExtension) // no extensions for Hall symbols
+     if (!haveExtension) 
        for (i = lastIndex; --i >= 0;) {
          s = spaceGroupDefinitions[i];
          if (s.hallSymbol.equals(name))
@@ -1214,7 +1214,7 @@ class SpaceGroup {
     , new SpaceGroup("171;c6^4;p 62;p 62")
     , new SpaceGroup("172;c6^5;p 64;p 64")
     , new SpaceGroup("173;c6^6;p 63;p 6c")
-    , new SpaceGroup("173*;c6^6;p 63*;p 63") //nonstandard
+    , new SpaceGroup("173*;c6^6;p 63*;p 63 ") //nonstandard; space added so not identical to H-M P 63
     , new SpaceGroup("174;c3h^1;p -6;p -6")
     , new SpaceGroup("175;c6h^1;p 6/m;-p 6")
     , new SpaceGroup("176;c6h^2;p 63/m;-p 6c")

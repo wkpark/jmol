@@ -26,15 +26,11 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 
-
-import java.io.BufferedReader;
-//import java.io.IOException;
 //import java.util.Hashtable;
 //import java.util.Vector;
 
 //import javax.vecmath.Vector3f;
 
-//import org.jmol.api.JmolAdapter;
 //import org.jmol.util.Logger;
 
 /**
@@ -78,27 +74,19 @@ TYPE ASSIGNMENTS      1  1  1  1  1  1  1  1  1  2  2  2  3  3  3  4  4  4  1  2
 TYPE ASSIGNMENTS      3  4  5  6  7  8  9 10
 EXPONENTS  0.2068882D+04 0.3106496D+03 0.7068303D+02 0.1986108D+02 0.6299305D+01
    */
-  /**
-   * Reads a Collection of AtomSets from a BufferedReader.
-   *
-   *
-   * @param reader BufferedReader associated with the Gaussian output text.
-   **/
 
-   public void readAtomSetCollection(BufferedReader reader) {
-/*
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("wfn");
-    try {
-      readHeader();
-      readAtoms();
-      readBasis();
-      readMolecularOrbitals();
-    } catch (Exception e) {
-      setError(e);
-    }
-*/
+  protected void initializeReader() {
+    continuing = false;
   }
+
+  /*
+   public void initializeReader() throws Exception {
+     readHeader();
+     readAtoms();
+     readBasis();
+     readMolecularOrbitals();
+   }
+*/
 
    /*
   private int nMo, nPrimitive;

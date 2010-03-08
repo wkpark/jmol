@@ -141,7 +141,7 @@ public abstract class AtomSetCollectionReader {
 
   // protected/public state variables
   public int[] latticeCells;
-  protected boolean iHaveAtoms;
+  public boolean doProcessLines;
   public boolean iHaveUnitCell;
   public boolean iHaveSymmetryOperators;
   protected boolean doApplySymmetry;
@@ -167,14 +167,14 @@ public abstract class AtomSetCollectionReader {
   private boolean doConvertToFractional;
   private boolean fileCoordinatesAreFractional;
   protected boolean ignoreFileUnitCell;
-  private boolean ignoreFileSpaceGroupName;
+  protected boolean ignoreFileSpaceGroupName;
   private float symmetryRange;  
-  private float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
+  protected float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
   private int[] firstLastStep;
   protected int desiredModelNumber = Integer.MIN_VALUE;
   private int lastModelNumber = Integer.MAX_VALUE;
   private int desiredSpaceGroupIndex = -1;
-  private SymmetryInterface symmetry;
+  protected SymmetryInterface symmetry;
   protected OutputStream os;
 
 /*  
@@ -200,12 +200,10 @@ public abstract class AtomSetCollectionReader {
   public void readAtomSetCollectionFromDOM(Object DOMNode) {
     // XML readers only
   }
-
-  ////////////// These next are optional ways of reading the file. 
-  ////////////// Probably move toward this for future readers.
   
-  protected boolean continuing = true;
-  public void readAtomSetCollection(BufferedReader reader) {
+  public boolean continuing = true;
+  
+  final public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection(readerName, this);
     try {
@@ -235,6 +233,30 @@ public abstract class AtomSetCollectionReader {
     return true;
   }
   
+  public boolean checkLastModel() {
+    if (isLastModel(modelNumber) && doProcessLines) {
+      continuing = false;
+      return false;
+    }
+    doProcessLines = false;
+    return true;
+  }
+
+  /**
+   * after reading a model, Q: Is this the last model?
+   * 
+   * @param modelNumber
+   * @return  Yes/No
+   */
+  public boolean isLastModel(int modelNumber) {
+    return (desiredModelNumber > 0 || modelNumber >= lastModelNumber);
+  }
+  
+  public boolean doGetVibration(int vibrationNumber) {
+    // vibrationNumber is 1-based
+  return (desiredVibrationNumber <= 0 || vibrationNumber == desiredVibrationNumber);
+  }
+
   protected void finalizeReader() throws Exception {
     applySymmetryAndSetTrajectory();
   }
@@ -402,7 +424,7 @@ public abstract class AtomSetCollectionReader {
     }
   }
 
-  private boolean haveModel = false;
+  public boolean haveModel;
   public boolean doGetModel(int modelNumber) {
     // modelNumber is 1-based, but firstLastStep is 0-based
   boolean isOK = (bsModels == null ? desiredModelNumber < 1 || modelNumber == desiredModelNumber
@@ -413,37 +435,15 @@ public abstract class AtomSetCollectionReader {
   if (isOK && desiredModelNumber == 0)
     atomSetCollection.discardPreviousAtoms();
   haveModel |= isOK;
+  if (isOK)
+    doProcessLines = true;
   return isOK;
   }
   
-  protected boolean checkLastModel() {
-    if (isLastModel(modelNumber) && iHaveAtoms) {
-      continuing = false;
-      return false;
-    }
-    iHaveAtoms = false;
-    return true;
-  }
-
-  /**
-   * after reading a model, Q: Is this the last model?
-   * 
-   * @param modelNumber
-   * @return  Yes/No
-   */
-  public boolean isLastModel(int modelNumber) {
-    return (desiredModelNumber > 0 || modelNumber >= lastModelNumber);
-  }
-  
-  public boolean doGetVibration(int vibrationNumber) {
-    // vibrationNumber is 1-based
-  return (desiredVibrationNumber <= 0 || vibrationNumber == desiredVibrationNumber);
-  }
-
   private String previousSpaceGroup;
   private float[] previousUnitCell;
   
-  private void initializeSymmetry() {
+  protected void initializeSymmetry() {
     previousSpaceGroup = spaceGroup;
     previousUnitCell = notionalUnitCell;
     iHaveUnitCell = ignoreFileUnitCell;
@@ -459,7 +459,7 @@ public abstract class AtomSetCollectionReader {
 
     needToApplySymmetry = false;
   }
-
+  
   protected void newAtomSet(String name) {
     if (atomSetCollection.getCurrentAtomSetIndex() >= 0) {
       atomSetCollection.newAtomSet();
@@ -477,7 +477,8 @@ public abstract class AtomSetCollectionReader {
     int lastAtomCount = atomSetCollection.getLastAtomSetAtomCount();
     atomSetCollection.cloneLastAtomSet(atomCount);
     if (atomSetCollection.haveUnitCell) {
-      iHaveUnitCell = needToApplySymmetry = true;
+      iHaveUnitCell = true;
+      needToApplySymmetry = true;
       spaceGroup = previousSpaceGroup;
       notionalUnitCell = previousUnitCell;
     }
@@ -488,6 +489,7 @@ public abstract class AtomSetCollectionReader {
     if (ignoreFileSpaceGroupName)
       return;
     spaceGroup = name.trim();
+    Logger.info("Setting space group name to " + spaceGroup);
   }
 
   public void setSymmetryOperator(String xyz) {
@@ -565,14 +567,14 @@ public abstract class AtomSetCollectionReader {
     for (int i = 0; i < n; i++)
       if (Float.isNaN(notionalUnitCell[i]))
         return false;
-    newSymmetry().setUnitCell(notionalUnitCell);
+    getSymmetry().setUnitCell(notionalUnitCell);
     if (doApplySymmetry)
       doConvertToFractional = !fileCoordinatesAreFractional;
     //if (but not only if) applying symmetry do we force conversion
     return true;
   }
 
-  private SymmetryInterface newSymmetry() {
+  protected SymmetryInterface getSymmetry() {
     symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
     return symmetry;
   }
@@ -681,11 +683,7 @@ public abstract class AtomSetCollectionReader {
         atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
             doPackUnitCell);
         if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
-          SymmetryInterface symmetry = (SymmetryInterface) Interface
-              .getOptionInterface("symmetry.Symmetry");
-          if (symmetry.createSpaceGroup(desiredSpaceGroupIndex, (spaceGroup
-              .indexOf("*") >= 0 ? "P1" : spaceGroup), notionalUnitCell,
-              atomSetCollection.doNormalize)) {
+          if (createSpaceGroup()) {
             atomSetCollection.setAtomSetSpaceGroupName(symmetry
                 .getSpaceGroupName());
             atomSetCollection.applySymmetry(symmetry);
@@ -698,6 +696,12 @@ public abstract class AtomSetCollectionReader {
     if (isTrajectory)
       atomSetCollection.setTrajectory();
     initializeSymmetry();
+  }
+
+  protected boolean createSpaceGroup() {
+    return getSymmetry().createSpaceGroup(desiredSpaceGroupIndex, (spaceGroup
+        .indexOf("*") >= 0 ? "P1" : spaceGroup), notionalUnitCell,
+        atomSetCollection.doNormalize);
   }
 
   public void setMOData(Hashtable moData) {
@@ -775,36 +779,38 @@ public abstract class AtomSetCollectionReader {
   }
 
   /**
-   * Extracts a block of frequency data from a file. This block may be of two types --
-   * either X Y Z across a row or each of X Y Z on a separate line. Data is presumed
-   * to be in fixed FORTRAN-like column format, not space-separated columns. 
+   * Extracts a block of frequency data from a file. This block may be of two
+   * types -- either X Y Z across a row or each of X Y Z on a separate line.
+   * Data is presumed to be in fixed FORTRAN-like column format, not
+   * space-separated columns.
    * 
    * @param iAtom0
-   *            the first atom to be assigned a frequency
+   *          the first atom to be assigned a frequency
    * @param atomCount
-   *            the number of atoms to be assigned
+   *          the number of atoms to be assigned
    * @param modelAtomCount
-   *            the number of atoms in each model
+   *          the number of atoms in each model
    * @param ignore
-   *            the frequencies to ignore because the user has selected
-   *            only certain vibrations to be read or for whatever reason; 
-   *            length serves to set the number of frequencies to be read
+   *          the frequencies to ignore because the user has selected only
+   *          certain vibrations to be read or for whatever reason; length
+   *          serves to set the number of frequencies to be read
    * @param isWide
-   *            when TRUE, this is a table that has X Y Z for each mode within the same row;
-   *            when FALSE, this is a table that has X Y Z for each mode on a separate line.
+   *          when TRUE, this is a table that has X Y Z for each mode within the
+   *          same row; when FALSE, this is a table that has X Y Z for each mode
+   *          on a separate line.
    * @param col0
-   *            the column in which data starts 
+   *          the column in which data starts
    * @param colWidth
-   *            the width of the data columns
+   *          the width of the data columns
    * @param atomIndexes
-   *            an array either null or indicating exactly which atoms get the frequencies
-   *            (used by CrystalReader)
+   *          an array either null or indicating exactly which atoms get the
+   *          frequencies (used by CrystalReader)
    * @throws Exception
    */
-  protected void fillFrequencyData(int iAtom0, int atomCount, int modelAtomCount, 
-                                   boolean[] ignore, boolean isWide,
-                                   int col0, int colWidth, int[] atomIndexes)
-                                                     throws Exception {
+  protected void fillFrequencyData(int iAtom0, int atomCount,
+                                   int modelAtomCount, boolean[] ignore,
+                                   boolean isWide, int col0, int colWidth,
+                                   int[] atomIndexes) throws Exception {
     boolean withSymmetry = (modelAtomCount != atomCount);
     if (atomIndexes != null)
       atomCount = atomIndexes.length;
@@ -819,7 +825,7 @@ public abstract class AtomSetCollectionReader {
       int dataPt = values.length - (isWide ? nFreq * 3 : nFreq) - 1;
       for (int j = 0; j < nFreq; j++) {
         ++dataPt;
-        String x = values[dataPt]; 
+        String x = values[dataPt];
         if (x.charAt(0) == ')') // AMPAC reader!
           x = x.substring(1);
         float vx = parseFloat(x);
@@ -827,10 +833,14 @@ public abstract class AtomSetCollectionReader {
         float vz = parseFloat(isWide ? values[++dataPt] : valuesZ[dataPt]);
         if (ignore[j])
           continue;
-        int iAtom = iAtom0 + modelAtomCount * j + (atomIndexes == null ? atomPt : atomIndexes[atomPt]);
+        int iAtom = (atomIndexes == null ? atomPt : atomIndexes[atomPt]);
+        if (iAtom < 0)
+          continue;
         if (Logger.debugging)
-          Logger.debug("vib " + iAtom + "/" + j + ": " + vx + " " + vy + " " + vz);
-        atomSetCollection.addVibrationVector(iAtom, vx, vy, vz, withSymmetry);
+          Logger.debug("vib " + iAtom + "/" + j + ": " + vx + " " + vy + " "
+              + vz);
+        atomSetCollection.addVibrationVector(iAtom0 + modelAtomCount * j
+            + iAtom, vx, vy, vz, withSymmetry);
       }
     }
   }

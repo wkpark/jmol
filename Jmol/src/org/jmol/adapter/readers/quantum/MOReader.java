@@ -106,7 +106,6 @@ abstract public class MOReader extends AtomSetCollectionReader {
   final protected int HEADER_NONE = 0;
   
   protected void initializeReader() throws Exception {
-    iHaveAtoms = false;
     line = "\nNBOs in the AO basis:";
     getNBOs = filterMO();
     line = "\nNBOcharges";

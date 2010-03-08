@@ -130,10 +130,9 @@ public class GaussianReader extends MOReader {
             + " equivalentAtomSet " + equivalentAtomSets + " calculation "
             + calculationNumber + " scan point " + scanPoint + line);
       readAtoms();
-      iHaveAtoms = true;
       return false;
     }
-    if (!iHaveAtoms)
+    if (!doProcessLines)
       return true;
     if (line.startsWith(" Energy=")) {
       setEnergy();

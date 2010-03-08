@@ -481,7 +481,7 @@ $end
           MOInfo info = new MOInfo();
           info.ne = ne;
           info.label = spin[e];
-          if (haveSym) info.symmetry = tokens[j]+tokens[j+1];
+          if (haveSym) info.moSymmetry = tokens[j]+tokens[j+1];
           moInfos[nMO] = info;
           nMO++;
         }
@@ -654,7 +654,7 @@ $end
           if (restricted) label = "V";
           else label = "V"+label; // keep spin information for the orbital
         }
-        mos[i].put("symmetry", moInfo.symmetry+" "+label +"("+(moid[i]+1)+")");
+        mos[i].put("symmetry", moInfo.moSymmetry+" "+label +"("+(moid[i]+1)+")");
         orbitals.addElement(mos[i]);
       }
       nMOs += nMO;
@@ -667,6 +667,6 @@ $end
   protected class MOInfo {
     int ne = 0;      // 0 or 1
     String label = "???";
-    String symmetry = "???";
+    String moSymmetry = "???";
   }
 }

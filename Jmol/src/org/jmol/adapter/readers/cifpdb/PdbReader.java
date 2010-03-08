@@ -124,7 +124,6 @@ public class PdbReader extends AtomSetCollectionReader {
       modelNumber = (bsModels == null ? modelNo : modelNumber + 1);
       if (!doGetModel(modelNumber))
         return checkLastModel();
-      iHaveAtoms = true;
       atomSetCollection.connectAll(maxSerial);
       if (atomCount > 0)
         applySymmetryAndSetTrajectory();
@@ -139,7 +138,7 @@ public class PdbReader extends AtomSetCollectionReader {
      * actually supports this. So you can't concatinate PDB files the way you
      * can CIF files. --Bob Hanson 8/30/06
      */
-    if (isMultiModel && !iHaveAtoms)
+    if (isMultiModel && !doProcessLines)
       return true;
     if (isAtom) {
       getHeader = false;

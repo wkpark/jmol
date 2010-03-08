@@ -54,7 +54,6 @@ public class SpartanSmolReader extends SpartanInputReader {
       bondData = "";
       if (!doGetModel(++modelNumber))
         return checkLastModel();
-      iHaveAtoms = true;
       atomSetCollection.newAtomSet();
       moData = new Hashtable();
       if (modelNo == Integer.MIN_VALUE) {
@@ -71,7 +70,7 @@ public class SpartanSmolReader extends SpartanInputReader {
       atomSetCollection.setAtomSetNumber(modelNo);
       return true;
     }
-    if (iHaveModelStatement && !iHaveAtoms)
+    if (iHaveModelStatement && !doProcessLines)
       return true;
     if ((line.indexOf("BEGIN") == 0)) {
       String lcline = line.toLowerCase();

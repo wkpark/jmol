@@ -452,6 +452,7 @@ public class ActionManager {
     ke.consume();
     if (keyProcessing)
       return;
+    hoverOff();
     //System.out.println("ActionmManager keyPressed: " + ke.getKeyCode());
     keyProcessing = true;
     int i = ke.getKeyCode();
@@ -469,7 +470,7 @@ public class ActionManager {
       moved.modifiers |= Binding.CTRL;
     }
     int action = Binding.LEFT+Binding.SINGLE_CLICK+moved.modifiers;
-    if(!binding.isUserAction(action))
+    if(!labelMode && !binding.isUserAction(action))
       checkMotionRotateZoom(action, current.x, 0, 0, false);
     if (viewer.getNavigationMode()) {
       int m = ke.getModifiers();
@@ -773,27 +774,39 @@ public class ActionManager {
     if (checkUserAction(action, x, y, deltaX, deltaY, time, mode))
       return;
 
-    if (isBound(action, ACTION_translate)) {
-      viewer.translateXYBy(deltaX, deltaY);
-      return;
-    }
-
-    if (isBound(action, ACTION_center)) {
-      if (pressedAtomIndex == Integer.MAX_VALUE)
-        pressedAtomIndex = viewer.findNearestAtomIndex(pressed.x, pressed.y);
-      Point3f pt = (pressedAtomIndex < 0 ? null : viewer
-          .getAtomPoint3f(pressedAtomIndex));
-      if (pt == null)
+    if (!drawMode && !labelMode) {
+      if (isBound(action, ACTION_translate)) {
         viewer.translateXYBy(deltaX, deltaY);
-      else
-        viewer.centerAt(x, y, pt);
-      return;
+        return;
+      }
+
+      if (isBound(action, ACTION_center)) {
+        if (pressedAtomIndex == Integer.MAX_VALUE)
+          pressedAtomIndex = viewer.findNearestAtomIndex(pressed.x, pressed.y);
+        Point3f pt = (pressedAtomIndex < 0 ? null : viewer
+            .getAtomPoint3f(pressedAtomIndex));
+        if (pt == null)
+          viewer.translateXYBy(deltaX, deltaY);
+        else
+          viewer.centerAt(x, y, pt);
+        return;
+      }
+
     }
 
     if (dragSelectedMode && isBound(action, ACTION_dragSelected)
         && haveSelection) {
       checkMotion(Viewer.CURSOR_MOVE);
       viewer.moveSelected(deltaX, deltaY, x, y, true);
+      return;
+    }
+
+    if (drawMode
+        && (isBound(action, ACTION_dragDrawObject) || isBound(action,
+            ACTION_dragDrawPoint)) || labelMode
+        && isBound(action, ACTION_dragLabel)) {
+      checkMotion(Viewer.CURSOR_MOVE);
+      viewer.checkObjectDragged(dragged.x, dragged.y, x, y, action);
       return;
     }
 
@@ -818,19 +831,6 @@ public class ActionManager {
         checkMotion(Viewer.CURSOR_MOVE);
         viewer.rotateMolecule(degX, degY);
       }
-      return;
-    }
-    if (drawMode
-        && (isBound(action, ACTION_dragDrawObject) || isBound(action,
-            ACTION_dragDrawPoint)) || labelMode
-        && isBound(action, ACTION_dragLabel)) {
-      checkMotion(Viewer.CURSOR_MOVE);
-      viewer.checkObjectDragged(dragged.x, dragged.y, x, y, action);
-      return;
-    }
-    if (dragSelectedMode && isBound(action, ACTION_dragSelected)) {
-      checkMotion(Viewer.CURSOR_MOVE);
-      viewer.moveSelected(deltaX, deltaY, x, y, true);
       return;
     }
     if (isBound(action, ACTION_rotateZorZoom)) {

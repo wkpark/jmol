@@ -4179,12 +4179,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void hoverOff() {
     if (!hoverEnabled)
       return;
+    boolean isHover = (hoverText != null || hoverAtomIndex >= 0);
     if (hoverAtomIndex >= 0) {
       setShapeProperty(JmolConstants.SHAPE_HOVER, "target", null);
       hoverAtomIndex = -1;
     }
-    boolean isHover = (hoverText != null);
-    if (isHover) {
+    if (hoverText != null) {
       setShapeProperty(JmolConstants.SHAPE_HOVER, "text", null);
       hoverText = null;
     }
@@ -6938,8 +6938,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       iShape = JmolConstants.SHAPE_DRAW;
       break;
     }
-    modelSet.checkObjectDragged(prevX, prevY, x, y, action,
-        getVisibleFramesBitSet(), iShape);
+    if (modelSet.checkObjectDragged(prevX, prevY, x, y, action,
+        getVisibleFramesBitSet(), iShape))
+      refresh(1, "checkObjectDragged"); 
+    
+    //TODO: refresh 1 or 2?
   }
 
   public void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,

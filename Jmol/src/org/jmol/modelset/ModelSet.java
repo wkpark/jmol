@@ -501,15 +501,16 @@ abstract public class ModelSet extends ModelCollection {
     return null;
   }
  
-  public void checkObjectDragged(int prevX, int prevY, int x, int y,
+  public boolean checkObjectDragged(int prevX, int prevY, int x, int y,
                           int modifiers, BitSet bsVisible, int iShape) {
     for (int i = iShape; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapes[i];
       if (shape != null
           && shape.checkObjectDragged(prevX, prevY, x, y, modifiers, bsVisible)
           || iShape > 0)
-        break;
+        return true;
     }
+    return false;
   }
 
   public Hashtable getShapeInfo() {

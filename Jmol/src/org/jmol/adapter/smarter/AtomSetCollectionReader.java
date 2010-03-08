@@ -233,6 +233,12 @@ public abstract class AtomSetCollectionReader {
     return true;
   }
   
+  /**
+   * sets continuing and doProcessLines
+   * 
+   * @return TRUE if continuing, FALSE if not
+   * 
+   */
   public boolean checkLastModel() {
     if (isLastModel(modelNumber) && doProcessLines) {
       continuing = false;

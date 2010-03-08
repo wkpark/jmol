@@ -421,7 +421,8 @@ public class Draw extends MeshCollection {
     if (property == "getCenter") {
       String id = (String) data[0];
       int index = ((Integer) data[1]).intValue();
-      data[2] = getSpinCenter(id, index, Integer.MIN_VALUE);
+      int modelIndex = ((Integer) data[2]).intValue();
+      data[2] = getSpinCenter(id, index, modelIndex);
       return (data[2] != null);
     }
     if (property == "getSpinAxis") {
@@ -446,7 +447,7 @@ public class Draw extends MeshCollection {
     int pt = axisID.indexOf("[");
     int pt2;
     if (pt > 0) {
-      id = axisID.substring(0,pt);
+      id = axisID.substring(0, pt);
       if ((pt2 = axisID.lastIndexOf("]")) < pt)
         pt2 = axisID.length();
       try {
@@ -456,23 +457,26 @@ public class Draw extends MeshCollection {
       }
     } else {
       id = axisID;
-      vertexIndex--;
+      if (vertexIndex != Integer.MIN_VALUE)
+        vertexIndex--;
     }
     DrawMesh m = (DrawMesh) getMesh(id);
     if (m == null || m.vertices == null)
-      return null; 
+      return null;
     // >= 0 ? that vertexIndex
     // < 0 and no ptCenters or modelIndex < 0 -- center point
     // < 0 center for modelIndex
-    if (vertexIndex < 0)
-      vertexIndex = m.vertexCount + vertexIndex;
-    if (m.vertexCount <= vertexIndex)
-      vertexIndex = m.vertexCount - 1;
-    else if (vertexIndex < 0)
-      vertexIndex = 0;
-    return (vertexIndex >= 0 ? m.vertices[vertexIndex] 
-        : m.ptCenters == null || modelIndex < 0 ? m.ptCenter 
-        : m.ptCenters[modelIndex]);
+    if (vertexIndex != Integer.MIN_VALUE) {
+      if (vertexIndex < 0)
+        vertexIndex = m.vertexCount + vertexIndex;
+      if (m.vertexCount <= vertexIndex)
+        vertexIndex = m.vertexCount - 1;
+      else if (vertexIndex < 0)
+        vertexIndex = 0;
+    }
+    return (vertexIndex >= 0 ? m.vertices[vertexIndex] : m.ptCenters == null
+        || modelIndex < 0 || modelIndex >= m.ptCenters.length 
+        ? m.ptCenter : m.ptCenters[modelIndex]);
   }
    
   private Vector3f getSpinAxis(String axisID, int modelIndex) {
@@ -500,7 +504,7 @@ public class Draw extends MeshCollection {
       thisMesh.modelIndex = (lineData == null ? viewer.getCurrentModelIndex() : indicatedModelIndex);
       if (thisMesh.modelIndex < 0)
         thisMesh.modelIndex = 0;
-      if (isFixed && !isArrow && !isCurve && modelCount > 1)
+      if (isFixed && modelCount > 1)
         thisMesh.modelIndex = -1;
       thisMesh.ptCenters = null;
       thisMesh.modelFlags = null;

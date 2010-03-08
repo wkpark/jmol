@@ -39,6 +39,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Quaternion;
 
 import java.util.BitSet;
+import java.util.Date;
 import java.util.Hashtable;
 
 abstract class TransformManager {
@@ -2100,6 +2101,7 @@ abstract class TransformManager {
       }
     } else {
       if (spinThread != null) {
+        spinThread.isReset = true;
         spinThread.interrupt();
         spinThread = null;
       }
@@ -2136,9 +2138,10 @@ abstract class TransformManager {
     BitSet bsAtoms;
     boolean isNav;
     boolean isGesture;
+    boolean isReset;
     
     SpinThread(float endDegrees, BitSet bsAtoms, boolean isNav, boolean isGesture) {
-      setName("SpinThread");
+      setName("SpinThread" + new Date());
       this.endDegrees = Math.abs(endDegrees);
       this.bsAtoms = bsAtoms;
       this.isNav = isNav;
@@ -2214,12 +2217,15 @@ abstract class TransformManager {
                 setSpinOn(false);
             }
             Thread.sleep(sleepTime);
+            if (isReset)
+              return;
           } catch (InterruptedException e) {
             break;
           }
         }
       }
-      setSpinOn(false);
+      if (!isReset)
+        setSpinOn(false);
     }
   }
 

@@ -2034,7 +2034,7 @@ public class ScriptEvaluator {
         } else if (v instanceof String[]) {
           fixed[j] = new Token(Token.string, Escape.escape((String[])v, true));
         } else {
-          Point3f center = getObjectCenter(var, Integer.MIN_VALUE);
+          Point3f center = getObjectCenter(var, Integer.MIN_VALUE, Integer.MIN_VALUE);
           if (center == null) 
             error(ERROR_invalidArgument);
           fixed[j] = new Token(Token.point3f, center);
@@ -3841,13 +3841,17 @@ public class ScriptEvaluator {
   }
 
   private Point3f centerParameter(int i) throws ScriptException {
+    return centerParameter(i, Integer.MIN_VALUE);
+  }
+
+  private Point3f centerParameter(int i, int modelIndex) throws ScriptException {
     Point3f center = null;
     expressionResult = null;
     if (checkToken(i)) {
       switch (getToken(i).tok) {
       case Token.dollarsign:
-        int index = Integer.MIN_VALUE;
         String id = objectNameParameter(++i);
+        int index = Integer.MIN_VALUE;
         // allow for $pt2.3 -- specific vertex
         if (tokAt(i + 1) == Token.leftsquare) {
           index = intParameter(i + 2);
@@ -3856,7 +3860,7 @@ public class ScriptEvaluator {
         }
         if (isSyntaxCheck)
           return new Point3f();
-        if ((center = getObjectCenter(id, index)) == null)
+        if ((center = getObjectCenter(id, index, modelIndex)) == null)
           error(ERROR_drawObjectNotDefined, id);
         break;
       case Token.bitset:
@@ -7698,10 +7702,13 @@ public class ScriptEvaluator {
           error(ERROR_tooManyPoints);
         // {X, Y, Z}
         // $drawObject[n]
-        Point3f pt1 = centerParameter(i);
+        Point3f pt1 = centerParameter(i, viewer.getCurrentModelIndex());
         if (!isSyntaxCheck && tok == Token.dollarsign
-            && tokAt(i + 2) != Token.leftsquare)
-          rotAxis = getDrawObjectAxis(objectNameParameter(++i), Integer.MIN_VALUE);
+            && tokAt(i + 2) != Token.leftsquare) {
+          // rotation about an axis such as $line1
+          isMolecular = true;
+          rotAxis = getDrawObjectAxis(objectNameParameter(++i), viewer.getCurrentModelIndex());
+        }
         points[nPoints++] = pt1;
         break;
       case Token.comma:
@@ -7761,8 +7768,8 @@ public class ScriptEvaluator {
         isSpin, bsAtoms);
   }
 
-  private Point3f getObjectCenter(String axisID, int index) {
-    Object[] data = new Object[] { axisID, new Integer(index), null };
+  private Point3f getObjectCenter(String axisID, int index, int modelIndex) {
+    Object[] data = new Object[] { axisID, new Integer(index), new Integer(modelIndex) };
     return (viewer
         .getShapeProperty(JmolConstants.SHAPE_DRAW, "getCenter", data)
         || viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getCenter",

@@ -5384,7 +5384,8 @@ public class ScriptEvaluator {
         if (isSyntaxCheck)
           return;
         viewer.setObjectMad(JmolConstants.SHAPE_AXES, "axes", 1);
-        setShapeProperty(JmolConstants.SHAPE_AXES, "position", new Point3f(50, 50, Float.MAX_VALUE));
+        setShapeProperty(JmolConstants.SHAPE_AXES, "position", new Point3f(50,
+            50, Float.MAX_VALUE));
         setBooleanProperty("navigationMode", true);
         viewer.setNavOn(theTok == Token.on);
         return;
@@ -5459,9 +5460,8 @@ public class ScriptEvaluator {
         if (isFloatParameter(++i)) {
           x = floatParameter(i);
           y = floatParameter(++i);
-        } else if (getToken(i).tok == Token.identifier) {
-          String str = parameterAsString(i);
-          switch(tokAt(i)) {
+        } else {
+          switch (tokAt(i)) {
           case Token.x:
             x = floatParameter(++i);
             break;
@@ -5469,14 +5469,12 @@ public class ScriptEvaluator {
             y = floatParameter(++i);
             break;
           default:
-            error(ERROR_invalidArgument);
+            pt = centerParameter(i);
+            i = iToken;
+            if (!isSyntaxCheck)
+              viewer.navTranslate(timeSec, pt);
+            continue;
           }
-        } else {
-          pt = centerParameter(i);
-          i = iToken;
-          if (!isSyntaxCheck)
-            viewer.navTranslate(timeSec, pt);
-          continue;
         }
         if (!isSyntaxCheck)
           viewer.navTranslatePercent(timeSec, x, y);
@@ -5518,8 +5516,8 @@ public class ScriptEvaluator {
           if (isSyntaxCheck)
             return;
           setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", pathID);
-          path = (Point3f[]) viewer.getShapeProperty(
-              JmolConstants.SHAPE_DRAW, "vertices");
+          path = (Point3f[]) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
+              "vertices");
           refresh();
           if (path == null)
             error(ERROR_invalidArgument);

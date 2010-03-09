@@ -548,12 +548,15 @@ abstract public class AtomCollection {
           setAtomType(i, sValue);
           break;
         case Token.atomx:
+        case Token.x:
           setAtomCoord(i, fValue, atom.y, atom.z);
           break;
         case Token.atomy:
+        case Token.y:
           setAtomCoord(i, atom.x, fValue, atom.z);
           break;
         case Token.atomz:
+        case Token.z:
           setAtomCoord(i, atom.x, atom.y, fValue);
           break;
         case Token.vibx:

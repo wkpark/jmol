@@ -1008,20 +1008,11 @@ public class ScriptEvaluator {
       if (!Token.tokAttr(tok, Token.identifier))
         return null;
       String name = parameterAsString(i);
-      switch (tok = Token.getSettableTokFromString(name)) {
-      case Token.atomx:
-      case Token.atomy:
-      case Token.atomz:
-      case Token.qw:
+      if (!mustBeSettable && viewer.isFunction(name)) {
+        tok = Token.function;
         break;
-      default:
-        if (!mustBeSettable && viewer.isFunction(name)) {
-          tok = Token.function;
-          break;
-        }
-        return null;
       }
-      break;
+      return null;
     }
     if (mustBeSettable && !Token.tokAttr(tok, Token.settable))
       return null;
@@ -3911,6 +3902,21 @@ public class ScriptEvaluator {
           break;
         }
         break;
+      case Token.x:
+        if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
+          evalError("x=?", null);
+        plane = new Point4f(1, 0, 0, -floatParameter(i));
+        break;
+      case Token.y:
+        if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
+          evalError("y=?", null);
+        plane = new Point4f(0, 1, 0, -floatParameter(i));
+        break;
+      case Token.z:
+        if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
+          evalError("z=?", null);
+        plane = new Point4f(0, 0, 1, -floatParameter(i));
+        break;
       case Token.identifier:
       case Token.string:
         String str = parameterAsString(i);
@@ -3921,25 +3927,6 @@ public class ScriptEvaluator {
         if (str.equalsIgnoreCase("yz"))
           return new Point4f(1, 0, 0, 0);
         iToken += 2;
-        if (str.equalsIgnoreCase("x")) {
-          if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
-            evalError("x=?", null);
-          plane = new Point4f(1, 0, 0, -floatParameter(i));
-          break;
-        }
-
-        if (str.equalsIgnoreCase("y")) {
-          if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
-            evalError("y=?", null);
-          plane = new Point4f(0, 1, 0, -floatParameter(i));
-          break;
-        }
-        if (str.equalsIgnoreCase("z")) {
-          if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
-            evalError("z=?", null);
-          plane = new Point4f(0, 0, 1, -floatParameter(i));
-          break;
-        }
         break;
       case Token.leftbrace:
         if (!isPoint3f(i)) {
@@ -5444,20 +5431,16 @@ public class ScriptEvaluator {
         continue;
       case Token.rotate:
         switch (getToken(++i).tok) {
+        case Token.x:
+          rotAxis.set(1, 0, 0);
+          break;
+        case Token.y:
+          rotAxis.set(0, 1, 0);
+          break;
+        case Token.z:
+          rotAxis.set(0, 0, 1);
+          break;
         case Token.identifier:
-          String str = parameterAsString(i++);
-          if (str.equalsIgnoreCase("x")) {
-            rotAxis.set(1, 0, 0);
-            break;
-          }
-          if (str.equalsIgnoreCase("y")) {
-            rotAxis.set(0, 1, 0);
-            break;
-          }
-          if (str.equalsIgnoreCase("z")) {
-            rotAxis.set(0, 0, 1);
-            break;
-          }
           error(ERROR_invalidArgument); // for now
           break;
         case Token.point3f:
@@ -5478,12 +5461,16 @@ public class ScriptEvaluator {
           y = floatParameter(++i);
         } else if (getToken(i).tok == Token.identifier) {
           String str = parameterAsString(i);
-          if (str.equalsIgnoreCase("x"))
+          switch(tokAt(i)) {
+          case Token.x:
             x = floatParameter(++i);
-          else if (str.equalsIgnoreCase("y"))
+            break;
+          case Token.y:
             y = floatParameter(++i);
-          else
+            break;
+          default:
             error(ERROR_invalidArgument);
+          }
         } else {
           pt = centerParameter(i);
           i = iToken;
@@ -7665,22 +7652,16 @@ public class ScriptEvaluator {
       case Token.molecular:
         isMolecular = true;
         continue;
-      case Token.identifier:
-        String str = parameterAsString(i);
-        if (str.equalsIgnoreCase("x")) {
-          rotAxis.set(direction, 0, 0);
-          continue;
-        }
-        if (str.equalsIgnoreCase("y")) {
-          rotAxis.set(0, (axesOrientationRasmol && !isMolecular ? -direction
-              : direction), 0);
-          continue;
-        }
-        if (str.equalsIgnoreCase("z")) {
-          rotAxis.set(0, 0, direction);
-          continue;
-        }
-        error(ERROR_invalidArgument);
+      case Token.x:
+        rotAxis.set(direction, 0, 0);
+        continue;
+      case Token.y:
+        rotAxis.set(0, (axesOrientationRasmol && !isMolecular ? -direction
+            : direction), 0);
+        continue;
+      case Token.z:
+        rotAxis.set(0, 0, direction);
+        continue;
       case Token.branch:
         int iAtom1 = expression(++i).nextSetBit(0);
         int iAtom2 = expression(++iToken).nextSetBit(0);
@@ -8121,7 +8102,7 @@ public class ScriptEvaluator {
       return; // coming from "cartoon only"
     // select beginexpr none endexpr
     viewer.setNoneSelected(statementLength == 4 && tokAt(2) == Token.none);
-    // select beginexpr bonds ( {...} ) endexpr
+    // select beginexpr bonds ( {...} ) endex pr
     if (tokAt(2) == Token.bitset && getToken(2).value instanceof BondSet
         || getToken(2).tok == Token.bonds && getToken(3).tok == Token.bitset) {
       if (statementLength == iToken + 2) {
@@ -10920,10 +10901,14 @@ public class ScriptEvaluator {
       return null;
     TickInfo tickInfo;
     String str = " ";
-    if (tokAt(index + 1) == Token.identifier) {
+    switch (tokAt(index + 1)) {
+    case Token.x:
+    case Token.y:
+    case Token.z:
       str = parameterAsString(++index).toLowerCase();
-      if (!str.equals("x") && !str.equals("y") && !str.equals("z"))
-        error(ERROR_invalidArgument);
+      break;
+    case Token.identifier:
+      error(ERROR_invalidArgument);      
     }
     if (tokAt(++index) == Token.none) {
       tickInfo = new TickInfo(null);
@@ -12583,23 +12568,18 @@ public class ScriptEvaluator {
       case Token.rotate:
         Vector3f rotAxis = new Vector3f();
         switch (getToken(++i).tok) {
-        case Token.identifier:
-          String str = parameterAsString(i);
-          float radians = floatParameter(++i)
-              * JmolConstants.radiansPerDegree;
-          if (str.equalsIgnoreCase("x")) {
-            rotAxis.set(radians, 0, 0);
-            break;
-          }
-          if (str.equalsIgnoreCase("y")) {
-            rotAxis.set(0, radians, 0);
-            break;
-          }
-          if (str.equalsIgnoreCase("z")) {
-            rotAxis.set(0, 0, radians);
-            break;
-          }
-          error(ERROR_invalidArgument);
+        case Token.x:
+          rotAxis.set(floatParameter(++i)
+              * JmolConstants.radiansPerDegree, 0, 0);
+          break;
+        case Token.y:
+          rotAxis.set(0, floatParameter(++i)
+              * JmolConstants.radiansPerDegree, 0);
+          break;
+        case Token.z:
+          rotAxis.set(0, 0, floatParameter(++i)
+              * JmolConstants.radiansPerDegree);
+          break;
         default:
           error(ERROR_invalidArgument);
         }

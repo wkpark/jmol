@@ -2609,10 +2609,13 @@ class ScriptMathProcessor {
     case Token.point3f:
       switch (op.intValue) {
       case Token.atomx:
+      case Token.x:
         return addX(((Point3f) x2.value).x);
       case Token.atomy:
+      case Token.y:
         return addX(((Point3f) x2.value).y);
       case Token.atomz:
+      case Token.z:
         return addX(((Point3f) x2.value).z);
       case Token.xyz:
         Point3f pt = new Point3f((Point3f) x2.value);
@@ -2643,12 +2646,15 @@ class ScriptMathProcessor {
     case Token.point4f:
       switch (op.intValue) {
       case Token.atomx:
+      case Token.x:
         return addX(((Point4f) x2.value).x);
       case Token.atomy:
+      case Token.y:
         return addX(((Point4f) x2.value).y);
       case Token.atomz:
+      case Token.z:
         return addX(((Point4f) x2.value).z);
-      case Token.qw:
+      case Token.w:
         return addX(((Point4f) x2.value).w);
       }
       break;

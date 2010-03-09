@@ -506,6 +506,7 @@ public class Token {
   public final static int fracxyz   =11 | mathproperty | atomproperty | settable;
   public final static int unitxyz   =12 | mathproperty | atomproperty;
   public final static int vibxyz    =13 | mathproperty | atomproperty | settable;
+  final static int w                =14 | mathproperty;// new
   
   // occupancy, radius, and structure are odd, because they takes different meanings when compared
   
@@ -578,6 +579,9 @@ public class Token {
   public final static int vibx            = floatproperty | 22 | settable;
   public final static int viby            = floatproperty | 23 | settable;
   public final static int vibz            = floatproperty | 24 | settable;
+  public final static int x               = floatproperty | 26 | settable;
+  public final static int y               = floatproperty | 27 | settable;
+  public final static int z               = floatproperty | 28 | settable;
   
   public final static int backbone     = floatproperty | shapeCommand | 1 | predefinedset | defaultON | settable;
   public final static int cartoon      = floatproperty | shapeCommand | 2 | defaultON | settable;
@@ -1082,7 +1086,6 @@ public class Token {
   final static int pointsperangstrom = misc | 151;// new
   final static int polygon        = misc | 152;// new
   public final static int prev    = misc | 154;
-  final static int qw             = misc | 155 | expression;
   final static int rad            = misc | 156;// new
   final static int radical        = misc | 157;// new
   final static int range          = misc | 158;
@@ -1126,13 +1129,13 @@ public class Token {
   final static int variable        = misc | 201;// new
   final static int variables       = misc | 202;// new
   final static int vertices        = misc | 203;// new
-  final static int width           = misc | 204;// new
-  final static int cancel          = misc | 205;// new
-  final static int fix             = misc | 206;// new
-  final static int energy          = misc | 207;// new
-  final static int criterion       = misc | 208;// new
-  final static int in              = misc | 209;// new
-  final static int out             = misc | 210;// new
+  final static int width           = misc | 206;// new
+  final static int cancel          = misc | 208;// new
+  final static int fix             = misc | 210;// new
+  final static int energy          = misc | 212;// new
+  final static int criterion       = misc | 214;// new
+  final static int in              = misc | 216;// new
+  final static int out             = misc | 218;// new
   
   
   // predefined Tokens: 
@@ -1269,14 +1272,6 @@ public class Token {
     if (token != null)
       return (tokAttr((tok = token.tok), settable) 
           && !tokAttr(tok, mathproperty) ? token.tok : nada);
-    if (s.equals("x"))
-      return atomx;
-    else if (s.equals("y"))
-      return atomy;
-    else if (s.equals("z"))
-      return atomz;
-    else if (s.equals("w"))
-      return qw;
     return nada;
   }
 
@@ -1757,6 +1752,10 @@ public class Token {
       "vz",              new Token(vibz),
       "vxyz",            new Token(vibxyz),
       "xyz",             new Token(xyz),
+      "w",               new Token(w),
+      "x",               new Token(x),
+      "y",               new Token(y),
+      "z",               new Token(z),
 
       // more misc parameters
       "addhydrogens",    new Token(addhydrogens),

@@ -1190,10 +1190,13 @@ final public class Atom extends Point3fi {
     case Token.adpmin:
       return atom.getADPMinMax(false);
     case Token.atomx:
+    case Token.x:
       return atom.x;
     case Token.atomy:
+    case Token.y:
       return atom.y;
     case Token.atomz:
+    case Token.z:
       return atom.z;
     case Token.covalent:
       return atom.getCovalentRadiusFloat();

@@ -809,6 +809,7 @@ abstract class ScriptCompilationTokenParser {
       // in principle be here, for example:
       // "AND" "SET" "TO*"
       // these need to have attribute expression to be here
+      // but then there are FX FY FZ UX UY UZ .. 
       if (!checkResNameSpec)
         return false;
     }
@@ -818,6 +819,12 @@ abstract class ScriptCompilationTokenParser {
         return false;
       specSeen = true;
       tok = tokPeek();
+      if (Token.tokAttr(tok, Token.comparator)) {
+        returnToken();
+        ltokenPostfix.remove(ltokenPostfix.size() - 1);
+        return false;
+      }
+
     }
     boolean wasInteger = false;
     if (tok == Token.times || tok == Token.integer || tok == Token.seqcode) {

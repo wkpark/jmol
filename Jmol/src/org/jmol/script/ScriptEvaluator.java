@@ -12564,25 +12564,24 @@ public class ScriptEvaluator {
         isosurface(JmolConstants.SHAPE_LCAOCARTOON);
         return;
       case Token.rotate:
-        Vector3f rotAxis = new Vector3f();
+        float degx = 0;
+        float degy = 0;
+        float degz = 0;
         switch (getToken(++i).tok) {
         case Token.x:
-          rotAxis.set(floatParameter(++i)
-              * JmolConstants.radiansPerDegree, 0, 0);
+          degx = floatParameter(++i) * JmolConstants.radiansPerDegree;
           break;
         case Token.y:
-          rotAxis.set(0, floatParameter(++i)
-              * JmolConstants.radiansPerDegree, 0);
+          degy = floatParameter(++i) * JmolConstants.radiansPerDegree;
           break;
         case Token.z:
-          rotAxis.set(0, 0, floatParameter(++i)
-              * JmolConstants.radiansPerDegree);
+          degz = floatParameter(++i) * JmolConstants.radiansPerDegree;
           break;
         default:
           error(ERROR_invalidArgument);
         }
         propertyName = "rotationAxis";
-        propertyValue = rotAxis;
+        propertyValue = new Vector3f(degx, degy, degz);
         break;
       case Token.on:
       case Token.display:

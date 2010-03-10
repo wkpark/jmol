@@ -704,8 +704,8 @@ in order to allow for faster BitSet methods
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMore.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersQuantum.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersSimple.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXtal.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXml.jar" /> 
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXtal.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeSpecial.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeSurface.jar" />
@@ -869,6 +869,7 @@ in order to allow for faster BitSet methods
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMolXyz.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMore.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersQuantum.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersSimple.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXml.jar" /> 
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXtal.jar" /> 
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeBio.jar" />

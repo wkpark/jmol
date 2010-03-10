@@ -870,6 +870,7 @@ in order to allow for faster BitSet methods
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMore.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersQuantum.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXml.jar" /> 
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXtal.jar" /> 
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeBio.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSpecial.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSurface.jar" />

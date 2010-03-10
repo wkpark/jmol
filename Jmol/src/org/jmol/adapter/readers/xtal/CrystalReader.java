@@ -67,6 +67,10 @@ import javax.vecmath.Point3f;
  * 
  *          load "xxx.out" FILTER "novibrations"
  * 
+ *          to load just the input deck exactly as indicated, use
+ * 
+ *          load "xxx.out" FILTER "input"
+ *          
  *    now allows reading of frequencies and atomic values with conventional
  *    as long as this is not an optimization. 
  *    
@@ -82,22 +86,24 @@ import javax.vecmath.Point3f;
 
 public class CrystalReader extends AtomSetCollectionReader {
 
-  private boolean isPrimitive = true;
-  private boolean isPolymer = false;
-  private boolean isSlab = false;
-  private boolean isMolecular = false;
-  private boolean haveCharges = false;
-  private boolean addVibrations = false;
+  private boolean isPrimitive;
+  private boolean isPolymer;
+  private boolean isSlab;
+  private boolean isMolecular;
+  private boolean haveCharges;
+  private boolean addVibrations;
+  private boolean isFreqCalc;
+  private boolean inputOnly;
   private int atomCount;
   private int[] atomFrag;
-  private BitSet bsPrimitiveAtomsIgnore;
-  private boolean isFreqCalc = false;
 
   protected void initializeReader() throws Exception {
     doProcessLines = false;
     if (filter != null)
       filter = filter.toLowerCase();
-    addVibrations = (filter == null || filter.indexOf("novib") < 0);
+    inputOnly = (filter != null && filter.indexOf("input") >= 0);
+    addVibrations = !inputOnly && (filter == null || filter.indexOf("novib") < 0);
+    isPrimitive = !inputOnly && (filter == null || filter.indexOf("conv") < 0);
     setFractionalCoordinates(readHeader());
   }
 
@@ -113,6 +119,8 @@ public class CrystalReader extends AtomSetCollectionReader {
       }
       if (line.startsWith(" INPUT COORDINATES")) {
         readInputCoords();
+        if (inputOnly)
+          continuing = false;
         return true;
       }
     }
@@ -304,7 +312,6 @@ public class CrystalReader extends AtomSetCollectionReader {
       isSlab = (type.equals("SLAB CALCULATION"));
     }
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("symmetryType", type);
-    isPrimitive = (filter == null || filter.indexOf("conv") < 0);
     if ((isPolymer || isSlab) && !isPrimitive) {
       Logger.error("Cannot use FILTER \"conventional\" with POLYMER or SLAB");
       isPrimitive = true;
@@ -362,7 +369,6 @@ public class CrystalReader extends AtomSetCollectionReader {
    * create arrays that map primitive atoms to conventional atoms
    * in a 1:1 fashion. Creates:
    * 
-   *  BitSet bsPrimitiveAtomsIgnore -- atoms that are not in base symmetry set
    *  int[] primitiveToIndex -- points to model-based atomIndex
    * 
    * @throws Exception
@@ -396,14 +402,8 @@ public class CrystalReader extends AtomSetCollectionReader {
         continue;
       nPrim++;
       int iAtom = parseInt(line.substring(4, 8)) - 1;
-      if (indexToPrimitive[iAtom] >= 0) {
-        // more than one primitive atom is mapped to a given conventional atom.
-        // so we ignore all except the first in terms of getting frequency or 
-        // other data.
-        if (bsPrimitiveAtomsIgnore == null)
-          bsPrimitiveAtomsIgnore = new BitSet();
-        bsPrimitiveAtomsIgnore.set(iPrim);
-      } else {
+      if (indexToPrimitive[iAtom] < 0) {
+        // no other primitive atom is mapped to a given conventional atom.
         indexToPrimitive[iAtom] = iPrim++; 
       }
     }

@@ -502,6 +502,11 @@ public class Quaternion {
     return v;
   }
 
+  public Vector3f get3dProjection(Vector3f v3d) {
+    v3d.set(q1, q2, q3);
+    return v3d;
+  }
+  
   /**
    * 
    * @param axisAngle
@@ -598,12 +603,160 @@ public class Quaternion {
         + Escape.escape(getVector(2, scale)) + " color blue\n";
   }
 
+  /**
+   * 
+   *  Java axisAngle / plane / Point4f format
+   *  all have the format {x y z w}
+   *  so we go with that here as well
+   *   
+   * @return  "{q1 q2 q3 q0}"
+   */
   public String toString() {
     return "{" + q1 + " " + q2 + " " + q3 + " " + q0 + "}";
   }
 
-  public String toString0123() {
-    return q0 + " " + q1  + " " + q2 + " " + q3;
+  public static Object sphereMean(Quaternion[] data, float[] retStddev, float criterion) {
+    // would like this to be based on Buss and Fillmore 
+    // "Spherical Averages and Applications to Spherical Splines and Interpolation"
+    // currently just simple 3D average, though
+    while (true) {
+      if (data == null || data.length == 0)
+        break;
+      if (retStddev == null)
+        retStddev = new float[1];
+      if (data.length == 1) {
+        retStddev[0] = 0;
+        return new Quaternion(data[0]);
+      }        
+      float diff = Float.MAX_VALUE;
+      float lastStddev = Float.MAX_VALUE;
+      Quaternion[] ndata = sphereNormalize(data);
+      Quaternion qMean = simpleAverage(ndata);
+      int maxIter = 100;
+      while (diff > criterion && --maxIter >= 0) {
+        qMean = newMean(ndata, qMean); 
+        retStddev[0] = stdDev(ndata, qMean);
+        diff = Math.abs(retStddev[0] - lastStddev);
+        lastStddev = retStddev[0];
+        System.out.println("sphereMean " + lastStddev + " " + diff);
+      }
+      return qMean;
+    }
+    return "NaN";
+  }
+
+  private static Quaternion newMean(Quaternion[] ndata, Quaternion mean) {
+    Vector3f sum = new Vector3f();
+    Vector3f vMean = mean.getNormal();
+    Vector3f v = new Vector3f();
+    for (int i = ndata.length; --i >= 0;) {
+      Quaternion q = ndata[i];
+      Quaternion dq = q.div(mean);
+      float dist_theta = dq.getThetaRadians();
+      //System.out.println(" newmean dist_theta " + dq + " " + dist_theta * 180 / 3.1415926);
+      v = dq.getNormal();
+      //System.out.println(projections[i]);
+      v.scale(dist_theta / 2);
+      sum.add(v);
+    }
+    sum.scale(1f / ndata.length);
+    if (sum.dot(vMean) < 0)
+      sum.scale(-1);
+    float theta = 2 * (float) (Math.asin(sum.length()) * 180 / Math.PI);
+    Quaternion newMean = new Quaternion(sum, theta);
+    System.out.println("newMean = " + newMean + " " + sum +  " " + theta);
+    newMean = newMean.mul(mean);
+    if (newMean.dot(mean) < 0)
+      newMean = newMean.negate();
+    return newMean;
+  }
+
+  private static Quaternion[] sphereNormalize(Quaternion[] data) {
+    Quaternion[] ndata = new Quaternion[data.length];
+    for (int i = data.length; --i >= 0;)
+      ndata[i] = new Quaternion(data[i]);
+    // Find the coordinate with the max. total absolute value.
+    double xAbsSum=0, yAbsSum=0, zAbsSum=0, wAbsSum=0;
+    for (int i = data.length; --i >= 0;) {
+      xAbsSum += Math.abs(data[i].q0);
+      yAbsSum += Math.abs(data[i].q1);
+      zAbsSum += Math.abs(data[i].q2);
+      wAbsSum += Math.abs(data[i].q3);
+    }
+    int index = 3;
+    if (xAbsSum>yAbsSum) {
+      if (xAbsSum>zAbsSum) {
+        if (xAbsSum>wAbsSum)
+          index = 0;
+      } else if (zAbsSum>wAbsSum) {
+        index = 2;
+      }
+    } else if (yAbsSum>zAbsSum) {
+      if (yAbsSum>wAbsSum)
+        index = 1;
+    } else if (zAbsSum>wAbsSum) {
+      index = 2;
+    }
+    for (int i = data.length; --i >= 0;) {
+      float value;
+      switch (index) {
+      case 0:
+        value = ndata[i].q0;
+        break;
+      case 1:
+        value = ndata[i].q1;
+        break;
+      case 2:
+        value = ndata[i].q2;
+        break;
+      default:
+        value = ndata[i].q3;
+        break;
+      }
+      if (value < 0)
+        ndata[i] = ndata[i].negate();
+    }
+    return ndata;
+  }
+
+  /**
+   * get average normal vector
+   * scale normal by average projection of vectors onto it
+   * create quaternion from this 3D projection
+   * 
+   * @param ndata
+   * @return approximate average
+   */
+  private static Quaternion simpleAverage(Quaternion[] ndata) {
+    Vector3f mean = new Vector3f();
+    for (int i = ndata.length; --i >= 0;)
+      mean.add(ndata[i].getNormal());
+    float f = 0;
+    mean.normalize();
+    Vector3f v = new Vector3f();
+    for (int i = ndata.length; --i >= 0;)
+      f += ndata[i].get3dProjection(v).dot(mean);
+    mean.scale(f / ndata.length);
+    f = (float) Math.sqrt(1 - mean.lengthSquared());
+    if (Float.isNaN(f))
+      f = 0;
+    return new Quaternion(new Point4f(mean.x, mean.y, mean.z, f));
+  }
+
+  private static float stdDev(Quaternion[] data, Quaternion mean) {
+    double sum = 0;
+    double sum2 = 0;
+    int n = data.length;
+    // the quaternion dot product gives theta/2 for dq
+    // it is proportional to the distance on the 4D sphere
+    // just as for two unit vectors, a dot b is the angle theta between them
+    // as well as the distance on the 3D sphere
+    for (int i = n; --i >= 0;) {
+      float dist = data[i].dot(mean);
+      sum += dist;
+      sum2 += dist * dist;
+    }
+    return (float) Math.sqrt((sum2 - sum * sum / n) / (n - 1));
   }
 
 }

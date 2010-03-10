@@ -362,13 +362,13 @@ public class _IdtfExporter extends __CartesianExporter {
     output("\n          KEY_FRAME 0 {");
     output("\n            KEY_FRAME_TIME 0");
     output("\n            KEY_FRAME_DISPLACEMENT 0 0 0");
-    output("\n            KEY_FRAME_ROTATION " + q.toString0123());
+    output("\n            KEY_FRAME_ROTATION " + toString0123(q));
     output("\n            KEY_FRAME_SCALE 1 1 1");
     output("\n          }");
     output("\n          KEY_FRAME 1 {");
     output("\n            KEY_FRAME_TIME 1");
     output("\n            KEY_FRAME_DISPLACEMENT " + dxyz);
-    output("\n            KEY_FRAME_ROTATION " + q.toString0123());
+    output("\n            KEY_FRAME_ROTATION " + toString0123(q));
     output("\n            KEY_FRAME_SCALE" + scale);
     output("\n          }");
     output("\n         }");
@@ -399,6 +399,10 @@ public class _IdtfExporter extends __CartesianExporter {
     output("\n}\n");
 
     output(modifiers.toString());    
+  }
+
+  private static String toString0123(Quaternion q) {
+      return q.q0 + " " + q.q1  + " " + q.q2 + " " + q.q3;
   }
 
   private Hashtable htNodes = new Hashtable();

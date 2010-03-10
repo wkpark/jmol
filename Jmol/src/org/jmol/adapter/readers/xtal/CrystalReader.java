@@ -74,12 +74,7 @@ import javax.vecmath.Point3f;
  *    now allows reading of frequencies and atomic values with conventional
  *    as long as this is not an optimization. 
  *    
- *    Piero-- 
- *    
- *    Q: Is there a way to determine the conventional cell from the primitive
- *    cell if the original primitive cell parameters are known and the cell
- *    changes? Can we just scale it up? Can the symmetry change during a 
- *    calculation? -- Bob
+ *  
  *          
  * 
  */
@@ -698,7 +693,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private void setFreqValue(int i) {
-    String activity = ", IR: " + data[2] + ", Ram. " + data[3];
+    String activity = ", IR: " + data[2] + ", Ram.: " + data[3];
     atomSetCollection.setAtomSetName(data[0] + " "
         + TextFormat.formatDecimal(frequencies[i], 2) + " cm-1 ("
         + TextFormat.formatDecimal(Float.parseFloat(data[1]), 0) + " km/Mole)"

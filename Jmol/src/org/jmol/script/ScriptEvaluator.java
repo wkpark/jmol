@@ -5077,10 +5077,16 @@ public class ScriptEvaluator {
           j++;
       }
       String key = parameterAsString(j);
+      boolean isMinusMinus = key.equals("--") || key.equals("++");
+      if (isMinusMinus) {
+        key = parameterAsString(++j);
+      }
       if (Token.tokAttr(tokAt(j), Token.misc) || getContextVariableAsVariable(key) != null) {
-        if (bsIn == null && getToken(++j).tok != Token.opEQ)
+        if (bsIn == null && !isMinusMinus && getToken(++j).tok != Token.opEQ)
           error(ERROR_invalidArgument);
         if (bsIn == null) {
+          if (isMinusMinus)
+            j -= 2;
           setVariable(++j, statementLength - 1, key, 0);
         } else {
           setVariable(j + 2, statementLength - 1, key + "_set", 0);

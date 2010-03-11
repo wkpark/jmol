@@ -732,8 +732,7 @@ public class Quaternion {
       v.scale(theta);
       sum.add(v);
     }
-    sum.scale(1f / data.length);
-    theta = sum.length();
+    theta = sum.length() / data.length;
     Quaternion dqMean = new Quaternion(sum, theta);
     return dqMean.mul(mean);
   }

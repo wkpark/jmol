@@ -1972,7 +1972,8 @@ class ScriptMathProcessor {
     Point4f pt4;
     Matrix3f m;
     String s;
-
+    float f;
+    
     if (logMessages) {
       dumpStacks("operate: " + op);
     }
@@ -2188,7 +2189,7 @@ class ScriptMathProcessor {
           pt.add(new Point3f(pt4.x, pt4.y, pt4.z));
           return addX(pt);
         default:
-          float f = ScriptVariable.fValue(x2);
+          f = ScriptVariable.fValue(x2);
           return addX(new Point3f(pt.x + f, pt.y + f, pt.z + f));
         }
       case Token.matrix3f:
@@ -2258,7 +2259,7 @@ class ScriptMathProcessor {
         pt = new Point3f((Point3f) x1.value);
         switch (x2.tok) {
         default:
-          float f = ScriptVariable.fValue(x2);
+          f = ScriptVariable.fValue(x2);
           return addX(new Point3f(pt.x - f, pt.y - f, pt.z - f));
         case Token.point3f:
           pt.sub((Point3f) x2.value);
@@ -2370,7 +2371,7 @@ class ScriptMathProcessor {
           return addX((new Quaternion(m3)).mul(
               new Quaternion((Point4f) x2.value)).getMatrix());
         default:
-          float f = ScriptVariable.fValue(x2);
+          f = ScriptVariable.fValue(x2);
           AxisAngle4f aa = new AxisAngle4f();
           aa.set(m3);
           aa.angle *= f;
@@ -2409,7 +2410,7 @@ class ScriptMathProcessor {
           Point3f pt2 = ((Point3f) x2.value);
           return addX(pt.x * pt2.x + pt.y * pt2.y + pt.z * pt2.z);
         default:
-          float f = ScriptVariable.fValue(x2);
+          f = ScriptVariable.fValue(x2);
           return addX(new Point3f(pt.x * f, pt.y * f, pt.z * f));
         }
       case Token.point4f:
@@ -2448,7 +2449,7 @@ class ScriptMathProcessor {
           return addX((int) 0);
         return addX(ScriptVariable.iValue(x1) % n);
       case Token.decimal:
-        float f = ScriptVariable.fValue(x1);
+        f = ScriptVariable.fValue(x1);
         // neg is scientific notation
         if (n == 0)
           return addX((int) (f + 0.5f * (f < 0 ? -1 : 1)));
@@ -2557,7 +2558,7 @@ class ScriptMathProcessor {
         return addX(new Quaternion((Point4f) x1.value).mul(1 / f2).toPoint4f());
       }
     case Token.leftdivide:
-      float f = ScriptVariable.fValue(x2);
+      f = ScriptVariable.fValue(x2);
       switch (x1.tok) {
       default:
         return addX(f == 0 ? 0
@@ -2570,6 +2571,9 @@ class ScriptMathProcessor {
               new Quaternion((Point4f) x2.value)).toPoint4f());
         return addX(new Quaternion((Point4f) x1.value).mul(1 / f).toPoint4f());
       }
+    case Token.timestimes:
+      f = (float) Math.pow(ScriptVariable.fValue(x1), ScriptVariable.fValue(x2));
+      return (x1.tok == Token.integer && x2.tok == Token.integer ? addX((int) f) : addX(f));
     }
     return true;
   }

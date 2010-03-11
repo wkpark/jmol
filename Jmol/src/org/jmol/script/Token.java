@@ -460,6 +460,7 @@ public class Token {
   final static int unaryMinus   = 0 | mathop | 11 << 4;
   final static int minusMinus   = 1 | mathop | 11 << 4;
   final static int plusPlus     = 2 | mathop | 11 << 4;
+  final static int timestimes   = 3 | mathop | 11 << 4;
   
   
   final static int propselector = 1 | mathop | 12 << 4;
@@ -1348,6 +1349,7 @@ public class Token {
       ";",            new Token(semicolon),
       "++",           new Token(plusPlus),
       "--",           new Token(minusMinus),
+      "**",           new Token(timestimes),
       "+",            tokenPlus,
       "-",            tokenMinus,
       "*",            tokenTimes,

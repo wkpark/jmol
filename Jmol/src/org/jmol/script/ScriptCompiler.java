@@ -2120,6 +2120,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case '+':
     case '&':
     case '|':
+    case '*':
       if (ichT < cchScript) {
         if (script.charAt(ichT) == ch) {
           ++ichT;
@@ -2135,7 +2136,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (ichT < cchScript && script.charAt(ichT) == '/')
         break;
     case '\\':  // leftdivide
-    case '*':
     case '!':
       if (ichT < cchScript && script.charAt(ichT) == '=')
         ++ichT;

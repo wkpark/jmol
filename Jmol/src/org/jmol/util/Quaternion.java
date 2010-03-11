@@ -697,11 +697,10 @@ public class Quaternion {
   private static Quaternion newMean(Quaternion[] data, Quaternion mean) {
     Vector3f sum = new Vector3f();
     float theta;
-    /* quaternion derivatives nicely take care of 
-     * producing the necessary metric. 
-     * since dq gives us the normal with the smallest POSITIVE angle, 
-     * we just scale by that -- using degrees,
-     * no special normalization is required.
+    /* quaternion derivatives nicely take care of producing the necessary 
+     * metric. Since dq gives us the normal with the smallest POSITIVE angle, 
+     * we just scale by that -- using degrees.
+     * No special normalization is required.
      * 
      * The key is that the mean has been set up already, and dq.getTheta()
      * will always return a value between 0 and 180. True, for groupings

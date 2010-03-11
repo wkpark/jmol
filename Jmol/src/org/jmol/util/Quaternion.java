@@ -636,8 +636,9 @@ public class Quaternion {
   }
 
   public static Object sphereMean(Quaternion[] data, float[] retStddev, float criterion) {
-    // based on Buss and Fillmore 
-    // "Spherical Averages and Applications to Spherical Splines and Interpolation"
+    // Samuel R. Buss, Jay P. Fillmore: 
+    // Spherical averages and applications to spherical splines and interpolation. 
+    // ACM Trans. Graph. 20(2): 95-126 (2001)
     while (true) {
       if (data == null || data.length == 0)
         break;

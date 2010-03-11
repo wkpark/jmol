@@ -739,6 +739,11 @@ public class Quaternion {
     return dqMean.mul(mean);
   }
 
+  /**
+   * @param data
+   * @param mean
+   * @return     standard deviation in units of degrees
+   */
   private static float stdDev(Quaternion[] data, Quaternion mean) {
     double sum = 0;
     double sum2 = 0;
@@ -747,9 +752,10 @@ public class Quaternion {
     // that is, cos(theta/2) for theta between them
     
     for (int i = n; --i >= 0;) {
-      float dist = 2 * (float) Math.acos(data[i].dot(mean));
-      sum += dist;
-      sum2 += dist * dist;
+      Quaternion dq = data[i].div(mean);
+      float theta = dq.getTheta();
+      sum += theta;
+      sum2 += theta * theta;
     }
     sum2 = sum2 - sum * sum / n;
     if (sum2 < 0)

@@ -725,8 +725,7 @@ public class Quaternion {
      *  
      */
     for (int i = data.length; --i >= 0;) {
-      Quaternion q = data[i];
-      Quaternion dq = q.div(mean);
+      Quaternion dq = data[i].div(mean);
       Vector3f v = dq.getNormal();
       theta = dq.getTheta();
       v.scale(theta);

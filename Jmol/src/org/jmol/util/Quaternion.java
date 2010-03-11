@@ -728,10 +728,10 @@ public class Quaternion {
       Quaternion dq = data[i].div(mean);
       Vector3f v = dq.getNormal();
       theta = dq.getTheta();
-      v.scale(theta);
+      v.scale(theta / data.length);
       sum.add(v);
     }
-    Quaternion dqMean = new Quaternion(sum, sum.length() / data.length);
+    Quaternion dqMean = new Quaternion(sum, sum.length());
     return dqMean.mul(mean);
   }
 

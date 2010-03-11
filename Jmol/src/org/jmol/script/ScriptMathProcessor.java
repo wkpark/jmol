@@ -2775,7 +2775,7 @@ class ScriptMathProcessor {
         for (int i = 0; i < pts.length; i++) {
           Object pt = Escape.unescapePoint(pts[i]);
           if (!(pt instanceof Point3f))
-            break;
+            return "NaN";
           data[i] = (Point3f) pt;
         }
       } else {
@@ -2847,7 +2847,7 @@ class ScriptMathProcessor {
         for (int i = 0; i < pts.length; i++) {
           Object pt = Escape.unescapePoint(pts[i]);
           if (!(pt instanceof Point4f))
-            break;
+            return "NaN";
           data[i] = new Quaternion((Point4f) pt);                   
         }
       } else {

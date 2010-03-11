@@ -118,15 +118,8 @@ final public class Measure {
      * 
      * a negative angle implies a left-handed axis (sheets)
      */
-    Point4f aa = new Point4f();
-    aa.x = vab.x;
-    aa.y = vab.y;
-    aa.z = vab.z;
     float theta = dq.getTheta();
     Vector3f n = dq.getNormal();
-    aa.x = vab.x;
-    aa.y = vab.y;
-    aa.z = vab.z;
     float v_dot_n = vab.dot(n);
     if (Math.abs(v_dot_n) < 0.0001f)
       v_dot_n = 0;
@@ -164,11 +157,8 @@ final public class Measure {
     Point3f pt_b_prime = new Point3f(pt_a_prime);
     pt_b_prime.add(n);
     theta = computeTorsion(a, pt_a_prime, pt_b_prime, b, true);
-    if (Float.isNaN(theta) || r.length() < 0.0001f) {
-      aa.set(n.x, n.y, n.z, 0);
-      dq.getThetaDirected(aa); // allow for r = 0
-      theta = aa.w;
-    }
+    if (Float.isNaN(theta) || r.length() < 0.0001f)
+      theta = dq.getThetaDirected(n); // allow for r = 0
     if (tokType == Token.angle)
       return new Float(theta);
     if (tokType == Token.draw)

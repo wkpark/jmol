@@ -695,8 +695,6 @@ public class Quaternion {
   }
 
   private static Quaternion newMean(Quaternion[] data, Quaternion mean) {
-    Vector3f sum = new Vector3f();
-    float theta;
     /* quaternion derivatives nicely take care of producing the necessary 
      * metric. Since dq gives us the normal with the smallest POSITIVE angle, 
      * we just scale by that -- using degrees.
@@ -724,11 +722,11 @@ public class Quaternion {
      *  This is officially an "exponential" or "hyperbolic" projection.
      *  
      */
+    Vector3f sum = new Vector3f();
     for (int i = data.length; --i >= 0;) {
       Quaternion dq = data[i].div(mean);
       Vector3f v = dq.getNormal();
-      theta = dq.getTheta();
-      v.scale(theta / data.length);
+      v.scale(dq.getTheta() / data.length);
       sum.add(v);
     }
     Quaternion dqMean = new Quaternion(sum, sum.length());

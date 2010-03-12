@@ -631,19 +631,21 @@ public class Quaternion {
     return "{" + q1 + " " + q2 + " " + q3 + " " + q0 + "}";
   }
 
-  public static Quaternion sphereCompare(Quaternion[] data1, Quaternion[] data2, float[] retStddev, float criterion) {
-    while (true) {
-      if (data1 == null || data2 == null || data1.length == 0 || data2.length != data1.length)
-        break;
-      Quaternion[] dqs = new Quaternion[data1.length];
-      for (int i = 0; i < dqs.length; i++) {
-        if (data1[i] == null || data2[i] == null)
-          return null;
-        dqs[i] = data2[i].div(data1[i]);
-      }
-      return (Quaternion) sphereMean(dqs, retStddev, criterion); 
+  public static Quaternion[] differences(Quaternion[] data1, Quaternion[] data2) {
+    int n;
+    if (data1 == null || data2 == null || (n = Math.min(data1.length, data2.length)) == 0)
+      return null;
+    Quaternion[] dqs = new Quaternion[n];
+    for (int i = 0; i < n; i++) {
+      if (data1[i] == null || data2[i] == null)
+        return null;
+      dqs[i] = data2[i].div(data1[i]);
     }
-    return null;
+    return dqs;
+  }
+  public static Quaternion sphereCompare(Quaternion[] data1, Quaternion[] data2, float[] retStddev, float criterion) {
+    Quaternion[] dqs = differences(data1, data2);
+    return (dqs == null ? null : (Quaternion) sphereMean(dqs, retStddev, criterion)); 
   }
   
   public static Object sphereMean(Quaternion[] data, float[] retStddev, float criterion) {

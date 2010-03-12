@@ -1476,7 +1476,7 @@ class ScriptMathProcessor {
     Point3f pt0 = null;
     if (tok == Token.quaternion || tok == Token.axisangle) {
       // quaternion([quaternion array]) // mean
-      // quaternion([quaternion array], [quaternion array])  // orientation comparison
+      // quaternion([quaternion array], [quaternion array])  // difference array
       // quaternion(matrix)
       // quaternion(vector, theta)
       // quaternion(q0, q1, q2, q3)
@@ -1546,8 +1546,13 @@ class ScriptMathProcessor {
         if (tok == Token.quaternion && args[0].tok == Token.list && args[1].tok == Token.list) {
           Quaternion[] data1 = getQuaternionArray((Object[]) args[0].value);
           Quaternion[] data2 = getQuaternionArray((Object[]) args[1].value);
-          q = Quaternion.sphereCompare(data1, data2, null, 0.0001f);
-          break;
+          data1 = Quaternion.differences(data1, data2);
+          if (data1 == null)
+            break;
+          String[] data = new String[data1.length];
+          for (int i = 0;i < data1.length; i++)
+            data[i] = data1[i].toString();
+          return addX(data);
         }
         Point3f pt1 = ptValue(args[1], false);
         p4 = planeValue(args[0]);

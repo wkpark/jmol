@@ -631,6 +631,21 @@ public class Quaternion {
     return "{" + q1 + " " + q2 + " " + q3 + " " + q0 + "}";
   }
 
+  public static Quaternion sphereCompare(Quaternion[] data1, Quaternion[] data2, float[] retStddev, float criterion) {
+    while (true) {
+      if (data1 == null || data2 == null || data1.length == 0 || data2.length != data1.length)
+        break;
+      Quaternion[] dqs = new Quaternion[data1.length];
+      for (int i = 0; i < dqs.length; i++) {
+        if (data1[i] == null || data2[i] == null)
+          return null;
+        dqs[i] = data2[i].div(data1[i]);
+      }
+      return (Quaternion) sphereMean(dqs, retStddev, criterion); 
+    }
+    return null;
+  }
+  
   public static Object sphereMean(Quaternion[] data, float[] retStddev, float criterion) {
     // Samuel R. Buss, Jay P. Fillmore: 
     // Spherical averages and applications to spherical splines and interpolation. 
@@ -682,7 +697,8 @@ public class Quaternion {
     // so dotted with the normalized mean gets us an approximate average for sin(theta/2)
     for (int i = ndata.length; --i >= 0;)
       f += Math.abs(ndata[i].get3dProjection(v).dot(mean)); 
-    mean.scale(f / ndata.length);
+    if (f != 0)
+      mean.scale(f / ndata.length);
     // now convert f to the corresponding cosine instead of sine
     f = (float) Math.sqrt(1 - mean.lengthSquared());
     if (Float.isNaN(f))

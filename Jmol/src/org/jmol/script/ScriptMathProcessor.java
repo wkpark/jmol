@@ -1475,6 +1475,8 @@ class ScriptMathProcessor {
       throws ScriptException {
     Point3f pt0 = null;
     if (tok == Token.quaternion || tok == Token.axisangle) {
+      // quaternion([quaternion array]) // mean
+      // quaternion([quaternion array], [quaternion array])  // orientation comparison
       // quaternion(matrix)
       // quaternion(vector, theta)
       // quaternion(q0, q1, q2, q3)
@@ -1490,6 +1492,8 @@ class ScriptMathProcessor {
       case 4:
         break;
       case 2:
+        if (tok == Token.quaternion && args[0].tok == Token.list && args[1].tok == Token.list)
+          break; 
         if ((pt0 = ptValue(args[0], false)) == null || tok != Token.quaternion
             && args[1].tok == Token.point3f)
           return false;
@@ -1514,7 +1518,37 @@ class ScriptMathProcessor {
       Quaternion q = null;
       Point4f p4 = null;
       switch (args.length) {
+      case 1:
+      default:
+        if (tok == Token.quaternion && args[0].tok == Token.list) {
+          Quaternion[] data1 = getQuaternionArray((Object[]) args[0].value);
+          Object mean = Quaternion.sphereMean(data1, null, 0.0001f);
+          q = (mean instanceof Quaternion ? (Quaternion) mean : null);
+          break;
+        } else if (args[0].tok == Token.matrix3f) {
+          q = new Quaternion((Matrix3f) args[0].value);
+        } else if (args[0].tok == Token.point4f) {
+          p4 = (Point4f) args[0].value;
+        } else if (args[0].tok == Token.bitset && tok == Token.quaternion) {
+          q = viewer.getAtomQuaternion(((BitSet) args[0].value).nextSetBit(0));
+          if (q == null)
+            return addX((int) 0);
+        } else {
+          Object v = Escape.unescapePoint(ScriptVariable.sValue(args[0]));
+          if (!(v instanceof Point4f))
+            return false;
+          p4 = (Point4f) v;
+        }
+        if (tok == Token.axisangle)
+          q = new Quaternion(new Point3f(p4.x, p4.y, p4.z), p4.w);
+        break;
       case 2:
+        if (tok == Token.quaternion && args[0].tok == Token.list && args[1].tok == Token.list) {
+          Quaternion[] data1 = getQuaternionArray((Object[]) args[0].value);
+          Quaternion[] data2 = getQuaternionArray((Object[]) args[1].value);
+          q = Quaternion.sphereCompare(data1, data2, null, 0.0001f);
+          break;
+        }
         Point3f pt1 = ptValue(args[1], false);
         p4 = planeValue(args[0]);
         if (pt1 != null)
@@ -1545,23 +1579,6 @@ class ScriptMathProcessor {
               ScriptVariable.fValue(args[1]), ScriptVariable.fValue(args[2])),
               ScriptVariable.fValue(args[3]));
         break;
-      default:
-        if (args[0].tok == Token.matrix3f) {
-          q = new Quaternion((Matrix3f) args[0].value);
-        } else if (args[0].tok == Token.point4f) {
-          p4 = (Point4f) args[0].value;
-        } else if (args[0].tok == Token.bitset && tok == Token.quaternion) {
-          q = viewer.getAtomQuaternion(((BitSet) args[0].value).nextSetBit(0));
-          if (q == null)
-            return addX((int) 0);
-        } else {
-          Object v = Escape.unescapePoint(ScriptVariable.sValue(args[0]));
-          if (!(v instanceof Point4f))
-            return false;
-          p4 = (Point4f) v;
-        }
-        if (tok == Token.axisangle)
-          q = new Quaternion(new Point3f(p4.x, p4.y, p4.z), p4.w);
       }
       if (q == null)
         q = new Quaternion(p4);
@@ -2838,25 +2855,9 @@ class ScriptMathProcessor {
     // only stddev and average
     
     while (true) {
-      if (quaternionOrStringData instanceof Quaternion[]) {
-        data = (Quaternion[]) quaternionOrStringData;
-      } else if (quaternionOrStringData instanceof Point4f[]) {
-        Point4f[] pts = (Point4f[]) quaternionOrStringData;
-        data = new Quaternion[pts.length];
-        for (int i = 0; i < pts.length; i++)
-          data[i] = new Quaternion(pts[i]);
-      } else if (quaternionOrStringData instanceof String[]) {
-        String[] pts = (String[]) quaternionOrStringData;
-        data = new Quaternion[pts.length];
-        for (int i = 0; i < pts.length; i++) {
-          Object pt = Escape.unescapePoint(pts[i]);
-          if (!(pt instanceof Point4f))
-            return "NaN";
-          data[i] = new Quaternion((Point4f) pt);                   
-        }
-      } else {
+      data = getQuaternionArray(quaternionOrStringData);
+      if (data == null)
         break;
-      }
       float[] retStddev = new float[1];
       Object result = Quaternion.sphereMean(data, retStddev, 0.0001f);
       if (result instanceof String)
@@ -2870,6 +2871,30 @@ class ScriptMathProcessor {
       break;
     }
     return "NaN";
+  }
+
+  private static Quaternion[] getQuaternionArray(Object[] quaternionOrStringData) {
+    Quaternion[] data;
+    if (quaternionOrStringData instanceof Quaternion[]) {
+      data = (Quaternion[]) quaternionOrStringData;
+    } else if (quaternionOrStringData instanceof Point4f[]) {
+      Point4f[] pts = (Point4f[]) quaternionOrStringData;
+      data = new Quaternion[pts.length];
+      for (int i = 0; i < pts.length; i++)
+        data[i] = new Quaternion(pts[i]);
+    } else if (quaternionOrStringData instanceof String[]) {
+      String[] pts = (String[]) quaternionOrStringData;
+      data = new Quaternion[pts.length];
+      for (int i = 0; i < pts.length; i++) {
+        Object pt = Escape.unescapePoint(pts[i]);
+        if (!(pt instanceof Point4f))
+          return null;
+        data[i] = new Quaternion((Point4f) pt);                   
+      }
+    } else {
+      return null;
+    }
+    return data;
   }
 
   private static Object sortOrReverse(Object list, int tok, boolean checkFloat) {

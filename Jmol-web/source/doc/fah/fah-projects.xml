@@ -3920,9 +3920,9 @@
   <fah_proj number="1771" name="p1771_BCHE_DAPP1_03_33_A1B" public="n" file="xyz"
     server="134.139.127.31" atoms="98477" preferred="14" deadline="28"
     credit="2137.6" frames="100" code="A0" contact="esorin" contrib="Danny Nielsen"/>
-  <fah_proj number="1773" name="p1773_BCHE_DAPP3_03_33_A1B" public="n"
+  <fah_proj number="1773" name="p1773_BCHE_DAPP3_03_33_A1B" public="n" file="xyz"
     server="134.139.127.31" atoms="98495" preferred="14" deadline="28"
-    credit="2137.6" frames="100" code="A0" contact="esorin"/>
+    credit="2137.6" frames="100" code="A0" contact="esorin" contrib="Krokonowaka"/>
   <fah_proj number="1775" name="p1775_BCHE_DAPP5_03_33_A1B" public="n" file="xyz"
     server="134.139.127.31" atoms="98789" preferred="14" deadline="28"
     credit="2137.6" frames="100" code="A0" contact="esorin" contrib="Bruce"/>
@@ -8346,7 +8346,7 @@
     credit="450" frames="100" code="GG2" contact="vvoelz"/>
   <fah_proj number="6606" name="p6606_CspTm_300K" public="y"
     server="171.64.65.61" atoms="1047" preferred="6" deadline="9"
-    credit="550" frames="100" code="GG2" contact="vvoelz"/>
+    credit="450" frames="100" code="GG2" contact="vvoelz"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"
@@ -8455,6 +8455,11 @@
   <fah_proj number="10107" name="p10107" public="y"
     server="171.64.65.71" atoms="1254" preferred="2" deadline="3"
     credit="548" frames="100" code="GG2" contact="gbowman"/>
+
+  <!-- Projects 10400 to 10499 -->
+  <fah_proj number="10400" name="p10400" public="n"
+    server="171.64.65.79" atoms="576" preferred="36" deadline="53"
+    credit="93" frames="100" code="A4" contact="kyleb"/>
 
   <!-- Projects 10500 to 10599 -->
   <fah_proj number="10501" name="p10501" public="y"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-02-23 11:38+0100\n"
+"POT-Creation-Date: 2010-03-14 00:37+0100\n"
 "PO-Revision-Date: 2009-10-25 22:19+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.cat>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -1245,7 +1245,7 @@ msgstr "S'està carregant…"
 msgid "What's New in Jmol"
 msgstr "Novetats del Jmol"
 
-#: org/openscience/jmol/app/webexport/JmolInstance.java:64
+#: org/openscience/jmol/app/webexport/JmolInstance.java:68
 msgid "Attempt to make scratch directory failed."
 msgstr "No s'ha pogut crear un directori temporal."
 
@@ -1266,12 +1266,12 @@ msgstr "Aquests noms s'empraran com a noms de fitxer de les miniaplicacions"
 msgid "Applet width:"
 msgstr "Amplada de la miniaplicació:"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:86
+#: org/openscience/jmol/app/webexport/PopInJmol.java:98
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr "Inseriu una llegenda de {0} ací."
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:89
+#: org/openscience/jmol/app/webexport/PopInJmol.java:101
 #, java-format
 msgid "insert a note for {0} here."
 msgstr "Inseriu una nota de {0} ací."
@@ -1343,9 +1343,9 @@ msgid "Insert a caption for {0} here."
 msgstr "Inseriu una llegenda per a {0} ací."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:354
-#, java-format
+#, fuzzy, java-format
 msgid ""
-"Insert additonal explanatory text here. Long text will wrap around Jmol "
+"Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
 "Inseriu un text explicatori addicional ací. Si el text és llarg, s''ajustarà "
@@ -1369,113 +1369,123 @@ msgstr ""
 msgid "Insert more information for {0} here."
 msgstr "Inseriu més informació de {0} ací."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:117
+#: org/openscience/jmol/app/webexport/WebPanel.java:127
 msgid "A web page containing Jmol applets"
 msgstr "Una pàgina web que conté miniaplicacions del Jmol"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:142
+#: org/openscience/jmol/app/webexport/WebPanel.java:152
 msgid "double-click and drag to reorder"
 msgstr "feu doble clic i arrosegueu per a reordenar"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:147
+#: org/openscience/jmol/app/webexport/WebPanel.java:157
 msgid "Add Present Jmol State as Instance..."
 msgstr "Afegeix l'estat del Jmol preenviat com a instància…"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:154
+#: org/openscience/jmol/app/webexport/WebPanel.java:164
 msgid "Delete Selected"
 msgstr "Suprimeix allò seleccionat"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:186
+#: org/openscience/jmol/app/webexport/WebPanel.java:196
 msgid "Jmol Instances:"
 msgstr "Instàncies de Jmol"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:209
+#: org/openscience/jmol/app/webexport/WebPanel.java:202
+#, fuzzy
+msgid "Select widgets:"
+msgstr "Amplada de la miniaplicació:"
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:230
 msgid "Help/Instructions"
 msgstr "Ajuda/Instruccions"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:216
-#: org/openscience/jmol/app/webexport/WebPanel.java:224
+#: org/openscience/jmol/app/webexport/WebPanel.java:237
+#: org/openscience/jmol/app/webexport/WebPanel.java:245
 msgid "Cartoon of Page"
 msgstr "Aspecte de la pàgina"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:230
+#: org/openscience/jmol/app/webexport/WebPanel.java:251
 msgid "Save HTML as..."
 msgstr "Anomena i desa l'HTML…"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:240
+#: org/openscience/jmol/app/webexport/WebPanel.java:261
 msgid "Relative server path to jar files:"
 msgstr "Camí relatiu al servidor per als fitxers jar:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:246
+#: org/openscience/jmol/app/webexport/WebPanel.java:267
 msgid "Relative local path to jar files:"
 msgstr "Camí relatiu local per als fitxers jar:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:252
+#: org/openscience/jmol/app/webexport/WebPanel.java:273
 msgid "Author (your name):"
 msgstr "Autor (el vostre nom):"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:259
+#: org/openscience/jmol/app/webexport/WebPanel.java:280
 msgid "Browser window title for this web page:"
 msgstr "Títol de finestra del navegador d'aquesta pàgina:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:317
+#: org/openscience/jmol/app/webexport/WebPanel.java:356
 msgid "Give the occurrence of Jmol a name:"
 msgstr "Anomena la visualització del Jmol:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:338
+#: org/openscience/jmol/app/webexport/WebPanel.java:377
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
 "S'ha produït un error en crear una instància nova que contenia scripts i una "
 "imatge."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:348
+#: org/openscience/jmol/app/webexport/WebPanel.java:387
 #, java-format
 msgid "added Instance {0}"
 msgstr "instància {0} afegida"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:351
+#: org/openscience/jmol/app/webexport/WebPanel.java:390
 #, java-format
 msgid "updated Instance {0}"
 msgstr "instància {0} actualitzada"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:388
+#: org/openscience/jmol/app/webexport/WebPanel.java:427
 msgid "Select a directory to create or an HTML file to save"
 msgstr "Seleccioneu un directori per crear o un fitxer HTML per desar"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:406
+#: org/openscience/jmol/app/webexport/WebPanel.java:445
 msgid "Call to FileWriter unsuccessful."
 msgstr "La crida a l'escriptura de fitxers ha fallat."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:471
+#: org/openscience/jmol/app/webexport/WebPanel.java:513
 #, java-format
 msgid "Using directory {0}"
 msgstr "S''utilitza el directori {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:472
+#: org/openscience/jmol/app/webexport/WebPanel.java:514
 msgid "adding JmolPopIn.js"
 msgstr "s'afegeix JmolPopIn.js"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:481
+#: org/openscience/jmol/app/webexport/WebPanel.java:523
 #, java-format
 msgid "adding {0}.png"
 msgstr "afegeix {0}.png"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:503
+#: org/openscience/jmol/app/webexport/WebPanel.java:545
 #, java-format
 msgid "adding {0}.spt"
 msgstr "afegeix {0}.spt"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:541
+#: org/openscience/jmol/app/webexport/WebPanel.java:559
+#, fuzzy, java-format
+msgid "adding {0}"
+msgstr "afegeix {0}.png"
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:599
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr ""
 "Basat en la plantilla d'A. Herr&#x00E1;ez com era modificat per J. Gutow"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:544
+#: org/openscience/jmol/app/webexport/WebPanel.java:602
 #, java-format
 msgid "creating {0}"
 msgstr "es crea {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:569
+#: org/openscience/jmol/app/webexport/WebPanel.java:638
 #, java-format
 msgid ""
 "Could not find or open:\n"
@@ -1484,7 +1494,7 @@ msgstr ""
 "No es pot trobar o obrir:\n"
 "{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:572
+#: org/openscience/jmol/app/webexport/WebPanel.java:641
 #, java-format
 msgid ""
 "copying\n"
@@ -1495,9 +1505,65 @@ msgstr ""
 "{0}\n"
 "         a"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:579
+#: org/openscience/jmol/app/webexport/WebPanel.java:648
 msgid "compressing large data file to"
 msgstr "s'està comprimint un fitxer de gran extensió a"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:43
+msgid "Spin on/off"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:55
+msgid "enable/disable spin"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:56
+msgid "Spin on"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:64
+msgid "Background Color"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:73
+msgid "background color:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:91
+msgid "Stereo Viewing"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:100
+msgid "select stereo type"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:103
+msgid "stereo off"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:104
+msgid "Stereo Off"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:105
+msgid "Red/Blue"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:107
+msgid "Red/Cyan"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:109
+msgid "Red/Green"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:119
+msgid "Download view"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:129
+msgid "unimplemented"
+msgstr ""
 
 #~ msgid "Show Selected"
 #~ msgstr "Mostra allò seleccionat"

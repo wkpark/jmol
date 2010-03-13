@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-02-26 22:48+0100\n"
+"POT-Creation-Date: 2010-03-14 00:37+0100\n"
 "PO-Revision-Date: 2010-01-10 16:53+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.cat>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -102,7 +102,7 @@ msgstr ""
 msgid "File Error:"
 msgstr "Error de fitxer:"
 
-#: org/jmol/applet/Jmol.java:1196
+#: org/jmol/applet/Jmol.java:1197
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
@@ -433,38 +433,42 @@ msgid "Norwegian Bokmal"
 msgstr "Noruec Bökmal"
 
 #: org/jmol/i18n/GT.java:137
+msgid "Occitan"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:138
 msgid "Polish"
 msgstr "Polonès"
 
-#: org/jmol/i18n/GT.java:138
+#: org/jmol/i18n/GT.java:139
 msgid "Brazilian Portuguese"
 msgstr "Portuguès del Brasil"
 
-#: org/jmol/i18n/GT.java:139
+#: org/jmol/i18n/GT.java:140
 msgid "Portuguese"
 msgstr "Portuguès"
 
-#: org/jmol/i18n/GT.java:140
+#: org/jmol/i18n/GT.java:141
 msgid "Russian"
 msgstr "Rus"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:142
 msgid "Slovenian"
 msgstr "Eslovè"
 
-#: org/jmol/i18n/GT.java:142
+#: org/jmol/i18n/GT.java:143
 msgid "Spanish"
 msgstr "Espanyol"
 
-#: org/jmol/i18n/GT.java:143
+#: org/jmol/i18n/GT.java:144
 msgid "Swedish"
 msgstr "Suec"
 
-#: org/jmol/i18n/GT.java:144
+#: org/jmol/i18n/GT.java:145
 msgid "Turkish"
 msgstr "Turc"
 
-#: org/jmol/i18n/GT.java:145
+#: org/jmol/i18n/GT.java:146
 msgid "Ukrainian"
 msgstr "Ucraïnès"
 
@@ -1594,95 +1598,95 @@ msgstr "Colors del RasMol"
 msgid "About..."
 msgstr "Quant a..."
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1098
-#: org/jmol/script/ScriptEvaluator.java:2364
+#: org/jmol/script/ScriptCompilationTokenParser.java:1105
+#: org/jmol/script/ScriptEvaluator.java:2356
 msgid "bad argument count"
 msgstr "recompte incorrecte dels arguments"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1101
+#: org/jmol/script/ScriptCompilationTokenParser.java:1108
 #, java-format
 msgid "invalid context for {0}"
 msgstr "el testimoni d''expressió no és vàlid: {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1104
-#: org/jmol/script/ScriptEvaluator.java:2388
+#: org/jmol/script/ScriptCompilationTokenParser.java:1111
+#: org/jmol/script/ScriptEvaluator.java:2380
 msgid "command expected"
 msgstr "s'esperava una ordre"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1107
+#: org/jmol/script/ScriptCompilationTokenParser.java:1114
 msgid "{ number number number } expected"
 msgstr "s'esperava { nombre nombre nombre }"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1110
-#: org/jmol/script/ScriptEvaluator.java:2397
+#: org/jmol/script/ScriptCompilationTokenParser.java:1117
+#: org/jmol/script/ScriptEvaluator.java:2389
 msgid "unexpected end of script command"
 msgstr "fi de l'ordre de l'script no esperat"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1113
+#: org/jmol/script/ScriptCompilationTokenParser.java:1120
 msgid "end of expression expected"
 msgstr "s'esperava la fi d'una expressió"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1116
+#: org/jmol/script/ScriptCompilationTokenParser.java:1123
 msgid "identifier or residue specification expected"
 msgstr "s'esperava un identificador o una especifació de residu"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1119
+#: org/jmol/script/ScriptCompilationTokenParser.java:1126
 msgid "invalid atom specification"
 msgstr "l'especificació d'àtom no és vàlida"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1122
+#: org/jmol/script/ScriptCompilationTokenParser.java:1129
 msgid "invalid chain specification"
 msgstr "l'especificació de cadena no és vàlida"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1125
+#: org/jmol/script/ScriptCompilationTokenParser.java:1132
 #, java-format
 msgid "invalid expression token: {0}"
 msgstr "el testimoni d''expressió no és vàlid: {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1128
+#: org/jmol/script/ScriptCompilationTokenParser.java:1135
 msgid "invalid model specification"
 msgstr "l'especificació de model no és vàlida"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1131
+#: org/jmol/script/ScriptCompilationTokenParser.java:1138
 #, java-format
 msgid "missing END for {0}"
 msgstr "Manca END per a {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1134
-#: org/jmol/script/ScriptEvaluator.java:2461
+#: org/jmol/script/ScriptCompilationTokenParser.java:1141
+#: org/jmol/script/ScriptEvaluator.java:2453
 msgid "number expected"
 msgstr "s'esperava un nombre"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1137
+#: org/jmol/script/ScriptCompilationTokenParser.java:1144
 msgid "number or variable name expected"
 msgstr "s'esperava un nombre o nom de variable"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1140
+#: org/jmol/script/ScriptCompilationTokenParser.java:1147
 msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "s'esperava una especificació de residu (ALA, AL?, A*)"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1143
+#: org/jmol/script/ScriptCompilationTokenParser.java:1150
 #, java-format
 msgid "{0} expected"
 msgstr "esperava {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1146
+#: org/jmol/script/ScriptCompilationTokenParser.java:1153
 #, java-format
 msgid "{0} unexpected"
 msgstr "no esperava {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1149
+#: org/jmol/script/ScriptCompilationTokenParser.java:1156
 #, java-format
 msgid "unrecognized expression token: {0}"
 msgstr "no es reconeix el testimoni de l''expressió: {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1152
-#: org/jmol/script/ScriptEvaluator.java:2510
+#: org/jmol/script/ScriptCompilationTokenParser.java:1159
+#: org/jmol/script/ScriptEvaluator.java:2502
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "el paràmetre {0} no està reconegut"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1155
+#: org/jmol/script/ScriptCompilationTokenParser.java:1162
 #, java-format
 msgid "unrecognized token: {0}"
 msgstr "no es reconeix el testimoni: {0}"
@@ -1691,133 +1695,133 @@ msgstr "no es reconeix el testimoni: {0}"
 msgid "script compiler ERROR: "
 msgstr "Error del compilador script: "
 
-#: org/jmol/script/ScriptEvaluator.java:2226
+#: org/jmol/script/ScriptEvaluator.java:2218
 #: org/jmol/script/ScriptEvaluator.java:7893
 msgid "script ERROR: "
 msgstr "Error de l'script: "
 
-#: org/jmol/script/ScriptEvaluator.java:2358
+#: org/jmol/script/ScriptEvaluator.java:2350
 msgid "x y z axis expected"
 msgstr "s'esperava un eix x y z"
 
-#: org/jmol/script/ScriptEvaluator.java:2361
+#: org/jmol/script/ScriptEvaluator.java:2353
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr "no es permet {0} amb el model de fons que es mostra"
 
-#: org/jmol/script/ScriptEvaluator.java:2367
+#: org/jmol/script/ScriptEvaluator.java:2359
 msgid "Miller indices cannot all be zero."
 msgstr "Els índexs de Miller no poden ser tots zero."
 
-#: org/jmol/script/ScriptEvaluator.java:2370
+#: org/jmol/script/ScriptEvaluator.java:2362
 msgid "bad [R,G,B] color"
 msgstr "el color [R,G,B] és incorrecte"
 
-#: org/jmol/script/ScriptEvaluator.java:2373
+#: org/jmol/script/ScriptEvaluator.java:2365
 msgid "boolean expected"
 msgstr "s'esperava un booleà"
 
-#: org/jmol/script/ScriptEvaluator.java:2376
+#: org/jmol/script/ScriptEvaluator.java:2368
 msgid "boolean or number expected"
 msgstr "s'esperava un booleà o un nombre"
 
-#: org/jmol/script/ScriptEvaluator.java:2379
+#: org/jmol/script/ScriptEvaluator.java:2371
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "s''esperava un boolea, un nombre o {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2382
+#: org/jmol/script/ScriptEvaluator.java:2374
 msgid "color expected"
 msgstr "s'esperava un color"
 
-#: org/jmol/script/ScriptEvaluator.java:2385
+#: org/jmol/script/ScriptEvaluator.java:2377
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "cal un nom de color o de paleta (Jmol, Rasmol)"
 
-#: org/jmol/script/ScriptEvaluator.java:2391
+#: org/jmol/script/ScriptEvaluator.java:2383
 msgid "{x y z} or $name or (atom expression) required"
 msgstr "cal {x y z}, $name o (expressió atòmica)"
 
-#: org/jmol/script/ScriptEvaluator.java:2394
+#: org/jmol/script/ScriptEvaluator.java:2386
 msgid "draw object not defined"
 msgstr "l'objecte de dibuix no està definit"
 
-#: org/jmol/script/ScriptEvaluator.java:2400
+#: org/jmol/script/ScriptEvaluator.java:2392
 msgid "valid (atom expression) expected"
 msgstr "s'esperava una (expressió atòmica) vàlida"
 
-#: org/jmol/script/ScriptEvaluator.java:2403
+#: org/jmol/script/ScriptEvaluator.java:2395
 msgid "(atom expression) or integer expected"
 msgstr "s'esperava una (expressió atòmica) o un nombre enter"
 
-#: org/jmol/script/ScriptEvaluator.java:2406
+#: org/jmol/script/ScriptEvaluator.java:2398
 msgid "filename expected"
 msgstr "s'esperava un nom de fitxer"
 
-#: org/jmol/script/ScriptEvaluator.java:2409
+#: org/jmol/script/ScriptEvaluator.java:2401
 msgid "file not found"
 msgstr "no s'ha trobat el fitxer"
 
-#: org/jmol/script/ScriptEvaluator.java:2412
+#: org/jmol/script/ScriptEvaluator.java:2404
 msgid "incompatible arguments"
 msgstr "arguments incompatibles"
 
-#: org/jmol/script/ScriptEvaluator.java:2415
+#: org/jmol/script/ScriptEvaluator.java:2407
 msgid "insufficient arguments"
 msgstr "arguments insuficients"
 
-#: org/jmol/script/ScriptEvaluator.java:2418
+#: org/jmol/script/ScriptEvaluator.java:2410
 msgid "integer expected"
 msgstr "s'esperava un enter"
 
-#: org/jmol/script/ScriptEvaluator.java:2421
+#: org/jmol/script/ScriptEvaluator.java:2413
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "l'enter està fora de l'abast ({0} - {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2424
+#: org/jmol/script/ScriptEvaluator.java:2416
 msgid "invalid argument"
 msgstr "l'argument no és vàlid"
 
-#: org/jmol/script/ScriptEvaluator.java:2427
+#: org/jmol/script/ScriptEvaluator.java:2419
 msgid "invalid parameter order"
 msgstr "odre dels paràmetres no vàlid"
 
-#: org/jmol/script/ScriptEvaluator.java:2430
+#: org/jmol/script/ScriptEvaluator.java:2422
 msgid "keyword expected"
 msgstr "s'esperava una paraula clau"
 
-#: org/jmol/script/ScriptEvaluator.java:2433
+#: org/jmol/script/ScriptEvaluator.java:2425
 msgid "no MO coefficient data available"
 msgstr "no hi ha dades del coeficient d'OM disponibles"
 
-#: org/jmol/script/ScriptEvaluator.java:2436
+#: org/jmol/script/ScriptEvaluator.java:2428
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "És necessari un índex d'OM d'1 a {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2439
+#: org/jmol/script/ScriptEvaluator.java:2431
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "no hi ha dades de base/coeficient d'OM per a aquest fotograma"
 
-#: org/jmol/script/ScriptEvaluator.java:2442
+#: org/jmol/script/ScriptEvaluator.java:2434
 msgid "no MO occupancy data available"
 msgstr "no hi ha dades d'ocupació d'OM disponibles"
 
-#: org/jmol/script/ScriptEvaluator.java:2445
+#: org/jmol/script/ScriptEvaluator.java:2437
 msgid "Only one molecular orbital is available in this file"
 msgstr "Només hi ha un orbital molecular disponible en aquest fitxer"
 
-#: org/jmol/script/ScriptEvaluator.java:2448
+#: org/jmol/script/ScriptEvaluator.java:2440
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "l''ordre {0} requereix que només es mostri un model"
 
-#: org/jmol/script/ScriptEvaluator.java:2451
+#: org/jmol/script/ScriptEvaluator.java:2443
 msgid "No data available"
 msgstr "no hi ha dades disponibles"
 
-#: org/jmol/script/ScriptEvaluator.java:2455
+#: org/jmol/script/ScriptEvaluator.java:2447
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
@@ -1825,25 +1829,25 @@ msgstr ""
 "No s'han llegit les càrregues parcials del títol; el Jmol les necessita per "
 "a rederitzar les dades d'EPM."
 
-#: org/jmol/script/ScriptEvaluator.java:2458
+#: org/jmol/script/ScriptEvaluator.java:2450
 msgid "No unit cell"
 msgstr "No hi ha cap cel·la unitat"
 
-#: org/jmol/script/ScriptEvaluator.java:2464
+#: org/jmol/script/ScriptEvaluator.java:2456
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "el número ha de ser ({0} o {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2467
+#: org/jmol/script/ScriptEvaluator.java:2459
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "el nombre decimal està fora de l''abast ({0} - {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2470
+#: org/jmol/script/ScriptEvaluator.java:2462
 msgid "object name expected after '$'"
 msgstr "s'esperava el nom de l'objectes després de '$'"
 
-#: org/jmol/script/ScriptEvaluator.java:2474
+#: org/jmol/script/ScriptEvaluator.java:2466
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
@@ -1851,95 +1855,95 @@ msgid ""
 msgstr ""
 "s''esperava un pla -- tres punts, unes expressions atòmiques, {0}, {1} o {2}"
 
-#: org/jmol/script/ScriptEvaluator.java:2477
+#: org/jmol/script/ScriptEvaluator.java:2469
 msgid "property name expected"
 msgstr "s'esperava un nom de propietat"
 
-#: org/jmol/script/ScriptEvaluator.java:2480
+#: org/jmol/script/ScriptEvaluator.java:2472
 #, java-format
 msgid "space group {0} was not found."
 msgstr "no s''ha trobat el grup espacial {0}."
 
-#: org/jmol/script/ScriptEvaluator.java:2483
+#: org/jmol/script/ScriptEvaluator.java:2475
 msgid "quoted string expected"
 msgstr "s'esperava una cadena entre cometes"
 
-#: org/jmol/script/ScriptEvaluator.java:2486
+#: org/jmol/script/ScriptEvaluator.java:2478
 msgid "quoted string or identifier expected"
 msgstr "s'esperava una cadena entre cometes o un identificador"
 
-#: org/jmol/script/ScriptEvaluator.java:2489
+#: org/jmol/script/ScriptEvaluator.java:2481
 msgid "too many rotation points were specified"
 msgstr "s'han especificat massa punts de rotació"
 
-#: org/jmol/script/ScriptEvaluator.java:2492
+#: org/jmol/script/ScriptEvaluator.java:2484
 msgid "too many script levels"
 msgstr "masses nivells d'script"
 
-#: org/jmol/script/ScriptEvaluator.java:2495
+#: org/jmol/script/ScriptEvaluator.java:2487
 msgid "unrecognized atom property"
 msgstr "no es reconeix la propietat de l'àtom"
 
-#: org/jmol/script/ScriptEvaluator.java:2498
+#: org/jmol/script/ScriptEvaluator.java:2490
 msgid "unrecognized bond property"
 msgstr "no es reconeix la propietat de l'enllaç"
 
-#: org/jmol/script/ScriptEvaluator.java:2501
+#: org/jmol/script/ScriptEvaluator.java:2493
 msgid "unrecognized command"
 msgstr "no es reconeix l'ordre"
 
-#: org/jmol/script/ScriptEvaluator.java:2504
+#: org/jmol/script/ScriptEvaluator.java:2496
 msgid "runtime unrecognized expression"
 msgstr "no es reconeix l'expressió d'execució"
 
-#: org/jmol/script/ScriptEvaluator.java:2507
+#: org/jmol/script/ScriptEvaluator.java:2499
 msgid "unrecognized object"
 msgstr "no es reconeix l'objecte"
 
-#: org/jmol/script/ScriptEvaluator.java:2514
+#: org/jmol/script/ScriptEvaluator.java:2506
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr ""
 "no es reconeix el paràmetre {0} a l'script d'estat del Jmol (es defineix "
 "així de totes maneres)"
 
-#: org/jmol/script/ScriptEvaluator.java:2517
+#: org/jmol/script/ScriptEvaluator.java:2509
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "no es reconeix el paràmetre SHOW -- utilitzeu {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2523
+#: org/jmol/script/ScriptEvaluator.java:2515
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "què s'ha d'escriure? {0} o «nomdefitxer» {1}"
 
-#: org/jmol/script/ScriptEvaluator.java:5909
+#: org/jmol/script/ScriptEvaluator.java:5910
 #, java-format
 msgid "{0} connections deleted"
 msgstr "s''han suprimit {0} connexions"
 
-#: org/jmol/script/ScriptEvaluator.java:5930
+#: org/jmol/script/ScriptEvaluator.java:5931
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} enllaços nous; {1} modificats"
 
-#: org/jmol/script/ScriptEvaluator.java:7090
+#: org/jmol/script/ScriptEvaluator.java:7093
 #, java-format
 msgid "file {0} created"
 msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:8017
-#: org/jmol/script/ScriptEvaluator.java:8247
+#: org/jmol/script/ScriptEvaluator.java:8251
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} àtoms suprimits"
 
-#: org/jmol/script/ScriptEvaluator.java:8816
+#: org/jmol/script/ScriptEvaluator.java:8820
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} enllaços d'hidrogen"
 
-#: org/jmol/script/ScriptEvaluator.java:9165
+#: org/jmol/script/ScriptEvaluator.java:9169
 #, fuzzy, java-format
 msgid "{0} struts added"
 msgstr "{0} enllaços d'hidrogen"
@@ -2171,25 +2175,25 @@ msgstr "{0} àtoms amagats"
 msgid "{0} atoms selected"
 msgstr "{0} àtoms seleccionats"
 
-#: org/jmol/viewer/Viewer.java:4101
+#: org/jmol/viewer/Viewer.java:4108
 #, fuzzy, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} enllaços d'hidrogen"
 
-#: org/jmol/viewer/Viewer.java:4142
+#: org/jmol/viewer/Viewer.java:4149
 msgid "Drag to move label"
 msgstr "Arrossegueu per a moure l'etiqueta"
 
-#: org/jmol/viewer/Viewer.java:7364
+#: org/jmol/viewer/Viewer.java:7378
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 "el porta-retalls no és accessible -- utilitzeu una miniaplicació signada"
 
-#: org/jmol/viewer/Viewer.java:8076
+#: org/jmol/viewer/Viewer.java:8090
 msgid "Cannot set log file path."
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:8078
+#: org/jmol/viewer/Viewer.java:8092
 #, java-format
 msgid "Setting log file to {0}"
 msgstr ""

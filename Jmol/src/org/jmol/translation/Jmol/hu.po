@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-02-23 11:38+0100\n"
+"POT-Creation-Date: 2010-03-14 00:37+0100\n"
 "PO-Revision-Date: 2010-01-14 15:03+0000\n"
 "Last-Translator: Balázs Attila <battila9@freemail.hu>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -1241,7 +1241,7 @@ msgstr "Betöltés..."
 msgid "What's New in Jmol"
 msgstr "őjdonságok a Jmol-ban"
 
-#: org/openscience/jmol/app/webexport/JmolInstance.java:64
+#: org/openscience/jmol/app/webexport/JmolInstance.java:68
 msgid "Attempt to make scratch directory failed."
 msgstr "Átmeneti mappa létrehozása sikertelen"
 
@@ -1261,12 +1261,12 @@ msgstr "Ezeket a neveket fogja a kisalkalmazások fájnneveként használni"
 msgid "Applet width:"
 msgstr "Kisalkalmazás szélessége:"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:86
+#: org/openscience/jmol/app/webexport/PopInJmol.java:98
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr "adja meg a {0} címkéjét."
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:89
+#: org/openscience/jmol/app/webexport/PopInJmol.java:101
 #, java-format
 msgid "insert a note for {0} here."
 msgstr "adja mega a {0} leírását."
@@ -1337,9 +1337,9 @@ msgid "Insert a caption for {0} here."
 msgstr "Adjon meg egy feliratot {0} számára"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:354
-#, java-format
+#, fuzzy, java-format
 msgid ""
-"Insert additonal explanatory text here. Long text will wrap around Jmol "
+"Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
 "Itt egy hosszabb, magyarázó szöveget adhat meg. Ha hosszú, akkor a {0} Jmol "
@@ -1363,110 +1363,120 @@ msgstr ""
 msgid "Insert more information for {0} here."
 msgstr "Adjon meg még több információt {0}-hoz."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:117
+#: org/openscience/jmol/app/webexport/WebPanel.java:127
 msgid "A web page containing Jmol applets"
 msgstr "Egy weboldal, mely Jmol JAVA kisalkalmazást tartalmaz"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:142
+#: org/openscience/jmol/app/webexport/WebPanel.java:152
 msgid "double-click and drag to reorder"
 msgstr "dupla kattinttással vagy húzással rendezhető át"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:147
+#: org/openscience/jmol/app/webexport/WebPanel.java:157
 msgid "Add Present Jmol State as Instance..."
 msgstr "A jelenlegi Jmol állapot hozzáadása példányként"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:154
+#: org/openscience/jmol/app/webexport/WebPanel.java:164
 msgid "Delete Selected"
 msgstr "Jelöltek törlése"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:186
+#: org/openscience/jmol/app/webexport/WebPanel.java:196
 msgid "Jmol Instances:"
 msgstr "Jmol példányok:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:209
+#: org/openscience/jmol/app/webexport/WebPanel.java:202
+#, fuzzy
+msgid "Select widgets:"
+msgstr "Kisalkalmazás szélessége:"
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:230
 msgid "Help/Instructions"
 msgstr "Súgó/Ismertető"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:216
-#: org/openscience/jmol/app/webexport/WebPanel.java:224
+#: org/openscience/jmol/app/webexport/WebPanel.java:237
+#: org/openscience/jmol/app/webexport/WebPanel.java:245
 msgid "Cartoon of Page"
 msgstr "A lap vázlata"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:230
+#: org/openscience/jmol/app/webexport/WebPanel.java:251
 msgid "Save HTML as..."
 msgstr "HTML mentés más&ként..."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:240
+#: org/openscience/jmol/app/webexport/WebPanel.java:261
 msgid "Relative server path to jar files:"
 msgstr "A jar fájlok relatív szerveroldali elérési útja"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:246
+#: org/openscience/jmol/app/webexport/WebPanel.java:267
 msgid "Relative local path to jar files:"
 msgstr "A jar fájlok relatív helyi fájlrendszeri útja"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:252
+#: org/openscience/jmol/app/webexport/WebPanel.java:273
 msgid "Author (your name):"
 msgstr "Szerző (az Ön neve)"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:259
+#: org/openscience/jmol/app/webexport/WebPanel.java:280
 msgid "Browser window title for this web page:"
 msgstr "A böngészőablak címsorában megjelenítndő cím:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:317
+#: org/openscience/jmol/app/webexport/WebPanel.java:356
 msgid "Give the occurrence of Jmol a name:"
 msgstr "Adjon a Jmol megjelenésének egy nevet:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:338
+#: org/openscience/jmol/app/webexport/WebPanel.java:377
 msgid "Error creating new instance containing script(s) and image."
 msgstr "Nem sikerült létrehozni az új példányt parancsfájlokkal és képekkel."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:348
+#: org/openscience/jmol/app/webexport/WebPanel.java:387
 #, java-format
 msgid "added Instance {0}"
 msgstr "a {0} példány hozzáadva"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:351
+#: org/openscience/jmol/app/webexport/WebPanel.java:390
 #, java-format
 msgid "updated Instance {0}"
 msgstr "a {0} példány frissítve"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:388
+#: org/openscience/jmol/app/webexport/WebPanel.java:427
 msgid "Select a directory to create or an HTML file to save"
 msgstr "Válassza ki a mappát, ahol a HTML fájlok létrejöjjenek"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:406
+#: org/openscience/jmol/app/webexport/WebPanel.java:445
 msgid "Call to FileWriter unsuccessful."
 msgstr "FileWriter hívása sikertelen."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:471
+#: org/openscience/jmol/app/webexport/WebPanel.java:513
 #, java-format
 msgid "Using directory {0}"
 msgstr "{0} mappa használata"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:472
+#: org/openscience/jmol/app/webexport/WebPanel.java:514
 msgid "adding JmolPopIn.js"
 msgstr "JmolPopIn.js hozzáadása"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:481
+#: org/openscience/jmol/app/webexport/WebPanel.java:523
 #, java-format
 msgid "adding {0}.png"
 msgstr "{0}.png hozzáadása"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:503
+#: org/openscience/jmol/app/webexport/WebPanel.java:545
 #, java-format
 msgid "adding {0}.spt"
 msgstr "{0}.spt hozzáadása"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:541
+#: org/openscience/jmol/app/webexport/WebPanel.java:559
+#, fuzzy, java-format
+msgid "adding {0}"
+msgstr "{0}.png hozzáadása"
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:599
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr "A mintát A. Herr&#x00E1;ez készítette és by J. Gutow módosította"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:544
+#: org/openscience/jmol/app/webexport/WebPanel.java:602
 #, java-format
 msgid "creating {0}"
 msgstr "{0} létrehozása"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:569
+#: org/openscience/jmol/app/webexport/WebPanel.java:638
 #, java-format
 msgid ""
 "Could not find or open:\n"
@@ -1475,7 +1485,7 @@ msgstr ""
 "Nem található vagy nyitható:\n"
 "{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:572
+#: org/openscience/jmol/app/webexport/WebPanel.java:641
 #, java-format
 msgid ""
 "copying\n"
@@ -1486,9 +1496,65 @@ msgstr ""
 "{0}\n"
 "         ide"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:579
+#: org/openscience/jmol/app/webexport/WebPanel.java:648
 msgid "compressing large data file to"
 msgstr "nagy adatfájl tömörítése"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:43
+msgid "Spin on/off"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:55
+msgid "enable/disable spin"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:56
+msgid "Spin on"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:64
+msgid "Background Color"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:73
+msgid "background color:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:91
+msgid "Stereo Viewing"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:100
+msgid "select stereo type"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:103
+msgid "stereo off"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:104
+msgid "Stereo Off"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:105
+msgid "Red/Blue"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:107
+msgid "Red/Cyan"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:109
+msgid "Red/Green"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:119
+msgid "Download view"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:129
+msgid "unimplemented"
+msgstr ""
 
 #~ msgid "Show Selected"
 #~ msgstr "A jelöltek látszanak"

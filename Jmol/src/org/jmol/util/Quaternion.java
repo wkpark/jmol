@@ -643,6 +643,7 @@ public class Quaternion {
     }
     return dqs;
   }
+  
   public static Quaternion sphereCompare(Quaternion[] data1, Quaternion[] data2, float[] retStddev, float criterion) {
     Quaternion[] dqs = differences(data1, data2);
     return (dqs == null ? null : (Quaternion) sphereMean(dqs, retStddev, criterion)); 

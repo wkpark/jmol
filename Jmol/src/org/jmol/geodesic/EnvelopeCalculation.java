@@ -292,7 +292,8 @@ public final class EnvelopeCalculation {
     int nPoints = 0;
     int dotCount = 42;
     for (int i = dotsConvexMax; --i >= 0;)
-      nPoints += dotsConvexMaps[i].cardinality(dotCount);
+      if (dotsConvexMaps[i] != null)
+        nPoints += dotsConvexMaps[i].cardinality(dotCount);
     Point3f[] points = new Point3f[nPoints];
     if (nPoints == 0)
       return points;

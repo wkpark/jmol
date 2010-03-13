@@ -1476,8 +1476,11 @@ class ScriptMathProcessor {
     Point3f pt0 = null;
     if (tok == Token.quaternion || tok == Token.axisangle) {
       // quaternion([quaternion array]) // mean
-      // quaternion([quaternion array], [quaternion array])  // difference array
+      // quaternion([quaternion array], [quaternion array]) // difference array
       // quaternion(matrix)
+      // quaternion({atomSet}) // array of all quaternions, by group
+      // quaternion({atomSet}, nMax) // nMax quaternions, by group
+      // quaternion({atomSet}, {atomset}) // difference array, by group
       // quaternion(vector, theta)
       // quaternion(q0, q1, q2, q3)
       // quaternion("{x, y, z, w"})
@@ -1492,8 +1495,13 @@ class ScriptMathProcessor {
       case 4:
         break;
       case 2:
-        if (tok == Token.quaternion && args[0].tok == Token.list && args[1].tok == Token.list)
-          break; 
+        if (tok == Token.quaternion) {
+          if (args[0].tok == Token.list && args[1].tok == Token.list)
+            break;
+          if (args[0].tok == Token.bitset
+              && (args[1].tok == Token.integer || args[1].tok == Token.bitset))
+            break;
+        }
         if ((pt0 = ptValue(args[0], false)) == null || tok != Token.quaternion
             && args[1].tok == Token.point3f)
           return false;
@@ -1516,6 +1524,7 @@ class ScriptMathProcessor {
       if (isSyntaxCheck)
         return addX(new Point4f(0, 0, 0, 1));
       Quaternion q = null;
+      Quaternion[] qs = null;
       Point4f p4 = null;
       switch (args.length) {
       case 1:
@@ -1530,9 +1539,7 @@ class ScriptMathProcessor {
         } else if (args[0].tok == Token.point4f) {
           p4 = (Point4f) args[0].value;
         } else if (args[0].tok == Token.bitset && tok == Token.quaternion) {
-          q = viewer.getAtomQuaternion(((BitSet) args[0].value).nextSetBit(0));
-          if (q == null)
-            return addX((int) 0);
+          qs = viewer.getAtomGroupQuaternions((BitSet) args[0].value, Integer.MAX_VALUE);
         } else {
           Object v = Escape.unescapePoint(ScriptVariable.sValue(args[0]));
           if (!(v instanceof Point4f))
@@ -1543,16 +1550,23 @@ class ScriptMathProcessor {
           q = new Quaternion(new Point3f(p4.x, p4.y, p4.z), p4.w);
         break;
       case 2:
-        if (tok == Token.quaternion && args[0].tok == Token.list && args[1].tok == Token.list) {
-          Quaternion[] data1 = getQuaternionArray((Object[]) args[0].value);
-          Quaternion[] data2 = getQuaternionArray((Object[]) args[1].value);
-          data1 = Quaternion.differences(data1, data2);
-          if (data1 == null)
+        if (tok == Token.quaternion) {
+          if (args[0].tok == Token.list && args[1].tok == Token.list) {
+            Quaternion[] data1 = getQuaternionArray((Object[]) args[0].value);
+            Quaternion[] data2 = getQuaternionArray((Object[]) args[1].value);
+            qs = Quaternion.differences(data1, data2);
             break;
-          String[] data = new String[data1.length];
-          for (int i = 0;i < data1.length; i++)
-            data[i] = data1[i].toString();
-          return addX(data);
+          }
+          if (args[0].tok == Token.bitset && args[1].tok == Token.bitset) {
+            Quaternion[] data1 = viewer.getAtomGroupQuaternions((BitSet) args[0].value, Integer.MAX_VALUE);
+            Quaternion[] data2 = viewer.getAtomGroupQuaternions((BitSet) args[1].value, Integer.MAX_VALUE);
+            qs = Quaternion.differences(data1, data2);
+            break;
+          }
+          if (args[0].tok == Token.bitset && args[1].tok == Token.integer) {
+            qs = viewer.getAtomGroupQuaternions((BitSet) args[0].value, ScriptVariable.iValue(args[1]));
+            break;
+          }
         }
         Point3f pt1 = ptValue(args[1], false);
         p4 = planeValue(args[0]);
@@ -1585,9 +1599,13 @@ class ScriptMathProcessor {
               ScriptVariable.fValue(args[3]));
         break;
       }
-      if (q == null)
-        q = new Quaternion(p4);
-      return addX(q.toPoint4f());
+      if (qs != null) {
+        String[] data = new String[qs.length];
+        for (int i = 0; i < qs.length; i++)
+          data[i] = qs[i].toString();
+        return addX(data);
+      }
+      return addX((q == null ? new Quaternion(p4) : q).toPoint4f());
     }
     if (tok == Token.now) {
       if (args.length == 1 && args[0].tok == Token.string)

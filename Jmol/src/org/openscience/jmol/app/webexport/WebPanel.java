@@ -31,10 +31,13 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Vector;
 import java.util.zip.GZIPOutputStream;
+import java.util.BitSet;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -53,7 +56,7 @@ import org.openscience.jmol.app.jmolpanel.HelpDialog;
  * 
  */
 abstract class WebPanel extends JPanel implements ActionListener,
-    ListSelectionListener {
+    ListSelectionListener, ItemListener {
 
   abstract String getAppletDefs(int i, String html, StringBuffer appletDefs,
                                 JmolInstance instance);
@@ -91,6 +94,9 @@ abstract class WebPanel extends JPanel implements ActionListener,
       webPageTitle;
   private JFileChooser fc;
   private JList instanceList;
+  protected Widgets theWidgets;
+  protected int nWidgets;
+  private Checkbox[] widgetCheckboxes;
   protected JmolViewer viewer;
   private int panelIndex;
   private WebPanel[] webPanels;
@@ -101,6 +107,10 @@ abstract class WebPanel extends JPanel implements ActionListener,
     this.fc = fc;
     this.webPanels = webPanels;
     this.panelIndex = panelIndex;
+    this.theWidgets=new Widgets(viewer);
+    this.nWidgets=theWidgets.widgetList.length;
+    this.widgetCheckboxes=new Checkbox[nWidgets];
+
     // Create the text fields for the path to the Jmol applet, page author(s)
     // name(s) and web page title.
     remoteAppletPath = new JTextField(20);
@@ -185,6 +195,16 @@ abstract class WebPanel extends JPanel implements ActionListener,
     rightPanel.setBorder(BorderFactory.createTitledBorder(GT
         ._("Jmol Instances:")));
 
+    //Create the Widget Panel
+    JPanel widgetPanel = new JPanel();
+    widgetPanel.setMinimumSize(new Dimension(150,150));
+    widgetPanel.setLayout(new BoxLayout(widgetPanel,BoxLayout.Y_AXIS));
+    widgetPanel.setBorder(BorderFactory.createTitledBorder(GT._("Select widgets:")));
+    for (int i = 0; i<nWidgets;i++){
+      widgetCheckboxes[i]=new Checkbox(theWidgets.widgetList[i].name);
+      widgetCheckboxes[i].addItemListener(this);
+      widgetPanel.add(widgetCheckboxes[i]);
+    }
     // Create the overall panel
     JPanel panel = new JPanel();
     panel.setLayout(new BorderLayout());
@@ -193,8 +213,9 @@ abstract class WebPanel extends JPanel implements ActionListener,
     leftPanel.setMaximumSize(new Dimension(350, 1000));
 
     // Add everything to this panel.
-    panel.add(leftPanel, BorderLayout.CENTER);
-    panel.add(rightPanel, BorderLayout.EAST);
+    panel.add(leftPanel, BorderLayout.WEST);
+    panel.add(rightPanel, BorderLayout.CENTER);
+    panel.add(widgetPanel, BorderLayout.EAST);
 
     enableButtons(instanceList);
     return panel;
@@ -288,6 +309,24 @@ abstract class WebPanel extends JPanel implements ActionListener,
     return editorScrollPane.getHeight();
   }
 
+  public void itemStateChanged(ItemEvent e){
+    DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
+    int[] list = instanceList.getSelectedIndices();
+    JmolInstance instance = (JmolInstance) listModel.get(list[0]);
+    Object source = e.getSource();
+    int stateChange = e.getStateChange();
+    for(int i=0; i<nWidgets;i++){
+      if(source==widgetCheckboxes[i]){
+        if(stateChange==ItemEvent.SELECTED){
+          instance.addWidget(i);
+        }
+        if(stateChange==ItemEvent.DESELECTED){
+          instance.deleteWidget(i);
+        }
+      }
+    }
+  }
+  
   public void actionPerformed(ActionEvent e) {
 
     if (e.getSource() == remoteAppletPath) {// apparently no events are fired to
@@ -332,7 +371,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
             .getNumber().intValue();
       }
       JmolInstance instance = new JmolInstance(viewer, name, script, width,
-          height);
+          height, nWidgets);
       if (instance == null) {
         LogPanel.log(GT
             ._("Error creating new instance containing script(s) and image."));
@@ -436,6 +475,9 @@ abstract class WebPanel extends JPanel implements ActionListener,
     if (appletSizeSpinnerH != null)
       appletSizeSpinnerH.getModel().setValue(new Integer(height));
     viewer.evalStringQuiet(")" + instance.script); //leading paren disabled history
+    //Set the widget selections to match this instance
+    for (int i = 0; i < nWidgets; i++)
+      widgetCheckboxes[i].setState(instance.whichWidgets.get(i));
   }
 
   String getInstanceName(int i) {
@@ -505,6 +547,22 @@ abstract class WebPanel extends JPanel implements ActionListener,
       }
       String html = WebExport.getResourceString(this, panelName + "_template");
       html = fixHtml(html);
+      String jsStr = "";
+      BitSet whichWidgets = allSelectedWidgets();
+      for (int i = 0; i < nWidgets; i++) {
+        if (whichWidgets.get(i)) {
+          String scriptFileName = theWidgets.widgetList[i]
+              .getJavaScriptFileName();
+          if (!scriptFileName.equalsIgnoreCase("none")) {
+            jsStr += "\n<script src=\"" + scriptFileName
+                + "\" type=\"text/javascript\"></script>";
+            LogPanel.log("  " + GT._("adding {0}", scriptFileName));
+            viewer.writeTextFile(datadirPath + "/" + scriptFileName + "",
+                WebExport.getResourceString(this, scriptFileName));
+          }
+        }
+      }
+      html=TextFormat.simpleReplace(html,"@WIDGETJSFILES@",jsStr);
       appletInfoDivs = "";
       StringBuffer appletDefs = new StringBuffer();
       if (!useAppletJS)
@@ -550,6 +608,17 @@ abstract class WebPanel extends JPanel implements ActionListener,
     }
     LogPanel.log("");
     return true;
+  }
+
+  public BitSet allSelectedWidgets() {
+    BitSet selectedWidgets = new BitSet(nWidgets);
+    selectedWidgets.clear();
+    DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
+    for (int i = 0; i < listModel.getSize(); i++) {
+      JmolInstance thisInstance = (JmolInstance) (listModel.getElementAt(i));
+      selectedWidgets.or(thisInstance.whichWidgets);
+    }
+    return selectedWidgets;
   }
 
   private String copyBinaryFile(String fullPathName, String dataPath) {

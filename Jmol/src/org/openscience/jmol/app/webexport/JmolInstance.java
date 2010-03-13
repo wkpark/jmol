@@ -29,6 +29,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.util.BitSet;
+
 import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;
@@ -41,18 +43,20 @@ class JmolInstance {
   int width;
   int height;
   String pictFile;
+  BitSet whichWidgets;//true bits are selected widgets
   boolean pictIsScratchFile;
   JmolViewer viewer;
 
   JmolInstance(JmolViewer viewer, String name, String script,
-      int width, int height) {
+      int width, int height, int nWidgets) {
     this.viewer = viewer;
     this.name = name;
     this.javaname = name.replaceAll("[^a-zA-Z_0-9-]", "_"); //escape filename characters
     this.script = script;
     this.width = width;
     this.height = height;
-    //need the file writing stuff...
+    this.whichWidgets=new BitSet(nWidgets);
+    whichWidgets.clear(0,nWidgets);
     FileSystemView Directories = FileSystemView.getFileSystemView();
     File homedir = Directories.getHomeDirectory();
     String homedirpath = homedir.getPath();
@@ -120,6 +124,24 @@ class JmolInstance {
     if (scratchToErase.exists() && !scratchToErase.delete())
         throw new IOException("Failed to delete scratch file " + pictFile + ".");
     //delete any other scratch files we create with an instance.
+    return true;
+  }
+
+  boolean addWidget(int widgetID) {
+    if (widgetID > whichWidgets.size())
+      return false;// minimalist error checking
+    if (widgetID < 0)
+      return false;
+    whichWidgets.set(widgetID);
+    return true;
+  }
+
+  boolean deleteWidget(int widgetID) {
+    if (widgetID > whichWidgets.size())
+      return false;// minimalist error checking
+    if (widgetID < 0)
+      return false;
+    whichWidgets.clear(widgetID);
     return true;
   }
 }

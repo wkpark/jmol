@@ -351,7 +351,7 @@ public class WebExport extends JPanel implements WindowListener {
         "GT_pop_in_template.html_INSERTINTRO", GT.escapeHTML(GT._("Insert the page INTRODUCTION here.")),
         
         "GT_pop_in_template2.html_INSERTCAPTION", GT.escapeHTML(GT._("Insert a caption for {0} here.","@NAME@")),
-        "GT_pop_in_template2.html_INSERTADDITIONAL", GT.escapeHTML(GT._("Insert additonal explanatory text here. Long text will wrap around Jmol model {0}.","@NAME@")),
+        "GT_pop_in_template2.html_INSERTADDITIONAL", GT.escapeHTML(GT._("Insert additional explanatory text here. Long text will wrap around Jmol model {0}.","@NAME@")),
         
         "GT_script_button_template.html_INSERT", GT.escapeHTML(GT._("Insert your TITLE and INTRODUCTION here.")),
         

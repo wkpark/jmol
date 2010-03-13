@@ -17,6 +17,10 @@
 	Modified 2007.08.13 by Bob Hanson
 	
 	-- integration into Jmol application
+	
+	Modified 2010.3.9 by Jonathan Gutow
+	-- addition of widget activation upon pop-in.
+	-- addition of widget switching on view change in ScriptButton pages.
 
 */
 
@@ -34,10 +38,26 @@ function putJmolDiv(molNr, molFileName,imageFileName,appletWidth,appletHeight) {
 
 function popInJmol(n,fileName,width,height) {
 	document.getElementById("Jmol"+n).innerHTML = jmolApplet([width,height],"defaultDirectory = \""+dataDir+"\";script "+fileName+"",n);
+    var cntlID =  "JmolCntl"+n;
+    var cntlDiv = document.getElementById(cntlID)
+    if(cntlDiv)
+        cntlDiv.setAttribute('style', 'visibility:visible;');
 }
 
-function scriptbuttonJmol(fileName) {
+function scriptbuttonJmol(fileName, numberOfButtons) {
 	document.getElementById("Jmol0").innerHTML = jmolApplet("100%","defaultDirectory = \""+dataDir+"\";script "+fileName+"");
+}
+
+function fixScriptButtonWidgets(numberOfButtons){
+    for (i=0;i<numberOfButtons;i++) {
+        var divID = "jmolCntl"+i;
+        if(divID) jmolWidgetStrs[i]=new String(document.getElementById(divID).innerHTML);
+    }
+    document.getElementById("JmolCntl").innerHTML = jmolWidgetStrs[0];
+}
+
+function updateScriptButtonWidgets(buttonNumber){
+    document.getElementById("JmolCntl").innerHTML = jmolWidgetStrs[buttonNumber];
 }
 
 function getHTML(element) {

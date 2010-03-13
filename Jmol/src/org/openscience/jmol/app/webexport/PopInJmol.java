@@ -81,6 +81,18 @@ class PopInJmol extends WebPanel implements ChangeListener {
     String javaname = instance.javaname;
     int JmolSizeW = instance.width;
     int JmolSizeH = instance.height;
+    String widgetDefs = "";
+    if (!instance.whichWidgets.isEmpty()) {
+      widgetDefs += "<div id=\"JmolCntl" + i
+          + "\" style=\"visibility:hidden; display:none;\">";
+      for (int j = 0; j < nWidgets; j++) {
+        if (instance.whichWidgets.get(j)) {
+          widgetDefs += theWidgets.widgetList[j].getJavaScript(i,
+              instance.script);
+        }
+      }
+      widgetDefs += "</div>";
+   }
     if (useAppletJS) {
       appletInfoDivs += "\n<div id=\"" + javaname + "_caption\">\n"
           + GT.escapeHTML(GT._("insert a caption for {0} here.", name))
@@ -88,6 +100,7 @@ class PopInJmol extends WebPanel implements ChangeListener {
       appletInfoDivs += "\n<div id=\"" + javaname + "_note\">\n"
           + GT.escapeHTML(GT._("insert a note for {0} here.", name))
           + "\n</div>";
+      //TODO fix pure javascript to work with widgets...
       appletDefs.append("\naddJmolDiv(" + i + ",'" + divClass + "','"
           + javaname + "'," + JmolSizeW + "," + JmolSizeH + ")");
     } else {
@@ -98,6 +111,9 @@ class PopInJmol extends WebPanel implements ChangeListener {
       s = TextFormat.simpleReplace(s, "@HEIGHT@", "" + JmolSizeH);
       s = TextFormat.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
       s = TextFormat.simpleReplace(s, "@APPLETNAME@", GT.escapeHTML(javaname));
+      s = TextFormat.simpleReplace(s, "@LEFTWIDGETS@", "");// no left widgets
+                                                           // for now
+      s = TextFormat.simpleReplace(s, "@RIGHTWIDGETS@", widgetDefs);
       appletDefs.append(s);
     }
     return html;

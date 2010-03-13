@@ -57,15 +57,43 @@ class ScriptButtons extends WebPanel {
     int size = ((SpinnerNumberModel) (appletSizeSpinnerP.getModel()))
         .getNumber().intValue();
     int leftpercent = 100 - size;
+    int appletheightpercent = 100;
+    int nbuttons = getInstanceList().getModel().getSize();
+    if (!allSelectedWidgets().isEmpty())
+      appletheightpercent = 85;
     html = TextFormat.simpleReplace(html, "@WIDTHPERCENT@", "" + size);
     html = TextFormat.simpleReplace(html, "@LEFTPERCENT@", "" + leftpercent);
+    html = TextFormat.simpleReplace(html, "@NBUTTONS@", "" + nbuttons);
+    html = TextFormat.simpleReplace(html, "@HEIGHT@", "" + appletheightpercent);
     return html;
   }
 
   String getAppletDefs(int i, String html, StringBuffer appletDefs,
                        JmolInstance instance) {
+    //TODO add widgets  Could have pure javascript update of widgets for each view.
+    //The widgets should appear below the applet as in Angel's example.  The best
+    //way to do this would be to build the widget div as a hidden div in the
+    //scrolling region and then just copy it to the display area?
     String name = instance.name;
     String buttonname = instance.javaname;
+    String widgetDefs = "";
+    int row = 0;
+    if (!instance.whichWidgets.isEmpty()) {
+      widgetDefs += "<table border = \"0\" width=\"100%\"><tbody><tr>";
+      for (int j = 0; j < nWidgets; j++) {
+        if (instance.whichWidgets.get(j)) {
+          if (row == 3) {
+            widgetDefs += "</tr><tr>";
+            row = 0;
+          }
+          widgetDefs += "<td>"
+              + theWidgets.widgetList[j].getJavaScript(0, instance.script)
+                  .replace("'", "\'") + "</td>";
+          row = row + 1;
+        }
+      }
+      widgetDefs += "</tr></tbody></table>";
+    }
     if (i == 0)
       html = TextFormat.simpleReplace(html, "@APPLETNAME0@", GT.escapeHTML(buttonname));
     if (useAppletJS) {
@@ -77,6 +105,8 @@ class ScriptButtons extends WebPanel {
       s = TextFormat.simpleReplace(s, "@APPLETNAME0@", GT.escapeHTML(buttonname));
       s = TextFormat.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
       s = TextFormat.simpleReplace(s, "@LABEL@", GT.escapeHTML(name));
+      s = TextFormat.simpleReplace(s, "@I@", ""+i);
+      s = TextFormat.simpleReplace(s, "@WIDGETSTR@", widgetDefs);
       appletDefs.append(s);
     }
     return html;

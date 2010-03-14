@@ -759,8 +759,6 @@ final public class Graphics3D implements JmolRendererInterface {
     void addPixel(int offset, int z, int p) {
       if (!isPass2) {
         zbuf[offset] = z;
-        if ((p & 0xFFFFFF) == 0)
-          p += 2;
         pbuf[offset] = p;
         return;
       }

@@ -110,7 +110,6 @@ final class Shade3D {
    */
   
   static int[] getShades(int rgb, boolean greyScale) {
-    System.out.println("----------------" + Integer.toHexString(rgb));
     int[] shades = new int[shadeIndexMax];
     if (rgb == 0)
       return shades;
@@ -123,7 +122,6 @@ final class Shade3D {
     float red = 0;
     float grn = 0;
     float blu = 0;
-    
     
     float f = ambientFraction;
 
@@ -140,6 +138,7 @@ final class Shade3D {
         blu0++;
         if (f < 0.1f)
           f += 0.1f;
+        rgb = rgb((int) red0, (int) grn0, (int) blu0);
         continue;
       }
       break;
@@ -149,9 +148,6 @@ final class Shade3D {
     float redStep = red0 * f;
     float grnStep = grn0 * f;
     float bluStep = blu0 * f;
-
-
-
 
     int i;
     for (i = 0; i < shadeIndexNormal; ++i) {

@@ -9,21 +9,21 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-03-14 00:37+0100\n"
-"PO-Revision-Date: 2010-02-01 18:48+0000\n"
-"Last-Translator: yurchor <yurchor@gmail.com>\n"
+"PO-Revision-Date: 2010-03-14 08:27+0000\n"
+"Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-02-03 22:24+0000\n"
+"X-Launchpad-Export-Date: 2010-03-14 11:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
-"Помилка під час спроби запуску Jmol: не вказано значення властивості «user."
-"home»."
+"Помилка під час спроби запуску Jmol: не вказано значення властивості "
+"«user.home»."
 
 #: org/openscience/jmol/app/JmolApp.java:139
 msgid "transparent background"
@@ -914,7 +914,8 @@ msgstr "Обертати молекулу."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr "Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
+msgstr ""
+"Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
 msgid "Click atoms to measure distances"
@@ -1324,8 +1325,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Щоб отримати просторову модель, з якою можна буде працювати, натисніть {0}тут"
-"{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
+"Щоб отримати просторову модель, з якою можна буде працювати, натисніть "
+"{0}тут{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:350
 msgid "Insert the page TITLE here."
@@ -1341,7 +1342,7 @@ msgid "Insert a caption for {0} here."
 msgstr "Тут ви можете вставити підпис до {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:354
-#, fuzzy, java-format
+#, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
@@ -1388,9 +1389,8 @@ msgid "Jmol Instances:"
 msgstr "Екземпляри Jmol:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:202
-#, fuzzy
 msgid "Select widgets:"
-msgstr "Ширина аплету:"
+msgstr "Виберіть віджети:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:230
 msgid "Help/Instructions"
@@ -1469,9 +1469,9 @@ msgid "adding {0}.spt"
 msgstr "додавання {0}.spt"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:559
-#, fuzzy, java-format
+#, java-format
 msgid "adding {0}"
-msgstr "додавання {0}.png"
+msgstr "додавання {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:599
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1508,59 +1508,59 @@ msgstr "стискання великого файла даних до"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:43
 msgid "Spin on/off"
-msgstr ""
+msgstr "Увімкнути/Вимкнути обертання"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:55
 msgid "enable/disable spin"
-msgstr ""
+msgstr "увімкнути/вимкнути обертання"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:56
 msgid "Spin on"
-msgstr ""
+msgstr "Обертання увімкнено"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:64
 msgid "Background Color"
-msgstr ""
+msgstr "Колір тла"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:73
 msgid "background color:"
-msgstr ""
+msgstr "колір тла:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:91
 msgid "Stereo Viewing"
-msgstr ""
+msgstr "Об’ємний перегляд"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:100
 msgid "select stereo type"
-msgstr ""
+msgstr "виберіть тип стерео"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:103
 msgid "stereo off"
-msgstr ""
+msgstr "вимкнути стерео"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:104
 msgid "Stereo Off"
-msgstr ""
+msgstr "Вимкнути стерео"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:105
 msgid "Red/Blue"
-msgstr ""
+msgstr "Червоний/Синій"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:107
 msgid "Red/Cyan"
-msgstr ""
+msgstr "Червоний/Блакитний"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:109
 msgid "Red/Green"
-msgstr ""
+msgstr "Червоний/Зелений"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:119
 msgid "Download view"
-msgstr ""
+msgstr "Звантажити перегляд"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:129
 msgid "unimplemented"
-msgstr ""
+msgstr "не реалізовано"
 
 #~ msgid "Show Selected"
 #~ msgstr "Показати позначені"

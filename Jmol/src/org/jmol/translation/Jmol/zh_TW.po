@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-03-14 00:37+0100\n"
-"PO-Revision-Date: 2009-12-23 16:10+0000\n"
+"PO-Revision-Date: 2010-03-14 05:22+0000\n"
 "Last-Translator: iychiang <iychiang1809@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-12-26 15:24+0000\n"
+"X-Launchpad-Export-Date: 2010-03-14 11:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -107,9 +107,7 @@ msgstr "視窗的 寬度 x 高度,例如 {0}"
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
-msgstr ""
-"JPG 影像壓縮品質(1-100;預設 75) 或 PNG 影像壓縮品質(0-9;預設 2,最大壓縮值為 "
-"9)"
+msgstr "JPG 影像壓縮品質(1-100;預設 75) 或 PNG 影像壓縮品質(0-9;預設 2,最大壓縮值為 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
@@ -1312,8 +1310,7 @@ msgstr "輸出至在{1}上的網頁功能{0}可產生網頁架構及JavaScript�
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
-msgstr ""
-"可以手動取得3-D模型，按{0}中的{1}。第一次載入applet時，須要相當長的下載時間。"
+msgstr "可以手動取得3-D模型，按{0}中的{1}。第一次載入applet時，須要相當長的下載時間。"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:350
 msgid "Insert the page TITLE here."
@@ -1329,11 +1326,11 @@ msgid "Insert a caption for {0} here."
 msgstr "在{0}這兒插入標題"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:354
-#, fuzzy, java-format
+#, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
-msgstr "在這兒插入更多的文字。太長的文字將會圍繞在Jmol模型 {0}。"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:356
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1372,9 +1369,8 @@ msgid "Jmol Instances:"
 msgstr "Jmol實例："
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:202
-#, fuzzy
 msgid "Select widgets:"
-msgstr "Applet 寬度："
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:230
 msgid "Help/Instructions"
@@ -1451,9 +1447,9 @@ msgid "adding {0}.spt"
 msgstr "{0}.spt加入中"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:559
-#, fuzzy, java-format
+#, java-format
 msgid "adding {0}"
-msgstr "{0}.png加入中"
+msgstr "加入 {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:599
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1490,51 +1486,51 @@ msgstr "正在壓縮大的資料檔至"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:43
 msgid "Spin on/off"
-msgstr ""
+msgstr "旋轉  開/關"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:55
 msgid "enable/disable spin"
-msgstr ""
+msgstr "開啟/關閉  旋轉"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:56
 msgid "Spin on"
-msgstr ""
+msgstr "開啟旋轉"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:64
 msgid "Background Color"
-msgstr ""
+msgstr "背景顏色"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:73
 msgid "background color:"
-msgstr ""
+msgstr "背景顏色:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:91
 msgid "Stereo Viewing"
-msgstr ""
+msgstr "立體視覺"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:100
 msgid "select stereo type"
-msgstr ""
+msgstr "選擇立體視覺種類"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:103
 msgid "stereo off"
-msgstr ""
+msgstr "關閉立體視覺"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:104
 msgid "Stereo Off"
-msgstr ""
+msgstr "關閉立體視覺"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:105
 msgid "Red/Blue"
-msgstr ""
+msgstr "紅/藍"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:107
 msgid "Red/Cyan"
-msgstr ""
+msgstr "紅/靛"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:109
 msgid "Red/Green"
-msgstr ""
+msgstr "紅/綠"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:119
 msgid "Download view"

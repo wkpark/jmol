@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-03-14 00:37+0100\n"
-"PO-Revision-Date: 2010-02-06 19:02+0000\n"
-"Last-Translator: yurchor <yurchor@gmail.com>\n"
+"PO-Revision-Date: 2010-03-14 07:42+0000\n"
+"Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-02-07 10:36+0000\n"
+"X-Launchpad-Export-Date: 2010-03-14 11:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:97
@@ -144,7 +144,8 @@ msgid "Check"
 msgstr "Перевірити"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Вгору"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -411,7 +412,7 @@ msgstr "Угорська"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Indonesian"
-msgstr ""
+msgstr "Індонезійська"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Italian"
@@ -419,7 +420,7 @@ msgstr "Італійська"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Japanese"
-msgstr ""
+msgstr "Японська"
 
 #: org/jmol/i18n/GT.java:135
 msgid "Korean"
@@ -431,7 +432,7 @@ msgstr "Норвезька (Бокмал)"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Occitan"
-msgstr ""
+msgstr "Оксітанська"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Polish"
@@ -2084,7 +2085,8 @@ msgstr "вибрати точку креслення (для вимірюван�
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr "вибрати мітку для перемикання стану приховано/показано (потрібно {0})"
+msgstr ""
+"вибрати мітку для перемикання стану приховано/показано (потрібно {0})"
 
 #: org/jmol/viewer/ActionManager.java:84
 #, java-format
@@ -2214,12 +2216,12 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "Minimize"
 #~ msgstr "Мінімізувати"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Створення файлів цим аплетом заборонено. Щоб отримати JPEG у форматі "
-#~ "Base64, скористайтеся {0}."
+#~ "Створення файлів цим аплетом заборонено. Щоб отримати JPEG у форматі Base64, "
+#~ "скористайтеся {0}."
 
 #~ msgid "Java memory usage"
 #~ msgstr "Використання пам’яті Java"
@@ -2230,6 +2232,7 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "File or URL"
 #~ msgstr "Файл або адреса URL"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Файл {0}"
 
@@ -2239,12 +2242,14 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "Script with history"
 #~ msgstr "Скрипт з журналом"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "Зображення {0}"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "Ізоповерхня JVXL"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "Просторова модель {0}"
 

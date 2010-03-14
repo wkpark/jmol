@@ -277,7 +277,8 @@ public class Token {
   final static int continuecmd  = 8 | flowCommand;
   final static int end          = 9 | flowCommand | expression;
   
-  final static int animation    = scriptCommand | 1;
+  final static int align        = scriptCommand | 1;// new
+  final static int animation    = scriptCommand | 2;
   final static int background   = scriptCommand | 3 | deprecatedparam;
   final static int bind         = scriptCommand | 4;
   final static int bondorder    = scriptCommand | 5;
@@ -949,7 +950,6 @@ public class Token {
   final static int absolute      = misc | 1;
   final static int addhydrogens  = misc | 2;// new
   final static int adjust        = misc | 3;// new
-  final static int align         = misc | 4;// new
   final static int allconnected  = misc | 5;// new
   final static int angstroms     = misc | 6;// new
   final static int anisotropy    = misc | 7;// new

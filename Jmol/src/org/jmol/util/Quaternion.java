@@ -81,6 +81,14 @@ public class Quaternion {
 
   // create a new object with the given components
   public Quaternion(float q0, float q1, float q2, float q3) {
+    if (q0 < -1) {
+      this.q0 = -1;
+      return;
+    }
+    if (q0 > 1) {
+      this.q0 = 1;
+      return;
+    }
     this.q0 = q0;
     this.q1 = q1;
     this.q2 = q2;
@@ -392,9 +400,11 @@ public class Quaternion {
   }
 
   public Quaternion mul(Quaternion p) {
-    return new Quaternion(q0 * p.q0 - q1 * p.q1 - q2 * p.q2 - q3 * p.q3, q0
-        * p.q1 + q1 * p.q0 + q2 * p.q3 - q3 * p.q2, q0 * p.q2 + q2 * p.q0 + q3
-        * p.q1 - q1 * p.q3, q0 * p.q3 + q3 * p.q0 + q1 * p.q2 - q2 * p.q1);
+    return new Quaternion(
+        q0 * p.q0 - q1 * p.q1 - q2 * p.q2 - q3 * p.q3, 
+        q0 * p.q1 + q1 * p.q0 + q2 * p.q3 - q3 * p.q2, 
+        q0 * p.q2 + q2 * p.q0 + q3 * p.q1 - q1 * p.q3, 
+        q0 * p.q3 + q3 * p.q0 + q1 * p.q2 - q2 * p.q1);
   }
 
   public Quaternion div(Quaternion p) {
@@ -496,7 +506,7 @@ public class Quaternion {
    */
   public Vector3f getNormalDirected(Vector3f v0) {
     Vector3f v = getNormal();
-    if (v0.x * q1 + v0.y * q2 + v0.z * q3 < 0) {
+    if (v.x * v0.x + v.y * v0.y + v.z * v0.z < 0) {
       v.scale(-1);
     }
     return v;
@@ -631,7 +641,13 @@ public class Quaternion {
     return "{" + q1 + " " + q2 + " " + q3 + " " + q0 + "}";
   }
 
-  public static Quaternion[] differences(Quaternion[] data1, Quaternion[] data2) {
+  /**
+   * 
+   * @param data1
+   * @param data2
+   * @return       pairwise array of data1 / data2
+   */
+  public static Quaternion[] div(Quaternion[] data1, Quaternion[] data2) {
     int n;
     if (data1 == null || data2 == null || (n = Math.min(data1.length, data2.length)) == 0)
       return null;
@@ -639,23 +655,17 @@ public class Quaternion {
     for (int i = 0; i < n; i++) {
       if (data1[i] == null || data2[i] == null)
         return null;
-      dqs[i] = data2[i].div(data1[i]);
+      dqs[i] = data1[i].div(data2[i]);
     }
     return dqs;
   }
   
-  public static Quaternion sphereCompare(Quaternion[] data1, Quaternion[] data2, float[] retStddev, float criterion) {
-    Quaternion[] dqs = differences(data1, data2);
-    return (dqs == null ? null : (Quaternion) sphereMean(dqs, retStddev, criterion)); 
-  }
-  
-  public static Object sphereMean(Quaternion[] data, float[] retStddev, float criterion) {
+  public static Quaternion sphereMean(Quaternion[] data, float[] retStddev, float criterion) {
     // Samuel R. Buss, Jay P. Fillmore: 
     // Spherical averages and applications to spherical splines and interpolation. 
     // ACM Trans. Graph. 20(2): 95-126 (2001)
-    while (true) {
       if (data == null || data.length == 0)
-        break;
+        return new Quaternion();
       if (retStddev == null)
         retStddev = new float[1];
       if (data.length == 1) {
@@ -666,16 +676,15 @@ public class Quaternion {
       float lastStddev = Float.MAX_VALUE;
       Quaternion qMean = simpleAverage(data);
       int maxIter = 100; // typically goes about 5 iterations
-      while (diff > criterion && --maxIter >= 0) {
+      int iter = 0;
+      while (diff > criterion && lastStddev != 0 && iter < maxIter) {
         qMean = newMean(data, qMean);
         retStddev[0] = stdDev(data, qMean);
         diff = Math.abs(retStddev[0] - lastStddev);
         lastStddev = retStddev[0];
-        Logger.info(maxIter + " sphereMean " + qMean + " stddev=" + lastStddev + " diff=" + diff);
+        Logger.info(++iter + " sphereMean " + qMean + " stddev=" + lastStddev + " diff=" + diff);
       }
       return qMean;
-    }
-    return "NaN";
   }
 
   /**
@@ -738,13 +747,19 @@ public class Quaternion {
      *  
      */
     Vector3f sum = new Vector3f();
+    Vector3f v;
+    Quaternion q, dq;
+    //System.out.println("newMean mean " + mean);
     for (int i = data.length; --i >= 0;) {
-      Quaternion dq = data[i].div(mean);
-      Vector3f v = dq.getNormal();
-      v.scale(dq.getTheta() / data.length);
+      q = data[i];
+      dq = q.div(mean);
+      v = dq.getNormal();
+      v.scale(dq.getTheta());
       sum.add(v);
     }
+    sum.scale(1f/data.length);
     Quaternion dqMean = new Quaternion(sum, sum.length());
+    //System.out.println("newMean dqMean " + dqMean + " " + dqMean.getNormal() + " " + dqMean.getTheta());
     return dqMean.mul(mean);
   }
 
@@ -763,6 +778,7 @@ public class Quaternion {
     for (int i = n; --i >= 0;) {
       Quaternion dq = data[i].div(mean);
       float theta = dq.getTheta();
+      //System.out.println("stdDev " + dq + " "+ mean + " " + theta);
       sum += theta;
       sum2 += theta * theta;
     }

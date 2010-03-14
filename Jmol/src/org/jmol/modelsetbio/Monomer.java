@@ -135,8 +135,8 @@ public abstract class Monomer extends Group {
 
   public boolean isDna() { return false; }
   public boolean isRna() { return false; }
-  public final boolean isProtein() {
-    return isAmino || this instanceof AlphaMonomer;
+  public boolean isProtein() {
+    return isAmino;
   }
   public final boolean isNucleic() {return this instanceof PhosphorusMonomer;}
 

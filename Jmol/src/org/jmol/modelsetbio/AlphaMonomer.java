@@ -35,6 +35,10 @@ public class AlphaMonomer extends Monomer {
 
   final static byte[] alphaOffsets = { 0 };
 
+  public boolean isProtein() {
+    return true;
+  }
+  
   static Monomer
     validateAndAllocate(Chain chain, String group3, int seqcode,
                         int firstIndex, int lastIndex,

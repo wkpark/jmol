@@ -266,14 +266,6 @@ abstract public class AtomCollection {
     return (i < 0 ? null : atoms[i].group.getQuaternion(qtype));
   } 
 
-  public Quaternion[] getAtomGroupQuaternions(BitSet bsAtoms, int nMax,
-                                              char qType) {
-    // run through list, getting quaternions. For simple groups, 
-    // go ahead and take for first three atoms
-    // TODO
-    return null;
-  }
-
   public Object getHelixData(BitSet bs, int tokType) {
     int iAtom = bs.nextSetBit(0);
     return (iAtom < 0 ? "null"

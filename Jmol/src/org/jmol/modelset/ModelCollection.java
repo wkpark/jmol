@@ -50,6 +50,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Point3fi;
+import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.util.TriangleData;
 import org.jmol.viewer.JmolConstants;
@@ -1007,6 +1008,31 @@ abstract public class ModelCollection extends BondCollection {
         model.bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, 2, false, null, null, null, null, false, new BitSet());
     }
     setHaveStraightness(true);
+  }
+
+  public Quaternion[] getAtomGroupQuaternions(BitSet bsAtoms, int nMax,
+                                              char qtype) {
+    // run through list, getting quaternions. For simple groups, 
+    // go ahead and take first three atoms
+    // for PDB files, do not include NON-protein groups.
+    int n = 0;
+    Vector v = new Vector();
+    for (int i = bsAtoms.nextSetBit(0); i >= 0 && n < nMax; i = bsAtoms.nextSetBit(i + 1)) {
+      Group g = atoms[i].group;
+      Quaternion q = g.getQuaternion(qtype);
+      if (q == null) {
+        if (g.seqcode == Integer.MIN_VALUE)
+          q = g.getQuaternionFrame(atoms); // non-PDB just use first three atoms
+        if (q == null)
+          continue;
+      }
+      v.add(q);
+      i = g.lastAtomIndex;
+    }
+    Quaternion[] qs = new Quaternion[v.size()];
+    for (int i = 0; i < qs.length; i++) 
+      qs[i] = (Quaternion) v.get(i);
+    return qs;
   }
 
   private static class Structure {

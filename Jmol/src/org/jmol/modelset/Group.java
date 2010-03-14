@@ -375,9 +375,16 @@ public class Group {
   public Atom getLeadAtom() {
     return null; // but see Monomer class
   }
-  
-  public Quaternion getQuaternion(char qtype) {
+
+  public Quaternion getQuaternion(char qType) {
     return null;
+  }
+  
+  public Quaternion getQuaternionFrame(Atom[] atoms) {
+    if (lastAtomIndex - firstAtomIndex < 3)
+      return null;
+    int pt = firstAtomIndex;
+    return Quaternion.getQuaternionFrame(atoms[pt], atoms[++pt], atoms[++pt]);
   }
 
   public void setProteinStructureId(int i) {

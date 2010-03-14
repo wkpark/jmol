@@ -32,7 +32,6 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Point3fi;
-import org.jmol.util.Quaternion;
 
 import java.util.BitSet;
 
@@ -983,10 +982,6 @@ final public class Atom extends Point3fi {
     return group.getBioPolymerLength();
   }
 
-  public Quaternion getQuaternion(char qtype) {
-    return group.getQuaternion(qtype);
-  }
-  
   public int getPolymerIndexInModel() {
     return group.getBioPolymerIndexInModel();
   }

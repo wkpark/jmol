@@ -1554,13 +1554,13 @@ class ScriptMathProcessor {
           if (args[0].tok == Token.list && args[1].tok == Token.list) {
             Quaternion[] data1 = getQuaternionArray((Object[]) args[0].value);
             Quaternion[] data2 = getQuaternionArray((Object[]) args[1].value);
-            qs = Quaternion.differences(data1, data2);
+            qs = Quaternion.div(data2, data1);
             break;
           }
           if (args[0].tok == Token.bitset && args[1].tok == Token.bitset) {
             Quaternion[] data1 = viewer.getAtomGroupQuaternions((BitSet) args[0].value, Integer.MAX_VALUE);
             Quaternion[] data2 = viewer.getAtomGroupQuaternions((BitSet) args[1].value, Integer.MAX_VALUE);
-            qs = Quaternion.differences(data1, data2);
+            qs = Quaternion.div(data2, data1);
             break;
           }
           if (args[0].tok == Token.bitset && args[1].tok == Token.integer) {
@@ -2882,9 +2882,7 @@ class ScriptMathProcessor {
       if (data == null)
         break;
       float[] retStddev = new float[1];
-      Object result = Quaternion.sphereMean(data, retStddev, 0.0001f);
-      if (result instanceof String)
-        break;
+      Quaternion result = Quaternion.sphereMean(data, retStddev, 0.0001f);
       switch (tok) {
       case Token.average:
         return result;

@@ -200,7 +200,7 @@ public class AminoMonomer extends AlphaMonomer {
   }
   
   public boolean getNHPoint(Point3f aminoHydrogenPoint, Vector3f vNH) {
-    if (monomerIndex == 0 || getGroupID() == JmolConstants.GROUPID_PROLINE) 
+    if (monomerIndex == 0 || groupID == JmolConstants.GROUPID_PROLINE) 
       return false;      
     Point3f nitrogenPoint = getNitrogenAtomPoint();
     Point3f nhPoint = getNitrogenHydrogenPoint();
@@ -307,7 +307,7 @@ public class AminoMonomer extends AlphaMonomer {
       // amino nitrogen chemical shift tensor frame      
       // vA = ptH - ptN rotated beta (17 degrees) clockwise (-) around Y (perp to plane)
       // vB = ptCa - ptN
-      if (monomerIndex == 0 || getGroupID() == JmolConstants.GROUPID_PROLINE)
+      if (monomerIndex == 0 || groupID == JmolConstants.GROUPID_PROLINE)
         return null;
       vC = new Vector3f();
       getNHPoint(ptTemp, vC);

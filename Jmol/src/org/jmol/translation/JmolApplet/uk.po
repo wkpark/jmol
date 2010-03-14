@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-03-14 00:37+0100\n"
-"PO-Revision-Date: 2010-03-14 07:42+0000\n"
+"PO-Revision-Date: 2010-03-14 14:05+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-03-14 11:08+0000\n"
+"X-Launchpad-Export-Date: 2010-03-14 15:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:97
@@ -368,7 +368,7 @@ msgstr "Спрощена китайська"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Traditional Chinese"
-msgstr "Китайська традиційна"
+msgstr "Традиційна китайська"
 
 #: org/jmol/i18n/GT.java:122
 msgid "Czech"

@@ -605,10 +605,10 @@ final public class Graphics3D implements JmolRendererInterface {
                 ) >> 2);
         */
         
-        int argb = (pbuf[offset4] >> 2) & 0x3F3F3F3F;
-        argb += (pbuf[offset4++ + width4] >> 2) & 0x3F3F3F3F;
-        argb += (pbuf[offset4] >> 2) & 0x3F3F3F3F;
-        argb += (pbuf[offset4++ + width4] >> 2) & 0x3F3F3F3F;
+        int argb = ((pbuf[offset4] >> 2) & 0x3F3F3F3F)
+          + ((pbuf[offset4++ + width4] >> 2) & 0x3F3F3F3F)
+          + ((pbuf[offset4] >> 2) & 0x3F3F3F3F)
+          + ((pbuf[offset4++ + width4] >> 2) & 0x3F3F3F3F);
         argb += (argb & 0xC0C0C0C0) >> 6;
         pbuf[offset1] = argb & 0x00FFFFFF;
       }
@@ -759,6 +759,8 @@ final public class Graphics3D implements JmolRendererInterface {
     void addPixel(int offset, int z, int p) {
       if (!isPass2) {
         zbuf[offset] = z;
+        if ((p & 0xFFFFFF) == 0)
+          p += 2;
         pbuf[offset] = p;
         return;
       }

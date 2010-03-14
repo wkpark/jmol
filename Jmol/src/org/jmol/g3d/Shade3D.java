@@ -110,24 +110,49 @@ final class Shade3D {
    */
   
   static int[] getShades(int rgb, boolean greyScale) {
+    System.out.println("----------------" + Integer.toHexString(rgb));
     int[] shades = new int[shadeIndexMax];
     if (rgb == 0)
       return shades;
     
-    float red = ((rgb >> 16) & 0xFF);
-    float grn = ((rgb >>  8) & 0xFF);
-    float blu = (rgb         & 0xFF);
 
-    float f = (1 - ambientFraction) / shadeIndexNormal;
+    float red0 = ((rgb >> 16) & 0xFF);
+    float grn0 = ((rgb >>  8) & 0xFF);
+    float blu0 = (rgb         & 0xFF);
+    
+    float red = 0;
+    float grn = 0;
+    float blu = 0;
+    
+    
+    float f = ambientFraction;
 
-    float redStep = red * f;
-    float grnStep = grn * f;
-    float bluStep = blu * f;
+    while (true) {
+      red = red0 * f + 0.5f;
+      grn = grn0 * f + 0.5f;
+      blu = blu0 * f + 0.5f;
+      if (f > 0 && red < 4 && grn < 4 && blu < 4) {
+        // with antialiasing, black shades with all 
+        // components less than 4 will be considered 0
+        // so we must adjust things just a bit.
+        red0++;
+        grn0++;
+        blu0++;
+        if (f < 0.1f)
+          f += 0.1f;
+        continue;
+      }
+      break;
+    }
+    f = (1 - f) / shadeIndexNormal;
 
-    red = red * ambientFraction + 0.5f;
-    grn = grn * ambientFraction + 0.5f;
-    blu = blu * ambientFraction + 0.5f;
-        
+    float redStep = red0 * f;
+    float grnStep = grn0 * f;
+    float bluStep = blu0 * f;
+
+
+
+
     int i;
     for (i = 0; i < shadeIndexNormal; ++i) {
       shades[i] = rgb((int) red, (int) grn, (int) blu);
@@ -143,11 +168,11 @@ final class Shade3D {
     grnStep = (255.5f - grn) * f;
     bluStep = (255.5f - blu) * f;
 
-    for (; i < shadeIndexMax;) {
+    for (; i < shadeIndexMax;i++) {
       red += redStep;
       grn += grnStep;
       blu += bluStep;
-      shades[i++] = rgb((int) red, (int) grn, (int) blu);
+      shades[i] = rgb((int) red, (int) grn, (int) blu);
     }
     
     if (greyScale)

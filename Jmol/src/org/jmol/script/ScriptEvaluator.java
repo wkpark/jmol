@@ -6511,6 +6511,7 @@ public class ScriptEvaluator {
     }
     dataLabel = dataLabel.toLowerCase();
     String dataType = dataLabel + " ";
+    boolean isDefault = (dataLabel.indexOf("(default)") >= 0);
     dataType = dataType.substring(0, dataType.indexOf(" "));
     boolean isModel = dataType.equals("model");
     boolean isAppend = dataType.equals("append");
@@ -6621,7 +6622,7 @@ public class ScriptEvaluator {
     userType = AtomCollection.getUserSettableType(dataType);
     if (userType >= 0) {
       // this is a known settable type or "property_xxxx"
-      viewer.setAtomData(userType, dataType, dataString);
+      viewer.setAtomData(userType, dataType, dataString, isDefault);
       return;
     }
     // this is just information to be stored.

@@ -89,7 +89,7 @@ public final class ModelLoader extends ModelSet {
 
   public ModelLoader(Viewer viewer, Object atomSetCollection, 
       ModelLoader mergeModelSet, String modelSetName) {
-    
+
     if (shapes == null && !viewer.isDataOnly())
       shapes = new Shape[JmolConstants.SHAPE_MAX];
     
@@ -375,7 +375,7 @@ public final class ModelLoader extends ModelSet {
   private void iterateOverAllNewModels(JmolAdapter adapter, Object atomSetCollection) {
 
     if (modelCount > 0) {
-      nullGroup = new Group(new Chain(this, getModel(baseModelIndex), ' '), "",
+      nullGroup = new Group(new Chain(this, models[baseModelIndex], ' '), "",
           0, -1, -1);
     }
 
@@ -618,13 +618,13 @@ public final class ModelLoader extends ModelSet {
                        float radius) {
     checkNewGroup(atomCount, modelIndex, chainID, group3, groupSequenceNumber,
         groupInsertionCode);
-    models[modelIndex].atomCount++;
-    models[modelIndex].bsAtoms.set(atomCount);
     if (atomCount == atoms.length)
       growAtomArrays(ATOM_GROWTH_INCREMENT);
     Atom atom = new Atom(currentModelIndex, atomCount, x, y, z, radius, 
         atomSymmetry, atomSite, atomicAndIsotopeNumber, formalCharge,
         isHetero, chainID, alternateLocationID);
+    models[modelIndex].atomCount++;
+    models[modelIndex].bsAtoms.set(atomCount);
     if (atomicAndIsotopeNumber % 128 == 1)
       models[currentModelIndex].hydrogenCount++;
     atoms[atomCount] = atom;
@@ -699,7 +699,7 @@ public final class ModelLoader extends ModelSet {
                              char groupInsertionCode) {
     String group3i = (group3 == null ? null : group3.intern());
     if (modelIndex != currentModelIndex) {
-      currentModel = getModel(modelIndex);
+      currentModel = models[modelIndex];
       currentModelIndex = modelIndex;
       currentChainID = '\uFFFF';
     }

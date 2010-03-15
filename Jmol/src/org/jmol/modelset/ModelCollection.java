@@ -862,10 +862,6 @@ abstract public class ModelCollection extends BondCollection {
     return Integer.MIN_VALUE;
   }
 
-  protected Model getModel(int modelIndex) {
-    return models[modelIndex];
-  }
-
   public int getInsertionCountInModel(int modelIndex) {
     return models[modelIndex].nInsertions;
   }
@@ -2882,7 +2878,7 @@ abstract public class ModelCollection extends BondCollection {
     float d = atom.getSurfaceDistance100() / 100f;
     if (d >= 0)
       info.put("surfaceDistance", new Float(d));
-    if (getModel(atom.modelIndex).isPDB) {
+    if (models[atom.modelIndex].isPDB) {
       info.put("resname", atom.getGroup3(false));
       int seqNum = atom.getSeqNumber();
       char insCode = atom.getInsertionCode();

@@ -118,7 +118,7 @@ public final class Model {
   public void resetBoundCount() {
     bondCount = -1;    
   }
-
+  
   int getBondCount() {
     if (bondCount >= 0)
       return bondCount;
@@ -324,5 +324,5 @@ public final class Model {
       bioPolymers[i].recalculateLeadMidpointsAndWingVectors();
     BitSetUtil.deleteBits(bsAtoms, bsDeleted);
   }
-
+  
 }

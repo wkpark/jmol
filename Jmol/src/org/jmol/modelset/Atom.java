@@ -89,6 +89,7 @@ final public class Atom extends Point3fi {
     //just a point -- just enough to determine a position
     isSimple = true;
     this.x = pt.x; this.y = pt.y; this.z = pt.z;
+    
     //must be transformed later -- Polyhedra;
   }
   

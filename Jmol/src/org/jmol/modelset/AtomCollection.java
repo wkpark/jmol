@@ -54,7 +54,7 @@ import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
 abstract public class AtomCollection {
-
+  
   protected void releaseModelSet() {
     atoms = null;
     viewer = null;
@@ -749,15 +749,15 @@ abstract public class AtomCollection {
 
   // loading data
   
-  public void setAtomData(int type, String name, String dataString) {
+  public void setAtomData(int type, String name, String dataString, boolean isDefault) {
     float[] fData = null;
     BitSet bs = null;
     switch (type) {
     case TAINT_COORD:
-      loadCoordinates(dataString, false);
+      loadCoordinates(dataString, false, !isDefault);
       return;
     case TAINT_VIBRATION:
-      loadCoordinates(dataString, true);
+      loadCoordinates(dataString, true, true);
       return;
     case TAINT_MAX:
       fData = new float[atomCount];
@@ -826,7 +826,7 @@ abstract public class AtomCollection {
     }    
   }
   
-  private void loadCoordinates(String data, boolean isVibrationVectors) {
+  private void loadCoordinates(String data, boolean isVibrationVectors, boolean doTaint) {
     if (!isVibrationVectors)
       bspf = null;
     int[] lines = Parser.markLines(data, ';');
@@ -843,6 +843,8 @@ abstract public class AtomCollection {
           setAtomVibrationVector(atomIndex, x, y, z);
         } else {
           setAtomCoord(atomIndex, x, y, z);
+          if (!doTaint)
+            untaint(atomIndex, TAINT_COORD);
         }
       }
     } catch (Exception e) {
@@ -912,6 +914,11 @@ abstract public class AtomCollection {
     return (isExplicit ? TAINT_MAX : -1);
   }
 
+  private boolean isTainted(int atomIndex, byte type) {
+    return (tainted != null && tainted[type] != null 
+        && tainted[type].get(atomIndex));
+  }
+
   public BitSet getTaintedAtoms(byte type) {
     return tainted == null ? null : tainted[type];
   }
@@ -926,12 +933,12 @@ abstract public class AtomCollection {
     tainted[type].set(atomIndex);
   }
 
-  private void untaint(int i, byte type) {
+  private void untaint(int atomIndex, byte type) {
     if (!preserveState)
       return;
     if (tainted == null || tainted[type] == null)
       return;
-    tainted[type].clear(i);
+    tainted[type].clear(atomIndex);
   }
 
   public void setTaintedAtoms(BitSet bs, byte type) {
@@ -950,6 +957,15 @@ abstract public class AtomCollection {
     BitSetUtil.copy(bs, tainted[type]);
   }
 
+  public void unTaintAtoms(BitSet bs, byte type) {
+    if (tainted == null || tainted[type] == null)
+      return;
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1))
+      tainted[type].clear(i);
+    if (tainted[type].nextSetBit(0) < 0)
+      tainted[type] = null;
+  }
+
   public String getAtomicPropertyState(int taintWhat, BitSet bsSelected) {
     if (!preserveState)
       return "";
@@ -958,15 +974,13 @@ abstract public class AtomCollection {
     for (byte i = 0; i < TAINT_MAX; i++)
       if (taintWhat < 0 || i == taintWhat)
       if((bs = (bsSelected != null ? bsSelected : getTaintedAtoms(i))) != null)
-        getAtomicPropertyState(viewer, commands, atoms, atomCount, i, bs, null, null);
+        getAtomicPropertyState(commands, i, bs, null, null);
     return commands.toString();
   }
   
-  public static void getAtomicPropertyState(Viewer viewer,
-                                            StringBuffer commands,
-                                            Atom[] atoms, int atomCount,
-                                            byte type, BitSet bs,
-                                            String label, float[] fData) {
+  public void getAtomicPropertyState(StringBuffer commands, 
+                                     byte type, BitSet bs,
+                                     String label, float[] fData) {
     if (!viewer.getPreserveState())
       return;
     // see setAtomData()
@@ -974,66 +988,70 @@ abstract public class AtomCollection {
     String dataLabel = (label == null ? userSettableValues[type] : label)
         + " set";
     int n = 0;
+    boolean isDefault = (type == TAINT_COORD);
     if (bs != null)
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
-          s.append(i + 1).append(" ").append(atoms[i].getElementSymbol())
-              .append(" ").append(atoms[i].getInfo().replace(' ', '_')).append(
-                  " ");
-          switch (type) {
-          case TAINT_MAX:
-            if (i < fData.length) // when data are appended, the array may not
-                                  // extend that far
-              s.append(fData[i]);
-            break;
-          case TAINT_ATOMNO:
-            s.append(atoms[i].getAtomNumber());
-            break;
-          case TAINT_ATOMNAME:
-            s.append(atoms[i].getAtomName());
-            break;
-          case TAINT_ATOMTYPE:
-            s.append(atoms[i].getAtomType());
-            break;
-          case TAINT_COORD:
-            s.append(atoms[i].x).append(" ").append(atoms[i].y).append(" ")
-                .append(atoms[i].z);
-            break;
-          case TAINT_VIBRATION:
-            Vector3f v = atoms[i].getVibrationVector();
-            if (v == null)
-              v = new Vector3f();
-            s.append(v.x).append(" ").append(v.y).append(" ").append(v.z);
-          case TAINT_ELEMENT:
-            s.append(atoms[i].getAtomicAndIsotopeNumber());
-            break;
-          case TAINT_FORMALCHARGE:
-            s.append(atoms[i].getFormalCharge());
-            break;
-          case TAINT_IONICRADIUS:
-            s.append(atoms[i].getBondingRadiusFloat());
-            break;
-          case TAINT_OCCUPANCY:
-            s.append(atoms[i].getOccupancy100());
-            break;
-          case TAINT_PARTIALCHARGE:
-            s.append(atoms[i].getPartialCharge());
-            break;
-          case TAINT_TEMPERATURE:
-            s.append(atoms[i].getBfactor100() / 100f);
-            break;
-          case TAINT_VALENCE:
-            s.append(atoms[i].getValence());
-            break;
-          case TAINT_VANDERWAALS:
-            s.append(atoms[i].getVanderwaalsRadiusFloat(viewer,
-                JmolConstants.VDW_AUTO));
-            break;
-          }
-          s.append(" ;\n");
-          ++n;
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        s.append(i + 1).append(" ").append(atoms[i].getElementSymbol()).append(
+            " ").append(atoms[i].getInfo().replace(' ', '_')).append(" ");
+        switch (type) {
+        case TAINT_MAX:
+          if (i < fData.length) // when data are appended, the array may not
+            // extend that far
+            s.append(fData[i]);
+          break;
+        case TAINT_ATOMNO:
+          s.append(atoms[i].getAtomNumber());
+          break;
+        case TAINT_ATOMNAME:
+          s.append(atoms[i].getAtomName());
+          break;
+        case TAINT_ATOMTYPE:
+          s.append(atoms[i].getAtomType());
+          break;
+        case TAINT_COORD:
+          if (isTainted(i, TAINT_COORD))
+            isDefault = false;
+          s.append(atoms[i].x).append(" ").append(atoms[i].y).append(" ")
+              .append(atoms[i].z);
+          break;
+        case TAINT_VIBRATION:
+          Vector3f v = atoms[i].getVibrationVector();
+          if (v == null)
+            v = new Vector3f();
+          s.append(v.x).append(" ").append(v.y).append(" ").append(v.z);
+        case TAINT_ELEMENT:
+          s.append(atoms[i].getAtomicAndIsotopeNumber());
+          break;
+        case TAINT_FORMALCHARGE:
+          s.append(atoms[i].getFormalCharge());
+          break;
+        case TAINT_IONICRADIUS:
+          s.append(atoms[i].getBondingRadiusFloat());
+          break;
+        case TAINT_OCCUPANCY:
+          s.append(atoms[i].getOccupancy100());
+          break;
+        case TAINT_PARTIALCHARGE:
+          s.append(atoms[i].getPartialCharge());
+          break;
+        case TAINT_TEMPERATURE:
+          s.append(atoms[i].getBfactor100() / 100f);
+          break;
+        case TAINT_VALENCE:
+          s.append(atoms[i].getValence());
+          break;
+        case TAINT_VANDERWAALS:
+          s.append(atoms[i].getVanderwaalsRadiusFloat(viewer,
+              JmolConstants.VDW_AUTO));
+          break;
         }
+        s.append(" ;\n");
+        ++n;
+      }
     if (n == 0)
       return;
+    if (isDefault)
+      dataLabel += "(default)";
     commands.append("\n  DATA \"" + dataLabel + "\"\n").append(n).append(
         " ;\nJmol Property Data Format 1 -- Jmol ").append(
         Viewer.getJmolVersion()).append(";\n");

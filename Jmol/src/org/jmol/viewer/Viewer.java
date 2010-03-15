@@ -2656,8 +2656,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.toFractional(modelIndex, pt);
   }
 
-  public void setAtomData(int type, String name, String coordinateData) {
-    modelSet.setAtomData(type, name, coordinateData);
+  public void setAtomData(int type, String name, String coordinateData, boolean isDefault) {
+    modelSet.setAtomData(type, name, coordinateData, isDefault);
     refreshMeasures(true);
   }
 
@@ -2873,7 +2873,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isAll || type.equalsIgnoreCase("variableState"))
       s.append(global.getState(sfunc));
     if (isAll || type.equalsIgnoreCase("dataState"))
-      dataManager.getDataState(s, sfunc, modelSet.atoms, getAtomCount(),
+      dataManager.getDataState(s, sfunc, 
           modelSet.getAtomicPropertyState(-1, null));
     // connections, atoms, bonds, labels, echos, shapes
     if (isAll || type.equalsIgnoreCase("modelState"))
@@ -8150,6 +8150,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + y + " " 
         + factor 
         : "");
+  }
+
+  void getAtomicPropertyState(StringBuffer commands, byte type,
+                                     BitSet bs, String name, float[] data) {
+    modelSet.getAtomicPropertyState(commands, type, bs, name, data);
   }
 
 }

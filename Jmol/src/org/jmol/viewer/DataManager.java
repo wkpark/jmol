@@ -27,7 +27,6 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
@@ -226,8 +225,7 @@ class DataManager {
     }    
   }
 
-  void getDataState(StringBuffer state, StringBuffer sfunc, Atom[] atoms,
-                    int atomCount, String atomProps) {
+  void getDataState(StringBuffer state, StringBuffer sfunc, String atomProps) {
     if (dataValues == null)
       return;
     Enumeration e = (dataValues.keys());
@@ -244,8 +242,7 @@ class DataManager {
         Object[] obj = (Object[]) dataValues.get(name);
         Object data = obj[1];
         if (data instanceof float[]) {
-          AtomCollection.getAtomicPropertyState(viewer, sb, atoms, atomCount,
-              AtomCollection.TAINT_MAX, 
+          viewer.getAtomicPropertyState(sb, AtomCollection.TAINT_MAX, 
               (BitSet) obj[2], 
               name, (float[]) data);
           sb.append("\n");

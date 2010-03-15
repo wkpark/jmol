@@ -342,14 +342,16 @@ public class NucleicMonomer extends PhosphorusMonomer {
          ptA = atom;
      }
    } else if (isPurine) {
-     // vA = N9--C4
-     // vB = N9--C8
-     ptA = getAtomFromOffsetIndex(C4);
-     ptB = getAtomFromOffsetIndex(C8);
-   } else {
-     // vA = N1--C2
-     // vB = N1--C6
+     // 11.9.34 experimenting:
+     // vA = N9--C2 // was N9--C4
+     // vB = N9--N7 // was N9--C8
      ptA = getAtomFromOffsetIndex(C2);
+     ptB = getAtomFromOffsetIndex(N7);
+   } else {
+     // 11.9.34 experimenting:
+     // vA = N1--N3 // was N1--C2
+     // vB = N1--C6
+     ptA = getAtomFromOffsetIndex(N3);
      ptB = getAtomFromOffsetIndex(C6);
    }
    if(ptA == null || ptB == null)

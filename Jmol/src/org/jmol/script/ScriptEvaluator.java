@@ -2023,7 +2023,12 @@ public class ScriptEvaluator {
         } else if (v instanceof Matrix4f) {
           fixed[j] = new Token(Token.matrix4f, v);
         } else if (v instanceof String[]) {
-          fixed[j] = new Token(Token.string, Escape.escape((String[])v, true));
+          String[] sv = (String[])v;
+          if (sv.length > 0 && sv[1].startsWith("{") && !(Escape.unescapePoint(sv[1]) instanceof String)) {
+            fixed[j] = new Token(Token.list, sv);
+          } else {
+            fixed[j] = new Token(Token.string, Escape.escape(sv, true));
+          }
         } else {
           Point3f center = getObjectCenter(var, Integer.MIN_VALUE, Integer.MIN_VALUE);
           if (center == null) 
@@ -9331,18 +9336,26 @@ public class ScriptEvaluator {
     BitSet bsTo = expression(++iToken);
     BitSet bsAtoms1 = bsFrom;
     BitSet bsAtoms2 = bsTo;
+    Quaternion[] data1 = null, data2 = null;
     if (iToken + 1 < statementLength) {
-      bsAtoms1 = expression(++iToken);
-      bsAtoms2 = (iToken + 1 < statementLength ? expression(++iToken)
+      if (tokAt(++iToken) == Token.list && tokAt(iToken + 1) == Token.list) {
+        data1 = ScriptMathProcessor.getQuaternionArray((Object[]) getToken(iToken).value);
+        data2 = ScriptMathProcessor.getQuaternionArray((Object[]) getToken(++iToken).value);
+      } else {
+        bsAtoms1 = expression(iToken);
+        bsAtoms2 = (iToken + 1 < statementLength ? expression(++iToken)
           : BitSetUtil.copy(bsAtoms1));
-      bsAtoms1.and(bsFrom);
-      bsAtoms2.and(bsTo);
+        bsAtoms1.and(bsFrom);
+        bsAtoms2.and(bsTo);
+      }
     }
     if (isSyntaxCheck)
       return;
-    Quaternion[] data1 = viewer.getAtomGroupQuaternions(bsAtoms1,
+    if (data1 == null)
+      data1 = viewer.getAtomGroupQuaternions(bsAtoms1,
         Integer.MAX_VALUE);
-    Quaternion[] data2 = viewer.getAtomGroupQuaternions(bsAtoms2,
+    if (data2 == null)
+      data2 = viewer.getAtomGroupQuaternions(bsAtoms2,
         Integer.MAX_VALUE);
     if (data1.length == 0 || data2.length == 0)
       return;

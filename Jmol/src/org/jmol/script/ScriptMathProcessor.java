@@ -2894,7 +2894,7 @@ class ScriptMathProcessor {
     return "NaN";
   }
 
-  private static Quaternion[] getQuaternionArray(Object[] quaternionOrStringData) {
+  protected static Quaternion[] getQuaternionArray(Object[] quaternionOrStringData) {
     Quaternion[] data;
     if (quaternionOrStringData instanceof Quaternion[]) {
       data = (Quaternion[]) quaternionOrStringData;

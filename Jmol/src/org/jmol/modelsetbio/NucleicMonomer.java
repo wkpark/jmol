@@ -28,12 +28,14 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 
 public class NucleicMonomer extends PhosphorusMonomer {
 
+  private final static byte P = 0;
   final static byte C6 = 1;
   private final static byte O2Pr = 2;
   private final static byte C5 = 3;
@@ -287,7 +289,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
   }
  
  Atom getQuaternionFrameCenter(char qType) {
-   return (getAtomFromOffsetIndex(isPurine ? N9 : N1));
+   return (getAtomFromOffsetIndex(qType == 'p' ? P : isPurine ? N9 : N1));
  }
  
  public Object getHelixData(int tokType, char qType, int mStep) {
@@ -318,11 +320,28 @@ public class NucleicMonomer extends PhosphorusMonomer {
    
    */
    
-   //if (m.getLeadAtom().getElementSymbol() != "P")
-     //return null;
-   Point3f ptA, ptB;
-   Point3f ptN = getQuaternionFrameCenter(qType);
-   if (isPurine) {
+   Atom ptA = null;
+   Atom ptB = null;
+   Atom ptNorP = getQuaternionFrameCenter(qType);
+   if(ptNorP == null)
+     return null;
+   if (qType == 'p') {
+     Atom p1 = getAtomFromOffsetIndex(O1P);
+     Atom p2 = getAtomFromOffsetIndex(O2P);
+     Bond[] bonds = ptNorP.getBonds();
+     int groupIndex = ptNorP.getGroupIndex();
+     for (int i = 0; i < bonds.length; i++) {
+       Atom atom = bonds[i].getOtherAtom(ptNorP);
+       if (p1 != null && atom.index == p1.index)
+         continue;
+       if (p2 != null && atom.index == p2.index)
+         continue;
+       if (atom.getGroupIndex() == groupIndex)
+         ptB = atom;
+       else
+         ptA = atom;
+     }
+   } else if (isPurine) {
      // vA = N9--C4
      // vB = N9--C8
      ptA = getAtomFromOffsetIndex(C4);
@@ -333,14 +352,14 @@ public class NucleicMonomer extends PhosphorusMonomer {
      ptA = getAtomFromOffsetIndex(C2);
      ptB = getAtomFromOffsetIndex(C6);
    }
-   if(ptN == null || ptA == null || ptB == null)
+   if(ptA == null || ptB == null)
      return null;
 
    Vector3f vA = new Vector3f(ptA);
-   vA.sub(ptN);
+   vA.sub(ptNorP);
    
    Vector3f vB = new Vector3f(ptB);
-   vB.sub(ptN);
+   vB.sub(ptNorP);
    return Quaternion.getQuaternionFrame(vA, vB, null);
  }
 

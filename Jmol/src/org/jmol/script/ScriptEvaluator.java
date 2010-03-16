@@ -2830,12 +2830,16 @@ public class ScriptEvaluator {
   }
 
   private void showString(String str) {
+    showString(str, false);
+  }
+  
+  private void showString(String str, boolean isPrint) {
     if (isSyntaxCheck)
       return;
     if (outputBuffer != null)
       outputBuffer.append(str).append('\n');
     else
-      viewer.showString(str, false);
+      viewer.showString(str, isPrint);
   }
 
   private void scriptStatusOrBuffer(String s) {
@@ -4545,9 +4549,6 @@ public class ScriptEvaluator {
         case Token.whilecmd:
           isForCheck = flowControl(token.tok, isForCheck);
           break;
-        case Token.align:
-          align();
-          break;
         case Token.animation:
           animation();
           break;
@@ -4574,6 +4575,9 @@ public class ScriptEvaluator {
           break;
         case Token.color:
           color();
+          break;
+        case Token.compare:
+          compare();
           break;
         case Token.configuration:
           configuration();
@@ -5688,6 +5692,92 @@ public class ScriptEvaluator {
     viewer.setStereoMode(colors, stereoMode, degrees);
   }
 
+  private void compare() throws ScriptException {
+    // compare {model1} {model2} [orientations]
+    // compare {model1} {model2} [orientations] {bsAtoms1} {bsAtoms2} 
+    // compare {model1} {model2} atoms {bsAtoms1} {bsAtoms2} 
+    // compare {model1} {model2} [orientations] [quaternionList1] [quaternionList2] 
+    BitSet bsFrom = expression(1);
+    BitSet bsTo = expression(++iToken);
+    BitSet bsAtoms1 = bsFrom;
+    BitSet bsAtoms2 = bsTo;
+    boolean isQuaternion = true;
+    boolean doRotate = false;
+    boolean doTranslate = false;
+    Quaternion[] data1 = null, data2 = null;
+    for (int i = iToken + 1; i < statementLength; ++i) {
+      switch (getToken(i).tok) {
+      case Token.bitset:
+      case Token.expressionBegin:
+        bsAtoms1 = expression(iToken);
+        bsAtoms2 = (iToken + 1 < statementLength ? expression(++iToken)
+            : BitSetUtil.copy(bsAtoms1));
+        bsAtoms1.and(bsFrom);
+        bsAtoms2.and(bsTo);
+        break;
+      case Token.list:
+        isQuaternion = true;
+        if (data1 == null)
+          data1 = ScriptMathProcessor
+              .getQuaternionArray((Object[]) getToken(iToken).value);
+        else if (data2 == null)
+          data2 = ScriptMathProcessor
+              .getQuaternionArray((Object[]) getToken(++iToken).value);
+        else
+          error(ERROR_invalidArgument);
+        break;
+      case Token.quaternion:
+        isQuaternion = true;
+        break;
+      case Token.atoms:
+        isQuaternion = false;
+        break;
+      case Token.rotate:
+        doRotate = true;
+        break;
+      case Token.translate:
+        doTranslate = true;
+        break;
+      default:
+        error(ERROR_invalidArgument);
+      }
+    }
+    if (isSyntaxCheck)
+      return;
+    float[] retStddev = new float[1];
+    Quaternion q = null;
+    if (isQuaternion) {
+      if (data1 == null)
+        data1 = viewer.getAtomGroupQuaternions(bsAtoms1, Integer.MAX_VALUE);
+      if (data2 == null)
+        data2 = viewer.getAtomGroupQuaternions(bsAtoms2, Integer.MAX_VALUE);
+      if (data1.length == 0 || data2.length == 0)
+        return;
+      q = Quaternion.sphereMean(Quaternion.div(data2, data1), retStddev,
+          0.0001f);
+      showString("RMSD = " + retStddev[0] + " degrees");
+    } else {
+      // atoms
+      viewer.calculateCoordinateRmsd(bsAtoms1, bsAtoms2, retStddev);
+      showString("RMSD = " + retStddev[0] + " Angstroms");
+    }
+    Point3f pt1 = new Point3f();
+    if (doRotate) {
+      if (q == null)
+        evalError("option not implemented", null);
+      Point3f pt0 = new Point3f();
+      pt1.add(q.getNormal());
+      float degrees = q.getTheta();
+      viewer.rotateAboutPointsInternal(pt0, pt1, degrees, Float.MAX_VALUE,
+          false, bsFrom);
+    }
+    if (doTranslate) {
+      pt1 = viewer.getAtomSetCenter(bsAtoms2);
+      pt1.sub(viewer.getAtomSetCenter(bsAtoms1));
+      viewer.setAtomCoordRelative(pt1, bsFrom);
+    }
+  }
+  
   private void connect(int index) throws ScriptException {
 
     final float[] distances = new float[2];
@@ -6725,13 +6815,7 @@ public class ScriptEvaluator {
   private void print() throws ScriptException {
     if (statementLength == 1)
       error(ERROR_badArgumentCount);
-    String s = (String) parameterExpression(1, 0, "", false);
-    if (isSyntaxCheck)
-      return;
-    if (outputBuffer != null)
-      outputBuffer.append(s).append('\n');
-    else
-      viewer.showString(s, true);
+    showString((String) parameterExpression(1, 0, "", false), true);
   }
 
   private boolean pause() throws ScriptException {
@@ -9331,48 +9415,6 @@ public class ScriptEvaluator {
     setShapeSize(shapeType, mad);
   }
 
-  private void align() throws ScriptException {
-    BitSet bsFrom = expression(1);
-    BitSet bsTo = expression(++iToken);
-    BitSet bsAtoms1 = bsFrom;
-    BitSet bsAtoms2 = bsTo;
-    Quaternion[] data1 = null, data2 = null;
-    if (iToken + 1 < statementLength) {
-      if (tokAt(++iToken) == Token.list && tokAt(iToken + 1) == Token.list) {
-        data1 = ScriptMathProcessor.getQuaternionArray((Object[]) getToken(iToken).value);
-        data2 = ScriptMathProcessor.getQuaternionArray((Object[]) getToken(++iToken).value);
-      } else {
-        bsAtoms1 = expression(iToken);
-        bsAtoms2 = (iToken + 1 < statementLength ? expression(++iToken)
-          : BitSetUtil.copy(bsAtoms1));
-        bsAtoms1.and(bsFrom);
-        bsAtoms2.and(bsTo);
-      }
-    }
-    if (isSyntaxCheck)
-      return;
-    if (data1 == null)
-      data1 = viewer.getAtomGroupQuaternions(bsAtoms1,
-        Integer.MAX_VALUE);
-    if (data2 == null)
-      data2 = viewer.getAtomGroupQuaternions(bsAtoms2,
-        Integer.MAX_VALUE);
-    if (data1.length == 0 || data2.length == 0)
-      return;
-    float[] retStddev = new float[1];
-    Quaternion q = Quaternion.sphereMean(Quaternion.div(data2, data1),
-        retStddev, 0.0001f);
-    Point3f pt0 = new Point3f();
-    Point3f pt1 = new Point3f();
-    pt1.add(q.getNormal());
-    float degrees = q.getTheta();
-    viewer.rotateAboutPointsInternal(pt0, pt1, degrees, Float.MAX_VALUE, false,
-        bsFrom);
-    pt1 = viewer.getAtomSetCenter(bsAtoms2);
-    pt1.sub(viewer.getAtomSetCenter(bsAtoms1));
-    viewer.setAtomCoordRelative(pt1, bsFrom);
-  }
-  
   private void animation() throws ScriptException {
     boolean animate = false;
     switch (getToken(1).tok) {

@@ -277,7 +277,6 @@ public class Token {
   final static int continuecmd  = 8 | flowCommand;
   final static int end          = 9 | flowCommand | expression;
   
-  final static int align        = scriptCommand | 1;// new
   final static int animation    = scriptCommand | 2;
   final static int background   = scriptCommand | 3 | deprecatedparam;
   final static int bind         = scriptCommand | 4;
@@ -285,6 +284,7 @@ public class Token {
   final static int calculate    = scriptCommand | 6;
   final static int cd           = scriptCommand | 7 | implicitStringCommand | expression;
   final static int centerAt     = scriptCommand | 8;
+  final static int compare      = scriptCommand | 9;// new
 //final static int color        see intproperty
 //final static int configuration see intproperty
   public final static int connect = scriptCommand | 10;
@@ -950,6 +950,7 @@ public class Token {
   final static int absolute      = misc | 1;
   final static int addhydrogens  = misc | 2;// new
   final static int adjust        = misc | 3;// new
+  final static int align         = misc | 4;
   final static int allconnected  = misc | 5;// new
   final static int angstroms     = misc | 6;// new
   final static int anisotropy    = misc | 7;// new
@@ -1375,6 +1376,7 @@ public class Token {
       "centerat",          new Token(centerAt),
       "color",             new Token(color),
       "colour",            null,
+      "compare",           new Token(compare),
       "configuration",     new Token(configuration),
       "conformation",      null,
       "config",            null,
@@ -1529,6 +1531,7 @@ public class Token {
       "axis",              new Token(axis),
       "axisangle",         new Token(axisangle),
       "orientation",       new Token(orientation),
+      "orientations",      null,
       "pdbheader",         new Token(pdbheader),                          
       "polymer",           new Token(polymer),
       "polymers",          null,
@@ -1554,6 +1557,7 @@ public class Token {
       "add",             new Token(add),
       "adpmax",          new Token(adpmax),
       "adpmin",          new Token(adpmin),
+      "align",           new Token(align),
       "all",             tokenAll,
       "altloc",          new Token(altloc),
       "altlocs",         null,
@@ -1761,7 +1765,6 @@ public class Token {
 
       // more misc parameters
       "addhydrogens",    new Token(addhydrogens),
-      "align",           new Token(align),
       "allconnected",    new Token(allconnected),
       "angstroms",       new Token(angstroms),
       "anisotropy",      new Token(anisotropy),

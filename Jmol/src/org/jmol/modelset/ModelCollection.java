@@ -435,6 +435,30 @@ abstract public class ModelCollection extends BondCollection {
     return (maxRadius == 0 ? 10 : maxRadius);
   }
 
+  public void calculateCoordinateRmsd(BitSet bsAtoms1, BitSet bsAtoms2,
+                                      float[] retStddev) {
+    double sum = 0;
+    double sum2 = 0;
+    int n = 0;
+    Point3f pt1 = getAtomSetCenter(bsAtoms2);
+    pt1.sub(getAtomSetCenter(bsAtoms1));
+    Point3f pt = new Point3f();
+
+    for (int j = 0, i = bsAtoms1.nextSetBit(0); i >= 0 && j >= 0; i = bsAtoms1
+        .nextSetBit(i + 1), j = bsAtoms2.nextSetBit(j + 1)) {
+      pt.set(atoms[j]);
+      pt.sub(pt1);
+      double d = atoms[i].distance(pt);
+      sum += d;
+      sum2 += d * d;
+      n++;
+    }
+    if (n < 2)
+      return;
+    float stddev = (int) (100 * Math.sqrt((sum2 - sum * sum / n) / (n - 1))) / 100f;
+    retStddev[0] = stddev;
+  }
+
   public Point3f getAtomSetCenter(BitSet bs) {
     Point3f ptCenter = new Point3f(0, 0, 0);
     int nPoints = 0;

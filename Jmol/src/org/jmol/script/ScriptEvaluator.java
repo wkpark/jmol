@@ -5714,6 +5714,7 @@ public class ScriptEvaluator {
             : BitSetUtil.copy(bsAtoms1));
         bsAtoms1.and(bsFrom);
         bsAtoms2.and(bsTo);
+        i = iToken;
         break;
       case Token.list:
         isQuaternion = true;
@@ -5762,10 +5763,11 @@ public class ScriptEvaluator {
       showString("RMSD = " + retStddev[0] + " Angstroms");
     }
     Point3f pt1 = new Point3f();
+    Point3f pt0 = new Point3f(viewer.getAtomSetCenter(bsAtoms1));
     if (doRotate) {
       if (q == null)
         evalError("option not implemented", null);
-      Point3f pt0 = new Point3f();
+      pt1.set(pt0);
       pt1.add(q.getNormal());
       float degrees = q.getTheta();
       viewer.rotateAboutPointsInternal(pt0, pt1, degrees, Float.MAX_VALUE,
@@ -5773,7 +5775,7 @@ public class ScriptEvaluator {
     }
     if (doTranslate) {
       pt1 = viewer.getAtomSetCenter(bsAtoms2);
-      pt1.sub(viewer.getAtomSetCenter(bsAtoms1));
+      pt1.sub(pt0);
       viewer.setAtomCoordRelative(pt1, bsFrom);
     }
   }

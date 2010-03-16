@@ -1,6 +1,8 @@
 package org.openscience.jmol.app.webexport;
 
 import org.jmol.api.JmolViewer;
+import org.jmol.g3d.Graphics3D;
+import javax.vecmath.Point3f;
 import org.jmol.i18n.GT;
 
 public class Widgets { // group of javascript widgets to allow user input to
@@ -76,8 +78,9 @@ public class Widgets { // group of javascript widgets to allow user input to
       int beginIndex = state.indexOf("Background");
       beginIndex = state.indexOf("[", beginIndex);
       int endIndex = state.indexOf("]", beginIndex);
-      String backColor = state.substring((beginIndex + 2), (endIndex));
-      backColor = hexrgbToDecimalrgb(backColor);
+      String backColor = state.substring((beginIndex), (endIndex+1));
+      Point3f ptRGB = Graphics3D.colorPointFromInt2(Graphics3D.getArgbFromString(backColor));
+      backColor = "" + (int)ptRGB.x + "," + (int)ptRGB.y + "," + (int)ptRGB.z;
       htmlStr += "JmolColorPickerBox(scriptStr, [" + backColor + "], 'backbox"
           + appletID + "',  '" + appletID + "');";
       htmlStr += "</script></td></tr></tbody></table>";
@@ -141,62 +144,4 @@ public class Widgets { // group of javascript widgets to allow user input to
     // widgetList[3] = new DownLoadWidget(viewer);
   }
 
-  String hexrgbToDecimalrgb(String hex) {
-    String decimal = "";
-    String hexred = hex.substring(0, 2);
-    String hexgreen = hex.substring(2, 4);
-    String hexblue = hex.substring(4, 6);
-    String red = ""
-        + (16 * hexDigitToDecimal(hexred.charAt(0)) + hexDigitToDecimal(hexred
-            .charAt(1)));
-    String green = ""
-        + (16 * hexDigitToDecimal(hexgreen.charAt(0)) + hexDigitToDecimal(hexgreen
-            .charAt(1)));
-    String blue = ""
-        + (16 * hexDigitToDecimal(hexblue.charAt(0)) + hexDigitToDecimal(hexblue
-            .charAt(1)));
-    decimal = "" + red + "," + green + "," + blue;
-    return (decimal);
-  }
-
-  private int hexDigitToDecimal(char hexdigit) {
-    int decimal = 0;
-    if ("1".contentEquals(String.valueOf(hexdigit)))
-      decimal = 1;
-    if ("2".contentEquals(String.valueOf(hexdigit)))
-      decimal = 2;
-    if ("3".contentEquals(String.valueOf(hexdigit)))
-      decimal = 3;
-    if ("4".contentEquals(String.valueOf(hexdigit)))
-      decimal = 4;
-    if ("5".contentEquals(String.valueOf(hexdigit)))
-      decimal = 5;
-    if ("6".contentEquals(String.valueOf(hexdigit)))
-      decimal = 6;
-    if ("7".contentEquals(String.valueOf(hexdigit)))
-      decimal = 7;
-    if ("8".contentEquals(String.valueOf(hexdigit)))
-      decimal = 8;
-    if ("9".contentEquals(String.valueOf(hexdigit)))
-      decimal = 9;
-    if ("A".contentEquals(String.valueOf(hexdigit))
-        || "a".contentEquals(String.valueOf(hexdigit)))
-      decimal = 10;
-    if ("B".contentEquals(String.valueOf(hexdigit))
-        || "b".contentEquals(String.valueOf(hexdigit)))
-      decimal = 11;
-    if ("C".contentEquals(String.valueOf(hexdigit))
-        || "c".contentEquals(String.valueOf(hexdigit)))
-      decimal = 12;
-    if ("D".contentEquals(String.valueOf(hexdigit))
-        || "d".contentEquals(String.valueOf(hexdigit)))
-      decimal = 13;
-    if ("E".contentEquals(String.valueOf(hexdigit))
-        || "e".contentEquals(String.valueOf(hexdigit)))
-      decimal = 14;
-    if ("F".contentEquals(String.valueOf(hexdigit))
-        || "f".contentEquals(String.valueOf(hexdigit)))
-      decimal = 15;
-    return (decimal);
-  }
 }

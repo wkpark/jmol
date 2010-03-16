@@ -42,20 +42,34 @@ class JmolInstance {
   String script;
   int width;
   int height;
+  int bgColor;
+  boolean spinOn;
   String pictFile;
   BitSet whichWidgets;//true bits are selected widgets
   boolean pictIsScratchFile;
   JmolViewer viewer;
 
-  JmolInstance(JmolViewer viewer, String name, String script,
+  public static JmolInstance getInstance(JmolViewer viewer, String name,
+                                         int width, int height, int widgets) {
+    JmolInstance ji = new JmolInstance(viewer, name, width, height, widgets);
+    return (ji.script == null ? null : ji);
+  }
+
+  private JmolInstance(JmolViewer viewer, String name,
       int width, int height, int nWidgets) {
     this.viewer = viewer;
     this.name = name;
-    this.javaname = name.replaceAll("[^a-zA-Z_0-9-]", "_"); //escape filename characters
-    this.script = script;
     this.width = width;
     this.height = height;
-    this.whichWidgets=new BitSet(nWidgets);
+    script = viewer.getStateInfo();
+    spinOn = viewer.getBooleanProperty("_spinning");
+    if (script == null) {
+      LogPanel.log("Error trying to get Jmol State within pop_in_Jmol.");
+      return;
+    }
+    bgColor = viewer.getBackgroundArgb();
+    javaname = name.replaceAll("[^a-zA-Z_0-9-]", "_"); //escape filename characters
+    whichWidgets=new BitSet(nWidgets);
     whichWidgets.clear(0,nWidgets);
     FileSystemView Directories = FileSystemView.getFileSystemView();
     File homedir = Directories.getHomeDirectory();
@@ -144,4 +158,5 @@ class JmolInstance {
     whichWidgets.clear(widgetID);
     return true;
   }
+
 }

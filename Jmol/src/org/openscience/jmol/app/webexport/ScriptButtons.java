@@ -87,7 +87,7 @@ class ScriptButtons extends WebPanel {
             row = 0;
           }
           widgetDefs += "<td>"
-              + theWidgets.widgetList[j].getJavaScript(0, instance.script)
+              + theWidgets.widgetList[j].getJavaScript(0, instance)
                   .replace("'", "\'") + "</td>";
           row = row + 1;
         }

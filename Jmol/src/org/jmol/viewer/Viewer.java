@@ -1220,7 +1220,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setSpinOn(boolean spinOn) {
     // Eval
     // startSpinningAxis
-    System.out.println("viewer.setSpinOn " + spinOn);
     transformManager.setSpinOn(spinOn);
   }
 

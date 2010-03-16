@@ -107,9 +107,9 @@ abstract class WebPanel extends JPanel implements ActionListener,
     this.fc = fc;
     this.webPanels = webPanels;
     this.panelIndex = panelIndex;
-    this.theWidgets=new Widgets(viewer);
-    this.nWidgets=theWidgets.widgetList.length;
-    this.widgetCheckboxes=new Checkbox[nWidgets];
+    theWidgets = new Widgets();
+    nWidgets = theWidgets.widgetList.length;
+    widgetCheckboxes = new Checkbox[nWidgets];
 
     // Create the text fields for the path to the Jmol applet, page author(s)
     // name(s) and web page title.
@@ -356,11 +356,6 @@ abstract class WebPanel extends JPanel implements ActionListener,
           ._("Give the occurrence of Jmol a name:"), label);
       if (name == null)
         return;
-      // need to get the script...
-      String script = viewer.getStateInfo();
-      if (script == null) {
-        LogPanel.log("Error trying to get Jmol State within pop_in_Jmol.");
-      }
       DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
       int width = 300;
       int height = 300;
@@ -370,11 +365,12 @@ abstract class WebPanel extends JPanel implements ActionListener,
         height = ((SpinnerNumberModel) (appletSizeSpinnerH.getModel()))
             .getNumber().intValue();
       }
-      JmolInstance instance = new JmolInstance(viewer, name, script, width,
+      JmolInstance instance = JmolInstance.getInstance(viewer, name, width,
           height, nWidgets);
       if (instance == null) {
         LogPanel.log(GT
             ._("Error creating new instance containing script(s) and image."));
+        return;
       }
 
       int i;

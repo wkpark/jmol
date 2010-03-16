@@ -1,38 +1,44 @@
 package org.openscience.jmol.app.webexport;
 
-import org.jmol.api.JmolViewer;
-import org.jmol.g3d.Graphics3D;
 import javax.vecmath.Point3f;
+
+import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
 
-public class Widgets { // group of javascript widgets to allow user input to
-  // Jmol
+class Widgets { 
+  
+  // group of javascript widgets to allow user input to Jmol
 
-  abstract public class Widget {
-    JmolViewer viewer;
+  Widget[] widgetList = new Widget[3];
+
+  Widgets() {
+    // this should just be a list of available widgets
+    widgetList[0] = new SpinOnWidget();
+    widgetList[1] = new BackgroundColorWidget();
+    widgetList[2] = new StereoViewWidget();
+    // widgetList[3] = new DownLoadWidget();
+  }
+
+  abstract class Widget {
     String name;
-    String script;// jmol script sent by widget
-    String javaScript; // html & javascript to define widget
 
-    Widget(JmolViewer viewer) {
-      this.viewer = viewer;
-    }
+    /**
+     * 
+     * Each Widget must implement this function and make sure to use
+     * the appletID number to specify the target applet i.e. "JmolApplet<appletID>"
+     * @param appletID
+     * @param instance
+     * @return  the JavaScript and html to implement the widget
+     */
+    abstract String getJavaScript(int appletID, JmolInstance instance);
 
-    abstract public String getJavaScript(int appletID, String state);// returns
-                                                                     // the
-                                                                     // JavaScript
-                                                                     // and html
-                                                                     // to
-
-    // implement the widget. Each Widget should implement this function and make
-    // sure to use
-    // the appletID number to specify the target applet ie.
-    // "JmolApplet<appletID>"
-
-    abstract public String getJavaScriptFileName();// returns the name of the
-    // javascript file necessary to implement the widget. Each widget should
-    // implement this function. If no file is needed return "none".
-    // A COPY OF THIS .JS FILE MUST BE STORED IN THE html PART OF WEBEXPORT
+    /**
+     *  
+     *  A COPY OF THIS .JS FILE MUST BE STORED IN THE html PART OF WEBEXPORT
+     *  
+     * @return  "none" (no file needed) or javascript file necessary to implement the widget
+     */
+    abstract String getJavaScriptFileName();// returns the name of the
 
     // TODO add a method for getting list of image files probably should return
     // an array of strings.
@@ -40,108 +46,86 @@ public class Widgets { // group of javascript widgets to allow user input to
   }
 
   class SpinOnWidget extends Widget {
-    SpinOnWidget(JmolViewer viewer) {
-      super(viewer);
-      this.name = GT._("Spin on/off");
+    SpinOnWidget() {
+      name = GT._("Spin on/off");
     }
 
-    public String getJavaScriptFileName() {
-      return ("JmolSpin.js");
+    String getJavaScriptFileName() {
+      return "JmolSpin.js";
     }
 
-    public String getJavaScript(int appletID, String state) {
-      String htmlStr = "<input type=\"checkbox\"";
-      if (state.contains("spin on"))
-        htmlStr += " checked=\"\"";
-      htmlStr += " onchange=\"jmol_spin(this.checked," + appletID + ");\" ";
-      htmlStr += "title=\"" + GT._("enable/disable spin") + "\">";
-      htmlStr += GT._("Spin on") + "</input>";
-      return (htmlStr);
+    String getJavaScript(int appletID, JmolInstance instance) {
+      return "<input type=\"checkbox\""
+          + (instance.spinOn ? " checked=\"\"" : "")
+          + " onchange=\"jmol_spin(this.checked," + appletID + ");\" "
+          + "title=\"" + GT._("enable/disable spin") + "\">"
+          + GT._("Spin on") + "</input>";
     }
   }
 
   class BackgroundColorWidget extends Widget {
-    BackgroundColorWidget(JmolViewer viewer) {
-      super(viewer);
-      this.name = GT._("Background Color");
+    BackgroundColorWidget() {
+      name = GT._("Background Color");
     }
 
-    public String getJavaScriptFileName() {
+    String getJavaScriptFileName() {
       return ("JmolColorPicker.js");
     }
 
-    public String getJavaScript(int appletID, String state) {
-      String htmlStr = "<table><tbody><tr><td>";
-      htmlStr += GT._("background color:");
-      htmlStr += "</td><td><script type = 'text/javascript'>";
-      htmlStr += "var scriptStr = 'color background $COLOR$;';";
-      int beginIndex = state.indexOf("Background");
-      beginIndex = state.indexOf("[", beginIndex);
-      int endIndex = state.indexOf("]", beginIndex);
-      String backColor = state.substring((beginIndex), (endIndex+1));
-      Point3f ptRGB = Graphics3D.colorPointFromInt2(Graphics3D.getArgbFromString(backColor));
-      backColor = "" + (int)ptRGB.x + "," + (int)ptRGB.y + "," + (int)ptRGB.z;
-      htmlStr += "JmolColorPickerBox(scriptStr, [" + backColor + "], 'backbox"
-          + appletID + "',  '" + appletID + "');";
-      htmlStr += "</script></td></tr></tbody></table>";
-      return (htmlStr);
+    String getJavaScript(int appletID, JmolInstance instance) {
+      Point3f ptRGB = Graphics3D.colorPointFromInt2(instance.bgColor);
+      return "<table><tbody><tr><td>"
+          + GT._("background color:")
+          + "</td><td><script type = 'text/javascript'>"
+          + "var scriptStr = 'color background $COLOR$;';"
+          + "JmolColorPickerBox(scriptStr, [" 
+          + (int)ptRGB.x + "," + (int)ptRGB.y + "," + (int)ptRGB.z
+          + "], 'backbox"
+          + appletID + "',  '" + appletID + "');"
+          + "</script></td></tr></tbody></table>";
     }
   }
 
   class StereoViewWidget extends Widget {
-    StereoViewWidget(JmolViewer viewer) {
-      super(viewer);
-      this.name = GT._("Stereo Viewing");
+    StereoViewWidget() {
+      name = GT._("Stereo Viewing");
     }
 
-    public String getJavaScriptFileName() {
-      return ("none");
+    String getJavaScriptFileName() {
+      return "none";
     }
 
-    public String getJavaScript(int appletID, String state) {
-      String htmlStr = "<select id=\"StereoMode" + appletID + "\" title=\""
-          + GT._("select stereo type") + "\"";
-      htmlStr += "onchange=\"void(jmolScriptWait((this.options[this.selectedIndex]).value,"
-          + appletID + "));\">";
-      htmlStr += "\n<option selected=\"\" value=\"" + GT._("stereo off")
-          + "\">" + GT._("Stereo Off") + " </option>";
-      htmlStr += "\n<option value=\"stereo REDBLUE\">" + GT._("Red/Blue")
-          + "</option>";
-      htmlStr += "\n<option value=\"stereo REDCYAN\">" + GT._("Red/Cyan")
-          + "</option>";
-      htmlStr += "\n<option value=\"stereo REDGREEN\">" + GT._("Red/Green")
-          + "</option>";
-      htmlStr += "\n</select>";
-      return (htmlStr);
+    String getJavaScript(int appletID, JmolInstance instance) {
+      return "<select id=\"StereoMode" + appletID + "\" title=\""
+          + GT._("select stereo type") + "\""
+          + "onchange=\"void(jmolScriptWait((this.options[this.selectedIndex]).value,"
+          + appletID + "));\">"
+          + "\n<option selected=\"\" value=\"" + GT._("stereo off")
+          + "\">" + GT._("Stereo Off") + " </option>"
+          + "\n<option value=\"stereo REDBLUE\">" + GT._("Red/Blue")
+          + "</option>"
+          + "\n<option value=\"stereo REDCYAN\">" + GT._("Red/Cyan")
+          + "</option>"
+          + "\n<option value=\"stereo REDGREEN\">" + GT._("Red/Green")
+          + "</option>"
+          + "\n</select>";
     }
   }
 
   class DownLoadWidget extends Widget {
-    DownLoadWidget(JmolViewer viewer) {
-      super(viewer);
-      this.name = GT._("Download view");
+    DownLoadWidget() {
+      name = GT._("Download view");
     }
 
-    public String getJavaScriptFileName() {
+    String getJavaScriptFileName() {
       // TODO
       return ("none");
     }
 
-    public String getJavaScript(int appletID, String state) {
+    String getJavaScript(int appletID, JmolInstance instance) {
       // TODO
       return (GT._("unimplemented"));
     }
-  }
-
-  // public Widget[] widgetList;
-  Widget[] widgetList = new Widget[3];
-
-  Widgets(JmolViewer viewer) {
-    // this should just be a list of available widgets
-    widgetList[0] = new SpinOnWidget(viewer);
-    widgetList[1] = new BackgroundColorWidget(viewer);
-    widgetList[2] = new StereoViewWidget(viewer);
-    // widgetList[3] = new DownLoadWidget(viewer);
   }
 
 }

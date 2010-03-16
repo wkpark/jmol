@@ -5697,14 +5697,14 @@ public class ScriptEvaluator {
     // compare {model1} {model2} [orientations] {bsAtoms1} {bsAtoms2} 
     // compare {model1} {model2} atoms {bsAtoms1} {bsAtoms2} 
     // compare {model1} {model2} [orientations] [quaternionList1] [quaternionList2] 
-    BitSet bsFrom = expression(1);
-    BitSet bsTo = expression(++iToken);
-    BitSet bsAtoms1 = bsFrom;
-    BitSet bsAtoms2 = bsTo;
     boolean isQuaternion = true;
     boolean doRotate = false;
     boolean doTranslate = false;
     Quaternion[] data1 = null, data2 = null;
+    BitSet bsFrom = expression(1);
+    BitSet bsTo = expression(++iToken);
+    BitSet bsAtoms1 = bsFrom;
+    BitSet bsAtoms2 = bsTo;
     for (int i = iToken + 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
       case Token.bitset:
@@ -5720,14 +5720,14 @@ public class ScriptEvaluator {
         isQuaternion = true;
         if (data1 == null)
           data1 = ScriptMathProcessor
-              .getQuaternionArray((Object[]) getToken(iToken).value);
+              .getQuaternionArray((Object[]) theToken.value);
         else if (data2 == null)
           data2 = ScriptMathProcessor
-              .getQuaternionArray((Object[]) getToken(++iToken).value);
+              .getQuaternionArray((Object[]) theToken.value);
         else
           error(ERROR_invalidArgument);
         break;
-      case Token.quaternion:
+      case Token.orientation:
         isQuaternion = true;
         break;
       case Token.atoms:

@@ -1130,7 +1130,7 @@ abstract public class AtomCollection {
       atomData.atomRadius = new float[atomCount];
     for (int i = 0; i < atomCount; i++) {
       Atom atom = atoms[i];
-      if (atomData.modelIndex >= 0
+      if (atom.isDeleted() || atomData.modelIndex >= 0
           && atom.modelIndex != atomData.firstModelIndex) {
         if (atomData.bsIgnored == null)
           atomData.bsIgnored = new BitSet();

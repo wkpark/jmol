@@ -8248,6 +8248,9 @@
   <fah_proj number="6025" name="p6025_Protein in POPC" public="y"
     server="171.64.65.54" atoms="76757" preferred="3" deadline="6"
     credit="483" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
+  <fah_proj number="6040" name="p6040_HA_solvated" public="n"
+    server="171.64.65.54" atoms="330706" preferred="4" deadline="6"
+    credit="1395" frames="100" code="A3" contact="kasson"/>
 
   <!-- Projects 6300 to 6399 -->
   <fah_proj number="6300" name="p6300_Peptide dimer in TIP3P water" public="y" file="xyz"
@@ -8324,6 +8327,9 @@
   <fah_proj number="6500" name="p6500_UBIQUITIN MODEL250 in water" public="n"
     server="169.230.26.30" atoms="19252" preferred="43" deadline="65"
     credit="237" frames="100" code="A0" contact="lan"/>
+  <fah_proj number="6501" name="p6501_ubiquitin_predict" public="n"
+    server="169.230.26.30" atoms="25933" preferred="23" deadline="34"
+    credit="123" frames="100" code="G" contact="lan"/>
 
   <!-- Projects 6600 to 6699 -->
   <fah_proj number="6600" name="p6600_CspTm_300K" public="y"
@@ -8453,6 +8459,9 @@
     server="171.64.65.71" atoms="1254" preferred="2" deadline="3"
     credit="548" frames="100" code="GG2" contact="gbowman"/>
   <fah_proj number="10107" name="p10107" public="y"
+    server="171.64.65.71" atoms="1254" preferred="2" deadline="3"
+    credit="548" frames="100" code="GG2" contact="gbowman"/>
+  <fah_proj number="10108" name="p10108" public="y"
     server="171.64.65.71" atoms="1254" preferred="2" deadline="3"
     credit="548" frames="100" code="GG2" contact="gbowman"/>
 

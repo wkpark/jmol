@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-03-14 00:37+0100\n"
-"PO-Revision-Date: 2010-01-09 02:12+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2010-03-17 00:28+0000\n"
+"Last-Translator: LI Anbang <lianbang@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-01-09 02:32+0000\n"
+"X-Launchpad-Export-Date: 2010-03-17 20:36+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -1327,11 +1327,11 @@ msgid "Insert a caption for {0} here."
 msgstr "为此处的 {0} 插入标题"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:354
-#, fuzzy, java-format
+#, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
-msgstr "此处插入额外的解释文字。较长的文本将会环绕 Jmol 模型 {0} 。"
+msgstr "此处插入额外的解释性文字。如果文字很长则会围绕Jmol模型 {0} 环绕。"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:356
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1370,9 +1370,8 @@ msgid "Jmol Instances:"
 msgstr "Jmol 实例："
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:202
-#, fuzzy
 msgid "Select widgets:"
-msgstr "Java小程序的宽度："
+msgstr "选择微件："
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:230
 msgid "Help/Instructions"
@@ -1449,9 +1448,9 @@ msgid "adding {0}.spt"
 msgstr "正在增加 {0}.spt"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:559
-#, fuzzy, java-format
+#, java-format
 msgid "adding {0}"
-msgstr "正在增加 {0}.png"
+msgstr "正在加入 {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:599
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1488,59 +1487,59 @@ msgstr "把大数据文件压缩到"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:43
 msgid "Spin on/off"
-msgstr ""
+msgstr "旋转 开/关"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:55
 msgid "enable/disable spin"
-msgstr ""
+msgstr "启用/停用 旋转"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:56
 msgid "Spin on"
-msgstr ""
+msgstr "旋转 开"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:64
 msgid "Background Color"
-msgstr ""
+msgstr "背景颜色"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:73
 msgid "background color:"
-msgstr ""
+msgstr "背景颜色"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:91
 msgid "Stereo Viewing"
-msgstr ""
+msgstr "立体化查看"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:100
 msgid "select stereo type"
-msgstr ""
+msgstr "选择立体类型"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:103
 msgid "stereo off"
-msgstr ""
+msgstr "立体 关"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:104
 msgid "Stereo Off"
-msgstr ""
+msgstr "立体 关"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:105
 msgid "Red/Blue"
-msgstr ""
+msgstr "红色 / 蓝色"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:107
 msgid "Red/Cyan"
-msgstr ""
+msgstr "红色 / 青色"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:109
 msgid "Red/Green"
-msgstr ""
+msgstr "红色 / 绿色"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:119
 msgid "Download view"
-msgstr ""
+msgstr "下载视图"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:129
 msgid "unimplemented"
-msgstr ""
+msgstr "功能尚未实现"
 
 #~ msgid "Show Selected"
 #~ msgstr "显示所选对象"

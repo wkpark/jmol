@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-03-14 00:37+0100\n"
-"PO-Revision-Date: 2009-12-30 15:18+0000\n"
+"PO-Revision-Date: 2010-03-16 23:26+0000\n"
 "Last-Translator: nanker <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-01-03 19:44+0000\n"
+"X-Launchpad-Export-Date: 2010-03-17 20:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -44,7 +44,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:147
 msgid "debug"
-msgstr ""
+msgstr "fejlsøg"
 
 #: org/openscience/jmol/app/JmolApp.java:148
 msgid "silent startup operation"
@@ -368,7 +368,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:288
 msgid "Molecular Properties"
-msgstr ""
+msgstr "Molekylære egenskaber"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:294
 msgid "Total Charge: "
@@ -380,7 +380,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:308
 msgid "Selection: "
-msgstr ""
+msgstr "Valg: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
@@ -594,7 +594,7 @@ msgstr "&Vis"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:97
 msgid "&Atom"
-msgstr ""
+msgstr "&Atom"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:99
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:100
@@ -602,7 +602,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:102
 #, java-format
 msgid "{0}% van der Waals"
-msgstr ""
+msgstr "{0}% van der Waals"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:103
 msgid "&Bond"
@@ -647,7 +647,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:116
 msgid "&Vector"
-msgstr ""
+msgstr "&Vektor"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:118
 msgid "&On"
@@ -698,7 +698,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
 msgid "V&ectors"
-msgstr ""
+msgstr "V&ektorer"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
@@ -743,7 +743,7 @@ msgstr "Værk&tøjer"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
 msgid "&Gaussian..."
-msgstr ""
+msgstr "&Gaussisk..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 msgid "Distance &Units"
@@ -863,7 +863,7 @@ msgstr "Hvad er nyt"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
 msgid "Hydrogens"
-msgstr ""
+msgstr "Hydrogen"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:66
@@ -1050,7 +1050,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:267
 msgid "width:"
-msgstr ""
+msgstr "bredde:"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:269
 msgid "Image width"
@@ -1059,7 +1059,7 @@ msgstr "Billedbredde"
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:284
 #: org/openscience/jmol/app/webexport/PopInJmol.java:68
 msgid "height:"
-msgstr ""
+msgstr "højde:"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:286
 msgid "Image height"
@@ -1157,11 +1157,11 @@ msgstr "Vis"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:155
 msgid "Atoms"
-msgstr ""
+msgstr "Atomer"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:156
 msgid "Bonds"
-msgstr ""
+msgstr "Binding"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:161
 msgid "Jmol Defaults"
@@ -1283,7 +1283,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:124
 msgid "Introduction"
-msgstr ""
+msgstr "Introduktion"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:134
 msgid "Pop-In Jmol"
@@ -1295,7 +1295,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:152
 msgid "Log"
-msgstr ""
+msgstr "Log"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:167
 #, java-format
@@ -1361,7 +1361,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:164
 msgid "Delete Selected"
-msgstr ""
+msgstr "Slet valgte"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:196
 msgid "Jmol Instances:"
@@ -1382,7 +1382,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:251
 msgid "Save HTML as..."
-msgstr ""
+msgstr "Gem HTML som..."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:261
 msgid "Relative server path to jar files:"
@@ -1394,7 +1394,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:273
 msgid "Author (your name):"
-msgstr ""
+msgstr "Forfatter (dit navn)"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:280
 msgid "Browser window title for this web page:"
@@ -1443,12 +1443,12 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:545
 #, java-format
 msgid "adding {0}.spt"
-msgstr ""
+msgstr "tilføjer {0}.spt"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:559
 #, java-format
 msgid "adding {0}"
-msgstr ""
+msgstr "tilføjer {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:599
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1495,11 +1495,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:64
 msgid "Background Color"
-msgstr ""
+msgstr "Baggrundsfarve"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:73
 msgid "background color:"
-msgstr ""
+msgstr "baggrundsfarve:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:91
 msgid "Stereo Viewing"

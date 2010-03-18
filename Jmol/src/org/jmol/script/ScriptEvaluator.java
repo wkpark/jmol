@@ -5707,8 +5707,15 @@ public class ScriptEvaluator {
     Vector vQuatSets = null;
     BitSet bsFrom = expression(1);
     BitSet bsTo = expression(++iToken);
+    BitSet bsSubset = null;
     for (int i = iToken + 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
+      case Token.comma:
+        break;
+      case Token.subset:
+        bsSubset = expression(++i);
+        i = iToken;
+        break;
       case Token.bitset:
       case Token.expressionBegin:
         if (vQuatSets != null)
@@ -5719,6 +5726,10 @@ public class ScriptEvaluator {
             ? expression(++iToken) : BitSetUtil.copy(bsAtoms1));
         bsAtoms1.and(bsFrom);
         bsAtoms2.and(bsTo);
+        if (bsSubset != null) {
+          bsAtoms1.and(bsSubset);
+          bsAtoms2.and(bsSubset);
+        }
         if (vAtomSets == null)
           vAtomSets = new Vector();
         vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
@@ -5758,6 +5769,7 @@ public class ScriptEvaluator {
     float[] retStddev = new float[2]; //[0] final, [1] initial for atoms
     Quaternion q = null;
     Vector vQ = new Vector();
+    Point3f[][] centerAndPoints = null;
     if (isQuaternion) {
       if (vAtomSets == null && vQuatSets == null) {
         vAtomSets = new Vector();
@@ -5784,36 +5796,32 @@ public class ScriptEvaluator {
     } else {
       // atoms
       if (bsAtoms1 == null) {
-        bsAtoms1 = viewer.getAtomBitSet("spine or connected(_P)");
+        bsAtoms1 = viewer.getAtomBitSet("spine");
         bsAtoms2 = BitSetUtil.copy(bsAtoms1);
         bsAtoms1.and(bsFrom);
         bsAtoms2.and(bsTo);
         vAtomSets = new Vector();
         vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
       }
-      q = viewer.calculateQuaternionRotation(vAtomSets, false, retStddev);
+      centerAndPoints = viewer.getCenterAndPoints(vAtomSets, true);
+      q = viewer.calculateQuaternionRotation(centerAndPoints, retStddev);
       showString("RMSD " + retStddev[1] + " --> " + retStddev[0] + " Angstroms");
     }
     Point3f pt1 = new Point3f();
-    bsAtoms1 = new BitSet();
-    for (int i = vAtomSets.size(); --i >= 0; )
-      bsAtoms1.or(((BitSet[]) vAtomSets.get(i))[0]);
-    Point3f pt0 = viewer.getAtomSetCenter(bsAtoms1);
+    if (centerAndPoints == null)
+      centerAndPoints = viewer.getCenterAndPoints(vAtomSets, true);
     if (doRotate) {
       if (q == null)
         evalError("option not implemented", null);
-      pt1.set(pt0);
+      pt1.set(centerAndPoints[0][0]);
       pt1.add(q.getNormal());
       float degrees = q.getTheta();
-      viewer.rotateAboutPointsInternal(pt0, pt1, degrees, Float.MAX_VALUE,
+      viewer.rotateAboutPointsInternal(centerAndPoints[0][0], pt1, degrees, Float.MAX_VALUE,
           false, bsFrom);
     }
     if (doTranslate) {
-      bsAtoms2 = new BitSet();
-      for (int i = vAtomSets.size(); --i >= 0; )
-        bsAtoms2.or(((BitSet[]) vAtomSets.get(i))[1]);
-      pt1 = viewer.getAtomSetCenter(bsAtoms2);
-      pt1.sub(pt0);
+      pt1.set(centerAndPoints[1][0]);
+      pt1.sub(centerAndPoints[0][0]);
       viewer.setAtomCoordRelative(pt1, bsFrom);
     }
   }

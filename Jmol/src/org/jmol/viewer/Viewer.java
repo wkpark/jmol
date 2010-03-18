@@ -8156,8 +8156,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.getAtomicPropertyState(commands, type, bs, name, data);
   }
 
-  public Quaternion calculateQuaternionRotation(Vector vAtomSets, boolean rmsdOnly,
+  public Quaternion calculateQuaternionRotation(Point3f[][] centerAndPoints,
                                                 float[] retStddev) {
-    return modelSet.calculateQuaternionRotation(vAtomSets, rmsdOnly, retStddev);  
+    return modelSet.calculateQuaternionRotation(centerAndPoints, retStddev);  
+  }
+
+  public Point3f[][] getCenterAndPoints(Vector atomSets, boolean addCenter) {
+    // TODO
+    return modelSet.getCenterAndPoints(atomSets, addCenter);
   }
 }

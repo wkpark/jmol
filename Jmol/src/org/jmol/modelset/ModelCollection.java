@@ -437,16 +437,57 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   /**
+   * 
+   * @param vAtomSets
+   * @param addCenters
+   * @return             array of two lists of points, centers first if desired
+   */
+
+  public Point3f[][] getCenterAndPoints(Vector vAtomSets, boolean addCenters) {
+    BitSet bsAtoms1, bsAtoms2;
+    int n = (addCenters ? 1 : 0);
+    for (int ii = vAtomSets.size(); --ii >= 0;) {
+      BitSet[] bss = (BitSet[]) vAtomSets.get(ii);
+      bsAtoms1 = bss[0];
+      bsAtoms2 = bss[1];
+      n += Math.min(bsAtoms1.cardinality(), bsAtoms2.cardinality());
+    }
+    Point3f[][] points = new Point3f[2][n];
+    if (addCenters) {
+      points[0][0] = new Point3f();
+      points[1][0] = new Point3f();
+    }
+    for (int ii = vAtomSets.size(); --ii >= 0;) {
+      BitSet[] bss = (BitSet[]) vAtomSets.get(ii);
+      bsAtoms1 = bss[0];
+      bsAtoms2 = bss[1];
+      for (int i = bsAtoms1.nextSetBit(0), j = bsAtoms2.nextSetBit(0); i >= 0 && j >= 0; i = bsAtoms1
+          .nextSetBit(i + 1), j = bsAtoms2.nextSetBit(j + 1)) {
+        points[0][--n] = atoms[i];
+        points[1][n] = atoms[j];
+        if (addCenters) {
+          points[0][0].add(atoms[i]);
+          points[1][0].add(atoms[j]);
+        }
+      }
+    }
+    if (addCenters) {
+      points[0][0].scale(1f/(points[0].length - 1));
+      points[1][0].scale(1f/(points[0].length - 1));
+    }
+    return points;
+  }
+
+  /**
    * given a set of pairs of atoms, return the optimum rotation to superimpose
    * two models.
    * 
-   * @param vAtomSets
-   * @param rmsdOnly
+   * @param centerAndPoints
    * @param retStddev
+   * 
    * @return optimum rotation
    */
-  public Quaternion calculateQuaternionRotation(Vector vAtomSets,
-                                                boolean rmsdOnly,
+  public Quaternion calculateQuaternionRotation(Point3f[][] centerAndPoints,
                                                 float[] retStddev) {
 
     /*
@@ -458,57 +499,34 @@ abstract public class ModelCollection extends BondCollection {
      * and Lydia E. Kavraki, "Molecular Distance Measures"
      * http://cnx.org/content/m11608/latest/
      */
-    int n = 0;
     Quaternion q = new Quaternion();
-    BitSet bsAtoms1 = new BitSet();
-    BitSet bsAtoms2 = new BitSet();
-    for (int i = vAtomSets.size(); --i >= 0;) {
-      BitSet[] bss = (BitSet[]) vAtomSets.get(i);
-      bsAtoms1.or(bss[0]);
-      bsAtoms2.or(bss[1]);
-    }
-    Point3f pt1 = getAtomSetCenter(bsAtoms1);
-    Point3f pt2 = getAtomSetCenter(bsAtoms2);
-    double Sxx = 0, Sxy = 0, Sxz = 0, Syx = 0, Syy = 0, Syz = 0, Szx = 0, Szy = 0, Szz = 0;
-    Point3f ptA, ptB;
-    Vector vPts = new Vector();
-    int n1 = bsAtoms1.cardinality();
-    int n2 = bsAtoms2.cardinality();
-    for (int ii = vAtomSets.size(); --ii >= 0;) {
-      BitSet[] bss = (BitSet[]) vAtomSets.get(ii);
-      bsAtoms1 = bss[0];
-      bsAtoms2 = bss[1];
-      for (int i = bsAtoms1.nextSetBit(0), j = bsAtoms2.nextSetBit(0); i >= 0 && j >= 0; i = bsAtoms1
-          .nextSetBit(i + 1), j = bsAtoms2.nextSetBit(j + 1)) {
-        Atom aij = atoms[i];
-        Atom bij = atoms[j];
-        Logger.info(" atom 1 " + aij.getInfo() + "\tatom 2 " + bij.getInfo());
-        ptA = new Point3f(aij);
-        ptA.sub(pt1);
-        ptB = new Point3f(bij);
-        ptB.sub(pt2);
-        vPts.add(new Point3f[] { ptA, ptB });
-        Sxx += (double) ptA.x * (double) ptB.x;
-        Sxy += (double) ptA.x * (double) ptB.y;
-        Sxz += (double) ptA.x * (double) ptB.z;
-        Syx += (double) ptA.y * (double) ptB.x;
-        Syy += (double) ptA.y * (double) ptB.y;
-        Syz += (double) ptA.y * (double) ptB.z;
-        Szx += (double) ptA.z * (double) ptB.x;
-        Szy += (double) ptA.z * (double) ptB.y;
-        Szz += (double) ptA.z * (double) ptB.z;
-        n++;
-      }
-    }
-    if (n1 != n || n2 != n)
-      Logger
-          .error("ModelCollection.calculateQuaternionRotation: Warning! overlapping atomsets!");
-    if (n < 2)
-      return null;
-
-    getRmsd(vPts, q, retStddev, 1);
-    if (rmsdOnly)
+    if (centerAndPoints.length == 1)
       return q;
+    double Sxx = 0, Sxy = 0, Sxz = 0, Syx = 0, Syy = 0, Syz = 0, Szx = 0, Szy = 0, Szz = 0;
+    int n = centerAndPoints[0].length - 1;
+    for (int i = n + 1; --i >= 1;) {
+      Point3f aij = centerAndPoints[0][i];
+      Point3f bij = centerAndPoints[1][i];
+      if (aij instanceof Atom)
+        Logger.info(" atom 1 " + ((Atom) aij).getInfo() + "\tatom 2 "
+            + ((Atom) bij).getInfo());
+      Point3f ptA = new Point3f(aij);
+      ptA.sub(centerAndPoints[0][0]);
+      Point3f ptB = new Point3f(bij);
+      ptB.sub(centerAndPoints[0][1]);
+      Sxx += (double) ptA.x * (double) ptB.x;
+      Sxy += (double) ptA.x * (double) ptB.y;
+      Sxz += (double) ptA.x * (double) ptB.z;
+      Syx += (double) ptA.y * (double) ptB.x;
+      Syy += (double) ptA.y * (double) ptB.y;
+      Syz += (double) ptA.y * (double) ptB.z;
+      Szx += (double) ptA.z * (double) ptB.x;
+      Szy += (double) ptA.z * (double) ptB.y;
+      Szz += (double) ptA.z * (double) ptB.z;
+    }
+    if (n < 2)
+      return q;
+    getRmsd(centerAndPoints, q, retStddev, 1);
     double[][] N = new double[4][4];
     N[0][0] = Sxx + Syy + Szz;
     N[0][1] = N[1][0] = Syz - Szy;
@@ -528,54 +546,26 @@ abstract public class ModelCollection extends BondCollection {
 
     float[] v = eigen.getEigenvectorsFloatTransposed()[3];
     q = new Quaternion(new Point4f(v[1], v[2], v[3], v[0]));
-    getRmsd(vPts, q, retStddev, 0);
+    getRmsd(centerAndPoints, q, retStddev, 0);
     return q;
   }
 
-  private void getRmsd(Vector vPts, Quaternion q, float[] retStddev, int pt) {
+  private void getRmsd(Point3f[][] centerAndPoints, Quaternion q, float[] retStddev, int pt) {
     double sum = 0;
     double sum2 = 0;
-    int n = vPts.size();
+    int n = centerAndPoints[0].length - 1;
     Point3f ptAnew = new Point3f();
-    for (int i = n; --i >= 0;) {
-      Point3f[] pts = (Point3f[]) vPts.get(i);
-      q.transform(pts[0], ptAnew);
-      double d = ptAnew.distance(pts[1]);
+    for (int i = n + 1; --i >= 1;) {
+      ptAnew.set(centerAndPoints[0][i]);
+      ptAnew.sub(centerAndPoints[0][0]);
+      q.transform(ptAnew, ptAnew);
+      ptAnew.add(centerAndPoints[1][0]);
+      double d = ptAnew.distance(centerAndPoints[1][i]);
       sum += d;
       sum2 += d * d;
     }
     float stddev = (int) (100 * Math.sqrt((sum2 - sum * sum / n) / (n - 1))) / 100f;
     retStddev[pt] = stddev;
-  }
-
-  /**
-   * 
-   * @param bsAtoms1
-   * @param bsAtoms2
-   * @return  array of quaternions taking atoms in set 1 to atoms in set 2 adjusted for geometric center
-   */
-  public Quaternion[] getAtomQuaternionDifferences(BitSet bsAtoms1,
-                                                   BitSet bsAtoms2) {
-    Point3f pt1 = getAtomSetCenter(bsAtoms1);
-    Point3f pt2 = getAtomSetCenter(bsAtoms2);
-    Point3f ptA = new Point3f();
-    Point3f ptB = new Point3f();
-    Point3f ptC = new Point3f();
-    int n = Math.min(bsAtoms1.cardinality(), bsAtoms2.cardinality());
-    Quaternion[] dq = new Quaternion[n];
-    int pt = 0;
-    for (int i = bsAtoms1.nextSetBit(0), j = bsAtoms2.nextSetBit(0); i >= 0 && j >= 0 && pt < n; i = bsAtoms1
-    .nextSetBit(i + 1), j = bsAtoms2.nextSetBit(j + 1)) {
-      ptA.set(atoms[i]);
-      ptA.sub(pt1);
-      ptB.set(atoms[j]);
-      ptB.sub(pt2);
-      Quaternion q1 = Quaternion.getQuaternionFrame(ptC, ptA, ptB);
-      ptA.sub(ptB);
-      Quaternion q2 = Quaternion.getQuaternionFrame(ptC, ptB, ptA);
-      dq[pt++] = q2.div(q1);
-    } 
-    return dq;
   }
 
   public Point3f getAtomSetCenter(BitSet bs) {

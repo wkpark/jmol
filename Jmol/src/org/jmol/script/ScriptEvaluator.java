@@ -5755,7 +5755,7 @@ public class ScriptEvaluator {
     }
     if (isSyntaxCheck)
       return;
-    float[] retStddev = new float[1];
+    float[] retStddev = new float[2]; //[0] final, [1] initial for atoms
     Quaternion q = null;
     Vector vQ = new Vector();
     if (isQuaternion) {
@@ -5792,7 +5792,7 @@ public class ScriptEvaluator {
         vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
       }
       q = viewer.calculateQuaternionRotation(vAtomSets, false, retStddev);
-      showString("RMSD = " + retStddev[0] + " Angstroms");
+      showString("RMSD " + retStddev[1] + " --> " + retStddev[0] + " Angstroms");
     }
     Point3f pt1 = new Point3f();
     bsAtoms1 = new BitSet();

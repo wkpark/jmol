@@ -482,7 +482,7 @@ abstract public class ModelCollection extends BondCollection {
           .nextSetBit(i + 1), j = bsAtoms2.nextSetBit(j + 1)) {
         Atom aij = atoms[i];
         Atom bij = atoms[j];
-        System.out.println(" atom 1 " + aij.getInfo() + "\tatom 2 " + bij.getInfo());
+        Logger.info(" atom 1 " + aij.getInfo() + "\tatom 2 " + bij.getInfo());
         ptA = new Point3f(aij);
         ptA.sub(pt1);
         ptB = new Point3f(bij);
@@ -506,8 +506,7 @@ abstract public class ModelCollection extends BondCollection {
     if (n < 2)
       return null;
 
-    getRmsd(vPts, q, retStddev);
-    Logger.info("RMSD initial = " + retStddev[0]);
+    getRmsd(vPts, q, retStddev, 1);
     if (rmsdOnly)
       return q;
     double[][] N = new double[4][4];
@@ -529,12 +528,11 @@ abstract public class ModelCollection extends BondCollection {
 
     float[] v = eigen.getEigenvectorsFloatTransposed()[3];
     q = new Quaternion(new Point4f(v[1], v[2], v[3], v[0]));
-    getRmsd(vPts, q, retStddev);
-    Logger.info("RMSD final = " + retStddev[0]);
+    getRmsd(vPts, q, retStddev, 0);
     return q;
   }
 
-  private void getRmsd(Vector vPts, Quaternion q, float[] retStddev) {
+  private void getRmsd(Vector vPts, Quaternion q, float[] retStddev, int pt) {
     double sum = 0;
     double sum2 = 0;
     int n = vPts.size();
@@ -547,7 +545,7 @@ abstract public class ModelCollection extends BondCollection {
       sum2 += d * d;
     }
     float stddev = (int) (100 * Math.sqrt((sum2 - sum * sum / n) / (n - 1))) / 100f;
-    retStddev[0] = stddev;
+    retStddev[pt] = stddev;
   }
 
   /**

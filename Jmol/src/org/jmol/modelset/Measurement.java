@@ -301,11 +301,11 @@ public class Measurement {
   
   private static float fixValue(float dist, String units) {
     if (units != null) {
-      if (units == "nm")
+      if (units.equals("nm"))
         return (int) (dist * 100 + 0.5f) / 1000f;
-      if (units == "pm")
+      if (units.equals("pm"))
         return (int) ((dist * 1000 + 0.5)) / 10f;
-      if (units == "au")
+      if (units.equals("au"))
         return (int) (dist / JmolConstants.ANGSTROMS_PER_BOHR * 1000 + 0.5f) / 1000f;
     }
     return (int) (dist * 100 + 0.5f) / 100f;

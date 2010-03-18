@@ -8362,17 +8362,11 @@ public class ScriptEvaluator {
     iToken = (type == '\0' ? 2 : 3);
     bs = (isSelected ? viewer.getSelectionSet() : iToken + 1 < statementLength ? expression(++iToken) : null);
     checkLast(iToken);      
-    if (getToken(1).tok == Token.identifier) {
-      char xyz = parameterAsString(1).toLowerCase().charAt(0);
-      switch (xyz) {
-      case 'x':
-      case 'y':
-      case 'z':
-        if (isSyntaxCheck)
-          return;
-        viewer.translate(xyz, amount, type, bs);
+    if (getToken(1).tok == Token.x || theTok == Token.y || theTok == Token.z ) {
+      if (isSyntaxCheck)
         return;
-      }
+      viewer.translate(parameterAsString(1).charAt(0), amount, type, bs);
+      return;
     }
     error(ERROR_axisExpected);
   }

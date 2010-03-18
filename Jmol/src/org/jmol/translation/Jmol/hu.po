@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: Jmol 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-03-14 00:37+0100\n"
-"PO-Revision-Date: 2010-01-14 15:03+0000\n"
-"Last-Translator: Balázs Attila <battila9@freemail.hu>\n"
+"PO-Revision-Date: 2010-03-18 11:27+0000\n"
+"Last-Translator: Krasznecz Zoltán <krasznecz.zoltan@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-01-14 18:08+0000\n"
+"X-Launchpad-Export-Date: 2010-03-18 16:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: HUNGARY\n"
 "X-Poedit-Language: Hungarian\n"
@@ -411,7 +411,7 @@ msgstr "Mégsem"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:49
 msgid "&Macros"
-msgstr "Makrók"
+msgstr "&Makrók"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:50
 msgid "&File"
@@ -1337,13 +1337,11 @@ msgid "Insert a caption for {0} here."
 msgstr "Adjon meg egy feliratot {0} számára"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:354
-#, fuzzy, java-format
+#, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
-"Itt egy hosszabb, magyarázó szöveget adhat meg. Ha hosszú, akkor a {0} Jmol "
-"modell körül megjelenni."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:356
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1384,9 +1382,8 @@ msgid "Jmol Instances:"
 msgstr "Jmol példányok:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:202
-#, fuzzy
 msgid "Select widgets:"
-msgstr "Kisalkalmazás szélessége:"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:230
 msgid "Help/Instructions"
@@ -1463,9 +1460,9 @@ msgid "adding {0}.spt"
 msgstr "{0}.spt hozzáadása"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:559
-#, fuzzy, java-format
+#, java-format
 msgid "adding {0}"
-msgstr "{0}.png hozzáadása"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:599
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"

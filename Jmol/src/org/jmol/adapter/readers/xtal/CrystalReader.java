@@ -103,6 +103,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   protected boolean checkLine() throws Exception {
+    
     if (line.contains("FRQFRQ")) {
       isFreqCalc = true;
       return true;
@@ -286,9 +287,13 @@ public class CrystalReader extends AtomSetCollectionReader {
       setEnergy();
     super.finalizeReader();
   }
-
+  
+  boolean cryVer = false;
   private boolean readHeader() throws Exception {
     discardLinesUntilContains("*                                CRYSTAL");
+    if (line.contains("*                                CRYSTAL03"))
+      cryVer = true;
+    
     discardLinesUntilContains("EEEEEEEEEE");
     atomSetCollection.setCollectionName(readLine().trim()
         + (desiredModelNumber == 0 ? " (optimized)" : ""));
@@ -635,7 +640,12 @@ public class CrystalReader extends AtomSetCollectionReader {
   private String[] data;
 
   private void readFrequencies() throws Exception {
-    discardLinesUntilContains("MODES         EIGV");
+    if (cryVer) {
+      discardLinesUntilContains("MODES          EV");
+    } else {
+      discardLinesUntilContains("MODES         EIGV");
+    }
+   
     readLine();
     Vector vData = new Vector();
     int freqAtomCount = atomCount;
@@ -657,8 +667,13 @@ public class CrystalReader extends AtomSetCollectionReader {
       for (int i = i0; i <= i1; i++)
         vData.add(data);
     }
-
-    discardLinesUntilContains("NORMAL MODES NORMALIZED TO CLASSICAL AMPLITUDES");
+    
+    if (cryVer) {
+      discardLinesUntilContains("THE CORRESPONDING MODES");
+    } else {
+      discardLinesUntilContains("NORMAL MODES NORMALIZED TO CLASSICAL AMPLITUDES");
+    }
+    
     readLine();
     int lastAtomCount = -1;
     while (readLine() != null && line.startsWith(" FREQ(CM**-1)")) {

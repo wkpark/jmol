@@ -409,7 +409,7 @@ public class Token {
   final static int surface              = predefinedset | 13;
   final static int thismodel            = predefinedset | 14;
   public final static int sheet         = predefinedset | 15;
-
+  public final static int spine         = predefinedset | 16; // new 11.9.34
   // these next are predefined in the sense that they are known quantities
   public final static int carbohydrate    = predefinedset | 21;
   final static int clickable              = predefinedset | 22;

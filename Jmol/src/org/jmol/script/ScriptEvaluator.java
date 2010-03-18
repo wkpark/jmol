@@ -5693,39 +5693,49 @@ public class ScriptEvaluator {
   }
 
   private void compare() throws ScriptException {
-    // compare {model1} {model2} [orientations]
-    // compare {model1} {model2} [orientations] {bsAtoms1} {bsAtoms2} 
-    // compare {model1} {model2} atoms {bsAtoms1} {bsAtoms2} 
-    // compare {model1} {model2} [orientations] [quaternionList1] [quaternionList2] 
-    boolean isQuaternion = true;
+    // compare {model1} {model2} [atoms] {bsAtoms1} {bsAtoms2}
+    // compare {model1} {model2} orientations
+    // compare {model1} {model2} orientations {bsAtoms1} {bsAtoms2}
+    // compare {model1} {model2} [orientations] [quaternionList1]
+    // [quaternionList2]
+    boolean isQuaternion = false;
     boolean doRotate = false;
     boolean doTranslate = false;
     Quaternion[] data1 = null, data2 = null;
+    BitSet bsAtoms1 = null, bsAtoms2 = null;
+    Vector vAtomSets = null;
+    Vector vQuatSets = null;
     BitSet bsFrom = expression(1);
     BitSet bsTo = expression(++iToken);
-    BitSet bsAtoms1 = bsFrom;
-    BitSet bsAtoms2 = bsTo;
     for (int i = iToken + 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
       case Token.bitset:
       case Token.expressionBegin:
+        if (vQuatSets != null)
+          error(ERROR_invalidArgument);
         bsAtoms1 = expression(iToken);
-        bsAtoms2 = (iToken + 1 < statementLength ? expression(++iToken)
-            : BitSetUtil.copy(bsAtoms1));
+        int tok = tokAt(iToken + 1);
+        bsAtoms2 = (tok == Token.bitset || tok == Token.expressionBegin 
+            ? expression(++iToken) : BitSetUtil.copy(bsAtoms1));
         bsAtoms1.and(bsFrom);
         bsAtoms2.and(bsTo);
+        if (vAtomSets == null)
+          vAtomSets = new Vector();
+        vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
         i = iToken;
         break;
       case Token.list:
-        isQuaternion = true;
-        if (data1 == null)
-          data1 = ScriptMathProcessor
-              .getQuaternionArray((Object[]) theToken.value);
-        else if (data2 == null)
-          data2 = ScriptMathProcessor
-              .getQuaternionArray((Object[]) theToken.value);
-        else
+        if (vAtomSets != null)
           error(ERROR_invalidArgument);
+        isQuaternion = true;
+        data1 = ScriptMathProcessor
+            .getQuaternionArray((Object[]) theToken.value);
+        getToken(++i);
+        data2 = ScriptMathProcessor
+            .getQuaternionArray((Object[]) theToken.value);
+        if (vQuatSets == null)
+          vQuatSets = new Vector();
+        vQuatSets.add(new Object[] { data1, data2 });
         break;
       case Token.orientation:
         isQuaternion = true;
@@ -5747,23 +5757,48 @@ public class ScriptEvaluator {
       return;
     float[] retStddev = new float[1];
     Quaternion q = null;
+    Vector vQ = new Vector();
     if (isQuaternion) {
-      if (data1 == null)
-        data1 = viewer.getAtomGroupQuaternions(bsAtoms1, Integer.MAX_VALUE);
-      if (data2 == null)
-        data2 = viewer.getAtomGroupQuaternions(bsAtoms2, Integer.MAX_VALUE);
-      if (data1.length == 0 || data2.length == 0)
-        return;
-      q = Quaternion.sphereMean(Quaternion.div(data2, data1), retStddev,
-          0.0001f);
+      if (vAtomSets == null && vQuatSets == null) {
+        vAtomSets = new Vector();
+        vAtomSets.add(new BitSet[] { bsFrom, bsTo });
+      }
+      if (vQuatSets == null) {
+        for (int i = 0; i < vAtomSets.size(); i++) {
+          BitSet[] bss = (BitSet[]) vAtomSets.get(i);
+          data1 = viewer.getAtomGroupQuaternions(bss[0], Integer.MAX_VALUE);
+          data2 = viewer.getAtomGroupQuaternions(bss[1], Integer.MAX_VALUE);
+          for (int j = 0; j < data1.length && j < data2.length; j++)
+            vQ.add(data2[j].div(data1[j]));
+        }
+      } else {
+        for (int j = 0; j < data1.length && j < data2.length; j++)
+          vQ.add(data2[j].div(data1[j]));
+      }
+      retStddev[0] = 0;
+      data1 = new Quaternion[vQ.size()];
+      for (int i = vQ.size(); --i >= 0;)
+        data1[i] = (Quaternion) vQ.get(i);
+      q = Quaternion.sphereMean(data1, retStddev, 0.0001f);
       showString("RMSD = " + retStddev[0] + " degrees");
     } else {
       // atoms
-      viewer.calculateCoordinateRmsd(bsAtoms1, bsAtoms2, retStddev);
+      if (bsAtoms1 == null) {
+        bsAtoms1 = viewer.getAtomBitSet("spine or connected(_P)");
+        bsAtoms2 = BitSetUtil.copy(bsAtoms1);
+        bsAtoms1.and(bsFrom);
+        bsAtoms2.and(bsTo);
+        vAtomSets = new Vector();
+        vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
+      }
+      q = viewer.calculateQuaternionRotation(vAtomSets, false, retStddev);
       showString("RMSD = " + retStddev[0] + " Angstroms");
     }
     Point3f pt1 = new Point3f();
-    Point3f pt0 = new Point3f(viewer.getAtomSetCenter(bsAtoms1));
+    bsAtoms1 = new BitSet();
+    for (int i = vAtomSets.size(); --i >= 0; )
+      bsAtoms1.or(((BitSet[]) vAtomSets.get(i))[0]);
+    Point3f pt0 = viewer.getAtomSetCenter(bsAtoms1);
     if (doRotate) {
       if (q == null)
         evalError("option not implemented", null);
@@ -5774,6 +5809,9 @@ public class ScriptEvaluator {
           false, bsFrom);
     }
     if (doTranslate) {
+      bsAtoms2 = new BitSet();
+      for (int i = vAtomSets.size(); --i >= 0; )
+        bsAtoms2.or(((BitSet[]) vAtomSets.get(i))[1]);
       pt1 = viewer.getAtomSetCenter(bsAtoms2);
       pt1.sub(pt0);
       viewer.setAtomCoordRelative(pt1, bsFrom);

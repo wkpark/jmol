@@ -47,6 +47,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 
+import org.jmol.util.Eigen;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Point3fi;
@@ -435,28 +436,148 @@ abstract public class ModelCollection extends BondCollection {
     return (maxRadius == 0 ? 10 : maxRadius);
   }
 
-  public void calculateCoordinateRmsd(BitSet bsAtoms1, BitSet bsAtoms2,
-                                      float[] retStddev) {
+  /**
+   * given a set of pairs of atoms, return the optimum rotation to superimpose
+   * two models.
+   * 
+   * @param vAtomSets
+   * @param rmsdOnly
+   * @param retStddev
+   * @return optimum rotation
+   */
+  public Quaternion calculateQuaternionRotation(Vector vAtomSets,
+                                                boolean rmsdOnly,
+                                                float[] retStddev) {
+
+    /*
+     * see Berthold K. P. Horn,
+     * "Closed-form solution of absolute orientation using unit quaternions" J.
+     * Opt. Soc. Amer. A, 1987, Vol. 4, pp. 629-642
+     * http://www.opticsinfobase.org/viewmedia.cfm?uri=josaa-4-4-629&seq=0
+     * 
+     * and Lydia E. Kavraki, "Molecular Distance Measures"
+     * http://cnx.org/content/m11608/latest/
+     */
+    int n = 0;
+    Quaternion q = new Quaternion();
+    BitSet bsAtoms1 = new BitSet();
+    BitSet bsAtoms2 = new BitSet();
+    for (int i = vAtomSets.size(); --i >= 0;) {
+      BitSet[] bss = (BitSet[]) vAtomSets.get(i);
+      bsAtoms1.or(bss[0]);
+      bsAtoms2.or(bss[1]);
+    }
+    Point3f pt1 = getAtomSetCenter(bsAtoms1);
+    Point3f pt2 = getAtomSetCenter(bsAtoms2);
+    double Sxx = 0, Sxy = 0, Sxz = 0, Syx = 0, Syy = 0, Syz = 0, Szx = 0, Szy = 0, Szz = 0;
+    Point3f ptA, ptB;
+    Vector vPts = new Vector();
+    int n1 = bsAtoms1.cardinality();
+    int n2 = bsAtoms2.cardinality();
+    for (int ii = vAtomSets.size(); --ii >= 0;) {
+      BitSet[] bss = (BitSet[]) vAtomSets.get(ii);
+      bsAtoms1 = bss[0];
+      bsAtoms2 = bss[1];
+      for (int i = bsAtoms1.nextSetBit(0), j = bsAtoms2.nextSetBit(0); i >= 0 && j >= 0; i = bsAtoms1
+          .nextSetBit(i + 1), j = bsAtoms2.nextSetBit(j + 1)) {
+        Atom aij = atoms[i];
+        Atom bij = atoms[j];
+        System.out.println(" atom 1 " + aij.getInfo() + "\tatom 2 " + bij.getInfo());
+        ptA = new Point3f(aij);
+        ptA.sub(pt1);
+        ptB = new Point3f(bij);
+        ptB.sub(pt2);
+        vPts.add(new Point3f[] { ptA, ptB });
+        Sxx += (double) ptA.x * (double) ptB.x;
+        Sxy += (double) ptA.x * (double) ptB.y;
+        Sxz += (double) ptA.x * (double) ptB.z;
+        Syx += (double) ptA.y * (double) ptB.x;
+        Syy += (double) ptA.y * (double) ptB.y;
+        Syz += (double) ptA.y * (double) ptB.z;
+        Szx += (double) ptA.z * (double) ptB.x;
+        Szy += (double) ptA.z * (double) ptB.y;
+        Szz += (double) ptA.z * (double) ptB.z;
+        n++;
+      }
+    }
+    if (n1 != n || n2 != n)
+      Logger
+          .error("ModelCollection.calculateQuaternionRotation: Warning! overlapping atomsets!");
+    if (n < 2)
+      return null;
+
+    getRmsd(vPts, q, retStddev);
+    Logger.info("RMSD initial = " + retStddev[0]);
+    if (rmsdOnly)
+      return q;
+    double[][] N = new double[4][4];
+    N[0][0] = Sxx + Syy + Szz;
+    N[0][1] = N[1][0] = Syz - Szy;
+    N[0][2] = N[2][0] = Szx - Sxz;
+    N[0][3] = N[3][0] = Sxy - Syx;
+
+    N[1][1] = Sxx - Syy - Szz;
+    N[1][2] = N[2][1] = Sxy + Syx;
+    N[1][3] = N[3][1] = Szx + Sxz;
+
+    N[2][2] = -Sxx + Syy - Szz;
+    N[2][3] = N[3][2] = Syz + Szy;
+
+    N[3][3] = -Sxx - Syy + Szz;
+
+    Eigen eigen = new Eigen(N);
+
+    float[] v = eigen.getEigenvectorsFloatTransposed()[3];
+    q = new Quaternion(new Point4f(v[1], v[2], v[3], v[0]));
+    getRmsd(vPts, q, retStddev);
+    Logger.info("RMSD final = " + retStddev[0]);
+    return q;
+  }
+
+  private void getRmsd(Vector vPts, Quaternion q, float[] retStddev) {
     double sum = 0;
     double sum2 = 0;
-    int n = 0;
-    Point3f pt1 = getAtomSetCenter(bsAtoms2);
-    pt1.sub(getAtomSetCenter(bsAtoms1));
-    Point3f pt = new Point3f();
-
-    for (int j = 0, i = bsAtoms1.nextSetBit(0); i >= 0 && j >= 0; i = bsAtoms1
-        .nextSetBit(i + 1), j = bsAtoms2.nextSetBit(j + 1)) {
-      pt.set(atoms[j]);
-      pt.sub(pt1);
-      double d = atoms[i].distance(pt);
+    int n = vPts.size();
+    Point3f ptAnew = new Point3f();
+    for (int i = n; --i >= 0;) {
+      Point3f[] pts = (Point3f[]) vPts.get(i);
+      q.transform(pts[0], ptAnew);
+      double d = ptAnew.distance(pts[1]);
       sum += d;
       sum2 += d * d;
-      n++;
     }
-    if (n < 2)
-      return;
     float stddev = (int) (100 * Math.sqrt((sum2 - sum * sum / n) / (n - 1))) / 100f;
     retStddev[0] = stddev;
+  }
+
+  /**
+   * 
+   * @param bsAtoms1
+   * @param bsAtoms2
+   * @return  array of quaternions taking atoms in set 1 to atoms in set 2 adjusted for geometric center
+   */
+  public Quaternion[] getAtomQuaternionDifferences(BitSet bsAtoms1,
+                                                   BitSet bsAtoms2) {
+    Point3f pt1 = getAtomSetCenter(bsAtoms1);
+    Point3f pt2 = getAtomSetCenter(bsAtoms2);
+    Point3f ptA = new Point3f();
+    Point3f ptB = new Point3f();
+    Point3f ptC = new Point3f();
+    int n = Math.min(bsAtoms1.cardinality(), bsAtoms2.cardinality());
+    Quaternion[] dq = new Quaternion[n];
+    int pt = 0;
+    for (int i = bsAtoms1.nextSetBit(0), j = bsAtoms2.nextSetBit(0); i >= 0 && j >= 0 && pt < n; i = bsAtoms1
+    .nextSetBit(i + 1), j = bsAtoms2.nextSetBit(j + 1)) {
+      ptA.set(atoms[i]);
+      ptA.sub(pt1);
+      ptB.set(atoms[j]);
+      ptB.sub(pt2);
+      Quaternion q1 = Quaternion.getQuaternionFrame(ptC, ptA, ptB);
+      ptA.sub(ptB);
+      Quaternion q2 = Quaternion.getQuaternionFrame(ptC, ptB, ptA);
+      dq[pt++] = q2.div(q1);
+    } 
+    return dq;
   }
 
   public Point3f getAtomSetCenter(BitSet bs) {

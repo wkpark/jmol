@@ -2264,24 +2264,24 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     
     // protein backbone
     //
-    "N",   //  1 - amino nitrogen
-    "CA",  //  2 - alpha carbon
-    "C",   //  3 - carbonyl carbon
+    "N",   //  1 - amino nitrogen        SPINE
+    "CA",  //  2 - alpha carbon          SPINE
+    "C",   //  3 - carbonyl carbon       SPINE
     "O",   //  4 - carbonyl oxygen
     "O1",  //  5 - carbonyl oxygen in some protein residues (4THN)
 
     // nucleic acid backbone sugar
     //
-    "O5'", //  6 - sugar 5' oxygen
-    "C5'", //  7 - sugar 5' carbon
-    "C4'", //  8 - sugar ring 4' carbon
-    "C3'", //  9 - sugar ring 3' carbon
+    "O5'", //  6 - sugar 5' oxygen       SPINE
+    "C5'", //  7 - sugar 5' carbon       SPINE
+    "C4'", //  8 - sugar ring 4' carbon  SPINE
+    "C3'", //  9 - sugar ring 3' carbon  SPINE
     "O3'", // 10 - sugar 3' oxygen
     "C2'", // 11 - sugar ring 2' carbon
     "C1'", // 12 - sugar ring 1' carbon
     // Phosphorus is not required for a nucleic group because
     // at the terminus it could have H5T or O5T ...
-    "P",   // 13 - phosphate phosphorus
+    "P",   // 13 - phosphate phosphorus  SPINE
 
     // ... But we need to distinguish phosphorus separately because
     // it could be found in phosphorus-only nucleic polymers
@@ -2790,7 +2790,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // structure related
     //
     "@alpha _a=2", // rasmol doc says "approximately *.CA" - whatever?
-    "@backbone (protein,nucleic) & _a>0 & (_a<32 || _a>="+ATOMID_BACKBONE_MIN+")",
+    "@backbone (protein,nucleic) & (_a>0 & _a<32 || _a>="+ATOMID_BACKBONE_MIN+")",
+    "@spine protein & _a>0 & _a<= 3 || nucleic & (_a >= 6 & _a <= 10 || _a=" + ATOMID_NUCLEIC_PHOSPHORUS + ")",
     "@sidechain (protein,nucleic) & !backbone",
     "@base nucleic & !backbone",
 

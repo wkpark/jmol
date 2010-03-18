@@ -55,7 +55,7 @@ public class Quadric {
     mat[0][2] = mat[2][0] = coef[4] / 2; //XZ
     mat[1][2] = mat[2][1] = coef[5] / 2; //YZ
     Eigen eigen = new Eigen(mat);
-    float[][] eigenVectors = Eigen.toFloat3x3(eigen.getEigenvectors());
+    float[][] eigenVectors = eigen.getEigenvectorsFloatTransposed();
     double[] eigenValues = eigen.getEigenvalues();
     for (int i = 0; i < 3; i++)
       lengths[i] = (float) (1/Math.sqrt(eigenValues[i]));

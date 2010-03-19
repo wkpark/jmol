@@ -1238,11 +1238,11 @@ abstract public class AtomCollection {
           // 2 bonds needed R2C or R-N or R2C=C
           //                    or RC=C or C=C
           boolean isEne = (nBonds == 1 && targetValence == 4);
-          getHybridizationAndAxes(i, z, x, (isEne ? "sp2b" : "lpa"), false);
+          getHybridizationAndAxes(i, z, x, (isEne ? "sp2b" : targetValence == 3 ? "sp3b" : "lpa"), false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
-          getHybridizationAndAxes(i, z, x, (isEne ? "sp2c" : "lpb"), false);
+          getHybridizationAndAxes(i, z, x, (isEne ? "sp2c" : targetValence == 3 ? "sp3c" : "lpb"), false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;

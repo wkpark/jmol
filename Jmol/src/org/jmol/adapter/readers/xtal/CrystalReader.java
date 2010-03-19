@@ -81,6 +81,7 @@ import javax.vecmath.Point3f;
 
 public class CrystalReader extends AtomSetCollectionReader {
 
+  private boolean isVersion3;
   private boolean isPrimitive;
   private boolean isPolymer;
   private boolean isSlab;
@@ -288,12 +289,10 @@ public class CrystalReader extends AtomSetCollectionReader {
     super.finalizeReader();
   }
   
-  boolean cryVer = false;
+
   private boolean readHeader() throws Exception {
     discardLinesUntilContains("*                                CRYSTAL");
-    if (line.contains("*                                CRYSTAL03"))
-      cryVer = true;
-    
+    isVersion3 = line.contains("CRYSTAL03");
     discardLinesUntilContains("EEEEEEEEEE");
     atomSetCollection.setCollectionName(readLine().trim()
         + (desiredModelNumber == 0 ? " (optimized)" : ""));
@@ -640,12 +639,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private String[] data;
 
   private void readFrequencies() throws Exception {
-    if (cryVer) {
-      discardLinesUntilContains("MODES          EV");
-    } else {
-      discardLinesUntilContains("MODES         EIGV");
-    }
-   
+    discardLinesUntilContains(isVersion3 ? "MODES          EV" : "MODES         EIGV");
     readLine();
     Vector vData = new Vector();
     int freqAtomCount = atomCount;
@@ -666,14 +660,8 @@ public class CrystalReader extends AtomSetCollectionReader {
       String[] data = new String[] { irrep, intens, irActivity, ramanActivity };
       for (int i = i0; i <= i1; i++)
         vData.add(data);
-    }
-    
-    if (cryVer) {
-      discardLinesUntilContains("THE CORRESPONDING MODES");
-    } else {
-      discardLinesUntilContains("NORMAL MODES NORMALIZED TO CLASSICAL AMPLITUDES");
-    }
-    
+    }    
+    discardLinesUntilContains(isVersion3 ? "THE CORRESPONDING MODES" : "NORMAL MODES NORMALIZED TO CLASSICAL AMPLITUDES");
     readLine();
     int lastAtomCount = -1;
     while (readLine() != null && line.startsWith(" FREQ(CM**-1)")) {

@@ -1170,13 +1170,15 @@ final public class Atom extends Point3fi {
     switch (tokWhat) {
     case Token.radius:
       return atom.getRadius();
-    case Token.volume:
-      return atom.getVolume(JmolConstants.VDW_AUTO);
+    case Token.selected:
+      return (viewer.getSelectionSet().get(atom.index) ? 1 : 0);
     case Token.surfacedistance:
       atom.group.chain.modelSet.getSurfaceDistanceMax();
       return atom.getSurfaceDistance100() / 100f;
     case Token.temperature: // 0 - 9999
       return atom.getBfactor100() / 100f;
+    case Token.volume:
+      return atom.getVolume(JmolConstants.VDW_AUTO);
 
     // these next have to be multiplied by 100 if being compared
     // note that spacefill here is slightly different than radius -- no integer option

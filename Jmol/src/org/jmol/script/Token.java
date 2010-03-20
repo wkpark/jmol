@@ -403,7 +403,6 @@ public class Token {
   public final static int purine        = predefinedset | 7;
   public final static int pyrimidine    = predefinedset | 8;
   public final static int rna           = predefinedset | 9;
-  public final static int selected      = predefinedset | 10;
   public final static int solvent       = predefinedset | 11 | deprecatedparam;
   public final static int sidechain     = predefinedset | 12;
   final static int surface              = predefinedset | 13;
@@ -571,6 +570,7 @@ public class Token {
   public final static int phi             = floatproperty | 11;
   public final static int psi             = floatproperty | 12;
   public final static int property        = floatproperty | 13 | mathproperty | setparam | settable;
+  public final static int selected        = floatproperty | 14 | settable | predefinedset;
   public final static int straightness    = floatproperty | 15;
   public final static int surfacedistance = floatproperty | 16;
   public final static int temperature     = floatproperty | 17 | settable;

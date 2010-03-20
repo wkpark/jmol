@@ -221,6 +221,7 @@ public class Parameters {
     boundingBox = null;
     bsExcluded = new BitSet[4];
     nContours = 0;
+    colorSchemeTranslucent = false;
     contourIncrements = null;
     contoursDiscrete = null;
     contourColixes = null;
@@ -724,6 +725,7 @@ public class Parameters {
   public Point3f[] boundingBox;
   public BitSet[] bsExcluded;
   public int contourType;
+  public boolean colorSchemeTranslucent;
   
   void setMapRanges(SurfaceReader surfaceReader) {
     if (!colorDensity)

@@ -1430,9 +1430,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (global.objStateOn[objId] ? global.objMad[objId] : 0);
   }
 
-  public void setPropertyColorScheme(String scheme, boolean isOverloaded) {
+  public void setPropertyColorScheme(String scheme, boolean isTranslucent, boolean isOverloaded) {
     global.propertyColorScheme = scheme;
-    colorManager.setColorScheme(scheme, isOverloaded);
+    colorManager.setColorScheme(scheme, isTranslucent, isOverloaded);
   }
 
   public String getPropertyColorScheme() {
@@ -5054,7 +5054,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setObjectColor("unitcell", value);
       return;
     case Token.propertycolorscheme:
-      setPropertyColorScheme(value, false);
+      setPropertyColorScheme(value, false, false);
       return;
     case Token.hoverlabel:
       // a special label for selected atoms

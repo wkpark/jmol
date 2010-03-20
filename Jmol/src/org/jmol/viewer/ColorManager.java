@@ -274,8 +274,11 @@ class ColorManager {
     altArgbsCpk[id] = argb;
     g3d.changeColixArgb((short) (JmolConstants.elementNumberMax + id), argb);
   }
+  
+  boolean currentTranslucent = false;
 
-  int setColorScheme(String colorScheme, boolean isOverloaded) {
+  int setColorScheme(String colorScheme, boolean isTranslucent, boolean isOverloaded) {
+    currentTranslucent = isTranslucent;
     palette = ColorEncoder.getColorScheme(colorScheme, isOverloaded);
     Logger.info("ColorManager: color scheme now \"" + ColorEncoder.getColorSchemeName(palette) + "\" color value range: " + colorLo + " to " + colorHi);
     return palette;
@@ -330,8 +333,8 @@ class ColorManager {
   
   short getColixForPropertyValue(float val) {
     return (colorLo < colorHi ? 
-        ColorEncoder.getColorIndexFromPalette(val, colorLo, colorHi, palette, false)
-        :ColorEncoder.getColorIndexFromPalette(-val, -colorLo, -colorHi, palette, false));    
+        ColorEncoder.getColorIndexFromPalette(val, colorLo, colorHi, palette, currentTranslucent)
+        :ColorEncoder.getColorIndexFromPalette(-val, -colorLo, -colorHi, palette, currentTranslucent));    
   }
 
 }

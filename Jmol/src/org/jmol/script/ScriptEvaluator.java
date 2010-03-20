@@ -6205,127 +6205,130 @@ public class ScriptEvaluator {
   }
 
   private void color() throws ScriptException {
-    int argb = 0;
+    int i = 1;
     if (isColorParam(1)) {
-      colorObject(Token.atoms, 1);
-      return;
-    }
-    switch (getToken(1).tok) {
-    case Token.dollarsign:
-      setObjectProperty();
-      return;
-    case Token.none:
-    case Token.spacefill:
-    case Token.amino:
-    case Token.chain:
-    case Token.group:
-    case Token.shapely:
-    case Token.structure:
-    case Token.temperature:
-    case Token.fixedtemp:
-    case Token.formalcharge:
-    case Token.partialcharge:
-    case Token.straightness:
-    case Token.surfacedistance:
-    case Token.vanderwaals:
-    case Token.monomer:
-    case Token.molecule:
-    case Token.altloc:
-    case Token.insertion:
-    case Token.translucent:
-    case Token.opaque:
-    case Token.jmol:
-    case Token.rasmol:
-    case Token.symop:
-    case Token.user:
-    case Token.property:
-      colorObject(Token.atoms, 1);
-      return;
-    case Token.string:
-      String strColor = stringParameter(1);
-      if (!isSyntaxCheck)
-        viewer.setPropertyColorScheme(strColor, true);
-      if (tokAt(2) == Token.range || tokAt(2) == Token.absolute) {
-        float min = floatParameter(3);
-        float max = floatParameter(4);
+      theTok = Token.atoms;
+    } else {
+      int argb = 0;
+      i = 2;
+      switch (getToken(1).tok) {
+      case Token.dollarsign:
+        setObjectProperty();
+        return;
+      case Token.none:
+      case Token.spacefill:
+      case Token.amino:
+      case Token.chain:
+      case Token.group:
+      case Token.shapely:
+      case Token.structure:
+      case Token.temperature:
+      case Token.fixedtemp:
+      case Token.formalcharge:
+      case Token.partialcharge:
+      case Token.straightness:
+      case Token.surfacedistance:
+      case Token.vanderwaals:
+      case Token.monomer:
+      case Token.molecule:
+      case Token.altloc:
+      case Token.insertion:
+      case Token.translucent:
+      case Token.opaque:
+      case Token.jmol:
+      case Token.rasmol:
+      case Token.symop:
+      case Token.user:
+      case Token.property:
+        theTok = Token.atoms;
+        i = 1;
+      case Token.string:
+        String strColor = stringParameter(1);
+        boolean isTranslucent = (tokAt(2) == Token.translucent);
+        if (!isSyntaxCheck)
+          viewer.setPropertyColorScheme(strColor, isTranslucent, true);
+        i = (isTranslucent ? 3 : 2);
+        if (tokAt(i) == Token.range || tokAt(i) == Token.absolute) {
+          float min = floatParameter(++i);
+          float max = floatParameter(++i);
+          if (!isSyntaxCheck)
+            viewer.setCurrentColorRange(min, max);
+        }
+        return;
+      case Token.range:
+      case Token.absolute:
+        float min = floatParameter(2);
+        float max = floatParameter(checkLast(3));
         if (!isSyntaxCheck)
           viewer.setCurrentColorRange(min, max);
-      }
-      return;
-    case Token.range:
-    case Token.absolute:
-      float min = floatParameter(2);
-      float max = floatParameter(checkLast(3));
-      if (!isSyntaxCheck)
-        viewer.setCurrentColorRange(min, max);
-      return;
-    case Token.background:
-      argb = getArgbParamLast(2, true);
-      if (!isSyntaxCheck)
-        viewer.setObjectArgb("background", argb);
-      return;
-    case Token.bitset:
-    case Token.expressionBegin:
-      colorObject(Token.atoms, -1);
-      return;
-    case Token.rubberband:
-      argb = getArgbParamLast(2, false);
-      if (!isSyntaxCheck)
-        viewer.setRubberbandArgb(argb);
-      return;
-    case Token.selectionhalos:
-      int i = 2;
-      if (tokAt(2) == Token.opaque)
-        i++;
-      argb = getArgbParamLast(i, true);
-      if (isSyntaxCheck)
         return;
-      viewer.loadShape(JmolConstants.SHAPE_HALOS);
-      setShapeProperty(JmolConstants.SHAPE_HALOS, "argbSelection", new Integer(
-          argb));
-      return;
-    case Token.axes:
-    case Token.boundbox:
-    case Token.unitcell:
-    case Token.identifier:
-    case Token.hydrogen:
-      // color element
-      String str = parameterAsString(1);
-      if (checkToken(2)) {
-        switch (getToken(2).tok) {
-        case Token.rasmol:
-          argb = Token.rasmol;
-          break;
-        case Token.none:
-        case Token.jmol:
-          argb = Token.jmol;
-          break;
-        default:
-          argb = getArgbParam(2);
-        }
-      }
-      if (argb == 0)
-        error(ERROR_colorOrPaletteRequired);
-      checkLast(iToken);
-      if (str.equalsIgnoreCase("axes")) {
-        setStringProperty("axesColor", Escape.escapeColor(argb));
-        return;
-      } else if (StateManager.getObjectIdFromName(str) >= 0) {
+      case Token.background:
+        argb = getArgbParamLast(2, true);
         if (!isSyntaxCheck)
-          viewer.setObjectArgb(str, argb);
+          viewer.setObjectArgb("background", argb);
         return;
+      case Token.bitset:
+      case Token.expressionBegin:
+        i = -1;
+        theTok = Token.atoms;
+        break;
+      case Token.rubberband:
+        argb = getArgbParamLast(2, false);
+        if (!isSyntaxCheck)
+          viewer.setRubberbandArgb(argb);
+        return;
+      case Token.selectionhalos:
+        i = 2;
+        if (tokAt(2) == Token.opaque)
+          i++;
+        argb = getArgbParamLast(i, true);
+        if (isSyntaxCheck)
+          return;
+        viewer.loadShape(JmolConstants.SHAPE_HALOS);
+        setShapeProperty(JmolConstants.SHAPE_HALOS, "argbSelection",
+            new Integer(argb));
+        return;
+      case Token.axes:
+      case Token.boundbox:
+      case Token.unitcell:
+      case Token.identifier:
+      case Token.hydrogen:
+        // color element
+        String str = parameterAsString(1);
+        if (checkToken(2)) {
+          switch (getToken(2).tok) {
+          case Token.rasmol:
+            argb = Token.rasmol;
+            break;
+          case Token.none:
+          case Token.jmol:
+            argb = Token.jmol;
+            break;
+          default:
+            argb = getArgbParam(2);
+          }
+        }
+        if (argb == 0)
+          error(ERROR_colorOrPaletteRequired);
+        checkLast(iToken);
+        if (str.equalsIgnoreCase("axes")) {
+          setStringProperty("axesColor", Escape.escapeColor(argb));
+          return;
+        } else if (StateManager.getObjectIdFromName(str) >= 0) {
+          if (!isSyntaxCheck)
+            viewer.setObjectArgb(str, argb);
+          return;
+        }
+        if (changeElementColor(str, argb))
+          return;
+        error(ERROR_invalidArgument);
+      case Token.isosurface:
+        setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID",
+            JmolConstants.PREVIOUS_MESH_ID);
+        break;
       }
-      if (changeElementColor(str, argb))
-        return;
-      error(ERROR_invalidArgument);
-      break;
-    case Token.isosurface:
-      setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID",
-          JmolConstants.PREVIOUS_MESH_ID);
-      // fall through
-    default:
-      colorObject(theTok, 2);
     }
+    colorShape(getShapeType(theTok), i, false);
   }
 
   private boolean changeElementColor(String str, int argb) {
@@ -6370,10 +6373,6 @@ public class ScriptEvaluator {
       }
     }
     return false;
-  }
-
-  private void colorObject(int tokObject, int index) throws ScriptException {
-    colorShape(getShapeType(tokObject), index, false);
   }
 
   private void colorShape(int shapeType, int index, boolean isBackground)
@@ -13508,11 +13507,16 @@ public class ScriptEvaluator {
         i = iToken;
         break;
       case Token.colorscheme:
+        // either order OK -- documented for "rwb" TRANSLUCENT
         if (tokAt(i + 1) == Token.translucent) {
           isColorSchemeTranslucent = true;
           i++;
         }
         colorScheme = parameterAsString(++i);
+        if (tokAt(i + 1) == Token.translucent) {
+          isColorSchemeTranslucent = true;
+          i++;
+        }
         break;
       case Token.addhydrogens:
         propertyName = "addHydrogens";

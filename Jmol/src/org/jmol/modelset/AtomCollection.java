@@ -608,6 +608,9 @@ abstract public class AtomCollection {
             fValue = Atom.RADIUS_MAX;
           atom.madAtom = ((short) (fValue * 2000));
           break;
+        case Token.selected:
+          viewer.getSelectionSet().set(atom.index, (fValue != 0));
+          break;
         case Token.temperature:
           if (setBFactor(i, fValue))
             taint(i, TAINT_TEMPERATURE);

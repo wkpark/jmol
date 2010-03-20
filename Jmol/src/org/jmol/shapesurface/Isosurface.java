@@ -936,7 +936,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public void notifySurfaceMappingCompleted() {
     setModelIndex();
     String schemeName = colorEncoder.getColorSchemeName();
-    viewer.setPropertyColorScheme(schemeName, false);
+    viewer.setPropertyColorScheme(schemeName, sg.getParams().colorSchemeTranslucent, false);
     viewer.setCurrentColorRange(jvxlData.valueMappedToRed,
         jvxlData.valueMappedToBlue);
     thisMesh.isColorSolid = false;

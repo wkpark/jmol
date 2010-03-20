@@ -579,6 +579,7 @@ public class SurfaceGenerator {
         mapSurface();
         return true;
       }
+      params.colorSchemeTranslucent = isTranslucent;
       colorEncoder.setColorScheme(colorScheme, isTranslucent);
       if (surfaceReader != null
           && params.state == Parameters.STATE_DATA_COLORED)

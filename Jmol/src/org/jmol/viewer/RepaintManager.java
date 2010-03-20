@@ -215,12 +215,15 @@ class RepaintManager {
   void setSelectedTranslation(BitSet bsAtoms, char xyz, int xy) {
     this.bsAtoms = bsAtoms;
     switch (xyz) {
+    case 'X':
     case 'x':
       ptOffset.x += xy;
       break;
+    case 'Y':
     case 'y':
       ptOffset.y += xy;
       break;
+    case 'Z':
     case 'z':
       ptOffset.z += xy;
       break;

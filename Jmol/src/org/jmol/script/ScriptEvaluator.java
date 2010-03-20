@@ -6242,6 +6242,7 @@ public class ScriptEvaluator {
       case Token.property:
         theTok = Token.atoms;
         i = 1;
+        break;
       case Token.string:
         String strColor = stringParameter(1);
         boolean isTranslucent = (tokAt(2) == Token.translucent);

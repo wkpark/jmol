@@ -645,9 +645,11 @@ public class Quaternion {
    * 
    * @param data1
    * @param data2
-   * @return       pairwise array of data1 / data2
+   * @param isRelative
+   * 
+   * @return       pairwise array of data1 / data2 or data1 \ data2
    */
-  public static Quaternion[] div(Quaternion[] data1, Quaternion[] data2) {
+  public static Quaternion[] div(Quaternion[] data1, Quaternion[] data2, boolean isRelative) {
     int n;
     if (data1 == null || data2 == null || (n = Math.min(data1.length, data2.length)) == 0)
       return null;
@@ -655,7 +657,7 @@ public class Quaternion {
     for (int i = 0; i < n; i++) {
       if (data1[i] == null || data2[i] == null)
         return null;
-      dqs[i] = data1[i].div(data2[i]);
+      dqs[i] = (isRelative ? data1[i].divLeft(data2[i]) : data1[i].div(data2[i]));
     }
     return dqs;
   }

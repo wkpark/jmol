@@ -642,6 +642,7 @@ public class Resolver {
 
   private static boolean checkCrystal(String[] lines) {
     if (lines[1].equals("SLAB") || lines[1].equals("MOLECULE")
+        || lines[1].equals("CRYSTAL")
         || lines[1].equals("POLYMER") || lines[3].equals("SLAB")
         || lines[3].equals("MOLECULE") || lines[3].equals("POLYMER"))
       return true;
@@ -754,20 +755,18 @@ public class Resolver {
   }
 
   private static boolean checkMol(String[] lines) {
-    if (lines[3].length() >= 6) {
-      String line4trimmed = lines[3].trim();
-      if (line4trimmed.endsWith("V2000") ||
-          line4trimmed.endsWith("v2000"))
-        return true;
-      try {
-        Integer.parseInt(lines[3].substring(0, 3).trim());
-        Integer.parseInt(lines[3].substring(3, 6).trim());
-        return (lines[0].indexOf("@<TRIPOS>") != 0 
-            && lines[1].indexOf("@<TRIPOS>") != 0
-            && lines[2].indexOf("@<TRIPOS>") != 0
-            );
-      } catch (NumberFormatException nfe) {
-      }
+    String line4trimmed = lines[3].trim();
+    if (line4trimmed.length() < 6)
+      return false;
+    if (line4trimmed.endsWith("V2000") || line4trimmed.endsWith("v2000"))
+      return true;
+    try {
+      Integer.parseInt(line4trimmed.substring(0, 3).trim());
+      Integer.parseInt(line4trimmed.substring(3, 6).trim());
+      return (lines[0].indexOf("@<TRIPOS>") != 0
+          && lines[1].indexOf("@<TRIPOS>") != 0 && lines[2]
+          .indexOf("@<TRIPOS>") != 0);
+    } catch (NumberFormatException nfe) {
     }
     return false;
   }

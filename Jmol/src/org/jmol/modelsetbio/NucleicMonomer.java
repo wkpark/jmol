@@ -35,7 +35,6 @@ import org.jmol.viewer.JmolConstants;
 
 public class NucleicMonomer extends PhosphorusMonomer {
 
-  private final static byte P = 0;
   final static byte C6 = 1;
   private final static byte O2Pr = 2;
   private final static byte C5 = 3;
@@ -289,7 +288,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
   }
  
  Atom getQuaternionFrameCenter(char qType) {
-   return (getAtomFromOffsetIndex(qType == 'p' ? P : isPurine ? N9 : N1));
+   return (getAtomFromOffsetIndex(qType == 'p' || qType == 'a' ? P : isPurine ? N9 : N1));
  }
  
  public Object getHelixData(int tokType, char qType, int mStep) {
@@ -325,7 +324,9 @@ public class NucleicMonomer extends PhosphorusMonomer {
    Atom ptNorP = getQuaternionFrameCenter(qType);
    if(ptNorP == null)
      return null;
-   if (qType == 'p') {
+   if (qType == 'a') {
+     return super.getQuaternion(qType);
+   } else if (qType == 'p') {
      Atom p1 = getAtomFromOffsetIndex(O1P);
      Atom p2 = getAtomFromOffsetIndex(O2P);
      Bond[] bonds = ptNorP.getBonds();

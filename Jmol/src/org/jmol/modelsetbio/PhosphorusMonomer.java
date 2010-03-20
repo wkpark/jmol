@@ -23,13 +23,19 @@
  */
 package org.jmol.modelsetbio;
 
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
+
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
+import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 
 public class PhosphorusMonomer extends Monomer {
 
-  private final static byte[] phosphorusOffsets = { 0 };
+  protected final static byte P = 0;
+
+  private final static byte[] phosphorusOffsets = { P };
 
   private static float MAX_ADJACENT_PHOSPHORUS_DISTANCE = 8.0f;
  
@@ -101,5 +107,23 @@ public class PhosphorusMonomer extends Monomer {
     float distance =
       getLeadAtomPoint().distance(possiblyPreviousMonomer.getLeadAtomPoint());
     return distance <= MAX_ADJACENT_PHOSPHORUS_DISTANCE;
+  }
+  
+  public Quaternion getQuaternion(char qType) {
+    //vA = ptCa(i+1) - ptCa
+    //vB = ptCa(i-1) - ptCa
+    if (monomerIndex == 0 
+        || monomerIndex == bioPolymer.monomerCount - 1)
+      return null;
+    Point3f ptP = getAtomFromOffsetIndex(P);
+    Point3f ptPNext = bioPolymer.monomers[monomerIndex + 1].getAtomFromOffsetIndex(P);
+    Point3f ptPPrev = bioPolymer.monomers[monomerIndex - 1].getAtomFromOffsetIndex(P);
+    if (ptP == null || ptPNext == null || ptPPrev == null)
+      return null;
+    Vector3f vA = new Vector3f();
+    Vector3f vB = new Vector3f();
+    vA.sub(ptPNext, ptP);
+    vB.sub(ptPPrev, ptP);
+    return Quaternion.getQuaternionFrame(vA, vB, null);
   }
 }

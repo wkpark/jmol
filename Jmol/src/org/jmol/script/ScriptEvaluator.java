@@ -1166,7 +1166,7 @@ public class ScriptEvaluator {
         i1 = index + 1;
       } else if (haveBitSet) {
         i0 = bs.nextSetBit(0);
-        i1 = bs.length();
+        i1 = Math.min(viewer.getAtomCount(), bs.length());
       } else {
         i0 = 0;
         i1 = viewer.getAtomCount();

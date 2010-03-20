@@ -2054,7 +2054,7 @@ abstract public class AtomCollection {
   public int[] getAtomIndices(BitSet bs) {
     int n = 0;
     int[] indices = new int[atomCount];
-    for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
+    for (int j = bs.nextSetBit(0); j >= 0 && j < atomCount; j = bs.nextSetBit(j + 1))
       indices[j] = ++n;
     return indices;
   }

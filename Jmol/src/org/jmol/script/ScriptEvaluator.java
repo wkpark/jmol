@@ -3346,7 +3346,7 @@ public class ScriptEvaluator {
       case Token.opGT:
         return BitSetUtil.newBitSet(comparisonValue + 1, atomCount);
       case Token.opEQ:
-        return BitSetUtil.newBitSet(comparisonValue, comparisonValue + 1);
+        return (comparisonValue < atomCount ? BitSetUtil.newBitSet(comparisonValue, comparisonValue + 1) : new BitSet());
       case Token.opNE:
       default:
         bs = BitSetUtil.setAll(atomCount);

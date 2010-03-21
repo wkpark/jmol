@@ -8250,6 +8250,9 @@
     credit="483" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
   <fah_proj number="6040" name="p6040_HA_solvated" public="n"
     server="171.64.65.54" atoms="330706" preferred="4" deadline="6"
+    credit="1395" frames="100" code="A3" contact="kasson" kfactor="6.2"/>
+  <fah_proj number="6041" name="p6041_HA_solvated" public="n"
+    server="171.64.65.54" atoms="330706" preferred="4" deadline="6"
     credit="1395" frames="100" code="A3" contact="kasson"/>
 
   <!-- Projects 6300 to 6399 -->

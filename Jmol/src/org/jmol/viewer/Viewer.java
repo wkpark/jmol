@@ -7188,7 +7188,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       refresh(6, "moveSelected");
       return;
     }
-    
     if (movingSelected)
       return;
     movingSelected = true;
@@ -7205,7 +7204,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
       transformManager.setRotateMolecule(false);
     }
-    refresh(6, "moveSelected");
+    refresh(2, ""); // should be syncing here
     refreshMeasures(true);
     movingSelected = false;
   }

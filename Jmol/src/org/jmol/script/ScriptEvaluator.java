@@ -7021,8 +7021,6 @@ public class ScriptEvaluator {
     int filePt = i;
     String localName = null;
     if (tokAt(filePt + 1) == Token.as) {
-      if (scriptLevel != 0)
-        error(ERROR_invalidArgument);
       localName = stringParameter(i + 2);
       i += 2;
     }

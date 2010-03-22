@@ -874,6 +874,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           addTokenToPrefix(new Token(Token.identifier, strFormat));
         else if (strFormat.indexOf("=") == 0) {
           addTokenToPrefix(new Token(Token.string, strFormat));
+          iHaveQuotedString = true;
         }
         return CONTINUE;
       }

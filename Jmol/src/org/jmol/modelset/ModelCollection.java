@@ -3173,7 +3173,7 @@ abstract public class ModelCollection extends BondCollection {
         info.put("symmetryInfo", "");
         return info;
       }
-      if (pt1 == null && drawID == null)
+      if (pt1 == null && drawID == null && symOp != 0)
         info = (Hashtable) getModelAuxiliaryInfo(modelIndex, "spaceGroupInfo");
       if (info != null)
         return info;

@@ -429,7 +429,7 @@ public class Parameters {
         cutoff = cutoff * cutoff;
     }
     isSilent = !logMessages;
-    script = "scale " + scale + " center " + Escape.escape(center)
+    script = " center " + Escape.escape(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale) + " LOBE {" + v.x + " "
         + v.y + " " + v.z + " " + v.w + "};";
   }

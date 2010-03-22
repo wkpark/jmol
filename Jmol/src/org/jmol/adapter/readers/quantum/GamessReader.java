@@ -135,6 +135,7 @@ abstract public class GamessReader extends MOReader {
     // We only want to set vetor data corresponding to new cloned
     // models and not interfere with the previous ones.
     discardLinesUntilContains("FREQUENCY:");
+    boolean haveFreq = false;
     while (line != null && line.indexOf("FREQUENCY:") >= 0) {
       int frequencyCount = 0;
       String[] tokens = getTokens();
@@ -145,8 +146,7 @@ abstract public class GamessReader extends MOReader {
           frequencies[frequencyCount - 1] = -frequencies[frequencyCount - 1];
         if (Float.isNaN(frequency))
           continue; // may be "I" for imaginary
-        frequencies[frequencyCount] = frequency;
-        frequencyCount++;
+        frequencies[frequencyCount++] = frequency;
         if (Logger.debugging) {
           Logger.debug((vibrationNumber + 1) + " frequency=" + frequency);
         }
@@ -162,7 +162,7 @@ abstract public class GamessReader extends MOReader {
         intensities = getTokens();
       }
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-      int iAtom0 = atomSetCollection.getAtomCount() - atomCount;
+      int iAtom0 = atomSetCollection.getAtomCount();
       boolean[] ignore = new boolean[frequencyCount];
       for (int i = 0; i < frequencyCount; i++) {
         ignore[i] = !doGetVibration(++vibrationNumber);
@@ -170,8 +170,13 @@ abstract public class GamessReader extends MOReader {
         // have done an optimization with HSSEND=.TRUE.
         if (ignore[i])
           continue;
-        if (vibrationNumber > 1)
+        if (haveFreq) {
           atomSetCollection.cloneLastAtomSet();
+        } else {
+          haveFreq = true;
+          iAtom0 -= atomCount;
+        }
+        System.out.println(iAtom0);
         atomSetCollection.setAtomSetName(frequencies[i] + " cm-1");
         atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
             + " cm-1");

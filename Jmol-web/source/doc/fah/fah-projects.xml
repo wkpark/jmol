@@ -8441,6 +8441,9 @@
   <fah_proj number="10008" name="p10008" public="y" file="xyz"
     server="129.74.85.48" atoms="544" preferred="4.54" deadline="34.05"
     credit="124.85" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10010" name="p10010" public="n"
+    server="129.74.85.48" atoms="551" preferred="4.6" deadline="34.48"
+    credit="126.41" frames="100" code="PM" contact="abdulwahidc"/>
 
   <!-- Projects 10100 to 10199 -->
   <fah_proj number="10101" name="p10101" public="y"

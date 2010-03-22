@@ -11646,16 +11646,8 @@ public class ScriptEvaluator {
       if (token != null)
         tok = token.tok;
     }
-    if (tok == Token.symop && statementLength > 3) {
-      Point3f pt1 = centerParameter(2);
-      Point3f pt2 = centerParameter(++iToken);
-      if (isSyntaxCheck)
-        return;
-      len = ++iToken;
-      msg = viewer.getSymmetryOperation(null, 0, pt1, pt2);
-    } else {
+    if (tok != Token.symop || statementLength <= 3)
       checkLength(-3);
-    }
     if (statementLength == 2 && str.indexOf("?") >= 0) {
       showString(viewer.getAllSettings(str.substring(0, str.indexOf("?"))));
       return;
@@ -11665,7 +11657,13 @@ public class ScriptEvaluator {
       msg = Escape.escape(((ScriptVariable)theToken).value);
       break;
     case Token.symop:
-      if (msg == null) {
+      if (statementLength > 3) {
+        Point3f pt1 = centerParameter(2);
+        Point3f pt2 = centerParameter(++iToken);
+        if (!isSyntaxCheck)
+          msg = viewer.getSymmetryOperation(null, 0, pt1, pt2);
+        len = ++iToken;
+      } else {
         int iop = (checkLength23() == 2 ? 0 : intParameter(2));
         if (!isSyntaxCheck)
           msg = viewer.getSymmetryOperation(null, iop, null, null);

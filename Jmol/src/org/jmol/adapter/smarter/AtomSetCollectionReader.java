@@ -790,6 +790,23 @@ public abstract class AtomSetCollectionReader {
   }
 
   /**
+   * fills a float array with string data from a file
+   * @param temp
+   * @throws Exception
+   */
+  protected void fillFloatArray(float[] temp) throws Exception {
+    String[] tokens = new String[0];
+    int pt = 0;
+    for (int i = 0; i < temp.length; i++) {
+      while (pt >= tokens.length) {
+        tokens = getTokens(readLine());
+        pt = 0;
+      }
+      temp[i] = parseFloat(tokens[pt++]);
+    }
+  }
+
+  /**
    * Extracts a block of frequency data from a file. This block may be of two
    * types -- either X Y Z across a row or each of X Y Z on a separate line.
    * Data is presumed to be in fixed FORTRAN-like column format, not

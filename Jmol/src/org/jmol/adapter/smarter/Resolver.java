@@ -47,7 +47,7 @@ public class Resolver {
     "molxyz.", ";Mol;Xyz;",
     "more.", ";Gromacs;MdCrd;MdTop;Mol2;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
-                 "Molden;MopacGraphf;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
+                 "Molden;MopacGraphf;NBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;V3000;", 
     "xtal.", ";Aims;Castep;Crystal;Shelx;Wien2k;"
@@ -537,25 +537,27 @@ public class Resolver {
   private final static int SPECIAL_WIEN               = 9;
   private final static int SPECIAL_CASTEP             = 10;
   private final static int SPECIAL_AIMS               = 11;
-          final static int SPECIAL_CRYSTAL            = 12;
+  private final static int SPECIAL_CRYSTAL            = 12;
+  private final static int SPECIAL_GROMACS            = 13;
+  private final static int SPECIAL_NBO                = 14;
   
   // these next are needed by the XML reader
   
-  public final static int SPECIAL_ARGUS_XML   = 13;
-  public final static int SPECIAL_CML_XML     = 14;
-  public final static int SPECIAL_CHEM3D_XML  = 15;
-  public final static int SPECIAL_MOLPRO_XML  = 16;
-  public final static int SPECIAL_ODYSSEY_XML = 17;
-  public final static int SPECIAL_XSD_XML     = 18;
-  public final static int SPECIAL_VASP_XML    = 19; 
+  public final static int SPECIAL_ARGUS_XML   = 15;
+  public final static int SPECIAL_CML_XML     = 16;
+  public final static int SPECIAL_CHEM3D_XML  = 17;
+  public final static int SPECIAL_MOLPRO_XML  = 18;
+  public final static int SPECIAL_ODYSSEY_XML = 19;
+  public final static int SPECIAL_XSD_XML     = 20;
+  public final static int SPECIAL_VASP_XML    = 21; 
   
-  public final static int SPECIAL_ARGUS_DOM   = 20;
-  public final static int SPECIAL_CML_DOM     = 21;
-  public final static int SPECIAL_CHEM3D_DOM  = 22;
-  public final static int SPECIAL_MOLPRO_DOM  = 23;
-  public final static int SPECIAL_ODYSSEY_DOM = 24;
-  public final static int SPECIAL_XSD_DOM     = 25; // not implemented
-  public final static int SPECIAL_VASP_DOM    = 26; 
+  public final static int SPECIAL_ARGUS_DOM   = 22;
+  public final static int SPECIAL_CML_DOM     = 23;
+  public final static int SPECIAL_CHEM3D_DOM  = 24;
+  public final static int SPECIAL_MOLPRO_DOM  = 25;
+  public final static int SPECIAL_ODYSSEY_DOM = 26;
+  public final static int SPECIAL_XSD_DOM     = 27; // not implemented
+  public final static int SPECIAL_VASP_DOM    = 28; 
   
   public final static String[][] specialTags = {
     { "Jme" },
@@ -573,8 +575,10 @@ public class Resolver {
     { "Castep" },
     { "Aims" },  
     { "Crystal" },  
+    { "Gromacs" },
+    { "NBO" },
     
-    { "XmlArgus" },  //12
+    { "XmlArgus" }, 
     { "XmlCml" },
     { "XmlChem3d" },
     { "XmlMolpro" },
@@ -598,9 +602,9 @@ public class Resolver {
     // the order here is CRITICAL
     if (isEnd) {
       if (checkGromacs(lines))
-        return "Gromacs";
+        return specialTags[SPECIAL_GROMACS][0];
       if (checkCrystal(lines))
-        return "Crystal";
+        return specialTags[SPECIAL_CRYSTAL][0];
     }
     if (nLines == 1 && lines[0].length() > 0
         && Character.isDigit(lines[0].charAt(0)))
@@ -627,7 +631,15 @@ public class Resolver {
       return specialTags[SPECIAL_CASTEP][0];
     if (checkAims(lines))
       return specialTags[SPECIAL_AIMS][0];
+    if (checkNBO(lines))
+      return specialTags[SPECIAL_NBO][0];
     return null;
+  }
+  
+  private static boolean checkNBO(String[] lines) {
+    // .31 file or .nbo file
+    return lines[1].startsWith(" Basis set information needed for plotting orbitals")
+      || lines[2].contains(" N A T U R A L   A T O M I C   O R B I T A L");
   }
   
   private static boolean checkGromacs(String[] lines) {

@@ -176,7 +176,6 @@ abstract public class GamessReader extends MOReader {
           haveFreq = true;
           iAtom0 -= atomCount;
         }
-        System.out.println(iAtom0);
         atomSetCollection.setAtomSetName(frequencies[i] + " cm-1");
         atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
             + " cm-1");

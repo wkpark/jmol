@@ -26,6 +26,7 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolViewer;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
@@ -202,6 +203,8 @@ public abstract class AtomSetCollectionReader {
   }
   
   public boolean continuing = true;
+
+  protected JmolViewer viewer;
   
   final public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
@@ -311,6 +314,8 @@ public abstract class AtomSetCollectionReader {
 
     initializeSymmetry();
     this.htParams = htParams;
+    this.viewer = (JmolViewer) htParams.get("viewer");
+    htParams.remove("viewer"); // don't pass this on to user
     getHeader = htParams.containsKey("getHeader");
     readerName = (String) htParams.get("readerName");
     parameterData = (String) htParams.get("parameterData");

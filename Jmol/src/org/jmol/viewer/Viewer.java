@@ -1679,6 +1679,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private Hashtable setLoadParameters(Hashtable htParams) {
     if (htParams == null)
       htParams = new Hashtable();
+    htParams.put("viewer", this);
     if (global.atomTypes.length() > 0)
       htParams.put("atomTypes", global.atomTypes);
     if (!htParams.containsKey("lattice"))

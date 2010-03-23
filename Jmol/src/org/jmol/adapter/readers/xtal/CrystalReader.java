@@ -122,10 +122,14 @@ public class CrystalReader extends AtomSetCollectionReader {
       }
     }
 
-    if (line.contains("DIMENSIONALITY OF THE SYSTEM    2")) {
-      isSlab = true;
+    if (line.contains("DIMENSIONALITY OF THE SYSTEM")) {
+      if (line.indexOf("2") >= 0)
+        isSlab = true;
+      if (line.indexOf("1") >= 0)
+        isPolymer = true;
       return true;
     }
+
     if (line.startsWith(" LATTICE PARAMETER")) {
       boolean isConvLattice = line.contains("- CONVENTIONAL");
       if (isConvLattice) {

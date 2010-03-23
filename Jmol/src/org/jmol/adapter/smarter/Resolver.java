@@ -639,6 +639,7 @@ public class Resolver {
   private static boolean checkNBO(String[] lines) {
     // .31 file or .nbo file
     return lines[1].startsWith(" Basis set information needed for plotting orbitals")
+      || lines[1].contains("s in the AO basis:")
       || lines[2].contains(" N A T U R A L   A T O M I C   O R B I T A L");
   }
   

@@ -45,7 +45,7 @@ import org.jmol.adapter.smarter.*;
  * 
 **/
 
-public class NWChemReader extends MOReader {
+public class NWChemReader extends AtomSetCollectionReader {
 
   /**
    * The number of the task begin interpreted.

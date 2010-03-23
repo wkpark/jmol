@@ -93,6 +93,7 @@ abstract public class MOReader extends AtomSetCollectionReader {
   private boolean getNBOs;
   private boolean getNBOCharges;
   protected boolean haveNboCharges;
+  private boolean haveNboOrbitals;
 
   private String[] filterTokens;
   private boolean filterIsNot; 
@@ -294,6 +295,14 @@ abstract public class MOReader extends AtomSetCollectionReader {
       readLine();
       return;
     }
+    // Idea here is to concatenate results from gennbo if desired,
+    // and these will replace previous results. 
+    // we still need atom positions and bases functions.
+    if (haveNboOrbitals) {
+      orbitals = new Vector();
+      alphaBeta = "";
+    }
+    haveNboOrbitals = true;
     Hashtable[] mos = null;
     Vector[] data = null;
     Vector coeffLabels = null;
@@ -325,10 +334,11 @@ abstract public class MOReader extends AtomSetCollectionReader {
           break;
       }
         //not everyone has followed the conventions for ending a section of output
-      if (line.length() == 0 || line.indexOf("--") >= 0 || line.indexOf(".....") >=0 
-           || line.indexOf("NBO BASIS") >= 0 // reading NBOs
-           || line.indexOf("CI EIGENVECTORS WILL BE LABELED") >=0 //this happens when doing MCSCF optimizations
-           || line.indexOf("   THIS LOCALIZATION HAD") >=0) { //this happens with certain localization methods
+      String str = line.toUpperCase();
+      if (str.length() == 0 || str.indexOf("--") >= 0 || str.indexOf(".....") >=0 
+           || str.indexOf("NBO BASIS") >= 0 // reading NBOs
+           || str.indexOf("CI EIGENVECTORS WILL BE LABELED") >=0 //this happens when doing MCSCF optimizations
+           || str.indexOf("   THIS LOCALIZATION HAD") >=0) { //this happens with certain localization methods
         for (int iMo = 0; iMo < nThisLine; iMo++) {
           float[] coefs = new float[data[iMo].size()];
           int iCoeff = 0;

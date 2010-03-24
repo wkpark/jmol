@@ -153,7 +153,8 @@ abstract public class MOReader extends AtomSetCollectionReader {
 
     // these output lines are being passed on by NBO 5.0 to whatever program is
     // using it (GAMESS, GAUSSIAN)
-
+if (line.indexOf("NBOs") >= 0)
+  System.out.println(line);
     if (getNBOs) {
       if (line.indexOf("(Occupancy)   Bond orbital/ Coefficients/ Hybrids") >= 0) {
         getNboTypes();
@@ -233,11 +234,12 @@ abstract public class MOReader extends AtomSetCollectionReader {
     readLine();
     readLine();
     int n = 0;
-    while (line != null && line.indexOf(".") == 4) {
-      if (parseInt(line.substring(0, 4)) != n + 1)
+    int pt = 0;
+    while (line != null && (pt = line.indexOf(".")) >= 0 && pt < 10) {
+      if (parseInt(line.substring(0, pt)) != n + 1)
         break;
-      moTypes.add(n++, line.substring(5, 34).trim());
-      while (readLine() != null && line.startsWith("     ")) {
+      moTypes.add(n++, line.substring(pt + 1, Math.min(40, line.length())).trim());
+      while (readLine() != null && line.startsWith("       ")) {
       }
     }
     Logger.info(n + " natural bond orbitals read");

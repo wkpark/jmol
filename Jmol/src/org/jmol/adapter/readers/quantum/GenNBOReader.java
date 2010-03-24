@@ -61,7 +61,7 @@ import java.util.Vector;
        /AONBO  / : Print the AO to NBO transformation
   * 
   */
-public class NBOReader extends MOReader {
+public class GenNBOReader extends MOReader {
     
   private boolean isOutputFile;
   private String moType = "";

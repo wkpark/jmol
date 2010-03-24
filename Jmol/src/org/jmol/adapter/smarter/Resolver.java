@@ -47,7 +47,7 @@ public class Resolver {
     "molxyz.", ";Mol;Xyz;",
     "more.", ";Gromacs;MdCrd;MdTop;Mol2;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
-                 "Molden;MopacGraphf;NBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
+                 "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;V3000;", 
     "xtal.", ";Aims;Castep;Crystal;Shelx;Wien2k;"
@@ -539,7 +539,7 @@ public class Resolver {
   private final static int SPECIAL_AIMS               = 11;
   private final static int SPECIAL_CRYSTAL            = 12;
   private final static int SPECIAL_GROMACS            = 13;
-  private final static int SPECIAL_NBO                = 14;
+  private final static int SPECIAL_GENNBO             = 14;
   
   // these next are needed by the XML reader
   
@@ -576,7 +576,7 @@ public class Resolver {
     { "Aims" },  
     { "Crystal" },  
     { "Gromacs" },
-    { "NBO" },
+    { "GenNBO" },
     
     { "XmlArgus" }, 
     { "XmlCml" },
@@ -631,12 +631,12 @@ public class Resolver {
       return specialTags[SPECIAL_CASTEP][0];
     if (checkAims(lines))
       return specialTags[SPECIAL_AIMS][0];
-    if (checkNBO(lines))
-      return specialTags[SPECIAL_NBO][0];
+    if (checkGenNBO(lines))
+      return specialTags[SPECIAL_GENNBO][0];
     return null;
   }
   
-  private static boolean checkNBO(String[] lines) {
+  private static boolean checkGenNBO(String[] lines) {
     // .31 file or .nbo file
     return lines[1].startsWith(" Basis set information needed for plotting orbitals")
       || lines[1].contains("s in the AO basis:")

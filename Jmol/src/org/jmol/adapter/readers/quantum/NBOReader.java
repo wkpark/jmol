@@ -68,19 +68,9 @@ public class NBOReader extends MOReader {
   private int nOrbitals;
 
   /*
-molname.31 AO
-molname.32 PNAO
-molname.33 NAO
-molname.34 PNHO
-molname.35 NHO
-molname.36 PNBO
-molname.37 NBO
-molname.38 PNLMO
-molname.39 NLMO
-molname.40 MO
-molname.41 AO density matrix
-molname.46 Basis label file
-
+   * molname.31 AO molname.32 PNAO molname.33 NAO molname.34 PNHO molname.35 NHO
+   * molname.36 PNBO molname.37 NBO molname.38 PNLMO molname.39 NLMO molname.40
+   * MO molname.41 AO density matrix molname.46 Basis label file
    */
   protected void initializeReader() throws Exception {
     String line1 = readLine();
@@ -88,19 +78,21 @@ molname.46 Basis label file
     isOutputFile = (line.indexOf("***") >= 0);
     if (isOutputFile) {
       readFile31();
+      super.initializeReader();
       // keep going -- we need to read the file using MOReader.
-    } else if (line.contains("s in the AO basis:")){
+      return;
+    }
+    if (line.contains("s in the AO basis:")) {
       moType = line.substring(1, line.indexOf("s"));
       readFile31();
-      readFile46();
-      readOrbitalData();
-      setMOData(false);
-      continuing = false;
     } else {
+      moType = "AO";
       readData31(line1, line);
-      continuing = false;
     }
-    super.initializeReader();
+    readFile46();
+    readOrbitalData(!moType.equals("AO"));
+    setMOData(false);
+    continuing = false;
   }
 
   protected boolean checkLine() throws Exception {
@@ -245,13 +237,14 @@ molname.46 Basis label file
       ntype = "AO";
     if (ntype == null)
       return;
-    if (ntype != "AO")
+    if (!ntype.equals("AO"))
       discardLinesUntilContains(ntype);
     StringBuffer sb = new StringBuffer();
     while (readLine() != null && line.indexOf("O    ") < 0)
       sb.append(line);
+    sb.append(' ');
     String data = sb.toString();
-    int n = data.length();
+    int n = data.length() - 1;
     sb = new StringBuffer();
     for (int i = 0; i < n; i++) {
       char c = data.charAt(i);
@@ -261,7 +254,7 @@ molname.46 Basis label file
           i++;
         break;
       case ' ':
-        if (Character.isDigit(data.charAt(i + 1)))
+        if (Character.isDigit(data.charAt(i + 1)) || data.charAt(i + 1) == '(')
           continue;
         break;
       }
@@ -277,17 +270,21 @@ molname.46 Basis label file
     }
   }
 
-  private void readOrbitalData() throws Exception {
-    readLine();
+  private void readOrbitalData(boolean isMO) throws Exception {
+    if (isMO)
+      readLine();
     for (int i = 0; i < nOrbitals; i++) {
       Hashtable mo = (Hashtable) orbitals.get(i);
       float[] coefs = new float[nOrbitals];
       mo.put("coefficients", coefs);
-      for (int j = 0; j < nOrbitals;) {
-        String[] data = getTokens(readLine());
-        for (int k = 0; k < data.length; k++, j++)
-          coefs[j] = parseFloat(data[k]);
-      }
+      if (isMO)
+        for (int j = 0; j < nOrbitals;) {
+          String[] data = getTokens(readLine());
+          for (int k = 0; k < data.length; k++, j++)
+            coefs[j] = parseFloat(data[k]);
+        }
+      else
+        coefs[i] = 1;
     }
   }
 

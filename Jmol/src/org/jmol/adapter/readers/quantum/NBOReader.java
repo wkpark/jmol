@@ -249,6 +249,7 @@ public class NBOReader extends MOReader {
     for (int i = 0; i < n; i++) {
       char c = data.charAt(i);
       switch (c) {
+      case '(':
       case '-':
         if (data.charAt(i + 1) == ' ')
           i++;
@@ -260,6 +261,7 @@ public class NBOReader extends MOReader {
       }
       sb.append(c);
     }
+    System.out.println(sb);
     tokens = getTokens(sb.toString());
     for (int i = 0; i < nOrbitals; i++) {
       Hashtable mo = (Hashtable) orbitals.get(i);

@@ -227,7 +227,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     }
     as5D = (moCoeff > moCoefficients.length);
     if (as5D)
-      Logger.info("MO calculation is assuming spherical (5D,7F) orbitals");
+      Logger.error("MO calculation does not have the proper number of coefficients! Assuming spherical (5D,7F) orbitals");
   }
 
   private boolean checkCalculationType() {

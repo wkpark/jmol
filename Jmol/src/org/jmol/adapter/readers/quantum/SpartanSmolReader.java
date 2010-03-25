@@ -56,6 +56,7 @@ public class SpartanSmolReader extends SpartanInputReader {
         return checkLastModel();
       atomSetCollection.newAtomSet();
       moData = new Hashtable();
+      moData.put("isNormalized", Boolean.TRUE);
       if (modelNo == Integer.MIN_VALUE) {
         modelNo = modelNumber;
         title = "Model " + line.substring(line.lastIndexOf(" ") + 1);

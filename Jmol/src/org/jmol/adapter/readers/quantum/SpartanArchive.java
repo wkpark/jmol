@@ -72,6 +72,7 @@ class SpartanArchive {
     this.r = r;
     this.atomSetCollection = atomSetCollection;
     this.moData = moData;
+    moData.put("isNormalized", Boolean.TRUE);
     moData.put("energyUnits","");
     this.bondData = bondData;
   }

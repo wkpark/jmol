@@ -80,6 +80,8 @@ abstract class QuantumCalculation {
     Z2 = new float[nZ];
   }
 
+  protected float volume = 1;
+
   protected void setupCoordinates(float[] originXYZ, float[] stepsXYZ,
                                   BitSet bsSelected, Point3f[] atomCoordAngstroms) {
 
@@ -88,6 +90,7 @@ abstract class QuantumCalculation {
     for (int i = 3; --i >= 0;) {
       originBohr[i] = originXYZ[i] * bohr_per_angstrom;
       stepBohr[i] = stepsXYZ[i] * bohr_per_angstrom;
+      volume *= stepBohr[i];
     }
     setXYZBohr(xBohr, 0, nX);
     setXYZBohr(yBohr, 1, nY);

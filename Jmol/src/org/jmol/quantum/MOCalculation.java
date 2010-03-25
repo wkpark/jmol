@@ -122,6 +122,7 @@ public class MOCalculation extends QuantumCalculation implements
   private boolean isElectronDensity;
   private float occupancy = 2f; //for now -- RHF only
   //private float coefMax = Integer.MAX_VALUE;
+  private boolean doNormalize = true;
   
 //  private float[] nuclearCharges;
 
@@ -135,7 +136,8 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
                         int firstAtomOffset, Vector shells,
                         float[][] gaussians, Hashtable aoOrdersDF,
                         Object slaters,
-                        float[] moCoefficients, float[] nuclearCharges) {
+                        float[] moCoefficients, float[] nuclearCharges, boolean doNormalize) {
+    this.doNormalize = doNormalize;
     this.calculationType = calculationType;
     this.firstAtomOffset = firstAtomOffset;
     this.shells = shells;
@@ -144,7 +146,8 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     this.slaters = (SlaterData[]) slaters;
     this.moCoefficients = moCoefficients;
     //this.nuclearCharges = nuclearCharges;
-    this.isElectronDensity = (nuclearCharges != null);
+    boolean testing = false;
+    this.isElectronDensity = (testing || nuclearCharges != null);
     int[] countsXYZ = volumeData.getVoxelCounts();
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2]);
     voxelData = volumeData.getVoxelData();
@@ -158,6 +161,8 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
       createGaussianCube();
     else
       createSlaterCube();
+    if (doDebug || testing || isElectronDensity)
+      calculateElectronDensity(nuclearCharges);
   }  
 
   public void calculateElectronDensity(float[] nuclearCharges) {
@@ -166,11 +171,13 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     for (int ix = nX; --ix >= 0;)
       for (int iy = nY; --iy >= 0;)
         for (int iz = nZ; --iz >= 0;) {
-          t += voxelData[ix][iy][iz];
+          float x = voxelData[ix][iy][iz];
+          t += x * x;
         }
-    float volume = stepBohr[0] * stepBohr[1] * stepBohr[2] / bohr_per_angstrom
-        / bohr_per_angstrom / bohr_per_angstrom;
+    float volume = stepBohr[0] * stepBohr[1] * stepBohr[2]; 
+        // / bohr_per_angstrom / bohr_per_angstrom / bohr_per_angstrom;
     t = t * volume;
+    System.out.println("total ElectronDensity = " + t);
     //processMep(nuclearCharges);
   }
 
@@ -215,8 +222,8 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
       int[] shell = (int[]) shells.get(i);
       int basisType = shell[1];
       gaussianPtr = shell[2];
-      int nGaussians = shell[3];
-      addData(basisType, nGaussians);
+      nGaussians = shell[3];
+      addData(basisType);
     }
     as5D = (moCoeff > moCoefficients.length);
     if (as5D)
@@ -248,13 +255,15 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     return true;
   }
 
+  private int nGaussians;
+  
   private void processShell(int iShell) {
     int lastAtom = atomIndex;
     int[] shell = (int[]) shells.get(iShell);
     atomIndex = shell[0] + firstAtomOffset;
     int basisType = shell[1];
     gaussianPtr = shell[2];
-    int nGaussians = shell[3];
+    nGaussians = shell[3];
 
     if (doDebug)
       Logger.debug("processShell: " + iShell + " type="
@@ -262,37 +271,37 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
           + nGaussians + " atom=" + atomIndex);
     if (atomIndex != lastAtom && (thisAtom = qmAtoms[atomIndex]) != null)
       thisAtom.setXYZ(true);
-    addData(basisType, nGaussians);
+    addData(basisType);
   }
 
-  private void addData(int basisType, int nGaussians) {
+  private void addData(int basisType) {
     switch (basisType) {
     case JmolConstants.SHELL_S:
-      addDataS(nGaussians);
+      addDataS();
       break;
     case JmolConstants.SHELL_P:
-      addDataP(nGaussians);
+      addDataP();
       break;
     case JmolConstants.SHELL_SP:
-      addDataSP(nGaussians);
+      addDataSP();
       break;
     case JmolConstants.SHELL_D_CARTESIAN:
       if (as5D)
-        addData5D(nGaussians);
+        addData5D();
       else
-        addData6D(nGaussians);
+        addData6D();
       break;
     case JmolConstants.SHELL_D_SPHERICAL:
-      addData5D(nGaussians);
+      addData5D();
       break;
     case JmolConstants.SHELL_F_CARTESIAN:
       if (as5D)
-        addData7F(nGaussians);
+        addData7F();
       else        
-        addData10F(nGaussians);
+        addData10F();
       break;
     case JmolConstants.SHELL_F_SPHERICAL:
-      addData7F(nGaussians);
+      addData7F();
       break;
     default:
       Logger.warn(" Unsupported basis type for atomno=" + (atomIndex + 1)
@@ -313,20 +322,22 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     }
   }
   
-  private void addDataS(int nGaussians) {
+  private void addDataS() {
     if (thisAtom == null) {
       moCoeff++;
       return;
     }
     if (doDebug)
-      dumpInfo(nGaussians, "S ");
+      dumpInfo("S ");
 
     float m1 = moCoefficients[moCoeff++];
     for (int ig = 0; ig < nGaussians; ig++) {
       float alpha = gaussians[gaussianPtr + ig][0];
       float c1 = gaussians[gaussianPtr + ig][1];
       // (2 alpha^3/pi^3)^0.25 exp(-alpha r^2)
-      float a = m1 * c1 * (float) Math.pow(alpha, 0.75) * 0.712705470f;
+      float a = m1 * c1;
+      if (doNormalize)
+        a *= (float) Math.pow(alpha, 0.75) * 0.712705470f;
       // the coefficients are all included with the X factor here
 
       for (int i = xMax; --i >= xMin;) {
@@ -353,13 +364,13 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
       setTemp();
   }
 
-  private void addDataP(int nGaussians) {
+  private void addDataP() {
     if (thisAtom == null) {
       moCoeff += 3;
       return;
     }
     if (doDebug)
-      dumpInfo(nGaussians, "X Y Z ");
+      dumpInfo("X Y Z ");
     float mx = moCoefficients[moCoeff++];
     float my = moCoefficients[moCoeff++];
     float mz = moCoefficients[moCoeff++];
@@ -368,7 +379,9 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
         float alpha = gaussians[gaussianPtr + ig][0];
         float c1 = gaussians[gaussianPtr + ig][1];
         // (128 alpha^5/pi^3)^0.25 [x|y|z]exp(-alpha r^2)
-        float a = c1 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        float a = c1;
+        if (doNormalize)
+          a *= (float) Math.pow(alpha, 1.25) * 1.42541094f;
         calcSP(alpha, 0, a * mx, 0, 0);
       }
       setTemp();
@@ -376,7 +389,9 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
         float alpha = gaussians[gaussianPtr + ig][0];
         float c1 = gaussians[gaussianPtr + ig][1];
         // (128 alpha^5/pi^3)^0.25 [x|y|z]exp(-alpha r^2)
-        float a = c1 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        float a = c1;
+        if (doNormalize)
+          a *= (float) Math.pow(alpha, 1.25) * 1.42541094f;
         calcSP(alpha, 0, 0, a * my, 0);
       }
       setTemp();
@@ -384,7 +399,9 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
         float alpha = gaussians[gaussianPtr + ig][0];
         float c1 = gaussians[gaussianPtr + ig][1];
         // (128 alpha^5/pi^3)^0.25 [x|y|z]exp(-alpha r^2)
-        float a = c1 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        float a = c1;
+        if (doNormalize)
+          a *= (float) Math.pow(alpha, 1.25) * 1.42541094f;
         calcSP(alpha, 0, 0, 0, a * mz);
       }
       setTemp();
@@ -393,13 +410,15 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
         float alpha = gaussians[gaussianPtr + ig][0];
         float c1 = gaussians[gaussianPtr + ig][1];
         // (128 alpha^5/pi^3)^0.25 [x|y|z]exp(-alpha r^2)
-        float a = c1 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        float a = c1;
+        if (doNormalize)
+          a *= (float) Math.pow(alpha, 1.25) * 1.42541094f;
         calcSP(alpha, 0, a * mx, a * my, a * mz);
       }
     }
   }
 
-  private void addDataSP(int nGaussians) {
+  private void addDataSP() {
     // spartan uses format "1" for BOTH SP and P, which is fine, but then
     // when c1 = 0, there is no mo coefficient, of course. 
     float c1 = gaussians[gaussianPtr][1];
@@ -408,7 +427,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
       return;
     }
     if (doDebug)
-      dumpInfo(nGaussians, c1 == 0 ? "X Y Z " : "S X Y Z ");
+      dumpInfo(c1 == 0 ? "X Y Z " : "S X Y Z ");
     float ms = (c1 == 0 ? 0 : moCoefficients[moCoeff++]);
     float mx = moCoefficients[moCoeff++];
     float my = moCoefficients[moCoeff++];
@@ -417,28 +436,36 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
       for (int ig = 0; ig < nGaussians; ig++) {
         float alpha = gaussians[gaussianPtr + ig][0];
         c1 = gaussians[gaussianPtr + ig][1];
-        float a1 = c1 * (float) Math.pow(alpha, 0.75) * 0.712705470f;
+        float a1 = c1;
+        if (doNormalize)
+          a1 *= (float) Math.pow(alpha, 0.75) * 0.712705470f;
         calcSP(alpha, a1 * ms, 0, 0, 0);
       }
       setTemp();
       for (int ig = 0; ig < nGaussians; ig++) {
         float alpha = gaussians[gaussianPtr + ig][0];
         float c2 = gaussians[gaussianPtr + ig][2];
-        float a2 = c2 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        float a2 = c2;
+        if (doNormalize)
+          a2 *= (float) Math.pow(alpha, 1.25) * 1.42541094f;
         calcSP(alpha, 0, a2 * mx, 0, 0);
       }
       setTemp();
       for (int ig = 0; ig < nGaussians; ig++) {
         float alpha = gaussians[gaussianPtr + ig][0];
         float c2 = gaussians[gaussianPtr + ig][2];
-        float a2 = c2 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        float a2 = c2;
+        if (doNormalize)
+          a2 *= (float) Math.pow(alpha, 1.25) * 1.42541094f;
         calcSP(alpha, 0, 0, a2 * my, 0);
       }
       setTemp();
       for (int ig = 0; ig < nGaussians; ig++) {
         float alpha = gaussians[gaussianPtr + ig][0];
         float c2 = gaussians[gaussianPtr + ig][2];
-        float a2 = c2 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        float a2 = c2;
+        if (doNormalize)
+          a2 *= (float) Math.pow(alpha, 1.25) * 1.42541094f;
         calcSP(alpha, 0, 0, 0, a2 * mz);
       }
       setTemp();
@@ -447,8 +474,12 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
         float alpha = gaussians[gaussianPtr + ig][0];
         c1 = gaussians[gaussianPtr + ig][1];
         float c2 = gaussians[gaussianPtr + ig][2];
-        float a1 = c1 * (float) Math.pow(alpha, 0.75) * 0.712705470f;
-        float a2 = c2 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        float a1 = c1;
+        if (doNormalize)
+          a1 *= (float) Math.pow(alpha, 0.75) * 0.712705470f;
+        float a2 = c2;
+        if (doNormalize)
+          a2 *= (float) Math.pow(alpha, 1.25) * 1.42541094f;
         calcSP(alpha, a1 * ms, a2 * mx, a2 * my, a2 * mz);
       }
     }
@@ -496,14 +527,14 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
 
   private final static float ROOT3 = 1.73205080756887729f;
 
-  private void addData6D(int nGaussians) {
+  private void addData6D() {
     //expects 6 orbitals in the order XX YY ZZ XY XZ YZ
     if (thisAtom == null  || isElectronDensity) {
       moCoeff += 6;
       return;
     }
     if (doDebug)
-      dumpInfo(nGaussians, "XXYYZZXYXZYZ");
+      dumpInfo("XXYYZZXYXZYZ");
     float mxx = moCoefficients[moCoeff++];
     float myy = moCoefficients[moCoeff++];
     float mzz = moCoefficients[moCoeff++];
@@ -515,7 +546,9 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
       float c1 = gaussians[gaussianPtr + ig][1];
       // xx|yy|zz: (2048 alpha^7/9pi^3)^0.25 [xx|yy|zz]exp(-alpha r^2)
       // xy|xz|yz: (2048 alpha^7/pi^3)^0.25 [xy|xz|yz]exp(-alpha r^2)
-      float a = c1 * (float) Math.pow(alpha, 1.75) * 2.8508219178923f;
+      float a = c1;
+      if (doNormalize)
+        a *= (float) Math.pow(alpha, 1.75) * 2.8508219178923f;
       float axx = a / ROOT3 * mxx;
       float ayy = a / ROOT3 * myy;
       float azz = a / ROOT3 * mzz;
@@ -550,7 +583,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     }
   }
 
-  private void addData5D(int nGaussians) {
+  private void addData5D() {
     // expects 5 real orbitals in the order d0, d+1, d-1, d+2, d-2
     // (i.e. dz^2, dxz, dyz, dx^2-y^2, dxy)
     // To avoid actually having to use spherical harmonics, we use 
@@ -565,7 +598,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
       return;
     }
     if (doDebug)
-      dumpInfo(nGaussians, JmolConstants.SHELL_D_SPHERICAL);
+      dumpInfo(JmolConstants.SHELL_D_SPHERICAL);
 
     float alpha, c1, a;
     float x, y, z;
@@ -583,11 +616,11 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
      zz           [(2048 * alpha^7) / (9 * pi^3))]^(1/4)
      */
 
-    final float norm1 = (float) Math.pow(2048.0 / (Math.PI * Math.PI * Math.PI), 0.25);
-    final float norm2 = (float) (norm1 / Math.sqrt(3));
+    final float norm1 =(doNormalize ? (float) Math.pow(2048.0 / (Math.PI * Math.PI * Math.PI), 0.25) : 1);
+    final float norm2 = (doNormalize ? (float) (norm1 / Math.sqrt(3)) : 1);
 
     // Normalization constant that shows up for dx^2-y^2
-    final float root34 = (float) Math.sqrt(0.75);
+    final float root34 =(doNormalize ? (float) Math.sqrt(0.75) : 1);
 
     float m0 = moCoefficients[moCoeff++];
     float m1p = moCoefficients[moCoeff++];
@@ -598,7 +631,9 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     for (int ig = 0; ig < nGaussians; ig++) {
       alpha = gaussians[gaussianPtr + ig][0];
       c1 = gaussians[gaussianPtr + ig][1];
-      a = c1 * (float) Math.pow(alpha, 1.75);
+      a = c1;
+      if (doNormalize)
+        a *= (float) Math.pow(alpha, 1.75);
 
       ad0 = a * m0;
       ad1p = a * m1p;
@@ -636,7 +671,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     }
   }
 
-  private void addData10F(int nGaussians) {
+  private void addData10F() {
     // expects 10 orbitals in the order XXX, YYY, ZZZ, XYY, XXY, 
     //                                  XXZ, XZZ, YZZ, YYZ, XYZ
     if (thisAtom == null || isElectronDensity) {
@@ -644,7 +679,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
       return;
     }
     if (doDebug)
-      dumpInfo(nGaussians, JmolConstants.SHELL_F_CARTESIAN);
+      dumpInfo(JmolConstants.SHELL_F_CARTESIAN);
     float alpha;
     float c1;
     float a;
@@ -667,10 +702,10 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
      zzz          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
      */
 
-    final float norm1 = (float) Math.pow(
-        32768.0 / (Math.PI * Math.PI * Math.PI), 0.25);
-    final float norm2 = (float) (norm1 / Math.sqrt(3));
-    final float norm3 = (float) (norm1 / Math.sqrt(15));
+    final float norm1 =(doNormalize ?  (float) Math.pow(
+        32768.0 / (Math.PI * Math.PI * Math.PI), 0.25) : 1);
+    final float norm2 =(doNormalize ?  (float) (norm1 / Math.sqrt(3)) : 1);
+    final float norm3 =(doNormalize ?  (float) (norm1 / Math.sqrt(15)) : 1);
 
     float mxxx = moCoefficients[moCoeff++];
     float myyy = moCoefficients[moCoeff++];
@@ -689,7 +724,9 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
 
       // common factor of contraction coefficient and alpha normalization 
       // factor; only call pow once per primitive
-      a = c1 * (float) Math.pow(alpha, 2.25);
+      a = c1;
+      if (doNormalize)
+        a *= (float) Math.pow(alpha, 2.25);
 
       axxx = a * norm3 * mxxx;
       ayyy = a * norm3 * myyy;
@@ -735,7 +772,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     }
   }
 
-  private void addData7F(int nGaussians) {
+  private void addData7F() {
     // expects 7 real orbitals in the order f0, f+1, f-1, f+2, f-2, f+3, f-3
 
     if (thisAtom == null || isElectronDensity) {
@@ -744,7 +781,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     }
 
     if (doDebug)
-      dumpInfo(nGaussians, JmolConstants.SHELL_F_SPHERICAL);
+      dumpInfo(JmolConstants.SHELL_F_SPHERICAL);
 
     float alpha, c1, a;
     float x, y, z, xx, yy, zz;
@@ -766,10 +803,10 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
      zzz          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
      */
 
-    final float norm1 = (float) Math.pow(
-        32768.0 / (Math.PI * Math.PI * Math.PI), 0.25);
-    final float norm2 = (float) (norm1 / Math.sqrt(3));
-    final float norm3 = (float) (norm1 / Math.sqrt(15));
+    final float norm1 = (doNormalize ?  (float) Math.pow(
+        32768.0 / (Math.PI * Math.PI * Math.PI), 0.25) : 1);
+    final float norm2 = (doNormalize ?  (float) (norm1 / Math.sqrt(3)) : 1);
+    final float norm3 = (doNormalize ? (float) (norm1 / Math.sqrt(15)) : 1);
 
     // Linear combination coefficients for the various Cartesian gaussians
     final float c0_xxz_yyz = (float) (3.0 / (2.0 * Math.sqrt(5)));
@@ -799,7 +836,9 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     for (int ig = 0; ig < nGaussians; ig++) {
       alpha = gaussians[gaussianPtr + ig][0];
       c1 = gaussians[gaussianPtr + ig][1];
-      a = c1 * (float) Math.pow(alpha, 2.25);
+      a = c1;
+      if (doNormalize)
+        a *= (float) Math.pow(alpha, 2.25);
 
       af0 = a * m0;
       af1p = a * m1p;
@@ -1040,12 +1079,13 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
           //  + X[ix] + " " + Y[iy] + " " + Z[iz] 
             + "\t"  + voxelDataTemp[27][27][iz]);
     }
-*/    if (isElectronDensity)
+*/ 
+    if (isElectronDensity)
       setTemp();
     return true;
   }
 
-  private void dumpInfo(int nGaussians, String info) {
+  private void dumpInfo(String info) {
     for (int ig = 0; ig < nGaussians; ig++) {
       float alpha = gaussians[gaussianPtr + ig][0];
       float c1 = gaussians[gaussianPtr + ig][1];
@@ -1062,7 +1102,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     return;
   }
 
-  private void dumpInfo(int nGaussians, int shell) {
+  private void dumpInfo(int shell) {
     for (int ig = 0; ig < nGaussians; ig++) {
       float alpha = gaussians[gaussianPtr + ig][0];
       float c1 = gaussians[gaussianPtr + ig][1];

@@ -92,6 +92,7 @@ public class GenNBOReader extends MOReader {
     readFile46();
     readOrbitalData(!moType.equals("AO"));
     setMOData(false);
+    moData.put("isNormalized", Boolean.TRUE);
     continuing = false;
   }
 

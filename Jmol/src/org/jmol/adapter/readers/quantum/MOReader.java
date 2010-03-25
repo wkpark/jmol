@@ -240,7 +240,7 @@ abstract public class MOReader extends AtomSetCollectionReader {
       while (readLine() != null && line.startsWith("       ")) {
       }
     }
-    Logger.info(n + " natural bond orbitals read");
+    Logger.info(n + " natural bond AO basis functions found");
   }
 
   /*
@@ -312,6 +312,7 @@ abstract public class MOReader extends AtomSetCollectionReader {
     readLine();
     int moCount = 0;
     int nSkip = -1;
+    int nBlank = 0;
     boolean haveMOs = false;
     if (line.indexOf("---") >= 0)
       readLine();
@@ -339,6 +340,12 @@ abstract public class MOReader extends AtomSetCollectionReader {
            || str.indexOf("NBO BASIS") >= 0 // reading NBOs
            || str.indexOf("CI EIGENVECTORS WILL BE LABELED") >=0 //this happens when doing MCSCF optimizations
            || str.indexOf("   THIS LOCALIZATION HAD") >=0) { //this happens with certain localization methods
+        if (str.length() == 0)
+          nBlank++;
+        else
+          nBlank = 0;
+        if (nBlank == 2)
+          break;
         for (int iMo = 0; iMo < nThisLine; iMo++) {
           float[] coefs = new float[data[iMo].size()];
           int iCoeff = 0;
@@ -372,6 +379,7 @@ abstract public class MOReader extends AtomSetCollectionReader {
         break;
       }
       //read the data line:
+      nBlank = 0;
       if (nThisLine == 0) {
         nThisLine = tokens.length;
         if (tokens[0].equals("AO")) {

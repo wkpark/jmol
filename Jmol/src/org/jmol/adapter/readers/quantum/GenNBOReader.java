@@ -70,7 +70,7 @@ public class GenNBOReader extends MOReader {
    * MO molname.41 AO density matrix molname.46 Basis label file
    */
   protected void initializeReader() throws Exception {
-    String line1 = readLine();
+    String line1 = readLine().trim();
     readLine();
     isOutputFile = (line.indexOf("***") >= 0);
     boolean isOK;
@@ -80,9 +80,11 @@ public class GenNBOReader extends MOReader {
       // keep going -- we need to read the file using MOReader.
     } else if (line.contains("s in the AO basis:")) {
       moType = line.substring(1, line.indexOf("s"));
+      atomSetCollection.setCollectionName(line1 + ": " + moType + "s");
       isOK = readFile31();
     } else {
       moType = "AO";
+      atomSetCollection.setCollectionName(line1 + ": " + moType + "s");
       isOK = readData31(line1, line);
     }
     if (!isOK)
@@ -154,7 +156,6 @@ public class GenNBOReader extends MOReader {
       line1 = readLine();
     if (line2 == null)
       line2 = readLine();
-    atomSetCollection.setAtomSetName(line1.trim() + moType);
 
     // read atomCount, shellCount, and gaussianCount
     readLine(); // ----------
@@ -166,6 +167,7 @@ public class GenNBOReader extends MOReader {
     // read atom types and positions
     readLine(); // ----------
     atomSetCollection.newAtomSet();
+    atomSetCollection.setAtomSetName(moType + "s: " + line1.trim());
     for (int i = 0; i < atomCount; i++) {
       tokens = getTokens(readLine());
       int z = parseInt(tokens[0]);

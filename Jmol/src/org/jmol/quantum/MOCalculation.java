@@ -177,7 +177,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     float volume = stepBohr[0] * stepBohr[1] * stepBohr[2]; 
         // / bohr_per_angstrom / bohr_per_angstrom / bohr_per_angstrom;
     t = t * volume;
-    System.out.println("total ElectronDensity = " + t);
+    Logger.info("Integrated density = " + t);
     //processMep(nuclearCharges);
   }
 

@@ -798,10 +798,12 @@ public abstract class AtomSetCollectionReader {
     String[] tokens = new String[0];
     int pt = 0;
     for (int i = 0; i < temp.length; i++) {
-      while (pt >= tokens.length) {
+      while (tokens != null && pt >= tokens.length) {
         tokens = getTokens(readLine());
         pt = 0;
       }
+      if (tokens == null)
+        break;
       temp[i] = parseFloat(tokens[pt++]);
     }
   }

@@ -73,23 +73,28 @@ public class GenNBOReader extends MOReader {
     String line1 = readLine();
     readLine();
     isOutputFile = (line.indexOf("***") >= 0);
+    boolean isOK;
     if (isOutputFile) {
-      readFile31();
+      isOK = readFile31();
       super.initializeReader();
       // keep going -- we need to read the file using MOReader.
-      return;
-    }
-    if (line.contains("s in the AO basis:")) {
+    } else if (line.contains("s in the AO basis:")) {
       moType = line.substring(1, line.indexOf("s"));
-      readFile31();
+      isOK = readFile31();
     } else {
       moType = "AO";
-      readData31(line1, line);
+      isOK = readData31(line1, line);
     }
-    readFile46();
-    readOrbitalData(!moType.equals("AO"));
-    setMOData(false);
-    moData.put("isNormalized", Boolean.TRUE);
+    if (!isOK)
+      Logger.error("Unimplemented shell type -- no orbitals avaliable");
+    if (isOutputFile) 
+      return;
+    if (isOK) {
+      readFile46();
+      readOrbitalData(!moType.equals("AO"));
+      setMOData(false);
+      moData.put("isNormalized", Boolean.TRUE);
+    }
     continuing = false;
   }
 
@@ -122,14 +127,16 @@ public class GenNBOReader extends MOReader {
    * 0.620578000
    */
 
-  private void readFile31() throws Exception {
+  private boolean readFile31() throws Exception {
     String data = getFileData(".31");
     if (data == null)
-      return;
+      return false;
     BufferedReader readerSave = reader;
     reader = new BufferedReader(new StringReader(data));
-    readData31(null, null);
+    if (!readData31(null, null))
+      return false;
     reader = readerSave;
+    return true;
   }
 
   private void readFile46() throws Exception {
@@ -142,7 +149,7 @@ public class GenNBOReader extends MOReader {
     reader = readerSave;
   }
 
-  private void readData31(String line1, String line2) throws Exception {
+  private boolean readData31(String line1, String line2) throws Exception {
     if (line1 == null)
       line1 = readLine();
     if (line2 == null)
@@ -176,12 +183,15 @@ public class GenNBOReader extends MOReader {
     for (int i = 0; i < gaussianCount; i++)
       gaussians[i] = new float[5];
     readLine(); // ----------
+    nOrbitals = 0;
     for (int i = 0; i < shellCount; i++) {
       tokens = getTokens(readLine());
       readLine(); // skip second line?
       int[] slater = new int[4];
       slater[0] = parseInt(tokens[0]) - 1; // atom pointer; 1-based
-      switch (parseInt(tokens[1])) {
+      int n = parseInt(tokens[1]);
+      nOrbitals += n;
+      switch (n) {
       case 1:
         slater[1] = JmolAdapter.SHELL_S;
         break;
@@ -192,26 +202,46 @@ public class GenNBOReader extends MOReader {
         slater[1] = JmolAdapter.SHELL_SP;
         break;
       case 5:
-        // TODO
-        slater[1] = JmolAdapter.SHELL_D_CARTESIAN;
-        break;
-      case 6:
-        // TODO
+        // TODO order?
+        // GenNBO is 251 252 253 254 255 for Dxy Dxz Dyz Dx2-y2 D2z2-x2-y2
+        // org.jmol.quantum.MOCalculation expects d2z^2-x2-y2, dxz, dyz, dx^2-y^2, dxy
         slater[1] = JmolAdapter.SHELL_D_SPHERICAL;
-        break;
+        return false;
+      case 6:
+        // TODO order?
+        // GenNBO is 201 202 203 204 205 206 for Dxx Dxy Dxz Dyy Dyz Dzz
+        // org.jmol.quantum.MOCalculation expects Dxx Dyy Dzz Dxy Dxz Dyz
+        slater[1] = JmolAdapter.SHELL_D_CARTESIAN;
+        return false;
       case 7:
-        // TODO
-        slater[1] = JmolAdapter.SHELL_F_CARTESIAN;
-        break;
-      case 10:
-        // TODO
+        // TODO order?
+        // GenNBO is 351 352 353 354 355 356 357
+        //        as 2z3-3x2z-3y2z
+        //               4xz2-x3-xy2
+        //                   4yz2-x2y-y3
+        //                           x2z-y2z
+        //                               xyz+x3-3xy2
+        //                                   3x2y-y3
         slater[1] = JmolAdapter.SHELL_F_SPHERICAL;
-        break;
+        return false;
+      case 10:
+        // TODO order?
+        // GenNBO is 301 302 303 304 305 306 307 308 309 310
+        //       for xxx xxy xxz xyy xyz xzz yyy yyz yzz zzz
+        // org.jmol.quantum.MOCalculation expects
+        //           xxx yyy zzz xyy xxy xxz xzz yzz yyz xyz
+        slater[1] = JmolAdapter.SHELL_F_CARTESIAN;
+        return false;
       }
       // 0 = S, 1 = P, 2 = SP, 3 = D, 4 = F
-      slater[2] = parseInt(tokens[2]) - 1;
-      slater[3] = parseInt(tokens[3]);
+      slater[2] = parseInt(tokens[2]) - 1; // gaussian list pointer
+      slater[3] = parseInt(tokens[3]);     // number of gaussians
       shells.addElement(slater);
+    }
+
+    for (int i = 0; i < nOrbitals; i++) {
+      Hashtable mo = new Hashtable();
+      orbitals.add(mo);
     }
 
     // get alphas and exponents
@@ -227,14 +257,14 @@ public class GenNBOReader extends MOReader {
       Logger.debug(shells.size() + " slater shells read");
       Logger.debug(gaussians.length + " gaussian primitives read");
     }
+    return true;
   }
 
-  private void readData46() throws Exception {
+  private boolean readData46() throws Exception {
     String[] tokens = getTokens(readLine());
-    nOrbitals = parseInt(tokens[1]);
-    for (int i = 0; i < nOrbitals; i++) {
-      Hashtable mo = new Hashtable();
-      orbitals.add(mo);
+    if (parseInt(tokens[1]) != nOrbitals) {
+      Logger.error("file 46 number of orbitals does not match nOrbitals: " + nOrbitals);
+      return false;
     }
     String ntype = null;
     if (moType.indexOf("NHO") >= 0)
@@ -245,8 +275,10 @@ public class GenNBOReader extends MOReader {
       ntype = "NAO";
     else if (moType.equals("AO"))
       ntype = "AO";
-    if (ntype == null)
-      return;
+    if (ntype == null) {
+      Logger.error("uninterpretable type " + moType);
+      return false;
+    }
     if (!ntype.equals("AO"))
       discardLinesUntilContains(ntype);
     StringBuffer sb = new StringBuffer();
@@ -271,7 +303,7 @@ public class GenNBOReader extends MOReader {
       }
       sb.append(c);
     }
-    System.out.println(sb);
+    Logger.info(sb.toString());
     tokens = getTokens(sb.toString());
     for (int i = 0; i < nOrbitals; i++) {
       Hashtable mo = (Hashtable) orbitals.get(i);
@@ -280,6 +312,7 @@ public class GenNBOReader extends MOReader {
       // TODO: does not account for SOMO
       mo.put("occupancy", new Float(type.indexOf("*") >= 0 ? 0 : 2));
     }
+    return true;
   }
 
   private void readOrbitalData(boolean isMO) throws Exception {

@@ -137,7 +137,7 @@ public class PsiReader extends MOReader {
       if (isInitial)
         atomNames.addElement(tokens[0]);
       else
-        atom.elementNumber = (byte) parseInt(tokens[0]);
+        atom.elementNumber = (short) parseInt(tokens[0]);
       if (atom.elementNumber < 0)
         atom.elementNumber = 0; // dummy atoms have -1 -> 0
       atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));

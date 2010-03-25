@@ -284,7 +284,7 @@ public class GaussianReader extends MOReader {
       tokens = getTokens(); // get the tokens in the line
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber =
-        (byte)parseInt(tokens[STD_ORIENTATION_ATOMIC_NUMBER_OFFSET]);
+        (short)parseInt(tokens[STD_ORIENTATION_ATOMIC_NUMBER_OFFSET]);
       if (atom.elementNumber < 0)
         atom.elementNumber = 0; // dummy atoms have -1 -> 0
       int offset = tokens.length-3;

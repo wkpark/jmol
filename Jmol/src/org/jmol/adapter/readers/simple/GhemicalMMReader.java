@@ -115,7 +115,7 @@ public class GhemicalMMReader extends AtomSetCollectionReader {
                             "expected: " + i + " saw:" + atomIndex);
       int elementNumber = parseInt();
       Atom atom = atomSetCollection.addNewAtom();
-      atom.elementNumber = (byte)elementNumber;
+      atom.elementNumber = (short)elementNumber;
     }
   }
 

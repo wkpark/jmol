@@ -35,34 +35,31 @@ import java.util.Vector;
 
 /**
  * NBO file nn reader will pull in other files as necessary
- *
- *
+ * 
+ * 
  **/
 
-
-
-
- /* NBO output analysis is based on
-  * 
- *********************************** NBO 5.G ***********************************
-             N A T U R A L   A T O M I C   O R B I T A L   A N D
-          N A T U R A L   B O N D   O R B I T A L   A N A L Y S I S
- *******************************************************************************
-  (c) Copyright 1996-2004 Board of Regents of the University of Wisconsin System
-      on behalf of the Theoretical Chemistry Institute.  All Rights Reserved.
-
-          Cite this program as:
-
-          NBO 5.G.  E. D. Glendening, J. K. Badenhoop, A. E. Reed,
-          J. E. Carpenter, J. A. Bohmann, C. M. Morales, and F. Weinhold
-          (Theoretical Chemistry Institute, University of Wisconsin,
-          Madison, WI, 2001); http://www.chem.wisc.edu/~nbo5
-
-       /AONBO  / : Print the AO to NBO transformation
-  * 
-  */
+/*
+ * NBO output analysis is based on
+ * 
+ * ********************************** NBO 5.G
+ * *********************************** N A T U R A L A T O M I C O R B I T A L A
+ * N D N A T U R A L B O N D O R B I T A L A N A L Y S I S
+ * ***********************
+ * ******************************************************* (c) Copyright
+ * 1996-2004 Board of Regents of the University of Wisconsin System on behalf of
+ * the Theoretical Chemistry Institute. All Rights Reserved.
+ * 
+ * Cite this program as:
+ * 
+ * NBO 5.G. E. D. Glendening, J. K. Badenhoop, A. E. Reed, J. E. Carpenter, J.
+ * A. Bohmann, C. M. Morales, and F. Weinhold (Theoretical Chemistry Institute,
+ * University of Wisconsin, Madison, WI, 2001); http://www.chem.wisc.edu/~nbo5
+ * 
+ * /AONBO / : Print the AO to NBO transformation
+ */
 public class GenNBOReader extends MOReader {
-    
+
   private boolean isOutputFile;
   private String moType = "";
   private int nOrbitals;
@@ -100,7 +97,7 @@ public class GenNBOReader extends MOReader {
     // for .nbo only
     return checkNboLine();
   }
-    
+
   private String getFileData(String ext) {
     String fileName = (String) htParams.get("fullPathName");
     int pt = fileName.lastIndexOf(".");
@@ -116,17 +113,15 @@ public class GenNBOReader extends MOReader {
     return data;
   }
 
-  
   /*
-  14_a                                                                          
- Basis set information needed for plotting orbitals
- ---------------------------------------------------------------------------
-     36    90   162
- ---------------------------------------------------------------------------
-    6  -2.992884000  -1.750577000   1.960024000
-    6  -2.378528000  -1.339374000   0.620578000
+   * 14_a Basis set information needed for plotting orbitals
+   * ---------------------------------------------------------------------------
+   * 36 90 162
+   * ---------------------------------------------------------------------------
+   * 6 -2.992884000 -1.750577000 1.960024000 6 -2.378528000 -1.339374000
+   * 0.620578000
    */
-  
+
   private void readFile31() throws Exception {
     String data = getFileData(".31");
     if (data == null)
@@ -153,24 +148,28 @@ public class GenNBOReader extends MOReader {
     if (line2 == null)
       line2 = readLine();
     atomSetCollection.setAtomSetName(line1.trim() + moType);
-    
+
     // read atomCount, shellCount, and gaussianCount
-    readLine();  // ----------
+    readLine(); // ----------
     String[] tokens = getTokens(readLine());
     int atomCount = parseInt(tokens[0]);
     shellCount = parseInt(tokens[1]);
     gaussianCount = parseInt(tokens[2]);
 
     // read atom types and positions
-    readLine();  // ----------
+    readLine(); // ----------
     atomSetCollection.newAtomSet();
     for (int i = 0; i < atomCount; i++) {
       tokens = getTokens(readLine());
+      int z = parseInt(tokens[0]);
+      if (z < 0) // dummy atom
+        continue;
       Atom atom = atomSetCollection.addNewAtom();
-      atom.elementNumber = (short) parseInt(tokens[0]);
-      atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
-    }    
-    
+      atom.elementNumber = (short) z;
+      atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]),
+          parseFloat(tokens[3]));
+    }
+
     // read basis functions
     shells = new Vector();
     gaussians = new float[gaussianCount][];
@@ -186,21 +185,31 @@ public class GenNBOReader extends MOReader {
       case 1:
         slater[1] = JmolAdapter.SHELL_S;
         break;
-      case 2:
+      case 3:
         slater[1] = JmolAdapter.SHELL_P;
-        break;
-      case 3: // perhaps?
-        slater[1] = JmolAdapter.SHELL_D_SPHERICAL;
         break;
       case 4:
         slater[1] = JmolAdapter.SHELL_SP;
         break;
-      case 5: // perhaps?
+      case 5:
+        // TODO
+        slater[1] = JmolAdapter.SHELL_D_CARTESIAN;
+        break;
+      case 6:
+        // TODO
+        slater[1] = JmolAdapter.SHELL_D_SPHERICAL;
+        break;
+      case 7:
+        // TODO
+        slater[1] = JmolAdapter.SHELL_F_CARTESIAN;
+        break;
+      case 10:
+        // TODO
         slater[1] = JmolAdapter.SHELL_F_SPHERICAL;
         break;
       }
       // 0 = S, 1 = P, 2 = SP, 3 = D, 4 = F
-      slater[2]  = parseInt(tokens[2]) - 1;
+      slater[2] = parseInt(tokens[2]) - 1;
       slater[3] = parseInt(tokens[3]);
       shells.addElement(slater);
     }
@@ -290,6 +299,5 @@ public class GenNBOReader extends MOReader {
         coefs[i] = 1;
     }
   }
-
 
 }

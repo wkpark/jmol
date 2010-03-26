@@ -673,7 +673,7 @@ public class Quaternion {
       if (data.length == 1) {
         retStddev[0] = 0;
         return new Quaternion(data[0]);
-      }        
+      }
       float diff = Float.MAX_VALUE;
       float lastStddev = Float.MAX_VALUE;
       Quaternion qMean = simpleAverage(data);
@@ -699,13 +699,15 @@ public class Quaternion {
    * @return approximate average
    */
   private static Quaternion simpleAverage(Quaternion[] ndata) {
-    Vector3f mean = new Vector3f();
+    Vector3f mean = new Vector3f(0, 0, 1);
     // using the directed normal ensures that the mean is 
     // continually added to and never subtracted from 
+    Vector3f v = ndata[0].getNormal();
+    mean.add(v);
     for (int i = ndata.length; --i >= 0;)
       mean.add(ndata[i].getNormalDirected(mean));
+    mean.sub(v);
     mean.normalize();
-    Vector3f v = new Vector3f();
     float f = 0;
     // the 3D projection of the quaternion is [sin(theta/2)]*n
     // so dotted with the normalized mean gets us an approximate average for sin(theta/2)

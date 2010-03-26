@@ -701,9 +701,8 @@ class ScriptMathProcessor {
   }
 
   private boolean evaluateCompare(ScriptVariable[] args, int tok) {
-    // compare({bitset} or [{positions},{bitset or [{positions}],
-    // "rotate|translate|matrix|stddev")
-    // matrix returns matrix4f for rotation/translation
+    // compare({bitset} or [{positions}],{bitset} or [{positions}])
+    // returns matrix4f for rotation/translation
     Vector ptsA, ptsB;
     switch (args[0].tok) {
     case Token.bitset:

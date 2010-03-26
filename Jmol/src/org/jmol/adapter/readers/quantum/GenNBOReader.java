@@ -36,7 +36,9 @@ import java.util.Vector;
 /**
  * NBO file nn reader will pull in other files as necessary
  * 
+ * acknowledgments: Grange Hermitage, Frank Weinhold
  * 
+ * @author hansonr
  **/
 
 /*

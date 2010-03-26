@@ -5205,6 +5205,13 @@ public class ScriptEvaluator {
     float degrees = 90;
     BitSet bsCenter = null;
     switch (getToken(i).tok) {
+    case Token.selected:
+      switch (tokAt(i + 1)) {
+      case Token.matrix4f:
+      default:
+        error(ERROR_invalidArgument);  
+      }
+      return;
     case Token.quaternion:
       Quaternion q;
       boolean isMolecular = false;
@@ -5804,7 +5811,7 @@ public class ScriptEvaluator {
         vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
       }
       centerAndPoints = viewer.getCenterAndPoints(vAtomSets, true);
-      q = viewer.calculateQuaternionRotation(centerAndPoints, retStddev);
+      q = ModelSet.calculateQuaternionRotation(centerAndPoints, retStddev);
       showString("RMSD " + retStddev[1] + " --> " + retStddev[0] + " Angstroms");
     }
     Point3f pt1 = new Point3f();
@@ -8301,31 +8308,41 @@ public class ScriptEvaluator {
     // invertSelected POINT
     // invertSelected PLANE
     // invertSelected HKL
+    // invertSelected STEREO {sp3Atom}
     Point3f pt = null;
     Point4f plane = null;
-    if (statementLength == 1) {
+    BitSet bs = null;
+    int iAtom = Integer.MIN_VALUE;
+    switch (tokAt(1)) {
+    case Token.nada:
       if (isSyntaxCheck)
         return;
-      BitSet bs = viewer.getSelectionSet();
+      bs = viewer.getSelectionSet();
       pt = viewer.getAtomSetCenter(bs);
       viewer.invertSelected(pt, bs);
       return;
-    }
-    String type = parameterAsString(1);
-
-    if (type.equalsIgnoreCase("point")) {
+    case Token.stereo:
+      iAtom = expression(2).nextSetBit(0);
+      bs = expression(iToken + 1);
+      break;
+    case Token.point:
       pt = centerParameter(2);
-    } else if (type.equalsIgnoreCase("plane")) {
+      break;
+    case Token.plane:
       plane = planeParameter(2);
-    } else if (type.equalsIgnoreCase("hkl")) {
+      break;
+    case Token.hkl:
       plane = hklParameter(2);
+      break;
     }
     checkLength(iToken + 1, 1);
-    if (plane == null && pt == null)
+    if (plane == null && pt == null && iAtom == Integer.MIN_VALUE)
       error(ERROR_invalidArgument);
     if (isSyntaxCheck)
       return;
-    viewer.invertSelected(pt, plane);
+    if (iAtom == -1)
+      return;
+    viewer.invertSelected(pt, plane, iAtom, bs);
   }
 
   private void translate(boolean isSelected) throws ScriptException {

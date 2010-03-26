@@ -23,6 +23,8 @@
  */
 package org.jmol.util;
 
+import java.util.Vector;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
@@ -427,6 +429,96 @@ final public class Measure {
     for (int i = 1; i < nPoints; i++)
       averagePoint.add(points[i]);
     averagePoint.scale(1f / nPoints);
+  }
+
+  public static Point3f[] getCenterAndPoints(Vector vPts) {
+    int n = vPts.size();
+    Point3f[] pts = new Point3f[n + 1];
+    pts[0] = new Point3f();
+    if (n > 0) {
+      for (int i = 0; i < n; i++)
+        pts[0].add(pts[i + 1] = (Point3f) vPts.get(i));
+      pts[0].scale(1f / n);
+    }
+    return pts;
+  }
+
+  public static void getRmsd(Point3f[][] centerAndPoints, Quaternion q, float[] retStddev, int pt) {
+    double sum = 0;
+    double sum2 = 0;
+    int n = centerAndPoints[0].length - 1;
+    Point3f ptAnew = new Point3f();
+    for (int i = n + 1; --i >= 1;) {
+      ptAnew.set(centerAndPoints[0][i]);
+      ptAnew.sub(centerAndPoints[0][0]);
+      q.transform(ptAnew, ptAnew);
+      ptAnew.add(centerAndPoints[1][0]);
+      double d = ptAnew.distance(centerAndPoints[1][i]);
+      sum += d;
+      sum2 += d * d;
+    }
+    float stddev = (int) (100 * Math.sqrt((sum2 - sum * sum / n) / (n - 1))) / 100f;
+    if (retStddev != null)
+      retStddev[pt] = stddev;
+  }
+
+  public static Quaternion calculateQuaternionRotation(Point3f[][] centerAndPoints,
+                                                       float[] retStddev) {
+    /*
+     * see Berthold K. P. Horn,
+     * "Closed-form solution of absolute orientation using unit quaternions" J.
+     * Opt. Soc. Amer. A, 1987, Vol. 4, pp. 629-642
+     * http://www.opticsinfobase.org/viewmedia.cfm?uri=josaa-4-4-629&seq=0
+     * 
+     * and Lydia E. Kavraki, "Molecular Distance Measures"
+     * http://cnx.org/content/m11608/latest/
+     */
+    Quaternion q = new Quaternion();
+    if (centerAndPoints.length == 1)
+      return q;
+    double Sxx = 0, Sxy = 0, Sxz = 0, Syx = 0, Syy = 0, Syz = 0, Szx = 0, Szy = 0, Szz = 0;
+    int n = centerAndPoints[0].length - 1;
+    for (int i = n + 1; --i >= 1;) {
+      Point3f aij = centerAndPoints[0][i];
+      Point3f bij = centerAndPoints[1][i];
+      Point3f ptA = new Point3f(aij);
+      ptA.sub(centerAndPoints[0][0]);
+      Point3f ptB = new Point3f(bij);
+      ptB.sub(centerAndPoints[0][1]);
+      Sxx += (double) ptA.x * (double) ptB.x;
+      Sxy += (double) ptA.x * (double) ptB.y;
+      Sxz += (double) ptA.x * (double) ptB.z;
+      Syx += (double) ptA.y * (double) ptB.x;
+      Syy += (double) ptA.y * (double) ptB.y;
+      Syz += (double) ptA.y * (double) ptB.z;
+      Szx += (double) ptA.z * (double) ptB.x;
+      Szy += (double) ptA.z * (double) ptB.y;
+      Szz += (double) ptA.z * (double) ptB.z;
+    }
+    if (n < 2)
+      return q;
+    getRmsd(centerAndPoints, q, retStddev, 1);
+    double[][] N = new double[4][4];
+    N[0][0] = Sxx + Syy + Szz;
+    N[0][1] = N[1][0] = Syz - Szy;
+    N[0][2] = N[2][0] = Szx - Sxz;
+    N[0][3] = N[3][0] = Sxy - Syx;
+
+    N[1][1] = Sxx - Syy - Szz;
+    N[1][2] = N[2][1] = Sxy + Syx;
+    N[1][3] = N[3][1] = Szx + Sxz;
+
+    N[2][2] = -Sxx + Syy - Szz;
+    N[2][3] = N[3][2] = Syz + Szy;
+
+    N[3][3] = -Sxx - Syy + Szz;
+
+    Eigen eigen = new Eigen(N);
+
+    float[] v = eigen.getEigenvectorsFloatTransposed()[3];
+    q = new Quaternion(new Point4f(v[1], v[2], v[3], v[0]));
+    getRmsd(centerAndPoints, q, retStddev, 0);
+    return q;
   }
 
 }

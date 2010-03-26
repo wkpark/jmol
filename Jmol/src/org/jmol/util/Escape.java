@@ -718,4 +718,15 @@ public class Escape {
     return XmlUtil.wrapCdata(toReadable(null, value));
   }
 
+  public static Vector unescapePointVector(String[] pts) {
+    Vector data = new Vector();
+    for (int i = 0; i < pts.length; i++) {
+      Object pt = Escape.unescapePoint(pts[i]);
+      if (!(pt instanceof Point3f))
+        return null;
+      data.add(pt);
+    }
+    return data;
+  }
+
 }

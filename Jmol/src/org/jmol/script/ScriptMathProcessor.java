@@ -35,6 +35,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
@@ -645,6 +646,8 @@ class ScriptMathProcessor {
     case Token.sin:
     case Token.sqrt:
       return evaluateMath(args, tok);
+    case Token.compare:
+      return evaluateCompare(args, tok);
     case Token.quaternion:
     case Token.axisangle:
       return evaluateQuaternion(args, tok);
@@ -695,6 +698,42 @@ class ScriptMathProcessor {
       return evaluateSymop(args, op.tok == Token.propselector);
     }
     return false;
+  }
+
+  private boolean evaluateCompare(ScriptVariable[] args, int tok) {
+    // compare({bitset} or [{positions},{bitset or [{positions}],
+    // "rotate|translate|matrix|stddev")
+    // matrix returns matrix4f for rotation/translation
+    Vector ptsA, ptsB;
+    switch (args[0].tok) {
+    case Token.bitset:
+      ptsA = viewer.getAtomPointVector((BitSet) args[0].value);
+      break;
+    case Token.list:
+      ptsA = Escape.unescapePointVector((String[]) args[0].value);
+      break;
+    default:
+      return false;
+    }
+    switch (args[1].tok) {
+    case Token.bitset:
+      ptsB = viewer.getAtomPointVector((BitSet) args[1].value);
+      break;
+    case Token.list:
+      ptsB = Escape.unescapePointVector((String[]) args[1].value);
+      break;
+    default:
+      return false;
+    }
+    if (ptsA == null || ptsB == null)
+      return false;
+    Point3f[] cptsA = Measure.getCenterAndPoints(ptsA);
+    Point3f[] cptsB = Measure.getCenterAndPoints(ptsB);
+    Quaternion q = Measure.calculateQuaternionRotation(new Point3f[][] { cptsA,
+        cptsB }, null);
+    Vector3f v = new Vector3f(cptsB[0]);
+    v.sub(cptsA[0]);
+    return addX(getMatrix4f(q.getMatrix(), v));
   }
 
   private boolean evaluateVolume(ScriptVariable[] args) throws ScriptException {
@@ -2260,23 +2299,7 @@ class ScriptMathProcessor {
           m.add((Matrix3f) x2.value);
           return addX(m);
         case Token.point3f:
-          Matrix4f m4 = new Matrix4f();
-          m = (Matrix3f) x1.value;
-          pt = (Point3f) x2.value;
-          m4.m00 = m.m00;
-          m4.m01 = m.m01;
-          m4.m02 = m.m02;
-          m4.m03 = pt.x;
-          m4.m10 = m.m10;
-          m4.m11 = m.m11;
-          m4.m12 = m.m12;
-          m4.m13 = pt.y;
-          m4.m20 = m.m20;
-          m4.m21 = m.m21;
-          m4.m22 = m.m22;
-          m4.m23 = pt.z;
-          m4.m33 = 1;
-          return addX(m4);
+          return addX(getMatrix4f((Matrix3f) x1.value, (Point3f) x2.value));
         }
       }
     case Token.minus:
@@ -2588,6 +2611,18 @@ class ScriptMathProcessor {
         default:
           return addX(pt4);
         }
+      case Token.matrix4f:
+        Matrix4f m4 = (Matrix4f) x1.value; 
+        switch (n) {
+        case 1:
+          Matrix3f m3 = new Matrix3f();
+          m4.get(m3);
+          return addX(m3);
+        case 2:
+          Vector3f v3 = new Vector3f();
+          m4.get(v3);
+          return addX(v3);
+        }
       case Token.bitset:
         return addX(ScriptVariable.bsSelect(x1, n));
       }
@@ -2637,6 +2672,10 @@ class ScriptMathProcessor {
           : addX(f));
     }
     return true;
+  }
+
+  private static Matrix4f getMatrix4f(Matrix3f matRotate, Tuple3f vTranslate) {
+    return new Matrix4f(matRotate, new Vector3f(vTranslate), 1);
   }
 
   private boolean evaluateBoundBox(ScriptVariable x2) {

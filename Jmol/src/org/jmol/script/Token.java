@@ -284,7 +284,6 @@ public class Token {
   final static int calculate    = scriptCommand | 6;
   final static int cd           = scriptCommand | 7 | implicitStringCommand | expression;
   final static int centerAt     = scriptCommand | 8;
-  final static int compare      = scriptCommand | 9;// new
 //final static int color        see intproperty
 //final static int configuration see intproperty
   public final static int connect = scriptCommand | 10;
@@ -691,8 +690,9 @@ public class Token {
 
   // xxx(a,b,c)
   
-  final static int select       = 1 | 3 << 9 | mathfunc | atomExpressionCommand;
-  final static int hkl          = 2 | 3 << 9 | mathfunc;
+  final static int compare      = 1 | 3 << 9 | mathfunc | scriptCommand;
+  final static int select       = 3 | 3 << 9 | mathfunc | atomExpressionCommand;
+  final static int hkl          = 3 | 3 << 9 | mathfunc;
 
   // ___.xxx(a,b,c)
   

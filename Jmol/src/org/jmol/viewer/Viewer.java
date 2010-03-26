@@ -7162,13 +7162,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void invertSelected(Point3f pt, BitSet bs) {
     // Eval
-    modelSet.invertSelected(pt, null, bs);
+    modelSet.invertSelected(pt, null, -1, null, bs);
     refreshMeasures(true);
   }
 
-  public void invertSelected(Point3f pt, Point4f plane) {
+  public void invertSelected(int iAtom, BitSet bsAtomsAB) {
+  }
+
+public void invertSelected(Point3f pt, Point4f plane, int iAtom, BitSet invAtoms) {
     // Eval
-    modelSet.invertSelected(pt, plane, selectionManager.getSelectionSet());
+    modelSet.invertSelected(pt, plane, iAtom, invAtoms, selectionManager.getSelectionSet());
     refreshMeasures(true);
   }
 
@@ -8156,13 +8159,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.getAtomicPropertyState(commands, type, bs, name, data);
   }
 
-  public Quaternion calculateQuaternionRotation(Point3f[][] centerAndPoints,
-                                                float[] retStddev) {
-    return modelSet.calculateQuaternionRotation(centerAndPoints, retStddev);  
-  }
-
   public Point3f[][] getCenterAndPoints(Vector atomSets, boolean addCenter) {
     // TODO
     return modelSet.getCenterAndPoints(atomSets, addCenter);
   }
+
 }

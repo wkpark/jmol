@@ -29,7 +29,9 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 
 import org.jmol.util.Logger;
+import org.jmol.util.Measure;
 import org.jmol.util.Point3fi;
+import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.util.XmlUtil;
 import org.jmol.viewer.JmolConstants;
@@ -1058,6 +1060,31 @@ abstract public class ModelSet extends ModelCollection {
     XmlUtil.closeTag(sb, "molecule");
     return sb.toString();
   }
+
+  /**
+   * given a set of pairs of atoms, return the optimum rotation to superimpose
+   * two models.
+   * 
+   * @param centerAndPoints
+   * @param retStddev
+   * 
+   * @return optimum rotation
+   */
+  public static Quaternion calculateQuaternionRotation(Point3f[][] centerAndPoints,
+                                                float[] retStddev) {
+    int n = centerAndPoints[0].length - 1;
+    for (int i = 1; i <= n; i++) {
+      Point3f aij = centerAndPoints[0][i];
+      Point3f bij = centerAndPoints[1][i];
+      if (aij instanceof Atom)
+        Logger.info(" atom 1 " + ((Atom) aij).getInfo() + "\tatom 2 "
+            + ((Atom) bij).getInfo());
+      else
+        break;
+    }
+    return Measure.calculateQuaternionRotation(centerAndPoints, retStddev);
+  }
+
 
 }
 

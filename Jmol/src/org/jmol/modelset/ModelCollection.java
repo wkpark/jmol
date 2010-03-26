@@ -47,7 +47,6 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 
-import org.jmol.util.Eigen;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Point3fi;
@@ -473,99 +472,9 @@ abstract public class ModelCollection extends BondCollection {
     }
     if (addCenters) {
       points[0][0].scale(1f/(points[0].length - 1));
-      points[1][0].scale(1f/(points[0].length - 1));
+      points[1][0].scale(1f/(points[1].length - 1));
     }
     return points;
-  }
-
-  /**
-   * given a set of pairs of atoms, return the optimum rotation to superimpose
-   * two models.
-   * 
-   * @param centerAndPoints
-   * @param retStddev
-   * 
-   * @return optimum rotation
-   */
-  public Quaternion calculateQuaternionRotation(Point3f[][] centerAndPoints,
-                                                float[] retStddev) {
-
-    /*
-     * see Berthold K. P. Horn,
-     * "Closed-form solution of absolute orientation using unit quaternions" J.
-     * Opt. Soc. Amer. A, 1987, Vol. 4, pp. 629-642
-     * http://www.opticsinfobase.org/viewmedia.cfm?uri=josaa-4-4-629&seq=0
-     * 
-     * and Lydia E. Kavraki, "Molecular Distance Measures"
-     * http://cnx.org/content/m11608/latest/
-     */
-    Quaternion q = new Quaternion();
-    if (centerAndPoints.length == 1)
-      return q;
-    double Sxx = 0, Sxy = 0, Sxz = 0, Syx = 0, Syy = 0, Syz = 0, Szx = 0, Szy = 0, Szz = 0;
-    int n = centerAndPoints[0].length - 1;
-    for (int i = n + 1; --i >= 1;) {
-      Point3f aij = centerAndPoints[0][i];
-      Point3f bij = centerAndPoints[1][i];
-      if (aij instanceof Atom)
-        Logger.info(" atom 1 " + ((Atom) aij).getInfo() + "\tatom 2 "
-            + ((Atom) bij).getInfo());
-      Point3f ptA = new Point3f(aij);
-      ptA.sub(centerAndPoints[0][0]);
-      Point3f ptB = new Point3f(bij);
-      ptB.sub(centerAndPoints[0][1]);
-      Sxx += (double) ptA.x * (double) ptB.x;
-      Sxy += (double) ptA.x * (double) ptB.y;
-      Sxz += (double) ptA.x * (double) ptB.z;
-      Syx += (double) ptA.y * (double) ptB.x;
-      Syy += (double) ptA.y * (double) ptB.y;
-      Syz += (double) ptA.y * (double) ptB.z;
-      Szx += (double) ptA.z * (double) ptB.x;
-      Szy += (double) ptA.z * (double) ptB.y;
-      Szz += (double) ptA.z * (double) ptB.z;
-    }
-    if (n < 2)
-      return q;
-    getRmsd(centerAndPoints, q, retStddev, 1);
-    double[][] N = new double[4][4];
-    N[0][0] = Sxx + Syy + Szz;
-    N[0][1] = N[1][0] = Syz - Szy;
-    N[0][2] = N[2][0] = Szx - Sxz;
-    N[0][3] = N[3][0] = Sxy - Syx;
-
-    N[1][1] = Sxx - Syy - Szz;
-    N[1][2] = N[2][1] = Sxy + Syx;
-    N[1][3] = N[3][1] = Szx + Sxz;
-
-    N[2][2] = -Sxx + Syy - Szz;
-    N[2][3] = N[3][2] = Syz + Szy;
-
-    N[3][3] = -Sxx - Syy + Szz;
-
-    Eigen eigen = new Eigen(N);
-
-    float[] v = eigen.getEigenvectorsFloatTransposed()[3];
-    q = new Quaternion(new Point4f(v[1], v[2], v[3], v[0]));
-    getRmsd(centerAndPoints, q, retStddev, 0);
-    return q;
-  }
-
-  private void getRmsd(Point3f[][] centerAndPoints, Quaternion q, float[] retStddev, int pt) {
-    double sum = 0;
-    double sum2 = 0;
-    int n = centerAndPoints[0].length - 1;
-    Point3f ptAnew = new Point3f();
-    for (int i = n + 1; --i >= 1;) {
-      ptAnew.set(centerAndPoints[0][i]);
-      ptAnew.sub(centerAndPoints[0][0]);
-      q.transform(ptAnew, ptAnew);
-      ptAnew.add(centerAndPoints[1][0]);
-      double d = ptAnew.distance(centerAndPoints[1][i]);
-      sum += d;
-      sum2 += d * d;
-    }
-    float stddev = (int) (100 * Math.sqrt((sum2 - sum * sum / n) / (n - 1))) / 100f;
-    retStddev[pt] = stddev;
   }
 
   public Point3f getAtomSetCenter(BitSet bs) {
@@ -1637,11 +1546,15 @@ abstract public class ModelCollection extends BondCollection {
                              Point3f center, boolean isInternal) {
     bspf = null;
     BitSet bs = (fullMolecule ? getMoleculeBitSet(bsAtoms) : BitSetUtil.copy(bsAtoms));
-    matInv.set(matrixRotate);
-    matInv.invert();
-    ptTemp.set(0, 0, 0);
-    matTemp.mul(mNew, matrixRotate);
-    matTemp.mul(matInv, matTemp);
+    if (mNew == null) {
+      matTemp.set(matrixRotate);
+    } else {
+      matInv.set(matrixRotate);
+      matInv.invert();
+      ptTemp.set(0, 0, 0);
+      matTemp.mul(mNew, matrixRotate);
+      matTemp.mul(matInv, matTemp);
+    }
     int n = 0;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
         if (isInternal) {
@@ -1690,7 +1603,8 @@ abstract public class ModelCollection extends BondCollection {
     return null;
   }
 
-  public void invertSelected(Point3f pt, Point4f plane, BitSet bs) {
+  public void invertSelected(Point3f pt, Point4f plane, int iAtom,
+                             BitSet invAtoms, BitSet bs) {
     bspf = null;
     if (pt != null) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -1701,17 +1615,50 @@ abstract public class ModelCollection extends BondCollection {
       }
       return;
     }
-    // ax + by + cz + d = 0
-    Vector3f norm = new Vector3f(plane.x, plane.y, plane.z);
-    norm.normalize();
-    float d = (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z
-        * plane.z);
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      float twoD = -Measure.distanceToPlane(plane, d, atoms[i]) * 2;
-      float x = norm.x * twoD;
-      float y = norm.y * twoD;
-      float z = norm.z * twoD;
-      setAtomCoordRelative(i, x, y, z);
+    if (plane != null) {
+      // ax + by + cz + d = 0
+      Vector3f norm = new Vector3f(plane.x, plane.y, plane.z);
+      norm.normalize();
+      float d = (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y
+          + plane.z * plane.z);
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        float twoD = -Measure.distanceToPlane(plane, d, atoms[i]) * 2;
+        float x = norm.x * twoD;
+        float y = norm.y * twoD;
+        float z = norm.z * twoD;
+        setAtomCoordRelative(i, x, y, z);
+      }
+      return;
+    }
+    if (iAtom >= 0) {
+      Atom thisAtom = atoms[iAtom];
+      // stereochemical inversion at iAtom
+      Bond[] bonds = thisAtom.bonds;
+      Point3f pt1 = null;
+      Point3f pt2 = null;
+      BitSet bsAtoms = new BitSet();
+      for (int i = 0; i < bonds.length; i++) {
+        Atom a = bonds[i].getOtherAtom(thisAtom);
+        if (invAtoms.get(a.index)) {
+          if (pt1 == null)
+            pt1 = a;
+          else if (pt2 == null)
+            pt2 = a;
+        } else {
+          bsAtoms.or(getBranchBitSet(a.index, iAtom));
+        }
+      }
+      if (pt1 == null || bsAtoms.cardinality() == 0)
+        return;
+      if (pt2 == null)
+        pt2 = pt1;
+      pt = new Point3f(pt1);
+      pt.add(pt2);
+      pt.scale(0.5f);
+      Vector3f v = new Vector3f(thisAtom);
+      v.sub(pt);
+      Quaternion q = new Quaternion(v, 180);
+      rotateAtoms(null, q.getMatrix(), bsAtoms, false, thisAtom, true);
     }
   }
 

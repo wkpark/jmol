@@ -649,7 +649,7 @@ isosurface delete phase mo 5 translucent
 isosurface delete phase mo 6 translucent
 load gamess-RHF-3-21G.log; frame 2; isosurface phase mo 8
 load gamess-UHF-3-21G.log; frame 2; isosurface phase mo 8 ;refresh;#alpha
-load gamess-UHF-3-21G.log; frame 2; isosurface phase mo 30 ;refresh;#beta
+load gamess-UHF-3-21G.log; frame 2; isosurface phase mo 22 ;refresh;#beta
 load XeF4.smo; moveto 1.0 922 52 385 55.3;
 isosurface delete cutoff 0.008 resolution 5 phase mo 68 translucent
 load water19.mo; moveto 1.0 922 52 385 55.3;

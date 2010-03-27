@@ -7235,7 +7235,7 @@ public class ScriptEvaluator {
       if (filename.startsWith("@") && filename.length() > 1) {
         String s = getStringParameter(filename.substring(1), false);
         htParams.put("fileData", s);
-        loadScript = new StringBuffer(filename.substring(1) + " = "
+        loadScript = new StringBuffer("var " + filename.substring(1) + " = "
             + Escape.escape(s) + ";\n  " + loadScript);
       }
     }

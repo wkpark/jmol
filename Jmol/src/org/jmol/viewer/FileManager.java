@@ -281,11 +281,14 @@ public class FileManager {
   }
 
   Object createAtomSetCollectionFromString(String strModel, Hashtable htParams,
-                                      boolean isAppend) {
-    String tag = (isAppend ? "append" : "model");
-    String script = "data \"" + tag + " inline\"\n" + strModel + "end \"" + tag
-        + " inline\";";
-    setLoadScript(script, isAppend);
+                                           boolean isAppend,
+                                           boolean isLoadVariable) {
+    if (!isLoadVariable) {
+      String tag = (isAppend ? "append" : "model");
+      String script = "data \"" + tag + " inline\"\n" + strModel + "end \""
+          + tag + " inline\";";
+      setLoadScript(script, isAppend);
+    }
     Logger.info("FileManager.getAtomSetCollectionFromString()");
     if (!isAppend) {
       fullPathName = fileName = "string";

@@ -6965,9 +6965,9 @@ public class ScriptEvaluator {
     boolean doLoadFiles = (!isSyntaxCheck || isCmdLine_C_Option);
     String errMsg = null;
     String sOptions = "";
-    
+
     // check for special parameters
-    
+
     if (statementLength == 1) {
       i = 0;
     } else {
@@ -6977,10 +6977,11 @@ public class ScriptEvaluator {
         modelName = stringParameter(++i);
         if (!isSyntaxCheck)
           htParams.put("parameterData", viewer.getFileAsString(modelName));
-        loadScript.append(" data /*file*/").append(modelName).append(Escape.escape(modelName));
+        loadScript.append(" data /*file*/").append(modelName).append(
+            Escape.escape(modelName));
         tok = tokAt(++i);
         modelName = parameterAsString(i);
-      } 
+      }
       if (tok == Token.identifier || modelName.equalsIgnoreCase("fileset")) {
         if (modelName.equals("menu")) {
           String m = parameterAsString(checkLast(2));
@@ -7039,9 +7040,9 @@ public class ScriptEvaluator {
         error(ERROR_filenameExpected);
     }
     // long timeBegin = System.currentTimeMillis();
-    
+
     // file name is next
-    
+
     int filePt = i;
     String localName = null;
     if (tokAt(filePt + 1) == Token.as) {
@@ -7059,8 +7060,7 @@ public class ScriptEvaluator {
         return;
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
-        || theTok == Token.manifest 
-        || theTok == Token.packed
+        || theTok == Token.manifest || theTok == Token.packed
         || theTok == Token.filter && tokAt(i + 3) != Token.coord
         || theTok == Token.identifier && tokAt(i + 3) != Token.coord) {
       if ((filename = parameterAsString(filePt)).length() == 0)
@@ -7140,8 +7140,8 @@ public class ScriptEvaluator {
         int iGroup = Integer.MIN_VALUE;
         if (tokAt(i) == Token.spacegroup) {
           ++i;
-          spacegroup = TextFormat.simpleReplace(parameterAsString(i++),
-              "''", "\"");
+          spacegroup = TextFormat.simpleReplace(parameterAsString(i++), "''",
+              "\"");
           sOptions += " spacegroup " + Escape.escape(spacegroup);
         }
         if (tokAt(i) == Token.unitcell) {
@@ -7164,9 +7164,9 @@ public class ScriptEvaluator {
             iGroup = -2;
             htParams.put("spaceGroupName", spacegroup);
           }
-        }         
+        }
         if (fparams != null && iGroup == Integer.MIN_VALUE)
-            iGroup = -1;
+          iGroup = -1;
         if (iGroup != Integer.MIN_VALUE)
           htParams.put("spaceGroupIndex", new Integer(iGroup));
       }
@@ -7233,15 +7233,15 @@ public class ScriptEvaluator {
     if (filenames == null) {
       // standard file loading here
       if (filename.startsWith("@") && filename.length() > 1) {
-        htParams.put("fileData", getStringParameter(filename.substring(1),
-            false));
-        filename = "string";
-        loadScript = new StringBuffer();
+        String s = getStringParameter(filename.substring(1), false);
+        htParams.put("fileData", s);
+        loadScript = new StringBuffer(filename.substring(1) + " = "
+            + Escape.escape(s) + ";\n  " + loadScript);
       }
     }
-    
+
     // OK, we are ready to load the data and create the model set
-    
+
     OutputStream os = null;
     if (localName != null) {
       os = viewer.getOutputStream(localName);
@@ -7270,21 +7270,22 @@ public class ScriptEvaluator {
     if (filenames == null) {
       // a single file or string -- complete the loadScript
       loadScript.append(" ");
-      if (!filename.equals("string") && !filename.equals("string[]"))
-        loadScript.append("/*file*/");
-      if (localName != null)
-        localName = viewer.getFullPath(localName);
-      loadScript.append(Escape.escape((localName != null 
-          ? localName : (modelName = (String) htParams
-          .get("fullPathName")))));
+      if (filename.startsWith("@")) {
+        loadScript.append(Escape.escape(filename));
+      } else {
+        if (!filename.equals("string") && !filename.equals("string[]"))
+          loadScript.append("/*file*/");
+        if (localName != null)
+          localName = viewer.getFullPath(localName);
+        loadScript.append(Escape.escape((localName != null ? localName
+            : (modelName = (String) htParams.get("fullPathName")))));
+      }
       loadScript.append(sOptions);
     }
-    String s = loadScript.toString();
-    if (s.startsWith("load"))
-      viewer.addLoadScript(s); 
-    // with "@t" we do not save the load command but instead the data statement 
+    viewer.addLoadScript(loadScript.toString());
+    // with "@t" we do not save the load command but instead the data statement
     // but there could state problems here because then we don't have the
-    // option to save load options with that... Hmm. 
+    // option to save load options with that... Hmm.
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
         viewer.addLoadScript("-");

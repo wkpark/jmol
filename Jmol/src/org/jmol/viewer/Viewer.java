@@ -1911,14 +1911,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     Object atomSetCollection;
     Logger.startTimer();
+    boolean isLoadVariable = fileName.startsWith("@");
     htParams = setLoadParameters(htParams);
-    if (fileName.equalsIgnoreCase("string")) {
+    if (isLoadVariable || fileName.equalsIgnoreCase("string")) {
       String strModel = (htParams.containsKey("fileData") ? (String) htParams
           .get("fileData") : fileManager.getInlineData(-1));
       if (!isAppend)
         zap(true, false);
       atomSetCollection = fileManager.createAtomSetCollectionFromString(
-          strModel, htParams, isAppend);
+          strModel, htParams, isAppend, isLoadVariable);
     } else {
       if (!isAppend && fileName.charAt(0) != '?')
         zap(false, false);
@@ -2020,7 +2021,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!isAppend)
       zap(true, false);
     Object atomSetCollection = fileManager.createAtomSetCollectionFromString(
-        strModel, setLoadParameters(htParams), isAppend);
+        strModel, setLoadParameters(htParams), isAppend, false);
     return createModelSetAndReturnError(atomSetCollection, isAppend);
   }
 

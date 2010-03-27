@@ -478,6 +478,12 @@ abstract class ScriptCompilationTokenParser {
   
   private boolean checkForItemSelector() {
     // {x[1]}  @{x}[1][3]  (atomno=3)[2][5]
+    int tok;
+    if ((tok = tokAt(itokenInfix + 1)) == Token.leftsquare
+        || tok == Token.leftbrace)
+      return true; // [[, as in a matrix or [{ ... not totally acceptable!
+    
+    // the real problem is that after an expression you can have
     for (int i = 0; i < 2; i++) {
       if (!addNextTokenIf(Token.leftsquare))
         break;

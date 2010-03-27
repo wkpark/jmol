@@ -6977,7 +6977,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         && (!isSpin || endDegrees == 0 || Float.isNaN(degreesPerSecond) || degreesPerSecond == 0)
         && (isSpin || endDegrees == 0))
       return;
-    //System.out.println("viewer " + endDegrees + " "  + Escape.escape(point1) + " " + Escape.escape(point2));
+    //System.out.println("viewer " + endDegrees + " "  + Escape.escape(point1) + " " + Escape.escape(point2) + " " + translation);
     transformManager.rotateAboutPointsInternal(point1, point2, degreesPerSecond,
         endDegrees, false, isSpin, bsSelected, false, translation, finalPoints);
     refresh(-1, "rotateAxisAboutPointsInternal");

@@ -23,6 +23,7 @@
 
 package org.jmol.script;
 
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Parser;
@@ -35,6 +36,8 @@ import org.jmol.modelset.Bond.BondSet;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.BitSet;
+
+import javax.vecmath.Matrix3f;
 
 public class ScriptCompiler extends ScriptCompilationTokenParser {
 
@@ -1009,10 +1012,18 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       //   mathFunc({...})
       // if you want to use a bitset there, you must use
       // bitsets properly: x.distance( ({1 2 3}) )
-      boolean isBond = (script.charAt(ichToken) == '[');
+      boolean isBondOrMatrix = (script.charAt(ichToken) == '[');
       BitSet bs = lookingAtBitset();
-      if (bs != null) {
-        if (isBond)
+      if (bs == null) {
+        if (isBondOrMatrix) {
+          Object m = lookingAtMatrix();
+          if (m != null) {
+            addTokenToPrefix(new Token((m instanceof Matrix3f ? Token.matrix3f : Token.matrix4f), m));            
+            return CONTINUE;
+          }
+        }
+      } else {
+        if (isBondOrMatrix)
           addTokenToPrefix(new Token(Token.bitset, new BondSet(bs)));
         // occasionally BondSet appears unknown in Eclipse even though it
         // is defined
@@ -1023,6 +1034,18 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
     }
     return OK;
+  }
+
+  private Object lookingAtMatrix() {
+    int ipt;
+    Object m;
+    if (ichToken + 4 >= cchScript 
+        || script.charAt(ichToken) != '[' || script.charAt(ichToken + 1) != '['
+        || (ipt = script.indexOf("]]", ichToken)) < 0
+        || (m = Escape.unescapeMatrix(script.substring(ichToken, ipt + 2))) == null)
+      return null;
+    cchToken = ipt + 2 - ichToken;
+    return m;
   }
 
   private int parseKnownToken(String ident) {

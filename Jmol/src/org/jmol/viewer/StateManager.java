@@ -574,7 +574,7 @@ public class StateManager {
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
         + ";debug;debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
         + ";_filecaching;_filecache;fontcaching;fontscaling;language;loglevel;measureStyleChime"
-        + ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode;"
+        + ";navigationmode;"
         + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"

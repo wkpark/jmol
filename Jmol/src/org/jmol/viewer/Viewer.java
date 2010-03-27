@@ -5147,6 +5147,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                   boolean isInt) {
     boolean found = true;
     switch (tok) {
+    case Token.minimizationcriterion:
+      global.minimizationCriterion = value;
+      break;
     case Token.gestureswipefactor:
       if (haveDisplay)
         actionManager.setGestureSwipeFactor(value);
@@ -5317,6 +5320,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setIntProperty(String key, int tok, int value) {
     boolean found = true;
     switch (tok) {
+    case Token.minimizationsteps:
+      global.minimizationSteps = value;
+      break;
     case Token.propertyatomnumbercolumncount:
     case Token.propertyatomnumberfield: // 11.6.RC16
     case Token.ellipsoiddotcount: // 11.5.30
@@ -5453,6 +5459,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.minimizationrefresh:
+      global.minimizationRefresh = value;
+      break;
     case Token.usearcball:
       global.useArcBall = value;
       break;
@@ -8142,6 +8151,10 @@ public void invertSelected(Point3f pt, Point4f plane, int iAtom, BitSet invAtoms
 
   public void minimize(int steps, float crit, BitSet bsSelected,
                        boolean addHydrogen) {
+    if (steps != Integer.MAX_VALUE)
+      setIntProperty("minimizationSteps", steps);
+    if (crit > 0)
+      setFloatProperty("minimizationCriterion", crit);
     if (addHydrogen)
       bsSelected = addHydrogens(bsSelected);
     else if (bsSelected == null)

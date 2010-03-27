@@ -764,10 +764,11 @@ public class Token {
   public final static int ellipsoidaxisdiameter          = floatparam | 14;
   public final static int gestureswipefactor             = floatparam | 15;
   public final static int hbondsangleminimum             = floatparam | 16;
-  public final static int hbondsdistancemaximum          = floatparam | 18;
-  public final static int hoverdelay                     = floatparam | 19;
-  public final static int loadatomdatatolerance          = floatparam | 20;  
-  public final static int minbonddistance                = floatparam | 21;
+  public final static int hbondsdistancemaximum          = floatparam | 17;
+  public final static int hoverdelay                     = floatparam | 18;
+  public final static int loadatomdatatolerance          = floatparam | 19;  
+  public final static int minbonddistance                = floatparam | 20;
+  public final static int minimizationcriterion          = floatparam | 21;
   public final static int mousedragfactor                = floatparam | 22;
   public final static int mousewheelfactor               = floatparam | 23;
   public final static int navfps                         = floatparam | 24;
@@ -807,6 +808,7 @@ public class Token {
   public final static int hermitelevel                   = intparam | 20;
   public final static int historylevel                   = intparam | 21;
   public final static int loglevel                       = intparam | 22;
+  public final static int minimizationsteps              = intparam | 23;
   public final static int percentvdwatom                 = intparam | 24;
   public final static int perspectivemodel               = intparam | 26;
   public final static int phongexponent                  = intparam | 28;
@@ -888,6 +890,7 @@ public class Token {
   public final static int measureallmodels               = booleanparam | 101;
   public final static int measurementlabels              = booleanparam | 102;
   public final static int messagestylechime              = booleanparam | 104;
+  public final static int minimizationrefresh            = booleanparam | 105;
   public final static int navigatesurface                = booleanparam | 106;
   public final static int navigationmode                 = booleanparam | 108;
   public final static int navigationperiodic             = booleanparam | 110;
@@ -1946,6 +1949,7 @@ public class Token {
       "hoverDelay",                               new Token(hoverdelay),
       "loadAtomDataTolerance",                    new Token(loadatomdatatolerance),
       "minBondDistance",                          new Token(minbonddistance),
+      "minimizationCriterion",                    new Token(minimizationcriterion),
       "mouseDragFactor",                          new Token(mousedragfactor),
       "mouseWheelFactor",                         new Token(mousewheelfactor),
       "navFPS",                                   new Token(navfps),
@@ -1990,6 +1994,7 @@ public class Token {
       "hermiteLevel",                             new Token(hermitelevel),
       "historyLevel",                             new Token(historylevel),
       "logLevel",                                 new Token(loglevel),
+      "minimizationSteps",                        new Token(minimizationsteps),
       "percentVdwAtom",                           new Token(percentvdwatom),
       "perspectiveModel",                         new Token(perspectivemodel),
       "phongExponent",                            new Token(phongexponent),
@@ -2080,6 +2085,7 @@ public class Token {
       "measurementLabels",                        new Token(measurementlabels),
       "measurementNumbers",                       new Token(measurementnumbers),
       "messageStyleChime",                        new Token(messagestylechime),
+      "minimizationRefresh",                      new Token(minimizationrefresh),
       "navigateSurface",                          new Token(navigatesurface),
       "navigationMode",                           new Token(navigationmode),
       "navigationPeriodic",                       new Token(navigationperiodic),

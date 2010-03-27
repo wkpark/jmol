@@ -1842,7 +1842,7 @@ public class ScriptEvaluator {
           + script);
       return;
     }
-    int tok = statement[iToken = 1].tok;
+    int tok = statement[1].tok;
     if (!Token.tokAttr(tok, Token.identifier) 
         && !Token.tokAttr(tok, Token.predefinedset)) {
       viewer.scriptStatus("JmolConstants.java ERROR: invalid variable name:"
@@ -2237,6 +2237,11 @@ public class ScriptEvaluator {
 
   private void numberOutOfRange(float min, float max) throws ScriptException {
     error(ERROR_numberOutOfRange, "" + min, "" + max);
+  }
+
+  void error(int iError, int i) throws ScriptException {
+    iToken = i;
+    error(iError, null, null, null, false);
   }
 
   void error(int iError) throws ScriptException {
@@ -2861,7 +2866,7 @@ public class ScriptEvaluator {
 
   private BitSet expression(int index) throws ScriptException {
     if (!checkToken(index))
-      error(ERROR_badArgumentCount);
+      error(ERROR_badArgumentCount, index);
     return expression(statement, index, 0, true, false, true, true);
   }
 
@@ -5186,8 +5191,7 @@ public class ScriptEvaluator {
       if (!isSyntaxCheck)
         viewer.stopMotion();
       return;
-    }
-      
+    }      
     if (statementLength == 2 && isFloatParameter(1)) {
       float f = floatParameter(1);
       if (isSyntaxCheck)
@@ -5205,13 +5209,6 @@ public class ScriptEvaluator {
     float degrees = 90;
     BitSet bsCenter = null;
     switch (getToken(i).tok) {
-    case Token.selected:
-      switch (tokAt(i + 1)) {
-      case Token.matrix4f:
-      default:
-        error(ERROR_invalidArgument);  
-      }
-      return;
     case Token.quaternion:
       Quaternion q;
       boolean isMolecular = false;
@@ -5708,6 +5705,8 @@ public class ScriptEvaluator {
     boolean isQuaternion = false;
     boolean doRotate = false;
     boolean doTranslate = false;
+    boolean doAnimate = false;
+    float nSeconds = Float.NaN;
     Quaternion[] data1 = null, data2 = null;
     BitSet bsAtoms1 = null, bsAtoms2 = null;
     Vector vAtomSets = null;
@@ -5717,6 +5716,12 @@ public class ScriptEvaluator {
     BitSet bsSubset = null;
     for (int i = iToken + 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
+      case Token.decimal:
+      case Token.integer:
+        nSeconds = Math.abs(floatParameter(i));
+        if (nSeconds > 0)
+          doAnimate = true;
+        break;
       case Token.comma:
         break;
       case Token.subset:
@@ -5729,8 +5734,8 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         bsAtoms1 = expression(iToken);
         int tok = tokAt(iToken + 1);
-        bsAtoms2 = (tok == Token.bitset || tok == Token.expressionBegin 
-            ? expression(++iToken) : BitSetUtil.copy(bsAtoms1));
+        bsAtoms2 = (tok == Token.bitset || tok == Token.expressionBegin ? expression(++iToken)
+            : BitSetUtil.copy(bsAtoms1));
         bsAtoms1.and(bsFrom);
         bsAtoms2.and(bsTo);
         if (bsSubset != null) {
@@ -5758,6 +5763,8 @@ public class ScriptEvaluator {
       case Token.orientation:
         isQuaternion = true;
         break;
+      case Token.point:
+        
       case Token.atoms:
         isQuaternion = false;
         break;
@@ -5773,7 +5780,7 @@ public class ScriptEvaluator {
     }
     if (isSyntaxCheck)
       return;
-    float[] retStddev = new float[2]; //[0] final, [1] initial for atoms
+    float[] retStddev = new float[2]; // [0] final, [1] initial for atoms
     Quaternion q = null;
     Vector vQ = new Vector();
     Point3f[][] centerAndPoints = null;
@@ -5812,25 +5819,35 @@ public class ScriptEvaluator {
       }
       centerAndPoints = viewer.getCenterAndPoints(vAtomSets, true);
       q = ModelSet.calculateQuaternionRotation(centerAndPoints, retStddev);
-      showString("RMSD " + retStddev[1] + " --> " + retStddev[0] + " Angstroms");
+      float r0 = (int) (retStddev[0] * 100) / 100f;
+      float r1 = (int) (retStddev[1] * 100) / 100f;
+      showString("RMSD " + r0 + " --> " + r1 + " Angstroms");
     }
     Point3f pt1 = new Point3f();
     if (centerAndPoints == null)
       centerAndPoints = viewer.getCenterAndPoints(vAtomSets, true);
+    if (Float.isNaN(nSeconds)) {
+      nSeconds = 1;
+    } else if (!doRotate && !doTranslate) {
+      doAnimate = doRotate = doTranslate = true;
+    }
+    float endDegrees = Float.NaN;
+    Vector3f translate = null;
+    if (doTranslate) {
+      translate = new Vector3f(centerAndPoints[1][0]);
+      translate.sub(centerAndPoints[0][0]);
+      endDegrees = 0;
+    }
     if (doRotate) {
       if (q == null)
         evalError("option not implemented", null);
       pt1.set(centerAndPoints[0][0]);
       pt1.add(q.getNormal());
-      float degrees = q.getTheta();
-      viewer.rotateAboutPointsInternal(centerAndPoints[0][0], pt1, degrees, Float.MAX_VALUE,
-          false, bsFrom);
+      endDegrees = q.getTheta();
     }
-    if (doTranslate) {
-      pt1.set(centerAndPoints[1][0]);
-      pt1.sub(centerAndPoints[0][0]);
-      viewer.setAtomCoordRelative(pt1, bsFrom);
-    }
+    if (!Float.isNaN(endDegrees))
+      viewer.rotateAboutPointsInternal(centerAndPoints[0][0], pt1, endDegrees
+          / nSeconds, endDegrees, doAnimate, bsFrom, translate, null);
   }
   
   private void connect(int index) throws ScriptException {
@@ -7764,17 +7781,88 @@ public class ScriptEvaluator {
       }
 
     BitSet bsAtoms = null;
-    float degrees = Float.MIN_VALUE;
+    float degreesPerSecond = Float.MIN_VALUE;
     int nPoints = 0;
     float endDegrees = Float.MAX_VALUE;
     boolean isMolecular = false;
+    boolean haveRotation = false;
     Point3f[] points = new Point3f[2];
     Vector3f rotAxis = new Vector3f(0, 1, 0);
+    Vector3f translation = null;
+    Matrix4f m4 = null;
     int direction = 1;
     int tok;
+    Quaternion q;
+    boolean helicalPath = false;
+    Vector ptsB = null;
     boolean axesOrientationRasmol = viewer.getAxesOrientationRasmol();
     for (int i = 1; i < statementLength; ++i) {
       switch (tok = getToken(i).tok) {
+      case Token.helix:
+        helicalPath = true;
+        break;
+      case Token.selected:
+        isSelected = true;
+        break;
+      case Token.translate:
+        translation = new Vector3f(centerParameter(++i));
+        isMolecular = true;
+        isSelected = true;
+        break;
+      case Token.compare:
+      case Token.matrix4f:
+        haveRotation = true;
+        if (tok == Token.compare) {
+          Vector ptsA = getPointVector(getToken(++i).value, i);
+          if(ptsA == null)
+            error(ERROR_invalidArgument, i);
+          i = iToken;
+          ptsB = getPointVector(getToken(++i).value, i);
+          if(ptsB == null)
+            error(ERROR_invalidArgument, i);
+          m4 = new Matrix4f();
+          float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m4);
+          // if the standard deviation is very small, we leave ptsB
+          // because it will be used to set the absolute final positions
+          if (stddev > 0.001)
+            ptsB = null;
+        } else {
+          m4 = (Matrix4f) theToken.value;
+        }
+        Matrix3f m3 = new Matrix3f();
+        m4.get(m3);
+        translation = new Vector3f();
+        m4.get(translation);
+        q = (isSyntaxCheck ? new Quaternion() : new Quaternion(m3));
+        rotAxis.set(q.getNormal());
+        endDegrees = q.getTheta();
+        points[0] = viewer.getAtomSetCenter(isSelected ? viewer
+            .getSelectionSet() : viewer.getModelAtomBitSet(null));
+        points[1] = new Point3f(points[0]);
+        if (helicalPath) {
+          points[1].add(translation);
+          Object[] ret = (Object[]) Measure.computeHelicalAxis(null,
+              Token.array, points[0], points[1], q);
+          points[0] = (Point3f) ret[0];
+          points[1] = new Point3f(points[0]);
+          float theta = ((Point3f) ret[3]).x;
+          if (theta == 0) {
+            points[1].add(rotAxis);
+          } else {
+            translation = (Vector3f) ret[1];
+            if (theta < 0) {
+              points[1].sub(translation);
+            } else {
+              points[1].add(translation);
+            }
+            //System.out.println("# " + endDegrees + " " + theta + " ;draw " + Escape.escape(points[0]) + Escape.escape(points[1]));
+          }
+        } else {
+          points[1].add(rotAxis);
+        }
+        nPoints = 2;
+        isMolecular = true;
+        break;
       case Token.spin:
         isSpin = true;
         continue;
@@ -7785,50 +7873,57 @@ public class ScriptEvaluator {
         i++;
         // fall through
       case Token.point4f:
-        Quaternion q = new Quaternion(getPoint4f(i));
+        haveRotation = true;
+        q = new Quaternion(getPoint4f(i));
         rotAxis.set(q.getNormal());
-        degrees = q.getTheta();
+        endDegrees = q.getTheta();
         break;
       case Token.axisangle:
+        haveRotation = true;
         if (isPoint3f(++i)) {
           rotAxis.set(centerParameter(i));
           break;
         }
         Point4f p4 = getPoint4f(i);
         rotAxis.set(p4.x, p4.y, p4.z);
-        degrees = p4.w;
+        endDegrees = p4.w;
         break;
       case Token.internal:
       case Token.molecular:
         isMolecular = true;
         continue;
       case Token.x:
+        haveRotation = true;
         rotAxis.set(direction, 0, 0);
         continue;
       case Token.y:
+        haveRotation = true;
         rotAxis.set(0, (axesOrientationRasmol && !isMolecular ? -direction
             : direction), 0);
         continue;
       case Token.z:
+        haveRotation = true;
         rotAxis.set(0, 0, direction);
         continue;
       case Token.branch:
+        haveRotation = true;
         int iAtom1 = expression(++i).nextSetBit(0);
         int iAtom2 = expression(++iToken).nextSetBit(0);
         if (iAtom1 < 0 || iAtom2 < 0)
           return;
         bsAtoms = viewer.getBranchBitSet(iAtom2, iAtom1);
+        isSelected = true;
         isMolecular = true;
         points[0] = viewer.getAtomPoint3f(iAtom1);
         points[1] = viewer.getAtomPoint3f(iAtom2);
         nPoints = 2;
-        i = iToken;
         break;
       case Token.bitset:
       case Token.expressionBegin:
       case Token.leftbrace:
       case Token.point3f:
       case Token.dollarsign:
+        haveRotation = true;
         if (nPoints == 2) // only 2 allowed for rotation -- for now
           error(ERROR_tooManyPoints);
         // {X, Y, Z}
@@ -7838,7 +7933,8 @@ public class ScriptEvaluator {
             && tokAt(i + 2) != Token.leftsquare) {
           // rotation about an axis such as $line1
           isMolecular = true;
-          rotAxis = getDrawObjectAxis(objectNameParameter(++i), viewer.getCurrentModelIndex());
+          rotAxis = getDrawObjectAxis(objectNameParameter(++i), viewer
+              .getCurrentModelIndex());
         }
         points[nPoints++] = pt1;
         break;
@@ -7846,18 +7942,11 @@ public class ScriptEvaluator {
         continue;
       case Token.integer:
       case Token.decimal:
-        // end degrees followed by degrees per second
-        if (degrees == Float.MIN_VALUE)
-          degrees = floatParameter(i);
-        else {
-          endDegrees = degrees;
-          degrees = floatParameter(i);
-          if (endDegrees * degrees < 0) {
-            // degrees per second here
-            // but expresses as seconds now
-            degrees = -endDegrees / degrees;
-          }
-          isSpin = true;
+        if (endDegrees == Float.MAX_VALUE) {
+          endDegrees = floatParameter(i);
+        } else {
+          degreesPerSecond = floatParameter(i);
+          isSpin = (degreesPerSecond != 0);
         }
         continue;
       default:
@@ -7867,19 +7956,21 @@ public class ScriptEvaluator {
     }
     if (isSyntaxCheck)
       return;
-    if (degrees == Float.MIN_VALUE)
-      degrees = 10;
     if (isSelected && bsAtoms == null)
       bsAtoms = viewer.getSelectionSet();
-    if (nPoints < 2) {
+    float rate = (degreesPerSecond == Float.MIN_VALUE ? 10 
+        : degreesPerSecond < 0 ? 
+      // -n means number of seconds, not degreesPerSecond
+        -endDegrees / degreesPerSecond : degreesPerSecond);
+    if (translation == null && nPoints < 2) {
       if (!isMolecular) {
         // fixed-frame rotation
         // rotate x 10 # Chime-like
         // rotate axisangle {0 1 0} 10
         // rotate x 10 (atoms) # point-centered
         // rotate x 10 $object # point-centered
-        viewer.rotateAxisAngleAtCenter(points[0], rotAxis, degrees, endDegrees,
-            isSpin, bsAtoms);
+        viewer.rotateAxisAngleAtCenter(points[0], rotAxis, rate,
+            endDegrees, isSpin, bsAtoms);
         return;
       }
       if (nPoints == 0)
@@ -7891,12 +7982,40 @@ public class ScriptEvaluator {
       points[1] = new Point3f(points[0]);
       points[1].add(rotAxis);
     }
-    if (points[0].distance(points[1]) == 0) {
+    if (nPoints == 0)
+      points[0] = new Point3f();
+    if (points[1] == null || points[0].distance(points[1]) == 0) {
       points[1] = new Point3f(points[0]);
       points[1].y += 1.0;
     }
-    viewer.rotateAboutPointsInternal(points[0], points[1], degrees, endDegrees,
-        isSpin, bsAtoms);
+    if (endDegrees == Float.MAX_VALUE)
+      endDegrees = 0;
+    if (endDegrees != 0 && translation != null && !haveRotation)
+      translation.scale(endDegrees / translation.length());
+    if (isSpin && translation != null && (endDegrees == 0 || degreesPerSecond == 0)) {
+      // need a token rotation
+      endDegrees = 0.01f;
+      rate = (degreesPerSecond == Float.MIN_VALUE ? 0.01f 
+          : degreesPerSecond < 0 ? 
+        // -n means number of seconds, not degreesPerSecond
+          -endDegrees / degreesPerSecond : degreesPerSecond * 0.01f / translation.length());
+      degreesPerSecond = 0.01f;       
+    }
+    if (bsAtoms != null && !isSpin && ptsB != null)
+      viewer.setAtomCoord(bsAtoms, Token.xyz, ptsB);
+    else
+      viewer.rotateAboutPointsInternal(points[0], points[1], rate,
+          endDegrees, isSpin, bsAtoms, translation, ptsB);
+  }
+
+  Vector getPointVector(Object value, int i) throws ScriptException {
+    if (value instanceof BitSet) 
+      return viewer.getAtomPointVector((BitSet) value);
+    if (value instanceof String[])
+      return Escape.unescapePointVector((String[]) value);
+    if (i > 0)
+      return viewer.getAtomPointVector(expression(i));
+    return null;
   }
 
   private Point3f getObjectCenter(String axisID, int index, int modelIndex) {
@@ -8323,6 +8442,7 @@ public class ScriptEvaluator {
       return;
     case Token.stereo:
       iAtom = expression(2).nextSetBit(0);
+      // but not these
       bs = expression(iToken + 1);
       break;
     case Token.point:
@@ -8346,44 +8466,48 @@ public class ScriptEvaluator {
   }
 
   private void translate(boolean isSelected) throws ScriptException {
-    // translate[selected] X|Y|Z x.x [NM|ANGSTROMS]
-    // translate[selected] X|Y x.x%
-    // translate[selected] X|Y|Z x.x [NM|ANGSTROMS]
-    // translate[selected] X|Y x.x%
-    // translate[selected] {x y z}  # selected implied
-    // translate[selected] {x y z} {atomExpression}
+    // translate [selected] X|Y|Z x.x [NM|ANGSTROMS]
+    // translate [selected] X|Y x.x%
+    // translate [selected] X|Y|Z x.x [NM|ANGSTROMS]
+    // translate [selected] X|Y x.x%
+    // translate {x y z} [{atomExpression}]
     BitSet bs = null;
-    if (isPoint3f(1)) {
-      Point3f pt = getPoint3f(1, true);
-      bs = (!isSelected && iToken + 1 < statementLength ? expression(++iToken) : null);
+    int i = 1;
+    if (tokAt(1) == Token.selected) {
+      isSelected = true;
+      i++;
+    }
+    if (isPoint3f(i)) {
+      Point3f pt = getPoint3f(i, true);
+      bs = (!isSelected && iToken + 1 < statementLength ? expression(++iToken)
+          : null);
       checkLast(iToken);
       if (!isSyntaxCheck)
         viewer.setAtomCoordRelative(pt, bs);
       return;
     }
-    float amount = floatParameter(2);
+    int xyz = getToken(i).tok;
+    if (xyz != Token.x && xyz != Token.y && xyz != Token.z)
+      error(ERROR_axisExpected);
+    float amount = floatParameter(++i);
     if (amount == 0)
       return;
     char type;
-    switch (tokAt(3)) {
+    switch (tokAt(++i)) {
     case Token.nada:
     case Token.bitset:
     case Token.expressionBegin:
       type = '\0';
       break;
     default:
-      type = (optParameterAsString(3).toLowerCase() + '\0').charAt(0);
+      type = (optParameterAsString(i).toLowerCase() + '\0').charAt(0);
     }
     iToken = (type == '\0' ? 2 : 3);
-    bs = (isSelected ? viewer.getSelectionSet() : iToken + 1 < statementLength ? expression(++iToken) : null);
-    checkLast(iToken);      
-    if (getToken(1).tok == Token.x || theTok == Token.y || theTok == Token.z ) {
-      if (isSyntaxCheck)
-        return;
+    bs = (isSelected ? viewer.getSelectionSet()
+        : iToken + 1 < statementLength ? expression(++iToken) : null);
+    checkLast(iToken);
+    if (!isSyntaxCheck)
       viewer.translate(parameterAsString(1).charAt(0), amount, type, bs);
-      return;
-    }
-    error(ERROR_axisExpected);
   }
 
   private void zap(boolean isZapCommand) throws ScriptException {

@@ -1687,6 +1687,7 @@ public class Token {
       "play",            new Token(play),
       "playRev",         new Token(playrev),
       "point",           new Token(point),
+      "points",          null,
       "pointGroup",      new Token(pointgroup),
       "polymerLength",   new Token(polymerlength),
       "previous",        new Token(prev),

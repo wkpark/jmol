@@ -700,39 +700,21 @@ class ScriptMathProcessor {
     return false;
   }
 
-  private boolean evaluateCompare(ScriptVariable[] args, int tok) {
+  private boolean evaluateCompare(ScriptVariable[] args, int tok) throws ScriptException {
     // compare({bitset} or [{positions}],{bitset} or [{positions}])
     // returns matrix4f for rotation/translation
     Vector ptsA, ptsB;
-    switch (args[0].tok) {
-    case Token.bitset:
-      ptsA = viewer.getAtomPointVector((BitSet) args[0].value);
-      break;
-    case Token.list:
-      ptsA = Escape.unescapePointVector((String[]) args[0].value);
-      break;
-    default:
+    if (args.length < 2)
       return false;
-    }
-    switch (args[1].tok) {
-    case Token.bitset:
-      ptsB = viewer.getAtomPointVector((BitSet) args[1].value);
-      break;
-    case Token.list:
-      ptsB = Escape.unescapePointVector((String[]) args[1].value);
-      break;
-    default:
-      return false;
-    }
+    ptsA = eval.getPointVector(args[0].value, 0);
+    ptsB = eval.getPointVector(args[1].value, 0);
     if (ptsA == null || ptsB == null)
       return false;
-    Point3f[] cptsA = Measure.getCenterAndPoints(ptsA);
-    Point3f[] cptsB = Measure.getCenterAndPoints(ptsB);
-    Quaternion q = Measure.calculateQuaternionRotation(new Point3f[][] { cptsA,
-        cptsB }, null);
-    Vector3f v = new Vector3f(cptsB[0]);
-    v.sub(cptsA[0]);
-    return addX(getMatrix4f(q.getMatrix(), v));
+    Matrix4f m = new Matrix4f();
+    float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m); 
+    if (args.length == 3 && ScriptVariable.sValue(args[2]).equalsIgnoreCase("stddev"))
+      return addX(stddev);
+    return addX(m);
   }
 
   private boolean evaluateVolume(ScriptVariable[] args) throws ScriptException {
@@ -2621,6 +2603,8 @@ class ScriptMathProcessor {
           Vector3f v3 = new Vector3f();
           m4.get(v3);
           return addX(v3);
+        default:
+          return false;
         }
       case Token.bitset:
         return addX(ScriptVariable.bsSelect(x1, n));

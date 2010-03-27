@@ -25,6 +25,7 @@ package org.jmol.util;
 
 import java.util.Vector;
 
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
@@ -163,6 +164,12 @@ final public class Measure {
       theta = dq.getThetaDirected(n); // allow for r = 0
     if (tokType == Token.angle)
       return new Float(theta);
+    /*
+    System.out.println("draw ID test VECTOR " + Escape.escape(pt_a_prime)
+          + " " + Escape.escape(n) + " color "
+          + (theta < 0 ? "{255.0 200.0 0.0}" : "{255.0 0.0 128.0};")
+          +"measure " + Escape.escape(a) + Escape.escape(pt_a_prime) + Escape.escape(pt_b_prime) + Escape.escape(b));
+    */
     if (tokType == Token.draw)
       return "draw ID " + id + " VECTOR " + Escape.escape(pt_a_prime)
           + " " + Escape.escape(n) + " color "
@@ -443,23 +450,16 @@ final public class Measure {
     return pts;
   }
 
-  public static void getRmsd(Point3f[][] centerAndPoints, Quaternion q, float[] retStddev, int pt) {
-    double sum = 0;
-    double sum2 = 0;
-    int n = centerAndPoints[0].length - 1;
-    Point3f ptAnew = new Point3f();
-    for (int i = n + 1; --i >= 1;) {
-      ptAnew.set(centerAndPoints[0][i]);
-      ptAnew.sub(centerAndPoints[0][0]);
-      q.transform(ptAnew, ptAnew);
-      ptAnew.add(centerAndPoints[1][0]);
-      double d = ptAnew.distance(centerAndPoints[1][i]);
-      sum += d;
-      sum2 += d * d;
-    }
-    float stddev = (int) (100 * Math.sqrt((sum2 - sum * sum / n) / (n - 1))) / 100f;
-    if (retStddev != null)
-      retStddev[pt] = stddev;
+  public static float getTransformMatrix4(Vector ptsA, Vector ptsB, Matrix4f m) {
+    Point3f[] cptsA = getCenterAndPoints(ptsA);
+    Point3f[] cptsB = getCenterAndPoints(ptsB);
+    float[] retStddev = new float[2];
+    Quaternion q = calculateQuaternionRotation(new Point3f[][] { cptsA,
+        cptsB }, retStddev);
+    Vector3f v = new Vector3f(cptsB[0]);
+    v.sub(cptsA[0]);
+    m.set(q.getMatrix(), v, 1);
+    return retStddev[1];
   }
 
   public static Quaternion calculateQuaternionRotation(Point3f[][] centerAndPoints,
@@ -473,11 +473,14 @@ final public class Measure {
      * and Lydia E. Kavraki, "Molecular Distance Measures"
      * http://cnx.org/content/m11608/latest/
      */
+    retStddev[1] = Float.NaN;
     Quaternion q = new Quaternion();
-    if (centerAndPoints.length == 1)
+    if (centerAndPoints[0].length == 1 || centerAndPoints[0].length != centerAndPoints[1].length)
       return q;
     double Sxx = 0, Sxy = 0, Sxz = 0, Syx = 0, Syy = 0, Syz = 0, Szx = 0, Szy = 0, Szz = 0;
     int n = centerAndPoints[0].length - 1;
+    if (n < 2)
+      return q;
     for (int i = n + 1; --i >= 1;) {
       Point3f aij = centerAndPoints[0][i];
       Point3f bij = centerAndPoints[1][i];
@@ -495,9 +498,7 @@ final public class Measure {
       Szy += (double) ptA.z * (double) ptB.y;
       Szz += (double) ptA.z * (double) ptB.z;
     }
-    if (n < 2)
-      return q;
-    getRmsd(centerAndPoints, q, retStddev, 1);
+    retStddev[0] = getRmsd(centerAndPoints, q);
     double[][] N = new double[4][4];
     N[0][0] = Sxx + Syy + Szz;
     N[0][1] = N[1][0] = Syz - Szy;
@@ -517,8 +518,26 @@ final public class Measure {
 
     float[] v = eigen.getEigenvectorsFloatTransposed()[3];
     q = new Quaternion(new Point4f(v[1], v[2], v[3], v[0]));
-    getRmsd(centerAndPoints, q, retStddev, 0);
+    retStddev[1] = getRmsd(centerAndPoints, q);
+    //System.out.println("Measure" + q.getInfo());
     return q;
+  }
+
+  public static float getRmsd(Point3f[][] centerAndPoints, Quaternion q) {
+    double sum = 0;
+    double sum2 = 0;
+    int n = centerAndPoints[0].length - 1;
+    Point3f ptAnew = new Point3f();
+    for (int i = n + 1; --i >= 1;) {
+      ptAnew.set(centerAndPoints[0][i]);
+      ptAnew.sub(centerAndPoints[0][0]);
+      q.transform(ptAnew, ptAnew);
+      ptAnew.add(centerAndPoints[1][0]);
+      double d = ptAnew.distance(centerAndPoints[1][i]);
+      sum += d;
+      sum2 += d * d;
+    }
+    return (float) Math.sqrt((sum2 - sum * sum / n) / (n - 1));
   }
 
 }

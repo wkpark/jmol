@@ -453,19 +453,40 @@ abstract public class AtomCollection {
   public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
     Point3f xyz = null;
     Point3f[] values = null;
-    if (xyzValues instanceof Point3f)
+    Vector v = null;
+    int type = 0;
+    int nValues = 1;
+    if (xyzValues instanceof Point3f) {
       xyz = (Point3f) xyzValues;
-    else
+      if (xyz == null)
+        return;
+    } else if (xyzValues instanceof Vector) {
+      v = (Vector) xyzValues;
+      if (v == null || (nValues = v.size()) == 0)
+        return;
+      type = 1;
+    } else if (xyzValues instanceof Point3f[]){
       values = (Point3f[]) xyzValues;
-    if (xyz == null && (values == null || values.length == 0))
+      if (values == null || (nValues = values.length) == 0)
+        return;
+      type = 2;
+    } else {
       return;
+    }
     int n = 0;
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) { 
-        if (values != null) {
-          if (n >= values.length)
+        switch (type) {
+        case 1:
+          if (n >= nValues)
+            return;
+          xyz = (Point3f) v.get(n++);
+          break;
+        case 2:
+          if (n >= nValues)
             return;
           xyz = values[n++];
+          break;
         }
         switch (tokType) {
         case Token.xyz:

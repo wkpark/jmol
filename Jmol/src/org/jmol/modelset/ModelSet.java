@@ -1085,6 +1085,5 @@ abstract public class ModelSet extends ModelCollection {
     return Measure.calculateQuaternionRotation(centerAndPoints, retStddev);
   }
 
-
 }
 

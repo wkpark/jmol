@@ -35,6 +35,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.Interface;
@@ -1934,7 +1935,7 @@ abstract public class ModelCollection extends BondCollection {
 
   ////////// atoms /////////
 
-  public void setAtomCoordRelative(Point3f offset, BitSet bs) {
+  public void setAtomCoordRelative(Tuple3f offset, BitSet bs) {
     setAtomCoordRelative(bs, offset.x, offset.y, offset.z);
     recalculatePositionDependentQuantities();
   }
@@ -2015,6 +2016,15 @@ abstract public class ModelCollection extends BondCollection {
   
   protected BitSet bsAll;
   
+  public BitSet getModelAtomBitSet(BitSet bsModels) {
+    BitSet bs = new BitSet();
+    if (bsModels == null)
+      bs.or(bsAll);
+    else
+      for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
+        bs.or(getModelAtomBitSet(i, false));
+    return bs;
+  }
   /**
    * 
    * @param modelIndex

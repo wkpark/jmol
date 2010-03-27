@@ -81,6 +81,7 @@ import java.util.BitSet;
 import java.util.Properties;
 import java.util.Vector;
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Point3i;
@@ -2384,6 +2385,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         hybridizationCompatible);
   }
 
+  public BitSet getModelAtomBitSet(BitSet bsModels) {
+    if (bsModels == null)
+      bsModels = getVisibleFramesBitSet();
+    return modelSet.getModelAtomBitSet(bsModels);
+  }
+  
   public BitSet getModelAtomBitSet(int modelIndex, boolean asCopy) {
     BitSet bs = modelSet.getModelAtomBitSet(modelIndex, asCopy);
     if (asCopy)
@@ -6950,24 +6957,28 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
-                                      float degrees, float endDegrees,
+                                      float degreesPerSecond, float endDegrees,
                                       boolean isSpin, BitSet bsSelected) {
     // Eval: rotate FIXED
-    if (Float.isNaN(degrees) || degrees == 0)
+    if (Float.isNaN(degreesPerSecond) || degreesPerSecond == 0 || endDegrees == 0)
       return;
-    transformManager.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees,
+    transformManager.rotateAxisAngleAtCenter(rotCenter, rotAxis, degreesPerSecond,
         endDegrees, isSpin, bsSelected);
     refresh(-1, "rotateAxisAngleAtCenter");
   }
 
   public void rotateAboutPointsInternal(Point3f point1, Point3f point2,
-                                        float degrees, float endDegrees,
-                                        boolean isSpin, BitSet bsSelected) {
+                                        float degreesPerSecond, float endDegrees,
+                                        boolean isSpin, BitSet bsSelected,
+                                        Vector3f translation, Vector finalPoints) {
     // Eval: rotate INTERNAL
-    if (Float.isNaN(degrees) || degrees == 0)
+    if ((translation == null || translation.length() < 0.001)
+        && (!isSpin || endDegrees == 0 || Float.isNaN(degreesPerSecond) || degreesPerSecond == 0)
+        && (isSpin || endDegrees == 0))
       return;
-    transformManager.rotateAboutPointsInternal(point1, point2, degrees,
-        endDegrees, false, isSpin, bsSelected, false);
+    //System.out.println("viewer " + endDegrees + " "  + Escape.escape(point1) + " " + Escape.escape(point2));
+    transformManager.rotateAboutPointsInternal(point1, point2, degreesPerSecond,
+        endDegrees, false, isSpin, bsSelected, false, translation, finalPoints);
     refresh(-1, "rotateAxisAboutPointsInternal");
   }
 
@@ -6986,7 +6997,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     transformManager
         .rotateAboutPointsInternal(pt1, pt2, global.pickingSpinRate,
-            Float.MAX_VALUE, isClockwise, true, null, false);
+            Float.MAX_VALUE, isClockwise, true, null, false, null, null);
   }
 
   public Vector3f getModelDipole() {
@@ -7145,7 +7156,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // no measure refresh here -- because it may involve hundreds of calls
   }
 
-  public void setAtomCoordRelative(Point3f offset, BitSet bs) {
+  public void setAtomCoordRelative(Tuple3f offset, BitSet bs) {
     // Eval
     modelSet.setAtomCoordRelative(offset,
         bs == null ? selectionManager.getSelectionSet() : bs);
@@ -8160,7 +8171,6 @@ public void invertSelected(Point3f pt, Point4f plane, int iAtom, BitSet invAtoms
   }
 
   public Point3f[][] getCenterAndPoints(Vector atomSets, boolean addCenter) {
-    // TODO
     return modelSet.getCenterAndPoints(atomSets, addCenter);
   }
 

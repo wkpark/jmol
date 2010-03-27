@@ -7236,6 +7236,7 @@ public class ScriptEvaluator {
         htParams.put("fileData", getStringParameter(filename.substring(1),
             false));
         filename = "string";
+        loadScript = new StringBuffer();
       }
     }
     
@@ -7278,7 +7279,12 @@ public class ScriptEvaluator {
           .get("fullPathName")))));
       loadScript.append(sOptions);
     }
-    viewer.addLoadScript(loadScript.toString());
+    String s = loadScript.toString();
+    if (s.startsWith("load"))
+      viewer.addLoadScript(s); 
+    // with "@t" we do not save the load command but instead the data statement 
+    // but there could state problems here because then we don't have the
+    // option to save load options with that... Hmm. 
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
         viewer.addLoadScript("-");

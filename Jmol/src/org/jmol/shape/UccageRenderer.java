@@ -67,11 +67,8 @@ public class UccageRenderer extends CageRenderer {
   }
 
   void render1(int mad) {
-    SymmetryInterface[] cellInfos = modelSet.getCellInfos();
-    if (cellInfos == null)
-      return;
     SymmetryInterface symmetry = viewer.getCurrentUnitCell();
-    if (symmetry == null)
+    if (symmetry == null || !symmetry.haveUnitCell())
       return;
     isPolymer = symmetry.isPolymer();
     isSlab = symmetry.isSlab();

@@ -5813,16 +5813,21 @@ public class ScriptEvaluator {
       // atoms
       if (bsAtoms1 == null) {
         bsAtoms1 = viewer.getAtomBitSet("spine");
-        bsAtoms2 = BitSetUtil.copy(bsAtoms1);
-        bsAtoms1.and(bsFrom);
-        bsAtoms2.and(bsTo);
+        if (bsAtoms1.nextSetBit(0) < 0) {
+          bsAtoms1 = bsFrom;
+          bsAtoms2 = bsTo;
+        } else {
+          bsAtoms2 = BitSetUtil.copy(bsAtoms1);
+          bsAtoms1.and(bsFrom);
+          bsAtoms2.and(bsTo);
+        }
         vAtomSets = new Vector();
         vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
       }
       centerAndPoints = viewer.getCenterAndPoints(vAtomSets, true);
       q = ModelSet.calculateQuaternionRotation(centerAndPoints, retStddev);
-      float r0 = (int) (retStddev[0] * 100) / 100f;
-      float r1 = (int) (retStddev[1] * 100) / 100f;
+      float r0 = (Float.isNaN(retStddev[1]) ? Float.NaN : (int) (retStddev[0] * 100) / 100f);
+      float r1 = (Float.isNaN(retStddev[1]) ? Float.NaN : (int) (retStddev[1] * 100) / 100f);
       showString("RMSD " + r0 + " --> " + r1 + " Angstroms");
     }
     Point3f pt1 = new Point3f();

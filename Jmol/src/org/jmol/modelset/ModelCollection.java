@@ -1635,27 +1635,19 @@ abstract public class ModelCollection extends BondCollection {
       Atom thisAtom = atoms[iAtom];
       // stereochemical inversion at iAtom
       Bond[] bonds = thisAtom.bonds;
-      Point3f pt1 = null;
-      Point3f pt2 = null;
       BitSet bsAtoms = new BitSet();
+      Vector vNot = new Vector();
       for (int i = 0; i < bonds.length; i++) {
         Atom a = bonds[i].getOtherAtom(thisAtom);
         if (invAtoms.get(a.index)) {
-          if (pt1 == null)
-            pt1 = a;
-          else if (pt2 == null)
-            pt2 = a;
+            bsAtoms.or(getBranchBitSet(a.index, iAtom));
         } else {
-          bsAtoms.or(getBranchBitSet(a.index, iAtom));
+          vNot.add(atoms[i]);
         }
       }
-      if (pt1 == null || bsAtoms.cardinality() == 0)
+      if (vNot.size() == 0)
         return;
-      if (pt2 == null)
-        pt2 = pt1;
-      pt = new Point3f(pt1);
-      pt.add(pt2);
-      pt.scale(0.5f);
+      pt = Measure.getCenterAndPoints(vNot)[0];
       Vector3f v = new Vector3f(thisAtom);
       v.sub(pt);
       Quaternion q = new Quaternion(v, 180);

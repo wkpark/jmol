@@ -3376,6 +3376,8 @@ public class ScriptEvaluator {
             false));
       case Token.symop:
         propertyBitSet = atom.getAtomSymmetry();
+        if (propertyBitSet == null)
+          continue;
         if (atom.getModelIndex() != iModel) {
           iModel = atom.getModelIndex();
           cellRange = modelSet.getModelCellRange(iModel);
@@ -8480,7 +8482,7 @@ public class ScriptEvaluator {
     // invertSelected POINT
     // invertSelected PLANE
     // invertSelected HKL
-    // invertSelected STEREO {sp3Atom}
+    // invertSelected STEREO {sp3Atom} {one or two groups)
     Point3f pt = null;
     Point4f plane = null;
     BitSet bs = null;
@@ -8495,7 +8497,7 @@ public class ScriptEvaluator {
       return;
     case Token.stereo:
       iAtom = expression(2).nextSetBit(0);
-      // but not these
+      // and only these:
       bs = expression(iToken + 1);
       break;
     case Token.point:

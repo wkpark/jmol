@@ -504,9 +504,13 @@ abstract class TransformManager {
       internalTranslation = null;
     } else {
       internalTranslation = new Vector3f(translation);
-      if (isSpin && !Float.isNaN(endDegrees))
-        internalTranslation.scale(1f / Math.abs(endDegrees) * degreesPerSecond
-            / spinFps);
+      //System.out.println("TM ROTAT " + internalTranslation);
+      if (isSpin && !Float.isNaN(endDegrees)) {
+        int nFrames = (int) (spinFps / degreesPerSecond * Math.abs(endDegrees) + 1); 
+        //System.out.println(nFrames);
+        internalTranslation.scale(1f / nFrames);
+      }
+      //System.out.println("TM ROTAT " + internalTranslation);
     }
     boolean isSelected = (bsAtoms != null);
     if (isSpin) {
@@ -2158,6 +2162,7 @@ abstract class TransformManager {
     boolean isNav;
     boolean isGesture;
     boolean isReset;
+   // private int count;
     
     SpinThread(float endDegrees, Vector endPositions, BitSet bsAtoms, boolean isNav, boolean isGesture) {
       setName("SpinThread" + new Date());
@@ -2173,6 +2178,7 @@ abstract class TransformManager {
       viewer.getGlobalSettings().setParameterValue(isNav ? "_navigating" : "_spinning", true);
       int i = 0;
       long timeBegin = System.currentTimeMillis();
+      //count = 0;
       while (!isInterrupted()) {
         if (isNav && myFps != navFps) {
           myFps = navFps;
@@ -2213,6 +2219,7 @@ abstract class TransformManager {
                 float angle = (isSpinInternal ? internalRotationAxis
                     : fixedRotationAxis).angle / myFps;
                 if (isSpinInternal) {
+                  //System.out.println("TM spin count " + (++count));
                   rotateAxisAngleRadiansInternal(angle, bsAtoms);
                 } else {
                   rotateAxisAngleRadiansFixed(angle, bsAtoms);
@@ -2250,7 +2257,8 @@ abstract class TransformManager {
       if (bsAtoms != null && endPositions != null) {
         // when the standard deviations of the end points was
         // exact, we know that we want EXACTLY those final positions
-        viewer.setAtomCoord(bsAtoms, Token.xyz, endPositions);
+        if (!viewer.getTestFlag1())
+          viewer.setAtomCoord(bsAtoms, Token.xyz, endPositions);
         bsAtoms = null;
         endPositions = null;
       }

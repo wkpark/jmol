@@ -711,7 +711,7 @@ class ScriptMathProcessor {
     if (ptsA == null || ptsB == null)
       return false;
     Matrix4f m = new Matrix4f();
-    float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m); 
+    float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null); 
     if (args.length == 3 && ScriptVariable.sValue(args[2]).equalsIgnoreCase("stddev"))
       return addX(stddev);
     return addX(m);
@@ -2657,7 +2657,7 @@ class ScriptMathProcessor {
     return true;
   }
 
-  private static Matrix4f getMatrix4f(Matrix3f matRotate, Tuple3f vTranslate) {
+  static Matrix4f getMatrix4f(Matrix3f matRotate, Tuple3f vTranslate) {
     return new Matrix4f(matRotate, new Vector3f(vTranslate), 1);
   }
 

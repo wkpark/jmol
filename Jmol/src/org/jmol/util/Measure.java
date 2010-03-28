@@ -450,7 +450,7 @@ final public class Measure {
     return pts;
   }
 
-  public static float getTransformMatrix4(Vector ptsA, Vector ptsB, Matrix4f m) {
+  public static float getTransformMatrix4(Vector ptsA, Vector ptsB, Matrix4f m, Point3f centerA) {
     Point3f[] cptsA = getCenterAndPoints(ptsA);
     Point3f[] cptsB = getCenterAndPoints(ptsB);
     float[] retStddev = new float[2];
@@ -459,6 +459,8 @@ final public class Measure {
     Vector3f v = new Vector3f(cptsB[0]);
     v.sub(cptsA[0]);
     m.set(q.getMatrix(), v, 1);
+    if (centerA != null)
+      centerA.set(cptsA[0]);
     return retStddev[1];
   }
 
@@ -538,6 +540,18 @@ final public class Measure {
       sum2 += d * d;
     }
     return (float) Math.sqrt((sum2 - sum * sum / n) / (n - 1));
+  }
+
+  public static Vector transformPoints(Vector vPts, Matrix4f m4, Point3f center) {
+    Vector v = new Vector();
+    for (int i = 0; i < vPts.size(); i++) {
+      Point3f pt = new Point3f((Point3f)vPts.get(i));
+      pt.sub(center);
+      m4.transform(pt, pt);
+      pt.add(center);
+      v.add(pt);
+    }
+    return v;
   }
 
 }

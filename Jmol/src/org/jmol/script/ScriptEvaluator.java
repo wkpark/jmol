@@ -5833,16 +5833,17 @@ public class ScriptEvaluator {
     Point3f pt1 = new Point3f();
     if (centerAndPoints == null)
       centerAndPoints = viewer.getCenterAndPoints(vAtomSets, true);
-    if (Float.isNaN(nSeconds)) {
+    if (Float.isNaN(nSeconds) || nSeconds < 0) {
       nSeconds = 1;
     } else if (!doRotate && !doTranslate) {
       doAnimate = doRotate = doTranslate = true;
     }
+    doAnimate = (nSeconds != 0);
     float endDegrees = Float.NaN;
-    Vector3f translate = null;
+    Vector3f translation = null;
     if (doTranslate) {
-      translate = new Vector3f(centerAndPoints[1][0]);
-      translate.sub(centerAndPoints[0][0]);
+      translation = new Vector3f(centerAndPoints[1][0]);
+      translation.sub(centerAndPoints[0][0]);
       endDegrees = 0;
     }
     if (doRotate) {
@@ -5852,9 +5853,16 @@ public class ScriptEvaluator {
       pt1.add(q.getNormal());
       endDegrees = q.getTheta();
     }
-    if (!Float.isNaN(endDegrees))
-      viewer.rotateAboutPointsInternal(centerAndPoints[0][0], pt1, endDegrees
-          / nSeconds, endDegrees, doAnimate, bsFrom, translate, null);
+    if (Float.isNaN(endDegrees) || Float.isNaN(pt1.x))
+      return;
+    Vector ptsB = null;
+    if (doRotate && doTranslate && nSeconds != 0) {
+      Vector ptsA = viewer.getAtomPointVector(bsFrom);
+      Matrix4f m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(), translation);
+      ptsB = Measure.transformPoints(ptsA, m4, centerAndPoints[0][0]);
+    }
+    viewer.rotateAboutPointsInternal(centerAndPoints[0][0], pt1, endDegrees
+          / nSeconds, endDegrees, doAnimate, bsFrom, translation, ptsB);
   }
   
   private void connect(int index) throws ScriptException {
@@ -7800,6 +7808,7 @@ public class ScriptEvaluator {
     float endDegrees = Float.MAX_VALUE;
     boolean isMolecular = false;
     boolean haveRotation = false;
+    Vector ptsA = null;
     Point3f[] points = new Point3f[2];
     Vector3f rotAxis = new Vector3f(0, 1, 0);
     Vector3f translation = null;
@@ -7809,6 +7818,7 @@ public class ScriptEvaluator {
     Quaternion q = null;
     boolean helicalPath = false;
     Vector ptsB = null;
+    BitSet bsCompare = null;
     boolean axesOrientationRasmol = viewer.getAxesOrientationRasmol();
     for (int i = 1; i < statementLength; ++i) {
       switch (tok = getToken(i).tok) {
@@ -7875,7 +7885,8 @@ public class ScriptEvaluator {
       case Token.matrix3f:
         haveRotation = true;
         if (tok == Token.compare) {
-          Vector ptsA = getPointVector(getToken(++i).value, i);
+          bsCompare = expression(++i);
+          ptsA = viewer.getAtomPointVector(bsCompare);
           if (ptsA == null)
             error(ERROR_invalidArgument, i);
           i = iToken;
@@ -7883,7 +7894,9 @@ public class ScriptEvaluator {
           if (ptsB == null || ptsA.size() != ptsB.size())
             error(ERROR_invalidArgument, i);
           m4 = new Matrix4f();
-          float stddev = (isSyntaxCheck ? 0 : Measure.getTransformMatrix4(ptsA, ptsB, m4));
+          points[0] = new Point3f();
+          nPoints = 1;
+          float stddev = (isSyntaxCheck ? 0 : Measure.getTransformMatrix4(ptsA, ptsB, m4, points[0]));
           // if the standard deviation is very small, we leave ptsB
           // because it will be used to set the absolute final positions
           if (stddev > 0.001)
@@ -7902,26 +7915,6 @@ public class ScriptEvaluator {
         q = (isSyntaxCheck ? new Quaternion() : new Quaternion(m3));
         rotAxis.set(q.getNormal());
         endDegrees = q.getTheta();
-        if (nPoints == 0)
-          points[0] = (isSyntaxCheck ? new Point3f() : viewer.getAtomSetCenter(isSelected ? viewer
-              .getSelectionSet() : viewer.getModelAtomBitSet(null)));
-        if (helicalPath && !isSyntaxCheck) {
-          points[1] = new Point3f(points[0]);
-          points[1].add(translation);
-          Object[] ret = (Object[]) Measure.computeHelicalAxis(null,
-              Token.array, points[0], points[1], q);
-          points[0] = (Point3f) ret[0];
-          float theta = ((Point3f) ret[3]).x;
-          if (theta != 0) {
-            translation = (Vector3f) ret[1];
-            rotAxis = new Vector3f(translation);
-            if (theta < 0)
-              rotAxis.scale(-1);
-            // System.out.println("# " + endDegrees + " " + theta + " ;draw " +
-            // Escape.escape(points[0]) + Escape.escape(points[1]));
-          }
-        }
-        nPoints = 1;
         isMolecular = true;
         break;
       case Token.quaternion:
@@ -7952,6 +7945,7 @@ public class ScriptEvaluator {
         if (tok == Token.bitset || tok == Token.expressionBegin) {
           if (translation != null || q != null || nPoints == 2) {
             bsAtoms = expression(i);
+            ptsB = null;
             isSelected = true;
             break;
           }
@@ -7980,11 +7974,39 @@ public class ScriptEvaluator {
       return;
     if (isSelected && bsAtoms == null)
       bsAtoms = viewer.getSelectionSet();
+    if (bsCompare != null) {
+      isSelected = true;
+      if (bsAtoms == null)
+        bsAtoms = bsCompare;
+    }
     float rate = (degreesPerSecond == Float.MIN_VALUE ? 10
         : degreesPerSecond < 0 ?
         // -n means number of seconds, not degreesPerSecond
         -endDegrees / degreesPerSecond
             : degreesPerSecond);
+    
+    if (q != null) {
+      if (nPoints == 0)
+        points[0] = viewer.getAtomSetCenter(bsAtoms != null ? bsAtoms : isSelected ? viewer
+            .getSelectionSet() : viewer.getModelAtomBitSet(null));
+      if (helicalPath) {
+        points[1] = new Point3f(points[0]);
+        points[1].add(translation);
+        Object[] ret = (Object[]) Measure.computeHelicalAxis(null,
+            Token.array, points[0], points[1], q);
+        points[0] = (Point3f) ret[0];
+        float theta = ((Point3f) ret[3]).x;
+        if (theta != 0) {
+          translation = (Vector3f) ret[1];
+          rotAxis = new Vector3f(translation);
+          if (theta < 0)
+            rotAxis.scale(-1);
+          // System.out.println("# " + endDegrees + " " + theta + " ;draw " +
+          // Escape.escape(points[0]) + Escape.escape(points[1]));
+        }
+      }
+      nPoints = 1;
+    }
     if (nPoints < 2) {
       if (!isMolecular) {
         // fixed-frame rotation
@@ -8026,6 +8048,10 @@ public class ScriptEvaluator {
           -endDegrees / degreesPerSecond
               : degreesPerSecond * 0.01f / translation.length());
       degreesPerSecond = 0.01f;
+    }
+    if (bsAtoms != null && isSpin && ptsB == null && m4 != null) {
+      ptsA = viewer.getAtomPointVector(bsAtoms);
+      ptsB = Measure.transformPoints(ptsA, m4, points[0]);
     }
     if (bsAtoms != null && !isSpin && ptsB != null)
       viewer.setAtomCoord(bsAtoms, Token.xyz, ptsB);

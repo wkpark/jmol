@@ -286,20 +286,22 @@ public class GenNBOReader extends MOReader {
       return false;
     }
     String ntype = null;
-    if (moType.indexOf("NHO") >= 0)
+    if (moType.equals("AO"))
+      ntype = "AO";
+    else if (moType.indexOf("NHO") >= 0)
       ntype = "NHO";
     else if (moType.indexOf("NBO") >= 0)
       ntype = "NBO";
     else if (moType.indexOf("NAO") >= 0)
       ntype = "NAO";
-    else if (moType.equals("AO"))
-      ntype = "AO";
+    else if (moType.indexOf("MO") >= 0)
+      ntype = "MO";
     if (ntype == null) {
       Logger.error("uninterpretable type " + moType);
       return false;
     }
     if (!ntype.equals("AO"))
-      discardLinesUntilContains(ntype);
+      discardLinesUntilContains(ntype.equals("MO") ? "NBO" : ntype);
     StringBuffer sb = new StringBuffer();
     while (readLine() != null && line.indexOf("O    ") < 0)
       sb.append(line);
@@ -328,6 +330,8 @@ public class GenNBOReader extends MOReader {
       Hashtable mo = new Hashtable();
       orbitals.add(mo);
     }
+    if (ntype.equals("MO"))
+      return true; // no labels here
     for (int i = 0; i < tokens.length; i++) {
       Hashtable mo = (Hashtable) orbitals.get(i);
       String type = tokens[i];

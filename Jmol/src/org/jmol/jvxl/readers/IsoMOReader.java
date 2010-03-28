@@ -50,6 +50,7 @@ class IsoMOReader extends AtomDataReader {
   }
   
   private void fixTitleLine(int iLine, Hashtable mo) {
+    // see Parameters.Java for defaults here. 
     if (!fixTitleLine(iLine))
        return;
     String line = params.title[iLine];
@@ -64,7 +65,7 @@ class IsoMOReader extends AtomDataReader {
     if (line.indexOf("%N") >= 0)
       line = TextFormat.formatString(line, "N", "" + params.qmOrbitalCount);
     if (line.indexOf("%E") >= 0)
-      line = TextFormat.formatString(line, "E", "" + mo.get("energy"));
+      line = TextFormat.formatString(line, "E", mo.containsKey("energy") && ++rep != 0 ? "" + mo.get("energy") : "");
     if (line.indexOf("%U") >= 0)
       line = TextFormat.formatString(line, "U", params.moData.containsKey("energyUnits") && ++rep != 0 ? (String) params.moData.get("energyUnits") : "");
     if (line.indexOf("%S") >= 0)
@@ -74,7 +75,7 @@ class IsoMOReader extends AtomDataReader {
     if (line.indexOf("%T") >= 0)
       line = TextFormat.formatString(line, "T", mo.containsKey("type") && ++rep != 0  ? "" + mo.get("type") : "");
     boolean isOptional = (line.indexOf("?") == 0);
-    params.title[iLine] = (!isOptional ? line : rep > 0 ? line.substring(1) : "");
+    params.title[iLine] = (!isOptional ? line : rep > 0 && !line.trim().endsWith("=") ? line.substring(1) : "");
   }
   
   protected void generateCube() {

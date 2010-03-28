@@ -646,7 +646,7 @@ public class Parameters {
           title = new String[5];
           title[0] = "%F";
           title[1] = "Model %M  MO %I/%N %T";
-          title[2] = "Energy = %E %U";
+          title[2] = "?Energy = %E %U";
           title[3] = "?Symmetry = %S";
           title[4] = "?Occupancy = %O";
         }

@@ -8004,6 +8004,7 @@ public class ScriptEvaluator {
           // System.out.println("# " + endDegrees + " " + theta + " ;draw " +
           // Escape.escape(points[0]) + Escape.escape(points[1]));
         }
+        m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(), translation);
       }
       nPoints = 1;
     }

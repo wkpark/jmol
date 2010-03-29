@@ -31,7 +31,6 @@ import org.jmol.viewer.JmolConstants;
 
 import javax.vecmath.Point3f;
 import java.util.Vector;
-import java.util.Hashtable;
 import java.util.BitSet;
 
 /*
@@ -123,7 +122,9 @@ public class MOCalculation extends QuantumCalculation implements
   private float occupancy = 2f; //for now -- RHF only
   //private float coefMax = Integer.MAX_VALUE;
   private boolean doNormalize = true;
-  
+  //                                                              DS         DC          FS          FC
+  private int[][] dfCoefMaps = new int[][] {null, null, null, new int[5], new int[6], new int[7], new int[10]};
+
 //  private float[] nuclearCharges;
 
   protected float[][][] voxelDataTemp;
@@ -131,23 +132,25 @@ public class MOCalculation extends QuantumCalculation implements
   public MOCalculation() {
   }
 
-public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
+  public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
                         String calculationType, Point3f[] atomCoordAngstroms,
                         int firstAtomOffset, Vector shells,
-                        float[][] gaussians, Hashtable aoOrdersDF,
+                        float[][] gaussians, int[][] dfCoefMaps,
                         Object slaters,
                         float[] moCoefficients, float[] nuclearCharges, boolean doNormalize) {
-    this.doNormalize = doNormalize;
+    boolean testing = false;
     this.calculationType = calculationType;
     this.firstAtomOffset = firstAtomOffset;
     this.shells = shells;
     this.gaussians = gaussians;
-    //this.aoOrdersDF = aoOrdersDF;
+    if (dfCoefMaps != null)
+      this.dfCoefMaps = dfCoefMaps;
     this.slaters = (SlaterData[]) slaters;
     this.moCoefficients = moCoefficients;
     //this.nuclearCharges = nuclearCharges;
-    boolean testing = false;
     this.isElectronDensity = (testing || nuclearCharges != null);
+    this.doNormalize = doNormalize;
+    
     int[] countsXYZ = volumeData.getVoxelCounts();
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2]);
     voxelData = volumeData.getVoxelData();
@@ -285,23 +288,23 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     case JmolConstants.SHELL_SP:
       addDataSP();
       break;
+    case JmolConstants.SHELL_D_SPHERICAL:
+      addData5D();
+      break;
     case JmolConstants.SHELL_D_CARTESIAN:
       if (as5D)
         addData5D();
       else
         addData6D();
       break;
-    case JmolConstants.SHELL_D_SPHERICAL:
-      addData5D();
+    case JmolConstants.SHELL_F_SPHERICAL:
+      addData7F();
       break;
     case JmolConstants.SHELL_F_CARTESIAN:
       if (as5D)
         addData7F();
       else        
         addData10F();
-      break;
-    case JmolConstants.SHELL_F_SPHERICAL:
-      addData7F();
       break;
     default:
       Logger.warn(" Unsupported basis type for atomno=" + (atomIndex + 1)
@@ -529,18 +532,19 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
 
   private void addData6D() {
     //expects 6 orbitals in the order XX YY ZZ XY XZ YZ
-    if (thisAtom == null  || isElectronDensity) {
+    int[] map = dfCoefMaps[JmolConstants.SHELL_D_CARTESIAN];
+    if (thisAtom == null || isElectronDensity || map[0] == Integer.MIN_VALUE) {
       moCoeff += 6;
       return;
     }
     if (doDebug)
-      dumpInfo("XXYYZZXYXZYZ");
-    float mxx = moCoefficients[moCoeff++];
-    float myy = moCoefficients[moCoeff++];
-    float mzz = moCoefficients[moCoeff++];
-    float mxy = moCoefficients[moCoeff++];
-    float mxz = moCoefficients[moCoeff++];
-    float myz = moCoefficients[moCoeff++];
+      dumpInfo(JmolConstants.SHELL_D_CARTESIAN, map);
+    float mxx = moCoefficients[map[0] + moCoeff++];
+    float myy = moCoefficients[map[1] + moCoeff++];
+    float mzz = moCoefficients[map[2] + moCoeff++];
+    float mxy = moCoefficients[map[3] + moCoeff++];
+    float mxz = moCoefficients[map[4] + moCoeff++];
+    float myz = moCoefficients[map[5] + moCoeff++];
     for (int ig = 0; ig < nGaussians; ig++) {
       float alpha = gaussians[gaussianPtr + ig][0];
       float c1 = gaussians[gaussianPtr + ig][1];
@@ -593,12 +597,13 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     // "Trasnformation Between Cartesian and Pure Spherical Harmonic Gaussians",
     // Schelgel and Frisch, Int. J. Quant. Chem 54, 83-87, 1995
 
-    if (thisAtom == null || isElectronDensity) {
+    int[] map = dfCoefMaps[JmolConstants.SHELL_D_SPHERICAL];
+    if (thisAtom == null || isElectronDensity || map[0] == Integer.MIN_VALUE) {
       moCoeff += 5;
       return;
     }
     if (doDebug)
-      dumpInfo(JmolConstants.SHELL_D_SPHERICAL);
+      dumpInfo(JmolConstants.SHELL_D_SPHERICAL, map);
 
     float alpha, c1, a;
     float x, y, z;
@@ -622,11 +627,11 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     // Normalization constant that shows up for dx^2-y^2
     final float root34 =(doNormalize ? (float) Math.sqrt(0.75) : 1);
 
-    float m0 = moCoefficients[moCoeff++];
-    float m1p = moCoefficients[moCoeff++];
-    float m1n = moCoefficients[moCoeff++];
-    float m2p = moCoefficients[moCoeff++];
-    float m2n = moCoefficients[moCoeff++];
+    float m0 = moCoefficients[map[0] + moCoeff++];
+    float m1p = moCoefficients[map[1] + moCoeff++];
+    float m1n = moCoefficients[map[2] + moCoeff++];
+    float m2p = moCoefficients[map[3] + moCoeff++];
+    float m2n = moCoefficients[map[4] + moCoeff++];
     
     for (int ig = 0; ig < nGaussians; ig++) {
       alpha = gaussians[gaussianPtr + ig][0];
@@ -674,12 +679,13 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
   private void addData10F() {
     // expects 10 orbitals in the order XXX, YYY, ZZZ, XYY, XXY, 
     //                                  XXZ, XZZ, YZZ, YYZ, XYZ
-    if (thisAtom == null || isElectronDensity) {
+    int[] map = dfCoefMaps[JmolConstants.SHELL_F_CARTESIAN];
+    if (thisAtom == null || isElectronDensity || map[0] == Integer.MIN_VALUE) {
       moCoeff += 10;
       return;
     }
     if (doDebug)
-      dumpInfo(JmolConstants.SHELL_F_CARTESIAN);
+      dumpInfo(JmolConstants.SHELL_F_CARTESIAN, map);
     float alpha;
     float c1;
     float a;
@@ -707,16 +713,16 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     final float norm2 =(doNormalize ?  (float) (norm1 / Math.sqrt(3)) : 1);
     final float norm3 =(doNormalize ?  (float) (norm1 / Math.sqrt(15)) : 1);
 
-    float mxxx = moCoefficients[moCoeff++];
-    float myyy = moCoefficients[moCoeff++];
-    float mzzz = moCoefficients[moCoeff++];
-    float mxyy = moCoefficients[moCoeff++];
-    float mxxy = moCoefficients[moCoeff++];
-    float mxxz = moCoefficients[moCoeff++];
-    float mxzz = moCoefficients[moCoeff++];
-    float myzz = moCoefficients[moCoeff++];
-    float myyz = moCoefficients[moCoeff++];
-    float mxyz = moCoefficients[moCoeff++];
+    float mxxx = moCoefficients[map[0] + moCoeff++];
+    float myyy = moCoefficients[map[1] + moCoeff++];
+    float mzzz = moCoefficients[map[2] + moCoeff++];
+    float mxyy = moCoefficients[map[3] + moCoeff++];
+    float mxxy = moCoefficients[map[4] + moCoeff++];
+    float mxxz = moCoefficients[map[5] + moCoeff++];
+    float mxzz = moCoefficients[map[6] + moCoeff++];
+    float myzz = moCoefficients[map[7] + moCoeff++];
+    float myyz = moCoefficients[map[8] + moCoeff++];
+    float mxyz = moCoefficients[map[9] + moCoeff++];
     for (int ig = 0; ig < nGaussians; ig++) {
       alpha = gaussians[gaussianPtr + ig][0];
       c1 = gaussians[gaussianPtr + ig][1];
@@ -775,13 +781,14 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
   private void addData7F() {
     // expects 7 real orbitals in the order f0, f+1, f-1, f+2, f-2, f+3, f-3
 
-    if (thisAtom == null || isElectronDensity) {
+    int[] map = dfCoefMaps[JmolConstants.SHELL_F_SPHERICAL];
+    if (thisAtom == null || isElectronDensity || map[0] == Integer.MIN_VALUE) {
       moCoeff += 7;
       return;
     }
 
     if (doDebug)
-      dumpInfo(JmolConstants.SHELL_F_SPHERICAL);
+      dumpInfo(JmolConstants.SHELL_F_SPHERICAL, map);
 
     float alpha, c1, a;
     float x, y, z, xx, yy, zz;
@@ -825,13 +832,13 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     final float c3n_yyy = c3p_xxx;
     final float c3n_xxy = c3p_xyy;
 
-    float m0 = moCoefficients[moCoeff++];
-    float m1p = moCoefficients[moCoeff++];
-    float m1n = moCoefficients[moCoeff++];
-    float m2p = moCoefficients[moCoeff++];
-    float m2n = moCoefficients[moCoeff++];
-    float m3p = moCoefficients[moCoeff++];
-    float m3n = moCoefficients[moCoeff++];
+    float m0 = moCoefficients[map[0] + moCoeff++];
+    float m1p = moCoefficients[map[1] + moCoeff++];
+    float m1n = moCoefficients[map[2] + moCoeff++];
+    float m2p = moCoefficients[map[3] + moCoeff++];
+    float m2n = moCoefficients[map[4] + moCoeff++];
+    float m3p = moCoefficients[map[5] + moCoeff++];
+    float m3n = moCoefficients[map[6] + moCoeff++];
 
     for (int ig = 0; ig < nGaussians; ig++) {
       alpha = gaussians[gaussianPtr + ig][0];
@@ -1102,7 +1109,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     return;
   }
 
-  private void dumpInfo(int shell) {
+  private void dumpInfo(int shell, int[] map) {
     for (int ig = 0; ig < nGaussians; ig++) {
       float alpha = gaussians[gaussianPtr + ig][0];
       float c1 = gaussians[gaussianPtr + ig][1];
@@ -1111,8 +1118,8 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     if (shell >= 0 && Logger.debugging) {
       String[] so = JmolConstants.getShellOrder(shell);
       for (int i = 0; i < so.length; i++)
-        Logger.debug("MO coeff " + so[i] + " " + (moCoeff + i + 1) + " "
-            + moCoefficients[moCoeff + i]);
+        Logger.debug("MO coeff " + so[i] + " " + (map[i] + moCoeff + i + 1) + " "
+            + moCoefficients[map[i] + moCoeff + i]);
     }
   }
 

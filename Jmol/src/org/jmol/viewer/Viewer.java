@@ -6568,6 +6568,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     }
     resizeImage(0, 0, false, false, true);
+    requestRepaintAndWait();
   }
 
   // //////////////////////////////////////////////////////////////

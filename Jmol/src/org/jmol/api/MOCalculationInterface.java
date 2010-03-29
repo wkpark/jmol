@@ -1,7 +1,6 @@
 package org.jmol.api;
 
 import java.util.BitSet;
-import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.vecmath.Point3f;
@@ -13,7 +12,7 @@ public interface MOCalculationInterface {
                                  String calculationType,
                                  Point3f[] atomCoordAngstroms,
                                  int firstAtomOffset, Vector shells,
-                                 float[][] gaussians, Hashtable aoOrdersDF,
+                                 float[][] gaussians, int[][] dfCoefMaps,
                                  Object slaters,
                                  float[] moCoefficients, float[] nuclearCharges, boolean doNormalize);
   

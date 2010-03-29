@@ -23,7 +23,6 @@
  */
 package org.jmol.adapter.readers.quantum;
 
-import org.jmol.adapter.smarter.*;
 import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
 
@@ -37,7 +36,7 @@ import java.util.Vector;
  * 
  * @author hansonr <hansonr@stolaf.edu>
  */
-abstract class SlaterReader extends AtomSetCollectionReader {
+abstract class SlaterReader extends BasisFunctionReader {
 
   /*
    * -- this abstract superclass is cartesian bases only (s, p, d, f)
@@ -46,11 +45,8 @@ abstract class SlaterReader extends AtomSetCollectionReader {
    * 
    */
 
-  protected final Hashtable moData = new Hashtable();
-  protected int nOrbitals = 0;
   protected final Vector slaters = new Vector();
   protected SlaterData[] slaterArray;
-  protected final Vector orbitals = new Vector();
   
   /**
    * 

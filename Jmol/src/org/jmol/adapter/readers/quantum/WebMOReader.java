@@ -86,6 +86,8 @@ public class WebMOReader extends MopacReader {
 
   protected void finalizeReader() throws Exception {
     super.finalizeReader();
+    if (nOrbitals > 0)
+      setMOs("eV");
     if (Logger.debugging)
       Logger.debug(orbitals.size() + " molecular orbitals read");
   }
@@ -106,36 +108,29 @@ public class WebMOReader extends MopacReader {
 
   void readAtoms() throws Exception {
     /*
-     
-     [ATOMS]
-     C 0 0 -1.11419008746451
-     O 0 0 1.11433559637682
-
-     !!!!or!!!!
-
-     [ATOMS]
-     6 0 0 0
-     6 2.81259696844285 0 0
-     16 1.40112510589261 3.14400070481769 0
-     6 4.21654880978248 -0.850781692374614 -2.34559506901613
-
+     * 
+     * [ATOMS] C 0 0 -1.11419008746451 O 0 0 1.11433559637682
+     * 
+     * !!!!or!!!!
+     * 
+     * [ATOMS] 6 0 0 0 6 2.81259696844285 0 0 16 1.40112510589261
+     * 3.14400070481769 0 6 4.21654880978248 -0.850781692374614
+     * -2.34559506901613
      */
 
-    readLine();
-    boolean isAtomicNumber = (parseInt(line) != Integer.MIN_VALUE);
-    while (line != null && (line.length() == 0 || line.charAt(0) != '[')) {
-      if (line.length() != 0) {
-        Atom atom = atomSetCollection.addNewAtom();
-        String[] tokens = getTokens();
-        if (isAtomicNumber) {
-          atom.elementSymbol = getElementSymbol(parseInt(tokens[0]));
-        } else {
-          atom.elementSymbol = tokens[0];
-        }
-        atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
-        atom.scale(ANGSTROMS_PER_BOHR);
-      }
-      readLine();
+    while (getLine()) {
+      String[] tokens = getTokens();
+      if (tokens.length == 0)
+        continue;
+      int atNo = parseInt(line);
+      Atom atom = atomSetCollection.addNewAtom();
+      if (atNo == Integer.MIN_VALUE)
+        atom.elementSymbol = tokens[0];
+      else
+        atom.elementSymbol = getElementSymbol(atNo);
+      atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]),
+          parseFloat(tokens[3]));
+      atom.scale(ANGSTROMS_PER_BOHR);
     }
   }
 
@@ -149,11 +144,10 @@ public class WebMOReader extends MopacReader {
 
      */
 
-    while (readLine() != null
-        && (line.length() == 0 || line.charAt(0) != '[')) {
-      if (line.length() == 0)
-        continue;
+    while (getLine()) {
       String[] tokens = getTokens();
+      if (tokens.length == 0)
+        continue;
       int atomIndex1 = parseInt(tokens[0]);
       int atomIndex2 = parseInt(tokens[1]);
       int order = parseInt(tokens[2]);
@@ -162,21 +156,74 @@ public class WebMOReader extends MopacReader {
     }
   }
 
+
+  // DS: org.jmol.quantum.MOCalculation expects 
+  //   d2z^2-x2-y2, dxz, dyz, dx2-y2, dxy
+  
+  // DC: org.jmol.quantum.MOCalculation expects 
+  //      Dxx Dyy Dzz Dxy Dxz Dyz
+
+  // FS: org.jmol.quantum.MOCalculation expects
+  //        as 2z3-3x2z-3y2z
+  //               4xz2-x3-xy2
+  //                   4yz2-x2y-y3
+  //                           x2z-y2z
+  //                               xyz
+  //                                  x3-3xy2
+  //                                     3x2y-y3
+
+  // FC: org.jmol.quantum.MOCalculation expects
+  //           xxx yyy zzz xyy xxy xxz xzz yzz yyz xyz
+
+
+  private static String DS_LIST = "NOT IMPLEMENTED IN THIS READER";
+
+  private static String DC_LIST = "xx    yy    zz    xy    xz    yz";
+
+  private static String FS_LIST = "NOT IMPLEMENTED IN THIS READER";
+
+  private static String FC_LIST = "xxx   yyy   zzz   yyx   xxy   xxz   zzx   zzy   yyz   xyz";
+
   void readAtomicOrbitalOrder() throws Exception {
     /*
      [AO_ORDER]
      DOrbitals XX YY ZZ XY XZ YZ
      FOrbitals XXX YYY ZZZ XXY XXZ YYX YYZ ZZX ZZY XYZ
      */
-    Hashtable info = new Hashtable();
-    while (readLine() != null
-        && (line.length() == 0 || line.charAt(0) != '[')) {
-      if (line.length() == 0)
-        continue;
+    
+    while (getLine()) {
       String[] tokens = getTokens();
-      info.put(tokens[0].substring(0, 1), tokens);
+      if (tokens.length == 0)
+        continue;
+      String data = line.substring(9).trim().toLowerCase();
+      boolean isOK = false;
+      switch(tokens.length - 1) {
+      case 3:
+      case 4:
+        isOK = true;
+        break;
+      case 5:
+        isOK = (tokens[0].equals("DOrbitals") && getDFMap(data, JmolAdapter.SHELL_D_SPHERICAL, DS_LIST, 99));
+        break;
+      case 6:
+        isOK = (tokens[0].equals("DOrbitals") && getDFMap(data, JmolAdapter.SHELL_D_CARTESIAN, DC_LIST, 2));
+        break;
+      case 7:
+        isOK = (tokens[0].equals("FOrbitals") && getDFMap(data, JmolAdapter.SHELL_F_SPHERICAL, FS_LIST, 99));
+        break;
+      case 10:
+        isOK = (tokens[0].equals("FOrbitals") && getDFMap(data, JmolAdapter.SHELL_F_CARTESIAN, FC_LIST, 3));
+        break;
+      }      
+      if (!isOK) {
+        Logger.error("atomic orbital order is unrecognized -- skipping reading of MOs due to line: " + line);
+        orbitals = null;
+      }
     }
-    moData.put("atomicOrbitalOrder", info);
+  }
+
+  private boolean getLine() throws Exception {
+    return (readLine() != null && (line.length() == 0 || line.charAt(0) != '['));
   }
 
   void readGaussianBasis() throws Exception {
@@ -202,8 +249,7 @@ public class WebMOReader extends MopacReader {
     int atomIndex = 0;
     int gaussianPtr = 0;
 
-    while (readLine() != null
-        && (line.length() == 0 || line.charAt(0) != '[')) {
+    while (getLine()) {
       String[] tokens = getTokens();
       if (tokens.length == 0)
         continue;
@@ -242,19 +288,17 @@ public class WebMOReader extends MopacReader {
 
   void readSlaterBasis() throws Exception {
     /*
-     * slater format:
-     [STO]
-     1 0 0 0 1 1.565085 0.998181645138011
-     1 1 0 0 0 1.842345 2.59926303779824
-     1 0 1 0 0 1.842345 2.59926303779824
-     1 0 0 1 0 1.842345 2.59926303779824
+     * slater format: [STO] 1 0 0 0 1 1.565085 0.998181645138011 1 1 0 0 0
+     * 1.842345 2.59926303779824 1 0 1 0 0 1.842345 2.59926303779824 1 0 0 1 0
+     * 1.842345 2.59926303779824
      */
-    while (readLine() != null && (line.length() == 0 || line.charAt(0) != '[')) {
+    while (getLine()) {
       String[] tokens = getTokens();
-      if (tokens.length >= 7)
-        addSlater(parseInt(tokens[0]) - 1, parseInt(tokens[1]),
-            parseInt(tokens[2]), parseInt(tokens[3]), parseInt(tokens[4]),
-            parseFloat(tokens[5]), parseFloat(tokens[6]));
+      if (tokens.length < 7)
+        continue;
+      addSlater(parseInt(tokens[0]) - 1, parseInt(tokens[1]),
+          parseInt(tokens[2]), parseInt(tokens[3]), parseInt(tokens[4]),
+          parseFloat(tokens[5]), parseFloat(tokens[6]));
     }
     setSlaters(false, false);
   }
@@ -269,15 +313,21 @@ public class WebMOReader extends MopacReader {
      3 0.111068760356317
      4 -0.020187156204269
      */
+    if (orbitals == null) {
+      Logger.error("MOLECULAR ORBITALS SKIPPED");
+      while(getLine()){
+        // skip
+      }
+      return;
+    }
     Hashtable mo = new Hashtable();
     Vector data = new Vector();
     float energy = parseFloat(readLine());
     float occupancy = parseFloat(readLine());
-    while (readLine() != null
-        && (line.length() == 0 || line.charAt(0) != '[')) {
-      if (line.length() == 0)
-        continue;
+    while (getLine()) {
       String[] tokens = getTokens();
+      if (tokens.length == 0)
+        continue;
       data.addElement(tokens[1]);
     }
     float[] coefs = new float[data.size()];
@@ -287,6 +337,6 @@ public class WebMOReader extends MopacReader {
     mo.put("occupancy", new Float(occupancy));
     mo.put("coefficients", coefs);
     orbitals.addElement(mo);
-    setMOs("eV");
+    nOrbitals++;
   }
 }

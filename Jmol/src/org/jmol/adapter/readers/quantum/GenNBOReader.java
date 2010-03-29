@@ -64,7 +64,6 @@ public class GenNBOReader extends MOReader {
 
   private boolean isOutputFile;
   private String moType = "";
-  private int nOrbitals;
 
   /*
    * molname.31 AO molname.32 PNAO molname.33 NAO molname.34 PNHO molname.35 NHO
@@ -153,6 +152,37 @@ public class GenNBOReader extends MOReader {
     reader = readerSave;
   }
 
+  private static String DS_LIST = "255   252   253   254   251"; 
+  // GenNBO is 251 252 253 254    255 
+  //   for     Dxy Dxz Dyz Dx2-y2 D2z2-x2-y2
+  // org.jmol.quantum.MOCalculation expects 
+  //   d2z^2-x2-y2, dxz, dyz, dx2-y2, dxy
+
+  private static String DC_LIST = "201   204   206   202   203   205";
+  // GenNBO is 201 202 203 204 205 206 
+  //       for Dxx Dxy Dxz Dyy Dyz Dzz
+  // org.jmol.quantum.MOCalculation expects 
+  //      Dxx Dyy Dzz Dxy Dxz Dyz
+
+  private static String FS_LIST = "351   352   353   354   355   356   357";
+  // GenNBO is 351 352 353 354 355 356 357
+  //        as 2z3-3x2z-3y2z
+  //               4xz2-x3-xy2
+  //                   4yz2-x2y-y3
+  //                           x2z-y2z
+  //                               xyz
+  //                                  x3-3xy2
+  //                                     3x2y-y3
+  // org.jmol.quantum.MOCalculation expects the same
+  private static String FC_LIST = "301   307   310   304   302   303   306   309   308   305";
+  // GenNBO is 301 302 303 304 305 306 307 308 309 310
+  //       for xxx xxy xxz xyy xyz xzz yyy yyz yzz zzz
+  // org.jmol.quantum.MOCalculation expects
+  //           xxx yyy zzz xyy xxy xxz xzz yzz yyz xyz
+  //           301 307 310 304 302 303 306 309 308 305
+
+  
+
   private boolean readData31(String line1, String line2) throws Exception {
     if (line1 == null)
       line1 = readLine();
@@ -194,70 +224,42 @@ public class GenNBOReader extends MOReader {
       slater[0] = parseInt(tokens[0]) - 1; // atom pointer; 1-based
       int n = parseInt(tokens[1]);
       nOrbitals += n;
+      line = readLine().trim();
       switch (n) {
       case 1:
         slater[1] = JmolAdapter.SHELL_S;
-        readLine();
         break;
       case 3:
-        if (!"101   102   103".equals(readLine().trim()))
+        if (!"101   102   103".equals(line))
           return false;
         slater[1] = JmolAdapter.SHELL_P;
         break;
       case 4:
-        if (!"1   101   102   103".equals(readLine().trim()))
+        if (!"1   101   102   103".equals(line))
           return false;
         slater[1] = JmolAdapter.SHELL_SP;
-        break;
+        break;        
       case 5:
-        // TODO order?
-        // GenNBO is 251 252 253 254    255 
-        //   for     Dxy Dxz Dyz Dx2-y2 D2z2-x2-y2
-        // org.jmol.quantum.MOCalculation expects 
-        //   d2z^2-x2-y2, dxz, dyz, dx2-y2, dxy
-        if (!"255   252   253   254   251".equals(readLine().trim()))
+        if (!getDFMap(line, JmolAdapter.SHELL_D_SPHERICAL, DS_LIST, 3))
           return false;
         slater[1] = JmolAdapter.SHELL_D_SPHERICAL;
         break;
       case 6:
-        // TODO order?     201   204   206   202   203   205
-        // GenNBO is 201 202 203 204 205 206 
-        //       for Dxx Dxy Dxz Dyy Dyz Dzz
-        // org.jmol.quantum.MOCalculation expects 
-        //      Dxx Dyy Dzz Dxy Dxz Dyz
-        // ie.  201 204 206 202 203 205
-        if (!"201   204   206   202   203   205".equals(readLine().trim()))
+        if (!getDFMap(line, JmolAdapter.SHELL_D_CARTESIAN, DC_LIST, 3))
           return false;
         slater[1] = JmolAdapter.SHELL_D_CARTESIAN;
         break;
       case 7:
-        // TODO order?
-        // GenNBO is 351 352 353 354 355 356 357
-        //        as 2z3-3x2z-3y2z
-        //               4xz2-x3-xy2
-        //                   4yz2-x2y-y3
-        //                           x2z-y2z
-        //                               xyz
-        //                                  x3-3xy2
-        //                                     3x2y-y3
-        // org.jmol.quantum.MOCalculation expects the same
-        if (!"351   352   353   354   355   356   357".equals(readLine().trim()))
+        if (!getDFMap(line, JmolAdapter.SHELL_F_SPHERICAL, FS_LIST, 3))
           return false;
         slater[1] = JmolAdapter.SHELL_F_SPHERICAL;
         break;
       case 10:
-        // TODO order?
-        // GenNBO is 301 302 303 304 305 306 307 308 309 310
-        //       for xxx xxy xxz xyy xyz xzz yyy yyz yzz zzz
-        // org.jmol.quantum.MOCalculation expects
-        //           xxx yyy zzz xyy xxy xxz xzz yzz yyz xyz
-        //           301 307 310 304 302 303 306 309 308 305
-        if (!"301   307   310   304   302   303   306   309   308   305".equals(readLine().trim()))
+        if (!getDFMap(line, JmolAdapter.SHELL_F_CARTESIAN, FC_LIST, 3))
           return false;
         slater[1] = JmolAdapter.SHELL_F_CARTESIAN;
         break;
       }
-      // 0 = S, 1 = P, 2 = SP, 3 = D, 4 = F
       slater[2] = parseInt(tokens[2]) - 1; // gaussian list pointer
       slater[3] = parseInt(tokens[3]);     // number of gaussians
       shells.addElement(slater);

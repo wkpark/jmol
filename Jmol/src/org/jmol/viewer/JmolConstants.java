@@ -3109,18 +3109,18 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   
   // these next in cartesian/spherical pairs:
   
-  final public static int SHELL_D_CARTESIAN = 3;
-  final public static int SHELL_D_SPHERICAL = 4;
-  final public static int SHELL_F_CARTESIAN = 5;
-  final public static int SHELL_F_SPHERICAL = 6;
+  final public static int SHELL_D_SPHERICAL = 3;
+  final public static int SHELL_D_CARTESIAN = 4;
+  final public static int SHELL_F_SPHERICAL = 5;
+  final public static int SHELL_F_CARTESIAN = 6;
 
   final private static String[] quantumShellTags = {"S", "P", "SP", "L", 
-    "D", "5D", "F", "7F"};
+    "5D", "D", "7F", "F"};
   
   final private static int[] quantumShellIDs = {
     SHELL_S, SHELL_P, SHELL_SP, SHELL_L, 
-    SHELL_D_CARTESIAN, SHELL_D_SPHERICAL,
-    SHELL_F_CARTESIAN, SHELL_F_SPHERICAL
+    SHELL_D_SPHERICAL, SHELL_D_CARTESIAN, 
+    SHELL_F_SPHERICAL, SHELL_F_CARTESIAN 
   };
   
   public static final String LOAD_ATOM_DATA_TYPES = "xyz;vxyz;vibration;temperature;occupancy;partialcharge";

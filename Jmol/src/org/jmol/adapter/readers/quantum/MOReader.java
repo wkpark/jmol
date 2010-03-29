@@ -78,15 +78,13 @@ import java.util.Vector;
        /AONBO  / : Print the AO to NBO transformation
   * 
   */
-abstract public class MOReader extends AtomSetCollectionReader {
+abstract public class MOReader extends BasisFunctionReader {
     
   protected int shellCount = 0;
   protected int gaussianCount = 0;
-  protected Hashtable moData = new Hashtable();
   protected Vector shells;
   protected float[][] gaussians;
 
-  protected Vector orbitals = new Vector();
   protected String energyUnits = "";
   
   protected Vector moTypes;
@@ -491,5 +489,5 @@ abstract public class MOReader extends AtomSetCollectionReader {
       alphaBeta = "";
     }
   }
-  
+ 
 }

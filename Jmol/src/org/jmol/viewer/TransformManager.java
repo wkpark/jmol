@@ -504,13 +504,12 @@ abstract class TransformManager {
       internalTranslation = null;
     } else {
       internalTranslation = new Vector3f(translation);
-      //System.out.println("TM ROTAT " + internalTranslation);
       if (isSpin && !Float.isNaN(endDegrees)) {
-        int nFrames = (int) (spinFps / degreesPerSecond * Math.abs(endDegrees) + 1); 
+        int nFrames = (int) (spinFps / Math.abs(degreesPerSecond) * Math.abs(endDegrees) + 1); 
         //System.out.println(nFrames);
         internalTranslation.scale(1f / nFrames);
       }
-      //System.out.println("TM ROTAT " + internalTranslation);
+      //System.out.println("TM TRANSLATE " + internalTranslation);
     }
     boolean isSelected = (bsAtoms != null);
     if (isSpin) {
@@ -2075,13 +2074,7 @@ abstract class TransformManager {
   }
 
   protected void setNavFps(int value) {
-    if (Float.isNaN(navFps))
-      return;
-    if (value <= 0)
-      value = 1;
-    else if (value > 50)
-      value = 50;
-    navFps = value;
+    // see TransformManager11
   }
 
   private void clearSpin() {
@@ -2219,7 +2212,6 @@ abstract class TransformManager {
                 float angle = (isSpinInternal ? internalRotationAxis
                     : fixedRotationAxis).angle / myFps;
                 if (isSpinInternal) {
-                  //System.out.println("TM spin count " + (++count));
                   rotateAxisAngleRadiansInternal(angle, bsAtoms);
                 } else {
                   rotateAxisAngleRadiansFixed(angle, bsAtoms);

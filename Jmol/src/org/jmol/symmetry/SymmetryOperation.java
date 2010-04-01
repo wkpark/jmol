@@ -344,6 +344,10 @@ class SymmetryOperation extends Matrix4f {
   private final static String twelfthsOf(float n12ths) {
     String str = "";
     int i12ths = Math.round(n12ths);
+    if (i12ths == 12)
+      return "1";
+    if (i12ths == -12)
+      return "-1";
     if (i12ths < 0) {
       i12ths = -i12ths;
       if (i12ths % 12 != 0)
@@ -430,17 +434,17 @@ class SymmetryOperation extends Matrix4f {
    * @param ptTarget 
    * @param id
    * @return Object[] containing: 
-   *                    xyz (Jones-Faithful calculated from matrix)
-   *                    xyzOriginal (Provided by calling method) 
-   *                    info ("C2 axis", for example) 
-   *                    draw commands 
-   *                    translation vector (fractional)  
-   *                    translation vector (Cartesian)  
-   *                    inversion point 
-   *                    axis point 
-   *                    axis vector
-   *                    angle of rotation
-   *                    matrix representation
+   *              [0]      xyz (Jones-Faithful calculated from matrix)
+   *              [1]      xyzOriginal (Provided by calling method) 
+   *              [2]      info ("C2 axis", for example) 
+   *              [3]      draw commands 
+   *              [4]      translation vector (fractional)  
+   *              [5]      translation vector (Cartesian)  
+   *              [6]      inversion point 
+   *              [7]      axis point 
+   *              [8]      axis vector (defines plane if angle = 0
+   *              [9]      angle of rotation
+   *              [10]      matrix representation
    */
   public Object[] getDescription(int isym, SymmetryInterface uc, Point3f pt00, Point3f ptTarget, String id) {
     if (!isFinalized)

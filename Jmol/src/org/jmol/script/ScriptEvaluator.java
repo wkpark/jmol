@@ -7821,6 +7821,8 @@ public class ScriptEvaluator {
     boolean helicalPath = false;
     Vector ptsB = null;
     BitSet bsCompare = null;
+    Point3f invPoint = null;
+    Point4f invPlane = null;
     boolean axesOrientationRasmol = viewer.getAxesOrientationRasmol();
     for (int i = 1; i < statementLength; ++i) {
       switch (tok = getToken(i).tok) {
@@ -7861,10 +7863,38 @@ public class ScriptEvaluator {
         haveRotation = true;
         rotAxis.set(0, 0, direction);
         continue;
+      case Token.symop:
+        int symop = intParameter(++i);
+        if (isSyntaxCheck)
+          continue;
+        Hashtable info = viewer.getSpaceGroupInfo(null);
+        Object[] op = (info == null ? null : (Object[]) info.get("operations"));
+        if (symop == 0 || op == null || op.length < Math.abs(symop))
+          error(ERROR_invalidArgument);
+        op = (Object[]) op[Math.abs(symop) - 1];
+        translation = (Vector3f) op[5];
+        invPoint = (Point3f) op[6];
+        points[0] = (Point3f) op[7];
+        rotAxis = (Vector3f) op[8];
+        endDegrees = ((Integer) op[9]).intValue();
+        if (symop < 0) {
+          endDegrees = -endDegrees;
+          if (translation != null)
+            translation.scale(-1);
+        }
+        if (endDegrees == 0 && points[0] != null) {
+          // glide plane
+          invPlane = Measure.getPlaneThroughPoint(points[0], rotAxis);
+        }
+        q = new Quaternion(); // flag only
+        nPoints = (points[0] == null ? 0 : 1);
+        isMolecular = true;
+        haveRotation = true;
+        continue;
       case Token.helix:
         // screw motion, for compare
         helicalPath = true;
-        break;
+        continue;
       case Token.translate:
         translation = new Vector3f(centerParameter(++i));
         isMolecular = isSelected = true;
@@ -8009,6 +8039,16 @@ public class ScriptEvaluator {
         m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(), translation);
       }
       nPoints = 1;
+    }
+    if (invPoint != null) {
+      viewer.invertAtomCoord(invPoint, bsAtoms);
+      if (rotAxis == null)
+        return;
+      if (translation != null)
+        translation = null;
+    }
+    if (invPlane != null) {
+      viewer.invertAtomCoord(invPlane, bsAtoms);
     }
     if (nPoints < 2) {
       if (!isMolecular) {
@@ -8367,6 +8407,8 @@ public class ScriptEvaluator {
             i = iToken + 1;
           }
           aList[0] = n;
+          if (n == 1)
+            error(ERROR_invalidArgument);
           targetValue = floatParameter(checkLast(i));
         }
         if (!isSyntaxCheck)
@@ -8493,7 +8535,7 @@ public class ScriptEvaluator {
         return;
       bs = viewer.getSelectionSet();
       pt = viewer.getAtomSetCenter(bs);
-      viewer.invertSelected(pt, bs);
+      viewer.invertAtomCoord(pt, bs);
       return;
     case Token.stereo:
       iAtom = expression(2).nextSetBit(0);
@@ -11698,9 +11740,9 @@ public class ScriptEvaluator {
             "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;CML;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
       error(
           ERROR_writeWhat,
-          "ALL|COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
-              + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
-          "JPG|JPG64|PNG|GIF|PPM|SPT|JVXL|XJVXL|MESH|PMESH|CML|XYZ|MOL|PDB|"
+          "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
+              + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
+          "CML|GIF|JPG|JPG64|JVXL|MESH|MOL|PDB|PMESH|PNG|PPM|SPT|XJVXL|XYZ|ZIP"
               + driverList.toUpperCase().replace(';', '|'));
     if (isSyntaxCheck)
       return "";
@@ -11842,7 +11884,7 @@ public class ScriptEvaluator {
       if (token != null)
         tok = token.tok;
     }
-    if (tok != Token.symop || statementLength <= 3)
+    if (tok != Token.symop)
       checkLength(-3);
     if (statementLength == 2 && str.indexOf("?") >= 0) {
       showString(viewer.getAllSettings(str.substring(0, str.indexOf("?"))));

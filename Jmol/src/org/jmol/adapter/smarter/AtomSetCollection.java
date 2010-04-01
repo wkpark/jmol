@@ -594,7 +594,7 @@ public class AtomSetCollection {
   
   boolean haveUnitCell = false;
   
-  boolean setNotionalUnitCell(float[] info) {
+  public void setNotionalUnitCell(float[] info) {
     notionalUnitCell = new float[info.length];
     for (int i = 0; i < info.length; i++)
       notionalUnitCell[i] = info[i];
@@ -602,7 +602,6 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("notionalUnitcell", notionalUnitCell);
     setGlobalBoolean(GLOBAL_latticeCells);
     getSymmetry().setUnitCell(notionalUnitCell);
-    return true;
   }
 
   void setGlobalBoolean(int globalIndex) {
@@ -804,16 +803,10 @@ public class AtomSetCollection {
         }
     if (iCell * noSymmetryCount == atomCount - iAtomFirst) 
       appendAtomProperties(iCell);
-    if (operationCount > 0) {
-      String[] symmetryList = new String[operationCount];
-      for (int i = 0; i < operationCount; i++)
-        symmetryList[i] = "" + symmetry.getSpaceGroupXyz(i, doNormalize);
-      setAtomSetAuxiliaryInfo("symmetryOperations", symmetryList);
-    }
+    setSymmetryOps();
     setAtomSetAuxiliaryInfo("presymmetryAtomIndex", new Integer(iAtomFirst));
     setAtomSetAuxiliaryInfo("presymmetryAtomCount",
         new Integer(noSymmetryCount));
-    setAtomSetAuxiliaryInfo("symmetryCount", new Integer(operationCount));
     setAtomSetAuxiliaryInfo("latticeDesignation", symmetry
         .getLatticeDesignation());
     setAtomSetAuxiliaryInfo("unitCellRange", unitCells);
@@ -824,7 +817,19 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("hasSymmetry", Boolean.TRUE);
     setGlobalBoolean(GLOBAL_SYMMETRY);
   }
+
   
+  private void setSymmetryOps() {
+    int operationCount = symmetry.getSpaceGroupOperationCount();
+    if (operationCount > 0) {
+      String[] symmetryList = new String[operationCount];
+      for (int i = 0; i < operationCount; i++)
+        symmetryList[i] = "" + symmetry.getSpaceGroupXyz(i, doNormalize);
+      setAtomSetAuxiliaryInfo("symmetryOperations", symmetryList);
+    }
+    setAtomSetAuxiliaryInfo("symmetryCount", new Integer(operationCount));
+  }
+
   Point3f[] cartesians;
   int bondCount0;
   int bondIndex0;
@@ -966,7 +971,17 @@ public class AtomSetCollection {
     return pt;
   }
   
-  public void applySymmetry(Vector biomts, boolean applySymmetryToBonds, String filter) {
+  public void applySymmetry(Vector biomts, float[] notionalUnitCell, boolean applySymmetryToBonds, String filter) {
+    if (latticeCells != null && latticeCells[0] != 0) {
+      Logger.error("Cannot apply biomolecule when lattice cells are indicated");
+      return;
+    }
+    doNormalize = false;
+    symmetry = null;
+    getSymmetry();
+    setNotionalUnitCell(notionalUnitCell);
+    addSpaceGroupOperation("x,y,z");
+    setAtomSetSpaceGroupName("biomolecule");
     int len = biomts.size();
     this.applySymmetryToBonds = applySymmetryToBonds;
     bondCount0 = bondCount;
@@ -988,6 +1003,7 @@ public class AtomSetCollection {
       }
       Matrix4f mat = new Matrix4f();
       mat.set((float[]) biomts.get(i));
+      Vector3f trans = new Vector3f();    
       for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
         try {
           int atomSite = atoms[i].atomSite;
@@ -996,7 +1012,7 @@ public class AtomSetCollection {
           Atom atom1 = newCloneAtom(atoms[iAtom]);
           atom1.atomSite = atomSite;
           mat.transform(atom1);
-          atom1.bsSymmetry = new BitSet(1);
+          atom1.bsSymmetry = new BitSet(i);
           atom1.bsSymmetry.set(i);
           if (addBonds) {
             // Clone bonds
@@ -1012,18 +1028,27 @@ public class AtomSetCollection {
           errorMessage = "appendAtomCollection error: " + e;
         }
       }
-      setAtomSetAuxiliaryInfo("presymmetryAtomIndex", new Integer(iAtomFirst));
-      setAtomSetAuxiliaryInfo("presymmetryAtomCount",
-          new Integer(atomMax - iAtomFirst));
-      setAtomSetAuxiliaryInfo("biosymmetryCount", new Integer(len));
-      symmetry = null;
-      notionalUnitCell = new float[6];
-      coordinatesAreFractional = false; 
-      setAtomSetAuxiliaryInfo("hasSymmetry", Boolean.TRUE);
-      setGlobalBoolean(GLOBAL_SYMMETRY);
+      mat.m03 /= notionalUnitCell[0];
+      mat.m13 /= notionalUnitCell[1];
+      mat.m23 /= notionalUnitCell[2];
+      if (symmetry != null)
+        symmetry.addSpaceGroupOperation(mat);
     }
-    //need to clone bonds
-
+    int noSymmetryCount = atomMax - iAtomFirst;
+    setAtomSetAuxiliaryInfo("presymmetryAtomIndex", new Integer(iAtomFirst));
+    setAtomSetAuxiliaryInfo("presymmetryAtomCount",
+        new Integer(noSymmetryCount));
+    setAtomSetAuxiliaryInfo("biosymmetryCount", new Integer(len));
+    if (symmetry != null) {
+      symmetry.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
+      setSymmetryOps();
+    }
+    symmetry = null;
+    notionalUnitCell = new float[6];
+    coordinatesAreFractional = false; 
+    setAtomSetAuxiliaryInfo("hasSymmetry", Boolean.TRUE);
+    setGlobalBoolean(GLOBAL_SYMMETRY);
+    //TODO: need to clone bonds
   }
   
   Hashtable atomSymbolicMap = new Hashtable();

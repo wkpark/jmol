@@ -142,7 +142,7 @@ class SpaceGroup {
     }
 
     finalOperations = new SymmetryOperation[operationCount];
-    if (doNormalize && count > 0) {
+    if (doNormalize && count > 0 && atoms != null) {
       // we must apply this first to (x,y,z) JUST IN CASE the 
       // model center itself is out of bounds, because we want
       // NO operation for (x,y,z). This requires REDEFINING ATOM LOCATIONS

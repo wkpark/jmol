@@ -110,6 +110,11 @@ public class Symmetry implements SymmetryInterface {
     return spaceGroup.addSymmetry(xyz, opId);
   }
 
+  public void addSpaceGroupOperation(Matrix4f mat) {
+    spaceGroup.addSymmetry("=" + 
+        SymmetryOperation.getXYZFromMatrix(mat, false, false, false), 0);    
+  }
+
   public void setLattice(int latt) {
     spaceGroup.setLattice(latt);
   }

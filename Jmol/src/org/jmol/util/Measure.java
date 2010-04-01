@@ -202,6 +202,10 @@ final public class Measure {
     return new Point4f(vNorm.x, vNorm.y, vNorm.z, w);
   }
   
+  public static Point4f getPlaneThroughPoint(Point3f pt, Vector3f normal) {
+    return new Point4f(normal.x, normal.y, normal.z, -normal.dot(new Vector3f(pt)));
+  }
+  
   public static float distanceToPlane(Point4f plane, Point3f pt) {
     return (plane == null ? Float.NaN 
         : (plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.w)

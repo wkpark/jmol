@@ -1642,7 +1642,7 @@ abstract public class ModelCollection extends BondCollection {
         if (invAtoms.get(a.index)) {
             bsAtoms.or(getBranchBitSet(a.index, iAtom));
         } else {
-          vNot.add(atoms[i]);
+          vNot.add(a);
         }
       }
       if (vNot.size() == 0)
@@ -3127,7 +3127,7 @@ abstract public class ModelCollection extends BondCollection {
       if (info != null)
         return info;
       info = new Hashtable();
-      if (pt1 == null && drawID == null)
+      if (pt1 == null && drawID == null && symOp == 0)
         setModelAuxiliaryInfo(modelIndex, "spaceGroupInfo", info);
       cellInfo = unitCells[modelIndex];
       spaceGroup = cellInfo.getSpaceGroupName();

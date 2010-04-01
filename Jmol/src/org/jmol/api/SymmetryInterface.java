@@ -126,4 +126,6 @@ public interface SymmetryInterface {
 
   public abstract boolean isSlab();
 
+  public abstract void addSpaceGroupOperation(Matrix4f mat);
+
 }

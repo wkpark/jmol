@@ -6309,7 +6309,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public int getHermiteLevel() {
     // mps
-    return global.hermiteLevel;
+    return (getSpinOn() ? 0 : global.hermiteLevel);
   }
 
   public boolean getHighResolution() {
@@ -6568,7 +6568,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     }
     resizeImage(0, 0, false, false, true);
-    requestRepaintAndWait();
+   // requestRepaintAndWait();
   }
 
   // //////////////////////////////////////////////////////////////
@@ -7182,16 +7182,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.allowRotateSelected;
   }
 
-  public void invertSelected(Point3f pt, BitSet bs) {
+  public void invertAtomCoord(Point3f pt, BitSet bs) {
     // Eval
     modelSet.invertSelected(pt, null, -1, null, bs);
     refreshMeasures(true);
   }
 
-  public void invertSelected(int iAtom, BitSet bsAtomsAB) {
+  public void invertAtomCoord(Point4f plane, BitSet bs) {
+    modelSet.invertSelected(null, plane, -1, null, bs);
+    refreshMeasures(true);
   }
 
-public void invertSelected(Point3f pt, Point4f plane, int iAtom, BitSet invAtoms) {
+  public void invertSelected(Point3f pt, Point4f plane, int iAtom, BitSet invAtoms) {
     // Eval
     modelSet.invertSelected(pt, plane, iAtom, invAtoms, selectionManager.getSelectionSet());
     refreshMeasures(true);

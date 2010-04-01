@@ -35,6 +35,7 @@ import javax.vecmath.AxisAngle4f;
 import org.jmol.g3d.Text3D;
 import org.jmol.script.Token;
 import org.jmol.util.Escape;
+import org.jmol.util.Logger;
 
 import org.jmol.util.Quaternion;
 
@@ -2159,7 +2160,6 @@ abstract class TransformManager {
     boolean isNav;
     boolean isGesture;
     boolean isReset;
-    private int count;
     
     SpinThread(float endDegrees, Vector endPositions, BitSet bsAtoms, boolean isNav, boolean isGesture) {
       setName("SpinThread" + new Date());
@@ -2175,8 +2175,8 @@ abstract class TransformManager {
       viewer.getGlobalSettings().setParameterValue(isNav ? "_navigating" : "_spinning", true);
       int i = 0;
       long timeBegin = System.currentTimeMillis();
-      count = 0;
       float angle = 0;
+      boolean haveNotified = false;
       while (!isInterrupted()) {
         if (isNav && myFps != navFps) {
           myFps = navFps;
@@ -2202,7 +2202,11 @@ abstract class TransformManager {
         int currentTime = (int) (System.currentTimeMillis() - timeBegin);
         int sleepTime = (targetTime - currentTime);
         //System.out.println(targetTime + " " + currentTime + " " + sleepTime);
-        if (sleepTime > 0) {
+        if (sleepTime <= 0) {
+          if (!haveNotified)
+            Logger.info("spinFPS is set too fast (" + myFps + ") -- can't keep up!");
+          haveNotified = true;
+        } else {
           boolean isInMotion = (bsAtoms == null && viewer.getInMotion());
           if (isInMotion) {
             if (isGesture)
@@ -2214,7 +2218,6 @@ abstract class TransformManager {
               if (isNav) {
                 setNavigationOffsetRelative(navigatingSurface);
               } else if (isSpinInternal || isSpinFixed) {
-                count++;
                 angle = (isSpinInternal ? internalRotationAxis
                     : fixedRotationAxis).angle / myFps;
                 if (isSpinInternal) {
@@ -2223,6 +2226,7 @@ abstract class TransformManager {
                   rotateAxisAngleRadiansFixed(angle, bsAtoms);
                 }
                 nDegrees += Math.abs(angle * degreesPerRadian);
+                //System.out.println(i + " " + angle + " " + nDegrees);
               } else { // old way: Rx * Ry * Rz
                 if (spinX != 0) {
                   rotateXRadians(spinX * JmolConstants.radiansPerDegree / myFps, null);

@@ -996,8 +996,6 @@ class ScriptMathProcessor {
           nPoints++;
           break;
         case Token.integer:
-          rangeMinMax[rPt++ % 2] = args[i].intValue;
-          break;
         case Token.decimal:
           rangeMinMax[rPt++ % 2] = ScriptVariable.fValue(args[i]);
           break;
@@ -2658,7 +2656,7 @@ class ScriptMathProcessor {
   }
 
   static Matrix4f getMatrix4f(Matrix3f matRotate, Tuple3f vTranslate) {
-    return new Matrix4f(matRotate, new Vector3f(vTranslate), 1);
+    return new Matrix4f(matRotate, vTranslate == null ? new Vector3f() : new Vector3f(vTranslate), 1);
   }
 
   private boolean evaluateBoundBox(ScriptVariable x2) {

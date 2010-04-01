@@ -504,16 +504,20 @@ abstract class TransformManager {
       internalTranslation = null;
     } else {
       internalTranslation = new Vector3f(translation);
-      if (isSpin && !Float.isNaN(endDegrees)) {
-        int nFrames = (int) (spinFps / Math.abs(degreesPerSecond) * Math.abs(endDegrees) + 1); 
-        //System.out.println(nFrames);
-        internalTranslation.scale(1f / nFrames);
-      }
       //System.out.println("TM TRANSLATE " + internalTranslation);
     }
     boolean isSelected = (bsAtoms != null);
     if (isSpin) {
-      internalRotationAxis.set(axis, degreesPerSecond
+      // we need to adjust the degreesPerSecond to match a multiple of the frame rate
+      //System.out.println(" ?? " + (spinFps / Math.abs(degreesPerSecond) * Math.abs(endDegrees)));
+      int nFrames = (int) (Math.abs(endDegrees) / Math.abs(degreesPerSecond) * spinFps + 0.5);
+      if (!Float.isNaN(endDegrees)) {
+        rotationRate = degreesPerSecond = endDegrees / nFrames * spinFps;
+        //System.out.println("TM nFrames = " + nFrames);
+        if (translation != null)
+        internalTranslation.scale(1f / (nFrames));
+      }
+      internalRotationAxis.set(axis, rotationRate
           * JmolConstants.radiansPerDegree);
       isSpinInternal = true;
       isSpinFixed = false;
@@ -1092,24 +1096,24 @@ abstract class TransformManager {
    
    
    \----------------0----------------/    midplane, p = 0.5, 1/f = 1
-   \        model center           /     viewingRange = screenPixelCount
-   \                             /
-   \                           /
-   \                         /
-   \-----------------------/   front plane, p = 0, 1/f = c / (c + 0.5)
-   \                     /    viewingRange = screenPixelCount / f
-   \                   /
-   \                 /
-   \               /   The distance across is the distance that is viewable
-   \             /    for this Z position. Just magnify a model and place its
-   \           /     center at 0. Whatever part of the model is within the
-   \         /      triangle will be viewed, scaling each distance so that
-   \       /       it ends up screenWidthPixels wide.
-   \     /
-   \   /
-   \ /
-   X  camera position, p = -c, 1/f = 0
-   viewingRange = 0
+    \        model center           /     viewingRange = screenPixelCount
+     \                             /
+      \                           /
+       \                         /
+        \-----------------------/   front plane, p = 0, 1/f = c / (c + 0.5)
+         \                     /    viewingRange = screenPixelCount / f
+          \                   /
+           \                 /
+            \               /   The distance across is the distance that is viewable
+             \             /    for this Z position. Just magnify a model and place its
+              \           /     center at 0. Whatever part of the model is within the
+               \         /      triangle will be viewed, scaling each distance so that
+                \       /       it ends up screenWidthPixels wide.
+                 \     /
+                  \   /
+                   \ /
+                    X  camera position, p = -c, 1/f = 0
+                       viewingRange = 0
 
    VISUAL RANGE
    
@@ -2155,7 +2159,7 @@ abstract class TransformManager {
     boolean isNav;
     boolean isGesture;
     boolean isReset;
-   // private int count;
+    private int count;
     
     SpinThread(float endDegrees, Vector endPositions, BitSet bsAtoms, boolean isNav, boolean isGesture) {
       setName("SpinThread" + new Date());
@@ -2171,13 +2175,14 @@ abstract class TransformManager {
       viewer.getGlobalSettings().setParameterValue(isNav ? "_navigating" : "_spinning", true);
       int i = 0;
       long timeBegin = System.currentTimeMillis();
-      //count = 0;
+      count = 0;
+      float angle = 0;
       while (!isInterrupted()) {
         if (isNav && myFps != navFps) {
           myFps = navFps;
           i = 0;
           timeBegin = System.currentTimeMillis();
-        } else if (!isNav && myFps != spinFps) {
+        } else if (!isNav && myFps != spinFps && bsAtoms == null) {
           myFps = spinFps;
           i = 0;
           timeBegin = System.currentTimeMillis();
@@ -2209,7 +2214,8 @@ abstract class TransformManager {
               if (isNav) {
                 setNavigationOffsetRelative(navigatingSurface);
               } else if (isSpinInternal || isSpinFixed) {
-                float angle = (isSpinInternal ? internalRotationAxis
+                count++;
+                angle = (isSpinInternal ? internalRotationAxis
                     : fixedRotationAxis).angle / myFps;
                 if (isSpinInternal) {
                   rotateAxisAngleRadiansInternal(angle, bsAtoms);
@@ -2235,7 +2241,8 @@ abstract class TransformManager {
                 viewer.refresh(1, "SpinThread:run()");
               else
                 viewer.requestRepaintAndWait();
-              if (!isNav && (nDegrees >= endDegrees - 0.00001))
+              //System.out.println(angle * degreesPerRadian + " " + count + " " + nDegrees + " " + endDegrees);
+              if (!isNav && nDegrees >= endDegrees - 0.001)
                 setSpinOn(false);
             }
             Thread.sleep(sleepTime);

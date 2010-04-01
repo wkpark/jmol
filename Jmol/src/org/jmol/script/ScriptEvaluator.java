@@ -7886,7 +7886,7 @@ public class ScriptEvaluator {
           // glide plane
           invPlane = Measure.getPlaneThroughPoint(points[0], rotAxis);
         }
-        q = new Quaternion(); // flag only
+        q = new Quaternion(rotAxis, endDegrees);
         nPoints = (points[0] == null ? 0 : 1);
         isMolecular = true;
         haveRotation = true;
@@ -7964,10 +7964,10 @@ public class ScriptEvaluator {
           rotAxis.set(centerParameter(i));
           break;
         }
-        q = new Quaternion(); // flag only
         Point4f p4 = getPoint4f(i);
         rotAxis.set(p4.x, p4.y, p4.z);
         endDegrees = p4.w;
+        q = new Quaternion(rotAxis, endDegrees);
         break;
       case Token.bitset:
       case Token.expressionBegin:
@@ -8036,16 +8036,16 @@ public class ScriptEvaluator {
           // System.out.println("# " + endDegrees + " " + theta + " ;draw " +
           // Escape.escape(points[0]) + Escape.escape(points[1]));
         }
-        m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(), translation);
+        m4 = null;
       }
+      if (isSpin && m4 == null)
+        m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(), translation);
       nPoints = 1;
     }
     if (invPoint != null) {
       viewer.invertAtomCoord(invPoint, bsAtoms);
       if (rotAxis == null)
         return;
-      if (translation != null)
-        translation = null;
     }
     if (invPlane != null) {
       viewer.invertAtomCoord(invPlane, bsAtoms);

@@ -2453,7 +2453,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     if (matchHbond) {
       initializeBspf();
-      return new int[] { autoHbond(bsA, bsB, 0, 0), 0 };
+      return new int[] { -autoHbond(bsA, bsB, 0, 0), 0 };
     }
     return new int[] { autoBond(bsA, bsB, null, bsBonds), 0 };
   }
@@ -2483,17 +2483,20 @@ abstract public class ModelCollection extends BondCollection {
   /**
    * a generalized formation of HBONDS, carried out in relation to calculate
    * HBONDS {atomsFrom} {atomsTo}. The calculation can create pseudo-H bonds for
-   * files that do not contain H atoms
+   * files that do not contain H atoms.
    * 
-   * @param bsA
-   * @param bsB
-   * @param maxXYDistance
-   * @param minAttachedAngle
-   * @return number of hbonds formed
+   * @param bsA  "from" set (must contain H if that is desired)
+   * @param bsB  "to" set
+   * @param maxXYDistance       max distance or 0
+   * @param minAttachedAngle    min attached angle or 0
+   * @return negative number of pseudo-hbonds or number of actual hbonds formed
    */
   protected int autoHbond(BitSet bsA, BitSet bsB, float maxXYDistance,
                           float minAttachedAngle) {
-    boolean considerH = (maxXYDistance != 0);
+    int i = bsA.nextSetBit(0);
+    if (i < 0)
+      return 0;
+    boolean considerH = (models[i].hydrogenCount == 0 || maxXYDistance != 0);
     if (maxXYDistance <= 0)
       maxXYDistance = defaultHbondMax;
     float hbondMax2 = maxXYDistance * maxXYDistance;
@@ -2509,11 +2512,12 @@ abstract public class ModelCollection extends BondCollection {
       Logger.startTimer();
     int modelLast = -1;
     boolean haveHAtoms = false;
+    boolean isPseudo = true;
     BitSet bsCO = new BitSet();
-    for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1))
+    for (i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1))
       if (atoms[i].getSpecialAtomID() == JmolConstants.ATOMID_CARBONYL_OXYGEN)
         bsCO.set(i);
-    for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
+    for (i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
       Atom atom = atoms[i];
       int elementNumber = atom.getElementNumber();
       boolean isH = (elementNumber == 1);
@@ -2535,6 +2539,7 @@ abstract public class ModelCollection extends BondCollection {
         min2 = hxbondMin2;
         max2 = hxbondMax2;
       } else {
+        isPseudo = true;
         dmax = maxXYDistance;
         min2 = hbondMin2;
         max2 = hbondMax2;
@@ -2569,7 +2574,7 @@ abstract public class ModelCollection extends BondCollection {
         Integer.MIN_VALUE, null, bsPseudoHBonds);
     if (showRebondTimes && Logger.debugging)
       Logger.checkTimer("Time to hbond");
-    return nNew;
+    return (isPseudo ? -nNew : nNew);
   }
 
 

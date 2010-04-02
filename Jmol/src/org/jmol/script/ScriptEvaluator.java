@@ -9476,7 +9476,7 @@ public class ScriptEvaluator {
     boolean isSurface = false;
     BitSet bs;
     BitSet bs2;
-    int n;
+    int n = Integer.MIN_VALUE;
     if ((iToken = statementLength) >= 2) {
       clearDefinedVariableAtomSets();
       switch (getToken(1).tok) {
@@ -9561,7 +9561,7 @@ public class ScriptEvaluator {
         if (statementLength == 2) {
           if (!isSyntaxCheck) {
             n = viewer.autoHbond();
-            showString(n + " pseudo-hydrogen bonds created");
+            break;
           }
           return;
         }
@@ -9569,7 +9569,7 @@ public class ScriptEvaluator {
         bs2 = expression(iToken + 1);
         if (!isSyntaxCheck) {
           n = viewer.autoHbond(bs1, bs2, -1, -1);
-          showString(n + " hydrogen bonds created");
+          break;
         }
         return;
       case Token.structure:
@@ -9580,6 +9580,10 @@ public class ScriptEvaluator {
           bs = viewer.getAtomBitSet(null);
         viewer.calculateStructures(bs);
         viewer.addStateScript(thisCommand, false, true);
+        return;
+      }
+      if (n != Integer.MIN_VALUE) {
+        showString(Math.abs(n) + (n < 0 ? " pseudo-" : " ") + "hydrogen bonds created");
         return;
       }
     }

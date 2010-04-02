@@ -636,7 +636,7 @@ abstract public class ModelSet extends ModelCollection {
     bsPseudoHBonds = new BitSet();
     if (minAttachedAngle == 0 && useRasMolHbondsCalculation && bondCount > 0) {
       calcHydrogenBonds(bsA, bsB);
-      return BitSetUtil.cardinalityOf(bsPseudoHBonds);
+      return -BitSetUtil.cardinalityOf(bsPseudoHBonds);
     }
     initializeBspf();
     return super.autoHbond(bsA, bsB, maxXYDistance, minAttachedAngle);

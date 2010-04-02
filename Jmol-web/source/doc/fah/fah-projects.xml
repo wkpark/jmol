@@ -3926,6 +3926,12 @@
   <fah_proj number="1775" name="p1775_BCHE_DAPP5_03_33_A1B" public="y" file="xyz"
     server="134.139.127.31" atoms="98789" preferred="14" deadline="28"
     credit="2137.6" frames="100" code="A0" contact="esorin" contrib="Bruce"/>
+  <fah_proj number="1798" name="p1798_LUTEO_300K" public="n"
+    server="134.139.127.32" atoms="41330" preferred="7" deadline="14"
+    credit="435" frames="100" code="A0" contact="esorin"/>
+  <fah_proj number="1799" name="p1799_AQUIFEX_300K" public="n"
+    server="134.139.127.32" atoms="41361" preferred="7" deadline="14"
+    credit="412" frames="100" code="A0" contact="esorin"/>
 
   <!-- Projects 1800 to 1899 -->
   <fah_proj number="1800" name="p1800_Collagen_PPG10_restrained_unfolding" public="y" file="xyz"
@@ -8441,9 +8447,39 @@
   <fah_proj number="10008" name="p10008" public="y" file="xyz"
     server="129.74.85.48" atoms="544" preferred="4.54" deadline="34.05"
     credit="124.85" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10009" name="p10009" public="n"
+    server="129.74.85.15" atoms="551" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
   <fah_proj number="10010" name="p10010" public="n"
     server="129.74.85.48" atoms="551" preferred="4.6" deadline="34.48"
     credit="126.41" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10012" name="p10012" public="n"
+    server="129.74.85.15" atoms="558" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10013" name="p10013" public="n"
+    server="129.74.85.15" atoms="554" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10014" name="p10014" public="n"
+    server="129.74.85.15" atoms="550" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10015" name="p10015" public="n"
+    server="129.74.85.15" atoms="556" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10016" name="p10016" public="n"
+    server="129.74.85.15" atoms="554" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10017" name="p10017" public="n"
+    server="129.74.85.15" atoms="554" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10019" name="p10019" public="n"
+    server="129.74.85.15" atoms="561" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10020" name="p10020" public="n"
+    server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10099" name="p10099" public="n"
+    server="129.74.85.15" atoms="551" preferred="0.09" deadline="1"
+    credit="2.53" frames="100" code="PM" contact="abdulwahidc"/>
 
   <!-- Projects 10100 to 10199 -->
   <fah_proj number="10101" name="p10101" public="y"
@@ -8471,6 +8507,14 @@
     server="171.64.65.71" atoms="1254" preferred="2" deadline="3"
     credit="548" frames="100" code="GG2" contact="gbowman"/>
 
+  <!-- Projects 10300 to 10399 -->
+  <fah_proj number="10300" name="p10300" public="n"
+    server="171.67.108.38" atoms="25077" preferred="100" deadline="140"
+    credit="520" frames="100" code="DG" contact="dsglazer"/>
+  <fah_proj number="10301" name="p10301" public="n"
+    server="171.67.108.38" atoms="14674" preferred="70" deadline="100"
+    credit="360" frames="100" code="DG" contact="dsglazer"/>
+
   <!-- Projects 10400 to 10499 -->
   <fah_proj number="10400" name="p10400" public="n"
     server="171.64.65.79" atoms="576" preferred="36" deadline="53"
@@ -8492,5 +8536,10 @@
   <fah_proj number="10505" name="p10505" public="y"
     server="171.67.108.21" atoms="0" preferred="6" deadline="9"
     credit="451" frames="100" code="GG2" contact="vvoelz"/>
+
+  <!-- Projects 10600 to 10699 -->
+  <fah_proj number="10601" name="p10601" public="n"
+    server="171.67.108.20" atoms="264" preferred="5" deadline="30"
+    credit="4920" frames="100" contact="yslin"/>
 
 </fah_projects>

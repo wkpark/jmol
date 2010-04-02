@@ -3929,7 +3929,7 @@
   <fah_proj number="1798" name="p1798_LUTEO_300K" public="n"
     server="134.139.127.32" atoms="41330" preferred="7" deadline="14"
     credit="435" frames="100" code="A0" contact="esorin"/>
-  <fah_proj number="1799" name="p1799_AQUIFEX_300K" public="n"
+  <fah_proj number="1799" name="p1799_AQUIFEX_300K" public="n" file="xyz"
     server="134.139.127.32" atoms="41361" preferred="7" deadline="14"
     credit="412" frames="100" code="A0" contact="esorin"/>
 
@@ -8255,11 +8255,11 @@
     server="171.64.65.54" atoms="76757" preferred="3" deadline="6"
     credit="483" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
   <fah_proj number="6040" name="p6040_HA_solvated" public="n"
-    server="171.64.65.54" atoms="330706" preferred="4" deadline="6"
-    credit="1395" frames="100" code="A3" contact="kasson" kfactor="6.2"/>
+    server="171.64.65.54" atoms="330706" preferred="6" deadline="8"
+    credit="1395" frames="100" code="A3" contact="kasson" kfactor="4.63"/>
   <fah_proj number="6041" name="p6041_HA_solvated" public="n"
-    server="171.64.65.54" atoms="330706" preferred="4" deadline="6"
-    credit="1395" frames="100" code="A3" contact="kasson"/>
+    server="171.64.65.54" atoms="330706" preferred="6" deadline="8"
+    credit="1395" frames="100" code="A3" contact="kasson" kfactor="4.63"/>
 
   <!-- Projects 6300 to 6399 -->
   <fah_proj number="6300" name="p6300_Peptide dimer in TIP3P water" public="y" file="xyz"
@@ -8511,9 +8511,9 @@
   <fah_proj number="10300" name="p10300" public="n"
     server="171.67.108.38" atoms="25077" preferred="100" deadline="140"
     credit="520" frames="100" code="DG" contact="dsglazer"/>
-  <fah_proj number="10301" name="p10301" public="n"
+  <fah_proj number="10301" name="p10301" public="n" file="xyz"
     server="171.67.108.38" atoms="14674" preferred="70" deadline="100"
-    credit="360" frames="100" code="DG" contact="dsglazer"/>
+    credit="360" frames="100" code="DG" contact="dsglazer" contrib="SandStar"/>
 
   <!-- Projects 10400 to 10499 -->
   <fah_proj number="10400" name="p10400" public="n"

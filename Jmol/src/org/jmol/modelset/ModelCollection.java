@@ -2512,9 +2512,10 @@ abstract public class ModelCollection extends BondCollection {
       Logger.startTimer();
     int modelLast = -1;
     BitSet bsCO = new BitSet();
-    for (i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1))
-      if (atoms[i].getSpecialAtomID() == JmolConstants.ATOMID_CARBONYL_OXYGEN)
-        bsCO.set(i);
+    if (!considerH)
+      for (i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1))
+        if (atoms[i].getSpecialAtomID() == JmolConstants.ATOMID_CARBONYL_OXYGEN)
+          bsCO.set(i);
     for (i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
       Atom atom = atoms[i];
       int elementNumber = atom.getElementNumber();
@@ -2523,6 +2524,7 @@ abstract public class ModelCollection extends BondCollection {
           || isH && !considerH)
         continue;
       float min2, max2, dmax;
+      boolean firstIsCO;
       if (isH) {
         Bond[] b = atom.getBonds();
         boolean isOK = false;
@@ -2536,12 +2538,13 @@ abstract public class ModelCollection extends BondCollection {
         dmax = hxbondMax;
         min2 = hxbondMin2;
         max2 = hxbondMax2;
+        firstIsCO = false;
       } else {
         dmax = maxXYDistance;
         min2 = hbondMin2;
         max2 = hbondMax2;
+        firstIsCO = bsCO.get(i);
       }
-      boolean firstIsCO = bsCO.get(i);
       // float searchRadius = hbondMax;
       if (atom.modelIndex != modelLast) {
         initializeBspt(modelLast = atom.modelIndex);
@@ -2551,10 +2554,13 @@ abstract public class ModelCollection extends BondCollection {
       while (iter.hasNext()) {
         Atom atomNear = atoms[iter.next()];
         int elementNumberNear = atomNear.getElementNumber();
-        if (elementNumberNear != 7 && elementNumberNear != 8
-            || atomNear == atom || (d2 = iter.foundDistance2()) < min2
-            || d2 > max2 || atom.isBonded(atomNear) || firstIsCO
-            && bsCO.get(atomNear.index)) {
+        if (atomNear == atom           
+            || !isH && elementNumberNear != 7 && elementNumberNear != 8
+            || isH && elementNumberNear == 1
+            || (d2 = iter.foundDistance2()) < min2 || d2 > max2 
+            || firstIsCO && bsCO.get(atomNear.index)
+            || atom.isBonded(atomNear) 
+            ){
           continue;
         }
         if (minAttachedAngle > 0

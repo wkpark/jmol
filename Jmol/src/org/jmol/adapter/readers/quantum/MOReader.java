@@ -241,6 +241,10 @@ abstract public class MOReader extends BasisFunctionReader {
     Logger.info(n + " natural bond AO basis functions found");
   }
 
+  private static String DC_LIST = "xx    yy    zz    xy    xz    yz";
+  private static String FC_LIST = "xxx   yyy   zzz   yyx   xxy   xxz   zzx   zzy   yyz   xyz";
+  private boolean haveCoeffMap;
+  
   /*
    * 
    * GAMESS:
@@ -303,7 +307,8 @@ abstract public class MOReader extends BasisFunctionReader {
     haveNboOrbitals = true;
     Hashtable[] mos = null;
     Vector[] data = null;
-    Vector coeffLabels = null;
+    String dCoeffLabels = "";
+    String fCoeffLabels = "";
     int ptOffset = -1;
     int fieldSize = 0;
     int nThisLine = 0;
@@ -344,24 +349,20 @@ abstract public class MOReader extends BasisFunctionReader {
           nBlank = 0;
         if (nBlank == 2)
           break;
+        
+        if (!haveCoeffMap) {
+          haveCoeffMap = true;
+          if (dCoeffLabels.length() > 0)
+            getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_CARTESIAN, DC_LIST, 2);
+          if (fCoeffLabels.length() > 0)
+            getDFMap(fCoeffLabels, JmolAdapter.SHELL_F_CARTESIAN, FC_LIST, 3);
+        }
         for (int iMo = 0; iMo < nThisLine; iMo++) {
           float[] coefs = new float[data[iMo].size()];
           int iCoeff = 0;
           while (iCoeff < coefs.length) {
-            // Reorder F coeffs; leave the rest untouched
-            if (((String) coeffLabels.get(iCoeff)).equals("XXX")) {
-              Hashtable fCoeffs = new Hashtable();
-              for (int ifc = 0; ifc < 10; ifc++) {
-                fCoeffs.put(coeffLabels.get(iCoeff+ifc), data[iMo].get(iCoeff+ifc));
-              }
-              for (int ifc = 0; ifc < 10; ifc++) {
-                String orderLabel = JmolAdapter.getQuantumSubshellTag(JmolAdapter.SHELL_F_CARTESIAN, ifc);
-                coefs[iCoeff++] = parseFloat((String) fCoeffs.get(orderLabel));
-              }
-            } else {
-              coefs[iCoeff] = parseFloat((String) data[iMo].get(iCoeff));
-              iCoeff++;
-            }
+            coefs[iCoeff] = parseFloat((String) data[iMo].get(iCoeff));
+            iCoeff++;
           }
           haveMOs = true;
           mos[iMo].put("coefficients", coefs);
@@ -398,7 +399,6 @@ abstract public class MOReader extends BasisFunctionReader {
           data[i] = new Vector();
         }
         getMOHeader(headerType, tokens, mos, nThisLine);
-        coeffLabels = new Vector();
         continue;
       }
       if (ptOffset < 0) {
@@ -410,8 +410,10 @@ abstract public class MOReader extends BasisFunctionReader {
         for (int i = 0; i < nThisLine; i++, pt += fieldSize)
           data[i].addElement(line.substring(pt, pt + fieldSize).trim());
       }
-      coeffLabels.addElement(JmolAdapter.canonicalizeQuantumSubshellTag(tokens[nSkip - 1].toUpperCase()));
-      
+      if (!haveCoeffMap && tokens[nSkip - 1].length() == 3)
+        fCoeffLabels += " " + JmolAdapter.canonicalizeQuantumSubshellTag(tokens[nSkip - 1].toLowerCase());      
+      if (!haveCoeffMap && tokens[nSkip - 1].length() == 2)
+        dCoeffLabels += " " + JmolAdapter.canonicalizeQuantumSubshellTag(tokens[nSkip - 1].toLowerCase());      
       line = "";
     }
     energyUnits = "a.u.";

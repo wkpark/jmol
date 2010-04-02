@@ -768,8 +768,8 @@ public class Resolver {
   }
 
   private static boolean checkMol(String[] lines) {
-    String line4trimmed = lines[3].trim();
-    if (line4trimmed.length() < 6)
+    String line4trimmed = ("X" + lines[3]).trim();
+    if (line4trimmed.length() < 7)
       return false;
     if (line4trimmed.endsWith("V2000") || line4trimmed.endsWith("v2000"))
       return true;

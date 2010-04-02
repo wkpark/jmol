@@ -91,7 +91,7 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     }
     String[] tokens = getTokens(fileList);
     boolean isOK = true;
-    for (int i = 0; i < tokens.length && isOK; i++) {
+    for (int i = 0; i < dfCoefMaps[shellType].length && isOK; i++) {
       String key = tokens[i];
       if (key.length() >= minLength) {
         int pt = jmolList.indexOf(key);

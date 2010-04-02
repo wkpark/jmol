@@ -1629,13 +1629,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       scriptManager.startCommandWatcher(false);
       scriptManager.interruptQueueThreads();
       g3d.destroy();
-      if (appConsole != null) {
-        appConsole.dispose();
-        appConsole = null;
-      }
-      if (scriptEditor != null) {
-        scriptEditor.dispose();
-        scriptEditor = null;
+      try {
+        if (appConsole != null) {
+          appConsole.dispose();
+          appConsole = null;
+        }
+        if (scriptEditor != null) {
+          scriptEditor.dispose();
+          scriptEditor = null;
+        }
+      } catch (Exception e) {
+        //ignore -- Disposal was interrupted only in Eclipse
       }
     }
   }

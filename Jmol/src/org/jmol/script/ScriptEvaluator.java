@@ -9188,7 +9188,7 @@ public class ScriptEvaluator {
     if (statementLength == 2 && getToken(1).tok == Token.calculate) {
       if (isSyntaxCheck)
         return;
-      int n = viewer.autoHbond(null);
+      int n = viewer.autoHbond();
       scriptStatusOrBuffer(GT._("{0} hydrogen bonds", n));
       return;
     }
@@ -9229,7 +9229,7 @@ public class ScriptEvaluator {
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0,
         bsAtoms);
     if (addHbonds)
-      viewer.autoHbond(bsAtoms, bsAtoms, null, 0, 0);
+      viewer.autoHbond(bsAtoms, bsAtoms, 0, 0);
     viewer.select(bsAtoms, tQuiet);
   }
 
@@ -9559,13 +9559,13 @@ public class ScriptEvaluator {
       case Token.hbond:
         if (statementLength == 2) {
           if (!isSyntaxCheck) 
-            viewer.autoHbond(null);
+            viewer.autoHbond();
           return;
         }
         BitSet bs1 = expression(2);
         bs2 = expression(iToken + 1);
         if (!isSyntaxCheck) {
-          int nBonds = viewer.autoHbond(bs1, bs2, null, -1, -1);
+          int nBonds = viewer.autoHbond(bs1, bs2, -1, -1);
           showString(nBonds + " hydrogen bonds created");
         }
         return;

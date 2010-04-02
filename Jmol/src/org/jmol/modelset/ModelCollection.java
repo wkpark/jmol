@@ -2453,7 +2453,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     if (matchHbond) {
       initializeBspf();
-      return new int[] { autoHbond(bsA, bsB, bsBonds, 0, 0), 0 };
+      return new int[] { autoHbond(bsA, bsB, 0, 0), 0 };
     }
     return new int[] { autoBond(bsA, bsB, null, bsBonds), 0 };
   }
@@ -2480,41 +2480,67 @@ abstract public class ModelCollection extends BondCollection {
     return true;
   }
 
-  protected int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds,
+  protected int autoHbond(BitSet bsA, BitSet bsB,
                           float maxXYDistance, float minAttachedAngle) {
+    boolean considerH = (maxXYDistance != 0);
     if (maxXYDistance <= 0)
       maxXYDistance = defaultHbondMax;
     float hbondMax2 = maxXYDistance * maxXYDistance;
     float hbondMin2 = hbondMin * hbondMin;
+    float hxbondMin2 = 1;
+    float hxbondMax2 = hbondMin2;
+    float hxbondMax = hbondMin;
     int nNew = 0;
+    float d2 = 0;
     Vector3f v1 = new Vector3f();
     Vector3f v2 = new Vector3f();
     if (showRebondTimes && Logger.debugging)
       Logger.startTimer();
     int modelLast = -1;
     BitSet bsCO = new BitSet();
-    for (int i = atomCount; --i >= 0;)
+    for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1))
       if (atoms[i].getSpecialAtomID() == JmolConstants.ATOMID_CARBONYL_OXYGEN)
         bsCO.set(i);
-    for (int i = atomCount; --i >= 0;) {
+    for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
       Atom atom = atoms[i];
       int elementNumber = atom.getElementNumber();
-      if (elementNumber != 7 && elementNumber != 8)
-        continue;      
+      if (elementNumber != 1 && elementNumber != 7 && elementNumber != 8
+          || elementNumber == 1 && !considerH)
+        continue;  
+      float min2, max2, dmax;
+      if (elementNumber == 1) {
+        Bond[] b = atom.getBonds();
+        boolean isOK = false;
+        for (int j = 0; j < b.length && !isOK; j++) {
+          Atom a2 = b[j].getOtherAtom(atom);
+          int element = a2.getElementNumber();
+          isOK = (element == 7 || element == 8);
+        }
+        if (!isOK)
+          continue;
+        dmax = hxbondMax;
+        min2 = hxbondMin2;
+        max2 = hxbondMax2;
+      } else {
+        dmax = maxXYDistance;
+        min2 = hbondMin2;
+        max2 = hbondMax2;
+      }
       boolean firstIsCO = bsCO.get(i);
       //float searchRadius = hbondMax;
       if (atom.modelIndex != modelLast)
           initializeBspt(modelLast = atom.modelIndex);
-      CubeIterator iter = bspf.getCubeIterator(atom.modelIndex);
-      iter.initializeHemisphere(atom, maxXYDistance);
-      while (iter.hasMoreElements()) {
-        Atom atomNear = (Atom) iter.nextElement();
+      AtomIndexIterator iter = getWithinAtomSetIterator(atom.index, dmax, bsB, false, false);
+      while (iter.hasNext()) {
+        Atom atomNear = atoms[iter.next()];
         int elementNumberNear = atomNear.getElementNumber();
-        if (elementNumberNear != 7 && elementNumberNear != 8
-            || atomNear == atom || iter.foundDistance2() < hbondMin2
-            || iter.foundDistance2() > hbondMax2 || atom.isBonded(atomNear)
-            || firstIsCO && bsCO.get(atomNear.index))
+        if(elementNumberNear != 7 && elementNumberNear != 8
+            || atomNear == atom 
+            || (d2 = iter.foundDistance2()) < min2 || d2 > max2
+            || atom.isBonded(atomNear)
+            || firstIsCO && bsCO.get(atomNear.index)) {
           continue;
+        }
         if (minAttachedAngle > 0
             && !checkMinAttachedAngle(atom, atomNear, minAttachedAngle, v1, v2))
           continue;

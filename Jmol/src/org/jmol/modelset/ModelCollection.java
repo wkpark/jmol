@@ -2488,8 +2488,8 @@ abstract public class ModelCollection extends BondCollection {
     float hbondMax2 = maxXYDistance * maxXYDistance;
     float hbondMin2 = hbondMin * hbondMin;
     float hxbondMin2 = 1;
-    float hxbondMax2 = hbondMin2;
-    float hxbondMax = hbondMin;
+    float hxbondMax2 = (maxXYDistance >hbondMin ? hbondMin2 : hbondMax2);
+    float hxbondMax = (maxXYDistance > hbondMin ? hbondMin : maxXYDistance);
     int nNew = 0;
     float d2 = 0;
     Vector3f v1 = new Vector3f();
@@ -2497,6 +2497,7 @@ abstract public class ModelCollection extends BondCollection {
     if (showRebondTimes && Logger.debugging)
       Logger.startTimer();
     int modelLast = -1;
+    boolean haveHAtoms = false;
     BitSet bsCO = new BitSet();
     for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1))
       if (atoms[i].getSpecialAtomID() == JmolConstants.ATOMID_CARBONYL_OXYGEN)
@@ -2504,11 +2505,12 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
       Atom atom = atoms[i];
       int elementNumber = atom.getElementNumber();
-      if (elementNumber != 1 && elementNumber != 7 && elementNumber != 8
-          || elementNumber == 1 && !considerH)
+      boolean isH = (elementNumber == 1);
+      if (!isH && (haveHAtoms || elementNumber != 7 && elementNumber != 8)
+          || isH && !considerH)
         continue;  
       float min2, max2, dmax;
-      if (elementNumber == 1) {
+      if (isH) {
         Bond[] b = atom.getBonds();
         boolean isOK = false;
         for (int j = 0; j < b.length && !isOK; j++) {
@@ -2528,8 +2530,10 @@ abstract public class ModelCollection extends BondCollection {
       }
       boolean firstIsCO = bsCO.get(i);
       //float searchRadius = hbondMax;
-      if (atom.modelIndex != modelLast)
+      if (atom.modelIndex != modelLast) {
           initializeBspt(modelLast = atom.modelIndex);
+          haveHAtoms = (models[atom.modelIndex].hydrogenCount > 0);
+      }
       AtomIndexIterator iter = getWithinAtomSetIterator(atom.index, dmax, bsB, false, false);
       while (iter.hasNext()) {
         Atom atomNear = atoms[iter.next()];

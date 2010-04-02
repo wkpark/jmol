@@ -26,6 +26,7 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.*;
 import org.jmol.util.Logger;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import java.util.Vector;
@@ -60,6 +61,10 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
 
   // FC: org.jmol.quantum.MOCalculation expects
   //           xxx yyy zzz xyy xxy xxz xzz yzz yyz xyz
+
+  
+  protected static String CANONICAL_DC_LIST = "XX    YY    ZZ    XY    XZ    YZ";
+  protected static String CANONICAL_FC_LIST = "XXX   YYY   ZZZ   XYY   XXY   XXZ   XZZ   YZZ   YYZ   XYZ";
 
   
   /**
@@ -110,6 +115,16 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     return isOK;
   }
 
+  final protected static String canonicalizeQuantumSubshellTag(String tag) {
+    char firstChar = tag.charAt(0);
+    if (firstChar == 'X' || firstChar == 'Y' || firstChar == 'Z') {
+      char[] sorted = tag.toCharArray();
+      Arrays.sort(sorted);
+      return new String(sorted);
+    } 
+    return tag;
+  }
+  
 
 
 }

@@ -100,14 +100,6 @@ public abstract class JmolAdapter {
     return JmolConstants.getQuantumSubshellTagID(shell, tag);
   }
                                            
-  final public static String getQuantumSubshellTag(int shell, int subshell) {
-    return JmolConstants.getQuantumSubshellTag(shell, subshell);
-  }
-  
-  final public static String canonicalizeQuantumSubshellTag(String tag) {
-    return JmolConstants.canonicalizeQuantumSubshellTag(tag);
-  }
-
   final public static short lookupGroupID(String group3) {
     return Group.lookupGroupID(group3);
   }

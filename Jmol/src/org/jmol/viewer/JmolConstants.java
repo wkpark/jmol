@@ -30,7 +30,6 @@ import org.jmol.util.Logger;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
@@ -3148,16 +3147,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       if (shell == quantumShellIDs[i])
         return quantumShellTags[i];
     return "" + shell;
-  }
-  
-  final public static String canonicalizeQuantumSubshellTag(String tag) {
-    char firstChar = tag.charAt(0);
-    if (firstChar == 'X' || firstChar == 'Y' || firstChar == 'Z') {
-      char[] sorted = tag.toCharArray();
-      Arrays.sort(sorted);
-      return new String(sorted);
-    } 
-    return tag;
   }
   
   final public static int getQuantumSubshellTagID(int shell, String tag) {

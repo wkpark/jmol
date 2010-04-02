@@ -241,8 +241,6 @@ abstract public class MOReader extends BasisFunctionReader {
     Logger.info(n + " natural bond AO basis functions found");
   }
 
-  private static String DC_LIST = "xx    yy    zz    xy    xz    yz";
-  private static String FC_LIST = "xxx   yyy   zzz   yyx   xxy   xxz   zzx   zzy   yyz   xyz";
   private boolean haveCoeffMap;
   
   /*
@@ -353,9 +351,9 @@ abstract public class MOReader extends BasisFunctionReader {
         if (!haveCoeffMap) {
           haveCoeffMap = true;
           if (dCoeffLabels.length() > 0)
-            getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_CARTESIAN, DC_LIST, 2);
+            getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_CARTESIAN, CANONICAL_DC_LIST, 2);
           if (fCoeffLabels.length() > 0)
-            getDFMap(fCoeffLabels, JmolAdapter.SHELL_F_CARTESIAN, FC_LIST, 3);
+            getDFMap(fCoeffLabels, JmolAdapter.SHELL_F_CARTESIAN, CANONICAL_FC_LIST, 3);
         }
         for (int iMo = 0; iMo < nThisLine; iMo++) {
           float[] coefs = new float[data[iMo].size()];
@@ -411,15 +409,15 @@ abstract public class MOReader extends BasisFunctionReader {
           data[i].addElement(line.substring(pt, pt + fieldSize).trim());
       }
       if (!haveCoeffMap && tokens[nSkip - 1].length() == 3)
-        fCoeffLabels += " " + JmolAdapter.canonicalizeQuantumSubshellTag(tokens[nSkip - 1].toLowerCase());      
+        fCoeffLabels += " " + canonicalizeQuantumSubshellTag(tokens[nSkip - 1].toUpperCase());      
       if (!haveCoeffMap && tokens[nSkip - 1].length() == 2)
-        dCoeffLabels += " " + JmolAdapter.canonicalizeQuantumSubshellTag(tokens[nSkip - 1].toLowerCase());      
+        dCoeffLabels += " " + canonicalizeQuantumSubshellTag(tokens[nSkip - 1].toUpperCase());      
       line = "";
     }
     energyUnits = "a.u.";
     setMOData(!alphaBeta.equals("alpha"));    
   }
-
+  
   protected void getMOHeader(int headerType, String[] tokens, Hashtable[] mos, int nThisLine)
       throws Exception {
     readLine();

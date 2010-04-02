@@ -9476,6 +9476,7 @@ public class ScriptEvaluator {
     boolean isSurface = false;
     BitSet bs;
     BitSet bs2;
+    int n;
     if ((iToken = statementLength) >= 2) {
       clearDefinedVariableAtomSets();
       switch (getToken(1).tok) {
@@ -9534,7 +9535,7 @@ public class ScriptEvaluator {
         checkLength(++iToken);
         if (isSyntaxCheck)
           return;
-        int n = viewer.calculateStruts(bs, bs2);
+        n = viewer.calculateStruts(bs, bs2);
         if (n > 0)
           colorShape(JmolConstants.SHAPE_STRUTS, JmolConstants.BOND_STRUT,
             0x0FFFFFF, "translucent", 0.5f, null);
@@ -9558,15 +9559,17 @@ public class ScriptEvaluator {
         break;
       case Token.hbond:
         if (statementLength == 2) {
-          if (!isSyntaxCheck) 
-            viewer.autoHbond();
+          if (!isSyntaxCheck) {
+            n = viewer.autoHbond();
+            showString(n + " pseudo-hydrogen bonds created");
+          }
           return;
         }
         BitSet bs1 = expression(2);
         bs2 = expression(iToken + 1);
         if (!isSyntaxCheck) {
-          int nBonds = viewer.autoHbond(bs1, bs2, -1, -1);
-          showString(nBonds + " hydrogen bonds created");
+          n = viewer.autoHbond(bs1, bs2, -1, -1);
+          showString(n + " hydrogen bonds created");
         }
         return;
       case Token.structure:

@@ -2480,15 +2480,26 @@ abstract public class ModelCollection extends BondCollection {
     return true;
   }
 
-  protected int autoHbond(BitSet bsA, BitSet bsB,
-                          float maxXYDistance, float minAttachedAngle) {
+  /**
+   * a generalized formation of HBONDS, carried out in relation to calculate
+   * HBONDS {atomsFrom} {atomsTo}. The calculation can create pseudo-H bonds for
+   * files that do not contain H atoms
+   * 
+   * @param bsA
+   * @param bsB
+   * @param maxXYDistance
+   * @param minAttachedAngle
+   * @return number of hbonds formed
+   */
+  protected int autoHbond(BitSet bsA, BitSet bsB, float maxXYDistance,
+                          float minAttachedAngle) {
     boolean considerH = (maxXYDistance != 0);
     if (maxXYDistance <= 0)
       maxXYDistance = defaultHbondMax;
     float hbondMax2 = maxXYDistance * maxXYDistance;
     float hbondMin2 = hbondMin * hbondMin;
     float hxbondMin2 = 1;
-    float hxbondMax2 = (maxXYDistance >hbondMin ? hbondMin2 : hbondMax2);
+    float hxbondMax2 = (maxXYDistance > hbondMin ? hbondMin2 : hbondMax2);
     float hxbondMax = (maxXYDistance > hbondMin ? hbondMin : maxXYDistance);
     int nNew = 0;
     float d2 = 0;
@@ -2508,7 +2519,7 @@ abstract public class ModelCollection extends BondCollection {
       boolean isH = (elementNumber == 1);
       if (!isH && (haveHAtoms || elementNumber != 7 && elementNumber != 8)
           || isH && !considerH)
-        continue;  
+        continue;
       float min2, max2, dmax;
       if (isH) {
         Bond[] b = atom.getBonds();
@@ -2529,20 +2540,20 @@ abstract public class ModelCollection extends BondCollection {
         max2 = hbondMax2;
       }
       boolean firstIsCO = bsCO.get(i);
-      //float searchRadius = hbondMax;
+      // float searchRadius = hbondMax;
       if (atom.modelIndex != modelLast) {
-          initializeBspt(modelLast = atom.modelIndex);
-          haveHAtoms = (models[atom.modelIndex].hydrogenCount > 0);
+        initializeBspt(modelLast = atom.modelIndex);
+        haveHAtoms = considerH && (models[atom.modelIndex].hydrogenCount > 0);
       }
-      AtomIndexIterator iter = getWithinAtomSetIterator(atom.index, dmax, bsB, false, false);
+      AtomIndexIterator iter = getWithinAtomSetIterator(atom.index, dmax, bsB,
+          false, false);
       while (iter.hasNext()) {
         Atom atomNear = atoms[iter.next()];
         int elementNumberNear = atomNear.getElementNumber();
-        if(elementNumberNear != 7 && elementNumberNear != 8
-            || atomNear == atom 
-            || (d2 = iter.foundDistance2()) < min2 || d2 > max2
-            || atom.isBonded(atomNear)
-            || firstIsCO && bsCO.get(atomNear.index)) {
+        if (elementNumberNear != 7 && elementNumberNear != 8
+            || atomNear == atom || (d2 = iter.foundDistance2()) < min2
+            || d2 > max2 || atom.isBonded(atomNear) || firstIsCO
+            && bsCO.get(atomNear.index)) {
           continue;
         }
         if (minAttachedAngle > 0
@@ -2554,8 +2565,8 @@ abstract public class ModelCollection extends BondCollection {
       }
       iter.release();
     }
-    ((ModelSet)this).setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, 
-        bsPseudoHBonds);
+    ((ModelSet) this).setShapeSize(JmolConstants.SHAPE_STICKS,
+        Integer.MIN_VALUE, null, bsPseudoHBonds);
     if (showRebondTimes && Logger.debugging)
       Logger.checkTimer("Time to hbond");
     return nNew;

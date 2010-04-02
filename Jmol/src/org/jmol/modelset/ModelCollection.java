@@ -2496,7 +2496,7 @@ abstract public class ModelCollection extends BondCollection {
     int i = bsA.nextSetBit(0);
     if (i < 0)
       return 0;
-    boolean considerH = (models[i].hydrogenCount == 0 || maxXYDistance != 0);
+    boolean considerH = (models[atoms[i].modelIndex].hydrogenCount != 0 && maxXYDistance != 0);
     if (maxXYDistance <= 0)
       maxXYDistance = defaultHbondMax;
     float hbondMax2 = maxXYDistance * maxXYDistance;
@@ -2511,8 +2511,6 @@ abstract public class ModelCollection extends BondCollection {
     if (showRebondTimes && Logger.debugging)
       Logger.startTimer();
     int modelLast = -1;
-    boolean haveHAtoms = false;
-    boolean isPseudo = true;
     BitSet bsCO = new BitSet();
     for (i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1))
       if (atoms[i].getSpecialAtomID() == JmolConstants.ATOMID_CARBONYL_OXYGEN)
@@ -2521,7 +2519,7 @@ abstract public class ModelCollection extends BondCollection {
       Atom atom = atoms[i];
       int elementNumber = atom.getElementNumber();
       boolean isH = (elementNumber == 1);
-      if (!isH && (haveHAtoms || elementNumber != 7 && elementNumber != 8)
+      if (!isH && (considerH || elementNumber != 7 && elementNumber != 8)
           || isH && !considerH)
         continue;
       float min2, max2, dmax;
@@ -2539,7 +2537,6 @@ abstract public class ModelCollection extends BondCollection {
         min2 = hxbondMin2;
         max2 = hxbondMax2;
       } else {
-        isPseudo = true;
         dmax = maxXYDistance;
         min2 = hbondMin2;
         max2 = hbondMax2;
@@ -2548,7 +2545,6 @@ abstract public class ModelCollection extends BondCollection {
       // float searchRadius = hbondMax;
       if (atom.modelIndex != modelLast) {
         initializeBspt(modelLast = atom.modelIndex);
-        haveHAtoms = considerH && (models[atom.modelIndex].hydrogenCount > 0);
       }
       AtomIndexIterator iter = getWithinAtomSetIterator(atom.index, dmax, bsB,
           false, false);
@@ -2574,7 +2570,7 @@ abstract public class ModelCollection extends BondCollection {
         Integer.MIN_VALUE, null, bsPseudoHBonds);
     if (showRebondTimes && Logger.debugging)
       Logger.checkTimer("Time to hbond");
-    return (isPseudo ? -nNew : nNew);
+    return (considerH ? nNew : -nNew);
   }
 
 

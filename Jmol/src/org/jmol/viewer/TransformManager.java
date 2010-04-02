@@ -125,7 +125,7 @@ abstract class TransformManager {
     windowCentered = true;
     setRotationCenterAndRadiusXYZ(null, true);
     matrixRotate.setIdentity(); // no rotations
-    if (viewer.getBooleanProperty("autoLoadOrientation")) {
+    if (viewer.autoLoadOrientation()) {
       Matrix3f m = (Matrix3f) viewer
           .getModelSetAuxiliaryInfo("defaultOrientationMatrix");
       if (m != null)

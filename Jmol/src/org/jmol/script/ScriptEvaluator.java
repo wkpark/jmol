@@ -6000,12 +6000,14 @@ public class ScriptEvaluator {
       case Token.identifier:
       case Token.aromatic:
       case Token.hbond:
-        if (ptColor == i)
-          break;
-        // I know -- should have required the COLOR keyword
-        if (isColorParam(i)) {
-          ptColor = -i;
-          break;
+        if (i > 0) {
+          if (ptColor == i)
+            break;
+          // I know -- should have required the COLOR keyword
+          if (isColorParam(i)) {
+            ptColor = -i;
+            break;
+          }
         }
         String cmd = parameterAsString(i);
         if ((bo = JmolConstants.getBondOrderFromString(cmd)) == JmolConstants.BOND_ORDER_NULL) {
@@ -6047,12 +6049,14 @@ public class ScriptEvaluator {
         break;
       }
       // now check for color -- -i means we've already checked
-      if (ptColor == -i || ptColor == i && isColorParam(i)) {
-        color = getArgbParam(i);
-        i = iToken;
-        isColorOrRadius = true;
-      } else if (ptColor == i) {
-        error(ERROR_invalidArgument);
+      if (i > 0) {
+        if (ptColor == -i || ptColor == i && isColorParam(i)) {
+          color = getArgbParam(i);
+          i = iToken;
+          isColorOrRadius = true;
+        } else if (ptColor == i) {
+          error(ERROR_invalidArgument);
+        }
       }
     }
     if (isSyntaxCheck)
@@ -6353,10 +6357,7 @@ public class ScriptEvaluator {
         if (argb == 0)
           error(ERROR_colorOrPaletteRequired);
         checkLast(iToken);
-        if (str.equalsIgnoreCase("axes")) {
-          setStringProperty("axesColor", Escape.escapeColor(argb));
-          return;
-        } else if (StateManager.getObjectIdFromName(str) >= 0) {
+        if (str.equalsIgnoreCase("axes") || StateManager.getObjectIdFromName(str) >= 0) {
           if (!isSyntaxCheck)
             viewer.setObjectArgb(str, argb);
           return;
@@ -10108,6 +10109,11 @@ public class ScriptEvaluator {
     // anything in this block MUST RETURN
 
     switch (tok) {
+    case Token.axescolor:
+      ival = getArgbParam(2);
+      if (!isSyntaxCheck)
+        viewer.setObjectArgb("axes", ival);
+      return;
     case Token.bondmode:
       setBondmode();
       return;

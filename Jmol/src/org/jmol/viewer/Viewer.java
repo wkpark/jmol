@@ -1357,8 +1357,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setObjectArgb(String name, int argb) {
     int objId = StateManager.getObjectIdFromName(name);
-    if (objId < 0)
+    if (objId < 0) {
+      if (name.equalsIgnoreCase("axes")) {
+        setObjectArgb("axis1", argb);
+        setObjectArgb("axis2", argb);
+        setObjectArgb("axis3", argb);
+      }
       return;
+    }
     global.objColors[objId] = argb;
     switch (objId) {
     case StateManager.OBJ_BACKGROUND:
@@ -2994,6 +3000,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getConformation(iModel, conformationIndex, doSet);
   }
 
+  boolean autoLoadOrientation() {
+    return global.autoLoadOrientation;
+  }
+  
   public int autoHbond(BitSet bsBonds) {
     // Eval
     return autoHbond(selectionManager.getSelectionSet(),
@@ -5042,11 +5052,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // /11.1///
       setObjectColor("background", value);
       return;
-    case Token.axescolor:
-      setObjectColor("axis1", value);
-      setObjectColor("axis2", value);
-      setObjectColor("axis3", value);
-      return;
     case Token.axis1color:
       setObjectColor("axis1", value);
       return;
@@ -5495,7 +5500,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.filecaching:
       // 11.9.21
       // not implemented -- application only -- CANNOT BE SET BY STATE
-      // global.atomTypes = value;
       break;
     case Token.slabbyatom:
       // 11.9.19

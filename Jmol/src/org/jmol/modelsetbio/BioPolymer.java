@@ -836,7 +836,7 @@ public abstract class BioPolymer extends Polymer {
                 new Object[] { new float[] { val1, val2 } });
           }
         }
-        if (pdbATOM == null)
+        if (pdbATOM == null)// || bsSelected != null && !bsSelected.get(a.getIndex()))
           continue;
         pdbATOM.append(LabelToken.formatLabel(viewer, a, "ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
         pdbATOM.append(TextFormat.sprintf(

@@ -1003,7 +1003,7 @@ public class AtomSetCollection {
       }
       Matrix4f mat = new Matrix4f();
       mat.set((float[]) biomts.get(i));
-      Vector3f trans = new Vector3f();    
+      //Vector3f trans = new Vector3f();    
       for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
         try {
           int atomSite = atoms[i].atomSite;

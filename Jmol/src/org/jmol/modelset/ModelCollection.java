@@ -539,7 +539,6 @@ abstract public class ModelCollection extends BondCollection {
         bsAtoms2, script2, postDefinitions);
     if (stateScript.isValid())
       stateScripts.addElement(stateScript);
-    System.out.println("modelcoll addstate " + stateScript);
     return stateScript;
   }
 

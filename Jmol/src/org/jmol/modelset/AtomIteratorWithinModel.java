@@ -53,7 +53,10 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   }
 
   public boolean hasNext() {
-    return bsptIter.hasMoreElements();
+    if (bsptIter.hasMoreElements())
+      return true;
+    release();
+    return false;
   }
 
   public int next() {
@@ -64,7 +67,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     return bsptIter.foundDistance2();
   }
   
-  public void release() {
+  private void release() {
     bsptIter.release();
     bsptIter = null;
   }

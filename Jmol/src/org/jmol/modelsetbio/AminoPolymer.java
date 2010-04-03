@@ -24,6 +24,7 @@
 package org.jmol.modelsetbio;
 
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.HBond;
 import org.jmol.modelset.Polymer;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -55,7 +56,7 @@ public class AminoPolymer extends AlphaPolymer {
 
   //boolean debugHbonds;
 
-  public void calcHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB) {
+  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB) {
     //debugHbonds = Logger.debugging;
     //initializeHbondDataStructures();
     calcProteinMainchainHydrogenBonds((AminoPolymer) polymer, bsA, bsB);
@@ -113,7 +114,6 @@ public class AminoPolymer extends AlphaPolymer {
   private final static float maxHbondAlphaDistance2 =
     maxHbondAlphaDistance * maxHbondAlphaDistance;
   private final static float minimumHbondDistance2 = 0.5f; // note: RasMol is 1/2 this. RMH
-  private final static double QConst = -332 * 0.42 * 0.2 * 1000;  
 
   private void bondAminoHydrogen(AminoMonomer source, int indexDonor, Point3f hydrogenPoint,
                          BitSet bsA, BitSet bsB) {
@@ -146,9 +146,9 @@ public class AminoPolymer extends AlphaPolymer {
       //mainchainHbondOffsets[indexDonor] = (short)(indexDonor - indexMin1);
       //min1Indexes[indexDonor] = (short)indexMin1;
       //min1Energies[indexDonor] = (short)energyMin1;
-      createResidueHydrogenBond(source, indexDonor, indexMin1, bsA, bsB, -energyMin1/1000f);
+      createResidueHydrogenBond(source, indexDonor, indexMin1, bsA, bsB, energyMin1/1000f);
       if (indexMin2 >= 0) {
-        createResidueHydrogenBond(source, indexDonor, indexMin2, bsA, bsB, -energyMin2/1000f);
+        createResidueHydrogenBond(source, indexDonor, indexMin2, bsA, bsB, energyMin2/1000f);
         //min2Indexes[indexDonor] = (short)indexMin2;
         //min2Energies[indexDonor] = (short)energyMin2;
       }
@@ -192,17 +192,17 @@ public class AminoPolymer extends AlphaPolymer {
     double distCN = Math.sqrt(distCN2);
     double distON = Math.sqrt(distON2);
 
-    int energy = (int) ((QConst / distOH - QConst / distCH + QConst / distCN - QConst
-        / distON));
+    int energy = HBond.getEnergy(distOH, distCH, distCN, distON);
 
     boolean isHbond = (distCN2 > distCH2 && distOH <= 3.0f && energy <= -500);
-/*    if (debugHbonds)
-      Logger.debug("draw calcHydrogen"+(++hPtr)+ " ("+nitrogen.getInfo()+") {" + hydrogenPoint.x + " "
+    /*
+    if (isHbond)
+      Logger.info("draw calcHydrogen"+ " ("+nitrogen.getInfo()+") {" + hydrogenPoint.x + " "
           + hydrogenPoint.y + " " + hydrogenPoint.z + "} #" + isHbond + " "
           + nitrogen.getInfo() + " " + target.getLeadAtom().getInfo()
           + " distOH=" + distOH + " distCH=" + distCH + " distCN=" + distCN
           + " distON=" + distON + " energy=" + energy);
-*/
+    */
     return (!isHbond ? 0 : energy < -9900 ? -9900 : energy);
   }
 
@@ -243,7 +243,7 @@ public class AminoPolymer extends AlphaPolymer {
     Atom nitrogen = donor.getNitrogenAtom();
     AminoMonomer recipient = (AminoMonomer)monomers[indexCarbonylGroup];
     Atom oxygen = recipient.getCarbonylOxygenAtom();
-    model.addHydrogenBond(nitrogen, oxygen, order, bsA, bsB, energy);
+    model.addRasmolHydrogenBond(nitrogen, oxygen, order, bsA, bsB, energy);
   }
 
   /*

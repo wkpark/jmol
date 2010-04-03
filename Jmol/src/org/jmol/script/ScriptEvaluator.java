@@ -2850,6 +2850,8 @@ public class ScriptEvaluator {
   }
 
   private void scriptStatusOrBuffer(String s) {
+    if (isSyntaxCheck)
+      return;
     if (outputBuffer != null) {
       outputBuffer.append(s).append('\n');
       return;
@@ -6086,14 +6088,14 @@ public class ScriptEvaluator {
         bs.set(atom1);
         result = viewer.makeConnections(distances[0], distances[1], bondOrder,
             operation, bs, expression(expression2), bsBonds, isBonds);
-        nNew += result[0];
+        nNew += Math.abs(result[0]);
         nModified += result[1];
         bs.clear(atom1);
       }
     } else {
       result = viewer.makeConnections(distances[0], distances[1], bondOrder,
           operation, atomSets[0], atomSets[1], bsBonds, isBonds);
-      nNew += result[0];
+      nNew += Math.abs(result[0]);
       nModified += result[1];
     }
     if (isDelete) {
@@ -9188,8 +9190,8 @@ public class ScriptEvaluator {
     if (statementLength == 2 && getToken(1).tok == Token.calculate) {
       if (isSyntaxCheck)
         return;
-      int n = viewer.autoHbond();
-      scriptStatusOrBuffer(GT._("{0} hydrogen bonds", n));
+      int n = viewer.autoHbond(null, null);
+      scriptStatusOrBuffer(GT._("{0} hydrogen bonds", Math.abs(n)));
       return;
     }
     if (statementLength == 2 && getToken(1).tok == Token.delete) {
@@ -9229,7 +9231,7 @@ public class ScriptEvaluator {
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0,
         bsAtoms);
     if (addHbonds)
-      viewer.autoHbond(bsAtoms, bsAtoms, 0, 0);
+      viewer.autoHbond(bsAtoms, bsAtoms);
     viewer.select(bsAtoms, tQuiet);
   }
 
@@ -9560,7 +9562,7 @@ public class ScriptEvaluator {
       case Token.hbond:
         if (statementLength == 2) {
           if (!isSyntaxCheck) {
-            n = viewer.autoHbond();
+            n = viewer.autoHbond(null, null);
             break;
           }
           return;
@@ -9568,7 +9570,7 @@ public class ScriptEvaluator {
         BitSet bs1 = expression(2);
         bs2 = expression(iToken + 1);
         if (!isSyntaxCheck) {
-          n = viewer.autoHbond(bs1, bs2, -1, -1);
+          n = viewer.autoHbond(bs1, bs2);
           break;
         }
         return;
@@ -9583,7 +9585,7 @@ public class ScriptEvaluator {
         return;
       }
       if (n != Integer.MIN_VALUE) {
-        showString(Math.abs(n) + (n < 0 ? " pseudo-" : " ") + "hydrogen bonds created");
+        scriptStatusOrBuffer(GT._("{0} hydrogen bonds", Math.abs(n)));
         return;
       }
     }

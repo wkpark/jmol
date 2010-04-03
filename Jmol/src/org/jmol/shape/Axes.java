@@ -92,23 +92,23 @@ public class Axes extends FontLineShape {
     myType = "axes";
     font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
     int axesMode = viewer.getAxesMode();
-    if (axesMode == JmolConstants.AXES_MODE_UNITCELL && modelSet.getCellInfos() != null) {
+    originPoint.set(0, 0, 0);
+    if (axesMode == JmolConstants.AXES_MODE_UNITCELL
+        && modelSet.getCellInfos() != null) {
       SymmetryInterface unitcell = viewer.getCurrentUnitCell();
-      if (unitcell == null)
+      if (unitcell != null && unitcell.haveUnitCell()) {
+        Point3f[] vectors = unitcell.getUnitCellVertices();
+        Point3f offset = unitcell.getCartesianOffset();
+        originPoint.set(offset);
+        scale = viewer.getAxesScale() / 2f;
+        // We must divide by 2 because that is the default for ALL axis types.
+        // Not great, but it will have to do.
+        axisPoints[0].scaleAdd(scale, vectors[4], offset);
+        axisPoints[1].scaleAdd(scale, vectors[2], offset);
+        axisPoints[2].scaleAdd(scale, vectors[1], offset);
         return;
-      Point3f[] vectors = unitcell.getUnitCellVertices();
-      Point3f offset = unitcell.getCartesianOffset();
-      originPoint.set(offset);
-      scale = viewer.getAxesScale() / 2f;
-      // We must divide by 2 because that is the default for ALL axis types.
-      // Not great, but it will have to do. 
-      axisPoints[0].scaleAdd(scale, vectors[4], offset);
-      axisPoints[1].scaleAdd(scale, vectors[2], offset);
-      axisPoints[2].scaleAdd(scale, vectors[1], offset);
-      return;
-    } else if (axesMode == JmolConstants.AXES_MODE_MOLECULAR) {
-      originPoint.set(0, 0, 0);
-    } else {
+      }
+    } else if (axesMode == JmolConstants.AXES_MODE_BOUNDBOX) {
       originPoint.set(viewer.getBoundBoxCenter());
     }
     setScale(viewer.getAxesScale() / 2f);

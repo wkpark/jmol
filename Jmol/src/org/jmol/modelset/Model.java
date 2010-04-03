@@ -99,7 +99,7 @@ public final class Model {
   boolean isTrajectory;
   int trajectoryBaseIndex;
   int selectedTrajectory = -1;
-  boolean hasCalculatedHBonds;
+  boolean hasRasmolHBonds;
   
   Hashtable dataFrames;
   int dataSourceFrame = -1;
@@ -290,11 +290,11 @@ public final class Model {
       if (type != Polymer.TYPE_AMINO && type != Polymer.TYPE_NUCLEIC)
         continue;
       if (type == Polymer.TYPE_AMINO)
-        bioPolymers[i].calcHydrogenBonds(null, bsA, bsB);
+        bioPolymers[i].calcRasmolHydrogenBonds(null, bsA, bsB);
       for (int j = bioPolymerCount; --j >= 0;)
         if (i != j && bioPolymers[i] != null
             && type == bioPolymers[j].getType())
-          bioPolymers[j].calcHydrogenBonds(bioPolymers[i], bsA, bsB);
+          bioPolymers[j].calcRasmolHydrogenBonds(bioPolymers[i], bsA, bsB);
     }
   }
   
@@ -302,10 +302,10 @@ public final class Model {
     return modelSet.isAtomHidden(index);
   }
   
-  public void addHydrogenBond(Atom atom1, Atom atom2, short order, BitSet bsA, BitSet bsB, float energy) {
-    hasCalculatedHBonds = true;
-    modelSet.addHydrogenBond(atom1, atom2, order, bsA, bsB, energy);
-    //System.out.println("addHB " + atom1.getInfo() + " "+ atom2.getInfo() + " " + atom1.distance(atom2));
+  public void addRasmolHydrogenBond(Atom atom1, Atom atom2, short order, BitSet bsA, BitSet bsB, float energy) {
+    // coming from modelsetbio.AminoPolymer or NucleicPolymer
+    hasRasmolHBonds = true;
+    modelSet.addRasmolHydrogenBond(atom1, atom2, order, bsA, bsB, energy);
   }
 
   public int getModelIndex() {

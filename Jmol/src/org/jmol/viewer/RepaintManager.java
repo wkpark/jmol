@@ -132,8 +132,8 @@ class RepaintManager {
         getRenderer(i, g3d).render(g3d, modelSet, shape);
       }
     } catch (Exception e) {
-      Logger
-          .error("rendering error -- perhaps use \"set refreshing FALSE/TRUE\" ? ");
+      e.printStackTrace();
+      Logger.error("rendering error? ");
     }
     if (logTime)
       Logger.checkTimer("render time");

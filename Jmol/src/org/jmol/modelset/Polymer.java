@@ -103,7 +103,7 @@ abstract public class Polymer {
   public void setConformation(BitSet bsConformation, int nAltLocs) {
   }
 
-  public void calcHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB) {
+  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB) {
     // subclasses should override if they know how to calculate hbonds
   }
   

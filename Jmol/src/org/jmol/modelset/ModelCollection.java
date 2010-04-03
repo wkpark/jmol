@@ -68,21 +68,30 @@ abstract public class ModelCollection extends BondCollection {
    * same numbers in the new model set, or the state script will not run
    * properly, among other problems.
    * 
-   * We subclass these just for sanity sake.
-   *  
-   * @param modelSet
+   * @param mergeModelSet
    */
-  protected void merge(ModelSet modelSet) {
-    for (int i = 0; i < modelSet.modelCount; i++) {
-      Model m = models[i] = modelSet.models[i];
+  protected void mergeModelArrays(ModelSet mergeModelSet) {
+    atoms = mergeModelSet.atoms;
+    bonds = mergeModelSet.bonds;
+    stateScripts = mergeModelSet.stateScripts;
+    proteinStructureTainted = mergeModelSet.proteinStructureTainted;
+    thisStateModel = -1;
+    bsSymmetry = mergeModelSet.bsSymmetry;
+    modelFileNumbers = mergeModelSet.modelFileNumbers;  // file * 1000000 + modelInFile (1-based)
+    modelNumbersForAtomLabel = mergeModelSet.modelNumbersForAtomLabel;
+    modelNames = mergeModelSet.modelNames;
+    modelNumbers = mergeModelSet.modelNumbers;
+    frameTitles = mergeModelSet.frameTitles;
+    mergeAtomArrays(mergeModelSet);
+  }
+
+  protected void mergeModels(ModelSet mergeModelSet) {
+    for (int i = 0; i < mergeModelSet.modelCount; i++) {
+      Model m = models[i] = mergeModelSet.models[i];
       m.modelSet = (ModelSet) this;
       for (int j = 0; j < m.chainCount; j++)
         m.chains[j].setModelSet(m.modelSet);
-      stateScripts = modelSet.stateScripts;
-      proteinStructureTainted = modelSet.proteinStructureTainted;
-      thisStateModel = -1;
     }
-    super.merge(modelSet);
   }
 
   protected void releaseModelSet() {
@@ -226,7 +235,7 @@ abstract public class ModelCollection extends BondCollection {
     if (alreadyDefined != null) {
       jbr.clearBioPolymers(groups, groupCount, alreadyDefined);
     }
-    boolean checkPolymerConnections = !viewer.getPdbLoadInfo(1);
+    boolean checkPolymerConnections = !viewer.isPdbSequential();
     for (int i = baseGroupIndex; i < groupCount; ++i) {
       Polymer bp = jbr.buildBioPolymer(groups[i], groups, i, checkPolymerConnections);
       if (bp != null)
@@ -530,6 +539,7 @@ abstract public class ModelCollection extends BondCollection {
         bsAtoms2, script2, postDefinitions);
     if (stateScript.isValid())
       stateScripts.addElement(stateScript);
+    System.out.println("modelcoll addstate " + stateScript);
     return stateScript;
   }
 
@@ -546,9 +556,9 @@ abstract public class ModelCollection extends BondCollection {
         BitSet bsAtoms2, String script2, boolean postDefinitions) {
       this.modelIndex = modelIndex;
       this.script1 = script1;
-      this.bsBonds = bsBonds;
-      this.bsAtoms1 = bsAtoms1;
-      this.bsAtoms2 = bsAtoms2;
+      this.bsBonds = BitSetUtil.copy(bsBonds);
+      this.bsAtoms1 = BitSetUtil.copy(bsAtoms1);
+      this.bsAtoms2 = BitSetUtil.copy(bsAtoms2);
       this.script2 = script2;
       this.postDefinitions = postDefinitions;
     }
@@ -1022,12 +1032,13 @@ abstract public class ModelCollection extends BondCollection {
       models[i].calcSelectedMonomersCount(bsSelected);
   }
 
-  public void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
-    //bsA and bsB are always the same. If that changes, we must
-    //pass on bsB to clearCalculatedHydrogenBonds as well;
+  public void calcRasmolHydrogenBonds(BitSet bsA, BitSet bsB) {
+    boolean isSame = bsA.equals(bsB);
     for (int i = modelCount; --i >= 0;)
       if (models[i].trajectoryBaseIndex == i) {
-        clearCalculatedHydrogenBonds(i, bsA);
+        clearRasmolHydrogenBonds(i, bsA);
+        if (!isSame)
+          clearRasmolHydrogenBonds(i, bsB);
         models[i].calcHydrogenBonds(bsA, bsB);
       }
   }
@@ -1806,15 +1817,17 @@ abstract public class ModelCollection extends BondCollection {
   public boolean hasCalculatedHBonds(BitSet bs) {
     BitSet bsModels = getModelBitSet(bs, false);
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
-      if (models[atoms[i].modelIndex].hasCalculatedHBonds)
+      if (models[atoms[i].modelIndex].hasRasmolHBonds)
         return true;
     return false;
   }
 
-  public void clearCalculatedHydrogenBonds(int baseIndex, BitSet bsAtoms) {
+  public void clearRasmolHydrogenBonds(int baseIndex, BitSet bsAtoms) {
+    //called by calcRasmolHydrogenBonds (bsAtoms not null) fom autoHBond
+    //      and setTrajectory (bsAtoms null)
     BitSet bsDelete = new BitSet();
     int nDelete = 0;
-    models[baseIndex].hasCalculatedHBonds = false;
+    models[baseIndex].hasRasmolHBonds = false;
     for (int i = bondCount; --i >= 0;) {
       Bond bond = bonds[i];
       if (baseIndex >= 0 
@@ -1822,7 +1835,7 @@ abstract public class ModelCollection extends BondCollection {
           || (bond.order & JmolConstants.BOND_H_CALC_MASK) == 0)
         continue;
       if (bsAtoms != null && !bsAtoms.get(bond.atom1.index)) {
-        models[baseIndex].hasCalculatedHBonds = true;
+        models[baseIndex].hasRasmolHBonds = true;
         continue;
       }
       bsDelete.set(i);
@@ -1835,6 +1848,7 @@ abstract public class ModelCollection extends BondCollection {
   //////////// iterators //////////
   
   //private final static boolean MIX_BSPT_ORDER = false;
+  private final static boolean showRebondTimes = true;
 
   protected void initializeBspf() {
     if (bspf == null) {
@@ -1872,6 +1886,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   protected void initializeBspt(int modelIndex) {
+    initializeBspf();
     if (bspf.isInitialized(modelIndex))
       return;
     bspf.initialize(modelIndex, atoms, getModelAtomBitSet(modelIndex, false));
@@ -2350,16 +2365,17 @@ abstract public class ModelCollection extends BondCollection {
     return new int[] { nNew, nModified };
   }
 
-  public int autoBond(BitSet bsA, BitSet bsB, BitSet bsExclude, BitSet bsBonds) {
+  public int autoBond(BitSet bsA, BitSet bsB, BitSet bsExclude, BitSet bsBonds, short mad) {
     if (atomCount == 0)
       return 0;
+    if (mad == 0)
+      mad = 1;
     // null values for bitsets means "all"
     if (maxBondingRadius == Float.MIN_VALUE)
       findMaxRadii();
     float bondTolerance = viewer.getBondTolerance();
     float minBondDistance = viewer.getMinBondDistance();
     float minBondDistance2 = minBondDistance * minBondDistance;
-    short mad = viewer.getMadBond();
     int nNew = 0;
     initializeBspf();
     if (showRebondTimes && Logger.debugging)
@@ -2451,54 +2467,50 @@ abstract public class ModelCollection extends BondCollection {
         bsB.set(bonds[i].atom2.index);
       }
     }
-    if (matchHbond) {
-      initializeBspf();
-      return new int[] { -autoHbond(bsA, bsB, 0, 0), 0 };
-    }
-    return new int[] { autoBond(bsA, bsB, null, bsBonds), 0 };
+    return new int[] {
+        matchHbond ? autoHbond(bsA, bsB) 
+            : autoBond(bsA, bsB, null, bsBonds, viewer.getMadBond()), 0 };
   }
   
-  private static float defaultHbondMax = 3.25f;
   private static float hbondMin = 2.5f;
-
-  private static boolean checkMinAttachedAngle(Atom atom1, Atom atom2, float minAngle, Vector3f v1, Vector3f v2) {
-    v1.sub(atom1, atom2);
-    return (checkMinAttachedAngle(atom1, atom1.getBonds(), atom2, minAngle, v1, v2)
-        && checkMinAttachedAngle(atom2, atom2.getBonds(), atom1, minAngle, v1, v2));
-  }
-
-  private static boolean checkMinAttachedAngle(Atom atom1, Bond[] bonds1, Atom atom2,
-                                        float minAngle, Vector3f v1, Vector3f v2) {
-    if (bonds1 != null)
-      for (int i = bonds1.length; --i >= 0;)
-        if (bonds1[i].isCovalent()) {
-          v2.sub(atom1, bonds1[i].getOtherAtom(atom1));
-          if (v2.angle(v1) < minAngle)
-            return false;
-        }
-    v1.scale(-1); // set for second check
-    return true;
-  }
 
   /**
    * a generalized formation of HBONDS, carried out in relation to calculate
    * HBONDS {atomsFrom} {atomsTo}. The calculation can create pseudo-H bonds for
    * files that do not contain H atoms.
    * 
-   * @param bsA  "from" set (must contain H if that is desired)
-   * @param bsB  "to" set
-   * @param maxXYDistance       max distance or 0
-   * @param minAttachedAngle    min attached angle or 0
+   * @param bsA
+   *          "from" set (must contain H if that is desired)
+   * @param bsB
+   *          "to" set
+   * @param maxXYDistance
+   *          max distance or 0
+   * @param minAttachedAngle
+   *          min attached angle or 0
    * @return negative number of pseudo-hbonds or number of actual hbonds formed
    */
-  protected int autoHbond(BitSet bsA, BitSet bsB, float maxXYDistance,
-                          float minAttachedAngle) {
-    int i = bsA.nextSetBit(0);
-    if (i < 0)
-      return 0;
-    boolean considerH = (models[atoms[i].modelIndex].hydrogenCount != 0 && maxXYDistance != 0);
-    if (maxXYDistance <= 0)
-      maxXYDistance = defaultHbondMax;
+  public int autoHbond(BitSet bsA, BitSet bsB) {
+    bsHBondsRasmol = new BitSet();
+    boolean haveHAtoms = false;
+    for (int i = bsA.nextSetBit(0); i >= 0 && !haveHAtoms; i = bsA
+        .nextSetBit(i + 1))
+      if (atoms[i].getElementNumber() == 1)
+        haveHAtoms = true;
+    boolean useRasMol = viewer.getHbondsRasmol();
+    if (useRasMol && !haveHAtoms) {
+      Logger.info("Rasmol pseudo-hbond calculation");
+      calcRasmolHydrogenBonds(bsA, bsB);
+      return -BitSetUtil.cardinalityOf(bsHBondsRasmol);
+    }
+    Logger.info(haveHAtoms ? "Standard Hbond calculation"
+        : "Jmol pseudo-hbond calculation");
+    BitSet bsCO = new BitSet();
+    for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
+      if (atoms[i].getSpecialAtomID() == JmolConstants.ATOMID_CARBONYL_OXYGEN)
+        bsCO.set(i);
+    }
+    float maxXYDistance = viewer.getHbondsDistanceMax();
+    float minAttachedAngle = (float) (viewer.getHbondsAngleMin() * Math.PI / 180);
     float hbondMax2 = maxXYDistance * maxXYDistance;
     float hbondMin2 = hbondMin * hbondMin;
     float hxbondMin2 = 1;
@@ -2511,17 +2523,14 @@ abstract public class ModelCollection extends BondCollection {
     if (showRebondTimes && Logger.debugging)
       Logger.startTimer();
     int modelLast = -1;
-    BitSet bsCO = new BitSet();
-    if (!considerH)
-      for (i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1))
-        if (atoms[i].getSpecialAtomID() == JmolConstants.ATOMID_CARBONYL_OXYGEN)
-          bsCO.set(i);
-    for (i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
+    Point3f C = null;
+    Point3f D = null;
+    for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
       Atom atom = atoms[i];
       int elementNumber = atom.getElementNumber();
       boolean isH = (elementNumber == 1);
-      if (!isH && (considerH || elementNumber != 7 && elementNumber != 8)
-          || isH && !considerH)
+      if (!isH && (haveHAtoms || elementNumber != 7 && elementNumber != 8)
+          || isH && !haveHAtoms)
         continue;
       float min2, max2, dmax;
       boolean firstIsCO;
@@ -2545,38 +2554,85 @@ abstract public class ModelCollection extends BondCollection {
         max2 = hbondMax2;
         firstIsCO = bsCO.get(i);
       }
-      // float searchRadius = hbondMax;
-      if (atom.modelIndex != modelLast) {
+      if (atom.modelIndex != modelLast)
         initializeBspt(modelLast = atom.modelIndex);
-      }
       AtomIndexIterator iter = getWithinAtomSetIterator(atom.index, dmax, bsB,
           false, false);
       while (iter.hasNext()) {
         Atom atomNear = atoms[iter.next()];
         int elementNumberNear = atomNear.getElementNumber();
-        if (atomNear == atom           
-            || !isH && elementNumberNear != 7 && elementNumberNear != 8
-            || isH && elementNumberNear == 1
-            || (d2 = iter.foundDistance2()) < min2 || d2 > max2 
-            || firstIsCO && bsCO.get(atomNear.index)
-            || atom.isBonded(atomNear) 
-            ){
+        if (atomNear == atom || !isH && elementNumberNear != 7
+            && elementNumberNear != 8 || isH && elementNumberNear == 1
+            || (d2 = iter.foundDistance2()) < min2 || d2 > max2 || firstIsCO
+            && bsCO.get(atomNear.index) || atom.isBonded(atomNear)) {
           continue;
         }
-        if (minAttachedAngle > 0
-            && !checkMinAttachedAngle(atom, atomNear, minAttachedAngle, v1, v2))
-          continue;
-        getOrAddBond(atom, atomNear, JmolConstants.BOND_H_REGULAR, (short) 1,
-            bsPseudoHBonds);
+        if (minAttachedAngle > 0) {
+          v1.sub(atom, atomNear);
+          if ((D = checkMinAttachedAngle(atom, atomNear, minAttachedAngle, v1,
+              v2, haveHAtoms)) == null)
+            continue;
+          v1.scale(-1);
+          if ((C = checkMinAttachedAngle(atomNear, atom, minAttachedAngle, v1,
+              v2, haveHAtoms)) == null)
+            continue;
+        }
+        if (isH && !Float.isNaN(C.x) && !Float.isNaN(D.x)) {
+          /*
+           * A crude calculation based on simple distances.
+           * In the NH -- O=C case this reads DH -- A=C
+           * 
+           *        (+)  H .......... A (-)
+           *             |            |
+           *             |            |
+           *        (-)  D            C (+)
+           * 
+           * 
+           *   E = Q/rAH - Q/rAD + Q/rCD - Q/rCH
+           * 
+           */
+
+          float energy = HBond.getEnergy((float) Math.sqrt(d2), C.distance(atom), 
+              C.distance(D), atomNear.distance(D)) / 1000f;
+          bsHBondsRasmol.set(addHBond(atom, atomNear,
+              JmolConstants.BOND_H_CALC, energy));
+        } else {
+          getOrAddBond(atom, atomNear, JmolConstants.BOND_H_REGULAR, (short) 1,
+              bsHBondsRasmol, true);
+        }
         nNew++;
       }
-      iter.release();
     }
     ((ModelSet) this).setShapeSize(JmolConstants.SHAPE_STICKS,
-        Integer.MIN_VALUE, null, bsPseudoHBonds);
+        Integer.MIN_VALUE, null, bsHBondsRasmol);
     if (showRebondTimes && Logger.debugging)
       Logger.checkTimer("Time to hbond");
-    return (considerH ? nNew : -nNew);
+    return (haveHAtoms ? nNew : -nNew);
+  }
+
+  private static Point3f checkMinAttachedAngle(Atom atom1, Atom atom2,
+                                               float minAngle, Vector3f v1,
+                                               Vector3f v2, boolean haveHAtoms) {
+    Bond[] bonds = atom1.getBonds();
+    Atom X = null;
+    float dMin = Float.MAX_VALUE;
+    if (bonds == null || bonds.length == 0)
+      return new Point3f(Float.NaN, 0, 0);
+    for (int i = bonds.length; --i >= 0;)
+      if (bonds[i].isCovalent()) {
+        Atom atomA = bonds[i].getOtherAtom(atom1);
+        if (!haveHAtoms && atomA.getElementNumber() == 1)
+          continue;
+        v2.sub(atom1, atomA);
+        float d = v2.angle(v1);
+        if (d < minAngle)
+          return null;
+        if (d < dMin) {
+          X = atomA;
+          dMin = d;
+        }
+      }
+    return X;
   }
 
 

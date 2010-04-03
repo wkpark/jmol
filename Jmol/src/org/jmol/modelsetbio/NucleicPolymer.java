@@ -43,7 +43,7 @@ public class NucleicPolymer extends BioPolymer {
 
   boolean hasWingPoints() { return true; }
 
-  public void calcHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB) {
+  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB) {
     lookForHbonds((NucleicPolymer)polymer, bsA, bsB);
   }
 
@@ -72,14 +72,14 @@ public class NucleicPolymer extends BioPolymer {
         }
       }
       if (bestN3 != null) {
-        model.addHydrogenBond(myN1, bestN3,  HBOND_MASK, bsA, bsB, 0);
+        model.addRasmolHydrogenBond(myN1, bestN3,  HBOND_MASK, bsA, bsB, 0);
         if (myNucleotide.isGuanine()) {
-          model.addHydrogenBond(myNucleotide.getN2(),
+          model.addRasmolHydrogenBond(myNucleotide.getN2(),
                              bestNucleotide.getO2(), HBOND_MASK, bsA, bsB, 0);
-          model.addHydrogenBond(myNucleotide.getO6(),
+          model.addRasmolHydrogenBond(myNucleotide.getO6(),
                              bestNucleotide.getN4(), HBOND_MASK, bsA, bsB, 0);
         } else {
-          model.addHydrogenBond(myNucleotide.getN6(),
+          model.addRasmolHydrogenBond(myNucleotide.getN6(),
                              bestNucleotide.getO4(), HBOND_MASK, bsA, bsB, 0);
         }
       }

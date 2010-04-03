@@ -151,6 +151,7 @@ public abstract class AtomSetCollectionReader {
   protected boolean applySymmetryToBonds;
   protected boolean needToApplySymmetry;
   protected boolean getHeader;
+  protected boolean isSequential;
   protected int templateAtomCount;
   public int modelNumber;
   protected int vibrationNumber;
@@ -317,6 +318,7 @@ public abstract class AtomSetCollectionReader {
     this.viewer = (JmolViewer) htParams.get("viewer");
     htParams.remove("viewer"); // don't pass this on to user
     getHeader = htParams.containsKey("getHeader");
+    isSequential = htParams.containsKey("isSequential");
     readerName = (String) htParams.get("readerName");
     parameterData = (String) htParams.get("parameterData");
     if (htParams.containsKey("vibrationNumber"))

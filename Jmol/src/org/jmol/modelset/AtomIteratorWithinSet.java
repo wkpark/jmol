@@ -79,6 +79,7 @@ class AtomIteratorWithinSet implements AtomIndexIterator {
         return true;
     }
     iNext = -1;
+    release();
     return false;
   }
 
@@ -90,7 +91,7 @@ class AtomIteratorWithinSet implements AtomIndexIterator {
     return bsptIter.foundDistance2();  
   }
   
-  public void release() {
+  private void release() {
     bsptIter.release();
     bsptIter = null;
   }

@@ -843,6 +843,7 @@ public class StateManager {
       setParameterValue("hbondsAngleMinimum", hbondsAngleMinimum);
       setParameterValue("hbondsDistanceMaximum", hbondsDistanceMaximum);
       setParameterValue("hbondsBackbone", hbondsBackbone);
+      setParameterValue("hbondsRasmol", hbondsRasmol);
       setParameterValue("hbondsSolid", hbondsSolid);
       setParameterValue("helixStep", helixStep);
       setParameterValue("helpPath", helpPath);
@@ -903,6 +904,7 @@ public class StateManager {
       setParameterValue("slabByMolecule", slabByMolecule);
       setParameterValue("slabByAtom", slabByAtom);
       setParameterValue("smartAromatic", smartAromatic);
+      setParameterValue("smallMoleculeMaxAtoms", smallMoleculeMaxAtoms);
       setParameterValue("solventProbe", solventOn);
       setParameterValue("solventProbeRadius", solventProbeRadius);
       setParameterValue("specular", specular);
@@ -959,10 +961,12 @@ public class StateManager {
     String atomTypes = "";
     boolean autoBond = true;
     boolean autoLoadOrientation = false; // 11.7.30 for Spartan and Sygress/CAChe loading with or without rotation
+    boolean axesOrientationRasmol = false;
     short bondRadiusMilliAngstroms = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
     float bondTolerance = JmolConstants.DEFAULT_BOND_TOLERANCE;
-    String defaultLoadScript = "";
     String defaultDirectory = "";
+    final Point3f ptDefaultLattice = new Point3f();
+    String defaultLoadScript = "";
 //    boolean _fileCaching = false;
 //    String _fileCache = "";
     boolean forceAutoBond = false;
@@ -972,6 +976,7 @@ public class StateManager {
     boolean pdbGetHeader = false; // true to get PDB header in auxiliary info
     boolean pdbSequential = false; // true for no bonding check
     int percentVdwAtom = JmolConstants.DEFAULT_PERCENT_VDW_ATOM;
+    int smallMoleculeMaxAtoms = 40000;
     boolean smartAromatic = true;
     boolean zeroBasedXyzRasmol = false;
 
@@ -983,6 +988,8 @@ public class StateManager {
      * @return script command
      */
     String getLoadState() {
+      
+      
       // some commands register flags so that they will be 
       // restored in a saved state definition, but will not execute
       // now so that there is no chance any embedded scripts or
@@ -991,12 +998,13 @@ public class StateManager {
       appendCmd(str, "set allowEmbeddedScripts false");
       if (allowEmbeddedScripts)
         setParameterValue("allowEmbeddedScripts", true);
-      appendCmd(str, "set autoBond " + autoBond);
       appendCmd(str, "set appendNew " + appendNew);
       appendCmd(str, "set appletProxy " + Escape.escape(appletProxy));
       appendCmd(str, "set applySymmetryToBonds " + applySymmetryToBonds);
       if (atomTypes.length() > 0)
         appendCmd(str, "set atomTypes " + Escape.escape(atomTypes));
+      appendCmd(str, "set autoBond " + autoBond);
+      appendCmd(str, "set autoLoadOrientation " + autoLoadOrientation);
       if (axesOrientationRasmol)
         appendCmd(str, "set axesOrientationRasmol true");
       appendCmd(str, "set bondRadiusMilliAngstroms " + bondRadiusMilliAngstroms);
@@ -1015,16 +1023,15 @@ public class StateManager {
       if (autoLoadOrientation)
         appendCmd(str, "set autoLoadOrientation true");
       appendCmd(str, "set minBondDistance " + minBondDistance);
-      appendCmd(str, "set pdbSequential " + pdbSequential);
       appendCmd(str, "set pdbGetHeader " + pdbGetHeader);
+      appendCmd(str, "set pdbSequential " + pdbSequential);
       appendCmd(str, "set percentVdwAtom " + percentVdwAtom);
+      appendCmd(str, "set smallMoleculeMaxAtoms " + smallMoleculeMaxAtoms);
       appendCmd(str, "set smartAromatic " + smartAromatic);
       if (zeroBasedXyzRasmol)
         appendCmd(str, "set zeroBasedXyzRasmol true");
       return str.toString();
     }
-
-    private final Point3f ptDefaultLattice = new Point3f();
 
     void setDefaultLattice(Point3f ptLattice) {
       ptDefaultLattice.set(ptLattice);
@@ -1083,6 +1090,7 @@ public class StateManager {
     boolean hbondsBackbone = false;
     float hbondsAngleMinimum = 90f;
     float hbondsDistanceMaximum = 3.25f;
+    boolean hbondsRasmol = true; // 12.0.RC3
     boolean hbondsSolid = false;
     byte modeMultipleBond = JmolConstants.MULTIBOND_NOTSMALL;
     boolean showHydrogens = true;
@@ -1111,7 +1119,6 @@ public class StateManager {
     boolean allowKeyStrokes = false;
     int animationFps = 10;
     boolean autoFps = false;
-    boolean axesOrientationRasmol = false;
     int axesMode = JmolConstants.AXES_MODE_BOUNDBOX;
     float axesScale = 2;
     float cameraDepth = 3.0f;

@@ -120,6 +120,15 @@ public class Bond {
     return (order & JmolConstants.BOND_AROMATIC_MASK) != 0;
   }
 
+  public void setPaletteID(byte pid) {
+    // hbonds only
+  }
+
+  public float getEnergy() {
+    // hbonds only
+    return 0;
+  }
+  
   int getValence() {
     return (!isCovalent() ? 0
         : isPartial() || is(JmolConstants.BOND_AROMATIC) ? 1
@@ -227,5 +236,4 @@ public class Bond {
   public boolean is(int bondType) {
     return (order & ~JmolConstants.BOND_NEW) == bondType;
   }
-
 }

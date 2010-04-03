@@ -30,7 +30,6 @@ import java.util.BitSet;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
-import org.jmol.modelset.HBond;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.ColorEncoder;
 
@@ -106,8 +105,8 @@ class ColorManager {
     int argb = 0;
     switch (pid) {
     case JmolConstants.PALETTE_ENERGY:
-      return ColorEncoder.getColorIndexFromPalette(((HBond)bond).getEnergy(), 
-          0.5f, 4.5f, ColorEncoder.BWR, false);
+      return ColorEncoder.getColorIndexFromPalette(bond.getEnergy(), 
+          -2.5f, -0.5f, ColorEncoder.BWR, false);
     }
     return (argb == 0 ? Graphics3D.RED : Graphics3D.getColix(argb));
   }

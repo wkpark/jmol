@@ -465,6 +465,7 @@ public class LabelToken {
     htValues.put("ORDER", "");
     htValues.put("TYPE", "");
     htValues.put("LENGTH", new Float(0));
+    htValues.put("ENERGY", new Float(0));
     return htValues;
   }
 
@@ -475,13 +476,14 @@ public class LabelToken {
     values.put("ORDER", "" + bond.getOrderNumberAsString());
     values.put("TYPE", bond.getOrderName());
     values.put("LENGTH", new Float(bond.atom1.distance(bond.atom2)));
+    values.put("ENERGY", new Float(bond.getEnergy()));
     setValues(tokens, values);
     formatLabel(viewer, bond.atom1, null, tokens, '1', indices);
     formatLabel(viewer, bond.atom2, null, tokens, '2', indices);
     return getLabel(tokens);
   }
 
-  public static String labelFormat(Viewer viewer, Measurement measurement,
+  public static String formatLabel(Viewer viewer, Measurement measurement,
                                    String label, float value, String units) {
     Hashtable htValues = new Hashtable();
     htValues.put("#", "" + (measurement.getIndex() + 1));

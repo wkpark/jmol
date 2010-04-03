@@ -240,8 +240,8 @@ abstract public class ModelSet extends ModelCollection {
       if (shapes[i] != null)
         setShapeProperty(i, "refreshTrajectories", Imodel, bs);
     
-    if (models[baseModel].hasCalculatedHBonds) {
-      clearCalculatedHydrogenBonds(baseModel, null);
+    if (models[baseModel].hasRasmolHBonds) {
+      clearRasmolHydrogenBonds(baseModel, null);
       models[baseModel].calcHydrogenBonds(bs, bs);
     }
         
@@ -629,19 +629,6 @@ abstract public class ModelSet extends ModelCollection {
   ///// super-overloaded methods ///////
   
   
-  private final static boolean useRasMolHbondsCalculation = true;
-
-  public int autoHbond(BitSet bsA, BitSet bsB, 
-                       float maxXYDistance, float minAttachedAngle) {
-    bsPseudoHBonds = new BitSet();
-    if (minAttachedAngle == 0 && useRasMolHbondsCalculation && bondCount > 0) {
-      calcHydrogenBonds(bsA, bsB);
-      return -BitSetUtil.cardinalityOf(bsPseudoHBonds);
-    }
-    initializeBspf();
-    return super.autoHbond(bsA, bsB, maxXYDistance, minAttachedAngle);
-  }
-  
   protected void assignAromaticBonds(boolean isUserCalculation) {
     super.assignAromaticBonds(isUserCalculation, null);
     // send a message to STICKS indicating that these bonds
@@ -653,32 +640,32 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public int[] makeConnections(float minDistance, float maxDistance, int order,
-                             int connectOperation, BitSet bsA, BitSet bsB,
-                             BitSet bsBonds, boolean isBonds) {
-    if (connectOperation == JmolConstants.CONNECT_DELETE_BONDS 
-        || connectOperation == JmolConstants.CONNECT_AUTO_BOND) {
+                               int connectOperation, BitSet bsA, BitSet bsB,
+                               BitSet bsBonds, boolean isBonds) {
+    if (connectOperation == JmolConstants.CONNECT_AUTO_BOND
+        && order != JmolConstants.BOND_H_REGULAR) {
       String stateScript = "connect ";
       if (minDistance != JmolConstants.DEFAULT_MIN_CONNECT_DISTANCE)
         stateScript += minDistance + " ";
       if (maxDistance != JmolConstants.DEFAULT_MAX_CONNECT_DISTANCE)
         stateScript += maxDistance + " ";
-      addStateScript(stateScript, (isBonds? bsA : null), 
-          (isBonds? null : bsA), (isBonds ? null : bsB),  
-          (connectOperation == JmolConstants.CONNECT_DELETE_BONDS ? " delete" : " auto"), 
-          false, true);
+      addStateScript(stateScript, (isBonds ? bsA : null),
+          (isBonds ? null : bsA), (isBonds ? null : bsB), " auto", false, true);
     }
     return super.makeConnections(minDistance, maxDistance, order,
         connectOperation, bsA, bsB, bsBonds, isBonds);
   }
   
-  public void setPdbConectBonding(int baseAtomIndex, int baseModelIndex, BitSet bsExclude) {
+  public void setPdbConectBonding(int baseAtomIndex, int baseModelIndex,
+                                  BitSet bsExclude) {
     short mad = viewer.getMadBond();
     for (int i = baseModelIndex; i < modelCount; i++) {
       Vector vConnect = (Vector) getModelAuxiliaryInfo(i, "PDB_CONECT_bonds");
       if (vConnect == null)
         continue;
       int nConnect = vConnect.size();
-      int[] atomInfo = (int[]) getModelAuxiliaryInfo(i, "PDB_CONECT_firstAtom_count_max");
+      int[] atomInfo = (int[]) getModelAuxiliaryInfo(i,
+          "PDB_CONECT_firstAtom_count_max");
       int firstAtom = atomInfo[0] + baseAtomIndex;
       int atomMax = firstAtom + atomInfo[1];
       int max = atomInfo[2];
@@ -700,12 +687,12 @@ abstract public class ModelSet extends ModelCollection {
         if (sourceIndex < 0 || targetIndex < 0)
           continue;
         if (bsExclude != null) {
-        if (atoms[sourceIndex].isHetero())
-          bsExclude.set(sourceIndex);
-        if (atoms[targetIndex].isHetero())
-          bsExclude.set(targetIndex);
+          if (atoms[sourceIndex].isHetero())
+            bsExclude.set(sourceIndex);
+          if (atoms[targetIndex].isHetero())
+            bsExclude.set(targetIndex);
         }
-        checkValencesAndBond(atoms[sourceIndex], atoms[targetIndex], order, 
+        checkValencesAndBond(atoms[sourceIndex], atoms[targetIndex], order,
             (order == JmolConstants.BOND_H_REGULAR ? 1 : mad), null);
       }
     }

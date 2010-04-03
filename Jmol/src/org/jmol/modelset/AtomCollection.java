@@ -78,7 +78,7 @@ abstract public class AtomCollection {
 
   }
 
-  protected void merge(AtomCollection mergeModelSet) {
+  protected void mergeAtomArrays(AtomCollection mergeModelSet) {
     tainted = mergeModelSet.tainted;
     atomNames = mergeModelSet.atomNames;
     atomTypes = mergeModelSet.atomTypes;
@@ -92,6 +92,7 @@ abstract public class AtomCollection {
     ellipsoids = mergeModelSet.ellipsoids;
     specialAtomIDs = mergeModelSet.specialAtomIDs;
     setHaveStraightness(false);
+    surfaceDistance100s = null;
   }
   
   public void setHaveStraightness(boolean TF) {

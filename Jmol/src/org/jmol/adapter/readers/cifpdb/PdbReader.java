@@ -108,7 +108,7 @@ public class PdbReader extends AtomSetCollectionReader {
     boolean isModel = (ptOption == 2);
     if (isAtom)
       serial = parseInt(line, 6, 11);
-    boolean isNewModel = (isTrajectory && !isMultiModel && isAtom && serial == 1);
+    boolean isNewModel = ((isTrajectory || isSequential) && !isMultiModel && isAtom && serial == 1);
     if (getHeader) {
       if (isAtom || isModel)
         getHeader = false;

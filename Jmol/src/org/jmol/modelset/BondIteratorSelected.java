@@ -60,7 +60,7 @@ class BondIteratorSelected implements BondIterator {
   public boolean hasNext() {
     if (isBondBitSet) {
       iBond = bsSelected.nextSetBit(iBond);
-      return (iBond >= 0);
+      return (iBond >= 0 && iBond < bondCount);
     }
     for (; iBond < bondCount; ++iBond) {
       Bond bond = bonds[iBond];

@@ -34,10 +34,8 @@ public class HBond extends Bond {
   
   HBond(Atom atom1, Atom atom2, int order, short mad, short colix, float energy) {
     super(atom1, atom2, order, mad, colix);
-    if (Logger.debugging)
-       Logger.debug("HBond energy = " + energy + " for #" + atom1.getIndex() 
-           + " " + atom1.getInfoXYZ(false) + ", #" + atom2.getIndex() + " " + atom2.getInfoXYZ(false));
     this.energy = energy;
+    Logger.info("HBond energy = " + energy + " #" + getIdentity());
   }
   
   public float getEnergy() {
@@ -50,6 +48,47 @@ public class HBond extends Bond {
   
   public void setPaletteID(byte paletteID) {
     this.paletteID = paletteID;
+  }
+  
+  /*
+   * A crude calculation based on simple distances.
+   * In the NH -- O=C case this reads DH -- A=C
+   * 
+   *    (+0.20)  H .......... A (-0.42)
+   *             |            |
+   *             |            |
+   *    (-0.20)  D            C (+0.42)
+   * 
+   * 
+   *   E = Q/rAH - Q/rAD + Q/rCD - Q/rCH
+   *   
+   *   http://en.wikipedia.org/wiki/DSSP_%28protein%29
+   * 
+   * Kabsch and Sander DSSP hydrogen bond calculation
+   * Kabsch W, Sander C (1983). "Dictionary of protein secondary 
+   * structure: pattern recognition of hydrogen-bonded and geometrical 
+   * features". Biopolymers 22 (12): 2577–637
+   * 
+   */
+  
+  private final static double QConst = -332 * 0.42 * 0.2 * 1000;  
+  
+  /**
+   * 
+   * @param distAH
+   * @param distCH
+   * @param distCD
+   * @param distAD
+   * @return          cal/mol
+   */
+  public final static int getEnergy(double distAH, double distCH, double distCD,
+                              double distAD) {
+    
+    int energy = (int) ((QConst / distAH - QConst / distAD + QConst / distCD - QConst
+        / distCH));
+    Logger.info(" distAH=" + distAH + " distAD=" + distAD + " distCD=" + distCD
+        + " distCH=" + distCH + " energy=" + energy);
+    return energy;
   }
 
 }

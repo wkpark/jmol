@@ -420,7 +420,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * The frame related methods
    * **************************************************************/
 
-  public int getEstimatedAtomCount(Object atomSetCollection) {
+  public int getAtomCount(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getAtomCount();
   }
 
@@ -492,19 +492,18 @@ public class SmarterJmolAdapter extends JmolAdapter {
     public boolean hasNext() {
       if (iatom == atomCount)
         return false;
-      atom = atoms[iatom++];
+      atom = atoms[iatom];
+      atoms[iatom++] = null; // single pass
       return true;
     }
     public int getAtomSetIndex() { return atom.atomSetIndex; }
     public BitSet getAtomSymmetry() { return atom.bsSymmetry; }
     public int getAtomSite() { return atom.atomSite + 1; }
     public Object getUniqueID() { return new Integer(atom.atomIndex); }
-    public String getElementSymbol() {
-      if (atom.elementSymbol != null)
-        return atom.elementSymbol;
-      return atom.getElementSymbol();
-    }
-    public int getElementNumber() { return atom.elementNumber; }
+    public String getElementSymbol() { return atom.getElementSymbol(); }
+    public short getElementNumber() { 
+      return (atom.elementNumber > 0 ?
+        atom.elementNumber : JmolAdapter.getElementNumber(atom.getElementSymbol())); }
     public String getAtomName() { return atom.atomName; }
     public int getFormalCharge() { return atom.formalCharge; }
     public float getPartialCharge() { return atom.partialCharge; }

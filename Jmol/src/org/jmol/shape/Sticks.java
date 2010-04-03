@@ -40,7 +40,6 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondIterator;
-import org.jmol.modelset.HBond;
 
 public class Sticks extends Shape {
 
@@ -133,8 +132,8 @@ public class Sticks extends Shape {
           bsColixSet.set(iter.nextIndex());
           Bond bond = iter.next();
           if (isEnergy) {
-            bond.setColix(setColix(colix, pid, bond));
-            ((HBond)bond).setPaletteID(pid);
+              bond.setColix(setColix(colix, pid, bond));
+              bond.setPaletteID(pid);
           } else {
             bond.setColix(Graphics3D.getColix(JmolConstants.getArgbHbondType(bond.getOrder())));
           }

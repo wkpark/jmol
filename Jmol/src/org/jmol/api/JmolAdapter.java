@@ -80,7 +80,7 @@ public abstract class JmolAdapter {
     return JmolConstants.elementSymbolFromNumber(elementNumber);
   }
   
-  public static int getElementNumber(String elementSymbol) {
+  public static short getElementNumber(String elementSymbol) {
     return JmolConstants.elementNumberFromSymbol(elementSymbol);
   }
   
@@ -276,7 +276,7 @@ abstract public Object getAtomSetCollectionFromReader(String name, String type,
    * @param atomSetCollection The client file
    * @return The estimated number of atoms in the file
    */
-  abstract public int getEstimatedAtomCount(Object atomSetCollection);
+  abstract public int getAtomCount(Object atomSetCollection);
 
   
   /**
@@ -368,7 +368,7 @@ abstract public Object getAtomSetCollectionFromReader(String name, String type,
     public BitSet getAtomSymmetry() { return null; }
     public int getAtomSite() { return Integer.MIN_VALUE; }
     abstract public Object getUniqueID();
-    public int getElementNumber() { return -1; } // may be atomicNumber + isotopeNumber*128
+    public short getElementNumber() { return -1; } // may be atomicNumber + isotopeNumber*128
     public String getElementSymbol() { return null; }
     public String getAtomName() { return null; }
     public int getFormalCharge() { return 0; }

@@ -1697,8 +1697,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       htParams.put("lattice", global.getDefaultLattice());
     if (global.applySymmetryToBonds)
       htParams.put("applySymmetryToBonds", Boolean.TRUE);
-    if (getPdbLoadInfo(2))
+    if (global.pdbGetHeader)
       htParams.put("getHeader", Boolean.TRUE);
+    if (global.pdbSequential)
+      htParams.put("isSequential", Boolean.TRUE);
     return htParams;
   }
 
@@ -2006,6 +2008,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isAppend) {
       selectAll();
       setTainted(true);
+      axesAreTainted = true;
     }
     atomSetCollection = null;
     System.gc();
@@ -3008,22 +3011,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.autoLoadOrientation;
   }
   
-  public int autoHbond() {
-    // Eval
-    return autoHbond(selectionManager.getSelectionSet(),
-        selectionManager.getSelectionSet(), 0, 0);
+  public int autoHbond(BitSet bsFrom, BitSet bsTo) {
+    if (bsFrom == null)
+      bsFrom = bsTo = selectionManager.getSelectionSet();
+    return modelSet.autoHbond(bsFrom, bsTo);
   }
 
-  public int autoHbond(BitSet bsFrom, BitSet bsTo,
-                       float maxXYDistance, float minAttachedAngle) {
-    // Eval
-    if (maxXYDistance < 0)
-      maxXYDistance = global.hbondsDistanceMaximum;
-    if (minAttachedAngle < 0)
-      minAttachedAngle = global.hbondsAngleMinimum;
-    minAttachedAngle *= (float) (Math.PI / 180);
-    return modelSet.autoHbond(bsFrom, bsTo, maxXYDistance,
-        minAttachedAngle);
+  public float getHbondsAngleMin() {
+    return global.hbondsAngleMinimum;
+  }
+
+  public float getHbondsDistanceMax() {
+    return global.hbondsDistanceMaximum;
+  }
+
+  public boolean getHbondsRasmol() {
+    return global.hbondsRasmol;
   }
 
   public boolean hasCalculatedHBonds(BitSet bsAtoms) {
@@ -5329,6 +5332,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setIntProperty(String key, int tok, int value) {
     boolean found = true;
     switch (tok) {
+    case Token.smallmoleculemaxatoms:
+      // 12.0.RC3
+      global.smallMoleculeMaxAtoms = value;
+      break;
     case Token.minimizationsteps:
       global.minimizationSteps = value;
       break;
@@ -5468,6 +5475,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.hbondsrasmol:
+      // 12.0.RC3
+      global.hbondsRasmol = value;
+      break;
     case Token.minimizationrefresh:
       global.minimizationRefresh = value;
       break;
@@ -5942,14 +5953,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      */
   }
 
-  public boolean getPdbLoadInfo(int type) {
-    switch (type) {
-    case 1:
-      return global.pdbSequential;
-    case 2:
-      return global.pdbGetHeader;
-    }
-    return false;
+  public boolean isPdbSequential() {
+    return global.pdbSequential;
   }
 
   boolean getSelectAllModels() {
@@ -6354,7 +6359,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval, PreferencesDialog
     clearModelDependentObjects();
     modelSet.deleteAllBonds();
-    modelSet.autoBond(null, null, null, null);
+    modelSet.autoBond(null, null, null, null, getMadBond());
     addStateScript("connect;", false, true);
   }
 
@@ -6365,7 +6370,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     BitSet bsExclude = new BitSet();
     modelSet.setPdbConectBonding(0, 0, bsExclude);
     if (isAuto) {
-      modelSet.autoBond(null, null, bsExclude, null);
+      modelSet.autoBond(null, null, bsExclude, null, getMadBond());
       addStateScript("connect PDB AUTO;", false, true);
       return;
     }
@@ -8197,6 +8202,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Point3f[][] getCenterAndPoints(Vector atomSets, boolean addCenter) {
     return modelSet.getCenterAndPoints(atomSets, addCenter);
+  }
+
+  public int getSmallMoleculeMaxAtoms() {
+    return global.smallMoleculeMaxAtoms;
   }
 
 }

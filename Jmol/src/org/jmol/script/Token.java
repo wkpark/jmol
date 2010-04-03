@@ -819,6 +819,7 @@ public class Token {
   public final static int propertydatafield              = intparam | 36;
   public final static int ribbonaspectratio              = intparam | 38;
   public final static int scriptreportinglevel           = intparam | 40;
+  public final static int smallmoleculemaxatoms          = intparam | 42;
   public final static int specularexponent               = intparam | 44;
   public final static int specularpercent                = intparam | 46;
   public final static int specularpower                  = intparam | 48;
@@ -873,6 +874,7 @@ public class Token {
 // see shapecommand public final static int frank                          = booleanparam | 72;
   public final static int greyscalerendering             = booleanparam | 74;
   public final static int hbondsbackbone                 = booleanparam | 76;
+  public final static int hbondsrasmol                   = booleanparam | 77;
   public final static int hbondssolid                    = booleanparam | 78;
 // see predefinedset  public final static int hetero                         = booleanparam | 80;
   public final static int hidenameinpopup                = booleanparam | 82;
@@ -1999,13 +2001,14 @@ public class Token {
       "perspectiveModel",                         new Token(perspectivemodel),
       "phongExponent",                            new Token(phongexponent),
       "pickingSpinRate",                          new Token(pickingspinrate),
-      "propertyAtomNumberField",                   new Token(propertyatomnumberfield),
+      "propertyAtomNumberField",                  new Token(propertyatomnumberfield),
       "propertyAtomNumberColumnCount",            new Token(propertyatomnumbercolumncount),
       "propertyDataColumnCount",                  new Token(propertydatacolumncount),
       "propertyDataField",                        new Token(propertydatafield),
       "ribbonAspectRatio",                        new Token(ribbonaspectratio),
       "scriptReportingLevel",                     new Token(scriptreportinglevel),
       "showScript",                               new Token(showscript),
+      "smallMoleculeMaxAtoms",                    new Token(smallmoleculemaxatoms),
       "specular",                                 new Token(specular),
       "specularExponent",                         new Token(specularexponent),
       "specularPercent",                          new Token(specularpercent),
@@ -2066,6 +2069,7 @@ public class Token {
 // see commands     "frank",                                    new Token(frank),
       "greyscaleRendering",                       new Token(greyscalerendering),
       "hbondsBackbone",                           new Token(hbondsbackbone),
+      "hbondsRasmol",                             new Token(hbondsrasmol),
       "hbondsSolid",                              new Token(hbondssolid),
       "hetero",                                   new Token(hetero),
       "hideNameInPopup",                          new Token(hidenameinpopup),

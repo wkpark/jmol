@@ -255,7 +255,7 @@ OR
     Hashtable[] mos;
     int[] basisFunctions;
     public SymmetryData(int index, String sym) {
-      System.out.println("ADF reader creating SymmetryData " + sym + " " + index);
+      Logger.info("ADF reader creating SymmetryData " + sym + " " + index);
       this.index = index;
       this.sym = sym;
     }
@@ -268,7 +268,7 @@ OR
     int nBF = 0;
     for (int i = 0; i < vSymmetries.size(); i++) {
       SymmetryData sd = (SymmetryData) vSymmetries.get(i);
-      System.out.println(sd.sym);
+      Logger.info(sd.sym);
       discardLinesUntilContains("=== " + sd.sym + " ===");
       if (line == null) {
         Logger.error("Symmetry slater basis section not found: " + sd.sym);

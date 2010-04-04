@@ -8508,9 +8508,9 @@
     credit="548" frames="100" code="GG2" contact="gbowman"/>
 
   <!-- Projects 10300 to 10399 -->
-  <fah_proj number="10300" name="p10300" public="n"
+  <fah_proj number="10300" name="p10300" public="n" file="xyz"
     server="171.67.108.38" atoms="25077" preferred="100" deadline="140"
-    credit="520" frames="100" code="DG" contact="dsglazer"/>
+    credit="520" frames="100" code="DG" contact="dsglazer" contrib="SandStar"/>
   <fah_proj number="10301" name="p10301" public="n" file="xyz"
     server="171.67.108.38" atoms="14674" preferred="70" deadline="100"
     credit="360" frames="100" code="DG" contact="dsglazer" contrib="SandStar"/>

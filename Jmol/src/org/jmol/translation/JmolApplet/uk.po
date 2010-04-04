@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-03-14 00:37+0100\n"
+"POT-Creation-Date: 2010-04-04 09:34+0200\n"
 "PO-Revision-Date: 2010-03-14 14:05+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -144,8 +144,7 @@ msgid "Check"
 msgstr "Перевірити"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Вгору"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -1596,235 +1595,235 @@ msgstr "Кольори RasMol"
 msgid "About..."
 msgstr "Про програму…"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1105
-#: org/jmol/script/ScriptEvaluator.java:2356
+#: org/jmol/script/ScriptCompilationTokenParser.java:1111
+#: org/jmol/script/ScriptEvaluator.java:2368
 msgid "bad argument count"
 msgstr "помилкова кількість параметрів"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1108
+#: org/jmol/script/ScriptCompilationTokenParser.java:1114
 #, java-format
 msgid "invalid context for {0}"
 msgstr "некоректний контекст {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1111
-#: org/jmol/script/ScriptEvaluator.java:2380
+#: org/jmol/script/ScriptCompilationTokenParser.java:1117
+#: org/jmol/script/ScriptEvaluator.java:2392
 msgid "command expected"
 msgstr "слід було використати команду"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1114
+#: org/jmol/script/ScriptCompilationTokenParser.java:1120
 msgid "{ number number number } expected"
 msgstr "слід було використати набір { число число число }"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1117
-#: org/jmol/script/ScriptEvaluator.java:2389
+#: org/jmol/script/ScriptCompilationTokenParser.java:1123
+#: org/jmol/script/ScriptEvaluator.java:2401
 msgid "unexpected end of script command"
 msgstr "помилкове завершення команди скрипту"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1120
+#: org/jmol/script/ScriptCompilationTokenParser.java:1126
 msgid "end of expression expected"
 msgstr "слід було використати команду завершення виразу"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1123
+#: org/jmol/script/ScriptCompilationTokenParser.java:1129
 msgid "identifier or residue specification expected"
 msgstr "слід було використати ідентифікатор або опис залишку"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1126
+#: org/jmol/script/ScriptCompilationTokenParser.java:1132
 msgid "invalid atom specification"
 msgstr "некоректний опис атома"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1129
+#: org/jmol/script/ScriptCompilationTokenParser.java:1135
 msgid "invalid chain specification"
 msgstr "некоректний опис ланцюжка"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1132
+#: org/jmol/script/ScriptCompilationTokenParser.java:1138
 #, java-format
 msgid "invalid expression token: {0}"
 msgstr "некоректний елементи виразу: {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1135
+#: org/jmol/script/ScriptCompilationTokenParser.java:1141
 msgid "invalid model specification"
 msgstr "некоректний опис моделі"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1138
+#: org/jmol/script/ScriptCompilationTokenParser.java:1144
 #, java-format
 msgid "missing END for {0}"
 msgstr "у {0} не вистачає команди END"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1141
-#: org/jmol/script/ScriptEvaluator.java:2453
+#: org/jmol/script/ScriptCompilationTokenParser.java:1147
+#: org/jmol/script/ScriptEvaluator.java:2465
 msgid "number expected"
 msgstr "слід було використати число"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1144
+#: org/jmol/script/ScriptCompilationTokenParser.java:1150
 msgid "number or variable name expected"
 msgstr "слід було використати число або назву змінної"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1147
+#: org/jmol/script/ScriptCompilationTokenParser.java:1153
 msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "слід було вказати опис залишку (ALA, AL?, A*)"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1150
+#: org/jmol/script/ScriptCompilationTokenParser.java:1156
 #, java-format
 msgid "{0} expected"
 msgstr "слід було використати {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1153
+#: org/jmol/script/ScriptCompilationTokenParser.java:1159
 #, java-format
 msgid "{0} unexpected"
 msgstr "не слід використовувати {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1156
+#: org/jmol/script/ScriptCompilationTokenParser.java:1162
 #, java-format
 msgid "unrecognized expression token: {0}"
 msgstr "невідомий елементи виразу: {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1159
-#: org/jmol/script/ScriptEvaluator.java:2502
+#: org/jmol/script/ScriptCompilationTokenParser.java:1165
+#: org/jmol/script/ScriptEvaluator.java:2514
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "невідомий параметр {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1162
+#: org/jmol/script/ScriptCompilationTokenParser.java:1168
 #, java-format
 msgid "unrecognized token: {0}"
 msgstr "невідомий елемент: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2227
+#: org/jmol/script/ScriptCompiler.java:2251
 msgid "script compiler ERROR: "
 msgstr "ПОМИЛКА обробки скрипту: "
 
-#: org/jmol/script/ScriptEvaluator.java:2218
-#: org/jmol/script/ScriptEvaluator.java:7893
+#: org/jmol/script/ScriptEvaluator.java:2225
+#: org/jmol/script/ScriptEvaluator.java:8256
 msgid "script ERROR: "
 msgstr "ПОМИЛКА скрипту: "
 
-#: org/jmol/script/ScriptEvaluator.java:2350
+#: org/jmol/script/ScriptEvaluator.java:2362
 msgid "x y z axis expected"
 msgstr "слід використовувати значення за вісями x y z"
 
-#: org/jmol/script/ScriptEvaluator.java:2353
+#: org/jmol/script/ScriptEvaluator.java:2365
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr "Не можна використовувати {0}, якщо у тлі показано модель"
 
-#: org/jmol/script/ScriptEvaluator.java:2359
+#: org/jmol/script/ScriptEvaluator.java:2371
 msgid "Miller indices cannot all be zero."
 msgstr "Індекси Міллера не можуть бути нульовими."
 
-#: org/jmol/script/ScriptEvaluator.java:2362
+#: org/jmol/script/ScriptEvaluator.java:2374
 msgid "bad [R,G,B] color"
 msgstr "помилкова трійка кольорів [R,G,B]"
 
-#: org/jmol/script/ScriptEvaluator.java:2365
+#: org/jmol/script/ScriptEvaluator.java:2377
 msgid "boolean expected"
 msgstr "слід використовувати булівське значення"
 
-#: org/jmol/script/ScriptEvaluator.java:2368
+#: org/jmol/script/ScriptEvaluator.java:2380
 msgid "boolean or number expected"
 msgstr "слід використовувати булівське або числове значення"
 
-#: org/jmol/script/ScriptEvaluator.java:2371
+#: org/jmol/script/ScriptEvaluator.java:2383
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "слід використовувати булівське, числове значення або {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2374
+#: org/jmol/script/ScriptEvaluator.java:2386
 msgid "color expected"
 msgstr "слід використовувати колір"
 
-#: org/jmol/script/ScriptEvaluator.java:2377
+#: org/jmol/script/ScriptEvaluator.java:2389
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "слід використовувати колір або назву палітри (Jmol, Rasmol)"
 
-#: org/jmol/script/ScriptEvaluator.java:2383
+#: org/jmol/script/ScriptEvaluator.java:2395
 msgid "{x y z} or $name or (atom expression) required"
 msgstr ""
 "слід використовувати {x y z}, $name або (запис за допомогою символів атомів)"
 
-#: org/jmol/script/ScriptEvaluator.java:2386
+#: org/jmol/script/ScriptEvaluator.java:2398
 msgid "draw object not defined"
 msgstr "об’єкт креслення не визначено"
 
-#: org/jmol/script/ScriptEvaluator.java:2392
+#: org/jmol/script/ScriptEvaluator.java:2404
 msgid "valid (atom expression) expected"
 msgstr "слід використовувати коректний (запис за допомогою символів атомів)"
 
-#: org/jmol/script/ScriptEvaluator.java:2395
+#: org/jmol/script/ScriptEvaluator.java:2407
 msgid "(atom expression) or integer expected"
 msgstr ""
 "слід використовувати (запис за допомогою символів атомів) або ціле число"
 
-#: org/jmol/script/ScriptEvaluator.java:2398
+#: org/jmol/script/ScriptEvaluator.java:2410
 msgid "filename expected"
 msgstr "слід використовувати назву файла"
 
-#: org/jmol/script/ScriptEvaluator.java:2401
+#: org/jmol/script/ScriptEvaluator.java:2413
 msgid "file not found"
 msgstr "файл не знайдено"
 
-#: org/jmol/script/ScriptEvaluator.java:2404
+#: org/jmol/script/ScriptEvaluator.java:2416
 msgid "incompatible arguments"
 msgstr "несумісні параметри"
 
-#: org/jmol/script/ScriptEvaluator.java:2407
+#: org/jmol/script/ScriptEvaluator.java:2419
 msgid "insufficient arguments"
 msgstr "недостатня кількість параметрів"
 
-#: org/jmol/script/ScriptEvaluator.java:2410
+#: org/jmol/script/ScriptEvaluator.java:2422
 msgid "integer expected"
 msgstr "слід було використовувати ціле число"
 
-#: org/jmol/script/ScriptEvaluator.java:2413
+#: org/jmol/script/ScriptEvaluator.java:2425
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "ціле число поза межами діапазону ({0}-{1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2416
+#: org/jmol/script/ScriptEvaluator.java:2428
 msgid "invalid argument"
 msgstr "некоректний параметр"
 
-#: org/jmol/script/ScriptEvaluator.java:2419
+#: org/jmol/script/ScriptEvaluator.java:2431
 msgid "invalid parameter order"
 msgstr "некоректний порядок параметрів"
 
-#: org/jmol/script/ScriptEvaluator.java:2422
+#: org/jmol/script/ScriptEvaluator.java:2434
 msgid "keyword expected"
 msgstr "слід було використовувати ключове слово"
 
-#: org/jmol/script/ScriptEvaluator.java:2425
+#: org/jmol/script/ScriptEvaluator.java:2437
 msgid "no MO coefficient data available"
 msgstr "не виявлено даних коефіцієнтів молекулярних орбіталей"
 
-#: org/jmol/script/ScriptEvaluator.java:2428
+#: org/jmol/script/ScriptEvaluator.java:2440
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr ""
 "Слід використовувати індекс молекулярних орбіталей у межах від 1 до {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2431
+#: org/jmol/script/ScriptEvaluator.java:2443
 msgid "no MO basis/coefficient data available for this frame"
 msgstr ""
 "для цього кадру не виявлено даних базових значень та коефіцієнтів "
 "молекулярних орбіталей"
 
-#: org/jmol/script/ScriptEvaluator.java:2434
+#: org/jmol/script/ScriptEvaluator.java:2446
 msgid "no MO occupancy data available"
 msgstr "дані щодо заповнення молекулярних орбіталей недоступні"
 
-#: org/jmol/script/ScriptEvaluator.java:2437
+#: org/jmol/script/ScriptEvaluator.java:2449
 msgid "Only one molecular orbital is available in this file"
 msgstr "У цьому файлі визначено лише одну молекулярну орбіталь"
 
-#: org/jmol/script/ScriptEvaluator.java:2440
+#: org/jmol/script/ScriptEvaluator.java:2452
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "Для {0} потрібно, щоб було показано лише одну модель"
 
-#: org/jmol/script/ScriptEvaluator.java:2443
+#: org/jmol/script/ScriptEvaluator.java:2455
 msgid "No data available"
 msgstr "Не виявлено даних"
 
-#: org/jmol/script/ScriptEvaluator.java:2447
+#: org/jmol/script/ScriptEvaluator.java:2459
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
@@ -1832,25 +1831,25 @@ msgstr ""
 "Не вдалося прочитати дані щодо часткових зарядів з файла; Jmol ці дані "
 "потрібні для обробки даних MEP."
 
-#: org/jmol/script/ScriptEvaluator.java:2450
+#: org/jmol/script/ScriptEvaluator.java:2462
 msgid "No unit cell"
 msgstr "Немає комірки одиниць"
 
-#: org/jmol/script/ScriptEvaluator.java:2456
+#: org/jmol/script/ScriptEvaluator.java:2468
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "числом має бути ({0} або {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2459
+#: org/jmol/script/ScriptEvaluator.java:2471
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "десяткове число поза діапазоном ({0}-{1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2462
+#: org/jmol/script/ScriptEvaluator.java:2474
 msgid "object name expected after '$'"
 msgstr "після «$» слід вказувати назву об’єкта"
 
-#: org/jmol/script/ScriptEvaluator.java:2466
+#: org/jmol/script/ScriptEvaluator.java:2478
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
@@ -1859,93 +1858,94 @@ msgstr ""
 "слід використовувати площину — або три точки, або запис символами атомів, "
 "або {0}, або {1}, або {2}"
 
-#: org/jmol/script/ScriptEvaluator.java:2469
+#: org/jmol/script/ScriptEvaluator.java:2481
 msgid "property name expected"
 msgstr "слід було використовувати назву властивості"
 
-#: org/jmol/script/ScriptEvaluator.java:2472
+#: org/jmol/script/ScriptEvaluator.java:2484
 #, java-format
 msgid "space group {0} was not found."
 msgstr "не знайдено просторову групу {0}."
 
-#: org/jmol/script/ScriptEvaluator.java:2475
+#: org/jmol/script/ScriptEvaluator.java:2487
 msgid "quoted string expected"
 msgstr "слід використовувати рядок у лапках"
 
-#: org/jmol/script/ScriptEvaluator.java:2478
+#: org/jmol/script/ScriptEvaluator.java:2490
 msgid "quoted string or identifier expected"
 msgstr "слід використовувати рядок у лапках або ідентифікатор"
 
-#: org/jmol/script/ScriptEvaluator.java:2481
+#: org/jmol/script/ScriptEvaluator.java:2493
 msgid "too many rotation points were specified"
 msgstr "було вказано забагато точок обертання"
 
-#: org/jmol/script/ScriptEvaluator.java:2484
+#: org/jmol/script/ScriptEvaluator.java:2496
 msgid "too many script levels"
 msgstr "занадто багато рівнів скрипту"
 
-#: org/jmol/script/ScriptEvaluator.java:2487
+#: org/jmol/script/ScriptEvaluator.java:2499
 msgid "unrecognized atom property"
 msgstr "невідома властивість атома"
 
-#: org/jmol/script/ScriptEvaluator.java:2490
+#: org/jmol/script/ScriptEvaluator.java:2502
 msgid "unrecognized bond property"
 msgstr "невідома властивість зв’язку"
 
-#: org/jmol/script/ScriptEvaluator.java:2493
+#: org/jmol/script/ScriptEvaluator.java:2505
 msgid "unrecognized command"
 msgstr "невідома команда"
 
-#: org/jmol/script/ScriptEvaluator.java:2496
+#: org/jmol/script/ScriptEvaluator.java:2508
 msgid "runtime unrecognized expression"
 msgstr "невідомий вираз під час виконання"
 
-#: org/jmol/script/ScriptEvaluator.java:2499
+#: org/jmol/script/ScriptEvaluator.java:2511
 msgid "unrecognized object"
 msgstr "невідомий об’єкт"
 
-#: org/jmol/script/ScriptEvaluator.java:2506
+#: org/jmol/script/ScriptEvaluator.java:2518
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr "невідомий параметр {0} у скрипті стану Jmol (встановлено попри все)"
 
-#: org/jmol/script/ScriptEvaluator.java:2509
+#: org/jmol/script/ScriptEvaluator.java:2521
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "невідомий параметр SHOW — використано {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2515
+#: org/jmol/script/ScriptEvaluator.java:2527
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "що записувати? {0} або «назву файла» {1}"
 
-#: org/jmol/script/ScriptEvaluator.java:5910
+#: org/jmol/script/ScriptEvaluator.java:6103
 #, java-format
 msgid "{0} connections deleted"
 msgstr "вилучено {0} з’єднань"
 
-#: org/jmol/script/ScriptEvaluator.java:5931
+#: org/jmol/script/ScriptEvaluator.java:6124
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} нові зв’язки; {1} змінено"
 
-#: org/jmol/script/ScriptEvaluator.java:7093
+#: org/jmol/script/ScriptEvaluator.java:7277
 #, java-format
 msgid "file {0} created"
 msgstr "створено файл {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:8017
-#: org/jmol/script/ScriptEvaluator.java:8251
+#: org/jmol/script/ScriptEvaluator.java:8380
+#: org/jmol/script/ScriptEvaluator.java:8625
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "вилучено {0} атомів"
 
-#: org/jmol/script/ScriptEvaluator.java:8820
+#: org/jmol/script/ScriptEvaluator.java:9194
+#: org/jmol/script/ScriptEvaluator.java:9588
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} водневих зв’язки"
 
-#: org/jmol/script/ScriptEvaluator.java:9169
+#: org/jmol/script/ScriptEvaluator.java:9544
 #, java-format
 msgid "{0} struts added"
 msgstr "додано {0} розпірки"
@@ -2085,8 +2085,7 @@ msgstr "вибрати точку креслення (для вимірюван�
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr ""
-"вибрати мітку для перемикання стану приховано/показано (потрібно {0})"
+msgstr "вибрати мітку для перемикання стану приховано/показано (потрібно {0})"
 
 #: org/jmol/viewer/ActionManager.java:84
 #, java-format
@@ -2188,24 +2187,24 @@ msgstr "приховано атоми {0}"
 msgid "{0} atoms selected"
 msgstr "позначено атоми {0}"
 
-#: org/jmol/viewer/Viewer.java:4108
+#: org/jmol/viewer/Viewer.java:4133
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "додано атоми водню {0}"
 
-#: org/jmol/viewer/Viewer.java:4149
+#: org/jmol/viewer/Viewer.java:4174
 msgid "Drag to move label"
 msgstr "Перетягніть, щоб пересунути мітку"
 
-#: org/jmol/viewer/Viewer.java:7378
+#: org/jmol/viewer/Viewer.java:7417
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "доступ до буфера даних заборонено — використовуйте підписаний аплет"
 
-#: org/jmol/viewer/Viewer.java:8090
+#: org/jmol/viewer/Viewer.java:8129
 msgid "Cannot set log file path."
 msgstr "Не вдалося встановити шлях до файла журналу."
 
-#: org/jmol/viewer/Viewer.java:8092
+#: org/jmol/viewer/Viewer.java:8131
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Встановлення файла журналу {0}"
@@ -2216,12 +2215,12 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "Minimize"
 #~ msgstr "Мінімізувати"
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 #~ msgstr ""
-#~ "Створення файлів цим аплетом заборонено. Щоб отримати JPEG у форматі Base64, "
-#~ "скористайтеся {0}."
+#~ "Створення файлів цим аплетом заборонено. Щоб отримати JPEG у форматі "
+#~ "Base64, скористайтеся {0}."
 
 #~ msgid "Java memory usage"
 #~ msgstr "Використання пам’яті Java"
@@ -2232,7 +2231,6 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "File or URL"
 #~ msgstr "Файл або адреса URL"
 
-#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Файл {0}"
 
@@ -2242,14 +2240,12 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "Script with history"
 #~ msgstr "Скрипт з журналом"
 
-#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "Зображення {0}"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "Ізоповерхня JVXL"
 
-#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "Просторова модель {0}"
 

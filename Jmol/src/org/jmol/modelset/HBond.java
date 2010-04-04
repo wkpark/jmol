@@ -67,7 +67,7 @@ public class HBond extends Bond {
    * Kabsch and Sander DSSP hydrogen bond calculation
    * Kabsch W, Sander C (1983). "Dictionary of protein secondary 
    * structure: pattern recognition of hydrogen-bonded and geometrical 
-   * features". Biopolymers 22 (12): 2577–637
+   * features". Biopolymers 22 (12): 2577-637
    * 
    */
   

@@ -2482,10 +2482,6 @@ abstract public class ModelCollection extends BondCollection {
    *          "from" set (must contain H if that is desired)
    * @param bsB
    *          "to" set
-   * @param maxXYDistance
-   *          max distance or 0
-   * @param minAttachedAngle
-   *          min attached angle or 0
    * @return negative number of pseudo-hbonds or number of actual hbonds formed
    */
   public int autoHbond(BitSet bsA, BitSet bsB) {

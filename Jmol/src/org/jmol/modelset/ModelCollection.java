@@ -218,8 +218,8 @@ abstract public class ModelCollection extends BondCollection {
   protected boolean isXYZ;
   protected boolean isPDB;
 
-  private Properties modelSetProperties;
-  private Hashtable modelSetAuxiliaryInfo;
+  protected Properties modelSetProperties;
+  protected Hashtable modelSetAuxiliaryInfo;
 
   protected Group[] groups;
   protected int groupCount;
@@ -744,14 +744,6 @@ abstract public class ModelCollection extends BondCollection {
         }
       }
     return (ok ? htFull : (Hashtable) getModelSetAuxiliaryInfo("hetNames"));
-  }
-
-  protected void setModelSetProperties(Properties modelSetProperties) {
-    this.modelSetProperties = modelSetProperties;
-  }
-
-  protected void setModelSetAuxiliaryInfo(Hashtable modelSetAuxiliaryInfo) {
-    this.modelSetAuxiliaryInfo = modelSetAuxiliaryInfo;
   }
 
   public Properties getModelSetProperties() {
@@ -2998,7 +2990,7 @@ abstract public class ModelCollection extends BondCollection {
   }
   
   public Hashtable getAuxiliaryInfo(BitSet bsModels) {
-    Hashtable info = getModelSetAuxiliaryInfo();
+    Hashtable info = modelSetAuxiliaryInfo;
     if (info == null)
       return info;
     Vector models = new Vector();

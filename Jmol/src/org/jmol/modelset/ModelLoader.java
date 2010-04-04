@@ -133,8 +133,8 @@ public final class ModelLoader extends ModelSet {
     //long timeBegin = System.currentTimeMillis();
     modelSetTypeName = name;
     isXYZ = (modelSetTypeName == "xyz");
-    setModelSetProperties((Properties) getModelSetAuxiliaryInfo("properties"));
-    setModelSetAuxiliaryInfo(info);
+    modelSetProperties = (Properties) getModelSetAuxiliaryInfo("properties");
+    modelSetAuxiliaryInfo = info;
     //isMultiFile = getModelSetAuxiliaryInfoBoolean("isMultiFile"); -- no longer necessary
     isPDB = getModelSetAuxiliaryInfoBoolean("isPDB");
     jmolData = (String) getModelSetAuxiliaryInfo("jmolData");
@@ -178,11 +178,13 @@ public final class ModelLoader extends ModelSet {
   private boolean appendNew;
   private int adapterModelCount = 0;
   private int adapterTrajectoryCount = 0;
+  private boolean isLargeModel;
   
   private void createModelSet(JmolAdapter adapter, Object atomSetCollection) {
     int nAtoms = (adapter == null ? 0 : adapter.getAtomCount(atomSetCollection));
     if (nAtoms > 0)
       Logger.info("reading " + nAtoms + " atoms");
+    isLargeModel = (nAtoms > viewer.getSmallMoleculeMaxAtoms());
     adapterModelCount = (adapter == null ? 1 : adapter
         .getAtomSetCount(atomSetCollection));
     // cannot append a trajectory into a previous model
@@ -244,13 +246,13 @@ public final class ModelLoader extends ModelSet {
     calculatePolymers(null);
     // only now can we access all of the atom's properties
 
-    RadiusData rd = (atomCount - baseAtomIndex > viewer
-        .getSmallMoleculeMaxAtoms() ? null : viewer.getDefaultRadiusData());
+    RadiusData rd = (isLargeModel ? null : viewer.getDefaultRadiusData());
     for (int i = baseAtomIndex; i < atomCount; i++)
       atoms[i].setMadAtom(viewer, rd);
     for (int i = models[baseModelIndex].firstAtomIndex; i < atomCount; i++)
       models[atoms[i].modelIndex].bsAtoms.set(i);
-
+    if (isLargeModel)
+      setDefaultRendering();
     freeze();
     calcBoundBoxDimensions(null, 1);
 
@@ -259,6 +261,23 @@ public final class ModelLoader extends ModelSet {
       mergeModelSet.releaseModelSet();
     mergeModelSet = null;
   }
+
+  private void setDefaultRendering() {
+    StringBuffer sb = new StringBuffer();
+    for (int i = baseModelIndex; i < modelCount; i++) {
+      String s = models[i].getDefaultRendering();
+      if (s != null)
+        sb.append(s);
+    }  
+    if (sb.length() == 0)
+      return;
+    String script = (String) getModelSetAuxiliaryInfo("jmolscript");
+    if (script == null)
+      script = "";
+    sb.append(script);
+    modelSetAuxiliaryInfo.put("jmolscript", sb.toString());
+  }
+
 
   private void setAtomProperties() {
     int atomIndex = baseAtomIndex;
@@ -758,7 +777,7 @@ public final class ModelLoader extends ModelSet {
     JmolAdapter.BondIterator iterBond = adapter.getBondIterator(atomSetCollection);
     if (iterBond == null)
       return;
-    short mad = (atomCount - baseAtomIndex > viewer.getSmallMoleculeMaxAtoms() ? 1 : viewer.getMadBond());
+    short mad = (isLargeModel ? 1 : viewer.getMadBond());
     short order;
     defaultCovalentMad = (jmolData == null ? mad : 0);
     boolean haveMultipleBonds = false;
@@ -1004,10 +1023,9 @@ public final class ModelLoader extends ModelSet {
     group3Of = null;
 
     if (group3Lists != null) {
-      Hashtable info = getModelSetAuxiliaryInfo();
-      if (info != null) {
-        info.put("group3Lists", group3Lists);
-        info.put("group3Counts", group3Counts);
+      if (modelSetAuxiliaryInfo != null) {
+        modelSetAuxiliaryInfo.put("group3Lists", group3Lists);
+        modelSetAuxiliaryInfo.put("group3Counts", group3Counts);
       }
     }
 

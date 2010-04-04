@@ -54,22 +54,25 @@ abstract public class Polymer {
 
   protected int[] leadAtomIndices;
 
-  protected int type;
+  protected int type = TYPE_NOBONDING;
   public int bioPolymerIndexInModel;
   
-  protected final static int TYPE_OTHER = 0; // could be phosphorus or alpha
+  protected final static int TYPE_NOBONDING = 0; // could be phosphorus or alpha
   protected final static int TYPE_AMINO = 1;
   protected final static int TYPE_NUCLEIC = 2;
   protected final static int TYPE_CARBOHYDRATE = 3;
   
+  protected Polymer() {
+  }
 
   public int getType() {
     return type;
   }
-  
-  protected Polymer() {
-  }
 
+  public int[] getRange() {
+    return null;  
+  }
+  
   public int getPolymerPointsAndVectors(int last, BitSet bs, Vector vList,
                                         boolean isTraceAlpha,
                                         float sheetSmoothing) {

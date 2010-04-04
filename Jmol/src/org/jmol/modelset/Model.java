@@ -284,6 +284,21 @@ public final class Model {
     return bioPolymers[polymerIndex];
   }
 
+  String getDefaultRendering() {
+    StringBuffer sb = null;
+    for (int i = 0; i < bioPolymerCount; i++) {
+      if (bioPolymers[i].getType() != Polymer.TYPE_NOBONDING)
+        continue;
+      int[] range = bioPolymers[i].getRange();
+      if (sb == null)
+        sb = new StringBuffer(";select ");
+      else
+        sb.append(","); 
+      sb.append("({").append(range[0]).append(":").append(range[1]).append("})");
+    }
+    return (sb == null ? null : sb.toString() + ";backbone;select *;");
+  }
+  
   void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
     for (int i = bioPolymerCount; --i >= 0;) {
       int type = bioPolymers[i].getType();

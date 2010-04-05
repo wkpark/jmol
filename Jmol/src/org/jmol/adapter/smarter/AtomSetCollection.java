@@ -400,7 +400,7 @@ public class AtomSetCollection {
   public void addAtom(Atom atom) {
     if (atomCount == atoms.length) {
       if (atomCount > 200000)
-        atoms = (Atom[])ArrayUtil.ensureLength(atoms, atomCount + 25000);
+        atoms = (Atom[])ArrayUtil.ensureLength(atoms, atomCount + 50000);
       else
         atoms = (Atom[])ArrayUtil.doubleLength(atoms);
     }

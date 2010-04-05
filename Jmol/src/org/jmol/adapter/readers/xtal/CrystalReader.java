@@ -109,6 +109,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       isFreqCalc = true;
       return true;
     }
+    
     if (!isPrimitive) {
       if (line.startsWith(" SHIFT OF THE ORIGIN")) {
         readShift();
@@ -129,7 +130,14 @@ public class CrystalReader extends AtomSetCollectionReader {
         isPolymer = true;
       return true;
     }
-
+    
+    if (line.contains("CONSTRUCTION OF A NANOTUBE FROM A SLAB")) {
+      isPolymer = true;
+      isSlab = false;
+      return true;
+    }
+    
+    
     if (line.startsWith(" LATTICE PARAMETER")) {
       boolean isConvLattice = line.contains("- CONVENTIONAL");
       if (isConvLattice) {

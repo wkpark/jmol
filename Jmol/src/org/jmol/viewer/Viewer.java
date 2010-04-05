@@ -4126,7 +4126,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       BitSet bsBonds = new BitSet();
       makeConnections(0, 1.3f, JmolConstants.BOND_COVALENT_SINGLE, 
           JmolConstants.CONNECT_CREATE_ONLY, 
-          bsA, bsB, bsBonds, false);
+          bsA, bsB, bsBonds, false, 0);
       if (wasAppendNew)
         setAppendNew(true);
     }
@@ -6346,13 +6346,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public int[] makeConnections(float minDistance, float maxDistance, int order,
                                int connectOperation, BitSet bsA, BitSet bsB,
-                               BitSet bsBonds, boolean isBonds) {
+                               BitSet bsBonds, boolean isBonds, float energy) {
     // eval
     clearModelDependentObjects();
     clearAllMeasurements(); // necessary for serialization
     clearMinimization();
     return modelSet.makeConnections(minDistance, maxDistance, order,
-        connectOperation, bsA, bsB, bsBonds, isBonds);
+        connectOperation, bsA, bsB, bsBonds, isBonds, energy);
   }
 
   public void rebond() {
@@ -8206,6 +8206,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public int getSmallMoleculeMaxAtoms() {
     return global.smallMoleculeMaxAtoms;
+  }
+
+  public void addHBond(int atomIndex1, int atomIndex2, short bo) {
+    // TODO
+    
   }
 
 }

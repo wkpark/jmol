@@ -641,7 +641,7 @@ abstract public class ModelSet extends ModelCollection {
 
   public int[] makeConnections(float minDistance, float maxDistance, int order,
                                int connectOperation, BitSet bsA, BitSet bsB,
-                               BitSet bsBonds, boolean isBonds) {
+                               BitSet bsBonds, boolean isBonds, float energy) {
     if (connectOperation == JmolConstants.CONNECT_AUTO_BOND
         && order != JmolConstants.BOND_H_REGULAR) {
       String stateScript = "connect ";
@@ -653,7 +653,7 @@ abstract public class ModelSet extends ModelCollection {
           (isBonds ? null : bsA), (isBonds ? null : bsB), " auto", false, true);
     }
     return super.makeConnections(minDistance, maxDistance, order,
-        connectOperation, bsA, bsB, bsBonds, isBonds);
+        connectOperation, bsA, bsB, bsBonds, isBonds, energy);
   }
   
   public void setPdbConectBonding(int baseAtomIndex, int baseModelIndex,
@@ -759,15 +759,18 @@ abstract public class ModelSet extends ModelCollection {
           commands.append("  ").append(cmd).append("\n");
       }
 
+      boolean isH = false;
       for (int i = 0; i < bondCount; i++) {
-        if ((bonds[i].order & JmolConstants.BOND_NEW) != 0
-            || bonds[i].isHydrogen()) {
+        if ((isH = bonds[i].isHydrogen()) || (bonds[i].order & JmolConstants.BOND_NEW) != 0) {
           Bond bond = bonds[i];
           commands.append("  connect ").append("({").append(
               bond.atom1.index).append("}) ").append("({").append(
-              bond.atom2.index).append("}) ").append(
-              JmolConstants.getBondOrderNameFromOrder(bond.order))
-              .append(";\n");
+              bond.atom2.index).append("}) ");
+          commands.append(JmolConstants.getBondOrderNameFromOrder(bond.order));
+          if (isH)
+            commands.append(" ").append(bond.order >> JmolConstants.BOND_HBOND_SHIFT)
+                .append(" ").append(bond.getEnergy());
+          commands.append(";\n");
         }
       }
       commands.append("\n");

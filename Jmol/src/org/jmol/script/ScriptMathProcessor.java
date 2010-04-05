@@ -2018,7 +2018,7 @@ class ScriptMathProcessor {
       viewer
           .makeConnections(fmin, fmax, order,
               JmolConstants.CONNECT_IDENTIFY_ONLY, atoms1, atoms2, bsBonds,
-              isBonds);
+              isBonds, 0);
       return addX(new ScriptVariable(Token.bitset, new BondSet(bsBonds, viewer
           .getAtomIndices(viewer.getAtomBits(Token.bonds, bsBonds)))));
     }

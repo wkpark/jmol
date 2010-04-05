@@ -35,7 +35,8 @@ public class HBond extends Bond {
   HBond(Atom atom1, Atom atom2, int order, short mad, short colix, float energy) {
     super(atom1, atom2, order, mad, colix);
     this.energy = energy;
-    Logger.info("HBond energy = " + energy + " #" + getIdentity());
+    if (Logger.debugging)
+      Logger.info("HBond energy = " + energy + " #" + getIdentity());
   }
   
   public float getEnergy() {
@@ -87,8 +88,8 @@ public class HBond extends Bond {
     
     int energy = (int) ((QConst / distAH - QConst / distAD + QConst / distCD - QConst
         / distCH));
-    Logger.info(" distAH=" + distAH + " distAD=" + distAD + " distCD=" + distCD
-        + " distCH=" + distCH + " energy=" + energy);
+    //Logger.info(" distAH=" + distAH + " distAD=" + distAD + " distCD=" + distCD
+      //  + " distCH=" + distCH + " energy=" + energy);
     return energy;
   }
 

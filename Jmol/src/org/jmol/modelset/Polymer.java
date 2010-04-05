@@ -69,8 +69,7 @@ abstract public class Polymer {
     return type;
   }
 
-  public int[] getRange() {
-    return null;  
+  public void getRange(BitSet bs) {
   }
   
   public int getPolymerPointsAndVectors(int last, BitSet bs, Vector vList,

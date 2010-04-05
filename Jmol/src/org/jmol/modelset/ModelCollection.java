@@ -1968,7 +1968,7 @@ abstract public class ModelCollection extends BondCollection {
    */
   public int calculateStruts(BitSet bs1, BitSet bs2) {
     // select only ONE model
-    makeConnections(0, Float.MAX_VALUE, JmolConstants.BOND_STRUT, JmolConstants.CONNECT_DELETE_BONDS, bs1, bs2, null, false);
+    makeConnections(0, Float.MAX_VALUE, JmolConstants.BOND_STRUT, JmolConstants.CONNECT_DELETE_BONDS, bs1, bs2, null, false, 0);
     int iAtom = bs1.nextSetBit(0);
     if (iAtom < 0)
       return 0;
@@ -2003,7 +2003,7 @@ abstract public class ModelCollection extends BondCollection {
         .calculateStruts((ModelSet) this, atoms, bs1, bs2, vCA, thresh, delta, strutsMultiple);
     for (int i = 0; i < struts.size(); i++) {
       Object[] o = (Object[]) struts.get(i);
-      bondAtoms((Atom) o[0], (Atom) o[1], JmolConstants.BOND_STRUT, mad, null);
+      bondAtoms((Atom) o[0], (Atom) o[1], JmolConstants.BOND_STRUT, mad, null, 0);
     }
     return struts.size();
   }
@@ -2246,9 +2246,9 @@ abstract public class ModelCollection extends BondCollection {
   protected int[] makeConnections(float minDistance, float maxDistance,
                                   int order, int connectOperation,
                                   BitSet bsA, BitSet bsB, BitSet bsBonds,
-                                  boolean isBonds) {
+                                  boolean isBonds, float energy) {
     boolean matchAny = (order == JmolConstants.BOND_ORDER_ANY);
-    boolean matchHbond = (order == JmolConstants.BOND_H_REGULAR);
+    boolean matchHbond = ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0);
     boolean matchNull = (order == JmolConstants.BOND_ORDER_NULL);
     boolean identifyOnly = false;
     boolean modifyOnly = false;
@@ -2344,7 +2344,7 @@ abstract public class ModelCollection extends BondCollection {
           }
         } else {
           bsBonds.set(
-               bondAtoms(atomA, atomB, order, mad, bsBonds).index);
+               bondAtoms(atomA, atomB, order, mad, bsBonds, energy).index);
           nNew++;
         }
       }
@@ -2564,6 +2564,8 @@ abstract public class ModelCollection extends BondCollection {
               v2, haveHAtoms)) == null)
             continue;
         }
+        float energy = 0;
+        short bo;
         if (isH && !Float.isNaN(C.x) && !Float.isNaN(D.x)) {
           /*
            * A crude calculation based on simple distances.
@@ -2579,14 +2581,13 @@ abstract public class ModelCollection extends BondCollection {
            * 
            */
 
-          float energy = HBond.getEnergy((float) Math.sqrt(d2), C.distance(atom), 
+          bo = JmolConstants.BOND_H_CALC; 
+          energy = HBond.getEnergy((float) Math.sqrt(d2), C.distance(atom), 
               C.distance(D), atomNear.distance(D)) / 1000f;
-          bsHBondsRasmol.set(addHBond(atom, atomNear,
-              JmolConstants.BOND_H_CALC, energy));
         } else {
-          getOrAddBond(atom, atomNear, JmolConstants.BOND_H_REGULAR, (short) 1,
-              bsHBondsRasmol, true);
+          bo = JmolConstants.BOND_H_REGULAR;
         }
+        bsHBondsRasmol.set(addHBond(atom, atomNear, bo, energy));
         nNew++;
       }
     }

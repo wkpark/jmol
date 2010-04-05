@@ -264,20 +264,19 @@ public final class ModelLoader extends ModelSet {
 
   private void setDefaultRendering() {
     StringBuffer sb = new StringBuffer();
-    for (int i = baseModelIndex; i < modelCount; i++) {
-      String s = models[i].getDefaultRendering();
-      if (s != null)
+    String s;
+    for (int i = baseModelIndex; i < modelCount; i++)
+      if ((s = models[i].getDefaultRendering()) != null)
         sb.append(s);
-    }  
     if (sb.length() == 0)
       return;
+    sb.append("select *;");
     String script = (String) getModelSetAuxiliaryInfo("jmolscript");
     if (script == null)
       script = "";
     sb.append(script);
     modelSetAuxiliaryInfo.put("jmolscript", sb.toString());
   }
-
 
   private void setAtomProperties() {
     int atomIndex = baseAtomIndex;
@@ -807,7 +806,7 @@ public final class ModelLoader extends ModelSet {
     // Atom.bondMutually(...) will return null
     if (atom1.isBonded(atom2))
       return;
-    Bond bond = bondMutually(atom1, atom2, order, getDefaultMadFromOrder(order));
+    Bond bond = bondMutually(atom1, atom2, order, getDefaultMadFromOrder(order), 0);
     if (bond.isAromatic())
       someModelsHaveAromaticBonds = true;
     if (bondCount == bonds.length)

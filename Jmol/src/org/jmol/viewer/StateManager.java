@@ -440,7 +440,7 @@ public class StateManager {
       for (int i = bondCount; --i >= 0;) {
         Bond b = bonds[i];
         connections[i] = new Connection(b.getAtomIndex1(), b.getAtomIndex2(), b
-            .getMad(), b.getColix(), b.getOrder(), b.getShapeVisibilityFlags());
+            .getMad(), b.getColix(), b.getOrder(), b.getEnergy(), b.getShapeVisibilityFlags());
       }
     }
 
@@ -455,7 +455,7 @@ public class StateManager {
         if (c.atomIndex1 >= atomCount || c.atomIndex2 >= atomCount)
           continue;
         Bond b = modelSet.bondAtoms(modelSet.atoms[c.atomIndex1],
-            modelSet.atoms[c.atomIndex2], c.order, c.mad, null);
+            modelSet.atoms[c.atomIndex2], c.order, c.mad, null, c.energy);
         b.setColix(c.colix);
         b.setShapeVisibilityFlags(c.shapeVisibilityFlags);
       }
@@ -471,15 +471,17 @@ public class StateManager {
     short mad;
     short colix;
     int order;
+    float energy;
     int shapeVisibilityFlags;
 
-    Connection(int atom1, int atom2, short mad, short colix, int order,
+    Connection(int atom1, int atom2, short mad, short colix, int order, float energy,
         int shapeVisibilityFlags) {
       atomIndex1 = atom1;
       atomIndex2 = atom2;
       this.mad = mad;
       this.colix = colix;
       this.order = order;
+      this.energy = energy;
       this.shapeVisibilityFlags = shapeVisibilityFlags;
     }
   }

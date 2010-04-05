@@ -123,9 +123,9 @@ abstract public class BondCollection extends AtomCollection {
     return bs;
   }
 
-  public Bond bondAtoms(Atom atom1, Atom atom2, int order, short mad, BitSet bsBonds) {
+  public Bond bondAtoms(Atom atom1, Atom atom2, int order, short mad, BitSet bsBonds, float energy) {
     // this method used when a bond must be flagged as new
-    Bond bond = getOrAddBond(atom1, atom2, order, mad, bsBonds, false);
+    Bond bond = getOrAddBond(atom1, atom2, order, mad, bsBonds, false, energy);
     bond.order |= JmolConstants.BOND_NEW;
     return bond;
   }
@@ -133,7 +133,7 @@ abstract public class BondCollection extends AtomCollection {
   protected final static int BOND_GROWTH_INCREMENT = 250;
 
   protected Bond getOrAddBond(Atom atom, Atom atomOther, int order, short mad,
-                            BitSet bsBonds, boolean unBonded) {
+                            BitSet bsBonds, boolean unBonded, float energy) {
     int i;
     if (!unBonded && atom.isBonded(atomOther)) {
       i = atom.getBond(atomOther).index;
@@ -144,7 +144,7 @@ abstract public class BondCollection extends AtomCollection {
       if (order == JmolConstants.BOND_ORDER_NULL
           || order == JmolConstants.BOND_ORDER_ANY)
         order = 1;
-      i = setBond(bondCount++, bondMutually(atom, atomOther, order, mad)).index;
+      i = setBond(bondCount++, bondMutually(atom, atomOther, order, mad, energy)).index;
     }
     if (bsBonds != null)
       bsBonds.set(i);
@@ -155,15 +155,13 @@ abstract public class BondCollection extends AtomCollection {
     return bonds[bond.index = index] = bond;
   }
 
-  protected Bond hBondMutually(Atom atom, Atom atomOther, int order, short mad, float energy) {
-    Bond bond = new HBond(atom, atomOther, order, mad, (short) 0, energy);
-    addBondToAtom(atom, bond);
-    addBondToAtom(atomOther, bond);
-    return bond;
-  }
-
-  protected Bond bondMutually(Atom atom, Atom atomOther, int order, short mad) {
-    Bond bond = new Bond(atom, atomOther, order, mad, (short) 0);
+  protected Bond bondMutually(Atom atom, Atom atomOther, int order, short mad, float energy) {
+    Bond bond;
+    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
+      bond = new HBond(atom, atomOther, order, mad, (short) 0, energy);
+    } else {
+      bond = new Bond(atom, atomOther, order, mad, (short) 0);
+    }
     addBondToAtom(atom, bond);
     addBondToAtom(atomOther, bond);
     return bond;
@@ -255,7 +253,7 @@ abstract public class BondCollection extends AtomCollection {
     if (order == JmolConstants.BOND_ORDER_NULL
         || order == JmolConstants.BOND_ORDER_ANY)
       order = 1;
-    return setBond(bondCount++, hBondMutually(atom1, atom2, order, (short) 1, energy)).index;
+    return setBond(bondCount++, bondMutually(atom1, atom2, order, (short) 1, energy)).index;
   }
 
   protected short getBondOrder(Atom atomA, float bondingRadiusA, Atom atomB,
@@ -289,7 +287,7 @@ abstract public class BondCollection extends AtomCollection {
     if (atomA.alternateLocationID != atomB.alternateLocationID
         && atomA.alternateLocationID != '\0' && atomB.alternateLocationID != '\0')
       return false;
-    getOrAddBond(atomA, atomB, order, mad, bsBonds, false);
+    getOrAddBond(atomA, atomB, order, mad, bsBonds, false, 0);
     return true;
   }
 

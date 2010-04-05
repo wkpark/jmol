@@ -398,8 +398,12 @@ public class AtomSetCollection {
   }
 
   public void addAtom(Atom atom) {
-    if (atomCount == atoms.length)
-      atoms = (Atom[])ArrayUtil.doubleLength(atoms);
+    if (atomCount == atoms.length) {
+      if (atomCount > 200000)
+        atoms = (Atom[])ArrayUtil.ensureLength(atoms, atomCount + 25000);
+      else
+        atoms = (Atom[])ArrayUtil.doubleLength(atoms);
+    }
     atom.atomIndex = atomCount;
     atoms[atomCount++] = atom;
     if (atomSetCount == 0)
@@ -1033,6 +1037,7 @@ public class AtomSetCollection {
       mat.m23 /= notionalUnitCell[2];
       if (symmetry != null)
         symmetry.addSpaceGroupOperation(mat);
+      System.out.println("biomt " + i + " " + atomCount);
     }
     int noSymmetryCount = atomMax - iAtomFirst;
     setAtomSetAuxiliaryInfo("presymmetryAtomIndex", new Integer(iAtomFirst));

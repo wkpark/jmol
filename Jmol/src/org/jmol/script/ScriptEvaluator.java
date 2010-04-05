@@ -5892,6 +5892,7 @@ public class ScriptEvaluator {
     boolean isBonds = false;
     int expression2 = 0;
     int ptColor = 0;
+    float energy = 0;
     /*
      * connect [<=2 distance parameters] [<=2 atom sets] [<=1 bond type] [<=1
      * operation]
@@ -6019,7 +6020,8 @@ public class ScriptEvaluator {
         if (haveType)
           error(ERROR_incompatibleArguments);
         haveType = true;
-        if (bo == JmolConstants.BOND_PARTIAL01) {
+        switch (bo) {
+        case JmolConstants.BOND_PARTIAL01:
           switch (tokAt(i + 1)) {
           case Token.decimal:
             bo = JmolConstants
@@ -6029,6 +6031,13 @@ public class ScriptEvaluator {
             bo = (short) intParameter(++i);
             break;
           }
+          break;
+        case JmolConstants.BOND_H_REGULAR:
+          if (tokAt(i + 1) == Token.integer) {
+            bo = (short) (intParameter(++i) << JmolConstants.BOND_HBOND_SHIFT);
+            energy = floatParameter(++i);
+          }
+          break;
         }
         bondOrder = bo;
         break;
@@ -6087,14 +6096,14 @@ public class ScriptEvaluator {
           .nextSetBit(atom1 + 1)) {
         bs.set(atom1);
         result = viewer.makeConnections(distances[0], distances[1], bondOrder,
-            operation, bs, expression(expression2), bsBonds, isBonds);
+            operation, bs, expression(expression2), bsBonds, isBonds, 0);
         nNew += Math.abs(result[0]);
         nModified += result[1];
         bs.clear(atom1);
       }
     } else {
       result = viewer.makeConnections(distances[0], distances[1], bondOrder,
-          operation, atomSets[0], atomSets[1], bsBonds, isBonds);
+          operation, atomSets[0], atomSets[1], bsBonds, isBonds, energy);
       nNew += Math.abs(result[0]);
       nModified += result[1];
     }

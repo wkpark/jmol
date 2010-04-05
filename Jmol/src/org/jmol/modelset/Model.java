@@ -28,6 +28,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Escape;
 
 import org.jmol.viewer.StateManager.Orientation;
 
@@ -285,18 +286,11 @@ public final class Model {
   }
 
   String getDefaultRendering() {
-    StringBuffer sb = null;
-    for (int i = 0; i < bioPolymerCount; i++) {
-      if (bioPolymers[i].getType() != Polymer.TYPE_NOBONDING)
-        continue;
-      int[] range = bioPolymers[i].getRange();
-      if (sb == null)
-        sb = new StringBuffer(";select ");
-      else
-        sb.append(","); 
-      sb.append("({").append(range[0]).append(":").append(range[1]).append("})");
-    }
-    return (sb == null ? null : sb.toString() + ";backbone;select *;");
+    BitSet bs = new BitSet();
+    for (int i = 0; i < bioPolymerCount; i++)
+      if (bioPolymers[i].getType() == Polymer.TYPE_NOBONDING)
+        bioPolymers[i].getRange(bs);
+    return (bs.nextSetBit(0) < 0 ? null: "select " + Escape.escape(bs) + ";backbone;");
   }
   
   void calcHydrogenBonds(BitSet bsA, BitSet bsB) {

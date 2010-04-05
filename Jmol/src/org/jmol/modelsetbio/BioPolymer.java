@@ -66,10 +66,11 @@ public abstract class BioPolymer extends Polymer {
     model = monomers[0].getModel();
   }
 
-  public int[] getRange() {
-    return (monomerCount == 0 ? new int[] { -1, -1 } : new int[] {
-        monomers[0].getFirstAtomIndex(),
-        monomers[monomerCount - 1].getLastAtomIndex() });
+  public void getRange(BitSet bs) {
+    if (monomerCount == 0)
+      return;
+    bs.set(monomers[0].getFirstAtomIndex(),
+        monomers[monomerCount - 1].getLastAtomIndex() + 1);
   }
   
   static BioPolymer allocateBioPolymer(Group[] groups, int firstGroupIndex,

@@ -285,7 +285,7 @@ public class LabelToken {
       if (propertyName.startsWith("property_")) {
         lt.text = propertyName;
         lt.tok = Token.data;
-        lt.data = viewer.getDataFloat(lt.text);        
+        lt.data = viewer.getDataFloat(lt.text);   
       } else {
         Token token = Token.getTokenFromName(propertyName);
         if (token != null && isLabelPropertyTok(token.tok))
@@ -375,8 +375,6 @@ public class LabelToken {
         break;
       case Token.data:
         floatT = (t.data != null ? t.data[atom.index] : Float.NaN);
-        if (Float.isNaN(floatT))
-          strT = atom.getClientAtomStringProperty(t.text);
         break;
       case Token.formalcharge:
         int formalCharge = atom.getFormalCharge();

@@ -1059,9 +1059,10 @@ abstract class ScriptCompilationTokenParser {
     if (tokPeek(Token.times)) {
       tokenNext();
       // this one is a '*' as a prime, not a wildcard
-      atomSpec += "*";
+      atomSpec += "'";
     }
-    return generateResidueSpecCode(new Token(Token.spec_atom, atomSpec));
+    int atomID = JmolConstants.lookupSpecialAtomID(atomSpec.toUpperCase());
+    return generateResidueSpecCode(new Token(Token.spec_atom, atomID, atomSpec));
   }
   
 //----------------------------------------------------------------------------------------

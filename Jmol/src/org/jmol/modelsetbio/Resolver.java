@@ -39,22 +39,20 @@ public final class Resolver implements JmolBioResolver {
                                             int seqcode, int firstAtomIndex,
                                             int maxAtomIndex, int modelIndex,
                                             int[] specialAtomIndexes,
-                                            byte[] specialAtomIDs, Atom[] atoms) {
+                                            Atom[] atoms) {
     /*
      * called by finalizeGroupBuild()
      * 
-     * first: build array of special atom names, 
-     * for example "CA" for the alpha carbon is assigned #2
-     * see JmolConstants.specialAtomNames[]
-     * the special atoms all have IDs based on Atom.lookupSpecialAtomID(atomName)
-     * these will be the same for each conformation
+     * first: build array of special atom names, for example "CA" for the alpha
+     * carbon is assigned #2 see JmolConstants.specialAtomNames[] the special
+     * atoms all have IDs based on Atom.lookupSpecialAtomID(atomName) these will
+     * be the same for each conformation
      * 
-     * second: creates the monomers themselves based on this information
-     * thus building the byte offsets[] array for each monomer, indicating which
-     * position relative to the first atom in the group is which atom.
-     * Each monomer.offsets[i] then points to the specific atom of that type
-     * these will NOT be the same for each conformation  
-     * 
+     * second: creates the monomers themselves based on this information thus
+     * building the byte offsets[] array for each monomer, indicating which
+     * position relative to the first atom in the group is which atom. Each
+     * monomer.offsets[i] then points to the specific atom of that type these
+     * will NOT be the same for each conformation
      */
 
     int lastAtomIndex = maxAtomIndex - 1;
@@ -65,31 +63,26 @@ public final class Resolver implements JmolBioResolver {
     for (int i = JmolConstants.ATOMID_MAX; --i >= 0;)
       specialAtomIndexes[i] = Integer.MIN_VALUE;
 
-    if (specialAtomIDs != null) {
-      // go last to first so that FIRST confirmation is default
-      for (int i = maxAtomIndex; --i >= firstAtomIndex;) {
-        int specialAtomID = specialAtomIDs[i];
-        if (specialAtomID <= 0)
-          continue;
-        if (specialAtomID < JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX) {
-          /*
-           * save for future option -- turns out the 1jsa bug was in 
-           * relation to an author using the same group number for two 
-           * different groups
-           * 
-           if ((distinguishingBits & (1 << specialAtomID) != 0) {
-           
-           //bh 9/21/2006:
-           // "if the group has two of the same, that cannot be right."
-           // Thus, for example, two C's doth not make a protein "carbonyl C"
-           distinguishingBits = 0;
-           break;
-           }
-           */
-          distinguishingBits |= (1 << specialAtomID);
-        }
-        specialAtomIndexes[specialAtomID] = i;
+    // go last to first so that FIRST confirmation is default
+    for (int i = maxAtomIndex; --i >= firstAtomIndex;) {
+      int specialAtomID = atoms[i].getAtomID();
+      if (specialAtomID <= 0)
+        continue;
+      if (specialAtomID < JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX) {
+        /*
+         * save for future option -- turns out the 1jsa bug was in relation to
+         * an author using the same group number for two different groups
+         * 
+         * if ((distinguishingBits & (1 << specialAtomID) != 0) {
+         * 
+         * //bh 9/21/2006: //
+         * "if the group has two of the same, that cannot be right." // Thus,
+         * for example, two C's doth not make a protein "carbonyl C"
+         * distinguishingBits = 0; break; }
+         */
+        distinguishingBits |= (1 << specialAtomID);
       }
+      specialAtomIndexes[specialAtomID] = i;
     }
 
     if (lastAtomIndex < firstAtomIndex)

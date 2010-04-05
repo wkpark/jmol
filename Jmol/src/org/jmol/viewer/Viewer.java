@@ -2420,16 +2420,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getModelBitSet(atomList, allTrajectories);
   }
 
-  // this is a problem. SmarterJmolAdapter doesn't implement this;
-  // it can only return null.
-
-  public String getClientAtomStringProperty(Object clientAtom,
-                                            String propertyName) {
-    return (modelAdapter == null || propertyName == null
-        || propertyName.length() == 0 ? null : modelAdapter
-        .getClientAtomStringProperty(clientAtom, propertyName));
-  }
-
   public ModelSet getModelSet() {
     return modelSet;
   }

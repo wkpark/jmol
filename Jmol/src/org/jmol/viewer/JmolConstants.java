@@ -2241,7 +2241,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFFFF80B0,*/
   };
 
-  public final static String[] specialAtomNames = {
+  private final static String[] specialAtomNames = {
     
     ////////////////////////////////////////////////////////////////
     // The ordering of these entries can be changed ... BUT ...
@@ -2284,12 +2284,16 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     // ... But we need to distinguish phosphorus separately because
     // it could be found in phosphorus-only nucleic polymers
-
+ 
+    "OD1",   // 14  ASP/ASN carbonyl/carbonate
+    "OD2",   // 15  ASP carbonyl/carbonate
+    "OE1",   // 16  GLU/GLN carbonyl/carbonate
+    "OE2",   // 17  GLU carbonyl/carbonate
+    
     // reserved for future expansion ... lipids & carbohydrates
     // 9/2006 -- carbohydrates are just handled as group3 codes
     // see below
-    null, null,             // 14 - 15
-    null, null, null, null, // 16 - 19
+    null, null, // 18 - 19
     null, null, null, null, // 20 - 23
     null, null, null, null, // 24 - 27
     null, null, null, null, // 28 - 31
@@ -2378,7 +2382,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "H1'",  // 87 - H on sugar ring 1' carbon 
     "H3T",  // 88 - 3' terminus hydrogen    
         
-    // add as many as necessary
+    // add as many as necessary -- backbone only
 
     "HO3'", // 89 - 3' terminus hydrogen (new)
     "HO5'", // 90 - 5' terminus hydrogen (new)
@@ -2391,8 +2395,12 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "H2''",
     "HO2'",
     
-};
+  };
 
+  public final static String getSpecialAtomName(int atomID) {
+    return specialAtomNames[atomID];
+  }
+  
   public final static int ATOMID_MAX = specialAtomNames.length;
   ////////////////////////////////////////////////////////////////
   // currently, ATOMIDs must be >= 0 && <= 127
@@ -2435,6 +2443,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // this can be increased as far as 32, but not higher.
   public final static int ATOMID_DISTINGUISHING_ATOM_MAX = 14;
   
+  public final static byte ATOMID_CARBONYL_OD1 = 14;
+  public final static byte ATOMID_CARBONYL_OD2 = 15;
+  public final static byte ATOMID_CARBONYL_OE1 = 16;
+  public final static byte ATOMID_CARBONYL_OE2 = 17;
+  
   public final static byte ATOMID_N1 = 32;
   public final static byte ATOMID_C2 = 33;
   public final static byte ATOMID_N3 = 34;
@@ -2468,6 +2481,21 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_HO3_PRIME       = 89;
   public final static byte ATOMID_HO5_PRIME       = 90;
 
+  private static Hashtable htSpecialAtoms = new Hashtable();
+  static {
+    for (int i = specialAtomNames.length; --i >= 0; ) {
+      String specialAtomName = specialAtomNames[i];
+      if (specialAtomName != null)
+        htSpecialAtoms.put(specialAtomName,  new Integer(i));
+    }
+  }
+
+  public static byte lookupSpecialAtomID(String atomName) {
+    Integer boxedAtomID = (Integer) htSpecialAtoms.get(atomName);
+    if (boxedAtomID != null)
+      return (byte) (boxedAtomID.intValue());
+    return 0;
+  }
 
   ////////////////////////////////////////////////////////////////
   // GROUP_ID related stuff for special groupIDs

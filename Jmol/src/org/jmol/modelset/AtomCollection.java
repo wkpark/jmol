@@ -67,13 +67,11 @@ abstract public class AtomCollection {
     atomNames = null;
     atomTypes = null;
     atomSerials = null;
-    clientAtomReferences = null;
     vibrationVectors = null;
     occupancies = null;
     bfactor100s = null;
     partialCharges = null;
     ionicRadii = null;
-    specialAtomIDs = null;
     ellipsoids = null;
 
   }
@@ -83,14 +81,12 @@ abstract public class AtomCollection {
     atomNames = mergeModelSet.atomNames;
     atomTypes = mergeModelSet.atomTypes;
     atomSerials = mergeModelSet.atomSerials;
-    clientAtomReferences = mergeModelSet.clientAtomReferences;
     vibrationVectors = mergeModelSet.vibrationVectors;
     occupancies = mergeModelSet.occupancies;
     bfactor100s = mergeModelSet.bfactor100s;
     ionicRadii = mergeModelSet.ionicRadii;
     partialCharges = mergeModelSet.partialCharges;
     ellipsoids = mergeModelSet.ellipsoids;
-    specialAtomIDs = mergeModelSet.specialAtomIDs;
     setHaveStraightness(false);
     surfaceDistance100s = null;
   }
@@ -140,8 +136,6 @@ abstract public class AtomCollection {
   String[] atomNames;
   String[] atomTypes;
   int[] atomSerials;
-  byte[] specialAtomIDs;
-  Object[] clientAtomReferences;
   Vector3f[] vibrationVectors;
   byte[] occupancies;
   short[] bfactor100s;
@@ -700,6 +694,10 @@ abstract public class AtomCollection {
   }
 
   protected void setAtomName(int atomIndex, String name) {
+    byte id = JmolConstants.lookupSpecialAtomID(name);
+    atoms[atomIndex].atomID = id;
+    if (id > 0 && ((ModelCollection)this).models[atoms[atomIndex].modelIndex].isPDB)
+      return;
     if (atomNames == null)
       atomNames = new String[atoms.length];
     atomNames[atomIndex] = name;
@@ -2122,8 +2120,6 @@ abstract public class AtomCollection {
       atoms[j].index = j;
       atoms[j].modelIndex--;
     }
-    //System.out.println("atomcollection deleteAtoms atomslen=" + atoms.length);
-
     atomNames = (String[]) ArrayUtil.deleteElements(atomNames, firstAtomIndex,
         nAtoms);
     atomTypes = (String[]) ArrayUtil.deleteElements(atomTypes, firstAtomIndex,
@@ -2137,14 +2133,9 @@ abstract public class AtomCollection {
         firstAtomIndex, nAtoms);
     partialCharges = (float[]) ArrayUtil.deleteElements(partialCharges,
         firstAtomIndex, nAtoms);
-    //maybe will not work?
     ellipsoids = (Object[][]) ArrayUtil.deleteElements(ellipsoids,
         firstAtomIndex, nAtoms);
-    specialAtomIDs = (byte[]) ArrayUtil.deleteElements(specialAtomIDs,
-        firstAtomIndex, nAtoms);
     vibrationVectors = (Vector3f[]) ArrayUtil.deleteElements(vibrationVectors,
-        firstAtomIndex, nAtoms);
-    clientAtomReferences = (Object[]) ArrayUtil.deleteElements((Object) clientAtomReferences,
         firstAtomIndex, nAtoms);
     nSurfaceAtoms = 0;
     bsSurface = null;

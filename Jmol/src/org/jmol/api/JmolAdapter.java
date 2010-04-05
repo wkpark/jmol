@@ -318,16 +318,6 @@ abstract public Object getAtomSetCollectionFromReader(String name, String type,
   abstract public float[] getPdbScaleTranslate(Object atomSetCollection);
 
   /**
-   * Get a property from a clientAtom.
-   * 
-   * @param clientAtom The clientAtom
-   * @param propertyName the key of the property
-   * @return The value of the property
-   */
-  abstract public String getClientAtomStringProperty(Object clientAtom,
-                                            String propertyName);
-  
-  /**
    * Get an AtomIterator for retrieval of all atoms in the file.
    * 
    * <p>This method may not return <code>null</code>.
@@ -390,7 +380,6 @@ abstract public Object getAtomSetCollectionFromReader(String name, String type,
     public String getGroup3() { return null; }
     public int getSequenceNumber() { return Integer.MIN_VALUE; }
     public char getInsertionCode() { return (char)0; }
-    public Object getClientAtomReference() { return null; }
   }
 
   /****************************************************************

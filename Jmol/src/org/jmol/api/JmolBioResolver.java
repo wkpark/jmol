@@ -12,7 +12,7 @@ public interface JmolBioResolver {
   public Group distinguishAndPropagateGroup(Chain chain, String group3, int seqcode,
                                                   int firstAtomIndex, int maxAtomIndex, 
                                                   int modelIndex, int[] specialAtomIndexes,
-                                                  byte[] specialAtomIDs, Atom[] atoms);
+                                                  Atom[] atoms);
   
   public Polymer buildBioPolymer(Group group, Group[] groups, int i, boolean checkPolymerConnections);
   

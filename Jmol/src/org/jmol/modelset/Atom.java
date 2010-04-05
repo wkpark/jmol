@@ -62,6 +62,11 @@ final public class Atom extends Point3fi {
   private byte formalChargeAndFlags;
   private byte valence;
   char alternateLocationID;
+  byte atomID;
+  public byte getAtomID() {
+    return atomID;
+  }
+  
   short madAtom;
   public short getMadAtom() {
     return madAtom;
@@ -540,17 +545,15 @@ final public class Atom extends Point3fi {
      screenDiameter = viewer.scaleToScreen(screenZ, Math.abs(madAtom));
    }
 
-   // note: atomName cannot be null
-   // note: atomNames cannot be null
-   
    public String getAtomName() {
-     return group.chain.modelSet.atomNames[index];
+     return (atomID > 0 ? JmolConstants.getSpecialAtomName(atomID) 
+         : group.chain.modelSet.atomNames[index]);
    }
    
    public String getAtomType() {
     String[] atomTypes = group.chain.modelSet.atomTypes;
     String type = (atomTypes == null ? null : atomTypes[index]);
-    return (type == null ? group.chain.modelSet.atomNames[index] : type);
+    return (type == null ? getAtomName() : type);
   }
    
    public int getAtomNumber() {
@@ -661,27 +664,13 @@ final public class Atom extends Point3fi {
     return str.substring(1);
   }
    
-   public int getModelIndex() {
-     return modelIndex;
-   }
+  public int getModelIndex() {
+    return modelIndex;
+  }
    
-   public int getMoleculeNumber() {
-     return (group.chain.modelSet.getMoleculeIndex(index) + 1);
-   }
-   
-   String getClientAtomStringProperty(String propertyName) {
-     Object[] clientAtomReferences = group.chain.modelSet.clientAtomReferences;
-     return
-       ((clientAtomReferences==null || clientAtomReferences.length<=index)
-        ? null : (group.chain.modelSet.viewer.
-           getClientAtomStringProperty(clientAtomReferences[index],
-                                       propertyName)));
-   }
-
-   public byte getSpecialAtomID() {
-     byte[] specialAtomIDs = group.chain.modelSet.specialAtomIDs;
-     return specialAtomIDs == null ? 0 : specialAtomIDs[index];
-   }
+  public int getMoleculeNumber() {
+    return (group.chain.modelSet.getMoleculeIndex(index) + 1);
+  }
    
   public float getFractionalCoord(char ch) {
     Point3f pt = getFractionalCoord();
@@ -945,7 +934,7 @@ final public class Atom extends Point3fi {
     //  (this will be a difference in terms of *clickability*).
     // except BACKBONE
     flags |= group.shapeVisibilityFlags;
-    if (getSpecialAtomID() != JmolConstants.ATOMID_ALPHA_CARBON)
+    if (atomID != JmolConstants.ATOMID_ALPHA_CARBON)
       flags &= ~JmolConstants.BACKBONE_VISIBILITY_FLAG;
 
     // We know that (flags & AIM), so now we must remove that flag
@@ -1103,7 +1092,7 @@ final public class Atom extends Point3fi {
     case Token.atomno:
       return atom.getAtomNumber();
     case Token.atomid:
-      return atom.getSpecialAtomID();
+      return atom.atomID;
     case Token.atomindex:
       return atom.getIndex();
     case Token.bondcount:

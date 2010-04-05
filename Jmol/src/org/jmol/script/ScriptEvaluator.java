@@ -3012,6 +3012,13 @@ public class ScriptEvaluator {
           refresh();
         rpn.addX(viewer.getClickableSet());
         break;
+      case Token.spec_atom:
+        int atomID = instruction.intValue;
+        if (atomID > 0)
+          rpn.addX(compareInt(Token.atomid, null, Token.opEQ, atomID));
+        else
+          rpn.addX(getAtomBits(instruction.tok, (String) value));
+        break;
       case Token.carbohydrate:
       case Token.dna:
       case Token.hetero:
@@ -3021,7 +3028,6 @@ public class ScriptEvaluator {
       case Token.purine:
       case Token.pyrimidine:
       case Token.rna:
-      case Token.spec_atom:
       case Token.spec_name_pattern:
       case Token.spec_alternate:
       case Token.specialposition:

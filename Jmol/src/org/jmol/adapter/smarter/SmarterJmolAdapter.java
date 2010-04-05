@@ -453,10 +453,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return b;
   }
   
-  public String getClientAtomStringProperty(Object clientAtom, String propertyName) {
-    return null;
-  }
-
   ////////////////////////////////////////////////////////////////
 
   public JmolAdapter.AtomIterator

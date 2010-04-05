@@ -1990,7 +1990,7 @@ abstract public class ModelCollection extends BondCollection {
     bsCheck.and(getModelAtomBitSet(modelIndex, false));
     for (int i = bsCheck.nextSetBit(0); i >= 0; i = bsCheck.nextSetBit(i + 1))
       if (atoms[i].isVisible(0)
-          && atoms[i].getSpecialAtomID() == JmolConstants.ATOMID_ALPHA_CARBON
+          && atoms[i].atomID == JmolConstants.ATOMID_ALPHA_CARBON
           && atoms[i].getGroupID() != JmolConstants.GROUPID_CYSTINE)
         vCA.add((a1 = atoms[i]));
     if (vCA.size() == 0)
@@ -2491,10 +2491,22 @@ abstract public class ModelCollection extends BondCollection {
     }
     Logger.info(haveHAtoms ? "Standard Hbond calculation"
         : "Jmol pseudo-hbond calculation");
-    BitSet bsCO = new BitSet();
-    for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
-      if (atoms[i].getSpecialAtomID() == JmolConstants.ATOMID_CARBONYL_OXYGEN)
-        bsCO.set(i);
+    BitSet bsCO = null;    
+    if (!haveHAtoms) {
+      bsCO = new BitSet();
+      for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
+        int atomID = atoms[i].atomID;
+        switch (atomID) {
+        case JmolConstants.ATOMID_TERMINATING_OXT:
+        case JmolConstants.ATOMID_CARBONYL_OXYGEN:
+        case JmolConstants.ATOMID_CARBONYL_OD1:
+        case JmolConstants.ATOMID_CARBONYL_OD2:
+        case JmolConstants.ATOMID_CARBONYL_OE1:
+        case JmolConstants.ATOMID_CARBONYL_OE2:
+          bsCO.set(i);
+          break;
+        }
+      }
     }
     float maxXYDistance = viewer.getHbondsDistanceMax();
     float minAttachedAngle = (float) (viewer.getHbondsAngleMin() * Math.PI / 180);
@@ -3063,7 +3075,7 @@ abstract public class ModelCollection extends BondCollection {
       char chainID = atom.getChainID();
       info.put("name", getAtomName(i));
       info.put("chain", (chainID == '\0' ? "" : "" + chainID));
-      info.put("atomID", new Integer(atom.getSpecialAtomID()));
+      info.put("atomID", new Integer(atom.atomID));
       info.put("groupID", new Integer(atom.getGroupID()));
       if (atom.alternateLocationID != '\0')
         info.put("altLocation", "" + atom.alternateLocationID);

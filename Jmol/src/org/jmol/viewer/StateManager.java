@@ -71,9 +71,10 @@ public class StateManager {
   public final static int OBJ_MAX = 8;
   private final static String objectNameList = "background axis1      axis2      axis3      boundbox   unitcell   frank      ";
 
-  public static String getVariableList(Hashtable htVariables, int nMax) {
+  public static String getVariableList(Hashtable htVariables, int nMax,
+                                       boolean withSites) {
     StringBuffer sb = new StringBuffer();
-    //user variables only:
+    // user variables only:
     int n = 0;
     Enumeration e = htVariables.keys();
 
@@ -81,8 +82,10 @@ public class StateManager {
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
       ScriptVariable var = (ScriptVariable) htVariables.get(key);
-      list[n++] = key  + (key.charAt(0) == '@' ? " "
-              + ScriptVariable.sValue(var) : " = " + varClip(key, var.escape(), nMax));
+      if (withSites || (!key.startsWith("@site_") && !key.startsWith("site_")))
+        list[n++] = key
+            + (key.charAt(0) == '@' ? " " + ScriptVariable.sValue(var) : " = "
+                + varClip(key, var.escape(), nMax));
     }
     Arrays.sort(list, 0, n);
     for (int i = 0; i < n; i++)
@@ -1462,7 +1465,8 @@ public class StateManager {
       String[] list = new String[htBooleanParameterFlags.size()
           + htNonbooleanParameterValues.size()];
       StringBuffer commands = new StringBuffer();
-      if (sfunc != null) {
+      boolean isState = (sfunc != null);
+      if (isState) {
         sfunc.append("  _setVariableState;\n");
         commands.append("function _setVariableState() {\n\n");
       }
@@ -1519,7 +1523,7 @@ public class StateManager {
           appendCmd(commands, list[i]);
 
       commands.append("\n#user-defined variables; \n");
-      commands.append(StateManager.getVariableList(htUserVariables, 0));
+      commands.append(StateManager.getVariableList(htUserVariables, 0, !isState));
 
       // label defaults
 
@@ -1538,7 +1542,7 @@ public class StateManager {
     }
 
     String getVariableList() {
-      return StateManager.getVariableList(htUserVariables, 0);
+      return StateManager.getVariableList(htUserVariables, 0, true);
     }
 
   }

@@ -219,7 +219,7 @@ public class PdbReader extends AtomSetCollectionReader {
       }
     }
     super.finalizeReader();
-    if (htSites != null)
+    if (htSites != null)// && atomSetCollection.getAtomSetCount() == 1)
       addSites(htSites);
     if (pdbHeader != null)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader",
@@ -924,13 +924,13 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   private void site() {
     if (htSites == null)
       htSites = new Hashtable();
-    int seqNum = parseInt(line, 7, 10);
+    //int seqNum = parseInt(line, 7, 10);
     int nResidues = parseInt(line, 15, 17);
     String siteID = parseTrimmed(line, 11, 14);
     Hashtable htSite = (Hashtable) htSites.get(siteID);
     if (htSite == null) {
       htSite = new Hashtable();
-      htSite.put("seqNum", "site_" + seqNum);
+      //htSite.put("seqNum", "site_" + seqNum);
       htSite.put("nResidues", new Integer(nResidues));
       htSite.put("groups", "");
       htSites.put(siteID, htSite);

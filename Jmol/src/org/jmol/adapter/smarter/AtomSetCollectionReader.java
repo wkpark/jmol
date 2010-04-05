@@ -674,12 +674,12 @@ public abstract class AtomSetCollectionReader {
       for (int i = name.length(); --i >= 0; )
         if (!Character.isLetterOrDigit(ch = name.charAt(i)) && ch != '\'')
           name = name.substring(0, i) + "_" + name.substring(i + 1);
-      String seqNum = (String) htSite.get("seqNum");
+      //String seqNum = (String) htSite.get("seqNum");
       String groups = (String) htSite.get("groups");
       if (groups.length() == 0)
         continue;
       addJmolScript("@site_" + name + " " + groups);
-      addJmolScript("@" + seqNum + " " + groups);
+      //addJmolScript("@" + seqNum + " " + groups);
       addJmolScript("site_" + name + " = \"" + groups + "\".split(\",\")");
       sites += (sites == "" ? "" : ",") + "site_" + name;
     }

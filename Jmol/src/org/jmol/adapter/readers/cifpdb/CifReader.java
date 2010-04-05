@@ -1130,7 +1130,7 @@ _struct_site_gen.details
 
 */
   
-  private int siteNum;
+  //private int siteNum;
   private Hashtable htSites;
   
   /**
@@ -1169,7 +1169,7 @@ _struct_site_gen.details
           htSite = (Hashtable)htSites.get(siteID);
           if (htSite == null) {
             htSite = new Hashtable();
-            htSite.put("seqNum", "site_" + (++siteNum));
+            //htSite.put("seqNum", "site_" + (++siteNum));
             htSite.put("groups", "");
             htSites.put(siteID, htSite);
           }

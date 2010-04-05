@@ -2160,7 +2160,7 @@ public class ScriptEvaluator {
       if (withVariables) {
         if (stack[i].contextVariables != null) {
           sb.append(getScriptID(stack[i]));
-          sb.append(StateManager.getVariableList(stack[i].contextVariables, 80));
+          sb.append(StateManager.getVariableList(stack[i].contextVariables, 80, true));
         }
       } else {
         sb.append(setErrorLineMessage(stack[i].functionName, stack[i].filename,
@@ -2171,7 +2171,7 @@ public class ScriptEvaluator {
     if (withVariables) {
       if (contextVariables != null) {
         sb.append(getScriptID(null));
-        sb.append(StateManager.getVariableList(contextVariables, 80));
+        sb.append(StateManager.getVariableList(contextVariables, 80, true));
       }
     } else {
       sb.append(setErrorLineMessage(functionName, filename,
@@ -4546,6 +4546,8 @@ public class ScriptEvaluator {
       }
       if (token == null)
         continue;
+      //if (!isSyntaxCheck)
+        //System.out.println("ScriptEval " + thisCommand);
 
       if (Token.tokAttr(token.tok, Token.shapeCommand))
         processShapeCommand(token.tok);
@@ -6852,19 +6854,23 @@ public class ScriptEvaluator {
     // that set of atoms forever.
 
     String setName = (String) getToken(1).value;
-    BitSet bs = expression(2);
     if (isSyntaxCheck)
       return;
+    boolean isSite = setName.startsWith("site_");
     boolean isDynamic = (setName.indexOf("dynamic_") == 0);
-    if (isDynamic) {
+    if (isDynamic || isSite) {
       Token[] code = new Token[statementLength];
       for (int i = statementLength; --i >= 0;)
         code[i] = statement[i];
-      definedAtomSets.put("!" + setName.substring(8), code);
-      viewer.addStateScript(thisCommand, false, true);
+      definedAtomSets.put("!" + (isSite ? setName : setName.substring(8)), code);
+      if (!isSite)
+        viewer.addStateScript(thisCommand, false, true);
     } else {
+      BitSet bs = expression(2);
       definedAtomSets.put(setName, bs);
+      //System.out.println("setStringProp1");
       setStringProperty("@" + setName, Escape.escape(bs));
+      //System.out.println("setStringProp2");
     }
   }
 
@@ -10506,7 +10512,11 @@ public class ScriptEvaluator {
               // set x ...
               // a[...] =
       );
+      
+      //System.out.println("setvar1 " + key);
+
       setVariable(pt, 0, key, setType);
+      //System.out.println("setvar2 " + key);
       if (!isJmolSet)
         return;
     }

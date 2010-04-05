@@ -2852,6 +2852,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public final static String STATE_VERSION_STAMP = "# Jmol state version ";
 
   public String getStateInfo(String type) {
+    //System.out.println("viewer getStateInfo " + type);
     if (!global.preserveState)
       return "";
     boolean isAll = (type == null || type.equalsIgnoreCase("all"));

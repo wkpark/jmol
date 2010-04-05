@@ -14,13 +14,13 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-04-04 09:34+0200\n"
-"PO-Revision-Date: 2010-01-23 13:47+0000\n"
-"Last-Translator: mucku <Unknown>\n"
+"PO-Revision-Date: 2010-04-05 03:33+0000\n"
+"Last-Translator: Oliver Stueker <Unknown>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-01-23 21:16+0000\n"
+"X-Launchpad-Export-Date: 2010-04-05 19:56+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:97
@@ -51,7 +51,7 @@ msgstr "Eingabe leeren"
 #: org/jmol/applet/AppletConsole.java:104
 #: org/jmol/popup/PopupResourceBundle.java:881
 msgid "History"
-msgstr "Historie"
+msgstr "Verlauf"
 
 #: org/jmol/applet/AppletConsole.java:105
 msgid "Load"
@@ -150,7 +150,8 @@ msgid "Check"
 msgstr "Prüfen"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "An die Spitze"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -417,7 +418,7 @@ msgstr "Ungarisch"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Indonesian"
-msgstr ""
+msgstr "Indonesisch"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Italian"
@@ -425,7 +426,7 @@ msgstr "Italienisch"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Japanese"
-msgstr ""
+msgstr "Japanisch"
 
 #: org/jmol/i18n/GT.java:135
 msgid "Korean"
@@ -437,7 +438,7 @@ msgstr "Norwegisch"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Occitan"
-msgstr ""
+msgstr "Okzitanisch"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Polish"
@@ -1951,9 +1952,9 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} Wasserstoff(brücken)bindungen"
 
 #: org/jmol/script/ScriptEvaluator.java:9544
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts added"
-msgstr "{0} Atome versteckt"
+msgstr "{0} Streben hunzugefügt"
 
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
@@ -1961,24 +1962,26 @@ msgstr "Klicken um in das Menü zu kommen..."
 
 #: org/jmol/viewer/ActionManager.java:53
 msgid "rotate"
-msgstr ""
+msgstr "drehen"
 
 #: org/jmol/viewer/ActionManager.java:54
 msgid "zoom"
-msgstr ""
+msgstr "Zoom"
 
 #: org/jmol/viewer/ActionManager.java:55
 msgid "rotate Z"
-msgstr ""
+msgstr "rotieren Z-Achse"
 
 #: org/jmol/viewer/ActionManager.java:56
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
 msgstr ""
+"rotieren Z-Achse (horizontale Bewegung der Maus) oder zoomen (vertikale "
+"Bewegung der Maus)"
 
 #: org/jmol/viewer/ActionManager.java:57
 msgid "translate"
-msgstr ""
+msgstr "verschieben"
 
 #: org/jmol/viewer/ActionManager.java:59
 msgid "center"
@@ -1986,37 +1989,37 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:60
 msgid "zoom (along right edge of window)"
-msgstr ""
+msgstr "Zoom (entlang der rechten Bildkante)"
 
 #: org/jmol/viewer/ActionManager.java:61
 #, java-format
 msgid "move selected atoms (requires {0})"
-msgstr ""
+msgstr "Ausgewählte Atome bewegen (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:62
 #, java-format
 msgid "select and drag atoms (requires {0})"
-msgstr ""
+msgstr "wähle und verschiebe Atome (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:63
 #, java-format
 msgid "rotate selected atoms (requires {0})"
-msgstr ""
+msgstr "Ausgewählte Atome drehen (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:64
 #, java-format
 msgid "delete bond (requires {0})"
-msgstr ""
+msgstr "Bindung löschen (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:65
 #, java-format
 msgid "connect atoms (requires {0})"
-msgstr ""
+msgstr "Atome verbinden (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:66
 #, java-format
 msgid "move label (requires {0})"
-msgstr ""
+msgstr "Beschriftungen verschieben (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:68
 #, java-format
@@ -2026,22 +2029,28 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
 msgid "move whole DRAW object (requires {0})"
-msgstr ""
+msgstr "ein ganzes DRAW Objekt verschieben (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:70
 msgid "spin model (swipe and release button and stop motion simultaneously)"
 msgstr ""
+"Modell in Rotation versetzen (wischen und Knopf loslassen und gleichzeitig "
+"Bewegung stoppen)"
 
 #: org/jmol/viewer/ActionManager.java:71
 msgid ""
 "click on two points to spin around axis clockwise (requires SET picking SPIN)"
 msgstr ""
+"Klicke auf zwei Punkte um im Uhrzeigersinn um die Achse zu rotieren "
+"(benötigt \"Set picking SPIN\")"
 
 #: org/jmol/viewer/ActionManager.java:72
 msgid ""
 "click on two points to spin around axis counterclockwise (requires SET "
 "picking SPIN)"
 msgstr ""
+"Klicke auf zwei Punkte um entgegen dem Uhrzeigersinn um die Achse zu "
+"rotieren (benötigt \"SET picking SPIN\")"
 
 #: org/jmol/viewer/ActionManager.java:74
 #, java-format
@@ -2051,12 +2060,13 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:75
 #, java-format
 msgid "adjust depth (back plane; requires {0})"
-msgstr ""
+msgstr "Tiefe anpassen (hintere Ebene; benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:76
 #, java-format
 msgid "move slab/depth window (both planes; requires {0})"
 msgstr ""
+"Schnittfläche/Tiefe Ausschnitt verschieben (beide Ebenen; benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:77
 msgid "pop up the full context menu"
@@ -2064,12 +2074,12 @@ msgstr "komplettes Kontextmenü öffnen"
 
 #: org/jmol/viewer/ActionManager.java:78
 msgid "pop up recent context menu (click on Jmol frank)"
-msgstr ""
+msgstr "letztes Kontext-Menü aufklappen (Klick auf Jmol Emblem)"
 
 #: org/jmol/viewer/ActionManager.java:80
 #, java-format
 msgid "translate navigation point (requires {0} and {1})"
-msgstr ""
+msgstr "Navigationspunkt verschieben (benötigt {0} und {1})"
 
 #: org/jmol/viewer/ActionManager.java:81
 msgid "pick an atom"
@@ -2077,12 +2087,13 @@ msgstr "Atom auswählen"
 
 #: org/jmol/viewer/ActionManager.java:82
 msgid "pick a DRAW point (for measurements)"
-msgstr ""
+msgstr "einen DRAW punkt auswählen (für Messungen)"
 
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
 msgstr ""
+"Eine Beschriftung auswählen um es zu verstecken/anzuzeigen (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:84
 #, java-format
@@ -2090,6 +2101,8 @@ msgid ""
 "pick an atom to include it in a measurement (after starting a measurement or "
 "after {0})"
 msgstr ""
+"ein Atom auswählen um es in einer Messung zu verwenden (nach dem Starten "
+"einer Messung oder nach {0})"
 
 #: org/jmol/viewer/ActionManager.java:86
 msgid "pick an atom to initiate or conclude a measurement"
@@ -2097,38 +2110,41 @@ msgstr "Atom auswählen um Messung zu initiieren oder abzuschließen"
 
 #: org/jmol/viewer/ActionManager.java:87
 msgid "pick an ISOSURFACE point"
-msgstr ""
+msgstr "einen ISOSURFACE Punkt auswählen"
 
 #: org/jmol/viewer/ActionManager.java:88
 msgid ""
 "pick a point or atom to navigate to (requires SET NAVIGATIONMODE; "
 "undocumented)"
 msgstr ""
+"einen Punkt oder ein Atom auswählen um dorthin zu navigieren (benötigt SET "
+"NAVIGATIONMODE; undokumentiert)"
 
 #: org/jmol/viewer/ActionManager.java:89
 #, java-format
 msgid "select an atom (requires {0})"
-msgstr ""
+msgstr "ein Atom auswählen (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:90
 #, java-format
 msgid "select NONE (requires {0})"
-msgstr ""
+msgstr "nichts auswählen (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:92
 #, java-format
 msgid "toggle selection (requires {0} or {1})"
-msgstr ""
+msgstr "Auswahl umschalten (benötigt {0} oder {1})"
 
 #: org/jmol/viewer/ActionManager.java:94
 #, java-format
 msgid "unselect this group of atoms (requires {0})"
-msgstr ""
+msgstr "Auswahl für diese Gruppe von Atomen aufheben (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:95
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
 msgstr ""
+"diese Gruppe von Atomen den ausgewählten Atomen hinzufügen (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:96
 #, java-format
@@ -2143,12 +2159,12 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:99
 msgid "simulate multi-touch using the mouse)"
-msgstr ""
+msgstr "multi-touch simulieren (mit der Maus)"
 
 #: org/jmol/viewer/ActionManager.java:100
 #, java-format
 msgid "stop motion (requires {0})"
-msgstr ""
+msgstr "Bewegung stoppen (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:1438
 msgid "pick one more atom in order to spin the model around an axis"
@@ -2181,7 +2197,7 @@ msgstr "{0} Atome ausgewählt"
 #: org/jmol/viewer/Viewer.java:4133
 #, java-format
 msgid "{0} hydrogens added"
-msgstr ""
+msgstr "{0} Wasserstoff-Brücken hinzugefügt"
 
 #: org/jmol/viewer/Viewer.java:4174
 msgid "Drag to move label"
@@ -2202,28 +2218,31 @@ msgstr ""
 msgid "Setting log file to {0}"
 msgstr ""
 
-#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
-#~ msgstr ""
-#~ "Fehler: kann kein boolsches Kennzeichen zu einem variablen Wert setzen:{0}"
-
-#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-#~ msgstr "FEHLER: Kann boolschen Flag keinen numerischen Wert zuweisen: {0}"
-
-#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-#~ msgstr "FEHLER: Kann der Variable keinen Boolschen Wert zuweisen: {0}"
-
 #~ msgid "About Jmol"
 #~ msgstr "Über Jmol"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Dateierstellung mit diesem Applet ist nicht zulässig. Für das Base64 "
-#~ "Format, benutzen Sie {0}."
+#~ "Dateierstellung mit diesem Applet ist nicht zulässig. Für das Base64 Format, "
+#~ "benutzen Sie {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Dateierstellung fehlgeschlagen."
+
+#, java-format
+#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
+#~ msgstr "FEHLER: Kann boolschen Flag keinen numerischen Wert zuweisen: {0}"
+
+#, java-format
+#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
+#~ msgstr "FEHLER: Kann der Variable keinen Boolschen Wert zuweisen: {0}"
+
+#, java-format
+#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
+#~ msgstr ""
+#~ "Fehler: kann kein boolsches Kennzeichen zu einem variablen Wert setzen:{0}"
 
 #~ msgid "Minimize"
 #~ msgstr "Minimieren"

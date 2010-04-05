@@ -287,10 +287,14 @@ public final class Model {
 
   String getDefaultRendering() {
     BitSet bs = new BitSet();
-    for (int i = 0; i < bioPolymerCount; i++)
-      if (bioPolymers[i].getType() == Polymer.TYPE_NOBONDING)
-        bioPolymers[i].getRange(bs);
-    return (bs.nextSetBit(0) < 0 ? null: "select " + Escape.escape(bs) + ";backbone;");
+    if (isPDB && getBondCount() == 0)
+      bs = bsAtoms;
+    else
+      for (int i = 0; i < bioPolymerCount; i++)
+        if (bioPolymers[i].getType() == Polymer.TYPE_NOBONDING)
+          bioPolymers[i].getRange(bs);
+    return (bs.nextSetBit(0) < 0 ? null : "select " + Escape.escape(bs)
+        + ";backbone;");
   }
   
   void calcHydrogenBonds(BitSet bsA, BitSet bsB) {

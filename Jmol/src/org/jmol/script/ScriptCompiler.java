@@ -135,15 +135,23 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private void addContextVariable(String ident) {
+    if (pushCount > 0) {
+      ((ContextToken) vPush.get(pushCount - 1)).addName(ident);
+      return;
+    }
     if (thisFunction == null) {
       if (contextVariables == null)
         contextVariables = new Hashtable();
-      contextVariables.put(ident, (new ScriptVariable(Token.string, "")).setName(ident));
+      addContextVariable(contextVariables, ident);
     } else {
       thisFunction.addVariable(ident, false);
     }
   }
   
+  static void addContextVariable(Hashtable contextVariables, String ident) {
+    contextVariables.put(ident, (new ScriptVariable(Token.string, "")).setName(ident));
+  }
+
   private boolean isContextVariable(String ident) {
     return (thisFunction != null ? thisFunction.isVariable(ident)
       : contextVariables != null && contextVariables.containsKey(ident));
@@ -257,6 +265,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     tokLastMath = 0;
     lastToken = Token.tokenOff;
     vBraces = new Vector();
+    vPush = new Vector();
+    pushCount = 0;
     iBrace = 0;
     braceCount = 0;
     parenCount = 0;
@@ -572,15 +582,26 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (thisFunction != null && thisFunction.cmdpt0 < 0) {
         thisFunction.cmdpt0 = iCommand;
       }
-      if (nTokens == 1 && tokenCommand.value.equals("{")
-          && lastFlowCommand != null) {
-        parenCount = setBraceCount = 0;
-        setCommand(lastFlowCommand);
-        ltoken.removeElementAt(0);
+      if (nTokens == 1 && braceCount == 1) {
+        if (lastFlowCommand != null) {
+          parenCount = setBraceCount = 0;
+          setCommand(lastFlowCommand);
+          ltoken.removeElementAt(0);
+        } else {
+          parenCount = setBraceCount = braceCount = 0;
+          ltoken.removeElementAt(0);
+          iBrace++;
+          Token t = new ContextToken(Token.push, 0, "{");
+          addTokenToPrefix(setCommand(t));
+          pushCount++;
+          vPush.add(t);
+          vBraces.add(tokenCommand);
+        }
       }
-      if (bracketCount > 0 || setBraceCount > 0 || parenCount > 0 
+      if (bracketCount > 0 || setBraceCount > 0 || parenCount > 0
           || braceCount == 1 && !checkFlowStartBrace(true)) {
-        error(nTokens == 1 ? ERROR_commandExpected : ERROR_endOfCommandUnexpected);
+        error(nTokens == 1 ? ERROR_commandExpected
+            : ERROR_endOfCommandUnexpected);
         return ERROR;
       }
       if (needRightParen) {
@@ -616,8 +637,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           }
           lineNumbers[iCommand] = iLine;
           lineIndices[iCommand][0] = ichCurrentCommand;
-          lineIndices[iCommand][1] =  Math.max(ichCurrentCommand, 
-              Math.min(cchScript, ichEnd == ichCurrentCommand ? ichToken : ichEnd));
+          lineIndices[iCommand][1] = Math.max(ichCurrentCommand, Math.min(
+              cchScript, ichEnd == ichCurrentCommand ? ichToken : ichEnd));
           lltoken.addElement(atokenInfix);
           iCommand = lltoken.size();
         }
@@ -637,8 +658,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       setEqualPt = Integer.MAX_VALUE;
 
       if (endOfLine) {
-        if (flowContext != null
-            && flowContext.checkForceEndIf(1)) {
+        if (flowContext != null && flowContext.checkForceEndIf(1)) {
           forceFlowEnd(flowContext.token);
           isEndOfCommand = true;
           cchToken = 0;
@@ -665,7 +685,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         return CONTINUE;
       }
       ichToken = cchScript;
-      return OK; //main loop exit
+      return OK; // main loop exit
     }
     return OK;
   }
@@ -1101,8 +1121,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (bracketCount > 0)  // ignore [FOR], as in 1C4D 
         break;
       // fall through
-    case Token.elseif:
     case Token.whilecmd:
+    case Token.elseif:
     case Token.ifcmd:
       if (nTokens > 1 && tokCommand != Token.set) {
         isEndOfCommand = true;
@@ -1152,7 +1172,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           flowContext.forceEndIf = false;
         return CONTINUE;
       }
-
       // fall through
     case Token.leftparen:
       parenCount++;
@@ -1511,18 +1530,20 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private boolean checkFlowStartBrace(boolean atEnd) {
-    if (!Token.tokAttr(tokCommand, Token.flowCommand)
-        || tokCommand == Token.breakcmd || tokCommand == Token.continuecmd)
+    if ((!Token.tokAttr(tokCommand, Token.flowCommand)
+        || tokCommand == Token.breakcmd || tokCommand == Token.continuecmd))
       return false;
     if (atEnd) {
-      //ltoken.remove(--nTokens);
-      vBraces.add(tokenCommand);
       iBrace++;
+      vBraces.add(tokenCommand);
       parenCount = braceCount = 0;
     }
     return true;
   }
 
+  Vector vPush = new Vector();
+  int pushCount;
+  
   private int checkFlowEndBrace() {
     if (iBrace <= 0
         || ((Token) vBraces.get(iBrace - 1)).tok != Token.rightbrace)
@@ -1534,6 +1555,13 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       braceCount--;
       parenCount--;
     }
+    if (token.tok == Token.push) {
+      vPush.remove(--pushCount);
+      addTokenToPrefix(setCommand(new ContextToken(Token.pop, 0, "}")));
+      isEndOfCommand = true;
+      return CONTINUE;
+    }
+
     return forceFlowEnd(token);
   }
 
@@ -1615,11 +1643,20 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (tokCommand == Token.endifcmd)
         flowContext = flowContext.getParent();
     } else if (isNew) {
-      setCommand(new Token(tokCommand, tokenCommand.value)); //copy
-      if (tokCommand == Token.elsecmd || tokCommand == Token.elseif) {
+      setCommand(new ContextToken(tokCommand, tokenCommand.value)); //copy
+      switch (tokCommand) {
+      case Token.elsecmd:
+      case Token.elseif:
         flowContext.token = tokenCommand;
-      } else {
-        flowContext = new ScriptFlowContext(this, tokenCommand, pt, flowContext);        
+        break;
+      case Token.whilecmd:
+      case Token.forcmd:
+        pushCount++;
+        vPush.add(tokenCommand);
+        // fall through
+      default:
+        flowContext = new ScriptFlowContext(this, tokenCommand, pt, flowContext);
+        break;
       }
     }
     return true;
@@ -1632,8 +1669,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         return error(ERROR_badContext, "end " + ident);
     switch (tok) {
     case Token.ifcmd:
+      break;
     case Token.forcmd:
     case Token.whilecmd:
+      vPush.remove(--pushCount);
       break;
     case Token.function:
       if (!isCheckOnly) {

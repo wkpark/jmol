@@ -311,6 +311,8 @@ public class Token {
   public final static int moveto       = scriptCommand | 36;
   public final static int navigate     = scriptCommand | 37;
 //final static int quaternion   see mathfunc
+  final static int pop          = scriptCommand | 38 | noArgs;
+  final static int push         = scriptCommand | 39 | noArgs;
   final static int quit         = scriptCommand | 41 | noArgs;
   final static int ramachandran = scriptCommand | 42 | expression;
   final static int refresh      = scriptCommand | 43 | noArgs;

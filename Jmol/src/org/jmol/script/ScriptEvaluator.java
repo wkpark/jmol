@@ -284,7 +284,7 @@ public class ScriptEvaluator {
     this.outputBuffer = outputBuffer;
     if (compileScript(null, script + JmolConstants.SCRIPT_EDITOR_IGNORE, false))
       instructionDispatchLoop(false);
-    popContext();
+    popContext(false);
   }
 
   /**
@@ -301,7 +301,7 @@ public class ScriptEvaluator {
     ScriptContext sc = compiler.compile(null, script, false, true, false, true);
     if (sc.errorType != null)
       return sc;
-    getScriptContext(sc, false);
+    getScriptContext(sc, false, false);
     isSyntaxCheck = true;
     isCmdLine_c_or_C_Option = isCmdLine_C_Option = false;
     pc = 0;
@@ -521,7 +521,7 @@ public class ScriptEvaluator {
         e.statement = e.aatoken[0];
         bs = e.expression(e.statement, 1, 0, false, false, true, true);
       }
-      e.popContext();
+      e.popContext(false);
     } catch (Exception ex) {
       Logger.error("getAtomBitSet " + atomExpression + "\n" + ex);
     }
@@ -1589,7 +1589,7 @@ public class ScriptEvaluator {
     this.filename = filename;
     strScript = fixScriptPath(strScript, filename);
     getScriptContext(compiler.compile(filename, strScript, false, false,
-        debugCompiler, false), false);
+        debugCompiler, false), false, false);
     isStateScript = (script.indexOf(Viewer.STATE_VERSION_STAMP) >= 0);
     String s = script;
     pc = setScriptExtensions();
@@ -1715,8 +1715,10 @@ public class ScriptEvaluator {
       return (ScriptVariable) contextVariables.get(var);
     for (int i = scriptLevel; --i >= 0;)
       if (stack[i].contextVariables != null
-          && stack[i].contextVariables.containsKey(var))
+          && stack[i].contextVariables.containsKey(var)) {
+        System.out.println(i + " getContextVariable " + var);
         return (ScriptVariable) stack[i].contextVariables.get(var);
+      }
     return null;
   }
 
@@ -1756,7 +1758,7 @@ public class ScriptEvaluator {
       contextVariables.put("_x", tokenAtom);
     instructionDispatchLoop(false);
     ScriptVariable v = getContextVariableAsVariable("_retval");
-    popContext();
+    popContext(false);
     return v;
   }
 
@@ -1887,7 +1889,7 @@ public class ScriptEvaluator {
     if (value instanceof Token[]) {
       pushContext(null);
       BitSet bs = expression((Token[]) value, -2, 0, true, false, true, true);
-      popContext();
+      popContext(false);
       if (!isDynamic)
         definedAtomSets.put(setName, bs);
       return bs;
@@ -2071,13 +2073,16 @@ public class ScriptEvaluator {
     this.tQuiet = tQuiet;
   }
 
-  private void pushContext(ScriptFunction function) throws ScriptException {
+  private void pushContext(ContextToken token) throws ScriptException {
     if (scriptLevel == scriptLevelMax)
       error(ERROR_tooManyScriptLevels);
-    ScriptContext context = getScriptContext();
-    stack[scriptLevel++] = context;
-    if (isCmdLine_c_or_C_Option)
-      Logger.info("-->>-------------".substring(0, scriptLevel + 5) + filename);
+    stack[scriptLevel++] = getScriptContext();
+    if (true || isCmdLine_c_or_C_Option)
+      Logger.info("-->>-------------".substring(0, scriptLevel + 5) + scriptLevel + " " + filename);
+    if (token != null) {
+      contextVariables = token.contextVariables;
+      System.out.println("pushcontext " + contextVariables);
+    }
   }
 
   public ScriptContext getScriptContext() {
@@ -2089,6 +2094,7 @@ public class ScriptEvaluator {
     context.lineNumbers = lineNumbers;
     context.lineIndices = lineIndices;
     context.aatoken = aatoken;    
+
     context.statement = statement;
     context.statementLength = statementLength;
     context.pc = pc;
@@ -2112,7 +2118,7 @@ public class ScriptEvaluator {
     return context;
   }
 
-  private void getScriptContext(ScriptContext context, boolean isFull) { 
+  private void getScriptContext(ScriptContext context, boolean isFull, boolean isPushPop) { 
 
     // just from the compiler:
     
@@ -2134,24 +2140,27 @@ public class ScriptEvaluator {
     contextPath = context.contextPath;
     filename = context.filename;
     functionName = context.functionName;
+    iToken = context.iToken;
+    outputBuffer = context.outputBuffer;
+    isStateScript = context.isStateScript;
+
+    if (isPushPop)
+      return;
     statement = context.statement;
     statementLength = context.statementLength;
     pc = context.pc;
     lineEnd = context.lineEnd;
     pcEnd = context.pcEnd;
-    iToken = context.iToken;
-    outputBuffer = context.outputBuffer;
-    isStateScript = context.isStateScript;
   }
   
-  private void popContext() {
-    if (isCmdLine_c_or_C_Option)
-      Logger.info("--<<-------------".substring(0, scriptLevel + 5) + filename);
+  private void popContext(boolean isPushPop) {
+    if (true || isCmdLine_c_or_C_Option)
+      Logger.info("--<<-------------".substring(0, scriptLevel + 5) + scriptLevel + " " + filename);
     if (scriptLevel == 0)
       return;
     ScriptContext context = stack[--scriptLevel];
     stack[scriptLevel] = null;
-    getScriptContext(context, true);
+    getScriptContext(context, true, isPushPop);
   }
 
   private String getContext(boolean withVariables) {
@@ -2550,7 +2559,7 @@ public class ScriptEvaluator {
       sb.append(setErrorLineMessage(functionName, filename, getLinenumber(null),
           pc, statementAsString(statement, iToken)));
       if (scriptLevel > 0)
-        popContext();
+        popContext(false);
       else
         break;
     }
@@ -4445,7 +4454,7 @@ public class ScriptEvaluator {
             setErrorMessage("" + er);
           }
           if (error) {
-            popContext();
+            popContext(false);
             scriptStatusOrBuffer(errorMessage);
             setErrorMessage(null);
           }
@@ -4497,16 +4506,16 @@ public class ScriptEvaluator {
         break;
       if (lineNumbers[pc] > lineEnd)
         break;
-      Token token = (aatoken[pc].length == 0 ? null : aatoken[pc][0]);
+      theToken = (aatoken[pc].length == 0 ? null : aatoken[pc][0]);
       // when checking scripts, we can't check statments
       // containing @{...}
       if (!historyDisabled && !isSyntaxCheck
           && scriptLevel <= commandHistoryLevelMax && !tQuiet) {
         String cmdLine = getCommand(pc, true, true);
-        if (token != null
+        if (theToken != null
             && cmdLine.length() > 0
             && !cmdLine.equals(lastCommand)
-            && (token.tok == Token.function || !Token.tokAttr(token.tok,
+            && (theToken.tok == Token.function || !Token.tokAttr(theToken.tok,
                 Token.flowCommand)))
           viewer.addCommand(lastCommand = cmdLine);
       }
@@ -4516,6 +4525,7 @@ public class ScriptEvaluator {
         continue;
       }
       thisCommand = getCommand(pc, false, true);
+      System.out.println(pc + " command=" + thisCommand);
       fullCommand = thisCommand + getNextComment();
       iToken = 0;
       String script = viewer.getInterruptScript();
@@ -4541,19 +4551,25 @@ public class ScriptEvaluator {
           logDebugScript(0);
         if (scriptLevel == 0 && viewer.logCommands())
           viewer.log(thisCommand);
-        if (logMessages && token != null)
-          Logger.debug(token.toString());
+        if (logMessages && theToken != null)
+          Logger.debug(theToken.toString());
       }
-      if (token == null)
+      if (theToken == null)
         continue;
       //if (!isSyntaxCheck)
         //System.out.println("ScriptEval " + thisCommand);
 
-      if (Token.tokAttr(token.tok, Token.shapeCommand))
-        processShapeCommand(token.tok);
+      if (Token.tokAttr(theToken.tok, Token.shapeCommand))
+        processShapeCommand(theToken.tok);
       else
-        switch (token.tok) {
+        switch (theToken.tok) {
         case Token.nada:
+          break;
+        case Token.push:
+          pushContext((ContextToken) theToken);
+          break;
+        case Token.pop:
+          popContext(true);
           break;
         case Token.breakcmd:
         case Token.continuecmd:
@@ -4566,7 +4582,7 @@ public class ScriptEvaluator {
         case Token.ifcmd:
         case Token.loop:
         case Token.whilecmd:
-          isForCheck = flowControl(token.tok, isForCheck);
+          isForCheck = flowControl(theToken.tok, isForCheck);
           break;
         case Token.animation:
           animation();
@@ -4629,7 +4645,7 @@ public class ScriptEvaluator {
         case Token.quit: // quit this only if it isn't the first command
           if (isSyntaxCheck)
             break;
-          if (pc > 0 && token.tok == Token.exit)
+          if (pc > 0 && theToken.tok == Token.exit)
             viewer.clearScriptQueue();
           interruptExecution = (pc > 0 || !viewer.usingScriptQueue());
           break;
@@ -5014,6 +5030,24 @@ public class ScriptEvaluator {
       }
       if (pcTo < 0)
         error(ERROR_invalidArgument);
+      int di = (pcTo < pc ? 1 : -1);
+      int nPush = 0;
+      for (int i = pcTo; i != pc; i += di) {
+        switch (aatoken[i][0].tok) {
+        case Token.push:
+        case Token.forcmd:
+        case Token.whilecmd:
+        case Token.ifcmd:
+          nPush++;
+          break;
+        case Token.pop:
+        case Token.end:
+          nPush--;
+          break;
+        }
+      }
+      if (nPush != 0)
+        error(ERROR_invalidArgument);
       if (!isSyntaxCheck)
         pc = pcTo - 1; // ... resetting the program counter
       return isForCheck;
@@ -5051,19 +5085,30 @@ public class ScriptEvaluator {
         viewer.addFunction((ScriptFunction) theToken.value);
         return isForCheck;
       }
-      isForCheck = (theTok == Token.forcmd);
       isOK = (theTok == Token.ifcmd);
+      isForCheck = (theTok == Token.forcmd || theTok == Token.whilecmd);
       break;
     case Token.whilecmd:
+      if (!isForCheck)
+        pushContext((ContextToken) theToken);
       isForCheck = false;
-      if (!ifCmd() && !isSyntaxCheck)
+      if (!ifCmd() && !isSyntaxCheck) {
         pc = pt;
+        popContext(true);
+      }
       break;
     case Token.breakcmd:
-      if (!isSyntaxCheck)
+      if (!isSyntaxCheck) {
         pc = aatoken[pt][0].intValue;
-      if (statementLength > 1)
-        intParameter(checkLast(1));
+        popContext(true);
+      }
+      if (statementLength == 1)
+        break;
+      int n = intParameter(checkLast(1));
+      if (isSyntaxCheck)
+        break;
+      for (int i = 0; i < n; i++)
+        popContext(true);
       break;
     case Token.continuecmd:
       isForCheck = true;
@@ -5103,6 +5148,7 @@ public class ScriptEvaluator {
         j = pts[1] + 1;
         isForCheck = false;
       } else {
+        pushContext((ContextToken) theToken);
         j = 2;
         if (tokAt(j) == Token.var)
           j++;
@@ -5127,6 +5173,8 @@ public class ScriptEvaluator {
       isOK = ((Boolean) parameterExpression(pts[0] + 1, pts[1], null, false))
           .booleanValue();
       pt++;
+      if (!isOK)
+        popContext(true);
       break;
     }
     if (!isOK && !isSyntaxCheck)
@@ -8273,10 +8321,10 @@ public class ScriptEvaluator {
       if (debugScript && viewer.getMessageStyleChime())
         viewer.scriptStatus("script <exiting>");
       isCmdLine_C_Option = saveLoadCheck;
-      popContext();
+      popContext(false);
     } else {
       Logger.error(GT._("script ERROR: ") + errorMessage);
-      popContext();
+      popContext(false);
       if (wasScriptCheck) {
         setErrorMessage(null);
       } else {
@@ -8303,7 +8351,7 @@ public class ScriptEvaluator {
     contextPath += " >> function " + name;
     loadFunction(name, params);
     instructionDispatchLoop(false);
-    popContext();
+    popContext(false);
   }
 
   private void sync() throws ScriptException {

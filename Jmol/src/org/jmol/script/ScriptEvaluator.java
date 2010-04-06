@@ -2066,12 +2066,23 @@ public class ScriptEvaluator {
     if (scriptLevel == scriptLevelMax)
       error(ERROR_tooManyScriptLevels);
     stack[scriptLevel++] = getScriptContext();
-    if (true || isCmdLine_c_or_C_Option)
+    if (isCmdLine_c_or_C_Option)
       Logger.info("-->>-------------".substring(0, scriptLevel + 5)
           + scriptLevel + " " + filename);
     if (token != null) {
       contextVariables = token.contextVariables;
     }
+  }
+
+  private void popContext(boolean isPushPop) {
+    if (isCmdLine_c_or_C_Option)
+      Logger.info("--<<-------------".substring(0, scriptLevel + 5)
+          + scriptLevel + " " + filename);
+    if (scriptLevel == 0)
+      return;
+    ScriptContext context = stack[--scriptLevel];
+    stack[scriptLevel] = null;
+    getScriptContext(context, true, isPushPop);
   }
 
   public ScriptContext getScriptContext() {
@@ -2141,17 +2152,6 @@ public class ScriptEvaluator {
     pc = context.pc;
     lineEnd = context.lineEnd;
     pcEnd = context.pcEnd;
-  }
-
-  private void popContext(boolean isPushPop) {
-    if (true || isCmdLine_c_or_C_Option)
-      Logger.info("--<<-------------".substring(0, scriptLevel + 5)
-          + scriptLevel + " " + filename);
-    if (scriptLevel == 0)
-      return;
-    ScriptContext context = stack[--scriptLevel];
-    stack[scriptLevel] = null;
-    getScriptContext(context, true, isPushPop);
   }
 
   private String getContext(boolean withVariables) {

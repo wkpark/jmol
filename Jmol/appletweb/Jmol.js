@@ -1,4 +1,4 @@
-/* Jmol 11.9 script library Jmol.js  6:56 AM 1/20/2010 Bob Hanson
+/* Jmol 12.0 script library Jmol.js 9:48 PM 4/5/2010 Bob Hanson
 
  checkbox heirarchy -- see http://chemapps.stolaf.edu/jmol/docs/examples-11/check.htm
 
@@ -78,6 +78,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 //               jmolHref([myfunc,"my param 1", "my param 2"], "testing")
 //               function myfunc(jmolControlObject, [myfunc,"my param 1", "my param 2"], target){...}
 //               and allows much more flexibility with responding to controls
+// bh 4/2010  -- added jmolSetMemoryMb(nMb)
 
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
@@ -564,6 +565,7 @@ var _jmol = {
   buttonCssText: "",
   checkboxCssClass: null,
   checkboxCssText: "",
+  java_arguments: "-Xmx512m",
   radioCssClass: null,
   radioCssText: "",
   linkCssClass: null,
@@ -707,6 +709,10 @@ with (_jmol) {
  }
 }
 
+function jmolSetMemoryMb(nMb) {
+  _jmol.java_arguments = "-Xmx" + Math.round(nMb) + "m"
+}
+
 function jmolSetParameter(name,value) {
   _jmol.params[name] = value
 }
@@ -776,6 +782,8 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
       params.mayscript = 'true';
       params.codebase = codebase;
     }
+    if (java_arguments)
+      params.java_arguments = java_arguments;
     if (useIEObject) { // use MSFT IE6 object tag with .cab file reference
       winCodebase = (windowsCabUrl ? " codebase='" + windowsCabUrl + "'\n" : "");
       params.code = 'JmolApplet';

@@ -31,6 +31,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 
+import org.jmol.util.OutputStringBuffer;
 import org.jmol.viewer.Viewer;
 
 abstract public class Polymer {
@@ -125,7 +126,7 @@ abstract public class Polymer {
   }
   
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType, 
-              boolean isDraw, BitSet bsAtoms, StringBuffer pdbATOM, 
+              boolean isDraw, BitSet bsAtoms, OutputStringBuffer pdbATOM, 
               StringBuffer pdbCONECT, BitSet bsSelected, boolean addHeader, 
               BitSet bsWritten) {
     return;

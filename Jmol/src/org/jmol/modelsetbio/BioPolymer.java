@@ -31,6 +31,7 @@ import org.jmol.modelset.Polymer;
 import org.jmol.util.Escape;
 
 import org.jmol.util.Logger;
+import org.jmol.util.OutputStringBuffer;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Viewer;
@@ -465,7 +466,7 @@ public abstract class BioPolymer extends Polymer {
 
   final public static void getPdbData(Viewer viewer, BioPolymer p, char ctype, char qtype,
                                       int mStep, int derivType, boolean isDraw,
-                                      BitSet bsAtoms, StringBuffer pdbATOM,
+                                      BitSet bsAtoms, OutputStringBuffer pdbATOM,
                                       StringBuffer pdbCONECT,
                                       BitSet bsSelected, boolean addHeader,
                                       BitSet bsWritten) {
@@ -568,7 +569,7 @@ public abstract class BioPolymer extends Polymer {
                               boolean useQuaternionStraightness,
                               boolean writeRamachandranStraightness,
                               boolean quaternionStraightness, boolean isAmino,
-                              boolean isRelativeAlias, StringBuffer pdbATOM,
+                              boolean isRelativeAlias, OutputStringBuffer pdbATOM,
                               StringBuffer pdbCONECT) {
     String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
     Quaternion q;
@@ -822,7 +823,7 @@ public abstract class BioPolymer extends Polymer {
               }
             }
             if (derivType == 1) {
-              pdbATOM.append(monomer.getHelixData(Token.draw, qtype, mStep)).append('\n');
+              pdbATOM.append((String) monomer.getHelixData(Token.draw, qtype, mStep)).append('\n');
               continue;
             }
             pdbATOM.append(

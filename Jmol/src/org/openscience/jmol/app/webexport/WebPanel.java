@@ -629,7 +629,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     if (gzoutFile.exists())
       return gzname;
     try {
-      Object ret = viewer.getFileAsBytes(fullPathName);
+      Object ret = viewer.getFileAsBytes(fullPathName, null);
       if (ret instanceof String)
         LogPanel.log(GT._("Could not find or open:\n{0}", fullPathName));
       else {

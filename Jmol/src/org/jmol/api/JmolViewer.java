@@ -455,7 +455,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public JmolAdapter getModelAdapter();
 
   abstract public void openFileAsynchronously(String fileName);
-  abstract public Object getFileAsBytes(String fullPathName);
+  abstract public Object getFileAsBytes(String fullPathName, OutputStream os);
 
   abstract public String getErrorMessage();
   abstract public String getErrorMessageUntranslated();

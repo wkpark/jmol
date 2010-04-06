@@ -54,6 +54,7 @@ import org.jmol.util.CifDataReader;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Escape;
 import org.jmol.util.JpegEncoder;
+import org.jmol.util.OutputStringBuffer;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -91,6 +92,7 @@ import javax.vecmath.AxisAngle4f;
 
 import java.net.URL;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -99,7 +101,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 
 /*
  * 
@@ -2088,23 +2089,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return getErrorMessage();
   }
 
-  public Object getCurrentFileAsBytes() {
+  public String writeCurrentFile(OutputStream os) {
     String filename = getFullPathName();
     if (filename.equals("string") || filename.indexOf("[]") >= 0
         || filename.equals("JSNode")) {
       String str = getCurrentFileAsString();
-      try {
-        return str.getBytes("UTF8");
-      } catch (UnsupportedEncodingException e) {
-        return str;
-      }
+      BufferedOutputStream bos = new BufferedOutputStream(os);
+      OutputStringBuffer sb = new OutputStringBuffer(bos);
+      sb.append(str);
+      return sb.toString();
     }
     String pathName = modelManager.getModelSetPathName();
-    return (pathName == null ? "" : getFileAsBytes(pathName));
+    return (pathName == null ? "" : (String) getFileAsBytes(pathName, os));
   }
 
-  public Object getFileAsBytes(String pathName) {
-    return fileManager.getFileAsBytes(pathName);
+  public Object getFileAsBytes(String pathName, OutputStream os) {
+    return fileManager.getFileAsBytes(pathName, os);
   }
 
   public String getCurrentFileAsString() {
@@ -7087,15 +7087,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getHelixData(bs, tokType);
   }
 
-  public String getPdbData(BitSet bs) {
+  public String getPdbData(BitSet bs, OutputStringBuffer sb) {
     if (bs == null)
       bs = getSelectionSet();
-    return modelSet.getPdbAtomData(bs);
-  }
-
-  public String getPdbData(int modelIndex, String type) {
-    return modelSet.getPdbData(modelIndex, type, selectionManager.getSelectionSet(),
-        false);
+    return modelSet.getPdbAtomData(bs, sb);
   }
 
   public boolean isJmolDataFrame(int modelIndex) {
@@ -7420,13 +7415,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param width
    * @param height
    * @param bsFrames
+   * @param fullPath 
    * @return message starting with "OK" or an error message
    */
   public String createImage(String fileName, String type, Object text_or_bytes,
-                            int quality, int width, int height, BitSet bsFrames) {
+                            int quality, int width, int height, BitSet bsFrames, String[] fullPath) {
     if (bsFrames == null)
       return (String) createImage(fileName, type, text_or_bytes, quality,
-          width, height);
+          width, height, fullPath);
     String info = "";
     int n = 0;
     int ptDot = fileName.indexOf(".");
@@ -7439,6 +7435,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setCurrentModelIndex(i);
         fileName = "0000" + (++n);
         fileName = froot + fileName.substring(fileName.length() - 4) + fext;
+        if (fullPath != null)
+          fullPath[0] = fileName;
         String msg = (String) createImage(fileName, type, text_or_bytes,
             quality, width, height);
         Logger.info(msg);
@@ -7453,7 +7451,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private boolean creatingImage;
 
-  /**
+  public Object createImage(String fileName, String type, Object text_or_bytes,
+                            int quality, int width, int height) {
+    return createImage(fileName, type, text_or_bytes, quality, width, height, null);
+  }
+
+    /**
    * general routine for creating an image or writing data to a file
    * 
    * passes request to statusManager to pass along to app or applet
@@ -7471,10 +7474,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *          image width
    * @param height
    *          image height
+     * @param fullPath 
    * @return null (canceled) or a message starting with OK or an error message
    */
   public Object createImage(String fileName, String type, Object text_or_bytes,
-                            int quality, int width, int height) {
+                            int quality, int width, int height, String[] fullPath) {
 
     /*
      * 
@@ -7516,6 +7520,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         if (useDialog)
           fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save"
               : "saveImage", fileName);
+        if (fullPath != null)
+          fullPath[0] = fileName;
         if (fileName == null)
           err = "CANCELED";
         else if (isZip) {
@@ -8022,9 +8028,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     display.repaint();
   }
 
-  public OutputStream getOutputStream(String localName) {
+  public OutputStream getOutputStream(String localName, String[] fullPath) {
     Object ret = createImage(localName, "OutputStream", null,
-        Integer.MIN_VALUE, 0, 0);
+        Integer.MIN_VALUE, 0, 0, fullPath);
     if (ret instanceof String) {
       Logger.error((String) ret);
       return null;
@@ -8199,9 +8205,38 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.smallMoleculeMaxAtoms;
   }
 
-  public void addHBond(int atomIndex1, int atomIndex2, short bo) {
-    // TODO
-    
+  public String streamFileData(String fileName, String type, String type2) {
+    String msg = null;
+    String[] fullPath = new String[1];
+    OutputStream os = getOutputStream(fileName, fullPath);
+    if (os == null)
+      return "";
+    OutputStringBuffer sb;
+    if (type.equals("PDB")) {
+      sb = new OutputStringBuffer(new BufferedOutputStream(os));
+      msg = getPdbData(null, sb);
+    } else if (type.equals("FILE")) {
+      msg = writeCurrentFile(os);
+      // quality = Integer.MIN_VALUE;
+    } else if (type.equals("QUAT") || type.equals("RAMA")) {
+      int modelIndex = getCurrentModelIndex();
+      sb = new OutputStringBuffer(new BufferedOutputStream(os));
+      msg = modelSet.getPdbData(modelIndex, type2, selectionManager
+          .getSelectionSet(), sb);
+    }
+    if (msg != null)
+      msg = "OK " + msg + " " + fullPath[0];
+    try {
+      os.flush();
+      os.close();
+    } catch (IOException e) {
+      // TODO
+    }
+    return msg;
+  }
+
+  public String getPdbData(int modelIndex, String type) {
+    return modelSet.getPdbData(modelIndex, type, selectionManager.getSelectionSet(), null);
   }
 
 }

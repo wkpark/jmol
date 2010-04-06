@@ -7285,9 +7285,10 @@ public class ScriptEvaluator {
 
     OutputStream os = null;
     if (localName != null) {
-      os = viewer.getOutputStream(localName);
+      String[] fullPath = new String[] {localName};
+      os = viewer.getOutputStream(localName, fullPath);
       if (os == null)
-        Logger.error("Could not create output stream for " + localName);
+        Logger.error("Could not create output stream for " + fullPath[0]);
       else
         htParams.put("OutputStream", os);
     }
@@ -11504,14 +11505,18 @@ public class ScriptEvaluator {
   }
 
   String write(Token[] args) throws ScriptException {
+    String[] fullPath = new String[1];
     int pt = 0;
     boolean isApplet = viewer.isApplet();
     boolean isCommand = false;
+    boolean isShow = false;
     String driverList = viewer.getExportDriverList();
     if (args == null) {
       args = statement;
       isCommand = true;
       pt++;
+    } else {
+      isShow = true;
     }
     int argCount = (isCommand ? statementLength : args.length);
     int tok = (isCommand && args.length == 1 ? Token.clipboard
@@ -11524,12 +11529,12 @@ public class ScriptEvaluator {
     String type2 = "";
     String fileName = null;
     boolean isCoord = false;
-    boolean isShow = false;
     boolean isExport = false;
     BitSet bsFrames = null;
     String localPath = null;
     String remotePath = null;
     String val = null;
+    String msg = null;
     int quality = Integer.MIN_VALUE;
     if (tok == Token.string) {
       Token t = Token.getTokenFromName(ScriptVariable.sValue(args[pt]));
@@ -11635,7 +11640,7 @@ public class ScriptEvaluator {
     case Token.identifier:
     case Token.string:
     case Token.frame:
-      type= ScriptVariable.sValue(tokenAt(pt, args)).toLowerCase();
+      type = ScriptVariable.sValue(tokenAt(pt, args)).toLowerCase();
       if (tok == Token.image) {
         pt++;
       } else if (tok == Token.frame) {
@@ -11776,8 +11781,10 @@ public class ScriptEvaluator {
       type = "JPG64";
     if (!isImage
         && !isExport
-        && !Parser.isOneOf(type,
-            "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;CML;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
+        && !Parser
+            .isOneOf(
+                type,
+                "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;CML;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
       error(
           ERROR_writeWhat,
           "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
@@ -11788,6 +11795,7 @@ public class ScriptEvaluator {
       return "";
     data = type.intern();
     Object bytes = null;
+    boolean doDefer = false;
     if (isExport) {
       // POV-Ray uses a BufferedWriter instead of a StringBuffer.
       boolean isPovRay = type.equals("Povray");
@@ -11801,12 +11809,12 @@ public class ScriptEvaluator {
         fileName = data.substring(data.indexOf("File created: ") + 14);
         fileName = fileName.substring(0, fileName.indexOf("\n"));
         fileName = fileName.substring(0, fileName.lastIndexOf(" ("));
-        String msg = viewer.createImage(fileName + ".ini", "ini", data,
-            Integer.MIN_VALUE, 0, 0, null);
+        msg = viewer.createImage(fileName + ".ini", "ini", data,
+            Integer.MIN_VALUE, 0, 0, null, fullPath);
         if (msg != null) {
           if (!msg.startsWith("OK"))
             evalError(msg, null);
-          scriptStatusOrBuffer("Created " + fileName + ".ini:\n\n" + data);
+          scriptStatusOrBuffer("Created " + fullPath[0] + ":\n\n" + data);
         }
         return "";
       }
@@ -11815,29 +11823,46 @@ public class ScriptEvaluator {
     } else if (data == "PGRP") {
       data = viewer.getPointGroupAsString(type2.equals("draw"), null, 0, 1.0f);
     } else if (data == "PDB") {
-      data = viewer.getPdbData(null);
-    } else if (data == "XYZ" || data == "MOL" || data == "CML") {
-      data = viewer.getData("selected", data);
-    } else if (data == "QUAT" || data == "RAMA") {
-      int modelIndex = viewer.getCurrentModelIndex();
-      if (modelIndex < 0)
-        error(ERROR_multipleModelsNotOK, "write " + type2);
-      data = viewer.getPdbData(modelIndex, type2);
-      type = "PDB";
-    } else if (data == "FUNCS") {
-      data = viewer.getFunctionCalls(null);
-      type = "TXT";
+      if (isShow) {
+        data = viewer.getPdbData(null, null);
+      } else {
+        doDefer = true;
+/*        
+        OutputStream os = viewer.getOutputStream(fileName, fullPath);
+        msg = viewer.getPdbData(null, new BufferedOutputStream(os));
+        if (msg != null)
+          msg = "OK " + msg + " " + fullPath[0];
+        try {
+          os.close();
+        } catch (IOException e) {
+          // TODO
+        }
+*/
+      }
     } else if (data == "FILE") {
       if (isShow)
         data = viewer.getCurrentFileAsString();
       else
-        bytes = viewer.getCurrentFileAsBytes();
+        doDefer = true;
       if ("?".equals(fileName))
         fileName = "?Jmol." + viewer.getParameter("_fileType");
-      quality = Integer.MIN_VALUE;
+    } else if (data == "QUAT" || data == "RAMA") {
+      int modelIndex = viewer.getCurrentModelIndex();
+      if (modelIndex < 0)
+        error(ERROR_multipleModelsNotOK, "write " + type2);
+      data = type2;
+      if (isShow)
+        data = viewer.getPdbData(modelIndex, type2);
+      else
+        doDefer = true;
+    } else if (data == "XYZ" || data == "MOL" || data == "CML") {
+      data = viewer.getData("selected", data);
+    } else if (data == "FUNCS") {
+      data = viewer.getFunctionCalls(null);
+      type = "TXT";
     } else if (data == "VAR") {
       data = ScriptVariable.sValue((ScriptVariable) getParameter(ScriptVariable
-              .sValue(tokenAt(isCommand ? 2 : 1, args)), true));
+          .sValue(tokenAt(isCommand ? 2 : 1, args)), true));
       type = "TXT";
     } else if (data == "SPT") {
       if (isCoord) {
@@ -11848,11 +11873,13 @@ public class ScriptEvaluator {
       } else {
         data = (String) viewer.getProperty("string", "stateInfo", null);
         if (localPath != null || remotePath != null)
-          data = FileManager.setScriptFileReferences(data, localPath, remotePath, null);
+          data = FileManager.setScriptFileReferences(data, localPath,
+              remotePath, null);
       }
     } else if (data == "ZIP" || data == "ZIPALL") {
       data = (String) viewer.getProperty("string", "stateInfo", null);
-      bytes = viewer.createImage(fileName, type, data, Integer.MIN_VALUE, -1, -1);
+      bytes = viewer.createImage(fileName, type, data, Integer.MIN_VALUE, -1,
+          -1);
     } else if (data == "HIS") {
       data = viewer.getSetHistory(Integer.MAX_VALUE);
       type = "SPT";
@@ -11864,7 +11891,8 @@ public class ScriptEvaluator {
         error(ERROR_noData);
       type = "XJVXL";
     } else if (data == "ISO" || data == "ISOX" || data == "MESH") {
-      if ((data = getIsosurfaceJvxl(data == "MESH", JmolConstants.SHAPE_ISOSURFACE)) == null)
+      if ((data = getIsosurfaceJvxl(data == "MESH",
+          JmolConstants.SHAPE_ISOSURFACE)) == null)
         error(ERROR_noData);
       type = (data.indexOf("<?xml") >= 0 ? "XJVXL" : "JVXL");
       if (!isShow)
@@ -11876,9 +11904,9 @@ public class ScriptEvaluator {
       if (quality < 0)
         quality = -1;
     }
-    if (data == null)
+    if (data == null && !doDefer)
       data = "";
-    if (len == 0)
+    if (len == 0 && !doDefer)
       len = (bytes == null ? data.length()
           : bytes instanceof String ? ((String) bytes).length()
               : ((byte[]) bytes).length);
@@ -11896,17 +11924,20 @@ public class ScriptEvaluator {
     } else if (bytes != null && bytes instanceof String) {
       // load error here
       scriptStatusOrBuffer((String) bytes);
-    } else {
-      if (bytes == null && (!isImage || fileName != null))
-        bytes = data;
-      String msg = viewer.createImage(fileName, type, bytes, quality, width,
-          height, bsFrames);
-      if (msg != null) {
-        if (!msg.startsWith("OK"))
-          evalError(msg, null);
-        scriptStatusOrBuffer(msg
-            + (isImage ? "; width=" + width + "; height=" + height : ""));
-      }
+      return "";
+    }
+    if (bytes == null && (!isImage || fileName != null))
+      bytes = data;
+    if (doDefer)
+      msg = viewer.streamFileData(fileName, type, type2);
+    else
+      msg = viewer.createImage(fileName, type, bytes, quality, width,
+          height, bsFrames, fullPath);
+    if (msg != null) {
+      if (!msg.startsWith("OK"))
+        evalError(msg, null);
+      scriptStatusOrBuffer(msg
+          + (isImage ? "; width=" + width + "; height=" + height : ""));
     }
     return "";
   }

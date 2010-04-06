@@ -50,6 +50,7 @@ import org.jmol.util.Escape;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.OutputStringBuffer;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
@@ -1132,12 +1133,11 @@ abstract public class ModelCollection extends BondCollection {
    * ONLY from one model
    */
 
-  public String getPdbAtomData(BitSet bs) {
+  public String getPdbAtomData(BitSet bs, OutputStringBuffer sb) {
     if (atomCount == 0)
       return "";
     int iModel = atoms[0].modelIndex;
     int iModelLast = -1;
-    StringBuffer sb = new StringBuffer();
     boolean showModels = (iModel != atoms[atomCount - 1].modelIndex);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Atom a = atoms[i];
@@ -1180,7 +1180,7 @@ abstract public class ModelCollection extends BondCollection {
    * 
    *****************************/
 
-  public String getPdbData(int modelIndex, String type, BitSet bsSelected, boolean addHeader) {
+  public String getPdbData(int modelIndex, String type, BitSet bsSelected, OutputStringBuffer sb) {
     if (isJmolDataFrame(modelIndex))
       modelIndex = getJmolDataSourceFrame(modelIndex);
     if (modelIndex < 0)
@@ -1200,23 +1200,23 @@ abstract public class ModelCollection extends BondCollection {
     boolean isDraw = (type.indexOf("draw") >= 0); 
     BitSet bsAtoms = getModelAtomBitSet(modelIndex, false);
     int nPoly = model.getBioPolymerCount();
-    StringBuffer pdbATOM = new StringBuffer();
     StringBuffer pdbCONECT = new StringBuffer();
     BitSet bsWritten = new BitSet();
+    if (sb == null)
+      sb = new OutputStringBuffer(null);
     for (int p = 0; p < nPoly; p++)
         model.bioPolymers[p].getPdbData(viewer, ctype, qtype,mStep, derivType, isDraw,
-            bsAtoms, pdbATOM, pdbCONECT, bsSelected, p == 0, bsWritten);
-    pdbATOM.append(pdbCONECT);
-    String s = pdbATOM.toString();
-    if (isDraw || s.length() == 0)
-      return s;
-    String remark = "REMARK   6 Jmol PDB-encoded data: " + type + ";";
+            bsAtoms, sb, pdbCONECT, bsSelected, p == 0, bsWritten);
+    sb.append(pdbCONECT.toString());
+    if (isDraw || sb.length() == 0)
+      return sb.toString();
+    sb.append("REMARK   6 Jmol PDB-encoded data: " + type + ";");
     if (ctype != 'R')
-      remark += "  quaternionFrame = \"" + qtype + "\"";
-    remark += "\nREMARK   6 Jmol Version " + Viewer.getJmolVersion();
+      sb.append("  quaternionFrame = \"" + qtype + "\"");
+      sb.append("\nREMARK   6 Jmol Version " + Viewer.getJmolVersion());
     bsSelected.and(bsAtoms);
-    remark += "\n\n" + getProteinStructureState(bsWritten, false, ctype == 'R', true);
-    return remark + s;
+    sb.append("\n\n" + getProteinStructureState(bsWritten, false, ctype == 'R', true));
+    return sb.toString();
   }
 
   public boolean isJmolDataFrame(int modelIndex) {

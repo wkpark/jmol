@@ -39,6 +39,8 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Parser;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 
 public class AtomSetCollection {
@@ -996,6 +998,10 @@ public class AtomSetCollection {
     for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
       atoms[iAtom].bsSymmetry = new BitSet(1);
       atoms[iAtom].bsSymmetry.set(0);
+    }
+    if (filter.indexOf("#<") >= 0) {
+      len = Math.min(len, Parser.parseInt(filter.substring(filter.indexOf("#<") + 2)) - 1);
+      filter = TextFormat.simpleReplace(filter, "#<", "_<");
     }
     for (int i = 1; i < len; i++) { //skip 1, it's the identity
       if (filter.indexOf("!#") >= 0) {

@@ -307,22 +307,6 @@ public class ZipUtil {
     return buf;
   }
 
-  public static byte[] getStreamAsBytes(BufferedInputStream bis) throws IOException {
-    byte[] buf = new byte[1024];
-    byte[] bytes = new byte[4096];
-    int len = 0;
-    int totalLen = 0;
-    while ((len = bis.read(buf)) > 0) {
-      totalLen += len;
-      if (totalLen >= bytes.length)
-        bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
-      System.arraycopy(buf, 0, bytes, totalLen - len, len);
-    }
-    buf = new byte[totalLen];
-    System.arraycopy(bytes, 0, buf, 0, totalLen);
-    return buf;
-  }
-
   public static boolean isGzip(byte[] bytes) {    
       return (bytes != null && bytes.length > 2 
           && bytes[0] == (byte) 0x1F && bytes[1] == (byte) 0x8B);

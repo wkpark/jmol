@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.CompoundDocument;
 import org.jmol.util.Parser;
@@ -50,6 +51,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.Reader;
 import java.text.DateFormat;
@@ -649,8 +651,8 @@ public class FileManager {
     return name0;
   }
 
-  Object getFileAsBytes(String name) {
-    //?? used by eval of "WRITE FILE"
+  Object getFileAsBytes(String name, OutputStream os) {
+    // ?? used by eval of "WRITE FILE"
     // will be full path name
     if (name == null)
       return null;
@@ -662,16 +664,42 @@ public class FileManager {
       return "Error:" + t;
     try {
       BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
-      InputStream is = bis;      
+      InputStream is = bis;
+      if (os != null)
+        return getStreamAsBytes(bis, os);
       Object bytes = (ZipUtil.isZipFile(is) && subFileList != null
           && 1 < subFileList.length ? ZipUtil.getZipFileContentsAsBytes(is,
-          subFileList, 1) : ZipUtil.getStreamAsBytes(bis));
+          subFileList, 1) : getStreamAsBytes(bis, null));
       is.close();
       return bytes;
     } catch (Exception ioe) {
       return ioe.getMessage();
     }
   }
+
+  private static Object getStreamAsBytes(BufferedInputStream bis, OutputStream os) throws IOException {
+    byte[] buf = new byte[1024];
+    byte[] bytes = (os == null ? new byte[4096] : null);
+    int len = 0;
+    int totalLen = 0;
+    while ((len = bis.read(buf)) > 0) {
+      totalLen += len;
+      if (os == null) {
+        if (totalLen >= bytes.length)
+          bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
+        System.arraycopy(buf, 0, bytes, totalLen - len, len);
+      } else {
+        os.write(buf, 0, len);
+      }
+    }
+    if (os == null) {
+      buf = new byte[totalLen];
+      System.arraycopy(bytes, 0, buf, 0, totalLen);
+      return buf;
+    }
+    return totalLen + " bytes";
+  }
+
 
   /**
    * 
@@ -1035,7 +1063,7 @@ public class FileManager {
         if (isLocal && name.indexOf("|") < 0) {
           v.add(null);
         } else {
-          Object ret = getFileAsBytes(name);
+          Object ret = getFileAsBytes(name, null);
           if (!(ret instanceof byte[]))
             return (String) ret;
           v.add(ret);

@@ -380,7 +380,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     
     if ("localName" == propertyName) {
-      value = viewer.getOutputStream((String) value);
+      value = viewer.getOutputStream((String) value, null);
       propertyName = "outputStream";
     }
     

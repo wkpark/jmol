@@ -68,7 +68,6 @@ public class Hermite3D {
 
   private final float[] sLeft = new float[16];
   private final float[] sRight = new float[16];
-  int sp;
 
   private final Point3f[] pTopLeft = new Point3f[16];
   private final Point3f[] pTopRight = new Point3f[16];
@@ -105,7 +104,7 @@ public class Hermite3D {
     pLeft[0].set(p1);
     sRight[0] = 1;
     pRight[0].set(p2);
-    sp = 0;
+    int sp = 0;
     int n=0;
     int dDiameterFirstHalf = 0;
     int dDiameterSecondHalf = 0;
@@ -209,7 +208,7 @@ public class Hermite3D {
     sLeft[0] = 0;
     sRight[0] = 1;
     needToFill[0] = true;
-    sp = 0;
+    int sp = 0;
     boolean closeEnd = false;
     do {
       Point3f a = pTopLeft[sp];
@@ -337,7 +336,7 @@ public class Hermite3D {
     pLeft[0].set(p1);
     sRight[0] = 1;
     pRight[0].set(p2);
-    sp = 0;
+    int sp = 0;
 
     for (int strands = 2; strands > 0; strands--) {
        if (strands == 1) {

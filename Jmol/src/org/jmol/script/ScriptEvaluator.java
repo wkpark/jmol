@@ -11735,7 +11735,7 @@ public class ScriptEvaluator {
     }
     switch (tokAt(pt, args)) {
     case Token.nada:
-      isShow = true;
+    case Token.clipboard:
       break;
     case Token.identifier:
     case Token.string:
@@ -11755,8 +11755,6 @@ public class ScriptEvaluator {
       }
       if (fileName.equalsIgnoreCase("clipboard"))
         fileName = null;
-      break;
-    case Token.clipboard:
       break;
     default:
       error(ERROR_invalidArgument);
@@ -11797,9 +11795,11 @@ public class ScriptEvaluator {
         type = "XYZ";
     }
     boolean isImage = Parser.isOneOf(type, "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG");
-    if (isImage && (isApplet && !viewer.isSignedApplet() || isShow))
+    if (isImage && fileName == null)
+      type = "[image to clipboard]";
+    else if (isImage && (isApplet && !viewer.isSignedApplet() || isShow))
       type = "JPG64";
-    if (!isImage
+    else if (!isImage
         && !isExport
         && !Parser
             .isOneOf(
@@ -11940,19 +11940,20 @@ public class ScriptEvaluator {
       // load error here
       scriptStatusOrBuffer((String) bytes);
       return "";
-    }
-    if (bytes == null && (!isImage || fileName != null))
-      bytes = data;
-    if (doDefer)
-      msg = viewer.streamFileData(fileName, type, type2);
-    else
-      msg = viewer.createImage(fileName, type, bytes, quality, width, height,
-          bsFrames, fullPath);
-    if (msg != null) {
-      if (!msg.startsWith("OK"))
-        evalError(msg, null);
-      scriptStatusOrBuffer(msg
-          + (isImage ? "; width=" + width + "; height=" + height : ""));
+    } else {
+      if (bytes == null && (!isImage || fileName != null))
+        bytes = data;
+      if (doDefer)
+        msg = viewer.streamFileData(fileName, type, type2);
+      else
+        msg = viewer.createImage(fileName, type, bytes, quality, width, height,
+            bsFrames, fullPath);
+      if (msg != null) {
+        if (!msg.startsWith("OK"))
+          evalError(msg, null);
+        scriptStatusOrBuffer(msg
+            + (isImage ? "; width=" + width + "; height=" + height : ""));
+      }
     }
     return "";
   }

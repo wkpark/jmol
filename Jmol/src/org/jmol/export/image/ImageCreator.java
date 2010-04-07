@@ -65,10 +65,10 @@ public class ImageCreator implements JmolImageCreatorInterface {
       if (text == null) {
         Image image = viewer.getScreenImage();
         ImageSelection.setClipboard(image);
-        msg = "OK " + (image.getWidth(null) * image.getHeight(null));
+        msg = "OK image to clipboard: " + (image.getWidth(null) * image.getHeight(null));
       } else {
         ImageSelection.setClipboard(text);
-        msg = "OK " + text.length();
+        msg = "OK text to clipboard: " + text.length();
       }
     } catch (Error er) {
       msg = viewer.getErrorMessage();

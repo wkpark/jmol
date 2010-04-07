@@ -8447,37 +8447,37 @@
   <fah_proj number="10008" name="p10008" public="y" file="xyz"
     server="129.74.85.48" atoms="544" preferred="4.54" deadline="34.05"
     credit="124.85" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10009" name="p10009" public="n"
+  <fah_proj number="10009" name="p10009" public="y"
     server="129.74.85.15" atoms="551" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
   <fah_proj number="10010" name="p10010" public="n"
     server="129.74.85.48" atoms="551" preferred="4.6" deadline="34.48"
     credit="126.41" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10012" name="p10012" public="n"
+  <fah_proj number="10012" name="p10012" public="y"
     server="129.74.85.15" atoms="558" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10013" name="p10013" public="n"
+  <fah_proj number="10013" name="p10013" public="y" file="xyz"
     server="129.74.85.15" atoms="554" preferred="4.59" deadline="34.43"
-    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10014" name="p10014" public="n"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Bas Couwenberg"/>
+  <fah_proj number="10014" name="p10014" public="y"
     server="129.74.85.15" atoms="550" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10015" name="p10015" public="n"
+  <fah_proj number="10015" name="p10015" public="y"
     server="129.74.85.15" atoms="556" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10016" name="p10016" public="n"
+  <fah_proj number="10016" name="p10016" public="y"
     server="129.74.85.15" atoms="554" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10017" name="p10017" public="n"
+  <fah_proj number="10017" name="p10017" public="y"
     server="129.74.85.15" atoms="554" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10019" name="p10019" public="n"
+  <fah_proj number="10019" name="p10019" public="y"
     server="129.74.85.15" atoms="561" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10020" name="p10020" public="n"
+  <fah_proj number="10020" name="p10020" public="y"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10099" name="p10099" public="n"
+  <fah_proj number="10099" name="p10099" public="y"
     server="129.74.85.15" atoms="551" preferred="0.09" deadline="1"
     credit="2.53" frames="100" code="PM" contact="abdulwahidc"/>
 

@@ -1016,7 +1016,7 @@ public class AtomSetCollection {
       //Vector3f trans = new Vector3f();    
       for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
         try {
-          int atomSite = atoms[i].atomSite;
+          int atomSite = atoms[iAtom].atomSite;
           if (addBonds)
             atomMap[atomSite] = atomCount;
           Atom atom1 = newCloneAtom(atoms[iAtom]);

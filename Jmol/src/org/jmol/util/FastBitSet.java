@@ -339,6 +339,9 @@ public class FastBitSet implements Cloneable {
   private final static void bitmapAnd(int[] bitmap, int[] bitmapAnd) {
     int wordCount = bitmap.length < bitmapAnd.length ? bitmap.length
         : bitmapAnd.length;
+    int n = bitmap.length;
+    while (n > wordCount)
+      bitmap[--n] = 0;
     while (--wordCount >= 0)
       bitmap[wordCount] &= bitmapAnd[wordCount];
   }

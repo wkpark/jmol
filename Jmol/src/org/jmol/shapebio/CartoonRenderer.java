@@ -184,7 +184,7 @@ public class CartoonRenderer extends RocketsRenderer {
                                           mad),
                      backboneScreen, stepScreen);
     --ring6Screens[5].z;
-    for (int i = 5; --i > 0; ) {
+    for (int i = 5; --i >= 0; ) {
       --ring6Screens[i].z;
       if (hasRing5)
         --ring5Screens[i].z;

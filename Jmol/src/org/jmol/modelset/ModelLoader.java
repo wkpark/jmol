@@ -434,6 +434,10 @@ public final class ModelLoader extends ModelSet {
       modelNumbers[modelIndex] = modelNumber;
       modelNames[modelIndex] = modelName;
     }
+    // this next sets the bitset length to avoid 
+    // unnecessary calls to System.arrayCopy
+    models[modelIndex].bsAtoms.set(atoms.length + 1);
+    models[modelIndex].bsAtoms.clear(atoms.length + 1);
     String codes = (String) getModelAuxiliaryInfo(modelIndex, "altLocs");
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
@@ -798,6 +802,7 @@ public final class ModelLoader extends ModelSet {
    */
   private void iterateOverAllNewStructures(JmolAdapter adapter,
                                            Object atomSetCollection) {
+    structuresDefinedInFile = new BitSet(modelCount);
     JmolAdapter.StructureIterator iterStructure = adapter
         .getStructureIterator(atomSetCollection);
     if (iterStructure != null)
@@ -1163,7 +1168,7 @@ public final class ModelLoader extends ModelSet {
   private void findElementsPresent() {
     elementsPresent = new BitSet[modelCount];
     for (int i = 0; i < modelCount; i++)
-      elementsPresent[i] = new BitSet();
+      elementsPresent[i] = new BitSet(64);
     for (int i = atomCount; --i >= 0;) {
       int n = atoms[i].getAtomicAndIsotopeNumber();
       if (n >= JmolConstants.elementNumberMax)
@@ -1228,7 +1233,7 @@ public final class ModelLoader extends ModelSet {
         continue;
       }
       pt.set(x, y, z);
-      BitSet bs = new BitSet();
+      BitSet bs = new BitSet(atomCount);
       getAtomsWithin(-tolerance, pt, bs, -1);
       getAtomsWithin(tolerance, pt, bs, -1);
       bs.and(bsSelected);

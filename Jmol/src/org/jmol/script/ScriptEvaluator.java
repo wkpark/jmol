@@ -1107,7 +1107,7 @@ public class ScriptEvaluator {
     case Token.function:
       userFunction = (String) ((Object[]) opValue)[0];
       params = (Vector) ((Object[]) opValue)[1];
-      bsAtom = new BitSet();
+      bsAtom = new BitSet(viewer.getAtomCount());
       tokenAtom = new ScriptVariable(Token.bitset, bsAtom);
       break;
     case Token.straightness:
@@ -3238,7 +3238,7 @@ public class ScriptEvaluator {
           rpn.addOp(instruction);
           break;
         }
-        if (instruction.tok == Token.identifier) {
+//        if (instruction.tok == Token.identifier) {
           val = getParameter((String) value, false);
           if (val instanceof String)
             val = getStringObjectAsVariable((String) val, null);
@@ -3246,8 +3246,8 @@ public class ScriptEvaluator {
             val = lookupIdentifierValue((String) value);
           rpn.addX(val);
           break;
-        }
-        error(ERROR_unrecognizedExpression);
+//        }
+   //     error(ERROR_unrecognizedExpression);
       }
     }
     expressionResult = rpn.getResult(allowUnderflow, null);
@@ -3288,7 +3288,7 @@ public class ScriptEvaluator {
     Atom[] atoms = modelSet.atoms;
     float propertyFloat = 0;
     viewer.autoCalculate(tokWhat);
-    for (int i = 0; i < atomCount; ++i) {
+    for (int i = atomCount; --i >= 0;) {
       boolean match = false;
       Atom atom = atoms[i];
       switch (tokWhat) {
@@ -3316,7 +3316,7 @@ public class ScriptEvaluator {
         .getChainCaseSensitive());
     if (!isCaseSensitive)
       comparisonString = comparisonString.toLowerCase();
-    for (int i = 0; i < atomCount; ++i) {
+    for (int i = atomCount; --i >= 0;) {
       String propertyString = Atom.atomPropertyString(atoms[i], tokWhat);
       if (!isCaseSensitive)
         propertyString = propertyString.toLowerCase();
@@ -3372,7 +3372,7 @@ public class ScriptEvaluator {
         return bs;
       }
     }
-    bs = new BitSet();
+    bs = new BitSet(atomCount);
     for (int i = 0; i < atomCount; ++i) {
       boolean match = false;
       Atom atom = atoms[i];
@@ -4519,6 +4519,7 @@ public class ScriptEvaluator {
       }
       thisCommand = getCommand(pc, false, true);
       fullCommand = thisCommand + getNextComment();
+      getToken(0);
       iToken = 0;
       String script = viewer.getInterruptScript();
       if (script != "")
@@ -8575,6 +8576,10 @@ public class ScriptEvaluator {
     if (isBondSet) {
       viewer.selectBonds(bs);
     } else {
+      if (bs.length() > viewer.getAtomCount()) {
+        bs = BitSetUtil.copy(bs);
+        bs.and(viewer.getModelAtomBitSet(-1, false));
+      }
       viewer.select(bs, tQuiet || scriptLevel > scriptReportingLevel);
     }
   }
@@ -9978,7 +9983,7 @@ public class ScriptEvaluator {
 
   BitSet bitSetForModelFileNumber(int m) {
     // where */1.0 or */1.1 or just 1.1 is processed
-    BitSet bs = new BitSet();
+    BitSet bs = new BitSet(viewer.getAtomCount());
     if (isSyntaxCheck)
       return bs;
     int modelCount = viewer.getModelCount();

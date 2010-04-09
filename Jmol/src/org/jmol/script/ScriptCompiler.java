@@ -2089,55 +2089,15 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       cchToken = 8;
       return new BitSet();
     }
+    int ichT;
     if (ichToken + 4 > cchScript 
         || script.charAt(ichToken + 1) != '{'
-      ||(script.charAt(ichToken) != '(' 
-        && script.charAt(ichToken) != '['))
-      return null;
-    int ichT = ichToken + 2;
-    char chEnd = (script.charAt(ichToken) == '(' ? ')' : ']');
-    char ch = ' ';
-    while (ichT < cchScript && (ch = script.charAt(ichT)) != '}'
-        && (Character.isDigit(ch) || isSpaceOrTab(ch) || ch == ':'))
-      ichT++;
-    if (ch != '}' || ichT + 1 == cchScript
-        || script.charAt(ichT + 1) != chEnd)
-      return null;
-    int iprev = -1;
-    int ipt = 0;
-    BitSet bs = new BitSet();
-    for (int ich = ichToken+ 2; ich < ichT;ich = ipt) {
-      while (isSpaceOrTab(ch = script.charAt(ich)))
-        ich++;
-      ipt = ich;
-      while (Character.isDigit(ch = script.charAt(ipt)))
-        ipt++;
-      if (ipt == ich) // possibly :m instead of n:m
-        return null;
-      int val;
-      try {
-        val = Integer.parseInt(script.substring(ich, ipt));
-      } catch(NumberFormatException e) {
-        return null;
-      }
-      if (ch == ':') {
-        iprev = val;
-        ipt++;
-      } else {
-        if (iprev >= 0) {
-          if (iprev > val)
-            return null;
-          for (int i = iprev; i <= val; i++)
-            bs.set(i);
-        } else {
-          bs.set(val);
-        }
-        iprev = -1;
-      }
-    }
-    if (iprev >= 0)
-      return null;
-    cchToken = ichT + 2 - ichToken;
+        || (ichT = script.indexOf("}", ichToken)) < 0
+        || ichT + 1 == cchScript)
+    return null;
+    BitSet bs = Escape.unescapeBitset(script.substring(ichToken, ichT + 2));
+    if (bs != null)
+      cchToken = ichT + 2 - ichToken;
     return bs;
   }
   

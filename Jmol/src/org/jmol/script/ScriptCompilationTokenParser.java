@@ -405,16 +405,16 @@ abstract class ScriptCompilationTokenParser {
         return false;
       if (Token.tokAttr(tok, Token.atomproperty)) {
         int itemp = itokenInfix;
-        boolean isOK = clauseComparator(Token.tokAttr(tok, Token.predefinedset));
+        boolean isOK = clauseComparator(true);
         if (isOK || itokenInfix != itemp)
             return isOK;
       }
-      if (tok != Token.integer && !Token.tokAttr(tok, Token.predefinedset))
-        break;
+      //if (tok != Token.integer && !Token.tokAttr(tok, Token.predefinedset))
+        //break;
       return addNextToken();
 
     }
-    return error(ERROR_unrecognizedExpressionToken, "" + valuePeek());
+//    return error(ERROR_unrecognizedExpressionToken, "" + valuePeek());
   }
 
   private boolean checkForCoordinate(boolean isImplicitExpression) {

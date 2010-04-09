@@ -88,7 +88,7 @@ public class Sheet extends ProteinStructure {
       AminoMonomer amino = (AminoMonomer) alphaPolymer.monomers[monomerIndexFirst];
       vectorCOSum.sub(amino.getCarbonylOxygenAtomPoint(), amino
           .getCarbonylCarbonAtomPoint());
-      for (int i = monomerCount; --i > 0;) {
+      for (int i = monomerCount; --i > monomerIndexFirst;) {
         amino = (AminoMonomer) alphaPolymer.monomers[i];
         vectorCO.sub(amino.getCarbonylOxygenAtomPoint(), amino
             .getCarbonylCarbonAtomPoint());

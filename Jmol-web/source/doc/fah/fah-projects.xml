@@ -3926,10 +3926,10 @@
   <fah_proj number="1775" name="p1775_BCHE_DAPP5_03_33_A1B" public="y" file="xyz"
     server="134.139.127.31" atoms="98789" preferred="14" deadline="28"
     credit="2137.6" frames="100" code="A0" contact="esorin" contrib="Bruce"/>
-  <fah_proj number="1798" name="p1798_LUTEO_300K" public="n" file="xyz"
+  <fah_proj number="1798" name="p1798_LUTEO_300K" public="y" file="xyz"
     server="134.139.127.32" atoms="41330" preferred="7" deadline="14"
     credit="435" frames="100" code="A0" contact="esorin"/>
-  <fah_proj number="1799" name="p1799_AQUIFEX_300K" public="n" file="xyz"
+  <fah_proj number="1799" name="p1799_AQUIFEX_300K" public="y" file="xyz"
     server="134.139.127.32" atoms="41361" preferred="7" deadline="14"
     credit="412" frames="100" code="A0" contact="esorin"/>
 
@@ -8336,8 +8336,8 @@
   <fah_proj number="6500" name="p6500_UBIQUITIN MODEL250 in water" public="n"
     server="169.230.26.30" atoms="19252" preferred="43" deadline="65"
     credit="237" frames="100" code="A0" contact="lan"/>
-  <fah_proj number="6501" name="p6501_ubiquitin_predict" public="n"
-    server="169.230.26.30" atoms="25933" preferred="23" deadline="34"
+  <fah_proj number="6501" name="p6501_ubiquitin_predict" public="y"
+    server="171.64.65.62" atoms="25933" preferred="23" deadline="34"
     credit="123" frames="100" code="G" contact="lan"/>
 
   <!-- Projects 6600 to 6699 -->
@@ -8459,9 +8459,9 @@
   <fah_proj number="10013" name="p10013" public="y" file="xyz"
     server="129.74.85.15" atoms="554" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Bas Couwenberg"/>
-  <fah_proj number="10014" name="p10014" public="y"
+  <fah_proj number="10014" name="p10014" public="y" file="xyz"
     server="129.74.85.15" atoms="550" preferred="4.59" deadline="34.43"
-    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="SandStar"/>
   <fah_proj number="10015" name="p10015" public="y" file="xyz"
     server="129.74.85.15" atoms="556" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Bas Couwenberg"/>

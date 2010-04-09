@@ -892,5 +892,9 @@ public abstract class BioPolymer extends Polymer {
     return (float) (1 - 2 * Math.acos(Math.abs(halfCosTheta))/Math.PI);   
   }
 
+  public boolean isDna() { return (monomerCount > 0 && monomers[0].isDna()); }
+  public boolean isRna() { return (monomerCount > 0 && monomers[0].isRna()); }
+
+
 
 }

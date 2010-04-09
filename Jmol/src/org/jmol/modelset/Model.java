@@ -299,13 +299,15 @@ public final class Model {
   
   void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
     for (int i = bioPolymerCount; --i >= 0;) {
-      int type = bioPolymers[i].getType();
+      Polymer bp = bioPolymers[i];
+      int type = bp.getType();
       if (type != Polymer.TYPE_AMINO && type != Polymer.TYPE_NUCLEIC)
         continue;
+      boolean isRNA = bp.isRna();
       if (type == Polymer.TYPE_AMINO)
         bioPolymers[i].calcRasmolHydrogenBonds(null, bsA, bsB);
       for (int j = bioPolymerCount; --j >= 0;)
-        if (i != j && bioPolymers[i] != null
+        if ( bioPolymers[j] != null && (isRNA || i != j)
             && type == bioPolymers[j].getType())
           bioPolymers[j].calcRasmolHydrogenBonds(bioPolymers[i], bsA, bsB);
     }

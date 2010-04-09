@@ -25,8 +25,12 @@ package org.jmol.modelsetbio;
 
 import java.util.BitSet;
 
+import javax.vecmath.Point4f;
+import javax.vecmath.Vector3f;
+
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Polymer;
+import org.jmol.util.Measure;
 import org.jmol.util.OutputStringBuffer;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
@@ -51,12 +55,17 @@ public class NucleicPolymer extends BioPolymer {
   private final static short HBOND_MASK = JmolConstants.BOND_H_NUCLEOTIDE;
   
   void lookForHbonds(NucleicPolymer other, BitSet bsA, BitSet bsB) {
-    //Logger.debug("NucleicPolymer.lookForHbonds()");
+    Vector3f vNorm = new Vector3f();
+    Vector3f vAB = new Vector3f();
+    Vector3f vAC = new Vector3f();
     for (int i = monomerCount; --i >= 0; ) {
       NucleicMonomer myNucleotide = (NucleicMonomer)monomers[i];
       if (! myNucleotide.isPurine())
         continue;
+      Atom myN3 = myNucleotide.getN3();
       Atom myN1 = myNucleotide.getN1();
+      Atom myN9 = myNucleotide.getN0();
+      Point4f plane = Measure.getPlaneThroughPoints(myN3, myN1, myN9, vNorm, vAB, vAC);
       Atom bestN3 = null;
       float minDist2 = 25;
       NucleicMonomer bestNucleotide = null;
@@ -64,9 +73,14 @@ public class NucleicPolymer extends BioPolymer {
         NucleicMonomer otherNucleotide = (NucleicMonomer)other.monomers[j];
         if (! otherNucleotide.isPyrimidine())
           continue;
+        Atom otherN1 = otherNucleotide.getN0();
         Atom otherN3 = otherNucleotide.getN3();
         float dist2 = myN1.distanceSquared(otherN3);
-        if (dist2 < minDist2) {
+        if (dist2 < minDist2 
+            && myN9.distanceSquared(otherN1) > 50 // not stacked
+            && Math.abs(Measure.distanceToPlane(plane, otherN3)) < 1
+        ) {
+          System.out.println(myN9.distanceSquared(otherN1) + " " + Measure.distanceToPlane(plane, otherN3));
           bestNucleotide = otherNucleotide;
           bestN3 = otherN3;
           minDist2 = dist2;

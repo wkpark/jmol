@@ -136,4 +136,7 @@ abstract public class Polymer {
     return null;
   }
 
+  public boolean isDna() { return false; }
+  public boolean isRna() { return false; }
+
 }

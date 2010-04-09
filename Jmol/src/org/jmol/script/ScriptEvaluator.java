@@ -4050,7 +4050,11 @@ public class ScriptEvaluator {
       mad = radiusRasMol * 4 * 2;
       break;
     case Token.decimal:
-      mad = (int) (floatParameter(1, 0, 3) * 1000 * 2);
+      mad = (int) (floatParameter(1, -3, 3) * 1000 * 2);
+      if (mad < 0) {
+        restrictSelected(false, false);
+        mad = -mad;
+      }
       break;
     default:
       error(ERROR_booleanOrNumberExpected);
@@ -6549,11 +6553,12 @@ public class ScriptEvaluator {
             || (pid == JmolConstants.PALETTE_TYPE || pid == JmolConstants.PALETTE_ENERGY)
             && shapeType != JmolConstants.SHAPE_HSTICKS)
           error(ERROR_invalidArgument);
-        Object data = null;
+        Object  data = null;
         if (pid == JmolConstants.PALETTE_PROPERTY) {
+          BitSet bsSelected = (viewer.isRangeSelected() ? viewer.getSelectionSet() : null);
           if (isColorIndex) {
             if (!isSyntaxCheck) {
-              data = getBitsetProperty(null, (isByElement ? Token.elemno
+              data = getBitsetProperty(bsSelected, (isByElement ? Token.elemno
                   : Token.groupid)
                   | Token.minmaxmask, null, null, null, null, false,
                   Integer.MAX_VALUE, false);
@@ -6566,7 +6571,7 @@ public class ScriptEvaluator {
                     Token.atomproperty)
                 && !Token.tokAttr(tok, Token.strproperty)) {
               if (!isSyntaxCheck) {
-                data = getBitsetProperty(null, getToken(index++).tok
+                data = getBitsetProperty(bsSelected, getToken(index++).tok
                     | Token.minmaxmask, null, null, null, null, false,
                     Integer.MAX_VALUE, false);
               }
@@ -9762,7 +9767,11 @@ public class ScriptEvaluator {
       mad = (intParameter(1, 0, 499) * 8);
       break;
     case Token.decimal:
-      mad = (int) (floatParameter(1, 0, Shape.RADIUS_MAX) * 2000);
+      mad = (int) (floatParameter(1, -Shape.RADIUS_MAX, Shape.RADIUS_MAX) * 2000);
+      if (mad < 0) {
+        restrictSelected(false, false);
+        mad = -mad;
+      }
       break;
     case Token.bitset:
       if (!isSyntaxCheck)

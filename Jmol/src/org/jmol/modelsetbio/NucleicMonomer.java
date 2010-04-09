@@ -288,7 +288,11 @@ public class NucleicMonomer extends PhosphorusMonomer {
   }
  
  Atom getQuaternionFrameCenter(char qType) {
-   return (getAtomFromOffsetIndex(qType == 'p' || qType == 'a' ? P : isPurine ? N9 : N1));
+   return (qType == 'p' || qType == 'a' ? getAtomFromOffsetIndex(P) : getN0());
+ }
+ 
+ Atom getN0() {
+   return (getAtomFromOffsetIndex(isPurine ? N9 : N1));
  }
  
  public Object getHelixData(int tokType, char qType, int mStep) {

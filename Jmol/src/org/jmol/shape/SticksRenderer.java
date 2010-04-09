@@ -81,6 +81,25 @@ public class SticksRenderer extends ShapeRenderer {
     mad = bond.getMad();
     atomA = bond.getAtom1();
     atomB = bond.getAtom2();
+    int order = bond.getOrder() & ~JmolConstants.BOND_NEW;
+    if (bondsBackbone) {
+      if (ssbondsBackbone && (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
+        // for ssbonds, always render the sidechain,
+        // then render the backbone version
+        /*
+         mth 2004 04 26
+         No, we are not going to do this any more
+         render(bond, atomA, atomB);
+         */
+
+        atomA = atomA.getGroup().getLeadAtom(atomA);
+        atomB = atomB.getGroup().getLeadAtom(atomB);
+      } else if (hbondsBackbone
+          && (order & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
+        atomA = atomA.getGroup().getLeadAtom(atomA);
+        atomB = atomB.getGroup().getLeadAtom(atomB);
+      }
+    }
     if (!atomA.isInFrame() || !atomB.isInFrame()
         || !g3d.isInDisplayRange(atomA.screenX, atomA.screenY)
         || !g3d.isInDisplayRange(atomB.screenX, atomB.screenY)
@@ -106,25 +125,6 @@ public class SticksRenderer extends ShapeRenderer {
     } else {
       colixA = Graphics3D.getColixInherited(colix, colixA);
       colixB = Graphics3D.getColixInherited(colix, colixB);
-    }
-    int order = bond.getOrder() & ~JmolConstants.BOND_NEW;
-    if (bondsBackbone) {
-      if (ssbondsBackbone && (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
-        // for ssbonds, always render the sidechain,
-        // then render the backbone version
-        /*
-         mth 2004 04 26
-         No, we are not going to do this any more
-         render(bond, atomA, atomB);
-         */
-
-        atomA = atomA.getGroup().getLeadAtom(atomA);
-        atomB = atomB.getGroup().getLeadAtom(atomB);
-      } else if (hbondsBackbone
-          && (order & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
-        atomA = atomA.getGroup().getLeadAtom(atomA);
-        atomB = atomB.getGroup().getLeadAtom(atomB);
-      }
     }
     xA = atomA.screenX;
     yA = atomA.screenY;

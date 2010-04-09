@@ -934,7 +934,7 @@ final public class Atom extends Point3fi {
     //  (this will be a difference in terms of *clickability*).
     // except BACKBONE
     flags |= group.shapeVisibilityFlags;
-    if (atomID != JmolConstants.ATOMID_ALPHA_CARBON)
+    if (atomID != JmolConstants.ATOMID_ALPHA_CARBON && atomID != JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS)
       flags &= ~JmolConstants.BACKBONE_VISIBILITY_FLAG;
 
     // We know that (flags & AIM), so now we must remove that flag

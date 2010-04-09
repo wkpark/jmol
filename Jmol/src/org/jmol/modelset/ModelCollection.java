@@ -1349,6 +1349,7 @@ abstract public class ModelCollection extends BondCollection {
     info.put("modelCountSelected", new Integer(BitSetUtil.cardinalityOf(bsModels)));
     info.put("modelsSelected", bsModels);
     Vector vModels = new Vector();
+    getMolecules();
     
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
       Hashtable model = new Hashtable();
@@ -1364,10 +1365,11 @@ abstract public class ModelCollection extends BondCollection {
         model.put("file", s);
       model.put("vibrationVectors", Boolean
           .valueOf(modelHasVibrationVectors(i)));
-      model.put("atomCount", new Integer(getAtomCountInModel(i)));
-      model.put("bondCount", new Integer(getBondCountInModel(i)));
-      model.put("groupCount", new Integer(getGroupCountInModel(i)));
-      model.put("polymerCount", new Integer(models[i].getBioPolymerCount()));
+      model.put("atomCount", new Integer(models[i].atomCount));
+      model.put("bondCount", new Integer(models[i].getBondCount()));
+      model.put("groupCount", new Integer(models[i].getGroupCount()));
+      model.put("moleculeCount", new Integer(models[i].moleculeCount));
+      model.put("polymerCount", new Integer(models[i].bioPolymerCount));
       model.put("chainCount", new Integer(getChainCountInModel(i, true)));
       if (models[i].properties != null)
         model.put("modelProperties", models[i].properties);
@@ -1748,33 +1750,45 @@ abstract public class ModelCollection extends BondCollection {
       molecules = new Molecule[4];
     moleculeCount = 0;
     BitSet atomlist = new BitSet(atomCount);
-    BitSet bs = new BitSet(atomCount);
+    BitSet bsBranch;
     int thisModelIndex = -1;
-    int modelIndex = -1;
-    int indexInModel = -1;
-    int moleculeCount0 = -1;
     Model m = null;
+    for (int i = 0; i < modelCount; i++) {
+      m = models[i];
+      m.moleculeCount = 0;
+      int bpt = m.getBioPolymerCount();
+      for (int j = 0; j < bpt; j++) {
+        bsBranch = new BitSet();
+        m.getBioPolymer(j).getRange(bsBranch); 
+        int iAtom = bsBranch.nextSetBit(0);
+        addMolecule(iAtom, bsBranch, m, atomlist);
+      }
+    }
+    bsBranch = new BitSet();
     for (int i = 0; i < atomCount; i++)
-      if (!atomlist.get(i) && !bs.get(i)) {
-        modelIndex = atoms[i].modelIndex;
+      if (!atomlist.get(i) && !bsBranch.get(i)) {
+        int modelIndex = atoms[i].modelIndex;
         if (modelIndex != thisModelIndex) {
-          indexInModel = -1;
           m = models[modelIndex];
-          m.firstMolecule = moleculeCount;
-          moleculeCount0 = moleculeCount - 1;
           thisModelIndex = modelIndex;
         }
-        indexInModel++;
-        bs = getBranchBitSet(i, -1);
-        atomlist.or(bs);
-        if (moleculeCount == molecules.length)
-          molecules = (Molecule[]) ArrayUtil.setLength(molecules,
-              moleculeCount * 2);
-        molecules[moleculeCount] = new Molecule((ModelSet) this, moleculeCount,
-            i, bs, thisModelIndex, indexInModel);
-        m.moleculeCount = moleculeCount++ - moleculeCount0;
+        bsBranch = getBranchBitSet(i, -1);
+        addMolecule(i, bsBranch, m, atomlist);
       }
     return molecules;
+  }
+
+  private void addMolecule(int iAtom, BitSet bsBranch, Model m, 
+                           BitSet atomlist) {
+    atomlist.or(bsBranch);
+    if (moleculeCount == molecules.length)
+      molecules = (Molecule[]) ArrayUtil.setLength(molecules,
+          moleculeCount * 2);
+    if (m.moleculeCount == 0)
+      m.firstMolecule = moleculeCount;
+    molecules[moleculeCount] = new Molecule((ModelSet) this, moleculeCount,
+        iAtom, bsBranch, m.modelIndex, m.moleculeCount++);
+    moleculeCount++;
   }
 
   public BitSet getBranchBitSet(int atomIndex, int atomIndexNot) {

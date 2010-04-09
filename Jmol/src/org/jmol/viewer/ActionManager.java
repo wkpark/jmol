@@ -669,7 +669,7 @@ public class ActionManager {
       }
       viewer.refresh(3, "mouseReleased");
     }
-    rubberbandSelectionMode = false;
+    rubberbandSelectionMode = (binding.getName() == "drag");
     rectRubber.x = Integer.MAX_VALUE;
     if (dragRelease)
       viewer.notifyMouseClicked(x, y, Binding.getMouseAction(pressedCount, 0));
@@ -1264,23 +1264,23 @@ public class ActionManager {
     rubberbandSelectionMode = false;
     switch (pickingStyleSelect) {
     case JmolConstants.PICKINGSTYLE_SELECT_PFAAT:
-      if (binding.getName() != "Pfaat") 
+      if (binding.getName() != "extendedSelect") 
         setBinding(pfaatBinding = (pfaatBinding == null ? new PfaatBinding() : pfaatBinding));
       break;
     case JmolConstants.PICKINGSTYLE_SELECT_DRAG:
-      if (binding.getName() != "Drag")
+      if (binding.getName() != "drag")
         setBinding(dragBinding = (dragBinding == null ? new DragBinding() : dragBinding));
       rubberbandSelectionMode = true;
       break;
     case JmolConstants.PICKINGSTYLE_SELECT_RASMOL:
-      if (binding.getName() != "Rasmol")
+      if (binding.getName() != "selectOrToggle")
         setBinding(rasmolBinding = (rasmolBinding == null ? new RasmolBinding() : rasmolBinding));
       break;
     default:
       if (binding != jmolBinding)
         setBinding(jmolBinding);
     }
-    if (binding.getName() != "Drag")
+    if (binding.getName() != "drag")
       predragBinding = binding;
   }
 

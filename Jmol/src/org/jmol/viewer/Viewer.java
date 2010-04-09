@@ -5323,6 +5323,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setIntProperty(String key, int tok, int value) {
     boolean found = true;
     switch (tok) {
+    case Token.repaintwaitms:
+      // 12.0.RC4
+      global.repaintWaitMs = value;
+      break;
     case Token.smallmoleculemaxatoms:
       // 12.0.RC3
       global.smallMoleculeMaxAtoms = value;
@@ -8239,4 +8243,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getPdbData(modelIndex, type, selectionManager.getSelectionSet(), null);
   }
 
+  public int getRepaintWait() {
+    return global.repaintWaitMs;
+  }
 }

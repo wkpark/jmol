@@ -580,7 +580,7 @@ public class StateManager {
         + ";debug;debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
         + ";_filecaching;_filecache;fontcaching;fontscaling;language;loglevel;measureStyleChime"
         + ";navigationmode;"
-        + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;rotationradius"
+        + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate"
@@ -890,6 +890,7 @@ public class StateManager {
       setParameterValue("propertyColorScheme", propertyColorScheme);
       setParameterValue("quaternionFrame", quaternionFrame);
       setParameterValue("rangeSelected", rangeSelected);
+      setParameterValue("repaintWaitMs", repaintWaitMs);
       setParameterValue("ribbonAspectRatio", ribbonAspectRatio);
       setParameterValue("ribbonBorder", ribbonBorder);
       setParameterValue("rocketBarrels", rocketBarrels);
@@ -1083,6 +1084,7 @@ public class StateManager {
     boolean dynamicMeasurements = false;
     boolean greyscaleRendering = false;
     boolean isosurfacePropertySmoothing = true;
+    int repaintWaitMs = 1000;
     boolean showHiddenSelectionHalos = false;
     boolean showKeyStrokes = true;
     boolean showMeasurements = true;

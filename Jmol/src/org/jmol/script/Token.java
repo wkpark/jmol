@@ -32,7 +32,6 @@ import java.util.Vector;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 
-
 public class Token {
 
   public int tok;
@@ -819,6 +818,7 @@ public class Token {
   public final static int propertyatomnumbercolumncount  = intparam | 32;
   public final static int propertydatacolumncount        = intparam | 34;
   public final static int propertydatafield              = intparam | 36;
+  public final static int repaintwaitms                  = intparam | 37;
   public final static int ribbonaspectratio              = intparam | 38;
   public final static int scriptreportinglevel           = intparam | 40;
   public final static int smallmoleculemaxatoms          = intparam | 42;
@@ -2007,6 +2007,7 @@ public class Token {
       "propertyAtomNumberColumnCount",            new Token(propertyatomnumbercolumncount),
       "propertyDataColumnCount",                  new Token(propertydatacolumncount),
       "propertyDataField",                        new Token(propertydatafield),
+      "repaintWaitMs",                            new Token(repaintwaitms),
       "ribbonAspectRatio",                        new Token(ribbonaspectratio),
       "scriptReportingLevel",                     new Token(scriptreportinglevel),
       "showScript",                               new Token(showscript),

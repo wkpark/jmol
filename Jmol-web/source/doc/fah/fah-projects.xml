@@ -8474,9 +8474,9 @@
   <fah_proj number="10019" name="p10019" public="y" file="xyz"
     server="129.74.85.15" atoms="561" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Bas Couwenberg"/>
-  <fah_proj number="10020" name="p10020" public="y"
+  <fah_proj number="10020" name="p10020" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
-    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Flathead74"/>
   <fah_proj number="10099" name="p10099" public="y"
     server="129.74.85.15" atoms="551" preferred="0.09" deadline="1"
     credit="2.53" frames="100" code="PM" contact="abdulwahidc"/>

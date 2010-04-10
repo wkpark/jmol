@@ -141,6 +141,7 @@ public final class ModelLoader extends ModelSet {
     fileHeader = (String) getModelSetAuxiliaryInfo("fileHeader");
     trajectorySteps = (Vector) getModelSetAuxiliaryInfo("trajectorySteps");
     isTrajectory = (trajectorySteps != null);
+    noAutoBond = getModelSetAuxiliaryInfoBoolean("noAutoBond");
     adapterTrajectoryCount = (trajectorySteps == null ? 0 : trajectorySteps.size()); 
     someModelsHaveSymmetry = getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
     someModelsHaveUnitcells = getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
@@ -179,6 +180,7 @@ public final class ModelLoader extends ModelSet {
   private int adapterModelCount = 0;
   private int adapterTrajectoryCount = 0;
   private boolean isLargeModel;
+  private boolean noAutoBond;
   
   private void createModelSet(JmolAdapter adapter, Object atomSetCollection) {
     int nAtoms = (adapter == null ? 0 : adapter.getAtomCount(atomSetCollection));
@@ -757,7 +759,7 @@ public final class ModelLoader extends ModelSet {
     while (iterBond.hasNext()) {
       order = (short) iterBond.getEncodedOrder();
       bondAtoms(iterBond.getAtomUniqueID1(), iterBond.getAtomUniqueID2(), order);
-      if (order > 1)
+      if (order > 1 && order != JmolConstants.BOND_STEREO_NEAR)
         haveMultipleBonds = true; 
     }
     if (haveMultipleBonds && someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds())
@@ -765,6 +767,7 @@ public final class ModelLoader extends ModelSet {
     defaultCovalentMad = mad;
   }
   
+  private Vector vStereo;
   private void bondAtoms(Object atomUid1, Object atomUid2, short order) {
     Atom atom1 = (Atom) htAtomMap.get(atomUid1);
     if (atom1 == null) {
@@ -780,7 +783,15 @@ public final class ModelLoader extends ModelSet {
     // Atom.bondMutually(...) will return null
     if (atom1.isBonded(atom2))
       return;
+    boolean isStereo = (order == JmolConstants.BOND_STEREO_NEAR);
+    if (isStereo)
+      order = 1;
     Bond bond = bondMutually(atom1, atom2, order, getDefaultMadFromOrder(order), 0);
+    if (isStereo) {
+      if (vStereo == null)
+        vStereo = new Vector();
+      vStereo.add(bond);
+    }
     if (bond.isAromatic())
       someModelsHaveAromaticBonds = true;
     if (bondCount == bonds.length)
@@ -921,14 +932,18 @@ public final class ModelLoader extends ModelSet {
 
   private void initializeBonding() {
     // perform bonding if necessary
-    
+
     // 1. apply CONECT records and set bsExclude to omit them
-    
-    BitSet bsExclude = (getModelSetAuxiliaryInfo("someModelsHaveCONECT") == null ? null : new BitSet());
+    // 2. apply stereochemistry from JME
+
+    if (vStereo != null)
+      applyStereochemistry();
+    BitSet bsExclude = (getModelSetAuxiliaryInfo("someModelsHaveCONECT") == null ? null
+        : new BitSet());
     if (bsExclude != null)
       setPdbConectBonding(baseAtomIndex, baseModelIndex, bsExclude);
-    
-    // 2. for each model in the collection, 
+
+    // 2. for each model in the collection,
     int atomIndex = baseAtomIndex;
     int modelAtomCount = 0;
     boolean symmetryAlreadyAppliedToBonds = viewer.getApplySymmetryToBonds();
@@ -936,45 +951,58 @@ public final class ModelLoader extends ModelSet {
     boolean forceAutoBond = viewer.getForceAutoBond();
     BitSet bs = null;
     boolean autoBonding = false;
-    for (int i = baseModelIndex; i < modelCount; 
-        atomIndex += modelAtomCount, i++) {
-      modelAtomCount = models[i].bsAtoms.cardinality();
-      if (getModelAuxiliaryInfoBoolean(i, "noautobond")) 
-        continue;
-      int modelBondCount = getModelAuxiliaryInfoInt(i, "initialBondCount");
-      if (modelBondCount < 0)
-        modelBondCount = bondCount;
-      boolean modelIsPDB = models[i].isPDB;
-      boolean modelHasSymmetry = getModelAuxiliaryInfoBoolean(i, "hasSymmetry");
-      //check for PDB file with fewer than one bond per every two atoms
-      //this is in case the PDB format is being usurped for non-RCSB uses
-      //In other words, say someone uses the PDB format to indicate atoms and
-      //connectivity. We do NOT want to mess up that connectivity here. 
-      //It would be OK if people used HETATM for every atom, but I think people
-      //use ATOM, so that's a problem. Those atoms would not be excluded from the
-      //automatic bonding, and additional bonds might be made.
-      boolean doBond = (forceAutoBond || doAutoBond && (
-                  modelBondCount == 0
-               || modelIsPDB && jmolData == null && modelBondCount < modelAtomCount / 2  
-               || modelHasSymmetry && !symmetryAlreadyAppliedToBonds
-          ));
-      if (!doBond) 
-        continue;
-      autoBonding = true;
-      if (merging || modelCount > 1) {
-        if (bs == null)
-          bs = new BitSet(atomCount);
-        if (i == baseModelIndex || !isTrajectory)
-          bs.or(models[i].bsAtoms);
+    if (!noAutoBond)
+      for (int i = baseModelIndex; i < modelCount; atomIndex += modelAtomCount, i++) {
+        modelAtomCount = models[i].bsAtoms.cardinality();
+        int modelBondCount = getModelAuxiliaryInfoInt(i, "initialBondCount");
+        if (modelBondCount < 0)
+          modelBondCount = bondCount;
+        boolean modelIsPDB = models[i].isPDB;
+        boolean modelHasSymmetry = getModelAuxiliaryInfoBoolean(i,
+            "hasSymmetry");
+        // check for PDB file with fewer than one bond per every two atoms
+        // this is in case the PDB format is being usurped for non-RCSB uses
+        // In other words, say someone uses the PDB format to indicate atoms and
+        // connectivity. We do NOT want to mess up that connectivity here.
+        // It would be OK if people used HETATM for every atom, but I think
+        // people
+        // use ATOM, so that's a problem. Those atoms would not be excluded from
+        // the
+        // automatic bonding, and additional bonds might be made.
+        boolean doBond = (forceAutoBond || doAutoBond
+            && (modelBondCount == 0 || modelIsPDB && jmolData == null
+                && modelBondCount < modelAtomCount / 2 || modelHasSymmetry
+                && !symmetryAlreadyAppliedToBonds));
+        if (!doBond)
+          continue;
+        autoBonding = true;
+        if (merging || modelCount > 1) {
+          if (bs == null)
+            bs = new BitSet(atomCount);
+          if (i == baseModelIndex || !isTrajectory)
+            bs.or(models[i].bsAtoms);
+        }
       }
-    }
     if (autoBonding) {
       autoBond(bs, bs, bsExclude, null, defaultCovalentMad);
-      Logger.info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
+      Logger
+          .info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
     } else {
-      Logger.info("ModelSet: not autobonding; use  forceAutobond=true  to force automatic bond creation");        
+      Logger
+          .info("ModelSet: not autobonding; use  forceAutobond=true  to force automatic bond creation");
     }
   }
+
+  private void applyStereochemistry() {
+    for (int i = vStereo.size(); --i >= 0;) {
+      Bond b = (Bond) vStereo.get(i);
+      BitSet bs = getBranchBitSet(b.atom2.index, b.atom1.index);
+      for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
+        atoms[j].z += 1;
+    }
+    vStereo = null;
+  }
+
 
   private void finalizeGroupBuild() {
     // run this loop in increasing order so that the

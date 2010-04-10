@@ -57,9 +57,12 @@ public class JmeReader extends AtomSetCollectionReader {
 
   private StringTokenizer tokenizer;
   
-  public void InitializeReader() throws Exception {
+  public void initializeReader() throws Exception {
     atomSetCollection.setCollectionName("JME");
     atomSetCollection.newAtomSet();
+    if (filter == null || filter.toUpperCase().indexOf("NOMIN") < 0)
+      addJmolScript("minimize addHydrogens");
+    readLine();
     tokenizer = new StringTokenizer(line, "\t ");
     int atomCount = parseInt(tokenizer.nextToken());
     int bondCount = parseInt(tokenizer.nextToken());
@@ -90,13 +93,21 @@ public class JmeReader extends AtomSetCollectionReader {
       int atomIndex1 = parseInt(tokenizer.nextToken());
       int atomIndex2 = parseInt(tokenizer.nextToken());
       int order = parseInt(tokenizer.nextToken());
-      if (order < 1) {
-        // not supported in Jmol -- these will be converted to single bond order
-        order = ((order == -1)
-                 ? JmolAdapter.ORDER_STEREO_NEAR  
-                 : JmolAdapter.ORDER_STEREO_FAR);
+      switch (order) {
+      case 0:
+        continue;
+      case -1:
+        order = JmolAdapter.ORDER_STEREO_NEAR;
+        break;
+      case -2:
+        order = atomIndex1;
+        atomIndex1 = atomIndex2;
+        atomIndex2 = order;
+        order = JmolAdapter.ORDER_STEREO_NEAR;
+        break;
       }
-      atomSetCollection.addBond(new Bond(atomIndex1-1, atomIndex2-1, order));
+      atomSetCollection
+          .addBond(new Bond(atomIndex1 - 1, atomIndex2 - 1, order));
     }
   }
 }

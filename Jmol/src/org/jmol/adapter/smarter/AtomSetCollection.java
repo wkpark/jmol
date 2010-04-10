@@ -272,15 +272,12 @@ public class AtomSetCollection {
         setGlobalBoolean(i);
   }
 
-  private boolean noAutoBond;
   void setNoAutoBond() {
-    noAutoBond = true;
+      setAtomSetCollectionAuxiliaryInfo("noAutoBond", Boolean.TRUE);
   }
   
   void finish() {
     for (int i = 0; i < atomSetCount; i++) {
-      if (noAutoBond)
-        setAtomSetAuxiliaryInfo("noAutoBond", Boolean.TRUE, i);
       setAtomSetAuxiliaryInfo("initialAtomCount", new Integer(atomSetAtomCounts[i]), i);
       setAtomSetAuxiliaryInfo("initialBondCount", new Integer(atomSetBondCounts[i]), i);
     }

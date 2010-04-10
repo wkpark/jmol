@@ -1203,10 +1203,12 @@ abstract public class AtomCollection {
    * @param nTotal
    * @param doAll       -- whether we add to C that already have H or not.
    * @param justCarbon
+   * @param vConnect 
    * @return     array of arrays of points added to specific atoms
    */
   public Point3f[][] getAdditionalHydrogens(BitSet bs, int[] nTotal,
-                                            boolean doAll, boolean justCarbon) {
+                                            boolean doAll, boolean justCarbon,
+                                            Vector vConnect) {
     Vector3f z = new Vector3f();
     Vector3f x = new Vector3f();
     Point3f[][] hAtoms = new Point3f[atomCount][];
@@ -1221,12 +1223,11 @@ abstract public class AtomCollection {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
         if (bsDeleted != null && bsDeleted.get(i))
           continue;
-        int ipt = types.indexOf(atoms[i].getElementSymbol());
+        Atom atom = atoms[i];
+        int ipt = types.indexOf(atom.getElementSymbol());
         if (ipt < 0)
           continue;
         int targetValence = 0 + valences.charAt(ipt) - '0';
-
-        Atom atom = atoms[i];
         if (doAll && atom.getCovalentHydrogenCount() > 0)
           continue;
         int nBonds = atom.getCovalentBondCount();
@@ -1248,14 +1249,20 @@ abstract public class AtomCollection {
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
+          if (vConnect != null)
+            vConnect.add(atom);
           getHybridizationAndAxes(i, z, x, "sp3b", false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
+          if (vConnect != null)
+            vConnect.add(atom);
           getHybridizationAndAxes(i, z, x, "sp3c", false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
+          if (vConnect != null)
+            vConnect.add(atom);
           break;
         case 2:
           // 2 bonds needed R2C or R-N or R2C=C
@@ -1265,10 +1272,14 @@ abstract public class AtomCollection {
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
+          if (vConnect != null)
+            vConnect.add(atom);
           getHybridizationAndAxes(i, z, x, (isEne ? "sp2c" : targetValence == 3 ? "sp3c" : "lpb"), false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
+          if (vConnect != null)
+            vConnect.add(atom);
           break;
         case 1:
           // one bond needed R3C, R-N-R, R-O R=C-R R=N R-3-C
@@ -1284,6 +1295,8 @@ abstract public class AtomCollection {
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, z, atom);
             hAtoms[i][hPt++] = pt;
+            if (vConnect != null)
+              vConnect.add(atom);
             break;
           case 2:
             // sp2
@@ -1291,6 +1304,8 @@ abstract public class AtomCollection {
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, z, atom);
             hAtoms[i][hPt++] = pt;
+            if (vConnect != null)
+              vConnect.add(atom);
             break;
           case 3:
             // sp
@@ -1298,6 +1313,8 @@ abstract public class AtomCollection {
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, z, atom);
             hAtoms[i][hPt++] = pt;
+            if (vConnect != null)
+              vConnect.add(atom);
             break;
           }
         }

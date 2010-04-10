@@ -4072,12 +4072,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.hbondsSolid;
   }
 
-  public Point3f[] getAdditionalHydrogens(BitSet bsAtoms, boolean doAll, boolean justCarbon) {
+  public Point3f[] getAdditionalHydrogens(BitSet bsAtoms, boolean doAll, 
+                                          boolean justCarbon, Vector vConnections) {
     if (bsAtoms == null)
       bsAtoms = selectionManager.getSelectionSet();
     int[] nTotal = new int[1];
     Point3f[][] pts = modelSet.getAdditionalHydrogens(bsAtoms, nTotal, doAll,
-        justCarbon);
+        justCarbon, vConnections);
     Point3f[] points = new Point3f[nTotal[0]];
     for (int i = 0, pt = 0; i < pts.length; i++)
       if (pts[i] != null)
@@ -4090,7 +4091,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean doAll = (bsAtoms == null);
     if (bsAtoms == null)
       bsAtoms = getModelAtomBitSet(getVisibleFramesBitSet().nextSetBit(0), true);
-    Point3f[] pts = getAdditionalHydrogens(bsAtoms, doAll, false);
+    Vector vConnections = new Vector();
+    Point3f[] pts = getAdditionalHydrogens(bsAtoms, doAll, false, vConnections);
     if (pts.length > 0) {
       boolean wasAppendNew = getAppendNew();
       setAppendNew(false);
@@ -4099,8 +4101,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       BitSet bsA = getModelAtomBitSet(modelIndex, true);
       BitSet bsB = getAtomBits(Token.hydrogen, null); 
       bsA.andNot(bsB);
+      int atomIndex = modelSet.getAtomCount();
+      StringBuffer sbConnect = new StringBuffer();
+      for (int i = 0; i < vConnections.size(); i++) {
+        Atom a = (Atom) vConnections.get(i);
+        sbConnect.append("connect ").append("({"+(atomIndex++)+"}) ").append("({" + a.index + "});");
+      }
       StringBuffer sb = new StringBuffer();
-      sb.append(pts.length).append("\nadded hydrogens\n");
+      sb.append(pts.length).append("\n#noautobond\n");
       for (int i = 0; i < pts.length; i++)
         sb.append("H ").append(pts[i].x)
             .append(" ").append(pts[i].y)
@@ -4110,10 +4118,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       bsB = getModelAtomBitSet(-1, true);
       bsB.andNot(bsA);
       bsAtoms.or(bsB);
-      BitSet bsBonds = new BitSet();
-      makeConnections(0, 1.3f, JmolConstants.BOND_COVALENT_SINGLE, 
-          JmolConstants.CONNECT_CREATE_ONLY, 
-          bsA, bsB, bsBonds, false, 0);
+      try {
+        eval.runScript(sbConnect.toString(), null);
+      } catch (Exception e) {
+        // ignore
+      }
       if (wasAppendNew)
         setAppendNew(true);
     }

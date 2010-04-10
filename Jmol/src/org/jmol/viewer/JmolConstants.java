@@ -407,7 +407,7 @@ final public class JmolConstants {
   }
 
   public final static int BOND_STEREO_MASK   = 0x400; // 1 << 10
-  //public final static int BOND_STEREO_NEAR   = 0x401;
+  public final static int BOND_STEREO_NEAR   = 0x401;
   //public final static int BOND_STEREO_FAR    = 0x402;
 
   public final static int BOND_AROMATIC_MASK   = 0x200; // 1 << 9

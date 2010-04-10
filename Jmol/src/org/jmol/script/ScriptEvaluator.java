@@ -7407,6 +7407,7 @@ public class ScriptEvaluator {
     if (defaultScript.length() > 0)
       msg += "\nUsing defaultLoadScript: " + defaultScript;
     String script = (String) viewer.getModelSetAuxiliaryInfo("jmolscript");
+    viewer.getModelSetAuxiliaryInfo().remove("jmolscript");
     if (script != null && viewer.getAllowEmbeddedScripts()) {
       msg += "\nAdding embedded #jmolscript: " + script;
       defaultScript += ";" + script;
@@ -12162,7 +12163,7 @@ public class ScriptEvaluator {
       msg = "set selectHetero " + viewer.getRasmolSetting(tok);
       break;
     case Token.addhydrogens:
-      msg = Escape.escapeArray(viewer.getAdditionalHydrogens(null, true, true));
+      msg = Escape.escapeArray(viewer.getAdditionalHydrogens(null, true, true, null));
       break;
     case Token.hydrogen:
       msg = "set selectHydrogens " + viewer.getRasmolSetting(tok);

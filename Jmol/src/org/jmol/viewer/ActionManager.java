@@ -575,7 +575,7 @@ public class ActionManager {
       checkPointOrAtomClicked(x, y, 0, 0);
     else if (isZoomArea(x))
       checkMotionRotateZoom(Binding.getMouseAction(1, Binding.LEFT), 0, 0, 0, false);
-    else
+    else //if (dragSelectedMode)
       viewer.setCursor(Viewer.CURSOR_DEFAULT);
   }
 
@@ -660,12 +660,12 @@ public class ActionManager {
       if (bs.length() > 0) {
         String s = Escape.escape(bs);
         if (isBound(action, ACTION_selectOr))
-          viewer.script("select selected or " + s);
+          viewer.script("selectionHalos on;select selected or " + s);
         else if (isBound(action, ACTION_selectAndNot))
-          viewer.script("select selected and not " + s);
+          viewer.script("selectionHalos on;select selected and not " + s);
         else
           // ACTION_selectToggle
-          viewer.script("select selected tog " + s);
+          viewer.script("selectionHalos on;select selected tog " + s);
       }
       viewer.refresh(3, "mouseReleased");
     }

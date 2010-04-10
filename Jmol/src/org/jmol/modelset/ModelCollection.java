@@ -1024,14 +1024,31 @@ abstract public class ModelCollection extends BondCollection {
       models[i].calcSelectedMonomersCount(bsSelected);
   }
 
-  public void calcRasmolHydrogenBonds(BitSet bsA, BitSet bsB) {
+
+  /**
+   * These are not actual hydrogen bonds. They are N-O bonds in proteins and
+   * nucleic acids The method is called by AminoPolymer and NucleicPolymer
+   * methods, which are indirectly called by ModelCollection.autoHbond
+   * @param bsA
+   * @param bsB
+   * @param vHBonds
+   *          vector of bonds to fill; if null, creates the HBonds
+   * @param nucleicOnly TODO
+   * @param nMax 
+   * @param m
+   */
+
+  public void calcRasmolHydrogenBonds(BitSet bsA, BitSet bsB, Vector vHBonds, 
+                                      boolean nucleicOnly, int nMax) {
     boolean isSame = bsA.equals(bsB);
     for (int i = modelCount; --i >= 0;)
       if (models[i].trajectoryBaseIndex == i) {
-        clearRasmolHydrogenBonds(i, bsA);
-        if (!isSame)
-          clearRasmolHydrogenBonds(i, bsB);
-        models[i].calcHydrogenBonds(bsA, bsB);
+        if (vHBonds == null) {
+          clearRasmolHydrogenBonds(i, bsA);
+          if (!isSame)
+            clearRasmolHydrogenBonds(i, bsB);
+        }
+        calcHydrogenBonds(models[i], bsA, bsB, vHBonds, nucleicOnly, nMax);
       }
   }
 
@@ -2063,8 +2080,8 @@ abstract public class ModelCollection extends BondCollection {
     switch (tokType) {
     default:
       return super.getAtomBits(tokType, specInfo);
-    case Token.molecule:
-      return getMoleculeBitSet((BitSet) specInfo);
+    case Token.basepair:
+      return getBasePairBits((String)specInfo);
     case Token.boundbox:
       BoxInfo boxInfo = getBoxInfo((BitSet) specInfo, 1);
       bs = getAtomsWithin(boxInfo.getBoundBoxCornerVector().length() + 0.0001f,
@@ -2073,6 +2090,10 @@ abstract public class ModelCollection extends BondCollection {
         if (!boxInfo.isWithin(atoms[i]))
           bs.clear(i);
       return bs;
+    case Token.molecule:
+      return getMoleculeBitSet((BitSet) specInfo);
+    case Token.sequence:
+      return getSequenceBits((String)specInfo);
     case Token.spec_seqcode_range:
       info = (int[]) specInfo;
       int seqcodeA = info[0];
@@ -2183,6 +2204,19 @@ abstract public class ModelCollection extends BondCollection {
     return bsResult;
   }
 
+  public BitSet getGroupsWithin(int nResidues, BitSet bs) {
+    BitSet bsCheck = getIterativeModels(false);
+    BitSet bsResult = new BitSet();
+    for (int iModel = modelCount; --iModel >= 0;) {
+      if (!bsCheck.get(iModel))
+        continue;
+      Model m = models[iModel];
+      for (int i = m.bioPolymerCount; --i >= 0;)
+        m.bioPolymers[i].getRangeGroups(nResidues, bs, bsResult);
+    }
+    return bsResult;
+  }
+
   public BitSet getAtomsWithin(float distance, Point3f coord, BitSet bsResult,
                                int modelIndex) {
 
@@ -2220,9 +2254,38 @@ abstract public class ModelCollection extends BondCollection {
     return bsResult;
   }
  
-  public BitSet getSequenceBits(String specInfo, BitSet bs) {
-    //Logger.debug("withinSequence");
-    String sequence = "";
+  private BitSet getBasePairBits(String specInfo) {
+    BitSet bs = new BitSet();
+    if (specInfo.length() % 2 != 0)
+      return bs;
+    BitSet bsA = null;
+    BitSet bsB = null;
+    Vector vHBonds = new Vector();
+    if (specInfo.length() == 0) {
+      bsA = bsB = getModelAtomBitSet(-1, false);
+      calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1);      
+    } else {
+      for (int i = 0; i < specInfo.length();) {
+        bsA = getSequenceBits(specInfo.substring(i, ++i));
+        if (bsA.cardinality() == 0)
+          continue;
+        bsB = getSequenceBits(specInfo.substring(i, ++i));
+        if (bsB.cardinality() == 0)
+          continue;
+        calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1);
+      }
+    }
+    BitSet bsAtoms = new BitSet();
+    for (int i = vHBonds.size(); --i >= 0;) {
+      Bond b = (Bond) vHBonds.get(i);
+      bsAtoms.set(b.atom1.index);
+      bsAtoms.set(b.atom2.index);
+    }
+    return super.getAtomBits(Token.group, bsAtoms);
+  }
+
+  public BitSet getSequenceBits(String specInfo) {
+    BitSet bs = getModelAtomBitSet(-1, false);
     int lenInfo = specInfo.length();
     BitSet bsResult = new BitSet();
     if (lenInfo == 0)
@@ -2230,11 +2293,11 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = 0; i < modelCount; ++i) {
       int polymerCount = getBioPolymerCountInModel(i);
       for (int ip = 0; ip < polymerCount; ip++) {
-        sequence = models[i].getBioPolymer(ip).getSequence();
+        Polymer bp = models[i].getBioPolymer(ip);
+        String sequence = bp.getSequence();
         int j = -1;
         while ((j = sequence.indexOf(specInfo, ++j)) >=0)
-          models[i].getBioPolymer(ip)
-          .getPolymerSequenceAtoms(i, ip, j, lenInfo, bs, bsResult);
+          bp.getPolymerSequenceAtoms(j, lenInfo, bs, bsResult);
       }
     }
     return bsResult;
@@ -2500,7 +2563,7 @@ abstract public class ModelCollection extends BondCollection {
     boolean useRasMol = viewer.getHbondsRasmol();
     if (useRasMol && !haveHAtoms) {
       Logger.info("Rasmol pseudo-hbond calculation");
-      calcRasmolHydrogenBonds(bsA, bsB);
+      calcRasmolHydrogenBonds(bsA, bsB, null, false, Integer.MAX_VALUE);
       return -BitSetUtil.cardinalityOf(bsHBondsRasmol);
     }
     Logger.info(haveHAtoms ? "Standard Hbond calculation"

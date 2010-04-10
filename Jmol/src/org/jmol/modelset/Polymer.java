@@ -106,14 +106,14 @@ abstract public class Polymer {
   public void setConformation(BitSet bsConformation, int nAltLocs) {
   }
 
-  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB) {
+  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB, Vector vHBonds, int nMaxPerResidue) {
     // subclasses should override if they know how to calculate hbonds
   }
   
   public void calcSelectedMonomersCount(BitSet bsSelected) {
   }
 
-  public void getPolymerSequenceAtoms(int iModel, int iPolymer, int group1,
+  public void getPolymerSequenceAtoms(int group1,
                                       int nGroups, BitSet bsInclude,
                                       BitSet bsResult) {
   }
@@ -138,5 +138,8 @@ abstract public class Polymer {
 
   public boolean isDna() { return false; }
   public boolean isRna() { return false; }
+
+  public void getRangeGroups(int residues, BitSet bs, BitSet bsResult) {
+  }
 
 }

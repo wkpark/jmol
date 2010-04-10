@@ -824,7 +824,7 @@ class ScriptMathProcessor {
     int pt = (args.length > 2 ? 3 : 1);
     String type = (pt >= args.length ? "array" : ScriptVariable
         .sValue(args[pt])).toLowerCase();
-    Token t = Token.getTokenFromName(type);
+    int tok = Token.getTokFromName(type);
     if (args.length > 2) {
       // helix(pt1, pt2, dq ...)
       Point3f pta = ptValue(args[0], true);
@@ -832,7 +832,7 @@ class ScriptMathProcessor {
       if (args[2].tok != Token.point4f)
         return false;
       Quaternion dq = new Quaternion((Point4f) args[2].value);
-      switch (t == null ? Token.nada : t.tok) {
+      switch (tok) {
       case Token.nada:
         break;
       case Token.point:
@@ -840,7 +840,7 @@ class ScriptMathProcessor {
       case Token.radius:
       case Token.angle:
       case Token.measure:
-        return addX(Measure.computeHelicalAxis(null, t.tok, pta, ptb, dq));
+        return addX(Measure.computeHelicalAxis(null, tok, pta, ptb, dq));
       case Token.array:
         String[] data = (String[]) Measure.computeHelicalAxis(null, Token.list,
             pta, ptb, dq);
@@ -854,7 +854,7 @@ class ScriptMathProcessor {
       BitSet bs = (args[0].value instanceof BitSet ? (BitSet) args[0].value
           : eval.compareInt(Token.resno, null, Token.opEQ, ScriptVariable
               .iValue(args[0])));
-      switch (t == null ? Token.nada : t.tok) {
+      switch (tok) {
       case Token.point:
         return addX(isSyntaxCheck ? new Point3f() : (Point3f) viewer
             .getHelixData(bs, Token.point));
@@ -870,7 +870,7 @@ class ScriptMathProcessor {
       case Token.draw:
       case Token.measure:
         return addX(isSyntaxCheck ? "" : (String) viewer
-            .getHelixData(bs, t.tok));
+            .getHelixData(bs, tok));
       case Token.array:
         String[] data = (String[]) viewer.getHelixData(bs, Token.list);
         if (data == null)
@@ -1843,12 +1843,14 @@ class ScriptMathProcessor {
       return false;
     int i = args.length;
     Object withinSpec = args[0].value;
-    int tok = args[0].tok;
     String withinStr = "" + withinSpec;
+    int tok = args[0].tok;
+    if (tok == Token.string)
+      tok = Token.getTokFromName(withinStr);
     BitSet bs = new BitSet();
     float distance = 0;
-    boolean isSequence = false;
     boolean isWithinModelSet = false;
+    boolean isWithinGroup = false;
     boolean isDistance = (tok == Token.decimal || tok == Token.integer);
     if (withinStr.equals("branch")) {
       if (i != 3 || !(args[1].value instanceof BitSet)
@@ -1859,74 +1861,98 @@ class ScriptMathProcessor {
               .nextSetBit(0)));
     }
     if (withinSpec instanceof String) {
-      isSequence = !Parser
-          .isOneOf(
-              withinStr.toLowerCase(),
-              "helix;sheet;atomname;atomtype;element;site;group;chain;structure;molecule;model;polymer;boundbox");
+      if (tok == Token.nada) {
+        tok = Token.sequence;
+        if (i != 1)
+          return false;
+        i = 2;
+      }
     } else if (isDistance) {
       distance = ScriptVariable.fValue(args[0]);
       if (i < 2)
         return false;
-      if (args[1].tok == Token.on || args[1].tok == Token.off) {
+      switch (args[1].tok) {
+      case Token.on:
+      case Token.off:
         isWithinModelSet = ScriptVariable.bValue(args[1]);
         i = 0;
+        break;
+      case Token.string:
+        isWithinGroup = (ScriptVariable.sValue(args[1])
+            .equalsIgnoreCase("group"));
+        break;
       }
     } else {
       return false;
     }
+    Point3f pt = null;
+    Point4f plane = null;
     switch (i) {
     case 1:
+      // within (sheet)
+      // within (helix)
       // within (boundbox)
-      boolean isHelix = withinStr.equalsIgnoreCase("helix");
-      if (isHelix || withinStr.equalsIgnoreCase("sheet"))
-        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(
-            isHelix ? Token.helix : Token.sheet, null));
-      return (!withinStr.equalsIgnoreCase("boundbox") ? false
-          : addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.boundbox, null)));
+      switch (tok) {
+      case Token.helix:
+      case Token.sheet:
+      case Token.boundbox:
+        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(tok, null));
+      case Token.basepair:
+        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(tok, ""));
+      }
+      return false;
     case 2:
       // within (atomName, "XX,YY,ZZZ")
-      if (withinStr.equalsIgnoreCase("atomName"))
-        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.atomname,
-            ScriptVariable.sValue(args[1])));
-      // within (atomType, "XX,YY,ZZZ")
-      if (withinStr.equalsIgnoreCase("atomType"))
-        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.atomtype,
-            ScriptVariable.sValue(args[1])));
+      switch (tok) {
+      case Token.atomname:
+      case Token.atomtype:
+      case Token.basepair:
+      case Token.sequence:
+        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(tok,
+            ScriptVariable.sValue(args[args.length - 1])));
+      }
       break;
     case 3:
-      withinStr = ScriptVariable.sValue(args[1]);
-      if (!Parser.isOneOf(withinStr.toLowerCase(), "on;off;plane;hkl;coord"))
+      switch (tok) {
+      case Token.on:
+      case Token.off:
+      case Token.group:
+      case Token.plane:
+      case Token.hkl:
+      case Token.coord:
+        break;
+      default:
         return false;
+      }
+      // within (distance, group, {atom collection})
       // within (distance, true|false, {atom collection})
       // within (distance, plane|hkl, [plane definition] )
       // within (distance, coord, [point or atom center] )
       break;
     }
-    Point3f pt = null;
-    Point4f plane = null;
     i = args.length - 1;
-    if (args[i].value instanceof Point4f)
+    if (args[i].value instanceof Point4f) {
       plane = (Point4f) args[i].value;
-    else if (args[i].value instanceof Point3f)
+    } else if (args[i].value instanceof Point3f) {
       pt = (Point3f) args[i].value;
-
+      if (!isSyntaxCheck && ScriptVariable.sValue(args[1]).equalsIgnoreCase("hkl"))
+        plane = eval.getHklPlane(pt);
+    }
     if (i > 0 && plane == null && pt == null
         && !(args[i].value instanceof BitSet))
       return false;
     if (isSyntaxCheck)
       return addX(bs);
-    if (ScriptVariable.sValue(args[1]).equalsIgnoreCase("hkl") && pt != null)
-      plane = eval.getHklPlane(pt);
     if (plane != null)
       return addX(viewer.getAtomsWithin(distance, plane));
     if (pt != null)
       return addX(viewer.getAtomsWithin(distance, pt));
     bs = ScriptVariable.bsSelect(args[i]);
-    if (isDistance)
-      return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet));
-    if (isSequence)
-      return addX(viewer.getSequenceBits(withinStr, bs));
-    return addX(viewer.getAtomBits(Token.getTokenFromName(withinStr).tok, bs));
+    if (!isDistance)
+      return addX(viewer.getAtomBits(tok, bs));
+    if (isWithinGroup)
+      return addX(viewer.getGroupsWithin((int) distance, bs));
+    return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet));
   }
 
   private boolean evaluateConnected(ScriptVariable[] args) {

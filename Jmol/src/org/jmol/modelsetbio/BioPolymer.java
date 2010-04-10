@@ -446,8 +446,7 @@ public abstract class BioPolymer extends Polymer {
     return returnInfo;
   }
 
-  public void getPolymerSequenceAtoms(int iModel, int iPolymer, int group1,
-                                      int nGroups, BitSet bsInclude,
+  public void getPolymerSequenceAtoms(int group1, int nGroups, BitSet bsInclude,
                                       BitSet bsResult) {
     int max = group1 + nGroups;
     for (int i = group1; i < monomerCount && i < max; i++)
@@ -895,6 +894,16 @@ public abstract class BioPolymer extends Polymer {
   public boolean isDna() { return (monomerCount > 0 && monomers[0].isDna()); }
   public boolean isRna() { return (monomerCount > 0 && monomers[0].isRna()); }
 
-
-
+  public void getRangeGroups(int nResidues, BitSet bsAtoms, BitSet bsResult) {
+    BitSet bsTemp = new BitSet();
+    for (int i = 0; i < monomerCount; i++) {
+      int n = bsAtoms.nextSetBit(monomers[i].getFirstAtomIndex());
+      if (n < 0 || n > monomers[i].getLastAtomIndex())
+        continue;
+      bsTemp.set(Math.max(0, i - nResidues), i + nResidues + 1);
+      i += nResidues - 1;
+    }
+    for (int i = bsTemp.nextSetBit(0); i >= 0 && i < monomerCount; i = bsTemp.nextSetBit(i + 1)) 
+      bsResult.set(monomers[i].getFirstAtomIndex(), monomers[i].getLastAtomIndex() + 1);
+  }
 }

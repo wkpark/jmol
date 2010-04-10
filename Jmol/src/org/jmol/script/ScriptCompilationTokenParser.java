@@ -502,6 +502,7 @@ abstract class ScriptCompilationTokenParser {
     // within ( distance, coord, point)
     // within ( distance, orClause)
     // within ( group|branch|etc, ....)
+    // within ( distance, group, ....)
 
     addNextToken();
     if (!addNextTokenIf(Token.leftparen))
@@ -528,6 +529,7 @@ abstract class ScriptCompilationTokenParser {
       // fall through
     case Token.atomtype:
     case Token.atomname:
+    case Token.basepair:
     case Token.boundbox:
     case Token.chain:
     case Token.coord:
@@ -537,6 +539,7 @@ abstract class ScriptCompilationTokenParser {
     case Token.model:
     case Token.molecule:
     case Token.polymer:
+    case Token.sequence:
     case Token.site:
     case Token.structure:
     case Token.string:
@@ -570,6 +573,9 @@ abstract class ScriptCompilationTokenParser {
         case Token.plane:
           isCoordOrPlane = true;
           addNextToken();
+          break;
+        case Token.group:
+          addTokenToPostfix(Token.string, "group");
           break;
         case Token.leftbrace:
           returnToken();

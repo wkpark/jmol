@@ -297,32 +297,10 @@ public final class Model {
         + ";backbone;");
   }
   
-  void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
-    for (int i = bioPolymerCount; --i >= 0;) {
-      Polymer bp = bioPolymers[i];
-      int type = bp.getType();
-      if (type != Polymer.TYPE_AMINO && type != Polymer.TYPE_NUCLEIC)
-        continue;
-      boolean isRNA = bp.isRna();
-      if (type == Polymer.TYPE_AMINO)
-        bioPolymers[i].calcRasmolHydrogenBonds(null, bsA, bsB);
-      for (int j = bioPolymerCount; --j >= 0;)
-        if ( bioPolymers[j] != null && (isRNA || i != j)
-            && type == bioPolymers[j].getType())
-          bioPolymers[j].calcRasmolHydrogenBonds(bioPolymers[i], bsA, bsB);
-    }
-  }
-  
   public boolean isAtomHidden(int index) {
     return modelSet.isAtomHidden(index);
   }
   
-  public void addRasmolHydrogenBond(Atom atom1, Atom atom2, short order, BitSet bsA, BitSet bsB, float energy) {
-    // coming from modelsetbio.AminoPolymer or NucleicPolymer
-    hasRasmolHBonds = true;
-    modelSet.addRasmolHydrogenBond(atom1, atom2, order, bsA, bsB, energy);
-  }
-
   public int getModelIndex() {
     return modelIndex;
   }

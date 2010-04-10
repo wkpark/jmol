@@ -954,197 +954,198 @@ public class Token {
   
   // misc
 
-  final static int absolute      = misc | 1;
-  final static int addhydrogens  = misc | 2;// new
-  final static int adjust        = misc | 3;// new
-  final static int align         = misc | 4;
-  final static int allconnected  = misc | 5;// new
-  final static int angstroms     = misc | 6;// new
-  final static int anisotropy    = misc | 7;// new
-  final static int arc           = misc | 9 | expression;// new
-  final static int area          = misc | 10;// new
-  final static int aromatic      = misc | 11 | predefinedset;// new
-  final static int arrow         = misc | 12;// new
-  final static int as            = misc | 301;// new
-  final static int atomicorbital = misc | 13;// new
-  public final static int auto   = misc | 14;// new
-  public final static int axis   = misc | 15;
-  final static int babel         = misc | 16;
-  final static int babel21       = misc | 17; // new
-  final static int back          = misc | 18;
-  public final static int backlit = misc | 19;
-  final static int binary        = misc | 20;// new
-  final static int blockdata     = misc | 21;// new
-  final static int bondset       = misc | 22;
-  final static int bottom        = misc | 23;
-  final static int cap           = misc | 24 | expression;// new
-  final static int cavity        = misc | 25;// new
-  final static int check         = misc | 26;// new
-  final static int circle        = misc | 27;// new
-  final static int clear         = misc | 28;
-  final static int clipboard     = misc | 29;
-  final static int collapsed     = misc | 31;// new
-  final static int colorscheme   = misc | 32;// new
-  final static int command       = misc | 33;// new
-  final static int commands      = misc | 34;// new
-  final static int constraint    = misc | 35;
-  final static int contour       = misc | 36;// new
-  public final static int contourlines  = misc | 37;
-  final static int contours      = misc | 38;// new
-  final static int corners       = misc | 39;// new
-  public final static int create = misc | 40;// new
-  final static int crossed       = misc | 41;// new
-  final static int curve         = misc | 42;// new
-  final static int cutoff        = misc | 43;// new
-  final static int cylinder      = misc | 44;// new
-  final static int density        = misc | 46 ;// new
-  final static int diameter       = misc | 50;// new
-  final static int direction      = misc | 52;
-  final static int discrete       = misc | 53;// new
-  final static int displacement   = misc | 54;
-  final static int distancefactor = misc | 55;// new
-  final static int dotted         = misc | 56;
-  final static int downsample     = misc | 57;// new
-  final static int eccentricity   = misc | 58;// new
-  final static int ed             = misc | 59 | expression;// new
-  final static int edges          = misc | 60;// new
-  final static int facecenteroffset = misc | 62;// new
-  public final static int fill    = misc | 63;
-  final static int filter         = misc | 64;// new
-  public final static int first   = misc | 65;// new
-  final static int fixed          = misc | 66;// new
-  final static int fixedtemp      = misc | 67;
-  final static int flat           = misc | 68;// new
-  final static int fps            = misc | 69 | expression;// new
-  final static int from           = misc | 70;// new
-  public final static int front   = misc | 71;
-  final static int frontedges     = misc | 72;// new
-  public final static int frontlit  = misc | 73;
-  public final static int frontonly = misc | 74;
-  final static int fullplane        = misc | 75;// new
-  public final static int fullylit  = misc | 76;
-  final static int functionxy     = misc | 77;// new
-  final static int functionxyz    = misc | 78;// new
-  final static int gridpoints     = misc | 79;// new
-  final static int homo           = misc | 82;// new
-  final static int id             = misc | 83 | expression;
-  final static int ignore         = misc | 84;// new
-  final static int image          = misc | 85;
-  final static int increment      = misc | 86;// new
-  public final static int info    = misc | 87;
-  final static int insideout      = misc | 88;// new
-  final static int interior       = misc | 89;// new
-  final static int internal       = misc | 90;// new
-  final static int intersection   = misc | 91;// new
-  public final static int jmol    = misc | 93;
-  public final static int last    = misc | 94;
-  final static int left           = misc | 95;
-  final static int line           = misc | 96;// new
-  final static int linedata       = misc | 97;// new
-  final static int lobe           = misc | 98;// new
-  final static int lonepair       = misc | 99;// new
-  final static int lp             = misc | 100;// new
-  final static int lumo           = misc | 101;// new
-  final static int manifest       = misc | 102;// new
-  final static int map            = misc | 103 | expression;// new
-  final static int maxset         = misc | 104;// new
-  final static int mep            = misc | 106 | expression;
-  public final static int mesh    = misc | 107;
-  final static int minset         = misc | 108;// new
-  final static int mode           = misc | 109;
-  public final static int modify         = misc | 110;// new
-  public final static int modifyorcreate = misc | 111;// new
-  final static int modelbased     = misc | 112;// new
-  final static int molecular      = misc | 113;// new
-  final static int monomer        = misc | 114;
-  public final static int next    = misc | 115;
-  public final static int nocontourlines  = misc | 116;
-  final static int nocross        = misc | 117;// new
-  final static int nodebug        = misc | 118;// new
-  public final static int nodots  = misc | 119;
-  final static int noedges        = misc | 120;// new
-  public final static int nofill  = misc | 121;
-  final static int nohead         = misc | 122;// new
-  final static int noload         = misc | 123;// new
-  public final static int nomesh  = misc | 124;
-  final static int noplane        = misc | 125;// new
-  final static int normal         = misc | 126;
-  public final static int notfrontonly  = misc | 127;
-  public final static int notriangles   = misc | 128;
-  final static int obj            = misc | 129;// new
-  final static int object         = misc | 130;// new
-  final static int offset         = misc | 131;// new
-  final static int offsetside     = misc | 132;// new
-  final static int once           = misc | 133;// new
-  final static int only           = misc | 134;
-  final static int opaque         = misc | 135;
-  final static int orbital        = misc | 136;// new
-  final static int orientation    = misc | 137;
-  final static int packed         = misc | 138;// new
-  final static int palindrome     = misc | 139;// new
-  final static int path           = misc | 140;// new
-  final static int pdb            = misc | 141 | expression;// new
-  final static int pdbheader      = misc | 142;
-  final static int period         = misc | 143;// new
-  final static int perpendicular  = misc | 145;// new
-  final static int phase          = misc | 146;// new
-  public final static int play    = misc | 147;
-  public final static int playrev = misc | 148;
-  final static int pocket         = misc | 149;// new
-  final static int pointgroup     = misc | 150;
-  final static int pointsperangstrom = misc | 151;// new
-  final static int polygon        = misc | 152;// new
-  public final static int prev    = misc | 154;
-  final static int rad            = misc | 156;// new
-  final static int radical        = misc | 157;// new
-  final static int range          = misc | 158;
-  public final static int rasmol  = misc | 159;
-  final static int reference      = misc | 160;// new
-  public final static int residue = misc | 161;
-  final static int resolution     = misc | 162;// new
-  final static int reversecolor   = misc | 163;// new
-  public final static int rewind  = misc | 164;
-  final static int right          = misc | 165;
-  final static int rotate45       = misc | 166;// new
-  public final static int rotation = misc | 167;
-  final static int rubberband     = misc | 169;
-  final static int sasurface      = misc | 170;
-  final static int scale          = misc | 171;
-  final static int selection      = misc | 172;// new
-  final static int shape          = misc | 173;
-  final static int shapely        = misc | 174;
-  final static int sigma          = misc | 175;// new
-  final static int sign           = misc | 177;// new
-  final static int solid          = misc | 178;
-  final static int spacegroup     = misc | 179;
-  final static int sphere         = misc | 180;// new
-  final static int squared        = misc | 181;// new
-  final static int state          = misc | 182;
-  final static int steps          = misc | 183;// new
-  final static int stop           = misc | 184;// new
-  final static int ticks          = misc | 185; // new
-  final static int title          = misc | 186;// new
-  final static int titleformat    = misc | 187;// new
-  final static int to             = misc | 188 | expression;// new
-  final static int top            = misc | 189 | expression;
-  final static int torsion        = misc | 190;
-  final static int transform      = misc | 194;
-  public final static int translation   = misc | 195;
-  public final static int translucent   = misc | 196;
-  public final static int triangles     = misc | 197;
-  final static int url             = misc | 198 | expression;
-  final static int user            = misc | 199;
-  final static int val             = misc | 200;// new
-  final static int variable        = misc | 201;// new
-  final static int variables       = misc | 202;// new
-  final static int vertices        = misc | 203;// new
-  final static int width           = misc | 206;// new
-  final static int cancel          = misc | 208;// new
-  final static int fix             = misc | 210;// new
-  final static int energy          = misc | 212;// new
-  final static int criterion       = misc | 214;// new
-  final static int in              = misc | 216;// new
-  final static int out             = misc | 218;// new
+  final static int absolute      = misc  | 2;
+  final static int addhydrogens  = misc  | 4;// new
+  final static int adjust        = misc  | 6;// new
+  final static int align         = misc  | 8;
+  final static int allconnected  = misc  | 10;// new
+  final static int angstroms     = misc  | 12;// new
+  final static int anisotropy    = misc  | 14;// new
+  final static int arc           = misc  | 16 | expression;// new
+  final static int area          = misc  | 18;// new
+  final static int aromatic      = misc  | 20 | predefinedset;// new
+  final static int arrow         = misc  | 22;// new
+  final static int as            = misc  | 24;// new
+  final static int atomicorbital = misc  | 26;// new
+  public final static int auto   = misc  | 28;// new
+  public final static int axis   = misc  | 30;
+  final static int babel         = misc  | 32;
+  final static int babel21       = misc  | 34; // new
+  final static int back          = misc  | 36;
+  public final static int backlit = misc  | 38;
+  public final static int basepair      = misc  | 40;
+  final static int binary        = misc  | 42;// new
+  final static int blockdata     = misc  | 44;// new
+  final static int bondset       = misc  | 46;
+  final static int bottom        = misc  | 48;
+  final static int cap           = misc  | 50 | expression;// new
+  final static int cavity        = misc  | 52;// new
+  final static int check         = misc  | 54;// new
+  final static int circle        = misc  | 56;// new
+  final static int clear         = misc  | 58;
+  final static int clipboard     = misc  | 60;
+  final static int collapsed     = misc  | 62;// new
+  final static int colorscheme   = misc  | 64;// new
+  final static int command       = misc  | 66;// new
+  final static int commands      = misc  | 68;// new
+  final static int constraint    = misc  | 70;
+  final static int contour       = misc  | 72;// new
+  public final static int contourlines  = misc  | 74;
+  final static int contours      = misc  | 76;// new
+  final static int corners       = misc  | 78;// new
+  public final static int create = misc  | 80;// new
+  final static int crossed       = misc  | 82;// new
+  final static int curve         = misc  | 84;// new
+  final static int cutoff        = misc  | 86;// new
+  final static int cylinder      = misc  | 88;// new
+  final static int density        = misc  | 90;// new
+  final static int diameter       = misc  | 92;// new
+  final static int direction      = misc  | 94;
+  final static int discrete       = misc  | 96;// new
+  final static int displacement   = misc  | 98;
+  final static int distancefactor = misc  | 100;// new
+  final static int dotted         = misc  | 102;
+  final static int downsample     = misc  | 104;// new
+  final static int eccentricity   = misc  | 106;// new
+  final static int ed             = misc  | 108 | expression;// new
+  final static int edges          = misc  | 110;// new
+  final static int facecenteroffset = misc  | 112;// new
+  public final static int fill    = misc  | 114;
+  final static int filter         = misc  | 116;// new
+  public final static int first   = misc  | 118;// new
+  final static int fixed          = misc  | 120;// new
+  final static int fixedtemp      = misc  | 122;
+  final static int flat           = misc  | 124;// new
+  final static int fps            = misc  | 126 | expression;// new
+  final static int from           = misc  | 128;// new
+  public final static int front   = misc  | 130;
+  final static int frontedges     = misc  | 132;// new
+  public final static int frontlit  = misc  | 134;
+  public final static int frontonly = misc  | 136;
+  final static int fullplane        = misc  | 138;// new
+  public final static int fullylit  = misc  | 140;
+  final static int functionxy     = misc  | 142;// new
+  final static int functionxyz    = misc  | 144;// new
+  final static int gridpoints     = misc  | 146;// new
+  final static int homo           = misc  | 148;// new
+  final static int id             = misc  | 150 | expression;
+  final static int ignore         = misc  | 152;// new
+  final static int image          = misc  | 154;
+  final static int increment      = misc  | 156;// new
+  public final static int info    = misc  | 158;
+  final static int insideout      = misc  | 160;// new
+  final static int interior       = misc  | 162;// new
+  final static int internal       = misc  | 164;// new
+  final static int intersection   = misc  | 166;// new
+  public final static int jmol    = misc  | 168;
+  public final static int last    = misc  | 170;
+  final static int left           = misc  | 172;
+  final static int line           = misc  | 174;// new
+  final static int linedata       = misc  | 176;// new
+  final static int lobe           = misc  | 178;// new
+  final static int lonepair       = misc  | 180;// new
+  final static int lp             = misc  | 182;// new
+  final static int lumo           = misc  | 184;// new
+  final static int manifest       = misc  | 186;// new
+  final static int map            = misc  | 188 | expression;// new
+  final static int maxset         = misc  | 190;// new
+  final static int mep            = misc  | 192 | expression;
+  public final static int mesh    = misc  | 194;
+  final static int minset         = misc  | 196;// new
+  final static int mode           = misc  | 198;
+  public final static int modify         = misc  | 200;// new
+  public final static int modifyorcreate = misc  | 202;// new
+  final static int modelbased     = misc  | 204;// new
+  final static int molecular      = misc  | 206;// new
+  final static int monomer        = misc  | 208;
+  public final static int next    = misc  | 210;
+  public final static int nocontourlines  = misc  | 212;
+  final static int nocross        = misc  | 214;// new
+  final static int nodebug        = misc  | 216;// new
+  public final static int nodots  = misc  | 218;
+  final static int noedges        = misc  | 220;// new
+  public final static int nofill  = misc  | 222;
+  final static int nohead         = misc  | 224;// new
+  final static int noload         = misc  | 226;// new
+  public final static int nomesh  = misc  | 228;
+  final static int noplane        = misc  | 230;// new
+  final static int normal         = misc  | 232;
+  public final static int notfrontonly  = misc  | 234;
+  public final static int notriangles   = misc  | 236;
+  final static int obj            = misc  | 238;// new
+  final static int object         = misc  | 240;// new
+  final static int offset         = misc  | 242;// new
+  final static int offsetside     = misc  | 244;// new
+  final static int once           = misc  | 246;// new
+  final static int only           = misc  | 248;
+  final static int opaque         = misc  | 250;
+  final static int orbital        = misc  | 252;// new
+  final static int orientation    = misc  | 254;
+  final static int packed         = misc  | 256;// new
+  final static int palindrome     = misc  | 258;// new
+  final static int path           = misc  | 260;// new
+  final static int pdb            = misc  | 262 | expression;// new
+  final static int pdbheader      = misc  | 264;
+  final static int period         = misc  | 266;// new
+  final static int perpendicular  = misc  | 268;// new
+  final static int phase          = misc  | 270;// new
+  public final static int play    = misc  | 272;
+  public final static int playrev = misc  | 274;
+  final static int pocket         = misc  | 276;// new
+  final static int pointgroup     = misc  | 278;
+  final static int pointsperangstrom = misc  | 280;// new
+  final static int polygon        = misc  | 282;// new
+  public final static int prev    = misc  | 284;
+  final static int rad            = misc  | 286;// new
+  final static int radical        = misc  | 288;// new
+  final static int range          = misc  | 290;
+  public final static int rasmol  = misc  | 292;
+  final static int reference      = misc  | 294;// new
+  public final static int residue = misc  | 296;
+  final static int resolution     = misc  | 298;// new
+  final static int reversecolor   = misc  | 300;// new
+  public final static int rewind  = misc  | 302;
+  final static int right          = misc  | 304;
+  final static int rotate45       = misc  | 306;// new
+  public final static int rotation = misc  | 308;
+  final static int rubberband     = misc  | 310;
+  final static int sasurface      = misc  | 312;
+  final static int scale          = misc  | 314;
+  final static int selection      = misc  | 316;// new
+  final static int shape          = misc  | 318;
+  final static int shapely        = misc  | 320;
+  final static int sigma          = misc  | 322;// new
+  final static int sign           = misc  | 324;// new
+  final static int solid          = misc  | 326;
+  final static int spacegroup     = misc  | 328;
+  final static int sphere         = misc  | 330;// new
+  final static int squared        = misc  | 332;// new
+  final static int state          = misc  | 334;
+  final static int steps          = misc  | 336;// new
+  final static int stop           = misc  | 338;// new
+  final static int ticks          = misc  | 340; // new
+  final static int title          = misc  | 342;// new
+  final static int titleformat    = misc  | 344;// new
+  final static int to             = misc  | 346 | expression;// new
+  final static int top            = misc  | 348 | expression;
+  final static int torsion        = misc  | 350;
+  final static int transform      = misc  | 352;
+  public final static int translation   = misc  | 354;
+  public final static int translucent   = misc  | 356;
+  public final static int triangles     = misc  | 358;
+  final static int url             = misc  | 360 | expression;
+  final static int user            = misc  | 362;
+  final static int val             = misc  | 364;// new
+  final static int variable        = misc  | 366;// new
+  final static int variables       = misc  | 368;// new
+  final static int vertices        = misc  | 370;// new
+  final static int width           = misc  | 372;// new
+  final static int cancel          = misc  | 374;// new
+  final static int fix             = misc  | 376;// new
+  final static int energy          = misc  | 378;// new
+  final static int criterion       = misc  | 380;// new
+  final static int in              = misc  | 382;// new
+  final static int out             = misc  | 384;// new
   
   
   // predefined Tokens: 
@@ -1187,6 +1188,13 @@ public class Token {
   public static Token getTokenFromName(String name) {
     return (Token) tokenMap.get(name);  
   }
+  
+  public static int getTokFromName(String name) {
+    Token token = getTokenFromName(name);
+    return (token == null ? Token.nada : token.tok);
+  }
+
+
   
   /**
    * note: nameOf is a very inefficient mechanism for getting 
@@ -1276,12 +1284,9 @@ public class Token {
   }
 
   public static int getSettableTokFromString(String s) {
-    Token token = getTokenFromName(s);
-    int tok;
-    if (token != null)
-      return (tokAttr((tok = token.tok), settable) 
-          && !tokAttr(tok, mathproperty) ? token.tok : nada);
-    return nada;
+    int tok = getTokFromName(s);
+    return (tok != nada && tokAttr(tok, settable) 
+          && !tokAttr(tok, mathproperty) ? tok : nada);
   }
 
   public static String completeCommand(Hashtable map, boolean isSet, 
@@ -1299,9 +1304,9 @@ public class Token {
       name = (String) e.nextElement();
       if (!name.startsWith(str))
         continue;
-      Token t = getTokenFromName(name);
-      if (asCommand ? tokAttr(t.tok, scriptCommand) 
-          : isSet ? tokAttr(t.tok, setparam) && !tokAttr(t.tok, deprecatedparam) 
+      int tok = getTokFromName(name);
+      if (asCommand ? tokAttr(tok, scriptCommand) 
+          : isSet ? tokAttr(tok, setparam) && !tokAttr(tok, deprecatedparam) 
           : true)
         v.add(name);
     }
@@ -1537,6 +1542,8 @@ public class Token {
       "atoms",             null,
       "axis",              new Token(axis),
       "axisangle",         new Token(axisangle),
+      "basepair",          new Token(basepair),
+      "basepairs",         null,
       "orientation",       new Token(orientation),
       "orientations",      null,
       "pdbheader",         new Token(pdbheader),                          

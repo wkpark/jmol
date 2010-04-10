@@ -24,11 +24,13 @@
 package org.jmol.modelsetbio;
 
 import java.util.BitSet;
+import java.util.Vector;
 
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.HBond;
 import org.jmol.modelset.Polymer;
 import org.jmol.util.Measure;
 import org.jmol.util.OutputStringBuffer;
@@ -48,13 +50,8 @@ public class NucleicPolymer extends BioPolymer {
 
   boolean hasWingPoints() { return true; }
 
-  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB) {
-    lookForHbonds((NucleicPolymer)polymer, bsA, bsB);
-  }
-
-  private final static short HBOND_MASK = JmolConstants.BOND_H_NUCLEOTIDE;
-  
-  void lookForHbonds(NucleicPolymer other, BitSet bsA, BitSet bsB) {
+  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB, Vector vAtoms, int nMaxPerResidue) {
+    NucleicPolymer other = (NucleicPolymer)polymer;
     Vector3f vNorm = new Vector3f();
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
@@ -63,6 +60,9 @@ public class NucleicPolymer extends BioPolymer {
       if (! myNucleotide.isPurine())
         continue;
       Atom myN3 = myNucleotide.getN3();
+      boolean isInA = bsA.get(myN3.index);
+      if (!isInA && !bsB.get(myN3.index))
+        continue;
       Atom myN1 = myNucleotide.getN1();
       Atom myN9 = myNucleotide.getN0();
       Point4f plane = Measure.getPlaneThroughPoints(myN3, myN1, myN9, vNorm, vAB, vAC);
@@ -73,8 +73,10 @@ public class NucleicPolymer extends BioPolymer {
         NucleicMonomer otherNucleotide = (NucleicMonomer)other.monomers[j];
         if (! otherNucleotide.isPyrimidine())
           continue;
-        Atom otherN1 = otherNucleotide.getN0();
         Atom otherN3 = otherNucleotide.getN3();
+        if (isInA && !bsB.get(otherN3.index) || !isInA && bsA.get(otherN3.index))
+          continue;
+        Atom otherN1 = otherNucleotide.getN0();
         float dist2 = myN1.distanceSquared(otherN3);
         if (dist2 < minDist2 
             && myN9.distanceSquared(otherN1) > 50 // not stacked
@@ -86,20 +88,35 @@ public class NucleicPolymer extends BioPolymer {
           minDist2 = dist2;
         }
       }
+      int n = 0;
       if (bestN3 != null) {
-        model.addRasmolHydrogenBond(myN1, bestN3,  HBOND_MASK, bsA, bsB, 0);
+        n += addHydrogenBond(vAtoms, myN1, bestN3);
+        if (n >= nMaxPerResidue)
+          continue;
         if (myNucleotide.isGuanine()) {
-          model.addRasmolHydrogenBond(myNucleotide.getN2(),
-                             bestNucleotide.getO2(), HBOND_MASK, bsA, bsB, 0);
-          model.addRasmolHydrogenBond(myNucleotide.getO6(),
-                             bestNucleotide.getN4(), HBOND_MASK, bsA, bsB, 0);
+          n += addHydrogenBond(vAtoms, myNucleotide.getN2(),
+              bestNucleotide.getO2());
+          if (n >= nMaxPerResidue)
+            continue;
+          n += addHydrogenBond(vAtoms, myNucleotide.getO6(),
+              bestNucleotide.getN4());
+          if (n >= nMaxPerResidue)
+            continue;
         } else {
-          model.addRasmolHydrogenBond(myNucleotide.getN6(),
-                             bestNucleotide.getO4(), HBOND_MASK, bsA, bsB, 0);
+          n += addHydrogenBond(vAtoms, myNucleotide.getN6(),
+              bestNucleotide.getO4());
         }
       }
     }
   }
+
+  static protected int addHydrogenBond(Vector vAtoms, Atom atom1, Atom atom2) {
+    if (atom1 == null || atom2 == null)
+      return 0;
+    vAtoms.add(new HBond(atom1, atom2, JmolConstants.BOND_H_NUCLEOTIDE, 0));
+    return 1;
+  }
+
 
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType,
                          boolean isDraw, BitSet bsAtoms, 

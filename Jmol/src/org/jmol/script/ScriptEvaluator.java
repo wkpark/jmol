@@ -5212,8 +5212,7 @@ public class ScriptEvaluator {
       showString(viewer.getBindingInfo(what.substring(pt + 1)));
       return;
     }
-    Token t = Token.getTokenFromName(what);
-    if (t != null && (t.tok & Token.scriptCommand) != 0)
+    if (Token.tokAttr(Token.getTokFromName(what), Token.scriptCommand))
       what = "?command=" + what;
     viewer.getHelp(what);
   }
@@ -5284,6 +5283,14 @@ public class ScriptEvaluator {
         bsCenter = (BitSet) expressionResult;
         q = (isSyntaxCheck ? new Quaternion() : viewer
             .getAtomQuaternion(bsCenter.nextSetBit(0)));
+      } else if (tokAt(i) == Token.list){
+        String[] s = (String[])getToken(i).value;
+        if (s.length == 0)
+          error(ERROR_invalidArgument);
+        Object o = Escape.unescapePoint(s[0]);
+        if (!(o instanceof Point4f))
+          error(ERROR_invalidArgument);
+        q = new Quaternion((Point4f)o);
       } else {
         q = new Quaternion(getPoint4f(i));
       }
@@ -7087,7 +7094,7 @@ public class ScriptEvaluator {
         isAppend = (modelName.equalsIgnoreCase("append"));
         tokType = (Parser.isOneOf(modelName.toLowerCase(),
             JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token
-            .getTokenFromName(modelName.toLowerCase()).tok : 0);
+            .getTokFromName(modelName.toLowerCase()) : 0);
         if (tokType > 0) {
           // loading just some data here
           // xyz vxyz vibration temperature occupancy partialcharge
@@ -8032,7 +8039,17 @@ public class ScriptEvaluator {
         if (tok == Token.quaternion)
           i++;
         haveRotation = true;
-        q = new Quaternion(getPoint4f(i));
+        if (tokAt(i) == Token.list){
+          String[] s = (String[])getToken(i).value;
+          if (s.length == 0)
+            error(ERROR_invalidArgument);
+          Object o = Escape.unescapePoint(s[0]);
+          if (!(o instanceof Point4f))
+            error(ERROR_invalidArgument);
+          q = new Quaternion((Point4f)o);
+        } else {
+          q = new Quaternion(getPoint4f(i));
+        }
         rotAxis.set(q.getNormal());
         endDegrees = q.getTheta();
         break;

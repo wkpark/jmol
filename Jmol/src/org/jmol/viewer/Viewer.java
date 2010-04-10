@@ -2712,10 +2712,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getAtomBits(tokType, specInfo);
   }
 
-  public BitSet getSequenceBits(String specInfo, BitSet bs) {
-    return modelSet.getSequenceBits(specInfo, bs);
-  }
-
   public BitSet getAtomsWithin(float distance, Point3f coord) {
     BitSet bs = new BitSet();
     modelSet.getAtomsWithin(distance, coord, bs, -1);
@@ -4988,8 +4984,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.setParameterValue(key, value);
       return;
     }
-    Token t = Token.getTokenFromName(key.toLowerCase());
-    setStringProperty(key, t == null ? Token.nada : t.tok, value);
+    setStringProperty(key, Token.getTokFromName(key.toLowerCase()), value);
   }
 
   public void setStringProperty(String key, int tok, String value) {
@@ -5142,8 +5137,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.setParameterValue(key, value);
       return;
     }
-    Token t = Token.getTokenFromName(key.toLowerCase());
-    setFloatProperty(key, (t == null ? Token.nada : t.tok), value, false);
+    setFloatProperty(key, Token.getTokFromName(key.toLowerCase()), value, false);
   }
 
   public boolean setFloatProperty(String key, int tok, float value,
@@ -5316,8 +5310,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.setParameterValue(key, value);
       return;
     }
-    Token t = Token.getTokenFromName(key.toLowerCase());
-    setIntProperty(key, (t == null ? Token.nada : t.tok), value);
+    setIntProperty(key, Token.getTokFromName(key.toLowerCase()), value);
   }
 
   public void setIntProperty(String key, int tok, int value) {
@@ -5461,8 +5454,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.setParameterValue(key, value);
       return;
     }
-    Token t = Token.getTokenFromName(key.toLowerCase());
-    setBooleanProperty(key, (t == null ? Token.nada : t.tok), value, true);
+    setBooleanProperty(key, Token.getTokFromName(key.toLowerCase()), value, true);
   }
 
   private boolean setBooleanProperty(String key, int tok, boolean value,
@@ -7093,7 +7085,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getPdbData(BitSet bs, OutputStringBuffer sb) {
     if (bs == null)
-      bs = getSelectionSet();
+      bs = selectionManager.getSelectionSet();
     return modelSet.getPdbAtomData(bs, sb);
   }
 
@@ -8245,5 +8237,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public int getRepaintWait() {
     return global.repaintWaitMs;
+  }
+
+  public BitSet getGroupsWithin(int nResidues, BitSet bs) {
+    return modelSet.getGroupsWithin(nResidues, bs);
   }
 }

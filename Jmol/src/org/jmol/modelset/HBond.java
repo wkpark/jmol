@@ -32,13 +32,20 @@ public class HBond extends Bond {
   private float energy;
   private byte paletteID;
   
-  HBond(Atom atom1, Atom atom2, int order, short mad, short colix, float energy) {
+  public HBond(Atom atom1, Atom atom2, int order, short mad, short colix, float energy) {
     super(atom1, atom2, order, mad, colix);
     this.energy = energy;
     if (Logger.debugging)
       Logger.info("HBond energy = " + energy + " #" + getIdentity());
   }
   
+  public HBond(Atom atom1, Atom atom2, int order, float energy) {
+    super(atom1, atom2, order, (short) 1, (short) 0);
+    this.energy= energy;
+    if (Logger.debugging)
+      Logger.info("HBond energy = " + energy + " #" + getIdentity());
+  }
+
   public float getEnergy() {
     return energy;
   }

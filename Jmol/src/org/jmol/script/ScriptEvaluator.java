@@ -12361,6 +12361,7 @@ public class ScriptEvaluator {
       str = "solventProbeRadius";
       break;
     // Chime related
+    case Token.basepair:
     case Token.chain:
     case Token.sequence:
     case Token.residue:

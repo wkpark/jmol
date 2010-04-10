@@ -2254,6 +2254,27 @@ abstract public class ModelCollection extends BondCollection {
     return bsResult;
   }
  
+  private String getBasePairInfo(BitSet bs) {
+    StringBuffer info = new StringBuffer();
+    Vector vHBonds = new Vector();
+    calcRasmolHydrogenBonds(bs, bs, vHBonds, true, 1);      
+    for (int i = vHBonds.size(); --i >= 0;) {
+      Bond b = (Bond) vHBonds.get(i);
+      getAtomResidueInfo(info, b.atom1);
+      info.append(" - ");
+      getAtomResidueInfo(info, b.atom2);
+      info.append("\n");
+    }
+    return info.toString();
+  }
+
+  private static void getAtomResidueInfo(StringBuffer info, Atom atom) {
+    info.append("[").append(atom.getGroup3(false)).append("]").append(
+        atom.getSeqcodeString()).append(":");
+    char id = atom.getChainID();
+    info.append(id == '\0' ? " " : "" + id);
+  }
+
   private BitSet getBasePairBits(String specInfo) {
     BitSet bs = new BitSet();
     if (specInfo.length() % 2 != 0)
@@ -3008,8 +3029,14 @@ abstract public class ModelCollection extends BondCollection {
   }
   
   public String getChimeInfo(int tok, BitSet bs) {
-    if (tok != Token.info)
-      return super.getChimeInfo(tok, bs);
+    switch (tok) {
+    case Token.info:
+      break;
+    case Token.basepair:
+      return getBasePairInfo(bs);
+    default:
+       return super.getChimeInfo(tok, bs);
+    }
     int n = 0;
     StringBuffer sb = new StringBuffer();
     int nHetero = 0;

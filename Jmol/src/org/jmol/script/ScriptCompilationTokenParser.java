@@ -575,6 +575,7 @@ abstract class ScriptCompilationTokenParser {
           addNextToken();
           break;
         case Token.group:
+          getToken();
           addTokenToPostfix(Token.string, "group");
           break;
         case Token.leftbrace:

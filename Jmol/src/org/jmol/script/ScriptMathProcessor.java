@@ -1880,6 +1880,7 @@ class ScriptMathProcessor {
       case Token.string:
         isWithinGroup = (ScriptVariable.sValue(args[1])
             .equalsIgnoreCase("group"));
+        tok = Token.group;
         break;
       }
     } else {

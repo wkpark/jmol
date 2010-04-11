@@ -78,6 +78,10 @@ public class JmeReader extends AtomSetCollectionReader {
       //Logger.debug("strAtom=" + strAtom);
       float x = parseFloat(tokenizer.nextToken());
       float y = parseFloat(tokenizer.nextToken());
+      // a little randomness to make it interesting
+      // and not drive the system to perfect planarity for rings particularly
+      // the minimizer will take care of the rest.
+      // methylcyclohexane, for example, will load different ways
       float z = (i == 0 ? 0.05f : (float) (Math.random()* 0.2 - 0.1));
       Atom atom = atomSetCollection.addNewAtom();
       int indexColon = strAtom.indexOf(':');

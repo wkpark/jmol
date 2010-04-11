@@ -27,6 +27,7 @@ package org.jmol.adapter.readers.simple;
 import org.jmol.adapter.smarter.*;
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.TextFormat;
 
 import java.util.StringTokenizer;
 
@@ -75,14 +76,25 @@ public class JmeReader extends AtomSetCollectionReader {
     for (int i = 0; i < atomCount; ++i) {
       String strAtom = tokenizer.nextToken();
       //Logger.debug("strAtom=" + strAtom);
-      int indexColon = strAtom.indexOf(':');
-      String elementSymbol = (indexColon > 0
-                              ? strAtom.substring(0, indexColon)
-                              : strAtom).intern();
       float x = parseFloat(tokenizer.nextToken());
       float y = parseFloat(tokenizer.nextToken());
       float z = (float) (Math.random()* 0.2 - 0.1);
       Atom atom = atomSetCollection.addNewAtom();
+      int indexColon = strAtom.indexOf(':');
+      String elementSymbol = (indexColon > 0
+                              ? strAtom.substring(0, indexColon)
+                              : strAtom).intern();
+      if (elementSymbol.length() > 1)
+        switch (elementSymbol.charAt(1)) {
+        case '+':
+          elementSymbol = TextFormat.trim(elementSymbol, "+");
+          atom.formalCharge = 1;
+          break;
+        case '-':
+          elementSymbol = TextFormat.trim(elementSymbol, "-");
+          atom.formalCharge = -1;
+          break;
+        }
       atom.elementSymbol = elementSymbol;
       atom.set(x, y, z);
     }

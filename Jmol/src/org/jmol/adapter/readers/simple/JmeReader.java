@@ -78,7 +78,7 @@ public class JmeReader extends AtomSetCollectionReader {
       //Logger.debug("strAtom=" + strAtom);
       float x = parseFloat(tokenizer.nextToken());
       float y = parseFloat(tokenizer.nextToken());
-      float z = (float) (Math.random()* 0.2 - 0.1);
+      float z = (i == 0 ? 0.05f : (float) (Math.random()* 0.2 - 0.1));
       Atom atom = atomSetCollection.addNewAtom();
       int indexColon = strAtom.indexOf(':');
       String elementSymbol = (indexColon > 0
@@ -102,8 +102,9 @@ public class JmeReader extends AtomSetCollectionReader {
 
   private void readBonds(int bondCount) throws Exception {
     for (int i = 0; i < bondCount; ++i) {
-      int atomIndex1 = parseInt(tokenizer.nextToken());
-      int atomIndex2 = parseInt(tokenizer.nextToken());
+      int atomIndex1 = parseInt(tokenizer.nextToken()) - 1;
+      int atomIndex2 = parseInt(tokenizer.nextToken()) - 1;
+      atomSetCollection.getAtom(atomIndex2).z = -atomSetCollection.getAtom(atomIndex1).z;
       int order = parseInt(tokenizer.nextToken());
       switch (order) {
       case 0:
@@ -119,7 +120,7 @@ public class JmeReader extends AtomSetCollectionReader {
         break;
       }
       atomSetCollection
-          .addBond(new Bond(atomIndex1 - 1, atomIndex2 - 1, order));
+          .addBond(new Bond(atomIndex1, atomIndex2, order));
     }
   }
 }

@@ -81,7 +81,7 @@ public class JmeReader extends AtomSetCollectionReader {
                               : strAtom).intern();
       float x = parseFloat(tokenizer.nextToken());
       float y = parseFloat(tokenizer.nextToken());
-      float z = 0;
+      float z = (float) (Math.random()* 0.2 - 0.1);
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.set(x, y, z);

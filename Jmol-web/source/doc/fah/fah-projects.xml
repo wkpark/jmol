@@ -8251,9 +8251,9 @@
   <fah_proj number="6024" name="p6024_Protein in POPC" public="y" file="xyz"
     server="171.64.65.54" atoms="76828" preferred="3" deadline="6"
     credit="474" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
-  <fah_proj number="6025" name="p6025_Protein in POPC" public="y"
+  <fah_proj number="6025" name="p6025_Protein in POPC" public="y" file="xyz"
     server="171.64.65.54" atoms="76757" preferred="3" deadline="6"
-    credit="483" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
+    credit="483" frames="100" code="A3" contact="kasson" kfactor="2.1" contrib="Rick Humphrey"/>
   <fah_proj number="6040" name="p6040_HA_solvated" public="y"
     server="171.64.65.54" atoms="330706" preferred="6" deadline="8"
     credit="1395" frames="100" code="A3" contact="kasson" kfactor="4.63"/>

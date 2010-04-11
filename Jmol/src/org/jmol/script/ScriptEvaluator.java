@@ -2322,7 +2322,7 @@ public class ScriptEvaluator {
   final static int ERROR_moModelError = 27;
   final static int ERROR_moOccupancy = 28;
   final static int ERROR_moOnlyOne = 29;
-  final static int ERROR_multipleModelsNotOK = 30;
+  final static int ERROR_multipleModelsDisplayedNotOK = 30;
   final static int ERROR_noData = 31;
   final static int ERROR_noPartialCharges = 32;
   final static int ERROR_noUnitCell = 33;
@@ -2347,6 +2347,7 @@ public class ScriptEvaluator {
   final static int ERROR_unrecognizedShowParameter = 52;
   final static int ERROR_what = 53;
   final static int ERROR_writeWhat = 54;
+  final static int ERROR_multipleModelsNotOK = 55;
 
   static String errorString(int iError, String value, String more,
                             String more2, boolean translated) {
@@ -2448,8 +2449,11 @@ public class ScriptEvaluator {
     case ERROR_moOnlyOne:
       msg = GT._("Only one molecular orbital is available in this file");
       break;
-    case ERROR_multipleModelsNotOK:
+    case ERROR_multipleModelsDisplayedNotOK:
       msg = GT._("{0} require that only one model be displayed");
+      break;
+    case ERROR_multipleModelsNotOK:
+      msg = GT._("{0} requires that only one model be loaded");
       break;
     case ERROR_noData:
       msg = GT._("No data available");
@@ -7479,7 +7483,7 @@ public class ScriptEvaluator {
     // for now, just one frame visible
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
-      error(ERROR_multipleModelsNotOK, type);
+      error(ERROR_multipleModelsDisplayedNotOK, type);
     modelIndex = viewer.getJmolDataSourceFrame(modelIndex);
     if (isDraw) {
       runScript(viewer.getPdbData(modelIndex, type));
@@ -9587,6 +9591,8 @@ public class ScriptEvaluator {
         checkLast(iToken);
         if (isSyntaxCheck)
           return;
+        if (viewer.getModelSet().getModelCount() > 1)
+          error(ERROR_multipleModelsNotOK); // for now...
         viewer.addHydrogens(bs);
         return;
       case Token.pointgroup:
@@ -11896,7 +11902,7 @@ public class ScriptEvaluator {
     } else if (data == "QUAT" || data == "RAMA") {
       int modelIndex = viewer.getCurrentModelIndex();
       if (modelIndex < 0)
-        error(ERROR_multipleModelsNotOK, "write " + type2);
+        error(ERROR_multipleModelsDisplayedNotOK, "write " + type2);
       data = type2;
       if (isShow)
         data = viewer.getPdbData(modelIndex, type2);
@@ -12072,7 +12078,7 @@ public class ScriptEvaluator {
         return;
       int modelIndex = viewer.getCurrentModelIndex();
       if (modelIndex < 0)
-        error(ERROR_multipleModelsNotOK, "show " + theToken.value);
+        error(ERROR_multipleModelsDisplayedNotOK, "show " + theToken.value);
       msg = viewer.getPdbData(modelIndex,
           theTok == Token.quaternion ? "quaternion w" : "ramachandran");
       break;
@@ -12423,7 +12429,7 @@ public class ScriptEvaluator {
     viewer.loadShape(JmolConstants.SHAPE_MO);
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
-      error(ERROR_multipleModelsNotOK, "MO isosurfaces");
+      error(ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
     Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
         "moData");
     if (moData == null)
@@ -13374,7 +13380,7 @@ public class ScriptEvaluator {
     if (modelIndex < 0) {
       modelIndex = viewer.getCurrentModelIndex();
       if (modelIndex < 0)
-        error(ERROR_multipleModelsNotOK, "MO isosurfaces");
+        error(ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
     }
     Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
         "jmolSurfaceInfo");

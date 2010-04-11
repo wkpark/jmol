@@ -1235,7 +1235,7 @@ abstract public class AtomCollection {
         if (charge != 0)
           targetValence += (targetValence == 4 ? -Math.abs(charge) : charge);
         int nVal = atom.getValence();
-        if (nBonds == 0 || nVal >= targetValence)
+        if (nVal >= targetValence)
           continue;
         int n = targetValence - nVal;
         hAtoms[i] = new Point3f[n];
@@ -1265,7 +1265,7 @@ abstract public class AtomCollection {
             vConnect.add(atom);
           break;
         case 2:
-          // 2 bonds needed R2C or R-N or R2C=C
+          // 2 bonds needed R2C or R-N or R2C=C or O
           //                    or RC=C or C=C
           boolean isEne = (nBonds == 1 && targetValence == 4);
           getHybridizationAndAxes(i, z, x, (isEne ? "sp2b" : targetValence == 3 ? "sp3b" : "lpa"), false);
@@ -1377,8 +1377,19 @@ abstract public class AtomCollection {
         }
     switch (nBonds) {
     case 0:
-      z.set(0, 0, 1);
-      x.set(1, 0, 0);
+      if (lcaoType.equals("sp3b") || lcaoType.equals("sp2a") || lcaoType.equals("lpa")) {
+        z.set(-0.5f, -0.7f, 1);
+        x.set(1, 0, 0);
+      } else if (lcaoType.equals("sp3c") || lcaoType.equals("lpb")) {
+        z.set(0.5f, -0.7f, -1f);
+        x.set(1, 0, 0);
+      } else if (lcaoType.equals("sp3d")) {
+        z.set(0, 1, 0);
+        x.set(1, 0, 0);
+      } else {
+        z.set(0, 0, 1);
+        x.set(1, 0, 0);
+      }
       break;
     case 1:
       if (lcaoType.indexOf("sp3") == 0) {

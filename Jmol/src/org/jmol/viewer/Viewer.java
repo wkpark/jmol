@@ -8169,10 +8169,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void minimize(int steps, float crit, BitSet bsSelected,
                        boolean addHydrogen) {
-    if (steps != Integer.MAX_VALUE)
-      setIntProperty("minimizationSteps", steps);
-    if (crit > 0)
-      setFloatProperty("minimizationCriterion", crit);
     if (addHydrogen)
       bsSelected = addHydrogens(bsSelected);
     else if (bsSelected == null)

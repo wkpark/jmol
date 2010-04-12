@@ -1116,6 +1116,7 @@ public class Token {
   final static int shapely        = misc  | 320;
   final static int sigma          = misc  | 322;// new
   final static int sign           = misc  | 324;// new
+  final static int smiles         = misc  | 325;// new Jmol 12.0.RC5
   final static int solid          = misc  | 326;
   final static int spacegroup     = misc  | 328;
   final static int sphere         = misc  | 330;// new
@@ -1730,6 +1731,7 @@ public class Token {
       "sin",             new Token(sin),
       "site",            new Token(site),
       "size",            new Token(size),
+      "smiles",          new Token(smiles),
       "solid",           new Token(solid),
       "sort",            new Token(sort),
       "specialPosition", new Token(specialposition),

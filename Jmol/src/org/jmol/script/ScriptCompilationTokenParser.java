@@ -512,7 +512,8 @@ abstract class ScriptCompilationTokenParser {
     float distance = Float.MAX_VALUE;
     String key = null;
     boolean allowComma = true;
-    switch (theToken.tok) {
+    int tok0 = theToken.tok;
+    switch (tok0) {
     case Token.minus:
       if (getToken() == null)
         return false;
@@ -541,6 +542,7 @@ abstract class ScriptCompilationTokenParser {
     case Token.polymer:
     case Token.sequence:
     case Token.site:
+    //case Token.smiles:  NOT, because we want this only for x = within("smiles"...) not select within(smiles...) 
     case Token.structure:
     case Token.string:
       key = (String) theValue;
@@ -559,11 +561,16 @@ abstract class ScriptCompilationTokenParser {
       if (!addNextTokenIf(Token.comma))
         break;
       int tok = tokPeek();
-      if (distance != Float.MAX_VALUE && (tok == Token.on || tok == Token.off)) {
-        addTokenToPostfix(getToken());
-        if (!addNextTokenIf(Token.comma))
-          break;
-        tok = tokPeek();
+      switch (tok0) {
+      case Token.integer:
+      case Token.decimal:
+        if (tok == Token.on || tok == Token.off) {
+          addTokenToPostfix(getToken());
+          if (!addNextTokenIf(Token.comma))
+            break;
+          tok = tokPeek();
+        }
+        break;
       }
       boolean isCoordOrPlane = false;
       if (key == null) {

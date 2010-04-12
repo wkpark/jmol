@@ -35,7 +35,7 @@ public class JmeReader extends AtomSetCollectionReader {
 /*
  *  see http://www.molinspiration.com/jme/doc/jme_functions.html
  *
- * not fully supported; recognized simply as a file with a single
+ * recognized simply as a file with a single
  * line and a digit as the first character.
  * 
  * the format of the JME String is as follows
@@ -50,39 +50,50 @@ public class JmeReader extends AtomSetCollectionReader {
  * modulator(s) > product(s)"
  * 
  * Which, unfortunately, is not much to go on. 
- * JME also outputs MDL MOL files; this should be the preferred
- * option
  * 
+ * But the really interesting thing is that Jmol 12.0 can 
+ * do minimization of the 2D structure to generate a 3D equivalent.
+ * 
+ * The load command FILTER keyword NOMIN prevents this minimization.
+ * Note that with jmolLoadInline you must explicitly add the script
+ * 
+ * minimize addHydrogens
+ * 
+ * to get the 2D -> 3D conversion after the file is loaded.
+ * 
+ * Bob Hanson hansonr@stolaf.edu  4/11/2010
  * 
  */
 
   private StringTokenizer tokenizer;
+  private boolean doMinimization = true;
   
   public void initializeReader() throws Exception {
     atomSetCollection.setCollectionName("JME");
     atomSetCollection.newAtomSet();
-    if (filter == null || filter.toUpperCase().indexOf("NOMIN") < 0)
-      addJmolScript("minimize addHydrogens");
+    doMinimization = (filter == null || filter.toUpperCase().indexOf("NOMIN") < 0);
     readLine();
     tokenizer = new StringTokenizer(line, "\t ");
     int atomCount = parseInt(tokenizer.nextToken());
     int bondCount = parseInt(tokenizer.nextToken());
     readAtoms(atomCount);
     readBonds(bondCount);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("is2D", Boolean.TRUE);
+    if (doMinimization)
+      addJmolScript("minimize addHydrogens");
     continuing = false;
   }
     
   private void readAtoms(int atomCount) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
       String strAtom = tokenizer.nextToken();
-      //Logger.debug("strAtom=" + strAtom);
       float x = parseFloat(tokenizer.nextToken());
       float y = parseFloat(tokenizer.nextToken());
       // a little randomness to make it interesting
       // and not drive the system to perfect planarity for rings particularly
       // the minimizer will take care of the rest.
       // methylcyclohexane, for example, will load different ways
-      float z = (i == 0 ? 0.05f : (float) (Math.random()* 0.2 - 0.1));
+      float z = (!doMinimization ? 0 : i == 0 ? 0.05f : (float) (Math.random()* 0.2 - 0.1));
       Atom atom = atomSetCollection.addNewAtom();
       int indexColon = strAtom.indexOf(':');
       String elementSymbol = (indexColon > 0
@@ -108,23 +119,29 @@ public class JmeReader extends AtomSetCollectionReader {
     for (int i = 0; i < bondCount; ++i) {
       int atomIndex1 = parseInt(tokenizer.nextToken()) - 1;
       int atomIndex2 = parseInt(tokenizer.nextToken()) - 1;
-      atomSetCollection.getAtom(atomIndex2).z = -atomSetCollection.getAtom(atomIndex1).z;
+      atomSetCollection.getAtom(atomIndex2).z = -atomSetCollection
+          .getAtom(atomIndex1).z;
       int order = parseInt(tokenizer.nextToken());
       switch (order) {
-      case 0:
+      default:
         continue;
+      case 1:
+        atomSetCollection.getAtom(atomIndex2).z = -atomSetCollection
+            .getAtom(atomIndex1).z;
+        break;
       case -1:
         order = JmolAdapter.ORDER_STEREO_NEAR;
         break;
       case -2:
-        order = atomIndex1;
-        atomIndex1 = atomIndex2;
-        atomIndex2 = order;
-        order = JmolAdapter.ORDER_STEREO_NEAR;
+        order = JmolAdapter.ORDER_STEREO_FAR;
+        break;
+      case 2:
+      case 3:
+        atomSetCollection.getAtom(atomIndex2).z = atomSetCollection
+            .getAtom(atomIndex1).z = 0;
         break;
       }
-      atomSetCollection
-          .addBond(new Bond(atomIndex1, atomIndex2, order));
+      atomSetCollection.addBond(new Bond(atomIndex1, atomIndex2, order));
     }
   }
 }

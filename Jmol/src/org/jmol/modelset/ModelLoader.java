@@ -142,6 +142,7 @@ public final class ModelLoader extends ModelSet {
     trajectorySteps = (Vector) getModelSetAuxiliaryInfo("trajectorySteps");
     isTrajectory = (trajectorySteps != null);
     noAutoBond = getModelSetAuxiliaryInfoBoolean("noAutoBond");
+    is2D = getModelSetAuxiliaryInfoBoolean("is2D");
     adapterTrajectoryCount = (trajectorySteps == null ? 0 : trajectorySteps.size()); 
     someModelsHaveSymmetry = getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
     someModelsHaveUnitcells = getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
@@ -181,6 +182,7 @@ public final class ModelLoader extends ModelSet {
   private int adapterTrajectoryCount = 0;
   private boolean isLargeModel;
   private boolean noAutoBond;
+  private boolean is2D;
   
   private void createModelSet(JmolAdapter adapter, Object atomSetCollection) {
     int nAtoms = (adapter == null ? 0 : adapter.getAtomCount(atomSetCollection));
@@ -257,6 +259,9 @@ public final class ModelLoader extends ModelSet {
       setDefaultRendering();
     freeze();
     calcBoundBoxDimensions(null, 1);
+
+    if (is2D)
+      applyStereochemistry();
 
     finalizeShapes();
     if (mergeModelSet != null)
@@ -759,7 +764,7 @@ public final class ModelLoader extends ModelSet {
     while (iterBond.hasNext()) {
       order = (short) iterBond.getEncodedOrder();
       bondAtoms(iterBond.getAtomUniqueID1(), iterBond.getAtomUniqueID2(), order);
-      if (order > 1 && order != JmolConstants.BOND_STEREO_NEAR)
+      if (order > 1 && order != JmolConstants.BOND_STEREO_NEAR && order != JmolConstants.BOND_STEREO_FAR)
         haveMultipleBonds = true; 
     }
     if (haveMultipleBonds && someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds())
@@ -783,22 +788,22 @@ public final class ModelLoader extends ModelSet {
     // Atom.bondMutually(...) will return null
     if (atom1.isBonded(atom2))
       return;
-    boolean isStereo = (order == JmolConstants.BOND_STEREO_NEAR);
-    if (isStereo)
-      order = 1;
-    Bond bond = bondMutually(atom1, atom2, order, getDefaultMadFromOrder(order), 0);
-    if (isStereo) {
+    boolean isNear = (order == JmolConstants.BOND_STEREO_NEAR);
+    boolean isFar = (order == JmolConstants.BOND_STEREO_FAR);
+    Bond bond;
+    if (isNear || isFar) {
+      bond = bondMutually(atom1, atom2, (is2D ? order : 1), getDefaultMadFromOrder(1), 0);
       if (vStereo == null)
         vStereo = new Vector();
       vStereo.add(bond);
+    } else {
+      bond = bondMutually(atom1, atom2, order, getDefaultMadFromOrder(order), 0);
+      if (bond.isAromatic())
+        someModelsHaveAromaticBonds = true;
     }
-    if (bond.isAromatic())
-      someModelsHaveAromaticBonds = true;
     if (bondCount == bonds.length)
       bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount + BOND_GROWTH_INCREMENT);
     setBond(bondCount++, bond);
-    //if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
-      //fileHasHbonds = true;
   }
 
   /**
@@ -936,8 +941,6 @@ public final class ModelLoader extends ModelSet {
     // 1. apply CONECT records and set bsExclude to omit them
     // 2. apply stereochemistry from JME
 
-    if (vStereo != null)
-      applyStereochemistry();
     BitSet bsExclude = (getModelSetAuxiliaryInfo("someModelsHaveCONECT") == null ? null
         : new BitSet());
     if (bsExclude != null)
@@ -992,17 +995,6 @@ public final class ModelLoader extends ModelSet {
           .info("ModelSet: not autobonding; use  forceAutobond=true  to force automatic bond creation");
     }
   }
-
-  private void applyStereochemistry() {
-    for (int i = vStereo.size(); --i >= 0;) {
-      Bond b = (Bond) vStereo.get(i);
-      BitSet bs = getBranchBitSet(b.atom2.index, b.atom1.index);
-      for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
-        atoms[j].z += 1;
-    }
-    vStereo = null;
-  }
-
 
   private void finalizeGroupBuild() {
     // run this loop in increasing order so that the
@@ -1205,6 +1197,79 @@ public final class ModelLoader extends ModelSet {
       elementsPresent[atoms[i].modelIndex].set(n);
     }
   }
+
+  private void applyStereochemistry() {
+
+    // 1) explicit stereoChemistry
+   
+    if (vStereo != null) {
+      for (int i = vStereo.size(); --i >= 0;) {
+        Bond b = (Bond) vStereo.get(i);
+        int dz = (b.order == JmolConstants.BOND_STEREO_NEAR ? 1 : -1);
+        b.order = 1;
+        BitSet bs = getBranchBitSet(b.atom2.index, b.atom1.index);
+        bs.set(b.atom2.index); // ring structures
+        for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
+          atoms[j].z += dz;
+      }
+      vStereo = null;
+    }
+    
+    for (int i = 0; i < atomCount; i++) {
+      Atom a = atoms[i];
+      if (Math.abs(a.z) > 0.8)
+        continue;
+      Bond[] bonds = a.getBonds();
+      
+      // 2) acute angles: lower atom front, rear atom back
+      //    (cyclohexane conformations)
+      
+        for (int j = 0; j < bonds.length - 1; j++) {
+        Atom a2 = bonds[j].getOtherAtom(a);
+        if (Math.abs(a2.z) >= 0.8)
+          continue;
+        for (int k = j + 1; k < bonds.length; k++) {
+          Atom a3 = bonds[k].getOtherAtom(a);
+          if (Math.abs(a3.z) >= 0.8)
+            continue;
+          if (org.jmol.util.Measure.computeAngle(a2, a, a3, true) < 58) {
+            if (a2.y < a3.y) {
+              a2.z += 1;
+              a3.z -= 1;
+            } else {
+              a3.z += 1;
+              a2.z -= 1;
+            }
+            break;
+          }
+        }
+      }
+        
+/*      // 3) atoms with a short bonds --> rear
+      //    atoms with a long bonds --> front
+      
+
+      float dMin = Float.MAX_VALUE;
+      float dMax = 0;
+      for (int j = 0; j < bonds.length; j++) {
+        float d = bonds[j].atom1.distance(bonds[j].atom2);
+        dMin = Math.min(dMin, d);
+        dMax = Math.max(dMax, d);
+      }
+      if (dMin < 0.7) {
+        a.z -= 1;
+        continue;
+      } else if (dMax > 1.3) {
+        a.z += 1;
+        continue;
+      }
+*/      
+    }
+    
+    
+    is2D = false;
+  }
+
 
   ///////////////  shapes  ///////////////
   

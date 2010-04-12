@@ -9,4 +9,6 @@ public interface SmilesMatcherInterface {
   public abstract void setModelSet(ModelSet modelSet);
   public abstract BitSet getSubstructureSet(String smiles)
       throws Exception;
+  public abstract BitSet[] getSubstructureSetArray(String smiles)
+      throws Exception;
 }

@@ -25,6 +25,7 @@
 package org.jmol.smiles;
 
 import java.util.BitSet;
+import java.util.Vector;
 
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.modelset.Atom;
@@ -71,13 +72,26 @@ public class PatternMatcher implements SmilesMatcherInterface {
    * Returns a vector of bits indicating which atoms match the pattern.
    * 
    * @param smiles SMILES pattern.
-   * @return BitSet Array indicating which atoms match the pattern.
+   * @return BitSet indicating which atoms match the pattern.
    * @throws Exception Raised if <code>smiles</code> is not a valid SMILES pattern.
    */
   public BitSet getSubstructureSet(String smiles) throws Exception {
     SmilesParser parser = new SmilesParser();
     SmilesMolecule pattern = parser.parseSmiles(smiles);
     return getSubstructureSet(pattern);
+  }
+
+  /**
+   * Returns a vector of bits indicating which atoms match the pattern.
+   * 
+   * @param smiles SMILES pattern.
+   * @return BitSet Array indicating which atoms match the pattern.
+   * @throws Exception Raised if <code>smiles</code> is not a valid SMILES pattern.
+   */
+  public BitSet[] getSubstructureSetArray(String smiles) throws Exception {
+    SmilesParser parser = new SmilesParser();
+    SmilesMolecule pattern = parser.parseSmiles(smiles);
+    return getSubstructureSetArray(pattern);
   }
 
   /**
@@ -93,14 +107,28 @@ public class PatternMatcher implements SmilesMatcherInterface {
   }
 
   /**
+   * Returns a vector of bitsets indicating which atoms match the pattern.
+   * 
+   * @param pattern SMILES pattern.
+   * @return BitSet Array indicating which atoms match the pattern.
+   */
+  public BitSet[] getSubstructureSetArray(SmilesMolecule pattern) {
+    Vector vSubstructures = new Vector();
+    searchMatch(vSubstructures, pattern, 0);
+    BitSet[] bitsets = new BitSet[vSubstructures.size()];
+    for (int i = 0; i < bitsets.length; i++)
+      bitsets[i] = (BitSet) vSubstructures.get(i);
+    return bitsets;
+  }
+
+  /**
    * Recursively search matches.
    * 
-   * @param bs Resulting BitSet (each atom in a structure is set to 1).
+   * @param ret Resulting BitSet or Vector(BitSet).
    * @param pattern SMILES pattern.
    * @param atomNum Current atom of the pattern.
    */
-  private void searchMatch(BitSet bs, SmilesMolecule pattern, int atomNum) {
-    //Logger.debug("Begin match:" + atomNum);
+  private void searchMatch(Object ret, SmilesMolecule pattern, int atomNum) {
     SmilesAtom patternAtom = pattern.getAtom(atomNum);
     for (int i = 0; i < patternAtom.getBondsCount(); i++) {
       SmilesBond patternBond = patternAtom.getBond(i);
@@ -111,10 +139,10 @@ public class PatternMatcher implements SmilesMatcherInterface {
         if (bonds != null) {
           for (int j = 0; j < bonds.length; j++) {
             if (bonds[j].getAtomIndex1() == matchingAtom) {
-              searchMatch(bs, pattern, patternAtom, atomNum, bonds[j].getAtomIndex2());
+              searchMatch(ret, pattern, patternAtom, atomNum, bonds[j].getAtomIndex2());
             }
             if (bonds[j].getAtomIndex2() == matchingAtom) {
-              searchMatch(bs, pattern, patternAtom, atomNum, bonds[j].getAtomIndex1());
+              searchMatch(ret, pattern, patternAtom, atomNum, bonds[j].getAtomIndex1());
             }
           }
         }
@@ -122,21 +150,20 @@ public class PatternMatcher implements SmilesMatcherInterface {
       }
     }
     for (int i = 0; i < atomCount; i++) {
-      searchMatch(bs, pattern, patternAtom, atomNum, i);
+      searchMatch(ret, pattern, patternAtom, atomNum, i);
     }
-    //Logger.debug("End match:" + atomNum);
   }
   
   /**
    * Recursively search matches.
    * 
-   * @param bs Resulting BitSet (each atom in a structure is set to 1).
+   * @param ret Resulting BitSet or Vector(BitSet).
    * @param pattern SMILES pattern.
    * @param patternAtom Atom of the pattern that is currently tested.
    * @param atomNum Current atom of the pattern.
    * @param i Atom number of the atom that is currently tested to match <code>patternAtom</code>.
    */
-  private void searchMatch(BitSet bs, SmilesMolecule pattern, SmilesAtom patternAtom, int atomNum, int i) {
+  private void searchMatch(Object ret, SmilesMolecule pattern, SmilesAtom patternAtom, int atomNum, int i) {
     // Check that an atom is not used twice
     for (int j = 0; j < atomNum; j++) {
       SmilesAtom previousAtom = pattern.getAtom(j);
@@ -213,11 +240,25 @@ public class PatternMatcher implements SmilesMatcherInterface {
     // Finish matching
       patternAtom.setMatchingAtom(i);
       if (atomNum + 1 < pattern.getAtomsCount()) {
-        searchMatch(bs, pattern, atomNum + 1);
+        searchMatch(ret, pattern, atomNum + 1);
       } else {
+        BitSet bs;
+        if (ret instanceof BitSet) {
+          bs = (BitSet) ret;
+        } else {
+          bs = new BitSet();
+        }
         for (int k = 0; k < pattern.getAtomsCount(); k++) {
           SmilesAtom matching = pattern.getAtom(k);
           bs.set(matching.getMatchingAtom());
+        }
+        if (ret instanceof Vector) {
+          Vector v = (Vector) ret;
+          boolean isOK = true;
+          for (int j = v.size(); --j >= 0 && isOK;)
+            isOK = !(((BitSet) v.get(j)).equals(bs));
+          if (isOK)
+            v.add(bs);
         }
       }
       patternAtom.setMatchingAtom(-1);

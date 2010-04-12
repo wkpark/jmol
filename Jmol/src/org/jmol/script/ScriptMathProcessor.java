@@ -1838,7 +1838,7 @@ class ScriptMathProcessor {
     return addX(ScriptVariable.sprintf(TextFormat.formatCheck(format), x1));
   }
 
-  private boolean evaluateWithin(ScriptVariable[] args) {
+  private boolean evaluateWithin(ScriptVariable[] args) throws ScriptException {
     if (args.length < 1 || args.length > 5)
       return false;
     int i = args.length;
@@ -1911,6 +1911,19 @@ class ScriptMathProcessor {
       case Token.sequence:
         return addX(isSyntaxCheck ? bs : viewer.getAtomBits(tok,
             ScriptVariable.sValue(args[args.length - 1])));
+      case Token.smiles:
+        if (isSyntaxCheck)
+          return addX(new Vector());
+        try {
+          BitSet[] b = viewer.getSmilesMatcher().getSubstructureSetArray(
+              ScriptVariable.sValue(args[1]));
+          String[] matches = new String[b.length];
+          for (int j = 0; j < b.length; j++)
+            matches[j] = Escape.escape(b[j]);
+          return addX(matches);
+        } catch (Exception e) {
+          eval.evalError(e.getMessage(), null);
+        }
       }
       break;
     case 3:

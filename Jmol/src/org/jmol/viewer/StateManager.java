@@ -872,6 +872,7 @@ public class StateManager {
       setParameterValue("minBondDistance", minBondDistance);
       setParameterValue("minimizationSteps", minimizationSteps);
       setParameterValue("minimizationRefresh", minimizationRefresh);
+      setParameterValue("minimizationSilent", minimizationSilent);
       setParameterValue("minimizationCriterion", minimizationCriterion);
       setParameterValue("navigationMode", navigationMode);
       setParameterValue("navigateSurface", navigateSurface);
@@ -1069,6 +1070,7 @@ public class StateManager {
 
     int minimizationSteps = 100;
     boolean minimizationRefresh = true;
+    boolean minimizationSilent = false;
     float minimizationCriterion = 0.001f;
 
     //rendering

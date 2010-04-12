@@ -138,7 +138,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void setAppletContext(String htmlName, URL documentBase, URL codeBase,
                                         String commandOptions);
 
-  abstract public boolean checkHalt(String strCommand);
+  abstract public boolean checkHalt(String strCommand, boolean isInterrupt);
   abstract public void haltScriptExecution();
 
   abstract public boolean isJvm12orGreater();

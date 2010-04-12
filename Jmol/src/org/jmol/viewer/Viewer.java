@@ -199,16 +199,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void clearModelDependentObjects() {
     setFrameOffsets(null);
-    if (minimizer != null) {
-      minimizer.setProperty("stop", null);
-      minimizer = null;
-    }
+    stopMinimization();
     if (smilesMatcher != null) {
       smilesMatcher.setModelSet(null);
       smilesMatcher = null;
     }
     if (symmetry != null) {
       symmetry = null;
+    }
+  }
+
+  private void stopMinimization() {    
+    if (minimizer != null) {
+      minimizer.setProperty("stop", null);
+      minimizer = null;
     }
   }
 
@@ -1724,7 +1728,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       fileName = fileName.substring(1);
     fileName = fileName.replace('\\', '/');
     String type = fileManager.getFileTypeName(fileName);
-    checkHalt("exit");
+    checkHalt("exit", true);
     // assumes a Jmol script file if no other file type
     allowScript &= (type == null);
     if (scriptEditorVisible && allowScript)
@@ -3800,7 +3804,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean isInterrupt = (strScript.length() > 0 && strScript.charAt(0) == '!');
     if (isInterrupt)
       strScript = strScript.substring(1);
-    String msg = checkScriptExecution(strScript);
+    String msg = checkScriptExecution(strScript, isInterrupt);
     if (msg != null)
       return msg;
     if (isScriptExecuting() && (isInterrupt || eval.isExecutionPaused())) {
@@ -3816,7 +3820,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         && !getMessageStyleChime());
   }
 
-  private String checkScriptExecution(String strScript) {
+  private String checkScriptExecution(String strScript, boolean isInterrupt) {
     String str = strScript;
     if (str.indexOf("\1##") >= 0)
       str = str.substring(0, str.indexOf("\1##"));
@@ -3824,7 +3828,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return "script processing resumed";
     if (checkStepping(str))
       return "script processing stepped";
-    if (checkHalt(str))
+    if (checkHalt(str, isInterrupt))
       return "script execution halted";
     return null;
   }
@@ -3866,7 +3870,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return false;
   }
 
-  public boolean checkHalt(String str) {
+  public boolean checkHalt(String str, boolean isInterrupt) {
     if (str.equalsIgnoreCase("pause")) {
       pauseScriptExecution();
       if (scriptEditorVisible)
@@ -3878,6 +3882,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       haltScriptExecution();
       clearScriptQueue();
       clearTimeout(null);
+      if (isInterrupt)
+        stopMinimization();
       transformManager.stopMotion();
       if (isCmdLine_c_or_C_Option)
         Logger.info("exit -- stops script checking");
@@ -3888,6 +3894,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (str.startsWith("quit")) {
       haltScriptExecution();
+      if (isInterrupt)
+        stopMinimization();
       if (isCmdLine_c_or_C_Option)
         Logger.info("quit -- stops script checking");
       else 
@@ -3938,7 +3946,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // from the scriptManager or scriptWait()
     if (strScript == null)
       return null;
-    String str = checkScriptExecution(strScript);
+    String str = checkScriptExecution(strScript, false);
     if (str != null)
       return str;
 
@@ -5477,6 +5485,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       break;
     case Token.minimizationrefresh:
       global.minimizationRefresh = value;
+      break;
+    case Token.minimizationsilent:
+      // 12.0.RC5
+      global.minimizationSilent = value;
       break;
     case Token.usearcball:
       global.useArcBall = value;

@@ -895,7 +895,8 @@ public class Token {
   public final static int measurementlabels              = booleanparam | 102;
   public final static int messagestylechime              = booleanparam | 104;
   public final static int minimizationrefresh            = booleanparam | 105;
-  public final static int navigatesurface                = booleanparam | 106;
+  public final static int minimizationsilent             = booleanparam | 106;
+  public final static int navigatesurface                = booleanparam | 107;
   public final static int navigationmode                 = booleanparam | 108;
   public final static int navigationperiodic             = booleanparam | 110;
   public final static int pdbgetheader                   = booleanparam | 112;
@@ -2102,6 +2103,7 @@ public class Token {
       "measurementNumbers",                       new Token(measurementnumbers),
       "messageStyleChime",                        new Token(messagestylechime),
       "minimizationRefresh",                      new Token(minimizationrefresh),
+      "minimizationSilent",                       new Token(minimizationsilent),
       "navigateSurface",                          new Token(navigatesurface),
       "navigationMode",                           new Token(navigationmode),
       "navigationPeriodic",                       new Token(navigationperiodic),

@@ -70,16 +70,17 @@ abstract public class ForceField {
   int atomCount; 
   int bondCount;
 
-  Viewer viewer;
   MinAtom[] atoms;
   MinBond[] bonds;
   BitSet bsFixed;
   
+  Minimizer minimizer;
+
   public ForceField() {}
   
   public void setModel(Minimizer m) {
   
-    this.viewer = m.viewer;
+    minimizer = m;
     this.atoms = m.minAtoms;
     this.bonds = m.minBonds;
     this.bsFixed = m.bsMinFixed;
@@ -127,7 +128,7 @@ abstract public class ForceField {
     e0 = energyFull(false, false);
     s = TextFormat.sprintf(" Initial E = %10.3f " + calc.getUnit() + " criterion = %8.6f max steps = " + stepMax, 
         new Object[] { new Float(e0), new Float(criterion) });
-    viewer.showString(s, false);
+    minimizer.report(s, false);
     calc.appendLogData(s);
   }
 
@@ -161,7 +162,7 @@ abstract public class ForceField {
         String s = TextFormat.sprintf(" Step %-4d E = %10.6f    dE = %8.6f",
             new Object[] { new float[] { (float) e1, (float) (dE), (float) criterion },
             new Integer(currentStep) });
-        viewer.showString(s, false);
+        minimizer.report(s, false);
         calc.appendLogData(s);
       }
       e0 = e1;
@@ -173,8 +174,7 @@ abstract public class ForceField {
               "\n   STEEPEST DESCENT HAS CONVERGED: E = %8.5f " + getUnits() + " after " + currentStep + " steps", "f",
               (float) e1);
           calc.appendLogData(s);
-          viewer.scriptEcho(s);
-
+          minimizer.report(s, true);
           Logger.info(s);
         }
         return false;

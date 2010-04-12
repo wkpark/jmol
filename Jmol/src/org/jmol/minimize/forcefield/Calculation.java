@@ -28,6 +28,7 @@ import org.jmol.minimize.MinAtom;
 
 abstract class Calculation {
 
+  
   double dE;
   
   FFParam parA, parB, parC;  

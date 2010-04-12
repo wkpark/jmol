@@ -70,6 +70,8 @@ public class Minimizer implements MinimizerInterface {
   private BitSet bsFixed;
   public Vector constraints;
   
+  private boolean isSilent;
+  
   public Minimizer() {
   }
 
@@ -669,6 +671,7 @@ Token[keyword(0x880001) value=")"]
   private void getEnergyOnly() {
     if (pFF == null || viewer == null)
       return;
+    isSilent = viewer.getBooleanProperty("minimizationSilent");
     pFF.steepestDescentInitialize(steps, crit);      
     viewer.setFloatProperty("_minimizationEnergyDiff", 0);
     viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
@@ -678,6 +681,7 @@ Token[keyword(0x880001) value=")"]
   
   public boolean startMinimization() {
     try {
+      isSilent = viewer.getBooleanProperty("minimizationSilent");
       Logger.info("minimizer: startMinimization");
       viewer.setIntProperty("_minimizationStep", 0);
       viewer.setStringProperty("_minimizationStatus", "starting");
@@ -699,7 +703,7 @@ Token[keyword(0x880001) value=")"]
   boolean stepMinimization() {
     if (!minimizationOn)
       return false;
-    boolean doRefresh = viewer.getBooleanProperty("minimizationRefresh");
+    boolean doRefresh = (!isSilent && viewer.getBooleanProperty("minimizationRefresh"));
     viewer.setStringProperty("_minimizationStatus", "running");
     boolean going = pFF.steepestDescentTakeNSteps(1);
     int currentStep = pFF.getCurrentStep();
@@ -809,5 +813,14 @@ Token[keyword(0x880001) value=")"]
           Logger.debug(" minimization thread interrupted");
       }
     }
+  }
+
+  public void report(String msg, boolean isEcho) {
+    if (isSilent)
+      Logger.info(msg);
+    else if (isEcho)
+      viewer.showString(msg, false);
+    else
+      viewer.scriptEcho(msg);    
   }
 }

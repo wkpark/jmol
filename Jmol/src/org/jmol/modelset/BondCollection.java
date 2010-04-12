@@ -43,6 +43,10 @@ abstract public class BondCollection extends AtomCollection {
     super.releaseModelSet();
   }
 
+  //note: Molecules is set up to only be calculated WHEN NEEDED
+  protected Molecule[] molecules = new Molecule[4];
+  protected int moleculeCount;
+
   protected Bond[] bonds;
   protected int bondCount;
   
@@ -388,6 +392,8 @@ abstract public class BondCollection extends AtomCollection {
   }
 
   public void deleteBonds(BitSet bsBond, boolean isFullModel) {
+    molecules = null;
+    moleculeCount = 0;
     int iDst = 0;
     Model mlast = null;
     for (int iSrc = 0; iSrc < bondCount; ++iSrc) {

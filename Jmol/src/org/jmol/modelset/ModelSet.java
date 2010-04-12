@@ -652,6 +652,7 @@ abstract public class ModelSet extends ModelCollection {
       addStateScript(stateScript, (isBonds ? bsA : null),
           (isBonds ? null : bsA), (isBonds ? null : bsB), " auto", false, true);
     }
+    moleculeCount = 0;
     return super.makeConnections(minDistance, maxDistance, order,
         connectOperation, bsA, bsB, bsBonds, isBonds, energy);
   }
@@ -699,6 +700,7 @@ abstract public class ModelSet extends ModelCollection {
   }
   
   public void deleteAllBonds() {
+    moleculeCount = 0;
     for (int i = stateScripts.size(); --i >= 0;) 
       if (((StateScript) stateScripts.get(i)).isConnect())
         stateScripts.removeElementAt(i);
@@ -836,6 +838,7 @@ abstract public class ModelSet extends ModelCollection {
   
   public BitSet deleteModels(BitSet bsAtoms) {
     // full models are deleted for any model containing the specified atoms
+    moleculeCount = 0;
     BitSet bsModels = getModelBitSet(bsAtoms, false);
     includeAllRelatedFrames(bsModels);
     int nAtomsDeleted = 0;

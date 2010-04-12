@@ -279,10 +279,6 @@ abstract public class ModelCollection extends BondCollection {
     return !isPDB && someModelsHaveSymmetry && someModelsHaveFractionalCoordinates;
   }
 
-  //note: Molecules is set up to only be calculated WHEN NEEDED
-  protected Molecule[] molecules = new Molecule[4];
-  protected int moleculeCount;
-
   private final Matrix3f matTemp = new Matrix3f();
   private final Matrix3f matInv = new Matrix3f();
   private final Point3f ptTemp = new Point3f();
@@ -3497,6 +3493,7 @@ abstract public class ModelCollection extends BondCollection {
       bspf = null;
       bsAll = null;
       molecules = null;
+      moleculeCount = 0;
       withinModelIterator = null;
       withinAtomSetIterator = null;
       isBbcageDefault = false;

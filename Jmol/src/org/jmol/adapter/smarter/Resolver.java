@@ -769,7 +769,7 @@ public class Resolver {
 
   private static boolean checkMol(String[] lines) {
     String line4trimmed = ("X" + lines[3]).trim();
-    if (line4trimmed.length() < 7)
+    if (line4trimmed.length() < 7 || line4trimmed.indexOf(".") >= 0)
       return false;
     if (line4trimmed.endsWith("V2000") || line4trimmed.endsWith("v2000"))
       return true;

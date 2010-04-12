@@ -2501,7 +2501,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // GROUP_ID related stuff for special groupIDs
   ////////////////////////////////////////////////////////////////
   
-  public final static int GROUPID_CYSTINE          = 5;
+  public final static int GROUPID_CYSTEINE          = 5;
   public final static int GROUPID_PROLINE          = 15;
   public final static int GROUPID_AMINO_MAX        = 24;
   
@@ -2778,7 +2778,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "@acyclic amino&!cyclic",
     "@aliphatic ala,gly,ile,leu,val",
     "@aromatic his,phe,trp,tyr",
-    //    "@cystine",
+    "@cystine within(group, cys.sg and connected(cys.sg))",
 
     "@buried ala,cys,ile,leu,met,phe,trp,val",
     "@surface amino&!buried",

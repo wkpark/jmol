@@ -2022,7 +2022,7 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = bsCheck.nextSetBit(0); i >= 0; i = bsCheck.nextSetBit(i + 1))
       if (atoms[i].isVisible(0)
           && atoms[i].atomID == JmolConstants.ATOMID_ALPHA_CARBON
-          && atoms[i].getGroupID() != JmolConstants.GROUPID_CYSTINE)
+          && atoms[i].getGroupID() != JmolConstants.GROUPID_CYSTEINE)
         vCA.add((a1 = atoms[i]));
     if (vCA.size() == 0)
       return 0;    

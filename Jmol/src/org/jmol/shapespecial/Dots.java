@@ -157,6 +157,8 @@ public class Dots extends AtomShape {
   }
 
   public void setSize(RadiusData rd, BitSet bsSelected) {
+    if (rd == null)
+      rd = new RadiusData(0, RadiusData.TYPE_ABSOLUTE, 0);
     if (this.bsSelected != null)
       bsSelected = this.bsSelected;
 
@@ -216,7 +218,8 @@ public class Dots extends AtomShape {
     // we just increment the atom radius and set the probe radius = 0;
 
     if (isVisible) {
-      for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected.nextSetBit(i + 1))
+      for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected
+          .nextSetBit(i + 1))
         if (!bsOn.get(i)) {
           bsOn.set(i);
           newSet = true;
@@ -232,27 +235,29 @@ public class Dots extends AtomShape {
     for (int i = atomCount; --i >= 0;) {
       atoms[i].setShapeVisibility(myVisibilityFlag, bsOn.get(i));
     }
+    if (!isVisible)
+      return;
     if (newSet) {
       mads = null;
       ec.newSet();
     }
+
     // always delete old surfaces for selected atoms
     FastBitSet[] dotsConvexMaps = ec.getDotsConvexMaps();
-    if (isVisible && dotsConvexMaps != null) {
+    if (dotsConvexMaps != null) {
       for (int i = atomCount; --i >= 0;)
         if (bsOn.get(i)) {
           dotsConvexMaps[i] = null;
         }
     }
     // now, calculate surface for selected atoms
-    if (isVisible) {
-      if (dotsConvexMaps == null) {
-        colixes = new short[atomCount];
-        paletteIDs = new byte[atomCount];
-      }
-      ec.calculate(rd, maxRadius, bsOn, bsIgnore, !viewer.getDotSurfaceFlag(),
-          viewer.getDotsSelectedOnlyFlag(), isSurface, true);
+
+    if (dotsConvexMaps == null) {
+      colixes = new short[atomCount];
+      paletteIDs = new byte[atomCount];
     }
+    ec.calculate(rd, maxRadius, bsOn, bsIgnore, !viewer.getDotSurfaceFlag(),
+        viewer.getDotsSelectedOnlyFlag(), isSurface, true);
 
     rdLast = rd;
 

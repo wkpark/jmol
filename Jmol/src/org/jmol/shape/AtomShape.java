@@ -67,8 +67,8 @@ public abstract class AtomShape extends Shape {
   public void setSize(int size, BitSet bsSelected) {
     if (size == 0)
       setSize(null, bsSelected);
-    // should not come through this route
-    setSize(new RadiusData(size, RadiusData.TYPE_SCREEN, 0), bsSelected);
+    else
+      setSize(new RadiusData(size, RadiusData.TYPE_SCREEN, 0), bsSelected);
   }
 
   public void setSize(RadiusData rd, BitSet bsSelected) {

@@ -5037,7 +5037,6 @@ public class ScriptEvaluator {
         case Token.push:
         case Token.forcmd:
         case Token.whilecmd:
-        case Token.ifcmd:
           nPush++;
           break;
         case Token.pop:

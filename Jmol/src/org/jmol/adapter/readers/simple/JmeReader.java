@@ -122,11 +122,6 @@ public class JmeReader extends AtomSetCollectionReader {
       case -2:
         order = JmolAdapter.ORDER_STEREO_FAR;
         break;
-      case 2:
-      case 3:
-        atomSetCollection.getAtom(atomIndex2).z = atomSetCollection
-            .getAtom(atomIndex1).z = 0;
-        break;
       }
       atomSetCollection.addBond(new Bond(atomIndex1, atomIndex2, order));
     }

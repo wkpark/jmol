@@ -32,42 +32,38 @@ import org.jmol.util.TextFormat;
 import java.util.StringTokenizer;
 
 public class JmeReader extends AtomSetCollectionReader {
-/*
- *  see http://www.molinspiration.com/jme/doc/jme_functions.html
- *
- * recognized simply as a file with a single
- * line and a digit as the first character.
- * 
- * the format of the JME String is as follows
- * natoms nbonds (atomic_symbol x_coord y_coord) for all atoms 
- * (atom1 atom2 bond_order) for all bonds
- * (for stereo bonds the bond order is -1 for up and -2 for down 
- * from the first to the second atom)
- * Molecules in multipart system are separated by 
- * the | character. Components of the reaction are 
- * separated by the > character. The JME string for 
- * the reaction is thus "reactant1 | reactant 2 ... > 
- * modulator(s) > product(s)"
- * 
- * Which, unfortunately, is not much to go on. 
- * 
- * But the really interesting thing is that Jmol 12.0 can 
- * do minimization of the 2D structure to generate a 3D equivalent.
- * 
- * The load command FILTER keyword NOMIN prevents this minimization.
- * Note that with jmolLoadInline you must explicitly add the script
- * 
- * minimize addHydrogens
- * 
- * to get the 2D -> 3D conversion after the file is loaded.
- * 
- * Bob Hanson hansonr@stolaf.edu  4/11/2010
- * 
- */
+  /*
+   * see http://www.molinspiration.com/jme/doc/jme_functions.html
+   * 
+   * recognized simply as a file with a single line and a digit as the first
+   * character.
+   * 
+   * the format of the JME String is as follows natoms nbonds (atomic_symbol
+   * x_coord y_coord) for all atoms (atom1 atom2 bond_order) for all bonds (for
+   * stereo bonds the bond order is -1 for up and -2 for down from the first to
+   * the second atom) Molecules in multipart system are separated by the |
+   * character. Components of the reaction are separated by the > character. The
+   * JME string for the reaction is thus "reactant1 | reactant 2 ... >
+   * modulator(s) > product(s)"
+   * 
+   * Which, unfortunately, is not much to go on.
+   * 
+   * But the really interesting thing is that Jmol 12.0 can do minimization of
+   * the 2D structure to generate a 3D equivalent.
+   * 
+   * The load command FILTER keyword NOMIN prevents this minimization. Note that
+   * with jmolLoadInline you must explicitly add the script
+   * 
+   * minimize addHydrogens
+   * 
+   * to get the 2D -> 3D conversion after the file is loaded.
+   * 
+   * Bob Hanson hansonr@stolaf.edu 4/11/2010
+   */
 
   private StringTokenizer tokenizer;
   private boolean doMinimization = true;
-  
+
   public void initializeReader() throws Exception {
     atomSetCollection.setCollectionName("JME");
     atomSetCollection.newAtomSet();
@@ -83,22 +79,16 @@ public class JmeReader extends AtomSetCollectionReader {
       addJmolScript("minimize addHydrogens");
     continuing = false;
   }
-    
+
   private void readAtoms(int atomCount) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
       String strAtom = tokenizer.nextToken();
-      float x = parseFloat(tokenizer.nextToken());
-      float y = parseFloat(tokenizer.nextToken());
-      // a little randomness to make it interesting
-      // and not drive the system to perfect planarity for rings particularly
-      // the minimizer will take care of the rest.
-      // methylcyclohexane, for example, will load different ways
-      float z = (!doMinimization ? 0 : i == 0 ? 0.05f : (float) (Math.random()* 0.2 - 0.1));
       Atom atom = atomSetCollection.addNewAtom();
+      atom.set(parseFloat(tokenizer.nextToken()), parseFloat(tokenizer
+          .nextToken()), 0);
       int indexColon = strAtom.indexOf(':');
-      String elementSymbol = (indexColon > 0
-                              ? strAtom.substring(0, indexColon)
-                              : strAtom).intern();
+      String elementSymbol = (indexColon > 0 ? strAtom.substring(0, indexColon)
+          : strAtom);
       if (elementSymbol.length() > 1)
         switch (elementSymbol.charAt(1)) {
         case '+':
@@ -111,7 +101,6 @@ public class JmeReader extends AtomSetCollectionReader {
           break;
         }
       atom.elementSymbol = elementSymbol;
-      atom.set(x, y, z);
     }
   }
 
@@ -119,8 +108,6 @@ public class JmeReader extends AtomSetCollectionReader {
     for (int i = 0; i < bondCount; ++i) {
       int atomIndex1 = parseInt(tokenizer.nextToken()) - 1;
       int atomIndex2 = parseInt(tokenizer.nextToken()) - 1;
-      atomSetCollection.getAtom(atomIndex2).z = -atomSetCollection
-          .getAtom(atomIndex1).z;
       int order = parseInt(tokenizer.nextToken());
       switch (order) {
       default:

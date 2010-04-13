@@ -7348,8 +7348,8 @@ public class ScriptEvaluator {
       if (filename.startsWith("@") && filename.length() > 1) {
         String s = getStringParameter(filename.substring(1), false);
         htParams.put("fileData", s);
-        loadScript = new StringBuffer("var " + filename.substring(1) + " = "
-            + Escape.escape(s) + ";\n  " + loadScript);
+        loadScript = new StringBuffer("{\nvar " + filename.substring(1) + " = "
+            + Escape.escape(s) + ";\n  " + loadScript + "\n}\n");
       } else if (isInline) {
         htParams.put("fileData", filename);
       }

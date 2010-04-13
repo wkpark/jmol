@@ -1828,7 +1828,7 @@ abstract public class ModelCollection extends BondCollection {
       Bond bond = atom.bonds[i];
       if ((bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
         continue;
-        getCovalentlyConnectedBitSet(bond.getOtherAtom(atom), bs, bsToTest);
+      getCovalentlyConnectedBitSet(bond.getOtherAtom(atom), bs, bsToTest);
     }
   }
 

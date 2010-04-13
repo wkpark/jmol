@@ -1200,76 +1200,88 @@ public final class ModelLoader extends ModelSet {
 
   private void applyStereochemistry() {
 
-    // 1) explicit stereoChemistry
-   
+    // 1) implicit stereochemistry 
+    
+    set2dZ(baseAtomIndex, baseAtomIndex + atomCount);
+
+    // 2) explicit stereochemistry
+    
     if (vStereo != null) {
       for (int i = vStereo.size(); --i >= 0;) {
         Bond b = (Bond) vStereo.get(i);
-        int dz = (b.order == JmolConstants.BOND_STEREO_NEAR ? 1 : -1);
+        int dz = (b.order == JmolConstants.BOND_STEREO_NEAR ? 3 : -3);
         b.order = 1;
         BitSet bs = getBranchBitSet(b.atom2.index, b.atom1.index);
-        bs.set(b.atom2.index); // ring structures
+        //bs.set(b.atom2.index); // ring structures
         for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
           atoms[j].z += dz;
       }
       vStereo = null;
     }
     
-    for (int i = 0; i < atomCount; i++) {
-      Atom a = atoms[i];
-      if (Math.abs(a.z) > 0.8)
-        continue;
-      Bond[] bonds = a.getBonds();
-      
-      // 2) acute angles: lower atom front, rear atom back
-      //    (cyclohexane conformations)
-      
-        for (int j = 0; j < bonds.length - 1; j++) {
-        Atom a2 = bonds[j].getOtherAtom(a);
-        if (Math.abs(a2.z) >= 0.8)
-          continue;
-        for (int k = j + 1; k < bonds.length; k++) {
-          Atom a3 = bonds[k].getOtherAtom(a);
-          if (Math.abs(a3.z) >= 0.8)
-            continue;
-          if (org.jmol.util.Measure.computeAngle(a2, a, a3, true) < 58) {
-            if (a2.y < a3.y) {
-              a2.z += 1;
-              a3.z -= 1;
-            } else {
-              a3.z += 1;
-              a2.z -= 1;
-            }
-            break;
-          }
-        }
-      }
-        
-/*      // 3) atoms with a short bonds --> rear
-      //    atoms with a long bonds --> front
-      
-
-      float dMin = Float.MAX_VALUE;
-      float dMax = 0;
-      for (int j = 0; j < bonds.length; j++) {
-        float d = bonds[j].atom1.distance(bonds[j].atom2);
-        dMin = Math.min(dMin, d);
-        dMax = Math.max(dMax, d);
-      }
-      if (dMin < 0.7) {
-        a.z -= 1;
-        continue;
-      } else if (dMax > 1.3) {
-        a.z += 1;
-        continue;
-      }
-*/      
-    }
-    
-    
     is2D = false;
   }
 
+
+  private void set2dZ(int iatom1, int iatom2) {
+    BitSet atomlist = new BitSet(iatom2);
+    BitSet bsBranch = new BitSet();
+    Vector3f v = new Vector3f();
+    Vector3f v0 = new Vector3f(0, 1, 0);
+    Vector3f v1 = new Vector3f();
+    BitSet bs0 = new BitSet();
+    bs0.set(iatom1, iatom2);
+    for (int i = iatom1; i < iatom2; i++)
+      if (!atomlist.get(i) && !bsBranch.get(i)) {
+        bsBranch = getBranch2dZ(i, -1, bs0, bsBranch, v, v0, v1);
+        atomlist.or(bsBranch);
+      }
+  }
+  
+  
+  private BitSet getBranch2dZ(int atomIndex, int atomIndexNot, BitSet bs0, 
+                              BitSet bsBranch, Vector3f v, Vector3f v0, Vector3f v1) {
+    BitSet bs = new BitSet(atomCount);
+    if (atomIndex < 0)
+      return bs;
+    BitSet bsToTest = new BitSet();
+    bsToTest.or(bs0);
+    if (atomIndexNot >= 0)
+      bsToTest.clear(atomIndexNot);
+    setBranch2dZ(atoms[atomIndex], bs, bsToTest, v, v0, v1);
+    return bs;
+  }
+
+  private static void setBranch2dZ(Atom atom, BitSet bs,
+                                            BitSet bsToTest, Vector3f v,
+                                            Vector3f v0, Vector3f v1) {
+    int atomIndex = atom.index;
+    if (!bsToTest.get(atomIndex))
+      return;
+    bsToTest.clear(atomIndex);
+    bs.set(atomIndex);
+    if (atom.bonds == null)
+      return;
+    for (int i = atom.bonds.length; --i >= 0;) {
+      Bond bond = atom.bonds[i];
+      if ((bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+        continue;
+      Atom atom2 = bond.getOtherAtom(atom);
+      setAtom2dZ(atom, atom2, v, v0, v1);
+      setBranch2dZ(atom2, bs, bsToTest, v, v0, v1);
+    }
+  }
+
+  private static void setAtom2dZ(Atom atomRef, Atom atom2, Vector3f v, Vector3f v0, Vector3f v1) {
+    v.set(atom2);
+    v.sub(atomRef);
+    v.z = 0;
+    v.normalize();
+    v1.cross(v0, v);
+    double theta = Math.acos(v.dot(v0));
+    float u = 1f;//(v1.z < 0 ? -1 : 1);
+    atom2.z = atomRef.z + (float) (u * Math.sin(4 * theta));    
+  }
 
   ///////////////  shapes  ///////////////
   

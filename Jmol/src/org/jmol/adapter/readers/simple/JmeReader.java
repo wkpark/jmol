@@ -29,8 +29,6 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.TextFormat;
 
-import java.util.StringTokenizer;
-
 public class JmeReader extends AtomSetCollectionReader {
   /*
    * see http://www.molinspiration.com/jme/doc/jme_functions.html
@@ -61,17 +59,15 @@ public class JmeReader extends AtomSetCollectionReader {
    * Bob Hanson hansonr@stolaf.edu 4/11/2010
    */
 
-  private StringTokenizer tokenizer;
   private boolean doMinimization = true;
 
   public void initializeReader() throws Exception {
     atomSetCollection.setCollectionName("JME");
     atomSetCollection.newAtomSet();
     doMinimization = (filter == null || filter.toUpperCase().indexOf("NOMIN") < 0);
-    readLine();
-    tokenizer = new StringTokenizer(line, "\t ");
-    int atomCount = parseInt(tokenizer.nextToken());
-    int bondCount = parseInt(tokenizer.nextToken());
+    line = readLine().replace('\t', ' ');
+    int atomCount = parseInt();
+    int bondCount = parseInt();
     readAtoms(atomCount);
     readBonds(bondCount);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("is2D", Boolean.TRUE);
@@ -82,10 +78,9 @@ public class JmeReader extends AtomSetCollectionReader {
 
   private void readAtoms(int atomCount) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
-      String strAtom = tokenizer.nextToken();
+      String strAtom = parseToken();
       Atom atom = atomSetCollection.addNewAtom();
-      atom.set(parseFloat(tokenizer.nextToken()), parseFloat(tokenizer
-          .nextToken()), 0);
+      atom.set(parseFloat(), parseFloat(), 0);
       int indexColon = strAtom.indexOf(':');
       String elementSymbol = (indexColon > 0 ? strAtom.substring(0, indexColon)
           : strAtom);
@@ -106,7 +101,9 @@ public class JmeReader extends AtomSetCollectionReader {
 
   private void readBonds(int bondCount) throws Exception {
     for (int i = 0; i < bondCount; ++i) {
-      int order = parseInt(tokenizer.nextToken());
+      int atomIndex1 = parseInt() - 1;
+      int atomIndex2 = parseInt() - 1;
+      int order = parseInt();
       switch (order) {
       default:
         continue;
@@ -121,8 +118,6 @@ public class JmeReader extends AtomSetCollectionReader {
         order = JmolAdapter.ORDER_STEREO_FAR;
         break;
       }
-      int atomIndex1 = parseInt(tokenizer.nextToken()) - 1;
-      int atomIndex2 = parseInt(tokenizer.nextToken()) - 1;
       atomSetCollection.addBond(new Bond(atomIndex1, atomIndex2, order));
     }
   }

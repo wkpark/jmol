@@ -27,6 +27,7 @@ package org.jmol.adapter.readers.simple;
 import org.jmol.adapter.smarter.*;
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.modelset.AtomCollection;
 import org.jmol.util.TextFormat;
 
 public class JmeReader extends AtomSetCollectionReader {
@@ -59,6 +60,8 @@ public class JmeReader extends AtomSetCollectionReader {
    * Bob Hanson hansonr@stolaf.edu 4/11/2010
    */
 
+  private boolean doMinimize = true;
+  
   public void initializeReader() throws Exception {
     atomSetCollection.setCollectionName("JME");
     atomSetCollection.newAtomSet();
@@ -68,7 +71,8 @@ public class JmeReader extends AtomSetCollectionReader {
     readAtoms(atomCount);
     readBonds(bondCount);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("is2D", Boolean.TRUE);
-    if (filter == null || filter.toUpperCase().indexOf("NOMIN") < 0)
+    doMinimize = (filter == null || filter.toUpperCase().indexOf("NOMIN") < 0);
+    if (doMinimize)
       addJmolScript("minimize addHydrogens");
     continuing = false;
   }
@@ -94,6 +98,14 @@ public class JmeReader extends AtomSetCollectionReader {
         }
       atom.elementSymbol = elementSymbol;
     }
+    /*
+    if (!doMinimize)
+      return;
+    Atom[] atoms = atomSetCollection.getAtoms();
+    for (int i = 0; i < atomCount; i++) {
+      atoms[i].z += ((i % 2) == 0 ? 0.05f : -0.05f);
+    }
+    */
   }
 
   private void readBonds(int bondCount) throws Exception {

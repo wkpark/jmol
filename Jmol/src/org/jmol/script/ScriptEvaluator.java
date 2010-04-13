@@ -7069,6 +7069,7 @@ public class ScriptEvaluator {
     String filename = null;
     String[] filenames = null;
     String[] tempFileInfo = null;
+    boolean isInline = false;
     int tokType = 0;
     int tok;
     boolean doLoadFiles = (!isSyntaxCheck || isCmdLine_C_Option);
@@ -7082,15 +7083,16 @@ public class ScriptEvaluator {
     } else {
       modelName = parameterAsString(i);
       tok = tokAt(i);
+      /* I have no idea what this was about.
       if (modelName.equalsIgnoreCase("data")) {
         modelName = stringParameter(++i);
         if (!isSyntaxCheck)
           htParams.put("parameterData", viewer.getFileAsString(modelName));
-        loadScript.append(" data /*file*/").append(modelName).append(
-            Escape.escape(modelName));
+        loadScript.append(" data / *file* /").append(Escape.escape(modelName));
         tok = tokAt(++i);
         modelName = parameterAsString(i);
       }
+      */
       if (tok == Token.identifier || modelName.equalsIgnoreCase("fileset")) {
         if (modelName.equals("menu")) {
           String m = parameterAsString(checkLast(2));
@@ -7101,6 +7103,7 @@ public class ScriptEvaluator {
         i++;
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
+        isInline = (modelName.equalsIgnoreCase("inline"));
         tokType = (Parser.isOneOf(modelName.toLowerCase(),
             JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token
             .getTokFromName(modelName.toLowerCase()) : 0);
@@ -7116,7 +7119,7 @@ public class ScriptEvaluator {
         if (isAppend
             && ((filename = optParameterAsString(i))
                 .equalsIgnoreCase("trajectory") || filename
-                .equalsIgnoreCase("models"))) {
+                .equalsIgnoreCase("models") || filename.equalsIgnoreCase("inline"))) {
           modelName = filename;
           loadScript.append(" " + modelName);
           i++;
@@ -7142,6 +7145,7 @@ public class ScriptEvaluator {
             htParams.put("firstLastStep", new int[] { 0, -1, 1 });
           }
         }
+      } else if (modelName.equalsIgnoreCase("inline")){
       } else {
         modelName = "fileset";
       }
@@ -7346,6 +7350,8 @@ public class ScriptEvaluator {
         htParams.put("fileData", s);
         loadScript = new StringBuffer("var " + filename.substring(1) + " = "
             + Escape.escape(s) + ";\n  " + loadScript);
+      } else if (isInline) {
+        htParams.put("fileData", filename);
       }
     }
 
@@ -7380,7 +7386,7 @@ public class ScriptEvaluator {
     if (filenames == null) {
       // a single file or string -- complete the loadScript
       loadScript.append(" ");
-      if (filename.startsWith("@")) {
+      if (filename.startsWith("@") || isInline) {
         loadScript.append(Escape.escape(filename));
       } else {
         if (!filename.equals("string") && !filename.equals("string[]"))

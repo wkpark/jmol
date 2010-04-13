@@ -1928,15 +1928,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     Object atomSetCollection;
     Logger.startTimer();
-    boolean isLoadVariable = fileName.startsWith("@");
     htParams = setLoadParameters(htParams);
-    if (isLoadVariable || fileName.equalsIgnoreCase("string")) {
-      String strModel = (htParams.containsKey("fileData") ? (String) htParams
+    boolean isLoadVariable = fileName.startsWith("@");
+    boolean haveFileData = (htParams.containsKey("fileData"));
+    boolean isString = fileName.equalsIgnoreCase("string");
+    if (haveFileData || isLoadVariable || isString) {
+      String strModel = (haveFileData ? (String) htParams
           .get("fileData") : fileManager.getInlineData(-1));
       if (!isAppend)
         zap(true, false);
       atomSetCollection = fileManager.createAtomSetCollectionFromString(
-          strModel, htParams, isAppend, isLoadVariable);
+          strModel, htParams, isAppend, isLoadVariable || haveFileData && !isString);
     } else {
       if (!isAppend && fileName.charAt(0) != '?')
         zap(false, false);
@@ -2738,7 +2740,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public BitSet getBranchBitSet(int atomIndex, int atomIndexNot) {
-    return modelSet.getBranchBitSet(atomIndex, atomIndexNot);
+    return modelSet.getBranchBitSet(atomIndex, atomIndexNot, true);
   }
 
   public int getAtomIndexFromAtomNumber(int atomNumber) {

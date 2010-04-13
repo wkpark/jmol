@@ -133,7 +133,7 @@ public abstract class AtomSetCollectionReader {
   protected BufferedReader reader;
   protected String readerName;
   public Hashtable htParams;
-  protected String parameterData;
+  //protected String parameterData;
 
   // buffer
   public String line, prevline; 
@@ -320,7 +320,7 @@ public abstract class AtomSetCollectionReader {
     getHeader = htParams.containsKey("getHeader");
     isSequential = htParams.containsKey("isSequential");
     readerName = (String) htParams.get("readerName");
-    parameterData = (String) htParams.get("parameterData");
+    //parameterData = (String) htParams.get("parameterData");
     if (htParams.containsKey("vibrationNumber"))
       desiredVibrationNumber = ((Integer) htParams.get("vibrationNumber")).intValue();
     else if (htParams.containsKey("modelNumber"))

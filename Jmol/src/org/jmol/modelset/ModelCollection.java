@@ -1657,7 +1657,7 @@ abstract public class ModelCollection extends BondCollection {
       for (int i = 0; i < bonds.length; i++) {
         Atom a = bonds[i].getOtherAtom(thisAtom);
         if (invAtoms.get(a.index)) {
-            bsAtoms.or(getBranchBitSet(a.index, iAtom));
+            bsAtoms.or(getBranchBitSet(a.index, iAtom, true));
         } else {
           vNot.add(a);
         }
@@ -1785,7 +1785,7 @@ abstract public class ModelCollection extends BondCollection {
           m = models[modelIndex];
           thisModelIndex = modelIndex;
         }
-        bsBranch = getBranchBitSet(i, -1);
+        bsBranch = getBranchBitSet(i, -1, true);
         addMolecule(i, bsBranch, m, atomlist);
       }
     return molecules;
@@ -1804,32 +1804,34 @@ abstract public class ModelCollection extends BondCollection {
     moleculeCount++;
   }
 
-  public BitSet getBranchBitSet(int atomIndex, int atomIndexNot) {
+  public BitSet getBranchBitSet(int atomIndex, int atomIndexNot, boolean allowCyclic) {
     BitSet bs = new BitSet(atomCount);
     if (atomIndex < 0)
       return bs;
     BitSet bsToTest = getModelAtomBitSet(atoms[atomIndex].modelIndex, true);
     if (atomIndexNot >= 0)
       bsToTest.clear(atomIndexNot);
-    getCovalentlyConnectedBitSet(atoms[atomIndex], bs, bsToTest);
-    return bs;
+    return (getCovalentlyConnectedBitSet(atoms[atomIndex], bs, bsToTest, allowCyclic) ?
+        bs : new BitSet());
   }
 
-  private void getCovalentlyConnectedBitSet(Atom atom, BitSet bs,
-                                            BitSet bsToTest) {
+  private boolean getCovalentlyConnectedBitSet(Atom atom, BitSet bs,
+                                            BitSet bsToTest, boolean allowCyclic) {
     int atomIndex = atom.index;
     if (!bsToTest.get(atomIndex))
-      return;
+      return allowCyclic;
     bsToTest.clear(atomIndex);
     bs.set(atomIndex);
     if (atom.bonds == null)
-      return;
+      return true;
     for (int i = atom.bonds.length; --i >= 0;) {
       Bond bond = atom.bonds[i];
       if ((bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
         continue;
-      getCovalentlyConnectedBitSet(bond.getOtherAtom(atom), bs, bsToTest);
+      if (!getCovalentlyConnectedBitSet(bond.getOtherAtom(atom), bs, bsToTest, allowCyclic))
+        return false;
     }
+    return true;
   }
 
   public boolean hasCalculatedHBonds(BitSet bs) {

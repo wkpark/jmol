@@ -27,7 +27,6 @@ package org.jmol.adapter.readers.simple;
 import org.jmol.adapter.smarter.*;
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.modelset.AtomCollection;
 import org.jmol.util.TextFormat;
 
 public class JmeReader extends AtomSetCollectionReader {

@@ -56,7 +56,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * String characters --> Token token --> Vector ltoken[] --> Token[][] aatokenCompiled[][]
    * 
    */
-  private static final String LOAD_TYPES = "append;data;files;menu;trajectory;models;" + JmolConstants.LOAD_ATOM_DATA_TYPES;
+  private static final String LOAD_TYPES = "append;data;files;inline;menu;trajectory;models;" + JmolConstants.LOAD_ATOM_DATA_TYPES;
   
   public ScriptCompiler(Viewer viewer) {
     this.viewer = viewer;

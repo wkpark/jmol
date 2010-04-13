@@ -106,8 +106,6 @@ public class JmeReader extends AtomSetCollectionReader {
 
   private void readBonds(int bondCount) throws Exception {
     for (int i = 0; i < bondCount; ++i) {
-      int atomIndex1 = parseInt(tokenizer.nextToken()) - 1;
-      int atomIndex2 = parseInt(tokenizer.nextToken()) - 1;
       int order = parseInt(tokenizer.nextToken());
       switch (order) {
       default:
@@ -123,6 +121,8 @@ public class JmeReader extends AtomSetCollectionReader {
         order = JmolAdapter.ORDER_STEREO_FAR;
         break;
       }
+      int atomIndex1 = parseInt(tokenizer.nextToken()) - 1;
+      int atomIndex2 = parseInt(tokenizer.nextToken()) - 1;
       atomSetCollection.addBond(new Bond(atomIndex1, atomIndex2, order));
     }
   }

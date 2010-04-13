@@ -113,8 +113,8 @@ public class JmeReader extends AtomSetCollectionReader {
       default:
         continue;
       case 1:
-        atomSetCollection.getAtom(atomIndex2).z = -atomSetCollection
-            .getAtom(atomIndex1).z;
+      case 2:
+      case 3:
         break;
       case -1:
         order = JmolAdapter.ORDER_STEREO_NEAR;

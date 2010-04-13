@@ -588,7 +588,7 @@ public class ScriptEvaluator {
       pt = -pt;
     int nParen = 0;
     ScriptMathProcessor rpn = new ScriptMathProcessor(this, isArrayItem,
-        asVector);
+        asVector, false);
     if (pt == 0 && ptMax == 0) // set command with v[...] = ....
       pt = 2;
     if (ptMax < pt)
@@ -778,7 +778,11 @@ public class ScriptEvaluator {
         i = iToken;
         break;
       case Token.expressionBegin:
-        if (tokAt(i + 1) == Token.all && tokAt(i + 2) == Token.expressionEnd) {
+        if (tokAt(i + 1) == Token.expressionEnd) {
+          v = new BitSet();
+          i++;
+          break;
+        } else if (tokAt(i + 1) == Token.all && tokAt(i + 2) == Token.expressionEnd) {
           tok = Token.all;
           iToken += 2;
         }
@@ -2893,7 +2897,7 @@ public class ScriptEvaluator {
       tempStatement = statement;
       statement = code;
     }
-    ScriptMathProcessor rpn = new ScriptMathProcessor(this, false, false);
+    ScriptMathProcessor rpn = new ScriptMathProcessor(this, false, false, mustBeBitSet);
     Object val;
     int comparisonValue = Integer.MAX_VALUE;
     boolean refreshed = false;
@@ -2939,6 +2943,8 @@ public class ScriptEvaluator {
         }
         break; // ignore otherwise
       case Token.rightbrace:
+        if (pc > 0 && code[pc - 1].tok == Token.leftbrace)
+          rpn.addX(new BitSet());
         break;
       case Token.leftsquare:
         isInMath = true;

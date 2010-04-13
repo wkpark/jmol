@@ -59,19 +59,16 @@ public class JmeReader extends AtomSetCollectionReader {
    * Bob Hanson hansonr@stolaf.edu 4/11/2010
    */
 
-  private boolean doMinimization = true;
-
   public void initializeReader() throws Exception {
     atomSetCollection.setCollectionName("JME");
     atomSetCollection.newAtomSet();
-    doMinimization = (filter == null || filter.toUpperCase().indexOf("NOMIN") < 0);
     line = readLine().replace('\t', ' ');
     int atomCount = parseInt();
     int bondCount = parseInt();
     readAtoms(atomCount);
     readBonds(bondCount);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("is2D", Boolean.TRUE);
-    if (doMinimization)
+    if (filter == null || filter.toUpperCase().indexOf("NOMIN") < 0)
       addJmolScript("minimize addHydrogens");
     continuing = false;
   }

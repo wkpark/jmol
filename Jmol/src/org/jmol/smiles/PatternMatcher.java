@@ -57,6 +57,9 @@ public class PatternMatcher implements SmilesMatcherInterface {
 
   private int atomCount;
   private ModelSet modelSet;
+  private BitSet bsSelected;
+  private BitSet bsRequired;
+  private BitSet bsNot;
 
   /**
    * Constructs a <code>PatternMatcher</code>.
@@ -85,10 +88,18 @@ public class PatternMatcher implements SmilesMatcherInterface {
    * Returns a vector of bits indicating which atoms match the pattern.
    * 
    * @param smiles SMILES pattern.
+   * @param bsSelected 
+   * @param bsRequired 
+   * @param bsNot 
    * @return BitSet Array indicating which atoms match the pattern.
    * @throws Exception Raised if <code>smiles</code> is not a valid SMILES pattern.
    */
-  public BitSet[] getSubstructureSetArray(String smiles) throws Exception {
+  public BitSet[] getSubstructureSetArray(String smiles, BitSet bsSelected,
+                                          BitSet bsRequired, BitSet bsNot)
+      throws Exception {
+    this.bsSelected = bsSelected;
+    this.bsRequired = (bsRequired != null && bsRequired.cardinality() > 0 ? bsRequired : null);
+    this.bsNot = bsNot;
     SmilesParser parser = new SmilesParser();
     SmilesMolecule pattern = parser.parseSmiles(smiles);
     return getSubstructureSetArray(pattern);
@@ -118,6 +129,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
     BitSet[] bitsets = new BitSet[vSubstructures.size()];
     for (int i = 0; i < bitsets.length; i++)
       bitsets[i] = (BitSet) vSubstructures.get(i);
+    bsSelected = bsRequired = bsNot = null;
     return bitsets;
   }
 
@@ -255,6 +267,13 @@ public class PatternMatcher implements SmilesMatcherInterface {
         if (ret instanceof Vector) {
           Vector v = (Vector) ret;
           boolean isOK = true;
+          if (bsNot != null && bsNot.intersects(bs))
+            isOK = false;
+          else if (bsRequired != null && !bsRequired.intersects(bs))
+            isOK = false;
+          else if (bsSelected != null)
+            for (int j = bs.nextSetBit(0); j >= 0 && isOK; j = bs.nextSetBit(j + 1))
+              isOK = bsSelected.get(j);
           for (int j = v.size(); --j >= 0 && isOK;)
             isOK = !(((BitSet) v.get(j)).equals(bs));
           if (isOK)

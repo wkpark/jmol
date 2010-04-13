@@ -85,17 +85,19 @@ class ScriptMathProcessor {
   private int incrementX;
   private boolean isArrayItem;
   private boolean asVector;
+  private boolean asBitSet;
   private int ptid = 0;
   private int ptx = Integer.MAX_VALUE;
 
   ScriptMathProcessor(ScriptEvaluator eval, boolean isArrayItem,
-      boolean asVector) {
+      boolean asVector, boolean asBitSet) {
     this.eval = eval;
     this.viewer = eval.viewer;
     this.logMessages = eval.logMessages;
     this.isSyntaxCheck = eval.isSyntaxCheck;
     this.isArrayItem = isArrayItem;
     this.asVector = asVector || isArrayItem;
+    this.asBitSet = asBitSet;
     wasX = isArrayItem;
     if (logMessages)
       Logger.info("initialize RPN");
@@ -126,6 +128,16 @@ class ScriptMathProcessor {
             || x.tok == Token.string || x.tok == Token.matrix3f
             || x.tok == Token.matrix4f)
           x = ScriptVariable.selectItem(x);
+        if (asBitSet && x.tok == Token.list) {
+          BitSet bs = new BitSet();
+          String[] list = (String[]) x.value;
+          for (int i = 0; i < list.length; i++) {
+            BitSet bs1 = Escape.unescapeBitset(list[i]);
+            if (bs1 != null)
+              bs.or(bs1);
+          }
+          x = new ScriptVariable(Token.bitset, bs);
+        }
         return x;
       }
     }
@@ -1852,13 +1864,58 @@ class ScriptMathProcessor {
     boolean isWithinModelSet = false;
     boolean isWithinGroup = false;
     boolean isDistance = (tok == Token.decimal || tok == Token.integer);
-    if (withinStr.equals("branch")) {
+    switch (tok) {
+    case Token.branch:
       if (i != 3 || !(args[1].value instanceof BitSet)
           || !(args[2].value instanceof BitSet))
         return false;
       return addX(viewer.getBranchBitSet(
           ((BitSet) args[2].value).nextSetBit(0), ((BitSet) args[1].value)
               .nextSetBit(0)));
+    case Token.smiles:
+      BitSet bsSelected = null;
+      BitSet bsRequired = null;
+      BitSet bsNot = null;
+      boolean isOK = true;
+      switch (i) {
+      case 2:
+        break;
+      case 5:
+        isOK = (args[4].tok == Token.bitset);
+        if (isOK)
+          bsNot = (BitSet) args[4].value;
+        else
+          break;
+        // fall through
+      case 4:
+        isOK = (args[3].tok == Token.bitset);
+        if (isOK)
+          bsRequired = (BitSet) args[3].value;
+        else
+          break;
+        // fall through
+      case 3:
+        isOK = (args[2].tok == Token.bitset);
+        if (isOK)
+          bsSelected = (BitSet) args[2].value;
+        break;
+      default:
+        isOK = false;
+      }
+      if (!isOK)
+        eval.error(ScriptEvaluator.ERROR_invalidArgument);
+      if (isSyntaxCheck)
+        return addX(new Vector());
+      try {
+        BitSet[] b = viewer.getSmilesMatcher().getSubstructureSetArray(
+            ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot);
+        String[] matches = new String[b.length];
+        for (int j = 0; j < b.length; j++)
+          matches[j] = Escape.escape(b[j]);
+        return addX(matches);
+      } catch (Exception e) {
+        eval.evalError(e.getMessage(), null);
+      }
     }
     if (withinSpec instanceof String) {
       if (tok == Token.nada) {
@@ -1909,21 +1966,8 @@ class ScriptMathProcessor {
       case Token.atomtype:
       case Token.basepair:
       case Token.sequence:
-        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(tok,
-            ScriptVariable.sValue(args[args.length - 1])));
-      case Token.smiles:
-        if (isSyntaxCheck)
-          return addX(new Vector());
-        try {
-          BitSet[] b = viewer.getSmilesMatcher().getSubstructureSetArray(
-              ScriptVariable.sValue(args[1]));
-          String[] matches = new String[b.length];
-          for (int j = 0; j < b.length; j++)
-            matches[j] = Escape.escape(b[j]);
-          return addX(matches);
-        } catch (Exception e) {
-          eval.evalError(e.getMessage(), null);
-        }
+        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(tok, ScriptVariable
+            .sValue(args[args.length - 1])));
       }
       break;
     case 3:
@@ -1949,7 +1993,8 @@ class ScriptMathProcessor {
       plane = (Point4f) args[i].value;
     } else if (args[i].value instanceof Point3f) {
       pt = (Point3f) args[i].value;
-      if (!isSyntaxCheck && ScriptVariable.sValue(args[1]).equalsIgnoreCase("hkl"))
+      if (!isSyntaxCheck
+          && ScriptVariable.sValue(args[1]).equalsIgnoreCase("hkl"))
         plane = eval.getHklPlane(pt);
     }
     if (i > 0 && plane == null && pt == null

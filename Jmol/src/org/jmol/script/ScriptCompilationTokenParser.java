@@ -317,6 +317,8 @@ abstract class ScriptCompilationTokenParser {
         addNextToken();
       if (!clauseAnd())
         return false;
+      if (allowComma && (lastToken.tok == Token.rightbrace || lastToken.tok == Token.bitset))
+        haveString = true;
     }
     return true;
   }
@@ -452,7 +454,7 @@ abstract class ScriptCompilationTokenParser {
     } else {
       addNextToken();
     }
-    if (!clauseOr(false))
+    if (!tokPeek(Token.rightbrace) && !clauseOr(false))
       return false;
     int n = 1;
     while (!tokPeek(Token.rightbrace)) {
@@ -617,8 +619,7 @@ abstract class ScriptCompilationTokenParser {
             addTokenToPostfix(getToken());
           }
         }
-      } else if (!clauseOr(allowComma)) {// *expression*
-        return error(ERROR_badArgumentCount);
+      } else if (!clauseOr(allowComma)) {// *expression*        return error(ERROR_badArgumentCount);
       }
     }
     if (!addNextTokenIf(Token.rightparen))

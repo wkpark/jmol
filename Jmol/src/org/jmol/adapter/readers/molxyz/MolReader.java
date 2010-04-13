@@ -46,6 +46,10 @@ import org.jmol.util.Logger;
  *  setAtomCoord(atom, x, y, z)
  *  applySymmetryAndSetTrajectory()
  *  
+ *  simple 2D-->3D conversion using
+ *  
+ *  load "xxx.mol" FILTER "2D"
+ *  
  */
 public class MolReader extends AtomSetCollectionReader {
 
@@ -68,6 +72,12 @@ public class MolReader extends AtomSetCollectionReader {
    * $END RGP
    * $END MOL
    */
+
+  boolean is2D;
+  
+  public void initializeReader() throws Exception {
+    is2D = (filter != null && filter.toUpperCase().indexOf("2D") >= 0);
+  }
 
   protected boolean checkLine() throws Exception {
     // reader-dependent
@@ -95,6 +105,13 @@ public class MolReader extends AtomSetCollectionReader {
     return true;
   }
   
+  public void finalizeReader() throws Exception {
+    if (is2D /* STILL! */) {
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("is2D", Boolean.TRUE);
+      addJmolScript("minimize addHydrogens");
+    }
+  }
+
   void processMolSdHeader() throws Exception {
     /* 
      * obviously we aren't being this strict, but for the record:
@@ -168,6 +185,8 @@ public class MolReader extends AtomSetCollectionReader {
       float x = parseFloat(line, 0, 10);
       float y = parseFloat(line, 10, 20);
       float z = parseFloat(line, 20, 30);
+      if (is2D && z != 0)
+        is2D = false;
       int charge = 0;
       if (line.length() >= 39) {
         int code = parseInt(line, 36, 39);

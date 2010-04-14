@@ -335,7 +335,7 @@ public class Minimizer implements MinimizerInterface {
         for (int j = 0, pt = 0; j < atomCountFull; j++)
           if (bsAtoms.get(j)) {
             if (search.get(j)) {
-              minAtoms[pt].type = data[1];
+              minAtoms[pt].type = data[1].intern();
               //System.out.println("pt" +pt + data[1]);
             }
             pt++;

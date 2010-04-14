@@ -284,7 +284,7 @@ class CalculationsUFF extends Calculations {
       a = atoms[ia = angle[0]];
       b = atoms[ib = angle[1]];
       c = atoms[ic = angle[2]];
-      boolean isHXH = (a.type.equals("H_") && c.type.equals("H_"));
+      boolean isHXH = (a.type == "H_" && c.type == "H_");
 
       parA = getParameter(a.type, ffParams);
       parB = getParameter(b.type, ffParams);
@@ -695,7 +695,7 @@ class CalculationsUFF extends Calculations {
       double koop = KCAL6;
       switch (elemNo) {
       case 6: // carbon could be a carbonyl, which is considerably stronger
-        if ((a.type + c.type + d.type).indexOf("O_2") >= 0) {
+        if (a.type == "O_2" || c.type == "O_2" || d.type == "O_2") {
           koop += KCAL44;
           break;
         }/* else if (b.type.lastIndexOf("R") == 2) 

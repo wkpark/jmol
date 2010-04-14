@@ -25,6 +25,7 @@
 
 package org.jmol.shapespecial;
 
+import java.util.BitSet;
 import java.util.Enumeration;
 
 import javax.vecmath.Matrix3f;
@@ -329,6 +330,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
   }
   
+  private BitSet bsTemp = new BitSet();
+  
   private void renderArc(Point3f ptAtom, int ptA, int ptB) {
     v1.set(points[ptA]);
     v1.sub(ptAtom);
@@ -342,7 +345,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     pt1.set(points[ptA]);
     s1.set(screens[ptA]);
     boolean fillArc = drawFill && !drawBall;
-    short normix = ellipsoids.g3d.get2SidedNormix(v3);
+    short normix = Graphics3D.get2SidedNormix(v3, bsTemp);
     if (!fillArc && !wireframeOnly)
       screens[6].set(s1);
     for (int i = 0, pt = 0; i < 18; i++, pt += 2) {

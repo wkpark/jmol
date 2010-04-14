@@ -807,20 +807,8 @@ final public class Export3D implements JmolRendererInterface {
     return g3d.isDirectedTowardsCamera(normix);
   }
 
-  public short getNormix(Vector3f vector) {
-    return g3d.getNormix(vector);
-  }
-
-  public short getInverseNormix(short normix) {
-    return g3d.getInverseNormix(normix);
-  }
-
   public Vector3f[] getTransformedVertexVectors() {
     return g3d.getTransformedVertexVectors();
-  }
-
-  public Vector3f getNormixVector(short normix) {
-    return g3d.getNormixVector(normix);
   }
 
   public Font3D getFont3DScaled(Font3D font, float scale) {

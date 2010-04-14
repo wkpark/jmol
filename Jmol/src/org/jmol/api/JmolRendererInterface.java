@@ -310,15 +310,9 @@ public interface JmolRendererInterface {
 
   public abstract byte getFontFid(String fontFace, float fontSize);
 
-  public abstract short getNormix(Vector3f vector);
-  
-  public abstract short getInverseNormix(short normix);
-
   public abstract boolean isDirectedTowardsCamera(short normix);
 
   public abstract Vector3f[] getTransformedVertexVectors();
-
-  public abstract Vector3f getNormixVector(short normix);
 
   public abstract Font3D getFont3DScaled(Font3D font3d, float imageFontScaling);
 

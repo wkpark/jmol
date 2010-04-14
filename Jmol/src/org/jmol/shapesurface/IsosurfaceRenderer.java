@@ -330,7 +330,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
           short n = mesh.normixes[i];
           // -n is an intensity2sided and does not correspond to a true normal index
           if (n >= 0) {
-            ptTemp.add(g3d.getNormixVector(n));
+            ptTemp.add(Graphics3D.getNormixVector(n));
             viewer.transformPoint(ptTemp, ptTempi);
             g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 1,
                 screens[i], ptTempi);

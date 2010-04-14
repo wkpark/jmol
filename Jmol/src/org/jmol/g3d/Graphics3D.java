@@ -25,6 +25,7 @@ package org.jmol.g3d;
 
 import java.awt.Component;
 import java.awt.Image;
+import java.util.BitSet;
 import java.util.Hashtable;
 
 import javax.vecmath.Matrix4f;
@@ -2848,20 +2849,18 @@ final public class Graphics3D implements JmolRendererInterface {
 
   public static final short NORMIX_NULL = 9999;
 
-  public short getNormix(Vector3f vector) {
-    return normix3d.getNormix(vector.x, vector.y, vector.z,
-                              Normix3D.NORMIX_GEODESIC_LEVEL);
+  public static short getNormix(Vector3f vector, BitSet bsTemp) {
+    return Normix3D.getNormix(vector.x, vector.y, vector.z,
+                              Normix3D.NORMIX_GEODESIC_LEVEL, bsTemp);
   }
 
-  public short getInverseNormix(short normix) {
-    if (normix3d.inverseNormixes == null)
-      normix3d.calculateInverseNormixes();
-    return normix3d.inverseNormixes[normix];
+  public static short getInverseNormix(short normix) {
+    return Normix3D.inverseNormixes[normix];
   }
 
-  public short get2SidedNormix(Vector3f vector) {
-    return (short)~normix3d.getNormix(vector.x, vector.y, vector.z,
-                                      Normix3D.NORMIX_GEODESIC_LEVEL);
+  public static short get2SidedNormix(Vector3f vector, BitSet bsTemp) {
+    return (short)~Normix3D.getNormix(vector.x, vector.y, vector.z,
+                                      Normix3D.NORMIX_GEODESIC_LEVEL, bsTemp);
   }
 
   public boolean isDirectedTowardsCamera(short normix) {
@@ -2873,8 +2872,8 @@ final public class Graphics3D implements JmolRendererInterface {
     return normix3d.getTransformedVectors();
   }
 
-  public Vector3f getNormixVector(short normix) {
-    return normix3d.getVector(normix);
+  public static Vector3f getNormixVector(short normix) {
+    return Normix3D.getVector(normix);
   }
 
   public void renderBackground() {

@@ -46,32 +46,32 @@ class Normix3D {
 
   private final static int normixCount = Geodesic.getVertexCount(NORMIX_GEODESIC_LEVEL);
   private final static Vector3f[] vertexVectors = Geodesic.getVertexVectors(); 
+  static final short[] inverseNormixes = new short[normixCount];
   private final static short[][] neighborVertexesArrays = Geodesic.getNeighborVertexesArrays();
-
-  private final Vector3f[] transformedVectors;
-  private final byte[] shadeIndexes;
-  private final byte[] shadeIndexes2Sided;
-
-  
   private final static boolean TIMINGS = false;
   
   //private final static boolean DEBUG_WITH_SEQUENTIAL_SEARCH = false;
 
+  
+  // instance variables depend upon current orientation:
+  
   private final Matrix3f rotationMatrix = new Matrix3f();
+  private final Vector3f[] transformedVectors = new Vector3f[normixCount];
+  private final byte[] shadeIndexes = new byte[normixCount];
+  private final byte[] shadeIndexes2Sided = new byte[normixCount];
+
 
   Normix3D() {
     //level      0   1    2    3
     //vertices  12, 42, 162, 642
-    shadeIndexes = new byte[normixCount];
-    shadeIndexes2Sided = new byte[normixCount];
-    transformedVectors = new Vector3f[normixCount];
     for (int i = normixCount; --i >= 0; )
       transformedVectors[i] = new Vector3f();
 
+    BitSet bsTemp = new BitSet();
     if (TIMINGS) {
       Logger.info("begin timings!");
       for (int i = 0; i < normixCount; ++i) {
-        short normix = getNormix(vertexVectors[i]);
+        short normix = getNormix(vertexVectors[i], bsTemp);
         Logger.info("draw normix" + i + " {" + vertexVectors[i].x + " " + vertexVectors[i].y + " " + vertexVectors[i].z + "} {0 0 0} \""+i+"\"");
         if (normix != i)
           if (Logger.debugging) {
@@ -116,7 +116,7 @@ class Normix3D {
         vBar.set(vertexVectors[bar]);
         vBar.scale(rand.nextFloat());
         vSum.add(vFoo, vBar);
-        short sum = getNormix(vSum);
+        short sum = getNormix(vSum, bsTemp);
         if (sum != foo && sum != bar) {
 /*          if (Logger.debugging) {
             Logger.debug(
@@ -134,7 +134,7 @@ class Normix3D {
 */
           throw new NullPointerException();
         }
-        short sum2 = getNormix(vSum);
+        short sum2 = getNormix(vSum, bsTemp);
         if (sum != sum2) {
           Logger.debug("normalized not the same answer?");
           throw new NullPointerException();
@@ -142,8 +142,13 @@ class Normix3D {
       }
       Logger.checkTimer("normix2 runtime for " + runCount);
     }
-  }
 
+    for (int n = normixCount; --n >= 0; ) {
+      Vector3f v = vertexVectors[n];
+      inverseNormixes[n] = getNormix(-v.x, -v.y, -v.z, NORMIX_GEODESIC_LEVEL, bsTemp);
+    } 
+  }
+  
   Vector3f[] getTransformedVectors() {
     return transformedVectors;
   }
@@ -153,18 +158,15 @@ class Normix3D {
     return (normix < 0) || (transformedVectors[normix].z > 0);
   }
 
-  short getNormix(Vector3f v) {
-    return getNormix(v.x, v.y, v.z, NORMIX_GEODESIC_LEVEL);
+  static short getNormix(Vector3f v, BitSet bsTemp) {
+    return getNormix(v.x, v.y, v.z, NORMIX_GEODESIC_LEVEL, bsTemp);
   }
 
-  Vector3f getVector(short normix) {
+  static Vector3f getVector(short normix) {
     return vertexVectors[normix];
   }
   
-
-  private final BitSet bsConsidered = new BitSet();
-
-  short getNormix(double x, double y, double z, int geodesicLevel) {
+  static short getNormix(double x, double y, double z, int geodesicLevel, BitSet bsConsidered) {
     short champion;
     double t;
     if (z >= 0) {
@@ -235,20 +237,6 @@ class Normix3D {
     }
 */
     return champion;
-  }
-
-  short[] inverseNormixes;
-
-  void calculateInverseNormixes() {
-    inverseNormixes = new short[normixCount];
-    for (int n = normixCount; --n >= 0; ) {
-      Vector3f v = vertexVectors[n];
-      inverseNormixes[n] = getNormix(-v.x, -v.y, -v.z, NORMIX_GEODESIC_LEVEL);
-      }
-    // validate that everyone's inverse is themselves
-    //for (int n = normixCount; --n >= 0; )
-    //  if (inverseNormixes[inverseNormixes[n]] != n)
-    //    throw new NullPointerException();
   }
 
   private static byte nullShadeIndex = 50;

@@ -406,6 +406,7 @@ public class Polyhedra extends AtomShape {
       }
     Point3f ptRef = new Point3f();
     // this next check for distance allows for bond AND distance constraints
+    BitSet bsTemp = new BitSet();
     for (int i = 0; i < ptCenter - 2; i++)
       for (int j = i + 1; j < ptCenter - 1; j++) {
         if (points[i].distance(points[j]) > distMax)
@@ -455,8 +456,8 @@ public class Polyhedra extends AtomShape {
             planesT[ipt++] = (byte) nRef;
             Measure.getNormalFromCenter(points[k], points[i], points[j],
                 ptRef, false, normal);
-            normixesT[planeCount++] = (isFaceCentered ? g3d
-                .get2SidedNormix(normal) : g3d.getNormix(normal));
+            normixesT[planeCount++] = (isFaceCentered ? Graphics3D
+                .get2SidedNormix(normal, bsTemp) : Graphics3D.getNormix(normal, bsTemp));
           }
           facet = faceId(i, k, -1);
           if (isCollapsed || isFaceCentered && facetCatalog.indexOf(facet) < 0) {
@@ -466,8 +467,8 @@ public class Polyhedra extends AtomShape {
             planesT[ipt++] = (byte) k;
             Measure.getNormalFromCenter(points[j], points[i], ptRef,
                 points[k], false, normal);
-            normixesT[planeCount++] = (isFaceCentered ? g3d
-                .get2SidedNormix(normal) : g3d.getNormix(normal));
+            normixesT[planeCount++] = (isFaceCentered ? Graphics3D
+                .get2SidedNormix(normal, bsTemp) : Graphics3D.getNormix(normal, bsTemp));
           }
           facet = faceId(j, k, -1);
           if (isCollapsed || isFaceCentered && facetCatalog.indexOf(facet) < 0) {
@@ -477,8 +478,8 @@ public class Polyhedra extends AtomShape {
             planesT[ipt++] = (byte) k;
             Measure.getNormalFromCenter(points[i], ptRef, points[j],
                 points[k], false, normal);
-            normixesT[planeCount++] = (isFaceCentered ? g3d
-                .get2SidedNormix(normal) : g3d.getNormix(normal));
+            normixesT[planeCount++] = (isFaceCentered ? Graphics3D
+                .get2SidedNormix(normal, bsTemp) : Graphics3D.getNormix(normal, bsTemp));
           }
           if (!isFaceCentered) {
             if (isCollapsed) {
@@ -488,7 +489,7 @@ public class Polyhedra extends AtomShape {
               planesT[ipt++] = (byte) i;
               planesT[ipt++] = (byte) j;
               planesT[ipt++] = (byte) k;
-              normixesT[planeCount++] = g3d.getNormix(normal);
+              normixesT[planeCount++] = Graphics3D.getNormix(normal, bsTemp);
             }
           }
         }

@@ -41,8 +41,7 @@ import javax.vecmath.Vector3f;
 public class Mesh extends MeshSurface {
   
   public final static String PREVIOUS_MESH_ID = "+PREVIOUS_MESH+";
-  private JmolRendererInterface g3d;
-  
+
   public String[] title;
   
   public short[] normixes;
@@ -91,7 +90,6 @@ public class Mesh extends MeshSurface {
     if (PREVIOUS_MESH_ID.equals(thisID))
       thisID = null;
     this.thisID = thisID;
-    this.g3d = g3d;
     this.colix = colix;
     this.index = index;
     //System.out.println("Mesh " + this + " constructed");
@@ -135,12 +133,13 @@ public class Mesh extends MeshSurface {
     Vector3f[] normals = getNormals(vertices);
     normixes = new short[normixCount];
     isTwoSided = (lighting == JmolConstants.FULLYLIT);
+    BitSet bsTemp = new BitSet();
     if (haveXyPoints)
       for (int i = normixCount; --i >= 0;)
         normixes[i] = Graphics3D.NORMIX_NULL;
     else
       for (int i = normixCount; --i >= 0;)
-        normixes[i] = g3d.getNormix(normals[i]);
+        normixes[i] = Graphics3D.getNormix(normals[i], bsTemp);
     this.lighting = JmolConstants.FRONTLIT;
     if (insideOut)
       invertNormixes();
@@ -176,7 +175,7 @@ public class Mesh extends MeshSurface {
 
   private void invertNormixes() {
     for (int i = normixCount; --i >= 0;)
-      normixes[i] = g3d.getInverseNormix(normixes[i]);
+      normixes[i] = Graphics3D.getInverseNormix(normixes[i]);
   }
 
   public void setTranslucent(boolean isTranslucent, float iLevel) {

@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-04-11 18:02+0200\n"
-"PO-Revision-Date: 2010-03-17 00:36+0000\n"
-"Last-Translator: LI Anbang <lianbang@gmail.com>\n"
+"PO-Revision-Date: 2010-04-11 21:21+0000\n"
+"Last-Translator: Charles Fu <Unknown>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-03-17 20:32+0000\n"
+"X-Launchpad-Export-Date: 2010-04-13 18:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:97
@@ -102,9 +102,7 @@ msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
-msgstr ""
-"信息会显示于此。在下方窗口中键入命令。点击主控台的帮助(Help)菜单可得到在线帮"
-"助信息（新窗口中显示）。"
+msgstr "信息会显示于此。在下方窗口中键入命令。点击主控台的帮助(Help)菜单可得到在线帮助信息（新窗口中显示）。"
 
 #: org/jmol/appletwrapper/AppletWrapper.java:91
 msgid "Loading Jmol applet ..."
@@ -140,7 +138,8 @@ msgid "Check"
 msgstr "勾选"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "回到顶端"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -1811,9 +1810,9 @@ msgid "{0} require that only one model be displayed"
 msgstr "{0} 要求只显示一个模型"
 
 #: org/jmol/script/ScriptEvaluator.java:2456
-#, fuzzy, java-format
+#, java-format
 msgid "{0} requires that only one model be loaded"
-msgstr "{0} 要求只显示一个模型"
+msgstr "{0} 要求仅有一个模型被加载"
 
 #: org/jmol/script/ScriptEvaluator.java:2459
 msgid "No data available"
@@ -2187,18 +2186,21 @@ msgstr "无法设置日志文件路径"
 msgid "Setting log file to {0}"
 msgstr "设定日志文件为 {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "错误：不能把布尔真假值设定为字符串值：{0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "错误：不能把布尔真假值标设定为数值：{0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "错误：不能把这个变量值设为布尔真假值：{0}"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr "不允许用这个小程序创建文件。欲使用 Base64 JPEC 格式，请使用 {0}。"
 
 #~ msgid "File creation failed."

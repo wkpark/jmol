@@ -198,7 +198,7 @@ public abstract class Shape {
       return false;
     }
     */
-    if (Logger.debugging)
+    if (Logger.debugging && shapeID != JmolConstants.SHAPE_HOVER)
       Logger.info(myType + " setProperty: " + propertyName + " = " + value);
 
     /*

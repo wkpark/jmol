@@ -929,7 +929,8 @@ public class ActionManager {
         * SLIDE_ZOOM_X_PERCENT / 100f;
   }
 
-  private boolean checkPointOrAtomClicked(int x, int y, int mods, int clickedCount) {
+  private boolean checkPointOrAtomClicked(int x, int y, int mods,
+                                          int clickedCount) {
     if (!viewer.haveModelSet())
       return false;
     // points are always picked up first, then atoms
@@ -951,8 +952,8 @@ public class ActionManager {
     }
     if (nearestPoint != null && Float.isNaN(nearestPoint.x))
       return false;
-    int nearestAtomIndex = (drawMode || nearestPoint != null ? 
-        -1 : viewer.findNearestAtomIndex(x, y));
+    int nearestAtomIndex = (drawMode || nearestPoint != null ? -1 : viewer
+        .findNearestAtomIndex(x, y));
     if (nearestAtomIndex >= 0
         && (clickedCount > 0 || measurementPending == null)
         && !viewer.isInSelectionSubset(nearestAtomIndex))
@@ -971,9 +972,9 @@ public class ActionManager {
       return (nearestAtomIndex >= 0);
     }
     setMouseMode();
-    
+
     if (isBound(action, ACTION_stopMotion)) {
-        viewer.stopMotion();
+      viewer.stopMotion();
       // continue checking --- no need to exit here
     }
 
@@ -997,7 +998,7 @@ public class ActionManager {
       }
       return false;
     }
-   
+
     if (isBound(action, ACTION_setMeasure)) {
       if (measurementPending != null) {
         addToMeasurement(nearestAtomIndex, nearestPoint, true);
@@ -1016,9 +1017,14 @@ public class ActionManager {
       viewer.deleteBonds(bs);
       return false;
     }
-    if (isBound(action, ACTION_pickAtom) || isBound(action, ACTION_pickPoint)) {
+    boolean isDragSelected = (dragSelectedMode
+        && (isBound(action, ACTION_rotateSelected) || isBound(action,
+            ACTION_dragSelected))); 
+    if (isBound(action, ACTION_pickAtom)
+        || isBound(action, ACTION_pickPoint)
+        || isDragSelected) {
       // TODO: in drawMode the binding changes
-      atomPicked(nearestAtomIndex, nearestPoint, action);
+      atomPicked(nearestAtomIndex, nearestPoint, isDragSelected ? 0 : action);
       return (nearestAtomIndex >= 0);
     }
     if (isBound(action, ACTION_reset)) {
@@ -1467,13 +1473,18 @@ public class ActionManager {
     String s = (isBound(action, ACTION_selectAndNot) ? "selected and not "
         : isBound(action, ACTION_selectOr) ? "selected or " : isBound(action,
             ACTION_selectToggle) ? "selected and not (" + item
-            + ") or (not selected) and " : isBound(action,
+            + ") or (not selected) and " : action == 0 || isBound(action,
             ACTION_selectToggleExtended) ? "selected tog " : isBound(action,
             ACTION_select) ? "" : null);
     if (s != null) {
-      BitSet bs = getSelectionSet(s + "(" + item + ")");
-      if (bs != null)
+      s += "(" + item + ")";
+      if (Logger.debugging)
+        Logger.debug(s);
+      BitSet bs = getSelectionSet(s);
+      if (bs != null) {
         viewer.setSelectionSet(bs);
+        viewer.refresh(3, "selections set");
+      }
     }
     selectionWorking = false;
   }

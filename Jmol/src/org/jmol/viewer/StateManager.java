@@ -874,6 +874,7 @@ public class StateManager {
       setParameterValue("minimizationRefresh", minimizationRefresh);
       setParameterValue("minimizationSilent", minimizationSilent);
       setParameterValue("minimizationCriterion", minimizationCriterion);
+      setParameterValue("monitorEnergy", monitorEnergy);
       setParameterValue("navigationMode", navigationMode);
       setParameterValue("navigateSurface", navigateSurface);
       setParameterValue("navigationPeriodic", navigationPeriodic);
@@ -1154,6 +1155,7 @@ public class StateManager {
     boolean logGestures = false;
     boolean measurementLabels = true;
     boolean messageStyleChime = false;
+    boolean monitorEnergy = false;
     int pickingSpinRate = 10;
     String pickLabel = "";
     float pointGroupDistanceTolerance = 0.2f;

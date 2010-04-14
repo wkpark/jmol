@@ -5484,6 +5484,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.monitorenergy:
+      // 12.0.RC6
+      global.monitorEnergy = value;
+      break;
     case Token.hbondsrasmol:
       // 12.0.RC3
       global.hbondsRasmol = value;
@@ -6183,7 +6187,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean getSelectionHaloEnabled() {
-    return modelSet.getSelectionHaloEnabled();
+    return modelSet.getSelectionHaloEnabled() || showSelected;
   }
 
   public boolean getBondSelectionModeOr() {
@@ -7002,6 +7006,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.rotateAxisAngleAtCenter(rotCenter, rotAxis, degreesPerSecond,
         endDegrees, isSpin, bsSelected);
     refresh(-1, "rotateAxisAngleAtCenter");
+    if (bsSelected != null && !isSpin)
+      checkMinimization();
+  }
+
+  private void checkMinimization() {
+    if (!global.monitorEnergy)
+      return;
+    minimize(0, 0, modelSet.getModelAtomBitSet(-1, false), false, true);
+    echoMessage("Energy = " + getParameter("_minimizationEnergy"));
   }
 
   public void rotateAboutPointsInternal(Point3f point1, Point3f point2,
@@ -7017,6 +7030,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.rotateAboutPointsInternal(point1, point2, degreesPerSecond,
         endDegrees, false, isSpin, bsSelected, false, translation, finalPoints);
     refresh(-1, "rotateAxisAboutPointsInternal");
+    if (bsSelected != null && !isSpin)
+      checkMinimization();
   }
 
   int getPickingSpinRate() {
@@ -7207,20 +7222,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval
     modelSet.invertSelected(pt, null, -1, null, bs);
     refreshMeasures(true);
+    checkMinimization();
   }
 
   public void invertAtomCoord(Point4f plane, BitSet bs) {
     modelSet.invertSelected(null, plane, -1, null, bs);
     refreshMeasures(true);
+    checkMinimization();
   }
 
   public void invertSelected(Point3f pt, Point4f plane, int iAtom, BitSet invAtoms) {
     // Eval
     modelSet.invertSelected(pt, plane, iAtom, invAtoms, selectionManager.getSelectionSet());
     refreshMeasures(true);
+    checkMinimization();
   }
 
   boolean movingSelected;
+  boolean showSelected;
+  
   void moveSelected(int deltaX, int deltaY, int x, int y,
                                  boolean isTranslation) {
     // cannot synchronize this -- it's from the mouse and the event queue
@@ -7228,12 +7248,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     BitSet bsSelected = selectionManager.getSelectionSet();
     if (deltaX == Integer.MIN_VALUE) {
-      setSelectionHalos(true);
+      showSelected = true;
+      loadShape(JmolConstants.SHAPE_HALOS);
       refresh(6, "moveSelected");
       return;
     }
     if (deltaX == Integer.MAX_VALUE) {
-      setSelectionHalos(false);
+      showSelected = false;
       refresh(6, "moveSelected");
       return;
     }
@@ -7255,6 +7276,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     refresh(2, ""); // should be syncing here
     refreshMeasures(true);
+    checkMinimization();
     movingSelected = false;
   }
 
@@ -7263,6 +7285,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.rotateAtoms(mNew, matrixRotate, bsAtoms, fullMolecule, center,
         isInternal);
     refreshMeasures(true);
+    checkMinimization();
   }
 
   public void refreshMeasures(boolean andClearMinimization) {

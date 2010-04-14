@@ -234,11 +234,11 @@ public class Minimizer implements MinimizerInterface {
     // minimize and store values
 
     if (steps <= 0)
-      setMinimizationOn(true);
+      getEnergyOnly();
     else if (isSilent || !viewer.useMinimizationThread())
       minimizeWithoutThread();
     else
-      getEnergyOnly();
+      setMinimizationOn(true);
     return true;
   }
 

@@ -695,7 +695,7 @@ class CalculationsUFF extends Calculations {
       double koop = KCAL6;
       switch (elemNo) {
       case 6: // carbon could be a carbonyl, which is considerably stronger
-        if ((a.type + c.type + d.type).indexOf("O_2") == 0) {
+        if ((a.type + c.type + d.type).indexOf("O_2") >= 0) {
           koop += KCAL44;
           break;
         }/* else if (b.type.lastIndexOf("R") == 2) 

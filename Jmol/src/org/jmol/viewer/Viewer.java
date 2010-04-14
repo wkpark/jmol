@@ -1718,6 +1718,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private final static int FILE_STATUS_MODELS_DELETED = 5;
 
   public void openFileAsynchronously(String fileName) {
+    // not really asynchronously -- put on the queue just like any other file
     // Jmol app file dropper, main, OpenUrlAction, RecentFilesAction
     if (fileName.indexOf(".jvxl") >= 0 || fileName.indexOf(".xjvxl") >= 0) {
       evalString("isosurface " + Escape.escape(fileName));
@@ -1727,8 +1728,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!allowScript)
       fileName = fileName.substring(1);
     fileName = fileName.replace('\\', '/');
+    if (isApplet)
+      fileName = "file://" + (fileName.startsWith("/") ? "" : "/") + fileName;
     String type = fileManager.getFileTypeName(fileName);
-    checkHalt("exit", true);
+    // checkHalt("exit", true);
     // assumes a Jmol script file if no other file type
     allowScript &= (type == null);
     if (scriptEditorVisible && allowScript)
@@ -8182,13 +8185,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void minimize(int steps, float crit, BitSet bsSelected,
-                       boolean addHydrogen) {
+                       boolean addHydrogen, boolean isSilent) {
     if (addHydrogen)
       bsSelected = addHydrogens(bsSelected);
     else if (bsSelected == null)
       bsSelected = getModelAtomBitSet(getVisibleFramesBitSet().nextSetBit(0), true);
     try {
-      getMinimizer(true).minimize(steps, crit, bsSelected);
+      getMinimizer(true).minimize(steps, crit, bsSelected, isSilent);
     } catch (Exception e) {
       Logger.error(e.getMessage());
     }

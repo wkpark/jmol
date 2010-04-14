@@ -596,6 +596,12 @@ public abstract class AtomSetCollectionReader {
     iHaveFractionalCoordinates = fileCoordinatesAreFractional = TF;
   }
 
+  protected void set2D(boolean doMinimize) {
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("is2D", Boolean.TRUE);
+    if (doMinimize)
+      addJmolScript("minimize silent addHydrogens;reset");
+  }
+
   protected boolean filterAtom(Atom atom) {
     //cif, pdb readers
     return (!haveAtomFilter || filterAtom(atom, atomSetCollection.getAtomCount()));

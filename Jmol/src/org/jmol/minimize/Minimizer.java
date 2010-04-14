@@ -166,7 +166,8 @@ public class Minimizer implements MinimizerInterface {
     //  viewer = null;
   }
   
-  public boolean minimize(int steps, double crit, BitSet bsSelected) {
+  public boolean minimize(int steps, double crit, BitSet bsSelected, boolean forceSilent) {
+    isSilent = (forceSilent || viewer.getBooleanProperty("minimizationSilent"));
     Object val;
     if (steps == Integer.MAX_VALUE) {
       val = viewer.getParameter("minimizationSteps");
@@ -198,7 +199,6 @@ public class Minimizer implements MinimizerInterface {
       atoms = viewer.getModelSet().getAtoms();
     }
     bsAtoms = BitSetUtil.copy(bsSelected);
-    System.out.println("minimizer bsAtoms: " + bsAtoms);
     atomCount = BitSetUtil.cardinalityOf(bsAtoms);
     if (atomCount == 0) {
       Logger.error(GT._("No atoms selected -- nothing to do!"));
@@ -233,10 +233,10 @@ public class Minimizer implements MinimizerInterface {
 
     // minimize and store values
 
-    if (steps > 0 && !viewer.useMinimizationThread())
-      minimizeWithoutThread();
-    else if (steps > 0)
+    if (steps <= 0)
       setMinimizationOn(true);
+    else if (isSilent || !viewer.useMinimizationThread())
+      minimizeWithoutThread();
     else
       getEnergyOnly();
     return true;
@@ -671,7 +671,6 @@ Token[keyword(0x880001) value=")"]
   private void getEnergyOnly() {
     if (pFF == null || viewer == null)
       return;
-    isSilent = viewer.getBooleanProperty("minimizationSilent");
     pFF.steepestDescentInitialize(steps, crit);      
     viewer.setFloatProperty("_minimizationEnergyDiff", 0);
     viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
@@ -681,7 +680,6 @@ Token[keyword(0x880001) value=")"]
   
   public boolean startMinimization() {
     try {
-      isSilent = viewer.getBooleanProperty("minimizationSilent");
       Logger.info("minimizer: startMinimization");
       viewer.setIntProperty("_minimizationStep", 0);
       viewer.setStringProperty("_minimizationStatus", "starting");

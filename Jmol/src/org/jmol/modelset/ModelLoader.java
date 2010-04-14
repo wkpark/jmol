@@ -1202,7 +1202,7 @@ public final class ModelLoader extends ModelSet {
 
     // 1) implicit stereochemistry 
     
-    set2dZ(baseAtomIndex, baseAtomIndex + atomCount);
+    set2dZ(baseAtomIndex, atomCount);
 
     // 2) explicit stereochemistry
     
@@ -1219,8 +1219,7 @@ public final class ModelLoader extends ModelSet {
           atoms[j].z += dz;
       }
       vStereo = null;
-    }
-    
+    } 
     is2D = false;
   }
 

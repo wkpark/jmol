@@ -52,7 +52,7 @@ public class JmeReader extends AtomSetCollectionReader {
    * The load command FILTER keyword NOMIN prevents this minimization. Note that
    * with jmolLoadInline you must explicitly add the script
    * 
-   * minimize addHydrogens
+   * minimize silent addHydrogens
    * 
    * to get the 2D -> 3D conversion after the file is loaded.
    * 
@@ -69,10 +69,8 @@ public class JmeReader extends AtomSetCollectionReader {
     int bondCount = parseInt();
     readAtoms(atomCount);
     readBonds(bondCount);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("is2D", Boolean.TRUE);
     doMinimize = (filter == null || filter.toUpperCase().indexOf("NOMIN") < 0);
-    if (doMinimize)
-      addJmolScript("minimize addHydrogens");
+    set2D(doMinimize);
     continuing = false;
   }
 

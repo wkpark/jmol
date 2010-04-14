@@ -24,6 +24,7 @@
 package org.openscience.jmol.app.jmolpanel;
 
 import org.jmol.api.*;
+import org.jmol.export.JmolFileDropper;
 import org.jmol.export.dialog.Dialog;
 import org.jmol.export.history.HistoryFile;
 import org.jmol.export.image.ImageCreator;
@@ -34,7 +35,6 @@ import org.openscience.jmol.app.*;
 import org.openscience.jmol.app.webexport.WebExport;
 
 import java.awt.*;
-import java.awt.dnd.DropTarget;
 import java.awt.event.*;
 import java.awt.print.*;
 import java.beans.*;
@@ -249,26 +249,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
       historyFile.repositionWindow(EDITOR_WINDOW_NAME, c, 150, 50);
 
     say(GT._("Setting up Drag-and-Drop..."));
-    FileDropper dropper = new FileDropper();
-    final JFrame f = frame;
-    dropper.addPropertyChangeListener(new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent evt) {
-        // System.out.println("Drop triggered...");
-        f.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        if (evt.getPropertyName().equals(FileDropper.FD_PROPERTY_FILENAME)) {
-          final String filename = evt.getNewValue().toString();
-          viewer.openFileAsynchronously(filename);
-        } else if (evt.getPropertyName().equals(FileDropper.FD_PROPERTY_INLINE)) {
-          final String inline = evt.getNewValue().toString();
-          viewer.openStringInline(inline);
-        }
-        f.setCursor(Cursor.getDefaultCursor());
-      }
-    });
-
-    this.setDropTarget(new DropTarget(this, dropper));
-    this.setEnabled(true);
-
+    new JmolFileDropper(viewer);
     say(GT._("Launching main frame..."));
   }
 

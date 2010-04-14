@@ -106,10 +106,8 @@ public class MolReader extends AtomSetCollectionReader {
   }
   
   public void finalizeReader() throws Exception {
-    if (is2D /* STILL! */) {
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("is2D", Boolean.TRUE);
-      addJmolScript("minimize addHydrogens");
-    }
+    if (is2D /* STILL! */)
+      set2D(true);
   }
 
   void processMolSdHeader() throws Exception {

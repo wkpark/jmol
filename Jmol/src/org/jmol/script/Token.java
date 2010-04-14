@@ -979,6 +979,7 @@ public class Token {
   final static int blockdata     = misc  | 44;// new
   final static int bondset       = misc  | 46;
   final static int bottom        = misc  | 48;
+  final static int cancel        = misc  | 49;// new
   final static int cap           = misc  | 50 | expression;// new
   final static int cavity        = misc  | 52;// new
   final static int check         = misc  | 54;// new
@@ -995,6 +996,7 @@ public class Token {
   final static int contours      = misc  | 76;// new
   final static int corners       = misc  | 78;// new
   public final static int create = misc  | 80;// new
+  final static int criterion     = misc  | 81;// new
   final static int crossed       = misc  | 82;// new
   final static int curve         = misc  | 84;// new
   final static int cutoff        = misc  | 86;// new
@@ -1010,10 +1012,12 @@ public class Token {
   final static int eccentricity   = misc  | 106;// new
   final static int ed             = misc  | 108 | expression;// new
   final static int edges          = misc  | 110;// new
+  final static int energy         = misc  | 111;// new
   final static int facecenteroffset = misc  | 112;// new
   public final static int fill    = misc  | 114;
   final static int filter         = misc  | 116;// new
   public final static int first   = misc  | 118;// new
+  final static int fix            = misc  | 119;// new
   final static int fixed          = misc  | 120;// new
   final static int fixedtemp      = misc  | 122;
   final static int flat           = misc  | 124;// new
@@ -1032,6 +1036,7 @@ public class Token {
   final static int id             = misc  | 150 | expression;
   final static int ignore         = misc  | 152;// new
   final static int image          = misc  | 154;
+  final static int in             = misc  | 155;// new
   final static int increment      = misc  | 156;// new
   public final static int info    = misc  | 158;
   final static int insideout      = misc  | 160;// new
@@ -1082,6 +1087,7 @@ public class Token {
   final static int opaque         = misc  | 250;
   final static int orbital        = misc  | 252;// new
   final static int orientation    = misc  | 254;
+  final static int out            = misc  | 255;// new
   final static int packed         = misc  | 256;// new
   final static int palindrome     = misc  | 258;// new
   final static int path           = misc  | 260;// new
@@ -1116,7 +1122,8 @@ public class Token {
   final static int shape          = misc  | 318;
   final static int shapely        = misc  | 320;
   final static int sigma          = misc  | 322;// new
-  final static int sign           = misc  | 324;// new
+  final static int sign           = misc  | 323;// new
+  final static int silent         = misc  | 324;// new
   final static int smiles         = misc  | 325;// new Jmol 12.0.RC5
   final static int solid          = misc  | 326;
   final static int spacegroup     = misc  | 328;
@@ -1142,12 +1149,6 @@ public class Token {
   final static int variables       = misc  | 368;// new
   final static int vertices        = misc  | 370;// new
   final static int width           = misc  | 372;// new
-  final static int cancel          = misc  | 374;// new
-  final static int fix             = misc  | 376;// new
-  final static int energy          = misc  | 378;// new
-  final static int criterion       = misc  | 380;// new
-  final static int in              = misc  | 382;// new
-  final static int out             = misc  | 384;// new
   
   
   // predefined Tokens: 
@@ -1885,6 +1886,7 @@ public class Token {
       "selection",       new Token(selection),
       "sigma",           new Token(sigma),
       "sign",            new Token(sign),
+      "silent",          new Token(silent),
       "sphere",          new Token(sphere),
       "squared",         new Token(squared),
       "steps",           new Token(steps),

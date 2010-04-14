@@ -8494,6 +8494,7 @@ public class ScriptEvaluator {
     int steps = Integer.MAX_VALUE;
     float crit = 0;
     boolean addHydrogen = false;
+    boolean isSilent = false;
     MinimizerInterface minimizer = viewer.getMinimizer(false);
     // may be null
     for (int i = 1; i < statementLength; i++)
@@ -8527,6 +8528,9 @@ public class ScriptEvaluator {
           viewer.getMinimizer(true).setProperty("constraint",
               new Object[] { aList, new int[n], new Float(targetValue) });
         return;
+      case Token.silent:
+        isSilent = true;
+        break;
       case Token.stop:
       case Token.cancel:
         checkLength(2);
@@ -8567,7 +8571,7 @@ public class ScriptEvaluator {
         break;
       }
     if (!isSyntaxCheck)
-      viewer.minimize(steps, crit, bsSelected, addHydrogen);
+      viewer.minimize(steps, crit, bsSelected, addHydrogen, isSilent);
   }
 
   private void select(int i) throws ScriptException {

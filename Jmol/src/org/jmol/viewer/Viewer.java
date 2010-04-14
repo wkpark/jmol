@@ -1728,7 +1728,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!allowScript)
       fileName = fileName.substring(1);
     fileName = fileName.replace('\\', '/');
-    if (isApplet)
+    if (isApplet && fileName.indexOf("://") < 0)
       fileName = "file://" + (fileName.startsWith("/") ? "" : "/") + fileName;
     String type = fileManager.getFileTypeName(fileName);
     // checkHalt("exit", true);

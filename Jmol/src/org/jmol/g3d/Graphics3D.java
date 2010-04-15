@@ -2847,20 +2847,22 @@ final public class Graphics3D implements JmolRendererInterface {
    * normals and normal indexes -- normix
    * ***************************************************************/
 
-  public static final short NORMIX_NULL = 9999;
-
-  public static short getNormix(Vector3f vector, BitSet bsTemp) {
-    return Normix3D.getNormix(vector.x, vector.y, vector.z,
-                              Normix3D.NORMIX_GEODESIC_LEVEL, bsTemp);
+  public static final short NORMIX_NULL = Normix3D.NORMIX_NULL;
+  
+  public static short getInverseNormix(short normix) {
+    return Normix3D.getInverseNormix(normix);
   }
 
-  public static short getInverseNormix(short normix) {
-    return Normix3D.inverseNormixes[normix];
+  public static short getNormix(Vector3f vector, BitSet bsTemp) {
+    return Normix3D.getNormix(vector, bsTemp);
   }
 
   public static short get2SidedNormix(Vector3f vector, BitSet bsTemp) {
-    return (short)~Normix3D.getNormix(vector.x, vector.y, vector.z,
-                                      Normix3D.NORMIX_GEODESIC_LEVEL, bsTemp);
+    return Normix3D.get2SidedNormix(vector, bsTemp);
+  }
+
+  public static Vector3f getNormixVector(short normix) {
+    return Normix3D.getVector(normix);
   }
 
   public boolean isDirectedTowardsCamera(short normix) {
@@ -2872,10 +2874,8 @@ final public class Graphics3D implements JmolRendererInterface {
     return normix3d.getTransformedVectors();
   }
 
-  public static Vector3f getNormixVector(short normix) {
-    return Normix3D.getVector(normix);
-  }
-
+  //////////////////////////////////////////////////////////
+  
   public void renderBackground() {
     renderBackground(null);
   }

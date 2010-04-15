@@ -48,7 +48,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     super.initRenderer();
   }
   protected void render() {
-    iShowNormals = viewer.getTestFlag3();
+    iShowNormals = viewer.getTestFlag4();
     Isosurface isosurface = (Isosurface) shape;
     int slabValue = (viewer.getNavigationMode() ? g3d.getSlab() : Integer.MAX_VALUE);
     for (int i = isosurface.meshCount; --i >= 0;) {
@@ -233,6 +233,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     boolean colorArrayed = (colorSolid && imesh.polygonColixes != null);
     short[] contourColixes = imesh.jvxlData.contourColixes;
     // two-sided means like a plane, with no front/back distinction
+    
     for (int i = imesh.polygonCount; --i >= 0;) {
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes == null)
@@ -320,21 +321,22 @@ public class IsosurfaceRenderer extends MeshRenderer {
   }
 
   private void renderNormals() {
-    //Logger.debug("mesh renderPoints: " + vertexCount);
+    // Logger.debug("mesh renderPoints: " + vertexCount);
     if (!g3d.setColix(Graphics3D.WHITE))
       return;
+    g3d.setFont(g3d.getFontFid("Monospaced", 24));
     for (int i = vertexCount; --i >= 0;) {
       if (vertexValues != null && !Float.isNaN(vertexValues[i])) {
-        //if ((i % 3) == 0) { //investigate vertex normixes
-          ptTemp.set(mesh.vertices[i]);
-          short n = mesh.normixes[i];
-          // -n is an intensity2sided and does not correspond to a true normal index
-          if (n >= 0) {
-            ptTemp.add(Graphics3D.getNormixVector(n));
-            viewer.transformPoint(ptTemp, ptTempi);
-            g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 1,
-                screens[i], ptTempi);
-          }
+        ptTemp.set(mesh.vertices[i]);
+        short n = mesh.normixes[i];
+        // -n is an intensity2sided and does not correspond to a true normal
+        // index
+        if (n >= 0) {
+          ptTemp.add(Graphics3D.getNormixVector(n));
+          viewer.transformPoint(ptTemp, ptTempi);
+          g3d.drawLine(screens[i], ptTempi);
+          g3d.drawStringNoSlab("" + n, null, ptTempi.x, ptTempi.y, ptTempi.z);
+        }
       }
     }
   }

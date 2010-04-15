@@ -201,8 +201,13 @@ public class Mesh extends MeshSurface {
       int[] pi = polygonIndexes[i];
       try {
         if (pi != null) {
-          Measure.calcNormalizedNormal(vertices[pi[0]], vertices[pi[1]],
-              vertices[pi[2]], vTemp, vAB, vAC);
+          Point3f vA = vertices[pi[0]];
+          Point3f vB = vertices[pi[1]];
+          Point3f vC = vertices[pi[2]];
+          if (vA.distanceSquared(vB) > 0.01 
+            && vB.distanceSquared(vC) > 0.01
+            && vA.distanceSquared(vC) > 0.01) {
+            Measure.calcNormalizedNormal(vA, vB, vC, vTemp, vAB, vAC);
           if (isPolygonSet) {
             normals[i].set(vTemp);
             continue;
@@ -213,6 +218,7 @@ public class Mesh extends MeshSurface {
               int k = pi[j];
               normals[k].add(vTemp);
             }
+          }
         }
       } catch (Exception e) {
       }

@@ -42,37 +42,37 @@ import org.jmol.util.Logger;
  */
 class Normix3D {
 
+  
+  // these inital 
   final static int NORMIX_GEODESIC_LEVEL = Geodesic.standardLevel;
 
   private final static int normixCount = Geodesic.getVertexCount(NORMIX_GEODESIC_LEVEL);
   private final static Vector3f[] vertexVectors = Geodesic.getVertexVectors(); 
-  static final short[] inverseNormixes = new short[normixCount];
+  private final static short[] inverseNormixes = new short[normixCount];
+  
+  static short getInverseNormix(short normix) {
+    return inverseNormixes[normix];
+  }
+
   private final static short[][] neighborVertexesArrays = Geodesic.getNeighborVertexesArrays();
   private final static boolean TIMINGS = false;
+
+  public static final short NORMIX_NULL = 9999;
   
   //private final static boolean DEBUG_WITH_SEQUENTIAL_SEARCH = false;
 
   
-  // instance variables depend upon current orientation:
-  
-  private final Matrix3f rotationMatrix = new Matrix3f();
-  private final Vector3f[] transformedVectors = new Vector3f[normixCount];
-  private final byte[] shadeIndexes = new byte[normixCount];
-  private final byte[] shadeIndexes2Sided = new byte[normixCount];
-
-
-  Normix3D() {
-    //level      0   1    2    3
-    //vertices  12, 42, 162, 642
-    for (int i = normixCount; --i >= 0; )
-      transformedVectors[i] = new Vector3f();
-
+  static {
+    // level 0 1 2 3
+    // vertices 12, 42, 162, 642
     BitSet bsTemp = new BitSet();
     if (TIMINGS) {
       Logger.info("begin timings!");
       for (int i = 0; i < normixCount; ++i) {
         short normix = getNormix(vertexVectors[i], bsTemp);
-        Logger.info("draw normix" + i + " {" + vertexVectors[i].x + " " + vertexVectors[i].y + " " + vertexVectors[i].z + "} {0 0 0} \""+i+"\"");
+        Logger.info("draw normix" + i + " {" + vertexVectors[i].x + " "
+            + vertexVectors[i].y + " " + vertexVectors[i].z + "} {0 0 0} \""
+            + i + "\"");
         if (normix != i)
           if (Logger.debugging) {
             Logger.debug("" + i + " -> " + normix);
@@ -82,16 +82,16 @@ class Normix3D {
       Vector3f vFoo = new Vector3f();
       Vector3f vBar = new Vector3f();
       Vector3f vSum = new Vector3f();
-      
+
       int runCount = 100000;
       short[] neighborVertexes = neighborVertexesArrays[NORMIX_GEODESIC_LEVEL];
       Logger.startTimer();
       for (int i = 0; i < runCount; ++i) {
-        short foo = (short)(rand.nextDouble() * normixCount);
+        short foo = (short) (rand.nextDouble() * normixCount);
         int offsetNeighbor;
         short bar;
         do {
-          offsetNeighbor = foo * 6 + (int)(rand.nextDouble() * 6);
+          offsetNeighbor = foo * 6 + (int) (rand.nextDouble() * 6);
           bar = neighborVertexes[offsetNeighbor];
         } while (bar == -1);
         vFoo.set(vertexVectors[foo]);
@@ -104,11 +104,11 @@ class Normix3D {
       Logger.checkTimer("base runtime for " + runCount);
       Logger.startTimer();
       for (int i = 0; i < runCount; ++i) {
-        short foo = (short)(rand.nextDouble() * normixCount);
+        short foo = (short) (rand.nextDouble() * normixCount);
         int offsetNeighbor;
         short bar;
         do {
-          offsetNeighbor = foo * 6 + (int)(rand.nextDouble() * 6);
+          offsetNeighbor = foo * 6 + (int) (rand.nextDouble() * 6);
           bar = neighborVertexes[offsetNeighbor];
         } while (bar == -1);
         vFoo.set(vertexVectors[foo]);
@@ -118,20 +118,15 @@ class Normix3D {
         vSum.add(vFoo, vBar);
         short sum = getNormix(vSum, bsTemp);
         if (sum != foo && sum != bar) {
-/*          if (Logger.debugging) {
-            Logger.debug(
-                "foo:" + foo + " -> " +
-                vertexVectors[foo] + "\n" +
-                "bar:" + bar + " -> " +
-                vertexVectors[bar] + "\n" +
-                "sum:" + sum + " -> " +
-                vertexVectors[sum] + "\n" +
-                "foo.dist="+dist2(vSum, vertexVectors[foo])+"\n"+
-                "bar.dist="+dist2(vSum, vertexVectors[bar])+"\n"+
-                "sum.dist="+dist2(vSum, vertexVectors[sum])+"\n"+
-                "\nvSum:" + vSum + "\n");
-          }
-*/
+          /*
+           * if (Logger.debugging) { Logger.debug( "foo:" + foo + " -> " +
+           * vertexVectors[foo] + "\n" + "bar:" + bar + " -> " +
+           * vertexVectors[bar] + "\n" + "sum:" + sum + " -> " +
+           * vertexVectors[sum] + "\n" + "foo.dist="+dist2(vSum,
+           * vertexVectors[foo])+"\n"+ "bar.dist="+dist2(vSum,
+           * vertexVectors[bar])+"\n"+ "sum.dist="+dist2(vSum,
+           * vertexVectors[sum])+"\n"+ "\nvSum:" + vSum + "\n"); }
+           */
           throw new NullPointerException();
         }
         short sum2 = getNormix(vSum, bsTemp);
@@ -141,25 +136,21 @@ class Normix3D {
         }
       }
       Logger.checkTimer("normix2 runtime for " + runCount);
-    }
 
-    for (int n = normixCount; --n >= 0; ) {
-      Vector3f v = vertexVectors[n];
-      inverseNormixes[n] = getNormix(-v.x, -v.y, -v.z, NORMIX_GEODESIC_LEVEL, bsTemp);
-    } 
+      for (int n = normixCount; --n >= 0;) {
+        Vector3f v = vertexVectors[n];
+        inverseNormixes[n] = getNormix(-v.x, -v.y, -v.z, NORMIX_GEODESIC_LEVEL,
+            bsTemp);
+      }
+    }
   }
   
-  Vector3f[] getTransformedVectors() {
-    return transformedVectors;
-  }
-
-  boolean isDirectedTowardsCamera(short normix) {
-    // normix < 0 means a double sided normix, so always visible
-    return (normix < 0) || (transformedVectors[normix].z > 0);
-  }
-
   static short getNormix(Vector3f v, BitSet bsTemp) {
     return getNormix(v.x, v.y, v.z, NORMIX_GEODESIC_LEVEL, bsTemp);
+  }
+
+  static short get2SidedNormix(Vector3f v, BitSet bsTemp) {
+    return (short)~getNormix(v.x, v.y, v.z, Normix3D.NORMIX_GEODESIC_LEVEL, bsTemp);
   }
 
   static Vector3f getVector(short normix) {
@@ -239,39 +230,47 @@ class Normix3D {
     return champion;
   }
 
-  private static byte nullShadeIndex = 50;
+  // only these three instance variables depend upon current orientation:
   
-  int getShadeIndex(short normix) {
-    return (normix == ~Graphics3D.NORMIX_NULL
-        || normix == Graphics3D.NORMIX_NULL ? nullShadeIndex
-        : normix < 0 ? shadeIndexes2Sided[~normix] : shadeIndexes[normix]);
+  private final Vector3f[] transformedVectors = new Vector3f[normixCount];
+  {
+    for (int i = normixCount; --i >= 0; )
+      transformedVectors[i] = new Vector3f();
+  }
+  private final byte[] shadeIndexes = new byte[normixCount];
+  private final byte[] shadeIndexes2Sided = new byte[normixCount];
+
+  Vector3f[] getTransformedVectors() {
+    return transformedVectors;
+  }
+  
+  boolean isDirectedTowardsCamera(short normix) {
+    // normix < 0 means a double sided normix, so always visible
+    return (normix < 0) || (transformedVectors[normix].z > 0);
   }
 
   void setRotationMatrix(Matrix3f rotationMatrix) {
-    this.rotationMatrix.set(rotationMatrix);
     for (int i = normixCount; --i >= 0; ) {
       Vector3f tv = transformedVectors[i];
       rotationMatrix.transform(vertexVectors[i], tv);
-      float x = tv.x;
-      float y = -tv.y;
-      float z = tv.z;
-      /*
-        enable this code in order to allow
-        lighting of the inside of surfaces.
-        but they probably should not be specular
-        and light source should be from another position ... like a headlamp
-        
-      if (z < 0) {
-        x = -x;
-        y = -y;
-        z = -z;
-      }
-      */
-      int shadeIndex = Shade3D.getShadeIndexNormalized(x, y, z);
-      shadeIndexes[i] = (byte) shadeIndex;
-      shadeIndexes2Sided[i] = (byte) (z >= 0 ? shadeIndex 
-          : Shade3D.getShadeIndexNormalized(-x, -y, -z));
+//        if (i == 0)
+  //        System.out.println(i + " " + shadeIndexes[i]);
+
+      shadeIndexes[i] = Shade3D.getShadeIndexNormalized(tv.x, -tv.y, tv.z);
+    //  if (i == 0 || i == 219 || i == 162 || i == 193)
+      //  System.out.println(i + " " + shadeIndexes[i]);
+      shadeIndexes2Sided[i] = (tv.z >= 0 ? shadeIndexes[i] 
+          : Shade3D.getShadeIndexNormalized(-tv.x, tv.y, -tv.z));
     }
+  }
+
+  private static byte nullShadeIndex = 50;
+  
+  int getShadeIndex(short normix) {
+    return (normix == ~NORMIX_NULL
+        || normix == NORMIX_NULL 
+        ? nullShadeIndex
+        : normix < 0 ? shadeIndexes2Sided[~normix] : shadeIndexes[normix]);
   }
 
   /*

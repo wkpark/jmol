@@ -191,9 +191,9 @@ final class Shade3D {
                   * shadeIndexLast + 0.5f);
   }
 
-  static int getShadeIndexNormalized(float x, float y, float z) {
+  static byte getShadeIndexNormalized(float x, float y, float z) {
     //from Normix3D.setRotationMatrix
-    return (int)(getFloatShadeIndexNormalized(x, y, z)
+    return (byte)(int) (getFloatShadeIndexNormalized(x, y, z)
                   * shadeIndexLast + 0.5f);
   }
 

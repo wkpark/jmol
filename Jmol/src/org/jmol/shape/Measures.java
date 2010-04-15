@@ -409,7 +409,9 @@ public class Measures extends Shape implements JmolMeasurementClient {
                    mustBeConnected,
                    mustNotBeConnected,
                    true);
-    define(md, (isDelete ? Token.delete : 0));
+    define(md, (isDelete ? Token.delete 
+        : Token.define
+        ));
   }
 
   private int find(Measurement m) {

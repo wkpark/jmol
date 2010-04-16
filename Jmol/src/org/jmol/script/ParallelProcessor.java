@@ -38,6 +38,9 @@ class ParallelProcessor extends ScriptFunction {
     this.viewer = viewer;
     for (int i = 0; i < processes.size(); i++)
       runProcess((Process) processes.get(i));
+  }
+  
+  void mergeResults() {
     for (int i = 0; i < vShapeManagers.size(); i++)
       viewer.mergeShapes(((ShapeManager) vShapeManagers.get(i)).getShapes());
     vShapeManagers = new Vector();
@@ -56,13 +59,17 @@ class ParallelProcessor extends ScriptFunction {
   static class Lock { 
     transient int depth = 0 ;
     int lockID = 0 ;
+    String name;
+    Lock(String name) {
+      this.name = name;
+    }
   }
   
   Hashtable locks = new Hashtable();
 
   Lock getLock(final String name) {
     if (!locks.containsKey(name))
-      locks.put(name, new Lock());    
+      locks.put(name, new Lock(name));    
     return (Lock) locks.get(name);
   }
   
@@ -73,7 +80,7 @@ class ParallelProcessor extends ScriptFunction {
       public void run() {
         // not exactly sure what to do about the lock here. 
         Lock lock = getLock(process.processName);
-        synchronized (lock) {
+        //synchronized (lock) {
           try {
             System.out.println("Running process " + process.processName + " " + process.context.pc + " - " + (process.context.pcEnd - 1));
             ShapeManager shapeManager = new ShapeManager(viewer, viewer.getModelSet());
@@ -84,24 +91,27 @@ class ParallelProcessor extends ScriptFunction {
             e.printStackTrace();
           }
           counter--;
-          lock.depth--;
+          //lock.depth--;
+          
+          if (counter == 0)
+            mergeResults();
         }
-      }
+      //}
     };
 
     counter++;
-    Lock lock = getLock(process.processName);
-    while (lock.depth != 0) {
-      Thread.yield();
-    }
+    //Lock lock = getLock(process.processName);
+    //while (lock.depth != 0) {
+      //Thread.yield();
+    //}
 
-    synchronized (lock) {
-      lock.depth++;
+    //synchronized (lock) {
+      //lock.depth++;
       if (viewer.getExecutor() != null && viewer.getTestFlag1()) {
         ((Executor) viewer.getExecutor()).execute(r);
       } else {
         r.run();
       }
-    }
+    //}
   }
 }

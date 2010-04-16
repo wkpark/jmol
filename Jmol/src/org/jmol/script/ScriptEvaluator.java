@@ -73,6 +73,7 @@ import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.PropertyManager;
+import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 
@@ -484,8 +485,11 @@ public class ScriptEvaluator {
     return "ERROR";
   }
 
-  public static boolean evaluateContext(Viewer viewer, ScriptContext context) {
+  ShapeManager shapeManager;
+  
+  public static boolean evaluateContext(Viewer viewer, ScriptContext context, ShapeManager shapeManager) {
     ScriptEvaluator e = new ScriptEvaluator(viewer);
+    e.shapeManager = shapeManager;
     try {
       e.getScriptContext(context, true, false);
       e.instructionDispatchLoop(false);
@@ -2831,53 +2835,77 @@ public class ScriptEvaluator {
     return sb.toString();
   }
 
-  // //////////// outgoing methods for setting properties
+  ///////////// shape get/set properties ////////////////
+
+  private Object getShapeProperty(int shapeType, String propertyName) {
+    return shapeManager.getShapeProperty(shapeType, propertyName, Integer.MIN_VALUE);
+  }
+
+  private boolean getShapeProperty(int shapeType, String propertyName,
+                                  Object[] data) {
+    return shapeManager.getShapeProperty(shapeType, propertyName, data);
+  }
+  
+  private Object getShapeProperty(int shapeType, String propertyName, int index) {
+    return shapeManager.getShapeProperty(shapeType, propertyName, index);
+  }
+
+  private void addShapeProperty(Vector propertyList, String key, Object value) {
+    if (!isSyntaxCheck)
+      propertyList.add(new Object[] { key, value });
+  }
 
   private void loadShape(int iShape) {
-    if (!isSyntaxCheck)
-      viewer.loadShape(iShape);
+    if (isSyntaxCheck)
+      return;
+      shapeManager.loadShape(iShape);
   }
 
   private void setObjectMad(int iShape, String name, int mad) {
-    if (!isSyntaxCheck)
-      viewer.setObjectMad(iShape, name, mad);    
+    if (isSyntaxCheck)
+      return;
+    viewer.setObjectMad(iShape, name, mad);
   }
 
   private void setObjectArgb(String str, int argb) {
-    if (!isSyntaxCheck)
-      viewer.setObjectArgb(str, argb);
+    if (isSyntaxCheck)
+      return;
+    viewer.setObjectArgb(str, argb);
   }
 
   private void setShapeProperty(int shapeType, String propertyName,
                                 Object propertyValue) {
-    if (!isSyntaxCheck)
-      viewer.setShapeProperty(shapeType, propertyName, propertyValue);
+    if (isSyntaxCheck)
+      return;
+    shapeManager.setShapeProperty(shapeType, propertyName, propertyValue, null);
   }
 
-  private void setShapeProperty(int iShape, String propertyName, 
-                                Object propertyValue,
-                                BitSet bs) {
-    if (!isSyntaxCheck)
-      viewer.setShapeProperty(iShape, propertyName, propertyValue, bs);
+  private void setShapeProperty(int iShape, String propertyName,
+                                Object propertyValue, BitSet bs) {
+    if (isSyntaxCheck)
+      return;
+    shapeManager.setShapeProperty(iShape, propertyName, propertyValue, bs);
   }
 
   private void setShapeSize(int shapeType, int size) {
-    if (!isSyntaxCheck)
       setShapeSize(shapeType, size, null);
-    // stars, halos, balls only
   }
 
   private void setShapeSize(int shapeType, int size, BitSet bs) {
     // stars, halos, balls only
-    if (!isSyntaxCheck)
-      viewer.setShapeSize(shapeType, size, null);
+    if (isSyntaxCheck)
+      return;
+      shapeManager.setShapeSize(shapeType, size, null, null);
   }
 
   private void setShapeSize(int shapeType, RadiusData rd) {
-    if (!isSyntaxCheck)
-      viewer.setShapeSize(shapeType, rd, null);
+    if (isSyntaxCheck)
+      return;
+      shapeManager.setShapeSize(shapeType, 0, rd, null);
   }
 
+  ////////////////////  setting properties ////////////////////////
+  
   private void setBooleanProperty(String key, boolean value) {
     if (!isSyntaxCheck)
       viewer.setBooleanProperty(key, value);
@@ -2900,6 +2928,8 @@ public class ScriptEvaluator {
       viewer.setStringProperty(key, value);
   }
 
+  //////////////////// showing strings /////////////////
+  
   private void showString(String str) {
     showString(str, false);
   }
@@ -2923,10 +2953,8 @@ public class ScriptEvaluator {
     viewer.scriptStatus(s);
   }
 
-  /*
-   * ****************************************************** =============
-   * expression processing ==================
-   */
+  
+  ///////////////// expression processing ///////////////////
 
   private Token[] tempStatement;
   private boolean isBondSet;
@@ -3981,7 +4009,7 @@ public class ScriptEvaluator {
         switch (shapeType) {
         case JmolConstants.SHAPE_DRAW:
           setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", id);
-          Point3f[] points = (Point3f[]) viewer.getShapeProperty(
+          Point3f[] points = (Point3f[]) getShapeProperty(
               JmolConstants.SHAPE_DRAW, "vertices");
           if (points == null || points.length < 3 || points[0] == null
               || points[1] == null || points[2] == null)
@@ -3991,7 +4019,7 @@ public class ScriptEvaluator {
           break;
         case JmolConstants.SHAPE_ISOSURFACE:
           setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID", id);
-          plane = (Point4f) viewer.getShapeProperty(
+          plane = (Point4f) getShapeProperty(
               JmolConstants.SHAPE_ISOSURFACE, "plane");
           break;
         }
@@ -4548,7 +4576,8 @@ public class ScriptEvaluator {
   private void instructionDispatchLoop(boolean doList) throws ScriptException {
     long timeBegin = 0;
     boolean isForCheck = false; // indicates the stage of the for command loop
-
+    if (shapeManager == null)
+      shapeManager = viewer.getShapeManager();
     debugScript = logMessages = false;
     if (!isSyntaxCheck)
       setDebugging();
@@ -5707,7 +5736,7 @@ public class ScriptEvaluator {
           if (isSyntaxCheck)
             return;
           setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", pathID);
-          path = (Point3f[]) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
+          path = (Point3f[]) getShapeProperty(JmolConstants.SHAPE_DRAW,
               "vertices");
           refresh();
           if (path == null)
@@ -6394,7 +6423,7 @@ public class ScriptEvaluator {
     boolean isWild = TextFormat.isWild(id);
     for (int iShape = JmolConstants.SHAPE_DIPOLES;;) {
       if (iShape != JmolConstants.SHAPE_MO
-          && viewer.getShapeProperty(iShape, "checkID", data)) {
+          && getShapeProperty(iShape, "checkID", data)) {
         setShapeProperty(iShape, "thisID", id);
         switch (tokCommand) {
         case Token.delete:
@@ -6410,7 +6439,7 @@ public class ScriptEvaluator {
             return getIsosurfaceJvxl(false, JmolConstants.SHAPE_ISOSURFACE);
           else if (iShape == JmolConstants.SHAPE_PMESH && !isWild)
             return getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH);
-          s += (String) viewer.getShapeProperty(iShape, "command") + "\n";
+          s += (String) getShapeProperty(iShape, "command") + "\n";
         case Token.color:
           colorShape(iShape, iTok + 1, false);
           break;
@@ -6719,7 +6748,7 @@ public class ScriptEvaluator {
             max = floatParameter(index + 2);
             index += 3;
             if (min == max && shapeType == JmolConstants.SHAPE_ISOSURFACE) {
-              float[] range = (float[]) viewer.getShapeProperty(shapeType,
+              float[] range = (float[]) getShapeProperty(shapeType,
                   "dataRange");
               if (range != null) {
                 min = range[0];
@@ -6756,7 +6785,7 @@ public class ScriptEvaluator {
                 : shapeType == JmolConstants.SHAPE_STICKS ? JmolConstants.BOND_COVALENT_MASK
                     : 0);
     if (typeMask == 0) {
-      viewer.loadShape(shapeType);
+      loadShape(shapeType);
       if (shapeType == JmolConstants.SHAPE_LABELS)
         setShapeProperty(JmolConstants.SHAPE_LABELS, "setDefaults", viewer
             .getNoneSelected());
@@ -6830,7 +6859,7 @@ public class ScriptEvaluator {
     if (bs == null)
       setShapeProperty(shapeType, prefix + "translucency", translucency);
     else if (!isSyntaxCheck)
-      viewer.setShapeProperty(shapeType, prefix + "translucency", translucency,
+      setShapeProperty(shapeType, prefix + "translucency", translucency,
           bs);
   }
 
@@ -7116,7 +7145,7 @@ public class ScriptEvaluator {
   private void label(int index) throws ScriptException {
     if (isSyntaxCheck)
       return;
-    viewer.loadShape(JmolConstants.SHAPE_LABELS);
+    loadShape(JmolConstants.SHAPE_LABELS);
     String strLabel = null;
     switch (getToken(index).tok) {
     case Token.on:
@@ -7649,7 +7678,7 @@ public class ScriptEvaluator {
     runScript(script);
     ss.setModelIndex(viewer.getCurrentModelIndex());
     viewer.setRotationRadius(isQuaternion ? 12.5f : 260f, true);
-    viewer.loadShape(JmolConstants.SHAPE_ECHO);
+    loadShape(JmolConstants.SHAPE_ECHO);
     showString("frame " + viewer.getModelNumberDotted(modelCount - 1)
         + " created: " + type);
   }
@@ -8319,21 +8348,20 @@ public class ScriptEvaluator {
   private Point3f getObjectCenter(String axisID, int index, int modelIndex) {
     Object[] data = new Object[] { axisID, new Integer(index),
         new Integer(modelIndex) };
-    return (viewer
-        .getShapeProperty(JmolConstants.SHAPE_DRAW, "getCenter", data)
-        || viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getCenter",
+    return (getShapeProperty(JmolConstants.SHAPE_DRAW, "getCenter", data)
+        || getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getCenter",
             data) ? (Point3f) data[2] : null);
   }
 
   private Point3f[] getObjectBoundingBox(String id) {
     Object[] data = new Object[] { id, null, null };
-    return (viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
+    return (getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
         "getBoundingBox", data) ? (Point3f[]) data[2] : null);
   }
 
   private Vector3f getDrawObjectAxis(String axisID, int index) {
     Object[] data = new Object[] { axisID, new Integer(index), null };
-    return (viewer.getShapeProperty(JmolConstants.SHAPE_DRAW, "getSpinAxis",
+    return (getShapeProperty(JmolConstants.SHAPE_DRAW, "getSpinAxis",
         data) ? (Vector3f) data[2] : null);
   }
 
@@ -9106,7 +9134,7 @@ public class ScriptEvaluator {
     case Token.id:
     case Token.times:
     case Token.identifier:
-      viewer.loadShape(JmolConstants.SHAPE_ELLIPSOIDS);
+      loadShape(JmolConstants.SHAPE_ELLIPSOIDS);
       if (theTok == Token.id)
         i++;
       setShapeId(JmolConstants.SHAPE_ELLIPSOIDS, i, false);
@@ -9431,7 +9459,7 @@ public class ScriptEvaluator {
     boolean addHbonds = viewer.hasCalculatedHBonds(bsAtoms);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_HYDROGEN_MASK));
-    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0, bsAtoms);
+    setShapeSize(JmolConstants.SHAPE_STICKS, 0, bsAtoms);
     if (addHbonds)
       viewer.autoHbond(bsAtoms, bsAtoms);
     viewer.select(bsAtoms, tQuiet);
@@ -9482,7 +9510,7 @@ public class ScriptEvaluator {
     boolean iHaveCoord = false;
     boolean idSeen = false;
 
-    viewer.loadShape(JmolConstants.SHAPE_DIPOLES);
+    loadShape(JmolConstants.SHAPE_DIPOLES);
     if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_DIPOLES))
       return;
     setShapeProperty(JmolConstants.SHAPE_DIPOLES, "init", null);
@@ -9828,7 +9856,7 @@ public class ScriptEvaluator {
 
   private void dots(int iShape) throws ScriptException {
     if (!isSyntaxCheck)
-      viewer.loadShape(iShape);
+      loadShape(iShape);
     setShapeProperty(iShape, "init", null);
     float value = Float.NaN;
     int type = 0;
@@ -9903,7 +9931,7 @@ public class ScriptEvaluator {
       break;
     case Token.bitset:
       if (!isSyntaxCheck)
-        viewer.loadShape(shapeType);
+        loadShape(shapeType);
       setShapeProperty(shapeType, "bitset", theToken.value);
       return;
     default:
@@ -10233,7 +10261,7 @@ public class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
     Font3D font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
-    viewer.loadShape(shapeType);
+    loadShape(shapeType);
     setShapeProperty(shapeType, "font", font3d);
     if (scaleAngstromsPerPixel >= 0)
       setShapeProperty(shapeType, "scalereference", new Float(
@@ -10784,7 +10812,7 @@ public class ScriptEvaluator {
     }
     if (!isSyntaxCheck) {
       viewer.setEchoStateActive(echoShapeActive);
-      viewer.loadShape(JmolConstants.SHAPE_ECHO);
+      loadShape(JmolConstants.SHAPE_ECHO);
       setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
     }
     if (statementLength == len)
@@ -10902,7 +10930,7 @@ public class ScriptEvaluator {
   }
 
   private boolean setLabel(String str) throws ScriptException {
-    viewer.loadShape(JmolConstants.SHAPE_LABELS);
+    loadShape(JmolConstants.SHAPE_LABELS);
     Object propertyValue = null;
     setShapeProperty(JmolConstants.SHAPE_LABELS, "setDefaults", viewer
         .getNoneSelected());
@@ -10986,7 +11014,7 @@ public class ScriptEvaluator {
     if (bs == null)
       setShapeProperty(JmolConstants.SHAPE_LABELS, str, propertyValue);
     else
-      viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, str, propertyValue,
+      setShapeProperty(JmolConstants.SHAPE_LABELS, str, propertyValue,
           bs);
     return true;
   }
@@ -11035,7 +11063,7 @@ public class ScriptEvaluator {
 
   private void setSsbond() throws ScriptException {
     boolean ssbondsBackbone = false;
-    // viewer.loadShape(JmolConstants.SHAPE_SSSTICKS);
+    // loadShape(JmolConstants.SHAPE_SSSTICKS);
     switch (tokAt(checkLast(2))) {
     case Token.backbone:
       ssbondsBackbone = true;
@@ -12053,7 +12081,7 @@ public class ScriptEvaluator {
         error(ERROR_noData);
       type = (data.indexOf("<?xml") >= 0 ? "XJVXL" : "JVXL");
       if (!isShow)
-        showString((String) viewer.getShapeProperty(
+        showString((String) getShapeProperty(
             JmolConstants.SHAPE_ISOSURFACE, "jvxlFileInfo"));
     } else {
       // image
@@ -12367,7 +12395,7 @@ public class ScriptEvaluator {
       break;
     case Token.draw:
       if (!isSyntaxCheck)
-        msg = (String) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
+        msg = (String) getShapeProperty(JmolConstants.SHAPE_DRAW,
             "command");
       break;
     case Token.file:
@@ -12400,7 +12428,7 @@ public class ScriptEvaluator {
       break;
     case Token.isosurface:
       if (!isSyntaxCheck)
-        msg = (String) viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
+        msg = (String) getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
             "jvxlDataXml");
       break;
     case Token.mo:
@@ -12524,13 +12552,13 @@ public class ScriptEvaluator {
   private String getIsosurfaceJvxl(boolean asMesh, int iShape) {
     if (isSyntaxCheck)
       return "";
-    return (String) viewer.getShapeProperty(iShape, asMesh ? "jvxlMeshXml"
+    return (String) getShapeProperty(iShape, asMesh ? "jvxlMeshXml"
         : "jvxlDataXml");
   }
 
   private String getMoJvxl(int ptMO) throws ScriptException {
     // 0: all; Integer.MAX_VALUE: current;
-    viewer.loadShape(JmolConstants.SHAPE_MO);
+    loadShape(JmolConstants.SHAPE_MO);
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
       error(ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
@@ -12538,14 +12566,14 @@ public class ScriptEvaluator {
         "moData");
     if (moData == null)
       error(ERROR_moModelError);
-    Integer n = (Integer) viewer.getShapeProperty(JmolConstants.SHAPE_MO,
+    Integer n = (Integer) getShapeProperty(JmolConstants.SHAPE_MO,
         "moNumber");
     if (n == null || ((Integer) n).intValue() == 0) {
       setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(modelIndex));
       setShapeProperty(JmolConstants.SHAPE_MO, "moData", moData);
     } else if (ptMO == Integer.MAX_VALUE) {
     }
-    return (String) viewer.getShapeProperty(JmolConstants.SHAPE_MO, "showMO",
+    return (String) getShapeProperty(JmolConstants.SHAPE_MO, "showMO",
         ptMO);
   }
 
@@ -12555,7 +12583,7 @@ public class ScriptEvaluator {
   }
 
   private void draw() throws ScriptException {
-    viewer.loadShape(JmolConstants.SHAPE_DRAW);
+    loadShape(JmolConstants.SHAPE_DRAW);
     switch (tokAt(1)) {
     case Token.list:
       if (listIsosurface(JmolConstants.SHAPE_DRAW))
@@ -12590,8 +12618,7 @@ public class ScriptEvaluator {
     Point3f center = null;
     String thisId = initIsosurface(JmolConstants.SHAPE_DRAW);
     boolean idSeen = (thisId != null);
-    boolean isWild = (idSeen && viewer.getShapeProperty(
-        JmolConstants.SHAPE_DRAW, "ID") == null);
+    boolean isWild = (idSeen && getShapeProperty(JmolConstants.SHAPE_DRAW, "ID") == null);
     for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -12825,7 +12852,7 @@ public class ScriptEvaluator {
         break;
       case Token.id:
         thisId = setShapeId(JmolConstants.SHAPE_DRAW, ++i, idSeen);
-        isWild = (viewer.getShapeProperty(JmolConstants.SHAPE_DRAW, "ID") == null);
+        isWild = (getShapeProperty(JmolConstants.SHAPE_DRAW, "ID") == null);
         i = iToken;
         break;
       case Token.modelbased:
@@ -12988,7 +13015,7 @@ public class ScriptEvaluator {
     boolean edgeParameterSeen = false;
     boolean isDesignParameter = false;
     int nAtomSets = 0;
-    viewer.loadShape(JmolConstants.SHAPE_POLYHEDRA);
+    loadShape(JmolConstants.SHAPE_POLYHEDRA);
     setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
     String setPropertyName = "centers";
     String decimalPropertyName = "radius_";
@@ -13142,7 +13169,7 @@ public class ScriptEvaluator {
   }
 
   private void lcaoCartoon() throws ScriptException {
-    viewer.loadShape(JmolConstants.SHAPE_LCAOCARTOON);
+    loadShape(JmolConstants.SHAPE_LCAOCARTOON);
     if (tokAt(1) == Token.list
         && listIsosurface(JmolConstants.SHAPE_LCAOCARTOON))
       return;
@@ -13333,12 +13360,12 @@ public class ScriptEvaluator {
     BitSet bsModels = viewer.getVisibleFramesBitSet();
     Vector propertyList = new Vector();
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
-      viewer.loadShape(JmolConstants.SHAPE_MO);
+      loadShape(JmolConstants.SHAPE_MO);
       if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_MO))
         return true;
       setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(i));
       String title = null;
-      int moNumber = ((Integer) viewer.getShapeProperty(JmolConstants.SHAPE_MO,
+      int moNumber = ((Integer) getShapeProperty(JmolConstants.SHAPE_MO,
           "moNumber")).intValue();
       if (isInitOnly)
         return true;// (moNumber != 0);
@@ -13490,7 +13517,7 @@ public class ScriptEvaluator {
         "jmolSurfaceInfo");
     int firstMoNumber = moNumber;
     if (moData != null && ((String) moData.get("surfaceDataType")).equals("mo")) {
-      // viewer.loadShape(shape);
+      // loadShape(shape);
       // setShapeProperty(shape, "init", new Integer(modelIndex));
     } else {
       moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex, "moData");
@@ -13581,12 +13608,12 @@ public class ScriptEvaluator {
       return false;
     checkLength(2);
     if (!isSyntaxCheck)
-      showString((String) viewer.getShapeProperty(iShape, "list"));
+      showString((String) getShapeProperty(iShape, "list"));
     return true;
   }
 
   private void isosurface(int iShape) throws ScriptException {
-    viewer.loadShape(iShape);
+    loadShape(iShape);
     if (tokAt(1) == Token.list && listIsosurface(iShape))
       return;
     int colorRangeStage = 0;
@@ -13618,7 +13645,7 @@ public class ScriptEvaluator {
     if (!isSyntaxCheck)
       viewer.setCursor(Viewer.CURSOR_WAIT);
     boolean idSeen = (initIsosurface(iShape) != null);
-    boolean isWild = (idSeen && viewer.getShapeProperty(iShape, "ID") == null);
+    boolean isWild = (idSeen && getShapeProperty(iShape, "ID") == null);
     boolean isColorSchemeTranslucent = false;
     String translucency = null;
     String colorScheme = null;
@@ -13974,7 +14001,7 @@ public class ScriptEvaluator {
         break;
       case Token.id:
         setShapeId(iShape, ++i, idSeen);
-        isWild = (viewer.getShapeProperty(iShape, "ID") == null);
+        isWild = (getShapeProperty(iShape, "ID") == null);
         i = iToken;
         break;
       case Token.colorscheme:
@@ -14487,7 +14514,7 @@ public class ScriptEvaluator {
     Object area = null;
     Object volume = null;
     if (doCalcArea) {
-      area = viewer.getShapeProperty(iShape, "area");
+      area = getShapeProperty(iShape, "area");
       if (area instanceof Float)
         viewer.setFloatProperty("isosurfaceArea", ((Float) area).floatValue());
       else
@@ -14495,7 +14522,7 @@ public class ScriptEvaluator {
             .getVariable(area));
     }
     if (doCalcVolume) {
-      volume = (doCalcVolume ? viewer.getShapeProperty(iShape, "volume") : null);
+      volume = (doCalcVolume ? getShapeProperty(iShape, "volume") : null);
       if (volume instanceof Float)
         viewer.setFloatProperty("isosurfaceVolume", ((Float) volume)
             .floatValue());
@@ -14505,20 +14532,18 @@ public class ScriptEvaluator {
     }
     if (surfaceObjectSeen && isIsosurface && !isSyntaxCheck) {
       setShapeProperty(iShape, "finalize", null);
-      Integer n = (Integer) viewer.getShapeProperty(iShape, "count");
-      float[] dataRange = (float[]) viewer
-          .getShapeProperty(iShape, "dataRange");
-      String s = (String) viewer.getShapeProperty(iShape, "ID");
+      Integer n = (Integer) getShapeProperty(iShape, "count");
+      float[] dataRange = (float[]) getShapeProperty(iShape, "dataRange");
+      String s = (String) getShapeProperty(iShape, "ID");
       if (s != null) {
-        float cutoff = ((Float) viewer.getShapeProperty(iShape, "cutoff"))
+        float cutoff = ((Float) getShapeProperty(iShape, "cutoff"))
             .floatValue();
         if (Float.isNaN(cutoff) && ptSigma >= 0) {
           iToken = ptSigma;
           error(ERROR_invalidArgument);
         }
         s += " created with cutoff=" + cutoff;
-        float[] minMax = (float[]) viewer
-            .getShapeProperty(iShape, "minMaxInfo");
+        float[] minMax = (float[]) getShapeProperty(iShape, "minMaxInfo");
         if (minMax[0] != Float.MAX_VALUE)
           s += " min=" + minMax[0] + " max=" + minMax[1];
         s += "; number of isosurfaces = " + n;
@@ -14541,11 +14566,6 @@ public class ScriptEvaluator {
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);
     setShapeProperty(iShape, "clear", null);
-  }
-
-  private void addShapeProperty(Vector propertyList, String key, Object value) {
-    if (!isSyntaxCheck)
-      propertyList.add(new Object[] { key, value });
   }
 
   /**

@@ -58,11 +58,14 @@ public class Draw extends MeshCollection {
   DrawMesh[] dmeshes = new DrawMesh[4];
   DrawMesh thisMesh;
   
-  public void allocMesh(String thisID) {
+  public void allocMesh(String thisID, Mesh m) {
     int index = meshCount++;
-    meshes = dmeshes = (DrawMesh[])ArrayUtil.ensureLength(dmeshes, meshCount * 2);
-    currentMesh = thisMesh = dmeshes[index] = new DrawMesh(thisID, g3d, colix, index);
-    if (thisID != null && thisID != JmolConstants.PREVIOUS_MESH_ID && htObjects != null)
+    meshes = dmeshes = (DrawMesh[]) ArrayUtil.ensureLength(dmeshes,
+        meshCount * 2);
+    currentMesh = thisMesh = dmeshes[index] = (m == null ? new DrawMesh(thisID,
+        g3d, colix, index) : (DrawMesh) m);
+    if (thisID != null && thisID != JmolConstants.PREVIOUS_MESH_ID
+        && htObjects != null)
       htObjects.put(thisID.toUpperCase(), currentMesh);
   }
 
@@ -356,7 +359,7 @@ public class Draw extends MeshCollection {
     
     if ("set" == propertyName) {
       if (thisMesh == null) {
-        allocMesh(null);
+        allocMesh(null, null);
         thisMesh.colix = colix;
       }
       thisMesh.isValid = (isValid ? setDrawing() : false);
@@ -487,7 +490,7 @@ public class Draw extends MeshCollection {
   
   private boolean setDrawing() {
     if (thisMesh == null)
-      allocMesh(null);
+      allocMesh(null, null);
     thisMesh.clear("draw");
     thisMesh.diameter = diameter;
     thisMesh.width = width;

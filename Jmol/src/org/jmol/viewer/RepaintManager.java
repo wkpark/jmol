@@ -38,9 +38,11 @@ import javax.vecmath.Point3f;
 class RepaintManager {
 
   private Viewer viewer;
+  private ShapeManager shapeManager;
 
-  RepaintManager(Viewer viewer) {
+  RepaintManager(Viewer viewer, ShapeManager shapeManager) {
     this.viewer = viewer;
+    this.shapeManager = shapeManager;
   }
 
   void clear() {
@@ -126,10 +128,9 @@ class RepaintManager {
       if (renderers ==  null)
         renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
       for (int i = 0; i < JmolConstants.SHAPE_MAX && g3d.currentlyRendering(); ++i) {
-        Shape shape = modelSet.getShape(i);
-        if (shape == null)
-          continue;
-        getRenderer(i, g3d).render(g3d, modelSet, shape);
+        Shape shape = shapeManager.getShape(i);
+        if (shape != null)
+          getRenderer(i, g3d).render(g3d, modelSet, shape);
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -200,7 +201,7 @@ class RepaintManager {
     viewer.finalizeTransformParameters();
     g3dExport.renderBackground();
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = modelSet.getShape(i);
+      Shape shape = shapeManager.getShape(i);
       if (shape != null)
         getRenderer(i, g3d).render(g3dExport, modelSet, shape);
     }

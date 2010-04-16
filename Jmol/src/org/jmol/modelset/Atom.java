@@ -468,10 +468,10 @@ final public class Atom extends Point3fi {
         getFormalCharge()) : r);
   }
 
-  float getVolume(int iType) {
+  float getVolume(Viewer viewer, int iType) {
     float r1 = (iType < 0 ? userDefinedVanDerWaalRadius : Float.NaN);
     if (Float.isNaN(r1))
-      r1 = group.chain.modelSet.viewer.getVanderwaalsMar(getElementNumber(), getVdwType(iType)) / 1000f;
+      r1 = viewer.getVanderwaalsMar(getElementNumber(), getVdwType(iType)) / 1000f;
     double volume = 0;
     for (int j = 0; j < bonds.length; j++) {
       if (!bonds[j].isCovalent())
@@ -479,7 +479,7 @@ final public class Atom extends Point3fi {
       Atom atom2 = bonds[j].getOtherAtom(this);
       float r2 = (iType < 0 ? atom2.userDefinedVanDerWaalRadius : Float.NaN);
       if (Float.isNaN(r2))
-          r2= group.chain.modelSet.viewer.getVanderwaalsMar(atom2.getElementNumber(), atom2.getVdwType(iType)) / 1000f;
+          r2= viewer.getVanderwaalsMar(atom2.getElementNumber(), atom2.getVdwType(iType)) / 1000f;
       float d = distance(atom2);
       if (d > r1 + r2)
         continue;
@@ -1167,7 +1167,7 @@ final public class Atom extends Point3fi {
     case Token.temperature: // 0 - 9999
       return atom.getBfactor100() / 100f;
     case Token.volume:
-      return atom.getVolume(JmolConstants.VDW_AUTO);
+      return atom.getVolume(viewer, JmolConstants.VDW_AUTO);
 
     // these next have to be multiplied by 100 if being compared
     // note that spacefill here is slightly different than radius -- no integer option
@@ -1217,7 +1217,7 @@ final public class Atom extends Point3fi {
     case Token.star:
     case Token.strands:
     case Token.trace:
-      return atom.group.chain.modelSet.getAtomShapeValue(atom.index, tokWhat);
+      return viewer.getAtomShapeValue(atom.group, atom.index, tokWhat);
     case Token.straightness:
       return atom.getStraightness();
     case Token.unitx:

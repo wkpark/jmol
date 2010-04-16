@@ -129,6 +129,10 @@ public abstract class Shape {
   public void initShape() {
   }
 
+  public void merge(Shape shape) {
+    // shape-dependent Jmol 12.0.RC6
+  }
+  
   protected Vector xmlProperties;
   
   public void setShapeSize(int size, RadiusData rd, BitSet bsSelected) {

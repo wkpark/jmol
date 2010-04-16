@@ -2448,7 +2448,7 @@ abstract public class ModelCollection extends BondCollection {
     if (autoAromatize)
       assignAromaticBonds(true, bsBonds);
     if (!identifyOnly)
-      ((ModelSet)this).setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsBonds);
+      viewer.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsBonds);
     return new int[] { nNew, nModified };
   }
 
@@ -2699,8 +2699,7 @@ abstract public class ModelCollection extends BondCollection {
         nNew++;
       }
     }
-    ((ModelSet) this).setShapeSize(JmolConstants.SHAPE_STICKS,
-        Integer.MIN_VALUE, null, bsHBondsRasmol);
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsHBondsRasmol);
     if (showRebondTimes && Logger.debugging)
       Logger.checkTimer("Time to hbond");
     return (haveHAtoms ? nNew : -nNew);

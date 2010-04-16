@@ -385,7 +385,7 @@ abstract public class AtomCollection {
     float volume = 0;
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
-        volume += atoms[i].getVolume(iType);
+        volume += atoms[i].getVolume(viewer, iType);
     return volume;
   }
   
@@ -600,7 +600,7 @@ abstract public class AtomCollection {
           break;
         case Token.label:
         case Token.format:
-          ((ModelSet) this).setAtomLabel(sValue, i);
+          viewer.setAtomLabel(sValue, i);
           break;
         case Token.occupancy:
           if (iValue < 2)

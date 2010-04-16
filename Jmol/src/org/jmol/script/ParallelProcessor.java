@@ -4,6 +4,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.concurrent.Executor;
 
+import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.Viewer;
 
 class ParallelProcessor extends ScriptFunction {
@@ -31,10 +32,15 @@ class ParallelProcessor extends ScriptFunction {
   }
   
   Viewer viewer;
+  Vector vShapeManagers = new Vector();
+
   public void runAllProcesses(Viewer viewer) {
     this.viewer = viewer;
     for (int i = 0; i < processes.size(); i++)
       runProcess((Process) processes.get(i));
+    for (int i = 0; i < vShapeManagers.size(); i++)
+      viewer.mergeShapes(((ShapeManager) vShapeManagers.get(i)).getShapes());
+    vShapeManagers = new Vector();
   }
 
   Vector processes = new Vector();
@@ -61,7 +67,7 @@ class ParallelProcessor extends ScriptFunction {
   }
   
   transient int counter = 0 ;
-
+  
   private void runProcess(final Process process) {
     Runnable r = new Runnable() {
       public void run() {
@@ -70,17 +76,15 @@ class ParallelProcessor extends ScriptFunction {
         synchronized (lock) {
           try {
             System.out.println("Running process " + process.processName + " " + process.context.pc + " - " + (process.context.pcEnd - 1));
-            viewer.eval(process.context);
-            // / run the process;
-            // finalize the process;
+            ShapeManager shapeManager = new ShapeManager(viewer, viewer.getModelSet());
+            vShapeManagers.add(shapeManager);
+            viewer.eval(process.context, shapeManager);
+            System.out.println("Process " + process.processName + " complete");
           } catch (Exception e) {
             e.printStackTrace();
           }
           counter--;
           lock.depth--;
-          if (counter == 0) {
-            // what?
-          }
         }
       }
     };

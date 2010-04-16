@@ -37,6 +37,7 @@ import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.AtomIndexIterator;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BoxInfo;
+import org.jmol.modelset.Group;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
@@ -223,6 +224,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private DataManager dataManager;
   private FileManager fileManager;
   private ActionManager actionManager;
+  private ShapeManager shapeManager;
   private ModelManager modelManager;
   private ModelSet modelSet;
   private MouseManager mouseManager;
@@ -304,10 +306,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         mouseManager = new MouseManager10(display, this, actionManager);
     }
     modelManager = new ModelManager(this);
+    shapeManager = new ShapeManager(this);
     tempManager = new TempArray();
     dataManager = new DataManager(this);
     animationManager = new AnimationManager(this);
-    repaintManager = new RepaintManager(this);
+    repaintManager = new RepaintManager(this, shapeManager);
     initialize();
     fileManager = new FileManager(this);
     compiler = new ScriptCompiler(this);
@@ -1499,7 +1502,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void select(BitSet bs, boolean isQuiet) {
     // Eval
     selectionManager.select(bs, isQuiet);
-    modelSet.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, null,
+    shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, null,
         null);
   }
 
@@ -1509,7 +1512,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void selectBonds(BitSet bs) {
-    modelSet.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, null,
+    shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, null,
         bs);
   }
 
@@ -2645,7 +2648,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean frankClicked(int x, int y) {
     return !global.disablePopupMenu && getShowFrank()
-        && modelSet.frankClicked(x, y);
+        && shapeManager.frankClicked(x, y);
   }
 
   public int findNearestAtomIndex(int x, int y) {
@@ -2810,14 +2813,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public Hashtable getAuxiliaryInfo(Object atomExpression) {
     return modelSet.getAuxiliaryInfo(getModelBitSet(
         getAtomBitSet(atomExpression), false));
-  }
-
-  public Hashtable getShapeInfo() {
-    return modelSet.getShapeInfo();
-  }
-
-  public int getShapeIdFromObjectName(String objectName) {
-    return modelSet.getShapeIdFromObjectName(objectName);
   }
 
   Vector getAllAtomInfo(Object atomExpression) {
@@ -4229,95 +4224,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       refresh(3, "hover off");
   }
 
-  public void setLabel(String strLabel) {
-    modelSet.setLabel(strLabel, selectionManager.getSelectionSet());
-  }
-
-  public void togglePickingLabel(BitSet bs) {
-    // eval label toggle (atomset) and actionManager
-    if (bs == null)
-      bs = selectionManager.getSelectionSet();
-    loadShape(JmolConstants.SHAPE_LABELS);
-    // setShapeSize(JmolConstants.SHAPE_LABELS, 0, Float.NaN, bs);
-    modelSet.setShapeProperty(JmolConstants.SHAPE_LABELS, "toggleLabel", null,
-        bs);
-  }
-
   BitSet getBitSetSelection() {
     return selectionManager.getSelectionSet();
   }
 
-  public void clearShapes() {
+  public void clearShapeRenderers() {
     repaintManager.clear();
-  }
-
-  public void loadShape(int shapeID) {
-    modelSet.loadShape(shapeID);
-  }
-
-  public void setShapeSize(int shapeID, int mad, BitSet bsSelected) {
-    // might be atoms or bonds
-    if (bsSelected == null)
-      bsSelected = selectionManager.getSelectionSet();
-    modelSet.setShapeSize(shapeID, mad, null, bsSelected);
-  }
-
-  public void setShapeSize(int shapeID, RadiusData rd, BitSet bsAtoms) {
-    // BondCollection.autoHbond()
-    // ModelCollection.makeConnections()
-    // Eval.configuration()
-    // Eval.connect()
-    // several points in Viewer
-    if (bsAtoms == null)
-      bsAtoms = selectionManager.getSelectionSet();
-    if (rd.value != 0 && rd.vdwType == Token.temperature)
-      modelSet.getBfactor100Lo();
-    modelSet.setShapeSize(shapeID, 0, rd, bsAtoms);
   }
 
   public int getBfactor100Hi() {
     return modelSet.getBfactor100Hi();
-  }
-
-  public void setShapeProperty(int shapeID, String propertyName, Object value) {
-    // Eval, BondCollection, StateManager, local
-    if (shapeID < 0)
-      return; // not applicable
-    modelSet.setShapeProperty(shapeID, propertyName, value, null);
-  }
-
-  public void setShapeProperty(int shapeID, String propertyName, Object value,
-                               BitSet bs) {
-    // Eval color
-    if (shapeID < 0)
-      return; // not applicable
-    modelSet.setShapeProperty(shapeID, propertyName, value, bs);
-  }
-
-  void setShapePropertyArgb(int shapeID, String propertyName, int argb) {
-    // Eval
-    setShapeProperty(shapeID, propertyName, argb == 0 ? null : new Integer(
-        argb | 0xFF000000));
-  }
-
-  public Object getShapeProperty(int shapeType, String propertyName) {
-    return modelSet
-        .getShapeProperty(shapeType, propertyName, Integer.MIN_VALUE);
-  }
-
-  public boolean getShapeProperty(int shapeType, String propertyName,
-                                  Object[] data) {
-    return modelSet.getShapeProperty(shapeType, propertyName, data);
-  }
-
-  public Object getShapeProperty(int shapeType, String propertyName, int index) {
-    return modelSet.getShapeProperty(shapeType, propertyName, index);
-  }
-
-  int getShapePropertyAsInt(int shapeID, String propertyName) {
-    Object value = getShapeProperty(shapeID, propertyName);
-    return value == null || !(value instanceof Integer) ? Integer.MIN_VALUE
-        : ((Integer) value).intValue();
   }
 
   short getColix(Object object) {
@@ -4432,7 +4348,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String getAtomInfo(int atomOrPointIndex) {
     // only for MeasurementTable and actionManager
     return (atomOrPointIndex >= 0 ? modelSet
-        .getAtomInfo(atomOrPointIndex, null) : (String) modelSet
+        .getAtomInfo(atomOrPointIndex, null) : (String) shapeManager
         .getShapeProperty(JmolConstants.SHAPE_MEASURES, "pointInfo",
             -atomOrPointIndex));
   }
@@ -6944,13 +6860,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // ////////////////////////////////////////////////
 
-  public void setModelVisibility() {
-    // Eval -- ok - handled specially
-    if (modelSet == null) // necessary for file chooser
-      return;
-    modelSet.setModelVisibility();
-  }
-
   boolean isTainted = true;
 
   public void setTainted(boolean TF) {
@@ -6972,14 +6881,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   Token checkObjectClicked(int x, int y, int modifiers) {
-    return modelSet.checkObjectClicked(x, y, modifiers,
+    return shapeManager.checkObjectClicked(x, y, modifiers,
         getVisibleFramesBitSet());
   }
 
   boolean checkObjectHovered(int x, int y) {
-    if (modelSet == null)
-      return false;
-    return modelSet.checkObjectHovered(x, y, getVisibleFramesBitSet());
+    return (shapeManager != null && shapeManager.checkObjectHovered(x, y, getVisibleFramesBitSet()));
   }
 
   void checkObjectDragged(int prevX, int prevY, int x, int y, int action) {
@@ -6992,7 +6899,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       iShape = JmolConstants.SHAPE_DRAW;
       break;
     }
-    if (modelSet.checkObjectDragged(prevX, prevY, x, y, action,
+    if (shapeManager.checkObjectDragged(prevX, prevY, x, y, action,
         getVisibleFramesBitSet(), iShape))
       refresh(1, "checkObjectDragged"); 
     
@@ -7931,10 +7838,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private int currentShapeID = -1;
   private String currentShapeState;
 
-  public Shape getShape(int i) {
-    return (modelSet == null ? null : modelSet.getShape(i));
-  }
-
   public void setShapeErrorState(int shapeID, String state) {
     currentShapeID = shapeID;
     currentShapeState = state;
@@ -7944,7 +7847,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (currentShapeID < 0)
       return "";
     if (modelSet != null)
-      modelSet.releaseShape(currentShapeID);
+      shapeManager.releaseShape(currentShapeID);
     repaintManager.clear(currentShapeID);
     return JmolConstants.getShapeClassName(currentShapeID) + " "
         + currentShapeState;
@@ -8305,7 +8208,136 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return executor;
   }
 
-  public boolean eval(ScriptContext context) {
-    return ScriptEvaluator.evaluateContext(this, context);
+  public boolean eval(ScriptContext context, ShapeManager shapeManager) {
+    return ScriptEvaluator.evaluateContext(this, context, (shapeManager == null ? this.shapeManager : shapeManager));
+  }
+
+  public Hashtable getShapeInfo() {
+    return shapeManager.getShapeInfo();
+  }
+
+  public int getShapeIdFromObjectName(String objectName) {
+    return shapeManager.getShapeIdFromObjectName(objectName);
+  }
+
+  public void setLabel(String strLabel) {
+    shapeManager.setLabel(strLabel, selectionManager.getSelectionSet());
+  }
+
+  public void togglePickingLabel(BitSet bs) {
+    // eval label toggle (atomset) and actionManager
+    if (bs == null)
+      bs = selectionManager.getSelectionSet();
+    loadShape(JmolConstants.SHAPE_LABELS);
+    // setShapeSize(JmolConstants.SHAPE_LABELS, 0, Float.NaN, bs);
+    shapeManager.setShapeProperty(JmolConstants.SHAPE_LABELS, "toggleLabel", null,
+        bs);
+  }
+
+  public void loadShape(int shapeID) {
+    shapeManager.loadShape(shapeID);
+  }
+
+  public void setShapeSize(int shapeID, int mad, BitSet bsSelected) {
+    // might be atoms or bonds
+    if (bsSelected == null)
+      bsSelected = selectionManager.getSelectionSet();
+    shapeManager.setShapeSize(shapeID, mad, null, bsSelected);
+  }
+
+  public void setShapeSize(int shapeID, int mad, RadiusData rd, BitSet bsSelected) {
+    shapeManager.setShapeSize(shapeID, mad, rd, bsSelected);
+  }
+
+  public void setShapeSize(int shapeID, RadiusData rd, BitSet bsAtoms) {
+    shapeManager.setShapeSize(shapeID, 0, rd, bsAtoms);
+  }
+
+  public void setShapeProperty(int shapeID, String propertyName, Object value) {
+    // Eval, BondCollection, StateManager, local
+    if (shapeID < 0)
+      return; // not applicable
+    shapeManager.setShapeProperty(shapeID, propertyName, value, null);
+  }
+
+  public void setShapeProperty(int shapeID, String propertyName, Object value,
+                               BitSet bs) {
+    // Eval color
+    if (shapeID < 0)
+      return; // not applicable
+    shapeManager.setShapeProperty(shapeID, propertyName, value, bs);
+  }
+
+  public Object getShapeProperty(int shapeType, String propertyName) {
+    return shapeManager.getShapeProperty(shapeType, propertyName, Integer.MIN_VALUE);
+  }
+
+  public boolean getShapeProperty(int shapeType, String propertyName,
+                                  Object[] data) {
+    return shapeManager.getShapeProperty(shapeType, propertyName, data);
+  }
+
+  public Object getShapeProperty(int shapeType, String propertyName, int index) {
+    return shapeManager.getShapeProperty(shapeType, propertyName, index);
+  }
+
+  int getShapePropertyAsInt(int shapeID, String propertyName) {
+    Object value = getShapeProperty(shapeID, propertyName);
+    return value == null || !(value instanceof Integer) ? Integer.MIN_VALUE
+        : ((Integer) value).intValue();
+  }
+
+  public void setModelVisibility() {
+    // Eval -- ok - handled specially
+    if (shapeManager == null) // necessary for file chooser
+      return;
+    shapeManager.setModelVisibility();
+  }
+
+  public Shape getShape(int i) {
+    return (shapeManager == null ? null : shapeManager.getShape(i));
+  }
+  public void resetShapes() {
+    shapeManager.resetShapes();
+  }
+
+  public void loadDefaultShapes(ModelSet modelSet) {
+    shapeManager.loadDefaultShapes(modelSet);    
+  }
+
+  public void refreshShapeTrajectories(int baseModel, BitSet bs) {
+    shapeManager.refreshShapeTrajectories(baseModel, bs);
+  }
+
+  public void deleteShapeAtoms(Object[] value, BitSet bs) {
+    shapeManager.deleteShapeAtoms(value, bs);
+  }
+
+  public void setAtomLabel(String value, int i) {
+    shapeManager.setAtomLabel(value, i);
+  }
+
+  public float getAtomShapeValue(Group group, int atomIndex, int tok) {
+    return shapeManager.getAtomShapeValue(group, atomIndex, tok);
+  }
+
+  public void findNearestShapeAtomIndex(int x, int y, Atom[] closest) {
+    shapeManager.findNearestShapeAtomIndex(x, y, closest);
+  }
+
+  public void getShapeState(StringBuffer commands, boolean isAll) {
+    shapeManager.getShapeState(commands, isAll);
+  }
+
+  public void resetBioshapes(BitSet bsAllAtoms) {
+    shapeManager.resetBioshapes(bsAllAtoms);    
+  }
+
+  public void mergeShapes(Shape[] newShapes) {
+    shapeManager.mergeShapes(newShapes);
+  }
+
+  public ShapeManager getShapeManager() {
+    return shapeManager;
   }
 }

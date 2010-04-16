@@ -94,6 +94,7 @@ package org.jmol.shapesurface;
 
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
+import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 
@@ -134,15 +135,21 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private IsosurfaceMesh[] isomeshes = new IsosurfaceMesh[4];
   protected IsosurfaceMesh thisMesh;
 
-  public void allocMesh(String thisID) {
+  public void allocMesh(String thisID, Mesh m) {
     int index = meshCount++;
     meshes = isomeshes = (IsosurfaceMesh[]) ArrayUtil.ensureLength(isomeshes,
         meshCount * 2);
-    currentMesh = thisMesh = isomeshes[index] = new IsosurfaceMesh(
-        thisID, g3d, colix, index);
+    currentMesh = thisMesh = isomeshes[index] = (m == null ? new IsosurfaceMesh(
+        thisID, g3d, colix, index) : (IsosurfaceMesh) m);
       sg.setJvxlData(jvxlData = thisMesh.jvxlData);
   }
 
+  public void merge(Shape shape) {
+    if (shapeID != JmolConstants.SHAPE_ISOSURFACE && shapeID != JmolConstants.SHAPE_PMESH)
+      return;
+    super.merge(shape);
+  }
+  
   public void initShape() {
     super.initShape();
     myType = "isosurface";
@@ -770,7 +777,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     String id = (thisMesh == null ? (nElectrons > 0 ? "lp" : "lcao") + (++nLCAO) + "_" + lcaoCartoon
         : thisMesh.thisID);
     if (thisMesh == null)
-      allocMesh(id);
+      allocMesh(id, null);
     if (lcaoCartoon.equals("px")) {
       thisMesh.thisID += "a";
       Mesh meshA = thisMesh;
@@ -875,7 +882,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public void fillMeshData(MeshData meshData, int mode, IsosurfaceMesh mesh) {
     if (meshData == null) {
       if (thisMesh == null)
-        allocMesh(null);
+        allocMesh(null, null);
       thisMesh.clear("isosurface", sg.getIAddGridPoints());
       thisMesh.colix = getDefaultColix();
       thisMesh.meshColix = meshColix;

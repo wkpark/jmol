@@ -25,7 +25,6 @@
 
 package org.jmol.modelset;
 
-import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
 
 import org.jmol.util.Logger;
@@ -67,6 +66,7 @@ public final class ModelLoader extends ModelSet {
   //}
   
 
+  
   private ModelLoader mergeModelSet;
   private boolean merging;
   private String jmolData; // from a PDB remark "Jmol PDB-encoded data"
@@ -76,9 +76,8 @@ public final class ModelLoader extends ModelSet {
   private int[][] group3Counts;
   
   public ModelLoader(Viewer viewer, String name) {
-    if (shapes == null && !viewer.isDataOnly())
-      shapes = new Shape[JmolConstants.SHAPE_MAX];    
     this.viewer = viewer;
+    viewer.resetShapes();
     preserveState = viewer.getPreserveState();
     initializeInfo(name, null);
     createModelSet(null, null);
@@ -86,18 +85,14 @@ public final class ModelLoader extends ModelSet {
     viewer.setStringProperty("_fileType", "");
   }
 
-
   public ModelLoader(Viewer viewer, Object atomSetCollection,
       ModelLoader mergeModelSet, String modelSetName) {
-
-    if (shapes == null && !viewer.isDataOnly())
-      shapes = new Shape[JmolConstants.SHAPE_MAX];
-
     JmolAdapter adapter = viewer.getModelAdapter();
     this.modelSetName = modelSetName;
     this.mergeModelSet = mergeModelSet;
     merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
-
+    if (!merging)
+      viewer.resetShapes();
     this.viewer = viewer;
     preserveState = viewer.getPreserveState();
 
@@ -1287,25 +1282,14 @@ public final class ModelLoader extends ModelSet {
   ///////////////  shapes  ///////////////
   
   private void finalizeShapes() {
+    viewer.loadDefaultShapes(this);
     if (someModelsHaveAromaticBonds && viewer.getSmartAromatic())
       assignAromaticBonds(false);
-    if (shapes == null)
-      return;
     if (merging) {
-      for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
-        if ((shapes[i] = mergeModelSet.shapes[i]) != null)
-          shapes[i].setModelSet(this);
-      if (baseModelCount == 1 && shapes[JmolConstants.SHAPE_MEASURES] != null)
-        setShapeProperty(JmolConstants.SHAPE_MEASURES, "clearModelIndex", null, null);
-      viewer.clearShapes();
+      if (baseModelCount == 1)
+        viewer.setShapeProperty(JmolConstants.SHAPE_MEASURES, "clearModelIndex", null, null);
       merging = false;
-      return;
     }
-    loadShape(JmolConstants.SHAPE_BALLS);
-    loadShape(JmolConstants.SHAPE_STICKS);
-    loadShape(JmolConstants.SHAPE_MEASURES);
-    loadShape(JmolConstants.SHAPE_BBCAGE);
-    loadShape(JmolConstants.SHAPE_UCCAGE);
   }
   
   public void createAtomDataSet(int tokType, Object atomSetCollection, BitSet bsSelected) {

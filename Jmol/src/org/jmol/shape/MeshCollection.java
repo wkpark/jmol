@@ -70,7 +70,7 @@ public abstract class MeshCollection extends Shape {
     }
     currentMesh = getMesh(thisID);
     if (currentMesh == null) {
-      allocMesh(thisID);
+      allocMesh(thisID, null);
     } else if (thisID.equals(JmolConstants.PREVIOUS_MESH_ID)) {
       linkedMesh = currentMesh.linkedMesh;
     }
@@ -85,15 +85,32 @@ public abstract class MeshCollection extends Shape {
 
   protected Hashtable htObjects;
   
-  public void allocMesh(String thisID) {
+  public void allocMesh(String thisID, Mesh m) {
     // this particular version is only run from privately;
     // isosurface and draw both have overriding methods
     int index = meshCount++;
     meshes = (Mesh[])ArrayUtil.ensureLength(meshes, meshCount * 2);
-    currentMesh = meshes[index] = new Mesh(thisID, g3d, colix, index);
+    currentMesh = meshes[index] = (m == null ? new Mesh(thisID, g3d, colix, index) : m);
     if (thisID != null && htObjects != null)
       htObjects.put(thisID.toUpperCase(), currentMesh);
     previousMeshID = null;
+  }
+
+  public void merge(Shape shape) {
+    MeshCollection mc = (MeshCollection) shape;
+    for (int i = 0; i < mc.meshCount; i++) {
+      if (mc.meshes[i] != null) {
+        Mesh m = mc.meshes[i];
+        Mesh m0 = getMesh(m.thisID);
+        if (m0 == null) {
+          allocMesh(m.thisID, m);
+        } else {
+          meshes[m0.index] = m;
+        }
+      }      
+    }
+    previousMeshID = null;
+    currentMesh = null;
   }
 
   public void initShape() {

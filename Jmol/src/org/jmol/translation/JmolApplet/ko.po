@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-04-11 18:02+0200\n"
-"PO-Revision-Date: 2008-10-01 21:49+0000\n"
-"Last-Translator: Won Kyu Park <wkpark@gmail.com>\n"
+"PO-Revision-Date: 2010-04-15 00:05+0000\n"
+"Last-Translator: Bundo <bundo@bundo.biz>\n"
 "Language-Team: Korean <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-02 20:04+0000\n"
+"X-Launchpad-Export-Date: 2010-04-15 19:56+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:97
@@ -22,9 +22,8 @@ msgid "Jmol Script Console"
 msgstr "Jmol 스크립트 콘솔"
 
 #: org/jmol/applet/AppletConsole.java:99
-#, fuzzy
 msgid "Editor"
-msgstr "기록"
+msgstr "편집자"
 
 #: org/jmol/applet/AppletConsole.java:100
 msgid "State"
@@ -32,9 +31,8 @@ msgstr "상태"
 
 #: org/jmol/applet/AppletConsole.java:101
 #: org/jmol/console/ScriptEditor.java:137
-#, fuzzy
 msgid "Run"
-msgstr "러시아어"
+msgstr "실행"
 
 #: org/jmol/applet/AppletConsole.java:102
 msgid "Clear Output"
@@ -55,9 +53,7 @@ msgstr "불러옴"
 
 #: org/jmol/applet/AppletConsole.java:143
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"CTRL-ENTER를 누르면 다음줄로 넘어가며 혹은 모델 데이타를 붙여넣기한 후에 불러"
-"옴을 누르세요"
+msgstr "CTRL-ENTER를 누르면 다음줄로 넘어가며 혹은 모델 데이타를 붙여넣기한 후에 불러옴을 누르세요"
 
 #: org/jmol/applet/AppletConsole.java:383
 msgid "&Help"
@@ -119,9 +115,8 @@ msgid "  {0} seconds"
 msgstr "  {0} 초"
 
 #: org/jmol/console/ScriptEditor.java:98
-#, fuzzy
 msgid "Jmol Script Editor"
-msgstr "Jmol 스크립트 콘솔"
+msgstr "Jmol 스크립트 편집기"
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/PopupResourceBundle.java:878
@@ -133,25 +128,24 @@ msgstr "콘솔"
 #: org/jmol/export/dialog/Dialog.java:456
 #: org/jmol/export/dialog/Dialog.java:459
 msgid "Open"
-msgstr ""
+msgstr "열기"
 
 #: org/jmol/console/ScriptEditor.java:133
 msgid "Script"
 msgstr "스크립트"
 
 #: org/jmol/console/ScriptEditor.java:134
-#, fuzzy
 msgid "Check"
-msgstr "체코어"
+msgstr "검사"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
-#, fuzzy
 msgid "Step"
-msgstr "정지"
+msgstr "단계"
 
 #: org/jmol/console/ScriptEditor.java:138
 #: org/jmol/popup/PopupResourceBundle.java:835
@@ -165,17 +159,15 @@ msgstr "다시"
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
-msgstr ""
+msgstr "끝내기"
 
 #: org/jmol/console/ScriptEditor.java:144
-#, fuzzy
 msgid "Clear"
-msgstr "입력 지우기"
+msgstr "지우기"
 
 #: org/jmol/console/ScriptEditor.java:145
-#, fuzzy
 msgid "Close"
-msgstr "콘솔"
+msgstr "닫기"
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
@@ -199,7 +191,7 @@ msgstr "PNG 압축 ({0})"
 #: org/jmol/export/dialog/Dialog.java:319
 #, java-format
 msgid "PNG Quality ({0})"
-msgstr ""
+msgstr "PNG 품질 ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:365
 #: org/jmol/export/dialog/Dialog.java:475
@@ -359,20 +351,19 @@ msgstr "모델 추가"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
-msgstr ""
+msgstr "아랍어"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
 msgstr "카탈로니아어"
 
 #: org/jmol/i18n/GT.java:120
-#, fuzzy
 msgid "Simplified Chinese"
-msgstr "곁가지 체인"
+msgstr "중국어 간체"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "중국어 번체"
 
 #: org/jmol/i18n/GT.java:122
 msgid "Czech"
@@ -380,21 +371,19 @@ msgstr "체코어"
 
 #: org/jmol/i18n/GT.java:123
 msgid "Danish"
-msgstr ""
+msgstr "덴마크어"
 
 #: org/jmol/i18n/GT.java:124
 msgid "Dutch"
 msgstr "네델란드어"
 
 #: org/jmol/i18n/GT.java:125
-#, fuzzy
 msgid "British English"
-msgstr "영어"
+msgstr "영국 영어"
 
 #: org/jmol/i18n/GT.java:126
-#, fuzzy
 msgid "American English"
-msgstr "영어"
+msgstr "미국 영어"
 
 #: org/jmol/i18n/GT.java:127
 msgid "Estonian"
@@ -409,9 +398,8 @@ msgid "German"
 msgstr "독일어"
 
 #: org/jmol/i18n/GT.java:130
-#, fuzzy
 msgid "Greek"
-msgstr "녹색"
+msgstr "그리스어"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Hungarian"
@@ -419,7 +407,7 @@ msgstr "헝가리어"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Indonesian"
-msgstr ""
+msgstr "인도네시아어"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Italian"
@@ -427,7 +415,7 @@ msgstr "이탈리아어"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Japanese"
-msgstr ""
+msgstr "일본어"
 
 #: org/jmol/i18n/GT.java:135
 msgid "Korean"
@@ -435,20 +423,19 @@ msgstr "한국어"
 
 #: org/jmol/i18n/GT.java:136
 msgid "Norwegian Bokmal"
-msgstr ""
+msgstr "노르웨이어"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Occitan"
-msgstr ""
+msgstr "오시탄어"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Polish"
 msgstr "폴란드어"
 
 #: org/jmol/i18n/GT.java:139
-#, fuzzy
 msgid "Brazilian Portuguese"
-msgstr "포루투갈어"
+msgstr "포루투갈어(브라질)"
 
 #: org/jmol/i18n/GT.java:140
 msgid "Portuguese"
@@ -476,12 +463,12 @@ msgstr "터키어"
 
 #: org/jmol/i18n/GT.java:146
 msgid "Ukrainian"
-msgstr ""
+msgstr "우크라이나어"
 
 #: org/jmol/minimize/Minimizer.java:191
 #, java-format
 msgid "Could not get class for force field {0}"
-msgstr "force field {0}에 대한 클래스를 찾을 수 없음"
+msgstr "포스필드 {0}을(를) 위한 클래스를 가져올 수 없음"
 
 #: org/jmol/minimize/Minimizer.java:202
 msgid "No atoms selected -- nothing to do!"
@@ -504,9 +491,8 @@ msgstr "원자 없음"
 
 #: org/jmol/popup/JmolPopup.java:464
 #: org/jmol/popup/PopupResourceBundle.java:578
-#, fuzzy
 msgid "Space Group"
-msgstr "공간 그룹"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:526 org/jmol/popup/JmolPopup.java:566
 #: org/jmol/popup/PopupResourceBundle.java:599
@@ -527,9 +513,8 @@ msgid "Translations"
 msgstr "번역"
 
 #: org/jmol/popup/JmolPopup.java:692
-#, fuzzy
 msgid "System"
-msgstr "정지"
+msgstr "시스템"
 
 #: org/jmol/popup/JmolPopup.java:698
 msgid "1 processor"
@@ -546,12 +531,11 @@ msgstr "프로세서 개수 모름"
 
 #: org/jmol/popup/JmolPopup.java:703
 msgid "Java version:"
-msgstr ""
+msgstr "자바 버전:"
 
 #: org/jmol/popup/JmolPopup.java:707
-#, fuzzy
 msgid "Java memory usage:"
-msgstr "자바 메모리 사용량"
+msgstr "자바 메모리 상황:"
 
 #: org/jmol/popup/JmolPopup.java:713
 #, java-format
@@ -609,9 +593,8 @@ msgid "Symmetry"
 msgstr "대칭"
 
 #: org/jmol/popup/PopupResourceBundle.java:579
-#, fuzzy
 msgid "Hide Symmetry"
-msgstr "대칭"
+msgstr "대칭 숨기기"
 
 #: org/jmol/popup/PopupResourceBundle.java:580
 msgid "Model information"
@@ -773,11 +756,11 @@ msgstr "핵산"
 
 #: org/jmol/popup/PopupResourceBundle.java:623
 msgid "DNA"
-msgstr ""
+msgstr "DNA"
 
 #: org/jmol/popup/PopupResourceBundle.java:624
 msgid "RNA"
-msgstr ""
+msgstr "RNA"
 
 #: org/jmol/popup/PopupResourceBundle.java:626
 msgid "Bases"
@@ -825,7 +808,7 @@ msgstr "리간드"
 
 #: org/jmol/popup/PopupResourceBundle.java:640
 msgid "Carbohydrate"
-msgstr ""
+msgstr "탄수화물"
 
 #: org/jmol/popup/PopupResourceBundle.java:641
 msgid "None of the above"
@@ -933,7 +916,7 @@ msgstr "켬"
 #: org/jmol/popup/PopupResourceBundle.java:955
 #, java-format
 msgid "{0} Å"
-msgstr ""
+msgstr "{0} Å"
 
 #: org/jmol/popup/PopupResourceBundle.java:670
 #: org/jmol/popup/PopupResourceBundle.java:784
@@ -1451,27 +1434,24 @@ msgid "Current state"
 msgstr "현재 상태"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
-#, fuzzy
 msgid "File"
-msgstr "파일 {0}"
+msgstr "파일"
 
 #: org/jmol/popup/PopupResourceBundle.java:892
-#, fuzzy
 msgid "Reload"
-msgstr "다시부르기 {0}"
+msgstr "다시 읽기"
 
 #: org/jmol/popup/PopupResourceBundle.java:893
 msgid "Open from PDB"
-msgstr ""
+msgstr "PDB에서 열기"
 
 #: org/jmol/popup/PopupResourceBundle.java:894
-#, fuzzy
 msgid "Open file or URL"
-msgstr "파일 혹은 URL"
+msgstr "파일 또는 URL 열기"
 
 #: org/jmol/popup/PopupResourceBundle.java:895
 msgid "Load full unit cell"
-msgstr ""
+msgstr "전체 단위 세포 불러오기"
 
 #: org/jmol/popup/PopupResourceBundle.java:896
 msgid "Open script"
@@ -1480,23 +1460,23 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:898
 #, java-format
 msgid "Save a copy of {0}"
-msgstr ""
+msgstr "{0}의 복사본을 저장"
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 msgid "Save script with state"
-msgstr ""
+msgstr "상태를 스크립트로 저장"
 
 #: org/jmol/popup/PopupResourceBundle.java:900
 msgid "Save script with history"
-msgstr ""
+msgstr "기록을 스크립트로 저장"
 
 #: org/jmol/popup/PopupResourceBundle.java:901
 #: org/jmol/popup/PopupResourceBundle.java:902
 #: org/jmol/popup/PopupResourceBundle.java:903
 #: org/jmol/popup/PopupResourceBundle.java:904
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} image"
-msgstr "{0} 그림"
+msgstr "{0} 이미지 내보내기"
 
 #: org/jmol/popup/PopupResourceBundle.java:905
 msgid "Save JVXL isosurface"
@@ -1506,18 +1486,17 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:907
 #: org/jmol/popup/PopupResourceBundle.java:908
 #: org/jmol/popup/PopupResourceBundle.java:909
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} 3D model"
-msgstr "{0} 삼차원 모델"
+msgstr "{0} 3D 모델 내보내기"
 
 #: org/jmol/popup/PopupResourceBundle.java:911
-#, fuzzy
 msgid "Computation"
-msgstr "구성"
+msgstr "연산"
 
 #: org/jmol/popup/PopupResourceBundle.java:912
 msgid "Optimize structure"
-msgstr ""
+msgstr "최적화 구조"
 
 #: org/jmol/popup/PopupResourceBundle.java:916
 msgid "Extract MOL data"
@@ -1558,7 +1537,7 @@ msgstr "다시부르기 {0}"
 #: org/jmol/popup/PopupResourceBundle.java:933
 #, java-format
 msgid "Reload {0} + Display {1}"
-msgstr ""
+msgstr "{0} 다시읽기  + {1} 보기"
 
 #: org/jmol/popup/PopupResourceBundle.java:934
 msgid "Reload + Polyhedra"
@@ -1582,7 +1561,7 @@ msgstr "픽셀 너비"
 #: org/jmol/popup/PopupResourceBundle.java:948
 #, java-format
 msgid "{0} px"
-msgstr ""
+msgstr "{0} px"
 
 #: org/jmol/popup/PopupResourceBundle.java:950
 msgid "Angstrom Width"
@@ -1610,7 +1589,7 @@ msgstr "RasMol색"
 
 #: org/jmol/popup/PopupResourceBundle.java:966
 msgid "About..."
-msgstr ""
+msgstr "정보..."
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1119
 #: org/jmol/script/ScriptEvaluator.java:2369
@@ -1706,9 +1685,8 @@ msgid "unrecognized token: {0}"
 msgstr "이해할 수 없는 토큰: {0}"
 
 #: org/jmol/script/ScriptCompiler.java:2250
-#, fuzzy
 msgid "script compiler ERROR: "
-msgstr "스크립트 오류: "
+msgstr "스크립트 컴파일러 오류: "
 
 #: org/jmol/script/ScriptEvaluator.java:2225
 #: org/jmol/script/ScriptEvaluator.java:8354
@@ -1754,9 +1732,8 @@ msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "색상 혹은 팔레트 이름 (Jmol, Rasmol)이 필요"
 
 #: org/jmol/script/ScriptEvaluator.java:2396
-#, fuzzy
 msgid "{x y z} or $name or (atom expression) required"
-msgstr " {x y z} 혹은 $name 혹은 (원자 표현식) 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2399
 msgid "draw object not defined"
@@ -1834,9 +1811,9 @@ msgid "{0} require that only one model be displayed"
 msgstr "{0}(은)는 단 하나의 모델만 표시됨"
 
 #: org/jmol/script/ScriptEvaluator.java:2456
-#, fuzzy, java-format
+#, java-format
 msgid "{0} requires that only one model be loaded"
-msgstr "{0}(은)는 단 하나의 모델만 표시됨"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2459
 msgid "No data available"
@@ -1846,9 +1823,7 @@ msgstr "아무 정보가 없음"
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
-msgstr ""
-"부분 전하 정보가 없습니다; Jmol은 MEP 정보를 보여주기 위해 이 정보가필요합니"
-"다."
+msgstr "부분 전하 정보가 없습니다; Jmol은 MEP 정보를 보여주기 위해 이 정보가필요합니다."
 
 #: org/jmol/script/ScriptEvaluator.java:2466
 msgid "No unit cell"
@@ -1963,28 +1938,25 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} 수소 결합"
 
 #: org/jmol/script/ScriptEvaluator.java:9644
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts added"
-msgstr "{0} 수소 결합"
+msgstr ""
 
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:53
-#, fuzzy
 msgid "rotate"
-msgstr "상태"
+msgstr "회전"
 
 #: org/jmol/viewer/ActionManager.java:54
-#, fuzzy
 msgid "zoom"
 msgstr "확대"
 
 #: org/jmol/viewer/ActionManager.java:55
-#, fuzzy
 msgid "rotate Z"
-msgstr "상태"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:56
 msgid ""
@@ -1992,14 +1964,12 @@ msgid ""
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:57
-#, fuzzy
 msgid "translate"
 msgstr "번역"
 
 #: org/jmol/viewer/ActionManager.java:59
-#, fuzzy
 msgid "center"
-msgstr "가운데"
+msgstr "중앙"
 
 #: org/jmol/viewer/ActionManager.java:60
 msgid "zoom (along right edge of window)"
@@ -2093,9 +2063,8 @@ msgid "pick an atom"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:82
-#, fuzzy
 msgid "pick a DRAW point (for measurements)"
-msgstr "클릭하면 꼬인각 (이면각) 측정"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format
@@ -2110,9 +2079,8 @@ msgid ""
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:86
-#, fuzzy
 msgid "pick an atom to initiate or conclude a measurement"
-msgstr "클릭하면 거리 측정"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:87
 msgid "pick an ISOSURFACE point"
@@ -2178,15 +2146,13 @@ msgid "pick two atoms in order to spin the model around an axis"
 msgstr "모델을 축상으로 회전하기 위해 두개의 원자를 고르세요"
 
 #: org/jmol/viewer/ActionManager.java:1442
-#, fuzzy
 msgid "pick one more atom in order to display the symmetry relationship"
-msgstr "축상으로 돌리기위해 하나 혹은 더 많은 원자를 고르세요"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:1443
-#, fuzzy
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr "모델을 축상으로 회전하기 위해 두개의 원자를 고르세요"
+msgstr ""
 
 #: org/jmol/viewer/SelectionManager.java:77
 #: org/jmol/viewer/SelectionManager.java:93
@@ -2200,9 +2166,9 @@ msgid "{0} atoms selected"
 msgstr "{0} 원자 선택"
 
 #: org/jmol/viewer/Viewer.java:4129
-#, fuzzy, java-format
+#, java-format
 msgid "{0} hydrogens added"
-msgstr "{0} 수소 결합"
+msgstr ""
 
 #: org/jmol/viewer/Viewer.java:4170
 msgid "Drag to move label"
@@ -2221,78 +2187,25 @@ msgstr ""
 msgid "Setting log file to {0}"
 msgstr ""
 
-#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
-#~ msgstr "오류: 문자열값에 부울린값을 지정할 수 없음: {0}"
-
-#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-#~ msgstr "오류: 숫자에 부울린값을 지정할 수 없음: {0}"
-
-#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-#~ msgstr "오류: 부울린에 이 값을 넣을 수 없음: {0}"
-
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr ""
-#~ "애플릿이 파일을 만들 수 없습니다. Base64 방식의 JPEG 포맷은 {0}을(를) 사용"
-#~ "하세요."
-
-#~ msgid "File creation failed."
-#~ msgstr "파일 생성 오류."
-
 #~ msgid "About Jmol"
 #~ msgstr "Jmol은"
 
-#~ msgid "Execute"
-#~ msgstr "실행"
+#, java-format
+#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
+#~ msgstr "오류: 문자열값에 부울린값을 지정할 수 없음: {0}"
 
-#~ msgid "Portuguese - Brazil"
-#~ msgstr "포루투갈어 - 브라질"
+#, java-format
+#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
+#~ msgstr "오류: 숫자에 부울린값을 지정할 수 없음: {0}"
 
-#~ msgid "all"
-#~ msgstr "모두"
+#, java-format
+#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
+#~ msgstr "오류: 부울린에 이 값을 넣을 수 없음: {0}"
 
-#~ msgid "Structure"
-#~ msgstr "스트럭쳐"
+#, java-format
+#~ msgid ""
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ msgstr "애플릿이 파일을 만들 수 없습니다. Base64 방식의 JPEG 포맷은 {0}을(를) 사용하세요."
 
-#~ msgid "Surface"
-#~ msgstr "표면"
-
-#~ msgid "Unitcell"
-#~ msgstr "단위세포"
-
-#~ msgid "Measure"
-#~ msgstr "측정"
-
-#~ msgid "Bound Box"
-#~ msgstr "경계상자"
-
-#~ msgid "Unit Cell"
-#~ msgstr "단위 Cell"
-
-#~ msgid "comma or right parenthesis expected"
-#~ msgstr "콤마 혹은 오른쪽 괄호 필요"
-
-#~ msgid "comparison operator expected"
-#~ msgstr "비교 연산자 필요"
-
-#~ msgid "equal sign expected"
-#~ msgstr "등가 기호 필요"
-
-#~ msgid "left parenthesis expected"
-#~ msgstr "왼쪽 괄화가 필요"
-
-#~ msgid "right brace expected"
-#~ msgstr "오른쪽 중괄호 필요"
-
-#~ msgid "right bracket expected"
-#~ msgstr "오른쪽 꺽쇠괄호 필요"
-
-#~ msgid "right parenthesis expected"
-#~ msgstr "오른쪽 괄호가 필요"
-
-#~ msgid "rotation points cannot be identical"
-#~ msgstr "회전 포인트가 같게 지정됨"
-
-#~ msgid "too many parentheses"
-#~ msgstr "너무 많은 괄호"
+#~ msgid "File creation failed."
+#~ msgstr "파일 생성 오류."

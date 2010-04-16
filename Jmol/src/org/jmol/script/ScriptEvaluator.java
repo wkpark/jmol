@@ -5133,6 +5133,7 @@ public class ScriptEvaluator {
     int ptNext = 0;
     switch (tok) {
     case Token.process:
+      pushContext((ContextToken) theToken);
       isDone = isOK = true;
       addProcess(pc, pt);
       break;
@@ -5160,6 +5161,7 @@ public class ScriptEvaluator {
       }
       if (theTok == Token.process) {
         addProcess(pt, pc);
+        popContext(true);
       }
       isOK = (theTok == Token.process || theTok == Token.ifcmd);
       isForCheck = (theTok == Token.forcmd || theTok == Token.whilecmd);
@@ -5267,6 +5269,7 @@ public class ScriptEvaluator {
     if (pc > 0) {
       vProcess = new Vector();
     } else {
+      
       Token[][] statements = new Token[pt][];
       for (int i = 0; i < vProcess.size(); i++)
         statements[i - pc] = (Token[]) vProcess.get(i);

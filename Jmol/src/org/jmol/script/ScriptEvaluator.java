@@ -5266,8 +5266,15 @@ public class ScriptEvaluator {
       return;
     if (pc > 0) {
       vProcess = new Vector();
-      parallelProcessor.addProcess("p" + (++iProcess), vProcess, getScriptContext());
     } else {
+      Token[][] statements = new Token[pt][];
+      for (int i = 0; i < vProcess.size(); i++)
+        statements[i - pc] = (Token[]) vProcess.get(i);
+      ScriptContext context = getScriptContext();
+      context.aatoken = statements;
+      context.pc = -pc;
+      context.pcEnd = pt - 1;
+      parallelProcessor.addProcess("p" + (++iProcess), context);
       vProcess = null;
     }
   }

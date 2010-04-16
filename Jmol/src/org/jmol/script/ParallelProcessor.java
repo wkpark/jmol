@@ -38,11 +38,7 @@ class ParallelProcessor extends ScriptFunction {
   }
 
   Vector processes = new Vector();
-  void addProcess(String name, Vector vProcess, ScriptContext context) {
-    Token[][] statements = new Token[vProcess.size()][];
-    for (int i = vProcess.size(); --i >= 0; )
-      statements[i] = (Token[]) vProcess.get(i);
-    context.aatoken = statements;
+  void addProcess(String name, ScriptContext context) {
     processes.add(new Process(name, context));
   }
 
@@ -73,7 +69,7 @@ class ParallelProcessor extends ScriptFunction {
         Lock lock = getLock(process.processName);
         synchronized (lock) {
           try {
-            System.out.println("Running process " + process.processName);
+            System.out.println("Running process " + process.processName + " " + process.context.pc + " - " + (process.context.pcEnd - 1));
             viewer.eval(process.context);
             // / run the process;
             // finalize the process;

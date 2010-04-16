@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-03-14 00:37+0100\n"
-"PO-Revision-Date: 2008-10-01 21:54+0000\n"
+"PO-Revision-Date: 2010-04-16 18:30+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Korean <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-02 20:16+0000\n"
+"X-Launchpad-Export-Date: 2010-04-16 21:18+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -34,18 +34,16 @@ msgid "no display (and also exit when done)"
 msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:144
-#, fuzzy
 msgid "check script syntax only - no file loading"
-msgstr "스크립트 문법검사만"
+msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:146
-#, fuzzy
 msgid "check script syntax only - with file loading"
-msgstr "스크립트 문법검사만"
+msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:147
 msgid "debug"
-msgstr ""
+msgstr "디버그"
 
 #: org/openscience/jmol/app/JmolApp.java:148
 msgid "silent startup operation"
@@ -57,7 +55,7 @@ msgstr "스크립트 실행중 명령 목록"
 
 #: org/openscience/jmol/app/JmolApp.java:152
 msgid "start with no splash screen"
-msgstr ""
+msgstr "스플래쉬 화면 없이 시작"
 
 #: org/openscience/jmol/app/JmolApp.java:154
 msgid "no console -- all output to sysout"
@@ -108,14 +106,12 @@ msgstr "창 너비 x 높이, 예) . {0}"
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
-msgstr ""
-"JPG 이미지 화질 (1-100: 기본값 75) 혹은 PNG 이미지 압축률 (0-9: 기본값 2, 최"
-"대 압축률 9)"
+msgstr "JPG 이미지 화질 (1-100: 기본값 75) 혹은 PNG 이미지 압축률 (0-9: 기본값 2, 최대 압축률 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
 msgid "{0} or {1}:filename"
-msgstr ""
+msgstr "{0} 또는 {1}:파일 이름"
 
 #: org/openscience/jmol/app/JmolApp.java:230
 msgid "For example:"
@@ -128,24 +124,21 @@ msgid ""
 msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:466
-#, fuzzy
 msgid "Executing script 1..."
-msgstr "스크립트 실행..."
+msgstr "스크립트 1 실행 중..."
 
 #: org/openscience/jmol/app/JmolApp.java:476
-#, fuzzy
 msgid "Executing script file..."
-msgstr "스크립트 실행..."
+msgstr "스크립트 파일 실행 중..."
 
 #: org/openscience/jmol/app/JmolApp.java:497
-#, fuzzy
 msgid "Executing script 2..."
-msgstr "스크립트 실행..."
+msgstr "스크립트  2 실행 중..."
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
 msgid "About Jmol"
-msgstr "Jmol에 대해"
+msgstr "정보"
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:67
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:74
@@ -159,39 +152,36 @@ msgstr "\"{0}\" URL을 찾을 수 없습니다."
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:177
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:96
 msgid "OK"
-msgstr "예"
+msgstr "확인"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:90
 msgid "Jmol Script Console"
 msgstr "Jmol 스크립트 콘솔"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
-#, fuzzy
 msgid "Editor"
-msgstr "편집(&E)"
+msgstr "편집자"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:114
 msgid "Check"
-msgstr ""
+msgstr "검사"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:115
-#, fuzzy
 msgid "Top"
-msgstr "윗면(&T)"
+msgstr "위"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:116
-#, fuzzy
 msgid "Step"
-msgstr "상태"
+msgstr "단계"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:123
 msgid "Variables"
-msgstr ""
+msgstr "변수"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:309
 msgid "Clear"
-msgstr "지움"
+msgstr "지우기"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:125
 msgid "Halt"
@@ -215,11 +205,11 @@ msgstr "닫기"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:132
 msgid "Undo"
-msgstr "무르기"
+msgstr "실행 취소"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:133
 msgid "Redo"
-msgstr "되무르기"
+msgstr "재실행"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:164
 msgid "AtomSetChooser"
@@ -259,7 +249,7 @@ msgstr "반복"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:265
 msgid "FPS"
-msgstr ""
+msgstr "FPS"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:281
 msgid "Vector"
@@ -283,7 +273,7 @@ msgstr "주기"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:354
 msgid "Controller"
-msgstr "콘트롤"
+msgstr "콘트롤러"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:361
 msgid "atom set"
@@ -337,16 +327,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:194
 msgid "Basic"
-msgstr ""
+msgstr "기본"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:196
 msgid "Advanced"
-msgstr ""
+msgstr "고급"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:224
-#, fuzzy
 msgid "Checkpoint File: "
-msgstr "최근 파일"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
@@ -354,15 +343,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:235
 msgid "Number of Processors:"
-msgstr ""
+msgstr "프로세스의 수:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:248
 msgid "Route"
-msgstr ""
+msgstr "회전"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:254
 msgid "Method: "
-msgstr ""
+msgstr "방식: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:261
 msgid "Basis Set: "
@@ -377,9 +366,8 @@ msgid "Job Options: "
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:288
-#, fuzzy
 msgid "Molecular Properties"
-msgstr "속성"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:294
 msgid "Total Charge: "
@@ -390,18 +378,16 @@ msgid "Multiplicity: "
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:308
-#, fuzzy
 msgid "Selection: "
-msgstr "선택"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:349
-#, fuzzy
 msgid "File..."
-msgstr "파일(&F)"
+msgstr "파일..."
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:360
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:759
@@ -433,7 +419,7 @@ msgstr "열기(&O)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:53
 msgid "Open a file."
-msgstr "파일 열기."
+msgstr "파일 열기"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:54
 msgid "Open &URL"
@@ -445,12 +431,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
 msgid "Output Conso&le..."
-msgstr "스크립트(&L)..."
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
-#, fuzzy
 msgid "Jmol Java &Console"
-msgstr "Jmol 자바 콘솔"
+msgstr "Jmol 자바 콘솔(&C)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:58
 msgid "AtomSet&Chooser..."
@@ -462,7 +447,7 @@ msgstr "다른이름 저장(&S)..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:60
 msgid "&Export"
-msgstr "다른 형식 저장(&E)"
+msgstr "내보내기(&E)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:61
 msgid "Export &Image..."
@@ -478,7 +463,7 @@ msgstr "웹페이지로(&W)..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "Export one or more views to a web page."
-msgstr "한개 혹은 여러 장면 웹페이지로 저장"
+msgstr "한개 혹은 여러 장면 웹페이지로 내보냅니다."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Render in POV-&Ray..."
@@ -540,11 +525,11 @@ msgstr "스크립트 복사"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:80
 msgid "Pr&eferences..."
-msgstr "환경설정(&e)"
+msgstr "기본 설정(&E)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
 msgid "&Paste"
-msgstr "붙이기(&P)"
+msgstr "붙여넣기(&P)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:83
 msgid "&Select"
@@ -583,7 +568,6 @@ msgid "Phosphorus"
 msgstr "인"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:91
-#, fuzzy
 msgid "Sulfur"
 msgstr "황"
 
@@ -634,7 +618,7 @@ msgstr "뼈대모양(&W)"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:121
 #, java-format
 msgid "{0} Å"
-msgstr ""
+msgstr "{0} Å"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:109
 msgid "&Label"
@@ -693,7 +677,7 @@ msgstr "확대(&Z)"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:132
 #, java-format
 msgid "{0}%"
-msgstr ""
+msgstr "{0}%"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:133
 msgid "&Perspective Depth"
@@ -817,36 +801,32 @@ msgid "&Rewind to first frame"
 msgstr "처음으로 되감기(&R)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
-#, fuzzy
 msgid "Rewind to first frame"
-msgstr "처음으로 되감기(&R)"
+msgstr "맨앞으로 되감기"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
 msgid "Go to &next frame"
-msgstr "다음 프레임(&n)"
+msgstr "다음 프레임(&N)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
-#, fuzzy
 msgid "Go to next frame"
-msgstr "다음 프레임(&n)"
+msgstr "다음 장면"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "Go to &previous frame"
-msgstr "이전 프레임(&p)"
+msgstr "이전 프레임(&P)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
-#, fuzzy
 msgid "Go to previous frame"
-msgstr "이전 프레임(&p)"
+msgstr "이전 장면"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "Go to &last frame"
-msgstr "마지막 프레임(&l)"
+msgstr "마지막 프레임(&L)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
-#, fuzzy
 msgid "Go to last frame"
-msgstr "마지막 프레임(&l)"
+msgstr "마지막 프레임으로 가기"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "Start &vibration"
@@ -975,9 +955,8 @@ msgid "Launching main frame..."
 msgstr "기본 프레임 적제..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:301
-#, fuzzy
 msgid "Jmol Console"
-msgstr "Jmol 자바 콘솔"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:323
 msgid "Could not create ConsoleTextArea: "
@@ -1388,9 +1367,8 @@ msgid "Jmol Instances:"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:202
-#, fuzzy
 msgid "Select widgets:"
-msgstr "원자 선택"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:230
 msgid "Help/Instructions"
@@ -1554,149 +1532,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:129
 msgid "unimplemented"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Initializing Script Editor..."
-#~ msgstr "스크립트 창 초기화..."
-
-#~ msgid "Initializing Measurements..."
-#~ msgstr "측정 초기화..."
-
-#~ msgid "&Java Output Console"
-#~ msgstr "Jmol 자바 콘솔(&C)"
-
-#~ msgid "Run"
-#~ msgstr "실행"
-
-#, fuzzy
-#~ msgid "quoted argument is Jmol script to execute"
-#~ msgstr "Jmol 스크립트 콘솔"
-
-#~ msgid "Preview"
-#~ msgstr "미리보기"
-
-#~ msgid "Append models"
-#~ msgstr "모델 추가"
-
-#~ msgid "Make crystal..."
-#~ msgstr "결정 만들기..."
-
-#~ msgid "Name"
-#~ msgstr "이름"
-
-#~ msgid "Measurements..."
-#~ msgstr "측정..."
-
-#~ msgid "Render in pov-ray."
-#~ msgstr "pov-ray로 렌더링"
-
-#~ msgid "Select an atom or region."
-#~ msgstr "원자 혹은 영역 선택"
-
-#~ msgid "View measurement table."
-#~ msgstr "측정 테이블 보기"
-
-#~ msgid "Image Type"
-#~ msgstr "그림 형식"
-
-#~ msgid "JPEG Quality"
-#~ msgstr "JPEG 화질"
-
-#~ msgid "Initializing AtomSetChooser Window..."
-#~ msgstr "원자선택 창 초기화..."
-
-#~ msgid "Setting up File Choosers..."
-#~ msgstr "파일 선택기 셋업..."
-
-#~ msgid "All Files"
-#~ msgstr "모든 파일"
-
-#~ msgid "Abort file chooser dialog"
-#~ msgstr "파일 선택 대화창 취소"
-
-#~ msgid "Details"
-#~ msgstr "자세히"
-
-#~ msgid "Directory"
-#~ msgstr "디렉토리"
-
-#~ msgid "Open selected directory"
-#~ msgstr "선택된 디렉토리 열기"
-
-#~ msgid "Attributes"
-#~ msgstr "속성"
-
-#~ msgid "Modified"
-#~ msgstr "변경"
-
-#~ msgid "Generic File"
-#~ msgstr "일반 파일"
-
-#~ msgid "Size"
-#~ msgstr "크기"
-
-#~ msgid "Files of Type:"
-#~ msgstr "파일 형식:"
-
-#~ msgid "Type"
-#~ msgstr "형식"
-
-#~ msgid "FileChooser help"
-#~ msgstr "파일 선택기 도움말"
-
-#~ msgid "Home"
-#~ msgstr "홈"
-
-#~ msgid "List"
-#~ msgstr "리스트"
-
-#~ msgid "Look In:"
-#~ msgstr "보기 방식:"
-
-#~ msgid "Error creating new folder"
-#~ msgstr "새 폴더 만들기 실패"
-
-#~ msgid "New Folder"
-#~ msgstr "새 폴더"
-
-#~ msgid "Create New Folder"
-#~ msgstr "폴더 만들기"
-
-#~ msgid "Open selected file"
-#~ msgstr "선택한 파일 열기"
-
-#~ msgid "Save selected file"
-#~ msgstr "선택한 파일 저장"
-
-#~ msgid "Save In:"
-#~ msgstr "선택 보기:"
-
-#~ msgid "Update"
-#~ msgstr "갱신"
-
-#~ msgid "Update directory listing"
-#~ msgstr "디렉토리 리스트 갱신"
-
-#~ msgid "Up"
-#~ msgstr "위로"
-
-#~ msgid "Up One Level"
-#~ msgstr "한단계 위"
-
-#~ msgid "No"
-#~ msgstr "아니오"
-
-#~ msgid "Yes"
-#~ msgstr "예"
-
-#~ msgid "Jmol-to-POV-Ray Conversion"
-#~ msgstr "Jmol를 POV-Ray로 변환"
-
-#~ msgid "Filename"
-#~ msgstr "파일이름"
-
-#~ msgid "Height : "
-#~ msgstr "높이 : "
-
-#~ msgid "POV-Ray Executable Location"
-#~ msgstr "POV-Ray 실행파일 위치"

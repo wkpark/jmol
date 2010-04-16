@@ -306,10 +306,12 @@ public class Token {
   final static int minimize     = scriptCommand | 32;
 //final static int model        see mathfunc
 //final static int measure      see mathfunc
-  final static int move         = scriptCommand | 35;
-  public final static int moveto       = scriptCommand | 36;
-  public final static int navigate     = scriptCommand | 37;
+  final static int move         = scriptCommand | 33;
+  public final static int moveto       = scriptCommand | 34;
+  public final static int navigate     = scriptCommand | 35;
 //final static int quaternion   see mathfunc
+  final static int parallel     = flowCommand | 36;
+  final static int process      = flowCommand | 37;
   final static int pop          = scriptCommand | 38 | noArgs;
   final static int push         = scriptCommand | 39 | noArgs;
   final static int quit         = scriptCommand | 41 | noArgs;
@@ -1472,13 +1474,15 @@ public class Token {
       "navigate",          new Token(navigate),
       "navigation",        null,
       "out",               new Token(out),
+      "parallel",          new Token(parallel),
       "pause",             new Token(pause),
       "wait",              null,
       "plot3d",            new Token(plot3d),
       "pmesh",             new Token(pmesh),
-      "polygon",         new Token(polygon),
+      "polygon",           new Token(polygon),
       "polyhedra",         new Token(polyhedra),
       "print",             new Token(print),
+      "process",           new Token(process),
       "quaternion",        new Token(quaternion),
       "quaternions",       null,
       "quit",              new Token(quit),

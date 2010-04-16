@@ -44,6 +44,7 @@ public class ScriptFunction {
   int pt0;
   int chpt0;
   int cmdpt0 = -1;
+  protected String typeName;
   public String name;
   String script;
   public Token[][] aatoken;
@@ -51,6 +52,7 @@ public class ScriptFunction {
   int[][] lineIndices;
   int nParameters;
   Vector names = new Vector();
+  int tok;
 
   Hashtable variables = new Hashtable();
   public boolean isVariable(String ident) {
@@ -61,6 +63,8 @@ public class ScriptFunction {
 
   ScriptFunction(String name) {
     this.name = name;
+    typeName = "function";
+    tok = Token.function;
   }
 
   void setVariables(Hashtable contextVariables, Vector params) {
@@ -136,8 +140,8 @@ public class ScriptFunction {
   }
 
   public String getSignature() {
-    StringBuffer s = new StringBuffer();
-    s.append("function ").append(name).append(" (");
+    StringBuffer s = new StringBuffer(typeName);
+    s.append(" ").append(name).append(" (");
     for (int i = 0; i < nParameters; i++) {
       if (i > 0)
         s.append(", ");

@@ -81,6 +81,8 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
@@ -8286,5 +8288,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public BitSet getGroupsWithin(int nResidues, BitSet bs) {
     return modelSet.getGroupsWithin(nResidues, bs);
+  }
+
+  // parallel processing
+  
+  private Object executor;
+  public Object getExecutor() {
+    if (executor != null)
+      return executor;
+    try {
+      int nProcessors = Runtime.getRuntime().availableProcessors();
+      executor = new ScheduledThreadPoolExecutor(nProcessors);
+    } catch (Exception e) {
+      executor = null;
+    }
+    return executor;
+  }
+
+  public boolean eval(ScriptContext context) {
+    return ScriptEvaluator.evaluateContext(this, context);
   }
 }

@@ -33,6 +33,7 @@ public class ScriptContext {
    */
   public String fullpath = "";
   public String filename;
+  public ParallelProcessor parallelProcessor;
   public String functionName;
   public String script;
   public short[] lineNumbers;
@@ -51,13 +52,13 @@ public class ScriptContext {
   public String errorMessageUntranslated;
   public int iCommandError = -1;
   public String errorType;
-  public ScriptContext[] stack;
   public int scriptLevel;
   public boolean isSyntaxCheck;
   public boolean executionStepping;
   public boolean executionPaused;
   public String scriptExtensions;
   public String contextPath = " >> ";
+  public ScriptContext parentContext;
 
   ScriptContext() {
   }

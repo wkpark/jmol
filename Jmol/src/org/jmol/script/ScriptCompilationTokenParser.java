@@ -92,7 +92,8 @@ abstract class ScriptCompilationTokenParser {
   protected boolean compileExpressions() {
     
     isEmbeddedExpression = (tokCommand != Token.nada
-        && (tokCommand != Token.function || tokenCommand.intValue != Integer.MAX_VALUE) 
+        && (tokCommand != Token.function && tokCommand != Token.parallel 
+            || tokenCommand.intValue != Integer.MAX_VALUE) 
         && tokCommand != Token.end && !Token.tokAttrOr(tokCommand, Token.atomExpressionCommand,
             Token.implicitStringCommand));
     boolean checkExpression = isEmbeddedExpression

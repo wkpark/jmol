@@ -161,7 +161,7 @@ class ScriptFlowContext {
 
   ScriptFlowContext getBreakableContext(int nLevelsUp) {
     ScriptFlowContext f = this;
-    while (f != null && (f.token.tok != Token.forcmd
+    while (f != null && (f.token.tok != Token.forcmd && f.token.tok != Token.process
       && f.token.tok != Token.whilecmd || nLevelsUp-- > 0))
       f = f.getParent();
     return f;

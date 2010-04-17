@@ -720,8 +720,8 @@ public class CrystalReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetProperty("Frequency", frequencies[i] + " cm-1");
     atomSetCollection.setAtomSetProperty("IRintensity", data[1] + " km/Mole");
     atomSetCollection.setAtomSetProperty("vibrationalSymmetry", data[0]);
-    atomSetCollection.setAtomSetProperty("IRactivity ", data[2]);
-    atomSetCollection.setAtomSetProperty("Ramanactivity ", data[3]);
+    atomSetCollection.setAtomSetProperty("IRactivity", data[2]);
+    atomSetCollection.setAtomSetProperty("Ramanactivity", data[3]);
   }
   
 }

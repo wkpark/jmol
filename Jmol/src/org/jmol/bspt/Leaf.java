@@ -24,6 +24,8 @@ package org.jmol.bspt;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.modelset.Atom;
+
 /**
  * A leaf of Point3f objects in the bsp tree
  *
@@ -73,21 +75,19 @@ class Leaf extends Element {
     return node.addTuple(level, tuple);
   }
     
-  /*
-    void dump(int level) {
+ 
+  void dump(int level, StringBuffer sb) {
     for (int i = 0; i < count; ++i) {
-    Point3f t = tuples[i];
-    for (int j = 0; j < level; ++j)
-    Logger.debug(".");
-    for (int dim = 0; dim < dimMax-1; ++dim)
-    Logger.debug("" + t.getDimensionValue(dim) + ",");
-    Logger.debug("" + t.getDimensionValue(dimMax - 1));
+      Point3f t = tuples[i];
+      for (int j = 0; j < level; ++j)
+        sb.append(".");
+      sb.append(t).append("Leaf ").append(i).append(": ").append(((Atom) t).getInfo());
     }
-    }
+  }
 
     public String toString() {
     return "leaf:" + count + "\n";
     }
-  */
+ 
 
 }

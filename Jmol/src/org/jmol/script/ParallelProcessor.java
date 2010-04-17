@@ -40,8 +40,10 @@ class ParallelProcessor extends ScriptFunction {
     if (processes.size() == 0)
       return;
     this.viewer = viewer;
+    viewer.setParallel(true);
     counter = 0;
     System.out.println("running " + processes.size() + " processes on " + Viewer.nProcessors + " processesors");
+    try {
     for (int i = processes.size(); --i >= 0;) {
       counter++;
       runProcess((Process) processes.remove(0));
@@ -49,6 +51,11 @@ class ParallelProcessor extends ScriptFunction {
     while (counter >= 0) {
       Thread.yield();
     }
+    } 
+    catch (Exception e) {
+      // could be memory errors here as well
+    }
+    viewer.setParallel(false);
   }
   
   void mergeResults() {

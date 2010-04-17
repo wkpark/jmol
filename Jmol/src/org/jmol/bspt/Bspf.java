@@ -26,6 +26,8 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.util.Logger;
+
 /**
  * A Binary Space Partitioning Forest
  *<p>
@@ -78,15 +80,15 @@ public final class Bspf {
         bspts[i].stats();
   }
 
-  /*
+  
   public void dump() {
     for (int i = 0; i < bspts.length; ++i) {
-      Logger.debug(">>>>\nDumping bspt #" + i + "\n>>>>");
+      Logger.info(">>>>\nDumping bspt #" + i + "\n>>>>");
       bspts[i].dump();
     }
-    Logger.debug("<<<<");
+    Logger.info("<<<<");
   }
-  */
+  
 /*
   public SphereIterator getSphereIterator(int bsptIndex) {
     if (bsptIndex >= sphereIterators.length) {

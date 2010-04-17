@@ -24,6 +24,8 @@ package org.jmol.bspt;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.util.Logger;
+
 //import org.jmol.util.Logger;
 
 /**
@@ -123,15 +125,17 @@ public final class Bspt {
 //    }
   }
 
-  /*
-    public void dump() {
-    eleRoot.dump(0);
+ 
+  public void dump() {
+    StringBuffer sb = new StringBuffer();
+    eleRoot.dump(0, sb);
+    Logger.info(sb.toString());
     }
 
     public String toString() {
-    return eleRoot.toString();
+      return eleRoot.toString();
     }
-  */
+ 
 
   /*
     Enumeration enum() {

@@ -113,21 +113,18 @@ class Node extends Element {
     return this;
   }
   
-  /*
-    void dump(int level) {
-    Logger.debug("");
-    eleLE.dump(level + 1);
+  void dump(int level, StringBuffer sb) {
+    sb.append("\nnode LEFT" + level);
+    eleLeft.dump(level + 1, sb);
     for (int i = 0; i < level; ++i)
-    Logger.debug("-");
-    Logger.debug(">" + splitValue);
-    eleGE.dump(level + 1);
+    sb.append("->");
+    sb.append(" RIGHT" + level);
+    eleRight.dump(level + 1, sb);
     }
     
     public String toString() {
-    return eleLE.toString() + dim + ":" +
-    splitValue + "\n" + eleGE.toString();
+      return eleLeft.toString() + dim + ":" + "\n" + eleRight.toString();
     }
-  */
   
   static float getDimensionValue(Point3f pt, int dim) {
     return (dim == 0 ? pt.x : dim == 1 ? pt.y : pt.z);

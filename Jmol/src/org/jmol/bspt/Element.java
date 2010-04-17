@@ -33,8 +33,8 @@ abstract class Element {
   Bspt bspt;
   int count;
   abstract Element addTuple(int level, Point3f tuple);
-  /*
-    abstract void dump(int level);
-  */
+  
+  abstract void dump(int level, StringBuffer sb);
+  
 }
 

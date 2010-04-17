@@ -1922,7 +1922,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public AtomIndexIterator getSelectedAtomIterator(BitSet bsSelected,
                                                     boolean isGreaterOnly,
-                                                    boolean modelZeroBased) {
+                                                    boolean modelZeroBased, boolean hemisphereOnly) {
     //EnvelopeCalculation, IsoSolventReader
     // This iterator returns only atoms OTHER than the atom specified
     // and with the specified restrictions. 
@@ -1931,7 +1931,7 @@ abstract public class ModelCollection extends BondCollection {
     
     initializeBspf();
     AtomIteratorWithinModel iter = new AtomIteratorWithinModel();
-    iter.initialize(bspf, bsSelected, isGreaterOnly, modelZeroBased, viewer.isMultiProcessor()); 
+    iter.initialize(bspf, bsSelected, isGreaterOnly, modelZeroBased, hemisphereOnly, viewer.isMultiProcessor()); 
     return iter;
   }
   
@@ -2147,7 +2147,7 @@ abstract public class ModelCollection extends BondCollection {
                                boolean withinAllModels) {
     BitSet bsResult = new BitSet();
     BitSet bsCheck = getIterativeModels(false);
-    AtomIndexIterator iter = getSelectedAtomIterator(null, false, false);
+    AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, false);
     if (withinAllModels) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         for (int iModel = modelCount; --iModel >= 0;) {
@@ -2213,7 +2213,7 @@ abstract public class ModelCollection extends BondCollection {
     }
 
     BitSet bsCheck = getIterativeModels(false);
-    AtomIndexIterator iter = getSelectedAtomIterator(null, false, false);
+    AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, false);
     for (int iModel = modelCount; --iModel >= 0;) {
       if (!bsCheck.get(iModel))
         continue;
@@ -2438,8 +2438,7 @@ abstract public class ModelCollection extends BondCollection {
     float minBondDistance = viewer.getMinBondDistance();
     float minBondDistance2 = minBondDistance * minBondDistance;
     int nNew = 0;
-    initializeBspf();
-    if (showRebondTimes && Logger.debugging)
+    if (showRebondTimes)// && Logger.debugging)
       Logger.startTimer();
     /*
      * miguel 2006 04 02 note that the way that these loops + iterators are
@@ -2465,7 +2464,7 @@ abstract public class ModelCollection extends BondCollection {
       }
       i0 = bsCheck.nextSetBit(0);
     }
-    CubeIterator iter = null;
+    AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, true);
     for (int i = i0; i >= 0 && i < atomCount; i = (isAll ? i + 1 : bsCheck.nextSetBit(i + 1))) {
       boolean isAtomInSetA = (isAll || bsA.get(i));
       boolean isAtomInSetB = (isAll || bsB.get(i));
@@ -2480,8 +2479,6 @@ abstract public class ModelCollection extends BondCollection {
           i = models[modelIndex].firstAtomIndex + models[modelIndex].atomCount - 1;
           continue;
         }
-        initializeBspt(modelIndex);
-        iter = bspf.getCubeIterator(modelIndex);
       }
       // Covalent bonds
       float myBondingRadius = atom.getBondingRadiusFloat();
@@ -2489,10 +2486,10 @@ abstract public class ModelCollection extends BondCollection {
         continue;
       boolean isFirstExcluded = (bsExclude != null && bsExclude.get(i));
       float searchRadius = myBondingRadius + maxBondingRadius + bondTolerance;
-      iter.initializeHemisphere(atom, searchRadius);
-      while (iter.hasMoreElements()) {
-        Atom atomNear = (Atom) iter.nextElement();
-        if (atomNear == atom || atomNear.isDeleted())
+      setIteratorForAtom(iter, i, searchRadius);
+      while (iter.hasNext()) {
+        Atom atomNear = atoms[iter.next()];
+        if (atomNear.isDeleted())
           continue;
         int atomIndexNear = atomNear.index;
         boolean isNearInSetA = (isAll || bsA.get(atomIndexNear));
@@ -2512,7 +2509,7 @@ abstract public class ModelCollection extends BondCollection {
       }
       iter.release();
     }
-    if (showRebondTimes && Logger.debugging)
+    if (showRebondTimes)//&& Logger.debugging)
       Logger.checkTimer("Time to autoBond");
     return nNew;
   }
@@ -2593,7 +2590,7 @@ abstract public class ModelCollection extends BondCollection {
       Logger.startTimer();
     Point3f C = null;
     Point3f D = null;
-    AtomIndexIterator iter = getSelectedAtomIterator(bsB, false, false);
+    AtomIndexIterator iter = getSelectedAtomIterator(bsB, false, false, false);
 
     for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
       Atom atom = atoms[i];

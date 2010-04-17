@@ -1985,6 +1985,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           : "|" + errMsg));
       zap(errMsg);
       setErrorMessage(errMsg);
+      setParallel(false);
     }
     return getErrorMessage();
   }
@@ -2232,7 +2233,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public AtomIndexIterator getSelectedAtomIterator(BitSet bsSelected,
                                                     boolean isGreaterOnly,
                                                     boolean modelZeroBased) {
-    return modelSet.getSelectedAtomIterator(bsSelected, isGreaterOnly, modelZeroBased);
+    return modelSet.getSelectedAtomIterator(bsSelected, isGreaterOnly, modelZeroBased, false);
   }
 
   public void setIteratorForAtom(AtomIndexIterator iterator, int atomIndex,
@@ -8322,8 +8323,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return shapeManager;
   }
 
+  boolean isParallel;
+  
+  public void setParallel(boolean TF) {
+    isParallel = TF;
+  }
   public boolean isMultiProcessor() {
-    return global.multiProcessor;
+    return global.multiProcessor && isParallel;
   }
 
 }

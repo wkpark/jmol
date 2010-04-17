@@ -66,8 +66,9 @@ public class CubeIterator {
    *
    * @param center
    * @param radius
+   * @param hemisphereOnly 
    */
-  public void initialize(Point3f center, float radius) {
+  public void initialize(Point3f center, float radius, boolean hemisphereOnly) {
     //this.center = center;
     this.radius = radius;
     tHemisphere = false;
@@ -78,25 +79,7 @@ public class CubeIterator {
     stack[0] = bspt.eleRoot;
     sp = 1;
     findLeftLeaf();
-  }
-
-  /**
-   * initialize to return all points within the hemisphere defined
-   * by center and radius.
-   *<p>
-   * the points returned are those that have a coordinate value >=
-   * to center along the first (x) dimension
-   *<p>
-   * Note that if you are iterating through all points, and two
-   * points are within radius and have the same
-   * x coordinate, then each will return the other.
-   *
-   * @param center
-   * @param radius
-   */
-  public void initializeHemisphere(Point3f center, float radius) {
-    initialize(center, radius);
-    tHemisphere = true;
+    tHemisphere = hemisphereOnly;
   }
 
   /**
@@ -178,7 +161,7 @@ public class CubeIterator {
    * @param t
    * @return boolean
    */
-  protected boolean isWithinRadius(Point3f t) {
+  private boolean isWithinRadius(Point3f t) {
     dx = t.x - cx;
     return (!tHemisphere || dx >= 0)        
     && (dx = Math.abs(dx)) <= radius

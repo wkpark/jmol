@@ -38,6 +38,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   private CubeIterator bsptIter;
   private Bspf bspf;
   private boolean threadSafe;
+  private boolean hemisphereOnly;
   private boolean isZeroBased;
 
   private int modelIndex = Integer.MAX_VALUE;
@@ -57,15 +58,18 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
    * @param bsSelected 
    * @param isGreaterOnly 
    * @param isZeroBased
+   * @param hemisphereOnly TODO
    * @param threadSafe 
    * 
    */
 
-  void initialize(Bspf bspf, BitSet bsSelected, boolean isGreaterOnly, boolean isZeroBased, boolean threadSafe) {
+  void initialize(Bspf bspf, BitSet bsSelected, boolean isGreaterOnly, 
+                  boolean isZeroBased, boolean hemisphereOnly, boolean threadSafe) {
     this.bspf = bspf;
     this.bsSelected = bsSelected;
     this.isGreaterOnly = isGreaterOnly;
     this.isZeroBased = isZeroBased;
+    this.hemisphereOnly = hemisphereOnly;
     this.threadSafe = threadSafe;
   }
 
@@ -75,9 +79,10 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     if (modelIndex != this.modelIndex || bsptIter == null) {
       bsptIter = bspf.getCubeIterator(modelIndex);
       this.modelIndex = modelIndex;
+      //bspf.dump();
     }
     zeroBase = (isZeroBased ? firstModelAtom : 0);
-    if (distance < 0) // distance and center will be added later
+    if (distance == Integer.MIN_VALUE) // distance and center will be added later
       return;
     this.atomIndex = atomIndex;
     set(center, distance);
@@ -86,41 +91,24 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   public void set(Point3f center, float distance) {
     if (bsptIter == null)
       return;
-    bsptIter.initialize(center, distance);
+    bsptIter.initialize(center, distance, hemisphereOnly);
     distanceSquared = distance * distance;
   }
-/*  
-  private int iNext;
-  public boolean hasNext() {
-    iNext = (bsptIter == null || !bsptIter.hasMoreElements() ? -1
-        : ((Atom) bsptIter.nextElement()).index);
-    if (atomIndex >= 0) {
-      while (iNext >= 0) {
-        if (iNext != atomIndex && iNext > (isGreaterOnly ? atomIndex : -1)
-            && (bsSelected == null || bsSelected.get(iNext)))
-          return true;
-        if (!bsptIter.hasMoreElements()) {
-          iNext = -1;
-          break;
-        }
-        iNext = ((Atom) bsptIter.nextElement()).index;
-      }
-    }
-    return (iNext >= 0);
-  }
-*/
   
   private int iNext;
   public boolean hasNext() {
-    if (atomIndex >= 0)
+    if (false && atomIndex >= 0)
       while (bsptIter.hasMoreElements()) {
-        if ((iNext = ((Atom) bsptIter.nextElement()).index) != atomIndex
+        Atom a = (Atom) bsptIter.nextElement();
+        if ((iNext = a.index) != atomIndex
             && iNext > (isGreaterOnly ? atomIndex : -1)
-            && (bsSelected == null || bsSelected.get(iNext)))
+            && (bsSelected == null || bsSelected.get(iNext))) {
           return true;
+        }
       }
     else if (bsptIter.hasMoreElements()) {
-      iNext = ((Atom) bsptIter.nextElement()).index;
+      Atom a = (Atom) bsptIter.nextElement();
+      iNext = a.index;
       return true;
     }
     iNext = -1;
@@ -135,6 +123,13 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     return (bsptIter == null ? -1 : bsptIter.foundDistance2());
   }
   
+  /**
+   * turns this into a SPHERICAL iterator
+   * for "within Distance" measures
+   * 
+   * @param bsResult 
+   * 
+   */
   public void addAtoms(BitSet bsResult) {
     int iAtom;
     while (hasNext())

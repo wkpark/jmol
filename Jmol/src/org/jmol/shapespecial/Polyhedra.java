@@ -24,9 +24,9 @@
 
 package org.jmol.shapespecial;
 
+import org.jmol.api.AtomIndexIterator;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
-import org.jmol.modelset.AtomIndexIterator;
 import org.jmol.modelset.Bond;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.Escape;
@@ -245,7 +245,7 @@ public class Polyhedra extends AtomShape {
 
   private void buildPolyhedra() {
     boolean useBondAlgorithm = radius == 0 || bondedOnly;
-    AtomIndexIterator iter = viewer.getWithinModelIterator();
+    AtomIndexIterator iter = modelSet.getSelectedAtomIterator(null, false, false);
     for (int i = centers.nextSetBit(0); i >= 0; i = centers.nextSetBit(i + 1)) {
       Polyhedron p = (haveBitSetVertices ? constructBitSetPolyhedron(i)
           : useBondAlgorithm ? constructBondsPolyhedron(i)
@@ -256,7 +256,7 @@ public class Polyhedra extends AtomShape {
         polyhedrons[polyhedronCount++] = p;
       }
       if (haveBitSetVertices)
-        return;
+        break;
     }
     iter.release();
   }
@@ -298,8 +298,7 @@ public class Polyhedra extends AtomShape {
     viewer.setIteratorForAtom(iter, atomIndex, radius);
     while (iter.hasNext()) {
       Atom other = atoms[iter.next()];
-      if (other == atom 
-          || bsVertices != null && !bsVertices.get(other.getIndex())
+      if (bsVertices != null && !bsVertices.get(other.getIndex())
           || atom.distance(other) > radius)
         continue;
       if (other.getAlternateLocationID() != atom.getAlternateLocationID()

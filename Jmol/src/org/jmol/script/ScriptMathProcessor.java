@@ -1919,8 +1919,8 @@ class ScriptMathProcessor {
     }
     if (withinSpec instanceof String) {
       if (tok == Token.nada) {
-        tok = Token.sequence;
-        if (i != 1)
+        tok = Token.spec_seqcode;
+        if (i > 2)
           return false;
         i = 2;
       }
@@ -1957,11 +1957,16 @@ class ScriptMathProcessor {
         return addX(isSyntaxCheck ? bs : viewer.getAtomBits(tok, null));
       case Token.basepair:
         return addX(isSyntaxCheck ? bs : viewer.getAtomBits(tok, ""));
+      case Token.spec_seqcode:
+        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.sequence, withinStr));
       }
       return false;
     case 2:
       // within (atomName, "XX,YY,ZZZ")
       switch (tok) {
+      case Token.spec_seqcode:
+        tok = Token.sequence;
+        break;
       case Token.atomname:
       case Token.atomtype:
       case Token.basepair:
@@ -1978,6 +1983,10 @@ class ScriptMathProcessor {
       case Token.plane:
       case Token.hkl:
       case Token.coord:
+        break;
+      case Token.sequence:
+        // within ("sequence", "CII", *.ca)
+        withinStr = ScriptVariable.sValue(args[2]);
         break;
       default:
         return false;
@@ -2007,6 +2016,9 @@ class ScriptMathProcessor {
     if (pt != null)
       return addX(viewer.getAtomsWithin(distance, pt));
     bs = ScriptVariable.bsSelect(args[i]);
+    if (tok == Token.sequence) {
+      return addX(viewer.getSequenceBits(withinStr, bs));
+    }
     if (!isDistance)
       return addX(viewer.getAtomBits(tok, bs));
     if (isWithinGroup)

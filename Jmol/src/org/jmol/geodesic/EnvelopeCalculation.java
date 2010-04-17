@@ -24,12 +24,12 @@
 
 package org.jmol.geodesic;
 
-import org.jmol.modelset.AtomIndexIterator;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.FastBitSet;
 //import org.jmol.util.SlowBitSet;
 
+import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
@@ -265,7 +265,7 @@ public final class EnvelopeCalculation {
     this.maxRadius = maxRadius;
     // now, calculate surface for selected atoms
     boolean isAll = (bsSelected == null);
-    AtomIndexIterator iter = viewer.getWithinAtomSetIterator(bsMySelected, false, modelZeroBased);
+    AtomIndexIterator iter = viewer.getSelectedAtomIterator(bsMySelected, false, modelZeroBased);
     //true ==> only atom index > this atom accepted
     int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1)))
@@ -274,6 +274,7 @@ public final class EnvelopeCalculation {
         getNeighbors(iter);
         calcConvexMap(isSurface);
       }
+    iter.release();
     currentPoints = null;
     setDotsConvexMax();
   }

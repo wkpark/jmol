@@ -1,4 +1,4 @@
-package org.jmol.modelset;
+package org.jmol.api;
 
 import java.util.BitSet;
 
@@ -18,7 +18,7 @@ public interface AtomIndexIterator {
    * @param threadSafe  don't use any cache in order to make this thread safe
    */
   public void set(int modelIndex, int zeroBase, int atomIndex, Point3f center, float distance);
-  public void initialize(Point3f center, float distance);
+  public void set(Point3f center, float distance);
   public void addAtoms(BitSet bsResult);
   public boolean hasNext();
   public int next();

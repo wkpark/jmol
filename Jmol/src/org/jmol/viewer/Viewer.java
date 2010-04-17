@@ -34,7 +34,6 @@ import org.jmol.shape.Shape;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
-import org.jmol.modelset.AtomIndexIterator;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.Group;
@@ -2230,14 +2229,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.calculateStructures(bsAtoms);
   }
 
-  public AtomIndexIterator getWithinModelIterator() {
-    return modelSet.getWithinModelIterator();
-  }
-
-  public AtomIndexIterator getWithinAtomSetIterator(BitSet bsSelected,
+  public AtomIndexIterator getSelectedAtomIterator(BitSet bsSelected,
                                                     boolean isGreaterOnly,
                                                     boolean modelZeroBased) {
-    return modelSet.getWithinAtomSetIterator(bsSelected, isGreaterOnly, modelZeroBased);
+    return modelSet.getSelectedAtomIterator(bsSelected, isGreaterOnly, modelZeroBased);
   }
 
   public void setIteratorForAtom(AtomIndexIterator iterator, int atomIndex,
@@ -2722,6 +2717,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public BitSet getAtomBits(int tokType, Object specInfo) {
     return modelSet.getAtomBits(tokType, specInfo);
+  }
+
+  public BitSet getSequenceBits(String specInfo, BitSet bs) {
+    return modelSet.getSequenceBits(specInfo, bs);
   }
 
   public BitSet getAtomsWithin(float distance, Point3f coord) {

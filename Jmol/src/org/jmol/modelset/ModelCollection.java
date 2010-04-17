@@ -38,6 +38,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
@@ -1919,7 +1920,7 @@ abstract public class ModelCollection extends BondCollection {
     iterator.set(modelIndex, models[modelIndex].firstAtomIndex, atomIndex, atoms[atomIndex], distance);    
   }
 
-  public AtomIndexIterator getWithinAtomSetIterator(BitSet bsSelected,
+  public AtomIndexIterator getSelectedAtomIterator(BitSet bsSelected,
                                                     boolean isGreaterOnly,
                                                     boolean modelZeroBased) {
     //EnvelopeCalculation, IsoSolventReader
@@ -1929,19 +1930,11 @@ abstract public class ModelCollection extends BondCollection {
     // not the full atom set.
     
     initializeBspf();
-    AtomIteratorWithinSet iter = new AtomIteratorWithinSet();
-    iter.initialize(bspf, modelZeroBased, viewer.isMultiProcessor(), bsSelected, isGreaterOnly); 
+    AtomIteratorWithinModel iter = new AtomIteratorWithinModel();
+    iter.initialize(bspf, bsSelected, isGreaterOnly, modelZeroBased, viewer.isMultiProcessor()); 
     return iter;
   }
   
-  public AtomIndexIterator getWithinModelIterator() {
-    //polyhedra, within(distance, atom), within(distance, point)
-    initializeBspf();
-    AtomIteratorWithinModel iter = new AtomIteratorWithinModel();
-    iter.initialize(bspf, false, viewer.isMultiProcessor());
-    return iter;
-  }
-
   ////////// bonds /////////
 
   public int getBondCountInModel(int modelIndex) {
@@ -2081,7 +2074,7 @@ abstract public class ModelCollection extends BondCollection {
     case Token.molecule:
       return getMoleculeBitSet((BitSet) specInfo);
     case Token.sequence:
-      return getSequenceBits((String)specInfo);
+      return getSequenceBits((String)specInfo, null);
     case Token.spec_seqcode_range:
       info = (int[]) specInfo;
       int seqcodeA = info[0];
@@ -2154,7 +2147,7 @@ abstract public class ModelCollection extends BondCollection {
                                boolean withinAllModels) {
     BitSet bsResult = new BitSet();
     BitSet bsCheck = getIterativeModels(false);
-    AtomIndexIterator iter = getWithinModelIterator();
+    AtomIndexIterator iter = getSelectedAtomIterator(null, false, false);
     if (withinAllModels) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         for (int iModel = modelCount; --iModel >= 0;) {
@@ -2170,6 +2163,7 @@ abstract public class ModelCollection extends BondCollection {
           iter.addAtoms(bsResult);
         }
     } else {
+      bsResult.or(bs);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         if (distance < 0) {
             getAtomsWithin(-distance, atoms[i], bsResult, atoms[i].modelIndex);
@@ -2180,6 +2174,7 @@ abstract public class ModelCollection extends BondCollection {
           iter.addAtoms(bsResult);
         }
     }
+    iter.release();
     return bsResult;
   }
 
@@ -2218,14 +2213,15 @@ abstract public class ModelCollection extends BondCollection {
     }
 
     BitSet bsCheck = getIterativeModels(false);
+    AtomIndexIterator iter = getSelectedAtomIterator(null, false, false);
     for (int iModel = modelCount; --iModel >= 0;) {
       if (!bsCheck.get(iModel))
         continue;
-      AtomIndexIterator iter = getWithinModelIterator();
-      setIteratorForAtom(iter, models[iModel].firstAtomIndex, 0);
-      iter.initialize(coord, distance);
+      setIteratorForAtom(iter, models[iModel].firstAtomIndex, -1);
+      iter.set(coord, distance);
       iter.addAtoms(bsResult);
     }
+    iter.release();
     return bsResult;
   }
  
@@ -2262,10 +2258,10 @@ abstract public class ModelCollection extends BondCollection {
       calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1);      
     } else {
       for (int i = 0; i < specInfo.length();) {
-        bsA = getSequenceBits(specInfo.substring(i, ++i));
+        bsA = getSequenceBits(specInfo.substring(i, ++i), null);
         if (bsA.cardinality() == 0)
           continue;
-        bsB = getSequenceBits(specInfo.substring(i, ++i));
+        bsB = getSequenceBits(specInfo.substring(i, ++i), null);
         if (bsB.cardinality() == 0)
           continue;
         calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1);
@@ -2280,8 +2276,9 @@ abstract public class ModelCollection extends BondCollection {
     return super.getAtomBits(Token.group, bsAtoms);
   }
 
-  public BitSet getSequenceBits(String specInfo) {
-    BitSet bs = getModelAtomBitSet(-1, false);
+  public BitSet getSequenceBits(String specInfo, BitSet bs) {
+    if (bs == null)
+      bs = getModelAtomBitSet(-1, false);
     int lenInfo = specInfo.length();
     BitSet bsResult = new BitSet();
     if (lenInfo == 0)
@@ -2596,7 +2593,7 @@ abstract public class ModelCollection extends BondCollection {
       Logger.startTimer();
     Point3f C = null;
     Point3f D = null;
-    AtomIndexIterator iter = getWithinAtomSetIterator(bsB, false, false);
+    AtomIndexIterator iter = getSelectedAtomIterator(bsB, false, false);
 
     for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
       Atom atom = atoms[i];
@@ -2670,6 +2667,7 @@ abstract public class ModelCollection extends BondCollection {
         nNew++;
       }
     }
+    iter.release();
     shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null,
         bsHBondsRasmol);
     if (showRebondTimes && Logger.debugging)

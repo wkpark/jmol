@@ -31,8 +31,8 @@ import javax.vecmath.Point4f;
 
 import org.jmol.util.Logger;
 
+import org.jmol.api.AtomIndexIterator;
 import org.jmol.jvxl.data.MeshData;
-import org.jmol.modelset.AtomIndexIterator;
 
 class IsoSolventReader extends AtomDataReader {
 
@@ -296,7 +296,8 @@ class IsoSolventReader extends AtomDataReader {
     float maxRadius = 0;
     float r0 = (isFirstPass && isCavity ? cavityRadius : 0);
     boolean isWithin = (isFirstPass && distance != Float.MAX_VALUE && point != null);
-    AtomIndexIterator iter = atomDataServer.getWithinAtomSetIterator(bsMySelected, true, true);
+    AtomIndexIterator iter = (doCalculateTroughs ? 
+        atomDataServer.getSelectedAtomIterator(bsMySelected, true, true) : null);
     for (int iAtom = 0; iAtom < atomCount; iAtom++) {
       ptA = atomXyz[iAtom];
       rA = atomRadius[iAtom];

@@ -579,11 +579,11 @@ public class StateManager {
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
         + ";debug;debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
         + ";_filecaching;_filecache;fontcaching;fontscaling;language;loglevel;measureStyleChime"
-        + ";navigationmode;"
+        + ";multiprocessor;navigationmode;"
         + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
-        + ";statusreporting;stereo;stereostate"
+        + ";statusreporting;stereo;stereostate;vibrationperiod;"
         + ";unitcellcolor;visualrange;windowcentered;zerobasedxyzrasmol;zoomenabled;mousedragfactor;mousewheelfactor"
         +
         //    saved in the hash table but not considered part of the state:
@@ -875,6 +875,7 @@ public class StateManager {
       setParameterValue("minimizationSilent", minimizationSilent);
       setParameterValue("minimizationCriterion", minimizationCriterion);
       setParameterValue("monitorEnergy", monitorEnergy);
+      setParameterValue("multiProcessor", multiProcessor && (Viewer.nProcessors > 1));
       setParameterValue("navigationMode", navigationMode);
       setParameterValue("navigateSurface", navigateSurface);
       setParameterValue("navigationPeriodic", navigationPeriodic);
@@ -1156,6 +1157,7 @@ public class StateManager {
     boolean measurementLabels = true;
     boolean messageStyleChime = false;
     boolean monitorEnergy = false;
+    boolean multiProcessor = true;
     int pickingSpinRate = 10;
     String pickLabel = "";
     float pointGroupDistanceTolerance = 0.2f;

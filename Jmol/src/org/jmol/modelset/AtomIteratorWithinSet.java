@@ -26,21 +26,12 @@
 package org.jmol.modelset;
 
 import org.jmol.bspt.Bspf;
-import org.jmol.bspt.CubeIterator;
 
 import java.util.BitSet;
 
-import javax.vecmath.Point3f;
-
-class AtomIteratorWithinSet implements AtomIndexIterator {
+public class AtomIteratorWithinSet extends AtomIteratorWithinModel implements AtomIndexIterator {
   
-  CubeIterator bsptIter;
-  BitSet bsSelected;
-  boolean isGreaterOnly;
-  int atomIndex;
-  int zerobase;
-
-  /**
+  /*
    * a more powerful iterator than AtomIteratorWithinModel
    * allowing excluding a specific atom, finding only those
    * atoms with an atom index greater than that specified
@@ -48,52 +39,43 @@ class AtomIteratorWithinSet implements AtomIndexIterator {
    * 
    * Returns atoms within a cube centered on the point
    * Does NOT return i == atomIndex
+   *
+   */
+  
+  private BitSet bsSelected;
+  private boolean isGreaterOnly;
 
+  /**
+   * 
    * @param bspf
-   * @param bsptIndex
-   * @param atomIndex
-   * @param center
-   * @param distance
    * @param bsSelected
    * @param isGreaterOnly
-   * @param zerobase
+   * @param isZeroBased
+   * @param threadSafe
    */
-  void initialize(Bspf bspf, int bsptIndex, int atomIndex,
-                  Point3f center, float distance, BitSet bsSelected,
-                  boolean isGreaterOnly, int zerobase) {
-    bsptIter = bspf.getCubeIterator(bsptIndex);
-    bsptIter.initialize(center, distance);
-    this.atomIndex = atomIndex;
+  public void initialize(Bspf bspf, boolean isZeroBased, boolean threadSafe, 
+                         BitSet bsSelected, boolean isGreaterOnly) {
+    super.initialize(bspf, isZeroBased, threadSafe);
     this.bsSelected = bsSelected;
     this.isGreaterOnly = isGreaterOnly;
-    this.zerobase = zerobase;
   }
 
-  int iNext;
+  private int iNext;
   public boolean hasNext() {
-    while (bsptIter.hasMoreElements()) {
-      Atom atom = (Atom) bsptIter.nextElement();
-      if ((iNext = atom.index) != atomIndex 
-          && iNext > (isGreaterOnly ? atomIndex : -1)
-          && (bsSelected == null || bsSelected.get(iNext)))
-        return true;
-    }
+    if (atomIndex >= 0)
+      while (bsptIter.hasMoreElements()) {
+        Atom atom = (Atom) bsptIter.nextElement();
+        if ((iNext = atom.index) != atomIndex
+            && iNext > (isGreaterOnly ? atomIndex : -1)
+            && (bsSelected == null || bsSelected.get(iNext)))
+          return true;
+      }
     iNext = -1;
-    release();
     return false;
   }
 
   public int next() {
-    return iNext - zerobase;
-  }
-
-  public float foundDistance2() {
-    return bsptIter.foundDistance2();  
-  }
-  
-  private void release() {
-    bsptIter.release();
-    bsptIter = null;
+    return iNext - zeroBase;
   }
 }
 

@@ -25,6 +25,8 @@
 
 package org.jmol.modelset;
 
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
 
 import org.jmol.bspt.Bspf;
@@ -32,8 +34,17 @@ import org.jmol.bspt.CubeIterator;
 
 public class AtomIteratorWithinModel implements AtomIndexIterator {
 
-  CubeIterator bsptIter;
+  protected CubeIterator bsptIter;
+  protected Bspf bspf;
+  protected boolean threadSafe;
+  private boolean isZeroBased;
 
+  protected int modelIndex = Integer.MAX_VALUE;
+  protected int atomIndex = -1;
+  protected int zeroBase;
+  private float distanceSquared;
+
+  
   /**
    * just the basic iterator for finding atoms 
    * within a cube centered on some point in space
@@ -41,35 +52,57 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
    * Used for select within(distance, atom)
    * 
    * @param bspf
-   * @param bsptIndex
-   * @param center
-   * @param radius
+   * @param isZeroBased
+   * @param threadSafe 
    * 
    */
 
-  void initialize(Bspf bspf, int bsptIndex, Point3f center, float radius) {
-    bsptIter = bspf.getCubeIterator(bsptIndex);
-    bsptIter.initialize(center, radius);
+  void initialize(Bspf bspf, boolean isZeroBased, boolean threadSafe) {
+    this.bspf = bspf;
+    this.isZeroBased = isZeroBased;
+    this.threadSafe = threadSafe;
   }
 
+  public void set(int modelIndex, int firstModelAtom, int atomIndex, Point3f center, float distance) {
+    if (threadSafe)
+      modelIndex = -1 - modelIndex; // no caching
+    if (modelIndex != this.modelIndex || bsptIter == null) {
+      bsptIter = bspf.getCubeIterator(modelIndex);
+      this.modelIndex = modelIndex;
+    }
+    zeroBase = (isZeroBased ? firstModelAtom : 0);
+    initialize(center, distance);
+  }
+
+  public void initialize(Point3f center, float distance) {
+    bsptIter.initialize(center, distance);
+    distanceSquared = distance * distance;
+  }
+  
   public boolean hasNext() {
-    if (bsptIter.hasMoreElements())
-      return true;
-    release();
-    return false;
+    return (bsptIter != null && bsptIter.hasMoreElements());
   }
-
+  
   public int next() {
-    return ((Atom) bsptIter.nextElement()).index;
+    return ((Atom) bsptIter.nextElement()).index - zeroBase;
   }
 
   public float foundDistance2() {
     return bsptIter.foundDistance2();
   }
   
-  private void release() {
+  public void addAtoms(BitSet bsResult) {
+    int iAtom;
+    while (hasNext())
+      if ((iAtom = next()) >= 0
+          && foundDistance2() <= distanceSquared)
+        bsResult.set(iAtom);    
+  }
+
+  public void release() {
     bsptIter.release();
     bsptIter = null;
   }
+
 }
 

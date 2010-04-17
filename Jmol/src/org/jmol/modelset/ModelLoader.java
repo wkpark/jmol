@@ -1282,12 +1282,13 @@ public final class ModelLoader extends ModelSet {
   ///////////////  shapes  ///////////////
   
   private void finalizeShapes() {
-    viewer.loadDefaultShapes(this);
+    shapeManager = viewer.getShapeManager();
+    shapeManager.loadDefaultShapes(this);
     if (someModelsHaveAromaticBonds && viewer.getSmartAromatic())
       assignAromaticBonds(false);
     if (merging) {
       if (baseModelCount == 1)
-        viewer.setShapeProperty(JmolConstants.SHAPE_MEASURES, "clearModelIndex", null, null);
+        shapeManager.setShapeProperty(JmolConstants.SHAPE_MEASURES, "clearModelIndex", null, null);
       merging = false;
     }
   }

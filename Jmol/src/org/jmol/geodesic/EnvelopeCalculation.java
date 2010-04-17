@@ -265,11 +265,13 @@ public final class EnvelopeCalculation {
     this.maxRadius = maxRadius;
     // now, calculate surface for selected atoms
     boolean isAll = (bsSelected == null);
+    AtomIndexIterator iter = viewer.getWithinAtomSetIterator(bsMySelected, false, modelZeroBased);
+    //true ==> only atom index > this atom accepted
     int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1)))
       if (bsIgnore == null || !bsIgnore.get(i)) {
         setAtomI(i);
-        getNeighbors();
+        getNeighbors(iter);
         calcConvexMap(isSurface);
       }
     currentPoints = null;
@@ -490,13 +492,11 @@ public final class EnvelopeCalculation {
   private float[] neighborPlusProbeRadii2 = new float[16];
   private float[] neighborRadii2 = new float[16];
   
-  private void getNeighbors() {
+  private AtomIndexIterator getNeighbors(AtomIndexIterator iter) {
     neighborCount = 0;
     if (disregardNeighbors)
-      return;
-    AtomIndexIterator iter = viewer.getWithinAtomSetIterator(indexI, radiusI + diameterP
-        + maxRadius, bsMySelected, false, modelZeroBased); //true ==> only atom index > this atom accepted
-
+      return null;
+    viewer.setIteratorForAtom(iter, indexI, radiusI + diameterP + maxRadius);    
     while (iter.hasNext()) {
       int indexN = iter.next();
       float neighborRadius = atomData.atomRadius[indexN];
@@ -518,6 +518,7 @@ public final class EnvelopeCalculation {
       neighborRadii2[neighborCount] = neighborRadius * neighborRadius;
       ++neighborCount;
     }
+    return iter;
   }
   
   public void deleteAtoms(int firstAtomDeleted, int nAtomsDeleted, BitSet bsAtoms) {

@@ -141,15 +141,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         meshCount * 2);
     currentMesh = thisMesh = isomeshes[index] = (m == null ? new IsosurfaceMesh(
         thisID, g3d, colix, index) : (IsosurfaceMesh) m);
-      sg.setJvxlData(jvxlData = thisMesh.jvxlData);
+    currentMesh.index = index;
+    sg.setJvxlData(jvxlData = thisMesh.jvxlData);
   }
 
-  public void merge(Shape shape) {
-    if (shapeID != JmolConstants.SHAPE_ISOSURFACE && shapeID != JmolConstants.SHAPE_PMESH)
-      return;
-    super.merge(shape);
-  }
-  
   public void initShape() {
     super.initShape();
     myType = "isosurface";
@@ -1379,4 +1374,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return null;
   }
 
+  public void merge(Shape shape) {
+    super.merge(shape);
+  }
 }

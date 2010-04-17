@@ -119,6 +119,7 @@ public class ScriptFunction {
     for (int i = 0; i < nCommands; i++) {
       function.lineNumbers[i] = (short) (lineNumbers[cmdpt0 + i] - line0);
       function.lineIndices[i] = new int[] {lineIndices[cmdpt0 + i][0] - chpt0, lineIndices[cmdpt0 + i][1] - chpt0 };
+      System.out.println("Line " + i + ": " + function.script.substring(function.lineIndices[i][0], function.lineIndices[i][1]));
       aatoken[i] = (Token[]) lltoken.get(cmdpt0 + i);
       if (aatoken[i].length > 0) {
         Token tokenCommand = aatoken[i][0];

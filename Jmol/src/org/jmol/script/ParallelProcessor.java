@@ -33,17 +33,29 @@ class ParallelProcessor extends ScriptFunction {
   
   Viewer viewer;
   Vector vShapeManagers = new Vector();
+  transient int counter = 0 ;
+  
 
   public void runAllProcesses(Viewer viewer) {
+    if (processes.size() == 0)
+      return;
     this.viewer = viewer;
-    for (int i = 0; i < processes.size(); i++)
-      runProcess((Process) processes.get(i));
+    counter = 0;
+    System.out.println("running " + processes.size() + " processes on " + Viewer.nProcessors + " processesors");
+    for (int i = processes.size(); --i >= 0;) {
+      counter++;
+      runProcess((Process) processes.remove(0));
+    }
+    while (counter >= 0) {
+      Thread.yield();
+    }
   }
   
   void mergeResults() {
     for (int i = 0; i < vShapeManagers.size(); i++)
       viewer.mergeShapes(((ShapeManager) vShapeManagers.get(i)).getShapes());
     vShapeManagers = new Vector();
+    counter = -1;
   }
 
   Vector processes = new Vector();
@@ -73,13 +85,11 @@ class ParallelProcessor extends ScriptFunction {
     return (Lock) locks.get(name);
   }
   
-  transient int counter = 0 ;
-  
   private void runProcess(final Process process) {
     Runnable r = new Runnable() {
       public void run() {
         // not exactly sure what to do about the lock here. 
-        Lock lock = getLock(process.processName);
+        //Lock lock = getLock(process.processName);
         //synchronized (lock) {
           try {
             System.out.println("Running process " + process.processName + " " + process.context.pc + " - " + (process.context.pcEnd - 1));
@@ -90,16 +100,13 @@ class ParallelProcessor extends ScriptFunction {
           } catch (Exception e) {
             e.printStackTrace();
           }
-          counter--;
           //lock.depth--;
-          
-          if (counter == 0)
+          if (--counter == 0)
             mergeResults();
         }
       //}
     };
 
-    counter++;
     //Lock lock = getLock(process.processName);
     //while (lock.depth != 0) {
       //Thread.yield();
@@ -107,7 +114,7 @@ class ParallelProcessor extends ScriptFunction {
 
     //synchronized (lock) {
       //lock.depth++;
-      if (viewer.getExecutor() != null && viewer.getTestFlag1()) {
+      if (viewer.getExecutor() != null && viewer.getBooleanProperty("multiProcessor")) {
         ((Executor) viewer.getExecutor()).execute(r);
       } else {
         r.run();

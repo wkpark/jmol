@@ -66,6 +66,12 @@ class Normix3D {
     // level 0 1 2 3
     // vertices 12, 42, 162, 642
     BitSet bsTemp = new BitSet();
+    for (int n = normixCount; --n >= 0;) {
+      Vector3f v = vertexVectors[n];
+      inverseNormixes[n] = getNormix(-v.x, -v.y, -v.z, NORMIX_GEODESIC_LEVEL,
+          bsTemp);
+    }
+
     if (TIMINGS) {
       Logger.info("begin timings!");
       for (int i = 0; i < normixCount; ++i) {
@@ -136,12 +142,6 @@ class Normix3D {
         }
       }
       Logger.checkTimer("normix2 runtime for " + runCount);
-
-      for (int n = normixCount; --n >= 0;) {
-        Vector3f v = vertexVectors[n];
-        inverseNormixes[n] = getNormix(-v.x, -v.y, -v.z, NORMIX_GEODESIC_LEVEL,
-            bsTemp);
-      }
     }
   }
   

@@ -100,7 +100,14 @@ public final class Bspf {
     return sphereIterators[bsptIndex];
   }
 */  
+  /**
+   * @param bsptIndex  a model index
+   * @return           either a cached or a new CubeIterator
+   * 
+   */
   public CubeIterator getCubeIterator(int bsptIndex) {
+    if (bsptIndex < 0)
+      return getNewCubeIterator(-1 - bsptIndex);
     if (bsptIndex >= cubeIterators.length) {
       CubeIterator[] t = new CubeIterator[bsptIndex + 1];
       System.arraycopy(cubeIterators, 0, t, 0, cubeIterators.length);
@@ -108,8 +115,12 @@ public final class Bspf {
     }
     if (cubeIterators[bsptIndex] == null &&
         bspts[bsptIndex] != null)
-      cubeIterators[bsptIndex] = bspts[bsptIndex].allocateCubeIterator();
+      cubeIterators[bsptIndex] = getNewCubeIterator(bsptIndex);
     return cubeIterators[bsptIndex];
+  }
+
+  public CubeIterator getNewCubeIterator(int bsptIndex) {
+      return bspts[bsptIndex].allocateCubeIterator();
   }
 
   public void initialize(int modelIndex, Point3f[] atoms, BitSet modelAtomBitSet) {

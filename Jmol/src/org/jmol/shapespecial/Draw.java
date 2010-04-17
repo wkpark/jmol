@@ -64,6 +64,7 @@ public class Draw extends MeshCollection {
         meshCount * 2);
     currentMesh = thisMesh = dmeshes[index] = (m == null ? new DrawMesh(thisID,
         g3d, colix, index) : (DrawMesh) m);
+    currentMesh.index = index;
     if (thisID != null && thisID != JmolConstants.PREVIOUS_MESH_ID
         && htObjects != null)
       htObjects.put(thisID.toUpperCase(), currentMesh);

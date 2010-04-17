@@ -899,9 +899,10 @@ public class Token {
   public final static int minimizationrefresh            = booleanparam | 105;
   public final static int minimizationsilent             = booleanparam | 106;
   public final static int monitorenergy                  = booleanparam | 107;
-  public final static int navigatesurface                = booleanparam | 108;
-  public final static int navigationmode                 = booleanparam | 109;
-  public final static int navigationperiodic             = booleanparam | 110;
+  public final static int multiprocessor                 = booleanparam | 108;
+  public final static int navigatesurface                = booleanparam | 109;
+  public final static int navigationmode                 = booleanparam | 110;
+  public final static int navigationperiodic             = booleanparam | 111;
   public final static int pdbgetheader                   = booleanparam | 112;
   public final static int pdbsequential                  = booleanparam | 114;
   public final static int perspectivedepth               = booleanparam | 116;
@@ -2112,6 +2113,7 @@ public class Token {
       "minimizationRefresh",                      new Token(minimizationrefresh),
       "minimizationSilent",                       new Token(minimizationsilent),
       "monitorEnergy",                            new Token(monitorenergy),
+      "multiProcessor",                           new Token(multiprocessor),
       "navigateSurface",                          new Token(navigatesurface),
       "navigationMode",                           new Token(navigationmode),
       "navigationPeriodic",                       new Token(navigationperiodic),

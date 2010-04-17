@@ -56,6 +56,7 @@ import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.util.TriangleData;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.ShapeManager;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
@@ -114,8 +115,6 @@ abstract public class ModelCollection extends BondCollection {
     bsSymmetry = null;
     bsAll = null;
     unitCells = null;
-    withinModelIterator = null;
-    withinAtomSetIterator = null;
     super.releaseModelSet();
   }
 
@@ -1912,12 +1911,15 @@ abstract public class ModelCollection extends BondCollection {
     bspf.initialize(modelIndex, atoms, getModelAtomBitSet(modelIndex, false));
   }
  
-  private AtomIteratorWithinModel withinModelIterator;
-  private AtomIteratorWithinSet withinAtomSetIterator;
+  public void setIteratorForAtom(AtomIndexIterator iterator, int atomIndex,
+                                   float distance) {
+    int modelIndex = atoms[atomIndex].modelIndex;
+    modelIndex = models[modelIndex].trajectoryBaseIndex;    
+    initializeBspt(modelIndex);
+    iterator.set(modelIndex, models[modelIndex].firstAtomIndex, atomIndex, atoms[atomIndex], distance);    
+  }
 
-  public AtomIndexIterator getWithinAtomSetIterator(int atomIndex,
-                                                    float distance,
-                                                    BitSet bsSelected,
+  public AtomIndexIterator getWithinAtomSetIterator(BitSet bsSelected,
                                                     boolean isGreaterOnly,
                                                     boolean modelZeroBased) {
     //EnvelopeCalculation, IsoSolventReader
@@ -1927,31 +1929,17 @@ abstract public class ModelCollection extends BondCollection {
     // not the full atom set.
     
     initializeBspf();
-    int modelIndex = atoms[atomIndex].modelIndex;
-    modelIndex = models[modelIndex].trajectoryBaseIndex;
-    initializeBspt(modelIndex);
-    if (withinAtomSetIterator == null)
-      withinAtomSetIterator = new AtomIteratorWithinSet();
-    withinAtomSetIterator.initialize(bspf, modelIndex, atomIndex, 
-        atoms[atomIndex], distance, bsSelected, isGreaterOnly, 
-       (modelZeroBased ? models[modelIndex].firstAtomIndex : 0));
-    return withinAtomSetIterator;
+    AtomIteratorWithinSet iter = new AtomIteratorWithinSet();
+    iter.initialize(bspf, modelZeroBased, viewer.isMultiProcessor(), bsSelected, isGreaterOnly); 
+    return iter;
   }
   
-  public AtomIndexIterator getWithinModelIterator(Atom atomCenter, float radius) {
-    //Polyhedra, within(distance, atom)
-    return getWithinModelIterator(atomCenter.modelIndex, atomCenter, radius);
-  }
-
-  private AtomIndexIterator getWithinModelIterator(int modelIndex, Point3f center, float radius) {
+  public AtomIndexIterator getWithinModelIterator() {
     //polyhedra, within(distance, atom), within(distance, point)
     initializeBspf();
-    modelIndex = models[modelIndex].trajectoryBaseIndex;
-    initializeBspt(modelIndex);
-    if (withinModelIterator == null)
-      withinModelIterator = new AtomIteratorWithinModel();
-    withinModelIterator.initialize(bspf, modelIndex, center, radius);
-    return withinModelIterator;
+    AtomIteratorWithinModel iter = new AtomIteratorWithinModel();
+    iter.initialize(bspf, false, viewer.isMultiProcessor());
+    return iter;
   }
 
   ////////// bonds /////////
@@ -2042,6 +2030,8 @@ abstract public class ModelCollection extends BondCollection {
   }
   
   protected BitSet bsAll;
+
+  protected ShapeManager shapeManager;
   
   public BitSet getModelAtomBitSet(BitSet bsModels) {
     BitSet bs = new BitSet();
@@ -2164,8 +2154,7 @@ abstract public class ModelCollection extends BondCollection {
                                boolean withinAllModels) {
     BitSet bsResult = new BitSet();
     BitSet bsCheck = getIterativeModels(false);
-    float d2 = distance * distance;
-    int iAtom = 0;
+    AtomIndexIterator iter = getWithinModelIterator();
     if (withinAllModels) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         for (int iModel = modelCount; --iModel >= 0;) {
@@ -2177,12 +2166,8 @@ abstract public class ModelCollection extends BondCollection {
                 bsResult, -1);
             continue;
           }
-          AtomIndexIterator iterWithin = getWithinModelIterator(iModel,
-              atoms[i], distance);
-          while (iterWithin.hasNext())
-            if ((iAtom = iterWithin.next()) >= 0
-                && iterWithin.foundDistance2() <= d2)
-              bsResult.set(iAtom);
+          setIteratorForAtom(iter, i, distance);
+          iter.addAtoms(bsResult);
         }
     } else {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -2191,12 +2176,8 @@ abstract public class ModelCollection extends BondCollection {
             getAtomsWithin(distance, atoms[i], bsResult, atoms[i].modelIndex);
             continue;
           }
-          AtomIndexIterator iterWithin = getWithinModelIterator(atoms[i],
-              distance);
-          while (iterWithin.hasNext())
-            if ((iAtom = iterWithin.next()) >= 0
-                && iterWithin.foundDistance2() <= d2)
-              bsResult.set(iAtom);
+          setIteratorForAtom(iter, i, distance);
+          iter.addAtoms(bsResult);
         }
     }
     return bsResult;
@@ -2237,17 +2218,13 @@ abstract public class ModelCollection extends BondCollection {
     }
 
     BitSet bsCheck = getIterativeModels(false);
-    float d2 = distance * distance;
     for (int iModel = modelCount; --iModel >= 0;) {
       if (!bsCheck.get(iModel))
         continue;
-      AtomIndexIterator iterWithin = getWithinModelIterator(iModel, coord,
-          distance);
-      int iAtom;
-      while (iterWithin.hasNext())
-        if ((iAtom = iterWithin.next()) >= 0
-            && iterWithin.foundDistance2() <= d2)
-          bsResult.set(iAtom);
+      AtomIndexIterator iter = getWithinModelIterator();
+      setIteratorForAtom(iter, models[iModel].firstAtomIndex, 0);
+      iter.initialize(coord, distance);
+      iter.addAtoms(bsResult);
     }
     return bsResult;
   }
@@ -2448,7 +2425,7 @@ abstract public class ModelCollection extends BondCollection {
     if (autoAromatize)
       assignAromaticBonds(true, bsBonds);
     if (!identifyOnly)
-      viewer.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsBonds);
+      shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsBonds);
     return new int[] { nNew, nModified };
   }
 
@@ -2587,7 +2564,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     Logger.info(haveHAtoms ? "Standard Hbond calculation"
         : "Jmol pseudo-hbond calculation");
-    BitSet bsCO = null;    
+    BitSet bsCO = null;
     if (!haveHAtoms) {
       bsCO = new BitSet();
       for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
@@ -2617,9 +2594,10 @@ abstract public class ModelCollection extends BondCollection {
     Vector3f v2 = new Vector3f();
     if (showRebondTimes && Logger.debugging)
       Logger.startTimer();
-    int modelLast = -1;
     Point3f C = null;
     Point3f D = null;
+    AtomIndexIterator iter = getWithinAtomSetIterator(bsB, false, false);
+
     for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
       Atom atom = atoms[i];
       int elementNumber = atom.getElementNumber();
@@ -2649,10 +2627,7 @@ abstract public class ModelCollection extends BondCollection {
         max2 = hbondMax2;
         firstIsCO = bsCO.get(i);
       }
-      if (atom.modelIndex != modelLast)
-        initializeBspt(modelLast = atom.modelIndex);
-      AtomIndexIterator iter = getWithinAtomSetIterator(atom.index, dmax, bsB,
-          false, false);
+      setIteratorForAtom(iter, atom.index, dmax);
       while (iter.hasNext()) {
         Atom atomNear = atoms[iter.next()];
         int elementNumberNear = atomNear.getElementNumber();
@@ -2676,22 +2651,18 @@ abstract public class ModelCollection extends BondCollection {
         short bo;
         if (isH && !Float.isNaN(C.x) && !Float.isNaN(D.x)) {
           /*
-           * A crude calculation based on simple distances.
-           * In the NH -- O=C case this reads DH -- A=C
+           * A crude calculation based on simple distances. In the NH -- O=C
+           * case this reads DH -- A=C
            * 
-           *        (+)  H .......... A (-)
-           *             |            |
-           *             |            |
-           *        (-)  D            C (+)
+           * (+) H .......... A (-) | | | | (-) D C (+)
            * 
            * 
-           *   E = Q/rAH - Q/rAD + Q/rCD - Q/rCH
-           * 
+           * E = Q/rAH - Q/rAD + Q/rCD - Q/rCH
            */
 
-          bo = JmolConstants.BOND_H_CALC; 
-          energy = HBond.getEnergy((float) Math.sqrt(d2), C.distance(atom), 
-              C.distance(D), atomNear.distance(D)) / 1000f;
+          bo = JmolConstants.BOND_H_CALC;
+          energy = HBond.getEnergy((float) Math.sqrt(d2), C.distance(atom), C
+              .distance(D), atomNear.distance(D)) / 1000f;
         } else {
           bo = JmolConstants.BOND_H_REGULAR;
         }
@@ -2699,7 +2670,8 @@ abstract public class ModelCollection extends BondCollection {
         nNew++;
       }
     }
-    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsHBondsRasmol);
+    shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null,
+        bsHBondsRasmol);
     if (showRebondTimes && Logger.debugging)
       Logger.checkTimer("Time to hbond");
     return (haveHAtoms ? nNew : -nNew);
@@ -3495,8 +3467,6 @@ abstract public class ModelCollection extends BondCollection {
       bsAll = null;
       molecules = null;
       moleculeCount = 0;
-      withinModelIterator = null;
-      withinAtomSetIterator = null;
       isBbcageDefault = false;
       calcBoundBoxDimensions(null, 1);
       return;

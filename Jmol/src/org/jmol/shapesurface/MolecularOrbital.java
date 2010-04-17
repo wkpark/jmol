@@ -26,6 +26,7 @@
 package org.jmol.shapesurface;
 
 import java.util.BitSet;
+import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Hashtable;
 
@@ -35,6 +36,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.script.Token;
+import org.jmol.shape.Shape;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.readers.Parameters;
 
@@ -402,4 +404,28 @@ public class MolecularOrbital extends Isosurface {
     appendCmd(s, ((IsosurfaceMesh) thisModel.get("mesh")).getState("mo"));
     return s.toString();
   }
+  
+  public void merge(Shape shape) {
+  MolecularOrbital mo = (MolecularOrbital) shape;
+  moCutoff = mo.moCutoff;
+  moScale = mo.moScale;
+  moResolution = mo.moResolution;
+  moPlane = mo.moPlane;
+  moTitleFormat = mo.moTitleFormat;
+  moColorNeg = mo.moColorNeg;
+  moColorPos = mo.moColorPos;
+  moTranslucency = mo.moTranslucency;
+  if (htModels == null)
+    htModels = new Hashtable();
+  Hashtable ht = mo.htModels;
+  if (ht != null) {
+    Enumeration e = ht.keys();
+    while (e.hasMoreElements()) {
+      Object key = e.nextElement();
+      htModels.put(key, ht.get(key));
+    }
+  }
+  super.merge(shape);
+}
+
 }

@@ -91,11 +91,18 @@ public abstract class MeshCollection extends Shape {
     int index = meshCount++;
     meshes = (Mesh[])ArrayUtil.ensureLength(meshes, meshCount * 2);
     currentMesh = meshes[index] = (m == null ? new Mesh(thisID, g3d, colix, index) : m);
+    currentMesh.index = index;
     if (thisID != null && htObjects != null)
       htObjects.put(thisID.toUpperCase(), currentMesh);
     previousMeshID = null;
   }
 
+  /**
+   * called by ParallelProcessor at completion
+   * 
+   * @param shape 
+   * 
+   */
   public void merge(Shape shape) {
     MeshCollection mc = (MeshCollection) shape;
     for (int i = 0; i < mc.meshCount; i++) {
@@ -106,6 +113,7 @@ public abstract class MeshCollection extends Shape {
           allocMesh(m.thisID, m);
         } else {
           meshes[m0.index] = m;
+          m.index = m0.index;
         }
       }      
     }

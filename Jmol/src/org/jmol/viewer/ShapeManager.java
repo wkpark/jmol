@@ -153,7 +153,7 @@ public class ShapeManager {
   }
 
   public void setModelVisibility() {
-    if (shapes == null)
+    if (shapes == null || shapes[JmolConstants.SHAPE_BALLS] == null)
       return;
 
     //named objects must be set individually
@@ -180,7 +180,7 @@ public class ShapeManager {
     }
   }
 
-  float getAtomShapeValue(Group group, int atomIndex, int tok) {
+  float getAtomShapeValue(int tok, Group group, int atomIndex) {
     int iShape = JmolConstants.shapeTokenIndex(tok);
     if (iShape < 0 || shapes[iShape] == null) 
       return 0;

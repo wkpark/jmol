@@ -461,6 +461,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setBooleanProperty("_applet", isApplet);
     setBooleanProperty("_signedApplet", isSignedApplet);
     setBooleanProperty("_useCommandThread", useCommandThread);
+    setIntProperty("_nProcessors", nProcessors);
 
     /*
      * Logger.info("jvm11orGreater=" + jvm11orGreater + "\njvm12orGreater=" +
@@ -468,18 +469,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      */
     if (!isSilent) {
       Logger.info(JmolConstants.copyright
-          + "\nJmol Version "
-          + getJmolVersion()
-          + "\njava.vendor:"
-          + strJavaVendor
-          + "\njava.version:"
-          + strJavaVersion
-          + "\nos.name:"
-          + strOSName
-          + "\nmemory:"
-          + getParameter("_memory")
-          + "\nuseCommandThread: "
-          + useCommandThread
+          + "\nJmol Version: " + getJmolVersion()
+          + "\njava.vendor: " + strJavaVendor
+          + "\njava.version: " + strJavaVersion
+          + "\nos.name: " + strOSName
+          + "\nmemory: " + getParameter("_memory")
+          + "\nprocessors available: " + nProcessors
+          + "\nuseCommandThread: " + useCommandThread
           + (!isApplet ? "" : "\nappletId:" + htmlName
               + (isSignedApplet ? " (signed)" : "")));
     }
@@ -2234,17 +2230,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.calculateStructures(bsAtoms);
   }
 
-  public AtomIndexIterator getWithinModelIterator(Atom atom, float distance) {
-    return modelSet.getWithinModelIterator(atom, distance);
+  public AtomIndexIterator getWithinModelIterator() {
+    return modelSet.getWithinModelIterator();
   }
 
-  public AtomIndexIterator getWithinAtomSetIterator(int atomIndex,
-                                                    float distance,
-                                                     BitSet bsSelected,
+  public AtomIndexIterator getWithinAtomSetIterator(BitSet bsSelected,
                                                     boolean isGreaterOnly,
                                                     boolean modelZeroBased) {
-    return modelSet.getWithinAtomSetIterator(atomIndex, distance, bsSelected,
-        isGreaterOnly, modelZeroBased);
+    return modelSet.getWithinAtomSetIterator(bsSelected, isGreaterOnly, modelZeroBased);
+  }
+
+  public void setIteratorForAtom(AtomIndexIterator iterator, int atomIndex,
+                                 float distance) {
+    modelSet.setIteratorForAtom(iterator, atomIndex, distance);    
   }
 
   public void fillAtomData(AtomData atomData, int mode) {
@@ -5402,6 +5400,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.multiprocessor:
+      // 12.0.RC6
+      global.multiProcessor = value && (nProcessors > 1);
+      break;
     case Token.monitorenergy:
       // 12.0.RC6
       global.monitorEnergy = value;
@@ -8196,15 +8198,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // parallel processing
   
   private Object executor;
+  public static int nProcessors = Runtime.getRuntime().availableProcessors();
+
   public Object getExecutor() {
-    if (executor != null)
+    if (executor != null || nProcessors < 2)
       return executor;
     try {
-      int nProcessors = Runtime.getRuntime().availableProcessors();
       executor = new ScheduledThreadPoolExecutor(nProcessors);
     } catch (Exception e) {
       executor = null;
     }
+    System.out.println("viewer " + executor);
     return executor;
   }
 
@@ -8214,14 +8218,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Hashtable getShapeInfo() {
     return shapeManager.getShapeInfo();
-  }
-
-  public int getShapeIdFromObjectName(String objectName) {
-    return shapeManager.getShapeIdFromObjectName(objectName);
-  }
-
-  public void setLabel(String strLabel) {
-    shapeManager.setLabel(strLabel, selectionManager.getSelectionSet());
   }
 
   public void togglePickingLabel(BitSet bs) {
@@ -8245,10 +8241,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     shapeManager.setShapeSize(shapeID, mad, null, bsSelected);
   }
 
-  public void setShapeSize(int shapeID, int mad, RadiusData rd, BitSet bsSelected) {
-    shapeManager.setShapeSize(shapeID, mad, rd, bsSelected);
-  }
-
   public void setShapeSize(int shapeID, RadiusData rd, BitSet bsAtoms) {
     shapeManager.setShapeSize(shapeID, 0, rd, bsAtoms);
   }
@@ -8258,14 +8250,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (shapeID < 0)
       return; // not applicable
     shapeManager.setShapeProperty(shapeID, propertyName, value, null);
-  }
-
-  public void setShapeProperty(int shapeID, String propertyName, Object value,
-                               BitSet bs) {
-    // Eval color
-    if (shapeID < 0)
-      return; // not applicable
-    shapeManager.setShapeProperty(shapeID, propertyName, value, bs);
   }
 
   public Object getShapeProperty(int shapeType, String propertyName) {
@@ -8281,22 +8265,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return shapeManager.getShapeProperty(shapeType, propertyName, index);
   }
 
-  int getShapePropertyAsInt(int shapeID, String propertyName) {
+  private int getShapePropertyAsInt(int shapeID, String propertyName) {
     Object value = getShapeProperty(shapeID, propertyName);
     return value == null || !(value instanceof Integer) ? Integer.MIN_VALUE
         : ((Integer) value).intValue();
   }
 
   public void setModelVisibility() {
-    // Eval -- ok - handled specially
     if (shapeManager == null) // necessary for file chooser
       return;
     shapeManager.setModelVisibility();
   }
 
-  public Shape getShape(int i) {
-    return (shapeManager == null ? null : shapeManager.getShape(i));
-  }
   public void resetShapes() {
     shapeManager.resetShapes();
   }
@@ -8309,16 +8289,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     shapeManager.refreshShapeTrajectories(baseModel, bs);
   }
 
-  public void deleteShapeAtoms(Object[] value, BitSet bs) {
-    shapeManager.deleteShapeAtoms(value, bs);
-  }
-
   public void setAtomLabel(String value, int i) {
     shapeManager.setAtomLabel(value, i);
   }
 
-  public float getAtomShapeValue(Group group, int atomIndex, int tok) {
-    return shapeManager.getAtomShapeValue(group, atomIndex, tok);
+  public void deleteShapeAtoms(Object[] value, BitSet bs) {
+    shapeManager.deleteShapeAtoms(value, bs);
   }
 
   public void findNearestShapeAtomIndex(int x, int y, Atom[] closest) {
@@ -8333,11 +8309,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     shapeManager.resetBioshapes(bsAllAtoms);    
   }
 
+  public float getAtomShapeValue(int tok, Group group, int atomIndex) {
+    // Atom
+    return shapeManager.getAtomShapeValue(tok, group, atomIndex);
+  }
+
   public void mergeShapes(Shape[] newShapes) {
+    // ParallelProcessor
     shapeManager.mergeShapes(newShapes);
   }
 
   public ShapeManager getShapeManager() {
     return shapeManager;
   }
+
+  public boolean isMultiProcessor() {
+    return global.multiProcessor;
+  }
+
 }

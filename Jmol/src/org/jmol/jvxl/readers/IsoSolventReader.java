@@ -296,6 +296,7 @@ class IsoSolventReader extends AtomDataReader {
     float maxRadius = 0;
     float r0 = (isFirstPass && isCavity ? cavityRadius : 0);
     boolean isWithin = (isFirstPass && distance != Float.MAX_VALUE && point != null);
+    AtomIndexIterator iter = atomDataServer.getWithinAtomSetIterator(bsMySelected, true, true);
     for (int iAtom = 0; iAtom < atomCount; iAtom++) {
       ptA = atomXyz[iAtom];
       rA = atomRadius[iAtom];
@@ -351,8 +352,8 @@ class IsoSolventReader extends AtomDataReader {
           if (isWithin && ptA.distance(point) > distance + rA + 0.5)
             continue;
           setGridLimitsForAtom(ptA, rA - solventRadius, ptA0, ptA1);
-          AtomIndexIterator iter = atomDataServer.getWithinAtomSetIterator(
-              iatomA, rA + solventRadius + maxRadius, bsMySelected, true, true); //true ==> only atom index > this atom accepted
+          atomDataServer.setIteratorForAtom(iter, iatomA, rA + solventRadius + maxRadius);
+          //true ==> only atom index > this atom accepted
           while (iter.hasNext()) {
             int iatomB = iter.next();
             Point3f ptB = atomXyz[myIndex[iatomB]];
@@ -400,6 +401,8 @@ class IsoSolventReader extends AtomDataReader {
             }
           }
         }
+      iter.release();
+      iter = null;
     }
     if (doSmoothProperty) {
       for (int x = 0; x < nPointsX; ++x)

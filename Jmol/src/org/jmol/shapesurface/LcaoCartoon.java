@@ -29,6 +29,7 @@ import java.util.BitSet;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.shape.Shape;
 import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 
@@ -345,4 +346,14 @@ public class LcaoCartoon extends Isosurface {
         appendCmd(sb, "lcaoCartoon ID " + meshes[i].thisID + " off");
     return super.getShapeState() + sb.toString();
   }
+  
+  public void merge(Shape shape) {
+    LcaoCartoon lc = (LcaoCartoon) shape;
+    lcaoScale = lc.lcaoScale;
+    lcaoColorNeg = lc.lcaoColorNeg;
+    isTranslucent = lc.isTranslucent;
+    super.merge(shape);
+  }
+  
+
 }

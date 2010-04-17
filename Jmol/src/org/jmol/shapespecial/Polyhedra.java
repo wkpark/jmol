@@ -245,10 +245,11 @@ public class Polyhedra extends AtomShape {
 
   private void buildPolyhedra() {
     boolean useBondAlgorithm = radius == 0 || bondedOnly;
+    AtomIndexIterator iter = viewer.getWithinModelIterator();
     for (int i = centers.nextSetBit(0); i >= 0; i = centers.nextSetBit(i + 1)) {
       Polyhedron p = (haveBitSetVertices ? constructBitSetPolyhedron(i)
           : useBondAlgorithm ? constructBondsPolyhedron(i)
-              : constructRadiusPolyhedron(i));
+              : constructRadiusPolyhedron(i, iter));
       if (p != null) {
         if (polyhedronCount == polyhedrons.length)
           polyhedrons = (Polyhedron[]) ArrayUtil.doubleLength(polyhedrons);
@@ -257,6 +258,7 @@ public class Polyhedra extends AtomShape {
       if (haveBitSetVertices)
         return;
     }
+    iter.release();
   }
 
   private Polyhedron constructBondsPolyhedron(int atomIndex) {
@@ -290,12 +292,12 @@ public class Polyhedra extends AtomShape {
     return validatePolyhedronNew(atoms[atomIndex], otherAtomCount, otherAtoms);
   }
 
-  private Polyhedron constructRadiusPolyhedron(int atomIndex) {
+  private Polyhedron constructRadiusPolyhedron(int atomIndex, AtomIndexIterator iter) {
     Atom atom = atoms[atomIndex];
     int otherAtomCount = 0;
-    AtomIndexIterator withinIterator = viewer.getWithinModelIterator(atom, radius);
-    while (withinIterator.hasNext()) {
-      Atom other = atoms[withinIterator.next()];
+    viewer.setIteratorForAtom(iter, atomIndex, radius);
+    while (iter.hasNext()) {
+      Atom other = atoms[iter.next()];
       if (other == atom 
           || bsVertices != null && !bsVertices.get(other.getIndex())
           || atom.distance(other) > radius)

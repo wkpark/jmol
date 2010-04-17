@@ -1953,9 +1953,12 @@ public class ScriptEvaluator {
     Token[] fixed;
     int i;
     int tok;
-    for (i = 1; i < statementLength; i++)
+    for (i = 1; i < statementLength; i++) {
+      if (statement[i] == null)
+        continue;
       if (statement[i].tok == Token.define)
         break;
+    }
     if (i == statementLength)// || isScriptCheck)
       return i == statementLength;
     fixed = new Token[statementLength];
@@ -1963,6 +1966,8 @@ public class ScriptEvaluator {
     boolean isExpression = false;
     int j = 1;
     for (i = 1; i < statementLength; i++) {
+      if (statement[i] == null)
+        continue;
       switch (tok = getToken(i).tok) {
       case Token.define:
         Object v;
@@ -2856,8 +2861,6 @@ public class ScriptEvaluator {
   }
 
   private void loadShape(int iShape) {
-    if (isSyntaxCheck)
-      return;
       shapeManager.loadShape(iShape);
   }
 
@@ -3691,11 +3694,11 @@ public class ScriptEvaluator {
   }
 
   private int tokAt(int i) {
-    return (i < statementLength ? statement[i].tok : Token.nada);
+    return (i < statementLength  && statement[i] != null ? statement[i].tok : Token.nada);
   }
 
   private int tokAt(int i, Token[] args) {
-    return (i < args.length ? args[i].tok : Token.nada);
+    return (i < args.length && args[i] != null ? args[i].tok : Token.nada);
   }
 
   private Token tokenAt(int i, Token[] args) {
@@ -4005,7 +4008,7 @@ public class ScriptEvaluator {
         String id = objectNameParameter(++i);
         if (isSyntaxCheck)
           return new Point4f();
-        int shapeType = viewer.getShapeIdFromObjectName(id);
+        int shapeType = shapeManager.getShapeIdFromObjectName(id);
         switch (shapeType) {
         case JmolConstants.SHAPE_DRAW:
           setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", id);
@@ -4575,6 +4578,7 @@ public class ScriptEvaluator {
    */
   private void instructionDispatchLoop(boolean doList) throws ScriptException {
     long timeBegin = 0;
+    vProcess = null;
     boolean isForCheck = false; // indicates the stage of the for command loop
     if (shapeManager == null)
       shapeManager = viewer.getShapeManager();
@@ -5164,7 +5168,7 @@ public class ScriptEvaluator {
     case Token.process:
       pushContext((ContextToken) theToken);
       isDone = isOK = true;
-      addProcess(pc, pt);
+      addProcess(pc, pt, true);
       break;
     case Token.ifcmd:
     case Token.elseif:
@@ -5189,7 +5193,7 @@ public class ScriptEvaluator {
         return isForCheck;
       }
       if (theTok == Token.process) {
-        addProcess(pt, pc);
+        addProcess(pt, pc, false);
         popContext(true);
       }
       isOK = (theTok == Token.process || theTok == Token.ifcmd);
@@ -5292,20 +5296,20 @@ public class ScriptEvaluator {
 
   private Vector vProcess;
   static int iProcess;
-  private void addProcess(int pc, int pt) {
+  private void addProcess(int pc, int pt, boolean isStart) {
     if (parallelProcessor == null)
       return;
-    if (pc > 0) {
+    if (isStart) {
       vProcess = new Vector();
     } else {
       
       Token[][] statements = new Token[pt][];
       for (int i = 0; i < vProcess.size(); i++)
-        statements[i - pc] = (Token[]) vProcess.get(i);
+        statements[i + 1 - pc] = (Token[]) vProcess.get(i);
       ScriptContext context = getScriptContext();
       context.aatoken = statements;
-      context.pc = -pc;
-      context.pcEnd = pt - 1;
+      context.pc = 1 - pc;
+      context.pcEnd = pt;
       parallelProcessor.addProcess("p" + (++iProcess), context);
       vProcess = null;
     }
@@ -7161,7 +7165,7 @@ public class ScriptEvaluator {
     default:
       strLabel = parameterAsString(index);
     }
-    viewer.setLabel(strLabel);
+    shapeManager.setLabel(strLabel, viewer.getSelectionSet());
   }
 
   private void hover() throws ScriptException {
@@ -7949,7 +7953,7 @@ public class ScriptEvaluator {
       if (shapeType != JmolConstants.SHAPE_MEASURES)
         setShapeSize(shapeType, 0);
     setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "delete", null);
-    viewer.setLabel(null);
+    shapeManager.setLabel(null, viewer.getSelectionSet());
 
     if (!isBond)
       setBooleanProperty("bondModeOr", bondmode);
@@ -13359,11 +13363,20 @@ public class ScriptEvaluator {
     int offset = Integer.MAX_VALUE;
     BitSet bsModels = viewer.getVisibleFramesBitSet();
     Vector propertyList = new Vector();
-    for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
+    int i = 1;
+    if (tokAt(1) == Token.model || tokAt(1) == Token.frame) {
+      i = modelNumberParameter(2);
+      if (i < 0)
+        error(ERROR_invalidArgument);
+      bsModels.clear();
+      bsModels.set(i);
+      i = 3;
+    }
+    for (int iModel = bsModels.nextSetBit(0); iModel >= 0; iModel = bsModels.nextSetBit(iModel + 1)) {
       loadShape(JmolConstants.SHAPE_MO);
-      if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_MO))
+      if (tokAt(i) == Token.list && listIsosurface(JmolConstants.SHAPE_MO))
         return true;
-      setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(i));
+      setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(iModel));
       String title = null;
       int moNumber = ((Integer) getShapeProperty(JmolConstants.SHAPE_MO,
           "moNumber")).intValue();
@@ -13373,9 +13386,9 @@ public class ScriptEvaluator {
         moNumber = Integer.MAX_VALUE;
       String propertyName = null;
       Object propertyValue = null;
-      switch (getToken(1).tok) {
+      switch (getToken(i).tok) {
       case Token.integer:
-        moNumber = intParameter(1);
+        moNumber = intParameter(i);
         break;
       case Token.next:
         moNumber = Token.next;
@@ -13384,24 +13397,24 @@ public class ScriptEvaluator {
         moNumber = Token.prev;
         break;
       case Token.color:
-        setColorOptions(2, JmolConstants.SHAPE_MO, 2);
+        setColorOptions(i + 1, JmolConstants.SHAPE_MO, 2);
         break;
       case Token.plane:
         // plane {X, Y, Z, W}
         propertyName = "plane";
-        propertyValue = planeParameter(2);
+        propertyValue = planeParameter(i + 1);
         break;
       case Token.scale:
         propertyName = "scale";
-        propertyValue = new Float(floatParameter(2));
+        propertyValue = new Float(floatParameter(i + 1));
         break;
       case Token.cutoff:
-        if (tokAt(2) == Token.plus) {
+        if (tokAt(i + 1) == Token.plus) {
           propertyName = "cutoffPositive";
-          propertyValue = new Float(floatParameter(3));
+          propertyValue = new Float(floatParameter(i + 2));
         } else {
           propertyName = "cutoff";
-          propertyValue = new Float(floatParameter(2));
+          propertyValue = new Float(floatParameter(i + 1));
         }
         break;
       case Token.debug:
@@ -13413,14 +13426,14 @@ public class ScriptEvaluator {
       case Token.pointsperangstrom:
       case Token.resolution:
         propertyName = "resolution";
-        propertyValue = new Float(floatParameter(2));
+        propertyValue = new Float(floatParameter(i + 1));
         break;
       case Token.squared:
         propertyName = "squareData";
         propertyValue = Boolean.TRUE;
         break;
       case Token.titleformat:
-        if (2 < statementLength && tokAt(2) == Token.string) {
+        if (i + 1 < statementLength && tokAt(i + 1) == Token.string) {
           propertyName = "titleFormat";
           propertyValue = parameterAsString(2);
         }
@@ -13444,11 +13457,11 @@ public class ScriptEvaluator {
       if (propertyName != null)
         addShapeProperty(propertyList, propertyName, propertyValue);
       if (moNumber != Integer.MAX_VALUE) {
-        if (tokAt(2) == Token.string)
-          title = parameterAsString(2);
+        if (tokAt(i + 1) == Token.string)
+          title = parameterAsString(i + 1);
         if (!isSyntaxCheck)
           viewer.setCursor(Viewer.CURSOR_WAIT);
-        setMoData(propertyList, moNumber, offset, i, title);
+        setMoData(propertyList, moNumber, offset, iModel, title);
         addShapeProperty(propertyList, "finalize", null);
         setShapeProperty(JmolConstants.SHAPE_MO, "setProperties", propertyList);
       }

@@ -416,7 +416,7 @@ abstract public class ModelSet extends ModelCollection {
     // appear in the state as bondOrder commands.
     
     if (isUserCalculation)
-      viewer.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsAromatic);
+      shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsAromatic);
   }
 
   public int[] makeConnections(float minDistance, float maxDistance, int order,
@@ -711,7 +711,7 @@ abstract public class ModelSet extends ModelCollection {
         fValue = Atom.RADIUS_MAX;
       if (fValue < 0)
         fValue = 0;
-      viewer.setShapeSize(JmolConstants.shapeTokenIndex(tok), (int) (fValue * 2000), null, bs);
+      shapeManager.setShapeSize(JmolConstants.shapeTokenIndex(tok), (int) (fValue * 2000), null, bs);
       return;
     }
     super.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);

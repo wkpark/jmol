@@ -3726,6 +3726,9 @@ public class ScriptEvaluator {
       iFrame = getToken(index).intValue; // decimal Token intValue is
       // model/frame number encoded
       break;
+    case Token.string:
+      iFrame = JmolConstants.modelValue(stringParameter(index));
+      break;
     default:
       error(ERROR_invalidArgument);
     }
@@ -10060,9 +10063,10 @@ public class ScriptEvaluator {
           isHyphen = true;
         // fall through
       case Token.integer:
+      case Token.string:
         if (nFrames == 2)
           error(ERROR_invalidArgument);
-        int iFrame = statement[i].intValue;
+        int iFrame = (theTok == Token.string ? JmolConstants.modelValue((String)theToken.value) : theToken.intValue);
         if (iFrame == -1) {
           checkLength(offset + 1);
           if (!isSyntaxCheck)

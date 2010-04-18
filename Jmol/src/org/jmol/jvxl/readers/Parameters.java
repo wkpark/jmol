@@ -218,6 +218,7 @@ public class Parameters {
     logMessages = Logger.debugging;
     mappedDataMin = Float.MAX_VALUE;
     minSet = 0;
+    modelIndex = -1;
     boundingBox = null;
     bsExcluded = new BitSet[4];
     nContours = 0;
@@ -689,7 +690,7 @@ public class Parameters {
   boolean readAllData;
   int fileIndex; //one-based
   String fileName;
-  int modelIndex; // zero-based
+  int modelIndex = -1; // zero-based
   public boolean isXLowToHigh;
   
   boolean insideOut;

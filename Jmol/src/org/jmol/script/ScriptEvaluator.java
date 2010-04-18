@@ -489,12 +489,14 @@ public class ScriptEvaluator {
   
   public static boolean evaluateContext(Viewer viewer, ScriptContext context, ShapeManager shapeManager) {
     ScriptEvaluator e = new ScriptEvaluator(viewer);
+    e.compiler = new ScriptCompiler(e.compiler); 
     e.shapeManager = shapeManager;
     try {
       e.getScriptContext(context, true, false);
       e.instructionDispatchLoop(false);
     } catch (Exception ex) {
       Logger.error("Error evaluating context");
+      ex.printStackTrace();
       return false;
     }
     return true;
@@ -1954,8 +1956,10 @@ public class ScriptEvaluator {
     int i;
     int tok;
     for (i = 1; i < statementLength; i++) {
-      if (statement[i] == null)
-        continue;
+      if (statement[i] == null) {
+        statementLength = i;
+        return true;
+      }
       if (statement[i].tok == Token.define)
         break;
     }
@@ -2082,6 +2086,8 @@ public class ScriptEvaluator {
     for (i = j; i < statement.length; i++)
       statement[i] = null;
     statementLength = j;
+    
+    
     return true;
   }
 
@@ -14551,7 +14557,7 @@ public class ScriptEvaluator {
       if (s != null) {
         float cutoff = ((Float) getShapeProperty(iShape, "cutoff"))
             .floatValue();
-        if (Float.isNaN(cutoff) && ptSigma >= 0) {
+        if (Float.isNaN(cutoff) && ptSigma > 0) {
           iToken = ptSigma;
           error(ERROR_invalidArgument);
         }

@@ -397,6 +397,7 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   void resetIsosurface() {
     meshData = new MeshData();
+    xyzMin = xyzMax = null;
     if (meshDataServer != null)
       meshDataServer.fillMeshData(null, 0, null);
     contourVertexCount = 0;

@@ -62,6 +62,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     this.viewer = viewer;
   }
   
+  public ScriptCompiler(ScriptCompiler compiler) {
+    this.viewer = compiler.viewer;
+  }
+
   private Viewer viewer;
   private String filename;
   private boolean isSilent;

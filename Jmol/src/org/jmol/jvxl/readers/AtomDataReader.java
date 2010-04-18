@@ -81,7 +81,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     modelIndex = params.modelIndex;
     bsMySelected = new BitSet();
     bsMyIgnored = (params.bsIgnore == null ? new BitSet() : params.bsIgnore);
-    
+
     doUsePlane = (params.thePlane != null);
     if (doUsePlane)
       volumeData.setPlaneParameters(params.thePlane);
@@ -91,20 +91,26 @@ abstract class AtomDataReader extends VolumeDataReader {
                           boolean addNearbyAtoms) {
 
     if (params.atomRadiusData == null)
-      params.atomRadiusData = new RadiusData(1, RadiusData.TYPE_FACTOR, JmolConstants.VDW_AUTO);
+      params.atomRadiusData = new RadiusData(1, RadiusData.TYPE_FACTOR,
+          JmolConstants.VDW_AUTO);
     atomData.radiusData = params.atomRadiusData;
     if (doAddHydrogens)
       atomData.radiusData.vdwType = JmolConstants.VDW_NOJMOL;
-    atomData.modelIndex = modelIndex; //-1 here means fill ALL atoms; any other means "this model only"
-    atomData.bsSelected = (doUseIterator ? null : params.bsSelected);
+    atomData.modelIndex = modelIndex; // -1 here means fill ALL atoms; any other
+    // means "this model only"
+    atomData.bsSelected = params.bsSelected;
     atomData.bsIgnored = bsMyIgnored;
     atomDataServer.fillAtomData(atomData, AtomData.MODE_FILL_COORDS_AND_RADII);
+    if (doUseIterator)
+      atomData.bsSelected = null; 
     atomCount = atomData.atomCount;
     modelIndex = atomData.firstModelIndex;
     int nSelected = 0;
     boolean needRadius = false;
     for (int i = 0; i < atomCount; i++) {
-      if ((params.bsSelected == null || params.bsSelected.get(i)) && (!bsMyIgnored.get(i))) {
+      if ((params.bsSelected == null 
+          || params.bsSelected.get(i))
+          && (!bsMyIgnored.get(i))) {
         if (doUsePlane
             && Math.abs(volumeData.distancePointToPlane(atomData.atomXyz[i])) > 2 * (atomData.atomRadius[i] = getWorkingRadius(
                 i, marginAtoms)))
@@ -154,13 +160,13 @@ abstract class AtomDataReader extends VolumeDataReader {
         atomNo[i] = -1;
         if (atomProp != null)
           atomProp[i] = Float.NaN;
-        //if (params.logMessages)
-        //Logger.debug("draw {" + hAtoms[i].x + " " + hAtoms[i].y + " "
-        //  + hAtoms[i].z + "};");
+        // if (params.logMessages)
+        // Logger.debug("draw {" + hAtoms[i].x + " " + hAtoms[i].y + " "
+        // + hAtoms[i].z + "};");
       }
       myAtomCount = nH;
       float[] props = params.theProperty;
-      for (int i = atomSet.nextSetBit(0); i >= 0; i = atomSet.nextSetBit(i+1)) {
+      for (int i = atomSet.nextSetBit(0); i >= 0; i = atomSet.nextSetBit(i + 1)) {
         if (atomProp != null)
           atomProp[myAtomCount] = (props != null && i < props.length ? props[i]
               : Float.NaN);
@@ -191,7 +197,7 @@ abstract class AtomDataReader extends VolumeDataReader {
 
     // fragment idea
 
-    if (!addNearbyAtoms)
+    if (!addNearbyAtoms || myAtomCount == 0)
       return;
     Point3f pt = new Point3f();
 
@@ -199,7 +205,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     for (int i = 0; i < atomCount; i++) {
       if (atomSet.get(i) || bsMyIgnored.get(i))
         continue;
-    float rA = atomData.atomRadius[i];
+      float rA = atomData.atomRadius[i];
       if (params.thePlane != null
           && Math.abs(volumeData.distancePointToPlane(atomData.atomXyz[i])) > 2 * rA)
         continue;
@@ -216,7 +222,8 @@ abstract class AtomDataReader extends VolumeDataReader {
       nAtoms += nearbyAtomCount;
       atomRadius = (float[]) ArrayUtil.setLength(atomRadius, nAtoms);
       atomXyz = (Point3f[]) ArrayUtil.setLength(atomXyz, nAtoms);
-      for (int i = bsNearby.nextSetBit(0); i >= 0; i = bsNearby.nextSetBit(i+1)) {
+      for (int i = bsNearby.nextSetBit(0); i >= 0; i = bsNearby
+          .nextSetBit(i + 1)) {
         atomXyz[myAtomCount] = atomData.atomXyz[i];
         atomRadius[myAtomCount++] = atomData.atomRadius[i];
       }

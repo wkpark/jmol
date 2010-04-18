@@ -238,7 +238,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("modelIndex" == propertyName) {
       if (!iHaveModelIndex) {
         modelIndex = ((Integer) value).intValue();
-        sg.setModelIndex(modelIndex);
+        sg.setModelIndex(Math.abs(modelIndex));
         isFixed = (modelIndex < 0);
       }
       isFixed = (modelIndex < 0);

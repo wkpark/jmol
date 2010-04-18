@@ -13435,12 +13435,12 @@ public class ScriptEvaluator {
       case Token.titleformat:
         if (i + 1 < statementLength && tokAt(i + 1) == Token.string) {
           propertyName = "titleFormat";
-          propertyValue = parameterAsString(2);
+          propertyValue = parameterAsString(i + 1);
         }
         break;
       case Token.homo:
       case Token.lumo:
-        if ((offset = moOffset(1)) == Integer.MAX_VALUE)
+        if ((offset = moOffset(i)) == Integer.MAX_VALUE)
           error(ERROR_invalidArgument);
         moNumber = 0;
         break;
@@ -13455,7 +13455,7 @@ public class ScriptEvaluator {
         return true;
       }
       if (propertyName != null)
-        addShapeProperty(propertyList, propertyName, propertyValue);
+        addShapeProperty(1propertyList, propertyName, propertyValue);
       if (moNumber != Integer.MAX_VALUE) {
         if (tokAt(i + 1) == Token.string)
           title = parameterAsString(i + 1);

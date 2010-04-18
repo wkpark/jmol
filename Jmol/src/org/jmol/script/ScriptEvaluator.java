@@ -13455,7 +13455,7 @@ public class ScriptEvaluator {
         return true;
       }
       if (propertyName != null)
-        addShapeProperty(1propertyList, propertyName, propertyValue);
+        addShapeProperty(propertyList, propertyName, propertyValue);
       if (moNumber != Integer.MAX_VALUE) {
         if (tokAt(i + 1) == Token.string)
           title = parameterAsString(i + 1);

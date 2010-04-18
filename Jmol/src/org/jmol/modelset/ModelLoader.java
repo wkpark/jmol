@@ -779,6 +779,8 @@ public final class ModelLoader extends ModelSet {
       Logger.error("bondAtoms cannot find atomUid2?:" + atomUid2);
       return;
     }
+    
+    System.out.println(atom1.index + " " + atom2.index);
     // note that if the atoms are already bonded then
     // Atom.bondMutually(...) will return null
     if (atom1.isBonded(atom2))
@@ -1283,6 +1285,8 @@ public final class ModelLoader extends ModelSet {
   
   private void finalizeShapes() {
     shapeManager = viewer.getShapeManager();
+    if (!merging)
+      shapeManager.resetShapes();
     shapeManager.loadDefaultShapes(this);
     if (someModelsHaveAromaticBonds && viewer.getSmartAromatic())
       assignAromaticBonds(false);

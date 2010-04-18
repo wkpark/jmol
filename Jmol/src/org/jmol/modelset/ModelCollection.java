@@ -2491,6 +2491,7 @@ abstract public class ModelCollection extends BondCollection {
         Atom atomNear = atoms[iter.next()];
         if (atomNear.isDeleted())
           continue;
+        System.out.println(atom.getInfo() + " " + atomNear.getInfo());
         int atomIndexNear = atomNear.index;
         boolean isNearInSetA = (isAll || bsA.get(atomIndexNear));
         boolean isNearInSetB = (isAll || bsB.get(atomIndexNear));

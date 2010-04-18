@@ -8281,14 +8281,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     shapeManager.resetShapes();
   }
 
-  public void loadDefaultShapes(ModelSet modelSet) {
-    shapeManager.loadDefaultShapes(modelSet);    
-  }
-
-  public void refreshShapeTrajectories(int baseModel, BitSet bs) {
-    shapeManager.refreshShapeTrajectories(baseModel, bs);
-  }
-
   public void setAtomLabel(String value, int i) {
     shapeManager.setAtomLabel(value, i);
   }

@@ -192,7 +192,7 @@ abstract public class ModelSet extends ModelCollection {
     recalculateLeadMidpointsAndWingVectors(baseModel);
     // Recalculate all measures that involve trajectories
 
-    viewer.refreshShapeTrajectories(baseModel, bs);
+    shapeManager.refreshShapeTrajectories(baseModel, bs);
 
     if (models[baseModel].hasRasmolHBonds) {
       clearRasmolHydrogenBonds(baseModel, null);

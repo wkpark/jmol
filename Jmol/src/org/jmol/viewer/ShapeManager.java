@@ -91,7 +91,8 @@ public class ShapeManager {
   public void setShapeSize(int shapeID, int size, RadiusData rd, BitSet bsSelected) {
     if (shapes == null)
       return;
-    if (bsSelected == null)
+    if (bsSelected == null && 
+        (shapeID != JmolConstants.SHAPE_STICKS || size != Integer.MAX_VALUE))
       bsSelected = viewer.getSelectionSet();
     if (rd != null && rd.value != 0 && rd.vdwType == Token.temperature)
       modelSet.getBfactor100Lo();

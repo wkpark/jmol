@@ -8260,7 +8260,7 @@
   <fah_proj number="6041" name="p6041_HA_solvated" public="y"
     server="171.64.65.54" atoms="330706" preferred="6" deadline="8"
     credit="1395" frames="100" code="A3" contact="kasson" kfactor="4.63"/>
-  <fah_proj number="6050" name="p6050_Mutant_scan" public="n"
+  <fah_proj number="6050" name="p6050_Mutant_scan" public="y"
     server="171.64.65.54" atoms="70777" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
 
@@ -8477,7 +8477,7 @@
   <fah_proj number="10016" name="p10016" public="y" file="xyz"
     server="129.74.85.15" atoms="554" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Igor Miranda"/>
-  <fah_proj number="10017" name="p10017" public="y"
+  <fah_proj number="10017" name="p10017" public="y" file="xyz"
     server="129.74.85.15" atoms="554" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
   <fah_proj number="10019" name="p10019" public="y" file="xyz"
@@ -8545,7 +8545,7 @@
   <fah_proj number="10505" name="p10505" public="y"
     server="171.67.108.21" atoms="0" preferred="6" deadline="9"
     credit="451" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="10506" name="p10506_ntl9-1-56-native" public="n"
+  <fah_proj number="10506" name="p10506_ntl9-1-56-native" public="y"
     server="171.64.65.61" atoms="908" preferred="8" deadline="12"
     credit="587" frames="100" code="GG2" contact="vvoelz"/>
 

@@ -44,7 +44,6 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.bspt.Bspf;
-import org.jmol.bspt.CubeIterator;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -2491,7 +2490,6 @@ abstract public class ModelCollection extends BondCollection {
         Atom atomNear = atoms[iter.next()];
         if (atomNear.isDeleted())
           continue;
-        System.out.println(atom.getInfo() + " " + atomNear.getInfo());
         int atomIndexNear = atomNear.index;
         boolean isNearInSetA = (isAll || bsA.get(atomIndexNear));
         boolean isNearInSetB = (isAll || bsB.get(atomIndexNear));

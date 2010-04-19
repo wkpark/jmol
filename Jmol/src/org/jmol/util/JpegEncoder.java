@@ -108,9 +108,15 @@ public class JpegEncoder extends Frame
   }
 */  
   public void Compress() {
-    WriteHeaders(outStream, JpegObj, dct);
+    String longState = WriteHeaders(outStream, JpegObj, dct);
     WriteCompressedData(outStream, JpegObj, dct, Huf);
     WriteEOI(outStream);
+    if (longState != null)
+      try {
+        outStream.write(longState.getBytes());
+      } catch (IOException e1) {
+        System.out.println("ERROR WRITING COMMENT");
+      }
     try {
       outStream.flush();
     } catch (IOException e) {
@@ -209,10 +215,10 @@ public class JpegEncoder extends Frame
     WriteMarker(EOI, out);
   }
   
-  static private void WriteHeaders(BufferedOutputStream out, JpegInfo JpegObj, DCT dct) {
+  static private String WriteHeaders(BufferedOutputStream out, JpegInfo JpegObj, DCT dct) {
     int i, j, index, offset, length;
     int tempArray[];
-    
+
     // the SOI marker
     byte[] SOI = {(byte) 0xFF, (byte) 0xD8};
     WriteMarker(SOI, out);
@@ -241,18 +247,25 @@ public class JpegEncoder extends Frame
     WriteArray(JFIF, out);
     
     // Comment Header
-    String comment = "";
-    comment = JpegObj.getComment();
-    length = comment.length();
-    byte COM[] = new byte[length + 4];
+    String comment = JpegObj.Comment;
+    if (JpegObj.Comment.length() >= 65000) {
+      JpegObj.Comment = "JPEG Encoder Copyright 1998, James R. Weeks and BioElectroMech.\n\n";
+    } else {
+      JpegObj.Comment = "JPEG Encoder Copyright 1998, James R. Weeks and BioElectroMech.\n\n" + comment;
+      comment = null;
+    }
+    // bug fix -- hansonr@stolaf.edu -- 4/2010 -- Jmol 12.0.RC7 -- 
+    // length was two short here.
+    length = JpegObj.Comment.length() + 2;
+    byte COM[] = new byte[length + 2];
     COM[0] = (byte) 0xFF;
     COM[1] = (byte) 0xFE;
     COM[2] = (byte) ((length >> 8) & 0xFF);
     COM[3] = (byte) (length & 0xFF);
     java.lang.System.arraycopy(JpegObj.Comment.getBytes(), 0, 
-        COM, 4, JpegObj.Comment.length());
+          COM, 4, JpegObj.Comment.length());
     WriteArray(COM, out);
-    
+
     // The DQT header
     // 0 is the luminance index and 1 is the chrominance index
     byte DQT[] = new byte[134];
@@ -312,7 +325,7 @@ public class JpegEncoder extends Frame
     SOS[index++] = (byte) JpegObj.Se;
     SOS[index++] = (byte) ((JpegObj.Ah << 4) + JpegObj.Al);
     WriteArray(SOS, out);
-    
+    return comment;
   }
 
   static void WriteDHTHeader(int[] bits, int[] val, BufferedOutputStream out) {
@@ -1201,18 +1214,10 @@ class JpegInfo
     imageobj = image;
     imageWidth = image.getWidth(null);
     imageHeight = image.getHeight(null);
-    Comment = comment + "\n\nJPEG Encoder Copyright 1998, James R. Weeks and BioElectroMech.  ";
+    Comment = comment;
     getYCCArray();
   }
-/*  
-  public void setComment(String comment) {
-    Comment.concat(comment);
-  }
-*/  
-  String getComment() {
-    return Comment;
-  }
-  
+
   /*
    * This method creates and fills three arrays, Y, Cb, and Cr using the
    * input image.

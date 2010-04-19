@@ -460,7 +460,8 @@ public class Resolver {
       }
     }
 
-    if (lines[0].indexOf("PNG") == 1 || lines[0].indexOf("JPG") == 1)
+    if (lines[0].indexOf("PNG") == 1 || lines[0].indexOf("JPG") == 1
+        || lines[0].indexOf("JFIF") == 6)
       return "spt"; // presume embedded script --- allows dragging into Jmol
     for (int i = 0; i < lines.length; ++i)
       if (lines[i].indexOf("# Jmol state") >= 0)

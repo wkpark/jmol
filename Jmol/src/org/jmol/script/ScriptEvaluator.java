@@ -9263,6 +9263,7 @@ public class ScriptEvaluator {
     // halo star spacefill
     RadiusData rd = null;
     int tok = tokAt(1);
+    boolean isOnly = false;
     switch (tok) {
     case Token.only:
       restrictSelected(false, false);
@@ -9272,13 +9273,19 @@ public class ScriptEvaluator {
     case Token.off:
       scale = 0;
       break;
+    case Token.decimal:
+      isOnly = (floatParameter(1) < 0);
+      // fall through
+    case Token.integer:
     default:
-      rd = encodeRadiusParameter(1);
+      rd = encodeRadiusParameter(1, isOnly);
       if (Float.isNaN(rd.value))
         error(ERROR_invalidArgument);
     }
     if (rd == null)
       rd = new RadiusData(scale, RadiusData.TYPE_FACTOR, JmolConstants.VDW_AUTO);
+    if (isOnly)
+      restrictSelected(false, false);
     setShapeSize(shape, rd);
   }
 
@@ -9291,7 +9298,7 @@ public class ScriptEvaluator {
    * 0) +30% 130% (0 80% percent (0
    */
 
-  private RadiusData encodeRadiusParameter(int index) throws ScriptException {
+  private RadiusData encodeRadiusParameter(int index, boolean isOnly) throws ScriptException {
 
     float value = Float.NaN;
     int type = RadiusData.TYPE_ABSOLUTE;
@@ -9330,7 +9337,9 @@ public class ScriptEvaluator {
         type = RadiusData.TYPE_ABSOLUTE;
         vdwType = Integer.MAX_VALUE;
       }
-      value = floatParameter(index, 0, Atom.RADIUS_MAX);
+      value = floatParameter(index, (isOnly ? -Atom.RADIUS_MAX : 0), Atom.RADIUS_MAX);
+      if (isOnly)
+        value = -value;
       break;
     case Token.integer:
       value = intParameter(index);
@@ -9903,7 +9912,7 @@ public class ScriptEvaluator {
       }
       break;
     }
-    RadiusData rd = (Float.isNaN(value) ? encodeRadiusParameter(1)
+    RadiusData rd = (Float.isNaN(value) ? encodeRadiusParameter(1, false)
         : new RadiusData(value, type, 0));
     if (Float.isNaN(rd.value))
       error(ERROR_invalidArgument);
@@ -13877,7 +13886,7 @@ public class ScriptEvaluator {
         break;
       case Token.ionic:
       case Token.vanderwaals:
-        RadiusData rd = encodeRadiusParameter(i);
+        RadiusData rd = encodeRadiusParameter(i, false);
         if (Float.isNaN(rd.value))
           rd.value = 100;
         propertyValue = rd;

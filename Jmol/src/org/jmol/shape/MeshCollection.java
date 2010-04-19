@@ -561,9 +561,18 @@ public abstract class MeshCollection extends Shape {
     cmd = TextFormat.simpleReplace(cmd, ";#", "; #");
     int pt = cmd.indexOf("; #");
     // not perfect -- user may have that in a title, I suppose...
-    if (pt >= 0)
+    String options = "";
+    if (pt >= 0) {
+      options = cmd.substring(pt + 1);
       cmd = cmd.substring(0, pt);
-    cmd = TextFormat.trim(cmd, ";") + ";";
+      pt = options.indexOf("# ({");
+      if (pt >= 0)
+        options = options.substring(0, pt);
+      pt = options.indexOf("# ID");
+      if (pt >= 0)
+        options = options.substring(0, pt);
+    }
+    cmd = TextFormat.trim(cmd, ";") + ";" + options;
     if (mesh.bitsets != null) {
       cmd += "# "
           + (mesh.bitsets[0] == null ? "({null})" : Escape

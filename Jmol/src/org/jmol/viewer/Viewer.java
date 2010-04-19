@@ -7860,6 +7860,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     try {
       if (doClear)
         zap("" + er); // get some breathing room
+      setCursor(Viewer.CURSOR_DEFAULT);
+      setBooleanProperty("refreshing", true);
       Logger.error("viewer handling error condition: " + er);
       notifyError("Error", "doClear=" + doClear + "; " + er, "" + er);
     } catch (Throwable e1) {

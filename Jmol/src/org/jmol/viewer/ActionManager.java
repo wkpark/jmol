@@ -1350,10 +1350,12 @@ public class ActionManager {
     case JmolConstants.PICKING_CENTER:
       if (!isBound(action, ACTION_pickAtom))
         return;
-      if (ptClicked == null)
+      if (ptClicked == null) {
         viewer.script("zoomTo (atomindex=" + atomIndex + ")");
-      else
+        viewer.setStatusAtomPicked(atomIndex, null);
+      } else {
         viewer.script("zoomTo " + Escape.escape(ptClicked));
+      }
       return;
     case JmolConstants.PICKING_SPIN:
     case JmolConstants.PICKING_SYMMETRY:
@@ -1367,14 +1369,17 @@ public class ActionManager {
         viewer.setStatusAtomPicked(atomIndex, null);
       return;
     case JmolConstants.PICKING_LABEL:
-      if (isBound(action, ACTION_pickLabel))
+      if (isBound(action, ACTION_pickLabel)) {
         viewer.script("set labeltoggle {atomindex=" + atomIndex + "}");
+        viewer.setStatusAtomPicked(atomIndex, null);
+      }
       return;
     }
     String spec = "atomindex=" + atomIndex;
     switch (pickingMode) {
     case JmolConstants.PICKING_LABEL:
       viewer.script("set labeltoggle " + spec);
+      viewer.setStatusAtomPicked(atomIndex, null);
       return;
     default:
       return;
@@ -1413,6 +1418,7 @@ public class ActionManager {
       break;
     }
     viewer.clearClickCount();
+    viewer.setStatusAtomPicked(atomIndex, null);
   }
 
   private void checkTwoAtomAction(int action, Point3fi ptClicked, int atomIndex) {

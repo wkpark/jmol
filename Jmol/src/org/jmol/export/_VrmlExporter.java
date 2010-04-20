@@ -350,8 +350,9 @@ public class _VrmlExporter extends __CartesianExporter {
 
   Hashtable htSpheresRendered = new Hashtable();
   protected void outputSphere(Point3f center, float radius, short colix) {
-    String child = useTable.getDef("S" + colix + "_" + (int) (radius * 100));
-    String check = child + " " + center;
+    int iRad = (int) (radius * 100);
+    String child = useTable.getDef("S" + colix + "_" + iRad);
+    String check = round(center) + " " + iRad;
     if (htSpheresRendered.get(check) != null)
       return;
     htSpheresRendered.put(check, Boolean.TRUE);

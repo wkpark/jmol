@@ -1086,7 +1086,9 @@ public class SurfaceGenerator {
     }
     BufferedReader br = (BufferedReader) value;
     if (fileType == null)
-      fileType = SurfaceFileReader.determineFileType(br);
+      fileType = SurfaceFileTyper.determineSurfaceFileType(br);
+    if (fileType == null)
+      fileType = "UNKNOWN";
     Logger.info("data file type was determined to be " + fileType);
     if (fileType.equals("Jvxl+"))
       return new JvxlReader(this, br);

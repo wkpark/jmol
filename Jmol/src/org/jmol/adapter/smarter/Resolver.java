@@ -913,7 +913,7 @@ public class Resolver {
 
   private final static String[] pdbLineStartRecords = {
     "Pdb", "HEADER", "OBSLTE", "TITLE ", "CAVEAT", "COMPND", "SOURCE", "KEYWDS",
-    "EXPDTA", "AUTHOR", "REVDAT", "SPRSDE", "JRNL  ", "REMARK",
+    "EXPDTA", "AUTHOR", "REVDAT", "SPRSDE", "JRNL  ", "REMARK ",
     "DBREF ", "SEQADV", "SEQRES", "MODRES", 
     "HELIX ", "SHEET ", "TURN  ",
     "CRYST1", "ORIGX1", "ORIGX2", "ORIGX3", "SCALE1", "SCALE2", "SCALE3",

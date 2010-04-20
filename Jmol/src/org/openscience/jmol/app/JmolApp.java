@@ -453,7 +453,7 @@ public class JmolApp {
     // Open a file if one is given as an argument -- note, this CAN be a
     // script file
     if (modelFilename != null) {
-      viewer.openFileAsynchronously(modelFilename);
+      viewer.openFile(modelFilename);
     }
 
     // OK, by now it is time to execute the script

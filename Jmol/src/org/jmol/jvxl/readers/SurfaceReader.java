@@ -323,8 +323,8 @@ public abstract class SurfaceReader implements VertexDataServer {
     if (!readAndSetVolumeParameters())
       return false;
     if (!justForPlane && params.sigma != Float.MAX_VALUE && !allowSigma) {
-      Logger.error("Reader does not support SIGMA option");
-      return false;
+      Logger.error("Reader does not support SIGMA option -- using cutoff 1.6");
+      params.cutoff = 1.6f;
     }
     nPointsX = voxelCounts[0];
     nPointsY = voxelCounts[1];

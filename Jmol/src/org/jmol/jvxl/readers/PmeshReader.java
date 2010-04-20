@@ -30,6 +30,7 @@ import javax.vecmath.Point3f;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
+import org.jmol.util.SurfaceFileTyper;
 
 /*
  * 
@@ -87,7 +88,7 @@ class PmeshReader extends PolygonFileReader {
 
   private int nPolygons;
   private boolean isBinary;
-  final static String PMESH_BINARY_MAGIC_NUMBER = "PM" + '\1' + '\0';
+  final static String PMESH_BINARY_MAGIC_NUMBER = SurfaceFileTyper.PMESH_BINARY_MAGIC_NUMBER;
   String pmeshError;
 
   PmeshReader(SurfaceGenerator sg, String fileName, BufferedReader br) {

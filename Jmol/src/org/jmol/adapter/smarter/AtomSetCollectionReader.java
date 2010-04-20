@@ -684,12 +684,12 @@ public abstract class AtomSetCollectionReader {
       String groups = (String) htSite.get("groups");
       if (groups.length() == 0)
         continue;
-      addJmolScript("@site_" + name + " " + groups);
+      addSiteScript("@site_" + name + " " + groups);
       //addJmolScript("@" + seqNum + " " + groups);
-      addJmolScript("site_" + name + " = \"" + groups + "\".split(\",\")");
+      addSiteScript("site_" + name + " = \"" + groups + "\".split(\",\")");
       sites += (sites == "" ? "" : ",") + "site_" + name;
     }
-    addJmolScript("site_list = \"" + sites + "\".split(\",\")");
+    addSiteScript("site_list = \"" + sites + "\".split(\",\")");
   }
 
   public void applySymmetryAndSetTrajectory() throws Exception {
@@ -944,6 +944,17 @@ public abstract class AtomSetCollectionReader {
     previousScript += script;
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("jmolscript", 
         previousScript);
+  }
+
+  private String siteScript;  
+  protected void addSiteScript(String script) {
+    if (siteScript == null)
+      siteScript = "";
+    else if (!siteScript.endsWith(";"))
+      siteScript += ";";
+    siteScript += script;
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("sitescript", 
+        siteScript);
   }
 
   public String readLine() throws Exception {

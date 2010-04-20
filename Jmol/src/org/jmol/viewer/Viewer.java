@@ -55,6 +55,7 @@ import org.jmol.util.CommandHistory;
 import org.jmol.util.Escape;
 import org.jmol.util.JpegEncoder;
 import org.jmol.util.OutputStringBuffer;
+import org.jmol.util.SurfaceFileTyper;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -1717,28 +1718,42 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private final static int FILE_STATUS_MODELSET_CREATED = 3;
   private final static int FILE_STATUS_MODELS_DELETED = 5;
 
+  /**
+   * opens a file as a model, a script, or a surface via the creation of a
+   * script that is queued \t at the beginning disallows script option
+   * 
+   * @param fileName
+   */
   public void openFileAsynchronously(String fileName) {
-    // not really asynchronously -- put on the queue just like any other file
-    // Jmol app file dropper, main, OpenUrlAction, RecentFilesAction
-    if (fileName.indexOf(".jvxl") >= 0 || fileName.indexOf(".xjvxl") >= 0) {
-      evalString("isosurface " + Escape.escape(fileName));
-      return;
-    }
     boolean allowScript = (!fileName.startsWith("\t"));
     if (!allowScript)
       fileName = fileName.substring(1);
     fileName = fileName.replace('\\', '/');
     if (isApplet && fileName.indexOf("://") < 0)
       fileName = "file://" + (fileName.startsWith("/") ? "" : "/") + fileName;
-    String type = fileManager.getFileTypeName(fileName);
-    // checkHalt("exit", true);
-    // assumes a Jmol script file if no other file type
-    allowScript &= (type == null);
-    if (scriptEditorVisible && allowScript)
+
+    String cmd = null;
+    if (fileName.endsWith("jvxl"))
+      cmd = "isosurface ";
+    else if (!fileName.endsWith(".spt")) {
+      String type = fileManager.getFileTypeName(fileName);
+      if (type == null) {
+        type = SurfaceFileTyper
+            .determineSurfaceFileType(getBufferedInputStream(fileName));
+        if (type != null) {
+          evalString("if (_filetype == 'Pdb') { isosurface sigma 1.0 within 2.0 {*} " + Escape.escape(fileName) + " mesh nofill }; else; { isosurface " + Escape.escape(fileName) + "}");
+          return;
+        }
+      } else if (!type.equals("spt")) {
+        evalString("zap; load " + Escape.escape(fileName) 
+            + ";if (_loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb') { select protein or nucleic;cartoons Only;color structure; select * }" );
+        return;
+      }
+    }
+    if (allowScript && scriptEditorVisible && cmd == null)
       showEditor(new String[] { fileName, getFileAsString(fileName) });
     else
-      evalString((allowScript ? "script " : "zap;load ")
-          + Escape.escape(fileName));
+      evalString((cmd == null ? "script " : cmd) + Escape.escape(fileName));
   }
 
   /**

@@ -378,16 +378,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
 
   public String getFileTypeName(Object atomSetCollectionOrReader) {
-    return staticGetFileTypeName(atomSetCollectionOrReader);
-  }
-
-  private static String staticGetFileTypeName(Object atomSetCollectionOrReader) {
-    if (atomSetCollectionOrReader == null)
-      return null;
-    if (atomSetCollectionOrReader instanceof BufferedReader)
-      return Resolver.getFileType((BufferedReader)atomSetCollectionOrReader);
     if (atomSetCollectionOrReader instanceof AtomSetCollection)
       return ((AtomSetCollection)atomSetCollectionOrReader).getFileTypeName();
+    if (atomSetCollectionOrReader instanceof BufferedReader)
+      return Resolver.getFileType((BufferedReader)atomSetCollectionOrReader);
     return null;
   }
 

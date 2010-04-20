@@ -26,6 +26,7 @@ package org.jmol.shape;
 
 import org.jmol.g3d.*;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.StateManager;
 import org.jmol.script.Token;
 
 import java.util.BitSet;
@@ -58,7 +59,7 @@ public abstract class MeshCollection extends Shape {
   protected int modelIndex;
   protected boolean allowContourLines;
   protected boolean haveContours = false;
-
+  
   public String[] title;
   protected boolean allowMesh = true;
   
@@ -145,6 +146,11 @@ public abstract class MeshCollection extends Shape {
       return;
     }
 
+    if ("variables" == propertyName) {
+      if (currentMesh != null && currentMesh.scriptCommand != null && !currentMesh.scriptCommand.startsWith("{"))
+        currentMesh.scriptCommand = "{\n" + StateManager.getVariableList((Hashtable) value, 0, false) + "\n" + currentMesh.scriptCommand;
+      return;
+    }
     if ("commandOption" == propertyName) {
       String s = "# " + (String) value;
       if (script.indexOf(s) < 0)
@@ -599,6 +605,9 @@ public abstract class MeshCollection extends Shape {
       cmd = encapsulateData(cmd, mesh.data2, "2");
     if (mesh.modelIndex >= 0 && modelCount > 1)
       appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
+    
+    if (cmd.charAt(0) == '{' && !cmd.endsWith("}"))
+        cmd += "\n}\n";
     appendCmd(sb, cmd);
     if (mesh.ptOffset != null)
       appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " offset " + Escape.escape(mesh.ptOffset));

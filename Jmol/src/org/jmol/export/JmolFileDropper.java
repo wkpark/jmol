@@ -89,10 +89,7 @@ public class JmolFileDropper implements DropTargetListener {
   private void loadFile(String fname) {
     if (fname.indexOf("://") < 0)
       fname = (fname.startsWith("/") ? "file://" : "file:///") + fname;
-    if (fname.endsWith(".jvxl") || fname.endsWith(".xjvxl"))
-      viewer.script("isosurface " + Escape.escape(fname));
-    else
-      viewer.script("load " + Escape.escape(fname));
+    viewer.openFileAsynchronously(fname);
   }
 
   private void loadFiles(List fileList) {

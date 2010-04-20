@@ -67,6 +67,7 @@ import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
+import org.jmol.util.SurfaceFileTyper;
 import org.jmol.util.TextFormat;
 import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.ActionManager;
@@ -1937,6 +1938,8 @@ public class ScriptEvaluator {
         BitSetUtil.deleteBits((BitSet) value, bsDeleted);
     }
   }
+  
+  //Hashtable thisCommandVariables;
 
   /**
    * provides support for @x and @{....} in statements. The compiler passes on
@@ -1950,6 +1953,7 @@ public class ScriptEvaluator {
   private boolean setStatement(int pc) throws ScriptException {
     statement = aatoken[pc];
     statementLength = statement.length;
+    //thisCommandVariables = null;
     if (statementLength == 0)
       return true;
     Token[] fixed;
@@ -1969,6 +1973,7 @@ public class ScriptEvaluator {
     fixed[0] = statement[0];
     boolean isExpression = false;
     int j = 1;
+    //thisCommandVariables = new Hashtable(); 
     for (i = 1; i < statementLength; i++) {
       if (statement[i] == null)
         continue;
@@ -1986,8 +1991,10 @@ public class ScriptEvaluator {
           i = iToken;
           ScriptVariable vt = (ScriptVariable) val.elementAt(0);
           v = (vt.tok == Token.list ? vt : ScriptVariable.oValue(vt));
+//          thisCommandVariables.put("v", v);
         } else {
           v = getParameter(var, false);
+//          thisCommandVariables.put(var, v);
         }
         tok = tokAt(0);
         boolean forceString = (Token.tokAttr(tok, Token.implicitStringCommand)
@@ -4801,7 +4808,7 @@ public class ScriptEvaluator {
           invertSelected();
           break;
         case Token.javascript:
-          script(Token.javascript);
+          script(Token.javascript, null);
           break;
         case Token.load:
           load();
@@ -4868,7 +4875,7 @@ public class ScriptEvaluator {
           set();
           break;
         case Token.script:
-          script(Token.script);
+          script(Token.script, null);
           break;
         case Token.select:
           select(1);
@@ -7218,16 +7225,14 @@ public class ScriptEvaluator {
     } else {
       modelName = parameterAsString(i);
       tok = tokAt(i);
-      /* I have no idea what this was about.
-      if (modelName.equalsIgnoreCase("data")) {
-        modelName = stringParameter(++i);
-        if (!isSyntaxCheck)
-          htParams.put("parameterData", viewer.getFileAsString(modelName));
-        loadScript.append(" data / *file* /").append(Escape.escape(modelName));
-        tok = tokAt(++i);
-        modelName = parameterAsString(i);
-      }
-      */
+      /*
+       * I have no idea what this was about. if
+       * (modelName.equalsIgnoreCase("data")) { modelName =
+       * stringParameter(++i); if (!isSyntaxCheck) htParams.put("parameterData",
+       * viewer.getFileAsString(modelName));
+       * loadScript.append(" data / *file* /").append(Escape.escape(modelName));
+       * tok = tokAt(++i); modelName = parameterAsString(i); }
+       */
       if (tok == Token.identifier || modelName.equalsIgnoreCase("fileset")) {
         if (modelName.equals("menu")) {
           String m = parameterAsString(checkLast(2));
@@ -7253,8 +7258,9 @@ public class ScriptEvaluator {
         }
         if (isAppend
             && ((filename = optParameterAsString(i))
-                .equalsIgnoreCase("trajectory") || filename
-                .equalsIgnoreCase("models") || filename.equalsIgnoreCase("inline"))) {
+                .equalsIgnoreCase("trajectory")
+                || filename.equalsIgnoreCase("models") || filename
+                .equalsIgnoreCase("inline"))) {
           modelName = filename;
           loadScript.append(" " + modelName);
           i++;
@@ -7280,7 +7286,7 @@ public class ScriptEvaluator {
             htParams.put("firstLastStep", new int[] { 0, -1, 1 });
           }
         }
-      } else if (modelName.equalsIgnoreCase("inline")){
+      } else if (modelName.equalsIgnoreCase("inline")) {
       } else {
         modelName = "fileset";
       }
@@ -7538,11 +7544,19 @@ public class ScriptEvaluator {
     // but there could state problems here because then we don't have the
     // option to save load options with that... Hmm.
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
-      if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
-        viewer.addLoadScript("-");
-        errMsg = TextFormat.trim(errMsg, "\n");
-        runScript("script \"" + errMsg.substring(40) + "\"");
-        return;
+      if (statementLength == 2) {
+        if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
+          viewer.addLoadScript("-");
+          script(0, filename);
+          return;
+        }
+        String surfaceType = SurfaceFileTyper.determineSurfaceFileType(viewer
+            .getBufferedInputStream(filename));
+        if (surfaceType != null) {
+          viewer.addLoadScript("-");
+          runScript("isosurface " + Escape.escape(filename));
+          return;
+        }
       }
       evalError(errMsg, null);
     }
@@ -7552,23 +7566,28 @@ public class ScriptEvaluator {
     }
     if (logMessages)
       scriptStatusOrBuffer("Successfully loaded:" + modelName);
-    String defaultScript = viewer.getDefaultLoadScript();
+    String script = viewer.getDefaultLoadScript();
     String msg = "";
-    if (defaultScript.length() > 0)
-      msg += "\nUsing defaultLoadScript: " + defaultScript;
-    String script = (String) viewer.getModelSetAuxiliaryInfo("jmolscript");
+    if (script.length() > 0)
+      msg += "\nUsing defaultLoadScript: " + script;
+    String embeddedScript = (String) viewer.getModelSetAuxiliaryInfo("jmolscript");
     viewer.getModelSetAuxiliaryInfo().remove("jmolscript");
-    if (script != null && viewer.getAllowEmbeddedScripts()) {
-      msg += "\nAdding embedded #jmolscript: " + script;
-      defaultScript += ";" + script;
-      defaultScript = "allowEmbeddedScripts = false;" + defaultScript
+    if (embeddedScript != null && viewer.getAllowEmbeddedScripts()) {
+      msg += "\nAdding embedded #jmolscript: " + embeddedScript;
+      script += ";" + embeddedScript;
+      viewer.setStringProperty("_loadScript", script);
+      script = "allowEmbeddedScripts = false;" + script
           + ";allowEmbeddedScripts = true;";
     }
     if (msg.length() > 0)
       Logger.info(msg);
-    if (defaultScript.length() > 0 && !isCmdLine_c_or_C_Option)
+    String siteScript = (String) viewer.getModelSetAuxiliaryInfo("sitescript");
+    viewer.getModelSetAuxiliaryInfo().remove("sitescript");
+    if (siteScript != null)
+      script = siteScript + ";" + script;
+    if (script.length() > 0 && !isCmdLine_c_or_C_Option)
       // NOT checking embedded scripts in some cases
-      runScript(defaultScript);
+      runScript(script);
   }
 
   private String getFullPathName() throws ScriptException {
@@ -8378,7 +8397,7 @@ public class ScriptEvaluator {
         data) ? (Vector3f) data[2] : null);
   }
 
-  private void script(int tok) throws ScriptException {
+  private void script(int tok, String filename) throws ScriptException {
     boolean loadCheck = true;
     boolean isCheck = false;
     boolean doStep = false;
@@ -8388,7 +8407,6 @@ public class ScriptEvaluator {
     int pcEnd = 0;
     int i = 2;
     String theScript = parameterAsString(1);
-    String filename = null;
     String localPath = null;
     String remotePath = null;
     String scriptPath = null;
@@ -8398,78 +8416,83 @@ public class ScriptEvaluator {
         viewer.jsEval(theScript);
       return;
     }
-    tok = tokAt(1);
-    if (tok != Token.string)
-      error(ERROR_filenameExpected);
-    filename = parameterAsString(1);
-    if (filename.equalsIgnoreCase("applet")) {
-      // script APPLET x "....."
-      String appID = parameterAsString(2);
-      theScript = parameterExpression(3, 0, "_script", false).toString();
-      checkLast(iToken);
-      if (isSyntaxCheck)
-        return;
-      if (appID.length() == 0 || appID.equals("all"))
-        appID = "*";
-      if (!appID.equals(".")) {
-        viewer.jsEval(appID + "\1" + theScript);
-        if (!appID.equals("*"))
+    if (filename == null) {
+      tok = tokAt(1);
+      if (tok != Token.string)
+        error(ERROR_filenameExpected);
+      filename = parameterAsString(1);
+      if (filename.equalsIgnoreCase("applet")) {
+        // script APPLET x "....."
+        String appID = parameterAsString(2);
+        theScript = parameterExpression(3, 0, "_script", false).toString();
+        checkLast(iToken);
+        if (isSyntaxCheck)
           return;
-      }
-    } else {
-      theScript = null;
-      tok = tokAt(statementLength - 1);
-      doStep = (tok == Token.step);
-      if (filename.equalsIgnoreCase("inline")) {
-        theScript = parameterExpression(2, (doStep ? statementLength - 1 : 0),
-            "_script", false).toString();
-        i = iToken + 1;
-      }
-      while (filename.equalsIgnoreCase("localPath")
-          || filename.equalsIgnoreCase("remotePath")
-          || filename.equalsIgnoreCase("scriptPath")) {
-        if (filename.equalsIgnoreCase("localPath"))
-          localPath = parameterAsString(i++);
-        else if (filename.equalsIgnoreCase("scriptPath"))
-          scriptPath = parameterAsString(i++);
-        else
-          remotePath = parameterAsString(i++);
-        filename = parameterAsString(i++);
-      }
-      if ((tok = tokAt(i)) == Token.check) {
-        isCheck = true;
-        tok = tokAt(++i);
-      }
-      if (tok == Token.noload) {
-        loadCheck = false;
-        tok = tokAt(++i);
-      }
-      if (tok == Token.line || tok == Token.lines) {
-        i++;
-        lineEnd = lineNumber = Math.max(intParameter(i++), 0);
-        if (checkToken(i)) {
-          if (getToken(i).tok == Token.minus)
-            lineEnd = (checkToken(++i) ? intParameter(i++) : 0);
-          else
-            lineEnd = -intParameter(i++);
-          if (lineEnd <= 0)
-            error(ERROR_invalidArgument);
+        if (appID.length() == 0 || appID.equals("all"))
+          appID = "*";
+        if (!appID.equals(".")) {
+          viewer.jsEval(appID + "\1" + theScript);
+          if (!appID.equals("*"))
+            return;
         }
-      } else if (tok == Token.command || tok == Token.commands) {
-        i++;
-        pc = Math.max(intParameter(i++) - 1, 0);
-        pcEnd = pc + 1;
-        if (checkToken(i)) {
-          if (getToken(i).tok == Token.minus)
-            pcEnd = (checkToken(++i) ? intParameter(i++) : 0);
-          else
-            pcEnd = -intParameter(i++);
-          if (pcEnd <= 0)
-            error(ERROR_invalidArgument);
+      } else {
+        theScript = null;
+        tok = tokAt(statementLength - 1);
+        doStep = (tok == Token.step);
+        if (filename.equalsIgnoreCase("inline")) {
+          theScript = parameterExpression(2,
+              (doStep ? statementLength - 1 : 0), "_script", false).toString();
+          i = iToken + 1;
         }
+        while (filename.equalsIgnoreCase("localPath")
+            || filename.equalsIgnoreCase("remotePath")
+            || filename.equalsIgnoreCase("scriptPath")) {
+          if (filename.equalsIgnoreCase("localPath"))
+            localPath = parameterAsString(i++);
+          else if (filename.equalsIgnoreCase("scriptPath"))
+            scriptPath = parameterAsString(i++);
+          else
+            remotePath = parameterAsString(i++);
+          filename = parameterAsString(i++);
+        }
+        if ((tok = tokAt(i)) == Token.check) {
+          isCheck = true;
+          tok = tokAt(++i);
+        }
+        if (tok == Token.noload) {
+          loadCheck = false;
+          tok = tokAt(++i);
+        }
+        if (tok == Token.line || tok == Token.lines) {
+          i++;
+          lineEnd = lineNumber = Math.max(intParameter(i++), 0);
+          if (checkToken(i)) {
+            if (getToken(i).tok == Token.minus)
+              lineEnd = (checkToken(++i) ? intParameter(i++) : 0);
+            else
+              lineEnd = -intParameter(i++);
+            if (lineEnd <= 0)
+              error(ERROR_invalidArgument);
+          }
+        } else if (tok == Token.command || tok == Token.commands) {
+          i++;
+          pc = Math.max(intParameter(i++) - 1, 0);
+          pcEnd = pc + 1;
+          if (checkToken(i)) {
+            if (getToken(i).tok == Token.minus)
+              pcEnd = (checkToken(++i) ? intParameter(i++) : 0);
+            else
+              pcEnd = -intParameter(i++);
+            if (pcEnd <= 0)
+              error(ERROR_invalidArgument);
+          }
+        }
+        checkLength(doStep ? i + 1 : i);
       }
-      checkLength(doStep ? i + 1 : i);
     }
+    
+    // processing
+    
     if (isSyntaxCheck && !isCmdLine_c_or_C_Option)
       return;
     if (isCmdLine_c_or_C_Option)
@@ -13669,6 +13692,7 @@ public class ScriptEvaluator {
     int nFiles = 0;
     int nX, nY, nZ, ptX, ptY;
     int ptSigma = 0;
+    int ptCutoff = 0;
     BitSet bs;
     Vector v;
     Point3f[] pts;
@@ -13883,6 +13907,8 @@ public class ScriptEvaluator {
         propertyValue = new Float(floatParameter(i));
         if (colorRangeStage > 0)
           ++colorRangeStage;
+        else
+          ptCutoff = i;
         break;
       case Token.ionic:
       case Token.vanderwaals:
@@ -14392,6 +14418,11 @@ public class ScriptEvaluator {
         propertyValue = data;
         break;
       case Token.string:
+        if (!surfaceObjectSeen && !planeSeen
+            && viewer.getParameter("_fileType").equals("Pdb") && ptSigma == 0
+            && ptCutoff == 0) {
+          addShapeProperty(propertyList, "sigma", new Float(1));
+        }
         propertyName = surfaceObjectSeen || planeSeen ? "mapColor" : "readFile";
         /*
          * a file name, optionally followed by an integer file index. OR empty.
@@ -14534,6 +14565,8 @@ public class ScriptEvaluator {
           new Object[] { colorScheme,
               isColorSchemeTranslucent ? Boolean.TRUE : Boolean.FALSE });
 
+    // TODO: addShapeProperty(propertyList, "variables", thisCommandVariables);
+
     // OK, now send them all
     setShapeProperty(iShape, "setProperties", propertyList);
 
@@ -14571,8 +14604,7 @@ public class ScriptEvaluator {
         float cutoff = ((Float) getShapeProperty(iShape, "cutoff"))
             .floatValue();
         if (Float.isNaN(cutoff) && ptSigma > 0) {
-          iToken = ptSigma;
-          error(ERROR_invalidArgument);
+          Logger.error("sigma not supported");
         }
         s += " created with cutoff=" + cutoff;
         float[] minMax = (float[]) getShapeProperty(iShape, "minMaxInfo");

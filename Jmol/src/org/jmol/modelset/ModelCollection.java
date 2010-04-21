@@ -1030,7 +1030,6 @@ abstract public class ModelCollection extends BondCollection {
    *          vector of bonds to fill; if null, creates the HBonds
    * @param nucleicOnly TODO
    * @param nMax 
-   * @param m
    */
 
   public void calcRasmolHydrogenBonds(BitSet bsA, BitSet bsB, Vector vHBonds, 

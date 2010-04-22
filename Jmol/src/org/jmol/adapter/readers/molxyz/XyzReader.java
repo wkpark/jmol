@@ -73,10 +73,9 @@ public class XyzReader extends AtomSetCollectionReader {
         continuing = false;
         return false;
       }
-    } else {
-      discardLines(modelAtomCount + 1);
     }
-    return true;
+    discardLinesUntilNonBlank();
+    return false;
   }
 
   private void readAtoms(int modelAtomCount) throws Exception {

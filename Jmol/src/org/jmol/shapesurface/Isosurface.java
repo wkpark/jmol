@@ -182,10 +182,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    ////isosurface-only (no calculation required; no calculation parameters to set)
+    // //isosurface-only (no calculation required; no calculation parameters to
+    // set)
 
     if ("navigate" == propertyName) {
-      navigate(((Integer)value).intValue());
+      navigate(((Integer) value).intValue());
       return;
     }
     if ("delete" == propertyName) {
@@ -215,12 +216,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("color" == propertyName) {
       if (thisMesh != null) {
-        //thisMesh.vertexColixes = null;
+        // thisMesh.vertexColixes = null;
         thisMesh.isColorSolid = true;
         thisMesh.polygonColixes = null;
-      } else if (!TextFormat.isWild(previousMeshID)){
+      } else if (!TextFormat.isWild(previousMeshID)) {
         for (int i = meshCount; --i >= 0;) {
-          //isomeshes[i].vertexColixes = null;
+          // isomeshes[i].vertexColixes = null;
           isomeshes[i].isColorSolid = true;
           isomeshes[i].polygonColixes = null;
         }
@@ -245,16 +246,20 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
-    if ("lcaoCartoon" == propertyName || "lonePair" == propertyName || "radical" == propertyName) {
-      // z x center rotationAxis (only one of x, y, or z is nonzero; in radians) 
+    if ("lcaoCartoon" == propertyName || "lonePair" == propertyName
+        || "radical" == propertyName) {
+      // z x center rotationAxis (only one of x, y, or z is nonzero; in radians)
       Vector3f[] info = (Vector3f[]) value;
       if (!explicitID) {
         setPropertySuper("thisID", null, null);
       }
-      //center (info[2]) is set in SurfaceGenerator
+      // center (info[2]) is set in SurfaceGenerator
       if (!sg.setParameter("lcaoCartoonCenter", info[2]))
-        drawLcaoCartoon(info[0], info[1], info[3], 
-        ("lonePair" == propertyName ? 2 : "radical" == propertyName ? 1 : 0));
+        drawLcaoCartoon(
+            info[0],
+            info[1],
+            info[3],
+            ("lonePair" == propertyName ? 2 : "radical" == propertyName ? 1 : 0));
       return;
     }
 
@@ -286,12 +291,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
     // Isosurface / SurfaceGenerator both interested
-    
+
     if ("setColorScheme" == propertyName) {
       Object[] o = (Object[]) value;
-      boolean isTranslucent = ((Boolean)o[1]).booleanValue();
+      boolean isTranslucent = ((Boolean) o[1]).booleanValue();
       if (thisMesh != null) {
-        thisMesh.colix = Graphics3D.getColixTranslucent(thisMesh.colix, isTranslucent, isTranslucent ? 0.5f : 0);
+        thisMesh.colix = Graphics3D.getColixTranslucent(thisMesh.colix,
+            isTranslucent, isTranslucent ? 0.5f : 0);
       }
     }
     if ("title" == propertyName) {
@@ -311,7 +317,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
     if ("scale3d" == propertyName) {
-      scale3d = ((Float)value).floatValue();
+      scale3d = ((Float) value).floatValue();
       if (thisMesh != null) {
         thisMesh.scale3d = thisMesh.jvxlData.scale3d = scale3d;
         thisMesh.offsetVertices = null;
@@ -320,13 +326,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("getSurfaceSets" == propertyName) {
       if (thisMesh != null)
-        thisMesh.thisSet = ((Integer)value).intValue();
+        thisMesh.thisSet = ((Integer) value).intValue();
     }
 
     if ("contour" == propertyName) {
-      explicitContours = true;  
+      explicitContours = true;
     }
-    
+
     if ("atomIndex" == propertyName) {
       atomIndex = ((Integer) value).intValue();
     }
@@ -345,7 +351,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("molecularOrbital" == propertyName) {
       moNumber = ((Integer) value).intValue();
       if (!isColorExplicit)
-        isPhaseColored = true;  
+        isPhaseColored = true;
     }
 
     if (propertyName == "functionXY") {
@@ -370,42 +376,44 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
     if ("finalize" == propertyName) {
-      thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, sg.getParams().contourColixes);
+      thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, sg
+          .getParams().contourColixes);
       setScriptInfo();
       setJvxlInfo();
       clearSg();
       return;
     }
-    
+
     if ("init" == propertyName) {
       newSg();
     }
-    
+
     if ("localName" == propertyName) {
       value = viewer.getOutputStream((String) value, null);
       propertyName = "outputStream";
     }
-    
+
     if ("mapColor" == propertyName || "readFile" == propertyName) {
       if (value == null) {
         // ScriptEvaluator has passed the filename to us as the value of the
-        // "fileName" property. We retrieve that from the surfaceGenerator 
-        // and open a BufferedReader for it. Or not.  But that would be 
+        // "fileName" property. We retrieve that from the surfaceGenerator
+        // and open a BufferedReader for it. Or not. But that would be
         // unlikely since we have just checked it in ScriptEvaluator
-        value = viewer.getBufferedReaderOrErrorMessageFromName(sg.getFileName(),
-          null, false);
+        value = viewer.getBufferedReaderOrErrorMessageFromName(
+            sg.getFileName(), null, false);
         if (value instanceof String) {
-          Logger.error("Isosurface: could not open file " + sg.getFileName() + " -- " + sg.getFileName());
+          Logger.error("Isosurface: could not open file " + sg.getFileName()
+              + " -- " + value);
           return;
-        }          
+        }
       }
     }
-    //surface Export3D only (return TRUE) or shared (return FALSE)
+    // surface Export3D only (return TRUE) or shared (return FALSE)
 
     if (sg != null && sg.setParameter(propertyName, value, bs))
       return;
 
-    /////////////// isosurface LAST, shared
+    // ///////////// isosurface LAST, shared
 
     if ("init" == propertyName) {
       explicitID = false;
@@ -416,7 +424,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (script != null && !(iHaveBitSets = getScriptBitSets(script, null)))
         sg.setParameter("select", bs);
       initializeIsosurface();
-     sg.setModelIndex(modelIndex);
+      sg.setModelIndex(modelIndex);
       return;
     }
 
@@ -426,35 +434,28 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
     /*
-     if ("background" == propertyName) {
-     boolean doHide = !((Boolean) value).booleanValue();
-     if (thisMesh != null)
-     thisMesh.hideBackground = doHide;
-     else {
-     for (int i = meshCount; --i >= 0;)
-     meshes[i].hideBackground = doHide;
-     }
-     return;
-     }
-
+     * if ("background" == propertyName) { boolean doHide = !((Boolean)
+     * value).booleanValue(); if (thisMesh != null) thisMesh.hideBackground =
+     * doHide; else { for (int i = meshCount; --i >= 0;)
+     * meshes[i].hideBackground = doHide; } return; }
      */
 
     if (propertyName == "deleteModelAtoms") {
       int modelIndex = ((int[]) ((Object[]) value)[2])[0];
       BitSet bsModels = new BitSet();
       bsModels.set(modelIndex);
-      int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
-      int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
+      int firstAtomDeleted = ((int[]) ((Object[]) value)[2])[1];
+      int nAtomsDeleted = ((int[]) ((Object[]) value)[2])[2];
       for (int i = meshCount; --i >= 0;) {
         Mesh m = meshes[i];
         if (m == null)
           continue;
         if (m.modelIndex == modelIndex) {
-           meshCount--;
-            if (m == currentMesh) 
-              currentMesh = thisMesh = null;
-            meshes = isomeshes = (IsosurfaceMesh[]) ArrayUtil.deleteElements(
-                meshes, i, 1);
+          meshCount--;
+          if (m == currentMesh)
+            currentMesh = thisMesh = null;
+          meshes = isomeshes = (IsosurfaceMesh[]) ArrayUtil.deleteElements(
+              meshes, i, 1);
         } else if (m.modelIndex > modelIndex) {
           m.modelIndex--;
           if (m.atomIndex >= firstAtomDeleted)
@@ -468,7 +469,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       }
       return;
     }
-    
+
     if ("setColorScheme" == propertyName) {
       String schemeName = ((String) ((Object[]) value)[0]);
       setColorCommand(schemeName, true);

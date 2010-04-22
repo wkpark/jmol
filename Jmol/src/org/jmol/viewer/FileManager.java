@@ -52,6 +52,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.Reader;
 import java.text.DateFormat;
@@ -398,11 +399,16 @@ public class FileManager {
   Object getInputStreamOrErrorMessageFromName(String name, boolean showMsg,
                                               boolean checkOnly) {
     String errorMessage = null;
-    int iurlPrefix;
-    for (iurlPrefix = urlPrefixes.length; --iurlPrefix >= 0;)
-      if (name.startsWith(urlPrefixes[iurlPrefix]))
+    int iurl;
+    for (iurl = urlPrefixes.length; --iurl >= 0;)
+      if (name.startsWith(urlPrefixes[iurl]))
         break;
-    boolean isURL = (iurlPrefix >= 0);
+    boolean isURL = (iurl >= 0);
+    String post = null;
+    if (isURL && (iurl = name.indexOf("?POST?")) >= 0) {
+      post = name.substring(iurl + 6);
+      name = name.substring(0, iurl);      
+    }
     boolean isApplet = (appletDocumentBase != null);
     InputStream in = null;
     // int length;
@@ -412,10 +418,15 @@ public class FileManager {
           name = appletProxy + "?url=" + URLEncoder.encode(name, "utf-8");
         URL url = (isApplet ? new URL(appletDocumentBase, name) : new URL(name));
         name = url.toString();
-        if (showMsg)
+        if (showMsg && !checkOnly)
           Logger.info("FileManager opening " + url.toString());
         URLConnection conn = url.openConnection();
-        // length = conn.getContentLength();
+        if (post != null && !checkOnly) {
+          conn.setDoOutput(true); 
+          OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream()); 
+          wr.write(post); 
+          wr.flush();           
+        }          
         in = conn.getInputStream();
       } else {
         if (showMsg)

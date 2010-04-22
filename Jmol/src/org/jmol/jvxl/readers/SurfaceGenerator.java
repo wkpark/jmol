@@ -112,8 +112,10 @@
 
 package org.jmol.jvxl.readers;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.BitSet;
@@ -146,6 +148,9 @@ public class SurfaceGenerator {
   private MarchingSquares marchingSquares;
   private String version;
   private String fileType;
+  public String getFileType() {
+    return fileType;
+  }
   private OutputStream os;
     
   public void setVersion(String version) {
@@ -886,7 +891,7 @@ public class SurfaceGenerator {
     
     if ("readFile" == propertyName) {
       if ((surfaceReader = setFileData(value)) == null) {
-        Logger.error("Could not set the data");
+        Logger.error("Could not set the surface data");
         return true;
       }
       surfaceReader.setOutputStream(os);
@@ -1072,11 +1077,11 @@ public class SurfaceGenerator {
     String fileType = this.fileType;
     this.fileType = null;
     if (value instanceof VolumeData) {
-      volumeData = (VolumeData)value;
+      volumeData = (VolumeData) value;
       return new VolumeDataReader(this);
     }
     if (value instanceof Hashtable) {
-      volumeData = (VolumeData)((Hashtable) value).get("volumeData");
+      volumeData = (VolumeData) ((Hashtable) value).get("volumeData");
       return new VolumeDataReader(this);
     }
     String data = null;
@@ -1085,8 +1090,27 @@ public class SurfaceGenerator {
       value = new BufferedReader(new StringReader((String) value));
     }
     BufferedReader br = (BufferedReader) value;
-    if (fileType == null)
+    fileType = SurfaceFileTyper.determineSurfaceFileType(br);
+    if (fileType != null && fileType.startsWith("UPPSALA")) {
+      //"http://eds.bmc.uu.se/cgi-bin/eds/gen_maps_zip.pl?POST?pdbCode=1blu&mapformat=ccp4&maptype=2fofc&page=generate"
+      // -- ah, but this does not work, because it is asynchronous!
+      // -- first a message is sent back that suggests you might have to wait, 
+      //    then a message that says, "Here is your map" is sent.
+      
+      String fname = params.fileName;
+      fname = fname.substring(0, fname.indexOf("/", 10));
+      fname += Parser.getNextQuotedString(fileType,
+          fileType.indexOf("A HREF") + 1);
+      params.fileName = fname;
+      value = atomDataServer.getBufferedInputStream(fname);
+      if (value == null) {
+        Logger.error("Isosurface: could not open file " + fname);
+        return null;
+      }
+      br = new BufferedReader(
+          new InputStreamReader((BufferedInputStream) value));
       fileType = SurfaceFileTyper.determineSurfaceFileType(br);
+    }
     if (fileType == null)
       fileType = "UNKNOWN";
     Logger.info("data file type was determined to be " + fileType);
@@ -1113,7 +1137,8 @@ public class SurfaceGenerator {
         // ignore
       }
       br = null;
-      return new MrcBinaryReader(this, params.fileName, data, fileType.charAt(3) == 'B');
+      return new MrcBinaryReader(this, params.fileName, data, fileType
+          .charAt(3) == 'B');
     }
     if (fileType.startsWith("DSN6")) {
       try {
@@ -1122,10 +1147,11 @@ public class SurfaceGenerator {
         // ignore
       }
       br = null;
-      return new Dsn6BinaryReader(this, params.fileName, data, fileType.charAt(4) == 'B');
+      return new Dsn6BinaryReader(this, params.fileName, data, fileType
+          .charAt(4) == 'B');
     }
     if (fileType.equals("Efvet"))
-      return new EfvetReader(this,br);
+      return new EfvetReader(this, br);
     if (fileType.equals("Pmesh"))
       return new PmeshReader(this, params.fileName, br);
     if (fileType.equals("Obj"))

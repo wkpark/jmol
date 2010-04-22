@@ -53,6 +53,8 @@ public class SurfaceFileTyper {
     //sure bets, but not REQUIRED:
     if ((line = br.info()).length() == 0)
       return null;
+    if (line.indexOf("Here is your gzipped map") >= 0)
+      return "UPPSALA" + line;
     if (line.indexOf("<jvxl") >= 0 && line.indexOf("<?xml") >= 0)
       return "JvxlXML";
     if (line.indexOf("#JVXL+") >= 0)

@@ -751,4 +751,48 @@ public class Escape {
     }
     return data;
   }
+
+  public static String unescapeUnicode(String s) {
+    int ichMax = s.length();
+    StringBuffer sb = new StringBuffer(ichMax);
+    int ich = 0;
+    while (ich < ichMax) {
+      char ch = s.charAt(ich++);
+      if (ch == '\\' && ich < ichMax) {
+        ch = s.charAt(ich++);
+        switch (ch) {
+        case 'u':
+          int digitCount = ch == 'x' ? 2 : 4;
+          if (ich < ichMax) {
+            int unicode = 0;
+            for (int k = digitCount; --k >= 0 && ich < ichMax;) {
+              char chT = s.charAt(ich);
+              int hexit = getHexitValue(chT);
+              if (hexit < 0)
+                break;
+              unicode <<= 4;
+              unicode += hexit;
+              ++ich;
+            }
+            ch = (char) unicode;
+          }
+        }
+      }
+      sb.append(ch);
+    }
+    return sb.toString();
+  }
+  
+  public static int getHexitValue(char ch) {
+    if (ch >= '0' && ch <= '9')
+      return ch - '0';
+    else if (ch >= 'a' && ch <= 'f')
+      return 10 + ch - 'a';
+    else if (ch >= 'A' && ch <= 'F')
+      return 10 + ch - 'A';
+    else
+      return -1;
+  }
+
+
 }

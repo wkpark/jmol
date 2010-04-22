@@ -55,6 +55,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;

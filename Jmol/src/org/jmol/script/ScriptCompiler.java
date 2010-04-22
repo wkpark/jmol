@@ -878,9 +878,15 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if (lookingAtString(!Token.tokAttr(tokCommand, Token.implicitStringCommand))) {
       if (cchToken < 0)
         return ERROR(ERROR_endOfCommandUnexpected);
-      String str = ((tokCommand == Token.load || tokCommand == Token.background || tokCommand == Token.script)
-          && !iHaveQuotedString ? script.substring(ichToken + 1, ichToken
-          + cchToken - 1) : getUnescapedStringLiteral());
+      String str;
+      if ((tokCommand == Token.load || tokCommand == Token.background || tokCommand == Token.script)
+          && !iHaveQuotedString) {
+        str = script.substring(ichToken + 1, ichToken + cchToken - 1);
+        if (str.indexOf("\\u") >= 0)
+          str = Escape.unescapeUnicode(str);
+      } else {
+        str = getUnescapedStringLiteral();
+      }
       addTokenToPrefix(new Token(Token.string, str));
       iHaveQuotedString = true;
       if (tokCommand == Token.data && str.indexOf("@") < 0 && !getData(str))
@@ -1851,7 +1857,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
             int unicode = 0;
             for (int k = digitCount; --k >= 0 && ich < ichMax;) {
               char chT = script.charAt(ich);
-              int hexit = getHexitValue(chT);
+              int hexit = Escape.getHexitValue(chT);
               if (hexit < 0)
                 break;
               unicode <<= 4;
@@ -1865,17 +1871,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       sb.append(ch);
     }
     return sb.toString();
-  }
-
-  static int getHexitValue(char ch) {
-    if (ch >= '0' && ch <= '9')
-      return ch - '0';
-    else if (ch >= 'a' && ch <= 'f')
-      return 10 + ch - 'a';
-    else if (ch >= 'A' && ch <= 'F')
-      return 10 + ch - 'A';
-    else
-      return -1;
   }
 
   //  static String[] loadFormats = { "append", "files", "trajectory", "menu", "models",

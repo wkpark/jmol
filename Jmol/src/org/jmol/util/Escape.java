@@ -762,10 +762,9 @@ public class Escape {
         ch = s.charAt(ich++);
         switch (ch) {
         case 'u':
-          int digitCount = ch == 'x' ? 2 : 4;
           if (ich < ichMax) {
             int unicode = 0;
-            for (int k = digitCount; --k >= 0 && ich < ichMax;) {
+            for (int k = 4; --k >= 0 && ich < ichMax;) {
               char chT = s.charAt(ich);
               int hexit = getHexitValue(chT);
               if (hexit < 0)

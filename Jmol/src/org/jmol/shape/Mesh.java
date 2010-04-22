@@ -199,27 +199,26 @@ public class Mesh extends MeshSurface {
     int adjustment = checkByteCount;
     for (int i = polygonCount; --i >= 0;) {
       int[] pi = polygonIndexes[i];
+      if (pi == null)
+        continue;
       try {
-        if (pi != null) {
-          Point3f vA = vertices[pi[0]];
-          Point3f vB = vertices[pi[1]];
-          Point3f vC = vertices[pi[2]];
-          if (vA.distanceSquared(vB) > 0.01 
-            && vB.distanceSquared(vC) > 0.01
-            && vA.distanceSquared(vC) > 0.01) {
-            Measure.calcNormalizedNormal(vA, vB, vC, vTemp, vAB, vAC);
-          if (isPolygonSet) {
-            normals[i].set(vTemp);
-            continue;
-          }
-          float l = vTemp.length();
-          if (l > 0.9 && l < 1.1) //test for not infinity or -infinity or isNaN
-            for (int j = pi.length - adjustment; --j >= 0;) {
-              int k = pi[j];
-              normals[k].add(vTemp);
-            }
-          }
+        Point3f vA = vertices[pi[0]];
+        Point3f vB = vertices[pi[1]];
+        Point3f vC = vertices[pi[2]];
+        if (vA.distanceSquared(vB) < 0.0001 || vB.distanceSquared(vC) < 0.0001
+            || vA.distanceSquared(vC) < 0.0001)
+          continue;
+        Measure.calcNormalizedNormal(vA, vB, vC, vTemp, vAB, vAC);
+        if (isPolygonSet) {
+          normals[i].set(vTemp);
+          continue;
         }
+        float l = vTemp.length();
+        if (l > 0.9 && l < 1.1) // test for not infinity or -infinity or isNaN
+          for (int j = pi.length - adjustment; --j >= 0;) {
+            int k = pi[j];
+            normals[k].add(vTemp);
+          }
       } catch (Exception e) {
       }
     }

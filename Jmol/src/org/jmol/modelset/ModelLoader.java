@@ -780,7 +780,6 @@ public final class ModelLoader extends ModelSet {
       return;
     }
     
-    System.out.println(atom1.index + " " + atom2.index);
     // note that if the atoms are already bonded then
     // Atom.bondMutually(...) will return null
     if (atom1.isBonded(atom2))

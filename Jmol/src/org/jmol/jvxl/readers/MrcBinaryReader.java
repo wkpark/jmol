@@ -207,7 +207,7 @@ class MrcBinaryReader extends MapFileReader {
     
     if (params.thePlane == null && (params.cutoffAutomatic || params.sigma != Float.MAX_VALUE)) {
       float sigma = (params.sigma == Float.MAX_VALUE ? 1 : params.sigma);
-      params.cutoff = rmsDeviation * sigma + dmean;
+      params.cutoff = rmsDeviation / sigma + dmean;
       Logger.info("Cutoff set to (mean + rmsDeviation*" + params.sigma + ")\n");
     }
 

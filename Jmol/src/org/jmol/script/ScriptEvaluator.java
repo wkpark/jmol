@@ -13691,8 +13691,8 @@ public class ScriptEvaluator {
     int thisSetNumber = 0;
     int nFiles = 0;
     int nX, nY, nZ, ptX, ptY;
-    int ptSigma = 0;
-    int ptCutoff = 0;
+    float sigma = Float.NaN;
+    float cutoff = Float.NaN;
     int ptWithin = 0;
     BitSet bs;
     Vector v;
@@ -13883,11 +13883,12 @@ public class ScriptEvaluator {
         // default is "cutoff"
         propertyName = (colorRangeStage == 1 ? "red"
             : colorRangeStage == 2 ? "blue" : "cutoff");
-        propertyValue = new Float(floatParameter(i));
+        float fp = floatParameter(i);
+        propertyValue = new Float(fp);
         if (colorRangeStage > 0)
           ++colorRangeStage;
         else
-          ptCutoff = i;
+          cutoff = fp;
         break;
       case Token.ionic:
       case Token.vanderwaals:
@@ -14132,12 +14133,11 @@ public class ScriptEvaluator {
       case Token.cutoff:
         if (++i < statementLength && getToken(i).tok == Token.plus) {
           propertyName = "cutoffPositive";
-          propertyValue = new Float(floatParameter(++i));
+          propertyValue = new Float(cutoff = floatParameter(++i));
         } else {
           propertyName = "cutoff";
-          propertyValue = new Float(floatParameter(i));
+          propertyValue = new Float(cutoff = floatParameter(i));
         }
-        ptCutoff = i;
         break;
       case Token.downsample:
         propertyName = "downsample";
@@ -14368,9 +14368,8 @@ public class ScriptEvaluator {
         propertyValue = Boolean.TRUE;
         break;
       case Token.sigma:
-        ptSigma = i;
         propertyName = "sigma";
-        propertyValue = new Float(floatParameter(++i));
+        propertyValue = new Float(sigma = floatParameter(++i));
         break;
       case Token.sign:
         signPt = i + 1;
@@ -14405,17 +14404,18 @@ public class ScriptEvaluator {
           String[] info = viewer.getElectronDensityLoadInfo();
           String server = info[0];
           //String option = (!firstPass || ptWithin > 0 ? null : info[1]);
-          String strCutoff = (isSyntaxCheck || !firstPass || ptCutoff > 0 ? null : info[2]);
+          String strCutoff = (isSyntaxCheck || !firstPass || !Float.isNaN(cutoff) ? null : info[2]);
           String f = filename.substring(1);
           filename = TextFormat.simpleReplace(server, "%LCFILE", f.toLowerCase());
           filename = TextFormat.simpleReplace(filename, "%FILE", f);
           if (strCutoff != null) {
             strCutoff = TextFormat.simpleReplace(strCutoff,"%LCFILE", f.toLowerCase());
             strCutoff = TextFormat.simpleReplace(strCutoff,"%FILE", f);
-            float cutoff = ScriptVariable.fValue(ScriptVariable.getVariable(viewer.evaluateExpression(strCutoff)));
+            cutoff = ScriptVariable.fValue(ScriptVariable.getVariable(viewer.evaluateExpression(strCutoff)));
             if (cutoff > 0) {
+              if (!Float.isNaN(sigma))
+                cutoff = 1 / sigma;
               addShapeProperty(propertyList, "cutoff", new Float(cutoff));
-              ptCutoff = i;
             }
           }
           if (ptWithin == 0) {
@@ -14424,8 +14424,8 @@ public class ScriptEvaluator {
           defaultMesh = true;
         }
         if (firstPass
-            && viewer.getParameter("_fileType").equals("Pdb") && ptSigma == 0
-            && ptCutoff == 0) {
+            && viewer.getParameter("_fileType").equals("Pdb") 
+            && Float.isNaN(sigma) && Float.isNaN(cutoff)) {
           addShapeProperty(propertyList, "sigma", new Float(1));
         }
         propertyName = (firstPass ? "readFile" : "mapColor");
@@ -14610,9 +14610,9 @@ public class ScriptEvaluator {
       float[] dataRange = (float[]) getShapeProperty(iShape, "dataRange");
       String s = (String) getShapeProperty(iShape, "ID");
       if (s != null) {
-        float cutoff = ((Float) getShapeProperty(iShape, "cutoff"))
+        cutoff = ((Float) getShapeProperty(iShape, "cutoff"))
             .floatValue();
-        if (Float.isNaN(cutoff) && ptSigma > 0) {
+        if (Float.isNaN(cutoff) && !Float.isNaN(sigma)) {
           Logger.error("sigma not supported");
         }
         s += " created with cutoff=" + cutoff;
@@ -14624,7 +14624,7 @@ public class ScriptEvaluator {
             && dataRange[0] != dataRange[1])
           s += "\ncolor range " + dataRange[2] + " " + dataRange[3]
               + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
-        if (doCalcArea)
+        if (doCalcArea) 
           s += "\nisosurfaceArea = " + Escape.escapeArray(area);
         if (doCalcVolume)
           s += "\nisosurfaceVolume = " + Escape.escapeArray(volume);

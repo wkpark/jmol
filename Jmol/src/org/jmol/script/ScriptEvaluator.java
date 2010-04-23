@@ -14577,6 +14577,7 @@ public class ScriptEvaluator {
     if (defaultMesh) {
       setShapeProperty(iShape, "token", new Integer(Token.mesh));
       setShapeProperty(iShape, "token", new Integer(Token.nofill));
+      setShapeProperty(iShape, "token", new Integer(Token.frontonly));
     }
     if (iptDisplayProperty > 0) {
       if (!setMeshDisplayProperty(iShape, iptDisplayProperty,

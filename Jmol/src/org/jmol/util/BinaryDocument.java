@@ -98,24 +98,30 @@ public class BinaryDocument {
     return b;
   }
 
-  public int readByteArray(byte[] b) throws IOException {
-    int n = ioRead(b);
-    nBytes += n;
-    return n;
+  public void readByteArray(byte[] b) throws Exception {
+    readByteArray(b, 0, b.length);
   }
 
-  private int ioRead(byte[] b) throws IOException {
-    int n = stream.read(b);
-    if (n > 0 && os != null)
-      os.write(b, 0, n);
-    return n;
+  public int readByteArray(byte[] b, int off, int len) throws Exception {
+    int n = ioRead(b, off, len);
+    if (n > 0)
+      nBytes += n;
+    int nBytesRead = n;
+    if (n > 0 && n < b.length) {
+      // apparently this is possible over the web
+      // it occurred in getting a DNS6B format file from Uppsala
+      while (nBytesRead < b.length && n > 0) {
+        n = ioRead(b, nBytesRead, b.length - nBytesRead);
+        if (n > 0) {
+          nBytes += n;
+          nBytesRead += n;
+        }
+      }
+    }
+    return nBytesRead;
   }
 
-  public void readByteArray(byte[] b, int off, int len) throws Exception {
-    nBytes += ioRead(b, off, len);
-  }
-
-  private long ioRead(byte[] b, int off, int len) throws Exception {
+  private int ioRead(byte[] b, int off, int len) throws Exception {
     int n = stream.read(b, off, len);
     if (n > 0 && os != null)
       os.write(b, off, n);

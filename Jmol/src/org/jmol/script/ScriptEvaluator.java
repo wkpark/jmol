@@ -14158,6 +14158,7 @@ public class ScriptEvaluator {
           propertyName = "cutoff";
           propertyValue = new Float(floatParameter(i));
         }
+        ptCutoff = i;
         break;
       case Token.downsample:
         propertyName = "downsample";

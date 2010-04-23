@@ -13693,6 +13693,7 @@ public class ScriptEvaluator {
     int nX, nY, nZ, ptX, ptY;
     int ptSigma = 0;
     int ptCutoff = 0;
+    int ptWithin = 0;
     BitSet bs;
     Vector v;
     Point3f[] pts;
@@ -13707,6 +13708,7 @@ public class ScriptEvaluator {
     String colorScheme = null;
     short[] discreteColixes = null;
     Vector propertyList = new Vector();
+    boolean defaultMesh = false;
     if (isPmesh || isPlot3d)
       addShapeProperty(propertyList, "fileType", "Pmesh");
     for (int i = iToken; i < statementLength; ++i) {
@@ -13749,40 +13751,17 @@ public class ScriptEvaluator {
         addShapeProperty(propertyList, "fileType", "Pmesh");
         continue;
       case Token.within:
+        ptWithin = i;
         float distance = floatParameter(++i);
-        propertyName = "withinPoints";
         Point3f ptc = centerParameter(++i);
-        BoxInfo bbox = null;
         i = iToken;
         if (fullCommand.indexOf("# WITHIN=") >= 0)
           bs = Escape.unescapeBitset(extractCommandOption("# WITHIN"));
         else
           bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult
               : null);
-        if (bs != null) {
-          bbox = viewer.getBoxInfo(bs, -distance);
-          pts = new Point3f[] { bbox.getBboxVertices()[0],
-              bbox.getBboxVertices()[7] };
-          addShapeProperty(propertyList, "commandOption", "WITHIN=\""
-              + Escape.escape(bs) + "\"");
-          v = new Vector();
-          if (bs.cardinality() == 1)
-            v.add(viewer.getAtomPoint3f(bs.nextSetBit(0)));
-        } else {
-          Point3f pt1 = new Point3f(distance, distance, distance);
-          Point3f pt0 = new Point3f(ptc);
-          pt0.sub(pt1);
-          pt1.add(ptc);
-          pts = new Point3f[] { pt0, pt1 };
-          v = new Vector();
-          v.add(ptc);
-        }
-        propertyValue = new Object[] { new Float(distance), pts, bs, v };
-        if (v.size() == 1) {
-          addShapeProperty(propertyList, "withinDistance", new Float(distance));
-          addShapeProperty(propertyList, "withinPoint", (Point3f) v.get(0));
-        }
-        break;
+        getWithinDistanceVector(propertyList, distance, ptc, bs);
+        continue;
       case Token.property:
         addShapeProperty(propertyList, "propertySmoothing", viewer
             .getIsosurfacePropertySmoothing() ? Boolean.TRUE : Boolean.FALSE);
@@ -14419,12 +14398,37 @@ public class ScriptEvaluator {
         propertyValue = data;
         break;
       case Token.string:
-        if (!surfaceObjectSeen && !planeSeen
+        String filename = parameterAsString(i);
+        boolean firstPass = (!surfaceObjectSeen && !planeSeen);
+        if (filename.startsWith("+") && filename.length() > 1) {
+          // Uppsala Electron Density Server (default, at least)
+          String[] info = viewer.getElectronDensityLoadInfo();
+          String server = info[0];
+          //String option = (!firstPass || ptWithin > 0 ? null : info[1]);
+          String strCutoff = (isSyntaxCheck || !firstPass || ptCutoff > 0 ? null : info[2]);
+          String f = filename.substring(1);
+          filename = TextFormat.simpleReplace(server, "%LCFILE", f.toLowerCase());
+          filename = TextFormat.simpleReplace(filename, "%FILE", f);
+          if (strCutoff != null) {
+            strCutoff = TextFormat.simpleReplace(strCutoff,"%LCFILE", f.toLowerCase());
+            strCutoff = TextFormat.simpleReplace(strCutoff,"%FILE", f);
+            float cutoff = ScriptVariable.fValue(ScriptVariable.getVariable(viewer.evaluateExpression(strCutoff)));
+            if (cutoff > 0) {
+              addShapeProperty(propertyList, "cutoff", new Float(cutoff));
+              ptCutoff = i;
+            }
+          }
+          if (ptWithin == 0) {
+            getWithinDistanceVector(propertyList, 2.0f, null, viewer.getModelAtomBitSet(modelIndex, true));
+          }
+          defaultMesh = true;
+        }
+        if (firstPass
             && viewer.getParameter("_fileType").equals("Pdb") && ptSigma == 0
             && ptCutoff == 0) {
           addShapeProperty(propertyList, "sigma", new Float(1));
         }
-        propertyName = surfaceObjectSeen || planeSeen ? "mapColor" : "readFile";
+        propertyName = (firstPass ? "readFile" : "mapColor");
         /*
          * a file name, optionally followed by an integer file index. OR empty.
          * In that case, if the model auxiliary info has the data stored in it,
@@ -14435,7 +14439,6 @@ public class ScriptEvaluator {
          * Both can be present, but if jmolMappedDataInfo is missing, then
          * jmolSurfaceInfo is used by default.
          */
-        String filename = parameterAsString(i);
         if (filename.equals("TESTDATA") && Viewer.testData != null) {
           propertyValue = Viewer.testData;
           break;
@@ -14571,6 +14574,10 @@ public class ScriptEvaluator {
     // OK, now send them all
     setShapeProperty(iShape, "setProperties", propertyList);
 
+    if (defaultMesh) {
+      setShapeProperty(iShape, "token", new Integer(Token.mesh));
+      setShapeProperty(iShape, "token", new Integer(Token.nofill));
+    }
     if (iptDisplayProperty > 0) {
       if (!setMeshDisplayProperty(iShape, iptDisplayProperty,
           getToken(iptDisplayProperty).tok))
@@ -14631,6 +14638,34 @@ public class ScriptEvaluator {
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);
     setShapeProperty(iShape, "clear", null);
+  }
+
+  private void getWithinDistanceVector(Vector propertyList, float distance, Point3f ptc, BitSet bs) {
+    Vector v = new Vector();
+    Point3f[] pts = new Point3f[2];
+    if (bs == null) {
+      Point3f pt1 = new Point3f(distance, distance, distance);
+      Point3f pt0 = new Point3f(ptc);
+      pt0.sub(pt1);
+      pt1.add(ptc);
+      pts[0] = pt0;
+      pts[1] = pt1;
+      v.add(ptc);
+    } else {
+      addShapeProperty(propertyList, "commandOption", "WITHIN=\""
+          + Escape.escape(bs) + "\"");
+      BoxInfo bbox = viewer.getBoxInfo(bs, -distance);
+      pts[0] = bbox.getBboxVertices()[0];
+      pts[1] = bbox.getBboxVertices()[7];
+      if (bs.cardinality() == 1)
+        v.add(viewer.getAtomPoint3f(bs.nextSetBit(0)));
+    }
+    if (v.size() == 1) {
+      addShapeProperty(propertyList, "withinDistance", new Float(distance));
+      addShapeProperty(propertyList, "withinPoint", (Point3f) v.get(0));
+    }
+    addShapeProperty(propertyList, "withinPoints",
+        new Object[] { new Float(distance), pts, bs, v });
   }
 
   /**

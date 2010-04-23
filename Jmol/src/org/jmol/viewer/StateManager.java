@@ -832,6 +832,9 @@ public class StateManager {
       setParameterValue("drawHover", drawHover);
       setParameterValue("drawPicking", drawPicking);
       setParameterValue("dynamicMeasurements", dynamicMeasurements);
+      setParameterValue("edsLoadFormat", edsLoadFormat);
+      //setParameterValue("edsLoadOptions", edsLoadOptions);
+      setParameterValue("edsLoadCutoff", edsLoadCutoff);
       setParameterValue("ellipsoidArcs", ellipsoidArcs);
       setParameterValue("ellipsoidAxes", ellipsoidAxes);
       setParameterValue("ellipsoidAxisDiameter", ellipsoidAxisDiameter);
@@ -981,6 +984,9 @@ public class StateManager {
     boolean forceAutoBond = false;
     char inlineNewlineChar = '|'; //pseudo static
     String loadFormat = "http://www.rcsb.org/pdb/files/%FILE.pdb";
+    String edsLoadFormat = "http://eds.bmc.uu.se/eds/dfs/in/%LCFILE/%LCFILE.omap";
+    String edsLoadCutoff = "load('http://eds.bmc.uu.se/eds/dfs/in/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";
+    String edsLoadOptions = "within 2.0 {*}";
     float minBondDistance = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
     boolean pdbGetHeader = false; // true to get PDB header in auxiliary info
     boolean pdbSequential = false; // true for no bonding check

@@ -200,7 +200,7 @@ class Dsn6BinaryReader extends MapFileReader {
     binarydoc.readByteArray(brickLayer);
     pt = 0;
     nBytes = binarydoc.getPosition();
-    System.out.println("DNs6B reader: " + nBytes);
+    //System.out.println("DNs6B reader: " + nBytes);
   }
   
   private float getBrickValue(int pt) {

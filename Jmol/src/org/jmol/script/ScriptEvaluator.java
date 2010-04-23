@@ -14400,7 +14400,7 @@ public class ScriptEvaluator {
       case Token.string:
         String filename = parameterAsString(i);
         boolean firstPass = (!surfaceObjectSeen && !planeSeen);
-        if (filename.startsWith("+") && filename.length() > 1) {
+        if (filename.startsWith("=") && filename.length() > 1) {
           // Uppsala Electron Density Server (default, at least)
           String[] info = viewer.getElectronDensityLoadInfo();
           String server = info[0];

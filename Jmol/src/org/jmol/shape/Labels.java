@@ -384,13 +384,13 @@ public class Labels extends AtomShape {
 
   void putLabel(int i, Text text) {
     if (text == null)
-      atomLabels.remove(atoms[i]);
+      atomLabels.remove(new Integer(i));
     else
-      atomLabels.put(atoms[i], text);
+      atomLabels.put(new Integer(i), text);
   }
 
   Text getLabel(int i) {
-    return (Text) atomLabels.get(atoms[i]);
+    return (Text) atomLabels.get(new Integer(i));
   }
 
   private void setColix(int i, short colix, byte pid) {

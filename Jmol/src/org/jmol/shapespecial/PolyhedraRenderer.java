@@ -23,6 +23,9 @@
  */
 package org.jmol.shapespecial;
 
+import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
+
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.ShapeRenderer;
@@ -38,25 +41,33 @@ public class PolyhedraRenderer extends ShapeRenderer {
     Polyhedra.Polyhedron[] polyhedrons = polyhedra.polyhedrons;
     drawEdges = polyhedra.drawEdges;
     short[] colixes = polyhedra.colixes;
+    Point3i[] screens = null;
     for (int i = polyhedra.polyhedronCount; --i >= 0;) {
       int iAtom = polyhedrons[i].centralAtom.getIndex();
       short colix = (colixes == null || iAtom >= colixes.length ? 
           Graphics3D.INHERIT_ALL : polyhedra.colixes[iAtom]);
-      render1(polyhedrons[i], colix);
+      screens = render1(polyhedrons[i], colix, screens);
     }
   }
 
-  private void render1(Polyhedra.Polyhedron p, short colix) {
+  private Point3i[] render1(Polyhedra.Polyhedron p, short colix, Point3i[] screens) {
     if (p.visibilityFlags == 0)
-      return;
+      return screens;
     colix = Graphics3D.getColixInherited(colix, p.centralAtom.getColix());
-    Atom[] vertices = p.vertices;
+    Point3f[] vertices = p.vertices;
     byte[] planes;
-
+    if (screens == null || screens.length < vertices.length) {
+      screens = new Point3i[vertices.length];
+      for (int i = vertices.length; --i >= 0;)
+        screens[i] = new Point3i();
+    }
     planes = p.planes;
     for (int i = vertices.length; --i >= 0;) {
-      if (vertices[i].isSimple())
-        vertices[i].transform(viewer);
+      Atom atom = (vertices[i] instanceof Atom ? (Atom) vertices[i] : null);
+      if (atom == null)
+        viewer.transformPoint(vertices[i], screens[i]);
+      else
+        screens[i].set(atom.screenX, atom.screenY, atom.screenZ);
     }
 
     isAll = (drawEdges == Polyhedra.EDGES_ALL);
@@ -65,20 +76,18 @@ public class PolyhedraRenderer extends ShapeRenderer {
     // no edges to new points when not collapsed
     if (g3d.setColix(colix))
       for (int i = 0, j = 0; j < planes.length;)
-        fillFace(p.normixes[i++], vertices[planes[j++]], vertices[planes[j++]],
-            vertices[planes[j++]]);
-    if (!g3d.setColix(Graphics3D.getColixTranslucent(colix, false, 0)))
-      return;
+        fillFace(p.normixes[i++], screens[planes[j++]], screens[planes[j++]],
+            screens[planes[j++]]);
+    if (g3d.setColix(Graphics3D.getColixTranslucent(colix, false, 0)))
     for (int i = 0, j = 0; j < planes.length;)
-      drawFace(p.normixes[i++], vertices[planes[j++]],
-          vertices[planes[j++]], vertices[planes[j++]]);
+      drawFace(p.normixes[i++], screens[planes[j++]],
+          screens[planes[j++]], screens[planes[j++]]);
+    return screens;
   }
 
-  private void drawFace(short normix, Atom atomA, Atom atomB, Atom atomC) {
+  private void drawFace(short normix, Point3i A, Point3i B, Point3i C) {
     if (isAll || frontOnly && g3d.isDirectedTowardsCamera(normix)) {
-      drawCylinderTriangle(atomA.screenX, atomA.screenY, atomA.screenZ,
-          atomB.screenX, atomB.screenY, atomB.screenZ, atomC.screenX,
-          atomC.screenY, atomC.screenZ);
+      drawCylinderTriangle(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
     }
   }
 
@@ -90,11 +99,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
     g3d.fillCylinderScreen(Graphics3D.ENDCAPS_SPHERICAL, 3, xA, yA, zA, xC, yC, zC);
   }
 
-  private void fillFace(short normix,
-                  Atom atomA, Atom atomB, Atom atomC) {
-    g3d.fillTriangle(normix,
-                     atomA.screenX, atomA.screenY, atomA.screenZ,
-                     atomB.screenX, atomB.screenY, atomB.screenZ,
-                     atomC.screenX, atomC.screenY, atomC.screenZ);
+  private void fillFace(short normix, Point3i A, Point3i B, Point3i C) {
+    g3d.fillTriangle(normix, A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
   }
 }

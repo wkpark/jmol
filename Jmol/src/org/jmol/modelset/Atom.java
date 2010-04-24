@@ -85,19 +85,7 @@ final public class Atom extends Point3fi {
   
   int clickabilityFlags;
   int shapeVisibilityFlags;
-  boolean isSimple = false;
-  public boolean isSimple() {
-    return isSimple;
-  }
-  
-  public Atom(Point3f pt) {
-    //just a point -- just enough to determine a position
-    isSimple = true;
-    this.x = pt.x; this.y = pt.y; this.z = pt.z;
-    
-    //must be transformed later -- Polyhedra;
-  }
-  
+
   Atom(int modelIndex, int atomIndex,
         float x, float y, float z, float radius,
         BitSet atomSymmetry, int atomSite,

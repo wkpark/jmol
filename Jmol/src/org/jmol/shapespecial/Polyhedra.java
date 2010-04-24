@@ -51,7 +51,7 @@ public class Polyhedra extends AtomShape {
   final static int EDGES_FRONT = 2;
   private final static int MAX_VERTICES = 150;
   private final static int FACE_COUNT_MAX = MAX_VERTICES - 3;
-  private Atom[] otherAtoms = new Atom[MAX_VERTICES];
+  private Point3f[] otherAtoms = new Point3f[MAX_VERTICES];
 
   int polyhedronCount;
   Polyhedron[] polyhedrons = new Polyhedron[32];
@@ -320,7 +320,7 @@ public class Polyhedra extends AtomShape {
   private final static Point3f randomPoint = new Point3f(3141f, 2718f, 1414f);
 
   private Polyhedron validatePolyhedronNew(Atom centralAtom, int vertexCount,
-                                   Atom[] otherAtoms) {
+                                   Point3f[] otherAtoms) {
     Vector3f normal = new Vector3f();
     int planeCount = 0;
     int ipt = 0;
@@ -369,7 +369,7 @@ public class Polyhedra extends AtomShape {
           if (Logger.debugging) {
             Logger.debug("Polyhedra distanceFactor for " + ptCenter
                 + " atoms increased to " + factor + " in order to include "
-                + otherAtoms[i].getInfo());
+                + ((Atom) otherAtoms[i]).getInfo());
           }
           break;
         }
@@ -439,12 +439,12 @@ public class Polyhedra extends AtomShape {
           normal.scale(isCollapsed && !isFaceCentered ? faceCenterOffset
               : 0.001f);
           int nRef = nPoints;
+          ptRef.set(points[ptCenter]);
           if (isCollapsed && !isFaceCentered) {
             points[nPoints] = new Point3f(points[ptCenter]);
             points[nPoints].add(normal);
-            otherAtoms[nPoints] = new Atom(points[nPoints]);
+            otherAtoms[nPoints] = points[nPoints];
           } else if (isFaceCentered) {
-            ptRef.set(points[ptCenter]);
             ptRef.sub(normal);
             nRef = ptCenter;
           }
@@ -535,7 +535,7 @@ public class Polyhedra extends AtomShape {
   class Polyhedron {
     int modelIndex;
     final Atom centralAtom;
-    final Atom[] vertices;
+    final Point3f[] vertices;
     int ptCenter;
     boolean visible;
     final short[] normixes;
@@ -546,12 +546,12 @@ public class Polyhedra extends AtomShape {
     float myFaceCenterOffset, myDistanceFactor;
 
     Polyhedron(Atom centralAtom, int ptCenter, int nPoints, int planeCount,
-        Atom[] otherAtoms, short[] normixes, byte[] planes) {
+        Point3f[] otherAtoms, short[] normixes, byte[] planes) {
       this.collapsed = isCollapsed;
       this.centralAtom = centralAtom;
       modelIndex = centralAtom.getModelIndex();
       this.ptCenter = ptCenter;
-      this.vertices = new Atom[nPoints];
+      this.vertices = new Point3f[nPoints];
       this.visible = true;
       this.normixes = new short[planeCount];
       //this.planeCount = planeCount;
@@ -569,7 +569,7 @@ public class Polyhedra extends AtomShape {
     protected String getState(Hashtable temp) {
       BitSet bs = new BitSet();
       for (int i = 0; i < ptCenter; i++)
-        bs.set(vertices[i].getIndex());
+        bs.set(((Atom) vertices[i]).getIndex());
       return "  polyhedra ({" + centralAtom.getIndex() + "}) "
           + (myDistanceFactor == DEFAULT_DISTANCE_FACTOR ? ""
               : " distanceFactor " + myDistanceFactor)

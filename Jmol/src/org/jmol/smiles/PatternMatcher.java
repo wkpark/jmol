@@ -146,7 +146,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
       SmilesBond patternBond = patternAtom.getBond(i);
       if (patternBond.getAtom2() == patternAtom) {
         int matchingAtom = patternBond.getAtom1().getMatchingAtom();
-        Atom atom = modelSet.getAtomAt(matchingAtom);
+        Atom atom = modelSet.atoms[matchingAtom];
         Bond[] bonds = atom.getBonds();
         if (bonds != null) {
           for (int j = 0; j < bonds.length; j++) {
@@ -184,7 +184,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
       }
     }
     
-    Atom atom = modelSet.getAtomAt(i);
+    Atom atom = modelSet.atoms[i];
 
     // Check symbol -- not isotope-sensitive
     String targetSym = patternAtom.getSymbol();

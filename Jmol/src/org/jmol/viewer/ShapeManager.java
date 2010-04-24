@@ -362,4 +362,19 @@ public class ShapeManager {
         }
   }
 
+  private final BitSet bsOK = new BitSet();
+  public BitSet transformAtoms(boolean firstPass) {
+    if (!firstPass)
+      return bsOK;
+    bsOK.clear();
+    Atom[] atoms = modelSet.atoms;
+    for (int i = modelSet.getAtomCount(); --i >= 0;) {
+      Atom atom = atoms[i];
+      if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_FRAME) == 0)
+        continue;
+      bsOK.set(i);
+      atom.transform(viewer);
+    }
+    return bsOK;
+  }
 }

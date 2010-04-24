@@ -88,7 +88,7 @@ public class LabelsRenderer extends ShapeRenderer {
       int offset = offsetFull >> Labels.FLAG_OFFSET;
       int textAlign = Labels.getAlignment(offsetFull);
       int pointer = offsetFull & Labels.POINTER_FLAGS;
-      int zSlab = atom.screenZ - atom.getScreenRadius() - 3;
+      int zSlab = atom.screenZ - atom.screenDiameter / 2 - 3;
       if (zSlab < 1)
         zSlab = 1;
       int zBox = zSlab;      

@@ -189,7 +189,7 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
     boolean drawLabel = (formats != null && formats.length > 0);
     int x, y;
     Object[] val = new Object[1];
-    int i = 0;
+    int i = (draw000 ? 0 : -1);
     while (p < d) {
       if (p >= tickInfo.first) {
         pointT2.set(pointT);

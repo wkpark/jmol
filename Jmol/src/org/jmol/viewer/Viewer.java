@@ -4189,11 +4189,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!isInSelectionSubset(atomIndex))
       return;
     loadShape(JmolConstants.SHAPE_HOVER);
-    Atom atom;
     if (isBound(action, ActionManager.ACTION_dragLabel)
         && getPickingMode() == JmolConstants.PICKING_LABEL
-        && (atom = modelSet.getAtomAt(atomIndex)) != null
-        && atom.isShapeVisible(JmolConstants
+        && modelSet.atoms[atomIndex].isShapeVisible(JmolConstants
             .getShapeVisibilityFlag(JmolConstants.SHAPE_LABELS))) {
       setShapeProperty(JmolConstants.SHAPE_HOVER, "specialLabel", GT
           ._("Drag to move label"));
@@ -6659,7 +6657,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Point3f getAtomPoint3f(int i) {
-    return modelSet.getAtomAt(i);
+    return modelSet.atoms[i];
   }
 
   public Vector getAtomPointVector(BitSet bs) {
@@ -8345,6 +8343,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   public boolean isMultiProcessor() {
     return global.multiProcessor && isParallel;
+  }
+
+  public BitSet transformAtoms(boolean firstPass) {
+    return shapeManager.transformAtoms(firstPass);
   }
 
 }

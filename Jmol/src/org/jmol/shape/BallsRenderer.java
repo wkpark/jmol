@@ -30,7 +30,6 @@ import java.util.BitSet;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Molecule;
-import org.jmol.viewer.JmolConstants;
 
 import javax.vecmath.*;
 public class BallsRenderer extends ShapeRenderer {
@@ -42,16 +41,16 @@ public class BallsRenderer extends ShapeRenderer {
     // maxX = minX + rectClip.width;
     // minY = rectClip.y;
     // maxY = minY + rectClip.height;
+    int atomCount = modelSet.getAtomCount();
+    boolean firstPass = g3d.setColix(Graphics3D.BLACK);
+    boolean slabbing = viewer.getSlabEnabled();
+    boolean slabByMolecule = viewer.getSlabByMolecule();
+    boolean slabByAtom = viewer.getSlabByAtom();
+    boolean renderCrosshairs = (atomCount > 0
+        && viewer.getShowNavigationPoint()
+        && exportType == Graphics3D.EXPORT_NOT && firstPass);
     boolean renderBalls = !viewer.getWireframeRotation()
         || !viewer.getInMotion();
-    boolean slabbing = viewer.getSlabEnabled();
-    // isNav = viewer.getNavigationMode();
-    boolean renderCrosshairs = modelSet.getAtomCount() > 0
-        && viewer.getShowNavigationPoint() && exportType == Graphics3D.EXPORT_NOT
-        && g3d.setColix(Graphics3D.BLACK);
-
-    Point3f navOffset = (renderCrosshairs ? new Point3f(viewer
-        .getNavigationOffset()) : null);
 
     if (slabbing) {
       minZ = g3d.getSlab();
@@ -65,18 +64,8 @@ public class BallsRenderer extends ShapeRenderer {
     }
 
     Atom[] atoms = modelSet.atoms;
-    int atomCount = modelSet.getAtomCount();
-    BitSet bsOK = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      Atom atom = atoms[i];
-      if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_FRAME) == 0)
-        continue;
-      bsOK.set(i);
-      atom.transform(viewer);
-    }
-    boolean slabByMolecule = viewer.getSlabByMolecule();
-    boolean slabByAtom = viewer.getSlabByAtom();
-    if (slabByMolecule && slabbing) {
+    BitSet bsOK = viewer.transformAtoms(firstPass);
+    if (firstPass && slabByMolecule && slabbing) {
       Molecule[] molecules = modelSet.getMolecules();
       int moleculeCount = modelSet.getMoleculeCountInModel(-1);
       for (int i = 0; i < moleculeCount; i++) {
@@ -86,57 +75,56 @@ public class BallsRenderer extends ShapeRenderer {
         if (!bsOK.get(pt))
           continue;
         for (; j < m.nAtoms; j++, pt++)
-          if (g3d.isClippedZ(atoms[pt].screenZ - (atoms[pt].screenDiameter >> 1)))
+          if (g3d.isClippedZ(atoms[pt].screenZ
+              - (atoms[pt].screenDiameter >> 1)))
             break;
         if (j != m.nAtoms) {
           pt = m.firstAtomIndex;
           for (int k = 0; k < m.nAtoms; k++) {
             bsOK.clear(pt);
-            atoms[pt++].screenZ = 0;  
+            atoms[pt++].screenZ = 0;
           }
         }
       }
-    }      
-    for (int i = atomCount; --i >= 0;)
-      if (bsOK.get(i)) {
-        Atom atom = atoms[i];
-        if (slabbing) {
-
-          if (g3d.isClippedZ(atom.screenZ
-              - (slabByAtom? atoms[i].screenDiameter >> 1 : 0))) {
-
-            atom.setClickable(0);
-            // note that in the case of navigation,
-            // maxZ is set to Integer.MAX_VALUE.
-
-            int r = (slabByAtom ? -1 : 1) * atom.screenDiameter / 2;
-            if (atom.screenZ + r < minZ || atom.screenZ - r > maxZ)
-              continue;
-            if (!g3d.isInDisplayRange(atom.screenX, atom.screenY))
-              continue;
+    }
+    for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {
+      Atom atom = atoms[i];
+      if (firstPass && slabbing) {
+        if (g3d.isClippedZ(atom.screenZ
+            - (slabByAtom ? atoms[i].screenDiameter >> 1 : 0))) {
+          atom.setClickable(0);
+          // note that in the case of navigation,
+          // maxZ is set to Integer.MAX_VALUE.
+          int r = (slabByAtom ? -1 : 1) * atom.screenDiameter / 2;
+          if (atom.screenZ + r < minZ || atom.screenZ - r > maxZ
+              || !g3d.isInDisplayRange(atom.screenX, atom.screenY)) {
+            bsOK.clear(i);
+            continue;
           }
-        }
-        // note: above transform is required for all other renderings
-
-        if (renderBalls && atom.screenDiameter > 0
-            && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0
-            && g3d.setColix(atom.getColix())) {
-          if (renderCrosshairs) {
-            if (atom.screenX < minX)
-              minX = atom.screenX;
-            if (atom.screenX > maxX)
-              maxX = atom.screenX;
-            if (atom.screenY < minY)
-              minY = atom.screenY;
-            if (atom.screenY > maxY)
-              maxY = atom.screenY;
-          }
-          g3d.drawAtom(atom);
         }
       }
+      // note: above transform is required for all other renderings
+
+      if (renderBalls && atom.screenDiameter > 0
+          && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0
+          && g3d.setColix(atom.getColix())) {
+        if (renderCrosshairs) {
+          if (atom.screenX < minX)
+            minX = atom.screenX;
+          if (atom.screenX > maxX)
+            maxX = atom.screenX;
+          if (atom.screenY < minY)
+            minY = atom.screenY;
+          if (atom.screenY > maxY)
+            maxY = atom.screenY;
+        }
+        g3d.drawAtom(atom);
+      }
+    }
 
     // this is the square and crosshairs for the navigator
     if (renderCrosshairs) {
+      Point3f navOffset = new Point3f(viewer.getNavigationOffset());
       boolean antialiased = g3d.isAntialiased();
       float navDepth = viewer.getNavigationDepthPercent();
       g3d.setColix(navDepth < 0 ? Graphics3D.RED

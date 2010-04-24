@@ -54,10 +54,6 @@ final public class Atom extends Point3fi {
   int atomSite;
   private float userDefinedVanDerWaalRadius;
   
-  public int getScreenRadius() {
-    return screenDiameter / 2;
-  }
-  
   private short atomicAndIsotopeNumber;
   private byte formalChargeAndFlags;
   private byte valence;

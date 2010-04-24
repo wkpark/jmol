@@ -979,9 +979,9 @@ public class ScriptEvaluator {
       String str;
       if (isAtoms) {
         if (asIdentity)
-          str = modelSet.getAtomAt(j).getInfo();
+          str = modelSet.atoms[j].getInfo();
         else
-          str = LabelToken.formatLabel(viewer, modelSet.getAtomAt(j), null,
+          str = LabelToken.formatLabel(viewer, modelSet.atoms[j], null,
               tokens, '\0', indices);
       } else {
         Bond bond = modelSet.getBondAt(j);
@@ -1185,7 +1185,7 @@ public class ScriptEvaluator {
       for (int i = i0; i >= 0 && i < i1; i = (haveBitSet ? bs.nextSetBit(i + 1)
           : i + 1)) {
         n++;
-        Atom atom = modelSet.getAtomAt(i);
+        Atom atom = modelSet.atoms[i];
         switch (mode) {
         case 0: // float
           float fv = Float.MAX_VALUE;
@@ -11461,11 +11461,20 @@ public class ScriptEvaluator {
             + (tok == Token.on ? "On" : "Off"), null);
         return;
       }
-      checkLength(index + 4);
-      // axes labels "X" "Y" "Z"
+      if (statementLength == index + 7) {
+      // axes labels "X" "Y" "Z" "-X" "-Y" "-Z"
       setShapeProperty(JmolConstants.SHAPE_AXES, "labels", new String[] {
           parameterAsString(++index), parameterAsString(++index),
-          parameterAsString(++index) });
+          parameterAsString(++index), parameterAsString(++index), 
+          parameterAsString(++index), parameterAsString(++index)
+      });
+      }     else {
+        checkLength(index + 4);
+        setShapeProperty(JmolConstants.SHAPE_AXES, "labels", new String[] {
+            parameterAsString(++index), parameterAsString(++index),
+            parameterAsString(++index)
+        });
+      }
       return;
     }
     // axes position [x y %]

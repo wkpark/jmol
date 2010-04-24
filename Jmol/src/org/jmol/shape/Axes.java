@@ -154,8 +154,10 @@ public class Axes extends FontLineShape {
         + (int) axisXY.x + " " + (int) axisXY.y + (axisXY.z < 0 ? " %" : "")
         + "];\n");
     if (labels != null) {
-      axisState += "  axes labels " + Escape.escape(labels[0]) + " "
-          + Escape.escape(labels[1]) + " " + Escape.escape(labels[2]) + "\n";
+      axisState += "  axes labels ";
+      for (int i = 0; i < labels.length; i++)
+        axisState += Escape.escape(labels[i]) + " ";
+      axisState += "\n";
     }
     return super.getShapeState() + "  axisScale = " + viewer.getAxesScale()
         + ";\n" + axisState;

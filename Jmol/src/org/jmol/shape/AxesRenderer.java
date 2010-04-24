@@ -74,12 +74,13 @@ public class AxesRenderer extends FontLineShapeRenderer {
     boolean isXY = (axes.axisXY.z != 0);
     int modelIndex = viewer.getCurrentModelIndex();
     // includes check here for background model present
+    boolean isUnitCell = (axesMode == JmolConstants.AXES_MODE_UNITCELL);
     if (viewer.isJmolDataFrame(modelIndex)
-        || axesMode == JmolConstants.AXES_MODE_UNITCELL && modelIndex < 0)
+        || isUnitCell && modelIndex < 0)
       return;
     int nPoints = 6;
     int labelPtr = 0;
-    if (axesMode == JmolConstants.AXES_MODE_UNITCELL && cellInfos != null
+    if (isUnitCell && cellInfos != null
         && cellInfos[modelIndex].haveUnitCell()) {
       nPoints = 3;
       labelPtr = 6;
@@ -91,7 +92,8 @@ public class AxesRenderer extends FontLineShapeRenderer {
       labelPtr = (viewer.getAxesOrientationRasmol() ? 15 : 9);
     }
     if (axes.labels != null) {
-      nPoints = 3;
+      if (nPoints != 3)
+        nPoints = axes.labels.length;
       labelPtr = -1;
     }
     boolean isDataFrame = viewer.isJmolDataFrame();
@@ -149,7 +151,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
       colix = colixes[i % 3];
       g3d.setColix(colix);
       String label = (axes.labels == null ? axisLabels[i + labelPtr]
-          : i < 3 ? axes.labels[i] : null);
+          : i < axes.labels.length ? axes.labels[i] : null);
       if (label != null && label.length() > 0)
         renderLabel(label, screens[i].x, screens[i].y, screens[i].z, xCenter,
             yCenter);

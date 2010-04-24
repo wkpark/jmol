@@ -1323,7 +1323,7 @@ public class ActionManager {
         return;
       viewer.script("connect "
           + measurementQueued.getMeasurementScript(" ", true)
-          + (isDelete || measurementQueued.isConnected(viewer.getModelSet().getAtoms(), 2)? " DELETE" : isStruts ? "STRUTS" : ""));
+          + (isDelete || measurementQueued.isConnected(viewer.getModelSet().atoms, 2)? " DELETE" : isStruts ? "STRUTS" : ""));
       return;
     case JmolConstants.PICKING_MEASURE_TORSION:
       n++;

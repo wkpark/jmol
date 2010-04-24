@@ -114,7 +114,7 @@ public class MeasurementData implements JmolMeasurementClient {
    */
   public void define(JmolMeasurementClient client, ModelSet modelSet) {
     this.client = (client == null ? this : client);
-    atoms = modelSet.getAtoms();
+    atoms = modelSet.atoms;
     /*
      * sets up measures based on an array of atom selection expressions -RMH 3/06
      * 

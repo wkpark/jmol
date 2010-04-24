@@ -105,15 +105,6 @@ abstract public class AtomCollection {
   public Atom[] atoms;
   int atomCount;
 
-
-  public Atom[] getAtoms() {
-    return atoms;
-  }
-
-  public Atom getAtomAt(int atomIndex) {
-    return atoms[atomIndex];
-  }
-
   public Vector getAtomPointVector(BitSet bs) {
     Vector v = new Vector();
     if (bs != null)

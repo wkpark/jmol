@@ -73,7 +73,7 @@ public class Measurement {
   
   public Point3fi getAtom(int i) {
     int pt = countPlusIndices[i];
-    return (pt < -1 ? pts[-2 - pt] : modelSet.getAtomAt(pt));
+    return (pt < -1 ? pts[-2 - pt] : modelSet.atoms[pt]);
   }
 
   public int getLastIndex() {

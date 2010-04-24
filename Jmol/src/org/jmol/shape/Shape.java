@@ -312,7 +312,7 @@ public abstract class Shape {
   }
   
   public short setColix(short colix, byte paletteID, int atomIndex) {
-    return setColix(colix, paletteID, modelSet.getAtomAt(atomIndex));
+    return setColix(colix, paletteID, modelSet.atoms[atomIndex]);
   }
 
   protected short setColix(short colix, byte paletteID, Atom atom) {

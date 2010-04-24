@@ -78,8 +78,8 @@ public class Backbone extends BioShapeCollection {
             || useThisBsSelected && isAtom1 
             || bondSelectionModeOr && (isAtom1 || isAtom2)) {
           bioShape.monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
-          Atom atomA = modelSet.getAtomAt(index1);
-          Atom atomB = modelSet.getAtomAt(index2);
+          Atom atomA = modelSet.atoms[index1];
+          Atom atomB = modelSet.atoms[index2];
           boolean wasVisible = (bioShape.mads[i] != 0); 
           if (wasVisible != isVisible) {
             atomA.addDisplayedBackbone(myVisibilityFlag, isVisible);
@@ -102,7 +102,7 @@ public class Backbone extends BioShapeCollection {
       BioShape bioShape = bioShapes[iShape];
       int[] atomIndices = bioShape.bioPolymer.getLeadAtomIndices();
       for (int i = bioShape.monomerCount; --i >= 0; ) {
-        Atom atom = modelSet.getAtomAt(atomIndices[i]);
+        Atom atom = modelSet.atoms[atomIndices[i]];
         if (atom.getNBackbonesDisplayed() > 0 && !modelSet.isAtomHidden(i))
           atom.setClickable(myVisibilityFlag);
       }

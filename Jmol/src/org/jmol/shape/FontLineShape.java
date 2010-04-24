@@ -75,13 +75,12 @@ public abstract class FontLineShape extends FontShape {
   private void appendTickInfo(StringBuffer sb, String type, int i) {
     sb.append("  ");
     sb.append(myType);
-    sb.append(type);
     addTickInfo(sb, tickInfos[i], false);
     sb.append(";\n");
   }
 
   public static void addTickInfo(StringBuffer sb, TickInfo tickInfo, boolean addFirst) {
-    sb.append(" ticks ").append(Escape.escape(tickInfo.ticks));
+    sb.append(" ticks ").append(tickInfo.type).append(" ").append(Escape.escape(tickInfo.ticks));
     if (tickInfo.tickLabelFormats != null)
       sb.append(" format ").append(Escape.escape(tickInfo.tickLabelFormats, false));
     if (tickInfo.scale != null)

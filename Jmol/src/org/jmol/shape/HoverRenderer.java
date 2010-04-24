@@ -33,7 +33,7 @@ public class HoverRenderer extends ShapeRenderer {
     Hover hover = (Hover) shape;
     boolean antialias = g3d.isAntialiased();
     if (hover.atomIndex >= 0) {
-      Atom atom = modelSet.getAtomAt(hover.atomIndex);
+      Atom atom = modelSet.atoms[hover.atomIndex];
       String label = (hover.specialLabel != null ? hover.specialLabel 
           : hover.atomFormats != null
           && hover.atomFormats[hover.atomIndex] != null ? 

@@ -556,7 +556,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
       for (int iAtom = m.getCount(); iAtom > 0; iAtom--) {
         int atomIndex = m.getAtomIndex(iAtom);
         if (atomIndex >= 0) {
-          if (!modelSet.getAtomAt(atomIndex).isClickable())
+          if (!modelSet.atoms[atomIndex].isClickable())
             continue out;
         } else {
           int modelIndex = m.getAtom(iAtom).modelIndex;

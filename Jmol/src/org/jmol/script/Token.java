@@ -744,7 +744,9 @@ public class Token {
   public final static int defaults                       = strparam | 32;
   public final static int defaulttorsionlabel            = strparam | 34;
   public final static int defaultvdw                     = strparam | 36;
-  public final static int filecachedirectory             = strparam | 38;
+  public final static int edsloadcutoff                  = strparam | 37;
+  public final static int edsloadformat                  = strparam | 38;
+  public final static int filecachedirectory             = strparam | 39;
   public final static int helppath                       = strparam | 40;
   public final static int hoverlabel                     = strparam | 42;
   public final static int language                       = strparam | 44;
@@ -1941,6 +1943,8 @@ public class Token {
       "defaults",                                 new Token(defaults),
       "defaultTorsionLabel",                      new Token(defaulttorsionlabel),
       "defaultVDW",                               new Token(defaultvdw),
+      "edsLoadCutoff",                            new Token(edsloadcutoff),
+      "edsLoadFormat",                            new Token(edsloadformat),
       "fileCacheDirectory",                       new Token(filecachedirectory),
       "fontsize",                                 new Token(fontsize),
       "helpPath",                                 new Token(helppath),

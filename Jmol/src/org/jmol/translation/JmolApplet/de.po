@@ -14,13 +14,13 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-04-11 18:02+0200\n"
-"PO-Revision-Date: 2010-04-05 03:33+0000\n"
-"Last-Translator: Oliver Stueker <Unknown>\n"
+"PO-Revision-Date: 2010-04-24 12:25+0000\n"
+"Last-Translator: Jan-Christoph Borchardt <jan@inquata.com>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-04-05 19:56+0000\n"
+"X-Launchpad-Export-Date: 2010-04-24 21:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:97
@@ -1825,9 +1825,9 @@ msgid "{0} require that only one model be displayed"
 msgstr "{0} erfordert, dass nur ein Modell angezeigt wird"
 
 #: org/jmol/script/ScriptEvaluator.java:2456
-#, fuzzy, java-format
+#, java-format
 msgid "{0} requires that only one model be loaded"
-msgstr "{0} erfordert, dass nur ein Modell angezeigt wird"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2459
 msgid "No data available"
@@ -2028,7 +2028,7 @@ msgstr "Beschriftungen verschieben (benötigt {0})"
 #: org/jmol/viewer/ActionManager.java:68
 #, java-format
 msgid "move specific DRAW point (requires {0})"
-msgstr ""
+msgstr "einen bestimmten DRAW-Punkt verschieben (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
@@ -2059,7 +2059,7 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:74
 #, java-format
 msgid "adjust slab (front plane; requires {0})"
-msgstr ""
+msgstr "Schnittfläche anpassen (vordere Ebene; benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:75
 #, java-format
@@ -2159,7 +2159,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:98
 msgid "reset (when clicked off the model)"
-msgstr ""
+msgstr "zurücksetzen (wenn neben dem Modell geklickt)"
 
 #: org/jmol/viewer/ActionManager.java:99
 msgid "simulate multi-touch using the mouse)"
@@ -2222,6 +2222,9 @@ msgstr ""
 msgid "Setting log file to {0}"
 msgstr ""
 
+#~ msgid "Java memory usage"
+#~ msgstr "Java Speichernutzung"
+
 #~ msgid "About Jmol"
 #~ msgstr "Über Jmol"
 
@@ -2234,6 +2237,30 @@ msgstr ""
 
 #~ msgid "File creation failed."
 #~ msgstr "Dateierstellung fehlgeschlagen."
+
+#~ msgid "File or URL"
+#~ msgstr "Datei oder URL"
+
+#~ msgid "File from PDB"
+#~ msgstr "Datei aus PDB"
+
+#~ msgid "{0} Image"
+#~ msgstr "{0} Grafik"
+
+#~ msgid "File {0}"
+#~ msgstr "Datei {0}"
+
+#~ msgid "Script with history"
+#~ msgstr "Skript mit Historie"
+
+#~ msgid "Script with state"
+#~ msgstr "Skript mit Zustand"
+
+#~ msgid "{0} 3D Model"
+#~ msgstr "{0} 3D Modell"
+
+#~ msgid "JVXL Isosurface"
+#~ msgstr "JVXL Isofläche"
 
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "FEHLER: Kann boolschen Flag keinen numerischen Wert zuweisen: {0}"

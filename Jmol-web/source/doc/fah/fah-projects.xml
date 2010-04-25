@@ -5243,6 +5243,9 @@
   <fah_proj number="2683" name="p2683_SINGLE VESICLE in water" public="y" file="xyz"
     server="171.67.108.22" atoms="1094681" preferred="4" deadline="6"
     credit="25403" frames="100" code="GC" contact="kasson" kfactor="2.0"/>
+  <fah_proj number="2690" name="p2690_Fullha" public="n"
+    server="171.64.65.53" atoms="1848374" preferred="6" deadline="8"
+    credit="9376" frames="100" code="A3" contact="kasson" kfactor="25.0"/>
 
   <!-- Projects 2700 to 2799 -->
   <fah_proj number="2711" name="p2711_GPUlambda" public="y"
@@ -8290,19 +8293,19 @@
   <fah_proj number="6059" name="p6059_Mutant_scan" public="y"
     server="171.64.65.54" atoms="77080" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
-  <fah_proj number="6060" name="p6060_Mutant_scan" public="n"
+  <fah_proj number="6060" name="p6060_Mutant_scan" public="y"
     server="171.64.65.54" atoms="77110" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
-  <fah_proj number="6061" name="p6061_Mutant_scan" public="n"
+  <fah_proj number="6061" name="p6061_Mutant_scan" public="y"
     server="171.64.65.54" atoms="77086" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
-  <fah_proj number="6062" name="p6062_Mutant_scan" public="n"
+  <fah_proj number="6062" name="p6062_Mutant_scan" public="y"
     server="171.64.65.54" atoms="77080" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
-  <fah_proj number="6063" name="p6063_Mutant_scan" public="n"
+  <fah_proj number="6063" name="p6063_Mutant_scan" public="y"
     server="171.64.65.54" atoms="77029" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
-  <fah_proj number="6064" name="p6064_Mutant_scan" public="n"
+  <fah_proj number="6064" name="p6064_Mutant_scan" public="y"
     server="171.64.65.54" atoms="77017" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
   <fah_proj number="6065" name="p6065_Mutant_scan" public="n"
@@ -8328,6 +8331,21 @@
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
   <fah_proj number="6072" name="p6072_Mutant_scan" public="n"
     server="171.64.65.54" atoms="76971" preferred="3" deadline="6"
+    credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
+  <fah_proj number="6073" name="p6073_Mutant_scan" public="n"
+    server="171.64.65.54" atoms="77105" preferred="3" deadline="6"
+    credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
+  <fah_proj number="6074" name="p6074_Mutant_scan" public="n"
+    server="171.64.65.54" atoms="77053" preferred="3" deadline="6"
+    credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
+  <fah_proj number="6075" name="p6075_Mutant_scan" public="n"
+    server="171.64.65.54" atoms="77086" preferred="3" deadline="6"
+    credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
+  <fah_proj number="6076" name="p6076_Mutant_scan" public="n"
+    server="171.64.65.54" atoms="76992" preferred="3" deadline="6"
+    credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
+  <fah_proj number="6077" name="p6077_Mutant_scan" public="n"
+    server="171.64.65.54" atoms="76980" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
 
   <!-- Projects 6300 to 6399 -->
@@ -8406,9 +8424,9 @@
   <fah_proj number="6329" name="p6329" public="n"
     server="171.64.65.60" atoms="6384" preferred="10" deadline="20"
     credit="104" frames="100" code="G" contact="vvoelz"/>
-  <fah_proj number="6330" name="p6330" public="n"
+  <fah_proj number="6330" name="p6330" public="n" file="xyz"
     server="171.64.65.60" atoms="6397" preferred="10" deadline="20"
-    credit="104" frames="100" code="G" contact="vvoelz"/>
+    credit="104" frames="100" code="G" contact="vvoelz" contrib="SandStar"/>
   <fah_proj number="6331" name="p6331" public="n"
     server="171.64.65.60" atoms="6397" preferred="10" deadline="20"
     credit="104" frames="100" code="G" contact="vvoelz"/>
@@ -8564,6 +8582,42 @@
   <fah_proj number="10020" name="p10020" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Flathead74"/>
+  <fah_proj number="10021" name="p10021" public="y"
+    server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10022" name="p10022" public="y"
+    server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10023" name="p10023" public="y"
+    server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10024" name="p10024" public="y"
+    server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10027" name="p10027" public="y"
+    server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10030" name="p10030" public="y"
+    server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10031" name="p10031" public="y"
+    server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10032" name="p10032" public="y"
+    server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10033" name="p10033" public="y"
+    server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10034" name="p10034" public="y"
+    server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10038" name="p10038" public="y"
+    server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+  <fah_proj number="10039" name="p10039" public="y"
+    server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
   <fah_proj number="10099" name="p10099" public="y"
     server="129.74.85.15" atoms="551" preferred="0.09" deadline="1"
     credit="2.53" frames="100" code="PM" contact="abdulwahidc"/>

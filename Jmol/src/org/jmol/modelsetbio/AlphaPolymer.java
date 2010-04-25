@@ -133,10 +133,10 @@ public class AlphaPolymer extends BioPolymer {
     float[] angles = new float[monomerCount];
     for (int i = monomerCount - 1; --i >= 2; )
       angles[i] = 
-        Measure.computeTorsion(monomers[i - 2].getLeadAtomPoint(),
-                                   monomers[i - 1].getLeadAtomPoint(),
-                                   monomers[i    ].getLeadAtomPoint(),
-                                   monomers[i + 1].getLeadAtomPoint(), true);
+        Measure.computeTorsion(monomers[i - 2].getLeadAtom(),
+                                   monomers[i - 1].getLeadAtom(),
+                                   monomers[i    ].getLeadAtom(),
+                                   monomers[i + 1].getLeadAtom(), true);
     return angles;
   }
 

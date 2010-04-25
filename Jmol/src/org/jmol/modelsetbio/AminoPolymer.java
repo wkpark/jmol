@@ -83,8 +83,8 @@ public class AminoPolymer extends AlphaPolymer {
 
   private void checkRasmolHydrogenBond(AminoMonomer source, int indexDonor, Point3f hydrogenPoint,
                          BitSet bsB, Vector vHBonds, int nMaxPerResidue) {
-    Point3f sourceAlphaPoint = source.getLeadAtomPoint();
-    Point3f sourceNitrogenPoint = source.getNitrogenAtomPoint();
+    Point3f sourceAlphaPoint = source.getLeadAtom();
+    Point3f sourceNitrogenPoint = source.getNitrogenAtom();
     Atom nitrogen = source.getNitrogenAtom();
     int energyMin1 = 0;
     int energyMin2 = 0;
@@ -97,7 +97,7 @@ public class AminoPolymer extends AlphaPolymer {
       Atom oxygen = target.getCarbonylOxygenAtom();
       if (!bsB.get(oxygen.index))
         continue;
-      Point3f targetAlphaPoint = target.getLeadAtomPoint();
+      Point3f targetAlphaPoint = target.getLeadAtom();
       float dist2 = sourceAlphaPoint.distanceSquared(targetAlphaPoint);
       if (dist2 > maxHbondAlphaDistance2)
         continue;
@@ -123,7 +123,7 @@ public class AminoPolymer extends AlphaPolymer {
   //private int hPtr = 0;
   private int calcHbondEnergy(Atom nitrogen, Point3f nitrogenPoint,
                       Point3f hydrogenPoint, AminoMonomer target) {
-    Point3f targetOxygenPoint = target.getCarbonylOxygenAtomPoint();
+    Point3f targetOxygenPoint = target.getCarbonylOxygenAtom();
 
     /*
      * the following were changed from "return -9900" to "return 0"
@@ -139,7 +139,7 @@ public class AminoPolymer extends AlphaPolymer {
     if (distOH2 < minimumHbondDistance2)
       return 0;
 
-    Point3f targetCarbonPoint = target.getCarbonylCarbonAtomPoint();
+    Point3f targetCarbonPoint = target.getCarbonylCarbonAtom();
     float distCH2 = targetCarbonPoint.distanceSquared(hydrogenPoint);
     if (distCH2 < minimumHbondDistance2)
       return 0;
@@ -351,12 +351,12 @@ public class AminoPolymer extends AlphaPolymer {
      * proline itself but the one prior to it.
      * 
      */
-    Point3f nitrogen1 = residue1.getNitrogenAtomPoint();
-    Point3f alphacarbon1 = residue1.getLeadAtomPoint();
-    Point3f carbon1 = residue1.getCarbonylCarbonAtomPoint();
-    Point3f nitrogen2 = residue2.getNitrogenAtomPoint();
-    Point3f alphacarbon2 = residue2.getLeadAtomPoint();
-    Point3f carbon2 = residue2.getCarbonylCarbonAtomPoint();
+    Point3f nitrogen1 = residue1.getNitrogenAtom();
+    Point3f alphacarbon1 = residue1.getLeadAtom();
+    Point3f carbon1 = residue1.getCarbonylCarbonAtom();
+    Point3f nitrogen2 = residue2.getNitrogenAtom();
+    Point3f alphacarbon2 = residue2.getLeadAtom();
+    Point3f carbon2 = residue2.getCarbonylCarbonAtom();
 
     residue2.setPhi(Measure.computeTorsion(carbon1, nitrogen2,
                                             alphacarbon2, carbon2, true));

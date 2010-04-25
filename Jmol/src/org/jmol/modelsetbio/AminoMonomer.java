@@ -106,24 +106,12 @@ public class AminoMonomer extends AlphaMonomer {
     return getAtomFromOffsetIndex(N);
   }
 
-  Point3f getNitrogenAtomPoint() {
-    return getAtomFromOffsetIndex(N);
-  }
-
   Atom getCarbonylCarbonAtom() {
-    return getAtomFromOffsetIndex(C);
-  }
-
-  Point3f getCarbonylCarbonAtomPoint() {
     return getAtomFromOffsetIndex(C);
   }
 
   Atom getCarbonylOxygenAtom() {
     return getWingAtom();
-  }
-
-  Point3f getCarbonylOxygenAtomPoint() {
-    return getWingAtomPoint();
   }
 
   Atom getInitiatorAtom() {
@@ -202,16 +190,16 @@ public class AminoMonomer extends AlphaMonomer {
   public boolean getNHPoint(Point3f aminoHydrogenPoint, Vector3f vNH) {
     if (monomerIndex == 0 || groupID == JmolConstants.GROUPID_PROLINE) 
       return false;      
-    Point3f nitrogenPoint = getNitrogenAtomPoint();
+    Point3f nitrogenPoint = getNitrogenAtom();
     Point3f nhPoint = getNitrogenHydrogenPoint();
     if (nhPoint != null) {
       vNH.sub(nhPoint, nitrogenPoint);
       aminoHydrogenPoint.set(nhPoint);
       return true;
     }
-    vNH.sub(nitrogenPoint, getLeadAtomPoint());
+    vNH.sub(nitrogenPoint, getLeadAtom());
     vNH.add(nitrogenPoint);
-    vNH.sub(((AminoMonomer)bioPolymer.monomers[monomerIndex - 1]).getCarbonylCarbonAtomPoint());
+    vNH.sub(((AminoMonomer)bioPolymer.monomers[monomerIndex - 1]).getCarbonylCarbonAtom());
     vNH.normalize();
     aminoHydrogenPoint.add(nitrogenPoint, vNH);
     this.nitrogenHydrogenPoint = new Point3f(aminoHydrogenPoint);
@@ -278,8 +266,8 @@ public class AminoMonomer extends AlphaMonomer {
      *   
      */
     
-    Point3f ptC = getCarbonylCarbonAtomPoint();
-    Point3f ptCa = getLeadAtomPoint();
+    Point3f ptC = getCarbonylCarbonAtom();
+    Point3f ptCa = getLeadAtom();
     Vector3f vA = new Vector3f();
     Vector3f vB = new Vector3f();
     Vector3f vC = null;
@@ -291,7 +279,7 @@ public class AminoMonomer extends AlphaMonomer {
       //vA = ptC - ptCa
       //vB = ptN - ptCa
       vA.sub(ptC, ptCa);
-      vB.sub(getNitrogenAtomPoint(), ptCa);
+      vB.sub(getNitrogenAtom(), ptCa);
       break;
     default:
     case 'p':
@@ -301,7 +289,7 @@ public class AminoMonomer extends AlphaMonomer {
       vA.sub(ptCa, ptC);
       if (monomerIndex == bioPolymer.monomerCount - 1)
         return null;
-      vB.sub(((AminoMonomer) bioPolymer.getMonomers()[monomerIndex + 1]).getNitrogenAtomPoint(), ptC);
+      vB.sub(((AminoMonomer) bioPolymer.getMonomers()[monomerIndex + 1]).getNitrogenAtom(), ptC);
       break;
     case 'n':
       // amino nitrogen chemical shift tensor frame      
@@ -311,7 +299,7 @@ public class AminoMonomer extends AlphaMonomer {
         return null;
       vC = new Vector3f();
       getNHPoint(ptTemp, vC);
-      vB.sub(ptCa, getNitrogenAtomPoint());
+      vB.sub(ptCa, getNitrogenAtom());
       vB.cross(vC, vB);
       Matrix3f mat = new Matrix3f();
       mat.set(new AxisAngle4f(vB, -beta));

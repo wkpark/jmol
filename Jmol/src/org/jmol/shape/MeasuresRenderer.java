@@ -24,7 +24,6 @@
 
 package org.jmol.shape;
 
-import org.jmol.modelset.Atom;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
@@ -39,7 +38,6 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
 
   private Measurement measurement;
   private boolean doJustify;
-//  final int[][] screens = new int[4][4]
   protected void render() {
     if (!g3d.checkTranslucent(false))
       return;
@@ -74,7 +72,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
 
   private Point3fi getAtom(int i) {
     Point3fi a = measurement.getAtom(i);
-    if (!(a instanceof Atom)) {
+    if (a.screenDiameter < 0) {
       viewer.transformPoint(a, pt0);
       a.screenX = pt0.x;
       a.screenY = pt0.y;

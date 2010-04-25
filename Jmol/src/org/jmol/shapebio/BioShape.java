@@ -65,8 +65,6 @@ class BioShape {
   int monomerCount;
   Monomer[] monomers;
 
-  //Point3f[] leadMidpoints;
-  //Point3f[] leadPoints;
   Vector3f[] wingVectors;
   int[] leadAtomIndices;
 

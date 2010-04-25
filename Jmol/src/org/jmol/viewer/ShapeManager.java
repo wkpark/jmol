@@ -27,6 +27,9 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.vecmath.Point3i;
+import javax.vecmath.Vector3f;
+
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
@@ -368,12 +371,24 @@ public class ShapeManager {
       return bsOK;
     bsOK.clear();
     Atom[] atoms = modelSet.atoms;
+    Vector3f[] vibrationVectors = modelSet.vibrationVectors;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_FRAME) == 0)
         continue;
       bsOK.set(i);
-      atom.transform(viewer);
+      Point3i screen;
+      if (vibrationVectors != null && atom.hasVibration())
+        screen = viewer.transformPoint(atom, vibrationVectors[i]);
+      else
+        screen = viewer.transformPoint(atom);
+      // ultimately I would like to dissociate the rendering 
+      // from the modelSet completely. 
+      atom.screenX = screen.x;
+      atom.screenY = screen.y;
+      atom.screenZ = screen.z;
+      atom.screenDiameter = viewer.scaleToScreen(screen.z, Math
+          .abs(atom.madAtom));
     }
     return bsOK;
   }

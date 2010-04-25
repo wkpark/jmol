@@ -86,12 +86,12 @@ public class Sheet extends ProteinStructure {
       Vector3f vectorCO = new Vector3f();
       Vector3f vectorCOSum = new Vector3f();
       AminoMonomer amino = (AminoMonomer) alphaPolymer.monomers[monomerIndexFirst];
-      vectorCOSum.sub(amino.getCarbonylOxygenAtomPoint(), amino
-          .getCarbonylCarbonAtomPoint());
+      vectorCOSum.sub(amino.getCarbonylOxygenAtom(), amino
+          .getCarbonylCarbonAtom());
       for (int i = monomerCount; --i > monomerIndexFirst;) {
         amino = (AminoMonomer) alphaPolymer.monomers[i];
-        vectorCO.sub(amino.getCarbonylOxygenAtomPoint(), amino
-            .getCarbonylCarbonAtomPoint());
+        vectorCO.sub(amino.getCarbonylOxygenAtom(), amino
+            .getCarbonylCarbonAtom());
         if (vectorCOSum.angle(vectorCO) < (float) Math.PI / 2)
           vectorCOSum.add(vectorCO);
         else

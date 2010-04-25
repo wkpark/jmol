@@ -38,7 +38,6 @@ import java.util.BitSet;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
-import javax.vecmath.Point3i;
 
 final public class Atom extends Point3fi {
 
@@ -63,11 +62,8 @@ final public class Atom extends Point3fi {
     return atomID;
   }
   
-  short madAtom;
-  public short getMadAtom() {
-    return madAtom;
-  }
-  
+  public short madAtom;
+
   short colixAtom;
   byte paletteID = JmolConstants.PALETTE_CPK;
 
@@ -343,6 +339,10 @@ final public class Atom extends Point3fi {
     return (formalChargeAndFlags & IS_HETERO_FLAG) != 0;
   }
 
+  public boolean hasVibration() {
+    return (formalChargeAndFlags & VIBRATION_VECTOR_FLAG) != 0;
+  }
+
   void setFormalCharge(int charge) {
     formalChargeAndFlags = (byte)((formalChargeAndFlags & FLAG_MASK) 
         | ((charge == Integer.MIN_VALUE ? 0 : charge > 7 ? 7 : charge < -3 ? -3 : charge) << 2));
@@ -515,20 +515,6 @@ final public class Atom extends Point3fi {
      return group;
    }
    
-   public void transform(Viewer viewer) {
-     Point3i screen;
-     Vector3f[] vibrationVectors;
-     if ((formalChargeAndFlags & VIBRATION_VECTOR_FLAG) == 0 ||
-         (vibrationVectors = group.chain.modelSet.vibrationVectors) == null)
-       screen = viewer.transformPoint(this);
-     else 
-       screen = viewer.transformPoint(this, vibrationVectors[index]);
-     screenX = screen.x;
-     screenY = screen.y;
-     screenZ = screen.z;
-     screenDiameter = viewer.scaleToScreen(screenZ, Math.abs(madAtom));
-   }
-
    public String getAtomName() {
      return (atomID > 0 ? JmolConstants.getSpecialAtomName(atomID) 
          : group.chain.modelSet.atomNames[index]);
@@ -916,10 +902,10 @@ final public class Atom extends Point3fi {
     //  An atom is considered visible if its PDB group is visible, even
     //  if it does not show up itself as part of the structure
     //  (this will be a difference in terms of *clickability*).
-    // except BACKBONE
-    flags |= group.shapeVisibilityFlags;
-    if (atomID != JmolConstants.ATOMID_ALPHA_CARBON && atomID != JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS)
-      flags &= ~JmolConstants.BACKBONE_VISIBILITY_FLAG;
+    // except BACKBONE -- in which case we only see the lead atoms
+    if (group.shapeVisibilityFlags != JmolConstants.BACKBONE_VISIBILITY_FLAG
+        || group.isLeadAtom(index))
+      flags |= group.shapeVisibilityFlags;
 
     // We know that (flags & AIM), so now we must remove that flag
     // and check to see if any others are remaining.

@@ -133,7 +133,7 @@ public abstract class BioPolymer extends Polymer {
     }
     if (invalidLead) {
       for (int i = monomerCount; --i >= 0;)
-        leadAtomIndices[i] = monomers[i].getLeadAtomIndex();
+        leadAtomIndices[i] = monomers[i].leadAtomIndex;
       invalidLead = false;
     }
     return leadAtomIndices;
@@ -154,7 +154,7 @@ public abstract class BioPolymer extends Polymer {
   }
 
   final Point3f getLeadPoint(int monomerIndex) {
-    return monomers[monomerIndex].getLeadAtomPoint();
+    return monomers[monomerIndex].getLeadAtom();
   }
 
   final Point3f getInitiatorPoint() {
@@ -194,11 +194,7 @@ public abstract class BioPolymer extends Polymer {
   // this might change in the future ... if we calculate a wing point
   // without an atom for an AlphaPolymer
   final Point3f getWingPoint(int polymerIndex) {
-    return monomers[polymerIndex].getWingAtomPoint();
-  }
-
-  final Point3f getPointPoint(int polymerIndex) {
-    return monomers[polymerIndex].getPointAtomPoint();
+    return monomers[polymerIndex].getWingAtom();
   }
 
   public void setConformation(BitSet bsSelected, int nAltLocsInModel) {
@@ -395,7 +391,7 @@ public abstract class BioPolymer extends Polymer {
     Vector3f[] vectors = getWingVectors();
     int count = monomerCount;
     for (int j = 0; j < count; j++)
-      if (bs.get(monomers[j].getLeadAtomIndex())) {
+      if (bs.get(monomers[j].leadAtomIndex)) {
         vList.addElement(new Point3f[] { points[j], new Point3f(vectors[j]) });
         last = j;
       } else if (last != Integer.MAX_VALUE - 1) {
@@ -423,7 +419,7 @@ public abstract class BioPolymer extends Polymer {
     ProteinStructure psLast = null;
     int n = 0;
     for (int i = 0; i < monomerCount; i++) {
-      if (bs.get(monomers[i].getLeadAtomIndex())) {
+      if (bs.get(monomers[i].leadAtomIndex)) {
         Hashtable monomerInfo = monomers[i].getMyInfo();
         monomerInfo.put("monomerIndex", new Integer(i));
         info.addElement(monomerInfo);
@@ -586,7 +582,7 @@ public abstract class BioPolymer extends Polymer {
     int dm = (mStep <= 1 ? 1 : mStep);
     for (int m = m0; m < p.monomerCount; m += dm) {
       Monomer monomer = p.monomers[m];
-      if (bsAtoms == null || bsAtoms.get(monomer.getLeadAtomIndex())) {
+      if (bsAtoms == null || bsAtoms.get(monomer.leadAtomIndex)) {
         Atom a = monomer.getLeadAtom();
         String id = monomer.getUniqueID();
         if (isRamachandran) {
@@ -620,32 +616,32 @@ public abstract class BioPolymer extends Polymer {
             // angles
             AminoMonomer aa = (AminoMonomer) monomer;
             pdbATOM.append("draw phi" + id + " ARROW ARC ").append(
-                Escape.escape(aa.getNitrogenAtomPoint())).append(
+                Escape.escape(aa.getNitrogenAtom())).append(
                 Escape.escape((Point3f) a)).append(
-                Escape.escape(aa.getCarbonylCarbonAtomPoint())).append(
+                Escape.escape(aa.getCarbonylCarbonAtom())).append(
                 "{" + (-x) + " " + x + " 0.5} \"phi = " + (int) x + "\"")
                 .append(" color ").append(qColor[2]).append('\n');
             pdbATOM.append("draw psi" + id + " ARROW ARC ").append(
                 Escape.escape((Point3f) a)).append(
-                Escape.escape(aa.getCarbonylCarbonAtomPoint())).append(
-                Escape.escape(aa.getNitrogenAtomPoint())).append(
+                Escape.escape(aa.getCarbonylCarbonAtom())).append(
+                Escape.escape(aa.getNitrogenAtom())).append(
                 "{0 " + y + " 0.5} \"psi = " + (int) y + "\"")
                 .append(" color ").append(qColor[1]).append('\n');
             pdbATOM.append("draw planeNCC" + id + " ").append(
-                Escape.escape(aa.getNitrogenAtomPoint())).append(
+                Escape.escape(aa.getNitrogenAtom())).append(
                 Escape.escape(a)).append(
-                Escape.escape(aa.getCarbonylCarbonAtomPoint())).append(
+                Escape.escape(aa.getCarbonylCarbonAtom())).append(
                 " color ").append(qColor[0]).append('\n');
             pdbATOM.append("draw planeCNC" + id + " ").append(
                 Escape.escape(((AminoMonomer) p.monomers[m - 1])
-                    .getCarbonylCarbonAtomPoint())).append(
-                Escape.escape(aa.getNitrogenAtomPoint())).append(
+                    .getCarbonylCarbonAtom())).append(
+                Escape.escape(aa.getNitrogenAtom())).append(
                 Escape.escape(a)).append(" color ").append(qColor[1]).append(
                 '\n');
             pdbATOM.append("draw planeCCN" + id + " ").append(Escape.escape(a))
-                .append(Escape.escape(aa.getCarbonylCarbonAtomPoint())).append(
+                .append(Escape.escape(aa.getCarbonylCarbonAtom())).append(
                     Escape.escape(((AminoMonomer) p.monomers[m + 1])
-                        .getNitrogenAtomPoint())).append(" color ").append(
+                        .getNitrogenAtom())).append(" color ").append(
                     qColor[2]).append('\n');
             continue;
           }
@@ -856,7 +852,7 @@ public abstract class BioPolymer extends Polymer {
           pdbCONECT.append(TextFormat.formatString("%5i", "i", a
               .getAtomNumber()));
           pdbCONECT.append('\n');
-          bsWritten.set(((Monomer) a.getGroup()).getLeadAtomIndex());
+          bsWritten.set(((Monomer) a.getGroup()).leadAtomIndex);
         }
         atomno = a.getAtomNumber();
       }

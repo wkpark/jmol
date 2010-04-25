@@ -367,6 +367,10 @@ public class Group {
     return selectedIndex;
   }
   
+  public boolean isLeadAtom(int atomIndex) {
+    return false;
+  }
+  
   public Atom getLeadAtom(Atom atom) { //for sticks
     Atom a = getLeadAtom();
     return (a == null ? atom : a);
@@ -420,5 +424,5 @@ public class Group {
   public int getBioPolymerIndexInModel() {
     return -1;
   }
-  
+
 }

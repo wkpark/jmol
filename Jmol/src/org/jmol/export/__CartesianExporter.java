@@ -127,7 +127,7 @@ abstract public class __CartesianExporter extends ___Exporter {
   // these are called by Export3D:
 
   void drawAtom(Atom atom) {
-    outputSphere(atom, atom.getMadAtom() / 2000f, atom.getColix());
+    outputSphere(atom, atom.madAtom / 2000f, atom.getColix());
   }
 
   void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) {

@@ -162,10 +162,8 @@ public abstract class BioShapeCollection extends Shape {
   }
 
   public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest) {
-    for (int i = bioShapes.length; --i >= 0; ){
-      BioShape b = bioShapes[i];
-      b.bioPolymer.findNearestAtomIndex(xMouse, yMouse, closest, bioShapes[i].mads, myVisibilityFlag);      
-    }
+    for (int i = bioShapes.length; --i >= 0; )
+      bioShapes[i].findNearestAtomIndex(xMouse, yMouse, closest);      
   }
 
   public void setVisibilityFlags(BitSet bs) {

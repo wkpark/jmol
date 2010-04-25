@@ -132,7 +132,7 @@ public class Balls extends AtomShape {
       int modelIndex = atom.getModelIndex();
       if (bs.get(modelIndex)) { 
         atom.setShapeVisibility(JmolConstants.ATOM_IN_FRAME, true);
-        if (atom.getMadAtom() != 0 &&  !modelSet.isAtomHidden(i))
+        if (atom.madAtom != 0 &&  !modelSet.isAtomHidden(i))
           atom.setShapeVisibility(myVisibilityFlag, true);
       }
     }
@@ -143,7 +143,7 @@ public class Balls extends AtomShape {
     float r = 0;
     for (int i = 0; i < atomCount; i++) {
       if (bsSizeSet != null && bsSizeSet.get(i)) {
-        if ((r = atoms[i].getMadAtom()) < 0)
+        if ((r = atoms[i].madAtom) < 0)
           setStateInfo(temp, i, "Spacefill on");
         else
           setStateInfo(temp, i, "Spacefill " + (r / 2000f));

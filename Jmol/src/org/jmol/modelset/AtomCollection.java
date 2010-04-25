@@ -127,7 +127,7 @@ abstract public class AtomCollection {
   String[] atomNames;
   String[] atomTypes;
   int[] atomSerials;
-  Vector3f[] vibrationVectors;
+  public Vector3f[] vibrationVectors;
   byte[] occupancies;
   short[] bfactor100s;
   float[] partialCharges;

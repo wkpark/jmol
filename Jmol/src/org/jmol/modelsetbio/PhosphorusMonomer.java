@@ -84,19 +84,7 @@ public class PhosphorusMonomer extends Monomer {
   public byte getProteinStructureType() {
     return JmolConstants.PROTEIN_STRUCTURE_NONE;
   }
-/*
-  public Atom getAtom(byte specialAtomID) {
-    return (specialAtomID == JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS
-            ? getLeadAtom()
-            : null);
-  }
 
-  public Point3f getAtomPoint(byte specialAtomID) {
-    return (specialAtomID == JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS
-            ? getLeadAtomPoint()
-            : null);
-  }
-*/
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
     if (possiblyPreviousMonomer == null)
       return true;
@@ -105,7 +93,7 @@ public class PhosphorusMonomer extends Monomer {
     // 1PN8 73:d and 74:d are 7.001 angstroms apart
     // but some P atoms are up to 7.4 angstroms apart
     float distance =
-      getLeadAtomPoint().distance(possiblyPreviousMonomer.getLeadAtomPoint());
+      getLeadAtom().distance(possiblyPreviousMonomer.getLeadAtom());
     return distance <= MAX_ADJACENT_PHOSPHORUS_DISTANCE;
   }
   

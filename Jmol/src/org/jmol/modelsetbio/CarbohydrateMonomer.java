@@ -53,4 +53,21 @@ public class CarbohydrateMonomer extends Monomer {
     return true;
   }
 
+  void findNearestAtomIndex(int x, int y, Atom[] closest,
+                            short madBegin, short madEnd) {    
+    Atom competitor = closest[0];
+    Atom anomericO = getLeadAtom();
+    short marBegin = (short) (madBegin / 2);
+    if (marBegin < 1200)
+      marBegin = 1200;
+    if (anomericO.screenZ == 0)
+      return;
+    int radiusBegin = scaleToScreen(anomericO.screenZ, marBegin);
+    if (radiusBegin < 4)
+      radiusBegin = 4;
+    if (isCursorOnTopOf(anomericO, x, y, radiusBegin, competitor))
+      closest[0] = anomericO;
+  }
+
+
 }

@@ -48,9 +48,11 @@ public abstract class Monomer extends Group {
           byte[] interestingAtomOffsets) {
     super(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
     offsets = interestingAtomOffsets;
+    leadAtomIndex = firstAtomIndex + (offsets[0] & 0xFF);
   }
 
   int monomerIndex;
+  int leadAtomIndex;
   
   void setBioPolymer(BioPolymer polymer, int index) {
     this.bioPolymer = polymer;
@@ -211,28 +213,16 @@ public abstract class Monomer extends Group {
   protected Point3f getAtomPoint(byte specialAtomID) { return null; }
 */
   
-  final int getLeadAtomIndex() {
-    return firstAtomIndex + (offsets[0] & 0xFF);
+  public boolean isLeadAtom(int atomIndex) {
+    return atomIndex == leadAtomIndex;
   }
 
   public final Atom getLeadAtom() {
     return getAtomFromOffsetIndex(0);
   }
 
-  final Point3f getLeadAtomPoint() {
-    return getAtomFromOffsetIndex(0);
-  }
-
   public final Atom getWingAtom() {
     return getAtomFromOffsetIndex(1);
-  }
-
-  public final Point3f getWingAtomPoint() {
-    return getAtomFromOffsetIndex(1);
-  }
-
-  final Point3f getPointAtomPoint() {
-    return getAtomFromOffsetIndex(3);
   }
 
   Atom getInitiatorAtom() {

@@ -143,9 +143,18 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
     vectorT.set(ptB);
     vectorT.sub(ptA);
     float d0 = vectorT.length();
-    if (tickInfo.scale != null)
-      vectorT.set(vectorT.x * tickInfo.scale.x, vectorT.y * tickInfo.scale.y,
-          vectorT.z * tickInfo.scale.z);
+    if (tickInfo.scale != null) {
+      if (Float.isNaN(tickInfo.scale.x)) { // unitcell
+        float a = viewer.getUnitCellInfo(JmolConstants.INFO_A);
+        if (!Float.isNaN(a))
+          vectorT.set(vectorT.x / a, vectorT.y
+              / viewer.getUnitCellInfo(JmolConstants.INFO_B), vectorT.z
+              / viewer.getUnitCellInfo(JmolConstants.INFO_C));
+      } else {
+        vectorT.set(vectorT.x * tickInfo.scale.x, vectorT.y * tickInfo.scale.y,
+            vectorT.z * tickInfo.scale.z);
+      }
+    }
     // d is in scaled units
     float d = vectorT.length() + 0.0001f * dx;
     if (d < dx)
@@ -164,7 +173,7 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
       diameter = 1;
     vectorT2.set(-vectorT2.y, vectorT2.x, 0);
     vectorT2.scale(length / vectorT2.length());
-    Point3f ptRef = tickInfo.reference;
+    Point3f ptRef = tickInfo.reference; // not implemented
     if (ptRef == null) {
       pointT3.set(viewer.getBoundBoxCenter());
       if (viewer.getAxesMode() == JmolConstants.AXES_MODE_BOUNDBOX) {

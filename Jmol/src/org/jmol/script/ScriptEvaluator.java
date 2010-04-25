@@ -7845,7 +7845,7 @@ public class ScriptEvaluator {
         strFormat = stringParameter(i);
         break;
       case Token.ticks:
-        tickInfo = checkTicks(i);
+        tickInfo = checkTicks(i, false, true, true);
         i = iToken;
         tokAction = Token.define;
         break;
@@ -11438,7 +11438,7 @@ public class ScriptEvaluator {
 
   private void axes(int index) throws ScriptException {
     // axes (index==1) or set axes (index==2)
-    TickInfo tickInfo = checkTicks(index);
+    TickInfo tickInfo = checkTicks(index, true, true, false);
     index = iToken + 1;
     int tok = tokAt(index);
     String type = optParameterAsString(index).toLowerCase();
@@ -11500,7 +11500,7 @@ public class ScriptEvaluator {
   }
 
   private void boundbox(int index) throws ScriptException {
-    TickInfo tickInfo = checkTicks(index);
+    TickInfo tickInfo = checkTicks(index, false, true, false);
     index = iToken + 1;
     float scale = 1;
     if (tokAt(index) == Token.scale) {
@@ -11556,7 +11556,9 @@ public class ScriptEvaluator {
     setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", mad);
   }
 
-  private TickInfo checkTicks(int index) throws ScriptException {
+  private TickInfo checkTicks(int index, boolean allowUnitCell,
+                              boolean allowScale, boolean allowFirst)
+      throws ScriptException {
     iToken = index - 1;
     if (tokAt(index) != Token.ticks)
       return null;
@@ -11577,30 +11579,33 @@ public class ScriptEvaluator {
       iToken = index;
       return tickInfo;
     }
-    tickInfo = new TickInfo(getPoint3f(index, false));
+    tickInfo = new TickInfo((Point3f) getPointOrPlane(index, false, true,
+        false, false, 3, 3));
+    if (coordinatesAreFractional || tokAt(iToken + 1) == Token.unitcell) {
+      tickInfo.scale = new Point3f(Float.NaN, Float.NaN, Float.NaN);
+      allowScale = false;
+    }
+    if (tokAt(iToken + 1) == Token.unitcell)
+      iToken++;
     tickInfo.type = str;
     if (tokAt(iToken + 1) == Token.format)
       tickInfo.tickLabelFormats = stringParameterSet(iToken + 2);
+    if (!allowScale)
+      return tickInfo;
     if (tokAt(iToken + 1) == Token.scale) {
       if (isFloatParameter(iToken + 2)) {
         float f = floatParameter(iToken + 2);
         tickInfo.scale = new Point3f(f, f, f);
-      } else if (tokAt(iToken + 2) == Token.unitcell) {
-        tickInfo.scale = new Point3f(1 / viewer
-            .getUnitCellInfo(JmolConstants.INFO_A), 1 / viewer
-            .getUnitCellInfo(JmolConstants.INFO_B), 1 / viewer
-            .getUnitCellInfo(JmolConstants.INFO_C));
-        if (Float.isNaN(tickInfo.scale.x))
-          tickInfo.scale = null;
-        iToken += 2;
       } else {
         tickInfo.scale = getPoint3f(iToken + 2, true);
       }
     }
-    if (tokAt(iToken + 1) == Token.first)
-      tickInfo.first = floatParameter(iToken + 2);
-    if (tokAt(iToken + 1) == Token.point)
-      tickInfo.reference = centerParameter(iToken + 2);
+    if (allowFirst)
+      if (tokAt(iToken + 1) == Token.first)
+        tickInfo.first = floatParameter(iToken + 2);
+    // POINT {x,y,z} reference point not implemented
+    //if (tokAt(iToken + 1) == Token.point)
+     // tickInfo.reference = centerParameter(iToken + 2);
     return tickInfo;
   }
 
@@ -11608,7 +11613,7 @@ public class ScriptEvaluator {
     int icell = Integer.MAX_VALUE;
     int mad = Integer.MAX_VALUE;
     Point3f pt = null;
-    TickInfo tickInfo = checkTicks(index);
+    TickInfo tickInfo = checkTicks(index, true, false, false);
     index = iToken;
     if (statementLength == index + 2) {
       if (getToken(index + 1).tok == Token.integer

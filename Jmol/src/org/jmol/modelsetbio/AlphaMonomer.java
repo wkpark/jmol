@@ -141,7 +141,7 @@ public class AlphaMonomer extends Monomer {
 
   final public Point3f getAtomPoint(byte specialAtomID) {
     return (specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
-            ? getLeadAtomPoint()
+            ? getLeadAtom()
             : null);
   }
 
@@ -194,7 +194,7 @@ public class AlphaMonomer extends Monomer {
       if (monomerIndex == 0 
           || monomerIndex == bioPolymer.monomerCount - 1)
         return null;
-      Point3f ptCa = getLeadAtomPoint();
+      Point3f ptCa = getLeadAtom();
       Point3f ptCaNext = bioPolymer.getLeadPoint(monomerIndex + 1);
       Point3f ptCaPrev = bioPolymer.getLeadPoint(monomerIndex - 1);
       vA.sub(ptCaNext, ptCa);

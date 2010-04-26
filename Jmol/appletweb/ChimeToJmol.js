@@ -177,6 +177,7 @@ function __jmolFixChimeButton(tag) {
 function __jmolFixChimeScript(script,isZoomSet) { 
 	script = script//.replace(/\*\./g,"_")
 			.replace(/hbonds /,"hbonds calculate;hbonds ")			
+			.replace(/\&gt;/g, ">").replace(/\&lt;/g, "<")	// angle brackets are read as & entities and may be used in scripts as less than / more than
 		// if Chime size was set in pixels, we'll do an approximated zoom conversion: 
 		// Chime zoom value divided by Chime width gives an idea of the needed zoom value (percent)
 	var j1 = script.indexOf("zoom ")

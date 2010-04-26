@@ -13825,6 +13825,7 @@ public class ScriptEvaluator {
     int ptWithin = 0;
     Boolean smoothing = null;
     BitSet bs;
+    BitSet bsSelect = null;
     StringBuffer sbCommand = new StringBuffer();
     Point3f[] pts;
     String str = null;
@@ -13949,10 +13950,11 @@ public class ScriptEvaluator {
         propertyValue = new Integer(modelIndex);
         break;
       case Token.select:
+        bsSelect = expression(++i);
         propertyName = "select";
-        propertyValue = expression(++i);
+        propertyValue = bsSelect;
         i = iToken;
-        sbCommand.append(" select " + Escape.escape((BitSet) propertyValue));
+        // don't set sbCommand here because at finalize we will do that
         break;
       case Token.set:
         thisSetNumber = intParameter(++i);
@@ -14139,7 +14141,7 @@ public class ScriptEvaluator {
         surfaceObjectSeen = true;
         String lcaoType = parameterAsString(++i);
         addShapeProperty(propertyList, "lcaoType", lcaoType);
-        sbCommand.append(" lcaocartoon ").append(lcaoType);
+        sbCommand.append(" lcaocartoon ").append(Escape.escape(lcaoType));
         switch (getToken(++i).tok) {
         case Token.bitset:
         case Token.expressionBegin:
@@ -14853,7 +14855,10 @@ public class ScriptEvaluator {
             .getVariable(volume));
     }
     if (surfaceObjectSeen && !isLcaoCartoon && !isSyntaxCheck) {
-      setShapeProperty(iShape, "finalize", sbCommand.toString());
+      if (bsSelect == null)
+        bsSelect = viewer.getSelectionSet();
+      setShapeProperty(iShape, "finalize", " select " + Escape.escape(bsSelect) 
+          + sbCommand.toString());
       Integer n = (Integer) getShapeProperty(iShape, "count");
       float[] dataRange = (float[]) getShapeProperty(iShape, "dataRange");
       String s = (String) getShapeProperty(iShape, "ID");

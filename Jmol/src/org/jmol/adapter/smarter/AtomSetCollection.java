@@ -682,24 +682,33 @@ public class AtomSetCollection {
       atoms[i].ellipsoid = symmetry.getEllipsoid(atoms[i].anisoBorU);
     bondCount0 = bondCount;
 
-    symmetry.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
+    symmetry
+        .setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
     int operationCount = symmetry.getSpaceGroupOperationCount();
     minXYZ = new Point3i();
     maxXYZ = new Point3i(maxX, maxY, maxZ);
     getSymmetry().setMinMaxLatticeParameters(minXYZ, maxXYZ);
-    if ((int)getSymmetry().getUnitCellInfo(JmolConstants.INFO_DIMENSIONS) < 3)
-      doPackUnitCell = false;
+    int dims = (int) getSymmetry().getUnitCellInfo(
+        JmolConstants.INFO_DIMENSIONS);
     if (doPackUnitCell) {
       minXYZ.x--;
       maxXYZ.x++;
-      minXYZ.y--;
-      maxXYZ.y++;
-      minXYZ.z--;
-      maxXYZ.z++;
+      if (dims > 1) { // not polymer
+        minXYZ.y--;
+        maxXYZ.y++;
+        if (dims > 2) { // not polymer or slab
+          minXYZ.z--;
+          maxXYZ.z++;
+        }
+      }
     }
-    int nCells = (maxXYZ.x - minXYZ.x) * (maxXYZ.y - minXYZ.y) * (maxXYZ.z - minXYZ.z);
+    int nCells = (maxXYZ.x - minXYZ.x) * (maxXYZ.y - minXYZ.y)
+        * (maxXYZ.z - minXYZ.z);
     int cartesianCount = (checkSpecial ? noSymmetryCount * operationCount
-        * nCells : symmetryRange > 0 ? noSymmetryCount * operationCount // checking against {1 1 1} 
+        * nCells : symmetryRange > 0 ? noSymmetryCount * operationCount // checking
+                                                                        // against
+                                                                        // {1 1
+                                                                        // 1}
     : symmetryRange < 0 ? 1 // checking against symop=1555 set; just a box
         : 1 // not checking
     );
@@ -723,7 +732,7 @@ public class AtomSetCollection {
       rmaxy = -Float.MAX_VALUE;
       rmaxz = -Float.MAX_VALUE;
     }
-    //always do the 555 cell first
+    // always do the 555 cell first
     Matrix4f op = symmetry.getSpaceGroupOperation(0);
     if (doPackUnitCell)
       ptOffset.set(0, 0, 0);
@@ -778,7 +787,7 @@ public class AtomSetCollection {
             pt = symmetryAddAtoms(iAtomFirst, noSymmetryCount, tx, ty, tz,
                 cell555Count, pt, iCell * operationCount);
         }
-    if (iCell * noSymmetryCount == atomCount - iAtomFirst) 
+    if (iCell * noSymmetryCount == atomCount - iAtomFirst)
       appendAtomProperties(iCell);
     setSymmetryOps();
     setAtomSetAuxiliaryInfo("presymmetryAtomIndex", new Integer(iAtomFirst));
@@ -790,7 +799,7 @@ public class AtomSetCollection {
     symmetry.setSpaceGroup(null);
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false;
-    //turn off global fractional conversion -- this will be model by model
+    // turn off global fractional conversion -- this will be model by model
     setAtomSetAuxiliaryInfo("hasSymmetry", Boolean.TRUE);
     setGlobalBoolean(GLOBAL_SYMMETRY);
   }

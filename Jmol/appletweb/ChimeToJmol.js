@@ -115,9 +115,9 @@ function __fixChime() {
 	for (var i = 1; i < Text.length; i++) {
 		var text = Text[i]
 		var pt = text.indexOf(">")
-		if (text.indexOf("src=") >= 0) {
+		if (text.substring(0,pt).indexOf("src=") >= 0) {
 			Text[i] = __jmolFixChimeApplet(text.substring(0, pt)) + text.substring(pt + 1)
-		} else if (text.indexOf("target=") >= 0) {
+		} else if (text.substring(0,pt).indexOf("button=") >= 0) {
 			Text[i] = __jmolFixChimeButton(text.substring(0, pt)) + text.substring(pt + 1)
 		}
 	}

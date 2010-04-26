@@ -2,6 +2,7 @@
 
 ChimeToJmol.js
 hansonr@stolaf.edu 8:07 AM 4/21/2010
+    Changes by A.Herraez 26 April 2010
 
 A set of functions that will (when fully developed) 
 allow the following on just about any Chime page to 
@@ -11,8 +12,8 @@ Also changes older Jmol "applet" code to use Jmol.js
 
 1) add these lines to your page's <HEAD> section:
 
- <script language="javascript" SRC="Jmol/Jmol.js">  </script>
- <script language="javascript" SRC="Jmol/ChimeToJmol.js">  </script>
+ <script type="text/javascript" src="Jmol/Jmol.js">  </script>
+ <script type="text/javascript" src="Jmol/ChimeToJmol.js">  </script>
 
 2) Set jmolDirectory (below) to the desired directory and load it with
 the standard Jmol files (Jmol.js, JmolApplet*.jar) and ChimeToJmol.js
@@ -27,6 +28,13 @@ to it.
 4) If you want to test your page, add NOJMOL to the page URL
 
 TODO: more script conversions needed for Chime.
+
+done # default Jmol Ball&Stick vs. defalt Chime wireframe
+# default orientation / axes - are different, but also depend on file format (Chime PDB, Chime MOL, Jmol both)
+done # embed tag options: display3d, color3d, bgcolor, hbonds, ssbonds, frank, hide popup menu, ...
+done # zoom  (partially done, not foolproof; needs testing in different situations)
+done # Hbonds on , Hbonds N  need previous calculate
+# external script files cannot be parsed and fixed: manual edit seems necessary
 
 */
 
@@ -69,7 +77,7 @@ function __fixJmol() {
 }
 
 function __jmolFixJmolApplet(tag) {
-	var A = __jmolGetAttributes(tag) 
+	var A = __jmolGetAttributes(tag)
 	if (!A.width)A.width = 300
 	if (!A.height)A.height = 300
 	if (!A.script)A.script = ""
@@ -92,10 +100,13 @@ function __jmolFixJmolAppletControl(tag) {
 	return "<span width=\"" + A.width + "\" height=\"" + A.height + "\">" + jmolButton(A.script,"X",A.target) + "</span>"
 }
 
+///////// Chime section //////////
+
 function __fixChime() {
 	jmolInitialize(jmolDirectory, 
 		(document.location.protocol=="file:" ? "JmolAppletSigned0.jar" : "JmolApplet0.jar"))
 	jmolSetDocument(0)
+	jmolSetButtonCssClass("JmolChimeButton")
 
 	var body = document.body.innerHTML
 	var Text = body.split("<EMBED")
@@ -113,32 +124,88 @@ function __fixChime() {
 	document.body.innerHTML = Text.join("")
 }
 
-function __jmolFixChimeApplet(tag) {
+function __jmolFixChimeApplet(tag) {  
 	var A = __jmolGetAttributes(tag) 
-	A.width = parseInt(A.width)
-	A.height = parseInt(A.height)
-	A.script = (A.script ? __jmolFixChimeScript(A.script) : "")
-	if (A.animmode) A.script += ";animation mode " + A.animmode + ";"
-	if (A.animfps) A.script += ";animation fps " + A.animfps + ";"
-	if (A.startanim && A.startanim.toLowerCase() == "true") A.script += ";animation on;"
-	return jmolApplet([A.width,A.height],"load = \"" + A.src + "\";" + A.script, A.name)	
+	var zoomSet = null
+	var s = "spacefill off;wireframe on;"
+	if (__jmolIsChimeFalse(A.frank)) s += "frank off;"
+	if (__jmolIsChimeTrue(A.nomenus)) s += "set disablePopupMenu on;"
+	if (A.display3d) s += __jmolFixChimeDisplay3d(A.display3d)
+	if (A.color3d) s += __jmolFixChimeColor3d(A.color3d)
+	if (A.bgcolor) s += __jmolFixChimeBgcolor(A.bgcolor)
+	if (A.spinx || A.spiny || A.spinz) s += "set spinX 0; set spinY 0; set spinZ 0;" // in Chime, setting any spin cancels the default 0 10 0; in Jmol, it does not
+	if (A.spinx) s += "set spinX " + A.spinx + ";"
+	if (A.spiny) s += "set spinY " + A.spiny + ";"
+	if (A.spinz) s += "set spinZ " + A.spinz + ";"
+	if (A.spinfps) s += "set spinFps " + A.spinfps + ";"
+	if (__jmolIsChimeTrue(A.startspin)) s += "spin on;"
+	if (A.hbonds && A.hbonds!="off") s += "hbonds calculate; hbonds " + A.hbonds + ";"
+	if (A.ssbonds) s += "ssbonds " + A.ssbonds + ";"
+	if (A.animmode) s += "animation mode " + A.animmode + ";"
+	if (A.animfps) s += "animation fps " + A.animfps + ";"
+	if (__jmolIsChimeTrue(A.startanim)) s += "animation on;"
+	
+	// if Chime size was set in pixels, let's do an approximated zoom conversion: store width and pass it to the script parser
+	if (A.width.indexOf("%")==-1) { A.width = parseInt(A.width); zoomSet = A.width }
+	if (A.height.indexOf("%")==-1) { A.height = parseInt(A.height) }
+	if (!A.script || A.script.indexOf("zoom ")==-1) { zoomSet=null }
+	
+	A.script = (A.script ? __jmolFixChimeScript(A.script,zoomSet) : "")
+	
+	return jmolApplet([A.width,A.height],"load \"" + A.src + "\";" + s + A.script, A.name)	
 }
 
 function __jmolFixChimeButton(tag) {
 	var A = __jmolGetAttributes(tag) 
-	if (!A.width)A.width = 12
-	if (!A.height)A.height = 12
-	A.script = __jmolFixChimeScript(A.script)
-	return "<span width=\"" + A.width + "\" height=\"" + A.height + "\">" + jmolLink(A.script,"[x]") + "</span>"
+	A.script = __jmolFixChimeScript(A.script)	
+	jmolSetTarget(A.target)
+	A.button = A.button.toLowerCase()	// 'button' may be push|pushed|radio#|toggle|followed
+	if (A.button=="followed" || A.button=="push" || A.button=="pushed") {
+		if (!A.height)A.height = 12
+		return '<span style="font-size:' + (A.height-4) + 'px;">' + jmolButton(A.script,"X") + '</span>'
+	}
+	if (A.button=="toggle") {
+		A.altscript = __jmolFixChimeScript(A.altscript)
+		return jmolCheckbox(A.script,A.altscript,"")
+	}
+	if (A.button.indexOf("radio")!=-1) {
+		return jmolRadio(A.script, "", false, "", "Chime"+A.button) 
+	}
+	return jmolLink(A.script,"[x]")	//this shouldn't be reached
 }
 
-function __jmolFixChimeScript(script) {
-	script = script.replace(/\*\./g,"_")
-			.replace(/stick on/g,"wireframe 0.15;")
-			.replace(/ball\&amp\;stick off/g,"wireframe off;spacefill off")
-			.replace(/select startanim\=false/g,"animation off")
-			.replace(/select startanim\=true/g,"animation play")
+function __jmolFixChimeScript(script,isZoomSet) { 
+	script = script//.replace(/\*\./g,"_")
+			.replace(/hbonds /,"hbonds calculate;hbonds ")			
+		// if Chime size was set in pixels, we'll do an approximated zoom conversion: 
+		// Chime zoom value divided by Chime width gives an idea of the needed zoom value (percent)
+	var j1 = script.indexOf("zoom ")
+	if (j1!=-1 && isZoomSet) {
+		var j2 = script.substring(j1).indexOf(";")
+		if (j2==-1) { j2=script.length-j1 }
+		var z = parseInt(script.substring(j1+5,j1+j2))	// this is the Chime zoom value
+		script = script.substring(0,j1) + "zoom " + parseInt(z/isZoomSet*100) + script.substring(j1+j2) 
+	}
 	return script
+}
+
+function __jmolFixChimeDisplay3d(v) {
+	if (v=="spacefill") return "spacefill on;wireframe off;"
+	if (v=="sticks") return "spacefill off;wireframe 0.15;"
+	if (v=="wireframe") return "spacefill on;wireframe on;"
+	if (v=="ball&amp;stick") return "spacefill 30%;wireframe 0.15;"
+	if (v=="cartoons") return "spacefill off;wireframe off;cartoons on;"
+	if (v=="ribbons") return "spacefill off;wireframe off;ribbons on;"
+	if (v=="strands") return "spacefill off;wireframe off;strands on;"
+}
+function __jmolFixChimeBgcolor(v) {
+	if (v.charAt(0)=="#") v = "[x" + v.substring(1) + "]"
+	return "color background " + v + ";"
+}
+function __jmolFixChimeColor3d(v) {
+	if (v=="monochrome" || v=="user") v="white"
+	return "color " + v + ";"
+	//color3d = {chain|cpk|group|monochrome|shapely|structure|temperature|user}
 }
 
 function __jmolGetAttributes(tag) {
@@ -197,4 +264,17 @@ function __jmolGetAttributes(tag) {
   return S
 }
 
+function __jmolIsChimeTrue(v) {
+	if (!v) { return false; }
+	v = v.toLowerCase();
+	if (v=="yes"||v=="true"||v=="on"||v=="1") { return true; }
+	return false;
+}
+function __jmolIsChimeFalse(v) {
+	if (!v) { return false; }
+	v = v.toLowerCase();
+	if (v=="no"||v=="false"||v=="off"||v=="0") { return true; }
+	return false;
+}
 
+document.writeln('<style type="text/css"> .JmolChimeButton { background-color:#C0C0C0; border:1px outset #C0C0C0; padding:0; font:inherit; } <' + '/style>')

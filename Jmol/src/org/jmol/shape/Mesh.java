@@ -52,7 +52,7 @@ public class Mesh extends MeshSurface {
   public boolean isValid = true;
   public String scriptCommand;
   public String colorCommand;
- 
+  public Point3f periodicity;
   public boolean visible = true;
   public int lighting = JmolConstants.FRONTLIT;
   
@@ -232,6 +232,8 @@ public class Mesh extends MeshSurface {
     s.append(type);
     if (!type.equals("mo"))
       s.append(" ID ").append(Escape.escape(thisID));
+    if (periodicity != null)
+      s.append(" periodicity ").append(Escape.escape(periodicity));
     s.append(fillTriangles ? " fill" : " noFill");
     s.append(drawTriangles ? " mesh" : " noMesh");
     s.append(showPoints ? " dots" : " noDots");

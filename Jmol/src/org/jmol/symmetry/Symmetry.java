@@ -30,6 +30,7 @@ import java.util.Hashtable;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.SymmetryInterface;
@@ -319,6 +320,11 @@ public class Symmetry implements SymmetryInterface {
 
   public boolean isPolymer() {
     return (unitCell == null ? false : unitCell.isPolymer());
+  }
+
+  public void setMinMaxLatticeParameters(Point3i minXYZ, Point3i maxXYZ) {
+    if (unitCell != null)
+      unitCell.setMinMaxLatticeParameters(minXYZ, maxXYZ);
   }
 
 }  

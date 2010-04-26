@@ -5,6 +5,7 @@ import java.util.Hashtable;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
@@ -127,5 +128,7 @@ public interface SymmetryInterface {
   public abstract boolean isSlab();
 
   public abstract void addSpaceGroupOperation(Matrix4f mat);
+
+  public abstract void setMinMaxLatticeParameters(Point3i minXYZ, Point3i maxXYZ);
 
 }

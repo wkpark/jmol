@@ -31,6 +31,7 @@ import java.util.BitSet;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.Interface;
@@ -665,8 +666,8 @@ public class AtomSetCollection {
 
   private final Point3f ptOffset = new Point3f();
    
-  private int minX, maxX, minY, maxY, minZ, maxZ;
-   
+  private Point3i minXYZ, maxXYZ;
+  
   private static boolean isWithinCell(Point3f pt, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
     float slop = 0.02f;
     return (pt.x > minX - slop && pt.x < maxX + slop 
@@ -683,47 +684,20 @@ public class AtomSetCollection {
 
     symmetry.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
     int operationCount = symmetry.getSpaceGroupOperationCount();
-    minX = 0;
-    minY = 0;
-    minZ = 0;
-    if (isLatticeRange) {
-      //alternative format for indicating a range of cells:
-      //{111 666}
-      //555 --> {0 0 0}
-      minX = (maxX / 100) - 5;
-      minY = (maxX % 100) / 10 - 5;
-      minZ = (maxX % 10) - 5;
-      //555 --> {1 1 1}
-      maxX = (maxY / 100) - 4;
-      maxZ = (maxY % 10) - 4;
-      maxY = (maxY % 100) / 10 - 4;
-    }
-    switch ((int)getSymmetry().getUnitCellInfo(JmolConstants.INFO_DIMENSIONS)) {
-    case 1:
-      minY = minZ = 0;
-      maxY = maxZ = 1;
+    minXYZ = new Point3i();
+    maxXYZ = new Point3i(maxX, maxY, maxZ);
+    getSymmetry().setMinMaxLatticeParameters(minXYZ, maxXYZ);
+    if ((int)getSymmetry().getUnitCellInfo(JmolConstants.INFO_DIMENSIONS) < 3)
       doPackUnitCell = false;
-      break;
-    case 2:
-      minZ = 0;
-      maxZ = 1;
-      doPackUnitCell = false;
-      break;
-    case 3:
-      break;
-    }
     if (doPackUnitCell) {
-      minX--;
-      maxX++;
-      minY--;
-      maxY++;
-      minZ--;
-      maxZ++;
+      minXYZ.x--;
+      maxXYZ.x++;
+      minXYZ.y--;
+      maxXYZ.y++;
+      minXYZ.z--;
+      maxXYZ.z++;
     }
-    this.maxX = maxX;
-    this.maxY = maxY;
-    this.maxZ = maxZ;
-    int nCells = (maxX - minX) * (maxY - minY) * (maxZ - minZ);
+    int nCells = (maxXYZ.x - minXYZ.x) * (maxXYZ.y - minXYZ.y) * (maxXYZ.z - minXYZ.z);
     int cartesianCount = (checkSpecial ? noSymmetryCount * operationCount
         * nCells : symmetryRange > 0 ? noSymmetryCount * operationCount // checking against {1 1 1} 
     : symmetryRange < 0 ? 1 // checking against symop=1555 set; just a box
@@ -753,9 +727,9 @@ public class AtomSetCollection {
     Matrix4f op = symmetry.getSpaceGroupOperation(0);
     if (doPackUnitCell)
       ptOffset.set(0, 0, 0);
-    for (int tx = minX; tx < maxX; tx++)
-      for (int ty = minY; ty < maxY; ty++)
-        for (int tz = minZ; tz < maxZ; tz++) {
+    for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
+      for (int ty = minXYZ.y; ty < maxXYZ.y; ty++)
+        for (int tz = minXYZ.z; tz < maxXYZ.z; tz++) {
           unitCells[iCell++] = 555 + tx * 100 + ty * 10 + tz;
           if (tx != 0 || ty != 0 || tz != 0 || cartesians.length == 0)
             continue;
@@ -796,9 +770,9 @@ public class AtomSetCollection {
       rmaxz += absRange;
     }
     iCell = 0;
-    for (int tx = minX; tx < maxX; tx++)
-      for (int ty = minY; ty < maxY; ty++)
-        for (int tz = minZ; tz < maxZ; tz++) {
+    for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
+      for (int ty = minXYZ.y; ty < maxXYZ.y; ty++)
+        for (int tz = minXYZ.z; tz < maxXYZ.z; tz++) {
           iCell++;
           if (tx != 0 || ty != 0 || tz != 0)
             pt = symmetryAddAtoms(iAtomFirst, noSymmetryCount, tx, ty, tz,
@@ -901,7 +875,7 @@ public class AtomSetCollection {
           symmetry.toUnitCell(cartesian, ptOffset);
           ptAtom.set(cartesian);
           symmetry.toFractional(ptAtom);
-          if (!isWithinCell(ptAtom, minX + 1, maxX - 1, minY + 1, maxY - 1, minZ + 1, maxZ - 1))
+          if (!isWithinCell(ptAtom, minXYZ.x + 1, maxXYZ.x - 1, minXYZ.y + 1, maxXYZ.y - 1, minXYZ.z + 1, maxXYZ.z - 1))
             continue;
         }
         if (checkSymmetryMinMax)

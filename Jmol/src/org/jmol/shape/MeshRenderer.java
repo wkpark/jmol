@@ -29,6 +29,8 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
+
+import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.Graphics3D;
 
 public abstract class MeshRenderer extends ShapeRenderer {
@@ -62,16 +64,43 @@ public abstract class MeshRenderer extends ShapeRenderer {
       render1(mc.meshes[i]);
   }
 
-  //draw, isosurface, molecular orbitals
-  public boolean render1(Mesh mesh) {  //used by mps renderer
+  // draw, isosurface, molecular orbitals
+  public boolean render1(Mesh mesh) { // used by mps renderer
     this.mesh = mesh;
     if (!setVariables())
       return false;
     if (!g3d.setColix(colix) && !mesh.showContourLines)
       return mesh.title != null;
 
-    transform();
+    for (int i = vertexCount; --i >= 0;)
+      viewer.transformPoint(vertices[i], screens[i]);
     render2(exportType != Graphics3D.EXPORT_NOT);
+    if (mesh.periodicity != null && mesh.modelIndex >= 0) {
+      SymmetryInterface unitcell = viewer.getModelUnitCell(mesh.modelIndex);
+      if (unitcell != null) {
+        Point3f vTemp = new Point3f();
+        Point3f offset = new Point3f();
+        Point3i minXYZ = new Point3i();
+        Point3i maxXYZ = new Point3i((int) mesh.periodicity.x,
+            (int) mesh.periodicity.y, (int) mesh.periodicity.z);
+        unitcell.setMinMaxLatticeParameters(minXYZ, maxXYZ);
+        for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
+          for (int ty = minXYZ.y; ty < maxXYZ.y; ty++)
+            for (int tz = minXYZ.z; tz < maxXYZ.z; tz++) {
+              if (tx == 0 && ty == 0 && tz == 0)
+                continue;
+              offset.set(tx, ty, tz);
+              unitcell.toCartesian(offset);
+              for (int i = vertexCount; --i >= 0;) {
+                vTemp.set(vertices[i]);
+                vTemp.add(offset);
+                viewer.transformPoint(vTemp, screens[i]);
+              }
+              render2(exportType != Graphics3D.EXPORT_NOT);
+            }
+      }
+    }
+
     if (screens != null)
       viewer.freeTempScreens(screens);
     return true;
@@ -105,18 +134,6 @@ public abstract class MeshRenderer extends ShapeRenderer {
   // all of the following methods are overridden in subclasses
   // DO NOT change parameters without first checking for the
   // same method in a subclass.
-  
-  protected void transform() {
-    
-    for (int i = vertexCount; --i >= 0;) {
-      viewer.transformPoint(vertices[i], screens[i]);
-/*
-      Point3f ptf = new Point3f();
-      viewer.transformPoint(vertices[i], ptf);
-      System.out.println("meshrend " + i + " " + vertices[i] + " " + screens[i] + " " + ptf);
-*/      
-    }
-  }
   
   protected boolean isPolygonDisplayable(int i) {
     return true;

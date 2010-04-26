@@ -3044,6 +3044,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getUnitCell(animationManager.currentModelIndex);
   }
 
+  public SymmetryInterface getModelUnitCell(int modelIndex) {
+    return modelSet.getUnitCell(modelIndex);
+  }
+
   public void setCurrentUnitCellOffset(int offset) {
     int modelIndex = animationManager.currentModelIndex;
     if (modelSet.setUnitCellOffset(modelIndex, offset))

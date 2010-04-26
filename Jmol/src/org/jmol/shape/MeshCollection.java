@@ -32,6 +32,8 @@ import org.jmol.script.Token;
 import java.util.BitSet;
 import java.util.Hashtable;
 
+import javax.vecmath.Point3f;
+
 import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
@@ -142,6 +144,12 @@ public abstract class MeshCollection extends Shape {
     if ("link" == propertyName) {
       if (meshCount >= 2 && currentMesh != null)
         currentMesh.linkedMesh = meshes[meshCount - 2];
+      return;
+    }
+
+    if ("periodicity" == propertyName) {
+      if (currentMesh != null)
+        currentMesh.periodicity = (Point3f) value;
       return;
     }
 

@@ -1880,6 +1880,7 @@ public class Token {
       "path",            new Token(path),
       "pdb",             new Token(pdb),
       "period",          new Token(period),
+      "periodicity",     null,
       "perpendicular",   new Token(perpendicular),
       "perp",            null,
       "phase",           new Token(phase),

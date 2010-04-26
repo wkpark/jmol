@@ -34,6 +34,7 @@ package org.jmol.util;
  */
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 
 import org.jmol.viewer.JmolConstants;
 
@@ -102,6 +103,28 @@ public class SimpleUnitCell {
     return Float.NaN;
   }
   
+  public void setMinMaxLatticeParameters(Point3i minXYZ, Point3i maxXYZ) {
+    if (maxXYZ.x <= 555 && maxXYZ.y >= 555) {
+      //alternative format for indicating a range of cells:
+      //{111 666}
+      //555 --> {0 0 0}
+      minXYZ.x = (maxXYZ.x / 100) - 5;
+      minXYZ.y = (maxXYZ.x % 100) / 10 - 5;
+      minXYZ.z = (maxXYZ.x % 10) - 5;
+      //555 --> {1 1 1}
+      maxXYZ.x = (maxXYZ.y / 100) - 4;
+      maxXYZ.z = (maxXYZ.y % 10) - 4;
+      maxXYZ.y = (maxXYZ.y % 100) / 10 - 4;
+    }
+    if (isPolymer) {
+      minXYZ.y = minXYZ.z = 0;
+      maxXYZ.y = maxXYZ.z = 1;
+    }  else if (isSlab) {
+        minXYZ.z = 0;
+        maxXYZ.z = 1;
+    }
+  }
+
   /// private methods
   
   private void setUnitCell(float[] notionalUnitcell) {

@@ -14943,6 +14943,16 @@ public class ScriptEvaluator {
     if (!checkOnly)
       iToken = i;
     switch (tok) {
+    case Token.period:
+      if (checkOnly)
+        return true;
+      Point3f periodicity = getPoint3f(iToken + 1, false);
+      periodicity.x = (int) periodicity.x;
+      periodicity.y = (int) periodicity.y;
+      periodicity.z = (int) periodicity.z;
+      propertyName = "periodicity";
+      propertyValue = periodicity;
+      break;
     case Token.opaque:
     case Token.translucent:
       if (!checkOnly)

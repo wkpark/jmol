@@ -75,14 +75,14 @@ public abstract class MeshRenderer extends ShapeRenderer {
     for (int i = vertexCount; --i >= 0;)
       viewer.transformPoint(vertices[i], screens[i]);
     render2(exportType != Graphics3D.EXPORT_NOT);
-    if (mesh.periodicity != null && mesh.modelIndex >= 0) {
+    if (mesh.lattice != null && mesh.modelIndex >= 0) {
       SymmetryInterface unitcell = viewer.getModelUnitCell(mesh.modelIndex);
       if (unitcell != null) {
         Point3f vTemp = new Point3f();
         Point3f offset = new Point3f();
         Point3i minXYZ = new Point3i();
-        Point3i maxXYZ = new Point3i((int) mesh.periodicity.x,
-            (int) mesh.periodicity.y, (int) mesh.periodicity.z);
+        Point3i maxXYZ = new Point3i((int) mesh.lattice.x,
+            (int) mesh.lattice.y, (int) mesh.lattice.z);
         unitcell.setMinMaxLatticeParameters(minXYZ, maxXYZ);
         for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
           for (int ty = minXYZ.y; ty < maxXYZ.y; ty++)

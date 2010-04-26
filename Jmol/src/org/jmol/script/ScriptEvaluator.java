@@ -14943,15 +14943,15 @@ public class ScriptEvaluator {
     if (!checkOnly)
       iToken = i;
     switch (tok) {
-    case Token.period:
+    case Token.lattice:
       if (checkOnly)
         return true;
-      Point3f periodicity = getPoint3f(iToken + 1, false);
-      periodicity.x = (int) periodicity.x;
-      periodicity.y = (int) periodicity.y;
-      periodicity.z = (int) periodicity.z;
-      propertyName = "periodicity";
-      propertyValue = periodicity;
+      Point3f lattice = getPoint3f(iToken + 1, false);
+      lattice.x = (int) lattice.x;
+      lattice.y = (int) lattice.y;
+      lattice.z = (int) lattice.z;
+      propertyName = "lattice";
+      propertyValue = lattice;
       break;
     case Token.opaque:
     case Token.translucent:

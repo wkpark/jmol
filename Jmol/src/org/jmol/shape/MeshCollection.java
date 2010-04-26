@@ -147,9 +147,9 @@ public abstract class MeshCollection extends Shape {
       return;
     }
 
-    if ("periodicity" == propertyName) {
+    if ("lattice" == propertyName) {
       if (currentMesh != null)
-        currentMesh.periodicity = (Point3f) value;
+        currentMesh.lattice = (Point3f) value;
       return;
     }
 

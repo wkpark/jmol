@@ -1051,6 +1051,7 @@ public class Token {
   final static int intersection   = misc  | 166;// new
   public final static int jmol    = misc  | 168;
   public final static int last    = misc  | 170;
+  final static int lattice        = misc  | 171;// new
   final static int left           = misc  | 172;
   final static int line           = misc  | 174;// new
   final static int linedata       = misc  | 176;// new
@@ -1850,6 +1851,7 @@ public class Token {
       "interior",        new Token(interior),
       "intersection",    new Token(intersection),
       "internal",        new Token(internal),
+      "lattice",         new Token(lattice),
       "line",            new Token(line),
       "linedata",        new Token(linedata),
       "lobe",            new Token(lobe),
@@ -1880,7 +1882,6 @@ public class Token {
       "path",            new Token(path),
       "pdb",             new Token(pdb),
       "period",          new Token(period),
-      "periodicity",     null,
       "perpendicular",   new Token(perpendicular),
       "perp",            null,
       "phase",           new Token(phase),

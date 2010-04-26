@@ -38,6 +38,7 @@ import java.util.Vector;
 import java.util.BitSet;
 
 import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 
 public class ScriptCompiler extends ScriptCompilationTokenParser {
 
@@ -1049,7 +1050,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (bs == null) {
         if (isBondOrMatrix) {
           Object m = lookingAtMatrix();
-          if (m != null) {
+          if (m instanceof Matrix3f || m instanceof Matrix4f) {
             addTokenToPrefix(new Token((m instanceof Matrix3f ? Token.matrix3f : Token.matrix4f), m));            
             return CONTINUE;
           }

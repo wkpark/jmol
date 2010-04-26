@@ -1939,7 +1939,6 @@ public class ScriptEvaluator {
     }
   }
   
-  //Hashtable thisCommandVariables;
 
   /**
    * provides support for @x and @{....} in statements. The compiler passes on
@@ -1953,7 +1952,6 @@ public class ScriptEvaluator {
   private boolean setStatement(int pc) throws ScriptException {
     statement = aatoken[pc];
     statementLength = statement.length;
-    //thisCommandVariables = null;
     if (statementLength == 0)
       return true;
     Token[] fixed;
@@ -1973,7 +1971,6 @@ public class ScriptEvaluator {
     fixed[0] = statement[0];
     boolean isExpression = false;
     int j = 1;
-    //thisCommandVariables = new Hashtable(); 
     for (i = 1; i < statementLength; i++) {
       if (statement[i] == null)
         continue;
@@ -1991,10 +1988,8 @@ public class ScriptEvaluator {
           i = iToken;
           ScriptVariable vt = (ScriptVariable) val.elementAt(0);
           v = (vt.tok == Token.list ? vt : ScriptVariable.oValue(vt));
-//          thisCommandVariables.put("v", v);
         } else {
           v = getParameter(var, false);
-//          thisCommandVariables.put(var, v);
         }
         tok = tokAt(0);
         boolean forceString = (Token.tokAttr(tok, Token.implicitStringCommand)
@@ -2869,8 +2864,9 @@ public class ScriptEvaluator {
   }
 
   private void addShapeProperty(Vector propertyList, String key, Object value) {
-    if (!isSyntaxCheck)
-      propertyList.add(new Object[] { key, value });
+    if (isSyntaxCheck)
+      return;
+    propertyList.add(new Object[] { key, value });
   }
 
   private void loadShape(int iShape) {
@@ -3877,6 +3873,106 @@ public class ScriptEvaluator {
       fparams = new float[n];
       for (int j = 0; j < n; j++)
         fparams[j] = ((Float) v.get(j)).floatValue();
+    }
+    return fparams;
+  }
+
+  private Point3f[] getPointArray(int i, int nPoints) throws ScriptException {
+    int tok = getToken(i++).tok;
+    Point3f[] points = new Point3f[nPoints];
+    if (tok == Token.list) {
+      String[] list = (String[]) theToken.value;
+      if (list.length != nPoints)
+        error(ERROR_invalidArgument);
+      for (int j = 0; j < nPoints; j++) {
+        Object o = Escape.unescapePoint(list[j]);
+        if (!(o instanceof Point3f))
+          error(ERROR_invalidArgument);
+        points[j] = (Point3f) o;
+      }
+      return points;
+    }
+    if (tok != Token.leftsquare)
+      error(ERROR_invalidArgument);
+    int n = 0;
+    while (tok != Token.rightsquare) {
+      tok = getToken(i).tok;
+      switch (tok) {
+      case Token.rightsquare:
+        continue;
+      case Token.comma:
+        i++;
+        break;
+      default:
+        points[n++] = getPoint3f(i, true);
+        i = iToken + 1;
+        if (n == nPoints && tokAt(i) != Token.rightsquare)
+          error(ERROR_invalidArgument);
+      }
+    }
+    return points;
+  }
+
+  private float[][] floatArraySet(int i, int nX, int nY) throws ScriptException {
+    int tok = tokAt(i++);
+    if (tok != Token.leftsquare)
+      error(ERROR_invalidArgument);
+    float[][] fparams = new float[nX][];
+    int n = 0;
+    while (tok != Token.rightsquare) {
+      tok = getToken(i).tok;
+      switch (tok) {
+      case Token.rightsquare:
+        continue;
+      case Token.comma:
+        i++;
+        break;
+      case Token.leftsquare:
+        i++;
+        float[] f = new float[nY];
+        fparams[n++] = f;
+        for (int j = 0; j < nY; j++) {
+          f[j] = floatParameter(i++);
+          if (tokAt(i) == Token.comma)
+            i++;
+        }
+        if (tokAt(i++) != Token.rightsquare)
+          error(ERROR_invalidArgument);
+        tok = Token.nada;
+        if (n == nX && tokAt(i) != Token.rightsquare)
+            error(ERROR_invalidArgument);
+        break;
+      default:
+        error(ERROR_invalidArgument);
+      }
+    }
+    return fparams;
+  }
+
+  private float[][][] floatArraySet(int i, int nX, int nY, int nZ) throws ScriptException {
+    int tok = tokAt(i++);
+    if (tok != Token.leftsquare || nX <= 0)
+      error(ERROR_invalidArgument);
+    float[][][] fparams = new float[nX][][];
+    int n = 0;
+    while (tok != Token.rightsquare) {
+      tok = getToken(i).tok;
+      switch (tok) {
+      case Token.rightsquare:
+        continue;
+      case Token.comma:
+        i++;
+        break;
+      case Token.leftsquare:
+        fparams[n++] = floatArraySet(i, nY, nZ);
+        i = ++iToken;                
+        tok = Token.nada;
+        if (n == nX && tokAt(i) != Token.rightsquare)
+            error(ERROR_invalidArgument);
+        break;
+      default:
+        error(ERROR_invalidArgument);
+      }
     }
     return fparams;
   }
@@ -9315,10 +9411,14 @@ public class ScriptEvaluator {
   /*
    * Based on the form of the parameters, returns and encoded radius as follows:
    * 
-   * script meaning range encoded
+   * script meaning range
    * 
-   * +1.2 offset [0 - 10] -1.2 offset 0) 1.2 absolute (0 - 10] -30% 70% (-100 -
-   * 0) +30% 130% (0 80% percent (0
+   * +1.2 offset [0 - 10] 
+   * -1.2 offset 0) 
+   * 1.2 absolute (0 - 10] 
+   * -30% 70% (-100 - 0) 
+   * +30% 130% (0 
+   * 80% percent (0
    */
 
   private RadiusData encodeRadiusParameter(int index, boolean isOnly) throws ScriptException {
@@ -9332,7 +9432,7 @@ public class ScriptEvaluator {
     case Token.adpmax:
     case Token.adpmin:
     case Token.ionic:
-    case Token.temperature:
+    case Token.temperature: 
     case Token.vanderwaals:
       value = 1;
       type = RadiusData.TYPE_FACTOR;
@@ -9340,7 +9440,6 @@ public class ScriptEvaluator {
       tok = tokAt(++index);
       break;
     }
-
     switch (tok) {
     case Token.auto:
     case Token.rasmol:
@@ -9367,7 +9466,7 @@ public class ScriptEvaluator {
     case Token.integer:
       value = intParameter(index);
       if (tokAt(index + 1) == Token.percent) {
-        index++;
+        iToken = ++index;
         type = RadiusData.TYPE_FACTOR;
         if (value < 0 || value > 200)
           integerOutOfRange(0, 200);
@@ -13249,8 +13348,7 @@ public class ScriptEvaluator {
         propertyName = (String) theToken.value;
         if (tokAt(i + 1) == Token.off)
           iToken = i + 1;
-        else
-          propertyValue = getCapSlabObject(i);
+        propertyValue = getCapSlabObject(null, i);
         i = iToken;
         break;
       case Token.center:
@@ -13290,11 +13388,6 @@ public class ScriptEvaluator {
       case Token.delete:
         propertyName = "delete";
         break;
-      case Token.integer:
-      case Token.decimal:
-        propertyName = "scale";
-        propertyValue = new Float(floatParameter(++i));
-        break;
       case Token.bitset:
       case Token.expressionBegin:
         propertyName = "select";
@@ -13302,7 +13395,7 @@ public class ScriptEvaluator {
         i = iToken;
         break;
       case Token.color:
-        translucency = setColorOptions(i + 1, JmolConstants.SHAPE_LCAOCARTOON,
+        translucency = setColorOptions(null, i + 1, JmolConstants.SHAPE_LCAOCARTOON,
             -2);
         if (translucency != null)
           setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "settranslucency",
@@ -13391,26 +13484,43 @@ public class ScriptEvaluator {
     setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "clear", null);
   }
 
-  private Object getCapSlabObject(int i) throws ScriptException {
+  private Object getCapSlabObject(StringBuffer sb, int i)
+      throws ScriptException {
     Object propertyValue = null;
-    if (tokAt(i + 1) == Token.boundbox) {
+    sb.append(" ").append(getToken(i).value).append(" ");
+    int tok = tokAt(i + 1);
+    Point4f plane = null;
+    switch (tok) {
+    case Token.within:
+      i++;
+      propertyValue = getPointArray(++i, 4);
+      break;
+    case Token.boundbox:
       propertyValue = BoxInfo.getCriticalPoints(viewer.getBoundBoxVertices(),
           null);
       iToken = i + 1;
-    } else if (tokAt(i + 1) == Token.unitcell) {
+      break;
+    case Token.unitcell:
       SymmetryInterface unitCell = viewer.getCurrentUnitCell();
       if (unitCell == null)
         error(ERROR_invalidArgument);
       propertyValue = BoxInfo.getCriticalPoints(unitCell.getUnitCellVertices(),
           unitCell.getCartesianOffset());
       iToken = i + 1;
-    } else {
-      Point4f plane = planeParameter(++i);
+      break;
+    default:
+      plane = planeParameter(++i);
       float off = (isFloatParameter(iToken + 1) ? floatParameter(++iToken)
           : Float.NaN);
       if (!Float.isNaN(off))
         plane.w -= off;
       propertyValue = plane;
+    }
+    if (sb != null) {
+      if (plane == null)
+        sb.append("within ").append(Escape.escape(propertyValue));
+      else
+        sb.append(Escape.escape(plane));
     }
     return propertyValue;
   }
@@ -13453,7 +13563,7 @@ public class ScriptEvaluator {
         moNumber = Token.prev;
         break;
       case Token.color:
-        setColorOptions(i + 1, JmolConstants.SHAPE_MO, 2);
+        setColorOptions(null, i + 1, JmolConstants.SHAPE_MO, 2);
         break;
       case Token.plane:
         // plane {X, Y, Z, W}
@@ -13526,7 +13636,7 @@ public class ScriptEvaluator {
     return true;
   }
 
-  private String setColorOptions(int index, int iShape, int nAllowed)
+  private String setColorOptions(StringBuffer sb, int index, int iShape, int nAllowed)
       throws ScriptException {
     getToken(index);
     String translucency = "opaque";
@@ -13536,6 +13646,11 @@ public class ScriptEvaluator {
         float value = (isFloatParameter(index + 1) ? floatParameter(++index)
             : Float.MAX_VALUE);
         setShapeTranslucency(iShape, null, "translucent", value, null);
+        if (sb != null) {
+          sb.append(" translucent");
+          if (value != Float.MAX_VALUE)
+            sb.append(" ").append(value);
+        }
       } else {
         setMeshDisplayProperty(iShape, index, theTok);
       }
@@ -13548,8 +13663,11 @@ public class ScriptEvaluator {
     nAllowed = Math.abs(nAllowed);
     for (int i = 0; i < nAllowed; i++) {
       if (isColorParam(iToken + 1)) {
+        int color = getArgbParam(++iToken);
         setShapeProperty(iShape, "colorRGB",
-            new Integer(getArgbParam(++iToken)));
+            new Integer(color));
+        if (sb != null)
+          sb.append(" ").append(Escape.escapeColor(color));
       } else if (iToken < index) {
         error(ERROR_invalidArgument);
       } else {
@@ -13561,8 +13679,7 @@ public class ScriptEvaluator {
 
   private int moOffset(int index) throws ScriptException {
     boolean isHomo = (getToken(index).tok == Token.homo);
-    int offset = Integer.MAX_VALUE;
-    offset = (isHomo ? 0 : 1);
+    int offset = (isHomo ? 0 : 1);
     int tok = tokAt(++index);
     if (tok == Token.integer && intParameter(index) < 0)
       offset += intParameter(index);
@@ -13682,16 +13799,15 @@ public class ScriptEvaluator {
   }
 
   private void isosurface(int iShape) throws ScriptException {
+    // also called by lcaoCartoon
     loadShape(iShape);
     if (tokAt(1) == Token.list && listIsosurface(iShape))
       return;
-    int colorRangeStage = 0;
-    int signPt = 0;
     int iptDisplayProperty = 0;
     boolean isIsosurface = (iShape == JmolConstants.SHAPE_ISOSURFACE);
     boolean isPmesh = (iShape == JmolConstants.SHAPE_PMESH);
     boolean isPlot3d = (iShape == JmolConstants.SHAPE_PLOT3D);
-
+    boolean isLcaoCartoon = (iShape == JmolConstants.SHAPE_LCAOCARTOON);
     boolean surfaceObjectSeen = false;
     boolean planeSeen = false;
     boolean doCalcArea = false;
@@ -13699,7 +13815,6 @@ public class ScriptEvaluator {
     boolean isCavity = false;
     boolean haveRadius = false;
     boolean isFxy = false;
-    boolean isColorMesh = false;
     float[] nlmZ = new float[5];
     float[] data = null;
     int thisSetNumber = 0;
@@ -13708,8 +13823,9 @@ public class ScriptEvaluator {
     float sigma = Float.NaN;
     float cutoff = Float.NaN;
     int ptWithin = 0;
+    Boolean smoothing = null;
     BitSet bs;
-    Vector v;
+    StringBuffer sbCommand = new StringBuffer();
     Point3f[] pts;
     String str = null;
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getCurrentModelIndex());
@@ -13726,17 +13842,6 @@ public class ScriptEvaluator {
     if (isPmesh || isPlot3d)
       addShapeProperty(propertyList, "fileType", "Pmesh");
     for (int i = iToken; i < statementLength; ++i) {
-      if (isColorParam(i)) {
-        if (i != signPt)
-          error(ERROR_invalidParameterOrder);
-        addShapeProperty(propertyList,
-            (isColorMesh ? "colorMesh" : "colorRGB"), new Integer(
-                getArgbParam(i)));
-        i = iToken;
-        signPt = i + 1;
-        idSeen = true;
-        continue;
-      }
       String propertyName = null;
       Object propertyValue = null;
       getToken(i);
@@ -13751,18 +13856,25 @@ public class ScriptEvaluator {
                 ',');
             pts = new Point3f[] { (Point3f) Escape.unescapePoint(bbox[0]),
                 (Point3f) Escape.unescapePoint(bbox[1]) };
+          } else if (tokAt(i + 1) == Token.point) {
+            pts = new Point3f[] { getPoint3f(i + 2, true),
+                getPoint3f(i + 2, true) };
+            i = iToken;
           } else {
             pts = viewer.getBoundBoxVertices();
           }
-          addShapeProperty(propertyList, "commandOption", "BBOX=\""
-              + Escape.escape(pts[0]) + ","
-              + Escape.escape(pts[pts.length - 1]) + "\"");
+          //addShapeProperty(propertyList, "commandOption", "BBOX=\""
+            //  + Escape.escape(pts[0]) + ","
+              //+ Escape.escape(pts[pts.length - 1]) + "\"");
           addShapeProperty(propertyList, "boundingBox", pts);
+          sbCommand.append(" boundBox " + Escape.escape(pts[0]) + " "
+              + Escape.escape(pts[pts.length - 1]));
         }
         continue;
       case Token.pmesh:
         isPmesh = true;
         addShapeProperty(propertyList, "fileType", "Pmesh");
+        sbCommand.append(" pmesh");
         continue;
       case Token.within:
         ptWithin = i;
@@ -13774,12 +13886,25 @@ public class ScriptEvaluator {
         else
           bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult
               : null);
-        getWithinDistanceVector(propertyList, distance, ptc, bs);
+        if (!isSyntaxCheck) {
+          getWithinDistanceVector(propertyList, distance, ptc, bs);
+          sbCommand.append(" within ").append(distance).append(" ")
+              .append(bs == null ? Escape.escape(ptc) : Escape.escape(bs));
+        }
+        continue;
+      case Token.isosurfacepropertysmoothing:
+        smoothing = (getToken(++i).tok == Token.on ? Boolean.TRUE : theTok == Token.off ? Boolean.FALSE : null);
+        if (smoothing == null)
+          error(ERROR_invalidArgument);
         continue;
       case Token.property:
-        addShapeProperty(propertyList, "propertySmoothing", viewer
-            .getIsosurfacePropertySmoothing() ? Boolean.TRUE : Boolean.FALSE);
+        if (smoothing == null)
+          smoothing = viewer.getIsosurfacePropertySmoothing() ? Boolean.TRUE
+              : Boolean.FALSE;
+        addShapeProperty(propertyList, "propertySmoothing", smoothing);
+        sbCommand.append(" isosurfacePropertySmoothing " + smoothing);
         str = parameterAsString(i);
+        sbCommand.append(" ").append(str);
         propertyName = "property";
         if (!isCavity && str.toLowerCase().indexOf("property_") == 0) {
           data = new float[viewer.getAtomCount()];
@@ -13788,10 +13913,11 @@ public class ScriptEvaluator {
           data = viewer.getDataFloat(str);
           if (data == null)
             error(ERROR_invalidArgument);
-          propertyValue = data;
-          break;
+          addShapeProperty(propertyList, propertyName, data);
+          continue;
         }
         int tokProperty = getToken(++i).tok;
+        sbCommand.append(" " + theToken.value);
         int atomCount = viewer.getAtomCount();
         data = (isCavity ? new float[0] : new float[atomCount]);
         if (isCavity)// not implemented: && tokProperty !=
@@ -13813,6 +13939,7 @@ public class ScriptEvaluator {
         if (surfaceObjectSeen)
           error(ERROR_invalidArgument);
         modelIndex = modelNumberParameter(++i);
+        sbCommand.append(" model " + modelIndex);
         if (modelIndex < 0) {
           propertyName = "fixed";
           propertyValue = Boolean.TRUE;
@@ -13825,88 +13952,113 @@ public class ScriptEvaluator {
         propertyName = "select";
         propertyValue = expression(++i);
         i = iToken;
+        sbCommand.append(" select " + Escape.escape((BitSet) propertyValue));
         break;
       case Token.set:
         thisSetNumber = intParameter(++i);
+        sbCommand.append(" set " + thisSetNumber);
         break;
       case Token.offset:
         propertyName = "offset";
         propertyValue = centerParameter(++i);
         i = iToken;
+        sbCommand.append(" offset " + Escape.escape((Point3f) propertyValue));
         break;
       case Token.center:
         propertyName = "center";
         propertyValue = centerParameter(++i);
+        sbCommand.append(" center " + Escape.escape((Point3f) propertyValue));
         i = iToken;
         break;
+      case Token.sign:
       case Token.color:
-        if (tokAt(i + 1) == Token.density) {
-          i++;
-          propertyName = "colorDensity";
-          break;
-        }
-        /*
-         * "color" now is just used as an equivalent to "sign" and as an
-         * introduction to "absolute" any other use is superfluous; it has been
-         * replaced with MAP for indicating "use the current surface" because
-         * the term COLOR is too general.
-         */
-
-        colorRangeStage = 0;
-        if (getToken(i + 1).tok == Token.string) {
-          colorScheme = parameterAsString(++i);
-          if (colorScheme.indexOf(" ") > 0) {
-            discreteColixes = Graphics3D.getColixArray(colorScheme);
-            if (discreteColixes == null)
-              error(ERROR_badRGBColor);
+        int color;
+        idSeen = true;
+        sbCommand.append(" " + theToken.value);
+        boolean isSign = (theTok == Token.sign);
+        if (isSign) {
+          addShapeProperty(propertyList, "sign", Boolean.TRUE);
+        } else {
+          if (tokAt(i + 1) == Token.density) {
+            i++;
+            propertyName = "colorDensity";
+            sbCommand.append(" density");
+            break;
           }
-        } else if (theTok == Token.mesh) {
-          isColorMesh = true;
-          i++;
-        }
-        if ((theTok = tokAt(i + 1)) == Token.translucent
-            || tokAt(i + 1) == Token.opaque) {
-          translucency = setColorOptions(i + 1, JmolConstants.SHAPE_ISOSURFACE,
-              -2);
-          i = iToken;
-        }
-        switch (tokAt(i + 1)) {
-        case Token.absolute:
-        case Token.range:
-          getToken(++i);
-          colorRangeStage = 1;
-          propertyName = "rangeAll";
-          if (tokAt(i + 1) == Token.all)
+          /*
+           * "color" now is just used as an equivalent to "sign" and as an
+           * introduction to "absolute" any other use is superfluous; it has
+           * been replaced with MAP for indicating "use the current surface"
+           * because the term COLOR is too general.
+           */
+
+          if (getToken(i + 1).tok == Token.string) {
+            colorScheme = parameterAsString(++i);
+            sbCommand.append(" ").append(Escape.escape(colorScheme));
+            if (colorScheme.indexOf(" ") > 0) {
+              discreteColixes = Graphics3D.getColixArray(colorScheme);
+              if (discreteColixes == null)
+                error(ERROR_badRGBColor);
+            }
+          } else if (theTok == Token.mesh) {
+            i++;
+            sbCommand.append(" mesh");
+            color = getArgbParam(++i);
+            i = iToken;
+            addShapeProperty(propertyList, "colorMesh", new Integer(color));
+            sbCommand.append(" ").append(Escape.escapeColor(color));
+          }
+          if ((theTok = tokAt(i + 1)) == Token.translucent
+              || theTok == Token.opaque) {
+            translucency = setColorOptions(sbCommand, i + 1,
+                JmolConstants.SHAPE_ISOSURFACE, -2);
+            i = iToken;
+            continue;
+          }
+          switch (tokAt(i + 1)) {
+          case Token.absolute:
+          case Token.range:
             getToken(++i);
-          break;
-        default:
-          signPt = i + 1;
-          continue;
+            sbCommand.append(" range");
+            addShapeProperty(propertyList, "rangeAll", null);
+            if (tokAt(i + 1) == Token.all) {
+              i++;
+              sbCommand.append(" all");
+              continue;
+            }
+            float min = floatParameter(++i);
+            float max = floatParameter(++i);
+            addShapeProperty(propertyList, "red", new Float(min));
+            addShapeProperty(propertyList, "blue", new Float(max));
+            sbCommand.append(" ").append(min).append(" ").append(max);
+            continue;
+          }
         }
-        break;
+        if (isColorParam(i + 1)) {
+          color = getArgbParam(++i);
+          addShapeProperty(propertyList, "colorRGB", new Integer(color));
+          sbCommand.append(" ").append(Escape.escapeColor(color));
+          i = iToken;
+          idSeen = true;
+          if (isColorParam(i + 1)) {
+            color = getArgbParam(++i);
+            i = iToken;
+            addShapeProperty(propertyList, "colorRGB", new Integer(color));
+            sbCommand.append(" ").append(Escape.escapeColor(color));
+          } else if (isSign) {
+            error(ERROR_invalidParameterOrder);
+          }
+        } else if (!isSign && discreteColixes == null) {
+          error(ERROR_invalidParameterOrder);
+        }
+        continue;
       case Token.file:
         continue;
-      case Token.plus:
-        if (colorRangeStage == 0) {
-          propertyName = "cutoffPositive";
-          propertyValue = new Float(floatParameter(++i));
-        }
-        break;
-      case Token.decimal:
-      case Token.integer:
-        // default is "cutoff"
-        propertyName = (colorRangeStage == 1 ? "red"
-            : colorRangeStage == 2 ? "blue" : "cutoff");
-        float fp = floatParameter(i);
-        propertyValue = new Float(fp);
-        if (colorRangeStage > 0)
-          ++colorRangeStage;
-        else
-          cutoff = fp;
-        break;
       case Token.ionic:
       case Token.vanderwaals:
+        sbCommand.append(" ").append(theToken.value);
         RadiusData rd = encodeRadiusParameter(i, false);
+        sbCommand.append(" ").append(rd);
         if (Float.isNaN(rd.value))
           rd.value = 100;
         propertyValue = rd;
@@ -13920,14 +14072,18 @@ public class ScriptEvaluator {
         propertyName = "plane";
         propertyValue = planeParameter(++i);
         i = iToken;
+        sbCommand.append(" plane ").append(
+            Escape.escape((Point4f) propertyValue));
         break;
       case Token.scale3d:
         propertyName = "scale3d";
         propertyValue = new Float(floatParameter(++i));
+        sbCommand.append(" scale3d ").append(propertyValue);
         break;
       case Token.scale:
         propertyName = "scale";
         propertyValue = new Float(floatParameter(++i));
+        sbCommand.append(" scale ").append(propertyValue);
         break;
       case Token.all:
         if (idSeen)
@@ -13943,6 +14099,8 @@ public class ScriptEvaluator {
           propertyValue = getPoint4f(i);
           propertyName = "ellipsoid";
           i = iToken;
+          sbCommand.append(" ellipsoid ").append(
+              Escape.escape((Point4f) propertyValue));
           break;
         } catch (ScriptException e) {
         }
@@ -13950,10 +14108,13 @@ public class ScriptEvaluator {
           propertyName = "ellipsoid";
           propertyValue = floatParameterSet(i, 6, 6);
           i = iToken;
+          sbCommand.append(" ellipsoid ").append(
+              Escape.escape((float[]) propertyValue));
           break;
         } catch (ScriptException e) {
         }
         bs = expression(i);
+        sbCommand.append(" ellipsoid ").append(Escape.escape(bs));
         int iAtom = bs.nextSetBit(0);
         Atom[] atoms = viewer.getModelSet().atoms;
         if (iAtom >= 0)
@@ -13971,16 +14132,20 @@ public class ScriptEvaluator {
         propertyName = "plane";
         propertyValue = hklParameter(++i);
         i = iToken;
+        sbCommand.append(" plane ").append(
+            Escape.escape((Point4f) propertyValue));
         break;
       case Token.lcaocartoon:
         surfaceObjectSeen = true;
         String lcaoType = parameterAsString(++i);
         addShapeProperty(propertyList, "lcaoType", lcaoType);
+        sbCommand.append(" lcaocartoon ").append(lcaoType);
         switch (getToken(++i).tok) {
         case Token.bitset:
         case Token.expressionBegin:
           propertyName = "lcaoCartoon";
           bs = expression(i);
+          sbCommand.append(" ").append(Escape.escape(bs));
           i = iToken;
           int atomIndex = bs.nextSetBit(0);
           modelIndex = 0;
@@ -14014,13 +14179,18 @@ public class ScriptEvaluator {
           error(ERROR_badArgumentCount);
         case Token.homo:
         case Token.lumo:
-          if ((offset = moOffset(i)) != Integer.MAX_VALUE) {
-            moNumber = 0;
-            i = iToken;
-          }
+          offset = moOffset(i);
+          moNumber = 0;
+          i = iToken;
+          sbCommand.append(" mo HOMO ");
+          if (offset > 0)
+            sbCommand.append("+");
+          if (offset != 0)
+            sbCommand.append(offset);
           break;
         case Token.integer:
           moNumber = intParameter(i);
+          sbCommand.append(" mo ").append(moNumber);
           break;
         }
         setMoData(propertyList, moNumber, offset, modelIndex, null);
@@ -14037,6 +14207,7 @@ public class ScriptEvaluator {
         surfaceObjectSeen = true;
         propertyName = "mep";
         propertyValue = partialCharges;
+        sbCommand.append(" mep ");
         break;
       case Token.sasurface:
       case Token.solvent:
@@ -14044,12 +14215,15 @@ public class ScriptEvaluator {
         addShapeProperty(propertyList, "bsSolvent",
             lookupIdentifierValue("solvent"));
         propertyName = (theTok == Token.sasurface ? "sasurface" : "solvent");
+        sbCommand.append(" ").append(theToken.value);
         float radius = (isFloatParameter(i + 1) ? floatParameter(++i) : viewer
             .getSolventProbeRadius());
         propertyValue = new Float(radius);
+        sbCommand.append(" ").append(radius);
         break;
       case Token.volume:
         doCalcVolume = !isSyntaxCheck;
+        sbCommand.append(" volume");
         break;
       case Token.id:
         setShapeId(iShape, ++i, idSeen);
@@ -14057,31 +14231,40 @@ public class ScriptEvaluator {
         i = iToken;
         break;
       case Token.colorscheme:
+        sbCommand.append(" colorScheme");
         // either order OK -- documented for "rwb" TRANSLUCENT
         if (tokAt(i + 1) == Token.translucent) {
+          sbCommand.append(" translucent");
           isColorSchemeTranslucent = true;
           i++;
         }
         colorScheme = parameterAsString(++i);
+        sbCommand.append(" ").append(Escape.escape(colorScheme));
         if (tokAt(i + 1) == Token.translucent) {
           isColorSchemeTranslucent = true;
+          sbCommand.append(" translucent");
           i++;
         }
         break;
       case Token.addhydrogens:
         propertyName = "addHydrogens";
         propertyValue = Boolean.TRUE;
+        sbCommand.append(" addHydrogens");
         break;
       case Token.angstroms:
         propertyName = "angstroms";
+        sbCommand.append(" angstroms");
         break;
       case Token.anisotropy:
         propertyName = "anisotropy";
         propertyValue = getPoint3f(++i, false);
+        sbCommand.append(" anisotropy").append(
+            Escape.escape((Point3f) propertyValue));
         i = iToken;
         break;
       case Token.area:
         doCalcArea = !isSyntaxCheck;
+        sbCommand.append(" area");
         break;
       case Token.atomicorbital:
       case Token.orbital:
@@ -14090,21 +14273,25 @@ public class ScriptEvaluator {
         nlmZ[1] = intParameter(++i);
         nlmZ[2] = intParameter(++i);
         nlmZ[3] = (isFloatParameter(i + 1) ? floatParameter(++i) : 6f);
+        sbCommand.append(" atomicOrbital ").append((int)nlmZ[0]).append(" ").append(
+            (int)nlmZ[1]).append(" ").append((int)nlmZ[2]).append(" ").append(nlmZ[3]);
         propertyName = "hydrogenOrbital";
         propertyValue = nlmZ;
         break;
       case Token.binary:
+        sbCommand.append(" binary");
         // for PMESH, specifically
         // ignore for now
         continue;
       case Token.blockdata:
+        sbCommand.append(" blockData");
         propertyName = "blockData";
         propertyValue = Boolean.TRUE;
         break;
       case Token.cap:
       case Token.slab:
         propertyName = (String) theToken.value;
-        propertyValue = getCapSlabObject(i);
+        propertyValue = getCapSlabObject(sbCommand, i);
         i = iToken;
         break;
       case Token.cavity:
@@ -14119,6 +14306,8 @@ public class ScriptEvaluator {
             : 10f);
         if (envelopeRadius > 10f)
           integerOutOfRange(0, 10);
+        sbCommand.append(" cavity ").append(cavityRadius).append(" ").append(
+            envelopeRadius);
         addShapeProperty(propertyList, "envelopeRadius", new Float(
             envelopeRadius));
         addShapeProperty(propertyList, "cavityRadius", new Float(cavityRadius));
@@ -14127,9 +14316,11 @@ public class ScriptEvaluator {
       case Token.contour:
       case Token.contours:
         propertyName = "contour";
+        sbCommand.append(" contour");
         switch (tokAt(i + 1)) {
         case Token.discrete:
           propertyValue = floatParameterSet(i + 2, 1, Integer.MAX_VALUE);
+          sbCommand.append(" discrete ").append(Escape.escape(propertyValue));
           i = iToken;
           break;
         case Token.increment:
@@ -14138,175 +14329,190 @@ public class ScriptEvaluator {
             error(ERROR_invalidArgument); // from to step
           propertyValue = pt;
           i = iToken;
+          sbCommand.append(" increment ").append(Escape.escape(pt));
           break;
         default:
           propertyValue = new Integer(
               tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
+          sbCommand.append(" ").append(propertyValue);
         }
         break;
       case Token.cutoff:
         if (++i < statementLength && getToken(i).tok == Token.plus) {
           propertyName = "cutoffPositive";
           propertyValue = new Float(cutoff = floatParameter(++i));
+          sbCommand.append(" cutoff +").append(propertyValue);
         } else {
           propertyName = "cutoff";
           propertyValue = new Float(cutoff = floatParameter(i));
+          sbCommand.append(" cutoff ").append(propertyValue);
         }
         break;
       case Token.downsample:
         propertyName = "downsample";
         propertyValue = new Integer(intParameter(++i));
+        sbCommand.append(" downsample ").append(propertyValue);
         break;
       case Token.eccentricity:
         propertyName = "eccentricity";
         propertyValue = getPoint4f(++i);
+        sbCommand.append(" eccentricity ").append(
+            Escape.escape((Point4f) propertyValue));
         i = iToken;
         break;
       case Token.ed:
+        sbCommand.append(" ed");
+        // electron density - never documented
         setMoData(propertyList, -1, 0, modelIndex, null);
         surfaceObjectSeen = true;
         continue;
       case Token.debug:
       case Token.nodebug:
+        sbCommand.append(" ").append(theToken.value);
         propertyName = "debug";
         propertyValue = (theTok == Token.debug ? Boolean.TRUE : Boolean.FALSE);
         break;
       case Token.fixed:
+        sbCommand.append(" fixed");
         propertyName = "fixed";
         propertyValue = Boolean.TRUE;
         break;
       case Token.fullplane:
+        sbCommand.append(" fullPlane");
         propertyName = "fullPlane";
         propertyValue = Boolean.TRUE;
         break;
       case Token.functionxy:
+      case Token.functionxyz:
+        boolean isFxyz = (theTok == Token.functionxyz);
+        propertyName = "" + theToken.value;
         // isosurface functionXY "functionName"|"data2d_xxxxx"
+        // isosurface functionXYZ "functionName"|"data3d_xxxxx"
         // {origin} {ni ix iy iz} {nj jx jy jz} {nk kx ky kz}
         Vector vxy = new Vector();
-        if (getToken(++i).tok != Token.string)
-          error(ERROR_what,
-              "functionXY must be followed by a function name in quotes.");
+        i++;
         String name = parameterAsString(i++);
         // override of function or data name when saved as a state
         String dName = extractCommandOption("# DATA" + (isFxy ? "2" : ""));
-        if (dName != null)
+        if (dName == null)
+          dName = "inline";
+        else
           name = dName;
+        sbCommand.append(" ").append(propertyName).append(" inline");
         boolean isXYZ = (name.indexOf("data2d_") == 0);
+        boolean isXYZV = (name.indexOf("data3d_") == 0);
+        boolean isInline = name.equals("inline");
         vxy.addElement(name); // (0) = name
-        vxy.addElement(getPoint3f(i, false)); // (1) = {origin}
+        Point3f pt3 = getPoint3f(i, false);
+        sbCommand.append(" ").append(Escape.escape(pt3));
+        vxy.addElement(pt3); // (1) = {origin}
         Point4f pt4;
         ptX = ++iToken;
         vxy.addElement(pt4 = getPoint4f(ptX)); // (2) = {ni ix iy iz}
+        sbCommand.append(" ").append(Escape.escape(pt4));
         nX = (int) pt4.x;
         ptY = ++iToken;
         vxy.addElement(pt4 = getPoint4f(ptY)); // (3) = {nj jx jy jz}
+        sbCommand.append(" ").append(Escape.escape(pt4));
         nY = (int) pt4.x;
-        vxy.addElement(getPoint4f(++iToken)); // (4) = {nk kx ky kz}
-        if (nX == 0 || nY == 0)
+        vxy.addElement(pt4 = getPoint4f(++iToken)); // (4) = {nk kx ky kz}
+        sbCommand.append(" ").append(Escape.escape(pt4));
+        nZ = (int) pt4.x;
+
+        if (nX == 0 || nY == 0 || nZ == 0)
           error(ERROR_invalidArgument);
         if (!isSyntaxCheck) {
-          float[][] fdata = (isXYZ ? viewer.getDataFloat2D(name) : viewer
-              .functionXY(name, nX, nY));
-          if (isXYZ) {
-            nX = (fdata == null ? 0 : fdata.length);
-            nY = 3;
-          } else {
+          float[][] fdata = null;
+          float[][][] xyzdata = null;
+          if (isFxyz) {
+            if (isInline) {
+              nX = Math.abs(nX);
+              nY = Math.abs(nY);
+              nZ = Math.abs(nZ);
+              xyzdata = floatArraySet(++iToken, nX, nY, nZ);
+            } else if (isXYZV) {
+              xyzdata = viewer.getDataFloat3D(name);
+            } else {
+              xyzdata = viewer.functionXYZ(name, nX, nY, nZ);
+            }
             nX = Math.abs(nX);
             nY = Math.abs(nY);
-          }
-          if (fdata == null) {
-            iToken = ptX;
-            error(ERROR_what, "fdata is null.");
-          }
-          if (fdata.length != nX && !isXYZ) {
-            iToken = ptX;
-            error(ERROR_what, "fdata length is not correct: " + fdata.length
-                + " " + nX + ".");
-          }
-          for (int j = 0; j < nX; j++) {
-            if (fdata[j] == null) {
-              iToken = ptY;
-              error(ERROR_what, "fdata[" + j + "] is null.");
+            nZ = Math.abs(nZ);
+            if (xyzdata == null) {
+              iToken = ptX;
+              error(ERROR_what, "xyzdata is null.");
             }
-            if (fdata[j].length != nY) {
-              iToken = ptY;
-              error(ERROR_what, "fdata[" + j + "] is not the right length: "
-                  + fdata[j].length + " " + nY + ".");
+            if (xyzdata.length != nX || xyzdata[0].length != nY
+                || xyzdata[0][0].length != nZ) {
+              iToken = ptX;
+              error(ERROR_what, "xyzdata[" + xyzdata.length + "]["
+                  + xyzdata[0].length + "][" + xyzdata[0][0].length
+                  + "] is not of size [" + nX + "][" + nY + "][" + nZ + "]");
             }
+            vxy.addElement(xyzdata); // (5) = float[][][] data
+            sbCommand.append(" ").append(Escape.escape(xyzdata));
+          } else {
+            if (isInline) {
+              nX = Math.abs(nX);
+              nY = Math.abs(nY);
+              fdata = floatArraySet(++iToken, nX, nY);
+            } else if (isXYZ) {
+              fdata = viewer.getDataFloat2D(name);
+              nX = (fdata == null ? 0 : fdata.length);
+              nY = 3;
+            } else {
+              fdata = viewer.functionXY(name, nX, nY);
+              nX = Math.abs(nX);
+              nY = Math.abs(nY);
+            }
+            if (fdata == null) {
+              iToken = ptX;
+              error(ERROR_what, "fdata is null.");
+            }
+            if (fdata.length != nX && !isXYZ) {
+              iToken = ptX;
+              error(ERROR_what, "fdata length is not correct: " + fdata.length
+                  + " " + nX + ".");
+            }
+            for (int j = 0; j < nX; j++) {
+              if (fdata[j] == null) {
+                iToken = ptY;
+                error(ERROR_what, "fdata[" + j + "] is null.");
+              }
+              if (fdata[j].length != nY) {
+                iToken = ptY;
+                error(ERROR_what, "fdata[" + j + "] is not the right length: "
+                    + fdata[j].length + " " + nY + ".");
+              }
+            }
+            vxy.addElement(fdata); // (5) = float[][] data
+            sbCommand.append(" ").append(Escape.escape(fdata));
           }
-          vxy.addElement(fdata); // (5) = float[][] data
         }
         i = iToken;
-        propertyName = "functionXY";
         propertyValue = vxy;
-        isFxy = surfaceObjectSeen = true;
-        break;
-      case Token.functionxyz:
-        // isosurface functionXYZ "functionName"
-        // {origin} {ni ix iy iz} {nj jx jy jz} {nk kx ky kz}
-        v = new Vector();
-        if (getToken(++i).tok != Token.string)
-          error(ERROR_what,
-              "functionXYZ must be followed by a function name in quotes.");
-        String fName = parameterAsString(i++);
-        // override of function or data name when saved as a state
-        String dataName = extractCommandOption("# DATA" + (isFxy ? "2" : ""));
-        if (dataName != null)
-          fName = dataName;
-        boolean isXYZV = (fName.indexOf("data3d_") == 0);
-        if (dataName != null)
-          fName = dataName;
-        v.addElement(fName); // (0) = name
-        v.addElement(getPoint3f(i, false)); // (1) = {origin}
-        Point4f pt;
-        ptX = ++iToken;
-        v.addElement(pt = getPoint4f(ptX)); // (2) = {ni ix iy iz}
-        nX = (int) pt.x;
-        ptY = ++iToken;
-        v.addElement(pt = getPoint4f(ptY)); // (3) = {nj jx jy jz}
-        nY = (int) pt.x;
-        v.addElement(pt = getPoint4f(++iToken)); // (4) = {nk kx ky kz}
-        nZ = (int) pt.x;
-        if (nX == 0 || nY == 0)
-          error(ERROR_invalidArgument);
-        if (!isSyntaxCheck) {
-          float[][][] xyzdata = (isXYZV ? viewer.getDataFloat3D(fName) : viewer
-              .functionXYZ(fName, nX, nY, nZ));
-          nX = Math.abs(nX);
-          nY = Math.abs(nY);
-          if (xyzdata == null) {
-            iToken = ptX;
-            error(ERROR_what, "xyzdata is null.");
-          }
-          if (xyzdata.length != nX || xyzdata[0].length != nY
-              || xyzdata[0][0].length != nZ) {
-            iToken = ptX;
-            error(ERROR_what, "xyzdata[" + xyzdata.length + "]["
-                + xyzdata[0].length + "][" + xyzdata[0][0].length
-                + "] is not of size [" + nX + "][" + nY + "][" + nZ + "]");
-          }
-          v.addElement(xyzdata); // (5) = float[][][] data
-        }
-        i = iToken;
-        propertyName = "functionXYZ";
-        propertyValue = v;
         isFxy = surfaceObjectSeen = true;
         break;
       case Token.gridpoints:
         propertyName = "gridPoints";
+        sbCommand.append(" gridPoints");
         break;
       case Token.ignore:
         propertyName = "ignore";
         propertyValue = expression(++i);
+        sbCommand.append(" ignore ").append(Escape.escape((BitSet) propertyValue));
         i = iToken;
         break;
       case Token.insideout:
         propertyName = "insideOut";
+        sbCommand.append(" insideout");
         break;
       case Token.internal:
       case Token.interior:
+      case Token.pocket:
+        sbCommand.append(" ").append(theToken.value);
         propertyName = "pocket";
-        propertyValue = Boolean.FALSE;
+        propertyValue = (theTok == Token.pocket ? Boolean.TRUE : Boolean.FALSE);
         break;
       case Token.lobe:
         // lobe {eccentricity}
@@ -14314,7 +14520,9 @@ public class ScriptEvaluator {
         propertyName = "lobe";
         propertyValue = getPoint4f(++i);
         i = iToken;
-        break;
+        sbCommand.append(" lobe ").append(
+            Escape.escape((Point4f) propertyValue));
+       break;
       case Token.lonepair:
       case Token.lp:
         // lp {eccentricity}
@@ -14322,8 +14530,11 @@ public class ScriptEvaluator {
         propertyName = "lp";
         propertyValue = getPoint4f(++i);
         i = iToken;
+        sbCommand.append(" lp ").append(
+            Escape.escape((Point4f) propertyValue));
         break;
       case Token.map:
+        sbCommand.append(" map");
         if (haveRadius && !surfaceObjectSeen) {
           surfaceObjectSeen = true;
           addShapeProperty(propertyList, "bsSolvent",
@@ -14336,10 +14547,12 @@ public class ScriptEvaluator {
       case Token.maxset:
         propertyName = "maxset";
         propertyValue = new Integer(intParameter(++i));
+        sbCommand.append(" maxSet ").append(propertyValue);
         break;
       case Token.minset:
         propertyName = "minset";
         propertyValue = new Integer(intParameter(++i));
+        sbCommand.append(" minSet ").append(propertyValue);
         break;
       case Token.radical:
         // rad {eccentricity}
@@ -14347,19 +14560,24 @@ public class ScriptEvaluator {
         propertyName = "rad";
         propertyValue = getPoint4f(++i);
         i = iToken;
+        sbCommand.append(" radical ").append(
+            Escape.escape((Point4f) propertyValue));
         break;
       case Token.modelbased:
         propertyName = "fixed";
         propertyValue = Boolean.FALSE;
+        sbCommand.append(" modelBased");
         break;
       case Token.molecular:
         surfaceObjectSeen = true;
         propertyName = "molecular";
         propertyValue = new Float(1.4);
+        sbCommand.append(" molecular");
         break;
       case Token.object:
       case Token.obj:
         addShapeProperty(propertyList, "fileType", "Obj");
+        sbCommand.append(" obj");
         continue;
       case Token.phase:
         if (surfaceObjectSeen)
@@ -14367,48 +14585,50 @@ public class ScriptEvaluator {
         propertyName = "phase";
         propertyValue = (tokAt(i + 1) == Token.string ? stringParameter(++i)
             : "_orb");
-        break;
-      case Token.pocket:
-        propertyName = "pocket";
-        propertyValue = Boolean.TRUE;
+        sbCommand.append(" phase ").append(Escape.escape(propertyValue));
         break;
       case Token.pointsperangstrom:
       case Token.resolution:
         propertyName = "resolution";
         propertyValue = new Float(floatParameter(++i));
+        sbCommand.append(" resolution ").append(propertyValue);
         break;
       case Token.reversecolor:
         propertyName = "reverseColor";
         propertyValue = Boolean.TRUE;
+        sbCommand.append(" reversecolor");
         break;
       case Token.sigma:
         propertyName = "sigma";
         propertyValue = new Float(sigma = floatParameter(++i));
-        break;
-      case Token.sign:
-        signPt = i + 1;
-        propertyName = "sign";
-        propertyValue = Boolean.TRUE;
-        colorRangeStage = 1;
+        sbCommand.append(" sigma ").append(propertyValue);
         break;
       case Token.sphere:
         // sphere [radius]
         surfaceObjectSeen = true;
         propertyName = "sphere";
         propertyValue = new Float(floatParameter(++i));
+        sbCommand.append(" sphere ").append(propertyValue);
         break;
       case Token.squared:
         propertyName = "squareData";
         propertyValue = Boolean.TRUE;
+        sbCommand.append(" squared");
         break;
       case Token.variable:
         propertyName = "property";
-        data = new float[viewer.getAtomCount()];
-        if (!isSyntaxCheck) {
-          Parser.parseFloatArray(""
-              + getParameter(parameterAsString(++i), false), null, data);
+        String vname = parameterAsString(++i);
+        int nAtoms = viewer.getAtomCount();
+        if (vname.length() == 0) {
+          data = floatParameterSet(i, nAtoms, nAtoms); 
+        } else {
+          data = new float[nAtoms];
+          if (!isSyntaxCheck) 
+            Parser.parseFloatArray(""
+              + getParameter(vname, false), null, data);
         }
         propertyValue = data;
+        sbCommand.append(" variable \"\" ").append(Escape.escape(data));
         break;
       case Token.string:
         String filename = parameterAsString(i);
@@ -14417,30 +14637,38 @@ public class ScriptEvaluator {
           // Uppsala Electron Density Server (default, at least)
           String[] info = viewer.getElectronDensityLoadInfo();
           String server = info[0];
-          //String option = (!firstPass || ptWithin > 0 ? null : info[1]);
-          String strCutoff = (isSyntaxCheck || !firstPass || !Float.isNaN(cutoff) ? null : info[2]);
+          // String option = (!firstPass || ptWithin > 0 ? null : info[1]);
+          String strCutoff = (isSyntaxCheck || !firstPass
+              || !Float.isNaN(cutoff) ? null : info[2]);
           String f = filename.substring(1);
-          filename = TextFormat.simpleReplace(server, "%LCFILE", f.toLowerCase());
+          filename = TextFormat.simpleReplace(server, "%LCFILE", f
+              .toLowerCase());
           filename = TextFormat.simpleReplace(filename, "%FILE", f);
           if (strCutoff != null) {
-            strCutoff = TextFormat.simpleReplace(strCutoff,"%LCFILE", f.toLowerCase());
-            strCutoff = TextFormat.simpleReplace(strCutoff,"%FILE", f);
-            cutoff = ScriptVariable.fValue(ScriptVariable.getVariable(viewer.evaluateExpression(strCutoff)));
+            strCutoff = TextFormat.simpleReplace(strCutoff, "%LCFILE", f
+                .toLowerCase());
+            strCutoff = TextFormat.simpleReplace(strCutoff, "%FILE", f);
+            cutoff = ScriptVariable.fValue(ScriptVariable.getVariable(viewer
+                .evaluateExpression(strCutoff)));
             if (cutoff > 0) {
               if (!Float.isNaN(sigma))
                 cutoff = 1 / sigma;
               addShapeProperty(propertyList, "cutoff", new Float(cutoff));
+              sbCommand.append(" cutoff ").append(cutoff);
             }
           }
           if (ptWithin == 0) {
-            getWithinDistanceVector(propertyList, 2.0f, null, viewer.getModelAtomBitSet(modelIndex, true));
+            bs = viewer.getModelAtomBitSet(modelIndex, true);
+            getWithinDistanceVector(propertyList, 2.0f, null, bs);
+            sbCommand.append(" within 2.0 ").append(Escape.escape(bs));
           }
-          defaultMesh = true;
+          if (firstPass)
+            defaultMesh = true;
         }
-        if (firstPass
-            && viewer.getParameter("_fileType").equals("Pdb") 
+        if (firstPass && viewer.getParameter("_fileType").equals("Pdb")
             && Float.isNaN(sigma) && Float.isNaN(cutoff)) {
           addShapeProperty(propertyList, "sigma", new Float(1));
+          sbCommand.append(" sigma 1.0");
         }
         propertyName = (firstPass ? "readFile" : "mapColor");
         /*
@@ -14453,12 +14681,13 @@ public class ScriptEvaluator {
          * Both can be present, but if jmolMappedDataInfo is missing, then
          * jmolSurfaceInfo is used by default.
          */
-        if (filename.equals("TESTDATA") && Viewer.testData != null) {
-          propertyValue = Viewer.testData;
+        
+        if (filename.equals("TESTDATA") && testData != null) {
+          propertyValue = testData;
           break;
         }
-        if (filename.equals("TESTDATA2") && Viewer.testData2 != null) {
-          propertyValue = Viewer.testData2;
+        if (filename.equals("TESTDATA2") && testData2 != null) {
+          propertyValue = testData2;
           break;
         }
         if (filename.length() == 0) {
@@ -14474,13 +14703,11 @@ public class ScriptEvaluator {
           filename = getFullPathName();
         }
         surfaceObjectSeen = true;
+        int fileIndex = -1;
         if (tokAt(i + 1) == Token.integer)
           addShapeProperty(propertyList, "fileIndex", new Integer(
-              intParameter(++i)));
-        if (filename.equals("string")) {
-          propertyValue = (isSyntaxCheck ? null : viewer.getFileInfo()[3]);
-          addShapeProperty(propertyList, "fileName", "");
-        } else if (filename.equalsIgnoreCase("INLINE")) {
+              fileIndex = intParameter(++i)));
+        if (filename.equalsIgnoreCase("INLINE")) {
           // inline PMESH data
           if (tokAt(i + 1) != Token.string)
             error(ERROR_stringExpected);
@@ -14492,6 +14719,7 @@ public class ScriptEvaluator {
             Logger.debug("pmesh inline data:\n" + sdata);
           propertyValue = (isSyntaxCheck ? null : sdata);
           addShapeProperty(propertyList, "fileName", "");
+          sbCommand.append(" INLINE ").append(Escape.escape(sdata));
         } else if (!isSyntaxCheck) {
           String[] fullPathNameOrError;
           String localName = null;
@@ -14512,19 +14740,26 @@ public class ScriptEvaluator {
             error(ERROR_fileNotFoundException, filename + ":"
                 + fullPathNameOrError[1]);
           Logger.info("reading isosurface data from " + filename);
-          addShapeProperty(propertyList, "commandOption", "FILE" + (nFiles++)
-              + "=" + Escape.escape(localName == null ? filename : localName));
           addShapeProperty(propertyList, "fileName", filename);
-          // null value indicates that we need a reader based on the fileName
+          if (localName != null)
+            filename = localName;
+          //addShapeProperty(propertyList, "commandOption", "FILE" + (nFiles++)
+            //  + "=" + Escape.escape(filename));
+          sbCommand.append(" /*file*/").append(Escape.escape(filename));
           propertyValue = null;
+          // null value indicates that we need a reader based on the fileName
         }
+        if (fileIndex >= 0)
+          sbCommand.append(" ").append(fileIndex);
         break;
       case Token.identifier:
         if (str.equalsIgnoreCase("LINK")) { // for state of lcaoCartoon
           propertyName = "link";
+          sbCommand.append(" link");
           break;
         } else if (str.equalsIgnoreCase("REMAPPABLE")) { // testing only
           propertyName = "remappable";
+          sbCommand.append(" remappable");
           break;
         } else {
           propertyName = "thisID";
@@ -14583,8 +14818,6 @@ public class ScriptEvaluator {
           new Object[] { colorScheme,
               isColorSchemeTranslucent ? Boolean.TRUE : Boolean.FALSE });
 
-    // TODO: addShapeProperty(propertyList, "variables", thisCommandVariables);
-
     // OK, now send them all
     setShapeProperty(iShape, "setProperties", propertyList);
 
@@ -14592,6 +14825,7 @@ public class ScriptEvaluator {
       setShapeProperty(iShape, "token", new Integer(Token.mesh));
       setShapeProperty(iShape, "token", new Integer(Token.nofill));
       setShapeProperty(iShape, "token", new Integer(Token.frontonly));
+      sbCommand.append(" mesh nofill frontOnly");
     }
     if (iptDisplayProperty > 0) {
       if (!setMeshDisplayProperty(iShape, iptDisplayProperty,
@@ -14618,14 +14852,13 @@ public class ScriptEvaluator {
         viewer.setUserVariable("isosurfaceVolume", ScriptVariable
             .getVariable(volume));
     }
-    if (surfaceObjectSeen && isIsosurface && !isSyntaxCheck) {
-      setShapeProperty(iShape, "finalize", null);
+    if (surfaceObjectSeen && !isLcaoCartoon && !isSyntaxCheck) {
+      setShapeProperty(iShape, "finalize", sbCommand.toString());
       Integer n = (Integer) getShapeProperty(iShape, "count");
       float[] dataRange = (float[]) getShapeProperty(iShape, "dataRange");
       String s = (String) getShapeProperty(iShape, "ID");
       if (s != null) {
-        cutoff = ((Float) getShapeProperty(iShape, "cutoff"))
-            .floatValue();
+        cutoff = ((Float) getShapeProperty(iShape, "cutoff")).floatValue();
         if (Float.isNaN(cutoff) && !Float.isNaN(sigma)) {
           Logger.error("sigma not supported");
         }
@@ -14638,7 +14871,7 @@ public class ScriptEvaluator {
             && dataRange[0] != dataRange[1])
           s += "\ncolor range " + dataRange[2] + " " + dataRange[3]
               + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
-        if (doCalcArea) 
+        if (doCalcArea)
           s += "\nisosurfaceArea = " + Escape.escapeArray(area);
         if (doCalcVolume)
           s += "\nisosurfaceVolume = " + Escape.escapeArray(volume);
@@ -14653,7 +14886,13 @@ public class ScriptEvaluator {
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);
     setShapeProperty(iShape, "clear", null);
+    //if (!isSyntaxCheck)
+      //System.out.println(sbCommand);
   }
+
+  private static Object testData; // for isosurface
+  private static Object testData2; // for isosurface
+
 
   private void getWithinDistanceVector(Vector propertyList, float distance, Point3f ptc, BitSet bs) {
     Vector v = new Vector();
@@ -14667,8 +14906,8 @@ public class ScriptEvaluator {
       pts[1] = pt1;
       v.add(ptc);
     } else {
-      addShapeProperty(propertyList, "commandOption", "WITHIN=\""
-          + Escape.escape(bs) + "\"");
+      //addShapeProperty(propertyList, "commandOption", "WITHIN=\""
+        //  + Escape.escape(bs) + "\"");
       BoxInfo bbox = viewer.getBoxInfo(bs, -distance);
       pts[0] = bbox.getBboxVertices()[0];
       pts[1] = bbox.getBboxVertices()[7];

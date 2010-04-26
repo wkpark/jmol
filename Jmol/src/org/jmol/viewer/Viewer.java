@@ -2974,9 +2974,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         matchFieldColumnCount, field, fieldColumnCount);
   }
 
-  public static Object testData; // for isosurface
-  public static Object testData2; // for isosurface
-
   public Object[] getData(String type) {
     return dataManager.getData(type);
   }

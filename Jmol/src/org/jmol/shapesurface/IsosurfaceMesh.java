@@ -459,9 +459,11 @@ public class IsosurfaceMesh extends Mesh {
     isColorSolid = haveColixes && jvxlData.jvxlPlane != null;
     if (jvxlData.vContours != null) {
       if (haveColixes)
-        for (int i = 0; i < jvxlData.vContours.length; i++)
-          ((short[]) jvxlData.vContours[i].get(3))[0] = colixes[i
-              % colixes.length];
+        for (int i = 0; i < jvxlData.vContours.length; i++) {
+          short colix  = colixes[i % colixes.length];
+          ((short[]) jvxlData.vContours[i].get(JvxlCoder.CONTOUR_COLIX))[0] = colix;
+          ((int[]) jvxlData.vContours[i].get(JvxlCoder.CONTOUR_COLOR))[0] = Graphics3D.getArgb(colix);
+        }
       return;
     }
     short defaultColix = 0;

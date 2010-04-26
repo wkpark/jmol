@@ -356,7 +356,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if (propertyName == "functionXY") {
       if (sg.isStateDataRead())
-        setScriptInfo(); // for script DATA1
+        setScriptInfo(null); // for script DATA1
     }
 
     if ("center" == propertyName) {
@@ -378,7 +378,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("finalize" == propertyName) {
       thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, sg
           .getParams().contourColixes);
-      setScriptInfo();
+      setScriptInfo((String) value);
       setJvxlInfo();
       clearSg();
       return;
@@ -866,7 +866,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       setProperty(nElectrons == 2 ? "lp" : nElectrons == 1 ? "rad" : "lobe", 
           lcaoDir, null);
     }
-    setScriptInfo();
+    setScriptInfo(null);
   }
 
   /////////////// meshDataServer interface /////////////////
@@ -1025,16 +1025,17 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.scale3d = (thisMesh.jvxlData.jvxlPlane == null ? 0 : scale3d);
   }
 
-  protected void setScriptInfo() {
+  protected void setScriptInfo(String strCommand) {
+    // also from lcaoCartoon
     thisMesh.title = sg.getTitle();
-    String script = sg.getScript();
+    String script = (strCommand == null ? sg.getScript() : strCommand);
     thisMesh.dataType = sg.getParams().dataType;
     thisMesh.scale3d = sg.getParams().scale3d;
     thisMesh.bitsets = null;
     thisMesh.slabbingObject = sg.getParams().slabbingObject;
     thisMesh.cappingObject = sg.getParams().cappingObject;
     if (script != null) {
-      if (script.charAt(0) == ' ') { // lobe only
+      if (script.charAt(0) == ' ') {
         script = myType + " ID " + Escape.escape(thisMesh.thisID) + script;
       } else if (sg.getIUseBitSets()) {
         thisMesh.bitsets = new BitSet[3];
@@ -1047,11 +1048,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (!explicitID && script != null && (pt = script.indexOf("# ID=")) >= 0)
       thisMesh.thisID = Parser.getNextQuotedString(script, pt);
     thisMesh.scriptCommand = script;
-    Vector v = (Vector) sg.getFunctionXYinfo();
-    if (thisMesh.data1 == null)
-      thisMesh.data1 = v;
-    else
-      thisMesh.data2 = v;
+//    Vector v = (Vector) sg.getFunctionXYinfo();
+//    if (thisMesh.data1 == null)
+//      thisMesh.data1 = v;
+//    else
+ //     thisMesh.data2 = v;
   }
 
   private void setJvxlInfo() {

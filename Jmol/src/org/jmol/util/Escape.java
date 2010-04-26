@@ -44,7 +44,10 @@ public class Escape {
       return escape("" + x);
     if (x instanceof String[])
       return escape((String[]) x, true);
-    if (x instanceof int[]) 
+    if (x instanceof int[] 
+          || x instanceof float[]
+          || x instanceof float[][]
+          || x instanceof float[][][]) 
       return toJSON(null, x);
     if (x instanceof Point3f[])
       return escapeArray(x);
@@ -243,13 +246,13 @@ public class Escape {
       }
     } else if (x instanceof Point3f[]) {
       Point3f[] plist = (Point3f[]) x;
-      s = new StringBuffer("array(");
+      s = new StringBuffer("[");
       for (int i = 0; i < plist.length; i++) {
         if (i > 0)
           s.append(", ");
         s.append(escape(plist[i]));
       }
-      return s.append(")").toString();
+      return s.append("]").toString();
     }
     s.append("]");
     return s.toString();
@@ -372,18 +375,17 @@ public class Escape {
     if (str.lastIndexOf("[[") != 0 || str.indexOf("]]") != str.length() - 2)
       return strMatrix;
     float[] points = new float[16];
-    str = str.substring(2, str.length() - 2).replace('[',' ').replace(']',',');
+    str = str.substring(2, str.length() - 2).replace('[',' ').replace(']',' ').replace(',',' ');
     int[] next = new int[1];
     int nPoints = 0;
     for (; nPoints < 16; nPoints++) {
       points[nPoints] = Parser.parseFloat(str, next);
       if (Float.isNaN(points[nPoints])) {
-        if (next[0] >= str.length() || str.charAt(next[0]) != ',')
-          break;
-        next[0]++;
-        nPoints--;
+        break;
       }
     }
+    if (!Float.isNaN(Parser.parseFloat(str, next)))
+      return strMatrix; // overflow
     if (nPoints == 9)
       return new Matrix3f(points);
     if (nPoints == 16)
@@ -549,6 +551,16 @@ public class Escape {
       int imax = ((float[][]) info).length;
       for (int i = 0; i < imax; i++) {
         sb.append(sep).append(toJSON(null, ((float[][]) info)[i]));
+        sep = ",";
+      }
+      sb.append("]");
+      return packageJSON(infoType, sb);
+    }
+    if (info instanceof float[][][]) {
+      sb.append("[");
+      int imax = ((float[][][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(toJSON(null, ((float[][][]) info)[i]));
         sep = ",";
       }
       sb.append("]");

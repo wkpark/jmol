@@ -46,7 +46,6 @@ final public class Atom extends Point3fi {
   private final static byte FLAG_MASK = 3;
   
   public static final int RADIUS_MAX = 16;
-  //private static final int MAD_MAX = RADIUS_MAX * 2000; // must be < 32000
 
   Group group;
   private BitSet atomSymmetry;

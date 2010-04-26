@@ -119,8 +119,8 @@ public class Mesh extends MeshSurface {
     vertices = null;
     offsetVertices = null;
     polygonIndexes = null;
-    data1 = null;
-    data2 = null;
+    //data1 = null;
+    //data2 = null;
     slabbingObject = null;
     cappingObject = null;
     
@@ -186,8 +186,8 @@ public class Mesh extends MeshSurface {
   public final Vector3f vAC = new Vector3f();
   public final Vector3f vTemp = new Vector3f();
 
-  public Vector data1;
-  public Vector data2;
+  //public Vector data1;
+  //public Vector data2;
   public Vector xmlProperties;
   public boolean colorDensity;
   public Object cappingObject;

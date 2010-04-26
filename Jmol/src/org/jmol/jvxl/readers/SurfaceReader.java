@@ -331,6 +331,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     nPointsZ = voxelCounts[2];
     jvxlData.insideOut = params.insideOut;
     jvxlData.dataXYReversed = params.dataXYReversed;
+    jvxlData.isBicolorMap = params.isBicolorMap;
     jvxlData.nPointsX = nPointsX;
     jvxlData.nPointsY = nPointsY;
     jvxlData.nPointsZ = nPointsZ;
@@ -398,6 +399,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   void resetIsosurface() {
     meshData = new MeshData();
     xyzMin = xyzMax = null;
+    jvxlData.isBicolorMap = params.isBicolorMap;
     if (meshDataServer != null)
       meshDataServer.fillMeshData(null, 0, null);
     contourVertexCount = 0;
@@ -720,10 +722,12 @@ public abstract class SurfaceReader implements VertexDataServer {
     if ((params.nContours > 0 || jvxlData.contourValues != null) && jvxlData.contourColixes == null) {
       int n = (jvxlData.contourValues == null ? params.nContours : jvxlData.contourValues.length);
       short[] colors = jvxlData.contourColixes = new short[n];
+      jvxlData.contourValuesUsed = (jvxlData.contourValues == null ? new float[n] : jvxlData.contourValues);
       float dv = (valueBlue - valueRed) / (n + 1);
       // n + 1 because we want n lines between n + 1 slices
       for (int i = 0; i < n; i++) {
         float v = (jvxlData.contourValues == null ? valueRed + (i + 1) * dv : jvxlData.contourValues[i]);
+        jvxlData.contourValuesUsed[i] = v;
         colors[i] = Graphics3D.getColixTranslucent(getArgbFromPalette(v));
       }
       //TODO -- this strips translucency

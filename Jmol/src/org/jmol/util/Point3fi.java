@@ -25,6 +25,17 @@
 package org.jmol.util;
 import javax.vecmath.Point3f;
 
+/**
+ * the Point3fi class allows storage of critical information involving
+ * an atom, picked bond, or measurement point, including: 
+ * 
+ * xyz position 
+ * screen position
+ * screen radius (-1 for a simple point)
+ * index (for atoms or for an associated bond that has be picked)
+ * associated modelIndex (for measurement points)
+ * 
+ */
 public class Point3fi extends Point3f {
   public int index;
   public int screenX;

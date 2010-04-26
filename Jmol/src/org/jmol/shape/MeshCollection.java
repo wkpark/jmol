@@ -31,7 +31,6 @@ import org.jmol.script.Token;
 
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
@@ -566,7 +565,8 @@ public abstract class MeshCollection extends Shape {
     cmd = cmd.replace('\t', ' ');
     cmd = TextFormat.simpleReplace(cmd, ";#", "; #");
     int pt = cmd.indexOf("; #");
-    // not perfect -- user may have that in a title, I suppose...
+    /*
+     not perfect -- user may have that in a title, I suppose...
     String options = "";
     if (pt >= 0) {
       options = cmd.substring(pt + 1);
@@ -578,6 +578,14 @@ public abstract class MeshCollection extends Shape {
       if (pt >= 0)
         options = options.substring(0, pt);
     }
+    */
+    if (pt >= 0) {
+      cmd = cmd.substring(0, pt);
+    }
+    cmd = TextFormat.trim(cmd, ";");
+    if (mesh.linkedMesh != null)
+      cmd += " LINK"; // for lcaoCartoon state
+    /*
     cmd = TextFormat.trim(cmd, ";") + ";" + options;
     if (mesh.bitsets != null) {
       cmd += "# "
@@ -597,17 +605,13 @@ public abstract class MeshCollection extends Shape {
       cmd += "# CAP=\"" + Escape.escape(mesh.cappingObject) + "\"";
     if (mesh.slabbingObject != null)
       cmd += "# SLAB=\"" + Escape.escape(mesh.slabbingObject) + "\"";
-    if (mesh.linkedMesh != null)
-      cmd += " LINK";
     if (mesh.data1 != null)
       cmd = encapsulateData(cmd, mesh.data1, "");
     if (mesh.data2 != null)
       cmd = encapsulateData(cmd, mesh.data2, "2");
+    */
     if (mesh.modelIndex >= 0 && modelCount > 1)
-      appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
-    
-    if (cmd.charAt(0) == '{' && !cmd.endsWith("}"))
-        cmd += "\n}\n";
+      appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));    
     appendCmd(sb, cmd);
     if (mesh.ptOffset != null)
       appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " offset " + Escape.escape(mesh.ptOffset));
@@ -624,7 +628,7 @@ public abstract class MeshCollection extends Shape {
       getColorState(sb, mesh);
     }
   }
-
+/*
 private String encapsulateData(String cmd, Vector data, String ext) {
   String name = ((String) data.elementAt(0)).toLowerCase();
   Object array = data.elementAt(5);
@@ -636,7 +640,7 @@ private String encapsulateData(String cmd, Vector data, String ext) {
       + "  " + cmd + "# DATA" + ext + "=\"" + name + "\"";
   return cmd;
 }
-
+*/
 protected void getColorState(StringBuffer sb, Mesh mesh) {
   getColorState(sb, mesh);
   if (mesh.isColorSolid)

@@ -206,7 +206,7 @@ public class LcaoCartoon extends Isosurface {
     
     //from the state:
     if (setInfo || "lobe" == propertyName || "sphere" == propertyName) {
-      setScriptInfo();
+      setScriptInfo(null);
     }
   }
 

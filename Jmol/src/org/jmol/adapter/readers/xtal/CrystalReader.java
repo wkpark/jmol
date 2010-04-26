@@ -92,6 +92,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private boolean inputOnly;
   private int atomCount;
   private int[] atomFrag;
+  private boolean getLastConventional;
 
   protected void initializeReader() throws Exception {
     doProcessLines = false;
@@ -100,6 +101,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     inputOnly = (filter != null && filter.indexOf("input") >= 0);
     addVibrations = !inputOnly && (filter == null || filter.indexOf("novib") < 0);
     isPrimitive = !inputOnly && (filter == null || filter.indexOf("conv") < 0);
+    getLastConventional = (!isPrimitive && desiredModelNumber == 0);
     setFractionalCoordinates(readHeader());
   }
 
@@ -145,7 +147,7 @@ public class CrystalReader extends AtomSetCollectionReader {
         if (isPrimitive)
           return true;
         readCellParams(); 
-      } else if (!isPrimitive && !havePrimitiveMapping) {
+      } else if (!isPrimitive && !havePrimitiveMapping && !getLastConventional) {
         readPrimitiveMapping(); // just for properties
         return true;
       }
@@ -153,6 +155,11 @@ public class CrystalReader extends AtomSetCollectionReader {
         return checkLastModel();
       if (isPrimitive) {
         readCellParams();
+      } else if (getLastConventional) {
+        discardLinesUntilContains(" CRYSTALLOGRAPHIC");
+        readCellParams();
+        discardLinesUntilContains(" CRYSTALLOGRAPHIC");
+        readInputCoords();
       } else if (modelNumber == 1) {
         // done here
       } else {
@@ -345,7 +352,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     }
     if (!isPrimitive) {
       discardLines(5);
-      setSpaceGroupName(line.substring(line.indexOf(":") + 1).trim());
+      setSpaceGroupName(line.indexOf(":") >= 0 ? line.substring(line.indexOf(":") + 1).trim() : "P1");
     }
     return true;
   }
@@ -389,6 +396,8 @@ public class CrystalReader extends AtomSetCollectionReader {
    * @throws Exception
    */
   private void readPrimitiveMapping() throws Exception {
+    if (vInputCoords == null)
+      return;
     havePrimitiveMapping = true;
     BitSet bsInputAtomsIgnore = new BitSet();
     int n = vInputCoords.size();    
@@ -423,7 +432,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       }
     }
     
-    if (bsInputAtomsIgnore.nextSetBit(0) >= 0) 
+    if (bsInputAtomsIgnore.nextSetBit(0) >= 0 && vInputCoords != null) 
       for (int i = n; --i >= 0;) {
         if (bsInputAtomsIgnore.get(i))
           vInputCoords.remove(i);
@@ -533,10 +542,17 @@ public class CrystalReader extends AtomSetCollectionReader {
     for (int i = 0; i < atomCount; i++) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens((String) vInputCoords.get(i));
-      int atomicNumber = getAtomicNumber(tokens[1]);
-      float x = parseFloat(tokens[2]) + ptOriginShift.x;
-      float y = parseFloat(tokens[3]) + ptOriginShift.y;
-      float z = parseFloat(tokens[4]) + ptOriginShift.z;
+      int atomicNumber, offset;
+      if (tokens.length == 7) {
+        atomicNumber = getAtomicNumber(tokens[2]);
+        offset = 2;          
+      } else {
+        atomicNumber = getAtomicNumber(tokens[1]);
+        offset = 0;
+      }
+      float x = parseFloat(tokens[2 + offset]) + ptOriginShift.x;
+      float y = parseFloat(tokens[3 + offset]) + ptOriginShift.y;
+      float z = parseFloat(tokens[4 + offset]) + ptOriginShift.z;
       /*
        * we do not do this, because we have other ways to do it namely, "packed"
        * or "{555 555 1}" In this way, we can check those input coordinates
@@ -607,6 +623,8 @@ public class CrystalReader extends AtomSetCollectionReader {
     float[] charges = new float[tokens.length];
     if (nuclearCharges == null)
       nuclearCharges = charges;
+    if (atomSetCollection.getAtomCount() == 0)
+      return;
     Atom[] atoms = atomSetCollection.getAtoms();
     int i0 = atomSetCollection.getLastAtomSetAtomIndex();
     for (int i = 0; i < charges.length; i++) {

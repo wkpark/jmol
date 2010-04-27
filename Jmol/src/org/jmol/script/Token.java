@@ -1180,6 +1180,7 @@ public class Token {
  
   public final static Token tokenExpressionBegin = new Token(expressionBegin, "expressionBegin");
   public final static Token tokenExpressionEnd   = new Token(expressionEnd, "expressionEnd");
+  public final static Token tokenConnected       = new Token(connected, "connected");
   final static Token tokenCoordinateBegin = new Token(leftbrace, "{");
   final static Token tokenCoordinateEnd   = new Token(rightbrace, "}");
   final static Token tokenColon           = new Token(colon, ':');

@@ -1927,7 +1927,7 @@ abstract public class ModelCollection extends BondCollection {
     
     initializeBspf();
     AtomIteratorWithinModel iter = new AtomIteratorWithinModel();
-    iter.initialize(bspf, bsSelected, isGreaterOnly, modelZeroBased, hemisphereOnly, viewer.isMultiProcessor()); 
+    iter.initialize(bspf, bsSelected, isGreaterOnly, modelZeroBased, hemisphereOnly, viewer.isParallel()); 
     return iter;
   }
   

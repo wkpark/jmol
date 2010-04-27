@@ -385,6 +385,7 @@ public class Minimizer implements MinimizerInterface {
   final static int TOKEN_ELEMENT_AROMATIC = 3;
   final static int TOKEN_ELEMENT_SP = 4;
   final static int TOKEN_ELEMENT_SP2 = 5;
+  final static int TOKEN_ELEMENT_ALLYLIC = 6;
   
   /*
 Token[keyword(0x80064) value="expressionBegin"]
@@ -420,7 +421,7 @@ Token[keyword(0x880001) value=")"]
        new Token(Token.opEQ, Token.elemno), 
        Token.intToken(0)  ,  // 2
        Token.tokenAnd, 
-       new Token(Token.connected, "connected"),
+       Token.tokenConnected,
        Token.tokenLeftParen,
        Token.intToken(0),   // 6
        Token.tokenRightParen,
@@ -438,14 +439,14 @@ Token[keyword(0x880001) value=")"]
        Token.intToken(0)  ,  // 2
        Token.tokenAnd, 
        Token.tokenLeftParen,
-       new Token(Token.connected, "connected"),
+       Token.tokenConnected,
        Token.tokenLeftParen,
        Token.intToken(1),
        Token.tokenComma,
        new Token(Token.string, "triple"),
        Token.tokenRightParen,
        Token.tokenOr,
-       new Token(Token.connected, "connected"),
+       Token.tokenConnected,
        Token.tokenLeftParen,
        Token.intToken(2),
        Token.tokenComma,
@@ -463,6 +464,24 @@ Token[keyword(0x880001) value=")"]
        Token.intToken(1),
        Token.tokenComma,
        new Token(Token.string, "double"),
+       Token.tokenRightParen,
+       Token.tokenExpressionEnd},
+       /*6*/  new Token[]{ //Nv vinylic == connected(3) && connected(connected("double"))
+       Token.tokenExpressionBegin,
+       new Token(Token.opEQ, Token.elemno), 
+       Token.intToken(0)  ,  // 2
+       Token.tokenAnd, 
+       Token.tokenConnected,
+       Token.tokenLeftParen,
+       Token.intToken(3),
+       Token.tokenRightParen,
+       Token.tokenAnd, 
+       Token.tokenConnected,
+       Token.tokenLeftParen,
+       Token.tokenConnected,
+       Token.tokenLeftParen,
+       new Token(Token.string, "double"),
+       Token.tokenRightParen,
        Token.tokenRightParen,
        Token.tokenExpressionEnd},
   };
@@ -524,7 +543,7 @@ Token[keyword(0x880001) value=")"]
       search = tokenTypes[TOKEN_ELEMENT_CONNECTED];
       search[PT_CONNECT].intValue = n;
       break;
-    case '^':
+    case '^': //1 or 2
       search = tokenTypes[TOKEN_ELEMENT_SP + (n - 1)];
       break;
     case '+':
@@ -535,10 +554,13 @@ Token[keyword(0x880001) value=")"]
       search = tokenTypes[TOKEN_ELEMENT_CHARGED];
       search[PT_CHARGE].intValue = -n;
       break;
+    case 'A': // amide/allylic (also just plain C=X)
+      search = tokenTypes[TOKEN_ELEMENT_ALLYLIC];
+      break;
     }
     search[PT_ELEMENT].intValue = elemNo;
     Object v = viewer.evaluateExpression(search);
-    if (Logger.debugging)
+    if (Logger.debugging && !v.toString().equals("{}"))
       Logger.debug(smarts + " minimize atoms=" + v.toString());
     return (v instanceof BitSet ? (BitSet) v : null);
   }

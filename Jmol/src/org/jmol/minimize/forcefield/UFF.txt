@@ -27,11 +27,13 @@ atom [#5]     B_2         Trigonal planar boron
 atom [#5D4]   B_3         Tetrahedral boron
 atom [#6]     C_3         Generic sp3 C
 atom [C^2]    C_2         sp2 non-aromatic C=
-atom [C+1]    C_2+        trivalent C (cation)  // bh added Jmol 11.12.RC9
-atom [C-1]    C_3         trivalent C (anion)  // bh added Jmol 11.12.RC9
+atom [C+1]    C_2+        trivalent C (cation)  // bh added Jmol 12.0.RC9
+atom [C-1]    C_3         trivalent C (anion)  // bh added Jmol 12.0.RC9
+atom [CA1]    C_2         allylic C (anion or cation) // bh added Jmol 12.0.RC9
 atom [C^1]    C_1         sp hybridized C
 atom [c]      C_R         aromatic C
 atom [#7]     N_3         Generic sp3 N
+atom [NA1]    N_2         allylic N or amide  // bh added Jmol 12.0.RC9
 atom [N^2]    N_2         sp2 non-aromatic N  // bh was [ND2], but this improperly treats N-oxides
 atom [N^1]    N_1         sp hybridized N     // bh was [ND1], but this is more specifically sp
 atom [n]      N_R         aromatic N

@@ -8219,18 +8219,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // parallel processing
   
-  private Object executor;
+  private ScheduledThreadPoolExecutor executor;
   public static int nProcessors = Runtime.getRuntime().availableProcessors();
 
-  public Object getExecutor() {
+  public ScheduledThreadPoolExecutor getExecutor() { 
+    // a Java 1.5 function 
     if (executor != null || nProcessors < 2)
-      return executor;
+      return executor; // note -- a Java 1.5 function 
     try {
       executor = new ScheduledThreadPoolExecutor(nProcessors);
     } catch (Exception e) {
       executor = null;
     }
-    System.out.println("viewer " + executor);
     return executor;
   }
 
@@ -8339,10 +8339,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   boolean isParallel;
   
-  public void setParallel(boolean TF) {
-    isParallel = TF;
+  public boolean setParallel(boolean TF) {
+    return (isParallel = global.multiProcessor && TF);
   }
-  public boolean isMultiProcessor() {
+  public boolean isParallel() {
     return global.multiProcessor && isParallel;
   }
 

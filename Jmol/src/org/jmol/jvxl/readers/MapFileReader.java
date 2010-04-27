@@ -85,8 +85,8 @@ abstract class MapFileReader extends VolumeFileReader {
         + maps);
     Logger.info("grid parameters: originX,Y,Z: " + origin);
 
-    SimpleUnitCell unitCell = new SimpleUnitCell(a / na, b / nb, c / nc, alpha,
-        beta, gamma);
+    SimpleUnitCell unitCell = new SimpleUnitCell( new float[] { a / na, b / nb, c / nc, alpha,
+        beta, gamma });
 
     /*
      

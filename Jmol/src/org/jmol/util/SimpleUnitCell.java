@@ -25,31 +25,123 @@
 
 package org.jmol.util;
 
-/*
- * Bob Hanson 9/2006
- * 
- * NEVER ACCESS THESE METHODS DIRECTLY! ONLY THROUGH CLASS Symmetry
- * 
- *
- */
-import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 
 import org.jmol.viewer.JmolConstants;
 
+/**
+ * general-purpose simple unit cell for calculations 
+ * and as a super-class of unitcell, which is only part of Symmetry
+ * 
+ * allows one-dimensional (polymer) and two-dimensional (slab) 
+ * periodicity
+ * 
+ */
 
 public class SimpleUnitCell {
   
-  protected final static float toRadians = (float) Math.PI * 2 / 360;
-  protected float a, b, c, alpha, beta, gamma;
-  protected boolean isPrimitive;
-  protected float[] notionalUnitcell; //6 parameters + 16 matrix items
+  protected float[] notionalUnitcell; //6 parameters + optional 16 matrix items
   protected Matrix4f matrixCartesianToFractional;
   protected Matrix4f matrixFractionalToCartesian;
+    
+  protected boolean isPrimitive;
   protected boolean isPolymer;
   protected boolean isSlab;
+  
+  protected final static float toRadians = (float) Math.PI * 2 / 360;
+  protected float a, b, c, alpha, beta, gamma;
+  protected double cosAlpha, sinAlpha;
+  protected double cosBeta, sinBeta;
+  protected double cosGamma, sinGamma;
+  protected double volume;
+  protected double cA_, cB_;
+  protected double a_;
+  protected double b_, c_;
+    
+  public SimpleUnitCell(float[] parameters) {
+    if (parameters == null || parameters[0] == 0)
+      return;
+    this.notionalUnitcell = parameters;
+    a = parameters[0];
+    b = parameters[1];
+    c = parameters[2];
+    alpha = parameters[3];
+    beta = parameters[4];
+    gamma = parameters[5];
+
+    if (b == -1) {
+      b = c = 1;
+      isPolymer = true;
+    } else if (c == -1) {
+      c = 1;
+      isSlab = true;
+    }
+    
+    cosAlpha = Math.cos(toRadians * alpha);
+    sinAlpha = Math.sin(toRadians * alpha);
+    cosBeta = Math.cos(toRadians * beta);
+    sinBeta = Math.sin(toRadians * beta);
+    cosGamma = Math.cos(toRadians * gamma);
+    sinGamma = Math.sin(toRadians * gamma);
+    double unitVolume = Math.sqrt(sinAlpha * sinAlpha + sinBeta * sinBeta
+        + sinGamma * sinGamma + 2.0 * cosAlpha * cosBeta * cosGamma - 2);
+    volume = a * b * c * unitVolume;
+    // these next few are for the B' calculation
+    cA_ = (cosAlpha - cosBeta * cosGamma) / sinGamma;
+    cB_ = unitVolume / sinGamma;
+    a_ = b * c * sinAlpha / volume;
+    b_ = a * c * sinBeta / volume;
+    c_ = a * b * sinGamma / volume;
+
+    if (parameters.length > 6 && !Float.isNaN(parameters[21])) {
+      float[] scaleMatrix = new float[16];
+      for (int i = 0; i < 16; i++)
+        scaleMatrix[i] = parameters[6 + i];
+      matrixCartesianToFractional = new Matrix4f(scaleMatrix);
+      matrixFractionalToCartesian = new Matrix4f();
+      matrixFractionalToCartesian.invert(matrixCartesianToFractional);
+    } else if (parameters.length > 6 && !Float.isNaN(parameters[14])) {
+      isPrimitive = true;
+      Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
+      float[] n = parameters;
+      m.setColumn(0, n[6], n[7], n[8], 0);
+      m.setColumn(1, n[9], n[10], n[11], 0);
+      m.setColumn(2, n[12], n[13], n[14], 0);
+      m.setColumn(3, 0, 0, 0, 1);
+      matrixCartesianToFractional = new Matrix4f();
+      matrixCartesianToFractional.invert(matrixFractionalToCartesian);
+    } else {
+      Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
+      // 1. align the a axis with x axis
+      m.setColumn(0, a, 0, 0, 0);
+      // 2. place the b is in xy plane making a angle gamma with a
+      m.setColumn(1, (float) (b * cosGamma), 
+          (float) (b * sinGamma), 0, 0);
+      // 3. now the c axis,
+      // http://server.ccl.net/cca/documents/molecular-modeling/node4.html
+      m.setColumn(2, (float) (c * cosBeta), 
+          (float) (c * (cosAlpha - cosBeta * cosGamma) / sinGamma), 
+          (float) (volume / (a * b * sinGamma)), 0);
+      m.setColumn(3, 0, 0, 0, 1);
+      matrixCartesianToFractional = new Matrix4f();
+      matrixCartesianToFractional.invert(matrixFractionalToCartesian);
+    }
+  }
+
+  public final void toCartesian(Point3f pt) {
+    if (matrixFractionalToCartesian != null)
+      matrixFractionalToCartesian.transform(pt);
+  }
+  
+  public final void toFractional(Point3f pt) {
+    if (matrixCartesianToFractional != null)
+      matrixCartesianToFractional.transform(pt);
+  }
+  
+  public final float[] getNotionalUnitCell() {
+    return notionalUnitcell;
+  }
   
   public boolean isPolymer() {
     return isPolymer;
@@ -57,61 +149,6 @@ public class SimpleUnitCell {
   
   public boolean isSlab() {
     return isSlab;
-  }
-  
-  public SimpleUnitCell(float[] notionalUnitcell) {
-    setUnitCell(notionalUnitcell);
-  }
-
-  public SimpleUnitCell(float a, float b, float c, 
-                        float alpha, float beta, float gamma) {
-    setUnitCell(new float[] {a, b, c, alpha, beta, gamma });
-  }
-
-  public final void toCartesian(Point3f pt) {
-    if (matrixFractionalToCartesian == null)
-      return;
-    matrixFractionalToCartesian.transform(pt);
-  }
-  
-  public final void toFractional(Point3f pt) {
-    if (matrixCartesianToFractional == null)
-      return;
-    matrixCartesianToFractional.transform(pt);
-  }
-  
-  public void setOrientation(Matrix3f mat) {
-    if (mat == null)
-      return;
-    Matrix4f m = new Matrix4f();
-    Matrix3f m3 = new Matrix3f(mat);
-    m3.invert();
-    m.set(m3);
-    matrixCartesianToFractional.mul(matrixCartesianToFractional, m);
-    matrixFractionalToCartesian.invert(matrixCartesianToFractional);
-/*
-    Point3f a = new Point3f(0, 1, 1);
-    Point3f b = new Point3f(1, 0, 1);
-    Point3f c = new Point3f(1, 1, 0);
-
-    matrixCartesianToFractional.transform(a);
-    System.out.println(a);
-    matrixCartesianToFractional.transform(b);
-    System.out.println(b);
-    matrixCartesianToFractional.transform(c);
-    System.out.println(c);
-    matrixFractionalToCartesian.transform(a);
-    System.out.println(a);
-    matrixFractionalToCartesian.transform(b);
-    System.out.println(b);
-    matrixFractionalToCartesian.transform(c);
-    System.out.println(c);
-*/    
-        
-  }
- 
-  public final float[] getNotionalUnitCell() {
-    return notionalUnitcell;
   }
   
   public final float getInfo(int infoType) {
@@ -134,118 +171,4 @@ public class SimpleUnitCell {
     return Float.NaN;
   }
   
-  public void setMinMaxLatticeParameters(Point3i minXYZ, Point3i maxXYZ) {
-    if (maxXYZ.x <= 555 && maxXYZ.y >= 555) {
-      //alternative format for indicating a range of cells:
-      //{111 666}
-      //555 --> {0 0 0}
-      minXYZ.x = (maxXYZ.x / 100) - 5;
-      minXYZ.y = (maxXYZ.x % 100) / 10 - 5;
-      minXYZ.z = (maxXYZ.x % 10) - 5;
-      //555 --> {1 1 1}
-      maxXYZ.x = (maxXYZ.y / 100) - 4;
-      maxXYZ.z = (maxXYZ.y % 10) - 4;
-      maxXYZ.y = (maxXYZ.y % 100) / 10 - 4;
-    }
-    if (isPolymer) {
-      minXYZ.y = minXYZ.z = 0;
-      maxXYZ.y = maxXYZ.z = 1;
-    }  else if (isSlab) {
-        minXYZ.z = 0;
-        maxXYZ.z = 1;
-    }
-  }
-
-  /// private methods
-  
-  private void setUnitCell(float[] notionalUnitcell) {
-    if (notionalUnitcell == null || notionalUnitcell[0] == 0)
-      return;
-    this.notionalUnitcell = notionalUnitcell;
-
-    a = notionalUnitcell[JmolConstants.INFO_A];
-    b = notionalUnitcell[JmolConstants.INFO_B];
-    c = notionalUnitcell[JmolConstants.INFO_C];
-    if (b == -1) {
-      b = c = 1;
-      isPolymer = true;
-    } else if (c == -1) {
-      c = 1;
-      isSlab = true;
-    }
-    alpha = notionalUnitcell[JmolConstants.INFO_ALPHA];
-    beta = notionalUnitcell[JmolConstants.INFO_BETA];
-    gamma = notionalUnitcell[JmolConstants.INFO_GAMMA];
-    constructFractionalMatrices();
-  }
-
-  protected Data data;
-  
-  protected class Data {
-    public double cosAlpha, sinAlpha;
-    public double cosBeta, sinBeta;
-    public double cosGamma, sinGamma;
-    public double volume;
-    public double cA_, cB_;
-    public double a_;
-    public double b_, c_;
-    
-    public Data() {
-      cosAlpha = Math.cos(toRadians * alpha);
-      sinAlpha = Math.sin(toRadians * alpha);
-      cosBeta = Math.cos(toRadians * beta);
-      sinBeta = Math.sin(toRadians * beta);
-      cosGamma = Math.cos(toRadians * gamma);
-      sinGamma = Math.sin(toRadians * gamma);
-      double unitVolume = Math.sqrt(sinAlpha * sinAlpha + sinBeta * sinBeta
-          + sinGamma * sinGamma + 2.0 * cosAlpha * cosBeta * cosGamma - 2);
-      volume = a * b * c * unitVolume;
-      // these next few are for the B' calculation
-      cA_ = (cosAlpha - cosBeta * cosGamma) / sinGamma;
-      cB_ = unitVolume / sinGamma;
-      a_ = b * c * sinAlpha / volume;
-      b_ = a * c * sinBeta / volume;
-      c_ = a * b * sinGamma / volume;
-    }
-  }
-  
-  private void constructFractionalMatrices() {
-    if (notionalUnitcell.length > 6 && !Float.isNaN(notionalUnitcell[21])) {
-      float[] scaleMatrix = new float[16];
-      for (int i = 0; i < 16; i++)
-        scaleMatrix[i] = notionalUnitcell[6 + i];
-      matrixCartesianToFractional = new Matrix4f(scaleMatrix);
-      matrixFractionalToCartesian = new Matrix4f();
-      matrixFractionalToCartesian.invert(matrixCartesianToFractional);
-    } else if (notionalUnitcell.length > 6 && !Float.isNaN(notionalUnitcell[14])) {
-      isPrimitive = true;
-      Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
-      float[] n = notionalUnitcell;
-      if (data == null)
-        data = new Data();
-      m.setColumn(0, n[6], n[7], n[8], 0);
-      m.setColumn(1, n[9], n[10], n[11], 0);
-      m.setColumn(2, n[12], n[13], n[14], 0);
-      m.setColumn(3, 0, 0, 0, 1);
-      matrixCartesianToFractional = new Matrix4f();
-      matrixCartesianToFractional.invert(matrixFractionalToCartesian);
-    } else {
-      Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
-      if (data == null)
-        data = new Data();
-      // 1. align the a axis with x axis
-      m.setColumn(0, a, 0, 0, 0);
-      // 2. place the b is in xy plane making a angle gamma with a
-      m.setColumn(1, (float) (b * data.cosGamma), 
-          (float) (b * data.sinGamma), 0, 0);
-      // 3. now the c axis,
-      // http://server.ccl.net/cca/documents/molecular-modeling/node4.html
-      m.setColumn(2, (float) (c * data.cosBeta), 
-          (float) (c * (data.cosAlpha - data.cosBeta * data.cosGamma) / data.sinGamma), 
-          (float) (data.volume / (a * b * data.sinGamma)), 0);
-      m.setColumn(3, 0, 0, 0, 1);
-      matrixCartesianToFractional = new Matrix4f();
-      matrixCartesianToFractional.invert(matrixFractionalToCartesian);
-    }
-  }
 }

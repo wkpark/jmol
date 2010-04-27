@@ -15,7 +15,7 @@
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
+ *  Lesser General License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
@@ -25,58 +25,67 @@
 
 package org.jmol.symmetry;
 
-/*
- * Bob Hanson 9/2006
- * 
- * NEVER ACCESS THESE METHODS DIRECTLY! ONLY THROUGH CLASS Symmetry
- * 
- * use the superclass SimpleUnitCell if all you need is a simple unit cell.
- *
- */
-
 import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.BoxInfo;
 import org.jmol.util.Quadric;
 import org.jmol.util.SimpleUnitCell;
 
+/**
+ * a class private to the org.jmol.symmetry package
+ * to be accessed only through the SymmetryInterface API
+ * 
+ * adds vertices and offsets orientation, 
+ * and a variety of additional calculations that in 
+ * principle could be put in SimpleUnitCell
+ * if desired, but for now are in this optional package.
+ * 
+ */
+
 class UnitCell extends SimpleUnitCell {
   
   private Point3f[] vertices; // eight corners
-  
   private Point3f cartesianOffset = new Point3f();
   private Point3f fractionalOffset = new Point3f();
   
-
   UnitCell(float[] notionalUnitcell) {
     super(notionalUnitcell);
     calcUnitcellVertices();
   }
 
-  public void setOrientation(Matrix3f mat) {
-    super.setOrientation(mat);
+  void setOrientation(Matrix3f mat) {
+    if (mat == null)
+      return;
+    Matrix4f m = new Matrix4f();
+    m.set(mat);
+    matrixFractionalToCartesian.mul(m, matrixFractionalToCartesian);
+    matrixCartesianToFractional.invert(matrixFractionalToCartesian);
+/*
+    Point3f a = new Point3f(0, 1, 1);
+    Point3f b = new Point3f(1, 0, 1);
+    Point3f c = new Point3f(1, 1, 0);
+
+    matrixCartesianToFractional.transform(a);
+    System.out.println(a);
+    matrixCartesianToFractional.transform(b);
+    System.out.println(b);
+    matrixCartesianToFractional.transform(c);
+    System.out.println(c);
+    matrixFractionalToCartesian.transform(a);
+    System.out.println(a);
+    matrixFractionalToCartesian.transform(b);
+    System.out.println(b);
+    matrixFractionalToCartesian.transform(c);
+    System.out.println(c);
+*/    
+        
     calcUnitcellVertices();
   }
 
-  private final void toFractionalUnitCell(Point3f pt) {
-    if (matrixCartesianToFractional == null)
-      return;
-    matrixCartesianToFractional.transform(pt);
-    pt.x = toFractional(pt.x);
-    pt.y = toFractional(pt.y);
-    pt.z = toFractional(pt.z);  
-  }
-  
-  private static float toFractional(float x) {
-    // introduced in Jmol 11.7.36
-    x = (float) (x - Math.floor(x));
-    if (x > 0.9999f || x < 0.0001f) 
-      x = 0;
-    return x;
-  }
-  
   final void toUnitCell(Point3f pt, Point3f offset) {
     if (matrixCartesianToFractional == null)
       return;
@@ -117,6 +126,28 @@ class UnitCell extends SimpleUnitCell {
     return cell;
   }
   
+  void setMinMaxLatticeParameters(Point3i minXYZ, Point3i maxXYZ) {
+    if (maxXYZ.x <= 555 && maxXYZ.y >= 555) {
+      //alternative format for indicating a range of cells:
+      //{111 666}
+      //555 --> {0 0 0}
+      minXYZ.x = (maxXYZ.x / 100) - 5;
+      minXYZ.y = (maxXYZ.x % 100) / 10 - 5;
+      minXYZ.z = (maxXYZ.x % 10) - 5;
+      //555 --> {1 1 1}
+      maxXYZ.x = (maxXYZ.y / 100) - 4;
+      maxXYZ.z = (maxXYZ.y % 10) - 4;
+      maxXYZ.y = (maxXYZ.y % 100) / 10 - 4;
+    }
+    if (isPolymer) {
+      minXYZ.y = minXYZ.z = 0;
+      maxXYZ.y = maxXYZ.z = 1;
+    }  else if (isSlab) {
+        minXYZ.z = 0;
+        maxXYZ.z = 1;
+    }
+  }
+
   final String dumpInfo(boolean isFull) {
     return "a=" + a + ", b=" + b + ", c=" + c + ", alpha=" + alpha + ", beta=" + beta + ", gamma=" + gamma
        + (isFull ? "\nfractional to cartesian: " + matrixFractionalToCartesian 
@@ -135,16 +166,11 @@ class UnitCell extends SimpleUnitCell {
     return fractionalOffset;
   }
   
-  /// private methods
+  final private static double twoP2 = 2 * Math.PI * Math.PI;
   
-    final static double twoP2 = 2 * Math.PI * Math.PI;
-    
-    Object[] getEllipsoid(float[] parBorU) {
+  Object[] getEllipsoid(float[] parBorU) {
     if (parBorU == null)
       return null;
-    if (data == null)
-      data = new Data();
-
     /*
      * 
      * returns {Vector3f[3] unitVectors, float[3] lengths} from J.W. Jeffery,
@@ -224,34 +250,34 @@ class UnitCell extends SimpleUnitCell {
 
     // System.out.println("ortep type " + ortepType + " isFractional=" +
     // isFractional + " D = " + dd + " C=" + cc);
-    double B11 = parBorU[0] * dd * (isFractional ? data.a_ * data.a_ : 1);
-    double B22 = parBorU[1] * dd * (isFractional ? data.b_ * data.b_ : 1);
-    double B33 = parBorU[2] * dd * (isFractional ? data.c_ * data.c_ : 1);
-    double B12 = parBorU[3] * dd * (isFractional ? data.a_ * data.b_ : 1) * cc;
-    double B13 = parBorU[4] * dd * (isFractional ? data.a_ * data.c_ : 1) * cc;
-    double B23 = parBorU[5] * dd * (isFractional ? data.b_ * data.c_ : 1) * cc;
+    double B11 = parBorU[0] * dd * (isFractional ? a_ * a_ : 1);
+    double B22 = parBorU[1] * dd * (isFractional ? b_ * b_ : 1);
+    double B33 = parBorU[2] * dd * (isFractional ? c_ * c_ : 1);
+    double B12 = parBorU[3] * dd * (isFractional ? a_ * b_ : 1) * cc;
+    double B13 = parBorU[4] * dd * (isFractional ? a_ * c_ : 1) * cc;
+    double B23 = parBorU[5] * dd * (isFractional ? b_ * c_ : 1) * cc;
 
     // set bFactor = (U11*U22*U33)
-    parBorU[7] = (float) Math.pow(B11 / twoP2 / data.a_ / data.a_ * B22 / twoP2
-        / data.b_ / data.b_ * B33 / twoP2 / data.c_ / data.c_, 0.3333);
+    parBorU[7] = (float) Math.pow(B11 / twoP2 / a_ / a_ * B22 / twoP2
+        / b_ / b_ * B33 / twoP2 / c_ / c_, 0.3333);
 
     double[] Bcart = new double[6];
 
-    Bcart[0] = a * a * B11 + b * b * data.cosGamma * data.cosGamma * B22 + c
-        * c * data.cosBeta * data.cosBeta * B33 + a * b * data.cosGamma * B12
-        + b * c * data.cosGamma * data.cosBeta * B23 + a * c * data.cosBeta
+    Bcart[0] = a * a * B11 + b * b * cosGamma * cosGamma * B22 + c
+        * c * cosBeta * cosBeta * B33 + a * b * cosGamma * B12
+        + b * c * cosGamma * cosBeta * B23 + a * c * cosBeta
         * B13;
-    Bcart[1] = b * b * data.sinGamma * data.sinGamma * B22 + c * c * data.cA_
-        * data.cA_ * B33 + b * c * data.cA_ * data.sinGamma * B23;
-    Bcart[2] = c * c * data.cB_ * data.cB_ * B33;
-    Bcart[3] = 2 * b * b * data.cosGamma * data.sinGamma * B22 + 2 * c * c
-        * data.cA_ * data.cosBeta * B33 + a * b * data.sinGamma * B12 + b * c
-        * (data.cA_ * data.cosGamma + data.sinGamma * data.cosBeta) * B23 + a
-        * c * data.cA_ * B13;
-    Bcart[4] = 2 * c * c * data.cB_ * data.cosBeta * B33 + b * c
-        * data.cosGamma * B23 + a * c * data.cB_ * B13;
-    Bcart[5] = 2 * c * c * data.cA_ * data.cB_ * B33 + b * c * data.cB_
-        * data.sinGamma * B23;
+    Bcart[1] = b * b * sinGamma * sinGamma * B22 + c * c * cA_
+        * cA_ * B33 + b * c * cA_ * sinGamma * B23;
+    Bcart[2] = c * c * cB_ * cB_ * B33;
+    Bcart[3] = 2 * b * b * cosGamma * sinGamma * B22 + 2 * c * c
+        * cA_ * cosBeta * B33 + a * b * sinGamma * B12 + b * c
+        * (cA_ * cosGamma + sinGamma * cosBeta) * B23 + a
+        * c * cA_ * B13;
+    Bcart[4] = 2 * c * c * cB_ * cosBeta * B33 + b * c
+        * cosGamma * B23 + a * c * cB_ * B13;
+    Bcart[5] = 2 * c * c * cA_ * cB_ * B33 + b * c * cB_
+        * sinGamma * B23;
 
     // System.out.println("UnitCell Bcart="+Bcart[0] + " " + Bcart[1] + " " +
     // Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
@@ -268,6 +294,35 @@ class UnitCell extends SimpleUnitCell {
     return new Object[] { unitVectors, lengths };
   }
     
+  Point3f[] getCanonicalCopy(float scale) {
+    Point3f[] pts = new Point3f[8];
+    for (int i = 0; i < 8; i++) {
+      pts[i] = new Point3f(BoxInfo.unitCubePoints[i]);
+      matrixFractionalToCartesian.transform(pts[i]);
+      //pts[i].add(cartesianOffset);
+    }
+    return BoxInfo.getCanonicalCopy(pts, scale);
+  }
+
+  /// private methods
+  
+  private final void toFractionalUnitCell(Point3f pt) {
+    if (matrixCartesianToFractional == null)
+      return;
+    matrixCartesianToFractional.transform(pt);
+    pt.x = toFractional(pt.x);
+    pt.y = toFractional(pt.y);
+    pt.z = toFractional(pt.z);  
+  }
+  
+  private static float toFractional(float x) {
+    // introduced in Jmol 11.7.36
+    x = (float) (x - Math.floor(x));
+    if (x > 0.9999f || x < 0.0001f) 
+      x = 0;
+    return x;
+  }
+  
   private void calcUnitcellVertices() {
     if (notionalUnitcell == null || notionalUnitcell[0] == 0)
       return;
@@ -279,14 +334,4 @@ class UnitCell extends SimpleUnitCell {
     }
   }  
   
-  public Point3f[] getCanonicalCopy(float scale) {
-    Point3f[] pts = new Point3f[8];
-    for (int i = 0; i < 8; i++) {
-      pts[i] = new Point3f(BoxInfo.unitCubePoints[i]);
-      matrixFractionalToCartesian.transform(pts[i]);
-      //pts[i].add(cartesianOffset);
-    }
-    return BoxInfo.getCanonicalCopy(pts, scale);
-  }
-
 }

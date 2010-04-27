@@ -32,7 +32,6 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
-import org.jmol.viewer.JmolConstants;
 
 import java.io.BufferedReader;
 import java.io.OutputStream;
@@ -535,8 +534,8 @@ public abstract class AtomSetCollectionReader {
   public void setUnitCellItem(int i, float x) {
     if (ignoreFileUnitCell)
       return;
-    if (i == JmolConstants.INFO_A && x == 1 
-        || i == JmolConstants.INFO_ALPHA && x == 0)
+    if (i == 0 && x == 1 
+        || i == 3 && x == 0)
       return;
     if (!Float.isNaN(x) && i >= 6 && Float.isNaN(notionalUnitCell[6]))
       initializeCartesianToFractional();
@@ -558,15 +557,15 @@ public abstract class AtomSetCollectionReader {
     if (ignoreFileUnitCell)
       return;
     if (a != 1) // PDB uses 1 1 1 0 0 0 or 1 1 1 90 90 90 
-      notionalUnitCell[JmolConstants.INFO_A] = a;
-    notionalUnitCell[JmolConstants.INFO_B] = b;
-    notionalUnitCell[JmolConstants.INFO_C] = c;
+      notionalUnitCell[0] = a;
+    notionalUnitCell[1] = b;
+    notionalUnitCell[2] = c;
     if (alpha != 0)
-      notionalUnitCell[JmolConstants.INFO_ALPHA] = alpha;
+      notionalUnitCell[3] = alpha;
     if (beta != 0)
-      notionalUnitCell[JmolConstants.INFO_BETA] = beta;
+      notionalUnitCell[4] = beta;
     if (gamma != 0)
-      notionalUnitCell[JmolConstants.INFO_GAMMA] = gamma;
+      notionalUnitCell[5] = gamma;
     iHaveUnitCell = checkUnitCell(6);
   }
   

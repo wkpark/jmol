@@ -274,14 +274,9 @@ public class CrystalReader extends AtomSetCollectionReader {
     discardLinesUntilContains("GAMMA");
     float[] params = new float[6];
     fillFloatArray(params);
-    SimpleUnitCell u = new SimpleUnitCell(params[0], params[1], params[2], params[3], params[4], params[5]);
+    SimpleUnitCell u = new SimpleUnitCell(params);
     u.toCartesian(a);
     u.toCartesian(b);
-
-    System.out.println(a);
-    System.out.println(b);
-
-    // matrix takes standard frame to this orientation -- that is, 
     matUnitCellOrientation = Quaternion.getQuaternionFrame(new Point3f(), a, b).getMatrix();
 
   }

@@ -29,6 +29,7 @@ import java.util.Vector;
 import java.util.Properties;
 import java.util.BitSet;
 
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -598,7 +599,7 @@ public class AtomSetCollection {
   
   boolean haveUnitCell = false;
   
-  public void setNotionalUnitCell(float[] info) {
+  public void setNotionalUnitCell(float[] info, Matrix3f matUnitCellOrientation) {
     notionalUnitCell = new float[info.length];
     for (int i = 0; i < info.length; i++)
       notionalUnitCell[i] = info[i];
@@ -606,6 +607,10 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("notionalUnitcell", notionalUnitCell);
     setGlobalBoolean(GLOBAL_latticeCells);
     getSymmetry().setUnitCell(notionalUnitCell);
+    if (matUnitCellOrientation != null) {
+      getSymmetry().setUnitCellOrientation(matUnitCellOrientation);
+      setAtomSetAuxiliaryInfo("matUnitCellOrientation", matUnitCellOrientation);
+    }
   }
 
   void setGlobalBoolean(int globalIndex) {
@@ -965,7 +970,7 @@ public class AtomSetCollection {
     doNormalize = false;
     symmetry = null;
     getSymmetry();
-    setNotionalUnitCell(notionalUnitCell);
+    setNotionalUnitCell(notionalUnitCell, null);
     addSpaceGroupOperation("x,y,z");
     setAtomSetSpaceGroupName("biomolecule");
     int len = biomts.size();

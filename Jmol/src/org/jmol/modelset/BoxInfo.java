@@ -242,14 +242,18 @@ public class BoxInfo {
 
   void setBoundBox(Point3f pt1, Point3f pt2, boolean byCorner, float scale) {
     if (pt1 != null) {
-      if (pt1.distance(pt2) == 0 || scale == 0)
+      if (scale == 0)
         return;
       if (byCorner) {
+        if (pt1.distance(pt2) == 0)
+          return;
         bbCorner0.set(Math.min(pt1.x, pt2.x), Math.min(pt1.y, pt2.y), Math.min(
             pt1.z, pt2.z));
         bbCorner1.set(Math.max(pt1.x, pt2.x), Math.max(pt1.y, pt2.y), Math.max(
             pt1.z, pt2.z));
       } else { // center and vector
+        if (pt2.x == 0 || pt2.y == 0 && pt2.z == 0)
+          return;
         bbCorner0.set(pt1.x - pt2.x, pt1.y - pt2.y, pt1.z - pt2.z);
         bbCorner1.set(pt1.x + pt2.x, pt1.y + pt2.y, pt1.z + pt2.z);
       }

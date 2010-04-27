@@ -551,6 +551,8 @@ public abstract class AtomSetCollectionReader {
       checkUnitCell(22);
   }
 
+  protected Matrix3f matUnitCellOrientation;
+  
   public void setUnitCell(float a, float b, float c, float alpha, float beta,
                    float gamma) {
     if (ignoreFileUnitCell)
@@ -695,7 +697,7 @@ public abstract class AtomSetCollectionReader {
   public void applySymmetryAndSetTrajectory() throws Exception {
     if (needToApplySymmetry && iHaveUnitCell) {
       atomSetCollection.setCoordinatesAreFractional(iHaveFractionalCoordinates);
-      atomSetCollection.setNotionalUnitCell(notionalUnitCell);
+      atomSetCollection.setNotionalUnitCell(notionalUnitCell, matUnitCellOrientation);
       atomSetCollection.setAtomSetSpaceGroupName(spaceGroup);
       atomSetCollection.setSymmetryRange(symmetryRange);
       if (doConvertToFractional || fileCoordinatesAreFractional) {

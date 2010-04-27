@@ -28,6 +28,7 @@ package org.jmol.symmetry;
 import java.util.BitSet;
 import java.util.Hashtable;
 
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -202,6 +203,11 @@ public class Symmetry implements SymmetryInterface {
     unitCell = new UnitCell(notionalUnitCell);
   }
 
+  public void setUnitCellOrientation(Matrix3f matUnitCellOrientation) {
+    if (unitCell != null)
+      unitCell.setOrientation(matUnitCellOrientation);
+  }
+
   public void toCartesian(Point3f pt) {
     if (unitCell == null)
       return;
@@ -294,6 +300,9 @@ public class Symmetry implements SymmetryInterface {
     if (notionalUnitcell == null)
       return;
     setUnitCell(notionalUnitcell);
+    Matrix3f matUnitCellOrientation = (Matrix3f) modelAuxiliaryInfo.get("matUnitCellOrientation");
+    if (matUnitCellOrientation != null)
+      setUnitCellOrientation(matUnitCellOrientation);
     if (Logger.debugging)
       Logger
           .debug("symmetryInfos[" + modelIndex + "]:\n" + unitCell.dumpInfo(true));

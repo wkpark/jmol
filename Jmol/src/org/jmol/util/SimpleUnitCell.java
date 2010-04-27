@@ -32,6 +32,7 @@ package org.jmol.util;
  * 
  *
  */
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -79,6 +80,36 @@ public class SimpleUnitCell {
     matrixCartesianToFractional.transform(pt);
   }
   
+  public void setOrientation(Matrix3f mat) {
+    if (mat == null)
+      return;
+    Matrix4f m = new Matrix4f();
+    Matrix3f m3 = new Matrix3f(mat);
+    m3.invert();
+    m.set(m3);
+    matrixCartesianToFractional.mul(matrixCartesianToFractional, m);
+    matrixFractionalToCartesian.invert(matrixCartesianToFractional);
+/*
+    Point3f a = new Point3f(0, 1, 1);
+    Point3f b = new Point3f(1, 0, 1);
+    Point3f c = new Point3f(1, 1, 0);
+
+    matrixCartesianToFractional.transform(a);
+    System.out.println(a);
+    matrixCartesianToFractional.transform(b);
+    System.out.println(b);
+    matrixCartesianToFractional.transform(c);
+    System.out.println(c);
+    matrixFractionalToCartesian.transform(a);
+    System.out.println(a);
+    matrixFractionalToCartesian.transform(b);
+    System.out.println(b);
+    matrixFractionalToCartesian.transform(c);
+    System.out.println(c);
+*/    
+        
+  }
+ 
   public final float[] getNotionalUnitCell() {
     return notionalUnitcell;
   }

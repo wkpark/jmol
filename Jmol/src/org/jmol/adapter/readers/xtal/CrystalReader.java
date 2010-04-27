@@ -29,11 +29,14 @@ package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.*;
 import org.jmol.util.Logger;
+import org.jmol.util.Quaternion;
+import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
 
 import java.util.BitSet;
 import java.util.Vector;
 
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 
 /**
@@ -125,6 +128,11 @@ public class CrystalReader extends AtomSetCollectionReader {
       }
     }
 
+    if (line.startsWith(" TRANSFORMATION MATRIX")) {
+      getOrientationMatrix();
+      return true;
+    }
+    
     if (line.contains("DIMENSIONALITY OF THE SYSTEM")) {
       if (line.indexOf("2") >= 0)
         isSlab = true;
@@ -236,6 +244,46 @@ public class CrystalReader extends AtomSetCollectionReader {
     }
 
     return true;
+  }
+
+  /**
+   * get the matrix that reorients the primitive coordinate axes
+   * to their correct orientation in relation to the conventional cell
+   * 
+   * @throws Exception
+   */
+  private void getOrientationMatrix() throws Exception {
+    if (!isPrimitive || isSlab || isPolymer)
+      return;    
+    float[] data = new float[9];
+    fillFloatArray(data);
+    Matrix3f m = new Matrix3f(data);
+    m.invert();
+    // find the conventional equivalents of the primitive a and b axes. 
+    Point3f a = new Point3f();
+    Point3f b = new Point3f();
+    a.set(1, 0, 0);
+    m.transform(a);
+    b.set(0, 1, 0);
+    m.transform(b);
+    System.out.println(a);
+    System.out.println(b);
+    
+    // now get conventional cell info so we can 
+    // convert from conventional to cartesian
+    discardLinesUntilContains("GAMMA");
+    float[] params = new float[6];
+    fillFloatArray(params);
+    SimpleUnitCell u = new SimpleUnitCell(params[0], params[1], params[2], params[3], params[4], params[5]);
+    u.toCartesian(a);
+    u.toCartesian(b);
+
+    System.out.println(a);
+    System.out.println(b);
+
+    // matrix takes standard frame to this orientation -- that is, 
+    matUnitCellOrientation = Quaternion.getQuaternionFrame(new Point3f(), a, b).getMatrix();
+
   }
 
   private Point3f ptOriginShift = new Point3f();

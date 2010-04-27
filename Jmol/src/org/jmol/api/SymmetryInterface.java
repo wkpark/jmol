@@ -3,6 +3,7 @@ package org.jmol.api;
 import java.util.BitSet;
 import java.util.Hashtable;
 
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -130,5 +131,7 @@ public interface SymmetryInterface {
   public abstract void addSpaceGroupOperation(Matrix4f mat);
 
   public abstract void setMinMaxLatticeParameters(Point3i minXYZ, Point3i maxXYZ);
+
+  public abstract void setUnitCellOrientation(Matrix3f matUnitCellOrientation);
 
 }

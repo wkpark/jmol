@@ -320,8 +320,6 @@ abstract public class ModelCollection extends BondCollection {
   }
   
   public void setBoundBox(Point3f pt1, Point3f pt2, boolean byCorner, float scale) {
-    if (pt1 != null && pt1.distance(pt2) == 0)
-      return;
     isBbcageDefault = false;
     bboxModels = null;
     bboxAtoms = null;

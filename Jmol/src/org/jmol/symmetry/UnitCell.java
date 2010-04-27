@@ -34,6 +34,7 @@ package org.jmol.symmetry;
  *
  */
 
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -51,6 +52,11 @@ class UnitCell extends SimpleUnitCell {
 
   UnitCell(float[] notionalUnitcell) {
     super(notionalUnitcell);
+    calcUnitcellVertices();
+  }
+
+  public void setOrientation(Matrix3f mat) {
+    super.setOrientation(mat);
     calcUnitcellVertices();
   }
 
@@ -267,8 +273,9 @@ class UnitCell extends SimpleUnitCell {
       return;
     vertices = new Point3f[8];
     for (int i = 8; --i >= 0;) {
-      vertices[i] = new Point3f();
+      vertices[i] = new Point3f(); 
       matrixFractionalToCartesian.transform(BoxInfo.unitCubePoints[i], vertices[i]);
+      //System.out.println("UNITCELL " + vertices[i] + " " + BoxInfo.unitCubePoints[i]);
     }
   }  
   
@@ -281,5 +288,5 @@ class UnitCell extends SimpleUnitCell {
     }
     return BoxInfo.getCanonicalCopy(pts, scale);
   }
- 
+
 }

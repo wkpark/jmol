@@ -144,8 +144,8 @@ class ParallelProcessor extends ScriptFunction {
       } catch (Error er) {
         clearShapeManager(er);
       } finally {
-        --counter;
         synchronized (lock) {
+        --counter;
           lock.notifyAll();
         }
       }

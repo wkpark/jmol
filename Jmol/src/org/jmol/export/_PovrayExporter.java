@@ -295,15 +295,16 @@ public class _PovrayExporter extends __RayTracerExporter {
   }
 
   private String getAuxiliaryFileData() {
+    String fName = fileName.substring(fileName.lastIndexOf("/") + 1);    
     return "; Created by: Jmol " + Viewer.getJmolVersion()
         + "\n; Creation date: " + getExportDate() 
         + "\n; File created: "  + fileName + " (" + nBytes + " bytes)\n\n" 
         + (commandLineOptions != null ? commandLineOptions :
           "\n; Jmol state: (embedded in input file)" 
-        + "\nInput_File_Name=" + fileName 
+        + "\nInput_File_Name=" + fName 
         + "\nOutput_to_File=true"
         + "\nOutput_File_Type=N"
-        + "\nOutput_File_Name=" + fileName + ".png" 
+        + "\nOutput_File_Name=" + fName + ".png" 
         + "\nWidth=" + screenWidth 
         + "\nHeight=" + screenHeight
         + "\nAntialias=true"

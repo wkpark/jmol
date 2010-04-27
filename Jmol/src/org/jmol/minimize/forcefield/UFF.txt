@@ -27,7 +27,7 @@ atom [#5]     B_2         Trigonal planar boron
 atom [#5D4]   B_3         Tetrahedral boron
 atom [#6]     C_3         Generic sp3 C
 atom [C^2]    C_2         sp2 non-aromatic C=
-atom [CD3]    C_2         trivalent C (cation)  // bh added Jmol 11.12.RC9
+atom [C+1]    C_2+        trivalent C (cation)  // bh added Jmol 11.12.RC9
 atom [C-1]    C_3         trivalent C (anion)  // bh added Jmol 11.12.RC9
 atom [C^1]    C_1         sp hybridized C
 atom [c]      C_R         aromatic C
@@ -159,6 +159,7 @@ param B_2	0.828	120	4.083	0.18	12.052	1.755	0	2	5.11	4.75	0.822
 param C_3	0.757	109.47	3.851	0.105	12.73	1.912	2.119	2	5.343	5.063	0.759
 param C_R	0.729	120	3.851	0.105	12.73	1.912	0	2	5.343	5.063	0.759
 param C_2	0.732	120	3.851	0.105	12.73	1.912	0	2	5.343	5.063	0.759
+param C_2+	0.732	120	6.851	0.105	12.73	1.912	0	2	5.343	5.063	0.759
 param C_1	0.706	180	3.851	0.105	12.73	1.912	0	2	5.343	5.063	0.759
 param N_3	0.7	106.7	3.66	0.069	13.407	2.544	0.45	2	6.899	5.88	0.715
 param N_R	0.699	120	3.66	0.069	13.407	2.544	0	2	6.899	5.88	0.715

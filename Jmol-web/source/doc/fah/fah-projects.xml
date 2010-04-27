@@ -8421,9 +8421,9 @@
   <fah_proj number="6328" name="p6328" public="y"
     server="171.64.65.60" atoms="6414" preferred="10" deadline="20"
     credit="106" frames="100" code="G" contact="vvoelz"/>
-  <fah_proj number="6329" name="p6329" public="y"
+  <fah_proj number="6329" name="p6329" public="y" file="xyz"
     server="171.64.65.60" atoms="6384" preferred="10" deadline="20"
-    credit="104" frames="100" code="G" contact="vvoelz"/>
+    credit="104" frames="100" code="G" contact="vvoelz" contrib="Bas Couwenberg"/>
   <fah_proj number="6330" name="p6330" public="y" file="xyz"
     server="171.64.65.60" atoms="6397" preferred="10" deadline="20"
     credit="104" frames="100" code="G" contact="vvoelz" contrib="SandStar"/>
@@ -8582,9 +8582,9 @@
   <fah_proj number="10020" name="p10020" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Flathead74"/>
-  <fah_proj number="10021" name="p10021" public="y"
+  <fah_proj number="10021" name="p10021" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
-    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="SandStar"/>
   <fah_proj number="10022" name="p10022" public="y"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
@@ -8609,10 +8609,10 @@
   <fah_proj number="10033" name="p10033" public="y"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10034" name="p10034" public="y"
+  <fah_proj number="10034" name="p10034" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
-    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10038" name="p10038" public="y"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="SandStar"/>
+  <fah_proj number="10038" name="p10038" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
   <fah_proj number="10039" name="p10039" public="y"

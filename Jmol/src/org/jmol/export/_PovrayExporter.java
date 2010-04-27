@@ -296,6 +296,7 @@ public class _PovrayExporter extends __RayTracerExporter {
 
   private String getAuxiliaryFileData() {
     String fName = fileName.substring(fileName.lastIndexOf("/") + 1);    
+    fName = fName.substring(fName.lastIndexOf("\\") + 1);    
     return "; Created by: Jmol " + Viewer.getJmolVersion()
         + "\n; Creation date: " + getExportDate() 
         + "\n; File created: "  + fileName + " (" + nBytes + " bytes)\n\n" 

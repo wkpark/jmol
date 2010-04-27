@@ -157,15 +157,15 @@ function __jmolFixChimeApplet(tag) {
 
 function __jmolFixChimeButton(tag) {
 	var A = __jmolGetAttributes(tag) 
-	A.script = __jmolFixChimeScript(A.script)	
-	jmolSetTarget(A.target)
+	A.script = (A.script ? __jmolFixChimeScript(A.script) : "")
+	if(A.target) jmolSetTarget(A.target)
 	A.button = A.button.toLowerCase()	// 'button' may be push|pushed|radio#|toggle|followed
 	if (A.button=="followed" || A.button=="push" || A.button=="pushed") {
 		if (!A.height)A.height = 12
 		return '<span style="font-size:' + (A.height-4) + 'px;">' + jmolButton(A.script,"X") + '</span>'
 	}
 	if (A.button=="toggle") {
-		A.altscript = __jmolFixChimeScript(A.altscript)
+		A.altscript = (A.altscript ? __jmolFixChimeScript(A.altscript) : "")
 		return jmolCheckbox(A.script,A.altscript,"")
 	}
 	if (A.button.indexOf("radio")!=-1) {

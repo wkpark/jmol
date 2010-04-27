@@ -332,8 +332,7 @@ public class Minimizer implements MinimizerInterface {
       else if (search == null)
         break;
       else
-        for (int j = 0, pt = 0; j < atomCountFull; j++)
-          if (bsAtoms.get(j)) {
+        for (int j = bsAtoms.nextSetBit(0), pt = 0; j < atomCountFull && j >= 0; j = bsAtoms.nextSetBit(j + 1)) {
             if (search.get(j)) {
               minAtoms[pt].type = data[1].intern();
               //System.out.println("pt" +pt + data[1]);
@@ -532,10 +531,15 @@ Token[keyword(0x880001) value=")"]
       search = tokenTypes[TOKEN_ELEMENT_CHARGED];
       search[PT_CHARGE].intValue = n;
       break;
+    case '-':
+      search = tokenTypes[TOKEN_ELEMENT_CHARGED];
+      search[PT_CHARGE].intValue = -n;
+      break;
     }
     search[PT_ELEMENT].intValue = elemNo;
     Object v = viewer.evaluateExpression(search);
-    //System.out.println(smarts + " minimize atoms=" + v.toString());
+    if (Logger.debugging)
+      Logger.debug(smarts + " minimize atoms=" + v.toString());
     return (v instanceof BitSet ? (BitSet) v : null);
   }
   

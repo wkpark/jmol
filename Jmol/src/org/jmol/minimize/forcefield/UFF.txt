@@ -26,7 +26,9 @@ atom [#4]     Be3+2       Generic Be
 atom [#5]     B_2         Trigonal planar boron
 atom [#5D4]   B_3         Tetrahedral boron
 atom [#6]     C_3         Generic sp3 C
-atom [C^2]    C_2         sp2 non-aromatic C
+atom [C^2]    C_2         sp2 non-aromatic C=
+atom [CD3]    C_2         trivalent C (cation)  // bh added Jmol 11.12.RC9
+atom [C-1]    C_3         trivalent C (anion)  // bh added Jmol 11.12.RC9
 atom [C^1]    C_1         sp hybridized C
 atom [c]      C_R         aromatic C
 atom [#7]     N_3         Generic sp3 N
@@ -35,7 +37,7 @@ atom [N^1]    N_1         sp hybridized N     // bh was [ND1], but this is more 
 atom [n]      N_R         aromatic N
 atom [#8]     O_3         generic, sp3 hybridized O
 #atom [#8]    O_3_z       sp3 hybridized O for zeolites
-atom [O^2]    O_2         sp2 hybridized O
+atom [O^2]    O_2         sp2 hybridized O  
 atom [O^1]    O_1         sp hybridized O
 atom [o]      O_R         aromatic O
 atom [#9]     F_          generic F

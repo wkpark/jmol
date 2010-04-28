@@ -33,6 +33,8 @@ import org.jmol.util.Logger;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.vecmath.Matrix4f;
+
 /**
  * PDB file reader.
  *
@@ -315,6 +317,8 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
     boolean needLine = true;
     Hashtable info = null;
     int nBiomt = 0;
+    Matrix4f mIdent = new Matrix4f();
+    mIdent.setIdentity();
     while (true) {
       if (needLine)
         readLine();
@@ -380,7 +384,12 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
               readLine();
           }
           mat[15] = 1;
-          biomts.add(mat);
+          Matrix4f m4 = new Matrix4f();
+          m4.set(mat);
+          if (m4.equals(mIdent))
+            biomts.add(0, m4);
+          else
+            biomts.add(m4);
           continue;
         }
       } catch (Exception e) {

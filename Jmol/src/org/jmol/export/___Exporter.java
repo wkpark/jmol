@@ -284,11 +284,15 @@ public abstract class ___Exporter {
     if (!isToFile)
       return output.toString();
     try {
+      System.out.println("__EXPORTER FLUSHING1");
       bw.flush();
+      System.out.println("__EXPORTER FLUSHING2");
       bw.close();
+      System.out.println("__EXPORTER CLOSING");
       os = null;
     } catch (IOException e) {
-      //ignore
+      System.out.println("__EXPORTER FLUSHING ERROR" + e.getMessage());
+      e.printStackTrace();
     }
     return null;
   }

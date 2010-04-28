@@ -6604,7 +6604,6 @@ public class ScriptEvaluator {
       case Token.opaque:
       case Token.jmol:
       case Token.rasmol:
-      case Token.symop:
       case Token.user:
       case Token.property:
         theTok = Token.atoms;
@@ -6797,7 +6796,7 @@ public class ScriptEvaluator {
         // "cpk" value would be "spacefill"
         String name = parameterAsString(index).toLowerCase();
         boolean isByElement = (name.indexOf(ColorEncoder.BYELEMENT_PREFIX) == 0);
-        boolean isColorIndex = (isByElement || name
+         boolean isColorIndex = (isByElement || name
             .indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
         byte pid = (isColorIndex || shapeType == JmolConstants.SHAPE_ISOSURFACE ? JmolConstants.PALETTE_PROPERTY
             : tok == Token.spacefill ? JmolConstants.PALETTE_CPK
@@ -12148,16 +12147,19 @@ public class ScriptEvaluator {
     if (isExport) {
       // POV-Ray uses a BufferedWriter instead of a StringBuffer.
       boolean isPovRay = type.equals("Povray");
+      System.out.println("SCRIPTEVALUATOR WRITE fileName = " + fileName);
       data = viewer.generateOutput(data, isPovRay ? fileName : null, width,
           height);
       if (data == null || data.length() == 0)
         return "";
       if (isPovRay) {
+        System.out.println("SCRIPTEVALUATOR WRITE isCommand ? " + isCommand);
         if (!isCommand)
           return data;
         fileName = data.substring(data.indexOf("File created: ") + 14);
         fileName = fileName.substring(0, fileName.indexOf("\n"));
         fileName = fileName.substring(0, fileName.lastIndexOf(" ("));
+        System.out.println("SCRIPTEVALUATOR WRITE to " + fileName);
         msg = viewer.createImage(fileName + ".ini", "ini", data,
             Integer.MIN_VALUE, 0, 0, null, fullPath);
         if (msg != null) {

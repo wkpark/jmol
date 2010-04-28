@@ -971,6 +971,7 @@ public class AtomSetCollection {
     symmetry = null;
     getSymmetry();
     setNotionalUnitCell(notionalUnitCell, null);
+    getSymmetry().setSpaceGroup(doNormalize);
     addSpaceGroupOperation("x,y,z");
     setAtomSetSpaceGroupName("biomolecule");
     int len = biomts.size();
@@ -980,15 +981,15 @@ public class AtomSetCollection {
     int[] atomMap = (addBonds ? new int[atomCount] : null);
     int iAtomFirst = getLastAtomSetAtomIndex();
     int atomMax = atomCount;
-    for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
-      atoms[iAtom].bsSymmetry = new BitSet(1);
-      atoms[iAtom].bsSymmetry.set(0);
-    }
     if (filter.indexOf("#<") >= 0) {
       len = Math.min(len, Parser.parseInt(filter.substring(filter.indexOf("#<") + 2)) - 1);
       filter = TextFormat.simpleReplace(filter, "#<", "_<");
     }
-    for (int i = 1; i < len; i++) { //skip 1, it's the identity
+    for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
+      atoms[iAtom].bsSymmetry = new BitSet(1);
+      atoms[iAtom].bsSymmetry.set(0);
+      }
+    for (int i = 1; i < len; i++) { 
       if (filter.indexOf("!#") >= 0) {
         if (filter.toUpperCase().indexOf("!#" + (i + 1) + ";") >= 0)
           continue;
@@ -996,16 +997,16 @@ public class AtomSetCollection {
           && filter.toUpperCase().indexOf("#" + (i + 1) + ";") < 0) {
         continue;
       }
-      Matrix4f mat = new Matrix4f();
-      mat.set((float[]) biomts.get(i));
+      Matrix4f mat = (Matrix4f) biomts.get(i);
       //Vector3f trans = new Vector3f();    
       for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
         try {
           int atomSite = atoms[iAtom].atomSite;
+          Atom atom1;
           if (addBonds)
             atomMap[atomSite] = atomCount;
-          Atom atom1 = newCloneAtom(atoms[iAtom]);
-          atom1.atomSite = atomSite;
+            atom1 = newCloneAtom(atoms[iAtom]);
+            atom1.atomSite = atomSite;
           mat.transform(atom1);
           atom1.bsSymmetry = new BitSet(i);
           atom1.bsSymmetry.set(i);
@@ -1026,7 +1027,7 @@ public class AtomSetCollection {
       mat.m03 /= notionalUnitCell[0];
       mat.m13 /= notionalUnitCell[1];
       mat.m23 /= notionalUnitCell[2];
-      if (symmetry != null)
+      if (symmetry != null && i > 0)
         symmetry.addSpaceGroupOperation(mat);
       System.out.println("biomt " + i + " " + atomCount);
     }

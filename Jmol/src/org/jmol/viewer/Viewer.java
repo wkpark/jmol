@@ -253,9 +253,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private String appletCodeBase = "";
   private String logFilePath = "";
 
-  private boolean jvm11orGreater = false;
-  private boolean jvm12orGreater = false;
-  private boolean jvm14orGreater = false;
+//  private boolean jvm11orGreater = false;
+//  private boolean jvm12orGreater = false;
+//  private boolean jvm14orGreater = false;
   private boolean multiTouch = false;
 
   private Viewer(Component display, JmolAdapter modelAdapter,
@@ -270,11 +270,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     strOSName = System.getProperty("os.name");
     strJavaVersion = System.getProperty("java.version");
     // Netscape on MacOS does not implement 1.1 event model
-    jvm11orGreater = (strJavaVersion.compareTo("1.1") >= 0 && !(strJavaVendor
-        .startsWith("Netscape")
-        && strJavaVersion.compareTo("1.1.5") <= 0 && "Mac OS".equals(strOSName)));
-    jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
-    jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
+    //jvm11orGreater = (strJavaVersion.compareTo("1.1") >= 0 && !(strJavaVendor
+    //    .startsWith("Netscape")
+    //    && strJavaVersion.compareTo("1.1.5") <= 0 && "Mac OS".equals(strOSName)));
+    //jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
+    //jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
+    
+    //jvm14orGreater = jvm12orGreater = jvm11orGreater = true;
+    
+    
+    // NOTE: Jmol 12.0 will only run with 1.5 or greater because of 
+    // .contains and parallel processes. 
+
     multiTouch = (commandOptions != null && commandOptions
         .contains("-multitouch"));
     stateManager = new StateManager(this);
@@ -298,12 +305,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       } else {
         actionManager = new ActionManager(this);
       }
-      if (jvm14orGreater)
+      //if (jvm14orGreater)
         mouseManager = new MouseManager14(display, this, actionManager);
-      else if (jvm11orGreater)
-        mouseManager = new MouseManager11(display, this, actionManager);
-      else
-        mouseManager = new MouseManager10(display, this, actionManager);
+      //else if (jvm11orGreater)
+      //  mouseManager = new MouseManager11(display, this, actionManager);
+      //else
+      //  mouseManager = new MouseManager10(display, this, actionManager);
     }
     modelManager = new ModelManager(this);
     shapeManager = new ShapeManager(this);
@@ -6745,7 +6752,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // //////////////////////////////////////////////////////////////
 
   public boolean isJvm12orGreater() {
-    return jvm12orGreater;
+    return true;//jvm12orGreater;
   }
 
   public String getOperatingSystemName() {

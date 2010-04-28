@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-03-14 00:37+0100\n"
-"PO-Revision-Date: 2009-08-15 08:18+0000\n"
-"Last-Translator: Egon Willighagen <Unknown>\n"
+"PO-Revision-Date: 2010-04-27 10:16+0000\n"
+"Last-Translator: Joostkam <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-08-16 17:24+0000\n"
+"X-Launchpad-Export-Date: 2010-04-28 15:32+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: The Netherlands\n"
 "X-Poedit-Language: Dutch\n"
@@ -22,7 +22,8 @@ msgstr ""
 #: org/openscience/jmol/app/JmolApp.java:102
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr "Kan Jmol niet starten: de syteemvariabele 'user.home' is not defined."
+msgstr ""
+"Kan Jmol niet starten: de syteemvariabele 'user.home' is not defined."
 
 #: org/openscience/jmol/app/JmolApp.java:139
 msgid "transparent background"
@@ -66,7 +67,8 @@ msgstr "geen console -- alle uitvoer naar de command line"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr "stuur alleen input van print berichten naar de console (impliceert -i)"
+msgstr ""
+"stuur alleen input van print berichten naar de console (impliceert -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent commmand thread"
@@ -83,6 +85,7 @@ msgstr "scriptbestand om te starten or '-' voor System.in"
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr ""
+"Gebruik meervoudige aanraak systemen heeft \"sparshui\" parameter nodig"
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
@@ -123,11 +126,10 @@ msgid "For example:"
 msgstr "Bijvoorbeeld:"
 
 #: org/openscience/jmol/app/JmolApp.java:236
-#, fuzzy
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
-msgstr "De -D opties zijn (standaard waarden tussen haakjes):"
+msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:466
 msgid "Executing script 1..."
@@ -1335,13 +1337,11 @@ msgid "Insert a caption for {0} here."
 msgstr "Voeg hier de titel voor {0} in."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:354
-#, fuzzy, java-format
+#, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
-"Voeg hier extra uitleg in. Lange teksten worden om het Jmol-model {0} heen "
-"gezet."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:356
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1381,9 +1381,8 @@ msgid "Jmol Instances:"
 msgstr "Jmol instanties:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:202
-#, fuzzy
 msgid "Select widgets:"
-msgstr "Applet-breedte:"
+msgstr "Selecteer widgets"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:230
 msgid "Help/Instructions"
@@ -1461,9 +1460,9 @@ msgid "adding {0}.spt"
 msgstr "toevoegen {0}.spt"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:559
-#, fuzzy, java-format
+#, java-format
 msgid "adding {0}"
-msgstr "toevoegen {0}.png"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:599
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1512,11 +1511,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:64
 msgid "Background Color"
-msgstr ""
+msgstr "AchtergrondKleur"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:73
 msgid "background color:"
-msgstr ""
+msgstr "achtergrond kleur:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:91
 msgid "Stereo Viewing"
@@ -1528,23 +1527,23 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:103
 msgid "stereo off"
-msgstr ""
+msgstr "stereo uit"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:104
 msgid "Stereo Off"
-msgstr ""
+msgstr "Stereo Uit"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:105
 msgid "Red/Blue"
-msgstr ""
+msgstr "Rood/Blauw"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:107
 msgid "Red/Cyan"
-msgstr ""
+msgstr "Rood/Cyaan"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:109
 msgid "Red/Green"
-msgstr ""
+msgstr "Rood/Groen"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:119
 msgid "Download view"
@@ -1552,70 +1551,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:129
 msgid "unimplemented"
-msgstr ""
+msgstr "niet geimplementeerd"
 
 #~ msgid "Show Selected"
 #~ msgstr "Selectie laten zien"
-
-#~ msgid "Initializing Measurements..."
-#~ msgstr "Initialiseren Metingen...."
-
-#~ msgid "Run"
-#~ msgstr "Starten"
-
-#~ msgid "Image size"
-#~ msgstr "Figuurgrootte"
-
-#~ msgid "Output format : "
-#~ msgstr "Uitvoerformaat: "
-
-#~ msgid "Select the file format of the output file"
-#~ msgstr "Selecteer het bestandsformaat van het uitvoerbestand"
-
-#~ msgid "Command Line to Execute"
-#~ msgstr "Commando om uit te voeren"
-
-#~ msgid "The actual command which will be executed"
-#~ msgstr "Het echte commando dat uitgevoerd wordt"
-
-#~ msgid "null component string"
-#~ msgstr "lege-component-tekst"
-
-#~ msgid "Filename Stem"
-#~ msgstr "Begin Bestandsnaam"
-
-#~ msgid "Use .ini file"
-#~ msgstr "Gebruik .ini-bestand"
-
-#~ msgid "Save options in a .ini file"
-#~ msgstr "Bewaar de opties in een .ini-bestand"
-
-#~ msgid "Render all frames"
-#~ msgstr "Render alle frames"
-
-#~ msgid "Render each model (not only the currently displayed one)"
-#~ msgstr "Render elk model (en niet alleen het huidige model)"
-
-#~ msgid "Turn on POV-Ray anti-aliasing"
-#~ msgstr "Zet POV-Ray antialiasing aan"
-
-#~ msgid "Use povray's slower but higher quality anti-aliasing mode"
-#~ msgstr "Gebruik povray's langzamere antialiasing aan voor hogere kwaliteit"
-
-#~ msgid "Render in pov-ray..."
-#~ msgstr "Renderen in pov-ray..."
-
-#~ msgid "File not loaded"
-#~ msgstr "Bestand niet geladen"
-
-#~ msgid "Couldn't find file: WebExportIntro.html"
-#~ msgstr "Kon het bestand WebExportIntro.html niet vinden."
-
-#~ msgid "Cartoon of Page:"
-#~ msgstr "Tekening van Pagina:"
-
-#~ msgid "Failed to delete scratch file {0}."
-#~ msgstr "Het wissen van de werkfolder {0} is mislukt."
-
-#~ msgid "&Java Output Console"
-#~ msgstr "&Java Output Console"

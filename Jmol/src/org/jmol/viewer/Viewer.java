@@ -7027,6 +7027,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getData(String atomExpression, String type) {
     String exp = "";
+    if (type.equalsIgnoreCase("MOL"))
+      return getModelExtract(atomExpression);
     if (type.toLowerCase().indexOf("property_") == 0)
       exp = "{selected}.label(\"%{" + type + "}\")";
     else if (type.equalsIgnoreCase("CML"))
@@ -7035,10 +7037,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // old crude
       exp = "{selected and not hetero}.label(\"ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \").lines"
           + "+{selected and hetero}.label(\"HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \").lines";
-    else if (type.equalsIgnoreCase("MOL"))
-      exp = "\"line1\nline2\nline3\n\"+(\"\"+{selected}.size)%-3+(\"\"+{selected}.bonds.size)%-3+\"  0  0  0\n\""
-          + "+{selected}.labels(\"%10.4x%10.4y%10.4z %-2e  0  0  0  0  0\").lines"
-          + "+{selected}.bonds.labels(\"%3D1%3D2%3ORDER  0  0  0\").lines";
     else if (type.startsWith("USER:"))
       exp = "{selected}.label(\"" + type.substring(5) + "\").lines";
     else

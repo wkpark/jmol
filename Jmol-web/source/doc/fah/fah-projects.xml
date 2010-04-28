@@ -8418,18 +8418,18 @@
   <fah_proj number="6327" name="p6327" public="y" file="xyz"
     server="171.64.65.60" atoms="15097" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz"/>
-  <fah_proj number="6328" name="p6328" public="y"
+  <fah_proj number="6328" name="p6328" public="y" file="xyz"
     server="171.64.65.60" atoms="6414" preferred="10" deadline="20"
-    credit="106" frames="100" code="G" contact="vvoelz"/>
+    credit="106" frames="100" code="G" contact="vvoelz" contrib="Bas Couwenberg"/>
   <fah_proj number="6329" name="p6329" public="y" file="xyz"
     server="171.64.65.60" atoms="6384" preferred="10" deadline="20"
     credit="104" frames="100" code="G" contact="vvoelz" contrib="Bas Couwenberg"/>
   <fah_proj number="6330" name="p6330" public="y" file="xyz"
     server="171.64.65.60" atoms="6397" preferred="10" deadline="20"
     credit="104" frames="100" code="G" contact="vvoelz" contrib="SandStar"/>
-  <fah_proj number="6331" name="p6331" public="y"
+  <fah_proj number="6331" name="p6331" public="y" file="xyz"
     server="171.64.65.60" atoms="6397" preferred="10" deadline="20"
-    credit="104" frames="100" code="G" contact="vvoelz"/>
+    credit="104" frames="100" code="G" contact="vvoelz" contrib="M.T"/>
 
   <!-- Projects 6500 to 6599 -->
   <fah_proj number="6500" name="p6500_UBIQUITIN MODEL250 in water" public="n"
@@ -8591,9 +8591,9 @@
   <fah_proj number="10023" name="p10023" public="y"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10024" name="p10024" public="y"
+  <fah_proj number="10024" name="p10024" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
-    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="SandStar"/>
   <fah_proj number="10027" name="p10027" public="y"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
@@ -8606,7 +8606,7 @@
   <fah_proj number="10032" name="p10032" public="y"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10033" name="p10033" public="y"
+  <fah_proj number="10033" name="p10033" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
   <fah_proj number="10034" name="p10034" public="y" file="xyz"

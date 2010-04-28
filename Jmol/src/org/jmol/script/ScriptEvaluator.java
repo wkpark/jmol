@@ -1753,24 +1753,27 @@ public class ScriptEvaluator {
     if (function == null)
       return null;
     functionName = name;
-    if (function instanceof ParallelProcessor) {
-      parallelProcessor = (ParallelProcessor) function;
-      vProcess = null;
-    }
-    aatoken = function.aatoken;
-    lineNumbers = function.lineNumbers;
-    lineIndices = function.lineIndices;
-    script = function.script;
-    pc = 0;
-    if (function.names != null) {
-      contextVariables = new Hashtable();
-      function.setVariables(contextVariables, params);
-    }
-    if (tokenAtom != null)
-      contextVariables.put("_x", tokenAtom);
-    instructionDispatchLoop(false);
-    if (function.tok == Token.parallel) {
-      ((ParallelProcessor) function).runAllProcesses(viewer);      
+    synchronized( function )
+    {
+      if (function instanceof ParallelProcessor) {
+        parallelProcessor = (ParallelProcessor) function;
+        vProcess = null;
+      }
+      aatoken = function.aatoken;
+      lineNumbers = function.lineNumbers;
+      lineIndices = function.lineIndices;
+      script = function.script;
+      pc = 0;
+      if (function.names != null) {
+        contextVariables = new Hashtable();
+        function.setVariables(contextVariables, params);
+      }
+      if (tokenAtom != null)
+        contextVariables.put("_x", tokenAtom);
+      instructionDispatchLoop(false);
+      if (function.tok == Token.parallel) {
+        ((ParallelProcessor) function).runAllProcesses(viewer);
+      }
     }
     ScriptVariable v = (getReturn ? getContextVariableAsVariable("_retval") : null);
     popContext(false);

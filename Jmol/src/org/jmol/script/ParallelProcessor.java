@@ -24,7 +24,7 @@
 package org.jmol.script;
 
 import java.util.Vector;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.Executor;
 
 import org.jmol.util.Logger;
 import org.jmol.viewer.ShapeManager;
@@ -59,7 +59,8 @@ class ParallelProcessor extends ScriptFunction {
   volatile Vector vShapeManagers = null;
   volatile int counter = 0;
   volatile Error error = null;
-
+  Object lock = new Object() ;
+  
   public void runAllProcesses(Viewer viewer) {
     if (processes.size() == 0)
       return;
@@ -77,10 +78,10 @@ class ParallelProcessor extends ScriptFunction {
       runProcess((Process) processes.remove(0), allowParallel);
     }
 
-    synchronized (this) {
+    synchronized (lock) {
       while (counter > 0) {
         try {
-          this.wait();
+          lock.wait();
         } catch (InterruptedException e) {
         }
         if (error != null)
@@ -153,8 +154,8 @@ class ParallelProcessor extends ScriptFunction {
   }
 
   private void runProcess(final Process process, boolean allowParallel) {
-    RunProcess r = new RunProcess(process, this);
-    ScheduledThreadPoolExecutor exec = (allowParallel ? viewer.getExecutor() : null);
+    RunProcess r = new RunProcess(process, lock);
+    Executor exec = (allowParallel ? viewer.getExecutor() : null);
     if (exec != null) {
       exec.execute(r);
     } else {

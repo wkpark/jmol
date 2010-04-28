@@ -82,7 +82,8 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
@@ -8224,15 +8225,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // parallel processing
   
-  private ScheduledThreadPoolExecutor executor;
+  private Executor executor;
   public static int nProcessors = Runtime.getRuntime().availableProcessors();
 
-  public ScheduledThreadPoolExecutor getExecutor() { 
+  public Executor getExecutor() { 
     // a Java 1.5 function 
     if (executor != null || nProcessors < 2)
       return executor; // note -- a Java 1.5 function 
     try {
-      executor = new ScheduledThreadPoolExecutor(nProcessors);
+      executor = Executors.newCachedThreadPool();
     } catch (Exception e) {
       executor = null;
     }

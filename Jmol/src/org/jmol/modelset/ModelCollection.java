@@ -1422,10 +1422,10 @@ abstract public class ModelCollection extends BondCollection {
 
   public int getModelSymmetryCount(int modelIndex) {
     String[] operations;
-    if (unitCells == null || unitCells[modelIndex] == null ||
-        (operations = unitCells[modelIndex].getSymmetryOperations()) == null)
-      return models[modelIndex].biosymmetryCount;
-    return operations.length;
+    return (models[modelIndex].biosymmetryCount > 0 
+        || unitCells == null || unitCells[modelIndex] == null 
+        || (operations = unitCells[modelIndex].getSymmetryOperations()) == null
+        ? models[modelIndex].biosymmetryCount : operations.length);
   }
   
   public String getSymmetryOperation(int modelIndex, String spaceGroup, 

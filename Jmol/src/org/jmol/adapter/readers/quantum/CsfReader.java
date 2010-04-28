@@ -241,7 +241,6 @@ public class CsfReader extends MopacReader {
         if (connectors.containsKey(thisBondID)) {
           int[] connect = (int[])connectors.get(thisBondID);
           connect[1] = thisAtomID;
-          System.out.println("*" + thisBondID +  " " + thisAtomID);
           if (htBonds != null) {
             Bond bond = (Bond) htBonds.get(thisBondID);
             setBond(bond, connect);
@@ -249,7 +248,6 @@ public class CsfReader extends MopacReader {
         } else {
           int[] connect = new int[2];
           connect[0] = thisAtomID;
-          System.out.println("" + thisBondID +  " " + thisAtomID);
           connectors.put(thisBondID, connect);
         }
       }
@@ -264,8 +262,7 @@ public class CsfReader extends MopacReader {
     bond.atomIndex1 = atomSetCollection.getAtomSerialNumberIndex(connect[0]);
     bond.atomIndex2 = atomSetCollection.getAtomSerialNumberIndex(connect[1]);
     atomSetCollection.addBond(bond);
-    nBonds++;
-    
+    nBonds++;    
   }
 
   private final static byte ID             = -1;

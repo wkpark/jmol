@@ -30,6 +30,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 /**
  * CSF file reader based on CIF idea -- fluid property fields.
@@ -52,6 +53,8 @@ public class CsfReader extends MopacReader {
   private int nVibrations = 0;
   private int nGaussians = 0;
   private int nSlaters = 0;
+  
+  private Hashtable htBonds;
   
   protected boolean checkLine() throws Exception {
     if (line.equals("local_transform")) {
@@ -91,6 +94,11 @@ public class CsfReader extends MopacReader {
     return true;
   }
  
+  public void finalizeReader() throws Exception {
+    for (int i = 0; i < nAtoms; i++)
+      atomSetCollection.getAtom(i).sequenceNumber = Integer.MIN_VALUE;
+    super.finalizeReader();
+  }
   /*
    local_transform
    0.036857 -0.132149 0.003770 0.000000
@@ -188,15 +196,16 @@ public class CsfReader extends MopacReader {
     objCls1, objID1, objCls2, objID2
   };
   
-  private Hashtable connectors = new Hashtable();
+  private Hashtable connectors;
   
   private void processConnectorObject() throws Exception {
+    connectors = new Hashtable();
     readLine();
     parseLineParameters(connectorFields, connectorFieldMap);
     out: for (; readLine() != null;) {
       if (line.startsWith("property_flags:"))
         break;
-      String thisAtomID = null;
+      int thisAtomID = Integer.MIN_VALUE;
       String thisBondID = null;
       String tokens[] = getTokens();
       String field2 = "";
@@ -220,7 +229,7 @@ public class CsfReader extends MopacReader {
             continue out;
           break;
         case objID1:
-          thisAtomID = "atom"+field;
+          thisAtomID = Parser.parseInt(field);
           break;
         case objID2:
           thisBondID = field2+field;
@@ -230,13 +239,16 @@ public class CsfReader extends MopacReader {
         default:
         }
       }
-      if (thisAtomID != null && thisBondID != null) {
+      if (thisAtomID != Integer.MIN_VALUE && thisBondID != null) {
         if (connectors.containsKey(thisBondID)) {
-          String[] connect = (String[])connectors.get(thisBondID);
+          int[] connect = (int[])connectors.get(thisBondID);
           connect[1] = thisAtomID;
-          //connectors.put(thisBondID, connect);
+          if (htBonds != null) {
+            Bond bond = (Bond) htBonds.get(thisBondID);
+            setBond(bond, connect);
+          }
         } else {
-          String[] connect = new String[2];
+          int[] connect = new int[2];
           connect[0] = thisAtomID;
           connectors.put(thisBondID, connect);
         }
@@ -247,6 +259,14 @@ public class CsfReader extends MopacReader {
   ////////////////////////////////////////////////////////////////
   // atom data
   ////////////////////////////////////////////////////////////////
+
+  private void setBond(Bond bond, int[] connect) {
+    bond.atomIndex1 = atomSetCollection.getAtomSerialNumberIndex(connect[0]);
+    bond.atomIndex2 = atomSetCollection.getAtomSerialNumberIndex(connect[1]);
+    atomSetCollection.addBond(bond);
+    nBonds++;
+    
+  }
 
   private final static byte ID             = -1;
 
@@ -280,10 +300,11 @@ public class CsfReader extends MopacReader {
           Logger.warn("field == null in " + line);
         switch (fieldTypes[i]) {
         case ID:
-          atom.atomName = "atom"+field;
+          atom.sequenceNumber = Parser.parseInt(field);
           break;
         case sym:
           atom.elementSymbol = field;
+          atom.atomName = field + atom.sequenceNumber;
           break;
         case anum:
           strAtomicNumbers += field + " "; // for MO slater basis calc
@@ -303,7 +324,7 @@ public class CsfReader extends MopacReader {
         Logger.warn("atom " + atom.atomName + " has invalid/unknown coordinates");
       } else {
         nAtoms++;
-        atomSetCollection.addAtomWithMappedName(atom);
+        atomSetCollection.addAtomWithMappedSerialNumber(atom);
       }
     }
   }
@@ -348,13 +369,16 @@ public class CsfReader extends MopacReader {
             order = 3;
           else
             Logger.warn("unknown CSF bond order: " + field);
-          String[] connect = (String[]) connectors.get(thisBondID);
           Bond bond = new Bond();
-          bond.atomIndex1 = atomSetCollection.getAtomNameIndex(connect[0]);
-          bond.atomIndex2 = atomSetCollection.getAtomNameIndex(connect[1]);
           bond.order = order;
-          atomSetCollection.addBond(bond);
-          nBonds++;
+          if (connectors == null) {
+            if (htBonds == null)
+              htBonds = new Hashtable();
+            htBonds.put(thisBondID, bond);
+          } else {
+            int[] connect = (int[]) connectors.get(thisBondID);
+            setBond(bond, connect);
+          }
           break;
         }
       }
@@ -626,7 +650,7 @@ public class CsfReader extends MopacReader {
           iShell = shells[ipt];
           int[] slater = new int[4];
           int iAtom = atomSetCollection
-              .getAtomNameIndex(((String[]) (connectors.get(sto_gto
+              .getAtomSerialNumberIndex(((int[]) (connectors.get(sto_gto
                   + "_basis_fxn" + (ipt + 1))))[0]);
           slater[0] = iAtom;
           slater[1] = JmolAdapter.getQuantumShellTagID(types[ipt]
@@ -650,7 +674,7 @@ public class CsfReader extends MopacReader {
       moData.put("gaussians", garray);
     } else {
       for (int ipt = 0; ipt < nSlaters; ipt++) {
-        int iAtom = atomSetCollection.getAtomNameIndex(((String[]) (connectors
+        int iAtom = atomSetCollection.getAtomSerialNumberIndex(((int[]) (connectors
             .get(sto_gto + "_basis_fxn" + (ipt + 1))))[0]);
         for (int i = 0; i < nZetas; i++) {
           if (zetas[ipt][i] == 0)

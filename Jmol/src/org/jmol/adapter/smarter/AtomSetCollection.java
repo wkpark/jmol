@@ -1067,14 +1067,14 @@ public class AtomSetCollection {
 
   boolean haveMappedSerials;
   void mapMostRecentAtomSerialNumber() {
-    // from ?? 
-    if (atomCount == 0) 
+    // from ??
+    if (atomCount == 0)
       return;
-      int index = atomCount - 1;
-      int atomSerial = atoms[index].atomSerial;
-      if (atomSerial != Integer.MIN_VALUE)
-        atomSymbolicMap.put(new Integer(atomSerial), new Integer(index));
-      haveMappedSerials = true;
+    int index = atomCount - 1;
+    int atomSerial = atoms[index].atomSerial;
+    if (atomSerial != Integer.MIN_VALUE)
+      atomSymbolicMap.put(new Integer(atomSerial), new Integer(index));
+    haveMappedSerials = true;
   }
 
   public void createAtomSerialMap() {

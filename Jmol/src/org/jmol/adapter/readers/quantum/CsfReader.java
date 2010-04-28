@@ -95,8 +95,6 @@ public class CsfReader extends MopacReader {
   }
  
   public void finalizeReader() throws Exception {
-    for (int i = 0; i < nAtoms; i++)
-      atomSetCollection.getAtom(i).sequenceNumber = Integer.MIN_VALUE;
     super.finalizeReader();
   }
   /*
@@ -243,6 +241,7 @@ public class CsfReader extends MopacReader {
         if (connectors.containsKey(thisBondID)) {
           int[] connect = (int[])connectors.get(thisBondID);
           connect[1] = thisAtomID;
+          System.out.println("*" + thisBondID +  " " + thisAtomID);
           if (htBonds != null) {
             Bond bond = (Bond) htBonds.get(thisBondID);
             setBond(bond, connect);
@@ -250,6 +249,7 @@ public class CsfReader extends MopacReader {
         } else {
           int[] connect = new int[2];
           connect[0] = thisAtomID;
+          System.out.println("" + thisBondID +  " " + thisAtomID);
           connectors.put(thisBondID, connect);
         }
       }
@@ -300,11 +300,11 @@ public class CsfReader extends MopacReader {
           Logger.warn("field == null in " + line);
         switch (fieldTypes[i]) {
         case ID:
-          atom.sequenceNumber = Parser.parseInt(field);
+          atom.atomSerial = Parser.parseInt(field);
           break;
         case sym:
           atom.elementSymbol = field;
-          atom.atomName = field + atom.sequenceNumber;
+          atom.atomName = field + atom.atomSerial;
           break;
         case anum:
           strAtomicNumbers += field + " "; // for MO slater basis calc

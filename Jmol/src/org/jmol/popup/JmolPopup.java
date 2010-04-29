@@ -41,9 +41,14 @@ import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.Vector;
 
-abstract public class JmolPopup {
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
-  private final static boolean forceAwt = false;
+public class JmolPopup {
 
   //list is saved in http://www.stolaf.edu/academics/chemapps/jmol/docs/misc
   private final static boolean dumpList = false;
@@ -53,51 +58,59 @@ abstract public class JmolPopup {
   //}
 
   JmolViewer viewer;
-  Component display;
-  MenuItemListener mil;
-  CheckboxMenuItemListener cmil;
-  boolean asPopup = true;
+  private Component display;
+  private MenuItemListener mil;
+  private CheckboxMenuItemListener cmil;
+  private boolean asPopup = true;
 
-  Hashtable htMenus = new Hashtable();
-  Properties menuText = new Properties();
+  private Hashtable htMenus = new Hashtable();
+  private Properties menuText = new Properties();
   
-  Object frankPopup;
+  private Object frankPopup;
 
-  int aboutComputedMenuBaseCount;
-  String nullModelSetName, modelSetName;
-  String modelSetFileName, modelSetRoot;
+  private int aboutComputedMenuBaseCount;
+  private String nullModelSetName, modelSetName;
+  private String modelSetFileName, modelSetRoot;
   
-  Hashtable modelSetInfo, modelInfo;
-  Vector PDBOnly = new Vector();
-  Vector UnitcellOnly = new Vector();
-  Vector FramesOnly = new Vector();
-  Vector VibrationOnly = new Vector();
-  Vector SymmetryOnly = new Vector();
-  Vector SignedOnly = new Vector();
-  Vector AppletOnly = new Vector();
-  Vector ChargesOnly = new Vector();
-  Vector TemperatureOnly = new Vector();
+  private Hashtable modelSetInfo, modelInfo;
+  private Vector PDBOnly = new Vector();
+  private Vector UnitcellOnly = new Vector();
+  private Vector FramesOnly = new Vector();
+  private Vector VibrationOnly = new Vector();
+  private Vector SymmetryOnly = new Vector();
+  private Vector SignedOnly = new Vector();
+  private Vector AppletOnly = new Vector();
+  private Vector ChargesOnly = new Vector();
+  private Vector TemperatureOnly = new Vector();
 
-  boolean isPDB;
-  boolean isSymmetry;
-  boolean isUnitCell;
-  boolean isMultiFrame;
-  boolean isMultiConfiguration;
-  boolean isVibration;
-  boolean isApplet;
-  boolean isSigned;
-  boolean isZapped;
-  boolean haveCharges;
-  boolean haveBFactors;
-  String altlocs;
+  private boolean isPDB;
+  private boolean isSymmetry;
+  private boolean isUnitCell;
+  private boolean isMultiFrame;
+  private boolean isMultiConfiguration;
+  private boolean isVibration;
+  private boolean isApplet;
+  private boolean isSigned;
+  private boolean isZapped;
+  private boolean haveCharges;
+  private boolean haveBFactors;
+  private String altlocs;
 
-  int modelIndex, modelCount, atomCount;
+  private int modelIndex, modelCount, atomCount;
 
-  final static int MAX_ITEMS = 25;
-  final static int TITLE_MAX_WIDTH = 20;
+  final private static int MAX_ITEMS = 25;
+  final private static int TITLE_MAX_WIDTH = 20;
 
-  static String menuStructure;
+  private static String menuStructure;
   
+  private JPopupMenu swingPopup;
+  private JMenu elementComputedMenu;
+  private JMenu mainMenu;
+  
+
+  private static int MENUITEM_HEIGHT = 20;
+
+
   JmolPopup(JmolViewer viewer, boolean asPopup) {
     this.viewer = viewer;
     this.asPopup = asPopup;
@@ -105,6 +118,13 @@ abstract public class JmolPopup {
     mil = new MenuItemListener();
     cmil = new CheckboxMenuItemListener();
     //System.out.println("JmolPopup " + this + " constructor");
+    if (asPopup) {
+      swingPopup = new JPopupMenu("Jmol");
+      build(swingPopup);
+    } else {
+      mainMenu = new JMenu("Jmol");
+      build(mainMenu);
+    }
   }
 
   static public JmolPopup newJmolPopup(JmolViewer viewer, boolean doTranslate, String menu, boolean asPopup) {
@@ -112,16 +132,12 @@ abstract public class JmolPopup {
     GT.setDoTranslate(true);
     JmolPopup popup;
     try {
-      popup = (!viewer.isJvm12orGreater() || forceAwt ? (JmolPopup) new JmolPopupAwt(
-          viewer, asPopup)
-          : (JmolPopup) new JmolPopupSwing(viewer, asPopup));
+      popup = (JmolPopup) new JmolPopup(viewer, asPopup);
     } catch (Exception e) {
       Logger.error("JmolPopup not loaded");
       GT.setDoTranslate(doTranslate);
       return null;
     }
-    // long runTime = System.currentTimeMillis() - beginTime;
-    // Logger.debug("LoadPopupThread finished " + runTime + " ms");
     try {
       popup.updateComputedMenus();
     } catch (NullPointerException e) {
@@ -132,13 +148,11 @@ abstract public class JmolPopup {
     return popup;
   }
 
-  public abstract void installMainMenu(Object objMenuBar); 
-  
   void build(Object popupMenu) {
     htMenus.put("popupMenu", popupMenu);
     boolean allowSignedFeatures = (!viewer.isApplet() || viewer.getBooleanProperty("_signedApplet"));
-    addMenuItems("", "popupMenu", popupMenu, new PopupResourceBundle(menuStructure, menuText), viewer
-        .isJvm12orGreater(), allowSignedFeatures);
+    addMenuItems("", "popupMenu", popupMenu, new PopupResourceBundle(menuStructure, menuText), 
+        allowSignedFeatures);
   }
 
   public String getMenu(String title) {
@@ -152,8 +166,6 @@ abstract public class JmolPopup {
     }
     return (new PopupResourceBundle(menuStructure, null)).getMenu(title);
   }
-  
-  abstract String getMenuCurrent();
   
   static protected void addCurrentItem(StringBuffer sb, char type, int level, String name, String label, String script, String flags) {
     sb.append(type).append(level).append('\t').append(name);
@@ -752,7 +764,7 @@ abstract public class JmolPopup {
 
   private void addMenuItems(String parentId, String key, Object menu,
                             PopupResourceBundle popupResourceBundle,
-                            boolean isJVM12orGreater, boolean allowSignedFeatures) {
+                            boolean allowSignedFeatures) {
     String id = parentId + "." + key;
     String value = popupResourceBundle.getStructure(key);
     //Logger.debug(id + " --- " + value);
@@ -775,7 +787,6 @@ abstract public class JmolPopup {
       Object newMenu = null;
       String script = "";
       item = st.nextToken();
-      boolean isDisabled = (!isJVM12orGreater && item.indexOf("JVM12") >= 0);
       String word = popupResourceBundle.getWord(item);
       if (item.indexOf("Menu") >= 0) {
         if (!allowSignedFeatures && item.startsWith("SIGNED"))
@@ -784,7 +795,7 @@ abstract public class JmolPopup {
         addMenuSubMenu(menu, subMenu);
         htMenus.put(item, subMenu);
         if (item.indexOf("Computed") < 0)
-          addMenuItems(id, item, subMenu, popupResourceBundle, isJVM12orGreater, allowSignedFeatures);
+          addMenuItems(id, item, subMenu, popupResourceBundle, allowSignedFeatures);
         // these will need tweaking:
         if ("aboutComputedMenu".equals(item)) {
           aboutComputedMenuBaseCount = getMenuItemCount(subMenu);
@@ -793,8 +804,6 @@ abstract public class JmolPopup {
           enableMenu(subMenu, false);
         }
         newMenu = subMenu;
-        if (isDisabled)
-          enableMenu(newMenu, false);
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
       } else if (item.endsWith("Checkbox")) {
@@ -809,8 +818,6 @@ abstract public class JmolPopup {
         if (script == null)
           script = item;
         newMenu = addMenuItem(menu, word, script, id + "." + item);
-        if (isDisabled)
-          enableMenuItem(newMenu, false);
       }
 
       if (item.indexOf("VARIABLE") >= 0)
@@ -1019,66 +1026,244 @@ abstract public class JmolPopup {
 
   ////////////////////////////////////////////////////////////////
 
-  abstract void resetFrankMenu();
+  private void showPopupMenu(int x, int y) {
+    if (display == null)
+      return;
+    try {
+      swingPopup.show(display, x, y);
+    } catch (Exception e) {
+      Logger.error("popup error: " + e.getMessage());
+      // browser in Java 1.6.0_10 is blocking setting WindowAlwaysOnTop 
 
-  abstract Object getParent(Object menu);
+    }
+  }
 
-  abstract void insertMenuSubMenu(Object menu, Object subMenu, int index);
+  public void installMainMenu(Object objMenuBar) {
+    if (objMenuBar instanceof JMenuBar) {
+      JMenuBar mb = (JMenuBar) objMenuBar;
+      mb.remove(0);
+      mb.add(mainMenu, 0);
+    }
+  }
 
-  abstract int getPosition(Object menu);
+  Object getParent(Object menu) {
+    return ((JMenu) menu).getParent();
+  }
 
-  abstract void showPopupMenu(int x, int y);
+  int getMenuItemHeight() {
+    return MENUITEM_HEIGHT;
+  }
 
-  abstract void showFrankMenu(int x, int y);
+  int getPosition(Object menu) {
+    Object p = getParent(menu);
+    if (p instanceof JPopupMenu) {
+      for (int i = ((JPopupMenu) p).getComponentCount(); --i >= 0;)
+        if (((JPopupMenu) p).getComponent(i) == menu)
+          return i;
+    } else {
+      for (int i = ((JMenu) p).getItemCount(); --i >= 0;)
+        if (((JMenu) p).getItem(i) == menu)
+          return i;
+    }
+    return -1;
+  }
 
-  abstract void setCheckBoxState(Object item, boolean state);
+  void insertMenuSubMenu(Object menu, Object subMenu, int index) {
+    if (menu instanceof JPopupMenu)
+      ((JPopupMenu) menu).insert((JMenu) subMenu, index);
+    else
+      ((JMenu) menu).insert((JMenu) subMenu, index);
+  }
 
-  abstract void addMenuSeparator(Object menu);
+  void createFrankPopup() {
+    frankPopup = new JPopupMenu("Frank");
+  }
 
-  abstract Object addMenuItem(Object menu, String entry, String script,
-                              String id);
+  void showFrankMenu(int x, int y) {
+    if (display == null)
+      return;
+    try {
+      ((JPopupMenu) frankPopup).show(display, x, y);
+    } catch (Exception e) {
+      // probably a permissions problem in Java 7
+    }
+  }
 
-  abstract void setLabel(Object menu, String entry);
+  void resetFrankMenu() {
+    JPopupMenu menu = (JPopupMenu) frankPopup;
+    menu.removeAll();
+  }
 
-  abstract void updateMenuItem(Object menuItem, String entry, String script);
+  void addToMenu(Object menu, JComponent item) {
+    if (menu instanceof JPopupMenu) {
+      ((JPopupMenu) menu).add(item);
+    } else if (menu instanceof JMenu) {
+      ((JMenu) menu).add(item);
+    } else {
+      Logger.warn("cannot add object to menu: " + menu);
+    }
+  }
 
-  abstract Object addCheckboxMenuItem(Object menu, String entry,
-                                      String basename, String id, boolean state);
+  ////////////////////////////////////////////////////////////////
 
-  abstract void addMenuSubMenu(Object menu, Object subMenu);
+  void addMenuSeparator(Object menu) {
+    if (menu instanceof JPopupMenu)
+      ((JPopupMenu) menu).addSeparator();
+    else
+      ((JMenu) menu).addSeparator();
+  }
 
-  abstract Object newMenu(String menuName, String id);
+  Object addMenuItem(Object menu, String entry, String script, String id) {
+    JMenuItem jmi = new JMenuItem(entry);
+    updateMenuItem(jmi, entry, script);
+    jmi.addActionListener(mil);
+    jmi.setName(id == null ? ((Component) menu).getName() + "." : id);
+    addToMenu(menu, jmi);
+    return jmi;
+  }
 
-  abstract void enableMenu(Object menu, boolean enable);
+  void setLabel(Object menu, String entry) {
+    if (menu instanceof JMenuItem)
+      ((JMenuItem) menu).setLabel(entry);
+    else
+      ((JMenu) menu).setLabel(entry);
+  }
 
-  abstract void enableMenuItem(Object item, boolean enable);
+  String getId(Object menu) {
+    return ((Component) menu).getName();
+  }
 
-  abstract void renameMenu(Object menu, String menuName);
+  void setCheckBoxValue(Object source) {
+    JCheckBoxMenuItem jcmi = (JCheckBoxMenuItem) source;
+    setCheckBoxValue(jcmi.getActionCommand(), jcmi.getState());
+  }
 
-  abstract void removeAll(Object menu);
+  void setCheckBoxState(Object item, boolean state) {
+    ((JCheckBoxMenuItem) item).setState(state);
+  }
 
-  abstract int getMenuItemCount(Object menu);
+  void updateMenuItem(Object menuItem, String entry, String script) {
+    JMenuItem jmi = (JMenuItem) menuItem;
+    jmi.setLabel(entry);
+    jmi.setActionCommand(script);
+  }
 
-  abstract void removeMenuItem(Object menu, int index);
+  Object addCheckboxMenuItem(Object menu, String entry, String basename,
+                             String id, boolean state) {
+    JCheckBoxMenuItem jcmi = new JCheckBoxMenuItem(entry);
+    jcmi.setState(state);
+    jcmi.addItemListener(cmil);
+    jcmi.setActionCommand(basename);
+    jcmi.setName(id == null ? ((Component) menu).getName() + "." : id);
+    addToMenu(menu, jcmi);
+    return jcmi;
+  }
 
-  abstract String getId(Object menuItem);
+  Object cloneMenu(Object menu) {
+    return null;
+  }
 
-  abstract void setCheckBoxValue(Object source);
+  void addMenuSubMenu(Object menu, Object subMenu) {
+    addToMenu(menu, (JMenu) subMenu);
+  }
 
-  abstract void createFrankPopup();
+  Object newMenu(String menuName, String id) {
+    JMenu jm = new JMenu(menuName);
+    jm.setName(id);
+    jm.setAutoscrolls(true);
+    return jm;
+  }
 
-  abstract int getMenuItemHeight();
+  void setAutoscrolls(Object menu) {
+    ((JMenu) menu).setAutoscrolls(true);
+  }
+
+  void renameMenu(Object menu, String newMenuName) {
+    ((JMenu) menu).setLabel(newMenuName);
+  }
+
+  Object newComputedMenu(String key, String word) {
+    if ("elementComputedMenu".equals(key)) {
+      elementComputedMenu = new JMenu(word);
+      return elementComputedMenu;
+    }
+    return new JMenu("unrecognized ComputedMenu:" + key);
+  }
+
+  int getMenuItemCount(Object menu) {
+    return ((JMenu) menu).getItemCount();
+  }
+
+  void removeMenuItem(Object menu, int index) {
+    ((JMenu) menu).remove(index);
+  }
+
+  void removeAll(Object menu) {
+    ((JMenu) menu).removeAll();
+  }
+
+  void enableMenu(Object menu, boolean enable) {
+    if (menu instanceof JMenuItem) {
+      enableMenuItem(menu, enable);
+      return;
+    }
+    try {
+      ((JMenu) menu).setEnabled(enable);
+    } catch (Exception e) {
+      //no menu item;
+    }
+  }
+
+  void enableMenuItem(Object item, boolean enable) {
+    try {
+      ((JMenuItem) item).setEnabled(enable);
+    } catch (Exception e) {
+      //no menu item;
+    }
+  }
 
   long maxMemoryForNewerJvm() {
-    // this method is overridden in JmolPopupSwing for newer Javas
-    // JmolPopupAwt does not implement this
-    return 0;
+    return Runtime.getRuntime().maxMemory();
   }
 
   int availableProcessorsForNewerJvm() {
-    // this method is overridden in JmolPopupSwing for newer Javas
-    // JmolPopupAwt does not implement this
-    return 0;
+    return Runtime.getRuntime().availableProcessors();
+  }
+
+  String getMenuCurrent() {
+    StringBuffer sb = new StringBuffer();
+    Object menu = htMenus.get("popupMenu");
+    getMenuCurrent(sb, 0, menu, "PopupMenu");
+    return sb.toString();
+  }
+
+  private void getMenuCurrent(StringBuffer sb, int level,
+                                     Object menu, String menuName) {
+    String name = menuName;
+    Component[] subMenus = 
+      (menu instanceof JPopupMenu ? ((JPopupMenu) menu).getComponents()
+       : ((JMenu) menu).getPopupMenu().getComponents());
+    for (int i = 0; i < subMenus.length; i++) {
+      Object m = subMenus[i];
+      String flags;
+      if (m instanceof JMenu) {
+        JMenu jm = (JMenu) m;
+        name = jm.getName();
+        flags = "enabled:" + jm.isEnabled();
+        addCurrentItem(sb, 'M', level, name, jm.getText(), null, flags);
+        getMenuCurrent(sb, level + 1, ((JMenu) m).getPopupMenu(), name);
+      } else if (m instanceof JMenuItem) {
+        JMenuItem jmi = (JMenuItem) m;
+        flags = "enabled:" + jmi.isEnabled();
+        if (m instanceof JCheckBoxMenuItem)
+          flags += ";checked:" + ((JCheckBoxMenuItem) m).getState();
+        String script = fixScript(jmi.getName(), jmi.getActionCommand());
+        addCurrentItem(sb, 'I', level, jmi.getName(), jmi.getText(), script,
+            flags);
+      } else {
+        addCurrentItem(sb, 'S', level, name, null, null, null);
+      }
+    }
   }
 
 }

@@ -79,7 +79,7 @@ class PopupResourceBundle {
           "FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYUNITCELLMenu - "
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
-              + "measureMenu pickingMenu - JVM12showConsole JVM12showMenu SIGNEDfileMenu computationMenu - "
+              + "measureMenu pickingMenu - showConsole showMenu SIGNEDfileMenu computationMenu - "
               + "languageComputedMenu aboutComputedMenu" },
               
       {   "selectMenuText",
@@ -200,7 +200,7 @@ class PopupResourceBundle {
       {   "measureMenu",
           "showMeasurementsCheckbox - "
               + "measureOff measureDistance measureAngle measureTorsion - "
-              + "measureDelete JVM12measureList - distanceNanometers distanceAngstroms distancePicometers" },
+              + "measureDelete measureList - distanceNanometers distanceAngstroms distancePicometers" },
 
       {   "pickingMenu",
           "pickOff pickCenter pickIdent pickLabel pickAtom "
@@ -211,7 +211,7 @@ class PopupResourceBundle {
               /* calculateVolume*/ },
 
               
-      {   "JVM12showMenu",
+      {   "showMenu",
           "showHistory showFile showFileHeader - "
               + "showOrient showMeasure - "
               + "showSpacegroup showState SYMMETRYshowSymmetry UNITCELLshow - showIsosurface showMo - extractMOL" },
@@ -457,7 +457,7 @@ class PopupResourceBundle {
       { "measureTorsion",
           "set pickingstyle MEASURE; set picking MEASURE TORSION" },
       { "measureDelete", "measure delete" },
-      { "JVM12measureList", "console on;show measurements" },
+      { "measureList", "console on;show measurements" },
       { "distanceNanometers", "select *; set measure nanometers" },
       { "distanceAngstroms", "select *; set measure angstroms" },
       { "distancePicometers", "select *; set measure picometers" },
@@ -476,7 +476,7 @@ class PopupResourceBundle {
       { "pickSpin", "set picking spin" },
       { "SYMMETRYpickSymmetry", "set picking symmetry" },
 
-      { "JVM12showConsole", "console" },
+      { "showConsole", "console" },
       { "showFile", "console on;show file" },
       { "showFileHeader", "console on;getProperty FileHeader" },
       { "showHistory", "console on;show history" },
@@ -854,7 +854,7 @@ class PopupResourceBundle {
         "measureAngle", GT._("Click for angle measurement"),
         "measureTorsion", GT._("Click for torsion (dihedral) measurement"),
         "measureDelete", GT._("Delete measurements"),
-        "JVM12measureList", GT._("List measurements"),
+        "measureList", GT._("List measurements"),
         "distanceNanometers", GT._("Distance units nanometers"),
         "distanceAngstroms", GT._("Distance units Angstroms"),
         "distancePicometers", GT._("Distance units picometers"),
@@ -874,8 +874,8 @@ class PopupResourceBundle {
         "SYMMETRYpickSymmetry", GT._("Show symmetry operation"),
         "pickSpin", GT._("Spin"),
 
-        "JVM12showMenu", GT._("Show"),
-        "JVM12showConsole", GT._("Console"),
+        "showMenu", GT._("Show"),
+        "showConsole", GT._("Console"),
         "showFile", GT._("File Contents"),
         "showFileHeader", GT._("File Header"),
         "showHistory", GT._("History"),

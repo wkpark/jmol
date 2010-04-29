@@ -25,7 +25,15 @@ package org.jmol.g3d;
 
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferInt;
+import java.awt.image.DirectColorModel;
+import java.awt.image.Raster;
+import java.awt.image.SinglePixelPackedSampleModel;
 
 /**
  *<p>
@@ -35,7 +43,7 @@ import java.awt.Image;
  *
  * @author Miguel, miguel@jmol.org
  */ 
-abstract class Platform3D {
+class Platform3D {
 
   int windowWidth, windowHeight, windowSize;
   int bufferWidth, bufferHeight, bufferSize, bufferSizeT;
@@ -57,22 +65,10 @@ abstract class Platform3D {
   static Platform3D createInstance(Component awtComponent) {
     if (awtComponent == null)
       return null;
-    boolean jvm12orGreater =
-      System.getProperty("java.version").compareTo("1.2") >= 0;
-    boolean useSwing = jvm12orGreater && !forcePlatformAWT;
-    Platform3D platform =(useSwing
-                          ? allocateSwing3D() : new Awt3D(awtComponent));
-    platform.initialize(desireClearingThread && useSwing);
+    Platform3D platform = new Platform3D();
+    platform.initialize(desireClearingThread);
     platform.graphicsOffscreen = platform.allocateOffscreenImage(1, 1).getGraphics();
-
     return platform;
-  }
-
-  private static Platform3D allocateSwing3D() {
-    // this method is necessary in order to prevent Swing-related
-    // classes from getting touched on the MacOS9 platform
-    // otherwise the Mac crashes *badly* when the classes are not found
-    return new Swing3D();
   }
 
   final void initialize(boolean useClearingThread) {
@@ -83,8 +79,6 @@ abstract class Platform3D {
       clearingThread.start();
     }
   }
-
-  abstract Image allocateImage();
 
   void allocateTBuffers(boolean antialiasTranslucent) {
     bufferSizeT = (antialiasTranslucent ? bufferSize : windowSize);
@@ -176,8 +170,6 @@ abstract class Platform3D {
   }
 
   Graphics graphicsOffscreen;
-  abstract Image allocateOffscreenImage(int width, int height);
-  abstract Graphics getGraphics(Image imageOffscreen);
   
   boolean checkOffscreenSize(int width, int height) {
     if (width <= widthOffscreen && height <= heightOffscreen)
@@ -247,6 +239,80 @@ abstract class Platform3D {
     }
   }
 
-  void setBackgroundTransparent(boolean tf) {
+  ////////swing
+  
+  private final static DirectColorModel rgbColorModel =
+    new DirectColorModel(24, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00000000);
+
+  private final static int[] sampleModelBitMasks =
+  { 0x00FF0000, 0x0000FF00, 0x000000FF };
+
+  private final static DirectColorModel rgbColorModelT =
+    new DirectColorModel(32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+
+  private final static int[] sampleModelBitMasksT =
+  { 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000 };
+
+  Image allocateImage() {
+    //backgroundTransparent not working with antialiasDisplay. I have no idea why. BH 9/24/08
+    if (false && backgroundTransparent)
+      return new BufferedImage(
+          rgbColorModelT,
+          Raster.createWritableRaster(
+              new SinglePixelPackedSampleModel(
+                  DataBuffer.TYPE_INT,
+                  windowWidth,
+                  windowHeight,
+                  sampleModelBitMasksT), 
+              new DataBufferInt(pBuffer, windowSize),
+              null),
+          false, 
+          null);
+    return new BufferedImage(
+        rgbColorModel,
+        Raster.createWritableRaster(
+            new SinglePixelPackedSampleModel(
+                DataBuffer.TYPE_INT,
+                windowWidth,
+                windowHeight,
+                sampleModelBitMasks), 
+            new DataBufferInt(pBuffer, windowSize),
+            null),
+        false, 
+        null);
   }
+
+  private static boolean backgroundTransparent = false;
+  
+  void setBackgroundTransparent(boolean tf) {
+    backgroundTransparent = tf;
+  }
+
+  Image allocateOffscreenImage(int width, int height) {
+    return new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+  }
+
+  Graphics getGraphics(Image image) {
+    return getStaticGraphics(image);
+  }
+  
+  static Graphics getStaticGraphics(Image image) {
+    Graphics2D g2d = ((BufferedImage) image).createGraphics();
+    if (backgroundTransparent) {
+      // what here?
+    }
+    // miguel 20041122
+    // we need to turn off text antialiasing on OSX when
+    // running in a web browser
+    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                         RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+    // I don't know if we need these or not, but cannot hurt to have them
+    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                         RenderingHints.VALUE_ANTIALIAS_OFF);
+    g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+                         RenderingHints.VALUE_RENDER_SPEED);
+    return g2d;
+  }
+
+  
 }

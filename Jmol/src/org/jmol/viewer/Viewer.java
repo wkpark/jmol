@@ -114,11 +114,9 @@ import java.io.StringReader;
  * client data structures and render the molecule to the supplied
  * java.awt.Component
  * 
- * The JmolViewer runs on Java 1.4 virtual machines. The 3d graphics rendering
+ * The JmolViewer runs on Java 1.5+ virtual machines. The 3d graphics rendering
  * package is a software implementation of a z-buffer. It does not use Java3D
- * and does not use Graphics2D from Java 1.2. Therefore, it is well suited to
- * building web browser applets that will run on a wide variety of system
- * configurations.
+ * and does not use Graphics2D from Java 1.2. 
  * 
  * public here is a test for applet-applet and JS-applet communication the idea
  * being that applet.getProperty("jmolViewer") returns this Viewer object,
@@ -228,7 +226,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private ShapeManager shapeManager;
   private ModelManager modelManager;
   private ModelSet modelSet;
-  private MouseManager mouseManager;
+  private MouseManager14 mouseManager;
   private RepaintManager repaintManager;
   private ScriptManager scriptManager;
   private SelectionManager selectionManager;
@@ -306,12 +304,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       } else {
         actionManager = new ActionManager(this);
       }
-      //if (jvm14orGreater)
-        mouseManager = new MouseManager14(display, this, actionManager);
-      //else if (jvm11orGreater)
-      //  mouseManager = new MouseManager11(display, this, actionManager);
-      //else
-      //  mouseManager = new MouseManager10(display, this, actionManager);
+      mouseManager = new MouseManager14(this, actionManager);
     }
     modelManager = new ModelManager(this);
     shapeManager = new ShapeManager(this);
@@ -6760,10 +6753,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   //
   // //////////////////////////////////////////////////////////////
 
-  public boolean isJvm12orGreater() {
-    return true;//jvm12orGreater;
-  }
-
   public String getOperatingSystemName() {
     return strOSName;
   }
@@ -8366,5 +8355,4 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public BitSet transformAtoms(boolean firstPass) {
     return shapeManager.transformAtoms(firstPass);
   }
-
 }

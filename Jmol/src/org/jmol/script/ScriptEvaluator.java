@@ -1192,8 +1192,8 @@ public class ScriptEvaluator {
           switch (tok) {
           case Token.function:
             bsAtom.set(i);
-            fv = ScriptVariable.fValue(getFunctionReturn(userFunction, params,
-                tokenAtom));
+            fv = ScriptVariable.fValue(runFunction(userFunction, params,
+                tokenAtom, true));
             bsAtom.clear(i);
             break;
           case Token.property:
@@ -1548,7 +1548,7 @@ public class ScriptEvaluator {
 
   // ///////////////////// general fields //////////////////////
 
-  private final static int scriptLevelMax = 10;
+  private final static int scriptLevelMax = 20;
 
   private Thread currentThread;
   protected Viewer viewer;
@@ -1746,7 +1746,7 @@ public class ScriptEvaluator {
 
   private ParallelProcessor parallelProcessor;
 
-  private ScriptVariable runFunction(String name, Vector params, Token tokenAtom, boolean getReturn) throws ScriptException {
+  ScriptVariable runFunction(String name, Vector params, Token tokenAtom, boolean getReturn) throws ScriptException {
     pushContext(null);
     contextPath += " >> function " + name;
     ScriptFunction function = viewer.getFunction(name);
@@ -1778,13 +1778,6 @@ public class ScriptEvaluator {
     ScriptVariable v = (getReturn ? getContextVariableAsVariable("_retval") : null);
     popContext(false);
     return v;
-  }
-
-  protected ScriptVariable getFunctionReturn(String name, Vector params,
-                                             ScriptVariable tokenAtom)
-      throws ScriptException {
-        
-    return runFunction(name, params, tokenAtom, true);
   }
 
   private void clearDefinedVariableAtomSets() {

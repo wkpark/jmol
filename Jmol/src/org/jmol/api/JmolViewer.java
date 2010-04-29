@@ -141,7 +141,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public boolean checkHalt(String strCommand, boolean isInterrupt);
   abstract public void haltScriptExecution();
 
-  abstract public boolean isJvm12orGreater();
   abstract public String getOperatingSystemName();
   abstract public String getJavaVersion();
   abstract public String getJavaVendor();

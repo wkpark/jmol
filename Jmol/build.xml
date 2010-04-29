@@ -7,10 +7,10 @@
   <property file="${user.home}/.jmol.build.properties" />
   <!-- compile options -->
   <property name="build.sysclasspath" value="ignore" />
-  <property name="build.compiler" value="javac1.4" />
+  <property name="build.compiler" value="javac1.5" />
   <!-- for some reason, I can't get ant to use this ${java.version}
        property as the value of the source parameter -->
-  <property name="java.version" value="1.4" />
+  <property name="java.version" value="1.5" />
   <property name="debug" value="off" />
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
@@ -193,7 +193,7 @@
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="src" destdir="${classes.dir}"
            debug="${debug}" deprecation="${deprecation}"
-           optimize="${optimization}" source="1.4">
+           optimize="${optimization}" source="1.5">
       <classpath refid="project.class.path" />
       <!-- removed all CDK based code, use BioClipse instead -->
       <exclude name="org/openscience/jmol/app/JmolEditBus.java"/>
@@ -246,13 +246,20 @@ bob 2010.02.01
 changed    source="1.3" target="1.1"
      to    source="1.4" target="1.4"
            
+bob 2010.04.29
+
 in order to allow for faster BitSet methods
+
+changed    source="1.4" target="1.4"
+     to    source="1.5" target="1.5"
+           
+all support for previous versions removed
 
     -->
     <javac srcdir="src" destdir="${applet.classes.dir}"
            debug="${debug}" deprecation="${deprecation}"
            optimize="${optimization}"
-           source="1.4" target="1.4"
+           source="1.5" target="1.5"
            includesfile="applet.classes"
            classpathref="applet-project.class.path" />
 
@@ -286,7 +293,7 @@ in order to allow for faster BitSet methods
     <mkdir dir="${apisio.classes.dir}"/>
     <javac srcdir="src" destdir="${apisio.classes.dir}"
            debug="${debug}" deprecation="${deprecation}"
-           optimize="${optimization}" source="1.4"
+           optimize="${optimization}" source="1.5"
            includesfile="apisio.classes"
            classpathref="apisio-project.class.path" />
     <copy todir="${apisio.classes.dir}" >
@@ -1308,7 +1315,7 @@ in order to allow for faster BitSet methods
     <mkdir dir="${test-classes.dir}"/>
     <javac srcdir="test" destdir="${test-classes.dir}"
            debug="off" deprecation="on"
-           optimize="off" source="1.4">
+           optimize="off" source="1.5">
       <classpath>
         <pathelement location="${jmol.build.dir}/Jmol.jar" />
         <pathelement location="./jars/junit.jar" />

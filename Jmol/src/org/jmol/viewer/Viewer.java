@@ -6874,7 +6874,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         "DATA_API", "getScriptEditor", Boolean.TRUE);
     if (msg != null) {
       scriptEditor.setFilename(filename);
-      scriptEditor.output(msg);
+      scriptEditor.output(ScriptCompiler.getEmbeddedScript(msg));
     }
     scriptEditor.setVisible(true);
   }

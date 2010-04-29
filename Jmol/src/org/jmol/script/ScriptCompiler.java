@@ -191,15 +191,23 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       script = script.substring(0, pt);
     }
     haveComments = (script.indexOf("#") >= 0); // speeds processing
-    pt = script.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG);
+    return getEmbeddedScript(script);
+  }
+  
+  public static String getEmbeddedScript(String script) {
+    if (script == null)
+      return script;
+    int pt = script.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG);
     if (pt < 0)
       return script;
     int pt1 = script.lastIndexOf("/*", pt);
-    int pt2 = script.indexOf((script.charAt(pt1 + 2) == '*' ? "*" : "") + "*/", pt);
-    return (pt1 < 0 || pt2 < pt ? script 
-        : script.substring(pt + JmolConstants.EMBEDDED_SCRIPT_TAG.length(), pt2)) + "\n";
+    int pt2 = script.indexOf((script.charAt(pt1 + 2) == '*' ? "*" : "") + "*/",
+        pt);
+    return (pt1 < 0 || pt2 < pt ? script : script.substring(pt
+        + JmolConstants.EMBEDDED_SCRIPT_TAG.length(), pt2))
+        + "\n";
   }
-  
+
   private ScriptFlowContext flowContext;
   private Vector ltoken;
   private Vector lltoken;

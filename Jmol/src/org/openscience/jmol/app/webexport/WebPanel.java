@@ -242,7 +242,9 @@ abstract class WebPanel extends JPanel implements ActionListener,
    * Logger.error("WebPanel IO ERROR reading resource " + fullPath); return
    * null; } return buf; }
    * 
-   * /* for example: Bytes[] data =
+   */
+
+  /* for example: Bytes[] data =
    * getResourceAsBytes("org/openscience/jmol/app/images/angleButton.gif")
    */
 

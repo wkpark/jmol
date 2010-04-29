@@ -120,11 +120,11 @@ class ParallelProcessor extends ScriptFunction {
 
   class RunProcess implements Runnable {
     Process process;
-    Object lock;
+    Object processLock;
 
     public RunProcess(Process process, Object lock) {
       this.process = process;
-      this.lock = lock;
+      processLock = lock;
     }
 
     public void run() {
@@ -145,9 +145,9 @@ class ParallelProcessor extends ScriptFunction {
       } catch (Error er) {
         clearShapeManager(er);
       } finally {
-        synchronized (lock) {
+        synchronized (processLock) {
           --counter;
-          lock.notifyAll();
+          processLock.notifyAll();
         }
       }
     }

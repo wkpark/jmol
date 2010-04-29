@@ -575,7 +575,7 @@ public class ActionManager {
       checkPointOrAtomClicked(x, y, 0, 0);
     else if (isZoomArea(x))
       checkMotionRotateZoom(Binding.getMouseAction(1, Binding.LEFT), 0, 0, 0, false);
-    else //if (dragSelectedMode)
+    else if (viewer.getCursor() == Viewer.CURSOR_ZOOM)//if (dragSelectedMode)
       viewer.setCursor(Viewer.CURSOR_DEFAULT);
   }
 
@@ -918,7 +918,8 @@ public class ActionManager {
       isZoom = isZoomArea(moved.x);
     int cursor = (isZoom || isBound(action, ACTION_wheelZoom) ? Viewer.CURSOR_ZOOM 
         : isRotateXY || isRotateZorZoom ? Viewer.CURSOR_MOVE : Viewer.CURSOR_DEFAULT);
-    viewer.setCursor(cursor);
+    if (viewer.getCursor() != Viewer.CURSOR_WAIT)
+      viewer.setCursor(cursor);
     if (inMotion)
       viewer.setInMotion(true);
     return isZoom;
@@ -1036,7 +1037,8 @@ public class ActionManager {
   }
 
   protected void checkMotion(int cursor) {
-    viewer.setCursor(cursor);
+    if (viewer.getCursor() != Viewer.CURSOR_WAIT)
+      viewer.setCursor(cursor);
     viewer.setInMotion(true);
   }
 

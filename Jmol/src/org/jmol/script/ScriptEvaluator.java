@@ -7605,6 +7605,8 @@ public class ScriptEvaluator {
       else
         htParams.put("OutputStream", os);
     }
+    if (!isSyntaxCheck)
+      viewer.setCursor(Viewer.CURSOR_WAIT);
     errMsg = viewer.loadModelFromFile(filename, filenames, isAppend, htParams,
         tokType);
     if (os != null)
@@ -12150,19 +12152,16 @@ public class ScriptEvaluator {
     if (isExport) {
       // POV-Ray uses a BufferedWriter instead of a StringBuffer.
       boolean isPovRay = type.equals("Povray");
-      System.out.println("SCRIPTEVALUATOR WRITE fileName = " + fileName);
       data = viewer.generateOutput(data, isPovRay ? fileName : null, width,
           height);
       if (data == null || data.length() == 0)
         return "";
       if (isPovRay) {
-        System.out.println("SCRIPTEVALUATOR WRITE isCommand ? " + isCommand);
         if (!isCommand)
           return data;
         fileName = data.substring(data.indexOf("File created: ") + 14);
         fileName = fileName.substring(0, fileName.indexOf("\n"));
         fileName = fileName.substring(0, fileName.lastIndexOf(" ("));
-        System.out.println("SCRIPTEVALUATOR WRITE to " + fileName);
         msg = viewer.createImage(fileName + ".ini", "ini", data,
             Integer.MIN_VALUE, 0, 0, null, fullPath);
         if (msg != null) {
@@ -14896,8 +14895,6 @@ public class ScriptEvaluator {
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);
     setShapeProperty(iShape, "clear", null);
-    //if (!isSyntaxCheck)
-      //System.out.println(sbCommand);
   }
 
   private static Object testData; // for isosurface

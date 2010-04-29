@@ -174,8 +174,6 @@ class RepaintManager {
   String generateOutput(String type, Graphics3D g3d, ModelSet modelSet,
                         String fileName) {
 
-    viewer.finalizeTransformParameters();
-
     JmolRendererInterface g3dExport = null;
     Object output = null;
     boolean isOK = false;
@@ -183,10 +181,6 @@ class RepaintManager {
       if (fileName == null) {
         output = new StringBuffer();
       } else {
-        if (fileName.charAt(0) == '?')
-          fileName = viewer.dialogAsk("save", fileName.substring(1));
-        if (fileName == null)
-          return null;
         output = fileName;
       }
       Class export3Dclass = Class.forName("org.jmol.export.Export3D");
@@ -198,7 +192,6 @@ class RepaintManager {
       Logger.error("Cannot export " + type);
       return null;
     }
-    viewer.finalizeTransformParameters();
     g3dExport.renderBackground();
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapeManager.getShape(i);

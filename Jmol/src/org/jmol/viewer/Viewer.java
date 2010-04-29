@@ -3568,11 +3568,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                int height) {
     if (isDataOnly)
       return "";
+    fileName = getFileNameFromDialog(fileName, Integer.MIN_VALUE);
+    if (fileName == null)
+      return null;
     mustRender = true;
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
     resizeImage(width, height, true, true, false);
     setModelVisibility();
+    finalizeTransformParameters();
     String data = repaintManager.generateOutput(type, g3d, modelSet, fileName);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
@@ -4298,6 +4302,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public final static int CURSOR_ZOOM = 5;
 
   private int currentCursor = CURSOR_DEFAULT;
+
+  public int getCursor() {
+    return currentCursor;
+  }
 
   public void setCursor(int cursor) {
     if (multiTouch || currentCursor == cursor || display == null)
@@ -7492,21 +7500,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (fileName == null) {
         err = clipImage((String) text_or_bytes);
       } else {
-        boolean isZip = (type.equals("ZIP") || type.equals("ZIPALL"));
-        boolean useDialog = (fileName.indexOf("?") == 0);
-        if (useDialog)
-          fileName = fileName.substring(1);
-        useDialog |= isApplet;
-        fileName = FileManager.getLocalPathForWritingFile(this, fileName);
-
-        if (useDialog)
-          fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save"
-              : "saveImage", fileName);
+        fileName = getFileNameFromDialog(fileName, quality);
         if (fullPath != null)
           fullPath[0] = fileName;
-        if (fileName == null)
+        if (fileName == null) {
           err = "CANCELED";
-        else if (isZip) {
+        } else if (type.equals("ZIP") || type.equals("ZIPALL")) {
           err = fileManager.createZipSet(fileName, (String) text_or_bytes, type
               .equals("ZIPALL"));
         } else {
@@ -7536,6 +7535,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       resizeImage(saveWidth, saveHeight, true, false, true);
     }
     return ("CANCELED".equals(err) ? null : err);
+  }
+
+  private String getFileNameFromDialog(String fileName, int quality) {
+    boolean useDialog = (fileName.indexOf("?") == 0);
+    if (useDialog)
+      fileName = fileName.substring(1);
+    useDialog |= isApplet;
+    fileName = FileManager.getLocalPathForWritingFile(this, fileName);
+    if (useDialog)
+      fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save"
+          : "saveImage", fileName);
+    return fileName;
   }
 
   private void setImageFontScaling(int width, int height) {

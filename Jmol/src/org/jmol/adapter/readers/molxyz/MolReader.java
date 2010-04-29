@@ -214,11 +214,10 @@ public class MolReader extends AtomSetCollectionReader {
       int atomIndex1 = parseInt(line, 0, 3);
       int atomIndex2 = parseInt(line, 3, 6);
       int order = parseInt(line, 6, 9);
-      int stereo = (line.length() >= 12 ? parseInt(line.substring(9, 12)) : 0);
       switch (order) {
       case 1:
         if (is2D)
-          switch (stereo) {
+          switch (line.length() >= 12 ? parseInt(line.substring(9, 12)) : 0) {
           case 1: // UP
             order = JmolAdapter.ORDER_STEREO_NEAR;
             break;

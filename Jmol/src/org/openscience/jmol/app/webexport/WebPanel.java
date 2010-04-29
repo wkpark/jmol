@@ -227,50 +227,41 @@ abstract class WebPanel extends JPanel implements ActionListener,
   }
 
   /*
-   * for example: getResourceAsBytes("org/openscience/jmol/app/images/angleButton.gif")
-
-  private static byte[] getResourceAsBytes(String fullPath) {
-    byte[] buf = new byte[1024];
-    byte[] bytes = new byte[4096];
-    InputStream is = ClassLoader.getSystemResourceAsStream(fullPath);
-    BufferedInputStream bis = new BufferedInputStream(is);
-    int len = 0;
-    int totalLen = 0;
-    try {
-    while ((len = bis.read(buf)) > 0) {
-      totalLen += len;
-      if (totalLen >= bytes.length)
-        bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
-      System.arraycopy(buf, 0, bytes, totalLen - len, len);
-    }
-    buf = new byte[totalLen];
-    System.arraycopy(bytes, 0, buf, 0, totalLen);
-    } catch (Exception IOException) {
-      Logger.error("WebPanel IO ERROR reading resource " + fullPath);
-      return null;
-    }
-    return buf;
-  }
-
-  /*
-   * for example: Bytes[] data = getResourceAsBytes("org/openscience/jmol/app/images/angleButton.gif")
+   * for example:
+   * getResourceAsBytes("org/openscience/jmol/app/images/angleButton.gif")
+   * 
+   * private static byte[] getResourceAsBytes(String fullPath) { byte[] buf =
+   * new byte[1024]; byte[] bytes = new byte[4096]; InputStream is =
+   * ClassLoader.getSystemResourceAsStream(fullPath); BufferedInputStream bis =
+   * new BufferedInputStream(is); int len = 0; int totalLen = 0; try { while
+   * ((len = bis.read(buf)) > 0) { totalLen += len; if (totalLen >=
+   * bytes.length) bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
+   * System.arraycopy(buf, 0, bytes, totalLen - len, len); } buf = new
+   * byte[totalLen]; System.arraycopy(bytes, 0, buf, 0, totalLen); } catch
+   * (Exception IOException) {
+   * Logger.error("WebPanel IO ERROR reading resource " + fullPath); return
+   * null; } return buf; }
+   * 
+   * /* for example: Bytes[] data =
+   * getResourceAsBytes("org/openscience/jmol/app/images/angleButton.gif")
    */
 
   private static byte[] getResourceAsBytes(String fullPath) {
     byte[] buf = new byte[1024];
     byte[] bytes = new byte[4096];
-    BufferedInputStream bis = new BufferedInputStream(ClassLoader.getSystemResourceAsStream(fullPath));
+    BufferedInputStream bis = new BufferedInputStream(ClassLoader
+        .getSystemResourceAsStream(fullPath));
     int len = 0;
     int totalLen = 0;
     try {
-    while ((len = bis.read(buf)) > 0) {
-      totalLen += len;
-      if (totalLen >= bytes.length)
-        bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
-      System.arraycopy(buf, 0, bytes, totalLen - len, len);
-    }
-    buf = new byte[totalLen];
-    System.arraycopy(bytes, 0, buf, 0, totalLen);
+      while ((len = bis.read(buf)) > 0) {
+        totalLen += len;
+        if (totalLen >= bytes.length)
+          bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
+        System.arraycopy(buf, 0, bytes, totalLen - len, len);
+      }
+      buf = new byte[totalLen];
+      System.arraycopy(bytes, 0, buf, 0, totalLen);
     } catch (Exception IOException) {
       Logger.error("WebPanel IO ERROR reading resource " + fullPath);
       return null;

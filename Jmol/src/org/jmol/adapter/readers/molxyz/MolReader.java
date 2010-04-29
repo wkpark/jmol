@@ -214,8 +214,19 @@ public class MolReader extends AtomSetCollectionReader {
       int atomIndex1 = parseInt(line, 0, 3);
       int atomIndex2 = parseInt(line, 3, 6);
       int order = parseInt(line, 6, 9);
+      int stereo = (line.length() >= 12 ? parseInt(line.substring(9, 12)) : 0);
       switch (order) {
       case 1:
+        if (is2D)
+          switch (stereo) {
+          case 1: // UP
+            order = JmolAdapter.ORDER_STEREO_NEAR;
+            break;
+          case 6: // DOWN
+            order = JmolAdapter.ORDER_STEREO_FAR;
+            break;
+          }
+        break;
       case 2:
       case 3:
         break;
@@ -235,8 +246,8 @@ public class MolReader extends AtomSetCollectionReader {
         order = JmolAdapter.ORDER_PARTIAL01;
         break;
       }
-      atomSetCollection
-          .addBond(new Bond(atom0 + atomIndex1 - 1, atom0 + atomIndex2 - 1, order));
+      atomSetCollection.addBond(new Bond(atom0 + atomIndex1 - 1, atom0
+          + atomIndex2 - 1, order));
     }
   }
 }

@@ -13626,10 +13626,10 @@ public class ScriptEvaluator {
           viewer.setCursor(Viewer.CURSOR_WAIT);
         setMoData(propertyList, moNumber, offset, iModel, title);
         addShapeProperty(propertyList, "finalize", null);
-        setShapeProperty(JmolConstants.SHAPE_MO, "setProperties", propertyList);
       }
-
     }
+    if (propertyList.size() > 0)
+      setShapeProperty(JmolConstants.SHAPE_MO, "setProperties", propertyList);
     return true;
   }
 

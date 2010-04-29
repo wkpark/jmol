@@ -45,6 +45,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
@@ -223,6 +224,58 @@ abstract class WebPanel extends JPanel implements ActionListener,
 
   JList getInstanceList() {
     return instanceList;
+  }
+
+  /*
+   * for example: getResourceAsBytes("org/openscience/jmol/app/images/angleButton.gif")
+
+  private static byte[] getResourceAsBytes(String fullPath) {
+    byte[] buf = new byte[1024];
+    byte[] bytes = new byte[4096];
+    InputStream is = ClassLoader.getSystemResourceAsStream(fullPath);
+    BufferedInputStream bis = new BufferedInputStream(is);
+    int len = 0;
+    int totalLen = 0;
+    try {
+    while ((len = bis.read(buf)) > 0) {
+      totalLen += len;
+      if (totalLen >= bytes.length)
+        bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
+      System.arraycopy(buf, 0, bytes, totalLen - len, len);
+    }
+    buf = new byte[totalLen];
+    System.arraycopy(bytes, 0, buf, 0, totalLen);
+    } catch (Exception IOException) {
+      Logger.error("WebPanel IO ERROR reading resource " + fullPath);
+      return null;
+    }
+    return buf;
+  }
+
+  /*
+   * for example: Bytes[] data = getResourceAsBytes("org/openscience/jmol/app/images/angleButton.gif")
+   */
+
+  private static byte[] getResourceAsBytes(String fullPath) {
+    byte[] buf = new byte[1024];
+    byte[] bytes = new byte[4096];
+    BufferedInputStream bis = new BufferedInputStream(ClassLoader.getSystemResourceAsStream(fullPath));
+    int len = 0;
+    int totalLen = 0;
+    try {
+    while ((len = bis.read(buf)) > 0) {
+      totalLen += len;
+      if (totalLen >= bytes.length)
+        bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
+      System.arraycopy(buf, 0, bytes, totalLen - len, len);
+    }
+    buf = new byte[totalLen];
+    System.arraycopy(bytes, 0, buf, 0, totalLen);
+    } catch (Exception IOException) {
+      Logger.error("WebPanel IO ERROR reading resource " + fullPath);
+      return null;
+    }
+    return buf;
   }
 
   private JPanel getLeftPanel(int w, int h) {

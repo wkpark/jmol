@@ -53,7 +53,7 @@ class GuiMap {
     labels.put("openTip", GT._("Open a file."));
     labels.put("openurl", GT._("Open &URL"));
     labels.put("editor", GT._("Scrip&t Editor..."));  // new %t 11.7.45
-    labels.put("console", GT._("Output Conso&le..."));// was &t
+    labels.put("console", GT._("Conso&le..."));
     labels.put("jconsole", GT._("Jmol Java &Console"));
     labels.put("atomsetchooser", GT._("AtomSet&Chooser..."));
     labels.put("saveas", GT._("&Save As..."));

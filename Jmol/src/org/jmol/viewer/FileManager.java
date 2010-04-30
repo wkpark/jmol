@@ -1441,6 +1441,17 @@ public class FileManager {
     }
   }
 
+  public static String fixFileNameVariables(String format, String fname) {
+    String str = TextFormat.simpleReplace(format, "%FILE", fname);
+    if (str.indexOf("%LC") < 0)
+      return str;
+    fname = fname.toLowerCase();
+    str = TextFormat.simpleReplace(str, "%LCFILE", fname);
+    if (fname.length() == 4)
+      str = TextFormat.simpleReplace(str, "%LC13", fname.substring(1,3));
+    return str;
+  }
+
   /*
   private class MonitorInputStream extends FilterInputStream {
     private long length;

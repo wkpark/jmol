@@ -579,7 +579,7 @@ public class StateManager {
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
         + ";debug;debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
         + ";_filecaching;_filecache;fontcaching;fontscaling;language;loglevel;measureStyleChime"
-        + ";multiprocessor;navigationmode;"
+        + ";loadformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
         + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
@@ -832,9 +832,9 @@ public class StateManager {
       setParameterValue("drawHover", drawHover);
       setParameterValue("drawPicking", drawPicking);
       setParameterValue("dynamicMeasurements", dynamicMeasurements);
-      setParameterValue("edsLoadFormat", edsLoadFormat);
-      //setParameterValue("edsLoadOptions", edsLoadOptions);
-      setParameterValue("edsLoadCutoff", edsLoadCutoff);
+      setParameterValue("edsUrlFormat", edsUrlFormat);
+      //setParameterValue("edsUrlOptions", edsUrlOptions);
+      setParameterValue("edsUrlCutoff", edsUrlCutoff);
       setParameterValue("ellipsoidArcs", ellipsoidArcs);
       setParameterValue("ellipsoidAxes", ellipsoidAxes);
       setParameterValue("ellipsoidAxisDiameter", ellipsoidAxisDiameter);
@@ -984,9 +984,9 @@ public class StateManager {
     boolean forceAutoBond = false;
     char inlineNewlineChar = '|'; //pseudo static
     String loadFormat = "http://www.rcsb.org/pdb/files/%FILE.pdb";
-    String edsLoadFormat = "http://eds.bmc.uu.se/eds/dfs/in/%LCFILE/%LCFILE.omap";
-    String edsLoadCutoff = "load('http://eds.bmc.uu.se/eds/dfs/in/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";
-    String edsLoadOptions = "within 2.0 {*}";
+    String edsUrlFormat = "http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.omap";
+    String edsUrlCutoff = "load('http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";
+    String edsUrlOptions = "within 2.0 {*}";
     float minBondDistance = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
     boolean pdbGetHeader = false; // true to get PDB header in auxiliary info
     boolean pdbSequential = false; // true for no bonding check
@@ -1034,7 +1034,9 @@ public class StateManager {
       if (sMode.equals("User"))
         appendCmd(str, viewer.getDefaultVdwTypeNameOrData(Integer.MAX_VALUE));
       appendCmd(str, "set forceAutoBond " + forceAutoBond);
-      appendCmd(str, "set loadFormat " + Escape.escape(loadFormat));
+      appendCmd(str, "#set loadFormat " + Escape.escape(loadFormat));
+      appendCmd(str, "#set edsUrlFormat " + Escape.escape(edsUrlFormat));
+      appendCmd(str, "#set edsUrlCutoff " + Escape.escape(edsUrlCutoff));
       if (autoLoadOrientation)
         appendCmd(str, "set autoLoadOrientation true");
       appendCmd(str, "set minBondDistance " + minBondDistance);

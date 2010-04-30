@@ -14643,15 +14643,11 @@ public class ScriptEvaluator {
           String server = info[0];
           // String option = (!firstPass || ptWithin > 0 ? null : info[1]);
           String strCutoff = (isSyntaxCheck || !firstPass
-              || !Float.isNaN(cutoff) ? null : info[2]);
+              || !Float.isNaN(cutoff) ? null : info[1]);
           String f = filename.substring(1);
-          filename = TextFormat.simpleReplace(server, "%LCFILE", f
-              .toLowerCase());
-          filename = TextFormat.simpleReplace(filename, "%FILE", f);
+          filename = FileManager.fixFileNameVariables(server, f);
           if (strCutoff != null) {
-            strCutoff = TextFormat.simpleReplace(strCutoff, "%LCFILE", f
-                .toLowerCase());
-            strCutoff = TextFormat.simpleReplace(strCutoff, "%FILE", f);
+            strCutoff = FileManager.fixFileNameVariables(strCutoff, f);
             cutoff = ScriptVariable.fValue(ScriptVariable.getVariable(viewer
                 .evaluateExpression(strCutoff)));
             if (cutoff > 0) {

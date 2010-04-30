@@ -4078,9 +4078,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   
   public String[] getElectronDensityLoadInfo() {
-    return new String[] { global.edsLoadFormat, 
-        global.edsLoadOptions, 
-        global.edsLoadCutoff };
+    return new String[] { global.edsUrlFormat, global.edsUrlCutoff,
+        global.edsUrlOptions };
   }
 
   public String getStandardLabelFormat() {

@@ -47,7 +47,6 @@ public class _PovrayExporter extends __RayTracerExporter {
 
   String finalizeOutput() {
     super.finalizeOutput();
-    System.out.println("POVRAY FINALIZED");
     return getAuxiliaryFileData();
   }
 

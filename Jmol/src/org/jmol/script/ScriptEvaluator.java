@@ -12145,25 +12145,30 @@ public class ScriptEvaluator {
     if (isExport) {
       // POV-Ray uses a BufferedWriter instead of a StringBuffer.
       boolean isPovRay = type.equals("Povray");
-      data = viewer.generateOutput(data, isPovRay ? fileName : null, width,
-          height);
+      // todo -- there's no reason this data has to be done this way. 
+      // we could send all of them out to file directly
+      data = viewer.generateOutput(data, fileName, width, height);
       if (data == null || data.length() == 0)
         return "";
+      if (!isCommand)
+        return data;
       if (isPovRay) {
-        if (!isCommand)
-          return data;
         fileName = data.substring(data.indexOf("File created: ") + 14);
         fileName = fileName.substring(0, fileName.indexOf("\n"));
         fileName = fileName.substring(0, fileName.lastIndexOf(" ("));
         msg = viewer.createImage(fileName + ".ini", "ini", data,
             Integer.MIN_VALUE, 0, 0, null, fullPath);
-        if (msg != null) {
-          if (!msg.startsWith("OK"))
-            evalError(msg, null);
-          scriptStatusOrBuffer("Created " + fullPath[0] + ":\n\n" + data);
-        }
-        return "";
+        data = "Created " + fullPath[0] + ":\n\n" + data;
+      } else {
+        msg = data;
       }
+      if (msg != null) {
+        if (!msg.startsWith("OK"))
+          evalError(msg, null);
+        scriptStatusOrBuffer(data);
+      }
+      return "";
+      
     } else if (data == "MENU") {
       data = viewer.getMenu("");
     } else if (data == "PGRP") {

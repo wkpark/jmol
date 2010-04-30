@@ -292,8 +292,9 @@ public abstract class ___Exporter {
       os = null;
     } catch (IOException e) {
       e.printStackTrace();
+      return "ERROR EXPORTING FILE";
     }
-    return null;
+    return "OK " + nBytes + " " + jmolRenderer.getExportName() + " " + fileName ;
   }
 
   protected static String getExportDate() {

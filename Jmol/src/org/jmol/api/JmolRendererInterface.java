@@ -20,6 +20,8 @@ public interface JmolRendererInterface {
   
   public abstract int getExportType();
   
+  public abstract String getExportName();
+
   public abstract boolean initializeExporter(String type, Viewer viewer,
                                              Graphics3D g3d, Object output);
 
@@ -295,7 +297,7 @@ public interface JmolRendererInterface {
                                          short normixC, Point3i screenD,
                                          short colixD, short normixD);
 
-  public abstract void drawSurface(MeshSurface meshSurface, Point3f[] vertices);
+  public abstract void drawSurface(MeshSurface meshSurface, Point3f[] vertices, Point3f offset);
 
   public abstract boolean isInDisplayRange(int x, int y);
 

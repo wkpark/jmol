@@ -1457,7 +1457,7 @@ final public class Graphics3D implements JmolRendererInterface {
                  screenD, colixD, normixD);
   }
 
-  public void drawSurface(MeshSurface meshSurface, Point3f[] vertices) {
+  public void drawSurface(MeshSurface meshSurface, Point3f[] vertices, Point3f offset) {
     // Export3D only
   }
   
@@ -2899,6 +2899,10 @@ final public class Graphics3D implements JmolRendererInterface {
   
   public int getExportType() {
     return EXPORT_NOT;
+  }
+
+  public String getExportName() {
+    return null;
   }
 
   public boolean canDoTriangles() {

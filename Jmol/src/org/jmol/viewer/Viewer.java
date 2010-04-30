@@ -3561,9 +3561,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                int height) {
     if (isDataOnly)
       return "";
-    fileName = getFileNameFromDialog(fileName, Integer.MIN_VALUE);
-    if (fileName == null)
-      return null;
+    if (fileName != null) {
+      fileName = getFileNameFromDialog(fileName, Integer.MIN_VALUE);
+      if (fileName == null)
+        return null;
+    }
     mustRender = true;
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
@@ -7527,6 +7529,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private String getFileNameFromDialog(String fileName, int quality) {
+    if (fileName == null)
+      return null;
     boolean useDialog = (fileName.indexOf("?") == 0);
     if (useDialog)
       fileName = fileName.substring(1);

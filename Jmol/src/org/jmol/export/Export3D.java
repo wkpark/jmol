@@ -56,6 +56,8 @@ final public class Export3D implements JmolRendererInterface {
   private int width;
   private int height;
   private int slab;
+  
+  String exportName;
 
   public Export3D() {
     hermite3d = new Hermite3D(this);
@@ -66,8 +68,13 @@ final public class Export3D implements JmolRendererInterface {
     return exporter.exportType;
   }
 
+  public String getExportName() {
+    return exportName;
+  }
+
   public boolean initializeExporter(String type, Viewer viewer, Graphics3D g3d,
                                     Object output) {
+    exportName = type;
     try {
       String name = "org.jmol.export._"
           + (false && type.equals("Povray") ? "NewPovray" : type) + "Exporter";
@@ -656,14 +663,14 @@ final public class Export3D implements JmolRendererInterface {
         colixD, normixD);
   }
 
-  public void drawSurface(MeshSurface meshSurface, Point3f[] vertices) {
+  public void drawSurface(MeshSurface meshSurface, Point3f[] vertices, Point3f offset) {
     exporter.drawSurface(meshSurface.vertexCount, meshSurface.polygonCount,
         meshSurface.haveQuads ? 4 : 3, vertices == null ? meshSurface.vertices
             : vertices, meshSurface.vertexNormals,
         meshSurface.isColorSolid ? null : meshSurface.vertexColixes,
         meshSurface.polygonIndexes,
         meshSurface.isColorSolid ? meshSurface.polygonColixes : null,
-        meshSurface.bsFaces, meshSurface.colix, null);
+        meshSurface.bsFaces, meshSurface.colix, offset);
   }
 
   public short[] getBgColixes(short[] bgcolixes) {

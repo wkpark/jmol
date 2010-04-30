@@ -158,6 +158,7 @@ public class _IdtfExporter extends __CartesianExporter {
  }
 
    */
+  
   private AxisAngle4f viewpoint = new AxisAngle4f();
   private boolean haveSphere;
   private boolean haveCylinder;

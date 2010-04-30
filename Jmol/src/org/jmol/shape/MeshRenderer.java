@@ -49,6 +49,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected float width;
   protected boolean isTranslucent;
   protected Point4f thePlane;
+  protected Point3f latticeOffset = new Point3f();
 
   protected final Point3f pt1f = new Point3f();
   protected final Point3f pt2f = new Point3f();
@@ -71,7 +72,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       return false;
     if (!g3d.setColix(colix) && !mesh.showContourLines)
       return mesh.title != null;
-
+    latticeOffset.set(0, 0, 0);
     for (int i = vertexCount; --i >= 0;)
       viewer.transformPoint(vertices[i], screens[i]);
     render2(exportType != Graphics3D.EXPORT_NOT);
@@ -79,7 +80,6 @@ public abstract class MeshRenderer extends ShapeRenderer {
       SymmetryInterface unitcell = viewer.getModelUnitCell(mesh.modelIndex);
       if (unitcell != null) {
         Point3f vTemp = new Point3f();
-        Point3f offset = new Point3f();
         Point3i minXYZ = new Point3i();
         Point3i maxXYZ = new Point3i((int) mesh.lattice.x,
             (int) mesh.lattice.y, (int) mesh.lattice.z);
@@ -89,11 +89,11 @@ public abstract class MeshRenderer extends ShapeRenderer {
             for (int tz = minXYZ.z; tz < maxXYZ.z; tz++) {
               if (tx == 0 && ty == 0 && tz == 0)
                 continue;
-              offset.set(tx, ty, tz);
-              unitcell.toCartesian(offset);
+              latticeOffset.set(tx, ty, tz);
+              unitcell.toCartesian(latticeOffset);
               for (int i = vertexCount; --i >= 0;) {
                 vTemp.set(vertices[i]);
-                vTemp.add(offset);
+                vTemp.add(latticeOffset);
                 viewer.transformPoint(vTemp, screens[i]);
               }
               render2(exportType != Graphics3D.EXPORT_NOT);
@@ -319,7 +319,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected void exportSurface() {
     mesh.vertexNormals = mesh.getNormals(vertices);
     mesh.bsFaces = bsFaces;
-    g3d.drawSurface(mesh, mesh.offsetVertices);
+    g3d.drawSurface(mesh, mesh.offsetVertices, latticeOffset);
     mesh.vertexNormals = null;
     mesh.bsFaces = null;
   }

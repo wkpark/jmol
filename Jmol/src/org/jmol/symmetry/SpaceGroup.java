@@ -194,7 +194,7 @@ class SpaceGroup {
     if (cellInfo != null) {
       if (spaceGroup.indexOf("[") >= 0)
         spaceGroup = spaceGroup.substring(0, spaceGroup.indexOf("[")).trim();
-      if (spaceGroup.equals("unspecified *"))
+      if (spaceGroup.equals("unspecified!"))
         return "no space group identified in file";
       sg = SpaceGroup.determineSpaceGroup(spaceGroup, cellInfo.getNotionalUnitCell());
     } else if (spaceGroup.equalsIgnoreCase("ALL")) {

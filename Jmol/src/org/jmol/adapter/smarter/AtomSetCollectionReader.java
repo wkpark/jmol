@@ -467,7 +467,7 @@ public abstract class AtomSetCollectionReader {
       symmetry = null;
     }
     if (!ignoreFileSpaceGroupName)
-      spaceGroup = "unspecified *";
+      spaceGroup = "unspecified!";
 
     needToApplySymmetry = false;
   }
@@ -720,7 +720,7 @@ public abstract class AtomSetCollectionReader {
 
   protected boolean createSpaceGroup() {
     return getSymmetry().createSpaceGroup(desiredSpaceGroupIndex, (spaceGroup
-        .indexOf("*") >= 0 ? "P1" : spaceGroup), notionalUnitCell,
+        .indexOf("!") >= 0 ? "P1" : spaceGroup), notionalUnitCell,
         atomSetCollection.doNormalize);
   }
 

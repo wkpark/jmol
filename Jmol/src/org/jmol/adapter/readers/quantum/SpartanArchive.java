@@ -111,7 +111,7 @@ class SpartanArchive {
     atomSetCollection.setAtomSetAuxiliaryInfo("energy", new Float(value));
     if (r instanceof SpartanSmolReader) {
       String prefix = ((SpartanSmolReader)r).constraints;
-      atomSetCollection.setAtomSetName(prefix + (prefix.length() == 0 ? "" : " ") + value);
+      atomSetCollection.setAtomSetName(prefix + (prefix.length() == 0 ? "" : " ") + "Energy=" + value + " KJ");
     }
     atomSetCollection.setAtomSetEnergy(tokens[0], value);
   }

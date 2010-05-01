@@ -220,10 +220,8 @@ void processAtomicCharges() throws Exception {
           if (ignore[i])
             continue;  
           atomSetCollection.cloneLastAtomSet();
-          atomSetCollection.setAtomSetName(fdata[i] + " cm^-1"
-              + (ldata == null ? "" : " " + ldata[i]));
-          atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
-              "Frequencies");
+          atomSetCollection.setAtomSetFrequency(null, ldata == null ? "" : " " + ldata[i], 
+              fdata[i], null);
         }
         fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null);
       }

@@ -92,6 +92,8 @@ class SpartanArchive {
       } else if (line.indexOf("WAVEFUNC") == 0 || line.indexOf("BETA") == 0) {
         readMolecularOrbital();
         haveMOData = true;
+      } else if (line.indexOf("ENERGY") == 0) {
+        readEnergy();
       } else if (line.equals("ENDARCHIVE")
           || endCheck != null && line.indexOf(endCheck) == 0) {
         break;
@@ -101,6 +103,17 @@ class SpartanArchive {
     if (haveMOData)
       r.setMOData(moData);
     return atomCount;
+  }
+
+  private void readEnergy() throws Exception {
+    String[] tokens = getTokens(readLine());
+    float value = parseFloat(tokens[0]);
+    atomSetCollection.setAtomSetAuxiliaryInfo("energy", new Float(value));
+    if (r instanceof SpartanSmolReader) {
+      String prefix = ((SpartanSmolReader)r).constraints;
+      atomSetCollection.setAtomSetName(prefix + (prefix.length() == 0 ? "" : " ") + value);
+    }
+    atomSetCollection.setAtomSetEnergy(tokens[0], value);
   }
 
   private static String[] getTokens(String info) {
@@ -405,11 +418,8 @@ class SpartanArchive {
           && !(label = line.substring(15, line.length())).equals("???"))
         info.put("label", label);
       freqs.addElement(info);
-      if (!ignore[i]) {
-        atomSetCollection.setAtomSetName(label + " " + freq + " cm^-1");
-        atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
-            "Frequencies");
-      }
+      if (!ignore[i])
+        atomSetCollection.setAtomSetFrequency(null, label, "" + freq, null);
     }
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
     int atomCount = atomSetCollection.getFirstAtomSetAtomCount();
@@ -473,6 +483,7 @@ class SpartanArchive {
         info.put("label", label);
       freqs.addElement(info);
       atomSetCollection.setAtomSetName(label + " " + freq + " cm^-1");
+      atomSetCollection.setAtomSetProperty("Frequency", freq + " cm^-1");
       atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
           "Frequencies");
     }

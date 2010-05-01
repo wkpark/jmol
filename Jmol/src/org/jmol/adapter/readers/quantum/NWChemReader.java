@@ -147,6 +147,7 @@ public class NWChemReader extends AtomSetCollectionReader {
         equivalentAtomSets);
     atomSetCollection.setAtomSetNames(energyKey + " = " + energyValue,
         equivalentAtomSets);
+    atomSetCollection.setAtomSetEnergy(value, parseFloat(value));
     haveEnergy = true;
   }
 
@@ -406,7 +407,6 @@ public class NWChemReader extends AtomSetCollectionReader {
     discardLinesUntilContains("Atom information");
     discardLines(2);
     atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, path);
     String tokens[];
     while (readLine() != null && line.indexOf("---") < 0) {
       tokens = getTokens();
@@ -437,11 +437,8 @@ public class NWChemReader extends AtomSetCollectionReader {
           continue;
         if (!firstTime || i > 0) { 
           atomSetCollection.cloneLastAtomSet();
-          atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, path);
         }
-        String frequencyString = tokens[i] + " cm^-1";
-        atomSetCollection.setAtomSetName(frequencyString);
-        atomSetCollection.setAtomSetProperty("Frequency", frequencyString);
+        atomSetCollection.setAtomSetFrequency(path, null, tokens[i], null);
       }
       firstTime = false;
       discardLines(1);
@@ -461,12 +458,12 @@ public class NWChemReader extends AtomSetCollectionReader {
         if (!doGetVibration(i + 1))
             continue;
         tokens = getTokens();
-        String frequencyString = tokens[1] + " cm^-1";
-        atomSetCollection.setAtomSetName(frequencyString, idx);
-        atomSetCollection.setAtomSetProperty("Frequency", frequencyString, idx);
+        int iset = atomSetCollection.getCurrentAtomSetIndex();
+        atomSetCollection.setCurrentAtomSetIndex(idx++);
+        atomSetCollection.setAtomSetFrequency(null, null, tokens[i], null);
         atomSetCollection.setAtomSetProperty("IRIntensity", tokens[5]
-            + " KM/mol", idx);
-        idx++;
+            + " KM/mol");
+        atomSetCollection.setCurrentAtomSetIndex(iset);
       }
     } catch (Exception e) {
       // If exception was thrown, don't do anything here...

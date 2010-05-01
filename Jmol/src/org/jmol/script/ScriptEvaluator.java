@@ -7288,10 +7288,13 @@ public class ScriptEvaluator {
 
   private void load() throws ScriptException {
     boolean isAppend = false;
+    boolean appendNew = viewer.getAppendNew();
+    boolean isInline = false;
+    boolean doLoadFiles = (!isSyntaxCheck || isCmdLine_C_Option);
+    String filter = null;
     Vector firstLastSteps = null;
     int modelCount = viewer.getModelCount()
         - (viewer.getFileName().equals("zapped") ? 1 : 0);
-    boolean appendNew = viewer.getAppendNew();
     StringBuffer loadScript = new StringBuffer("load");
     int nFiles = 1;
     Hashtable htParams = new Hashtable();
@@ -7302,12 +7305,10 @@ public class ScriptEvaluator {
     String filename = null;
     String[] filenames = null;
     String[] tempFileInfo = null;
-    boolean isInline = false;
-    int tokType = 0;
-    int tok;
-    boolean doLoadFiles = (!isSyntaxCheck || isCmdLine_C_Option);
     String errMsg = null;
     String sOptions = "";
+    int tokType = 0;
+    int tok;
 
     // check for special parameters
 
@@ -7316,14 +7317,6 @@ public class ScriptEvaluator {
     } else {
       modelName = parameterAsString(i);
       tok = tokAt(i);
-      /*
-       * I have no idea what this was about. if
-       * (modelName.equalsIgnoreCase("data")) { modelName =
-       * stringParameter(++i); if (!isSyntaxCheck) htParams.put("parameterData",
-       * viewer.getFileAsString(modelName));
-       * loadScript.append(" data / *file* /").append(Escape.escape(modelName));
-       * tok = tokAt(++i); modelName = parameterAsString(i); }
-       */
       if (tok == Token.identifier || modelName.equalsIgnoreCase("fileset")) {
         if (modelName.equals("menu")) {
           String m = parameterAsString(checkLast(2));
@@ -7515,11 +7508,8 @@ public class ScriptEvaluator {
         if (iGroup != Integer.MIN_VALUE)
           htParams.put("spaceGroupIndex", new Integer(iGroup));
       }
-      if (tokAt(i) == Token.filter) {
-        String filter = stringParameter(++i);
-        htParams.put("filter", filter);
-        sOptions += " FILTER " + Escape.escape(filter);
-      }
+      if (tokAt(i) == Token.filter)
+        filter = stringParameter(++i);
     } else {
       if (i != 2) {
         modelName = parameterAsString(i++);
@@ -7531,9 +7521,7 @@ public class ScriptEvaluator {
       while (i < statementLength) {
         switch (tokAt(i)) {
         case Token.filter:
-          String filter = stringParameter(++i);
-          htParams.put("filter", filter);
-          loadScript.append(" FILTER ").append(Escape.escape(filter));
+          filter = stringParameter(++i);
           ++i;
           continue;
         case Token.coord:
@@ -7575,6 +7563,12 @@ public class ScriptEvaluator {
     }
     if (!doLoadFiles)
       return;
+    if (filter == null)
+      filter = viewer.getDefaultLoadFilter();
+    if (filter.length() > 0) {
+      htParams.put("filter", filter);
+      loadScript.append(" FILTER ").append(Escape.escape(filter));
+    }
     if (filenames == null) {
       // standard file loading here
       if (filename.startsWith("@") && filename.length() > 1) {

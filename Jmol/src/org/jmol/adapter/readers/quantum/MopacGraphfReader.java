@@ -34,7 +34,7 @@ import java.util.Hashtable;
  * @author Bob Hanson <hansonr@stolaf.edu>
  * 
  */
-public class MopacGraphfReader extends MopacReader {
+public class MopacGraphfReader extends MopacSlaterReader {
     
   private int atomCount;
   

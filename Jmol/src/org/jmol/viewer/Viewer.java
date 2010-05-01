@@ -3011,9 +3011,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getConformation(iModel, conformationIndex, doSet);
   }
 
-  boolean autoLoadOrientation() {
-    return global.autoLoadOrientation;
-  }
+  //boolean autoLoadOrientation() {
+  //  return true;//global.autoLoadOrientation; 12.0.RC10
+  //}
   
   public int autoHbond(BitSet bsFrom, BitSet bsTo) {
     if (bsFrom == null)
@@ -4069,6 +4069,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     eval.pauseExecution();
   }
 
+  public String getDefaultLoadFilter() {
+    return global.defaultLoadFilter;
+  }
+
   public String getDefaultLoadScript() {
     return global.defaultLoadScript;
   }
@@ -4958,6 +4962,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setStringProperty(String key, int tok, String value) {
     boolean found = true;
     switch (tok) {
+    case Token.defaultloadfilter:
+      // 12.0.RC10
+      global.defaultLoadFilter = value;
+      break;
     case Token.logfile:
       value = setLogFile(value);
       if (value == null)
@@ -5506,10 +5514,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // 11.7.40
       global.useMinimizationThread = value;
       break;
-    case Token.autoloadorientation:
-      // 11.7.30
-      global.autoLoadOrientation = value;
-      break;
+//    case Token.autoloadorientation:
+//      // 11.7.30; removed in 12.0.RC10 -- use FILTER "NoOrient"
+//      global.autoLoadOrientation = value;
+//      break;
     case Token.allowkeystrokes:
       // 11.7.24
       if (global.disablePopupMenu)

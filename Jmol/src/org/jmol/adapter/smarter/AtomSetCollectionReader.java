@@ -166,6 +166,7 @@ public abstract class AtomSetCollectionReader {
   private boolean iHaveFractionalCoordinates;
   private boolean doPackUnitCell;
   private boolean doConvertToFractional;
+  private boolean doSetOrientation = true;
   private boolean fileCoordinatesAreFractional;
   protected boolean ignoreFileUnitCell;
   protected boolean ignoreFileSpaceGroupName;
@@ -333,6 +334,7 @@ public abstract class AtomSetCollectionReader {
     // bsFilter is usually null, but it gets set to indicate
     // which atoms were selected by the filter. This then
     // gets used by COORD files to load just those coordinates
+    doSetOrientation = (filter == null || filter.toUpperCase().indexOf("NOORIENT") < 0);
     haveAtomFilter = (filter != null && (filter.indexOf(".") >= 0 
         || filter.indexOf("[") >= 0 || filter.indexOf(":") >= 0 
         || filter.toUpperCase().indexOf("BIOMOLECULE") >= 0));
@@ -734,7 +736,7 @@ public abstract class AtomSetCollectionReader {
   private Matrix3f matrixRotate;
   public void setTransform(float x1, float y1, float z1, float x2, float y2,
                               float z2, float x3, float y3, float z3) {
-    if (matrixRotate != null)
+    if (matrixRotate != null || !doSetOrientation)
       return;
     matrixRotate = new Matrix3f();
     Vector3f v = new Vector3f();

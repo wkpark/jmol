@@ -111,26 +111,30 @@ class RepaintManager {
 
   private boolean logTime;
   
-  private void render1(Graphics3D g3d, ModelSet modelSet) { // , Rectangle rectClip
-
+  private void render1(Graphics3D g3d, ModelSet modelSet) { // , Rectangle
+                                                            // rectClip
     if (modelSet == null || !viewer.mustRenderFlag())
       return;
-
-    logTime = viewer.getTestFlag1();
-    viewer.finalizeTransformParameters();
     if (logTime)
       Logger.startTimer();
 
+
+
+    logTime = viewer.getTestFlag1();
+    viewer.finalizeTransformParameters();
     try {
       if (bsAtoms != null)
         translateSelected();
       g3d.renderBackground();
-      if (renderers ==  null)
+      if (renderers == null)
         renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
       for (int i = 0; i < JmolConstants.SHAPE_MAX && g3d.currentlyRendering(); ++i) {
         Shape shape = shapeManager.getShape(i);
-        if (shape != null)
-          getRenderer(i, g3d).render(g3d, modelSet, shape);
+        if (shape == null)
+          continue;
+        getRenderer(i, g3d).render(g3d, modelSet, shape);
+        if (logTime)
+          Logger.checkTimer("render time " + JmolConstants.getShapeClassName(i));
       }
     } catch (Exception e) {
       e.printStackTrace();

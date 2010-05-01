@@ -45,7 +45,7 @@ import org.jmol.util.Parser;
  * 
  * @author hansonr <hansonr@stolaf.edu>
  */
-public class CsfReader extends MopacReader {
+public class CsfReader extends MopacSlaterReader {
 
   private int nAtoms = 0;
   private String strAtomicNumbers = "";
@@ -398,7 +398,7 @@ public class CsfReader extends MopacReader {
   private void processVibrationObject() throws Exception {
     //int iatom = atomSetCollection.getFirstAtomSetAtomCount();
     float[][] vibData = new float[nVibrations][nAtoms * 3];
-    float[] energies = new float[nVibrations];
+    String[] energies = new String[nVibrations];
     readLine();
     while (line != null && parseLineParameters(vibFields, vibFieldMap) > 0) {
       while (readLine() != null && !line.startsWith("property_flags:")) {
@@ -414,7 +414,7 @@ public class CsfReader extends MopacReader {
             fillCsfArray("normalMode", tokens, i, vibData[thisvib]);
             break;
           case vibEnergy:
-            energies[thisvib] = parseFloat(field);
+            energies[thisvib] = field;
             break;
           }
         }
@@ -424,9 +424,7 @@ public class CsfReader extends MopacReader {
       if (!doGetVibration(i + 1))
         continue;
       atomSetCollection.cloneFirstAtomSetWithBonds(nBonds);
-      atomSetCollection.setAtomSetName(energies[i] + " cm^-1");
-      atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
-          "Frequencies");
+      atomSetCollection.setAtomSetFrequency(null, null, energies[i], null);
       int ipt = 0;
       int baseAtom = nAtoms * (i + 1);
       for (int iAtom = 0; iAtom < nAtoms; iAtom++)

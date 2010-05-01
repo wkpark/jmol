@@ -125,12 +125,12 @@ abstract class TransformManager {
     windowCentered = true;
     setRotationCenterAndRadiusXYZ(null, true);
     matrixRotate.setIdentity(); // no rotations
-    if (viewer.autoLoadOrientation()) {
+    //if (viewer.autoLoadOrientation()) {
       Matrix3f m = (Matrix3f) viewer
           .getModelSetAuxiliaryInfo("defaultOrientationMatrix");
       if (m != null)
         matrixRotate.set(m);
-    }
+    //}
     setZoomEnabled(true);
     zoomToPercent(100);
     zoomPercent = zoomPercentSetting;
@@ -2260,8 +2260,7 @@ abstract class TransformManager {
       if (bsAtoms != null && endPositions != null) {
         // when the standard deviations of the end points was
         // exact, we know that we want EXACTLY those final positions
-        if (!viewer.getTestFlag1())
-          viewer.setAtomCoord(bsAtoms, Token.xyz, endPositions);
+        viewer.setAtomCoord(bsAtoms, Token.xyz, endPositions);
         bsAtoms = null;
         endPositions = null;
       }

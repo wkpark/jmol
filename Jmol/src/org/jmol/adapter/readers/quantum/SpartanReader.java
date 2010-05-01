@@ -99,8 +99,11 @@ public class SpartanReader extends AtomSetCollectionReader {
         if (Float.isNaN(frequency))
           break; // ////////////// loop exit is here
         ignore[lineFreqCount] = !doGetVibration(++vibrationNumber);
-        if (!ignore[lineFreqCount] && vibrationNumber > 1)
-          atomSetCollection.cloneFirstAtomSet();
+        if (!ignore[lineFreqCount]) {
+          if (vibrationNumber > 1)
+            atomSetCollection.cloneFirstAtomSet();
+          atomSetCollection.setAtomSetFrequency(null, null, "" + frequency, null);
+        }
       }
       if (lineFreqCount == 0)
         return;

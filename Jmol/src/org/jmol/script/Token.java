@@ -740,6 +740,7 @@ public class Token {
   public final static int defaultcolorscheme             = strparam | 24;
   public final static int defaultdirectory               = strparam | 26;
   public final static int defaultdistancelabel           = strparam | 28;
+  public final static int defaultloadfilter              = strparam | 29;
   public final static int defaultloadscript              = strparam | 30;
   public final static int defaults                       = strparam | 32;
   public final static int defaulttorsionlabel            = strparam | 34;
@@ -848,7 +849,7 @@ public class Token {
   public final static int atompicking                    = booleanparam | 20;
   public final static int autobond                       = booleanparam | 22;
   public final static int autofps                        = booleanparam | 24;
-  public final static int autoloadorientation            = booleanparam | 26;
+//  public final static int autoloadorientation            = booleanparam | 26;
   public final static int axesmolecular                  = booleanparam | 28;
   public final static int axesorientationrasmol          = booleanparam | 30;
   public final static int axesunitcell                   = booleanparam | 32;
@@ -1944,6 +1945,7 @@ public class Token {
       "defaultColors",                            null,
       "defaultDirectory",                         new Token(defaultdirectory),
       "defaultDistanceLabel",                     new Token(defaultdistancelabel),
+      "defaultLoadFilter",                        new Token(defaultloadfilter),
       "defaultLoadScript",                        new Token(defaultloadscript),
       "defaults",                                 new Token(defaults),
       "defaultTorsionLabel",                      new Token(defaulttorsionlabel),
@@ -2066,7 +2068,7 @@ public class Token {
       "atomPicking",                              new Token(atompicking),
       "autobond",                                 new Token(autobond),
       "autoFPS",                                  new Token(autofps),
-      "autoLoadOrientation",                      new Token(autoloadorientation),
+//      "autoLoadOrientation",                      new Token(autoloadorientation),
       "axesMolecular",                            new Token(axesmolecular),
       "axesOrientationRasmol",                    new Token(axesorientationrasmol),
       "axesUnitCell",                             new Token(axesunitcell),

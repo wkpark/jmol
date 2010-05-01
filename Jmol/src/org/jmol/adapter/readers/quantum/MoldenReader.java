@@ -16,7 +16,7 @@ import org.jmol.util.Logger;
  * @author Matthew Zwier <mczwier@gmail.com>
  */
 
-public class MoldenReader extends MopacReader {
+public class MoldenReader extends MopacSlaterReader {
   protected float[] frequencies = null;
   protected AtomSetCollection freqAtomSet = null;
   
@@ -277,7 +277,7 @@ public class MoldenReader extends MopacReader {
       boolean ignore = !doGetVibration(nFreq + 1);
       if (!ignore) {
         atomSetCollection.cloneLastAtomSet();
-        atomSetCollection.setAtomSetName(frequencies.get(nFreq) + " cm-1");
+        atomSetCollection.setAtomSetFrequency(null, null, "" + frequencies.get(nFreq), null);
         i0 = atomSetCollection.getLastAtomSetAtomIndex();
       }
       for (int nAtom = 0; nAtom < nAtoms; nAtom++) {

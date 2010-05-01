@@ -211,11 +211,7 @@ OR
         if (ignore[i])
           continue;
         atomSetCollection.cloneLastAtomSet();
-        atomSetCollection.setAtomSetName(frequencies[i] + " cm^-1");
-        atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
-            + " cm^-1");
-        atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
-            "Frequencies");
+        atomSetCollection.setAtomSetFrequency(null, null, frequencies[i], null);
       }
       discardLines(nXX);
       fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 0, 0, null);

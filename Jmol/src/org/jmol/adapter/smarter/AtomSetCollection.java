@@ -128,6 +128,9 @@ public class AtomSetCollection {
   public int getCurrentAtomSetIndex() {
     return currentAtomSetIndex;
   }
+  public void setCurrentAtomSetIndex(int i) {
+    currentAtomSetIndex = i;
+  }
 
   private int[] atomSetNumbers = new int[16];
   private int[] atomSetAtomCounts = new int[16];
@@ -233,7 +236,7 @@ public class AtomSetCollection {
     for (int atomSetNum = 0; atomSetNum < collection.atomSetCount; atomSetNum++) {
       newAtomSet();
       atomSetAuxiliaryInfo[currentAtomSetIndex] = collection.atomSetAuxiliaryInfo[atomSetNum];
-      setAtomSetAuxiliaryInfo("title", collection.collectionName);    
+      setAtomSetAuxiliaryInfo("title", collection.collectionName);
       setAtomSetName(collection.getAtomSetName(atomSetNum));
       for (int atomNum = 0; atomNum < collection.atomSetAtomCounts[atomSetNum]; atomNum++) {
         try {
@@ -1218,19 +1221,9 @@ public class AtomSetCollection {
   * @param atomSetName The name to be associated with the current AtomSet
   */
   public void setAtomSetName(String atomSetName) {
-    setAtomSetName(atomSetName, currentAtomSetIndex);
+    setAtomSetAuxiliaryInfo("name", atomSetName, currentAtomSetIndex);
     if (!allowMultiple)
       setCollectionName(atomSetName);
-  }
-  
-  /**
-  * Sets the name for an AtomSet
-  *
-  * @param atomSetName The number to be associated with the AtomSet
-  * @param atomSetIndex The index of the AtomSet that needs the association
-  */
-  public void setAtomSetName(String atomSetName, int atomSetIndex) {
-    setAtomSetAuxiliaryInfo("name", atomSetName, atomSetIndex);
   }
   
   /**
@@ -1243,7 +1236,7 @@ public class AtomSetCollection {
    */
   public void setAtomSetNames(String atomSetName, int n) {
     for (int idx = currentAtomSetIndex; --n >= 0 && idx >= 0; --idx)
-      setAtomSetName(atomSetName, idx);
+      setAtomSetAuxiliaryInfo("name", atomSetName, idx);
   }
 
   /**
@@ -1259,14 +1252,34 @@ public class AtomSetCollection {
   }
   
   /**
-  * Sets a property for the AtomSet
-  *
-  * @param key The key for the property
-  * @param value The value to be associated with the key
-  */
+   * Sets a property for the current AtomSet
+   * used specifically for creating directories and plots of frequencies and 
+   * moleular energies
+   *
+   * @param key The key for the property
+   * @param value The value to be associated with the key
+   */
   public void setAtomSetProperty(String key, String value) {
     setAtomSetProperty(key, value, currentAtomSetIndex);
   }
+
+  /**
+   * Sets the a property for the an AtomSet
+   *
+   * @param key The key for the property
+   * @param value The value for the property
+   * @param atomSetIndex The index of the AtomSet to get the property
+   */
+  public void setAtomSetProperty(String key, String value, int atomSetIndex) {
+    // lazy instantiation of the Properties object
+    Properties p = (Properties) getAtomSetAuxiliaryInfo(atomSetIndex,
+        "modelProperties");
+    if (p == null)
+      setAtomSetAuxiliaryInfo("modelProperties", p = new Properties(),
+          atomSetIndex);
+    p.put(key, value);
+  }
+
 
   public void setAtomSetAuxiliaryProperty(String key, String data) {
     if (!data.endsWith("\n"))
@@ -1323,21 +1336,6 @@ public class AtomSetCollection {
     return  atomSetAuxiliaryInfo[index].get(key);
   }
   
-  /**
-  * Sets the a property for the an AtomSet
-  *
-  * @param key The key for the property
-  * @param value The value for the property
-  * @param atomSetIndex The index of the AtomSet to get the property
-  */
-  public void setAtomSetProperty(String key, String value, int atomSetIndex) {
-    // lazy instantiation of the Properties object
-    Properties p = (Properties) getAtomSetAuxiliaryInfo(atomSetIndex, "modelProperties");
-    if (p == null)
-      setAtomSetAuxiliaryInfo("modelProperties", p = new Properties(), atomSetIndex);
-    p.put(key, value);
-  }
-
   /**
    * Sets auxiliary information for an AtomSet
    *
@@ -1499,6 +1497,25 @@ public class AtomSetCollection {
       if ((s = atomIdNames.getProperty(atoms[i].atomName)) != null)
         atoms[i].atomName = s;
     return null;
+  }
+
+  public void setAtomSetEnergy(String energyString, float value) {
+    if (currentAtomSetIndex < 0)
+      return;
+    setAtomSetAuxiliaryInfo("EnergyString", energyString);
+    setAtomSetAuxiliaryInfo("Energy", new Float(value));
+    setAtomSetProperty("Energy", "" + value);
+  }
+
+  public void setAtomSetFrequency(String pathKey, String label, String freq, String units) {
+    freq += " " + (units == null ? "cm^-1" : units);
+    setAtomSetName((label == null ? "" : label + " ") + freq);
+    setAtomSetProperty("Frequency", freq);
+    if (label != null)
+      setAtomSetProperty("FrequencyLabel", label);
+    setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, (pathKey == null ? ""
+        : pathKey + SmarterJmolAdapter.PATH_SEPARATOR + "Frequencies")
+        + "Frequencies");
   }
 
 }

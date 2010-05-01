@@ -191,13 +191,8 @@ public class QchemReader extends MOReader {
         if (ignore[i])
           continue;
         atomSetCollection.cloneLastAtomSet();
-        atomSetCollection.setAtomSetName(frequencies[i + 1] + " cm^-1");
-        // set the properties
-        atomSetCollection.setAtomSetProperty("Frequency", frequencies[i + 1]
-            + " cm^-1");
-        atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
-            "Calculation " + calculationNumber
-                + SmarterJmolAdapter.PATH_SEPARATOR + "Frequencies");
+        atomSetCollection.setAtomSetFrequency("Calculation " + calculationNumber, 
+            null, frequencies[i + 1], null);
       }
 
       // position to start reading the displacement vectors

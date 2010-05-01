@@ -370,6 +370,7 @@ public class MolecularOrbital extends Isosurface {
     StringBuffer s = new StringBuffer();
     for (int i = 0; i < modelCount; i++)
       s.append(getMoState(i));
+    //System.out.println("molecular orbital state " + s.length());
     return s.toString();
   }
 

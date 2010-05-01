@@ -208,6 +208,7 @@ public class GaussianReader extends MOReader {
     if (tokens.length < 4)
       return;
     energyKey = tokens[0];
+    atomSetCollection.setAtomSetEnergy(tokens[2], parseFloat(tokens[2]));
     energyString = tokens[2] + " " + tokens[3];
     // now set the names for the last equivalentAtomSets
     atomSetCollection.setAtomSetNames(energyKey + " = " + energyString,
@@ -238,6 +239,7 @@ public class GaussianReader extends MOReader {
     energyKey = "Energy";
     energyString = tokens[1];
     atomSetCollection.setAtomSetNames("Energy = "+tokens[1], equivalentAtomSets);
+    atomSetCollection.setAtomSetEnergy(energyString, parseFloat(energyString));
   }
   
   /* GAUSSIAN STRUCTURAL INFORMATION THAT IS EXPECTED
@@ -275,6 +277,7 @@ public class GaussianReader extends MOReader {
     // if energy information is found for this structure the reader
     // will overwrite this setting later.
     atomSetCollection.setAtomSetName(energyKey + " = " + energyString);
+    atomSetCollection.setAtomSetEnergy(energyString, parseFloat(energyString));
 //  atomSetCollection.setAtomSetName("Last read atomset.");
     String path = getTokens()[0]; // path = type of orientation
     discardLines(4);
@@ -509,21 +512,14 @@ but:
         if (ignore[i])
           continue;  
         atomSetCollection.cloneLastAtomSet();
-        atomSetCollection.setAtomSetName(
-            symmetries[i] + " " + frequencies[i]+" cm^-1");
         // set the properties
-        atomSetCollection.setAtomSetProperty(energyKey, energyString);
-        atomSetCollection.setAtomSetProperty("Frequency",
-            frequencies[i]+" cm^-1");
+        atomSetCollection.setAtomSetFrequency("Calculation " + calculationNumber, symmetries[i], frequencies[i], null);
         atomSetCollection.setAtomSetProperty("ReducedMass",
             red_masses[i]+" AMU");
         atomSetCollection.setAtomSetProperty("ForceConstant",
             frc_consts[i]+" mDyne/A");
         atomSetCollection.setAtomSetProperty("IRIntensity",
             intensities[i]+" KM/Mole");
-        atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
-            "Calculation " + calculationNumber+
-            SmarterJmolAdapter.PATH_SEPARATOR+"Frequencies");
       }
       discardLinesUntilContains(" AN ");
       fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 0, 0, null);

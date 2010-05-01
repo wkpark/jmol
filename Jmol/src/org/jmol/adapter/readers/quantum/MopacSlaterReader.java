@@ -27,7 +27,7 @@ package org.jmol.adapter.readers.quantum;
  * 
  * @author hansonr <hansonr@stolaf.edu>
  */
-abstract class MopacReader extends SlaterReader {
+abstract class MopacSlaterReader extends SlaterReader {
 
   protected final static float MIN_COEF = 0.0001f;  // sufficient?  
   protected int[] atomicNumbers;

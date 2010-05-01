@@ -375,10 +375,7 @@ public class JaguarReader extends MOReader {
         if (ignore[i]) 
           continue;
         atomSetCollection.cloneFirstAtomSet();
-        atomSetCollection.setAtomSetName(frequencies[i + 1] + " cm-1"
-            + (symmetries == null ? "" : " (" + symmetries[i + 1] + ")"));
-        atomSetCollection.setAtomSetProperty("Frequency", frequencies[i + 1]
-            + " cm-1");
+        atomSetCollection.setAtomSetFrequency(null, symmetries == null ? null : symmetries[i + 1], frequencies[i], null);
         if (intensities != null)
           atomSetCollection.setAtomSetProperty("IRIntensity",
               intensities[i + 1] + " km/mol");

@@ -213,7 +213,7 @@ public class CompoundDocument extends BinaryDocument {
     //offset 56:
     int minBytesStandardStream; // less than this (and not DIR) will be "short"
     int SID_SSAT_start; // start of short sector allocation table (SSAT)
-    //int nSSATsectors; // number of sectors allocated to SSAT
+    int nSSATsectors; // number of sectors allocated to SSAT
     int SID_MSAT_next; // pointer to next master sector allocation table sector
     int nAdditionalMATsectors; // number of sectors allocated to more MSAT sectors
     //offset 76; 436 bytes:      
@@ -254,7 +254,7 @@ public class CompoundDocument extends BinaryDocument {
         readByteArray(unused2);
         minBytesStandardStream = readInt();
         SID_SSAT_start = readInt();
-        /*nSSATsectors = */readInt();
+        nSSATsectors = readInt();
         SID_MSAT_next = readInt();
         nAdditionalMATsectors = readInt();
         for (int i = 0; i < 109; i++)
@@ -392,10 +392,7 @@ public class CompoundDocument extends BinaryDocument {
   private void getShortSectorAllocationTable() {
     int nSSID = 0;
     int thisSID = header.SID_SSAT_start;
-    //BH: I had to multiply this by 2 to read the Fe.spartan file
-    //    I don't know why -- I probably misread the CompoundDocument documentation 
-    //    anyway, this just gives a larger table that may or may not be accessed.
-    int nMax = header.nSATsectors * nIntPerSector * 2;
+    int nMax = header.nSSATsectors * nIntPerSector;
     SSAT = new int[nMax];
     try {
       while (thisSID > 0 && nSSID < nMax) {
@@ -433,8 +430,9 @@ public class CompoundDocument extends BinaryDocument {
     } catch (Exception e) {
       Logger.error(null, e);
     }
-    //Logger.debug("CompoundDocument directory entry: \n"
-      //+ getDirectoryListing("\n"));
+    if (Logger.debugging)
+      Logger.debug("CompoundDocument directory entry: \n"
+        + getDirectoryListing("\n"));
   }
 
   private StringBuffer getFileAsString(CmpDocDirectoryEntry thisEntry, boolean asBinaryString) {
@@ -487,13 +485,13 @@ public class CompoundDocument extends BinaryDocument {
   }
   private StringBuffer getShortStringData(int shortSID, int nBytes, boolean asBinaryString) {
     StringBuffer data = new StringBuffer();
-    byte[] byteBuf = new byte[shortSectorSize];
-    int ptShort = 0;
-    int thisSID;
     if (rootEntry == null)
       return data;
+    int thisSID = rootEntry.SIDfirstSector;
+    int ptShort = 0;
+    byte[] byteBuf = new byte[shortSectorSize];
     try {
-      thisSID = rootEntry.SIDfirstSector;
+      //System.out.println("CD shortSID=" + shortSID);
       // point to correct short data sector, 512/64 = 4 per page
       while (thisSID >= 0 && shortSID >= 0 && nBytes > 0) {
         while (shortSID - ptShort >= nShortSectorsPerStandardSector) {
@@ -503,6 +501,7 @@ public class CompoundDocument extends BinaryDocument {
         seek(getOffset(thisSID) + (shortSID - ptShort) * shortSectorSize);
         nBytes = getSectorData(data, byteBuf, shortSectorSize, nBytes, asBinaryString);
         shortSID = SSAT[shortSID];
+        //System.out.println("CD shortSID=" + shortSID);
       }
     } catch (Exception e) {
       Logger.error(data.toString());

@@ -176,9 +176,7 @@ abstract public class GamessReader extends MOReader {
           haveFreq = true;
           iAtom0 -= atomCount;
         }
-        atomSetCollection.setAtomSetName(frequencies[i] + " cm-1");
-        atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
-            + " cm-1");
+        atomSetCollection.setAtomSetFrequency(null, null, "" + frequencies[i], null);
         if (red_masses != null)
           atomSetCollection.setAtomSetProperty("ReducedMass",
               red_masses[red_masses.length - frequencyCount + i] + " AMU");

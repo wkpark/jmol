@@ -800,7 +800,7 @@ public class StateManager {
       setParameterValue("atomTypes", atomTypes);
       setParameterValue("autoBond", autoBond);
       setParameterValue("autoFps", autoFps);
-      setParameterValue("autoLoadOrientation", autoLoadOrientation);
+//      setParameterValue("autoLoadOrientation", autoLoadOrientation);
       setParameterValue("axesMode", axesMode);
       setParameterValue("axesScale", axesScale);
       setParameterValue("axesOrientationRasmol", axesOrientationRasmol);
@@ -817,6 +817,7 @@ public class StateManager {
       setParameterValue("defaultDrawArrowScale", defaultDrawArrowScale);
       setParameterValue("defaultDirectory", defaultDirectory);
       setParameterValue("defaultDistanceLabel", defaultDistanceLabel);
+      setParameterValue("defaultLoadFilter", defaultLoadFilter);
       setParameterValue("defaultLoadScript", defaultLoadScript);
       setParameterValue("defaultTorsionLabel", defaultTorsionLabel);
       setParameterValue("defaultTranslucent", defaultTranslucent);
@@ -972,13 +973,16 @@ public class StateManager {
     boolean applySymmetryToBonds = false; //new 11.1.29
     String atomTypes = "";
     boolean autoBond = true;
-    boolean autoLoadOrientation = false; // 11.7.30 for Spartan and Sygress/CAChe loading with or without rotation
+//    boolean autoLoadOrientation = false; // 11.7.30 for Spartan and Sygress/CAChe loading with or without rotation
+       // starting with Jmol 12.0.RC10, this setting is ignored, and FILTER "NoOrient" is required if the file
+       // is to be loaded without reference to the orientation saved in the file.
     boolean axesOrientationRasmol = false;
     short bondRadiusMilliAngstroms = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
     float bondTolerance = JmolConstants.DEFAULT_BOND_TOLERANCE;
     String defaultDirectory = "";
     final Point3f ptDefaultLattice = new Point3f();
     String defaultLoadScript = "";
+    String defaultLoadFilter = "";
 //    boolean _fileCaching = false;
 //    String _fileCache = "";
     boolean forceAutoBond = false;
@@ -1019,7 +1023,7 @@ public class StateManager {
       if (atomTypes.length() > 0)
         appendCmd(str, "set atomTypes " + Escape.escape(atomTypes));
       appendCmd(str, "set autoBond " + autoBond);
-      appendCmd(str, "set autoLoadOrientation " + autoLoadOrientation);
+//      appendCmd(str, "set autoLoadOrientation " + autoLoadOrientation);
       if (axesOrientationRasmol)
         appendCmd(str, "set axesOrientationRasmol true");
       appendCmd(str, "set bondRadiusMilliAngstroms " + bondRadiusMilliAngstroms);
@@ -1034,11 +1038,12 @@ public class StateManager {
       if (sMode.equals("User"))
         appendCmd(str, viewer.getDefaultVdwTypeNameOrData(Integer.MAX_VALUE));
       appendCmd(str, "set forceAutoBond " + forceAutoBond);
+      appendCmd(str, "#set defaultLoadFilter " + Escape.escape(defaultLoadFilter)) ;
       appendCmd(str, "#set loadFormat " + Escape.escape(loadFormat));
       appendCmd(str, "#set edsUrlFormat " + Escape.escape(edsUrlFormat));
       appendCmd(str, "#set edsUrlCutoff " + Escape.escape(edsUrlCutoff));
-      if (autoLoadOrientation)
-        appendCmd(str, "set autoLoadOrientation true");
+//      if (autoLoadOrientation)
+  //      appendCmd(str, "set autoLoadOrientation true");
       appendCmd(str, "set minBondDistance " + minBondDistance);
       appendCmd(str, "set pdbGetHeader " + pdbGetHeader);
       appendCmd(str, "set pdbSequential " + pdbSequential);

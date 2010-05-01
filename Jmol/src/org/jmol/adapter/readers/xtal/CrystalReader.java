@@ -629,6 +629,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private void setEnergy() {
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", energy);
+    atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());
     atomSetCollection.setAtomSetName("Energy = " + energy + " Hartree");
   }
 
@@ -773,16 +774,16 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private void setFreqValue(int i) {
-    String activity = ", IR: " + data[2] + ", Ram.: " + data[3];
-    atomSetCollection.setAtomSetName(data[0] + " "
-        + TextFormat.formatDecimal(frequencies[i], 2) + " cm-1 ("
-        + TextFormat.formatDecimal(Float.parseFloat(data[1]), 0) + " km/Mole)"
-        + activity);
-    atomSetCollection.setAtomSetProperty("Frequency", frequencies[i] + " cm-1");
+    String activity = "IR: " + data[2] + ", Ram.: " + data[3];
+    atomSetCollection.setAtomSetFrequency(null, activity, "" + frequencies[i], null);
     atomSetCollection.setAtomSetProperty("IRintensity", data[1] + " km/Mole");
     atomSetCollection.setAtomSetProperty("vibrationalSymmetry", data[0]);
     atomSetCollection.setAtomSetProperty("IRactivity", data[2]);
     atomSetCollection.setAtomSetProperty("Ramanactivity", data[3]);
+    atomSetCollection.setAtomSetName(data[0] + " "
+        + TextFormat.formatDecimal(frequencies[i], 2) + " cm-1 ("
+        + TextFormat.formatDecimal(Float.parseFloat(data[1]), 0) + " km/Mole), "
+        + activity);
   }
   
 }

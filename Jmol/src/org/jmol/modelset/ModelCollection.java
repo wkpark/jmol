@@ -1382,6 +1382,10 @@ abstract public class ModelCollection extends BondCollection {
       model.put("chainCount", new Integer(getChainCountInModel(i, true)));
       if (models[i].properties != null)
         model.put("modelProperties", models[i].properties);
+      Float energy = (Float) getModelAuxiliaryInfo(i, "Energy");
+      if (energy != null)
+        model.put("energy", energy);        
+      model.put("atomCount", new Integer(models[i].atomCount));
       vModels.addElement(model);
     }
     info.put("models", vModels);

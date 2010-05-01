@@ -37,12 +37,17 @@ public class SpartanSmolReader extends SpartanInputReader {
 
   private boolean iHaveModelStatement = false;
 
+  boolean isCompoundDocument = false;
   protected void initializeReader() throws Exception {
     modelName = "Spartan file";
+    isCompoundDocument = (readLine().indexOf("Compound Document File Directory") >= 0);
   }
 
   protected boolean checkLine() throws Exception {
-    if (line.indexOf("JMOL_MODEL") >= 0 && !line.startsWith("END")) {
+    String lcline;
+    if (isCompoundDocument && 
+        (lcline = line.toLowerCase()).equals("begin directory entry molecule") 
+        || line.indexOf("JMOL_MODEL") >= 0 && !line.startsWith("END")) {
 
       // bogus type added by Jmol as a marker only
 
@@ -52,29 +57,30 @@ public class SpartanSmolReader extends SpartanInputReader {
       int modelNo = getModelNumber();
       modelNumber = (bsModels == null && modelNo != Integer.MIN_VALUE ? modelNo : modelNumber + 1);
       bondData = "";
-      if (!doGetModel(++modelNumber))
+      if (!doGetModel(modelNumber))
         return checkLastModel();
       atomSetCollection.newAtomSet();
       moData = new Hashtable();
       moData.put("isNormalized", Boolean.TRUE);
       if (modelNo == Integer.MIN_VALUE) {
         modelNo = modelNumber;
-        title = "Model " + line.substring(line.lastIndexOf(" ") + 1);
+        title = "Model " + modelNo;
       } else  {
         title = (String) titles.get("Title" + modelNo);
         title = "Profile " + modelNo + (title == null ? "" : ": " + title);
       }
       Logger.info(title);
-      atomSetCollection.setAtomSetAuxiliaryInfo("title", title);
       atomSetCollection.setAtomSetName(title);
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.FALSE);
       atomSetCollection.setAtomSetNumber(modelNo);
+      if (isCompoundDocument)
+        readTransform();
       return true;
     }
     if (iHaveModelStatement && !doProcessLines)
       return true;
     if ((line.indexOf("BEGIN") == 0)) {
-      String lcline = line.toLowerCase();
+      lcline = line.toLowerCase();
       if (lcline.endsWith("input")) {
         bondData = "";
         readInputRecords();
@@ -115,10 +121,10 @@ public class SpartanSmolReader extends SpartanInputReader {
       spartanArchive.addBonds(bondData, 0);
   }
   
-  private class MoleculeRecord {
+  private void readTransform() throws Exception {
     float[] mat;
+    String binaryCodes = readLine();
     // last 16x4 bytes constitutes the 4x4 matrix, using doubles
-    MoleculeRecord(String binaryCodes) {
       String[] tokens = getTokens(binaryCodes.trim());
       if (tokens.length < 16)
         return;
@@ -127,7 +133,11 @@ public class SpartanSmolReader extends SpartanInputReader {
         bytes[i] = (byte) Integer.parseInt(tokens[i], 16);
       mat = new float[16];
       for (int i = 16, j = bytes.length; --i >= 0; j -= 8)
-        mat[i] = bytesToDoubleToFloat(bytes, j);        
+        mat[i] = bytesToDoubleToFloat(bytes, j);
+      setTransform(
+          mat[0], mat[1], mat[2], 
+          mat[4], mat[5], mat[6], 
+          mat[8], mat[9], mat[10]);
     }
     
     private float bytesToDoubleToFloat(byte[] bytes, int j) {
@@ -141,16 +151,6 @@ public class SpartanSmolReader extends SpartanInputReader {
           | (((long) bytes[--j]) & 0xff));
       return (float) d;
     }
-
-    protected void setTrans() {
-      if (mat == null)
-        return;
-      setTransform(
-          mat[0], mat[1], mat[2], 
-          mat[4], mat[5], mat[6], 
-          mat[8], mat[9], mat[10]);
-    }
-  }
 
   private String endCheck = "END Directory Entry ";
   private Hashtable moData = new Hashtable();
@@ -185,6 +185,10 @@ public class SpartanSmolReader extends SpartanInputReader {
   }
   
   private void readProperties() throws Exception {
+    if (spartanArchive == null) {
+      readLine();
+      return;
+    }
     spartanArchive.readProperties();
     if (!atomSetCollection
         .setAtomSetCollectionPartialCharges("MULCHARGES"))
@@ -203,14 +207,6 @@ public class SpartanSmolReader extends SpartanInputReader {
     } catch (NumberFormatException e) {
       return 0;
     }
-  }
-
-  private void readTransform() throws Exception {
-    // created with flag: asBinaryString
-    //
-    //0.0 0.0 1.0 0.0 -1.0 0.0 0.0 0.0 0.0 -1.0 0.0 0.0 0.6250277955447784 1.7865956568574344 0.3608597599807504 1.0 
-    MoleculeRecord mr = new MoleculeRecord(readLine());
-    mr.setTrans();
   }
 
   private boolean readArchiveHeader()

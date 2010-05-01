@@ -96,9 +96,7 @@ public class XmlMolproReader extends XmlCmlReader {
           if (units.startsWith("inverseCent"))
             units = "cm^-1";
         }
-        atomSetCollection.setAtomSetName(wavenumber + " " + units);
-        atomSetCollection.setAtomSetProperty("Frequency", wavenumber + " " + units);
-        atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, "Frequencies");
+        atomSetCollection.setAtomSetFrequency(null, null, wavenumber, units);
         keepChars = true;
       }
       return;

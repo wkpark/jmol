@@ -984,7 +984,7 @@ public class Resolver {
   { "GamessUS", "GAMESS" };
 
   private final static String[] spartanBinaryContainsRecords =
-  { "SpartanSmol" , "|PropertyArchive", "_spartan", "spardir" };
+  { "SpartanSmol" , "|PropertyArchive", "_spartan", "spardir", "BEGIN Directory Entry Molecule" };
 
   private final static String[] spartanContainsRecords =
   { "Spartan", "Spartan" };  // very old Spartan files?

@@ -42,7 +42,7 @@ import org.jmol.util.Logger;
  * right now WebMO files don't allow for multiple MOS, but we will assume here that that may change.
  *<p>
  */
-public class WebMOReader extends MopacReader {
+public class WebMOReader extends MopacSlaterReader {
 
   protected boolean checkLine() throws Exception {
     if (line.equals("[HEADER]")) {

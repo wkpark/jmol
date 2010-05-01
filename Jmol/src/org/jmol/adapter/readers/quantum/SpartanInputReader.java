@@ -40,7 +40,7 @@ public abstract class SpartanInputReader extends AtomSetCollectionReader {
   protected int modelAtomCount;
   protected int atomCount;
   protected String bondData = "";
-  
+
   protected void readInputRecords() throws Exception {
     int atomCount0 = atomCount;
       readInputHeader();
@@ -59,6 +59,8 @@ public abstract class SpartanInputReader extends AtomSetCollectionReader {
       discardLinesUntilContains("HESSIAN");
       if (line != null)
         readBonds(atomCount0);
+      if (line != null && line.indexOf("BEGINCONSTRAINTS") >= 0)
+        readConstraints();
       while (line != null && line.indexOf("END ") < 0 && line.indexOf("MOLSTATE") < 0)
         readLine();
       if (line != null && line.indexOf("MOLSTATE") >= 0)
@@ -66,7 +68,20 @@ public abstract class SpartanInputReader extends AtomSetCollectionReader {
       if (atomSetCollection.getAtomCount() > 0)
         atomSetCollection.setAtomSetName(modelName);
   }
-  
+
+  String constraints = "";
+  private void readConstraints() throws Exception {
+    constraints = "";
+    while (readLine() != null && line.indexOf("END") < 0)
+      constraints += (constraints == "" ? "" : "\n") + line;
+    readLine();
+    if (constraints.length() == 0)
+      return;
+    atomSetCollection.setAtomSetAuxiliaryInfo("constraints", constraints);
+    atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, "EnergyProfile");
+    atomSetCollection.setAtomSetProperty("Constraint", constraints);
+  }
+
   private void readTransform() throws Exception {
     readLine();
     String[] tokens = getTokens(readLine() + " " + readLine());
@@ -143,6 +158,7 @@ public abstract class SpartanInputReader extends AtomSetCollectionReader {
         nAtoms -= tokens.length;
       }
     }
+    readLine();
     if (Logger.debugging)
       Logger.debug(atomSetCollection.getBondCount() + " bonds read");
   }

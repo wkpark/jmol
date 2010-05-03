@@ -56,7 +56,7 @@ import org.jmol.viewer.JmolConstants;
 public class PatternMatcher implements SmilesMatcherInterface {
 
   private int atomCount;
-  private ModelSet modelSet;
+  private Atom[] atoms;
   private BitSet bsSelected;
   private BitSet bsRequired;
   private BitSet bsNot;
@@ -68,7 +68,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
   public PatternMatcher() {
   }
   public void setModelSet(ModelSet modelSet) {
-    this.modelSet = modelSet;
+    atoms = modelSet.atoms;
     atomCount = (modelSet == null ? 0 : modelSet.getAtomCount());     
   }
   /**
@@ -155,7 +155,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
           // get the matching atom for the FIRST atom
           int matchingAtom = patternBond.getAtom1().getMatchingAtom();
           // get all the bonds for the corresponding Jmol model atom
-          Atom atom = modelSet.atoms[matchingAtom];
+          Atom atom = atoms[matchingAtom];
           Bond[] bonds = atom.getBonds();
           if (bonds != null) {
             // for all these bonds, if either of the
@@ -164,8 +164,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
               if (bonds[j].getAtomIndex1() == matchingAtom) {
                 searchMatch(ret, pattern, patternAtom, atomNum, bonds[j]
                     .getAtomIndex2());
-              }
-              if (bonds[j].getAtomIndex2() == matchingAtom) {
+              } else if (bonds[j].getAtomIndex2() == matchingAtom) {
                 searchMatch(ret, pattern, patternAtom, atomNum, bonds[j]
                     .getAtomIndex1());
               }
@@ -205,7 +204,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
       }
     }
 
-    Atom atom = modelSet.atoms[i];
+    Atom atom = atoms[i];
 
     // Check symbol -- not isotope-sensitive and not case sensitive
     String targetSym = patternAtom.getSymbol();
@@ -271,32 +270,27 @@ public class PatternMatcher implements SmilesMatcherInterface {
           bondFound = true;
           break;
         }
+        int order = bonds[k].getOrder();
         switch (patternBond.getBondType()) {
-        case SmilesBond.TYPE_AROMATIC: // not implemented
-          if ((bonds[k].getOrder() & JmolConstants.BOND_AROMATIC_MASK) != 0) {
+        case SmilesBond.TYPE_SINGLE:
+        case SmilesBond.TYPE_DIRECTIONAL_1:
+        case SmilesBond.TYPE_DIRECTIONAL_2:
+          if (order == JmolConstants.BOND_COVALENT_SINGLE) {
             bondFound = true;
           }
           break;
         case SmilesBond.TYPE_DOUBLE:
-          if ((bonds[k].getOrder() & JmolConstants.BOND_COVALENT_DOUBLE) != 0) {
-            bondFound = true;
-          }
-          break;
-        case SmilesBond.TYPE_SINGLE:
-          // check for aromatic here
-          
-          if ((bonds[k].getOrder() & JmolConstants.BOND_COVALENT_SINGLE) != 0) {
-            bondFound = true;
-          }
-          break;
-        case SmilesBond.TYPE_DIRECTIONAL_1:
-        case SmilesBond.TYPE_DIRECTIONAL_2:
-          if ((bonds[k].getOrder() & JmolConstants.BOND_COVALENT_SINGLE) != 0) {
+          if (order == JmolConstants.BOND_COVALENT_DOUBLE) {
             bondFound = true;
           }
           break;
         case SmilesBond.TYPE_TRIPLE:
-          if ((bonds[k].getOrder() & JmolConstants.BOND_COVALENT_TRIPLE) != 0) {
+          if (order == JmolConstants.BOND_COVALENT_TRIPLE) {
+            bondFound = true;
+          }
+          break;
+        case SmilesBond.TYPE_AROMATIC: // not implemented
+          if ((order & JmolConstants.BOND_AROMATIC_MASK) != 0) {
             bondFound = true;
           }
           break;

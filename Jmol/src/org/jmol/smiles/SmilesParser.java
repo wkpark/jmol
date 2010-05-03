@@ -73,7 +73,7 @@ public class SmilesParser {
     SmilesMolecule molecule = new SmilesMolecule();
     parseSmiles(molecule, smiles, null);
     
-    // Implicit hydrogren creation
+    // Implicit hydrogen creation
     for (int i = 0; i< molecule.getAtomsCount(); i++) {
       SmilesAtom atom = molecule.getAtom(i);
       atom.createMissingHydrogen(molecule);
@@ -401,15 +401,15 @@ public class SmilesParser {
       bondType = SmilesBond.TYPE_SINGLE;
     }
     SmilesAtom newAtom = molecule.createAtom();
-    if ((currentAtom != null) && (bondType != SmilesBond.TYPE_NONE)) {
-      molecule.createBond(currentAtom, newAtom, bondType);
-    }
     newAtom.setSymbol(atomSymbol);
     newAtom.setAtomicMass(atomicMass);
     newAtom.setCharge(charge);
     newAtom.setChiralClass(chiralClass);
     newAtom.setChiralOrder(chiralOrder);
     newAtom.setHydrogenCount(hydrogenCount);
+    if ((currentAtom != null) && (bondType != SmilesBond.TYPE_NONE)) {
+      molecule.createBond(currentAtom, newAtom, bondType);
+    }
     return newAtom;
   }
 

@@ -37,6 +37,10 @@ public class SmilesAtom {
   private int matchingAtom;
   private String chiralClass;
   private int chiralOrder;
+  private boolean isAromatic;
+  public boolean isAromatic() {
+    return isAromatic;
+  }
 
   private SmilesBond[] bonds;
   private int bondsCount;
@@ -93,7 +97,7 @@ public class SmilesAtom {
    * @param molecule Molecule containing the atom.
    */
   public void createMissingHydrogen(SmilesMolecule molecule) {
-  	// Determing max count
+  	// Determining max count
   	int count = 0;
   	if (hydrogenCount == Integer.MIN_VALUE) {
       if (symbol != null) {
@@ -101,6 +105,8 @@ public class SmilesAtom {
           count = 3;
         } else if (symbol == "Br") {
           count = 1;
+        } else if (symbol == "c") {
+          count = 3; // BH 5/2/2010 Jmol 12.0.RC10
         } else if (symbol == "C") {
           count = 4;
         } else if (symbol == "Cl") {
@@ -119,6 +125,9 @@ public class SmilesAtom {
           count = 2;
         }
       }
+
+      //System.out.println(" assigning " + count + " valence to atom " + number + " " + symbol);
+
       for (int i = 0; i < bondsCount; i++) {
         SmilesBond bond = bonds[i];
         switch (bond.getBondType()) {
@@ -140,10 +149,11 @@ public class SmilesAtom {
   	}
 
     // Adding hydrogens
+    //System.out.println(" adding " + count + " H atoms to atom " + number + " " + symbol);
     for (int i = 0; i < count; i++) {
       SmilesAtom hydrogen = molecule.createAtom();
-      molecule.createBond(this, hydrogen, SmilesBond.TYPE_SINGLE);
       hydrogen.setSymbol("H");
+      molecule.createBond(this, hydrogen, SmilesBond.TYPE_SINGLE);
     }
   }
 
@@ -172,6 +182,7 @@ public class SmilesAtom {
    */
   public void setSymbol(String symbol) {
     this.symbol = (symbol != null) ? symbol.intern() : null;
+    isAromatic = symbol.equals(symbol.toLowerCase()); // BH added
   }
 
   /**

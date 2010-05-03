@@ -66,7 +66,12 @@ final public class Atom extends Point3fi {
   short colixAtom;
   byte paletteID = JmolConstants.PALETTE_CPK;
 
-  Bond[] bonds;
+  public Bond[] bonds;
+  
+  public void setBonds(Bond[] bonds) {
+    this.bonds = bonds;  // for Smiles equating
+  }
+  
   int nBondsDisplayed = 0;
   int nBackbonesDisplayed = 0;
   
@@ -77,7 +82,7 @@ final public class Atom extends Point3fi {
   int clickabilityFlags;
   int shapeVisibilityFlags;
 
-  Atom(int modelIndex, int atomIndex,
+  public Atom(int modelIndex, int atomIndex,
         float x, float y, float z, float radius,
         BitSet atomSymmetry, int atomSite,
         short atomicAndIsotopeNumber, int formalCharge, 
@@ -162,7 +167,7 @@ final public class Atom extends Point3fi {
     bonds = null;
   }
 
-  int getBondedAtomIndex(int bondIndex) {
+  public int getBondedAtomIndex(int bondIndex) {
     return bonds[bondIndex].getOtherAtom(this).index;
   }
 

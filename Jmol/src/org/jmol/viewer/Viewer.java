@@ -181,7 +181,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       smilesMatcher = (SmilesMatcherInterface) Interface
           .getOptionInterface("smiles.PatternMatcher");
     }
-    smilesMatcher.setModelSet(modelSet);
     return smilesMatcher;
   }
 
@@ -203,7 +202,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setFrameOffsets(null);
     stopMinimization();
     if (smilesMatcher != null) {
-      smilesMatcher.setModelSet(null);
       smilesMatcher = null;
     }
     if (symmetry != null) {

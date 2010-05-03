@@ -80,7 +80,7 @@ public class Bond {
   
   final static int myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_STICKS);
 
-  Bond(Atom atom1, Atom atom2, int order,
+  public Bond(Atom atom1, Atom atom2, int order,
               short mad, short colix) {
     this.atom1 = atom1;
     this.atom2 = atom2;
@@ -199,6 +199,10 @@ public class Bond {
 
   public int getOrder() {
     return order;
+  }
+
+  public int getCovalentOrder() {
+    return (isCovalent() ? order & ~JmolConstants.BOND_NEW : 0);
   }
 
   String getOrderName() {

@@ -30,7 +30,6 @@ import java.util.Vector;
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
-import org.jmol.modelset.ModelSet;
 import org.jmol.viewer.JmolConstants;
 
 /**
@@ -55,33 +54,83 @@ import org.jmol.viewer.JmolConstants;
  */
 public class PatternMatcher implements SmilesMatcherInterface {
 
-  private int atomCount;
-  private Atom[] atoms;
-  private BitSet bsSelected;
-  private BitSet bsRequired;
-  private BitSet bsNot;
-
   /**
-   * Constructs a <code>PatternMatcher</code>.
    * 
+   * searches for matches of smiles1 within smiles2
+   * 
+   * @param smiles1
+   * @param smiles2
+   * @return            number of occurances of smiles1 within smiles2
    */
-  public PatternMatcher() {
+  public int find(String smiles1, String smiles2) {
+    BitSet[] list = null;
+    try {
+      // create a topological model set from smiles2
+      SmilesMolecule pattern = (new SmilesParser()).parseSmiles(smiles2);
+      int atomCount = pattern.getAtomsCount();
+      Atom[] atoms = new Atom[atomCount];
+      for (int i = 0; i < atomCount; i++) {
+        SmilesAtom sAtom = pattern.getAtom(i);
+        Atom atom = atoms[i] = new Atom(0, i, 0, 0, 0, 0, null, 0, 
+            sAtom.getAtomicNumber(), sAtom.getCharge(), false, '\0', '\0');
+        atom.setBonds(new Bond[sAtom.getBondsCount()]);
+      }
+      int[] bondCounts = new int[atomCount];
+      for (int i = pattern.getBondsCount(); --i >= 0; ) {
+        SmilesBond sBond = pattern.getBond(i);
+        int order = 1;
+        switch (sBond.getBondType()) {
+        case SmilesBond.TYPE_UNKNOWN:
+        case SmilesBond.TYPE_NONE:
+        case SmilesBond.TYPE_DIRECTIONAL_1:
+        case SmilesBond.TYPE_DIRECTIONAL_2:
+        case SmilesBond.TYPE_SINGLE:
+          order = JmolConstants.BOND_COVALENT_SINGLE;
+          break;
+        case SmilesBond.TYPE_AROMATIC:
+          order = JmolConstants.BOND_AROMATIC_SINGLE;
+          break;
+        case SmilesBond.TYPE_DOUBLE:
+          order = JmolConstants.BOND_COVALENT_DOUBLE;
+          break;
+        case SmilesBond.TYPE_TRIPLE:
+          order = JmolConstants.BOND_COVALENT_TRIPLE;
+          break;
+        }
+        int i1 = sBond.getAtom1().getIndex();
+        int i2 = sBond.getAtom2().getIndex();
+        Atom atom1 = (Atom) atoms[i1];
+        Atom atom2 = (Atom) atoms[i2];
+        Bond b = new Bond(atom1, atom2, 
+            order, (short) 0, (short) 0);
+        atom1.bonds[bondCounts[i1]++] = b;
+        atom2.bonds[bondCounts[i2]++] = b;
+      }
+      list = getSubstructureSetArray(smiles1, atoms, atomCount, null, null, null);
+      return list.length;
+    } catch (Exception e) {
+      return 0;
+    }
   }
-  public void setModelSet(ModelSet modelSet) {
-    atoms = modelSet.atoms;
-    atomCount = (modelSet == null ? 0 : modelSet.getAtomCount());     
-  }
+  
+
   /**
    * Returns a vector of bits indicating which atoms match the pattern.
    * 
    * @param smiles SMILES pattern.
+   * @param atoms 
+   * @param atomCount 
    * @return BitSet indicating which atoms match the pattern.
    * @throws Exception Raised if <code>smiles</code> is not a valid SMILES pattern.
    */
-  public BitSet getSubstructureSet(String smiles) throws Exception {
-    SmilesParser parser = new SmilesParser();
-    SmilesMolecule pattern = parser.parseSmiles(smiles);
-    return getSubstructureSet(pattern);
+  
+  public BitSet getSubstructureSet(String smiles, Atom[] atoms, int atomCount) throws Exception {
+    SmilesMolecule pattern = SmilesParser.getMolecule(smiles);
+    pattern.jmolAtoms = atoms;
+    pattern.jmolAtomCount = atomCount;
+    BitSet bsSubstructure = new BitSet();
+    search(bsSubstructure, pattern);
+    return bsSubstructure;
   }
 
   /**
@@ -89,48 +138,35 @@ public class PatternMatcher implements SmilesMatcherInterface {
    * 
    * @param smiles SMILES pattern.
    * @param bsSelected 
+   * @param atoms 
+   * @param atomCount 
    * @param bsRequired 
    * @param bsNot 
    * @return BitSet Array indicating which atoms match the pattern.
    * @throws Exception Raised if <code>smiles</code> is not a valid SMILES pattern.
    */
-  public BitSet[] getSubstructureSetArray(String smiles, BitSet bsSelected,
+  public BitSet[] getSubstructureSetArray(String smiles, Atom[] atoms, int atomCount, 
+                                          BitSet bsSelected, 
                                           BitSet bsRequired, BitSet bsNot)
       throws Exception {
-    this.bsSelected = bsSelected;
-    this.bsRequired = (bsRequired != null && bsRequired.cardinality() > 0 ? bsRequired : null);
-    this.bsNot = bsNot;
-    SmilesParser parser = new SmilesParser();
-    SmilesMolecule pattern = parser.parseSmiles(smiles);
-    return getSubstructureSetArray(pattern);
-  }
-
-  /**
-   * Returns a vector of bits indicating which atoms match the pattern.
-   * 
-   * @param pattern SMILES pattern.
-   * @return BitSet Array indicating which atoms match the pattern.
-   */
-  public BitSet getSubstructureSet(SmilesMolecule pattern) {
-    BitSet bsSubstructure = new BitSet();
-    searchMatch(bsSubstructure, pattern, 0);
-    return bsSubstructure;
-  }
-
-  /**
-   * Returns a vector of bitsets indicating which atoms match the pattern.
-   * 
-   * @param pattern SMILES pattern.
-   * @return BitSet Array indicating which atoms match the pattern.
-   */
-  public BitSet[] getSubstructureSetArray(SmilesMolecule pattern) {
+    SmilesMolecule pattern = SmilesParser.getMolecule(smiles);
+    pattern.bsSelected = bsSelected;
+    pattern.bsRequired = (bsRequired != null && bsRequired.cardinality() > 0 ? bsRequired : null);
+    pattern.bsNot = bsNot;
+    pattern.jmolAtoms = atoms;
+    pattern.jmolAtomCount = atomCount;
     Vector vSubstructures = new Vector();
-    searchMatch(vSubstructures, pattern, 0);
+    search(vSubstructures, pattern);
     BitSet[] bitsets = new BitSet[vSubstructures.size()];
     for (int i = 0; i < bitsets.length; i++)
       bitsets[i] = (BitSet) vSubstructures.get(i);
-    bsSelected = bsRequired = bsNot = null;
     return bitsets;
+  }
+
+  private void search(Object ret, SmilesMolecule pattern) {
+    for (int i = 0; i < pattern.jmolAtomCount; i++) {
+      searchMatch(ret, pattern, pattern.getAtom(0), 0, i);
+    }
   }
 
   /**
@@ -147,35 +183,22 @@ public class PatternMatcher implements SmilesMatcherInterface {
     // consider a specific pattern atom...
     SmilesAtom patternAtom = pattern.getAtom(atomNum);
     // for all the pattern bonds for this atom...
-    if (atomNum > 0)
       for (int i = 0; i < patternAtom.getBondsCount(); i++) {
         SmilesBond patternBond = patternAtom.getBond(i);
-        // if the SECOND atom in the bond is this atom...
+        // find the one bond to atoms already assigned
+        // note that it must be there, because SMILES strings
+        // are parsed in order, from left to right. You can't
+        // have two fragments going at the same time.
         if (patternBond.getAtom2() == patternAtom) {
-          // get the matching atom for the FIRST atom
-          int matchingAtom = patternBond.getAtom1().getMatchingAtom();
-          // get all the bonds for the corresponding Jmol model atom
-          Atom atom = atoms[matchingAtom];
+          // run through the bonds of that assigned atom
+          Atom atom = pattern.jmolAtoms[patternBond.getAtom1().getMatchingAtom()];
           Bond[] bonds = atom.getBonds();
-          if (bonds != null) {
-            // for all these bonds, if either of the
-            // bonded atoms is the FIRST atom,
-            for (int j = 0; j < bonds.length; j++) {
-              if (bonds[j].getAtomIndex1() == matchingAtom) {
-                searchMatch(ret, pattern, patternAtom, atomNum, bonds[j]
-                    .getAtomIndex2());
-              } else if (bonds[j].getAtomIndex2() == matchingAtom) {
-                searchMatch(ret, pattern, patternAtom, atomNum, bonds[j]
-                    .getAtomIndex1());
-              }
-            }
-          }
+          // now run through all the bonds looking for atoms that might match
+          if (bonds != null)
+            for (int j = 0; j < bonds.length; j++)
+              searchMatch(ret, pattern, patternAtom, atomNum, atom.getBondedAtomIndex(j));
           return;
         }
-      }
-    else
-      for (int i = 0; i < atomCount; i++) {
-        searchMatch(ret, pattern, patternAtom, atomNum, i);
       }
   }
   
@@ -186,6 +209,8 @@ public class PatternMatcher implements SmilesMatcherInterface {
    *          Resulting BitSet or Vector(BitSet).
    * @param pattern
    *          SMILES pattern.
+   * @param atoms 
+   * @param atomCount 
    * @param patternAtom
    *          Atom of the pattern that is currently tested.
    * @param atomNum
@@ -194,22 +219,20 @@ public class PatternMatcher implements SmilesMatcherInterface {
    *          Atom number of the atom that is currently tested to match
    *          <code>patternAtom</code>.
    */
-  private void searchMatch(Object ret, SmilesMolecule pattern,
+  private void searchMatch(Object ret, SmilesMolecule pattern,  
                            SmilesAtom patternAtom, int atomNum, int i) {
-    // Check that an atom is not used twice
+    
     for (int j = 0; j < atomNum; j++) {
       SmilesAtom previousAtom = pattern.getAtom(j);
       if (previousAtom.getMatchingAtom() == i) {
         return;
       }
     }
+    Atom atom = pattern.jmolAtoms[i];
 
-    Atom atom = atoms[i];
-
-    // Check symbol -- not isotope-sensitive and not case sensitive
-    String targetSym = patternAtom.getSymbol();
-    if (targetSym != "*"
-        && !targetSym.equalsIgnoreCase(atom.getElementSymbol(false)))
+    // Check atomic number
+    int targetAtomicNumber = patternAtom.getAtomicNumber();
+    if (targetAtomicNumber != 0 && targetAtomicNumber != (atom.getElementNumber()))
       return;
     int targetMass = patternAtom.getAtomicMass();
     if (targetMass > 0 && targetMass != atom.getIsotopeNumber()) {
@@ -232,11 +255,11 @@ public class PatternMatcher implements SmilesMatcherInterface {
      */
     boolean bondFound = false;
     boolean isAromatic = patternAtom.isAromatic();
-    if (isAromatic && targetSym == "c") {
+    if (isAromatic && targetAtomicNumber == 6) {
       // for aromatic carbon specifically, match any atom 
       // that is either doubly bonded or aromatic bonded 
       for (int k = 0; k < bonds.length; k++) {
-        int order = bonds[k].getOrder();
+        int order = bonds[k].getCovalentOrder();
         if (order == JmolConstants.BOND_COVALENT_DOUBLE
             || (order & JmolConstants.BOND_AROMATIC_MASK) != 0) {
           bondFound = true;
@@ -270,7 +293,9 @@ public class PatternMatcher implements SmilesMatcherInterface {
           bondFound = true;
           break;
         }
-        int order = bonds[k].getOrder();
+        if (!bonds[k].isCovalent())
+          continue;
+        int order = bonds[k].getCovalentOrder();
         switch (patternBond.getBondType()) {
         case SmilesBond.TYPE_SINGLE:
         case SmilesBond.TYPE_DIRECTIONAL_1:
@@ -294,7 +319,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
             bondFound = true;
           }
           break;
-        case SmilesBond.TYPE_UNKOWN:
+        case SmilesBond.TYPE_UNKNOWN:
           bondFound = true;
           break;
         }
@@ -303,13 +328,14 @@ public class PatternMatcher implements SmilesMatcherInterface {
       }
     }
 
+    // add this atom to the growing list
     patternAtom.setMatchingAtom(i);
-/*    
+/*
     for (int k = 0; k <= atomNum; k++) {
       System.out.print("-" + pattern.getAtom(k).getMatchingAtom());
     }
-    System.out.println("");
-*/
+    System.out.println(" " + (atomNum+1) + "/" + pattern.getAtomsCount());
+*/    
     if (atomNum + 1 < pattern.getAtomsCount()) {
       searchMatch(ret, pattern, atomNum + 1);
     } else {
@@ -326,14 +352,14 @@ public class PatternMatcher implements SmilesMatcherInterface {
       if (ret instanceof Vector) {
         Vector v = (Vector) ret;
         boolean isOK = true;
-        if (bsNot != null && bsNot.intersects(bs))
+        if (pattern.bsNot != null && pattern.bsNot.intersects(bs))
           isOK = false;
-        else if (bsRequired != null && !bsRequired.intersects(bs))
+        else if (pattern.bsRequired != null && !pattern.bsRequired.intersects(bs))
           isOK = false;
-        else if (bsSelected != null)
+        else if (pattern.bsSelected != null)
           for (int j = bs.nextSetBit(0); j >= 0 && isOK; j = bs
               .nextSetBit(j + 1))
-            isOK = bsSelected.get(j);
+            isOK = pattern.bsSelected.get(j);
         for (int j = v.size(); --j >= 0 && isOK;)
           isOK = !(((BitSet) v.get(j)).equals(bs));
         if (isOK)
@@ -342,4 +368,5 @@ public class PatternMatcher implements SmilesMatcherInterface {
     }
     patternAtom.setMatchingAtom(-1);
   }
+  
 }

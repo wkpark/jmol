@@ -30,7 +30,7 @@ package org.jmol.smiles;
 public class SmilesBond {
 
   // Bond orders
-  public final static int TYPE_UNKOWN = -1;
+  public final static int TYPE_UNKNOWN = -1;
   public final static int TYPE_NONE = 0;
   public final static int TYPE_SINGLE = 1;
   public final static int TYPE_DOUBLE = 2;
@@ -95,7 +95,7 @@ public class SmilesBond {
     case CODE_DIRECTIONAL_2:
       return TYPE_DIRECTIONAL_2;
     }
-    return TYPE_UNKOWN;
+    return TYPE_UNKNOWN;
   }
 
   public SmilesAtom getAtom1() {

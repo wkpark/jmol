@@ -1093,6 +1093,13 @@ class ScriptMathProcessor {
     String sFind = ScriptVariable.sValue(args[0]);
     boolean isPattern = (args.length == 2);
     String flags = (isPattern ? ScriptVariable.sValue(args[1]) : "");
+    if (sFind.equalsIgnoreCase("smiles")) {
+      if (x1.tok == Token.string)
+        return addX(viewer.getSmilesMatcher().find(flags, ScriptVariable.sValue(x1)));
+      if (x1.tok == Token.bitset)
+        return addX(getSmilesMatches(flags, (BitSet) x1.value, null, null));
+      eval.error(ScriptEvaluator.ERROR_invalidArgument);
+    }
     boolean isReverse = (flags.indexOf("v") >= 0);
     boolean isCaseInsensitive = (flags.indexOf("i") >= 0);
     boolean asMatch = (flags.indexOf("m") >= 0);
@@ -1906,16 +1913,7 @@ class ScriptMathProcessor {
         eval.error(ScriptEvaluator.ERROR_invalidArgument);
       if (isSyntaxCheck)
         return addX(new Vector());
-      try {
-        BitSet[] b = viewer.getSmilesMatcher().getSubstructureSetArray(
-            ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot);
-        String[] matches = new String[b.length];
-        for (int j = 0; j < b.length; j++)
-          matches[j] = Escape.escape(b[j]);
-        return addX(matches);
-      } catch (Exception e) {
-        eval.evalError(e.getMessage(), null);
-      }
+      return addX(getSmilesMatches(ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot));
     }
     if (withinSpec instanceof String) {
       if (tok == Token.nada) {
@@ -2026,6 +2024,22 @@ class ScriptMathProcessor {
     return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet));
   }
 
+  private String[] getSmilesMatches(String smiles, BitSet bsSelected,
+                                          BitSet bsRequired, BitSet bsNot) throws ScriptException {    
+    try {
+      BitSet[] b = viewer.getSmilesMatcher().getSubstructureSetArray(
+          smiles, viewer.getModelSet().atoms, viewer.getAtomCount(), 
+          bsSelected, bsRequired, bsNot);
+      String[] matches = new String[b.length];
+      for (int j = 0; j < b.length; j++)
+        matches[j] = Escape.escape(b[j]);
+      return matches;
+    } catch (Exception e) {
+      eval.evalError(e.getMessage(), null);
+      return null;
+    }
+  }
+
   private boolean evaluateConnected(ScriptVariable[] args) {
     /*
      * Two options here:
@@ -2132,7 +2146,7 @@ class ScriptMathProcessor {
     String smiles = (isSyntaxCheck ? "" : ScriptVariable.sValue(args[0]));
     if (smiles.length() > 0)
       try {
-        bs = viewer.getSmilesMatcher().getSubstructureSet(smiles);
+        bs = viewer.getSmilesMatcher().getSubstructureSet(smiles, viewer.getModelSet().atoms, viewer.getAtomCount());
       } catch (Exception e) {
         eval.evalError(e.getMessage(), null);
       }

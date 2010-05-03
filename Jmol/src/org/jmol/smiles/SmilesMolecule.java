@@ -24,27 +24,34 @@
 
 package org.jmol.smiles;
 
+import java.util.BitSet;
+
+import org.jmol.modelset.Atom;
+
 /**
  * Molecule created from a SMILES String
  */
 public class SmilesMolecule {
 
-  private SmilesAtom[] atoms;
-  private int atomsCount;
-  private SmilesBond[] bonds;
-  private int bondsCount;
+  Atom[] jmolAtoms;
+  int jmolAtomCount;
+  BitSet bsSelected;
+  BitSet bsRequired;
+  BitSet bsNot;      
 
   private final static int INITIAL_ATOMS = 16;
   private final static int INITIAL_BONDS = 16;
+
+  private SmilesAtom[] atoms = new SmilesAtom[INITIAL_ATOMS];
+  private int atomsCount;
+  private SmilesBond[] bonds = new SmilesBond[INITIAL_BONDS];
+  private int bondsCount;
+
   
   /**
    * SmilesMolecule constructor  
    */
   public SmilesMolecule() {
-    atoms = new SmilesAtom[INITIAL_ATOMS];
-    atomsCount = 0;
-    bonds = new SmilesBond[INITIAL_BONDS];
-    bondsCount = 0;
   }
   
   /* ============================================================= */

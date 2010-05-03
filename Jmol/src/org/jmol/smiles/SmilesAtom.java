@@ -24,25 +24,23 @@
 
 package org.jmol.smiles;
 
+import org.jmol.viewer.JmolConstants;
+
 /**
  * This class represents an atom in a <code>SmilesMolecule</code>.
  */
 public class SmilesAtom {
 
-  private int number;
-  private String symbol;
-  private int atomicMass;
+  private int index;
+  private short atomicNumber = -1;
+  private int atomicMass = Integer.MIN_VALUE;
   private int charge;
-  private int hydrogenCount;
-  private int matchingAtom;
+  private int hydrogenCount = Integer.MIN_VALUE;
+  private int matchingAtom = -1;
   private String chiralClass;
-  private int chiralOrder;
+  private int chiralOrder = Integer.MIN_VALUE;
   private boolean isAromatic;
-  public boolean isAromatic() {
-    return isAromatic;
-  }
-
-  private SmilesBond[] bonds;
+  private SmilesBond[] bonds = new SmilesBond[INITIAL_BONDS];
   private int bondsCount;
 
   private final static int INITIAL_BONDS = 4;
@@ -76,19 +74,10 @@ public class SmilesAtom {
   /**
    * Constructs a <code>SmilesAtom</code>.
    * 
-   * @param number Atom number in the molecule. 
+   * @param index Atom number in the molecule. 
    */
-  public SmilesAtom(int number) {
-    this.number = number;
-    this.symbol = null;
-    this.atomicMass = Integer.MIN_VALUE;
-    this.charge = 0;
-    this.hydrogenCount = Integer.MIN_VALUE;
-    this.matchingAtom = -1;
-    this.chiralClass = null;
-    this.chiralOrder = Integer.MIN_VALUE;
-    bonds = new SmilesBond[INITIAL_BONDS];
-    bondsCount = 0;
+  public SmilesAtom(int index) {
+    this.index = index;
   }
 
   /**
@@ -100,33 +89,37 @@ public class SmilesAtom {
   	// Determining max count
   	int count = 0;
   	if (hydrogenCount == Integer.MIN_VALUE) {
-      if (symbol != null) {
-        if (symbol == "B") {
-          count = 3;
-        } else if (symbol == "Br") {
-          count = 1;
-        } else if (symbol == "c") {
-          count = 3; // BH 5/2/2010 Jmol 12.0.RC10
-        } else if (symbol == "C") {
-          count = 4;
-        } else if (symbol == "Cl") {
-          count = 1;
-        } else if (symbol == "F") {
-          count = 1;
-        } else if (symbol == "I") {
-          count = 1;
-        } else if (symbol == "N") {
-          count = 3;
-        } else if (symbol == "O") {
-          count = 2;
-        } else if (symbol == "P") {
-          count = 3;
-        } else if (symbol == "S") {
-          count = 2;
-        }
-      }
+  	  // not a complete set...
+  	  switch (atomicNumber) {
+  	  case -1:
+  	    break;
+  	  case 1: // H
+      case 9: // F
+      case 17: // Cl
+      case 35: // Br
+      case 53: // At
+      case 85: // I
+        count = 1;
+        break;
+      case 8: // O
+      case 16: // S
+      case 34: // Se
+      case 52: // Te
+        count = 2;
+        break;
+      case 5:  // B
+      case 7:  // N
+      case 13: // Al
+      case 15: // P
+      case 33: // As
+        count = 3;
+        break;
+      case 6: // C
+        count = (isAromatic ? 3 : 4);
+        break;
+  	  }
 
-      //System.out.println(" assigning " + count + " valence to atom " + number + " " + symbol);
+  	  //System.out.println(" assigning " + count + " valence to atom " + number + " " + atomicNumber);
 
       for (int i = 0; i < bondsCount; i++) {
         SmilesBond bond = bonds[i];
@@ -152,27 +145,26 @@ public class SmilesAtom {
     //System.out.println(" adding " + count + " H atoms to atom " + number + " " + symbol);
     for (int i = 0; i < count; i++) {
       SmilesAtom hydrogen = molecule.createAtom();
-      hydrogen.setSymbol("H");
+      hydrogen.setAtomicNumber((short) 1);
       molecule.createBond(this, hydrogen, SmilesBond.TYPE_SINGLE);
     }
   }
 
   /**
-   * Returns the atom number of the atom.
+   * Returns the atom index of the atom.
    * 
-   * @return Atom number.
+   * @return Atom index.
    */
-  public int getNumber() {
-    return number;
+  public int getIndex() {
+    return index;
   }
 
   /**
-   * Returns the symbol of the atom.
    * 
-   * @return Atom symbol.
+   * @return whether symbol was lower case
    */
-  public String getSymbol() {
-    return symbol;
+  public boolean isAromatic() {
+    return isAromatic;
   }
 
   /**
@@ -181,8 +173,28 @@ public class SmilesAtom {
    * @param symbol Atom symbol.
    */
   public void setSymbol(String symbol) {
-    this.symbol = (symbol != null) ? symbol.intern() : null;
+    if (symbol.equals("*")) {
+      atomicNumber = 0;
+      return;
+    }
     isAromatic = symbol.equals(symbol.toLowerCase()); // BH added
+    if (isAromatic)
+      symbol = symbol.substring(0, 1).toUpperCase() 
+          + (symbol.length() == 1 ? "" : symbol.substring(1));
+    atomicNumber = JmolConstants.elementNumberFromSymbol(symbol);
+  }
+
+  /**
+   *  Returns the atomic number of the element or 0
+   * 
+   * @return atomicNumber
+   */
+  public short getAtomicNumber() {
+    return atomicNumber;
+  }
+
+  private void setAtomicNumber(short i) {
+    atomicNumber = i;
   }
 
   /**

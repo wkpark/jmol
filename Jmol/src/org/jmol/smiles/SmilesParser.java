@@ -48,15 +48,12 @@ package org.jmol.smiles;
  */
 public class SmilesParser {
 
-  private SmilesBond[] ringBonds;
-  
-  /**
-   * Constructs a <code>SmilesParser</code>.
-   */
-  public SmilesParser() {
-    ringBonds = null;
+  public static SmilesMolecule getMolecule(String smiles) throws InvalidSmilesException {
+    return (new SmilesParser()).parseSmiles(smiles);
   }
 
+  private SmilesBond[] ringBonds;
+  
   /**
    * Parses a SMILES String
    * 
@@ -140,7 +137,7 @@ public class SmilesParser {
     // Bonds
     firstChar = smiles.charAt(index);
     int bondType = SmilesBond.getBondTypeFromCode(firstChar);
-    if (bondType != SmilesBond.TYPE_UNKOWN) {
+    if (bondType != SmilesBond.TYPE_UNKNOWN) {
       if (currentAtom == null) {
         throw new InvalidSmilesException("Bond without a previous atom");
       }
@@ -397,7 +394,7 @@ public class SmilesParser {
     }
 
     // Create atom
-    if (bondType == SmilesBond.TYPE_UNKOWN) {
+    if (bondType == SmilesBond.TYPE_UNKNOWN) {
       bondType = SmilesBond.TYPE_SINGLE;
     }
     SmilesAtom newAtom = molecule.createAtom();
@@ -456,13 +453,13 @@ public class SmilesParser {
     if (ringBonds[ringNum] == null) {
       ringBonds[ringNum] = molecule.createBond(currentAtom, null, bondType);
     } else {
-      if (bondType == SmilesBond.TYPE_UNKOWN) {
+      if (bondType == SmilesBond.TYPE_UNKNOWN) {
         bondType = ringBonds[ringNum].getBondType();
-        if (bondType == SmilesBond.TYPE_UNKOWN) {
+        if (bondType == SmilesBond.TYPE_UNKNOWN) {
           bondType = SmilesBond.TYPE_SINGLE;
         }
       } else {
-        if ((ringBonds[ringNum].getBondType() != SmilesBond.TYPE_UNKOWN) &&
+        if ((ringBonds[ringNum].getBondType() != SmilesBond.TYPE_UNKNOWN) &&
             (ringBonds[ringNum].getBondType() != bondType)) {
           throw new InvalidSmilesException("Incoherent bond type for ring");
         }

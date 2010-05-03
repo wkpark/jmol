@@ -63,6 +63,7 @@ public class SmilesBond {
     this.atom1 = atom1;
     this.atom2 = atom2;
     this.bondType = bondType;
+/*    
     if (atom2 == null) {
       System.out.println("SMILES connecting " + atom1.getSymbol() + atom1.getNumber()
           + " to " + atom2 + " type " + bondType);
@@ -70,6 +71,7 @@ public class SmilesBond {
     System.out.println("SMILES connecting " + atom1.getSymbol() + atom1.getNumber()
          + " to " + atom2.getSymbol() + atom2.getNumber() + " type " + bondType);
     }
+*/    
   }
 
   /**

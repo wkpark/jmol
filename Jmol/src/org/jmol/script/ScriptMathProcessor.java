@@ -1858,7 +1858,7 @@ class ScriptMathProcessor {
     String withinStr = "" + withinSpec;
     int tok = args[0].tok;
     if (tok == Token.string)
-      tok = Token.getTokFromName(withinStr);
+      tok = Token.getTokFromName(withinStr.toLowerCase());
     BitSet bs = new BitSet();
     float distance = 0;
     boolean isWithinModelSet = false;

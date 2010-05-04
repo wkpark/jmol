@@ -1092,13 +1092,21 @@ class ScriptMathProcessor {
     ScriptVariable x1 = getX();
     String sFind = ScriptVariable.sValue(args[0]);
     String flags = (args.length > 1 ? ScriptVariable.sValue(args[1]) : "");
-    if (sFind.equalsIgnoreCase("smiles")) {
+    boolean isSmiles = sFind.equalsIgnoreCase("smiles");
+    if (isSmiles || x1.tok == Token.bitset) {
       if (x1.tok == Token.string)
         return addX(viewer.getSmilesMatcher().find(flags,
             ScriptVariable.sValue(x1),
             (args.length == 3 ? ScriptVariable.bValue(args[2]) : false)));
-      if (x1.tok == Token.bitset)
-        return addX(getSmilesMatches(flags, (BitSet) x1.value, null, null));
+      if (x1.tok == Token.bitset) {
+        boolean oneOnly = (args.length > 1 ? ScriptVariable
+            .bValue(args[args.length - 1]) : false);
+        Object ret = getSmilesMatches((isSmiles ? flags : sFind),
+            (BitSet) x1.value, null, null, oneOnly);
+        if (oneOnly)
+          return addX((BitSet) ret);
+        return addX((String[]) ret);
+      }
       eval.error(ScriptEvaluator.ERROR_invalidArgument);
     }
     boolean isReverse = (flags.indexOf("v") >= 0);
@@ -1915,7 +1923,7 @@ class ScriptMathProcessor {
         eval.error(ScriptEvaluator.ERROR_invalidArgument);
       if (isSyntaxCheck)
         return addX(new Vector());
-      return addX(getSmilesMatches(ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot));
+      return addX((String[]) getSmilesMatches(ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot, false));
     }
     if (withinSpec instanceof String) {
       if (tok == Token.nada) {
@@ -2026,19 +2034,21 @@ class ScriptMathProcessor {
     return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet));
   }
 
-  private String[] getSmilesMatches(String smiles, BitSet bsSelected,
-                                          BitSet bsRequired, BitSet bsNot) throws ScriptException {    
+  private Object getSmilesMatches(String smiles, BitSet bsSelected,
+                                          BitSet bsRequired, BitSet bsNot, boolean oneOnly) throws ScriptException {    
     try {
       BitSet[] b = viewer.getSmilesMatcher().getSubstructureSetArray(
           smiles, viewer.getModelSet().atoms, viewer.getAtomCount(), 
-          bsSelected, bsRequired, bsNot);
+          bsSelected, bsRequired, bsNot, oneOnly);
+      if (oneOnly)
+        return (b.length > 0 ? b[0] : new BitSet());
       String[] matches = new String[b.length];
       for (int j = 0; j < b.length; j++)
         matches[j] = Escape.escape(b[j]);
       return matches;
     } catch (Exception e) {
       eval.evalError(e.getMessage(), null);
-      return null;
+      return null; // unattainable
     }
   }
 

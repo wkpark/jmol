@@ -10,7 +10,7 @@ public interface SmilesMatcherInterface {
       throws Exception;
 
   public abstract BitSet[] getSubstructureSetArray(String smiles, Atom[] atoms, int atomCount, 
-      BitSet bsSelected, BitSet bsRequired, BitSet bsNot) throws Exception;
+      BitSet bsSelected, BitSet bsRequired, BitSet bsNot, boolean oneOnly) throws Exception;
   
   public abstract int find(String smiles1, String smiles2, boolean oneOnly);
   

@@ -140,7 +140,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         }
       }
       list = getSubstructureSetArray(smiles1, atoms, atomCount, null, null,
-          null);
+          null, oneOnly);
       return list.length;
     } catch (Exception e) {
       return -1;
@@ -169,17 +169,18 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * Returns a vector of bits indicating which atoms match the pattern.
    * 
    * @param smiles SMILES pattern.
-   * @param bsSelected 
    * @param atoms 
    * @param atomCount 
+   * @param bsSelected 
    * @param bsRequired 
    * @param bsNot 
+   * @param oneOnly 
    * @return BitSet Array indicating which atoms match the pattern.
    * @throws Exception Raised if <code>smiles</code> is not a valid SMILES pattern.
    */
   public BitSet[] getSubstructureSetArray(String smiles, Atom[] atoms, int atomCount, 
                                           BitSet bsSelected, 
-                                          BitSet bsRequired, BitSet bsNot)
+                                          BitSet bsRequired, BitSet bsNot, boolean oneOnly)
       throws Exception {
     SmilesSearch search = SmilesParser.getMolecule(smiles);
     search.bsSelected = bsSelected;
@@ -187,6 +188,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     search.bsNot = bsNot;
     search.jmolAtoms = atoms;
     search.jmolAtomCount = atomCount;
+    search.oneOnly = oneOnly;
     search.asVector = true;
     Vector vSubstructures = (Vector) search.search();
     BitSet[] bitsets = new BitSet[vSubstructures.size()];

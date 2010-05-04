@@ -689,13 +689,13 @@ public class Token {
   final static int add          = 1 | 2 << 9 | mathfunc | mathproperty;
   final static int distance     = 2 | 2 << 9 | mathfunc | mathproperty;
   final static int replace      = 3 | 2 << 9 | mathfunc | mathproperty;
-  final static int find         = 4 | 2 << 9 | mathfunc | mathproperty;
 
   // xxx(a,b,c)
   
   final static int compare      = 1 | 3 << 9 | mathfunc | scriptCommand;
-  final static int select       = 3 | 3 << 9 | mathfunc | atomExpressionCommand;
+  final static int find         = 2 | 3 << 9 | mathfunc | mathproperty;
   final static int hkl          = 3 | 3 << 9 | mathfunc;
+  final static int select       = 4 | 3 << 9 | mathfunc | atomExpressionCommand;
 
   // ___.xxx(a,b,c)
   

@@ -1278,8 +1278,7 @@ public class TestSmilesParser extends TestCase {
    */
   private static void checkMolecule(String smiles, SmilesMolecule expected) {
     try {
-      SmilesParser parser = new SmilesParser();
-      SmilesMolecule molecule = parser.parseSmiles(smiles);
+      SmilesMolecule molecule = SmilesParser.getMolecule(smiles);
       assertTrue(areMoleculeEquals(molecule, expected));
     } catch (InvalidSmilesException e) {
       fail("InvalidSmilesException: " + e.getMessage());
@@ -1358,18 +1357,18 @@ public class TestSmilesParser extends TestCase {
               bond2.getBondType() + ")");
           return false;
         }
-        if (bond1.getAtom1().getNumber() != bond2.getAtom1().getNumber()) {
+        if (bond1.getAtom1().getIndex() != bond2.getAtom1().getIndex()) {
           Logger.error(
               "Atom " + i + ", bond " + j + " atom1 number (" +
-              bond1.getAtom1().getNumber() + "," +
-              bond2.getAtom1().getNumber() + ")");
+              bond1.getAtom1().getIndex() + "," +
+              bond2.getAtom1().getIndex() + ")");
           return false;
         }
-        if (bond1.getAtom2().getNumber() != bond2.getAtom2().getNumber()) {
+        if (bond1.getAtom2().getIndex() != bond2.getAtom2().getIndex()) {
           Logger.error(
               "Atom " + i + ", bond " + j + " atom2 number (" +
-              bond1.getAtom2().getNumber() + "," +
-              bond2.getAtom2().getNumber() + ")");
+              bond1.getAtom2().getIndex() + "," +
+              bond2.getAtom2().getIndex() + ")");
           return false;
         }
       }
@@ -1402,11 +1401,18 @@ public class TestSmilesParser extends TestCase {
             atom2.getChiralOrder() + ")");
         return false;
       }
-      if (!atom1.getSymbol().equals(atom2.getSymbol())) {
+      if (atom1.getAtomicNumber() != atom2.getAtomicNumber()) {
         Logger.error(
-            "Atom " + i + " symbol (" +
-            atom1.getSymbol() + "," +
-            atom2.getSymbol() + ")");
+            "Atom " + i + " atomicNumber (" +
+            atom1.getAtomicNumber() + "," +
+            atom2.getAtomicNumber() + ")");
+        return false;
+      }
+      if (atom1.isAromatic() != atom2.isAromatic()) {
+        Logger.error(
+            "Atom " + i + " isAromatic (" +
+            atom1.isAromatic() + "," +
+            atom2.isAromatic() + ")");
         return false;
       }
     }

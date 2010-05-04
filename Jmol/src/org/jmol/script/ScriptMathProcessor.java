@@ -1085,7 +1085,7 @@ class ScriptMathProcessor {
   }
 
   private boolean evaluateFind(ScriptVariable[] args) throws ScriptException {
-    if (args.length == 0 || args.length > 3)
+    if (args.length == 0)
       return false;
     if (isSyntaxCheck)
       return addX((int) 1);

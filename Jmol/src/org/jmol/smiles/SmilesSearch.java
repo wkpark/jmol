@@ -29,9 +29,11 @@ import java.util.BitSet;
 import org.jmol.modelset.Atom;
 
 /**
- * Molecule created from a SMILES String
+ * Search data created from a SMILES String -- was SmilesMolecule, 
+ * but this now includes more data than that so as to keep this thread safe
+ * 
  */
-public class SmilesMolecule {
+public class SmilesSearch {
 
   Atom[] jmolAtoms;
   int jmolAtomCount;
@@ -51,7 +53,7 @@ public class SmilesMolecule {
   /**
    * SmilesMolecule constructor  
    */
-  public SmilesMolecule() {
+  public SmilesSearch() {
   }
   
   /* ============================================================= */

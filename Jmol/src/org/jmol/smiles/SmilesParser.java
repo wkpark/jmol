@@ -48,7 +48,7 @@ package org.jmol.smiles;
  */
 public class SmilesParser {
 
-  public static SmilesMolecule getMolecule(String smiles) throws InvalidSmilesException {
+  public static SmilesSearch getMolecule(String smiles) throws InvalidSmilesException {
     return (new SmilesParser()).parseSmiles(smiles);
   }
 
@@ -61,13 +61,13 @@ public class SmilesParser {
    * @return Molecule corresponding to <code>smiles</code>
    * @throws InvalidSmilesException
    */
-  public SmilesMolecule parseSmiles(String smiles) throws InvalidSmilesException {
+  public SmilesSearch parseSmiles(String smiles) throws InvalidSmilesException {
     if (smiles == null) {
       throw new InvalidSmilesException("SMILES expressions must not be null");
     }
 
     // First pass
-    SmilesMolecule molecule = new SmilesMolecule();
+    SmilesSearch molecule = new SmilesSearch();
     parseSmiles(molecule, smiles, null);
     
     // Implicit hydrogen creation
@@ -97,7 +97,7 @@ public class SmilesParser {
    * @throws InvalidSmilesException
    */
   private void parseSmiles(
-      SmilesMolecule molecule,
+      SmilesSearch molecule,
       String         smiles,
       SmilesAtom     currentAtom) throws InvalidSmilesException {
     if ((smiles == null) || (smiles.length() == 0)) {
@@ -219,7 +219,7 @@ public class SmilesParser {
    * @throws InvalidSmilesException
    */
   private SmilesAtom parseAtom(
-        SmilesMolecule molecule,
+        SmilesSearch molecule,
         String         smiles,
         SmilesAtom     currentAtom,
         int            bondType,
@@ -420,7 +420,7 @@ public class SmilesParser {
    * @throws InvalidSmilesException
    */
   private void parseRing(
-        SmilesMolecule molecule,
+        SmilesSearch molecule,
         String         smiles,
         SmilesAtom     currentAtom,
         int            bondType) throws InvalidSmilesException {

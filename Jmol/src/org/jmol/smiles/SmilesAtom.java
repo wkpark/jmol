@@ -85,7 +85,7 @@ public class SmilesAtom {
    * 
    * @param molecule Molecule containing the atom.
    */
-  public void createMissingHydrogen(SmilesMolecule molecule) {
+  public void createMissingHydrogen(SmilesSearch molecule) {
   	// Determining max count
   	int count = 0;
   	if (hydrogenCount == Integer.MIN_VALUE) {

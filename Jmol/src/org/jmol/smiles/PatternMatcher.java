@@ -40,17 +40,42 @@ import org.jmol.viewer.JmolConstants;
  * <p>
  * An example on how to use it:
  * <pre><code>
- * PatternMatcher matcher = new PatternMatcher(modelSet);
+ * PatternMatcher matcher = new PatternMatcher();
  * try {
- *   BitSet bitSet = matcher.getSubstructureSet(smilesString);
- *   // Use bitSet...
+ *   BitSet bitSet = matcher.getSubstructureSet(smilesString, atoms, atomCount);
+ *   
+ *   // or, to get the exact finds:
+ *   
+ *   BitSet[] matcher.getSubstructureSetArray(smiles, atoms, atomCount, 
+ *                                         bsSelected, bsRequired, bsNot);
+ *                                         
+ *   //The input BitSets may be null
+ * 
+ *   // or, to count the matches of one Smiles string in another:
+ *   
+ *   int nFound = matcher.find(smilesString1, smilesString2);
+ *   // smilesString1 is found in smilesString2
+ *   
  * } catch (InvalidSmilesException e) {
  *   // Exception management
  * }
+ *   
+ *   in Jmol script:
+ *   
+ *   string2.find("SMILES", string1)
+ *   
+ *   e.g.
+ *   
+ *     print "CCCC".find("SMILES", "C[C]")
+ *
+ *   2
+ *   
  * </code></pre>
  * 
  * @author Nicolas Vervelle
- * @see org.jmol.smiles.SmilesMolecule
+ * @see org.jmol.smiles.SmilesParser
+ * @see org.jmol.smiles.SmilesSearch
+ * 
  */
 public class PatternMatcher implements SmilesMatcherInterface {
 
@@ -66,7 +91,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
     BitSet[] list = null;
     try {
       // create a topological model set from smiles2
-      SmilesMolecule pattern = (new SmilesParser()).parseSmiles(smiles2);
+      SmilesSearch pattern = (new SmilesParser()).parseSmiles(smiles2);
       int atomCount = pattern.getAtomsCount();
       Atom[] atoms = new Atom[atomCount];
       for (int i = 0; i < atomCount; i++) {
@@ -125,7 +150,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
    */
   
   public BitSet getSubstructureSet(String smiles, Atom[] atoms, int atomCount) throws Exception {
-    SmilesMolecule pattern = SmilesParser.getMolecule(smiles);
+    SmilesSearch pattern = SmilesParser.getMolecule(smiles);
     pattern.jmolAtoms = atoms;
     pattern.jmolAtomCount = atomCount;
     BitSet bsSubstructure = new BitSet();
@@ -149,7 +174,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
                                           BitSet bsSelected, 
                                           BitSet bsRequired, BitSet bsNot)
       throws Exception {
-    SmilesMolecule pattern = SmilesParser.getMolecule(smiles);
+    SmilesSearch pattern = SmilesParser.getMolecule(smiles);
     pattern.bsSelected = bsSelected;
     pattern.bsRequired = (bsRequired != null && bsRequired.cardinality() > 0 ? bsRequired : null);
     pattern.bsNot = bsNot;
@@ -163,7 +188,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
     return bitsets;
   }
 
-  private void search(Object ret, SmilesMolecule pattern) {
+  private void search(Object ret, SmilesSearch pattern) {
     for (int i = 0; i < pattern.jmolAtomCount; i++) {
       searchMatch(ret, pattern, pattern.getAtom(0), 0, i);
     }
@@ -179,7 +204,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
    * @param atomNum
    *          Current atom of the pattern.
    */
-  private void searchMatch(Object ret, SmilesMolecule pattern, int atomNum) {
+  private void searchMatch(Object ret, SmilesSearch pattern, int atomNum) {
     // consider a specific pattern atom...
     SmilesAtom patternAtom = pattern.getAtom(atomNum);
     // for all the pattern bonds for this atom...
@@ -207,7 +232,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
    * 
    * @param ret
    *          Resulting BitSet or Vector(BitSet).
-   * @param pattern
+   * @param search
    *          SMILES pattern.
    * @param atoms 
    * @param atomCount 
@@ -219,16 +244,16 @@ public class PatternMatcher implements SmilesMatcherInterface {
    *          Atom number of the atom that is currently tested to match
    *          <code>patternAtom</code>.
    */
-  private void searchMatch(Object ret, SmilesMolecule pattern,  
+  private void searchMatch(Object ret, SmilesSearch search,  
                            SmilesAtom patternAtom, int atomNum, int i) {
     
     for (int j = 0; j < atomNum; j++) {
-      SmilesAtom previousAtom = pattern.getAtom(j);
+      SmilesAtom previousAtom = search.getAtom(j);
       if (previousAtom.getMatchingAtom() == i) {
         return;
       }
     }
-    Atom atom = pattern.jmolAtoms[i];
+    Atom atom = search.jmolAtoms[i];
 
     // Check atomic number
     int targetAtomicNumber = patternAtom.getAtomicNumber();
@@ -336,8 +361,8 @@ public class PatternMatcher implements SmilesMatcherInterface {
     }
     System.out.println(" " + (atomNum+1) + "/" + pattern.getAtomsCount());
 */    
-    if (atomNum + 1 < pattern.getAtomsCount()) {
-      searchMatch(ret, pattern, atomNum + 1);
+    if (atomNum + 1 < search.getAtomsCount()) {
+      searchMatch(ret, search, atomNum + 1);
     } else {
       BitSet bs;
       if (ret instanceof BitSet) {
@@ -345,21 +370,21 @@ public class PatternMatcher implements SmilesMatcherInterface {
       } else {
         bs = new BitSet();
       }
-      for (int k = 0; k < pattern.getAtomsCount(); k++) {
-        SmilesAtom matching = pattern.getAtom(k);
+      for (int k = 0; k < search.getAtomsCount(); k++) {
+        SmilesAtom matching = search.getAtom(k);
         bs.set(matching.getMatchingAtom());
       }
       if (ret instanceof Vector) {
         Vector v = (Vector) ret;
         boolean isOK = true;
-        if (pattern.bsNot != null && pattern.bsNot.intersects(bs))
+        if (search.bsNot != null && search.bsNot.intersects(bs))
           isOK = false;
-        else if (pattern.bsRequired != null && !pattern.bsRequired.intersects(bs))
+        else if (search.bsRequired != null && !search.bsRequired.intersects(bs))
           isOK = false;
-        else if (pattern.bsSelected != null)
+        else if (search.bsSelected != null)
           for (int j = bs.nextSetBit(0); j >= 0 && isOK; j = bs
               .nextSetBit(j + 1))
-            isOK = pattern.bsSelected.get(j);
+            isOK = search.bsSelected.get(j);
         for (int j = v.size(); --j >= 0 && isOK;)
           isOK = !(((BitSet) v.get(j)).equals(bs));
         if (isOK)

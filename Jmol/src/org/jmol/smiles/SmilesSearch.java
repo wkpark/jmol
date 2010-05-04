@@ -220,13 +220,13 @@ public class SmilesSearch {
         if (bonds[k].getAtomIndex1() != matchingAtom
             && bonds[k].getAtomIndex2() != matchingAtom)
           continue;
-        bondFound = false;
         if (matchAnyBond) {
           // disregard bond type when aromatic -- could be single, double, or
           // aromatic
           bondFound = true;
           break;
         }
+        bondFound = false;
         if (!bonds[k].isCovalent())
           continue;
         int order = bonds[k].getCovalentOrder();
@@ -234,24 +234,16 @@ public class SmilesSearch {
         case SmilesBond.TYPE_SINGLE:
         case SmilesBond.TYPE_DIRECTIONAL_1:
         case SmilesBond.TYPE_DIRECTIONAL_2:
-          if (order == JmolConstants.BOND_COVALENT_SINGLE) {
-            bondFound = true;
-          }
+          bondFound = (order == JmolConstants.BOND_COVALENT_SINGLE);
           break;
         case SmilesBond.TYPE_DOUBLE:
-          if (order == JmolConstants.BOND_COVALENT_DOUBLE) {
-            bondFound = true;
-          }
+          bondFound = (order == JmolConstants.BOND_COVALENT_DOUBLE);
           break;
         case SmilesBond.TYPE_TRIPLE:
-          if (order == JmolConstants.BOND_COVALENT_TRIPLE) {
-            bondFound = true;
-          }
+          bondFound = (order == JmolConstants.BOND_COVALENT_TRIPLE);
           break;
         case SmilesBond.TYPE_AROMATIC: // not implemented
-          if ((order & JmolConstants.BOND_AROMATIC_MASK) != 0) {
-            bondFound = true;
-          }
+          bondFound = ((order & JmolConstants.BOND_AROMATIC_MASK) != 0);
           break;
         case SmilesBond.TYPE_UNKNOWN:
           bondFound = true;

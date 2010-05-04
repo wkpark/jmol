@@ -1208,7 +1208,7 @@ public final class ModelLoader extends ModelSet {
         int dz = (b.order == JmolConstants.BOND_STEREO_NEAR ? 3 : -3);
         b.order = 1;
         if (b.atom2.z != b.atom1.z && (dz < 0) == (b.atom2.z < b.atom1.z))
-          continue;
+          dz /= 3;
         BitSet bs = getBranchBitSet(b.atom2.index, b.atom1.index, false);
         bs.set(b.atom2.index); // ring structures
         for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))

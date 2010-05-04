@@ -1279,7 +1279,7 @@ public class TestSmilesParser extends TestCase {
   private static void checkMolecule(String smiles, SmilesSearch expected) {
     try {
       SmilesSearch molecule = SmilesParser.getMolecule(smiles);
-      assertTrue(areMoleculeEquals(molecule, expected));
+      assertTrue(areMoleculesEqual(molecule, expected));
     } catch (InvalidSmilesException e) {
       fail("InvalidSmilesException: " + e.getMessage());
     }
@@ -1306,21 +1306,21 @@ public class TestSmilesParser extends TestCase {
    * @param molecule2 Molecule 2
    * @return true if they are equal
    */
-  private static boolean areMoleculeEquals(
+  private static boolean areMoleculesEqual(
           SmilesSearch molecule1,
           SmilesSearch molecule2) {
     if ((molecule1 == null) || (molecule2 == null)) {
       Logger.error("Molecule null");
       return false;
     }
-    if (molecule1.getAtomsCount() != molecule2.getAtomsCount()) {
+    if (molecule1.getPatternAtomCount() != molecule2.getPatternAtomCount()) {
       Logger.error(
           "Atoms count (" +
-          molecule1.getAtomsCount() + "," +
-          molecule2.getAtomsCount() + ")");
+          molecule1.getPatternAtomCount() + "," +
+          molecule2.getPatternAtomCount() + ")");
       return false;
     }
-    for (int i = 0; i < molecule1.getAtomsCount(); i++) {
+    for (int i = molecule1.getPatternAtomCount(); --i >= 0; ) {
       SmilesAtom atom1 = molecule1.getAtom(i);
       SmilesAtom atom2 = molecule2.getAtom(i);
       if ((atom1 == null) || (atom2 == null)) {

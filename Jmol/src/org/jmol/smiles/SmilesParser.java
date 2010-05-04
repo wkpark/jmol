@@ -71,7 +71,7 @@ public class SmilesParser {
     parseSmiles(molecule, smiles, null);
     
     // Implicit hydrogen creation
-    for (int i = 0; i< molecule.getAtomsCount(); i++) {
+    for (int i = 0; i< molecule.patternAtomCount; i++) {
       SmilesAtom atom = molecule.getAtom(i);
       atom.createMissingHydrogen(molecule);
     }

@@ -1085,17 +1085,18 @@ class ScriptMathProcessor {
   }
 
   private boolean evaluateFind(ScriptVariable[] args) throws ScriptException {
-    if (args.length != 1 && args.length != 2)
+    if (args.length == 0 || args.length > 3)
       return false;
     if (isSyntaxCheck)
       return addX((int) 1);
     ScriptVariable x1 = getX();
     String sFind = ScriptVariable.sValue(args[0]);
-    boolean isPattern = (args.length == 2);
-    String flags = (isPattern ? ScriptVariable.sValue(args[1]) : "");
+    String flags = (args.length > 1 ? ScriptVariable.sValue(args[1]) : "");
     if (sFind.equalsIgnoreCase("smiles")) {
       if (x1.tok == Token.string)
-        return addX(viewer.getSmilesMatcher().find(flags, ScriptVariable.sValue(x1)));
+        return addX(viewer.getSmilesMatcher().find(flags,
+            ScriptVariable.sValue(x1),
+            (args.length == 3 ? ScriptVariable.bValue(args[2]) : false)));
       if (x1.tok == Token.bitset)
         return addX(getSmilesMatches(flags, (BitSet) x1.value, null, null));
       eval.error(ScriptEvaluator.ERROR_invalidArgument);
@@ -1104,6 +1105,7 @@ class ScriptMathProcessor {
     boolean isCaseInsensitive = (flags.indexOf("i") >= 0);
     boolean asMatch = (flags.indexOf("m") >= 0);
     boolean isList = (x1.tok == Token.list);
+    boolean isPattern = (args.length == 2);
     if (isList || isPattern) {
       Pattern pattern = null;
       try {

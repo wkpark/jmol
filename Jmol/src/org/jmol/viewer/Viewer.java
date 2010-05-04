@@ -179,7 +179,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public SmilesMatcherInterface getSmilesMatcher() {
     if (smilesMatcher == null) {
       smilesMatcher = (SmilesMatcherInterface) Interface
-          .getOptionInterface("smiles.PatternMatcher");
+          .getOptionInterface("smiles.SmilesMatcher");
     }
     return smilesMatcher;
   }

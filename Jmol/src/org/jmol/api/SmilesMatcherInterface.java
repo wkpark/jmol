@@ -12,6 +12,6 @@ public interface SmilesMatcherInterface {
   public abstract BitSet[] getSubstructureSetArray(String smiles, Atom[] atoms, int atomCount, 
       BitSet bsSelected, BitSet bsRequired, BitSet bsNot) throws Exception;
   
-  public abstract int find(String smiles1, String smiles2);
+  public abstract int find(String smiles1, String smiles2, boolean oneOnly);
   
 }

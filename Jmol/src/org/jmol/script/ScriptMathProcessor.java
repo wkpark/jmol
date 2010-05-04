@@ -1097,13 +1097,13 @@ class ScriptMathProcessor {
       if (x1.tok == Token.string)
         return addX(viewer.getSmilesMatcher().find(flags,
             ScriptVariable.sValue(x1),
-            (args.length == 3 ? ScriptVariable.bValue(args[2]) : false)));
+            (args.length == 3 && ScriptVariable.bValue(args[2]))));
       if (x1.tok == Token.bitset) {
-        boolean oneOnly = (args.length > 1 ? ScriptVariable
-            .bValue(args[args.length - 1]) : false);
+        boolean isAll = (args.length > 1 && ScriptVariable
+            .bValue(args[args.length - 1]));
         Object ret = getSmilesMatches((isSmiles ? flags : sFind),
-            (BitSet) x1.value, null, null, oneOnly);
-        if (oneOnly)
+            (BitSet) x1.value, null, null, isAll);
+        if (!isAll)
           return addX((BitSet) ret);
         return addX((String[]) ret);
       }
@@ -1923,7 +1923,7 @@ class ScriptMathProcessor {
         eval.error(ScriptEvaluator.ERROR_invalidArgument);
       if (isSyntaxCheck)
         return addX(new Vector());
-      return addX((String[]) getSmilesMatches(ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot, false));
+      return addX((String[]) getSmilesMatches(ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot, true));
     }
     if (withinSpec instanceof String) {
       if (tok == Token.nada) {
@@ -2035,12 +2035,12 @@ class ScriptMathProcessor {
   }
 
   private Object getSmilesMatches(String smiles, BitSet bsSelected,
-                                          BitSet bsRequired, BitSet bsNot, boolean oneOnly) throws ScriptException {    
+                                          BitSet bsRequired, BitSet bsNot, boolean isAll) throws ScriptException {    
     try {
       BitSet[] b = viewer.getSmilesMatcher().getSubstructureSetArray(
           smiles, viewer.getModelSet().atoms, viewer.getAtomCount(), 
-          bsSelected, bsRequired, bsNot, oneOnly);
-      if (oneOnly)
+          bsSelected, bsRequired, bsNot, isAll);
+      if (!isAll)
         return (b.length > 0 ? b[0] : new BitSet());
       String[] matches = new String[b.length];
       for (int j = 0; j < b.length; j++)
@@ -2158,7 +2158,7 @@ class ScriptMathProcessor {
     String smiles = (isSyntaxCheck ? "" : ScriptVariable.sValue(args[0]));
     if (smiles.length() > 0)
       try {
-        bs = viewer.getSmilesMatcher().getSubstructureSet(smiles, viewer.getModelSet().atoms, viewer.getAtomCount());
+        bs = viewer.getSmilesMatcher().getSubstructureSet(smiles, viewer.getModelSet().atoms, viewer.getAtomCount(), true);
       } catch (Exception e) {
         eval.evalError(e.getMessage(), null);
       }

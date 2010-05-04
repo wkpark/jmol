@@ -46,7 +46,7 @@ public class SmilesSearch {
   BitSet bsSelected;
   BitSet bsRequired;
   BitSet bsNot;      
-  boolean oneOnly;
+  boolean isAll;
   
   private final static int INITIAL_ATOMS = 16;
   private SmilesAtom[] atoms = new SmilesAtom[INITIAL_ATOMS];
@@ -323,7 +323,7 @@ public class SmilesSearch {
         if (isOK)
           Logger.debug("match: " + Escape.escape(bsReturn));
       }
-      if (oneOnly || bsReturn.cardinality() == jmolAtomCount)
+      if (!isAll || bsReturn.cardinality() == jmolAtomCount)
         return false;
     }
     patternAtom.setMatchingAtom(-1);

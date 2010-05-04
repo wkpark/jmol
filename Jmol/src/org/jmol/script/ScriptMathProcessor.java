@@ -1095,7 +1095,7 @@ class ScriptMathProcessor {
     boolean isSmiles = sFind.equalsIgnoreCase("smiles");
     if (isSmiles || x1.tok == Token.bitset) {
       if (x1.tok == Token.string)
-        return addX(viewer.getSmilesMatcher().find(flags,
+        return addX(isSyntaxCheck ? 0 : viewer.getSmilesMatcher().find(flags,
             ScriptVariable.sValue(x1),
             (args.length == 3 && ScriptVariable.bValue(args[2]))));
       if (x1.tok == Token.bitset) {
@@ -2035,7 +2035,12 @@ class ScriptMathProcessor {
   }
 
   private Object getSmilesMatches(String smiles, BitSet bsSelected,
-                                          BitSet bsRequired, BitSet bsNot, boolean isAll) throws ScriptException {    
+                                          BitSet bsRequired, BitSet bsNot, boolean isAll) throws ScriptException {
+    if (isSyntaxCheck) {
+      if (isAll)
+        return new String[] {""};
+      return new BitSet();
+    }
     try {
       BitSet[] b = viewer.getSmilesMatcher().getSubstructureSetArray(
           smiles, viewer.getModelSet().atoms, viewer.getAtomCount(), 

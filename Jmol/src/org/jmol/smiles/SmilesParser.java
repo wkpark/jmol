@@ -70,7 +70,6 @@ public class SmilesParser {
    SmilesSearch parse(String pattern) throws InvalidSmilesException {
     if (pattern == null)
       throw new InvalidSmilesException("SMILES expressions must not be null");
-
     // First pass
     SmilesSearch molecule = new SmilesSearch();
     molecule.isSmarts = isSmarts;
@@ -179,6 +178,8 @@ public class SmilesParser {
     ch = pattern.charAt(index);
     int bondType = SmilesBond.getBondTypeFromCode(ch);
     if (bondType != SmilesBond.TYPE_UNKNOWN) {
+      if (bondType == SmilesBond.TYPE_DIRECTIONAL_1 || bondType == SmilesBond.TYPE_DIRECTIONAL_2)
+        molecule.haveBondStereochemistry = true;
       if (currentAtom == null) {
         throw new InvalidSmilesException("Bond without a previous atom");
       }
@@ -261,8 +262,10 @@ public class SmilesParser {
     SmilesAtom newAtom = molecule.createAtom();
 
     pattern = checkCharge(pattern, newAtom);
-    pattern = checkChirality(pattern, newAtom);
-
+    if (pattern.indexOf("@") >= 0) {
+      molecule.haveAtomStereochemistry = true;
+      pattern = checkChirality(pattern, newAtom);
+    }
     int len = pattern.length();
     int index = 0;
     int pt = index;
@@ -350,8 +353,6 @@ public class SmilesParser {
     int len = pattern.length();
     int ch;
     int index = pt0;
-    if (index < 0)
-      return pattern;
     chiralClass = SmilesAtom.CHIRALITY_DEFAULT;
     chiralOrder = 1;
     if (++index < len) {

@@ -52,11 +52,13 @@ public class SmilesSearch {
   boolean isAll;
   boolean isSmarts;
   
+  int patternAtomCount;
+  boolean asVector;
+  boolean haveBondStereochemistry;
+  boolean haveAtomStereochemistry;
 
   private final static int INITIAL_ATOMS = 16;
   private SmilesAtom[] atoms = new SmilesAtom[INITIAL_ATOMS];
-  int patternAtomCount;
-  boolean asVector;
   private Vector vReturn;
   private BitSet bsReturn = new BitSet();
     
@@ -309,7 +311,7 @@ public class SmilesSearch {
         }
       }
     } else {
-      if (!checkChirality())
+      if (!checkStereochemistry())
         return true;
       BitSet bs = new BitSet();
       for (int k = 0; k < patternAtomCount; k++) {
@@ -350,36 +352,104 @@ public class SmilesSearch {
     return true;
   }
 
-  private boolean checkChirality() {
-    for (int k = 0; k < patternAtomCount; k++) {
-      SmilesAtom sAtom = atoms[k];
-      int nH = sAtom.getHydrogenCount();
-      int chiralClass = sAtom.getChiralClass();
-      switch (chiralClass) {
-      case Integer.MIN_VALUE:
-        break;
-      case SmilesAtom.CHIRALITY_TETRAHEDRAL:
-        Atom atom1 =  null;
-        switch (nH) {
-        case 0:
-          atom1 = jmolAtoms[sAtom.getMatchingBondedAtom(0)];
+  private boolean checkStereochemistry() {
+
+    // first, @ stereochemistry
+
+    if (haveAtomStereochemistry)
+      for (int k = 0; k < patternAtomCount; k++) {
+        SmilesAtom sAtom = atoms[k];
+        int nH = sAtom.getHydrogenCount();
+        int chiralClass = sAtom.getChiralClass();
+        switch (chiralClass) {
+        case Integer.MIN_VALUE:
           break;
-        case 1:
-          atom1 = getHydrogens(jmolAtoms[sAtom.getMatchingAtom()], null);
+        case SmilesAtom.CHIRALITY_TETRAHEDRAL:
+          Atom atom1 = null;
+          switch (nH) {
+          case 0:
+            atom1 = jmolAtoms[sAtom.getMatchingBondedAtom(0)];
+            break;
+          case 1:
+            atom1 = getHydrogens(jmolAtoms[sAtom.getMatchingAtom()], null);
+            break;
+          default:
+            continue;
+          }
+          Atom atom2 = jmolAtoms[sAtom.getMatchingBondedAtom(1 - nH)];
+          Atom atom3 = jmolAtoms[sAtom.getMatchingBondedAtom(2 - nH)];
+          Atom atom4 = jmolAtoms[sAtom.getMatchingBondedAtom(3 - nH)];
+          if (getChirality(atom2, atom3, atom4, atom1) != sAtom
+              .getChiralOrder())
+            return false;
           break;
         default:
-          continue;
+          Logger.error("chirality class " + chiralClass + " not supported");
         }
-        Atom atom2 = jmolAtoms[sAtom.getMatchingBondedAtom(1 - nH)];
-        Atom atom3 = jmolAtoms[sAtom.getMatchingBondedAtom(2 - nH)];
-        Atom atom4 = jmolAtoms[sAtom.getMatchingBondedAtom(3 - nH)];
-        if (getChirality(atom2, atom3, atom4, atom1) != sAtom.getChiralOrder())
-          return false;
-        break;
-      default:
-        Logger.error("chirality class " + chiralClass + " not supported");
       }
-    }
+
+    // next, /C=C/ double bond stereochemistry
+
+    if (haveBondStereochemistry)
+      for (int k = 0; k < patternAtomCount; k++) {
+        SmilesAtom sAtom1 = atoms[k];
+        SmilesAtom sAtom2 = null;
+        SmilesAtom sAtomDirected1 = null;
+        SmilesAtom sAtomDirected2 = null;
+        int dir1 = 0;
+        int dir2 = 0;
+        
+        int nBonds = sAtom1.getBondsCount();
+        for (int j = 0; j < nBonds; j++) {
+          SmilesBond b = sAtom1.getBond(j);
+          boolean isAtom2 = (b.getAtom2() == sAtom1);
+          int type = b.getBondType();
+          switch (type) {
+          case SmilesBond.TYPE_DOUBLE:
+            if (isAtom2)
+              continue;
+            sAtom2 = b.getAtom2();
+            break;
+          case SmilesBond.TYPE_DIRECTIONAL_1:
+          case SmilesBond.TYPE_DIRECTIONAL_2:
+            sAtomDirected1 = (isAtom2 ? b.getAtom1() : b.getAtom2());
+            dir1 = (type == SmilesBond.TYPE_DIRECTIONAL_1 ? 1 : -1);
+          }
+        }
+        if (sAtom2 == null || dir1 == 0)
+          continue;
+        nBonds = sAtom2.getBondsCount();
+        for (int j = 0; j < nBonds && dir2 == 0; j++) {
+          SmilesBond b = sAtom2.getBond(j);
+          boolean isAtom2 = (b.getAtom2() == sAtom2);
+          int type = b.getBondType();
+          switch (type) {
+          case SmilesBond.TYPE_DIRECTIONAL_1:
+          case SmilesBond.TYPE_DIRECTIONAL_2:
+            sAtomDirected2 = (isAtom2 ? b.getAtom1() : b.getAtom2());
+            dir2 = (type == SmilesBond.TYPE_DIRECTIONAL_1 ? 1 : -1);
+            break;
+          }
+        }
+        
+        if (dir2 == 0)
+          continue;
+
+        Atom dbAtom1 = jmolAtoms[sAtom1.getMatchingAtom()];        
+        Atom dbAtom2 = jmolAtoms[sAtom2.getMatchingAtom()];        
+        Atom dbAtom1a = jmolAtoms[sAtomDirected1.getMatchingAtom()];        
+        Atom dbAtom2a = jmolAtoms[sAtomDirected2.getMatchingAtom()];        
+        Vector3f v1 = new Vector3f(dbAtom1a);
+        Vector3f v2 = new Vector3f(dbAtom2a);
+        v1.sub(dbAtom1);
+        v2.sub(dbAtom2);
+        // for \C=C\, (dir1*dir2 == 1), dot product should be negative 
+        // because the bonds are oppositely directed
+        // for \C=C/, (dir1*dir2 == -1), dot product should be positive 
+        // because the bonds are only about 60 degrees apart
+        if (v1.dot(v2) * dir1 * dir2 > 0)
+          return false;
+      }
     return true;
   }
 

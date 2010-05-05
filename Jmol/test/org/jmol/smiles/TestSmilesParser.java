@@ -1294,6 +1294,7 @@ public class TestSmilesParser extends TestCase {
   private void addHydrogen(SmilesSearch molecule, SmilesAtom bonded) {
     if (true)
       return;
+    // no longer testable this way -- SmilesParser does not add H atoms
     SmilesAtom atomH = molecule.createAtom();
     atomH.setSymbol("H");
     if (bonded != null) {

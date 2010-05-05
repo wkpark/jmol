@@ -322,6 +322,8 @@ public class SmilesAtom {
   }
 
   public int getMatchingBondedAtom(int i) {
+    if (i >= bondsCount)
+      return -1;
     SmilesBond b = bonds[i];
     return (b.getAtom1() == this ? b.getAtom2() : b.getAtom1()).matchingAtom;
   }

@@ -121,4 +121,9 @@ public class SmilesBond {
   public void setBondType(int bondType) {
     this.bondType = bondType;
   }
+  
+  public SmilesAtom getOtherAtom(SmilesAtom a) {
+    return (atom1 == a ? atom2 : atom1);
+  }
+  
 }

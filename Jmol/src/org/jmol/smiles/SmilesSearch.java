@@ -169,7 +169,7 @@ public class SmilesSearch {
         return true;
       }
     }
-    Atom atom = jmolAtoms[i];
+    Atom atom = getJmolAtom(i);
 
     // Check atomic number
     int targetAtomicNumber = patternAtom.getAtomicNumber();
@@ -299,7 +299,7 @@ public class SmilesSearch {
         // have two fragments going at the same time.
         if (patternBond.getAtom2() == patternAtom) {
           // run through the bonds of that assigned atom
-          atom = jmolAtoms[patternBond.getAtom1().getMatchingAtom()];
+          atom = getJmolAtom(patternBond.getAtom1().getMatchingAtom());
           bonds = atom.getBonds();
           // now run through all the bonds looking for atoms that might match
           // this is the iterative step
@@ -320,7 +320,7 @@ public class SmilesSearch {
         if (!isSmarts) {
           npH = atoms[k].getHydrogenCount();
           if (npH != Integer.MIN_VALUE && npH != Integer.MAX_VALUE) 
-              getHydrogens(jmolAtoms[iAtom], bs);
+              getHydrogens(getJmolAtom(iAtom), bs);
         }
       }
       if (bsRequired != null && !bsRequired.intersects(bs))
@@ -356,41 +356,81 @@ public class SmilesSearch {
 
     // first, @ stereochemistry
 
-    if (haveAtomStereochemistry)
+    if (haveAtomStereochemistry) {
+      Atom atom1 = null, atom2 = null, atom3 = null, atom4 = null, atom5 = null;
       for (int k = 0; k < patternAtomCount; k++) {
         SmilesAtom sAtom = atoms[k];
         int nH = sAtom.getHydrogenCount();
         int chiralClass = sAtom.getChiralClass();
+        int order = sAtom.getChiralOrder();
+        atom4 = null;
         switch (chiralClass) {
         case Integer.MIN_VALUE:
           break;
+        case SmilesAtom.CHIRALITY_ALLENE:
+          SmilesAtom sAtom1 = sAtom.getBond(0).getOtherAtom(sAtom);
+          SmilesAtom sAtom2 = sAtom.getBond(1).getOtherAtom(sAtom);
+          if (sAtom1 == null || sAtom2 == null)
+            continue;
+          
+          // ignoring cumulenes for now
+          
+          atom1 = getJmolAtom(sAtom1.getMatchingBondedAtom(0));
+          atom2 = getJmolAtom(sAtom1.getMatchingBondedAtom(1));
+          if (atom2 == null && nH != 1)
+            continue;
+          if (atom2 == null) {
+            atom2 = getHydrogens(getJmolAtom(sAtom1.getMatchingAtom()), null);
+            if (sAtom1.getIndex() == 0) {
+              // attached H is first in that case
+              Atom a = atom2;
+              atom2 = atom1;
+              atom1 = a;
+            }
+          }
+          nH = sAtom2.getHydrogenCount();
+          atom3 = getJmolAtom(sAtom2.getMatchingBondedAtom(1));
+          atom4 = getJmolAtom(sAtom2.getMatchingBondedAtom(2));
+          if (atom3 == null || atom4 == null && nH != 1)
+            continue;
+          if (atom4 == null)
+            atom4 = getHydrogens(getJmolAtom(sAtom2.getMatchingAtom()), null);
+          atom5 = null;
+          break;          
         case SmilesAtom.CHIRALITY_TETRAHEDRAL:
-          Atom atom1 = null;
+          atom1 = getJmolAtom(sAtom.getMatchingBondedAtom(0));
           switch (nH) {
           case 0:
-            atom1 = jmolAtoms[sAtom.getMatchingBondedAtom(0)];
+            atom2 = getJmolAtom(sAtom.getMatchingBondedAtom(1));
             break;
           case 1:
-            atom1 = getHydrogens(jmolAtoms[sAtom.getMatchingAtom()], null);
+            atom2 = getHydrogens(getJmolAtom(sAtom.getMatchingAtom()), null);
+            if (sAtom.getIndex() == 0) {
+              // attached H is first in that case
+              Atom a = atom2;
+              atom2 = atom1;
+              atom1 = a;
+            }
+            atom5 = null;
             break;
           default:
             continue;
           }
-          Atom atom2 = jmolAtoms[sAtom.getMatchingBondedAtom(1 - nH)];
-          Atom atom3 = jmolAtoms[sAtom.getMatchingBondedAtom(2 - nH)];
-          Atom atom4 = jmolAtoms[sAtom.getMatchingBondedAtom(3 - nH)];
-          if (getChirality(atom2, atom3, atom4, atom1) != sAtom
-              .getChiralOrder())
-            return false;
+          atom3 = getJmolAtom(sAtom.getMatchingBondedAtom(2 - nH));
+          atom4 = getJmolAtom(sAtom.getMatchingBondedAtom(3 - nH));
           break;
         default:
           Logger.error("chirality class " + chiralClass + " not supported");
+          continue;
         }
+        if (atom4 != null && atom5 == null)
+          if (getChirality(atom2, atom3, atom4, atom1) != order)
+            return false;
       }
-
+    }
     // next, /C=C/ double bond stereochemistry
 
-    if (haveBondStereochemistry)
+    if (haveBondStereochemistry) {
       for (int k = 0; k < patternAtomCount; k++) {
         SmilesAtom sAtom1 = atoms[k];
         SmilesAtom sAtom2 = null;
@@ -435,10 +475,10 @@ public class SmilesSearch {
         if (dir2 == 0)
           continue;
 
-        Atom dbAtom1 = jmolAtoms[sAtom1.getMatchingAtom()];        
-        Atom dbAtom2 = jmolAtoms[sAtom2.getMatchingAtom()];        
-        Atom dbAtom1a = jmolAtoms[sAtomDirected1.getMatchingAtom()];        
-        Atom dbAtom2a = jmolAtoms[sAtomDirected2.getMatchingAtom()];        
+        Atom dbAtom1 = getJmolAtom(sAtom1.getMatchingAtom());        
+        Atom dbAtom2 = getJmolAtom(sAtom2.getMatchingAtom());        
+        Atom dbAtom1a = getJmolAtom(sAtomDirected1.getMatchingAtom());        
+        Atom dbAtom2a = getJmolAtom(sAtomDirected2.getMatchingAtom());        
         Vector3f v1 = new Vector3f(dbAtom1a);
         Vector3f v2 = new Vector3f(dbAtom2a);
         v1.sub(dbAtom1);
@@ -450,14 +490,19 @@ public class SmilesSearch {
         if (v1.dot(v2) * dir1 * dir2 > 0)
           return false;
       }
+    }
     return true;
+  }
+
+  private Atom getJmolAtom(int i) {
+    return (i < 0 ? null : jmolAtoms[i]);
   }
 
   private Atom getHydrogens(Atom atom, BitSet bsHydrogens) {
     Bond[] b = atom.getBonds();
     Atom atomH = null;
     for (int k = 0, i = 0; i < b.length; i++)
-      if ((atomH = jmolAtoms[k = atom.getBondedAtomIndex(i)]).getElementNumber() == 1) {
+      if ((atomH = getJmolAtom(k = atom.getBondedAtomIndex(i))).getElementNumber() == 1) {
         if (bsHydrogens == null)
           break;
         bsHydrogens.set(k);

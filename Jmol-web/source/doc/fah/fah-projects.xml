@@ -3929,7 +3929,7 @@
   <fah_proj number="1796" name="p1796_LUTEO_300K" public="n"
     server="134.139.127.32" atoms="41330" preferred="7" deadline="14"
     credit="435" frames="100" code="A0" contact="esorin"/>
-  <fah_proj number="1797" name="p1797_AQUIFEX_300K" public="n"
+  <fah_proj number="1797" name="p1797_AQUIFEX_300K" public="n" file="xyz"
     server="134.139.127.32" atoms="41361" preferred="7" deadline="14"
     credit="412" frames="100" code="A0" contact="esorin"/>
   <fah_proj number="1798" name="p1798_LUTEO_300K" public="y" file="xyz"

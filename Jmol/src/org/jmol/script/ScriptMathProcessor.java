@@ -705,7 +705,9 @@ class ScriptMathProcessor {
     case Token.connected:
       return evaluateConnected(args);
     case Token.substructure:
-      return evaluateSubstructure(args);
+    case Token.smiles:
+    case Token.smarts:
+      return evaluateSubstructure(args, tok);
     case Token.symop:
       return evaluateSymop(args, op.tok == Token.propselector);
     }
@@ -1093,16 +1095,17 @@ class ScriptMathProcessor {
     String sFind = ScriptVariable.sValue(args[0]);
     String flags = (args.length > 1 ? ScriptVariable.sValue(args[1]) : "");
     boolean isSmiles = sFind.equalsIgnoreCase("smiles");
-    if (isSmiles || x1.tok == Token.bitset) {
+    boolean isSmarts = sFind.equalsIgnoreCase("smarts");
+    if (isSmiles || isSmarts || x1.tok == Token.bitset) {
       if (x1.tok == Token.string)
         return addX(isSyntaxCheck ? 0 : viewer.getSmilesMatcher().find(flags,
             ScriptVariable.sValue(x1),
-            (args.length == 3 && ScriptVariable.bValue(args[2]))));
+            isSmarts, (args.length == 3 && ScriptVariable.bValue(args[2]))));
       if (x1.tok == Token.bitset) {
         boolean isAll = (args.length > 1 && ScriptVariable
             .bValue(args[args.length - 1]));
-        Object ret = getSmilesMatches((isSmiles ? flags : sFind),
-            (BitSet) x1.value, null, null, isAll);
+        Object ret = getSmilesMatches((isSmiles || isSmarts ? flags : sFind),
+            (BitSet) x1.value, null, null, !isSmiles, isAll);
         if (!isAll)
           return addX((BitSet) ret);
         return addX((String[]) ret);
@@ -1890,6 +1893,7 @@ class ScriptMathProcessor {
           ((BitSet) args[2].value).nextSetBit(0), ((BitSet) args[1].value)
               .nextSetBit(0)));
     case Token.smiles:
+    case Token.smarts:
       BitSet bsSelected = null;
       BitSet bsRequired = null;
       BitSet bsNot = null;
@@ -1923,7 +1927,7 @@ class ScriptMathProcessor {
         eval.error(ScriptEvaluator.ERROR_invalidArgument);
       if (isSyntaxCheck)
         return addX(new Vector());
-      return addX((String[]) getSmilesMatches(ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot, true));
+      return addX((String[]) getSmilesMatches(ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot, tok == Token.smarts, true));
     }
     if (withinSpec instanceof String) {
       if (tok == Token.nada) {
@@ -2035,7 +2039,7 @@ class ScriptMathProcessor {
   }
 
   private Object getSmilesMatches(String smiles, BitSet bsSelected,
-                                          BitSet bsRequired, BitSet bsNot, boolean isAll) throws ScriptException {
+                                          BitSet bsRequired, BitSet bsNot, boolean asSmarts, boolean isAll) throws ScriptException {
     if (isSyntaxCheck) {
       if (isAll)
         return new String[] {""};
@@ -2044,7 +2048,7 @@ class ScriptMathProcessor {
     try {
       BitSet[] b = viewer.getSmilesMatcher().getSubstructureSetArray(
           smiles, viewer.getModelSet().atoms, viewer.getAtomCount(), 
-          bsSelected, bsRequired, bsNot, isAll);
+          bsSelected, bsRequired, bsNot, asSmarts, isAll);
       if (!isAll)
         return (b.length > 0 ? b[0] : new BitSet());
       String[] matches = new String[b.length];
@@ -2155,15 +2159,15 @@ class ScriptMathProcessor {
     return addX(viewer.getAtomsConnected(min, max, order, atoms1));
   }
 
-  private boolean evaluateSubstructure(ScriptVariable[] args)
+  private boolean evaluateSubstructure(ScriptVariable[] args, int tok)
       throws ScriptException {
     if (args.length != 1)
       return false;
     BitSet bs = new BitSet();
-    String smiles = (isSyntaxCheck ? "" : ScriptVariable.sValue(args[0]));
-    if (smiles.length() > 0)
+    String pattern = (isSyntaxCheck ? "" : ScriptVariable.sValue(args[0]));
+    if (pattern.length() > 0)
       try {
-        bs = viewer.getSmilesMatcher().getSubstructureSet(smiles, viewer.getModelSet().atoms, viewer.getAtomCount(), true);
+        bs = viewer.getSmilesMatcher().getSubstructureSet(pattern, viewer.getModelSet().atoms, viewer.getAtomCount(), tok == Token.smarts, true);
       } catch (Exception e) {
         eval.evalError(e.getMessage(), null);
       }

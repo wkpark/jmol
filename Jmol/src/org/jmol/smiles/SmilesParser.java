@@ -48,72 +48,107 @@ package org.jmol.smiles;
  */
 public class SmilesParser {
 
-  public static SmilesSearch getMolecule(String smiles) throws InvalidSmilesException {
-    return (new SmilesParser()).parseSmiles(smiles);
+  protected boolean isSmarts;
+  protected SmilesBond[] ringBonds;
+  
+
+  public static SmilesSearch getMolecule(String pattern) throws InvalidSmilesException {
+    return (new SmilesParser()).parse(pattern);
   }
 
-  private SmilesBond[] ringBonds;
-  
   /**
    * Parses a SMILES String
    * 
-   * @param smiles SMILES String
-   * @return Molecule corresponding to <code>smiles</code>
+   * @param pattern SMILES String
+   * @return Molecule corresponding to <code>pattern</code>
    * @throws InvalidSmilesException
    */
-  public SmilesSearch parseSmiles(String smiles) throws InvalidSmilesException {
-    if (smiles == null) {
+   SmilesSearch parse(String pattern) throws InvalidSmilesException {
+    if (pattern == null)
       throw new InvalidSmilesException("SMILES expressions must not be null");
-    }
 
     // First pass
     SmilesSearch molecule = new SmilesSearch();
-    parseSmiles(molecule, smiles, null);
-    
-    // Implicit hydrogen creation
-    for (int i = 0; i< molecule.patternAtomCount; i++) {
-      SmilesAtom atom = molecule.getAtom(i);
-      atom.createMissingHydrogen(molecule);
-    }
+    molecule.isSmarts = isSmarts;
+    parseSmiles(molecule, pattern, null);
 
+    if (!isSmarts)
+      for (int i = molecule.patternAtomCount; --i >= 0; )
+        molecule.getAtom(i).createMissingHydrogen(molecule);
+
+    fixChirality(molecule);
     // Check for rings
-    if (ringBonds != null) {
-      for (int i = 0; i < ringBonds.length; i++) {
-        if (ringBonds[i] != null) {
+    if (ringBonds != null)
+      for (int i = 0; i < ringBonds.length; i++)
+        if (ringBonds[i] != null)
           throw new InvalidSmilesException("Open ring");
-        }
-      }
-    }
 
     return molecule;
+  }
+
+  private void fixChirality(SmilesSearch molecule) throws InvalidSmilesException {
+    for (int i = molecule.patternAtomCount; --i >= 0; ) {
+      SmilesAtom sAtom = molecule.getAtom(i);
+      int chiralClass = sAtom.getChiralClass();
+      int nBonds = sAtom.getHydrogenCount();
+      if (nBonds < 0)
+        nBonds = 0;
+      nBonds += sAtom.getBondsCount();
+      switch (chiralClass) {
+      case SmilesAtom.CHIRALITY_DEFAULT:
+        switch (nBonds) {
+        case 2:
+        case 4:
+        case 5:
+        case 6:
+          chiralClass = nBonds;
+          break;
+        }
+        break;
+      case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
+        if (nBonds != 4)
+          chiralClass = SmilesAtom.CHIRALITY_DEFAULT;
+        break;        
+      case SmilesAtom.CHIRALITY_ALLENE:
+      case SmilesAtom.CHIRALITY_OCTAHEDRAL:
+      case SmilesAtom.CHIRALITY_TETRAHEDRAL:
+      case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+        if (nBonds != chiralClass)
+          chiralClass = SmilesAtom.CHIRALITY_DEFAULT;
+        break;        
+      }
+      if (chiralClass == SmilesAtom.CHIRALITY_DEFAULT)
+        throw new InvalidSmilesException("Incorrect number of bonds for chirality descriptor");
+      sAtom.setChiralClass(chiralClass);
+    }
   }
 
   /**
    * Parses a part of a SMILES String
    *
    * @param molecule Resulting molecule 
-   * @param smiles SMILES String
+   * @param pattern SMILES String
    * @param currentAtom Current atom
    * @throws InvalidSmilesException
    */
-  private void parseSmiles(
+  protected void parseSmiles(
       SmilesSearch molecule,
-      String         smiles,
+      String         pattern,
       SmilesAtom     currentAtom) throws InvalidSmilesException {
-    if ((smiles == null) || (smiles.length() == 0)) {
+    if ((pattern == null) || (pattern.length() == 0)) {
       return;
     }
 
     // Branching
     int index = 0;
-    char firstChar = smiles.charAt(index);
-    if (firstChar == '(') {
+    char ch = pattern.charAt(0);
+    if (ch == '(') {
       index++;
       int currentIndex = index;
       int parenthesisCount = 1;
-      while ((currentIndex < smiles.length()) &&
+      while ((currentIndex < pattern.length()) &&
              (parenthesisCount > 0)) {
-        switch (smiles.charAt(currentIndex)) {
+        switch (pattern.charAt(currentIndex)) {
         case '(':
           parenthesisCount++;
           break;
@@ -123,20 +158,18 @@ public class SmilesParser {
         }
         currentIndex++;
       }
-      if (parenthesisCount != 0) {
+      if (parenthesisCount != 0)
         throw new InvalidSmilesException("Unbalanced parenthesis");
-      }
-      String subSmiles = smiles.substring(index, currentIndex - 1);
+      String subSmiles = pattern.substring(index, currentIndex - 1);
       parseSmiles(molecule, subSmiles, currentAtom);
       index = currentIndex;
-      if (index >= smiles.length()) {
-          throw new InvalidSmilesException("Pattern must not end with ')'");
-      }
+      if (index >= pattern.length())
+        throw new InvalidSmilesException("Pattern must not end with ')'");
     }
 
     // Bonds
-    firstChar = smiles.charAt(index);
-    int bondType = SmilesBond.getBondTypeFromCode(firstChar);
+    ch = pattern.charAt(index);
+    int bondType = SmilesBond.getBondTypeFromCode(ch);
     if (bondType != SmilesBond.TYPE_UNKNOWN) {
       if (currentAtom == null) {
         throw new InvalidSmilesException("Bond without a previous atom");
@@ -145,64 +178,64 @@ public class SmilesParser {
     }
 
     // Atom
-    firstChar = smiles.charAt(index);
-    if ((firstChar >= '0') && (firstChar <= '9')) {
+    ch = pattern.charAt(index);
+    if ((ch >= '0') && (ch <= '9')) {
       // Ring
-      String subSmiles = smiles.substring(index, index + 1);
+      String subSmiles = pattern.substring(index, index + 1);
       parseRing(molecule, subSmiles, currentAtom, bondType);
       index++;
-    } else if (firstChar == '%') {
+    } else if (ch == '%') {
       // Ring
       index++;
-      if ((smiles.charAt(index) < 0) || (smiles.charAt(index) > 9)) {
+      if ((pattern.charAt(index) < 0) || (pattern.charAt(index) > 9)) {
         throw new InvalidSmilesException("Ring number must follow the % sign");
       }
       int currentIndex = index;
-      while ((currentIndex < smiles.length()) &&
-             (smiles.charAt(currentIndex) >= '0') &&
-             (smiles.charAt(currentIndex) <= '9')) {
+      while ((currentIndex < pattern.length()) &&
+             (pattern.charAt(currentIndex) >= '0') &&
+             (pattern.charAt(currentIndex) <= '9')) {
         currentIndex++;
       }
-      String subSmiles = smiles.substring(index, currentIndex);
+      String subSmiles = pattern.substring(index, currentIndex);
       parseRing(molecule, subSmiles, currentAtom, bondType);
       index = currentIndex;
-    } else if (firstChar == '[') {
+    } else if (ch == '[') {
       // Atom definition
       index++;
       int currentIndex = index;
-      while ((currentIndex < smiles.length()) &&
-             (smiles.charAt(currentIndex) != ']')) {
+      while ((currentIndex < pattern.length()) &&
+             (pattern.charAt(currentIndex) != ']')) {
         currentIndex++;
       }
-      if (currentIndex >= smiles.length()) {
+      if (currentIndex >= pattern.length()) {
         throw new InvalidSmilesException("Unmatched [");
       }
-      String subSmiles = smiles.substring(index, currentIndex);
+      String subSmiles = pattern.substring(index, currentIndex);
       currentAtom = parseAtom(molecule, subSmiles, currentAtom, bondType, true);
       index = currentIndex + 1;
-    } else if (((firstChar >= 'a') && (firstChar <= 'z')) ||
-               ((firstChar >= 'A') && (firstChar <= 'Z')) ||
-			   (firstChar == '*')) {
+    } else if (((ch >= 'a') && (ch <= 'z')) ||
+               ((ch >= 'A') && (ch <= 'Z')) ||
+			   (ch == '*')) {
       // Atom definition
       int size = 1;
-      if (index + 1 < smiles.length()) {
-        char secondChar = smiles.charAt(index + 1);
-        if ((firstChar >= 'A') && (firstChar <= 'Z') &&
+      if (index + 1 < pattern.length()) {
+        char secondChar = pattern.charAt(index + 1);
+        if ((ch >= 'A') && (ch <= 'Z') &&
             (secondChar >= 'a') && (secondChar <= 'z')) {
           size = 2;
         }
       }
-      String subSmiles = smiles.substring(index, index + size);
+      String subSmiles = pattern.substring(index, index + size);
       currentAtom = parseAtom(molecule, subSmiles, currentAtom, bondType, false);
       index += size;
     }
 
     // Next part of the SMILES String
     if (index == 0) {
-      throw new InvalidSmilesException("Unexpected character: " + smiles.charAt(0));
+      throw new InvalidSmilesException("Unexpected character: " + pattern.charAt(0));
     }
-    if (index < smiles.length()) {
-      String subSmiles = smiles.substring(index);
+    if (index < pattern.length()) {
+      String subSmiles = pattern.substring(index);
       parseSmiles(molecule, subSmiles, currentAtom);
     }
   }
@@ -210,224 +243,214 @@ public class SmilesParser {
   /**
    * Parses an atom definition
    * 
-   * @param molecule Resulting molecule 
-   * @param smiles SMILES String
-   * @param currentAtom Current atom
-   * @param bondType Bond type
-   * @param complete Indicates if is a complete definition (between [])
+   * @param molecule
+   *          Resulting molecule
+   * @param pattern
+   *          SMILES String
+   * @param currentAtom
+   *          Current atom
+   * @param bondType
+   *          Bond type
+   * @param complete
+   *          Indicates if is a complete definition (between [])
    * @return New atom
    * @throws InvalidSmilesException
    */
-  private SmilesAtom parseAtom(
-        SmilesSearch molecule,
-        String         smiles,
-        SmilesAtom     currentAtom,
-        int            bondType,
-		boolean        complete) throws InvalidSmilesException {
-    if ((smiles == null) || (smiles.length() == 0)) {
+  protected SmilesAtom parseAtom(SmilesSearch molecule, String pattern,
+                                 SmilesAtom currentAtom, int bondType,
+                                 boolean complete)
+      throws InvalidSmilesException {
+    if ((pattern == null) || (pattern.length() == 0)) {
       throw new InvalidSmilesException("Empty atom definition");
     }
+    SmilesAtom newAtom = molecule.createAtom();
 
-    // Atomic mass
-  	int index = 0;
-  	char firstChar = smiles.charAt(index);
-  	int atomicMass = Integer.MIN_VALUE;
-  	if ((firstChar >= '0') && (firstChar <= '9')) {
-  	  int currentIndex = index;
-  	  while ((currentIndex < smiles.length()) &&
-             (smiles.charAt(currentIndex) >= '0') &&
-             (smiles.charAt(currentIndex) <= '9')) {
-  	    currentIndex++;
-  	  }
-  	  String sub = smiles.substring(index, currentIndex);
-  	  try {
-  	    atomicMass = Integer.parseInt(sub);
-  	  } catch (NumberFormatException e) {
-  	    throw new InvalidSmilesException("Non numeric atomic mass");
-  	  }
-  	  index = currentIndex;
-  	}
+    pattern = checkCharge(pattern, newAtom);
+    pattern = checkChirality(pattern, newAtom);
 
-  	// Symbol
-  	if (index >= smiles.length()) {
-  	  throw new InvalidSmilesException("Missing atom symbol");
-  	}
-  	firstChar = smiles.charAt(index);
-  	if (((firstChar < 'a') || (firstChar > 'z')) &&
-        ((firstChar < 'A') || (firstChar > 'Z')) &&
-        (firstChar != '*')) {
-  	  throw new InvalidSmilesException("Unexpected atom symbol");
-  	}
-    int size = 1;
-    if (index + 1 < smiles.length()) {
-      char secondChar = smiles.charAt(index + 1);
-      if ((firstChar >= 'A') && (firstChar <= 'Z') &&
-          (secondChar >= 'a') && (secondChar <= 'z')) {
-        size = 2;
+    int len = pattern.length();
+    int index = 0;
+    int pt = index;
+    char ch = pattern.charAt(0);
+
+    // isotope
+    if (Character.isDigit(ch)) {
+      while (pt < len && Character.isDigit(pattern.charAt(pt)))
+        pt++;
+      try {
+        newAtom.setAtomicMass(Integer.parseInt(pattern.substring(index, pt)));
+      } catch (NumberFormatException e) {
+        throw new InvalidSmilesException("Non numeric atomic mass");
       }
+      index = pt;
     }
-    String atomSymbol = smiles.substring(index, index + size);
+    // Symbol
+    if (index >= len)
+      throw new InvalidSmilesException("Missing atom symbol");
+    ch = pattern.charAt(index);
+    if (ch != '*' && !Character.isLetter(ch))
+      throw new InvalidSmilesException("Unexpected atom symbol");
+    char nextChar = (index + 1 < len ? pattern.charAt(index + 1) : 'Z');
+    int size = (Character.isLetter(ch)
+        && Character.isLowerCase(nextChar) ? 2 : 1);
+    if (size == 2 && nextChar == 'h' && index + 2 < len
+        && Character.isDigit(pattern.charAt(index + 2)))
+      size = 1;
+    if (!newAtom.setSymbol(Character.toUpperCase(ch)
+        + pattern.substring(index + 1, index + size)))
+      throw new InvalidSmilesException("Invalid atom symbol");
     index += size;
 
-    // Chirality
-    String chiralClass = null;
-    int chiralOrder = Integer.MIN_VALUE;
-    if (index < smiles.length()) {
-      firstChar = smiles.charAt(index);
-      if (firstChar == '@') {
-        index++;
-        if (index < smiles.length()) {
-          firstChar = smiles.charAt(index);
-          if (firstChar == '@') {
-            index++;
-            chiralClass = SmilesAtom.DEFAULT_CHIRALITY;
-            chiralOrder = 2;
-          } else if ((firstChar >= 'A') && (firstChar <= 'Z') && (firstChar != 'H')) {
-            if (index + 1 < smiles.length()) {
-              char secondChar = smiles.charAt(index);
-              if ((secondChar >= 'A') && (secondChar <= 'Z')) {
-                chiralClass = smiles.substring(index, index + 2);
-                index += 2;
-                int currentIndex = index;
-                while ((currentIndex < smiles.length()) &&
-                       (smiles.charAt(currentIndex) >= '0') &&
-                       (smiles.charAt(currentIndex) <= '9')) {
-                  currentIndex++;
-                }
-                if (currentIndex > index) {
-                  String sub = smiles.substring(index, currentIndex);
-                  try {
-                    chiralOrder = Integer.parseInt(sub);
-                  } catch (NumberFormatException e) {
-                    throw new InvalidSmilesException("Non numeric chiral order");
-                  }
-                } else {
-                  chiralOrder = 1;
-                }
-                index = currentIndex;
-              }
-            }
-          } else {
-            chiralClass = SmilesAtom.DEFAULT_CHIRALITY;
-            chiralOrder = 1;
-          }
-        } else {
-          chiralClass = SmilesAtom.DEFAULT_CHIRALITY;
-          chiralOrder = 1;
-        }
-      }
-    }
+    checkHydrogenCount(complete, pattern, index, newAtom);
+    
+    // Final check
 
+    if (bondType == SmilesBond.TYPE_UNKNOWN)
+      bondType = SmilesBond.TYPE_SINGLE;
+    if ((currentAtom != null) && (bondType != SmilesBond.TYPE_NONE))
+      molecule.createBond(currentAtom, newAtom, bondType);
+    return newAtom;
+  }
+
+  private void checkHydrogenCount(boolean complete, String pattern, int index,
+                                  SmilesAtom newAtom)
+      throws InvalidSmilesException {
     // Hydrogen count
     int hydrogenCount = Integer.MIN_VALUE;
-    if (index < smiles.length()) {
-      firstChar = smiles.charAt(index);
-      if (firstChar == 'H') {
-        index++;
-        int currentIndex = index;
-        while ((currentIndex < smiles.length()) &&
-               (smiles.charAt(currentIndex) >= '0') &&
-               (smiles.charAt(currentIndex) <= '9')) {
-          currentIndex++;
+    int len = pattern.length();
+    if (index >= len)
+      return;
+    char ch = pattern.charAt(index);
+    if (ch == 'H' || isSmarts && ch == 'h') {
+      index++;
+      int pt = index;
+      while (pt < len && Character.isDigit(pattern.charAt(pt)))
+        pt++;
+      if (pt > index) {
+        try {
+          hydrogenCount = Integer.parseInt(pattern.substring(index, pt));
+        } catch (NumberFormatException e) {
+          throw new InvalidSmilesException("Non numeric hydrogen count");
         }
-        if (currentIndex > index) {
-          String sub = smiles.substring(index, currentIndex);
+      } else {
+        hydrogenCount = 1;
+      }
+      index = pt;
+    }
+    if (index < len)
+      throw new InvalidSmilesException(
+          "Unexpected characters after atom definition: "
+              + pattern.substring(index));
+    if (ch == 'h') // minimum count
+      hydrogenCount = -hydrogenCount;
+    if (hydrogenCount == Integer.MIN_VALUE && complete)
+      hydrogenCount = Integer.MAX_VALUE;
+    newAtom.setHydrogenCount(hydrogenCount);
+  }
+
+  private String checkChirality(String pattern, SmilesAtom newAtom)
+      throws InvalidSmilesException {
+    int chiralClass = 0;
+    int chiralOrder = Integer.MIN_VALUE;
+    int pt0 = pattern.indexOf('@');
+    int len = pattern.length();
+    int ch;
+    int index = pt0;
+    if (index < 0)
+      return pattern;
+    chiralClass = SmilesAtom.CHIRALITY_DEFAULT;
+    chiralOrder = 1;
+    if (++index < len) {
+      switch (ch = pattern.charAt(index)) {
+      case '@':
+        chiralOrder = 2;
+        index++;
+        break;
+      case 'H':
+        break;
+      case 'A':
+      case 'O':
+      case 'S':
+      case 'T':
+        chiralClass = (index + 1 < len ? SmilesAtom.getChiralityClass(pattern
+            .substring(index, index + 2)) : -1);
+        index += 2;
+        break;
+      default:
+        chiralOrder = (Character.isDigit(ch) ? 1 : -1);
+      }
+      int pt = index;
+      if (chiralOrder == 1) {
+        while (pt < len && Character.isDigit(pattern.charAt(pt)))
+          pt++;
+        if (pt > index) {
           try {
-            hydrogenCount = Integer.parseInt(sub);
+            chiralOrder = Integer.parseInt(pattern.substring(index, pt));
           } catch (NumberFormatException e) {
-            throw new InvalidSmilesException("Non numeric hydrogen count");
+            chiralOrder = -1;
           }
-        } else {
-          hydrogenCount = 1;
-        }
-        index = currentIndex;
-      }
-    }
-    if ((hydrogenCount == Integer.MIN_VALUE) && (complete)) {
-      hydrogenCount = 0;
-    }
-
-    // Charge
-    int charge = 0;
-    if (index < smiles.length()) {
-      firstChar = smiles.charAt(index);
-      if ((firstChar == '+') || (firstChar == '-')) {
-        int count = 1;
-        index++;
-        if (index < smiles.length()) {
-          char nextChar = smiles.charAt(index);
-          if ((nextChar >= '0') && (nextChar <= '9')) {
-            int currentIndex = index;
-            while ((currentIndex < smiles.length()) &&
-                   (smiles.charAt(currentIndex) >= '0') &&
-                   (smiles.charAt(currentIndex) <= '9')) {
-              currentIndex++;
-            }
-            String sub = smiles.substring(index, currentIndex);
-            try {
-              count = Integer.parseInt(sub);
-            } catch (NumberFormatException e) {
-              throw new InvalidSmilesException("Non numeric charge");
-            }
-            index = currentIndex;
-          } else {
-            int currentIndex = index;
-            while ((currentIndex < smiles.length()) &&
-                   (smiles.charAt(currentIndex) == firstChar)) {
-              currentIndex++;
-              count++;
-            }
-            index = currentIndex;
-          }
-        }
-        if (firstChar == '+') {
-          charge = count;
-        } else {
-          charge = -count;
+          index = pt;
         }
       }
+      if (chiralOrder < 1 || chiralClass < 0)
+        throw new InvalidSmilesException("Invalid chirality descriptor");
     }
-
-    // Final check
-    if (index < smiles.length()) {
-      throw new InvalidSmilesException("Unexpected characters after atom definition: " + smiles.substring(index));
-    }
-
-    // Create atom
-    if (bondType == SmilesBond.TYPE_UNKNOWN) {
-      bondType = SmilesBond.TYPE_SINGLE;
-    }
-    SmilesAtom newAtom = molecule.createAtom();
-    newAtom.setSymbol(atomSymbol);
-    newAtom.setAtomicMass(atomicMass);
-    newAtom.setCharge(charge);
     newAtom.setChiralClass(chiralClass);
     newAtom.setChiralOrder(chiralOrder);
-    newAtom.setHydrogenCount(hydrogenCount);
-    if ((currentAtom != null) && (bondType != SmilesBond.TYPE_NONE)) {
-      molecule.createBond(currentAtom, newAtom, bondType);
+    return pattern.substring(0, pt0) + pattern.substring(index);
+  }
+
+  private String checkCharge(String pattern, SmilesAtom newAtom) throws InvalidSmilesException {
+    // Charge
+    int pt = pattern.indexOf("-") + pattern.indexOf("+") + 1;
+    if (pt < 0)
+      return pattern;
+    int len = pattern.length();
+    char ch = pattern.charAt(pt);
+    int count = 1;
+    int index = pt + 1;
+    int currentIndex = index;
+    if (index < len) {
+      char nextChar = pattern.charAt(index);
+      if (Character.isDigit(nextChar)) {
+        while (currentIndex < len && Character.isDigit(pattern.charAt(currentIndex)))
+          currentIndex++;
+        try {
+          count = Integer.parseInt(pattern.substring(index, currentIndex));
+        } catch (NumberFormatException e) {
+          throw new InvalidSmilesException("Non numeric charge");
+        }
+      } else {
+        while (currentIndex < len
+            && pattern.charAt(currentIndex) == ch) {
+          currentIndex++;
+          count++;
+        }
+      }
+      index = currentIndex;
     }
-    return newAtom;
+    newAtom.setCharge(ch == '+' ? count : -count);
+    return pattern.substring(0, pt) + pattern.substring(index, currentIndex);
   }
 
   /**
    * Parses a ring definition
    * 
    * @param molecule Resulting molecule 
-   * @param smiles SMILES String
+   * @param pattern SMILES String
    * @param currentAtom Current atom
    * @param bondType Bond type
    * @throws InvalidSmilesException
    */
-  private void parseRing(
+  protected void parseRing(
         SmilesSearch molecule,
-        String         smiles,
+        String         pattern,
         SmilesAtom     currentAtom,
         int            bondType) throws InvalidSmilesException {
   	// Extracting ring number
     int ringNum = 0;
     try {
-      ringNum = Integer.parseInt(smiles);
+      ringNum = Integer.parseInt(pattern);
     } catch (NumberFormatException e) {
       throw new InvalidSmilesException("Non numeric ring identifier");
     }

@@ -6,13 +6,13 @@ import org.jmol.modelset.Atom;
 
 public interface SmilesMatcherInterface {
 
-  public abstract BitSet getSubstructureSet(String smiles, Atom[] atoms, int atomCount, boolean isAll)
+  public abstract BitSet getSubstructureSet(String smiles, Atom[] atoms, int atomCount, boolean asSmarts, boolean isAll)
       throws Exception;
 
   public abstract BitSet[] getSubstructureSetArray(String smiles, Atom[] atoms, int atomCount, 
-      BitSet bsSelected, BitSet bsRequired, BitSet bsNot, boolean isAll) throws Exception;
+      BitSet bsSelected, BitSet bsRequired, BitSet bsNot, boolean asSmarts, boolean isAll) throws Exception;
   
-  public abstract int find(String smiles1, String smiles2, boolean isAll);
+  public abstract int find(String pattern,/* ...in... */ String smiles, boolean asSmarts, boolean isAll);
   
   
 }

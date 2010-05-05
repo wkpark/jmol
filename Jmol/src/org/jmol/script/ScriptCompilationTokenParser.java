@@ -373,6 +373,8 @@ abstract class ScriptCompilationTokenParser {
     case Token.connected:
       return clauseConnected();
     case Token.substructure:
+    case Token.smarts:
+    case Token.smiles:
       return clauseSubstructure();
     case Token.within:
       return clauseWithin();
@@ -545,6 +547,7 @@ abstract class ScriptCompilationTokenParser {
     case Token.polymer:
     case Token.sequence:
     case Token.site:
+    //case Token.smarts:  NOT...
     //case Token.smiles:  NOT, because we want this only for x = within("smiles"...) not select within(smiles...) 
     case Token.structure:
     case Token.string:

@@ -37,39 +37,13 @@ public class SmilesAtom {
   private int charge;
   private int hydrogenCount = Integer.MIN_VALUE;
   private int matchingAtom = -1;
-  private String chiralClass;
+  private int chiralClass = Integer.MIN_VALUE;
   private int chiralOrder = Integer.MIN_VALUE;
   private boolean isAromatic;
   private SmilesBond[] bonds = new SmilesBond[INITIAL_BONDS];
   private int bondsCount;
 
   private final static int INITIAL_BONDS = 4;
-
-  
-  /**
-   * Constant used for default chirality.
-   */
-  public final static String DEFAULT_CHIRALITY = "";
-  /**
-   * Constant used for Allene chirality.
-   */
-  public final static String CHIRALITY_ALLENE = "AL";
-  /**
-   * Constant used for Octahedral chirality.
-   */
-  public final static String CHIRALITY_OCTAHEDRAL = "OH";
-  /**
-   * Constant used for Square Planar chirality.
-   */
-  public final static String CHIRALITY_SQUARE_PLANAR = "SP";
-  /**
-   * Constant used for Tetrahedral chirality.
-   */
-  public final static String CHIRALITY_TETRAHEDRAL = "TH";
-  /**
-   * Constant used for Trigonal Bipyramidal chirality.
-   */
-  public final static String CHIRALITY_TRIGONAL_BIPYRAMIDAL = "TB";
 
   /**
    * Constructs a <code>SmilesAtom</code>.
@@ -90,32 +64,35 @@ public class SmilesAtom {
   	int count = 0;
   	if (hydrogenCount == Integer.MIN_VALUE) {
   	  // not a complete set...
+  	  // B, C, N, O, P, S, F, Cl, Br, and I
+  	  // B (3), C (4), N (3,5), O (2), P (3,5), S (2,4,6), and 1 for the halogens
+  	  
   	  switch (atomicNumber) {
   	  case -1:
   	    break;
-  	  case 1: // H
-      case 9: // F
-      case 17: // Cl
-      case 35: // Br
-      case 53: // At
-      case 85: // I
-        count = 1;
-        break;
-      case 8: // O
-      case 16: // S
-      case 34: // Se
-      case 52: // Te
-        count = 2;
-        break;
       case 5:  // B
-      case 7:  // N
-      case 13: // Al
-      case 15: // P
-      case 33: // As
         count = 3;
         break;
       case 6: // C
         count = (isAromatic ? 3 : 4);
+        break;
+      case 8: // O
+        count = 2;
+        break;
+      case 7:  // N
+        count = 3;
+        break;
+      case 16: // S
+        count = 2;
+        break;
+      case 15: // P
+        count = 3;
+        break;
+      case 9: // F
+      case 17: // Cl
+      case 35: // Br
+      case 85: // I
+        count = 1;
         break;
   	  }
 
@@ -138,11 +115,13 @@ public class SmilesAtom {
         }
       }
   	} else {
-  	  count = hydrogenCount;
+  	  count = Math.abs(hydrogenCount);
+  	  hydrogenCount = Integer.MIN_VALUE;
   	}
 
+  	
     // Adding hydrogens
-    //System.out.println(" adding " + count + " H atoms to atom " + number + " " + symbol);
+    //System.out.println(" adding " + count + " H atoms to atom " + index);
     for (int i = 0; i < count; i++) {
       SmilesAtom hydrogen = molecule.createAtom();
       hydrogen.setAtomicNumber((short) 1);
@@ -171,17 +150,19 @@ public class SmilesAtom {
    * Sets the symbol of the atm.
    * 
    * @param symbol Atom symbol.
+   * @return  false if invalid symbol
    */
-  public void setSymbol(String symbol) {
+  public boolean setSymbol(String symbol) {
     if (symbol.equals("*")) {
       atomicNumber = 0;
-      return;
+      return true;
     }
     isAromatic = symbol.equals(symbol.toLowerCase()); // BH added
     if (isAromatic)
       symbol = symbol.substring(0, 1).toUpperCase() 
           + (symbol.length() == 1 ? "" : symbol.substring(1));
     atomicNumber = JmolConstants.elementNumberFromSymbol(symbol);
+    return (atomicNumber != 0);
   }
 
   /**
@@ -253,13 +234,24 @@ public class SmilesAtom {
     this.matchingAtom = atom;
   }
 
+  final static int CHIRALITY_DEFAULT = 0;
+  final static int CHIRALITY_ALLENE = 2;
+  final static int CHIRALITY_TETRAHEDRAL = 4;
+  final static int CHIRALITY_TRIGONAL_BIPYRAMIDAL = 5;
+  final static int CHIRALITY_OCTAHEDRAL = 6;
+  final static int CHIRALITY_SQUARE_PLANAR = 8;
+  
+  static int getChiralityClass(String xx) {
+    return (" ;AL;OH;SP;TH;TP".indexOf(xx) + 1)/ 3;
+  }
+
   /**
    * Returns the chiral class of the atom.
    * (see <code>CHIRALITY_...</code> constants)
    * 
    * @return Chiral class.
    */
-  public String getChiralClass() {
+  public int getChiralClass() {
     return chiralClass;
   }
 
@@ -269,8 +261,8 @@ public class SmilesAtom {
    * 
    * @param chiralClass Chiral class.
    */
-  public void setChiralClass(String chiralClass) {
-    this.chiralClass = (chiralClass != null) ? chiralClass.intern() : null;
+  public void setChiralClass(int chiralClass) {
+    this.chiralClass = chiralClass;
   }
 
   /**
@@ -306,7 +298,7 @@ public class SmilesAtom {
    * @param count Number of hydrogen atoms.
    */
   public void setHydrogenCount(int count) {
-    this.hydrogenCount = count;
+    hydrogenCount = count;
   }
 
   /**
@@ -345,4 +337,10 @@ public class SmilesAtom {
     bonds[bondsCount] = bond;
     bondsCount++;
   }
+
+  public int getMatchingBondedAtom(int i) {
+    SmilesBond b = bonds[i];
+    return (b.getAtom1() == this ? b.getAtom2() : b.getAtom1()).matchingAtom;
+  }
+
 }

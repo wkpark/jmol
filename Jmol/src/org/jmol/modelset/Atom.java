@@ -264,7 +264,7 @@ final public class Atom extends Point3fi {
     return n;
   }
 
-  int getCovalentHydrogenCount() {
+  public int getCovalentHydrogenCount() {
     if (bonds == null)
       return 0;
     int n = 0;

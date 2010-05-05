@@ -655,6 +655,8 @@ public class Token {
   final static int forcmd       = 8 | 1 << 9 | mathfunc | flowCommand;
   final static int ifcmd        = 9 | 1 << 9 | mathfunc | flowCommand;
   final static int abs          = 10 | 1 << 9 | mathfunc;
+  final static int smarts       = 11 | 1 << 9 | mathfunc;
+  final static int smiles       = 12 | 1 << 9 | mathfunc;
 
   // ___.xxx(a)
   
@@ -1132,8 +1134,7 @@ public class Token {
   final static int sigma          = misc  | 322;// new
   final static int sign           = misc  | 323;// new
   final static int silent         = misc  | 324;// new
-  final static int smiles         = misc  | 325;// new Jmol 12.0.RC5
-  final static int solid          = misc  | 326;
+  final static int solid          = misc  | 327;
   final static int spacegroup     = misc  | 328;
   final static int sphere         = misc  | 330;// new
   final static int squared        = misc  | 332;// new
@@ -1745,7 +1746,9 @@ public class Token {
       "sin",             new Token(sin),
       "site",            new Token(site),
       "size",            new Token(size),
+      "smarts",          new Token(smarts),
       "smiles",          new Token(smiles),
+      "substructure",    null,  // 12.0 substructure-->smiles (should be smarts, but for legacy reasons, need this to be smiles
       "solid",           new Token(solid),
       "sort",            new Token(sort),
       "specialPosition", new Token(specialposition),
@@ -1755,7 +1758,6 @@ public class Token {
       "straightness",    new Token(straightness),
       "structureId",     new Token(strucid),
       "sub",             new Token(sub),
-      "substructure",    new Token(substructure),
       "sum",             new Token(sum), // sum
       "sum2",            new Token(sum2), // sum of squares
       "surface",         new Token(surface),

@@ -2056,6 +2056,7 @@ class ScriptMathProcessor {
         matches[j] = Escape.escape(b[j]);
       return matches;
     } catch (Exception e) {
+      //e.printStackTrace();
       eval.evalError(e.getMessage(), null);
       return null; // unattainable
     }

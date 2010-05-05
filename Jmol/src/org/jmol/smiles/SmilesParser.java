@@ -52,8 +52,12 @@ public class SmilesParser {
   protected SmilesBond[] ringBonds;
   
 
-  public static SmilesSearch getMolecule(String pattern) throws InvalidSmilesException {
-    return (new SmilesParser()).parse(pattern);
+  public SmilesParser(boolean isSmarts) {
+    this.isSmarts = isSmarts;    
+  }
+  
+  public static SmilesSearch getMolecule(boolean isSmarts, String pattern) throws InvalidSmilesException {
+    return (new SmilesParser(isSmarts)).parse(pattern);
   }
 
   /**
@@ -74,14 +78,16 @@ public class SmilesParser {
 
     if (!isSmarts)
       for (int i = molecule.patternAtomCount; --i >= 0; )
-        molecule.getAtom(i).createMissingHydrogen(molecule);
-
-    fixChirality(molecule);
+        if (!molecule.getAtom(i).setHydrogenCount(molecule))
+          throw new InvalidSmilesException("unbracketed atoms must be one of: B C N O P S F Cl Br I");
+            
     // Check for rings
     if (ringBonds != null)
       for (int i = 0; i < ringBonds.length; i++)
         if (ringBonds[i] != null)
           throw new InvalidSmilesException("Open ring");
+
+    fixChirality(molecule);
 
     return molecule;
   }
@@ -91,7 +97,7 @@ public class SmilesParser {
       SmilesAtom sAtom = molecule.getAtom(i);
       int chiralClass = sAtom.getChiralClass();
       int nBonds = sAtom.getHydrogenCount();
-      if (nBonds < 0)
+      if (nBonds < 0 || nBonds == Integer.MAX_VALUE)
         nBonds = 0;
       nBonds += sAtom.getBondsCount();
       switch (chiralClass) {
@@ -125,29 +131,31 @@ public class SmilesParser {
 
   /**
    * Parses a part of a SMILES String
-   *
-   * @param molecule Resulting molecule 
-   * @param pattern SMILES String
-   * @param currentAtom Current atom
+   * 
+   * @param molecule
+   *          Resulting molecule
+   * @param pattern
+   *          SMILES String
+   * @param currentAtom
+   *          Current atom
    * @throws InvalidSmilesException
    */
-  protected void parseSmiles(
-      SmilesSearch molecule,
-      String         pattern,
-      SmilesAtom     currentAtom) throws InvalidSmilesException {
-    if ((pattern == null) || (pattern.length() == 0)) {
+  protected void parseSmiles(SmilesSearch molecule, String pattern,
+                             SmilesAtom currentAtom)
+      throws InvalidSmilesException {
+
+    if (pattern == null || pattern.length() == 0)
       return;
-    }
 
     // Branching
     int index = 0;
+    int len = pattern.length();
     char ch = pattern.charAt(0);
     if (ch == '(') {
       index++;
       int currentIndex = index;
       int parenthesisCount = 1;
-      while ((currentIndex < pattern.length()) &&
-             (parenthesisCount > 0)) {
+      while ((currentIndex < len) && (parenthesisCount > 0)) {
         switch (pattern.charAt(currentIndex)) {
         case '(':
           parenthesisCount++;
@@ -163,7 +171,7 @@ public class SmilesParser {
       String subSmiles = pattern.substring(index, currentIndex - 1);
       parseSmiles(molecule, subSmiles, currentAtom);
       index = currentIndex;
-      if (index >= pattern.length())
+      if (index >= len)
         throw new InvalidSmilesException("Pattern must not end with ')'");
     }
 
@@ -179,7 +187,7 @@ public class SmilesParser {
 
     // Atom
     ch = pattern.charAt(index);
-    if ((ch >= '0') && (ch <= '9')) {
+    if (Character.isDigit(ch)) {
       // Ring
       String subSmiles = pattern.substring(index, index + 1);
       parseRing(molecule, subSmiles, currentAtom, bondType);
@@ -191,11 +199,9 @@ public class SmilesParser {
         throw new InvalidSmilesException("Ring number must follow the % sign");
       }
       int currentIndex = index;
-      while ((currentIndex < pattern.length()) &&
-             (pattern.charAt(currentIndex) >= '0') &&
-             (pattern.charAt(currentIndex) <= '9')) {
+      while (currentIndex < len
+          && Character.isDigit(pattern.charAt(currentIndex)))
         currentIndex++;
-      }
       String subSmiles = pattern.substring(index, currentIndex);
       parseRing(molecule, subSmiles, currentAtom, bondType);
       index = currentIndex;
@@ -203,41 +209,30 @@ public class SmilesParser {
       // Atom definition
       index++;
       int currentIndex = index;
-      while ((currentIndex < pattern.length()) &&
-             (pattern.charAt(currentIndex) != ']')) {
+      while ((currentIndex < len) && (pattern.charAt(currentIndex) != ']')) {
         currentIndex++;
       }
-      if (currentIndex >= pattern.length()) {
+      if (currentIndex >= len) {
         throw new InvalidSmilesException("Unmatched [");
       }
       String subSmiles = pattern.substring(index, currentIndex);
       currentAtom = parseAtom(molecule, subSmiles, currentAtom, bondType, true);
       index = currentIndex + 1;
-    } else if (((ch >= 'a') && (ch <= 'z')) ||
-               ((ch >= 'A') && (ch <= 'Z')) ||
-			   (ch == '*')) {
+    } else if (ch == '*' || Character.isLetter(ch)) {
       // Atom definition
-      int size = 1;
-      if (index + 1 < pattern.length()) {
-        char secondChar = pattern.charAt(index + 1);
-        if ((ch >= 'A') && (ch <= 'Z') &&
-            (secondChar >= 'a') && (secondChar <= 'z')) {
-          size = 2;
-        }
-      }
+      int size = (index + 1 < len
+          && Character.isLowerCase(pattern.charAt(index + 1)) ? 2 : 1);
       String subSmiles = pattern.substring(index, index + size);
       currentAtom = parseAtom(molecule, subSmiles, currentAtom, bondType, false);
       index += size;
     }
 
     // Next part of the SMILES String
-    if (index == 0) {
-      throw new InvalidSmilesException("Unexpected character: " + pattern.charAt(0));
-    }
-    if (index < pattern.length()) {
-      String subSmiles = pattern.substring(index);
-      parseSmiles(molecule, subSmiles, currentAtom);
-    }
+    if (index == 0)
+      throw new InvalidSmilesException("Unexpected character: "
+          + pattern.charAt(0));
+    if (index < len)
+      parseSmiles(molecule, pattern.substring(index), currentAtom);
   }
 
   /**
@@ -300,7 +295,6 @@ public class SmilesParser {
         + pattern.substring(index + 1, index + size)))
       throw new InvalidSmilesException("Invalid atom symbol");
     index += size;
-
     checkHydrogenCount(complete, pattern, index, newAtom);
     
     // Final check
@@ -318,31 +312,31 @@ public class SmilesParser {
     // Hydrogen count
     int hydrogenCount = Integer.MIN_VALUE;
     int len = pattern.length();
-    if (index >= len)
-      return;
-    char ch = pattern.charAt(index);
-    if (ch == 'H' || isSmarts && ch == 'h') {
-      index++;
-      int pt = index;
-      while (pt < len && Character.isDigit(pattern.charAt(pt)))
-        pt++;
-      if (pt > index) {
-        try {
-          hydrogenCount = Integer.parseInt(pattern.substring(index, pt));
-        } catch (NumberFormatException e) {
-          throw new InvalidSmilesException("Non numeric hydrogen count");
+    if (index < len) {
+      char ch = pattern.charAt(index);
+      if (ch == 'H' || isSmarts && ch == 'h') {
+        index++;
+        int pt = index;
+        while (pt < len && Character.isDigit(pattern.charAt(pt)))
+          pt++;
+        if (pt > index) {
+          try {
+            hydrogenCount = Integer.parseInt(pattern.substring(index, pt));
+          } catch (NumberFormatException e) {
+            throw new InvalidSmilesException("Non numeric hydrogen count");
+          }
+        } else {
+          hydrogenCount = 1;
         }
-      } else {
-        hydrogenCount = 1;
+        index = pt;
       }
-      index = pt;
+      if (index < len)
+        throw new InvalidSmilesException(
+            "Unexpected characters after atom definition: "
+                + pattern.substring(index));
+      if (ch == 'h') // minimum count
+        hydrogenCount = -hydrogenCount;
     }
-    if (index < len)
-      throw new InvalidSmilesException(
-          "Unexpected characters after atom definition: "
-              + pattern.substring(index));
-    if (ch == 'h') // minimum count
-      hydrogenCount = -hydrogenCount;
     if (hydrogenCount == Integer.MIN_VALUE && complete)
       hydrogenCount = Integer.MAX_VALUE;
     newAtom.setHydrogenCount(hydrogenCount);

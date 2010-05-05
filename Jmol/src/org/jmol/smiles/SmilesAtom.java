@@ -55,49 +55,45 @@ public class SmilesAtom {
   }
 
   /**
-   * Creates missing hydrogen atoms in a <code>SmilesMolecule</code>.
+   * Finalizes the hydrogen count for implicit hydrogens in a <code>SmilesMolecule</code>.
    * 
    * @param molecule Molecule containing the atom.
+   * @return false if inappropriate
    */
-  public void createMissingHydrogen(SmilesSearch molecule) {
-  	// Determining max count
+  public boolean setHydrogenCount(SmilesSearch molecule) {
+    if (hydrogenCount != Integer.MIN_VALUE)
+      return true;
+    // Determining max count
   	int count = 0;
-  	if (hydrogenCount == Integer.MIN_VALUE) {
   	  // not a complete set...
   	  // B, C, N, O, P, S, F, Cl, Br, and I
   	  // B (3), C (4), N (3,5), O (2), P (3,5), S (2,4,6), and 1 for the halogens
   	  
   	  switch (atomicNumber) {
-  	  case -1:
-  	    break;
-      case 5:  // B
-        count = 3;
-        break;
+  	  default:
+  	    return false;
+  	  case 0:
+  	    return true;
       case 6: // C
         count = (isAromatic ? 3 : 4);
         break;
       case 8: // O
-        count = 2;
-        break;
-      case 7:  // N
-        count = 3;
-        break;
       case 16: // S
         count = 2;
         break;
+      case 5:  // B
+      case 7:  // N
       case 15: // P
         count = 3;
         break;
       case 9: // F
       case 17: // Cl
       case 35: // Br
-      case 85: // I
+      case 53: // I
         count = 1;
         break;
   	  }
-
-  	  //System.out.println(" assigning " + count + " valence to atom " + number + " " + atomicNumber);
-
+  	  
       for (int i = 0; i < bondsCount; i++) {
         SmilesBond bond = bonds[i];
         switch (bond.getBondType()) {
@@ -114,19 +110,10 @@ public class SmilesAtom {
           break;
         }
       }
-  	} else {
-  	  count = Math.abs(hydrogenCount);
-  	  hydrogenCount = Integer.MIN_VALUE;
-  	}
-
-  	
-    // Adding hydrogens
-    //System.out.println(" adding " + count + " H atoms to atom " + index);
-    for (int i = 0; i < count; i++) {
-      SmilesAtom hydrogen = molecule.createAtom();
-      hydrogen.setAtomicNumber((short) 1);
-      molecule.createBond(this, hydrogen, SmilesBond.TYPE_SINGLE);
-    }
+      
+      if (count > 0)
+        hydrogenCount = count;
+      return true;
   }
 
   /**
@@ -172,10 +159,6 @@ public class SmilesAtom {
    */
   public short getAtomicNumber() {
     return atomicNumber;
-  }
-
-  private void setAtomicNumber(short i) {
-    atomicNumber = i;
   }
 
   /**
@@ -242,7 +225,7 @@ public class SmilesAtom {
   final static int CHIRALITY_SQUARE_PLANAR = 8;
   
   static int getChiralityClass(String xx) {
-    return (" ;AL;OH;SP;TH;TP".indexOf(xx) + 1)/ 3;
+    return ("0;11;AL;33;TH;TP;OC;77;SP;".indexOf(xx) + 1)/ 3;
   }
 
   /**
@@ -342,5 +325,6 @@ public class SmilesAtom {
     SmilesBond b = bonds[i];
     return (b.getAtom1() == this ? b.getAtom2() : b.getAtom1()).matchingAtom;
   }
+
 
 }

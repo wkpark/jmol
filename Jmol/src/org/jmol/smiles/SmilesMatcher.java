@@ -93,7 +93,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     BitSet[] list = null;
     try {
       // create a topological model set from smiles
-      SmilesSearch search = (new SmilesParser()).parse(smiles);
+      SmilesSearch search = (new SmilesParser(false)).parse(smiles);
       search.isAll = isAll;
       int atomCount = search.patternAtomCount;
       Atom[] atoms = new Atom[atomCount];
@@ -162,7 +162,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    */
   
   public BitSet getSubstructureSet(String smiles, Atom[] atoms, int atomCount, boolean asSmarts, boolean isAll) throws Exception {
-    SmilesSearch search = (asSmarts ? SmartsParser.getMolecule(smiles) : SmilesParser.getMolecule(smiles));
+    SmilesSearch search = SmilesParser.getMolecule(asSmarts, smiles);
     search.jmolAtoms = atoms;
     search.jmolAtomCount = atomCount;
     search.isAll = isAll;
@@ -187,7 +187,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
                                           BitSet bsSelected, 
                                           BitSet bsRequired, BitSet bsNot, boolean asSmarts, boolean isAll)
       throws Exception {
-    SmilesSearch search = (asSmarts ? SmartsParser.getMolecule(smiles) : SmilesParser.getMolecule(smiles));
+    SmilesSearch search = SmilesParser.getMolecule(asSmarts, smiles);
     search.bsSelected = bsSelected;
     search.bsRequired = (bsRequired != null && bsRequired.cardinality() > 0 ? bsRequired : null);
     search.bsNot = bsNot;

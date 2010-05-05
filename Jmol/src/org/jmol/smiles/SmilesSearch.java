@@ -52,13 +52,13 @@ public class SmilesSearch {
   boolean isAll;
   boolean isSmarts;
   
+
   private final static int INITIAL_ATOMS = 16;
   private SmilesAtom[] atoms = new SmilesAtom[INITIAL_ATOMS];
   int patternAtomCount;
   boolean asVector;
   private Vector vReturn;
   private BitSet bsReturn = new BitSet();
-
     
   /* ============================================================= */
   /*                             Atoms                             */
@@ -312,8 +312,15 @@ public class SmilesSearch {
       if (!checkChirality())
         return true;
       BitSet bs = new BitSet();
-      for (int k = 0; k < patternAtomCount; k++)
-        bs.set(atoms[k].getMatchingAtom());
+      for (int k = 0; k < patternAtomCount; k++) {
+        int iAtom = atoms[k].getMatchingAtom();
+        bs.set(iAtom);        
+        if (!isSmarts) {
+          npH = atoms[k].getHydrogenCount();
+          if (npH != Integer.MIN_VALUE && npH != Integer.MAX_VALUE) 
+              getHydrogens(jmolAtoms[iAtom], bs);
+        }
+      }
       if (bsRequired != null && !bsRequired.intersects(bs))
         return true;
       if (asVector) {
@@ -358,11 +365,7 @@ public class SmilesSearch {
           atom1 = jmolAtoms[sAtom.getMatchingBondedAtom(0)];
           break;
         case 1:
-          Atom atom = jmolAtoms[sAtom.getMatchingAtom()];
-          Bond[] b = atom.getBonds();
-          for (int i = 0; i < b.length; i++)
-            if ((atom = jmolAtoms[atom.getBondedAtomIndex(i)]).getElementNumber() == 1)
-              break;
+          atom1 = getHydrogens(jmolAtoms[sAtom.getMatchingAtom()], null);
           break;
         default:
           continue;
@@ -380,7 +383,20 @@ public class SmilesSearch {
     return true;
   }
 
-  
+  private Atom getHydrogens(Atom atom, BitSet bsHydrogens) {
+    Bond[] b = atom.getBonds();
+    Atom atomH = null;
+    for (int k = 0, i = 0; i < b.length; i++)
+      if ((atomH = jmolAtoms[k = atom.getBondedAtomIndex(i)]).getElementNumber() == 1) {
+        if (bsHydrogens == null)
+          break;
+        bsHydrogens.set(k);
+      }
+    return atomH;
+  }
+
+
+
   Vector3f vTemp = new Vector3f();
   Vector3f vA = new Vector3f();
   Vector3f vB = new Vector3f();

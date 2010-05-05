@@ -352,15 +352,23 @@ public class SmilesSearch {
     return true;
   }
 
+  private Vector3f vTemp1;
+  private Vector3f vTemp2;
+  Vector3f vNorm1;
+  Vector3f vNorm2;
+  Vector3f vNorm3;
+
   private boolean checkStereochemistry() {
 
     // first, @ stereochemistry
 
     if (haveAtomStereochemistry) {
-      Atom atom1 = null, atom2 = null, atom3 = null, atom4 = null, atom5 = null;
+      Atom atom1 = null, atom2 = null, atom3 = null, atom4 = null;
       for (int k = 0; k < patternAtomCount; k++) {
         SmilesAtom sAtom = atoms[k];
         int nH = sAtom.getHydrogenCount();
+        if (nH == Integer.MAX_VALUE)
+          nH = 0;
         int chiralClass = sAtom.getChiralClass();
         int order = sAtom.getChiralOrder();
         atom4 = null;
@@ -372,9 +380,9 @@ public class SmilesSearch {
           SmilesAtom sAtom2 = sAtom.getBond(1).getOtherAtom(sAtom);
           if (sAtom1 == null || sAtom2 == null)
             continue;
-          
+
           // ignoring cumulenes for now
-          
+
           atom1 = getJmolAtom(sAtom1.getMatchingBondedAtom(0));
           atom2 = getJmolAtom(sAtom1.getMatchingBondedAtom(1));
           if (atom2 == null && nH != 1)
@@ -395,8 +403,11 @@ public class SmilesSearch {
             continue;
           if (atom4 == null)
             atom4 = getHydrogens(getJmolAtom(sAtom2.getMatchingAtom()), null);
-          atom5 = null;
-          break;          
+          if (getChirality(atom2, atom3, atom4, atom1) != order)
+            return false;
+          continue;
+        case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+        case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
         case SmilesAtom.CHIRALITY_TETRAHEDRAL:
           atom1 = getJmolAtom(sAtom.getMatchingBondedAtom(0));
           switch (nH) {
@@ -411,21 +422,56 @@ public class SmilesSearch {
               atom2 = atom1;
               atom1 = a;
             }
-            atom5 = null;
             break;
           default:
             continue;
           }
           atom3 = getJmolAtom(sAtom.getMatchingBondedAtom(2 - nH));
           atom4 = getJmolAtom(sAtom.getMatchingBondedAtom(3 - nH));
-          break;
+         // System.out.println("order " + order + "\n" + atom1.getInfo() + "\n" + atom2.getInfo() + "\n" + atom3.getInfo() + "\n" + atom4.getInfo());
+          switch (chiralClass) {
+          case SmilesAtom.CHIRALITY_TETRAHEDRAL:
+          case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+            if (getChirality(atom2, atom3, atom4, atom1) != order)
+              return false;
+            continue;
+          case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
+            if (vTemp1 == null) {
+              vTemp1 = new Vector3f();
+              vTemp2 = new Vector3f();
+              vNorm1 = new Vector3f();
+              vNorm2 = new Vector3f();
+              vNorm3 = new Vector3f();
+            }
+            Measure.getNormalThroughPoints(atom1, atom2, atom3, vNorm1, vTemp1,
+                vTemp2);
+            Measure.getNormalThroughPoints(atom2, atom3, atom4, vNorm2, vTemp1,
+                vTemp2);
+            Measure.getNormalThroughPoints(atom3, atom4, atom1, vNorm3, vTemp1,
+                vTemp2);
+            // vNorm1 vNorm2 vNorm3 are right-hand normals for the given
+            // triangles
+            // 1-2-3, 2-3-4, 3-4-1
+            // sp1 up up up
+            // sp2 up up DOWN
+            // sp3 up DOWN DOWN
+
+            if (vNorm1.dot(vNorm2) < 0) {
+              if (order != 3)
+                return false;
+            } else if (vNorm2.dot(vNorm3) < 0) {
+              if (order != 2)
+                return false;
+            } else if (order != 1) {
+              return false;
+            }
+            continue;
+          }
+          continue;
         default:
           Logger.error("chirality class " + chiralClass + " not supported");
-          continue;
+          return false;
         }
-        if (atom4 != null && atom5 == null)
-          if (getChirality(atom2, atom3, atom4, atom1) != order)
-            return false;
       }
     }
     // next, /C=C/ double bond stereochemistry
@@ -438,7 +484,7 @@ public class SmilesSearch {
         SmilesAtom sAtomDirected2 = null;
         int dir1 = 0;
         int dir2 = 0;
-        
+
         int nBonds = sAtom1.getBondsCount();
         for (int j = 0; j < nBonds; j++) {
           SmilesBond b = sAtom1.getBond(j);
@@ -471,21 +517,21 @@ public class SmilesSearch {
             break;
           }
         }
-        
+
         if (dir2 == 0)
           continue;
 
-        Atom dbAtom1 = getJmolAtom(sAtom1.getMatchingAtom());        
-        Atom dbAtom2 = getJmolAtom(sAtom2.getMatchingAtom());        
-        Atom dbAtom1a = getJmolAtom(sAtomDirected1.getMatchingAtom());        
-        Atom dbAtom2a = getJmolAtom(sAtomDirected2.getMatchingAtom());        
+        Atom dbAtom1 = getJmolAtom(sAtom1.getMatchingAtom());
+        Atom dbAtom2 = getJmolAtom(sAtom2.getMatchingAtom());
+        Atom dbAtom1a = getJmolAtom(sAtomDirected1.getMatchingAtom());
+        Atom dbAtom2a = getJmolAtom(sAtomDirected2.getMatchingAtom());
         Vector3f v1 = new Vector3f(dbAtom1a);
         Vector3f v2 = new Vector3f(dbAtom2a);
         v1.sub(dbAtom1);
         v2.sub(dbAtom2);
-        // for \C=C\, (dir1*dir2 == 1), dot product should be negative 
+        // for \C=C\, (dir1*dir2 == 1), dot product should be negative
         // because the bonds are oppositely directed
-        // for \C=C/, (dir1*dir2 == -1), dot product should be positive 
+        // for \C=C/, (dir1*dir2 == -1), dot product should be positive
         // because the bonds are only about 60 degrees apart
         if (v1.dot(v2) * dir1 * dir2 > 0)
           return false;
@@ -516,7 +562,10 @@ public class SmilesSearch {
   Vector3f vA = new Vector3f();
   Vector3f vB = new Vector3f();
   private int getChirality(Atom a, Atom b, Atom c, Atom pt) {
-    return (Measure.getDirectedNormalThroughPoints(a, b, c, pt, vTemp, vA, vB) < 0 ? 1 : 2);
+    Measure.getNormalThroughPoints(a, b, c, vTemp, vA, vB);
+    vA.set(pt);
+    vA.sub(a);
+    return (vA.dot(vTemp) > 0 ? 1 : 2);
   }  
 
 }

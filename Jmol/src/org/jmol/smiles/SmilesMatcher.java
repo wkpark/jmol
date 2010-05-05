@@ -93,7 +93,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     BitSet[] list = null;
     try {
       // create a topological model set from smiles
-      SmilesSearch search = (new SmilesParser(false)).parse(smiles);
+      SmilesSearch search = SmilesParser.getMolecule(false, smiles);
       search.isAll = isAll;
       int atomCount = search.patternAtomCount;
       Atom[] atoms = new Atom[atomCount];

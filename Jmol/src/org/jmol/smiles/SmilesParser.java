@@ -48,18 +48,18 @@ package org.jmol.smiles;
  */
 public class SmilesParser {
 
-  protected boolean isSmarts;
-  protected SmilesBond[] ringBonds;
+  private boolean isSmarts;
+  private SmilesBond[] ringBonds;
   
 
-  public SmilesParser(boolean isSmarts) {
-    this.isSmarts = isSmarts;    
-  }
-  
   public static SmilesSearch getMolecule(boolean isSmarts, String pattern) throws InvalidSmilesException {
     return (new SmilesParser(isSmarts)).parse(pattern);
   }
 
+  private SmilesParser(boolean isSmarts) {
+    this.isSmarts = isSmarts;    
+  }
+  
   /**
    * Parses a SMILES String
    * 
@@ -91,43 +91,6 @@ public class SmilesParser {
     return molecule;
   }
 
-  private void fixChirality(SmilesSearch molecule) throws InvalidSmilesException {
-    for (int i = molecule.patternAtomCount; --i >= 0; ) {
-      SmilesAtom sAtom = molecule.getAtom(i);
-      int chiralClass = sAtom.getChiralClass();
-      int nBonds = sAtom.getHydrogenCount();
-      if (nBonds < 0 || nBonds == Integer.MAX_VALUE)
-        nBonds = 0;
-      nBonds += sAtom.getBondsCount();
-      switch (chiralClass) {
-      case SmilesAtom.CHIRALITY_DEFAULT:
-        switch (nBonds) {
-        case 2:
-        case 4:
-        case 5:
-        case 6:
-          chiralClass = nBonds;
-          break;
-        }
-        break;
-      case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
-        if (nBonds != 4)
-          chiralClass = SmilesAtom.CHIRALITY_DEFAULT;
-        break;        
-      case SmilesAtom.CHIRALITY_ALLENE:
-      case SmilesAtom.CHIRALITY_OCTAHEDRAL:
-      case SmilesAtom.CHIRALITY_TETRAHEDRAL:
-      case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
-        if (nBonds != chiralClass)
-          chiralClass = SmilesAtom.CHIRALITY_DEFAULT;
-        break;        
-      }
-      if (chiralClass == SmilesAtom.CHIRALITY_DEFAULT)
-        throw new InvalidSmilesException("Incorrect number of bonds for chirality descriptor");
-      sAtom.setChiralClass(chiralClass);
-    }
-  }
-
   /**
    * Parses a part of a SMILES String
    * 
@@ -139,7 +102,7 @@ public class SmilesParser {
    *          Current atom
    * @throws InvalidSmilesException
    */
-  protected void parseSmiles(SmilesSearch molecule, String pattern,
+  private void parseSmiles(SmilesSearch molecule, String pattern,
                              SmilesAtom currentAtom)
       throws InvalidSmilesException {
 
@@ -255,7 +218,7 @@ public class SmilesParser {
    * @return New atom
    * @throws InvalidSmilesException
    */
-  protected SmilesAtom parseAtom(SmilesSearch molecule, String pattern,
+  private SmilesAtom parseAtom(SmilesSearch molecule, String pattern,
                                  SmilesAtom currentAtom, int bondType,
                                  boolean complete)
       throws InvalidSmilesException {
@@ -312,6 +275,58 @@ public class SmilesParser {
     return newAtom;
   }
 
+  /**
+   * Parses a ring definition
+   * 
+   * @param molecule
+   *          Resulting molecule
+   * @param pattern
+   *          SMILES String
+   * @param currentAtom
+   *          Current atom
+   * @param bondType
+   *          Bond type
+   * @throws InvalidSmilesException
+   */
+  private void parseRing(SmilesSearch molecule, String pattern,
+                           SmilesAtom currentAtom, int bondType)
+      throws InvalidSmilesException {
+    // Extracting ring number
+    int ringNum = 0;
+    try {
+      ringNum = Integer.parseInt(pattern);
+    } catch (NumberFormatException e) {
+      throw new InvalidSmilesException("Non numeric ring identifier");
+    }
+
+    // Ring management
+
+    if (ringBonds == null)
+      ringBonds = new SmilesBond[10];
+    if (ringNum >= ringBonds.length) {
+      SmilesBond[] tmp = new SmilesBond[ringBonds.length * 2];
+      System.arraycopy(ringBonds, 0, tmp, 0, ringBonds.length);
+      ringBonds = tmp;
+    }
+
+    SmilesBond b = ringBonds[ringNum];
+    if (b == null) {
+      ringBonds[ringNum] = molecule.createBond(currentAtom, null, bondType);
+      return;
+    }
+    if (bondType == SmilesBond.TYPE_UNKNOWN) {
+      if ((bondType = b.getBondType()) == SmilesBond.TYPE_UNKNOWN)
+        bondType = SmilesBond.TYPE_SINGLE;
+    } else if (b.getBondType() != SmilesBond.TYPE_UNKNOWN
+        && b.getBondType() != bondType) {
+      throw new InvalidSmilesException("Incoherent bond type for ring");
+    }
+    b.setBondType(bondType);
+    b.setAtom2(currentAtom);
+    currentAtom.addBond(b);
+    ringBonds[ringNum] = null;
+  }
+
   private void checkHydrogenCount(boolean complete, String pattern, int index,
                                   SmilesAtom newAtom)
       throws InvalidSmilesException {
@@ -346,6 +361,39 @@ public class SmilesParser {
     if (hydrogenCount == Integer.MIN_VALUE && complete)
       hydrogenCount = Integer.MAX_VALUE;
     newAtom.setHydrogenCount(hydrogenCount);
+  }
+
+  private String checkCharge(String pattern, SmilesAtom newAtom) throws InvalidSmilesException {
+    // Charge
+    int pt = pattern.indexOf("-") + pattern.indexOf("+") + 1;
+    if (pt < 0)
+      return pattern;
+    int len = pattern.length();
+    char ch = pattern.charAt(pt);
+    int count = 1;
+    int index = pt + 1;
+    int currentIndex = index;
+    if (index < len) {
+      char nextChar = pattern.charAt(index);
+      if (Character.isDigit(nextChar)) {
+        while (currentIndex < len && Character.isDigit(pattern.charAt(currentIndex)))
+          currentIndex++;
+        try {
+          count = Integer.parseInt(pattern.substring(index, currentIndex));
+        } catch (NumberFormatException e) {
+          throw new InvalidSmilesException("Non numeric charge");
+        }
+      } else {
+        while (currentIndex < len
+            && pattern.charAt(currentIndex) == ch) {
+          currentIndex++;
+          count++;
+        }
+      }
+      index = currentIndex;
+    }
+    newAtom.setCharge(ch == '+' ? count : -count);
+    return pattern.substring(0, pt) + pattern.substring(index, currentIndex);
   }
 
   private String checkChirality(String pattern, SmilesAtom newAtom)
@@ -398,98 +446,42 @@ public class SmilesParser {
     return pattern.substring(0, pt0) + pattern.substring(index);
   }
 
-  private String checkCharge(String pattern, SmilesAtom newAtom) throws InvalidSmilesException {
-    // Charge
-    int pt = pattern.indexOf("-") + pattern.indexOf("+") + 1;
-    if (pt < 0)
-      return pattern;
-    int len = pattern.length();
-    char ch = pattern.charAt(pt);
-    int count = 1;
-    int index = pt + 1;
-    int currentIndex = index;
-    if (index < len) {
-      char nextChar = pattern.charAt(index);
-      if (Character.isDigit(nextChar)) {
-        while (currentIndex < len && Character.isDigit(pattern.charAt(currentIndex)))
-          currentIndex++;
-        try {
-          count = Integer.parseInt(pattern.substring(index, currentIndex));
-        } catch (NumberFormatException e) {
-          throw new InvalidSmilesException("Non numeric charge");
+  private void fixChirality(SmilesSearch molecule) throws InvalidSmilesException {
+    for (int i = molecule.patternAtomCount; --i >= 0; ) {
+      SmilesAtom sAtom = molecule.getAtom(i);
+      int chiralClass = sAtom.getChiralClass();
+      int nBonds = sAtom.getHydrogenCount();
+      if (nBonds < 0 || nBonds == Integer.MAX_VALUE)
+        nBonds = 0;
+      nBonds += sAtom.getBondsCount();
+      switch (chiralClass) {
+      case SmilesAtom.CHIRALITY_DEFAULT:
+        switch (nBonds) {
+        case 2:
+        case 4:
+        case 5:
+        case 6:
+          chiralClass = nBonds;
+          break;
         }
-      } else {
-        while (currentIndex < len
-            && pattern.charAt(currentIndex) == ch) {
-          currentIndex++;
-          count++;
-        }
+        break;
+      case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
+        if (nBonds != 4)
+          chiralClass = SmilesAtom.CHIRALITY_DEFAULT;
+        break;        
+      case SmilesAtom.CHIRALITY_ALLENE:
+      case SmilesAtom.CHIRALITY_OCTAHEDRAL:
+      case SmilesAtom.CHIRALITY_TETRAHEDRAL:
+      case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+        if (nBonds != chiralClass)
+          chiralClass = SmilesAtom.CHIRALITY_DEFAULT;
+        break;        
       }
-      index = currentIndex;
+      if (chiralClass == SmilesAtom.CHIRALITY_DEFAULT)
+        throw new InvalidSmilesException("Incorrect number of bonds for chirality descriptor");
+      sAtom.setChiralClass(chiralClass);
     }
-    newAtom.setCharge(ch == '+' ? count : -count);
-    return pattern.substring(0, pt) + pattern.substring(index, currentIndex);
   }
 
-  /**
-   * Parses a ring definition
-   * 
-   * @param molecule Resulting molecule 
-   * @param pattern SMILES String
-   * @param currentAtom Current atom
-   * @param bondType Bond type
-   * @throws InvalidSmilesException
-   */
-  protected void parseRing(
-        SmilesSearch molecule,
-        String         pattern,
-        SmilesAtom     currentAtom,
-        int            bondType) throws InvalidSmilesException {
-  	// Extracting ring number
-    int ringNum = 0;
-    try {
-      ringNum = Integer.parseInt(pattern);
-    } catch (NumberFormatException e) {
-      throw new InvalidSmilesException("Non numeric ring identifier");
-    }
-    
-    // Checking rings buffer is big enough
-    if (ringBonds == null) {
-      ringBonds = new SmilesBond[10];
-      for (int i = 0; i < ringBonds.length; i++) {
-        ringBonds[i] = null;
-      }
-    }
-    if (ringNum >= ringBonds.length) {
-      SmilesBond[] tmp = new SmilesBond[ringNum + 1];
-      for (int i = 0; i < ringBonds.length; i++) {
-        tmp[i] = ringBonds[i];
-      }
-      for (int i = ringBonds.length; i < tmp.length; i++) {
-        tmp[i] = null;
-      }
-    }
-    
-    // Ring management
-    if (ringBonds[ringNum] == null) {
-      ringBonds[ringNum] = molecule.createBond(currentAtom, null, bondType);
-    } else {
-      if (bondType == SmilesBond.TYPE_UNKNOWN) {
-        bondType = ringBonds[ringNum].getBondType();
-        if (bondType == SmilesBond.TYPE_UNKNOWN) {
-          bondType = SmilesBond.TYPE_SINGLE;
-        }
-      } else {
-        if ((ringBonds[ringNum].getBondType() != SmilesBond.TYPE_UNKNOWN) &&
-            (ringBonds[ringNum].getBondType() != bondType)) {
-          throw new InvalidSmilesException("Incoherent bond type for ring");
-        }
-      }
-      ringBonds[ringNum].setBondType(bondType);
-      ringBonds[ringNum].setAtom2(currentAtom);
-      currentAtom.addBond(ringBonds[ringNum]);
-      ringBonds[ringNum] = null;
-    }
-  }
 
 }

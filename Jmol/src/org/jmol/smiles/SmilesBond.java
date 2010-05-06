@@ -38,6 +38,7 @@ public class SmilesBond {
   public final static int TYPE_AROMATIC = 4;
   public final static int TYPE_DIRECTIONAL_1 = 5;
   public final static int TYPE_DIRECTIONAL_2 = 6;
+  public final static int TYPE_ANY = 7;
 
   // Bond expressions
   public final static char CODE_NONE = '.';

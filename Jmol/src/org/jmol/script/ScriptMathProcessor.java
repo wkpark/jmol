@@ -2048,7 +2048,7 @@ class ScriptMathProcessor {
     try {
       BitSet[] b = viewer.getSmilesMatcher().getSubstructureSetArray(
           smiles, viewer.getModelSet().atoms, viewer.getAtomCount(), 
-          bsSelected, bsRequired, bsNot, asSmarts, isAll);
+          bsSelected, bsRequired, bsNot, null, asSmarts, isAll);
       if (!isAll)
         return (b.length > 0 ? b[0] : new BitSet());
       String[] matches = new String[b.length];

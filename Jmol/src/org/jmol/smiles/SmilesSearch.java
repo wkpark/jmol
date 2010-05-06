@@ -31,6 +31,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -44,6 +45,8 @@ import org.jmol.viewer.JmolConstants;
  */
 public class SmilesSearch {
 
+  boolean isSilent;
+  
   Atom[] jmolAtoms;
   int jmolAtomCount;
   BitSet bsSelected;
@@ -61,6 +64,7 @@ public class SmilesSearch {
   private SmilesAtom[] atoms = new SmilesAtom[INITIAL_ATOMS];
   private Vector vReturn;
   private BitSet bsReturn = new BitSet();
+  BitSet bsAromatic = new BitSet();
     
   /* ============================================================= */
   /*                             Atoms                             */
@@ -176,6 +180,15 @@ public class SmilesSearch {
     if (targetAtomicNumber != 0
         && targetAtomicNumber != (atom.getElementNumber()))
       return true;
+    
+    
+    // Check aromatic
+    boolean isAromatic = patternAtom.isAromatic();
+
+    if (targetAtomicNumber != 0 && isAromatic != bsAromatic .get(i))
+      return true;
+
+
     // Check isotope
     int targetMass = patternAtom.getAtomicMass();
     if (targetMass > 0 && targetMass != atom.getIsotopeNumber()) {
@@ -198,28 +211,8 @@ public class SmilesSearch {
     // Check bonds
 
     Bond[] bonds = atom.getBonds();
-
-    /*
-     * the JME test for aromatic carbon is simply that the atom is carbon and is
-     * in a ring and is double bonded or aromatic-bonded nothing more than that
-     */
     boolean bondFound = false;
-    boolean isAromatic = patternAtom.isAromatic();
-    if (isAromatic && targetAtomicNumber == 6) {
-      // for aromatic carbon specifically, match any atom
-      // that is either doubly bonded or aromatic bonded
-      for (int k = 0; k < bonds.length; k++) {
-        int order = bonds[k].getCovalentOrder();
-        if (order == JmolConstants.BOND_COVALENT_DOUBLE
-            || (order & JmolConstants.BOND_AROMATIC_MASK) != 0) {
-          bondFound = true;
-          break;
-        }
-      }
-      if (!bondFound)
-        return true;
-    }
-
+    
     for (int j = 0; j < patternAtom.getBondsCount(); j++) {
       SmilesBond patternBond = patternAtom.getBond(j);
       // Check only if the current atom is the second atom of the bond
@@ -235,9 +228,11 @@ public class SmilesSearch {
       // and that is enough for us.
       // this does not actually work for SMARTS
       boolean matchAnyBond = (isAromatic && atom1.isAromatic());
+      bondFound = false;
       for (int k = 0; k < bonds.length; k++) {
         if (bonds[k].getAtomIndex1() != matchingAtom
-            && bonds[k].getAtomIndex2() != matchingAtom)
+            && bonds[k].getAtomIndex2() != matchingAtom
+            || !bonds[k].isCovalent())
           continue;
         if (matchAnyBond) {
           // disregard bond type when aromatic -- could be single, double, or
@@ -246,10 +241,11 @@ public class SmilesSearch {
           break;
         }
         bondFound = false;
-        if (!bonds[k].isCovalent())
-          continue;
         int order = bonds[k].getCovalentOrder();
         switch (patternBond.getBondType()) {
+        case SmilesBond.TYPE_ANY:
+          bondFound = true;
+          break;
         case SmilesBond.TYPE_SINGLE:
         case SmilesBond.TYPE_DIRECTIONAL_1:
         case SmilesBond.TYPE_DIRECTIONAL_2:
@@ -272,13 +268,15 @@ public class SmilesSearch {
           return true;
         break;
       }
+      if (!bondFound)
+        return true;
     }
 
     // add this atom to the growing list
     patternAtom.setMatchingAtom(i);
 
     atomNum++;
-    if (Logger.debugging) {
+    if (!isSilent && Logger.debugging) {
       StringBuffer s = new StringBuffer();
       for (int k = 0; k < atomNum; k++) {
         s.append("-").append(atoms[k].getMatchingAtom());
@@ -325,25 +323,22 @@ public class SmilesSearch {
       }
       if (bsRequired != null && !bsRequired.intersects(bs))
         return true;
+      bsReturn.or(bs);
       if (asVector) {
         boolean isOK = true;
         for (int j = vReturn.size(); --j >= 0 && isOK;)
           isOK = !(((BitSet) vReturn.get(j)).equals(bs));
-        if (isOK)
-          vReturn.add(bs);
-        else
+        if (!isOK)
           return true;
-        bsReturn = bs;
-      } else {
-        bsReturn.or(bs);
+        vReturn.add(bs);
       }
-      if (Logger.debugging) {
+      if (!isSilent && Logger.debugging) {
         StringBuffer s = new StringBuffer();
         for (int k = 0; k < atomNum; k++)
           s.append("-").append(atoms[k].getMatchingAtom());
         s.append(" ").append(atomNum).append("/").append(getPatternAtomCount());
         Logger.debug(s.toString());
-        Logger.debug("match: " + Escape.escape(bsReturn));
+        Logger.debug("match: " + Escape.escape(bs));
       }
       if (!isAll || bsReturn.cardinality() == jmolAtomCount)
         return false;
@@ -612,6 +607,61 @@ public class SmilesSearch {
   private int getChirality(Atom a, Atom b, Atom c, Atom pt) {
     float d = Measure.getNormalThroughPoints(a, b, c, vTemp, vA, vB);
     return (Measure.distanceToPlane(vTemp, d, pt) > 0 ? 1 : 2);
+  }
+
+  public void setAromatic(BitSet bsAromatic) {
+    if (bsAromatic != null)
+      BitSetUtil.copy(bsAromatic, this.bsAromatic);
+    bsAromatic = this.bsAromatic;
+    
+    /*
+     * the JME test for aromatic carbon is simply that the atom is carbon and is
+     * in a ring and is double bonded or aromatic-bonded nothing more than that
+     */
+    
+    BitSet bsAllRings = new BitSet();
+    
+   /*Vector r5 = */getBitSets("*1****1", bsAllRings);
+   /*Vector r6 = */getBitSets("*1*****1", bsAllRings);
+   /*Vector r7 = */getBitSets("*1******1", bsAllRings);
+    
+   System.out.println(Escape.escape(bsAllRings));
+    // TODO -- will need individual rings at some point
+    
+    for (int i = 0; i < jmolAtomCount; i++) {
+      if (!bsAllRings.get(i))
+        continue;
+      Bond[] bonds = jmolAtoms[i].bonds;
+      for (int k = 0; k < bonds.length; k++) {
+        int order = bonds[k].getCovalentOrder();
+        if (order == JmolConstants.BOND_COVALENT_DOUBLE
+            || (order & JmolConstants.BOND_AROMATIC_MASK) != 0) {
+          if (bsAllRings.get(jmolAtoms[i].getBondedAtomIndex(k)))
+            bsAromatic.set(i);
+          break;
+        }
+      }
+    }
+  }
+
+  private Vector getBitSets(String smarts, BitSet bsAll) {
+    SmilesSearch search;
+    try {
+      search = SmilesParser.getMolecule(true, smarts);
+    } catch (InvalidSmilesException e) {
+      return null;
+    }
+    search.isSilent = true;
+    search.bsSelected = bsSelected;
+    search.bsRequired = bsRequired;
+    search.bsNot = bsNot;
+    search.jmolAtoms = jmolAtoms;
+    search.jmolAtomCount = jmolAtomCount;
+    search.isAll = true;
+    search.asVector = true;
+    Vector v = (Vector) search.search();
+    bsAll.or(search.bsReturn);
+    return v;
   }  
 
 }

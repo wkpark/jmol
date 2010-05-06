@@ -10,7 +10,7 @@ public interface SmilesMatcherInterface {
       throws Exception;
 
   public abstract BitSet[] getSubstructureSetArray(String smiles, Atom[] atoms, int atomCount, 
-      BitSet bsSelected, BitSet bsRequired, BitSet bsNot, boolean asSmarts, boolean isAll) throws Exception;
+      BitSet bsSelected, BitSet bsRequired, BitSet bsNot, BitSet bsAromatic, boolean asSmarts, boolean isAll) throws Exception;
   
   public abstract int find(String pattern,/* ...in... */ String smiles, boolean asSmarts, boolean isAll);
   

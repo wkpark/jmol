@@ -70,6 +70,8 @@ public class SmilesParser {
    * @throws InvalidSmilesException
    */
    SmilesSearch parse(String pattern) throws InvalidSmilesException {
+    if (Logger.debugging)
+      Logger.debug("Smiles Parser: " + pattern);
     if (pattern == null)
       throw new InvalidSmilesException("SMILES expressions must not be null");
     // First pass
@@ -271,7 +273,7 @@ public class SmilesParser {
     // Final check
 
     if (bondType == SmilesBond.TYPE_UNKNOWN)
-      bondType = SmilesBond.TYPE_SINGLE;
+      bondType = (isSmarts ? SmilesBond.TYPE_ANY : SmilesBond.TYPE_SINGLE);
     if ((currentAtom != null) && (bondType != SmilesBond.TYPE_NONE))
       molecule.createBond(currentAtom, newAtom, bondType);
     if (Logger.debugging)

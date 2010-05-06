@@ -103,9 +103,12 @@ public class SmilesMatcher implements SmilesMatcherInterface {
             .getAtomicNumber(), sAtom.getCharge(), false, '\0', '\0');
         atom.setBonds(new Bond[sAtom.getBondsCount()]);
       }
+      BitSet bsAromatic = new BitSet();
       int[] bondCounts = new int[atomCount];
       for (int i = atomCount; --i >= 0;) {
         SmilesAtom sAtom = search.getAtom(i);
+        if (sAtom.isAromatic())
+          bsAromatic.set(i);
         for (int j = sAtom.getBondsCount(); --j >= 0;) {
           SmilesBond sBond = sAtom.getBond(j);
           if (sBond.getAtom1() != sAtom)
@@ -141,7 +144,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         }
       }
       list = getSubstructureSetArray(pattern, atoms, atomCount, null, null,
-          null, asSmarts, isAll);
+          null, bsAromatic, asSmarts, isAll);
       return list.length;
     } catch (Exception e) {
       return -1;
@@ -165,6 +168,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     SmilesSearch search = SmilesParser.getMolecule(asSmarts, smiles);
     search.jmolAtoms = atoms;
     search.jmolAtomCount = atomCount;
+    search.setAromatic(null);
     search.isAll = isAll;
     return (BitSet) search.search();
   }
@@ -178,6 +182,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param bsSelected 
    * @param bsRequired 
    * @param bsNot 
+   * @param bsAromatic 
    * @param asSmarts 
    * @param isAll 
    * @return BitSet Array indicating which atoms match the pattern.
@@ -185,7 +190,8 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    */
   public BitSet[] getSubstructureSetArray(String smiles, Atom[] atoms, int atomCount, 
                                           BitSet bsSelected, 
-                                          BitSet bsRequired, BitSet bsNot, boolean asSmarts, boolean isAll)
+                                          BitSet bsRequired, BitSet bsNot, 
+                                          BitSet bsAromatic, boolean asSmarts, boolean isAll)
       throws Exception {
     SmilesSearch search = SmilesParser.getMolecule(asSmarts, smiles);
     search.bsSelected = bsSelected;
@@ -193,6 +199,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     search.bsNot = bsNot;
     search.jmolAtoms = atoms;
     search.jmolAtomCount = atomCount;
+    search.setAromatic(bsAromatic);
     search.isAll = isAll;
     search.asVector = true;
     Vector vSubstructures = (Vector) search.search();

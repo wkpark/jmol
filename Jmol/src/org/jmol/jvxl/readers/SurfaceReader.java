@@ -322,7 +322,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.cutoff = Float.NaN;
     if (!readAndSetVolumeParameters())
       return false;
-    if (!justForPlane && params.sigma != Float.MAX_VALUE && !allowSigma) {
+    if (!justForPlane && !Float.isNaN(params.sigma) && !allowSigma) {
       Logger.error("Reader does not support SIGMA option -- using cutoff 1.6");
       params.cutoff = 1.6f;
     }

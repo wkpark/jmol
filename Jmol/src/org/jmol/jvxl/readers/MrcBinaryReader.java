@@ -205,10 +205,10 @@ class MrcBinaryReader extends MapFileReader {
 
     getVectorsAndOrigin();
     
-    if (params.thePlane == null && (params.cutoffAutomatic || params.sigma != Float.MAX_VALUE)) {
-      float sigma = (params.sigma == Float.MAX_VALUE ? 1 : params.sigma);
-      params.cutoff = rmsDeviation / sigma + dmean;
-      Logger.info("Cutoff set to (mean + rmsDeviation*" + params.sigma + ")\n");
+    if (params.thePlane == null && (params.cutoffAutomatic || !Float.isNaN(params.sigma))) {
+      float sigma = (Float.isNaN(params.sigma) ? 1 : params.sigma);
+      params.cutoff = rmsDeviation * sigma + dmean;
+      Logger.info("Cutoff set to (mean + rmsDeviation*" + sigma + ")\n");
     }
 
     jvxlFileHeaderBuffer = new StringBuffer();

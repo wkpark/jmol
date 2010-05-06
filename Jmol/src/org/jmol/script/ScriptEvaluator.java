@@ -14647,8 +14647,11 @@ public class ScriptEvaluator {
             cutoff = ScriptVariable.fValue(ScriptVariable.getVariable(viewer
                 .evaluateExpression(strCutoff)));
             if (cutoff > 0) {
-              if (!Float.isNaN(sigma))
-                cutoff = 1 / sigma;
+              if (!Float.isNaN(sigma)) {
+                cutoff *= sigma;
+                sigma = Float.NaN;
+                addShapeProperty(propertyList, "sigma", new Float(sigma));
+              }
               addShapeProperty(propertyList, "cutoff", new Float(cutoff));
               sbCommand.append(" cutoff ").append(cutoff);
             }

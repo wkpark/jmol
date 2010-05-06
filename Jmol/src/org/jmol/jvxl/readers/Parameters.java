@@ -231,7 +231,7 @@ public class Parameters {
     resolution = Float.MAX_VALUE;
     scale = Float.NaN;
     scale3d = 0;
-    sigma = Float.MAX_VALUE;
+    sigma = Float.NaN;
     slabbingObject = null;
     solventExtendedAtomRadius = 0;
     state = STATE_INITIALIZED;

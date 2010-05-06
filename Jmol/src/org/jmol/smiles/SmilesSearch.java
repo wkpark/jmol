@@ -380,9 +380,12 @@ public class SmilesSearch {
           SmilesAtom sAtom2 = sAtom.getBond(1).getOtherAtom(sAtom);
           if (sAtom1 == null || sAtom2 == null)
             continue;
-
-          // ignoring cumulenes for now
-
+          // cumulenes
+          while (sAtom1.getBondsCount() == 2 && sAtom2.getBondsCount() == 2) {
+            sAtom1 = sAtom1.getBond(0).getOtherAtom(sAtom1);
+            sAtom2 = sAtom2.getBond(1).getOtherAtom(sAtom2);
+          }
+          // derive atoms 1-4 from different carbons:
           atom1 = getJmolAtom(sAtom1.getMatchingBondedAtom(0));
           atom2 = getJmolAtom(sAtom1.getMatchingBondedAtom(1));
           if (atom2 == null && nH != 1)
@@ -390,7 +393,11 @@ public class SmilesSearch {
           if (atom2 == null) {
             atom2 = getHydrogens(getJmolAtom(sAtom1.getMatchingAtom()), null);
             if (sAtom1.getIndex() == 0) {
+              // check for the VERY first atom in a set
               // attached H is first in that case
+              // so we have to switch it, since we have
+              // assigned already the first atom to be
+              // the first pattern atom
               Atom a = atom2;
               atom2 = atom1;
               atom1 = a;
@@ -406,9 +413,10 @@ public class SmilesSearch {
           if (getChirality(atom2, atom3, atom4, atom1) != order)
             return false;
           continue;
-        case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
-        case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
         case SmilesAtom.CHIRALITY_TETRAHEDRAL:
+        case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
+        case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+        case SmilesAtom.CHIRALITY_OCTAHEDRAL:
           atom1 = getJmolAtom(sAtom.getMatchingBondedAtom(0));
           switch (nH) {
           case 0:
@@ -417,7 +425,6 @@ public class SmilesSearch {
           case 1:
             atom2 = getHydrogens(getJmolAtom(sAtom.getMatchingAtom()), null);
             if (sAtom.getIndex() == 0) {
-              // attached H is first in that case
               Atom a = atom2;
               atom2 = atom1;
               atom1 = a;
@@ -428,27 +435,44 @@ public class SmilesSearch {
           }
           atom3 = getJmolAtom(sAtom.getMatchingBondedAtom(2 - nH));
           atom4 = getJmolAtom(sAtom.getMatchingBondedAtom(3 - nH));
-         // System.out.println("order " + order + "\n" + atom1.getInfo() + "\n" + atom2.getInfo() + "\n" + atom3.getInfo() + "\n" + atom4.getInfo());
+          
+          // in all the checks below, we use Measure utilities to 
+          // calculate the equations of the planes associated with 
+          // three given atoms -- the normal, in particular. We 
+          // then use dot products to check the directions of normals
+          // to see if the rotation is in the direction required. 
+          
+          // we only use TP1, TP2, OH1, OH2 here.
+          // so we must also check that the two bookend atoms are axial
+          
           switch (chiralClass) {
           case SmilesAtom.CHIRALITY_TETRAHEDRAL:
-          case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
             if (getChirality(atom2, atom3, atom4, atom1) != order)
               return false;
             continue;
+          case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+            // check for axial-axial
+            if (!isDiaxial(sAtom, 4 - nH, atom1)
+                || getChirality(atom2, atom3, atom4, atom1) != order)
+              return false;
+            continue;
+          case SmilesAtom.CHIRALITY_OCTAHEDRAL:
+            if (!isDiaxial(sAtom, 5 - nH, atom1))
+              return false;
+            // check for CW or CCW set
+            Atom atom5 = getJmolAtom(sAtom.getMatchingBondedAtom(4 - nH));
+            getPlaneNormals(atom2, atom3, atom4, atom5);
+            if (vNorm1.dot(vNorm2) < 0 
+                || vNorm2.dot(vNorm3) < 0)
+              return false;
+            // now check rotation in relation to the first atom
+            vNorm2.set(getJmolAtom(sAtom.getMatchingAtom()));
+            vNorm2.sub(atom1);
+            if ((vNorm2.dot(vNorm1) < 0 ? 1 : 2) != order)
+              return false;
+            continue;
           case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
-            if (vTemp1 == null) {
-              vTemp1 = new Vector3f();
-              vTemp2 = new Vector3f();
-              vNorm1 = new Vector3f();
-              vNorm2 = new Vector3f();
-              vNorm3 = new Vector3f();
-            }
-            Measure.getNormalThroughPoints(atom1, atom2, atom3, vNorm1, vTemp1,
-                vTemp2);
-            Measure.getNormalThroughPoints(atom2, atom3, atom4, vNorm2, vTemp1,
-                vTemp2);
-            Measure.getNormalThroughPoints(atom3, atom4, atom1, vNorm3, vTemp1,
-                vTemp2);
+            getPlaneNormals(atom1, atom2, atom3, atom4);
             // vNorm1 vNorm2 vNorm3 are right-hand normals for the given
             // triangles
             // 1-2-3, 2-3-4, 3-4-1
@@ -468,9 +492,6 @@ public class SmilesSearch {
             continue;
           }
           continue;
-        default:
-          Logger.error("chirality class " + chiralClass + " not supported");
-          return false;
         }
       }
     }
@@ -540,6 +561,33 @@ public class SmilesSearch {
     return true;
   }
 
+  private void getPlaneNormals(Atom atom1, Atom atom2, Atom atom3, Atom atom4) {
+    if (vTemp1 == null) {
+      vTemp1 = new Vector3f();
+      vTemp2 = new Vector3f();
+      vNorm1 = new Vector3f();
+      vNorm2 = new Vector3f();
+      vNorm3 = new Vector3f();
+    }
+    Measure.getNormalThroughPoints(atom1, atom2, atom3, vNorm1, vTemp1,
+        vTemp2);
+    Measure.getNormalThroughPoints(atom2, atom3, atom4, vNorm2, vTemp1,
+        vTemp2);
+    Measure.getNormalThroughPoints(atom3, atom4, atom1, vNorm3, vTemp1,
+        vTemp2);
+  }
+
+  private boolean isDiaxial(SmilesAtom sAtom, int k, Atom atom1) {
+    Atom atom0 = getJmolAtom(sAtom.getMatchingAtom());
+    Atom atom2 = getJmolAtom(sAtom.getMatchingBondedAtom(k));
+    vA.set(atom0);
+    vB.set(atom0);
+    vA.sub(atom1);
+    vB.sub(atom2);
+    // about 172 degrees
+    return (vA.dot(vB) < -0.95f);
+  }
+
   private Atom getJmolAtom(int i) {
     return (i < 0 ? null : jmolAtoms[i]);
   }
@@ -562,10 +610,8 @@ public class SmilesSearch {
   Vector3f vA = new Vector3f();
   Vector3f vB = new Vector3f();
   private int getChirality(Atom a, Atom b, Atom c, Atom pt) {
-    Measure.getNormalThroughPoints(a, b, c, vTemp, vA, vB);
-    vA.set(pt);
-    vA.sub(a);
-    return (vA.dot(vTemp) > 0 ? 1 : 2);
+    float d = Measure.getNormalThroughPoints(a, b, c, vTemp, vA, vB);
+    return (Measure.distanceToPlane(vTemp, d, pt) > 0 ? 1 : 2);
   }  
 
 }

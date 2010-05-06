@@ -225,7 +225,7 @@ public class SmilesAtom {
   final static int CHIRALITY_SQUARE_PLANAR = 8;
   
   static int getChiralityClass(String xx) {
-    return ("0;11;AL;33;TH;TP;OC;77;SP;".indexOf(xx) + 1)/ 3;
+    return ("0;11;AL;33;TH;TP;OH;77;SP;".indexOf(xx) + 1)/ 3;
   }
 
   /**

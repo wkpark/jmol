@@ -177,14 +177,13 @@ public class SmilesSearch {
 
     // Check atomic number
     int targetAtomicNumber = patternAtom.getAtomicNumber();
-    if (targetAtomicNumber != 0
+    if (targetAtomicNumber > 0
         && targetAtomicNumber != (atom.getElementNumber()))
       return true;
-    
-    
+        
     // Check aromatic
-    boolean isAromatic = patternAtom.isAromatic();
 
+    boolean isAromatic = patternAtom.isAromatic();
     if (targetAtomicNumber != 0 && isAromatic != bsAromatic .get(i))
       return true;
 
@@ -244,6 +243,7 @@ public class SmilesSearch {
         int order = bonds[k].getCovalentOrder();
         switch (patternBond.getBondType()) {
         case SmilesBond.TYPE_ANY:
+        case SmilesBond.TYPE_UNKNOWN:
           bondFound = true;
           break;
         case SmilesBond.TYPE_SINGLE:
@@ -259,9 +259,6 @@ public class SmilesSearch {
           break;
         case SmilesBond.TYPE_AROMATIC: // not implemented
           bondFound = ((order & JmolConstants.BOND_AROMATIC_MASK) != 0);
-          break;
-        case SmilesBond.TYPE_UNKNOWN:
-          bondFound = true;
           break;
         }
         if (!bondFound)
@@ -610,41 +607,72 @@ public class SmilesSearch {
   }
 
   public void setAromatic(BitSet bsAromatic) {
-    if (bsAromatic != null)
+    if (bsAromatic != null) {
+      // can force the issue
       BitSetUtil.copy(bsAromatic, this.bsAromatic);
-    bsAromatic = this.bsAromatic;
-    
-    /*
-     * the JME test for aromatic carbon is simply that the atom is carbon and is
-     * in a ring and is double bonded or aromatic-bonded nothing more than that
-     */
-    
-    BitSet bsAllRings = new BitSet();
-    
-   /*Vector r5 = */getBitSets("*1****1", bsAllRings);
-   /*Vector r6 = */getBitSets("*1*****1", bsAllRings);
-   /*Vector r7 = */getBitSets("*1******1", bsAllRings);
-    
-   System.out.println(Escape.escape(bsAllRings));
-    // TODO -- will need individual rings at some point
-    
-    for (int i = 0; i < jmolAtomCount; i++) {
-      if (!bsAllRings.get(i))
-        continue;
-      Bond[] bonds = jmolAtoms[i].bonds;
-      for (int k = 0; k < bonds.length; k++) {
-        int order = bonds[k].getCovalentOrder();
-        if (order == JmolConstants.BOND_COVALENT_DOUBLE
-            || (order & JmolConstants.BOND_AROMATIC_MASK) != 0) {
-          if (bsAllRings.get(jmolAtoms[i].getBondedAtomIndex(k)))
-            bsAromatic.set(i);
+      return;
+    }
+    for (int i = 3; i < 8; i++)
+      checkRing(i);
+  }
+
+  private void checkRing(int n) {
+    Vector v = getBitSets("*1" + "******".substring(0, n - 2) + "*1");
+    Vector3f norm = null;
+    Vector3f temp = new Vector3f();
+    Vector3f vA = new Vector3f();
+    Vector3f vB = new Vector3f();
+    for (int i = v.size(); --i >= 0;) {
+      BitSet bs = (BitSet) v.get(i);
+      norm = null;
+      for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) {
+        // check this ring atom
+        norm = checkRingPlane(j, j, bs, norm, temp, vA, vB);
+        Bond[] bonds = jmolAtoms[j].bonds;
+        // also check the substituent
+        if (norm != null)
+          for (int k = 0; k < bonds.length; k++) {
+            int j2 = jmolAtoms[j].getBondedAtomIndex(k);
+            if (!bs.get(j2)) {
+              norm = checkRingPlane(j, j2, bs, norm, temp, vA, vB);
+              break;
+            }
+          }
+        if (norm == null)
           break;
-        }
       }
+      // if the norm is still there, then it means
+      // all atoms tested were within a plane
+      if (norm != null)
+        for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
+          bsAromatic.set(j);
     }
   }
 
-  private Vector getBitSets(String smarts, BitSet bsAll) {
+  private Vector3f checkRingPlane(int j, int j2, BitSet bs, Vector3f norm,
+                                  Vector3f temp, Vector3f va2, Vector3f vb2) {
+    boolean isOK = true;
+    for (int k = bs.nextSetBit(j + 1); isOK && k >= 0; k = bs.nextSetBit(k + 1))
+      for (int l = bs.nextSetBit(k + 1); isOK && l >= 0; l = bs
+          .nextSetBit(l + 1)) {
+        Measure.getNormalThroughPoints(jmolAtoms[j2], jmolAtoms[k],
+            jmolAtoms[l], temp, vA, vB);
+        if (norm == null) {
+          norm = new Vector3f(temp);
+        } else if (Math.abs(norm.dot(temp)) < 0.99) { 
+          // not within about 8 degrees of alignment
+          norm = null; 
+          isOK = false;
+          break;
+        }
+        if (j2 != j) // just one test in the case of a substituent
+          return norm;
+        //System.out.println(bs + " " + norm.dot(temp));
+      }
+    return norm;
+  }
+
+  private Vector getBitSets(String smarts) {
     SmilesSearch search;
     try {
       search = SmilesParser.getMolecule(true, smarts);
@@ -659,9 +687,7 @@ public class SmilesSearch {
     search.jmolAtomCount = jmolAtomCount;
     search.isAll = true;
     search.asVector = true;
-    Vector v = (Vector) search.search();
-    bsAll.or(search.bsReturn);
-    return v;
+    return (Vector) search.search();
   }  
 
 }

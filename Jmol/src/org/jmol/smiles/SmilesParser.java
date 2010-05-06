@@ -25,6 +25,7 @@
 package org.jmol.smiles;
 
 import org.jmol.util.Logger;
+import org.jmol.viewer.JmolConstants;
 
 /**
  * Parses a SMILES String to create a <code>SmilesMolecule</code>.
@@ -107,7 +108,7 @@ public class SmilesParser {
    * @throws InvalidSmilesException
    */
   private void parseSmiles(SmilesSearch molecule, String pattern,
-                             SmilesAtom currentAtom)
+                           SmilesAtom currentAtom)
       throws InvalidSmilesException {
 
     if (pattern == null || pattern.length() == 0)
@@ -148,7 +149,8 @@ public class SmilesParser {
     ch = pattern.charAt(index);
     int bondType = SmilesBond.getBondTypeFromCode(ch);
     if (bondType != SmilesBond.TYPE_UNKNOWN) {
-      if (bondType == SmilesBond.TYPE_DIRECTIONAL_1 || bondType == SmilesBond.TYPE_DIRECTIONAL_2)
+      if (bondType == SmilesBond.TYPE_DIRECTIONAL_1
+          || bondType == SmilesBond.TYPE_DIRECTIONAL_2)
         molecule.haveBondStereochemistry = true;
       if (currentAtom == null) {
         throw new InvalidSmilesException("Bond without a previous atom");
@@ -191,9 +193,41 @@ public class SmilesParser {
       index = currentIndex + 1;
     } else if (ch == '*' || Character.isLetter(ch)) {
       // Atom definition
-      int size = (index + 1 < len
-          && Character.isUpperCase(ch) 
-          && Character.isLowerCase(pattern.charAt(index + 1)) ? 2 : 1);
+      char ch2 = (isSmarts && Character.isUpperCase(ch) 
+          && index + 1 < len ? pattern.charAt(index + 1)
+          : '\0');
+      if (ch2 != '\0'
+          && JmolConstants.elementNumberFromSymbol(pattern.substring(index,
+              index + 2)) == 0)
+        ch2 = '\0';
+      // guess at some ambiguous SMARTS strings:
+      if (ch2 != '\0') {
+        boolean isOK = true;
+        switch (ch2) {
+        case 'a': // Na Ca Ba Pa
+          switch (ch) {
+          case 'C':
+          case 'N':
+          case 'B':
+          case 'P':
+            isOK = false;
+          }
+          break;
+        case 'c': // Sc Ac
+          switch (ch) {
+          case 'A':
+          case 'S':
+            isOK = false;
+          }
+          break;
+        }
+        if (!isOK) {
+          Logger.error("Note: " + ch + ch2 + " NOT interpreted as an element");
+          ch2 = '\0';
+        }
+      }
+      int size = (Character.isUpperCase(ch) && Character.isLowerCase(ch2) ? 2
+          : 1);
       String subSmiles = pattern.substring(index, index + size);
       currentAtom = parseAtom(molecule, subSmiles, currentAtom, bondType, false);
       index += size;
@@ -272,10 +306,13 @@ public class SmilesParser {
     
     // Final check
 
-    if (bondType == SmilesBond.TYPE_UNKNOWN)
-      bondType = (isSmarts ? SmilesBond.TYPE_ANY : SmilesBond.TYPE_SINGLE);
-    if ((currentAtom != null) && (bondType != SmilesBond.TYPE_NONE))
+    if ((currentAtom != null) && (bondType != SmilesBond.TYPE_NONE)) {
+      if (bondType == SmilesBond.TYPE_UNKNOWN)
+        bondType = (isSmarts ? SmilesBond.TYPE_ANY 
+            : currentAtom.isAromatic() && newAtom.isAromatic() ? SmilesBond.TYPE_AROMATIC 
+            : SmilesBond.TYPE_SINGLE);
       molecule.createBond(currentAtom, newAtom, bondType);
+    }
     if (Logger.debugging)
       Logger.debug("new atom: " + newAtom);
     return newAtom;

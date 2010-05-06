@@ -83,6 +83,7 @@ public class SmilesAtom {
   	  default:
   	    return false;
   	  case 0:
+  	  case -1: // A a
   	    return true;
       case 6: // C
         count = (isAromatic ? 3 : 4);
@@ -152,6 +153,16 @@ public class SmilesAtom {
   public boolean setSymbol(String symbol) {
     if (symbol.equals("*")) {
       atomicNumber = 0;
+      return true;
+    }
+    if (symbol.equals("a")) {
+      atomicNumber = -1;
+      isAromatic = true;
+      return true;
+    }
+    if (symbol.equals("A")) {
+      atomicNumber = -1;
+      isAromatic = false;
       return true;
     }
     isAromatic = symbol.equals(symbol.toLowerCase()); // BH added

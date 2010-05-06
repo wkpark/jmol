@@ -115,6 +115,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
             continue;
           int order = 1;
           switch (sBond.getBondType()) {
+          case SmilesBond.TYPE_ANY:
           case SmilesBond.TYPE_UNKNOWN:
           case SmilesBond.TYPE_NONE:
           case SmilesBond.TYPE_DIRECTIONAL_1:
@@ -133,8 +134,6 @@ public class SmilesMatcher implements SmilesMatcherInterface {
             break;
           }
           SmilesAtom sAtom2 = sBond.getAtom2();
-          if (sAtom.isAromatic() && sAtom2.isAromatic())
-            order = JmolConstants.BOND_AROMATIC;
           int i2 = sAtom2.getIndex();
          
           Atom atom1 = (Atom) atoms[i];

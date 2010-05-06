@@ -24,6 +24,8 @@
 
 package org.jmol.smiles;
 
+import org.jmol.util.Logger;
+
 /**
  * Parses a SMILES String to create a <code>SmilesMolecule</code>.
  * The SMILES specification has been found at the
@@ -188,6 +190,7 @@ public class SmilesParser {
     } else if (ch == '*' || Character.isLetter(ch)) {
       // Atom definition
       int size = (index + 1 < len
+          && Character.isUpperCase(ch) 
           && Character.isLowerCase(pattern.charAt(index + 1)) ? 2 : 1);
       String subSmiles = pattern.substring(index, index + size);
       currentAtom = parseAtom(molecule, subSmiles, currentAtom, bondType, false);
@@ -255,13 +258,12 @@ public class SmilesParser {
     if (ch != '*' && !Character.isLetter(ch))
       throw new InvalidSmilesException("Unexpected atom symbol");
     char nextChar = (index + 1 < len ? pattern.charAt(index + 1) : 'Z');
-    int size = (Character.isLetter(ch)
+    int size = (Character.isUpperCase(ch)
         && Character.isLowerCase(nextChar) ? 2 : 1);
     if (size == 2 && nextChar == 'h' && index + 2 < len
         && Character.isDigit(pattern.charAt(index + 2)))
       size = 1;
-    if (!newAtom.setSymbol(Character.toUpperCase(ch)
-        + pattern.substring(index + 1, index + size)))
+    if (!newAtom.setSymbol(ch + pattern.substring(index + 1, index + size)))
       throw new InvalidSmilesException("Invalid atom symbol");
     index += size;
     checkHydrogenCount(complete, pattern, index, newAtom);
@@ -272,6 +274,8 @@ public class SmilesParser {
       bondType = SmilesBond.TYPE_SINGLE;
     if ((currentAtom != null) && (bondType != SmilesBond.TYPE_NONE))
       molecule.createBond(currentAtom, newAtom, bondType);
+    if (Logger.debugging)
+      Logger.debug("new atom: " + newAtom);
     return newAtom;
   }
 

@@ -24,6 +24,7 @@
 
 package org.jmol.smiles;
 
+import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
 /**
@@ -43,6 +44,15 @@ public class SmilesAtom {
   private SmilesBond[] bonds = new SmilesBond[INITIAL_BONDS];
   private int bondsCount;
 
+  public String toString() {
+    return "[atom" + index + "(" + matchingAtom + ")"
+    + " " + atomicNumber 
+    + " ch:" + charge 
+    + " ar:" + isAromatic 
+    + " hy:" + hydrogenCount
+    + " ]";
+  }
+  
   private final static int INITIAL_BONDS = 4;
 
   /**
@@ -317,6 +327,8 @@ public class SmilesAtom {
       System.arraycopy(bonds, 0, tmp, 0, bonds.length);
       bonds = tmp;
     }
+    if (Logger.debugging)
+      Logger.debug("adding bond to " + this + ": " + bond.getAtom1() + " " + bond.getAtom2());
     bonds[bondsCount] = bond;
     bondsCount++;
   }

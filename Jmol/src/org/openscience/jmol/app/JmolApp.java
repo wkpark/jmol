@@ -155,7 +155,7 @@ public class JmolApp {
     options.addOption("p", "printOnly", false, GT
         ._("send only output from print messages to console (implies -i)"));
     options.addOption("t", "threaded", false, GT
-        ._("independent commmand thread"));
+        ._("independent command thread"));
     options.addOption("x", "exit", false, GT
         ._("exit after script (implicit with -n)"));
 

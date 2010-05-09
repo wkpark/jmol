@@ -232,6 +232,11 @@ public class CrystalReader extends AtomSetCollectionReader {
       readFrequencies();
       return true;
     }
+    
+    if (line.startsWith(" MAX GRADIENT")) {
+      readGradient();
+      return true;
+    }
 
     if (line.startsWith(" ATOMIC SPINS SET")) {
       readSpins();
@@ -293,6 +298,22 @@ public class CrystalReader extends AtomSetCollectionReader {
     String[] ab = TextFormat.split(f, '/');
     return (ab.length == 2 ? parseFloat(ab[0]) / parseFloat(ab[1]) : 0);
   }
+  
+  private void readGradient() throws Exception {
+    /*MAX GRADIENT      0.000967  THRESHOLD             
+      RMS GRADIENT      0.000967  THRESHOLD              
+      MAX DISPLAC.      0.005733  THRESHOLD             
+      RMS DISPLAC.      0.005733  THRESHOLD */          
+    atomSetCollection.setAtomSetProperty("maxGradient", TextFormat
+        .formatDecimal(parseFloat(line.substring(19, 28).trim()), 6));
+    readLine();
+    readLine();
+    atomSetCollection.setAtomSetProperty("maxDisplacement", TextFormat
+        .formatDecimal(parseFloat(line.substring(19, 28).trim()), 6));
+    readLine();
+    atomSetCollection.setAtomSetProperty("rmsDisplacement", TextFormat
+        .formatDecimal(parseFloat(line.substring(19, 28).trim()), 6));
+   }
 
   private void readVolumePrimCell() {
     // line looks like:  PRIMITIVE CELL - CENTRING CODE 1/0 VOLUME=   113.054442 - DENSITY 2.642 g/cm^3

@@ -43,6 +43,9 @@ public abstract class JmolConsole extends JDialog implements ActionListener, Win
   public JmolViewer viewer;
   protected Component display;
 
+  static {
+    System.out.println("JmolConsole is initializing");
+  }
   // common:
   
   protected ScriptEditor scriptEditor;

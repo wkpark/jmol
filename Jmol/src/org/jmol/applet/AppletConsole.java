@@ -39,13 +39,35 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 public class AppletConsole extends JmolConsole implements JmolAppConsoleInterface {
+  
+  static {
+    System.out.println("AppletConsole is initializing");
+  }
   final JTextArea input = new ControlEnterTextArea();
+
+  static {
+    System.out.println("AppletConsole is initializing...input");
+  }
+  
   private final JTextPane output = new JTextPane();
+  
+  static {
+    System.out.println("AppletConsole is initializing...output");
+  }
+
   private final Document outputDocument = output.getDocument();
   
+  static {
+    System.out.println("AppletConsole is initializing...document");
+  }
+
   private JFrame jf;
 
   private final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
+
+  static {
+    System.out.println("AppletConsole is initializing...attributes");
+  }
 
   //public void finalize() {
   //  System.out.println("Console " + this + " finalize");
@@ -72,8 +94,12 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
   private AppletConsole(Viewer viewer, Component display) {
     this.display = display;
+    System.out.println("AppletConsole is initializing...display");
+
     set(viewer);
-  }
+
+    System.out.println("AppletConsole is initializing...viewer");
+}
 
   public void sendConsoleEcho(String strEcho) {
     output(strEcho);
@@ -88,7 +114,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
   private void set(JmolViewer viewer) {
     //Logger.debug("Console constructor");
-    //System.out.println("Console " + this + " constructed");
+    System.out.println("Console " + this + " set()");
 
     this.viewer = viewer;
     boolean doTranslate = GT.getDoTranslate();
@@ -117,6 +143,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     jf.setJMenuBar(menubar);
     c.setLayout(new BoxLayout(c, BoxLayout.Y_AXIS));
 
+    System.out.println("Console " + this + " set(2)");
 
     JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, jscrollOutput,
         jscrollInput);
@@ -155,6 +182,9 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
     jf.addWindowListener(this);
     GT.setDoTranslate(doTranslate);
+
+    System.out.println("Console " + this + " set(3)");
+
   }
   
   protected JMenuBar createMenubar() {

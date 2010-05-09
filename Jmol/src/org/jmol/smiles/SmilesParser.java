@@ -92,8 +92,6 @@ public class SmilesParser {
    * -- does NOT implement "?" for bond stereochemistry, as 3D structures
    *    always defined stereochemically
    *    
-   * -- ringMemberships will only be to 8-membered rings
-   *    
    *   [smarts] == [node][connections] 
    *   [branch] == "(" [smarts] ")" 
    *   [connections] == [connection] | NULL }

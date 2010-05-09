@@ -100,7 +100,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       for (int i = 0; i < atomCount; i++) {
         SmilesAtom sAtom = search.getAtom(i);
         Atom atom = atoms[i] = new Atom(0, i, 0, 0, 0, 0, null, 0, sAtom
-            .getAtomicNumber(), sAtom.getCharge(), false, '\0', '\0');
+            .atomicNumber, sAtom.getCharge(), false, '\0', '\0');
         atom.setBonds(new Bond[sAtom.getBondsCount()]);
       }
       BitSet bsAromatic = new BitSet();
@@ -115,12 +115,13 @@ public class SmilesMatcher implements SmilesMatcherInterface {
             continue;
           int order = 1;
           switch (sBond.getBondType()) {
-          case SmilesBond.TYPE_ANY:
           case SmilesBond.TYPE_UNKNOWN:
           case SmilesBond.TYPE_NONE:
           case SmilesBond.TYPE_DIRECTIONAL_1:
           case SmilesBond.TYPE_DIRECTIONAL_2:
+          case SmilesBond.TYPE_RING_BOND:
           case SmilesBond.TYPE_SINGLE:
+          case SmilesBond.TYPE_ANY:
             order = JmolConstants.BOND_COVALENT_SINGLE;
             break;
           case SmilesBond.TYPE_AROMATIC:
@@ -134,7 +135,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
             break;
           }
           SmilesAtom sAtom2 = sBond.getAtom2();
-          int i2 = sAtom2.getIndex();
+          int i2 = sAtom2.index;
          
           Atom atom1 = (Atom) atoms[i];
           Atom atom2 = (Atom) atoms[i2];
@@ -169,7 +170,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     search.jmolAtomCount = atomCount;
     search.setAromatic(null);
     search.isAll = isAll;
-    return (BitSet) search.search();
+    return (BitSet) search.search(false);
   }
 
   /**
@@ -201,7 +202,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     search.setAromatic(bsAromatic);
     search.isAll = isAll;
     search.asVector = true;
-    Vector vSubstructures = (Vector) search.search();
+    Vector vSubstructures = (Vector) search.search(false);
     BitSet[] bitsets = new BitSet[vSubstructures.size()];
     for (int i = 0; i < bitsets.length; i++)
       bitsets[i] = (BitSet) vSubstructures.get(i);

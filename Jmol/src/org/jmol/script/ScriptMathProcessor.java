@@ -1101,14 +1101,33 @@ class ScriptMathProcessor {
         return addX(isSyntaxCheck ? 0 : viewer.getSmilesMatcher().find(flags,
             ScriptVariable.sValue(x1),
             isSmarts, (args.length == 3 && ScriptVariable.bValue(args[2]))));
+      if (isSmiles || isSmarts)
+        sFind = flags;
       if (x1.tok == Token.bitset) {
         boolean isAll = (args.length > 1 && ScriptVariable
             .bValue(args[args.length - 1]));
-        Object ret = getSmilesMatches((isSmiles || isSmarts ? flags : sFind),
+        Object ret = getSmilesMatches(sFind,
             (BitSet) x1.value, null, null, !isSmiles, isAll);
         if (!isAll)
           return addX((BitSet) ret);
         return addX((String[]) ret);
+      }
+      if (x1.tok == Token.list) {
+        String[] list = (String[]) x1.value;
+        Vector v = new Vector();
+        for (int i = 0; i < list.length; i++) {
+          BitSet bs = Escape.unescapeBitset(list[i]);
+          if (bs == null)
+            continue;
+          BitSet ret = (BitSet) getSmilesMatches(sFind,
+              bs, null, null, !isSmiles, false);
+          if (ret.cardinality() > 0)
+            v.addElement(ret);
+        }
+        list = new String[v.size()];
+        for (int i = v.size(); --i >= 0; )
+          list[i] = Escape.escape((BitSet)v.get(i));
+        return addX(list);
       }
       eval.error(ScriptEvaluator.ERROR_invalidArgument);
     }

@@ -43,6 +43,7 @@ public class InvalidSmilesException extends Exception {
    */
   public InvalidSmilesException(String message) {
     super(message);
+    printStackTrace();
   }
 
   /**

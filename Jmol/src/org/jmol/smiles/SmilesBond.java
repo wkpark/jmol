@@ -38,16 +38,8 @@ public class SmilesBond {
   public final static int TYPE_AROMATIC = 4;
   public final static int TYPE_DIRECTIONAL_1 = 5;
   public final static int TYPE_DIRECTIONAL_2 = 6;
-  public final static int TYPE_ANY = 7;
-
-  // Bond expressions
-  public final static char CODE_NONE = '.';
-  public final static char CODE_SINGLE = '-';
-  public final static char CODE_DOUBLE = '=';
-  public final static char CODE_TRIPLE = '#';
-  public final static char CODE_AROMATIC = ':';
-  public final static char CODE_DIRECTIONAL_1 = '/';
-  public final static char CODE_DIRECTIONAL_2 = '\\';
+  public final static int TYPE_RING_BOND = 7;
+  public final static int TYPE_ANY = 8;
 
   private SmilesAtom atom1;
   private SmilesAtom atom2;
@@ -72,20 +64,24 @@ public class SmilesBond {
    */
   public static int getBondTypeFromCode(char code) {
     switch (code) {
-    case CODE_NONE:
+    case '.':
       return TYPE_NONE;
-    case CODE_SINGLE:
+    case '-':
       return TYPE_SINGLE;
-    case CODE_DOUBLE:
+    case '=':
       return TYPE_DOUBLE;
-    case CODE_TRIPLE:
+    case '#':
       return TYPE_TRIPLE;
-    case CODE_AROMATIC:
+    case ':':
       return TYPE_AROMATIC;
-    case CODE_DIRECTIONAL_1:
+    case '/':
       return TYPE_DIRECTIONAL_1;
-    case CODE_DIRECTIONAL_2:
+    case '\\':
       return TYPE_DIRECTIONAL_2;
+    case '@':
+      return TYPE_RING_BOND;
+    case '~':
+      return TYPE_ANY;
     }
     return TYPE_UNKNOWN;
   }

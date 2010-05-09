@@ -410,6 +410,32 @@ final public class Atom extends Point3fi {
     return n;
   }
 
+  public int getImplicitHydrogenCount() {
+    int targetValence = getTargetValence();
+    int charge = getFormalCharge();
+    if (charge != 0)
+      targetValence += (targetValence == 4 ? -Math.abs(charge) : charge);
+    int n = targetValence - getValence();
+    return (n < 0 ? 0 : n);
+  }
+
+  int getTargetValence() {
+    switch (getElementNumber()) {
+    case 6: //C
+    case 14: //Si      
+      return 4;
+    case 5:  // B
+    case 7:  // N
+    case 15: // P
+      return 3;
+    case 8: //O
+    case 16: //S
+      return 2;
+    }
+    return -1;
+  }
+
+
   public float getDimensionValue(int dimension) {
     return (dimension == 0 ? x : (dimension == 1 ? y : z));
   }

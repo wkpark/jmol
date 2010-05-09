@@ -1206,8 +1206,6 @@ abstract public class AtomCollection {
     BitSet bsDeleted = viewer.getDeletedAtoms();
     Point3f pt;
     int nH = 0;
-    String types = (justCarbon ? "C" : "C S Si N O");
-    String valences = "4 2 4  3 2";
     // these numbers are increased by
     // just not doing aldehydes here -- all A-X-B bent == sp3 for now
     if (bs != null)
@@ -1215,20 +1213,17 @@ abstract public class AtomCollection {
         if (bsDeleted != null && bsDeleted.get(i))
           continue;
         Atom atom = atoms[i];
-        int ipt = types.indexOf(atom.getElementSymbol());
-        if (ipt < 0)
+        if (justCarbon && atom.getElementNumber() != 6)
           continue;
-        int targetValence = 0 + valences.charAt(ipt) - '0';
         if (doAll && atom.getCovalentHydrogenCount() > 0)
           continue;
-        int nBonds = atom.getCovalentBondCount();
-        int charge = atom.getFormalCharge();
-        if (charge != 0)
-          targetValence += (targetValence == 4 ? -Math.abs(charge) : charge);
-        int nVal = atom.getValence();
-        if (nVal >= targetValence)
+        int n = atom.getImplicitHydrogenCount();
+        if (n == 0)
           continue;
-        int n = targetValence - nVal;
+        int nBonds = atom.getCovalentBondCount();
+        int targetValence = atom.getTargetValence();
+        int atomicNumber = atom.getElementNumber();
+
         hAtoms[i] = new Point3f[n];
         //System.out.println(atom.getInfo() + " targetValence=" + targetValence + " nB="
          //+ nBonds + " nVal=" + nVal + " n=" + n);
@@ -1258,7 +1253,7 @@ abstract public class AtomCollection {
         case 2:
           // 2 bonds needed R2C or R-N or R2C=C or O
           //                    or RC=C or C=C
-          boolean isEne = (nBonds == 1 && targetValence == 4);
+          boolean isEne = (atomicNumber == 5 || nBonds == 1 && targetValence == 4);
           getHybridizationAndAxes(i, z, x, (isEne ? "sp2b" : targetValence == 3 ? "sp3b" : "lpa"), false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
@@ -1273,15 +1268,16 @@ abstract public class AtomCollection {
             vConnect.add(atom);
           break;
         case 1:
-          // one bond needed R3C, R-N-R, R-O R=C-R R=N R-3-C
-          // nbonds ......... 3 .. 2 ... 1 ... 2 .. 1 .. 1
-          // nval ........... 3 .. 2 ... 1 ... 3 .. 2 .. 3
-          // targetValence .. 4 .. 3 ... 2 ... 4 .. 3 .. 4
+          // one bond needed R2B, R3C, R-N-R, R-O R=C-R R=N R-3-C
+          // nbonds ......... 2 .. 3 .. 2 ... 1 ... 2 .. 1 .. 1
+          // nval ........... 2 .. 3 .. 2 ... 1 ... 3 .. 2 .. 3
+          // targetValence .. 3 .. 4 .. 3 ... 2 ... 4 .. 3 .. 4
           // ................sp3 . sp3 . sp3 . sp2 sp2 . sp
           switch (targetValence - nBonds) {
           case 1:
-            // sp3
-            getHybridizationAndAxes(i, z, x, targetValence == 2 ? "sp3b" : "lpa",
+            // sp3 or Boron sp2
+            getHybridizationAndAxes(i, z, x, (atomicNumber == 5 ? "sp2c" 
+                : targetValence == 2 ? "sp3b" : "lpa"),
                 false);
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, z, atom);

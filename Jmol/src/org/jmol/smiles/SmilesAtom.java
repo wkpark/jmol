@@ -32,9 +32,22 @@ import org.jmol.viewer.JmolConstants;
  */
 public class SmilesAtom {
 
-  private int index;
-  private short atomicNumber = -1;
-  private int atomicMass = Integer.MIN_VALUE;
+  final static int CHIRALITY_DEFAULT = 0;
+  final static int CHIRALITY_ALLENE = 2;
+  final static int CHIRALITY_TETRAHEDRAL = 4;
+  final static int CHIRALITY_TRIGONAL_BIPYRAMIDAL = 5;
+  final static int CHIRALITY_OCTAHEDRAL = 6;
+  final static int CHIRALITY_SQUARE_PLANAR = 8;
+  
+  static int getChiralityClass(String xx) {
+    return ("0;11;AL;33;TH;TP;OH;77;SP;".indexOf(xx) + 1)/ 3;
+  }
+
+  int index;
+  boolean not;
+  
+  short atomicNumber = -2; // UNDEFINED (could be A or a or *)
+  private int atomicMass = 0;
   private int charge;
   private int hydrogenCount = Integer.MIN_VALUE;
   private int matchingAtom = -1;
@@ -43,7 +56,45 @@ public class SmilesAtom {
   private boolean isAromatic;
   private SmilesBond[] bonds = new SmilesBond[INITIAL_BONDS];
   private int bondsCount;
+  
+  int iNested = 0;
+  
+  SmilesAtom[] atomsOr;
+  int nAtomsOr;
+  
+  SmilesAtom[] primitives;
+  int nPrimitives;
+  
+  public SmilesAtom addAtomOr() {
+    if (atomsOr == null)
+      atomsOr = new SmilesAtom[2];
+    if (nAtomsOr >= atomsOr.length) {
+      SmilesAtom[] tmp = new SmilesAtom[atomsOr.length * 2];
+      System.arraycopy(atomsOr, 0, tmp, 0, atomsOr.length);
+      atomsOr = tmp;
+    }
+    SmilesAtom sAtom = new SmilesAtom(index);
+    atomsOr[nAtomsOr] = sAtom;
+    nAtomsOr++;
+    return sAtom;
+  }
 
+  public SmilesAtom addPrimitive() {
+    if (primitives == null)
+      primitives = new SmilesAtom[2];
+    if (nPrimitives >= primitives.length) {
+      SmilesAtom[] tmp = new SmilesAtom[primitives.length * 2];
+      System.arraycopy(primitives, 0, tmp, 0, primitives.length);
+      primitives = tmp;
+    }
+    SmilesAtom sAtom = new SmilesAtom(index);
+    primitives[nPrimitives] = sAtom;
+    setSymbol("*");
+    nPrimitives++;
+    return sAtom;
+  }
+
+  
   public String toString() {
     return "[atom" + index + "(" + matchingAtom + ")"
     + " " + atomicNumber 
@@ -151,21 +202,22 @@ public class SmilesAtom {
    * @return  false if invalid symbol
    */
   public boolean setSymbol(String symbol) {
+    isAromatic = symbol.equals(symbol.toLowerCase()); // BH added
+ 
     if (symbol.equals("*")) {
+      isAromatic = false;
+      atomicNumber = -2;
+      return true;
+    }
+    if (symbol.equals("a") || symbol.equals("A")) {
+      atomicNumber = -1;
+      return true;
+    }
+    if (symbol.equals("Xx")) {
       atomicNumber = 0;
       return true;
     }
-    if (symbol.equals("a")) {
-      atomicNumber = -1;
-      isAromatic = true;
-      return true;
-    }
-    if (symbol.equals("A")) {
-      atomicNumber = -1;
-      isAromatic = false;
-      return true;
-    }
-    isAromatic = symbol.equals(symbol.toLowerCase()); // BH added
+    
     if (isAromatic)
       symbol = symbol.substring(0, 1).toUpperCase() 
           + (symbol.length() == 1 ? "" : symbol.substring(1));
@@ -197,7 +249,7 @@ public class SmilesAtom {
    * @param mass Atomic mass.
    */
   public void setAtomicMass(int mass) {
-    this.atomicMass = mass;
+    atomicMass = mass;
   }
   
   /**
@@ -236,17 +288,6 @@ public class SmilesAtom {
    */
   public void setMatchingAtom(int atom) {
     this.matchingAtom = atom;
-  }
-
-  final static int CHIRALITY_DEFAULT = 0;
-  final static int CHIRALITY_ALLENE = 2;
-  final static int CHIRALITY_TETRAHEDRAL = 4;
-  final static int CHIRALITY_TRIGONAL_BIPYRAMIDAL = 5;
-  final static int CHIRALITY_OCTAHEDRAL = 6;
-  final static int CHIRALITY_SQUARE_PLANAR = 8;
-  
-  static int getChiralityClass(String xx) {
-    return ("0;11;AL;33;TH;TP;OH;77;SP;".indexOf(xx) + 1)/ 3;
   }
 
   /**
@@ -349,6 +390,38 @@ public class SmilesAtom {
       return -1;
     SmilesBond b = bonds[i];
     return (b.getAtom1() == this ? b.getAtom2() : b.getAtom1()).matchingAtom;
+  }
+
+
+
+  int degree = -1;
+  public void setDegree(int degree) {
+    this.degree = degree;
+  }
+
+  int valence = -1;
+  public void setValence(int valence) {
+    this.valence = valence;
+  }
+
+  int connectivity = -1;
+  public void setConnectivity(int connectivity) {
+    this.connectivity = connectivity;
+  }
+
+  int ringMembership = -1;
+  public void setRingMembership(int rm) {
+    ringMembership = rm;
+  }
+
+  int ringSize = -1;
+  public void setRingSize(int rs) {
+    ringSize = rs;
+  }
+
+  int ringConnectivity = -1;
+  public void setRingConnectivity(int rc) {
+    ringConnectivity = rc;
   }
 
 

@@ -59,15 +59,8 @@ public class SmilesParser {
    * 
    * Comparision to Daylight SMARTS:
    * 
-   * -- defines "aromatic" unambiguously and strictly geometrically as follows:
-   * 
-   *     -- an "aromatic atom" is defined to be any atom within an aromatic ring
-   *        (no restriction to element)
-   *     -- "aromatic ring" is defined as a ring of 3-7 atoms for which
-   *          (a) the normals to all combinations of three ring atoms as well as 
-   *          (b) one normal for each subtituent defined for the plane formed
-   *              by that substituent, its connecting ring atom, and one other ring atom
-   *         are all parallel or antiparallel to each other.
+   * -- defines "aromatic" unambiguously and strictly geometrically. 
+   *    see org.jmol.smiles.SmilesAromatic.java
    * 
    * -- nesting ("recursive" SMARTS") implemented: using [C&$(C[$(aaaO);$(aaC)])]
    * 

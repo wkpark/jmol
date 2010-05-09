@@ -4885,9 +4885,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!haveDisplay)
       return;
     // Eval
-    if (appConsole == null)
-      getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
-    appConsole.setVisible(showConsole);
+    try {
+      if (appConsole == null)
+        getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
+      appConsole.setVisible(showConsole);
+    } catch (Exception e) {
+      // no console for this client...
+    }
   }
 
   public void clearConsole() {

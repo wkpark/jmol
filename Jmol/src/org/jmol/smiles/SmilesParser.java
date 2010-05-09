@@ -495,7 +495,7 @@ public class SmilesParser {
             newAtom.setRingSize(ret[0]);
             molecule.needRingData = true;
             if (ret[0] > molecule.ringDataMax)
-              molecule.ringDataMax = ret[0] + 1;
+              molecule.ringDataMax = ret[0];
             break;
           case 'v':
             index = getDigits(pattern, index + 1, ret);

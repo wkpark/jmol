@@ -2181,13 +2181,18 @@ class ScriptMathProcessor {
 
   private boolean evaluateSubstructure(ScriptVariable[] args, int tok)
       throws ScriptException {
-    if (args.length != 1)
+    if (args.length == 0)
       return false;
     BitSet bs = new BitSet();
     String pattern = (isSyntaxCheck ? "" : ScriptVariable.sValue(args[0]));
     if (pattern.length() > 0)
       try {
-        bs = viewer.getSmilesMatcher().getSubstructureSet(pattern, viewer.getModelSet().atoms, viewer.getAtomCount(), tok == Token.smarts, true);
+        BitSet bsSelected = (args.length == 2 && args[1].tok == Token.bitset ? ScriptVariable
+            .bsSelect(args[1])
+            : null);
+        bs = viewer.getSmilesMatcher().getSubstructureSet(pattern,
+            viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
+            tok == Token.smarts, true);
       } catch (Exception e) {
         eval.evalError(e.getMessage(), null);
       }

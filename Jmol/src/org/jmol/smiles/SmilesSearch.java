@@ -43,6 +43,8 @@ import org.jmol.viewer.JmolConstants;
  * but this now includes more data than that and the search itself
  * so as to keep this thread safe
  * 
+ * definition of "aromatic" is 
+ * 
  */
 public class SmilesSearch {
 
@@ -718,8 +720,6 @@ public class SmilesSearch {
     return atomH;
   }
 
-
-
   Vector3f vTemp = new Vector3f();
   Vector3f vA = new Vector3f();
   Vector3f vB = new Vector3f();
@@ -734,16 +734,25 @@ public class SmilesSearch {
       BitSetUtil.copy(bsAromatic, this.bsAromatic);
       return;
     }
+    bsAromatic = this.bsAromatic;
     if (needRingData) {
       ringCounts = new int[jmolAtomCount];
       ringConnections = new int[jmolAtomCount];
-      ringData = new BitSet[ringDataMax];
+      ringData = new BitSet[ringDataMax + 1];
     }
     ringSets = new StringBuffer();
-    for (int i = 3; i < ringDataMax; i++) {
+    String s = "****";
+    while (s.length() < ringDataMax)
+      s += s;
+    for (int i = 3; i < ringDataMax + 1; i++) {
       Vector v = (Vector) getBitSets(
-          "*1" + "******************************************".substring(0, i - 2) + "*1", false, ringSets);
-      checkRing(v);
+          "*1" + s.substring(0, i - 2) + "*1", false, ringSets);
+      for (int r = v.size(); --r >= 0;) {
+        BitSet bs = (BitSet) v.get(r);
+        if (SmilesAromatic.isAromaticRing(jmolAtoms, bsSelected, bs, 0.01f))
+          for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
+            bsAromatic.set(j);
+      }
       if (needRingData) {
         ringData[i] = new BitSet();
         for (int k = 0; k < v.size(); k++) {
@@ -762,61 +771,6 @@ public class SmilesSearch {
             ringConnections[i]++;
       }
     }
-  }
-
-  private void checkRing(Vector v) {
-    Vector3f norm = null;
-    Vector3f temp = new Vector3f();
-    Vector3f vA = new Vector3f();
-    Vector3f vB = new Vector3f();
-    for (int i = v.size(); --i >= 0;) {
-      BitSet bs = (BitSet) v.get(i);
-      norm = null;
-      for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) {
-        // check this ring atom
-        norm = checkRingPlane(j, j, bs, norm, temp, vA, vB);
-        Bond[] bonds = jmolAtoms[j].bonds;
-        // also check the substituent
-        if (norm != null)
-          for (int k = 0; k < bonds.length; k++) {
-            int j2 = jmolAtoms[j].getBondedAtomIndex(k);
-            if (!bs.get(j2)) {
-              norm = checkRingPlane(j, j2, bs, norm, temp, vA, vB);
-              break;
-            }
-          }
-        if (norm == null)
-          break;
-      }
-      // if the norm is still there, then it means
-      // all atoms tested were within a plane
-      if (norm != null)
-        for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
-          bsAromatic.set(j);
-    }
-  }
-
-  private Vector3f checkRingPlane(int j, int j2, BitSet bs, Vector3f norm,
-                                  Vector3f temp, Vector3f va2, Vector3f vb2) {
-    boolean isOK = true;
-    for (int k = bs.nextSetBit(j + 1); isOK && k >= 0; k = bs.nextSetBit(k + 1))
-      for (int l = bs.nextSetBit(k + 1); isOK && l >= 0; l = bs
-          .nextSetBit(l + 1)) {
-        Measure.getNormalThroughPoints(jmolAtoms[j2], jmolAtoms[k],
-            jmolAtoms[l], temp, vA, vB);
-        if (norm == null) {
-          norm = new Vector3f(temp);
-        } else if (Math.abs(norm.dot(temp)) < 0.99) { 
-          // not within about 8 degrees of alignment
-          norm = null; 
-          isOK = false;
-          break;
-        }
-        if (j2 != j) // just one test in the case of a substituent
-          return norm;
-        //System.out.println(bs + " " + norm.dot(temp));
-      }
-    return norm;
   }
 
   private Object getBitSets(String smarts, boolean firstAtomOnly, StringBuffer ringSets) {

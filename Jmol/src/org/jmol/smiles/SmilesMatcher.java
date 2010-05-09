@@ -155,19 +155,25 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   /**
    * Returns a vector of bits indicating which atoms match the pattern.
    * 
-   * @param smiles SMILES pattern.
-   * @param atoms 
-   * @param atomCount 
-   * @param asSmarts 
-   * @param isAll 
+   * @param smiles
+   *          SMILES pattern.
+   * @param atoms
+   * @param atomCount
+   * @param bsSelected
+   * @param asSmarts
+   * @param isAll
    * @return BitSet indicating which atoms match the pattern.
-   * @throws Exception Raised if <code>smiles</code> is not a valid SMILES pattern.
+   * @throws Exception
+   *           Raised if <code>smiles</code> is not a valid SMILES pattern.
    */
-  
-  public BitSet getSubstructureSet(String smiles, Atom[] atoms, int atomCount, boolean asSmarts, boolean isAll) throws Exception {
+
+  public BitSet getSubstructureSet(String smiles, Atom[] atoms, int atomCount,
+                                   BitSet bsSelected, boolean asSmarts,
+                                   boolean isAll) throws Exception {
     SmilesSearch search = SmilesParser.getMolecule(asSmarts, smiles);
     search.jmolAtoms = atoms;
     search.jmolAtomCount = atomCount;
+    search.bsSelected = bsSelected;
     search.setAromatic(null);
     search.isAll = isAll;
     return (BitSet) search.search(false);
@@ -194,11 +200,11 @@ public class SmilesMatcher implements SmilesMatcherInterface {
                                           BitSet bsAromatic, boolean asSmarts, boolean isAll)
       throws Exception {
     SmilesSearch search = SmilesParser.getMolecule(asSmarts, smiles);
+    search.jmolAtoms = atoms;
+    search.jmolAtomCount = atomCount;
     search.bsSelected = bsSelected;
     search.bsRequired = (bsRequired != null && bsRequired.cardinality() > 0 ? bsRequired : null);
     search.bsNot = bsNot;
-    search.jmolAtoms = atoms;
-    search.jmolAtomCount = atomCount;
     search.setAromatic(bsAromatic);
     search.isAll = isAll;
     search.asVector = true;

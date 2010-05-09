@@ -645,7 +645,6 @@ public class Token {
 
   // xxx(a)
   
-  final static int substructure = 1 | 1 << 9 | mathfunc;
   final static int javascript   = 2 | 1 << 9 | mathfunc | implicitStringCommand;
   final static int acos         = 3 | 1 << 9 | mathfunc;
   final static int sin          = 4 | 1 << 9 | mathfunc;
@@ -655,8 +654,6 @@ public class Token {
   final static int forcmd       = 8 | 1 << 9 | mathfunc | flowCommand;
   final static int ifcmd        = 9 | 1 << 9 | mathfunc | flowCommand;
   final static int abs          = 10 | 1 << 9 | mathfunc;
-  final static int smarts       = 11 | 1 << 9 | mathfunc;
-  final static int smiles       = 12 | 1 << 9 | mathfunc;
 
   // ___.xxx(a)
   
@@ -679,6 +676,9 @@ public class Token {
   final static int load         = 2 | 2 << 9 | mathfunc | scriptCommand;
   final static int random       = 3 | 2 << 9 | mathfunc;
   final static int script       = 4 | 2 << 9 | mathfunc | scriptCommand;
+  final static int substructure = 5 | 2 << 9 | mathfunc;
+  final static int smarts       = 6 | 2 << 9 | mathfunc;
+  final static int smiles       = 7 | 2 << 9 | mathfunc;
 
   // ___.xxx(a,b)
 

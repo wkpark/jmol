@@ -6,7 +6,7 @@ import org.jmol.modelset.Atom;
 
 public interface SmilesMatcherInterface {
 
-  public abstract BitSet getSubstructureSet(String smiles, Atom[] atoms, int atomCount, boolean asSmarts, boolean isAll)
+  public abstract BitSet getSubstructureSet(String smiles, Atom[] atoms, int atomCount, BitSet bsSelected, boolean asSmarts, boolean isAll)
       throws Exception;
 
   public abstract BitSet[] getSubstructureSetArray(String smiles, Atom[] atoms, int atomCount, 

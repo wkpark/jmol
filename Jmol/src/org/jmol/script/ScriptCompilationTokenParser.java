@@ -684,6 +684,9 @@ abstract class ScriptCompilationTokenParser {
       return false;
     if (!addNextTokenIf(Token.string))
       return error(ERROR_tokenExpected, "\"...\"");
+      if (addNextTokenIf(Token.comma))
+        if (!clauseOr(tokPeek(Token.leftparen))) // *expression*
+          return false;
     if (!addNextTokenIf(Token.rightparen))
       return error(ERROR_tokenExpected, ")");
     return true;

@@ -53,7 +53,7 @@ import org.jmol.viewer.JmolConstants;
 public class SmilesParser {
 
   /*
-   * 3D-SMARTS -- Bob Hanson hansonr@stolaf.edu 5/10/2010
+   * 3D-SMARTS -- Bob Hanson hansonr@stolaf.edu 5/8/2010
    * 
    * An adaptation of SMARTS for 3D molecular atom selection.
    * 
@@ -93,9 +93,9 @@ public class SmilesParser {
    *    always defined stereochemically
    *    
    *   [smarts] == [node][connections] 
-   *   [branch] == "(" [smarts] ")" 
    *   [connections] == [connection] | NULL }
    *   [connection] == { [branch] | [bond] [node] } [connections]
+   *   [branch] == "(" [smarts] ")" 
    *   [node] == { [atomExpression] | [atomExpression] [ringPoint] }
    *   [ringPoint] == { "%" [digits] | [digit] }
    *      # note: all ringPoints must have a second matching ringPoint 
@@ -158,7 +158,7 @@ public class SmilesParser {
    *
    *
    *
-   * Bob Hanson, Jmol 12.0.RC10, 5/9/2010
+   * Bob Hanson, Jmol 12.0.RC10, 5/8/2010
    * 
    */
   

@@ -487,25 +487,27 @@ final public class Atom extends Point3fi {
     if (Float.isNaN(r1))
       r1 = viewer.getVanderwaalsMar(getElementNumber(), getVdwType(iType)) / 1000f;
     double volume = 0;
-    for (int j = 0; j < bonds.length; j++) {
-      if (!bonds[j].isCovalent())
-        continue;
-      Atom atom2 = bonds[j].getOtherAtom(this);
-      float r2 = (iType < 0 ? atom2.userDefinedVanDerWaalRadius : Float.NaN);
-      if (Float.isNaN(r2))
-          r2= viewer.getVanderwaalsMar(atom2.getElementNumber(), atom2.getVdwType(iType)) / 1000f;
-      float d = distance(atom2);
-      if (d > r1 + r2)
-        continue;
-      if (d + r1 <= r2)
-        return 0;
+    if (bonds != null)
+      for (int j = 0; j < bonds.length; j++) {
+        if (!bonds[j].isCovalent())
+          continue;
+        Atom atom2 = bonds[j].getOtherAtom(this);
+        float r2 = (iType < 0 ? atom2.userDefinedVanDerWaalRadius : Float.NaN);
+        if (Float.isNaN(r2))
+          r2 = viewer.getVanderwaalsMar(atom2.getElementNumber(), atom2
+              .getVdwType(iType)) / 1000f;
+        float d = distance(atom2);
+        if (d > r1 + r2)
+          continue;
+        if (d + r1 <= r2)
+          return 0;
 
-      // calculate hidden spherical cap height and volume
-      // A.Bondi, J. Phys. Chem. 68, 1964, 441-451.
-      
-      double h = r1 - (r1*r1 + d*d - r2*r2) / (2.0 * d);
-      volume -= Math.PI / 3 * h * h * (3 * r1 - h);
-    }
+        // calculate hidden spherical cap height and volume
+        // A.Bondi, J. Phys. Chem. 68, 1964, 441-451.
+
+        double h = r1 - (r1 * r1 + d * d - r2 * r2) / (2.0 * d);
+        volume -= Math.PI / 3 * h * h * (3 * r1 - h);
+      }
     return (float) (volume + 4 * Math.PI / 3 * r1 * r1 * r1);
   }
 
@@ -1059,17 +1061,9 @@ final public class Atom extends Point3fi {
     return index;
   }
   
-  public Atom findAromaticNeighbor(BitSet notAtoms) {
-    for (int i = bonds.length; --i >= 0; ) {
-      Bond bondT = bonds[i];
-      Atom a = bondT.getOtherAtom(this);
-      if (bondT.isAromatic() && (notAtoms == null || !notAtoms.get(a.index)))
-        return a;
-    }
-    return null;
-  }
-
   public Atom findAromaticNeighbor(int notAtomIndex) {
+    if (bonds == null)
+      return null;
     for (int i = bonds.length; --i >= 0; ) {
       Bond bondT = bonds[i];
       Atom a = bondT.getOtherAtom(this);

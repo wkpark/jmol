@@ -99,7 +99,9 @@ public class SmilesParser {
    *   [bond] == { "-" | "=" | "#" | "." | "/" | "\\" | ":" | "~" | "@" | NULL
    *
    * 
-   *   [atomExpression] = { [unbracketedAtomType] | "[" [bracketedExpression] "]" }
+   *   [atomExpression] = { [unbracketedAtomType] 
+   *                             | "[" [bracketedExpression] "]" 
+   *                             | [nestedExpression] }
    *   
    *   [unbracketedAtomType] == [atomType] 
    *                                 & ! { "Na" | "Ca" | "Ba" | "Pa" | "Sc" | "Ac" }
@@ -238,17 +240,21 @@ public class SmilesParser {
     int len = pattern.length();
     char ch = pattern.charAt(0);
 
-    if (ch == '{') { // 3D SEARCH {C}CCC{C}C subset selection
+    switch (ch) {
+    case '{':
+      // 3D SEARCH {C}CCC{C}C subset selection
       braceCount++;
       molecule.haveSelected = true;
       parseSmiles(molecule, pattern.substring(++index), currentAtom);
       return;
-    }
-
-    if (braceCount > 0 && ch == '}') {
-      braceCount--;
-      parseSmiles(molecule, pattern.substring(++index), currentAtom);
-      return;
+    case '}':
+      if (braceCount > 0) {
+        braceCount--;
+        parseSmiles(molecule, pattern.substring(++index), currentAtom);
+        return;
+      }
+      // will throw exception
+      break;
     }
 
     // Branch
@@ -305,7 +311,7 @@ public class SmilesParser {
     }
 
     boolean isRing = (Character.isDigit(ch) || ch == '%');
-    boolean isAtom = (!isRing && (ch == '[' || ch == '*' || Character
+    boolean isAtom = (!isRing && (ch == '_' || ch == '[' || ch == '*' || Character
         .isLetter(ch)));
     if (isRing) {
       int ringNumber;
@@ -323,24 +329,33 @@ public class SmilesParser {
       }
       parseRing(molecule, ringNumber, currentAtom, bondType);
     } else if (isAtom) {
+      int pt = index;
       switch (ch) {
       case '[':
-        // [bracketedExpression]
-        index++;
-        int currentIndex = index;
-        while ((currentIndex < len) && (pattern.charAt(currentIndex) != ']')) {
-          currentIndex++;
+      case '_':
+        char ch2;
+        if (ch == '[') {
+          // [bracketedExpression]
+          index++;
+          ch2 = ']';
+        } else {
+          // nested $(...) now _n_
+          ch2 = '_';
         }
-        if (currentIndex >= len) {
-          throw new InvalidSmilesException("Unmatched [");
+        while (++pt < len && pattern.charAt(pt) != ch2) {
+          //          
         }
-        currentAtom = parseAtom(molecule, null, pattern.substring(index,
-            currentIndex), currentAtom, bondType, true, false);
-        index = currentIndex + 1;
+        if (pt >= len)
+          throw new InvalidSmilesException("Unmatched " + ch);
+        if (ch == '_')
+          pt++;
+        currentAtom = parseAtom(molecule, null, pattern.substring(index, pt),
+            currentAtom, bondType, true, false);
+        index = pt + (ch == '_' ? 0 : 1);
         break;
       default:
         // [atomType]
-        char ch2 = (isSearch && Character.isUpperCase(ch) ? getChar(pattern,
+        ch2 = (isSearch && Character.isUpperCase(ch) ? getChar(pattern,
             index + 1) : '\0');
         if (!Character.isLowerCase(ch2)
             || JmolConstants.elementNumberFromSymbol(pattern.substring(index,
@@ -381,7 +396,9 @@ public class SmilesParser {
           pCount--;
           if (pCount == 0) {
             int i = molecule.addNested(pattern.substring(index + 2, pt));
-            pattern = pattern.substring(0, index) + "_" + i + pattern.substring(pt + 1);
+            // [ ] here is to allow $(   ) for outside of [ ]
+            String s = "_" + i + "_";
+            pattern = pattern.substring(0, index) + s + pattern.substring(pt + 1);
           }
           break;
         }
@@ -520,7 +537,10 @@ public class SmilesParser {
               throw new InvalidSmilesException("Invalid SEARCH primitive: "
                   + pattern.substring(index));
             case '_': // $(...) nesting
-              index = getDigits(pattern, index + 1, ret);
+              index = getDigits(pattern, index + 1, ret) + 1; // skip trailing _
+              if (ret[0] == Integer.MIN_VALUE)
+                throw new InvalidSmilesException("Invalid SEARCH primitive: "
+                    + pattern.substring(index));
               newAtom.iNested = ret[0];
               break;
             case 'D':

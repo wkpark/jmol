@@ -743,7 +743,8 @@ final public class JmolConstants {
     Integer boxedAtomicNumber = (Integer) htElementMap.get(elementSymbol);
     if (boxedAtomicNumber != null)
       return (short) boxedAtomicNumber.intValue();
-    Logger.error("'" + elementSymbol + "' is not a recognized symbol");
+    if (!isSilent)
+      Logger.error("'" + elementSymbol + "' is not a recognized symbol");
     return 0;
   }
   

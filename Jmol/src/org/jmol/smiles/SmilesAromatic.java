@@ -50,7 +50,7 @@ public class SmilesAromatic {
    *        true if standard deviation of vNorm.dot.vMean is less than cutoff
    */
   
-  public final static boolean isAromaticRing(Atom[] atoms, BitSet bsSelected, BitSet bs, float cutoff) {
+  public final static boolean isFlatSp2Ring(Atom[] atoms, BitSet bsSelected, BitSet bs, float cutoff) {
     /*
      * 
      * Bob Hanson, hansonr@stolaf.edu
@@ -84,7 +84,7 @@ public class SmilesAromatic {
      *      e) Add vNorm to vMean. 
      *   4) Calculate the standard deviation of the dot products of the 
      *      individual vNorms with the normalized vMean. 
-     *   5) The ring is deemed aromatic if this standard deviation is less 
+     *   5) The ring is deemed flat if this standard deviation is less 
      *      than the selected cutoff value. 
      *      
      *   Efficiencies:
@@ -96,13 +96,14 @@ public class SmilesAromatic {
      *      If it is not, return false. Note that it can be shown that for 
      *      a set of normals, even if all are aligned except one, with dot product
      *      to the mean x, then the standard deviation will be (1 - x) / sqrt(N).
-     *      Given even an 8-membered ring that is somehow aromatic, this still
+     *      Given even an 8-membered ring, this still
      *      results in a minimum value of x of about 1-4c (allowing for as many as
      *      8 substituents), considerably better than our 1-5c. 
      *      So 1-5c is a very conservative test.   
      *      
      *   3) One could probably dispense with the actual standard deviation 
-     *      calculation, as it is VERY unlikely that an actual nonaromatic ring
+     *      calculation, as it is VERY unlikely that an actual nonaromatic rings
+     *      (other than quinones and other such compounds)
      *      would have any chance of passing the first two tests.
      *   
      */
@@ -138,7 +139,7 @@ public class SmilesAromatic {
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Atom ringAtom = atoms[i];
       Bond[] bonds = ringAtom.bonds;
-      // if more than three connections, ring cannot be aromatic
+      // if more than three connections, ring cannot be fully conjugated
       // identify substituent and two ring atoms
       int iSub = -1;
       int r1 = -1;
@@ -170,9 +171,9 @@ public class SmilesAromatic {
         vNorms[nNorms++] = new Vector3f(vTemp);
       }
     }
-    boolean isAromatic = checkStandardDeviation(vNorms, vMean, nNorms, cutoff);
+    boolean isFlat = checkStandardDeviation(vNorms, vMean, nNorms, cutoff);
     //System.out.println(Escape.escape(bs) + " aromatic ? " + isAromatic);
-    return isAromatic;
+    return isFlat;
   }
 
   private final static boolean addNormal(Vector3f vTemp, Vector3f vMean, float maxDev) {

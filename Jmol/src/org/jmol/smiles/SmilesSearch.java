@@ -760,7 +760,7 @@ public class SmilesSearch {
           "*1" + s.substring(0, i - 2) + "*1", false, ringSets);
       for (int r = v.size(); --r >= 0;) {
         BitSet bs = (BitSet) v.get(r);
-        if (SmilesAromatic.isAromaticRing(jmolAtoms, bsSelected, bs, 0.01f))
+        if (SmilesAromatic.isFlatSp2Ring(jmolAtoms, bsSelected, bs, 0.01f))
           for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
             bsAromatic.set(j);
       }

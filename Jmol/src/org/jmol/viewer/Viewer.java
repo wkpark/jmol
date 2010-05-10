@@ -2418,7 +2418,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                         String lcaoType,
                                         boolean hybridizationCompatible) {
     return modelSet.getHybridizationAndAxes(atomIndex, z, x, lcaoType,
-        hybridizationCompatible);
+        hybridizationCompatible, true);
   }
 
   public BitSet getModelAtomBitSet(BitSet bsModels) {

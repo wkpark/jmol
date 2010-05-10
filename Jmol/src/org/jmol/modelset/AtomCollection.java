@@ -1231,19 +1231,19 @@ abstract public class AtomCollection {
         int hPt = 0;
         switch (n) {
         case 3: // three bonds needed RC
-          getHybridizationAndAxes(i, z, x, "sp3a", false);
+          getHybridizationAndAxes(i, z, x, "sp3a", false, true);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
           if (vConnect != null)
             vConnect.add(atom);
-          getHybridizationAndAxes(i, z, x, "sp3b", false);
+          getHybridizationAndAxes(i, z, x, "sp3b", false, true);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
           if (vConnect != null)
             vConnect.add(atom);
-          getHybridizationAndAxes(i, z, x, "sp3c", false);
+          getHybridizationAndAxes(i, z, x, "sp3c", false, true);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
@@ -1254,13 +1254,13 @@ abstract public class AtomCollection {
           // 2 bonds needed R2C or R-N or R2C=C or O
           //                    or RC=C or C=C
           boolean isEne = (atomicNumber == 5 || nBonds == 1 && targetValence == 4);
-          getHybridizationAndAxes(i, z, x, (isEne ? "sp2b" : targetValence == 3 ? "sp3b" : "lpa"), false);
+          getHybridizationAndAxes(i, z, x, (isEne ? "sp2b" : targetValence == 3 ? "sp3b" : "lpa"), false, true);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
           if (vConnect != null)
             vConnect.add(atom);
-          getHybridizationAndAxes(i, z, x, (isEne ? "sp2c" : targetValence == 3 ? "sp3c" : "lpb"), false);
+          getHybridizationAndAxes(i, z, x, (isEne ? "sp2c" : targetValence == 3 ? "sp3c" : "lpb"), false, true);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, z, atom);
           hAtoms[i][hPt++] = pt;
@@ -1278,7 +1278,7 @@ abstract public class AtomCollection {
             // sp3 or Boron sp2
             getHybridizationAndAxes(i, z, x, (atomicNumber == 5 ? "sp2c" 
                 : targetValence == 2 ? "sp3b" : "lpa"),
-                false);
+                false, false);
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, z, atom);
             hAtoms[i][hPt++] = pt;
@@ -1287,7 +1287,7 @@ abstract public class AtomCollection {
             break;
           case 2:
             // sp2
-            getHybridizationAndAxes(i, z, x, (targetValence == 4 ? "sp2c" : "sp2b"), false);
+            getHybridizationAndAxes(i, z, x, (targetValence == 4 ? "sp2c" : "sp2b"), false, false);
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, z, atom);
             hAtoms[i][hPt++] = pt;
@@ -1296,7 +1296,7 @@ abstract public class AtomCollection {
             break;
           case 3:
             // sp
-            getHybridizationAndAxes(i, z, x, "sp", false);
+            getHybridizationAndAxes(i, z, x, "sp", false, true);
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, z, atom);
             hAtoms[i][hPt++] = pt;
@@ -1316,7 +1316,7 @@ abstract public class AtomCollection {
 
   public String getHybridizationAndAxes(int atomIndex, Vector3f z, Vector3f x,
                                         String lcaoTypeRaw,
-                                        boolean hybridizationCompatible) {
+                                        boolean hybridizationCompatible, boolean doAlignZ) {
     String lcaoType = (lcaoTypeRaw.length() > 0 && lcaoTypeRaw.charAt(0) == '-' ? lcaoTypeRaw
         .substring(1)
         : lcaoTypeRaw);
@@ -1447,7 +1447,7 @@ abstract public class AtomCollection {
         break;
       case 3:
         // special case, for example R2C=O oxygen
-        getHybridizationAndAxes(atom1.index, z, x3, lcaoType, false);
+        getHybridizationAndAxes(atom1.index, z, x3, lcaoType, false, doAlignZ);
         x3.set(x);
         if (lcaoType.indexOf("sp2") == 0) { // align z as sp2 orbital
           hybridization = "sp2";
@@ -1466,7 +1466,7 @@ abstract public class AtomCollection {
             atom1 = atom2;
           if (atom1.getCovalentBondCount() == 3) {
             // special case, for example R2C=C=CR2 central carbon
-            getHybridizationAndAxes(atom1.index, x, z, "pz", false);
+            getHybridizationAndAxes(atom1.index, x, z, "pz", false, doAlignZ);
             if (lcaoType.equals("px"))
               x.scale(-1);
             z.set(x2);
@@ -1541,8 +1541,7 @@ abstract public class AtomCollection {
       }
       hybridization = "sp2";
       if (lcaoType.indexOf("sp") == 0) { // align z as sp2 orbital
-        z
-            .set(lcaoType.equalsIgnoreCase("sp3") || lcaoType.indexOf("d") >= 0 ? x4
+        z.set(lcaoType.equalsIgnoreCase("sp3") || lcaoType.indexOf("d") >= 0 ? x4
                 : lcaoType.indexOf("c") >= 0 ? x3
                     : lcaoType.indexOf("b") >= 0 ? x2 : x);
         z.scale(-1);
@@ -1551,7 +1550,7 @@ abstract public class AtomCollection {
       }
       // align z as p orbital
       z.set(y1);
-      if (z.z < 0) {
+      if (z.z < 0 && doAlignZ) {
         z.set(-z.x, -z.y, -z.z);
         x.set(-x.x, -x.y, -x.z);
       }

@@ -40,34 +40,15 @@ import org.jmol.viewer.Viewer;
 
 public class AppletConsole extends JmolConsole implements JmolAppConsoleInterface {
   
-  static {
-    System.out.println("AppletConsole is initializing");
-  }
   final JTextArea input = new ControlEnterTextArea();
-
-  static {
-    System.out.println("AppletConsole is initializing...input");
-  }
   
   private final JTextPane output = new JTextPane();
   
-  static {
-    System.out.println("AppletConsole is initializing...output");
-  }
-
   private final Document outputDocument = output.getDocument();
   
-  static {
-    System.out.println("AppletConsole is initializing...document");
-  }
-
   private JFrame jf;
 
   private final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
-
-  static {
-    System.out.println("AppletConsole is initializing...attributes");
-  }
 
   //public void finalize() {
   //  System.out.println("Console " + this + " finalize");
@@ -76,6 +57,10 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   private JMenuBar menubar; // requiring Swing here for now
   private JButton clearOutButton, clearInButton, loadButton;
 
+  static {
+    System.out.println("AppletConsole initialized");
+  }
+  
   public Object getMyMenuBar() {
     return menubar;
   }
@@ -86,6 +71,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   public AppletConsole() {
+    System.out.println("AppletConsole default constructor");    
   }
   
   public JmolAppConsoleInterface getAppConsole(Viewer viewer, Component display) {
@@ -93,13 +79,13 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   private AppletConsole(Viewer viewer, Component display) {
-    this.display = display;
-    System.out.println("AppletConsole is initializing...display");
+    System.out.println("AppletConsole is constructing viewer=" + viewer + " display=" + display);
 
+    this.display = display;
     set(viewer);
 
-    System.out.println("AppletConsole is initializing...viewer");
-}
+    System.out.println("AppletConsole is constructed");
+  }
 
   public void sendConsoleEcho(String strEcho) {
     output(strEcho);
@@ -114,7 +100,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
   private void set(JmolViewer viewer) {
     //Logger.debug("Console constructor");
-    System.out.println("Console " + this + " set()");
+    System.out.println("Console " + this + " set()" + viewer);
 
     this.viewer = viewer;
     boolean doTranslate = GT.getDoTranslate();
@@ -251,6 +237,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   private void setupInput() {
+    System.out.println("AppletConsole.setupOutput " + input);
     input.setLineWrap(true);
     input.setWrapStyleWord(true);
     input.setDragEnabled(true);
@@ -265,6 +252,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   private void setupOutput() {
+    System.out.println("AppletConsole.setupOutput " + output);
     output.setEditable(false);
     output.setDragEnabled(true);
     //    output.setLineWrap(true);
@@ -273,9 +261,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   public void setVisible(boolean visible) {
-    if (Logger.debugging) {
-      Logger.debug("Console.setVisible(" + visible + ")");
-    }
+    System.out.println("AppletConsole.setVisible(" + visible + ") " + jf);
     jf.setVisible(visible);
     input.requestFocus();
   }
@@ -285,6 +271,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   private void output(String message, AttributeSet att) {
+    System.out.println("AppletConsole.output " + message + " " + att);
     if (message == null || message.length() == 0) {
       output.setText("");
       return;
@@ -299,15 +286,18 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   public String getText() {
+    System.out.println("AppletConsole.getText()");
     return output.getText(); 
   }
 
   protected void clearContent(String text) {
+    System.out.println("AppletConsole.clearContent()");
     output.setText(text);
   }
   
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
+    System.out.println("AppletConsole.actionPerformed" +  source);
     if (source == clearInButton) {
       input.setText("");
       return;

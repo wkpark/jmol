@@ -3074,7 +3074,7 @@ public class ScriptEvaluator {
         break;
       case Token.within:
       case Token.smiles:
-      case Token.smarts:
+      case Token.search:
       case Token.substructure:
       case Token.connected:
       case Token.comma:

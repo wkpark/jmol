@@ -65,10 +65,11 @@ public class SmilesSearch {
   BitSet bsRequired;
   BitSet bsNot;      
   boolean isAll;
-  boolean isSmarts;
+  boolean isSearch;
   
   int patternAtomCount;
   boolean asVector;
+  boolean haveSelected;
   boolean haveBondStereochemistry;
   boolean haveAtomStereochemistry;
   boolean needRingData;
@@ -81,10 +82,10 @@ public class SmilesSearch {
   SmilesAtom[] atoms = new SmilesAtom[INITIAL_ATOMS];
   private Vector vReturn;
   private BitSet bsReturn = new BitSet();
-  BitSet bsAromatic = new BitSet();
+  private BitSet bsAromatic = new BitSet();
   
-  StringBuffer ringSets;
-    
+  private StringBuffer ringSets;
+  
   /* ============================================================= */
   /*                             Atoms                             */
   /* ============================================================= */
@@ -206,7 +207,7 @@ public class SmilesSearch {
       }
     }
 
-    // apply SMARTS [ , , & ; ] logic
+    // apply SEARCH [ , , & ; ] logic
 
     if (patternAtom.atomsOr != null) {
       for (int ii = 0; ii < patternAtom.nAtomsOr; ii++)
@@ -243,7 +244,7 @@ public class SmilesSearch {
       // already know it is double- or aromatic-bonded.
       // for N, we assume it is attached to at least one aromatic atom,
       // and that is enough for us.
-      // this does not actually work for SMARTS
+      // this does not actually work for SEARCH
       boolean bothAromatic = (isAromatic && atom1.isAromatic());
       bondFound = false;
       for (int k = 0; k < bonds.length; k++) {
@@ -299,7 +300,7 @@ public class SmilesSearch {
 
     // add this atom to the growing list
     // note that we explicitly do a reference using
-    // index because this could be a SMARTS [x,x] "sub" atom
+    // index because this could be a SEARCH [x,x] "sub" atom
     atoms[patternAtom.index].setMatchingAtom(iAtom);
 
     atomNum++;
@@ -333,10 +334,12 @@ public class SmilesSearch {
       BitSet bs = new BitSet();
       for (int j = 0; j < patternAtomCount; j++) {
         int i = atoms[j].getMatchingAtom();
+        if (!firstAtomOnly && haveSelected && !atoms[j].selected)
+          continue;
         bs.set(i);
         if (firstAtomOnly)
           break;
-        if (!isSmarts) {
+        if (!isSearch) {
           int npH = atoms[j].getHydrogenCount();
           if (npH != Integer.MIN_VALUE && npH != Integer.MAX_VALUE)
             getHydrogens(getJmolAtom(i), bs);
@@ -381,7 +384,7 @@ public class SmilesSearch {
 
       int n;
 
-      // _ <n> apply "recursive" SMARTS -- for examle, [C&$(C[$(aaaO);$(aaC)])]"
+      // _ <n> apply "recursive" SEARCH -- for examle, [C&$(C[$(aaaO);$(aaC)])]"
       if (patternAtom.iNested > 0) {
         Object o = htNested.get("_" + patternAtom.iNested);
         if (!(o instanceof BitSet))
@@ -788,6 +791,7 @@ public class SmilesSearch {
     search.jmolAtomCount = jmolAtomCount;
     search.htNested = htNested;
     search.isAll = true;
+    // note - we do NOT pass on bsSelectOut
     if (firstAtomOnly) {
       search.setAromatic(bsAromatic);
       search.ringDataMax = ringDataMax;

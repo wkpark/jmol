@@ -706,7 +706,7 @@ class ScriptMathProcessor {
       return evaluateConnected(args);
     case Token.substructure:
     case Token.smiles:
-    case Token.smarts:
+    case Token.search:
       return evaluateSubstructure(args, tok);
     case Token.symop:
       return evaluateSymop(args, op.tok == Token.propselector);
@@ -1095,13 +1095,13 @@ class ScriptMathProcessor {
     String sFind = ScriptVariable.sValue(args[0]);
     String flags = (args.length > 1 ? ScriptVariable.sValue(args[1]) : "");
     boolean isSmiles = sFind.equalsIgnoreCase("smiles");
-    boolean isSmarts = sFind.equalsIgnoreCase("smarts");
-    if (isSmiles || isSmarts || x1.tok == Token.bitset) {
+    boolean isSearch = sFind.equalsIgnoreCase("search");
+    if (isSmiles || isSearch || x1.tok == Token.bitset) {
       if (x1.tok == Token.string)
         return addX(isSyntaxCheck ? 0 : viewer.getSmilesMatcher().find(flags,
             ScriptVariable.sValue(x1),
-            isSmarts, (args.length == 3 && ScriptVariable.bValue(args[2]))));
-      if (isSmiles || isSmarts)
+            isSearch, (args.length == 3 && ScriptVariable.bValue(args[2]))));
+      if (isSmiles || isSearch)
         sFind = flags;
       if (x1.tok == Token.bitset) {
         boolean isAll = (args.length > 1 && ScriptVariable
@@ -1912,7 +1912,7 @@ class ScriptMathProcessor {
           ((BitSet) args[2].value).nextSetBit(0), ((BitSet) args[1].value)
               .nextSetBit(0)));
     case Token.smiles:
-    case Token.smarts:
+    case Token.search:
       BitSet bsSelected = null;
       BitSet bsRequired = null;
       BitSet bsNot = null;
@@ -1946,7 +1946,7 @@ class ScriptMathProcessor {
         eval.error(ScriptEvaluator.ERROR_invalidArgument);
       if (isSyntaxCheck)
         return addX(new Vector());
-      return addX((String[]) getSmilesMatches(ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot, tok == Token.smarts, true));
+      return addX((String[]) getSmilesMatches(ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot, tok == Token.search, true));
     }
     if (withinSpec instanceof String) {
       if (tok == Token.nada) {
@@ -2058,7 +2058,7 @@ class ScriptMathProcessor {
   }
 
   private Object getSmilesMatches(String smiles, BitSet bsSelected,
-                                          BitSet bsRequired, BitSet bsNot, boolean asSmarts, boolean isAll) throws ScriptException {
+                                          BitSet bsRequired, BitSet bsNot, boolean isSearch, boolean isAll) throws ScriptException {
     if (isSyntaxCheck) {
       if (isAll)
         return new String[] {""};
@@ -2067,7 +2067,7 @@ class ScriptMathProcessor {
     try {
       BitSet[] b = viewer.getSmilesMatcher().getSubstructureSetArray(
           smiles, viewer.getModelSet().atoms, viewer.getAtomCount(), 
-          bsSelected, bsRequired, bsNot, null, asSmarts, isAll);
+          bsSelected, bsRequired, bsNot, null, isSearch, isAll);
       if (!isAll)
         return (b.length > 0 ? b[0] : new BitSet());
       String[] matches = new String[b.length];
@@ -2192,7 +2192,7 @@ class ScriptMathProcessor {
             : null);
         bs = viewer.getSmilesMatcher().getSubstructureSet(pattern,
             viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
-            tok == Token.smarts, true);
+            tok == Token.search, true);
       } catch (Exception e) {
         eval.evalError(e.getMessage(), null);
       }

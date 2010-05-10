@@ -45,6 +45,7 @@ public class SmilesAtom {
 
   int index;
   boolean not;
+  boolean selected;
   
   short atomicNumber = -2; // UNDEFINED (could be A or a or *)
   private int atomicMass = 0;

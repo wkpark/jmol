@@ -677,7 +677,7 @@ public class Token {
   final static int random       = 3 | 2 << 9 | mathfunc;
   final static int script       = 4 | 2 << 9 | mathfunc | scriptCommand;
   final static int substructure = 5 | 2 << 9 | mathfunc;
-  final static int smarts       = 6 | 2 << 9 | mathfunc;
+  final static int search       = 6 | 2 << 9 | mathfunc;
   final static int smiles       = 7 | 2 << 9 | mathfunc;
 
   // ___.xxx(a,b)
@@ -1740,13 +1740,13 @@ public class Token {
       "rubberband",      new Token(rubberband),
       "saSurface",       new Token(sasurface),
       "scale",           new Token(scale),
+      "search",          new Token(search),
       "selected",        new Token(selected),
       "shapely",         new Token(shapely),
       "sidechain",       new Token(sidechain),
       "sin",             new Token(sin),
       "site",            new Token(site),
       "size",            new Token(size),
-      "smarts",          new Token(smarts),
       "smiles",          new Token(smiles),
       "substructure",    null,  // 12.0 substructure-->smiles (should be smarts, but for legacy reasons, need this to be smiles
       "solid",           new Token(solid),

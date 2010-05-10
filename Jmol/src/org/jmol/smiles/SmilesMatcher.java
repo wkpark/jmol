@@ -85,11 +85,11 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * 
    * @param pattern
    * @param smiles
-   * @param asSmarts 
+   * @param isSearch 
    * @param isAll 
    * @return number of occurances of pattern within smiles
    */
-  public int find(String pattern, String smiles, boolean asSmarts, boolean isAll) {
+  public int find(String pattern, String smiles, boolean isSearch, boolean isAll) {
     BitSet[] list = null;
     try {
       // create a topological model set from smiles
@@ -144,7 +144,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         }
       }
       list = getSubstructureSetArray(pattern, atoms, atomCount, null, null,
-          null, bsAromatic, asSmarts, isAll);
+          null, bsAromatic, isSearch, isAll);
       return list.length;
     } catch (Exception e) {
       return -1;
@@ -160,7 +160,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param atoms
    * @param atomCount
    * @param bsSelected
-   * @param asSmarts
+   * @param isSearch
    * @param isAll
    * @return BitSet indicating which atoms match the pattern.
    * @throws Exception
@@ -168,9 +168,9 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    */
 
   public BitSet getSubstructureSet(String smiles, Atom[] atoms, int atomCount,
-                                   BitSet bsSelected, boolean asSmarts,
+                                   BitSet bsSelected, boolean isSearch,
                                    boolean isAll) throws Exception {
-    SmilesSearch search = SmilesParser.getMolecule(asSmarts, smiles);
+    SmilesSearch search = SmilesParser.getMolecule(isSearch, smiles);
     search.jmolAtoms = atoms;
     search.jmolAtomCount = atomCount;
     search.bsSelected = bsSelected;
@@ -189,7 +189,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param bsRequired 
    * @param bsNot 
    * @param bsAromatic 
-   * @param asSmarts 
+   * @param isSearch 
    * @param isAll 
    * @return BitSet Array indicating which atoms match the pattern.
    * @throws Exception Raised if <code>smiles</code> is not a valid SMILES pattern.
@@ -197,9 +197,9 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   public BitSet[] getSubstructureSetArray(String smiles, Atom[] atoms, int atomCount, 
                                           BitSet bsSelected, 
                                           BitSet bsRequired, BitSet bsNot, 
-                                          BitSet bsAromatic, boolean asSmarts, boolean isAll)
+                                          BitSet bsAromatic, boolean isSearch, boolean isAll)
       throws Exception {
-    SmilesSearch search = SmilesParser.getMolecule(asSmarts, smiles);
+    SmilesSearch search = SmilesParser.getMolecule(isSearch, smiles);
     search.jmolAtoms = atoms;
     search.jmolAtomCount = atomCount;
     search.bsSelected = bsSelected;

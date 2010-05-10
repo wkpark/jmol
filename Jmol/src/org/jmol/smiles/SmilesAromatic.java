@@ -33,7 +33,7 @@ import org.jmol.util.Measure;
 
 public class SmilesAromatic {
   /** 
-   * 3D-SMARTS aromaticity test.
+   * 3D-SEARCH aromaticity test.
    * 
    * A simple and unambiguous test for aromaticity based on 3D geometry 
    * and connectivity only, not Hueckel theory.

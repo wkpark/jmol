@@ -1534,7 +1534,7 @@ public class ScriptEvaluator {
       fvalues = new float[nValues];
       for (int i = nValues; --i >= 0;)
         fvalues[i] = (tok == Token.element ? JmolConstants
-            .elementNumberFromSymbol(list[i]) : Parser.parseFloat(list[i]));
+            .elementNumberFromSymbol(list[i], false) : Parser.parseFloat(list[i]));
       if (tokenValue.tok == Token.string && nValues == 1) {
         fValue = fvalues[0];
         iValue = (int) fValue;

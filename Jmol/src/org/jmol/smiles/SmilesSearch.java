@@ -340,7 +340,7 @@ public class SmilesSearch {
         if (firstAtomOnly)
           break;
         if (!isSearch) {
-          int npH = atoms[j].getHydrogenCount();
+          int npH = atoms[j].explicitHydrogenCount;
           if (npH != Integer.MIN_VALUE && npH != Integer.MAX_VALUE)
             getHydrogens(getJmolAtom(i), bs);
         }
@@ -420,11 +420,16 @@ public class SmilesSearch {
       if (patternAtom.getCharge() != atom.getFormalCharge())
         break;
 
-      // H or h Check hcount
-      n = patternAtom.getHydrogenCount();
+      // H explicit H count
+      n = patternAtom.explicitHydrogenCount;
+      if (n != Integer.MIN_VALUE && n != Integer.MAX_VALUE && n != atom.getCovalentHydrogenCount()) 
+        break;
+      
+      // h implicit H count
+      n = patternAtom.implicitHydrogenCount;
       if (n != Integer.MIN_VALUE && n != Integer.MAX_VALUE) {
-        if (n < 0 && atom.getImplicitHydrogenCount() != -n || n >= 0
-            && n != atom.getCovalentHydrogenCount())
+        int nH = atom.getImplicitHydrogenCount();
+        if (n == -1 && nH == 0 || n != -1 && n != nH)
           break;
       }
 
@@ -460,7 +465,10 @@ public class SmilesSearch {
       }
       // x <n>
       if (patternAtom.ringConnectivity >= 0) {
-        if (ringConnections[iAtom] != patternAtom.ringConnectivity)
+        // default > 0
+        n =  ringConnections[iAtom];
+        if (patternAtom.ringConnectivity == -1 && n == 0 
+            || patternAtom.ringConnectivity != -1 && n != patternAtom.ringConnectivity)
           break;
       }
  
@@ -485,7 +493,7 @@ public class SmilesSearch {
       Atom atom1 = null, atom2 = null, atom3 = null, atom4 = null;
       for (int k = 0; k < patternAtomCount; k++) {
         SmilesAtom sAtom = atoms[k];
-        int nH = sAtom.getHydrogenCount();
+        int nH = sAtom.explicitHydrogenCount;
         if (nH == Integer.MAX_VALUE)
           nH = 0;
         int chiralClass = sAtom.getChiralClass();
@@ -522,7 +530,7 @@ public class SmilesSearch {
               atom1 = a;
             }
           }
-          nH = sAtom2.getHydrogenCount();
+          nH = sAtom2.explicitHydrogenCount;
           atom3 = getJmolAtom(sAtom2.getMatchingBondedAtom(1));
           atom4 = getJmolAtom(sAtom2.getMatchingBondedAtom(2));
           if (atom3 == null || atom4 == null && nH != 1)

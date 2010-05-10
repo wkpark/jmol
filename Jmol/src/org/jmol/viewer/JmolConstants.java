@@ -716,9 +716,10 @@ final public class JmolConstants {
 
   /**
    * @param elementSymbol First char must be upper case, second char accepts upper or lower case
+   * @param isSilent TODO
    * @return elementNumber = atomicNumber + IsotopeNumber*128
    */
-  public final static short elementNumberFromSymbol(String elementSymbol) {
+  public final static short elementNumberFromSymbol(String elementSymbol, boolean isSilent) {
     if (htElementMap == null) {
       Hashtable map = new Hashtable();
       for (int elementNumber = elementNumberMax; --elementNumber >= 0;) {

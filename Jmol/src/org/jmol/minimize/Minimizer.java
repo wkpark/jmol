@@ -530,7 +530,7 @@ Token[keyword(0x880001) value=")"]
         s = s.toUpperCase();
         search = tokenTypes[TOKEN_ELEMENT_AROMATIC];
       }
-      elemNo = JmolConstants.elementNumberFromSymbol(s);
+      elemNo = JmolConstants.elementNumberFromSymbol(s, false);
     }
     if (elemNo > elemnoMax)
       return null;

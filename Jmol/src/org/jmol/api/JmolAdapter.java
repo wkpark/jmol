@@ -81,7 +81,7 @@ public abstract class JmolAdapter {
   }
   
   public static short getElementNumber(String elementSymbol) {
-    return JmolConstants.elementNumberFromSymbol(elementSymbol);
+    return JmolConstants.elementNumberFromSymbol(elementSymbol, false);
   }
   
   public static boolean isHetero(String group3) {

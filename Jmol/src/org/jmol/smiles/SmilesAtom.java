@@ -46,11 +46,14 @@ public class SmilesAtom {
   int index;
   boolean not;
   boolean selected;
+  boolean hasSymbol;
   
   short atomicNumber = -2; // UNDEFINED (could be A or a or *)
+  
   private int atomicMass = 0;
   private int charge;
-  private int hydrogenCount = Integer.MIN_VALUE;
+  int explicitHydrogenCount = Integer.MIN_VALUE;
+  int implicitHydrogenCount = Integer.MIN_VALUE;
   private int matchingAtom = -1;
   private int chiralClass = Integer.MIN_VALUE;
   private int chiralOrder = Integer.MIN_VALUE;
@@ -101,7 +104,8 @@ public class SmilesAtom {
     + " " + atomicNumber 
     + " ch:" + charge 
     + " ar:" + isAromatic 
-    + " hy:" + hydrogenCount
+    + " H:" + explicitHydrogenCount
+    + " h:" + implicitHydrogenCount
     + " ]";
   }
   
@@ -123,7 +127,8 @@ public class SmilesAtom {
    * @return false if inappropriate
    */
   public boolean setHydrogenCount(SmilesSearch molecule) {
-    if (hydrogenCount != Integer.MIN_VALUE)
+    // only called for SMILES search -- simple C or [C]
+    if (explicitHydrogenCount != Integer.MIN_VALUE)
       return true;
     // Determining max count
   	int count = 0;
@@ -175,7 +180,7 @@ public class SmilesAtom {
       }
       
       if (count > 0)
-        hydrogenCount = count;
+        explicitHydrogenCount = count;
       return true;
   }
 
@@ -204,7 +209,7 @@ public class SmilesAtom {
    */
   public boolean setSymbol(String symbol) {
     isAromatic = symbol.equals(symbol.toLowerCase()); // BH added
- 
+    hasSymbol = true;
     if (symbol.equals("*")) {
       isAromatic = false;
       atomicNumber = -2;
@@ -222,7 +227,7 @@ public class SmilesAtom {
     if (isAromatic)
       symbol = symbol.substring(0, 1).toUpperCase() 
           + (symbol.length() == 1 ? "" : symbol.substring(1));
-    atomicNumber = JmolConstants.elementNumberFromSymbol(symbol);
+    atomicNumber = JmolConstants.elementNumberFromSymbol(symbol, true);
     return (atomicNumber != 0);
   }
 
@@ -330,21 +335,21 @@ public class SmilesAtom {
   }
 
   /**
-   * Returns the number of hydrogen atoms bonded with this atom.
-   * 
-   * @return Number of hydrogen atoms.
-   */
-  public int getHydrogenCount() {
-    return hydrogenCount;
-  }
-
-  /**
-   * Sets the number of hydrogen atoms bonded with this atom.
+   * Sets the number of explicit hydrogen atoms bonded with this atom.
    * 
    * @param count Number of hydrogen atoms.
    */
-  public void setHydrogenCount(int count) {
-    hydrogenCount = count;
+  public void setExplicitHydrogenCount(int count) {
+    explicitHydrogenCount = count;
+  }
+
+  /**
+   * Sets the number of implicit hydrogen atoms bonded with this atom.
+   * 
+   * @param count Number of hydrogen atoms.
+   */
+  public void setImplicitHydrogenCount(int count) {
+    implicitHydrogenCount = count;
   }
 
   /**

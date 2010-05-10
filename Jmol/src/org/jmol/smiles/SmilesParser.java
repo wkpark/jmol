@@ -63,10 +63,13 @@ public class SmilesParser {
    *    see org.jmol.smiles.SmilesAromatic.java
    * 
    * -- nesting ("recursive" SEARCH") implemented: using [C&$(C[$(aaaO);$(aaC)])]
+   *    note that $(...) need not be within [...] and 
+   *    wherever it is, it means "just the first atom" 
    * 
    * -- all atom logic implemented: [X,!X,X&X,X&X&X;X&X] etc.
    * 
-   * -- "&" is completely optional: [13CH2] same as [13&C&H2]
+   * -- "&" is optional: [13CH2] same as [13&C&H2]
+   *    except in cases of ambiguity with element symbols: [Rh] is rhodium, not [R&h]
    * 
    * -- allows any order of primitives; "H1" interpreted as "one H atom"
    *       [H2C13] same as [13CH2]
@@ -87,6 +90,11 @@ public class SmilesParser {
    * 
    * -- does NOT implement "?" for bond stereochemistry, as 3D structures
    *    always defined stereochemically
+   * 
+   * -- The statement "All atomic expressions which are not simple primitives must be enclosed in brackets"
+   *    is misleading, in the sense that some primitives, even if they are simple, must also
+   *    be in brackets. Primitives such as "35" or "H2" or "R2" must be within brackets in order to 
+   *    distinguish them from ring connections. 
    *    
    *   [smarts] == [node][connections] 
    *   [connections] == [connection] | NULL }

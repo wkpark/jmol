@@ -630,7 +630,7 @@ abstract public class BondCollection extends AtomCollection {
    */
   private boolean assignAromaticSingle(Atom atom, int notBondIndex) {
     Bond[] bonds = atom.bonds;
-    if (assignAromaticSingleHetero(atom))
+    if (bonds == null || assignAromaticSingleHetero(atom))
       return false;
     for (int i = bonds.length; --i >= 0;) {
       Bond bond = bonds[i];
@@ -655,6 +655,8 @@ abstract public class BondCollection extends AtomCollection {
    */
   private boolean assignAromaticDouble(Atom atom) {
     Bond[] bonds = atom.bonds;
+    if (bonds == null)
+      return false;
     boolean haveDouble = assignAromaticSingleHetero(atom);
     int lastBond = -1;
     for (int i = bonds.length; --i >= 0;) {

@@ -50,7 +50,7 @@ public class SmilesAtom {
   
   short atomicNumber = -2; // UNDEFINED (could be A or a or *)
   
-  private int atomicMass = 0;
+  private int atomicMass = Integer.MIN_VALUE;
   private int charge;
   int explicitHydrogenCount = Integer.MIN_VALUE;
   int implicitHydrogenCount = Integer.MIN_VALUE;

@@ -192,6 +192,7 @@ public class SmilesParser {
     // First pass
     SmilesSearch molecule = new SmilesSearch();
     molecule.isSearch = isSearch;
+    molecule.pattern = pattern;
     parseSmiles(molecule, pattern, null);
     if (braceCount != 0)
       throw new InvalidSmilesException("unmatched '{'");
@@ -329,38 +330,23 @@ public class SmilesParser {
       }
       parseRing(molecule, ringNumber, currentAtom, bondType);
     } else if (isAtom) {
-      int pt = index;
       switch (ch) {
       case '[':
       case '_':
-        char ch2;
-        if (ch == '[') {
-          // [bracketedExpression]
-          index++;
-          ch2 = ']';
-        } else {
-          // nested $(...) now _n_
-          ch2 = '_';
-        }
-        while (++pt < len && pattern.charAt(pt) != ch2) {
-          //          
-        }
-        if (pt >= len)
-          throw new InvalidSmilesException("Unmatched " + ch);
-        if (ch == '_')
-          pt++;
-        currentAtom = parseAtom(molecule, null, pattern.substring(index, pt),
-            currentAtom, bondType, true, false);
-        index = pt + (ch == '_' ? 0 : 1);
+        String subPattern = getSubPattern(pattern, index, ch);
+        currentAtom = parseAtom(molecule, null, subPattern, currentAtom,
+            bondType, true, false);
+        index += subPattern.length() + (ch == '[' ? 2 : 0);
         break;
       default:
         // [atomType]
-        ch2 = (isSearch && Character.isUpperCase(ch) ? getChar(pattern,
+        int ch2 = (isSearch && Character.isUpperCase(ch) ? getChar(pattern,
             index + 1) : '\0');
-        if (!Character.isLowerCase(ch2)
-            || JmolConstants.elementNumberFromSymbol(pattern.substring(index,
-                index + 2), true) == 0)
-          ch2 = '\0';
+        if (ch != 'X' || ch2 != 'x')
+          if (!Character.isLowerCase(ch2)
+              || JmolConstants.elementNumberFromSymbol(pattern.substring(index,
+                  index + 2), true) == 0)
+            ch2 = '\0';
         // guess at some ambiguous SEARCH strings:
         if (ch2 != '\0'
             && "NA CA BA PA SC AC".indexOf(pattern.substring(index, index + 2)) >= 0) {
@@ -383,28 +369,45 @@ public class SmilesParser {
     parseSmiles(molecule, pattern.substring(index), currentAtom);
   }
 
+  private static String getSubPattern(String pattern, int index, char ch) throws InvalidSmilesException {
+    char ch2;
+    int margin;
+    switch (ch) {
+    case '[':
+      ch2 = ']';
+      margin = 1;
+      break;
+    case '(':
+      ch2 = ')';
+      margin = 1;
+      break;
+    default:
+      ch2 = ch;
+      margin = 0;
+    }
+    int len = pattern.length();
+    int pCount = 1;
+    for (int pt = index + 1; pt < len; pt++) {
+      char ch1 = pattern.charAt(pt);
+      if (ch1 == ch2) {
+        pCount--;
+        if (pCount == 0)
+          return pattern.substring(index + margin, pt + 1 - margin);
+      } else if (ch1 == ch) {
+        pCount++;
+      }
+    }
+    throw new InvalidSmilesException("Unmatched " + ch);
+  }
+
   private String parseNested(SmilesSearch molecule, String pattern) throws InvalidSmilesException {
     int index;
     while ((index = pattern.lastIndexOf("$(")) >= 0) {
-      int pCount = 0;
-      for (int pt = index; pt < pattern.length(); pt++) {
-        switch(pattern.charAt(pt)) {
-        case '(':
-          pCount++;
-          break;
-        case ')':
-          pCount--;
-          if (pCount == 0) {
-            int i = molecule.addNested(pattern.substring(index + 2, pt));
-            // [ ] here is to allow $(   ) for outside of [ ]
-            String s = "_" + i + "_";
-            pattern = pattern.substring(0, index) + s + pattern.substring(pt + 1);
-          }
-          break;
-        }
-      }
-      if (pCount != 0)
-        throw new InvalidSmilesException("unmatched () in $(...)");
+      String s = getSubPattern(pattern, index + 1, '(');
+      int i = molecule.addNested(s);
+      int pt = index + s.length() + 3;
+      s = "_" + i + "_";
+      pattern = pattern.substring(0, index) + s + pattern.substring(pt);
     }
     return pattern;
   }
@@ -526,12 +529,14 @@ public class SmilesParser {
             // Even better is to use &:  R&h, r&A
             size = (Character.isUpperCase(ch) && Character.isLowerCase(nextChar) ? 2
                 : 1);
-            symbol = (ch + pattern.substring(index + 1, index + size));
-            isSymbol = (JmolConstants.elementNumberFromSymbol(symbol, true) > 0);
+            String s = pattern.substring(index + 1, index + size);
+            symbol = Character.toUpperCase(ch) + s;
+            isSymbol = (symbol.equals("Xx") ? true : JmolConstants.elementNumberFromSymbol(symbol, true) > 0);
+            symbol = ch + s;
           }
           if ("-+@".indexOf(ch) >= 0 
               || ch == 'H' && (Character.isDigit(nextChar) || haveSymbol && !isNot)
-              || "_DhRrvXx".indexOf(ch) >= 0 && (Character.isDigit(nextChar) || !isSymbol)) {
+              || isBracketed && "_DhRrvXx".indexOf(ch) >= 0 && (Character.isDigit(nextChar) || !isSymbol)) {
             switch (ch) {
             default:
               throw new InvalidSmilesException("Invalid SEARCH primitive: "

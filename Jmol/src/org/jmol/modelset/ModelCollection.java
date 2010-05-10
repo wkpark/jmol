@@ -1652,6 +1652,8 @@ abstract public class ModelCollection extends BondCollection {
       Atom thisAtom = atoms[iAtom];
       // stereochemical inversion at iAtom
       Bond[] bonds = thisAtom.bonds;
+      if (bonds == null)
+        return;
       BitSet bsAtoms = new BitSet();
       Vector vNot = new Vector();
       for (int i = 0; i < bonds.length; i++) {

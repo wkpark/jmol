@@ -67,6 +67,7 @@ public class SmilesSearch {
   boolean isAll;
   boolean isSearch;
   
+  String pattern;
   int patternAtomCount;
   boolean asVector;
   boolean haveSelected;
@@ -396,8 +397,9 @@ public class SmilesSearch {
 
       // # <n> or Symbol Check atomic number
       int targetAtomicNumber = patternAtom.atomicNumber;
+      n = atom.getElementNumber();
       if (targetAtomicNumber >= 0
-          && targetAtomicNumber != (atom.getElementNumber()))
+          && targetAtomicNumber != n)
         break;
 
       // Check aromatic
@@ -406,14 +408,16 @@ public class SmilesSearch {
         break;
 
       // <n> Check isotope
-      int targetMass = patternAtom.getAtomicMass();
-      int isotope = atom.getIsotopeNumber();
-      if (targetMass > 0 && targetMass != isotope || targetMass < 0
-          && isotope != 0 && -targetMass != isotope) {
-        // smiles indicates [13C] or [12C]
-        // must match perfectly -- [12C] matches only explicit C-12, not
-        // "unlabeled" C
+      if (patternAtom.getAtomicMass() == 0 && n != 0)
         break;
+      if ((n = patternAtom.getAtomicMass()) != Integer.MIN_VALUE) {
+        int isotope = atom.getIsotopeNumber();
+        if (n >= 0 && n != isotope || n < 0 && isotope != 0 && -n != isotope) {
+          // smiles indicates [13C] or [12C]
+          // must match perfectly -- [12C] matches only explicit C-12, not
+          // "unlabeled" C
+          break;
+        }
       }
 
       // +/- Check charge
@@ -422,9 +426,10 @@ public class SmilesSearch {
 
       // H explicit H count
       n = patternAtom.explicitHydrogenCount;
-      if (n != Integer.MIN_VALUE && n != Integer.MAX_VALUE && n != atom.getCovalentHydrogenCount()) 
+      if (n != Integer.MIN_VALUE && n != Integer.MAX_VALUE
+          && n != atom.getCovalentHydrogenCount())
         break;
-      
+
       // h implicit H count
       n = patternAtom.implicitHydrogenCount;
       if (n != Integer.MIN_VALUE && n != Integer.MAX_VALUE) {
@@ -458,20 +463,21 @@ public class SmilesSearch {
           break;
         }
       }
-      // R <n> 
+      // R <n>
       if (ringData != null && patternAtom.ringMembership >= 0) {
-          if (ringCounts[iAtom] != patternAtom.ringMembership)
-            break;
+        if (ringCounts[iAtom] != patternAtom.ringMembership)
+          break;
       }
       // x <n>
       if (patternAtom.ringConnectivity >= 0) {
         // default > 0
-        n =  ringConnections[iAtom];
-        if (patternAtom.ringConnectivity == -1 && n == 0 
-            || patternAtom.ringConnectivity != -1 && n != patternAtom.ringConnectivity)
+        n = ringConnections[iAtom];
+        if (patternAtom.ringConnectivity == -1 && n == 0
+            || patternAtom.ringConnectivity != -1
+            && n != patternAtom.ringConnectivity)
           break;
       }
- 
+
       foundAtom = !foundAtom;
       break;
     }
@@ -756,8 +762,8 @@ public class SmilesSearch {
     while (s.length() < ringDataMax)
       s += s;
     for (int i = 3; i < ringDataMax + 1; i++) {
-      Vector v = (Vector) getBitSets(
-          "*1" + s.substring(0, i - 2) + "*1", false, ringSets);
+      Vector v = (Vector) getBitSets("*1" + s.substring(0, i - 2) + "*1",
+          false, ringSets);
       for (int r = v.size(); --r >= 0;) {
         BitSet bs = (BitSet) v.get(r);
         if (SmilesAromatic.isFlatSp2Ring(jmolAtoms, bsSelected, bs, 0.01f))
@@ -777,9 +783,10 @@ public class SmilesSearch {
     if (needRingData) {
       for (int i = 0; i < jmolAtomCount; i++) {
         Atom atom = jmolAtoms[i];
-        for (int k = atom.bonds.length; --k >= 0;)
-          if (ringCounts[atom.getBondedAtomIndex(k)] > 0)
-            ringConnections[i]++;
+        if (atom.bonds != null)
+          for (int k = atom.bonds.length; --k >= 0;)
+            if (ringCounts[atom.getBondedAtomIndex(k)] > 0)
+              ringConnections[i]++;
       }
     }
   }

@@ -77,7 +77,7 @@ public class SmilesParser {
    * -- adds ambiguous isotope: [C13?] -- "C13 or C with undesignated isotope"
    * 
    * -- adds {...} for selection of one or more subsets of matched atoms
-   *    these may be anywhere outside of [ ]s. 
+   *    though not described in the specification, these may be anywhere outside of [ ]s. 
    * 
    * -- does NOT implement "zero-level parentheses", since the match is 
    *    always only within a given model (even though one might use . for a not-connected indicator)

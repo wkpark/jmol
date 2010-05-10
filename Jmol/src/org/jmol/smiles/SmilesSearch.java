@@ -340,11 +340,8 @@ public class SmilesSearch {
         bs.set(i);
         if (firstAtomOnly)
           break;
-        if (!isSearch) {
-          int npH = atoms[j].explicitHydrogenCount;
-          if (npH != Integer.MIN_VALUE && npH != Integer.MAX_VALUE)
-            getHydrogens(getJmolAtom(i), bs);
-        }
+        if (!isSearch && atoms[j].explicitHydrogenCount > 0)
+          getHydrogens(getJmolAtom(i), bs);
       }
       if (bsRequired != null && !bsRequired.intersects(bs))
         return true;
@@ -426,13 +423,12 @@ public class SmilesSearch {
 
       // H explicit H count
       n = patternAtom.explicitHydrogenCount;
-      if (n != Integer.MIN_VALUE && n != Integer.MAX_VALUE
-          && n != atom.getCovalentHydrogenCount())
+      if (n >= 0 && n != atom.getCovalentHydrogenCount())
         break;
 
       // h implicit H count
       n = patternAtom.implicitHydrogenCount;
-      if (n != Integer.MIN_VALUE && n != Integer.MAX_VALUE) {
+      if (n != Integer.MIN_VALUE) {
         int nH = atom.getImplicitHydrogenCount();
         if (n == -1 && nH == 0 || n != -1 && n != nH)
           break;
@@ -500,7 +496,7 @@ public class SmilesSearch {
       for (int k = 0; k < patternAtomCount; k++) {
         SmilesAtom sAtom = atoms[k];
         int nH = sAtom.explicitHydrogenCount;
-        if (nH == Integer.MAX_VALUE)
+        if (nH < 0)
           nH = 0;
         int chiralClass = sAtom.getChiralClass();
         int order = sAtom.getChiralOrder();

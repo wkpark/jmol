@@ -624,7 +624,7 @@ public class SmilesParser {
         }
       }
       if (hydrogenCount == Integer.MIN_VALUE && isBracketed)
-        hydrogenCount = Integer.MAX_VALUE;
+        hydrogenCount = Integer.MIN_VALUE + 1;
       newAtom.setExplicitHydrogenCount(hydrogenCount);
       // for stereochemistry only:
       molecule.atoms[newAtom.index].setExplicitHydrogenCount(hydrogenCount);
@@ -784,7 +784,7 @@ public class SmilesParser {
       SmilesAtom sAtom = molecule.getAtom(i);
       int stereoClass = sAtom.getChiralClass();
       int nBonds = sAtom.explicitHydrogenCount;
-      if (nBonds < 0 || nBonds == Integer.MAX_VALUE)
+      if (nBonds < 0)
         nBonds = 0;
       nBonds += sAtom.getBondsCount();
       switch (stereoClass) {

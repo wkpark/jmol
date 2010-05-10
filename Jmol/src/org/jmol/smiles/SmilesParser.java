@@ -117,6 +117,10 @@ public class SmilesParser {
    *   [andSet] == { [primitiveDescriptor] 
    *                              | [primitiveDescriptor] [primitiveDescriptor] 
    *                              | [primitiveDescriptor] "&" [andSet] }
+   *       # note -- if & is not used, certain combinations of primitiveDescritors
+   *       #         are not allowed. Specifically, combinations that together
+   *       #         form the symbol for an element are not allowed: Ar, Rh, etc.
+   *       #         however, rA and hR would be fine
    *                              
    *   [primitiveDescriptor] == { "!" [primitive] | [primitive] }
    *   [primitive] == { [isotope] | [atomType] | [charge] | [stereochemistry]

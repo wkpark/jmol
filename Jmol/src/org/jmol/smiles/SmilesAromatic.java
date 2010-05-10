@@ -30,6 +30,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.util.Measure;
+//import org.jmol.viewer.JmolConstants;
 
 public class SmilesAromatic {
   /** 
@@ -67,6 +68,9 @@ public class SmilesAromatic {
      *   with arbitrary order and up to N substituents
      *   
      *   1) Check to see if all ring atoms have no more than 3 connections.
+     *      Note: An alternative definition might include "and no substituent
+     *      is explicitly double-bonded to its ring atom, as in quinone.
+     *      Here we opt to allow the atoms of quinone to be called "aromatic."
      *   2) Select a cutoff value close to zero. We use 0.01 here. 
      *   3) Generate a set of normals as follows:
      *      a) For each ring atom, construct the normal associated with the plane
@@ -126,6 +130,9 @@ public class SmilesAromatic {
           continue;
         if (++n > 3)
           return false;
+        // uncomment these two lines to exclude quinone and nucleic acid bases
+        // if (!bs.get(iAtom) && bonds[k].getOrder() == JmolConstants.BOND_COVALENT_DOUBLE)
+        //   return false;
       }
     }
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {

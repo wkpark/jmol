@@ -94,6 +94,7 @@ public class SmilesAtom {
     SmilesAtom sAtom = new SmilesAtom(index);
     primitives[nPrimitives] = sAtom;
     setSymbol("*");
+    hasSymbol = false;
     nPrimitives++;
     return sAtom;
   }

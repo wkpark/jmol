@@ -56,6 +56,8 @@ public class SmilesBond {
     this.atom1 = atom1;
     this.atom2 = atom2;
     this.bondType = bondType;
+    if (atom2 != null)
+      atom2.isFirst = false;
   }
 
   /**
@@ -100,6 +102,8 @@ public class SmilesBond {
 
   public void setAtom2(SmilesAtom atom) {
     this.atom2 = atom;
+    if (atom2 != null)
+      atom2.isFirst = false;
   }
 
   public int getBondType() {

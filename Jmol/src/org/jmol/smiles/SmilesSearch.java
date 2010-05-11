@@ -24,6 +24,7 @@
 
 package org.jmol.smiles;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -49,7 +50,7 @@ import org.jmol.viewer.JmolConstants;
 public class SmilesSearch {
 
   boolean isSilent;
-  
+  boolean isSmilesFind;
   Hashtable htNested;
   private int nNested;
   public int addNested(String pattern) {
@@ -492,7 +493,7 @@ public class SmilesSearch {
     // first, @ stereochemistry
 
     if (haveAtomStereochemistry) {
-      Atom atom1 = null, atom2 = null, atom3 = null, atom4 = null;
+      Atom atom1 = null, atom2 = null, atom3 = null, atom4 = null, atom5 = null;
       for (int k = 0; k < patternAtomCount; k++) {
         SmilesAtom sAtom = atoms[k];
         int nH = sAtom.explicitHydrogenCount;
@@ -521,7 +522,7 @@ public class SmilesSearch {
             continue;
           if (atom2 == null) {
             atom2 = getHydrogens(getJmolAtom(sAtom1.getMatchingAtom()), null);
-            if (sAtom1.index == 0) {
+            if (sAtom1.isFirst) {
               // check for the VERY first atom in a set
               // attached H is first in that case
               // so we have to switch it, since we have
@@ -553,7 +554,7 @@ public class SmilesSearch {
             break;
           case 1:
             atom2 = getHydrogens(getJmolAtom(sAtom.getMatchingAtom()), null);
-            if (sAtom.index == 0) {
+            if (sAtom.isFirst) {
               Atom a = atom2;
               atom2 = atom1;
               atom1 = a;
@@ -564,16 +565,18 @@ public class SmilesSearch {
           }
           atom3 = getJmolAtom(sAtom.getMatchingBondedAtom(2 - nH));
           atom4 = getJmolAtom(sAtom.getMatchingBondedAtom(3 - nH));
+          atom5 = getJmolAtom(sAtom.getMatchingBondedAtom(4 - nH));
           
           // in all the checks below, we use Measure utilities to 
-          // calculate the equations of the planes associated with 
           // three given atoms -- the normal, in particular. We 
           // then use dot products to check the directions of normals
           // to see if the rotation is in the direction required. 
           
           // we only use TP1, TP2, OH1, OH2 here.
           // so we must also check that the two bookend atoms are axial
-          
+
+          if (isSmilesFind)
+            setSmilesCoordinates(sAtom, new Atom[] { atom1, atom2, atom3, atom4, atom5 });
           switch (chiralClass) {
           case SmilesAtom.CHIRALITY_TETRAHEDRAL:
             if (sAtom.not != (getChirality(atom2, atom3, atom4, atom1) != order))
@@ -589,7 +592,6 @@ public class SmilesSearch {
             if (sAtom.not != (!isDiaxial(sAtom, 5 - nH, atom1)))
               return false;
             // check for CW or CCW set
-            Atom atom5 = getJmolAtom(sAtom.getMatchingBondedAtom(4 - nH));
             getPlaneNormals(atom2, atom3, atom4, atom5);
             if (sAtom.not != (vNorm1.dot(vNorm2) < 0 
                 || vNorm2.dot(vNorm3) < 0))
@@ -690,6 +692,50 @@ public class SmilesSearch {
     return true;
   }
 
+  private void setSmilesCoordinates(SmilesAtom sAtom, Atom[] cAtoms) {
+    
+    // When testing equality of two SMILES strings in terms of stereochemistry,
+    // we need to set the atom positions based on the ORIGINAL SMILES order,
+    // which, except for the H atom, will be the same as the "matchedAtom" index.
+    // all the necessary information is passed via the atomSite field of Atom
+
+    int iAtom = sAtom.getMatchingAtom();
+    Atom atom = jmolAtoms[iAtom];
+    int atomSite = atom.getAtomSite();
+    if (atomSite == Integer.MIN_VALUE)
+      return;
+    int chiralClass = atomSite >> 8;
+    int chiralOrder = atomSite & 0xFF;
+    if (chiralClass != sAtom.getChiralClass())
+      return;
+    
+    // set the chirality center at the origin
+    atom.set(0, 0, 0);
+    int[] map = new int[cAtoms[4] == null  ? 4 : 5];
+    for (int i = 0; i < map.length; i++)
+      map[i] = (cAtoms[i].index << 3) + i;
+    Arrays.sort(map);
+    switch (chiralClass) {
+    case SmilesAtom.CHIRALITY_ALLENE:
+    case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
+    case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+    case SmilesAtom.CHIRALITY_OCTAHEDRAL:
+      // hmm...
+      break;
+    case SmilesAtom.CHIRALITY_TETRAHEDRAL:
+      if (chiralOrder == 2) {
+        int i = map[0];
+        map[0] = map[1];
+        map[1] = i;
+      }
+      cAtoms[map[0] & 7].set(0, 0, 1);
+      cAtoms[map[1] & 7].set(1, 0, -1);
+      cAtoms[map[2] & 7].set(0, 1, -1);
+      cAtoms[map[3] & 7].set(-1, -1, -1);
+      break;
+    }
+  }
+
   private void getPlaneNormals(Atom atom1, Atom atom2, Atom atom3, Atom atom4) {
     if (vTemp1 == null) {
       vTemp1 = new Vector3f();
@@ -741,13 +787,12 @@ public class SmilesSearch {
     return (Measure.distanceToPlane(vTemp, d, pt) > 0 ? 1 : 2);
   }
 
-  public void setAromatic(BitSet bsAromatic) {
-    if (bsAromatic != null) {
-      // can force the issue
-      BitSetUtil.copy(bsAromatic, this.bsAromatic);
-      return;
-    }
-    bsAromatic = this.bsAromatic;
+  public void setRingData(BitSet bsA) {
+    boolean needAromatic = (bsA == null);
+    // when using "xxx".find("search","....")
+    // or $(...), the aromatic set has already been determined
+    if (!needAromatic)
+      BitSetUtil.copy(bsA, bsAromatic);
     if (needRingData) {
       ringCounts = new int[jmolAtomCount];
       ringConnections = new int[jmolAtomCount];
@@ -762,7 +807,7 @@ public class SmilesSearch {
           false, ringSets);
       for (int r = v.size(); --r >= 0;) {
         BitSet bs = (BitSet) v.get(r);
-        if (SmilesAromatic.isFlatSp2Ring(jmolAtoms, bsSelected, bs, 0.01f))
+        if (needAromatic && SmilesAromatic.isFlatSp2Ring(jmolAtoms, bsSelected, bs, 0.01f))
           for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
             bsAromatic.set(j);
       }
@@ -801,10 +846,11 @@ public class SmilesSearch {
     search.jmolAtoms = jmolAtoms;
     search.jmolAtomCount = jmolAtomCount;
     search.htNested = htNested;
+    search.isSmilesFind = isSmilesFind;
     search.isAll = true;
     // note - we do NOT pass on bsSelectOut
     if (firstAtomOnly) {
-      search.setAromatic(bsAromatic);
+      search.setRingData(bsAromatic);
       search.ringDataMax = ringDataMax;
       search.ringData = ringData;
       search.ringCounts = ringCounts;

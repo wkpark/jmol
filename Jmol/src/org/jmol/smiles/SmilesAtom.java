@@ -43,10 +43,15 @@ public class SmilesAtom {
     return ("0;11;AL;33;TH;TP;OH;77;SP;".indexOf(xx) + 1)/ 3;
   }
 
+  static boolean allowSmilesUnbracketed(String xx) {
+    return ("B, C, N, O, P, S, F, Cl, Br, I,".indexOf(xx + ",") >= 0);
+  }
+  
   int index;
   boolean not;
   boolean selected;
   boolean hasSymbol;
+  boolean isFirst = true;
   
   short atomicNumber = -2; // UNDEFINED (could be A or a or *)
   

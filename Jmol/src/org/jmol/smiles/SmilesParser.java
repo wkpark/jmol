@@ -348,7 +348,7 @@ public class SmilesParser {
         break;
       default:
         // [atomType]
-        int ch2 = (isSearch && Character.isUpperCase(ch) ? getChar(pattern,
+        int ch2 = (Character.isUpperCase(ch) ? getChar(pattern,
             index + 1) : '\0');
         if (ch != 'X' || ch2 != 'x')
           if (!Character.isLowerCase(ch2)
@@ -539,7 +539,8 @@ public class SmilesParser {
                 : 1);
             String s = pattern.substring(index + 1, index + size);
             symbol = Character.toUpperCase(ch) + s;
-            isSymbol = (symbol.equals("Xx") ? true : JmolConstants.elementNumberFromSymbol(symbol, true) > 0);
+            isSymbol = (!isBracketed && !isSearch ? SmilesAtom.allowSmilesUnbracketed(symbol) 
+                : symbol.equals("Xx") || JmolConstants.elementNumberFromSymbol(symbol, true) > 0);
             symbol = ch + s;
           }
           if ("-+@".indexOf(ch) >= 0 
@@ -622,7 +623,7 @@ public class SmilesParser {
           } else {
             // Symbol
             if (!newAtom.setSymbol(symbol))
-              throw new InvalidSmilesException("Invalid atom symbol");
+              throw new InvalidSmilesException("Invalid atom symbol: " + symbol);
             if (isPrimitive)
               atomSet.hasSymbol = true;
             // indicates we have already assigned an atom number

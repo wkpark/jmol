@@ -820,7 +820,7 @@ public class SmilesSearch {
         map[n - 1] = i;
       }
       cAtoms[map[0] & 7].set(0, 0, 1);
-      cAtoms[map[n - 1]].set(0, 0, -1);
+      cAtoms[map[n - 1] & 7].set(0, 0, -1);
       cAtoms[map[1] & 7].set(1, 0, 0);
       cAtoms[map[2] & 7].set(0, 1, 0);
       cAtoms[map[3] & 7].set(-1, 0, 0);

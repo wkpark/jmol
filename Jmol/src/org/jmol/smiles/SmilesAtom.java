@@ -108,10 +108,10 @@ public class SmilesAtom {
   public String toString() {
     return "[atom" + index + "(" + matchingAtom + ")"
     + " " + atomicNumber 
-    + " ch:" + charge 
-    + " ar:" + isAromatic 
-    + " H:" + explicitHydrogenCount
-    + " h:" + implicitHydrogenCount
+//    + " ch:" + charge 
+//    + " ar:" + isAromatic 
+//    + " H:" + explicitHydrogenCount
+//    + " h:" + implicitHydrogenCount
     + " ]";
   }
   

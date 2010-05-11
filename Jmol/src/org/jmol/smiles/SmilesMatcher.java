@@ -152,13 +152,15 @@ public class SmilesMatcher implements SmilesMatcherInterface {
             continue;
           int order = 1;
           switch (sBond.getBondType()) {
-          case SmilesBond.TYPE_UNKNOWN:
-          case SmilesBond.TYPE_NONE:
+          // these first two are for cis/trans alkene
+          // stereochemistry; we co-opt stereo near/far here
           case SmilesBond.TYPE_DIRECTIONAL_1:
+            order = JmolConstants.BOND_STEREO_NEAR;
+            break;
           case SmilesBond.TYPE_DIRECTIONAL_2:
-          case SmilesBond.TYPE_RING_BOND:
+            order = JmolConstants.BOND_STEREO_FAR;
+            break;
           case SmilesBond.TYPE_SINGLE:
-          case SmilesBond.TYPE_ANY:
             order = JmolConstants.BOND_COVALENT_SINGLE;
             break;
           case SmilesBond.TYPE_AROMATIC:
@@ -179,7 +181,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
           atom1.bonds[bondCounts[atom1.index]++] = atom2.bonds[bondCounts[atom2.index]++] = b;
         }
       }
-      list = getSubstructureSetArray(pattern, atoms, -atomCount, null, null,
+      list = getSubstructureSetArray(pattern, atoms, -nAtomsNew, null, null,
           null, bsAromatic, isSearch, isAll);
       return list.length;
     } catch (Exception e) {

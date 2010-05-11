@@ -302,7 +302,7 @@ public class SmilesParser {
 
     int bondType = SmilesBond.getBondTypeFromCode(ch);
     if (bondType != SmilesBond.TYPE_UNKNOWN) {
-      if (!isSearch && "-=#:".indexOf(ch) < 0)
+      if (!isSearch && "-=#:/\\".indexOf(ch) < 0)
         throw new InvalidSmilesException("SEARCH bond type " + ch
             + " not allowed in SMILES");
       if (currentAtom == null && bondType != SmilesBond.TYPE_NONE)

@@ -190,7 +190,6 @@ public class SmilesSearch {
   private final boolean checkMatch(SmilesAtom patternAtom, int atomNum,
                                    int iAtom, boolean firstAtomOnly) {
 
-    isSilent = false;
     // check for requested selection or not-selection
 
     if (bsNot != null && bsNot.get(iAtom) || bsSelected != null
@@ -199,7 +198,7 @@ public class SmilesSearch {
 
     Atom atom = getJmolAtom(iAtom);
 
-    // check for atom already found or atom not in this model
+// check for atom already found or atom not in this model
 
     for (int i = 0; i < atomNum; i++) {
       int iPrev = atoms[i].getMatchingAtom();
@@ -280,7 +279,10 @@ public class SmilesSearch {
           case SmilesBond.TYPE_SINGLE:
           case SmilesBond.TYPE_DIRECTIONAL_1:
           case SmilesBond.TYPE_DIRECTIONAL_2:
-            bondFound = (order == JmolConstants.BOND_COVALENT_SINGLE);
+            // STEREO_NEAR and _FAR are stand-ins for find()
+            bondFound = (order == JmolConstants.BOND_COVALENT_SINGLE
+                || order == JmolConstants.BOND_STEREO_NEAR 
+                || order == JmolConstants.BOND_STEREO_FAR);
             break;
           case SmilesBond.TYPE_DOUBLE:
             bondFound = (order == JmolConstants.BOND_COVALENT_DOUBLE);
@@ -304,7 +306,6 @@ public class SmilesSearch {
     // note that we explicitly do a reference using
     // index because this could be a SEARCH [x,x] "sub" atom
     atoms[patternAtom.index].setMatchingAtom(iAtom);
-
     atomNum++;
     if (atomNum < patternAtomCount) {
       // next position...
@@ -493,9 +494,10 @@ public class SmilesSearch {
     // first, @ stereochemistry
 
     if (haveAtomStereochemistry) {
-      Atom atom1 = null, atom2 = null, atom3 = null, atom4 = null, atom5 = null;
-      for (int k = 0; k < patternAtomCount; k++) {
-        SmilesAtom sAtom = atoms[k];
+      Atom atom1 = null, atom2 = null, atom3 = null, 
+      atom4 = null, atom5 = null, atom6 = null;
+      for (int i = 0; i < patternAtomCount; i++) {
+        SmilesAtom sAtom = atoms[i];
         int nH = sAtom.explicitHydrogenCount;
         if (nH < 0)
           nH = 0;
@@ -540,6 +542,8 @@ public class SmilesSearch {
             continue;
           if (atom4 == null)
             atom4 = getHydrogens(getJmolAtom(sAtom2.getMatchingAtom()), null);
+          if (isSmilesFind)
+            setSmilesCoordinates(sAtom, new Atom[] { atom1, atom2, atom3, atom4, null, null });
           if (sAtom.not != (getChirality(atom2, atom3, atom4, atom1) != order))
             return false;
           continue;
@@ -566,6 +570,7 @@ public class SmilesSearch {
           atom3 = getJmolAtom(sAtom.getMatchingBondedAtom(2 - nH));
           atom4 = getJmolAtom(sAtom.getMatchingBondedAtom(3 - nH));
           atom5 = getJmolAtom(sAtom.getMatchingBondedAtom(4 - nH));
+          atom6 = getJmolAtom(sAtom.getMatchingBondedAtom(5 - nH));
           
           // in all the checks below, we use Measure utilities to 
           // three given atoms -- the normal, in particular. We 
@@ -576,7 +581,7 @@ public class SmilesSearch {
           // so we must also check that the two bookend atoms are axial
 
           if (isSmilesFind)
-            setSmilesCoordinates(sAtom, new Atom[] { atom1, atom2, atom3, atom4, atom5 });
+            setSmilesCoordinates(sAtom, new Atom[] { atom1, atom2, atom3, atom4, atom5, atom6 });
           switch (chiralClass) {
           case SmilesAtom.CHIRALITY_TETRAHEDRAL:
             if (sAtom.not != (getChirality(atom2, atom3, atom4, atom1) != order))
@@ -584,12 +589,12 @@ public class SmilesSearch {
             continue;
           case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
             // check for axial-axial
-            if (sAtom.not != (!isDiaxial(sAtom, 4 - nH, atom1)
+            if (sAtom.not != (!isDiaxial(sAtom, atom5, atom1)
                 || getChirality(atom2, atom3, atom4, atom1) != order))
               return false;
             continue;
           case SmilesAtom.CHIRALITY_OCTAHEDRAL:
-            if (sAtom.not != (!isDiaxial(sAtom, 5 - nH, atom1)))
+            if (sAtom.not != (!isDiaxial(sAtom, atom6, atom1)))
               return false;
             // check for CW or CCW set
             getPlaneNormals(atom2, atom3, atom4, atom5);
@@ -607,9 +612,9 @@ public class SmilesSearch {
             // vNorm1 vNorm2 vNorm3 are right-hand normals for the given
             // triangles
             // 1-2-3, 2-3-4, 3-4-1
-            // sp1 up up up
-            // sp2 up up DOWN
-            // sp3 up DOWN DOWN
+            // sp1 up up up U-shaped
+            // sp2 up up DOWN 4-shaped
+            // sp3 up DOWN DOWN Z-shaped
 
             if (vNorm1.dot(vNorm2) < 0) {
               if (sAtom.not != (order != 3))
@@ -669,10 +674,11 @@ public class SmilesSearch {
             break;
           }
         }
-
         if (dir2 == 0)
           continue;
 
+        if (isSmilesFind)
+          setSmilesBondCoordinates(sAtom1, sAtom2);
         Atom dbAtom1 = getJmolAtom(sAtom1.getMatchingAtom());
         Atom dbAtom2 = getJmolAtom(sAtom2.getMatchingAtom());
         Atom dbAtom1a = getJmolAtom(sAtomDirected1.getMatchingAtom());
@@ -690,6 +696,61 @@ public class SmilesSearch {
       }
     }
     return true;
+  }
+
+  private void setSmilesBondCoordinates(SmilesAtom sAtom1, SmilesAtom sAtom2) {
+    Atom dbAtom1 = getJmolAtom(sAtom1.getMatchingAtom());
+    Atom dbAtom2 = getJmolAtom(sAtom2.getMatchingAtom());
+    dbAtom1.set(-1, 0, 0);
+    dbAtom2.set(1, 0, 0);
+    int nBonds = 0;
+    int dir1 = 0;
+    for (int k = dbAtom1.bonds.length; --k >= 0;) {
+      Bond bond = dbAtom1.bonds[k];
+      Atom atom = bond.getOtherAtom(dbAtom1);
+      if (atom == dbAtom2)
+        continue;
+      atom.set(-2, (nBonds++ == 0) ? -1 : 1, 0);
+      switch (bond.getOrder()) {
+      case JmolConstants.BOND_STEREO_NEAR:
+        dir1 = nBonds;
+        break;
+      case JmolConstants.BOND_STEREO_FAR:
+        dir1 = -nBonds;
+      }
+    }
+    int dir2 = 0;
+    nBonds = 0;
+    Atom[] atoms = new Atom[2];
+    for (int k = dbAtom2.bonds.length; --k >= 0;) {
+      Bond bond = dbAtom2.bonds[k];
+      Atom atom = bond.getOtherAtom(dbAtom2);
+      if (atom == dbAtom1)
+        continue;
+      atoms[nBonds] = atom;
+      atom.set(2, (nBonds++ == 0) ? 1 : -1, 0);
+      switch (bond.getOrder()) {
+      case JmolConstants.BOND_STEREO_NEAR:
+        dir2 = nBonds;
+        break;
+      case JmolConstants.BOND_STEREO_FAR:
+        dir2 = -nBonds;
+      }
+    }
+    //     2     3
+    //      \   /
+    //       C=C
+    //      /   \
+    //     1     4
+    //
+    // check for overall directionality matching even/oddness of bond order
+    // and switch Y positions of 3 and 4 if necessary
+    //  
+    if ((dir1 * dir2 > 0) == (Math.abs(dir1) % 2 == Math.abs(dir2) % 2))
+      return;
+    float y = atoms[0].y;
+    atoms[0].y = atoms[1].y;
+    atoms[1].y = y;
   }
 
   private void setSmilesCoordinates(SmilesAtom sAtom, Atom[] cAtoms) {
@@ -711,17 +772,12 @@ public class SmilesSearch {
     
     // set the chirality center at the origin
     atom.set(0, 0, 0);
-    int[] map = new int[cAtoms[4] == null  ? 4 : 5];
+    int[] map = new int[cAtoms[4] == null  ? 4 : cAtoms[5] == null ? 5 : 6];
     for (int i = 0; i < map.length; i++)
       map[i] = (cAtoms[i].index << 3) + i;
     Arrays.sort(map);
     switch (chiralClass) {
     case SmilesAtom.CHIRALITY_ALLENE:
-    case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
-    case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
-    case SmilesAtom.CHIRALITY_OCTAHEDRAL:
-      // hmm...
-      break;
     case SmilesAtom.CHIRALITY_TETRAHEDRAL:
       if (chiralOrder == 2) {
         int i = map[0];
@@ -732,6 +788,44 @@ public class SmilesSearch {
       cAtoms[map[1] & 7].set(1, 0, -1);
       cAtoms[map[2] & 7].set(0, 1, -1);
       cAtoms[map[3] & 7].set(-1, -1, -1);
+      break;
+    case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
+      switch (chiralOrder) {
+      case 1: // U-shaped
+        cAtoms[map[0] & 7].set(1, 0, 0);
+        cAtoms[map[1] & 7].set(0, 1, 0);
+        cAtoms[map[2] & 7].set(-1, 0, 0);
+        cAtoms[map[3] & 7].set(0, -1, 0);
+        break;
+      case 2: // 4-shaped
+        cAtoms[map[0] & 7].set(1, 0, 0);
+        cAtoms[map[1] & 7].set(-1, 0, 0);
+        cAtoms[map[2] & 7].set(0, 1, 0);
+        cAtoms[map[3] & 7].set(0, -1, 0);
+        break;
+      case 3: // Z-shaped
+        cAtoms[map[0] & 7].set(1, 0, 0);
+        cAtoms[map[1] & 7].set(-1, 0, 0);
+        cAtoms[map[2] & 7].set(0, -1, 0);
+        cAtoms[map[3] & 7].set(0, 1, 0);
+        break;
+      }
+      break;
+    case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+    case SmilesAtom.CHIRALITY_OCTAHEDRAL:
+      int n = map.length;
+      if (chiralOrder == 2) {
+        int i = map[0];
+        map[0] = map[n - 1];
+        map[n - 1] = i;
+      }
+      cAtoms[map[0] & 7].set(0, 0, 1);
+      cAtoms[map[n - 1]].set(0, 0, -1);
+      cAtoms[map[1] & 7].set(1, 0, 0);
+      cAtoms[map[2] & 7].set(0, 1, 0);
+      cAtoms[map[3] & 7].set(-1, 0, 0);
+      if (n != 5)
+        cAtoms[map[3] & 7].set(0, -1, 0);        
       break;
     }
   }
@@ -752,9 +846,8 @@ public class SmilesSearch {
         vTemp2);
   }
 
-  private boolean isDiaxial(SmilesAtom sAtom, int k, Atom atom1) {
+  private boolean isDiaxial(SmilesAtom sAtom, Atom atom2, Atom atom1) {
     Atom atom0 = getJmolAtom(sAtom.getMatchingAtom());
-    Atom atom2 = getJmolAtom(sAtom.getMatchingBondedAtom(k));
     vA.set(atom0);
     vB.set(atom0);
     vA.sub(atom1);

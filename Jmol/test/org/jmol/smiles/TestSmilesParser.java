@@ -1396,11 +1396,11 @@ public class TestSmilesParser extends TestCase {
             atom2.getChiralOrder() + ")");
         return false;
       }
-      if (atom1.getAtomicNumber() != atom2.getAtomicNumber()) {
+      if (atom1.getElementNumber() != atom2.getElementNumber()) {
         Logger.error(
             "Atom " + i + " atomicNumber (" +
-            atom1.getAtomicNumber() + "," +
-            atom2.getAtomicNumber() + ")");
+            atom1.getElementNumber() + "," +
+            atom2.getElementNumber() + ")");
         return false;
       }
       if (atom1.isAromatic() != atom2.isAromatic()) {

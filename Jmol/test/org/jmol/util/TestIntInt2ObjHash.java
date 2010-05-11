@@ -25,6 +25,7 @@
 
 package org.jmol.util;
 
+
 public class TestIntInt2ObjHash extends junit.framework.TestCase {
 
   public TestIntInt2ObjHash() {

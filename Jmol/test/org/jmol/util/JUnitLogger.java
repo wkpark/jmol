@@ -25,6 +25,7 @@
 
 package org.jmol.util;
 
+
 /**
  * Implementation of Logger for JUnit tests 
  */

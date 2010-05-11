@@ -898,7 +898,7 @@ all support for previous versions removed
   </target>
 
 	  <target name="smiles-applet-jar" id="smiles-applet-jar"
-	          depends="applet-classes,appletjars">
+	          depends="applet-classes">
 	    <jar destfile="${jmol.applet.build.dir}/JmolSmilesApplet.jar"
 	         manifest="manifest/appletSmiles.txt" index="true" >
 		      <fileset dir="${classes.dir}" >
@@ -907,16 +907,22 @@ all support for previous versions removed
 	      <fileset dir="${applet.classes.dir}" >
 	        <include name="JmolSmiles*" />
 	        <include name="org/jmol/smiles/**" />
-	        <include name="org/jmol/api/JmolNode*" />
-	        <include name="org/jmol/api/JmolEdge*" />
-	        <include name="org/jmol/api/SmilesMatcherInterface*" />
+	        <include name="org/jmol/api/JmolNode.class" />
+	        <include name="org/jmol/api/JmolEdge.class" />
+	        <include name="org/jmol/api/SmilesMatcherInterface.class" />
 	        <include name="org/jmol/util/Parser.class" />
 	        <include name="org/jmol/util/DefaultLogger.class" />
 	        <include name="org/jmol/util/Logger.class" />
 	        <include name="org/jmol/util/LoggerInterface.class" />
 	        <include name="org/jmol/util/Elements.class" />
 	      </fileset>
-	      <fileset dir="${appletjars.dir}" includes="**/*"/>
+	      <fileset dir="${appletjars.dir}">
+	        <include name="javax/vecmath/*3f*" />
+	        <include name="javax/vecmath/*3d*" />
+	        <include name="javax/vecmath/Point4f*" />
+	        <include name="javax/vecmath/Tuple4f*" />
+	      	<exclude name="javax/vecmath/Matrix*" />
+	      </fileset>
 	    </jar>
 
 	    <for list="${all.JmolApplet.languages}" delimiter=","

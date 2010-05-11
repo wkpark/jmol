@@ -31,9 +31,10 @@ import org.jmol.modelset.AtomCollection;
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Elements;
 import org.jmol.util.Escape;
-
 import org.jmol.util.Parser;
+
 
 /*
  * a class for storing and retrieving user data,
@@ -283,12 +284,12 @@ class DataManager {
   BitSet bsUserVdws;
   
   public void setUserVdw(int iMode) {
-    userVdwMars = new int[JmolConstants.elementNumberMax];
-    userVdws = new float[JmolConstants.elementNumberMax];
+    userVdwMars = new int[Elements.elementNumberMax];
+    userVdws = new float[Elements.elementNumberMax];
     bsUserVdws = new BitSet();
     if (iMode == JmolConstants.VDW_USER)
       iMode = JmolConstants.VDW_JMOL;
-    for (int i = 1; i < JmolConstants.elementNumberMax; i++) {
+    for (int i = 1; i < Elements.elementNumberMax; i++) {
       userVdwMars[i] = JmolConstants.getVanderwaalsMar(i, iMode);
       userVdws[i] = userVdwMars[i] / 1000f;
     }
@@ -335,13 +336,13 @@ class DataManager {
     StringBuffer sb = new StringBuffer(JmolConstants.vdwLabels[iType] + "\n");
     boolean isAll = (bs == null);
     int i0 = (isAll ? 1 : bs.nextSetBit(0));
-    int i1 = (isAll ? JmolConstants.elementNumberMax : bs.length());
+    int i1 = (isAll ? Elements.elementNumberMax : bs.length());
     for (int i = i0; i < i1 && i >= 0; i = (isAll ? i + 1 : bs
         .nextSetBit(i + 1)))
       sb.append(i).append('\t').append(
           iType == JmolConstants.VDW_USER ? userVdws[i] : JmolConstants
               .getVanderwaalsMar(i, iType) / 1000f).append('\t').append(
-          JmolConstants.elementSymbolFromNumber(i)).append('\n');
+          Elements.elementSymbolFromNumber(i)).append('\n');
     return (bs == null ? sb.toString() : "\n  DATA \"element_vdw\"\n"
         + sb.append("  end \"element_vdw\";\n\n").toString());
   }

@@ -25,6 +25,7 @@
 
 package org.jmol.util;
 
+
 /**
  * Logger mechanism.
  */

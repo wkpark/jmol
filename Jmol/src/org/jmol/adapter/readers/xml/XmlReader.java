@@ -33,6 +33,7 @@ import java.io.*;
 import java.util.HashMap;
 
 import netscape.javascript.JSObject;
+
 import org.jmol.util.Logger;
 
 /**

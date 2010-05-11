@@ -23,6 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
+import org.jmol.api.JmolEdge;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.HBond;
 import org.jmol.modelset.Polymer;
@@ -177,25 +178,25 @@ public class AminoPolymer extends AlphaPolymer {
     int order;
     switch (indexAminoGroup - indexCarbonylGroup) {
     case 2:
-      order = JmolConstants.BOND_H_PLUS_2;
+      order = JmolEdge.BOND_H_PLUS_2;
       break;
     case 3:
-      order = JmolConstants.BOND_H_PLUS_3;
+      order = JmolEdge.BOND_H_PLUS_3;
       break;
     case 4:
-      order = JmolConstants.BOND_H_PLUS_4;
+      order = JmolEdge.BOND_H_PLUS_4;
       break;
     case 5:
-      order = JmolConstants.BOND_H_PLUS_5;
+      order = JmolEdge.BOND_H_PLUS_5;
       break;
     case -3:
-      order = JmolConstants.BOND_H_MINUS_3;
+      order = JmolEdge.BOND_H_MINUS_3;
       break;
     case -4:
-      order = JmolConstants.BOND_H_MINUS_4;
+      order = JmolEdge.BOND_H_MINUS_4;
       break;
     default:
-      order = JmolConstants.BOND_H_CALC;
+      order = JmolEdge.BOND_H_CALC;
     }
     vHBonds.add(new HBond(nitrogen, oxygen, order, energy));
   }

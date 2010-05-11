@@ -35,12 +35,12 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.Logger;
 import org.jmol.util.Quadric;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Shape;
 import org.jmol.shape.ShapeRenderer;
 import org.jmol.shapespecial.Ellipsoids.Ellipsoid;
-import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
 public class EllipsoidsRenderer extends ShapeRenderer {

@@ -25,6 +25,8 @@
 
 package org.jmol.modelset;
 
+import org.jmol.api.JmolEdge;
+import org.jmol.api.JmolNode;
 import org.jmol.g3d.Graphics3D;
 
 import java.util.BitSet;
@@ -32,7 +34,7 @@ import java.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.viewer.JmolConstants;
 
-public class Bond {
+public class Bond implements JmolEdge {
 
   public static class BondSet extends BitSet {
     private int[] associatedAtoms;
@@ -85,9 +87,9 @@ public class Bond {
     this.atom1 = atom1;
     this.atom2 = atom2;
     if (atom1.getElementNumber() == 16 && atom2.getElementNumber() == 16)
-      order |= JmolConstants.BOND_SULFUR_MASK;
-    if (order == JmolConstants.BOND_AROMATIC_MASK)
-      order = JmolConstants.BOND_AROMATIC;
+      order |= JmolEdge.BOND_SULFUR_MASK;
+    if (order == JmolEdge.BOND_AROMATIC_MASK)
+      order = JmolEdge.BOND_AROMATIC;
     this.order = order;
     this.colix = colix;
     setMad(mad);
@@ -99,23 +101,23 @@ public class Bond {
   }
 
   public boolean isCovalent() {
-    return (order & JmolConstants.BOND_COVALENT_MASK) != 0;
+    return (order & JmolEdge.BOND_COVALENT_MASK) != 0;
   }
 
   boolean isHydrogen() {
-    return (order & JmolConstants.BOND_HYDROGEN_MASK) != 0;
+    return (order & JmolEdge.BOND_HYDROGEN_MASK) != 0;
   }
 
   boolean isStereo() {
-    return (order & JmolConstants.BOND_STEREO_MASK) != 0;
+    return (order & JmolEdge.BOND_STEREO_MASK) != 0;
   }
 
   boolean isPartial() {
-    return (order & JmolConstants.BOND_PARTIAL_MASK) != 0;
+    return (order & JmolEdge.BOND_PARTIAL_MASK) != 0;
   }
 
   boolean isAromatic() {
-    return (order & JmolConstants.BOND_AROMATIC_MASK) != 0;
+    return (order & JmolEdge.BOND_AROMATIC_MASK) != 0;
   }
 
   public void setPaletteID(byte pid) {
@@ -129,7 +131,7 @@ public class Bond {
   
   int getValence() {
     return (!isCovalent() ? 0
-        : isPartial() || is(JmolConstants.BOND_AROMATIC) ? 1
+        : isPartial() || is(JmolEdge.BOND_AROMATIC) ? 1
         : order & 7);
   }
 
@@ -174,7 +176,7 @@ public class Bond {
   }
 
   public void setOrder(int order) {
-    this.order = order | (this.order & JmolConstants.BOND_NEW);
+    this.order = order | (this.order & JmolEdge.BOND_NEW);
   }
 
   public Atom getAtom1() {
@@ -202,7 +204,7 @@ public class Bond {
   }
 
   public int getCovalentOrder() {
-    return (isCovalent() ? order & ~JmolConstants.BOND_NEW : 0);
+    return (isCovalent() ? order & ~JmolEdge.BOND_NEW : 0);
   }
 
   String getOrderName() {
@@ -236,6 +238,10 @@ public class Bond {
   }
 
   public boolean is(int bondType) {
-    return (order & ~JmolConstants.BOND_NEW) == bondType;
+    return (order & ~JmolEdge.BOND_NEW) == bondType;
+  }
+
+  public JmolNode getOtherAtom(JmolNode thisAtom) {
+    return (atom1 == thisAtom ? atom2 : atom2 == thisAtom ? atom1 : null);
   }
 }

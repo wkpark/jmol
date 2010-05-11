@@ -27,12 +27,12 @@ package org.jmol.shapespecial;
 import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
 
-import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 
+import org.jmol.api.JmolEdge;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -193,7 +193,7 @@ public class Dipoles extends Shape {
     if ("color" == propertyName) {
       colix = Graphics3D.getColix(value);
       if (isBond) {
-        setColixDipole(colix, JmolConstants.BOND_COVALENT_MASK, bs);
+        setColixDipole(colix, JmolEdge.BOND_COVALENT_MASK, bs);
       } else if (value != null) {
         setProperty(Token.color, false, 0, 0);
       }

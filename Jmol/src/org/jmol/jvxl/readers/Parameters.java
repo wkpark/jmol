@@ -124,8 +124,8 @@ import java.util.Vector;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.util.Escape;
-
 import org.jmol.util.Logger;
+
 import org.jmol.viewer.JmolConstants;
 
 public class Parameters {

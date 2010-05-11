@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Vector;
 
+
 /* a simple compound document reader. 
  * See http://sc.openoffice.org/compdocfileformat.pdf
  * 

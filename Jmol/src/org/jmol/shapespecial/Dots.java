@@ -29,8 +29,8 @@ import org.jmol.shape.AtomShape;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.FastBitSet;
-
 import org.jmol.util.Logger;
+
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.EnvelopeCalculation;

@@ -24,7 +24,7 @@
 package org.jmol.viewer;
 
 import org.jmol.util.Escape;
-import org.jmol.util.Logger; //import org.jmol.viewer.StateManager.Orientation;
+import org.jmol.util.Logger;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;

@@ -26,6 +26,7 @@ package org.jmol.script;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.api.JmolEdge;
 import org.jmol.i18n.GT;
 
 import java.util.Vector;
@@ -653,7 +654,7 @@ abstract class ScriptCompilationTokenParser {
         if (!addNextTokenIf(Token.comma))
           break;
         String strOrder = (String) getToken().value;
-        int intType = JmolConstants.getBondOrderFromString(strOrder);        if (intType == JmolConstants.BOND_ORDER_NULL) {
+        int intType = JmolConstants.getBondOrderFromString(strOrder);        if (intType == JmolEdge.BOND_ORDER_NULL) {
           returnToken();
         } else {
           addTokenToPostfix(Token.string, strOrder);

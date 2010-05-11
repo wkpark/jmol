@@ -24,9 +24,9 @@
 
 package org.jmol.smiles;
 
+import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.viewer.JmolConstants;
 
 /**
  * Parses a SMILES String to create a <code>SmilesMolecule</code>.
@@ -352,7 +352,7 @@ public class SmilesParser {
             index + 1) : '\0');
         if (ch != 'X' || ch2 != 'x')
           if (!Character.isLowerCase(ch2)
-              || JmolConstants.elementNumberFromSymbol(pattern.substring(index,
+              || Elements.elementNumberFromSymbol(pattern.substring(index,
                   index + 2), true) == 0)
             ch2 = '\0';
         // guess at some ambiguous SEARCH strings:
@@ -540,7 +540,7 @@ public class SmilesParser {
             String s = pattern.substring(index + 1, index + size);
             symbol = Character.toUpperCase(ch) + s;
             isSymbol = (!isBracketed && !isSearch ? SmilesAtom.allowSmilesUnbracketed(symbol) 
-                : symbol.equals("Xx") || JmolConstants.elementNumberFromSymbol(symbol, true) > 0);
+                : symbol.equals("Xx") || Elements.elementNumberFromSymbol(symbol, true) > 0);
             symbol = ch + s;
           }
           if ("-+@".indexOf(ch) >= 0 

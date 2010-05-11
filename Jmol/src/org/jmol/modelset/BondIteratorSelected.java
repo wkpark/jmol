@@ -25,7 +25,7 @@
 
 package org.jmol.modelset;
 
-import org.jmol.viewer.JmolConstants;
+import org.jmol.api.JmolEdge;
 import java.util.BitSet;
 
 class BondIteratorSelected implements BondIterator {
@@ -64,11 +64,11 @@ class BondIteratorSelected implements BondIterator {
     }
     for (; iBond < bondCount; ++iBond) {
       Bond bond = bonds[iBond];
-      if (bondType != JmolConstants.BOND_ORDER_ANY
+      if (bondType != JmolEdge.BOND_ORDER_ANY
           && (bond.order & bondType) == 0) {
         continue;
-      } else if (bondType == JmolConstants.BOND_ORDER_ANY
-          && (bond.order & JmolConstants.BOND_STRUT) != 0)
+      } else if (bondType == JmolEdge.BOND_ORDER_ANY
+          && (bond.order & JmolEdge.BOND_STRUT) != 0)
         continue;
       boolean isSelected1 = bsSelected.get(bond.atom1.index);
       boolean isSelected2 = bsSelected.get(bond.atom2.index);

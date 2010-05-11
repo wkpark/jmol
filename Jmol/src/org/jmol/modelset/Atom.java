@@ -28,9 +28,12 @@ package org.jmol.modelset;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
+import org.jmol.api.JmolEdge;
+import org.jmol.api.JmolNode;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.Elements;
 import org.jmol.util.Point3fi;
 
 import java.util.BitSet;
@@ -39,7 +42,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-final public class Atom extends Point3fi {
+final public class Atom extends Point3fi implements JmolNode {
 
   private final static byte VIBRATION_VECTOR_FLAG = 1;
   private final static byte IS_HETERO_FLAG = 2;
@@ -258,7 +261,7 @@ final public class Atom extends Point3fi {
     int n = 0;
     Bond b;
     for (int i = bonds.length; --i >= 0; )
-      if (((b = bonds[i]).order & JmolConstants.BOND_COVALENT_MASK) != 0
+      if (((b = bonds[i]).order & JmolEdge.BOND_COVALENT_MASK) != 0
           && !b.getOtherAtom(this).isDeleted())
         ++n;
     return n;
@@ -269,7 +272,7 @@ final public class Atom extends Point3fi {
       return 0;
     int n = 0;
     for (int i = bonds.length; --i >= 0; ) {
-      if ((bonds[i].order & JmolConstants.BOND_COVALENT_MASK) == 0)
+      if ((bonds[i].order & JmolEdge.BOND_COVALENT_MASK) == 0)
         continue;
       Atom a = bonds[i].getOtherAtom(this);
       if (a.valence >= 0 && a.getElementNumber() == 1)
@@ -278,6 +281,10 @@ final public class Atom extends Point3fi {
     return n;
   }
 
+  public JmolEdge[] getEdges() {
+    return bonds;
+  }
+  
   public Bond[] getBonds() {
     return bonds;
   }
@@ -311,13 +318,13 @@ final public class Atom extends Point3fi {
   }
 
   public void setAtomicAndIsotopeNumber(int n) {
-    if (n < 0 || (n % 128) >= JmolConstants.elementNumberMax || n > Short.MAX_VALUE)
+    if (n < 0 || (n % 128) >= Elements.elementNumberMax || n > Short.MAX_VALUE)
       n = 0;
     atomicAndIsotopeNumber = (short) n;
   }
 
   public String getElementSymbol(boolean withIsotope) {
-    return JmolConstants.elementSymbolFromNumber(withIsotope ? atomicAndIsotopeNumber : atomicAndIsotopeNumber % 128);    
+    return Elements.elementSymbolFromNumber(withIsotope ? atomicAndIsotopeNumber : atomicAndIsotopeNumber % 128);    
   }
   
   public String getElementSymbol() {

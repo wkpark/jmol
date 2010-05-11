@@ -30,6 +30,7 @@ import java.util.Hashtable;
 import java.util.BitSet;
 
 import org.jmol.modelset.Group;
+import org.jmol.util.Elements;
 import org.jmol.viewer.JmolConstants;
 
 /****************************************************************
@@ -52,20 +53,20 @@ import org.jmol.viewer.JmolConstants;
  ****************************************************************/
 public abstract class JmolAdapter {
   
-  public final static short ORDER_COVALENT_SINGLE = JmolConstants.BOND_COVALENT_SINGLE;
-  public final static short ORDER_COVALENT_DOUBLE = JmolConstants.BOND_COVALENT_DOUBLE;
-  public final static short ORDER_COVALENT_TRIPLE = JmolConstants.BOND_COVALENT_TRIPLE;
-  public final static short ORDER_AROMATIC        = JmolConstants.BOND_AROMATIC;
-  public final static short ORDER_AROMATIC_SINGLE = JmolConstants.BOND_AROMATIC_SINGLE;
-  public final static short ORDER_AROMATIC_DOUBLE = JmolConstants.BOND_AROMATIC_DOUBLE;
-  public final static short ORDER_HBOND           = JmolConstants.BOND_H_REGULAR;
-  public final static short ORDER_STEREO_NEAR     = JmolConstants.BOND_STEREO_NEAR; 
-  public final static short ORDER_STEREO_FAR      = JmolConstants.BOND_STEREO_FAR; 
-  public final static short ORDER_PARTIAL01       = JmolConstants.BOND_PARTIAL01;
-  public final static short ORDER_PARTIAL12       = JmolConstants.BOND_PARTIAL12;
-  public final static short ORDER_PARTIAL23       = JmolConstants.BOND_PARTIAL23;
-  public final static short ORDER_PARTIAL32       = JmolConstants.BOND_PARTIAL32;
-  public final static short ORDER_UNSPECIFIED     = JmolConstants.BOND_ORDER_UNSPECIFIED;
+  public final static short ORDER_COVALENT_SINGLE = JmolEdge.BOND_COVALENT_SINGLE;
+  public final static short ORDER_COVALENT_DOUBLE = JmolEdge.BOND_COVALENT_DOUBLE;
+  public final static short ORDER_COVALENT_TRIPLE = JmolEdge.BOND_COVALENT_TRIPLE;
+  public final static short ORDER_AROMATIC        = JmolEdge.BOND_AROMATIC;
+  public final static short ORDER_AROMATIC_SINGLE = JmolEdge.BOND_AROMATIC_SINGLE;
+  public final static short ORDER_AROMATIC_DOUBLE = JmolEdge.BOND_AROMATIC_DOUBLE;
+  public final static short ORDER_HBOND           = JmolEdge.BOND_H_REGULAR;
+  public final static short ORDER_STEREO_NEAR     = JmolEdge.BOND_STEREO_NEAR; 
+  public final static short ORDER_STEREO_FAR      = JmolEdge.BOND_STEREO_FAR; 
+  public final static short ORDER_PARTIAL01       = JmolEdge.BOND_PARTIAL01;
+  public final static short ORDER_PARTIAL12       = JmolEdge.BOND_PARTIAL12;
+  public final static short ORDER_PARTIAL23       = JmolEdge.BOND_PARTIAL23;
+  public final static short ORDER_PARTIAL32       = JmolEdge.BOND_PARTIAL32;
+  public final static short ORDER_UNSPECIFIED     = JmolEdge.BOND_ORDER_UNSPECIFIED;
   
   public final static int        SHELL_S           = JmolConstants.SHELL_S;
   public final static int        SHELL_P           = JmolConstants.SHELL_P;
@@ -77,11 +78,11 @@ public abstract class JmolAdapter {
   public final static int        SHELL_F_SPHERICAL = JmolConstants.SHELL_F_SPHERICAL;
   
   public static String getElementSymbol(int elementNumber) {
-    return JmolConstants.elementSymbolFromNumber(elementNumber);
+    return Elements.elementSymbolFromNumber(elementNumber);
   }
   
   public static short getElementNumber(String elementSymbol) {
-    return JmolConstants.elementNumberFromSymbol(elementSymbol, false);
+    return Elements.elementNumberFromSymbol(elementSymbol, false);
   }
   
   public static boolean isHetero(String group3) {

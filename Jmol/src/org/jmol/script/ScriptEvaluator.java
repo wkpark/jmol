@@ -39,6 +39,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.JmolEdge;
 import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
@@ -62,6 +63,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 
+import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
@@ -1533,7 +1535,7 @@ public class ScriptEvaluator {
         return;
       fvalues = new float[nValues];
       for (int i = nValues; --i >= 0;)
-        fvalues[i] = (tok == Token.element ? JmolConstants
+        fvalues[i] = (tok == Token.element ? Elements
             .elementNumberFromSymbol(list[i], false) : Parser.parseFloat(list[i]));
       if (tokenValue.tok == Token.string && nValues == 1) {
         fValue = fvalues[0];
@@ -1803,34 +1805,34 @@ public class ScriptEvaluator {
 
     int firstIsotope = JmolConstants.firstIsotope;
     // name ==> e_=n for all standard elements
-    for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
-      String definition = "@" + JmolConstants.elementNameFromNumber(i) + " _e="
+    for (int i = Elements.elementNumberMax; --i >= 0;) {
+      String definition = "@" + Elements.elementNameFromNumber(i) + " _e="
           + i;
       defineAtomSet(definition);
     }
     // _Xx ==> name for of all elements, isotope-blind
-    for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
-      String definition = "@_" + JmolConstants.elementSymbolFromNumber(i) + " "
-          + JmolConstants.elementNameFromNumber(i);
+    for (int i = Elements.elementNumberMax; --i >= 0;) {
+      String definition = "@_" + Elements.elementSymbolFromNumber(i) + " "
+          + Elements.elementNameFromNumber(i);
       defineAtomSet(definition);
     }
     // name ==> _e=nn for each alternative element
     for (int i = firstIsotope; --i >= 0;) {
-      String definition = "@" + JmolConstants.altElementNameFromIndex(i)
-          + " _e=" + JmolConstants.altElementNumberFromIndex(i);
+      String definition = "@" + Elements.altElementNameFromIndex(i)
+          + " _e=" + Elements.altElementNumberFromIndex(i);
       defineAtomSet(definition);
     }
     // these variables _e, _x can't be more than two characters
     // name ==> _isotope=iinn for each isotope
     // _T ==> _isotope=iinn for each isotope
     // _3H ==> _isotope=iinn for each isotope
-    for (int i = JmolConstants.altElementMax; --i >= firstIsotope;) {
-      String def = " element=" + JmolConstants.altElementNumberFromIndex(i);
-      String definition = "@_" + JmolConstants.altElementSymbolFromIndex(i);
+    for (int i = Elements.altElementMax; --i >= firstIsotope;) {
+      String def = " element=" + Elements.altElementNumberFromIndex(i);
+      String definition = "@_" + Elements.altElementSymbolFromIndex(i);
       defineAtomSet(definition + def);
-      definition = "@_" + JmolConstants.altIsotopeSymbolFromIndex(i);
+      definition = "@_" + Elements.altIsotopeSymbolFromIndex(i);
       defineAtomSet(definition + def);
-      definition = "@" + JmolConstants.altElementNameFromIndex(i);
+      definition = "@" + Elements.altElementNameFromIndex(i);
       if (definition.length() > 1)
         defineAtomSet(definition + def);
     }
@@ -5890,14 +5892,14 @@ public class ScriptEvaluator {
     switch (getToken(1).tok) {
     case Token.integer:
     case Token.decimal:
-      if ((order = JmolConstants.getBondOrderFromFloat(floatParameter(1))) == JmolConstants.BOND_ORDER_NULL)
+      if ((order = JmolConstants.getBondOrderFromFloat(floatParameter(1))) == JmolEdge.BOND_ORDER_NULL)
         error(ERROR_invalidArgument);
       break;
     default:
-      if ((order = JmolConstants.getBondOrderFromString(parameterAsString(1))) == JmolConstants.BOND_ORDER_NULL)
+      if ((order = JmolConstants.getBondOrderFromString(parameterAsString(1))) == JmolEdge.BOND_ORDER_NULL)
         error(ERROR_invalidArgument);
       // generic partial can be indicated by "partial n.m"
-      if (order == JmolConstants.BOND_PARTIAL01 && tokAt(2) == Token.decimal) {
+      if (order == JmolEdge.BOND_PARTIAL01 && tokAt(2) == Token.decimal) {
         order = JmolConstants
             .getPartialBondOrderFromInteger(statement[2].intValue);
       }
@@ -6186,7 +6188,7 @@ public class ScriptEvaluator {
     float radius = Float.NaN;
     int color = Integer.MIN_VALUE;
     int distanceCount = 0;
-    int bondOrder = JmolConstants.BOND_ORDER_NULL;
+    int bondOrder = JmolEdge.BOND_ORDER_NULL;
     int bo;
     int operation = JmolConstants.CONNECT_MODIFY_OR_CREATE;
     boolean isDelete = false;
@@ -6226,7 +6228,7 @@ public class ScriptEvaluator {
           if (haveType || isColorOrRadius)
             error(ERROR_invalidParameterOrder);
           bo = JmolConstants.getBondOrderFromFloat(floatParameter(i));
-          if (bo == JmolConstants.BOND_ORDER_NULL)
+          if (bo == JmolEdge.BOND_ORDER_NULL)
             error(ERROR_invalidArgument);
           bondOrder = bo;
           haveType = true;
@@ -6293,8 +6295,8 @@ public class ScriptEvaluator {
           error(ERROR_invalidParameterOrder);
         operation = theTok;
         if (theTok == Token.auto
-            && !(bondOrder == JmolConstants.BOND_ORDER_NULL
-                || bondOrder == JmolConstants.BOND_H_REGULAR || bondOrder == JmolConstants.BOND_AROMATIC))
+            && !(bondOrder == JmolEdge.BOND_ORDER_NULL
+                || bondOrder == JmolEdge.BOND_H_REGULAR || bondOrder == JmolEdge.BOND_AROMATIC))
           error(ERROR_invalidArgument);
         break;
       case Token.struts:
@@ -6322,7 +6324,7 @@ public class ScriptEvaluator {
           }
         }
         String cmd = parameterAsString(i);
-        if ((bo = JmolConstants.getBondOrderFromString(cmd)) == JmolConstants.BOND_ORDER_NULL) {
+        if ((bo = JmolConstants.getBondOrderFromString(cmd)) == JmolEdge.BOND_ORDER_NULL) {
           error(ERROR_invalidArgument);
         }
         // must be bond type
@@ -6330,7 +6332,7 @@ public class ScriptEvaluator {
           error(ERROR_incompatibleArguments);
         haveType = true;
         switch (bo) {
-        case JmolConstants.BOND_PARTIAL01:
+        case JmolEdge.BOND_PARTIAL01:
           switch (tokAt(i + 1)) {
           case Token.decimal:
             bo = JmolConstants
@@ -6341,9 +6343,9 @@ public class ScriptEvaluator {
             break;
           }
           break;
-        case JmolConstants.BOND_H_REGULAR:
+        case JmolEdge.BOND_H_REGULAR:
           if (tokAt(i + 1) == Token.integer) {
-            bo = (short) (intParameter(++i) << JmolConstants.BOND_HBOND_SHIFT);
+            bo = (short) (intParameter(++i) << JmolEdge.BOND_HBOND_SHIFT);
             energy = floatParameter(++i);
           }
           break;
@@ -6390,7 +6392,7 @@ public class ScriptEvaluator {
     if (translucency != null || !Float.isNaN(radius)
         || color != Integer.MIN_VALUE) {
       if (!haveType)
-        bondOrder = JmolConstants.BOND_ORDER_ANY;
+        bondOrder = JmolEdge.BOND_ORDER_ANY;
       if (!haveOperation)
         operation = JmolConstants.CONNECT_MODIFY_ONLY;
     }
@@ -6694,42 +6696,42 @@ public class ScriptEvaluator {
   }
 
   private boolean changeElementColor(String str, int argb) {
-    for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
-      if (str.equalsIgnoreCase(JmolConstants.elementNameFromNumber(i))) {
+    for (int i = Elements.elementNumberMax; --i >= 0;) {
+      if (str.equalsIgnoreCase(Elements.elementNameFromNumber(i))) {
         if (!isSyntaxCheck)
           viewer.setElementArgb(i, argb);
         return true;
       }
     }
-    for (int i = JmolConstants.altElementMax; --i >= 0;) {
-      if (str.equalsIgnoreCase(JmolConstants.altElementNameFromIndex(i))) {
+    for (int i = Elements.altElementMax; --i >= 0;) {
+      if (str.equalsIgnoreCase(Elements.altElementNameFromIndex(i))) {
         if (!isSyntaxCheck)
-          viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
+          viewer.setElementArgb(Elements.altElementNumberFromIndex(i),
               argb);
         return true;
       }
     }
     if (str.charAt(0) != '_')
       return false;
-    for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
-      if (str.equalsIgnoreCase("_" + JmolConstants.elementSymbolFromNumber(i))) {
+    for (int i = Elements.elementNumberMax; --i >= 0;) {
+      if (str.equalsIgnoreCase("_" + Elements.elementSymbolFromNumber(i))) {
         if (!isSyntaxCheck)
           viewer.setElementArgb(i, argb);
         return true;
       }
     }
-    for (int i = JmolConstants.altElementMax; --i >= JmolConstants.firstIsotope;) {
+    for (int i = Elements.altElementMax; --i >= JmolConstants.firstIsotope;) {
       if (str
-          .equalsIgnoreCase("_" + JmolConstants.altElementSymbolFromIndex(i))) {
+          .equalsIgnoreCase("_" + Elements.altElementSymbolFromIndex(i))) {
         if (!isSyntaxCheck)
-          viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
+          viewer.setElementArgb(Elements.altElementNumberFromIndex(i),
               argb);
         return true;
       }
       if (str
-          .equalsIgnoreCase("_" + JmolConstants.altIsotopeSymbolFromIndex(i))) {
+          .equalsIgnoreCase("_" + Elements.altIsotopeSymbolFromIndex(i))) {
         if (!isSyntaxCheck)
-          viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
+          viewer.setElementArgb(Elements.altElementNumberFromIndex(i),
               argb);
         return true;
       }
@@ -6892,10 +6894,10 @@ public class ScriptEvaluator {
     }
     if (isSyntaxCheck || shapeType < 0)
       return;
-    typeMask = (shapeType == JmolConstants.SHAPE_STRUTS ? JmolConstants.BOND_STRUT
-        : shapeType == JmolConstants.SHAPE_HSTICKS ? JmolConstants.BOND_HYDROGEN_MASK
-            : shapeType == JmolConstants.SHAPE_SSSTICKS ? JmolConstants.BOND_SULFUR_MASK
-                : shapeType == JmolConstants.SHAPE_STICKS ? JmolConstants.BOND_COVALENT_MASK
+    typeMask = (shapeType == JmolConstants.SHAPE_STRUTS ? JmolEdge.BOND_STRUT
+        : shapeType == JmolConstants.SHAPE_HSTICKS ? JmolEdge.BOND_HYDROGEN_MASK
+            : shapeType == JmolConstants.SHAPE_SSSTICKS ? JmolEdge.BOND_SULFUR_MASK
+                : shapeType == JmolConstants.SHAPE_STICKS ? JmolEdge.BOND_COVALENT_MASK
                     : 0);
     if (typeMask == 0) {
       loadShape(shapeType);
@@ -6943,7 +6945,7 @@ public class ScriptEvaluator {
           bs);
     if (typeMask != 0)
       setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-          JmolConstants.BOND_COVALENT_MASK));
+          JmolEdge.BOND_COVALENT_MASK));
   }
 
   private void colorShape(int shapeType, int typeMask, int argb,
@@ -6958,7 +6960,7 @@ public class ScriptEvaluator {
       setShapeTranslucency(shapeType, "", translucency, translucentLevel, bs);
     if (typeMask != 0)
       setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-          JmolConstants.BOND_COVALENT_MASK));
+          JmolEdge.BOND_COVALENT_MASK));
   }
   
   private void setShapeTranslucency(int shapeType, String prefix,
@@ -7046,7 +7048,7 @@ public class ScriptEvaluator {
       // vdw for now
       data[0] = dataType;
       data[1] = dataString.replace(';', '\n');
-      int n = JmolConstants.elementNumberMax;
+      int n = Elements.elementNumberMax;
       int[] eArray = new int[n + 1];
       for (int ie = 1; ie <= n; ie++)
         eArray[ie] = ie;
@@ -8061,10 +8063,10 @@ public class ScriptEvaluator {
     // wireframe will not operate on STRUTS even though they are
     // a form of bond order (see BondIteratoSelected)
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolConstants.BOND_STRUT));
+        JmolEdge.BOND_STRUT));
     setShapeSize(JmolConstants.SHAPE_STICKS, 0);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolConstants.BOND_COVALENT_MASK));
+        JmolEdge.BOND_COVALENT_MASK));
     // also need to turn off backbones, ribbons, strands, cartoons
     for (int shapeType = JmolConstants.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --shapeType >= 0;)
       if (shapeType != JmolConstants.SHAPE_MEASURES)
@@ -9528,17 +9530,17 @@ public class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolConstants.BOND_COVALENT_MASK));
+        JmolEdge.BOND_COVALENT_MASK));
     setShapeSize(JmolConstants.SHAPE_STICKS, mad);
   }
 
   private void ssbond() throws ScriptException {
     int mad = getMadParameter();
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolConstants.BOND_SULFUR_MASK));
+        JmolEdge.BOND_SULFUR_MASK));
     setShapeSize(JmolConstants.SHAPE_STICKS, mad);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolConstants.BOND_COVALENT_MASK));
+        JmolEdge.BOND_COVALENT_MASK));
   }
 
   private void struts() throws ScriptException {
@@ -9547,10 +9549,10 @@ public class ScriptEvaluator {
     if (defOn)
       mad = (int) (viewer.getStrutDefaultRadius() * 2000f);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolConstants.BOND_STRUT));
+        JmolEdge.BOND_STRUT));
     setShapeSize(JmolConstants.SHAPE_STICKS, mad);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolConstants.BOND_COVALENT_MASK));
+        JmolEdge.BOND_COVALENT_MASK));
   }
 
   private void hbond(boolean isCommand) throws ScriptException {
@@ -9569,10 +9571,10 @@ public class ScriptEvaluator {
     }
     int mad = getMadParameter();
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolConstants.BOND_HYDROGEN_MASK));
+        JmolEdge.BOND_HYDROGEN_MASK));
     setShapeSize(JmolConstants.SHAPE_STICKS, mad);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolConstants.BOND_COVALENT_MASK));
+        JmolEdge.BOND_COVALENT_MASK));
   }
 
   private void configuration() throws ScriptException {
@@ -9595,7 +9597,7 @@ public class ScriptEvaluator {
       return;
     boolean addHbonds = viewer.hasCalculatedHBonds(bsAtoms);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolConstants.BOND_HYDROGEN_MASK));
+        JmolEdge.BOND_HYDROGEN_MASK));
     setShapeSize(JmolConstants.SHAPE_STICKS, 0, bsAtoms);
     if (addHbonds)
       viewer.autoHbond(bsAtoms, bsAtoms);
@@ -9908,7 +9910,7 @@ public class ScriptEvaluator {
           return;
         n = viewer.calculateStruts(bs, bs2);
         if (n > 0)
-          colorShape(JmolConstants.SHAPE_STRUTS, JmolConstants.BOND_STRUT,
+          colorShape(JmolConstants.SHAPE_STRUTS, JmolEdge.BOND_STRUT,
               0x0FFFFFF, "translucent", 0.5f, null);
         showString(GT._("{0} struts added", n));
         return;

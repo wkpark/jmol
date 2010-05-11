@@ -27,6 +27,7 @@ package org.jmol.util;
 
 import java.util.BitSet;
 
+
 public class Parser {
 
   /// general static string-parsing class ///

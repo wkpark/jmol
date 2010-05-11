@@ -42,11 +42,12 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Elements;
 import org.jmol.util.Escape;
-
 import org.jmol.util.Logger;
-import org.jmol.util.Measure;
 import org.jmol.util.Parser;
+
+import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
@@ -191,7 +192,7 @@ abstract public class AtomCollection {
   }
 
   String getElementName(int i) {
-      return JmolConstants.elementNameFromNumber(atoms[i]
+      return Elements.elementNameFromNumber(atoms[i]
           .getAtomicAndIsotopeNumber());
   }
 

@@ -32,6 +32,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import netscape.javascript.JSObject;
+
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 

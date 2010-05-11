@@ -29,7 +29,7 @@ import java.awt.*;
 import java.net.URL;
 
 import org.jmol.i18n.GT;
-import org.jmol.util.Logger; 
+import org.jmol.util.Logger;
 
 public class AppletWrapper extends Applet {
 

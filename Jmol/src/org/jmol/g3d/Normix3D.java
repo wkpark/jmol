@@ -30,6 +30,7 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 import java.util.Random;
 import java.util.BitSet;
+
 import org.jmol.util.Logger;
 
 /**

@@ -52,8 +52,8 @@ import javax.swing.filechooser.FileSystemView;
 import org.jmol.api.JmolViewer;
 import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
-import org.jmol.util.TextFormat;
 import org.jmol.util.Parser;
+import org.jmol.util.TextFormat;
 
 public class WebExport extends JPanel implements WindowListener {
 

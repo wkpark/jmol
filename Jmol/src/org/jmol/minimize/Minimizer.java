@@ -28,6 +28,7 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.jmol.api.JmolEdge;
 import org.jmol.api.MinimizerInterface;
 import org.jmol.i18n.GT;
 import org.jmol.minimize.forcefield.ForceField;
@@ -36,11 +37,11 @@ import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Elements;
 import org.jmol.util.Escape;
-
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.viewer.JmolConstants;
+
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
@@ -279,7 +280,7 @@ public class Minimizer implements MinimizerInterface {
             case 2:
             case 3:
               break;
-            case JmolConstants.BOND_AROMATIC:
+            case JmolEdge.BOND_AROMATIC:
               bondOrder = 5;
               break;
             default:
@@ -530,7 +531,7 @@ Token[keyword(0x880001) value=")"]
         s = s.toUpperCase();
         search = tokenTypes[TOKEN_ELEMENT_AROMATIC];
       }
-      elemNo = JmolConstants.elementNumberFromSymbol(s, false);
+      elemNo = Elements.elementNumberFromSymbol(s, false);
     }
     if (elemNo > elemnoMax)
       return null;

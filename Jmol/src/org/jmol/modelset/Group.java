@@ -23,8 +23,8 @@
  */
 package org.jmol.modelset;
 
-import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;

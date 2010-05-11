@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+
 public class SurfaceFileTyper {
 
   /* moved to util because drag-drop can then determine an isosurface file 

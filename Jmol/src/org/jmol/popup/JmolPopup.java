@@ -25,6 +25,7 @@ package org.jmol.popup;
 
 import org.jmol.api.*;
 import org.jmol.i18n.GT;
+import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
@@ -289,17 +290,17 @@ public class JmolPopup {
       return;
     for (int i = elementsPresentBitSet.nextSetBit(0); i >= 0; i = elementsPresentBitSet
         .nextSetBit(i + 1)) {
-      String elementName = JmolConstants.elementNameFromNumber(i);
-      String elementSymbol = JmolConstants.elementSymbolFromNumber(i);
+      String elementName = Elements.elementNameFromNumber(i);
+      String elementSymbol = Elements.elementSymbolFromNumber(i);
       String entryName = elementSymbol + " - " + elementName;
       addMenuItem(menu, entryName, "SELECT " + elementName, null);
     }
-    for (int i = JmolConstants.firstIsotope; i < JmolConstants.altElementMax; ++i) {
-      int n = JmolConstants.elementNumberMax + i;
+    for (int i = JmolConstants.firstIsotope; i < Elements.altElementMax; ++i) {
+      int n = Elements.elementNumberMax + i;
       if (elementsPresentBitSet.get(n)) {
-        n = JmolConstants.altElementNumberFromIndex(i);
-        String elementName = JmolConstants.elementNameFromNumber(n);
-        String elementSymbol = JmolConstants.elementSymbolFromNumber(n);
+        n = Elements.altElementNumberFromIndex(i);
+        String elementName = Elements.elementNameFromNumber(n);
+        String elementSymbol = Elements.elementSymbolFromNumber(n);
         String entryName = elementSymbol + " - " + elementName;
         addMenuItem(menu, entryName, "SELECT " + elementName, null);
       }

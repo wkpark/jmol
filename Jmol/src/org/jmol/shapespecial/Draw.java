@@ -36,8 +36,8 @@ import javax.vecmath.Vector3f;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
-
 import org.jmol.util.Logger;
+
 import org.jmol.util.Measure;
 import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;

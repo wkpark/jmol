@@ -30,6 +30,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+
 /*
  * Standard UNIT quaternion math -- for rotation.
  * 

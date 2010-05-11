@@ -54,6 +54,7 @@ package org.jmol.symmetry;
 
 import javax.vecmath.Point3i;
 import javax.vecmath.Matrix4f;
+
 import org.jmol.util.Logger;
 
 class HallInfo {

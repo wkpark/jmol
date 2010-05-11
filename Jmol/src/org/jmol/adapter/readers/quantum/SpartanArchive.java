@@ -26,13 +26,13 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.Parser;
 
 import java.util.Vector;
 import java.util.Hashtable;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 class SpartanArchive {
 

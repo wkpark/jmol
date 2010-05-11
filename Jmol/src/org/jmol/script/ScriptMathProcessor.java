@@ -38,6 +38,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.JmolEdge;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.MeasurementData;
@@ -2103,7 +2104,7 @@ class ScriptMathProcessor {
     float min = Integer.MIN_VALUE, max = Integer.MAX_VALUE;
     float fmin = 0, fmax = Float.MAX_VALUE;
 
-    int order = JmolConstants.BOND_ORDER_ANY;
+    int order = JmolEdge.BOND_ORDER_ANY;
     BitSet atoms1 = null;
     BitSet atoms2 = null;
     boolean haveDecimal = false;
@@ -2125,10 +2126,10 @@ class ScriptMathProcessor {
       case Token.string:
         String type = ScriptVariable.sValue(var);
         if (type.equalsIgnoreCase("hbond"))
-          order = JmolConstants.BOND_HYDROGEN_MASK;
+          order = JmolEdge.BOND_HYDROGEN_MASK;
         else
           order = JmolConstants.getBondOrderFromString(type);
-        if (order == JmolConstants.BOND_ORDER_NULL)
+        if (order == JmolEdge.BOND_ORDER_NULL)
           return false;
         break;
       case Token.decimal:

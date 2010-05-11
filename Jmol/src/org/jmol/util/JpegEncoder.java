@@ -36,6 +36,7 @@ import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
 
+
 /*
  * JpegEncoder - The JPEG main program which performs a jpeg compression of
  * an image.

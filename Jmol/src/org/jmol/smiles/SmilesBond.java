@@ -24,10 +24,13 @@
 
 package org.jmol.smiles;
 
+import org.jmol.api.JmolEdge;
+import org.jmol.api.JmolNode;
+
 /**
  * Bond in a SmilesMolecule
  */
-public class SmilesBond {
+public class SmilesBond implements JmolEdge {
 
   // Bond orders
   public final static int TYPE_UNKNOWN = -1;
@@ -116,6 +119,34 @@ public class SmilesBond {
   
   public SmilesAtom getOtherAtom(SmilesAtom a) {
     return (atom1 == a ? atom2 : atom1);
+  }
+
+  public int getAtomIndex1() {
+    return atom1.index;
+  }
+
+  public int getAtomIndex2() {
+    return atom2.index;
+  }
+
+  public int getCovalentOrder() {
+    return bondType;
+  }
+
+  public int getOrder() {
+    return bondType;
+  }
+
+  public JmolNode getOtherAtom(JmolNode atom) {
+    return (atom == atom1 ? atom2 : atom == atom2 ? atom1 : null);
+  }
+
+  public boolean isCovalent() {
+    return true;
+  }
+
+  public int getValence() {
+    return (bondType & 7);
   }
   
 }

@@ -27,9 +27,9 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolFileReaderInterface;
 import org.jmol.util.CompoundDocument;
+import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.util.ZipUtil;
-import org.jmol.util.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;

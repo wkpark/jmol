@@ -30,8 +30,8 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Logger;
 
 import java.util.BitSet;
 import java.util.Hashtable;

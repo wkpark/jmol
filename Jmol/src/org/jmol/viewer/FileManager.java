@@ -26,11 +26,11 @@ package org.jmol.viewer;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.CompoundDocument;
+import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.util.ZipUtil;
 
-import org.jmol.util.Logger;
 
 import org.jmol.api.JmolFileReaderInterface;
 import org.jmol.api.JmolViewer;

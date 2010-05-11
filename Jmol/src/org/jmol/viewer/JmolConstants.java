@@ -24,7 +24,9 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.api.JmolEdge;
 import org.jmol.script.Token;
+import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 
 import java.io.BufferedInputStream;
@@ -352,41 +354,6 @@ final public class JmolConstants {
     return -1;
   }
 
-  /**
-   * Extended Bond Definition Types
-   *
-   */
-
-  // | new connection              1 << 15
-  //  ||| | Hydrogen bond 0x3800   F << 11
-  //       |Stereo 0x400           1 << 10  NOT IMPLEMENTED
-  //        |Aromatic 0x200        1 << 9
-  //         |Sulfur-Sulfur 0x100  1 << 8
-  //           ||| Partial n       7 << 5
-  //              | |||| Partial m 0x1F
-  //       ||| |||| |||| Covalent 0x3FF
-  // 0011 1111 1111 1111 ANY
-  // 0111 1111 1111 1111 NULL
-  
-  
-  public final static int BOND_ORDER_ANY     = 0xFFFF;
-  public final static int BOND_ORDER_NULL    = 0x1FFFF;
-
-  public final static int BOND_NEW           = 0x20000;
-  public static final int BOND_STRUT         = 0x8000;
-  public final static int BOND_HBOND_SHIFT   = 11;
-  public final static int BOND_HYDROGEN_MASK = 0xF << 11;
-  public final static int BOND_H_REGULAR     = 1 << 11;
-  public final static int BOND_H_CALC_MASK   = 0xE << 11; // excludes regular
-  public final static int BOND_H_CALC        = 2 << 11;
-  public final static int BOND_H_PLUS_2      = 3 << 11;
-  public final static int BOND_H_PLUS_3      = 4 << 11;
-  public final static int BOND_H_PLUS_4      = 5 << 11;
-  public final static int BOND_H_PLUS_5      = 6 << 11;
-  public final static int BOND_H_MINUS_3     = 7 << 11;
-  public final static int BOND_H_MINUS_4     = 8 << 11;
-  public final static int BOND_H_NUCLEOTIDE  = 9 << 11;
-  
   public final static int[] argbsHbondType =
   {
     0xFFFF69B4, // 0  unused - pink
@@ -402,34 +369,10 @@ final public class JmolConstants {
   };
 
   public static int getArgbHbondType(int order) {
-    int argbIndex = ((order & BOND_HYDROGEN_MASK) >> BOND_HBOND_SHIFT);
+    int argbIndex = ((order & JmolEdge.BOND_HYDROGEN_MASK) >> JmolEdge.BOND_HBOND_SHIFT);
     return argbsHbondType[argbIndex];
   }
 
-  public final static int BOND_STEREO_MASK   = 0x400; // 1 << 10
-  public final static int BOND_STEREO_NEAR   = 0x401; // for JME reader
-  public final static int BOND_STEREO_FAR    = 0x402; // for JME reader
-
-  public final static int BOND_AROMATIC_MASK   = 0x200; // 1 << 9
-  public final static int BOND_AROMATIC_SINGLE = 0x201; // same as single
-  public final static int BOND_AROMATIC_DOUBLE = 0x202; // same as double
-  public final static int BOND_AROMATIC        = 0x203; // same as partial 2.1
-
-  public final static int BOND_SULFUR_MASK   = 0x100; // 1 << 8; will be incremented
-
-  public final static int BOND_PARTIAL_MASK  = 0xE0;  // 7 << 5;
-  public final static int BOND_PARTIAL01     = 0x21;
-  public final static int BOND_PARTIAL12     = 0x42;
-  public final static int BOND_PARTIAL23     = 0x61;
-  public final static int BOND_PARTIAL32     = 0x64;
-  
-  public final static int BOND_COVALENT_MASK = 0x3FF; // MUST be numerically correct
-  public final static int BOND_COVALENT_SINGLE = 1;   
-  public final static int BOND_COVALENT_DOUBLE = 2;   
-  public final static int BOND_COVALENT_TRIPLE = 3;   
-  public final static int BOND_COVALENT_QUADRUPLE = 4;
-  public final static int BOND_ORDER_UNSPECIFIED = 7;
-  
   private final static String[] bondOrderNames = {
     "single", "double", "triple", "quadruple", 
     "aromatic", "struts",
@@ -449,12 +392,12 @@ final public class JmolConstants {
   };
 
   private final static int[] bondOrderValues = {
-    BOND_COVALENT_SINGLE, BOND_COVALENT_DOUBLE, BOND_COVALENT_TRIPLE, BOND_COVALENT_QUADRUPLE,
-    BOND_AROMATIC, BOND_STRUT,
-    BOND_H_REGULAR, BOND_PARTIAL01, BOND_PARTIAL12, 
-    BOND_PARTIAL23, BOND_PARTIAL32, 
-    BOND_AROMATIC_SINGLE, BOND_AROMATIC_DOUBLE,
-    BOND_ORDER_UNSPECIFIED
+    JmolEdge.BOND_COVALENT_SINGLE, JmolEdge.BOND_COVALENT_DOUBLE, JmolEdge.BOND_COVALENT_TRIPLE, JmolEdge.BOND_COVALENT_QUADRUPLE,
+    JmolEdge.BOND_AROMATIC, JmolEdge.BOND_STRUT,
+    JmolEdge.BOND_H_REGULAR, JmolEdge.BOND_PARTIAL01, JmolEdge.BOND_PARTIAL12, 
+    JmolEdge.BOND_PARTIAL23, JmolEdge.BOND_PARTIAL32, 
+    JmolEdge.BOND_AROMATIC_SINGLE, JmolEdge.BOND_AROMATIC_DOUBLE,
+    JmolEdge.BOND_ORDER_UNSPECIFIED
   };
 
   public final static int getBondOrderFromString(String bondOrderString) {
@@ -464,7 +407,7 @@ final public class JmolConstants {
     }
     if (bondOrderString.toLowerCase().indexOf("partial ") == 0)
       return getPartialBondOrderFromInteger(modelValue(bondOrderString.substring(8).trim()));
-    return BOND_ORDER_NULL;
+    return JmolEdge.BOND_ORDER_NULL;
   }
   
   /**
@@ -479,7 +422,7 @@ final public class JmolConstants {
   }
 
   public final static int getPartialBondOrder(int order) {
-    return ((order & ~BOND_NEW) >> 5);
+    return ((order & ~JmolEdge.BOND_NEW) >> 5);
   }
   
   public final static int getPartialBondDotted(int order) {
@@ -494,27 +437,27 @@ final public class JmolConstants {
         fOrder = -fOrder;
       }
     }
-    return BOND_ORDER_NULL;
+    return JmolEdge.BOND_ORDER_NULL;
   }
   
   public final static String getBondOrderNameFromOrder(int order) {
-    order &= ~BOND_NEW;
+    order &= ~JmolEdge.BOND_NEW;
     switch (order) {
-    case BOND_ORDER_ANY:
-    case BOND_ORDER_NULL:
+    case JmolEdge.BOND_ORDER_ANY:
+    case JmolEdge.BOND_ORDER_NULL:
       return "";
-    case BOND_STRUT:
+    case JmolEdge.BOND_STRUT:
       return "strut";
-    case BOND_COVALENT_SINGLE:
+    case JmolEdge.BOND_COVALENT_SINGLE:
       return "single";
-    case BOND_COVALENT_DOUBLE:
+    case JmolEdge.BOND_COVALENT_DOUBLE:
       return "double";
     }
-    if ((order & BOND_PARTIAL_MASK) != 0)
+    if ((order & JmolEdge.BOND_PARTIAL_MASK) != 0)
       return "partial " + getBondOrderNumberFromOrder(order);
-    if ((order & BOND_HYDROGEN_MASK) != 0)
+    if ((order & JmolEdge.BOND_HYDROGEN_MASK) != 0)
       return "hbond";
-    if ((order & BOND_SULFUR_MASK) != 0)
+    if ((order & JmolEdge.BOND_SULFUR_MASK) != 0)
       return "single";
     for (int i = bondOrderValues.length; --i >= 0;) {
       if (bondOrderValues[i] == order)
@@ -551,14 +494,14 @@ final public class JmolConstants {
    * @return a string representation to preserve float n.m
    */
   public final static String getBondOrderNumberFromOrder(int order) {
-    order &= ~BOND_NEW;
-    if (order == BOND_ORDER_NULL || order == BOND_ORDER_ANY)
+    order &= ~JmolEdge.BOND_NEW;
+    if (order == JmolEdge.BOND_ORDER_NULL || order == JmolEdge.BOND_ORDER_ANY)
       return "0"; // I don't think this is possible
-    if ((order & BOND_HYDROGEN_MASK) != 0)
+    if ((order & JmolEdge.BOND_HYDROGEN_MASK) != 0)
       return "1";
-    if ((order & BOND_SULFUR_MASK) != 0)
+    if ((order & JmolEdge.BOND_SULFUR_MASK) != 0)
       return "1";
-    if ((order & BOND_PARTIAL_MASK) != 0)
+    if ((order & JmolEdge.BOND_PARTIAL_MASK) != 0)
       return (order >> 5) + "." + (order & 0x1F);
     for (int i = bondOrderValues.length; --i >= 0; ) {
       if (bondOrderValues[i] == order)
@@ -579,413 +522,6 @@ final public class JmolConstants {
   public final static int BACKLIT = Token.backlit;
   public final static int FULLYLIT = Token.fullylit;
 
-  /**
-   * The default elementSymbols. Presumably the only entry which may cause
-   * confusion is element 0, whose symbol we have defined as "Xx". 
-   */
-  private final static String[] elementSymbols = {
-    "Xx", // 0
-    "H",  // 1
-    "He", // 2
-    "Li", // 3
-    "Be", // 4
-    "B",  // 5
-    "C",  // 6
-    "N",  // 7
-    "O",  // 8
-    "F",  // 9
-    "Ne", // 10
-    "Na", // 11
-    "Mg", // 12
-    "Al", // 13
-    "Si", // 14
-    "P",  // 15
-    "S",  // 16
-    "Cl", // 17
-    "Ar", // 18
-    "K",  // 19
-    "Ca", // 20
-    "Sc", // 21
-    "Ti", // 22
-    "V",  // 23
-    "Cr", // 24
-    "Mn", // 25
-    "Fe", // 26
-    "Co", // 27
-    "Ni", // 28
-    "Cu", // 29
-    "Zn", // 30
-    "Ga", // 31
-    "Ge", // 32
-    "As", // 33
-    "Se", // 34
-    "Br", // 35
-    "Kr", // 36
-    "Rb", // 37
-    "Sr", // 38
-    "Y",  // 39
-    "Zr", // 40
-    "Nb", // 41
-    "Mo", // 42
-    "Tc", // 43
-    "Ru", // 44
-    "Rh", // 45
-    "Pd", // 46
-    "Ag", // 47
-    "Cd", // 48
-    "In", // 49
-    "Sn", // 50
-    "Sb", // 51
-    "Te", // 52
-    "I",  // 53
-    "Xe", // 54
-    "Cs", // 55
-    "Ba", // 56
-    "La", // 57
-    "Ce", // 58
-    "Pr", // 59
-    "Nd", // 60
-    "Pm", // 61
-    "Sm", // 62
-    "Eu", // 63
-    "Gd", // 64
-    "Tb", // 65
-    "Dy", // 66
-    "Ho", // 67
-    "Er", // 68
-    "Tm", // 69
-    "Yb", // 70
-    "Lu", // 71
-    "Hf", // 72
-    "Ta", // 73
-    "W",  // 74
-    "Re", // 75
-    "Os", // 76
-    "Ir", // 77
-    "Pt", // 78
-    "Au", // 79
-    "Hg", // 80
-    "Tl", // 81
-    "Pb", // 82
-    "Bi", // 83
-    "Po", // 84
-    "At", // 85
-    "Rn", // 86
-    "Fr", // 87
-    "Ra", // 88
-    "Ac", // 89
-    "Th", // 90
-    "Pa", // 91
-    "U",  // 92
-    "Np", // 93
-    "Pu", // 94
-    "Am", // 95
-    "Cm", // 96
-    "Bk", // 97
-    "Cf", // 98
-    "Es", // 99
-    "Fm", // 100
-    "Md", // 101
-    "No", // 102
-    "Lr", // 103
-    "Rf", // 104
-    "Db", // 105
-    "Sg", // 106
-    "Bh", // 107
-    "Hs", // 108
-    "Mt", // 109
-    /*
-    "Ds", // 110
-    "Uuu",// 111
-    "Uub",// 112
-    "Uut",// 113
-    "Uuq",// 114
-    "Uup",// 115
-    "Uuh",// 116
-    "Uus",// 117
-    "Uuo",// 118
-    */
-  };
-
-  /**
-   * one larger than the last elementNumber, same as elementSymbols.length
-   */
-  public final static int elementNumberMax = elementSymbols.length;
-
-  private static Hashtable htElementMap;
-
-  /**
-   * @param elementSymbol First char must be upper case, second char accepts upper or lower case
-   * @param isSilent TODO
-   * @return elementNumber = atomicNumber + IsotopeNumber*128
-   */
-  public final static short elementNumberFromSymbol(String elementSymbol, boolean isSilent) {
-    if (htElementMap == null) {
-      Hashtable map = new Hashtable();
-      for (int elementNumber = elementNumberMax; --elementNumber >= 0;) {
-        String symbol = elementSymbols[elementNumber];
-        Integer boxed = new Integer(elementNumber);
-        map.put(symbol, boxed);
-        if (symbol.length() == 2)
-          map.put(symbol.toUpperCase(), boxed);
-      }
-      for (int i = altElementMax; --i >= firstIsotope;) {
-        String symbol = altElementSymbols[i];
-        Integer boxed = new Integer(altElementNumbers[i]);
-        map.put(symbol, boxed);
-        if (symbol.length() == 2)
-          map.put(symbol.toUpperCase(), boxed);
-      }
-      htElementMap = map;
-    }
-    if (elementSymbol == null)
-      return 0;
-    Integer boxedAtomicNumber = (Integer) htElementMap.get(elementSymbol);
-    if (boxedAtomicNumber != null)
-      return (short) boxedAtomicNumber.intValue();
-    if (!isSilent)
-      Logger.error("'" + elementSymbol + "' is not a recognized symbol");
-    return 0;
-  }
-  
-  /**
-   * @param elementNumber may be atomicNumber + isotopeNumber*128
-   * @return elementSymbol
-   */
-  public final static String elementSymbolFromNumber(int elementNumber) {
-    //Isotopes as atomicNumber + IsotopeNumber * 128
-    if (elementNumber >= elementNumberMax) {
-      for (int j = altElementMax; --j >= 0;)
-        if (elementNumber == altElementNumbers[j])
-          return altElementSymbols[j];
-      elementNumber %= 128;
-    }
-    if (elementNumber < 0 || elementNumber >= elementNumberMax)
-      elementNumber = 0;
-    return elementSymbols[elementNumber];
-  }
-
-  /**
-   * @param elementNumber may be atomicNumber + isotopeNumber*128
-   * @return elementName
-   */
-  public final static String elementNameFromNumber(int elementNumber) {
-    //Isotopes as atomicNumber + IsotopeNumber * 128
-    if (elementNumber >= elementNumberMax) {
-      for (int j = altElementMax; --j >= 0;)
-        if (elementNumber == altElementNumbers[j])
-          return altElementNames[j];
-      elementNumber %= 128;
-    }
-    if (elementNumber < 0 || elementNumber >= elementNumberMax)
-      elementNumber = 0;
-    return elementNames[elementNumber];
-  }
-
-  private final static String elementNames[] = {
-    "unknown",       //  0
-    "hydrogen",      //  1
-    "helium",        //  2
-    "lithium",       //  3
-    "beryllium",     //  4
-    "boron",         //  5
-    "carbon",        //  6
-    "nitrogen",      //  7
-    "oxygen",        //  8
-    "fluorine",      //  9
-    "neon",          // 10
-    "sodium",        // 11
-    "magnesium",     // 12
-    "aluminum",      // 13 aluminium
-    "silicon",       // 14
-    "phosphorus",    // 15
-    "sulfur",        // 16 sulphur
-    "chlorine",      // 17
-    "argon",         // 18
-    "potassium",     // 19
-    "calcium",       // 20
-    "scandium",      // 21
-    "titanium",      // 22
-    "vanadium",      // 23
-    "chromium",      // 24
-    "manganese",     // 25
-    "iron",          // 26
-    "cobalt",        // 27
-    "nickel",        // 28
-    "copper",        // 29
-    "zinc",          // 30
-    "gallium",       // 31
-    "germanium",     // 32
-    "arsenic",       // 33
-    "selenium",      // 34
-    "bromine",       // 35
-    "krypton",       // 36
-    "rubidium",      // 37
-    "strontium",     // 38
-    "yttrium",       // 39
-    "zirconium",     // 40
-    "niobium",       // 41
-    "molybdenum",    // 42
-    "technetium",    // 43
-    "ruthenium",     // 44
-    "rhodium",       // 45
-    "palladium",     // 46
-    "silver",        // 47
-    "cadmium",       // 48
-    "indium",        // 49
-    "tin",           // 50
-    "antimony",      // 51
-    "tellurium",     // 52
-    "iodine",        // 53
-    "xenon",         // 54
-    "cesium",        // 55  caesium
-    "barium",        // 56
-    "lanthanum",     // 57
-    "cerium",        // 58
-    "praseodymium",  // 59
-    "neodymium",     // 60
-    "promethium",    // 61
-    "samarium",      // 62
-    "europium",      // 63
-    "gadolinium",    // 64
-    "terbium",       // 66
-    "dysprosium",    // 66
-    "holmium",       // 67
-    "erbium",        // 68
-    "thulium",       // 69
-    "ytterbium",     // 70
-    "lutetium",      // 71
-    "hafnium",       // 72
-    "tantalum",      // 73
-    "tungsten",      // 74
-    "rhenium",       // 75
-    "osmium",        // 76
-    "iridium",       // 77
-    "platinum",      // 78
-    "gold",          // 79
-    "mercury",       // 80
-    "thallium",      // 81
-    "lead",          // 82
-    "bismuth",       // 83
-    "polonium",      // 84
-    "astatine",      // 85
-    "radon",         // 86
-    "francium",      // 87
-    "radium",        // 88
-    "actinium",      // 89
-    "thorium",       // 90
-    "protactinium",  // 91
-    "uranium",       // 92
-    "neptunium",     // 93
-    "plutonium",     // 94
-    "americium",     // 95
-    "curium",        // 96
-    "berkelium",     // 97
-    "californium",   // 98
-    "einsteinium",   // 99
-    "fermium",       // 100
-    "mendelevium",   // 101
-    "nobelium",      // 102
-    "lawrencium",    // 103
-    "rutherfordium", // 104
-    "dubnium",       // 105
-    "seaborgium",    // 106
-    "bohrium",       // 107
-    "hassium",       // 108
-    "meitnerium"     // 109
-  };
-
-  /**
-   * @param i index into altElementNames
-   * @return elementName
-   */
-  public final static String altElementNameFromIndex(int i) {
-    return altElementNames[i];
-  }
-  
-  /**
-   * @param i index into altElementNumbers
-   * @return elementNumber (may be atomicNumber + isotopeNumber*128)
-   */
-  public final static short altElementNumberFromIndex(int i) {
-    return altElementNumbers[i];
-  }
-  
-  /**
-   * @param i index into altElementSymbols
-   * @return elementSymbol
-   */
-  public final static String altElementSymbolFromIndex(int i) {
-    return altElementSymbols[i];
-  }
-  
-  /**
-   * @param i index into altElementSymbols
-   * @return 2H
-   */
-  public final static String altIsotopeSymbolFromIndex(int i) {
-    int code = altElementNumbers[i]; 
-    return (code >> 7) + elementSymbolFromNumber(code & 127);
-  }
-  
-  /**
-   * @param atomicAndIsotopeNumber (may be atomicNumber + isotopeNumber*128)
-   * @return  index into altElementNumbers
-   */
-  public final static int altElementIndexFromNumber(int atomicAndIsotopeNumber) {
-    for (int i = 0; i < altElementMax; i++)
-      if (altElementNumbers[i] == atomicAndIsotopeNumber)
-        return i;
-    return 0;
-  }
-    
-  // add as we go
-  private final static String naturalIsotopes = "1H,12C,14N,";
-
-  public final static boolean isNaturalIsotope(String isotopeSymbol) {
-    return (naturalIsotopes.indexOf(isotopeSymbol + ",") >= 0);      
-  }
-
-  private final static short[] altElementNumbers = {
-    0,
-    13,
-    16,
-    55,
-    (2 << 7) + 1, // D = 2*128 + 1 <-- firstIsotope
-    (3 << 7) + 1, // T = 3*128 + 1
-    (11 << 7) + 6, // 11C
-    (13 << 7) + 6, // 13C
-    (14 << 7) + 6, // 14C
-    (15 << 7) + 7, // 15N
-  };
-
-  
-  private final static String[] altElementSymbols = {
-    "Xx",
-    "Al",
-    "S",
-    "Cs",
-    "D",
-    "T",
-    "11C",
-    "13C",
-    "14C",
-    "15N",
-  };
-
-  private final static String[] altElementNames = {
-    "dummy",
-    "aluminium",
-    "sulphur",
-    "caesium",
-    "deuterium",
-    "tritium",
-    "",
-    "",
-    "",
-    "",
-  };
-  
   public final static int[] altArgbsCpk = {
     0xFFFF1493, // Xx 0
     0xFFBFA6A6, // Al 13
@@ -1004,31 +540,6 @@ final public class JmolConstants {
    * first entry of an actual isotope int the altElementSymbols, altElementNames, altElementNumbers arrays
    */
   public final static int firstIsotope = 4;
-  
-  /**
-   * length of the altElementSymbols, altElementNames, altElementNumbers arrays
-   */
-  public final static int altElementMax = altElementNumbers.length;
-
-  /*
-   * about Van der Waals constants (Bob Hanson, 1/7/2010)
-   * 
-   *  The problem is that the "Jmol" set is appropriate only for PDB structures with
-   *  no H atoms. The VDW radius for atoms such as C, N, and O are inflated so as to 
-   *  make up for this deficit. The origin is early RasMol, but then these numbers have
-   *  been augmented and tweaked to become a set of special values specific to Jmol.
-   * 
-   *  As a serious viewer and analysis tool, this is an issue.
-   * 
-   *  Starting with Jmol 11.9.17 I propose better method to determine VDW radii:
-   *  
-   *  1) set the defaultVDW parameter to "auto"
-   *  2) allow users to override that by specifying their own setting
-   *  3) allow methods to override that by NOJMOL (H atoms will be added later) 
-   * 
-   * 
-   * 
-   */
   
   public final static int VDW_UNKNOWN = -1;
   public final static int VDW_JMOL = 0;        // OpenBabel-1.0
@@ -1853,13 +1364,13 @@ final public class JmolConstants {
   static {
     // if the length of these tables is all the same then the
     // java compiler should eliminate all of this code.
-    if ((elementNames.length != elementNumberMax) ||
-        (vanderwaalsMars.length / 4 != elementNumberMax) ||
-        (covalentMars.length  != elementNumberMax) ||
-        (argbsCpk.length != elementNumberMax)) {
+    if ((Elements.elementNames.length != Elements.elementNumberMax) ||
+        (vanderwaalsMars.length / 4 != Elements.elementNumberMax) ||
+        (covalentMars.length  != Elements.elementNumberMax) ||
+        (argbsCpk.length != Elements.elementNumberMax)) {
       Logger.error("ERROR!!! Element table length mismatch:" +
-                         "\n elementSymbols.length=" + elementSymbols.length +
-                         "\n elementNames.length=" + elementNames.length +
+                         "\n elementSymbols.length=" + Elements.elementSymbols.length +
+                         "\n elementNames.length=" + Elements.elementNames.length +
                          "\n vanderwaalsMars.length=" + vanderwaalsMars.length+
                          "\n covalentMars.length=" +
                          covalentMars.length +
@@ -2041,7 +1552,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   };
 
   public final static short FORMAL_CHARGE_COLIX_RED =
-    (short)elementSymbols.length;
+    (short)Elements.elementSymbols.length;
   public final static short FORMAL_CHARGE_COLIX_WHITE =
     (short)(FORMAL_CHARGE_COLIX_RED + 4);
   public final static short FORMAL_CHARGE_COLIX_BLUE =

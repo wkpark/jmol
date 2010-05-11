@@ -25,9 +25,9 @@ package org.jmol.jvxl.readers;
 
 import javax.vecmath.Point4f;
 import java.io.BufferedReader;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.Escape;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.JvxlCoder;
 

@@ -29,6 +29,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+
 //import java.io.RandomAccessFile;
 
 /* a basic binary file reader (extended by CompoundDocument). 

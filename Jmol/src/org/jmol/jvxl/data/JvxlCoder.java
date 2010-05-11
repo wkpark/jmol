@@ -28,9 +28,9 @@ import java.util.BitSet;
 import java.util.Vector;
 
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 import org.jmol.util.XmlUtil;
 

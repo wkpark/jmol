@@ -29,12 +29,12 @@ import java.util.Vector;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.JmolEdge;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.HBond;
 import org.jmol.modelset.Polymer;
 import org.jmol.util.Measure;
 import org.jmol.util.OutputStringBuffer;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 public class NucleicPolymer extends BioPolymer {
@@ -113,7 +113,7 @@ public class NucleicPolymer extends BioPolymer {
   static protected int addHydrogenBond(Vector vAtoms, Atom atom1, Atom atom2) {
     if (atom1 == null || atom2 == null)
       return 0;
-    vAtoms.add(new HBond(atom1, atom2, JmolConstants.BOND_H_NUCLEOTIDE, 0));
+    vAtoms.add(new HBond(atom1, atom2, JmolEdge.BOND_H_NUCLEOTIDE, 0));
     return 1;
   }
 

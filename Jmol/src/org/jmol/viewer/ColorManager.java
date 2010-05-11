@@ -25,7 +25,9 @@ package org.jmol.viewer;
 
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Elements;
 import org.jmol.util.Logger;
+
 import java.util.BitSet;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
@@ -80,7 +82,7 @@ class ColorManager {
     for (int i = JmolConstants.argbsCpk.length; --i >= 0; )
       g3d.changeColixArgb((short)i, argbsCpk[i]);
     for (int i = JmolConstants.altArgbsCpk.length; --i >= 0; )
-      g3d.changeColixArgb((short)(JmolConstants.elementNumberMax + i), altArgbsCpk[i]);
+      g3d.changeColixArgb((short)(Elements.elementNumberMax + i), altArgbsCpk[i]);
   }
 
   short colixRubberband = Graphics3D.HOTPINK;
@@ -126,11 +128,11 @@ class ColorManager {
       // Note that CPK colors can be changed based upon user preference
       // therefore, a changable colix is allocated in this case
       id = atom.getAtomicAndIsotopeNumber();
-      if (id < JmolConstants.elementNumberMax)
+      if (id < Elements.elementNumberMax)
         return g3d.getChangeableColix(id, argbsCpk[id]);
-      id = (short) JmolConstants.altElementIndexFromNumber(id);
+      id = (short) Elements.altElementIndexFromNumber(id);
       return g3d.getChangeableColix(
-          (short) (JmolConstants.elementNumberMax + id), altArgbsCpk[id]);
+          (short) (Elements.elementNumberMax + id), altArgbsCpk[id]);
     case JmolConstants.PALETTE_PARTIAL_CHARGE:
       // This code assumes that the range of partial charges is [-1, 1].
       index = ColorEncoder.quantize(atom.getPartialCharge(), 
@@ -242,17 +244,17 @@ class ColorManager {
   private static int getJmolOrRasmolArgb(int id, int argb) {
     switch (argb) {
     case Token.jmol:
-      if (id >= JmolConstants.elementNumberMax)
+      if (id >= Elements.elementNumberMax)
         break;
       return ColorEncoder.getArgbFromPalette(id, 0, 0, ColorEncoder.JMOL);
     case Token.rasmol:
-      if (id >= JmolConstants.elementNumberMax)
+      if (id >= Elements.elementNumberMax)
         break;
       return ColorEncoder.getArgbFromPalette(id, 0, 0, ColorEncoder.RASMOL);
     default:
       return argb;
     }
-    return JmolConstants.altArgbsCpk[JmolConstants
+    return JmolConstants.altArgbsCpk[Elements
         .altElementIndexFromNumber(id)];
   }
 
@@ -264,14 +266,14 @@ class ColorManager {
       argbsCpk = ArrayUtil.arrayCopy(JmolConstants.argbsCpk, 0, -1, false);
       altArgbsCpk = ArrayUtil.arrayCopy(JmolConstants.altArgbsCpk, 0, -1, false);
     }
-    if (id < JmolConstants.elementNumberMax) {
+    if (id < Elements.elementNumberMax) {
       argbsCpk[id] = argb;
       g3d.changeColixArgb((short)id, argb);
       return;
     }
-    id = JmolConstants.altElementIndexFromNumber(id);
+    id = Elements.altElementIndexFromNumber(id);
     altArgbsCpk[id] = argb;
-    g3d.changeColixArgb((short) (JmolConstants.elementNumberMax + id), argb);
+    g3d.changeColixArgb((short) (Elements.elementNumberMax + id), argb);
   }
   
   boolean currentTranslucent = false;

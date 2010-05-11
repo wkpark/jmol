@@ -31,6 +31,7 @@ import java.util.Vector;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 
+
 public class TextFormat {
 
   private final static DecimalFormat[] formatters = new DecimalFormat[10];

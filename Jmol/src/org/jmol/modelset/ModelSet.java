@@ -36,6 +36,7 @@ import org.jmol.util.XmlUtil;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.api.Interface;
+import org.jmol.api.JmolEdge;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
 import org.jmol.shape.Shape;
@@ -423,7 +424,7 @@ abstract public class ModelSet extends ModelCollection {
                                int connectOperation, BitSet bsA, BitSet bsB,
                                BitSet bsBonds, boolean isBonds, float energy) {
     if (connectOperation == JmolConstants.CONNECT_AUTO_BOND
-        && order != JmolConstants.BOND_H_REGULAR) {
+        && order != JmolEdge.BOND_H_REGULAR) {
       String stateScript = "connect ";
       if (minDistance != JmolConstants.DEFAULT_MIN_CONNECT_DISTANCE)
         stateScript += minDistance + " ";
@@ -474,7 +475,7 @@ abstract public class ModelSet extends ModelCollection {
             bsExclude.set(targetIndex);
         }
         checkValencesAndBond(atoms[sourceIndex], atoms[targetIndex], order,
-            (order == JmolConstants.BOND_H_REGULAR ? 1 : mad), null);
+            (order == JmolEdge.BOND_H_REGULAR ? 1 : mad), null);
       }
     }
   }
@@ -543,14 +544,14 @@ abstract public class ModelSet extends ModelCollection {
 
       boolean isH = false;
       for (int i = 0; i < bondCount; i++) {
-        if ((isH = bonds[i].isHydrogen()) || (bonds[i].order & JmolConstants.BOND_NEW) != 0) {
+        if ((isH = bonds[i].isHydrogen()) || (bonds[i].order & JmolEdge.BOND_NEW) != 0) {
           Bond bond = bonds[i];
           commands.append("  connect ").append("({").append(
               bond.atom1.index).append("}) ").append("({").append(
               bond.atom2.index).append("}) ");
           commands.append(JmolConstants.getBondOrderNameFromOrder(bond.order));
           if (isH)
-            commands.append(" ").append(bond.order >> JmolConstants.BOND_HBOND_SHIFT)
+            commands.append(" ").append(bond.order >> JmolEdge.BOND_HBOND_SHIFT)
                 .append(" ").append(bond.getEnergy());
           commands.append(";\n");
         }

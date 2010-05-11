@@ -30,9 +30,10 @@ import java.util.Vector;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
-
 import org.jmol.util.Logger;
+
 import org.jmol.viewer.JmolConstants;
+import org.jmol.api.JmolEdge;
 import org.jmol.script.Token;
 
 abstract public class BondCollection extends AtomCollection {
@@ -131,7 +132,7 @@ abstract public class BondCollection extends AtomCollection {
   public Bond bondAtoms(Atom atom1, Atom atom2, int order, short mad, BitSet bsBonds, float energy) {
     // this method used when a bond must be flagged as new
     Bond bond = getOrAddBond(atom1, atom2, order, mad, bsBonds, false, energy);
-    bond.order |= JmolConstants.BOND_NEW;
+    bond.order |= JmolEdge.BOND_NEW;
     return bond;
   }
 
@@ -155,8 +156,8 @@ abstract public class BondCollection extends AtomCollection {
     if (bondCount == bonds.length)
       bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount
           + BOND_GROWTH_INCREMENT);
-    if (order == JmolConstants.BOND_ORDER_NULL
-        || order == JmolConstants.BOND_ORDER_ANY)
+    if (order == JmolEdge.BOND_ORDER_NULL
+        || order == JmolEdge.BOND_ORDER_ANY)
       order = 1;
     return order;
   }
@@ -167,7 +168,7 @@ abstract public class BondCollection extends AtomCollection {
 
   protected Bond bondMutually(Atom atom, Atom atomOther, int order, short mad, float energy) {
     Bond bond;
-    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
+    if ((order & JmolEdge.BOND_HYDROGEN_MASK) != 0) {
       bond = new HBond(atom, atomOther, order, mad, (short) 0, energy);
     } else {
       bond = new Bond(atom, atomOther, order, mad, (short) 0);
@@ -334,8 +335,8 @@ abstract public class BondCollection extends AtomCollection {
    * @return if hydrogen bond, default to 1; otherwise 0 (general default)
    */
   protected short getDefaultMadFromOrder(int order) {
-    return (short) ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0 ? 1
-        : (order & JmolConstants.BOND_STRUT) != 0 ? (int) (viewer
+    return (short) ((order & JmolEdge.BOND_HYDROGEN_MASK) != 0 ? 1
+        : (order & JmolEdge.BOND_STRUT) != 0 ? (int) (viewer
             .getStrutDefaultRadius() * 2000) : defaultCovalentMad);
   }
 
@@ -354,9 +355,9 @@ abstract public class BondCollection extends AtomCollection {
       maxDistance = -maxDistance;
     BitSet bsDelete = new BitSet();
     int nDeleted = 0;
-    int newOrder = order |= JmolConstants.BOND_NEW;
-    if (!matchNull && (order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
-      order = JmolConstants.BOND_HYDROGEN_MASK;
+    int newOrder = order |= JmolEdge.BOND_NEW;
+    if (!matchNull && (order & JmolEdge.BOND_HYDROGEN_MASK) != 0)
+      order = JmolEdge.BOND_HYDROGEN_MASK;
     for (int i = bondCount; --i >= 0;) {
       Bond bond = bonds[i];
       Atom atom1 = bond.atom1;
@@ -379,8 +380,8 @@ abstract public class BondCollection extends AtomCollection {
                 : distanceSquared > maxDistanceSquared))
           continue;
         if (matchNull
-            || newOrder == (bond.order & ~JmolConstants.BOND_SULFUR_MASK | JmolConstants.BOND_NEW)
-            || (order & bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
+            || newOrder == (bond.order & ~JmolEdge.BOND_SULFUR_MASK | JmolEdge.BOND_NEW)
+            || (order & bond.order & JmolEdge.BOND_HYDROGEN_MASK) != 0) {
           bsDelete.set(i);
           nDeleted++;
         }
@@ -497,7 +498,7 @@ abstract public class BondCollection extends AtomCollection {
     for (int i = bondCount; --i >= 0;) {
       Bond bond = bonds[i];
       if (bond.isAromatic())
-        bond.setOrder(JmolConstants.BOND_AROMATIC);
+        bond.setOrder(JmolEdge.BOND_AROMATIC);
     }
   }
   
@@ -529,15 +530,15 @@ abstract public class BondCollection extends AtomCollection {
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsBonds.nextSetBit(i + 1))) {
         Bond bond = bonds[i];
         if (bsAromatic.get(i))
-          bond.setOrder(JmolConstants.BOND_AROMATIC);
-        switch (bond.order & ~JmolConstants.BOND_NEW) {
-        case JmolConstants.BOND_AROMATIC:
+          bond.setOrder(JmolEdge.BOND_AROMATIC);
+        switch (bond.order & ~JmolEdge.BOND_NEW) {
+        case JmolEdge.BOND_AROMATIC:
           bsAromatic.set(i);
           break;
-        case JmolConstants.BOND_AROMATIC_SINGLE:
+        case JmolEdge.BOND_AROMATIC_SINGLE:
           bsAromaticSingle.set(i);
           break;
-        case JmolConstants.BOND_AROMATIC_DOUBLE:
+        case JmolEdge.BOND_AROMATIC_DOUBLE:
           bsAromaticDouble.set(i);
           break;
         }
@@ -548,7 +549,7 @@ abstract public class BondCollection extends AtomCollection {
     i0 = (isAll ? bondCount - 1 : bsBonds.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsBonds.nextSetBit(i + 1))) {
         bond = bonds[i];
-        if (!bond.is(JmolConstants.BOND_AROMATIC)
+        if (!bond.is(JmolEdge.BOND_AROMATIC)
             || bsAromaticDouble.get(i) || bsAromaticSingle.get(i))
           continue;
         if (!assignAromaticDouble(bond))
@@ -558,14 +559,14 @@ abstract public class BondCollection extends AtomCollection {
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsBonds.nextSetBit(i + 1))) {
         bond = bonds[i];
         if (bsAromaticDouble.get(i)) {
-          if (!bond.is(JmolConstants.BOND_AROMATIC_DOUBLE)) {
+          if (!bond.is(JmolEdge.BOND_AROMATIC_DOUBLE)) {
             bsAromatic.set(i);
-            bond.setOrder(JmolConstants.BOND_AROMATIC_DOUBLE);
+            bond.setOrder(JmolEdge.BOND_AROMATIC_DOUBLE);
           }
         } else if (bsAromaticSingle.get(i) || bond.isAromatic()) {
-          if (!bond.is(JmolConstants.BOND_AROMATIC_SINGLE)) {
+          if (!bond.is(JmolEdge.BOND_AROMATIC_SINGLE)) {
             bsAromatic.set(i);
-            bond.setOrder(JmolConstants.BOND_AROMATIC_SINGLE);
+            bond.setOrder(JmolEdge.BOND_AROMATIC_SINGLE);
           }
         }
       }
@@ -711,7 +712,7 @@ abstract public class BondCollection extends AtomCollection {
     int i0 = (isAll ? bondCount - 1 : bsSelected.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
         bond = bonds[i];
-        if (!bond.is(JmolConstants.BOND_AROMATIC_SINGLE))
+        if (!bond.is(JmolEdge.BOND_AROMATIC_SINGLE))
           continue;
         Atom atom1;
         Atom atom2 = bond.atom2;
@@ -739,12 +740,12 @@ abstract public class BondCollection extends AtomCollection {
           //next to trivalent C --> N=C
           if (valence == 3 && bondorder == 3 && charge < 1 && n2 == 6
               && atom2.getValence() == 3)
-            bond.setOrder(JmolConstants.BOND_AROMATIC_DOUBLE);
+            bond.setOrder(JmolEdge.BOND_AROMATIC_DOUBLE);
           break;
         case 8:
           //monovalent nonnegative O next to P or S
           if (valence == 1 && charge == 0 && (n2 == 14 || n2 == 16))
-            bond.setOrder(JmolConstants.BOND_AROMATIC_DOUBLE);
+            bond.setOrder(JmolEdge.BOND_AROMATIC_DOUBLE);
           break;
         }
       }

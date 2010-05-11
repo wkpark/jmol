@@ -42,6 +42,7 @@ import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
+import org.jmol.api.JmolEdge;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.bspt.Bspf;
 import org.jmol.util.ArrayUtil;
@@ -1828,7 +1829,7 @@ abstract public class ModelCollection extends BondCollection {
       return true;
     for (int i = atom.bonds.length; --i >= 0;) {
       Bond bond = atom.bonds[i];
-      if ((bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+      if ((bond.order & JmolEdge.BOND_HYDROGEN_MASK) != 0)
         continue;
       if (!getCovalentlyConnectedBitSet(bond.getOtherAtom(atom), bs, bsToTest, allowCyclic))
         return false;
@@ -1854,7 +1855,7 @@ abstract public class ModelCollection extends BondCollection {
       Bond bond = bonds[i];
       if (baseIndex >= 0 
            && models[bond.atom1.modelIndex].trajectoryBaseIndex != baseIndex
-          || (bond.order & JmolConstants.BOND_H_CALC_MASK) == 0)
+          || (bond.order & JmolEdge.BOND_H_CALC_MASK) == 0)
         continue;
       if (bsAtoms != null && !bsAtoms.get(bond.atom1.index)) {
         models[baseIndex].hasRasmolHBonds = true;
@@ -1980,7 +1981,7 @@ abstract public class ModelCollection extends BondCollection {
    */
   public int calculateStruts(BitSet bs1, BitSet bs2) {
     // select only ONE model
-    makeConnections(0, Float.MAX_VALUE, JmolConstants.BOND_STRUT, JmolConstants.CONNECT_DELETE_BONDS, bs1, bs2, null, false, 0);
+    makeConnections(0, Float.MAX_VALUE, JmolEdge.BOND_STRUT, JmolConstants.CONNECT_DELETE_BONDS, bs1, bs2, null, false, 0);
     int iAtom = bs1.nextSetBit(0);
     if (iAtom < 0)
       return 0;
@@ -2015,7 +2016,7 @@ abstract public class ModelCollection extends BondCollection {
         .calculateStruts((ModelSet) this, atoms, bs1, bs2, vCA, thresh, delta, strutsMultiple);
     for (int i = 0; i < struts.size(); i++) {
       Object[] o = (Object[]) struts.get(i);
-      bondAtoms((Atom) o[0], (Atom) o[1], JmolConstants.BOND_STRUT, mad, null, 0);
+      bondAtoms((Atom) o[0], (Atom) o[1], JmolEdge.BOND_STRUT, mad, null, 0);
     }
     return struts.size();
   }
@@ -2319,9 +2320,9 @@ abstract public class ModelCollection extends BondCollection {
                                   int order, int connectOperation,
                                   BitSet bsA, BitSet bsB, BitSet bsBonds,
                                   boolean isBonds, float energy) {
-    boolean matchAny = (order == JmolConstants.BOND_ORDER_ANY);
-    boolean matchHbond = ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0);
-    boolean matchNull = (order == JmolConstants.BOND_ORDER_NULL);
+    boolean matchAny = (order == JmolEdge.BOND_ORDER_ANY);
+    boolean matchHbond = ((order & JmolEdge.BOND_HYDROGEN_MASK) != 0);
+    boolean matchNull = (order == JmolEdge.BOND_ORDER_NULL);
     boolean identifyOnly = false;
     boolean modifyOnly = false;
     boolean createOnly = false;
@@ -2333,7 +2334,7 @@ abstract public class ModelCollection extends BondCollection {
       return deleteConnections(minDistance, maxDistance, order, bsA, bsB,
           isBonds, matchNull, minDistanceSquared, maxDistanceSquared);
     case JmolConstants.CONNECT_AUTO_BOND:
-      if (order != JmolConstants.BOND_AROMATIC)
+      if (order != JmolEdge.BOND_AROMATIC)
         return autoBond(order, bsA, bsB, bsBonds, isBonds, matchHbond);
       modifyOnly = true;
       autoAromatize = true;
@@ -2349,7 +2350,7 @@ abstract public class ModelCollection extends BondCollection {
       break;
     }
     if (matchNull)
-      order = JmolConstants.BOND_COVALENT_SINGLE; //default for setting
+      order = JmolEdge.BOND_COVALENT_SINGLE; //default for setting
     defaultCovalentMad = viewer.getMadBond();
     boolean minDistanceIsFractionRadius = (minDistance < 0);
     boolean maxDistanceIsFractionRadius = (maxDistance < 0);
@@ -2366,7 +2367,7 @@ abstract public class ModelCollection extends BondCollection {
     Atom atomB = null;
     float dAB = 0;
     float dABcalc = 0;
-    short newOrder = (short) (order | JmolConstants.BOND_NEW);
+    short newOrder = (short) (order | JmolEdge.BOND_NEW);
     for (int iA = bsA.nextSetBit(0); iA >= 0; iA = bsA.nextSetBit(iA + 1)) {
       if (isBonds) {
         bondAB = bonds[iA];
@@ -2656,11 +2657,11 @@ abstract public class ModelCollection extends BondCollection {
            * E = Q/rAH - Q/rAD + Q/rCD - Q/rCH
            */
 
-          bo = JmolConstants.BOND_H_CALC;
+          bo = JmolEdge.BOND_H_CALC;
           energy = HBond.getEnergy((float) Math.sqrt(d2), C.distance(atom), C
               .distance(D), atomNear.distance(D)) / 1000f;
         } else {
-          bo = JmolConstants.BOND_H_REGULAR;
+          bo = JmolEdge.BOND_H_REGULAR;
         }
         bsHBondsRasmol.set(addHBond(atom, atomNear, bo, energy));
         nNew++;
@@ -2901,8 +2902,8 @@ abstract public class ModelCollection extends BondCollection {
     BitSet bsResult = new BitSet();
     int[] nBonded = new int[atomCount];
     int i;
-    boolean ishbond = (intType == JmolConstants.BOND_HYDROGEN_MASK);
-    boolean isall = (intType == JmolConstants.BOND_ORDER_ANY);
+    boolean ishbond = (intType == JmolEdge.BOND_HYDROGEN_MASK);
+    boolean isall = (intType == JmolEdge.BOND_ORDER_ANY);
     for (int ibond = 0; ibond < bondCount; ibond++) {
       Bond bond = bonds[ibond];
       if (isall || bond.is(intType) || ishbond && bond.isHydrogen()) {
@@ -2977,7 +2978,7 @@ abstract public class ModelCollection extends BondCollection {
     int order = b.getValence();
     if (order > 3)
       order = 1;
-    switch (b.order & ~JmolConstants.BOND_NEW) {
+    switch (b.order & ~JmolEdge.BOND_NEW) {
     case JmolAdapter.ORDER_AROMATIC:
       order = 4;
       break;

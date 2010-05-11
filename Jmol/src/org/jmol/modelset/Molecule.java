@@ -26,8 +26,8 @@
 package org.jmol.modelset;
 
 
+import org.jmol.util.Elements;
 import org.jmol.util.Logger;
-import org.jmol.viewer.JmolConstants;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -41,8 +41,8 @@ public class Molecule {
   public int firstAtomIndex;
   public int nAtoms;
   int nElements;
-  int[] elementCounts = new int[JmolConstants.elementNumberMax];
-  int[] altElementCounts = new int[JmolConstants.altElementMax];
+  int[] elementCounts = new int[Elements.elementNumberMax];
+  int[] altElementCounts = new int[Elements.altElementMax];
   int elementNumberMax;
   int altElementMax;
   String mf;
@@ -68,13 +68,13 @@ public class Molecule {
     for (int i = atomList.nextSetBit(0); i >= 0; i = atomList.nextSetBit(i + 1)) {
       nAtoms++;
       int n = modelSet.atoms[i].getAtomicAndIsotopeNumber();
-      if (n < JmolConstants.elementNumberMax) {
+      if (n < Elements.elementNumberMax) {
         elementCounts[n]++;
         if (elementCounts[n] == 1)
           nElements++;
         elementNumberMax = Math.max(elementNumberMax, n);
       } else {
-        n = JmolConstants.altElementIndexFromNumber(n);
+        n = Elements.altElementIndexFromNumber(n);
         altElementCounts[n]++;
         if (altElementCounts[n] == 1)
           nElements++;
@@ -90,7 +90,7 @@ public class Molecule {
     for (int i = 1; i <= elementNumberMax; i++) {
       nX = elementCounts[i];
       if (nX != 0) {
-        mf += sep + JmolConstants.elementSymbolFromNumber(i) + " " + nX;
+        mf += sep + Elements.elementSymbolFromNumber(i) + " " + nX;
         sep = " ";
       }
     }
@@ -98,7 +98,7 @@ public class Molecule {
       nX = altElementCounts[i];
       if (nX != 0) {
         mf += sep
-            + JmolConstants.elementSymbolFromNumber(JmolConstants
+            + Elements.elementSymbolFromNumber(Elements
                 .altElementNumberFromIndex(i)) + " " + nX;
         sep = " ";
       }

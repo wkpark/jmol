@@ -27,6 +27,7 @@ package org.jmol.util;
 
 import java.io.PrintStream;
 
+
 /**
  * Default implementation of the logger.
  */

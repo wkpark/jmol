@@ -24,8 +24,8 @@
 package org.jmol.script;
 
 import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
+import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;

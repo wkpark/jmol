@@ -27,8 +27,9 @@ package org.jmol.modelset;
 
 import org.jmol.util.BitSetUtil;
 
-import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Elements;
+import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
@@ -37,6 +38,7 @@ import org.jmol.viewer.Viewer;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
+import org.jmol.api.JmolEdge;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 
@@ -759,7 +761,7 @@ public final class ModelLoader extends ModelSet {
     while (iterBond.hasNext()) {
       order = (short) iterBond.getEncodedOrder();
       bondAtoms(iterBond.getAtomUniqueID1(), iterBond.getAtomUniqueID2(), order);
-      if (order > 1 && order != JmolConstants.BOND_STEREO_NEAR && order != JmolConstants.BOND_STEREO_FAR)
+      if (order > 1 && order != JmolEdge.BOND_STEREO_NEAR && order != JmolEdge.BOND_STEREO_FAR)
         haveMultipleBonds = true; 
     }
     if (haveMultipleBonds && someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds())
@@ -784,8 +786,8 @@ public final class ModelLoader extends ModelSet {
     // Atom.bondMutually(...) will return null
     if (atom1.isBonded(atom2))
       return;
-    boolean isNear = (order == JmolConstants.BOND_STEREO_NEAR);
-    boolean isFar = (order == JmolConstants.BOND_STEREO_FAR);
+    boolean isNear = (order == JmolEdge.BOND_STEREO_NEAR);
+    boolean isFar = (order == JmolEdge.BOND_STEREO_FAR);
     Bond bond;
     if (isNear || isFar) {
       bond = bondMutually(atom1, atom2, (is2D ? order : 1), getDefaultMadFromOrder(1), 0);
@@ -1187,9 +1189,9 @@ public final class ModelLoader extends ModelSet {
       elementsPresent[i] = new BitSet(64);
     for (int i = atomCount; --i >= 0;) {
       int n = atoms[i].getAtomicAndIsotopeNumber();
-      if (n >= JmolConstants.elementNumberMax)
-        n = JmolConstants.elementNumberMax
-            + JmolConstants.altElementIndexFromNumber(n);
+      if (n >= Elements.elementNumberMax)
+        n = Elements.elementNumberMax
+            + Elements.altElementIndexFromNumber(n);
       elementsPresent[atoms[i].modelIndex].set(n);
     }
   }
@@ -1205,7 +1207,7 @@ public final class ModelLoader extends ModelSet {
     if (vStereo != null) {
       for (int i = vStereo.size(); --i >= 0;) {
         Bond b = (Bond) vStereo.get(i);
-        int dz = (b.order == JmolConstants.BOND_STEREO_NEAR ? 3 : -3);
+        int dz = (b.order == JmolEdge.BOND_STEREO_NEAR ? 3 : -3);
         b.order = 1;
         if (b.atom2.z != b.atom1.z && (dz < 0) == (b.atom2.z < b.atom1.z))
           dz /= 3;
@@ -1261,7 +1263,7 @@ public final class ModelLoader extends ModelSet {
       return;
     for (int i = atom.bonds.length; --i >= 0;) {
       Bond bond = atom.bonds[i];
-      if ((bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+      if ((bond.order & JmolEdge.BOND_HYDROGEN_MASK) != 0)
         continue;
       Atom atom2 = bond.getOtherAtom(atom);
       setAtom2dZ(atom, atom2, v, v0, v1);

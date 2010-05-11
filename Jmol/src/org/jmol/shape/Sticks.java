@@ -36,6 +36,7 @@ import java.util.Hashtable;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
+import org.jmol.api.JmolEdge;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -53,7 +54,7 @@ public class Sticks extends Shape {
 
   public void initShape() {
     super.initShape();
-    myMask = JmolConstants.BOND_COVALENT_MASK;
+    myMask = JmolEdge.BOND_COVALENT_MASK;
     reportAll = false;
   }
 
@@ -111,7 +112,7 @@ public class Sticks extends Shape {
         bsOrderSet = new BitSet();
       int order = ((Integer) value).shortValue();
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-          : modelSet.getBondIterator(JmolConstants.BOND_ORDER_ANY, bs));
+          : modelSet.getBondIterator(JmolEdge.BOND_ORDER_ANY, bs));
       while (iter.hasNext()) {
         bsOrderSet.set(iter.nextIndex());
         iter.next().setOrder(order);
@@ -214,7 +215,7 @@ public class Sticks extends Shape {
       for (int i = i0; i >= 0; i = (reportAll ? i - 1 : bsOrderSet
           .nextSetBit(i + 1))) {
         Bond bond = bonds[i];
-        if (reportAll || (bond.getOrder() & JmolConstants.BOND_NEW) == 0)
+        if (reportAll || (bond.getOrder() & JmolEdge.BOND_NEW) == 0)
           setStateInfo(temp, i, "bondOrder "
               + JmolConstants.getBondOrderNameFromOrder(bond.getOrder()));
       }

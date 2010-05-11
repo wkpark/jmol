@@ -37,6 +37,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 
+
 public class Escape {
 
   public static String escape(Object x) {

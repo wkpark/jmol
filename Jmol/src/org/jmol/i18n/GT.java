@@ -25,8 +25,8 @@ package org.jmol.i18n;
 
 import java.text.MessageFormat;
 import java.util.*;
+
 import org.jmol.util.Logger;
-//import org.jmol.util.ZipUtil;
 
 public class GT {
 

@@ -52,14 +52,15 @@ import org.jmol.util.Base64;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.CifDataReader;
 import org.jmol.util.CommandHistory;
+import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JpegEncoder;
+import org.jmol.util.Logger;
 import org.jmol.util.OutputStringBuffer;
+import org.jmol.util.Parser;
 import org.jmol.util.SurfaceFileTyper;
 
-import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TempArray;
 import org.jmol.util.TextFormat;
@@ -1302,7 +1303,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setElementArgb(int elementNumber, int argb) {
     // Eval
     global.setParameterValue("=color "
-        + JmolConstants.elementNameFromNumber(elementNumber), Escape
+        + Elements.elementNameFromNumber(elementNumber), Escape
         .escapeColor(argb));
     colorManager.setElementArgb(elementNumber, argb);
   }

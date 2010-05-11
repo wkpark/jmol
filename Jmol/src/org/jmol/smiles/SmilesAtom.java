@@ -24,14 +24,18 @@
 
 package org.jmol.smiles;
 
+import javax.vecmath.Point3f;
+
+import org.jmol.api.JmolEdge;
+import org.jmol.api.JmolNode;
+import org.jmol.util.Elements;
 import org.jmol.util.Logger;
-import org.jmol.viewer.JmolConstants;
 
 /**
  * This class represents an atom in a <code>SmilesMolecule</code>.
  */
-public class SmilesAtom {
-
+public class SmilesAtom extends Point3f implements JmolNode {
+  
   final static int CHIRALITY_DEFAULT = 0;
   final static int CHIRALITY_ALLENE = 2;
   final static int CHIRALITY_TETRAHEDRAL = 4;
@@ -53,9 +57,9 @@ public class SmilesAtom {
   boolean hasSymbol;
   boolean isFirst = true;
   
-  short atomicNumber = -2; // UNDEFINED (could be A or a or *)
+  short elementNumber = -2; // UNDEFINED (could be A or a or *)
   
-  private int atomicMass = Integer.MIN_VALUE;
+  private short atomicMass = Short.MIN_VALUE;
   private int charge;
   int explicitHydrogenCount = Integer.MIN_VALUE;
   int implicitHydrogenCount = Integer.MIN_VALUE;
@@ -63,9 +67,14 @@ public class SmilesAtom {
   private int chiralClass = Integer.MIN_VALUE;
   private int chiralOrder = Integer.MIN_VALUE;
   private boolean isAromatic;
-  private SmilesBond[] bonds = new SmilesBond[INITIAL_BONDS];
+  SmilesBond[] bonds = new SmilesBond[INITIAL_BONDS];
   private int bondsCount;
-  
+
+  public void setBonds(SmilesBond[] bonds) {
+    this.bonds = bonds;
+  }
+
+
   int iNested = 0;
   
   SmilesAtom[] atomsOr;
@@ -107,7 +116,7 @@ public class SmilesAtom {
   
   public String toString() {
     return "[atom" + index + "(" + matchingAtom + ")"
-    + " " + atomicNumber 
+    + " " + elementNumber 
 //    + " ch:" + charge 
 //    + " ar:" + isAromatic 
 //    + " H:" + explicitHydrogenCount
@@ -126,6 +135,17 @@ public class SmilesAtom {
     this.index = index;
   }
 
+  int component;
+  int atomSite;
+  
+  public SmilesAtom(int iComponent, int ptAtom, int flags, short atomicNumber, int charge) {
+    component = iComponent;
+    index = ptAtom;
+    this.atomSite = flags;
+    this.elementNumber = atomicNumber;
+    this.charge = charge;
+  }
+
   /**
    * Finalizes the hydrogen count for implicit hydrogens in a <code>SmilesMolecule</code>.
    * 
@@ -142,7 +162,7 @@ public class SmilesAtom {
   	  // B, C, N, O, P, S, F, Cl, Br, and I
   	  // B (3), C (4), N (3,5), O (2), P (3,5), S (2,4,6), and 1 for the halogens
   	  
-  	  switch (atomicNumber) {
+  	  switch (elementNumber) {
   	  default:
   	    return false;
   	  case 0:
@@ -218,23 +238,23 @@ public class SmilesAtom {
     hasSymbol = true;
     if (symbol.equals("*")) {
       isAromatic = false;
-      atomicNumber = -2;
+      elementNumber = -2;
       return true;
     }
     if (symbol.equals("a") || symbol.equals("A")) {
-      atomicNumber = -1;
+      elementNumber = -1;
       return true;
     }
     if (symbol.equals("Xx")) {
-      atomicNumber = 0;
+      elementNumber = 0;
       return true;
     }
     
     if (isAromatic)
       symbol = symbol.substring(0, 1).toUpperCase() 
           + (symbol.length() == 1 ? "" : symbol.substring(1));
-    atomicNumber = JmolConstants.elementNumberFromSymbol(symbol, true);
-    return (atomicNumber != 0);
+    elementNumber = Elements.elementNumberFromSymbol(symbol, true);
+    return (elementNumber != 0);
   }
 
   /**
@@ -242,8 +262,8 @@ public class SmilesAtom {
    * 
    * @return atomicNumber
    */
-  public short getAtomicNumber() {
-    return atomicNumber;
+  public short getElementNumber() {
+    return elementNumber;
   }
 
   /**
@@ -251,7 +271,7 @@ public class SmilesAtom {
    * 
    * @return Atomic mass.
    */
-  public int getAtomicMass() {
+  public short getAtomicMass() {
     return atomicMass;
   }
 
@@ -261,7 +281,7 @@ public class SmilesAtom {
    * @param mass Atomic mass.
    */
   public void setAtomicMass(int mass) {
-    atomicMass = mass;
+    atomicMass = (short) mass;
   }
   
   /**
@@ -434,6 +454,47 @@ public class SmilesAtom {
   int ringConnectivity = -1;
   public void setRingConnectivity(int rc) {
     ringConnectivity = rc;
+  }
+
+  public int getModelIndex() {
+    return component;
+  }
+
+  public JmolEdge[] getEdges() {
+    return bonds;
+  }
+
+  public int getAtomSite() {
+    return atomSite;
+  }
+
+  public int getBondedAtomIndex(int j) {
+    return bonds[j].getOtherAtom(this).index;
+  }
+
+  public int getCovalentHydrogenCount() {
+    int n = 0;
+    for (int k = 0; k < bonds.length; k++)
+      if (bonds[k].getOtherAtom(this).elementNumber == 1)
+        n++;
+    return n;
+  }
+
+  public int getFormalCharge() {
+    return charge;
+  }
+
+  public short getIsotopeNumber() {
+    return atomicMass;
+  }
+
+  public int getValence() {
+    int n = valence;
+    if (n < 0 && bonds != null)
+      for (int i = bonds.length; --i >= 0;)
+        n += bonds[i].getValence();
+    valence = n;
+    return n;
   }
 
 

@@ -25,6 +25,7 @@
 
 package org.jmol.shape;
 
+import org.jmol.api.JmolEdge;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -81,9 +82,9 @@ public class SticksRenderer extends ShapeRenderer {
     mad = bond.getMad();
     atomA = bond.getAtom1();
     atomB = bond.getAtom2();
-    int order = bond.getOrder() & ~JmolConstants.BOND_NEW;
+    int order = bond.getOrder() & ~JmolEdge.BOND_NEW;
     if (bondsBackbone) {
-      if (ssbondsBackbone && (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
+      if (ssbondsBackbone && (order & JmolEdge.BOND_SULFUR_MASK) != 0) {
         // for ssbonds, always render the sidechain,
         // then render the backbone version
         /*
@@ -95,7 +96,7 @@ public class SticksRenderer extends ShapeRenderer {
         atomA = atomA.getGroup().getLeadAtom(atomA);
         atomB = atomB.getGroup().getLeadAtom(atomB);
       } else if (hbondsBackbone
-          && (order & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
+          && (order & JmolEdge.BOND_HYDROGEN_MASK) != 0) {
         atomA = atomA.getGroup().getLeadAtom(atomA);
         atomB = atomB.getGroup().getLeadAtom(atomB);
       }
@@ -152,15 +153,15 @@ public class SticksRenderer extends ShapeRenderer {
     case 4:
       drawBond(0);
       break;
-    case JmolConstants.BOND_ORDER_UNSPECIFIED:
-    case JmolConstants.BOND_AROMATIC_SINGLE:
+    case JmolEdge.BOND_ORDER_UNSPECIFIED:
+    case JmolEdge.BOND_AROMATIC_SINGLE:
       bondOrder = 1;
-      drawBond(order == JmolConstants.BOND_AROMATIC_SINGLE ? 0 : 1);
+      drawBond(order == JmolEdge.BOND_AROMATIC_SINGLE ? 0 : 1);
       break;
-    case JmolConstants.BOND_AROMATIC:
-    case JmolConstants.BOND_AROMATIC_DOUBLE:
+    case JmolEdge.BOND_AROMATIC:
+    case JmolEdge.BOND_AROMATIC_DOUBLE:
       bondOrder = 2;
-      drawBond(order == JmolConstants.BOND_AROMATIC ? getAromaticDottedBondMask()
+      drawBond(order == JmolEdge.BOND_AROMATIC ? getAromaticDottedBondMask()
           : 0);
       break;
     //case JmolConstants.BOND_STEREO_NEAR:
@@ -168,10 +169,10 @@ public class SticksRenderer extends ShapeRenderer {
       //renderTriangle(bond);
       //break;
     default:
-      if ((bondOrder & JmolConstants.BOND_PARTIAL_MASK) != 0) {
+      if ((bondOrder & JmolEdge.BOND_PARTIAL_MASK) != 0) {
         bondOrder = JmolConstants.getPartialBondOrder(order);
         drawBond(JmolConstants.getPartialBondDotted(order));
-      } else if ((bondOrder & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
+      } else if ((bondOrder & JmolEdge.BOND_HYDROGEN_MASK) != 0) {
         if (hbondsSolid) {
           bondOrder = 1;
           drawBond(0);
@@ -179,7 +180,7 @@ public class SticksRenderer extends ShapeRenderer {
           renderHbondDashed();
         }
         break;
-      } else if (bondOrder == JmolConstants.BOND_STRUT) {
+      } else if (bondOrder == JmolEdge.BOND_STRUT) {
         bondOrder = 1;
         drawBond(0);
       }
@@ -187,12 +188,12 @@ public class SticksRenderer extends ShapeRenderer {
   }
     
   int getRenderBondOrder(int order) {
-    order &= ~JmolConstants.BOND_NEW; 
-    if ((order & JmolConstants.BOND_PARTIAL_MASK) != 0)
+    order &= ~JmolEdge.BOND_NEW; 
+    if ((order & JmolEdge.BOND_PARTIAL_MASK) != 0)
       return order;
-    if ((order & JmolConstants.BOND_SULFUR_MASK) != 0)
-      order &= ~JmolConstants.BOND_SULFUR_MASK;
-    if ((order & JmolConstants.BOND_COVALENT_MASK) != 0) {
+    if ((order & JmolEdge.BOND_SULFUR_MASK) != 0)
+      order &= ~JmolEdge.BOND_SULFUR_MASK;
+    if ((order & JmolEdge.BOND_COVALENT_MASK) != 0) {
       if (!showMultipleBonds ||
           modeMultipleBond == JmolConstants.MULTIBOND_NEVER ||
           (modeMultipleBond == JmolConstants.MULTIBOND_NOTSMALL &&

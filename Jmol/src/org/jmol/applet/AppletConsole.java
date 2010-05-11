@@ -34,7 +34,6 @@ import java.util.Hashtable;
 import javax.swing.*;
 import javax.swing.text.*;
 
-import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 

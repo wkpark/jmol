@@ -57,6 +57,10 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   private JMenuBar menubar; // requiring Swing here for now
   private JButton clearOutButton, clearInButton, loadButton;
 
+  protected Hashtable map = new Hashtable();
+  protected Hashtable labels = null;
+  
+  
   static {
     System.out.println("AppletConsole initialized");
   }
@@ -75,6 +79,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
   
   public JmolAppConsoleInterface getAppConsole(Viewer viewer, Component display) {
+    System.out.println("AppletConsle.getAppConsole");
     return new AppletConsole(viewer, display);
   }
 
@@ -393,10 +398,6 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   /// Graphical User Interface for applet ///
-  
-  protected Hashtable map = new Hashtable();
-  protected Hashtable labels = null;
-  
   
   private Hashtable setupLabels() {
       Hashtable labels = new Hashtable();

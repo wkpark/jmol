@@ -34,7 +34,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolNode;
-import org.jmol.util.Logger;
+//import org.jmol.util.Logger;
 
 /**
  *  -- was SmilesMolecule, 
@@ -353,7 +353,7 @@ public class SmilesSearch {
           return true;
         vReturn.add(bs);
       }
-      
+/*      
       if (!isSilent && Logger.debugging) {
         StringBuffer s = new StringBuffer();
         for (int k = 0; k < atomNum; k++)
@@ -362,6 +362,7 @@ public class SmilesSearch {
         Logger.debug(s.toString());
         Logger.debug("match: " + bs);
       }
+*/      
       if (ringSets != null) {
         ringSets.append(" ");
         for (int k = atomNum * 3 + 2; --k > atomNum;)

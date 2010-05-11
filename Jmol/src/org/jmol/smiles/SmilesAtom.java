@@ -29,7 +29,7 @@ import javax.vecmath.Point3f;
 import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolNode;
 import org.jmol.util.Elements;
-import org.jmol.util.Logger;
+//import org.jmol.util.Logger;
 
 /**
  * This class represents an atom in a <code>SmilesMolecule</code>.
@@ -411,8 +411,8 @@ public class SmilesAtom extends Point3f implements JmolNode {
       System.arraycopy(bonds, 0, tmp, 0, bonds.length);
       bonds = tmp;
     }
-    if (Logger.debugging)
-      Logger.debug("adding bond to " + this + ": " + bond.getAtom1() + " " + bond.getAtom2());
+    //if (Logger.debugging)
+      //Logger.debug("adding bond to " + this + ": " + bond.getAtom1() + " " + bond.getAtom2());
     bonds[bondsCount] = bond;
     bondsCount++;
   }

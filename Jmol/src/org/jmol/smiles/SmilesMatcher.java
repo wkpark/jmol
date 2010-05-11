@@ -90,6 +90,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    */
   public int find(String pattern, String smiles, boolean isSearch, boolean isAll) {
     BitSet[] list = null;
+    InvalidSmilesException.setLastError(null);
     try {
       // create a topological model set from smiles
       // do not worry about stereochemistry -- this
@@ -181,6 +182,8 @@ public class SmilesMatcher implements SmilesMatcherInterface {
           null, bsAromatic, isSearch, isAll);
       return list.length;
     } catch (Exception e) {
+      if (InvalidSmilesException.getLastError() == null)
+        InvalidSmilesException.setLastError(e.getMessage());
       return -1;
     }
   }

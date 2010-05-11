@@ -25,8 +25,7 @@
 package org.jmol.smiles;
 
 import org.jmol.util.Elements;
-import org.jmol.util.Logger;
-import org.jmol.util.Parser;
+//import org.jmol.util.Logger;
 
 /**
  * Parses a SMILES String to create a <code>SmilesMolecule</code>.
@@ -193,8 +192,8 @@ public class SmilesParser {
    * @throws InvalidSmilesException
    */
    SmilesSearch parse(String pattern) throws InvalidSmilesException {
-    if (Logger.debugging)
-      Logger.debug("Smiles Parser: " + pattern);
+    //if (Logger.debugging)
+      //Logger.debug("Smiles Parser: " + pattern);
     if (pattern == null)
       throw new InvalidSmilesException("SMILES expressions must not be null");
     // First pass
@@ -358,7 +357,7 @@ public class SmilesParser {
         // guess at some ambiguous SEARCH strings:
         if (ch2 != '\0'
             && "NA CA BA PA SC AC".indexOf(pattern.substring(index, index + 2)) >= 0) {
-          Logger.error("Note: " + ch + ch2 + " NOT interpreted as an element");
+          System.out.println("Note: " + ch + ch2 + " NOT interpreted as an element");
           ch2 = '\0';
         }
         int size = (Character.isUpperCase(ch) && Character.isLowerCase(ch2) ? 2
@@ -646,8 +645,8 @@ public class SmilesParser {
         bondType = (isSearch ? SmilesBond.TYPE_ANY : SmilesBond.TYPE_SINGLE);
       molecule.createBond(currentAtom, newAtom, bondType);
     }
-    if (Logger.debugging)
-      Logger.debug("new atom: " + newAtom);
+    //if (Logger.debugging)
+      //Logger.debug("new atom: " + newAtom);
     return newAtom;
   }
 
@@ -660,7 +659,11 @@ public class SmilesParser {
     int len = pattern.length();
     while (pt < len && Character.isDigit(pattern.charAt(pt)))
       pt++;
-    ret[0] = Parser.parseInt(pattern.substring(index, pt));
+    try {
+      ret[0] = Integer.parseInt(pattern.substring(index, pt));
+    } catch (NumberFormatException e) {
+      ret[0] = Integer.MIN_VALUE;
+    }
     return pt;
   }
 
@@ -782,7 +785,7 @@ public class SmilesParser {
     newAtom.setChiralClass(stereoClass);
     newAtom.setChiralOrder(order);
     if (getChar(pattern, index) == '?') {
-      Logger.error("Ignoring '?' in stereochemistry");
+      System.out.println("Ignoring '?' in stereochemistry");
       index++;
     }
     return index;

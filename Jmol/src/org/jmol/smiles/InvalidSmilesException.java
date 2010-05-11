@@ -29,6 +29,16 @@ package org.jmol.smiles;
  */
 public class InvalidSmilesException extends Exception {
 
+  private static String lastError;
+
+  public static String getLastError() {
+    return lastError;
+  }
+  
+  public static void setLastError(String message) {
+    lastError = message;
+  }
+  
   /**
    * Constructs a <code>InvalideSmilesException</code> without any detail.
    */
@@ -43,6 +53,7 @@ public class InvalidSmilesException extends Exception {
    */
   public InvalidSmilesException(String message) {
     super(message);
+    lastError = message;
     printStackTrace();
   }
 
@@ -55,6 +66,7 @@ public class InvalidSmilesException extends Exception {
    */
   public InvalidSmilesException(Throwable cause) {
     super(cause);
+    lastError = cause.getMessage();
   }
 
   /**
@@ -66,5 +78,6 @@ public class InvalidSmilesException extends Exception {
    */
   public InvalidSmilesException(String message, Throwable cause) {
     super(message, cause);
+    lastError = message + "\n" + cause.getCause();
   }
 }

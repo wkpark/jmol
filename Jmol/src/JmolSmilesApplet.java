@@ -27,27 +27,30 @@ import java.applet.Applet;
 import java.awt.Event;
 import java.awt.Graphics;
 
+import org.jmol.smiles.InvalidSmilesException;
 import org.jmol.smiles.SmilesMatcher;
 
 public class JmolSmilesApplet extends Applet {
-
-  public JmolSmilesApplet() {
-    System.out.println("JmolSmilesApplet constructor");
-  }
 
   public void init() {
     System.out.println("JmolSmilesApplet init");
   }
 
+  private static String lastError;
+
+  public String getLastError() {
+    return lastError;
+  }
+  
   public int find(String pattern, String smiles, boolean isSearch, boolean isAll) {
     System.out.println("find " + pattern + " in " + smiles + " isSearch? " + isSearch + "; isAll? " + isAll);
+    lastError = null;    
     int ret = -1;
     try {
-      System.out.println("getting smiles matcher");
       SmilesMatcher sm = new SmilesMatcher();
-      System.out.println(sm);
       ret = sm.find(pattern, smiles, isSearch, isAll);
-      System.out.println("ret" + ret);
+      if (ret < 0)
+        lastError = InvalidSmilesException.getLastError();
     } catch (Exception e) {
       e.printStackTrace();
     } catch (Error er) {
@@ -67,7 +70,7 @@ public class JmolSmilesApplet extends Applet {
   }
   
   public void destroy() {
-    System.out.println("JmolSmilesApplet destroy");
+    System.out.println("JmolSmilesApplet destroyed");
   }
 
 }

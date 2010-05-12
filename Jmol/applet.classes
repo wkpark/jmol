@@ -1,4 +1,5 @@
 JmolApplet.java
+JmolSmilesApplet.java
 org/jmol/adapter/readers/cifpdb/*.java
 org/jmol/adapter/readers/molxyz/*.java
 org/jmol/adapter/readers/more/*.java

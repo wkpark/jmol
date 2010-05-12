@@ -625,7 +625,7 @@ public class Jmol implements WrappedApplet {
      * scripts to return prior to full execution 
      * 
      */
-    System.out.println("Jmol.script: " + script);
+    //System.out.println("Jmol.script: " + script);
     if (script == null || script.length() == 0)
       return "";
     switch (processType) {
@@ -874,8 +874,8 @@ public class Jmol implements WrappedApplet {
       String strInfo = (data == null || data[1] == null ? null : data[1]
           .toString());
 
-      System.out.println("Jmol.java notifyCallback " + type + " " + callback
-       + " " + strInfo);
+      //System.out.println("Jmol.java notifyCallback " + type + " " + callback
+       //+ " " + strInfo);
       switch (type) {
       case JmolConstants.CALLBACK_MINIMIZATION:
       case JmolConstants.CALLBACK_RESIZE:
@@ -1080,7 +1080,7 @@ public class Jmol implements WrappedApplet {
         return "";
       }
       try {
-        System.out.println(jsoDocument.eval("!!_jmol.noEval"));
+        //System.out.println(jsoDocument.eval("!!_jmol.noEval"));
         if (!haveDocumentAccess
             || ((Boolean) jsoDocument.eval("!!_jmol.noEval")).booleanValue())
           return "NO EVAL ALLOWED";

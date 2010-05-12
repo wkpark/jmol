@@ -295,13 +295,13 @@ public class TextFormat {
         }
         ich += len;
         if (!Float.isNaN(floatT))
-          strLabel += TextFormat.format(floatT, width, precision, alignLeft,
+          strLabel += format(floatT, width, precision, alignLeft,
               zeroPad);
         else if (strT != null)
-          strLabel += TextFormat.format(strT, width, precision, alignLeft,
+          strLabel += format(strT, width, precision, alignLeft,
               zeroPad);
         else if (!Double.isNaN(doubleT))
-          strLabel += TextFormat.format(doubleT, width, precision, alignLeft,
+          strLabel += format(doubleT, width, precision, alignLeft,
               zeroPad);
         if (doOne)
           break;
@@ -604,7 +604,7 @@ public class TextFormat {
       String name = (String) list.get(i);
       String newName = (String) newList.get(i);
       if (!newName.equals(name))
-        s = TextFormat.simpleReplace(s, "\"" + name + "\"", "\"" + newName
+        s = simpleReplace(s, "\"" + name + "\"", "\"" + newName
             + "\"");
     }
     return s;
@@ -617,7 +617,7 @@ public class TextFormat {
       String name = (String) list.get(i);
       String newName = (String) newList.get(i);
       if (!newName.equals(name))
-        s = TextFormat.simpleReplace(s, name, newName);
+        s = simpleReplace(s, name, newName);
     }
     return s;
   }

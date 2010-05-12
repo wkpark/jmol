@@ -72,6 +72,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
 
   public void setBonds(SmilesBond[] bonds) {
     this.bonds = bonds;
+    bondsCount = bonds.length;
   }
 
 
@@ -191,6 +192,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
       for (int i = 0; i < bondsCount; i++) {
         SmilesBond bond = bonds[i];
         switch (bond.getBondType()) {
+        case SmilesBond.TYPE_ANY: // for aromatics
         case SmilesBond.TYPE_SINGLE:
         case SmilesBond.TYPE_DIRECTIONAL_1:
         case SmilesBond.TYPE_DIRECTIONAL_2:
@@ -366,6 +368,9 @@ public class SmilesAtom extends Point3f implements JmolNode {
    * @param count Number of hydrogen atoms.
    */
   public void setExplicitHydrogenCount(int count) {
+    if (count == 2)
+      System.out.println("hmm");
+
     explicitHydrogenCount = count;
   }
 
@@ -495,6 +500,13 @@ public class SmilesAtom extends Point3f implements JmolNode {
         n += bonds[i].getValence();
     valence = n;
     return n;
+  }
+
+  public SmilesBond getBondTo(SmilesAtom atom) {
+    for (int k = 0; k < bonds.length; k++)
+      if (bonds[k] != null && bonds[k].getOtherAtom(this) == atom)
+      return bonds[k];
+    return null;
   }
 
 

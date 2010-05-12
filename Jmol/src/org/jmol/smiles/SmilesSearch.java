@@ -773,10 +773,29 @@ public class SmilesSearch {
     
     // set the chirality center at the origin
     atom.set(0, 0, 0);
+
+    // Here is the secret:
+    // Sort the atoms by the origintal order of bonds
+    // in the SMILES string that generated the 
+    // atom set.
     int[] map = new int[cAtoms[4] == null  ? 4 : cAtoms[5] == null ? 5 : 6];
-    for (int i = 0; i < map.length; i++)
-      map[i] = (cAtoms[i].getIndex() << 3) + i;
+    JmolEdge[] bonds = atom.getEdges();
+    for (int i = 0; i < map.length; i++) {
+      map[i] = cAtoms[i].getIndex();
+//      System.out.println("i=" + i + "; cAtoms[i]=" + map[i]);
+    }
+    for (int i = 0; i < map.length; i++) {
+      int k = 0;
+      for (; k < bonds.length; k++)
+        if (bonds[k].getOtherAtom(atom) == cAtoms[i])
+          break;
+      map[i] = (k *1000 + 1000) + i;
+    }
     Arrays.sort(map);
+    for (int i = 0; i < map.length; i++) {
+      map[i] = map[i] & 7;
+//      System.out.println("i=" + i + "; map[i]=" + map[i] + " a=" + cAtoms[map[i]].getIndex());
+    }
     switch (chiralClass) {
     case SmilesAtom.CHIRALITY_ALLENE:
     case SmilesAtom.CHIRALITY_TETRAHEDRAL:
@@ -785,30 +804,30 @@ public class SmilesSearch {
         map[0] = map[1];
         map[1] = i;
       }
-      cAtoms[map[0] & 7].set(0, 0, 1);
-      cAtoms[map[1] & 7].set(1, 0, -1);
-      cAtoms[map[2] & 7].set(0, 1, -1);
-      cAtoms[map[3] & 7].set(-1, -1, -1);
+      cAtoms[map[0]].set(0, 0, 1);
+      cAtoms[map[1]].set(1, 0, -1);
+      cAtoms[map[2]].set(0, 1, -1);
+      cAtoms[map[3]].set(-1, -1, -1);
       break;
     case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
       switch (chiralOrder) {
       case 1: // U-shaped
-        cAtoms[map[0] & 7].set(1, 0, 0);
-        cAtoms[map[1] & 7].set(0, 1, 0);
-        cAtoms[map[2] & 7].set(-1, 0, 0);
-        cAtoms[map[3] & 7].set(0, -1, 0);
+        cAtoms[map[0]].set(1, 0, 0);
+        cAtoms[map[1]].set(0, 1, 0);
+        cAtoms[map[2]].set(-1, 0, 0);
+        cAtoms[map[3]].set(0, -1, 0);
         break;
       case 2: // 4-shaped
-        cAtoms[map[0] & 7].set(1, 0, 0);
-        cAtoms[map[1] & 7].set(-1, 0, 0);
-        cAtoms[map[2] & 7].set(0, 1, 0);
-        cAtoms[map[3] & 7].set(0, -1, 0);
+        cAtoms[map[0]].set(1, 0, 0);
+        cAtoms[map[1]].set(-1, 0, 0);
+        cAtoms[map[2]].set(0, 1, 0);
+        cAtoms[map[3]].set(0, -1, 0);
         break;
       case 3: // Z-shaped
-        cAtoms[map[0] & 7].set(1, 0, 0);
-        cAtoms[map[1] & 7].set(-1, 0, 0);
-        cAtoms[map[2] & 7].set(0, -1, 0);
-        cAtoms[map[3] & 7].set(0, 1, 0);
+        cAtoms[map[0]].set(1, 0, 0);
+        cAtoms[map[1]].set(-1, 0, 0);
+        cAtoms[map[2]].set(0, -1, 0);
+        cAtoms[map[3]].set(0, 1, 0);
         break;
       }
       break;
@@ -820,13 +839,13 @@ public class SmilesSearch {
         map[0] = map[n - 1];
         map[n - 1] = i;
       }
-      cAtoms[map[0] & 7].set(0, 0, 1);
-      cAtoms[map[n - 1] & 7].set(0, 0, -1);
-      cAtoms[map[1] & 7].set(1, 0, 0);
-      cAtoms[map[2] & 7].set(0, 1, 0);
-      cAtoms[map[3] & 7].set(-1, 0, 0);
-      if (n != 5)
-        cAtoms[map[3] & 7].set(0, -1, 0);        
+      cAtoms[map[0]].set(0, 0, 1);
+      cAtoms[map[n - 1]].set(0, 0, -1);
+      cAtoms[map[1]].set(1, 0, 0);
+      cAtoms[map[2]].set(0, 1, 0);
+      cAtoms[map[3]].set(-1, 0, 0);
+      if (n == 6)
+        cAtoms[map[4]].set(0, -1, 0);        
       break;
     }
   }

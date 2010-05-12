@@ -9,6 +9,13 @@ import javax.vecmath.Point4f;
 
 public class TriangleData {
 
+  /*
+   * the triangle data from Marching Cubes
+   * 
+   * Used for Marching Cubes as well as calculating the intersection of unit cells 
+   * and bounding boxes with planes
+   * 
+   */
   protected static final int[] Pwr2 = new int[] { 1, 2, 4, 8, 16, 32, 64, 128,
     256, 512, 1024, 2048 };
 

@@ -642,7 +642,7 @@ public class SmilesParser {
 
     if (currentAtom != null && bondType != SmilesBond.TYPE_NONE) {
       if (bondType == SmilesBond.TYPE_UNKNOWN)
-        bondType = (isSearch ? SmilesBond.TYPE_ANY : SmilesBond.TYPE_SINGLE);
+        bondType = (isSearch || currentAtom.isAromatic() && newAtom.isAromatic() ? SmilesBond.TYPE_ANY : SmilesBond.TYPE_SINGLE);
       molecule.createBond(currentAtom, newAtom, bondType);
     }
     //if (Logger.debugging)
@@ -682,7 +682,7 @@ public class SmilesParser {
    * @throws InvalidSmilesException
    */
   private void parseRing(SmilesSearch molecule, int ringNum,
-                           SmilesAtom currentAtom, int bondType)
+                         SmilesAtom currentAtom, int bondType)
       throws InvalidSmilesException {
 
     // Ring management
@@ -702,7 +702,9 @@ public class SmilesParser {
     }
     if (bondType == SmilesBond.TYPE_UNKNOWN) {
       if ((bondType = b.getBondType()) == SmilesBond.TYPE_UNKNOWN)
-        bondType = (isSearch ? SmilesBond.TYPE_ANY : SmilesBond.TYPE_SINGLE);
+        bondType = (isSearch || currentAtom.isAromatic()
+            && b.getAtom1().isAromatic() ? SmilesBond.TYPE_ANY
+            : SmilesBond.TYPE_SINGLE);
     } else if (b.getBondType() != SmilesBond.TYPE_UNKNOWN
         && b.getBondType() != bondType) {
       throw new InvalidSmilesException("Incoherent bond type for ring");

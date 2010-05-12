@@ -107,7 +107,6 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       }
       SmilesAtom[] atoms = new SmilesAtom[nAtomsNew];
       int ptAtom = 0;
-      int[] bondCounts = new int[nAtomsNew];
       for (int i = 0; i < atomCount; i++) {
         SmilesAtom sAtom = search.getAtom(i);
         int cclass = sAtom.getChiralClass();
@@ -117,65 +116,77 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         // create a Jmol atom for this pattern atom
         // we co-opt atom.matchingAtom here
         // because this search will never actually be run
-        SmilesAtom atom = atoms[ptAtom] = new SmilesAtom(0, ptAtom, cclass == Integer.MIN_VALUE ? cclass :
-            (cclass << 8) + sAtom.getChiralOrder(), 
-            sAtom.elementNumber, sAtom.getCharge());
+        SmilesAtom atom = atoms[ptAtom] = new SmilesAtom(0, ptAtom,
+            cclass == Integer.MIN_VALUE ? cclass : (cclass << 8)
+                + sAtom.getChiralOrder(), sAtom.elementNumber, sAtom
+                .getCharge());
         // we pass on the aromatic flag because
         // we don't want SmilesSearch to calculate
         // that for us
         if (sAtom.isAromatic())
           bsAromatic.set(ptAtom);
-        sAtom.setMatchingAtom(ptAtom);
+        sAtom.setMatchingAtom(ptAtom++);
         // set up the bonds array and fill with H atoms
-        bondCounts[ptAtom++] = n;
         SmilesBond[] bonds = new SmilesBond[sAtom.getBondsCount() + n];
         atom.setBonds(bonds);
+        // when there is only 1 H and the atom is NOT FIRST, then it will
+        // be important to designate the bonds in order -- with the
+        // H SECOND not first
+        int offset = (sAtom.isFirst || n != 1 || cclass <= 0 ? 0 : 1);
         while (--n >= 0) {
-          SmilesAtom atomH = atoms[ptAtom] = new SmilesAtom(0, ptAtom, 0, (short) 1, 0);
+          SmilesAtom atomH = atoms[ptAtom] = new SmilesAtom(0, ptAtom, 0,
+              (short) 1, 0);
           ptAtom++;
           atomH.setBonds(new SmilesBond[1]);
-          atomH.bonds[0] = bonds[n] = new SmilesBond(atom, atomH,
+          atomH.bonds[0] = bonds[offset + n] = new SmilesBond(atom, atomH,
               JmolEdge.BOND_COVALENT_SINGLE);
         }
       }
-      
+
       // set up bonds
       for (int i = 0; i < atomCount; i++) {
         SmilesAtom sAtom = search.getAtom(i);
         int i1 = sAtom.getMatchingAtom();
-        for (int j = sAtom.getBondsCount(); --j >= 0;) {
+        SmilesAtom atom1 = atoms[i1];
+        int n = sAtom.getBondsCount();
+        for (int j = 0; j < n; j++) {
           SmilesBond sBond = sAtom.getBond(j);
-          if (sBond.getAtom1() != sAtom)
-            continue;
-          int order = 1;
-          switch (sBond.getBondType()) {
-          // these first two are for cis/trans alkene
-          // stereochemistry; we co-opt stereo near/far here
-          case SmilesBond.TYPE_DIRECTIONAL_1:
-            order = JmolEdge.BOND_STEREO_NEAR;
-            break;
-          case SmilesBond.TYPE_DIRECTIONAL_2:
-            order = JmolEdge.BOND_STEREO_FAR;
-            break;
-          case SmilesBond.TYPE_SINGLE:
-            order = JmolEdge.BOND_COVALENT_SINGLE;
-            break;
-          case SmilesBond.TYPE_AROMATIC:
-            order = JmolEdge.BOND_AROMATIC_SINGLE;
-            break;
-          case SmilesBond.TYPE_DOUBLE:
-            order = JmolEdge.BOND_COVALENT_DOUBLE;
-            break;
-          case SmilesBond.TYPE_TRIPLE:
-            order = JmolEdge.BOND_COVALENT_TRIPLE;
-            break;
+          boolean firstAtom = (sBond.getAtom1() == sAtom);
+          SmilesBond b;
+          if (firstAtom) {
+            int order = 1;
+            switch (sBond.getBondType()) {
+            // these first two are for cis/trans alkene
+            // stereochemistry; we co-opt stereo near/far here
+            case SmilesBond.TYPE_DIRECTIONAL_1:
+              order = JmolEdge.BOND_STEREO_NEAR;
+              break;
+            case SmilesBond.TYPE_DIRECTIONAL_2:
+              order = JmolEdge.BOND_STEREO_FAR;
+              break;
+            case SmilesBond.TYPE_SINGLE:
+              order = JmolEdge.BOND_COVALENT_SINGLE;
+              break;
+            case SmilesBond.TYPE_AROMATIC:
+              order = JmolEdge.BOND_AROMATIC_DOUBLE;
+              break;
+            case SmilesBond.TYPE_DOUBLE:
+              order = JmolEdge.BOND_COVALENT_DOUBLE;
+              break;
+            case SmilesBond.TYPE_TRIPLE:
+              order = JmolEdge.BOND_COVALENT_TRIPLE;
+              break;
+            }
+            SmilesAtom atom2 = atoms[sBond.getAtom2().getMatchingAtom()];
+            b = new SmilesBond(atom1, atom2, order);
+          } else {
+            SmilesAtom atom2 = atoms[sBond.getAtom1().getMatchingAtom()];
+            b = atom2.getBondTo(atom1);
           }
-          SmilesAtom sAtom2 = sBond.getAtom2();
-          int i2 = sAtom2.getMatchingAtom();
-          SmilesAtom atom1 = atoms[i1];
-          SmilesAtom atom2 = atoms[i2];
-          SmilesBond b = new SmilesBond(atom1, atom2, order);
-          atom1.bonds[bondCounts[atom1.index]++] = atom2.bonds[bondCounts[atom2.index]++] = b;
+          int b1 = 0;
+          while (atom1.getBond(b1) != null)
+            b1++;
+          atom1.bonds[b1] = b;
         }
       }
       list = getSubstructureSetArray(pattern, atoms, -nAtomsNew, null, null,
@@ -184,6 +195,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     } catch (Exception e) {
       if (InvalidSmilesException.getLastError() == null)
         InvalidSmilesException.setLastError(e.getMessage());
+      e.printStackTrace();
       return -1;
     }
   }

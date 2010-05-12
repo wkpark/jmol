@@ -222,9 +222,9 @@ public class Symmetry implements SymmetryInterface {
     return UnitCell.ijkToPoint3f(nnn);
   }
 
-  public void toFractional(Point3f pt) {
+  public void toFractional(Point3f pt, boolean isAbsolute) {
     if (unitCell != null)
-      unitCell.toFractional(pt);
+      unitCell.toFractional(pt, isAbsolute);
   }
 
   public Point3f[] getUnitCellVertices() {

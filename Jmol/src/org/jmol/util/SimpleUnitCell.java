@@ -127,17 +127,23 @@ public class SimpleUnitCell {
       matrixCartesianToFractional = new Matrix4f();
       matrixCartesianToFractional.invert(matrixFractionalToCartesian);
     }
+    matrixCtoFAbsolute = new Matrix4f(matrixCartesianToFractional);
   }
 
+  protected Matrix4f matrixCtoFAbsolute;
+  
   public final void toCartesian(Point3f pt) {
     if (matrixFractionalToCartesian != null)
       matrixFractionalToCartesian.transform(pt);
   }
   
-  public final void toFractional(Point3f pt) {
-    if (matrixCartesianToFractional != null)
-      matrixCartesianToFractional.transform(pt);
+  public final void toFractional(Point3f pt, boolean isAbsolute) {
+    if (matrixCartesianToFractional == null)
+      return;
+    (isAbsolute ? matrixCtoFAbsolute : matrixCartesianToFractional)
+        .transform(pt);
   }
+  
   
   public final float[] getNotionalUnitCell() {
     return notionalUnitcell;

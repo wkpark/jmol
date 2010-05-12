@@ -695,7 +695,7 @@ final public class Atom extends Point3fi implements JmolNode {
     SymmetryInterface[] c = group.chain.modelSet.unitCells;
     Point3f pt = new Point3f(this);
     if (c != null)
-      c[modelIndex].toFractional(pt);
+      c[modelIndex].toFractional(pt, false);
     return pt;
   }
   
@@ -705,7 +705,7 @@ final public class Atom extends Point3fi implements JmolNode {
     if (c != null) {
       c[modelIndex].toUnitCell(pt, null);
       if (!asCartesian)
-        c[modelIndex].toFractional(pt);
+        c[modelIndex].toFractional(pt, false);
     }
     return pt;
   }
@@ -724,7 +724,7 @@ final public class Atom extends Point3fi implements JmolNode {
   void setFractionalCoord(int tok, float fValue) {
     SymmetryInterface[] c = group.chain.modelSet.unitCells;
     if (c != null)
-      c[modelIndex].toFractional(this);
+      c[modelIndex].toFractional(this, false);
     switch (tok) {
     case Token.fracx:
       x = fValue;

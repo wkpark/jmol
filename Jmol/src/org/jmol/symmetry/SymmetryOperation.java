@@ -406,7 +406,7 @@ class SymmetryOperation extends Matrix4f {
   }
 
   private void transformCartesian(UnitCell unitcell, Point3f pt) {
-    unitcell.toFractional(pt);
+    unitcell.toFractional(pt, false);
     transform(pt);
     unitcell.toCartesian(pt);
 
@@ -474,7 +474,7 @@ class SymmetryOperation extends Matrix4f {
       pt02.set(ptTarget);
       uc.toUnitCell(pt01, ptemp);
       uc.toUnitCell(pt02, ptemp);
-      uc.toFractional(pt01);
+      uc.toFractional(pt01, false);
       m.transform(pt01);
       uc.toCartesian(pt01);
       uc.toUnitCell(pt01, ptemp);
@@ -482,8 +482,8 @@ class SymmetryOperation extends Matrix4f {
         return null;
       pt01.set(pt00);
       pt02.set(ptTarget);
-      uc.toFractional(pt01);
-      uc.toFractional(pt02);
+      uc.toFractional(pt01, false);
+      uc.toFractional(pt02, false);
       m.transform(pt01);
       vtemp.sub(pt02, pt01);
       pt01.set(0, 0, 0);
@@ -499,10 +499,10 @@ class SymmetryOperation extends Matrix4f {
     Point3f p2 = new Point3f(pt02);
     Point3f p3 = new Point3f(pt03);
 
-    uc.toFractional(p0);
-    uc.toFractional(p1);
-    uc.toFractional(p2);
-    uc.toFractional(p3);
+    uc.toFractional(p0, false);
+    uc.toFractional(p1, false);
+    uc.toFractional(p2, false);
+    uc.toFractional(p3, false);
     m.transform(p0, p0);
     m.transform(p1, p1);
     m.transform(p2, p2);
@@ -681,7 +681,7 @@ class SymmetryOperation extends Matrix4f {
           trans = new Vector3f(p0);
           trans.sub(pt0);
           ptemp.set(trans);
-          uc.toFractional(ptemp);
+          uc.toFractional(ptemp, false);
           ftrans.set(ptemp);
         } else {
           trans = null;
@@ -713,7 +713,7 @@ class SymmetryOperation extends Matrix4f {
       // within cell 555
 
       ptemp.set(trans);
-      uc.toFractional(ptemp);
+      uc.toFractional(ptemp, false);
       if (approx(ptemp.x) == 1) {
         ptemp.x = 0;
       }
@@ -776,7 +776,7 @@ class SymmetryOperation extends Matrix4f {
 
     if (isinversion) {
       ptemp.set(ipt);
-      uc.toFractional(ptemp);
+      uc.toFractional(ptemp, false);
       info1 = "inversion center|" + fcoord(ptemp);
     } else if (isrotation) {
       if (haveinversion) {
@@ -784,7 +784,7 @@ class SymmetryOperation extends Matrix4f {
       } else if (pitch1 != 0) {
         info1 = "" + (360 / ang) + "-fold screw axis";
         ptemp.set(ax1);
-        uc.toFractional(ptemp);
+        uc.toFractional(ptemp, false);
         info1 += "|translation: " + fcoord(ptemp);
       } else {
         info1 = "C" + (360 / ang) + " axis";
@@ -816,7 +816,7 @@ class SymmetryOperation extends Matrix4f {
 
     if (haveinversion && !isinversion) {
       ptemp.set(ipt);
-      uc.toFractional(ptemp);
+      uc.toFractional(ptemp, false);
       info1 += "|inversion center at " + fcoord(ptemp);
     }
 
@@ -1078,7 +1078,7 @@ class SymmetryOperation extends Matrix4f {
         // screw
         trans = new Vector3f(ax1);
         ptemp.set(trans);
-        uc.toFractional(ptemp);
+        uc.toFractional(ptemp, false);
         ftrans = new Vector3f(ptemp);
       }
       if (haveinversion && pitch1 != 0) {

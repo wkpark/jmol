@@ -109,8 +109,7 @@ class UnitCell extends SimpleUnitCell {
     matrixFractionalToCartesian.transform(cartesianOffset);
     matrixFractionalToCartesian.m03 = cartesianOffset.x;
     matrixFractionalToCartesian.m13 = cartesianOffset.y;
-    matrixFractionalToCartesian.m23 = cartesianOffset.z;
-    
+    matrixFractionalToCartesian.m23 = cartesianOffset.z;    
   }
 
   void setOffset(int nnn) {
@@ -159,10 +158,12 @@ class UnitCell extends SimpleUnitCell {
   }
   
   Point3f getCartesianOffset() {
+    // for slabbing isosurfaces and rendering the ucCage
     return cartesianOffset;
   }
   
   Point3f getFractionalOffset() {
+    // no references
     return fractionalOffset;
   }
   

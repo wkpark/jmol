@@ -758,7 +758,7 @@ public class AtomSetCollection {
             if (doPackUnitCell) {
               symmetry.toUnitCell(c, ptOffset);
               atom.set(c);
-              symmetry.toFractional(atom);
+              symmetry.toFractional(atom, false);
             }
             atom.bsSymmetry.set(iCell * operationCount);
             atom.bsSymmetry.set(0);
@@ -891,7 +891,7 @@ public class AtomSetCollection {
         if (doPackUnitCell) {
           symmetry.toUnitCell(cartesian, ptOffset);
           ptAtom.set(cartesian);
-          symmetry.toFractional(ptAtom);
+          symmetry.toFractional(ptAtom, false);
           if (!isWithinCell(ptAtom, minXYZ.x + 1, maxXYZ.x - 1, minXYZ.y + 1, maxXYZ.y - 1, minXYZ.z + 1, maxXYZ.z - 1))
             continue;
         }

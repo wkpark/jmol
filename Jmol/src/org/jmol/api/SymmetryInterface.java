@@ -80,7 +80,7 @@ public interface SymmetryInterface {
 
   public abstract Point3f ijkToPoint3f(int nnn);
 
-  public abstract void toFractional(Point3f pt);
+  public abstract void toFractional(Point3f pt, boolean isAbsolute);
 
   public abstract Point3f[] getUnitCellVertices();
 

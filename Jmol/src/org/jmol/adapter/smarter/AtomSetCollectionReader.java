@@ -664,7 +664,7 @@ public abstract class AtomSetCollectionReader {
   public void setAtomCoord(Atom atom) {
     if (doConvertToFractional && !fileCoordinatesAreFractional
         && symmetry != null) {
-      symmetry.toFractional(atom);
+      symmetry.toFractional(atom, false);
       iHaveFractionalCoordinates = true;
     }
     //if (Logger.debugging)

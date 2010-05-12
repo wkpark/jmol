@@ -4774,6 +4774,14 @@ public class ScriptEvaluator {
       else
         switch (theToken.tok) {
         case Token.nada:
+          if (isSyntaxCheck || !viewer.getMessageStyleChime())
+            break;
+          String s = (String) theToken.value;
+          if (s == null)
+            break;
+          if (outputBuffer == null)
+            viewer.showMessage(s = "#" + s);
+          scriptStatusOrBuffer(s);
           break;
         case Token.push:
           pushContext((ContextToken) theToken);

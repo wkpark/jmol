@@ -400,6 +400,7 @@ class StatusManager {
 
   synchronized void setScriptEcho(String strEcho,
                                   boolean isScriptQueued) {
+    System.out.println("statusmanagere setScriptEcho " + strEcho);
     if (strEcho == null)
       return;
     setStatusChanged("scriptEcho", 0, strEcho, false);
@@ -446,7 +447,7 @@ class StatusManager {
                                     int msWalltime,
                                     String strErrorMessageUntranslated) {
     // only allow trapping of script information of type 0
-
+System.out.println("setScriptStatus " + strStatus + " === " + statusMessage);
     if (msWalltime < -1) {
       int iscript = -2 - msWalltime;
       setStatusChanged("scriptStarted", iscript, statusMessage, false);

@@ -1337,14 +1337,14 @@ public class TestSmilesParser extends TestCase {
             atom2.getAtomicMass() + ")");
         return false;
       }
-      if (atom1.getBondsCount() != atom2.getBondsCount()) {
+      if (atom1.getCovalentBondCount() != atom2.getCovalentBondCount()) {
         Logger.error(
             "Atom " + i + " bonds count (" +
-            atom1.getBondsCount() + "," +
-            atom2.getBondsCount() + ")");
+            atom1.getCovalentBondCount() + "," +
+            atom2.getCovalentBondCount() + ")");
         return false;
       }
-      for (int j = 0; j < atom1.getBondsCount(); j++) {
+      for (int j = 0; j < atom1.getCovalentBondCount(); j++) {
         SmilesBond bond1 = atom1.getBond(j);
         SmilesBond bond2 = atom2.getBond(j);
         if ((bond1 == null) || (bond2 == null)) {

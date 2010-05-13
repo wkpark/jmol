@@ -187,7 +187,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
           while (atom1.getBond(b1) != null)
             b1++;
           if (firstAtom)
-            System.out.println(atom1 + ".bonds[" + b1 + "]=" + b);
+            System.out.println(b);
           atom1.bonds[b1] = b;
         }
       }

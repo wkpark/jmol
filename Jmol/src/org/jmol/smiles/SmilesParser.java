@@ -26,6 +26,7 @@ package org.jmol.smiles;
 
 import org.jmol.util.Elements;
 //import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 /**
  * Parses a SMILES String to create a <code>SmilesMolecule</code>.
@@ -240,6 +241,8 @@ public class SmilesParser {
     if (pattern == null || pattern.length() == 0)
       return;
 
+    if (pattern.indexOf(" ") >= 0)
+      pattern = TextFormat.simpleReplace(pattern, " ", "");
     if (pattern.indexOf("$(") >= 0)
       pattern = parseNested(molecule, pattern);
 

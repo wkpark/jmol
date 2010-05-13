@@ -994,10 +994,10 @@ public class SmilesSearch {
     // note - we do NOT pass on bsSelectOut
     if (firstAtomOnly) {
       search.setRingData(bsAromatic);
-      search.ringDataMax = ringDataMax;
-      search.ringData = ringData;
-      search.ringCounts = ringCounts;
-      search.ringConnections = ringConnections;
+    //  search.ringDataMax = ringDataMax;
+    //  search.ringData = ringData;
+    //  search.ringCounts = ringCounts;
+    //  search.ringConnections = ringConnections;
     }
     search.ringSets = ringSets;
     search.asVector = !firstAtomOnly;

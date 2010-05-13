@@ -49,7 +49,7 @@ public class SmilesBond implements JmolEdge {
   private int bondType;
 
   public String toString() {
-    return atom1 + " - " + atom2;
+    return atom1 + " -" + bondType + "- " + atom2;
   }
   /**
    * SmilesBond constructor

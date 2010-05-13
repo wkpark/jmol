@@ -116,13 +116,13 @@ public class SmilesAtom extends Point3f implements JmolNode {
 
   
   public String toString() {
-    return "[atom" + index + "(" + matchingAtom + ")"
-    + " " + elementNumber 
+    return "[" + Elements.elementSymbolFromNumber(elementNumber)
+    + index + (matchingAtom >= 0 ? "(" + matchingAtom + ")" : "")
 //    + " ch:" + charge 
 //    + " ar:" + isAromatic 
 //    + " H:" + explicitHydrogenCount
 //    + " h:" + implicitHydrogenCount
-    + " ]";
+    + "]";
   }
   
   private final static int INITIAL_BONDS = 4;

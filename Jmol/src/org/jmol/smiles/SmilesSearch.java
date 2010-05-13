@@ -710,7 +710,7 @@ public class SmilesSearch {
       JmolNode atom = bond.getOtherAtom(dbAtom1);
       if (atom == dbAtom2)
         continue;
-      atom.set(-2, (nBonds++ == 0) ? -1 : 1, 0);
+      atom.set(-1, (nBonds++ == 0) ? -1 : 1, 0);
       switch (bond.getOrder()) {
       case JmolEdge.BOND_STEREO_NEAR:
         dir1 = nBonds;
@@ -729,7 +729,7 @@ public class SmilesSearch {
       if (atom == dbAtom1)
         continue;
       atoms[nBonds] = atom;
-      atom.set(2, (nBonds++ == 0) ? 1 : -1, 0);
+      atom.set(1, (nBonds++ == 0) ? 1 : -1, 0);
       switch (bond.getOrder()) {
       case JmolEdge.BOND_STEREO_NEAR:
         dir2 = nBonds;

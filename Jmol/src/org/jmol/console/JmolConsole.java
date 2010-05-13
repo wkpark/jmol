@@ -74,7 +74,7 @@ public abstract class JmolConsole extends JDialog implements ActionListener, Win
   }
   
   public JmolConsole(JmolViewer viewer, JFrame frame, String title) {
-    super((JFrame) null, title, false);
+    super(frame, title, false);
     this.viewer = viewer;
     display = frame;
   }

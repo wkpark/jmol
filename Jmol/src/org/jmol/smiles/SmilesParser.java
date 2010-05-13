@@ -800,7 +800,7 @@ public class SmilesParser {
       int nBonds = sAtom.explicitHydrogenCount;
       if (nBonds < 0)
         nBonds = 0;
-      nBonds += sAtom.getBondsCount();
+      nBonds += sAtom.getCovalentBondCount();
       switch (stereoClass) {
       case SmilesAtom.CHIRALITY_DEFAULT:
         switch (nBonds) {

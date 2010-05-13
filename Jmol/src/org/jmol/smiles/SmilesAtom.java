@@ -388,7 +388,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
    * 
    * @return Number of bonds.
    */
-  public int getBondsCount() {
+  public int getCovalentBondCount() {
     return bondsCount;
   }
 
@@ -483,6 +483,12 @@ public class SmilesAtom extends Point3f implements JmolNode {
       if (bonds[k].getOtherAtom(this).elementNumber == 1)
         n++;
     return n;
+  }
+
+  public int getImplicitHydrogenCount() {
+    // searching a SMILES string all H atoms will 
+    // be explicitly defined
+    return 0;
   }
 
   public int getFormalCharge() {

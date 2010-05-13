@@ -229,7 +229,7 @@ public class SmilesSearch {
 
     JmolEdge[] bonds = atom.getEdges();
 
-    for (int i = 0; i < patternAtom.getBondsCount(); i++) {
+    for (int i = 0; i < patternAtom.getCovalentBondCount(); i++) {
       SmilesBond patternBond = patternAtom.getBond(i);
       // Check only if the current atom is the second atom of the bond
       if (patternBond.getAtom2() != patternAtom)
@@ -308,7 +308,7 @@ public class SmilesSearch {
       // next position...
       patternAtom = atoms[atomNum];
       // for all the pattern bonds for this atom...
-      for (int i = 0; i < patternAtom.getBondsCount(); i++) {
+      for (int i = 0; i < patternAtom.getCovalentBondCount(); i++) {
         SmilesBond patternBond = patternAtom.getBond(i);
         // find the bond to atoms already assigned
         // note that it must be there, because SMILES strings
@@ -430,14 +430,14 @@ public class SmilesSearch {
       // h implicit H count
       n = patternAtom.implicitHydrogenCount;
       if (n != Integer.MIN_VALUE) {
-        int nH = atom.getCovalentHydrogenCount();
+        int nH = atom.getImplicitHydrogenCount();
         if (n == -1 && nH == 0 || n != -1 && n != nH)
           break;
       }
 
       // D <n> degree
       if (patternAtom.degree > 0
-          && patternAtom.degree != atom.getCovalentHydrogenCount())
+          && patternAtom.degree != atom.getCovalentBondCount())
         break;
 
       // v <n> valence
@@ -512,7 +512,7 @@ public class SmilesSearch {
           if (sAtom1 == null || sAtom2 == null)
             continue;
           // cumulenes
-          while (sAtom1.getBondsCount() == 2 && sAtom2.getBondsCount() == 2) {
+          while (sAtom1.getCovalentBondCount() == 2 && sAtom2.getCovalentBondCount() == 2) {
             sAtom1 = sAtom1.getBond(0).getOtherAtom(sAtom1);
             sAtom2 = sAtom2.getBond(1).getOtherAtom(sAtom2);
           }
@@ -641,7 +641,7 @@ public class SmilesSearch {
         int dir1 = 0;
         int dir2 = 0;
 
-        int nBonds = sAtom1.getBondsCount();
+        int nBonds = sAtom1.getCovalentBondCount();
         for (int j = 0; j < nBonds; j++) {
           SmilesBond b = sAtom1.getBond(j);
           boolean isAtom2 = (b.getAtom2() == sAtom1);
@@ -660,7 +660,7 @@ public class SmilesSearch {
         }
         if (sAtom2 == null || dir1 == 0)
           continue;
-        nBonds = sAtom2.getBondsCount();
+        nBonds = sAtom2.getCovalentBondCount();
         for (int j = 0; j < nBonds && dir2 == 0; j++) {
           SmilesBond b = sAtom2.getBond(j);
           boolean isAtom2 = (b.getAtom2() == sAtom2);

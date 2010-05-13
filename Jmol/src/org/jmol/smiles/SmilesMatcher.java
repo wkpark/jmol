@@ -127,7 +127,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
           bsAromatic.set(ptAtom);
         sAtom.setMatchingAtom(ptAtom++);
         // set up the bonds array and fill with H atoms
-        SmilesBond[] bonds = new SmilesBond[sAtom.getBondsCount() + n];
+        SmilesBond[] bonds = new SmilesBond[sAtom.getCovalentBondCount() + n];
         atom.setBonds(bonds);
         // when there is only 1 H and the atom is NOT FIRST, then it will
         // be important to designate the bonds in order -- with the
@@ -148,7 +148,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         SmilesAtom sAtom = search.getAtom(i);
         int i1 = sAtom.getMatchingAtom();
         SmilesAtom atom1 = atoms[i1];
-        int n = sAtom.getBondsCount();
+        int n = sAtom.getCovalentBondCount();
         for (int j = 0; j < n; j++) {
           SmilesBond sBond = sAtom.getBond(j);
           boolean firstAtom = (sBond.getAtom1() == sAtom);

@@ -39,4 +39,6 @@ public interface JmolNode {
   public short getIsotopeNumber();
   public int getModelIndex();
   public int getValence();
+  public int getCovalentBondCount();
+  public int getImplicitHydrogenCount();
 }

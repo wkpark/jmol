@@ -2101,8 +2101,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       BitSet bsNew = new BitSet();
       modelSet = modelManager.createModelSet(fullPathName, fileName,
           atomSetCollection, bsNew, isAppend);
-      if (bsNew.cardinality() > 0)
+      if (bsNew.cardinality() > 0) {
+        String jmolScript = (String) modelSet.getModelSetAuxiliaryInfo("jmolscript");
         minimize(Integer.MAX_VALUE, 0, bsNew, true, true, false);
+        if (jmolScript != null)
+          modelSet.getModelSetAuxiliaryInfo().put("jmolscript", jmolScript);
+      }
       //but we need to NOT save H atom positions, either!
       if (!isAppend)
         initializeModel();

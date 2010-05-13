@@ -84,7 +84,7 @@ public class FileManager {
   }
 
   private void setLoadScript(String script, boolean isAppend) {
-    if (script.indexOf("#nocache") >= 0) // 2D addhydrogens
+    if (script != null && script.indexOf("#nocache") >= 0) // 2D addhydrogens
       return;
     if (loadScript == null || !isAppend)
       loadScript = "";

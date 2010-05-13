@@ -82,13 +82,13 @@ public final class ModelLoader extends ModelSet {
     viewer.resetShapes();
     preserveState = viewer.getPreserveState();
     initializeInfo(name, null);
-    createModelSet(null, null);
+    createModelSet(null, null, null);
     modelSetName = "zapped";
     viewer.setStringProperty("_fileType", "");
   }
 
   public ModelLoader(Viewer viewer, Object atomSetCollection,
-      ModelLoader mergeModelSet, String modelSetName) {
+      ModelLoader mergeModelSet, String modelSetName, BitSet bsNew) {
     JmolAdapter adapter = viewer.getModelAdapter();
     this.modelSetName = modelSetName;
     this.mergeModelSet = mergeModelSet;
@@ -100,7 +100,7 @@ public final class ModelLoader extends ModelSet {
 
     initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase()
         .intern(), adapter.getAtomSetCollectionAuxiliaryInfo(atomSetCollection));
-    createModelSet(adapter, atomSetCollection);
+    createModelSet(adapter, atomSetCollection, bsNew);
     // dumpAtomSetNameDiagnostics(adapter, atomSetCollection);
   }
 /*
@@ -123,6 +123,7 @@ public final class ModelLoader extends ModelSet {
 
   private boolean someModelsHaveUnitcells;
   private boolean isTrajectory;
+  private boolean doMinimize;
   private String fileHeader;
 
   private void initializeInfo(String name, Hashtable info) {
@@ -140,6 +141,7 @@ public final class ModelLoader extends ModelSet {
     isTrajectory = (trajectorySteps != null);
     noAutoBond = getModelSetAuxiliaryInfoBoolean("noAutoBond");
     is2D = getModelSetAuxiliaryInfoBoolean("is2D");
+    doMinimize = is2D && getModelSetAuxiliaryInfoBoolean("doMinimize");
     adapterTrajectoryCount = (trajectorySteps == null ? 0 : trajectorySteps.size()); 
     someModelsHaveSymmetry = getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
     someModelsHaveUnitcells = getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
@@ -181,7 +183,7 @@ public final class ModelLoader extends ModelSet {
   private boolean noAutoBond;
   private boolean is2D;
   
-  private void createModelSet(JmolAdapter adapter, Object atomSetCollection) {
+  private void createModelSet(JmolAdapter adapter, Object atomSetCollection, BitSet bsNew) {
     int nAtoms = (adapter == null ? 0 : adapter.getAtomCount(atomSetCollection));
     if (nAtoms > 0)
       Logger.info("reading " + nAtoms + " atoms");
@@ -214,6 +216,8 @@ public final class ModelLoader extends ModelSet {
       }
     }
     initializeAtomBondModelCounts(nAtoms);
+    if (bsNew != null && doMinimize)
+      bsNew.set(baseAtomIndex, baseAtomIndex + nAtoms);
     if (adapter == null) {
       setModelNameNumberProperties(0, -1, "", 1, null, null, false, null);
     } else {
@@ -821,8 +825,6 @@ public final class ModelLoader extends ModelSet {
         .getStructureIterator(atomSetCollection);
     if (iterStructure != null)
       while (iterStructure.hasNext()) {
-        //System.out.println(iterStructure.getStructureType() + iterStructure
-          //  .getStartSequenceNumber()+" "+iterStructure.getEndSequenceNumber());
         if (!iterStructure.getStructureType().equals("turn")) {
           defineStructure(iterStructure.getModelIndex(),
               iterStructure.getStructureType(),
@@ -1278,8 +1280,7 @@ public final class ModelLoader extends ModelSet {
     v.normalize();
     v1.cross(v0, v);
     double theta = Math.acos(v.dot(v0));
-    float u = 1f;//(v1.z < 0 ? -1 : 1);
-    atom2.z = atomRef.z + (float) (u * Math.sin(4 * theta));    
+    atom2.z = atomRef.z + (float) (0.8f * Math.sin(4 * theta));
   }
 
   ///////////////  shapes  ///////////////

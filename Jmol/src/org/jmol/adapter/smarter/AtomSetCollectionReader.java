@@ -602,7 +602,7 @@ public abstract class AtomSetCollectionReader {
   protected void set2D(boolean doMinimize) {
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("is2D", Boolean.TRUE);
     if (doMinimize)
-      addJmolScript("minimize silent addHydrogens;reset");
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("doMinimize", Boolean.TRUE);
   }
 
   protected boolean filterAtom(Atom atom) {

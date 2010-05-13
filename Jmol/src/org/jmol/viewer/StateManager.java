@@ -1045,6 +1045,9 @@ public class StateManager {
 //      if (autoLoadOrientation)
   //      appendCmd(str, "set autoLoadOrientation true");
       appendCmd(str, "set minBondDistance " + minBondDistance);
+      // these next two might be part of a 2D->3D operation
+      appendCmd(str, "set minimizationCriterion  " + minimizationCriterion);
+      appendCmd(str, "set minimizationSteps  " + minimizationSteps);
       appendCmd(str, "set pdbGetHeader " + pdbGetHeader);
       appendCmd(str, "set pdbSequential " + pdbSequential);
       appendCmd(str, "set percentVdwAtom " + percentVdwAtom);

@@ -2098,8 +2098,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     pushHoldRepaint("createModelSet");
     setErrorMessage(null);
     try {
+      BitSet bsNew = new BitSet();
       modelSet = modelManager.createModelSet(fullPathName, fileName,
-          atomSetCollection, isAppend);
+          atomSetCollection, bsNew, isAppend);
+      if (bsNew.cardinality() > 0)
+        minimize(Integer.MAX_VALUE, 0, bsNew, true, true, false);
+      //but we need to NOT save H atom positions, either!
       if (!isAppend)
         initializeModel();
     } catch (Error er) {
@@ -4126,11 +4130,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return points;
   } 
 
-  public BitSet addHydrogens(BitSet bsAtoms) {
+  public BitSet addHydrogens(BitSet bsAtoms, boolean taintAtoms) {
     boolean doAll = (bsAtoms == null);
     if (bsAtoms == null)
       bsAtoms = getModelAtomBitSet(getVisibleFramesBitSet().nextSetBit(0), true);
     Vector vConnections = new Vector();
+    int nAtoms0 = modelSet.getAtomCount();
     Point3f[] pts = getAdditionalHydrogens(bsAtoms, doAll, false, vConnections);
     if (pts.length > 0) {
       boolean wasAppendNew = getAppendNew();
@@ -4140,14 +4145,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       BitSet bsA = getModelAtomBitSet(modelIndex, true);
       BitSet bsB = getAtomBits(Token.hydrogen, null); 
       bsA.andNot(bsB);
-      int atomIndex = modelSet.getAtomCount();
-      StringBuffer sbConnect = new StringBuffer();
-      for (int i = 0; i < vConnections.size(); i++) {
-        Atom a = (Atom) vConnections.get(i);
-        sbConnect.append("connect ").append("({"+(atomIndex++)+"}) ").append("({" + a.index + "});");
+      StringBuffer sbConnect = null;
+      if (taintAtoms) {
+        int atomIndex = modelSet.getAtomCount();
+        sbConnect = new StringBuffer();
+        for (int i = 0; i < vConnections.size(); i++) {
+          Atom a = (Atom) vConnections.get(i);
+          sbConnect.append("connect ").append("({"+(atomIndex++)+"}) ").append("({" + a.index + "});");
+        }
       }
       StringBuffer sb = new StringBuffer();
-      sb.append(pts.length).append("\n#noautobond\n");
+      sb.append(pts.length).append("\n#noautobond");
+      if (!taintAtoms)
+        sb.append("#nocache");
+      sb.append("\n");
       for (int i = 0; i < pts.length; i++)
         sb.append("H ").append(pts[i].x)
             .append(" ").append(pts[i].y)
@@ -4158,7 +4169,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       bsB.andNot(bsA);
       bsAtoms.or(bsB);
       try {
-        eval.runScript(sbConnect.toString(), null);
+        if (sbConnect == null)
+          modelSet.attachHydrogens(vConnections, nAtoms0);
+        else
+          eval.runScript(sbConnect.toString(), null);
       } catch (Exception e) {
         // ignore
       }
@@ -6961,7 +6975,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void checkMinimization() {
     if (!global.monitorEnergy)
       return;
-    minimize(0, 0, modelSet.getModelAtomBitSet(-1, false), false, true);
+    minimize(0, 0, modelSet.getModelAtomBitSet(-1, false), false, true, true);
     echoMessage("Energy = " + getParameter("_minimizationEnergy"));
   }
 
@@ -8156,14 +8170,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       display.requestFocusInWindow();
   }
 
+  /**
+   * 
+   * @param steps  Integer.MAX_VALUE --> use defaults
+   * @param crit   -1 --> use defaults
+   * @param bsSelected
+   * @param addHydrogen
+   * @param isSilent
+   * @param taintAtoms
+   */
   public void minimize(int steps, float crit, BitSet bsSelected,
-                       boolean addHydrogen, boolean isSilent) {
+                       boolean addHydrogen, boolean isSilent, boolean taintAtoms) {
     if (addHydrogen)
-      bsSelected = addHydrogens(bsSelected);
+      bsSelected = addHydrogens(bsSelected, taintAtoms);
     else if (bsSelected == null)
       bsSelected = getModelAtomBitSet(getVisibleFramesBitSet().nextSetBit(0), true);
     try {
-      getMinimizer(true).minimize(steps, crit, bsSelected, isSilent);
+      getMinimizer(true).minimize(steps, crit, bsSelected, isSilent, taintAtoms);
     } catch (Exception e) {
       Logger.error(e.getMessage());
     }

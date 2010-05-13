@@ -8823,7 +8823,7 @@ public class ScriptEvaluator {
         break;
       }
     if (!isSyntaxCheck)
-      viewer.minimize(steps, crit, bsSelected, addHydrogen, isSilent);
+      viewer.minimize(steps, crit, bsSelected, addHydrogen, isSilent, true);
   }
 
   private void select(int i) throws ScriptException {
@@ -9872,7 +9872,7 @@ public class ScriptEvaluator {
           return;
         if (viewer.getModelSet().getModelCount() > 1)
           error(ERROR_multipleModelsNotOK); // for now...
-        viewer.addHydrogens(bs);
+        viewer.addHydrogens(bs, true);
         return;
       case Token.pointgroup:
         pointGroup();

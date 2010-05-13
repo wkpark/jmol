@@ -24,6 +24,8 @@
  */
 package org.jmol.viewer;
 
+import java.util.BitSet;
+
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
 
@@ -54,7 +56,7 @@ class ModelManager {
   }
 
   ModelSet createModelSet(String fullPathName, String fileName,
-                          Object atomSetCollection, boolean isAppend) {
+                          Object atomSetCollection, BitSet bsNew, boolean isAppend) {
     // 11.9.10 11/22/2009 bh adjusted to never allow a null return
     if (isAppend) {
       if (atomSetCollection != null) {
@@ -62,7 +64,7 @@ class ModelManager {
         if (name.indexOf(" (modified)") < 0)
           name += " (modified)";
         modelLoader = new ModelLoader(viewer, atomSetCollection, modelLoader,
-            name);
+            name, bsNew);
       }
     } else if (atomSetCollection == null) {
       return zap();
@@ -79,7 +81,7 @@ class ModelManager {
       if (modelSetName == null)
         modelSetName = reduceFilename(fileName);
       modelLoader = new ModelLoader(viewer, atomSetCollection, null,
-          modelSetName);
+          modelSetName, bsNew);
     }
     if (modelLoader.getAtomCount() == 0)
       zap();

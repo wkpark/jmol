@@ -7,7 +7,7 @@ import java.util.BitSet;
 public interface MinimizerInterface {
 
   public abstract boolean minimize(int steps, double crit, BitSet bsSelected, 
-                                   boolean isSilent) throws Exception;
+                                   boolean isSilent, boolean taintAtoms) throws Exception;
   public abstract void setProperty(String propertyName, Object propertyValue);
   public abstract Object getProperty(String propertyName, int param);
 }

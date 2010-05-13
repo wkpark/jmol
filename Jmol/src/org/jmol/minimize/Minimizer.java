@@ -69,6 +69,8 @@ public class Minimizer implements MinimizerInterface {
   private String ff = "UFF";
   private BitSet bsTaint, bsSelected, bsAtoms;
   private BitSet bsFixed;
+  private boolean taintAtoms;
+  
   public Vector constraints;
   
   private boolean isSilent;
@@ -146,6 +148,7 @@ public class Minimizer implements MinimizerInterface {
     
   private void clear() {
     setMinimizationOn(false);
+    taintAtoms = true;
     atomCount = 0;
     bondCount = 0;
     atoms = null;
@@ -167,8 +170,9 @@ public class Minimizer implements MinimizerInterface {
     //  viewer = null;
   }
   
-  public boolean minimize(int steps, double crit, BitSet bsSelected, boolean forceSilent) {
+  public boolean minimize(int steps, double crit, BitSet bsSelected, boolean forceSilent, boolean taintAtoms) {
     isSilent = (forceSilent || viewer.getBooleanProperty("minimizationSilent"));
+    this.taintAtoms = taintAtoms;
     Object val;
     if (steps == Integer.MAX_VALUE) {
       val = viewer.getParameter("minimizationSteps");
@@ -359,7 +363,8 @@ public class Minimizer implements MinimizerInterface {
     if (steps > 0) {
       bsTaint = BitSetUtil.copy(bsAtoms);
       BitSetUtil.andNot(bsTaint, bsFixed);
-      viewer.setTaintedAtoms(bsTaint, AtomCollection.TAINT_COORD);
+      if (taintAtoms) // not for 2D loads
+        viewer.setTaintedAtoms(bsTaint, AtomCollection.TAINT_COORD);
     }
     return true;
 

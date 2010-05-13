@@ -2461,6 +2461,21 @@ abstract public class ModelCollection extends BondCollection {
     return new int[] { nNew, nModified };
   }
 
+  /**
+   * these are hydrogens that are being added due to a load 2D command
+   * and are therefore not to be flagged as NEW
+   * 
+   * @param vConnections
+   * @param atomIndex
+   */
+  public void attachHydrogens(Vector vConnections, int atomIndex) {
+    short mad = getDefaultMadFromOrder(1);
+    for (int i = 0; i < vConnections.size(); i++) {
+      Bond b = bondAtoms((Atom) vConnections.get(i), atoms[atomIndex++], 1, mad, null, 0);
+      b.order &= ~JmolEdge.BOND_NEW;
+    }
+  }
+
   public int autoBond(BitSet bsA, BitSet bsB, BitSet bsExclude, BitSet bsBonds, short mad) {
     if (atomCount == 0)
       return 0;

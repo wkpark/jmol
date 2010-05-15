@@ -215,6 +215,12 @@ public class Minimizer implements MinimizerInterface {
       clear();
       return false;
     }
+    if (steps > 0) {
+      bsTaint = BitSetUtil.copy(bsAtoms);
+      BitSetUtil.andNot(bsTaint, bsFixed);
+      if (taintAtoms) // not for 2D loads
+        viewer.setTaintedAtoms(bsTaint, AtomCollection.TAINT_COORD);
+    }
     setAtomPositions();
     this.bsSelected = bsSelected;
 
@@ -359,15 +365,7 @@ public class Minimizer implements MinimizerInterface {
       Logger.error(GT._("could not setup force field {0}", ff));
       return false;
     }
-
-    if (steps > 0) {
-      bsTaint = BitSetUtil.copy(bsAtoms);
-      BitSetUtil.andNot(bsTaint, bsFixed);
-      if (taintAtoms) // not for 2D loads
-        viewer.setTaintedAtoms(bsTaint, AtomCollection.TAINT_COORD);
-    }
     return true;
-
   }
   
   private void setAtomPositions() {

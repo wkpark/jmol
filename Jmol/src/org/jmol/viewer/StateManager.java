@@ -947,7 +947,7 @@ public class StateManager {
       setParameterValue("visualRange", visualRange);
       setParameterValue("wireframeRotation", wireframeRotation);
       setParameterValue("zoomLarge", zoomLarge);
-      setParameterValue("zShade", zShadePower);
+      setParameterValue("zShadePower", zShadePower);
       setParameterValue("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
     }
 

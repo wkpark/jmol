@@ -1972,6 +1972,7 @@ public class Token {
       // float
       
       "axesScale",                                new Token(axesscale),
+      "axisScale",                                null, // legacy
       "bondTolerance",                            new Token(bondtolerance),
       "cameraDepth",                              new Token(cameradepth),
       "defaultDrawArrowScale",                    new Token(defaultdrawarrowscale),

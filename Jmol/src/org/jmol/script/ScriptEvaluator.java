@@ -7579,7 +7579,7 @@ public class ScriptEvaluator {
       filter = viewer.getDefaultLoadFilter();
     if (filter.length() > 0) {
       htParams.put("filter", filter);
-      loadScript.append(" FILTER ").append(Escape.escape(filter));
+      sOptions += " FILTER " + Escape.escape(filter);
     }
     if (filenames == null) {
       // standard file loading here
@@ -7604,10 +7604,29 @@ public class ScriptEvaluator {
       else
         htParams.put("OutputStream", os);
     }
+      
+    if (filenames == null && tokType == 0) {
+      // a single file or string -- complete the loadScript
+      loadScript.append(" ");
+      if (filename.startsWith("@") || isInline) {
+        loadScript.append(Escape.escape(filename));
+      } else {
+        if (!filename.equals("string") && !filename.equals("string[]"))
+          loadScript.append("/*file*/");
+        if (localName != null)
+          localName = viewer.getFullPath(localName);
+        loadScript.append(Escape.escape((localName != null ? localName
+            : "$FILENAME$")));
+      }
+      loadScript.append(sOptions);
+      htParams.put("loadScript", loadScript);
+    }
+
     if (!isSyntaxCheck)
       viewer.setCursor(Viewer.CURSOR_WAIT);
+    
     errMsg = viewer.loadModelFromFile(filename, filenames, isAppend, htParams,
-        tokType);
+        loadScript, tokType);
     if (os != null)
       try {
         Logger.info(GT._("file {0} created", localName));
@@ -7623,36 +7642,18 @@ public class ScriptEvaluator {
         evalError(errMsg, null);
       return;
     }
-    if (filenames == null) {
-      // a single file or string -- complete the loadScript
-      loadScript.append(" ");
-      if (filename.startsWith("@") || isInline) {
-        loadScript.append(Escape.escape(filename));
-      } else {
-        if (!filename.equals("string") && !filename.equals("string[]"))
-          loadScript.append("/*file*/");
-        if (localName != null)
-          localName = viewer.getFullPath(localName);
-        loadScript.append(Escape.escape((localName != null ? localName
-            : (modelName = (String) htParams.get("fullPathName")))));
-      }
-      loadScript.append(sOptions);
-    }
-    viewer.addLoadScript(loadScript.toString());
     // with "@t" we do not save the load command but instead the data statement
     // but there could state problems here because then we don't have the
     // option to save load options with that... Hmm.
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (statementLength == 2) {
         if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
-          viewer.addLoadScript("-");
           script(0, filename);
           return;
         }
         String surfaceType = SurfaceFileTyper.determineSurfaceFileType(viewer
             .getBufferedInputStream(filename));
         if (surfaceType != null) {
-          viewer.addLoadScript("-");
           runScript("isosurface " + Escape.escape(filename));
           return;
         }
@@ -7664,7 +7665,9 @@ public class ScriptEvaluator {
       viewer.setCurrentModelIndex(modelCount);
     }
     if (logMessages)
-      scriptStatusOrBuffer("Successfully loaded:" + modelName);
+      scriptStatusOrBuffer("Successfully loaded:" + 
+          (filenames == null ? htParams.get("fullPathName")
+             : modelName));
     String script = viewer.getDefaultLoadScript();
     String msg = "";
     if (script.length() > 0)

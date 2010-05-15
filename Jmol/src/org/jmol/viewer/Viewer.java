@@ -1764,7 +1764,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public String openFile(String fileName) {
     Object atomSetCollection = getAtomSetCollection(fileName, false, null, null);
-    return createModelSetAndReturnError(atomSetCollection, false);
+    return createModelSetAndReturnError(atomSetCollection, false, null);
   }
 
   /**
@@ -1776,7 +1776,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String openFiles(String[] fileNames) {
     Object atomSetCollection = getAtomSetCollection(fileNames, false, null,
         null);
-    return createModelSetAndReturnError(atomSetCollection, false);
+    return createModelSetAndReturnError(atomSetCollection, false, null);
   }
 
   /**
@@ -1791,7 +1791,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     zap(true, false);
     Object atomSetCollection = fileManager.createAtomSetCollectionFromReader(
         fullPathName, fileName, reader, setLoadParameters(null));
-    return createModelSetAndReturnError(atomSetCollection, false);
+    return createModelSetAndReturnError(atomSetCollection, false, null);
   }
 
   /**
@@ -1801,12 +1801,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param fileNames
    * @param isAppend
    * @param htParams
+   * @param loadScript 
    * @param tokType
    * @return null or error
    */
   public String loadModelFromFile(String fileName, String[] fileNames,
                                   boolean isAppend, Hashtable htParams,
-                                  int tokType) {
+                                  StringBuffer loadScript, int tokType) {
     Object atomSetCollection;
     if (fileNames == null) {
       atomSetCollection = getAtomSetCollection(fileName, isAppend, htParams,
@@ -1823,7 +1824,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (tokType != 0)
       return loadAtomDataAndReturnError(atomSetCollection, tokType);
-    return createModelSetAndReturnError(atomSetCollection, isAppend);
+    if (loadScript != null) {
+      String fname = (String) htParams.get("fullPathName");
+      if (fname == null)
+        fname = "";
+      loadScript = new StringBuffer(TextFormat.simpleReplace(loadScript.toString(), "$FILENAME$", fname));
+    }
+    return createModelSetAndReturnError(atomSetCollection, isAppend, 
+        loadScript);
   }
 
   /**
@@ -1841,7 +1849,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         DOMNode, setLoadParameters(null));
     long ms = System.currentTimeMillis() - timeBegin;
     Logger.info("openDOM " + ms + " ms");
-    return createModelSetAndReturnError(atomSetCollection, false);
+    return createModelSetAndReturnError(atomSetCollection, false, null);
   }
 
   public String openStringInline(String strModel) {
@@ -1870,7 +1878,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       zap(true, false);
     Object atomSetCollection = fileManager.createAtomSeCollectionFromArrayData(
         arrayData, setLoadParameters(null), isAppend);
-    return createModelSetAndReturnError(atomSetCollection, isAppend);
+    return createModelSetAndReturnError(atomSetCollection, isAppend, null);
   }
 
   public String loadInline(String strModel, boolean isAppend) {
@@ -2007,12 +2015,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   /**
    * 
-   * @param isAppend
    * @param atomSetCollection
+   * @param isAppend
+   * @param loadScript TODO
    * @return errMsg
    */
   private String createModelSetAndReturnError(Object atomSetCollection,
-                                              boolean isAppend) {
+                                              boolean isAppend, StringBuffer loadScript) {
     String fullPathName = fileManager.getFullPathName();
     String fileName = fileManager.getFileName();
     String errMsg;
@@ -2028,7 +2037,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       clearAtomSets();
     setFileLoadStatus(FILE_STATUS_CREATING_MODELSET, fullPathName, fileName,
         null, null);
-    errMsg = createModelSet(fullPathName, fileName, atomSetCollection, isAppend);
+    errMsg = createModelSet(fullPathName, fileName, atomSetCollection, loadScript, isAppend);
     setFileLoadStatus(FILE_STATUS_MODELSET_CREATED, fullPathName, fileName,
         getModelSetName(), errMsg);
     if (isAppend) {
@@ -2051,7 +2060,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public void openClientFile(String fullPathName, String fileName,
                              Object atomSetCollection) {
-    createModelSet(fullPathName, fileName, atomSetCollection, false);
+    createModelSet(fullPathName, fileName, atomSetCollection, null, false);
   }
 
   private String openStringInline(String strModel, Hashtable htParams,
@@ -2061,7 +2070,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       zap(true, false);
     Object atomSetCollection = fileManager.createAtomSetCollectionFromString(
         strModel, setLoadParameters(htParams), isAppend, false);
-    return createModelSetAndReturnError(atomSetCollection, isAppend);
+    return createModelSetAndReturnError(atomSetCollection, isAppend, null);
   }
 
   private String openStringsInline(String[] arrayModels, Hashtable htParams,
@@ -2071,7 +2080,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       zap(true, false);
     Object atomSetCollection = fileManager.createAtomSeCollectionFromStrings(
         arrayModels, setLoadParameters(htParams), isAppend);
-    return createModelSetAndReturnError(atomSetCollection, isAppend);
+    return createModelSetAndReturnError(atomSetCollection, isAppend, null);
   }
 
   public char getInlineChar() {
@@ -2089,11 +2098,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param fullPathName
    * @param fileName
    * @param atomSetCollection
+   * @param loadScript TODO
    * @param isAppend
    * @return null or error message
    */
   private String createModelSet(String fullPathName, String fileName,
-                                Object atomSetCollection, boolean isAppend) {
+                                Object atomSetCollection, 
+                                StringBuffer loadScript, boolean isAppend) {
     // null fullPathName implies we are doing a merge
     pushHoldRepaint("createModelSet");
     setErrorMessage(null);
@@ -2102,12 +2113,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       modelSet = modelManager.createModelSet(fullPathName, fileName,
           atomSetCollection, bsNew, isAppend);
       if (bsNew.cardinality() > 0) {
+        String scriptOld = fileManager.getLoadScript();
+        addLoadScript("-");
         String jmolScript = (String) modelSet.getModelSetAuxiliaryInfo("jmolscript");
-        minimize(Integer.MAX_VALUE, 0, bsNew, true, true, false);
+        minimize(Integer.MAX_VALUE, 0, bsNew, true, true, true);
+        if (loadScript != null) {
+          // this will be taken care of by data statements
+//          String scriptNew = fileManager.getLoadScript();
+          addLoadScript("-");
+          addLoadScript(scriptOld);
+          addLoadScript("set minimizationSteps 0;" + loadScript + ";set minimizationSteps " + 
+              getParameter("minimizationSteps") + ";\n");
+        }
+       
+        
         if (jmolScript != null)
           modelSet.getModelSetAuxiliaryInfo().put("jmolscript", jmolScript);
+      } else if (loadScript != null) {
+        addLoadScript(loadScript.toString());
       }
-      //but we need to NOT save H atom positions, either!
       if (!isAppend)
         initializeModel();
     } catch (Error er) {

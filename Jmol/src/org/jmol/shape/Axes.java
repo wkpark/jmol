@@ -159,7 +159,7 @@ public class Axes extends FontLineShape {
         axisState += Escape.escape(labels[i]) + " ";
       axisState += "\n";
     }
-    return super.getShapeState() + "  axisScale = " + viewer.getAxesScale()
+    return super.getShapeState() + "  axesScale = " + viewer.getAxesScale()
         + ";\n" + axisState;
   }
 

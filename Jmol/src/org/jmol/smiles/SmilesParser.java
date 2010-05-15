@@ -164,7 +164,8 @@ public class SmilesParser {
    *                                      #   !R" or "R0" indicates "not in any ring"
    *   [r_Prop] == { "r" [digits] | "r" } # in ring of size [digits]; "r" indicates "in a ring"
    *   [v_Prop] == { "v" [digits] | "v" } # valence -- total bond order (counting double as 2, e.g.)
-   *   [X_Prop] == { "X" [digits] | "X" } # connectivity -- total number of connections (includes hmod)
+   *   [X_Prop] == { "X" [digits] | "X" } # connectivity -- total number of connections
+   *                                      #   includes implicit H atoms
    *   [x_Prop] == { "x" [digits] | "x" } # ring connectivity -- total ring connections ?
    *   
    *   [nestedExpression] == "$(" + [atomExpression] + ")"

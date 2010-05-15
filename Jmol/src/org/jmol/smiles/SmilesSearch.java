@@ -431,7 +431,7 @@ public class SmilesSearch {
       n = patternAtom.implicitHydrogenCount;
       if (n != Integer.MIN_VALUE) {
         int nH = atom.getImplicitHydrogenCount();
-        if (n == -1 && nH == 0 || n != -1 && n != nH)
+        if (n == -1 ? nH == 0 : n != nH)
           break;
       }
 
@@ -446,8 +446,8 @@ public class SmilesSearch {
 
       // X <n> connectivity ?
       if (patternAtom.connectivity > 0
-          && patternAtom.connectivity != atom.getCovalentHydrogenCount()
-              + atom.getCovalentHydrogenCount())
+          && patternAtom.connectivity != atom.getCovalentBondCount()
+              + atom.getImplicitHydrogenCount())
         break;
 
       // r <n>

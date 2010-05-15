@@ -153,11 +153,16 @@ public class SmilesParser {
    *       # note -- "?" here (unspecified) is not relevant in 3D-SEARCH 
    *   
    *   [A_Prop] == "#" [digits]           # elemental atomic number
-   *   [D_Prop] == { "D" [digits] | "D" } # degree -- total number of connections excluding hmod
+   *   [D_Prop] == { "D" [digits] | "D" } # degree -- total number of connections 
+   *                                      #   excludes implicit H atoms
    *   [H_Prop] == { "H" [digits] | "H" } # exact hydrogen count 
-   *   [h_Prop] == { "h" [digits] | "h" } # implicit hydrogens -- at least this number
-   *   [R_Prop] == { "R" [digits] | "R" } # ring membership; e.g. "R2" indicates "in two rings"; "!R" or "R0" indicates "not in any ring" 
-   *   [r_Prop] == { "r" [digits] | "r" } # in ring of size [digits]
+   *                                      #   excludes implicit H atoms
+   *   [h_Prop] == { "h" [digits] | "h" } # implicit hydrogens -- "h" indicates "at least one"
+   *                                      #   (see note below)
+   *   [R_Prop] == { "R" [digits] | "R" } # ring membership; e.g. "R2" indicates "in two rings"
+   *                                      #   "R" indicates "in a ring" 
+   *                                      #   !R" or "R0" indicates "not in any ring"
+   *   [r_Prop] == { "r" [digits] | "r" } # in ring of size [digits]; "r" indicates "in a ring"
    *   [v_Prop] == { "v" [digits] | "v" } # valence -- total bond order (counting double as 2, e.g.)
    *   [X_Prop] == { "X" [digits] | "X" } # connectivity -- total number of connections (includes hmod)
    *   [x_Prop] == { "x" [digits] | "x" } # ring connectivity -- total ring connections ?
@@ -172,7 +177,54 @@ public class SmilesParser {
    * Bob Hanson, Jmol 12.0.RC10, 5/8/2010
    * 
    */
-  
+
+  /*
+   * implicit hydrogen calculation
+   * 
+   * For a match to a SMILES string, as in "CCC".find("[Ch2]")
+   * Jmol will return no match, because "CCC" refers to a structure
+   * with a specific set of H atoms. Just because the H atoms are 
+   * "implicit" in "CCC" is irrelevant.
+   * 
+   * For a match to a 3D model, [*h2] refers to all atoms such 
+   * that the "calculate hydrogens" command would add two hydrogens,
+   * and [*h] refers to cases where Jmol would add at least one hydrogen.
+   * 
+   * Jmol calculates the number of implicit hydrogens as follows:
+   * 
+   *  int targetValence = getTargetValence();
+   *  int charge = getFormalCharge();
+   *  if (charge != 0)
+        targetValence += (targetValence == 4 ? -Math.abs(charge) : charge);
+   * int n = targetValence - getValence();
+   * nImplicitHydrogens = (n < 0 ? 0 : n);
+   * 
+   * Where getTargetValence() returns:
+   *     switch (getElementNumber()) {
+   *     case 6: //C
+   *     case 14: //Si      
+   *       return 4;
+   *     case 5:  // B
+   *     case 7:  // N
+   *     case 15: // P
+   *       return 3;
+   *     case 8: //O
+   *     case 16: //S
+   *       return 2;
+   *     default:
+   *       return -1;
+   *     }
+   *     
+   * Thus the implicit hydrogen count is:
+   * 
+   * a) 0 for all atoms other than {B,C,N,O,P,Si,S}
+   * b) 0 for BR3
+   * c) 0 for NR3, 1 for NR2, 2 for NR
+   * d) 0 for RN=R, 1 for R=N, 0 for R=NR2(+), 0 for R2N(-)
+   * e) 0 for CR4, 1 for CR3, 2 for CR2, 3 for CR
+   * f) 0 for CR3(+), 0 for CR3(-)
+   * 
+   */
   private boolean isSearch;
   private SmilesBond[] ringBonds;
   

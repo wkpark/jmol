@@ -6881,11 +6881,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           appConsole = null;
         } else if (appConsole == null && paramInfo != null
             && ((Boolean) paramInfo).booleanValue()) {
-          appConsole = (isApplet ? (JmolAppConsoleInterface) Interface
-              .getOptionInterface("applet.AppletConsole")
-              : (JmolAppConsoleInterface) Interface
-                  .getApplicationInterface("jmolpanel.AppConsole"))
-              .getAppConsole(this, display);
+          for (int i = 0; i < 2 && appConsole == null; i++)
+            appConsole = (isApplet ? (JmolAppConsoleInterface) Interface
+                .getOptionInterface("applet.AppletConsole")
+                : (JmolAppConsoleInterface) Interface
+                    .getApplicationInterface("jmolpanel.AppConsole"))
+                .getAppConsole(this, display);
         }
         scriptEditor = (appConsole == null ? null : appConsole
             .getScriptEditor());

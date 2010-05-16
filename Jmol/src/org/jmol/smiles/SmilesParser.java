@@ -24,9 +24,9 @@
 
 package org.jmol.smiles;
 
+import java.util.Hashtable;
+
 import org.jmol.util.Elements;
-//import org.jmol.util.Logger;
-import org.jmol.util.TextFormat;
 
 /**
  * Parses a SMILES String to create a <code>SmilesMolecule</code>.
@@ -58,6 +58,10 @@ public class SmilesParser {
    * An adaptation of SMARTS for 3D molecular atom search and selection.
    * 
    * Comparision to Daylight SMARTS:
+   * 
+   * -- allows whitespace
+   * 
+   * -- allows definition of $R<n> variables
    * 
    * -- defines "aromatic" unambiguously and strictly geometrically. 
    *    see org.jmol.smiles.SmilesAromatic.java
@@ -96,6 +100,17 @@ public class SmilesParser {
    *    be in brackets. Primitives such as "35" or "H2" or "R2" must be within brackets in order to 
    *    distinguish them from ring connections. 
    *    
+   *       
+   *   [smartDef] == [variableDefs] [smarts] | [smarts]
+   *   [variableDefs] == [variableDef] | [variableDef] [variableDefs]
+   *   [variableDef] ==  "$R" [digits] "=" "\"" [smarts] "\"" [comments] ";"
+   *   
+   *      # note: Variable definitions must be parsed first. 
+   *      #       After that, all variable references ($R[digits]) are replaced
+   *      #       and all whitespace is removed
+   *      # note: Variable references that would have digits run over into 
+   *      #       ring numbers may be terminated with white space
+   *      
    *   [smarts] == [node][connections] 
    *   [connections] == [connection] | NULL }
    *   [connection] == { [branch] | [bond] [node] } [connections]
@@ -294,8 +309,9 @@ public class SmilesParser {
     if (pattern == null || pattern.length() == 0)
       return;
 
-    if (pattern.indexOf(" ") >= 0)
-      pattern = TextFormat.simpleReplace(pattern, " ", "");
+    if (pattern.indexOf("$R") >= 0)
+      pattern = parseVariables(pattern);
+    pattern = pattern.replaceAll("\\s","");
     if (pattern.indexOf("$(") >= 0)
       pattern = parseNested(molecule, pattern);
 
@@ -440,6 +456,10 @@ public class SmilesParser {
       ch2 = ']';
       margin = 1;
       break;
+    case '"':
+      ch2 = '"';
+      margin = 1;
+      break;
     case '(':
       ch2 = ')';
       margin = 1;
@@ -461,6 +481,42 @@ public class SmilesParser {
       }
     }
     throw new InvalidSmilesException("Unmatched " + ch);
+  }
+
+  private String parseVariables(String pattern) throws InvalidSmilesException {
+    Hashtable vars = new Hashtable();
+    int index;
+    int ipt = 0;
+    int iptLast = -1;
+    int[] ret = new int[1];
+    char ch;
+    while ((index = pattern.indexOf("$R", ipt)) >= 0) {
+      ipt = getDigits(pattern, index + 2, ret);
+      if (ret[0] < 0)
+        throw new InvalidSmilesException("bad variable definition: "
+            + pattern.substring(index));
+      if (getChar(pattern, ipt) != '=')
+        break;
+      String s = getSubPattern(pattern, ipt + 1, '\"');
+      vars.put("R" + ret[0], s);
+      ipt += s.length() + 2;
+      
+      while ((ch = getChar(pattern, ++ipt)) != ';' && ch != '\0') {}
+       iptLast = ++ipt;
+    }
+    if (iptLast < 0)
+      return pattern;
+    pattern = pattern.substring(iptLast);
+    ipt = 0;
+    while ((index = pattern.indexOf("$R")) >= 0) {
+      ipt = getDigits(pattern, index + 2, ret);
+      String s = (String) vars.get("R" + ret[0]);
+      if (s == null)
+        throw new InvalidSmilesException("undefined variable: "
+            + pattern.substring(index, ipt));
+      pattern = pattern.substring(0, index) + s + pattern.substring(ipt);
+    }
+    return pattern;
   }
 
   private String parseNested(SmilesSearch molecule, String pattern) throws InvalidSmilesException {

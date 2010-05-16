@@ -651,31 +651,40 @@ public class SmilesParser {
             // Instead of "Rh" one should use "hR"; instead of "Ar", use "rA"
             // Even better is to use &: R&h, r&A
             char nextChar = getChar(pattern, index + 1);
-            String symbol = null;
-            String sym2 = "";
-            boolean isSymbol = !isBracketed;
-            boolean allowSymbol = (Character.isLetter(ch) && (isSymbol || isNot || !((isPrimitive ? atomSet
-                : newAtom).hasSymbol)));
-            if (allowSymbol) {
-              // if we already have a symbol, and we aren't negating,
-              // then this MUST be a property
-              // because you can't have [C&O], but you can have [R&!O&!C]
-              // We also allow [C&!O], though that's not particularly useful.
-              sym2 = pattern.substring(index + 1, index
-                  + (Character.isLowerCase(nextChar) ? 2 : 1));
-              symbol = Character.toUpperCase(ch) + sym2;
-              if (ch == 'H')
-                isSymbol = !Character.isDigit(nextChar);
-              else if (!isBracketed || "DdhRrvXx".indexOf(ch) < 0 || !Character.isDigit(nextChar))
-                isSymbol = true;
-              else
-                isSymbol = (!isBracketed && !isSearch ? SmilesAtom
-                    .allowSmilesUnbracketed(symbol) : symbol.equals("Xx")
-                    || Elements.elementNumberFromSymbol(symbol, true) > 0);
+            String sym2 = pattern.substring(index + 1, index
+                + (Character.isLowerCase(nextChar) ? 2 : 1));
+            String symbol = Character.toUpperCase(ch) + sym2;
+            boolean mustBeSymbol = true;
+            boolean checkForPrimitive = (isBracketed && Character.isLetter(ch));
+            if (checkForPrimitive) {
+              if (!isNot && (isPrimitive ? atomSet : newAtom).hasSymbol) {
+                // if we already have a symbol, and we aren't negating,
+                // then this MUST be a property
+                // because you can't have [C&O], but you can have [R&!O&!C]
+                // We also allow [C&!O], though that's not particularly useful.
+                mustBeSymbol = false;
+              } else if (ch == 'H') {
+                // only H if not H<n> 
+                mustBeSymbol = !Character.isDigit(nextChar);
+              } else if ("DdhRrvXx".indexOf(ch) >= 0
+                  && Character.isDigit(nextChar)) {
+                // not a symbol if any of these are followed by a number 
+                mustBeSymbol = false;
+              } else if (!symbol.equals("A") && !symbol.equals("Xx")) {
+                // check for two-character symbol, then one-character symbol
+                mustBeSymbol = (Elements.elementNumberFromSymbol(symbol, true) > 0);
+                if (!mustBeSymbol && sym2 != "") {
+                  sym2 = "";
+                  symbol = symbol.substring(0, 1);
+                  mustBeSymbol = (Elements
+                      .elementNumberFromSymbol(symbol, true) > 0);
+                }
+              }
             }
-            if (isSymbol) {
-              symbol = ch + sym2;
-              if (!newAtom.setSymbol(symbol))
+            if (mustBeSymbol) {
+              if (!isBracketed && !isSearch
+                  && !SmilesAtom.allowSmilesUnbracketed(symbol)
+                  || !newAtom.setSymbol(symbol = ch + sym2))
                 throw new InvalidSmilesException("Invalid atom symbol: "
                     + symbol);
               if (isPrimitive)

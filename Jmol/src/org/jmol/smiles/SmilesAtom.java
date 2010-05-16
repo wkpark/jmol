@@ -236,7 +236,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
    * @return  false if invalid symbol
    */
   public boolean setSymbol(String symbol) {
-    isAromatic = symbol.equals(symbol.toLowerCase()); // BH added
+    isAromatic = symbol.equals(symbol.toLowerCase());
     hasSymbol = true;
     if (symbol.equals("*")) {
       isAromatic = false;

@@ -120,6 +120,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
             cclass == Integer.MIN_VALUE ? cclass : (cclass << 8)
                 + sAtom.getChiralOrder(), sAtom.elementNumber, sAtom
                 .getCharge());
+        System.out.println(atom);
         // we pass on the aromatic flag because
         // we don't want SmilesSearch to calculate
         // that for us
@@ -136,6 +137,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         while (--n >= 0) {
           SmilesAtom atomH = atoms[ptAtom] = new SmilesAtom(0, ptAtom, 0,
               (short) 1, 0);
+          System.out.println(atomH);
           ptAtom++;
           atomH.setBonds(new SmilesBond[1]);
           atomH.bonds[0] = bonds[offset + n] = new SmilesBond(atom, atomH,

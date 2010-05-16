@@ -440,6 +440,11 @@ public class SmilesSearch {
           && patternAtom.degree != atom.getCovalentBondCount())
         break;
 
+      // d <n> degree
+      if (patternAtom.nonhydrogenDegree > 0
+          && patternAtom.nonhydrogenDegree != atom.getCovalentBondCount() - atom.getCovalentHydrogenCount())
+        break;
+
       // v <n> valence
       if (patternAtom.valence > 0 && patternAtom.valence != atom.getValence())
         break;
@@ -755,10 +760,11 @@ public class SmilesSearch {
   }
 
   private void setSmilesCoordinates(SmilesAtom sAtom, JmolNode[] cAtoms) {
-    
+
     // When testing equality of two SMILES strings in terms of stereochemistry,
     // we need to set the atom positions based on the ORIGINAL SMILES order,
-    // which, except for the H atom, will be the same as the "matchedAtom" index.
+    // which, except for the H atom, will be the same as the "matchedAtom"
+    // index.
     // all the necessary information is passed via the atomSite field of Atom
 
     int iAtom = sAtom.getMatchingAtom();
@@ -770,31 +776,47 @@ public class SmilesSearch {
     int chiralOrder = atomSite & 0xFF;
     if (chiralClass != sAtom.getChiralClass())
       return;
-    
+
     // set the chirality center at the origin
     atom.set(0, 0, 0);
 
     // Here is the secret:
     // Sort the atoms by the origintal order of bonds
-    // in the SMILES string that generated the 
+    // in the SMILES string that generated the
     // atom set.
-    int[] map = new int[cAtoms[4] == null  ? 4 : cAtoms[5] == null ? 5 : 6];
+    int[] map = new int[cAtoms[4] == null ? 4 : cAtoms[5] == null ? 5 : 6];
     JmolEdge[] bonds = atom.getEdges();
     for (int i = 0; i < map.length; i++) {
       map[i] = cAtoms[i].getIndex();
-//      System.out.println("i=" + i + "; cAtoms[i]=" + map[i]);
+      // System.out.println("i=" + i + "; cAtoms[i]=" + map[i]);
+    }
+    int k;
+    JmolNode a2 = null;
+    JmolEdge[] b2 = null;
+    if (chiralClass == 2) {
+      a2 = bonds[1].getOtherAtom(atom);
+      b2 = a2.getEdges();
+      atom = bonds[0].getOtherAtom(atom);
+      bonds = atom.getEdges();
     }
     for (int i = 0; i < map.length; i++) {
-      int k = 0;
-      for (; k < bonds.length; k++)
+      for (k = 0; k < bonds.length; k++)
         if (bonds[k].getOtherAtom(atom) == cAtoms[i])
           break;
-      map[i] = (k *1000 + 1000) + i;
+      if (k < bonds.length) {
+        map[i] = (k * 100 + 1000) + i;
+      } else if (a2 != null) {
+        for (k = 0; k < b2.length; k++)
+          if (b2[k].getOtherAtom(a2) == cAtoms[i])
+            break;
+        map[i] = (k * 100 + 2000) + i;
+      }
     }
     Arrays.sort(map);
     for (int i = 0; i < map.length; i++) {
-      map[i] = map[i] & 7;
-//      System.out.println("i=" + i + "; map[i]=" + map[i] + " a=" + cAtoms[map[i]].getIndex());
+      map[i] = map[i] % 10;
+      // System.out.println("i=" + i + "; map[i]=" + map[i] + " a=" +
+      // cAtoms[map[i]].getIndex());
     }
     switch (chiralClass) {
     case SmilesAtom.CHIRALITY_ALLENE:
@@ -845,7 +867,7 @@ public class SmilesSearch {
       cAtoms[map[2]].set(0, 1, 0);
       cAtoms[map[3]].set(-1, 0, 0);
       if (n == 6)
-        cAtoms[map[4]].set(0, -1, 0);        
+        cAtoms[map[4]].set(0, -1, 0);
       break;
     }
   }

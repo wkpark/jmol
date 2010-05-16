@@ -117,7 +117,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   
   public String toString() {
     return "[" + Elements.elementSymbolFromNumber(elementNumber)
-    + index + (matchingAtom >= 0 ? "(" + matchingAtom + ")" : "")
+    + '.' + index + (matchingAtom >= 0 ? "(" + matchingAtom + ")" : "")
 //    + " ch:" + charge 
 //    + " ar:" + isAromatic 
 //    + " H:" + explicitHydrogenCount
@@ -434,6 +434,11 @@ public class SmilesAtom extends Point3f implements JmolNode {
   int degree = -1;
   public void setDegree(int degree) {
     this.degree = degree;
+  }
+
+  int nonhydrogenDegree = -1;
+  public void setNonhydrogenDegree(int degree) {
+    nonhydrogenDegree = degree;
   }
 
   int valence = -1;

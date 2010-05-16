@@ -168,7 +168,9 @@ public class SmilesParser {
    *   
    *   [A_Prop] == "#" [digits]           # elemental atomic number
    *   [D_Prop] == { "D" [digits] | "D" } # degree -- total number of connections 
-   *                                      #   excludes implicit H atoms
+   *                                      #   excludes implicit H atoms; default 1
+   *   [d_Prop] == { "d" [digits] | "d" } # degree -- non-hydrogen connections
+   *                                      #   default 1 
    *   [H_Prop] == { "H" [digits] | "H" } # exact hydrogen count 
    *                                      #   excludes implicit H atoms
    *   [h_Prop] == { "h" [digits] | "h" } # implicit hydrogens -- "h" indicates "at least one"
@@ -614,120 +616,129 @@ public class SmilesParser {
           }
           newAtom.setAtomicMass(mass);
         } else {
-          char nextChar = getChar(pattern, index + 1);
-          String symbol = null;
-          int size = 1;
-          boolean isSymbol;
-          boolean haveSymbol = ((isPrimitive ? atomSet : newAtom).hasSymbol);
-          if (haveSymbol && !isNot) {
-            isSymbol = false;
-            // if we already have a symbol, then this MUST be a property
-          } else {
-            // SMARTS has ambiguities in terms of chaining without &. 
+          switch (ch) {
+          case '_': // $(...) nesting
+            index = getDigits(pattern, index + 1, ret) + 1;
+            if (ret[0] == Integer.MIN_VALUE)
+              throw new InvalidSmilesException("Invalid SEARCH primitive: "
+                  + pattern.substring(index));
+            newAtom.iNested = ret[0];
+            break;
+          case '-':
+          case '+':
+            index = checkCharge(pattern, index, newAtom);
+            break;
+          case '@':
+            molecule.haveAtomStereochemistry = true;
+            index = checkChirality(pattern, index,
+                molecule.atoms[newAtom.index]);
+            break;
+          default:
+            // SMARTS has ambiguities in terms of chaining without &.
             // H alone is "one H atom"
             // "!H" is "not hydrogen" but "!H2" is "not two attached hydrogens"
             // Rh would be "Any ring atom with at least one implicit H atom"
             // Ar would be "Any aliphatic ring atom"
             // also, Jmol has Xx
             // We manage this by simply asserting that if & is not used and
-            // the first two-letters of the expression could be interpreted 
+            // the first two-letters of the expression could be interpreted
             // as a symbol, then it WILL be interpreted as a symbol
             //
             // Instead of "Rh" one should use "hR"; instead of "Ar", use "rA"
-            // Even better is to use &:  R&h, r&A
-            size = (Character.isUpperCase(ch) && Character.isLowerCase(nextChar) ? 2
-                : 1);
-            String s = pattern.substring(index + 1, index + size);
-            symbol = Character.toUpperCase(ch) + s;
-            isSymbol = (!isBracketed && !isSearch ? SmilesAtom.allowSmilesUnbracketed(symbol) 
-                : symbol.equals("Xx") || Elements.elementNumberFromSymbol(symbol, true) > 0);
-            symbol = ch + s;
-          }
-          if ("-+@".indexOf(ch) >= 0 
-              || ch == 'H' && (Character.isDigit(nextChar) || haveSymbol && !isNot)
-              || isBracketed && "_DhRrvXx".indexOf(ch) >= 0 && (Character.isDigit(nextChar) || !isSymbol)) {
-            switch (ch) {
-            default:
-              throw new InvalidSmilesException("Invalid SEARCH primitive: "
-                  + pattern.substring(index));
-            case '_': // $(...) nesting
-              index = getDigits(pattern, index + 1, ret) + 1; // skip trailing _
-              if (ret[0] == Integer.MIN_VALUE)
+            // Even better is to use &: R&h, r&A
+            char nextChar = getChar(pattern, index + 1);
+            String symbol = null;
+            String sym2 = "";
+            boolean isSymbol = !isBracketed;
+            boolean allowSymbol = (Character.isLetter(ch) && (isSymbol || isNot || !((isPrimitive ? atomSet
+                : newAtom).hasSymbol)));
+            if (allowSymbol) {
+              // if we already have a symbol, and we aren't negating,
+              // then this MUST be a property
+              // because you can't have [C&O], but you can have [R&!O&!C]
+              // We also allow [C&!O], though that's not particularly useful.
+              sym2 = pattern.substring(index + 1, index
+                  + (Character.isLowerCase(nextChar) ? 2 : 1));
+              symbol = Character.toUpperCase(ch) + sym2;
+              if (ch == 'H')
+                isSymbol = !Character.isDigit(nextChar);
+              else if (!isBracketed || "DhRrvXx".indexOf(ch) < 0 || !Character.isDigit(nextChar))
+                isSymbol = true;
+              else
+                isSymbol = (!isBracketed && !isSearch ? SmilesAtom
+                    .allowSmilesUnbracketed(symbol) : symbol.equals("Xx")
+                    || Elements.elementNumberFromSymbol(symbol, true) > 0);
+            }
+            if (isSymbol) {
+              symbol = ch + sym2;
+              if (!newAtom.setSymbol(symbol))
+                throw new InvalidSmilesException("Invalid atom symbol: "
+                    + symbol);
+              if (isPrimitive)
+                atomSet.hasSymbol = true;
+              // indicates we have already assigned an atom number
+              index += symbol.length();
+            } else {
+              index = getDigits(pattern, index + 1, ret);
+              int val = ret[0];
+              switch (ch) {
+              default:
                 throw new InvalidSmilesException("Invalid SEARCH primitive: "
                     + pattern.substring(index));
-              newAtom.iNested = ret[0];
-              break;
-            case 'D':
-              // default is 1
-              index = getDigits(pattern, index + 1, ret);
-              newAtom.setDegree(ret[0] == Integer.MIN_VALUE ? 1 : ret[0]);
-              break;
-            case 'H':
-              index = getDigits(pattern, index + 1, ret);
-              // default is 1
-              hydrogenCount = (ret[0] == Integer.MIN_VALUE ? 1 : ret[0]);
-              break;
-            case 'h':
-              index = getDigits(pattern, index + 1, ret);
-              // default > 1
-              newAtom.setImplicitHydrogenCount(ret[0] == Integer.MIN_VALUE ? -1 : ret[0]);
-              break;
-            case 'R':
-              index = getDigits(pattern, index + 1, ret);
-              if (ret[0] == Integer.MIN_VALUE) {
-                ret[0] = 0;
-                newAtom.not = !newAtom.not;  // R --> !R0; !R --> R0 
+              case 'D':
+                // default is 1
+                newAtom.setDegree(val == Integer.MIN_VALUE ? 1 : val);
+                break;
+              case 'd':
+                // default is 1
+                newAtom
+                    .setNonhydrogenDegree(val == Integer.MIN_VALUE ? 1 : val);
+                break;
+              case 'H':
+                // default is 1
+                hydrogenCount = (val == Integer.MIN_VALUE ? 1 : val);
+                break;
+              case 'h':
+                // default > 1
+                newAtom.setImplicitHydrogenCount(val == Integer.MIN_VALUE ? -1
+                    : val);
+                break;
+              case 'R':
+                if (val == Integer.MIN_VALUE) {
+                  val = 0;
+                  newAtom.not = !newAtom.not; // R --> !R0; !R --> R0
+                }
+                newAtom.setRingMembership(val);
+                molecule.needRingData = true;
+                break;
+              case 'r':
+                if (val == Integer.MIN_VALUE) {
+                  val = 0;
+                  newAtom.not = !newAtom.not; // r --> !R0; !r --> R0
+                  newAtom.setRingMembership(val);
+                } else {
+                  newAtom.setRingSize(val);
+                  if (val > molecule.ringDataMax)
+                    molecule.ringDataMax = val;
+                }
+                molecule.needRingData = true;
+                break;
+              case 'v':
+                // default 1
+                newAtom.setValence(val == Integer.MIN_VALUE ? 1 : val);
+                break;
+              case 'X':
+                // default 1
+                newAtom.setConnectivity(val == Integer.MIN_VALUE ? 1 : val);
+                break;
+              case 'x':
+                // default > 0
+                newAtom
+                    .setRingConnectivity(val == Integer.MIN_VALUE ? -1 : val);
+                molecule.needRingData = true;
+                break;
               }
-              newAtom.setRingMembership(ret[0]);
-              molecule.needRingData = true;
-              break;
-            case 'r':
-              index = getDigits(pattern, index + 1, ret);
-              if (ret[0] == Integer.MIN_VALUE) {
-                ret[0] = 0;
-                newAtom.not = !newAtom.not;  // r --> !R0; !r --> R0 
-                newAtom.setRingMembership(ret[0]);
-              } else {
-                newAtom.setRingSize(ret[0]);
-                if (ret[0] > molecule.ringDataMax)
-                  molecule.ringDataMax = ret[0];
-              }
-              molecule.needRingData = true;
-              break;
-            case 'v':
-              // default 1
-              index = getDigits(pattern, index + 1, ret);
-              newAtom.setValence(ret[0] == Integer.MIN_VALUE ? 1 : ret[0]);
-              break;
-            case 'X':
-              // default 1
-              index = getDigits(pattern, index + 1, ret);
-              newAtom.setConnectivity(ret[0] == Integer.MIN_VALUE ? 1 : ret[0]);
-              break;
-            case 'x':
-              // default > 0
-              index = getDigits(pattern, index + 1, ret);
-              newAtom.setRingConnectivity(ret[0] == Integer.MIN_VALUE ? -1 : ret[0]);
-              molecule.needRingData = true;
-              break;
-            case '-':
-            case '+':
-              index = checkCharge(pattern, index, newAtom);
-              break;
-            case '@':
-              molecule.haveAtomStereochemistry = true;
-              index = checkChirality(pattern, index,
-                  molecule.atoms[newAtom.index]);
-              break;
             }
-          } else {
-            // Symbol
-            if (!newAtom.setSymbol(symbol))
-              throw new InvalidSmilesException("Invalid atom symbol: " + symbol);
-            if (isPrimitive)
-              atomSet.hasSymbol = true;
-            // indicates we have already assigned an atom number
-            index += size;
           }
           isNot = false;
         }
@@ -743,11 +754,13 @@ public class SmilesParser {
 
     if (currentAtom != null && bondType != SmilesBond.TYPE_NONE) {
       if (bondType == SmilesBond.TYPE_UNKNOWN)
-        bondType = (isSearch || currentAtom.isAromatic() && newAtom.isAromatic() ? SmilesBond.TYPE_ANY : SmilesBond.TYPE_SINGLE);
+        bondType = (isSearch || currentAtom.isAromatic()
+            && newAtom.isAromatic() ? SmilesBond.TYPE_ANY
+            : SmilesBond.TYPE_SINGLE);
       molecule.createBond(currentAtom, newAtom, bondType);
     }
-    //if (Logger.debugging)
-      //Logger.debug("new atom: " + newAtom);
+    // if (Logger.debugging)
+    // Logger.debug("new atom: " + newAtom);
     return newAtom;
   }
 

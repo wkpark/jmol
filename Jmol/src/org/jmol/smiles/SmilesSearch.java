@@ -592,7 +592,7 @@ public class SmilesSearch {
               return false;
             continue;
           case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
-            // check for axial-axial
+            // check for axial-axial'
             if (sAtom.not != (!isDiaxial(sAtom, atom5, atom1)
                 || getChirality(atom2, atom3, atom4, atom1) != order))
               return false;
@@ -804,12 +804,12 @@ public class SmilesSearch {
         if (bonds[k].getOtherAtom(atom) == cAtoms[i])
           break;
       if (k < bonds.length) {
-        map[i] = (k * 100 + 1000) + i;
+        map[i] = (k * 10 + 100) + i;
       } else if (a2 != null) {
         for (k = 0; k < b2.length; k++)
           if (b2[k].getOtherAtom(a2) == cAtoms[i])
             break;
-        map[i] = (k * 100 + 2000) + i;
+        map[i] = (k * 10 + 200) + i;
       }
     }
     Arrays.sort(map);

@@ -105,7 +105,9 @@ public class SmilesParser {
    *       
    *   [smartDef] == [variableDefs] [smarts] | [smarts]
    *   [variableDefs] == [variableDef] | [variableDef] [variableDefs]
-   *   [variableDef] ==  "$" [chars] "=" "\"" [smarts] "\"" [comments] ";"
+   *   [variableDef] ==  "$" [label] "=" "\"" [smarts] "\"" [comments] ";"
+   *   [label] == [any characters other than "=" and "$", and not starting with "("]
+   *   [comments] == [any characters other than ";"]
    *   
    *      # note: Variable definitions must be parsed first. 
    *      #       After that, all variable references [$XXXX] are replaced
@@ -495,9 +497,11 @@ public class SmilesParser {
       if (getChar(pattern, ipt + 1) == '(')
         break;
       ipt = skipTo(pattern, index, '=');
-      if (ipt < 0 || getChar(pattern, ipt + 1) != '\"')
+      if (ipt <= index + 1 || getChar(pattern, ipt + 1) != '\"')
         break;
       String key = pattern.substring(index, ipt);
+      if (key.lastIndexOf('$') > 0)
+        throw new InvalidSmilesException("Invalid variable name: " + key);
       String s = getSubPattern(pattern, ipt + 1, '\"');
       keys.add("[" + key + "]");
       values.add(s);
@@ -662,7 +666,7 @@ public class SmilesParser {
               symbol = Character.toUpperCase(ch) + sym2;
               if (ch == 'H')
                 isSymbol = !Character.isDigit(nextChar);
-              else if (!isBracketed || "DhRrvXx".indexOf(ch) < 0 || !Character.isDigit(nextChar))
+              else if (!isBracketed || "DdhRrvXx".indexOf(ch) < 0 || !Character.isDigit(nextChar))
                 isSymbol = true;
               else
                 isSymbol = (!isBracketed && !isSearch ? SmilesAtom

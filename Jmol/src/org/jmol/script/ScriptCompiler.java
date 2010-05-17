@@ -1472,6 +1472,12 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         }
       }
       break;
+    case Token.load:
+      if (theTok == Token.define && (nTokens == 1 || lastToken.tok == Token.filter || lastToken.tok == Token.spacegroup)) {
+        addTokenToPrefix(Token.tokenDefineString);
+        return CONTINUE;          
+      }
+      break;
     case Token.display:
     case Token.hide:
     case Token.restrict:

@@ -244,9 +244,10 @@ public class JmolPanel extends JPanel implements SplashInterface {
     Component c = (Component) viewer.getProperty("DATA_API","getAppConsole", null);
     if (c != null)
       historyFile.repositionWindow(SCRIPT_WINDOW_NAME, c, 200, 100);
-    c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
-    if (c != null)
-      historyFile.repositionWindow(EDITOR_WINDOW_NAME, c, 150, 50);
+    // this just causes problems
+    //c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
+    //if (c != null)
+      //historyFile.repositionWindow(EDITOR_WINDOW_NAME, c, 150, 50);
 
     say(GT._("Setting up Drag-and-Drop..."));
     new JmolFileDropper(viewer);

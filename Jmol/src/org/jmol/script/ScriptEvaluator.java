@@ -1975,6 +1975,7 @@ public class ScriptEvaluator {
       switch (tok = getToken(i).tok) {
       case Token.define:
         Object v;
+        boolean forceString = (theToken.intValue == Token.string);
         // Object var_set;
         String s;
         String var = parameterAsString(++i);
@@ -1990,8 +1991,8 @@ public class ScriptEvaluator {
           v = getParameter(var, false);
         }
         tok = tokAt(0);
-        boolean forceString = (Token.tokAttr(tok, Token.implicitStringCommand)
-            || tok == Token.load || tok == Token.script); // for the file names
+        forceString = (forceString || Token.tokAttr(tok, Token.implicitStringCommand)
+            || tok == Token.script); // for the file names
         if (v instanceof ScriptVariable) {
           fixed[j] = (Token) v;
           if (isExpression && fixed[j].tok == Token.list)
@@ -2011,12 +2012,13 @@ public class ScriptEvaluator {
           fixed[j] = new Token(Token.decimal, JmolConstants.modelValue("" + v),
               v);
         } else if (v instanceof String) {
-          v = getStringObjectAsVariable((String) v, null);
+          if (!forceString)
+            v = getStringObjectAsVariable((String) v, null);
           if (v instanceof ScriptVariable) {
             fixed[j] = (Token) v;
           } else {
             s = (String) v;
-            if (isExpression) {
+            if (isExpression && !forceString) {
               fixed[j] = new Token(Token.bitset, getAtomBitSet(this, s));
             } else {
               // bit of a hack here....

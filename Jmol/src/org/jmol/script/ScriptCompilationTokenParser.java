@@ -153,7 +153,7 @@ abstract class ScriptCompilationTokenParser {
           break;
       }
       if (lastToken.tok == Token.define) {
-        if (!clauseDefine())
+        if (!clauseDefine(true, false))
           return false;
         continue;
       }
@@ -361,11 +361,9 @@ abstract class ScriptCompilationTokenParser {
     case Token.none:
       // nothing special
       return addNextToken();
-
     case Token.string:
       haveString = true;
       return addNextToken();
-
     case Token.decimal:
       // create a file_model integer as part of the token
       return addTokenToPostfix(Token.spec_model2, getToken().intValue, theValue);
@@ -380,19 +378,14 @@ abstract class ScriptCompilationTokenParser {
     case Token.within:
       return clauseWithin();
     case Token.define:
-      addNextToken();
-      if (tokPeek() == Token.nada)
-        return error(ERROR_endOfCommandUnexpected);
-      return clauseDefine();
+      return clauseDefine(false, false);
     case Token.bonds:
     case Token.measure:
       addNextToken();
       if (tokPeek(Token.bitset))
         addNextToken();
-      else if (tokPeek(Token.define)) {
-        addNextToken();
-        return clauseDefine();
-      }
+      else if (tokPeek(Token.define))
+        return clauseDefine(false, false);
       return true;
     case Token.leftparen:
       addNextToken();
@@ -616,8 +609,7 @@ abstract class ScriptCompilationTokenParser {
             addTokenToPostfix(Token.tokenExpressionEnd);
             break;
           case Token.define:
-            addTokenToPostfix(getToken());
-            if (!clauseDefine())
+            if (!clauseDefine(false, false))
               return false;
             break;
           default:
@@ -683,11 +675,15 @@ abstract class ScriptCompilationTokenParser {
     addNextToken();
     if (!addNextTokenIf(Token.leftparen))
       return false;
-    if (!addNextTokenIf(Token.string))
+    if (tokPeek(Token.define)) {
+      if (!clauseDefine(false, true))
+        return false;
+    } else if (!addNextTokenIf(Token.string)) {
       return error(ERROR_tokenExpected, "\"...\"");
-      if (addNextTokenIf(Token.comma))
-        if (!clauseOr(tokPeek(Token.leftparen))) // *expression*
-          return false;
+    }
+    if (addNextTokenIf(Token.comma))
+      if (!clauseOr(tokPeek(Token.leftparen))) // *expression*
+        return false;
     if (!addNextTokenIf(Token.rightparen))
       return error(ERROR_tokenExpected, ")");
     return true;
@@ -747,7 +743,7 @@ abstract class ScriptCompilationTokenParser {
     }
     addTokenToPostfix(theToken);
     if (theToken.tok == Token.define)
-      return clauseDefine();
+      return clauseDefine(false, false);
     return true;
   }
 
@@ -783,7 +779,15 @@ abstract class ScriptCompilationTokenParser {
     return addTokenToPostfix(Token.cell, cell);
   }
 
-  private boolean clauseDefine() {
+  private boolean clauseDefine(boolean haveToken, boolean forceString) {
+    if (!haveToken) {
+      Token token = tokenNext();
+      if (forceString) // we know it is @, this forces string type
+        token = Token.tokenDefineString;
+      addTokenToPostfix(token);
+    }
+    if (tokPeek() == Token.nada)
+      return error(ERROR_endOfCommandUnexpected);
     // we allow @x[1], which compiles as {@x}[1], not @{x[1]}
     // otherwise [1] gets read as a general atom name selector
     if (!addSubstituteTokenIf(Token.leftbrace, Token.tokenExpressionBegin))

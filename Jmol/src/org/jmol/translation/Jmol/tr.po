@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-04-30 15:54+0200\n"
+"POT-Creation-Date: 2010-05-17 20:16+0200\n"
 "PO-Revision-Date: 2009-11-14 21:39+0000\n"
 "Last-Translator: Mustafa Yılmaz <apshalasha@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -68,7 +68,7 @@ msgid "send only output from print messages to console (implies -i)"
 msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:158
-msgid "independent commmand thread"
+msgid "independent command thread"
 msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:160
@@ -186,7 +186,7 @@ msgid "Variables"
 msgstr "Değişkenler"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:290
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:291
 msgid "Clear"
 msgstr "Temizle"
 
@@ -954,47 +954,47 @@ msgstr "Menu Çubuğu Oluşturuluyor..."
 msgid "Starting display..."
 msgstr "Görüntülemeye başlanıyor..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:251
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:252
 msgid "Setting up Drag-and-Drop..."
 msgstr "Sürükle-Bırak kuruluyor..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:253
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:254
 msgid "Launching main frame..."
 msgstr "Ana çerçeve başlatılıyor..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:282
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
 msgid "Jmol Console"
 msgstr "Jmol Komut Satırı"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:304
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:305
 msgid "Could not create ConsoleTextArea: "
 msgstr "KonsolMetinAlanı oluşturulamadı: "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:321
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
 msgid "Creating main window..."
 msgstr "Ana pencere üretiliyor..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:323
 msgid "Initializing Swing..."
 msgstr "Sapma başlatılıyor..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:334
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:335
 msgid "Initializing Jmol..."
 msgstr "Jmol başlatılıyor..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:446
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:447
 msgid "Closing Jmol..."
 msgstr "Jmol Kapanıyor..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1066
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1067
 msgid "Open URL"
 msgstr "Adresi aç"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1067
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1068
 msgid "Enter URL of molecular model"
 msgstr "Moleküler modelin adresini gir"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1241
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1242
 msgid "IO Exception:"
 msgstr "G/Ç Hatası:"
 

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-04-30 15:54+0200\n"
+"POT-Creation-Date: 2010-05-17 20:16+0200\n"
 "PO-Revision-Date: 2010-03-17 00:28+0000\n"
 "Last-Translator: LI Anbang <lianbang@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -66,7 +66,8 @@ msgid "send only output from print messages to console (implies -i)"
 msgstr "只把打印信息输出发送到控制台（隐含 -i 参数）"
 
 #: org/openscience/jmol/app/JmolApp.java:158
-msgid "independent commmand thread"
+#, fuzzy
+msgid "independent command thread"
 msgstr "独立命令线程"
 
 #: org/openscience/jmol/app/JmolApp.java:160
@@ -179,7 +180,7 @@ msgid "Variables"
 msgstr "变量"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:290
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:291
 msgid "Clear"
 msgstr "清除"
 
@@ -947,47 +948,47 @@ msgstr "建立菜单栏..."
 msgid "Starting display..."
 msgstr "启动显示..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:251
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:252
 msgid "Setting up Drag-and-Drop..."
 msgstr "设置拖拽和放下..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:253
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:254
 msgid "Launching main frame..."
 msgstr "启动主框架..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:282
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
 msgid "Jmol Console"
 msgstr "Jmol控制台"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:304
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:305
 msgid "Could not create ConsoleTextArea: "
 msgstr "无法建立控制台文字区域: "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:321
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
 msgid "Creating main window..."
 msgstr "创建主窗口..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:323
 msgid "Initializing Swing..."
 msgstr "启动摆动..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:334
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:335
 msgid "Initializing Jmol..."
 msgstr "启动Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:446
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:447
 msgid "Closing Jmol..."
 msgstr "关闭Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1066
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1067
 msgid "Open URL"
 msgstr "打开URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1067
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1068
 msgid "Enter URL of molecular model"
 msgstr "输入分子模型的URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1241
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1242
 msgid "IO Exception:"
 msgstr "IO例外:"
 

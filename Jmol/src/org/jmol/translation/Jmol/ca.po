@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-04-30 15:54+0200\n"
+"POT-Creation-Date: 2010-05-17 20:16+0200\n"
 "PO-Revision-Date: 2009-10-25 22:19+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.cat>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -72,7 +72,8 @@ msgstr ""
 "envia només a sortida els missatge d'impressió a la consola (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
-msgid "independent commmand thread"
+#, fuzzy
+msgid "independent command thread"
 msgstr "Fil d'ordre independent"
 
 #: org/openscience/jmol/app/JmolApp.java:160
@@ -190,7 +191,7 @@ msgid "Variables"
 msgstr "Variables"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:290
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:291
 msgid "Clear"
 msgstr "Neteja"
 
@@ -958,47 +959,47 @@ msgstr "S'està construint la barra de menú…"
 msgid "Starting display..."
 msgstr "S'està iniciant la visualització…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:251
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:252
 msgid "Setting up Drag-and-Drop..."
 msgstr "Configuració del l'«arrossega i deixa anar»…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:253
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:254
 msgid "Launching main frame..."
 msgstr "S'està executant el fotograma principal…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:282
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
 msgid "Jmol Console"
 msgstr "Consola del Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:304
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:305
 msgid "Could not create ConsoleTextArea: "
 msgstr "No s'ha pogut crear l'àrea de text de la consola: "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:321
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
 msgid "Creating main window..."
 msgstr "S'està creant la finestra principal…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:323
 msgid "Initializing Swing..."
 msgstr "S'està inicialitzant el Swing…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:334
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:335
 msgid "Initializing Jmol..."
 msgstr "S'està inicialitzant el Jmol…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:446
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:447
 msgid "Closing Jmol..."
 msgstr "S'està tancant el Jmol…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1066
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1067
 msgid "Open URL"
 msgstr "Obre un URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1067
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1068
 msgid "Enter URL of molecular model"
 msgstr "Introduïu l'URL d'un model molecular"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1241
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1242
 msgid "IO Exception:"
 msgstr "S'ha produït una excepció IO:"
 

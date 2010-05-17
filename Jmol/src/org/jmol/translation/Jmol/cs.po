@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-04-30 15:54+0200\n"
-"PO-Revision-Date: 2009-07-31 16:12+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"POT-Creation-Date: 2010-05-17 20:16+0200\n"
+"PO-Revision-Date: 2010-05-15 16:06+0000\n"
+"Last-Translator: Martin Slavík <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-07-31 16:32+0000\n"
+"X-Launchpad-Export-Date: 2010-05-17 18:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
@@ -70,7 +70,8 @@ msgid "send only output from print messages to console (implies -i)"
 msgstr "poslat pouze výstup příkazů print na konzoli (předpokládá -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
-msgid "independent commmand thread"
+#, fuzzy
+msgid "independent command thread"
 msgstr "nezávislá řada příkazů"
 
 #: org/openscience/jmol/app/JmolApp.java:160
@@ -83,7 +84,7 @@ msgstr "soubor skriptu pro spuštění nebo  '-' pro System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr ""
+msgstr "využití multitouch rozhraní (vyžaduje \"sparshui\" parametr"
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
@@ -124,11 +125,12 @@ msgid "For example:"
 msgstr "Například:"
 
 #: org/openscience/jmol/app/JmolApp.java:236
-#, fuzzy
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
-msgstr "-D volby jsou následující (standardní v závorkách):"
+msgstr ""
+"D-volby jsou následující (výchozí hodnoty v závorce) a musí být před názvem "
+"'-jar Jmol.jar':"
 
 #: org/openscience/jmol/app/JmolApp.java:466
 msgid "Executing script 1..."
@@ -186,7 +188,7 @@ msgid "Variables"
 msgstr "Proměnné"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:290
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:291
 msgid "Clear"
 msgstr "Vyčistit"
 
@@ -437,9 +439,8 @@ msgid "Scrip&t Editor..."
 msgstr "Editor skrip&tů..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
-#, fuzzy
 msgid "Conso&le..."
-msgstr "Output Conso&le..."
+msgstr "Konzo&le..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
 msgid "Jmol Java &Console"
@@ -957,47 +958,47 @@ msgstr "Vytvářím Menu..."
 msgid "Starting display..."
 msgstr "Spouštím zobrazení..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:251
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:252
 msgid "Setting up Drag-and-Drop..."
 msgstr "Nastavuji 'táhnout a pustit'..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:253
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:254
 msgid "Launching main frame..."
 msgstr "Nahrávám hlavní rám..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:282
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
 msgid "Jmol Console"
 msgstr "Jmol konzole"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:304
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:305
 msgid "Could not create ConsoleTextArea: "
 msgstr "Nelze vytvořit textové pole pro konzoli: "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:321
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
 msgid "Creating main window..."
 msgstr "Vytvářím hlavní okno..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:323
 msgid "Initializing Swing..."
 msgstr "Inicializuji Swing..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:334
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:335
 msgid "Initializing Jmol..."
 msgstr "Inicializuji Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:446
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:447
 msgid "Closing Jmol..."
 msgstr "Ukončuji Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1066
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1067
 msgid "Open URL"
 msgstr "Otevřít URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1067
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1068
 msgid "Enter URL of molecular model"
 msgstr "Zadat URL molekulárního modelu"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1241
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1242
 msgid "IO Exception:"
 msgstr "IO výjimka:"
 
@@ -1339,11 +1340,11 @@ msgid "Insert a caption for {0} here."
 msgstr "Vložte zde titulek pro {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:354
-#, fuzzy, java-format
+#, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
-msgstr "Zde vložte vysvětlující text. Delší text bude obtékat Jmol model {0}."
+msgstr "Vlož sem text s vysvětlením. Dlouhý text bude obtékat Jmol model {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:356
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1383,9 +1384,8 @@ msgid "Jmol Instances:"
 msgstr "Instance Jmolu:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:203
-#, fuzzy
 msgid "Select widgets:"
-msgstr "Šířka appletu:"
+msgstr "Vyber widget:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:276
 msgid "Help/Instructions"
@@ -1462,9 +1462,9 @@ msgid "adding {0}.spt"
 msgstr "přidávám {0}.spt"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:601
-#, fuzzy, java-format
+#, java-format
 msgid "adding {0}"
-msgstr "přidávám {0}.png"
+msgstr "přidávám {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:641
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1501,113 +1501,71 @@ msgstr "komprimuji velký soubor do"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:50
 msgid "Spin on/off"
-msgstr ""
+msgstr "Rotace ano/ne"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:61
 msgid "enable/disable spin"
-msgstr ""
+msgstr "umožnit/zakázat rotaci"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:62
 msgid "Spin on"
-msgstr ""
+msgstr "Zapni rotaci"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:68
 msgid "Background Color"
-msgstr ""
+msgstr "Barva pozadí"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:78
 msgid "background color:"
-msgstr ""
+msgstr "barva pozadí:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:91
 msgid "Stereo Viewing"
-msgstr ""
+msgstr "Stereo pohled"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:100
 msgid "select stereo type"
-msgstr ""
+msgstr "vybrat stereo typ"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:103
 msgid "stereo off"
-msgstr ""
+msgstr "vypnout stereo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:104
 msgid "Stereo Off"
-msgstr ""
+msgstr "Vypnout stereo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:105
 msgid "Red/Blue"
-msgstr ""
+msgstr "Červená/Modrá"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:107
 msgid "Red/Cyan"
-msgstr ""
+msgstr "Červená/Modrozelená"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:109
 msgid "Red/Green"
-msgstr ""
+msgstr "Červená/Zelená"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:117
 msgid "Download view"
-msgstr ""
+msgstr "Ulož pohled"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:127
 msgid "unimplemented"
-msgstr ""
+msgstr "neimplementováno"
+
+#~ msgid "The -D options are as follows (defaults in parenthesis):"
+#~ msgstr "-D volby jsou následující (standardní v závorkách):"
+
+#~ msgid "Output Conso&le..."
+#~ msgstr "Output Conso&le..."
 
 #~ msgid "Show Selected"
 #~ msgstr "Zobrazit vybrané"
 
-#~ msgid "Initializing Script Editor..."
-#~ msgstr "Spouštím editori skriptů..."
-
-#~ msgid "Initializing Measurements..."
-#~ msgstr "Načítám měření..."
-
-#~ msgid "Run"
-#~ msgstr "Spustit"
-
-#~ msgid "Image size"
-#~ msgstr "Velikost obrázku"
-
-#~ msgid "Output format : "
-#~ msgstr "Formát výstupu: "
-
-#~ msgid "Select the file format of the output file"
-#~ msgstr "Zvolit typ výstupního souboru"
-
-#~ msgid "Command Line to Execute"
-#~ msgstr "Příkazový řádek pro spuštění"
-
-#~ msgid "The actual command which will be executed"
-#~ msgstr "Aktuální příkaz, který bude vykonán:"
-
-#~ msgid "null component string"
-#~ msgstr "prázdný řetězec komponenty"
-
-#~ msgid "Filename Stem"
-#~ msgstr "základ jména souboru"
-
-#~ msgid "Use .ini file"
-#~ msgstr "Použít soubor .ini"
-
-#~ msgid "Save options in a .ini file"
-#~ msgstr "Uložit volby jako soubor .ini"
-
-#~ msgid "Render all frames"
-#~ msgstr "Vykreslit všechny snímky"
-
-#~ msgid "Render each model (not only the currently displayed one)"
-#~ msgstr "Vykreslit každý model (nejen právě zobrazený)"
-
-#~ msgid "Turn on POV-Ray anti-aliasing"
-#~ msgstr "Zapni POV-Ray vyhlazování"
-
-#~ msgid "Use povray's slower but higher quality anti-aliasing mode"
-#~ msgstr "Použij Povray vyhlazování (pomalejší ale s vyšší kvalitou)"
-
-#~ msgid "Render in pov-ray..."
-#~ msgstr "POV-ray vykreslení..."
-
-#~ msgid "&Java Output Console"
-#~ msgstr "Jmol &Java Konzole"
+#~ msgid ""
+#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
+#~ "model {0}."
+#~ msgstr ""
+#~ "Zde vložte vysvětlující text. Delší text bude obtékat Jmol model {0}."

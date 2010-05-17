@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-04-11 18:02+0200\n"
-"PO-Revision-Date: 2010-02-26 20:16+0000\n"
+"PO-Revision-Date: 2010-05-15 16:09+0000\n"
 "Last-Translator: Martin Slavík <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-02-26 21:36+0000\n"
+"X-Launchpad-Export-Date: 2010-05-17 18:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
@@ -414,7 +414,7 @@ msgstr "Maďarština"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Indonesian"
-msgstr ""
+msgstr "Indonéština"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Italian"
@@ -434,7 +434,7 @@ msgstr "Norština Bokmal"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Occitan"
-msgstr ""
+msgstr "Okcitánština"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Polish"
@@ -1818,9 +1818,9 @@ msgid "{0} require that only one model be displayed"
 msgstr "{0} vyžaduje zobrazení pouze jednoho modelu"
 
 #: org/jmol/script/ScriptEvaluator.java:2456
-#, fuzzy, java-format
+#, java-format
 msgid "{0} requires that only one model be loaded"
-msgstr "{0} vyžaduje zobrazení pouze jednoho modelu"
+msgstr "{0} vyžaduje načtení pouze jediného modelu"
 
 #: org/jmol/script/ScriptEvaluator.java:2459
 msgid "No data available"

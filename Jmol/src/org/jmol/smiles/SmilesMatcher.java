@@ -269,4 +269,40 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       bitsets[i] = (BitSet) vSubstructures.get(i);
     return bitsets;
   }
+
+  /**
+   * Rather than returning bitsets, this method returns the
+   * sets of matching atoms so that a direct atom-atom correlation can be done.
+   * 
+   * @param smiles 
+   * @param atoms 
+   * @param atomCount 
+   * @param bsSelected 
+   * @param isSearch 
+   * @param isAll 
+   * @return      a set of atom correlations
+   * @throws Exception 
+   * 
+   */
+  public int[][] getCorrelationMaps(String smiles, JmolNode[] atoms,
+                                    int atomCount, BitSet bsSelected,
+                                    boolean isSearch, boolean isAll) throws Exception {
+    SmilesSearch search = SmilesParser.getMolecule(isSearch, smiles);
+    search.jmolAtoms = atoms;
+    search.jmolAtomCount = Math.abs(atomCount);
+    if (atomCount < 0)
+      search.isSmilesFind = true;
+    search.bsSelected = bsSelected;
+    search.bsRequired = null;
+    search.bsNot = null;
+    search.setRingData(null);
+    search.isAll = isAll;
+    search.asVector = true;
+    search.getMaps = true;
+    Vector vSubstructures = (Vector) search.search(false);
+    int[][] maps = new int[vSubstructures.size()][];
+    for (int i = 0; i < maps.length; i++)
+      maps[i] = (int[]) vSubstructures.get(i);
+    return maps;
+  }
 }

@@ -68,6 +68,8 @@ public class SmilesSearch {
   String pattern;
   int patternAtomCount;
   boolean asVector;
+  boolean getMaps;
+
   boolean haveSelected;
   boolean haveBondStereochemistry;
   boolean haveAtomStereochemistry;
@@ -157,7 +159,9 @@ public class SmilesSearch {
      *    
      */
     if (asVector)
-      vReturn = new Vector();    
+      vReturn = new Vector();
+//    else
+  //    System.out.println("smilesseearch search" + pattern);
     for (int i = 0; i < jmolAtomCount; i++)
       if (!checkMatch(atoms[0], 0, i, firstAtomOnly))
         break;
@@ -199,8 +203,9 @@ public class SmilesSearch {
 
     for (int i = 0; i < atomNum; i++) {
       int iPrev = atoms[i].getMatchingAtom();
-      if (iPrev == iAtom || atom != null
-          && jmolAtoms[0].getModelIndex() != atom.getModelIndex()) {
+      if (iPrev == iAtom)
+        return true;
+      if (atom != null && jmolAtoms[atoms[0].getMatchingAtom()].getModelIndex() != atom.getModelIndex()) {
         return true;
       }
     }
@@ -304,6 +309,7 @@ public class SmilesSearch {
     // index because this could be a SEARCH [x,x] "sub" atom
     atoms[patternAtom.index].setMatchingAtom(iAtom);
     atomNum++;
+    //System.out.println("smilesSearch " + pattern + " " + atomNum);
     if (atomNum < patternAtomCount) {
       // next position...
       patternAtom = atoms[atomNum];
@@ -345,13 +351,22 @@ public class SmilesSearch {
       if (bsRequired != null && !bsRequired.intersects(bs))
         return true;
       bsReturn.or(bs);
+ //System.out.println("smilesSearch " + pattern + " " + bs);
       if (asVector) {
-        boolean isOK = true;
-        for (int j = vReturn.size(); --j >= 0 && isOK;)
-          isOK = !(((BitSet) vReturn.get(j)).equals(bs));
-        if (!isOK)
-          return true;
-        vReturn.add(bs);
+        if (getMaps) {
+          // every map is important always
+          int[] map = new int[patternAtomCount];
+          for (int j = 0; j < patternAtomCount; j++)
+            map[j] = atoms[j].getMatchingAtom();          
+          vReturn.add(map);
+        } else {
+          boolean isOK = true;
+          for (int j = vReturn.size(); --j >= 0 && isOK;)
+            isOK = !(((BitSet) vReturn.get(j)).equals(bs));
+          if (!isOK)
+            return true;
+          vReturn.add(bs);
+        }
       }
 /*      
       if (!isSilent && Logger.debugging) {
@@ -944,6 +959,7 @@ public class SmilesSearch {
   Vector3f vTemp = new Vector3f();
   Vector3f vA = new Vector3f();
   Vector3f vB = new Vector3f();
+  
   private int getChirality(JmolNode a, JmolNode b, JmolNode c, JmolNode pt) {
     float d = getNormalThroughPoints((Point3f) a, (Point3f) b, (Point3f) c, vTemp, vA, vB);
     return (distanceToPlane(vTemp, d, (Point3f) pt) > 0 ? 1 : 2);
@@ -966,7 +982,7 @@ public class SmilesSearch {
     String s = "****";
     while (s.length() < ringDataMax)
       s += s;
-    for (int i = 3; i < ringDataMax + 1; i++) {
+    for (int i = 6; i < 7/*ringDataMax + 1*/; i++) {
       Vector v = (Vector) getBitSets("*1" + s.substring(0, i - 2) + "*1",
           false, ringSets);
       for (int r = v.size(); --r >= 0;) {

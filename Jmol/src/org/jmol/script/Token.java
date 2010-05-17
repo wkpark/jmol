@@ -634,14 +634,17 @@ public class Token {
   public final static int point = 10 | 0 << 9 | mathfunc;
   final static int quaternion   = 11 | 0 << 9 | mathfunc | scriptCommand;
   final static int axisangle    = 12 | 0 << 9 | mathfunc;
+  final static int compare      = 13 | 0 << 9 | mathfunc | scriptCommand;
 
   // xxx(a,b,c,d,e)
   
-  final static int within           = 13 | 0 << 9 | mathfunc;
-  public final static int connected = 14 | 0 << 9 | mathfunc;
-  public final static int helix     = 15 | 0 << 9 | mathfunc | predefinedset;
+  final static int within           = 14 | 0 << 9 | mathfunc;
+  public final static int connected = 15 | 0 << 9 | mathfunc;
+  public final static int helix     = 16 | 0 << 9 | mathfunc | predefinedset;
 
-  final static int now          = 16 | 0 << 9 | mathfunc;
+  // xxx()
+  
+  final static int now          = 17 | 0 << 9 | mathfunc;
 
   // xxx(a)
   
@@ -694,7 +697,6 @@ public class Token {
 
   // xxx(a,b,c)
   
-  final static int compare      = 1 | 3 << 9 | mathfunc | scriptCommand;
   final static int find         = 2 | 3 << 9 | mathfunc | mathproperty;
   final static int hkl          = 3 | 3 << 9 | mathfunc;
   final static int select       = 4 | 3 << 9 | mathfunc | atomExpressionCommand;

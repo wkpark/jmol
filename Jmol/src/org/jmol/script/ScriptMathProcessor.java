@@ -40,6 +40,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolEdge;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.modelset.Atom;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Bond.BondSet;
@@ -715,22 +716,84 @@ class ScriptMathProcessor {
     return false;
   }
 
-  private boolean evaluateCompare(ScriptVariable[] args, int tok) throws ScriptException {
-    // compare({bitset} or [{positions}],{bitset} or [{positions}])
-    // returns matrix4f for rotation/translation
-    Vector ptsA, ptsB;
-    if (args.length < 2)
+  private boolean evaluateCompare(ScriptVariable[] args, int tok)
+      throws ScriptException {
+    // compare({bitset} or [{positions}],{bitset} or [{positions}] [,"stddev"])
+    // compare({bitset},{bitset},smilesString [,"stddev"])
+    // returns matrix4f for rotation/translation or stddev
+    if (args.length < 2 || args.length > 4)
       return false;
-    ptsA = eval.getPointVector(args[0].value, 0);
-    ptsB = eval.getPointVector(args[1].value, 0);
-    if (ptsA == null || ptsB == null)
+    float stddev;
+    String sOpt = ScriptVariable.sValue(args[args.length - 1]);
+    boolean isStdDev = sOpt.equalsIgnoreCase("stddev");
+    boolean isSmiles = (args.length == (isStdDev ? 4 : 3));
+    if (isSmiles
+        && (args[0].tok != Token.bitset || args[1].tok != Token.bitset))
       return false;
     Matrix4f m = new Matrix4f();
-    float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null); 
-    if (args.length == 3 && ScriptVariable.sValue(args[2]).equalsIgnoreCase("stddev"))
-      return addX(stddev);
-    return addX(m);
+    if (isSyntaxCheck) {
+      m.setIdentity();
+      stddev = 0;
+    } else {
+      Vector ptsA, ptsB;
+      if (isSmiles) {
+        ptsA = new Vector();
+        ptsB = new Vector();
+        if (args.length == 4)
+          sOpt = ScriptVariable.sValue(args[2]);
+        stddev = getSmilesCorrelation((BitSet) args[0].value, 
+            (BitSet) args[1].value, sOpt, ptsA, ptsB, m);
+        if (Float.isNaN(stddev))
+          return false;
+      } else {
+        ptsA = eval.getPointVector(args[0].value, 0);
+        ptsB = eval.getPointVector(args[1].value, 0);
+        if (ptsA == null || ptsB == null)
+          return false;
+        stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
+      }
+    }
+    return (isStdDev ? addX(stddev) : addX(m));
   }
+
+  private float getSmilesCorrelation(BitSet bsA, BitSet bsB, String smiles,
+                                     Vector ptsA, Vector ptsB, Matrix4f m)
+      throws ScriptException {
+    try {
+      Atom[] atoms = viewer.getModelSet().atoms;
+      int atomCount = viewer.getAtomCount();
+      int[][] maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles,
+          atoms, atomCount, bsA, false, false);
+      if (maps.length == 0)
+        return Float.NaN;
+      for (int i = 0; i < maps[0].length; i++)
+        ptsA.add(atoms[maps[0][i]]);
+      maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles, atoms,
+          atomCount, bsB, false, true);
+      if (maps.length == 0)
+        return Float.NaN;
+      float lowestStdDev = Float.MAX_VALUE;
+      int[] mapB = null;
+      for (int i = 0; i < maps.length; i++) {
+        ptsB.clear();
+        for (int j = 0; j < maps[i].length; j++)
+          ptsB.add(atoms[maps[i][j]]);
+        float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
+        if (stddev < lowestStdDev) {
+          mapB = maps[i];
+          lowestStdDev = stddev;
+        }
+      }
+      for (int i = 0; i < mapB.length; i++)
+        ptsB.add(atoms[mapB[i]]);
+      return lowestStdDev;
+    } catch (Exception e) {
+      // e.printStackTrace();
+      eval.evalError(e.getMessage(), null);
+      return 0; // unattainable
+    }
+  }
+
 
   private boolean evaluateVolume(ScriptVariable[] args) throws ScriptException {
     ScriptVariable x1 = getX();

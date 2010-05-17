@@ -116,7 +116,10 @@ public class SmilesAtom extends Point3f implements JmolNode {
 
   
   public String toString() {
-    return "[" + Elements.elementSymbolFromNumber(elementNumber)
+    String s = (elementNumber == -1 ? "A" : elementNumber == -2 ? "*" : Elements.elementSymbolFromNumber(elementNumber));
+    if (isAromatic)
+      s = s.toLowerCase();
+    return "[" + s
     + '.' + index + (matchingAtom >= 0 ? "(" + matchingAtom + ")" : "")
 //    + " ch:" + charge 
 //    + " ar:" + isAromatic 

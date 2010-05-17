@@ -806,5 +806,26 @@ public class Escape {
       return -1;
   }
 
+  public static String[] unescapeStringArray(String data) {
+    //TODO -- should recognize '..' as well as "..." ?
+    if (data == null || !data.startsWith("[") || !data.endsWith("]"))
+      return null;
+    Vector v = new Vector();
+    int[] next = new int[1];
+    next[0] = 1;
+    while (next[0] < data.length()) {
+      String s = Parser.getNextQuotedString(data, next);
+      if (s == null)
+        return null;
+      v.add(s);
+      while (next[0] < data.length() && data.charAt(next[0]) != '"')
+        next[0]++;
+    }    
+    String[] array = new String[v.size()];
+    for (int i = 0; i < array.length; i++)
+      array[i] = (String) v.get(i);
+    return array;
+  }
+
 
 }

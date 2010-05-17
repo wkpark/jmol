@@ -7410,6 +7410,17 @@ public class ScriptEvaluator {
       }
       if (filename.indexOf("[]") >= 0)
         return;
+      if (filename.indexOf("[") == 0) {
+        filenames = Escape.unescapeStringArray(filename);
+        if (filenames != null) {
+          if (i == 1)
+            loadScript.append(" files");
+          if (loadScript.indexOf(" files") < 0)
+            error(ERROR_invalidArgument);
+          for (int j = 0; j < filenames.length; j++)
+            loadScript.append(" /*file*/").append(Escape.escape(filenames[j]));
+        }
+      }
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
         || theTok == Token.manifest || theTok == Token.packed

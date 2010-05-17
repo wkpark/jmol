@@ -8182,6 +8182,34 @@ public class ScriptEvaluator {
     boolean axesOrientationRasmol = viewer.getAxesOrientationRasmol();
     for (int i = 1; i < statementLength; ++i) {
       switch (tok = getToken(i).tok) {
+      case Token.bitset:
+      case Token.expressionBegin:
+      case Token.leftbrace:
+      case Token.point3f:
+      case Token.dollarsign:
+        if (tok == Token.bitset || tok == Token.expressionBegin) {
+          if (translation != null || q != null || nPoints == 2) {
+            bsAtoms = expression(i);
+            ptsB = null;
+            isSelected = true;
+            break;
+          }
+        }
+        haveRotation = true;
+        if (nPoints == 2)
+          nPoints = 0;
+        // {X, Y, Z}
+        // $drawObject[n]
+        Point3f pt1 = centerParameter(i, viewer.getCurrentModelIndex());
+        if (!isSyntaxCheck && tok == Token.dollarsign
+            && tokAt(i + 2) != Token.leftsquare) {
+          // rotation about an axis such as $line1
+          isMolecular = true;
+          rotAxis = getDrawObjectAxis(objectNameParameter(++i), viewer
+              .getCurrentModelIndex());
+        }
+        points[nPoints++] = pt1;
+        break;
       case Token.spin:
         isSpin = true;
         continue;
@@ -8219,6 +8247,63 @@ public class ScriptEvaluator {
         haveRotation = true;
         rotAxis.set(0, 0, direction);
         continue;
+
+        // 11.6 options
+
+      case Token.point4f:
+      case Token.quaternion:
+        if (tok == Token.quaternion)
+          i++;
+        haveRotation = true;
+        if (tokAt(i) == Token.list){
+          String[] s = (String[])getToken(i).value;
+          if (s.length == 0)
+            error(ERROR_invalidArgument);
+          Object o = Escape.unescapePoint(s[0]);
+          if (!(o instanceof Point4f))
+            error(ERROR_invalidArgument);
+          q = new Quaternion((Point4f)o);
+        } else {
+          q = new Quaternion(getPoint4f(i));
+        }
+        rotAxis.set(q.getNormal());
+        endDegrees = q.getTheta();
+        break;
+      case Token.axisangle:
+        haveRotation = true;
+        if (isPoint3f(++i)) {
+          rotAxis.set(centerParameter(i));
+          break;
+        }
+        Point4f p4 = getPoint4f(i);
+        rotAxis.set(p4.x, p4.y, p4.z);
+        endDegrees = p4.w;
+        q = new Quaternion(rotAxis, endDegrees);
+        break;
+      case Token.branch:
+        haveRotation = true;
+        int iAtom1 = expression(++i).nextSetBit(0);
+        int iAtom2 = expression(++iToken).nextSetBit(0);
+        if (iAtom1 < 0 || iAtom2 < 0)
+          return;
+        bsAtoms = viewer.getBranchBitSet(iAtom2, iAtom1);
+        isSelected = true;
+        isMolecular = true;
+        points[0] = viewer.getAtomPoint3f(iAtom1);
+        points[1] = viewer.getAtomPoint3f(iAtom2);
+        nPoints = 2;
+        break;
+        
+        // 12.0 options
+
+      case Token.translate:
+        translation = new Vector3f(centerParameter(++i));
+        isMolecular = isSelected = true;
+        break;
+      case Token.helix:
+        // screw motion, for quaternion-based operations
+        helicalPath = true;
+        continue;
       case Token.symop:
         int symop = intParameter(++i);
         if (isSyntaxCheck)
@@ -8247,27 +8332,6 @@ public class ScriptEvaluator {
         isMolecular = true;
         haveRotation = true;
         continue;
-      case Token.helix:
-        // screw motion, for compare
-        helicalPath = true;
-        continue;
-      case Token.translate:
-        translation = new Vector3f(centerParameter(++i));
-        isMolecular = isSelected = true;
-        break;
-      case Token.branch:
-        haveRotation = true;
-        int iAtom1 = expression(++i).nextSetBit(0);
-        int iAtom2 = expression(++iToken).nextSetBit(0);
-        if (iAtom1 < 0 || iAtom2 < 0)
-          return;
-        bsAtoms = viewer.getBranchBitSet(iAtom2, iAtom1);
-        isSelected = true;
-        isMolecular = true;
-        points[0] = viewer.getAtomPoint3f(iAtom1);
-        points[1] = viewer.getAtomPoint3f(iAtom2);
-        nPoints = 2;
-        break;
       case Token.compare:
       case Token.matrix4f:
       case Token.matrix3f:
@@ -8305,64 +8369,6 @@ public class ScriptEvaluator {
         rotAxis.set(q.getNormal());
         endDegrees = q.getTheta();
         isMolecular = true;
-        break;
-      case Token.quaternion:
-      case Token.point4f:
-        if (tok == Token.quaternion)
-          i++;
-        haveRotation = true;
-        if (tokAt(i) == Token.list){
-          String[] s = (String[])getToken(i).value;
-          if (s.length == 0)
-            error(ERROR_invalidArgument);
-          Object o = Escape.unescapePoint(s[0]);
-          if (!(o instanceof Point4f))
-            error(ERROR_invalidArgument);
-          q = new Quaternion((Point4f)o);
-        } else {
-          q = new Quaternion(getPoint4f(i));
-        }
-        rotAxis.set(q.getNormal());
-        endDegrees = q.getTheta();
-        break;
-      case Token.axisangle:
-        haveRotation = true;
-        if (isPoint3f(++i)) {
-          rotAxis.set(centerParameter(i));
-          break;
-        }
-        Point4f p4 = getPoint4f(i);
-        rotAxis.set(p4.x, p4.y, p4.z);
-        endDegrees = p4.w;
-        q = new Quaternion(rotAxis, endDegrees);
-        break;
-      case Token.bitset:
-      case Token.expressionBegin:
-      case Token.leftbrace:
-      case Token.point3f:
-      case Token.dollarsign:
-        if (tok == Token.bitset || tok == Token.expressionBegin) {
-          if (translation != null || q != null || nPoints == 2) {
-            bsAtoms = expression(i);
-            ptsB = null;
-            isSelected = true;
-            break;
-          }
-        }
-        haveRotation = true;
-        if (nPoints == 2)
-          nPoints = 0;
-        // {X, Y, Z}
-        // $drawObject[n]
-        Point3f pt1 = centerParameter(i, viewer.getCurrentModelIndex());
-        if (!isSyntaxCheck && tok == Token.dollarsign
-            && tokAt(i + 2) != Token.leftsquare) {
-          // rotation about an axis such as $line1
-          isMolecular = true;
-          rotAxis = getDrawObjectAxis(objectNameParameter(++i), viewer
-              .getCurrentModelIndex());
-        }
-        points[nPoints++] = pt1;
         break;
       default:
         error(ERROR_invalidArgument);

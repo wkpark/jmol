@@ -662,9 +662,8 @@ public final class ModelLoader extends ModelSet {
       }
       if (isPDB && atomName.indexOf('*') >= 0)
           atomName = atomName.replace('*', '\'');
-      byte specialAtomID = (isPDB ? JmolConstants.lookupSpecialAtomID(atomName)
-          : 0);
-      if (specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
+      byte specialAtomID = JmolConstants.lookupSpecialAtomID(atomName);
+      if (isPDB && specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
           && "CA".equalsIgnoreCase(group3))
         specialAtomID = 0;
       atom.atomID = specialAtomID;

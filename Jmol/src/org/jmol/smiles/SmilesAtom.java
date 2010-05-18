@@ -451,12 +451,12 @@ public class SmilesAtom extends Point3f implements JmolNode {
     this.connectivity = connectivity;
   }
 
-  int ringMembership = -1;
+  int ringMembership = Integer.MIN_VALUE;
   public void setRingMembership(int rm) {
     ringMembership = rm;
   }
 
-  int ringSize = -1;
+  int ringSize = Integer.MIN_VALUE;
   public void setRingSize(int rs) {
     ringSize = rs;
   }

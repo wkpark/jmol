@@ -471,9 +471,9 @@ public class SmilesSearch {
         break;
 
       // r <n>
-      if (ringData != null && patternAtom.ringSize >= 0) {
-        if (patternAtom.ringSize == 0) {
-          if (ringCounts[iAtom] != 0)
+      if (ringData != null && patternAtom.ringSize >= -1) {
+        if (patternAtom.ringSize <= 0) {
+          if ((ringCounts[iAtom] == 0) != (patternAtom.ringSize == 0))
             break;
         } else if (ringData[patternAtom.ringSize] == null
             || !ringData[patternAtom.ringSize].get(iAtom)) {
@@ -481,8 +481,11 @@ public class SmilesSearch {
         }
       }
       // R <n>
-      if (ringData != null && patternAtom.ringMembership >= 0) {
-        if (ringCounts[iAtom] != patternAtom.ringMembership)
+      if (ringData != null && patternAtom.ringMembership >= -1) {
+        // !R --> -1 implies "R0" 
+        //  R --> -1 implies "!R0"
+        if (patternAtom.ringMembership == -1 ? ringCounts[iAtom] == 0 
+            : ringCounts[iAtom] != patternAtom.ringMembership)
           break;
       }
       // x <n>

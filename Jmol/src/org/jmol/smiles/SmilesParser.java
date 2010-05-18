@@ -720,17 +720,14 @@ public class SmilesParser {
                     : val);
                 break;
               case 'R':
-                if (val == Integer.MIN_VALUE) {
-                  val = 0;
-                  newAtom.not = !newAtom.not; // R --> !R0; !R --> R0
-                }
+                if (val == Integer.MIN_VALUE)
+                  val = -1; // R --> !R0; !R --> R0
                 newAtom.setRingMembership(val);
                 molecule.needRingData = true;
                 break;
               case 'r':
                 if (val == Integer.MIN_VALUE) {
-                  val = 0;
-                  newAtom.not = !newAtom.not; // r --> !R0; !r --> R0
+                  val = -1; // r --> !R0; !r --> R0
                   newAtom.setRingMembership(val);
                 } else {
                   newAtom.setRingSize(val);

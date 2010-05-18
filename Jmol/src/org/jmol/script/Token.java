@@ -1744,6 +1744,7 @@ public class Token {
       "saSurface",       new Token(sasurface),
       "scale",           new Token(scale),
       "search",          new Token(search),
+      "smarts",          null,
       "selected",        new Token(selected),
       "shapely",         new Token(shapely),
       "sidechain",       new Token(sidechain),

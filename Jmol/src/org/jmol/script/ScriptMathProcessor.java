@@ -719,14 +719,14 @@ class ScriptMathProcessor {
   private boolean evaluateCompare(ScriptVariable[] args, int tok)
       throws ScriptException {
     // compare({bitset} or [{positions}],{bitset} or [{positions}] [,"stddev"])
-    // compare({bitset},{bitset},smilesString [,"stddev"])
+    // compare({bitset},{bitset}[,"SMARTS"|"SMILES"],smilesString [,"stddev"])
     // returns matrix4f for rotation/translation or stddev
     if (args.length < 2 || args.length > 4)
       return false;
     float stddev;
     String sOpt = ScriptVariable.sValue(args[args.length - 1]);
     boolean isStdDev = sOpt.equalsIgnoreCase("stddev");
-    boolean isSmiles = (args.length == (isStdDev ? 4 : 3));
+    boolean isSmiles = (args.length > (isStdDev ? 3 : 2));
     if (isSmiles
         && (args[0].tok != Token.bitset || args[1].tok != Token.bitset))
       return false;
@@ -739,10 +739,15 @@ class ScriptMathProcessor {
       if (isSmiles) {
         ptsA = new Vector();
         ptsB = new Vector();
-        if (args.length == 4)
-          sOpt = ScriptVariable.sValue(args[2]);
-        stddev = getSmilesCorrelation((BitSet) args[0].value, 
-            (BitSet) args[1].value, sOpt, ptsA, ptsB, m);
+        sOpt = ScriptVariable.sValue(args[2]);
+        isSmiles = sOpt.equalsIgnoreCase("SMILES");
+        boolean isSearch = sOpt.equalsIgnoreCase("SMARTS");
+        if (isSmiles || isSearch)
+          sOpt = (args.length > 3 ? ScriptVariable.sValue(args[3]) : null);
+        if (sOpt == null)
+          return false;
+        stddev = eval.getSmilesCorrelation((BitSet) args[0].value, 
+            (BitSet) args[1].value, sOpt, ptsA, ptsB, m, null, !isSmiles);
         if (Float.isNaN(stddev))
           return false;
       } else {
@@ -755,45 +760,6 @@ class ScriptMathProcessor {
     }
     return (isStdDev ? addX(stddev) : addX(m));
   }
-
-  private float getSmilesCorrelation(BitSet bsA, BitSet bsB, String smiles,
-                                     Vector ptsA, Vector ptsB, Matrix4f m)
-      throws ScriptException {
-    try {
-      Atom[] atoms = viewer.getModelSet().atoms;
-      int atomCount = viewer.getAtomCount();
-      int[][] maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles,
-          atoms, atomCount, bsA, false, false);
-      if (maps.length == 0)
-        return Float.NaN;
-      for (int i = 0; i < maps[0].length; i++)
-        ptsA.add(atoms[maps[0][i]]);
-      maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles, atoms,
-          atomCount, bsB, false, true);
-      if (maps.length == 0)
-        return Float.NaN;
-      float lowestStdDev = Float.MAX_VALUE;
-      int[] mapB = null;
-      for (int i = 0; i < maps.length; i++) {
-        ptsB.clear();
-        for (int j = 0; j < maps[i].length; j++)
-          ptsB.add(atoms[maps[i][j]]);
-        float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
-        if (stddev < lowestStdDev) {
-          mapB = maps[i];
-          lowestStdDev = stddev;
-        }
-      }
-      for (int i = 0; i < mapB.length; i++)
-        ptsB.add(atoms[mapB[i]]);
-      return lowestStdDev;
-    } catch (Exception e) {
-      // e.printStackTrace();
-      eval.evalError(e.getMessage(), null);
-      return 0; // unattainable
-    }
-  }
-
 
   private boolean evaluateVolume(ScriptVariable[] args) throws ScriptException {
     ScriptVariable x1 = getX();
@@ -1155,23 +1121,29 @@ class ScriptMathProcessor {
       return false;
     if (isSyntaxCheck)
       return addX((int) 1);
+    
+    // {*}.find("CCCC")
+    // "CCCC".find("CC")
+    // {2.1}.find("CCCC",{1.1}) // find pattern "CCCC" in {2.1} with conformation given by {1.1}
+
     ScriptVariable x1 = getX();
     String sFind = ScriptVariable.sValue(args[0]);
     String flags = (args.length > 1 ? ScriptVariable.sValue(args[1]) : "");
-    boolean isSmiles = sFind.equalsIgnoreCase("smiles");
-    boolean isSearch = sFind.equalsIgnoreCase("search");
+    boolean isSmiles = sFind.equalsIgnoreCase("SMILES");
+    boolean isSearch = sFind.equalsIgnoreCase("SMARTS");
     if (isSmiles || isSearch || x1.tok == Token.bitset) {
+      int iPt = (isSmiles || isSearch ? 2 : 1);
+      BitSet bs2 = (iPt < args.length && args[iPt].tok == Token.bitset ? (BitSet) args[iPt++].value
+          : null);
+      boolean isAll = (iPt < args.length && ScriptVariable.bValue(args[iPt]));
       if (x1.tok == Token.string)
-        return addX(isSyntaxCheck ? 0 : viewer.getSmilesMatcher().find(flags,
-            ScriptVariable.sValue(x1),
-            isSearch, (args.length == 3 && ScriptVariable.bValue(args[2]))));
+        return (bs2 == null && addX(isSyntaxCheck ? 0 : viewer.getSmilesMatcher().find(flags,
+            ScriptVariable.sValue(x1), isSearch, isAll)));
       if (isSmiles || isSearch)
         sFind = flags;
       if (x1.tok == Token.bitset) {
-        boolean isAll = (args.length > 1 && ScriptVariable
-            .bValue(args[args.length - 1]));
-        Object ret = getSmilesMatches(sFind,
-            (BitSet) x1.value, null, null, !isSmiles, isAll);
+        Object ret = eval.getSmilesMatches(sFind, (BitSet) x1.value, null, null,
+              bs2, !isSmiles, isAll);
         if (!isAll)
           return addX((BitSet) ret);
         return addX((String[]) ret);
@@ -1183,14 +1155,14 @@ class ScriptMathProcessor {
           BitSet bs = Escape.unescapeBitset(list[i]);
           if (bs == null)
             continue;
-          BitSet ret = (BitSet) getSmilesMatches(sFind,
-              bs, null, null, !isSmiles, false);
+          BitSet ret = (BitSet) eval.getSmilesMatches(sFind, bs, null, null,
+              null, !isSmiles, false);
           if (ret.cardinality() > 0)
             v.addElement(ret);
         }
         list = new String[v.size()];
-        for (int i = v.size(); --i >= 0; )
-          list[i] = Escape.escape((BitSet)v.get(i));
+        for (int i = v.size(); --i >= 0;)
+          list[i] = Escape.escape((BitSet) v.get(i));
         return addX(list);
       }
       eval.error(ScriptEvaluator.ERROR_invalidArgument);
@@ -2010,7 +1982,7 @@ class ScriptMathProcessor {
         eval.error(ScriptEvaluator.ERROR_invalidArgument);
       if (isSyntaxCheck)
         return addX(new Vector());
-      return addX((String[]) getSmilesMatches(ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot, tok == Token.search, true));
+      return addX((String[]) eval.getSmilesMatches(ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot, null, tok == Token.search, true));
     }
     if (withinSpec instanceof String) {
       if (tok == Token.nada) {
@@ -2119,30 +2091,6 @@ class ScriptMathProcessor {
     if (isWithinGroup)
       return addX(viewer.getGroupsWithin((int) distance, bs));
     return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet));
-  }
-
-  private Object getSmilesMatches(String smiles, BitSet bsSelected,
-                                          BitSet bsRequired, BitSet bsNot, boolean isSearch, boolean isAll) throws ScriptException {
-    if (isSyntaxCheck) {
-      if (isAll)
-        return new String[] {""};
-      return new BitSet();
-    }
-    try {
-      BitSet[] b = viewer.getSmilesMatcher().getSubstructureSetArray(
-          smiles, viewer.getModelSet().atoms, viewer.getAtomCount(), 
-          bsSelected, bsRequired, bsNot, null, isSearch, isAll);
-      if (!isAll)
-        return (b.length > 0 ? b[0] : new BitSet());
-      String[] matches = new String[b.length];
-      for (int j = 0; j < b.length; j++)
-        matches[j] = Escape.escape(b[j]);
-      return matches;
-    } catch (Exception e) {
-      //e.printStackTrace();
-      eval.evalError(e.getMessage(), null);
-      return null; // unattainable
-    }
   }
 
   private boolean evaluateConnected(ScriptVariable[] args) {

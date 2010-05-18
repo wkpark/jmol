@@ -6025,8 +6025,10 @@ public class ScriptEvaluator {
     // compare {model1} {model2} [atoms] {bsAtoms1} {bsAtoms2}
     // compare {model1} {model2} orientations
     // compare {model1} {model2} orientations {bsAtoms1} {bsAtoms2}
-    // compare {model1} {model2} [orientations] [quaternionList1]
-    // [quaternionList2]
+    // compare {model1} {model2} [orientations] [quaternionList1] [quaternionList2]
+    // compare {model1} {model2} SMILES "....."
+    // compare {model1} {model2} SMARTS "....."
+    
     boolean isQuaternion = false;
     boolean doRotate = false;
     boolean doTranslate = false;
@@ -6039,8 +6041,16 @@ public class ScriptEvaluator {
     BitSet bsFrom = expression(1);
     BitSet bsTo = expression(++iToken);
     BitSet bsSubset = null;
+    boolean isSmiles = false;
+     String strSmiles = null;
     for (int i = iToken + 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
+      case Token.smiles:
+        isSmiles = true;
+        // fall through
+      case Token.search:
+        strSmiles = stringParameter(++i);
+        break;
       case Token.decimal:
       case Token.integer:
         nSeconds = Math.abs(floatParameter(i));
@@ -6132,6 +6142,22 @@ public class ScriptEvaluator {
         data1[i] = (Quaternion) vQ.get(i);
       q = Quaternion.sphereMean(data1, retStddev, 0.0001f);
       showString("RMSD = " + retStddev[0] + " degrees");
+    } else if (strSmiles != null) {
+      if (vAtomSets == null)
+        vAtomSets = new Vector();
+      bsAtoms1 = BitSetUtil.copy(bsFrom);
+      bsAtoms2 = BitSetUtil.copy(bsTo);
+      vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
+      Matrix4f m4 = new Matrix4f();
+      float stddev = getSmilesCorrelation(bsFrom, bsTo, 
+          strSmiles, null, null, m4, null, !isSmiles);
+      if (Float.isNaN(stddev))
+        error(ERROR_invalidArgument);
+      Vector3f translation = new Vector3f();
+      m4.get(translation);
+      Matrix3f m3 = new Matrix3f();
+      m4.get(m3);
+      q = new Quaternion(m3);
     } else {
       // atoms
       if (bsAtoms1 == null) {
@@ -6188,6 +6214,104 @@ public class ScriptEvaluator {
     }
     viewer.rotateAboutPointsInternal(centerAndPoints[0][0], pt1, endDegrees
         / nSeconds, endDegrees, doAnimate, bsFrom, translation, ptsB);
+  }
+
+  float getSmilesCorrelation(BitSet bsA, BitSet bsB, String smiles,
+                             Vector ptsA, Vector ptsB, Matrix4f m,
+                             Vector vReturn, boolean isSearch)
+      throws ScriptException {
+    float tolerance = 0.1f; // TODO
+    try {
+      if (ptsA == null) {
+        ptsA = new Vector();
+        ptsB = new Vector();
+      }
+      if (m == null)
+        m = new Matrix4f();
+      
+      Atom[] atoms = viewer.getModelSet().atoms;
+      int atomCount = viewer.getAtomCount();
+      int[][] maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles,
+          atoms, atomCount, bsA, isSearch, false);
+      if (maps.length == 0)
+        return Float.NaN;
+      for (int i = 0; i < maps[0].length; i++)
+        ptsA.add(atoms[maps[0][i]]);
+      maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles, atoms,
+          atomCount, bsB, isSearch, true);
+      if (maps.length == 0)
+        return Float.NaN;
+      float lowestStdDev = Float.MAX_VALUE;
+      int[] mapB = null;
+      for (int i = 0; i < maps.length; i++) {
+        ptsB.clear();
+        for (int j = 0; j < maps[i].length; j++)
+          ptsB.add(atoms[maps[i][j]]);
+        float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
+        System.out.println("getSmilesCorrelation stddev=" + stddev);
+        if (vReturn != null) {
+          if (stddev < tolerance) {
+            BitSet bs = new BitSet();
+            for (int j = 0; j < maps[i].length; j++)
+              bs.set(maps[i][j]);
+            vReturn.add(bs);
+          }
+        }
+        if (stddev < lowestStdDev) {
+          mapB = maps[i];
+          lowestStdDev = stddev;
+        }
+      }
+      for (int i = 0; i < mapB.length; i++)
+        ptsB.add(atoms[mapB[i]]);
+      return lowestStdDev;
+    } catch (Exception e) {
+      // e.printStackTrace();
+      evalError(e.getMessage(), null);
+      return 0; // unattainable
+    }
+  }
+
+  Object getSmilesMatches(String smiles, BitSet bsSelected,
+                                  BitSet bsRequired, BitSet bsNot,
+                                  BitSet bsMatch3D, boolean isSearch,
+                                  boolean isAll) throws ScriptException {
+    if (isSyntaxCheck) {
+      if (isAll)
+        return new String[] { "" };
+      return new BitSet();
+    }
+    try {
+      BitSet[] b;
+      if (bsMatch3D == null) {
+        b = viewer.getSmilesMatcher().getSubstructureSetArray(smiles,
+            viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
+            bsRequired, bsNot, null, isSearch, isAll);
+      } else {
+        Vector vReturn = new Vector();
+        float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, smiles,
+            null, null, null, vReturn, isSearch);
+        if (Float.isNaN(stddev)) {
+          if (isAll)
+            return new String[] { "" };
+          return new BitSet();
+        }
+        showString("RMSD " + stddev + " Angstroms");
+        b = new BitSet[vReturn.size()];
+        for (int j = 0; j < b.length; j++)
+          b[j] = (BitSet) vReturn.get(j);
+      }
+      if (!isAll)
+        return (b.length > 0 ? b[0] : new BitSet());
+      String[] matches = new String[b.length];
+      for (int j = 0; j < b.length; j++)
+        matches[j] = Escape.escape(b[j]);
+      return matches;
+    } catch (Exception e) {
+      // e.printStackTrace();
+      evalError(e.getMessage(), null);
+      return null; // unattainable
+    }
   }
 
   private void connect(int index) throws ScriptException {
@@ -8184,6 +8308,7 @@ public class ScriptEvaluator {
     Vector3f rotAxis = new Vector3f(0, 1, 0);
     Vector3f translation = null;
     Matrix4f m4 = null;
+    Matrix3f m3 = null;
     int direction = 1;
     int tok;
     Quaternion q = null;
@@ -8370,7 +8495,7 @@ public class ScriptEvaluator {
         } else if (tok == Token.matrix4f) {
           m4 = (Matrix4f) theToken.value;
         }
-        Matrix3f m3 = new Matrix3f();
+        m3 = new Matrix3f();
         if (m4 != null) {
           translation = new Vector3f();
           m4.get(translation);

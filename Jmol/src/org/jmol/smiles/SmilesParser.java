@@ -667,8 +667,9 @@ public class SmilesParser {
                 // We also allow [C&!O], though that's not particularly useful.
                 mustBeSymbol = false;
               } else if (ch == 'H') {
-                // only H if not H<n> 
-                mustBeSymbol = !Character.isDigit(nextChar);
+                // only H if not H<n> or H1? 
+                // 
+                mustBeSymbol = !Character.isDigit(nextChar) || getChar(pattern, index + 2) == '?';
               } else if ("DdhRrvXx".indexOf(ch) >= 0
                   && Character.isDigit(nextChar)) {
                 // not a symbol if any of these are followed by a number 
@@ -753,10 +754,10 @@ public class SmilesParser {
               }
             }
           }
-          ch = getChar(pattern, index);
-         if (isNot && ch != '\0')
-           throw new InvalidSmilesException("'!' may only involve one primitive.");
         }
+        ch = getChar(pattern, index);
+        if (isNot && ch != '\0')
+          throw new InvalidSmilesException("'!' may only involve one primitive.");
       }
       if (hydrogenCount == Integer.MIN_VALUE && isBracketed)
         hydrogenCount = Integer.MIN_VALUE + 1;

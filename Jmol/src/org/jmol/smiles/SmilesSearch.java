@@ -482,7 +482,6 @@ public class SmilesSearch {
       }
       // R <n>
       if (ringData != null && patternAtom.ringMembership >= -1) {
-        // !R --> -1 implies "R0" 
         //  R --> -1 implies "!R0"
         if (patternAtom.ringMembership == -1 ? ringCounts[iAtom] == 0 
             : ringCounts[iAtom] != patternAtom.ringMembership)

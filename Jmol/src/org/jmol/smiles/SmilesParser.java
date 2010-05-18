@@ -603,13 +603,13 @@ public class SmilesParser {
 
       boolean isNot = false;
       if (isSearch && ch == '!') {
-        index++;
+        ch = getChar(pattern, ++index);
         newAtom.not = isNot = true;
       }
 
       int hydrogenCount = Integer.MIN_VALUE;
 
-      while ((ch = getChar(pattern, index)) != '\0') {
+      while (ch != '\0') {
         if (Character.isDigit(ch)) {
           index = getDigits(pattern, index, ret);
           int mass = ret[0];
@@ -753,7 +753,9 @@ public class SmilesParser {
               }
             }
           }
-          isNot = false;
+          ch = getChar(pattern, index);
+         if (isNot && ch != '\0')
+           throw new InvalidSmilesException("'!' may only involve one primitive.");
         }
       }
       if (hydrogenCount == Integer.MIN_VALUE && isBracketed)

@@ -146,7 +146,8 @@ public class SmilesParser {
    *       # note -- if & is not used, certain combinations of primitiveDescritors
    *       #         are not allowed. Specifically, combinations that together
    *       #         form the symbol for an element are not allowed: Ar, Rh, etc.
-   *       #         however, rA and hR would be fine
+   *       #         when NOT followed by a digit: [Ar3] is OK, 
+   *       #         but [Ard2] is argon with two non-hydrogen connections
    *                              
    *   [primitiveDescriptor] == { "!" [primitive] | [primitive] }
    *   [primitive] == { [isotope] | [atomType] | [charge] | [stereochemistry]
@@ -641,18 +642,20 @@ public class SmilesParser {
             // SMARTS has ambiguities in terms of chaining without &.
             // H alone is "one H atom"
             // "!H" is "not hydrogen" but "!H2" is "not two attached hydrogens"
-            // Rh would be "Any ring atom with at least one implicit H atom"
-            // Ar would be "Any aliphatic ring atom"
+            // [Rh] could be rhodium or "Any ring atom with at least one implicit H atom"
+            // [Ar] could be argon or "Any aliphatic ring atom"
+            // There is no ambiguity, though, with [Rh3] or [Ar6] because
+            // in those cases the number forces the single-character property
+            // "h3" or "r6", thus forcing "R" or "A"
             // also, Jmol has Xx
             // We manage this by simply asserting that if & is not used and
             // the first two-letters of the expression could be interpreted
-            // as a symbol, then it WILL be interpreted as a symbol
-            //
-            // Instead of "Rh" one should use "hR"; instead of "Ar", use "rA"
-            // Even better is to use &: R&h, r&A
+            // as a symbol, AND the next character is not a digit, then it WILL be interpreted as a symbol
             char nextChar = getChar(pattern, index + 1);
             String sym2 = pattern.substring(index + 1, index
-                + (Character.isLowerCase(nextChar) ? 2 : 1));
+                + (Character.isLowerCase(nextChar) 
+                    && (!isBracketed || !Character.isDigit(getChar(pattern, index + 2))) 
+                    ? 2 : 1));
             String symbol = Character.toUpperCase(ch) + sym2;
             boolean mustBeSymbol = true;
             boolean checkForPrimitive = (isBracketed && Character.isLetter(ch));

@@ -602,11 +602,14 @@ public class Measures extends Shape implements JmolMeasurementClient {
       FontLineShape.addTickInfo(commands, defaultTickInfo, true);
       commands.append(";\n");
     }
+    if (mad >= 0)
+      commands.append(" set measurements " + (mad / 2000f));
     String s = getShapeCommands(temp, null, -1, "select measures");
-    if (s != null) {
+    if (s != null && s.length() != 0) {
       commands.append(s);
       appendCmd(commands, "select measures ({null})");
     }
+    
     return commands.toString();
   }
   

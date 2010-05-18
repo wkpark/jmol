@@ -371,9 +371,6 @@ public class SmilesAtom extends Point3f implements JmolNode {
    * @param count Number of hydrogen atoms.
    */
   public void setExplicitHydrogenCount(int count) {
-    if (count == 2)
-      System.out.println("hmm");
-
     explicitHydrogenCount = count;
   }
 

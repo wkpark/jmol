@@ -244,7 +244,7 @@ class ScriptMathProcessor {
 
   private boolean addX(float x) {
     // no check for unary minus
-    return addX(new Float(x));
+    return Float.isNaN(x) ? addX("NaN") : addX(new Float(x));
   }
 
   private static boolean isOpFunc(Token op) {
@@ -734,6 +734,7 @@ class ScriptMathProcessor {
       m.setIdentity();
       stddev = 0;
     } else {
+      stddev = Float.NaN;
       Vector ptsA, ptsB;
       if (isSmiles) {
         ptsA = new Vector();
@@ -747,17 +748,14 @@ class ScriptMathProcessor {
           return false;
         stddev = eval.getSmilesCorrelation((BitSet) args[0].value, 
             (BitSet) args[1].value, sOpt, ptsA, ptsB, m, null, !isSmiles);
-        if (Float.isNaN(stddev))
-          return false;
       } else {
         ptsA = eval.getPointVector(args[0].value, 0);
         ptsB = eval.getPointVector(args[1].value, 0);
-        if (ptsA == null || ptsB == null)
-          return false;
-        stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
+        if (ptsA != null && ptsB != null)
+          stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
       }
     }
-    return (isStdDev ? addX(stddev) : addX(m));
+    return (isStdDev || Float.isNaN(stddev) ? addX(stddev) : addX(m));
   }
 
   private boolean evaluateVolume(ScriptVariable[] args) throws ScriptException {

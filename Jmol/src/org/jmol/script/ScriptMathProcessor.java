@@ -40,7 +40,6 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolEdge;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelset.Atom;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Bond.BondSet;

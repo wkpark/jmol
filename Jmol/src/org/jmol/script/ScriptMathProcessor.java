@@ -720,7 +720,7 @@ class ScriptMathProcessor {
     // compare({bitset} or [{positions}],{bitset} or [{positions}] [,"stddev"])
     // compare({bitset},{bitset}[,"SMARTS"|"SMILES"],smilesString [,"stddev"])
     // returns matrix4f for rotation/translation or stddev
-    if (args.length < 2 || args.length > 4)
+    if (args.length < 2 || args.length > 5)
       return false;
     float stddev;
     String sOpt = ScriptVariable.sValue(args[args.length - 1]);

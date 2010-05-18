@@ -982,7 +982,7 @@ public class SmilesSearch {
     String s = "****";
     while (s.length() < ringDataMax)
       s += s;
-    for (int i = 6; i < 7/*ringDataMax + 1*/; i++) {
+    for (int i = 3; i <= ringDataMax; i++) {
       Vector v = (Vector) getBitSets("*1" + s.substring(0, i - 2) + "*1",
           false, ringSets);
       for (int r = v.size(); --r >= 0;) {

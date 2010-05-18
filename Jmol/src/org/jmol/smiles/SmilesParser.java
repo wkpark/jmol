@@ -140,15 +140,16 @@ public class SmilesParser {
    *   [bracketedExpression] == { [orSet] | [orSet] ";" [andSet] } 
    *   
    *   [orSet] == { [andSet] | [andSet] "," [andSet] }
-   *   [andSet] == { [primitives] | "!" [primitive] 
-   *                              | [primitives] "&" [andSet] }
+   *   [andSet] == { [primitives] | [primitives] "&" [andSet]
+   *                              | "!" [primitive] 
+   *                              | "!" [primitive] "&" [andSet] }
+   *   [primitives] == { [primitive] | [primitive] [primitives] }
    *       # note -- if & is not used, certain combinations of primitiveDescritors
    *       #         are not allowed. Specifically, combinations that together
    *       #         form the symbol for an element are not allowed: Ar, Rh, etc.
    *       #         when NOT followed by a digit: [Ar3] is OK, 
-   *       #         but [Ard2] is argon with two non-hydrogen connections
-   *                              
-   *   [primitives] == { [primitive] | [primitive] [primitives] }
+   *       #         but [Ard2] is "argon with two non-hydrogen connections"
+   *                 Also, "!" may be use with only one primitive             
    *   [primitive] == { [isotope] | [atomType] | [charge] | [stereochemistry]
    *                              | [A_Prop] | [D_Prop] | [H_Prop] | [h_Prop] 
    *                              | [R_Prop] | [r_Prop] | [v_Prop] | [X_Prop]

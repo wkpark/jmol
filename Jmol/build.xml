@@ -252,6 +252,12 @@ in order to allow for faster BitSet methods
 
 changed    source="1.4" target="1.4"
      to    source="1.5" target="1.5"
+     
+bob 2010.05.19
+
+changed just the applet classes back to:
+
+           source="1.4" target="1.4"
            
 all support for previous versions removed
 
@@ -259,7 +265,7 @@ all support for previous versions removed
     <javac srcdir="src" destdir="${applet.classes.dir}"
            debug="${debug}" deprecation="${deprecation}"
            optimize="${optimization}"
-           source="1.5" target="1.5"
+           source="1.4" target="1.4"
            includesfile="applet.classes"
            classpathref="applet-project.class.path" />
 

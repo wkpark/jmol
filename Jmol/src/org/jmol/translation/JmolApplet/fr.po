@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-04-11 18:02+0200\n"
-"PO-Revision-Date: 2010-04-24 22:56+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2010-05-19 03:02+0000\n"
+"Last-Translator: Tognu <jaalvarez@ipn.mx>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-04-25 09:04+0000\n"
+"X-Launchpad-Export-Date: 2010-05-19 18:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -962,7 +962,7 @@ msgstr "Structures"
 
 #: org/jmol/popup/PopupResourceBundle.java:697
 msgid "Cartoon Rockets"
-msgstr ""
+msgstr "Roquettes Cartoon"
 
 #: org/jmol/popup/PopupResourceBundle.java:698
 #: org/jmol/popup/PopupResourceBundle.java:790
@@ -972,12 +972,12 @@ msgstr "Rubans"
 #: org/jmol/popup/PopupResourceBundle.java:699
 #: org/jmol/popup/PopupResourceBundle.java:791
 msgid "Rockets"
-msgstr ""
+msgstr "Roquettes"
 
 #: org/jmol/popup/PopupResourceBundle.java:700
 #: org/jmol/popup/PopupResourceBundle.java:792
 msgid "Strands"
-msgstr ""
+msgstr "Rives"
 
 #: org/jmol/popup/PopupResourceBundle.java:703
 msgid "Vibration"
@@ -1125,7 +1125,7 @@ msgstr "Monomère"
 
 #: org/jmol/popup/PopupResourceBundle.java:757
 msgid "Shapely"
-msgstr ""
+msgstr "Galbé"
 
 #: org/jmol/popup/PopupResourceBundle.java:759
 msgid "Inherit"
@@ -1362,7 +1362,7 @@ msgstr "Unité pour les distances en picomètres"
 
 #: org/jmol/popup/PopupResourceBundle.java:862
 msgid "Set picking"
-msgstr ""
+msgstr "Réglez la cueillette"
 
 #: org/jmol/popup/PopupResourceBundle.java:864
 msgid "Center"
@@ -1402,7 +1402,7 @@ msgstr "Sélectionner site"
 
 #: org/jmol/popup/PopupResourceBundle.java:874
 msgid "Show symmetry operation"
-msgstr ""
+msgstr "opération de symétrie montrent"
 
 #: org/jmol/popup/PopupResourceBundle.java:877
 msgid "Show"
@@ -1450,7 +1450,7 @@ msgstr "Recharger"
 
 #: org/jmol/popup/PopupResourceBundle.java:893
 msgid "Open from PDB"
-msgstr ""
+msgstr "Ouvert du PDB"
 
 #: org/jmol/popup/PopupResourceBundle.java:894
 msgid "Open file or URL"
@@ -1628,7 +1628,7 @@ msgstr "fin d'expression attendue"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1137
 msgid "identifier or residue specification expected"
-msgstr ""
+msgstr "spécification identifiant ou de résidus prévus"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1140
 msgid "invalid atom specification"
@@ -1650,7 +1650,7 @@ msgstr "spécification de modèle incorrecte"
 #: org/jmol/script/ScriptCompilationTokenParser.java:1152
 #, java-format
 msgid "missing END for {0}"
-msgstr ""
+msgstr "manquantes END pour {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1155
 #: org/jmol/script/ScriptEvaluator.java:2469
@@ -1673,7 +1673,7 @@ msgstr "{0} attendu"
 #: org/jmol/script/ScriptCompilationTokenParser.java:1167
 #, java-format
 msgid "{0} unexpected"
-msgstr ""
+msgstr "{0} inattendue"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1170
 #, java-format
@@ -1693,7 +1693,7 @@ msgstr "élément non reconnu: {0}"
 
 #: org/jmol/script/ScriptCompiler.java:2250
 msgid "script compiler ERROR: "
-msgstr ""
+msgstr "Erreur du compilateur de script: "
 
 #: org/jmol/script/ScriptEvaluator.java:2225
 #: org/jmol/script/ScriptEvaluator.java:8354
@@ -1740,7 +1740,7 @@ msgstr "un nom de couleur ou de palette (Jmol, Rasmol) est requis"
 
 #: org/jmol/script/ScriptEvaluator.java:2396
 msgid "{x y z} or $name or (atom expression) required"
-msgstr ""
+msgstr "{x y z} o $name o une expression atome requis"
 
 #: org/jmol/script/ScriptEvaluator.java:2399
 msgid "draw object not defined"
@@ -1793,20 +1793,20 @@ msgstr "mot clé attendu"
 
 #: org/jmol/script/ScriptEvaluator.java:2438
 msgid "no MO coefficient data available"
-msgstr ""
+msgstr "pas de données MO coefficient disponibles"
 
 #: org/jmol/script/ScriptEvaluator.java:2441
 #, java-format
 msgid "An MO index from 1 to {0} is required"
-msgstr ""
+msgstr "Un indice MO de 1 à {0} est requis"
 
 #: org/jmol/script/ScriptEvaluator.java:2444
 msgid "no MO basis/coefficient data available for this frame"
-msgstr ""
+msgstr "aucune base MO / données coefficient disponible pour ce cadre"
 
 #: org/jmol/script/ScriptEvaluator.java:2447
 msgid "no MO occupancy data available"
-msgstr ""
+msgstr "no MO occupancy data available"
 
 #: org/jmol/script/ScriptEvaluator.java:2450
 msgid "Only one molecular orbital is available in this file"
@@ -1820,7 +1820,7 @@ msgstr "{0} requière qu'un seul modèle soit affiché"
 #: org/jmol/script/ScriptEvaluator.java:2456
 #, java-format
 msgid "{0} requires that only one model be loaded"
-msgstr ""
+msgstr "{0} requiert qu'un seul modèle être chargé"
 
 #: org/jmol/script/ScriptEvaluator.java:2459
 msgid "No data available"
@@ -1910,6 +1910,7 @@ msgstr "objet non reconnu"
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr ""
+"méconnue {0} paramètre dans le script Jmol état (ensemble de toute façon)"
 
 #: org/jmol/script/ScriptEvaluator.java:2525
 #, java-format
@@ -1929,7 +1930,7 @@ msgstr "{0} connexions supprimées"
 #: org/jmol/script/ScriptEvaluator.java:6200
 #, java-format
 msgid "{0} new bonds; {1} modified"
-msgstr ""
+msgstr "{0} de nouveaux liens; {1} modification"
 
 #: org/jmol/script/ScriptEvaluator.java:7362
 #, java-format

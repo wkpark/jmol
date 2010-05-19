@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-17 20:16+0200\n"
-"PO-Revision-Date: 2010-05-01 00:13+0100\n"
-"Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
+"PO-Revision-Date: 2010-05-19 02:31+0000\n"
+"Last-Translator: Tognu <jaalvarez@ipn.mx>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-03-15 21:12+0000\n"
+"X-Launchpad-Export-Date: 2010-05-19 18:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: SPAIN\n"
 "X-Poedit-Language: Spanish\n"
@@ -71,9 +71,8 @@ msgid "send only output from print messages to console (implies -i)"
 msgstr "enviar sólo salida de mensajes de impresión a la consola (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
-#, fuzzy
 msgid "independent command thread"
-msgstr "hilo de instrucciones independiente"
+msgstr "Hilo independiente"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"
@@ -1570,3 +1569,6 @@ msgstr "sin aplicarse"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Las opciones  -D son (valores predeterminados entre paréntesis):"
+
+#~ msgid "Output Conso&le..."
+#~ msgstr "C&onsola..."

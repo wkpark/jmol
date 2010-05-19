@@ -131,7 +131,7 @@ It is recommended they be restricted to the set A-Z, a-z, and 0-9.
 <tr><td>A</td><td>any non-aromatic atom</td></tr>
 <tr><td>a</td><td>any aromatic atom</td></tr>
 <tr><td>#</td><td>atomic number</td></tr>
-<tr><td>(integer)</td><td>mass number</td></tr>
+<tr><td>(integer)</td><td>mass number -- Note, however, that [H1] is [*H1], "any atom with one attached hydrogen", not unlabeled hydrogen, [1H].</td></tr>
 <tr><td>D</td><td>degree - total number of connections</td></tr>
 <tr><td>H</td><td>exact hydrogen count</td></tr>
 <tr><td>h</td><td>"implicit" hydrogen count (atoms are not in structure)</td></tr>
@@ -156,9 +156,6 @@ In addition, Jmol 3D-SEARCH adds the following primitives and options:
     
 </li><li>Allows any order of bracketed primitives: [H2C13] same as [13CH2].
  
-</li><li>Adds ambiguous isotope: [C12?] -- "C13 or C with undesignated isotope".
-    Note, however, that [H1] is [*H1], "one attached hydrogen", not [1H]
-     
 </li><li>All atom logic implemented: [X,!X,X&X,X&X&X;X&X] etc.
  
 </li><li>"&" is optional: [13CH2] same as [13&C&H2]

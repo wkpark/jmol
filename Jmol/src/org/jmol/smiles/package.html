@@ -38,11 +38,14 @@
 An adaptation of SMILES and SMARTS for 3D molecular atom search and selection.
 
     The <a href="..">org.jmol.smiles</a> package provides extensive functionality for selecting
-    atoms based on SMILES and SMARTS strings. This package may be used independently
+    atoms within a three-dimensional model based on SMILES and SMARTS strings. 
+    This package may be used independently
     of Jmol -- see <a href="../../../JmolSmilesApplet.java">JmolSmilesApplet.java</a>
     and <a href="http://chemapps.stolaf.edu/jmol/docs/examples-11/JmeToJmol.htm">JmeToJmol.htm</a>.
     </p>
-
+<p> Besides a presentation of general considerations, a detailed <a href="#specs">specification</a> for syntax, and 
+the term "aromatic" is <a href="#aromaticity">defined</a>.
+</p>
  <h3>General Considerations</h3>
 <p>
 <b>format</b>
@@ -92,9 +95,11 @@ or [2H] are selected; connected hydrogen atoms as in [CH3] are not selected.
       select within(SMARTS,@x)
 </pre> 
 Note that these variables are any string whatsoever, not just atom sets. The syntax is simply:
-<ul><li>Each variable definition takes the form $ [name] =" [definition] ";
-</li><li>[name] can be any characters except '$', '=', and ']'. It is recommended they be restricted to the set A-Z, a-z, and 0-9.
+<ul><li>Each variable definition takes the form $ [name] =" [definition] " [comments] ;
+</li><li>[name] can be any characters except '$', '=', and ']' and must not start with '('. 
+It is recommended they be restricted to the set A-Z, a-z, and 0-9.
 </li><li>[definition] can be any valid SMARTS characters. 
+</li><li>[comments] can be any characters other than ';'. 
 </li><li>The actual pattern starts after the last variable definition.
 </li><li>Nested variables are allowed, but note that this may require using the recursion syntax, $(...): 
 <pre>
@@ -117,8 +122,30 @@ Note that these variables are any string whatsoever, not just atom sets. The syn
 <b>primitives</b>
 
 <ul>
-<li>All Daylight SMARTS primitives are implemented.
-  
+<li>All Daylight SMARTS primitives are implemented. These include:
+<br/>
+<table border="1" cellpadding="5" width="500">
+<tr><td>#</td><td>atomic number</td></tr>
+<tr><td>(integer)</td><td>mass number</td></tr>
+<tr><td>D</td><td>degree - total number of connections</td></tr>
+<tr><td>H</td><td>exact hydrogen count</td></tr>
+<tr><td>h</td><td>"implicit" hydrogen count (atoms are not in structure)</td></tr>
+<tr><td>R</td><td>in the specified number of rings</td></tr>
+<tr><td>r</td><td>in ring of a given size</td></tr>
+<tr><td>v</td><td>valence (total bond order)</td></tr>
+<tr><td>X</td><td>calculated connectivity, including implicit hydrogens</td></tr>
+<tr><td>x</td><td>number of ring bonds</td></tr>
+<tr><td>@</td><td>stereochemistry</td></tr>
+</table>
+<br/>
+In addition, Jmol 3D-SEARCH adds the following primitives and options:
+<br/>
+<br/>
+<table border="1" cellpadding="5" width="500">
+<tr><td>d</td><td>non-hydrogen degree -- number of non-hydrogen connections</td></tr>
+<tr><td>[number]?</td><td>mass number or undefined (so, for example, [C12?] means any carbon that isn't explicitly C13 or C14</td></tr>
+</table>  
+<br/>
 </li><li>All primitives that are not element names, <b>*</b>, <b>A</b>, or <b>a</b> must be 
     enclosed in brackets.
     
@@ -132,18 +159,17 @@ Note that these variables are any string whatsoever, not just atom sets. The syn
 </li><li>"&" is optional: [13CH2] same as [13&C&H2]
     except in cases of ambiguity with element symbols: [Rh] is rhodium, not [R&h].
  
-</li><li>Jmol 3D-SEARCH does NOT implement "zero-level parentheses", since the match is 
-    always only within a given model (even though one might use . for a not-connected indicator)
- 
-</li><li>Jmol 3D-SEARCH does NOT implement "?" in atom stereochemistry ("chirality") because 
+</li><li>Jmol 3D-SEARCH does NOT implement:
+<ul><li> "zero-level parentheses", since the match is 
+    always only within a given model (but note that you can still use '.' for a "not-connected" indicator)
+</li><li>"?" in atom stereochemistry ("chirality") because 
     3D structures are always defined stereochemically.
  
-</li><li>does NOT implement "?" for bond stereochemistry, as 3D structures
+</li><li>"?" for bond stereochemistry, as 3D structures
     are always defined stereochemically
+</li></ul>
 
-
-</li>
-</ul>
+</li></ul>
 
 <b>implicit hydrogen count</b>
 
@@ -152,10 +178,10 @@ Note that these variables are any string whatsoever, not just atom sets. The syn
 The primitives <b>h</b> (implicit hydrogen count) and <b>X</b> (total connections, including implicit hydrogens)
 require analysis of bonding around a model atom to determine the number of missing ("implicit") hydrogen atoms based on a "target valence." 
 Models that specify only "aromatic" or "partial" bonding may produce ambiguous results, and for that reason, 
-primitives <b>X</b> and <b>h</b> are disrecommended for those situations.
+primitives <b>X</b> and <b>h</b> are not recommended for use. Other primitives, such as <b>D</b>, <b>d</b>, and <b>v</b> should be more useful.
 The analysis Jmol uses here is the same as for how Jmol calculates the number of hydrogens to add for the <b>calculate hydrogens</b> command and 
 includes:
- <ol style="list-style-type: lower-alpha;"><li>Determine the target valence <b>TV</b> as follows:
+ <ol style="list-style-type: lower-alpha;"><li>Assign the target valence <b>TV</b> as follows:
   <ul><li>For C and Si, <b>TV</b> = 4.
   </li><li>For B, N, and P, <b>TV</b> = 3.
   </li><li>For O and S, <b>TV</b> = 2.

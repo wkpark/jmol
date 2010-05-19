@@ -366,7 +366,7 @@ public class SmilesParser {
       if (ipt <= index + 1 || getChar(pattern, ipt + 1) != '\"')
         break;
       String key = pattern.substring(index, ipt);
-      if (key.lastIndexOf('$') > 0)
+      if (key.lastIndexOf('$') > 0 || key.indexOf(']') > 0)
         throw new InvalidSmilesException("Invalid variable name: " + key);
       String s = getSubPattern(pattern, ipt + 1, '\"');
       keys.add("[" + key + "]");

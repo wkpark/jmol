@@ -254,7 +254,8 @@ includes:
       #       element followed by an aromatic atom. 
       
    [atomType] == { [validElementSymbol] | "A" | [aromaticType] | "*" }
-   [validElementSymbol] == (see <a href="../util/Elements.java">Elements.java</a>; including Xx)
+   [validElementSymbol] == (see <a href="../util/Elements.java">Elements.java</a>; 
+                            including Xx but excluding Uu... three-letter series elements)
    [aromaticType] == { "a" | [validElementSymbol].toLowerCase() }
        
    [bracketedExpression] == { [orSet] | [orSet] ";" [andSet] } 

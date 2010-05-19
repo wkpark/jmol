@@ -5249,6 +5249,9 @@
   <fah_proj number="2683" name="p2683_SINGLE VESICLE in water" public="y" file="xyz"
     server="171.67.108.22" atoms="1094681" preferred="4" deadline="6"
     credit="25403" frames="100" code="GC" contact="kasson" kfactor="2.0"/>
+  <fah_proj number="2684" name="p2684_SINGLE VESICLE in water" public="y"
+    server="171.67.108.22" atoms="1096433" preferred="4" deadline="6"
+    credit="7463" frames="100" code="A3" contact="kasson" kfactor="26.4"/>
   <fah_proj number="2690" name="p2690_Fullha" public="n"
     server="171.64.65.53" atoms="1848374" preferred="6" deadline="8"
     credit="9376" frames="100" code="A3" contact="kasson" kfactor="25.0"/>
@@ -5573,12 +5576,24 @@
   <fah_proj number="2967" name="p2967_BBA5_U_Amb99p" public="y" file="xyz"
     server="171.64.122.78" atoms="12200" preferred="26" deadline="38"
     credit="132" frames="100" code="GT" contact="gbowman" contrib="Barrie North"/>
+  <fah_proj number="2968" name="p2968" public="y"
+    server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
+    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com"/>
+  <fah_proj number="2969" name="p2969" public="y"
+    server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
+    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com"/>
   <fah_proj number="2970" name="p2970_N17_native" public="y" file="xyz"
     server="171.64.122.131" atoms="7294" preferred="55" deadline="81"
     credit="292.5" frames="100" code="GST" contact="nwkelley" contrib="Smoking2000"/>
   <fah_proj number="2971" name="p2971_N17_extend" public="y" file="xyz"
     server="171.64.122.131" atoms="7294" preferred="55" deadline="81"
     credit="292.5" frames="100" code="GST" contact="nwkelley" contrib="Smoking2000"/>
+  <fah_proj number="2972" name="p2972" public="y"
+    server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
+    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com"/>
+  <fah_proj number="2973" name="p2973" public="y"
+    server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
+    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com"/>
 
   <!-- Projects 3000 to 3099 -->
   <fah_proj number="3000" name="p3000_SMP-supervillin-beta1" public="n" file="xyz"
@@ -8290,9 +8305,9 @@
   <fah_proj number="6056" name="p6056_Mutant_scan" public="y"
     server="171.64.65.54" atoms="77182" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
-  <fah_proj number="6057" name="p6057_Mutant_scan" public="y"
+  <fah_proj number="6057" name="p6057_Mutant_scan" public="y" file="xyz"
     server="171.64.65.54" atoms="77090" preferred="3" deadline="6"
-    credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
+    credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1" contrib="David McKee"/>
   <fah_proj number="6058" name="p6058_Mutant_scan" public="y"
     server="171.64.65.54" atoms="77078" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>

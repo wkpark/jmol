@@ -438,6 +438,11 @@ final public class Atom extends Point3fi implements JmolNode {
     case 8: //O
     case 16: //S
       return 2;
+    case 9: // F
+    case 17: // Cl
+    case 35: // Br
+    case 53: // I
+      return 1;
     }
     return -1;
   }

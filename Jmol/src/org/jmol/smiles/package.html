@@ -53,7 +53,7 @@ Allows any amount of white space -- spaces, tabs, new lines.
 <b>atom selection</b>
 
 <ul>
-<li>For SMILES searches, all hyrogen atoms -- as in HCCC or [CH2] -- are selected. This includes all hydrogens needed to complete the
+<li>For SMILES searches, all hydrogen atoms -- as in HCCC or [CH2] -- are selected. This includes all hydrogens needed to complete the
 "normal" valence of an unbracketed atom such that "CCC" is the same as "[CH3][CH2][CH2]".
 
 </li><li>For SMARTS searches, no valence calculation is done to add any additional hydrogens to unbracketed 
@@ -126,8 +126,50 @@ or [2H] are selected; connected hydrogen atoms as in [CH3] are not selected.
  
 </li><li>does NOT implement "?" for bond stereochemistry, as 3D structures
     are always defined stereochemically
+
+
 </li>
 </ul>
+
+<b>implicit hydrogen count</b>
+
+<ul><li>
+
+The primitives <b>h</b> (implicit hydrogen count) and <b>X</b> (total connections, including implicit hydrogens)
+require analysis of bonding around a model atom to determine the number of missing ("implicit") hydrogen atoms based on a "target valence." 
+Models that specify only "aromatic" or "partial" bonding may produce ambiguous results, and for that reason, 
+primitives <b>X</b> and <b>h</b> are disrecommended for those situations.
+The analysis Jmol uses here is the same as for how Jmol calculates the number of hydrogens to add for the <b>calculate hydrogens</b> command and 
+includes:
+ <ol style="list-style-type: lower-alpha;"><li>Determine the target valence <b>TV</b> as follows:
+  <ul><li>For C and Si, <b>TV</b> = 4.
+  </li><li>For B, N, and P, <b>TV</b> = 3.
+  </li><li>For O and S, <b>TV</b> = 2.
+  </li><li>For F, Cl, Br, and I, <b>TV</b> = 1.
+  </li><li>For all other atoms, <b>TV</b> = 0.
+  </li></ul>
+ </li><li>Obtain the formal charge on the atom, <b>C</b>.
+ </li><li>Group IV elements such as carbon are unique, in that their cations are valence-poor, not valence-rich. 
+ So for carbon and silicon, subtract the ABSOLUTE VALUE of <b>C</b> from the target valence.
+ In all other cases, let <b>TV</b> = <b>TV</b> + <b>C</b>.
+ </li><li>Determine the overall valence of the atom, <b>OV</b>. This is calculated by adding up all the bond orders to the atom.
+ </li><li>Subtract <b>OV</b> from <b>TV</b> to get the number of implicit hydrogen atoms. If this number is less than zero, assign zero.
+ </ol>
+</li><li>Thus, the implicit hydrogen count is:
+ <ol style="list-style-type: lower-alpha;"><li> 0 for all atoms other than {B,C,N,O,P,Si,S}
+  </li><li>0 for BR3
+  </li><li>0 for CR4, 1 for CR3, 2 for CR2, 3 for CR
+  </li><li>0 for CR3(+), 0 for CR3(-)
+  </li><li>0 for R=CR2, 1 for R=CR, 2 for R=C, 1 for C#R (triple bond)
+  </li><li>0 for NR3, 1 for NR2, 2 for NR
+  </li><li>0 for RN=R, 1 for R=N
+  </li><li>1 for NR3(+), 1 for R=NR(+), 1 for RN(-)
+  </li><li>0 for OR2, 0 for O=R, 1 for OR
+  </li><li>0 for RO(-), 2 for RO(+)
+  </li></ol>
+</li></ul>  
+  
+
 </p>     
 <a name="specs"><h3>Detailed Jmol 3D-SEARCH SMARTS Specification</h3></a>
 <p>

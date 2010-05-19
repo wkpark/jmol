@@ -269,7 +269,8 @@ includes:
        #         form the symbol for an element are not allowed: Ar, Rh, etc.
        #         when NOT followed by a digit: [Ar3] is OK, 
        #         but [Ard2] is "argon with two non-hydrogen connections"
-                 Also, "!" may be use with only one primitive             
+       #         Also, "!" may be use with implied "&". 
+       #         Thus, [!a&!h2] or [h2&!a] are valid, but [!ah2] is invalid.             
    [primitive] == { [isotope] | [atomType] | [charge] | [stereochemistry]
                               | [A_Prop] | [D_Prop] | [H_Prop] | [h_Prop] 
                               | [R_Prop] | [r_Prop] | [v_Prop] | [X_Prop]

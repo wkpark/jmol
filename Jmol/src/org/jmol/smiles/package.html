@@ -247,15 +247,15 @@ includes:
                              | [nestedExpression] }
    
    [unbracketedAtomType] == [atomType] 
-                                 & ! { "Na" | "Ca" | "Ba" | "Pa" | "Sc" | "Ac" }
+                                 & ! { "Ac" | "Ba" | "Ca" | "Na" | "Pa" | "Sc"
+                                     | "ac" | "ba" | "ca" | "na" | "pa" | "sc" }
       # note: Brackets are required for these elements: [Na], [Ca], etc.
       #       These elements Xy are instead interpreted as "X" "y", a single-letter
       #       element followed by an aromatic atom. 
       
    [atomType] == { [validElementSymbol] | "A" | [aromaticType] | "*" }
    [validElementSymbol] == (see <a href="../util/Elements.java">Elements.java</a>; including Xx)
-   [aromaticType] == "a" | [validElementSymbol].toLowerCase() 
-                                 & ! { "na" | "ca" | "ba" | "pa" | "sc" | "ac" }
+   [aromaticType] == { "a" | [validElementSymbol].toLowerCase() }
        
    [bracketedExpression] == { [orSet] | [orSet] ";" [andSet] } 
    

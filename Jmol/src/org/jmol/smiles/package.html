@@ -266,9 +266,10 @@ includes:
    [primitives] == { [primitive] | [primitive] [primitives] }
        # note -- if & is not used, certain combinations of primitiveDescritors
        #         are not allowed. Specifically, combinations that together
-       #         form the symbol for an element are not allowed: Ar, Rh, etc.
-       #         when NOT followed by a digit: [Ar3] is OK, 
-       #         but [Ard2] is "argon with two non-hydrogen connections"
+       #         form the symbol for an element will be read as the element (Ar, Rh, etc.)
+       #         when NOT followed by a digit and no element has already been defined 
+       #         So, for example, [Ar] is argon, [Ar3] is [A&r3], [ORh] is [O&R&h],  
+       #         but [Ard2] is [Ar&d2] -- "argon with two non-hydrogen connections"
        #         Also, "!" may be use with implied "&". 
        #         Thus, [!a&!h2] or [h2&!a] are valid, but [!ah2] is invalid.             
    [primitive] == { [isotope] | [atomType] | [charge] | [stereochemistry]

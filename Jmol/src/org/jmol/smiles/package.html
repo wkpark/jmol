@@ -47,7 +47,7 @@ An adaptation of SMILES and SMARTS for 3D molecular atom search and selection.
 <p>
 <b>format</b>
 <ul><li> 
-Allows any amount of white space -- spaces, tabs, new lines.
+Allows any amount of white space -- spaces, tabs, new lines. Prior to parsing, all white space is removed.
 </li></ul>
  
 <b>atom selection</b>
@@ -91,13 +91,27 @@ or [2H] are selected; connected hydrogen atoms as in [CH3] are not selected.
       Var x = '$R1="[CH3,NH2]";$R2="[OH]"; {a}[$R1]' // select aromatic atoms attached to CH3 or NH2  
       select within(SMARTS,@x)
 </pre> 
-</li><li>Implements Nested ("recursive") SEARCH: 
+Note that these variables are any string whatsoever, not just atom sets. The syntax is simply:
+<ul><li>Each variable definition takes the form $ [name] =" [definition] ";
+</li><li>[name] can be any characters except '$', '=', and ']'. It is recommended they be restricted to the set A-Z, a-z, and 0-9.
+</li><li>[definition] can be any valid SMARTS characters. 
+</li><li>The actual pattern starts after the last variable definition.
+</li><li>Nested variables are allowed, but note that this may require using the recursion syntax, $(...): 
+<pre>
+      Var x = '$R1="[CH3,NH2]";$R2="[$($R1),OH]"; {a}[$R1]' // select aromatic atoms attached to CH3, NH2, or OH  
+      select within(SMARTS,@x)
+</pre> 
+</li><li>For $xxx="yyyy", all occurrances of the string "[$xxx]" are replaced within the pattern prior to parsing. 
+</li></ul>
+<br/>
+
+</li><li>Implements nested ("recursive") SMARTS: 
 <pre> 
       Var x = '$R1="[CH3,NH2]";$R2="[OH]";  {a}[$([$R1]),$([$R2])]' // aromatic attached to CH3, NH2, or OH
       select within(SMARTS,@x)
 </pre>
     Note that $(...) need not be within [...], and 
-    wherever it is, it means "just the first atom" 
+    wherever it is, it always means "just the first atom".
 </ul>
 
 <b>primitives</b>
@@ -105,7 +119,7 @@ or [2H] are selected; connected hydrogen atoms as in [CH3] are not selected.
 <ul>
 <li>All Daylight SMARTS primitives are implemented.
   
-</li><li>All atomic expressions which are not element names, <b>*</b>, <b>A</b>, or <b>a</b> must be 
+</li><li>All primitives that are not element names, <b>*</b>, <b>A</b>, or <b>a</b> must be 
     enclosed in brackets.
     
 </li><li>Allows any order of bracketed primitives: [H2C13] same as [13CH2].

@@ -158,6 +158,7 @@ class StatusListener implements JmolStatusListener {
       return;
     }
     if (callbackType.equalsIgnoreCase("language")) {
+      JmolResourceHandler.clear();
       Dialog.setupUIManager();
       if (jmol.webExport != null) {
         WebExport.saveHistory();

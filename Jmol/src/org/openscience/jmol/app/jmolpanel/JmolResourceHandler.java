@@ -32,6 +32,8 @@ import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import javax.swing.ImageIcon;
 
+import org.jmol.i18n.GT;
+
 /**
  * Provides access to resources (for example, strings and images). This class is
  * a singleton which is retrieved by the getInstance method.
@@ -47,7 +49,8 @@ class JmolResourceHandler {
   private JmolResourceHandler() {
     String language = "en";
     String country = "";
-    String localeString = System.getProperty("user.language");
+    String localeString = GT.getLanguage();
+//    String localeString = System.getProperty("user.language");
     if (localeString != null) {
       StringTokenizer st = new StringTokenizer(localeString, "_");
       if (st.hasMoreTokens()) {
@@ -70,6 +73,10 @@ class JmolResourceHandler {
     }
   }
 
+  static void clear() {
+    instance = null;  
+  }
+  
   static JmolResourceHandler getInstance() {
     if (instance == null) {
       instance = new JmolResourceHandler();

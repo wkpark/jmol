@@ -110,7 +110,7 @@ public class CrystalReader extends AtomSetCollectionReader {
 
   protected boolean checkLine() throws Exception {
     
-    if (line.contains("FRQFRQ")) {
+    if (line.indexOf("FRQFRQ") >= 0) {
       isFreqCalc = true;
       return true;
     }
@@ -133,7 +133,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       return true;
     }
     
-    if (line.contains("DIMENSIONALITY OF THE SYSTEM")) {
+    if (line.indexOf("DIMENSIONALITY OF THE SYSTEM") >= 0) {
       if (line.indexOf("2") >= 0)
         isSlab = true;
       if (line.indexOf("1") >= 0)
@@ -141,7 +141,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       return true;
     }
     
-    if (line.contains("CONSTRUCTION OF A NANOTUBE FROM A SLAB")) {
+    if (line.indexOf("CONSTRUCTION OF A NANOTUBE FROM A SLAB") >= 0) {
       isPolymer = true;
       isSlab = false;
       return true;
@@ -149,7 +149,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     
     
     if (line.startsWith(" LATTICE PARAMETER")) {
-      boolean isConvLattice = line.contains("- CONVENTIONAL");
+      boolean isConvLattice = (line.indexOf("- CONVENTIONAL") >= 0);
       if (isConvLattice) {
         // skip if we want primitive and this is the conventional lattice
         if (isPrimitive)
@@ -204,7 +204,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       return true;
     }
 
-    if (isPrimitive && line.contains("VOLUME=") && line.contains("- DENSITY")) {
+    if (isPrimitive && line.indexOf("VOLUME=") >= 0 && line.indexOf("- DENSITY") >= 0) {
       readVolumePrimCell();
       return true;
     }
@@ -226,7 +226,7 @@ public class CrystalReader extends AtomSetCollectionReader {
 
     if (addVibrations
         && line
-            .contains("* CALCULATION OF PHONON FREQUENCIES AT THE GAMMA POINT.")) {
+            .indexOf("* CALCULATION OF PHONON FREQUENCIES AT THE GAMMA POINT.") >= 0) {
       if (vInputCoords != null)
         processInputCoords();
       readFrequencies();
@@ -379,7 +379,7 @@ public class CrystalReader extends AtomSetCollectionReader {
 
   private boolean readHeader() throws Exception {
     discardLinesUntilContains("*                                CRYSTAL");
-    isVersion3 = line.contains("CRYSTAL03");
+    isVersion3 = (line.indexOf("CRYSTAL03") >= 0);
     discardLinesUntilContains("EEEEEEEEEE");
     atomSetCollection.setCollectionName(readLine().trim()
         + (desiredModelNumber == 0 ? " (optimized)" : ""));
@@ -471,7 +471,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       indexToPrimitive[i] = -1;
     
     discardLines(3);
-    while (readLine() != null && line.contains(" NOT IRREDUCIBLE")) {
+    while (readLine() != null && line.indexOf(" NOT IRREDUCIBLE") >= 0) {
       // example HA_BULK_PBE_FREQ.OUT
       // we remove unnecessary atoms. This is important, because
       // these won't get properties, and we don't know exactly which
@@ -682,7 +682,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private float[] nuclearCharges;
   private void readTotalAtomicCharges() throws Exception {
     StringBuffer data = new StringBuffer();
-    while (readLine() != null && !line.contains("T")) // TTTTT or SUMMED SPIN DENSITY
+    while (readLine() != null && line.indexOf("T") < 0) // TTTTT or SUMMED SPIN DENSITY
       data.append(line);
     String[] tokens = getTokens(data.toString());
     float[] charges = new float[tokens.length];

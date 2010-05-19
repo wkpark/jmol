@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import org.jmol.popup.JmolPopup;
+import org.jmol.script.ParallelProcessor;
 import org.jmol.script.ScriptCompiler;
 import org.jmol.script.ScriptContext;
 import org.jmol.script.ScriptEvaluator;
@@ -83,8 +84,6 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
@@ -281,7 +280,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // .contains and parallel processes. 
 
     multiTouch = (commandOptions != null && commandOptions
-        .contains("-multitouch"));
+        .indexOf("-multitouch") >= 0);
     stateManager = new StateManager(this);
     g3d = new Graphics3D(display);
     colorManager = new ColorManager(this, g3d);
@@ -291,7 +290,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     selectionManager = new SelectionManager(this);
     if (display != null) {
       if (multiTouch) {
-        if (!commandOptions.contains("-multitouch-sparshui-simulated")) {
+        if (commandOptions.indexOf("-multitouch-sparshui-simulated") < 0) {
           int[] pixels = new int[1];
           Image image = Toolkit.getDefaultToolkit().createImage(
               new MemoryImageSource(1, 1, pixels, 0, 1));
@@ -8298,18 +8297,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // parallel processing
   
-  private Executor executor;
+  private Object executor;
   public static int nProcessors = Runtime.getRuntime().availableProcessors();
 
-  public Executor getExecutor() { 
+  public Object getExecutor() { 
     // a Java 1.5 function 
     if (executor != null || nProcessors < 2)
       return executor; // note -- a Java 1.5 function 
     try {
-      executor = Executors.newCachedThreadPool();
+      executor = ParallelProcessor.getExecutor();
     } catch (Exception e) {
       executor = null;
+    } catch (Error er) {
+      executor = null;
     }
+    if (executor == null)
+      Logger.error("parallel processing is not available");
     return executor;
   }
 

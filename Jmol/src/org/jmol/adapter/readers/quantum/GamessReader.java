@@ -274,23 +274,23 @@ $SYSTEM OPTIONS
         if ((gbasis.startsWith("ACC") || gbasis.startsWith("CC"))
             && gbasis.endsWith("C"))
           calculationType += "C";
-        if (gbasis.contains("CCD")) {
+        if (gbasis.indexOf("CCD") >= 0) {
           calculationType += "VDZ";
           recognized = true;
         }
-        if (gbasis.contains("CCT")) {
+        if (gbasis.indexOf("CCT") >= 0) {
           calculationType += "VTZ";
           recognized = true;
         }
-        if (gbasis.contains("CCQ")) {
+        if (gbasis.indexOf("CCQ") >= 0) {
           calculationType += "VQZ";
           recognized = true;
         }
-        if (gbasis.contains("CC5")) {
+        if (gbasis.indexOf("CC5") >= 0) {
           calculationType += "V5Z";
           recognized = true;
         }
-        if (gbasis.contains("CC6")) {
+        if (gbasis.indexOf("CC6") >= 0) {
           calculationType += "V6Z";
           recognized = true;
         }
@@ -327,17 +327,17 @@ $SYSTEM OPTIONS
           calculationType += ")";
         }
       }
-      if (DFTtype!=null && !DFTtype.contains("NONE")) {
+      if (DFTtype!=null && DFTtype.indexOf("NONE") < 0) {
         if (calculationType.length() > 0)
           calculationType += " ";
         calculationType += DFTtype;
       }
-      if (CItype !=null && !CItype.contains("NONE")) {
+      if (CItype !=null && CItype.indexOf("NONE") < 0) {
         if (calculationType.length() > 0)
           calculationType += " ";
         calculationType += CItype;
       }
-      if (CCtype !=null && !CCtype.contains("NONE")) {
+      if (CCtype !=null && CCtype.indexOf("NONE") < 0) {
         if (calculationType.length() > 0)
           calculationType += " ";
         calculationType += CCtype;

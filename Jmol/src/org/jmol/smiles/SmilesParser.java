@@ -54,145 +54,7 @@ import org.jmol.util.TextFormat;
 public class SmilesParser {
 
   /*
-   * 3D-SEARCH -- Bob Hanson hansonr@stolaf.edu 5/8/2010
-   * 
-   * An adaptation of SMARTS for 3D molecular atom search and selection.
-   * 
-   * Comparision to Daylight SMARTS:
-   * 
-   * -- allows whitespace
-   * 
-   * -- allows definition of [$XXX] variables
-   * 
-   * -- defines "aromatic" unambiguously and strictly geometrically. 
-   *    see org.jmol.smiles.SmilesAromatic.java
-   * 
-   * -- nesting ("recursive" SEARCH") implemented: using [C&$(C[$(aaaO);$(aaC)])]
-   *    note that $(...) need not be within [...] and 
-   *    wherever it is, it means "just the first atom" 
-   * 
-   * -- all atom logic implemented: [X,!X,X&X,X&X&X;X&X] etc.
-   * 
-   * -- "&" is optional: [13CH2] same as [13&C&H2]
-   *    except in cases of ambiguity with element symbols: [Rh] is rhodium, not [R&h]
-   * 
-   * -- allows any order of primitives; "H1" interpreted as "one H atom"
-   *       [H2C13] same as [13CH2]
-   * 
-   * -- bracketed H atoms -- as in [CH2] -- are not selected
-   * -- unbracketed H atoms -- as in HCCC -- are selected
-   * 
-   * -- adds ambiguous isotope: [C13?] -- "C13 or C with undesignated isotope"
-   * 
-   * -- adds {...} for selection of one or more subsets of matched atoms
-   *    though not described in the specification, these may be anywhere outside of [ ]s. 
-   * 
-   * -- does NOT implement "zero-level parentheses", since the match is 
-   *    always only within a given model (even though one might use . for a not-connected indicator)
-   * 
-   * -- does NOT implement "?" in atom stereochemistry ("chirality") because 
-   *    3D structures are always defined stereochemically.
-   * 
-   * -- does NOT implement "?" for bond stereochemistry, as 3D structures
-   *    always defined stereochemically
-   * 
-   * -- The statement "All atomic expressions which are not simple primitives must be enclosed in brackets"
-   *    is misleading, in the sense that some primitives, even if they are simple, must also
-   *    be in brackets. Primitives such as "35" or "H2" or "R2" must be within brackets in order to 
-   *    distinguish them from ring connections. 
-   *    
-   *      # note: prior to parsing, all white space is removed
-   *       
-   *   [smartDef] == [variableDefs] [smarts] | [smarts]
-   *   [variableDefs] == [variableDef] | [variableDef] [variableDefs]
-   *   [variableDef] ==  "$" [label] "=" "\"" [smarts] "\"" [comments] ";"
-   *   [label] == [any characters other than "=" and "$", and not starting with "("]
-   *   [comments] == [any characters other than ";"]
-   *   
-   *      # note: Variable definitions must be parsed first. 
-   *      #       After that, all variable references [$XXXX] are replaced
-   *      
-   *   [smarts] == [node][connections] 
-   *   [connections] == [connection] | NULL }
-   *   [connection] == { [branch] | [bond] [node] } [connections]
-   *   [branch] == "(" [smarts] ")" 
-   *   [node] == { [atomExpression] | [ringPointer] }
-   *   [ringPointer] == { "%" [digits] | [digit] }
-   *      # note: all ringPointers must have a second matching ringPointer 
-   *      #       and must be preceded by an atomExpression or 
-   *   [bond] == { "-" | "=" | "#" | "." | "/" | "\\" | ":" | "~" | "@" | NULL
-   *
-   * 
-   *   [atomExpression] = { [unbracketedAtomType] 
-   *                             | "[" [bracketedExpression] "]" 
-   *                             | [nestedExpression] }
-   *   
-   *   [unbracketedAtomType] == [atomType] 
-   *                                 & ! { "Na" | "Ca" | "Ba" | "Pa" | "Sc" | "Ac" }
-   *      # note: These elements Xy are instead interpreted as "X" "y", a single-letter
-   *      #       element followed by an aromatic atom
-   *        
-   *   [atomType] == { [validElementSymbol] | "A" | [aromaticType] | "*" }
-   *   [validElementSymbol] == (see org.jmol.viewer.JmolConstants.elementSymbols; including Xx)
-   *   [aromaticType] == "a" | [validElementSymbol].toLowerCase() 
-   *                                 & ! { "na" | "ca" | "ba" | "pa" | "sc" | "ac" }
-   *       
-   *   [bracketedExpression] == { [orSet] | [orSet] ";" [andSet] } 
-   *   
-   *   [orSet] == { [andSet] | [andSet] "," [andSet] }
-   *   [andSet] == { [primitives] | [primitives] "&" [andSet]
-   *                              | "!" [primitive] 
-   *                              | "!" [primitive] "&" [andSet] }
-   *   [primitives] == { [primitive] | [primitive] [primitives] }
-   *       # note -- if & is not used, certain combinations of primitiveDescritors
-   *       #         are not allowed. Specifically, combinations that together
-   *       #         form the symbol for an element are not allowed: Ar, Rh, etc.
-   *       #         when NOT followed by a digit: [Ar3] is OK, 
-   *       #         but [Ard2] is "argon with two non-hydrogen connections"
-   *                 Also, "!" may be use with only one primitive             
-   *   [primitive] == { [isotope] | [atomType] | [charge] | [stereochemistry]
-   *                              | [A_Prop] | [D_Prop] | [H_Prop] | [h_Prop] 
-   *                              | [R_Prop] | [r_Prop] | [v_Prop] | [X_Prop]
-   *                              | [x_Prop] | [nestedExpression] }
-   *   [isotope] == [digits] | [digits] "?"
-   *       # note -- isotope mass may come before or after element symbol, 
-   *       #         EXCEPT "H1" which must be parsed as "an atom with a single H"
-   *   [charge] == { "-" [digits] | "+" [digits] | [plusSet] | [minusSet] }
-   *   [plusSet] == { "+" | "+" [plusSet] }
-   *   [minusSet] == { "-" | "-" [minusSet] }
-   *   [stereochemistry] == { "@"           # anticlockwise
-   *                              | "@@"    # clockwise
-   *                              | "@" [stereochemistryDescriptor] 
-   *                              | "@@" [stereochemistryDescriptor] }
-   *   [stereochemistryDescriptor] == [stereoClass] [stereoOrder]
-   *   [stereoClass] == { "AL" | "TH" | "SP" | "TP" | "OH" }
-   *   [stereoOrder] == [digits]
-   *       # note -- "?" here (unspecified) is not relevant in 3D-SEARCH 
-   *   
-   *   [A_Prop] == "#" [digits]           # elemental atomic number
-   *   [D_Prop] == { "D" [digits] | "D" } # degree -- total number of connections 
-   *                                      #   excludes implicit H atoms; default 1
-   *   [d_Prop] == { "d" [digits] | "d" } # degree -- non-hydrogen connections
-   *                                      #   default 1 
-   *   [H_Prop] == { "H" [digits] | "H" } # exact hydrogen count 
-   *                                      #   excludes implicit H atoms
-   *   [h_Prop] == { "h" [digits] | "h" } # implicit hydrogens -- "h" indicates "at least one"
-   *                                      #   (see note below)
-   *   [R_Prop] == { "R" [digits] | "R" } # ring membership; e.g. "R2" indicates "in two rings"
-   *                                      #   "R" indicates "in a ring" 
-   *                                      #   !R" or "R0" indicates "not in any ring"
-   *   [r_Prop] == { "r" [digits] | "r" } # in ring of size [digits]; "r" indicates "in a ring"
-   *   [v_Prop] == { "v" [digits] | "v" } # valence -- total bond order (counting double as 2, e.g.)
-   *   [X_Prop] == { "X" [digits] | "X" } # connectivity -- total number of connections
-   *                                      #   includes implicit H atoms
-   *   [x_Prop] == { "x" [digits] | "x" } # ring connectivity -- total ring connections ?
-   *   
-   *   [nestedExpression] == "$(" + [atomExpression] + ")"
-   * 
-   *   [digits] = { [digit] | [digit] [digits] }
-   *   [digit] = { "0" | "1" | "2" | "3" | "4" | "5" | "6" | 7" | "8" | "9" }
-   *
-   *
+   * see package.html for details
    *
    * Bob Hanson, Jmol 12.0.RC10, 5/8/2010
    * 
@@ -310,7 +172,7 @@ public class SmilesParser {
                            SmilesAtom currentAtom)
       throws InvalidSmilesException {
 
-    if (pattern == null || pattern.length() == 0)
+    if (pattern == null)
       return;
 
     pattern = pattern.replaceAll("\\s","");
@@ -319,6 +181,9 @@ public class SmilesParser {
       pattern = parseVariables(pattern);
     if (pattern.indexOf("$(") >= 0)
       pattern = parseNested(molecule, pattern);
+
+    if (pattern.length() == 0)
+      return;
 
     int[] ret = new int[1];
     int index = 0;
@@ -424,7 +289,7 @@ public class SmilesParser {
         break;
       default:
         // [atomType]
-        int ch2 = (Character.isUpperCase(ch) ? getChar(pattern,
+        char ch2 = (Character.isUpperCase(ch) ? getChar(pattern,
             index + 1) : '\0');
         if (ch != 'X' || ch2 != 'x')
           if (!Character.isLowerCase(ch2)

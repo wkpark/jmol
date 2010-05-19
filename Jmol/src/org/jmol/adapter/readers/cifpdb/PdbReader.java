@@ -797,7 +797,7 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
     if (htHetero == null)
       htHetero = new Hashtable();
     String groupName = parseToken(line, 7, 10);
-    if (htHetero.contains(groupName))
+    if (htHetero.containsKey(groupName))
       return;
     String hetName = parseTrimmed(line, 30, 70);
     htHetero.put(groupName, hetName);

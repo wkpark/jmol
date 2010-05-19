@@ -25,13 +25,19 @@ package org.jmol.script;
 
 import java.util.Vector;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.jmol.util.Logger;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.Viewer;
 
-class ParallelProcessor extends ScriptFunction {
+public class ParallelProcessor extends ScriptFunction {
 
+  
+  public static Object getExecutor() {
+    return Executors.newCachedThreadPool();
+  }
+  
   ParallelProcessor(String name) {
     super(name);
     typeName = "parallel";
@@ -155,7 +161,7 @@ class ParallelProcessor extends ScriptFunction {
 
   private void runProcess(final Process process, boolean allowParallel) {
     RunProcess r = new RunProcess(process, lock);
-    Executor exec = (allowParallel ? viewer.getExecutor() : null);
+    Executor exec = (allowParallel ? (Executor) viewer.getExecutor() : null);
     if (exec != null) {
       exec.execute(r);
     } else {

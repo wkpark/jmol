@@ -258,7 +258,7 @@ public class XmlUtil {
     sb.append(indent);
     appendTag(sb, "val", attributes.toArray(), null, false, false);
     sb.append(value);
-    if (value instanceof String && ((String)value).contains("\n"))
+    if (value instanceof String && ((String)value).indexOf("\n") >= 0)
       sb.append(indent);      
     closeTag(sb, "val");
     return sb.toString();

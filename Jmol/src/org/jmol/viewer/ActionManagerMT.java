@@ -51,9 +51,9 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     super(viewer);
     groupID = ((int) (Math.random() * 0xFFFFFF)) << 4;
     
-    boolean isSparsh = commandOptions.contains("-multitouch-sparshui");
-    boolean isSimulated = commandOptions.contains("-multitouch-sparshui-simulated");
-    boolean isJNI = commandOptions.contains("-multitouch-jni");
+    boolean isSparsh = (commandOptions.indexOf("-multitouch-sparshui") >= 0);
+    boolean isSimulated = (commandOptions.indexOf("-multitouch-sparshui-simulated") >= 0);
+    boolean isJNI = (commandOptions.indexOf("-multitouch-jni") >= 0);
     String className = (isSparsh ? "multitouch.sparshui.JmolSparshClientAdapter" : "multitouch.jni.JmolJniClientAdapter");
       adapter = (JmolMultiTouchAdapter) Interface
     .getOptionInterface(className);

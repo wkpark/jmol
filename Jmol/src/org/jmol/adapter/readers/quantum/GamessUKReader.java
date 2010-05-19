@@ -37,11 +37,11 @@ public class GamessUKReader extends GamessReader {
    * 
    */
   protected boolean checkLine() throws Exception {
-    if (line.contains("BASIS OPTIONS")) {
+    if (line.indexOf("BASIS OPTIONS") >= 0) {
       readBasisInfo();
       return true;
     }
-    if (line.contains("$CONTRL OPTIONS")) {
+    if (line.indexOf("$CONTRL OPTIONS") >= 0) {
       readControlInfo();
       return true;
     }

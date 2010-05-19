@@ -512,6 +512,7 @@ abstract class ScriptCompilationTokenParser {
     String key = null;
     boolean allowComma = true;
     int tok0 = theToken.tok;
+    int tok;
     switch (tok0) {
     case Token.minus:
       if (getToken() == null)
@@ -523,6 +524,29 @@ abstract class ScriptCompilationTokenParser {
     case Token.integer:
     case Token.decimal:
       distance = floatValue();
+      break;
+    case Token.search: 
+    case Token.smiles:  
+      addTokenToPostfix(Token.string, theValue);
+      if (!addNextTokenIf(Token.comma))
+        return false;
+      allowComma = false;
+      tok = tokPeek();
+      switch (tok) {
+      case Token.nada:
+        return false;
+      case Token.string:
+        addNextToken();
+        key = "";
+        break;
+      case Token.define:
+        if (!clauseDefine(false, true))
+          return false;
+        key = "";
+        break;
+      default:
+        return false;
+      }
       break;
     case Token.branch:
       allowComma = false;
@@ -541,8 +565,6 @@ abstract class ScriptCompilationTokenParser {
     case Token.polymer:
     case Token.sequence:
     case Token.site:
-    //case Token.search:  NOT...
-    //case Token.smiles:  NOT, because we want this only for x = within("smiles"...) not select within(smiles...) 
     case Token.structure:
     case Token.string:
       key = (String) theValue;
@@ -555,12 +577,12 @@ abstract class ScriptCompilationTokenParser {
     }
     if (key == null)
       addTokenToPostfix(Token.decimal, new Float(distance));
-    else
+    else if (key.length() > 0)
       addTokenToPostfix(Token.string, key);
     while (true) {
       if (!addNextTokenIf(Token.comma))
         break;
-      int tok = tokPeek();
+      tok = tokPeek();
       switch (tok0) {
       case Token.integer:
       case Token.decimal:

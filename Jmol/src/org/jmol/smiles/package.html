@@ -32,10 +32,252 @@
   <body bgcolor="white">
     
     <p>
-      Provides SMILES parsing Functionality.
+<h1>Jmol 3D-SEARCH</h1>
+<p>Robert M. Hanson<br/>Department of Chemistry<br/>St. Olaf College<br/>5/19/2010</p>
+<p>
+An adaptation of SMILES and SMARTS for 3D molecular atom search and selection.
+
+    The <a href="..">org.jmol.smiles</a> package provides extensive functionality for selecting
+    atoms based on SMILES and SMARTS strings. This package may be used independently
+    of Jmol -- see <a href="../../../JmolSmilesApplet.java">JmolSmilesApplet.java</a>
+    and <a href="http://chemapps.stolaf.edu/jmol/docs/examples-11/JmeToJmol.htm">JmeToJmol.htm</a>.
     </p>
 
-    <!-- Put @see and @since tags down here. -->
+ <h3>General Considerations</h3>
+<p>
+<b>format</b>
+<ul><li> 
+Allows any amount of white space -- spaces, tabs, new lines.
+</li></ul>
+ 
+<b>atom selection</b>
+
+<ul>
+<li>For SMILES searches, all hyrogen atoms -- as in HCCC or [CH2] -- are selected. This includes all hydrogens needed to complete the
+"normal" valence of an unbracketed atom such that "CCC" is the same as "[CH3][CH2][CH2]".
+
+</li><li>For SMARTS searches, no valence calculation is done to add any additional hydrogens to unbracketed 
+atoms. "CCC" is the same as "[C][C][C]". only unbracketed or bracketed hydrogen atoms such as H[C]C or [H] 
+or [2H] are selected; connected hydrogen atoms as in [CH3] are not selected.
+
+</li><li>Adds { } for selection of one or more subsets of matched atoms.
+    Simply place { } around atoms any atoms or group of atoms that are to be 
+    specifically returned from a search.
+
+</li></ul>
+<b>aromaticity</b>
+ 
+<ul>
+<li>Jmol 3D-SEARCH defines "aromatic" unambiguously and strictly geometrically. 
+    see <a href="#aromaticity">below</a>.
+
+</li><li>Note that "aromatic" is not restricted to any specific subset of elements.
+</li></ul>
+  
+</p>     
+ <h3>Comparision to <a target="_blank" href="http://www.daylight.com/dayhtml/doc/theory/theory.smiles.html">Daylight SMILES</a></h3>
+<p>     
+ All single-component aspects of Daylight SMILES are implemented, including
+    aromaticity and atom- and bond-based stereochemistry ("chirality").
+</p>     
+
+ <h3>Comparision to <a target="_blank" href="http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html">Daylight SMARTS</a></h3>
+<p>     
+<ul>
+<li>[H1] interpreted as [*H1] -- "an atom with one connected H atom".
+
+</li><li>Allows definition of [$XXX] variables:
+<pre>
+      Var x = '$R1="[CH3,NH2]";$R2="[OH]"; {a}[$R1]' // select aromatic atoms attached to CH3 or NH2  
+      select within(SMARTS,@x)
+</pre> 
+</li><li>Implements Nested ("recursive") SEARCH: 
+<pre> 
+      Var x = '$R1="[CH3,NH2]";$R2="[OH]";  {a}[$([$R1]),$([$R2])]' // aromatic attached to CH3, NH2, or OH
+      select within(SMARTS,@x)
+</pre>
+    Note that $(...) need not be within [...], and 
+    wherever it is, it means "just the first atom" 
+</ul>
+
+<b>primitives</b>
+
+<ul>
+<li>All Daylight SMARTS primitives are implemented.
+  
+</li><li>All atomic expressions which are not element names, <b>*</b>, <b>A</b>, or <b>a</b> must be 
+    enclosed in brackets.
     
-  </body>
+</li><li>Allows any order of bracketed primitives: [H2C13] same as [13CH2].
+ 
+</li><li>Adds ambiguous isotope: [C12?] -- "C13 or C with undesignated isotope".
+    Note, however, that [H1] is [*H1], "one attached hydrogen", not [1H]
+     
+</li><li>All atom logic implemented: [X,!X,X&X,X&X&X;X&X] etc.
+ 
+</li><li>"&" is optional: [13CH2] same as [13&C&H2]
+    except in cases of ambiguity with element symbols: [Rh] is rhodium, not [R&h].
+ 
+</li><li>Jmol 3D-SEARCH does NOT implement "zero-level parentheses", since the match is 
+    always only within a given model (even though one might use . for a not-connected indicator)
+ 
+</li><li>Jmol 3D-SEARCH does NOT implement "?" in atom stereochemistry ("chirality") because 
+    3D structures are always defined stereochemically.
+ 
+</li><li>does NOT implement "?" for bond stereochemistry, as 3D structures
+    are always defined stereochemically
+</li>
+</ul>
+</p>     
+<a name="specs"><h3>Detailed Jmol 3D-SEARCH SMARTS Specification</h3></a>
+<p>
+<pre> 
+      # note: prior to parsing, all white space is removed
+       
+   [smartDef] == [variableDefs] [smarts] | [smarts]
+   [variableDefs] == [variableDef] | [variableDef] [variableDefs]
+   [variableDef] ==  "$" [label] "=" "\"" [smarts] "\"" [comments] ";"
+   [label] == [any characters other than "=" and "$", and not starting with "("]
+   [comments] == [any characters other than ";"]
+   
+      # note: Variable definitions must be parsed first. 
+      #       After that, all variable references [$XXXX] are replaced
+      
+   [smarts] == [node][connections] 
+   [connections] == [connection] | NULL }
+   [connection] == { [branch] | [bond] [node] } [connections]
+   [branch] == "(" [smarts] ")" 
+   [node] == { [atomExpression] | [ringPointer] }
+   [ringPointer] == { "%" [digits] | [digit] }
+      # note: all ringPointers must have a second matching ringPointer 
+      #       and must be preceded by an atomExpression or 
+   [bond] == { "-" | "=" | "#" | "." | "/" | "\\" | ":" | "~" | "@" | NULL
+
+ 
+   [atomExpression] = { [unbracketedAtomType] 
+                             | "[" [bracketedExpression] "]" 
+                             | [nestedExpression] }
+   
+   [unbracketedAtomType] == [atomType] 
+                                 & ! { "Na" | "Ca" | "Ba" | "Pa" | "Sc" | "Ac" }
+      # note: Brackets are required for these elements: [Na], [Ca], etc.
+      #       These elements Xy are instead interpreted as "X" "y", a single-letter
+      #       element followed by an aromatic atom. 
+      
+   [atomType] == { [validElementSymbol] | "A" | [aromaticType] | "*" }
+   [validElementSymbol] == (see <a href="../util/Elements.java">Elements.java</a>; including Xx)
+   [aromaticType] == "a" | [validElementSymbol].toLowerCase() 
+                                 & ! { "na" | "ca" | "ba" | "pa" | "sc" | "ac" }
+       
+   [bracketedExpression] == { [orSet] | [orSet] ";" [andSet] } 
+   
+   [orSet] == { [andSet] | [andSet] "," [andSet] }
+   [andSet] == { [primitives] | [primitives] "&" [andSet]
+                              | "!" [primitive] 
+                              | "!" [primitive] "&" [andSet] }
+   [primitives] == { [primitive] | [primitive] [primitives] }
+       # note -- if & is not used, certain combinations of primitiveDescritors
+       #         are not allowed. Specifically, combinations that together
+       #         form the symbol for an element are not allowed: Ar, Rh, etc.
+       #         when NOT followed by a digit: [Ar3] is OK, 
+       #         but [Ard2] is "argon with two non-hydrogen connections"
+                 Also, "!" may be use with only one primitive             
+   [primitive] == { [isotope] | [atomType] | [charge] | [stereochemistry]
+                              | [A_Prop] | [D_Prop] | [H_Prop] | [h_Prop] 
+                              | [R_Prop] | [r_Prop] | [v_Prop] | [X_Prop]
+                              | [x_Prop] | [nestedExpression] }
+   [isotope] == [digits] | [digits] "?"
+       # note -- isotope mass may come before or after element symbol, 
+       #         EXCEPT "H1" which must be parsed as "an atom with a single H"
+   [charge] == { "-" [digits] | "+" [digits] | [plusSet] | [minusSet] }
+   [plusSet] == { "+" | "+" [plusSet] }
+   [minusSet] == { "-" | "-" [minusSet] }
+   [stereochemistry] == { "@"           # anticlockwise
+                              | "@@"    # clockwise
+                              | "@" [stereochemistryDescriptor] 
+                              | "@@" [stereochemistryDescriptor] }
+   [stereochemistryDescriptor] == [stereoClass] [stereoOrder]
+   [stereoClass] == { "AL" | "TH" | "SP" | "TP" | "OH" }
+   [stereoOrder] == [digits]
+       # note -- "?" here (unspecified) is not relevant in 3D-SEARCH 
+   
+   [A_Prop] == "#" [digits]           # elemental atomic number
+   [D_Prop] == { "D" [digits] | "D" } # degree -- total number of connections 
+                                      #   excludes implicit H atoms; default 1
+   [d_Prop] == { "d" [digits] | "d" } # degree -- non-hydrogen connections
+                                      #   default 1 
+   [H_Prop] == { "H" [digits] | "H" } # exact hydrogen count 
+                                      #   excludes implicit H atoms
+   [h_Prop] == { "h" [digits] | "h" } # implicit hydrogens -- "h" indicates "at least one"
+                                      #   (see note below)
+   [R_Prop] == { "R" [digits] | "R" } # ring membership; e.g. "R2" indicates "in two rings"
+                                      #   "R" indicates "in a ring" 
+                                      #   !R" or "R0" indicates "not in any ring"
+   [r_Prop] == { "r" [digits] | "r" } # in ring of size [digits]; "r" indicates "in a ring"
+   [v_Prop] == { "v" [digits] | "v" } # valence -- total bond order (counting double as 2, e.g.)
+   [X_Prop] == { "X" [digits] | "X" } # connectivity -- total number of connections
+                                      #   includes implicit H atoms
+   [x_Prop] == { "x" [digits] | "x" } # ring connectivity -- total ring connections
+   
+   [nestedExpression] == "$(" + [atomExpression] + ")"
+ 
+   [digits] = { [digit] | [digit] [digits] }
+   [digit] = { "0" | "1" | "2" | "3" | "4" | "5" | "6" | 7" | "8" | "9" }
+
+</pre>
+</p>
+
+<a name="aromaticity"><h3>Jmol 3D-SEARCH Definition of "aromatic"</h3></a>
+
+<p>
+
+We define "aromatic" here strictly in terms of geometry - a flat ring with trigonal planar geometry for all atoms in the ring. 
+No consideration of bond order is used, because for the sorts of models that can be loaded into Jmol, many do not
+assume a bonding scheme (PDB, GAUSSIAN, etc.).
+</p>
+<p>
+    Given a ring of N atoms...
+    
+<pre>
+                  1
+                /   \
+               2     6 -- 6a
+               |     |
+         5a -- 5     4
+                \   /
+                  3  
+</pre>
+    
+    with arbitrary order and up to N substituents...
+
+<ol>
+<li>    
+    Check to see if all ring atoms have no more than 3 connections.
+       Note: An alternative definition might include "and no substituent
+       is explicitly double-bonded to its ring atom, as in quinone.
+       Here we opt to allow the atoms of quinone to be called "aromatic."
+</li><li> Select a cutoff value close to zero. We use 0.01 here. 
+</li><li> Generate a set of normals as follows:
+<ol style="list-style-type: lower-alpha;"><li> For each ring atom, construct the normal associated with the plane
+          formed by that ring atom and its two nearest ring-atom neighbors.
+</li><li> For each ring atom with a substituent, construct a normal 
+          associated with the plane formed by its connecting substituent
+          atom and the two nearest ring-atom neighbors.
+</li><li> If this is the first normal, assign vMean to it. 
+</li><li> If this is not the first normal, check vNorm.dot.vMean. If this
+          value is less than zero, scale vNorm by -1.
+</li><li> Add vNorm to vMean. 
+</ol>
+</li><li>Calculate the standard deviation of the dot products of the 
+       individual vNorms with the normalized vMean. 
+</li><li>The ring is deemed flat if this standard deviation is less 
+       than the selected cutoff value. 
+</li></ol>
+       
+</p>
+
+<p>
+ -- <a href="mailto:hansonr@stolaf.edu>Bob Hanson</a>  5/19/2010
+ </p>
+</body>
 </html>

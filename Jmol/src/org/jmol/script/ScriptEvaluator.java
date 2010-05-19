@@ -766,6 +766,7 @@ public class ScriptEvaluator {
         }
         rpn.addX(new ScriptVariable(theToken));
         break;
+        // for within:
       case Token.atomname:
       case Token.atomtype:
       case Token.branch:
@@ -776,7 +777,10 @@ public class ScriptEvaluator {
       case Token.group:
       case Token.model:
       case Token.molecule:
+      case Token.sequence:
       case Token.site:
+      case Token.search:
+      case Token.smiles:
       case Token.structure:
         //
       case Token.on:

@@ -82,11 +82,11 @@ public class GamessUSReader extends GamessReader {
    */
   protected boolean checkLine() throws Exception {
     boolean isBohr;
-    if (line.contains("BASIS OPTIONS")){
+    if (line.indexOf("BASIS OPTIONS") >= 0){
       readBasisInfo();
       return true;
     }    
-    if (line.contains("$CONTRL OPTIONS")){
+    if (line.indexOf("$CONTRL OPTIONS") >= 0){
       readControlInfo();
       return true;
     }
@@ -395,10 +395,9 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
    */
   void readPartialCharges() throws Exception {
     String tokens[]=null;
-    String searchstr = (havePartialChargeFilter
-        && filter.toUpperCase().indexOf("CHARGE=LOW") >= 0 ? "LOW.POP."
+    String searchstr = (filter != null && filter.toUpperCase().indexOf("CHARGE=LOW") >= 0 ? "LOW.POP."
             : "MULL.POP.");
-    while (readLine() != null && ("".equals(line.trim())||line.contains("ATOM"))) {
+    while (readLine() != null && ("".equals(line.trim())||line.indexOf("ATOM") >= 0)) {
       tokens = getTokens();      
     }
     int poploc = 0;
@@ -426,7 +425,7 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
   void readDipoleMoment() throws Exception {
     String tokens[] = null;
     readLine();
-    while (line != null && ("".equals(line.trim()) || !line.contains("DX"))) {
+    while (line != null && ("".equals(line.trim()) || line.indexOf("DX") < 0)) {
       readLine();
     }
     tokens = getTokens(line);

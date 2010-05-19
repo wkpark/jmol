@@ -162,9 +162,10 @@ public class SmilesSearch {
       vReturn = new Vector();
 //    else
   //    System.out.println("smilesseearch search" + pattern);
-    for (int i = 0; i < jmolAtomCount; i++)
-      if (!checkMatch(atoms[0], 0, i, firstAtomOnly))
-        break;
+    if (patternAtomCount > 0)
+      for (int i = 0; i < jmolAtomCount; i++)
+        if (!checkMatch(atoms[0], 0, i, firstAtomOnly))
+          break;
     return (asVector ? (Object) vReturn : bsReturn);
   }
 

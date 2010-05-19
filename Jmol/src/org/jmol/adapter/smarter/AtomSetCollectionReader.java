@@ -338,8 +338,6 @@ public abstract class AtomSetCollectionReader {
     haveAtomFilter = (filter != null && (filter.indexOf(".") >= 0 
         || filter.indexOf("[") >= 0 || filter.indexOf(":") >= 0 
         || filter.toUpperCase().indexOf("BIOMOLECULE") >= 0));
-    havePartialChargeFilter = (filter != null 
-        && filter.toLowerCase().indexOf("charge=") >= 0);
     bsFilter = (BitSet) htParams.get("bsFilter");
     if (bsFilter == null && filter != null) {
       bsFilter = new BitSet();

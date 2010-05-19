@@ -133,28 +133,28 @@ abstract public class Binding {
     int action = 0;
     desc = desc.toUpperCase();
 
-    if (desc.contains("CTRL"))
+    if (desc.indexOf("CTRL") >= 0)
       action |= CTRL;
-    if (desc.contains("ALT"))
+    if (desc.indexOf("ALT") >= 0)
       action |= ALT;
-    if (desc.contains("SHIFT"))
+    if (desc.indexOf("SHIFT") >= 0)
       action |= SHIFT;
           
-    if (desc.contains("MIDDLE"))
+    if (desc.indexOf("MIDDLE") >= 0)
       action |= MIDDLE;
-    else if (desc.contains("RIGHT"))
+    else if (desc.indexOf("RIGHT") >= 0)
       action |= RIGHT;
-    else if (desc.contains("WHEEL"))
+    else if (desc.indexOf("WHEEL") >= 0)
       action |= WHEEL;
     else
       action |= LEFT;
       
     
-    if (desc.contains("DOUBLE"))
+    if (desc.indexOf("DOUBLE") >= 0)
       action |= DOUBLE_CLICK;
-    else if ((action & WHEEL) == 0 || desc.contains("SINGLE"))
+    else if ((action & WHEEL) == 0 || desc.indexOf("SINGLE") >= 0)
       action |= SINGLE_CLICK;
-    else if (desc.contains("DOWN"))
+    else if (desc.indexOf("DOWN") >= 0)
       action |= DOWN;
 
     return action;

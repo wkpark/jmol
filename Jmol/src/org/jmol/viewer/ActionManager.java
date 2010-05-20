@@ -377,6 +377,7 @@ public class ActionManager {
   protected int clickedCount;
 
   private boolean drawMode = false;
+  private int dragAtomIndex = -1;
   private boolean labelMode = false;
   private boolean dragSelectedMode = false;
   private boolean measuresEnabled = true;
@@ -459,7 +460,7 @@ public class ActionManager {
     switch(i) {
     case KeyEvent.VK_ALT:
       if (dragSelectedMode && isAltKeyReleased)
-        viewer.moveSelected(Integer.MIN_VALUE, 0, 0, 0, false);
+        viewer.moveSelected(Integer.MIN_VALUE, 0, 0, 0, null, false);
       isAltKeyReleased = false;
       moved.modifiers |= Binding.ALT;
       break;
@@ -498,7 +499,7 @@ public class ActionManager {
     switch(i) {
     case KeyEvent.VK_ALT:
       if (dragSelectedMode)
-        viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, false);
+        viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, null, false);
       isAltKeyReleased = true;
       moved.modifiers &= ~Binding.ALT;
       break;
@@ -572,7 +573,7 @@ public class ActionManager {
     setCurrent(time, x, y, modifiers);
     moved.setCurrent();
     if (measurementPending != null || hoverActive)
-      checkPointOrAtomClicked(x, y, 0, 0);
+      checkPointOrAtomClicked(x, y, 0, 0, false);
     else if (isZoomArea(x))
       checkMotionRotateZoom(Binding.getMouseAction(1, Binding.LEFT), 0, 0, 0, false);
     else if (viewer.getCursor() == Viewer.CURSOR_ZOOM)//if (dragSelectedMode)
@@ -592,36 +593,42 @@ public class ActionManager {
   
   void mousePressed(long time, int x, int y, int mods) {
     setCurrent(time, x, y, mods);
-    pressedCount = (pressed.check(x, y, mods, time, MAX_DOUBLE_CLICK_MILLIS)
-        ? pressedCount + 1 : 1);
+    pressedCount = (pressed.check(x, y, mods, time, MAX_DOUBLE_CLICK_MILLIS) ? pressedCount + 1
+        : 1);
     pressed.setCurrent();
     dragged.setCurrent();
     viewer.setFocus();
-    boolean isSelectAndDrag = isBound(Binding.getMouseAction(Integer.MIN_VALUE, mods), ACTION_selectAndDrag);
+    boolean isSelectAndDrag = isBound(Binding.getMouseAction(Integer.MIN_VALUE,
+        mods), ACTION_selectAndDrag);
     int action = Binding.getMouseAction(pressedCount, mods);
     dragGesture.setAction(action, time);
     if (Binding.getModifiers(action) != 0) {
       action = viewer.notifyMouseClicked(x, y, action);
       if (action == 0)
         return;
-    }    
+    }
     pressedAtomIndex = Integer.MAX_VALUE;
     if (checkUserAction(action, x, y, 0, 0, time, 0))
       return;
-    if (drawMode && (
-        isBound(action, ACTION_dragDrawObject)
-        || isBound(action, ACTION_dragDrawPoint))
-      || labelMode && isBound(action, ACTION_dragLabel)) {
+    if (drawMode
+        && (isBound(action, ACTION_dragDrawObject) || isBound(action,
+            ACTION_dragDrawPoint)) || labelMode
+        && isBound(action, ACTION_dragLabel)) {
       viewer.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, action);
+      return;
+    }
+    if (pickingMode == JmolConstants.PICKING_DRAG_ATOM) {
+      dragAtomIndex = viewer.findNearestAtomIndex(x, y);
       return;
     }
     if (dragSelectedMode) {
       haveSelection = true;
       if (isSelectAndDrag) {
-        haveSelection = checkPointOrAtomClicked(x, y, mods, pressedCount); 
+        haveSelection = (viewer.findNearestAtomIndex(x, y) >= 0);
+        // checkPointOrAtomClicked(x, y, mods, pressedCount, true);
       }
       if (isBound(action, ACTION_dragSelected) && haveSelection) {
-        viewer.moveSelected(Integer.MIN_VALUE, 0, 0, 0, false);
+        viewer.moveSelected(Integer.MIN_VALUE, 0, 0, 0, null, false);
       }
       return;
     }
@@ -648,6 +655,7 @@ public class ActionManager {
 
   void mouseReleased(long time, int x, int y, int mods) {
     setCurrent(time, x, y, mods);
+    dragAtomIndex = -1;
     viewer.spinXYBy(0, 0, 0);
     boolean dragRelease = !pressed.check(x, y, mods, time, Long.MAX_VALUE);
     viewer.setInMotion(false);
@@ -683,7 +691,7 @@ public class ActionManager {
     }
     if (dragSelectedMode && isBound(action, ACTION_dragSelected)
         && haveSelection)
-      viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, false);
+      viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, null, false);
 
     if (dragRelease && checkUserAction(action, x, y, 0, 0, time, 2))
       return;
@@ -719,7 +727,7 @@ public class ActionManager {
     boolean isSelectAndDrag = isBound(Binding.getMouseAction(Integer.MIN_VALUE, mods), ACTION_selectAndDrag);
     if (isSelectAndDrag)
       return;
-    checkPointOrAtomClicked(x, y, mods, clickedCount);
+    checkPointOrAtomClicked(x, y, mods, clickedCount, false);
   }
 
   private boolean isRubberBandSelect(int action) {
@@ -774,6 +782,14 @@ public class ActionManager {
     if (checkUserAction(action, x, y, deltaX, deltaY, time, mode))
       return;
 
+    if (pickingMode == JmolConstants.PICKING_DRAG_ATOM && dragAtomIndex >= 0) {
+      checkMotion(Viewer.CURSOR_MOVE);
+      BitSet bs = new BitSet();
+      bs.set(dragAtomIndex);
+      viewer.moveSelected(deltaX, deltaY, x, y, bs, true);
+      return;
+    }
+
     if (!drawMode && !labelMode) {
       if (isBound(action, ACTION_translate)) {
         viewer.translateXYBy(deltaX, deltaY);
@@ -797,10 +813,10 @@ public class ActionManager {
     if (dragSelectedMode && isBound(action, ACTION_dragSelected)
         && haveSelection) {
       checkMotion(Viewer.CURSOR_MOVE);
-      viewer.moveSelected(deltaX, deltaY, x, y, true);
+      viewer.moveSelected(deltaX, deltaY, x, y, null, true);
       return;
     }
-
+    
     if (drawMode
         && (isBound(action, ACTION_dragDrawObject) || isBound(action,
             ACTION_dragDrawPoint)) || labelMode
@@ -931,7 +947,7 @@ public class ActionManager {
   }
 
   private boolean checkPointOrAtomClicked(int x, int y, int mods,
-                                          int clickedCount) {
+                                          int clickedCount, boolean atomOnly) {
     if (!viewer.haveModelSet())
       return false;
     // points are always picked up first, then atoms
@@ -944,7 +960,7 @@ public class ActionManager {
     }
     Point3fi nearestPoint = null;
     int tokType = 0;
-    if (!drawMode) {
+    if (!drawMode && !atomOnly) {
       Token t = viewer.checkObjectClicked(x, y, action);
       if (t != null) {
         tokType = t.tok;
@@ -1310,6 +1326,9 @@ public class ActionManager {
     }
     int n = 2;
     switch (pickingMode) {
+    case JmolConstants.PICKING_DRAG_ATOM:
+      // this is done in mouse drag, not mouse release
+      return;
     case JmolConstants.PICKING_OFF:
       return;
     case JmolConstants.PICKING_STRUTS:
@@ -1365,6 +1384,7 @@ public class ActionManager {
     }
     if (ptClicked != null)
       return;
+    // atoms only here:
     switch (pickingMode) {
     case JmolConstants.PICKING_IDENTIFY:
       if (isBound(action, ACTION_pickAtom))

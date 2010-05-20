@@ -285,7 +285,6 @@ abstract class TransformManager {
   private final AxisAngle4f axisangleT = new AxisAngle4f();
   private final Vector3f vectorT = new Vector3f();
   private final Vector3f vectorT2 = new Vector3f();
-  protected final Point3f pointT = new Point3f();
   private final Point3f pointT2 = new Point3f();
 
   final static int MAXIMUM_ZOOM_PERCENTAGE = 200000;
@@ -367,7 +366,7 @@ abstract class TransformManager {
 
   void rotateZBy(int zDelta, int x, int y) {
     if (x != Integer.MAX_VALUE && y != Integer.MAX_VALUE)
-      resetXYCenter(x, y, null);
+      resetXYCenter(x, y);
     rotateZRadians((float) (zDelta / degreesPerRadian));
   }
 
@@ -577,15 +576,16 @@ abstract class TransformManager {
     vectorT.set(internalRotationCenter);
     pointT2.set(fixedRotationCenter);
     pointT2.sub(vectorT);
-    matrixTemp4.transform(pointT2, pointT);
+    Point3f pt = new Point3f();
+    matrixTemp4.transform(pointT2, pt);
 
     // return this point to the fixed frame
 
-    pointT.add(vectorT);
+    pt.add(vectorT);
 
     // it is the new fixed rotation center!
 
-    setRotationCenterAndRadiusXYZ(pointT, false);
+    setRotationCenterAndRadiusXYZ(pt, false);
   }
 
   /* ***************************************************************
@@ -808,23 +808,20 @@ abstract class TransformManager {
       return;
     zoomRatio = factor;
     zoomPercentSetting *= factor;
-    resetXYCenter(x, y, null);
+    resetXYCenter(x, y);
   }
 
-  private void resetXYCenter(int x, int y, Point3f pt) {
+  private void resetXYCenter(int x, int y) {
     if (x == Integer.MAX_VALUE || y == Integer.MAX_VALUE)
       return;
     if (windowCentered)
       viewer.setBooleanProperty("windowCentered", false);
-    if (pt == null) {
-      transformPoint(fixedRotationCenter, pointT);
-      pointT.set(x, y, pointT.z);
-      unTransformPoint(pointT, pointT);
-      fixedTranslation.set(x, y, 0);
-      setFixedRotationCenter(pointT);
-    } else {
-      transformPoint(pt, pointT);
-    }
+    Point3f pt = new Point3f();
+    transformPoint(fixedRotationCenter, pt);
+    pt.set(x, y, pt.z);
+    unTransformPoint(pt, pt);
+    fixedTranslation.set(x, y, 0);
+    setFixedRotationCenter(pt);
   }
 
   void zoomByPercent(float percentZoom) {
@@ -1305,6 +1302,7 @@ abstract class TransformManager {
    ****************************************************************/
 
   protected final Matrix4f matrixTransform = new Matrix4f();
+  protected final Matrix4f matrixTransformInv = new Matrix4f();
 
   Matrix4f getMatrixtransform() {
     return matrixTransform;
@@ -1412,7 +1410,7 @@ abstract class TransformManager {
     matrixTransform.mul(matrixTemp, matrixTransform);
     //z-translate to set rotation center at midplane (Nav) or front plane (V10)
     matrixTransform.m23 += modelCenterOffset;
-
+    matrixTransformInv.invert(matrixTransform);
     // note that the image is still centered at 0, 0 in the xy plane
 
   }
@@ -1451,6 +1449,7 @@ abstract class TransformManager {
     return point3iScreenTemp;
   }
 
+  private final Point3f pointTsp = new Point3f();
   private Point3i transformScreenPoint(Point3f ptXyp) {
     // just does the processing for [x y] and [x y %]
     if (ptXyp.z == -Float.MAX_VALUE) {
@@ -1464,8 +1463,8 @@ abstract class TransformManager {
       point3iScreenTemp.x <<= 1;
       point3iScreenTemp.y <<= 1;
     }
-    matrixTransform.transform(fixedRotationCenter, pointT);
-    point3iScreenTemp.z = (int) pointT.z;
+    matrixTransform.transform(fixedRotationCenter, pointTsp);
+    point3iScreenTemp.z = (int) pointTsp.z;
     return point3iScreenTemp;
   }
 
@@ -1510,43 +1509,39 @@ abstract class TransformManager {
     matrixTransform.transform(vectorAngstroms, vectorTransformed);
   }
 
+  final protected Point3f untransformedPoint = new Point3f();
   void unTransformPoint(Point3f screenPt, Point3f coordPt) {
     //draw move2D
-    pointT.set(screenPt);
+    untransformedPoint.set(screenPt);
     switch (mode) {
     case MODE_NAVIGATION:
-      pointT.x -= navigationOffset.x;
-      pointT.y -= navigationOffset.y;
+      untransformedPoint.x -= navigationOffset.x;
+      untransformedPoint.y -= navigationOffset.y;
       break;
     case MODE_PERSPECTIVE_CENTER:
-      pointT.x -= perspectiveOffset.x;
-      pointT.y -= perspectiveOffset.y;
+      untransformedPoint.x -= perspectiveOffset.x;
+      untransformedPoint.y -= perspectiveOffset.y;
       break;
     case MODE_STANDARD:
-      pointT.x -= fixedRotationOffset.x;
-      pointT.y -= fixedRotationOffset.y;
+      untransformedPoint.x -= fixedRotationOffset.x;
+      untransformedPoint.y -= fixedRotationOffset.y;
     }
     if (perspectiveDepth) {
-      float factor = getPerspectiveFactor(pointT.z);
-      pointT.x /= factor;
-      pointT.y /= factor;
+      float factor = getPerspectiveFactor(untransformedPoint.z);
+      untransformedPoint.x /= factor;
+      untransformedPoint.y /= factor;
     }
     switch (mode) {
     case MODE_NAVIGATION:
-      pointT.x += navigationShiftXY.x;
-      pointT.y += navigationShiftXY.y;
+      untransformedPoint.x += navigationShiftXY.x;
+      untransformedPoint.y += navigationShiftXY.y;
       break;
     case MODE_PERSPECTIVE_CENTER:
-      pointT.x += perspectiveShiftXY.x;
-      pointT.y += perspectiveShiftXY.y;
+      untransformedPoint.x += perspectiveShiftXY.x;
+      untransformedPoint.y += perspectiveShiftXY.y;
       break;
     }
-    matrixUnTransform(pointT, coordPt);
-  }
-
-  protected void matrixUnTransform(Point3f screen, Point3f angstroms) {
-    matrixTemp.invert(matrixTransform);
-    matrixTemp.transform(screen, angstroms);
+    matrixTransformInv.transform(untransformedPoint, coordPt);
   }
 
   /* ***************************************************************
@@ -2465,14 +2460,14 @@ abstract class TransformManager {
   }
 
   private void setRotationCenterAndRadiusXYZ(String relativeTo, Point3f pt) {
-    pointT.set(pt);
+    Point3f pt1 = new Point3f(pt);
     if (relativeTo == "average")
-      pointT.add(viewer.getAverageAtomPoint());
+      pt1.add(viewer.getAverageAtomPoint());
     else if (relativeTo == "boundbox")
-      pointT.add(viewer.getBoundBoxCenter());
+      pt1.add(viewer.getBoundBoxCenter());
     else if (relativeTo != "absolute")
-      pointT.set(rotationCenterDefault);
-    setRotationCenterAndRadiusXYZ(pointT, true);
+      pt1.set(rotationCenterDefault);
+    setRotationCenterAndRadiusXYZ(pt1, true);
   }
 
   void setNewRotationCenter(Point3f center, boolean doScale) {

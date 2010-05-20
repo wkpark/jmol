@@ -314,10 +314,11 @@ class TransformManager11 extends TransformManager {
       // must just be (not so!) simple navigation
       // navigation center will initially move
       // but we center it by moving the rotation center instead
-      matrixTransform.transform(navigationCenter, pointT);
-      float z = pointT.z;
-      matrixTransform.transform(fixedRotationCenter, pointT);
-      modelCenterOffset = referencePlaneOffset + (pointT.z - z);
+      Point3f pt1 = new Point3f();
+      matrixTransform.transform(navigationCenter, pt1);
+      float z = pt1.z;
+      matrixTransform.transform(fixedRotationCenter, pt1);
+      modelCenterOffset = referencePlaneOffset + (pt1.z - z);
       calcCameraFactors();
       calcTransformMatrix();
       break;
@@ -333,10 +334,12 @@ class TransformManager11 extends TransformManager {
       // TODO
       // but if periodic, then the navigationCenter may have to be moved back a
       // notch
+      Point3f pt = new Point3f(navigationCenter);
       viewer.toUnitCell(navigationCenter, null);
-      if (pointT.distance(navigationCenter) > 0.01) {
-        matrixTransform.transform(navigationCenter, pointT);
-        float dz = navigationShiftXY.z - pointT.z;
+      // presuming here that pointT is still a molecular point??
+      if (pt.distance(navigationCenter) > 0.01) {
+        matrixTransform.transform(navigationCenter, pt);
+        float dz = navigationShiftXY.z - pt.z;
         // the new navigation center determines the navigationZOffset
         modelCenterOffset += dz;
         calcCameraFactors();
@@ -406,17 +409,18 @@ class TransformManager11 extends TransformManager {
     // fixedRotationCenter, navigationOffset, navigationCenter
     mode = defaultMode;
     // get the rotation center's Z offset and move X and Y to 0,0
-    transformPoint(fixedRotationCenter, pointT);
-    pointT.x -= navigationOffset.x;
-    pointT.y -= navigationOffset.y;
+    Point3f pt = new Point3f();
+    transformPoint(fixedRotationCenter, pt);
+    pt.x -= navigationOffset.x;
+    pt.y -= navigationOffset.y;
     // unapply the perspective as if IT were the navigation center
-    float f = -getPerspectiveFactor(pointT.z);
-    pointT.x /= f;
-    pointT.y /= f;
-    pointT.z = referencePlaneOffset;
+    float f = -getPerspectiveFactor(pt.z);
+    pt.x /= f;
+    pt.y /= f;
+    pt.z = referencePlaneOffset;
     // now untransform that point to give the center that would
     // deliver this fixedModel position
-    matrixUnTransform(pointT, navigationCenter);
+    matrixTransformInv.transform(pt, navigationCenter);
     mode = MODE_NAVIGATION;
   }
 
@@ -655,12 +659,13 @@ class TransformManager11 extends TransformManager {
   }
 
   void navTranslate(float seconds, Point3f pt) {
-    transformPoint(pt, pointT);
+    Point3f pt1 = new Point3f();
+    transformPoint(pt, pt1);
     if (seconds > 0) {
-      navigateTo(seconds, null, Float.NaN, null, Float.NaN, pointT.x, pointT.y);
+      navigateTo(seconds, null, Float.NaN, null, Float.NaN, pt1.x, pt1.y);
       return;
     }
-    navTranslatePercent(-1, pointT.x, pointT.y);
+    navTranslatePercent(-1, pt1.x, pt1.y);
   }
 
   void navTranslatePercent(float seconds, float x, float y) {

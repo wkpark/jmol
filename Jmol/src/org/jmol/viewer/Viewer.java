@@ -2373,6 +2373,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     stopAnimationThreads("stop from init model");
     reset();
     selectAll();
+    movingSelected = false;
     noneSelected = false;
     hoverEnabled = true;
     transformManager.setCenter();
@@ -7233,15 +7234,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     checkMinimization();
   }
 
-  boolean movingSelected;
-  boolean showSelected;
+  private boolean movingSelected;
+  private boolean showSelected;
   
   void moveSelected(int deltaX, int deltaY, int x, int y,
-                                 boolean isTranslation) {
+                                 BitSet bsSelected, boolean isTranslation) {
     // cannot synchronize this -- it's from the mouse and the event queue
     if (isJmolDataFrame())
       return;
-    BitSet bsSelected = selectionManager.getSelectionSet();
+    if (bsSelected== null)
+      bsSelected = selectionManager.getSelectionSet();
     if (deltaX == Integer.MIN_VALUE) {
       showSelected = true;
       loadShape(JmolConstants.SHAPE_HALOS);
@@ -7259,11 +7261,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // note this does not sync with applets
     if (isTranslation) {
       Point3f ptCenter = getAtomSetCenter(bsSelected);
-      Point3i pti = transformPoint(ptCenter);
-      Point3f pt = new Point3f(pti.x + deltaX, pti.y + deltaY, pti.z);
-      unTransformPoint(pt, pt);
-      pt.sub(ptCenter);
-      modelSet.setAtomCoordRelative(pt, bsSelected);
+      Point3i ptScreen = transformPoint(ptCenter);
+      Point3f ptScreenNew = new Point3f(ptScreen.x + deltaX + 0.5f, ptScreen.y + deltaY + 0.5f, ptScreen.z);
+      Point3f ptNew = new Point3f();
+      transformManager.finalizeTransformParameters();
+      unTransformPoint(ptScreenNew, ptNew);
+//      script("draw ID 'pt" + Math.random() + "' " + Escape.escape(ptNew));
+      ptNew.sub(ptCenter);      
+      modelSet.setAtomCoordRelative(ptNew, bsSelected);
     } else {
       transformManager.setRotateMolecule(true);
       transformManager.rotateXYBy(deltaX, deltaY, bsSelected);

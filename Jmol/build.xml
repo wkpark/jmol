@@ -193,7 +193,7 @@
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="src" destdir="${classes.dir}"
            debug="${debug}" deprecation="${deprecation}"
-           optimize="${optimization}" source="1.5">
+           optimize="${optimization}" source="1.5" target="1.5">
       <classpath refid="project.class.path" />
       <!-- removed all CDK based code, use BioClipse instead -->
       <exclude name="org/openscience/jmol/app/JmolEditBus.java"/>

@@ -8225,9 +8225,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                        boolean addHydrogen, boolean isSilent, boolean asScript) {
     if (addHydrogen)
       bsSelected = addHydrogens(bsSelected, asScript);
-    else if (bsSelected == null) {
+    else if (bsSelected == null)
       bsSelected = getModelAtomBitSet(getVisibleFramesBitSet());
-    }
     try {
       getMinimizer(true).minimize(steps, crit, bsSelected, isSilent);
     } catch (Exception e) {

@@ -22,18 +22,24 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.api;
+package org.jmol.multitouch;
 
-import org.jmol.viewer.Viewer;
+import java.util.List;
 
-public interface JmolMultiTouchAdapter {
+import javax.vecmath.Point3f;
+
+public interface JmolMultiTouchClient {
   
   /*
-   * An interface that allows ActionManagerMT to create a Sparsh client adapter
+   * An interface that involves only Java 1.4-compliant classes.
+   * 
+   * ActionManagerMT implements this interface.
+   * It is connected to the SparshUI code (com.sparshui.client) 
+   * within org.jmol.multitouch.sparshui.SparshClient
    * 
    */
-  public void dispose();
-  public boolean setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client, boolean isSimulation);
-  public void mouseMoved(int x, int y);
-  public boolean isServer();
+  public int getGroupID(int x, int y);
+  public List getAllowedGestures(int groupID);
+  public void processEvent(int groupID, int eventType, int touchID, 
+                           int iData, Point3f pt, long time);
 }

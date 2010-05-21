@@ -23,8 +23,8 @@
  */
 package org.jmol.multitouch.jni;
 
-import org.jmol.api.JmolMultiTouchAdapter;
-import org.jmol.api.JmolMultiTouchClient;
+import org.jmol.multitouch.JmolMultiTouchAdapter;
+import org.jmol.multitouch.JmolMultiTouchClient;
 import org.jmol.multitouch.JmolMultiTouchClientAdapter;
 import org.jmol.viewer.Viewer;
 

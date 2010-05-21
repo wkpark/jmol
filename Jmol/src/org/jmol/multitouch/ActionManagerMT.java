@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.viewer;
+package org.jmol.multitouch;
 
 import java.util.List;
 import java.util.Vector;
@@ -29,10 +29,10 @@ import java.util.Vector;
 import javax.vecmath.Point3f;
 
 import org.jmol.api.Interface;
-import org.jmol.api.JmolMultiTouchAdapter;
-import org.jmol.api.JmolMultiTouchClient;
 import org.jmol.api.JmolTouchSimulatorInterface;
 import org.jmol.util.Logger;
+import org.jmol.viewer.ActionManager;
+import org.jmol.viewer.Viewer;
 import org.jmol.viewer.binding.Binding;
 
 public class ActionManagerMT extends ActionManager implements JmolMultiTouchClient {
@@ -46,9 +46,11 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   private boolean resetNeeded = true;
   private long lastLogTime = 0;
   
-  
-  ActionManagerMT(Viewer viewer, String commandOptions) {
-    super(viewer);
+  /* (non-Javadoc)
+   * @see org.jmol.viewer.ActionManagerInterface#setViewer(org.jmol.viewer.Viewer, java.lang.String)
+   */
+  public void setViewer(Viewer viewer, String commandOptions) {
+    super.setViewer(viewer, commandOptions);
     groupID = ((int) (Math.random() * 0xFFFFFF)) << 4;
     
     boolean isSparsh = (commandOptions.indexOf("-multitouch-sparshui") >= 0);
@@ -100,16 +102,16 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     }
   }
 
-  void clear() {
+  public void clear() {
     // per file load
     simulationPhase = 0;
     resetNeeded = true;
     super.clear();
   }
   
-  boolean doneHere;
+  private boolean doneHere;
   
-  void dispose() {
+  public void dispose() {
     Logger.debug("ActionManagerMT -- dispose");
     // per applet/application instance
     doneHere = true;
@@ -290,34 +292,34 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     }
   }
 
-  void mouseEntered(long time, int x, int y) {
+  public void mouseEntered(long time, int x, int y) {
     super.mouseEntered(time, x, y);    
   }
   
-  void mouseExited(long time, int x, int y) {
+  public void mouseExited(long time, int x, int y) {
     super.mouseExited(time, x, y);    
   }
   
-  void mouseClicked(long time, int x, int y, int mods, int count) {
+  public void mouseClicked(long time, int x, int y, int mods, int count) {
     if (haveMultiTouchInput)
       return;
     super.mouseClicked(time, x, y, mods, count);
   }
 
-  void mouseMoved(long time, int x, int y, int mods) {
+  public void mouseMoved(long time, int x, int y, int mods) {
     if (haveMultiTouchInput)
       return;
     adapter.mouseMoved(x, y);
     super.mouseMoved(time, x, y, mods);
   }
 
-  void mouseWheel(long time, int rotation, int mods) {
+  public void mouseWheel(long time, int rotation, int mods) {
     if (haveMultiTouchInput)
       return;
     super.mouseWheel(time, rotation, mods);
   }
 
-  void mousePressed(long time, int x, int y, int mods) {
+  public void mousePressed(long time, int x, int y, int mods) {
     if (simulator != null) {
       int action = Binding.getMouseAction(1, mods);
       if (binding.isBound(action, ACTION_multiTouchSimulation)) {
@@ -335,7 +337,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     super.mousePressed(time, x, y, mods);
   }
 
-  void mouseDragged(long time, int x, int y, int mods) {
+  public void mouseDragged(long time, int x, int y, int mods) {
     if (simulator != null && simulationPhase > 0) {
       setCurrent(time, x, y, mods);
       simulator.mouseDragged(time, x, y);
@@ -346,7 +348,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     super.mouseDragged(time, x, y, mods);
   }
 
-  void mouseReleased(long time, int x, int y, int mods) {
+  public void mouseReleased(long time, int x, int y, int mods) {
     if (simulator != null && simulationPhase > 0) {
       setCurrent(time, x, y, mods);
       viewer.spinXYBy(0, 0, 0);

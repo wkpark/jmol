@@ -30,10 +30,10 @@ import java.util.List;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolGestureServerInterface;
-import org.jmol.api.JmolMultiTouchClient;
+import org.jmol.multitouch.ActionManagerMT;
+import org.jmol.multitouch.JmolMultiTouchClient;
 import org.jmol.multitouch.JmolMultiTouchClientAdapter;
 import org.jmol.util.Logger;
-import org.jmol.viewer.ActionManagerMT;
 import org.jmol.viewer.Viewer;
 
 import com.sparshui.client.SparshClient;

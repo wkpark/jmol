@@ -298,10 +298,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
               .createCustomCursor(image, new Point(0, 0), "invisibleCursor");
           display.setCursor(transparentCursor);
         }
-        actionManager = new ActionManagerMT(this, commandOptions);
+        actionManager = (ActionManager) Interface.getInterface("multitouch.ActionManagerMT");
       } else {
-        actionManager = new ActionManager(this);
+        actionManager = new ActionManager();
       }
+      actionManager.setViewer(this, commandOptions);
       mouseManager = new MouseManager14(this, actionManager);
     }
     modelManager = new ModelManager(this);
@@ -908,7 +909,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + yDelta : "");
   }
 
-  void spinXYBy(int xDelta, int yDelta, float speed) {
+  public void spinXYBy(int xDelta, int yDelta, float speed) {
     if (mouseEnabled)
       transformManager.spinXYBy(xDelta, yDelta, speed);
     if (xDelta == 0 && yDelta == 0)
@@ -917,7 +918,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + yDelta + " " + speed : "");
   }
 
-  void rotateZBy(int zDelta, int x, int y) {
+  public void rotateZBy(int zDelta, int x, int y) {
     // mouseSinglePressDrag
     if (mouseEnabled)
       transformManager.rotateZBy(zDelta, x, y);
@@ -938,7 +939,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + " " + deltaY : "");
   }
 
-  void translateXYBy(int xDelta, int yDelta) {
+  public void translateXYBy(int xDelta, int yDelta) {
     // mouseDoublePressDrag, mouseSinglePressDrag
     if (mouseEnabled)
       transformManager.translateXYBy(xDelta, yDelta);
@@ -8202,11 +8203,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return isKiosk;
   }
 
-  boolean hasFocus() {
+  public boolean hasFocus() {
     return (display != null && (isKiosk || display.hasFocus()));  
   }
   
-  void setFocus() {
+  public void setFocus() {
     if (display != null && !display.hasFocus())
       display.requestFocusInWindow();
   }

@@ -31,8 +31,6 @@ import java.awt.Toolkit;
 import javax.swing.SwingUtilities;
 import javax.vecmath.Point3f;
 
-import org.jmol.api.JmolMultiTouchAdapter;
-import org.jmol.api.JmolMultiTouchClient;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 

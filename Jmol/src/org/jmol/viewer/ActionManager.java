@@ -255,18 +255,16 @@ public class ActionManager {
  
   protected Viewer viewer;
   
-  Binding binding;
+  protected Binding binding;
   Binding jmolBinding;
   Binding pfaatBinding;
   Binding dragBinding;
   Binding rasmolBinding;
   Binding predragBinding;
 
-  ActionManager aman;
-  ActionManager(Viewer viewer) {
+  public void setViewer(Viewer viewer, String commandOptions) {
     this.viewer = viewer;
-    aman = this;
-    setBinding(jmolBinding = new JmolBinding());
+    setBinding(jmolBinding = new JmolBinding());   
   }
 
   boolean isBound(int gesture, int action) {
@@ -396,19 +394,19 @@ public class ActionManager {
   protected boolean isMultiTouchClient;
   protected boolean isMultiTouchServer;
 
-  boolean isMTClient() {
+  public boolean isMTClient() {
     return isMultiTouchClient;
   }
 
-  boolean isMTServer() {
+  public boolean isMTServer() {
     return isMultiTouchServer;
   }
 
-  void dispose() {
+  public void dispose() {
     clear();
   }
 
-  void clear() {
+  public void clear() {
     startHoverWatcher(false);
     clearTimeouts();
     if (predragBinding != null)
@@ -418,7 +416,7 @@ public class ActionManager {
     eval = null;
   }
 
-  synchronized void startHoverWatcher(boolean isStart) {
+  synchronized public void startHoverWatcher(boolean isStart) {
     if (viewer.isPreviewOnly())
       return;
     try {
@@ -441,7 +439,7 @@ public class ActionManager {
     }
   }
 
-  void setModeMouse(int modeMouse) {
+  public void setModeMouse(int modeMouse) {
     if (modeMouse == JmolConstants.MOUSE_NONE) {
       startHoverWatcher(false);
     }
@@ -451,7 +449,7 @@ public class ActionManager {
    * called by MouseManager.keyPressed
    * @param ke
    */
-  void keyPressed(KeyEvent ke) {
+  public void keyPressed(KeyEvent ke) {
     ke.consume();
     if (keyProcessing)
       return;
@@ -527,16 +525,16 @@ public class ActionManager {
     }
   }
 
-  void mouseEntered(long time, int x, int y) {
+  public void mouseEntered(long time, int x, int y) {
     setCurrent(time, x, y, 0);
   }
 
-  void mouseExited(long time, int x, int y) {
+  public void mouseExited(long time, int x, int y) {
     setCurrent(time, x, y, 0);
     exitMeasurementMode();
   }
 
-  void setMouseMode() {
+  public void setMouseMode() {
     drawMode = labelMode = false;
     dragSelectedMode = viewer.getDragSelected();
     measuresEnabled = !dragSelectedMode;
@@ -571,7 +569,7 @@ public class ActionManager {
     exitMeasurementMode();
   }
 
-  void mouseMoved(long time, int x, int y, int modifiers) {
+  public void mouseMoved(long time, int x, int y, int modifiers) {
     setCurrent(time, x, y, modifiers);
     moved.setCurrent();
     if (measurementPending != null || hoverActive)
@@ -582,7 +580,7 @@ public class ActionManager {
       viewer.setCursor(Viewer.CURSOR_DEFAULT);
   }
 
-  void mouseWheel(long time, int rotation, int mods) {
+  public void mouseWheel(long time, int rotation, int mods) {
     if (viewer.isApplet() && !viewer.hasFocus())
       return;
     // sun bug? noted by Charles Xie that wheeling on a Java page
@@ -593,7 +591,7 @@ public class ActionManager {
 
   private boolean haveSelection;
   
-  void mousePressed(long time, int x, int y, int mods) {
+  public void mousePressed(long time, int x, int y, int mods) {
     setCurrent(time, x, y, mods);
     pressedCount = (pressed.check(x, y, mods, time, MAX_DOUBLE_CLICK_MILLIS) ? pressedCount + 1
         : 1);
@@ -643,7 +641,7 @@ public class ActionManager {
     checkMotionRotateZoom(action, x, 0, 0, true);
   }
 
-  void mouseDragged(long time, int x, int y, int mods) {
+  public void mouseDragged(long time, int x, int y, int mods) {
     setMouseMode();
     int deltaX = x - dragged.x;
     int deltaY = y - dragged.y;
@@ -655,7 +653,7 @@ public class ActionManager {
     checkAction(action, x, y, deltaX, deltaY, time, 1);
   }
 
-  void mouseReleased(long time, int x, int y, int mods) {
+  public void mouseReleased(long time, int x, int y, int mods) {
     setCurrent(time, x, y, mods);
     viewer.spinXYBy(0, 0, 0);
     boolean dragRelease = !pressed.check(x, y, mods, time, Long.MAX_VALUE);
@@ -728,7 +726,7 @@ public class ActionManager {
   }
 
 
-  void mouseClicked(long time, int x, int y, int mods, int count) {
+  public void mouseClicked(long time, int x, int y, int mods, int count) {
     setMouseMode();
     setCurrent(time, x, y, mods);
     clickedCount = (count > 1 ? count : clicked.check(x, y, mods, time,
@@ -749,7 +747,7 @@ public class ActionManager {
         );
   }
 
-  Rectangle getRubberBand() {
+  public Rectangle getRubberBand() {
     if (!rubberbandSelectionMode || rectRubber.x == Integer.MAX_VALUE)
       return null;
     return rectRubber;
@@ -1112,7 +1110,7 @@ public class ActionManager {
 
   Hashtable timeouts;
   
-  String showTimeout(String name) {
+  public String showTimeout(String name) {
     StringBuffer sb = new StringBuffer();
     if (timeouts != null) {
       Enumeration e = timeouts.elements();
@@ -1125,7 +1123,7 @@ public class ActionManager {
     return (sb.length() > 0 ? sb.toString() : "<no timeouts set>");
   }
 
-  void clearTimeouts() {
+  public void clearTimeouts() {
     if (timeouts == null)
       return;
     Enumeration e = timeouts.elements();
@@ -1134,7 +1132,7 @@ public class ActionManager {
     timeouts.clear();    
   }
   
-  void setTimeout(String name, int mSec, String script) {
+  public void setTimeout(String name, int mSec, String script) {
     if (name == null) {
       clearTimeouts();
       return;
@@ -1159,7 +1157,7 @@ public class ActionManager {
     t.start();
   }
 
-  class TimeoutThread extends Thread {
+  private class TimeoutThread extends Thread {
     String name;
     private int ms;
     private long targetTime;
@@ -1221,11 +1219,11 @@ public class ActionManager {
     }
   }
   
-  void hoverOn(int atomIndex) {
+  public void hoverOn(int atomIndex) {
     viewer.hoverOn(atomIndex, Binding.getMouseAction(clickedCount, moved.modifiers));
   }
 
-  void hoverOff() {
+  public void hoverOff() {
     try {
       viewer.hoverOff();
     } catch (Exception e) {
@@ -1281,20 +1279,20 @@ public class ActionManager {
     measurementQueued = new MeasurementPending(viewer.getModelSet());    
   }
 
-  int getPickingMode() {
+  public int getPickingMode() {
     return pickingMode;
   }
     
-  void setPickingMode(int pickingMode) {
+  public void setPickingMode(int pickingMode) {
     this.pickingMode = pickingMode;
     resetMeasurement();
   }
 
-  int getPickingStyle() {
+  public int getPickingStyle() {
     return pickingStyle;
   }
 
-  void setPickingStyle(int pickingStyle) {
+  public void setPickingStyle(int pickingStyle) {
     this.pickingStyle = pickingStyle;
     if (pickingStyle >= JmolConstants.PICKINGSTYLE_MEASURE_ON) {
       pickingStyleMeasure = pickingStyle;
@@ -1512,8 +1510,8 @@ public class ActionManager {
     return n;
   }
 
-  boolean selectionWorking = false;
-  ScriptEvaluator eval;
+  private boolean selectionWorking = false;
+  private ScriptEvaluator eval;
   private void applySelectStyle(String item, int action) {
     if (measurementPending != null || selectionWorking)
       return;
@@ -1599,7 +1597,7 @@ public class ActionManager {
       return ptNext;
     }
     
-    long getTimeDifference(int nPoints) {
+    public long getTimeDifference(int nPoints) {
       nPoints = getPointCount(nPoints, 0);
       if (nPoints < 2)
         return 0;
@@ -1608,7 +1606,7 @@ public class ActionManager {
       return mp1.time - mp0.time;
     }
 
-    float getSpeedPixelsPerMillisecond(int nPoints, int nPointsPrevious) {
+    public float getSpeedPixelsPerMillisecond(int nPoints, int nPointsPrevious) {
       nPoints = getPointCount(nPoints, nPointsPrevious);
       if (nPoints < 2)
         return 0;

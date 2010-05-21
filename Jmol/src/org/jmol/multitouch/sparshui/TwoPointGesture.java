@@ -4,8 +4,8 @@ import java.util.Vector;
 
 import javax.vecmath.Vector3f;
 
+import org.jmol.multitouch.ActionManagerMT;
 import org.jmol.util.Logger;
-import org.jmol.viewer.ActionManagerMT;
 
 import com.sparshui.common.Event;
 import com.sparshui.common.Location;

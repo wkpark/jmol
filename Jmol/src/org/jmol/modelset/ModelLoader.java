@@ -131,8 +131,8 @@ public final class ModelLoader extends ModelSet {
     //long timeBegin = System.currentTimeMillis();
     modelSetTypeName = name;
     isXYZ = (modelSetTypeName == "xyz");
-    modelSetProperties = (Properties) getModelSetAuxiliaryInfo("properties");
     modelSetAuxiliaryInfo = info;
+    modelSetProperties = (Properties) getModelSetAuxiliaryInfo("properties");
     //isMultiFile = getModelSetAuxiliaryInfoBoolean("isMultiFile"); -- no longer necessary
     isPDB = getModelSetAuxiliaryInfoBoolean("isPDB");
     jmolData = (String) getModelSetAuxiliaryInfo("jmolData");

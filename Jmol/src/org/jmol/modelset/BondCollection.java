@@ -129,10 +129,11 @@ abstract public class BondCollection extends AtomCollection {
     return bs;
   }
 
-  public Bond bondAtoms(Atom atom1, Atom atom2, int order, short mad, BitSet bsBonds, float energy) {
+  public Bond bondAtoms(Atom atom1, Atom atom2, int order, short mad, BitSet bsBonds, float energy, boolean isNew) {
     // this method used when a bond must be flagged as new
     Bond bond = getOrAddBond(atom1, atom2, order, mad, bsBonds, false, energy);
-    bond.order |= JmolEdge.BOND_NEW;
+    if (isNew)
+      bond.order |= JmolEdge.BOND_NEW;
     return bond;
   }
 

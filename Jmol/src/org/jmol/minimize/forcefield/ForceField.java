@@ -64,7 +64,8 @@ abstract public class ForceField {
   protected abstract Hashtable getFFParameters();
 
   private double criterion, e0, dE; 
-  private int currentStep, stepMax;
+  int currentStep;
+  private int stepMax;
   private double[][] coordSaved;  
 
   int atomCount; 
@@ -159,7 +160,7 @@ abstract public class ForceField {
       boolean done = Util.isNear(e1, e0, criterion);
 
       if (done || currentStep % 10 == 0 || stepMax <= currentStep) {
-        String s = TextFormat.sprintf(" Step %-4d E = %10.6f    dE = %8.6f",
+        String s = TextFormat.sprintf(" Step %-4d E = %10.6f    dE = %8.6f ",
             new Object[] { new float[] { (float) e1, (float) (dE), (float) criterion },
             new Integer(currentStep) });
         minimizer.report(s, false);
@@ -179,7 +180,12 @@ abstract public class ForceField {
         }
         return false;
       }
+      //System.out.println(isPreliminary + " " + getNormalizedDE() + " " + currentStep);
       if (isPreliminary && getNormalizedDE() >= 2) {
+        // looking back at this after some time, I don't exactly see why I wanted
+        // this to stay in preliminary mode unless |DE| >= 2 * crit. 
+        // It's hard to ever have |DE| NOT >= 2 * crit -- that would be very close to the criterion.
+        // And when that IS the case, why would you want to STAY in preliminary mode? Hmm.
         calc.setPreliminary(isPreliminary = false);
         e0 = energyFull(false, false);
       }

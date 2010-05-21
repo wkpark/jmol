@@ -576,12 +576,14 @@ public final class ModelLoader extends ModelSet {
     while (iterAtom.hasNext()) {
       int modelIndex = iterAtom.getAtomSetIndex() + baseModelIndex;
       if (modelIndex != iLast) {
+        currentModelIndex = modelIndex;
+        currentModel = models[modelIndex];
+        currentChainID = '\uFFFF';
         models[modelIndex].bsAtoms.clear();
         isPDB = models[modelIndex].isPDB;
         iLast = modelIndex;
       }
-      addAtom(isPDB, modelIndex, 
-          iterAtom.getAtomSymmetry(), 
+      addAtom(isPDB, iterAtom.getAtomSymmetry(), 
           iterAtom.getAtomSite(),
           iterAtom.getUniqueID(), 
           iterAtom.getElementNumber(), 
@@ -624,75 +626,36 @@ public final class ModelLoader extends ModelSet {
     
   }
 
-  private void addAtom(boolean isPDB, int modelIndex, BitSet atomSymmetry,
-                       int atomSite, Object atomUid,
-                       short atomicAndIsotopeNumber, String atomName,
-                       int formalCharge, float partialCharge,
+  private void addAtom(boolean isPDB, BitSet atomSymmetry, int atomSite,
+                       Object atomUid, short atomicAndIsotopeNumber,
+                       String atomName, int formalCharge, float partialCharge,
                        Object[] ellipsoid, int occupancy, float bfactor,
                        float x, float y, float z, boolean isHetero,
                        int atomSerial, char chainID, String group3,
                        int groupSequenceNumber, char groupInsertionCode,
                        float vectorX, float vectorY, float vectorZ,
                        char alternateLocationID, float radius) {
-    checkNewGroup(atomCount, modelIndex, chainID, group3, groupSequenceNumber,
-        groupInsertionCode);
-    Atom atom = new Atom(currentModelIndex, atomCount, x, y, z, radius,
-        atomSymmetry, atomSite, atomicAndIsotopeNumber, formalCharge, isHetero,
-        chainID, alternateLocationID);
-    models[modelIndex].atomCount++;
-    models[modelIndex].bsAtoms.set(atomCount);
-    if (atomicAndIsotopeNumber % 128 == 1)
-      models[currentModelIndex].hydrogenCount++;
-    atoms[atomCount] = atom;
-    setBFactor(atomCount, bfactor);
-    setOccupancy(atomCount, occupancy);
-    setPartialCharge(atomCount, partialCharge);
-    if (ellipsoid != null)
-      setEllipsoid(atomCount, ellipsoid);
-    atom.group = nullGroup;
-    atom.colixAtom = viewer
-        .getColixAtomPalette(atom, JmolConstants.PALETTE_CPK);
+    checkNewGroup(chainID, group3, groupSequenceNumber, groupInsertionCode);
+    if (isPDB && atomName.indexOf('*') >= 0)
+      atomName = atomName.replace('*', '\'');
+    byte specialAtomID = 0;
     if (atomName != null) {
-      int i;
-      if ((i = atomName.indexOf('\0')) >= 0) {
-        if (atomTypes == null)
-          atomTypes = new String[atoms.length];
-        atomTypes[atomCount] = atomName.substring(i + 1);
-        atomName = atomName.substring(0, i);
-      }
-      if (isPDB && atomName.indexOf('*') >= 0)
-          atomName = atomName.replace('*', '\'');
-      byte specialAtomID = JmolConstants.lookupSpecialAtomID(atomName);
+      specialAtomID = JmolConstants.lookupSpecialAtomID(atomName);
       if (isPDB && specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
           && "CA".equalsIgnoreCase(group3))
         specialAtomID = 0;
-      atom.atomID = specialAtomID;
-      if (specialAtomID == 0) {
-        if (atomNames == null)
-          atomNames = new String[atoms.length];
-        atomNames[atomCount] = atomName.intern();
-      }
     }
-    if (atomSerial != Integer.MIN_VALUE) {
-      if (atomSerials == null)
-        atomSerials = new int[atoms.length];
-      atomSerials[atomCount] = atomSerial;
-    }
-    if (!Float.isNaN(vectorX))
-      setVibrationVector(atomCount, vectorX, vectorY, vectorZ);
+    Atom atom = addAtom(currentModelIndex, nullGroup, atomicAndIsotopeNumber,
+        atomName, atomSerial, atomSite, x, y, z, radius, vectorX, vectorY,
+        vectorZ, formalCharge, partialCharge, occupancy, bfactor, ellipsoid,
+        isHetero, alternateLocationID, specialAtomID, atomSymmetry);
     htAtomMap.put(atomUid, atom);
-    atomCount++;
   }
 
-  private void checkNewGroup(int atomIndex, int modelIndex, char chainID,
+  private void checkNewGroup(char chainID,
                              String group3, int groupSequenceNumber,
                              char groupInsertionCode) {
     String group3i = (group3 == null ? null : group3.intern());
-    if (modelIndex != currentModelIndex) {
-      currentModel = models[modelIndex];
-      currentModelIndex = modelIndex;
-      currentChainID = '\uFFFF';
-    }
     if (chainID != currentChainID) {
       currentChainID = chainID;
       currentChain = getOrAllocateChain(currentModel, chainID);
@@ -712,7 +675,7 @@ public final class ModelLoader extends ModelSet {
         seqcodes = ArrayUtil.doubleLength(seqcodes);
         firstAtomIndexes = ArrayUtil.doubleLength(firstAtomIndexes);
       }
-      firstAtomIndexes[groupCount] = atomIndex;
+      firstAtomIndexes[groupCount] = atomCount;
       chainOf[groupCount] = currentChain;
       group3Of[groupCount] = group3;
       seqcodes[groupCount] = Group.getSeqcode(groupSequenceNumber,
@@ -730,28 +693,6 @@ public final class ModelLoader extends ModelSet {
       model.chains = (Chain[])ArrayUtil.doubleLength(model.chains);
     return model.chains[model.chainCount++] = new Chain(this, model, chainID);
   }
-
-  private void growAtomArrays(int newLength) {
-    atoms = (Atom[]) ArrayUtil.setLength(atoms, newLength);
-    if (vibrationVectors != null)
-      vibrationVectors = (Vector3f[]) ArrayUtil.setLength(vibrationVectors,
-          newLength);
-    if (occupancies != null)
-      occupancies = ArrayUtil.setLength(occupancies, newLength);
-    if (bfactor100s != null)
-      bfactor100s = ArrayUtil.setLength(bfactor100s, newLength);
-    if (partialCharges != null)
-      partialCharges = ArrayUtil.setLength(partialCharges, newLength);
-    if (ellipsoids != null)
-      ellipsoids = (Object[][]) ArrayUtil.setLength(ellipsoids, newLength);
-    if (atomNames != null)
-      atomNames = ArrayUtil.setLength(atomNames, newLength);
-    if (atomTypes != null)
-      atomTypes = ArrayUtil.setLength(atomTypes, newLength);
-    if (atomSerials != null)
-      atomSerials = ArrayUtil.setLength(atomSerials, newLength);
-  }
-
 
   private void iterateOverAllNewBonds(JmolAdapter adapter, Object atomSetCollection) {
     JmolAdapter.BondIterator iterBond = adapter.getBondIterator(atomSetCollection);
@@ -1180,7 +1121,7 @@ public final class ModelLoader extends ModelSet {
     for (int i = 0; i < atomCount; ++i)
       if (atomNames[i] == null) {
         Atom atom = atoms[i];
-        atomNames[i] = atom.getElementSymbol() + atom.getAtomNumber();
+        atomNames[i] = (atom.getElementSymbol() + atom.getAtomNumber()).intern();
       }
   }
 
@@ -1208,14 +1149,19 @@ public final class ModelLoader extends ModelSet {
     if (vStereo != null) {
       for (int i = vStereo.size(); --i >= 0;) {
         Bond b = (Bond) vStereo.get(i);
-        int dz = (b.order == JmolEdge.BOND_STEREO_NEAR ? 3 : -3);
+        float dz2 = (b.order == JmolEdge.BOND_STEREO_NEAR ? 3 : -3);
         b.order = 1;
-        if (b.atom2.z != b.atom1.z && (dz < 0) == (b.atom2.z < b.atom1.z))
-          dz /= 3;
+        if (b.atom2.z != b.atom1.z && (dz2 < 0) == (b.atom2.z < b.atom1.z))
+          dz2 /= 3;
+        //float dz1 = dz2/3;
+        //b.atom1.z += dz1;
         BitSet bs = getBranchBitSet(b.atom2.index, b.atom1.index, false);
         bs.set(b.atom2.index); // ring structures
         for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
-          atoms[j].z += dz;
+          atoms[j].z += dz2;
+        // move atom2 somewhat closer to but not directly above atom1
+        b.atom2.x = (b.atom1.x + b.atom2.x) /2;
+        b.atom2.y = (b.atom1.y + b.atom2.y) /2;
       }
       vStereo = null;
     } 

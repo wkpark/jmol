@@ -28,6 +28,7 @@ package org.jmol.modelset;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
@@ -39,6 +40,7 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolEdge;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.shape.Shape;
 
 import java.util.BitSet;
@@ -46,6 +48,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 /*
  * An abstract class always created using new ModelLoader(...)
@@ -832,6 +835,119 @@ abstract public class ModelSet extends ModelCollection {
     }
     return Measure.calculateQuaternionRotation(centerAndPoints, retStddev);
   }
+  
+  // atom addition //
+  
+  protected void growAtomArrays(int newLength) {
+    atoms = (Atom[]) ArrayUtil.setLength(atoms, newLength);
+    if (vibrationVectors != null)
+      vibrationVectors = (Vector3f[]) ArrayUtil.setLength(vibrationVectors,
+          newLength);
+    if (occupancies != null)
+      occupancies = ArrayUtil.setLength(occupancies, newLength);
+    if (bfactor100s != null)
+      bfactor100s = ArrayUtil.setLength(bfactor100s, newLength);
+    if (partialCharges != null)
+      partialCharges = ArrayUtil.setLength(partialCharges, newLength);
+    if (ellipsoids != null)
+      ellipsoids = (Object[][]) ArrayUtil.setLength(ellipsoids, newLength);
+    if (atomNames != null)
+      atomNames = ArrayUtil.setLength(atomNames, newLength);
+    if (atomTypes != null)
+      atomTypes = ArrayUtil.setLength(atomTypes, newLength);
+    if (atomSerials != null)
+      atomSerials = ArrayUtil.setLength(atomSerials, newLength);
+  }
+
+  private Atom addAtom(int modelIndex, Group group, short atomicAndIsotopeNumber,
+                       String atomName, int atomSerial, int atomSite, float x, float y, float z) {
+    return addAtom(modelIndex, group, atomicAndIsotopeNumber, atomName, atomSerial,
+        atomSite, x, y, z, Float.NaN, Float.NaN, Float.NaN, Float.NaN, 0, 0,
+        100, Float.NaN, null, false, '\0', (byte) 0, null);
+  }
+  protected Atom addAtom(int modelIndex, Group group,
+                         short atomicAndIsotopeNumber, String atomName, int atomSerial,
+                         int atomSite, float x, float y, float z,
+                         float radius, float vectorX, float vectorY,
+                         float vectorZ, int formalCharge, float partialCharge,
+                         int occupancy, float bfactor, Object[] ellipsoid,
+                         boolean isHetero, char alternateLocationID,
+                         byte specialAtomID, BitSet atomSymmetry) {
+    Atom atom = new Atom(modelIndex, atomCount, x, y, z, radius, atomSymmetry,
+        atomSite, atomicAndIsotopeNumber, formalCharge, isHetero,
+        alternateLocationID);
+    models[modelIndex].atomCount++;
+    models[modelIndex].bsAtoms.set(atomCount);
+    if (atomicAndIsotopeNumber % 128 == 1)
+      models[modelIndex].hydrogenCount++;
+    atoms[atomCount] = atom;
+    setBFactor(atomCount, bfactor);
+    setOccupancy(atomCount, occupancy);
+    setPartialCharge(atomCount, partialCharge);
+    if (ellipsoid != null)
+      setEllipsoid(atomCount, ellipsoid);
+    atom.group = group;
+    atom.colixAtom = viewer
+        .getColixAtomPalette(atom, JmolConstants.PALETTE_CPK);
+    if (atomName != null) {
+      int i;
+      if ((i = atomName.indexOf('\0')) >= 0) {
+        if (atomTypes == null)
+          atomTypes = new String[atoms.length];
+        atomTypes[atomCount] = atomName.substring(i + 1);
+        atomName = atomName.substring(0, i);
+      }
+      atom.atomID = specialAtomID;
+      if (specialAtomID == 0) {
+        if (atomNames == null)
+          atomNames = new String[atoms.length];
+        atomNames[atomCount] = atomName.intern();
+      }
+    }
+    if (atomSerial != Integer.MIN_VALUE) {
+      if (atomSerials == null)
+        atomSerials = new int[atoms.length];
+      atomSerials[atomCount] = atomSerial;
+    }
+    if (!Float.isNaN(vectorX))
+      setVibrationVector(atomCount, vectorX, vectorY, vectorZ);
+    atomCount++;
+    return atom;
+  }
+
+  /**
+   * these are hydrogens that are being added due to a load 2D command and are
+   * therefore not to be flagged as NEW
+   * 
+   * @param vConnections
+   * @param pts
+   * @param atomIndex
+   * @return            BitSet of new atoms
+   */
+  public BitSet addHydrogens(Vector vConnections, Point3f[] pts) {
+    int modelIndex = modelCount - 1;
+    BitSet bs = new BitSet();
+    if (models[modelIndex].isTrajectory || models[modelIndex].getGroupCount() > 1)
+      return bs; // can't add atoms to a trajectory or a system with multiple groups!
+    growAtomArrays(atomCount + pts.length);
+    RadiusData rd = viewer.getDefaultRadiusData();
+    short mad = getDefaultMadFromOrder(1);
+    for (int i = 0, n = models[modelIndex].atomCount + 1; i < vConnections.size(); i++, n++) {
+      Atom atom1 = (Atom) vConnections.get(i);
+      // hmm. atom1.group will not be expanded, though...
+      // something like within(group,...) will not select these atoms!
+      Atom atom2 = addAtom(modelIndex, atom1.group, (short) 1, "H"
+          + n, n, n, pts[i].x, pts[i].y, pts[i].z);
+      atom2.setMadAtom(viewer, rd);
+      bs.set(atom2.index);
+      bondAtoms(atom1, atom2, JmolEdge.BOND_COVALENT_SINGLE, mad, null, 0, false);
+    }
+    // must reset the shapes to give them new atom counts and arrays
+    shapeManager.loadDefaultShapes(this);
+    return bs;
+  }
+
+
 
 }
 

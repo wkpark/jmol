@@ -33,6 +33,8 @@ import java.util.Vector;
 import javax.vecmath.Point3f;
 
 import org.jmol.i18n.GT;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.Token;
@@ -617,7 +619,7 @@ public class ActionManager {
       viewer.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, action);
       return;
     }
-    if (pickingMode == JmolConstants.PICKING_DRAG_ATOM) {
+    if (pickingMode == JmolConstants.PICKING_DRAG_ATOM || pickingMode == JmolConstants.PICKING_DRAG_MINIMIZE) {
       dragAtomIndex = viewer.findNearestAtomIndex(x, y);
       return;
     }
@@ -655,13 +657,22 @@ public class ActionManager {
 
   void mouseReleased(long time, int x, int y, int mods) {
     setCurrent(time, x, y, mods);
-    dragAtomIndex = -1;
     viewer.spinXYBy(0, 0, 0);
     boolean dragRelease = !pressed.check(x, y, mods, time, Long.MAX_VALUE);
     viewer.setInMotion(false);
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
     int action = Binding.getMouseAction(pressedCount, mods);
     dragGesture.add(action, x, y, time);
+
+    if (pickingMode == JmolConstants.PICKING_DRAG_MINIMIZE && dragAtomIndex >= 0) {
+      BitSet bs = viewer.getMoleculeBitSet(dragAtomIndex);
+      dragAtomIndex = -1;
+      viewer.stopMinimization();
+      viewer.minimize(Integer.MAX_VALUE, 0, bs, false, false, false);
+      return;
+    }
+
+    dragAtomIndex = -1;
     boolean isRbAction = isRubberBandSelect(action);
     if (isRbAction) {
       BitSet bs = viewer.findAtomsInRectangle(rectRubber);
@@ -679,9 +690,9 @@ public class ActionManager {
     }
     rubberbandSelectionMode = (binding.getName() == "drag");
     rectRubber.x = Integer.MAX_VALUE;
-    if (dragRelease)
-      viewer.notifyMouseClicked(x, y, Binding.getMouseAction(pressedCount, 0));
-
+    if (dragRelease) {
+      viewer.notifyMouseClicked(x, y, Binding.getMouseAction(pressedCount, 0));      
+    }
     if (drawMode
         && (isBound(action, ACTION_dragDrawObject) || isBound(action,
             ACTION_dragDrawPoint)) || labelMode
@@ -782,10 +793,18 @@ public class ActionManager {
     if (checkUserAction(action, x, y, deltaX, deltaY, time, mode))
       return;
 
-    if (pickingMode == JmolConstants.PICKING_DRAG_ATOM && dragAtomIndex >= 0) {
+    if ((pickingMode == JmolConstants.PICKING_DRAG_ATOM || pickingMode == JmolConstants.PICKING_DRAG_MINIMIZE) 
+        && dragAtomIndex >= 0) {
       checkMotion(Viewer.CURSOR_MOVE);
       BitSet bs = new BitSet();
       bs.set(dragAtomIndex);
+      Atom atom = viewer.getModelSet().atoms[dragAtomIndex];
+      Bond[] bonds = atom.bonds;
+      for (int i = 0; i < bonds.length; i++) {
+        Atom atom2 = atom.bonds[i].getOtherAtom(atom);
+        if (atom2.getElementNumber() == 1)
+          bs.set(atom2.index);
+      }
       viewer.moveSelected(deltaX, deltaY, x, y, bs, true);
       return;
     }
@@ -1328,6 +1347,7 @@ public class ActionManager {
     switch (pickingMode) {
     case JmolConstants.PICKING_DRAG_ATOM:
       // this is done in mouse drag, not mouse release
+    case JmolConstants.PICKING_DRAG_MINIMIZE:
       return;
     case JmolConstants.PICKING_OFF:
       return;

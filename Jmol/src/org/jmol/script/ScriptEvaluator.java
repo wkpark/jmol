@@ -8974,7 +8974,7 @@ public class ScriptEvaluator {
         break;
       }
     if (!isSyntaxCheck)
-      viewer.minimize(steps, crit, bsSelected, addHydrogen, isSilent, true);
+      viewer.minimize(steps, crit, bsSelected, addHydrogen, isSilent, false);
   }
 
   private void select(int i) throws ScriptException {

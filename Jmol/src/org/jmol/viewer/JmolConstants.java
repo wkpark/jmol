@@ -305,6 +305,7 @@ final public class JmolConstants {
   public final static int PICKING_CONNECT          = 23;
   public final static int PICKING_STRUTS           = 24;
   public final static int PICKING_DRAG_ATOM        = 25;
+  public final static int PICKING_DRAG_MINIMIZE    = 26;
 
 
   private final static String[] pickingModeNames = {
@@ -313,7 +314,7 @@ final public class JmolConstants {
     "atom", "group", "chain", "molecule", "polymer", "structure", 
     "site", "model", "element", 
     "measure", "distance", "angle", "torsion", "navigate", 
-    "connect", "struts", "dragatom"
+    "connect", "struts", "dragatom", "dragminimize"
   };
  
   public final static String getPickingModeName(int pickingMode) {

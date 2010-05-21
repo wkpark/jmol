@@ -89,7 +89,7 @@ final public class Atom extends Point3fi implements JmolNode {
         float x, float y, float z, float radius,
         BitSet atomSymmetry, int atomSite,
         short atomicAndIsotopeNumber, int formalCharge, 
-        boolean isHetero, char chainID, char alternateLocationID) {
+        boolean isHetero, char alternateLocationID) {
     this.modelIndex = (short)modelIndex;
     this.atomSymmetry = atomSymmetry;
     this.atomSite = atomSite;
@@ -572,6 +572,7 @@ final public class Atom extends Point3fi implements JmolNode {
    
    public int getAtomNumber() {
      int[] atomSerials = group.chain.modelSet.atomSerials;
+     // shouldn't ever be null.
      return (atomSerials != null ? atomSerials[index] : index);
 //        : group.chain.modelSet.isZeroBased ? atomIndex : atomIndex);
    }

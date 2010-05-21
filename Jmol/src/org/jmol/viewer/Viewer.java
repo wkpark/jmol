@@ -209,7 +209,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
-  private void stopMinimization() {    
+  void stopMinimization() {    
     if (minimizer != null) {
       minimizer.setProperty("stop", null);
       minimizer = null;
@@ -684,7 +684,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return stateManager.getSavedCoordinates(saveName);
   }
 
-  private void clearMinimization() {
+  void clearMinimization() {
     if (minimizer != null)
       minimizer.setProperty("clear", null);
   }
@@ -2454,6 +2454,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         hybridizationCompatible, true);
   }
 
+  public BitSet getMoleculeBitSet(int atomIndex) {
+    return modelSet.getMoleculeBitSet(atomIndex);
+  }
+  
   public BitSet getModelAtomBitSet(BitSet bsModels) {
     if (bsModels == null)
       bsModels = getVisibleFramesBitSet();
@@ -4158,49 +4162,45 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return points;
   } 
 
-  public BitSet addHydrogens(BitSet bsAtoms, boolean taintAtoms) {
+  public BitSet addHydrogens(BitSet bsAtoms, boolean asScript) {
     boolean doAll = (bsAtoms == null);
     if (bsAtoms == null)
       bsAtoms = getModelAtomBitSet(getVisibleFramesBitSet().nextSetBit(0), true);
     Vector vConnections = new Vector();
-    int nAtoms0 = modelSet.getAtomCount();
     Point3f[] pts = getAdditionalHydrogens(bsAtoms, doAll, false, vConnections);
+    boolean wasAppendNew = false;
+    int modelIndex = getAtomModelIndex(bsAtoms.nextSetBit(0));
     if (pts.length > 0) {
-      boolean wasAppendNew = getAppendNew();
-      setAppendNew(false);
-      int modelIndex = getAtomModelIndex(bsAtoms.nextSetBit(0));
-      int atomno = modelSet.getAtomCountInModel(modelIndex);
-      BitSet bsA = getModelAtomBitSet(modelIndex, true);
-      BitSet bsB = getAtomBits(Token.hydrogen, null); 
-      bsA.andNot(bsB);
-      StringBuffer sbConnect = null;
-      if (taintAtoms) {
-        int atomIndex = modelSet.getAtomCount();
-        sbConnect = new StringBuffer();
-        for (int i = 0; i < vConnections.size(); i++) {
-          Atom a = (Atom) vConnections.get(i);
-          sbConnect.append("connect ").append("({"+(atomIndex++)+"}) ").append("({" + a.index + "});");
-        }
-      }
-      StringBuffer sb = new StringBuffer();
-      sb.append(pts.length).append("\n#noautobond");
-      if (!taintAtoms)
-        sb.append("#nocache");
-      sb.append("\n");
-      for (int i = 0; i < pts.length; i++)
-        sb.append("H ").append(pts[i].x)
-            .append(" ").append(pts[i].y)
-            .append(" ").append(pts[i].z)
-            .append(" - - - - ").append(++atomno).append('\n');
-      loadInline(sb.toString(), '\n', true);
-      bsB = getModelAtomBitSet(-1, true);
-      bsB.andNot(bsA);
-      bsAtoms.or(bsB);
       try {
-        if (sbConnect == null)
-          modelSet.attachHydrogens(vConnections, nAtoms0);
-        else
+        if (asScript) {
+          bsAtoms.or(modelSet.addHydrogens(vConnections, pts));
+        } else {
+          wasAppendNew = getAppendNew();
+          setAppendNew(false);
+          BitSet bsA = getModelAtomBitSet(modelIndex, true);
+          BitSet bsB = getAtomBits(Token.hydrogen, null);
+          bsA.andNot(bsB);
+          int atomIndex = modelSet.getAtomCount();
+          int atomno = modelSet.getAtomCountInModel(modelIndex);
+          StringBuffer sbConnect = new StringBuffer();
+          for (int i = 0; i < vConnections.size(); i++) {
+            Atom a = (Atom) vConnections.get(i);
+            sbConnect.append("connect ").append("({" + (atomIndex++) + "}) ")
+                .append("({" + a.index + "});");
+          }
+          StringBuffer sb = new StringBuffer();
+          sb.append(pts.length).append("\n#noautobond");
+          sb.append("\n");
+          for (int i = 0; i < pts.length; i++)
+            sb.append("H ").append(pts[i].x).append(" ").append(pts[i].y)
+                .append(" ").append(pts[i].z).append(" - - - - ").append(
+                    ++atomno).append('\n');
+          loadInline(sb.toString(), '\n', true);
+          bsB = getModelAtomBitSet(-1, true);
+          bsB.andNot(bsA);
+          bsAtoms.or(bsB);
           eval.runScript(sbConnect.toString(), null);
+        }
       } catch (Exception e) {
         // ignore
       }
@@ -7011,7 +7011,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void checkMinimization() {
     if (!global.monitorEnergy)
       return;
-    minimize(0, 0, modelSet.getModelAtomBitSet(-1, false), false, true, true);
+    minimize(0, 0, modelSet.getModelAtomBitSet(-1, false), false, true, false);
     echoMessage("Energy = " + getParameter("_minimizationEnergy"));
   }
 
@@ -7237,12 +7237,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean movingSelected;
   private boolean showSelected;
   
-  void moveSelected(int deltaX, int deltaY, int x, int y,
-                                 BitSet bsSelected, boolean isTranslation) {
+  void moveSelected(int deltaX, int deltaY, int x, int y, BitSet bsSelected,
+                    boolean isTranslation) {
     // cannot synchronize this -- it's from the mouse and the event queue
     if (isJmolDataFrame())
       return;
-    if (bsSelected== null)
+    if (bsSelected == null)
       bsSelected = selectionManager.getSelectionSet();
     if (deltaX == Integer.MIN_VALUE) {
       showSelected = true;
@@ -7262,12 +7262,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isTranslation) {
       Point3f ptCenter = getAtomSetCenter(bsSelected);
       Point3i ptScreen = transformPoint(ptCenter);
-      Point3f ptScreenNew = new Point3f(ptScreen.x + deltaX + 0.5f, ptScreen.y + deltaY + 0.5f, ptScreen.z);
+      Point3f ptScreenNew = new Point3f(ptScreen.x + deltaX + 0.5f, ptScreen.y
+          + deltaY + 0.5f, ptScreen.z);
       Point3f ptNew = new Point3f();
       transformManager.finalizeTransformParameters();
       unTransformPoint(ptScreenNew, ptNew);
-//      script("draw ID 'pt" + Math.random() + "' " + Escape.escape(ptNew));
-      ptNew.sub(ptCenter);      
+      // script("draw ID 'pt" + Math.random() + "' " + Escape.escape(ptNew));
+      ptNew.sub(ptCenter);
       modelSet.setAtomCoordRelative(ptNew, bsSelected);
     } else {
       transformManager.setRotateMolecule(true);
@@ -7288,10 +7289,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     checkMinimization();
   }
 
-  public void refreshMeasures(boolean andClearMinimization) {
+  public void refreshMeasures(boolean andStopMinimization) {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "refresh", null);
-    if (andClearMinimization)
-      clearMinimization();
+    if (andStopMinimization)
+      stopMinimization();
   }
 
   void setDynamicMeasurements(boolean TF) { // deprecated; unnecessary
@@ -8217,16 +8218,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param bsSelected
    * @param addHydrogen
    * @param isSilent
-   * @param taintAtoms
+   * @param asScript TODO
    */
   public void minimize(int steps, float crit, BitSet bsSelected,
-                       boolean addHydrogen, boolean isSilent, boolean taintAtoms) {
+                       boolean addHydrogen, boolean isSilent, boolean asScript) {
     if (addHydrogen)
-      bsSelected = addHydrogens(bsSelected, taintAtoms);
-    else if (bsSelected == null)
-      bsSelected = getModelAtomBitSet(getVisibleFramesBitSet().nextSetBit(0), true);
+      bsSelected = addHydrogens(bsSelected, asScript);
+    else if (bsSelected == null) {
+      //bsSelected = getModelAtomBitSet(getVisibleFramesBitSet().nextSetBit(0), true).nextSetBit(0);
+    }
     try {
-      getMinimizer(true).minimize(steps, crit, bsSelected, isSilent, taintAtoms);
+      getMinimizer(true).minimize(steps, crit, bsSelected, isSilent);
     } catch (Exception e) {
       Logger.error(e.getMessage());
     }

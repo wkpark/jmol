@@ -284,8 +284,7 @@ class CalculationsUFF extends Calculations {
       a = atoms[ia = angle[0]];
       b = atoms[ib = angle[1]];
       c = atoms[ic = angle[2]];
-      boolean isHXH = (a.type == "H_" && c.type == "H_");
-
+      double preliminaryMagnification = (a.type == "H_" && c.type == "H_" ? 10 : 1);
       parA = getParameter(a.type, ffParams);
       parB = getParameter(b.type, ffParams);
       parC = getParameter(c.type, ffParams);
@@ -336,7 +335,7 @@ class CalculationsUFF extends Calculations {
           * (3.0 * rab * rbc * (1.0 - cosT0 * cosT0) - rac * rac * cosT0);
       calc.addElement(new Object[] {
           new int[] { ia, ib, ic, coordination },
-          new double[] { ka, c0 - c2, c1, 2 * c2, theta0 * RAD_TO_DEG, (isHXH ? ka * 10 : ka) } });
+          new double[] { ka, c0 - c2, c1, 2 * c2, theta0 * RAD_TO_DEG, preliminaryMagnification * ka } });
     }
 
     double compute(Object[] dataIn) {
@@ -696,7 +695,9 @@ class CalculationsUFF extends Calculations {
       switch (elemNo) {
       case 6: // carbon could be a carbonyl, which is considerably stronger
         // added b.type == "C_2+" for cations 12.0.RC9
-        if (b.type == "C_2+" || a.type == "O_2" || c.type == "O_2" || d.type == "O_2") {
+        // added b.typ "C_2" check for H-connected 12.0.RC13
+        if (b.type == "C_2" && b.hCount > 1
+            || b.type == "C_2+" || a.type == "O_2" || c.type == "O_2" || d.type == "O_2") {
           koop += KCAL44;
           break;
         }/* else if (b.type.lastIndexOf("R") == 2) 

@@ -2016,7 +2016,7 @@ abstract public class ModelCollection extends BondCollection {
         .calculateStruts((ModelSet) this, atoms, bs1, bs2, vCA, thresh, delta, strutsMultiple);
     for (int i = 0; i < struts.size(); i++) {
       Object[] o = (Object[]) struts.get(i);
-      bondAtoms((Atom) o[0], (Atom) o[1], JmolEdge.BOND_STRUT, mad, null, 0);
+      bondAtoms((Atom) o[0], (Atom) o[1], JmolEdge.BOND_STRUT, mad, null, 0, true);
     }
     return struts.size();
   }
@@ -2449,7 +2449,7 @@ abstract public class ModelCollection extends BondCollection {
           }
         } else {
           bsBonds.set(
-               bondAtoms(atomA, atomB, order, mad, bsBonds, energy).index);
+               bondAtoms(atomA, atomB, order, mad, bsBonds, energy, true).index);
           nNew++;
         }
       }
@@ -2459,21 +2459,6 @@ abstract public class ModelCollection extends BondCollection {
     if (!identifyOnly)
       shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsBonds);
     return new int[] { nNew, nModified };
-  }
-
-  /**
-   * these are hydrogens that are being added due to a load 2D command
-   * and are therefore not to be flagged as NEW
-   * 
-   * @param vConnections
-   * @param atomIndex
-   */
-  public void attachHydrogens(Vector vConnections, int atomIndex) {
-    short mad = getDefaultMadFromOrder(1);
-    for (int i = 0; i < vConnections.size(); i++) {
-      Bond b = bondAtoms((Atom) vConnections.get(i), atoms[atomIndex++], 1, mad, null, 0);
-      b.order &= ~JmolEdge.BOND_NEW;
-    }
   }
 
   public int autoBond(BitSet bsA, BitSet bsB, BitSet bsExclude, BitSet bsBonds, short mad) {

@@ -36,15 +36,20 @@ public class MinAtom {
   public double[] force = new double[3];
   public Vector bonds = new Vector();
   public int nBonds;
+  public int hCount;
   
   public String type;
   int[] bondedAtoms;
   
+  public String toString() {
+    return "#" + index + " " + type;
+  }
   MinAtom(int index, Atom atom, double[] coord, String type) {
     this.index = index;
     this.atom = atom;
     this.coord = coord;
     this.type = type;
+    hCount = atom.getCovalentHydrogenCount();    
   }
 
   void set() {
@@ -60,7 +65,7 @@ public class MinAtom {
         return (MinBond) bonds.elementAt(i);
     return null;
   }
-  
+
   public int[] getBondedAtomIndexes() {
     if (bondedAtoms == null) {
       bondedAtoms = new int[nBonds];

@@ -338,7 +338,6 @@ class SymmetryOperation extends Matrix4f {
         term = term.substring(1);
       str += "," + term;
     }
-    Logger.info("Symmetry operation getXYZFromMatrix " + str);
     return str.substring(1);
   }
 
@@ -822,7 +821,6 @@ class SymmetryOperation extends Matrix4f {
 
     String cmds = null;
     if (!typeOnly) {
-      Logger.info(m.opId + "\t" + xyz + "\t" + info1);
       drawid = "\ndraw ID " + id + "_";
 
       // delete previous elements of this user-settable ID

@@ -338,7 +338,7 @@ class SymmetryOperation extends Matrix4f {
         term = term.substring(1);
       str += "," + term;
     }
-    System.out.println("Symmetry operation getXYZFromMatrix " + str);
+    Logger.info("Symmetry operation getXYZFromMatrix " + str);
     return str.substring(1);
   }
 

@@ -303,16 +303,24 @@ public class CrystalReader extends AtomSetCollectionReader {
     /*MAX GRADIENT      0.000967  THRESHOLD             
       RMS GRADIENT      0.000967  THRESHOLD              
       MAX DISPLAC.      0.005733  THRESHOLD             
-      RMS DISPLAC.      0.005733  THRESHOLD */          
-    atomSetCollection.setAtomSetProperty("maxGradient", TextFormat
-        .formatDecimal(parseFloat(line.substring(19, 28).trim()), 6));
-    readLine();
-    readLine();
-    atomSetCollection.setAtomSetProperty("maxDisplacement", TextFormat
-        .formatDecimal(parseFloat(line.substring(19, 28).trim()), 6));
-    readLine();
-    atomSetCollection.setAtomSetProperty("rmsDisplacement", TextFormat
-        .formatDecimal(parseFloat(line.substring(19, 28).trim()), 6));
+      RMS DISPLAC.      0.005733  THRESHOLD */
+    
+    String key = null;
+    while (line != null) {
+      String[] tokens = getTokens();
+      if (line.indexOf("MAX GRAD") >= 0)
+        key = "maxGradient";
+      else if (line.indexOf("RMS GRAD") >= 0)
+        key = "rmsGradient";
+      else if (line.indexOf("MAX DISP") >= 0)
+        key = "maxDisplacement";
+      else if (line.indexOf("RMS DISP") >= 0)
+        key = "rmsDisplacement";
+      else
+        break;
+      atomSetCollection.setAtomSetProperty(key, tokens[2]);
+      readLine();
+    }
    }
 
   private void readVolumePrimCell() {

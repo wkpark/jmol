@@ -564,8 +564,8 @@ public class SmilesSearch {
             continue;
           if (atom4 == null)
             atom4 = getHydrogens(getJmolAtom(sAtom2.getMatchingAtom()), null);
-          if (isSmilesFind)
-            setSmilesCoordinates(sAtom, new JmolNode[] { atom1, atom2, atom3, atom4, null, null });
+          if (isSmilesFind && !setSmilesCoordinates(sAtom, new JmolNode[] { atom1, atom2, atom3, atom4, null, null }))
+              return false;
           if (sAtom.not != (getChirality(atom2, atom3, atom4, atom1) != order))
             return false;
           continue;
@@ -602,8 +602,8 @@ public class SmilesSearch {
           // we only use TP1, TP2, OH1, OH2 here.
           // so we must also check that the two bookend atoms are axial
 
-          if (isSmilesFind)
-            setSmilesCoordinates(sAtom, new JmolNode[] { atom1, atom2, atom3, atom4, atom5, atom6 });
+          if (isSmilesFind && !setSmilesCoordinates(sAtom, new JmolNode[] { atom1, atom2, atom3, atom4, atom5, atom6 }))
+              return false;
           switch (chiralClass) {
           case SmilesAtom.CHIRALITY_TETRAHEDRAL:
             if (sAtom.not != (getChirality(atom2, atom3, atom4, atom1) != order))
@@ -777,7 +777,7 @@ public class SmilesSearch {
     ((Point3f) atoms[1]).y = y;
   }
 
-  private void setSmilesCoordinates(SmilesAtom sAtom, JmolNode[] cAtoms) {
+  private boolean setSmilesCoordinates(SmilesAtom sAtom, JmolNode[] cAtoms) {
 
     // When testing equality of two SMILES strings in terms of stereochemistry,
     // we need to set the atom positions based on the ORIGINAL SMILES order,
@@ -787,13 +787,14 @@ public class SmilesSearch {
 
     int iAtom = sAtom.getMatchingAtom();
     JmolNode atom = jmolAtoms[iAtom];
+    // atomSite is used by smilesMatch.find to encode chiralClass and chiralOrder 
     int atomSite = atom.getAtomSite();
     if (atomSite == Integer.MIN_VALUE)
-      return;
+      return false;
     int chiralClass = atomSite >> 8;
     int chiralOrder = atomSite & 0xFF;
     if (chiralClass != sAtom.getChiralClass())
-      return;
+      return false;
 
     // set the chirality center at the origin
     atom.set(0, 0, 0);
@@ -888,6 +889,7 @@ public class SmilesSearch {
         cAtoms[map[4]].set(0, -1, 0);
       break;
     }
+    return true;
   }
 
   private void getPlaneNormals(JmolNode atom1, JmolNode atom2, JmolNode atom3, JmolNode atom4) {

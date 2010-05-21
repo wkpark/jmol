@@ -1410,7 +1410,11 @@ abstract class TransformManager {
     matrixTransform.mul(matrixTemp, matrixTransform);
     //z-translate to set rotation center at midplane (Nav) or front plane (V10)
     matrixTransform.m23 += modelCenterOffset;
-    matrixTransformInv.invert(matrixTransform);
+    try {
+      matrixTransformInv.invert(matrixTransform);
+    } catch (Exception e) {
+      // ignore -- this is a Mac issue on applet startup
+    }
     // note that the image is still centered at 0, 0 in the xy plane
 
   }

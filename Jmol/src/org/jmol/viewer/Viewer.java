@@ -201,6 +201,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void clearModelDependentObjects() {
     setFrameOffsets(null);
     stopMinimization();
+    minimizer = null;
     if (smilesMatcher != null) {
       smilesMatcher = null;
     }
@@ -2464,8 +2465,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   
   public BitSet getModelAtomBitSet(BitSet bsModels) {
-    if (bsModels == null)
-      bsModels = getVisibleFramesBitSet();
     return modelSet.getModelAtomBitSet(bsModels);
   }
   
@@ -4176,6 +4175,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean wasAppendNew = false;
     int modelIndex = getAtomModelIndex(bsAtoms.nextSetBit(0));
     if (pts.length > 0) {
+      clearModelDependentObjects();
       try {
         if (asScript) {
           bsAtoms.or(modelSet.addHydrogens(vConnections, pts));
@@ -8230,7 +8230,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (addHydrogen)
       bsSelected = addHydrogens(bsSelected, asScript);
     else if (bsSelected == null)
-      bsSelected = getModelAtomBitSet(getVisibleFramesBitSet());
+      bsSelected = getModelAtomBitSet(null);
+    BitSet bsDeleted = getDeletedAtoms();
+    if (bsDeleted != null)
+      bsSelected.andNot(bsDeleted);
     try {
       getMinimizer(true).minimize(steps, crit, bsSelected, isSilent);
     } catch (Exception e) {

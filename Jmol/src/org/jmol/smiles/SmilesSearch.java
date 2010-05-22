@@ -181,12 +181,6 @@ public class SmilesSearch {
    *          <code>patternAtom</code>.
    * @param firstAtomOnly
    *          TODO
-   * @param ret
-   *          Resulting BitSet or Vector(BitSet).
-   * @param search
-   *          SMILES pattern.
-   * @param atoms
-   * @param atomCount
    * @return true to continue or false if oneOnly
    */
   private final boolean checkMatch(SmilesAtom patternAtom, int atomNum,

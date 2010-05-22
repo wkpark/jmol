@@ -13,6 +13,16 @@
 	using some of the interactive scripting capabilities provided by the 
 	<a href="[root]/jslibrary">Jmol.js JavaScript library</a>.
 			</p>
+			<blockquote>
+  			<i>Please, note that these pages are intended for demonstration
+  			run from the Jmol website server.
+  			If you try to create your own page by copying their source code, it is
+  			likely that it will not work, due to the arrangement of files needed.
+  			Please, first read 
+  			<a href="[root]/jslibrary/index.en.html#General%20Recommendations">general recommendations</a>
+  			in particular, and the rest of the <a href="[root]/jslibrary">documentation for Jmol.js</a>. 
+  			</i>
+			</blockquote>
 			<ul>
 				<li><a href="./atoms/">Atoms</a></li>
 				<li><a href="./bonds/">Bonds</a></li>

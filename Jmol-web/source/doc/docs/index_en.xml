@@ -35,8 +35,8 @@
 			</section>
 			<section title="Documentation for the JavaScript Library">
 				<p>
-	<b>Jmol.js</b> (included in Jmol standard distribution) is a library, written in JavaScript, that can be used to simplify development of 
-	web pages that include the JmolApplet. Here is its <a href="../jslibrary/">description and documentation</a>.
+	<b>Jmol.js</b> (included in Jmol standard distribution) is a library, written in JavaScript, that can be used to simplify <b>development of 
+	web pages</b> that include the JmolApplet. Here is its <a href="../jslibrary/">description and documentation</a>.
 				</p>
 			</section>
 			<section title="Scripting JmolApplet Without Using the JavaScript Library">

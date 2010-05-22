@@ -17,6 +17,16 @@
 	usando algunas de las posibilidades de interacción mediante guiones proporcionadas por
 	la <a href="[root]/jslibrary">biblioteca de javascript Jmol.js</a>.
 			</p>
+			<blockquote>
+  			<i>Nótese que estas páginas están destinadas a demostración desde el servidor
+  			de la sede web de Jmol.
+  			Si intentas crear tu propia página web simplemente copiando su código fuente,
+  			es probable que no funcione, debido a la disposición de archivos necesaria.
+  			Lee antes las
+  			<a href="[root]/jslibrary/index.es.html#Recomendaciones%20generales">recomendaciones generales</a>
+  			en particular, y el resto de la <a href="[root]/jslibrary">documentación de Jmol.js</a>. 
+  			</i>
+			</blockquote>
 			<ul>
 				<li><a href="./atoms/">Átomos</a></li>
 				<li><a href="./bonds/">Enlaces</a></li>

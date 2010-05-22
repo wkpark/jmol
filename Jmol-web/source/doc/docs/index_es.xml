@@ -43,7 +43,7 @@
 				<p>
 	<b>Jmol.js</b> (incluida en la distribución estándar de Jmol) es una biblioteca,
 	escrita en javascript, que 
-	puede usarse para simplificar el desarrollo de páginas web que incluyan la miniaplicación JmolApplet. 
+	puede usarse para simplificar el <b>desarrollo de páginas web</b> que incluyan la miniaplicación JmolApplet. 
 	Aquí está su <a href="../jslibrary/">descripción y documentación</a>.
 				</p>
 			</section>

@@ -5576,10 +5576,10 @@
   <fah_proj number="2967" name="p2967_BBA5_U_Amb99p" public="y" file="xyz"
     server="171.64.122.78" atoms="12200" preferred="26" deadline="38"
     credit="132" frames="100" code="GT" contact="gbowman" contrib="Barrie North"/>
-  <fah_proj number="2968" name="p2968" public="y" file="xyz"
+  <fah_proj number="2968" name="Trpzip2 Folding at 300K" public="y" file="xyz"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
     credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" contrib="SandStar"/>
-  <fah_proj number="2969" name="p2969" public="y"
+  <fah_proj number="2969" name="Trpzip2 Folding at 350K" public="y"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
     credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com"/>
   <fah_proj number="2970" name="p2970_N17_native" public="y" file="xyz"
@@ -5588,10 +5588,10 @@
   <fah_proj number="2971" name="p2971_N17_extend" public="y" file="xyz"
     server="171.64.122.131" atoms="7294" preferred="55" deadline="81"
     credit="292.5" frames="100" code="GST" contact="nwkelley" contrib="Smoking2000"/>
-  <fah_proj number="2972" name="p2972" public="y"
+  <fah_proj number="2972" name="Trpzip2 Folding at 400K" public="y"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
     credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com"/>
-  <fah_proj number="2973" name="p2973" public="y"
+  <fah_proj number="2973" name="Trpzip2 Folding at 450K" public="y"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
     credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com"/>
 

@@ -1898,8 +1898,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String loadInline(String strModel, char newLine, boolean isAppend) {
     // ScriptEvaluator DATA command uses this, but anyone could.
-    if (strModel == null)
+    if (strModel == null || strModel.length() == 0)
       return null;
+    if (strModel.startsWith("LOAD files")) {
+      script(strModel);
+      return null;
+    }
     int i;
     if (strModel.indexOf("\\/n") >= 0) {
       // the problem is that when this string is passed to Jmol
@@ -4874,7 +4878,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet == null ? null : modelSet.getModelTitle(modelIndex);
   }
 
-  private String getModelFileName(int modelIndex) {
+  public String getModelFileName(int modelIndex) {
     // necessary for status manager frame change?
     return modelSet == null ? null : modelSet.getModelFileName(modelIndex);
   }

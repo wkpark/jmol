@@ -34,6 +34,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import org.jmol.export.image.ImageCreator;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.binding.Binding;
@@ -112,13 +113,12 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
     if (!viewer.menuEnabled())
       return;
     char ch = ke.getKeyChar();
-    int modifiers = ke.getModifiers() & Binding.CTRL_ALT;
-    // System.out.println(ch + " " + (0+ch) + " " + modifiers + " " + CTRL + " "
-    // + ALT);
+    int modifiers = ke.getModifiers();
+    System.out.println(ch + " " + (0+ch) + " " + modifiers);
     if (modifiers != 0) {
       switch (ch) {
       case (char) 11:
-      case 'k':
+      case 'k': // keystrokes on/off
         boolean isON = !viewer.getBooleanProperty("allowKeyStrokes");
         switch (modifiers) {
         case Binding.CTRL:
@@ -133,6 +133,14 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
         }
         clearKeyBuffer();
         viewer.refresh(3, "showkey");
+        break;
+      case 22:
+      case 'v': // paste
+        switch (modifiers) {
+        case Binding.CTRL:
+          viewer.loadInline(ImageCreator.getClipboardTextStatic(), false);
+          break;
+        }
       }
       return;
     }

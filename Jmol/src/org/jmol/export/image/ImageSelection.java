@@ -31,7 +31,9 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.jmol.util.Logger;
 
@@ -118,7 +120,8 @@ public class ImageSelection implements Transferable {
   }
 
   /**
-   * Get the String residing on the clipboard.
+   * Get the String residing on the clipboard. Or, if it is a file list,
+   * get the load command associated with that.
    * from http://www.javapractices.com/Topic82.cjp
    * @return any text found on the Clipboard; if none found, return an
    * empty String.
@@ -127,11 +130,20 @@ public class ImageSelection implements Transferable {
     String result = null;
     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     Transferable contents = clipboard.getContents(null);
-    boolean hasTransferableText = (contents != null)
-        && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
-    if (hasTransferableText) {
+    if (contents == null)
+      return null;
       try {
+        if (contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
         result = (String) contents.getTransferData(DataFlavor.stringFlavor);
+        } else if (contents.isDataFlavorSupported(DataFlavor.javaFileListFlavor)){
+          List fileList = (List) contents.getTransferData(DataFlavor.javaFileListFlavor);
+          final int length = fileList.size();
+          if (length == 0)
+            return null;
+          result = "LOAD files ";
+          for (int i = 0; i < length; i++)
+            result += " \"" + ((File) fileList.get(i)).getAbsolutePath().replace('\\','/') + "\"";
+        }
       } catch (UnsupportedFlavorException ex) {
         //highly unlikely since we are using a standard DataFlavor
         Logger.error("Clipboard problem", ex);
@@ -140,7 +152,6 @@ public class ImageSelection implements Transferable {
         Logger.error("Clipboard problem", ex);
         ex.printStackTrace();
       }
-    }
     return result;
   }
 }

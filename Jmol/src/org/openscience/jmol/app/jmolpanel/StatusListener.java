@@ -101,10 +101,15 @@ class StatusListener implements JmolStatusListener {
       break;
     case JmolConstants.CALLBACK_ANIMFRAME:
       int[] iData = (int[]) data[1];
+      int modelIndex = iData[0];
+      if (modelIndex <= -2)
+        modelIndex = -2 - modelIndex; // animation is running
       int file = iData[1];
       int model = iData[2];
-      if (display.haveDisplay)
+      if (display.haveDisplay) {
         display.status.setStatus(1, file + "." + model);
+        jmol.getFrame().setTitle("[" + file + "." + model + "] " + viewer.getModelFileName(modelIndex));
+      }
       break;
     case JmolConstants.CALLBACK_SCRIPT:
       int msWalltime = ((Integer) data[3]).intValue();

@@ -980,9 +980,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
     }
 
     public void actionPerformed(ActionEvent e) {
-      String str = ImageCreator.getClipboardTextStatic();
-      if (str != null && str.length() > 0)
-        viewer.loadInline(str, false);
+      viewer.loadInline(ImageCreator.getClipboardTextStatic(), false);
     }
   }
 
@@ -1296,8 +1294,10 @@ public class JmolPanel extends JPanel implements SplashInterface {
   static final String chemFileProperty = "chemFile";
 
   void notifyFileOpen(String fullPathName, String title) {
-    recentFiles.notifyFileOpen(fullPathName);
-    frame.setTitle(title);
+    if (fullPathName == null || !fullPathName.equals("file[]")) {
+      recentFiles.notifyFileOpen(fullPathName);
+      frame.setTitle(title);
+    }
     if (atomSetChooser == null) {
       atomSetChooser = new AtomSetChooser(viewer, frame);
       pcs.addPropertyChangeListener(chemFileProperty, atomSetChooser);

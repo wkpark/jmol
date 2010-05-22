@@ -142,6 +142,7 @@ public class GT {
       new Language("sl",    GT._("Slovenian"),                false),
       new Language("es",    GT._("Spanish"),                  true),
       new Language("sv",    GT._("Swedish"),                  false),
+      new Language("ta",    GT._("Tamil"),                    false),
       new Language("tr",    GT._("Turkish"),                  true),
       new Language("uk",    GT._("Ukrainian"),                true),
     };

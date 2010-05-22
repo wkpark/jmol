@@ -1,85 +1,83 @@
-# Translation file of the JmolApplet for Korean.
-# Copyright (C) 1998-2008 The Jmol Development Team
-# This file is distributed under the same license as the Jmol package.
-# Won-Kyu Park <wkpark@kldp.org>, 2008.
+# Tamil translation for jmol
+# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
+# This file is distributed under the same license as the jmol package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Jmol\n"
+"Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-22 12:02+0200\n"
-"PO-Revision-Date: 2010-04-15 00:05+0000\n"
-"Last-Translator: Bundo <bundo@bundo.biz>\n"
-"Language-Team: Korean <Jmol-developers@lists.sf.net>\n"
+"PO-Revision-Date: 2010-05-22 07:43+0000\n"
+"Last-Translator: Ramesh <rame20002007@yahoo.com>\n"
+"Language-Team: Tamil <ta@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-04-15 19:56+0000\n"
+"X-Launchpad-Export-Date: 2010-05-22 09:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:113
 msgid "Jmol Script Console"
-msgstr "Jmol 스크립트 콘솔"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:115
 msgid "Editor"
-msgstr "편집자"
+msgstr "தொகுப்பாளர்"
 
 #: org/jmol/applet/AppletConsole.java:116
 msgid "State"
-msgstr "상태"
+msgstr "நிலை"
 
 #: org/jmol/applet/AppletConsole.java:117
 #: org/jmol/console/ScriptEditor.java:137
 msgid "Run"
-msgstr "실행"
+msgstr "இயக்கு"
 
 #: org/jmol/applet/AppletConsole.java:118
 msgid "Clear Output"
-msgstr "출력 지우기"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:119
 msgid "Clear Input"
-msgstr "입력 지우기"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:120
 #: org/jmol/popup/PopupResourceBundle.java:881
 msgid "History"
-msgstr "기록"
+msgstr "வரலாறு"
 
 #: org/jmol/applet/AppletConsole.java:121
 msgid "Load"
-msgstr "불러옴"
+msgstr "ஏற்றுக"
 
 #: org/jmol/applet/AppletConsole.java:160
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
-"CTRL-ENTER를 누르면 다음줄로 넘어가며 혹은 모델 데이타를 붙여넣기한 후에 불러"
-"옴을 누르세요"
 
 #: org/jmol/applet/AppletConsole.java:403
 msgid "&Help"
-msgstr "도움말(&H)"
+msgstr "&உதவி"
 
 #: org/jmol/applet/AppletConsole.java:404
 msgid "&Search..."
-msgstr "찾기(&S)..."
+msgstr "&தேடுக..."
 
 #: org/jmol/applet/AppletConsole.java:405
 msgid "&Commands"
-msgstr "명령(&C)"
+msgstr "&கட்டளைகள்"
 
 #: org/jmol/applet/AppletConsole.java:406
 msgid "Math &Functions"
-msgstr "수학 함수(&F)"
+msgstr "கணிதம் மற்றும் சார்புகள்"
 
 #: org/jmol/applet/AppletConsole.java:407
 msgid "Set &Parameters"
-msgstr "파라메터 설정(&P)"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:408
 msgid "&More"
-msgstr ""
+msgstr "&மேலும்"
 
 #: org/jmol/applet/Jmol.java:696
 #, java-format
@@ -90,15 +88,10 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
-"Jmol 애플릿 버전 {0} {1}.\n"
-"\n"
-"An OpenScience project.\n"
-"\n"
-"더 많은 정보는 http://www.jmol.org를 참조하세요"
 
 #: org/jmol/applet/Jmol.java:942
 msgid "File Error:"
-msgstr "파일 오류:"
+msgstr ""
 
 #: org/jmol/applet/Jmol.java:1218
 msgid ""
@@ -109,36 +102,36 @@ msgstr ""
 
 #: org/jmol/appletwrapper/AppletWrapper.java:91
 msgid "Loading Jmol applet ..."
-msgstr "Jmol 애플릿 부르기 ..."
+msgstr ""
 
 #: org/jmol/appletwrapper/AppletWrapper.java:165
 #, java-format
 msgid "  {0} seconds"
-msgstr "  {0} 초"
+msgstr "  {0} நொடிகள்"
 
 #: org/jmol/console/ScriptEditor.java:98
 msgid "Jmol Script Editor"
-msgstr "Jmol 스크립트 편집기"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/PopupResourceBundle.java:878
 msgid "Console"
-msgstr "콘솔"
+msgstr "பணியகம்"
 
 #: org/jmol/console/ScriptEditor.java:132
 #: org/jmol/export/dialog/Dialog.java:432
 #: org/jmol/export/dialog/Dialog.java:456
 #: org/jmol/export/dialog/Dialog.java:459
 msgid "Open"
-msgstr "열기"
+msgstr "திற"
 
 #: org/jmol/console/ScriptEditor.java:133
 msgid "Script"
-msgstr "스크립트"
+msgstr "சிறுநிரல்"
 
 #: org/jmol/console/ScriptEditor.java:134
 msgid "Check"
-msgstr "검사"
+msgstr "சரிபார்"
 
 #: org/jmol/console/ScriptEditor.java:135
 msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
@@ -146,317 +139,317 @@ msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
 msgid "Step"
-msgstr "단계"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:138
 #: org/jmol/popup/PopupResourceBundle.java:835
 msgid "Pause"
-msgstr "멈춤"
+msgstr "இடைநிறுத்து"
 
 #: org/jmol/console/ScriptEditor.java:140
 #: org/jmol/popup/PopupResourceBundle.java:836
 msgid "Resume"
-msgstr "다시"
+msgstr "மீண்டும் துவக்கு"
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
-msgstr "끝내기"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:144
 msgid "Clear"
-msgstr "지우기"
+msgstr "சுத்தம் (Clear)"
 
 #: org/jmol/console/ScriptEditor.java:145
 msgid "Close"
-msgstr "닫기"
+msgstr "மூடுக"
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
-msgstr "파일 혹은 URL:"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:260
 msgid "Image Type"
-msgstr "그림 형식"
+msgstr "பிம்பத்தின் வகை"
 
 #: org/jmol/export/dialog/Dialog.java:275
 #: org/jmol/export/dialog/Dialog.java:316
 #, java-format
 msgid "JPEG Quality ({0})"
-msgstr "JPEG 화질 ({0})"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:289
 #, java-format
 msgid "PNG Compression  ({0})"
-msgstr "PNG 압축 ({0})"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:319
 #, java-format
 msgid "PNG Quality ({0})"
-msgstr "PNG 품질 ({0})"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:365
 #: org/jmol/export/dialog/Dialog.java:475
 msgid "Yes"
-msgstr "확인"
+msgstr "அனுமதி"
 
 #: org/jmol/export/dialog/Dialog.java:365
 #: org/jmol/export/dialog/Dialog.java:473
 msgid "No"
-msgstr "취소"
+msgstr "மறு"
 
 #: org/jmol/export/dialog/Dialog.java:367
 #, java-format
 msgid "Do you want to overwrite file {0}?"
-msgstr "파일 {0}을(를) 덮어쓸까요?"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:368
 msgid "Warning"
-msgstr "주의"
+msgstr "எச்சரிக்கை"
 
 #: org/jmol/export/dialog/Dialog.java:424
 msgid "All Files"
-msgstr "모든 파일"
+msgstr "அனைத்து கோப்புகளும்"
 
 #: org/jmol/export/dialog/Dialog.java:425
 #: org/jmol/export/dialog/Dialog.java:472
 msgid "Cancel"
-msgstr "취소"
+msgstr "ரத்து"
 
 #: org/jmol/export/dialog/Dialog.java:427
 msgid "Abort file chooser dialog"
-msgstr "파일 선택 대화창 취소"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:429
 #: org/jmol/export/dialog/Dialog.java:430
 msgid "Details"
-msgstr "자세히"
+msgstr "விவரங்கள்"
 
 #: org/jmol/export/dialog/Dialog.java:431
 msgid "Directory"
-msgstr "디렉토리"
+msgstr "அடைவு"
 
 #: org/jmol/export/dialog/Dialog.java:434
 msgid "Open selected directory"
-msgstr "선택된 디렉토리 열기"
+msgstr "தெரிவு செய்த அடிவைத் திற"
 
 #: org/jmol/export/dialog/Dialog.java:435
 msgid "Attributes"
-msgstr "속성"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:436
 msgid "Modified"
-msgstr "수정됨"
+msgstr "மாற்றப்பட்ட"
 
 #: org/jmol/export/dialog/Dialog.java:437
 msgid "Generic File"
-msgstr "일반 파일"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:438
 msgid "Name"
-msgstr "이름"
+msgstr "பெயர்"
 
 #: org/jmol/export/dialog/Dialog.java:439
 msgid "File Name:"
-msgstr "파일 이름:"
+msgstr "கோப்புப் பெயர்:"
 
 #: org/jmol/export/dialog/Dialog.java:440
 msgid "Size"
-msgstr "크기"
+msgstr "அளவு"
 
 #: org/jmol/export/dialog/Dialog.java:441
 msgid "Files of Type:"
-msgstr "파일 형식:"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:442
 msgid "Type"
-msgstr "종류"
+msgstr "வகை"
 
 #: org/jmol/export/dialog/Dialog.java:443
 msgid "Help"
-msgstr "도움말"
+msgstr "உதவி"
 
 #: org/jmol/export/dialog/Dialog.java:445
 msgid "FileChooser help"
-msgstr "파일 선택기 도움말"
+msgstr "கோப்புத்தெரிவியின் உதவி"
 
 #: org/jmol/export/dialog/Dialog.java:446
 #: org/jmol/export/dialog/Dialog.java:447
 msgid "Home"
-msgstr "홈"
+msgstr "முகப்பு"
 
 #: org/jmol/export/dialog/Dialog.java:448
 #: org/jmol/export/dialog/Dialog.java:449
 msgid "List"
-msgstr "목록"
+msgstr "பட்டியல்"
 
 #: org/jmol/export/dialog/Dialog.java:450
 msgid "Look In:"
-msgstr "보기 방식:"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:452
 msgid "Error creating new folder"
-msgstr "새 폴더 만들기 실패"
+msgstr "புதிய அடைவை உருவாக்குவதில் பிழை"
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "New Folder"
-msgstr "새 폴더"
+msgstr "புதிய அடைவு"
 
 #: org/jmol/export/dialog/Dialog.java:455
 msgid "Create New Folder"
-msgstr "새 폴더 만들기"
+msgstr "புதிய அடைவை உருவாக்கு"
 
 #: org/jmol/export/dialog/Dialog.java:458
 msgid "Open selected file"
-msgstr "선택한 파일 열기"
+msgstr "தேர்ந்தெடுக்கப்பட்ட கோப்பினை திற"
 
 #: org/jmol/export/dialog/Dialog.java:460
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "Save"
-msgstr "저장"
+msgstr "சேமி"
 
 #: org/jmol/export/dialog/Dialog.java:462
 msgid "Save selected file"
-msgstr "선택한 파일 저장"
+msgstr "தெரிவு செய்த கோப்பை சேமி"
 
 #: org/jmol/export/dialog/Dialog.java:464
 msgid "Save In:"
-msgstr ""
+msgstr "இதில் சேமி:"
 
 #: org/jmol/export/dialog/Dialog.java:465
 msgid "Update"
-msgstr "갱신"
+msgstr "புதுப்பி"
 
 #: org/jmol/export/dialog/Dialog.java:467
 msgid "Update directory listing"
-msgstr "디렉토리 리스트 갱신"
+msgstr "அடைவுப் பட்டியலை புதுப்பி"
 
 #: org/jmol/export/dialog/Dialog.java:468
 msgid "Up"
-msgstr "위로"
+msgstr "மேலே"
 
 #: org/jmol/export/dialog/Dialog.java:469
 msgid "Up One Level"
-msgstr "상위 폴더"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:474
 msgid "OK"
-msgstr "확인"
+msgstr ""
 
 #: org/jmol/export/dialog/FilePreview.java:71
 msgid "Preview"
-msgstr "미리보기"
+msgstr ""
 
 #: org/jmol/export/dialog/FilePreview.java:91
 msgid "Append models"
-msgstr "모델 추가"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
-msgstr "아랍어"
+msgstr "அராபிக்"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
-msgstr "카탈로니아어"
+msgstr "காட்டலான்"
 
 #: org/jmol/i18n/GT.java:120
 msgid "Simplified Chinese"
-msgstr "중국어 간체"
+msgstr "எளிய சைனீஸ்"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Traditional Chinese"
-msgstr "중국어 번체"
+msgstr "பாரம்பரிய சைனீஸ்"
 
 #: org/jmol/i18n/GT.java:122
 msgid "Czech"
-msgstr "체코어"
+msgstr "செக்"
 
 #: org/jmol/i18n/GT.java:123
 msgid "Danish"
-msgstr "덴마크어"
+msgstr "டானிஷ்"
 
 #: org/jmol/i18n/GT.java:124
 msgid "Dutch"
-msgstr "네델란드어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:125
 msgid "British English"
-msgstr "영국 영어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:126
 msgid "American English"
-msgstr "미국 영어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:127
 msgid "Estonian"
-msgstr "에스토니아어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:128
 msgid "French"
-msgstr "프랑스어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:129
 msgid "German"
-msgstr "독일어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:130
 msgid "Greek"
-msgstr "그리스어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:131
 msgid "Hungarian"
-msgstr "헝가리어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:132
 msgid "Indonesian"
-msgstr "인도네시아어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:133
 msgid "Italian"
-msgstr "이탈리아어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:134
 msgid "Japanese"
-msgstr "일본어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:135
 msgid "Korean"
-msgstr "한국어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:136
 msgid "Norwegian Bokmal"
-msgstr "노르웨이어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:137
 msgid "Occitan"
-msgstr "오시탄어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:138
 msgid "Polish"
-msgstr "폴란드어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:139
 msgid "Brazilian Portuguese"
-msgstr "포루투갈어(브라질)"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:140
 msgid "Portuguese"
-msgstr "포루투갈어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:141
 msgid "Russian"
-msgstr "러시아어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:142
 msgid "Slovenian"
-msgstr "슬로베니아어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:143
 msgid "Spanish"
-msgstr "스페인어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:144
 msgid "Swedish"
-msgstr "스웨덴어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:145
 msgid "Tamil"
@@ -464,35 +457,35 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:146
 msgid "Turkish"
-msgstr "터키어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:147
 msgid "Ukrainian"
-msgstr "우크라이나어"
+msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:196
 #, java-format
 msgid "Could not get class for force field {0}"
-msgstr "포스필드 {0}을(를) 위한 클래스를 가져올 수 없음"
+msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:206
 msgid "No atoms selected -- nothing to do!"
-msgstr "아무 원자도 선택안됨 -- 실행 안함!"
+msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:271
 #, java-format
 msgid "{0} atoms will be minimized."
-msgstr "{0} 원자를 최적화하려 함"
+msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:361
 #, java-format
 msgid "could not setup force field {0}"
-msgstr "포스필드 {0}(을)를 설정할 수 없음"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:221
 #: org/jmol/popup/PopupResourceBundle.java:566
 msgid "No atoms loaded"
-msgstr "원자 없음"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:477
 #: org/jmol/popup/PopupResourceBundle.java:578
@@ -505,303 +498,303 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:622
 #: org/jmol/popup/PopupResourceBundle.java:639
 msgid "All"
-msgstr "모두"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:702
 #: org/jmol/popup/PopupResourceBundle.java:971
 msgid "Mouse Manual"
-msgstr "마우스 설명서"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:703
 #: org/jmol/popup/PopupResourceBundle.java:972
 msgid "Translations"
-msgstr "번역"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:705
 msgid "System"
-msgstr "시스템"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:711
 msgid "1 processor"
-msgstr "1 프로세서"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:712
 #, java-format
 msgid "{0} processors"
-msgstr "{0} 프로세서"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:714
 msgid "unknown processor count"
-msgstr "프로세서 개수 모름"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:716
 msgid "Java version:"
-msgstr "자바 버전:"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:720
 msgid "Java memory usage:"
-msgstr "자바 메모리 상황:"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:726
 #, java-format
 msgid "{0} MB total"
-msgstr "총 {0} MB"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:728
 #, java-format
 msgid "{0} MB free"
-msgstr "{0} MB 여유"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:731
 #, java-format
 msgid "{0} MB maximum"
-msgstr "{0} MB 최대"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:734
 msgid "unknown maximum"
-msgstr "최대 모름"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:568
 msgid "Configurations"
-msgstr "구성"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:569
 msgid "Element"
-msgstr "원소"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:570
 msgid "Model/Frame"
-msgstr "모델/프레임"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:571
 msgid "Language"
-msgstr "언어"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:572
 #: org/jmol/popup/PopupResourceBundle.java:573
 #: org/jmol/popup/PopupResourceBundle.java:574
 msgid "By Residue Name"
-msgstr "Residue 이름으로"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:575
 msgid "By HETATM"
-msgstr "HETATM으로"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:576
 msgid "Molecular Orbitals"
-msgstr "분자 궤도"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:577
 #: org/jmol/popup/PopupResourceBundle.java:888
 #: org/jmol/popup/PopupResourceBundle.java:930
 msgid "Symmetry"
-msgstr "대칭"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:579
 msgid "Hide Symmetry"
-msgstr "대칭 숨기기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:580
 msgid "Model information"
-msgstr "모델 정보"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:581
 #, java-format
 msgid "Select ({0})"
-msgstr "선택 ({0})"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:582
 #, java-format
 msgid "All {0} models"
-msgstr "전체 {0} 모델"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:583
 #, java-format
 msgid "Configurations ({0})"
-msgstr "구성 ({0})"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:584
 #, java-format
 msgid "Collection of {0} models"
-msgstr "{0} 모델의 콜렉션"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:585
 #, java-format
 msgid "atoms: {0}"
-msgstr "원자: {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:586
 #, java-format
 msgid "bonds: {0}"
-msgstr "결합: {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:587
 #, java-format
 msgid "groups: {0}"
-msgstr "그룹: {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:588
 #, java-format
 msgid "chains: {0}"
-msgstr "체인: {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:589
 #, java-format
 msgid "polymers: {0}"
-msgstr "중합체: {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:590
 #, java-format
 msgid "model {0}"
-msgstr "모델 {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:591
 #, java-format
 msgid "View {0}"
-msgstr "뷰 {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:592
 msgid "Main Menu"
-msgstr "주 메뉴"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:593
 msgid "Biomolecules"
-msgstr "바이오분자"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:594
 #, java-format
 msgid "biomolecule {0} ({1} atoms)"
-msgstr "바이오분자 {0} ({1}개 원자)"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:595
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
-msgstr "바이오분자 {0} 부르기 ({1}개 원자)"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:600
 #: org/jmol/popup/PopupResourceBundle.java:719
 #: org/jmol/popup/PopupResourceBundle.java:728
 msgid "None"
-msgstr "없음"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:601
 msgid "Display Selected Only"
-msgstr "선택한 것만 보기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:602
 msgid "Invert Selection"
-msgstr "선택 반전"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:604
 msgid "View"
-msgstr "보기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:605
 msgid "Front"
-msgstr "앞면"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:606
 msgid "Left"
-msgstr "왼쪽"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:607
 msgid "Right"
-msgstr "오른쪽"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:608
 msgid "Top"
-msgstr "위"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:609
 msgid "Bottom"
-msgstr "아래"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:610
 msgid "Back"
-msgstr "뒷면"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:612
 msgid "Protein"
-msgstr "단백질"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:614
 #: org/jmol/popup/PopupResourceBundle.java:625
 #: org/jmol/popup/PopupResourceBundle.java:695
 #: org/jmol/popup/PopupResourceBundle.java:787
 msgid "Backbone"
-msgstr "백본"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:615
 msgid "Side Chains"
-msgstr "곁가지 체인"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:616
 msgid "Polar Residues"
-msgstr "극성 Residues"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:617
 msgid "Nonpolar Residues"
-msgstr "무극성 Residues"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:618
 msgid "Basic Residues (+)"
-msgstr "기본 Residues (+)"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:619
 msgid "Acidic Residues (-)"
-msgstr "산성 Residues (-)"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:620
 msgid "Uncharged Residues"
-msgstr "무전하 Residues"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:621
 msgid "Nucleic"
-msgstr "핵산"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:623
 msgid "DNA"
-msgstr "DNA"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:624
 msgid "RNA"
-msgstr "RNA"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:626
 msgid "Bases"
-msgstr "염기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:627
 msgid "AT pairs"
-msgstr "AT 짝"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:628
 msgid "GC pairs"
-msgstr "GC 짝"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:629
 msgid "AU pairs"
-msgstr "AU 짝"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:630
 msgid "Hetero"
-msgstr "헤테로"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:631
 msgid "All PDB \"HETATM\""
-msgstr "PDB의 모든 \"HETATM\""
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:632
 msgid "All Solvent"
-msgstr "모든 용매"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:633
 msgid "All Water"
-msgstr "모든 물분자"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:635
 msgid "Nonaqueous Solvent"
-msgstr "Nonaqueous 용매"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:636
 msgid "Nonaqueous HETATM"
@@ -809,56 +802,56 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:637
 msgid "Ligand"
-msgstr "리간드"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:640
 msgid "Carbohydrate"
-msgstr "탄수화물"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:641
 msgid "None of the above"
-msgstr "위에 없음"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:643
 msgid "Style"
-msgstr "속성"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:644
 msgid "Scheme"
-msgstr "형식"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:645
 msgid "CPK Spacefill"
-msgstr "CPK 공간채움"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:646
 msgid "Ball and Stick"
-msgstr "공 막대기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:647
 msgid "Sticks"
-msgstr "막대기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:648
 msgid "Wireframe"
-msgstr "뼈대"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:649
 #: org/jmol/popup/PopupResourceBundle.java:696
 #: org/jmol/popup/PopupResourceBundle.java:789
 msgid "Cartoon"
-msgstr "카툰"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:650
 #: org/jmol/popup/PopupResourceBundle.java:701
 #: org/jmol/popup/PopupResourceBundle.java:788
 msgid "Trace"
-msgstr "트레이스"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:652
 #: org/jmol/popup/PopupResourceBundle.java:741
 msgid "Atoms"
-msgstr "원자"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:653
 #: org/jmol/popup/PopupResourceBundle.java:662
@@ -871,7 +864,7 @@ msgstr "원자"
 #: org/jmol/popup/PopupResourceBundle.java:863
 #: org/jmol/popup/PopupResourceBundle.java:928
 msgid "Off"
-msgstr "끔"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:654
 #: org/jmol/popup/PopupResourceBundle.java:655
@@ -881,12 +874,12 @@ msgstr "끔"
 #: org/jmol/popup/PopupResourceBundle.java:659
 #, java-format
 msgid "{0}% van der Waals"
-msgstr "{0}% 반데르발스"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:661
 #: org/jmol/popup/PopupResourceBundle.java:783
 msgid "Bonds"
-msgstr "결합"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:663
 #: org/jmol/popup/PopupResourceBundle.java:673
@@ -895,7 +888,7 @@ msgstr "결합"
 #: org/jmol/popup/PopupResourceBundle.java:708
 #: org/jmol/popup/PopupResourceBundle.java:812
 msgid "On"
-msgstr "켬"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:664
 #: org/jmol/popup/PopupResourceBundle.java:665
@@ -921,16 +914,16 @@ msgstr "켬"
 #: org/jmol/popup/PopupResourceBundle.java:955
 #, java-format
 msgid "{0} Å"
-msgstr "{0} Å"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:670
 #: org/jmol/popup/PopupResourceBundle.java:784
 msgid "Hydrogen Bonds"
-msgstr "수소 결합"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:672
 msgid "Calculate"
-msgstr "계산"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:674
 msgid "Set H-Bonds Side Chain"
@@ -956,21 +949,21 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:693
 #: org/jmol/popup/PopupResourceBundle.java:786
 msgid "Structures"
-msgstr "스트럭쳐"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:697
 msgid "Cartoon Rockets"
-msgstr "카본 로켓"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:698
 #: org/jmol/popup/PopupResourceBundle.java:790
 msgid "Ribbons"
-msgstr "리본"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:699
 #: org/jmol/popup/PopupResourceBundle.java:791
 msgid "Rockets"
-msgstr "로켓"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:700
 #: org/jmol/popup/PopupResourceBundle.java:792
@@ -979,17 +972,17 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:703
 msgid "Vibration"
-msgstr "진동"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:706
 #: org/jmol/popup/PopupResourceBundle.java:796
 msgid "Vectors"
-msgstr "벡터"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:709
 #, java-format
 msgid "{0} pixels"
-msgstr "{0} 픽셀"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:712
 #: org/jmol/popup/PopupResourceBundle.java:713
@@ -998,76 +991,76 @@ msgstr "{0} 픽셀"
 #: org/jmol/popup/PopupResourceBundle.java:716
 #, java-format
 msgid "Scale {0}"
-msgstr "스케일 {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:718
 msgid "Stereographic"
-msgstr "입체"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:720
 msgid "Red+Cyan glasses"
-msgstr "빨강+시안 안경"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:721
 msgid "Red+Blue glasses"
-msgstr "빨강+파랑 안경"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:722
 msgid "Red+Green glasses"
-msgstr "빨강+녹색 안경"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:723
 msgid "Cross-eyed viewing"
-msgstr "Cross-eyed 보기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:724
 msgid "Wall-eyed viewing"
-msgstr "Wall-eyed 보기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:726
 #: org/jmol/popup/PopupResourceBundle.java:793
 msgid "Labels"
-msgstr "표지"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:729
 msgid "With Element Symbol"
-msgstr "원소기호로"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:730
 msgid "With Atom Name"
-msgstr "원자이름으로"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:731
 msgid "With Atom Number"
-msgstr "원자 번호로"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:733
 msgid "Position Label on Atom"
-msgstr "원자에 번호지정"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:734
 msgid "Centered"
-msgstr "가운데"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:735
 msgid "Upper Right"
-msgstr "우상"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:736
 msgid "Lower Right"
-msgstr "우하"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:737
 msgid "Upper Left"
-msgstr "좌상"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:738
 msgid "Lower Left"
-msgstr "좌하"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:740
 msgid "Color"
-msgstr "색상"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:743
 msgid "By Scheme"
@@ -1075,51 +1068,51 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:744
 msgid "Element (CPK)"
-msgstr "원소 (CPK)"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:745
 msgid "Alternative Location"
-msgstr "다른 위치"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:746
 msgid "Molecule"
-msgstr "분자"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:747
 msgid "Formal Charge"
-msgstr "Formal 전하"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:748
 msgid "Partial Charge"
-msgstr "부분 전하"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:749
 msgid "Temperature (Relative)"
-msgstr "온도 (상대적)"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:750
 msgid "Temperature (Fixed)"
-msgstr "온도 (절대값)"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:752
 msgid "Amino Acid"
-msgstr "아미노산"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:753
 msgid "Secondary Structure"
-msgstr "제2 스트럭쳐"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:754
 msgid "Chain"
-msgstr "체인"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:755
 msgid "Group"
-msgstr "그룹"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:756
 msgid "Monomer"
-msgstr "모노머"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:757
 msgid "Shapely"
@@ -1127,276 +1120,276 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:759
 msgid "Inherit"
-msgstr "상속"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:760
 msgid "Black"
-msgstr "검정"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:761
 msgid "White"
-msgstr "흰색"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:762
 msgid "Cyan"
-msgstr "시안"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:764
 msgid "Red"
-msgstr "빨강"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:765
 msgid "Orange"
-msgstr "오렌지"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:766
 msgid "Yellow"
-msgstr "노랑"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:767
 msgid "Green"
-msgstr "녹색"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:768
 msgid "Blue"
-msgstr "파랑"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:769
 msgid "Indigo"
-msgstr "인디고"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:770
 msgid "Violet"
-msgstr "보라"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:772
 msgid "Salmon"
-msgstr "연어살색"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:773
 msgid "Olive"
-msgstr "올리브"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:774
 msgid "Maroon"
-msgstr "진한빨강"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:775
 msgid "Gray"
-msgstr "회색"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:776
 msgid "Slate Blue"
-msgstr "연청"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:777
 msgid "Gold"
-msgstr "금색"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:778
 msgid "Orchid"
-msgstr "연보라"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:780
 #: org/jmol/popup/PopupResourceBundle.java:926
 msgid "Make Opaque"
-msgstr "불투명으로"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:781
 #: org/jmol/popup/PopupResourceBundle.java:927
 msgid "Make Translucent"
-msgstr "투명으로"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:794
 msgid "Background"
-msgstr "배경"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:795
 #: org/jmol/popup/PopupResourceBundle.java:918
 msgid "Surfaces"
-msgstr "표면"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:797
 #: org/jmol/popup/PopupResourceBundle.java:937
 #: org/jmol/popup/PopupResourceBundle.java:963
 msgid "Axes"
-msgstr "축"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:798
 #: org/jmol/popup/PopupResourceBundle.java:938
 #: org/jmol/popup/PopupResourceBundle.java:962
 msgid "Boundbox"
-msgstr "경계상자"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:799
 #: org/jmol/popup/PopupResourceBundle.java:915
 #: org/jmol/popup/PopupResourceBundle.java:939
 #: org/jmol/popup/PopupResourceBundle.java:964
 msgid "Unit cell"
-msgstr "단위 cell"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:801
 msgid "Zoom"
-msgstr "확대"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:808
 msgid "Zoom In"
-msgstr "확대"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:809
 msgid "Zoom Out"
-msgstr "축소"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:811
 #: org/jmol/popup/PopupResourceBundle.java:875
 msgid "Spin"
-msgstr "회전"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:815
 msgid "Set X Rate"
-msgstr "X축 회전"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:816
 msgid "Set Y Rate"
-msgstr "Y축 회전"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:817
 msgid "Set Z Rate"
-msgstr "Z축 회전"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:818
 #: org/jmol/popup/PopupResourceBundle.java:844
 msgid "Set FPS"
-msgstr "FPS 설정"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:828
 msgid "Animation"
-msgstr "동영상"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:829
 msgid "Animation Mode"
-msgstr "동영상 모드"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:830
 msgid "Play Once"
-msgstr "한번만"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:831
 msgid "Palindrome"
-msgstr "왔다갔다"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:832
 msgid "Loop"
-msgstr "반복"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:834
 msgid "Play"
-msgstr "재생"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:837
 msgid "Stop"
-msgstr "정지"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:838
 msgid "Next Frame"
-msgstr "다음 장면"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:839
 msgid "Previous Frame"
-msgstr "이전 장면"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:840
 msgid "Rewind"
-msgstr "되감기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:841
 msgid "Reverse"
-msgstr "반대로"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:842
 msgid "Restart"
-msgstr "재시작"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:851
 #: org/jmol/popup/PopupResourceBundle.java:883
 msgid "Measurements"
-msgstr "측정"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:852
 msgid "Double-Click begins and ends all measurements"
-msgstr "시작하고 끝낼때 더블 클릭을 누름"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:853
 msgid "Click for distance measurement"
-msgstr "클릭하면 거리 측정"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:854
 msgid "Click for angle measurement"
-msgstr "클릭하면 각도 측정"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:855
 msgid "Click for torsion (dihedral) measurement"
-msgstr "클릭하면 꼬인각 (이면각) 측정"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:856
 msgid "Delete measurements"
-msgstr "측정 지우기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:857
 msgid "List measurements"
-msgstr "측정 리스트"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:858
 msgid "Distance units nanometers"
-msgstr "길이단위 나노미터"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:859
 msgid "Distance units Angstroms"
-msgstr "길이 단위 옹스트롬"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:860
 msgid "Distance units picometers"
-msgstr "길이 단위 피코미터"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:862
 msgid "Set picking"
-msgstr "선택 설정"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:864
 msgid "Center"
-msgstr "가운데"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:866
 msgid "Identity"
-msgstr "식별자"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:867
 msgid "Label"
-msgstr "표지"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:868
 msgid "Select atom"
-msgstr "원자 선택"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:869
 msgid "Select chain"
-msgstr "체인 선택"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:870
 msgid "Select element"
-msgstr "원소 선택"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:871
 msgid "Select group"
-msgstr "그룹 선택"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:872
 msgid "Select molecule"
-msgstr "분자 선택"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:873
 msgid "Select site"
-msgstr "사이트 선택"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:874
 msgid "Show symmetry operation"
@@ -1404,59 +1397,59 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:877
 msgid "Show"
-msgstr "보기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:879
 msgid "File Contents"
-msgstr "파일 내용"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:880
 msgid "File Header"
-msgstr "파일 헤더"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:882
 msgid "Isosurface JVXL data"
-msgstr "Isosurface JVXL 데이터"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:884
 msgid "Molecular orbital JVXL data"
-msgstr "분자 오비탈 JVXL 데이터"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:885
 msgid "Model"
-msgstr "모델"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:886
 msgid "Orientation"
-msgstr "배향"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:887
 msgid "Space group"
-msgstr "공간 그룹"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:889
 msgid "Current state"
-msgstr "현재 상태"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:891
 msgid "File"
-msgstr "파일"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:892
 msgid "Reload"
-msgstr "다시 읽기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:893
 msgid "Open from PDB"
-msgstr "PDB에서 열기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:894
 msgid "Open file or URL"
-msgstr "파일 또는 URL 열기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:895
 msgid "Load full unit cell"
-msgstr "전체 단위 세포 불러오기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:896
 msgid "Open script"
@@ -1465,15 +1458,15 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:898
 #, java-format
 msgid "Save a copy of {0}"
-msgstr "{0}의 복사본을 저장"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 msgid "Save script with state"
-msgstr "상태를 스크립트로 저장"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:900
 msgid "Save script with history"
-msgstr "기록을 스크립트로 저장"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:901
 #: org/jmol/popup/PopupResourceBundle.java:902
@@ -1481,7 +1474,7 @@ msgstr "기록을 스크립트로 저장"
 #: org/jmol/popup/PopupResourceBundle.java:904
 #, java-format
 msgid "Export {0} image"
-msgstr "{0} 이미지 내보내기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:905
 msgid "Save JVXL isosurface"
@@ -1493,56 +1486,56 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:909
 #, java-format
 msgid "Export {0} 3D model"
-msgstr "{0} 3D 모델 내보내기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:911
 msgid "Computation"
-msgstr "연산"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:912
 msgid "Optimize structure"
-msgstr "최적화 구조"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:916
 msgid "Extract MOL data"
-msgstr "MOL 테이타 추출"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:919
 msgid "Dot Surface"
-msgstr "점 포면"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:920
 msgid "van der Waals Surface"
-msgstr "반데르발스 표면"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:921
 msgid "Molecular Surface"
-msgstr "분자 표면"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:922
 #, java-format
 msgid "Solvent Surface ({0}-Angstrom probe)"
-msgstr "용매 표면 ({0}-옹스트롬 프로브)"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:924
 #, java-format
 msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
-msgstr "Solvent-Accessiable 표면 (VDW + {0} 옹스트롬)"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:925
 msgid "Molecular Electrostatic Potential"
-msgstr "분자 전하 포텐셜(MEP)"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:931
 #: org/jmol/popup/PopupResourceBundle.java:932
 #, java-format
 msgid "Reload {0}"
-msgstr "다시부르기 {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:933
 #, java-format
 msgid "Reload {0} + Display {1}"
-msgstr "{0} 다시읽기  + {1} 보기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:934
 msgid "Reload + Polyhedra"
@@ -1550,15 +1543,15 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:941
 msgid "Hide"
-msgstr "숨기기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:942
 msgid "Dotted"
-msgstr "점"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:944
 msgid "Pixel Width"
-msgstr "픽셀 너비"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:945
 #: org/jmol/popup/PopupResourceBundle.java:946
@@ -1566,98 +1559,98 @@ msgstr "픽셀 너비"
 #: org/jmol/popup/PopupResourceBundle.java:948
 #, java-format
 msgid "{0} px"
-msgstr "{0} px"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:950
 msgid "Angstrom Width"
-msgstr "옹스트롬 너비"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:958
 msgid "Selection Halos"
-msgstr "선택 표시"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:959
 msgid "Show Hydrogens"
-msgstr "수소 보기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:960
 msgid "Show Measurements"
-msgstr "측정 보기"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:961
 msgid "Perspective Depth"
-msgstr "원근 깊이"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:965
 msgid "RasMol Colors"
-msgstr "RasMol색"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:966
 msgid "About..."
-msgstr "정보..."
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1161
 #: org/jmol/script/ScriptEvaluator.java:2421
 msgid "bad argument count"
-msgstr "인자 개수 오류"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1164
 #, java-format
 msgid "invalid context for {0}"
-msgstr "{0}에 대한 잘못된 컨텍스트"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1167
 #: org/jmol/script/ScriptEvaluator.java:2445
 msgid "command expected"
-msgstr "명령이 필요함"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1170
 msgid "{ number number number } expected"
-msgstr "{ 숫자 숫자 숫자 } 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1173
 #: org/jmol/script/ScriptEvaluator.java:2454
 msgid "unexpected end of script command"
-msgstr "예상치않은 스크립트 명령"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1176
 msgid "end of expression expected"
-msgstr "수식의 끝이 요구됨"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1179
 msgid "identifier or residue specification expected"
-msgstr "식별자 혹은 residue 지정이 필요함"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1182
 msgid "invalid atom specification"
-msgstr "잘못된 원자 지정"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1185
 msgid "invalid chain specification"
-msgstr "잘못된 체인 지정"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1188
 #, java-format
 msgid "invalid expression token: {0}"
-msgstr "잘못된 수식 토큰: {0}"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1191
 msgid "invalid model specification"
-msgstr "잘못된 모델 지정"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1194
 #, java-format
 msgid "missing END for {0}"
-msgstr "{0}에 END가 없습니다"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1197
 #: org/jmol/script/ScriptEvaluator.java:2521
 msgid "number expected"
-msgstr "숫자 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1200
 msgid "number or variable name expected"
-msgstr "숫자 혹은 변수 이름이 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1203
 msgid "residue specification (ALA, AL?, A*) expected"
@@ -1666,41 +1659,41 @@ msgstr ""
 #: org/jmol/script/ScriptCompilationTokenParser.java:1206
 #, java-format
 msgid "{0} expected"
-msgstr "{0}이(가) 필요함"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1209
 #, java-format
 msgid "{0} unexpected"
-msgstr "{0}은(는) 불필요함"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1212
 #, java-format
 msgid "unrecognized expression token: {0}"
-msgstr "이해할  수 없는 수식 토큰: {0}"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1215
 #: org/jmol/script/ScriptEvaluator.java:2570
 #, java-format
 msgid "unrecognized {0} parameter"
-msgstr "이해할 수 없는 {0} 파라메터"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1218
 #, java-format
 msgid "unrecognized token: {0}"
-msgstr "이해할 수 없는 토큰: {0}"
+msgstr ""
 
 #: org/jmol/script/ScriptCompiler.java:2283
 msgid "script compiler ERROR: "
-msgstr "스크립트 컴파일러 오류: "
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2277
 #: org/jmol/script/ScriptEvaluator.java:8772
 msgid "script ERROR: "
-msgstr "스크립트 오류: "
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2415
 msgid "x y z axis expected"
-msgstr "x y z 축 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2418
 #, java-format
@@ -1709,32 +1702,32 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2424
 msgid "Miller indices cannot all be zero."
-msgstr "밀러 지수는 모든 값이 0일 수 없음"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2427
 msgid "bad [R,G,B] color"
-msgstr "잘못된 [R,G,B] 색상"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2430
 msgid "boolean expected"
-msgstr "부울린값 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2433
 msgid "boolean or number expected"
-msgstr "부울린 혹은 숫자 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2436
 #, java-format
 msgid "boolean, number, or {0} expected"
-msgstr "부울린, 숫자 혹은 {0} 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2439
 msgid "color expected"
-msgstr "색상 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2442
 msgid "a color or palette name (Jmol, Rasmol) is required"
-msgstr "색상 혹은 팔레트 이름 (Jmol, Rasmol)이 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2448
 msgid "{x y z} or $name or (atom expression) required"
@@ -1742,78 +1735,78 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2451
 msgid "draw object not defined"
-msgstr "그림 객체가 정의 안됨"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2457
 msgid "valid (atom expression) expected"
-msgstr "유효한 (원자 표현식) 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2460
 msgid "(atom expression) or integer expected"
-msgstr "(원자 표현식) 혹은 정수 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2463
 msgid "filename expected"
-msgstr "파일 이름 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2466
 msgid "file not found"
-msgstr "파일 없음"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2469
 msgid "incompatible arguments"
-msgstr "비호환 인자"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2472
 msgid "insufficient arguments"
-msgstr "부족한 인자"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2475
 msgid "integer expected"
-msgstr "정수가 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2478
 #, java-format
 msgid "integer out of range ({0} - {1})"
-msgstr "정수가 범위에 벗어남 ({0} - {1})"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2481
 msgid "invalid argument"
-msgstr "잘못된 인자"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2484
 msgid "invalid parameter order"
-msgstr "잘못된 인자 순서"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2487
 msgid "keyword expected"
-msgstr "키워드 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2490
 msgid "no MO coefficient data available"
-msgstr "MO 계수 정보 없음"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2493
 #, java-format
 msgid "An MO index from 1 to {0} is required"
-msgstr "1에서 {0} 사이의 MO 지정값이 필요함"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2496
 msgid "no MO basis/coefficient data available for this frame"
-msgstr "현재 프레임에 대한 MO basis/계수 정보가 없음"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2499
 msgid "no MO occupancy data available"
-msgstr "MO 점유값이 없음"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2502
 msgid "Only one molecular orbital is available in this file"
-msgstr "단 하나의 분자궤도가 있습니다"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2505
 #, java-format
 msgid "{0} require that only one model be displayed"
-msgstr "{0}(은)는 단 하나의 모델만 표시됨"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2508
 #, java-format
@@ -1822,85 +1815,83 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2511
 msgid "No data available"
-msgstr "아무 정보가 없음"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2515
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
 msgstr ""
-"부분 전하 정보가 없습니다; Jmol은 MEP 정보를 보여주기 위해 이 정보가필요합니"
-"다."
 
 #: org/jmol/script/ScriptEvaluator.java:2518
 msgid "No unit cell"
-msgstr "단위 cell 없음"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2524
 #, java-format
 msgid "number must be ({0} or {1})"
-msgstr "유효한 숫자는 ({0} 혹은 {1})"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2527
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
-msgstr "십진수가 범위에 벗어남 ({0} - {1})"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2530
 msgid "object name expected after '$'"
-msgstr "'$' 뒤에 객체 이름이 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2534
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
-msgstr "평면이 필요함 -- 세개의 점 혹은 원자 표현식 혹은 {0} 혹은 {1} 혹은 {2}"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2537
 msgid "property name expected"
-msgstr "속성 이름 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2540
 #, java-format
 msgid "space group {0} was not found."
-msgstr "공간 그룹 {0}(을)를 찾을 수 없음"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2543
 msgid "quoted string expected"
-msgstr "따옴표로 감싼 문자열 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2546
 msgid "quoted string or identifier expected"
-msgstr "인용된 문자열 혹은 지정자 필요"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2549
 msgid "too many rotation points were specified"
-msgstr "너무 많은 회전 포인트가 지정됨"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2552
 msgid "too many script levels"
-msgstr "너무 많은 스크립트 단계"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2555
 msgid "unrecognized atom property"
-msgstr "모르는 원자 속성"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2558
 msgid "unrecognized bond property"
-msgstr "모르는 결합 속성"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2561
 msgid "unrecognized command"
-msgstr "모르는 명령"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2564
 msgid "runtime unrecognized expression"
-msgstr "런타임시 인식안되는 표현식"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2567
 msgid "unrecognized object"
-msgstr "모르는 객체"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2574
 #, java-format
@@ -1910,22 +1901,22 @@ msgstr ""
 #: org/jmol/script/ScriptEvaluator.java:2577
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
-msgstr "SHOW 인자가 인식안됨 -- {0} 사용"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2583
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
-msgstr "무엇을 쓰나요? {0} 혹은 {1} \"파일이름\""
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:6561
 #, java-format
 msgid "{0} connections deleted"
-msgstr "{0} 결함 제거"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:6582
 #, java-format
 msgid "{0} new bonds; {1} modified"
-msgstr "{0} 새 결합: {1} 변경됨"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:7773
 #, java-format
@@ -1936,13 +1927,13 @@ msgstr ""
 #: org/jmol/script/ScriptEvaluator.java:9145
 #, java-format
 msgid "{0} atoms deleted"
-msgstr "{0} 원자 지움"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:9722
 #: org/jmol/script/ScriptEvaluator.java:10119
 #, java-format
 msgid "{0} hydrogen bonds"
-msgstr "{0} 수소 결합"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:10074
 #, java-format
@@ -1955,11 +1946,11 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:55
 msgid "rotate"
-msgstr "회전"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:56
 msgid "zoom"
-msgstr "확대"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:57
 msgid "rotate Z"
@@ -1972,11 +1963,11 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:59
 msgid "translate"
-msgstr "번역"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:61
 msgid "center"
-msgstr "중앙"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:62
 msgid "zoom (along right edge of window)"
@@ -2146,11 +2137,11 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:1490
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr "축상으로 돌리기위해 하나 혹은 더 많은 원자를 고르세요"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:1491
 msgid "pick two atoms in order to spin the model around an axis"
-msgstr "모델을 축상으로 회전하기 위해 두개의 원자를 고르세요"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:1494
 msgid "pick one more atom in order to display the symmetry relationship"
@@ -2165,12 +2156,12 @@ msgstr ""
 #: org/jmol/viewer/SelectionManager.java:93
 #, java-format
 msgid "{0} atoms hidden"
-msgstr "{0} 원자 숨김"
+msgstr ""
 
 #: org/jmol/viewer/SelectionManager.java:135
 #, java-format
 msgid "{0} atoms selected"
-msgstr "{0} 원자 선택"
+msgstr ""
 
 #: org/jmol/viewer/Viewer.java:4211
 #, java-format
@@ -2193,25 +2184,3 @@ msgstr ""
 #, java-format
 msgid "Setting log file to {0}"
 msgstr ""
-
-#~ msgid "About Jmol"
-#~ msgstr "Jmol은"
-
-#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
-#~ msgstr "오류: 문자열값에 부울린값을 지정할 수 없음: {0}"
-
-#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-#~ msgstr "오류: 숫자에 부울린값을 지정할 수 없음: {0}"
-
-#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-#~ msgstr "오류: 부울린에 이 값을 넣을 수 없음: {0}"
-
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr ""
-#~ "애플릿이 파일을 만들 수 없습니다. Base64 방식의 JPEG 포맷은 {0}을(를) 사용"
-#~ "하세요."
-
-#~ msgid "File creation failed."
-#~ msgstr "파일 생성 오류."

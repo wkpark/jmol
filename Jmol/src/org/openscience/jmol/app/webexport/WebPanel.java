@@ -45,7 +45,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
-import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
@@ -248,7 +247,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
    * getResourceAsBytes("org/openscience/jmol/app/images/angleButton.gif")
    */
 
-  private static byte[] getResourceAsBytes(String fullPath) {
+  /*private static byte[] getResourceAsBytes(String fullPath) {
     byte[] buf = new byte[1024];
     byte[] bytes = new byte[4096];
     BufferedInputStream bis = new BufferedInputStream(ClassLoader
@@ -269,7 +268,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       return null;
     }
     return buf;
-  }
+  }*/
 
   private JPanel getLeftPanel(int w, int h) {
 

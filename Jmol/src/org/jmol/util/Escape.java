@@ -827,5 +827,15 @@ public class Escape {
     return array;
   }
 
+  public static BitSet getBitSetFromArray(String[] list) {
+    BitSet bs = new BitSet();
+    for (int i = 0; i < list.length; i++) {
+      BitSet bs1 = Escape.unescapeBitset(list[i]);
+      if (bs1 != null)
+        bs.or(bs1);
+    }
+    return bs;
+  }
+
 
 }

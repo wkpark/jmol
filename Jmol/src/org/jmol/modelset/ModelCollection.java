@@ -2031,6 +2031,8 @@ abstract public class ModelCollection extends BondCollection {
   
   public BitSet getModelAtomBitSet(BitSet bsModels) {
     BitSet bs = new BitSet();
+    if (bsModels == null && bsAll == null)
+      bsAll = BitSetUtil.setAll(atomCount);
     if (bsModels == null)
       bs.or(bsAll);
     else

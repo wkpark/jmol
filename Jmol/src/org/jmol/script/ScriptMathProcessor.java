@@ -129,16 +129,8 @@ class ScriptMathProcessor {
             || x.tok == Token.string || x.tok == Token.matrix3f
             || x.tok == Token.matrix4f)
           x = ScriptVariable.selectItem(x);
-        if (asBitSet && x.tok == Token.list) {
-          BitSet bs = new BitSet();
-          String[] list = (String[]) x.value;
-          for (int i = 0; i < list.length; i++) {
-            BitSet bs1 = Escape.unescapeBitset(list[i]);
-            if (bs1 != null)
-              bs.or(bs1);
-          }
-          x = new ScriptVariable(Token.bitset, bs);
-        }
+        if (asBitSet && x.tok == Token.list)
+          x = new ScriptVariable(Token.bitset, Escape.getBitSetFromArray((String[]) x.value));
         return x;
       }
     }
@@ -1978,8 +1970,9 @@ class ScriptMathProcessor {
       if (!isOK)
         eval.error(ScriptEvaluator.ERROR_invalidArgument);
       if (isSyntaxCheck)
-        return addX(new Vector());
-      return addX((String[]) eval.getSmilesMatches(ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot, null, tok == Token.search, true));
+        return (asBitSet ? addX(new BitSet()) : addX(new Vector()));
+      String[] x = (String[]) eval.getSmilesMatches(ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot, null, tok == Token.search, true);
+      return (asBitSet ? addX(Escape.getBitSetFromArray(x)) : addX(x));
     }
     if (withinSpec instanceof String) {
       if (tok == Token.nada) {

@@ -664,6 +664,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     stateManager.saveState(saveName);
   }
 
+  public void deleteSavedState(String saveName) {
+    stateManager.deleteSaved("State_" + saveName);
+  }
+  
   public String getSavedState(String saveName) {
     return stateManager.getSavedState(saveName);
   }
@@ -1931,7 +1935,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     String datasep = getDataSeparator();
     if (datasep != null && datasep != ""
-        && (i = strModel.indexOf(datasep)) >= 0) {
+        && (i = strModel.indexOf(datasep)) >= 0
+        && strModel.indexOf("# Jmol state") < 0) {
       int n = 2;
       while ((i = strModel.indexOf(datasep, i + 1)) >= 0)
         n++;
@@ -2071,6 +2076,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private String openStringInline(String strModel, Hashtable htParams,
                                   boolean isAppend) {
     // loadInline, openStringInline
+    
+    BufferedReader br = new BufferedReader(new StringReader(strModel));
+    String type = getModelAdapter().getFileTypeName(br);
+    if (type == null)
+      return "unknown file type";
+    if (type.equals("spt")) {
+      return "cannot open script inline";
+    }
+      
     if (!isAppend)
       zap(true, false);
     Object atomSetCollection = fileManager.createAtomSetCollectionFromString(
@@ -7815,7 +7829,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     clearModelDependentObjects();
     if (!fullModels) {
       modelSet.deleteAtoms(bs);
-      return selectionManager.deleteAtoms(bs);
+      int n = selectionManager.deleteAtoms(bs);
+      setTainted(true);
+      return n;
     }
     fileManager.addLoadScript("zap " + Escape.escape(bs));
     setCurrentModelIndex(0, false);
@@ -8444,5 +8460,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public BitSet transformAtoms(boolean firstPass) {
     return shapeManager.transformAtoms(firstPass);
+  }
+
+  public void undo(boolean isSave) {
+    if (isSave) {
+      saveState("undo");
+      return;
+    }
+    String state = getSavedState("undo");
+    if (state == null)
+      return;
+    deleteSavedState("undo");
+    evalStringQuiet(state + ";set picking " + getParameter("picking"));
   }
 }

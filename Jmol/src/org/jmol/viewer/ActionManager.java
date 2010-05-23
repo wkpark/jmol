@@ -1403,6 +1403,8 @@ public class ActionManager {
     if (ptClicked != null)
       return;
     // atoms only here:
+    BitSet bs;
+    String spec = "atomindex=" + atomIndex;
     switch (pickingMode) {
     case JmolConstants.PICKING_IDENTIFY:
       if (isBound(action, ACTION_pickAtom))
@@ -1414,20 +1416,29 @@ public class ActionManager {
         viewer.setStatusAtomPicked(atomIndex, null);
       }
       return;
-    }
-    String spec = "atomindex=" + atomIndex;
-    switch (pickingMode) {
-    case JmolConstants.PICKING_LABEL:
-      viewer.script("set labeltoggle " + spec);
-      viewer.setStatusAtomPicked(atomIndex, null);
+    case JmolConstants.PICKING_ASSIGN_ATOM:
+      //TODO H C + - 
+      // also check valence and add/remove H atoms as necessary?
+      viewer.undo(true);
       return;
-    default:
+    case JmolConstants.PICKING_INVERT_STEREO:
+      // only for rings
+      viewer.undo(true);
+      bs = viewer.getAtomBitSet("connected(atomIndex="+atomIndex+") and !within(SMARTS,'[R]')");
+      if (bs.cardinality() > 2)
+        return;
+      viewer.invertSelected(null, null, atomIndex, bs);
       return;
     case JmolConstants.PICKING_DELETE_ATOM:
-      BitSet bs = getSelectionSet("(" + spec + ")");
+      viewer.undo(true);
+      bs = getSelectionSet("(" + spec + ")");
       viewer.deleteAtoms(bs, false);
-      break;
-    case JmolConstants.PICKING_IDENTIFY:
+      return;
+    }
+    // set picking select options:
+    switch (pickingMode) {
+    default:
+      return;
     case JmolConstants.PICKING_SELECT_ATOM:
       applySelectStyle(spec, action);
       break;

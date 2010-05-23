@@ -204,7 +204,7 @@ public class StateManager {
     return names;
   }
 
-  private void deleteSaved(String type) {
+  private void deleteSavedType(String type) {
     Enumeration e = saved.keys();
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
@@ -215,9 +215,13 @@ public class StateManager {
     }
   }
 
+  void deleteSaved(String name) {
+    saved.remove(name);
+  }
+  
   void saveSelection(String saveName, BitSet bsSelected) {
     if (saveName.equalsIgnoreCase("DELETE")) {
-      deleteSaved("Selected_");
+      deleteSavedType("Selected_");
       return;
     }
     saveName = lastSelected = "Selected_" + saveName;
@@ -238,7 +242,7 @@ public class StateManager {
 
   void saveState(String saveName) {
     if (saveName.equalsIgnoreCase("DELETE")) {
-      deleteSaved("State_");
+      deleteSavedType("State_");
       return;
     }
     saveName = lastState = "State_" + saveName;
@@ -265,7 +269,7 @@ public class StateManager {
    */
   void saveStructure(String saveName) {
     if (saveName.equalsIgnoreCase("DELETE")) {
-      deleteSaved("Shape_");
+      deleteSavedType("Shape_");
       return;
     }
     saveName = lastShape = "Shape_" + saveName;
@@ -280,7 +284,7 @@ public class StateManager {
 
   void saveCoordinates(String saveName, BitSet bsSelected) {
     if (saveName.equalsIgnoreCase("DELETE")) {
-      deleteSaved("Coordinates_");
+      deleteSavedType("Coordinates_");
       return;
     }
     saveName = lastCoordinates = "Coordinates_" + saveName;
@@ -318,7 +322,7 @@ public class StateManager {
 
   void saveOrientation(String saveName) {
     if (saveName.equalsIgnoreCase("DELETE")) {
-      deleteSaved("Orientation_");
+      deleteSavedType("Orientation_");
       return;
     }
     Orientation o = new Orientation(saveName.equals("default"));
@@ -408,7 +412,7 @@ public class StateManager {
 
   void saveBonds(String saveName) {
     if (saveName.equalsIgnoreCase("DELETE")) {
-      deleteSaved("Bonds_");
+      deleteSavedType("Bonds_");
       return;
     }
     Connections b = new Connections();

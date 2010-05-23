@@ -107,14 +107,15 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
   }
 
   public void keyTyped(KeyEvent ke) {
-    if (Logger.debugging)
-      Logger.debug("ActionmManager keyTyped: " + ke.getKeyCode());
     ke.consume();
     if (!viewer.menuEnabled())
       return;
     char ch = ke.getKeyChar();
     int modifiers = ke.getModifiers();
-    System.out.println(ch + " " + (0+ch) + " " + modifiers);
+    // for whatever reason, CTRL may also drop the 6- and 7-bits,
+    // so we are in the ASCII non-printable region 1-31
+    if (Logger.debugging)
+      Logger.debug("ActionmManager keyTyped: " + ch + " " + (0+ch) + " " + modifiers);
     if (modifiers != 0) {
       switch (ch) {
       case (char) 11:
@@ -138,9 +139,19 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
       case 'v': // paste
         switch (modifiers) {
         case Binding.CTRL:
-          viewer.loadInline(ImageCreator.getClipboardTextStatic(), false);
+          String ret = viewer.loadInline(ImageCreator.getClipboardTextStatic(), false);
+          if (ret != null)
+            Logger.error(ret);
           break;
         }
+      case 26:
+      case 'z': // undo
+        switch (modifiers) {
+        case Binding.CTRL:
+          viewer.undo(false);
+          break;
+        }
+        
       }
       return;
     }

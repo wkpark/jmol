@@ -383,7 +383,7 @@ public class LabelToken {
         else if (formalCharge < 0)
           strT = "" + -formalCharge + "-";
         else
-          strT = "0";
+          strT = "";
         break;
       case 'g':
         strT = "" + atom.getSelectedGroupIndexWithinChain();

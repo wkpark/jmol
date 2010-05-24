@@ -39,7 +39,7 @@ public class HalosRenderer extends ShapeRenderer {
     boolean selectDisplayTrue = viewer.getSelectionHaloEnabled();
     boolean showHiddenSelections = (selectDisplayTrue && viewer
         .getShowHiddenSelectionHalos());
-    if (halos.mads == null && !selectDisplayTrue)
+    if (halos.mads == null && halos.bsHighlight == null && !selectDisplayTrue)
       return;
     isAntialiased = g3d.isAntialiased();
     Atom[] atoms = modelSet.atoms;
@@ -48,10 +48,10 @@ public class HalosRenderer extends ShapeRenderer {
       Atom atom = atoms[i];
       if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_FRAME) == 0)
         continue;
-      short mad = (halos.mads == null ? 0 : halos.mads[i]);
-      short colix = (halos.colixes == null || i >= halos.colixes.length ? Graphics3D.INHERIT_ALL
-          : halos.colixes[i]);
       boolean isHidden = modelSet.isAtomHidden(i);
+      mad = (halos.mads == null ? 0 : halos.mads[i]);
+      colix = (halos.colixes == null || i >= halos.colixes.length ? Graphics3D.INHERIT_ALL
+          : halos.colixes[i]);
       if (selectDisplayTrue && bsSelected.get(i)) {
         if (isHidden && !showHiddenSelections)
           continue;
@@ -68,13 +68,17 @@ public class HalosRenderer extends ShapeRenderer {
       } else {
         colix = Graphics3D.getColixInherited(colix, atom.getColix());
       }
-      if (mad == 0)
-        continue;
-      render1(atom, mad, colix);
+      if (mad != 0)
+        render1(atom);
+      if (!isHidden && halos.bsHighlight != null && halos.bsHighlight.get(i)) {
+        mad = -2;
+        colix = halos.colixHighlight;
+        render1(atom);
+      }       
     }
   }
 
-  void render1(Atom atom, short mad, short colix) {
+  void render1(Atom atom) {
     int z = atom.screenZ;
     int diameter = mad;
     if (diameter < 0) { //unsized selection
@@ -84,7 +88,7 @@ public class HalosRenderer extends ShapeRenderer {
         if (ellipsemax > 0)
           diameter = viewer.scaleToScreen(z, (int) (ellipsemax * 2000));
         if (diameter == 0) {
-          diameter = viewer.scaleToScreen(z, 500);
+          diameter = viewer.scaleToScreen(z, mad == -2 ? 250 : 500);
         }
       }
     } else {
@@ -94,6 +98,8 @@ public class HalosRenderer extends ShapeRenderer {
     if (isAntialiased)
       d /= 2;
     float haloDiameter = (d / 4);
+    if (mad == -2)
+      haloDiameter /= 2;
     if (haloDiameter < 4)
       haloDiameter = 4;
     if (haloDiameter > 10)

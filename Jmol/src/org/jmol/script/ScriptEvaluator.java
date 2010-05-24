@@ -6782,6 +6782,7 @@ public class ScriptEvaluator {
         if (!isSyntaxCheck)
           viewer.setRubberbandArgb(argb);
         return;
+      case Token.highlight:
       case Token.selectionhalos:
         i = 2;
         if (tokAt(2) == Token.opaque)
@@ -6790,7 +6791,9 @@ public class ScriptEvaluator {
         if (isSyntaxCheck)
           return;
         loadShape(JmolConstants.SHAPE_HALOS);
-        setShapeProperty(JmolConstants.SHAPE_HALOS, "argbSelection",
+        setShapeProperty(
+            JmolConstants.SHAPE_HALOS,
+            (theTok == Token.selectionhalos ? "argbSelection" : "argbHighlight"),
             new Integer(argb));
         return;
       case Token.axes:
@@ -10631,6 +10634,10 @@ public class ScriptEvaluator {
     case Token.unitcell:
       unitcell(2);
       return;
+    case Token.highlight:
+      loadShape(JmolConstants.SHAPE_HALOS);
+      setShapeProperty(JmolConstants.SHAPE_HALOS, "highlight", (tokAt(2) == Token.off ? null : expression(2)));
+      return;
     case Token.display:// deprecated
     case Token.selectionhalos:
       selectionHalo(2);
@@ -11425,6 +11432,7 @@ public class ScriptEvaluator {
     case Token.delete:
       break;
     default:
+
       checkLength(3);
     }
 
@@ -11437,6 +11445,7 @@ public class ScriptEvaluator {
     // set picking dragselected
 
     String str = parameterAsString(i);
+    int mode = JmolConstants.getPickingMode(str);
     switch (getToken(i).tok) {
     case Token.on:
     case Token.normal:
@@ -11461,10 +11470,36 @@ public class ScriptEvaluator {
       str = "deleteBond";
       break;
     }
-    int mode = JmolConstants.getPickingMode(str);
+    String option = null;
+    if ((mode = str.indexOf("_")) >= 0) {
+      option = str.substring(mode + 1);
+      if (option.length() == 0)
+        error(ERROR_invalidArgument);
+      option = Character.toUpperCase(option.charAt(0))
+          + (option.length() == 1 ? "" : option.substring(1, 2));
+      str = str.substring(0, mode);
+      mode = JmolConstants.getPickingMode(str.substring(0, mode));
+    } else {
+      mode = JmolConstants.getPickingMode(str);
+    }
+    if (mode >= 0) {
+      setStringProperty("picking", str);
+      if (option != null)
+        switch (mode) {
+        case JmolConstants.PICKING_ASSIGN_ATOM:
+          if (!isSyntaxCheck)
+            viewer.setAtomPickingOption(option);
+          return;
+        case JmolConstants.PICKING_ASSIGN_BOND:
+          if (!isSyntaxCheck)
+            viewer.setBondPickingOption(option);
+          return;
+        default:
+          mode = -1;
+        }
+    }
     if (mode < 0)
       error(ERROR_unrecognizedParameter, "SET PICKING " + type, str);
-    setStringProperty("picking", str);
   }
 
   private void setPickingStyle() throws ScriptException {

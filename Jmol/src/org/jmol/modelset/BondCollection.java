@@ -774,6 +774,57 @@ abstract public class BondCollection extends AtomCollection {
     }
     return super.getAtomBits(tokType, specInfo);
   }
-  
+ 
+  public void setBondOrder(int bondIndex, char type) {
+    int bondOrder = 0;
+    Bond bond = bonds[bondIndex];  
+    switch (type) {
+    case '1':
+      bondOrder = JmolEdge.BOND_COVALENT_SINGLE;
+      break;
+    case '2':
+      bondOrder = JmolEdge.BOND_COVALENT_DOUBLE;
+      break;
+    case '3':
+      bondOrder = JmolEdge.BOND_COVALENT_TRIPLE;
+      break;
+    case 'p':
+    case 'm':
+      bondOrder = JmolConstants.getBondOrderNumberFromOrder(bond.getCovalentOrder()).charAt(0)
+       - '0' + (type == 'p' ? 1 : -1);
+      if (bondOrder > 3)
+        bondOrder = 1;
+      else if (bondOrder < 0)
+        bondOrder = 3;
+      break;
+    default:
+      return;
+    }
+    bond.setOrder(bondOrder | JmolEdge.BOND_NEW);
+    removeUnnecessaryBonds(bond.atom1);
+    removeUnnecessaryBonds(bond.atom2);
+    BitSet bsAtoms = new BitSet();
+    bsAtoms.set(bond.getAtomIndex1());
+    bsAtoms.set(bond.getAtomIndex2());
+    viewer.addHydrogens(bsAtoms, false);
+  }
+
+  protected void removeUnnecessaryBonds(Atom atom) {
+    BitSet bs = new BitSet();
+    BitSet bsBonds = new BitSet();
+    Bond[] bonds = atom.bonds;
+    for (int i = 0; i < bonds.length; i++)
+      if (bonds[i].isCovalent()) {
+        Atom atom2 = bonds[i].getOtherAtom(atom);
+        if (atom2.getElementNumber() == 1)
+          bs.set(bonds[i].getOtherAtom(atom).index);
+      } else {
+        bsBonds.set(bonds[i].index);
+      }
+    viewer.deleteAtoms(bs, false);
+    deleteBonds(bsBonds, false);
+  }
+
+
 }
 

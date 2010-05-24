@@ -2354,6 +2354,8 @@ abstract public class ModelCollection extends BondCollection {
                                   int order, int connectOperation,
                                   BitSet bsA, BitSet bsB, BitSet bsBonds,
                                   boolean isBonds, float energy) {
+    if (bsBonds == null)
+      bsBonds = new BitSet();
     boolean matchAny = (order == JmolEdge.BOND_ORDER_ANY);
     boolean matchHbond = ((order & JmolEdge.BOND_HYDROGEN_MASK) != 0);
     boolean matchNull = (order == JmolEdge.BOND_ORDER_NULL);

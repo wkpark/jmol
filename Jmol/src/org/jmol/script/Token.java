@@ -723,8 +723,9 @@ public class Token {
   public final static int backgroundmodel  = setparam | 2;
   public final static int debug            = setparam | 4;
   public final static int defaultlattice   = setparam | 6;
-  public final static int showscript       = setparam | 8;
-  public final static int specular         = setparam | 10;
+  public final static int highlight        = setparam | 8;// 12.0.RC14
+  public final static int showscript       = setparam | 10;
+  public final static int specular         = setparam | 12;
   public final static int trajectory       = setparam | 14;
   public final static int usercolorscheme  = setparam | 16;
 
@@ -1664,6 +1665,7 @@ public class Token {
       "_g",              null, 
       "groupIndex",      new Token(groupindex),
       "hidden",          new Token(hidden),
+      "highlight",       new Token(highlight),
       "hkl",             new Token(hkl),
       "id",              new Token(id),
       "identify",        new Token(identify),

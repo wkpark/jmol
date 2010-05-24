@@ -28,12 +28,16 @@ package org.jmol.shape;
 import java.util.BitSet;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 public class Halos extends AtomShape {
 
   short colixSelection = Graphics3D.USE_PALETTE;
 
+  BitSet bsHighlight;
+  short colixHighlight = Graphics3D.RED;
+  
   void initState() {
     Logger.debug("init halos");
     translucentAllowed = false;
@@ -44,6 +48,14 @@ public class Halos extends AtomShape {
       return;
     if ("argbSelection" == propertyName) {
       colixSelection = Graphics3D.getColix(((Integer)value).intValue());
+      return;
+    }
+    if ("argbHighlight" == propertyName) {
+      colixHighlight = Graphics3D.getColix(((Integer)value).intValue());
+      return;
+    }
+    if ("highlight" == propertyName) {
+      bsHighlight = (BitSet) value;
       return;
     }
     super.setProperty(propertyName, value, bs);
@@ -60,9 +72,13 @@ public class Halos extends AtomShape {
   }
   
  public String getShapeState() {
-    return super.getShapeState()
-        + (colixSelection == Graphics3D.USE_PALETTE ? "" 
+    String state = super.getShapeState()
+        + (colixSelection == Graphics3D.USE_PALETTE ? ""
             : colixSelection == Graphics3D.INHERIT_ALL ? "  color SelectionHalos NONE;\n"
-            : getColorCommand("selectionHalos", colixSelection) + ";\n");
+                : getColorCommand("selectionHalos", colixSelection) + ";\n");
+    if (bsHighlight != null)
+      state += "  set highlight " + Escape.escape(bsHighlight) + "; "
+          + getColorCommand("highlight", colixHighlight) + ";\n";
+    return state;
   }
 }

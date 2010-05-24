@@ -2471,7 +2471,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                         String lcaoType,
                                         boolean hybridizationCompatible) {
     return modelSet.getHybridizationAndAxes(atomIndex, z, x, lcaoType,
-        hybridizationCompatible, true);
+        hybridizationCompatible, true, -1);
   }
 
   public BitSet getMoleculeBitSet(int atomIndex) {
@@ -4188,16 +4188,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Point3f[] pts = getAdditionalHydrogens(bsAtoms, doAll, false, vConnections);
     boolean wasAppendNew = false;
     int modelIndex = getAtomModelIndex(bsAtoms.nextSetBit(0));
+    BitSet bsA = getModelAtomBitSet(modelIndex, true);
+    BitSet bsB = new BitSet();
     if (pts.length > 0) {
       clearModelDependentObjects();
       try {
         if (asScript) {
-          bsAtoms.or(modelSet.addHydrogens(vConnections, pts));
+          bsB = modelSet.addHydrogens(vConnections, pts);
+          bsAtoms.or(bsB);
         } else {
           wasAppendNew = getAppendNew();
           setAppendNew(false);
-          BitSet bsA = getModelAtomBitSet(modelIndex, true);
-          BitSet bsB = getAtomBits(Token.hydrogen, null);
+          bsB = getAtomBits(Token.hydrogen, null);
           bsA.andNot(bsB);
           int atomIndex = modelSet.getAtomCount();
           int atomno = modelSet.getAtomCountInModel(modelIndex);
@@ -4215,9 +4217,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                 .append(" ").append(pts[i].z).append(" - - - - ").append(
                     ++atomno).append('\n');
           loadInline(sb.toString(), '\n', true);
-          bsB = getModelAtomBitSet(-1, true);
+          bsB = getModelAtomBitSet(modelIndex, true);
           bsB.andNot(bsA);
-          bsAtoms.or(bsB);
           eval.runScript(sbConnect.toString(), null);
         }
       } catch (Exception e) {
@@ -4227,7 +4228,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setAppendNew(true);
     }
     scriptStatus(GT._("{0} hydrogens added", pts.length));
-    return bsAtoms;
+    return bsB;
   }
 
   public void setMarBond(short marBond) {
@@ -4402,11 +4403,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (haveDisplay)
     actionManager.setPickingMode(pickingMode);
     global.setParameterValue("picking", JmolConstants
-        .getPickingModeName(actionManager.getPickingMode()));
+        .getPickingModeName(actionManager.getAtomPickingMode()));
   }
 
   public int getPickingMode() {
-    return (haveDisplay ? actionManager.getPickingMode() : 0);
+    return (haveDisplay ? actionManager.getAtomPickingMode() : 0);
   }
 
   public boolean getDrawPicking() {
@@ -8244,7 +8245,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void minimize(int steps, float crit, BitSet bsSelected,
                        boolean addHydrogen, boolean isSilent, boolean asScript) {
     if (addHydrogen)
-      bsSelected = addHydrogens(bsSelected, asScript);
+      bsSelected.or(addHydrogens(bsSelected, asScript));
     else if (bsSelected == null)
       bsSelected = getModelAtomBitSet(null);
     BitSet bsDeleted = getDeletedAtoms();
@@ -8462,7 +8463,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return shapeManager.transformAtoms(firstPass);
   }
 
-  public void undo(boolean isSave) {
+  void undoAction(boolean isSave) {
     if (isSave) {
       saveState("undo");
       return;
@@ -8471,6 +8472,27 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (state == null)
       return;
     deleteSavedState("undo");
-    evalStringQuiet(state + ";set picking " + getParameter("picking"));
+    evalStringQuiet(state + actionManager.getPickingState()
+        + transformManager.getMoveToText(0, false));
   }
+
+  public void setAtomPickingOption(String option) {
+    if (haveDisplay)
+      actionManager.setAtomPickingOption(option);
+  }
+  
+  public void setBondPickingOption(String option) {
+    if (haveDisplay)
+      actionManager.setBondPickingOption(option);
+  }
+
+  void assignAtom(int atomIndex, String type) {
+    clearModelDependentObjects();
+    modelSet.assignAtom(atomIndex, type);
+  }
+
+  public void setBondOrder(int bondIndex, char type) {
+    modelSet.setBondOrder(bondIndex, type);
+  }
+
 }

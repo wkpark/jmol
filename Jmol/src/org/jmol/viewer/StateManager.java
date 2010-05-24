@@ -600,7 +600,7 @@ public class StateManager {
         + ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred"
         + ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount"
         + ";spinx;spiny;spinz;spinfps;navx;navy;navz;navfps;" + JmolConstants.getCallbackName(-1)
-        + ";undo;";
+        + ";undo;bondpicking;";
 
   protected static int getJmolVersionInt() {
     // 11.9.999 --> 1109999

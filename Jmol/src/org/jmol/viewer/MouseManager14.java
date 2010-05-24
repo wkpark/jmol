@@ -148,7 +148,7 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
       case 'z': // undo
         switch (modifiers) {
         case Binding.CTRL:
-          viewer.undo(false);
+          viewer.undoAction(false);
           break;
         }
         

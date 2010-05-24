@@ -12015,6 +12015,7 @@ public class ScriptEvaluator {
         if (script == null)
           error(ERROR_invalidArgument);
         runScript(script);
+        viewer.checkCoordinatesChanged();
         return;
       case Token.state:
         if (isSyntaxCheck)

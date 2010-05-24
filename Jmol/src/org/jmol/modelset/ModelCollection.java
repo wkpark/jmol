@@ -1966,7 +1966,7 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-  private void recalculatePositionDependentQuantities() {
+  public void recalculatePositionDependentQuantities() {
     if (getHaveStraightness())
       calculateStraightness();
     recalculateLeadMidpointsAndWingVectors(-1);

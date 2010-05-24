@@ -7203,6 +7203,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
+  public void checkCoordinatesChanged() {    
+    modelSet.recalculatePositionDependentQuantities();
+    refreshMeasures(true);
+  }
+
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
     // Frame equivalent used in DATA "coord set"
     modelSet.setAtomCoord(atomIndex, x, y, z);

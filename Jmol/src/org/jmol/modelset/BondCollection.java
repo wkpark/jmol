@@ -788,10 +788,10 @@ abstract public class BondCollection extends AtomCollection {
     case '3':
       bondOrder = JmolEdge.BOND_COVALENT_TRIPLE;
       break;
-    case 'p':
-    case 'm':
+    case '+':
+    case '-':
       bondOrder = JmolConstants.getBondOrderNumberFromOrder(bond.getCovalentOrder()).charAt(0)
-       - '0' + (type == 'p' ? 1 : -1);
+       - '0' + (type == '+' ? 1 : -1);
       if (bondOrder > 3)
         bondOrder = 1;
       else if (bondOrder < 0)

@@ -145,6 +145,7 @@ public class Draw extends MeshCollection {
       bsAllModels = null;
       intersectID = null;
       boundBox = null;
+      explicitID = false;
       setPropertySuper("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
       setPropertySuper("init", value, bs);
       return;

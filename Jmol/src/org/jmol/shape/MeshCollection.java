@@ -41,7 +41,7 @@ import org.jmol.util.TextFormat;
 
 public abstract class MeshCollection extends Shape {
 
-  // Draw, Isosurface(LcaoCartoon MolecularOrbital), Pmesh
+  // Draw, Isosurface(LcaoCartoon MolecularOrbital Pmesh)
     
   public int meshCount;
   public Mesh[] meshes = new Mesh[4];

@@ -8511,6 +8511,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     BitSet bs = new BitSet();
     bs.set(atomIndex);
     if (type != null) {
+      if (atom.getElementNumber() == 1) {
+        deleteAtoms(bs, false);
+        refresh(3, "createOrMoveAtom");
+        return;
+      }
       Point3f[] pts = new Point3f[] { atom };
       Vector vConnections = new Vector();
       vConnections.add(atom);

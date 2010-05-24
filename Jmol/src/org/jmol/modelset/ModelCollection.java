@@ -3611,7 +3611,7 @@ abstract public class ModelCollection extends BondCollection {
     // TODO
     // not as simple as just defining an atom.
     // if we click on an H, and C is being defined,
-    // I'd like this to sprout an sp3-carbon at that position.
+    // this sprouts an sp3-carbon at that position.
 
     Atom atom = atoms[atomIndex];
     BitSet bs = new BitSet();
@@ -3677,9 +3677,6 @@ abstract public class ModelCollection extends BondCollection {
 
     }
     viewer.addHydrogens(bsA, false);
-  }
-
-  public void createOrMoveAtom(int atomIndex, int deltaX, int deltaY, String type) {
   }
 
 }

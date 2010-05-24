@@ -47,6 +47,8 @@ public class Measurement {
 
   public ModelSet modelSet;
 
+  public int traceX = Integer.MIN_VALUE, traceY;
+  
   protected int count;
   protected int[] countPlusIndices = new int[5];
   protected Point3fi[] pts;

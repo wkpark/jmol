@@ -81,9 +81,17 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     return a;
   }
   
-  private void renderMeasurement(int count, Measurement measurement, boolean renderLabel) {
+  private void renderMeasurement(int count, Measurement measurement,
+                                 boolean renderLabel) {
     this.measurement = measurement;
-    switch(count) {
+    switch (count) {
+    case 1:
+      if (measurement.traceX != Integer.MIN_VALUE) {
+        atomA = getAtom(1);
+        drawLine(atomA.screenX, atomA.screenY, atomA.screenZ,
+            measurement.traceX, measurement.traceY, atomA.screenZ, mad);
+      }
+      break;
     case 2:
       atomA = getAtom(1);
       atomB = getAtom(2);
@@ -216,10 +224,10 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     int count = measurementPending.getCount();
     if (count == 0)
       return;
-    g3d.setColix(viewer.getColixRubberband());
+    g3d.setColix(measurementPending.traceX != Integer.MIN_VALUE ? measurementPending.getColix() : viewer.getColixRubberband());
     measurementPending.refresh();
     if (measurementPending.haveTarget())
-      renderMeasurement(count, measurementPending, true);
+      renderMeasurement(count, measurementPending, measurementPending.traceX == Integer.MIN_VALUE);
     else
       renderPendingWithCursor(count, measurementPending);
   }

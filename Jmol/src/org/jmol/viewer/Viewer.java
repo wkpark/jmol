@@ -4187,40 +4187,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Vector vConnections = new Vector();
     Point3f[] pts = getAdditionalHydrogens(bsAtoms, doAll, false, vConnections);
     boolean wasAppendNew = false;
-    int modelIndex = getAtomModelIndex(bsAtoms.nextSetBit(0));
-    BitSet bsA = getModelAtomBitSet(modelIndex, true);
     BitSet bsB = new BitSet();
+    wasAppendNew = getAppendNew();
     if (pts.length > 0) {
       clearModelDependentObjects();
       try {
-        if (asScript) {
-          bsB = modelSet.addHydrogens(vConnections, pts);
-          bsAtoms.or(bsB);
-        } else {
-          wasAppendNew = getAppendNew();
-          setAppendNew(false);
-          bsB = getAtomBits(Token.hydrogen, null);
-          bsA.andNot(bsB);
-          int atomIndex = modelSet.getAtomCount();
-          int atomno = modelSet.getAtomCountInModel(modelIndex);
-          StringBuffer sbConnect = new StringBuffer();
-          for (int i = 0; i < vConnections.size(); i++) {
-            Atom a = (Atom) vConnections.get(i);
-            sbConnect.append("connect ").append("({" + (atomIndex++) + "}) ")
-                .append("({" + a.index + "});");
-          }
-          StringBuffer sb = new StringBuffer();
-          sb.append(pts.length).append("\n#noautobond");
-          sb.append("\n");
-          for (int i = 0; i < pts.length; i++)
-            sb.append("H ").append(pts[i].x).append(" ").append(pts[i].y)
-                .append(" ").append(pts[i].z).append(" - - - - ").append(
-                    ++atomno).append('\n');
-          loadInline(sb.toString(), '\n', true);
-          bsB = getModelAtomBitSet(modelIndex, true);
-          bsB.andNot(bsA);
-          eval.runScript(sbConnect.toString(), null);
-        }
+        bsB = (asScript ? modelSet.addHydrogens(vConnections, pts)
+            : addHydrogensInline(bsAtoms, vConnections, pts));
       } catch (Exception e) {
         // ignore
       }
@@ -4228,6 +4201,34 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setAppendNew(true);
     }
     scriptStatus(GT._("{0} hydrogens added", pts.length));
+    return bsB;
+  }
+
+  public BitSet addHydrogensInline(BitSet bsAtoms, Vector vConnections, Point3f[] pts) throws Exception {
+    int modelIndex = getAtomModelIndex(bsAtoms.nextSetBit(0));
+    BitSet bsA = getModelAtomBitSet(modelIndex, true);
+    setAppendNew(false);
+//    BitSet bsB = getAtomBits(Token.hydrogen, null);
+//    bsA.andNot(bsB);
+    int atomIndex = modelSet.getAtomCount();
+    int atomno = modelSet.getAtomCountInModel(modelIndex);
+    StringBuffer sbConnect = new StringBuffer();
+    for (int i = 0; i < vConnections.size(); i++) {
+      Atom a = (Atom) vConnections.get(i);
+      sbConnect.append("connect 0 100 ").append("({" + (atomIndex++) + "}) ")
+          .append("({" + a.index + "});");
+    }
+    StringBuffer sb = new StringBuffer();
+    sb.append(pts.length).append("\n#noautobond");
+    sb.append("\n");
+    for (int i = 0; i < pts.length; i++)
+      sb.append("H ").append(pts[i].x).append(" ").append(pts[i].y)
+          .append(" ").append(pts[i].z).append(" - - - - ").append(
+              ++atomno).append('\n');
+    loadInline(sb.toString(), '\n', true);
+    eval.runScript(sbConnect.toString(), null);
+    BitSet bsB = getModelAtomBitSet(modelIndex, true);
+    bsB.andNot(bsA);
     return bsB;
   }
 
@@ -7262,8 +7263,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean movingSelected;
   private boolean showSelected;
   
-  void moveSelected(int deltaX, int deltaY, int x, int y, BitSet bsSelected,
-                    boolean isTranslation) {
+  public void moveSelected(int deltaX, int deltaY, BitSet bsSelected, boolean isTranslation) {
     // cannot synchronize this -- it's from the mouse and the event queue
     if (isJmolDataFrame())
       return;
@@ -8493,11 +8493,46 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void assignAtom(int atomIndex, String type) {
     clearModelDependentObjects();
-    modelSet.assignAtom(atomIndex, type);
+    modelSet.assignAtom(atomIndex, type, true);
   }
 
   public void setBondOrder(int bondIndex, char type) {
-    modelSet.setBondOrder(bondIndex, type);
+    BitSet bsAtoms = modelSet.setBondOrder(bondIndex, type);
+    if (bsAtoms == null)
+      refresh(3, "setBondOrder");
+    else
+      addHydrogens(bsAtoms, false);
+  }
+
+  public void createOrMoveAtom(int atomIndex, int deltaX, int deltaY,
+                               String type) {
+    clearModelDependentObjects();
+    Atom atom = modelSet.atoms[atomIndex];
+    BitSet bs = new BitSet();
+    bs.set(atomIndex);
+    if (type != null) {
+      Point3f[] pts = new Point3f[] { atom };
+      Vector vConnections = new Vector();
+      vConnections.add(atom);
+      deltaX -= atom.screenX;
+      deltaY -= atom.screenY;
+      try {
+        bs = addHydrogensInline(bs, vConnections, pts);
+      } catch (Exception e) {
+        return;
+      }
+      atomIndex = bs.nextSetBit(0);
+      moveSelected(deltaX, deltaY, bs, true);
+      modelSet.assignAtom(atomIndex, type, false);
+    } else {
+      Bond[] bonds = atom.bonds;
+      for (int i = 0; i < bonds.length; i++) {
+        Atom atom2 = atom.bonds[i].getOtherAtom(atom);
+        if (atom2.getElementNumber() == 1)
+          bs.set(atom2.index);
+      }
+      moveSelected(deltaX, deltaY, bs, true);
+    }
   }
 
 }

@@ -3603,8 +3603,8 @@ abstract public class ModelCollection extends BondCollection {
     return sb.toString();
   }
 
-  public void assignAtom(int atomIndex, String type) {
-    
+  public void assignAtom(int atomIndex, String type, boolean autoBond) {
+
     if (type == null)
       type = "C";
 
@@ -3623,6 +3623,7 @@ abstract public class ModelCollection extends BondCollection {
     if (atomicNumber > 0) {
       RadiusData rd = new RadiusData();
       setElement(atom, atomicNumber, rd);
+      setAtomName(atomIndex, type + atom.getAtomNumber());
     } else if (type.equals("+")) {
       atom.setFormalCharge(atom.getFormalCharge() + 1);
     } else if (type.equals("-")) {
@@ -3634,7 +3635,7 @@ abstract public class ModelCollection extends BondCollection {
     // 2) delete noncovalent bonds and attached hydrogens for that atom.
 
     removeUnnecessaryBonds(atom);
-    
+
     // 3) adjust distance from previous atom.
 
     float dx = 0;
@@ -3652,26 +3653,33 @@ abstract public class ModelCollection extends BondCollection {
       v.scale(dx - d);
       atom.add(v);
     }
-    
-    // 4) clear out all atoms within 1.0 angstrom
-    
+
     BitSet bsA = new BitSet(atomIndex);
     bsA.set(atomIndex);
-    bs = getAtomsWithin(1.0f, bsA, false);
-    bs.andNot(bsA);
-    if (bs.nextSetBit(0) >= 0)
-      viewer.deleteAtoms(bs, false);
 
-    // 5) attach nearby non-hydrogen atoms (rings)
-    
-    bs = getModelAtomBitSet(atom.modelIndex,false);
-    bs.andNot(getAtomBits(Token.hydrogen, null));
-    makeConnections(0.1f, 1.8f, 1, JmolConstants.CONNECT_CREATE_ONLY, bsA, bs, null, false, 0);
+    if (autoBond) {
 
-    // 6) add hydrogen atoms
+      // 4) clear out all atoms within 1.0 angstrom
 
-    bs = viewer.addHydrogens(bsA, false);
+      bs = getAtomsWithin(1.0f, bsA, false);
+      bs.andNot(bsA);
+      if (bs.nextSetBit(0) >= 0)
+        viewer.deleteAtoms(bs, false);
+
+      // 5) attach nearby non-hydrogen atoms (rings)
+
+      bs = getModelAtomBitSet(atom.modelIndex, false);
+      bs.andNot(getAtomBits(Token.hydrogen, null));
+      makeConnections(0.1f, 1.8f, 1, JmolConstants.CONNECT_CREATE_ONLY, bsA,
+          bs, null, false, 0);
+
+      // 6) add hydrogen atoms
+
+    }
+    viewer.addHydrogens(bsA, false);
   }
 
+  public void createOrMoveAtom(int atomIndex, int deltaX, int deltaY, String type) {
+  }
 
 }

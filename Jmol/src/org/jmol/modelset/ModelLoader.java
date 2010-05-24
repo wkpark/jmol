@@ -89,13 +89,13 @@ public final class ModelLoader extends ModelSet {
 
   public ModelLoader(Viewer viewer, Object atomSetCollection,
       ModelLoader mergeModelSet, String modelSetName, BitSet bsNew) {
+    this.viewer = viewer;
     JmolAdapter adapter = viewer.getModelAdapter();
     this.modelSetName = modelSetName;
     this.mergeModelSet = mergeModelSet;
     merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
     if (!merging)
       viewer.resetShapes();
-    this.viewer = viewer;
     preserveState = viewer.getPreserveState();
 
     initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase()

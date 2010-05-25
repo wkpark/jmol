@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-25 18:54+0200\n"
-"PO-Revision-Date: 2010-03-19 12:24+0000\n"
-"Last-Translator: Mustafa Yılmaz <apshalasha@gmail.com>\n"
+"PO-Revision-Date: 2010-05-25 21:46+0000\n"
+"Last-Translator: Angel Spy <melissadilara@yahoo.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-03-19 19:32+0000\n"
+"X-Launchpad-Export-Date: 2010-05-25 22:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: Turkish\n"
 
@@ -37,11 +37,11 @@ msgstr "Çalıştır"
 
 #: org/jmol/applet/AppletConsole.java:118
 msgid "Clear Output"
-msgstr "Çıktıyı Sil"
+msgstr "Çıktıyı Temizle"
 
 #: org/jmol/applet/AppletConsole.java:119
 msgid "Clear Input"
-msgstr "Girdiyi Sil"
+msgstr "Girdiyi Temizle"
 
 #: org/jmol/applet/AppletConsole.java:120
 #: org/jmol/popup/MainPopupResourceBundle.java:845
@@ -55,8 +55,8 @@ msgstr "Yükle"
 #: org/jmol/applet/AppletConsole.java:160
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
-"Yeni satır için CTRL-ENTER'a basın ya da model veri yapıştırın ve Yükle'ye "
-"basın"
+"yeni satır için CTRL-ENTER'a basın veya model verisini yapıştırın ve "
+"Yükle'ye basın"
 
 #: org/jmol/applet/AppletConsole.java:403
 msgid "&Help"
@@ -80,7 +80,7 @@ msgstr "&Parametreleri Ayarla"
 
 #: org/jmol/applet/AppletConsole.java:408
 msgid "&More"
-msgstr "&Daha"
+msgstr "&Daha Fazla"
 
 #: org/jmol/applet/Jmol.java:696
 #, java-format
@@ -127,7 +127,7 @@ msgstr "Jmol Betik Düzenleyicisi"
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/MainPopupResourceBundle.java:842
 msgid "Console"
-msgstr "Uçbirim"
+msgstr "Konsol"
 
 #: org/jmol/console/ScriptEditor.java:132
 #: org/jmol/export/dialog/Dialog.java:432
@@ -145,7 +145,8 @@ msgid "Check"
 msgstr "Denetle"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Yukarı"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -160,7 +161,7 @@ msgstr "Duraklat"
 #: org/jmol/console/ScriptEditor.java:140
 #: org/jmol/popup/MainPopupResourceBundle.java:800
 msgid "Resume"
-msgstr "Devam Et"
+msgstr "Sürdür"
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
@@ -176,11 +177,11 @@ msgstr "Kapat"
 
 #: org/jmol/export/dialog/Dialog.java:90
 msgid "File or URL:"
-msgstr "Dosya ya da internet adresi:"
+msgstr "Dosya veya URL:"
 
 #: org/jmol/export/dialog/Dialog.java:260
 msgid "Image Type"
-msgstr "Görüntü Tipi"
+msgstr "Görüntü Türü"
 
 #: org/jmol/export/dialog/Dialog.java:275
 #: org/jmol/export/dialog/Dialog.java:316
@@ -211,7 +212,7 @@ msgstr "Hayır"
 #: org/jmol/export/dialog/Dialog.java:367
 #, java-format
 msgid "Do you want to overwrite file {0}?"
-msgstr "{0} dosyasının üzerine yazmak istediğinizden emin misiniz?"
+msgstr "{0} dosyasının üzerine yazılsın mı?"
 
 #: org/jmol/export/dialog/Dialog.java:368
 msgid "Warning"
@@ -257,7 +258,7 @@ msgstr "Genel Dosya"
 
 #: org/jmol/export/dialog/Dialog.java:438
 msgid "Name"
-msgstr "Ad"
+msgstr "Adı"
 
 #: org/jmol/export/dialog/Dialog.java:439
 msgid "File Name:"
@@ -299,7 +300,7 @@ msgstr "Bak:"
 
 #: org/jmol/export/dialog/Dialog.java:452
 msgid "Error creating new folder"
-msgstr "Yeni klasör oluşturulurken hata"
+msgstr "Yeni klasör oluşturma hatası"
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "New Folder"
@@ -324,11 +325,11 @@ msgstr "Seçilen dosyayı kaydet"
 
 #: org/jmol/export/dialog/Dialog.java:464
 msgid "Save In:"
-msgstr "İçine kaydet:"
+msgstr "İçine Kaydet:"
 
 #: org/jmol/export/dialog/Dialog.java:465
 msgid "Update"
-msgstr "Güncelleme"
+msgstr "Güncelle"
 
 #: org/jmol/export/dialog/Dialog.java:467
 msgid "Update directory listing"
@@ -344,7 +345,7 @@ msgstr "Bir Seviye Yukarı"
 
 #: org/jmol/export/dialog/Dialog.java:474
 msgid "OK"
-msgstr "Tamam"
+msgstr "TAMAM"
 
 #: org/jmol/export/dialog/FilePreview.java:71
 msgid "Preview"
@@ -380,7 +381,7 @@ msgstr "Danca"
 
 #: org/jmol/i18n/GT.java:124
 msgid "Dutch"
-msgstr "Hollandaca"
+msgstr "Flemenkçe"
 
 #: org/jmol/i18n/GT.java:125
 msgid "British English"
@@ -412,7 +413,7 @@ msgstr "Macarca"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Indonesian"
-msgstr "Endonezya Dili"
+msgstr "Endonezce"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Italian"
@@ -432,7 +433,7 @@ msgstr "Norveç Bokmal"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Occitan"
-msgstr "Oksitan dili"
+msgstr "Occitan"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Polish"
@@ -460,11 +461,11 @@ msgstr "İspanyolca"
 
 #: org/jmol/i18n/GT.java:144
 msgid "Swedish"
-msgstr "İsveççe"
+msgstr "İsveçce"
 
 #: org/jmol/i18n/GT.java:145
 msgid "Tamil"
-msgstr ""
+msgstr "Tamil"
 
 #: org/jmol/i18n/GT.java:146
 msgid "Turkish"
@@ -486,7 +487,7 @@ msgstr "Herhangi bir atom seçili değil -- yapacak bir şey yok!"
 #: org/jmol/minimize/Minimizer.java:271
 #, java-format
 msgid "{0} atoms will be minimized."
-msgstr "{0} atom simge küçültülecek"
+msgstr "{0} atomlar küçültülecek."
 
 #: org/jmol/minimize/Minimizer.java:361
 #, java-format
@@ -494,9 +495,8 @@ msgid "could not setup force field {0}"
 msgstr "Güç alanını ayarlanamadı {0}"
 
 #: org/jmol/modelkit/AtomPopupResourceBundle.java:63
-#, fuzzy
 msgid "delete atom"
-msgstr "Atomu seç"
+msgstr "atomu sil"
 
 #: org/jmol/modelkit/AtomPopupResourceBundle.java:64
 msgid "drag atom"
@@ -516,38 +516,35 @@ msgstr ""
 
 #: org/jmol/modelkit/BondPopupResourceBundle.java:60
 msgid "delete"
-msgstr ""
+msgstr "sil"
 
 #: org/jmol/modelkit/BondPopupResourceBundle.java:61
-#, fuzzy
 msgid "single"
-msgstr "Dosya"
+msgstr "tek"
 
 #: org/jmol/modelkit/BondPopupResourceBundle.java:62
 msgid "double"
-msgstr ""
+msgstr "çift"
 
 #: org/jmol/modelkit/BondPopupResourceBundle.java:63
-#, fuzzy
 msgid "triple"
-msgstr "Dosya"
+msgstr ""
 
 #: org/jmol/modelkit/BondPopupResourceBundle.java:64
 msgid "increase"
-msgstr ""
+msgstr "artır"
 
 #: org/jmol/modelkit/BondPopupResourceBundle.java:65
 msgid "decrease"
-msgstr ""
+msgstr "azalt"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:57
 msgid "minimize"
-msgstr ""
+msgstr "küçült"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:58
-#, fuzzy
 msgid "save"
-msgstr "Kaydet"
+msgstr "kaydet"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:59
 msgid "exit modelkit mode"
@@ -561,7 +558,7 @@ msgstr "Hiç atom yüklenmedi"
 #: org/jmol/popup/JmolPopup.java:365
 #: org/jmol/popup/MainPopupResourceBundle.java:542
 msgid "Space Group"
-msgstr "Uzay grubu"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:427 org/jmol/popup/JmolPopup.java:467
 #: org/jmol/popup/MainPopupResourceBundle.java:563
@@ -592,7 +589,7 @@ msgstr "1 işlemci"
 #: org/jmol/popup/JmolPopup.java:579
 #, java-format
 msgid "{0} processors"
-msgstr "{0} işlemciler"
+msgstr "{0} işlemci"
 
 #: org/jmol/popup/JmolPopup.java:581
 msgid "unknown processor count"
@@ -623,11 +620,11 @@ msgstr "En yüksek {0} MB"
 
 #: org/jmol/popup/JmolPopup.java:601
 msgid "unknown maximum"
-msgstr "bilinmeyen en yüksek değer"
+msgstr "bilinmeyen maksimum"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:532
 msgid "Configurations"
-msgstr "Ayarlar"
+msgstr "Yapılandırmalar"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:533
 msgid "Element"
@@ -682,7 +679,7 @@ msgstr "Tüm {0} modeller"
 #: org/jmol/popup/MainPopupResourceBundle.java:547
 #, java-format
 msgid "Configurations ({0})"
-msgstr "Ayarlar  ({0})"
+msgstr "Yapılandırmalar ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:548
 #, java-format
@@ -735,12 +732,12 @@ msgstr "Biyomoleküller"
 #: org/jmol/popup/MainPopupResourceBundle.java:558
 #, java-format
 msgid "biomolecule {0} ({1} atoms)"
-msgstr "biyomolkül {0} ({1} atom)"
+msgstr "biyomolekül {0} ({1} atom)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:559
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
-msgstr "biyomolkül yükle {0} ({1} atom)"
+msgstr "biyomolekülü yükle {0} ({1} atom)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:564
 #: org/jmol/popup/MainPopupResourceBundle.java:683
@@ -762,7 +759,7 @@ msgstr "Görünüm"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:569
 msgid "Front"
-msgstr "Yazı Tipi"
+msgstr "Ön"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:570
 msgid "Left"
@@ -778,7 +775,7 @@ msgstr "Üst"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:573
 msgid "Bottom"
-msgstr "Aşağı"
+msgstr "Alt"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:574
 msgid "Back"
@@ -889,7 +886,7 @@ msgstr "Stil"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:608
 msgid "Scheme"
-msgstr "Tasarı"
+msgstr "Şema"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
 msgid "CPK Spacefill"
@@ -1053,7 +1050,7 @@ msgstr "Vektörler"
 #: org/jmol/popup/MainPopupResourceBundle.java:673
 #, java-format
 msgid "{0} pixels"
-msgstr "{0} benek"
+msgstr "{0} piksel"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:676
 #: org/jmol/popup/MainPopupResourceBundle.java:677
@@ -1135,7 +1132,7 @@ msgstr "Renk"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:707
 msgid "By Scheme"
-msgstr "Tasarıya Göre"
+msgstr "Şemaya Göre"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:708
 msgid "Element (CPK)"
@@ -1151,7 +1148,7 @@ msgstr "Molekül"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:711
 msgid "Formal Charge"
-msgstr "Formülsel Yük"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:712
 msgid "Partial Charge"
@@ -1191,7 +1188,7 @@ msgstr "Güzel biçimli"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:723
 msgid "Inherit"
-msgstr "Kalıt Al"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:724
 msgid "Black"
@@ -1231,7 +1228,7 @@ msgstr "Çivit Rengi"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:734
 msgid "Violet"
-msgstr "Menekşe rengi"
+msgstr "Menekşe Moru"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:736
 msgid "Salmon"
@@ -1269,7 +1266,7 @@ msgstr "Donuk Yap"
 #: org/jmol/popup/MainPopupResourceBundle.java:745
 #: org/jmol/popup/MainPopupResourceBundle.java:892
 msgid "Make Translucent"
-msgstr "Yarı Şeffaf Yap"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:758
 msgid "Background"
@@ -1301,11 +1298,11 @@ msgstr "Birim hücre"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:765
 msgid "Zoom"
-msgstr "Yakınlaştır"
+msgstr "Zum"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:772
 msgid "Zoom In"
-msgstr "Yakınlaş"
+msgstr "Yaklaş"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:773
 msgid "Zoom Out"
@@ -1339,7 +1336,7 @@ msgstr "Canlandırma"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:793
 msgid "Animation Mode"
-msgstr "Canlandırma Kipi"
+msgstr "Canlandırma Modu"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:794
 msgid "Play Once"
@@ -1568,9 +1565,8 @@ msgid "Optimize structure"
 msgstr "İyileştirilmiş yapı"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:877
-#, fuzzy
 msgid "Model kit"
-msgstr "Model"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:881
 msgid "Extract MOL data"
@@ -1885,9 +1881,9 @@ msgid "{0} require that only one model be displayed"
 msgstr "{0} sadece bir modelin gösterilmesine ihtiyaç duyuyor"
 
 #: org/jmol/script/ScriptEvaluator.java:2514
-#, fuzzy, java-format
+#, java-format
 msgid "{0} requires that only one model be loaded"
-msgstr "{0} sadece bir modelin gösterilmesine ihtiyaç duyuyor"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2517
 msgid "No data available"
@@ -2070,7 +2066,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:65
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:67
@@ -2107,9 +2104,9 @@ msgid "select NONE (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:76
-#, fuzzy, java-format
+#, java-format
 msgid "toggle selection (requires {0})"
-msgstr "seçili atomları hareket ettir ({0} gerektirir)"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:77
 #, java-format
@@ -2144,14 +2141,14 @@ msgid "rotate selected atoms (requires {0})"
 msgstr "seçili atomları döndür ({0} gerektirir)"
 
 #: org/jmol/viewer/ActionManager.java:85
-#, fuzzy, java-format
+#, java-format
 msgid "move atom (requires {0})"
-msgstr "atomları birleştir ({0} gerektirir)"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:86
-#, fuzzy, java-format
+#, java-format
 msgid "move atom and minimize molecule (requires {0})"
-msgstr "seçili atomları hareket ettir ({0} gerektirir)"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:87
 #, java-format
@@ -2197,14 +2194,14 @@ msgid "pick an ISOSURFACE point"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:97
-#, fuzzy, java-format
+#, java-format
 msgid "pick a point or atom to navigate to (requires {0})"
-msgstr "atomları birleştir ({0} gerektirir)"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:99
-#, fuzzy, java-format
+#, java-format
 msgid "delete atom (requires {0})"
-msgstr "seçili atomları hareket ettir ({0} gerektirir)"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:100
 #, java-format
@@ -2217,9 +2214,9 @@ msgid "connect atoms (requires {0})"
 msgstr "atomları birleştir ({0} gerektirir)"
 
 #: org/jmol/viewer/ActionManager.java:102
-#, fuzzy, java-format
+#, java-format
 msgid "assign/new atom or bond (requires {0})"
-msgstr "atomları birleştir ({0} gerektirir)"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:104
 msgid "reset (when clicked off the model)"
@@ -2236,7 +2233,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:1655
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr "modeli bir eksen etrafında döndürebilmek için bir tane daha atom seçin"
+msgstr ""
+"modeli bir eksen etrafında döndürebilmek için bir tane daha atom seçin"
 
 #: org/jmol/viewer/ActionManager.java:1656
 msgid "pick two atoms in order to spin the model around an axis"
@@ -2287,21 +2285,24 @@ msgstr ""
 #~ msgid "About Jmol"
 #~ msgstr "Jmol Hakkında"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Bu programcık tarafından dosya oluşturulmasına izin verilmemektedir. "
-#~ "Base64 JPEG biçimi için {0} kullanın."
+#~ "Bu programcık tarafından dosya oluşturulmasına izin verilmemektedir. Base64 "
+#~ "JPEG biçimi için {0} kullanın."
 
 #~ msgid "File creation failed."
 #~ msgstr "Dosya oluşturulamadı."
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "HATA: ikili işaret yazı değerine atanamadı: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "HATA: ikili işaret sayısal değere atanamadı: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "HATA: Bu değişkenin değeri bir ikiliye atanamadı: {0}"

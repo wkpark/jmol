@@ -718,13 +718,16 @@ public class ActionManager {
       // H C + -, etc.
       // also check valence and add/remove H atoms as necessary?
       viewer.undoAction(true);
-      if (measurementPending.getCount() == 2)
+      if (measurementPending.getCount() == 2) {
         viewer.script("connect "
             + measurementPending.getMeasurementScript(" ", false));
-      else if (pressed.inRange(dragged.x, dragged.y))
-        viewer.script("assign atom ({" + dragAtomIndex + "}) \""
-            + pickAtomAssignType + "\"");
-      else if (!isPickAtomAssignCharge) {
+      } else if (pressed.inRange(dragged.x, dragged.y)) {
+        String s = "assign atom ({" + dragAtomIndex + "}) \""
+        + pickAtomAssignType + "\"";
+        if (isPickAtomAssignCharge)
+          s += ";{atomindex=" + dragAtomIndex + "}.label='%C'; ";
+        viewer.script(s);
+      } else if (!isPickAtomAssignCharge) {
         Atom a = viewer.getModelSet().atoms[dragAtomIndex];
         if (a.getElementNumber() == 1) {
           viewer.script("delete ({" + dragAtomIndex + "})");

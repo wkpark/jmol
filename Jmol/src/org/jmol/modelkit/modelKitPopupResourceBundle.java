@@ -40,7 +40,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
     
   private static String[][] menuContents = {
     { "modelkitMenu", "atomMenu bondMenu - addh minimize saveSIGNED exit" },
-    { "atomMenu" , "assignAtom_XP!RD dragAtomP!RD dragMinimizeP!RD - assignAtom_CP!RD assignAtom_HP!RD assignAtom_NP!RD assignAtom_OP!RD - assignAtom_pP!RD assignAtom_mP!RD" },
+    { "atomMenu" , "assignAtom_XP!RD dragAtomP!RD dragMinimizeP!RD - assignAtom_CP!RD assignAtom_HP!RD assignAtom_NP!RD assignAtom_OP!RD - assignAtom_PlP!RD assignAtom_MiP!RD" },
     { "bondMenu", "assignBond_0P!RD assignBond_1P!RD assignBond_2P!RD assignBond_3P!RD - assignBond_pP!RD assignBond_mP!RD - rotateBondP!RD" }
   };
   

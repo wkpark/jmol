@@ -6009,6 +6009,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setPickingMode(null, value ? JmolConstants.PICKING_ASSIGN_BOND : JmolConstants.PICKING_IDENTIFY);
     setPickingMode(null, value ? JmolConstants.PICKING_ASSIGN_ATOM : JmolConstants.PICKING_IDENTIFY);
     if (value) {
+      setNavigationMode(false);
+      selectAll();
+//      setShapeProperty(JmolConstants.SHAPE_LABELS, "color", "RED");
       setAtomPickingOption("C");
       setBondPickingOption("p");
     }

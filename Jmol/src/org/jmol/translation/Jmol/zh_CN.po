@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-17 20:16+0200\n"
-"PO-Revision-Date: 2010-03-17 00:28+0000\n"
-"Last-Translator: LI Anbang <lianbang@gmail.com>\n"
+"PO-Revision-Date: 2010-05-25 12:56+0000\n"
+"Last-Translator: 英华 <wantinghard@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-03-17 20:36+0000\n"
+"X-Launchpad-Export-Date: 2010-05-25 16:32+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -66,7 +66,6 @@ msgid "send only output from print messages to console (implies -i)"
 msgstr "只把打印信息输出发送到控制台（隐含 -i 参数）"
 
 #: org/openscience/jmol/app/JmolApp.java:158
-#, fuzzy
 msgid "independent command thread"
 msgstr "独立命令线程"
 
@@ -431,9 +430,8 @@ msgid "Scrip&t Editor..."
 msgstr "脚本编辑器(&T)..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
-#, fuzzy
 msgid "Conso&le..."
-msgstr "输出控制台(&L)..."
+msgstr "终端(&L)..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
 msgid "Jmol Java &Console"

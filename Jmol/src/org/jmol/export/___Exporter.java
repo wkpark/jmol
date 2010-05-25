@@ -505,8 +505,12 @@ public abstract class ___Exporter {
                               Matrix3f toEllipsoidal, double[] coef,
                               Matrix4f deriv, Point3i[] octantPoints);
 
-  abstract void fillScreenedCircle(short colix, int diameter, int x, int y,
-                                   int z); // halos
+  void drawFilledCircle(short colixRing, short colixFill, int diameter, int x, int y, int z) {
+    if (colixRing != 0)
+      drawCircle(x, y, z, diameter, colixRing, false);
+    if (colixFill != 0)
+      drawCircle(x, y, z, diameter, colixFill, true);
+  }
 
   //rockets:
   abstract void fillSphere(short colix, int diameter, Point3f pt);

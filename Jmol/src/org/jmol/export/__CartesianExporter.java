@@ -130,7 +130,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     outputSphere(atom, atom.madAtom / 2000f, atom.getColix());
   }
 
-  void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) {
+ void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) {
     // draw circle
     tempP3.set(x, y, z);
     viewer.unTransformPoint(tempP3, tempP1);
@@ -201,12 +201,6 @@ abstract public class __CartesianExporter extends ___Exporter {
                      int y, int z, int diameter, Matrix3f toEllipsoidal,
                      double[] coef, Matrix4f deriv, Point3i[] octantPoints) {
     outputEllipsoid(center, points, colix);
-  }
-
-  void fillScreenedCircle(short colix, int diameter, int x, int y, int z) {
-    drawCircle(x, y, z, diameter, colix, false);
-    drawCircle(x, y, z, diameter, Graphics3D.getColixTranslucent(colix, true,
-        0.5f), true);
   }
 
   void fillSphere(short colix, int diameter, Point3f pt) {

@@ -803,53 +803,26 @@ final public class Graphics3D implements JmolRendererInterface {
     }
   }
 
-
-  /**
-   * draws a screened circle ... every other dot is turned on
-   *
-   * @param colix the color index
-   * @param diameter the pixel diameter
-   * @param x center x
-   * @param y center y
-   * @param z center z
-   * @param doFill fill or not
-   */
-  public void drawCircle(short colix, int diameter, int x, int y, int z, boolean doFill) {
-    // draw circle
+  public void drawFilledCircle(short colixRing, short colixFill, int diameter,
+                               int x, int y, int z) {
     if (isClippedZ(z))
       return;
     int r = (diameter + 1) / 2;
     boolean isClipped = x < r || x + r >= width || y < r || y + r >= height;
-      if (!isClipped)
-        circle3d.plotCircleCenteredUnclipped(x, y, z, diameter);
-      else if (!isClippedXY(diameter, x, y))
-        circle3d.plotCircleCenteredClipped(x, y, z, diameter);
-    if (!doFill)
+    if (isClipped && isClippedXY(diameter, x, y))
       return;
-    if (!isClipped)
-      circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
-    else if (!isClippedXY(diameter, x, y))
-      circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);    
-  }
-
-  public void fillScreenedCircle(short colixFill, int diameter, int x, int y, int z) {
-    // halo only -- simple Z/window clip
-    if (isClippedZ(z))
-      return;
-    int r = (diameter + 1) / 2;
-    boolean isClipped = x < r || x + r >= width || y < r || y + r >= height;
-    if (setColix(getColixTranslucent(colixFill, false, 0))) {
-      if (!isClipped)
-        circle3d.plotCircleCenteredUnclipped(x, y, z, diameter);
-      else if (!isClippedXY(diameter, x, y))
+    if (colixRing != 0 && setColix(colixRing)) {
+      if (isClipped)
         circle3d.plotCircleCenteredClipped(x, y, z, diameter);
+      else
+        circle3d.plotCircleCenteredUnclipped(x, y, z, diameter);
     }
-    if (!setColix(getColixTranslucent(colixFill, true, 0.5f)))
-      return;
-    if (!isClipped)
-      circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
-    else if (!isClippedXY(diameter, x, y))
-      circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);
+    if (colixFill != 0 && setColix(colixFill)) {
+      if (isClipped)
+        circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);
+      else
+        circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
+    }
   }
 
   /**

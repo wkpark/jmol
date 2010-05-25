@@ -114,11 +114,9 @@ final public class Export3D implements JmolRendererInterface {
 
   /**
    * draws a screened circle ... every other dot is turned on
-   * 
+   * @param colixRing 
    * @param colixFill
-   *          the color index
    * @param diameter
-   *          the pixel diameter
    * @param x
    *          center x
    * @param y
@@ -127,12 +125,12 @@ final public class Export3D implements JmolRendererInterface {
    *          center z
    */
 
-  public void fillScreenedCircle(short colixFill, int diameter, int x, int y,
+  public void drawFilledCircle(short colixRing, short colixFill, int diameter, int x, int y,
                                  int z) {
     // halos, draw
     if (isClippedZ(z))
       return;
-    exporter.fillScreenedCircle(colixFill, diameter, x, y, z);
+    exporter.drawFilledCircle(colixRing, colixFill, diameter, x, y, z);
   }
 
   /**

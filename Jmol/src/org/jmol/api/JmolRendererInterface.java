@@ -73,31 +73,17 @@ public interface JmolRendererInterface {
   public abstract void drawAtom(Atom atom);
 
   /**
-   * draws a screened circle ... every other dot is turned on
+   * draws a ring and filled circle (halos, draw CIRCLE, draw handles)
    *
-   * @param colix the color index
-   * @param diameter the pixel diameter
-   * @param x center x
-   * @param y center y
-   * @param z center z
-   * @param doFill fill or not
-   */
-  public abstract void drawCircle(short colix, int diameter, int x, int y, int z,
-                                          boolean doFill);
-
-
-  /**
-   * draws a screened circle ... every other dot is turned on
-   *
-   * @param colixFill the color index
-   * @param diameter the pixel diameter
+   * @param colixRing 
+   * @param colixFill 
+   * @param diameter 
    * @param x center x
    * @param y center y
    * @param z center z
    */
-  public abstract void fillScreenedCircle(short colixFill,
-                                                  int diameter, int x, int y,
-                                                  int z);
+  public abstract void drawFilledCircle(short colixRing, short colixFill, int diameter, int x, int y,
+                                          int z);
 
   /**
    * fills a solid sphere

@@ -79,8 +79,6 @@ abstract class __RayTracerExporter extends ___Exporter {
   abstract protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,
                                      short colix);
 
-  abstract protected void outputCircleScreened(int x, int y, int z, float radius, short colix);
-  
   protected Point3f getScreenNormal(Point3f pt, Vector3f normal, float factor) {
     if (Float.isNaN(normal.x)) {
       tempP3.set(0, 0, 0);
@@ -209,10 +207,6 @@ abstract class __RayTracerExporter extends ___Exporter {
     outputSphere(pt.x, pt.y, pt.z, diameter / 2f, colix);
   }
   
-  void fillScreenedCircle(short colix, int diameter, int x, int y, int z) {
-    outputCircleScreened(x, y, z, diameter / 2f, colix);
-  }
-
   void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
     outputTriangle(ptA, ptB, ptC, colix);
   }

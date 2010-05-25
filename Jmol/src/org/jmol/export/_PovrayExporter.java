@@ -324,15 +324,8 @@ public class _PovrayExporter extends __RayTracerExporter {
   protected void outputCircle(int x, int y, int z, float radius, short colix,
                               boolean doFill) {
     output((doFill ? "b(" : "c(") + x + "," + y + "," + z + "," + radius + ","
-        + x + "," + y + "," + (z + 1) + "," + (radius + 2) + ","
+        + x + "," + y + "," + (z + 1) + "," + (radius + (doFill ? 0 : 2)) + ","
         + color4(colix) + ")\n");
-  }
-
-  protected void outputCircleScreened(int x, int y, int z, float radius, short colix) {
-    //halos
-    output("b(" + x + "," + y + "," + z + "," + radius + "," 
-        + x + "," + y + "," + (z + 1) + "," + radius + "," 
-        + rgbFractionalFromColix(colix, ',') + ",0.8)\n");
   }
 
   protected void outputComment(String comment) {

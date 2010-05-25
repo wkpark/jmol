@@ -171,12 +171,6 @@ public class _TachyonExporter extends __RayTracerExporter {
     outputRing(x, y, z, tempV1, radius, colix, doFill);
   }
 
-  protected void outputCircleScreened(int x, int y, int z, float radius, short colix) {
-    colix = Graphics3D.getColixTranslucent(colix, true, 0.8f);
-    tempV1.set(0,0,-1);
-    outputRing(x, y, z, tempV1, radius, colix, true);
-  }
-
   private void outputRing(int x, int y, int z, Vector3f tempV1, float radius,
                           short colix, boolean doFill) {
     outputTexture(colix, true);

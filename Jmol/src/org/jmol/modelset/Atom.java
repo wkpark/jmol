@@ -423,7 +423,6 @@ final public class Atom extends Point3fi implements JmolNode {
     if (charge != 0)
       targetValence += (targetValence == 4 ? -Math.abs(charge) : charge);
     int n = targetValence - getValence();
-    System.out.println("Atom nImplicit=" + n);
     return (n < 0 ? 0 : n);
   }
 

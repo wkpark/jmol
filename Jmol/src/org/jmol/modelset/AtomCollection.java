@@ -1224,7 +1224,6 @@ abstract public class AtomCollection {
         if (doAll && atom.getCovalentHydrogenCount() > 0)
           continue;
         int n = atom.getImplicitHydrogenCount();
-        System.out.println("atomcoll " + n);
         if (n == 0)
           continue;
         int nBonds = atom.getCovalentBondCount();
@@ -1579,7 +1578,7 @@ abstract public class AtomCollection {
                 : lcaoType.indexOf("c") >= 0 ? x3
                     : lcaoType.indexOf("b") >= 0 ? x2 : x);
         z.scale(-1);
-        System.out.println("draw x" + lcaoType + " vector {C13} " + z);
+        //System.out.println("draw x" + lcaoType + " vector {C13} " + z);
         x.set(y1);
         break;
       }

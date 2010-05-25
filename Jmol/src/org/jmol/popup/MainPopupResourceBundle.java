@@ -180,7 +180,7 @@ class MainPopupResourceBundle extends PopupResource {
               + "pickMolecule pickElement PDBpickChain PDBpickGroup SYMMETRYpickSite pickSpin" },
 
       {   "computationMenu",
-          "minimize"
+          "minimize modelkit!PDB!FRAMES"
               /* calculateVolume*/ },
 
               
@@ -484,6 +484,7 @@ class MainPopupResourceBundle extends PopupResource {
       { "extractMOL", "console on;getproperty extractModel \"visible\" " },
       
        { "minimize", "minimize" },    
+       { "modelkit!PDB!FRAMES", "set modelkitmode" },    
       //  { "calculateVolume", "console on;print \"Volume = \" + {*}.volume() + \" Ang^3\"" },     
       
       { "surfDots", "dots on" },
@@ -873,6 +874,7 @@ class MainPopupResourceBundle extends PopupResource {
 
         "computationMenu", GT._("Computation"),      
         "minimize", GT._("Optimize structure"),      
+        "modelkit!PDB!FRAMES", GT._("Model kit"),      
         //"calculateVolume", GT._("Molecular volume"),   
                 
         "UNITCELLshow", GT._("Unit cell"),

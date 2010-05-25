@@ -97,6 +97,10 @@ public final class Model {
 
   int hydrogenCount;
   boolean isPDB;
+  public boolean isPDB() {
+    return isPDB;
+  }
+  
   boolean isTrajectory;
   int trajectoryBaseIndex;
   int selectedTrajectory = -1;

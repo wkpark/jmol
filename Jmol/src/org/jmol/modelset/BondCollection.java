@@ -400,9 +400,11 @@ abstract public class BondCollection extends AtomCollection {
   }
 
   public void deleteBonds(BitSet bsBond, boolean isFullModel) {
+    int iDst = bsBond.nextSetBit(0);
+    if (iDst < 0)
+      return;
     molecules = null;
     moleculeCount = 0;
-    int iDst = bsBond.nextSetBit(0);
     int modelIndexLast = -1;
     int n = bsBond.cardinality();
     for (int iSrc = iDst; iSrc < bondCount; ++iSrc) {
@@ -793,10 +795,10 @@ abstract public class BondCollection extends AtomCollection {
     case '2':
     case '3':
       break;
-    case '+':
-    case '-':
+    case 'p':
+    case 'm':
       bondOrder = JmolConstants.getBondOrderNumberFromOrder(bond.getCovalentOrder()).charAt(0)
-       - '0' + (type == '+' ? 1 : -1);
+       - '0' + (type == 'p' ? 1 : -1);
       if (bondOrder > 3)
         bondOrder = 1;
       else if (bondOrder < 0)

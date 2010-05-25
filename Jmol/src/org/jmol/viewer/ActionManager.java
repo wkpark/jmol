@@ -1364,7 +1364,7 @@ public class ActionManager {
   private int pickingStyleMeasure = JmolConstants.PICKINGSTYLE_MEASURE_OFF;
   private int rootPickingStyle = JmolConstants.PICKINGSTYLE_SELECT_JMOL;
   private String pickAtomAssignType = "C";
-  private char pickBondAssignType = '+';
+  private char pickBondAssignType = 'p';
   private int bondPickingMode;
   private boolean isPickAtomAssignCharge;
 
@@ -1411,7 +1411,7 @@ public class ActionManager {
     switch (atomPickingMode) {
     case JmolConstants.PICKING_ASSIGN_ATOM:
       pickAtomAssignType = option;
-      isPickAtomAssignCharge = ("+-".indexOf(pickAtomAssignType) >= 0);
+      isPickAtomAssignCharge = (pickAtomAssignType.equals("Pl") || pickAtomAssignType.equals("Mi"));
       break;
     }
   }

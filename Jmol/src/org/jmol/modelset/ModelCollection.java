@@ -3627,9 +3627,9 @@ abstract public class ModelCollection extends BondCollection {
       RadiusData rd = new RadiusData();
       setElement(atom, atomicNumber, rd);
       setAtomName(atomIndex, type + atom.getAtomNumber());
-    } else if (type.equals("+")) {
+    } else if (type.equals("Pl")) {
       atom.setFormalCharge(atom.getFormalCharge() + 1);
-    } else if (type.equals("-")) {
+    } else if (type.equals("Mi")) {
       atom.setFormalCharge(atom.getFormalCharge() - 1);
     } else if (type.equals("X")) {
       isDelete = true;

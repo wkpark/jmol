@@ -67,8 +67,10 @@ public class SimplePopup {
   protected JPopupMenu frankPopup;
 
   protected Hashtable htMenus = new Hashtable();
+  protected Vector NotPDB = new Vector();
   protected Vector PDBOnly = new Vector();
   protected Vector UnitcellOnly = new Vector();
+  protected Vector SingleModelOnly = new Vector();
   protected Vector FramesOnly = new Vector();
   protected Vector VibrationOnly = new Vector();
   protected Vector SymmetryOnly = new Vector();
@@ -183,10 +185,16 @@ public class SimplePopup {
   }
 
   void updateFileTypeDependentMenus() {
+    for (int i = 0; i < NotPDB.size(); i++)
+      enableMenu(NotPDB.get(i), !isPDB);
     for (int i = 0; i < PDBOnly.size(); i++)
       enableMenu(PDBOnly.get(i), isPDB);
     for (int i = 0; i < UnitcellOnly.size(); i++)
       enableMenu(UnitcellOnly.get(i), isUnitCell);
+    for (int i = 0; i < FramesOnly.size(); i++)
+      enableMenu(FramesOnly.get(i), isMultiFrame);
+    for (int i = 0; i < SingleModelOnly.size(); i++)
+      enableMenu(SingleModelOnly.get(i), !isMultiFrame);
     for (int i = 0; i < FramesOnly.size(); i++)
       enableMenu(FramesOnly.get(i), isMultiFrame);
     for (int i = 0; i < VibrationOnly.size(); i++)
@@ -258,9 +266,12 @@ public class SimplePopup {
       if (item.indexOf("VARIABLE") >= 0)
         htMenus.put(item, newMenu);
       // menus or menu items:
-      if (item.indexOf("PDB") >= 0) {
+      if (item.indexOf("!PDB") >= 0) {
+        NotPDB.add(newMenu);
+      } else if (item.indexOf("PDB") >= 0) {
         PDBOnly.add(newMenu);
-      } else if (item.indexOf("URL") >= 0) {
+      } 
+      if (item.indexOf("URL") >= 0) {
         AppletOnly.add(newMenu);
       } else if (item.indexOf("CHARGE") >= 0) {
         ChargesOnly.add(newMenu);
@@ -268,9 +279,15 @@ public class SimplePopup {
         TemperatureOnly.add(newMenu);
       } else if (item.indexOf("UNITCELL") >= 0) {
         UnitcellOnly.add(newMenu);
+      } 
+      
+      if (item.indexOf("!FRAMES") >= 0) {
+        SingleModelOnly.add(newMenu);
       } else if (item.indexOf("FRAMES") >= 0) {
         FramesOnly.add(newMenu);
-      } else if (item.indexOf("VIBRATION") >= 0) {
+      } 
+      
+      if (item.indexOf("VIBRATION") >= 0) {
         VibrationOnly.add(newMenu);
       } else if (item.indexOf("SYMMETRY") >= 0) {
         SymmetryOnly.add(newMenu);

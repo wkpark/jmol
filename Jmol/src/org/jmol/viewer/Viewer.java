@@ -2153,6 +2153,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (!isAppend)
         initializeModel();
+      if (global.modelkitMode && 
+          (modelSet.getModelCount() > 1 || modelSet.getModels()[0].isPDB()))
+        setBooleanProperty("modelkitmode", false);
+        
     } catch (Error er) {
       handleError(er, true);
       String errMsg = getShapeErrorState();

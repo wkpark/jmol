@@ -903,9 +903,10 @@ public class Token {
   public final static int loggestures                    = booleanparam | 100;
   public final static int measureallmodels               = booleanparam | 101;
   public final static int measurementlabels              = booleanparam | 102;
-  public final static int messagestylechime              = booleanparam | 104;
-  public final static int minimizationrefresh            = booleanparam | 105;
-  public final static int minimizationsilent             = booleanparam | 106;
+  public final static int messagestylechime              = booleanparam | 103;
+  public final static int minimizationrefresh            = booleanparam | 104;
+  public final static int minimizationsilent             = booleanparam | 105;
+  public final static int modelkitmode                   = booleanparam | 106; // new 12.0.RC15
   public final static int monitorenergy                  = booleanparam | 107;
   public final static int multiprocessor                 = booleanparam | 108;
   public final static int navigatesurface                = booleanparam | 109;
@@ -2132,6 +2133,7 @@ public class Token {
       "messageStyleChime",                        new Token(messagestylechime),
       "minimizationRefresh",                      new Token(minimizationrefresh),
       "minimizationSilent",                       new Token(minimizationsilent),
+      "modelkitMode",                             new Token(modelkitmode),
       "monitorEnergy",                            new Token(monitorenergy),
       "multiProcessor",                           new Token(multiprocessor),
       "navigateSurface",                          new Token(navigatesurface),

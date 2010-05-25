@@ -23,49 +23,22 @@
  */
 package org.jmol.popup;
 
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.Properties;
 
 import org.jmol.i18n.GT;
 
-class PopupResourceBundle {
+class MainPopupResourceBundle extends PopupResource {
 
-  PopupResourceBundle(String menuStructure, Properties menuText) {
-    buildStructure(menuStructure);
-    localize(menuStructure != null, menuText);
+  MainPopupResourceBundle(String menuStructure, Properties menuText) {
+    super(menuStructure, menuText);
   }
 
-  String getMenu(String title) {
-    return "# Jmol.mnu " + title + "\n\n" +
-           "# Part I -- Menu Structure\n" +
-           "# ------------------------\n\n" +
-           dumpStructure(menuContents) + "\n\n" +
-           "# Part II -- Key Definitions\n" +
-           "# --------------------------\n\n" +
-           dumpStructure(structureContents) + "\n\n" +
-           "# Part III -- Word Translations\n" +
-           "# -----------------------------\n\n" +
-           dumpWords();
+  protected void buildStructure(String menuStructure) {
+    addItems(menuContents);
+    addItems(structureContents);
+    setStructure(menuStructure);
   }
-  
-  String getStructure(String key) {
-    return structure.getProperty(key);
-  }
-
-  void addStructure(String key, String value) {
-    structure.setProperty(key, value);
-  }
-
-  String getWord(String key) {
-    String str = words.getProperty(key);
-    return (str == null ? key : str);
-  }
-
-  // Properties to store menu structure and contents
-  private Properties structure = new Properties();
-  private Properties words = new Properties();
-  
+    
   private static String Box(String cmd) {
     return "if (showBoundBox or showUnitcell) {"+cmd+"} else {boundbox on;"+cmd+";boundbox off}";
   }
@@ -545,19 +518,9 @@ class PopupResourceBundle {
       { "25a", "0.25" },
       { "50a", "0.50" },
       { "100a", "1.0" },
-
-//      { "rasmolChimeCompatibility",
-//        "set color rasmol; set zeroBasedXyzRasmol on; "
-  //          + "set axesOrientationRasmol on; load \"\"; select *; cpk off; wireframe on; " },
-
-  /* now these entries are inserted dynamically into a submenu:  
-      { "APPLETjmolUrl", "show url \"http://www.jmol.org\"" },
-      { "APPLETmouseManualUrl", "show url \"http://wiki.jmol.org/index.php/Mouse_Manual\"" },
-      { "APPLETtranslationUrl", "show url \"http://wiki.jmol.org/index.php/Internationalisation\"" }, 
-  */
   };
   
-  private String[] getWordContents() {
+  protected String[] getWordContents() {
     
     boolean wasTranslating = GT.getDoTranslate();
     if (!wasTranslating)
@@ -978,13 +941,19 @@ class PopupResourceBundle {
     return words;
   }
   
-  private void buildStructure(String menuStructure) {
-    addItems(menuContents);
-    addItems(structureContents);
-    setStructure(menuStructure);
+  public String getMenu(String title) {
+    return "# Jmol.mnu " + title + "\n\n" +
+           "# Part I -- Menu Structure\n" +
+           "# ------------------------\n\n" +
+           dumpStructure(menuContents) + "\n\n" +
+           "# Part II -- Key Definitions\n" +
+           "# --------------------------\n\n" +
+           dumpStructure(structureContents) + "\n\n" +
+           "# Part III -- Word Translations\n" +
+           "# -----------------------------\n\n" +
+           dumpWords();
   }
-  
-  
+
   private String dumpWords() {
     String[] wordContents = getWordContents();
     StringBuffer s = new StringBuffer();
@@ -1011,78 +980,6 @@ class PopupResourceBundle {
     return s.toString();
   }
  
-   
-   
-  public void setStructure(String slist) {
-    if (slist == null)
-      return;
-    BufferedReader br = new BufferedReader(new StringReader(slist));
-    String line;
-    int pt;
-    try {
-      while ((line = br.readLine()) != null) {
-        if (line.length() == 0 || line.charAt(0) == '#') 
-          continue;
-        pt = line.indexOf("=");
-        if (pt < 0) {
-          pt = line.length();
-          line += "=";
-        }
-        String name = line.substring(0, pt).trim();
-        String value = line.substring(pt + 1).trim();
-        String label = null;
-        if ((pt = name.indexOf("|")) >= 0) {
-          label = name.substring(pt + 1).trim();
-          name = name.substring(0, pt).trim();
-        }
-        if (name.length() == 0)
-          continue;
-        if (value.length() > 0)
-          structure.setProperty(name, value);
-        if (label != null && label.length() > 0)
-          words.setProperty(name, GT._(label));
-        /* note that in this case we are using a variable in 
-         * the GT._() method. That's because all standard labels
-         * have been preprocessed already, so any standard label
-         * will be translated. Any other label MIGHT be translated
-         * if by chance that word or phrase appears in some other
-         * GT._() call somewhere else in Jmol. Otherwise it will not
-         * be translated by this call, because it hasn't been 
-         * internationalized. 
-         */
-      }
-    } catch (Exception e) {
-      //
-    }
-    try {
-      br.close();
-    } catch (Exception e) {
-    }
-  }
+
   
-  private void addItems(String[][] itemPairs) {   
-    String previous = "";
-    for (int i = 0; i < itemPairs.length; i++) {
-      String str = itemPairs[i][1];
-      if (str == null)
-        str = previous;
-      previous = str;
-      structure.setProperty(itemPairs[i][0], str);
-    }
-  }
-  
-  private void localize(boolean haveUserMenu, Properties menuText) {
-    String[] wordContents = getWordContents();
-    for (int i = 0; i < wordContents.length;)      
-      /*if (haveUserMenu && words.getProperty(wordContents[i]) != null) {
-        i += 2;
-      } else*/ {
-        String item = wordContents[i++];
-        String word = wordContents[i++];
-        words.setProperty(item, word);
-        // save a few names for later
-        if (menuText != null && item.indexOf("Text") >= 0)
-          menuText.setProperty(item, word);
-      }
-  }
 }

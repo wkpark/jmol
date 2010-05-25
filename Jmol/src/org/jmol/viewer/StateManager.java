@@ -600,7 +600,7 @@ public class StateManager {
         + ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred"
         + ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount"
         + ";spinx;spiny;spinz;spinfps;navx;navy;navz;navfps;" + JmolConstants.getCallbackName(-1)
-        + ";undo;bondpicking;";
+        + ";undo;bondpicking;modelkitmode;";
 
   protected static int getJmolVersionInt() {
     // 11.9.999 --> 1109999
@@ -882,6 +882,7 @@ public class StateManager {
       setParameterValue("minimizationRefresh", minimizationRefresh);
       setParameterValue("minimizationSilent", minimizationSilent);
       setParameterValue("minimizationCriterion", minimizationCriterion);
+      setParameterValue("modelkitMode", modelkitMode);
       setParameterValue("monitorEnergy", monitorEnergy);
       setParameterValue("multiProcessor", multiProcessor && (Viewer.nProcessors > 1));
       setParameterValue("navigationMode", navigationMode);
@@ -1215,6 +1216,7 @@ public class StateManager {
     float navigationSpeed = 5;
     boolean showNavigationPointAlways = false;
     String stereoState = null;
+    boolean modelkitMode = false;
 
     // special persistent object characteristics -- bbcage, uccage, axes:
 

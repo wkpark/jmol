@@ -2413,6 +2413,8 @@ abstract public class ModelCollection extends BondCollection {
         atomB = bondAB.atom2;
       } else {
         atomA = atoms[iA];
+        if (atomA.isDeleted())
+          continue;
       }
       for (int iB = m; --iB >= 0;) {
         if (!isBonds) {
@@ -2421,7 +2423,7 @@ abstract public class ModelCollection extends BondCollection {
           if (!bsB.get(iB))
             continue;
           atomB = atoms[iB];
-          if (atomA.modelIndex != atomB.modelIndex)
+          if (atomA.modelIndex != atomB.modelIndex || atomB.isDeleted())
             continue;
           if (atomA.alternateLocationID != atomB.alternateLocationID
               && atomA.alternateLocationID != '\0'
@@ -3620,6 +3622,7 @@ abstract public class ModelCollection extends BondCollection {
 
     // 1) change the element type or charge
 
+    boolean isDelete = false;
     if (atomicNumber > 0) {
       RadiusData rd = new RadiusData();
       setElement(atom, atomicNumber, rd);
@@ -3628,20 +3631,22 @@ abstract public class ModelCollection extends BondCollection {
       atom.setFormalCharge(atom.getFormalCharge() + 1);
     } else if (type.equals("-")) {
       atom.setFormalCharge(atom.getFormalCharge() - 1);
+    } else if (type.equals("X")) {
+      isDelete = true;
     } else {
       return; // uninterpretable
     }
 
     // 2) delete noncovalent bonds and attached hydrogens for that atom.
 
-    removeUnnecessaryBonds(atom);
+    removeUnnecessaryBonds(atom, isDelete);
 
     // 3) adjust distance from previous atom.
 
     float dx = 0;
     if (atom.getCovalentBondCount() == 1)
       if (wasH) {
-        dx = 1.35f;
+        dx = 1.50f;
       } else if (!wasH && atomicNumber == 1) {
         dx = 1.0f;
       }
@@ -3660,7 +3665,7 @@ abstract public class ModelCollection extends BondCollection {
     if (autoBond) {
 
       // 4) clear out all atoms within 1.0 angstrom
-
+      bspf = null;
       bs = getAtomsWithin(1.0f, bsA, false);
       bs.andNot(bsA);
       if (bs.nextSetBit(0) >= 0)
@@ -3668,7 +3673,7 @@ abstract public class ModelCollection extends BondCollection {
 
       // 5) attach nearby non-hydrogen atoms (rings)
 
-      bs = getModelAtomBitSet(atom.modelIndex, false);
+      bs = getModelAtomBitSet(atom.modelIndex, true);
       bs.andNot(getAtomBits(Token.hydrogen, null));
       makeConnections(0.1f, 1.8f, 1, JmolConstants.CONNECT_CREATE_ONLY, bsA,
           bs, null, false, 0);

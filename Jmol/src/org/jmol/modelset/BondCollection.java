@@ -359,16 +359,22 @@ abstract public class BondCollection extends AtomCollection {
     int newOrder = order |= JmolEdge.BOND_NEW;
     if (!matchNull && (order & JmolEdge.BOND_HYDROGEN_MASK) != 0)
       order = JmolEdge.BOND_HYDROGEN_MASK;
-    for (int i = bondCount; --i >= 0;) {
+    BitSet bsBonds;
+    if (isBonds) {
+      bsBonds = bsA;
+    } else {
+      bsBonds = new BitSet();
+      for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
+        Atom a = atoms[i];
+        for (int j = a.bonds.length; --j >= 0; )
+          bsBonds.set(a.bonds[j].index);
+      }
+    }
+    for (int i = bsBonds.nextSetBit(0); i < bondCount && i >= 0; i = bsBonds.nextSetBit(i + 1)) {
       Bond bond = bonds[i];
       Atom atom1 = bond.atom1;
       Atom atom2 = bond.atom2;
-      if (!isBonds
-          && (bsA.get(atom1.index) && bsB.get(atom2.index) || bsA
-              .get(atom2.index)
-              && bsB.get(atom1.index)) || isBonds && bsA.get(i)) {
-        if (!atom1.isBonded(atom2))
-          continue;
+      if (isBonds || bsB.get(atom2.index) || bsB.get(atom1.index)) {
         float distanceSquared = atom1.distanceSquared(atom2);
         if (minDistanceIsFractionRadius || maxDistanceIsFractionRadius) {
           dAB = atom1.distance(atom2);
@@ -396,15 +402,18 @@ abstract public class BondCollection extends AtomCollection {
   public void deleteBonds(BitSet bsBond, boolean isFullModel) {
     molecules = null;
     moleculeCount = 0;
-    int iDst = 0;
-    Model mlast = null;
-    for (int iSrc = 0; iSrc < bondCount; ++iSrc) {
+    int iDst = bsBond.nextSetBit(0);
+    int modelIndexLast = -1;
+    int n = bsBond.cardinality();
+    for (int iSrc = iDst; iSrc < bondCount; ++iSrc) {
       Bond bond = bonds[iSrc];
-      if (bsBond.get(iSrc)) {
+      if (n > 0 && bsBond.get(iSrc)) {
+        n--;
         if (!isFullModel) {
-          Model m = bond.atom1.group.chain.model;
-          if (m != mlast)
-            (mlast = m).resetBoundCount();
+          int modelIndex = bond.atom1.modelIndex;
+          if (modelIndex != modelIndexLast)
+            ((ModelCollection) this).models[modelIndexLast = modelIndex]
+                .resetBoundCount();
         }
         bond.deleteAtomReferences();
       } else {
@@ -803,16 +812,18 @@ abstract public class BondCollection extends AtomCollection {
       return null;
     }
     bond.setOrder(bondOrder | JmolEdge.BOND_NEW);
-    removeUnnecessaryBonds(bond.atom1);
-    removeUnnecessaryBonds(bond.atom2);
+    removeUnnecessaryBonds(bond.atom1, false);
+    removeUnnecessaryBonds(bond.atom2, false);
     BitSet bsAtoms = new BitSet();
     bsAtoms.set(bond.getAtomIndex1());
     bsAtoms.set(bond.getAtomIndex2());
     return bsAtoms;
   }
 
-  protected void removeUnnecessaryBonds(Atom atom) {
+  protected void removeUnnecessaryBonds(Atom atom, boolean deleteAtom) {
     BitSet bs = new BitSet();
+    if (deleteAtom)
+      bs.set(atom.index);
     BitSet bsBonds = new BitSet();
     Bond[] bonds = atom.bonds;
     if (bonds == null)
@@ -825,8 +836,10 @@ abstract public class BondCollection extends AtomCollection {
       } else {
         bsBonds.set(bonds[i].index);
       }
-    viewer.deleteAtoms(bs, false);
-    deleteBonds(bsBonds, false);
+    if (bsBonds.nextSetBit(0) >= 0)
+      deleteBonds(bsBonds, false);
+    if (bs.nextSetBit(0) >= 0)
+      viewer.deleteAtoms(bs, false);
   }
 
 

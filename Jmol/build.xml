@@ -573,6 +573,8 @@ all support for previous versions removed
         <exclude name="JmolSmiles*" />
         <exclude name="org/jmol/export/**/*" />
         <exclude name="org/jmol/multitouch/**/*" />
+        <exclude name="org/jmol/translation/**/*" />
+        <exclude name="org/openscience/**/*" />
         <exclude name="com/sparshui/**/*" />
       </fileset>
       <fileset dir="${appletjars.dir}" includes="**/*"/>
@@ -593,6 +595,7 @@ all support for previous versions removed
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/minimize/**" />
+        <include name="org/jmol/modelkit/**" />
       </fileset>
     </jar>
 
@@ -741,7 +744,9 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}" >
         <include name="**/*" />
         <exclude name="JmolSmiles*" />
-      </fileset>
+        <exclude name="org/openscience/**/*" />
+        <exclude name="org/jmol/translation/**/*" />
+     </fileset>
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
     <signjar jar="${jmol.applet.build.dir}/JmolAppletSigned.jar.temp"
@@ -947,6 +952,7 @@ all support for previous versions removed
 	    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/minimize/**" />
+	        <include name="org/jmol/modelkit/**" />
 	      </fileset>
 	    </jar>
 

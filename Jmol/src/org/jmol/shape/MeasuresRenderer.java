@@ -224,7 +224,8 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     int count = measurementPending.getCount();
     if (count == 0)
       return;
-    g3d.setColix(measurementPending.traceX != Integer.MIN_VALUE ? measurementPending.getColix() : viewer.getColixRubberband());
+    g3d.setColix(measurementPending.traceX == Integer.MIN_VALUE ? viewer.getColixRubberband()
+        : count == 2 ? Graphics3D.MAGENTA : Graphics3D.GOLD);
     measurementPending.refresh();
     if (measurementPending.haveTarget())
       renderMeasurement(count, measurementPending, measurementPending.traceX == Integer.MIN_VALUE);

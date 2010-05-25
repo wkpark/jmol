@@ -35,7 +35,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 public class DisplayPanel extends JPanel
-  implements ComponentListener, Printable {
+  implements JmolFrame, ComponentListener, Printable {
   
   StatusBar status;
   GuiMap guimap;
@@ -47,9 +47,11 @@ public class DisplayPanel extends JPanel
   boolean haveDisplay;
   Point border;
   boolean haveBorder;
-  private JFrame frame;
   MeasurementTable measurementTable;
-  JFrame getFrame() {
+
+  private JFrame frame;
+  
+  public JFrame getFrame() {
     return frame;
   }
   

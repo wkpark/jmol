@@ -1224,6 +1224,7 @@ abstract public class AtomCollection {
         if (doAll && atom.getCovalentHydrogenCount() > 0)
           continue;
         int n = atom.getImplicitHydrogenCount();
+        System.out.println("atomcoll " + n);
         if (n == 0)
           continue;
         int nBonds = atom.getCovalentBondCount();

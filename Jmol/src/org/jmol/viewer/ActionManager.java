@@ -642,7 +642,8 @@ public class ActionManager {
         || atomPickingMode == JmolConstants.PICKING_ASSIGN_ATOM
         && isBound(action, ACTION_assignNew)) {
       dragAtomIndex = viewer.findNearestAtomIndex(x, y);
-      if (dragAtomIndex >= 0 && atomPickingMode == JmolConstants.PICKING_ASSIGN_ATOM) {
+      if (dragAtomIndex >= 0
+          && atomPickingMode == JmolConstants.PICKING_ASSIGN_ATOM) {
         enterMeasurementMode();
         measurementPending.addPoint(dragAtomIndex, null, false);
       }
@@ -660,7 +661,14 @@ public class ActionManager {
       return;
     }
     if (isBound(action, ACTION_popupMenu)) {
-      viewer.popupMenu(x, y);
+      char type = 'j';
+      if (viewer.getModelkitMode()) {
+        Token t = viewer.checkObjectClicked(x, y, Binding.getMouseAction(1,
+            Binding.LEFT));
+        type = (t != null && t.tok == Token.bonds ? 'b' : viewer
+            .findNearestAtomIndex(x, y) >= 0 ? 'a' : 'm');
+      }
+      viewer.popupMenu(x, y, type);
       return;
     }
     if (viewer.useArcBall())
@@ -1082,7 +1090,7 @@ public class ActionManager {
     }
 
     if (isBound(action, ACTION_clickFrank) && viewer.frankClicked(x, y)) {
-      viewer.popupMenu(-x, y);
+      viewer.popupMenu(-x, y, 'j');
       return false;
     }
     if (viewer.getNavigationMode()
@@ -1356,14 +1364,14 @@ public class ActionManager {
   private int pickingStyleMeasure = JmolConstants.PICKINGSTYLE_MEASURE_OFF;
   private int rootPickingStyle = JmolConstants.PICKINGSTYLE_SELECT_JMOL;
   private String pickAtomAssignType = "C";
-  private char pickBondAssignType = '1';
+  private char pickBondAssignType = '+';
   private int bondPickingMode;
   private boolean isPickAtomAssignCharge;
 
   public String getPickingState() {
     // the pickingMode is not reported in the state. But when we do an UNDO, 
     // we want to restore this. 
-    String script = ";set bondPicking " + viewer.getBondPicking() + ";set picking " + JmolConstants.getPickingModeName(atomPickingMode);
+    String script = ";set modelkitMode " + viewer.getModelkitMode() + ";set picking " + JmolConstants.getPickingModeName(atomPickingMode);
     if (atomPickingMode == JmolConstants.PICKING_ASSIGN_ATOM)
       script += "_" + pickAtomAssignType;
     script += ";";

@@ -4416,7 +4416,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean getBondPicking() {
-    return global.bondPicking;
+    return global.bondPicking || global.modelkitMode;
   }
 
   private boolean getAtomPicking() {
@@ -4474,12 +4474,27 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return !global.disablePopupMenu;
   }
 
-  void popupMenu(int x, int y) {
+  void popupMenu(int x, int y, char type) {
     if (isPreviewOnly || global.disablePopupMenu)
       return;
-    if (jmolpopup == null)
-      jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
-    jmolpopup.show(x, y);
+    switch (type) {
+    case 'j':
+      if (jmolpopup == null)
+        jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
+      jmolpopup.show(x, y);
+      break;
+    case 'a':
+    case 'b':
+    case 'm':
+      if (modelkit == null) {
+        modelkit = (JmolModelKitInterface) Interface.getOptionInterface("modelkit.ModelKit");
+        if (modelkit == null)
+          return;
+        modelkit = modelkit.getModelKit(this, display);
+        modelkit.getMenus(true);
+      }
+      modelkit.show(x, y, type);
+    }
   }
 
   public String getMenu(String type) {
@@ -5074,6 +5089,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // also serves to change language for callbacks and menu
       new GT(value);
       language = GT.getLanguage();
+      modelkit = null;
       if (jmolpopup != null)
         jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
       statusManager.setCallbackFunction("language", language);
@@ -5504,6 +5520,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.modelkitmode:
+      setModelKitMode(value);
+      break; 
     case Token.multiprocessor:
       // 12.0.RC6
       global.multiProcessor = value && (nProcessors > 1);
@@ -5957,6 +5976,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * String getFileCacheDirectory() { if (!global._fileCaching) return null;
    * return global._fileCache; }
    */
+
+  private void setModelKitMode(boolean value) {
+    value &= modelSet.getModelCount() == 1;
+    global.modelkitMode = value;
+    setPickingMode(null, value ? JmolConstants.PICKING_ASSIGN_BOND : JmolConstants.PICKING_IDENTIFY);
+    setPickingMode(null, value ? JmolConstants.PICKING_ASSIGN_ATOM : JmolConstants.PICKING_IDENTIFY);
+    if (value) {
+      setAtomPickingOption("C");
+      setBondPickingOption("+");
+    }
+  }
+
+  boolean getModelkitMode() {
+    return global.modelkitMode;
+  }
 
   private String language = GT.getLanguage();
 
@@ -6863,6 +6897,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   JmolAppConsoleInterface appConsole;
   JmolScriptEditorInterface scriptEditor;
   JmolPopup jmolpopup;
+  JmolModelKitInterface modelkit;
+  
   String menuStructure;
 
   public Object getProperty(String returnType, String infoType, Object paramInfo) {
@@ -8492,8 +8528,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void assignAtom(int atomIndex, String type) {
+    if (modelSet.getModelCount() != 1)
+      return;
     clearModelDependentObjects();
     modelSet.assignAtom(atomIndex, type, true);
+    refresh(3, "assignAtom");
   }
 
   public void setBondOrder(int bondIndex, char type) {

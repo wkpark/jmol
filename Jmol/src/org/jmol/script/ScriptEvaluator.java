@@ -1755,35 +1755,41 @@ public class ScriptEvaluator {
   ScriptVariable runFunction(String name, Vector params, Token tokenAtom, boolean getReturn) throws ScriptException {
     pushContext(null);
     contextPath += " >> function " + name;
+    System.out.println(contextPath);
     ScriptFunction function = viewer.getFunction(name);
     if (function == null)
       return null;
     functionName = name;
-    synchronized( function )
-    {
+
       if (function instanceof ParallelProcessor) {
-        parallelProcessor = (ParallelProcessor) function;
-        vProcess = null;
+        synchronized( function )  // can't do this -- too general
+        {        parallelProcessor = (ParallelProcessor) function;
+                  vProcess = null;
+                 runFunction(function, params, tokenAtom);
+                 ((ParallelProcessor) function).runAllProcesses(viewer);
+        }
+      } else {
+        runFunction(function, params, tokenAtom);
       }
-      aatoken = function.aatoken;
-      lineNumbers = function.lineNumbers;
-      lineIndices = function.lineIndices;
-      script = function.script;
-      pc = 0;
-      if (function.names != null) {
-        contextVariables = new Hashtable();
-        function.setVariables(contextVariables, params);
-      }
-      if (tokenAtom != null)
-        contextVariables.put("_x", tokenAtom);
-      instructionDispatchLoop(false);
-      if (function.tok == Token.parallel) {
-        ((ParallelProcessor) function).runAllProcesses(viewer);
-      }
-    }
     ScriptVariable v = (getReturn ? getContextVariableAsVariable("_retval") : null);
     popContext(false);
     return v;
+  }
+
+  private void runFunction(ScriptFunction function, Vector params,
+                                     Token tokenAtom) throws ScriptException {
+    aatoken = function.aatoken;
+    lineNumbers = function.lineNumbers;
+    lineIndices = function.lineIndices;
+    script = function.script;
+    pc = 0;
+    if (function.names != null) {
+      contextVariables = new Hashtable();
+      function.setVariables(contextVariables, params);
+    }
+    if (tokenAtom != null)
+      contextVariables.put("_x", tokenAtom);
+    instructionDispatchLoop(false);
   }
 
   private void clearDefinedVariableAtomSets() {
@@ -4811,6 +4817,9 @@ public class ScriptEvaluator {
           break;
         case Token.animation:
           animation();
+          break;
+        case Token.assign:
+          assign();
           break;
         case Token.background:
           background(1);
@@ -10265,6 +10274,25 @@ public class ScriptEvaluator {
       break;
     default:
       frameControl(1, true);
+    }
+  }
+  
+  private void assign() throws ScriptException {
+    int atomsOrBonds = tokAt(1);
+    int index = expression(2).nextSetBit(0);
+    if (index < 0)
+      error(ERROR_invalidArgument);
+    String type = parameterAsString(++iToken);
+    Point3f pt = (++iToken < statementLength ? centerParameter(iToken) : null);
+    if (isSyntaxCheck)
+      return;
+    switch (atomsOrBonds) {
+    case Token.atoms:
+      viewer.assignAtom(index, pt, type);
+      break;
+    case Token.bonds:
+      viewer.assignBond(index, (type + "p").charAt(0));
+      break;
     }
   }
 

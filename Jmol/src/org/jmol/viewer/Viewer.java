@@ -5988,7 +5988,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setPickingMode(null, value ? JmolConstants.PICKING_ASSIGN_ATOM : JmolConstants.PICKING_IDENTIFY);
     if (value) {
       setAtomPickingOption("C");
-      setBondPickingOption("+");
+      setBondPickingOption("p");
     }
   }
 
@@ -8508,19 +8508,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return shapeManager.transformAtoms(firstPass);
   }
 
-  void undoAction(boolean isSave) {
-    if (isSave) {
-      saveState("undo");
-      return;
-    }
-    String state = getSavedState("undo");
-    if (state == null)
-      return;
-    deleteSavedState("undo");
-    evalStringQuiet(state + actionManager.getPickingState()
-        + transformManager.getMoveToText(0, false));
-  }
-
   public void setAtomPickingOption(String option) {
     if (haveDisplay)
       actionManager.setAtomPickingOption(option);
@@ -8531,15 +8518,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       actionManager.setBondPickingOption(option);
   }
 
-  void assignAtom(int atomIndex, String type) {
-    if (modelSet.getModelCount() != 1)
+  void undoAction(boolean isSave) {
+    if (isSave) {
+      evalStringQuiet("save state undo");
       return;
-    clearModelDependentObjects();
+    }
+    evalStringQuiet("restore state undo;" 
+        + actionManager.getPickingState()
+        + transformManager.getMoveToText(0, false));
+  }
+
+  void assignAtom(int atomIndex, String type) {
     modelSet.assignAtom(atomIndex, type, true);
     refresh(3, "assignAtom");
   }
 
-  public void setBondOrder(int bondIndex, char type) {
+  int test = 0;
+  
+  public void assignBond(int bondIndex, char type) {
     BitSet bsAtoms = modelSet.setBondOrder(bondIndex, type);
     if (bsAtoms == null)
       refresh(3, "setBondOrder");
@@ -8547,40 +8543,42 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       addHydrogens(bsAtoms, false);
   }
 
-  public void createOrMoveAtom(int atomIndex, int deltaX, int deltaY,
-                               String type) {
+  public void assignAtom(int atomIndex, Point3f pt, String type) {
+    if (modelSet.getModelCount() != 1)
+      return;
+    clearModelDependentObjects();
+    if (pt == null) {
+      modelSet.assignAtom(atomIndex, type, true);
+      refresh(3, "assignAtom");
+      return;
+    }
+    Atom atom = modelSet.atoms[atomIndex];
+    BitSet bs = new BitSet();
+    bs.set(atomIndex);
+    Point3f[] pts = new Point3f[] { pt };
+    Vector vConnections = new Vector();
+    vConnections.add(atom);
+    try {
+      bs = addHydrogensInline(bs, vConnections, pts);
+      atomIndex = bs.nextSetBit(0);
+      modelSet.assignAtom(atomIndex, type, false);
+    } catch (Exception e) {
+      //
+    }
+  }
+
+  public void moveAtomWithHydrogens(int atomIndex, int deltaX, int deltaY) {
     clearModelDependentObjects();
     Atom atom = modelSet.atoms[atomIndex];
     BitSet bs = new BitSet();
     bs.set(atomIndex);
-    if (type != null) {
-      if (atom.getElementNumber() == 1) {
-        deleteAtoms(bs, false);
-        refresh(3, "createOrMoveAtom");
-        return;
-      }
-      Point3f[] pts = new Point3f[] { atom };
-      Vector vConnections = new Vector();
-      vConnections.add(atom);
-      deltaX -= atom.screenX;
-      deltaY -= atom.screenY;
-      try {
-        bs = addHydrogensInline(bs, vConnections, pts);
-      } catch (Exception e) {
-        return;
-      }
-      atomIndex = bs.nextSetBit(0);
-      moveSelected(deltaX, deltaY, bs, true);
-      modelSet.assignAtom(atomIndex, type, false);
-    } else {
-      Bond[] bonds = atom.bonds;
-      for (int i = 0; i < bonds.length; i++) {
-        Atom atom2 = atom.bonds[i].getOtherAtom(atom);
-        if (atom2.getElementNumber() == 1)
-          bs.set(atom2.index);
-      }
-      moveSelected(deltaX, deltaY, bs, true);
+    Bond[] bonds = atom.bonds;
+    for (int i = 0; i < bonds.length; i++) {
+      Atom atom2 = atom.bonds[i].getOtherAtom(atom);
+      if (atom2.getElementNumber() == 1)
+        bs.set(atom2.index);
     }
+    moveSelected(deltaX, deltaY, bs, true);
   }
 
 }

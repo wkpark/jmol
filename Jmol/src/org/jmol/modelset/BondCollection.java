@@ -366,8 +366,9 @@ abstract public class BondCollection extends AtomCollection {
       bsBonds = new BitSet();
       for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
         Atom a = atoms[i];
-        for (int j = a.bonds.length; --j >= 0; )
-          bsBonds.set(a.bonds[j].index);
+        if (a.bonds != null)
+          for (int j = a.bonds.length; --j >= 0; )
+            bsBonds.set(a.bonds[j].index);
       }
     }
     for (int i = bsBonds.nextSetBit(0); i < bondCount && i >= 0; i = bsBonds.nextSetBit(i + 1)) {

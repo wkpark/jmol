@@ -276,7 +276,8 @@ public class Token {
   final static int continuecmd  = 8 | flowCommand;
   final static int end          = 9 | flowCommand | expression;
   
-  final static int animation    = scriptCommand | 2;
+  final static int animation    = scriptCommand | 1;
+  final static int assign       = scriptCommand | 2;
   final static int background   = scriptCommand | 3 | deprecatedparam;
   final static int bind         = scriptCommand | 4;
   final static int bondorder    = scriptCommand | 5;
@@ -1391,6 +1392,7 @@ public class Token {
         
       "animation",         new Token(animation),
       "anim",              null,
+      "assign",            new Token(assign),
       "axes",              new Token(axes),
       "backbone",          new Token(backbone),
       "background",        new Token(background),

@@ -32,16 +32,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Enumeration;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
 
 public class SimplePopup {
 
@@ -83,6 +86,7 @@ public class SimplePopup {
   protected boolean isSymmetry;
   protected boolean isUnitCell;
   protected boolean isMultiFrame;
+  protected boolean isLastFrame;
   protected boolean isMultiConfiguration;
   protected boolean isVibration;
   protected boolean isApplet;
@@ -119,8 +123,24 @@ public class SimplePopup {
   protected int thisx, thisy;
 
   public void show(int x, int y) {
+    show(x, y, true);
+  }
+
+  protected void updateForShow() {
+    // depends upon implementation
+  }
+  
+  public void show(int x, int y, boolean doPopup) {
     thisx = x;
     thisy = y;
+    updateForShow();
+    for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements();) {
+      String key = (String) keys.nextElement();
+      Object item = htCheckbox.get(key);
+      String basename = key.substring(0, key.indexOf(":"));
+      boolean b = viewer.getBooleanProperty(basename);
+      setCheckBoxState(item, b);
+    }
     showPopupMenu(thisx, thisy);
   }
 
@@ -177,6 +197,7 @@ public class SimplePopup {
     isSymmetry = checkBoolean(modelSetInfo, "someModelsHaveSymmetry");
     isUnitCell = checkBoolean(modelSetInfo, "someModelsHaveUnitcells");
     isMultiFrame = (modelCount > 1);
+    isLastFrame = (modelIndex == modelCount - 1);
     altlocs = viewer.getAltLocListInModel(modelIndex);
     isMultiConfiguration = (altlocs.length() > 0);
     isVibration = (viewer.modelHasVibrationVectors(modelIndex));
@@ -191,10 +212,8 @@ public class SimplePopup {
       enableMenu(PDBOnly.get(i), isPDB);
     for (int i = 0; i < UnitcellOnly.size(); i++)
       enableMenu(UnitcellOnly.get(i), isUnitCell);
-    for (int i = 0; i < FramesOnly.size(); i++)
-      enableMenu(FramesOnly.get(i), isMultiFrame);
     for (int i = 0; i < SingleModelOnly.size(); i++)
-      enableMenu(SingleModelOnly.get(i), !isMultiFrame);
+      enableMenu(SingleModelOnly.get(i), isLastFrame);
     for (int i = 0; i < FramesOnly.size(); i++)
       enableMenu(FramesOnly.get(i), isMultiFrame);
     for (int i = 0; i < VibrationOnly.size(); i++)
@@ -221,6 +240,7 @@ public class SimplePopup {
       addMenuItem(menu, "#" + key, "", "");
       return;
     }
+    ButtonGroup group = null;
     // process predefined @terms
     StringTokenizer st = new StringTokenizer(value);
     String item;
@@ -237,7 +257,9 @@ public class SimplePopup {
       String script = "";
       item = st.nextToken();
       String word = popupResourceBundle.getWord(item);
+      boolean isCB = false;
       if (item.indexOf("Menu") >= 0) {
+        group = null;
         if (!allowSignedFeatures && item.startsWith("SIGNED"))
           continue;
         Object subMenu = newMenu(word, id + "." + item);        
@@ -249,13 +271,20 @@ public class SimplePopup {
         newMenu = subMenu;
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
-      } else if (item.endsWith("Checkbox")) {
+      } else if (item.endsWith("Checkbox") || (isCB = (item.endsWith("CB") || item.endsWith("RD")))) {
+        // could be "PRD" -- set picking checkbox
         script = popupResourceBundle.getStructure(item);
-        String basename = item.substring(0, item.length() - 8);
-        if (script == null || script.length() == 0)
+        String basename = item.substring(0, item.length() - (!isCB ? 8 : 2));
+        boolean isRadio = (isCB && item.endsWith("RD"));
+        if (script == null || script.length() == 0 && !isRadio)
           script = "set " + basename + " T/F";
         newMenu = addCheckboxMenuItem(menu, word, basename 
-            + ":" + script, id + "." + item);
+            + ":" + script, id + "." + item, isRadio);
+        if (isRadio) {
+          if (group == null)
+            group = new ButtonGroup();
+          group.add((JMenuItem) newMenu);
+        }
       } else {
         script = popupResourceBundle.getStructure(item);
         if (script == null)
@@ -325,13 +354,20 @@ public class SimplePopup {
     int pt;
     if (what.indexOf("##") < 0) {
       // not a special computed checkbox
+      // name:trueAction|falseAction
       String basename = what.substring(0, (pt = what.indexOf(":")));
       if (viewer.getBooleanProperty(basename) == TF)
         return "";
-      what = what.substring(pt + 1);
-      if ((pt = what.indexOf("|")) >= 0)
-        what = (TF ? what.substring(0, pt) : what.substring(pt + 1)).trim();
-      what = TextFormat.simpleReplace(what, "T/F", (TF ? " TRUE" : " FALSE"));
+      if (basename.endsWith("P!")) {
+        if (!TF)
+          return "";
+        what = "set picking " + basename.substring(0, basename.length() - 2);
+      } else {
+        what = what.substring(pt + 1);
+        if ((pt = what.indexOf("|")) >= 0)
+          what = (TF ? what.substring(0, pt) : what.substring(pt + 1)).trim();
+        what = TextFormat.simpleReplace(what, "T/F", (TF ? " TRUE" : " FALSE"));
+      }
     }
     viewer.evalStringQuiet(what);
     return what;
@@ -407,8 +443,8 @@ public class SimplePopup {
   }
 
   Object addCheckboxMenuItem(Object menu, String entry, String basename,
-                             String id) {
-    Object item = addCheckboxMenuItem(menu, entry, basename, id, false);
+                             String id, boolean isRadio) {
+    Object item = addCheckboxMenuItem(menu, entry, basename, id, false, isRadio);
     rememberCheckbox(basename, item);
     return item;
   }
@@ -467,12 +503,16 @@ public class SimplePopup {
   }
 
   void setCheckBoxValue(Object source) {
-    JCheckBoxMenuItem jcmi = (JCheckBoxMenuItem) source;
-    setCheckBoxValue(jcmi.getActionCommand(), jcmi.getState());
+    JMenuItem jcmi = (JMenuItem) source;
+    setCheckBoxValue(jcmi.getActionCommand(), jcmi.isSelected());
   }
 
   void setCheckBoxState(Object item, boolean state) {
-    ((JCheckBoxMenuItem) item).setState(state);
+    if (item instanceof JCheckBoxMenuItem)
+      ((JCheckBoxMenuItem) item).setState(state);
+    else
+      ((JRadioButtonMenuItem) item).setArmed(state);
+    ((JMenuItem) item).setSelected(state);
   }
 
   void updateMenuItem(Object menuItem, String entry, String script) {
@@ -480,16 +520,25 @@ public class SimplePopup {
     jmi.setLabel(entry);
     jmi.setActionCommand(script);
   }
-
+  
   Object addCheckboxMenuItem(Object menu, String entry, String basename,
-                             String id, boolean state) {
-    JCheckBoxMenuItem jcmi = new JCheckBoxMenuItem(entry);
-    jcmi.setState(state);
-    jcmi.addItemListener(cmil);
-    jcmi.setActionCommand(basename);
-    jcmi.setName(id == null ? ((Component) menu).getName() + "." : id);
-    addToMenu(menu, jcmi);
-    return jcmi;
+                             String id, boolean state, boolean isRadio) {
+    JMenuItem jm;
+    if (isRadio) {
+      JRadioButtonMenuItem jr = new JRadioButtonMenuItem(entry);
+      jm = jr;
+      jr.setArmed(state);
+    } else {
+      JCheckBoxMenuItem jcmi = new JCheckBoxMenuItem(entry);
+      jm = jcmi;
+      jcmi.setState(state);
+    }
+    jm.setSelected(state);
+    jm.addItemListener(cmil);
+    jm.setActionCommand(basename);
+    jm.setName(id == null ? ((Component) menu).getName() + "." : id);
+    addToMenu(menu, jm);
+    return jm;
   }
 
   Object cloneMenu(Object menu) {

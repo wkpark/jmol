@@ -237,6 +237,16 @@ public class Sticks extends Shape {
             + "\n" : "");
   }
   
+  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
+    Point3fi pt = new Point3fi();
+    Bond bond = findPickedBond(x, y, bsVisible, pt);
+    if (bond == null)
+      return false;
+    viewer.highlightBond(bond.getIndex());
+    return true;
+  }
+  
+
   public Point3fi checkObjectClicked(int x, int y, int modifiers,
                                     BitSet bsVisible) {
     Point3fi pt = new Point3fi();

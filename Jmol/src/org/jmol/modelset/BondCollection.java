@@ -814,12 +814,16 @@ abstract public class BondCollection extends AtomCollection {
       deleteBonds(bs, false);
       return null;
     }
+    BitSet bsAtoms = new BitSet();
+    try {
     bond.setOrder(bondOrder | JmolEdge.BOND_NEW);
     removeUnnecessaryBonds(bond.atom1, false);
     removeUnnecessaryBonds(bond.atom2, false);
-    BitSet bsAtoms = new BitSet();
     bsAtoms.set(bond.getAtomIndex1());
     bsAtoms.set(bond.getAtomIndex2());
+    } catch (Exception e) {
+      Logger.error("Exception in seBondOrder: " + e.getMessage());
+    }
     return bsAtoms;
   }
 

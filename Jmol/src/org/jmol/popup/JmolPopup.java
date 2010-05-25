@@ -146,14 +146,6 @@ public class JmolPopup extends SimplePopup {
     }
   }
 
-  private void updateForShow() {
-    updateMode = UPDATE_SHOW;
-    updateSelectMenu();
-    updateFRAMESbyModelComputedMenu();
-    updateModelSetComputedMenu();
-    updateAboutSubmenu();
-  }
-
   boolean checkBoolean(Hashtable info, String key) {
     if (info == null || !info.containsKey(key))
       return false;
@@ -425,7 +417,7 @@ public class JmolPopup extends SimplePopup {
     if (modelCount < 2)
       return;
     addCheckboxMenuItem(menu, GT._("All", true), "frame 0 ##", null,
-        (modelIndex < 0));
+        (modelIndex < 0), false);
 
     Object subMenu = menu;
     int nmod = MAX_ITEMS;
@@ -447,7 +439,7 @@ public class JmolPopup extends SimplePopup {
       if (entryName.length() > 50)
         entryName = entryName.substring(0, 45) + "...";
       addCheckboxMenuItem(subMenu, entryName, "model " + script + " ##", null,
-          (modelIndex == i));
+          (modelIndex == i), false);
     }
   }
 
@@ -465,12 +457,12 @@ public class JmolPopup extends SimplePopup {
     removeAll(menu);
     String script = "hide none ##CONFIG";
     addCheckboxMenuItem(menu, GT._("All", true), script, null,
-        (updateMode == UPDATE_CONFIG && configurationSelected.equals(script)));
+        (updateMode == UPDATE_CONFIG && configurationSelected.equals(script)), false);
     for (int i = 0; i < nAltLocs; i++) {
       script = "configuration " + (i + 1) + "; hide thisModel and not selected ##CONFIG";
       String entryName = "" + (i + 1) + " -- \"" + altlocs.charAt(i) + "\"";
       addCheckboxMenuItem(menu, entryName, script, null,
-          (updateMode == UPDATE_CONFIG && configurationSelected.equals(script)));
+          (updateMode == UPDATE_CONFIG && configurationSelected.equals(script)), false);
     }
   }
 
@@ -619,7 +611,7 @@ public class JmolPopup extends SimplePopup {
             GT._(name, true) + " (" + code + ")",
             "language = \"" + code + "\" ##" + name,
             id + "." + code,
-            language.equals(code));
+            language.equals(code), false);
       }
     }
   }
@@ -647,20 +639,18 @@ public class JmolPopup extends SimplePopup {
     return null;
   }
 
+  protected void updateForShow() {
+    updateMode = UPDATE_SHOW;
+    updateSelectMenu();
+    updateFRAMESbyModelComputedMenu();
+    updateModelSetComputedMenu();
+    updateAboutSubmenu();
+  }
+
   public void show(int x, int y) {
-    thisx = x;
-    thisy = y;
-    String id = currentMenuItemId;
-    updateForShow();
-    for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements();) {
-      String key = (String) keys.nextElement();
-      Object item = htCheckbox.get(key);
-      String basename = key.substring(0, key.indexOf(":"));
-      boolean b = viewer.getBooleanProperty(basename);
-      setCheckBoxState(item, b);
-    }
+    super.show(x, y, false);
     if (x < 0) {
-      setFrankMenu(id);
+      setFrankMenu(currentMenuItemId);
       thisx = -x - 50;
       if (nFrankList > 1) {
         thisy = y - nFrankList * MENUITEM_HEIGHT;

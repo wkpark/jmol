@@ -10035,7 +10035,7 @@ public class ScriptEvaluator {
           return;
         if (viewer.getModelSet().getModelCount() > 1)
           error(ERROR_multipleModelsNotOK); // for now...
-        viewer.addHydrogens(bs, true);
+        viewer.addHydrogens(bs, false);
         return;
       case Token.pointgroup:
         pointGroup();

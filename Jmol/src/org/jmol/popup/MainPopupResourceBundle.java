@@ -56,7 +56,7 @@ class MainPopupResourceBundle extends PopupResource {
               + "languageComputedMenu aboutComputedMenu" },
               
       {   "selectMenuText",
-          "hideNotSelectedCheckbox showSelectionsCheckbox - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYSelectComputedMenu - "
+          "hideNotSelectedCB showSelectionsCB - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYSelectComputedMenu - "
               + "PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarboMenu PDBnoneOfTheAbove" },
 
       {   "PDBproteinMenu", 
@@ -80,7 +80,7 @@ class MainPopupResourceBundle extends PopupResource {
           "front left right top bottom back" },
 
       {   "renderMenu",
-          "perspectiveDepthCheckbox showBoundBoxCheckbox showUNITCELLCheckbox showAxesCheckbox stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - "
+          "perspectiveDepthCB showBoundBoxCB showUNITCELLCB showAxesCB stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - "
               + "PDBstructureMenu [set_axes]Menu [set_boundbox]Menu [set_UNITCELL]Menu" },
 
       {   "renderSchemeMenu",
@@ -88,7 +88,7 @@ class MainPopupResourceBundle extends PopupResource {
               + "renderSticks renderWireframe PDBrenderCartoonsOnly PDBrenderTraceOnly" },
                             
       {   "atomMenu",
-          "showHydrogensCheckbox - atomNone - "
+          "showHydrogensCB - atomNone - "
               + "atom15 atom20 atom25 atom50 atom75 atom100" },
 
       {   "bondMenu",
@@ -124,7 +124,7 @@ class MainPopupResourceBundle extends PopupResource {
           "labelCentered labelUpperRight labelLowerRight labelUpperLeft labelLowerLeft" },
 
       {   "colorMenu",
-          "colorrasmolCheckbox - [color_atoms]Menu [color_bonds]Menu [color_hbonds]Menu [color_ssbonds]Menu colorPDBStructuresMenu [color_isosurface]Menu"
+          "colorrasmolCB - [color_atoms]Menu [color_bonds]Menu [color_hbonds]Menu [color_ssbonds]Menu colorPDBStructuresMenu [color_isosurface]Menu"
               + " - [color_labels]Menu [color_vectors]Menu - [color_axes]Menu [color_boundbox]Menu [color_UNITCELL]Menu [color_background]Menu" },
 
       { "[color_atoms]Menu", "schemeMenu - @COLOR - opaque translucent" },
@@ -171,7 +171,7 @@ class MainPopupResourceBundle extends PopupResource {
           "animfps5 animfps10 animfps20 animfps30 animfps50" },
 
       {   "measureMenu",
-          "showMeasurementsCheckbox - "
+          "showMeasurementsCB - "
               + "measureOff measureDistance measureAngle measureTorsion - "
               + "measureDelete measureList - distanceNanometers distanceAngstroms distancePicometers" },
 
@@ -240,15 +240,15 @@ class MainPopupResourceBundle extends PopupResource {
   
   private static String[][] structureContents = {
 
-      { "colorrasmolCheckbox", ""},
-      { "hideNotSelectedCheckbox", "set hideNotSelected true | set hideNotSelected false; hide(none)" },
-      { "perspectiveDepthCheckbox", ""},
-      { "showAxesCheckbox", "set showAxes true | set showAxes false;set axesMolecular" },
-      { "showBoundBoxCheckbox", ""},
-      { "showHydrogensCheckbox", ""},
-      { "showMeasurementsCheckbox", ""},
-      { "showSelectionsCheckbox", ""},
-      { "showUNITCELLCheckbox", ""},
+      { "colorrasmolCB", ""},
+      { "hideNotSelectedCB", "set hideNotSelected true | set hideNotSelected false; hide(none)" },
+      { "perspectiveDepthCB", ""},
+      { "showAxesCB", "set showAxes true | set showAxes false;set axesMolecular" },
+      { "showBoundBoxCB", ""},
+      { "showHydrogensCB", ""},
+      { "showMeasurementsCB", ""},
+      { "showSelectionsCB", ""},
+      { "showUNITCELLCB", ""},
 
       { "selectAll", "SELECT all" },
       { "selectNone", "SELECT none" },
@@ -562,7 +562,7 @@ class MainPopupResourceBundle extends PopupResource {
 //        "selectMenu", GT._("Select"),
         "selectAll", GT._("All"),
         "selectNone", GT._("None"),
-        "hideNotSelectedCheckbox", GT._("Display Selected Only"),
+        "hideNotSelectedCB", GT._("Display Selected Only"),
         "invertSelection", GT._("Invert Selection"),
 
         "viewMenu", GT._("View"),
@@ -920,14 +920,14 @@ class MainPopupResourceBundle extends PopupResource {
         "100a", GT._("{0} \u00C5", "1.0"),
 
 //        "optionsMenu", GT._("Compatibility"),
-        "showSelectionsCheckbox", GT._("Selection Halos"),
-        "showHydrogensCheckbox", GT._("Show Hydrogens"),
-        "showMeasurementsCheckbox", GT._("Show Measurements"),
-        "perspectiveDepthCheckbox", GT._("Perspective Depth"),      
-        "showBoundBoxCheckbox", GT._("Boundbox"),
-        "showAxesCheckbox", GT._("Axes"),
-        "showUNITCELLCheckbox", GT._("Unit cell"),      
-        "colorrasmolCheckbox", GT._("RasMol Colors"),
+        "showSelectionsCB", GT._("Selection Halos"),
+        "showHydrogensCB", GT._("Show Hydrogens"),
+        "showMeasurementsCB", GT._("Show Measurements"),
+        "perspectiveDepthCB", GT._("Perspective Depth"),      
+        "showBoundBoxCB", GT._("Boundbox"),
+        "showAxesCB", GT._("Axes"),
+        "showUNITCELLCB", GT._("Unit cell"),      
+        "colorrasmolCB", GT._("RasMol Colors"),
         "aboutComputedMenu", GT._("About..."),
         
         //"rasmolChimeCompatibility", GT._("RasMol/Chime Settings"),

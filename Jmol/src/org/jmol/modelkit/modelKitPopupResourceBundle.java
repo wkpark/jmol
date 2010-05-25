@@ -39,12 +39,15 @@ class ModelKitPopupResourceBundle extends PopupResource {
   }
     
   private static String[][] menuContents = {
-    { "modelkitMenu", "minimize saveSIGNED exit" }
+    { "modelkitMenu", "atomMenu bondMenu - addh minimize saveSIGNED exit" },
+    { "atomMenu" , "assignAtom_XP!RD dragAtomP!RD dragMinimizeP!RD - assignAtom_CP!RD assignAtom_HP!RD assignAtom_NP!RD assignAtom_OP!RD - assignAtom_pP!RD assignAtom_mP!RD" },
+    { "bondMenu", "assignBond_0P!RD assignBond_1P!RD assignBond_2P!RD assignBond_3P!RD - assignBond_pP!RD assignBond_mP!RD - rotateBondP!RD" }
   };
   
   private static String[][] structureContents = {
     { "minimize" , "minimize" },
-    { "saveSIGNED", "write '?.mol'" },
+    { "addh" , "delete hydrogens; calculate hydrogens" },
+    { "saveSIGNED", "write '?jmol.mol'" },
     { "exit", "set modelkitMode false" },
   };
   
@@ -54,8 +57,27 @@ class ModelKitPopupResourceBundle extends PopupResource {
     if (!wasTranslating)
       GT.setDoTranslate(true);
     String[] words = new String[] {
+        "atomMenu", GT._("atoms"),
+        "bondMenu", GT._("bonds"),
         "minimize", GT._("minimize"),
         "saveSIGNED", GT._("save"),
+        "addh", GT._("add hydrogens"),
+        "assignAtom_XP!RD" , GT._("delete atom"),
+        "dragAtomP!RD" , GT._("drag atom"),
+        "dragMinimizeP!RD" , GT._("drag-minimize"),
+        "assignAtom_CP!RD" , "C",
+        "assignAtom_HP!RD" , "H",
+        "assignAtom_NP!RD" , "N",
+        "assignAtom_OP!RD" , "O",
+        "assignAtom_PlP!RD", GT._("increase charge"),
+        "assignAtom_MiP!RD", GT._("decrease charge"),
+        "assignBond_0P!RD" , GT._("delete bond"),
+        "assignBond_1P!RD", GT._("single"),
+        "assignBond_2P!RD", GT._("double"),
+        "assignBond_3P!RD", GT._("triple"),
+        "assignBond_pP!RD", GT._("increase order"),
+        "assignBond_mP!RD", GT._("decrease order"),
+        "rotateBondP!RD", GT._("rotate bond"),
         "exit", GT._("exit modelkit mode"),
     };
  

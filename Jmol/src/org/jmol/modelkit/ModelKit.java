@@ -36,9 +36,6 @@ import javax.swing.JFrame;
 public class ModelKit extends JDialog implements JmolModelKitInterface {
 
   JmolViewer viewer;
-
-  SimplePopup atomMenu;
-  SimplePopup bondMenu;
   SimplePopup modelkitMenu;
 
   public ModelKit() {
@@ -68,8 +65,6 @@ public class ModelKit extends JDialog implements JmolModelKitInterface {
   public void getMenus(boolean doTranslate) {
     GT.setDoTranslate(true);
     try {
-      atomMenu = new SimplePopup(viewer, "atomMenu", new AtomPopupResourceBundle());
-      bondMenu = new SimplePopup(viewer, "bondMenu", new BondPopupResourceBundle());
       modelkitMenu = new SimplePopup(viewer, "modelkitMenu",
           new ModelKitPopupResourceBundle());
     } catch (Exception e) {
@@ -82,18 +77,6 @@ public class ModelKit extends JDialog implements JmolModelKitInterface {
    * @see org.jmol.modelkit.JmolModelKitInterface#show(int, int, java.lang.String)
    */
   public void show(int x, int y, char type) {
-    if (atomMenu == null)
-      return;
-    switch (type) {
-    case 'a':
-      atomMenu.show(x, y);
-      break;
-    case 'b':
-      bondMenu.show(x, y);
-      break;
-    case 'm':
       modelkitMenu.show(x, y);
-      break;
-    }
   }  
 }

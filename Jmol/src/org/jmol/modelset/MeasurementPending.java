@@ -68,9 +68,14 @@ public class MeasurementPending extends Measurement {
     return 0;
   }
 
+  public void setCount(int count) {
+    super.setCount(count);
+    numSet = count;
+  }
+
   private int lastIndex = -1;
   
-  public int addPoint(int atomIndex, Point3fi ptClicked, boolean doSet) {
+  synchronized public int addPoint(int atomIndex, Point3fi ptClicked, boolean doSet) {
     haveModified = (atomIndex != lastIndex);
     lastIndex = atomIndex;
     if (ptClicked == null) {

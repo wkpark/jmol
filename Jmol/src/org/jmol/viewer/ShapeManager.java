@@ -202,8 +202,12 @@ public class ShapeManager {
     return (frankShape != null && frankShape.wasClicked(x, y));
   }
 
-  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
-    Shape shape = shapes[JmolConstants.SHAPE_ECHO];
+  public boolean checkObjectHovered(int x, int y, BitSet bsVisible, boolean checkBonds) {
+    Shape shape    = shapes[JmolConstants.SHAPE_STICKS];
+    if (checkBonds && shape != null 
+        && shape.checkObjectHovered(x, y, bsVisible))
+      return true;
+    shape = shapes[JmolConstants.SHAPE_ECHO];
     if (shape != null && shape.checkObjectHovered(x, y, bsVisible))
       return true;
     shape = shapes[JmolConstants.SHAPE_ISOSURFACE];

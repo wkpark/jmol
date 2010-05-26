@@ -10040,7 +10040,7 @@ public class ScriptEvaluator {
         bs = (statementLength == 2 ? null : expression(2));
         checkLast(iToken);
         if (!isSyntaxCheck)
-          viewer.addHydrogens(bs, false);
+          viewer.addHydrogens(bs, false, false);
         return;
       case Token.pointgroup:
         pointGroup();

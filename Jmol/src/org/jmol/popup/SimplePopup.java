@@ -356,26 +356,32 @@ public class SimplePopup {
    *          true or false
    */
   protected void setCheckBoxValue(JMenuItem item, String what, boolean TF) {
-    int pt;
-    // name:trueAction|falseAction
-    String basename = what.substring(0, (pt = what.indexOf(":")));
-    if (viewer.getBooleanProperty(basename) == TF)
-      return;
-    if (basename.endsWith("P!")) {
-      if (basename.indexOf("??") >= 0) {
-        what = setCheckBoxOption(item, basename, what);
-      } else {
-        if (what == null)
-          return;
-        if (!TF)
-          return;
-        what = "set picking " + basename.substring(0, basename.length() - 2);
+    if (what.indexOf("##") < 0) {
+      int pt = what.indexOf(":");
+      if (pt < 0) {
+        Logger.error("check box " + item.getName() + " IS " + what);
+        return;
       }
-    } else {
-      what = what.substring(pt + 1);
-      if ((pt = what.indexOf("|")) >= 0)
-        what = (TF ? what.substring(0, pt) : what.substring(pt + 1)).trim();
-      what = TextFormat.simpleReplace(what, "T/F", (TF ? " TRUE" : " FALSE"));
+      // name:trueAction|falseAction
+      String basename = what.substring(0, pt);
+      if (viewer.getBooleanProperty(basename) == TF)
+        return;
+      if (basename.endsWith("P!")) {
+        if (basename.indexOf("??") >= 0) {
+          what = setCheckBoxOption(item, basename, what);
+        } else {
+          if (what == null)
+            return;
+          if (!TF)
+            return;
+          what = "set picking " + basename.substring(0, basename.length() - 2);
+        }
+      } else {
+        what = what.substring(pt + 1);
+        if ((pt = what.indexOf("|")) >= 0)
+          what = (TF ? what.substring(0, pt) : what.substring(pt + 1)).trim();
+        what = TextFormat.simpleReplace(what, "T/F", (TF ? " TRUE" : " FALSE"));
+      }
     }
     viewer.evalStringQuiet(what);
   }

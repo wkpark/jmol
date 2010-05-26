@@ -39,21 +39,23 @@ class ModelKitPopupResourceBundle extends PopupResource {
   }
     
   private static String[][] menuContents = {
-    { "modelkitMenu", "atomMenu bondMenu - new center addh minimize saveFileSIGNED saveStateSIGNED exit" },
-    { "atomMenu" , "assignAtom_XP!RD dragAtomP!RD dragMinimizeP!RD " +
-    		"- assignAtom_CP!RD assignAtom_HP!RD assignAtom_NP!RD assignAtom_OP!RD " +
-    		"_??P!RD _??P!RD _??P!RD " +
-    		"moreAtomMenu - assignAtom_PlP!RD assignAtom_MiP!RD" },
-    { "moreAtomMenu", "clearQ - _??P!RD _??P!RD _??P!RD _??P!RD _??P!RD _??P!RD " },
-    { "bondMenu", "assignBond_0P!RD assignBond_1P!RD assignBond_2P!RD assignBond_3P!RD - assignBond_pP!RD assignBond_mP!RD - rotateBondP!RD" },
+    { "modelkitMenu", "atomMenu bondMenu " +
+    		"- new center addh minimize " +
+    		"- saveFileSIGNED saveStateSIGNED exit" },
+    { "atomMenu" , "assignAtom_XP!CB dragMoleculeP!CB dragAtomP!CB dragMinimizeP!CB " +
+    		"- assignAtom_CP!CB assignAtom_HP!CB assignAtom_NP!CB assignAtom_OP!CB " +
+    		"_??P!CB _??P!CB _??P!CB " +
+    		"moreAtomMenu - assignAtom_PlP!CB assignAtom_MiP!CB" },
+    { "moreAtomMenu", "clearQ - _??P!CB _??P!CB _??P!CB _??P!CB _??P!CB _??P!CB " },
+    { "bondMenu", "assignBond_0P!CB assignBond_1P!CB assignBond_2P!CB assignBond_3P!CB - assignBond_pP!CB assignBond_mP!CB - rotateBondP!CB" },
   };
   
   private static String[][] structureContents = {
     { "new" , "zap" },
     { "minimize" , "minimize" },
     { "center" , "center visible" },
-    { "addh" , "delete hydrogens; calculate hydrogens" },
-    { "saveFileSIGNED", "write COORD '?jmol.mol'" },
+    { "addh" , "calculate hydrogens {model=_lastframe}" },
+    { "saveFileSIGNED", "select visible;write COORD '?jmol.mol'" },
     { "saveStateSIGNED", "write '?jmol.jpg'" },
     { "clearQ", "clearQ" },
     { "exit", "set modelkitMode false" },
@@ -75,23 +77,24 @@ class ModelKitPopupResourceBundle extends PopupResource {
         "saveFileSIGNED", GT._("save file"),
         "saveStateSIGNED", GT._("save state"),
         "addh", GT._("add hydrogens"),
-        "assignAtom_XP!RD" , GT._("delete atom"),
-        "dragAtomP!RD" , GT._("drag atom"),
-        "dragMinimizeP!RD" , GT._("drag-minimize"),
-        "assignAtom_CP!RD" , "C",
-        "assignAtom_HP!RD" , "H",
-        "assignAtom_NP!RD" , "N",
-        "assignAtom_OP!RD" , "O",
-        "_??P!RD", "??",
-        "assignAtom_PlP!RD", GT._("increase charge"),
-        "assignAtom_MiP!RD", GT._("decrease charge"),
-        "assignBond_0P!RD" , GT._("delete bond"),
-        "assignBond_1P!RD", GT._("single"),
-        "assignBond_2P!RD", GT._("double"),
-        "assignBond_3P!RD", GT._("triple"),
-        "assignBond_pP!RD", GT._("increase order"),
-        "assignBond_mP!RD", GT._("decrease order"),
-        "rotateBondP!RD", GT._("rotate bond"),
+        "assignAtom_XP!CB" , GT._("delete atom"),
+        "dragMoleculeP!CB" , GT._("drag molecule"),
+        "dragAtomP!CB" , GT._("drag atom"),
+        "dragMinimizeP!CB" , GT._("drag-minimize"),
+        "assignAtom_CP!CB" , "C",
+        "assignAtom_HP!CB" , "H",
+        "assignAtom_NP!CB" , "N",
+        "assignAtom_OP!CB" , "O",
+        "_??P!CB", "??",
+        "assignAtom_PlP!CB", GT._("increase charge"),
+        "assignAtom_MiP!CB", GT._("decrease charge"),
+        "assignBond_0P!CB" , GT._("delete bond"),
+        "assignBond_1P!CB", GT._("single"),
+        "assignBond_2P!CB", GT._("double"),
+        "assignBond_3P!CB", GT._("triple"),
+        "assignBond_pP!CB", GT._("increase order"),
+        "assignBond_mP!CB", GT._("decrease order"),
+        "rotateBondP!CB", GT._("rotate bond"),
         "exit", GT._("exit modelkit mode"),
     };
  

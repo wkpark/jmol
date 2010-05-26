@@ -166,6 +166,8 @@ class GuiMap {
     labels.put("animateNextScriptTip", GT._("Go to next frame"));
     labels.put("animatePrevScript", GT._("Go to &previous frame"));
     labels.put("animatePrevScriptTip", GT._("Go to previous frame"));
+    labels.put("animateAllScript", GT._("All &frames"));
+    labels.put("animateAllScriptTip", GT._("All frames"));
     labels.put("animateLastScript", GT._("Go to &last frame"));
     labels.put("animateLastScriptTip", GT._("Go to last frame"));
     labels.put("vibrateStartScript", GT._("Start &vibration"));

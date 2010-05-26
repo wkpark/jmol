@@ -813,7 +813,7 @@ public class ScriptEvaluator {
         // fall through
       case Token.all:
         if (tok == Token.all)
-          v = viewer.getModelAtomBitSet(-1, true);
+          v = viewer.getModelUndeletedAtomsBitSet(-1);
         else
           v = expression(statement, i, 0, true, true, true, true);
         i = iToken;
@@ -1882,7 +1882,10 @@ public class ScriptEvaluator {
           + script);
       return;
     }
-    definedAtomSets.put(statement[1].value, statement);
+    String name = ((String)statement[1].value).toLowerCase();
+    if (name.startsWith("dynamic_"))
+      name = "!" + name.substring(8);
+    definedAtomSets.put(name, statement);
   }
 
   private BitSet lookupIdentifierValue(String identifier)
@@ -3095,7 +3098,7 @@ public class ScriptEvaluator {
         rpn.addOp(instruction);
         break;
       case Token.all:
-        rpn.addX(viewer.getModelAtomBitSet(-1, true));
+        rpn.addX(viewer.getModelUndeletedAtomsBitSet(-1));
         break;
       case Token.none:
         rpn.addX(new BitSet());
@@ -3109,7 +3112,7 @@ public class ScriptEvaluator {
         break;
       case Token.subset:
         BitSet bsSubset = viewer.getSelectionSubset();
-        rpn.addX(bsSubset == null ? viewer.getModelAtomBitSet(-1, true)
+        rpn.addX(bsSubset == null ? viewer.getModelUndeletedAtomsBitSet(-1)
             : BitSetUtil.copy(bsSubset));
         break;
       case Token.hidden:
@@ -3209,7 +3212,7 @@ public class ScriptEvaluator {
       case Token.thismodel:
         rpn
             .addX(viewer
-                .getModelAtomBitSet(viewer.getCurrentModelIndex(), true));
+                .getModelUndeletedAtomsBitSet(viewer.getCurrentModelIndex()));
         break;
       case Token.hydrogen:
       case Token.amino:
@@ -7307,7 +7310,7 @@ public class ScriptEvaluator {
     // will evaluate the moment it is defined and then represent
     // that set of atoms forever.
 
-    String setName = (String) getToken(1).value;
+    String setName = ((String) getToken(1).value).toLowerCase();
     if (isSyntaxCheck)
       return;
     boolean isSite = setName.startsWith("site_");
@@ -7825,8 +7828,7 @@ public class ScriptEvaluator {
     String msg = "";
     if (script.length() > 0)
       msg += "\nUsing defaultLoadScript: " + script;
-    String embeddedScript = (String) viewer.getModelSetAuxiliaryInfo("jmolscript");
-    viewer.getModelSetAuxiliaryInfo().remove("jmolscript");
+    String embeddedScript = (String) viewer.getModelSetAuxiliaryInfo().remove("jmolscript");
     if (embeddedScript != null && viewer.getAllowEmbeddedScripts()) {
       msg += "\nAdding embedded #jmolscript: " + embeddedScript;
       script += ";" + embeddedScript;
@@ -7836,8 +7838,7 @@ public class ScriptEvaluator {
     }
     if (msg.length() > 0)
       Logger.info(msg);
-    String siteScript = (String) viewer.getModelSetAuxiliaryInfo("sitescript");
-    viewer.getModelSetAuxiliaryInfo().remove("sitescript");
+    String siteScript = (String) viewer.getModelSetAuxiliaryInfo().remove("sitescript");
     if (siteScript != null)
       script = siteScript + ";" + script;
     if (script.length() > 0 && !isCmdLine_c_or_C_Option)
@@ -8548,7 +8549,7 @@ public class ScriptEvaluator {
       if (nPoints == 0)
         points[0] = viewer.getAtomSetCenter(bsAtoms != null ? bsAtoms
             : isSelected ? viewer.getSelectionSet() : viewer
-                .getModelAtomBitSet(null));
+                .getModelUndeletedAtomsBitSet(-1));
       if (helicalPath) {
         points[1] = new Point3f(points[0]);
         points[1].add(translation);
@@ -9034,8 +9035,9 @@ public class ScriptEvaluator {
       viewer.selectBonds(bs);
     } else {
       if (bs.length() > viewer.getAtomCount()) {
-        bs = BitSetUtil.copy(bs);
-        bs.and(viewer.getModelAtomBitSet(-1, false));
+        BitSet bs1 = viewer.getModelUndeletedAtomsBitSet(-1); 
+        bs1.and(bs);
+        bs = bs1;
       }
       viewer.select(bs, tQuiet || scriptLevel > scriptReportingLevel);
     }
@@ -10037,11 +10039,8 @@ public class ScriptEvaluator {
       case Token.hydrogen:
         bs = (statementLength == 2 ? null : expression(2));
         checkLast(iToken);
-        if (isSyntaxCheck)
-          return;
-        if (viewer.getModelSet().getModelCount() > 1)
-          error(ERROR_multipleModelsNotOK); // for now...
-        viewer.addHydrogens(bs, false);
+        if (!isSyntaxCheck)
+          viewer.addHydrogens(bs, false);
         return;
       case Token.pointgroup:
         pointGroup();
@@ -10505,11 +10504,11 @@ public class ScriptEvaluator {
       if (viewer.isTrajectory(model1))
         model2 = model1 + 1;
       for (int j = model1; j < model2; j++)
-        bs.or(viewer.getModelAtomBitSet(j, false));
+        bs.or(viewer.getModelUndeletedAtomsBitSet(j));
     } else {
       int modelIndex = viewer.getModelNumberIndex(m, false, true);
       if (modelIndex >= 0)
-        bs.or(viewer.getModelAtomBitSet(modelIndex, false));
+        bs.or(viewer.getModelUndeletedAtomsBitSet(modelIndex));
     }
     return bs;
   }
@@ -12198,7 +12197,7 @@ public class ScriptEvaluator {
           bsAtoms = expression(args, pt, 0, true, false, true, true);
           pt = iToken + 1;
         } else {
-          bsAtoms = viewer.getModelAtomBitSet(-1, false);
+          bsAtoms = viewer.getModelUndeletedAtomsBitSet(-1);
         }
         if (!isSyntaxCheck)
           bsFrames = viewer.getModelBitSet(bsAtoms, true);
@@ -14865,7 +14864,7 @@ public class ScriptEvaluator {
             }
           }
           if (ptWithin == 0) {
-            bs = viewer.getModelAtomBitSet(modelIndex, true);
+            bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
             getWithinDistanceVector(propertyList, 2.0f, null, bs);
             sbCommand.append(" within 2.0 ").append(Escape.escape(bs));
           }

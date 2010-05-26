@@ -710,7 +710,7 @@ abstract public class ModelCollection extends BondCollection {
         if (nAltLocs == 0 || conformationIndex >= nAltLocs)
           continue;
         String altLocs = getAltLocListInModel(i);
-        BitSet bsConformation = getModelAtomBitSet(i, true);
+        BitSet bsConformation = viewer.getModelUndeletedAtomsBitSet(i);
         if (conformationIndex >= 0)
           for (int c = nAltLocs; --c >= 0;)
             if (c != conformationIndex)
@@ -1210,7 +1210,7 @@ abstract public class ModelCollection extends BondCollection {
     int mStep = viewer.getHelixStep();
     int derivType = (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1 : 2);
     boolean isDraw = (type.indexOf("draw") >= 0); 
-    BitSet bsAtoms = getModelAtomBitSet(modelIndex, false);
+    BitSet bsAtoms = viewer.getModelUndeletedAtomsBitSet(modelIndex);
     int nPoly = model.getBioPolymerCount();
     StringBuffer pdbCONECT = new StringBuffer();
     BitSet bsWritten = new BitSet();
@@ -1813,7 +1813,7 @@ abstract public class ModelCollection extends BondCollection {
     BitSet bs = new BitSet(atomCount);
     if (atomIndex < 0)
       return bs;
-    BitSet bsToTest = getModelAtomBitSet(atoms[atomIndex].modelIndex, true);
+    BitSet bsToTest = viewer.getModelUndeletedAtomsBitSet(atoms[atomIndex].modelIndex);
     if (atomIndexNot >= 0)
       bsToTest.clear(atomIndexNot);
     return (getCovalentlyConnectedBitSet(atoms[atomIndex], bs, bsToTest, allowCyclic) ?
@@ -1914,7 +1914,7 @@ abstract public class ModelCollection extends BondCollection {
     initializeBspf();
     if (bspf.isInitialized(modelIndex))
       return;
-    bspf.initialize(modelIndex, atoms, getModelAtomBitSet(modelIndex, false));
+    bspf.initialize(modelIndex, atoms, viewer.getModelUndeletedAtomsBitSet(modelIndex));
   }
  
   public void setIteratorForAtom(AtomIndexIterator iterator, int atomIndex,
@@ -2002,7 +2002,7 @@ abstract public class ModelCollection extends BondCollection {
       bsCheck = BitSetUtil.copy(bs1);
       bsCheck.or(bs2);
     }
-    bsCheck.and(getModelAtomBitSet(modelIndex, false));
+    bsCheck.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
     for (int i = bsCheck.nextSetBit(0); i >= 0; i = bsCheck.nextSetBit(i + 1))
       if (atoms[i].isVisible(0)
           && atoms[i].atomID == JmolConstants.ATOMID_ALPHA_CARBON
@@ -2031,7 +2031,12 @@ abstract public class ModelCollection extends BondCollection {
 
   protected ShapeManager shapeManager;
   
-  public BitSet getModelAtomBitSet(BitSet bsModels) {
+  /**
+   * note -- this method returns ALL atoms, including deleted.
+   * @param bsModels
+   * @return   bitset of atoms
+   */
+  public BitSet getModelAtomBitSetIncludingDeleted(BitSet bsModels) {
     BitSet bs = new BitSet();
     if (bsModels == null && bsAll == null)
       bsAll = BitSetUtil.setAll(atomCount);
@@ -2039,16 +2044,18 @@ abstract public class ModelCollection extends BondCollection {
       bs.or(bsAll);
     else
       for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
-        bs.or(getModelAtomBitSet(i, false));
+        bs.or(getModelAtomBitSetIncludingDeleted(i, false));
     return bs;
   }
   /**
+   * Note that this method returns all atoms, included deleted ones.
+   * If you don't want deleted atoms, then use viewer.getModelAtomBitSetUndeleted(modelIndex, TRUE)
    * 
    * @param modelIndex
    * @param asCopy     MUST BE TRUE IF THE BITSET IS GOING TO BE MODIFIED!
    * @return either the actual bitset or a copy
    */
-  public BitSet getModelAtomBitSet(int modelIndex, boolean asCopy) {
+  public BitSet getModelAtomBitSetIncludingDeleted(int modelIndex, boolean asCopy) {
     BitSet bs = (modelIndex < 0 ? bsAll : models[modelIndex].bsAtoms);
     if (bs == null)
       bs = bsAll = BitSetUtil.setAll(atomCount);
@@ -2293,7 +2300,7 @@ abstract public class ModelCollection extends BondCollection {
     BitSet bsB = null;
     Vector vHBonds = new Vector();
     if (specInfo.length() == 0) {
-      bsA = bsB = getModelAtomBitSet(-1, false);
+      bsA = bsB = viewer.getModelUndeletedAtomsBitSet(-1);
       calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1);      
     } else {
       for (int i = 0; i < specInfo.length();) {
@@ -2317,7 +2324,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public BitSet getSequenceBits(String specInfo, BitSet bs) {
     if (bs == null)
-      bs = getModelAtomBitSet(-1, false);
+      bs = viewer.getModelUndeletedAtomsBitSet(-1);
     int lenInfo = specInfo.length();
     BitSet bsResult = new BitSet();
     if (lenInfo == 0)
@@ -3399,7 +3406,7 @@ abstract public class ModelCollection extends BondCollection {
       iModel = viewer.getCurrentModelIndex();
       if (iModel < 0)
         return "";
-      bsAtoms = getModelAtomBitSet(iModel, false);
+      bsAtoms = viewer.getModelUndeletedAtomsBitSet(iModel);
     }
     int iAtom = bsAtoms.nextSetBit(0);
     if (iAtom < 0)
@@ -3633,7 +3640,7 @@ abstract public class ModelCollection extends BondCollection {
 
     boolean isDelete = false;
     if (atomicNumber > 0) {
-      RadiusData rd = new RadiusData();
+      RadiusData rd = viewer.getDefaultRadiusData();
       setElement(atom, atomicNumber, rd);
       setAtomName(atomIndex, type + atom.getAtomNumber());
     } else if (type.equals("Pl")) {
@@ -3682,7 +3689,7 @@ abstract public class ModelCollection extends BondCollection {
 
       // 5) attach nearby non-hydrogen atoms (rings)
 
-      bs = getModelAtomBitSet(atom.modelIndex, true);
+      bs = viewer.getModelUndeletedAtomsBitSet(atom.modelIndex);
       bs.andNot(getAtomBits(Token.hydrogen, null));
       makeConnections(0.1f, 1.8f, 1, JmolConstants.CONNECT_CREATE_ONLY, bsA,
           bs, null, false, 0);
@@ -3709,20 +3716,27 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public void appendLoadStates(StringBuffer commands) {
-    for (int i = 0; i < modelCount; i++) {
-      commands.append(models[i].loadState);
-      if (models[i].isModelKit) {
-        BitSet bs = getModelAtomBitSet(i, true);
-        if (tainted[TAINT_COORD] != null)
-          tainted[TAINT_COORD].andNot(bs);
-        if (tainted[TAINT_ELEMENT] != null)
-          tainted[TAINT_ELEMENT].andNot(bs);
-        models[i].loadScript = new StringBuffer(); 
-        Viewer.getInlineData(commands, viewer.getModelExtract(bs, false), false);
-      } else {
-        commands.append(models[i].loadScript);
-      }
+    for (int i = 0; i < modelCount; i++) 
+      commands.append(getModelLoadState(i));
+  }
+
+  public String getModelLoadState(int i) {
+    if (i < 0)
+      i = modelCount - 1;
+    StringBuffer commands = new StringBuffer();
+    commands.append(models[i].loadState);
+    if (models[i].isModelKit) {
+      BitSet bs = viewer.getModelUndeletedAtomsBitSet(i);
+      if (tainted[TAINT_COORD] != null)
+        tainted[TAINT_COORD].andNot(bs);
+      if (tainted[TAINT_ELEMENT] != null)
+        tainted[TAINT_ELEMENT].andNot(bs);
+      models[i].loadScript = new StringBuffer(); 
+      Viewer.getInlineData(commands, viewer.getModelExtract(bs, false), false);
+    } else {
+      commands.append(models[i].loadScript);
     }
+    return commands.toString();
   }
 
 

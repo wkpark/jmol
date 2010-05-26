@@ -35,6 +35,7 @@ import javax.vecmath.Point3f;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.Token;
@@ -487,6 +488,7 @@ public class ActionManager {
       moved.modifiers |= Binding.ALT;
       break;
     case KeyEvent.VK_SHIFT:
+      dragged.modifiers |= Binding.SHIFT;
       moved.modifiers |= Binding.SHIFT;
       break;
     case KeyEvent.VK_CONTROL:
@@ -641,6 +643,8 @@ public class ActionManager {
     }
     if (atomPickingMode == JmolConstants.PICKING_DRAG_ATOM
         && isBound(action, ACTION_dragAtom)
+        || atomPickingMode == JmolConstants.PICKING_DRAG_MOLECULE
+        && (isBound(action, ACTION_dragAtom) || isBound(action, ACTION_rotateBranch))
         || atomPickingMode == JmolConstants.PICKING_DRAG_MINIMIZE
         && isBound(action, ACTION_dragMinimize)
         || atomPickingMode == JmolConstants.PICKING_ASSIGN_ATOM
@@ -701,10 +705,13 @@ public class ActionManager {
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
     int action = Binding.getMouseAction(pressedCount, mods);
     dragGesture.add(action, x, y, time);
-
+    if (dragRelease)
+      viewer.setRotateBondIndex(Integer.MIN_VALUE);
     if (atomPickingMode == JmolConstants.PICKING_DRAG_MINIMIZE
         && dragAtomIndex >= 0) {
-      BitSet bs = viewer.getMoleculeBitSet(dragAtomIndex);
+      BitSet bs = new BitSet();
+      bs.set(dragAtomIndex);
+      bs = viewer.getAtomBits(Token.group, bs);
       dragAtomIndex = -1;
       viewer.stopMinimization();
       viewer.minimize(Integer.MAX_VALUE, 0, bs, false, false, false);
@@ -717,17 +724,23 @@ public class ActionManager {
         return;
       // H C + -, etc.
       // also check valence and add/remove H atoms as necessary?
-      viewer.undoAction(true);
       if (measurementPending.getCount() == 2) {
+        viewer.undoAction(true, -1, 0);
         viewer.script("connect "
             + measurementPending.getMeasurementScript(" ", false));
       } else if (pressed.inRange(dragged.x, dragged.y)) {
         String s = "assign atom ({" + dragAtomIndex + "}) \""
-        + pickAtomAssignType + "\"";
-        if (isPickAtomAssignCharge)
+            + pickAtomAssignType + "\"";
+        if (isPickAtomAssignCharge) {
           s += ";{atomindex=" + dragAtomIndex + "}.label='%C'; ";
+          viewer.undoAction(true, dragAtomIndex,
+              AtomCollection.TAINT_FORMALCHARGE);
+        } else {
+          viewer.undoAction(true, -1, 0);
+        }
         viewer.script(s);
       } else if (!isPickAtomAssignCharge) {
+        viewer.undoAction(true, -1, 0);
         Atom a = viewer.getModelSet().atoms[dragAtomIndex];
         if (a.getElementNumber() == 1) {
           viewer.script("delete ({" + dragAtomIndex + "})");
@@ -868,15 +881,28 @@ public class ActionManager {
         viewer.moveSelected(deltaX, deltaY, x, y, null, false);
         return;
       }
-      if (!isBound(action, ACTION_rotate)) 
+      if (!isBound(action, ACTION_rotate))
         viewer.setRotateBondIndex(-1);
     }
-    
-    if ((atomPickingMode == JmolConstants.PICKING_DRAG_ATOM || atomPickingMode == JmolConstants.PICKING_DRAG_MINIMIZE)
-        && dragAtomIndex >= 0) {
-      checkMotion(Viewer.CURSOR_MOVE);
-      viewer.moveAtomWithHydrogens(dragAtomIndex, deltaX, deltaY);
-      return;
+
+    if (dragAtomIndex >= 0) {
+      switch (atomPickingMode) {
+      case JmolConstants.PICKING_DRAG_ATOM:
+      case JmolConstants.PICKING_DRAG_MINIMIZE:
+      case JmolConstants.PICKING_DRAG_MOLECULE:
+        if (dragGesture.getPointCount() == 1)
+          viewer.undoAction(true, dragAtomIndex, AtomCollection.TAINT_COORD);
+        checkMotion(Viewer.CURSOR_MOVE);
+        if (isBound(action, ACTION_rotateBranch)) {
+          BitSet bs = new BitSet();
+          bs.set(dragAtomIndex);
+          bs = viewer.getAtomBits(Token.molecule, bs);
+          viewer.rotateMolecule(getDegrees(deltaX, 0), getDegrees(deltaY, 1), bs);
+          return;
+        }
+        viewer.moveAtomWithHydrogens(dragAtomIndex, deltaX, deltaY, atomPickingMode == JmolConstants.PICKING_DRAG_MOLECULE);
+        return;
+      }
     }
 
     if (dragAtomIndex >= 0 && isBound(action, ACTION_assignNew)
@@ -925,7 +951,8 @@ public class ActionManager {
     if (dragSelectedMode && isBound(action, ACTION_dragSelected)
         && haveSelection) {
       checkMotion(Viewer.CURSOR_MOVE);
-      viewer.moveSelected(deltaX, deltaY, Integer.MIN_VALUE, Integer.MIN_VALUE, null, true);
+      viewer.moveSelected(deltaX, deltaY, Integer.MIN_VALUE, Integer.MIN_VALUE,
+          null, true);
       return;
     }
 
@@ -945,10 +972,8 @@ public class ActionManager {
     boolean isRotate = isBound(action, ACTION_rotate);
     if (isRotate || viewer.allowRotateSelected()
         && isBound(action, ACTION_rotateSelected)) {
-      float degX = ((float) deltaX) / viewer.getScreenWidth() * 180
-          * mouseDragFactor;
-      float degY = ((float) deltaY) / viewer.getScreenHeight() * 180
-          * mouseDragFactor;
+      float degX = getDegrees(deltaX, 0);
+      float degY = getDegrees(deltaY, 1);
       if (isRotate) {
         if (viewer.useArcBall())
           viewer.rotateArcBall(x, y, mouseDragFactor);
@@ -956,7 +981,7 @@ public class ActionManager {
           viewer.rotateXYBy(degX, degY);
       } else {
         checkMotion(Viewer.CURSOR_MOVE);
-        viewer.rotateMolecule(degX, degY);
+        viewer.rotateMolecule(degX, degY, null);
       }
       return;
     }
@@ -993,6 +1018,12 @@ public class ActionManager {
         return;
       }
     }
+  }
+
+  private float getDegrees(int delta, int i) {
+    return ((float) delta)
+        / (i == 0 ? viewer.getScreenWidth() : viewer.getScreenHeight()) * 180
+        * mouseDragFactor;
   }
 
   protected void zoomByFactor(int dz, int x, int y) {
@@ -1130,7 +1161,8 @@ public class ActionManager {
           action,
           bondPickingMode == JmolConstants.PICKING_ROTATE_BOND || bondPickingMode == JmolConstants.PICKING_ASSIGN_BOND ? ACTION_assignNew
               : ACTION_deleteBond)) {
-        viewer.undoAction(true);
+        if (bondPickingMode == JmolConstants.PICKING_ASSIGN_BOND)
+          viewer.undoAction(true, -1, 0);
         switch (bondPickingMode) {
         case JmolConstants.PICKING_ASSIGN_BOND:
           viewer.script("assign bond [{" + nearestPoint.index + "}] \""
@@ -1590,17 +1622,16 @@ public class ActionManager {
     case JmolConstants.PICKING_INVERT_STEREO:
       if (isBound(action, ACTION_assignNew)) {
         // only for rings
-        viewer.undoAction(true);
         bs = viewer.getAtomBitSet("connected(atomIndex=" + atomIndex
             + ") and !within(SMARTS,'[R]')");
         if (bs.cardinality() > 2)
           return;
+        viewer.undoAction(true, atomIndex, AtomCollection.TAINT_COORD);
         viewer.invertSelected(null, null, atomIndex, bs);
       }
       return;
     case JmolConstants.PICKING_DELETE_ATOM:
       if (isBound(action, ACTION_deleteAtom)) {
-        viewer.undoAction(true);
         bs = getSelectionSet("(" + spec + ")");
         viewer.deleteAtoms(bs, false);
       }
@@ -1817,6 +1848,10 @@ public class ActionManager {
       return mp1.y - mp0.y;
     }
 
+    int getPointCount() {
+      return ptNext;
+    }
+    
     int getPointCount(int nPoints, int nPointsPrevious) {
       if (nPoints > nodes.length - nPointsPrevious)
         nPoints = nodes.length - nPointsPrevious;

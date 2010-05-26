@@ -299,4 +299,15 @@ class SelectionManager {
       bs.and(bsSubset);
   }
 
+  public void processDeletedModelAtoms(BitSet bsAtoms) {
+    if (bsDeleted != null)
+      BitSetUtil.deleteBits(bsDeleted, bsAtoms);
+    if (bsSubset != null)
+      BitSetUtil.deleteBits(bsSubset, bsAtoms);
+    BitSetUtil.deleteBits(bsHidden, bsAtoms);
+    BitSet bs = BitSetUtil.copy(bsSelection);
+    BitSetUtil.deleteBits(bs, bsAtoms);
+    setSelectionSet(bs);
+  }
+
 }

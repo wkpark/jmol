@@ -771,7 +771,7 @@ class ScriptMathProcessor {
       return false;
     BitSet bs = (x1 != null ? (BitSet) x1.value : args.length > 2
         && args[1].tok == Token.bitset ? (BitSet) args[1].value : viewer
-        .getModelAtomBitSet(-1, false));
+        .getModelUndeletedAtomsBitSet(-1));
     String xyz;
     switch (args[0].tok) {
     case Token.string:
@@ -1349,7 +1349,7 @@ class ScriptMathProcessor {
         s = "";
         for (int i = 0; i < modelCount; i++) {
           s += (i == 0 ? "" : "\n");
-          BitSet bs = viewer.getModelAtomBitSet(i, true);
+          BitSet bs = viewer.getModelUndeletedAtomsBitSet(i);
           bs.and(bsSelected);
           s += Escape.escape(bs);
         }
@@ -2162,7 +2162,7 @@ class ScriptMathProcessor {
       fmin = JmolConstants.DEFAULT_MIN_CONNECT_DISTANCE;
     }
     if (atoms1 == null)
-      atoms1 = viewer.getModelAtomBitSet(-1, true);
+      atoms1 = viewer.getModelUndeletedAtomsBitSet(-1);
     if (haveDecimal && atoms2 == null)
       atoms2 = atoms1;
     if (atoms2 != null) {

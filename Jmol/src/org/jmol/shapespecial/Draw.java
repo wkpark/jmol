@@ -632,8 +632,7 @@ public class Draw extends MeshCollection {
     int nData = vData.size();
     int modelIndex = 0;
     BitSet bs;
-    BitSet bsModel = (iModel < 0 ? null : viewer.getModelAtomBitSet(iModel,
-        false));
+    BitSet bsModel = (iModel < 0 ? null : viewer.getModelUndeletedAtomsBitSet(iModel));
     for (int i = 0; i < nData; i++) {
       Object[] info = (Object[]) vData.elementAt(i);
       switch (((Integer) info[0]).intValue()) {

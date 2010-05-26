@@ -431,7 +431,7 @@ Token[keyword(0x880001) value=")"]
        new Token(Token.opEQ, Token.elemno), 
        Token.intToken(0), //2
        Token.tokenAnd, 
-       new Token(Token.isaromatic, "isaromatic"),
+       new Token(Token.identifier, "flatring"),
        Token.tokenExpressionEnd},
          /*4*/  new Token[]{ //sp == connected(1,"triple") or connected(2, "double")
        Token.tokenExpressionBegin,

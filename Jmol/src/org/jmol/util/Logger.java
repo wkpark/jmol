@@ -44,6 +44,8 @@ public final class Logger {
   private final static boolean[] _activeLevels = new boolean[LEVEL_MAX];
   private       static boolean   _logLevel = false;
   public static boolean debugging;
+  public static boolean debuggingHigh;
+  
   static {
     _activeLevels[LEVEL_DEBUGHIGH] = getProperty("debugHigh",    false);
     _activeLevels[LEVEL_DEBUG] = getProperty("debug",    false);
@@ -53,6 +55,7 @@ public final class Logger {
     _activeLevels[LEVEL_FATAL] = getProperty("fatal",    true);
     _logLevel                  = getProperty("logLevel", false);
     debugging = (_logger != null && (_activeLevels[LEVEL_DEBUG] || _activeLevels[LEVEL_DEBUGHIGH]));
+    debuggingHigh = (debugging && _activeLevels[LEVEL_DEBUGHIGH]);
   }
 
   private static boolean getProperty(String level, boolean defaultValue) {

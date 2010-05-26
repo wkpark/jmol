@@ -88,7 +88,7 @@ class AnimationManager {
     setStatusFrameChanged();
     if (modelSet != null) {
       if (!viewer.getSelectAllModels())
-        viewer.setSelectionSubset(viewer.getModelAtomBitSet(currentModelIndex, false));
+        viewer.setSelectionSubset(viewer.getModelUndeletedAtomsBitSet(currentModelIndex));
     }
   
   }

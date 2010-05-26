@@ -304,12 +304,13 @@ final public class JmolConstants {
   public final static int PICKING_NAVIGATE         = 22;
   public final static int PICKING_CONNECT          = 23;
   public final static int PICKING_STRUTS           = 24;
-  public final static int PICKING_DRAG_ATOM        = 25;
-  public final static int PICKING_DRAG_MINIMIZE    = 26;
-  public final static int PICKING_INVERT_STEREO    = 27;
-  public final static int PICKING_ASSIGN_ATOM      = 28;
-  public final static int PICKING_ASSIGN_BOND      = 29;
-  public final static int PICKING_ROTATE_BOND      = 30;
+  public final static int PICKING_DRAG_MOLECULE    = 25;
+  public final static int PICKING_DRAG_ATOM        = 26;
+  public final static int PICKING_DRAG_MINIMIZE    = 27;
+  public final static int PICKING_INVERT_STEREO    = 28;
+  public final static int PICKING_ASSIGN_ATOM      = 29;
+  public final static int PICKING_ASSIGN_BOND      = 30;
+  public final static int PICKING_ROTATE_BOND      = 31;
   
 
 
@@ -319,7 +320,8 @@ final public class JmolConstants {
     "atom", "group", "chain", "molecule", "polymer", "structure", 
     "site", "model", "element", 
     "measure", "distance", "angle", "torsion", "navigate", 
-    "connect", "struts", "dragatom", "dragminimize", "invertstereo", 
+    "connect", "struts", 
+    "dragmolecule", "dragatom", "dragminimize", "invertstereo", 
     "assignatom", "assignbond", "rotatebond"
   };
  
@@ -2342,6 +2344,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "@spine protein & _a>0 & _a<= 3 || nucleic & (_a >= 6 & _a <= 10 || _a=" + ATOMID_NUCLEIC_PHOSPHORUS + ")",
     "@sidechain (protein,nucleic) & !backbone",
     "@base nucleic & !backbone",
+    "@dynamic_flatring within(SMARTS,'[a]')"
 
     //    "@hetero", handled specially
 

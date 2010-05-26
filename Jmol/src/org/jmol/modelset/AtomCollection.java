@@ -880,7 +880,7 @@ abstract public class AtomCollection {
   final public static byte TAINT_ATOMTYPE = 1;
   final public static byte TAINT_COORD = 2;
   final public static byte TAINT_ELEMENT = 3;
-  final private static byte TAINT_FORMALCHARGE = 4;
+  public final static byte TAINT_FORMALCHARGE = 4;
   final private static byte TAINT_IONICRADIUS = 5;
   final private static byte TAINT_OCCUPANCY = 6;
   final private static byte TAINT_PARTIALCHARGE = 7;
@@ -932,6 +932,13 @@ abstract public class AtomCollection {
     return tainted == null ? null : tainted[type];
   }
   
+  public void taint(BitSet bsAtoms, byte type) {
+    if (!preserveState)
+      return;
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))
+      taint(i, type);
+  }
+
   protected void taint(int atomIndex, byte type) {
     if (!preserveState)
       return;

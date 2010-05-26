@@ -114,8 +114,8 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
     int modifiers = ke.getModifiers();
     // for whatever reason, CTRL may also drop the 6- and 7-bits,
     // so we are in the ASCII non-printable region 1-31
-    if (Logger.debugging)
-      Logger.debug("ActionmManager keyTyped: " + ch + " " + (0+ch) + " " + modifiers);
+    if (Logger.debuggingHigh)
+      Logger.debug("MouseManager keyTyped: " + ch + " " + (0+ch) + " " + modifiers);
     if (modifiers != 0) {
       switch (ch) {
       case (char) 11:
@@ -148,7 +148,7 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
       case 'z': // undo
         switch (modifiers) {
         case Binding.CTRL:
-          viewer.undoAction(false);
+          viewer.undoAction(false, 0, 0);
           break;
         }
         

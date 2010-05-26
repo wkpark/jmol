@@ -267,7 +267,7 @@ abstract public class ModelSet extends ModelCollection {
   private BitSet getSpecModel(int modelNumber) {
     int modelIndex = getModelNumberIndex(modelNumber, true, true);
     return (modelIndex < 0 && modelNumber > 0 ? new BitSet()
-        : getModelAtomBitSet(modelIndex, true));
+        : viewer.getModelUndeletedAtomsBitSet(modelIndex));
   }
 
   protected final Atom[] closest = new Atom[1];
@@ -366,15 +366,12 @@ abstract public class ModelSet extends ModelCollection {
       modelIndex = viewer.getVisibleFramesBitSet().nextSetBit(0);
       bsAtoms = null;
     }
-    BitSet bs = getModelAtomBitSet(modelIndex, true);
+    BitSet bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
     if (bsAtoms != null)
-      for (int i = 0; i < atomCount; i++)
-        if (atoms[i].modelIndex == modelIndex)
-          if (!bsAtoms.get(i))
-            bs.clear(i);
+      bs.and(bsAtoms);
     iAtom = bs.nextSetBit(0);
     if (iAtom < 0) {
-      bs = getModelAtomBitSet(modelIndex, true);
+      bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
       iAtom = bs.nextSetBit(0);
     }
     Object obj = viewer.getShapeProperty(JmolConstants.SHAPE_VECTORS, "mad", iAtom);
@@ -632,7 +629,7 @@ abstract public class ModelSet extends ModelCollection {
 
     BitSet bsDeleted;
     if (nModelsDeleted == modelCount) {
-      bsDeleted = getModelAtomBitSet(-1, true);
+      bsDeleted = getModelAtomBitSetIncludingDeleted(-1, true);
       viewer.zap(true, false);
       return bsDeleted;
     }
@@ -649,7 +646,7 @@ abstract public class ModelSet extends ModelCollection {
     for (int i = 0, mpt = 0; i < modelCount; i++)
       if (bsModels.get(i)) { // get a good count now
         getAtomCountInModel(i);
-        bsDeleted.or(getModelAtomBitSet(i, false));
+        bsDeleted.or(getModelAtomBitSetIncludingDeleted(i, false));
       } else {
         models[i].modelIndex = mpt;
         newModels[mpt++] = models[i];

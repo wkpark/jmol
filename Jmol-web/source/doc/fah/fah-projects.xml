@@ -8465,7 +8465,7 @@
   <fah_proj number="6503" name="p6503_TR462_B_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="17092" preferred="14" deadline="21"
     credit="75" frames="100" code="G" contact="lan" contrib="Danny Nielsen,Leszek Dobrowolski,SandStar"/>
-  <fah_proj number="6505" name="p6505_1CFC_A_predict" public="n" file="xyz"
+  <fah_proj number="6505" name="p6505_1CFC_A_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="16825" preferred="14" deadline="21"
     credit="74" frames="100" code="G" contact="lan" contrib="SandStar"/>
 
@@ -8715,11 +8715,58 @@
   <fah_proj number="10601" name="p10601" public="n"
     server="171.67.108.20" atoms="264" preferred="5" deadline="30"
     credit="4920" frames="100" contact="yslin"/>
-  <fah_proj number="10626" name="p10626" public="n"
-    server="171.67.108.20" atoms="582" preferred="3" deadline="2"
+  <fah_proj number="10626" name="p10626" public="y"
+    server="171.67.108.20" atoms="582" preferred="2" deadline="3"
     credit="610" frames="100" code="OG" contact="yslin"/>
-  <fah_proj number="10627" name="p10627" public="n"
-    server="171.67.108.20" atoms="582" preferred="3" deadline="2"
+  <fah_proj number="10627" name="p10627" public="y"
+    server="171.67.108.20" atoms="582" preferred="2" deadline="3"
     credit="611" frames="100" code="OG" contact="yslin"/>
+
+  <!-- Projects 10800 to 10899 -->
+  <fah_proj number="10820" name="p10820" public="n"
+    server="171.64.122.84" atoms="34383" preferred="10" deadline="20"
+    credit="210" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10821" name="p10821" public="n"
+    server="171.64.122.84" atoms="34398" preferred="10" deadline="20"
+    credit="205" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10822" name="p10822" public="n"
+    server="171.64.122.84" atoms="34407" preferred="10" deadline="20"
+    credit="207" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10823" name="p10823" public="n"
+    server="171.64.122.84" atoms="34374" preferred="10" deadline="20"
+    credit="206" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10824" name="p10824" public="n"
+    server="171.64.122.84" atoms="34383" preferred="10" deadline="20"
+    credit="207" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10825" name="p10825" public="n"
+    server="171.64.122.84" atoms="34377" preferred="10" deadline="20"
+    credit="207" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10826" name="p10826" public="n"
+    server="171.64.122.84" atoms="34371" preferred="10" deadline="20"
+    credit="209" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10827" name="p10827" public="n"
+    server="171.64.122.84" atoms="34359" preferred="10" deadline="20"
+    credit="207" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10828" name="p10828" public="n"
+    server="171.64.122.84" atoms="34368" preferred="10" deadline="20"
+    credit="209" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10829" name="p10829" public="n"
+    server="171.64.122.84" atoms="34386" preferred="10" deadline="20"
+    credit="211" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10830" name="p10830" public="n"
+    server="171.64.122.84" atoms="34401" preferred="10" deadline="20"
+    credit="209" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10831" name="p10831" public="n"
+    server="171.64.122.84" atoms="34380" preferred="10" deadline="20"
+    credit="207" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10832" name="p10832" public="n"
+    server="171.64.122.84" atoms="34377" preferred="10" deadline="20"
+    credit="207" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10833" name="p10833" public="n"
+    server="171.64.122.84" atoms="34365" preferred="10" deadline="20"
+    credit="209" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10834" name="p10834" public="n"
+    server="171.64.122.84" atoms="34398" preferred="10" deadline="20"
+    credit="208" frames="100" code="G" contact="yslin"/>
 
 </fah_projects>

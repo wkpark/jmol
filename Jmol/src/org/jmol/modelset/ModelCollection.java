@@ -3697,7 +3697,7 @@ abstract public class ModelCollection extends BondCollection {
       // 6) add hydrogen atoms
 
     }
-    viewer.addHydrogens(bsA, false);
+    viewer.addHydrogens(bsA, false, true);
   }
 
   public void deleteAtoms(BitSet bs) {

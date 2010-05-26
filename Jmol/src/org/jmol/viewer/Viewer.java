@@ -5606,6 +5606,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.allowmodelkit:
       // 11.12.RC15
       global.allowModelkit = value;
+      if (!value)
+        setModelKitMode(false);
       break;
     case Token.modelkitmode:
       setModelKitMode(value);
@@ -6065,14 +6067,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
 
   private void setModelKitMode(boolean value) {
-    // int modelIndex = getCurrentModelIndex();
-    // value &= (modelIndex == modelSet.getModelCount() - 1 &&
-    // !isTrajectory(modelIndex));
+    if (value || global.modelkitMode) {
+      setPickingMode(null, value ? JmolConstants.PICKING_ASSIGN_BOND
+          : JmolConstants.PICKING_IDENTIFY);
+      setPickingMode(null, value ? JmolConstants.PICKING_ASSIGN_ATOM
+          : JmolConstants.PICKING_IDENTIFY);
+    }
     global.modelkitMode = value;
-    setPickingMode(null, value ? JmolConstants.PICKING_ASSIGN_BOND
-        : JmolConstants.PICKING_IDENTIFY);
-    setPickingMode(null, value ? JmolConstants.PICKING_ASSIGN_ATOM
-        : JmolConstants.PICKING_IDENTIFY);
     if (value) {
       setNavigationMode(false);
       selectAll();
